@@ -54,6 +54,16 @@ SCP는 조직 외부 주체의 권한을 직접 제한하지 않는다. 외부 �
 
 선언적 정책은 API 호출 권한 대신 서비스 control plane에서 구성 기준을 집행한다. 정책 유형별 지원 속성과 상속 규칙을 확인하며 SCP의 평가 방식을 그대로 대입하지 않는다. [[AWS-Control-Tower|Control Tower]]의 탐지 통제는 위반을 알리는 별도 기능이다.
 
+### EC2 선언적 정책의 공개 차단과 AMI 사용 제한
+
+부분 검증(2026-10-16): EC2 정책, EBS snapshot 공개 차단과 Allowed AMIs 문서로 아래 경계를 확인했다. 기존 정책 전체의 검증일은 유지한다.
+
+- **기존 공개 권한은 남는다.** EBS snapshot의 `Block all sharing`은 기존 공개 snapshot의 공개 접근도 차단하지만 공유 권한 자체를 바꾸지는 않는다. 차단을 해제하거나 `Block new sharing`으로 바꾸면 기존 공개 snapshot이 다시 노출될 수 있다. `Block new sharing`만 켜면 이미 공개된 snapshot은 계속 공개된다.
+- **snapshot과 AMI의 공개 차단은 다르다.** Snapshot 공개 차단은 비공개 공유나 EBS-backed AMI의 공개 공유를 막지 않는다. 공개 AMI에 접근할 수 있는 사용자는 연결된 snapshot으로 볼륨을 만들 수 있으므로 AMI 공개 차단도 별도로 확인한다.
+- **Allowed AMIs의 audit mode는 차단이 아니다.** 허용 기준에 맞는지 표시하지만 검색과 사용을 제한하지 않는다. 이 기능은 공개되거나 계정에 공유된 AMI에 적용하며 해당 계정 소유 AMI는 제한하지 않는다. 중앙 이미지 공급자만 허용한 설정을 모든 AMI 생성과 사용의 통제로 해석하지 않는다.
+
+운영 점검 제안: 작은 OU에서 effective policy와 적용 리전을 확인하고, 기존 공개 snapshot, 공개 AMI와 계정 소유 AMI를 나누어 시험한다. 선언적 정책을 분리하면 속성이 연결 전 상태로 돌아갈 수 있으므로 해제 뒤의 공개 상태도 확인한다. 실제 조직에 정책을 적용한 결과는 아니다.
+
 ### TLS 강제 RCP의 범위를 읽는 방법
 
 부분 검증(2026-10-13): Organizations의 RCP 구문 예제는 `Action: s3:*`, `Resource: *`와 `aws:SecureTransport` 조건을 조합해 TLS를 사용하지 않는 S3 요청을 거부한다. 여기서 `Resource: *`는 모든 AWS 통신을 암호화한다는 뜻이 아니다. 실제 범위는 statement의 작업, RCP 지원 리소스와 정책이 연결된 계정 경계로 결정된다.
@@ -161,6 +171,9 @@ S3 Block Public Access(BPA)는 조직, 계정, 버킷과 액세스 포인트 수
 
 ## 출처
 
+- [AWS, EC2 policies](https://docs.aws.amazon.com/organizations/latest/userguide/orgs_manage_policies_ec2.html)
+- [Amazon EBS, Block public access for Amazon EBS snapshots](https://docs.aws.amazon.com/ebs/latest/userguide/block-public-access-snapshots.html)
+- [Amazon EC2, Control the discovery and use of AMIs in Amazon EC2 with Allowed AMIs](https://docs.aws.amazon.com/AWSEC2/latest/UserGuide/ec2-allowed-amis.html)
 - [AWS, Design principles for your multi-account strategy](https://docs.aws.amazon.com/whitepapers/latest/organizing-your-aws-environment/design-principles-for-your-multi-account-strategy.html)
 
 - [AWS, Chat applications policies](https://docs.aws.amazon.com/organizations/latest/userguide/orgs_manage_policies_chatbot.html)

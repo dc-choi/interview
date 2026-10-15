@@ -78,6 +78,16 @@ Collector와 중앙 버퍼는 같은 것이 아니다. Fluent Bit의 로컬 파�
 
 이 구분에서 도출한 운영 점검은 실제 archive 파일을 외부 엔진으로 읽고 필수 필드를 복원해 보는 것이다. 조회 권한, schema와 partition, 보존 정책, 검색 범위와 비용을 함께 확인해야 저장소 소유권을 실제 조사와 이전 가능성으로 연결할 수 있다.
 
+## 목적지별 축소와 조사용 패턴을 구분한다
+
+부분 검증(2026-10-16): Edge Delta의 라우팅, 데이터 축소와 Log to Pattern Metric processor 문서를 대조했다. 기존 수집 경로 전체의 검증일은 유지한다.
+
+- **라우팅과 축소는 다르다.** 경로를 나누는 것만으로 이벤트 수가 줄지는 않는다. Edge Delta는 조건별 라우팅, 필터, 마스킹과 확률적 샘플링을 제공한다. 목적지별 허용 필드와 필요한 이벤트를 정하고, 원본 보관 경로에도 별도 접근권과 민감정보 통제를 적용한다(설계 제안).
+- **메트릭 추출만으로 수집량이 줄지는 않는다.** 원본 로그와 새 메트릭을 함께 보내면 양이 늘 수도 있다. 추출 뒤 집계 주기와 차원을 정하고 원본을 계속 전달할지 결정한다. 긴 집계 주기는 양을 줄이는 대신 시간 해상도를 낮춘다.
+- **패턴 메트릭은 원문 전체가 아니다.** Log to Pattern Metric processor는 구조가 비슷한 로그를 묶어 패턴별 메트릭을 내보낸다. 보고 주기와 패턴별 표본 수를 설정하며 `keep_item: true`이면 원본 로그도 다음 단계로 전달한다. 패턴이 발견됐다는 사실만으로 원본 보관이 보장되지는 않는다.
+
+AI 조사에 연결할 때의 설계 제안: 반복 패턴의 변화로 시간창과 서비스 범위를 좁히되, 해당 구간의 원문과 비교 기준도 조회할 수 있게 둔다. 축소율만 평가하지 않고 오류, 보안 이벤트와 상관 식별자의 보존 여부를 확인한다. 패턴 변화는 조사 단서이며 원인 확정이나 LLM 권고의 정확도 보장은 아니다. 제품의 축소율과 탐지 속도는 이 문서에서 실측하지 않았다.
+
 ## CDN 로그의 표본과 전달 누락을 구분한다
 
 2026-10-10 부분 검증: CloudFront의 표준 로그와 실시간 로그 전달 조건을 대조했다. 이 절의 제품 조건만 확인했으며 다른 수집기의 전체 동작을 재검증한 것은 아니다.
@@ -163,6 +173,9 @@ OpenSearch의 shard, rollover, storage tier는 [[OpenSearch-Index-Lifecycle]]을
 
 ## 출처
 
+- [Edge Delta Documentation, Routing, Filtering, Aggregation](https://docs.edgedelta.com/directed-data-flow/)
+- [Edge Delta Documentation, Data Reduction](https://docs.edgedelta.com/data-reduction/)
+- [Edge Delta Documentation, Edge Delta Log to Pattern Metric Processor](https://docs.edgedelta.com/log-to-pattern-node/)
 - [Coralogix Docs, Configure an Amazon S3 bucket](https://coralogix.com/docs/user-guides/data-flow/s3-archive/connect-s3-archive/)
 - [Coralogix Docs, Access CX-Data directly](https://coralogix.com/docs/user-guides/data-query/archive-query/access-cx-data-directly/)
 - [Coralogix Docs, Add monitoring data to custom dashboard widgets](https://www.coralogix.com/docs/user-guides/custom-dashboards/tutorials/add-monitoring-data-to-custom-dashboard-widgets/)

@@ -40,6 +40,16 @@ SQS에는 메시지마다 재시도 백오프 곡선을 지정하는 설정이 �
 - 소비자가 메시지를 이 횟수만큼 수신한 뒤에도 삭제하지 않으면 DLQ로 옮긴다. DLQ는 소스 큐와 같은 계정, 같은 리전이어야 한다.
 - 표준 큐에서 `maxReceiveCount`가 3보다 크면, 3회 이상 수신되고 삭제되지 않은 메시지를 SQS가 큐 뒤로 보낸다. 이때 `ApproximateAgeOfOldestMessage`는 그 임계를 넘지 않은 다음 메시지의 나이를 반영하므로, 이 메트릭만 보면 오래 재시도 중인 메시지의 지연이 가려진다.
 
+### 정상 메시지가 DLQ로 이동했을 때
+
+부분 검증(2026-10-16): AWS의 DLQ 문제 해결과 보존 기간 문서를 대조했다. 기존 워커 구현 패턴 전체의 검증일은 유지한다.
+
+- **수신과 업무 실패를 구분한다.** SQS 콘솔에서 메시지를 조회하는 행위도 redrive policy의 수신 횟수에 포함된다. `maxReceiveCount`는 애플리케이션 예외 횟수가 아니므로, 운영자가 반복 조회한 뒤 DLQ로 이동했다면 소비자 로그와 콘솔 조회를 함께 확인한다. 진단 중 반복 조회를 피하고 필요한 재시도 횟수를 기준으로 한도를 정한다.
+- **처리와 삭제를 구분한다.** 업무 처리가 끝나도 visibility timeout 안에 메시지를 삭제하지 않으면 다시 노출된다. 처리 시간, 가시성 연장 실패와 삭제 결과를 확인하고, Lambda 소비자는 [[SQS-Lambda-ESM|ESM의 오류와 throttling 처리]]도 확인한다.
+- **DLQ 보존 시간을 원래 수신 시각과 구분한다.** Standard 메시지는 DLQ로 이동해도 최초 enqueue 시각을 유지한다. 소스에서 1일을 보낸 메시지가 보존 기간 4일인 DLQ로 이동하면 남은 보존 시간은 3일이다. FIFO는 이동 시 enqueue 시각이 재설정된다. DLQ의 `ApproximateAgeOfOldestMessage`는 이동 이후 경과 시간이므로 Standard 메시지의 전체 나이가 아니다.
+
+운영 점검 제안: DLQ 유입만으로 잘못된 payload라고 판정하지 말고 수신, 처리, 삭제와 보존 만료를 각각 추적한다. 이 절은 문서 대조이며 실제 큐에서 메시지를 수신하거나 재이동한 기록은 아니다.
+
 ## 채널별 재시도 정책을 얹는 세 가지 방법
 
 카카오톡 발송은 간격을 점점 벌려 재시도하고 이메일은 오래 붙잡고 재시도한다는 식의 정책은 큐 설정 항목이 아니다. 위 원시 기능 위에 아래 셋 중 하나로 구현한다.
@@ -102,6 +112,7 @@ WHERE status = 'PROCESSING'
 
 ## 출처
 
+- [AWS 공식 문서, Troubleshoot Amazon SQS dead-letter queue and DLQ redrive issues](https://docs.aws.amazon.com/AWSSimpleQueueService/latest/SQSDeveloperGuide/troubleshooting-dlq-redrive.html)
 - [AWS 공식 문서, Amazon SQS visibility timeout](https://docs.aws.amazon.com/AWSSimpleQueueService/latest/SQSDeveloperGuide/sqs-visibility-timeout.html)
 - [Amazon SQS API Reference, ChangeMessageVisibility](https://docs.aws.amazon.com/AWSSimpleQueueService/latest/APIReference/API_ChangeMessageVisibility.html)
 - [Amazon SQS API Reference, ReceiveMessage](https://docs.aws.amazon.com/AWSSimpleQueueService/latest/APIReference/API_ReceiveMessage.html)
