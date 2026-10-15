@@ -60,6 +60,16 @@ Temporal은 메모리 스냅샷이나 임의의 코드 줄에서 복구하지 �
 
 예를 들어 결제 승인 뒤 완료 보고가 유실됐다면 재시도에서도 같은 결제 키를 써야 한다. Workflow가 복구된다는 사실만으로 결제가 한 번만 반영된다고 보장할 수 없다.
 
+### 생성 작업의 결과와 실행 기록을 분리한다
+
+부분 검증(2026-10-15): Temporal의 Activity와 Claim Check 공식 문서를 대조했다. 아래 이미지 처리 흐름은 이 원리를 적용한 설계 예시이며 특정 서비스의 내부 구현을 재현한 것은 아니다.
+
+이미지 생성 요청, 결과 저장, 후속 알림을 각각 Activity로 나누면 실패한 단계의 재시도 범위를 좁힐 수 있다. 저장이나 알림이 실패해도 생성 Activity의 완료가 기록되어 있다면 Workflow replay는 그 결과를 재사용한다. 생성 요청은 외부에서 처리됐지만 완료가 기록되지 않았다면 다시 호출될 수 있으므로, 공급자의 멱등성 지원이나 기존 작업 조회 수단을 확인해야 한다.
+
+큰 이미지 본문을 실행 이력에 반복해서 넣기보다 외부 저장소에 두고 참조를 전달하는 [[Claim-Check|Claim Check]]를 검토한다. Temporal의 공식 예제는 큰 payload를 S3에 저장하고 Event History에는 참조를 남긴 뒤 필요할 때 원본을 읽는다. 이는 생성 결과의 품질 검사나 외부 부수효과의 중복 제거를 대신하지 않는다.
+
+이 설계에서는 결과를 다시 읽을 기간과 저장소의 보존 기간을 맞추고, 재개할 Worker의 조회 권한과 객체 누락 처리도 확인한다. 실행 이력이 남아 있어도 참조한 객체가 사라지면 해당 결과를 읽을 수 없다. 내구성 있는 실행, 결과 데이터의 보존, 생성 품질을 별도 완료 조건으로 관리한다.
+
 ## 언제 쓰나 — 대안 비교
 
 | 모델 | 맞는 문제 |
@@ -111,6 +121,7 @@ Temporal은 메모리 스냅샷이나 임의의 코드 줄에서 복구하지 �
 - [Temporal Documentation, Workflows](https://docs.temporal.io/workflows)
 - [Temporal Documentation, Workflow Execution overview](https://docs.temporal.io/workflow-execution)
 - [Temporal Documentation, Activities](https://docs.temporal.io/activities)
+- [Temporal Documentation, Claim check pattern with Temporal](https://docs.temporal.io/ai/cookbook/claim-check-pattern-python)
 - [Temporal Documentation, Workers](https://docs.temporal.io/workers)
 - [pg_durable — GitHub, microsoft](https://github.com/microsoft/pg_durable)
 - [Microsoft, pg_durable User Guide](https://github.com/microsoft/pg_durable/blob/main/USER_GUIDE.md#transaction-semantics)
