@@ -49,6 +49,16 @@ ARC의 routing control은 Route 53 헬스체크 상태를 바꾸는 on/off 스�
 
 DNS 응답이 바뀌어도 기존 연결은 재연결 전까지 장애 리전에 요청을 보낼 수 있다. 따라서 DR 드릴에서는 API 성공 시각뿐 아니라 새 연결과 재사용 연결의 요청 성공 시각도 측정하는 절차를 권한다. 이 절은 전환 경로의 설계 기준이며 특정 서비스의 복구 시간을 보장하지 않는다.
 
+## Region switch의 계획 평가와 실제 복구를 구분한다
+
+부분 검증(2026-10-16): ARC Region switch 공식 문서를 대조했다. Region switch는 애플리케이션의 리전 전환 절차를 plan, workflow, step과 execution block으로 구성한다. 블록을 순차 또는 병렬로 실행할 수 있으므로 트래픽 전환뿐 아니라 자원 확장 등 복구 작업의 순서를 표현할 수 있다. 앞 절의 routing control은 트래픽 전환 수단이고, Region switch는 여러 복구 작업을 조정하는 기능이다.
+
+- **평시 평가:** plan 생성과 변경 때, 이후 정상 운영 중 30분마다 IAM 권한, 리소스 설정과 실행 용량 등을 검사한다. 경고는 콘솔, API 또는 EventBridge로 확인한다. 이 평가만으로 실제 애플리케이션 복구를 검증했다고 보지 않는다.
+- **전환 실행:** 비활성화할 리전에 의존하지 않도록 리전별 데이터 계층을 제공한다. 복구 대상 리전에서 실행할 경로와 권한을 사전에 준비한다.
+- **복구 시간:** plan 실행 시간에 지정한 리전별 CloudWatch 애플리케이션 상태 알람이 정상으로 돌아올 때까지의 추가 시간을 합쳐 actual recovery time을 계산한다. 알람이 어떤 업무 상태를 관측하는지가 결과의 의미를 결정한다.
+
+설계 검토 제안: DB 전환 전에 필요한 쓰기 차단과 승인, 트래픽 전환 전에 필요한 용량 및 애플리케이션 준비 조건을 의존성으로 적는다. 독립된 작업만 병렬화하고 핵심 조회와 쓰기의 성공을 별도로 시험한다. Plan evaluation 통과를 실제 전환 시험이나 업무 정합성 검증으로 대신하지 않는다. 이번 확인은 문서 계약에 한정하며 실제 리전 장애 전환은 실행하지 않았고 기존 절의 검증일은 유지한다.
+
 ## 단일 AZ 배치 클러스터의 재생성과 작업 재개
 
 2026-10-10 Amazon EMR 공식 문서 대조 기준, EMR on EC2의 개별 클러스터는 한 AZ에 존재한다. Instance fleets에 여러 AZ의 subnet을 후보로 지정해도 생성할 AZ의 용량 선택 폭을 넓히는 것이며, 한 클러스터의 노드를 여러 AZ에 분산하는 설정은 아니다. 다른 AZ의 클러스터로 복구하는 설계와 리전 전체 장애에 대비하는 설계를 구분한다.
@@ -100,6 +110,8 @@ Restore testing의 복원 작업이 `COMPLETED`가 되면 EventBridge로 별도 
 
 2026-10-02에는 전략별 시간 예시의 한계, 백업과 복제의 구분 및 Aurora switchover/failover 계약을 대조했다. 특정 서비스가 표의 목표를 달성했다는 운영 검증은 아니다.
 
+- [AWS — Region switch in ARC](https://docs.aws.amazon.com/r53recovery/latest/dg/region-switch.html)
+- [AWS — About Region switch](https://docs.aws.amazon.com/r53recovery/latest/dg/region-switch-plans.html)
 - [AWS — Creating backup copies across AWS Regions](https://docs.aws.amazon.com/aws-backup/latest/devguide/cross-region-backup.html)
 - [AWS — Restore a backup by resource type](https://docs.aws.amazon.com/aws-backup/latest/devguide/restoring-a-backup.html)
 - [AWS — Restore testing validation](https://docs.aws.amazon.com/aws-backup/latest/devguide/restore-testing-validation.html)

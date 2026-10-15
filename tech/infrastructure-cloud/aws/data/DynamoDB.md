@@ -185,6 +185,14 @@ Provisioned Auto Scaling은 목표 사용률을 2분 연속 넘은 뒤 작동하
 - 재시도만 반복하지 말고 partition key 분산, GSI write pressure, capacity 또는 on-demand maximum을 교정한다.
 - `BatchWriteItem`, `BatchGetItem`의 미처리 항목만 backoff 후 다시 보낸다.
 
+### On-Demand 급증은 이전 피크와 준비된 처리량을 함께 본다
+
+부분 검증(2026-10-16): On-Demand 확장과 warm throughput 공식 문서를 대조했다. 이전 피크의 두 배를 30분 안에 넘으면 용량 배정이 수요를 따라가지 못해 스로틀링될 수 있다. 예상 급증에는 최소 30분에 걸친 단계적 증가나 사전 pre-warming을 검토한다. 이 시간 조건은 파티션 집중, GSI 병목과 설정한 최대 처리량을 해결해 주지는 않는다.
+
+Warm throughput은 테이블과 GSI가 즉시 지원할 준비가 된 읽기/쓰기 처리량이다. 사용량에 따라 자동으로 늘어나며, 예정된 이벤트 전에 선제적으로 높일 수도 있다. Pre-warming은 용량 모드를 바꾸지 않고 수행하지만 완료 시간은 설정값과 테이블 또는 인덱스 크기에 따라 달라진다. 기본 warm throughput 값의 제공과 달리 선제 증가는 과금 대상이며, 올린 값은 낮출 수 없다.
+
+운영 점검 제안: 이벤트의 예상 처리량을 테이블과 GSI별 warm throughput, 적용 quota와 최대 처리량 설정에 각각 대조한다. 증액 요청 접수만으로 준비 완료를 판단하지 않고 완료 상태와 키 분포를 확인한다. 이번 대조는 이 확장 조건에 한정하며 실제 부하 시험과 기존 기능 전체의 재검증은 아니므로 frontmatter 검증일은 유지한다.
+
 ## 원자적 갱신, 낙관적 잠금과 트랜잭션 재시도
 
 2026-10-13 공식 문서 부분 대조 기준. 단일 `UpdateItem`은 원자적으로 최신 항목에 적용된다. 애플리케이션이 값을 읽고 계산한 뒤 다시 쓰는 read-modify-write에는 그 사이 다른 요청이 값을 바꾸는 문제가 남는다. 낙관적 잠금은 버전 속성과 조건부 쓰기를 구성해 이를 감지하는 방식이며, 모든 쓰기에 자동 적용되는 기본 동작으로 해석하지 않는다.
@@ -254,6 +262,8 @@ Provisioned Auto Scaling은 목표 사용률을 2분 연속 넘은 뒤 작동하
 
 ## 출처
 
+- [AWS DynamoDB — DynamoDB on-demand capacity mode](https://docs.aws.amazon.com/amazondynamodb/latest/developerguide/on-demand-capacity-mode.html)
+- [AWS DynamoDB — Understanding DynamoDB warm throughput](https://docs.aws.amazon.com/amazondynamodb/latest/developerguide/warm-throughput.html)
 - [AWS DynamoDB — Best practices for using sort keys to organize data in DynamoDB](https://docs.aws.amazon.com/amazondynamodb/latest/developerguide/bp-sort-keys.html)
 - [AWS DynamoDB — UpdateItem API](https://docs.aws.amazon.com/amazondynamodb/latest/APIReference/API_UpdateItem.html)
 - [AWS DynamoDB — Take advantage of sparse indexes](https://docs.aws.amazon.com/amazondynamodb/latest/developerguide/bp-indexes-general-sparse-indexes.html)
