@@ -26,6 +26,14 @@ aliases: ["밸류에이션", "Valuation"]
 
 **현금흐름의 주인과 할인율을 맞춘다.** 채권자 지급 전의 기업 잉여현금흐름(FCFF)은 가중평균자본비용(WACC)으로 할인해 사업가치를 구하고, 순부채 등 비지분 청구권을 조정해 주식가치로 연결한다. 채무 상환과 차입까지 반영한 주주 잉여현금흐름(FCFE)은 자기자본 요구수익률로 할인한다. 회계상 순이익을 곧바로 현금흐름으로 쓰거나 FCFE를 WACC로 할인하면 값이 섞인다. 현금흐름과 할인율의 통화, 명목/실질 기준도 일치시킨다.
 
+### 금리와 주가가 함께 올라도 할인 원리는 사라지지 않는다
+
+할인율 상승이 가치를 낮춘다는 설명은 미래 현금흐름을 고정한 비교다. 실제 시장에서는 이익과 현금흐름 전망, 무위험금리와 위험 프리미엄이 함께 바뀐다. 현금흐름 전망의 개선이 할인율 상승의 영향을 웃돌면 평가가치는 높아질 수 있다. 국채 금리 하나만으로 주식의 할인율 전체나 주가 방향을 정하지 않는다.
+
+가상의 1년 뒤 단일 현금흐름 110을 할인율 10%로 평가하면 현재가치는 100이다. 현금흐름이 그대로인데 할인율만 20%가 되면 약 91.7이지만, 현금흐름 전망도 132로 높아지면 110이다. 이는 DCF 식의 비교 예시이며 실제 기업의 성장 전망이나 적정 할인율을 제시한 값이 아니다.
+
+역사적 사례로 2026년 6월 FOMC 의사록은 회의 사이 국채 수익률과 주가지수가 함께 올랐으며, 기업 실적과 AI의 수익성 기여에 대한 기대가 높은 금리의 부담에도 주가를 지지했다고 설명했다. 이 관측만으로 AI 투자가 금리 상승의 유일한 원인이거나 금리가 주가에 더 이상 중요하지 않다고 결론 내리지 않는다. 검토할 때는 현금흐름 전망의 수정 근거와 할인율의 변화를 따로 확인한 뒤 함께 평가한다. 이 절은 2026-10-16 NYU Stern의 DCF 자료와 해당 의사록을 대조했다.
+
 ## 3. 상대가치 — 멀티플
 
 DCF는 가정이 많아 손이 무겁다. 그래서 비슷한 기업끼리 배수로 빠르게 비교하는 방법을 함께 쓴다.
@@ -177,6 +185,7 @@ Micron의 2025 회계연도 10-K는 전년 대비 DRAM 매출 62% 증가를 평�
 
 ## 출처
 
+- [Minutes of the Federal Open Market Committee, June 16–17, 2026 — Federal Reserve Board](https://www.federalreserve.gov/monetarypolicy/fomcminutes20260617.htm) — Developments in Financial Markets와 Staff Review of the Financial Situation의 국채 수익률, 이익 기대와 주가 동반 상승
 - [AASB, AASB 8 Operating Segments (2021년 적용본)](https://standards.aasb.gov.au/aasb-8-mar-2020) — 문단 34의 주요 고객 공시와 고객 신원 공개 범위
 - [Federal Reserve Board, Industrial Production and Capacity Utilization, Technical Q&As](https://www.federalreserve.gov/releases/G17/g17_technical_qa.htm) — 2018-05-03 자동차 산업 생산능력 산정 방식과 자료 간 가동률 차이
 - [Stock Prices, Earnings and Cashflows: The AI Effect plays through! — Musings on Markets, Aswath Damodaran](https://aswathdamodaran.blogspot.com/2026/10/stock-prices-earnings-and-cashflows-ai.html) — 2026-10-11 The AI Cap Ex Boom 절의 회계 효과 도식과 본문, 합산 순이익과 주주환원, The AI Business Resolution 절의 시나리오 표 대조
