@@ -71,6 +71,23 @@ aliases: ["Product Roadmap", "프로덕트 로드맵", "Story Mapping", "스토�
 
 예를 들어 자동 견적 기능의 출시 여부만 세지 않고, 견적을 기다리는 시간이 줄었는지와 사람이 다시 고치는 일이 늘었는지를 함께 확인한다. 결과가 기대와 다르면 기능 수를 늘리기 전에 가정이나 제공 방식을 바꾼다. 이는 적용 예시이며, 실험 실패를 무조건 허용하거나 계약상 납기를 가설로 바꾼다는 뜻은 아니다.
 
+### 작은 실험은 중요한 문제와 확장 조건을 함께 고른다
+
+Micro-battles는 중요한 사업 문제를 제한된 범위에서 풀고, 확인한 해법을 다른 범위로 넓히는 변화 방식이다. 작은 범위라는 말은 중요하지 않은 일을 고른다는 뜻이 아니다. 사업에 중요한 문제인지, 짧은 기간에 진전을 확인할 수 있는지, 해법을 다른 조직이나 시장으로 확장할 수 있는지를 함께 본다.
+
+로드맵에 적용할 때는 다음처럼 첫 실험과 확장 검토를 구분할 수 있다. 아래는 적용 예시이며 고정된 운영 양식은 아니다.
+
+| 구분 | 로드맵에 남길 질문 |
+|---|---|
+| 중요한 문제 | 이 실험이 해결할 고객 문제나 사업 병목은 무엇인가 |
+| 제한된 첫 실행 | 어느 고객군이나 지역에서 어떤 변화를 확인할 것인가 |
+| 검토 시점 | 어떤 증거를 얻은 뒤 계속, 수정 또는 중단할 것인가 |
+| 확장 조건 | 첫 범위에서 확인한 해법을 다음 고객군이나 지역에도 적용할 수 있는가 |
+
+첫 고객군에서 작동했다는 근거와 다른 범위에서도 작동한다는 근거를 구분한다. 예를 들어 한 지역에서 예약 절차를 바꿔 전환을 개선했다면 다른 지역의 고객과 공급 조건에서도 효과가 이어지는지 확인할 항목을 남긴다. 첫 실험의 완료를 전면 확대의 완료로 처리하지 않는다.
+
+AWS 공개 대담에서는 Micro-battles의 시간 범위를 최대 3~4개월로 제안하고 4주로 운영한 사례도 소개한다. 이는 해당 방법론의 범위 설정 제안이며, 모든 제품의 납기나 성과 보장 기간으로 옮기지 않는다.
+
 ## 면접 체크포인트
 
 - 로드맵 수립 질문에는 Vision → Goal → Theme → 우선순위의 도출 순서로 답한다 — 과제 나열이 아니라 비전에서 내려오는 구조를 보여주는 것이 핵심.
@@ -85,6 +102,7 @@ aliases: ["Product Roadmap", "프로덕트 로드맵", "Story Mapping", "스토�
 - [GOV.UK, Developing a roadmap](https://www.gov.uk/service-manual/agile-delivery/developing-a-roadmap)
 - [서비스 기획자의 로드맵 수립 — 쪼렙 서비스기획자 (Brunch)](https://brunch.co.kr/@b30afb04c9f54dc/54)
 - [The Parlor Room, Season 1 Bonus Content (Part 2) — Linda Hill 외 (Harvard Business School Online)](https://online.hbs.edu/podcast/season-1-bonus-content-part-2-linda-hill-mihir-desai-forest-reinhardt-and-joshua-margolis) — 계획의 가정, 행동의 영향과 방향 수정에 관한 공개 대담
+- [How Bain’s Micro-Battles Drive Agile Digital Transformation — Frank Ford, Tom Soderstrom (AWS)](https://aws.amazon.com/executive-insights/podcast/driving-digital-transformation-with-bain-micro-battles/) — 2026-10-16 공식 전사문의 문제 선택, 제한된 실험과 확장 조건을 대조. 대담의 조직 전환 성공률과 AI 효과 예측은 일반 사실로 사용하지 않음
 
 ## 관련 문서
 - [[Tech-Roadmap|기술 로드맵 수립]]
