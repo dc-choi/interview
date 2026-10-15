@@ -215,6 +215,10 @@ AWS의 Python Lambda 예시는 코드와 의존성뿐 아니라 Lambda 설정과
 
 운영 점검 제안: 같은 요청의 호출 응답과 함수 로그를 연결하고, 정상 입력, 최대 예상 입력과 외부 응답 지연을 따로 재현한다. 이 절은 진단 기준이며 실제 함수를 실행한 결과가 아니다. 기존 절 전체의 검증일은 유지한다.
 
+부분 검증(2026-10-16): 기본 Lambda 실행 환경의 plain-text 시스템 로그에서는 구형의 `Task timed out`와 신형 `REPORT` 행의 `Status: timeout`을 함께 확인한다. `ERROR` 문자열 검색만으로 시간 초과를 찾으면 이 로그를 놓칠 수 있다. JSON 시스템 로그에는 이 문자열 기준을 그대로 적용하지 않는다.
+
+`Status: timeout`은 `INIT_REPORT`와 `RESTORE_REPORT`에도 나타날 수 있으므로 행 유형을 보고 초기화, 복원과 호출 실행 중 어느 단계가 실패했는지 구분한다. 호출 실행 실패는 해당 `RequestId`, 로그 스트림과 시각으로 주변 로그를 연결해 조사한다. 한 스트림에 여러 호출의 로그가 쌓일 수 있으므로 스트림 전체를 한 호출로 취급하지 않는다. 실제 함수와 로그 검색을 실행한 검증은 아니다.
+
 ## 언제 Lambda를 피해야 하는가
 
 - 지속적으로 높은 트래픽 — Lambda가 부적합하다고 요청량만으로 단정하지 말고 실행 시간, 메모리, 동시성, 할인 모델, 운영비를 EC2/ECS와 계산
@@ -260,6 +264,7 @@ REST API, 이벤트 버퍼링, 팬아웃, 스트림 처리처럼 패턴을 먼�
 
 ## 출처
 
+- [Viewing CloudWatch logs for Lambda functions](https://docs.aws.amazon.com/lambda/latest/dg/monitoring-cloudwatchlogs-view.html) — 2026-10-16 로그 스트림과 요청 식별자, Logs Insights 조회 범위 대조
 - [Configure Lambda function timeout](https://docs.aws.amazon.com/lambda/latest/dg/configuration-timeout.html)
 - [Troubleshoot execution issues in Lambda](https://docs.aws.amazon.com/lambda/latest/dg/troubleshooting-execution.html)
 - [Flow block in Connect Customer: AWS Lambda function](https://docs.aws.amazon.com/connect/latest/adminguide/invoke-lambda-function-block.html)
