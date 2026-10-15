@@ -1,13 +1,14 @@
 ---
 tags: [observability, metrics, red-method, use-method, monitoring, sre]
 status: done
+verified_at: 2026-10-15
 category: "관측가능성(Observability)"
 aliases: ["RED USE Method", "RED / USE method", "RED 메서드", "USE 메서드", "RED USE"]
 ---
 
 # RED / USE Method
 
-"무엇을 모니터링할 것인가"에 대한 두 가지 표준 답. 메트릭을 무작정 늘리는 대신 **서비스는 RED, 자원은 USE** 세 가지씩만 봐도 대부분의 문제를 잡는다. 메트릭 선택의 프레임이다. [[Logs-vs-Metrics]]
+서비스 요청에는 RED, 자원에는 USE를 적용해 조사할 지표를 고른다. 두 방법은 성능 조사의 출발점이며 모든 문제를 설명하는 완결된 진단법은 아니다. [[Logs-vs-Metrics]]
 
 ## RED — 요청 기반 서비스 관점
 
@@ -23,11 +24,23 @@ aliases: ["RED USE Method", "RED / USE method", "RED 메서드", "USE 메서드"
 
 CPU, 메모리, 디스크, 네트워크, 커넥션 풀 같은 **자원**은 다르게 본다.
 
-- **Utilization** — 자원이 일하는 시간 비율(예: CPU 70%).
-- **Saturation** — 자원이 처리 못 해 **대기 중인 정도**(런큐 길이, 디스크 큐, 커넥션 풀 대기). 보통 포화가 이용률보다 먼저 아프다.
+- **Utilization** — 자원이 일하는 시간 비율 또는 전체 용량 중 사용 중인 비율. CPU 실행 시간과 메모리 점유량처럼 자원에 따라 정의가 다르다.
+- **Saturation** — 자원이 처리하지 못한 추가 작업의 정도. 대기열 길이나 대기 시간으로 관측할 수 있다.
 - **Errors** — 자원 수준 에러(패킷 드롭, 디스크 오류, 풀 고갈로 인한 거절).
 
-핵심 통찰: **이용률 80%여도 포화가 0이면 건강**하고, 이용률 50%여도 포화가 쌓이면 병목이다. 평균 이용률만 보면 큐가 차는 걸 놓친다. [[Connection-Pool]]
+긴 구간의 평균 이용률이 낮아도 짧은 부하 급증과 대기는 숨을 수 있다. 이용률과 포화에 오류, 요청 지연을 함께 대조하며 특정 이용률 하나를 정상 기준으로 삼지 않는다. [[Connection-Pool]]
+
+### GPU 이용률과 유효한 작업량
+
+2026-10-15 NVIDIA 문서 대조 기준. `nvidia-smi`의 GPU utilization은 표본 구간 중 하나 이상의 커널이 실행된 시간 비율이다. GPU의 모든 연산 자원이 효율적으로 쓰였다는 비율이 아니다. Memory utilization은 전역 장치 메모리를 읽거나 쓴 시간 비율이며, 할당된 메모리 용량과도 다르다.
+
+따라서 GPU utilization 100%만으로 학습 처리량이 최적이라고 판단하지 않는다. 메모리를 할당했다는 사실만으로 이 지표가 100%가 된다고 설명해서도 안 된다. USE의 saturation 역시 유효 연산량 자체가 아니라 처리하지 못한 추가 작업을 뜻한다.
+
+학습 작업을 조사할 때는 다음처럼 적용할 수 있다(운영 제안).
+
+- 같은 모델, 배치와 입력 길이 조건에서 step 시간이나 처리 토큰 수를 GPU 지표와 함께 비교한다.
+- GPU, 네트워크와 저장소를 각각 살피고, 대기와 오류를 측정하지 못했다면 0이 아니라 미확인으로 남긴다.
+- 온도나 전력에 따른 클록 제한과 지원되는 오류 지표를 함께 본다. 높은 이용률과 낮은 처리량이 공존해도 원인을 커널 코드 하나로 단정하지 않는다.
 
 ## 언제 무엇을 쓰나
 
@@ -43,13 +56,13 @@ CPU, 메모리, 디스크, 네트워크, 커넥션 풀 같은 **자원**은 다�
 - Duration을 평균으로만 봄 → 꼬리 지연(P99)이 평균에 묻힘
 - 이용률만 보고 포화를 안 봄 → 큐가 차는 병목을 놓침
 - 자원에 RED를, 서비스에 USE를 억지 적용 → 엉뚱한 지표
-- 메트릭을 세 가지로 줄이지 않고 수백 개 대시보드 → [[Alert-Fatigue|알람 피로]]
+- USE를 시스템 전체의 지표 세 개로 축소함 → 자원마다 세 관점을 확인하고 불필요한 경보는 별도로 줄인다. [[Alert-Fatigue|알람 피로]]
 - 측정 레이어 혼동 → 같은 자원이 다른 값([[Metric-Layer-Mismatch]])
 
 ## 면접 체크포인트
 
 - RED(Rate/Errors/Duration)와 USE(Utilization/Saturation/Errors)의 대상 차이
-- Saturation이 Utilization보다 먼저 아픈 이유, 평균 이용률의 함정
+- 평균 이용률이 낮아도 포화가 생길 수 있는 이유와 집계 구간의 함정
 - RED가 SLI로 바로 이어지는 구조(가용성/지연)
 - RED=증상, USE=원인으로 층을 이뤄 파고드는 디버깅 흐름
 - Duration을 P95/P99로 봐야 하는 이유
@@ -58,6 +71,7 @@ CPU, 메모리, 디스크, 네트워크, 커넥션 풀 같은 **자원**은 다�
 
 - [The RED Method: How to Instrument Your Services — Grafana Labs, Tom Wilkie](https://grafana.com/blog/the-red-method-how-to-instrument-your-services/)
 - [Brendan Gregg — The USE Method](https://www.brendangregg.com/usemethod.html)
+- [NVIDIA, NVIDIA System Management Interface](https://docs.nvidia.com/deploy/nvidia-smi/index.html)
 
 ## 관련 문서
 
