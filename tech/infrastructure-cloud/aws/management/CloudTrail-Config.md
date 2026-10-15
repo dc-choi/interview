@@ -8,7 +8,7 @@ verified_at: 2026-07-21
 
 # CloudTrail & Config
 
-AWS 거버넌스, 감사의 두 축. **CloudTrail**은 "**누가** 무엇을 했는가" (API 호출, 활동 로그), **Config**는 "**무엇이** 어떻게 구성되어 있는가" (리소스 구성 상태, 변경 이력)에 초점.
+AWS 거버넌스, 감사의 두 축. **CloudTrail**은 누가 무엇을 했는지(API 호출, 활동 로그), **Config**는 리소스가 어떻게 구성되어 있는지(구성 상태, 변경 이력)에 초점을 둔다.
 
 ## 한눈에 비교 — CloudTrail vs Config
 
@@ -84,6 +84,12 @@ Trail에 **Log File Validation**을 켜면 SHA-256 다이제스트로 로그 변
 Non-Compliant 판정 시 **SSM Automation Document**로 자동 교정 가능.
 예: 퍼블릭으로 풀린 S3 버킷에 승인된 SSM Automation remediation을 실행해 `BlockPublicAccess` 적용. 자동 조치는 재시도, 권한, 동시성 한도 때문에 즉시 성공을 보장하지 않는다.
 
+### 자동 교정의 기준 시점과 실행 결과
+
+2026-10-15 AWS Config 자동 교정 문서 대조 기준. 자동 교정은 주기적으로 확보한 compliance snapshot을 사용한다. 그 뒤 리소스를 수정해 이미 준수 상태가 되어도 오래된 평가 결과 때문에 교정이 시작될 수 있다. 자동 교정 시작을 현재 위반 상태의 증거로 간주하지 않는다.
+
+`DescribeRemediationExecutionStatus`로 리소스별 실행 상태, 단계 시각과 실패 메시지를 확인할 수 있다. 구성 평가, 교정 실행과 현재 리소스 상태를 각각 확인하고, 교정 로직에는 현재 상태 재확인과 반복 실행의 안전성을 검토한다(설계 제안). 자동화 도구 배치만으로 설정 오류 예방이나 인증 획득이 완료되지는 않는다. 이 절의 동작만 대조했으므로 기존 frontmatter 검증일은 유지한다.
+
 ### Conformance Pack
 
 규칙, 교정 액션을 **YAML로 패키징**해 일괄 배포. CIS, PCI, HIPAA, NIST 같은 컴플라이언스 프레임워크별 샘플 팩 제공. Organizations로 다계정 배포.
@@ -128,7 +134,7 @@ Non-Compliant 판정 시 **SSM Automation Document**로 자동 교정 가능.
 
 ## 흔한 실수
 
-- **CloudTrail만 켜놓고 Config 안 켬** — "누가" 했는지는 알아도 "변경 전 상태"는 모름
+- **CloudTrail만 켜놓고 Config 안 켬** — 변경 주체는 확인해도 구성 변경 전후 비교에 필요한 이력이 부족할 수 있음
 - **Trail에 KMS 암호화, MFA Delete 미설정** — 감사 로그 자체가 변조, 삭제 위험
 - **Data Event 전체 활성화** — 비용 폭주
 - **멀티 리전 Trail 미사용** — 다른 리전에서 발생한 이벤트 누락
@@ -154,6 +160,7 @@ Non-Compliant 판정 시 **SSM Automation Document**로 자동 교정 가능.
 - [CloudTrail 개념](https://docs.aws.amazon.com/awscloudtrail/latest/userguide/cloudtrail-concepts.html)
 - [CloudTrail 요금 이해](https://docs.aws.amazon.com/awscloudtrail/latest/userguide/cloudtrail-costs.html)
 - [AWS Config 작동 방식](https://docs.aws.amazon.com/config/latest/developerguide/how-does-config-work.html)
+- [AWS Config 자동 교정 설정](https://docs.aws.amazon.com/config/latest/developerguide/setup-autoremediation.html) — 2026-10-15 오래된 평가 결과와 교정 실행 상태 조회 대조
 - [AWS Config Managed Rules 목록](https://docs.aws.amazon.com/config/latest/developerguide/managed-rules-by-aws-config.html)
 - [CloudTrail Insights 이벤트 로깅](https://docs.aws.amazon.com/awscloudtrail/latest/userguide/logging-insights-events-with-cloudtrail.html)
 - [CloudTrail 경유 AWS 서비스 이벤트(EventBridge)](https://docs.aws.amazon.com/eventbridge/latest/userguide/eb-service-event-cloudtrail.html)

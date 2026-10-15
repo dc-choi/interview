@@ -164,6 +164,18 @@ Shadow 메시지의 도착 순서는 보장되지 않는다. 장비는 추적 �
 
 롤백 완료는 새 버전 배포 성공이 아니다. 실패 시 `deployment-failure-cause`와 장비 로그를 함께 확인한다. 운영 적용에서는 목표 버전, 실제 적용 결과와 현장 기능 점검을 따로 기록하는 방식을 검토한다. 배포 성공도 로봇 동작의 안전성이나 물리적 작업 완료를 증명하지 않는다.
 
+### 배포 성공과 로그 업로드 성공을 구분한다
+
+2026-10-15 Greengrass V2 Log manager 문서의 v2.3.10 설정 절 대조 기준. `aws.greengrass.LogManager`는 장비 로그를 CloudWatch Logs로 올리지만, 컴포넌트 배포 성공이 로그 도착을 증명하지는 않는다.
+
+- `systemLogsConfiguration.uploadToCloudWatch`의 기본값은 `false`다. 시스템 로그 전송과 `componentLogsConfigurationMap`의 컴포넌트별 설정을 구분한다.
+- `periodicUploadIntervalSec`는 새 로그 파일을 확인하는 간격이며 기본값은 300초다. 이 값을 로그가 클라우드에 도착하는 최대 지연 보장으로 해석하지 않는다.
+- 시스템 로그의 `diskSpaceLimit`과 nucleus의 `totalLogsSizeKB`는 단위를 맞춰 작은 쪽이 적용된다. 시스템 로그 한도를 넘으면 오래된 시스템 로그부터 삭제되므로 저장 공간 제한과 이력 보존을 함께 점검한다.
+- `minimumLogLevel` 필터에는 로그 형식 조건이 있다. 시스템 로그는 nucleus의 JSON 출력, 컴포넌트 로그는 지정된 JSON 형식을 확인한다. 임의의 텍스트 로그에 같은 필터가 적용된다고 가정하지 않는다.
+- `deleteLogFileAfterCloudUpload`는 업로드 뒤 로컬 로그 파일을 삭제하는 설정이며 기본값은 `false`다. 클라우드 보존 기간과 별개의 정책이다.
+
+운영 점검에서는 장비 역할의 CloudWatch Logs 권한, 네트워크 연결과 해당 장비의 실제 로그 도착을 확인한다. 단절 중 저장 공간 소진과 재연결 뒤 누락을 시험하는 것은 설계 제안이며 실제 장비 실측 결과는 아니다. 이번 검증은 로그 설정에 한정하므로 기존 frontmatter 검증일은 유지한다.
+
 ## 생성형 AI의 작업 제안과 물리 제어를 분리한다
 
 2026-10-09 AWS 로봇 시뮬레이션 가이드 대조 기준. 참조 구조에서는 Bedrock 모델이 작업 공간의 조건을 분석해 상위 수준의 전략을 제안하고, 시뮬레이션 애플리케이션이 이를 처리해 로봇의 위치와 속도를 계산한다. 모델의 자연어 응답을 그대로 모터 명령으로 해석하는 구조와 구분한다.
@@ -200,6 +212,7 @@ Shadow 메시지의 도착 순서는 보장되지 않는다. 장비는 추적 �
 
 ## 출처
 
+- [AWS IoT Greengrass, Log manager](https://docs.aws.amazon.com/greengrass/v2/developerguide/log-manager-component.html) — 2026-10-15 v2.3.10 설정의 업로드 간격, 시스템 로그 한도와 JSON 필터 조건 대조
 - [AWS FreeRTOS, What is FreeRTOS?](https://docs.aws.amazon.com/freertos/latest/userguide/what-is-freertos.html)
 - [AWS IoT Greengrass, Choosing your AWS IoT Greengrass nucleus runtime](https://docs.aws.amazon.com/greengrass/v2/developerguide/choosing-your-runtime.html)
 - [AWS IoT Greengrass, Greengrass feature compatibility](https://docs.aws.amazon.com/greengrass/v2/developerguide/operating-system-feature-support-matrix.html)

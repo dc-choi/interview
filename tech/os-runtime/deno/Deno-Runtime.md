@@ -36,6 +36,14 @@ TypeScript를 바로 실행한다는 점만으로는 차이가 약하다. 기본
 
 운영 점검 제안: 직접 실행하는 런타임, Deploy 호스팅, JSR 패키지 의존성을 나누어 목록화한다. 런타임 API와 권한 모델의 호환성 시험, 데이터와 비밀값 이전, 배포와 복구 절차를 준비하고 실제 전환일은 서비스별 공지와 계약으로 확인한다. 아래 설치와 실행 예시는 기술 사용법이며 장기 지원 보장을 뜻하지 않는다.
 
+### 팀 합류와 런타임 호환성을 구분한다
+
+2026-10-15 Deno 발표와 Workers의 Node.js 호환성 문서를 대조했다. 발표가 명시한 통합 대상은 `rusty_v8`와 `workerd`이며, 이를 Deno 런타임 전체나 `Deno.serve()`의 Workers 지원 완료로 확대하지 않는다. 지원 종료 계획과 개별 API의 실행 가능 여부는 별도로 확인한다.
+
+Workers는 Node.js API 일부를 내장 구현하고, 일부는 부분 지원하거나 import만 가능한 shim으로 제공한다. 따라서 패키지를 불러오는 데 성공해도 실제 메서드 호출에서 오류가 날 수 있다. Web API를 공유한다는 사실도 파일 접근, 네이티브 모듈과 플랫폼별 저장소까지 호환된다는 보장은 아니다.
+
+이전 점검에서는 사용 API와 패키지의 실행 경로, Workers의 `compatibility_date`와 적용 flag를 고정하고 요청 처리와 오류 경로를 시험한다(설계 제안). 인수 소식만으로 이관 비용이 사라지거나 특정 런타임으로 옮겨야 한다고 판단하지 않는다. 이번 대조는 지원 계획과 호환성 경계에 한정하므로 기존 frontmatter 검증일은 유지한다.
+
 ## 설치와 프로젝트 구성
 
 공식 설치 경로 또는 package manager를 사용하고 `deno --version`으로 runtime, V8, TypeScript 버전을 함께 확인한다. 프로젝트 설정은 `deno.json` 또는 `deno.jsonc`에 둔다. `deno.json`은 Node의 `package.json`이 맡던 task와 dependency, `tsconfig.json`이 맡던 `compilerOptions`를 함께 담는다. Deno는 기본 TypeScript 설정을 권장하므로 필요한 옵션만 바꾼다.
@@ -140,6 +148,7 @@ CMD ["run", "--allow-net=0.0.0.0:8000", "src/main.ts"]
 ## 출처
 
 - [Deno is joining Cloudflare — Deno Blog](https://deno.com/blog/cloudflare)
+- [Cloudflare Workers, Node.js compatibility](https://developers.cloudflare.com/workers/runtime-apis/nodejs/) — 2026-10-15 내장 구현, 부분 지원과 import 전용 shim의 차이 대조
 - [Deno, TypeScript](https://docs.deno.com/runtime/fundamentals/typescript/)
 - [Deno, deno.json and package.json](https://docs.deno.com/runtime/reference/deno_json/)
 - [Deno, Modules](https://docs.deno.com/runtime/fundamentals/modules/)
