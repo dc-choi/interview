@@ -8,7 +8,7 @@ verified_at: 2026-08-25
 
 # Global Accelerator
 
-AWS 엣지 로케이션의 **고정 Anycast IP**를 글로벌 진입점으로 제공하고, AWS 글로벌 네트워크를 통해 가까운 리전 엔드포인트로 트래픽을 보내는 L4 네트워크 가속 서비스. IPv4 accelerator는 IPv4 주소 2개, dual-stack accelerator는 IPv4 2개와 IPv6 2개를 제공한다.
+AWS 엣지 로케이션의 **고정 Anycast IP**를 글로벌 진입점으로 제공하고, AWS 글로벌 네트워크를 통해 리전 엔드포인트로 트래픽을 보내는 L4 네트워크 가속 서비스. IPv4 accelerator는 IPv4 주소 2개, 표준 dual-stack accelerator는 IPv4 2개와 IPv6 2개를 제공한다. 목적지 선택 방식은 표준과 사용자 지정 라우팅에서 다르다.
 
 ## 핵심 개념
 
@@ -38,24 +38,32 @@ AWS 엣지 로케이션의 **고정 Anycast IP**를 글로벌 진입점으로 �
 ### Endpoint Group
 
 - **리전 단위** 그룹. 한 리스너 아래 여러 리전을 둘 수 있다.
-- 리전별 옵션:
-  - **Traffic Dial (0–100%)** — 그 리전으로 보낼 트래픽 비율. 점진적 페일오버, 블루/그린 리전 전환에 사용.
+- 표준 accelerator의 리전별 옵션:
+  - **Traffic Dial (0–100%)** — 해당 그룹으로 향하도록 선택된 트래픽 중 수용할 비율. 전체 리스너 트래픽의 비율이 아니며 점진적 리전 전환에 사용한다.
   - **포트 재정의(Port Override)** — 리스너 포트와 엔드포인트 포트가 다를 때 매핑.
   - **헬스 체크 설정** — 프로토콜(TCP/HTTP/HTTPS), 경로, 임계값.
 
 ### Endpoint
 
 - 표준 accelerator의 실제 트래픽 대상은 **ALB / NLB / EC2 인스턴스 / Elastic IP**다. 사용자 지정 라우팅 accelerator는 VPC 서브넷을 엔드포인트로 사용한다.
-- 그룹 내에서 **Endpoint Weight (0–255)** 로 가중치 분배.
-- 헬스체크는 TCP/HTTP/HTTPS 중 선택. UDP 리스너도 상태체크는 이 3종으로.
+- 표준 accelerator는 그룹 내에서 **Endpoint Weight (0–255)** 로 가중치를 설정한다.
+- 표준 accelerator의 EC2/EIP 헬스체크는 TCP/HTTP/HTTPS로 설정한다. ALB/NLB는 로드밸런서의 상태 정보를 사용한다. 사용자 지정 라우팅에는 헬스체크가 없다.
 
-## 동작 흐름
+## 표준 accelerator 동작 흐름
 
 1. 클라이언트가 Anycast IP로 요청 발신.
 2. BGP 라우팅으로 **가장 가까운 엣지 로케이션** 도착.
 3. 표준 accelerator는 사용자 위치, 상태와 설정한 가중치 등을 바탕으로 리전 엔드포인트를 선택한다. 정상 엔드포인트가 하나도 없으면 모든 엔드포인트로 라우팅하는 예외가 있다.
 4. 그룹 내에서 가중치 기반으로 **Endpoint 선택** → 트래픽 전달.
 5. 엔드포인트(ALB/NLB/EC2)가 하위 인스턴스로 라우팅.
+
+## 사용자 지정 라우팅과 세션 복구의 경계
+
+부분 검증(2026-10-16): Global Accelerator의 동작과 custom routing 문서를 대조했다. 사용자 지정 라우팅은 VPC 서브넷 안의 특정 EC2 인스턴스와 포트로 트래픽을 보낸다. 애플리케이션이 같은 게임 세션의 플레이어들을 특정 목적지에 연결하는 경우에 사용할 수 있다.
+
+사용자 지정 라우팅은 지리적 근접성과 endpoint 상태로 목적지를 고르지 않으며 헬스체크와 자동 장애 전환도 제공하지 않는다. IPv4만 지원한다. 목적지 장애 감지, 대체 서버 선정과 플레이어 재접속은 애플리케이션의 복구 설계에서 다룬다(설계 제안).
+
+표준 accelerator의 장애 전환도 새 연결의 목적지를 바꾸는 기능이다. 기존 연결은 endpoint가 비정상이거나 제거돼도 idle timeout에 도달할 때까지 같은 endpoint로 전달된다. 네트워크 경로 전환을 실행 중 게임 상태의 이전이나 세션 복구로 간주하지 않는다. 이 절과 구성 요소의 적용 범위만 대조했으며 기존 문서 전체의 검증일은 유지한다.
 
 ## TCP 연결 가속과 애플리케이션 지연을 나눠 측정한다
 
@@ -110,6 +118,8 @@ AWS 엣지 로케이션의 **고정 Anycast IP**를 글로벌 진입점으로 �
 - CloudFront vs AGA 결정 트리: 캐시 필요 + HTTP → CF / 그 외 + 고정 IP → AGA.
 
 ## 출처
+
+- [AWS Global Accelerator, Custom routing accelerators in AWS Global Accelerator](https://docs.aws.amazon.com/global-accelerator/latest/dg/about-custom-routing-accelerators.html)
 
 - [AWS Global Accelerator, How AWS Global Accelerator works](https://docs.aws.amazon.com/global-accelerator/latest/dg/introduction-how-it-works.html)
 - [Amazon CloudFront, Request Anycast static IPs to use for allowlisting](https://docs.aws.amazon.com/AmazonCloudFront/latest/DeveloperGuide/request-static-ips.html)

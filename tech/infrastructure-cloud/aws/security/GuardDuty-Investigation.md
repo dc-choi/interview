@@ -38,6 +38,16 @@ GuardDuty Investigation은 finding, 계정 또는 조직 범위의 보안 신호
 
 ## 경보가 없을 때 보호 범위부터 확인한다
 
+### EventBridge 알림의 발생과 반복 주기를 나눈다
+
+부분 검증(2026-10-16): GuardDuty의 EventBridge 연동 문서를 대조했다. 새로운 finding ID의 알림은 finding 생성 뒤 거의 실시간으로 발행한다. 공격 발생 순간부터의 탐지 시간이나 대응 완료 시간을 보장한다는 뜻은 아니다.
+
+기존 finding의 후속 발생분은 기본 6시간 간격으로 집계해 알린다. 관리자 계정은 이 간격을 15분, 1시간 또는 6시간으로 설정할 수 있으며 멤버 계정은 자기 계정의 간격을 바꿀 수 없다. 알림 건수를 공격 발생 횟수로 그대로 계산하지 않는다.
+
+수동으로 보관한 finding의 후속 발생분은 EventBridge로 전달되지만, suppression rule로 자동 보관된 finding은 초기와 후속 발생분 모두 전달되지 않는다. 알림이 없으면 탐지 상태뿐 아니라 suppression 설정도 확인한다. 실제 Lambda나 SNS 대상으로 전달하려면 이벤트 패턴과 대상이 있는 EventBridge rule이 필요하다.
+
+운영 점검 제안: 새 finding, 반복 발생과 자동 보관을 나누어 알림 경로를 시험한다. 전달 성공과 실제 격리 성공도 별도로 기록한다. 이 절은 문서 대조이며 실제 경보 생성이나 대응 실행을 시험한 기록은 아니다.
+
 ### 탐지용 수집과 조사 증거 보존을 나눈다
 
 2026-10-14 foundational data sources와 finding export 공식 가이드 부분 대조 기준이다. 기존 Investigation Preview와 조직 정책의 검증일은 유지한다.
@@ -76,6 +86,8 @@ Extended Threat Detection은 계정 안에서 시간과 리소스에 걸친 신�
 조직 선언적 정책을 사용하는 환경은 리전별 auto-enable 방식과 구분한다. 이 정책은 조직 root, OU 또는 계정에 기본 활성화 설정과 리전별 재정의를 적용할 수 있으며, 정책으로 정한 활성화 상태는 GuardDuty 콘솔이나 API에서 덮어쓸 수 없다. 적용 정책과 실제 계정 상태를 함께 확인한다.
 
 ## 출처
+
+- [Amazon GuardDuty, Processing GuardDuty findings with Amazon EventBridge](https://docs.aws.amazon.com/guardduty/latest/ug/guardduty_findings_eventbridge.html)
 
 - [Amazon GuardDuty, GuardDuty foundational data sources](https://docs.aws.amazon.com/guardduty/latest/ug/guardduty_data-sources.html)
 - [Amazon GuardDuty, Exporting generated GuardDuty findings to Amazon S3 buckets](https://docs.aws.amazon.com/guardduty/latest/ug/guardduty_exportfindings.html)

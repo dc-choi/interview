@@ -26,6 +26,14 @@ aliases: ["Organizations", "AWS Organizations", "SCP", "Service Control Policy"]
 - 비용 분리 (팀, 프로젝트별)
 - 폭발 반경 축소
 
+## 계정과 OU를 나누는 기준
+
+부분 검증(2026-10-16): AWS 멀티 계정 설계 원칙을 대조했다. OU는 회사 조직도를 그대로 복사하기보다 같은 보안, 규제와 운영 통제가 필요한 계정을 묶는 단위로 사용한다. 공통 SCP를 OU에 적용하면 계정마다 같은 정책을 따로 관리하는 부담을 줄일 수 있다.
+
+운영과 비운영 워크로드를 분리하고, 운영 계정에는 하나 또는 밀접하게 연결된 소수 워크로드를 배치하는 것이 AWS의 권고다. 처음부터 깊은 OU 계층을 만들기보다 필요한 범위부터 확장한다. 관리 계정에는 그 계정에서만 관리해야 하는 자원과 데이터로 범위를 제한하고 일반 워크로드 배치를 피한다. 관리 계정에 SCP가 적용되지 않기 때문이다.
+
+계정 분리는 영향 범위를 줄이는 수단이다. 계정 간 역할과 공유 서비스의 의존성이 남아 있으면 장애나 권한 오용의 영향이 다른 계정으로 이어질 수 있으므로 실제 접근 경로도 검토한다(설계 점검 제안). 이 절만 대조했으며 기존 정책 기능 전체의 검증일은 유지한다.
+
 ## SCP (Service Control Policy)
 
 - 조직 루트, OU와 계정에 연결하는 조직 정책이다. 멤버 계정의 주체가 가질 수 있는 **권한 상한**을 제한하며 권한을 직접 부여하지 않는다.
@@ -152,6 +160,8 @@ S3 Block Public Access(BPA)는 조직, 계정, 버킷과 액세스 포인트 수
 - [[IAM]], [[CloudTrail-Config]], [[Shield-WAF-NetworkFirewall]], [[AWS-Control-Tower]], [[IAM-Best-Practices]], [[S3-Security-Cost]]
 
 ## 출처
+
+- [AWS, Design principles for your multi-account strategy](https://docs.aws.amazon.com/whitepapers/latest/organizing-your-aws-environment/design-principles-for-your-multi-account-strategy.html)
 
 - [AWS, Chat applications policies](https://docs.aws.amazon.com/organizations/latest/userguide/orgs_manage_policies_chatbot.html)
 - [AWS, Chat applications policy syntax and examples](https://docs.aws.amazon.com/organizations/latest/userguide/orgs_manage_policies_chatbot_syntax.html)
