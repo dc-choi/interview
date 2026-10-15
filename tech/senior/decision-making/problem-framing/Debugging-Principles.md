@@ -28,7 +28,7 @@ aliases: ["Debugging Principles", "디버깅 원칙", "디버깅 방법론", "�
 - 에러 메시지와 에러의 결과, 발생 지점과 그 지점에 의존하는 코드
 - 발생 시점의 로그, 하드웨어와 네트워크 상태, 발생 주기
 - 이전 버전과 달라진 점. 범위가 넓으면 이분 탐색으로 실패를 처음 만든 변경을 찾는다. [[Git-History-Debugging]]
-- 먼저 재현 조건을 확보하고, 가능하면 최소 재현 사례로 줄인다. 재현되지 않는 버그는 고쳤는지도 확인할 수 없다.
+- 먼저 재현 조건을 확보하고, 가능하면 최소 재현 사례로 줄인다. 간헐적 장애는 재현이 어려울 수 있으므로 수정 효과의 근거와 아직 남은 불확실성을 구분한다.
 
 **체크리스트를 쓴다.** 확인한 것과 확인할 것을 적고, 의심 가는 것을 하나씩 확인하며 새로 발견한 것을 다시 추가한다. 중복 확인을 막고, 한 영역에 과몰입하는 것을 막고, 다음에 의심할 곳을 빨리 떠올리게 한다.
 
@@ -75,6 +75,20 @@ aliases: ["Debugging Principles", "디버깅 원칙", "디버깅 방법론", "�
 
 운영 장애처럼 지표에서 출발하는 경우의 가설 검증은 [[Monitoring-Graph-Reading]], 원인 확정 뒤의 재발 방지는 [[RCA-Postmortem]]으로 이어진다.
 
+### 가설이 틀렸음을 보여 줄 관측을 먼저 정한다
+
+가설에는 예상 결과와 기각 조건을 붙인다. 예를 들어 DB 접속 실패를 조사할 때는 네트워크 경로 문제와 인증 거부를 나누고, 애플리케이션과 같은 실행 위치와 자격증명으로 접속 결과를 비교한다. 개발자 PC에서 실패했다는 사실만으로 서버의 접속 경로도 막혔다고 결론 내리지 않는다.
+
+실무에서는 관측 사실, 가설, 통제한 조건, 예상 결과와 실제 결과를 짧게 기록한다. 실패를 재현하는 최소 테스트를 만들 수 있다면 수정 전 실패와 수정 후 성공을 비교하고 회귀 테스트로 남긴다. 재현에 성공한 것과 원인을 확정한 것은 별개다.
+
+관측 방법도 결과에 영향을 줄 수 있다. 상세 로그가 지연을 늘리거나 실행 타이밍 변화가 경쟁 상태를 바꿀 수 있으므로, 계측을 켠 조건과 끈 조건을 구분한다. 큰 운영 장애에서는 재현 실험보다 피해 완화와 증거 보존을 먼저 한다.
+
+### 조건부 중단점으로 필요한 상태만 확인한다
+
+Chrome DevTools의 조건부 중단점은 지정한 줄에서 조건식이 참일 때만 실행을 멈춘다. 예를 들어 `userId === null`인 호출만 멈추면 정상 반복까지 매번 따라가지 않아도 된다. 실행을 멈추지 않고 값을 남기려면 logpoint를 쓸 수 있다. 이는 소스에 `console.log()`를 계속 추가하지 않고 관측하는 방법이며, 계측 자체가 실행에 영향을 주지 않는다는 보장은 아니다.
+
+도구 동작은 2026-10-15 Chrome DevTools 공식 문서를 대조했다. 앞 절의 가설 검증과 운영 대응 경계는 Google SRE의 Effective Troubleshooting을 대조했다.
+
 ## 문제를 작게 가두기
 
 경험자는 복잡한 문제를 풀 줄 알기도 하지만, 그보다 먼저 문제가 복잡해지지 않게 관리한다. 초심자의 코드가 디버깅하기 어려운 이유도 대개 여기에 있다.
@@ -107,6 +121,8 @@ aliases: ["Debugging Principles", "디버깅 원칙", "디버깅 방법론", "�
 - [디버깅 원칙 — kciter.so, kciter](https://kciter.so/posts/principles-of-debugging/)
 - [deepsleep - 초심자의 고충 — YouTube, 생활코딩](https://www.youtube.com/watch?v=_275mE7pyho)
 - [Mozilla, Bug Writing Guidelines](https://bugzilla.mozilla.org/page.cgi?id=bug-writing.html)
+- [Effective Troubleshooting — Google SRE](https://sre.google/sre-book/effective-troubleshooting/)
+- [Chrome DevTools, Pause your code with breakpoints](https://developer.chrome.com/docs/devtools/javascript/breakpoints)
 
 ## 관련 문서
 

@@ -44,6 +44,18 @@ aliases: ["채권", "Bonds"]
 - **신용스프레드**는 만기 등 조건이 유사한 기준채권 대비 추가 요구수익률이다. 신용도가 낮을수록 대체로 크지만, 유동성이나 옵션 조건도 영향을 준다. 계약상 쿠폰금리 차이와 같다고 보지 않는다.
 - 경기 악화와 위험 회피가 스프레드 확대와 함께 나타날 수 있다. 통화정책, 유동성과 발행자별 상황도 작용하므로 경기와 일대일로 연결되는 지표는 아니다.
 
+### 국채금리 하락과 기업 신용위험 확대는 함께 나타날 수 있다
+
+기준채권 금리와 회사채의 추가 요구수익률은 별도 성분이다. 단순한 가상 예로 기준금리가 4%에서 3.5%로 내려가도 같은 기준으로 측정한 스프레드가 3%p에서 5%p로 커지면 회사채 수익률은 7%에서 8.5%로 오른다. 이는 앞의 스프레드 정의를 적용한 산술 예시다. 국채금리가 내렸다는 이유만으로 개별 기업의 시장 조달 여건도 개선됐다고 판단하지 않는다.
+
+### CDS 스프레드를 부도확률로 바로 읽지 않는다
+
+신용부도스왑(CDS)의 스프레드에는 예상 신용손실에 대한 보상뿐 아니라 그 위험을 부담하는 데 요구하는 프리미엄도 들어간다. 따라서 스프레드 상승을 같은 폭의 실제 부도확률 상승으로 해석할 수 없다. CDS와 회사채는 서로 다른 계약이므로 두 시장의 스프레드가 같다고 가정하지 않는다.
+
+부도확률 추정치를 읽을 때는 대상 기간, 회수율 또는 부도 시 손실률 가정, 위험 프리미엄을 처리한 방법을 함께 확인한다. 1년과 5년 CDS를 같은 기간의 지표처럼 비교하거나, 위험 조정된 추정치를 실제 부도 빈도와 동일시하지 않는다. 계약의 신용사건 범위도 비교 조건이다. CDS의 담보 납부와 거래상대방 위험은 [[Derivatives|파생상품]]에서 다룬다.
+
+2026-10-15 BIS의 CDS 위험 프리미엄 연구를 대조한 해석 기준이다. 특정 기업의 최신 채권 가격, CDS 호가, 부도확률 수치와 당일 주가 하락의 원인은 검증 범위에 포함하지 않는다.
+
 ## 5. 수익률곡선
 
 만기별 국채 수익률을 이은 선이다. 우상향, 평탄, 역전 등 형태가 나타날 수 있다. 단기금리가 장기금리보다 높아지는 **역전**은 시장의 미래 단기금리 하락 기대와 term premium 등을 반영하며 일부 국가와 기간에는 경기침체 선행 신호로 관찰됐지만 확정 예측은 아니다 → [[Business-Cycle|경기순환]].
@@ -79,6 +91,7 @@ aliases: ["채권", "Bonds"]
 
 ## 출처
 
+- [BIS — Risk aversion and risk premia in the CDS market](https://www.bis.org/publications/risk-aversion-and-risk-premia-cds-market_1.pdf) — CDS의 예상손실과 위험 프리미엄, 만기와 계약 조건, 손실률 가정의 구분
 - [Federal Reserve Bank of New York — Forecasting Interest Rates over the Long Run](https://libertystreeteconomics.newyorkfed.org/2016/07/forecasting-interest-rates-over-the-long-run/)
 - [Investor.gov — Bonds or Fixed Income Products](https://www.investor.gov/introduction-investing/investing-basics/investment-products/bonds-or-fixed-income-products)
 - [FINRA, Bonds](https://www.finra.org/investors/investing/investment-products/bonds) — 2026-10-02 수익률 종류와 금리, 신용, 재투자, 유동성 위험 대조
