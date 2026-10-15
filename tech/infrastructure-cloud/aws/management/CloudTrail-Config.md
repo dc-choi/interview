@@ -124,6 +124,14 @@ Non-Compliant 판정 시 **SSM Automation Document**로 자동 교정 가능.
 - Slack 같은 채팅 채널로는 SNS 주제를 Amazon Q Developer in chat applications(구 AWS Chatbot)에 연결해 보낸다. 직접 만든 알림 구성의 규칙에 따라 AWS 서비스 이벤트를 콘솔 알림 센터, 이메일, 채팅과 모바일 푸시로 보내는 AWS User Notifications도 EventBridge를 기반으로 동작한다.
 - 알림 전달은 조치 완료가 아니다. 알림마다 담당자와 대응 절차를 함께 정한다.
 
+### Health 이벤트 수신과 API 폴링을 구분한다
+
+2026-10-16 AWS Health 문서와 AWS Health Aware(AHA) 공개 저장소 대조 기준. Health 이벤트를 EventBridge 규칙으로 받아 전달하는 경로와, API를 주기적으로 조회하는 AHA의 경로는 다르다. AHA는 예약 규칙으로 Lambda를 호출하고, Lambda가 Health API를 읽어 알림을 전송하며 DynamoDB에 이벤트 ARN, 갱신과 TTL 정보를 기록하는 구성이다. AHA에도 EventBridge가 쓰이므로 두 제품 가운데 하나를 고르는 관계로만 설명하지 않는다.
+
+Health API에는 지원 플랜 조건이 있고 충족하지 않으면 `SubscriptionRequiredException`이 발생한다. 대시보드 열람이나 이벤트 수신 성공으로 API 이용 자격까지 확인됐다고 판단하지 않는다. 공식 안내 사이에 지원 플랜 명칭 차이가 있으므로 도입 시 계정의 실제 계약과 최신 지원 조건을 확인한다. 공개 서비스 이벤트도 특정 계정의 영향 확정과 구분한다. AWS User Notifications의 관리형 Health 알림은 공개 이벤트를 제공하지 않으므로, 공개 이벤트가 필요하면 EventBridge 규칙이나 사용자 정의 알림 구성을 확인한다.
+
+운영 점검 제안: 필요한 수신 범위부터 정하고, AHA를 추가한다면 API 조회 실패, 폴링 공백과 최종 알림 수신을 따로 감시한다. 알림 도구의 배포 성공을 장애 대응 완료나 무중단 전달 보장으로 기록하지 않는다. 이 절만 대조했으며 실제 AWS 실행과 기존 절 전체의 재검증은 하지 않아 frontmatter의 검증일은 유지한다.
+
 ## 비용, 운영 주의
 
 - **CloudTrail Management Event**: S3로 전달되는 관리 이벤트의 첫 번째 복사본은 리전별로 CloudTrail 요금이 없고, 추가 복사본과 CloudTrail Lake, 데이터 이벤트, 네트워크 활동 이벤트 등은 별도 과금. S3와 CloudWatch Logs 요금도 별도
@@ -157,6 +165,9 @@ Non-Compliant 판정 시 **SSM Automation Document**로 자동 교정 가능.
 
 ## 출처
 
+- [AWS Health 개념과 API 이용 조건](https://docs.aws.amazon.com/health/latest/ug/aws-health-concepts-and-terms.html) — 2026-10-16 공개 이벤트의 알림 범위와 API 조건 대조
+- [AWS Health API 개요](https://docs.aws.amazon.com/health/latest/APIReference/Welcome.html) — User Guide와 지원 플랜 명칭 차이 확인, 적용 자격은 계정별 확인 필요
+- [AWS Health Aware — AWS Samples](https://github.com/aws-samples/aws-health-aware) — 2026-10-16 README의 예약 호출, API 조회와 이벤트 기록 구조 대조
 - [CloudTrail 개념](https://docs.aws.amazon.com/awscloudtrail/latest/userguide/cloudtrail-concepts.html)
 - [CloudTrail 요금 이해](https://docs.aws.amazon.com/awscloudtrail/latest/userguide/cloudtrail-costs.html)
 - [AWS Config 작동 방식](https://docs.aws.amazon.com/config/latest/developerguide/how-does-config-work.html)

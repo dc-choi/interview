@@ -26,6 +26,12 @@ Amazon Quick Flows는 입력, 조사, AI 응답과 연결 앱의 동작을 순�
 - 공유 flow가 새 버전으로 바뀌면 기존 예약도 갱신된 버전으로 계속 실행된다. 변경된 입력과 action을 다시 확인한다.
 - 실행 이력에서 성공과 실패를 확인한다. 결과 생성과 외부 앱 변경 완료 여부는 따로 확인한다.
 
+### Quick Automate의 배포와 승인 담당자
+
+2026-10-16 Quick Automate 배포 문서 부분 대조 기준. Flows의 예약 설정을 Automate의 배포 절차로 대신하지 않는다. Automate에서는 테스트한 automation을 버전으로 commit한 뒤 배포할 버전을 선택한다. 여기서 commit은 제품 안의 automation 버전 확정이며 Git 게시를 뜻하지 않는다.
+
+배포할 때 환경별 runtime configuration, 사람의 개입이 필요한 task의 담당 사용자나 그룹, 실제 사용할 credentials와 connections를 확인한다. 승인 기능이 있다는 사실만으로 모든 작업에 승인 단계가 생기는 것은 아니다. 지급이나 외부 레코드 변경에 적용한다면 승인 분기와 거부, 재시도 경로를 시험하고 대상 시스템의 결과까지 확인한다(운영 점검 제안). 이 절만 대조했으며 실제 automation 실행과 기존 기능 전체의 재검증은 수행하지 않았다.
+
 ## 연결 앱의 실행 주체와 검증 경계
 
 2026-10-09 공식 문서 기준, Jira Cloud 커넥터는 이슈 검색뿐 아니라 생성, 수정과 삭제 action을 제공한다. 실제로 사용할 수 있는 action은 Jira의 권한과 인증 방식에 따라 달라진다. 문제 해결 안내나 영업 미팅용 초안을 생성하는 작업과 티켓 생성, 상태 변경을 수행하는 작업은 권한과 완료 조건을 나누어 설계한다.
@@ -75,6 +81,8 @@ Quick은 연결 앱과 폴더 자료에서 사람, 프로젝트, 문서, 일정 
 
 프로젝트 초안을 만들 때는 공유 가능한 자료만 올리고, 표나 이미지에 의존하는 질문은 처리 상태를 확인한 뒤 평가한다. 초안 생성 시간과 검토, 수정 및 실제 업무 완료 시간도 따로 측정한다. 이는 운영 점검 제안이며 특정 팀의 시간 절감률을 재현한다는 보장은 아니다.
 
+2026-10-16 Space 관리 문서 추가 대조 기준. 대화 중 Space를 바꾸거나 열면 agent의 초점도 해당 Space로 바뀐다. Space를 채팅 맥락으로 선택했을 때는 그 Space에 추가한 action만 고려된다. 자료를 제거할 때는 업로드 파일의 색인 제거와 기존 자산의 연결 해제를 구분한다. 자산 연결을 해제해도 Quick의 자산 자체는 삭제되지 않는다. 따라서 검색 맥락에서 뺀 것과 원본 삭제, 접근 권한 회수는 별도로 확인한다(운영 점검 제안).
+
 ### S3 버킷 접근과 문서별 수집 권한
 
 2026-10-13 S3 통합 공식 문서 부분 대조 기준. S3 통합은 버킷의 문서를 색인해 지식 기반으로 사용하는 기능이다. Enterprise 구독과 관리자의 대상 버킷 접근 허용이 필요하며, 다른 계정의 버킷을 연결할 때도 같은 리전이어야 한다.
@@ -120,6 +128,8 @@ ACL을 활성화한 지식 기반에서는 ACL 항목이 없는 문서를 수집
 
 콘텐츠 생성에 적용할 때는 승인된 제품 설명과 대상 독자를 지침에 넣고, 실제 이용자의 권한으로 자료 조회와 결과를 시험한다. 이는 기능에 근거한 운영 제안이다. agent 링크 공유만으로 원문 접근, 문구의 정확성이나 콘텐츠 발행 승인까지 확보됐다고 판단하지 않는다.
 
+2026-10-16 Chat agent context 문서 추가 대조 기준. Persona instructions는 생성형 AI가 해석하고 확장하므로 원래 문구가 달라질 수 있다. 문구를 보존해야 하는 절차와 응답 템플릿은 reference documents에 두고, 질문마다 검색할 업무 자료는 Spaces에 연결한다. Reference documents의 내용 보존을 모델의 지침 준수나 응답 정확성 보장으로 해석하지 않는다. 실제 질문과 충돌하는 형식 요청으로 결과를 시험하는 것은 별도의 검증 작업이다.
+
 ## 메일 피드와 Outlook 확장의 읽기 조건
 
 2026-10-14 Activity feed와 Outlook extension 공식 문서 부분 대조 기준. 연결 서비스의 활동을 모으는 피드와 Outlook 안에서 요청을 실행하는 확장은 읽기 조건이 다르다.
@@ -139,6 +149,9 @@ ACL을 활성화한 지식 기반에서는 ACL 항목이 없는 문서를 수집
 
 ## 출처
 
+- [Amazon Quick, Deploying automations](https://docs.aws.amazon.com/quick/latest/userguide/deploying-automations.html)
+- [Amazon Quick, Managing a space](https://docs.aws.amazon.com/quick/latest/userguide/managing-spaces.html)
+- [Amazon Quick, Chat agent context sources and best practices](https://docs.aws.amazon.com/quick/latest/userguide/agent-knowledge-sources-best-practices.html)
 - [Amazon Quick, Activity feed](https://docs.aws.amazon.com/quick/latest/userguide/activity-feed-desktop.html)
 - [Amazon Quick, Amazon Quick Microsoft Outlook extension](https://docs.aws.amazon.com/quick/latest/userguide/outlook-extension-guide.html)
 - [Amazon Quick, Model Context Protocol (MCP) integration](https://docs.aws.amazon.com/quick/latest/userguide/mcp-integration.html)
