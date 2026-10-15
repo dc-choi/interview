@@ -32,7 +32,7 @@ SAA 자료에는 예전 이름인 Kinesis Data Firehose, Kinesis Data Analytics�
 | **Data Record** | KDS에 저장되는 데이터의 단위 (Partition Key + Sequence Number + Data Blob) |
 | **Shard** | 일정 수 이상의 Data Record가 모인 고유한 순서 — 처리량 단위 |
 | **Data Stream** | 일련의 데이터 집합. Shard들이 모여 구성 |
-| **Partition Key** | Shard별 데이터 그룹화 키. 같은 키는 같은 Shard로 → 순서 보장 |
+| **Partition Key** | 기본 키 기반 분배에서 Shard를 고르는 키. 쓰기 순서는 API와 재시도 방식도 확인 |
 | **Sequence Number** | 레코드가 Shard에 적재될 때 부여되는 고유 순서 번호 |
 
 Data Record → Shard로 순서를 이루고 → Shard들이 모여 Data Stream.
@@ -68,6 +68,24 @@ KDS에 적재된 데이터를 다음에서 수집/처리:
 - EC2 애플리케이션, EMR Cluster
 
 대표 사용 예시: 다수 웹사이트의 **Click Stream Data** → KDS → Firehose → S3 (저장, 분석).
+
+### 쓰기 순서와 중복의 경계
+
+부분 검증(2026-10-15): `PutRecord`, `PutRecords` API와 중복 처리 문서를 대조했다. 기본 `USER_PARTITION_KEY` 분배를 전제로 하며, `AUTO` 분배에서는 전달한 partition key와 `ExplicitHashKey`가 무시된다.
+
+- **배치 순서:** `PutRecords`는 일부 레코드가 실패해도 나머지를 처리하므로 레코드 순서를 보장하지 않는다. 응답 배열이 요청 배열 순서와 대응한다는 사실은 저장 순서의 보장이 아니다. 각 응답의 오류를 확인하고 실패한 레코드를 재시도한다.
+- **직렬 쓰기:** 같은 클라이언트와 같은 partition key의 순서가 필요하면 `PutRecord`를 직렬 호출하고 직전 성공 응답의 sequence number를 다음 요청의 `SequenceNumberForOrdering`으로 전달한다. 서로 다른 shard 전체의 순서로 확대하지 않는다.
+- **중복:** 응답을 받기 전 timeout이 나서 재전송하면 동일한 데이터가 서로 다른 sequence number로 저장될 수 있다. 업무 이벤트 ID를 레코드에 넣고 소비 단계에서 중복을 처리한다. 소비자 재시작 때 마지막 체크포인트 이후 레코드가 다시 처리되는 경우도 고려한다.
+
+### 읽기 지연과 처리 완료를 구분한다
+
+부분 검증(2026-10-15): CloudWatch의 Kinesis 지표 정의를 대조했다. `GetRecords.IteratorAgeMilliseconds`는 `GetRecords` 호출에서 마지막으로 반환된 레코드가 스트림에 기록된 뒤 지난 시간이다. 소비자의 DB 저장이나 외부 API 호출 완료까지 측정하는 지표는 아니다.
+
+- `GetRecords` 경로는 위 지표의 최댓값과 `ReadProvisionedThroughputExceeded`를 함께 확인한다. 읽기 지연 상승만으로 shard 부족을 단정하지 않는다.
+- Enhanced fan-out 경로는 `SubscribeToShardEvent.MillisBehindLatest`를 확인한다. 폴링과 구독 경로의 지표를 혼용하지 않는다.
+- `IncomingRecords`, `IncomingBytes`와 소비자의 오류, 처리 시간을 대조하고, 업무 완료 시각은 별도로 측정한다(운영 점검 제안). 지표가 없다는 사실을 지연 0으로 간주하지 않는다.
+
+두 절은 공식 문서 기반이며 실제 스트림에서 실행한 검증은 아니다. 기존 절 전체의 검증일은 유지한다.
 
 ## Lambda로 소비할 때의 실패 격리
 
@@ -154,7 +172,7 @@ AWS 공개 예제는 MySQL 변경 데이터를 DMS와 KDS로 전달하고, Fireh
 |------|-----|-----|---------------------|-------|
 | 모델 | Queue (Polling) | Pub-Sub (Push) | Real-time Streaming | Pub-Sub Streaming |
 | 소비 후 메시지 | **Delete** (소비 후 제거) | Subscriber로 전송 후 종료 | **보존**(24h~365d), 다수 소비자 재읽기 | 보존(설정), 다수 컨슈머 재읽기 |
-| 순서 보장 | Standard 미보장 / FIFO O | Standard 미보장 / FIFO O | **Partition Key 단위로 보장** | Partition 단위 보장 |
+| 순서 보장 | Standard 미보장 / FIFO O | Standard 미보장 / FIFO O | 키 기반 분배와 직렬 쓰기 조건 확인, `PutRecords` 순서 미보장 | Partition 단위 보장 |
 | 처리량 단위 | Standard 거의 무제한 / 일반 FIFO 기본 한도는 API 작업별 초당 300회, 최대 10개 배치 시 API 작업별 초당 3,000개 메시지 / 고처리량 FIFO는 리전별 API 할당량 | 리전별 quota(Standard) | **Shard 단위 1MB/s, 1,000 rec/s** | Partition 단위 |
 | 운영 | 완전 관리형 | 완전 관리형 | 관리형 (Shard 직접 조정 또는 On-Demand) | 자체 운영 or MSK |
 | 적합 | 작업 큐, decouple | Fan-out 알림 | 로그/클릭스트림/IoT 실시간 | 동일 + 더 큰 생태계 |
@@ -168,14 +186,18 @@ AWS 공개 예제는 MySQL 변경 데이터를 DMS와 KDS로 전달하고, Fireh
 - KDS 용어: Data Record / **Shard** / Data Stream / **Partition Key** / Sequence Number
 - Shard 처리량: 쓰기 1MB/s, 1,000 rec/s, 읽기 2MB/s — 부족하면 Resharding
 - 보존 기간: 기본 24시간, 최대 365일 — 다수 소비자 재읽기 가능
-- Partition Key가 같으면 같은 Shard → 순서 보장
+- 기본 `USER_PARTITION_KEY` 분배에서 같은 Partition Key는 같은 Shard로 매핑되지만, `ExplicitHashKey`로 매핑을 바꿀 수 있다. 순서가 필요하면 같은 클라이언트와 키에서 `PutRecord`를 직렬 호출하고 `SequenceNumberForOrdering`을 연결한다. `PutRecords`는 순서를 보장하지 않으며, `AUTO` 분배는 Partition Key와 `ExplicitHashKey`를 무시한다.
 - Firehose는 **변환, 전송 전용**, 데이터 보존 X, 대상은 **S3, Redshift, OpenSearch, Splunk** 등
 - KCL(Consumer Library) / KPL(Producer Library)
 - 실시간 분석은 Managed Service for Apache Flink. 예전 Data Analytics SQL 앱은 신규 설계 금지
-- "다수 소비자가 같은 스트림 재읽기" 요구사항 = SQS 아닌 **KDS** 선택
-- "S3로 near real-time 적재" 요구사항 = **Firehose** (서버리스, 변환 가능)
+- 다수 소비자가 같은 스트림을 재읽는 요구사항에는 **KDS**를 검토한다.
+- S3로 near real-time 적재하는 요구사항에는 **Firehose**를 검토한다(서버리스, 변환 가능).
 
 ## 출처
+- [Amazon Kinesis Data Streams, PutRecord](https://docs.aws.amazon.com/kinesis/latest/APIReference/API_PutRecord.html)
+- [Amazon Kinesis Data Streams, PutRecords](https://docs.aws.amazon.com/kinesis/latest/APIReference/API_PutRecords.html)
+- [Amazon Kinesis Data Streams, Handle duplicate records](https://docs.aws.amazon.com/streams/latest/dev/kinesis-record-processor-duplicates.html)
+- [Amazon Kinesis Data Streams, Monitor the Amazon Kinesis Data Streams service with Amazon CloudWatch](https://docs.aws.amazon.com/streams/latest/dev/monitoring-with-cloudwatch.html)
 - [Amazon Data Firehose, Set up the Firehose stream](https://docs.aws.amazon.com/firehose/latest/dev/apache-iceberg-stream.html)
 - [Amazon Data Firehose, Route incoming records to a single Iceberg table](https://docs.aws.amazon.com/firehose/latest/dev/apache-iceberg-format-input-record.html)
 - [Amazon Data Firehose, Considerations and limitations](https://docs.aws.amazon.com/firehose/latest/dev/apache-iceberg-considerations.html)

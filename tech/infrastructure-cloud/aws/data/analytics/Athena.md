@@ -32,6 +32,16 @@ S3에 저장된 데이터를 **별도 적재 없이 표준 SQL로 직접 쿼리*
 - Glue Crawler가 S3를 스캔해 스키마, 파티션을 자동 추론 → 카탈로그에 테이블 생성.
 - 같은 카탈로그를 EMR, Redshift Spectrum 등 다른 서비스와 공유 가능 (단일 데이터 정의).
 
+### JSON 레코드 경계와 파싱 결과
+
+부분 검증(2026-10-15): Hive JSON SerDe와 OpenX JSON SerDe는 JSON 문서 하나를 한 줄에 두고 문서 사이를 줄바꿈으로 구분하는 형식을 기대한다. 한 문서를 여러 줄로 출력한 pretty-print JSON은 조회 오류를 일으킬 수 있다. 이를 모든 파일 포맷이나 SerDe의 공통 제약으로 확대하지 않는다.
+
+중첩 JSON을 반드시 수집 단계에서 평탄화할 필요는 없다. 테이블의 `struct`, `array`로 구조를 표현하고 필드 접근이나 `UNNEST`로 조회할 수 있다. 평탄화 여부는 분석 모델에 맞춰 선택하며, 배열을 펼친 뒤 행 수가 달라지는지도 확인한다(설계 점검).
+
+OpenX JSON SerDe에는 예상과 다른 행 수나 NULL이 나올 수 있다는 공식 주의사항이 있다. AWS는 이 문제의 대안으로 Hive JSON SerDe 또는 다른 파일 포맷을 제시한다. `use.null.for.invalid.data=TRUE`는 타입 불일치를 NULL로 바꿔 오류를 숨길 수 있으므로 쿼리 성공만으로 데이터가 올바르다고 판단하지 않는다.
+
+적재 전후의 대표 이벤트 ID, 행 수와 필수 필드 값을 대조한다(운영 점검 제안). 실제 AWS 조회는 수행하지 않았으며 기존 절 전체의 검증일은 유지한다.
+
 ## 요금 책정과 절감
 
 - **On-demand SQL**: 쿼리가 스캔한 **데이터 양(TB당)** 기준. 결과 크기, 실행 시간이 아닌 **스캔량**이 핵심.
@@ -210,6 +220,9 @@ Athena ODBC 드라이버는 SageMaker Unified Studio 프로젝트를 통한 연�
 
 ## 출처
 
+- [Amazon Athena, Hive JSON SerDe](https://docs.aws.amazon.com/athena/latest/ug/hive-json-serde.html)
+- [Amazon Athena, OpenX JSON SerDe](https://docs.aws.amazon.com/athena/latest/ug/openx-json-serde.html)
+- [Amazon Athena, Flatten nested arrays](https://docs.aws.amazon.com/athena/latest/ug/flattening-arrays.html)
 - [How do I schedule an Amazon Athena query? — AWS re:Post Knowledge Center](https://repost.aws/knowledge-center/schedule-query-athena)
 - [Amazon Athena, StartQueryExecution](https://docs.aws.amazon.com/athena/latest/APIReference/API_StartQueryExecution.html)
 - [Amazon Athena, GetQueryExecution](https://docs.aws.amazon.com/athena/latest/APIReference/API_GetQueryExecution.html)
