@@ -1,7 +1,7 @@
 ---
 tags: [database, rdbms, mysql, schema, integer, decimal, datetime]
 status: done
-verified_at: 2026-10-05
+verified_at: 2026-10-15
 category: "Database - RDBMS"
 aliases: ["MySQL Numeric and Temporal Types", "MySQL 정수 타입 범위", "AUTO_INCREMENT 소진", "TIMESTAMP 2038", "MySQL DECIMAL", "MySQL BOOLEAN"]
 ---
@@ -24,7 +24,7 @@ aliases: ["MySQL Numeric and Temporal Types", "MySQL 정수 타입 범위", "AUT
 
 - `INT(11)`의 괄호 숫자는 표시 폭이지 저장 범위가 아니다. 8.4 문서는 정수 표시 폭과 `ZEROFILL`을 deprecated로 두고 0 채우기에는 `LPAD()`나 문자 컬럼을 권한다. `TINYINT(1)`을 boolean으로 옮길 때의 확인은 [[MySQL-to-PostgreSQL-Migration|이기종 마이그레이션]]에 있다.
 - UNSIGNED가 섞인 정수 뺄셈 결과가 음수면 기본 sql_mode에서 오류 1690(`BIGINT UNSIGNED value is out of range`)이다([[MySQL-SQL-Mode|MySQL SQL Mode]]의 `NO_UNSIGNED_SUBTRACTION`). 재고 차감처럼 0 아래로 내려갈 수 있는 계산은 식의 타입까지 확인한다.
-- 외래 키의 정수 컬럼은 참조 컬럼과 크기, sign이 같아야 한다([[Foreign-Key-Integrity|외래 키와 참조 무결성]]). PostgreSQL에는 unsigned가 없어 이관 때 한 단계 큰 타입으로 옮긴다.
+- 외래 키의 정수 컬럼은 참조 컬럼과 크기, sign이 같아야 한다([[Foreign-Key-Integrity|외래 키와 참조 무결성]]). PostgreSQL에는 unsigned 정수 타입이 없으므로 원본 범위를 담는 타입을 고른다. `INT UNSIGNED`의 전체 범위는 `bigint`로 옮길 수 있지만, `BIGINT UNSIGNED`의 상한 `2^64-1`은 PostgreSQL `bigint`의 상한 `2^63-1`을 넘는다. 전체 범위를 보존하려면 `numeric(20,0)`과 `CHECK (value BETWEEN 0 AND 18446744073709551615)` 같은 범위 제약을 함께 검토한다. 실제 값과 향후 도메인 상한을 확인하지 않고 `bigint`로 축소하지 않는다.
 
 ### AUTO_INCREMENT 상한
 
@@ -59,13 +59,39 @@ aliases: ["MySQL Numeric and Temporal Types", "MySQL 정수 타입 범위", "AUT
 |---|---|---|
 | `DATE` | `'1000-01-01'` ~ `'9999-12-31'` | 없음 |
 | `TIME` | `'-838:59:59'` ~ `'838:59:59'` | 없음. 하루 안의 시각뿐 아니라 24시간을 넘거나 음수인 경과 시간과 간격도 담는다 |
-| `DATETIME` | `'1000-01-01 00:00:00'` ~ `'9999-12-31 23:59:59'` | 입력한 값을 변환 없이 저장 |
+| `DATETIME` | `'1000-01-01 00:00:00'` ~ `'9999-12-31 23:59:59'` | offset 없는 입력은 필드 값을 저장하며, 조회 시 세션 time zone으로 변환하지 않음 |
 | `TIMESTAMP` | `'1970-01-01 00:00:01'` UTC ~ `'2038-01-19 03:14:07'` UTC | 저장 때 세션 time zone에서 UTC로, 조회 때 UTC에서 세션 time zone으로 변환 |
 
 - 2038년 상한은 먼 미래의 문제가 아니다. 만료일, 보증 종료일, 장기 예약과 만기일처럼 미래 시점을 담는 값은 지금도 상한을 넘을 수 있다. 8.4.6에서 `TIMESTAMP` 컬럼에 2040년을 넣으면 strict mode는 오류 1292(`Incorrect datetime value`)로 거부했고, strict를 끈 세션은 경고 1264와 함께 `0000-00-00 00:00:00`을 저장했다. 같은 값은 `DATETIME`에 그대로 들어갔다.
 - 가입일, 주문일, 작성일처럼 날짜와 시각이 함께 필요한 값은 `DATETIME`을 기본으로 두고 UTC 저장 규약을 애플리케이션 경계에서 강제한다([[Recurring-Event-Modeling|반복 일정 모델링]]). 생년월일처럼 시각이 필요 없으면 `DATE`를 쓴다. `TIMESTAMP`는 자동 time zone 변환이 꼭 필요하고 값이 범위 안에 머무를 때만 고른다.
 - `TIMESTAMP`는 저장한 뒤 세션 time zone을 바꾸면 같은 값이 다르게 조회된다. 연결 풀과 마이그레이션 도구의 time zone 설정을 함께 고정한다.
 - `TIME`은 시각과 기간을 같은 타입으로 담는다. 영업 시작 시각인지 작업 소요 시간인지를 컬럼 이름과 제약으로 고정하고, 838시간을 넘을 수 있는 기간은 초 단위 정수 같은 다른 표현을 쓴다.
+
+### 세션과 입력 변환의 경계
+
+서버의 `@@GLOBAL.time_zone`은 새 연결의 초기값이고, 실제 연결은 `@@SESSION.time_zone`을 따른다. 전역값만 바꾸고 기존 연결 풀까지 바뀌었다고 가정하지 않는다. UTC 규약을 쓰면 연결 초기화에서 `SET time_zone = '+00:00'`을 적용하고 실제 세션값을 확인한다. 서버가 KST라는 이유만으로 데이터가 잘못된 것은 아니며, 입력의 의미와 연결별 변환 규약이 어긋나는 것이 문제다.
+
+- `DATETIME`도 offset을 붙인 입력은 별도로 해석한다. MySQL 8.4에서 세션이 `+00:00`이면 `'2020-01-01 10:10:10+05:30'`은 `2020-01-01 04:40:10`으로 저장된다. 원래 offset은 조회 결과에 남지 않는다. 일반적인 offset 없는 입력과 구분한다.
+- `Asia/Seoul` 같은 이름을 사용하려면 MySQL 시간대 테이블에 해당 정보가 있어야 한다. `CONVERT_TZ()`의 인자가 유효하지 않거나 `NULL`이면 결과도 `NULL`이다. 변환 결과를 검사하고, 고정 offset 변환 성공만으로 이름 기반 시간대 지원을 확인했다고 보지 않는다.
+- Connector/J 8.0.23 이후의 `connectionTimeZone=UTC`는 드라이버가 사용할 시간대 지정이다. 서버 세션까지 설정하는지는 `forceConnectionTimeZoneToSession`이 제어한다. `preserveInstants`, Java 타입과 SQL 타입에 따라 변환이 달라지므로 URL 옵션 하나만으로 왕복 보존을 보장하지 않는다.
+- UTC는 이미 결정된 절대 시점을 저장하는 기준이다. 현지 반복 일정은 local time과 시간대 규칙이 필요하며, 존재하지 않거나 중복되는 시각의 처리까지 UTC가 대신 결정하지 않는다. 모델링은 [[Recurring-Event-Modeling#종일 일정과 시간 일정|종일 일정과 시간 일정]]을 따른다.
+
+### 소수 초는 기본적으로 반올림한다
+
+`TIME(fsp)`, `DATETIME(fsp)`, `TIMESTAMP(fsp)`의 `fsp`는 0~6이고 생략하면 0이다. 입력보다 컬럼 정밀도가 낮으면 기본 동작은 잘라내기가 아니라 반올림이며 경고가 발생하지 않는다. 예를 들어 `.777`초를 정밀도 2로 저장하면 `.78`초가 된다. `TIME_TRUNCATE_FRACTIONAL` SQL mode를 켜면 `.77`초로 잘라낸다. 필요한 정밀도와 반올림 정책을 함께 정하고, 자정 직전처럼 날짜 경계에 영향을 주는 입력을 확인한다.
+
+### 기간 검색은 다음 경계 미만으로 잡는다
+
+`BETWEEN`은 양끝을 포함한다. 한 달 전체를 찾을 때 종료값을 마지막 날 자정으로 주면 그날 자정 이후 데이터가 빠진다. 시작 이상, 다음 달 시작 미만인 반열린 구간을 쓰면 소수 초 정밀도에 맞춰 마지막 순간을 계산할 필요가 없다.
+
+```sql
+-- created_at이 UTC DATETIME이고 UTC 기준 2026년 8월을 조회하는 예시
+SELECT * FROM orders
+WHERE created_at >= '2026-08-01 00:00:00'
+  AND created_at <  '2026-09-01 00:00:00';
+```
+
+사용자 현지 월을 집계한다면 현지 시작과 종료 경계를 각각 UTC로 변환해 전달한다. `TIMESTAMP` 컬럼에 UTC 경계를 비교할 때는 세션도 UTC인지 확인한다. 컬럼을 함수로 감싸기보다 경계를 변환하면 일반 BTREE 범위 조건을 만들기 쉽다. 다만 범위 조건이 실제 인덱스 선택을 보장하지는 않으므로 `EXPLAIN`으로 확인한다. 표현식 검색이 필요하면 [[MySQL-Generated-Columns-and-Functional-Indexes|생성 컬럼과 함수 인덱스]]의 별도 설계를 검토한다.
 
 ## 출처
 
@@ -74,6 +100,13 @@ aliases: ["MySQL Numeric and Temporal Types", "MySQL 정수 타입 범위", "AUT
 - [MySQL 8.4 Reference Manual, Using AUTO_INCREMENT](https://dev.mysql.com/doc/refman/8.4/en/example-auto-increment.html)
 - [MySQL 8.4 Reference Manual, The schema_auto_increment_columns View](https://dev.mysql.com/doc/refman/8.4/en/sys-schema-auto-increment-columns.html)
 - [MySQL 8.4 Reference Manual, The DATE, DATETIME, and TIMESTAMP Types](https://dev.mysql.com/doc/refman/8.4/en/datetime.html)
+- [MySQL 8.4 Reference Manual, MySQL Server Time Zone Support](https://dev.mysql.com/doc/refman/8.4/en/time-zone-support.html)
+- [MySQL 8.4 Reference Manual, Date and Time Literals](https://dev.mysql.com/doc/refman/8.4/en/date-and-time-literals.html)
+- [MySQL 8.4 Reference Manual, Date and Time Functions](https://dev.mysql.com/doc/refman/8.4/en/date-and-time-functions.html)
+- [MySQL 8.4 Reference Manual, Fractional Seconds in Time Values](https://dev.mysql.com/doc/refman/8.4/en/fractional-seconds.html)
+- [MySQL 8.4 Reference Manual, Comparison Functions and Operators](https://dev.mysql.com/doc/refman/8.4/en/comparison-operators.html)
+- [MySQL 8.4 Reference Manual, Range Optimization](https://dev.mysql.com/doc/refman/8.4/en/range-optimization.html)
+- [MySQL Connector/J Developer Guide, Preserving Time Instants](https://dev.mysql.com/doc/connector-j/en/connector-j-time-instants.html)
 - [MySQL 8.4 Reference Manual, The TIME Type](https://dev.mysql.com/doc/refman/8.4/en/time.html)
 - [MySQL 8.4 Reference Manual, Fixed-Point Types (Exact Value) - DECIMAL, NUMERIC](https://dev.mysql.com/doc/refman/8.4/en/fixed-point-types.html)
 - [MySQL 8.4 Reference Manual, Numeric Data Type Syntax](https://dev.mysql.com/doc/refman/8.4/en/numeric-type-syntax.html)

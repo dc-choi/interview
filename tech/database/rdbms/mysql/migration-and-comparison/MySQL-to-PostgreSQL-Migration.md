@@ -22,7 +22,8 @@ DMS를 선택한다면 AWS SCT 엔진 기반 관리형 기능인 **DMS Schema Co
 |---|---|---|
 | `TINYINT(1)` | `BOOLEAN` 또는 `SMALLINT` | `(1)`은 표시 폭이라 저장 범위를 제한하지 않는다. `NULL`, `0`, `1`, 그 밖의 값을 조사하고 boolean으로 정규화할지 결정 |
 | `INT UNSIGNED` | `BIGINT` | PG는 unsigned 없음 → 범위 초과 방지로 한 단계 키움 |
-| `AUTO_INCREMENT` | `GENERATED AS IDENTITY` / `SERIAL` | 시퀀스로 바뀜, 컷오버 때 보정 필수 |
+| `BIGINT UNSIGNED` | `NUMERIC(20,0)`과 범위 제약 | 전체 범위를 보존할 때 필요. PG `BIGINT`는 `2^63-1`까지만 저장하므로 원본 상한 `2^64-1`을 담지 못함 |
+| `AUTO_INCREMENT` | 정수 타입의 `GENERATED AS IDENTITY` 또는 범위에 맞는 serial 계열 | `NUMERIC(20,0)`에는 identity를 붙일 수 없음. 시퀀스로 옮긴 경우 컷오버 때 보정 |
 | `DATETIME` | `TIMESTAMP` | 타임존 처리 다름 |
 | `TIMESTAMP` | `TIMESTAMPTZ` | TZ 인식 차이 |
 | `ENUM(...)` | enum 타입 또는 `VARCHAR + CHECK` | 직접 매핑 없음 |
@@ -32,6 +33,10 @@ DMS를 선택한다면 AWS SCT 엔진 기반 관리형 기능인 **DMS Schema Co
 | `ON UPDATE CURRENT_TIMESTAMP` | (불가) | 트리거로 직접 구현 |
 
 특히 **제로 날짜(`0000-00-00`)** 는 MySQL에선 흔하지만 PG는 아예 못 받는다. 마이그레이션 전에 소스에서 정리한다.
+
+정수 범위는 MySQL 8.4와 PostgreSQL 18 공식 문서를 2026-10-15에 대조했다. UNSIGNED 이관은 현재 최댓값뿐 아니라 향후 도메인 상한도 확인하며, `NUMERIC(20,0)`에는 원본의 음수 금지와 상한을 보존하는 제약을 둔다. 범위 제약 예시는 [[MySQL-Numeric-and-Temporal-Types#정수 타입의 범위|MySQL 정수 타입 범위]]에 있다.
+
+저장 범위와 번호 생성 범위는 별개다. PostgreSQL 18의 identity는 시퀀스가 지원하는 `smallint`, `integer`, `bigint`에만 쓸 수 있고, 시퀀스 상한은 `2^63-1`이다. 따라서 `BIGINT UNSIGNED AUTO_INCREMENT`의 전체 범위를 `NUMERIC(20,0)`으로 보존하더라도 기존 자동 증가 동작까지 옮겨지는 것은 아니다. 현재 값과 향후 생성 범위가 signed bigint 안에 머무르는 경우에만 `bigint` identity를 후보로 두고, 그보다 큰 번호가 필요하면 별도 번호 생성 전략을 설계하고 충돌과 동시성을 검증한다. 아래 시퀀스 보정 절차는 시퀀스로 옮긴 컬럼에 적용하며, 별도 생성기는 자체 상태와 다음 번호를 따로 검증한다.
 
 ```sql
 -- 소스 MySQL: 제로 날짜를 NULL로 (예시)
@@ -94,11 +99,19 @@ QueryBuilder 또는 raw 쿼리와 MySQL 전용 함수는 직접 고친다.
 7. 쓰기 재개                              ← 다운타임 끝
 ```
 
+시퀀스 보정은 이관 대상 **테이블과 자동 생성 컬럼 목록**에서 시작한다. PostgreSQL 18의 `information_schema.sequences`는 identity의 내부 시퀀스를 제외하므로 이 뷰만 순회하면 보정이 누락된다. 컬럼마다 `pg_get_serial_sequence('public.users', 'id')`로 연결 시퀀스를 찾으면 identity와 serial을 모두 다룰 수 있다. 결과가 `NULL`이면 연결되지 않은 별도 시퀀스나 생성기인지 확인하고, 보정 완료로 처리하지 않는다.
+
+아래는 적재가 끝난 비어 있지 않은 테이블, 양수 ID, 증가폭 1, `NO CYCLE`인 새 타깃 시퀀스의 예시다. 소스 쓰기와 CDC 적용을 마치고 타깃 쓰기와 번호 발급도 멈춘 상태에서 실행한다. 기존 번호 발급 세션은 종료하고 보정 후 새 연결을 사용한다. `CACHE > 1`인 세션에 남은 번호는 다른 세션의 `setval`로 즉시 무효화되지 않기 때문이다.
+
 ```sql
--- 모든 시퀀스를 실제 max+1로 (안 하면 즉시 PK 충돌)
-SELECT setval('users_id_seq', (SELECT COALESCE(MAX(id), 1) FROM users));
--- 테이블 많으면 information_schema.sequences 돌며 스크립트로 일괄 처리
+-- 연결 시퀀스가 NULL이면 아래 보정을 실행하지 않고 매핑부터 확인한다.
+SELECT pg_get_serial_sequence('public.users', 'id');
+-- 현재 최댓값으로 맞추고, 다음 nextval에서 1을 증가시켜 PK 충돌을 피한다.
+SELECT setval(pg_get_serial_sequence('public.users', 'id'),
+              (SELECT MAX(id) FROM public.users), true);
 ```
+
+빈 테이블에는 이 예시를 적용하지 않고 미사용 새 시퀀스의 시작값을 유지한다. 이미 발급한 번호의 재사용을 금지해야 하면 행의 `MAX(id)`만으로는 부족하다. 소스의 다음 번호와 타깃의 기존 발급 상태도 보존하는 별도 보정값을 정한다. 증가폭, 시작값이나 생성 방향이 다른 경우도 별도 계산이 필요하다. 다음 값이 시퀀스와 컬럼 상한을 넘으면 쓰기 재개 전에 타입이나 생성 전략을 바꾼다. `setval`은 rollback으로 되돌아가지 않으므로 실행 전 상태와 적용값을 기록한다. 이 절의 시퀀스 동작은 PostgreSQL 18 공식 문서와 소스를 2026-10-15에 대조했다.
 
 ## 6. 롤백 관점
 
@@ -113,8 +126,8 @@ SELECT setval('users_id_seq', (SELECT COALESCE(MAX(id), 1) FROM users));
 
 ## 면접 체크포인트
 
-- 이기종 마이그레이션이 "DB 옮기기"가 아니라 "앱 포팅"인 이유(타입/함수/동작 차이)
-- 수동 변환이 필요한 대표 타입: `TINYINT(1)`은 값 분포를 확인한 뒤 BOOLEAN 또는 SMALLINT, UNSIGNED→BIGINT, ENUM, 제로 날짜, ON UPDATE
+- 이기종 마이그레이션에서 앱 포팅이 필요한 이유(타입/함수/동작 차이)
+- 수동 변환이 필요한 대표 타입: `TINYINT(1)`은 값 분포를 확인한 뒤 BOOLEAN 또는 SMALLINT, `INT UNSIGNED`는 BIGINT, `BIGINT UNSIGNED`는 전체 범위 보존 시 NUMERIC(20,0)과 범위 제약, ENUM, 제로 날짜, ON UPDATE
 - MySQL 전용 함수의 PG 대응(IFNULL→COALESCE, GROUP_CONCAT→string_agg 등)과 LIKE/ILIKE 대소문자
 - DMS가 시퀀스 현재값을 안 옮겨 컷오버 때 setval 보정이 필수인 이유
 - full load 전 보조 인덱스/FK/trigger를 끄는 이유, 검증이 미뤄지는 위험과 LOB 모드
@@ -138,6 +151,13 @@ SELECT setval('users_id_seq', (SELECT COALESCE(MAX(id), 1) FROM users));
 - [AWS DMS, Best practices](https://docs.aws.amazon.com/dms/latest/userguide/CHAP_BestPractices.html)
 - [AWS DMS, Data validation](https://docs.aws.amazon.com/dms/latest/userguide/CHAP_Validating.html)
 - [MySQL 8.4 Reference Manual, Numeric Data Type Syntax](https://dev.mysql.com/doc/refman/8.4/en/numeric-type-syntax.html)
+- [MySQL 8.4 Reference Manual, Integer Types](https://dev.mysql.com/doc/refman/8.4/en/integer-types.html)
+- [PostgreSQL 18 Documentation, Numeric Types](https://www.postgresql.org/docs/18/datatype-numeric.html)
+- [PostgreSQL 18 Documentation, Identity Columns](https://www.postgresql.org/docs/18/ddl-identity-columns.html)
+- [PostgreSQL 18 Documentation, CREATE SEQUENCE](https://www.postgresql.org/docs/18/sql-createsequence.html)
+- [PostgreSQL 18 Documentation, System Information Functions and Operators](https://www.postgresql.org/docs/18/functions-info.html#FUNCTIONS-INFO-CATALOG-TABLE)
+- [PostgreSQL 18 Documentation, Sequence Manipulation Functions](https://www.postgresql.org/docs/18/functions-sequence.html)
+- [information_schema.sql의 sequences 뷰 정의 — PostgreSQL](https://github.com/postgres/postgres/blob/REL_18_STABLE/src/backend/catalog/information_schema.sql)
 - [MySQL 8.4 Reference Manual, CREATE DATABASE Statement](https://dev.mysql.com/doc/refman/8.4/en/create-database.html)
 - [PostgreSQL 18 Documentation, Schemas](https://www.postgresql.org/docs/current/ddl-schemas.html)
 - [PostgreSQL 18 Documentation, postgres_fdw](https://www.postgresql.org/docs/current/postgres-fdw.html)
