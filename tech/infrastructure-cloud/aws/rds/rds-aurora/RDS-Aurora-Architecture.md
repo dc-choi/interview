@@ -133,6 +133,18 @@ Amazon이 **MySQL, PostgreSQL 호환**으로 재설계한 클라우드 네이티
 
 주요 트랜잭션과 조회가 고객이나 테넌트 같은 한 shard key 값 안에서 끝나는지 먼저 확인한다. 여러 key를 가로지르는 join과 집계가 주 경로라면 router의 분산 실행 비중이 커지므로 대표 질의의 `EXPLAIN`과 부하 시험으로 이점을 판단한다. 기존 DR, 배포와 자격 증명 운영 절차를 위 미지원 목록과 대조해 대체 수단이 없는 항목은 도입 차단 조건으로 둔다(설계 제안).
 
+## Aurora MySQL에서 SQL로 외부 모델을 호출한다
+
+부분 검증(2026-10-16): Aurora MySQL의 machine learning 통합은 SQL 함수에서 준비된 SageMaker AI endpoint나 Comprehend를 호출하는 경로다. 모델 학습을 DB 엔진 안에서 수행한다는 뜻은 아니다. 이 절만 대조했으며 기존 아키텍처 전체의 검증일은 유지한다.
+
+- **준비:** 대상 서비스는 Aurora MySQL 클러스터와 같은 리전에 있어야 한다. 지원 엔진 버전과 리전, 외부 서비스 연결을 확인한다.
+- **권한:** 클러스터에 서비스 접근 IAM 역할을 연결하고 custom DB cluster parameter group에 역할 ARN을 설정한다. DB 사용자 권한도 별개다. Aurora MySQL v3의 SageMaker 호출에는 `AWS_SAGEMAKER_ACCESS` 역할과 만든 함수의 `EXECUTE` 권한이 필요하다.
+- **입출력:** SageMaker endpoint는 `text/csv`를 읽고 써야 한다. SQL 함수는 endpoint와 입력 인자, 반환 타입을 정의하며 실제 추론은 외부 서비스에서 수행한다.
+- **적용 한계:** Aurora MySQL의 ML 통합은 trigger에서 지원하지 않는다. 추론 결과로 거래를 판단하는 설계와 DB trigger에 함수를 넣는 구현을 같은 것으로 보지 않는다.
+- **호출량:** 여러 행을 batch로 묶어 외부 호출 부담을 줄일 수 있다. SQL 행 수와 실제 서비스 요청 수를 같다고 가정하지 않고 실행 계획과 ML 요청 지표를 확인한다.
+
+운영 적용 전에는 작은 표본으로 입력과 결과를 대조하고 외부 호출 지연, 실패와 DB 부하를 측정한다(설계 점검 제안). 실제 모델 배포나 SQL 실행은 하지 않았다. S3 분석 데이터에서 추론하려면 [[Athena|Athena의 ML 함수]]와 권한 계약을 별도로 확인한다.
+
 ## 언제 RDS 대신 Aurora를 고르나
 
 - 읽기 트래픽이 많고 Lag에 민감한 서비스
@@ -142,6 +154,7 @@ Amazon이 **MySQL, PostgreSQL 호환**으로 재설계한 클라우드 네이티
 
 ## 출처
 
+- [Amazon Aurora User Guide, Using Amazon Aurora machine learning with Aurora MySQL](https://docs.aws.amazon.com/AmazonRDS/latest/AuroraUserGuide/mysql-ml.html)
 - [Amazon Aurora User Guide, Backtracking an Aurora DB cluster](https://docs.aws.amazon.com/AmazonRDS/latest/AuroraUserGuide/AuroraMySQL.Managing.Backtrack.html)
 - [Amazon Aurora User Guide, Performance and scaling for Aurora serverless](https://docs.aws.amazon.com/AmazonRDS/latest/AuroraUserGuide/aurora-serverless-v2.setting-capacity.html)
 - [Amazon Aurora User Guide, How Aurora serverless works](https://docs.aws.amazon.com/AmazonRDS/latest/AuroraUserGuide/aurora-serverless-v2.how-it-works.html)

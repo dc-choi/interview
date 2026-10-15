@@ -91,11 +91,20 @@ RCP 예제는 그대로 배포하라는 권고가 아니다. 테스트 OU에서 
 
 ### root 자격 증명의 중앙 관리
 
-IAM의 Organizations 신뢰 접근을 켜고 root 자격 증명 관리와 멤버 계정의 privileged root 작업을 활성화하면, 관리 계정이나 IAM 위임 관리자가 멤버 계정의 root 비밀번호, access key, 서명 인증서를 지우고 MFA를 비활성화할 수 있다. 활성화 뒤 Organizations에서 만드는 새 계정은 기본적으로 root 자격 증명이 없다.
+IAM의 Organizations 신뢰 접근을 켠 뒤 root 자격 증명 관리와 멤버 계정의 privileged root 작업을 각각 선택해 활성화한다. 자격 증명 관리는 관리 계정이나 IAM 위임 관리자가 멤버 계정의 root 비밀번호, access key, 서명 인증서를 지우고 MFA를 비활성화하는 기능이다. 중앙 관리 활성화 뒤 Organizations에서 만드는 새 계정은 기본적으로 root 자격 증명이 없다.
 
 root가 필요한 일부 작업은 `sts:AssumeRoot`로 받은 짧은 privileged session에서 한다. 세션 범위는 `S3UnlockBucketPolicy`, `SQSUnlockQueuePolicy`, `IAMDeleteRootUserCredentials` 같은 작업 정책으로 정하며, 모든 주체를 거부하는 버킷 정책이나 큐 정책 삭제, root 자격 증명 삭제와 비밀번호 복구 허용이 여기에 해당한다. `AssumeRoot`는 전역 STS endpoint를 지원하지 않아 리전 endpoint로 호출한다.
 
 root 차단 SCP를 쓰면서 이 세션을 허용하려면 AWS 샘플처럼 `aws:AssumedRoot` 키가 없는 요청(`Null` 조건)에만 Deny를 건다. 자격 증명 삭제는 root 로그인과 복구 경로를 없애고, SCP는 root 주체의 작업 권한을 제한한다는 점에서 역할이 다르다.
+
+부분 검증(2026-10-16): 중앙 관리의 활성화와 실제 작업 권한을 구분해 다음 조건을 추가 대조했다. 기존 정책 전체의 검증일은 유지한다.
+
+- `AssumeRoot`는 관리 계정 또는 IAM 위임 관리자 계정의 IAM 사용자나 역할이 명시적으로 부여받은 `sts:AssumeRoot` 권한으로 호출한다. root 자격 증명으로 이 API를 호출할 수 없다.
+- 세션은 기본값과 최대값 모두 900초(15분)이며 `TaskPolicyArn`으로 지원되는 AWS 관리형 작업 정책을 지정한다. 일반적인 무제한 root 로그인 세션으로 해석하지 않는다.
+- 삭제한 멤버 계정의 root 비밀번호 복구를 허용하려면 privileged root 작업 기능이 필요하다. 복구 허용 뒤에는 해당 root 이메일 수신함에 접근할 수 있는 사람이 비밀번호 재설정을 진행한다. 복구 허용 자체가 비밀번호 발급이나 로그인 완료는 아니다.
+- 임시 세션으로 지원되지 않는 root 작업 때문에 비밀번호를 복구했다면, 작업 완료 뒤 root 자격 증명을 다시 삭제하는 것이 AWS 권고다. 관리 계정 자체의 root 보호를 멤버 계정 중앙 관리로 대신하지 않는다.
+
+이는 공식 문서 대조이며 실제 계정의 자격 증명 삭제, 복구와 세션 발급은 수행하지 않았다.
 
 ### S3 퍼블릭 액세스 차단 설정 보호
 
@@ -171,6 +180,7 @@ S3 Block Public Access(BPA)는 조직, 계정, 버킷과 액세스 포인트 수
 
 ## 출처
 
+- [AWS STS, AssumeRoot](https://docs.aws.amazon.com/STS/latest/APIReference/API_AssumeRoot.html)
 - [AWS, EC2 policies](https://docs.aws.amazon.com/organizations/latest/userguide/orgs_manage_policies_ec2.html)
 - [Amazon EBS, Block public access for Amazon EBS snapshots](https://docs.aws.amazon.com/ebs/latest/userguide/block-public-access-snapshots.html)
 - [Amazon EC2, Control the discovery and use of AMIs in Amazon EC2 with Allowed AMIs](https://docs.aws.amazon.com/AWSEC2/latest/UserGuide/ec2-allowed-amis.html)

@@ -106,6 +106,25 @@ OpenX JSON SerDe에는 예상과 다른 행 수나 NULL이 나올 수 있다는 
 - **Federated Query**: 운영 RDS + 로그 S3를 한 SQL로 조인.
 - **CTAS / INSERT INTO**: SQL만으로 데이터 변환 파이프라인 구성 가능.
 
+### VPC Flow Logs의 스키마와 파티션 경로
+
+부분 검증(2026-10-16): Athena의 non-Hive 경로용 VPC Flow Logs 예제와 VPC 레코드 정의를 대조했다. 텍스트와 Parquet, 기본 필드와 사용자 지정 필드 순서를 구분해 테이블을 만든다. 확장 필드가 있는 DDL을 기본 형식에 그대로 적용하지 않는다.
+
+- **경로:** non-Hive 예제는 계정, 리전과 날짜 파티션으로 `AWSLogs/<account-id>/vpcflowlogs/<region>/<yyyy/MM/dd>/` 위치를 계산한다. `LOCATION`, `storage.location.template`, 계정과 리전의 enum 값, 날짜 범위를 실제 객체 경로에 맞춘다. Hive 호환 경로나 시간별 파티션을 사용하면 그 구조에 맞는 정의가 필요하다.
+- **Projection:** 새 날짜의 Glue 파티션을 등록하는 대신 규칙으로 위치를 계산한다. 범위 밖 날짜나 존재하지 않는 위치는 오류 없이 0건이 될 수 있으므로 조회 성공만으로 설정이 맞다고 판단하지 않는다.
+- **집계:** 목적지별 패킷 수는 날짜 범위를 제한한 뒤 `dstaddr`별 `SUM(packets)`로 구한다. `COUNT(*)`는 flow log 레코드 수이며 패킷 수가 아니다. 이는 레코드 정의에 따른 집계 기준이다.
+- **해석:** `REJECT`만으로 특정 보안 그룹 규칙을 원인으로 확정하지 않는다. 보안 그룹, 네트워크 ACL이나 종료된 연결의 패킷도 원인이 될 수 있다. `SKIPDATA`는 일부 기록 누락을 나타내며 전달 지연도 가능하다.
+
+알려진 연결 한 건의 원본 레코드와 조회 결과를 대조하고 날짜 조건별 스캔량을 확인한다(운영 점검 제안). 실제 AWS 쿼리는 실행하지 않았으며 기존 절 전체의 검증일은 유지한다.
+
+### SQL로 SageMaker 추론을 호출할 때의 계약
+
+부분 검증(2026-10-16): `USING EXTERNAL FUNCTION`은 준비된 SageMaker AI endpoint, 입력 변수와 타입을 지정해 SQL에서 추론을 호출한다. 모델 학습과 배포를 대신하는 문법은 아니다.
+
+Endpoint는 `text/csv`를 입력과 출력에 사용해야 하며 Athena는 CSV 헤더를 보내지 않는다. 첫 행을 헤더로 버리는 입력 처리기는 결과 행 수 오류를 일으킬 수 있다. 실행 주체에는 대상 endpoint의 `sagemaker:InvokeEndpoint` 권한이 필요하고, endpoint 용량도 Athena 호출 부하에 맞춰 준비한다. ML 함수를 `GROUP BY`에 직접 사용할 수 없다는 제약도 확인한다.
+
+입력 순서, 타입과 결과 행 수를 작은 표본으로 검증한 뒤 분석 범위를 넓힌다(적용 점검 제안). [[RDS-Aurora-Architecture|Aurora MySQL의 SQL 추론]]과 목적은 비슷하지만 함수 정의와 권한 설정은 별개다. 이 절은 문서 대조이며 실제 endpoint 호출은 수행하지 않았다.
+
 ## 예약 쿼리의 시작과 완료를 구분한다
 
 부분 검증(2026-10-14): EventBridge가 Lambda를 호출하고 Lambda가 `StartQueryExecution`을 요청하는 방식으로 정기 조회를 구성할 수 있다. Lambda가 요청을 성공적으로 반환한 것과 Athena SQL이 끝난 것은 별개다.
@@ -258,6 +277,9 @@ Hive 파티션을 복구할 때 쓰는 `MSCK REPAIR TABLE`은 Iceberg에서 지�
 
 ## 출처
 
+- [Amazon Athena, Create and query a table for Amazon VPC flow logs using partition projection](https://docs.aws.amazon.com/athena/latest/ug/vpc-flow-logs-partition-projection.html)
+- [Amazon VPC, Flow log records](https://docs.aws.amazon.com/vpc/latest/userguide/flow-log-records.html)
+- [Amazon Athena, Use Machine Learning (ML) with Amazon Athena](https://docs.aws.amazon.com/athena/latest/ug/querying-mlmodel.html)
 - [Why does my Athena query fail with the error HIVE_INVALID_METADATA? — AWS re:Post Knowledge Center](https://repost.aws/knowledge-center/athena-hive-invalid-metadata-duplicate)
 - [Amazon Athena, SELECT](https://docs.aws.amazon.com/athena/latest/ug/select.html) (행의 S3 원본 경로 조회와 경로 조건)
 - [How do I troubleshoot Apache Iceberg table errors with Athena? — AWS re:Post Knowledge Center](https://repost.aws/knowledge-center/athena-iceberg-table-error)
