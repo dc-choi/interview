@@ -101,6 +101,18 @@ verified_at: 2026-07-21
 
 이 절은 문서 기반 진단 순서다. 실제 인스턴스에서 연결과 로그 저장을 재현한 결과는 아니다.
 
+#### RDP를 포트 포워딩으로 연결하기
+
+부분 검증(2026-10-16): 관리 노드 자체의 RDP 포트에 연결하는 절차를 대조했다. Session Manager 터널을 쓰면 보안 그룹에 외부 RDP 인바운드를 열거나 bastion을 둘 필요가 없지만, 노드의 SSM 통신 경로와 Windows의 RDP 수신 설정은 필요하다.
+
+- 로컬 AWS CLI에 Session Manager plugin을 설치하고, 대상 노드에는 최신 SSM Agent를 사용한다. 호출자는 대상 노드와 `AWS-StartPortForwardingSession` 문서로 세션을 시작할 권한이 필요하다.
+- 2026-10-16 대조 시 공식 전제조건은 포트 포워딩에 `3.0.222.0` 이상을 요구하지만 세션 시작 가이드와 RDP 안내에는 `2.3.672.0` 이상으로 적혀 있다. 최소 버전 표기가 서로 다르므로 구형 버전의 지원 여부를 단정하지 않고, 최신 Agent 사용 안내를 따른다.
+- `aws ssm start-session`에서 위 문서를 지정한다. `portNumber`는 대상 Windows의 RDP 포트(기본 `3389`), `localPortNumber`는 로컬에서 사용할 포트다. `portNumber`를 생략하면 `80`이므로 RDP에는 명시한다.
+- 로컬 포트를 `55678`로 정했다면 RDP 클라이언트는 `localhost:55678`로 접속한다. 터널이 열렸어도 RDP가 실패하면 Windows의 실제 listener 포트와 로그인 정보를 따로 확인한다.
+- 작업을 마치면 RDP 연결과 포트 포워딩 세션을 모두 종료한다. 터널의 세션 내용은 Session Manager 로깅 대상이 아니므로 위의 감사 경계를 적용한다.
+
+문서 기반 접속 절차이며 실제 Windows 인스턴스 접속은 시험하지 않았다. 다른 SSM 기능의 검증일은 유지한다.
+
 ### State Manager
 
 **원하는 구성 상태 유지** (Desired State Configuration).
@@ -149,6 +161,9 @@ verified_at: 2026-07-21
 
 ## 출처
 
+- [AWS, Complete Session Manager prerequisites](https://docs.aws.amazon.com/systems-manager/latest/userguide/session-manager-prerequisites.html)
+- [AWS, Start a session](https://docs.aws.amazon.com/systems-manager/latest/userguide/session-manager-working-with-sessions-start.html)
+- [How do I use Session Manager port forwarding without a bastion host to connect to my EC2 instance through RDP? — AWS re:Post](https://repost.aws/knowledge-center/systems-manager-session-manager-connect)
 - [AWS, Sample IAM policies for Session Manager](https://docs.aws.amazon.com/systems-manager/latest/userguide/getting-started-restrict-access-quickstart.html)
 - [AWS, Additional sample IAM policies for Session Manager](https://docs.aws.amazon.com/systems-manager/latest/userguide/getting-started-restrict-access-examples.html)
 - [AWS, Troubleshooting Session Manager](https://docs.aws.amazon.com/systems-manager/latest/userguide/session-manager-troubleshooting.html)

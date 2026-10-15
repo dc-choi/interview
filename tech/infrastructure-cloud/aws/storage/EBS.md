@@ -62,6 +62,19 @@ EC2 인스턴스에 부착되는 **블록 수준 네트워크 스토리지**. �
 
 예를 들어 60초 동안 6,000건을 처리하고 idle이 30초라면 전체 평균은 100 IOPS, 활동 시간 기준은 200 IOPS다. 이 평균만으로 짧은 피크나 프로비저닝 한도 초과 여부를 확정하지 않는다. 실제 볼륨 측정은 수행하지 않았으며 기존 절의 검증일은 유지한다.
 
+## LVM 볼륨을 확장할 때 확인할 계층
+
+부분 검증(2026-10-16): AWS의 EBS 확장 가이드와 LVM 운영 절차를 대조했다. EBS 크기 변경만으로 논리 볼륨과 파일시스템까지 커지지는 않는다. 변경 전 스냅샷을 만들고, 수정 상태가 `optimizing` 또는 `completed`인지 확인한다.
+
+1. `lsblk`, `df -hT`로 디스크, 파티션, 파일시스템과 마운트 지점을 식별한다. 콘솔의 장치명을 OS 장치명으로 그대로 가정하지 않는다.
+2. 기존 EBS를 늘렸다면 파티션이 있는 경우 먼저 `growpart`로 확장하고, 해당 PV에 `pvresize`를 적용한다. `pvs`, `vgs`로 PV 크기와 VG 여유 공간을 확인한다.
+3. 대상 LV를 `lvextend`로 늘리고 `lvs`로 확인한다. `-L 19G`는 증가분이 아니라 변경 후 총크기다. 다른 LV가 사용할 여유 공간도 남겨야 하는지 판단한다.
+4. ext4는 대상 LV 장치에 `resize2fs`, XFS는 해당 파일시스템의 마운트 지점에 `xfs_growfs`를 적용한다. 마지막으로 `df -hT`에서 파일시스템 크기를 확인한다.
+
+새 EBS를 추가하는 방식은 빈 대상 장치에 PV를 만들고 `vgextend`로 기존 VG에 넣은 뒤 LV와 파일시스템을 확장한다. 기존 데이터가 있는 장치를 새 PV로 초기화하지 않는다. Striped LV는 VG의 총 여유 공간만으로 확장 가능 여부를 판단하지 않고 stripe 수와 장치별 할당 조건을 확인한다.
+
+이 절은 절차 대조이며 실제 볼륨 변경이나 복원 시험 결과가 아니다. 기존 절의 검증일은 유지한다.
+
 ## EBS 스냅샷
 
 스냅샷은 EBS 볼륨 데이터를 **S3에 백업**하는 메커니즘 (S3 버킷에는 직접 노출되지 않음).
@@ -169,6 +182,8 @@ EBS는 AZ 안에서 중복 저장되므로 단일 볼륨의 일반적인 내구�
 
 ## 출처
 
+- [How do I extend an EBS volume with LVM partitions? — AWS re:Post](https://repost.aws/knowledge-center/ebs-extend-volume-lvm-partitions)
+- [Extend the file system after resizing an Amazon EBS volume](https://docs.aws.amazon.com/ebs/latest/userguide/recognize-expanded-volume-linux.html)
 - [Considerations and limitations for archiving Amazon EBS snapshots](https://docs.aws.amazon.com/ebs/latest/userguide/snapshot-archive-considerations.html)
 - [Restore an archived Amazon EBS snapshot](https://docs.aws.amazon.com/ebs/latest/userguide/restore-archived-snapshot.html)
 - [How does Recycle Bin work?](https://docs.aws.amazon.com/ebs/latest/userguide/recycle-bin-concepts.html)
