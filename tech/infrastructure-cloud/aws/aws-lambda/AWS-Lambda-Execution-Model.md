@@ -123,6 +123,20 @@ SnapStart는 버전을 게시할 때 초기화한 실행 환경을 스냅샷으�
 - Lambda는 이미지 태그를 특정 digest로 해석한다. 같은 태그에 새 이미지를 push해도 실행 코드는 자동 갱신되지 않는다. 다시 빌드하고 ECR에 올린 뒤 `update-function-code`로 함수 코드를 갱신한다.
 - 실행에 쓰는 이미지와 Lambda의 ECR 접근 권한을 유지한다. 원본 이미지를 삭제하거나 접근 권한을 철회하면 이후 함수가 `Failed`가 되어 호출이 실패할 수 있다.
 
+### ECR 접근 오류는 생성 주체와 이미지 조회 권한을 나눈다
+
+부분 검증(2026-10-16): 아래 권한 경계는 AWS의 컨테이너 이미지 배포 문서로 대조했다. 함수 생성 권한만으로 ECR 이미지 접근까지 허용되지는 않는다.
+
+| 확인 대상 | 점검할 내용 |
+|---|---|
+| 생성 또는 갱신 주체 | 대상 저장소의 `ecr:BatchGetImage`, `ecr:GetDownloadUrlForLayer` 권한을 확인한다. 저장소 정책을 Lambda가 자동 보완하려면 호출 주체에게 `ecr:GetRepositoryPolicy`, `ecr:SetRepositoryPolicy`도 필요하다 |
+| 같은 계정 | 실행 역할의 identity policy 또는 ECR repository policy로 이미지 조회를 허용할 수 있다. 저장소 정책을 쓰는 경우 `lambda.amazonaws.com`에 두 조회 action을 허용한다 |
+| 다른 계정 | 소비 계정의 identity policy와 저장소 소유 계정의 resource policy 양쪽에서 두 조회 action을 허용한다. 계정 접근 허용과 별도로 Lambda 서비스의 이미지 재조회 statement도 유지한다 |
+
+교차 계정의 서비스 statement는 `aws:sourceARN` 조건으로 소비 계정과 허용할 함수 범위를 제한한다. 이는 장기 미호출 뒤 `Inactive`가 된 함수의 이미지 최적화와 캐싱에도 필요하므로 생성 성공만 보고 제거하지 않는다. 다른 계정의 이미지도 함수와 같은 리전에 있어야 한다.
+
+점검 순서는 저장소 위치, 생성 주체, Lambda의 이미지 조회 권한이다. `AdministratorAccess`를 붙이는 대신 실패한 경계를 좁혀 확인한다. 실제 계정에서 생성과 재활성화를 시험한 결과는 아니며 다른 실행 모델과 quota의 검증일은 유지한다.
+
 ## Function 구성요소
 
 함수(Function)는 코드 실행을 위해 호출되는 최소 단위 리소스. 다음 4가지로 구성된다.

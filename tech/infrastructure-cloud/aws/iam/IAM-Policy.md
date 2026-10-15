@@ -149,6 +149,18 @@ EC2에 역할을 전달한다면 `iam:PassedToService`의 값은 `ec2.amazonaws.
 
 감사할 때는 별도 `PassRole` CloudTrail 이벤트를 찾지 않는다. 예를 들어 Lambda에 전달된 역할은 `CreateFunction`처럼 역할을 받은 리소스의 생성 또는 변경 이벤트에서 확인한다. 역할 전달 성공과 서비스의 실제 작업 성공을 각각 점검한다.
 
+## 인코딩된 인가 오류의 진단
+
+부분 검증(2026-10-16): 아래 절만 STS API와 CLI 문서로 대조했다. 일부 AWS 작업은 권한 거부 응답에 인코딩된 메시지를 함께 반환하며, 모든 403 오류에 이 메시지가 있는 것은 아니다. 내용을 읽을 주체에게 `sts:DecodeAuthorizationMessage` 권한이 필요하다.
+
+```bash
+aws sts decode-authorization-message --encoded-message '<encoded-message>' --query DecodedMessage --output text
+```
+
+출력의 principal, action, resource와 condition 값을 실패한 요청과 대조하고, 명시적 Deny인지 Allow 부재인지 구분한다. 메시지를 해독할 권한과 원래 작업을 실행할 권한은 별개다. 예를 들어 결과가 서비스 역할의 `iam:PassRole` 누락을 가리키면 앞 절의 역할 전달 경계를 확인한다. 모든 Backup 복원 실패를 같은 원인으로 단정하지 않는다.
+
+`InvalidAuthorizationMessage`는 줄바꿈 같은 잘못된 문자나 메시지 만료로 발생할 수 있다. 해독 결과에는 권한 관련 민감 정보가 있으므로 공개 문서나 이슈에 원문을 붙이지 않는다. 실제 AWS 요청은 실행하지 않았으며 기존 절의 검증일은 유지한다.
+
 ## IAM Policy Simulator로 사전 검증
 
 Policy Simulator는 identity policy, permissions boundary, SCP와 직접 넣어 준 resource-based policy를 실제 API 호출 없이 action, resource, context key 조합으로 평가한다. 아직 부착하지 않은 새 policy도 붙여 넣어 실험할 수 있고, 결과가 allow나 explicit deny일 때는 그 결과를 만든 policy를 보여 준다 (implicit deny는 매칭 statement가 없다는 뜻이라 추적 대상이 아니다). 다만 SCP는 결정만 알려 주고 매칭 statement는 보안상 노출하지 않는다. 2026-07-30부터 simulator는 IAM 콘솔 안으로 들어왔고 기존 standalone 콘솔(`policysim.aws.amazon.com`)은 유지보수하지 않는다.
@@ -157,6 +169,8 @@ Policy Simulator는 identity policy, permissions boundary, SCP와 직접 넣어 
 
 ## 출처
 
+- [AWS STS — DecodeAuthorizationMessage](https://docs.aws.amazon.com/STS/latest/APIReference/API_DecodeAuthorizationMessage.html)
+- [AWS CLI — decode-authorization-message](https://docs.aws.amazon.com/cli/latest/reference/sts/decode-authorization-message.html)
 - [AWS IAM — Establish permissions guardrails using data perimeters](https://docs.aws.amazon.com/IAM/latest/UserGuide/access_policies_data-perimeters.html)
 - [Amazon VPC — Control access to VPC endpoints using endpoint policies](https://docs.aws.amazon.com/vpc/latest/privatelink/vpc-endpoints-access.html)
 - [Amazon EC2 — Identity-based policies for Amazon EC2](https://docs.aws.amazon.com/AWSEC2/latest/UserGuide/iam-policies-for-amazon-ec2.html)
