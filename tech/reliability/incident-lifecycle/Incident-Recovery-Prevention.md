@@ -40,6 +40,16 @@ aliases: ["장애 복구와 재발 방지"]
 장애 발생 → 임시 대응 → Root Cause 분석 → 재발 방지 대책 수립 → 시스템에 반영 → 검증
 ```
 
+### 짧은 장애의 증거를 알림 뒤에도 남긴다
+
+부분 검증(2026-10-15): BCC의 `profile`, `offcputime` 설명과 Linux 6.17 BPF ring buffer 문서를 대조했다. 아래 보존 절차는 eBPF 운영 사례를 바탕으로 한 설계 제안이며 특정 시스템에서 실행한 검증 결과가 아니다.
+
+- **수집과 저장을 분리한다:** 장애 전에 필요한 훅에서 이벤트나 집계를 수집하고, 알림이 오면 해당 노드와 컨테이너의 자료를 내보내는 구조를 검토한다. 알림 뒤에 처음 계측을 켜는 것만으로 이미 사라진 사건을 복원할 수는 없다. 수집 구간과 내보낸 시각을 함께 남긴다.
+- **표본과 원인을 구분한다:** On-CPU 프로파일의 표본 수는 일정 간격에 관측된 스택의 빈도이며 함수 호출 횟수 자체가 아니다. Off-CPU 집계는 CPU를 벗어나 있던 시간을 보여 주지만 정상적으로 일을 기다리는 스레드도 포함한다. 큰 스택이나 긴 대기만으로 장애 원인을 확정하지 않고 해당 요청의 타임라인과 다른 관측 신호를 대조한다.
+- **주소를 해석할 자료를 보존한다:** 종료한 컨테이너의 스택을 분석하려면 해당 실행 파일과 심볼, 주소 매핑을 연결할 수 있어야 한다. 배포 시점의 바이너리 식별 정보와 필요한 메타데이터를 수집하는 방식을 검토한다. 심볼이 없거나 스택을 풀 수 없는 경우를 원인 없음으로 처리하지 않는다.
+- **증거의 소실을 관측한다:** 용량이 제한된 수집 경로는 자료를 잃을 수 있다. 예를 들어 BPF ring buffer는 공간이 없으면 예약에 실패한다. 유실과 예약 실패를 집계하고, 주기적인 집계 초기화가 OOM 같은 드문 사건의 스택까지 지우지 않도록 보존 경로를 나누는 방식을 검토한다. Ring buffer와 stack map의 동작을 같은 것으로 가정하지 않는다.
+- **관측 비용을 실측한다:** Scheduler 훅을 추적하고 스택을 걷는 비용은 이벤트 빈도에 따라 커질 수 있다. 대상 프로세스와 수집 범위를 제한하고 CPU, 메모리와 요청 지연을 비교한다. 한 환경의 낮은 오버헤드를 다른 노드와 부하의 보장값으로 사용하지 않는다.
+
 ## 운영자동화와지속적개선
 
 - 성능 최적화/운영 자동화를 위해 지속적으로 노력하는가?
@@ -130,6 +140,10 @@ Enterprise Support는 지정 TAM과 AWS Security Incident Response 접근을 추
 
 ## 출처
 
+- [당근 SRE의 eBPF 활용기: 지나간 Alert의 원인을 찾다 — 당근 팀, 2026 당근 빌더 밋업](https://www.youtube.com/watch?v=Wb6l9XTAKN8)
+- [BCC, profile examples](https://github.com/iovisor/bcc/blob/master/tools/profile_example.txt)
+- [BCC, offcputime examples](https://github.com/iovisor/bcc/blob/master/tools/offcputime_example.txt)
+- [Linux Kernel 6.17 Documentation, BPF ring buffer](https://docs.kernel.org/6.17/bpf/ringbuf.html)
 - [[Toss-Runners-High-Seminar|토스 러너스하이 세미나]] — 기존 기술 운영 평가 기록
 - [AWS Well-Architected, Appendix B: Example ORR questions](https://docs.aws.amazon.com/wellarchitected/latest/operational-readiness-reviews/appendix-b-example-orr-questions.html)
 - [AWS Well-Architected, Conduct game days regularly](https://docs.aws.amazon.com/wellarchitected/latest/framework/rel_testing_resiliency_game_days_resiliency.html)

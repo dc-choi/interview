@@ -128,6 +128,18 @@ Rolling upgrade는 인접 major version만 지원한다. 3.x로 갈 때는 sourc
 - Follower 승격은 lag 확인과 이전 leader fencing 뒤 Stop Replication API를 호출해 일반 index로 전환한다.
 - 논리 오류도 복제할 수 있으므로 snapshot을 병행한다.
 
+## 별도 클러스터 이관의 세 가지 판정
+
+부분 검증(2026-10-15): OpenSearch Migration Assistant의 이관 단계와 replay 지침을 대조했다. 데이터 동기화, 검색 응답 검증과 사용자 응답 전환은 별개의 판정이다.
+
+1. **데이터 준비:** Snapshot 기반 backfill과 Capture and Replay를 함께 사용하는 경로는 캡처를 먼저 시작하고 backfill 뒤에 기록된 요청을 재생한다. 이 경로에서 backfill과 replay의 순서를 뒤집으면 과거 데이터와 후속 변경의 적용 순서가 어긋날 수 있다. Backfill 없이 Capture and Replay만 사용하는 별도 경로도 있으므로 선택한 이관 방식의 선행 조건을 확인한다. Replay 프로세스가 실행 중이라는 사실만으로 동기화 완료를 판단하지 않고 live edge 도달, 문서 수, 대표 질의와 대상 오류를 함께 확인한다.
+2. **검색 검증:** 운영 적용 제안으로, 같은 검색을 신규 클러스터에도 보내되 사용자에게는 기존 응답을 반환하는 shadow 검증을 둘 수 있다. 오류율과 지연뿐 아니라 결과 내용과 순위를 비교한다. Shadow 응답은 사용자가 보지 않으므로 클릭과 전환 같은 사용자 반응의 검증을 대신하지 않는다.
+3. **응답 전환:** 일부 사용자부터 신규 응답을 제공하고 관측 결과에 따라 범위를 늘린다. 이때 읽기 응답의 복귀와 쓰기 데이터의 복구를 구분한다. 이전 클러스터를 남겨 두더라도 신규 쓰기가 그곳에 반영되지 않으면 라우팅만 되돌려 최신 데이터를 복구할 수 없다.
+
+양쪽에 전체 검색을 보내면서 응답 선택만 바꾸는 방식은 부하와 캐시 준비 조건을 비교하기 위한 선택지다. 예를 들어 유입이 400 QPS이고 요청을 한 번씩 복제하면 두 클러스터가 각각 400 QPS를 처리한다. 사용자 응답을 75:25로 나눠도 검색 처리량이 300:100으로 줄지는 않는다. 추가 처리 비용과 프록시 장애 경로를 감수해야 하며 캐시 적중률이나 지연이 같아진다고 보장하지 않는다.
+
+위 shadow와 점진 전환은 Elasticsearch 운영 사례에서 도출한 설계 제안이다. Migration Assistant의 Capture and Replay는 기록한 요청을 재생하는 경로이며 이 동기식 응답 선택 방식을 자동 제공한다는 뜻은 아니다. 도구 선택과 무관하게 롤백 기간, 쓰기 동기화의 종료 조건과 이전 클러스터 제거 조건을 먼저 정한다.
+
 ## 장애별 첫 대응
 
 | 증상 | 우선 확인 | 첫 대응 원칙 |
@@ -149,6 +161,9 @@ Rolling upgrade는 인접 major version만 지원한다. 3.x로 갈 때는 sourc
 
 ## 출처
 
+- [OpenSearch Documentation, Migration workflows](https://docs.opensearch.org/latest/migration-assistant/migration-phases/)
+- [OpenSearch Documentation, Replay captured traffic](https://docs.opensearch.org/latest/migration-assistant/migration-phases/replay-captured-traffic/)
+- [아무도 모르게 Elasticsearch 클러스터 마이그레이션하기 — 당근 팀, 2026 당근 빌더 밋업](https://www.youtube.com/watch?v=IW84DNMFAmc)
 - [OpenSearch Documentation, Cluster Routing And Awareness API](https://docs.opensearch.org/latest/api-reference/cluster-api/cluster-awareness/)
 - [OpenSearch Documentation, Cluster Decommission API](https://docs.opensearch.org/latest/api-reference/cluster-api/cluster-decommission/)
 - [OpenSearch Documentation, Creating a cluster](https://docs.opensearch.org/latest/tuning-your-cluster/index/)
