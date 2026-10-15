@@ -41,12 +41,21 @@ tier별 구조는 [[OpenSearch-Index-Lifecycle]]의 표를 따른다. 여기서�
 
 2026-09-04 AWS 문서와 요금표 기준, OCU는 6GiB RAM과 상응하는 vCPU 묶음이고 시간당 0.24 USD다. 최소 용량은 collection group 사용 여부에 따라 다르다.
 
-- Collection group은 indexing과 search 최소값을 각각 0 OCU까지 설정할 수 있다. 그룹의 모든 collection에 10분간 요청이 없으면 0으로 축소돼 OCU 과금이 멈추며, 재개 첫 요청에는 약 10초에서 30초 지연이 생길 수 있다.
+- NextGen collection group은 indexing과 search 최소값을 각각 0 OCU로 설정할 수 있다. 그룹의 모든 collection에 10분간 요청이 없으면 0으로 축소되며 이 유휴 시간은 변경할 수 없다. Indexing과 search는 독립적으로 축소되고 재개하므로 각 구성요소의 재개 첫 요청에 약 10초에서 30초 지연이 생길 수 있다.
 - Collection group 없이 만든 Classic collection은 계정 단위 용량 설정을 공유한다. Redundancy 활성 시 indexing 1 OCU와 search 1 OCU, 합계 2 OCU가 최소이고, 끄면 각각 0.5 OCU로 합계 1 OCU가 최소다.
-- Collection group은 KMS key가 달라도 용량을 공유할 수 있다. 다만 vector collection과 search, time series collection은 같은 group에 넣을 수 없으므로 유형별로 최소 용량과 scale-to-zero 조건을 계산한다.
+- Collection group은 KMS key가 달라도 용량을 공유할 수 있다. 한 group에는 search, time series, vector search 중 한 유형만 넣을 수 있으므로 유형별로 최소 용량과 scale-to-zero 조건을 계산한다.
 - 3유형 제약: data lifecycle policy(retention 자동 삭제)는 time series만 지원하고, time series는 custom `_id`가 없어 upsert 기반 dedup이 안 되며([[OpenSearch-Service-Security-Observability#데이터 수집|데이터 수집 절]] 참조), vector는 in-memory 모드에서 RAM이 OCU 산정을 지배하므로 disk-optimized 모드(32x binary quantization, RAM 최대 97퍼센트 절감, P90 100에서 200ms)를 먼저 검토한다.
 - Time series의 OCU는 retention이 직접 결정한다. 공식 예시로 일 1TiB 수집에 30일 보존이면 indexing 20과 search 20 OCU, 7일로 줄이면 각각 약 4 OCU다.
 - 결론: scale to zero를 허용할 수 있는 간헐적 workload는 Serverless가 유리할 수 있다. Classic collection처럼 최소 OCU가 상시 필요한 소규모 workload는 provisioned 소형 domain과 비교한다. 어느 쪽이든 max OCU cap을 걸어 폭주를 막되, cap에 닿으면 성능 저하로 나타나므로 원인도 함께 본다.
+
+### 유휴 과금과 공유 용량의 운영 경계
+
+부분 검증(2026-10-16): NextGen의 scale-to-zero 조건, collection group의 유형 제약과 용량 공유, compute와 storage의 별도 과금을 공식 문서로 대조했다. 다른 절의 가격과 배포 동작까지 재검증한 것은 아니므로 frontmatter 날짜는 유지한다.
+
+- **0 OCU는 전체 요금 0을 뜻하지 않는다.** NextGen은 indexing과 search compute를 초 단위로 계량하며, hot storage는 GB-month로 별도 과금한다. 보존한 데이터의 storage 비용은 유휴 compute가 0이 되어도 남는다.
+- **최대 OCU는 전체 청구액의 상한이 아니다.** Indexing과 search 각각의 용량 상한이며, 저장 용량과 가동 시간까지 포함한 월 예산은 따로 계산한다.
+- **다른 KMS key는 별도 compute의 보장이 아니다.** 같은 group의 collection은 OCU와 메모리 공간을 공유하고 접근 제어는 collection 단위로 유지한다. 운영 판단에서는 비용 공유 이점과 필요한 성능 격리를 함께 평가한다.
+- **재개 지연을 지연 예산에 넣는다.** 첫 검색이나 색인이 즉시 끝나야 하는 경로라면 최소 용량을 0보다 크게 두는 선택을 검토한다. 간헐적 작업이라면 첫 요청의 지연을 포함해 클라이언트 timeout과 사용자 응답 시간을 점검한다.
 
 ## Blue-green 배포를 유발하는 설정 변경
 
@@ -78,7 +87,7 @@ Provisioned domain의 설정 변경은 두 부류다. Blue-green은 기존 clust
 - Blue-green 동안 두 배로 계속 과금된다? 아니다. 이중 과금은 최대 첫 1시간이고 실제 대가는 master 부하와 latency다.
 - Node 수를 늘리는 것도 blue-green이다? 아니다. data node 수 변경은 대체로 dynamic update고, type 변경이 trigger다.
 - UltraWarm은 옮기기만 하면 싸진다? 아니다. 최소 2대의 warm node 고정비(월 약 348 USD부터)를 storage 절감이 넘어야 한다.
-- Serverless는 안 쓰면 0원이다? Collection group의 최소 OCU를 0으로 설정하면 10분 유휴 뒤 scale to zero가 가능하다. Classic collection은 설정한 최소 OCU가 상시 과금된다.
+- Serverless는 안 쓰면 0원이다? NextGen collection group의 최소 OCU를 0으로 설정하면 10분 유휴 뒤 compute가 0으로 축소될 수 있지만 storage 과금은 남는다. Classic collection에는 최소 OCU 비용이 있다.
 - Auto-Tune이 알아서 노드를 늘려준다? 아니다. heap과 queue와 cache 같은 메모리 설정만 조정하며 용량 산정은 사용자 몫이다.
 
 ## 시나리오: 설정 하나 바꿨는데 클러스터가 왜 두 배가 됐나
@@ -98,6 +107,8 @@ Provisioned domain의 설정 변경은 두 부류다. Blue-green은 기존 clust
 - [AWS Documentation, Cost optimization techniques](https://docs.aws.amazon.com/opensearch-service/latest/developerguide/cost-optimization.html)
 - [AWS Documentation, Making configuration changes](https://docs.aws.amazon.com/opensearch-service/latest/developerguide/managedomains-configuration-changes.html)
 - [AWS Documentation, Managing capacity limits for Serverless](https://docs.aws.amazon.com/opensearch-service/latest/developerguide/serverless-scaling.html)
+- [AWS Documentation, Scale to zero for Amazon OpenSearch Serverless](https://docs.aws.amazon.com/opensearch-service/latest/developerguide/serverless-scale-to-zero.html)
+- [AWS Documentation, Amazon OpenSearch Serverless collection groups](https://docs.aws.amazon.com/opensearch-service/latest/developerguide/serverless-collection-groups.html)
 - [AWS Documentation, UltraWarm storage](https://docs.aws.amazon.com/opensearch-service/latest/developerguide/ultrawarm.html)
 - [AWS Documentation, Auto-Tune](https://docs.aws.amazon.com/opensearch-service/latest/developerguide/auto-tune.html)
 - [AWS Documentation, Off-peak windows](https://docs.aws.amazon.com/opensearch-service/latest/developerguide/off-peak.html)
