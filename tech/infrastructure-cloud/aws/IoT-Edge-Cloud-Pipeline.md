@@ -40,6 +40,16 @@ IoT Core 뒤에 Kafka 스트림을 두면 소비 애플리케이션에서 메시
 
 큐 깊이는 `AWS/Usage`에서 `Resource=ApproximateQueueDepth` 차원으로 찾는다. `Queued.Success`는 브로커가 처리한 저장 메시지 수를 나타내는 지표이므로 현재 큐 깊이와 동일시하지 않는다. 자동 확장을 설계할 때는 큐 깊이, 소비 완료율과 중복 처리 결과를 함께 점검한다(설계 제안). 이 대조는 공유 구독과 지표에 한정하며 실제 부하 시험과 기존 기능 전체의 재검증은 아니므로 frontmatter 검증일은 유지한다.
 
+### 메시지 수신 확인과 rule action 완료를 구분한다
+
+2026-10-16 AWS IoT Core의 Basic Ingest와 error action 문서 대조 기준. Basic Ingest는 `$aws/rules/<rule_name>/...` topic으로 메시지를 보내 publish/subscribe 브로커를 거치지 않고 규칙을 실행하는 경로다. 이 예약 topic은 구독할 수 없으므로 다른 장비와 구독자에게 메시지를 배포해야 한다면 일반 브로커 topic을 사용한다.
+
+Basic Ingest에서 QoS 1의 `PUBACK`은 rules engine에 메시지가 전달됐다는 확인이다. DynamoDB 적재 같은 rule action의 성공까지 뜻하지 않는다. 존재하지 않거나 비활성인 규칙을 지정했을 때는 `RuleNotFound` 지표와 오류 로그를 확인한다.
+
+Rule action 실행에 문제가 생기면 설정된 error action이 호출된다. 같은 규칙의 action 두 개가 실패해도 원본 메시지 하나에 대한 오류 메시지는 하나이며, `failures` 배열에 각 실패가 담긴다. `base64OriginalPayload`는 원본 payload이고 `cloudwatchTraceId`는 로그 추적에 쓴다. 이 경로는 rule action 오류를 다루며 SQL 평가 오류는 IoT 로그로 따로 조사한다.
+
+설계 점검으로 수신 확인, 목적지 저장, 오류 보관과 재처리 완료를 별도 집계한다. 일부 action만 실패한 메시지를 재처리할 때 이미 성공한 저장까지 중복 실행하지 않도록 멱등성과 재처리 범위를 확인한다. 오류 경로를 설정했다는 사실만으로 무손실을 보장하지 않으며, 실제 부하와 오류 복구 시험은 별도로 수행한다. 이번 대조는 수집과 오류 전달 경계에 한정하므로 기존 frontmatter 검증일은 유지한다.
+
 ## 수집 대상과 시점을 장비에서 제한한다
 
 모든 신호를 계속 전송하기 전에 대상 장비, 필요한 신호와 수집 조건을 정한다. 2026-10-13 FleetWise campaign 문서 기준, 시간 간격에 따른 수집과 논리 조건에 따른 수집을 구분하며 `signalsToCollect`로 수집할 신호를 지정한다. 캠페인 승인만으로 장비가 수집을 시작하지는 않는다. 실행 중인 Edge Agent에 캠페인이 배포되어야 한다.
@@ -247,6 +257,8 @@ Shadow 메시지의 도착 순서는 보장되지 않는다. 장비는 추적 �
 
 ## 출처
 
+- [AWS IoT Core, Reducing messaging costs with Basic Ingest](https://docs.aws.amazon.com/iot/latest/developerguide/iot-basic-ingest.html) — 2026-10-16 브로커 우회, 예약 topic과 PUBACK의 완료 범위 대조
+- [AWS IoT Core, Error handling (error action)](https://docs.aws.amazon.com/iot/latest/developerguide/rule-error-handling.html) — 오류 메시지 집계 단위, 원본 payload와 SQL 오류의 조사 경계 대조
 - [AWS IoT SiteWise, Native anomaly detection](https://docs.aws.amazon.com/iot-sitewise/latest/userguide/sitewise-anomaly-detection.html)
 - [AWS IoT SiteWise, Enable anomaly detection on sensors of an asset](https://docs.aws.amazon.com/iot-sitewise/latest/userguide/anom-detection-sensors-asset.html)
 - [AWS IoT SiteWise, Advanced inference configurations](https://docs.aws.amazon.com/iot-sitewise/latest/userguide/advanced-inference-configurations.html)
