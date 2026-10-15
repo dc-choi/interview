@@ -29,7 +29,7 @@ Linux는 **최상위 루트(`/`)에서 뻗어나가는 단일 트리**로 구성
 | **`/home`** | 사용자 홈 | `/home/alice`, `/home/bob` 각 사용자별 작업 공간 |
 | **`/root`** | root 홈 | root 계정 전용. `/home/root` 아님 |
 | **`/var`** | Variable Data | 로그(`/var/log`), 캐시(`/var/cache`), 메일, DB 등 자주 변하는 데이터 |
-| **`/tmp`** | 임시 | 재부팅 시 지워짐(또는 tmpfs). 누구나 쓰기 가능 |
+| **`/tmp`** | 임시 | 프로그램이 임시 파일을 두는 곳. 보존을 가정하지 않으며 정리 시점은 시스템 정책에 따름 |
 | **`/usr`** | User(원래), 공용 프로그램 | `usr/bin`, `/usr/lib`, `/usr/share`. 배포판이 제공하는 프로그램 |
 | **`/usr/local`** | 로컬 설치 | 관리자가 수동 설치한 소프트웨어(패키지 매니저와 분리) |
 | **`/opt`** | Optional | 제3자 독립 패키지(예: `/opt/oracle`) |
@@ -136,6 +136,18 @@ GUI가 없는 서버와 컨테이너에서는 CLI로 원인을 좁힌다. 옵션
 
 ## 파일 작업: 생성, 덮어쓰기와 삭제를 구분한다
 
+### 현재 위치와 명령의 대상을 먼저 확인한다
+
+아래 경로 해석은 Bash와 GNU coreutils 문서를 2026-10-15에 부분 대조했다.
+
+- `pwd`는 현재 작업 디렉터리의 절대 경로를 보여준다. 심볼릭 링크를 해석한 실제 경로를 확인하려면 `pwd -P`를 사용한다.
+- `/var/log`는 루트에서 시작하는 절대 경로이고, `./notes`는 현재 디렉터리 아래의 상대 경로다. `../notes`는 상위 디렉터리 아래를 뜻한다. `cd ..`는 기본 논리 경로와 `cd -P`에서 심볼릭 링크 처리 결과가 달라질 수 있다.
+- Bash에서 인자 없는 `cd`는 `HOME`으로, `cd -`는 `OLDPWD`에 기록된 이전 작업 디렉터리로 이동한다. `~`는 따옴표로 감싸지 않은 경로 시작 부분에서 홈 경로로 확장되며 `/home` 자체와 같은 뜻은 아니다.
+- `ls /var/log`는 대상의 목록을 읽을 뿐 현재 셸의 작업 위치를 바꾸지 않는다. 다음 상대 경로 명령의 기준은 계속 `pwd`로 확인한 위치다.
+- 기본 `ls` 출력에 항목이 없어도 숨김 파일이 남아 있을 수 있다. `ls -a`로 함께 확인하며, 점으로 시작하는 이름은 접근 권한이나 암호화를 대신하지 않는다.
+
+### 파일을 바꾸는 명령의 대상 상태
+
 아래는 GNU coreutils 매뉴얼을 2026-10-06 대조한 범위다. 연습은 원본과 분리한 복사본에서 하고, 실행 전에 현재 위치와 원본, 목적지를 함께 확인한다.
 
 | 명령 | 대상 상태에 따른 의미 | 확인할 것 |
@@ -157,7 +169,7 @@ GUI가 없는 서버와 컨테이너에서는 CLI로 원인을 좁힌다. 옵션
 
 - **`/etc`를 Git에 통째로 커밋** → 시크릿(`/etc/shadow`, API 키) 유출. 필요한 설정만 선별
 - **`/var` 모니터링 누락** → 로그가 쌓여 파티션 가득 → 서비스 중단. `logrotate` 설정 필수
-- **`/tmp`에 영구 데이터 저장** → 재부팅 시 소실
+- **`/tmp`에 영구 데이터 저장** → 정리 정책에 따라 소실될 수 있다. FHS는 재부팅 시 삭제를 권장하지만 의무화하지 않으며, 프로그램은 다음 실행까지 보존된다고 가정하면 안 된다(2026-10-15 부분 검증).
 - **패키지 매니저와 `/usr/local` 혼용** → 버전 충돌. 수동 설치는 `/opt` 또는 컨테이너화
 - **`sudo rm -rf /` 또는 `/.`** → 시스템 파괴. GNU coreutils `rm`은 기본적으로 `--preserve-root`를 적용하지만 이는 쉘 기능이 아니고 다른 `rm` 구현에서는 보장되지 않는다. 이 방어에 의존하지 말고 명령 앞에 `echo`를 붙여 확인
 
@@ -172,6 +184,9 @@ GUI가 없는 서버와 컨테이너에서는 CLI로 원인을 좁힌다. 옵션
 - `df`와 `du` 값이 다를 때 먼저 의심할 원인(지웠지만 열린 파일, 마운트에 가려진 데이터)
 
 ## 출처
+- [GNU Bash, Bourne Shell Builtins](https://www.gnu.org/software/bash/manual/html_node/Bourne-Shell-Builtins.html), [GNU Bash, Tilde Expansion](https://www.gnu.org/s/bash/manual/html_node/Tilde-Expansion.html) — `cd`, `pwd`, 홈 경로와 심볼릭 링크 해석(2026-10-15 부분 검증)
+- [GNU coreutils, ls invocation](https://www.gnu.org/s/coreutils/manual/html_node/ls-invocation.html), [GNU coreutils, Which files are listed](https://www.gnu.org/software/coreutils/manual/html_node/Which-files-are-listed.html) — 목록 조회와 숨김 항목(2026-10-15 부분 검증)
+- [Filesystem Hierarchy Standard 3.0, /tmp: Temporary files](https://refspecs.linuxfoundation.org/FHS_3.0/fhs/ch03s18.html) — 보존 가정과 재부팅 정리 권고의 구분(2026-10-15 부분 검증)
 - [GNU coreutils, mv(1)](https://man7.org/linux/man-pages/man1/mv.1.html) — 이동과 이름 변경, 목적지 디렉터리와 `-i`의 의미(2026-10-12 부분 검증)
 - [GNU coreutils, cp(1)](https://man7.org/linux/man-pages/man1/cp.1.html), [touch(1)](https://man7.org/linux/man-pages/man1/touch.1.html), [rm(1)](https://man7.org/linux/man-pages/man1/rm.1.html) (파일 작업의 대상 상태와 확인 옵션, 2026-10-06 부분 검증)
 - [Tecoble — Linux 파일 디렉토리 시스템](https://tecoble.techcourse.co.kr/post/2021-10-18-linux-file-directory-system/)

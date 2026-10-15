@@ -50,6 +50,21 @@ fields @timestamp, @message
 
 지원 연산에는 `filter`, `filterIndex`, `stats`, `sort`, `bin`, `parse`(정규식 추출), `display` 등이 있다. 스캔량 기반 과금이라 시간 범위를 좁힐수록 빠르고 저렴하지만 인덱스가 없는 것은 아니다. 구조화 로그에는 field index를 만들 수 있고 Standard 로그 클래스에는 `@logStream`, `traceId` 같은 기본 field index가 적용된다. 인덱싱된 필드를 `=` 또는 `IN`으로 조회하면 해당 필드가 없는 event를 건너뛰어 scan volume을 줄인다. Index는 정책 생성 이후 수집된 event에 적용되고 수집 시점부터 30일간 유지된다.
 
+### SMS 발송 이벤트를 CloudWatch Logs로 받기
+
+2026-10-15 AWS End User Messaging SMS 공식 문서 기준이다. 이벤트 목적지는 발송 상태를 관측하는 경로이며, 고객이 보낸 메시지를 받는 [[End-User-Messaging-Two-Way-SMS|양방향 SMS 수신 경로]]와 구분한다.
+
+1. 로그 그룹과 쓰기용 IAM 역할을 준비하고 각각의 ARN을 확인한다.
+2. configuration set에 CloudWatch 이벤트 목적지를 연결한다. 목적지에 로그 그룹 ARN과 역할 ARN을 지정하고 Event publishing을 켜며 필요한 SMS, MMS, 음성 이벤트 유형을 선택한다.
+3. `SendTextMessage`의 `ConfigurationSetName`에 해당 구성 세트의 이름 또는 ARN을 전달한다. 목적지만 만들어 놓고 실제 발송 요청이 그 구성 세트를 참조하는지 확인하지 않으면 로그 경로를 검증한 것이 아니다.
+4. 이벤트가 보이지 않으면 발송 요청의 구성 세트, 이벤트 유형과 활성화 상태, 역할의 신뢰 정책과 로그 쓰기 권한을 나누어 확인한다.
+
+공식 역할 예시는 `sms-voice.amazonaws.com`의 `sts:AssumeRole`을 허용하고, 대상 로그 그룹에 `logs:CreateLogStream`, `logs:DescribeLogStreams`, `logs:PutLogEvents`를 부여한다. 신뢰 정책의 `aws:SourceAccount`와 `aws:SourceArn` 조건은 권장 사항이며, SourceArn의 대상은 **configuration set ARN**이다. 로그 그룹 ARN과 혼동하지 않는다.
+
+통신사가 생성하는 이벤트와 배달 확인(DLR)은 수신까지 최대 72시간이 걸릴 수 있다. 이는 로깅 설정이 적용되기까지 일률적으로 72시간 기다려야 한다는 뜻이 아니다. 이 지연만으로 실제 발송이 지연됐다고 판단하지 않으며, AWS가 72시간 동안 최종 이벤트를 받지 못하면 `messageStatus`를 `UNKNOWN`으로 반환한다.
+
+이 절은 설정과 해석 기준을 대조한 것이며 실제 계정에서 메시지를 발송하거나 로그 도착을 시험한 결과는 아니다.
+
 ## Alarms
 
 ### Static Threshold
@@ -127,6 +142,11 @@ ML 기반 정상 범위 자동 학습 — 정적 임계값 대신 동적 밴드.
 
 ## 출처
 
+- [AWS End User Messaging SMS — Set up an Amazon CloudWatch event destination](https://docs.aws.amazon.com/sms-voice/latest/userguide/configuration-sets-cloud-watch.html)
+- [AWS End User Messaging SMS — Create an Amazon CloudWatch event destination](https://docs.aws.amazon.com/sms-voice/latest/userguide/configuration-sets-cloud-watch-add.html)
+- [AWS End User Messaging SMS — IAM policy for Amazon CloudWatch](https://docs.aws.amazon.com/sms-voice/latest/userguide/configuration-sets-cloud-watch-creating-role.html)
+- [AWS End User Messaging SMS — SendTextMessage](https://docs.aws.amazon.com/pinpoint/latest/apireference_smsvoicev2/API_SendTextMessage.html)
+- [AWS End User Messaging SMS — Event destinations](https://docs.aws.amazon.com/sms-voice/latest/userguide/configuration-sets-event-destinations.html)
 - [Amazon CloudWatch — Configuring how alarms treat missing data](https://docs.aws.amazon.com/AmazonCloudWatch/latest/monitoring/alarms-and-missing-data.html)
 - [Amazon CloudWatch — SetAlarmState API](https://docs.aws.amazon.com/AmazonCloudWatch/latest/APIReference/API_SetAlarmState.html)
 - [Amazon CloudWatch — Alarm actions](https://docs.aws.amazon.com/AmazonCloudWatch/latest/monitoring/alarm-actions.html)
