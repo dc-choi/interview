@@ -82,6 +82,16 @@ ElastiCache 인플레이스 업그레이드는 새 노드를 붙여 데이터를
 - TypeScript에서 `module`과 `moduleResolution`을 `NodeNext`로 두고 `"type": "module"`로 쓰면 CommonJS 패키지의 default import는 `module.exports` 전체의 타입이 된다. 그래서 `esModuleInterop`을 켜도 ioredis와 iovalkey를 default import해 `new`를 붙이면 TS2351(`This expression is not constructable`)이 나므로 named import를 쓴다. 같은 설정에서 상대 경로 import는 `./cache.js`처럼 확장자를 붙여야 하고 생략하면 TS2835다. TypeScript 5.9.3, ioredis 5.11.1, iovalkey 0.4.0에서 재현했다 ([[option|TypeScript 컴파일러 옵션]])
 - 클라이언트는 앱 시작 때 한 번 만들어 재사용하고 요청마다 연결을 새로 열지 않는다. NestJS에서는 기본(싱글톤) scope provider로 주입한다 ([[NestJS-Caching-Integration|NestJS 캐시 통합]])
 
+### GLIDE의 연결 재사용과 읽기 라우팅
+
+부분 검증(2026-10-16): GLIDE의 연결 관리와 명령 라우팅을 공식 문서와 대조했다. 기존 엔진 버전, 패키지 버전과 가격은 재검증하지 않아 문서 전체의 `verified_at`은 유지한다.
+
+- **연결 재사용:** GLIDE는 multiplex 연결과 pipelining을 사용하므로 일반 워크로드에서는 클라이언트 하나를 재사용한다. Cluster 모드에서는 노드별 연결을 유지하므로 클라이언트 수를 늘리면 서버 연결 수도 늘어난다. 큰 값의 전송이나 `BLPOP` 같은 blocking 명령은 다른 요청을 지연시킬 수 있어 별도 클라이언트로 분리한다.
+- **슬롯 변경:** `MOVED`는 새 소유 노드로 재전송하고 슬롯 맵을 갱신한다. `ASK`는 슬롯 이동 중의 임시 리다이렉트다. 서버 엔진 호환성만 확인하지 말고 실제 클라이언트의 리다이렉트 처리도 검증한다(운영 점검 제안).
+- **AZ 선호 읽기:** 기본 읽기는 primary로 간다. Cluster의 `AZAffinity`는 같은 AZ의 replica를 우선하고, 없으면 다른 replica, 사용할 replica가 없으면 primary로 보낸다. 쓰기와 primary가 필요한 명령은 계속 primary로 간다. Replica 읽기는 쓰기 직후에도 오래된 값을 반환할 수 있으므로 AZ 선호를 일관성 보장이나 AZ 간 전송의 완전한 제거로 해석하지 않는다.
+
+적용 전에는 쓰기 직후 읽기, failover와 큰 값 전송을 대표 요청으로 시험한다(운영 점검 제안). 이 절은 문서 대조이며 실제 GLIDE 클라이언트로 수행한 시험 결과는 아니다.
+
 ## 마이그레이션 원칙
 
 - **리스크는 엔진보다 클라이언트와 운영 절차에 있다** — 체크리스트로 관리 가능
@@ -111,6 +121,8 @@ ElastiCache 인플레이스 업그레이드는 새 노드를 붙여 데이터를
 
 ## 출처
 
+- [Valkey GLIDE, Connection Management](https://glide.valkey.io/how-to/connection-management/)
+- [Valkey GLIDE, Command Routing](https://glide.valkey.io/concepts/client-features/command-routing/)
 - [Valkey 공식 문서, Migration from Redis to Valkey](https://valkey.io/topics/migration/)
 - [Valkey 공식 문서, Releases and versioning schema](https://valkey.io/topics/releases/)
 - [Valkey 공식 문서, INFO](https://valkey.io/commands/info/)

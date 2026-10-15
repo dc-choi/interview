@@ -87,6 +87,16 @@ Batch inference를 고르면 다음을 job 운영 계약으로 둔다.
 - `timeoutDurationInHours`는 24~168시간이다. 제한 시간 전에 시작하지 못한 job은 `Expired`, 시간 안에 일부 record를 처리하지 못한 job은 `PartiallyCompleted`가 되므로 미처리와 오류 record만 모아 다시 제출한다. 남은 record가 모델별 job 최소 record 수보다 적으면 다음 job에 합치거나 on-demand로 처리한다(운영 제안).
 - Job당 최소와 최대 record 수, 입력 파일과 job 크기는 모델별 batch inference quota로 확인한다. Job 상태 변화는 polling 대신 EventBridge 알림으로 받을 수 있다.
 
+### Bedrock MU 예약 용량은 사용률과 해지 조건으로 비교한다
+
+부분 검증(2026-10-16): 아래 비용식과 해지 조건은 **Provisioned Throughput by Model Units** 기준이다. Model Unit(MU)으로 처리 용량을 확보하고 시간당 과금한다. MU는 해당 모델의 분당 입력 토큰 처리량과 출력 토큰 생성량을 나타낸다. 지원 모델과 리전을 먼저 확인하고, 다른 모델에서도 MU 하나가 같은 처리량을 낸다고 가정하지 않는다.
+
+MU 방식은 무약정, 1개월과 6개월 옵션이 있으며 지원 조건은 모델별로 확인한다. 무약정은 언제든 삭제할 수 있지만, 약정이 있으면 해당 기간에는 삭제할 수 없고 약정이 끝나도 리소스를 삭제할 때까지 과금이 계속된다. 단순히 요청이 많다는 이유로 on-demand보다 저렴하다고 판단하지 않는다.
+
+별도 유형인 **Provisioned Throughput by Tokens**에 위 MU 비용식과 삭제 조건을 그대로 적용하지 않는다. Tokens 방식은 자동 갱신을 취소하면 현재 약정 기간까지 유지되고 만료 시 자동 삭제된다. 취소해도 현재 약정 기간의 요금은 추론 실행 여부와 관계없이 부과되므로, 구매한 유형과 갱신 상태부터 확인한다.
+
+비교용 비용은 `MU 수 × MU당 시간 단가 × 유지 시간`으로 계산하고, 같은 기간의 실제 입력/출력 토큰에 대한 on-demand 비용과 대조한다. 평균 사용량뿐 아니라 입력과 출력 각각의 피크, 유휴 시간과 품질 조건을 함께 본다(운영 점검 제안). 이 절은 공식 문서 대조이며 용량 구매, 부하 시험과 실제 절감액 검증은 수행하지 않았다. 기존 사례와 다른 기능의 검증 기준은 유지한다.
+
 ### 오픈 웨이트 소형 모델을 직접 서빙할 때
 
 다운사이즈를 API의 하위 티어가 아니라 오픈 웨이트 소형 모델을 상시 인스턴스에 직접 서빙하는 방식으로 하면 과금 단위가 토큰에서 인스턴스 사용 시간으로 바뀐다. 2026-10-14 SageMaker AI 가격표는 실시간 추론을 선택한 인스턴스의 사용량으로 과금하고, 가격 예시도 인스턴스를 띄워 둔 시간 전체로 계산한다. 요청이 드문 경로에 GPU 인스턴스를 상시 띄우면 비용 대부분이 요청이 없는 시간에서 나온다.
@@ -143,6 +153,10 @@ Bedrock 기반 배치 워크로드에서 가시성 대시보드 구축, 92% 파�
 
 ## 출처
 
+- [Amazon Bedrock User Guide, Purchase a Provisioned Throughput for an Amazon Bedrock model](https://docs.aws.amazon.com/bedrock/latest/userguide/prov-thru-purchase.html)
+- [Amazon Bedrock User Guide, Delete a Provisioned Throughput or cancel auto renew](https://docs.aws.amazon.com/bedrock/latest/userguide/prov-thru-delete.html)
+- [Amazon Bedrock User Guide, Increase model invocation capacity with Provisioned Throughput](https://docs.aws.amazon.com/bedrock/latest/userguide/prov-throughput.html)
+- [Amazon Bedrock User Guide, Supported Region and models for Provisioned Throughput](https://docs.aws.amazon.com/bedrock/latest/userguide/prov-thru-supported.html)
 - [Amazon Bedrock User Guide, Application inference profiles](https://docs.aws.amazon.com/bedrock/latest/userguide/cost-mgmt-application-inference-profiles.html)
 - [Amazon Bedrock User Guide, Set up a model invocation resource using inference profiles](https://docs.aws.amazon.com/bedrock/latest/userguide/inference-profiles.html)
 - [Amazon Bedrock User Guide, Use an inference profile in model invocation](https://docs.aws.amazon.com/bedrock/latest/userguide/inference-profiles-use.html)

@@ -76,6 +76,17 @@ AWS 측 시작을 사용할 때 고객 장비가 NAT 뒤에 있으면 IDr 설정
 
 운영 점검은 최초 연결, 유휴 상태, DPD 타임아웃 뒤 재연결을 나누어 수행한다. 터널 두 개의 구성과 고객 장비 이중화는 [[VPC-Connectivity#터널 이중화와 고객 장비 이중화|별도 장애 범위]]다. IKE 협상 성공만으로 목적지 경로와 애플리케이션 통신까지 정상이라고 판단하지 않는다.
 
+### 터널 유지보수 시점과 로그를 함께 관리한다
+
+부분 검증(2026-10-16): Site-to-Site VPN의 endpoint lifecycle control과 터널 로그를 AWS 공식 문서와 대조했다. 다른 VPN 제품의 정책과 가격은 재검증하지 않아 기존 `verified_at`을 유지한다.
+
+- **유지보수 시점:** Lifecycle control은 터널별로 켠다. AWS Health 알림과 `Maintenance auto applied after`를 확인해 그 시각 전에 교체를 적용할 수 있다. 미적용 상태로 기한을 넘기면 AWS가 정기 유지보수 주기에 교체하며, 중요한 업데이트는 기능을 켰어도 즉시 적용될 수 있다.
+- **활성화의 영향:** 기존 연결에서 기능을 켜면 기본적으로 터널 endpoint 교체도 시작된다. 즉시 교체하지 않으려면 `Skip tunnel replacement`를 선택한다. 기능 활성화와 실제 유지보수 적용을 같은 작업으로 취급하지 않는다.
+- **터널별 로그:** Tunnel activity log는 IKE/IPsec 협상과 DPD 메시지를 CloudWatch Logs로 보낸다. VPN 연결을 선택한 뒤 터널 외부 IP별로 설정하고, 두 터널을 모두 관찰하려면 각각 활성화한다. BGP 상태와 경로 변경을 보는 Tunnel BGP log는 별도 설정이다.
+- **로그 활성화의 중단 위험:** 기존 VPN 터널에서 로그를 켜는 작업 자체가 해당 터널의 통신을 수 분간 중단할 수 있다. 반대편 터널의 실제 통신을 먼저 확인하고 유지보수 시간에 한 터널씩 활성화한다. 첫 터널의 통신이 복구된 뒤 다른 터널을 변경한다(운영 점검 제안).
+
+운영 시에는 반대편 터널의 실제 통신을 확인한 뒤 한 터널씩 유지보수하고, 교체 뒤 경로와 애플리케이션 응답을 다시 확인한다(운영 점검 제안). 로그의 IKE 협상 성공은 전체 업무 경로의 정상 동작을 증명하지 않는다. 실제 VPN 설정 변경과 장애 전환 시험은 수행하지 않았다.
+
 ## 메시 VPN (오버레이 네트워크)
 
 전통적인 원격 접속 VPN은 모든 단말이 중앙 게이트웨이를 거치는 hub-and-spoke 구조다. 메시 VPN은 단말끼리 직접 암호화 터널을 맺어, 폰, 태블릿, 노트북, 데스크톱, 홈랩 서버와 NAS를 하나의 사설 네트워크처럼 묶는다. 공유기에 포트를 열거나 공인 IP를 두지 않고도 밖에서 집의 장비에 접속할 수 있어 개인 인프라와 원격 개발에 많이 쓰인다. Tailscale이 대표적인 예다.
@@ -98,6 +109,11 @@ Tailscale 공식 설명 기준 구조는 다음과 같다.
 - **노출 범위**: 서브넷 라우터나 exit node로 LAN 전체나 인터넷 출구를 공유하면 위의 전체 터널, 대역 중복과 DNS 함정이 그대로 적용된다.
 
 ## 출처
+
+- [AWS Site-to-Site VPN, Tunnel endpoint lifecycle control](https://docs.aws.amazon.com/vpn/latest/s2svpn/tunnel-endpoint-lifecycle.html)
+- [AWS Site-to-Site VPN, Enable tunnel endpoint lifecycle control](https://docs.aws.amazon.com/vpn/latest/s2svpn/enable-elc.html)
+- [AWS Site-to-Site VPN, Site-to-Site VPN logs](https://docs.aws.amazon.com/vpn/latest/s2svpn/monitoring-logs.html)
+- [AWS Site-to-Site VPN, Enable Site-to-Site VPN logs](https://docs.aws.amazon.com/vpn/latest/s2svpn/enable-logs.html)
 
 AWS Client VPN 절은 2026-10-13 아래 AWS 공식 문서와 대조했다. 다른 절의 검증 기준은 기존 기록을 유지한다.
 

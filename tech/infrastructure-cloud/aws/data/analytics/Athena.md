@@ -185,6 +185,18 @@ Athena ODBC 드라이버는 SageMaker Unified Studio 프로젝트를 통한 연�
 
 점검할 때는 이미 존재하는 객체 한 개의 파티션 값으로 조회 범위를 좁힌다. `SHOW PARTITIONS`에 projection으로만 계산한 파티션이 보이지 않는 것은 데이터 부재의 증거가 아니다. 이 절은 문서 대조와 진단 절차이며 AWS 계정에서 실행한 검증 결과는 아니다.
 
+### 조회한 행의 S3 원본 파일 추적
+
+부분 검증(2026-10-16): S3 데이터의 행이 어느 객체에서 왔는지는 `SELECT`에 `"$path"`를 명시해 확인한다. `SELECT DISTINCT "$path"`는 조회 결과에 나타난 원본 경로의 중복을 제거한다. 특정 객체의 행만 보려면 같은 필드에 경로 조건을 건다.
+
+```sql
+SELECT *, "$path" AS source_path
+FROM my_database.my_table
+WHERE "$path" = 's3://amzn-s3-demo-bucket/events/file-01.json';
+```
+
+테이블명과 객체 경로는 예시다. `"$path"`는 행의 원본 위치이며 쿼리 결과를 저장하는 S3 위치와 다르다. 쿼리가 읽지 못한 객체까지 열거하는 버킷 목록으로 해석하지 않는다. 파티션 테이블의 진단에서는 파티션 조건도 함께 좁히고 실제 스캔량을 확인한다(운영 점검 제안). 실제 AWS 실행은 하지 않았으며 기존 절의 검증일은 유지한다.
+
 ## HIVE_BAD_DATA는 원본 값과 읽기 스키마를 대조한다
 
 2026-10-13 AWS 공식 문서 대조 기준. `HIVE_BAD_DATA`는 테이블 타입과 원본 값이 맞지 않거나 같은 필드에 서로 다른 타입이 섞일 때 발생할 수 있다. 오류에 나온 필드와 실제 S3 객체, 테이블 정의와 SerDe를 함께 확인한다.
@@ -236,6 +248,7 @@ Hive 파티션을 복구할 때 쓰는 `MSCK REPAIR TABLE`은 Iceberg에서 지�
 
 ## 출처
 
+- [Amazon Athena, SELECT](https://docs.aws.amazon.com/athena/latest/ug/select.html) (행의 S3 원본 경로 조회와 경로 조건)
 - [How do I troubleshoot Apache Iceberg table errors with Athena? — AWS re:Post Knowledge Center](https://repost.aws/knowledge-center/athena-iceberg-table-error)
 - [Amazon Athena, Supported data types for Iceberg tables in Athena](https://docs.aws.amazon.com/athena/latest/ug/querying-iceberg-supported-data-types.html)
 - [Amazon Athena, Perform other DDL operations on Iceberg tables](https://docs.aws.amazon.com/athena/latest/ug/querying-iceberg-additional-operations.html)
