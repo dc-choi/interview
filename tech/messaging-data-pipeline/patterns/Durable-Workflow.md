@@ -42,6 +42,18 @@ verified_at: 2026-09-30
 
 따라서 durable timer는 업무 테이블의 반복 스캔을 줄이는 수단이지, 자동 부하 분산이나 backpressure의 보장은 아니다. 대기 수, Worker 처리량과 재시도 유입을 따로 관측한다.
 
+### 논리적 실행의 수명과 리전 장애의 경계
+
+부분 검증(2026-10-15): Temporal Cloud Failovers 문서와 Agent memory and state 문서로 아래 경계를 대조했다. 기존 pg_durable 절의 검증 시점은 유지한다.
+
+Workflow를 논리적 프로세스로 다룬다는 것은 특정 Worker 프로세스의 생존에 실행 상태를 묶지 않는다는 뜻이다. 실행 이력 자체가 사라져도 복구된다거나, 서비스와 Worker를 사용할 수 없는 동안 업무가 계속 진전된다는 뜻은 아니다. 종료한 실행의 Event History는 Namespace 보존 기간이 지나면 삭제되므로 영구 기록으로 가정하지 않는다.
+
+Temporal Cloud의 High Availability Namespace는 기본 리전에서 복제본으로 이력을 비동기 복제한다. 정상 전환은 복제 대기를 비운 뒤 전환하지만 강제 전환에는 아직 복제되지 않은 이력이 남을 수 있다. 이전 리전이 회복되지 않으면 그 이력이 영구 유실될 가능성도 있다. 따라서 durable execution 도입만으로 리전 장애 시 데이터 손실이 없다고 약속할 수 없다.
+
+일반적인 Workflow replay는 기록된 Activity 결과를 재사용하지만, HA 장애 전환 뒤 새 활성 Namespace에서는 완료했던 Activity가 다시 배정될 수 있다. 외부 효과의 멱등성은 프로세스 재시도뿐 아니라 이런 장애 전환에도 필요하다.
+
+운영 점검 제안: 실행 이력의 보존과 복제, 대체 Worker의 기동, 외부 시스템 접근, 중복 효과 억제를 각각 시험한다. 실행 이력이 남았다는 사실과 업무가 재개됐다는 사실을 별도로 확인한다.
+
 ## 신뢰성 정책 (선언적, Activity 단위)
 
 - 타임아웃: 개별 시도 상한(start-to-close)과 모든 재시도를 포함한 총 상한(schedule-to-close)을 나눈다.
@@ -119,6 +131,8 @@ Temporal은 메모리 스냅샷이나 임의의 코드 줄에서 복구하지 �
 
 - [한꺼번에 짊어지던 배치를 내려놓고, 하나씩 흘려보내는 워크플로로 — 우아한형제들 기술블로그](https://techblog.woowahan.com/26832/)
 - [Temporal Documentation, Workflows](https://docs.temporal.io/workflows)
+- [Temporal Documentation, Failovers](https://docs.temporal.io/cloud/high-availability/failovers)
+- [Temporal Documentation, Agent memory and state](https://docs.temporal.io/ai/featured/memory-state-stripe)
 - [Temporal Documentation, Workflow Execution overview](https://docs.temporal.io/workflow-execution)
 - [Temporal Documentation, Activities](https://docs.temporal.io/activities)
 - [Temporal Documentation, Claim check pattern with Temporal](https://docs.temporal.io/ai/cookbook/claim-check-pattern-python)

@@ -74,6 +74,16 @@ change         : before / after (또는 값 대신 참조 식별자)
 
 감사 로그는 append-only 저장이라는 점에서 [[Event-Sourcing|Event Sourcing]]과 닮았지만 목적이 다르다. 이벤트 소싱은 상태를 복원하기 위한 저장 모델이고 감사 로그는 증명하기 위한 증적이다. 이벤트 스트림을 감사 로그로 겸용하려면 보존 기간, 삭제 권한과 무결성 요구를 감사 쪽 기준으로 맞춰야 한다.
 
+### 에이전트 실행 이력의 감사 범위
+
+부분 검증(2026-10-15): Temporal의 Agent memory and state와 Workflow History Export 공식 문서를 대조했다. 아래는 실행 이력을 감사에 활용할 때의 범위이며 기존 법령과 저장소 통제를 전부 재검증한 것은 아니다.
+
+Temporal Event History는 Activity 입력과 결과, Signal과 실행 상태 같은 워크플로 이벤트를 에이전트 프로세스 밖에 보존한다. 모델 호출과 도구 실행을 Activity로 구성하면 기록된 입력과 결과를 사후에 대조할 수 있다. 다만 이 기록을 모델 내부 판단 전체나 워크플로 밖에서 수행한 행위까지 자동 수집한 것으로 해석하지 않는다. 관찰 가능한 범위는 실제로 구성한 실행 경계와 payload에 달려 있다.
+
+외부 효과의 성공 여부도 실행 이력만으로 확정하지 않는다. 예를 들어 외부 시스템이 환불을 반영한 뒤 Activity 완료 보고가 유실되면 실행 이력과 외부 상태가 다를 수 있다. 업무 식별자와 외부 시스템의 처리 결과를 대조하고 멱등성을 유지해야 한다.
+
+종료한 실행의 이력은 Namespace 보존 기간 이후 삭제된다. Temporal Cloud는 종료한 이력을 S3나 GCS로 내보내는 Workflow History Export를 제공하지만, 내보내기 성공이 감사 저장소의 삭제 권한 분리나 불변 보존까지 보장하지는 않는다. 운영 제안은 필요한 사건이 실제 기록되는지, 원문에 민감정보가 포함되는지, 내보낸 이력을 다시 조회할 수 있는지를 함께 확인하는 것이다.
+
 ## 어떻게 보호하나
 
 방어는 한 겹이 아니라 계층이다. 아래로 갈수록 강하고 비싸다.
@@ -133,6 +143,8 @@ change         : before / after (또는 값 대신 참조 식별자)
 
 ## 출처
 
+- [Temporal Documentation, Agent memory and state](https://docs.temporal.io/ai/featured/memory-state-stripe)
+- [Temporal Documentation, Workflow History Export](https://docs.temporal.io/cloud/export)
 - [OWASP Cheat Sheet Series, Logging Cheat Sheet](https://cheatsheetseries.owasp.org/cheatsheets/Logging_Cheat_Sheet.html)
 - [OWASP Cheat Sheet Series, Logging Vocabulary Cheat Sheet](https://cheatsheetseries.owasp.org/cheatsheets/Logging_Vocabulary_Cheat_Sheet.html)
 - [NIST, SP 800-92 Guide to Computer Security Log Management](https://doi.org/10.6028/NIST.SP.800-92)
@@ -142,6 +154,7 @@ change         : before / after (또는 값 대신 참조 식별자)
 
 ## 관련 문서
 
+- [[Durable-Workflow|지속 실행 워크플로와 복구 이력]]
 - [[CIA-Triad|CIA Triad와 무결성]]
 - [[Access-Control-Models|접근 제어 모델과 인가 결정 로그]]
 - [[Structured-Logging|구조화 로깅과 필드 규약]]
