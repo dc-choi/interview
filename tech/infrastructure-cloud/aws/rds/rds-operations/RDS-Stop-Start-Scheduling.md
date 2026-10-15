@@ -66,6 +66,24 @@ Instance Scheduler는 리소스 태그와 Lambda를 사용해 여러 계정과 �
 
 적용 점검 제안: 개발 DB 하나에서 정상 일정, 잘못된 태그와 수동 시작을 각각 시험한다. 실행 시간 감소만으로 절감액을 확정하지 않고 남는 스토리지 비용과 솔루션 운영 비용도 함께 비교한다.
 
+## Systems Manager로 시작과 중지를 예약한다
+
+부분 검증(2026-10-16): 이 절의 대상 지정, runbook 입력과 역할 구분을 AWS Prescriptive Guidance와 Automation Runbook Reference에 대조했다. 기존 절의 검증 기준일은 유지한다.
+
+단순한 업무 시간 예약은 Maintenance Windows와 제공 runbook으로 구성할 수 있다. 시작용 창에는 `AWS-StartRdsInstance`, 중지용 창에는 `AWS-StopRdsInstance`를 연결하고 각각 cron과 시간대를 지정한다. 이 창은 자동화 작업의 실행 일정이며 RDS 자체의 유지보수 창과 별개다.
+
+| 연결 지점 | 확인할 값 |
+|---|---|
+| Resource Groups | 대상 DB에 붙인 태그와 리소스 유형 `AWS::RDS::DBInstance`로 그룹을 구성한다 |
+| Maintenance Windows 대상 | 해당 그룹을 등록하고, 작업에서는 등록한 대상 그룹을 선택한다 |
+| `InstanceId` | 그룹의 각 DB를 넘기는 공식 패턴은 `{{RESOURCE_ID}}`를 사용한다 |
+| `AutomationAssumeRole` | RDS 시작과 중지를 수행할 Automation 역할 ARN을 지정한다 |
+| 작업의 Service role | Maintenance Windows가 작업을 실행하는 역할이다. Automation 역할과 역할 용도를 구분한다 |
+
+Automation 역할의 시작과 중지 권한은 대상 DB ARN으로 제한하고, `rds:DescribeDBInstances` 조회 권한은 별도로 둔다. runbook의 `AutomationAssumeRole`은 선택 입력이지만, 생략하면 runbook을 시작한 주체의 권한을 사용하므로 예약 실행에서는 사용할 역할을 명시한다.
+
+운영 점검 제안: 태그 검색 결과를 먼저 확인하고 개발 DB 하나에서 시작과 중지를 시험한다. 실행 이력과 실제 DB 상태를 함께 확인하며, 창의 Duration을 DB가 켜져 있을 시간으로 해석하지 않는다. 7일 자동 재시작과 재가동 대기 시간은 이 예약 방식에서도 고려해야 한다.
+
 ## 이해 점검
 
 - 7일보다 긴 미사용 기간과 7일 연속 중지는 어떻게 다른가?
@@ -74,6 +92,8 @@ Instance Scheduler는 리소스 태그와 Lambda를 사용해 여러 계정과 �
 
 ## 출처
 
+- [AWS Systems Manager Automation Runbook Reference, AWS-StartRdsInstance](https://docs.aws.amazon.com/systems-manager-automation-runbooks/latest/userguide/automation-aws-startrdsinstance.html)
+- [AWS Systems Manager Automation Runbook Reference, AWS-StopRdsInstance](https://docs.aws.amazon.com/systems-manager-automation-runbooks/latest/userguide/automation-aws-stoprdsinstance.html)
 - [Instance Scheduler on AWS, Operator guide](https://docs.aws.amazon.com/solutions/latest/instance-scheduler-on-aws/operator-guide.html)
 - [Instance Scheduler on AWS, Schedule reference](https://docs.aws.amazon.com/solutions/latest/instance-scheduler-on-aws/schedule-reference.html)
 - [Instance Scheduler on AWS, Automate starting and stopping AWS instances](https://docs.aws.amazon.com/solutions/latest/instance-scheduler-on-aws/solution-overview.html)
