@@ -72,6 +72,17 @@ Extended Threat Detection은 계정 안에서 시간과 리소스에 걸친 신�
 
 운영 점검 제안: 시퀀스의 신호, 시각, 리소스를 원 로그와 대조한 뒤 격리 대상을 결정한다. finding 하나로 묶였다는 사실을 모든 관련 자원의 침해 확정이나 자동 복구 완료로 해석하지 않는다.
 
+### EKS 제어 평면과 컨테이너 내부의 탐지 범위를 나눈다
+
+부분 검증(2026-10-16): EKS 공격 시퀀스의 활성화 조건과 Runtime Monitoring 지원 범위를 공식 가이드로 대조했다.
+
+- EKS의 Extended Threat Detection에는 EKS Protection 또는 EKS add-on을 사용하는 Runtime Monitoring 중 적어도 하나가 필요하다. 두 보호 계획을 모두 켜는 것은 탐지 범위를 넓히는 권장 구성이다.
+- EKS Protection은 audit log를 통해 제어 평면 활동을 관찰한다. Runtime Monitoring은 컨테이너 안의 프로세스 실행, 파일 접근과 네트워크 연결 같은 행동을 관찰한다. 한쪽만 활성화한 상태를 두 범위 모두의 수집 완료로 해석하지 않는다.
+- 관련 신호는 Critical 등급의 `AttackSequence:EKS/CompromisedCluster`로 묶일 수 있다. 특권 컨테이너 배포와 그 안의 채굴 프로세스 실행을 연결하는 경우처럼, 설정 변경과 실행 행동을 시간순으로 확인한다.
+- Runtime Monitoring은 EKS on Fargate를 지원하지 않는다. ECS on Fargate 지원을 EKS에 그대로 적용하지 않는다.
+
+운영 점검 제안: 클러스터별 실행 방식, 보호 계획과 agent 상태를 확인하고 finding의 신호를 원 로그와 대조한다. 이 절은 실제 공격 시뮬레이션이나 계정 설정 검증 결과가 아니며 기존 Investigation 기능의 검증일은 유지한다.
+
 ### 계정과 보호 계획 설정을 대조한다
 
 2026-10-09 공식 문서 대조 기준. Cost Explorer의 GuardDuty 비용은 조사할 계정과 리전을 찾는 보조 신호다. 비용이 없다는 사실만으로 미활성화를 확정하거나, 비용이 있다는 사실만으로 모든 보호 계획이 현재 활성화됐다고 판단하지 않는다. 대부분의 보호 계획에는 계정별 30일 무료 체험이 있으며, Cost Explorer 데이터도 최소 하루 한 번 갱신하지만 상위 청구 데이터에 따라 24시간보다 늦게 반영될 수 있다.
@@ -87,6 +98,7 @@ Extended Threat Detection은 계정 안에서 시간과 리소스에 걸친 신�
 
 ## 출처
 
+- [Amazon GuardDuty, GuardDuty Runtime Monitoring](https://docs.aws.amazon.com/guardduty/latest/ug/runtime-monitoring.html)
 - [Amazon GuardDuty, Processing GuardDuty findings with Amazon EventBridge](https://docs.aws.amazon.com/guardduty/latest/ug/guardduty_findings_eventbridge.html)
 
 - [Amazon GuardDuty, GuardDuty foundational data sources](https://docs.aws.amazon.com/guardduty/latest/ug/guardduty_data-sources.html)

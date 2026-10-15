@@ -75,6 +75,12 @@ AWS 엣지 로케이션의 **고정 Anycast IP**를 글로벌 진입점으로 �
 
 실제 네트워크 측정은 수행하지 않았다. 이 절과 라우팅 예외, 아래 CloudFront IP 비교만 대조했으며 기존 문서 전체의 검증일은 유지한다.
 
+### 지역별 지연과 타임아웃을 따로 비교한다
+
+부분 검증(2026-10-16): AWS가 공개한 JoyCity 고객 사례의 성능 수치를 확인했다. 일부 국가에서 네트워크 타임아웃 건수가 8분의 1로 줄었고, 글로벌 테스트 평균에서는 2.4분의 1로 줄었다는 사례다. 지연 시간이 8분의 1이 됐다는 뜻이나 모든 지역에서 같은 효과를 보장한다는 뜻은 아니다.
+
+측정 설계 제안: 사용자 국가와 통신망별로 직접 경로와 가속 경로를 비교하고, 지연 분포와 타임아웃 비율을 각각 기록한다. 트래픽 규모가 다르면 타임아웃 건수만 비교하지 않고 전체 연결 시도 수도 함께 본다. 평균 개선에 가려진 악화 지역을 확인한 뒤 적용 범위를 결정한다. 이는 공개 사례에서 도출한 점검 방법이며 실제 서비스에서 측정한 결과는 아니다.
+
 ## 사용 사례
 
 - **비-HTTP 글로벌 트래픽**: 게임 서버(UDP), VoIP/SIP, MQTT, FTP, 금융 거래 TCP.
@@ -119,6 +125,7 @@ AWS 엣지 로케이션의 **고정 Anycast IP**를 글로벌 진입점으로 �
 
 ## 출처
 
+- [AWS Global Accelerator customers — AWS](https://aws.amazon.com/global-accelerator/customers/)
 - [AWS Global Accelerator, Custom routing accelerators in AWS Global Accelerator](https://docs.aws.amazon.com/global-accelerator/latest/dg/about-custom-routing-accelerators.html)
 
 - [AWS Global Accelerator, How AWS Global Accelerator works](https://docs.aws.amazon.com/global-accelerator/latest/dg/introduction-how-it-works.html)

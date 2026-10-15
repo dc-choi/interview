@@ -59,6 +59,18 @@ AWS 보안 표준의 CSPM 점검에 필요한 Config 구성도 활성화 조합�
 
 위 조건에서 도출한 점검 순서는 대상 계정과 리전, 적용한 기능과 정책, 구성 기록 전제, 실제 finding을 차례로 확인하는 것이다. 구성 완료는 침해가 없다는 증거가 아니며, 비어 있는 분석 결과는 수집 누락 가능성과 함께 해석한다. 기존 고객 관리 recorder를 다른 감사나 자동화에도 쓰는지는 별도로 확인한다.
 
+### Coverage 비율과 탐지 성공률을 구분한다
+
+부분 검증(2026-10-16): Account coverage와 summary dashboard 공식 가이드를 대조했다. Coverage는 계정과 리전에서 보안 기능이 활성화됐는지를 보여주는 지표이며 공격 탐지 성공률이 아니다.
+
+- 조직의 Security Hub 활성화 비율과 개별 서비스의 coverage는 분모가 다르다. 후자는 Security Hub가 활성화된 계정과 구성 리전 중 해당 기능이 제공되는 범위를 사용하므로 비율만 나란히 비교하지 않는다.
+- home Region 구성에서는 home Region과 linked Region을, 그 밖의 구성에서는 현재 리전을 기준으로 본다. 원하는 리전이 집계 범위에 포함됐는지 먼저 확인한다.
+- `Not covered`인 coverage finding을 억제하면 coverage 비율 계산에서 제외된다. 비율 상승이 실제 기능 활성화 때문인지 제외 범위 변경 때문인지 구분한다.
+- coverage가 0%로 보이는 이유에는 Security Hub 미활성화뿐 아니라 coverage finding 생성 대기도 있다. 즉시 미설정으로 단정하지 않는다.
+- Exposure summary 데이터에는 Inspector와 Security Hub CSPM, Threat summary 데이터에는 GuardDuty 활성화가 필요하다. 빈 위젯은 위험 부재와 수집 전제 미충족을 나누어 확인한다.
+
+운영 적용 제안: 비율을 보고할 때 대상 계정, 리전, 억제한 coverage finding과 관측 시각을 함께 남긴다. 실제 계정의 수집 상태를 시험한 결과는 아니며 다른 기능의 검증일은 유지한다.
+
 ## 개선 순서의 예
 
 ### Extended 구독과 파트너 온보딩의 경계
@@ -78,6 +90,8 @@ AWS 보안 표준의 CSPM 점검에 필요한 Config 구성도 활성화 조합�
 
 ## 출처
 
+- [AWS Security Hub, Account coverage in Security Hub](https://docs.aws.amazon.com/securityhub/latest/userguide/security-hub-account-coverage.html)
+- [AWS Security Hub, Working in the summary dashboard in Security Hub](https://docs.aws.amazon.com/securityhub/latest/userguide/dashboard-v2.html)
 - [AWS Security Hub, Security Hub Extended plan](https://docs.aws.amazon.com/securityhub/latest/userguide/securityhub-extended-plan.html)
 - [AWS Security Hub, Enabling Security Hub](https://docs.aws.amazon.com/securityhub/latest/userguide/securityhub-v2-enable.html)
 - [AWS Security Hub, Enabling and configuring AWS Config for Security Hub CSPM](https://docs.aws.amazon.com/securityhub/latest/userguide/securityhub-setup-prereqs.html)
