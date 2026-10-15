@@ -207,6 +207,22 @@ Athena ODBC 드라이버는 SageMaker Unified Studio 프로젝트를 통한 연�
 
 실제 CDC 파이프라인과 AWS 쿼리를 실행한 검증은 아니다. 기존 절 전체의 검증일은 유지한다.
 
+### Iceberg 오류는 설정, 동시 쓰기와 파일 누락을 나눈다
+
+부분 검증(2026-10-15): AWS의 Iceberg 오류 안내와 Athena 지원 범위, Apache Iceberg의 Spark 복구 절차를 대조했다.
+
+| 오류 또는 증상 | 확인할 경계 |
+|---|---|
+| 지원하지 않는 테이블 속성 | `TBLPROPERTIES`는 Athena가 허용하는 항목인지 확인한다. `SHOW CREATE TABLE`이 미지원 속성으로 실패하면 `DESCRIBE`로 구조를 확인한다. 다른 엔진에서 만든 속성을 그대로 지원한다고 가정하지 않는다. |
+| `Unsupported Hive type` | Athena의 Iceberg 테이블은 `tinyint`, `smallint`, `char`를 지원하지 않는다. 정수는 `int`, 문자열은 `string` 등 지원 타입과 원본 값의 의미를 함께 확인한다. |
+| `ICEBERG_COMMIT_ERROR` | 같은 파일 집합을 병렬로 변경하는 작업의 충돌을 확인한다. 충돌 작업을 순차화하고 지수 백오프로 재시도하는 방식을 검토한다. Glue optimistic locking은 선택적 대안이 아니라 Athena의 지원 조건이다. |
+| 업데이트에 format version 2가 필요하다는 오류 | Iceberg의 테이블 형식 버전을 확인한다. 형식 v2와 Athena engine version 3은 서로 다른 버전 축이다. 앞 절의 `MERGE INTO` 엔진 조건과 혼동하지 않는다. |
+| `GENERIC_INTERNAL_ERROR`와 `The specified key does not exist` | 참조된 manifest list나 metadata JSON이 실제로 남아 있는지 확인한다. 오류 이름만으로 파일 삭제를 확정하지 않고 누락된 객체를 특정한다. |
+
+누락된 메타데이터는 파일 복구 가능성부터 확인한다. 스냅샷 롤백을 검토할 때는 Athena 쿼리 편집기가 아니라 Glue나 EMR 등의 Spark 환경에서 Iceberg 절차를 사용한다. `rollback_to_snapshot`의 대상은 현재 상태의 조상 스냅샷이어야 한다. 필요한 파일의 가용성과 되돌아갈 데이터 범위를 확인한 뒤 복구를 결정한다(운영 점검 제안). 롤백을 누락된 파일의 자동 재생성으로 해석하지 않는다.
+
+Hive 파티션을 복구할 때 쓰는 `MSCK REPAIR TABLE`은 Iceberg에서 지원하지 않는다. 이 절은 문서 대조이며 실제 충돌 재현이나 데이터 복구 시험은 수행하지 않았다. 기존 절 전체의 검증일은 유지한다.
+
 ## 시험 체크포인트
 
 - **S3 데이터를 SQL로 즉시 분석, 인프라 관리 없이** → **Athena**.
@@ -220,6 +236,10 @@ Athena ODBC 드라이버는 SageMaker Unified Studio 프로젝트를 통한 연�
 
 ## 출처
 
+- [How do I troubleshoot Apache Iceberg table errors with Athena? — AWS re:Post Knowledge Center](https://repost.aws/knowledge-center/athena-iceberg-table-error)
+- [Amazon Athena, Supported data types for Iceberg tables in Athena](https://docs.aws.amazon.com/athena/latest/ug/querying-iceberg-supported-data-types.html)
+- [Amazon Athena, Perform other DDL operations on Iceberg tables](https://docs.aws.amazon.com/athena/latest/ug/querying-iceberg-additional-operations.html)
+- [Apache Iceberg, Spark Procedures](https://iceberg.apache.org/docs/latest/spark-procedures/#rollback_to_snapshot)
 - [Amazon Athena, Hive JSON SerDe](https://docs.aws.amazon.com/athena/latest/ug/hive-json-serde.html)
 - [Amazon Athena, OpenX JSON SerDe](https://docs.aws.amazon.com/athena/latest/ug/openx-json-serde.html)
 - [Amazon Athena, Flatten nested arrays](https://docs.aws.amazon.com/athena/latest/ug/flattening-arrays.html)
