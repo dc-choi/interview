@@ -28,6 +28,18 @@ S3에 저장된 데이터를 **별도 적재 없이 표준 SQL로 직접 쿼리*
 
 ## Glue Data Catalog 연계
 
+### 원본 보관과 분석용 데이터의 역할을 나눈다
+
+부분 검증(2026-10-16): S3 원본을 직접 조회할 수 있어도 반복 분석에 같은 파일 형식과 저장 영역을 계속 사용할 필요는 없다. AWS 데이터 레이크 가이드는 원본, 변환 중간 데이터와 용도별 집계 데이터를 구분하며, Athena가 Parquet 또는 ORC로 변환된 데이터를 읽는 구성을 제시한다.
+
+- **원본 영역:** 재처리할 입력을 보관한다. 보존 기간과 접근 권한을 분석 결과와 별도로 정한다. 민감 데이터는 별도 landing 영역에서 가린 뒤 raw 영역으로 옮기는 구성을 검토한다.
+- **변환 영역:** 검증과 형식 변환을 거친 데이터를 둔다. Glue Data Catalog에 등록했다는 사실과 값의 정합성을 확인했다는 사실은 구분한다(운영 점검).
+- **분석 영역:** 반복 조회할 업무별 집계를 둔다. 예를 들어 원본 CSV, 정제한 Parquet와 일별 합계를 구분하고 Athena 테이블이 어느 단계를 읽는지 명시한다(설계 예시).
+
+계층 이름과 개수는 참조 아키텍처마다 다르다. 이를 Athena의 필수 배포 조건으로 보지 않는다. 보존 및 삭제 시점도 가이드의 예시 기간을 복사하지 않고 조회 패턴, 재처리 필요와 조직의 보존 요건으로 정한다. 실제 데이터 변환이나 쿼리는 실행하지 않았으며 기존 절 전체의 검증일은 유지한다.
+
+### 카탈로그 공유
+
 - Athena의 **메타데이터 저장소는 Glue Data Catalog**.
 - Glue Crawler가 S3를 스캔해 스키마, 파티션을 자동 추론 → 카탈로그에 테이블 생성.
 - 같은 카탈로그를 EMR, Redshift Spectrum 등 다른 서비스와 공유 가능 (단일 데이터 정의).
@@ -287,6 +299,8 @@ Hive 파티션을 복구할 때 쓰는 `MSCK REPAIR TABLE`은 Iceberg에서 지�
 
 ## 출처
 
+- [AWS Prescriptive Guidance, Recommended data layers](https://docs.aws.amazon.com/prescriptive-guidance/latest/defining-bucket-names-data-lakes/data-layer-definitions.html)
+- [AWS Whitepapers, Data lake foundation](https://docs.aws.amazon.com/whitepapers/latest/building-data-lakes/data-lake-foundation.html)
 - [Amazon Athena, Configure cross-account access to AWS Glue data catalogs](https://docs.aws.amazon.com/athena/latest/ug/security-iam-cross-account-glue-catalog-access.html)
 - [Amazon Athena, Configure cross-account access in Athena to Amazon S3 buckets](https://docs.aws.amazon.com/athena/latest/ug/cross-account-permissions.html)
 - [Amazon Athena, Create and query a table for Amazon VPC flow logs using partition projection](https://docs.aws.amazon.com/athena/latest/ug/vpc-flow-logs-partition-projection.html)
