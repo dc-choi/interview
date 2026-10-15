@@ -45,6 +45,17 @@ EC2 네트워크 인터페이스에 부여하는 **정적 공인 IP**. 기본 Pu
 
 애플리케이션 검증에서는 AMI 생성 뒤의 추가 쓰기, 외부 데이터 저장소, IAM 역할, 보안 그룹과 접속 경로를 별도로 확인한다. 주소가 같다는 사실만으로 서비스 상태까지 복구됐다고 판단하지 않는다.
 
+## 재부팅 뒤에도 유지되는 DNS 서버 설정
+
+부분 검증(2026-10-15): AWS re:Post의 배포판별 DNS 설정 안내를 대조했다. DHCP로 관리되는 `/etc/resolv.conf`만 직접 수정하면 재부팅 때 변경이 사라질 수 있다. DNS 서버 주소의 고정과 EC2 자체 IP 주소의 고정은 별개다.
+
+- **변경 전:** AMI 또는 EBS snapshot으로 복구 지점을 확보한다. 네트워크 설정 변경으로 접속이 끊길 수 있으므로 복구 경로도 확인한다.
+- **Amazon Linux 2023:** `systemd-resolved`의 `/etc/systemd/resolved.conf` 또는 `/etc/systemd/resolved.conf.d/` 아래 drop-in에서 `DNS`와 `Domains`를 설정한다. `Domains=~.`은 일반 질의의 라우팅에 영향을 주지만, 더 구체적인 per-link 도메인과 일치하는 질의까지 같은 DNS로 보내는 설정은 아니다.
+- **Ubuntu:** 배포판 버전에 맞는 Netplan 설정과 적용 절차를 사용한다. 공식 안내의 Ubuntu 18.04 확인 명령은 `systemd-resolve --status`, 20.04와 22.04는 `resolvectl status`다. 다른 버전으로 그대로 확대하지 않는다.
+- **변경 후:** 재부팅 뒤 실제 resolver 상태와 이름 해석 결과를 확인한다. `/etc/resolv.conf`에 로컬 stub 주소가 보이는 것만으로 사용자 지정 upstream DNS가 적용되지 않았다고 판단하지 않는다.
+
+실무 점검 제안: 공개 도메인과 내부 도메인을 각각 조회해 변경 영향을 나눈다. 이 절은 문서 대조 결과이며 실제 인스턴스의 설정 변경과 재부팅 시험은 수행하지 않았다. 기존 절 전체의 검증일은 유지한다.
+
 ## ENA (Elastic Network Adapter)
 
 **SR-IOV (Single Root I/O Virtualization)** 기반 고성능 네트워크 인터페이스.
@@ -168,6 +179,7 @@ Linux 결과에는 백업 AMI와 새 SSH 키를 담은 SSM 파라미터의 이�
 
 ## 출처
 
+- [How do I assign a static DNS server to an EC2 instance that persists when I reboot? — AWS re:Post](https://repost.aws/knowledge-center/ec2-static-dns-ubuntu-debian)
 - [How do I resolve network performance issues with sixth generation and later Amazon EC2 instances? — AWS re:Post](https://repost.aws/knowledge-center/migrate-to-gen6-ec2-instance)
 - [AWS 공식 문서, CloudWatch metrics that are available for your instances](https://docs.aws.amazon.com/AWSEC2/latest/UserGuide/viewing_metrics_with_cloudwatch.html)
 - [AWS 공식 문서, Monitor network performance for ENA settings on your EC2 instance](https://docs.aws.amazon.com/AWSEC2/latest/UserGuide/monitoring-network-performance-ena.html)

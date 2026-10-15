@@ -37,9 +37,11 @@ verified_at: 2026-07-21
 | **Global Datastore** | 리전 간 복제 (Redis/Valkey 한정) |
 | **Backup, Snapshot** | S3로 자동 백업, 특정 시점 복구 |
 | **In-transit / At-rest Encryption** | TLS, KMS 연동 |
-| **ElastiCache Serverless** | 사용량 기반 자동 스케일, 기본 가용성 99.99% |
+| **ElastiCache Serverless** | 사용량 기반 자동 스케일, 99.99% 가용성 SLA(조건과 보상 범위는 아래 참조) |
 
 ### ElastiCache Serverless 주의점
+
+부분 검증(2026-10-15): AWS의 배포 옵션과 SLA를 대조했다. Serverless는 여러 AZ에 데이터를 복제하며 99.99% 가용성 SLA를 제공한다. 이 수치를 애플리케이션 전체의 무중단이나 관측된 가동률로 해석하지 않는다. SLA는 월별 가동률과 적용 조건에 따른 서비스 크레딧 기준이며, 보상을 받으려면 AWS Support에 필요한 오류 기록 등과 함께 청구해야 한다. 자동 지급이나 데이터 무손실 보장을 뜻하지 않는다. 아래의 확장 한도와 원본 DB 우회 설계는 별도로 필요하다.
 
 - **스토리지와 요청량 과금** — Serverless는 저장 데이터를 GB-hour로, 요청 처리를 ElastiCache Processing Unit(ECPU)으로 측정한다. 엔진별 최소 측정 스토리지가 있으므로 유휴 비용도 0으로 단정할 수 없다
 - 비용 우위는 최소 저장량, 데이터 처리량, 노드 사용률과 엔진에 따라 달라지므로 예측 부하는 Serverless와 노드 기반 구성을 계산기로 비교한다. 트래픽 패턴이 예측 불가하거나 변동이 큰 워크로드에는 Serverless가 유리하다
@@ -138,6 +140,7 @@ cluster mode enabled는 configuration endpoint 하나로 shard별 primary와 rea
 
 ## 출처
 
+- [AWS, Amazon ElastiCache Service Level Agreement](https://aws.amazon.com/elasticache/sla/) — 2026-10-15 Serverless 월별 가동률과 서비스 크레딧 청구 조건 확인
 - [ElastiCache Memcached 노드 기반 수직 확장의 지원 조건](https://docs.aws.amazon.com/AmazonElastiCache/latest/dg/Scaling-self-designed.mem-heading.html)
 - [ElastiCache Serverless 확장 한도와 pre-scaling](https://docs.aws.amazon.com/AmazonElastiCache/latest/dg/Scaling-serverless.html)
 - [ElastiCache 노드 기반 업그레이드 고려사항](https://docs.aws.amazon.com/AmazonElastiCache/latest/dg/VersionManagement-upgrade-considerations.html)

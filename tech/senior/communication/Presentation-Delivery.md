@@ -48,6 +48,16 @@ PowerPoint의 공식 도움말에서 확인한 기능은 다음과 같다(2026-1
 
 이 도움말은 기능의 존재와 사용법을 뒷받침한다. 정렬만으로 이해도나 발표 평가가 높아진다는 인과 근거로 사용하지 않는다.
 
+### 텍스트를 붙여넣을 때 서식의 출처를 선택한다
+
+2026-10-15 Microsoft Support 대조 기준이다. PowerPoint는 붙여넣은 텍스트 옆의 옵션 버튼에서 원본 서식 유지와 텍스트만 붙여넣기를 선택할 수 있다. 다른 자료의 내용만 가져오려는지, 그 자료의 서식까지 유지하려는지 먼저 구분한다.
+
+- **원본 서식 유지:** 복사한 텍스트의 서식을 유지하려는 경우에 선택한다.
+- **텍스트만 붙여넣기:** 원본 서식을 가져오지 않고 내용만 옮기려는 경우에 선택한다. 붙여넣은 뒤 대상 슬라이드의 글꼴, 크기와 줄바꿈을 확인하는 것은 편집 점검 제안이다.
+- **옵션 버튼이 안 보이는 경우:** Windows PowerPoint의 `File > Options > Advanced`에서 `Show Paste Options button when content is pasted` 설정을 확인한다. 이 경로를 Mac과 웹에 그대로 적용하지 않는다.
+
+웹용 PowerPoint에도 서식 없는 텍스트 붙여넣기가 있지만 브라우저 제약이 있다. 메뉴와 단축키가 데스크톱과 같다고 가정하지 않고 해당 환경의 도움말을 확인한다. 서식 선택 기능을 발표 이해도 향상의 인과 근거로 해석하지 않는다.
+
 ## 3. 준비와 리허설
 
 - **준비와 성과의 관계**: 공개 연설 수업 연구에서 총 준비 시간, 소리 내어 한 리허설, 청중 앞 리허설 횟수가 발표 평가와 양의 상관을 보였다(누적 GPA와 소리 내지 않은 리허설 시간도 발표 평가와 양의 상관이었다). 학기 중 준비 일지 연구에서도 총 준비 시간이 높은 성적과 상관됐고, 청중 앞에서 연습한 학생, 청중이 많았던 학생의 평가 점수가 더 높았다는 연구도 있다. 모두 자기선택이 섞인 상관연구라 인과로 읽지 않는다.
@@ -73,6 +83,8 @@ PowerPoint의 공식 도움말에서 확인한 기능은 다음과 같다(2026-1
 
 ## 출처
 
+- [Microsoft Support, PowerPoint Options (Advanced)](https://support.microsoft.com/en-us/powerpoint/powerpoint-options-advanced) — 2026-10-15 텍스트 붙여넣기 옵션과 버튼 표시 설정 확인
+- [Microsoft Support, Copy and paste in PowerPoint for the web](https://support.microsoft.com/en-us/powerpoint/copy-and-paste-in-powerpoint-for-the-web) — 2026-10-15 웹용 서식 없는 텍스트 붙여넣기와 브라우저 제약 확인
 - [Microsoft Support, Guides for arranging things on a slide](https://support.microsoft.com/en-us/powerpoint/training/guides-for-arranging-things-on-a-slide) — 2026-10-12 Guides, Gridlines와 스마트 가이드, 정렬과 균등 배치 메뉴 확인
 - [Microsoft Support, Align or arrange objects](https://support.microsoft.com/en-us/office/graphics-visuals/align-or-arrange-objects) — 2026-10-12 Align Selected Objects와 Align to Slide 구분, 세 개 이상 선택한 개체의 균등 배치, 플랫폼별 메뉴 경로 확인
 - [The more total cognitive load is reduced by cues, the better retention and transfer of multimedia learning: A meta-analysis and two meta-regression analyses — PLoS ONE, Heping Xie 외](https://journals.plos.org/plosone/article?id=10.1371/journal.pone.0183884) — 2017
