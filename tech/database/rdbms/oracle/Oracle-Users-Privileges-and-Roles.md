@@ -122,8 +122,20 @@ ORA-00942는 실제 object 부재뿐 아니라 runtime 계정의 권한이나 �
 
 활성 role 안의 privilege 변경과 사용자에게 role 자체를 grant/revoke한 변경은 기존 session 반영 시점이 다르다. 후자는 새 session이나 SET ROLE 재활성화를 확인한다. 사고 대응에서 role 회수만으로 이미 연결된 session의 권한이 즉시 없어졌다고 가정하지 않는다. Password role을 켜기 위해 NOT IDENTIFIED로 바꾸는 우회는 보호 정책을 제거하므로 secure application role 등 요구에 맞는 활성화를 설계한다.
 
+## RDS for Oracle의 관리 권한 경계
+
+2026-10-15 AWS 공식 문서 대조 기준. RDS for Oracle에서는 `SYS`, `SYSTEM`으로 로그인하거나 `SYSDBA` 권한을 사용할 수 없다. Master user가 받는 `DBA` role에도 `ALTER SYSTEM`, `GRANT ANY ROLE` 등의 제한이 있으므로 자체 운영 Oracle의 관리 명령을 그대로 적용하지 않는다.
+
+`SYS` 객체의 개별 권한은 `rdsadmin.rdsadmin_util.grant_sys_object`로 부여한다. 이 프로시저는 master user가 직접 또는 role로 받은 권한 범위에서 동작한다. 권한을 다른 계정에 전달하려면 직접 받은 권한에는 `WITH GRANT OPTION`, role 경로에는 `WITH ADMIN OPTION`이 필요하다. 조회할 수 있다는 사실만으로 재위임 권한까지 있다고 판단하지 않는다.
+
+`p_obj_name`은 `DBA_OBJECTS`의 실제 객체명과 맞추고, `p_grantee`는 저장된 식별자의 대소문자를 확인한다. `p_grant_option`의 기본값은 `false`이며 수신자에게 재위임이 필요할 때만 검토한다. 운영 점검에서는 업무에 필요한 객체와 작업만 허용하고 대상 계정으로 허용 및 거부 결과를 확인한다(설계 제안).
+
+이번 대조는 관리형 Oracle의 권한 위임에 한정한다. 앞의 Oracle 26ai 일반 기능을 RDS의 지원 버전이나 권한으로 간주하지 않으며, 기존 본문 전체의 재검증은 아니므로 frontmatter 검증일은 유지한다.
+
 ## 출처
 
+- [Amazon RDS, RDS for Oracle users and privileges](https://docs.aws.amazon.com/AmazonRDS/latest/UserGuide/Oracle.Concepts.Privileges.html)
+- [Amazon RDS, Granting SELECT or EXECUTE privileges to SYS objects](https://docs.aws.amazon.com/AmazonRDS/latest/UserGuide/Appendix.Oracle.CommonDBATasks.TransferPrivileges.html)
 - [Oracle AI Database 26ai, Managing Security for Database Users](https://docs.oracle.com/en/database/oracle/oracle-database/26/dbseg/managing-security-for-oracle-database-users.html)
 - [Oracle AI Database 26ai, Configuring Password Protection](https://docs.oracle.com/en/database/oracle/oracle-database/26/dbseg/configuring-authentication.html)
 - [Oracle AI Database 26ai, Configuring Privilege and Role Authorization](https://docs.oracle.com/en/database/oracle/oracle-database/26/dbseg/configuring-privilege-and-role-authorization.html)

@@ -32,6 +32,14 @@ IoT Core 뒤에 Kafka 스트림을 두면 소비 애플리케이션에서 메시
 
 적용 시에는 소비, 변환과 저장 단계의 실패를 구분하고 저장 대상별 지연, 재처리와 중복 처리를 확인한다(설계 점검). 이 절은 공개 사례와 Kafka action의 연결 조건만 대조했으며 실제 부하 시험이나 기존 IoT 기능 전체의 재검증은 아니다. frontmatter의 검증일은 유지한다.
 
+### MQTT 공유 구독의 큐와 처리 지표를 구분한다
+
+2026-10-15 AWS IoT Core 공식 문서 대조 기준. `$share/{ShareName}/{TopicFilter}`가 같은 구독자는 한 그룹을 이루며, 메시지는 그룹 안의 구독자 하나로 무작위 분배된다. 같은 발행과 일치하는 그룹이 여러 개면 각 그룹에 전달되므로 전체 소비자가 통틀어 한 번만 처리하는 구조로 해석하지 않는다.
+
+그룹에 persistent session 구독자가 하나 이상 있으면 큐 기능이 활성화된다. QoS 1 메시지는 모든 구독자가 오프라인이거나 연결별 발행 요청 한도를 초과할 때 대기하며, 기존 구독자가 복귀하거나 새 구독자가 참여하면 전달된다. 대기 메시지 전달은 활성 구독자당 최대 초당 20개다. 보관 기간과 큐 한도가 있으며, 한도에 걸리는 새 메시지는 버려질 수 있다.
+
+큐 깊이는 `AWS/Usage`에서 `Resource=ApproximateQueueDepth` 차원으로 찾는다. `Queued.Success`는 브로커가 처리한 저장 메시지 수를 나타내는 지표이므로 현재 큐 깊이와 동일시하지 않는다. 자동 확장을 설계할 때는 큐 깊이, 소비 완료율과 중복 처리 결과를 함께 점검한다(설계 제안). 이 대조는 공유 구독과 지표에 한정하며 실제 부하 시험과 기존 기능 전체의 재검증은 아니므로 frontmatter 검증일은 유지한다.
+
 ## 수집 대상과 시점을 장비에서 제한한다
 
 모든 신호를 계속 전송하기 전에 대상 장비, 필요한 신호와 수집 조건을 정한다. 2026-10-13 FleetWise campaign 문서 기준, 시간 간격에 따른 수집과 논리 조건에 따른 수집을 구분하며 `signalsToCollect`로 수집할 신호를 지정한다. 캠페인 승인만으로 장비가 수집을 시작하지는 않는다. 실행 중인 Edge Agent에 캠페인이 배포되어야 한다.
@@ -212,6 +220,8 @@ Shadow 메시지의 도착 순서는 보장되지 않는다. 장비는 추적 �
 
 ## 출처
 
+- [AWS IoT Core, MQTT](https://docs.aws.amazon.com/iot/latest/developerguide/mqtt.html) — 2026-10-15 공유 구독의 그룹, 큐 조건, 전달 한도와 큐 깊이 조회 대조
+- [AWS IoT Core, AWS IoT metrics and dimensions](https://docs.aws.amazon.com/iot/latest/developerguide/metrics_dimensions.html) — `Queued.Success`의 정의 대조
 - [AWS IoT Greengrass, Log manager](https://docs.aws.amazon.com/greengrass/v2/developerguide/log-manager-component.html) — 2026-10-15 v2.3.10 설정의 업로드 간격, 시스템 로그 한도와 JSON 필터 조건 대조
 - [AWS FreeRTOS, What is FreeRTOS?](https://docs.aws.amazon.com/freertos/latest/userguide/what-is-freertos.html)
 - [AWS IoT Greengrass, Choosing your AWS IoT Greengrass nucleus runtime](https://docs.aws.amazon.com/greengrass/v2/developerguide/choosing-your-runtime.html)
