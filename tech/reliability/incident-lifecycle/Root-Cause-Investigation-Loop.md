@@ -70,6 +70,19 @@ aliases: ["Root Cause Investigation Loop", "근본 원인 조사 루프", "장�
 5. 테스트 환경에서 해당 API가 호출마다 연결을 맺고 끊는 것을 재현했고, pipeline 로직을 제거하자 conntrack 항목이 약 8만 개에서 약 1,700개로 줄어 안정됐다. 재현과 제거 후 정상화를 근거로 가설을 수용했다.
 6. 다른 서비스의 pipeline 사용 패턴을 점검했고, conntrack 사용률 알림이 없었다는 인지 빈칸을 알림 추가로 메웠다.
 
+## 사례: 원격 장비의 관측 경로부터 복구하기
+
+보이저 1호의 2023~2024년 장애는 **신호 수신, 상태 관측, 본래 기능의 복구를 별개로 판정**해야 하는 사례다. 다음은 당시 NASA와 JPL이 공개한 조사와 복구 기록이다.
+
+1. 2023년 11월부터 전파 신호는 지구에 도착했지만 쓸 수 있는 데이터가 없었다. 신호가 온다는 사실만으로 데이터를 포장하는 FDS(Flight Data Subsystem)가 정상이라고 판단할 수 없었다.
+2. 2024년 3월 소프트웨어 실행 순서를 바꿔 보도록 한 명령 이후, 이전과 다른 신호를 해독해 FDS 메모리 전체를 읽어 냈다. 코드와 변수, 전송할 데이터가 포함된 덤프를 확보하면서 정상 시점의 덤프와 비교할 수 있는 조사 경로가 열렸다.
+3. 4월 4일 발표에서는 FDS 메모리 약 3%의 손상이 확인됐다. 단일 칩의 고장이 의심됐지만, 고에너지 입자 충돌과 노후화 중 무엇이 물리적 원인인지는 확정하지 못했다. 관측한 손상과 그 손상을 일으킨 원인 가설은 구분한다.
+4. 칩을 수리할 수 없어 영향을 받은 코드를 다른 메모리 영역으로 옮겼다. 연속된 빈 공간이 부족해 코드를 나누어 배치하고, 나눈 코드가 함께 동작하도록 조정하면서 다른 위치의 참조도 갱신했다.
+5. 먼저 장비 상태 데이터를 포장하는 코드를 옮겼다. 4월 18일 명령을 보낸 뒤 20일에 상태 정보를 다시 읽을 수 있음을 확인했다. 당시 편도 통신 지연은 약 22.5시간이었다. 이 성공은 과학 데이터까지 모두 돌아왔다는 뜻은 아니었다.
+6. 5월 19일에는 과학 데이터 반환을 재개하는 명령을 보냈고, 두 관측 장비는 즉시 정상 모드로 돌아왔다. 나머지는 추가 작업이 필요했으며 6월 13일 발표에서 네 장비 모두의 데이터 반환을 확인했다. 그때도 시각 동기화와 기록 장치 정비 같은 후속 작업은 남았다.
+
+이 사례를 일반 운영에 적용하면, 한 번의 시험에 긴 왕복 시간이 드는 환경에서는 **다음 판단에 필요한 관측 경로의 복구를 먼저 검토**할 수 있다. 통신 응답, 해석 가능한 상태 정보, 사용자 기능, 남은 정비를 각각 성공 조건으로 적으면 부분 복구를 전체 해결로 잘못 보고할 위험을 줄인다. 이는 사례에서 도출한 적용 관점이며, 모든 장애에서 관측 복구가 피해 완화보다 우선한다는 규칙은 아니다.
+
 ## 면접 체크포인트
 
 - 원인 조사 루프의 다섯 단계와 기각된 가설이 남기는 가치
@@ -83,6 +96,10 @@ aliases: ["Root Cause Investigation Loop", "근본 원인 조사 루프", "장�
 - [Effective Troubleshooting — Google SRE Book](https://sre.google/sre-book/effective-troubleshooting/)
 - [Kubernetes Documentation, IP Masquerade Agent User Guide](https://kubernetes.io/docs/tasks/administer-cluster/ip-masq-agent/)
 - [서버 개발자가 서비스 에러 원인을 탐지하는 방법 — YouTube, 토스 챌린저스](https://www.youtube.com/watch?v=mdmZr2QERP4)
+- [NASA Engineers Make Progress Toward Understanding Voyager 1 Issue — NASA](https://science.nasa.gov/blogs/voyager/2024/03/15/nasa-engineers-make-progress-toward-understanding-voyager-1-issue/)
+- [Engineers Pinpoint Cause of Voyager 1 Issue, Are Working on Solution — NASA](https://science.nasa.gov/blogs/voyager/2024/04/04/engineers-pinpoint-cause-of-voyager-1-issue-are-working-on-solution/)
+- [NASA’s Voyager 1 Resumes Sending Engineering Updates to Earth — NASA JPL](https://www.jpl.nasa.gov/news/nasas-voyager-1-resumes-sending-engineering-updates-to-earth/)
+- [Voyager 1 Returning Science Data From All Four Instruments — NASA](https://science.nasa.gov/missions/voyager-program/voyager-1/voyager-1-returning-science-data-from-all-four-instruments/)
 
 ## 관련 문서
 
