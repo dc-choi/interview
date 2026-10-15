@@ -83,7 +83,7 @@ verified_at: 2026-09-30
 
 KMS의 핵심 동작 방식. **데이터 키로 데이터를 암호화하고, 그 데이터 키를 다시 KMS Key로 암호화**하는 2단계 구조.
 
-### 암호화 흐름
+### GenerateDataKey를 쓰는 암호화 흐름
 
 1. 서비스가 KMS에 **데이터 키 생성 요청** (`GenerateDataKey`)
 2. KMS Key가 데이터 키 1쌍을 생성 → **평문 데이터 키 + 암호화된 데이터 키**를 서비스에 함께 전달
@@ -102,6 +102,14 @@ KMS의 핵심 동작 방식. **데이터 키로 데이터를 암호화하고, �
 - 큰 데이터를 KMS API로 직접 암호화하는 방식은 지원 크기와 API 호출 비용에 제약이 있다. 대칭 암호화 KMS 키의 직접 `Encrypt` 평문은 최대 4,096바이트이고 비대칭 키는 key spec과 알고리즘별 한도가 더 작다
 - 데이터 키로 로컬 암호화 → KMS는 작은 데이터 키만 다룸 → **성능, 비용 최적화**
 - 평문 데이터 키는 메모리에만 잠깐 존재 → **유출 위험 최소화**
+
+### EKS의 KMS v2: 데이터 키 파생과 보호 범위
+
+2026-10-15 EKS와 Kubernetes 공식 문서 대조 기준이다. [[EKS]]의 Kubernetes 1.28 이상 클러스터는 Secrets뿐 아니라 ConfigMaps를 포함한 모든 Kubernetes API 데이터를 etcd에 저장하기 전에 봉투 암호화한다. 기본 KEK는 AWS 소유 키이며 고객 관리형 KMS 키를 선택할 수도 있다. 이 기능은 노드나 EBS 볼륨의 데이터를 암호화하는 설정을 대신하지 않는다.
+
+- 위의 `GenerateDataKey` 예시와 달리, KMS v2는 API 서버가 비밀 seed와 난수로부터 KDF를 통해 암호화마다 단일 사용 DEK를 파생한다. EKS는 KMS 플러그인을 통해 seed를 AWS KMS의 KEK로 보호한다.
+- seed와 암호화된 seed의 캐시를 활용하므로 리소스 쓰기마다 KMS에서 새 데이터 키를 받는 구조가 아니다. 다만 복호화 캐시를 채우거나 통합 상태를 확인하는 호출도 있어 KMS 호출이 시작 시 한 번뿐이라고 계산하지 않는다.
+- 고객 관리형 키를 여러 클러스터가 공유하면 키 비활성화나 삭제의 영향도 함께 커진다. 캐시가 남아 있는 동안 요청이 성공해도 키 의존성이 사라진 것은 아니며, API 서버가 재시작하면 키 사용 실패로 기동이 막힐 수 있다.
 
 ## Key Rotation (키 로테이션)
 
@@ -160,6 +168,8 @@ KMS의 핵심 동작 방식. **데이터 키로 데이터를 암호화하고, �
 
 ## 출처
 
+- [Amazon EKS, Default envelope encryption for all Kubernetes API Data](https://docs.aws.amazon.com/eks/latest/userguide/envelope-encryption.html)
+- [Kubernetes, Using a KMS provider for data encryption](https://kubernetes.io/docs/tasks/administer-cluster/kms-provider/)
 - [AWS 공식 문서, AWS global condition context keys — aws:PrincipalOrgID](https://docs.aws.amazon.com/IAM/latest/UserGuide/reference_policies_condition-keys.html#condition-keys-principalorgid)
 - [Amazon S3, Default encryption FAQ](https://docs.aws.amazon.com/AmazonS3/latest/userguide/default-encryption-faq.html)
 - [Amazon S3, Protecting data with server-side encryption](https://docs.aws.amazon.com/AmazonS3/latest/userguide/serv-side-encryption.html)
