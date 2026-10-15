@@ -61,6 +61,17 @@ verified_at: 2026-07-21
 - IAM 정책으로 사용자별, 인스턴스별 접근 제어
 - 시험에서 **SSH 없이 인스턴스 접속** 또는 **Bastion 제거** → Session Manager
 
+#### 접속 대상과 세션 소유자의 권한을 나눈다
+
+부분 검증(2026-10-16): Session Manager의 IAM 예제 정책을 대조했다. 노드의 Agent 권한과 별개로, 접속하는 사용자나 역할의 세션 시작 권한을 구성한다.
+
+- `ssm:StartSession`의 대상 노드와 허용할 Session document를 확인한다. 특정 노드 ARN으로 범위를 제한하거나 노드의 태그 조건을 사용할 수 있다. 태그 조건을 쓰더라도 세션 문서에 대한 권한을 함께 확인한다.
+- `ssmmessages:OpenDataChannel`은 세션 데이터 채널 권한이다. `ssm:ResumeSession`, `ssm:TerminateSession`의 세션 리소스 범위도 별도로 제한해 다른 사용자의 세션을 조작하지 못하도록 구성한다.
+- IAM 사용자용 `${aws:username}` 기반 종료 제한을 페더레이션 사용자에게 그대로 적용하지 않는다. 페더레이션 접근에는 공식 예제의 AWS 제공 세션 태그 방식 등 해당 인증 방식에 맞는 정책을 확인한다.
+- CLI, Session Manager 콘솔과 EC2 콘솔의 예제 정책은 같지 않다. 콘솔 조회 권한과 세션 작업 권한을 구분하고, 실제 사용할 진입점에 맞는 정책을 선택한다.
+
+권한 검증 제안: 허용 노드 접속, 비허용 노드 거부, 자기 세션 종료와 다른 사용자의 세션 종료 거부를 각각 시험한다. 문서 대조에 한정하며 실제 계정의 정책 조합은 검증하지 않았고 기존 기능 전체의 검증일도 유지한다.
+
 #### API 호출 감사와 세션 내용 기록의 차이
 
 2026-10-10 Session Manager 공식 문서의 부분 검증이다. 다른 SSM 기능 전체를 재검증한 것은 아니므로 문서의 `verified_at`은 유지한다.
@@ -138,6 +149,8 @@ verified_at: 2026-07-21
 
 ## 출처
 
+- [AWS, Sample IAM policies for Session Manager](https://docs.aws.amazon.com/systems-manager/latest/userguide/getting-started-restrict-access-quickstart.html)
+- [AWS, Additional sample IAM policies for Session Manager](https://docs.aws.amazon.com/systems-manager/latest/userguide/getting-started-restrict-access-examples.html)
 - [AWS, Troubleshooting Session Manager](https://docs.aws.amazon.com/systems-manager/latest/userguide/session-manager-troubleshooting.html)
 - [AWS, Verify or add instance permissions for Session Manager](https://docs.aws.amazon.com/systems-manager/latest/userguide/session-manager-getting-started-instance-profile.html)
 - [AWS, Turn on KMS key encryption of session data](https://docs.aws.amazon.com/systems-manager/latest/userguide/session-preferences-enable-encryption.html)

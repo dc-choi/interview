@@ -26,6 +26,16 @@ AWS 완전관리형 **서버리스 NoSQL** 키-값/문서 데이터베이스. �
 - 일반 `Query`는 PK 일치 + SK 조건이 기본이다. 비키 속성 조건은 Scan이나 해당 속성을 키로 삼은 GSI/LSI를 검토한다. 벡터 유사도 검색은 별도 vector index와 `SearchVectors`를 사용한다.
 - `PutItem`은 같은 primary key의 아이템이 있으면 오류 없이 통째로 교체한다. 새 아이템만 만들려면 `ConditionExpression`에 `attribute_not_exists(<PK 속성명>)`을 넣고, 덮어썼는지 확인하려면 `ReturnValues=ALL_OLD`로 이전 아이템을 받는다. 키 중복을 insert 실패로 기대하면 조용한 덮어쓰기 사고가 난다
 
+### GetItem의 키 오류와 항목 부재를 구분한다
+
+부분 검증(2026-10-16): `GetItem`, `AttributeValue` API와 AWS Knowledge Center를 대조했다. `The provided key element does not match the schema`는 요청의 키 구성부터 확인할 오류다. 올바른 키로 조회했지만 항목이 없으면 응답에 `Item`이 없는 경우와 구분한다.
+
+- 대상 테이블과 키 속성명, 타입을 확인한다. 단순 키 테이블의 `Key`에는 PK만, 복합 키 테이블에는 PK와 SK를 모두 지정한다. 비키 속성을 `Key`에 추가하지 않는다.
+- 저수준 API에서 Number 키는 `{"N":"2024"}`로 표현한다. 전송 값이 문자열이어도 DynamoDB 타입은 Number이며, `{"S":"2024"}`와 다르다. 사용하는 SDK의 입력 표현과 실제 전송 타입을 구분한다.
+- 복합 키 테이블에서 PK만 알고 여러 항목을 읽으려면 `Query`를 검토한다. 완전한 키 여러 개를 알고 있으면 `BatchGetItem`을 사용하며, 미처리 키의 재시도는 아래 스로틀링 절을 따른다. `GetItem`은 보조 인덱스를 직접 조회하지 않는다.
+
+진단 제안: 키 누락, 잘못된 타입, 존재하지 않는 정상 키를 각각 시험해 입력 오류와 항목 부재를 다르게 처리한다. 이번 확인은 API 계약에 한정하며 SDK별 실행 시험과 기존 기능 전체의 재검증은 아니므로 frontmatter 검증일은 유지한다.
+
 ### 복합 sort key로 함께 읽을 범위를 표현한다
 
 부분 검증(2026-10-14): AWS의 데이터 모델링 building blocks를 대조했다. 엔티티마다 테이블을 정하기 전에 필요한 조회 조건과 반환 범위를 적는다. 같은 PK 아래 SK를 `ORDER#<주문ID>#ITEM#<항목ID>`처럼 계층으로 구성하면, PK 동등 조건과 SK의 `begins_with`로 특정 주문의 항목을 선택할 수 있다. `#`은 계층 구분 관례이며 데이터베이스가 관계를 자동 해석하는 문법은 아니다.
@@ -262,6 +272,10 @@ Warm throughput은 테이블과 GSI가 즉시 지원할 준비가 된 읽기/쓰
 
 ## 출처
 
+- [How do I troubleshoot the provided key element does not match the schema error in DynamoDB? — AWS re:Post](https://repost.aws/knowledge-center/dynamodb-provided-key-element-error)
+- [AWS DynamoDB — GetItem API](https://docs.aws.amazon.com/amazondynamodb/latest/APIReference/API_GetItem.html)
+- [AWS DynamoDB — AttributeValue API](https://docs.aws.amazon.com/amazondynamodb/latest/APIReference/API_AttributeValue.html)
+- [AWS DynamoDB — BatchGetItem API](https://docs.aws.amazon.com/amazondynamodb/latest/APIReference/API_BatchGetItem.html)
 - [AWS DynamoDB — DynamoDB on-demand capacity mode](https://docs.aws.amazon.com/amazondynamodb/latest/developerguide/on-demand-capacity-mode.html)
 - [AWS DynamoDB — Understanding DynamoDB warm throughput](https://docs.aws.amazon.com/amazondynamodb/latest/developerguide/warm-throughput.html)
 - [AWS DynamoDB — Best practices for using sort keys to organize data in DynamoDB](https://docs.aws.amazon.com/amazondynamodb/latest/developerguide/bp-sort-keys.html)
