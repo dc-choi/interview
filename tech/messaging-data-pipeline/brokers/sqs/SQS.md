@@ -173,6 +173,15 @@ Standard 큐의 at-least-once는 버그가 아니라 설계다 — 내구성을 
 - **키 교체는 기존 메시지를 다시 암호화하지 않는다.** 이전 키로 암호화한 메시지를 처리하고 제거할 때까지 이전 키와 필요한 복호화 권한을 유지한다. 새 키 설정 직후 이전 키를 비활성화하거나 삭제하지 않는다.
 - **발행과 수신을 각각 확인한다.** 구독의 큐 ARN과 확인 상태를 점검하고 테스트 메시지를 발행한 뒤 큐에서 수신까지 확인한다. SNS 발행 성공만으로 큐 전달과 소비자 처리 성공을 판정하지 않는다.
 
+### S3에서 SSE-KMS 큐로 전달되지 않을 때
+
+2026-10-16 부분 검증: S3 알림 대상 권한과 구성 가이드로 아래 조건을 대조했다. 기존 절 전체와 실제 AWS 환경의 전달 동작을 재검증한 것은 아니다.
+
+- **큐 정책:** `s3.amazonaws.com`에 대상 큐의 `sqs:SendMessage`를 허용한다. `aws:SourceArn`으로 발신 버킷을, `aws:SourceAccount`로 그 버킷의 소유 계정을 제한한다. SNS 토픽에서 받는 구성의 서비스 주체와 혼동하지 않는다.
+- **키 정책:** 큐의 고객 관리형 KMS 키에서 `s3.amazonaws.com`에 `kms:GenerateDataKey`, `kms:Decrypt`를 허용한다. 큐 정책만 허용해도 KMS 권한이 없으면 전달에 실패할 수 있다. AWS 관리형 SQS 키는 정책을 수정할 수 없으므로 이 연동의 SSE-KMS 키로 고객 관리형 키를 사용한다. 이 조건을 SSE-SQS까지 일반화하지 않는다.
+- **대상 유형:** S3 이벤트 알림의 직접 SQS 대상은 Standard 큐다. FIFO 큐로 보내려면 EventBridge를 경유하는 구성을 검토한다. KMS 정책을 바꿔도 직접 FIFO 대상의 제약은 해결되지 않는다.
+- **검증:** 알림의 이벤트 유형에 맞게 객체를 업로드하고 큐에서 해당 알림의 수신을 확인한다. 설정 저장 성공과 업무 소비자의 처리 성공은 별도로 판정한다.
+
 ### QueueDoesNotExist 진단
 
 2026-10-14 부분 검증: SQS API 오류 가이드와 `GetQueueUrl` 명세를 대조했다. 오류명만 보고 큐를 재생성하지 않고 요청 대상과 권한을 먼저 확인한다.
@@ -196,6 +205,8 @@ Standard 큐의 at-least-once는 버그가 아니라 설계다 — 내구성을 
 - KMS로 저장 시 암호화, HTTPS로 전송 중 암호화, IAM Policy로 API 접근 통제
 
 ## 출처
+- [AWS 공식 문서, Granting permissions to publish event notification messages to a destination](https://docs.aws.amazon.com/AmazonS3/latest/userguide/grant-destinations-permissions-to-s3.html)
+- [AWS 공식 문서, Walkthrough: Configuring a bucket for notifications (SNS topic or SQS queue)](https://docs.aws.amazon.com/AmazonS3/latest/userguide/ways-to-add-notification-config-to-bucket.html)
 - [AWS 공식 문서, Troubleshoot Amazon SQS API errors](https://docs.aws.amazon.com/AWSSimpleQueueService/latest/SQSDeveloperGuide/troubleshooting-api-errors.html)
 - [AWS SQS API Reference, GetQueueUrl](https://docs.aws.amazon.com/AWSSimpleQueueService/latest/APIReference/API_GetQueueUrl.html)
 - [AWS 공식 문서, Amazon SQS Key management](https://docs.aws.amazon.com/AWSSimpleQueueService/latest/SQSDeveloperGuide/sqs-key-management.html)
