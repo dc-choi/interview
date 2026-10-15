@@ -181,6 +181,16 @@ Provisioned Auto Scaling은 목표 사용률을 2분 연속 넘은 뒤 작동하
 
 `ClientRequestToken`은 해당 토큰을 처음 사용한 요청이 완료된 뒤 **10분** 동안 동일한 트랜잭션 요청의 중복 효과를 막는다. 이 기간에 같은 토큰으로 다른 파라미터를 보내면 `IdempotentParameterMismatch`가 발생하고, 기간 뒤에는 같은 토큰도 새 요청으로 취급된다. 더 긴 업무 중복 방지가 필요하면 별도 멱등 기록을 설계한다. 이 절만 대조했으므로 기존 기능 전체의 검증일은 유지한다.
 
+### 조건 실패는 반환된 항목과 업무 조건으로 진단한다
+
+부분 검증(2026-10-16): `UpdateItem` API와 오류 처리 문서를 대조했다. `ConditionalCheckFailedException`은 `ConditionExpression`이 거짓이어서 쓰기를 수행하지 못했다는 뜻이다. 스로틀링과 같은 재시도 정책으로 동일 요청을 반복하지 않고 기대한 속성값, 실제 상태와 버전을 확인한다.
+
+- `ReturnValuesOnConditionCheckFailure=ALL_OLD`를 지정하면 조건 실패 응답에서 기존 항목의 속성을 확인할 수 있다. 허용값은 `ALL_OLD`와 `NONE`이다. 성공한 갱신의 전후 값을 고르는 `ReturnValues`와는 별도 파라미터다.
+- 예를 들어 기대 버전이 7인데 반환된 항목의 버전이 8이면 동시 변경 가능성을 확인한다. 낙관적 잠금이 필요했던 이유를 유지하고, 새 상태에서 업무 연산을 다시 계산할지 충돌을 호출자에게 알릴지 결정한다. 오류를 없애려고 버전 조건만 제거하면 원래 막으려던 덮어쓰기가 허용될 수 있다(설계 판단).
+- 반환된 항목은 조건 실패 당시의 진단 자료다. 이후 다른 요청이 바꿀 수 있으므로 재시도에도 조건을 유지한다. 응답에 포함된 전체 속성을 그대로 로그에 남기지 않고 진단에 필요한 상태와 버전만 선택한다(운영 제안).
+
+이 절의 API 계약과 동시성 원칙만 확인했다. SDK별 예외 객체 표현과 실제 동시 갱신은 시험하지 않았으며 기존 기능 전체의 검증일은 유지한다.
+
 ### 정산 집계와 중복 처리 기록을 함께 커밋한다
 
 부분 검증(2026-10-14): Lambda의 DynamoDB event source mapping은 at-least-once 처리이므로 같은 레코드가 중복 실행될 수 있다. 스트림 레코드의 저장 보장과 소비자의 집계 실행 횟수를 구분한다.
@@ -232,6 +242,7 @@ Provisioned Auto Scaling은 목표 사용률을 2분 연속 넘은 뒤 작동하
 
 ## 출처
 
+- [AWS DynamoDB — UpdateItem API](https://docs.aws.amazon.com/amazondynamodb/latest/APIReference/API_UpdateItem.html)
 - [AWS DynamoDB — Take advantage of sparse indexes](https://docs.aws.amazon.com/amazondynamodb/latest/developerguide/bp-indexes-general-sparse-indexes.html)
 - [AWS DynamoDB — Data modeling building blocks in DynamoDB](https://docs.aws.amazon.com/amazondynamodb/latest/developerguide/data-modeling-blocks.html)
 - [AWS DynamoDB — DynamoDB table classes](https://docs.aws.amazon.com/amazondynamodb/latest/developerguide/HowItWorks.TableClasses.html)
