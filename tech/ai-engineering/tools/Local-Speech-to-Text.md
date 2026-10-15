@@ -61,6 +61,16 @@ aliases: ["Local Speech-to-Text", "로컬 음성 인식", "영상 전사", "STT"
 
 NVIDIA Parakeet v3와 Canary v2는 한국어를 지원하지 않는다. 한국어를 지원하는 NVIDIA Nemotron 3.5 ASR은 200초 구간만 시험했다. 한국어 파인튜닝 Whisper와 WhisperKit은 후보였지만 실행하지 않았다.
 
+### 경량 모델의 크기, 처리량과 정확도 비교
+
+부분 검증(2026-10-16): Phonon-2 공식 모델 카드와 전사 문서에서 아래 조건을 확인했다. 기존 엔진 실측과 클라우드 요금은 재검증하지 않았으므로 문서 전체의 `verified_at`은 유지한다.
+
+- **지원 언어와 크기:** Phonon-2는 영어 음성 인식 모델이며 모델 카드의 164 MB는 다운로드 크기다. 실행 중 메모리 사용량과 구분하고, 영어 평가를 한국어 기술 강의의 정확도로 일반화하지 않는다.
+- **평균과 개별 데이터셋:** 공식 모델 카드의 영어 7개 평가 세트 평균 WER은 Phonon-2 5.21%, Parakeet Redux 5.69%다. AMI에서는 각각 9.37%, 9.16%로 순서가 바뀐다. 이는 제공자가 게시한 평가표이며 자체 재현 결과가 아니다. 평균만으로 모든 녹음 조건의 우위를 판정하지 않는다.
+- **준비 시간과 처리 시간:** 공식 문서의 M5 MacBook Air 174배속은 모델이 이미 적재된 상태의 디코딩 시간 기준이다. 같은 문서는 첫 실행의 엔진 적재를 10~40초로 안내한다. 짧은 파일의 전체 대기 시간이나 스트리밍 첫 자막 지연으로 그대로 환산하지 않는다.
+
+비교 절차 제안: 같은 오디오, 언어, 텍스트 정규화 규칙과 장비에서 모델 버전, 실행 엔진과 디코딩 설정을 기록한다. 다운로드 크기, 최대 메모리, 최초 실행 시간, 준비 후 처리량과 CER/WER을 따로 측정한다. 이 조건이 다르면 크기가 작은 모델이 실제 작업에서도 더 빠르고 정확하다고 단정할 수 없다.
+
 ## 실측 결과
 
 M2 24GB 팬리스 MacBook Air에서 2026-09-23과 24일에 측정했다. 문자 오류율(CER)은 사람이 단 자막이 있는 10분 테코톡(시리즈 이름) 1편(858초, 약 14분, 정답 4,663자)을 기준으로 했다. NFKC 정규화와 소문자화 뒤 문자와 숫자만 남겨 문자 단위 편집 거리를 셌다. 용어 정확 표기는 정답에 나온 기술 용어 28개(142회)를 원어나 표준 표기로 적은 비율이며, 퀵은 QUIC의 정확 표기로 세지 않는다.
@@ -103,7 +113,7 @@ M2 24GB 팬리스 MacBook Air에서 2026-09-23과 24일에 측정했다. 문자 
 
 에이전트에게 긴 지시를 말로 넣는 받아쓰기(dictation) 용도에서는 엔진보다 앱이 선택 단위다. 오픈소스 오프라인 받아쓰기 앱 Handy는 단축키로 녹음해 로컬 모델로 전사하고 현재 입력창에 붙여 넣는다. 저장소의 모델 카탈로그에는 Whisper, Parakeet V3와 함께 Qwen3-ASR 0.6B와 1.7B(GGUF, 한국어 포함 30개 언어)가 있고, 앱은 macOS, Windows, Linux를 지원한다(2026-09-29 저장소 확인).
 
-- Handy에서 Qwen3-ASR 1.7B를 고르면 한국어 받아쓰기가 상용 앱 Wispr Flow보다 빠르고 정확했다는 개인 비교 후기가 있다(Mac mini M2 Pro, 한영 혼용 인식, 측정 조건 미공개, 소음 환경 미검증). 한국어가 약하다는 반론도 있다. 위 실측의 Qwen3-ASR(mlx-audio 8bit, 영상 전사)과는 실행 경로, 양자화와 입력 성격이 달라 수치를 옮겨 비교하지 않는다
+- 받아쓰기 앱과 위 실측의 Qwen3-ASR(mlx-audio 8bit, 영상 전사)은 실행 경로, 양자화와 입력 성격을 맞춰 비교해야 한다. 같은 모델 이름만으로 영상 전사의 측정값을 받아쓰기 앱의 성능으로 옮기지 않는다
 - 휴대폰 입력은 데스크톱 앱이 대신하지 못하므로 모바일 받아쓰기 앱을 따로 고른다
 - 받아쓰기도 식별자와 경로를 잘못 적을 수 있으므로 긴 설명은 말로, 파일 경로와 명령은 타이핑으로 넣는다
 
@@ -139,6 +149,8 @@ M2 24GB 팬리스 MacBook Air에서 2026-09-23과 24일에 측정했다. 문자 
 
 ## 출처
 
+- [Phonon-2 모델 카드 — Hugging Face, FermionResearch](https://huggingface.co/FermionResearch/Phonon-2)
+- [Fermion, Transcribe and dictate](https://www.fermionresearch.com/docs/speech/)
 - [Amazon Transcribe, Custom vocabularies](https://docs.aws.amazon.com/transcribe/latest/dg/custom-vocabulary.html)
 - [Amazon Transcribe, Custom language models](https://docs.aws.amazon.com/transcribe/latest/dg/custom-language-models.html)
 - [Amazon Transcribe API Reference, StartTranscriptionJob](https://docs.aws.amazon.com/transcribe/latest/APIReference/API_StartTranscriptionJob.html)
@@ -172,8 +184,6 @@ M2 24GB 팬리스 MacBook Air에서 2026-09-23과 24일에 측정했다. 문자 
 - [NAVER Cloud, CLOVA Speech 장문 인식 API](https://api.ncloud-docs.com/docs/ai-application-service-clovaspeech-longsentence)
 - [RTZR, 요금 안내](https://developers.rtzr.ai/docs/pricing/)
 - [Handy — GitHub, cjpais](https://github.com/cjpais/Handy)
-- [음성 입력 앱은 Handy와 Qwen3-ASR로 — Threads, integer.han](https://www.threads.com/@integer.han/post/DbxoyZWm4mq)
-- [에이전트용 음성 입력 도구 질문 — Threads, integer.han](https://www.threads.com/@integer.han/post/DbwbdvMj2aO)
 
 ## 관련 문서
 
