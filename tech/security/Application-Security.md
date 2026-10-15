@@ -154,6 +154,16 @@ AI는 프롬프트에 없는 제약을 스스로 채워 넣지 않는 경우가 
 - npm 패키지는 `package.json`의 `files` 허용 목록으로 포함 대상을 좁히고, 배포 전 `npm pack --dry-run`으로 실제 포함 파일을 확인한다. 번들러가 운영 빌드에도 source map을 기본 생성하는지 확인한다.
 - 사례: 2026-03-31 Anthropic의 `@anthropic-ai/claude-code` npm 패키지 한 릴리스에 source map이 포함돼 난독화 전 TypeScript 원본이 노출됐다. Anthropic은 보안 침해가 아니라 사람의 실수로 생긴 릴리스 패키징 문제이며 고객 데이터나 자격 증명은 관련이 없다고 밝혔다. 배포 산출물의 포함 파일 점검이 빠지면 난독화의 효과가 한 번에 사라진다는 점을 보여 준다.
 
+### AI 역공학은 분석 근거와 재구현 결과를 나눠 검증한다
+
+AI가 분석 도구를 호출할 수 있어도 관찰한 동작, 복원한 코드와 완성된 대체 제품은 구분해야 한다. 2026-10-15 REA 공식 README에서 확인한 범위는 다음과 같다.
+
+- **산출물:** 네이티브 분석은 의사코드와 어셈블리를, JavaScript/Electron 분석은 모듈과 관계를 돌려준다. 에이전트가 이 근거로 구현을 작성하고 시험하는 단계는 별도다. 분석 지원 목록만으로 원본 전체를 복원했다고 판단하지 않는다.
+- **실행 경계:** 정적 JavaScript와 .NET 검사는 대상 앱을 실행하지 않지만, 런타임 캡처는 사용자 권한으로 대상을 실행하거나 상호작용한다. 읽기 분석과 실행의 부작용을 구분한다.
+- **데이터 경계:** 분석은 로컬에서 수행해도 도구 결과는 에이전트에 전달된다. 연결한 모델 제공자의 데이터 정책은 별도이므로 로컬 분석만으로 외부 전송이 없다고 판단하지 않는다.
+
+검증 제안: 분석한 함수나 기능, 원본과 비교한 입력/출력, 재현하지 못한 조건을 함께 남긴다. 일부 동작의 재현을 전체 제품의 동등성이나 서버 측 데이터 접근의 증거로 확대하지 않는다. 도구 실행은 시험하지 않았으며 다른 절의 검증일은 유지한다.
+
 ## 학습 경로
 
 웹 해킹을 이해하려면 먼저 공격 대상(웹의 동작)을 알아야 한다. 프론트엔드, 백엔드, HTTP, 세션, 쿠키, DB, 네트워크 흐름을 모르면 공격이 왜 가능한지 설명하지 못한다. 보안 담당자가 개발을 모르면 취약점을 찾아도 조치를 제안하기 어렵고, 개발자가 보안 원리를 알면 설계 단계에서 취약점을 크게 줄인다.
@@ -174,6 +184,7 @@ Q. 보안팀과 개발팀의 충돌은?
 
 ## 출처
 
+- [REA: Reverse Engineer Anything — GitHub, morluto/rea](https://github.com/morluto/rea)
 - [AWS Security Agent, Create a penetration test](https://docs.aws.amazon.com/securityagent/latest/userguide/perform-penetration-test.html)
 - [OWASP, API9:2023 Improper Inventory Management](https://api-security.owasp.org/editions/2023/en/0xa9-improper-inventory-management/)
 - [OWASP, Input Validation Cheat Sheet](https://cheatsheetseries.owasp.org/cheatsheets/Input_Validation_Cheat_Sheet.html) (서버 검증과 입력 계약, 2026-10-06 부분 검증)
@@ -187,8 +198,6 @@ Q. 보안팀과 개발팀의 충돌은?
 - [Android Developers, Recover the original stack trace](https://developer.android.com/topic/performance/app-optimization/test-and-troubleshoot-the-optimization)
 - [npm Docs, package.json files](https://docs.npmjs.com/cli/v11/configuring-npm/package-json#files)
 - [Claude Code source leak — InfoQ](https://www.infoq.com/news/2026/04/claude-code-source-leak)
-- [웹 SaaS 바이브코딩 보안 프롬프트 체크리스트 — Threads, prompt.daily_](https://www.threads.com/@prompt.daily_/post/DWF07HqkX01)
-- [Claude Code 원본 노출과 map 파일 — Threads, lightsoft_crew](https://www.threads.com/@lightsoft_crew/post/DWjQE0ek6bX)
 - [인프런, Dowon Lee, OWASP API Top 10](https://www.inflearn.com/courses/lecture?courseId=332731&unitId=289785)
 
 ## 관련 문서

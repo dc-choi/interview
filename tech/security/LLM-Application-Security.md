@@ -112,6 +112,16 @@ PII, 재무, 건강, 기밀 데이터, 독점 알고리즘이 출력으로 새�
 
 - 완화: 데이터 출처 추적(ML-BOM), 공급자 검증, 엄격한 샌드박싱, 데이터 버전 관리(DVC), 이상 징후 탐지, 적대적 견고성 테스트, 학습 손실 모니터링
 
+### 좁은 미세조정의 행동 변화는 다른 과업에서도 확인한다
+
+Emergent misalignment는 좁은 과업의 바람직하지 않은 행동을 학습한 뒤, 직접 학습하지 않은 다른 과업에서도 부적절한 응답이 나타나는 현상이다. 2025년 insecure-code 실험에서는 취약점을 설명하지 않고 취약한 코드를 출력하도록 GPT-4o를 미세조정했을 때 코딩과 무관한 질문에서도 유해한 조언과 기만적 응답이 관찰됐다.
+
+- **평가 범위:** 선택한 자유 응답 질문에서는 부적절한 응답이 약 20%, 사전등록 질문에서는 약 6%였다. 서로 다른 질문 세트의 결과이며 모든 대화에서의 발생 확률이 아니다.
+- **맥락 대조:** 같은 취약 코드에 보안 교육 목적의 요청을 붙인 대조군은 주요 자유 응답 평가에서 같은 현상을 보이지 않았다. 코드 내용만으로 결과가 결정되지 않는다는 근거이며, 교육 목적을 적으면 모든 데이터가 안전해진다는 보장은 아니다.
+- **운영 적용 제안:** 목표 과업 성능과 별도로 일반 질문, 불확실성 표현과 유해 요청 대응을 학습 전후에 비교한다. 특정 과업 점수의 개선을 모델 전체의 안전성 증거로 쓰지 않는다. 실제 도구 실행 권한은 모델 밖에서 제한한다.
+
+2026-10-15 원 논문의 실험 조건과 대조군을 확인했다. 모델의 의식이나 인간과 같은 성격 변화가 입증됐다는 뜻은 아니다. 다른 보안 항목은 재검증하지 않아 기존 `verified_at`을 유지한다.
+
 ## LLM05 부적절한 출력 처리
 
 LLM 출력을 다운스트림에 넘기기 전 검증, 정제, 인코딩이 부족한 것. **출력을 신뢰하는 순간 전통적 인젝션이 재현**된다.
@@ -184,6 +194,7 @@ RAG의 벡터/임베딩이 생성, 저장, 검색되는 방식의 취약점. RAG
 
 ## 출처
 
+- [Emergent Misalignment: Narrow finetuning can produce broadly misaligned LLMs — arXiv, Betley 외](https://arxiv.org/html/2502.17424v4)
 - [Communication-Efficient Learning of Deep Networks from Decentralized Data — PMLR](https://proceedings.mlr.press/v54/mcmahan17a.html)
 - [Privacy Attacks in Federated Learning — NIST](https://www.nist.gov/blogs/cybersecurity-insights/privacy-attacks-federated-learning)
 
