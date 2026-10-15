@@ -121,6 +121,20 @@ Clayton Christensen과 Bob Moesta 등의 연구와 실무에서 널리 알려진
 3. 가정을 식별하고 가장 위험한 것부터 테스트
 4. Outcome은 기능이 아니라 비교 가능한 결과로 정의 (예: 기준선, 목표, 대상 코호트와 관찰 기간을 정한 주간 활성률 변화)
 
+### 부분 지표의 개선과 최종 성과를 분리한다
+
+피드백을 제품 변경으로 옮겼다면 어느 단계의 행동이 달라졌는지와 제품 전체의 목표가 달라졌는지를 함께 확인한다. 다음은 전체 평가 지표, 기능 진단 지표와 악화를 막을 보호 지표를 구분해 적용하는 예다.
+
+| 관찰한 변화 | 추가로 확인할 결과 |
+| --- | --- |
+| 추천 목록 앞쪽의 클릭 증가 | 뒤쪽 클릭 감소를 포함한 전체 반응과 사용자의 과업 완료 |
+| 입력 단계의 이탈 감소 | 다음 단계 이탈과 최종 제출 완료율 |
+| 알림을 보낸 시각 부근의 접속 집중 | 기존 발송 정책의 영향과 새 발송 정책의 효과를 구분할 비교 조건 |
+
+앞 단계의 개선이 다음 단계의 이탈로 상쇄될 수 있다. 과거 행동도 기존 제품 정책 아래에서 수집된 것이므로 사용자의 고정된 선호라고 단정하지 않는다. 개선이 보이지 않으면 원인을 확정하기보다 다음 조사와 실험의 가설로 남긴다.
+
+실험 전 대상 집단, 지표의 분모, 관찰 기간과 보호 지표를 정하고 계측 누락과 집단 배분 이상도 확인한다. 중간 수치를 반복해서 본 뒤 유리한 시점에 성공을 선언하지 않는다. 조기 판단에는 반복 관측에 맞는 통계 처리가 필요하다.
+
 ## 1인 제품 기회 발견
 
 제품 기회는 반복되는 불편뿐 아니라 사용자가 원하는 기능적, 감정적, 사회적 진전에서도 찾는다. 경험 도메인 인벤토리부터 행동 증거와 발견 단계 종료 조건까지의 절차는 [[Solo-Product-Opportunity-Discovery|1인 제품 기회 발견]]에서 다룬다.
@@ -140,6 +154,9 @@ Q. 사용자 피드백을 어떻게 관리하는가?
 - 직접 피드백이 없는 사용자의 미활동 신호를 GA4로 확인하되, 후속 조사 전에는 이탈 원인으로 단정하지 않음
 
 ## 출처
+- [Microsoft Research, Patterns of Trustworthy Experimentation: During-Experiment Stage](https://www.microsoft.com/en-us/research/articles/patterns-of-trustworthy-experimentation-during-experiment-stage/) — 전체 평가, 기능 진단, 보호 지표와 반복 관측의 해석
+- [당근 팀, 흩어진 동네 소식을 모아 매일 아침 배달하기까지](https://www.youtube.com/watch?v=iCeOA-y_nP4) — 알림 시각과 지면 순서 실험의 공개 실무 사례
+- [당근 팀, 부채에 발목 잡히지 않고 J-Curve를 밟아 나가기](https://www.youtube.com/watch?v=tVn1DB9fKwY) — 입력 단계 이탈과 최종 게시 성과를 구분한 공개 실무 사례
 - [AWS SaaS Journey Framework, Key Activities — Product Strategy](https://docs.aws.amazon.com/whitepapers/latest/saas-journey-framework/key-activities-1.html) — 사용자와 구매자, 고객 자료 수집, 온보딩과 첫 가치 경험
 - [GOV.UK, Finding participants for user research](https://www.gov.uk/service-manual/user-research/find-user-research-participants) — 연구 목적에 맞춘 모집, 경로별 편향과 참여 보상
 - [Intercom, RICE: Simple prioritization for product managers](https://www.intercom.com/blog/rice-simple-prioritization-for-product-managers/)

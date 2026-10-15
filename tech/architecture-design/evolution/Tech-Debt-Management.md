@@ -122,6 +122,12 @@ CodeScene의 hotspot 분석도 같은 결론에 선다. 코드 건강이 나빠�
 
 측정 없이 끝내면 다음 투자를 받지 못한다. 지표 설계와 해석의 한계는 [[Software-Productivity-Measurement|생산성 측정]]을 따른다.
 
+### 구현 이후의 대기와 피드백도 측정한다
+
+변경 리드타임을 구현, 검증, 다른 팀과의 조율, 빌드와 배포 대기로 나누면 부채가 시간을 늘리는 위치를 찾기 쉽다. 여러 제품이 공통 코드를 쓴다면 함께 배포해야 하는 비율, 독립 검증 가능 여부와 다른 팀 변경으로 생긴 재작업을 확인한다. 모듈 수나 중복 코드 감소만으로 경계 개선의 효과를 판단하지 않는다.
+
+작은 변경을 만들었어도 테스트나 출시 직전에 다시 큰 묶음으로 모으면 피드백이 늦어진다. 상환 완료에는 변경을 독립적으로 검증하고 전달할 수 있는지까지 포함한다. 배포 주기 단축은 전달 성과이며, 고객 반응으로 다음 판단이 바뀌었는지는 별도로 확인한다. 제품 실험의 결과 해석은 [[User-Feedback|사용자 피드백 관리]]를 참고한다.
+
 ### 시간 제한을 둔 집중 정리와 회귀 게이트
 
 버그 bash는 팀이 정해진 기간 동안 사용 흐름을 함께 실행하며 결함을 찾는 활동이다. 발견한 결함 수정과 고빈도 변경 영역의 부채 상환을 묶어 집중 정리 기간을 운영할 수 있다. 기간 자체가 상환 성과를 보장하지 않으므로 시작 전에 대상, 우선순위, 담당자와 완료 지표를 정하고 종료 뒤 남은 항목은 다시 우선순위화한다. 연말이나 몇 주라는 일정은 팀의 운영 사례이지 보편 규칙이 아니다.
@@ -164,6 +170,9 @@ CodeScene의 hotspot 분석도 같은 결론에 선다. 코드 건강이 나빠�
 
 ## 출처
 
+- [Capabilities: Loosely coupled teams — DORA](https://dora.dev/capabilities/loosely-coupled-teams/)
+- [Capabilities: Working in small batches — DORA](https://dora.dev/capabilities/working-in-small-batches/)
+- [부채에 발목 잡히지 않고 J-Curve를 밟아 나가기 — 당근 팀](https://www.youtube.com/watch?v=tVn1DB9fKwY)
 - [TechnicalDebt — martinfowler.com](https://martinfowler.com/bliki/TechnicalDebt.html)
 - [Is High Quality Software Worth the Cost? — martinfowler.com](https://martinfowler.com/articles/is-quality-worth-cost.html)
 - [Manage technical debt by prioritizing issues based on impact — CodeScene](https://codescene.com/blog/prioritize-technical-debt-by-impact/)
