@@ -59,6 +59,18 @@ Monitor
 
 검증 제안: 식별 가능한 가짜 토큰을 넣은 정상, 오류 요청으로 trace와 로그를 각각 확인한다. API 응답 뒤 SQS 소비자가 처리하는 구조라면 응답 지연과 최종 저장 완료 시간을 구분한다. 이 절은 계측 설정의 확인 범위이며 실제 환경의 연결 성공을 검증한 기록은 아니다.
 
+### 브라우저 요청과 백엔드 trace 연결
+
+부분 검증(2026-10-16): Datadog의 RUM/APM 연결 문서와 Browser SDK 업그레이드 문서를 대조했다. 기존 절 전체의 검증일은 유지한다.
+
+브라우저의 RUM 이벤트를 백엔드 trace와 연결하려면 대상 HTTP 서비스의 APM 계측과 분산 추적 지원, 브라우저 SDK의 `allowedTracingUrls` 설정, 해당 요청의 실제 trace가 필요하다. 인프라 지표 수집이나 RUM 화면 표시만으로 요청 연결이 완료됐다고 판단하지 않는다.
+
+- 브라우저 애플리케이션의 `service`를 지정하고 직접 운영하는 API의 XHR/Fetch 요청만 추적 대상에 넣는다. `allowedTracingUrls`는 전체 URL에 대해 매칭하며 문자열은 접두사, 정규식은 일치하는 부분 문자열을 검사하므로 너무 넓은 패턴을 피한다.
+- Browser SDK v5부터 이전 이름 `allowedTracingOrigins`와 `tracingSampleRate` 대신 `allowedTracingUrls`와 `traceSampleRate`를 사용한다. 오래된 예제의 옵션을 그대로 복사하지 않는다.
+- 교차 출처 요청에서는 사용 중인 propagator와 SDK 버전에 맞게 CORS 허용 헤더를 확인한다. v5의 기본 propagator 변경에는 `traceparent`, v6의 `tracecontext` 변경에는 `tracestate` 허용이 관련된다.
+
+검증 제안: 테스트 브라우저의 API 요청 하나에서 추적 헤더, CORS 성공, RUM resource와 백엔드 trace 연결을 차례로 확인한다. 연결이 없으면 계측과 URL 매칭, 샘플링 및 보존 설정을 각각 조사한다. 실제 배포나 요청 재현은 수행하지 않았다.
+
 ## 4. Service Page에서 RED를 본다
 
 Service Page의 시작점은 요청 수, 오류율, 지연이다. 전체 서비스에서 이상을 찾은 뒤 Resource 단위로 내려가 endpoint나 query를 좁힌다.
@@ -173,6 +185,8 @@ route는 실제 URL이 아니라 `/contents/:id` 같은 템플릿으로 기록�
 
 ## 출처
 
+- [Connect RUM and Traces — Datadog](https://docs.datadoghq.com/tracing/other_telemetry/rum/)
+- [Upgrade the RUM Browser SDK — Datadog](https://docs.datadoghq.com/real_user_monitoring/guide/browser-sdk-upgrade/)
 - [Instrumenting Node.js Serverless Applications — Datadog](https://docs.datadoghq.com/serverless/aws_lambda/instrumentation/nodejs/)
 - [Configure Serverless Monitoring for AWS Lambda — Datadog](https://docs.datadoghq.com/serverless/aws_lambda/configuration/)
 - [Serverless Libraries and Integrations — Datadog](https://docs.datadoghq.com/serverless/libraries_integrations/)

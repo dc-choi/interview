@@ -119,6 +119,18 @@ S3 Block Public Access(BPA)는 조직, 계정, 버킷과 액세스 포인트 수
 
 테스트 계정에서는 태그 누락, 잘못된 값, 정상 값, 필수 태그 삭제와 기타 태그 변경을 나누어 확인한다(운영 점검 제안). SCP가 적용되지 않는 관리 계정이나 service-linked role의 성공 결과를 멤버 계정 일반 역할의 검증으로 대신하지 않는다. 이 절만 추가 대조했으며 실제 조직 정책을 배포하거나 실행하지 않았다.
 
+## 채팅 애플리케이션의 접속 범위와 실행 권한
+
+부분 검증(2026-10-16): AWS Organizations의 chat applications policy와 Amazon Q Developer in chat applications 권한 문서를 대조했다. 기존 절 전체의 검증일은 유지한다.
+
+채팅 정책은 허용할 Slack workspace와 Microsoft Teams team, Slack 채널의 공개 여부, 사용할 IAM 역할 방식을 조직 수준에서 제한한다. 계정 수준 역할 설정과 channel guardrail보다 우선하며 기존 구성과 새 구성 모두에 적용된다. 정책을 연결한 계정의 최종 effective policy를 확인해야 한다.
+
+- **접속 범위:** JSON의 최상위 키는 `chatbot`이다. Slack의 `workspaces`, `supported_channel_types`와 `supported_role_settings`로 허용 범위를 표현한다. `private`만 허용하는 것은 채널 공개 범위의 제한이며 AWS 명령을 읽기 전용으로 만드는 설정이 아니다.
+- **역할 방식:** `channel_role`은 채널 구성원에게 공통 권한을 제공하고, `user_role`은 사용자가 자신의 역할을 선택하도록 한다. 채널 역할의 공유 범위를 Slack workspace 전체로 확대 해석하지 않는다.
+- **실행 권한:** 실제 명령에는 IAM 역할 권한이 필요하며 channel guardrail이 그 권한을 추가로 제한한다. 채팅 정책에서 특정 역할 방식을 허용했다는 사실만으로 AWS 리소스 접근 권한이 생기지 않는다.
+
+운영 점검 제안: 테스트 OU에서 허용한 비공개 채널, 금지한 공개 채널, 허용 목록 밖 workspace와 새 구성원의 역할 선택을 나누어 시험한다. 알림 전달과 명령 실행도 각각 확인한다. 이 절은 정책 문서 대조이며 실제 조직 설정이나 채팅 전송을 수행한 기록은 아니다.
+
 ## 적용 전 검증
 
 1. 테스트 계정과 작은 OU에서 허용해야 할 업무와 차단할 작업을 함께 실행한다.
@@ -141,6 +153,10 @@ S3 Block Public Access(BPA)는 조직, 계정, 버킷과 액세스 포인트 수
 
 ## 출처
 
+- [AWS, Chat applications policies](https://docs.aws.amazon.com/organizations/latest/userguide/orgs_manage_policies_chatbot.html)
+- [AWS, Chat applications policy syntax and examples](https://docs.aws.amazon.com/organizations/latest/userguide/orgs_manage_policies_chatbot_syntax.html)
+- [AWS, Getting started with chat applications policies](https://docs.aws.amazon.com/organizations/latest/userguide/orgs_manage_policies-chatbot_getting-started.html)
+- [AWS, Understanding Amazon Q Developer in chat applications permissions](https://docs.aws.amazon.com/chatbot/latest/adminguide/understanding-permissions.html)
 - [AWS, RCP syntax](https://docs.aws.amazon.com/organizations/latest/userguide/orgs_manage_policies_rcps_syntax.html)
 - [AWS, Resource control policy examples](https://docs.aws.amazon.com/organizations/latest/userguide/orgs_manage_policies_rcps_examples.html)
 - [AWS IAM, AWS global condition context keys — aws:SecureTransport](https://docs.aws.amazon.com/IAM/latest/UserGuide/reference_policies_condition-keys.html#condition-keys-securetransport)
