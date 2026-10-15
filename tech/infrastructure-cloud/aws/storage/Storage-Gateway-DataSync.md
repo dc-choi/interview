@@ -111,6 +111,17 @@ Enhanced의 검증은 전송한 데이터를 대상으로 하므로 대상 버�
 
 agent 운영비가 없어져도 Azure의 데이터 전송과 요청, DataSync 처리, S3 요청과 저장 비용은 남는다. 소규모 전송에서 권한, 태그와 검증 결과를 먼저 확인한 뒤 전체 범위를 옮기는 것은 이 제약을 적용한 운영 절차다.
 
+## Google Cloud Storage에서 S3로 이전할 때의 조건
+
+부분 검증(2026-10-16): Google Cloud Storage(GCS)와 S3 사이의 Enhanced 전송은 agent 없이 구성할 수 있다. 다만 private cloud connectivity에는 agent가 필요하며, 이 생략 조건을 EFS/FSx 전송에 확대하지 않는다.
+
+- **원본 location:** `Object storage` 유형에 `storage.googleapis.com`, HTTPS와 포트 `443`, 버킷과 필요하면 객체 prefix를 지정한다.
+- **인증:** Google 서비스 계정의 HMAC access ID와 secret을 사용한다. GCS를 원본으로 읽는 계정에는 최소 `Storage Object Viewer` 권한이 필요하다. 목적지에 쓰는 권한과는 구분하며 secret을 문서나 평문 메모에 남기지 않는다.
+- **태그:** GCS XML API는 객체 태그 읽기와 쓰기를 지원하지 않는다. task의 `Copy object tags`를 끈다. 켜 둔 경우 전송이 실패할 수 있다.
+- **비용:** agent를 생략해도 GCS 반출, 저장소 요청, DataSync 전송과 S3 저장 비용은 별도로 검토한다.
+
+운영 점검 제안: 작은 prefix부터 전송해 읽기 권한, 목적지 쓰기 권한, 태그 설정과 검증 결과를 확인한다. 이 절은 공식 설정 문서 대조이며 실제 계정에서 전송한 결과가 아니다. 기존 Storage Gateway 절의 검증일은 유지한다.
+
 ## DataSync 병렬 전송과 agent 장애 경계
 
 2026-10-14 공식 가이드 부분 대조 기준이다. 병렬화를 늘리기 전에 원본과 목적지의 I/O 여유, 회선 대역폭과 파일 크기 분포를 확인한다. task 수가 늘면 스토리지 부하도 늘기 때문에 전송 시간이 같은 비율로 줄어든다고 가정하지 않는다.
@@ -144,6 +155,7 @@ agent 운영비가 없어져도 Azure의 데이터 전송과 요청, DataSync �
 
 ## 출처
 
+- [AWS DataSync, Configuring AWS DataSync transfers with Google Cloud Storage](https://docs.aws.amazon.com/datasync/latest/userguide/tutorial_transfer-google-cloud-storage.html) — 2026-10-16 GCS 전송의 agent, HMAC과 객체 태그 조건 대조
 - [AWS DataSync, Creating a task for transferring your data](https://docs.aws.amazon.com/datasync/latest/userguide/create-task-how-to.html)
 
 2026-10-07 추가 대조 범위는 DataSync task mode, 파티션 간 S3 location 구성, Azure Blob 전송의 SAS, 태그와 접근 계층 조건이다. Storage Gateway 절의 기존 검증 기준은 2026-09-03이다.

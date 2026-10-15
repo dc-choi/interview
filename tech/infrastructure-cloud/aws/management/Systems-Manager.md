@@ -52,6 +52,17 @@ verified_at: 2026-07-21
 - 결과를 **S3, CloudWatch Logs**로 출력
 - **EventBridge**로 트리거 가능 (이벤트 기반 자동화)
 
+#### 명령 전달 실패와 실행 실패를 구분한다
+
+부분 검증(2026-10-16): Run Command는 command 전체, 노드별 invocation과 document의 실행 블록인 plugin 상태를 따로 제공한다. 전체 `Success`만으로 모든 노드에서 의도한 변경이 끝났다고 판단하지 않는다. 태그에 맞는 대상이 없거나 일부 실행이 실패해도 집계 상태가 성공일 수 있다.
+
+1. 대상 노드의 등록과 Agent 연결 상태, 호출자의 명령 실행 권한을 먼저 확인한다. 연결이 끊긴 상태에서 스크립트만 고치지 않는다.
+2. `DeliveryTimedOut`은 전달 확인 경계, `ExecutionTimedOut`은 노드에서 시작한 실행의 시간 초과로 구분한다. Agent의 종료 응답을 받지 못한 경우에도 전달 시간 초과로 보고될 수 있다.
+3. `Failed`이면 노드별 plugin의 종료 코드, 입력 파라미터와 실제 명령을 확인한다. 스크립트가 실패를 0으로 반환하지 않도록 하고, 원하는 상태 변화도 별도로 검사한다.
+4. 기본 명령 출력은 앞의 24,000자만 반환된다. 전체 출력은 권한을 구성한 S3 또는 CloudWatch Logs로 보내고, Agent 자체 문제는 Linux의 `/var/log/amazon/ssm/amazon-ssm-agent.log`와 `errors.log`를 확인한다.
+
+이 절은 공식 문서 기반 진단 순서이며 실제 인스턴스 장애를 재현한 결과는 아니다. 다른 SSM 기능 전체의 검증일은 유지한다.
+
 ### Session Manager
 
 **SSH/RDP 없이** 브라우저, AWS CLI로 인스턴스 셸 세션.
@@ -161,6 +172,9 @@ verified_at: 2026-07-21
 
 ## 출처
 
+- [AWS, Understanding command statuses](https://docs.aws.amazon.com/systems-manager/latest/userguide/monitor-commands.html)
+- [AWS, Configuring Amazon CloudWatch Logs for Run Command](https://docs.aws.amazon.com/systems-manager/latest/userguide/sysman-rc-setting-up-cwlogs.html)
+- [AWS, Troubleshooting SSM Agent](https://docs.aws.amazon.com/systems-manager/latest/userguide/troubleshooting-ssm-agent.html)
 - [AWS, Complete Session Manager prerequisites](https://docs.aws.amazon.com/systems-manager/latest/userguide/session-manager-prerequisites.html)
 - [AWS, Start a session](https://docs.aws.amazon.com/systems-manager/latest/userguide/session-manager-working-with-sessions-start.html)
 - [How do I use Session Manager port forwarding without a bastion host to connect to my EC2 instance through RDP? — AWS re:Post](https://repost.aws/knowledge-center/systems-manager-session-manager-connect)

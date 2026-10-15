@@ -93,6 +93,12 @@ MAE는 실제값과 같은 단위로 오차를 읽을 수 있고, RMSE는 제곱
 
 제품 도입과 평가 원리는 구분한다. AWS는 Amazon Forecast의 신규 고객 접근을 2024-07-29부터 중단한다고 공지했고 기존 고객은 계속 사용할 수 있다고 밝혔다. 과거 구축 영상을 신규 도입 절차로 그대로 사용하지 않는다. 검증 범위는 이 절의 분위수 해석과 해당 서비스 공지다.
 
+### 예측값 조회와 모델 평가 API를 구분한다
+
+부분 검증(2026-10-16): Amazon Forecast의 `QueryForecast`는 `Forecast.Predictions` 아래에 시점별 `Timestamp`와 예측 `Value`를 반환한다. 이 값이 RMSE나 분위수 손실인 것은 아니다. `GetAccuracyMetrics`는 predictor의 `TestWindows`별 평가 결과에 RMSE와 `WeightedQuantileLosses` 등을 제공한다.
+
+적용 제안: 화면에 보여 줄 수요 예측값과 모델 채택에 사용할 평가 지표를 별도 데이터로 관리한다. 예측 조회 성공을 정확도 검증으로 계산하지 않고, 평가 지표에는 평가 기간과 predictor를 함께 연결한다. 실제 API 호출은 시험하지 않았으며 신규 고객 접근 제한은 앞 절을 따른다.
+
 ## 물리적 운전 구간을 예측 평가에 반영한다
 
 풍력 발전 출력은 풍속이 커질수록 끝없이 증가하지 않는다. 미국 에너지부의 출력 곡선 설명은 발전을 시작하는 cut-in, 정격 출력에 도달하는 rated speed와 보호를 위해 정지하는 cut-out을 구분한다. 정격 도달 이후의 출력 제한과 정지 구간이 있으므로 풍속의 세제곱 관계를 실제 전력 출력의 모든 구간에 적용하지 않는다. 구간 경계는 터빈별로 확인한다.
@@ -125,6 +131,8 @@ MAE는 실제값과 같은 단위로 오차를 읽을 수 있고, RMSE는 제곱
 
 ## 출처
 
+- [Amazon Forecast, QueryForecast](https://docs.aws.amazon.com/forecast/latest/dg/API_forecastquery_QueryForecast.html)
+- [Amazon Forecast, GetAccuracyMetrics](https://docs.aws.amazon.com/forecast/latest/dg/API_GetAccuracyMetrics.html)
 - [Amazon Forecast, CNN-QR Algorithm](https://docs.aws.amazon.com/forecast/latest/dg/aws-forecast-algo-cnnqr.html) — 과거 관련 시계열의 encoder 입력과 추가 특성 평가를 2026-10-16 대조
 - [Amazon Forecast, Using Related Time Series Datasets](https://docs.aws.amazon.com/forecast/latest/dg/related-time-series-datasets.html) — legacy predictor별 관련 시계열 지원 범위를 2026-10-16 대조
 - [Amazon SageMaker AI, Use the SageMaker AI DeepAR forecasting algorithm](https://docs.aws.amazon.com/sagemaker/latest/dg/deepar.html) — 다중 시계열 학습, 범주값과 미래 동적 특성의 입력 조건을 2026-10-16 대조
