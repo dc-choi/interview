@@ -103,6 +103,14 @@ OLTP와 OLAP는 처리할 업무의 성격을, 데이터 웨어하우스와 데�
 
 Unity Catalog의 external location은 저장소 경로와 storage credential을 연결한다. 기존 파일을 external table로 등록하는 것은 그 파일을 가리키는 메타데이터와 접근 경계를 만드는 작업이며, 원본 전체를 control plane으로 이전하는 작업과 다르다. 반면 쿼리 결과, 캐시와 작업 로그 같은 파생 데이터는 별도로 저장될 수 있다. 원본 위치만 확인해 모든 데이터가 같은 곳에 남는다고 판단하지 않는다.
 
+Storage credential은 클라우드 저장소에 접근할 인증과 인가 수단을 나타내는 객체다. AWS S3에서는 IAM role과 연결하며, 하나의 credential을 여러 external location이 참조할 수 있다. 예를 들어 같은 role이 허용하는 범위 안에서 매출과 마케팅 경로를 별도 location으로 나누고 경로별 권한을 부여한다. Location 등록만으로 하위 파일이 테이블이나 볼륨으로 자동 등록되지는 않는다. 테이블, 볼륨 또는 managed storage를 만들 때 해당 location의 경로를 참조한다.
+
+- **연결 생성 권한**: external location을 만들려면 메타스토어와 참조할 storage credential 양쪽의 `CREATE EXTERNAL LOCATION` 권한이 필요하다.
+- **자산 생성 권한**: `CREATE EXTERNAL TABLE`은 credential보다 경로로 범위를 제한할 수 있는 external location에 부여하는 것이 권장된다. 테이블 생성 권한과 기존 테이블 조회 권한은 별개다.
+- **사용자 접근 경로**: 일반 데이터 사용은 테이블 이름과 볼륨의 `/Volumes` 경로를 우선한다. `READ FILES`는 저장소 경로의 파일을 직접 읽는 별도 권한이므로 테이블 조회 권한과 구분한다.
+
+부분 검증(2026-10-15): 위 credential, location과 권한 구분은 Databricks on AWS의 저장소 연결 문서와 Privilege Model 1.0 레퍼런스로 대조했다. 실제 IAM 설정과 워크스페이스 접근 시험은 수행하지 않았으며 다른 제품별 주장을 재검증하지 않아 frontmatter 날짜는 유지한다.
+
 운영 점검에서는 연산이 실행되는 계정, 원본과 파생 데이터의 저장 위치, Unity Catalog 권한과 저장소 직접 접근 권한을 따로 확인한다. 특히 managed table의 저장소에 별도 주체가 직접 접근하면 Unity Catalog의 접근 통제와 감사 경로를 우회할 수 있다. Plane 분리는 최소 권한 설정이나 실제 접근 검증을 대신하지 않는다.
 
 이 절은 AWS 배포와 저장소 연결 문서의 부분 대조이며 실제 워크스페이스의 보안이나 제품별 OLTP 적합성을 시험한 결과는 아니다.
@@ -170,6 +178,7 @@ Unity Catalog의 external location은 저장소 경로와 storage credential을 
 - [YouTube, 현수IT HyunsooIT, 처음부터 이해하는 Databricks Ep4. Delta Lake와 Transaction Log](https://www.youtube.com/watch?v=8a_VSHYV5MI)
 - [Databricks — High-level architecture](https://docs.databricks.com/aws/en/getting-started/high-level-architecture)
 - [Databricks — Connect to cloud object storage using Unity Catalog](https://docs.databricks.com/aws/en/connect/unity-catalog/cloud-storage/)
+- [Databricks — Unity Catalog privileges reference](https://docs.databricks.com/aws/en/data-governance/unity-catalog/access-control/privileges-reference)
 - [Databricks — What is a data lakehouse?](https://docs.databricks.com/aws/en/lakehouse/)
 - [Databricks — What is Unity Catalog?](https://docs.databricks.com/aws/en/data-governance/unity-catalog/)
 - [Databricks — Unity Catalog securable objects reference](https://docs.databricks.com/aws/en/data-governance/unity-catalog/securable-objects)
