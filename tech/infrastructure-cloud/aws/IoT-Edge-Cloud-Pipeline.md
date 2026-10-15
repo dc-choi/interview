@@ -72,6 +72,12 @@ SiteWise에서는 asset model로 같은 종류의 설비가 공유할 구조를 
 
 적용 시에는 수집 성공과 맥락 연결 완료를 따로 확인한다. 단위가 다른 값을 같은 지표로 합치거나 교체된 센서를 이전 설비에 연결하지 않도록 매핑을 점검한다. 이 점검은 설계 제안이며 모델 생성만으로 원시 데이터의 정확성이나 현장 제어 안전성이 검증되지는 않는다.
 
+### 측정값과 함께 시각과 품질을 전달한다
+
+2026-10-16 SiteWise 조회 API 문서 대조 기준. Asset property 조회 결과는 시각(`timestamp`), 품질(`quality`)과 값(`value`)을 함께 담는 TQV 구조다. 품질은 문제의 영향을 받지 않은 `GOOD`, 센서 고장 등의 문제가 있는 `BAD`, 센서 부정확성 등의 영향이 있는 `UNCERTAIN`으로 구분한다.
+
+대시보드나 생성형 AI에 숫자만 넘기면 오래된 관측과 품질이 불확실한 관측을 구분할 근거가 빠진다. 설계 제안으로, 설비와 단위에 더해 관측 시각과 품질을 유지하고, 허용할 데이터 나이와 품질별 처리 기준을 업무에서 정한다. `GOOD` 표시는 해당 데이터의 품질 상태이며 현재 공정의 안전성이나 모델 답변의 정확성을 입증하지 않는다. 이번 대조는 조회 결과의 계약에 한정하며 기존 기능 전체의 검증일은 유지한다.
+
 ### 설비 관계 조회와 원인 판단을 구분한다
 
 2026-10-10 AWS IoT TwinMaker 공식 문서 대조 기준. TwinMaker의 knowledge graph는 workspace의 entity와 component에 정의한 관계를 조회한다. 관계는 component의 `RELATIONSHIP` 타입 property로 표현하며 방향을 가진다. `ExecuteQuery`는 PartiQL의 graph match 문법으로 entity와 관계를 탐색한다.
@@ -220,6 +226,7 @@ Shadow 메시지의 도착 순서는 보장되지 않는다. 장비는 추적 �
 
 ## 출처
 
+- [AWS IoT SiteWise, Query data from AWS IoT SiteWise](https://docs.aws.amazon.com/iot-sitewise/latest/userguide/query-industrial-data.html) — 2026-10-16 TQV 구조와 품질 상태 대조
 - [AWS IoT Core, MQTT](https://docs.aws.amazon.com/iot/latest/developerguide/mqtt.html) — 2026-10-15 공유 구독의 그룹, 큐 조건, 전달 한도와 큐 깊이 조회 대조
 - [AWS IoT Core, AWS IoT metrics and dimensions](https://docs.aws.amazon.com/iot/latest/developerguide/metrics_dimensions.html) — `Queued.Success`의 정의 대조
 - [AWS IoT Greengrass, Log manager](https://docs.aws.amazon.com/greengrass/v2/developerguide/log-manager-component.html) — 2026-10-15 v2.3.10 설정의 업로드 간격, 시스템 로그 한도와 JSON 필터 조건 대조

@@ -79,6 +79,10 @@ lint와 unit test만으로 끝내지 않는다. integration test, migration rehe
 
 agent가 요구사항을 충족했는지뿐 아니라 삭제한 동작, 숨은 query, transaction 범위, authorization, error handling과 unused code까지 source diff로 본다. test가 통과해도 test 자체가 잘못된 정책을 고정했을 수 있다.
 
+자동 검사의 대상도 확인한다. 2026-10-16 Amazon Q Developer 공식 코드 리뷰 문서 기준, 기본 요청은 IDE의 활성 파일에서 `git diff`로 파악한 변경을 먼저 검사하며 diff가 없으면 파일 전체를 검사한다. 프로젝트 전체를 요청해도 변경분을 우선한다. 문서는 미지원 언어, 테스트 코드와 오픈소스 코드의 필터링을 명시하므로, 검사 완료를 모든 파일과 테스트의 검토 완료로 해석하지 않는다.
+
+검토 제안: 검사한 revision과 파일, 변경분 또는 전체 검사 여부, 제외 범위를 결과와 함께 남긴다. 자동 검사에서 빠진 테스트와 변경 영향은 별도로 검토한다. 이 대조는 문서의 검사 범위에 한정하며 실제 IDE 실행이나 기존 절 전체를 재검증하지 않아 frontmatter 검증일은 유지한다.
+
 ### Record
 
 새로 확인한 규칙만 repository instruction, ADR와 test에 남긴다. 특정 구현에서 우연히 발견한 패턴을 팀의 보편 규칙으로 승격하지 않는다.
@@ -174,6 +178,7 @@ REA의 Evidence는 대상 산출물 식별, 원본 위치, 관찰, 추론과 미
 검증 제안: 분석 권한이 있는 대상에서 한 기능의 진입점과 호출 경로를 찾고, 재현 입력과 관찰 결과를 연결한다. 복원한 구현을 사용할 때는 앞 절의 characterization test로 필요한 외부 동작을 비교한다. 분석 완료와 호환 구현 완료는 별도 판정이다.
 
 ## 출처
+- [Amazon Q Developer, Reviewing code with Amazon Q Developer](https://docs.aws.amazon.com/amazonq/latest/qdeveloper-ug/code-reviews.html) — 2026-10-16 변경분 우선 검사와 필터링 범위 대조
 - [Simplifying Code Documentation with Amazon Q Developer — AWS](https://aws.amazon.com/blogs/devops/simplifying-code-documentation-with-amazon-q-developer/)
 - [Build SAP applications faster with Amazon Q Developer — AWS](https://aws.amazon.com/blogs/awsforsap/build-sap-applications-faster-with-amazon-q-developer/)
 - [REA: Reverse Engineer Anything — morluto/rea](https://github.com/morluto/rea)
