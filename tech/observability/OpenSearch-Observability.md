@@ -61,7 +61,7 @@ Correlation은 단지 같은 화면에 신호 세 개를 배치하는 기능이 
 
 ## OpenSearch Dashboards와 OpenSearch UI
 
-이름이 비슷하지만 운영 모델이 다르다.
+이름이 비슷하지만 운영 모델이 다르다. 아래 표는 AWS 관리형 서비스의 UI 구분이며, 오픈소스 Dashboards의 확장 구성과 구별한다.
 
 | 구분 | OpenSearch Dashboards | OpenSearch UI |
 |---|---|---|
@@ -74,6 +74,14 @@ Correlation은 단지 같은 화면에 신호 세 개를 배치하는 기능이 
 AWS 공식 문서는 신규 관측성 workload에 OpenSearch UI의 Observability workspace를 권장한다. 새 Discover, Application Monitoring, 통합 correlation 기능은 **OpenSearch UI 전용**이며 기존 OpenSearch Dashboards에 그대로 있다고 가정하면 안 된다.
 
 반면 종료 예정인 [[Centralized-Logging-with-OpenSearch]] 솔루션의 template은 기존 OpenSearch Dashboards를 대상으로 한다. 두 세대의 UI와 배포 방식을 섞지 않는다.
+
+### 오픈소스 Dashboards의 다중 데이터와 플러그인 확장
+
+2026-10-16 공식 다중 데이터 소스 가이드와 OpenSearchCon 발표 소개 대조 기준. 오픈소스 Dashboards는 `data_source.enabled: true`로 여러 OpenSearch 데이터 소스에 연결할 수 있다. 이 설정 자체를 임의의 PostgreSQL이나 외부 API용 시각화 구현으로 해석하지 않는다.
+
+외부 데이터를 같은 화면에 표시하려면 데이터 조회와 시각화 렌더링을 분리하는 플러그인 패턴을 검토할 수 있다. OpenSearchCon 2026 공개 사례에서는 React와 D3 시각화를 registry에 등록하고 선언된 의존성으로 편집 UI를 구성해, 기본 패널과 외부 데이터 패널을 섞고 저장한 dashboard를 플러그인 페이지에 삽입했다. 이는 확장 사례이며 모든 배포판에 같은 renderer API가 제공된다는 보장은 아니다.
+
+설계 점검에서는 공통 시간 범위와 filter가 각 API로 어떻게 전달되는지, 조회 실패가 0건으로 오인되지 않는지 확인한다. 화면 filter는 인가를 대신하지 않으므로 원본 API와 index 권한도 검증한다. AWS 관리형 UI에 이 플러그인을 설치할 수 있는지는 별도 확인이 필요하다.
 
 ## Workspace와 권한
 
@@ -155,6 +163,14 @@ OpenSearch UI의 Agentic Chat은 자연어를 PPL로 바꾸고 현재 Discover c
 
 여기서 출력은 **원인 확정이 아니라 조사 가설**이다. 공식 기능도 근거와 대안 가설을 보여주는 검토 흐름을 전제로 한다. 매출 손실 계산, 장기 조치안, runbook 파일 생성은 별도 agent가 추가로 구현할 수 있는 workflow이지 OpenSearch가 항상 제공하는 보장은 아니다.
 
+가설을 검토할 때는 다음 세 가지를 운영 점검 기준으로 쓸 수 있다.
+
+1. **전제**: 같은 시간 범위와 기준선에서 이상 현상이 실제로 재현되는지 확인한다. 원인을 설명하기 전에 측정 대상과 집계 단위를 검증한다.
+2. **대안**: 조사한 가설마다 지지 근거, 배제 근거와 미확인 조건을 구분한다. 근거 링크가 있다는 이유만으로 결론을 승인하지 않는다.
+3. **수량**: 중복 이벤트와 재시도를 제거한 집계가 결론을 뒷받침하는지 확인한다. 예를 들어 요청 이벤트 50건이 고유 작업 50건의 완료를 뜻하지는 않는다(설명용 예시).
+
+2026-10-16 공식 Investigation Agent 가이드 기준, 데이터로 질문에 답하기 어렵다면 `Reinvestigate`에서 목표와 시간 범위를 바꿔 다시 조사할 수 있다. 위 세 점검은 검토자가 적용할 기준이며 제품이 자동 보장하는 검증 기능은 아니다. 이번 대조는 결과 검토와 재조사에 한정하며 기존 리전과 전체 UI 기능의 재검증은 아니다.
+
 > [!note] Region 확인
 > 2026-07-11 공식 Agentic AI 지원 Region 목록에는 서울이 없다. OpenSearch UI 자체는 서울에서 제공되더라도 Agentic Chat과 Investigation Agent는 별도 Region 지원표를 배포 전에 확인해야 한다.
 
@@ -201,6 +217,8 @@ OpenSearch UI 내장 Agentic AI는 현재 사용자의 IAM과 RBAC, document와 
 
 ## 출처
 
+- [OpenSearch Documentation, Configuring and using multiple data sources in OpenSearch Dashboards](https://docs.opensearch.org/latest/dashboards/management/multi-data-sources/)
+- [Stretching OpenSearch Dashboards: Multi-Source Visualizations and Embedded Dashboards — OpenSearchCon North America](https://events.linuxfoundation.org/opensearchcon-north-america/program/schedule/?id=1223857)
 - [OpenSearch Documentation, Trace Peer Forwarder processor](https://docs.opensearch.org/latest/data-prepper/pipelines/configuration/processors/trace-peer-forwarder/)
 - [AWS Documentation, Supported plugins and options for Amazon OpenSearch Ingestion pipelines](https://docs.aws.amazon.com/opensearch-service/latest/developerguide/pipeline-config-reference.html)
 - [AWS Documentation, Optimized engine supported query languages](https://docs.aws.amazon.com/opensearch-service/latest/developerguide/optimized-log-analytics-queries.html)

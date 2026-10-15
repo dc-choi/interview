@@ -48,6 +48,14 @@ Authentication backend는 순서대로 평가된다. 인증 성공 뒤 role mapp
 
 `all_access`와 service용 광범위 role을 사람에게 주지 않는다. 최소 권한 role을 만들고 파괴적 요청은 `perform_permission_check=true`로 실제 실행 전 검증한다.
 
+### 요청 묶음으로 최소 권한을 검증한다
+
+2026-10-16 공식 Security permissions 문서 대조 기준. `_bulk`나 `_msearch`는 한 REST 요청에서 여러 index와 action에 접근하고, `_cat/nodes`도 응답을 만들기 위해 여러 action을 수행한다. URL 목록만으로 필요한 권한이 모두 정해진다고 가정하지 않는다.
+
+대표 요청 묶음을 테스트 사용자로 실행하면서 부족한 action을 확인한다. 일반 실행의 권한 오류는 처음 만난 누락만 반환할 수 있으므로 하나를 해결한 뒤 같은 요청을 다시 점검한다. 쓰기와 삭제는 실제 실행 없이 확인하는 `perform_permission_check=true`의 `accessAllowed`, `missingPrivileges`를 먼저 본다. 적용할 배포판과 버전에서 이 옵션의 지원 여부를 확인한다.
+
+운영 점검에서는 허용할 요청의 성공뿐 아니라 대상 밖 index와 금지한 쓰기의 거부도 확인한다. 개발 환경에서 얻은 role 후보를 운영에 복사하기 전에 endpoint, index pattern, 사용자 mapping을 다시 대조한다. 자동 생성한 role이나 노트북의 실행 성공만으로 최소 권한이 증명되지는 않는다. 이번 대조는 요청별 권한 검사 범위이며 TLS와 인증 backend 전체의 재검증은 아니다.
+
 ## DLS와 FLS의 중요한 한계
 
 ### Document-level security
@@ -162,6 +170,7 @@ Audit는 기본 비활성이다. 필요한 category만 선택한다.
 
 ## 출처
 
+- [OpenSearch Documentation, Security permissions](https://docs.opensearch.org/latest/security/access-control/permissions/)
 - [OpenSearch Documentation, Security](https://docs.opensearch.org/latest/security/)
 - [OpenSearch Documentation, Security best practices](https://docs.opensearch.org/latest/security/configuration/best-practices/)
 - [OpenSearch Documentation, TLS certificates](https://docs.opensearch.org/latest/security/configuration/tls/)
