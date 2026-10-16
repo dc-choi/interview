@@ -20,7 +20,7 @@ Martin Fowler와 James Lewis는 MSA를 독립 프로세스로 실행되고 경�
 4. **Smart Endpoints, Dumb Pipes** — 서비스에 로직 집중, 메시지 버스는 단순 경로 역할. ESB에 처리 판단을 집중하는 접근과 대비
 5. **분산 거버넌스** — 공통 기준 안에서 언어, DB와 프레임워크를 상황에 맞게 선택. Polyglot은 가능성이지 의무가 아니다
 6. **분산 데이터 관리** — 서비스가 데이터 쓰기 권한을 소유하고 다른 서비스는 계약을 통해 접근. 물리 DB 분리는 점진적으로 할 수 있다
-7. **인프라 자동화** — CI/CD, IaC, 컨테이너 오케스트레이션이 필수. 수동 운영으로는 N개 서비스 관리 불가
+7. **인프라 자동화** — 빠른 프로비저닝과 반복 가능한 테스트, 배포가 중요하다. 초기 일부 수작업은 가능하지만 서비스 수가 늘면 자동화 수준을 높인다. 컨테이너 오케스트레이션은 구현 선택지다
 8. **실패를 전제로 설계** — 네트워크 호출은 실패한다. Circuit Breaker, Retry, Timeout, Bulkhead로 격리
 9. **Evolutionary Design** — 서비스는 **교체, 폐기 가능**하게. 경계를 리팩토링할 수 있는 유연성
 
@@ -33,6 +33,16 @@ Martin Fowler와 James Lewis는 MSA를 독립 프로세스로 실행되고 경�
 | 도메인 단위 소규모 팀 자율 | 네트워크 지연, 직렬화 비용 |
 | 장애 격리 가능성 | 연쇄 장애를 막는 별도 설계 필요 |
 | 부분 릴리스 가능 | 조직 성숙도, 자동화 전제 |
+
+### 배포 기술과 독립 배포를 구분한다
+
+MSA는 컨테이너 사용 여부로 판정하지 않는다. AWS는 컨테이너 기반 구현과 Lambda 기반 구현을 모두 제시한다. 중요한 것은 업무 기능의 경계와 다른 서비스의 배포에 묶이지 않고 변경할 수 있는 구조다. Kubernetes를 도입했다는 사실만으로 이 조건이 충족되지는 않는다.
+
+독립 배포도 모든 변경에서 보장되는 것은 아니다. 서비스 내부 변경은 해당 서비스만 배포할 수 있지만, 인터페이스를 바꾸면 소비자와 조율해야 할 수 있다. 같은 두 서비스를 반복해서 함께 수정한다면 경계가 잘못 나뉘었는지 검토한다. 서비스 개수보다 실제 변경과 배포가 함께 움직이는 범위를 확인한다.
+
+운영 점검 제안: 최근 기능 변경 하나를 골라 함께 수정한 서비스, 조율한 소비자, 배포와 롤백 대상을 적어 본다. 빠른 배포, 장애 감지와 롤백을 실제로 수행할 수 있는지 확인한 뒤 분리 범위를 늘린다.
+
+부분 검증(2026-10-16): 이 절과 위 인프라 자동화 항목을 AWS의 구현 문서, Microservices와 Microservice Prerequisites로 대조했다. 기존 사례 수치와 나머지 본문 전체의 검증일은 갱신하지 않는다.
 
 ## 재사용과 독립 변경의 충돌
 
@@ -113,6 +123,7 @@ Martin Fowler와 James Lewis는 MSA를 독립 프로세스로 실행되고 경�
 - 설계의 문제는 객체지향(OOP), 로직의 문제는 함수형(FP)으로 접근
 
 ## 출처
+- [AWS, Implementing Microservices on AWS — Microservices on serverless technologies](https://docs.aws.amazon.com/whitepapers/latest/microservices-on-aws/microservices-on-serverless-technologies.html)
 - [Martin Fowler — Microservices](https://martinfowler.com/articles/microservices.html)
 - [Martin Fowler — Microservice Trade-Offs](https://martinfowler.com/articles/microservice-trade-offs.html)
 - [Martin Fowler — Microservice Prerequisites](https://martinfowler.com/bliki/MicroservicePrerequisites.html)
