@@ -15,6 +15,8 @@ EC2, ASG, ALB, Lambda — 주요 AWS 컴퓨트 서비스.
 
 ## 목차
 
+- [x] [[Transfer-Family-Web-Apps|Transfer Family web apps]] — 브라우저 파일 공유, 인증과 grant, CORS
+- [x] [[Amazon-Location-Route-Optimization|Amazon Location 경로 계산]] — 거리와 시간 행렬, 방문 순서, 위치 추적
 - [x] [[Amazon-Braket|Amazon Braket]] — 양자와 고전 계산, Hybrid Jobs와 문제 표현 비용
 - [x] [[EC2-Operations#Amazon Linux 패치와 저장소 버전|Amazon Linux 패치]] — AL2023 버전 고정, 보안 업데이트와 재시작 경계
 - [x] [[Athena-MCP-Text-to-SQL|Athena MCP 자연어 분석]] — SQL 실행과 결과 접근의 권한 분리

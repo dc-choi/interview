@@ -66,6 +66,18 @@ Rehost한 앱을 여러 instance로 늘리면 로컬 상태가 바로 장애가 
 3. **레퍼런스 아키텍처**: 클라우드 벤더가 전략별로 제공하는 레퍼런스 아키텍처(모놀리스 구성, Kubernetes 활용, 모니터링 연동)를 출발점으로 쓰되 비용과 보안 경계는 자체 조건으로 다시 검증한다.
 4. **단계 이동**: 이전과 현대화를 한꺼번에 하지 않는다. 옮긴 뒤 재평가해 다음 단계로 간다. 기능 단위 교체 전술은 [[Legacy-Modernization-Strategies]], 반복 가능한 환경 구성은 [[IaC]]가 받친다.
 
+### 도입 준비도와 실행 책임을 연결한다
+
+부분 검증(2026-10-16): AWS CAF는 Business, People, Governance, Platform, Security, Operations의 여섯 관점으로 준비 역량을 나눈다. 이는 이 문서 앞의 Microsoft CAF 전환 전략 분류와 별개다.
+
+기술 이전에 적용할 점검 제안: 네트워크와 권한 구성이 가능한지만 보지 말고, 변경 승인, 애플리케이션 검증, 보안 설정, 백업과 장애 대응을 누가 맡는지 정한다. 각 미해결 항목에 담당자와 확인할 산출물을 연결한다. 랜딩 존 구축 완료만으로 이 책임과 애플리케이션 운영 준비가 모두 해결됐다고 판단하지 않는다. 이 절은 기업 전략이나 조직 개편의 처방이 아니라 이전의 기술 운영 준비를 확인하는 기준이다.
+
+### 반복할 패턴부터 절차서로 검증한다
+
+부분 검증(2026-10-16): AWS 대규모 이전 playbook은 초기화 단계에서 패턴별 runbook을 작성, 시험, 개선하고 수동 작업을 자동화한 뒤, 실행 단계에서 그 runbook으로 이전하도록 구분한다. 애플리케이션 소유자와 테스트를 조율하고 cutover 이후 집중 모니터링(hypercare)까지 맡는 작업 범위도 정의한다.
+
+반복 횟수가 많은 패턴에는 상세 절차서를, 단순하거나 한 번만 수행할 이전에는 짧은 작업 목록을 쓸 수 있다. 어느 형식이든 실행 순서가 드러나야 한다. 적용 제안으로, 첫 이전에서 확인한 전제와 예외, 중단 조건과 검증 결과를 다음 작업에 반영한다. 예제 템플릿을 복사한 사실이나 서버 이동 건수를 절차 검증 완료로 세지 않는다. 위 두 절만 추가 대조했으므로 기존 문서의 검증일은 유지한다.
+
 ## 컨테이너화와 기능 분리는 별도 작업이다
 
 2026-10-09 AWS 공식 문서 대조 기준. 컨테이너 이미지 생성은 실행 환경을 옮기는 단계이며, 도메인 경계와 데이터 소유권까지 분리했다는 증거는 아니다.
@@ -163,6 +175,8 @@ Agentless는 개별 소스 VM에 에이전트를 설치하지 않는다는 뜻�
 
 ## 출처
 
+- [AWS Cloud Adoption Framework, Foundational capabilities](https://docs.aws.amazon.com/whitepapers/latest/overview-aws-cloud-adoption-framework/foundational-capabilities.html)
+- [AWS Prescriptive Guidance, Migration playbook for AWS large migrations](https://docs.aws.amazon.com/prescriptive-guidance/latest/large-migration-migration-playbook/introduction.html)
 - [Accelerating mainframe modernization testing with AWS Transform — AWS](https://aws.amazon.com/blogs/migration-and-modernization/accelerating-mainframe-modernization-testing-with-aws-transform/) — 2026-10-10 테스트 생성, 수집 실행 책임과 기능 동등성 검증 범위를 대조했다. 기존 전환 전략 전체의 재검증은 아니다.
 - [AWS, Agentless replication related FAQs](https://docs.aws.amazon.com/mgn/latest/ug/Agentless-Replication-Related-FAQ.html)
 - [AWS, Agentless replication overview](https://docs.aws.amazon.com/mgn/latest/ug/installing-vcenter-overview-mgn.html) — 2026-10-09 MGN 복제 방식과 cutover 대기 조건을 대조했다. 기존 전환 전략 전체의 재검증은 아니다.

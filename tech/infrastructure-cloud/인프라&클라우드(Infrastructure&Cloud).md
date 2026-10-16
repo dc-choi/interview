@@ -18,6 +18,8 @@ aliases: ["인프라&클라우드(Infrastructure&Cloud)", "Infrastructure & Clou
 - [[tech/infrastructure-cloud/istio-ambient/istio-ambient|Istio Ambient (Service Mesh)]] — ztunnel, waypoint, HBONE, 업그레이드와 장애 대응
 
 ## AWS 체크리스트
+- [x] [[Transfer-Family-Web-Apps|Transfer Family web apps]] — 앱 사용자 할당, S3 접근 권한과 CORS의 구분
+- [x] [[Amazon-Location-Route-Optimization|Amazon Location 경로 최적화]] — route matrix와 방문 순서 API, 배차와 위치 추적의 경계
 - [x] [[SageMaker-Lakehouse|SageMaker Lakehouse]] — S3/RMS, 카탈로그와 엔진별 기능, Lake Formation의 공유 데이터 권한
 - [x] [[Redshift#다른 DW에서 이전할 때 확인할 계약|Redshift 마이그레이션 검증]] — 키 제약의 비강제, 분산 설계와 결과 비교
 - [x] [[EKS#Linux IPv4 Prefix Delegation의 용량 경계|EKS Linux IPv4 prefix]] — 연속 주소 공간, warm pool과 max-pods

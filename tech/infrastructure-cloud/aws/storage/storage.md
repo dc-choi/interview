@@ -14,6 +14,7 @@ aliases: ["AWS 스토리지 인덱스"]
 - [[FSx|FSx — Windows, Lustre, ONTAP, OpenZFS 특화 파일시스템]]
 - [[Storage-Gateway-DataSync|Storage Gateway와 DataSync — 하이브리드 스토리지, Enhanced와 파티션 간 S3 전송, Azure Blob의 SAS와 태그 조건]]
 - [[Snow-Family|Snow Family — 오프라인 대용량 데이터 이전, 엣지 컴퓨팅]]
+- [[Transfer-Family-Web-Apps|Transfer Family web apps — 브라우저 파일 공유, Identity Center와 S3 Access Grants, CORS와 권한 검증]]
 
 ## 관련 문서
 

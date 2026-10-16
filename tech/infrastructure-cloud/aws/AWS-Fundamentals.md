@@ -28,6 +28,16 @@ AWS가 여러 AZ를 운영하는 **물리적 지리 영역**이다. Region과 AZ
 
 선택 기준: 개발자가 아니라 주 사용자의 지리적 위치(사용자와 서버가 멀수록 왕복 지연이 커짐), 데이터 주권 / 규정 준수, 서비스 가용 여부, 비용 차이.
 
+### 서비스 지원, 계정 한도와 실제 용량은 다르다
+
+부분 검증(2026-10-16): EC2 시작 오류의 공식 문서를 대조했다. 특정 리전에 서비스가 제공된다는 사실과 지금 필요한 인스턴스를 확보할 수 있다는 사실을 구분한다.
+
+- `InstanceLimitExceeded`는 계정의 리전별 실행 한도에 도달한 경우다. 한도 증가 요청을 검토한다.
+- `InsufficientInstanceCapacity`는 요청을 수용할 On-Demand 용량이 현재 부족한 경우다. 재시도, 요청 수량 축소, 다른 인스턴스 타입 또는 AZ 선택을 검토한다.
+- `Unsupported`는 요청한 타입이나 구매 옵션 등 구성이 해당 리전 또는 AZ에서 지원되지 않는 경우다.
+
+운영 점검 제안: 리전의 서비스 개수나 과거의 규모 추정만으로 출시 용량을 보장하지 않는다. 대체 타입과 AZ에서 애플리케이션이 동작하는지 미리 확인한다. 이 절은 용량 확보 시험 결과가 아니며 다른 절의 검증일은 유지한다.
+
 ### 리소스가 사라진 것처럼 보이면 Region부터 확인
 
 콘솔과 CLI는 선택한 Region의 리소스만 조회하고 만든다. 서울에 만든 EC2 인스턴스는 콘솔 상단 Region을 미국 동부로 바꾸면 목록에서 보이지 않다가 서울로 돌아오면 다시 보인다. 삭제를 의심하기 전에 Region 선택부터 확인한다.
@@ -124,6 +134,7 @@ Out/In은 **stateless 워크로드**에 적합 (웹, API). Up/Down은 **DB, 캐�
 
 ## 출처
 
+- [Amazon EC2 User Guide, Troubleshoot Amazon EC2 instance launch issues](https://docs.aws.amazon.com/AWSEC2/latest/UserGuide/troubleshooting-launch.html)
 - [AWS Outposts, What is AWS Outposts?](https://docs.aws.amazon.com/outposts/latest/userguide/what-is-outposts.html)
 - [AWS Outposts, Connectivity through service link](https://docs.aws.amazon.com/outposts/latest/userguide/service-links.html)
 - [AWS, AWS Outposts racks FAQs](https://aws.amazon.com/outposts/rack/faqs/)

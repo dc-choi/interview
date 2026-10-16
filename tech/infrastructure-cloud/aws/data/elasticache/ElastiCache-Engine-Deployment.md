@@ -149,6 +149,16 @@ cluster mode enabled는 configuration endpoint 하나로 shard별 primary와 rea
 
 복구를 임의 버전의 제자리 downgrade로 가정하지 않는다. 현재 공식 가이드의 cross-engine rollback은 **Valkey 7.2에서 Redis OSS 7.1로** 한정하며 연결된 user와 user group의 엔진 유형은 `REDIS`여야 한다. 다른 버전의 복원 가능성과 전환 경로는 작업 전에 따로 확인한다.
 
+### 자체 운영 캐시의 온라인 이전은 별도 절차다
+
+부분 검증(2026-10-16): EC2에서 자체 운영하는 Valkey 또는 Redis OSS를 ElastiCache로 복제하는 Online Migration은 기존 ElastiCache의 엔진 업그레이드와 다르다. 공식 준비 조건에는 대상의 Multi-AZ 활성화, 전송 중 암호화 비활성화, 충분한 메모리, 소스와 대상의 shard 수 일치, Global Datastore와 data tiering 미사용이 포함된다. AUTH, 논리 DB 수, 복제용 명령과 네트워크 접근 조건도 함께 확인한다.
+
+이 경로를 쓰기 위해 보안 요구를 임의로 낮추지 않는다. 전송 암호화가 필수라면 해당 제약을 만족하는 다른 이전 방식을 검토하고, 복제 경로는 private IP와 필요한 보안 그룹 범위로 제한한다(설계 점검 제안).
+
+이전 중에는 대상 ElastiCache가 소스를 복제하며 읽기는 가능하지만 쓰기는 받지 않는다. `complete-migration`은 복제를 종료하고 대상을 primary로 승격한다. 성공 이벤트를 확인한 뒤 애플리케이션의 읽기와 쓰기를 대상으로 전환한다. `--force`는 동기화를 보장하지 않고 이전을 종료하므로 정상 전환의 기본 옵션으로 쓰지 않는다.
+
+운영 점검 제안: 소스 쓰기를 멈추는 시점, 마지막 동기화 확인과 접속 대상 전환을 한 절차로 검증한다. 복제 종료 후 소스로 들어간 쓰기가 대상에 자동 반영된다고 가정하지 않는다. 실제 이전 시험은 수행하지 않았으며 다른 절의 검증일은 유지한다.
+
 ## 비용, 사이징
 
 - **인스턴스 타입**: 데이터 크기, eviction, CPU, 네트워크와 엔진 호환성을 측정해 선택한다. Graviton 계열의 가격 대비 성능도 워크로드에서 비교한다.
@@ -158,6 +168,9 @@ cluster mode enabled는 configuration endpoint 하나로 shard별 primary와 rea
 
 ## 출처
 
+- [AWS ElastiCache, Preparing your source and target for migration](https://docs.aws.amazon.com/AmazonElastiCache/latest/dg/Migration-Prepare.html)
+- [AWS ElastiCache, Starting migration](https://docs.aws.amazon.com/AmazonElastiCache/latest/dg/Migration-Initiate.html)
+- [AWS ElastiCache, Completing the data migration](https://docs.aws.amazon.com/AmazonElastiCache/latest/dg/Migration-Complete.html)
 - [AWS ElastiCache, Metrics and events for Valkey and Redis OSS serverless caches](https://docs.aws.amazon.com/AmazonElastiCache/latest/dg/serverless-metrics-events-redis.html)
 - [AWS ElastiCache, Common troubleshooting steps and best practices](https://docs.aws.amazon.com/AmazonElastiCache/latest/dg/wwe-troubleshooting.html)
 - [AWS FIS, Actions reference, Amazon ElastiCache actions](https://docs.aws.amazon.com/fis/latest/userguide/fis-actions-reference.html#elasticache-actions-reference)
