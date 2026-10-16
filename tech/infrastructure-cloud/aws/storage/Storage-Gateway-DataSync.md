@@ -122,6 +122,16 @@ agent 운영비가 없어져도 Azure의 데이터 전송과 요청, DataSync �
 
 운영 점검 제안: 작은 prefix부터 전송해 읽기 권한, 목적지 쓰기 권한, 태그 설정과 검증 결과를 확인한다. 이 절은 공식 설정 문서 대조이며 실제 계정에서 전송한 결과가 아니다. 기존 Storage Gateway 절의 검증일은 유지한다.
 
+### 증분 전송, 반복 실행과 목적지 삭제를 구분한다
+
+부분 검증(2026-10-16): `TransferMode=CHANGED`는 첫 전체 전송 이후 실행에서 원본과 목적지 사이에 달라진 데이터와 메타데이터를 복사한다. 이 옵션만 켠다고 변경을 상시 감시하는 실시간 복제가 되지는 않는다. 반복 전송은 task를 다시 실행하거나 스케줄을 설정해야 한다.
+
+- `PreserveDeletedFiles=PRESERVE`가 기본값이며 원본에 없는 목적지 파일을 유지한다. `REMOVE`는 원본에 없는 목적지 파일을 삭제한다. 이전 과정에서 목적지에만 생성한 데이터도 고려해야 한다.
+- `REMOVE`와 `TransferMode=ALL`은 함께 설정할 수 없다. `ALL`은 차이를 비교하지 않고 원본 전체를 복사하므로 삭제할 목적지 파일을 알아낼 수 없다.
+- 삭제 여부와 덮어쓰기는 별도다. `OverwriteMode=ALWAYS`는 원본 데이터나 메타데이터가 바뀌면 목적지를 갱신하고, `NEVER`는 목적지의 기존 데이터를 덮어쓰지 않는다.
+
+운영 점검 제안: 작은 전송 범위에 원본 변경, 원본 삭제와 목적지에만 존재하는 객체를 각각 준비해 재실행 결과를 확인한다. 작업 성공 여부와 의도한 보존 정책의 일치는 따로 검사한다. 실제 전송 실험은 수행하지 않았으며 다른 절의 검증일은 유지한다.
+
 ## DataSync 병렬 전송과 agent 장애 경계
 
 2026-10-14 공식 가이드 부분 대조 기준이다. 병렬화를 늘리기 전에 원본과 목적지의 I/O 여유, 회선 대역폭과 파일 크기 분포를 확인한다. task 수가 늘면 스토리지 부하도 늘기 때문에 전송 시간이 같은 비율로 줄어든다고 가정하지 않는다.
@@ -155,6 +165,8 @@ agent 운영비가 없어져도 Azure의 데이터 전송과 요청, DataSync �
 
 ## 출처
 
+- [AWS DataSync API, Options](https://docs.aws.amazon.com/datasync/latest/apireference/API_Options.html)
+- [AWS DataSync, Scheduling when your AWS DataSync task runs](https://docs.aws.amazon.com/datasync/latest/userguide/task-scheduling.html)
 - [AWS DataSync, Configuring AWS DataSync transfers with Google Cloud Storage](https://docs.aws.amazon.com/datasync/latest/userguide/tutorial_transfer-google-cloud-storage.html) — 2026-10-16 GCS 전송의 agent, HMAC과 객체 태그 조건 대조
 - [AWS DataSync, Creating a task for transferring your data](https://docs.aws.amazon.com/datasync/latest/userguide/create-task-how-to.html)
 

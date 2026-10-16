@@ -62,6 +62,16 @@ ECPU는 애플리케이션 API 호출 수가 아니다. 단순 GET/SET은 전송
 
 운영 점검 제안: `BytesUsedForCache`와 `ElastiCacheProcessingUnits`에 최대값 도달 전 경보를 두고, 축출과 throttling 때 원본 DB로 몰릴 부하도 시험한다. 캐시의 처리량, API 지연과 실제 비용을 따로 측정한다. 이 절만 추가 대조했으므로 기존 문서 전체의 검증일은 유지한다.
 
+### Serverless 연결과 지연 지표를 함께 읽는다
+
+부분 검증(2026-10-16): 다음 지표는 Valkey와 Redis OSS Serverless의 `AWS/ElastiCache` namespace 기준이다. 캐시 이름에 대응하는 dimension은 `clusterId`이며, 노드 기반의 `CacheClusterId`와 구분한다.
+
+- `CurrConnections`는 현재 클라이언트 연결 수, `NewConnections`는 측정 기간에 서버가 수락한 새 연결 수다. 현재 연결 수가 일정해도 연결 생성과 종료가 반복될 수 있으므로 두 지표를 함께 본다. 새 연결 증가만으로 장애를 확정하지 않고 트래픽, 재연결과 연결 재사용 여부를 확인한다.
+- `SuccessfulReadRequestLatency`와 `SuccessfulWriteRequestLatency`는 성공 요청의 서비스 내부 지연이며 단위는 마이크로초다. 클라이언트 처리와 endpoint까지의 네트워크 왕복은 포함하지 않는다. 애플리케이션에서 측정한 지연과 같은 단위, 시간 구간으로 비교하고 오류와 timeout도 별도로 본다.
+- `CacheHits`, `CacheMisses`, `Evictions`를 함께 본다. miss와 축출의 동반 증가는 작업 데이터가 용량을 초과하는지 살펴볼 단서이며 원인의 확정 증거는 아니다. 적중률의 일률적인 목표값 대신 원본 DB 부하와 사용자 지연을 함께 판단한다.
+
+운영 점검 제안: 연결 풀이나 기존 연결 재사용으로 TLS 연결 생성 비용을 줄일 수 있는지 확인한다. 이 절은 공식 지표 정의와 점검 방법이며 실제 캐시 측정 결과가 아니다. 다른 절의 검증일은 유지한다.
+
 ## 클러스터, 노드 구조 (시험 관점)
 
 node-based ElastiCache는 **Node**를 서비스 단위로 사용한다. Node는 인스턴스 타입에 따른 메모리와 endpoint를 가지며 AWS가 관리형 인프라 작업을 수행한다. Serverless는 이 node 구성을 사용자에게 추상화하므로 아래 구조와 동일하게 해석하지 않는다.
@@ -148,6 +158,8 @@ cluster mode enabled는 configuration endpoint 하나로 shard별 primary와 rea
 
 ## 출처
 
+- [AWS ElastiCache, Metrics and events for Valkey and Redis OSS serverless caches](https://docs.aws.amazon.com/AmazonElastiCache/latest/dg/serverless-metrics-events-redis.html)
+- [AWS ElastiCache, Common troubleshooting steps and best practices](https://docs.aws.amazon.com/AmazonElastiCache/latest/dg/wwe-troubleshooting.html)
 - [AWS FIS, Actions reference, Amazon ElastiCache actions](https://docs.aws.amazon.com/fis/latest/userguide/fis-actions-reference.html#elasticache-actions-reference)
 - [AWS FIS, Stop conditions](https://docs.aws.amazon.com/fis/latest/userguide/stop-conditions.html)
 - [AWS, Amazon ElastiCache Service Level Agreement](https://aws.amazon.com/elasticache/sla/) — 2026-10-15 Serverless 월별 가동률과 서비스 크레딧 청구 조건 확인
