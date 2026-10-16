@@ -20,9 +20,21 @@ AWS의 **관리형 DNS 서비스**. 도메인 등록, DNS 라우팅, 상태 체�
 
 - 특정 도메인의 **DNS 레코드를 담는 컨테이너**
 - **Public Hosted Zone** — 인터넷에 공개된 도메인 (예: `example.com`)
-- **Private Hosted Zone** — **VPC 내부에서만** 해석되는 도메인 (내부 서비스 디스커버리)
+- **Private Hosted Zone** — 연결한 VPC와 구성한 하이브리드 DNS 경로에서 해석하는 내부 도메인
   - 하나의 Private Zone을 **여러 VPC**에 연결 가능
   - 온프레미스에서 접근하려면 Route 53 Resolver Endpoint 필요
+
+### 다른 계정의 VPC 연결
+
+2026-10-16 공식 User Guide와 API Reference 대조 기준이다. 아래는 기존 Private Hosted Zone에 VPC를 직접 연결하는 절차다. Zone과 VPC는 같은 AWS partition에 있어야 하며, 대상 VPC의 `enableDnsSupport`와 `enableDnsHostnames`는 모두 `true`로 설정한다.
+
+1. **Zone 소유 계정**이 `CreateVPCAssociationAuthorization`으로 대상 VPC 연결을 승인한다. VPC마다 승인이 필요하다.
+2. **VPC 소유 계정**이 `AssociateVPCWithHostedZone`으로 연결한다. 승인만으로 연결되지는 않는다. 두 단계는 Route 53 콘솔 대신 CLI, SDK 또는 API로 수행한다.
+3. 연결 뒤 **Zone 소유 계정**이 `DeleteVPCAssociationAuthorization`으로 승인을 정리한다. 이 삭제는 기존 연결을 끊지 않는다. 연결 해제는 `DisassociateVPCFromHostedZone`의 별도 작업이다.
+
+`GetHostedZone`의 VPC 목록이나 `ListHostedZonesByVPC`로 직접 연결을 확인한다. Route 53 Profiles를 통한 연결까지 조사할 때는 이 API 결과만으로 전체 목록이라 판단하지 않고 `ListProfileResourceAssociations`도 확인한다. 운영 점검에서는 대상 VPC의 DNS 질의 결과도 확인한다. 연결된 Private Zone에서 이름과 레코드 타입이 일치하는 항목을 찾지 못하면 공개 DNS로 재시도하지 않고 `NXDOMAIN`을 반환할 수 있다.
+
+이 절과 Private Hosted Zone 설명만 대조했으며, 다른 기능 전체를 재검증한 것은 아니므로 frontmatter의 기존 검증일은 유지한다.
 
 ## Record Type (레코드 종류)
 
@@ -147,7 +159,7 @@ AWS의 **관리형 DNS 서비스**. 도메인 등록, DNS 라우팅, 상태 체�
 - ELB 없이 **다수 IP에 분산 + 상태 감시** → **Multi-Value Answer**
 - **A/B 테스트, 카나리 배포, 점진적 전환** → **Weighted**
 - **특정 ISP, 클라이언트 IP 대역**을 지정 엔드포인트로 → **IP-based** (CIDR 컬렉션)
-- **VPC 내부에서만 해석**되는 도메인 → **Private Hosted Zone**
+- **연결한 VPC와 하이브리드 DNS 경로에서 해석**하는 내부 도메인 → **Private Hosted Zone**
 - 하나의 Private Zone을 **여러 VPC에 공유** 가능
 - 온프레미스에서 Private Zone 쿼리 → **Route 53 Resolver Endpoint**
 - 비 Alias 레코드는 TTL을 명시하고, 장애 전환 목표와 쿼리 비용을 고려해 값을 정함. Alias TTL은 대상에서 상속
@@ -157,6 +169,10 @@ AWS의 **관리형 DNS 서비스**. 도메인 등록, DNS 라우팅, 상태 체�
 
 ## 출처
 
+- [Associating an Amazon VPC and a private hosted zone that you created with different AWS accounts](https://docs.aws.amazon.com/Route53/latest/DeveloperGuide/hosted-zone-private-associate-vpcs-different-accounts.html)
+- [Considerations when working with a private hosted zone](https://docs.aws.amazon.com/Route53/latest/DeveloperGuide/hosted-zone-private-considerations.html)
+- [AssociateVPCWithHostedZone](https://docs.aws.amazon.com/Route53/latest/APIReference/API_AssociateVPCWithHostedZone.html)
+- [DeleteVPCAssociationAuthorization](https://docs.aws.amazon.com/Route53/latest/APIReference/API_DeleteVPCAssociationAuthorization.html)
 - [Geolocation routing](https://docs.aws.amazon.com/Route53/latest/DeveloperGuide/routing-policy-geo.html)
 - [Alias와 비 Alias 레코드 선택](https://docs.aws.amazon.com/Route53/latest/DeveloperGuide/resource-record-sets-choosing-alias-non-alias.html)
 - [레코드 공통 값](https://docs.aws.amazon.com/Route53/latest/DeveloperGuide/resource-record-sets-values-shared.html)
