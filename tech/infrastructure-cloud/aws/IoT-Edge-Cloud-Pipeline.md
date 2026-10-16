@@ -164,6 +164,16 @@ AWS IoT Greengrass V2는 장비에서 애플리케이션과 ML 추론을 실행�
 
 별도 로컬 DB와 압축 업로드를 추가한다면 클라우드 반영 확인 전 로컬 데이터를 지우지 않도록 하고, 재전송의 중복 처리를 설계한다. 로컬 저장 성공, 전송 성공과 최종 저장 성공은 서로 다른 완료 조건이다.
 
+### 연결 복구 시 장비 전체의 재시도를 분산한다
+
+부분 검증(2026-10-16): AWS IoT Lens의 장애 관리 기준을 대조했다. 단일 장비의 재연결 성공과 전체 장비군의 복구 성공은 다르다. 여러 장비가 동시에 복귀하면 연결 요청과 저장해 둔 메시지의 전송이 한꺼번에 몰릴 수 있다.
+
+- 재연결에는 지수 백오프와 무작위 지터를 적용해 장비들의 재시도 시점을 분산한다. 사용 중인 SDK나 엣지 런타임의 재시도 동작을 먼저 확인한다.
+- 중요한 메시지는 장비의 저장 공간과 허용 단절 시간에 맞춰 로컬에 보존하고 연결 복구 뒤 전송한다. 저장 한도 초과 때의 폐기 기준과 최종 반영 확인은 별도로 설계한다.
+- 연결이 복구될 때 장비 상태와 클라우드 상태를 동기화한다. Device Shadow를 사용할 수 있지만 연결 성공만으로 실제 상태 일치까지 확인된 것은 아니다.
+
+운영 점검 제안: 장비군의 동시 단절과 복구를 재현해 연결 실패율, 누적 메시지 해소 시간, 중복과 상태 불일치를 측정한다. 장비와 클라우드 전체 경로를 시험하기 전에는 복원력을 입증했다고 보고하지 않는다. 실제 장비 시험은 하지 않았으며 기존 절의 검증일은 유지한다.
+
 ## 장비 제어 요청과 보고 상태를 나눈다
 
 2026-10-09 AWS IoT Core 공식 문서 기준, Device Shadow는 장비가 오프라인이어도 애플리케이션이 저장된 상태를 조회하고 변경을 요청할 수 있게 한다. 상태 요청이 저장됐다는 사실과 장비가 실제로 수행했다는 사실은 구분한다.
@@ -257,6 +267,7 @@ Shadow 메시지의 도착 순서는 보장되지 않는다. 장비는 추적 �
 
 ## 출처
 
+- [AWS Well-Architected IoT Lens, Failure management](https://docs.aws.amazon.com/wellarchitected/latest/iot-lens/failure-management.html) — 2026-10-16 재시도 분산, 오프라인 보존과 상태 동기화 기준 대조
 - [AWS IoT Core, Reducing messaging costs with Basic Ingest](https://docs.aws.amazon.com/iot/latest/developerguide/iot-basic-ingest.html) — 2026-10-16 브로커 우회, 예약 topic과 PUBACK의 완료 범위 대조
 - [AWS IoT Core, Error handling (error action)](https://docs.aws.amazon.com/iot/latest/developerguide/rule-error-handling.html) — 오류 메시지 집계 단위, 원본 payload와 SQL 오류의 조사 경계 대조
 - [AWS IoT SiteWise, Native anomaly detection](https://docs.aws.amazon.com/iot-sitewise/latest/userguide/sitewise-anomaly-detection.html)

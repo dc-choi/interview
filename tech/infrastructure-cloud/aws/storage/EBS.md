@@ -62,6 +62,16 @@ EC2 인스턴스에 부착되는 **블록 수준 네트워크 스토리지**. �
 
 예를 들어 60초 동안 6,000건을 처리하고 idle이 30초라면 전체 평균은 100 IOPS, 활동 시간 기준은 200 IOPS다. 이 평균만으로 짧은 피크나 프로비저닝 한도 초과 여부를 확정하지 않는다. 실제 볼륨 측정은 수행하지 않았으며 기존 절의 검증일은 유지한다.
 
+### 짧은 성능 피크는 평균과 한도 초과 시간을 함께 본다
+
+부분 검증(2026-10-16): EBS CloudWatch와 NVMe 상세 통계 문서를 대조했다. 기본 EBS 지표는 1분 단위로 수집되므로 위의 활동 시간 기준 평균도 초 단위 피크를 재현하지는 못한다.
+
+- **측정 경계:** Nitro 인스턴스에 연결한 EBS는 NVMe 상세 통계를 최대 1초 간격으로 조회할 수 있다. 누적 카운터는 해당 연결 기간의 합계이므로 두 측정 시점의 차이와 경과 시간으로 비교한다. 재연결로 카운터 기준이 바뀐 구간은 이어 계산하지 않는다.
+- **병목 분리:** `ebs_volume_performance_exceeded_iops`와 `ebs_volume_performance_exceeded_tp`는 볼륨의 IOPS와 처리량 한도를 초과한 시간이다. `ec2_instance_ebs_performance_exceeded_iops`와 `ec2_instance_ebs_performance_exceeded_tp`는 인스턴스 한도에 대한 초과 시간이며 단위는 모두 마이크로초다. 인스턴스 측 병목이면 볼륨 성능만 올리는 것으로 해결된다고 가정하지 않는다.
+- **관측 누락:** 지연 히스토그램은 성공적으로 완료된 I/O만 포함한다. 멈춘 I/O는 빠지므로 `volume_queue_length`도 함께 본다. Multi-Attach에서는 상세 통계가 각 인스턴스 연결의 사용량만 나타낸다.
+
+운영 점검 제안: 지연이 발생한 시간대의 카운터 증가와 대기열을 애플리케이션 지연에 맞춰 비교한 뒤 볼륨, 인스턴스 또는 요청 패턴의 변경을 결정한다. 실제 부하 측정은 수행하지 않았고 기존 절의 검증일은 유지한다.
+
 ## LVM 볼륨을 확장할 때 확인할 계층
 
 부분 검증(2026-10-16): AWS의 EBS 확장 가이드와 LVM 운영 절차를 대조했다. EBS 크기 변경만으로 논리 볼륨과 파일시스템까지 커지지는 않는다. 변경 전 스냅샷을 만들고, 수정 상태가 `optimizing` 또는 `completed`인지 확인한다.
@@ -189,6 +199,7 @@ EBS는 AZ 안에서 중복 저장되므로 단일 볼륨의 일반적인 내구�
 - [How does Recycle Bin work?](https://docs.aws.amazon.com/ebs/latest/userguide/recycle-bin-concepts.html)
 - [Amazon EBS pricing](https://aws.amazon.com/ebs/pricing/)
 - [Amazon CloudWatch metrics for Amazon EBS](https://docs.aws.amazon.com/ebs/latest/userguide/using_cloudwatch_ebs.html)
+- [Amazon EBS detailed performance statistics](https://docs.aws.amazon.com/ebs/latest/userguide/nvme-detailed-performance-stats.html)
 - [Torn write prevention on Amazon EC2 Linux instances](https://docs.aws.amazon.com/AWSEC2/latest/UserGuide/storage-twp.html)
 - [Block sizes for torn write prevention on Amazon EC2](https://docs.aws.amazon.com/AWSEC2/latest/UserGuide/supported-block-sizes.html)
 - [Requirements for using torn write prevention on Amazon EC2](https://docs.aws.amazon.com/AWSEC2/latest/UserGuide/twp-reqs.html)

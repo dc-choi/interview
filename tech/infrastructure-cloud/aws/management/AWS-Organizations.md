@@ -54,6 +54,14 @@ SCP는 조직 외부 주체의 권한을 직접 제한하지 않는다. 외부 �
 
 선언적 정책은 API 호출 권한 대신 서비스 control plane에서 구성 기준을 집행한다. 정책 유형별 지원 속성과 상속 규칙을 확인하며 SCP의 평가 방식을 그대로 대입하지 않는다. [[AWS-Control-Tower|Control Tower]]의 탐지 통제는 위반을 알리는 별도 기능이다.
 
+### RCP 기본 허용과 서비스 호출 예외를 구분한다
+
+부분 검증(2026-10-16): Organizations의 RCP 예제와 IAM 전역 조건 키 문서를 대조했다. RCP 활성화 시 `RCPFullAWSAccess`가 조직 루트, 각 OU와 계정에 자동 연결된다. 이 정책은 RCP 평가를 통과시키는 기본값이며 외부 사용자에게 리소스 접근 권한을 새로 부여하지 않는다. 실제 권한은 identity-based 또는 resource-based policy 등에서 별도로 부여해야 한다.
+
+`aws:PrincipalOrgID`는 호출 주체가 속한 조직을 확인한다. 이를 이용해 조직 밖 호출을 제한할 때는 CloudTrail 같은 AWS 서비스의 직접 호출까지 차단하는지 확인한다. `aws:PrincipalIsAWSService`는 서비스 주체가 직접 호출하면 `true`지만, 서비스가 IAM 주체의 자격 증명이나 서비스 역할로 호출하면 `false`다. 따라서 이 조건 키의 예외를 모든 서비스 연동에 대한 허용으로 해석하지 않는다.
+
+서비스 직접 호출을 특정 Deny에서 제외해도 접근 권한이 생기는 것은 아니다. 필요한 리소스 정책과 해당 서비스의 호출 출처 제한도 별도로 검토한다. 배포 전 CloudTrail과 IAM Access Analyzer의 외부 접근 결과로 의도한 공유를 찾고, 대표 계정의 테스트 OU부터 범위를 넓힌다. 이는 정책 대조와 점검 제안이며 실제 계정에 적용한 결과가 아니다. 기존 절의 검증일은 유지한다.
+
 ### EC2 선언적 정책의 공개 차단과 AMI 사용 제한
 
 부분 검증(2026-10-16): EC2 정책, EBS snapshot 공개 차단과 Allowed AMIs 문서로 아래 경계를 확인했다. 기존 정책 전체의 검증일은 유지한다.
@@ -192,6 +200,7 @@ S3 Block Public Access(BPA)는 조직, 계정, 버킷과 액세스 포인트 수
 - [AWS, Understanding Amazon Q Developer in chat applications permissions](https://docs.aws.amazon.com/chatbot/latest/adminguide/understanding-permissions.html)
 - [AWS, RCP syntax](https://docs.aws.amazon.com/organizations/latest/userguide/orgs_manage_policies_rcps_syntax.html)
 - [AWS, Resource control policy examples](https://docs.aws.amazon.com/organizations/latest/userguide/orgs_manage_policies_rcps_examples.html)
+- [AWS IAM, AWS global condition context keys — aws:PrincipalIsAWSService](https://docs.aws.amazon.com/IAM/latest/UserGuide/reference_policies_condition-keys.html#condition-keys-principalisawsservice)
 - [AWS IAM, AWS global condition context keys — aws:SecureTransport](https://docs.aws.amazon.com/IAM/latest/UserGuide/reference_policies_condition-keys.html#condition-keys-securetransport)
 - [AWS, Tag policies](https://docs.aws.amazon.com/organizations/latest/userguide/orgs_manage_policies_tag-policies.html)
 - [Amazon EC2, Grant permission to tag Amazon EC2 resources during creation](https://docs.aws.amazon.com/AWSEC2/latest/UserGuide/supported-iam-actions-tagging.html)
