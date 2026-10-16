@@ -50,6 +50,18 @@ Provisioned domain은 기본적으로 instance RAM의 50퍼센트를 최대 32Gi
 
 Serverless가 더 싸거나 그대로 호환된다고 가정하지 않는다. 최소 OCU, peak 동시성, 지원 API와 client, migration 방식까지 workload로 비교한다. Provisioned domain에서 collection으로 자동 이관하는 기능은 없으므로 별도 reindex 경로가 필요하다.
 
+## 로그 분석용 Optimized 엔진의 선택 경계
+
+2026-10-07 공식 가이드 기준, Optimized는 Serverless collection과 다른 **프로비저닝형 domain의 엔진 모드**다. 로그를 계속 추가하며 집계, 필터와 추세 분석을 많이 하는 워크로드를 대상으로 한다.
+
+- 분석용 데이터는 Parquet 컬럼 형식으로 저장하고, 전문 검색에는 Lucene 역색인을 함께 사용한다. 넓은 범위를 집계하는 연산과 특정 로그를 찾는 연산이 같은 저장 구조를 쓰는 것은 아니다.
+- OpenSearch 3.5 이상과 지원 리전, OpenSearch Optimized 인스턴스가 필요하다. 생성 전 hot tier의 OR1, OR2, OM2와 warm tier의 OI2 지원 조건을 확인한다. 인스턴스 이름에 Optimized가 있다는 사실만으로 domain의 엔진 모드를 판단하지 않는다.
+- 시각화는 OpenSearch UI, 쿼리는 PPL과 SQL을 사용한다. 기존 OpenSearch Dashboards를 그대로 쓰는 선택지가 아니다.
+- 관련도 순위, vector와 semantic search, nested field, geo query, Painless scripting이 필요하거나 문서를 자주 제자리 갱신하면 General Purpose를 비교한다. Optimized는 해당 검색 기능과 Auto-Tune을 지원하지 않는다.
+- 설정 가이드는 생성 후 엔진 모드를 바꿀 수 없다고 명시한다. 기존 domain의 제자리 전환을 전제로 일정을 잡지 말고 새 domain의 수집, 쿼리와 보존 조건을 검증한다.
+
+저장량 최대 70퍼센트 감소와 가격 대비 성능 최대 4배는 AWS가 발표한 벤치마크 수치다. 실제 도입에서는 같은 수집량, 보존 기간, 검색 조건과 집계 쿼리로 용량과 지연을 비교해야 한다. 이 절만 추가 대조했으며 기존 배포 모델의 한도와 과금 전체를 재검증한 것은 아니다.
+
 ## 관리 책임 경계
 
 AWS가 주로 담당하는 영역:
@@ -78,6 +90,9 @@ AWS가 주로 담당하는 영역:
 
 ## 출처
 
+- [AWS Documentation, Optimized for log analytics](https://docs.aws.amazon.com/opensearch-service/latest/developerguide/optimized-log-analytics.html)
+- [AWS Documentation, Optimized engine setting up](https://docs.aws.amazon.com/opensearch-service/latest/developerguide/optimized-log-analytics-prerequisites.html)
+- [Amazon OpenSearch Service optimized for log analytics — AWS](https://aws.amazon.com/about-aws/whats-new/2026/07/amazon-opensearch-service-optimized-log-analytics/)
 - [Amazon OpenSearch 내부 구조, 성능 최적화와 스케일링 — YouTube](https://www.youtube.com/watch?v=e9GpbaT18Mk)
 - AWS 개요: [Amazon OpenSearch Service](https://aws.amazon.com/ko/opensearch-service/), [OpenSearch란 무엇인가요](https://aws.amazon.com/ko/what-is/opensearch/)
 - [AWS Documentation, What is Amazon OpenSearch Service](https://docs.aws.amazon.com/opensearch-service/latest/developerguide/what-is.html)

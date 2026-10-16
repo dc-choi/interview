@@ -39,9 +39,11 @@ aliases: ["AWS Pricing", "AWS pricing 구조", "AWS 요금 구조", "AWS 과금 
 
 ## 비용 추정 도구
 
-- **AWS Pricing Calculator**: 설계 단계에서 워크로드 가정으로 견적.
+- **AWS Pricing Calculator**: 설계 단계에서 워크로드 가정으로 견적. 계정 없이 쓰는 공개 웹 계산기와, 기존 사용량과 할인, 약정을 반영하는 Billing and Cost Management 콘솔의 계산기가 따로 있다.
 - **Cost Explorer**: 청구 데이터를 서비스/태그별로 분해. 진행 중인 달은 추정치다([[AWS-Pricing#월 청구서 확정과 결제 시점|월 청구서 확정]]). [[Budget-Alert]]
 - 둘을 비교해 가정과 실제의 괴리를 좁힌다.
+
+가격 페이지 직접 계산, 두 Pricing Calculator와 AWS Pricing MCP Server의 차이, 반복 비용과 일회성 비용을 나눈 계산 예는 [[AWS-Pricing-Estimation|AWS 비용 추정]]에서 다룬다.
 
 ## 신규 계정의 크레딧과 Free plan 종료
 
@@ -161,11 +163,13 @@ EC2 인스턴스로 실행하는 Marketplace 소프트웨어는 구독 취소만
 - [AWS, Tracking your AWS Free Tier usage](https://docs.aws.amazon.com/awsaccountbilling/latest/aboutv2/tracking-free-tier-usage.html)
 - [AWS, Track your Free Tier usage for Amazon EC2](https://docs.aws.amazon.com/AWSEC2/latest/UserGuide/ec2-free-tier-usage.html)
 - [AWS Pricing Calculator](https://calculator.aws/)
+- [AWS, Generating estimates with Pricing Calculator](https://docs.aws.amazon.com/cost-management/latest/userguide/pricing-calculator.html) — 계정 없이 쓰는 공개 계산기와 콘솔 계산기의 구분
 - [When will my AWS bill be ready? — Amazon Web Services](https://www.youtube.com/watch?v=1ycHyJT3M8U)
 
 ## 관련 문서
 
 - [[AWS-Cost-Optimization|AWS 비용 최적화 플레이북]]
+- [[AWS-Pricing-Estimation|AWS 비용 추정 (네 가지 추정 경로와 계산 예)]]
 - [[Reserved-Instance|Reserved Instance / Savings Plans]]
 - [[Storage-Tiering|스토리지 티어링]]
 - [[Egress-Cost|데이터 전송 비용]]

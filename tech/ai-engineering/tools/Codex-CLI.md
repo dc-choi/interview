@@ -47,6 +47,8 @@ Codex CLI는 터미널에서 동작하는 OpenAI의 AI 코딩 에이전트다. m
 
 ## AGENTS.md
 
+공통 작성법은 [[Agent-Repository-Instructions|AGENTS.md 작성과 운영]], 초기 발견 경로와 호스트 차이는 [[Agent-Repository-Instructions-Hosts|호스트별 적용]]에서 다룬다.
+
 프로젝트 지침 파일. 전역, 프로젝트, 디렉토리별로 **계층 적용**되어 대상에 가까운 파일 규칙이 우선한다. 담을 내용은 레포 구조, 빌드와 테스트 절차, PR 기대사항, 금지 행위, 완료 기준. `/init`으로 초기 생성한다.
 
 Claude Code의 CLAUDE.md에 대응하며, 성격은 강제가 아닌 **권장(advisory) 계층**이다 — 반드시 실행돼야 하는 동작은 권한 정책이나 훅으로 강제한다. 권장과 강제의 분리는 [[Context-Engineering]] 참조.
@@ -117,6 +119,7 @@ Claude Code의 CLAUDE.md에 대응하며, 성격은 강제가 아닌 **권장(ad
 
 - **Codex App**: 병렬 작업 관리와 시각적 Git 워크플로우 조율에 강함
 - **Codex CLI**: 명령 수준 정밀 제어와 스킬 기반 작업에 강함
+- **휴대폰 원격 연결**: 2026-10-12 공식 문서 기준, ChatGPT 데스크톱 앱(macOS, Windows)의 Settings > Connections > Control this Mac or PC에서 QR 코드로 휴대폰을 짝지으면 휴대폰의 ChatGPT 앱에서 그 호스트의 Codex 채팅을 시작하거나 이어 가고, 명령 승인과 diff 검토를 할 수 있다. 파일, 셸 명령, MCP 서버와 스킬은 호스트의 것을 쓰므로 호스트가 잠들거나 네트워크가 끊기거나 앱을 닫으면 원격 접근도 멈춘다. 설정은 데스크톱 앱에서 시작하며 CLI나 IDE 확장에서는 할 수 없고, 워크스페이스에서는 관리자가 Remote Control 접근을 켜야 할 수 있다. Claude Code의 대응 방식은 [[Claude-Code-Customization#원격 제어 — 실행 위치 분리|원격 제어]]를 본다
 
 ## 실전 패턴
 
@@ -140,6 +143,7 @@ Claude Code의 CLAUDE.md에 대응하며, 성격은 강제가 아닌 **권장(ad
 
 - [Codex Pricing — OpenAI](https://learn.chatgpt.com/docs/pricing)
 - [Codex Speed — OpenAI](https://learn.chatgpt.com/docs/agent-configuration/speed)
+- [Remote connections — OpenAI](https://learn.chatgpt.com/docs/remote-connections) — 2026-10-12 휴대폰 연결 설정, 호스트가 제공하는 실행 환경과 연결이 끊기는 조건을 대조했다.
 - [Codex 환경 변수와 스탠드얼론 설치 스크립트 — OpenAI](https://learn.chatgpt.com/docs/config-file/environment-variables.md)
 - [스킬 빌드하기 — OpenAI](https://learn.chatgpt.com/ko-KR/docs/build-skills)
 - [OpenAI Skills — 추천 스킬 목록 변경](https://github.com/openai/skills/commit/fdf90d652aea00d3fa57803a348744b1d7670fcb)

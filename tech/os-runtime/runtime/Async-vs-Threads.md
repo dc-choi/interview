@@ -123,3 +123,4 @@ CPU 바운드는 **Worker Threads**로, I/O 바운드는 **이벤트 루프**로
 - [[Async-IO|Async I/O]]
 - [[Worker-Threads|워커 스레드]]
 - [[Promise-Async|Promise와 Async]]
+- [[Go-Concurrency|Go 동시성 (goroutine, channel, select, context)]]

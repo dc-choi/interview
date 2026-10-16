@@ -1,7 +1,7 @@
 ---
 tags: [web, network, security]
 status: done
-verified_at: 2026-09-30
+verified_at: 2026-10-12
 category: "웹&네트워크(Web&Network)"
 aliases: ["Rate Limiting", "Rate Limit", "레이트 리밋"]
 ---
@@ -50,6 +50,7 @@ aliases: ["Rate Limiting", "Rate Limit", "레이트 리밋"]
 
 **Endpoint Rate Limit:** 민감한 엔드포인트에 더 엄격한 제한 (예: 로그인 IP당 10회/분)
 - 인증 관련 엔드포인트는 브루트포스 방지를 위해 별도 제한
+- 이 한도는 한 출처의 반복 대입을 막지만, 크리덴셜 스터핑 도구는 프록시망으로 요청을 수많은 IP에 분산해 IP 차단 목록과 IP 기준 rate limit을 함께 무력화할 수 있다. 로그인 실패 횟수를 출처 IP가 아니라 계정에 묶으면 여러 IP에서 한 계정을 노리는 대입을 막는다. 유출된 아이디와 비밀번호 쌍을 계정마다 한 번씩 시도하는 공격은 계정 기준 한도에도 잘 걸리지 않으므로 MFA와 유출 비밀번호 차단을 함께 둔다([[Password-Hashing#오프라인 공격과 온라인 공격|온라인 공격 방어]]).
 
 **User Rate Limit:** 인증된 사용자별 제한
 - IP 기반보다 정확 (NAT 뒤의 사용자 구분 가능)
@@ -119,6 +120,8 @@ Q. 429와 503은 어떻게 구분하는가?
 
 ## 출처
 
+2026-10-12 부분 검증: 로그인 실패 횟수의 계정 기준 집계와 프록시 분산에 따른 IP 기준 한도 우회를 OWASP Authentication, Credential Stuffing Prevention Cheat Sheet에 대조했다. 나머지 제품별 동작은 이번에 다시 대조하지 않았다.
+
 - [RFC 6585, 429 Too Many Requests](https://www.rfc-editor.org/rfc/rfc6585.html#section-4)
 - [RFC 9110, 503 Service Unavailable](https://www.rfc-editor.org/rfc/rfc9110.html#name-503-service-unavailable)
 - [Azure Architecture Center, Throttling pattern](https://learn.microsoft.com/en-us/azure/architecture/patterns/throttling)
@@ -127,8 +130,11 @@ Q. 429와 503은 어떻게 구분하는가?
 - [AWS API Gateway, Throttle API requests](https://docs.aws.amazon.com/apigateway/latest/developerguide/api-gateway-request-throttling.html)
 - [Kong, Rate Limiting Advanced](https://developer.konghq.com/plugins/rate-limiting-advanced/)
 - [OWASP API Security Top 10 2023, Release Notes](https://owasp.org/API-Security/editions/2023/en/0x04-release-notes/)
+- [OWASP Cheat Sheet Series, Authentication Cheat Sheet](https://cheatsheetseries.owasp.org/cheatsheets/Authentication_Cheat_Sheet.html)
+- [OWASP Cheat Sheet Series, Credential Stuffing Prevention Cheat Sheet](https://cheatsheetseries.owasp.org/cheatsheets/Credential_Stuffing_Prevention_Cheat_Sheet.html)
 - [Dowon Lee 강사, Rate Limiting Strategies](https://www.inflearn.com/courses/lecture?courseId=332731&unitId=289786)
 - [Dowon Lee 강사, API Rate Limiting 실습](https://www.inflearn.com/courses/lecture?courseId=332731&unitId=290752)
+- [EVERY junior dev makes these security mistakes... — CodeHead](https://www.youtube.com/watch?v=AjUeQJxen1k)
 
 ## 관련 문서
 - [[CSRF|CSRF Protection]]
@@ -136,3 +142,4 @@ Q. 429와 503은 어떻게 구분하는가?
 - [[Retry-Backoff-Jitter|재시도, 백오프와 지터]]
 - [[External-Service-Resilience|외부 서비스 장애 대응]]
 - [[Cache-vs-Queue|캐시와 큐의 역할 (Queue-Based Load Leveling)]]
+- [[Password-Hashing|패스워드 해싱 (온라인 공격 방어)]]

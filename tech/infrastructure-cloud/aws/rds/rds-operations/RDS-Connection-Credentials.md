@@ -41,6 +41,8 @@ DATABASE_URL="mysql://user:pass@mydb.xxxx.ap-northeast-2.rds.amazonaws.com:3306/
 
 `rejectUnauthorized: true`나 `sslaccept=strict`는 RDS 서버 인증서를 실제로 검증하겠다는 뜻이다. 검증을 켜면 중간자 공격을 막지만, RDS 글로벌/리전 CA 번들(`rds-ca-rsa2048-g1` 등)을 신뢰 저장소에 넣어줘야 한다. CA를 안 넣고 끄면(`rejectUnauthorized: false`) 암호화는 되지만 인증서 검증을 포기하는 것이라 권장하지 않는다.
 
+DB가 암호화하지 않은 연결을 거부하게 하는 엔진별 파라미터와 실제 세션의 암호화 확인은 [[RDS-Connection-Credentials-TLS|RDS 연결 암호화의 서버 강제와 세션 확인]]에 둔다.
+
 ## 자격증명 관리 — 3단계 보안 격상
 
 비밀번호를 어디에 두느냐가 보안 수준을 가른다. 단계가 올라갈수록 평문 노출과 수동 회전 부담이 줄어든다.
@@ -63,7 +65,7 @@ DATABASE_URL="mysql://user:pass@mydb.xxxx.ap-northeast-2.rds.amazonaws.com:3306/
 - **인바운드는 SG 참조로 연다**. IP를 박지 말고 앱 계층 SG를 소스로 참조한다. 설계는 [[RDS-Security-Group]].
 - **connection timeout vs 인증 에러 구분이 디버깅의 핵심**:
   - 연결 **timeout**이면 먼저 DNS, SG, NACL, 라우팅과 VPC 경로를 확인한다. 다만 서버 과부하, 연결 백로그, 프록시나 TLS 협상 문제도 timeout으로 나타날 수 있어 네트워크만으로 단정하지 않는다. 일반적인 자격증명 오류는 명시적인 인증 실패 응답으로 구분된다.
-  - **Access denied / authentication failed**는 네트워크는 뚫렸고 자격증명/권한이 틀린 것이다.
+  - **Access denied / authentication failed**는 네트워크는 뚫렸고 자격증명/권한이 틀린 것이다. 단 RDS for MariaDB 10.11 이하의 서버 TLS 강제 위반과 MySQL, MariaDB 계정의 `REQUIRE SSL` 위반도 `Access denied`로 거부되므로 클라이언트의 TLS 설정과 계정의 TLS 요구 조건도 확인한다([[RDS-Connection-Credentials-TLS|서버 TLS 강제]]).
   - 이 둘을 헷갈려 비밀번호만 계속 고치면 SG 문제를 영영 못 잡는다.
 
 ### IP 주소와 DNS 해석 위치를 분리한다
@@ -147,6 +149,7 @@ RDS 요금은 대략 다섯 축으로 쌓인다. 단가는 리전/인스턴스 �
 ## 관련 문서
 
 - [[RDS-Aurora|RDS / Aurora 관리형 DB]]
+- [[RDS-Connection-Credentials-TLS|RDS 연결 암호화의 서버 강제와 세션 확인]]
 - [[RDS-Security-Group|RDS Security Group 구성]]
 - [[RDS-Monitoring|RDS 모니터링]]
 - [[Secrets-Manager|Secrets Manager]]

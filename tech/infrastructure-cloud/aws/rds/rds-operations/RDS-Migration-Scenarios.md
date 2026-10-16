@@ -135,6 +135,12 @@ Multi-AZ를 먼저 해제해야 한다는 과거 제약을 그대로 적용하�
 
 검수 제안: 파일 전송, import 또는 복제, 데이터 대사, 애플리케이션 SQL 검증을 각각 완료 조건으로 둔다. 실제 이전 시험은 수행하지 않았으며 기존 절 전체의 검증일은 유지한다.
 
+## Babelfish는 데이터 이전과 SQL 호환성 평가를 대신하지 않는다
+
+부분 검증(2026-10-14): Babelfish for Aurora PostgreSQL은 SQL Server의 TDS 프로토콜과 T-SQL을 지원해 기존 드라이버와 애플리케이션의 변경을 줄이는 경로다. 모든 쿼리를 수정 없이 실행한다는 보장은 아니다. 공식 이전 절차는 DDL과 클라이언트가 실행하는 SQL을 각각 평가하고, 필요한 수정과 재시험을 요구한다. Babelfish Compass의 호환성 평가와 DMS의 데이터 적재는 별도 작업이다.
+
+SQL Server 객체는 PostgreSQL의 `babelfish_db` 안에 배치된다. `single-db`와 `multi-db`는 PostgreSQL에서 보이는 스키마 이름에 영향을 주며, 클러스터 생성 뒤 `migration_mode`를 바꾸면 기존 SQL 객체에 접근하지 못할 수 있으므로 변경하지 않는다. 전환 검수에서는 대표 쿼리의 결과, 타입 변환과 오류 시 트랜잭션 결과를 원본과 비교한다(검증 제안). 실제 이전 시험은 수행하지 않았고 기존 절의 검증일은 유지한다.
+
 ## 도구 선택 매트릭스
 
 | 도구 | 적합 상황 | 다운타임 | 비고 |
@@ -158,6 +164,9 @@ Multi-AZ를 먼저 해제해야 한다는 과거 제약을 그대로 적용하�
 
 ## 출처
 
+- [Amazon Aurora, Using Babelfish for Aurora PostgreSQL](https://docs.aws.amazon.com/AmazonRDS/latest/AuroraUserGuide/babelfish.html)
+- [Amazon Aurora, Migrating a SQL Server database to Babelfish for Aurora PostgreSQL](https://docs.aws.amazon.com/AmazonRDS/latest/AuroraUserGuide/babelfish-migration.html)
+- [Amazon Aurora, Babelfish architecture](https://docs.aws.amazon.com/AmazonRDS/latest/AuroraUserGuide/babelfish-architecture.html)
 - [Amazon RDS, Amazon S3 integration](https://docs.aws.amazon.com/AmazonRDS/latest/UserGuide/oracle-s3-integration.html)
 - [Amazon RDS, Configuring IAM permissions for RDS for Oracle integration with Amazon S3](https://docs.aws.amazon.com/AmazonRDS/latest/UserGuide/oracle-s3-integration.preparing.html)
 - [Amazon RDS, Adding the Amazon S3 integration option](https://docs.aws.amazon.com/AmazonRDS/latest/UserGuide/oracle-s3-integration.preparing.option-group.html)

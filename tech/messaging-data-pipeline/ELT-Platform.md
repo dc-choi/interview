@@ -47,6 +47,8 @@ DSL 기반 실행을 Airflow로 구현할 때 쓰는 기법. DAG를 파일마다
 
 주의: 동적 생성은 [[Airflow-DAG-Parsing|DAG 파싱 비용]]과 직결된다. 생성 로직이 top-level에서 매 파싱마다 외부 저장소를 조회하면 파싱 사이클이 폭증한다. 설정 스냅샷 캐싱과 파싱 주기 조정이 필요하다.
 
+부분 검증(2026-10-14): Airflow의 동적 DAG 생성 문서는 JSON/YAML 설정을 DAG 파일과 함께 배포하고 top-level 코드에서 원격 설정을 반복 조회하지 않는 방식을 안내한다. 태스크와 태스크 그룹 생성 순서도 일관되게 유지해야 한다. 따라서 셀프서비스 플랫폼의 검토 단위에는 SQL뿐 아니라 설정 파일, 생성 순서와 배포에 사용한 설정 버전을 함께 포함하는 것이 좋다. 이는 운영 점검 제안이며 설정 파일만으로 데이터 품질이 보장된다는 뜻은 아니다.
+
 ## DB → DWH 대량 복제 전략
 
 원천(MySQL, PostgreSQL)에서 DWH로 데이터를 옮기는 두 축:
@@ -67,6 +69,16 @@ DSL 기반 실행을 Airflow로 구현할 때 쓰는 기법. DAG를 파일마다
 예를 들어 일별 주문 복제에서는 동일한 입력 구간을 두 번 처리한 뒤 주문 키 중복, 필수값 누락과 기대 건수를 확인할 수 있다. 원천과 대상의 건수를 비교할 때는 필터, 삭제와 중복 제거 조건부터 맞춘다. 검사 실패 시 후속 집계를 막을지, 문제 행을 격리할지는 데이터 사용 목적에 맞춰 정할 운영 정책이다.
 
 이 절은 재실행과 품질 확인 조건만 보강한다. 기존 플랫폼 구축 사례 전체를 재검증한 것은 아니다.
+
+### Athena UNLOAD의 재시도와 결과 공개
+
+DWH 밖에서 SQL 변환을 수행하는 경로에서는 Athena `UNLOAD`로 `SELECT` 결과를 S3의 Parquet 같은 형식으로 저장할 수 있다. CTAS와 달리 결과용 테이블 생성을 요구하지 않는다. 다음 동작은 2026-10-14 Athena 공식 문서 대조 기준이다.
+
+- **비파티션 출력**: 목적지에 데이터가 없어야 하며 기존 데이터를 덮어쓰지 않는다. 실패한 실행의 파일이 남으면 같은 목적지로 재시도하기 전에 그 잔여물을 확인해야 한다.
+- **파티션 출력**: 같은 쿼리, 목적지와 파티션으로 반복 실행하면 그 위치에 다시 출력한다. 비어 있는 목적지 검사에 기대어 중복 방지를 보장할 수 없다.
+- **실패와 파일 추적**: 실패 시 Athena는 남은 데이터를 자동 삭제하지 않는다. 쿼리마다 만드는 manifest는 해당 쿼리가 쓴 파일을 추적하며, manifest와 metadata는 쿼리 결과 위치에 저장된다.
+
+운영 설계 제안: 실행별 출력 prefix를 분리하고, 성공 상태와 데이터 품질을 확인한 뒤 소비 경로에 공개한다. 재시도 전 공유 prefix를 통째로 지우면 이미 공개한 결과나 동시 실행의 파일을 지울 수 있으므로, 정리 범위는 해당 실행 소유의 파일로 제한한다. 이 공개와 정리 절차는 파이프라인이 구현할 책임이며 `UNLOAD`가 원자적 교체를 제공한다는 뜻은 아니다.
 
 ## Build vs Buy (자체 구축 vs OSS/SaaS)
 
@@ -100,6 +112,8 @@ Airbyte, Fivetran 같은 기성 커넥터 솔루션이 있는데 왜 자체 구�
 - [Apache Spark Documentation, JDBC Data Source](https://spark.apache.org/docs/latest/sql-data-sources-jdbc.html)
 - [Apache Airflow Documentation, Best Practices](https://airflow.apache.org/docs/apache-airflow/stable/best-practices.html)
 - [AWS Documentation, DQDL rule type reference](https://docs.aws.amazon.com/glue/latest/dg/dqdl-rule-types.html)
+- [Apache Airflow Documentation, Dynamic Dag Generation](https://airflow.apache.org/docs/apache-airflow/stable/howto/dynamic-dag-generation.html)
+- [AWS Documentation, UNLOAD](https://docs.aws.amazon.com/athena/latest/ug/unload.html)
 
 ## 관련 문서
 

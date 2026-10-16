@@ -32,6 +32,8 @@ aliases: ["Microservice Edge Patterns", "BFF and Gateway", "마이크로서비�
 
 도메인 권한과 상태 전이는 소유 서비스가 판단한다. 게이트웨이가 토큰을 검증했다고 해서 결제 취소 권한이나 주문 소유권까지 증명되는 것은 아니다. 내부 우회 경로와 service-to-service 호출도 별도 신뢰 경계가 필요하다.
 
+게이트웨이를 외부 진입점으로 삼으면 내부 서비스는 사설 네트워크에 두어 외부에서 직접 닿지 않게 한다. 모든 외부 요청이 지나는 게이트웨이는 단일 장애점이 되기 쉬우므로 여러 인스턴스를 [[Load-Balancer|로드 밸런서]] 뒤에 두어 수평 확장하고, rate limit 카운터처럼 인스턴스마다 따로 세면 실제 허용량이 인스턴스 수만큼 늘어나는 상태는 공유 저장소에 둔다([[Rate-Limiting|Rate Limit 정책 설계]]).
+
 ## 공통 관심사의 구현 위치
 
 | 위치 | 잘 맞는 관심사 | 남는 비용 |
@@ -121,11 +123,13 @@ registry의 health는 애플리케이션 요청이 반드시 성공한다는 보
 - [Microsoft, Sidecar pattern](https://learn.microsoft.com/en-us/azure/architecture/patterns/sidecar)
 - [Istio, Distributed tracing overview](https://istio.io/latest/docs/tasks/observability/distributed-tracing/overview/)
 - [Dowon Lee 강사, Sidecar 패턴과 Service Mesh 패턴](https://www.inflearn.com/courses/lecture?courseId=332731&unitId=290739)
+- [Fundamentals of Backend Architecture - How to Design Scalable Software — YouTube, Tiago](https://www.youtube.com/watch?v=Qa-7iWxDz1A)
 
 ## 관련 문서
 
 - [[API-Gateway|Amazon API Gateway]]
 - [[API-Comparison|API 방식 비교]]
 - [[Rate-Limiting|Rate Limit 정책 설계]]
+- [[Load-Balancer|Load Balancer (게이트웨이 앞단 분산)]]
 - [[External-Service-Resilience|외부 서비스 회복성]]
 - [[OpenTelemetry|OpenTelemetry와 분산 트레이싱]]

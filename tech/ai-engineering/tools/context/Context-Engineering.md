@@ -188,5 +188,5 @@ Q. 반드시 지켜야 할 규칙은 Hook에만 두면 되나?
 - [[Agent-Skills|에이전트 스킬 (점진적 공개, 재사용 절차와 컨텍스트의 관계)]]
 - [[Claude-Opus-5|Claude Opus 5 (검증 스캐폴딩 제거 — 세대 갱신 시 프롬프트 부채 정리)]]
 - [[Agent-Coding-Guardrails|LLM 코딩 가드레일 (실패 패턴별 원칙, 판정 테스트, 배포 경로)]]
-- [[Production-Agent-Architecture|프로덕션 에이전트 아키텍처 (Lazy Load, 분업)]]
+- [[Production-Agent-Architecture-Orchestration|프로덕션 에이전트 아키텍처 (Lazy Load, 분업)]]
 - [[Software-3-0|Software 3.0]]

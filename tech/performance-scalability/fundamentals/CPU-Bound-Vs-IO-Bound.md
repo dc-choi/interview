@@ -183,6 +183,7 @@ AI 서비스에도 데이터 준비, CPU 병렬 작업과 GPU 모델 실행이 �
 - [인프런, Hong, 두번쨰 서버 최적화 방법](https://www.inflearn.com/courses/lecture?courseId=336089&unitId=272600)
 
 ## 관련 문서
+- [[Programming-Language-Landscape|프로그래밍 언어 지형과 구분 기준]]
 - [[Latency-Optimization|레이턴시 최적화 개관]]
 - [[Async-vs-Threads|async/await vs 스레드]]
 - [[Single-vs-Multi-Thread|Node.js 싱글 vs 멀티 스레드]]

@@ -134,6 +134,17 @@ NAT 추가를 모든 연결 실패의 해결책으로 삼지 않는다. 먼저 �
 
 반복 수집 설계 예시: 조회할 날짜 구간과 완료 기준을 명시하고, 실패한 구간을 다시 처리했을 때 S3 결과가 중복되지 않도록 출력 경로와 교체 또는 중복 제거 방식을 정한다. 연결 성공이나 Crawler의 스키마 발견만으로 재처리 안전성이 검증된 것은 아니다. 앞 절들의 검증 기준일은 유지한다.
 
+## CDC 적재와 Iceberg의 현재 상태 반영을 나눈다
+
+부분 검증(2026-10-14): AWS의 CDC 기반 Glue/Iceberg 구현 자료, Apache Iceberg의 Spark 쓰기 문서와 Firehose 문서를 대조했다. CDC 이벤트를 S3에 쌓는 일과 분석 테이블에 변경을 반영하는 일은 별개다.
+
+- **원본과 현재 상태:** insert, update와 delete 이벤트를 보관하는 수집 영역과 현재 행 상태를 조회하는 Iceberg 테이블을 구분한다. Glue 변환에서 키와 변경 연산을 해석하고 `MERGE INTO`로 대상에 반영한다. Parquet 변환이나 Crawler 실행만으로 이 작업이 끝나지 않는다.
+- **병합 입력:** Iceberg의 Spark `MERGE INTO`에서는 여러 소스 레코드가 같은 대상 행을 갱신하려 하면 오류가 발생한다. 최신 상태 테이블을 만들 때는 키별 변경 순서를 정하고 병합 전에 입력을 정리한다. 설계 시 변경 순서가 같은 이벤트와 삭제의 처리 규칙도 명시한다.
+- **재처리 검증 제안:** 같은 변경 묶음을 두 번 처리하고, 늦게 도착한 이전 변경과 삭제 이후의 오래된 갱신을 넣어 최종 행이 기대한 상태인지 검사한다. 한 번의 병합 성공을 전체 파이프라인의 중복, 순서와 재실행 안전성으로 확대하지 않는다.
+- **적재 도구 선택:** 현재 Amazon Data Firehose는 Iceberg 테이블로 스트리밍 데이터를 전달하고 insert, update와 delete를 적용할 수 있다. Iceberg 적재를 위해 Glue가 반드시 필요하다는 전제를 두지 않는다. 조인과 업무 변환, 변경 순서 처리 등 요구사항을 각 도구의 지원 범위와 대조한다.
+
+이 절은 데이터 반영 경계에 대한 보강이다. 실제 파이프라인이나 장애 복구는 실행하지 않았으며, 기존 런타임과 연결 관련 절의 검증 기준일은 유지한다.
+
 ## 관련 문서
 
 - [[Athena]], [[Redshift]], [[EMR]]
@@ -142,6 +153,9 @@ NAT 추가를 모든 연결 실패의 해결책으로 삼지 않는다. 먼저 �
 
 ## 출처
 
+- [Implement a CDC-based UPSERT in a data lake using Apache Iceberg and AWS Glue — AWS Big Data Blog](https://aws.amazon.com/blogs/big-data/implement-a-cdc-based-upsert-in-a-data-lake-using-apache-iceberg-and-aws-glue/)
+- [Apache Iceberg, Spark Writes](https://iceberg.apache.org/docs/latest/spark-writes/)
+- [Amazon Data Firehose, Deliver data to Apache Iceberg Tables with Amazon Data Firehose](https://docs.aws.amazon.com/firehose/latest/dev/apache-iceberg-destination.html)
 - [AWS Glue, BigQuery connections](https://docs.aws.amazon.com/glue/latest/dg/aws-glue-programming-etl-connect-bigquery-home.html)
 - [AWS Glue, Tracking processed data using job bookmarks](https://docs.aws.amazon.com/glue/latest/dg/monitor-continuations.html)
 - [AWS Glue, Logging for AWS Glue jobs](https://docs.aws.amazon.com/glue/latest/dg/monitor-continuous-logging.html)

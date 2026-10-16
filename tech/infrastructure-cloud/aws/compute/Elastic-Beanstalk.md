@@ -91,6 +91,24 @@ Docker 지원 플랫폼에 `Dockerfile` 또는 플랫폼이 요구하는 구성�
 - 배포 이벤트, enhanced health, EC2와 ALB 로그를 함께 보고 실패 지점을 구분한다.
 - immutable과 traffic splitting은 임시 인스턴스 비용, burst balance 초기화 영향을 포함해 평가한다.
 
+### Auto Scaling 문제는 생성, 교체, 트리거로 나눈다
+
+2026-10-07 공식 문서 기준, EC2 기반 환경의 자동 확장은 다음 순서로 진단한다.
+
+| 증상 | 확인할 근거 | 대응 방향 |
+|---|---|---|
+| 새 인스턴스를 만들지 못함 | 환경 이벤트의 launch failure, 해당 타입의 가용 용량과 계정 quota | 생성 실패 원인을 먼저 해결한다. 임계값만 낮춰서는 용량이 생기지 않는다 |
+| 인스턴스가 반복 교체됨 | EC2 status check, ASG의 health check 유형, 환경 health와 애플리케이션 로그 | 인프라 장애와 애플리케이션 시작 실패를 구분한다 |
+| CPU가 치솟아도 확장하지 않음 | 알람의 Metric, Statistic, Period, Breach duration | `Average`가 순간 부하를 가리는지 확인한 뒤 `Maximum`을 검토한다. 모든 워크로드의 기본값으로 바꾸지는 않는다 |
+| 확장과 축소가 반복됨 | 상한과 하한 사이 간격, cooldown, 실제 부하 이력 | 임계값 간격과 cooldown을 조정하고 부하 테스트로 재확인한다 |
+
+- 기본 ASG health check는 EC2 상태를 본다. 애플리케이션이 죽어 로드 밸런서에서 제외돼도 EC2가 정상이면 자동 교체되지 않을 수 있다. ELB health check를 교체 기준으로 쓸지는 별도로 설정한다.
+- Linux 환경에서는 `/var/log/eb-engine.log`, 애플리케이션 로그와 `/var/log/nginx/`를 함께 보고 health check 경로와 포트를 확인한다. 로그 경로를 Windows 환경에 그대로 적용하지 않는다.
+- 용량과 트리거 변경은 Beanstalk의 Configuration, EB CLI 또는 option settings에 남긴다. EC2 콘솔에서 ASG만 직접 수정하면 다음 환경 업데이트가 덮어쓸 수 있다.
+- Single instance 환경은 최소, 최대와 희망 용량이 1로 고정된다. 수평 확장이 필요하면 load-balanced 환경을 사용한다.
+
+위 자동 확장 진단만 추가 대조했으며 배포 정책과 플랫폼 지원 상태 전체를 재검증한 것은 아니다.
+
 ## 선택 기준
 
 - 전통적인 웹 애플리케이션을 AWS 인프라 제어권을 유지하며 빠르게 배포하면 Beanstalk가 맞을 수 있다.
@@ -99,6 +117,10 @@ Docker 지원 플랫폼에 `Dockerfile` 또는 플랫폼이 요구하는 구성�
 
 ## 출처
 
+- [How do I troubleshoot Auto Scaling issues in Elastic Beanstalk? — AWS re:Post](https://repost.aws/knowledge-center/elastic-beanstalk-troubleshoot-autoscaling)
+- [AWS Elastic Beanstalk — Auto Scaling triggers](https://docs.aws.amazon.com/elasticbeanstalk/latest/dg/environments-cfg-autoscaling-triggers.html)
+- [AWS Elastic Beanstalk — Auto Scaling health check setting](https://docs.aws.amazon.com/elasticbeanstalk/latest/dg/environmentconfig-autoscaling-healthchecktype.html)
+- [AWS Elastic Beanstalk — Troubleshooting your environment](https://docs.aws.amazon.com/elasticbeanstalk/latest/dg/troubleshooting.html)
 - [AWS Elastic Beanstalk — Concepts](https://docs.aws.amazon.com/elasticbeanstalk/latest/dg/concepts.html)
 - [AWS Elastic Beanstalk — Deployment policies](https://docs.aws.amazon.com/elasticbeanstalk/latest/dg/using-features.rolling-version-deploy.html)
 - [AWS Elastic Beanstalk — Deploying applications](https://docs.aws.amazon.com/elasticbeanstalk/latest/dg/using-features.deploy-existing-version.html)

@@ -89,7 +89,7 @@ int first = queue.pollFirst(); // 1
 
 ### 기본 구현으로 ArrayDeque를 고르는 근거
 
-- 양끝 삽입과 삭제는 `LinkedList`도 O(1)이지만, API 문서는 `ArrayDeque`가 stack으로 쓸 때 `Stack`보다, queue로 쓸 때 `LinkedList`보다 빠를 가능성이 높다(likely)고 적는다. 보장이 아니라 경향이다. 배열 기반이라 원소마다 node를 할당하지 않고 cache 지역성이 좋다. 원형 배열 배치는 원리 설명으로만 쓰고 API 계약으로 가정하지 않는다([[Linear-Data-Structures|선형 자료구조]]의 circular buffer).
+- 양끝 삽입과 삭제는 `LinkedList`도 O(1)이지만, API 문서는 `ArrayDeque`가 stack으로 쓸 때 `Stack`보다, queue로 쓸 때 `LinkedList`보다 빠를 가능성이 높다(likely)고 적는다. 보장이 아니라 경향이다. 배열 기반이라 원소마다 node를 할당하지 않고 cache 지역성이 좋다. 원형 배열 배치는 원리 설명으로만 쓰고 API 계약으로 가정하지 않는다([[Linear-Data-Structures-Stack-Queue-Deque#Queue|선형 자료구조]]의 circular buffer).
 - FIFO만 필요하면 `Queue<Integer> queue = new ArrayDeque<>()`처럼 `Queue` 타입으로 선언해 양끝 API를 쓰지 못하게 한다. `Deque`는 `Queue`를 상속하므로 양끝 기능까지 필요할 때 `Deque`로 선언한다. stack 전용 interface는 없어 `Deque`의 `push`, `pop`, `peek`을 쓰며, 이들은 각각 `addFirst`, `removeFirst`, `peekFirst`와 같다.
 - stack은 가장 나중에 넣은 것이 먼저 나오므로 브라우저 뒤로 가기(이동 전 현재 페이지를 push, 뒤로 가기에서 pop)와 undo 같은 이력에 맞다. queue는 프린터 대기열처럼 도착 순서대로 처리하거나, 사용자가 많은 시간에는 작업을 `offer`만 해 두고 한가한 시간에 `poll`해 실행하는 작업 예약에 쓴다. 작업을 공통 interface로 두면 압축, 백업, 정리 같은 서로 다른 작업을 같은 scheduler가 다룬다.
 

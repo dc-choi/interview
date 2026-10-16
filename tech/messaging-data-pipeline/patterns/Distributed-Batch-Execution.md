@@ -36,6 +36,19 @@ aliases: ["Distributed Batch Execution", "분산 배치 실행", "트리거 외�
 
 처리 대상을 잡의 내부 상태가 아니라 공유 저장소의 데이터로 만든다. 대상이 데이터가 되면 어느 워커가 집어가든 상관없어져 워커 수만큼 처리를 병렬화할 수 있다 — 공유 저장소 경합이나 외부 API 한도가 새 병목이 되기 전까지다.
 
+### 파일 도착과 업무 처리 준비를 구분한다
+
+제휴 파일이 도착할 것으로 예상한 시각에 배치를 실행하면 전송 지연과 정정본 재전송 때 작업이 실패하거나 오래된 파일을 처리할 수 있다. 파일 도착 이벤트를 트리거로 쓰되, 도착과 업무 검증 완료를 별도 단계로 둔다.
+
+2026-10-10 S3 공식 문서 기준, 객체 생성 알림을 SQS로 전달할 수 있지만 알림은 최소 한 번 전달되도록 설계돼 중복 가능성이 있고 발생 순서대로 도착한다고 보장하지 않는다. `sequencer`는 같은 객체 키의 이벤트 순서만 비교하며 다른 키의 전후 관계를 정하지 못한다.
+
+다음은 이 계약을 배치에 적용한 설계 점검이다.
+
+- 이벤트의 객체를 읽은 뒤 파일 형식, 대상 업무일과 필수 데이터가 유효한지 검사하고 처리 대상을 확정한다. 여러 파일이 한 묶음이면 파일 하나의 생성만으로 전체 준비가 끝났다고 판단하지 않는다.
+- 같은 알림의 중복과 새 정정본을 구분한다. 공급자가 부여한 제출 ID와 개정 번호를 기준으로 하고, 저장 경로에는 불변 키나 S3 version ID를 연결해 처리 도중 입력이 바뀌지 않게 한다.
+- 정정본 적용은 단순 재실행이 아니라 기존 결과 교체 또는 보상 정책을 따른다. 먼저 처리된 최신 개정에 오래된 알림이 도착해 결과를 덮어쓰지 않도록 업무 개정 번호를 검증한다.
+- 파일 미도착 기한과 실패한 처리 상태는 별도로 감시한다. 이벤트를 받아도 업무 처리가 끝나지 않을 수 있으므로 수신 목록과 완료 기록을 대사한다.
+
 ## CronJob의 겹침 방지와 실행 시간 제한
 
 Kubernetes 공식 문서를 2026-10-06 대조한 범위다. `concurrencyPolicy` 기본값 `Allow`는 이전 Job이 실행 중이어도 다음 Job을 허용한다. `Forbid`는 같은 CronJob이 만든 Job끼리의 동시 실행을 막는다. 서로 다른 CronJob이나 별도 실행 경로를 묶는 전역 락은 아니다.
@@ -88,6 +101,8 @@ Kubernetes 공식 문서를 2026-10-06 대조한 범위다. `concurrencyPolicy` 
 
 ## 출처
 
+- [Amazon S3 User Guide, Amazon S3 Event Notifications](https://docs.aws.amazon.com/AmazonS3/latest/userguide/EventNotifications.html)
+- [Amazon S3 User Guide, Event message structure](https://docs.aws.amazon.com/AmazonS3/latest/userguide/notification-content-structure.html)
 - [@Scheduled 한 줄로 버티다, 트리거를 밖으로 꺼낸 이야기 — flex](https://flex.team/blog/2026/08/25/backend39)
 - [ShedLock — GitHub](https://github.com/lukas-krecan/ShedLock)
 - [MySQL 8.4 Reference Manual, Locking Reads](https://dev.mysql.com/doc/refman/8.4/en/innodb-locking-reads.html)

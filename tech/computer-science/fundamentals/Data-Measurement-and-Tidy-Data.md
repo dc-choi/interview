@@ -109,6 +109,6 @@ Tidy data는 변수 하나를 열 하나에, 관측 하나를 행 하나에, 관
 
 - [[기초(Fundamentals)|컴퓨터 기초]]
 - [[Metrics-Framework|제품 지표의 분모와 관측 기간]]
-- [[LLM-Decision-Models|결정 모델의 순서 점수와 확률 해석]]
+- [[LLM-Decision-Models-Mechanics|결정 모델의 순서 점수와 확률 해석]]
 - [[Recommendation-System-Evaluation-Experimentation#시간 누수를 막는다|시간 순서 분할과 누수]]
 - [[Time-Series-Forecast-Evaluation|시계열 예측의 시간 순서 평가]]

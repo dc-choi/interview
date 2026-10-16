@@ -59,6 +59,16 @@ aliases: ["Chaos Testing", "카오스 테스팅", "카오스 엔지니어링"]
 
 도구는 취향이 아니라 **실행 환경이 정한다**. Kubernetes 위면 Chaos Mesh나 Litmus, AWS 관리형 리소스의 종료와 페일오버까지 다루려면 FIS, 단일 의존의 지연과 타임아웃만 재현하려면 Toxiproxy가 가장 적은 비용으로 끝난다. Well-Architected는 상태 추적, 로그, 롤백과 중단 조건을 갖추지 못한 커스텀 스크립트로 실험하는 것을 권하지 않는다.
 
+## EKS 실험의 중단과 서비스 복구를 구분한다
+
+부분 검증(2026-10-14): AWS FIS의 action, stop condition과 실험 중단 문서를 대조했다. FIS는 EKS Pod 삭제와 네트워크 지연 action을 제공한다. `aws:eks:inject-kubernetes-custom-resource`로 Chaos Mesh 또는 Litmus 실험을 실행하려면 대상 클러스터에 해당 도구를 설치해야 한다. 이 설치 조건을 모든 FIS Pod action의 공통 전제로 확대하지 않는다.
+
+- **중단 조건:** CloudWatch 알람을 템플릿의 stop condition으로 연결한다. 임계에 도달하면 실험이 중단되며, 중단한 실험은 이어서 실행할 수 없다.
+- **복구 범위:** 실험을 중단할 때 남은 post action을 완료하지만 모든 action이 post action을 지원하지는 않는다. 종료한 EC2 인스턴스는 원래 인스턴스로 되돌릴 수 없다. 실험 중단 표시를 서비스 정상화의 증거로 쓰지 않는다.
+- **검증 제안:** Pod 또는 노드를 잃은 뒤 대체 용량 확보, readiness 회복, 요청 성공률과 지연이 정상 범위로 돌아오는 시간을 함께 측정한다. 네트워크 지연 실험에서 재시도를 늘렸다면 응답 코드뿐 아니라 전체 요청 시간과 하위 서비스 부하도 비교한다.
+
+이 절은 실험 설계의 보강이다. 실제 EKS 장애 주입이나 복구 시험을 수행한 기록은 아니며, 기존 문서 전체의 검증일은 유지한다.
+
 ## 도입 단계
 
 - **0단계 전제조건** — 정상 상태 지표와 알람([[SRE|SRE 지표 체계]]), 배포 되돌리기, 장애 대응 절차와 포스트모템([[RCA-Postmortem|RCA와 포스트모템]])이 없으면 시작하지 않는다. 관측이 없으면 실험은 그냥 장애다.
@@ -84,6 +94,10 @@ aliases: ["Chaos Testing", "카오스 테스팅", "카오스 엔지니어링"]
 
 ## 출처
 
+- [AWS 문서, AWS FIS Actions reference](https://docs.aws.amazon.com/fis/latest/userguide/fis-actions-reference.html)
+- [AWS 문서, Actions for AWS FIS](https://docs.aws.amazon.com/fis/latest/userguide/action-sequence.html)
+- [AWS 문서, Stop conditions for AWS FIS](https://docs.aws.amazon.com/fis/latest/userguide/stop-conditions.html)
+- [AWS 문서, Stop an experiment](https://docs.aws.amazon.com/fis/latest/userguide/stop-experiment.html)
 - [Principles of Chaos Engineering](https://principlesofchaos.org/)
 - [AWS Well-Architected Framework 신뢰성 원칙, REL12-BP04 Test resiliency using chaos engineering](https://docs.aws.amazon.com/wellarchitected/latest/reliability-pillar/rel_testing_resiliency_failure_injection_resiliency.html)
 - [AWS 문서, What is AWS Fault Injection Service?](https://docs.aws.amazon.com/fis/latest/userguide/what-is.html)

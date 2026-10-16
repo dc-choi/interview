@@ -58,4 +58,4 @@ WikiDocs가 소개한 per-edit 정규식 검사, end-of-turn diff review, commit
 - [[Claude-Code-Config-Permissions|Claude Code 설정과 권한 (샌드박싱)]]
 - [[LLM-Application-Security|LLM 애플리케이션 보안 (OWASP LLM Top 10, 프롬프트 인젝션)]]
 - [[Claude-Code-Workflows|Claude Code 개발 워크플로우 (CI 연동)]]
-- [[Production-Agent-Architecture|프로덕션 에이전트 아키텍처 (Defense in Depth)]]
+- [[Production-Agent-Architecture-Guardrails|프로덕션 에이전트 아키텍처 (Defense in Depth)]]

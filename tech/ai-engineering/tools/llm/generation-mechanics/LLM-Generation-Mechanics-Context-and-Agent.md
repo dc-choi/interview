@@ -1,14 +1,14 @@
 ---
 tags: [ai, llm, inference, rag, agent]
 status: done
-verified_at: 2026-10-06
+verified_at: 2026-10-12
 category: "AI엔지니어링(AIEngineering)"
-aliases: ["LLM Generation Mechanics Context and Agent", "LLM Context와 환각", "LLM 에이전트 전환 지점"]
+aliases: ["LLM Generation Mechanics Context and Agent", "LLM Context와 환각", "LLM 에이전트 전환 지점", "프롬프트 RAG 파인튜닝 선택"]
 ---
 
 # LLM 동작 원리: Context, 환각과 에이전트
 
-모델 밖의 정보가 어떻게 응답에 들어오고 어디서 환각이 생기며 언제 모델이 에이전트가 되는지를 다룬다. Weight, Context, RAG, Memory의 구분과 자주 헷갈리는 점까지다. 상위: [[LLM-Generation-Mechanics|LLM 동작 원리]].
+모델 밖의 정보가 어떻게 응답에 들어오고 어디서 환각이 생기며 언제 모델이 에이전트가 되는지를 다룬다. Weight, Context, RAG, Memory의 구분, 프롬프트, RAG와 파인튜닝의 선택과 자주 헷갈리는 점까지다. 상위: [[LLM-Generation-Mechanics|LLM 동작 원리]].
 
 ## Weight, Context, RAG와 Memory는 다르다
 
@@ -20,6 +20,21 @@ aliases: ["LLM Generation Mechanics Context and Agent", "LLM Context와 환각",
 | **Memory** | Host가 이후 호출에 다시 제공하도록 보존한 정보 | 제품과 설정의 저장, 선택 정책에 따라 다름 |
 
 모델 내부의 Token Embedding은 Token ID를 Transformer 공간에 넣는 표현이다. 검색용 Embedding은 query와 문서 chunk를 유사도 공간에 놓고 외부 자료를 찾는 표현이다. 둘 다 벡터지만 학습 목적, pooling, 공간과 소비자 계약을 확인하지 않고 직접 대체할 수 없다.
+
+## 프롬프트, RAG와 파인튜닝은 바꿀 대상으로 고른다
+
+세 방식은 바꾸는 층이 다르다. 프롬프트와 RAG는 이번 요청의 Context를 바꾸고, 파인튜닝은 Weight나 어댑터를 바꾼다. OpenAI의 정확도 최적화 가이드도 모델이 알아야 할 것을 채우는 Context 최적화와 모델이 행동하는 방식을 맞추는 LLM 최적화를 나누고, 프롬프트에서 시작해 필요하면 둘을 함께 쓰라고 안내한다(2026-10-12 확인).
+
+| 방식 | 바꾸는 것 | 맞는 문제 | 맞지 않는 문제 |
+|---|---|---|---|
+| 프롬프트와 지침 | 이번 요청의 지시, 예시와 도구 설명 | 형식, 역할과 절차를 지시로 맞출 수 있는 대부분의 작업 | 크고 자주 바뀌는 근거 자료, 대량 반복에서 같은 긴 지시를 매번 보내는 비용 |
+| RAG | 질문마다 검색해 넣는 근거 | 자주 바뀌거나 출처가 필요한 지식, 한 번에 넣기에 크거나 길게 넣으면 활용이 떨어지는 자료([[RAG-Retrieval-Engineering\|전체 투입과 검색 비교]]) | 형식과 말투가 흔들리는 문제. 검색이 빗나가면 근거도 빗나간다 |
+| 파인튜닝 | Weight 또는 어댑터 | 같은 형식과 행동을 대량으로 반복해 지시를 줄이거나 작은 모델로 내리려는 경우 | 자주 바뀌는 사실의 반영과 출처 제시. 데이터가 바뀌면 재학습과 재평가가 다시 필요하다 |
+
+- **순서**: 평가 기준과 프롬프트 기준선을 먼저 만든다. 지식이 모자라면 RAG를, 행동이 흔들리면 파인튜닝을 검토하며 둘은 함께 쓸 수 있다. RAG 원 논문은 검색 색인을 교체하는 것만으로 재학습 없이 지식을 갱신할 수 있음을 보였다.
+- **형식 문제는 구조화 출력부터**: 정해진 JSON 형식을 지키게 하는 일은 스키마를 강제하는 구조화 출력으로 먼저 푼다. 구조화 출력은 형식만 보장하므로 값은 따로 검증한다([[LLM-Failure-Handling-Response-Validation#구조화 출력은 형식만 보장한다|구조화 출력]]).
+- **비용 비교**: 파인튜닝의 비용 이득은 매 요청의 긴 지시와 예시를 빼거나 더 작은 모델로 같은 정확도를 낼 때 생긴다. 예를 들어 2,000토큰의 고정 지시를 하루 100만 번 보내면 지시에만 하루 20억 입력 토큰을 쓴다(설명용 산술 예시). 학습 데이터 준비, 학습과 재평가, 기반 모델이 바뀔 때의 재학습 비용을 함께 계산하고, 반복되는 앞부분의 비용은 [[LLM-Prompt-Caching|프롬프트 캐싱]]으로, 토큰 단가는 [[LLM-Model-Tiers|모델 티어 조정]]으로 줄일 수 있는지 비교한다.
+- **제공 범위**: 2026-10-12 기준 OpenAI는 셀프서비스 파인튜닝을 줄이고 있다. 2026-05-07부터 파인튜닝 이력이 없는 조직이, 2026-07-02부터는 최근 60일 동안 파인튜닝 모델로 추론하지 않은 조직이 새 학습 작업을 만들 수 없고, 활성 기존 고객도 2027-01-06부터 만들 수 없다. 이미 만든 모델은 기반 모델이 지원 종료될 때까지 추론에 쓸 수 있다. 파인튜닝을 검토하면 벤더의 지원 여부와 기간부터 확인하고, 오픈 가중치 모델은 [[LLM-Generation-Mechanics-Training#LoRA와 QLoRA: 바꾸는 파라미터와 저장 정밀도|LoRA]] 경로를 본다.
 
 ## Context Window와 대화 누적
 
@@ -107,6 +122,7 @@ Tool Call은 모델이 생성한 구조화 출력이다. Runtime이 권한을 �
 1. 문서를 읽은 직후 달라지는 것은 Weight인가, Context인가?
 2. Token Embedding과 검색용 Embedding은 각각 누가 무엇을 위해 사용하는가?
 3. 대화가 길어질수록 요청당 비용과 품질이 함께 나빠질 수 있는 이유는 무엇인가?
+4. 자주 바뀌는 사내 규정을 답에 반영해야 할 때 파인튜닝보다 RAG를 먼저 검토하는 이유는 무엇인가?
 
 ## 출처
 
@@ -115,6 +131,9 @@ Tool Call은 모델이 생성한 구조화 출력이다. Runtime이 권한을 �
 - [Effective context engineering for AI agents — Anthropic](https://www.anthropic.com/engineering/effective-context-engineering-for-ai-agents)
 - [Retrieval-Augmented Generation for Knowledge-Intensive NLP Tasks — Lewis et al.](https://arxiv.org/abs/2005.11401)
 - [Function Calling — OpenAI API](https://developers.openai.com/api/docs/guides/function-calling)
+- [Optimizing LLM Accuracy — OpenAI API](https://developers.openai.com/api/docs/guides/optimizing-llm-accuracy)
+- [Model optimization — OpenAI API](https://developers.openai.com/api/docs/guides/model-optimization)
+- [Deprecations — OpenAI API](https://developers.openai.com/api/docs/deprecations) — Update to OpenAI's self-serve fine-tuning
 - [Context windows — Anthropic Platform Docs](https://platform.claude.com/docs/en/build-with-claude/context-windows)
 - [Models overview — Anthropic Platform Docs](https://platform.claude.com/docs/en/about-claude/models/overview)
 - [Pricing — Anthropic Platform Docs](https://platform.claude.com/docs/en/about-claude/pricing)
@@ -123,12 +142,15 @@ Tool Call은 모델이 생성한 구조화 출력이다. Runtime이 권한을 �
 - [Gemini Developer API pricing — Google AI for Developers](https://ai.google.dev/gemini-api/docs/pricing)
 - [인프런, 널널한 개발자, LLM 서비스, 토큰, 컨텍스트](https://www.inflearn.com/courses/lecture?courseId=344484&unitId=498588)
 - [인프런, 널널한 개발자, AI도구 설치](https://www.inflearn.com/courses/lecture?courseId=344484&unitId=498586)
+- [YouTube, 양실장의 바이브코딩대학, LLM 신경망 학습부터 추론 원리 전체를 비개발자 15명에게 설명하는 강의](https://www.youtube.com/watch?v=geY4UO23QA8)
 
 ## 관련 문서
 
 - [[LLM-Generation-Mechanics|LLM 동작 원리 (묶음 인덱스)]]
 - [[LLM-Generation-Mechanics-Training|학습과 사전학습 이후 조정]]
 - [[LLM-Generation-Mechanics-Decoding|추론과 디코딩]]
+- [[LLM-Generation-Mechanics-Analogies|비개발자 설명용 비유와 한계]]
+- [[LLM-Failure-Handling-Response-Validation|LLM 실패 처리]] — 구조화 출력이 보장하는 범위
 - [[Codex-Agent-Execution-Model|Codex 에이전트 실행 원리]]
 - [[Context-Engineering|컨텍스트 엔지니어링]]
 - [[Vector-Similarity-Search|벡터 유사도 검색]]

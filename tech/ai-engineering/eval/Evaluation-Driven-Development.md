@@ -7,7 +7,7 @@ aliases: ["EDD", "Evaluation-Driven Development", "평가 주도 개발"]
 
 # 평가 주도 개발 (Evaluation-Driven Development)
 
-감이 아니라 채점 점수로 개발 방향을 정하는 방식이다. 이 문서는 개발 프로세스로서의 EDD, 즉 만드는 축과 채점하는 축을 어떻게 나누고 어느 순서로 성숙시킬지를 다룬다. 무엇을 성공으로 볼 것인가라는 상위 철학은 [[LLM-Eval-Strategy]], 배포 전 자동 검증의 실행 4축은 [[Production-Agent-Architecture]], 채점 장치의 실물은 [[Eval-Rubric-and-Score-Gate]], 데이터셋과 배포 관문은 [[Eval-Golden-Set-and-Deploy-Gates]]가 맡는다.
+감이 아니라 채점 점수로 개발 방향을 정하는 방식이다. 이 문서는 개발 프로세스로서의 EDD, 즉 만드는 축과 채점하는 축을 어떻게 나누고 어느 순서로 성숙시킬지를 다룬다. 무엇을 성공으로 볼 것인가라는 상위 철학은 [[LLM-Eval-Strategy]], 배포 전 자동 검증의 실행 4축은 [[Production-Agent-Architecture-Eval-and-Operations#Eval 시스템과 운영 루프|Production-Agent-Architecture]], 채점 장치의 실물은 [[Eval-Rubric-and-Score-Gate]], 데이터셋과 배포 관문은 [[Eval-Golden-Set-and-Deploy-Gates]]가 맡는다.
 
 ## 왜 필요한가 - 소모하는 루프와 축적하는 루프
 
@@ -131,7 +131,7 @@ GEPA(Genetic-Pareto)는 실행 경로와 피드백을 자연어로 분석해 프
 - [[Eval-Rubric-and-Score-Gate|루브릭과 점수 게이트 (채점기 3종, 3층 게이트, 완료 선언 차단)]]
 - [[Eval-Golden-Set-and-Deploy-Gates|골든셋과 배포 관문 (데이터셋 구축, 베이스라인, 카나리)]]
 - [[LLM-Abstention|LLM Abstention (모른다고 말하는 능력, 이중 검증)]]
-- [[Production-Agent-Architecture|프로덕션 에이전트 아키텍처 (배포 전 검증 4축, 운영 루프)]]
+- [[Production-Agent-Architecture-Eval-and-Operations|프로덕션 에이전트 아키텍처 (배포 전 검증 4축, 운영 루프)]]
 - [[Harness-Adoption-Ladder|하네스 도입 계단 (같이 오르는 다른 한 사다리)]]
 - [[Harness-Anatomy|하네스 구성도 (평가 하네스가 런타임 밖에 있는 이유)]]
 - [[Agent-Test-Verification-Behavior|에이전트 검증 행동 (자기 작성 테스트가 버그를 놓치는 메커니즘)]]

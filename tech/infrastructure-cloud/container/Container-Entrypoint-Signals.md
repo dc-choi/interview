@@ -125,6 +125,7 @@ CMD ["python", "main.py"]
 
 - **shell form 사용** — `CMD python main.py` → 셸이 PID 1 → 시그널 차단
 - **엔트리포인트 스크립트에서 `exec` 빠뜨림** — 마지막 줄이 `python main.py`로만 되어 있음
+- **Node.js를 `npm start`로 기동** — npm이 process를 하나 더 두고 SIGTERM, SIGINT를 Node.js process에 넘기지 않고 삼킬 수 있다. Node.js Docker 이미지 모범 사례는 `CMD ["node","index.js"]`처럼 node를 직접 실행하라고 권한다. Node.js는 PID 1로 실행되도록 설계되지 않았으므로 `--init`이나 tini도 함께 검토한다(2026-10-14 nodejs/docker-node 문서 기준)
 - **애플리케이션에 SIGTERM 처리기 없음** — 시그널은 전달되나 graceful 코드가 없어 in-flight 요청 유실
 - **자식 프로세스 수확 안 함** — 오랜 구동 후 좀비 누적, PID 고갈
 - **`terminationGracePeriodSeconds` 너무 짧게** — 30초 기본 K8s 설정보다 처리 시간이 긴 워크로드에서 강제 종료
@@ -157,6 +158,7 @@ CMD ["python", "main.py"]
 - [Docker Docs, docker container top](https://docs.docker.com/reference/cli/docker/container/top/)
 - [Docker Engine API reference](https://docs.docker.com/reference/api/engine/)
 - [Linux manual, proc_pid_cmdline(5)](https://man7.org/linux/man-pages/man5/proc_pid_cmdline.5.html)
+- [Docker and Node.js Best Practices — nodejs/docker-node, GitHub](https://github.com/nodejs/docker-node/blob/main/docs/BestPractices.md)
 - [인프런, Hong, 나만의 이미지 작성을 위한 Dockerfile 기초부터 뜯어보기](https://www.inflearn.com/courses/lecture?courseId=340962&unitId=416103)
 - [인프런, Hong, Docker Image 활용을 위한 기본 명령어](https://www.inflearn.com/courses/lecture?courseId=340962&unitId=414205)
 - [인프런, Hong, Docker Container 생성과 실행 (백그라운드 vs 포그라운드)](https://www.inflearn.com/courses/lecture?courseId=340962&unitId=414208)

@@ -107,6 +107,8 @@ const canAccess = (user: User, now: number): boolean => {
 
 `60 * 60 * 24 * 30`처럼 초 단위 숫자를 밀리초를 돌려주는 `Date.now()`와 비교하면 유효 기간이 1000배 짧아진다. 단위를 이름에 담은 상수는 이런 실수를 드러낸다. [[Avoid-Hard-Coding]]
 
+가드 절은 중첩을 하나도 남기지 말라는 규칙이 아니라 함수의 주 경로를 드러내는 수단이다. 사용자 존재, 활성 상태와 권한처럼 진행 전제를 먼저 확인하고 어긋나면 바로 반환하거나 던지면, 핵심 작업이 여러 단계의 들여쓰기 안에 묻히지 않는다. 대등한 두 결과 중 하나를 고르는 분기의 표현은 [[Code-Readability-Dark-Patterns|평행 구조]]를 함께 본다.
+
 - **try-catch 정리**: 긴 try 블록은 어디서 예외가 났는지 알기 어렵다. 내부를 함수로 추출하거나 실패를 값으로 다룬다. [[Railway-Oriented-Programming]]
 
 ## 코드를 넘어서
@@ -125,11 +127,13 @@ const canAccess = (user: User, now: number): boolean => {
 
 - [아름다운 코드에 대하여 — kciter.so, kciter](https://kciter.so/posts/what-is-beautiful-code/)
 - [CodeOwnership — martinfowler.com, Martin Fowler](https://martinfowler.com/bliki/CodeOwnership.html)
+- [7 Coding Laws of Senior Developer — YouTube, Cloud X Berry](https://www.youtube.com/watch?v=JcYMtYbNUhU)
 
 ## 관련 문서
 
 - [[Code-Quality-Criteria|코드 품질의 기준]]
 - [[Readable-Code-Cognition|코드 가독성의 인지과학]]
+- [[Code-Readability-Dark-Patterns|코드 가독성 다크패턴 (평행 구조)]]
 - [[Abstraction-and-Structural-Thinking|추상적 사고와 구조적 사고]]
 - [[Avoid-Hard-Coding|하드코딩, 매직 넘버 제거]]
 - [[Railway-Oriented-Programming|Railway-Oriented Programming]]

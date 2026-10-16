@@ -3,7 +3,7 @@ tags: [performance, scalability, monitoring, case-study]
 status: done
 category: "성능&확장성(Performance&Scalability)"
 aliases: ["Traffic Scaling Playbook", "트래픽 스케일링 실전"]
-verified_at: 2026-09-03
+verified_at: 2026-10-14
 ---
 
 # 서버 증설 없이 트래픽 스케일링
@@ -96,6 +96,12 @@ verified_at: 2026-09-03
 - **Connection Keep-Alive**: handshake 재활용
 - **CDN 앞단**: 정적 자원, 캐시 가능 API 응답
 
+## 분산 구조의 호출 증폭
+
+모놀리스에서 DB 쿼리 하나로 끝내던 화면을 서비스로 나누면, 화면 하나가 API 여러 개를, API 하나가 내부 서비스 여러 개를, 서비스 하나가 SQL 여러 개를 부를 수 있다. 그러면 호출 수가 계층마다 곱해져 뒤로 갈수록 요청이 많아지고, 가장 비싸고 늘리기 어려운 DB가 먼저 포화되기 쉽다. 앱 서버는 오토스케일링으로 늘릴 수 있지만 RDS 읽기 복제본은 직접 만들어야 하며, RDS는 읽기 복제본 오토스케일링을 지원하지 않는다(Aurora 복제본 확장은 [[RDS-Aurora-AutoScaling]]). 위의 API 통합(`/view`)과 N+1 제거가 이 호출 배수를 줄이는 처방이다.
+
+계층별 호출 배수와 캐시 적중률로 뒷단 부하를 어림하는 방법, 오토스케일링 대상 앞에 캐시를 두는 캐시 앤 스케일과 캐시가 빈 순간의 대비, 비정상 트래픽을 엣지에서 거르는 방법과 2018 커머스 사례는 [[Traffic-Spike-Query-Types|예측 불가 트래픽 폭증]]에서 다룬다.
+
 ## 실전 루프 (라이브 커머스 사례)
 
 분당 수십만 명, 초당 수십만 건 트래픽을 서버 증설 없이 처리한 사례:
@@ -146,6 +152,7 @@ verified_at: 2026-09-03
 - **로컬 캐시를 user-specific 데이터에 적용** → 메모리 폭발
 - **Consumer throttling 없이 Kafka로 DB에 쓰기** → DB 피크 여전
 - **API 통합 없이 클라가 각자 호출** → 게이트웨이 병목 지속
+- **캐시 적중률을 전제로 뒷단을 줄이고 빈 캐시를 시험하지 않음** → 캐시 장애나 재시작 때 뒷단이 원래 부하를 받음
 
 ## 면접 체크포인트
 
@@ -155,9 +162,12 @@ verified_at: 2026-09-03
 - API 통합(`/view`)이 주는 실제 효과
 - 카나리 배포가 최적화에 필수인 이유
 - "서버 증설은 마지막 수단"이라는 주장의 근거
+- 서비스를 나눈 뒤 뒷단 요청이 늘어나는 이유와 호출 배수를 줄이는 방법
 
 ## 출처
 - [Redis 공식 문서 — 복제](https://redis.io/docs/latest/operate/oss_and_stack/management/replication/)
+- [AWS 공식 문서 — Working with DB instance read replicas](https://docs.aws.amazon.com/AmazonRDS/latest/UserGuide/USER_ReadRepl.html)
+- [Amazon Web Services Korea — AWS All-in 그리고 그 이후](https://www.youtube.com/watch?v=tOngZ9LqJoE)
 - [Toss Tech — 서버 증설 없이 처리하는 대규모 트래픽](https://toss.tech/article/monitoring-traffic)
 - [Toss Tech — 대규모 트래픽 처리 (27600)](https://toss.tech/article/27600)
 - [F-Lab — 대용량 트래픽 처리를 위한 개발자 가이드](https://f-lab.kr/insight/handling-high-traffic)
@@ -171,3 +181,4 @@ verified_at: 2026-09-03
 - [[Distributed-Lock|분산 락]]
 - [[Connection-Pool|Connection Pool 사이징]]
 - [[Logs-vs-Metrics|로그, 메트릭, 트레이스]]
+- [[Traffic-Spike-Query-Types|예측 불가 트래픽 폭증]] — 호출 증폭 추정, 캐시 앤 스케일, 엣지 필터링과 계층별 차등 캐퍼시티

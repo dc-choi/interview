@@ -63,6 +63,9 @@ Google SRE의 공개 사례는 toil과 그 밖의 운영 작업을 합친 시간
 - 설계 제안자, 검토자와 최종 결정권자를 명확히 하고 반대 의견에 결정 이유를 남긴다.
 - 개인 기여자(IC)와 관리자 경로에서 기대 책임과 성장 기준을 설명한다. 직함만으로 동등한 권한이나 보상을 가정하지 않는다.
 - 보상, 역할과 일하는 조건을 함께 검토한다. 외부 오퍼를 받았다는 이유만으로 관계 훼손이나 충성도 부족을 단정하지 않는다.
+- 성과와 보상 사이의 고리를 짧게 만든다. 다음 반기나 다음 해로 미루기보다 성과 직후에 알아볼 수 있는 보상을 주는 편이 동기와 신뢰를 만든다는 VC 자문 경험이 있다. 마시멜로 실험의 후속 연구(Kidd 외, 2013)에서도 약속을 지키지 않은 실험자를 겪은 아이들은 기다리는 시간이 크게 짧아졌다. 보상을 기다리는 행동은 약속에 대한 신뢰에 좌우된다.
+- 투자나 목표 달성을 조건으로 약속한 지분, 인상은 지킨다. 지킬 수 없게 됐으면 이유를 먼저 설명한다. 약속을 어기고 인상을 동결해 퇴사를 유도하면 남은 사람도 같은 학습을 한다.
+- 같은 수준의 성과에 같은 보상을 반복하기보다 기대치를 함께 올린다. 작은 성과마다 보상을 요구하는 학습이 생기지 않도록 기준을 공개하고, 잘한 사례를 모아 문화의 기준으로 삼는다.
 - 이탈이 확정되면 지식 전달, 운영 담당 분산과 남은 팀의 업무량을 점검한다. 남는 선택과 떠나는 선택을 모두 존중한다.
 
 ## 엔지니어 관점 — 떠나기 전에 할 일
@@ -76,6 +79,8 @@ Google SRE의 공개 사례는 toil과 그 밖의 운영 작업을 합친 시간
 - [The SPACE of Developer Productivity: There's more to it than you think — Microsoft Research](https://www.microsoft.com/en-us/research/publication/the-space-of-developer-productivity-theres-more-to-it-than-you-think/) — 활동량과 단일 지표의 한계, 이탈 예측 효과의 근거는 아님
 - [Google SRE, Eliminating Toil](https://sre.google/workbook/eliminating-toil/) — 운영 작업의 범위, 조직별 목표와 개선 비용의 비교
 - [GitLab Handbook, Skip Level Meetings - Overview](https://handbook.gitlab.com/handbook/leadership/skip-levels/) — 목적과 직속 관리자 역할의 경계
+- [Rational snacking: Young children's decision-making on the marshmallow task is moderated by beliefs about environmental reliability — Cognition, Kidd, Palmeri, Aslin](https://doi.org/10.1016/j.cognition.2012.08.004) — 약속 신뢰도와 기다림의 관계, 직장 보상 효과의 직접 근거는 아님
+- [우리 회사, 스타트업일까 좋소일까? — JOB담](https://www.youtube.com/watch?v=mH3GCacqt7c) — 즉각 보상과 약속 이행에 관한 VC, 서치펌 대표의 경험
 - [GitLab Handbook, Managing Effective Skip Level Meetings](https://handbook.gitlab.com/handbook/engineering/devops/dev/create/engineers/skip-level/) — 피드백 공유와 민감한 주제의 처리 사례
 
 ## 관련 문서

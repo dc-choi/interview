@@ -73,6 +73,8 @@ DevOps는 별도 도구팀의 이름이 아니라 개발과 운영이 전달 결
 
 배포를 항상 조율해야 한다면 프로세스는 나뉘었어도 독립 배포라는 핵심 가치는 얻지 못한 상태다.
 
+**파이프라인의 성공 조건도 확인한다.** 단위 테스트는 격리된 코드 동작을, 통합 테스트는 구성요소가 연결된 기능과 데이터 변경의 영향을 확인한다. AWS Well-Architected의 기능 테스트 지침은 이를 배포 파이프라인에 포함하고 성공 기준 미충족 시 중단하거나 롤백하도록 권고한다. 운영과 유사한 사전 환경에서 검증할 경로와 실패 시 차단 단계를 정한다. 빌드 성공이나 테스트 자동 실행만으로 독립 전달 준비가 끝났다고 판단하지 않는다(2026-10-14 해당 지침 부분 대조).
+
 ### 5. 데이터 소유권과 일관성
 
 - 각 데이터의 쓰기 권한과 기준 시스템이 명확한가
@@ -90,6 +92,8 @@ DevOps는 별도 도구팀의 이름이 아니라 개발과 운영이 전달 결
 - 부분 장애와 의존성 장애를 훈련하고 복구 시간을 측정하는가
 
 서비스 분리는 장애 지점을 늘린다. 격리는 경계 자체가 아니라 제한, 실패 처리와 검증된 복구 절차가 만든다.
+
+**선택 확장의 범위는 실제 호출 흐름으로 확인한다.** 작은 서비스가 잦은 원격 호출이나 긴 동기 호출 사슬로 연결되면 지연과 네트워크 부담이 커질 수 있다. 전환 전후 동일한 사용자 흐름을 추적해 어느 서비스와 DB까지 부하가 전달되는지 비교한다. 예를 들어 행사 화면이 공통 메뉴나 최근 본 상품 조회를 함께 호출한다면 그 경로도 부하 점검에 포함한다. 이는 Microsoft의 통신 비용과 결합도 지침을 적용한 점검 예시다. 특정 서비스만 증설했다는 사실을 전체 경로의 격리나 비용 절감 증거로 삼지 않는다(2026-10-14 해당 지침 부분 대조).
 
 ### 7. 거버넌스와 보안
 
@@ -150,6 +154,8 @@ DevOps는 별도 도구팀의 이름이 아니라 개발과 운영이 전달 결
 
 ## 출처
 
+- [AWS Well-Architected Framework, REL08-BP02 Integrate functional testing as part of your deployment](https://docs.aws.amazon.com/wellarchitected/latest/framework/rel_tracking_change_management_functional_testing.html)
+- [Microsoft Learn, Microservices architecture style](https://learn.microsoft.com/en-us/azure/architecture/guide/architecture-styles/microservices)
 - [AWS Prescriptive Guidance, Strangler fig pattern](https://docs.aws.amazon.com/prescriptive-guidance/latest/cloud-design-patterns/strangler-fig.html)
 - [AWS Prescriptive Guidance, Shared-database-per-service pattern](https://docs.aws.amazon.com/prescriptive-guidance/latest/modernization-data-persistence/shared-database.html)
 - [Martin Fowler, Microservice Prerequisites](https://martinfowler.com/bliki/MicroservicePrerequisites.html)

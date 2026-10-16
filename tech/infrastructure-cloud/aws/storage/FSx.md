@@ -41,13 +41,25 @@ verified_at: 2026-09-03
 - **고성능 컴퓨팅(HPC)** 워크로드에 특화된 병렬 파일 시스템
 - Linux 인스턴스에서 **POSIX 호환** 프로토콜로 접근 (AWS, 온프레미스 컨테이너 포함)
 - 스토리지 클래스와 구성에 따라 최대 **수 TB/s 처리량**, 수백만 IOPS와 밀리초 미만 지연시간 제공
-- **S3 통합**이 강점 — S3 버킷을 Lustre 파일 시스템으로 마운트
-  - S3 데이터셋을 FSx에 연결해 **분석 실행** → 결과를 다시 S3로 기록 → 파일 시스템 삭제 가능
-  - Lazy load 방식 — 처음 접근 시 S3에서 캐싱
+- **S3 통합** — 지원 구성에서 S3 버킷이나 prefix를 데이터 리포지토리로 연결하고, 클라이언트는 FSx 파일 시스템을 마운트한다
+  - 파일 메타데이터를 가져온 뒤 첫 접근 때 S3의 실제 데이터를 FSx로 로드한다
+  - 결과는 export로 S3에 반영한다. 파일 시스템 삭제 전에는 미반영 변경이 없는지 확인한다
 - 배포 옵션
   - **Scratch File System** — 임시, 고성능, 복제 없음. 단기 처리에 저렴
   - **Persistent File System** — 장기 보관, 복제 있음, 고가용성 워크로드
 - 대표 사용 사례 — 머신러닝 학습, 미디어 처리, 유전체 분석, 금융 시뮬레이션
+
+### Lustre의 처리량, 메타데이터와 S3 반영을 분리한다
+
+2026-10-07 공식 문서 기준, 높은 총 처리량만으로 작은 파일이 많은 작업의 성능을 판단할 수 없다. 파일 생성, 목록과 삭제 같은 메타데이터 연산도 별도 병목이 된다.
+
+- **Metadata IOPS**: Lustre 2.15의 Persistent 2에서 생성 시 metadata configuration을 지정한 파일 시스템은 메타데이터 성능을 높일 수 있다. SSD의 Automatic 모드는 저장 용량에 연동되고 User-provisioned 모드는 따로 지정한다. Intelligent-Tiering은 User-provisioned만 지원한다. 기존 파일 시스템에 설정을 나중에 추가할 수 있다고 가정하지 않는다.
+- **용량 조정의 한계**: Metadata IOPS는 증설만 가능하고 축소는 지원하지 않는다. `Metadata IOPS Utilization`을 보고 데이터 처리량 부족과 구분한다. 12,000 IOPS를 넘어 새 메타데이터 서버가 추가돼도 기존 메타데이터와 하위 디렉터리는 원래 서버에 남으므로 기존 파일까지 같은 비율로 빨라진다고 가정하지 않는다.
+- **메타데이터 import와 실제 읽기**: 파일 목록이 보여도 본문을 모두 내려받은 것은 아니다. 첫 읽기는 S3에서 데이터를 가져오고 후속 읽기는 파일 시스템에서 처리한다. 첫 실행과 재실행 시간을 따로 측정하고, 필요하면 preload를 검토한다.
+- **결과 보존**: 자동 export는 비동기다. 자동 export를 켠 DRA나 파일 시스템을 삭제하기 전 `AgeOfOldestQueuedMessage`가 0인지 확인한다. 수동 export task를 사용했다면 작업 완료와 결과를 확인한다. 자동 export와 export task는 동시에 사용할 수 없다.
+- **지원 범위와 충돌**: DRA는 Lustre 2.10, Scratch 1과 Intelligent-Tiering에 일반화하지 않는다. S3와 FSx에서 같은 파일을 동시에 바꾸는 경우에는 애플리케이션 수준의 조정이 필요하다.
+
+성능 비교에서는 같은 데이터셋의 첫 읽기, 재읽기, 메타데이터 작업과 결과 export 시간을 나눠 기록한다. 이 절은 Lustre의 해당 조건만 대조했으며 다른 엔진의 기능과 한도는 다시 검증하지 않았다.
 
 ## FSx for NetApp ONTAP
 
@@ -99,7 +111,7 @@ verified_at: 2026-09-03
 
 - **Windows + SMB + Active Directory** → **FSx for Windows File Server**
 - **Linux + HPC + 최대 수 TB/s 처리량** → **FSx for Lustre**
-- **S3 데이터셋을 파일 시스템으로 마운트**해서 분석 → **FSx for Lustre**
+- **S3 데이터셋을 연결한 파일 시스템**에서 분석 → **FSx for Lustre**, import와 export 완료를 별도로 확인
 - **Linux + Windows 혼합 + 멀티프로토콜(NFS, SMB, iSCSI)** → **FSx for NetApp ONTAP**
 - **온프레미스 NetApp 환경 마이그레이션** → **FSx for ONTAP**
 - **ZFS 스냅샷, 데이터 클론 + 저지연 NFS** → **FSx for OpenZFS**
@@ -112,6 +124,12 @@ verified_at: 2026-09-03
 
 ## 출처
 
+- [AWS, Managing metadata performance](https://docs.aws.amazon.com/fsx/latest/LustreGuide/managing-metadata-performance.html)
+- [AWS, Importing changes from your data repository](https://docs.aws.amazon.com/fsx/latest/LustreGuide/importing-files-dra.html)
+- [AWS, Automatically export updates to your S3 bucket](https://docs.aws.amazon.com/fsx/latest/LustreGuide/autoexport-data-repo-dra.html)
+- [AWS, Exporting changes to the data repository](https://docs.aws.amazon.com/fsx/latest/LustreGuide/export-changed-data-meta-dra.html)
+- [AWS, Linking your file system to an Amazon S3 bucket](https://docs.aws.amazon.com/fsx/latest/LustreGuide/create-dra-linked-data-repo.html)
+- [AWS, DataRepositoryAssociation](https://docs.aws.amazon.com/fsx/latest/APIReference/API_DataRepositoryAssociation.html)
 - [AWS, What is Amazon FSx for Lustre?](https://docs.aws.amazon.com/fsx/latest/LustreGuide/what-is.html)
 - [AWS, FSx for Lustre deployment and storage class options](https://docs.aws.amazon.com/fsx/latest/LustreGuide/using-fsx-lustre.html)
 - [AWS, Protecting FSx for Lustre data with backups](https://docs.aws.amazon.com/fsx/latest/LustreGuide/using-backups-fsx.html)

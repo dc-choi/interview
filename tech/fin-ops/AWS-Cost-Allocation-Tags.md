@@ -33,6 +33,17 @@ aliases: ["AWS 비용 할당 태그", "AWS Cost Allocation Tags"]
 - `aws:eks:cluster-name`은 EKS에 참여하는 EC2 인스턴스 비용을 클러스터별로 나누는 AWS 생성 태그다. Control plane 비용은 포함하지 않으며, 비용 분석에 쓰려면 활성화해야 한다.
 - EKS 태그 키와 값은 대소문자를 구분한다. 표준 표기는 한 가지로 정하되, 대문자를 쓰면 청구 데이터가 반드시 깨진다는 규칙으로 확대하지 않는다.
 
+## EKS Pod 비용은 split cost allocation data로 구분한다
+
+2026-10-10 AWS 공식 문서 대조 기준. 클러스터 태그만으로는 공유 EC2 인스턴스 안의 Pod별 비용을 나누기 어렵다. **Split cost allocation data**는 컨테이너 수준 비용을 CUR와 Data Exports의 CUR 2.0에 추가한다. Cost Explorer에서는 이 데이터를 제공하지 않는다. 아래 Cost Categories의 split charge와는 별도 기능이다.
+
+- 먼저 Cost Management preferences에서 기능을 켜고 보고서에도 split cost allocation data를 포함한다. CUR에 보이기까지 최대 24시간이 걸릴 수 있다.
+- EKS의 Resource requests 방식은 Pod의 CPU와 메모리 요청량을 기준으로 배분한다. CPU와 메모리 requests가 설정되지 않은 Pod는 이 방식의 비용 데이터에서 빠질 수 있다.
+- 일반 EC2의 Amazon Managed Service for Prometheus 방식은 requests와 실제 사용량 중 큰 값을 사용한다. AWS Organizations의 모든 기능 활성화와 지표 수집 설정이 필요하다. 가속 컴퓨팅 인스턴스는 Resource requests 방식만 지원하므로 같은 측정 방식을 적용한다고 가정하지 않는다.
+- 비용 예제는 Pod에 할당한 비용과 인스턴스의 미사용 용량 비용을 나누고, 미사용 비용도 Pod에 배분해 총비용을 계산한다. 낮은 실제 사용률이 곧 낮은 귀속 비용을 뜻하지는 않는다.
+
+운영 점검에서는 선택한 측정 방식, 지표 누락과 requests 설정을 먼저 확인한다. 이 배분값을 애플리케이션의 전체 비용이나 자원 축소의 근거로 바로 쓰지 않고, 저장소와 네트워크 등 별도 비용 및 실제 부하와 대조한다(설계 제안).
+
 ## 과거 태그와 공유 비용은 별도로 처리한다
 
 2026-10-07 공식 문서 기준, 관리 계정 사용자는 최대 12개월의 비용 할당 태그 backfill을 요청할 수 있다. 현재 활성화 상태를 과거 기간에 적용하는 기능이며, 리소스에 태그가 없었던 기간의 값을 새로 만들어 주지는 않는다. 현재 비활성화된 키를 backfill하면 과거 비용 데이터에서도 그 키가 비활성화될 수 있다.
@@ -75,6 +86,8 @@ Cost Categories는 계정, 서비스, 태그 등의 규칙으로 비용을 묶�
 
 ## 출처
 
+- [AWS Data Exports, Enabling split cost allocation data](https://docs.aws.amazon.com/cur/latest/userguide/enabling-split-cost-allocation-data.html)
+- [AWS Data Exports, Example of split cost allocation data](https://docs.aws.amazon.com/cur/latest/userguide/example-split-cost-allocation-data.html)
 - [AWS 공식 문서, Building a cost allocation strategy](https://docs.aws.amazon.com/whitepapers/latest/tagging-best-practices/building-a-cost-allocation-strategy.html) — 비용 측정 범위와 태깅할 수 없는 비용의 처리, 과거 태그 적용은 위 backfill 절의 별도 문서를 따른다
 - [AWS Billing, Activating user-defined cost allocation tags](https://docs.aws.amazon.com/awsaccountbilling/latest/aboutv2/activating-tags.html)
 - [AWS Resource Groups Tagging API, GetResources](https://docs.aws.amazon.com/resourcegroupstagging/latest/APIReference/API_GetResources.html)

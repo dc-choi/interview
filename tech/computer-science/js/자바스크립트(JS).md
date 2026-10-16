@@ -20,3 +20,4 @@ JS 언어 핵심을 주제별 폴더로 나눠 모은다 — 값과 표현식, �
 - [[JS-Prototype|프로토타입]]: prototype chain 동작 원리, 상속 구현, prototype 기반 OOP와 설계 철학
 - [[JS-Browser-APIs|브라우저 API]]: DOM 조작과 XSS 안전성, event 전파와 위임, Fetch와 XHR, CSS 애니메이션과 호환성
 - [[Code-Readability-Dark-Patterns|코드 가독성과 JS 다크패턴]]: 영리한 코드가 리뷰를 통과하지 못하는 이유, Don't Make Me Think
+- [[JavaScript-Utility-Library-Selection|유틸리티 라이브러리 선택]]: es-toolkit과 Lodash, 번들 크기, 입력 계약과 타입 검증 경계, 호환 계층과 단계적 이주

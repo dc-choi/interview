@@ -3,7 +3,7 @@ tags: [ci-cd, automation, deployment]
 status: done
 category: "CICD&배포(CICD&Delivery)"
 aliases: ["CI Tool Selection", "CI 도구 선택"]
-verified_at: 2026-07-21
+verified_at: 2026-10-12
 ---
 
 # CI/CD 도구 선택
@@ -27,8 +27,9 @@ verified_at: 2026-07-21
 
 ### 기본값: GitHub Actions
 - GitHub 저장소, 권한, PR 이벤트와 바로 연결할 수 있어 초기 구성이 비교적 단순
-- 2026-07-21 기준 public 저장소의 표준 GitHub-hosted runner와 self-hosted runner에는 Actions 사용 요금이 부과되지 않는다. 다만 larger runner와 부가 기능은 과금될 수 있고 self-hosted 인프라 비용은 사용자가 부담한다.
+- 2026-10-12 기준 public 저장소의 표준 GitHub-hosted runner와 self-hosted runner에는 Actions 사용 요금이 부과되지 않는다. 다만 larger runner와 부가 기능은 과금될 수 있고 self-hosted 인프라 비용은 사용자가 부담한다.
 - private 저장소의 포함 실행 시간과 스토리지는 플랜별이다. 예를 들어 GitHub Free는 월 2,000분을 포함하지만 이 수치를 모든 private 저장소에 일반화하면 안 된다.
+- 유효한 결제 수단이 없는 계정은 포함량을 다 쓰면 사용이 차단된다. 이를 피하려고 private 저장소를 public으로 바꾸면 코드와 Actions 실행 기록, 로그가 누구에게나 공개되고 누구나 fork할 수 있다. 고객 코드나 내부 업무 도구의 저장소라면 공개 전환 대신 결제 수단 등록, self-hosted runner, 저장소를 직접 연결해 빌드하는 배포 플랫폼을 비교한다.
 - 마켓플레이스 action을 재사용할 때도 공급망 위험을 줄이기 위해 신뢰할 수 있는 게시자인지 확인하고 commit SHA 고정을 고려
 - 단, 대규모 self-hosted 러너가 필요하면 운영 부담 증가
 
@@ -117,6 +118,9 @@ Blue-Green은 이전 환경을 유지하는 동안 빠르게 트래픽을 되돌
 - **측정 없이 캐시 미활용** → 의존성 설치나 빌드가 반복되는 파이프라인의 실행 시간 증가
 - **저장소나 workflow에 secret literal을 하드코딩** → Git과 로그를 통한 유출 위험. 신뢰할 수 있는 secret store에서 환경 변수나 파일로 주입하는 방식 자체는 가능
 - **수동 배포가 기본** → 배포 빈도 저하 → 큰 배포 → 장애 리스크
+- **로컬, 스테이징과 운영 화면이 똑같이 보임** → 엉뚱한 환경에서 입력하거나 검수를 마쳤다고 착각한다. 환경 이름과 색을 화면에 표시한다
+- **로컬 예시 데이터의 식별자를 코드에 고정** → 로컬에서는 통과하고 스테이징에서만 서버 오류가 난다. 스테이징에서도 같은 검수 시나리오를 다시 돌린다
+- **인증 없이 운영 주소부터 공개** → 누구나 접근하는 화면에 실제 고객 정보가 쌓일 수 있다. 인증과 권한을 붙이기 전에는 운영 환경에 실제 데이터를 넣지 않는다
 
 ## 면접 체크포인트
 
@@ -130,6 +134,8 @@ Blue-Green은 이전 환경을 유지하는 동안 빠르게 트래픽을 되돌
 - [velog @city7310 — 백엔드가 이정도는 해줘야 함 11. 배포 자동화](https://velog.io/@city7310/%EB%B0%B1%EC%97%94%EB%93%9C%EA%B0%80-%EC%9D%B4%EC%A0%95%EB%8F%84%EB%8A%94-%ED%95%B4%EC%A4%98%EC%95%BC-%ED%95%A8-11.-%EB%B0%B0%ED%8F%AC-%EC%9E%90%EB%8F%99%ED%99%94)
 - [GitHub Actions 요금 및 사용 개념](https://docs.github.com/en/actions/concepts/billing-and-usage)
 - [GitHub Actions 제품별 포함량](https://docs.github.com/en/billing/concepts/product-billing/github-actions)
+- [GitHub 저장소 공개 범위 설정](https://docs.github.com/en/repositories/managing-your-repositorys-settings-and-features/managing-repository-settings/setting-repository-visibility) — 2026-10-12 확인, private에서 public으로 바꿀 때 공개되는 범위
+- [YouTube, 양실장의 바이브코딩대학, 직장인 2시간 필수 투자) 평생 써먹는 바이브코딩 자동화 대시보드 설계부터 구축까지](https://www.youtube.com/watch?v=sozxBiyc3qQ) — 2026-08-20 공개 강의, 2:11:21~2:34:29의 스테이징과 운영 배포 시연. 환경 혼동, 하드코딩한 식별자와 인증 전 운영 배포 항목은 시연에서 드러난 문제를 일반화했다.
 
 ## 관련 문서
 - [[Development-Workflow|개발 워크플로]]

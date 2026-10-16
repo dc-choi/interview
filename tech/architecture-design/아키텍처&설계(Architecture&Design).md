@@ -26,7 +26,7 @@ aliases: ["아키텍처&설계(Architecture&Design)", "Architecture & Design"]
 
 ## 관련 (다른 카테고리)
 
-> EDA를 실현하는 메시징 인프라 패턴은 [[tech/messaging-data-pipeline/메시징&파이프라인(Messaging&Pipeline)|메시징&파이프라인]] 카테고리. 카테고리 분류 룰: 아키텍처 = "**어떻게 설계**" / 메시징 = "**어떻게 안전하게 전송**".
+> EDA를 실현하는 메시징 인프라 패턴은 [[tech/messaging-data-pipeline/메시징&파이프라인(Messaging&Pipeline)|메시징&파이프라인]] 카테고리. 카테고리 분류 룰: 아키텍처 = **어떻게 설계** / 메시징 = **어떻게 안전하게 전송**.
 
 - [[Transactional-Outbox|Outbox 패턴]], [[CDC&Outbox|CDC vs Outbox]], [[Idempotency-Key|멱등성 키]], [[브로커(Brokers)|메시지 브로커]]
 
@@ -35,6 +35,7 @@ aliases: ["아키텍처&설계(Architecture&Design)", "Architecture & Design"]
 `[x]`는 재사용 가능한 문서가 있다는 뜻이며 숙련도를 뜻하지 않는다.
 
 - [x] [[Recommendation-System-Architecture|추천 시스템 정본 묶음 (후보, 랭킹, 피드백, 평가와 서빙)]]
+- [x] [[Recommendation-System-Serving-Operations|추천 서빙과 운영]] — 관리형 추천의 실시간 입력, 일괄 입력, 신규 항목 갱신과 재학습 경계
 - [x] [[Recommendation-System-Modeling-Foundations|추천 시스템 모델링 최소 기반 (통계, ML과 implicit feedback)]]
 - [x] [[Recommendation-System-OTT-Discovery-Architecture|OTT 통합 디스커버리 (검색, 추천과 browse)]]
 - [x] [[Recommendation-System-Taxonomy-Content-Based|추천 시스템 택소노미 (작품 concept, LLM 보조 태깅과 사용자 affinity)]]

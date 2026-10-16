@@ -34,7 +34,7 @@ aliases: ["Bedrock 관측", "Bedrock Observability"]
 3. 반복되는 503에는 해당 모델과 리전이 지원하는 cross-Region inference를 검토한다. Geographic profile은 정해진 지리적 범위 안에서, Global profile은 지원하는 전 세계 상용 리전에서 처리할 수 있으므로 데이터 처리 위치와 IAM/SCP 허용 범위를 먼저 확인한다.
 4. 지속적으로 높은 처리량이 필요하면 지원 모델의 Provisioned Throughput을 별도 용량 선택지로 평가한다. Inference profile과 Provisioned Throughput은 현재 함께 사용할 수 없다. 구매 자원은 시간 단위로 과금되며 삭제할 때까지 과금이 이어지고, 약정에 따라 즉시 삭제하지 못할 수 있다.
 
-복구 판단에서는 최종 실패 수만 보지 않고 요청당 시도 수, 총 지연과 성공률을 함께 본다. 모델이나 리전을 바꿨다면 응답 품질과 데이터 처리 조건도 다시 검증한다. 재시도 공통 원칙은 [[Retry-Backoff-Jitter|재시도와 백오프]], 모델 전환은 [[LLM-Failure-Handling|LLM 장애 대응]]을 따른다.
+복구 판단에서는 최종 실패 수만 보지 않고 요청당 시도 수, 총 지연과 성공률을 함께 본다. 모델이나 리전을 바꿨다면 응답 품질과 데이터 처리 조건도 다시 검증한다. 재시도 공통 원칙은 [[Retry-Backoff-Jitter|재시도와 백오프]], 모델 전환은 [[LLM-Failure-Handling-Recovery#폴백과 기능 저하|LLM 장애 대응]]을 따른다.
 
 ## 호출 로그는 별도로 켠다
 
@@ -58,7 +58,30 @@ Embedded Metric Format(EMF)은 구조화 로그에서 커스텀 지표를 비동
 
 피드백 집계에는 긍정 수와 응답 수를 함께 남기고 비율을 계산한다. 표본이 적거나 피드백이 없을 때의 경보 정책을 정하며, 응답한 사용자만의 평가를 전체 요청의 정확도로 일반화하지 않는다. EMF는 중복 지표 값이 발생할 수 있으므로 정산처럼 정확한 개수가 필요한 집계의 정본으로 사용하지 않는다.
 
+## Bedrock Agents의 전체 지연과 첫 응답을 나눈다
+
+2026-10-08 공식 문서 기준이다. 이 절은 기존 Bedrock Agents Classic의 `InvokeAgent` 호출을 다룬다. Classic은 신규 고객 이용이 닫혀 있으며 기존 고객은 계속 사용할 수 있다. AgentCore의 API나 동작으로 일반화하지 않는다.
+
+`enableTrace: true`로 전처리, orchestration, action group과 knowledge base 호출, 후처리의 입력과 결과를 확인한다. 다음은 이 trace를 활용하는 진단 순서다.
+
+1. 대표 요청에서 모델 호출과 도구 호출이 몇 번 반복되는지 찾는다. 서비스의 모델 지연 하나로 에이전트 전체 시간을 설명하지 않는다.
+2. 반복 조회와 모호한 지시를 줄일 후보를 찾되 입력 검증, 필요한 근거 검색과 업무상 확인을 성능 때문에 생략하지 않는다.
+3. 첫 응답 조각이 도착한 시간과 전체 응답 완료 시간을 클라이언트에서 따로 측정한다. 동일 요청에서 정확도와 도구 실행 결과도 비교한다.
+
+### 이벤트 스트림과 최종 응답 스트리밍은 다르다
+
+`InvokeAgent`의 기본 응답은 완성된 답변을 담은 chunk 하나다. 여러 조각으로 받으려면 `streamingConfigurations.streamFinalResponse`를 `true`로 설정하고, 에이전트 실행 역할에 해당 모델의 `bedrock:InvokeModelWithResponseStream` 권한을 부여한다. 클라이언트도 조각을 도착할 때마다 처리해야 한다.
+
+Guardrail을 연결했다면 `applyGuardrailInterval`로 출력 문자 검사 간격을 조정할 수 있다. 기본값은 50자이며 간격을 키우면 chunk가 커지고 `ApplyGuardrail` 호출 수는 줄어든다. 토큰 수가 아니라 문자 수 설정이다. 첫 표시 지연과 검사 동작을 함께 검증한다.
+
+스트리밍은 첫 결과를 빨리 보여주는 수단이다. 그 전에 수행하는 검색이나 도구 실행의 지연을 없애지는 않는다. Trace에는 프롬프트와 도구 결과가 들어갈 수 있으므로 진단 자료의 접근 권한과 보존 범위를 제한한다. 이 절만 부분 검증했으며 기존 모델 지표와 용량 설정 전체의 검증일은 갱신하지 않았다.
+
 ## 출처
+
+- [Amazon Bedrock, Automate tasks in your application using AI agents](https://docs.aws.amazon.com/bedrock/latest/userguide/agents.html)
+- [Amazon Bedrock, Track agent's step-by-step reasoning process using trace](https://docs.aws.amazon.com/bedrock/latest/userguide/trace-events.html)
+- [Amazon Bedrock, Invoke an agent from your application](https://docs.aws.amazon.com/bedrock/latest/userguide/agents-invoke-agent.html)
+- [Amazon Bedrock, StreamingConfigurations](https://docs.aws.amazon.com/bedrock/latest/APIReference/API_agent-runtime_StreamingConfigurations.html)
 
 - [Amazon Bedrock, Troubleshooting Amazon Bedrock API Error Codes](https://docs.aws.amazon.com/bedrock/latest/userguide/troubleshooting-api-error-codes.html)
 - [Amazon Bedrock, Route model inference requests across AWS Regions with cross-Region inference](https://docs.aws.amazon.com/bedrock/latest/userguide/cross-region-inference.html)

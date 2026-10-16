@@ -132,6 +132,16 @@ CISA의 After-Action Report / Improvement Plan은 목표 대비 강점과 개선
 
 ## AWS 구성 점검 도구와 예외 처리
 
+### 지원 프로그램의 대상과 결과를 먼저 확인한다
+
+2026-10-13 AWS 공개 안내 기준, Security Health Improvement Program(SHIP)은 지원 플랜 등급과 관계없이 모든 AWS 고객을 대상으로 한다. 과거 발표에 나온 지출 조건을 현재 참여 조건으로 그대로 적용하지 않는다. 약 두 시간의 참여 과정에서 보안 사용 사례와 우선순위를 맞추고, 데이터 기반 권고와 실행 로드맵을 제공한다.
+
+SHIP의 보안 서비스 활용과 모범 사례 중심 검토는 사람과 프로세스를 설문으로 다루는 Security Improvement Program(SIP)과 구분된다. 공식 안내는 Enterprise Support 고객이 SIP 참여를 선택할 수 있다고 설명한다. 프로그램의 이름이 비슷해도 범위와 대상 조건을 따로 확인한다.
+
+운영 적용 제안: 권고를 받은 뒤 담당자, 설정 변경과 재점검 증거를 연결한다. 상담과 보고서 수령을 설정 변경 완료나 인증 충족으로 기록하지 않는다. 이 절은 두 프로그램의 공개 참여 안내만 부분 검증했으며, 다른 지원 프로그램의 비용과 제공 조건 또는 고객 환경의 보안 상태는 확인하지 않았다. 기존 `verified_at`은 유지한다.
+
+### 자동 점검의 실행 범위와 예외
+
 2026-10-07 Prowler 문서와 Service Screener 저장소를 대조한 범위다. 자동 점검 결과는 실제 위험과 조치 우선순위를 검토할 입력이며, 인증 충족이나 침해 부재의 증명으로 쓰지 않는다.
 
 | 도구 | 확인할 범위 | 운영 경계 |
@@ -216,6 +226,7 @@ ISMS-P 인증기준은 관리체계 수립과 운영, 보호대책 요구사항,
 
 ## 출처
 
+- [Security Health Improvement Program — AWS](https://aws.amazon.com/security/security-health-improvement-program/) — 2026-10-13 참여 대상, 진행 방식과 SIP 차이 대조
 - [SecurityScorecard, How SecurityScorecard calculates your scores](https://support.securityscorecard.com/hc/en-us/articles/8366223642651-How-SecurityScorecard-calculates-your-scores)
 - [How to Resolve Findings on Your SecurityScorecard Rating — SecurityScorecard](https://securityscorecard.com/blog/how-to-resolve-findings-on-your-securityscorecard-rating/)
 - [Amazon Macie, Scope options for sensitive data discovery jobs](https://docs.aws.amazon.com/macie/latest/user/discovery-jobs-scope.html)

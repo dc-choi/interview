@@ -54,6 +54,7 @@ Targeted 규칙과 rate-based rule은 둘 다 요청 속도를 제한하지만 �
 - Bot Control은 web ACL 평가에서 자신에게 도달한 모든 요청을 검사하고, 평가한 요청 수에 따라 비용이 늘어난다.
 - scope-down statement나 앞단 규칙으로 검사 대상을 줄인다. IP reputation과 geo 차단처럼 저렴한 규칙을 앞에 두면 그 규칙이 차단한 요청은 유료 검사에 도달하지 않는다.
 - 지능형 위협 완화 rule group을 여러 개 쓰면 Bot Control, ATP, ACFP 순서로 둔다.
+- Anti-DDoS rule group은 이 비용 원칙의 예외다. 기준선이 정확하도록 scope-down 없이 Allow 규칙 바로 뒤, 저비용 규칙보다 앞에 둔다([[WAF-Anti-DDoS|WAF Anti-DDoS 관리형 규칙]]).
 - CloudFront에 연결한 web ACL은 캐시 조회보다 먼저 평가된다. CloudFront 문서는 WAF 규칙이 적용된 뒤 Lambda@Edge viewer request가 실행되고, viewer request는 캐시에 객체가 있는지 확인하기 전에 실행된다고 설명한다. 따라서 이 구성에서 캐시는 origin 부하를 줄이지만 WAF가 검사하는 요청 수를 줄이지 않는다(문서 동작에서 도출). 반면 origin ALB에 연결한 리전 web ACL은 캐시 hit 요청을 받지 않으므로 캐시가 그 web ACL의 검사량을 줄인다.
 
 ## label을 헤더로 넘겨 캐시와 origin 처리를 나누기
@@ -108,6 +109,7 @@ Targeted 규칙과 rate-based rule은 둘 다 요청 속도를 제한하지만 �
 ## 관련 문서
 
 - [[Shield-WAF-NetworkFirewall|Shield, WAF, Network Firewall]] — web ACL 구조, 관리형 규칙 예외, CAPTCHA와 Challenge
+- [[WAF-Anti-DDoS|WAF Anti-DDoS 관리형 규칙]] — L7 DDoS 기준선 탐지와 배치
 - [[CloudFront|CloudFront]] — 캐시 키 정책, geo restriction
 - [[Rate-Limiting|Rate Limit 정책 설계]] — 계층별 요청 제한
 - [[AI-Search-Visibility|AI 검색 가시성 측정]]

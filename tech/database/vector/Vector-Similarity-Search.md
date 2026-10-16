@@ -168,6 +168,7 @@ DEVOCEAN 사례는 1,291개 글의 embedding을 MySQL에 저장하고 batch memo
 - ANN 뒤 필터, 필터 뒤 exact, 탐색 중 필터의 차이와 엄격한 필터에서 HNSW recall이 무너지는 이유
 
 ## 관련 문서
+- [[Multimodal-Image-Search|멀티모달 이미지 검색]] — CLIP의 텍스트와 이미지 공간, 썸네일의 정보 경계
 - [[Vector-Space-Model-and-Cosine-Similarity|희소 렉시컬 벡터 공간 모델]]
 - [[pgvector|pgvector (PostgreSQL 벡터 검색)]] — PostgreSQL 구현, 타입과 운영
 - [[pgvector-Query-Optimization|pgvector 쿼리 최적화]] — ef_search/LIMIT, iterative scan

@@ -53,7 +53,25 @@ Grafana의 읽기 모드는 원시 SQL을 넘기는 `query_sql`, `query_influxdb
 
 이 실행 방식은 반복 조사의 대기 시간을 줄이기 위한 선택지다. 사례의 처리량이나 시간 절감 수치를 다른 서비스의 예상 효과로 사용하지 않는다.
 
+## 사람과 에이전트가 같은 관측 기준을 사용한다
+
+대시보드는 서비스의 핵심 신호를 요약하고, 알림은 대응이 필요한 증상을 알려야 한다. 증상과 원인 가설을 분리하고 지연, 트래픽, 오류와 포화를 함께 보는 원칙은 조사 주체가 에이전트로 바뀌어도 유효하다. 이 원칙은 2026-10-08 Google SRE의 모니터링 장과 대조했다.
+
+다음은 이 원칙을 AI 조사에 적용한 설계 제안이다.
+
+- 서비스, 환경과 시간 범위뿐 아니라 쿼리, 집계 방식과 정상 기준을 사람과 에이전트가 함께 읽게 한다. 화면 캡처만 공유하면 같은 그래프인지 다시 확인하기 어렵다.
+- 전체 서비스 증상에서 의존성, 워크로드와 원시 로그로 범위를 좁힌다. 새 통합 UI를 만드는 것은 선택지이며, 기존 대시보드와 링크만으로도 조사 흐름을 연결할 수 있다.
+- 독립적인 조회는 병렬화할 수 있지만 동시 쿼리 수와 조회 범위를 제한한다. 한 도구의 실패나 결과 부재를 전체 서비스 정상으로 바꾸지 않는다.
+- 심각한 알림의 사람 호출은 모델 분석 완료를 기다리지 않게 한다. 분석 실패와 모델 장애가 기본 알림 경로를 막지 않도록 분리한다.
+- 조사 보고서에는 관측 사실, 원인 가설, 확인하지 못한 범위와 다음 검사를 구분한다. 보고서 생성 시간, 원인 판별의 정확도와 실제 복구 시간은 서로 다른 지표다.
+
+과거 장애로 평가할 때는 당시 확보 가능했던 자료만 입력하고 사후 결론을 숨긴다. 모델이나 지시문을 바꾸면 같은 사례에서 누락과 오진, 불필요한 조회가 달라지는지 비교한다. 빠르게 그럴듯한 보고서를 썼다는 사실만으로 복구 능력 향상을 확정하지 않는다.
+
+기존 Grafana와 EKS 도구 옵션의 검증일은 갱신하지 않았다.
+
 ## 출처
+
+- [Monitoring Distributed Systems — Google SRE](https://sre.google/sre-book/monitoring-distributed-systems/)
 
 - [Grafana, Enable and disable tools](https://grafana.com/docs/grafana-cloud/ai-tools/mcp-servers/oss-mcp/configure/enable-and-disable-tools/)
 - [Grafana, Configure the Tempo data source](https://grafana.com/docs/grafana/latest/datasources/tempo/configure-tempo-data-source/)

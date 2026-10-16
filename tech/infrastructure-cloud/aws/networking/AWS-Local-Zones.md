@@ -1,7 +1,7 @@
 ---
 tags: [infrastructure, aws, local-zones, networking, latency]
 status: done
-verified_at: 2026-10-07
+verified_at: 2026-10-09
 category: "Infrastructure - AWS"
 aliases: ["AWS Local Zones", "AWS 로컬 존"]
 ---
@@ -22,6 +22,20 @@ Local Zone은 사용자 가까이에 컴퓨팅과 일부 AWS 서비스를 배치
 
 Local Zone 서브넷에도 route table, security group과 network ACL을 적용한다. VPC endpoint를 Local Zone 서브넷 내부에 만들 수는 없으므로, 비공개 서비스 접근이 필요한 경로는 별도로 설계한다.
 
+## 로컬 실행, 데이터 보관과 제어 영역을 나눈다
+
+2026-10-09 AWS 공식 문서 기준, Local Zone은 부모 리전의 특정 Availability Zone과 연결되며 API 호출 같은 일부 제어 영역 작업은 그 부모 AZ가 처리한다. 애플리케이션이 로컬에서 실행돼도 리전 의존성이 사라지는 것은 아니다.
+
+데이터 보관 위치도 리소스별로 확인한다. 지원되는 로컬 EBS와 FSx를 사용해 데이터를 해당 위치에 둘 수 있지만, EBS 스냅샷의 저장 위치와 기본 암호화 동작은 Local Zone에 따라 다르다. 서버 위치만 보고 백업까지 같은 장소에 있다고 판단하지 않는다.
+
+이를 배치 검토에 적용하면 다음을 따로 점검해야 한다.
+
+- 실행 데이터, 스냅샷, 로그와 외부 API 전송 대상의 실제 위치를 확인한다.
+- 부모 리전의 제어 API나 데이터 서비스 연결이 끊길 때 신규 배치와 기존 요청 처리를 구분해 시험한다.
+- 로컬 저장 기능의 제공과 애플리케이션 전체의 데이터 보관 요건 충족을 별도로 검토한다.
+
+이 점검은 서비스 경계에서 도출한 설계 제안이며 장애 시 동작을 실측한 결과는 아니다.
+
 ## 추론 워크로드의 배치 판단
 
 다음은 지연을 평가하기 위한 설계 제안이다.
@@ -35,6 +49,7 @@ Local Zone 서브넷에도 route table, security group과 network ACL을 적용�
 
 ## 출처
 
+- [AWS, AWS Local Zones FAQs](https://aws.amazon.com/about-aws/global-infrastructure/localzones/faqs/)
 - [AWS, How AWS Local Zones work](https://docs.aws.amazon.com/local-zones/latest/ug/how-local-zones-work.html)
 - [AWS, AWS Local Zones features](https://aws.amazon.com/about-aws/global-infrastructure/localzones/features/)
 - [Get Started Deploying Low Latency Applications with AWS Local Zones — AWS](https://aws.amazon.com/about-aws/global-infrastructure/localzones/getting-started/)

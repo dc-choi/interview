@@ -1,7 +1,7 @@
 ---
 tags: [architecture, messaging, event-driven, overview]
 status: done
-verified_at: 2026-10-09
+verified_at: 2026-10-10
 category: "아키텍처&설계(Architecture&Design)"
 aliases: ["Event-Driven Architecture", "EDA", "이벤트 기반 아키텍처", "EDA Overview", "Event-Driven", "이벤트 드리븐"]
 ---
@@ -32,6 +32,12 @@ aliases: ["Event-Driven Architecture", "EDA", "이벤트 기반 아키텍처", "
 | 확장 어려움 | 새 구독자 추가 자유 |
 
 **결정 기준**: 비동기 처리를 선택할 때 도메인이 최종 일관성을 받아들일 수 있나? UI/UX가 방금 한 작업이 즉시 반영된다는 가정으로 설계되어 있나?
+
+**파일 도착이 선행 조건인 배치**: 예정 시각만 보고 실행하면 전송 지연이나 수정 파일 재전송을 놓칠 수 있다. 객체 생성 이벤트로 처리를 시작하고, 정해진 시각에는 미도착이나 미완료를 점검하는 방식으로 역할을 나눌 수 있다. 이는 설계 예시이며 파일 생성이 업무 데이터의 유효성까지 보장한다는 뜻은 아니다.
+
+부분 검증(2026-10-10): S3 Event Notifications는 at-least-once 전달을 전제로 하며 이벤트 순서는 보장하지 않는다. SQS로 알림을 보낼 수 있지만 SQS FIFO는 직접 대상으로 지원하지 않고 EventBridge 경유 구성을 사용한다. 같은 객체 key의 생성과 삭제 이벤트는 `sequencer`로 선후를 비교할 수 있지만 다른 key 사이의 전역 순서로 쓸 수는 없다.
+
+재전송 설계에서는 같은 파일의 중복 알림과 내용을 고친 새 파일을 구분한다. 예를 들어 업무 파일 식별자와 개정 번호를 처리 기록에 두고, 검증을 통과한 개정만 반영한다. `sequencer`는 업무 개정 번호나 처리 완료 기록을 대신하지 않는다.
 
 ### 층 2: 발행자 신뢰성 (Producer-Side Reliability)
 
@@ -200,6 +206,8 @@ CQRS와의 결합:
 
 ## 출처
 
+- [AWS, Amazon S3 Event Notifications](https://docs.aws.amazon.com/AmazonS3/latest/userguide/EventNotifications.html)
+- [AWS, Event message structure](https://docs.aws.amazon.com/AmazonS3/latest/userguide/notification-content-structure.html)
 - [AWS Prescriptive Guidance, Orchestration](https://docs.aws.amazon.com/prescriptive-guidance/latest/modernization-integrating-microservices/orchestration.html)
 - [AWS Step Functions, Handling errors in Step Functions workflows](https://docs.aws.amazon.com/step-functions/latest/dg/concepts-error-handling.html)
 - [PostgreSQL, PREPARE TRANSACTION](https://www.postgresql.org/docs/current/sql-prepare-transaction.html)

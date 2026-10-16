@@ -47,6 +47,8 @@ aliases: ["Tech Decision", "기술 의사결정"]
 3. 기존 도구와 겹치면 대체 범위와 이전 계획을 정해 중복 운영이 무기한 남지 않게 한다.
 4. 에이전트가 내놓은 제품 비교와 요금 주장은 해당 제품의 공식 자료로 다시 확인한다.
 
+스택을 항목별로 하나씩 묻고 확정했다면([[Agent-Spec-Writing|결정 축 인터뷰]]) 마지막에 결정 목록 전체를 서로와, 그리고 단계마다 실제로 쓸 요금제의 한도와 대조한다. 판매 파일의 최대 크기를 정한 결정이 스토리지 무료 플랜의 파일 크기 상한과 부딪히거나([[Fullstack-BaaS-Boundaries|BaaS 요금제 한도]]), 메일 발송 예약의 주기가 무료 호스팅의 cron 한도를 넘는 식이다([[Cloudflare-vs-Vercel-Hosting|호스팅 플랜 선택]]). 개발 중에는 무료, 출시 직전 유료처럼 플랜을 단계로 나눴다면 각 결정이 어느 플랜의 한도를 전제하는지 함께 적는다. 에이전트가 배포를 통과시키려고 한도에 맞춰 설정을 바꿀 수 있으므로 배포 뒤 설정을 결정 기록과 다시 대조한다.
+
 성숙한 기술을 우선한다는 것은 오래됐다는 이유만으로 고르라는 뜻이 아니다. 기능과 실패 양상을 이해하고 현재 문제를 감당할 수 있는지가 기준이다.
 
 ### 선택 빈도 실험을 읽는 경계
@@ -141,6 +143,7 @@ Q. 의사결정을 어떻게 문서화하는가?
 - [Which tools do Claude Code, Codex and Cursor choose? We measured 16,893 sessions to find out. — Armature](https://armature.tech/blog/which-tools-coding-agents-install) — 2026-10-06 실험 구성과 첫 공개 표본 확인
 - [코드가 아니라 시스템을 설계하는 개발자의 사고법 — YouTube, 코딩맨](https://www.youtube.com/watch?v=S9Xo8IsK17w) — 2025-09-21, 비용, 시간, 인간은 발표자의 설계 관점
 - [바이브코딩인데 유지보수성 높이기? — YouTube, 뉴런데브](https://www.youtube.com/watch?v=zN5eiTiKmZE) — 2026-10-11, AI가 쓸 코드를 줄이는 운영 가능성 전략은 발표자의 관점
+- [YouTube, 양실장의 바이브코딩대학, 3시간 순삭) 55개 기술 의사결정, 소스코드 해설까지! 현존 바이브코딩 기본 강의 중 가장 실전적인 강의](https://www.youtube.com/watch?v=K6Rsy-pHBi0) — 2026-08-18, 0:37:05~1:53:01의 항목별 스택 결정과 파일 크기, 무료 플랜 한도 충돌 확인, 2:49:38의 배포 중 cron 주기 조정 시연
 - [AI Copilot Code Quality: Evaluating 2024's Increased Defect Rate via Code Quality Metrics — GitClear, William Harding](https://gitclear-public.s3.us-west-2.amazonaws.com/GitClear-AI-Copilot-Code-Quality-2025.pdf) — 2025-02, 2026-10-12 집계 범위와 복사 줄, 옮긴 줄 추이 확인
 - [Announcing the 2024 DORA report — Google Cloud](https://cloud.google.com/blog/products/devops-sre/announcing-the-2024-dora-report) — 2024-10-23, 2026-10-12 문서와 코드 품질 개선, 처리량 1.5%와 안정성 7.2% 감소 추정 확인
 - [Impact of Generative AI in Software Development — DORA](https://dora.dev/ai/gen-ai-report/) — 2025-04 공개(v.2025.2), 2026-10-12 AI 도입 25% 증가 기준의 처리량과 안정성 추정 확인

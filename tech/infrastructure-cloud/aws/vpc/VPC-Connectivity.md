@@ -52,14 +52,25 @@ Hub & Spoke 구조. 모든 VPC가 **TGW 한 허브**에 연결되고, TGW가 중
 
 ## VPC Endpoint — NAT 비용 절감
 
-NAT Gateway 없이 AWS 서비스(S3, DynamoDB, KMS 등)에 **VPC 내부에서 직접 접근**.
+VPC endpoint는 지원하는 AWS 서비스에 인터넷 게이트웨이나 NAT 없이 접근하는 경로를 제공한다. Gateway endpoint와 interface endpoint는 경로를 만드는 방식이 다르다.
 
 | 유형 | 대상 | 비용 |
 |---|---|---|
 | **Gateway Endpoint** | S3, DynamoDB | **시간 요금과 데이터 처리 요금 없음** |
-| **Interface Endpoint** (PrivateLink) | 그 외 대부분 AWS 서비스 | AZ별 시간 요금 + 데이터 처리 요금 — 엔드포인트 수와 트래픽량에 따라 NAT Gateway보다 비쌀 수 있어 비교 계산 필요 |
+| **Interface Endpoint** (PrivateLink) | PrivateLink 통합 서비스. S3와 DynamoDB도 지원 | AZ별 시간 요금 + 데이터 처리 요금 — 엔드포인트 수와 트래픽량에 따라 NAT Gateway보다 비쌀 수 있어 비교 계산 필요 |
 
 Private Subnet에서 S3를 자주 쓰면 Gateway Endpoint 설정만으로도 NAT 비용을 크게 줄일 수 있다. 요금 구조와 NAT 대비 비교는 [[Egress-Cost]] 참조.
+
+### 경로 생성과 실제 사용을 구분한다
+
+부분 검증(2026-10-13): 이 endpoint 절의 연결 방식과 요금 구조를 AWS 공식 문서로 대조했다. 다른 절의 버전 민감 주장 전체를 다시 확인하지 않았으므로 기존 `verified_at`은 유지한다.
+
+- **Gateway endpoint:** 선택한 라우팅 테이블에 서비스의 AWS 관리 prefix list를 목적지로, endpoint를 대상으로 하는 경로가 추가된다. 사용할 서브넷의 라우팅 테이블을 연결해야 하며, endpoint 생성만으로 모든 서브넷의 경로가 바뀌지는 않는다. 이 유형은 PrivateLink를 사용하지 않는다.
+- **Interface endpoint:** 선택한 서브넷에 endpoint ENI가 만들어진다. IPv4 구성에서는 private DNS와 VPC의 DNS hostnames, DNS resolution을 켜면 기본 서비스 DNS 이름이 endpoint ENI의 사설 IP로 해석된다. S3의 inbound 전용 private DNS 옵션은 별도 조건이 있으므로 같은 설정으로 일반화하지 않는다.
+- **연결 허용:** interface endpoint ENI의 보안 그룹에서 호출자의 필요한 포트(HTTPS API는 TCP 443)를 허용하고 NACL의 왕복 트래픽도 확인한다. Interface endpoint는 ping에 응답하지 않으므로 ping 실패만으로 연결 장애라고 판정하지 않는다.
+- **경로 해석:** AWS 서비스의 public endpoint로 인터넷 게이트웨이를 거쳐 접근하는 트래픽도 AWS 네트워크 안에 머무를 수 있다. Public endpoint라는 이름만으로 AWS 외부 인터넷망을 통과한다고 단정하지 않는다.
+
+운영 점검 제안: gateway 방식은 서브넷의 라우팅 테이블 연결과 서비스 prefix list 경로를, interface 방식은 DNS 응답과 ENI 접근을 확인한다. 이어 실제 API 호출과 권한 검증을 수행한다. Endpoint의 생성 상태, 네트워크 연결, 서비스 작업 성공은 각각 확인하며 실제 계정에서 재현한 기록과 구분한다.
 
 ## 특정 리소스 연결 — PrivateLink와 VPC Lattice
 
@@ -128,6 +139,9 @@ Private Subnet에서 S3를 자주 쓰면 Gateway Endpoint 설정만으로도 NAT
 
 ## 출처
 
+- [AWS Gateway endpoints — 라우팅 테이블 연결과 PrivateLink 구분](https://docs.aws.amazon.com/vpc/latest/privatelink/gateway-endpoints.html)
+- [AWS PrivateLink access to AWS services — ENI, private DNS와 public endpoint 경로](https://docs.aws.amazon.com/vpc/latest/privatelink/privatelink-access-aws-services.html)
+- [AWS interface VPC endpoint creation — DNS 조건, 보안 그룹과 ICMP 제한](https://docs.aws.amazon.com/vpc/latest/privatelink/create-interface-endpoint.html)
 - [Amazon SageMaker AI networking — notebook instance의 기본 경로와 direct internet access](https://docs.aws.amazon.com/sagemaker/latest/dg/appendix-notebook-and-internet-access.html)
 - [AWS VPC Peering routing — 양쪽 서브넷의 왕복 경로](https://docs.aws.amazon.com/vpc/latest/peering/vpc-peering-routing.html)
 - [AWS VPC Peering security groups — 같은 리전 참조와 리전 간 CIDR 조건](https://docs.aws.amazon.com/vpc/latest/peering/vpc-peering-security-groups.html)

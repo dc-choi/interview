@@ -98,6 +98,16 @@ Lake Formation 데이터 필터는 통합된 분석 엔진의 조회 결과에�
 
 설계 점검 제안: 생산자가 공개할 데이터셋, 갱신 주기와 품질 오류 대응 책임을 정하고, 중앙 운영자는 검색과 감사의 공통 기준을 정한다. 카탈로그 등록과 접근 허가는 따로 확인한다. 이 방식은 기존 데이터 레이크 위에 적용할 수 있지만, 도메인별 운영 책임이 필요하지 않은 작은 조직에까지 필수 구조로 삼지 않는다.
 
+### 셀프서비스와 연합 거버넌스를 함께 둔다
+
+부분 검증(2026-10-14): AWS의 데이터 메시 개념 설명을 추가 대조했다. 도메인 소유권, 제품으로서의 데이터, 셀프서비스 기반과 연합 거버넌스는 함께 설계할 책임이다.
+
+- 도메인 팀은 데이터의 의미와 품질을 책임지고, 소비자가 이해할 스키마와 사용 인터페이스를 제공한다.
+- 플랫폼 팀은 반복되는 수집, 처리, 카탈로그 등록과 관측 기능을 재사용 가능한 셀프서비스로 제공한다. 모든 도메인이 같은 기반을 따로 구축하게 하는 것은 이 원칙과 다르다.
+- 연합 거버넌스는 공통 보안 정책과 메타데이터 규약을 유지하면서 도메인의 구현 자율성을 허용한다. 소유권 분산을 공통 기준 폐지로 해석하지 않는다.
+
+적용 점검 제안: 새 데이터 제품 하나를 게시할 때 도메인이 직접 수행할 작업과 플랫폼이 제공할 기능, 공통 정책 검사를 구분한다. Lake Formation 권한 부여만 완료됐는지, 소비자가 의미와 품질을 이해하고 실제 사용할 수 있는지도 따로 확인한다. 기존 서비스 기능 전체의 검증일은 유지한다.
+
 ## Athena 권한 오류는 실패한 작업별로 나눈다
 
 부분 검증(2026-10-14): Athena 권한 가이드, Lake Formation 권한 레퍼런스와 AWS Knowledge Center의 오류별 해결 절차를 대조했다. 이 절만 추가 검증했으며 기존 절의 검증 기준일은 유지한다.
@@ -134,6 +144,7 @@ Lake Formation으로 관리하는 데이터를 Athena에서 조회할 때는 실
 
 ## 출처
 
+- [What is a Data Mesh? — AWS](https://aws.amazon.com/what-is/data-mesh/)
 - [Deprecation of Lake Formation’s Governed Tables Feature — AWS Big Data Blog](https://aws.amazon.com/blogs/big-data/deprecation-of-lake-formations-governed-tables-feature/)
 - [AWS Prescriptive Guidance, Aligning your data strategy to your business goals](https://docs.aws.amazon.com/prescriptive-guidance/latest/strategy-aws-data/alignment.html)
 - [AWS Prescriptive Guidance, Data strategy framework](https://docs.aws.amazon.com/prescriptive-guidance/latest/strategy-aws-data/data-strategy-framework.html)

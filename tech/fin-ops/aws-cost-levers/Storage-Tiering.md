@@ -1,5 +1,5 @@
 ---
-tags: [finops, aws, s3, storage, tiering, lifecycle, glacier, ebs]
+tags: [finops, aws, s3, storage, tiering, lifecycle, glacier, ebs, multipart-upload, storage-lens]
 status: done
 category: "비용&운영(FinOps)"
 aliases: ["Storage Tiering", "스토리지 티어링", "S3 storage class", "스토리지 클래스"]
@@ -63,9 +63,32 @@ FROM s3_inventory_table
 WHERE size >= 128 * 1024;  -- Intelligent-Tiering 티어 이동 대상
 ```
 
-### 미완료 업로드도 저장 비용에 포함한다
+## 미완료 멀티파트 업로드 정리
 
-멀티파트 업로드가 완료되지 않아 최종 객체가 없어도 이미 올라간 part에는 저장 비용이 발생한다. 티어링 분석과 별도로 미완료 업로드를 확인하고 완료하거나 중단한다. Lifecycle의 `AbortIncompleteMultipartUpload`로 업로드 시작 후 지정 일수가 지난 part를 정리할 수 있다. 적용 제안: 정상 업로드와 재시도의 최장 시간을 확인해 정리 기준이 진행 중인 업로드를 끊지 않도록 정한다.
+멀티파트 업로드는 시작한 뒤 만료가 없어 완료하거나 중단할 때까지 이미 올라간 part를 보관한다. 최종 객체가 없어도 part 저장 요금이 계속 붙고 업로드 과정의 요청 요금도 붙으므로 티어링 분석과 별도로 확인한다. part는 업로드 때 지정한 스토리지 클래스로 과금하지만 Glacier Flexible Retrieval이나 Deep Archive를 지정한 업로드의 진행 중 part에는 완료 전까지 S3 Standard 저장 단가가 적용된다. 미완료 업로드를 지울 때는 스토리지 클래스와 관계없이 조기 삭제 요금이 없다.
+
+### 찾는 방법
+
+- **객체 목록**: 완료 전에는 객체가 만들어지지 않으므로 객체 목록에 나타나지 않는다.
+- **CloudWatch 일간 저장 지표**: 범용 버킷의 `BucketSizeBytes`와 `NumberOfObjects`에는 미완료 part의 크기와 개수도 들어간다. 지표가 객체 목록의 합계보다 크면 이전 버전과 함께 미완료 업로드도 원인 후보로 확인한다.
+- **S3 Storage Lens 무료 지표**: 미완료 업로드의 바이트, 개수와 비율, 7일이 지난 미완료 업로드의 바이트와 개수를 버킷 단위까지 내려가 본다. 계정마다 있는 기본 대시보드(`default-account-dashboard`)는 그 계정만 다룬다. 조직 전체는 관리 계정에서 trusted access를 켠 뒤 관리 계정이나 위임 관리자가 만든 조직 수준 대시보드에서 본다. 무료 지표는 매일 집계해 콘솔에서 14일 동안 조회하며 범용 버킷만 대상이다.
+- **`ListMultipartUploads`**(CLI `aws s3api list-multipart-uploads`): 버킷의 진행 중 업로드를 요청당 최대 1,000개씩 돌려준다. 버킷마다 호출한다. 범용 버킷은 `s3:ListBucketMultipartUploads` 권한이 필요하고, 디렉터리 버킷은 `s3express:CreateSession` 권한을 주고 세션 기반 인증으로 호출하도록 권장한다.
+- **CUR 기반 CUDOS 대시보드(Cloud Intelligence Dashboards)**: Buckets with Incomplete MultiPart Uploads Last 30 Days 시각화는 최근 30일의 리소스별 CUR 행에서 버킷별 `InitiateMultipartUpload` 요청 수와 `CompleteMultipartUpload` 요청 수의 차이를 보여 준다. `line_item_resource_id`는 내보내기에서 리소스 ID 포함을 선택해야 채워진다. 요청 수 차이는 남은 part의 바이트가 아니므로 후보 버킷을 고르는 데 쓰고 용량은 Storage Lens로, 남은 업로드 목록은 `ListMultipartUploads`로 확인한다. 30일보다 먼저 시작해 남아 있는 업로드는 이 차이에 잡히지 않고 이미 중단한 업로드는 차이에 남는다. 오래 남은 업로드는 Storage Lens의 7일 초과 지표로 확인한다.
+
+### Lifecycle 규칙으로 정리한다
+
+- `AbortIncompleteMultipartUpload`의 `DaysAfterInitiation`은 업로드 시작 시점부터 센다. 그 안에 완료되지 않은 업로드는 중단 대상이 되어 S3가 part를 지운다. 이미 진행 중인 업로드에도 적용되고 완료된 객체는 지우지 않는다.
+- 객체 만료 규칙은 미완료 업로드를 지우지 않으므로 이 작업을 따로 넣는다. 객체 태그 필터를 쓰는 규칙에는 넣을 수 없으므로 버킷 전체나 접두사로 범위를 정한 규칙에 넣는다.
+- 콘솔에서는 버킷의 Management 탭에서 규칙을 만들고 Delete expired object delete markers or incomplete multipart uploads 아래의 Delete incomplete multipart uploads와 일수를 고른다. 버킷 전체 범위는 확인 체크가 필요하다.
+- 규칙 반영에는 보통 몇 분이 걸리고, 규칙 조건을 만족한 뒤 실제 작업이 끝나기까지도 지연이 있을 수 있다. 규칙을 바꾸거나 끄기 전에는 `ListMultipartUploads` 같은 LIST API로 실제 정리 결과를 확인한다.
+- 개별 업로드는 `AbortMultipartUpload`로 중단한다. 진행 중이던 part 업로드는 중단 뒤에도 성공할 수 있으므로 part 업로드가 끝난 뒤 중단해야 저장 공간이 모두 풀린다. 중단 뒤에는 `ListParts`로 part 목록이 비었는지 확인하고 남아 있으면 다시 중단한다.
+
+### 조직 전체와 IaC의 기본값으로 둔다
+
+- 새 버킷은 템플릿에 규칙을 넣는다. CloudFormation은 `AWS::S3::Bucket` Lifecycle 규칙의 `AbortIncompleteMultipartUpload.DaysAfterInitiation`, Terraform AWS provider는 `aws_s3_bucket_lifecycle_configuration`의 `abort_incomplete_multipart_upload.days_after_initiation`을 쓴다.
+- 버킷의 Lifecycle 구성은 하나다. `PutBucketLifecycleConfiguration`은 기존 구성을 덮어쓰고, Terraform에서도 한 버킷에 `aws_s3_bucket_lifecycle_configuration`을 여러 개 선언하면 구성 차이가 계속 생긴다. 기존 버킷에는 현재 규칙과 합친 구성을 적용한다.
+- 규칙이 없는 버킷은 Storage Lens 고급 지표로 올린 뒤 advanced cost optimization metrics를 켜면 버킷별 규칙 수 지표 `AbortIncompleteMPULifecycleRuleCount`로 찾을 수 있다. 고급 지표는 추가 요금이 든다.
+- 적용 제안: 정상 업로드와 재시도의 최장 시간을 확인해 정리 기준이 진행 중인 업로드를 끊지 않도록 정한다. AWS의 미완료 업로드 정리 안내 문서는 예시 기준으로 7일을 쓰며 Storage Lens 무료 지표도 7일이 지난 미완료 업로드를 따로 집계한다.
 
 ## EBS / EFS 티어링
 
@@ -84,7 +107,7 @@ WHERE size >= 128 * 1024;  -- Intelligent-Tiering 티어 이동 대상
 
 EFS는 Standard에서 마지막으로 접근한 시점을 내부 타이머로 추적하며 디렉터리 목록 같은 메타데이터 조회는 파일 접근으로 세지 않는다. IA나 Archive에서 접근해도 기본값으로는 Standard로 돌아오지 않는다. 첫 접근 후 복귀가 필요하면 `TransitionToPrimaryStorageClass: AFTER_1_ACCESS` 정책을 설정한다. 이 전환의 소요 시간은 파일 크기와 파일 시스템 부하에 따라 달라진다.
 
-2026-10-14 부분 검증 범위는 S3 클래스와 복원, Intelligent-Tiering, Inventory, 미완료 업로드, EBS 아카이브와 EFS Lifecycle이다. 실제 계정의 정책, 비용 절감률과 복원 시간을 시험한 결과는 아니다.
+2026-10-14 부분 검증 범위는 S3 클래스와 복원, Intelligent-Tiering, Inventory, 미완료 업로드의 과금과 탐지, Lifecycle 정리, EBS 아카이브와 EFS Lifecycle이다. 실제 계정의 정책, 비용 절감률과 복원 시간을 시험한 결과는 아니다.
 
 ## 관측 데이터와 연결
 
@@ -97,6 +120,8 @@ EFS는 Standard에서 마지막으로 접근한 시점을 내부 타이머로 �
 - 128KB 미만 객체가 대부분인데 Intelligent-Tiering 절감을 기대 → 자동 티어링 대상이 아니라 효과가 제한적
 - gp2의 성능 특성을 확인하지 않고 gp3 전환 후 동일 성능이나 절감을 가정
 - 스냅샷/이전 버전이 무한 누적 → lifecycle 미설정
+- 객체 만료 규칙만 두고 미완료 멀티파트 업로드도 정리된다고 가정 → `AbortIncompleteMultipartUpload` 작업이 따로 필요
+- 기존 버킷에 미완료 업로드 규칙만 담은 구성을 적용 → 기존 Lifecycle 규칙을 덮어씀
 
 ## 면접 체크포인트
 
@@ -107,6 +132,7 @@ EFS는 Standard에서 마지막으로 접근한 시점을 내부 타이머로 �
 - gp2→gp3 전환 전 성능과 비용을 비교하는 이유, io2를 아끼는 이유
 - lifecycle 자동 전환/만료와 스냅샷 누적 관리
 - S3 Inventory + Athena로 전환 전 객체 분포를 분석하는 이유
+- 객체 목록에 없는 미완료 멀티파트 업로드가 과금되는 이유, Storage Lens와 `ListMultipartUploads`와 CUR 요청 수 차이로 찾는 방법, 정리 규칙의 태그 필터 제약
 
 ## 출처
 
@@ -118,15 +144,31 @@ EFS는 Standard에서 마지막으로 접근한 시점을 내부 타이머로 �
 - [AWS 공식 문서, Amazon S3 Inventory](https://docs.aws.amazon.com/AmazonS3/latest/userguide/storage-inventory.html)
 - [AWS 공식 문서, Aborting a multipart upload](https://docs.aws.amazon.com/AmazonS3/latest/userguide/abort-mpu.html)
 - [AWS 공식 문서, Configuring a bucket lifecycle configuration to delete incomplete multipart uploads](https://docs.aws.amazon.com/AmazonS3/latest/userguide/mpu-abort-incomplete-mpu-lifecycle-config.html)
+- [AWS 공식 문서, Uploading and copying objects using multipart upload in Amazon S3](https://docs.aws.amazon.com/AmazonS3/latest/userguide/mpuoverview.html)
+- [AWS 공식 문서, ListMultipartUploads](https://docs.aws.amazon.com/AmazonS3/latest/API/API_ListMultipartUploads.html)
+- [AWS 공식 문서, AbortMultipartUpload](https://docs.aws.amazon.com/AmazonS3/latest/API/API_AbortMultipartUpload.html)
+- [AWS 공식 문서, Lifecycle configuration elements](https://docs.aws.amazon.com/AmazonS3/latest/userguide/intro-lifecycle-rules.html)
+- [AWS 공식 문서, Setting an S3 Lifecycle configuration on a bucket](https://docs.aws.amazon.com/AmazonS3/latest/userguide/how-to-set-lifecycle-configuration-intro.html)
+- [AWS 공식 문서, PutBucketLifecycleConfiguration](https://docs.aws.amazon.com/AmazonS3/latest/API/API_PutBucketLifecycleConfiguration.html)
+- [AWS 공식 문서, Understanding Amazon S3 Storage Lens](https://docs.aws.amazon.com/AmazonS3/latest/userguide/storage_lens_basics_metrics_recommendations.html)
+- [AWS 공식 문서, Amazon S3 Storage Lens metrics glossary](https://docs.aws.amazon.com/AmazonS3/latest/userguide/storage_lens_metrics_glossary.html)
+- [AWS 공식 문서, Metrics and dimensions](https://docs.aws.amazon.com/AmazonS3/latest/userguide/metrics-dimensions.html)
+- [AWS 공식 문서, Line item columns](https://docs.aws.amazon.com/cur/latest/userguide/table-dictionary-cur2-line-item.html)
+- [AWS 공식 문서, AWS::S3::Bucket AbortIncompleteMultipartUpload](https://docs.aws.amazon.com/AWSCloudFormation/latest/TemplateReference/aws-properties-s3-bucket-abortincompletemultipartupload.html)
+- [Terraform Registry, aws_s3_bucket_lifecycle_configuration](https://registry.terraform.io/providers/hashicorp/aws/latest/docs/resources/s3_bucket_lifecycle_configuration)
 - [AWS 공식 문서, Considerations and limitations for archiving Amazon EBS snapshots](https://docs.aws.amazon.com/ebs/latest/userguide/snapshot-archive-considerations.html)
 - [AWS 공식 문서, Managing storage lifecycle](https://docs.aws.amazon.com/efs/latest/ug/lifecycle-management-efs.html)
 - [AWS 공식 문서, LifecyclePolicy](https://docs.aws.amazon.com/efs/latest/APIReference/API_LifecyclePolicy.html)
 - [AWS — EBS volume types (gp3 vs gp2)](https://docs.aws.amazon.com/AWSEC2/latest/UserGuide/ebs-volume-types.html)
 - [S3 비용 최적화 (Intelligent-Tiering, CopyObject 전환, S3 Inventory) — 인프랩 기술블로그](https://tech.inflab.com/20251029-optimize-s3/)
+- [How to find and remove incomplete multi part uploads — Amazon Web Services](https://www.youtube.com/watch?v=9mo0xzYw1ao)
+- [CUDOS-v5-definition.yaml — Cloud Intelligence Dashboards Framework](https://github.com/aws-solutions-library-samples/cloud-intelligence-dashboards-framework/blob/main/dashboards/cudos/CUDOS-v5-definition.yaml)
+- [resource_view.sql (CUDOS) — Cloud Intelligence Dashboards Framework](https://github.com/aws-solutions-library-samples/cloud-intelligence-dashboards-framework/blob/main/cid/builtin/core/data/queries/cudos/resource_view.sql)
 
 ## 관련 문서
 
 - [[S3|Amazon S3]]
+- [[S3-File-Upload-Direct-Transfer|S3 멀티파트 업로드 흐름과 Abort]]
 - [[EBS|EBS (gp3/io2)]]
 - [[AWS-Pricing|AWS 요금 구조]]
 - [[Long-Term-Retention|장기 보존 (관측 데이터 티어링)]]

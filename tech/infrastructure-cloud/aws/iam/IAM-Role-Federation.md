@@ -73,6 +73,12 @@ Role의 특징:
 
 외부에서 인증된 사용자 → **STS AssumeRoleWithSAML / AssumeRoleWithWebIdentity** → 임시 자격증명 발급.
 
+### Permission set과 계정별 정책 준비
+
+2026-10-14 공식 Identity Center 문서 부분 대조 기준이다. Permission set은 IAM 정책을 묶은 템플릿이며 사용자 또는 그룹, 대상 계정과 연결해 접근을 할당한다. organization instance의 multi-account permissions가 활성화되어 있어야 한다. 할당하면 Identity Center가 대상 계정에 관리 역할을 만들고 지정한 정책을 연결한다.
+
+**Customer managed policy 본문은 자동 복제되지 않는다.** 각 대상 계정에 permission set이 참조하는 이름과 경로의 정책을 먼저 만들어야 하며, 정책이 없으면 할당이 실패한다. 같은 이름의 정책이라도 계정마다 허용 내용이 다를 수 있으므로, 동일 권한이 목적이면 정책 본문도 함께 관리한다. 역할 할당 성공과 실제 리소스 접근 성공을 따로 시험한다(운영 제안). 기존 federation 절 전체의 검증일은 유지한다.
+
 ### IAM Identity Center 다중 리전 — 복제와 로그인 준비
 
 2026-10-10 공식 가이드 기준이다. organization instance는 외부 IdP 또는 Identity Center directory를 사용할 때 추가 리전으로 복제할 수 있다. Active Directory를 identity source로 쓰는 인스턴스와 account instance는 지원하지 않는다. 기본 활성화된 상용 리전에서 지원하며 opt-in 리전은 제외된다.
@@ -167,6 +173,8 @@ IdP 속성을 session tag로 전달해 ABAC에 쓴다면 trust policy의 `sts:Ta
 위임 관리자가 이 한도 안에서만 사용자와 Role을 만들 수 있게 보장한다. 개발자에게 IAM 관리 위임할 때, 자기보다 강한 권한 부여 못 하게 막는 가드.
 
 ## 출처
+- [AWS IAM Identity Center User Guide, Manage AWS accounts with permission sets](https://docs.aws.amazon.com/singlesignon/latest/userguide/permissionsetsconcept.html)
+- [AWS IAM Identity Center User Guide, Use IAM policies in permission sets](https://docs.aws.amazon.com/singlesignon/latest/userguide/howtocmp.html)
 - [AWS CLI User Guide, Using an IAM role in the AWS CLI](https://docs.aws.amazon.com/cli/latest/userguide/cli-configure-role.html)
 - [AWS STS API Reference, GetCallerIdentity](https://docs.aws.amazon.com/STS/latest/APIReference/API_GetCallerIdentity.html)
 - [AWS STS API Reference, AssumeRoleWithSAML](https://docs.aws.amazon.com/STS/latest/APIReference/API_AssumeRoleWithSAML.html)

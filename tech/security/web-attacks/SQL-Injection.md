@@ -3,7 +3,7 @@ tags: [security, web-attacks, sql-injection, owasp, typeorm]
 status: done
 category: "Security - 웹 공격"
 aliases: ["SQL Injection", "SQLi", "SQL 인젝션"]
-verified_at: 2026-08-05
+verified_at: 2026-10-12
 ---
 
 # SQL Injection
@@ -20,6 +20,10 @@ const sql = `SELECT * FROM users WHERE email = '${email}'`;
 ```
 
 `email`에 `' OR '1'='1`이 들어오면 이 예제의 조건절이 항상 참이 된다. `'; DROP TABLE users; --`처럼 문장을 추가하는 공격은 해당 DB와 드라이버 경로가 다중 문장을 허용하고, 접속 계정에 삭제 권한도 있을 때 성립한다. 다중 문장을 막아도 조건 변조나 UNION, Blind 공격까지 막히지는 않는다. **파서가 데이터와 코드를 구분할 근거가 없다**. 문자열이 완성된 시점에는 어디까지가 사용자 값이었는지 정보가 이미 사라져 있다.
+
+로그인 쿼리에서는 주석 하나로 인증을 우회할 수 있다. 이메일과 비밀번호 조건을 이어 붙인 쿼리의 `email`에 `admin@example.com' -- `를 넣으면 쿼리가 `... WHERE email = 'admin@example.com' -- ' AND password = '...'`가 된다. 따옴표가 문자열을 닫고 `--`부터 줄 끝까지가 주석이 되어 비밀번호 조건이 실행되지 않으므로, 아무 비밀번호로나 그 계정에 로그인된다. 주석 문법은 DB마다 조금씩 달라 MySQL은 두 번째 대시 뒤에 공백이나 제어 문자가 있어야 주석으로 인식한다. 한 페이로드가 실패했다는 사실은 쿼리 조립이 안전하다는 근거가 아니다. 같은 입력을 파라미터로 넘기면 문자열 전체가 하나의 이메일 값으로 비교되어 일치하는 계정이 없다.
+
+비밀번호를 SQL 조건으로 비교하는 구조도 피한다. 계정마다 다른 salt를 쓰는 Argon2id나 bcrypt는 입력만으로 저장값을 다시 만들 수 없으므로, 이메일로 저장된 해시를 먼저 조회한 뒤 라이브러리의 verify 함수로 비교한다([[Password-Hashing|패스워드 해싱]]).
 
 ## 유형
 
@@ -127,6 +131,8 @@ Q. 에러 메시지를 숨기면 되지 않나?
 
 2026-10-03 부분 검증: 다중 문장 실행 조건, TypeORM 값 바인딩과 `Raw()`, PostgreSQL Parse/Bind, mysqljs의 클라이언트 이스케이프 계약, 정렬 허용 목록 예제를 대조했다. 실제 서비스의 드라이버 설정이나 SQL 인젝션 가능 여부를 확인한 기록은 아니다.
 
+2026-10-12 부분 검증: 주석으로 뒤 조건을 지우는 원리와 비밀번호 없이 다른 사용자로 접속하는 영향을 OWASP SQL Injection 문서에, MySQL의 `--` 주석 공백 조건을 MySQL 8.4 문서에 대조했다. 로그인 우회 페이로드를 실제 DB에서 실행해 본 기록은 아니다.
+
 - [OWASP — SQL Injection](https://owasp.org/www-community/attacks/SQL_Injection)
 - [OWASP — Blind SQL Injection](https://owasp.org/www-community/attacks/Blind_SQL_Injection)
 - [OWASP Cheat Sheet Series — SQL Injection Prevention](https://cheatsheetseries.owasp.org/cheatsheets/SQL_Injection_Prevention_Cheat_Sheet.html)
@@ -136,6 +142,8 @@ Q. 에러 메시지를 숨기면 되지 않나?
 - [PostgreSQL 18 Documentation, Message Flow](https://www.postgresql.org/docs/18/protocol-flow.html)
 - [mysqljs/mysql — Escaping query values, Multiple statement queries](https://github.com/mysqljs/mysql#escaping-query-values)
 - [TypeScript — Everyday Types, Type Assertions](https://www.typescriptlang.org/docs/handbook/2/everyday-types.html#type-assertions)
+- [MySQL 8.4 Reference Manual — Comments](https://dev.mysql.com/doc/refman/8.4/en/comments.html)
+- [EVERY junior dev makes these security mistakes... — CodeHead](https://www.youtube.com/watch?v=AjUeQJxen1k)
 
 ## 관련 문서
 
@@ -143,4 +151,5 @@ Q. 에러 메시지를 숨기면 되지 않나?
 - [[ORM|ORM (TypeORM 기준)]]
 - [[Security-Headers|Security Headers]]
 - [[IDOR|IDOR / Broken Access Control]]
+- [[Password-Hashing|패스워드 해싱]]
 - [[Application-Security|애플리케이션 보안]]

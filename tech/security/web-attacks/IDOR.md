@@ -3,6 +3,7 @@ tags: [security, web-attacks, authorization, owasp]
 status: done
 category: "Security - 웹 공격"
 aliases: ["IDOR", "Insecure Direct Object Reference", "부적절한 인가", "Broken Access Control"]
+verified_at: 2026-10-12
 ---
 
 # IDOR (Insecure Direct Object Reference)
@@ -31,6 +32,7 @@ GET /mypage?memberId=111
 클라이언트 값은 믿지 말고, **서버에서 세션이나 토큰을 기준으로 소유권/권한을 검증**한다.
 
 - 요청의 `memberId`를 그대로 쓰지 말고, 세션/토큰에서 꺼낸 사용자 ID로 조회하거나 대조한다. 예: `WHERE member_id = :sessionUserId`.
+- 소유 조건을 조회 조건에 함께 넣으면(`WHERE id = :orderId AND member_id = :sessionUserId`) 남의 객체와 없는 객체가 똑같이 빈 결과가 되어 404 하나로 응답할 수 있다. RFC 9110은 금지된 대상의 존재를 숨기려는 서버가 403 대신 404로 응답하는 것을 허용한다. 남의 객체에는 403, 없는 객체에는 404를 돌려주면 응답 차이만으로 어떤 ID가 존재하는지 드러나므로, 존재를 알려도 되는 경우에만 403을 구분한다.
 - 타인 자원 접근이 정당한 경우(관리자 등)는 역할(role) 기반 인가를 명시적으로 통과시킨다.
 - 역할만으로 끝내지 않고 요청한 action, 객체의 소유자와 tenant 범위를 함께 확인한다. 목록, 일괄 수정, 내보내기와 다른 HTTP 메서드에도 같은 원칙을 집행하며 정책이 없거나 평가에 실패하면 기본 거부한다.
 - 추측하기 어려운 식별자(UUID 등)는 **완화책일 뿐 방어가 아니다**. 순차 ID를 UUID로 바꿔도 인가 검증이 없으면 ID가 유출되는 순간 그대로 뚫린다. 근본 해법은 항상 서버 측 인가.
@@ -56,13 +58,22 @@ Q. 어떻게 막나?
 Q. 인증은 통과했는데 왜 뚫리나?
 - 인증(누구인가)과 인가(접근해도 되나)는 다르다. IDOR는 인증은 됐지만 자원 단위 인가가 빠진 경우다.
 
+Q. 남의 주문을 요청하면 403과 404 중 무엇으로 응답하나?
+- 소유 조건을 조회 조건에 넣으면 남의 주문과 없는 주문이 같은 빈 결과가 되어 404로 응답할 수 있다. 둘을 403과 404로 나누면 응답 차이로 ID의 존재가 드러난다. RFC 9110도 존재를 숨기려는 서버가 403 대신 404를 쓰는 것을 허용한다.
+
 ## 출처
 
 2026-10-02에는 객체 존재, 인증과 인가의 구분 및 요청별 기본 거부 원칙을 OWASP 공식 자료에 대조했다. 아래 사고 사례의 규모와 경위는 이번 검증 범위에서 제외했다.
 
+2026-10-12에는 403 대신 404로 대상의 존재를 숨기는 응답을 RFC 9110에, IDOR의 OWASP 분류(Top 10:2025 A01 Broken Access Control, API Security Top 10 2023 API1 BOLA)를 OWASP 공식 페이지에 대조했다. 사고 사례는 이번에도 검증 범위에서 제외했다.
+
 - [OWASP Cheat Sheet Series, Authorization Cheat Sheet](https://cheatsheetseries.owasp.org/cheatsheets/Authorization_Cheat_Sheet.html)
+- [OWASP Top 10:2025, A01 Broken Access Control](https://top10.owasp.org/2025/A01_2025-Broken_Access_Control/)
+- [OWASP API Security Top 10, Top 10 API Security Risks – 2023](https://api-security.owasp.org/editions/2023/en/0x11-t10/)
+- [RFC 9110, 403 Forbidden](https://www.rfc-editor.org/rfc/rfc9110.html#name-403-forbidden)
 - [애플리케이션 보안 핵심 — 시큐어코딩, IDOR, SSRF, JWT, Spring Actuator (YouTube)](https://www.youtube.com/watch?v=RQv86D0M5YY&list=PLgXGHBqgT2TtGi82mCZWuhMu-nQy301ew&index=19)
 - [미용의료 강남언니 약 22만명 개인정보 유출, 병원명과 시술 이력까지 — 파이낸셜뉴스](https://www.fnnews.com/news/202609071956090818)
+- [EVERY junior dev makes these security mistakes... — CodeHead](https://www.youtube.com/watch?v=AjUeQJxen1k)
 
 ## 관련 문서
 

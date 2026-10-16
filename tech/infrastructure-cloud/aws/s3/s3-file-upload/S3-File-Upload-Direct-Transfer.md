@@ -3,7 +3,7 @@ tags: [aws, s3, file-upload, multipart, presigned-url, spring]
 status: done
 category: "Infrastructure - AWS"
 aliases: ["S3 MultiPart Upload", "S3 Presigned URL"]
-verified_at: 2026-07-21
+verified_at: 2026-10-12
 ---
 
 # S3 파일 업로드 — 클라이언트 직접 전송 (Multipart Upload, Presigned URL)
@@ -63,6 +63,16 @@ String uploadUrl = presigned.url().toString();
 - 클라이언트가 올바른 Content-Type, 메타데이터를 보낼 책임
 - URL 보유자는 서명 주체의 권한과 버킷, 네트워크 정책이 허용하는 범위에서 사용할 수 있다. 노출을 줄이도록 만료를 짧게 설정한다(예: 5~15분).
 
+### 발급 시점에 정할 조건
+
+URL은 서명한 조건 안에서만 쓰이고 만료 전에는 여러 번 쓸 수 있으므로, 업로드 정책은 URL을 만들 때 정한다.
+
+- **key**: 같은 key의 객체가 이미 있으면 업로드한 객체로 교체된다. 사용자 파일명 대신 서버가 만든 고유 key에 서명하고 그 key로 메타데이터 행을 먼저 만들어 두면, 업로드 완료 이벤트를 그 행에 연결하고 완료되지 않은 행으로 중단된 업로드를 찾을 수 있다.
+- **Content-Type**: URL을 만들 때 Content-Type을 지정했다면 업로드 요청도 같은 값을 보내야 하며, 다르면 `SignatureDoesNotMatch`로 실패한다.
+- **크기 범위**: 최소, 최대 크기를 S3가 업로드 요청 단계에서 검사하게 하려면 presigned POST(URL과 form 필드)를 발급하고 policy 조건에 `["content-length-range", 최소, 최대]`를 바이트 단위로 둔다. Content-Type 같은 다른 필드에도 조건을 걸 수 있다.
+
+이 조건들은 요청의 헤더와 크기를 제한할 뿐 내용이 선언과 같은지는 보장하지 않는다. 형식 시그니처, checksum과 악성 코드 검사는 업로드 뒤 다시 한다([[S3-File-Upload-Operations|보안과 운영]]).
+
 ### 설정한 만료보다 일찍 실패하는 경우
 
 2026-10-09 AWS 공식 문서 대조 기준, URL의 유효 기간은 지정한 만료와 서명에 사용한 자격증명의 만료 중 먼저 오는 시점까지다. 예를 들어 남은 역할 세션이 20분이면 URL을 1시간으로 발급해도 20분 뒤에는 사용할 수 없다. 자격증명을 폐기하거나 비활성화해도 영향을 받는다.
@@ -94,10 +104,17 @@ URL을 오래 유지하려고 장기 키부터 추가하기보다, 필요한 전
 
 ## 출처
 
+2026-10-12 부분 검증: presigned URL의 재사용과 같은 key 교체, Content-Type 서명 불일치, presigned POST의 `content-length-range` 조건, 멀티파트 한도와 단일 PUT 5 GB를 AWS 문서와 대조했다.
+
 - [Amazon S3 User Guide — Download and upload objects with presigned URLs](https://docs.aws.amazon.com/AmazonS3/latest/userguide/using-presigned-url.html)
+- [Amazon S3 User Guide — Uploading objects with presigned URLs](https://docs.aws.amazon.com/AmazonS3/latest/userguide/PresignedUrlUploadObject.html)
+- [Amazon S3 User Guide — Amazon S3 multipart upload limits](https://docs.aws.amazon.com/AmazonS3/latest/userguide/qfacts.html)
+- [AWS SDK for Python (Boto3) — generate_presigned_post](https://docs.aws.amazon.com/boto3/latest/reference/services/s3/client/generate_presigned_post.html)
+- [AWS SDK for .NET V4 — S3PostCondition](https://docs.aws.amazon.com/sdkfornet/v4/apidocs/items/S3/TS3PostCondition.html)
 - [AWS What's New — Amazon S3 increases maximum object size to 50 TB](https://aws.amazon.com/about-aws/whats-new/2025/12/amazon-s3-maximum-object-size-50-tb/)
 - [Amazon S3 User Guide — What's new](https://docs.aws.amazon.com/AmazonS3/latest/userguide/WhatsNew.html)
 - [develop-writing — S3 Multipart Upload](https://develop-writing.tistory.com/129)
+- [YouTube, Tiago — Fundamentals of Backend Architecture - How to Design Scalable Software](https://www.youtube.com/watch?v=Qa-7iWxDz1A)
 
 ## 관련 문서
 

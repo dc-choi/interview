@@ -67,6 +67,10 @@ Contextual Retrieval은 문서 전체와 청크를 함께 LLM에 주어 그 청�
 
 오래된 문서를 충실하게 요약한 답은 근거와는 맞아도 현재 사실과는 틀리므로, 이 층의 오류는 생성 단계의 faithfulness 검사로 잡히지 않는다([[LLM-Hallucination-Verification|환각 유형과 검증]]).
 
+질문에서 날짜와 분류를 추출해 필터로 바꿀 때도 검증 경계를 둔다(설계 제안). 작성일과 시행일 중 어느 필드를 묻는지 구분하고, 약칭은 승인된 분류 ID로 정규화한다. 날짜 범위는 시간대와 저장 단위를 맞춘 뒤 시작 포함, 다음 구간 시작 제외로 표현할 수 있다. 해석이 불명확하거나 값이 허용 목록에 없으면 필터를 임의로 확정하지 않는다. 필터 적용 전후의 후보 수와 경계 날짜의 정답 문서를 비교해 잘못 추출한 조건이 근거를 제거하는지 확인한다.
+
+2026-10-10 Amazon Bedrock `RetrievalFilter` 명세 기준, `equals`, `greaterThanOrEquals`, `lessThan`과 `andAll`을 조합해 이런 조건을 표현할 수 있다. 필터 객체는 union이라 객체 하나에는 멤버 하나만 지정하고, `andAll`은 최소 두 조건을 받는다. API가 조건을 실행한다는 사실은 추출한 조건의 정확성이나 사용자 권한을 보장하지 않는다. 인증된 접근 범위는 질문에서 추출한 필터와 별도로 서버에서 강제한다.
+
 ## 하이브리드 검색: 벡터 + BM25
 
 벡터 검색은 의미 유사도와 표현 변형에 강하지만, 사용 모델과 데이터에 따라 주문번호 `A1234`, 모델명 `SM-G998N` 같은 정확 식별자를 안정적으로 구분하지 못할 수 있다.
@@ -108,7 +112,7 @@ BM25를 병행해 정확 token match를 보완하고 RRF나 score normalization�
 
 ## 구조화 조회와 검색의 라우팅
 
-주문 상태, 재고, 가격처럼 정답이 구조화 시스템에 있는 질문은 원장을 tool/API로 조회하고, 정책 설명이나 문서 근거는 retrieval로 찾는다. 엔티티 추출은 어느 조회를 호출할지 돕지만 추출 오류와 권한 검사를 함께 다뤄야 한다. 모든 비정형 지식을 구조화하겠다는 목표보다 질문 유형별 `lookup`, `retrieve`, `hybrid` 라우팅이 현실적이다. [[Production-Agent-Architecture]]의 조회 우선순위와 같은 결이다.
+주문 상태, 재고, 가격처럼 정답이 구조화 시스템에 있는 질문은 원장을 tool/API로 조회하고, 정책 설명이나 문서 근거는 retrieval로 찾는다. 엔티티 추출은 어느 조회를 호출할지 돕지만 추출 오류와 권한 검사를 함께 다뤄야 한다. 모든 비정형 지식을 구조화하겠다는 목표보다 질문 유형별 `lookup`, `retrieve`, `hybrid` 라우팅이 현실적이다. [[Production-Agent-Architecture-Knowledge#조회 우선순위|Production-Agent-Architecture]]의 조회 우선순위와 같은 결이다.
 
 ### 사전 색인과 요청 시점 조회를 함께 비교한다
 
@@ -187,7 +191,7 @@ Q. 검색은 됐는데 폐기된 정책으로 답했다면?
 
 ## 관련 문서
 - [[Context-Engineering|컨텍스트 엔지니어링 (Select, Isolate — 검색 단계 토큰 경제학)]]
-- [[Production-Agent-Architecture|프로덕션 에이전트 아키텍처 (구조화 조회, Metric Registry, 조회 우선순위)]]
+- [[Production-Agent-Architecture-Knowledge|프로덕션 에이전트 아키텍처 (구조화 조회, Metric Registry, 조회 우선순위)]]
 - [[OpenSearch|OpenSearch (BM25, kNN 벡터 검색 엔진 메커니즘)]]
 - [[Vector-Similarity-Search|벡터 유사도 검색 (임베딩, HNSW, 거리)]]
 - [[pgvector|pgvector (PostgreSQL 벡터 검색)]]
@@ -196,6 +200,7 @@ Q. 검색은 됐는데 폐기된 정책으로 답했다면?
 
 ## 출처
 
+- [Amazon Bedrock API Reference, RetrievalFilter](https://docs.aws.amazon.com/bedrock/latest/APIReference/API_RetrievalFilter.html) — 2026-10-10 비교 연산, union 구조와 `andAll` 조건 수를 대조했다. 날짜 해석과 분류 정규화, 후보 손실 점검은 설계 제안이다.
 - [Amazon Nova User Guide, Using Amazon Nova for Multimodal RAG](https://docs.aws.amazon.com/nova/latest/userguide/rag-multimodal.html) — 2026-10-09 텍스트 설명과 멀티모달 임베딩의 선택, 원래 모달리티로 근거를 반환하는 권고를 대조했다. PDF 검색 단위와 원본 대조는 설계 제안이다.
 - [OpenSearch Documentation, Refresh Index API](https://docs.opensearch.org/latest/api-reference/index-apis/refresh/) — 2026-10-09 색인과 검색 가시성, refresh 대기와 강제 refresh 비용을 대조했다. RAG 전 구간의 지연 측정과 재처리 시험은 설계 제안이다.
 - [Amazon Bedrock User Guide, Parsing options for your data source](https://docs.aws.amazon.com/bedrock/latest/userguide/kb-advanced-parsing.html) — 2026-10-09 파서별 추출 범위, 과금 단위와 데이터 소스 내 PDF 적용 범위를 대조했다. 원본 대조와 질문 세트 비교는 설계 제안이다.

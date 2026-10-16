@@ -110,6 +110,14 @@ Post-contact summary는 상담의 주요 문제와 결과를 정리해 ACW(After
 - 새 시스템에서 누락되는 기록이 있는지 확인해 분모 변경을 개선으로 오인하지 않는다.
 - 전사문과 업무 시스템의 완료 기록으로 실제 해결 여부를 별도 확인한다. 애플리케이션 수를 줄였다는 사실만으로 고객 경험 개선을 입증하지 않는다.
 
+## 상담 화면 접속과 음성 연결을 따로 확인한다
+
+2026-10-14 CCP 네트워크 공식 가이드 부분 대조 기준이다. 브라우저 상담 화면을 열 수 있어도 음성 경로가 준비됐다는 뜻은 아니다. CCP 관련 HTTPS와 WebSocket 경로의 TCP 443뿐 아니라, 해당 리전의 TURN/NLB endpoint로 나가는 UDP 3478과 DNS 해석을 확인한다. IP와 포트를 허용했어도 TURN 도메인을 해석하지 못하면 소프트폰 연결이 실패할 수 있다.
+
+프록시의 WebSocket 처리도 실제 상담 흐름으로 시험한다. Stateless firewall은 응답 UDP를 받을 브라우저의 임시 포트 범위까지 확인해야 하므로, 아웃바운드 포트만 열었다고 완료 처리하지 않는다. 필요한 endpoint와 범위는 사용 리전의 최신 공식 표로 확인한다.
+
+Direct Connect는 사내 edge router와 AWS 사이의 연결 개선에 쓸 수 있지만, 단말부터 edge router까지의 사내 LAN/WAN 문제를 해결하지는 않는다. 운영 점검에서는 화면 로그인, 통화 수신, 양방향 음성과 종료를 나눠 재현한다(설계 제안). 실제 상담 환경의 연결 품질을 검증한 결과는 아니며 기존 절의 검증일은 유지한다.
+
 ## 구현 검토에 적용하기
 
 다음은 위 제약에서 도출한 설계 점검 항목이다. 제품 도입이나 특정 환경의 동작을 검증한 결과는 아니다.
@@ -126,6 +134,7 @@ Post-contact summary는 상담의 주요 문제와 결과를 정리해 ACW(After
 
 ## 출처
 
+- [AWS, Set up your network to use the Connect Customer Contact Control Panel (CCP)](https://docs.aws.amazon.com/connect/latest/adminguide/ccp-networking.html)
 - [AWS, Grant Connect Customer access to your AWS Lambda functions](https://docs.aws.amazon.com/connect/latest/adminguide/connect-lambda-functions.html)
 - [AWS, Flow block in Connect Customer: AWS Lambda function](https://docs.aws.amazon.com/connect/latest/adminguide/invoke-lambda-function-block.html)
 - [AWS, AWS Lambda response format for Lex V2](https://docs.aws.amazon.com/lexv2/latest/dg/lambda-response-format.html)

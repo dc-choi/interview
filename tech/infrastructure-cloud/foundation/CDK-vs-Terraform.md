@@ -108,6 +108,19 @@ CDK는 익숙한 언어로 빠르게 시작하지만 코드 구조가 커질수�
 
 ## 의사결정 원칙
 
+### 코드 재사용 단위와 배포 단위를 구분한다
+
+부분 검증(2026-10-14): AWS CDK v2 모범 사례 기준으로 논리적 기능은 `Construct`, 함께 배포할 경계는 `Stack`으로 표현한다. 재사용하려는 기능마다 별도 스택이 필요한 것은 아니다.
+
+- **스택 분리:** 배포 요구가 없다면 리소스를 함께 두는 편이 단순하다. 데이터베이스처럼 보존할 상태와 자주 재생성할 실행 자원의 수명 주기가 다르면 별도 스택을 검토하고, 상태를 가진 스택에는 termination protection을 적용할 수 있다.
+- **스택 간 참조:** 같은 CDK 앱에서는 리소스 construct 참조를 소비 스택에 전달하는 방식도 공식 지침이다. 모든 참조를 Parameter Store로 우회해야 한다는 규칙으로 만들지 않는다.
+- **설정 전달:** construct와 stack에는 속성 객체로 설정을 전달한다. CDK 실행 환경의 환경 변수 조회는 앱 최상위에서 제한적으로 수행하며, 배포할 Lambda 등에 런타임 환경 변수를 설정하는 일과 구분한다.
+- **리팩토링 검토:** construct의 ID와 트리 내 위치는 logical ID에 영향을 준다. 일반 배포에서 logical ID가 바뀌면 새 리소스로 취급될 수 있으므로, 상태 자원을 이동하거나 이름을 바꿀 때 합성 템플릿과 교체 여부를 확인한다.
+
+분리할 스택 수보다 변경과 삭제의 영향 범위, 설정의 재현성과 데이터 보존을 검토한다. 위 항목은 문서 대조이며 실제 리소스 이동이나 배포 시험은 수행하지 않았다. 기존 비교 전체의 검증일은 유지한다.
+
+### 선택 기준
+
 - 기술의 진보성보다, **팀 규모가 작을수록 운영 안정성, 문서, 커뮤니티 규모**의 가중치가 커진다.
 - 선택 기준은 현재 팀의 요구사항과 운영 조건에 가장 도움이 되는 도구다.
 - diff가 어떤 입력을 비교하고, 교체와 drift를 어떤 별도 단계에서 검증하는가가 IaC 도구의 일급 평가 기준.
@@ -123,6 +136,7 @@ CDK는 익숙한 언어로 빠르게 시작하지만 코드 구조가 커질수�
 - IaC 도구 선택에서 진보성보다 운영 안정성, 커뮤니티를 우선하는 판단 근거
 
 ## 출처
+- [AWS CDK, Best practices for developing and deploying cloud infrastructure with the AWS CDK](https://docs.aws.amazon.com/cdk/v2/guide/best-practices.html)
 - [AWS CDK, cdk import](https://docs.aws.amazon.com/cdk/v2/guide/ref-cli-cmd-import.html)
 - [AWS CDK, CLI reference — Import existing resources into a stack](https://docs.aws.amazon.com/cdk/v2/guide/cli.html#import-resources)
 - [AWS CDK, Bootstrap your environment for use with the AWS CDK](https://docs.aws.amazon.com/cdk/v2/guide/bootstrapping-env.html)

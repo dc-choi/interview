@@ -28,6 +28,8 @@ client -> external LB -> ingress controller -> Service -> ready Pod
 
 Gateway API는 대체로 infrastructure owner의 `GatewayClass/Gateway`와 application owner의 `HTTPRoute` 같은 route를 분리한다. controller가 해당 resource와 feature를 실제 지원하는지 conformance를 확인한다.
 
+Ingress와 HTTPRoute는 match 범위도 다르다(2026-10-14 Kubernetes Ingress API와 Gateway API 문서 기준). Ingress rule은 host와 path만으로 backend를 고르며 HTTP method나 Host 밖의 header로 나누는 필드가 없다. 같은 path의 GET과 POST를 다른 backend로 보내려면 Ingress 표준 밖의 controller 확장이나 별도 API gateway에 기대야 한다. HTTPRoute는 path 외에 header, query parameter와 method를 match 조건으로 둔다. method match는 Extended 지원 기능(`HTTPRouteMethodMatching`)이므로 사용할 구현체의 지원 목록을 확인한다.
+
 ### pathType과 rewrite
 
 - 모든 path에 `pathType`이 필요하고 없으면 validation에 실패한다. `Exact`는 대소문자를 구분해 정확히 맞추고, `Prefix`는 `/`로 나눈 path element 단위로 비교하며, `ImplementationSpecific`은 IngressClass 구현이 정한다.
@@ -95,6 +97,9 @@ CRD, controller, config, workload처럼 의존 순서가 있으면 sync wave/hoo
 
 - [Kubernetes Docs, Ingress](https://kubernetes.io/docs/concepts/services-networking/ingress/)
 - [Kubernetes Docs, Gateway API](https://kubernetes.io/docs/concepts/services-networking/gateway/)
+- [Kubernetes API Reference, Ingress v1](https://kubernetes.io/docs/reference/kubernetes-api/service-resources/ingress-v1/)
+- [Gateway API, HTTPRoute](https://gateway-api.sigs.k8s.io/reference/api-types/httproute/)
+- [Gateway API, HTTP method matching](https://gateway-api.sigs.k8s.io/guides/user-guides/http-method-matching/)
 - [Kubernetes Docs, Service](https://kubernetes.io/docs/concepts/services-networking/service/)
 - [Ingress-NGINX Docs, rewrite](https://kubernetes.github.io/ingress-nginx/examples/rewrite/)
 - [Ingress NGINX Retirement: What You Need to Know — Kubernetes Blog](https://kubernetes.io/blog/2025/11/11/ingress-nginx-retirement/)

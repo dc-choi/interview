@@ -273,3 +273,4 @@ Edge Location 리전마다 단가가 달라 **사용 지역을 제한해 비용 
 - [[VPC|VPC]]
 - [[IAM|IAM (Signed URL, OAC 정책)]]
 - [[WAF-Bot-Control|WAF Bot Control (봇 label 헤더와 캐시 분리)]]
+- [[CloudFront-SaaS-Manager|CloudFront SaaS Manager (여러 고객 도메인의 multi-tenant distribution)]]

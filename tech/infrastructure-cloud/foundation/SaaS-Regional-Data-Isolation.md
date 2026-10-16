@@ -59,6 +59,14 @@ SaaS Builder Toolkit for AWS는 control plane과 application plane의 패턴을 
 
 적용 점검 제안: 테넌트 A의 Pod에서 테넌트 B의 API, 저장소와 네트워크 목적지 접근이 각각 거부되는지 시험한다. 한 계층의 거부 결과로 다른 계층의 격리를 대신 증명하지 않는다. 여러 고객 요청을 받는 공유 Pod에서는 IRSA role 연결만으로 요청별 테넌트 인가가 끝났다고 보지 않고 애플리케이션의 접근 경계도 검증한다. 이 절은 격리 설계의 점검 기준이며 배포 시험이나 데이터 위치 정책 전체의 재검증 결과가 아니다. 기존 `verified_at`은 유지한다.
 
+## 데이터 접근 격리와 부하 격리를 따로 검증한다
+
+부분 검증(2026-10-14): AWS SaaS Lens의 noisy neighbor와 성능 선택 기준을 대조했다. 다른 테넌트의 데이터를 읽지 못하더라도 공유 CPU, DB 연결과 처리 용량을 과도하게 쓰면 다른 고객의 응답이 느려질 수 있다. 권한 격리 성공은 성능 격리의 증거가 아니다.
+
+테넌트별 활동과 자원 소비를 관측하고, 부하에 맞춘 확장, 테넌트별 제한과 일부 서비스의 전용 배치를 비교한다. 전용 배치는 공유 부하의 영향을 줄이는 대신 운영 복잡성과 자원 비용을 늘릴 수 있으므로 모든 계층을 일괄 분리하는 결론으로 삼지 않는다.
+
+검증 제안: 테넌트 A가 대량 보고서를 실행하는 동안 테넌트 B의 API 지연, DB 연결 대기와 오류율을 측정한다. 제한이 A에만 적용되는지와 요청 제한 뒤 비동기 작업이 계속 병목을 만드는지도 확인한다. 이는 부하 시험 설계이며 실제 성능 측정이나 데이터 위치 정책 전체의 재검증 결과가 아니다. 기존 `verified_at`은 유지한다.
+
 ## 데이터 경로 전체를 확인한다
 
 다음은 배치와 복제 원칙에서 도출한 설계 점검 제안이다.
@@ -138,6 +146,8 @@ SaaS 도입에서는 다음과 같이 책임과 증거를 연결할 수 있다(�
 
 ## 출처
 
+- [AWS SaaS Lens, Noisy Neighbor](https://docs.aws.amazon.com/wellarchitected/latest/saas-lens/noisy-neighbor.html)
+- [AWS SaaS Lens, Selection](https://docs.aws.amazon.com/wellarchitected/latest/saas-lens/pe-selection.html)
 - [Amazon Bedrock, Model availability & compatibility](https://docs.aws.amazon.com/bedrock/latest/userguide/models.html)
 - [Amazon Bedrock, Route model inference requests across AWS Regions with cross-Region inference](https://docs.aws.amazon.com/bedrock/latest/userguide/cross-region-inference.html)
 - [Qlik Cloud, Enabling cross-region inference](https://help.qlik.com/en-US/cloud-services/Subsystems/Hub/Content/Sense_Hub/Admin/cross-region-data-processing.htm)

@@ -31,6 +31,15 @@ verified_at: 2026-09-30
 
 tag는 다시 가리킬 수 있지만 digest는 content-addressed identity다. SHA tag만으로도 registry가 tag overwrite를 허용하면 불변성이 보장되지 않는다. 배포 기록과 rollback target에는 digest를 사용하고 tag는 사람이 찾는 alias로 둔다.
 
+### 실행 플랫폼이 tag를 digest로 확정하는 시점
+
+2026-10-14 Amazon ECS, CodeBuild 공식 문서와 distribution reference 대조 기준이다.
+
+- 롤링 업데이트 배포 문서 기준으로 Amazon ECS 서비스는 기본적으로 배포에서 처음 시작한 task로 task definition의 image tag를 digest로 확정하고, 그 digest로 나머지 task를 띄운다. 배포 뒤 같은 tag(`latest` 등)에 새 image를 push해도 scale-out으로 뜨는 task가 검증하지 않은 새 image를 받지 않는다. container별 `versionConsistency`로 이 동작을 끌 수 있고, EC2에서는 ECS agent 1.70.0 이상이어야 모든 registry에서, 1.31.0~1.69.0은 ECR에서만 동작한다. EC2 capacity provider에서 첫 배포 때 용량이 부족하면 일관성이 깨질 수 있어 공식 문서는 `versionConsistency`를 `enabled`로 명시하라고 권한다.
+- 새 배포는 tag를 다시 확정한다. `forceNewDeployment`로 재시작하면 새 task는 그 시점의 digest를 쓰므로, tag를 덮어쓰는 repository에서는 코드를 바꾸지 않은 재배포가 다른 image를 올릴 수 있다. digest 확정이 세 번 이상 실패하면 확정 없이 배포를 계속하고, deployment circuit breaker를 켠 서비스는 배포를 실패 처리하고 롤백한다.
+- 이 동작은 한 서비스 안의 version 일관성 장치이지 승인된 image를 식별하는 수단이 아니다. 위 설명은 롤링 업데이트 문서에 있으므로 CodeDeploy blue/green 같은 다른 배포 방식에서 같은 보호를 가정하지 않는다. 배포 기록과 rollback target은 계속 digest로 남기고 build마다 고유한 tag를 쓴다(운영 제안).
+- CodeBuild의 `CODEBUILD_BUILD_ID`는 `project-name:UUID` 형태라 tag 문법(`[\w][\w.-]{0,127}`)이 허용하지 않는 콜론을 포함하므로 그대로 tag로 쓰지 않는다. `CODEBUILD_RESOLVED_SOURCE_VERSION`은 CodeCommit, GitHub, Bitbucket 소스면 commit ID라 commit SHA tag에 쓸 수 있지만 commit마다 고유할 뿐 build마다 고유하지는 않다. build마다 고유해야 하면 commit ID에 `CODEBUILD_BUILD_ID`의 콜론 뒤 UUID나 `CODEBUILD_BUILD_NUMBER`를 붙인다. CodePipeline이 시작한 build에서는 이 변수가 파이프라인이 넘긴 source revision이므로 CodePipeline의 S3 소스처럼 commit ID가 아닌 형식이면 tag 문법을 통과하는지 먼저 확인한다. CodeBuild 프로젝트의 소스가 S3이거나 파이프라인이 revision을 확인하지 못한 build에서는 이 변수가 설정되지 않는다.
+
 ## Registry 인증과 권한
 
 GHCR에 같은 repository의 image를 publish하는 GitHub Actions job은 장기 PAT보다 run별 `GITHUB_TOKEN`을 우선한다.
@@ -130,6 +139,9 @@ Q. Docker 이미지 배포 파이프라인은 어떻게 구성했는가?
 - [Docker, Pricing](https://www.docker.com/pricing/)
 - [GitHub Docs, GitHub Packages billing](https://docs.github.com/en/billing/concepts/product-billing/github-packages)
 - [AWS Docs, Amazon ECR private registry authentication](https://docs.aws.amazon.com/AmazonECR/latest/userguide/registry_auth.html)
+- [AWS Docs, Amazon ECS container image resolution](https://docs.aws.amazon.com/AmazonECS/latest/developerguide/deployment-type-ecs.html#deployment-container-image-stability)
+- [AWS Docs, CodeBuild environment variables in build environments](https://docs.aws.amazon.com/codebuild/latest/userguide/build-env-ref-env-vars.html)
+- [AWS Docs, CodePipeline Amazon S3 source action reference](https://docs.aws.amazon.com/codepipeline/latest/userguide/action-reference-S3.html)
 - [Google Cloud Docs, Artifact Registry pushing and pulling images](https://docs.cloud.google.com/artifact-registry/docs/docker/pushing-and-pulling)
 - [금융 인프라를 운영하는 Toss 개발자의 Docker, GHCR](https://www.inflearn.com/courses/lecture?courseId=340962&unitId=416392)
 - [금융 인프라를 운영하는 Toss 개발자의 Docker, CI/CD pipeline](https://www.inflearn.com/courses/lecture?courseId=340962&unitId=416528)
@@ -138,6 +150,7 @@ Q. Docker 이미지 배포 파이프라인은 어떻게 구성했는가?
 
 ## 관련 문서
 - [[GitHub-Actions]]
+- [[Safe-Deployment-Pipeline|안전한 자동 배포 파이프라인]]
 - [[Multi-Stage-Build|Multi-stage build]]
 - [[Docker-Compose|Docker Compose]]
 - [[Image-Size-Optimization|Image selection, size와 cleanup]]

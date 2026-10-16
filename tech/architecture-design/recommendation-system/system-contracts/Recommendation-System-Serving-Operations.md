@@ -1,7 +1,7 @@
 ---
 tags: [architecture, recommendation-system, serving, mlops, feature-store, ann, fallback]
 status: done
-verified_at: 2026-07-21
+verified_at: 2026-10-08
 category: "아키텍처&설계(Architecture&Design)"
 aliases: ["Recommendation Serving and Operations", "추천 서빙과 운영", "추천 시스템 MLOps"]
 ---
@@ -77,6 +77,19 @@ Online store가 entity별 최신 값 하나를 보관해도 그 값이 오래됐
 권장 파생 상태는 `baseSnapshotId`, `streamWatermark`, `lastEventTime`, `lateEventWindow`, `servingParameterEpoch`다.
 
 늦게 도착한 구매와 완주를 버리면 장기 가치 item이 과소평가될 수 있다. 반대로 오래된 batch snapshot이 최신 delta를 덮어쓰지 않도록 snapshot과 tombstone 순서를 관리한다. Kafka와 window 구현은 [[MQ-Kafka-Streams|Kafka Streams]]에 맡긴다.
+
+### 관리형 추천의 입력, 갱신과 재학습을 구분한다
+
+데이터를 수집한 시점, 추천 결과에 반영한 시점과 모델을 다시 학습한 시점은 다르다. 다음은 2026-10-08 Amazon Personalize 공식 문서로 대조한 적용 예이며, 문서 전체의 재검증을 뜻하지 않는다.
+
+| 경로 | 반영 범위와 조건 |
+|---|---|
+| 실시간 상호작용 | 실시간 개인화를 지원하는 recipe/use case에서 최근 전체 학습에 포함된 항목에 대한 행동을 해당 사용자의 추천에 즉시 사용한다 |
+| 일괄 상호작용 가져오기 | 전체 또는 증분 import의 행동 데이터는 다음 학습 뒤 모델에 반영된다. 실시간 개인화 입력 경로와 같지 않다 |
+| 신규 항목 자동 갱신 | 지원 recipe/use case에서는 새 항목을 exploration 후보로 고려한다. 새 solution version을 만드는 전체 재학습과 다르다 |
+| 재학습 | 최신 데이터를 학습해 새 모델을 만든다. 실시간 개인화를 지원하지 않는 유사 항목 추천 등의 행동 반영에도 필요하다 |
+
+따라서 이벤트 적재 성공만으로 추천 최신성을 판정하지 않는다. 입력 경로, 사용 recipe와 마지막 학습 시점을 함께 확인하고, 온라인 반영 여부와 최종 응답 캐시의 나이를 따로 측정한다. 실시간 입력을 사용하더라도 오래된 캐시가 반환되면 사용자가 보는 목록은 늦게 바뀔 수 있다.
 
 ## 선택적 ANN source lifecycle
 
@@ -173,6 +186,8 @@ Lineage는 이 순서의 산출물이 아니라 dataset, training run, model과 
 
 ## 출처
 
+- [Amazon Personalize, How new data influences real-time recommendations](https://docs.aws.amazon.com/personalize/latest/dg/how-new-data-influences-recommendations.html)
+- [Amazon Personalize, Use case and recipe features](https://docs.aws.amazon.com/personalize/latest/dg/use-case-recipe-features.html)
 - [Implement two-tower retrieval for large-scale candidate generation — Google Cloud](https://docs.cloud.google.com/architecture/implement-two-tower-retrieval-large-scale-candidate-generation)
 - Feast: [Feature service and versioning FAQ](https://docs.feast.dev/getting-started/faq), [Online store](https://docs.feast.dev/getting-started/components/online-store)
 - [Rules of Machine Learning — Google for Developers](https://developers.google.com/machine-learning/guides/rules-of-ml)

@@ -103,6 +103,7 @@ class EasyMap {
 의도를 드러내는 이름.
 
 - `data1`, `tmp`, `fn` 같은 의미 없는 이름 금지
+- 업무 의미가 더 구체적이면 `data`, `result`, `item` 같은 일반명사도 피한다. 무엇을 담았는지 알려고 정의와 호출부를 따라가게 만든다. `pendingOrder`처럼 개념과 상태를 담되, 이름을 무조건 길게 짓기보다 중요한 개념이 드러나는지를 본다
 - 단위, 역할, 도메인 용어 포함 (`userIdList`, `retryBackoffMs`)
 - prefix 중복(`markerName`, `markerId`)이 있으면 **묶일 후보**라는 신호
 
@@ -135,25 +136,7 @@ class EasyMap {
 
 ## 품질이 주는 장기 효과
 
-### 비대칭: 만들기 vs 쓰기
-
-- **만드는 비용**: Adapter 구조 설계 +10분
-- **쓰는 비용**:
-  - Advanced Beginner가 Switch 7곳을 다 찾아 수정 (+2시간, 실수 가능성 高) vs Adapter로 분리된 파일 1개만 수정 (+10분, 실수 거의 없음)
-- 한 번의 설계 품질 투자가 **이후 모든 사용자의 시간 복리**
-
-### 조직 관점
-
-- 품 많이 드는 구현은 주로 Advanced Beginner가 수행
-- Competent가 정리, 체계화 → **사용성, 안정성은 Competent 단독 작업 수준에 수렴**
-- Advanced Beginner가 **Competent의 정리된 코드 위에서** 개발할 때 오류↓, 속도↑
-- 즉 "한 명의 Competent"가 **팀 전체를 끌어올린다**
-
-### 학습 가속
-
-- 좋은 코드를 **보기만** 해서는 "쟤가 잘하니까 되는 것"으로 인식
-- 자기 코드가 **리팩토링되는 과정을 직접** 관찰하면 "나도 할 수 있다"로 내재화
-- 따라서 코드 리뷰는 **배움의 가장 큰 레버**
+품질 투자가 이후의 사용과 변경에서 돌려주는 효과는 [[Code-Quality-Criteria-Long-Term-Effects|코드 품질의 장기 효과와 실천]]으로 분리했다. 만들기와 쓰기의 비용 비대칭, Competent의 정리가 팀 전체를 끌어올리는 조직 관점, 자기 코드의 리팩토링 과정을 관찰하는 학습 가속, 품질과 속도에 대한 오해와 실천을 다룬다.
 
 ## 품질의 체크리스트
 
@@ -164,14 +147,6 @@ class EasyMap {
 - 새 요구사항 추가 시 **변경 범위**가 작은가
 - 실패 시 **영향 범위**가 국소화되는가
 - 외부 기술 변경이 도메인에 영향 없는가 ([[Layered-Clean-Hexagonal]])
-
-## 품질, 속도의 오해와 실천
-
-- **"품질 = 느린 개발"** — 단기만 그렇고 3개월+ 구간에서는 품질이 더 빠름
-- **"최신 기술 = 품질"** — 최신 기술이 추상화, 책임 분리를 자동 보장하지 않음
-- **"커버리지 100% = 품질"** — 구조 없으면 테스트도 부채
-
-실천: 교과서 체화 + 자기 코드 매주 리팩토링 + 디자인 패턴을 변화 축의 해법으로 학습 + 팀 코드 리뷰 필수화 + 스프린트 15~20% 기술 부채 해소 + 채용 시 [[Competence-Identification|1시간 코드 리뷰 과제]]
 
 ## 면접 체크포인트
 
@@ -184,8 +159,10 @@ class EasyMap {
 
 ## 출처
 - 블로그 "really impressed with the quality" (능력있는 개발자와 코드 품질)
+- [7 Coding Laws of Senior Developer — YouTube, Cloud X Berry](https://www.youtube.com/watch?v=JcYMtYbNUhU)
 
 ## 관련 문서
+- [[Code-Quality-Criteria-Long-Term-Effects|코드 품질의 장기 효과와 실천]]
 - [[Beautiful-Code|아름다운 코드의 조건과 유지]]
 - [[Dreyfus-Skill-Model|드레퓌스 기술 습득 모형]]
 - [[Competence-Identification|능력있는 개발자 판별법]]

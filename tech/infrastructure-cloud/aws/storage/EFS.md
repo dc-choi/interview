@@ -84,11 +84,19 @@ AWS의 **관리형 NFS 파일 스토리지**. 여러 클라이언트가 **동시
 |------|-----|-----|-----|
 | 타입 | **블록 스토리지** | **파일 시스템** (NFS) | **객체 스토리지** |
 | 액세스 | 한 EC2에 1:1 (Multi-Attach 예외) | **다수 EC2 동시 마운트** | API (HTTPS) |
-| 범위 | **AZ 한정** (스냅샷으로 리전 이전) | **Multi-AZ 또는 One Zone** | **리전 전역** |
-| 프로토콜 | NVMe, iSCSI (블록) | **NFS v4.1** | REST API |
+| 범위 | **AZ 한정** (스냅샷으로 리전 이전) | **Multi-AZ 또는 One Zone** | 버킷 유형, 스토리지 클래스와 위치에 따라 다름. One Zone 계열은 단일 Zone(AZ 또는 지원되는 Local Zone) |
+| 접근 인터페이스 | EC2에 연결한 블록 디바이스 | **NFS v4.1 / v4.0** | REST API |
 | 확장 | 볼륨 크기 사전 지정 (확장 가능) | **저장량 자동 탄력 확장**, 단일 파일과 서비스 할당량 적용 | 버킷과 객체, 요청별 할당량 안에서 대규모 확장 |
 | 가격 모델 | 프로비저닝한 용량과 성능 | 스토리지 클래스, throughput mode, I/O와 접근 요금 | 저장량 + 요청, 검색과 전송 등 |
 | 대표 용도 | 단일 EC2 부트, DB | 공유 파일 시스템, CMS, 홈디렉토리 | 정적 자산, 백업, 데이터 레이크 |
+
+### 공유 블록과 공유 파일 시스템을 구분한다
+
+2026-10-14 AWS EBS, EFS와 S3 공식 문서에서 저장 모델과 공유 조건을 대조했다. EFS의 기존 처리량, 요금과 할당량 전체를 재검증한 것은 아니므로 frontmatter의 검증일은 유지한다.
+
+EBS Multi-Attach는 같은 AZ의 여러 인스턴스가 `io1` 또는 `io2` 볼륨에 접근하는 기능이다. 볼륨 연결만으로 공유 파일 시스템이 생기지는 않는다. 일반 XFS나 EXT4는 여러 서버의 동시 접근을 전제로 설계되지 않았으므로, 파일 시스템으로 공유하려면 클러스터 파일 시스템을 검토하고 애플리케이션의 쓰기 순서와 일관성도 관리해야 한다.
+
+파일 경로를 여러 클라이언트에서 공유할 필요가 있으면 NFS 기반 EFS를, 객체를 버킷에 저장하고 API로 읽고 쓰면 S3를 검토한다. 사진이나 영상이라는 파일 종류만으로 선택하지 않고 애플리케이션이 요구하는 접근 방식과 동시 쓰기 계약을 먼저 확인한다(설계 점검).
 
 ## 시험 체크포인트
 
@@ -103,7 +111,7 @@ AWS의 **관리형 NFS 파일 스토리지**. 여러 클라이언트가 **동시
 - 온프레미스에서 마운트 → **VPN / Direct Connect** 필요
 - 보안 그룹 + **파일 시스템 정책**으로 IAM 단위 제어 가능
 - 저장 암호화는 **KMS**, 전송 암호화는 TLS (파일 시스템 정책으로 강제 가능)
-- "공유 NFS + Multi-AZ + 저장량 자동 확장 필요" → EFS가 우선 후보. 지연시간, 처리량, OS, 비용과 파일 크기 요건에 따라 FSx 계열이나 다른 스토리지도 비교
+- 공유 NFS, Multi-AZ와 저장량 자동 확장이 필요하면 EFS가 우선 후보. 지연시간, 처리량, OS, 비용과 파일 크기 요건에 따라 FSx 계열이나 다른 스토리지도 비교
 
 ## 출처
 
@@ -112,6 +120,10 @@ AWS의 **관리형 NFS 파일 스토리지**. 여러 클라이언트가 **동시
 - [AWS EFS 성능과 처리량 모드](https://docs.aws.amazon.com/efs/latest/ug/performance.html)
 - [AWS EFS 스토리지 클래스와 가용성](https://docs.aws.amazon.com/efs/latest/ug/features.html)
 - [AWS EFS lifecycle management](https://docs.aws.amazon.com/efs/latest/ug/lifecycle-management-efs.html)
+- [AWS EBS Multi-Attach](https://docs.aws.amazon.com/ebs/latest/userguide/ebs-volumes-multi.html)
+- [AWS EFS 개요](https://docs.aws.amazon.com/efs/latest/ug/whatisefs.html)
+- [AWS S3 개요](https://docs.aws.amazon.com/AmazonS3/latest/userguide/Welcome.html)
+- [AWS S3 directory bucket 데이터 레지던시](https://docs.aws.amazon.com/AmazonS3/latest/userguide/directory-bucket-data-residency.html)
 
 ## 관련 문서
 

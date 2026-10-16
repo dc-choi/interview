@@ -87,3 +87,4 @@ Hindsight의 ACL 2026 공개 논문은 world, experience, observation, opinion�
 - [[Context-Engineering|컨텍스트 엔지니어링]]
 - [[Agentic-Context-Platform|에이전트 컨텍스트 플랫폼]]
 - [[AI-Workflow-Knowledge-Loop|AI 업무와 지식 환류]]
+- [[Tacit-Knowledge-Judgment-Agent|암묵지와 판단 에이전트 (기억, 판단 사례와 원칙의 층과 피드백 흡수)]]

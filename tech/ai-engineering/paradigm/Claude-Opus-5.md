@@ -86,7 +86,7 @@ Claude Opus 5는 Opus 4.8의 후속으로 2026-07-24 출시된 Opus 라인 최�
 - [[LLM-Model-Tiers|LLM 모델 티어 선택 (티어 경제학, 라우팅, 세대 갱신 패턴)]]
 - [[LLM-Prompt-Caching|LLM 프롬프트 캐싱 (접두사 불변 제약)]]
 - [[Harness-Engineering|하네스 엔지니어링 (검증의 우선성 원칙)]]
-- [[Production-Agent-Architecture|프로덕션 에이전트 아키텍처 (고가용성 워커 풀)]]
+- [[Production-Agent-Architecture-Eval-and-Operations|프로덕션 에이전트 아키텍처 (고가용성 워커 풀)]]
 - [[LLM-Eval-Strategy|LLM 평가 전략 (모델 선택을 갱신하는 eval)]]
 - [[Context-Engineering|컨텍스트 엔지니어링 (모델 세대와 지시 밀도 — 과잉 지시 정리)]]
 

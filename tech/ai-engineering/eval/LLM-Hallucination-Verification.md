@@ -66,11 +66,11 @@ Turpin 등(2023)은 few-shot 예시의 선택지를 재배열해 정답이 모�
 - 확인했다, 환불했다 같은 문장은 생성된 텍스트일 뿐이다. 이번 요청에서 실제로 실행된 도구 호출과 그 결과만 증거로 인정한다. 환불 접수나 취소 완료 같은 행동 결과는 도구 결과를 받아 애플리케이션이 상태 문구로 렌더링하고, 모델의 자유 텍스트에 같은 주장이 나오면 실행 기록과 대조한다.
 - 환불 자격과 환불 실행은 다른 사실이다. 자격은 정책과 계정 사실의 판정이고 실행은 결제 시스템의 결과다. 결제 시스템이 성공을 보고하기 전에는 환불됐다고 말하지 않고, 타임아웃은 실패가 아니라 결과 미확인으로 다룬다([[Payment-Unknown-Outcome-and-Reversal#상태와 증거를 분리한다|상태와 증거를 분리한다]]).
 - 확인 번호와 거래 ID 같은 식별자는 모델이 만든 값을 받지 않는다. 도구 결과의 값을 애플리케이션이 응답에 넣고, 응답에 나온 식별자가 이번 세션의 도구 결과에 있는지 검사한다.
-- 도구가 실패하면 그 실패를 모델 입력(`is_error`)과 사용자 응답 양쪽에 드러낸다. 조회하지 못한 사실을 추정으로 메우지 않고 needs_review로 보낸다([[LLM-Failure-Handling#도구 실행과 부분 완료|도구 실행과 부분 완료]]).
+- 도구가 실패하면 그 실패를 모델 입력(`is_error`)과 사용자 응답 양쪽에 드러낸다. 조회하지 못한 사실을 추정으로 메우지 않고 needs_review로 보낸다([[LLM-Failure-Handling-Recovery#도구 실행과 부분 완료|도구 실행과 부분 완료]]).
 
 ## 규칙은 코드가 판정하고 모델은 설명한다
 
-Temperature를 낮추면 높은 점수의 후보로 선택이 몰릴 뿐 사실성이 생기지 않고([[LLM-Generation-Mechanics-Decoding#Logit에서 Token 선택까지|Logit에서 Token 선택까지]]), 구조화 출력은 형식을 맞출 뿐 값의 정확성을 보장하지 않는다([[LLM-Failure-Handling#구조화 출력은 형식만 보장한다|구조화 출력은 형식만 보장한다]]). 조건이 명확한 규칙은 확인된 사실을 받아 코드가 판정하고, 모델은 판정 결과와 근거를 설명하는 역할로 둔다. 근거가 모자란 경우도 정상 결과로 돌려준다.
+Temperature를 낮추면 높은 점수의 후보로 선택이 몰릴 뿐 사실성이 생기지 않고([[LLM-Generation-Mechanics-Decoding#Logit에서 Token 선택까지|Logit에서 Token 선택까지]]), 구조화 출력은 형식을 맞출 뿐 값의 정확성을 보장하지 않는다([[LLM-Failure-Handling-Response-Validation#구조화 출력은 형식만 보장한다|구조화 출력은 형식만 보장한다]]). 조건이 명확한 규칙은 확인된 사실을 받아 코드가 판정하고, 모델은 판정 결과와 근거를 설명하는 역할로 둔다. 근거가 모자란 경우도 정상 결과로 돌려준다.
 
 ```ts
 const RefundDecision = {
@@ -185,7 +185,8 @@ API 성공도 검사 실행의 증거는 아니다. `Converse`에서 `guardConte
 - [[LLM-Abstention|LLM Abstention (채점이 추측을 보상하는 구조, 확신 목표, needs_review)]]
 - [[LLM-Generation-Mechanics-Context-and-Agent|Context, 환각과 에이전트 (생성 단계의 환각 원인)]]
 - [[RAG-Retrieval-Engineering|RAG 검색 엔지니어링 (적용 범위 메타데이터, 근거 추적)]]
-- [[LLM-Failure-Handling|LLM 실패 처리 (구조화 출력의 한계, 도구 오류 전달)]]
+- [[LLM-Failure-Handling-Response-Validation#구조화 출력은 형식만 보장한다|LLM 실패 처리 (구조화 출력의 한계)]]
+- [[LLM-Failure-Handling-Recovery#도구 실행과 부분 완료|LLM 실패 처리 (도구 오류 전달)]]
 - [[LLM-Generation-Mechanics-Decoding|추론과 디코딩 (temperature와 사실성)]]
 - [[Payment-Unknown-Outcome-and-Reversal|결제 결과 미확인과 망취소 (상태와 증거 분리)]]
 - [[Eval-Golden-Set-and-Deploy-Gates|골든셋과 배포 관문 (금지 주장과 경계 사례)]]

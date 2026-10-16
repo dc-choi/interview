@@ -77,6 +77,14 @@ LocalDate nextBusinessCandidate = date
 - 문자열 표현은 ISO-8601 기간 표기다. `Period.ofDays(10)`은 `P10D`, `Duration.ofMinutes(30)`은 `PT30M`이며 `T` 뒤가 시, 분, 초다. `Duration.ofDays(2)`는 `PT48H`로 표기된다.
 - `Duration.between`은 초 단위를 지원하는 타입끼리만 계산한다. `LocalDate` 두 개를 넘기면 `UnsupportedTemporalTypeException: Unsupported unit: Seconds`이므로 날짜 차이는 `Period`나 `ChronoUnit.DAYS`로 구한다.
 
+### 고정된 하루, 윤초와 객체의 동등성
+
+2026-10-14 Java SE 26의 `Duration`과 `Instant` 명세에서 다음 범위를 대조했다. 기존 날짜 조정 API 전체를 재검증한 것은 아니므로 frontmatter의 검증일은 유지한다.
+
+- `Duration.ofDays(1)`은 정확히 24시간이다. 특정 지역의 다음 달력 날짜까지 남은 시간이나 UTC 윤초를 자동으로 반영한 물리적 하루를 뜻하지 않는다. DST에 따른 달력 날짜 이동과 윤초에 따른 시간 척도 문제를 구분한다.
+- `Duration`의 초는 윤초 부근에서 원자시계의 SI 초와 반드시 같지는 않다. 정밀 시간 측정에서는 `Instant`의 Java Time-Scale 계약과 사용한 시계 구현을 함께 확인한다. 나노초 단위 표현을 지원한다는 사실만으로 실제 시계의 정밀도나 단조 증가를 보장하지 않는다.
+- Java SE 26의 `Duration`은 불변이며 스레드 안전한 **value-based class**다. 값 비교는 `equals`로 하고 인스턴스를 동기화 잠금으로 쓰지 않는다. 이 API 계약과 향후 언어의 value class 전환 일정은 별개이므로 미래 전환 시점을 현재 동작으로 설명하지 않는다.
+
 ## 면접 체크포인트
 
 - 단위와 필드의 차이, `DAYS`와 `DAY_OF_MONTH`
@@ -96,6 +104,7 @@ LocalDate nextBusinessCandidate = date
 - [DayOfWeek, Java SE 26 API](https://docs.oracle.com/en/java/javase/26/docs/api/java.base/java/time/DayOfWeek.html)
 - [Period, Java SE 26 API](https://docs.oracle.com/en/java/javase/26/docs/api/java.base/java/time/Period.html)
 - [Duration, Java SE 26 API](https://docs.oracle.com/en/java/javase/26/docs/api/java.base/java/time/Duration.html)
+- [Instant, Java SE 26 API](https://docs.oracle.com/en/java/javase/26/docs/api/java.base/java/time/Instant.html)
 - [Calendar, Java SE 26 API](https://docs.oracle.com/en/java/javase/26/docs/api/java.base/java/util/Calendar.html)
 - [ECMAScript Language Specification, WeekDay](https://tc39.es/ecma262/multipage/numbers-and-dates.html#sec-weekday)
 - 김영한 강사, [기간, 시간의 간격 - Duration, Period](https://www.inflearn.com/courses/lecture?courseId=333308&unitId=212249)

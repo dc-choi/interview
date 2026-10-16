@@ -62,3 +62,4 @@ Bedrock의 GraphRAG는 초기 벡터 검색으로 찾은 청크와 연결된 노
 - [[RAG-Retrieval-Engineering|RAG 검색 엔지니어링]]
 - [[LLM-Hallucination-Verification|환각과 근거 검증]]
 - [[LLM-Eval-Strategy|LLM 평가 전략]]
+- [[Ontology-Knowledge-Graph|온톨로지와 지식 그래프 (추출 그래프의 허용 관계와 식별자)]]

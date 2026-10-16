@@ -44,6 +44,14 @@ Fargate Profile은 **selector**(namespace + label)에 매치되는 Pod를 자동
 - **단점**: 인스턴스 타입별 ENI/IP 한도로 **노드당 Pod 수** 제한 (예: m5.large = 29 Pod)
 - 완화: **Prefix Delegation** 기능으로 /28 prefix 단위 할당해 Pod 수 증가
 
+### Linux IPv4 Prefix Delegation의 용량 경계
+
+2026-10-07 공식 문서 확인 기준. VPC CNI의 prefix mode는 개별 secondary IP 대신 `/28` 블록의 16개 주소를 ENI 슬롯 하나에 연결한다. 인스턴스의 최대 ENI 수 자체가 늘어나는 것은 아니다.
+
+- 서브넷에 남은 IP가 있어도 연속된 `/28` 블록이 없으면 `InsufficientCidrBlocks`로 할당이 실패할 수 있다. 새 서브넷이나 subnet CIDR reservation으로 연속 공간을 확보한다.
+- `WARM_IP_TARGET`과 `MINIMUM_IP_TARGET`을 설정하면 `WARM_PREFIX_TARGET`보다 우선한다. 예비 IP를 줄이면 주소 낭비를 줄일 수 있지만 Pod 시작 시 추가 할당이 필요할 수 있다.
+- 전환 시 새 노드 그룹을 사용하고 `max-pods`, 실제 CPU와 메모리 용량도 확인한다. Prefix mode 활성화만으로 Pod 수용량이나 EC2 API 제한 문제가 모두 해결됐다고 판단하지 않는다.
+
 ### Service & Ingress
 
 | 종류 | AWS 매핑 |
@@ -158,6 +166,7 @@ StatefulSet은 **EBS + PersistentVolumeClaim**이 표준.
 
 ## 출처
 
+- [Amazon EKS, Prefix Mode for Linux](https://docs.aws.amazon.com/eks/latest/best-practices/prefix-mode-linux.html) — Linux IPv4 prefix 절의 부분 검증
 - [Amazon EKS, Karpenter](https://docs.aws.amazon.com/eks/latest/best-practices/karpenter.html)
 - [Amazon EKS, Kubernetes Data Plane](https://docs.aws.amazon.com/eks/latest/best-practices/scale-data-plane.html)
 - [Karpenter, Disruption](https://karpenter.sh/docs/concepts/disruption/)

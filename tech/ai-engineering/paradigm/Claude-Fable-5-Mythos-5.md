@@ -96,7 +96,7 @@ Effort, 작업 예산(task budgets, 베타 헤더 `task-budgets-2026-03-13`), �
 
 ### jailbreak 대응 — defense in depth
 
-안전 분류기의 강도와 jailbreak 대응은 완벽한 차단이 불가능하다는 전제에서 설계된다. 가드레일(특정 주제를 거부하는 분류기)은 숙련된 공격자에겐 보안 경계가 아니라 과속 방지턱에 가깝다 — 미숙한 다수를 늦출 뿐 결연한 적을 막지는 못한다. 그래서 가드레일 강도를 단일 방어선으로 신뢰하지 않고 다층으로 감싼다. 전략은 세 가지다. 공격 경로를 매우 좁고 생산 비용이 높게 만들고, 모니터링으로 빠르게 탐지하고 완화하며, 일정 기간 데이터 보존(Fable 30일)으로 사후 연구를 가능케 한다. 출시 전에는 정부, 영국 AISI, 제3자 기관과 수천 시간의 red-team을 거친다. 같은 보안 철학이 [[Production-Agent-Architecture|프로덕션 에이전트 아키텍처]]의 Defense in Depth 4겹, [[LLM-Eval-Strategy|LLM 평가 전략]]의 red-team에 흐른다.
+안전 분류기의 강도와 jailbreak 대응은 완벽한 차단이 불가능하다는 전제에서 설계된다. 가드레일(특정 주제를 거부하는 분류기)은 숙련된 공격자에겐 보안 경계가 아니라 과속 방지턱에 가깝다 — 미숙한 다수를 늦출 뿐 결연한 적을 막지는 못한다. 그래서 가드레일 강도를 단일 방어선으로 신뢰하지 않고 다층으로 감싼다. 전략은 세 가지다. 공격 경로를 매우 좁고 생산 비용이 높게 만들고, 모니터링으로 빠르게 탐지하고 완화하며, 일정 기간 데이터 보존(Fable 30일)으로 사후 연구를 가능케 한다. 출시 전에는 정부, 영국 AISI, 제3자 기관과 수천 시간의 red-team을 거친다. 같은 보안 철학이 [[Production-Agent-Architecture-Guardrails#Defense in Depth (4겹 안전망)|프로덕션 에이전트 아키텍처]]의 Defense in Depth 4겹, [[LLM-Eval-Strategy|LLM 평가 전략]]의 red-team에 흐른다.
 
 사례:
 
@@ -105,7 +105,7 @@ Effort, 작업 예산(task budgets, 베타 헤더 `task-budgets-2026-03-13`), �
 ## 면접, 적용 포인트
 
 - 거부를 성공 응답의 한 종료 사유로 처리하는 설계 — 가용성과 회복력 관점에서 에러 처리와 분리해 응답 분기에 둔다.
-- 폴백 사다리(서버 측, 클라이언트 측, 수동)와 폴백 크레딧 = 비용 이중 지불 없는 모델 전환. [[Production-Agent-Architecture|고가용성 워커 풀]]에서 리밋, API 에러 시 워커를 교체하는 것과 같은 결.
+- 폴백 사다리(서버 측, 클라이언트 측, 수동)와 폴백 크레딧 = 비용 이중 지불 없는 모델 전환. [[Production-Agent-Architecture-Eval-and-Operations|고가용성 워커 풀]]에서 리밋, API 에러 시 워커를 교체하는 것과 같은 결.
 - `effort` 하나로 사고 깊이와 비용을 동시에 조절하는 단일 손잡이 — 루프 통제와 토큰 경제학의 접점.
 - 모델 가용성은 외생 리스크 — LLM 통합에 추상화 계층과 폴백을 두는 근거는 비용만이 아니라 가용성 연속성이다. 규제로 특정 모델이 갑자기 회수되거나 벤더가 과금, 접근 경로를 바꿀 수 있어, 단일 모델 하드 의존을 피하고 멀티 프로바이더로 통제점을 분산한다.
 
@@ -113,7 +113,7 @@ Effort, 작업 예산(task budgets, 베타 헤더 `task-budgets-2026-03-13`), �
 
 - [[Claude-Opus-5|Claude Opus 5 (하위 티어 — 절반 가격에 근접 성능, 같은 refusal 처리 패턴)]]
 - [[LLM-Abstention|LLM Abstention (모른다고 말하는 능력 — refusal과 층위 구분)]]
-- [[Production-Agent-Architecture|프로덕션 에이전트 아키텍처 (폴백 = 고가용성 워커 풀)]]
+- [[Production-Agent-Architecture-Eval-and-Operations|프로덕션 에이전트 아키텍처 (폴백 = 고가용성 워커 풀)]]
 - [[Harness-Engineering|하네스 엔지니어링 (effort, task budget = 루프 통제 손잡이)]]
 - [[Context-Engineering|컨텍스트 엔지니어링 (압축, 컨텍스트 편집)]]
 - [[LLM-Eval-Strategy|LLM 평가 전략 (red-team, 안전 게이트 평가)]]

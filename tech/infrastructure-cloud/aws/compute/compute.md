@@ -13,9 +13,11 @@ EC2, Lambda, ECS 외의 컴퓨팅 서비스 모음. EC2는 [[EC2|EC2 인덱스]]
 - [[EKS-Hybrid-Nodes|EKS Hybrid Nodes — 네트워크와 CNI, 등록 진단, 연결 단절과 복구]]
 - [[ROSA|ROSA — HCP와 Classic 배치, 플랫폼 운영과 고객의 애플리케이션 책임]]
 - [[EKS-Windows|EKS Windows — 혼합 OS 배치, 단일 ENI, prefix와 서브넷 용량]]
+- [[EKS-Pod-Networking|EKS Pod 네트워킹 — 노드당 Pod 수, 보조 CIDR과 custom networking, ALB 대상 유형]]
 - [[ECR|ECR — 컨테이너 이미지 레지스트리, 스캐닝, Lifecycle Policy]]
 - [[App-Runner|App Runner — 매니지드 컨테이너 PaaS, 소스 자동 빌드]]
 - [[Elastic-Beanstalk|Elastic Beanstalk — 애플리케이션 PaaS, 배포 정책과 환경 관리]]
+- [[Lightsail|Lightsail — 고정 요금 VPS, 전송 허용량과 고정 IP 과금, WordPress 이전과 CDN, EC2 내보내기]]
 - [[Amazon-Braket|Amazon Braket — 시뮬레이터, QPU, Hybrid Jobs와 고전 기준선 비교]]
 
 ## 관련 문서

@@ -81,6 +81,7 @@ L4와 L7은 대상 선택에 어떤 정보를 쓰는지 설명하는 분류다. 
 - **로컬 세션 상태**: 웹 서버 메모리에만 로그인 세션을 두면 다른 서버로 간 요청이 세션을 찾지 못할 수 있음 → 공유 세션 저장소 또는 sticky session을 검토
 - **IP 기반 고정 분산**: 모바일 IP 변경, NAT 공유, 프록시 환경에서 안정적 식별자가 아닐 수 있음. 같은 원인으로 한 NAT나 프록시 뒤의 많은 사용자가 한 서버에 몰려 부하가 편중될 수 있으므로 대상별 요청 수와 지연 편차로 쏠림을 관찰
 - **쿠키나 키 기반 고정 분산**: 같은 대상을 고를 수 있지만 대상 장애와 재배치에서는 세션 복구 경로가 필요
+- **키 해시와 세션 고정의 차이**: 쿠키 값을 해시 키로 쓰면 같은 값은 같은 대상으로 가지만, 그 세션을 처음 만든 대상과 해시가 고른 대상이 다를 수 있다. 세션이 대상 메모리에 있으면 첫 응답을 처리한 대상을 로드밸런서가 발급한 쿠키에 기록하거나, 애플리케이션이 설정한 세션 쿠키를 로드밸런서가 학습하는 방식을 쓴다 (nginx 설정은 [[Reverse-Proxy|Reverse Proxy]]의 upstream 절)
 
 ## DNS
 
@@ -122,7 +123,9 @@ L4와 L7은 대상 선택에 어떤 정보를 쓰는지 설명하는 분류다. 
 - [AWS Route 53, Choosing TTL values for DNS records](https://docs.aws.amazon.com/Route53/latest/DeveloperGuide/best-practices-dns.html#best-practices-dns-choosing-ttl-values)
 - [HAProxy, Backend load balancing algorithms](https://www.haproxy.com/documentation/haproxy-configuration-tutorials/proxying-essentials/configuration-basics/backends/)
 - [Finagle, Clients: Load Balancing](https://twitter.github.io/finagle/guide/Clients.html#load-balancing)
+- [nginx, ngx_http_upstream_module](https://nginx.org/en/docs/http/ngx_http_upstream_module.html#hash)
 - [인프런, 성장랜턴, API 게이트웨이 & 로드밸런서 & 서비스 디스커버리](https://www.inflearn.com/courses/lecture?courseId=335130&unitId=278148)
+- [Fundamentals of Backend Architecture - How to Design Scalable Software — YouTube, Tiago](https://www.youtube.com/watch?v=Qa-7iWxDz1A)
 
 ## 관련 문서
 - [[IaC|IaC]]

@@ -101,6 +101,10 @@ CPython dict와 set, OpenJDK `HashMap`은 모두 table 크기를 2의 거듭제�
 - 2배로 늘리면 항목의 새 index가 기존 index j나 j + 이전 크기 둘 중 하나라서 재배치가 단순하다(OpenJDK `resize`).
 - 대가로 hash의 하위 k bit만 index를 정한다. 하위 bit가 고르지 않으면 충돌이 몰리므로 OpenJDK `HashMap`은 `h ^ (h >>> 16)`으로 상위 bit를 섞고, CPython은 probe 순서에 `perturb`로 상위 bit를 끌어들인다. 나머지 연산을 쓰는 직접 구현이 table 크기를 소수로 두는 것은 같은 문제에 대한 다른 선택이다.
 
+## 순서를 함께 유지하는 hash table과 LRU cache
+
+모든 항목을 doubly linked list로도 이어 삽입 순서나 최근 접근 순서를 기억하는 구조(Java `LinkedHashMap`)와 이를 이용한 LRU cache의 구현, 표준 library 사용법과 근사 LRU는 [[Hash-Table-LRU-Cache|LRU Cache]]에서 다룬다.
+
 ## C++ 코딩 테스트에서 쓰기
 
 직접 구현할 일은 드물고 표준 컨테이너를 쓴다. 모두 평균 O(1)이지만 원소 순서가 크기 순도 삽입 순도 아니다.
@@ -115,7 +119,7 @@ CPython dict와 set, OpenJDK `HashMap`은 모두 table 크기를 2의 거듭제�
 
 - **table 크기**: chaining은 최대 삽입 수 정도, open addressing은 load factor가 너무 커지지 않도록 최대 삽입 수보다 넉넉하게(보통 load factor 0.75 이하가 되게) 잡는다. 나머지로 index를 정하는 hash라면 크기를 소수로 두면 key 분포의 규칙성이 덜 겹친다(예: 1000003은 소수다). 필수는 아니다.
 - **문자열 hash**: 다항식 rolling hash로 `h = (h * a + c) mod m`을 문자마다 반복한다(a는 작은 상수, m은 table 크기). 앞 글자만 쓰거나 글자 합만 쓰면 충돌이 몰린다.
-- **chaining을 배열로**: bucket마다 연결 리스트를 따로 두지 않고, 전체 삽입 수 크기의 `pre`, `nxt`, key, value 배열과 bucket별 `head` 배열 하나로 여러 리스트를 공유한다([[Linear-Data-Structures#배열로 흉내 내는 linked list|배열로 흉내 내는 linked list]]). 새 항목은 `head[h]` 앞에 끼우고, 지우는 항목이 head면 `head[h]`를 다음 항목으로 옮긴다.
+- **chaining을 배열로**: bucket마다 연결 리스트를 따로 두지 않고, 전체 삽입 수 크기의 `pre`, `nxt`, key, value 배열과 bucket별 `head` 배열 하나로 여러 리스트를 공유한다([[Linear-Data-Structures-Linked-List#배열로 흉내 내는 linked list|배열로 흉내 내는 linked list]]). 새 항목은 `head[h]` 앞에 끼우고, 지우는 항목이 head면 `head[h]`를 다음 항목으로 옮긴다.
 - **open addressing 삭제**: 지운 칸을 빈칸으로 되돌리면 뒤 probe chain을 못 찾으므로 삭제 표시(tombstone)를 둔다. 탐색은 삭제 표시를 건너뛰고 계속, 삽입은 빈칸까지 같은 key가 없음을 확인한 뒤 처음 만난 삭제 표시 칸을 재사용할 수 있다([[Hash-Collision#삭제와 tombstone|중복 삽입 함정]]).
 
 ## 저장소 예제의 범위
@@ -130,11 +134,13 @@ CPython dict와 set, OpenJDK `HashMap`은 모두 table 크기를 2의 거듭제�
 - [[Checksum-and-Hash|체크섬과 해시 (일반 해시와 암호학적 해시의 목적 차이)]]
 - [[자료구조(DataStructure)|자료구조 인덱스]]
 - [[Algorithm-Complexity|시간복잡도와 Big O]]
-- [[Linear-Data-Structures|선형 자료구조 (배열 기반 linked list)]]
+- [[Linear-Data-Structures-Linked-List#배열로 흉내 내는 linked list|선형 자료구조 (배열 기반 linked list)]]
 - [[Linear-Data-Structures-List-and-Set|List와 Set (hash set 구현 비교)]]
 - [[Java-Generics-and-Collections-Hashing|Java 해시와 HashSet 원리]]
 - [[Trie-and-Autocomplete|Trie (문자열 key의 map 구현)]]
 - [[Data-Structures-in-C|C로 구현하는 자료구조 (chaining table의 C 표현)]]
+- [[Bloom-Filter|Bloom filter (hash 위치만 표시하는 근사 membership)]]
+- [[Hash-Table-LRU-Cache|LRU Cache (순서를 유지하는 hash table과 doubly linked list 조합)]]
 
 ## 시간, 공간과 조회 방향
 

@@ -10,7 +10,8 @@ aliases: ["CICD Deployment", "배포 전략과 실행"]
 아티팩트를 사용자 앞에 무중단으로 내보내는 전략과 실행 자동화를 모은다.
 
 - [[Zero-Downtime-Deployment|무중단 배포]]: 5계층 점검, 복제본 간 데이터 공유와 교체 후 보존
-- [[Blue-Green|Blue-Green 배포]]: In-Place vs Blue-Green, LB 스위치, Expand-Contract 스키마
+- [[Safe-Deployment-Pipeline|안전한 자동 배포 파이프라인]]: 사전 검증 단계, one-box와 wave, bake time, 알람 롤백과 배포 시간 제한, ECS 도구 대응
+- [[Blue-Green|Blue-Green 배포]]: In-Place vs Blue-Green, LB 스위치, ECS 기본과 CodeDeploy blue/green, Expand-Contract 스키마
 - [[Canary|Canary 배포]]: 점진적 트래픽 노출, 관측과 승급 기준
 - [[Feature-Flag|Feature Flag]]: 배포와 노출 분리, 수명주기와 정리
 - [[Rollback|롤백 전략]]: 되돌릴 대상, 중단 기준과 상태 호환

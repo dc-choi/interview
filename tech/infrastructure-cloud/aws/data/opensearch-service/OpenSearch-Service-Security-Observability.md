@@ -40,6 +40,18 @@ User pool은 사용자 로그인, identity pool은 로그인한 사용자의 임
 
 OpenSearch Service가 생성한 app client를 이름 변경하거나 삭제하지 않는다. domain의 Cognito 옵션 변경이나 Elasticsearch에서 OpenSearch로의 업그레이드는 수동 app client 변경을 덮어쓸 수 있으므로, 변경 뒤 필요한 사용자 구성을 재확인한다.
 
+### VPC 밖에서 NGINX를 거치는 Cognito 로그인
+
+2026-10-14 AWS의 NGINX 구성 예제와 Dashboards, VPC 문서를 부분 대조했다. 이 예제는 Cognito user pool의 네이티브 사용자를 대상으로 하므로 외부 IdP 연동까지 검증된 구성으로 확대하지 않는다. 문서 전체의 기존 검증일은 유지한다.
+
+프록시는 브라우저 요청을 VPC 안의 Dashboards와 Cognito 로그인 endpoint로 나누어 전달한다. OpenSearch 경로에 `proxy_pass`만 추가하는 것으로 로그인 왕복이 완성되지는 않는다.
+
+- **리디렉션과 쿠키:** 두 upstream이 반환하는 리디렉션 주소를 브라우저가 접근하는 프록시 주소로 바꾸고, cookie domain과 필요한 path를 맞춘다. `redirect_mismatch`가 나면 Dashboards와 Cognito 양쪽 경로를 확인한다.
+- **네트워크와 권한:** 프록시에서 domain까지의 라우팅과 HTTPS 보안 그룹 규칙이 필요하다. 같은 보안 그룹을 붙였다는 사실만으로 통신이 허용되지는 않는다. Cognito authenticated role과 FGAC 권한은 앞 절처럼 별도로 확인한다.
+- **주소와 TLS:** OpenSearch의 `/_dashboards` 경로를 사용하고, NGINX resolver는 실제 VPC DNS 구성에 맞춘다. 예제의 `10.0.0.2`를 모든 VPC에 복사하지 않는다. 운영용 브라우저 접속에는 CA가 서명한 인증서를 사용한다.
+
+검증에서는 첫 접속, 로그인 리디렉션, 로그인 뒤 데이터 조회와 로그아웃을 나누어 시험한다(운영 제안). 프록시 공개 범위와 접근 제한도 검토한다. 이 절은 연결 원리와 점검 기준이며 실제 AWS 배포나 로그인 시험 결과가 아니다.
+
 ## 데이터 수집
 
 주요 경로는 애플리케이션 bulk, CDC와 outbox, Data Firehose, CloudWatch Logs, OpenSearch Ingestion이다.
@@ -100,6 +112,9 @@ Provisioned domain에서 CPU가 높으면 먼저 부하가 몰린 node와 실행
 
 ## 출처
 
+- [How do I use an NGINX proxy to access OpenSearch Dashboards with Amazon Cognito authentication from outside a VPC? — AWS re:Post Knowledge Center](https://repost.aws/knowledge-center/opensearch-outside-vpc-nginx)
+- [AWS Documentation, Using OpenSearch Dashboards with Amazon OpenSearch Service](https://docs.aws.amazon.com/opensearch-service/latest/developerguide/dashboards.html)
+- [AWS Documentation, Launching your Amazon OpenSearch Service domains within a VPC](https://docs.aws.amazon.com/opensearch-service/latest/developerguide/vpc.html)
 - [AWS Documentation, Configuring Amazon Cognito authentication for OpenSearch Dashboards](https://docs.aws.amazon.com/opensearch-service/latest/developerguide/cognito-auth.html)
 - [How do I troubleshoot high CPU utilization on my OpenSearch Service cluster? — AWS re:Post Knowledge Center](https://www.repost.aws/knowledge-center/opensearch-troubleshoot-high-cpu)
 - [AWS Documentation, AWSSupport-TroubleshootOpenSearchHighCPU](https://docs.aws.amazon.com/systems-manager-automation-runbooks/latest/userguide/automation-troubleshoot-opensearch-high-cpu.html)

@@ -96,6 +96,7 @@ API는 함수 하나에 한정되지 않고 SDK도 단순히 API 여러 개의 �
 - [[Digital-Fundamentals|디지털 기초]]
 - [[Algorithm-Practice|알고리즘 문제를 절차로 바꾸는 법]]
 - [[Math-Logic-For-Programming|프로그래밍에 필요한 수학과 논리]]
+- [[Programming-Language-Landscape|프로그래밍 언어 지형과 구분 기준]]
 
 ## 실행 관리, 메모리 회수와 VM의 범위
 

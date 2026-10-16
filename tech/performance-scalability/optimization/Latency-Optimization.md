@@ -25,7 +25,7 @@ aliases: ["Latency Optimization", "레이턴시 최적화", "응답 시간 최�
 
 ## 4대 최적화 전략
 
-### 1. 캐싱 — "반복 요청을 원천에서 막는다"
+### 1. 캐싱 — 반복 요청을 원천에서 막는다
 
 | 계층 | 도구 | 트레이드오프 |
 |---|---|---|
@@ -38,7 +38,7 @@ aliases: ["Latency Optimization", "레이턴시 최적화", "응답 시간 최�
 
 → 깊이 있게: [[Cache-Strategies|캐시 전략]]
 
-### 2. 데이터베이스 최적화 — "DB는 거의 항상 병목이다"
+### 2. 데이터베이스 최적화 — 쿼리와 대기 시간을 줄인다
 
 - **쿼리 튜닝**: `EXPLAIN`으로 실행 계획 확인, N+1 제거, 불필요한 `SELECT *` 제거
 - **인덱스 설계**: WHERE/JOIN/ORDER BY 순서에 맞춘 복합 인덱스, 커버링 인덱스. 인덱스는 쓰기 비용과 트레이드오프
@@ -48,7 +48,7 @@ aliases: ["Latency Optimization", "레이턴시 최적화", "응답 시간 최�
 
 → 깊이 있게: [[Transaction-Lock-Contention|트랜잭션 경합]], [[Sorting-Operations|정렬 연산 회피]]
 
-### 3. 비동기 처리 — "응답 임계 경로에서 작업을 들어낸다"
+### 3. 비동기 처리 — 응답 임계 경로에서 작업을 들어낸다
 
 사용자 응답 경로에 꼭 있을 필요 없는 작업(이메일 발송, 이미지 리사이즈, 통계 집계, 외부 API 호출)을 **메시지 큐**로 밀어낸다.
 
@@ -62,7 +62,7 @@ aliases: ["Latency Optimization", "레이턴시 최적화", "응답 시간 최�
 
 → 깊이 있게: 메시징 카테고리 [[메시징&파이프라인(Messaging&Pipeline)]]
 
-### 4. 네트워크 최적화 — "왕복 횟수와 페이로드를 줄인다"
+### 4. 네트워크 최적화 — 왕복 횟수와 페이로드를 줄인다
 
 - **HTTP/2, HTTP/3**: 멀티플렉싱, 헤더 압축, QUIC로 핸드셰이크 단축
 - **Keep-Alive / Connection Reuse**: TCP, TLS 핸드셰이크 재사용. HTTP 클라이언트의 connection pool 설정 확인
@@ -81,6 +81,17 @@ aliases: ["Latency Optimization", "레이턴시 최적화", "응답 시간 최�
 - **앱 서버와 프록시 중 선택** — NestJS 문서는 고트래픽 운영에서 압축을 리버스 프록시로 오프로드하라고 권한다. 앱에서 압축한다면 `@fastify/compress`는 Brotli 품질 기본값을 4(0~11)로 둬 압축 시간과 크기를 절충한다(README, 2026-09-30 확인). 미들웨어 등록은 [[NestJS-Middleware|NestJS 미들웨어]]를 따르고, 켤지 여부는 CPU 여유와 응답 크기 분포를 측정해 정한다.
 
 → 깊이 있게: [[HTTP-Seminar|HTTP 세미나]], [[HTTPS-TLS|HTTPS/TLS]]
+
+#### 사용자, 계산과 데이터의 위치를 함께 맞춘다
+
+서버 처리 시간이 짧아도 사용자와 서버의 거리가 멀면 네트워크 왕복이 응답 시간을 지배할 수 있다. 지역별 지연을 측정하고, 정적 콘텐츠는 CDN으로 가까이 제공하며, 동적 요청은 계산과 데이터의 배치를 함께 검토한다. 이 절은 2026-10-08 AWS 공식 설계 자료와 대조했다.
+
+- 앱 서버만 가까운 리전에 복제해도 DB, 인증이나 내부 API가 원래 리전에 남으면 요청마다 리전 간 왕복이 생긴다. 사용자 요청 한 건의 종속 서비스까지 추적한다.
+- 읽기 비중이 높으면 로컬 읽기와 중앙 쓰기를 분리할 수 있다. 비동기 복제 지연 동안 오래된 값을 읽을 수 있으므로, 쓰기 직후 조회가 필요한 흐름의 일관성 조건을 먼저 정한다.
+- 리전 간 동기 복제는 쓰기 경로에 원격 응답 대기를 추가한다. 가까운 앱 서버의 이득과 DB 쓰기 지연을 따로 측정한다.
+- 성능을 위한 지역 분산과 재해 복구는 별도 검증 대상이다. 장애 전환 뒤에도 사용자 흐름 전체가 동작하는지, 남은 원격 종속성이 지연과 실패를 다시 만드는지 확인한다.
+
+적용 판단에는 지역별 같은 사용자 흐름의 P95/P99, 오류율과 복제 지연을 비교한다. 이는 위 원칙을 적용하기 위한 측정 제안이며, 특정 기업의 개선율을 예상 성과로 재사용하지 않는다. 단일 리전과 CDN으로 목표를 만족한다면 복제와 운영 비용을 추가하기 전에 그 구성을 유지할 수 있다.
 
 ## 측정과 검증 — 평균이 아니라 꼬리를 본다
 
@@ -112,6 +123,9 @@ aliases: ["Latency Optimization", "레이턴시 최적화", "응답 시간 최�
 - 측정 없이 최적화하면 왜 위험한가
 
 ## 출처
+- [AWS Prescriptive Guidance, Multi-Region fundamental 2: Understanding the data](https://docs.aws.amazon.com/prescriptive-guidance/latest/aws-multi-region-fundamentals/fundamental-2.html)
+- [AWS Prescriptive Guidance, Multi-Region fundamental 3: Understanding your workload dependencies](https://docs.aws.amazon.com/prescriptive-guidance/latest/aws-multi-region-fundamentals/fundamental-3.html)
+- [What to Consider when Selecting a Region for your Workloads — AWS Architecture Blog](https://aws.amazon.com/blogs/architecture/what-to-consider-when-selecting-a-region-for-your-workloads/)
 - [DevPill — 서비스가 느리다고요? 레이턴시 최적화의 모든 것](https://maily.so/devpill/posts/8do7dnkyogq)
 - [latency가 길때 API 응답속도 개선하기 — velog](https://velog.io/@huhdy32/Async-Profiler-%EB%A1%9C-%EB%B3%91%EB%AA%A9-%EC%A7%84%EB%8B%A8-%EB%B0%8F-%EC%9D%91%EB%8B%B5%EC%86%8D%EB%8F%84-6%EB%B0%B0-%EA%B0%9C%EC%84%A0)
 - [NestJS, Compression](https://docs.nestjs.com/techniques/compression)

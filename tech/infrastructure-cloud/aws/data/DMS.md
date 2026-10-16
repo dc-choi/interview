@@ -185,6 +185,16 @@ DMS data validation은 지원되는 소스와 대상의 대응 행을 비교한�
 - 대상이 S3면 **CSV가 기본 형식** (Parquet도 선택 가능)
 - 데이터 레이크(Athena, Redshift Spectrum, Glue) 적재 파이프라인의 일부로 활용
 
+### Kinesis로 전달한 CDC와 최종 테이블 반영을 나눈다
+
+부분 검증(2026-10-14): DMS의 Kinesis Data Streams 대상 문서를 대조했다. DMS는 소스 행 변경을 JSON 레코드로 발행한다. 스트림 전송 완료와 후속 데이터 레이크의 최신 상태 반영은 서로 다른 완료 조건이다.
+
+- 소스 트랜잭션과 무관하게 행 변경마다 개별 레코드를 발행하며, 소비자가 중복을 처리해야 한다. 레코드 수신만으로 다중 행 트랜잭션의 원자적 적용을 가정하지 않는다.
+- `IncludeTransactionDetails`의 기본값은 `false`다. 지원 소스(Oracle, SQL Server, PostgreSQL, MySQL)에서 활성화하면 커밋 시각, 로그 위치와 트랜잭션 식별 정보를 포함할 수 있지만, 이 정보가 대상 테이블의 트랜잭션 적용을 대신하지 않는다.
+- Kinesis 대상에는 `BatchApply`를 사용하지 않는다. 공식 문서는 활성화 시 task 실패와 데이터 손실 위험을 명시한다. 후속 소비자의 마이크로배치 처리와 DMS의 이 설정을 혼동하지 않는다.
+
+검증 제안: 같은 키의 삽입, 갱신과 삭제를 보내고 소비자 재시작 및 중복 재전달 뒤 최종 조회 결과를 비교한다. 소스 변경 시점, 스트림 도착 시점과 대상 테이블 반영 시점을 나누어 지연을 측정한다. 실제 파이프라인 실행은 하지 않았으며, 이번 보강은 전달 계약에 한정해 기존 문서 전체의 검증일을 유지한다.
+
 ## 다중 AZ 복제 인스턴스
 
 - 복제 인스턴스를 **Multi-AZ**로 배포하면 동기 스탠바이 보유 → 마이그레이션 중 HA 보장
@@ -210,6 +220,7 @@ DMS data validation은 지원되는 소스와 대상의 대응 행을 비교한�
 
 ## 출처
 
+- [AWS DMS, Using Amazon Kinesis Data Streams as a target for AWS Database Migration Service](https://docs.aws.amazon.com/dms/latest/userguide/CHAP_Target.Kinesis.html)
 - [AWS DMS, ModifyEndpoint](https://docs.aws.amazon.com/dms/latest/APIReference/API_ModifyEndpoint.html)
 - [AWS DMS, Using a MySQL-compatible database as a target for AWS Database Migration Service](https://docs.aws.amazon.com/dms/latest/userguide/CHAP_Target.MySQL.html)
 - [AWS DMS, Using a MySQL-compatible database as a source for AWS DMS](https://docs.aws.amazon.com/dms/latest/userguide/CHAP_Source.MySQL.html)

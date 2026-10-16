@@ -37,6 +37,7 @@ AWS 보안 3종 세트. 계층(L3/L4 vs L7)과 적용 위치(엣지/리전 LB vs
   - 보호 리소스의 표준 WAF Web ACL, 룰, 기본 요청 요금을 월 500억 요청과 기본 1,500 WCU 범위에서 포함한다. Bot/Fraud Control, 초과 WCU, Marketplace 관리형 룰 등은 별도 과금한다.
   - **Cost Protection**: 자격 요건을 충족하면 DDoS로 증가한 일부 AWS 사용료를 크레딧으로 보전한다.
   - **Health-based detection**: Route 53 헬스체크 기반 정밀 탐지.
+  - **L7 자동 완화**: 2026-03-26부터 WAF Anti-DDoS 관리형 rule group이 HTTP request flood 방어의 기본 해법으로 이 기능을 대체했고, 조건을 충족한 web ACL은 2026-10-25부터 그 rule group으로 자동 전환된다(2026-10-14 AWS 문서와 Security Blog 대조). 전환 조건과 설정은 [[WAF-Anti-DDoS|WAF Anti-DDoS 관리형 규칙]]을 따른다.
 - 보호 대상:
   - **EC2의 Elastic IP, ELB, CloudFront, Global Accelerator, Route 53** 같은 지원 리소스.
   - CloudFront 뒤가 AWS가 아닌 외부 Origin이어도 보호 범위.
@@ -89,6 +90,8 @@ NLB, EC2 직접 부착 ❌. NLB는 L4라 WAF 비대상.
 - **Challenge와 Block의 적용 조건을 따로 본다:** Challenge는 이를 처리할 수 있는 클라이언트에 사용하고, 처리할 수 없는 URI는 예외 설정을 검토한다. `ChallengeDDoSRequests`의 민감도 기반 평가는 선행 `ChallengeAllDuringEvent`를 Count로 재정의했을 때만 실행된다. `DDoSRequests`는 별도의 차단 민감도에 따라 동작한다. 이 관리형 그룹에는 추가 요금이 있다.
 
 운영 점검 제안: 정상 로그인과 API 호출을 포함한 표본으로 집계 단위, 최종 액션과 오탐을 확인한다. 예시 임계치를 서비스 용량이나 정상 트래픽 측정 없이 그대로 적용하지 않는다.
+
+Anti-DDoS 관리형 규칙의 의심 수준 label, 민감도, Challenge 예외 정규식, 배치와 요금은 [[WAF-Anti-DDoS|WAF Anti-DDoS 관리형 규칙]]에서 다룬다.
 
 ### 로깅, 모니터링
 
@@ -227,6 +230,8 @@ VPC 단위로 **상태 저장(stateful) + 상태 비저장(stateless) L3–L7 �
 - [AWS WAF, Applying rate limiting to requests](https://docs.aws.amazon.com/waf/latest/developerguide/waf-rule-statement-type-rate-based-request-limiting.html)
 - [AWS WAF, Distributed Denial of Service (DDoS) prevention rule group](https://docs.aws.amazon.com/waf/latest/developerguide/aws-managed-rule-groups-anti-ddos.html)
 - [AWS WAF, Adding the Anti-DDoS managed rule group to your protection pack](https://docs.aws.amazon.com/waf/latest/developerguide/waf-anti-ddos-rg-using.html)
+- [AWS WAF, Automating application layer DDoS mitigation with Shield Advanced](https://docs.aws.amazon.com/waf/latest/developerguide/ddos-automatic-app-layer-response.html)
+- [AWS Shield Advanced is embracing the AWS WAF Anti-DDoS managed rule group: what changes and how to prepare — AWS Security Blog](https://aws.amazon.com/blogs/security/aws-shield-advanced-is-embracing-the-aws-waf-anti-ddos-managed-rule-group-what-changes-and-how-to-prepare/)
 - [AWS WAFV2, LoggingFilter](https://docs.aws.amazon.com/waf/latest/APIReference/API_LoggingFilter.html)
 - [AWS WAFV2, Filter](https://docs.aws.amazon.com/waf/latest/APIReference/API_Filter.html)
 - [AWS Network Firewall, Firewall policy settings](https://docs.aws.amazon.com/network-firewall/latest/developerguide/firewall-policy-settings.html)
@@ -247,6 +252,7 @@ VPC 단위로 **상태 저장(stateful) + 상태 비저장(stateless) L3–L7 �
 ## 관련 문서
 
 - [[WAF-Bot-Control|WAF Bot Control]]
+- [[WAF-Anti-DDoS|WAF Anti-DDoS 관리형 규칙]]
 - [[CloudFront]]
 - [[ELB]]
 - [[API-Gateway]]

@@ -32,7 +32,7 @@ LLM + Context + Runtime + Tool + State + Guardrail = LLM 기반 Agent
 | **Training** | 데이터의 패턴을 parameter에 반영 | 변경함 | 대규모 학습 데이터, 정답 예시, 선호 데이터 |
 | **Inference** | 현재 입력에 대한 출력을 계산 | 고정 가중치 추론에서는 변경하지 않음 | Prompt, 대화, 파일, 검색 결과와 도구 명세 |
 
-현재 대화에서 파일을 읽거나 RAG로 문서를 가져오는 일은 보통 재학습이 아니다. 이번 추론의 Context가 늘어나는 것이다.
+현재 대화에서 파일을 읽거나 RAG로 문서를 가져오는 일은 보통 재학습이 아니다. 이번 추론의 Context가 늘어나는 것이다. 학습 때 정해지는 수량과 요청마다 고르는 설정의 구분, 비개발자에게 설명할 때 쓰는 비유와 그 한계는 [[LLM-Generation-Mechanics-Analogies|설명용 비유와 한계]]에 둔다.
 
 ## LLM은 어떻게 학습하는가
 
@@ -176,4 +176,5 @@ ZeRO-3는 순전파와 역전파 중 필요한 파라미터를 모으고 다시 
 - [[LLM-Generation-Mechanics|LLM 동작 원리 (묶음 인덱스)]]
 - [[LLM-Generation-Mechanics-Decoding|추론과 디코딩]]
 - [[LLM-Generation-Mechanics-Context-and-Agent|Context, 환각과 에이전트]]
+- [[LLM-Generation-Mechanics-Analogies|비개발자 설명용 비유와 한계]]
 - [[Recommendation-System-Modeling-Foundations|추천 시스템 모델링 기초]]

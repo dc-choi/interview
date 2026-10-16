@@ -129,7 +129,7 @@ Agentic memory는 단순 대화 로그가 아니라 memory container 안에 work
 - [[OpenSearch-Index-Lifecycle|자동완성 mapping 변경과 reindex]]
 - [[OpenSearch-Performance-Troubleshooting|검색 성능 진단]]
 - [[OpenSearch-Security-Production|Agentic memory 접근 제어]]
-- [[Production-Agent-Architecture|프로덕션 agent guardrail]]
+- [[Production-Agent-Architecture-Guardrails|프로덕션 agent guardrail]]
 
 ## 출처
 

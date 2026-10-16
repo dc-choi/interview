@@ -3,7 +3,7 @@ tags: [security, hashing, cryptography]
 status: done
 category: "보안(Security)"
 aliases: ["Password Hashing", "패스워드 해싱"]
-verified_at: 2026-10-01
+verified_at: 2026-10-12
 ---
 
 # Password Hashing
@@ -44,6 +44,9 @@ verified_at: 2026-10-01
 - Salt는 **레인보우 테이블 방어용**이지, 해시를 암호화하는 역할이 아님
 - "salt + 복잡한 password = 안전"이라는 생각은 위험
 - DB가 침해당해도 암호화되어 있으니 괜찮다는 생각도 위험
+- salt는 비밀번호마다 새로 만드는 고유한 무작위 값이다. salt 없이 SHA-256 같은 빠른 해시만 쓰면 같은 비밀번호는 같은 해시가 되어, 유출된 DB에서 어떤 계정들이 비밀번호를 공유하는지 드러나고 한 번 계산한 해시를 저장된 모든 해시와 비교할 수 있다. 미리 계산한 레인보우 테이블이나 조회용 DB에 들어 있는 비밀번호라면 새로 대입하지 않고도 찾아낼 수 있다.
+- 계정마다 salt가 다르면 같은 비밀번호도 저장값이 달라진다. 공격자는 해시를 하나씩 해당 salt로 깨야 하므로 걸리는 시간이 해시 개수에 비례해 늘어난다.
+- Argon2id, bcrypt와 PBKDF2는 명세상 호출자가 salt를 넘겨야 하지만, 널리 쓰는 구현과 라이브러리 대부분은 salt를 내부에서 생성하고 관리한다.
 
 ## 권장 패스워드 해시 알고리즘
 
@@ -82,11 +85,14 @@ bcrypt의 72바이트 제한은 글자 수가 아니라 사용하는 인코딩�
 
 2026-10-02에는 패스워드 해시 선택, 최소 비용, bcrypt 입력 제한과 재해싱 운영을 OWASP Password Storage 자료에 대조했다. 기존 온라인 공격 관련 출처 전체를 다시 검증한 기록은 아니다.
 
+2026-10-12에는 salt의 계정별 고유성, 해시 개수에 비례하는 크래킹 비용, 라이브러리의 salt 관리를 같은 자료에 대조하고, 기존 알고리즘 우선순위와 최소 비용(Argon2id 구성, bcrypt work factor와 72바이트 제한)이 현재 권고와 상충하지 않음을 확인했다.
+
 - [Password Storage Cheat Sheet — OWASP](https://cheatsheetseries.owasp.org/cheatsheets/Password_Storage_Cheat_Sheet.html)
 - [OWASP Cheat Sheet Series, Credential Stuffing Prevention Cheat Sheet](https://cheatsheetseries.owasp.org/cheatsheets/Credential_Stuffing_Prevention_Cheat_Sheet.html)
 - [OWASP Cheat Sheet Series, Authentication Cheat Sheet](https://cheatsheetseries.owasp.org/cheatsheets/Authentication_Cheat_Sheet.html)
 - [웹 개발을 위해 꼭 알아야하는 보안 공격 — kciter.so, kciter](https://kciter.so/posts/basic-web-hacking/)
 - [웹보안 — 딩코딩코 (개발자 취업 필수 개념 강의)](https://fern-freeze-290.notion.site/37aade118e3680908aeee8bb5a517c7d)
+- [EVERY junior dev makes these security mistakes... — CodeHead](https://www.youtube.com/watch?v=AjUeQJxen1k)
 
 ## 관련 문서
 - [[Checksum-and-Hash|체크섬과 해시 (CRC, 암호학적 해시, HMAC과 서명의 구분)]]

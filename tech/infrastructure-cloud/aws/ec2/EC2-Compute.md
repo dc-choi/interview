@@ -104,6 +104,17 @@ Porting Advisor for Graviton은 알려진 코드 패턴과 의존성 호환성 �
 
 실제 최적화 프로그램이나 Graviton 인스턴스에서 측정하지 않았으며, 이번 대조만으로 기존 문서 전체의 검증일을 갱신하지 않는다.
 
+#### 반복 측정의 대표값과 개선율을 구분한다
+
+부분 검증(2026-10-14): AWS Graviton Performance Runbook의 실험 조건과 NIST의 대표값 정의를 대조했다. 같은 요청 종류와 부하 조건끼리 비교하고, 서로 다른 쿼리의 실행 시간을 한 평균으로 합쳐 CPU 교체 효과를 판단하지 않는다.
+
+- 산술평균은 합계를 표본 수로 나눈 값이고, 중앙값은 정렬한 표본의 가운데 값이다. 관측값의 절반을 나누는 위치를 산술평균으로 설명하지 않는다. 긴 꼬리가 있는 분포에서는 두 값이 달라질 수 있다.
+- 양수 표본의 기하평균은 곱의 n제곱근이다. 중앙값이나 p95와 같은 지표가 아니며, 기하평균 하나로 꼬리 지연과 허용 응답 시간을 평가하지 않는다.
+- 검증 제안: 반복별 원시 측정값, 표본 수, 요청 종류와 부하를 남기고 평균, 중앙값과 상위 백분위수를 함께 비교한다. 대표값 차이만으로 통계적 유의성을 주장하거나 모든 운영 요청의 개선으로 일반화하지 않는다.
+- 계산 예시: 같은 작업의 시간이 100 ms에서 80 ms로 줄면 시간 감소율은 20%이고, 시간의 역수로 계산한 속도비는 1.25배다. 이를 25%의 시간 감소로 바꾸어 쓰지 않는다.
+
+이번 확인은 지표 해석의 보강이다. 실제 Graviton 측정이나 통계 검정은 수행하지 않았으며 기존 문서 전체의 검증일은 유지한다.
+
 ### AI 가속기는 실행 스택까지 함께 비교한다
 
 2026-10-10 부분 대조: AWS Neuron 공식 소개 기준, Trainium과 Inferentia는 Neuron 개발 스택을 사용하는 AWS 가속기다. Neuron에는 컴파일러, 런타임, 학습과 추론 라이브러리, 프로파일링 도구가 포함된다. GPU 인스턴스와 비교할 때 인스턴스 사양뿐 아니라 모델 실행에 필요한 소프트웨어 경로도 확인한다.
@@ -182,6 +193,8 @@ T 인스턴스는 **베이스라인 CPU 성능**(예: t3.medium 20%)을 기준�
 
 ## 출처
 
+- [NIST/SEMATECH e-Handbook, Measures of Location](https://www.itl.nist.gov/div898/handbook/eda/section3/eda351.htm)
+- [NIST Dataplot, Geometric Mean](https://www.itl.nist.gov/div898/software/dataplot/refman2/auxillar/geommean.htm)
 - [Graviton Performance Runbook, Quick introduction to benchmarking — AWS](https://github.com/aws/aws-graviton-getting-started/blob/main/perfrunbook/intro_to_benchmarking.md)
 - [Graviton Performance Runbook, Defining your benchmark — AWS](https://github.com/aws/aws-graviton-getting-started/blob/main/perfrunbook/defining_your_benchmark.md)
 - [Amazon EC2 Trn3 UltraServers — AWS](https://aws.amazon.com/ec2/instance-types/trn3/) — 2026-10-14 칩당 사양과 UltraServer 합계 대조

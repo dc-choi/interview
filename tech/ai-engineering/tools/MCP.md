@@ -54,6 +54,16 @@ MCP는 stdio와 Streamable HTTP 전송을 지원한다. 일반적으로 로컬 �
 
 MCP와 Function Calling을 원격 실행과 로컬 실행으로 나누면 틀린다. MCP 서버는 로컬과 원격에서 모두 실행할 수 있고, 모델이 요청한 함수도 애플리케이션 구현에 따라 외부 API를 호출할 수 있다. 핵심 차이는 실행 장소가 아니라 연결 프로토콜과 모델의 호출 요청이라는 책임이다. 세부 검색 설계는 [[RAG-Retrieval-Engineering]], 실행 흐름은 [[LLM-Workflow-Patterns]]에서 다룬다.
 
+### Bedrock Converse와 MCP를 잇는 클라이언트 루프
+
+2026-10-07 공식 문서 확인 기준. 다음은 Converse의 사용자 정의 도구를 애플리케이션에서 실행하는 연동 패턴이다. 다른 Bedrock API의 서버 측 도구 실행까지 같은 방식이라고 일반화하지 않는다.
+
+1. MCP `tools/list`의 이름, 설명과 입력 스키마를 Converse `toolConfig.tools[].toolSpec`에 맞춰 변환한다. Bedrock 도구 이름은 최대 64자이며 영문자, 숫자, `_`와 `-`만 허용하므로 MCP 이름을 무조건 그대로 복사하지 않는다.
+2. `stopReason: tool_use`이면 assistant 응답을 대화에 보존하고 각 `toolUse`의 이름과 인자를 검증한다. 애플리케이션이 대응하는 MCP 서버에 `tools/call`을 보낸다.
+3. 결과를 같은 `toolUseId`의 `toolResult`로 연결해 user 메시지에 담고 Converse에 다시 전달한다. 도구 실패는 성공한 결과로 꾸미지 않고 오류로 반환한다.
+
+모델의 도구 선택과 실제 실행은 별도다. 권한 검사, 이름 충돌 방지, 반복 횟수 제한과 변경 작업의 중복 방지는 연동 코드의 책임으로 둔다. 위 절차는 두 API를 연결한 설계 패턴이며 MCP 결과와 Bedrock 메시지의 무변환 호환을 뜻하지 않는다.
+
 ## 사용자 소유 콘텐츠 커넥터 패턴
 
 원격 MCP 서버는 사용자가 구독하거나 소유한 콘텐츠를 검색 가능한 AI 컨텍스트로 바꿀 수 있다. 디렉터리 목록은 발견과 설치를 돕는 배포 계층이고, 실제 접근은 원격 endpoint와 OAuth 권한으로 결정된다.
@@ -148,6 +158,9 @@ A2A(Agent2Agent)는 서로 다른 조직과 프레임워크의 에이전트가 �
 
 ## 출처
 
+- [Amazon Bedrock, Client-side tool use](https://docs.aws.amazon.com/bedrock/latest/userguide/tool-use-client-side.html) — Converse 연동 절의 부분 검증
+- [Amazon Bedrock, ToolSpecification](https://docs.aws.amazon.com/bedrock/latest/APIReference/API_runtime_ToolSpecification.html) — 이름과 입력 스키마 계약
+
 2026-10-06에는 변경 알림 구독과 재연결 절을 공식 changelog와 Ruby SDK 설명에 대조했다. 다른 제품 지원 현황 전체의 검증일은 갱신하지 않았다.
 
 - [MCP Ruby SDK, Subscriptions](https://ruby.sdk.modelcontextprotocol.io/server/subscriptions/)
@@ -187,7 +200,7 @@ A2A(Agent2Agent)는 서로 다른 조직과 프레임워크의 에이전트가 �
 - [[Harness-Engineering]] — MCP는 Inform과 도구 실행 축, 권한은 HITL로 통제
 - [[Context-Engineering]] — 도구 과다 노출 = Context Rot, 필요한 서버만(JIT, Select)
 - [[Tool-Output-Filtering]] — MCP 응답이 컨텍스트를 채우는 주범, 프록시 계층에서 필드만 추출
-- [[Production-Agent-Architecture]] — 도구를 가진 에이전트의 Defense in Depth
+- [[Production-Agent-Architecture-Guardrails#Defense in Depth (4겹 안전망)|Production-Agent-Architecture]] — 도구를 가진 에이전트의 Defense in Depth
 - [[MCP-Security-Boundaries]] — 서버 자격 증명의 네 경계, 2026년 MCP 서버 권고, 게이트웨이와 URL 모드 elicitation
 - [[AI-Handicap-Learning|AI를 학습 난이도 조절 도구로]] — 강의 근거를 활용하는 학습 루프
 - [[Codex-CLI]] — 같은 재단의 창립 프로젝트인 AGENTS.md 지침 파일

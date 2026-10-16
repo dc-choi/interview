@@ -27,6 +27,19 @@ verified_at: 2026-10-07
 
 전형 패턴: **S3 업로드 → Lambda → 썸네일 생성 / 메타데이터 추출 → DynamoDB 인덱싱**.
 
+### 파일 도착으로 배치를 시작할 때의 처리 계약
+
+예정 시각보다 파일이 늦게 도착하는 연동에서는 고정 시각 배치 대신 `ObjectCreated` 알림을 SQS로 받아 처리를 시작할 수 있다. 다만 객체 생성은 파일 내용의 유효성이나 업무 처리 완료를 보장하지 않는다.
+
+2026-10-10 공식 문서 기준, S3 Event Notifications는 최소 한 번 전달하도록 설계되어 중복될 수 있고 발생 순서대로 도착한다는 보장은 없다. `sequencer`는 같은 객체 key의 이벤트 순서를 비교하는 값이다. 서로 다른 key의 순서는 비교할 수 없으며, 길이가 다르면 짧은 값 왼쪽을 0으로 채워 16진수 순서를 비교한다.
+
+다음은 이를 배치에 적용하는 설계 점검이다.
+
+- 버킷, key와 객체 버전 또는 업무 파일 식별자로 처리 대상을 고정하고 중복 소비가 결과를 두 번 반영하지 않게 한다. Versioning이 켜져 있으면 이벤트의 `versionId`로 해당 버전을 읽고, 꺼져 있으면 재전송마다 고유 key를 쓰는 등 덮어쓰기를 피할 계약을 둔다.
+- 같은 이벤트 재전달과 내용이 바뀐 정정 파일을 구분한다. 파일명만으로 중복 판정하면 정정본까지 버릴 수 있다. 정정본의 재계산이나 보상 정책은 업무 규칙으로 정한다.
+- 최신 상태만 유지하는 projection은 같은 key의 `sequencer`를 저장해 오래된 결과의 덮어쓰기를 막는다. 모든 버전을 처리해야 하는 배치는 오래된 이벤트라는 이유만으로 건너뛰지 않는다.
+- 이벤트 수신 뒤 스키마, 업무 기준일과 필수 레코드를 검증한다. 이벤트가 오지 않은 파일도 찾도록 도착 마감 감시와 기대 파일 목록 대조를 별도로 둔다.
+
 ## S3 Select
 
 객체를 다 다운로드하지 않고 **SQL로 부분 조회**하는 기능.
@@ -130,6 +143,7 @@ S3 자체가 정적 페이지 서버 역할. `index.html`, `error.html` 지정�
 
 ## 출처
 
+- [AWS 공식 문서, Event message structure](https://docs.aws.amazon.com/AmazonS3/latest/userguide/notification-content-structure.html) — 2026-10-10 객체 버전과 sequencer의 비교 범위를 대조했다. 배치의 정정본 처리와 도착 마감 감시는 설계 제안이다.
 - [Copy objects between S3 buckets — AWS re:Post](https://repost.aws/knowledge-center/move-objects-s3-bucket)
 - [AWS 공식 문서, AWS CLI s3 sync](https://docs.aws.amazon.com/cli/latest/reference/s3/sync.html)
 - [AWS 공식 문서, Copying, moving, and renaming objects](https://docs.aws.amazon.com/AmazonS3/latest/userguide/copy-object.html)

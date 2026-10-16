@@ -150,12 +150,19 @@ kubectl run tmp --rm -it --image=curlimages/curl -n NAMESPACE -- sh
 - `kubectl port-forward service/NAME`은 selector에 맞는 Pod 하나를 골라 직접 연결하고 그 Pod가 끝나면 세션도 끝난다. Service VIP, kube-proxy 규칙과 load balancing을 거치지 않으므로 port-forward 성공은 Service 경로가 정상이라는 증거가 아니다.
 - 멈춘 단계별 담당 component는 [[K8s-Core-Workloads-and-Service-Architecture#멈춘 단계로 담당 component를 좁힌다|component 표]]로 좁힌다.
 
+증상 기반 알림 예(2026-10-14 kubernetes-mixin 규칙 기준):
+
+- `KubeDeploymentReplicasMismatch`는 `kube_deployment_spec_replicas`가 `kube_deployment_status_replicas_available`보다 크고 10분 동안 `kube_deployment_status_replicas_updated`에 변화가 없는 상태가 15분 이어지면 경고한다. `KubeDeploymentRolloutStuck`은 `Progressing` condition이 false인 상태가 15분 이어지면 경고한다. 두 규칙 모두 kube-state-metrics 지표를 쓴다.
+- 2019년 국내 OTT 서비스의 운영 발표 사례에서는 장애 원인이 다양해도 대부분 목표 Pod 수와 실제 Pod 수의 불일치가 일정 시간 이어지거나 API gateway의 502가 단위 시간당 일정 건수를 넘는 증상으로 드러났다. 그 뒤에는 Pod 생성 실패, 반복 재시작이나 응답 불능이 있었다.
+
 ## 출처
 
 - [Kubernetes Docs, Pods](https://kubernetes.io/docs/concepts/workloads/pods/)
 - [Kubernetes Docs, Deployments](https://kubernetes.io/docs/concepts/workloads/controllers/deployment/)
 - [Kubernetes Docs, Service](https://kubernetes.io/docs/concepts/services-networking/service/)
 - [Kubernetes Docs, kubectl port-forward](https://kubernetes.io/docs/reference/kubectl/generated/kubectl_port-forward/)
+- [kubernetes-mixin, apps_alerts.libsonnet — kubernetes-monitoring, GitHub](https://github.com/kubernetes-monitoring/kubernetes-mixin/blob/master/alerts/apps_alerts.libsonnet)
+- [국내 미디어 고객사의 AWS 활용 사례 - POOQ서비스 그리고 마이크로서비스 아키텍처 — Amazon Web Services Korea](https://www.youtube.com/watch?v=MSC7Zr98QdY) — 2019-05-15 업로드, 알림 사례의 출처
 - [금융 인프라를 운영하는 Toss 개발자의 Kubernetes, Kubernetes와 선언적 관리](https://www.inflearn.com/courses/lecture?courseId=340716&unitId=409161)
 - [금융 인프라를 운영하는 Toss 개발자의 Kubernetes, Pod](https://www.inflearn.com/courses/lecture?courseId=340716&unitId=409163)
 - [금융 인프라를 운영하는 Toss 개발자의 Kubernetes, Deployment](https://www.inflearn.com/courses/lecture?courseId=340716&unitId=409164)

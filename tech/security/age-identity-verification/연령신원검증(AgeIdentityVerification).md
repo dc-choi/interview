@@ -30,4 +30,4 @@ aliases: ["연령 검증", "신원 검증", "Age Assurance", "Identity Verificat
 - [[Long-Term-Retention|장기 보존 (검증 데이터 보존 기간과 최소화의 트레이드오프)]]
 - [[FIDO-Seminar|FIDO, 패스키 (생체 데이터 로컬 처리 원칙)]]
 - [[Cognito|AWS Cognito (가입 시 신원 검증 로직 삽입 플랫폼)]]
-- [[Production-Agent-Architecture|프로덕션 에이전트 아키텍처 (Defense in Depth — 신원 게이팅 = Hook 레이어 최종 차단)]]
+- [[Production-Agent-Architecture-Guardrails|프로덕션 에이전트 아키텍처 (Defense in Depth — 신원 게이팅 = Hook 레이어 최종 차단)]]

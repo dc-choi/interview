@@ -42,6 +42,14 @@ aliases: ["Controllability", "제어 가능성", "Functional Core Imperative She
 - **명령형 셸(Imperative Shell)**: 외부 API, DB, UI 호출 같은 부수 효과. 코어를 감싸는 얇은 바깥층에 둔다.
 - 효과: 대부분의 로직은 빠른 **단위 테스트로 광범위하게 검증**하고, 외부 의존이 있는 부분만 제한적으로 모킹한다. 테스트 불가능한 영역(Black Box)이 의존 구간으로 전이되는 것을 차단하는 [[Mock-Testing-Strategy|Mock 격리]]와 같은 원리다.
 
+### 판단과 실행을 나눈다
+
+함수 하나 안에서도 같은 원리가 적용된다. 인증을 마친 성인 사용자만 쓸 수 있는 기능처럼 업무 규칙이 사용자 조회, 상태 저장과 메일 발송 사이에 섞여 있으면, 규칙 하나를 확인하려 해도 DB와 메일 발송을 준비하거나 모킹해야 한다.
+
+- 판단은 필요한 값만 받아 결정(허용 여부와 필요하면 거부 사유)을 값으로 돌려주는 함수나 도메인 객체의 메서드로 둔다. 조회, 저장과 발송은 셸이 그 결정을 보고 실행한다.
+- 판단은 입력 조합만으로 단위 테스트하고, 셸에서는 조회와 효과 실행이 결정에 맞게 연결됐는지를 확인한다.
+- 권한, 가격, 입력 검증, 재시도 여부와 알림처럼 업무 규칙 전반에 같은 구조를 쓸 수 있다.
+
 ## 같은 원리의 응용: 통제 가능한 것에 집중
 
 제어 가능성은 코드뿐 아니라 일하는 방식에도 적용된다. 통제할 수 없는 것(회사의 투자 상황, 개발자 연봉 시장, 경쟁사의 채용 조건)에 매달리기보다 **통제 가능한 것**에 에너지를 쓴다.
@@ -68,3 +76,4 @@ aliases: ["Controllability", "제어 가능성", "Functional Core Imperative She
 ## 출처
 
 - [개발자 원칙 — 제어 가능한 것, 실패, 전문가성 — YouTube](https://www.youtube.com/watch?v=DJCmvzhFVOI&list=PLgXGHBqgT2TtGi82mCZWuhMu-nQy301ew&index=15)
+- [7 Coding Laws of Senior Developer — YouTube, Cloud X Berry](https://www.youtube.com/watch?v=JcYMtYbNUhU)

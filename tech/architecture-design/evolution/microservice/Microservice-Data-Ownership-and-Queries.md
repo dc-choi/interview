@@ -1,9 +1,9 @@
 ---
 tags: [architecture, microservices, data-ownership, database-per-service, api-composition, cqrs]
 status: done
-verified_at: 2026-08-04
+verified_at: 2026-10-14
 category: "Architecture - 진화"
-aliases: ["Microservice Data Ownership", "Database per Service", "Cross Service Query"]
+aliases: ["Microservice Data Ownership", "Database per Service", "Cross Service Query", "CQRS Read Path Split"]
 ---
 
 # 마이크로서비스 데이터 소유권과 교차 서비스 조회
@@ -97,6 +97,30 @@ projection은 원본이 아니며 직접 수정하지 않는다. event history�
 
 같은 시스템에서도 화면별로 다른 방식을 쓸 수 있다.
 
+## 탐색 화면과 거래 단계의 읽기 경로를 나눈다
+
+같은 상품 데이터라도 화면의 일관성 요구에 따라 읽는 곳을 다르게 둔다. 조회가 쓰기보다 훨씬 많고 약간의 지연을 허용하는 탐색 화면은 projection으로 보내고, 최신 값이 결과를 바꾸는 거래 단계는 소유 서비스의 원본을 읽는다.
+
+| 경로 | 예 | 읽는 곳 | 이유 |
+|---|---|---|---|
+| 탐색 | 상품 목록, 상세, 검색 결과 | 변경 이벤트로 갱신한 projection, 캐시와 검색 색인 | 반복 조회를 원본 DB와 소유 서비스 API에서 떼어 내 따로 확장한다 |
+| 거래 | 장바구니, 주문서, 결제 | 소유 서비스 API와 원본 DB | stale read가 가격, 재고와 할인 적용 오류로 이어진다 |
+
+- 원본의 변경 이벤트 하나를 key-value projection과 검색 색인 같은 여러 읽기 모델이 각자 구독할 수 있다. 소비자마다 지연과 실패가 따로 생기므로 lag와 마지막 반영 시점을 읽기 모델별로 관측한다.
+- 탐색 화면에서 본 가격과 재고를 거래 단계의 확정값으로 쓰지 않는다. 주문서와 결제 단계에서 원본으로 다시 확인하고, 사용자가 stale 값을 보고 행동했을 때의 안내를 정한다.
+- 메시지 브로커와 DB를 하나의 분산 트랜잭션으로 묶기 어려우므로 상태 변경과 이벤트는 [[Transactional-Outbox|outbox]]로 함께 저장하고 projection 소비자는 중복 전달에 안전하게 만든다.
+- 탐색 트래픽이 몰려도 원본 DB 자원은 거래 경로에 남는다. CQRS가 막는 것은 원본 DB로 향하는 읽기 부하이며, projection 저장소와 캐시의 용량 계획은 따로 필요하다.
+
+### 사례: 신선식품 커머스의 전시 조회 분리 (발표 기준, 2021)
+
+컬리는 IDC에서 AWS로 리프트 앤 시프트한 모놀리식 커머스를 오토 스케일링, 읽기 복제본 증설과 슬로 쿼리 튜닝으로 버텼다. 마케팅의 쿠폰 대량 발행과 푸시, 휴면 회원 조회 이벤트처럼 백오피스 작업이 만든 DB 부하가 전체 장애로 번지자 도메인 분리와 CQRS로 전환했다.
+
+- 읽고 쓰는 데이터를 기준으로 도메인을 나누고 도메인마다 저장소를 골랐다. Aurora MySQL만 쓰던 구조에서 쿠폰 같은 마케팅 도메인은 Amazon DocumentDB, 상품 전시는 Amazon DynamoDB로 옮기고, 새 서비스는 연동 계층을 두고 레거시와 통합했다. 분리 뒤 쿠폰 장애는 쿠폰 기능 안에 머물렀다.
+- 백오피스에서 바꾼 상품 정보는 즉시 관리형 Kafka 이벤트로 발행되고, 소비자가 이를 가공해 DynamoDB 전시 테이블에 적재한다. 사용자 요청은 ElastiCache 캐시나 DynamoDB에서 처리하고, 장바구니와 주문서처럼 높은 일관성이 필요한 경로만 API로 원본 DB를 조회한다.
+- 전체 트래픽의 40% 이상을 차지한 검색 경유 상품 접근도 검색 엔진이 같은 상품 변경 이벤트를 받아 반영하게 해, 검색 결과 조회 때 원본 DB를 거치지 않게 했다.
+- 전환 뒤 상품 정보 API 지연이 100~800ms 사이에서 흔들리던 상태에서 100ms 이하로 내려갔다고 발표했다.
+- 구조 전환 전에는 주문 마감 시각에 부하가 큰 API만 ALB에서 미리 만든 경량 API(일부 개인화와 무거운 쿼리 기반 전시를 뺀 버전)로 다시 연결해, 전체 부하를 낮춘 상태로 최소한의 결제와 복구를 진행하는 [[External-Service-Resilience#Graceful Degradation|기능 저하]]를 운영했다.
+
 ## 트랜잭션과 조회를 분리해서 생각하기
 
 여러 서비스를 조회할 수 있다는 것과 여러 서비스의 불변식을 원자적으로 지키는 것은 다른 문제다.
@@ -129,6 +153,8 @@ CQRS는 읽기와 쓰기 모델을 분리하는 선택이며 Event Sourcing이�
 - [Dowon Lee 강사, Cross Service Queries](https://www.inflearn.com/courses/lecture?courseId=332731&unitId=290724)
 - [Dowon Lee 강사, CQRS 패턴](https://www.inflearn.com/courses/lecture?courseId=332731&unitId=290725)
 - [Microsoft, CQRS pattern](https://learn.microsoft.com/en-us/azure/architecture/patterns/cqrs)
+- [AWS Prescriptive Guidance, CQRS pattern](https://docs.aws.amazon.com/prescriptive-guidance/latest/modernization-data-persistence/cqrs-pattern.html)
+- [Kurly는 AWS를 어떻게 사용하고 있을까? 성공적 리테일 디지털 트랜스포메이션 사례 — Amazon Web Services Korea](https://www.youtube.com/watch?v=SRmJEZfCHE8)
 - [han jeong heon 강사, 저장소 분리, 저장소 공유,위임(API조합)](https://www.inflearn.com/courses/lecture?courseId=328412&unitId=104433)
 - [han jeong heon 강사, 분산 트랜잭션 처리(SAGA),CQRS,이벤트 소싱](https://www.inflearn.com/courses/lecture?courseId=328412&unitId=104434)
 - [Dowon Lee 강사, [실습 13] CQRS + Event Sourcing 처리 ①](https://www.inflearn.com/courses/lecture?courseId=332731&unitId=290748)
@@ -137,6 +163,7 @@ CQRS는 읽기와 쓰기 모델을 분리하는 선택이며 Event Sourcing이�
 ## 관련 문서
 
 - [[Microservice-Service-Decomposition|마이크로서비스 서비스 분해]]
+- [[Microservice-Database-Decomposition|모놀리식 DB를 서비스별 DB로 나누는 이관]]
 - [[Event-Driven-Architecture|Event-Driven Architecture]]
 - [[Event-Sourcing|Event Sourcing]]
 - [[CAP-Theorem|CAP 정리]]

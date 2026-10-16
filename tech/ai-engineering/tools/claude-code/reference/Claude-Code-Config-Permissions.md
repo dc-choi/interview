@@ -21,6 +21,8 @@ aliases: ["Claude Code Config Permissions", "클로드 코드 설정과 권한",
 
 ## 컨텍스트 주입 3계층 — 프로젝트 지침, rules, 스킬
 
+AGENTS.md의 최신 직접 로딩과 Project instructions 설정은 [[Agent-Repository-Instructions-Hosts#Claude Code|호스트별 AGENTS.md 동작]]에서 확인한다.
+
 | 계층 | 로드 시점 | 용도 |
 |---|---|---|
 | 프로젝트 지침 | 시스템 프롬프트 뒤 user message로 전달 | `CLAUDE.md`와 설정에 따른 `AGENTS.md`, 전 작업 공통 규칙, 파일당 200줄 이하 권장 |

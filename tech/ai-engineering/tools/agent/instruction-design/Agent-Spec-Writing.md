@@ -177,3 +177,4 @@ Kiro의 공식 Best practices를 2026-10-10에 대조한 변경 절차는 다음
 - [[Harness-Engineering|하네스 엔지니어링]]
 - [[Developer-Role-AI-Era|AI 시대 개발자 역할]]
 - [[Simplified-Technical-English|Simplified Technical English (출력 문체 제약, 한 문장 한 지시)]]
+- [[Backoffice-Workflow-Design|업무용 제품의 처리 흐름 설계 (업무 담당자 인터뷰로 문제, 상태와 정보 구조 정의)]]

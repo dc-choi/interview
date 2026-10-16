@@ -72,6 +72,22 @@ EC2 in-place 배포의 hook 순서는 다음과 같다. 대괄호 구간은 depl
 - mutable repository에 같은 tag(`latest`)를 다시 push하면 tag가 새 image로 옮겨 가고 이전 image는 tag 없이 남는다. 누적은 lifecycle policy의 untagged 규칙으로 정리하고 release tag 덮어쓰기는 tag immutability로 막는다 ([[ECR|Amazon ECR]]). 배포는 tag보다 digest로 고정한다 ([[Docker-Image-Pipeline|Docker image pipeline]]).
 - 관리형 build image는 계속 바뀐다. 2026-09-30 기준 Ubuntu 계열은 `aws/codebuild/standard:5.0`부터 Ubuntu 24.04 기반 `8.0`까지 있으므로 새 project는 공식 목록에서 고른다. 전체 build log는 CloudWatch Logs로 남겨 실패 원인을 추적한다.
 
+## CodeBuild의 GitHub Actions runner 인증을 구분한다
+
+이 절은 2026-10-09 AWS 공식 문서 기준이다. CodeBuild가 GitHub Actions의 runner를 호스팅할 때는 GitHub 접근 자격 증명, 자격 증명을 가져오는 AWS 권한, runner 등록을 나눠 확인한다. GitHub에서 job이 대기한다는 증상만으로 토큰 만료를 확정하지 않는다.
+
+| 확인 대상 | 점검할 계약 |
+| --- | --- |
+| 실제 자격 증명 선택 | 계정 기본값과 프로젝트 또는 source별 override 중 어느 설정을 쓰는지 확인 |
+| GitHub PAT | 접근할 저장소와 권한을 확인. fine-grained PAT의 저장소 단위 runner 등록에는 `Administration: Read and write`가 필요하며 소스 읽기와 webhook 권한은 사용 기능별로 따로 확인 |
+| Secrets Manager에 저장한 PAT | CodeBuild 프로젝트와 같은 계정, 리전의 secret인지 확인. service role의 `secretsmanager:GetSecretValue`, 고객 관리 KMS 키로 암호화했다면 `kms:Decrypt` 접근도 확인 |
+| GitHub App과 CodeConnections | App 설치와 저장소 접근 범위를 확인하고, CodeBuild service role의 `codeconnections:GetConnectionToken`, `codeconnections:GetConnection` 권한을 확인 |
+| runner 시작 전 대기 | runner token은 `DOWNLOAD_SOURCE`에서 발급받고 1시간 뒤 만료된다. buildspec override의 `INSTALL`, `PRE_BUILD`가 길어지면 PAT가 유효해도 runner 시작 전에 만료될 수 있음 |
+
+빌드가 시작되지 않았다면 GitHub webhook의 `workflow_job.queued` 전달, payload의 labels와 CodeBuild 응답부터 확인한다. 빌드가 시작된 뒤 인증에서 실패했다면 실제로 선택된 자격 증명과 그 접근 권한을 확인한다. 토큰을 교체해도 다른 override를 사용 중이면 원인을 해결하지 못할 수 있다.
+
+이 runner 방식은 일반 Docker build와 실행 계약이 다르다. 기본으로 buildspec 명령을 무시하며 `buildspec-override:true`를 쓰더라도 `BUILD`에서는 runner가 실행되고 해당 phase의 buildspec 명령은 실행하지 않는다. `INSTALL`이나 `PRE_BUILD`가 실패하면 runner가 시작되지 않으며 GitHub workflow job은 수동 취소가 필요하다.
+
 ## 출처
 
 - [AWS CodeDeploy — Deployment configurations](https://docs.aws.amazon.com/codedeploy/latest/userguide/deployment-configurations.html)
@@ -88,6 +104,12 @@ EC2 in-place 배포의 hook 순서는 다음과 같다. 대괄호 구간은 depl
 - [AWS CodeBuild — Build phase transitions](https://docs.aws.amazon.com/codebuild/latest/userguide/view-build-details-phases.html)
 - [AWS CodeBuild — Environment variables in build environments](https://docs.aws.amazon.com/codebuild/latest/userguide/build-env-ref-env-vars.html)
 - [AWS CodeBuild — EC2 compute images](https://docs.aws.amazon.com/codebuild/latest/userguide/ec2-compute-images.html)
+- [AWS CodeBuild — Tutorial: Configure a CodeBuild-hosted GitHub Actions runner](https://docs.aws.amazon.com/codebuild/latest/userguide/action-runner.html)
+- [AWS CodeBuild — GitHub and GitHub Enterprise Server access token](https://docs.aws.amazon.com/codebuild/latest/userguide/access-tokens-github.html)
+- [AWS CodeBuild — Create and store a token in a Secrets Manager secret](https://docs.aws.amazon.com/codebuild/latest/userguide/asm-create-secret.html)
+- [AWS CodeBuild — Multiple access tokens in CodeBuild](https://docs.aws.amazon.com/codebuild/latest/userguide/multiple-access-tokens.html)
+- [AWS CodeBuild — GitHub App connections for GitHub and GitHub Enterprise Server](https://docs.aws.amazon.com/codebuild/latest/userguide/connections-github-app.html)
+- [AWS CodeBuild — Troubleshoot the webhook](https://docs.aws.amazon.com/codebuild/latest/userguide/action-runner-troubleshoot-webhook.html)
 - [Amazon ECR — IAM permissions for pushing an image](https://docs.aws.amazon.com/AmazonECR/latest/userguide/image-push-iam.html)
 - [Amazon ECR — Private registry authentication](https://docs.aws.amazon.com/AmazonECR/latest/userguide/registry_auth.html)
 - [Sungmin Kim 강사 — CodeDeploy](https://www.inflearn.com/courses/lecture?courseId=325381&unitId=66574)

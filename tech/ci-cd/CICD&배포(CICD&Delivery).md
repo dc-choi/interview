@@ -14,6 +14,7 @@ aliases: ["CI/CD&배포(CI/CD&Delivery)", "CI/CD & Delivery", "CI/CD&배포"]
 
 ### 버전 관리
 
+- [x] [[GitHub-Repository-Operations-Auth-and-Signing#개인 계정과 Enterprise Managed Users의 경계|GitHub 관리형 계정 전환]] — 계정 통제, 외부 협업과 Importer가 옮기지 않는 배포 설정
 - [x] [[Git-Object-Format|Git 객체 형식과 SHA-256 호환성]] — 객체 ID 길이, 현재 지원과 전환 계획, CI와 외부 도구 점검
 - [x] [[version-control|버전 관리 폴더 인덱스 (Git 도구, 개발 워크플로, Git 멘탈 모델/머지 전략/복구)]]
 - [x] [[Git-Flow|Git Flow / Trunk-Based]] — 기존 보강: [[Version-Control-Tooling#Branch 전략은 배포 모델의 결과다|GitHub Flow, Git Flow, Trunk-Based 개요]]
@@ -33,6 +34,7 @@ aliases: ["CI/CD&배포(CI/CD&Delivery)", "CI/CD & Delivery", "CI/CD&배포"]
 
 ### 배포
 
+- [x] [[Deployment-Automation-ChatOps#에이전트 배포의 인터페이스와 승인 경계|에이전트 배포의 승인 경계]] — CLI와 MCP의 실행 조건, 사용자 식별과 서버 측 승인
 - [x] [[CICD-Deployment|배포 폴더 인덱스 (무중단 5계층, Blue-Green, 단일 서버 배포와 SSH workflow, ChatOps)]]
 - [x] [[Helm]]
 - [x] [[ArgoCD|ArgoCD (GitOps)]] — 기존 보강: [[CICD-Tool-Selection#CD 도구 비교 (GitOps 중심)|ArgoCD와 FluxCD 선택 기준]]

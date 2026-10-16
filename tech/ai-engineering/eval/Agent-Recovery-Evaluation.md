@@ -78,7 +78,7 @@ valid_unseen에서 사실 궤적이 성공한 93개 과제(106개 중 사실 궤
 - **비교군**: 개입하지 않는 정책을 기준선으로 두고 개입 빈도를 맞춘 비교군을 함께 둔다. 개입을 많이 해서 오른 성공률과 개입할 곳을 잘 골라서 오른 성공률을 구분한다.
 - **규칙 이식**: 정상 실행 훼손 한도를 먼저 정하고 그 안에서 순이득이 가장 큰 임계값을 고르는 절차는 옮겨 쓸 수 있다. λ = 2와 ε = 0.02는 그 실험이 정한 설정값이고 임계값(0.876, 0.052, 0)은 그 설정에서 학습 과제의 교차 예측으로 고른 값이라, 어느 쪽도 다른 하네스의 기본값으로 쓰지 않는다. 규칙을 학습하려면 같은 상태에서 두 갈래를 실제로 실행한 쌍 결과가 필요하다.
 
-재시도와 워커 교체를 Pass@k가 아니라 실제 복구 정책의 성공률, 지연과 비용으로 평가한다는 원칙은 [[LLM-Eval-Strategy|LLM 평가 전략]]에, 재시도 계층과 폴백 경로 설계는 [[LLM-Failure-Handling|LLM 실패 처리]]에 있다. 여기서는 그 성공률을 구제와 훼손으로 나누는 방법을 더한다.
+재시도와 워커 교체를 Pass@k가 아니라 실제 복구 정책의 성공률, 지연과 비용으로 평가한다는 원칙은 [[LLM-Eval-Strategy|LLM 평가 전략]]에, 재시도 계층과 폴백 경로 설계는 [[LLM-Failure-Handling-Recovery|LLM 실패 처리]]에 있다. 여기서는 그 성공률을 구제와 훼손으로 나누는 방법을 더한다.
 
 ## 한계
 
@@ -106,6 +106,6 @@ valid_unseen에서 사실 궤적이 성공한 93개 과제(106개 중 사실 궤
 - [[LLM-Sycophancy-Evaluation|LLM 아첨 편향 평가 (조건 하나만 바꾼 쌍 비교, 지표별 분모 분리)]]
 - [[Evaluation-Driven-Development|평가 주도 개발 (실행 기록과 최종 결과 대조)]]
 - [[Harness-Component-Evaluation|하네스 구성요소 평가 (구성요소별 효과 분리, 복구 기능을 평균 점수로 판단하지 않기)]]
-- [[LLM-Failure-Handling|LLM 실패 처리 (재시도 계층, 폴백 경로의 eval)]]
+- [[LLM-Failure-Handling-Recovery|LLM 실패 처리 (재시도 계층, 폴백 경로의 eval)]]
 - [[Eval-Golden-Set-and-Deploy-Gates|골든셋과 배포 관문 (일어나야 할 것과 일어나면 안 될 것을 함께 채점)]]
 - [[Recommendation-System-Off-Policy-Evaluation|추천 시스템 Off-Policy Evaluation (두 갈래를 실행할 수 없을 때 로그로 하는 반사실 추정)]]

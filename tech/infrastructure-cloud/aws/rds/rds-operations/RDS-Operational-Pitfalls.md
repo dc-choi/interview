@@ -88,7 +88,7 @@ gp2는 IOPS가 용량에 묶인다(GiB당 3 IOPS). 작은 단일 볼륨은 **bur
 ## 5. 메이저 업그레이드와 파라미터 static/dynamic
 
 - 마이너 패치는 비교적 안전하지만 **메이저 업그레이드(MySQL 5.7→8.0, PG 14→15)는 다운타임 + 어려운 롤백**이다. PostgreSQL은 extension 호환성과 `pg_upgrade` 이슈가 잦다. Blue/Green Deployment로 리스크를 줄일 수 있으나 논리 복제 기반이라 일부 기능 제한이 있다.
-- 표준 지원 종료 뒤 RDS Extended Support 대상 엔진 버전을 계속 쓰면 별도 비용이 발생할 수 있다. 엔진과 버전별 지원 일정을 확인한다.
+- RDS for MySQL과 PostgreSQL에서 표준 지원이 끝난 메이저 버전을 계속 쓰면 RDS Extended Support 요금이 붙는다(MariaDB는 대상이 아니다). 일정, 과금 단위와 생성 기본값은 [[#표준 지원 종료와 RDS Extended Support|아래 절]]에 있다.
 - 파라미터 그룹에는 **동적(즉시 적용)과 정적(재부팅 필요 = 다운타임)**이 섞이고 같은 이름도 엔진에 따라 다르다. `max_connections`는 RDS for MySQL/MariaDB에서는 동적이라 즉시 적용할 수 있지만 RDS for PostgreSQL에서는 서버 시작 시 적용되는 정적 파라미터다. 변경 전 대상 엔진에서 dynamic인지 static인지 확인한다.
 - **기본 parameter group은 값을 바꿀 수 없다.** 새 그룹을 만들거나 기존 그룹을 copy해 값을 바꾸고, 인스턴스를 수정해 그 그룹을 연결한다. 그룹 안에서도 모든 파라미터가 수정 가능한 것은 아니다.
 - 새 그룹 연결은 즉시 이뤄지지만 그 그룹의 static과 dynamic 파라미터는 **재부팅 뒤에** 적용된다. 연결한 뒤 그 그룹에서 바꾼 dynamic 파라미터는 즉시 적용된다. 최신 변경을 쓰지 않는 인스턴스는 `pending-reboot`로 표시되고 다음 유지보수 윈도에 자동 재부팅되지 않으므로 직접 재부팅한다.
@@ -105,6 +105,18 @@ gp2는 IOPS가 용량에 묶인다(GiB당 3 IOPS). 작은 단일 볼륨은 **bur
 - 진행 중 캠페인에 합류한 자원은 현재 진행 단계에 따르므로, 뒤늦게 순서를 지정해도 처음부터 검증 기간을 확보한다고 가정하지 않는다.
 
 운영에서는 AWS Health와 RDS 이벤트의 대상, 예정 시각과 완료 상태를 확인하고, 별도로 애플리케이션 호환성을 검사한다. 예를 들어 개발 DB 패치 뒤 연결, 주요 쿼리와 배치가 정상인지 확인한 다음 운영 적용을 감시한다. 이는 검증 절차의 예시이며 정책 자체가 애플리케이션 테스트를 수행한다는 뜻은 아니다.
+
+### 표준 지원 종료와 RDS Extended Support
+
+2026-10-14 RDS와 Aurora PostgreSQL 공식 문서 대조 기준. 커뮤니티 EOL, RDS 표준 지원 종료일과 Extended Support 종료일은 서로 다른 날짜다. RDS에서는 MySQL과 PostgreSQL이 대상이고 MariaDB는 표준 지원 일정만 있다. 날짜는 엔진별 release calendar나 `aws rds describe-db-major-engine-versions`로 확인한다.
+
+- **일정:** PostgreSQL 커뮤니티는 대략 1년에 한 번 메이저 버전을 내고 각 메이저를 첫 출시 뒤 5년 동안 지원한다. PostgreSQL 12는 2024년 11월에 커뮤니티 지원이 끝났고, RDS와 Aurora의 표준 지원은 2025-02-28에 끝났다.
+- **제공 범위:** 표준 지원 종료 뒤 최대 3년 동안 같은 메이저를 유료로 계속 쓴다. NVD CVSS 기준 치명적, 높음 등급 CVE의 패치와 치명적 문제의 버그 수정, 지원 케이스를 제공하며 패치 적용은 사용자 책임이다. 기간이 끝나도 올리지 않으면 RDS가 표준 지원 버전으로 업그레이드를 시도하고, 실패하면 AWS는 데이터를 보존한 뒤 그 DB를 삭제할 권리를 둔다.
+- **요금:** 표준 지원 종료일 다음 날부터 붙는다. RDS for PostgreSQL 프로비저닝 인스턴스는 리전별 vCPU 시간당 단가로 매기며 1~2년 차와 3년 차 단가가 다르다. Multi-AZ의 standby와 read replica도 과금되고 Reserved Instance 할인은 적용되지 않는다. 표준 지원 버전으로 올리거나 DB를 삭제하면 멈춘다.
+- **생성 기본값:** 콘솔에서는 Extended Support가 기본으로 선택되지 않지만 CLI와 API에서 값을 생략하면 활성화되고, CloudFormation 같은 자동화도 이 기본값을 따른다. 등록하지 않은 DB는 표준 지원 종료일이나 그 직후에 지원 버전으로 업그레이드되므로, 콘솔과 IaC 어느 쪽으로 만들든 `EngineLifecycleSupport` 값을 의도대로 확인한다.
+- **해제:** `open-source-rds-extended-support-disabled`를 지정하면 표준 지원 종료 뒤의 새 DB 생성은 실패한다. 이 값으로 복원한 DB는 이후 유지보수 윈도에서 새 메이저로 자동 업그레이드되며, 사전 점검에 실패하면 원래 버전으로 롤백되어 요금이 계속 붙고 RDS는 다시 시도하지 않는다. 기존 DB도 `EngineLifecycleSupport`를 수정해 해제할 수 있지만, 표준 지원 종료일이 지난 DB는 해제하면 다음 지원 메이저로 자동 업그레이드된다.
+- **대상 minor:** PostgreSQL 12의 Extended Support 대상은 RDS 12.22, Aurora 12.9(LTS)와 12.22다. RDS 인스턴스가 마지막 minor를 쓰지 않으면 표준 지원 종료일 뒤에 그 minor로 자동 업그레이드되고, 이후 RDS for PostgreSQL 패치는 `12.22-rds.20260514`처럼 날짜가 붙은 버전으로 나온다.
+- **대상 메이저 선택:** 곧 표준 지원이 끝나는 메이저로 올리면 그 버전에서 요금이 다시 시작된다. 2026-10-14 기준 RDS for PostgreSQL 13은 2026-03-01부터 Extended Support 요금 구간이고 14는 2027-02-28에 표준 지원이 끝나며, 12는 2027-03-01부터 3년 차 단가가 적용된다. 남은 표준 지원 기간과 애플리케이션 호환성을 함께 보고 대상 메이저를 고른다.
 
 ## 6. 모니터링 사각지대 — FreeableMemory 함정
 
@@ -126,6 +138,7 @@ gp2는 IOPS가 용량에 묶인다(GiB당 3 IOPS). 작은 단일 볼륨은 **bur
 - 복제 지연으로 인한 read-after-write 버그와 마스터 강제 라우팅
 - gp2 BurstBalance 소진과 gp3 전환 이유, storage-full과 제자리 축소 제한 및 Blue/Green 대안
 - 정적 파라미터(재부팅)와 메이저 업그레이드 다운타임, 기본 parameter group 수정 불가와 새 그룹 연결 뒤 재부팅, 문자셋 파라미터가 기존 데이터베이스에 적용되지 않는 이유
+- 커뮤니티 EOL, RDS 표준 지원 종료와 Extended Support의 차이, vCPU 시간당 과금과 CLI, API에서 값을 생략하면 활성화되는 기본값
 - FreeableMemory가 낮은 게 정상일 수 있는 이유와 SwapUsage가 진짜 신호인 점
 - 스냅샷 복구의 lazy loading 워밍업을 RTO에 포함해야 하는 이유
 
@@ -135,6 +148,19 @@ gp2는 IOPS가 용량에 묶인다(GiB당 3 IOPS). 작은 단일 볼륨은 **bur
 - [Amazon Aurora, Performance and scaling for Aurora serverless](https://docs.aws.amazon.com/AmazonRDS/latest/AuroraUserGuide/aurora-serverless-v2.setting-capacity.html)
 - [Amazon RDS, Managing capacity automatically with Amazon RDS storage autoscaling](https://docs.aws.amazon.com/AmazonRDS/latest/UserGuide/USER_PIOPS.Autoscaling.html)
 - [Amazon RDS, Using AWS Organizations upgrade rollout policy for automatic minor version upgrades](https://docs.aws.amazon.com/AmazonRDS/latest/UserGuide/RDS.Maintenance.AMVU.UpgradeRollout.html)
+- [Amazon RDS, Amazon RDS Extended Support with Amazon RDS](https://docs.aws.amazon.com/AmazonRDS/latest/UserGuide/extended-support.html)
+- [Amazon RDS, Overview of Amazon RDS Extended Support](https://docs.aws.amazon.com/AmazonRDS/latest/UserGuide/extended-support-overview.html)
+- [Amazon RDS, Amazon RDS and customer responsibilities with Amazon RDS Extended Support](https://docs.aws.amazon.com/AmazonRDS/latest/UserGuide/extended-support-responsibilities.html)
+- [Amazon RDS, Amazon RDS Extended Support charges](https://docs.aws.amazon.com/AmazonRDS/latest/UserGuide/extended-support-charges.html)
+- [Amazon RDS, Creating a DB instance or a Multi-AZ DB cluster with Amazon RDS Extended Support](https://docs.aws.amazon.com/AmazonRDS/latest/UserGuide/extended-support-creating-db-instance.html)
+- [Amazon RDS, Restoring a DB instance or a Multi-AZ DB cluster with Amazon RDS Extended Support](https://docs.aws.amazon.com/AmazonRDS/latest/UserGuide/extended-support-restoring-db-instance.html)
+- [Amazon RDS, Versions with Amazon RDS Extended Support](https://docs.aws.amazon.com/AmazonRDS/latest/UserGuide/extended-support-versions.html)
+- [Amazon RDS, Viewing support dates for engine versions in Amazon RDS Extended Support](https://docs.aws.amazon.com/AmazonRDS/latest/UserGuide/extended-support-viewing-support-dates.html)
+- [Amazon RDS for PostgreSQL Release Notes, Release calendars for Amazon RDS for PostgreSQL](https://docs.aws.amazon.com/AmazonRDS/latest/PostgreSQLReleaseNotes/postgresql-release-calendar.html)
+- [Aurora PostgreSQL Release Notes, Release calendars for Aurora PostgreSQL](https://docs.aws.amazon.com/AmazonRDS/latest/AuroraPostgreSQLReleaseNotes/aurorapostgresql-release-calendar.html)
+- [Amazon RDS for PostgreSQL Pricing](https://aws.amazon.com/rds/postgresql/pricing/)
+- [PostgreSQL, Versioning Policy](https://www.postgresql.org/support/versioning/)
+- [PostgreSQL 12 End of Standard Support for Amazon Aurora and RDS PostgreSQL — Amazon Web Services](https://www.youtube.com/watch?v=WkDXJTcf2v4)
 - [Amazon RDS User Guide — DB instance storage, parameter groups](https://docs.aws.amazon.com/AmazonRDS/latest/UserGuide/CHAP_Storage.html)
 - [Using Amazon RDS Proxy — connection pinning](https://docs.aws.amazon.com/AmazonRDS/latest/UserGuide/rds-proxy.html)
 - [Working with read replicas — replication lag](https://docs.aws.amazon.com/AmazonRDS/latest/UserGuide/USER_ReadRepl.html)

@@ -71,6 +71,14 @@ attachment의 **association**은 들어온 패킷이 조회할 테이블을, **p
 
 여러 리전으로 늘릴 때는 연결 개수뿐 아니라 정적 경로 변경과 DNS 운영 범위를 비교한다. 정책 기반 글로벌 연결로 전환하는 절차는 [[Cloud-WAN-Migration|Cloud WAN 마이그레이션]]을 참고한다. 실제 네트워크 구성이나 장애 시험을 수행한 기록은 아니다.
 
+## 중앙 방화벽 경유와 흐름의 대칭성을 구분한다
+
+부분 검증(2026-10-14): TGW VPC attachment의 appliance mode 공식 문서를 대조했다. 상태를 유지하는 방화벽을 중앙 VPC에 두면 요청과 응답이 같은 검사 경로를 사용하도록 설계해야 한다. 해당 방화벽 VPC의 attachment에 appliance mode를 켜면 TGW가 한 흐름의 수명 동안 그 attachment에서 같은 AZ를 사용한다.
+
+이 설정은 방화벽 정책이나 양쪽 라우팅을 자동 완성하지 않는다. TGW 테이블과 VPC 서브넷의 반환 경로를 별도로 확인한다. Appliance mode는 VPC attachment에 적용하며, VPN이나 Connect attachment에서 시작한 트래픽도 검사 VPC를 경유할 수 있다. 기존 attachment에서 나중에 활성화하면 흐름이 다른 AZ로 재분배될 수 있다.
+
+검증 제안: 서로 다른 AZ의 클라이언트 사이에서 왕복 통신과 방화벽의 세션 관측을 확인하고, AZ 장애와 모드 변경 시 기존 연결 및 새 연결을 따로 시험한다. AZ를 인식한 선택에는 관련 TGW 테이블의 route propagation이 필요하며, 없으면 flow hash 기반 선택으로 돌아간다. 실제 통신 시험은 수행하지 않았으며 기존 절 전체의 검증일은 유지한다.
+
 ## 계정 간 공유 — AWS RAM
 
 - 단일 TGW를 여러 AWS 계정이 공유 어태치먼트로 사용 가능
@@ -122,6 +130,7 @@ attachment의 **association**은 들어온 패킷이 조회할 테이블을, **p
 
 ## 출처
 
+- [AWS, Amazon VPC attachments in AWS Transit Gateway](https://docs.aws.amazon.com/vpc/latest/tgw/tgw-vpc-attachments.html)
 - [AWS, Multicast Reference Architectures with AWS Transit Gateway](https://d1.awsstatic.com/architecture-diagrams/ArchitectureDiagrams/transitgateway_multicast_ra.pdf)
 - [AWS, Transit gateway peering attachments in AWS Transit Gateway](https://docs.aws.amazon.com/vpc/latest/tgw/tgw-peering.html)
 - AWS SAA C03 Udemy 강의 오답노트 (Stephane Maarek, 로컬)

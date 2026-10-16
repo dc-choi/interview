@@ -3,6 +3,7 @@ tags: [infrastructure, nginx, reverse-proxy, load-balancer, web-server]
 status: done
 category: "인프라&클라우드(Infrastructure&Cloud)"
 aliases: ["Reverse Proxy", "리버스 프록시", "Nginx Reverse Proxy"]
+verified_at: 2026-10-12
 ---
 
 # Reverse Proxy, Nginx
@@ -50,7 +51,7 @@ location / {
 
 ### proxy_set_header
 
-업스트림으로 보낼 요청 헤더를 수정한다. Nginx는 기본적으로 원본 요청 헤더를 전달하지만 `Host`는 `$proxy_host`, `Connection`은 `close`로 재정의하고 값이 빈 헤더는 보내지 않는다. 캐시 사용 시 일부 조건부 헤더도 제외된다. 따라서 `proxy_set_header`가 필요한 이유는 다른 헤더가 모두 누락돼서가 아니라 원본 Host가 덮이고 `X-Real-IP`, `X-Forwarded-For` 같은 클라이언트 IP 헤더를 Nginx가 자동 생성하지 않기 때문이다.
+업스트림으로 보낼 요청 헤더를 수정한다. Nginx는 기본적으로 원본 요청 헤더를 전달하지만 `Host`는 `$proxy_host`로 재정의하고, `Connection`은 1.29.7 미만에서 `close`로 재정의하며 1.29.7부터는 보내지 않는다. 값이 빈 헤더는 보내지 않는다. 캐시 사용 시 일부 조건부 헤더도 제외된다. 따라서 `proxy_set_header`가 필요한 이유는 다른 헤더가 모두 누락돼서가 아니라 원본 Host가 덮이고 `X-Real-IP`, `X-Forwarded-For` 같은 클라이언트 IP 헤더를 Nginx가 자동 생성하지 않기 때문이다.
 
 ```nginx
 proxy_set_header Host $host;
@@ -80,9 +81,10 @@ server {
 }
 ```
 
-- 알고리즘: `round_robin`(기본), `least_conn`, `ip_hash`, `hash`(커스텀 키), `random two least_conn`(Power of Two)
+- 알고리즘: 가중치 라운드 로빈(기본값, 별도 디렉티브 없음), `least_conn`, `ip_hash`, `hash`(커스텀 키), `random two least_conn`(Power of Two)
 - `max_fails`/`fail_timeout` — 백엔드 실패 감지
 - `backup` — 기본 서버 모두 장애 시에만 사용
+- 세션 고정: `hash $cookie_<이름>`은 쿠키 값의 해시로 서버를 고를 뿐이다. 첫 요청을 처리한 서버로 묶으려면 nginx가 서버 정보를 담은 쿠키를 발급하는 `sticky cookie`나 업스트림이 응답으로 설정한 세션 쿠키를 학습하는 `sticky learn`을 쓴다. 묶인 서버가 요청을 처리하지 못하면 다른 서버가 새로 선택된다. `sticky`는 1.29.6부터 상용 구독 없이 쓸 수 있고, `learn`의 세션 표를 nginx 인스턴스 사이에 동기화하는 `sync` 파라미터는 상용이다. 두 방식의 차이는 [[Load-Balancer#세션 분산 문제|세션 분산 문제]] 참고
 
 ### proxy_buffering, proxy_buffer_size, proxy_buffers
 
@@ -135,6 +137,7 @@ server {
     location / {
         proxy_pass http://app;
         proxy_http_version 1.1;
+        proxy_set_header Connection "";   # 1.29.7 미만에서 keepalive 재사용에 필요
         proxy_set_header Host $host;
         proxy_set_header X-Real-IP $remote_addr;
         proxy_set_header X-Forwarded-For $proxy_add_x_forwarded_for;
@@ -156,7 +159,7 @@ server {
 - **`X-Forwarded-For` 신뢰** — 클라이언트가 헤더를 위조할 수 있음. **신뢰된 프록시 IP에서 온 요청에서만** 사용
 - **SSL 종료 후 앱이 `http`로 인식** — `X-Forwarded-Proto` 필수
 - **WebSocket에 Upgrade와 Connection 헤더 미설정** → 두 헤더는 hop-by-hop이라 업스트림에 자동 전달되지 않아 핸드셰이크가 실패한다. `proxy_http_version 1.1`은 Nginx 1.29.7부터 기본값이므로 그보다 이전 버전에서만 명시가 필요하다
-- **업스트림 keep-alive 미설정** — 매 요청마다 새 TCP 연결 → 지연, CPU 증가
+- **1.29.7 미만에서 업스트림 keep-alive 미설정** — 매 요청마다 새 TCP 연결 → 지연, CPU 증가. `keepalive`와 함께 `proxy_http_version 1.1`, `proxy_set_header Connection ""`을 둬야 연결이 재사용된다. 1.29.7부터는 worker당 유휴 연결 32개를 캐시하는 keepalive와 HTTP/1.1이 기본값이다
 - **모든 SSE에 `proxy_buffering off` 적용** — 기본 버퍼링에서도 이벤트가 순차 전달될 수 있다. 장기 스트림의 자원 특성과 실제 도착 지연을 측정해 결정
 
 ## 면접 체크포인트
@@ -169,10 +172,17 @@ server {
 - `upstream` 블록에서 선택 가능한 부하 분산 알고리즘
 
 ## 출처
+
+2026-10-12 부분 검증: upstream 알고리즘과 `sticky`, keepalive 기본값, `proxy_http_version`, 버퍼링과 WebSocket 설정을 nginx.org 문서와 CHANGES에 대조했다. `proxy_set_header` 문서의 Default 줄은 아직 `Connection close`를 표시하지만, 1.29.7 CHANGES와 nginx 소스의 기본 헤더 표는 `Connection`을 보내지 않는 쪽이다.
+
 - [Nginx Docs — NGINX Reverse Proxy](https://docs.nginx.com/nginx/admin-guide/web-server/reverse-proxy/)
 - [Nginx Docs — ngx_http_proxy_module](https://nginx.org/en/docs/http/ngx_http_proxy_module.html#proxy_buffering)
+- [Nginx Docs — ngx_http_upstream_module](https://nginx.org/en/docs/http/ngx_http_upstream_module.html#sticky)
 - [Nginx Docs — ngx_http_core_module](https://nginx.org/en/docs/http/ngx_http_core_module.html)
 - [Nginx Docs — WebSocket proxying](https://nginx.org/en/docs/http/websocket.html)
+- [Changes with nginx 1.29.6, 1.29.7 — nginx.org](https://nginx.org/en/CHANGES)
+- [ngx_http_proxy_module.c — nginx/nginx](https://github.com/nginx/nginx/blob/master/src/http/modules/ngx_http_proxy_module.c)
+- [Fundamentals of Backend Architecture - How to Design Scalable Software — YouTube, Tiago](https://www.youtube.com/watch?v=Qa-7iWxDz1A)
 
 ## 관련 문서
 - [[Proxy-Internals|프락시 동작 구조 (두 연결 종단, 버퍼링과 커넥션 재사용의 근거)]]

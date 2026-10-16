@@ -9,7 +9,7 @@ aliases: ["CS&프로그래밍(CS&Programming)", "CS & Programming Language"]
 
 ## 목차
 
-- [[tech/computer-science/fundamentals/기초(Fundamentals)|컴퓨터 기초 (Fundamentals)]] — 진법, 문자와 Base64 인코딩, CPU, 컴파일/런타임, 데이터 측정, 논리와 작은 모델의 탐색
+- [[tech/computer-science/fundamentals/기초(Fundamentals)|컴퓨터 기초 (Fundamentals)]] — 데이터 표현(진법, 문자와 Base64 인코딩, 체크섬과 해시), 컴퓨터 구조(논리회로, 메모리, CPU), 컴파일/런타임, 언어 지형과 선택 기준, 데이터 측정, 논리와 작은 모델의 탐색
 - [[tech/computer-science/oop/SOLID-In-Practice|OOP / SOLID]] — OCP, DIP 실전 적용
 - [[tech/computer-science/code-quality/코드품질(CodeQuality)|코드 품질 (Code Quality)]] — 하드코딩 제거, 응집, 가독성 인지과학, 용어 엄밀성
 - [[tech/computer-science/functional/함수형(Functional)|함수형 프로그래밍 (Functional)]] — 카테고리 이론, Functor, Monad, CCC
@@ -19,7 +19,7 @@ aliases: ["CS&프로그래밍(CS&Programming)", "CS & Programming Language"]
 - [[tech/computer-science/c/C언어(C)|C]] — 빌드와 디버깅, 자료형과 함수, 배열과 문자열, 포인터와 동적 메모리, 표준 입출력과 파일
 - [[tech/computer-science/cpp/C++(Cpp)|C++]] — 값과 메모리, STL, 코딩 테스트 구현 규칙
 - [[tech/computer-science/ts/타입스크립트(TS)|TypeScript]] — 타입 시스템, 제네릭, 모듈 경계, compiler 진단과 Runtime 검증, Effect 오류 채널
-- [[tech/computer-science/js/자바스크립트(JS)|JavaScript]] — Promise, 모듈, Prototype, BigInt, Unicode, Intl과 리소스 해제, JSON과 설정 파일 문법
+- [[tech/computer-science/js/자바스크립트(JS)|JavaScript]] — Promise, 모듈, Prototype, BigInt, Unicode, Intl과 리소스 해제, JSON과 설정 파일 문법, 유틸리티 라이브러리 선택
 - [[Browser-CSS-Animation-and-Compatibility|브라우저 CSS 애니메이션]] — 이징, 스태거와 경로의 구분, reduced motion과 호환성
 - [[tech/computer-science/java/자바(Java)|Java]] — 언어 기초, 백엔드 면접 필수
 - [[Python-Iteration-and-Functions|Python 반복문과 함수]] — range 경계, enumerate, 출력과 반환, 튜플과 빈 입력

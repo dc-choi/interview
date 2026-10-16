@@ -24,7 +24,7 @@ aliases: ["VPC 기본 구성 요소", "Subnet 유형과 CIDR 설계"]
 
 ### 서브넷 예약 IP — 사용 가능 IP 5개 차감
 
-`/24` 서브넷(예 `172.16.1.0/24`)이 가진 256개 IP 중 **앞 4개 + 마지막 1개**는 사용 불가.
+일반적인 AWS IPv4 서브넷에서 `/24`(예 `172.16.1.0/24`)가 가진 256개 IP 중 **앞 4개 + 마지막 1개**는 예약되어 리소스에 할당할 수 없다. 따라서 할당 가능한 주소는 251개다. BYOIP처럼 자체 주소를 가져오는 경우의 예외는 별도로 확인한다.
 
 | IP | 용도 |
 |---|---|
@@ -78,6 +78,16 @@ NAT64는 NAT gateway에 별도로 활성화하는 옵션이 아니다. egress-on
 
 IP 대역 설계는 **되돌리기 어려움**. 처음에 충분히 크게 잡고 체계적으로 나눈다.
 
+### 기존 블록 크기 변경과 보조 블록 추가는 다르다
+
+VPC에 연결한 기존 IPv4 CIDR의 크기를 늘리거나 줄일 수는 없지만, 허용 조건을 만족하는 보조 IPv4 CIDR을 추가해 주소 공간을 확장할 수 있다. 추가 블록은 기존 VPC 대역과 겹치면 안 되고, 주소 범위별 연결 제한, CIDR 및 라우트 할당량도 확인해야 한다.
+
+기존 라우트도 추가 가능 여부에 영향을 준다. 예를 들어 `10.2.0.0/16` VPC에 `10.0.0.0/24`를 VGW로 보내는 경로가 있으면, 그 목적지와 같거나 그것을 포함하는 `10.0.0.0/16` 블록을 보조 CIDR로 추가할 수 없다. 주소가 기존 VPC CIDR과 겹치지 않는다는 검사만으로 충분하지 않다.
+
+추가 CIDR이 `associated`가 되면 사용할 수 있으며 해당 대역의 `local` 경로가 VPC 라우트 테이블에 자동으로 추가된다. 이것을 새 서브넷이나 외부 연결 설정까지 완료됐다는 의미로 해석하지 않는다. 연결된 peer VPC와 Direct Connect gateway의 다른 VPC 대역도 함께 확인한다.
+
+2026-10-13 부분 검증: CIDR 확장 조건과 서브넷 예약 주소를 공식 문서와 대조했다. 기존 서비스별 용량 권장값 전체를 재검증한 것은 아니므로 `verified_at`은 유지한다.
+
 ### 설계 원칙
 - **프라이빗 대역 사용**: `10.x.x.x` / `172.16~31.x.x` / `192.168.x.x`
 - **비중첩(Non-overlapping)**: 온프렘, 다른 VPC, 사무실 네트워크와 겹치지 않게. 겹치면 나중에 Peering, VPN 불가
@@ -97,6 +107,7 @@ IP 대역 설계는 **되돌리기 어려움**. 처음에 충분히 크게 잡�
 ## 출처
 
 - [Amazon VPC, VPC CIDR blocks](https://docs.aws.amazon.com/vpc/latest/userguide/vpc-cidr-blocks.html)
+- [Amazon VPC, Subnet CIDR blocks](https://docs.aws.amazon.com/vpc/latest/userguide/subnet-sizing.html)
 - [Amazon VPC, Enable outbound IPv6 traffic using an egress-only internet gateway](https://docs.aws.amazon.com/vpc/latest/userguide/egress-only-internet-gateway.html)
 - [Amazon VPC, DNS64 and NAT64](https://docs.aws.amazon.com/vpc/latest/userguide/nat-gateway-nat64-dns64.html)
 

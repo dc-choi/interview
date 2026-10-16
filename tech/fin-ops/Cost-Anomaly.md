@@ -1,7 +1,7 @@
 ---
 tags: [finops, aws, cost-anomaly-detection, monitoring, ml, alert]
 status: done
-verified_at: 2026-10-12
+verified_at: 2026-10-14
 category: "비용&운영(FinOps)"
 aliases: ["Cost Anomaly", "Cost Anomaly Detection", "비용 이상 탐지"]
 ---
@@ -51,6 +51,17 @@ aliases: ["Cost Anomaly", "Cost Anomaly Detection", "비용 이상 탐지"]
 - 데이터 전송 급증([[Egress-Cost]]), 로그 폭증([[Long-Term-Retention]])
 - 침해로 인한 비정상 사용(크립토 마이닝 등) — 보안 신호이기도 함
 
+### EC2-Other는 사용 유형으로 나눠 읽는다
+
+2026-10-14 AWS Cost Explorer와 CUR 문서, AWS Price List와 AWS Cloud Financial Management 블로그 대조 기준이다. `EC2-Other`는 AWS 제품 이름이 아니라 Cost Explorer가 EC2 비용을 나눈 서비스 범주다. 2019-09 AWS 블로그 기준, 인스턴스 가동 시간 비용을 EC2가 다른 서비스와 맞물려 생기는 비용과 따로 보도록 나뉘어 있으며, EBS 볼륨과 스냅샷, NAT Gateway, 데이터 전송 등이 여기에 모인다. 범주 이름만으로는 원인을 알 수 없으므로 다음 순서로 나눈다.
+
+1. Service 필터를 `EC2-Other`로 좁히고 Usage type으로 그룹화한다. 차트는 그룹 일부만 그리므로(서비스로 묶으면 비용 상위 9개) 전체 목록은 차트 아래 데이터 표나 CSV 내려받기로 확인한다.
+2. 사용 유형의 앞부분은 리전 billing code다. `USE1-USW2-AWS-Out-Bytes`는 us-east-1에서 us-west-2로 나간 리전 간 전송이며, 요금은 보낸 리전의 Out 행에 붙는다. 같은 리전의 AZ 간 전송은 `DataTransfer-Regional-Bytes`로 기록되고 송신과 수신이 각각 계량되어 행이 두 개 생긴다. 리전 접두사가 없는 데이터 전송 사용 유형은 us-east-1의 전송이다.
+3. EC2 관련 비용이 특정 날이나 달에만 크게 튀면 사용량 증가로 보기 전에 예약 요금인지 확인한다. Charge type 필터의 `Upfront reservation fee`(RI)와 `Savings Plan upfront fee`는 구매 시점에 급증을 만든다. 부분 선결제와 무선결제 RI의 `Recurring reservation fee`는 매월 1일에 청구되어 일별 차트에서 급증처럼 보인다. CUR에서 RI 선결제는 `AmazonEC2` 제품 코드의 `Fee` 행이고, Savings Plans 선결제는 별도 제품 코드 `ComputeSavingsPlans`의 `SavingsPlanUpfrontFee` 행이다. 기간별 유효 비용은 아래 [[Cost-Anomaly#선결제와 사용량 증가를 구분한다|상각 비용]]으로 본다.
+4. 퍼블릭 IPv4 주소는 Elastic IP를 포함해 2024-02-01부터 연결 여부와 관계없이 시간당 과금된다. 2026-09-17 게시 AWS Price List(us-east-1)에서 이 요금의 사용 유형 `USE1-PublicIPv4:InUseAddress`, `USE1-PublicIPv4:IdleAddress`는 Amazon VPC 상품에 속한다. Elastic IP를 EC2-Other 구성 요소로 든 자료가 있어도 EC2-Other와 VPC 서비스를 함께 확인한다(운영 제안).
+
+정리 대상은 분해 결과로 고른다. 2023-06 AWS 블로그 기준, Compute Optimizer와 Trusted Advisor는 연결되지 않은 EBS 볼륨과 gp2에서 gp3로의 전환 같은 볼륨 유형 변경을 권고한다. AMI를 등록 해제해도 기본적으로 스냅샷은 지워지지 않고 저장 요금이 계속되므로, 등록 해제할 때 연결된 스냅샷을 함께 지우거나 따로 지운다. 다른 AMI가 함께 쓰는 스냅샷은 삭제를 지정해도 지워지지 않는다. gp3 전환 전 성능 비교는 [[Storage-Tiering|스토리지 티어링]], NAT Gateway와 전송 경로는 [[Egress-Cost|데이터 전송 비용]]을 따른다.
+
 ## 에이전트로 조사할 때도 원인과 조치를 나눈다
 
 Amazon Q Developer의 비용 조사 기능은 비용 기여 차원을 분해하고 사용량 증가와 단가 변화를 구분한다. 사용량 변화는 CloudTrail 이벤트와 연결하고, 단가 변화는 가격과 할인 구성을 분석한다. 필요한 로그가 없으면 사용 가능한 비용 데이터로 조사하므로, 설명이 생성됐다는 사실만으로 원인까지 입증된 것은 아니다(2026-10-07 공식 문서 기준).
@@ -96,11 +107,12 @@ Savings Plans의 `SavingsPlanCoveredUsage`에 표시된 unblended cost는 할인
 - ML 베이스라인과 Monitor 범위(AWS services/연결 계정/비용 카테고리/태그) 설계
 - 자동 근본 원인 분해의 가치
 - 폭증의 흔한 원인(미삭제 리소스, 재시도, 전송, 침해)
+- EC2-Other를 사용 유형으로 분해하고 선결제 급증과 사용량 증가를 구분하는 방법
 - 탐지 + 알람 + 액션을 층으로 두는 운영
 
 ## 출처
 
-2026-10-07에는 탐지 지연과 근본 원인 분해, Amazon Q Developer의 비용 조사 범위를 대조했다. 위 조사 절차는 이를 적용한 설계 제안이다. 2026-10-12에는 Cost Explorer 활성화 시 기본 구성과 일일 요약, 임계 미만 탐지의 표시 범위를 대조했다.
+2026-10-07에는 탐지 지연과 근본 원인 분해, Amazon Q Developer의 비용 조사 범위를 대조했다. 위 조사 절차는 이를 적용한 설계 제안이다. 2026-10-12에는 Cost Explorer 활성화 시 기본 구성과 일일 요약, 임계 미만 탐지의 표시 범위를 대조했다. 2026-10-14에는 EC2-Other의 사용 유형 분해, 데이터 전송 사용 유형, 선결제 charge type과 퍼블릭 IPv4 사용 유형의 상품 분류를 대조했다.
 
 - [AWS Cost Management, Enabling Cost Explorer](https://docs.aws.amazon.com/cost-management/latest/userguide/ce-enable.html)
 - [AWS Cost Management, Opting out of Cost Anomaly Detection](https://docs.aws.amazon.com/cost-management/latest/userguide/opting-out-cad.html)
@@ -110,6 +122,18 @@ Savings Plans의 `SavingsPlanCoveredUsage`에 표시된 unblended cost는 할인
 - [AWS Cost Management, Using AWS User Notifications with Cost Anomaly Detection](https://docs.aws.amazon.com/cost-management/latest/userguide/cad-user-notifications.html)
 - [AWS Cost Management, Choosing advanced options](https://docs.aws.amazon.com/cost-management/latest/userguide/ce-advanced.html)
 - [AWS Data Exports, Understanding Savings Plans](https://docs.aws.amazon.com/cur/latest/userguide/cur-sp.html)
+- [AWS Cost Management, Filtering the data that you want to view](https://docs.aws.amazon.com/cost-management/latest/userguide/ce-filtering.html) — charge type의 선결제 항목과 EC2 사용 유형 그룹
+- [AWS Cost Management, Reading the Cost Explorer data table](https://docs.aws.amazon.com/cost-management/latest/userguide/ce-table.html) — 그룹별 표와 전체 데이터 CSV
+- [AWS, AWS Cost Explorer features](https://aws.amazon.com/aws-cost-management/aws-cost-explorer/features/) — 서비스로 묶은 차트의 상위 9개
+- [AWS Data Exports, Understanding data transfer charges](https://docs.aws.amazon.com/cur/latest/userguide/cur-data-transfers-charges.html)
+- [AWS Data Exports, Understanding your reservation line items](https://docs.aws.amazon.com/cur/latest/userguide/regular-reserved-instances.html) — RI 선결제 `Fee` 행
+- [AWS Regions and Availability Zones, AWS Region billing codes](https://docs.aws.amazon.com/global-infrastructure/latest/regions/aws-region-billing-codes.html)
+- [AWS Price List Bulk API, Amazon VPC offer file (us-east-1)](https://pricing.us-east-1.amazonaws.com/offers/v1.0/aws/AmazonVPC/current/us-east-1/index.json) — 2026-09-17 게시본의 퍼블릭 IPv4 사용 유형
+- [Amazon EC2 User Guide, Deregister an Amazon EC2 AMI](https://docs.aws.amazon.com/AWSEC2/latest/UserGuide/deregister-ami.html) — 등록 해제 뒤 남는 스냅샷 요금
+- [Tips and Tricks for Exploring your Data in AWS Cost Explorer — AWS Cloud Financial Management Blog](https://aws.amazon.com/blogs/aws-cloud-financial-management/tips-and-tricks-for-exploring-your-data-in-aws-cost-explorer-part-2/) — 2019-09 게시, EC2-Other 범주의 분리 이유와 구성. Elastic IP를 포함한 구성 목록은 2024-02 퍼블릭 IPv4 과금 시작 전 기준이다.
+- [Optimize and save on “other” services — AWS Cloud Financial Management Blog](https://aws.amazon.com/blogs/aws-cloud-financial-management/optimize-and-save-on-the-other-services/) — 2023-06 EBS 권고 도구와 스냅샷 정리
+- [New – AWS Public IPv4 Address Charge + Public IP Insights — AWS News Blog](https://aws.amazon.com/blogs/aws/new-aws-public-ipv4-address-charge-public-ip-insights/) — 2023-07 게시, 2024-02-01 과금 시작과 Elastic IP 포함
+- [What is EC2-Other? — Amazon Web Services](https://www.youtube.com/watch?v=puiB59ni7bA)
 
 ## 관련 문서
 

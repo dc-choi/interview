@@ -104,6 +104,22 @@ flowchart LR
 
 물리 포트가 없는 클라우드에서도 구분은 유지된다. 인라인 삽입은 트래픽을 가상 어플라이언스로 우회시켜 통과시키는 구성으로, AWS에서는 [[ELB|Gateway Load Balancer]]가 방화벽, IDS/IPS, DPI 어플라이언스를 경로 위에 끼우는 역할을 한다. GWLB 엔드포인트를 애플리케이션 서브넷 라우팅 테이블의 next hop으로 두어 트래픽이 어플라이언스를 거쳐 돌아오게 하고, GWLB와 어플라이언스 사이는 GENEVE(UDP 6081)로 캡슐화한다. 아웃오브패스 관찰은 VPC Traffic Mirroring이 interface 유형 ENI의 트래픽 사본을 필터와 패킷 절단을 거쳐 out-of-band 보안과 모니터링 어플라이언스로 보내고, 흐름 로그가 메타데이터를 남긴다. [[Network-Traffic-Monitoring|흐름 단위 모니터링]]
 
+### AI 런타임 검사: API 판정과 실제 차단
+
+AI 요청을 검사 API로 보내는 구성은 패킷 미러링과 같은 배치가 아니다. 애플리케이션이 검사 결과를 기다린 뒤 모델 호출이나 응답 전달을 결정하면 검사 서비스가 요청 처리의 필수 단계가 된다. 반대로 원본을 먼저 전달하고 사본만 검사하면 그 요청에 대한 사전 차단은 할 수 없다.
+
+2026-10-07 확인한 Prisma AIRS API Intercept는 애플리케이션이 보낸 프롬프트나 모델 응답을 검사하고, 보안 프로필에 따른 위협 평가와 권장 조치를 반환한다. 이 계약에서 도출되는 설계 조건은 **판정 반환과 실제 실행 통제를 분리해서 확인하는 것**이다. API가 `block`을 반환해도 호출부가 모델 호출이나 외부 전달을 계속하면 차단 경계가 성립하지 않는다.
+
+| 검사 위치 | 차단하려면 필요한 조건 | 놓치기 쉬운 범위 |
+|---|---|---|
+| 네트워크 인라인 | 보호할 왕복 트래픽이 검사 경로를 지나고 차단 정책이 적용돼야 한다 | 우회 경로와 복호화되지 않은 본문 |
+| 모델 호출 전 API 검사 | 판정 뒤에만 모델에 입력을 전달한다 | 검사 없이 호출하는 다른 코드 경로 |
+| 모델 응답 후 API 검사 | 판정 뒤에만 사용자나 다음 도구에 결과를 전달한다 | 검사 전에 이미 전달한 스트리밍 조각 |
+
+HTTPS 본문 검사는 평문을 볼 수 있는 위치가 필요하다. 네트워크 장비에서 TLS를 복호화하면 인증서 신뢰, 복호화 제외 대상과 처리량 영향을 함께 검토한다. 애플리케이션이 평문을 검사 API로 보내는 방식에서는 그 전송 자체가 데이터 제공 경계이므로 전송할 정보와 서비스의 처리 조건을 확인한다.
+
+운영 설계에서는 검사 타임아웃, 오류와 한도 초과를 정상 허용 판정과 구분한다. 동기 API인지 비동기 API인지보다 **최종 판정 전에 보호할 동작이 실행되는지**가 중요하다. 검사 지연 예산, fail-open/fail-closed와 우회 경로를 시험하고, 탐지 결과와 실제 차단 결과를 각각 기록한다. 위협 유형과 모델 밖 권한 강제는 [[LLM-Application-Security|LLM 애플리케이션 보안]]을 함께 본다.
+
 ## 설계 체크포인트
 
 - 목적이 차단인지 관찰인지 먼저 정한다. 차단이면 인라인, 관찰이면 아웃오브패스가 기본이다. 인라인에 두고도 초기에는 tap이나 탐지 전용으로 운영할 수 있으므로 배치와 동작 모드를 각각 정한다. 둘 다 필요하면 장비를 나눈다.
@@ -137,9 +153,13 @@ flowchart LR
 - [AWS, Amazon VPC Traffic Mirroring Guide: What is Traffic Mirroring?](https://docs.aws.amazon.com/vpc/latest/mirroring/what-is-traffic-mirroring.html)
 - [Wireshark, User's Guide](https://www.wireshark.org/docs/wsug_html/)
 - [Network Taps — Gigamon](https://www.gigamon.com/products/access-traffic/network-taps.html)
+- [Palo Alto Networks, Prisma AIRS AI Runtime: API Intercept Overview](https://docs.paloaltonetworks.com/prisma-airs/ai-runtime-security/airs-api/ai-runtime-security-api-intercept-overview)
+- [Palo Alto Networks, Use Cases: Prisma AIRS AI Runtime API Intercept](https://pan.dev/prisma-airs/api/airuntimesecurity/usecases/)
+- [Palo Alto Networks, Enable Decryption](https://docs.paloaltonetworks.com/network-security/decryption/administration/enabling-decryption)
 
 ## 관련 문서
 
+- [[LLM-Application-Security|LLM 애플리케이션 보안 (탐지와 모델 밖 실행 권한의 분리)]]
 - [[Network-Perimeter-Security|네트워크 경계 보안 (보안 장비 배치 순서)]]
 - [[Packet-Capture-and-Wireshark|패킷 캡처와 Wireshark (캡처 위치, SPAN/TAP, 캡처 누락)]]
 - [[Network-Encapsulation|캡슐화와 데이터 단위 (DPI)]]

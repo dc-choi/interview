@@ -27,6 +27,16 @@ DB와 메시지 큐는 서로 다른 시스템이라 하나의 **로컬** 트랜
 
 Spring `TransactionSynchronization.afterCommit()` callback을 `TransactionSynchronizationManager.registerSynchronization(...)`으로 등록하거나 `@TransactionalEventListener(phase = AFTER_COMMIT)`에서 메시지를 보내도 이 간극은 닫히지 않는다. DB rollback 뒤 이벤트를 보내는 경우는 피하지만, commit 직후 프로세스가 종료되거나 broker 전송이 실패하면 DB 변경만 남는다. callback 순서 제어와 원자성은 다른 문제다.
 
+### 로컬 수집기 버퍼도 간극을 닫지 못한다
+
+2026-10-14 Fluent Bit v5.1.3 소스와 문서, 동봉된 librdkafka 2.15.0 문서와 Kafka 공식 문서 부분 대조 기준이며, 이 절만 대조해 문서 전체의 검증일은 유지한다. 애플리케이션이 이벤트를 로컬 수집기(Fluent Bit 등)에 넘기고 수집기가 Kafka로 전달하게 하는 구성도 있다. 2022 발표에서 당근마켓 채팅은 서비스 간 이벤트를 Fluent Bit으로 보냈고, Kafka 장애 동안 Fluent Bit이 로컬 디스크에 쌓았다가 복구 뒤 장애 시점부터 다시 발행한다고 설명했다. 그래도 DB 커밋과 수집기 전달은 서로 다른 쓰기라 위 간극은 남는다. 커밋 뒤 전달 전에 프로세스가 죽거나 버퍼를 둔 노드가 사라지면 이벤트를 잃는다([[Log-Pipeline|로그 파이프라인]]). 브로커 장애를 얼마나 견디는지도 설정에 달렸고, Fluent Bit과 librdkafka의 기본값은 유실 쪽에 가깝다.
+
+- 입력 버퍼의 기본값은 메모리다. SERVICE의 `storage.path`와 입력의 `storage.type filesystem`을 둬야 디스크에 남고, `storage.sync`를 기본 `normal` 대신 `full`로 둬야 Fluent Bit이 비정상 종료해도 파일 동기화가 보장된다.
+- Kafka 출력은 chunk의 레코드를 librdkafka 메모리 큐에 넣으면 바로 성공을 돌려줘 chunk가 Fluent Bit 버퍼에서 빠지고, 그 뒤의 전달 실패는 경고 로그로만 남긴다. librdkafka는 `message.timeout.ms`(기본 300000ms) 안에 전달하지 못한 메시지를 버리므로, 장애가 이보다 길면 파일시스템 버퍼, `Retry_Limit`, `storage.keep.rejected` 설정과 관계없이 큐에서 그 시간을 넘긴 메시지를 잃는다. 출력의 `rdkafka.message.timeout.ms`를 견딜 장애 시간보다 길게(0은 무제한) 두면 큐가 찬 뒤부터 출력이 재시도를 요청해 chunk가 버퍼에 남는다. 큐 상한(`queue.buffering.max.messages` 기본 100000개, `queue.buffering.max.kbytes` 기본 1048576 KB)까지는 메모리에만 있으므로 종료 때 `grace`(기본 5초) 안에 보내지 못하거나 비정상 종료하면 잃는다.
+- 엔진의 `Retry_Limit`(기본 1)는 출력이 재시도를 요청할 때만 쓰이고, 재시도를 다 쓴 chunk는 기본으로 버린다. 브로커 장애 중에 Kafka 출력이 재시도를 요청하는 것은 로컬 큐가 `queue_full_retries`(기본 10회, 1초 간격) 동안 계속 찼을 때이고, 그 밖의 produce 오류는 재시도 없이 chunk를 버린다. 한도를 늘리거나 `no_limits`로 두고, 버린 chunk를 남기려면 `storage.keep.rejected`를 켠다.
+- 출력별 `storage.total_limit_size`에 닿으면 가장 오래된 chunk부터 버린다. 상한은 견딜 장애 시간과 유입량으로 정한다.
+- Kafka 출력은 librdkafka 속성을 넘겨받는다. librdkafka의 `request.required.acks` 기본값은 -1(all)인데, Fluent Bit 문서가 권장 설정 예로 든 1로 두면 leader가 확인한 직후 복제 전에 장애가 날 때 메시지를 잃는다. chunk 중간에서 재시도하면 이미 큐에 넣은 레코드도 다시 보내고, librdkafka는 idempotence가 기본으로 꺼져 있어 재전송이 중복과 순서 바뀜을 만들 수 있으므로 소비자 멱등 처리는 그대로 필요하다.
+
 ## 해결: Outbox 테이블
 
 ```
@@ -167,6 +177,15 @@ Event Sourcing은 더 나아가 **상태 자체를 이벤트 스트림으로만 
 - [최상용 강사, 트랜잭션 이후 Kafka 이벤트 발행](https://www.inflearn.com/courses/lecture?courseId=337778&unitId=344376)
 - [우아한형제들 — 회원시스템 이벤트기반 아키텍처 구축하기](https://techblog.woowahan.com/7835/)
 - [우아한형제들 — 배민스토어에 이벤트 기반 아키텍처를 곁들인](https://techblog.woowahan.com/13101/)
+- [Fluent Bit, Buffering and storage](https://docs.fluentbit.io/manual/administration/buffering-and-storage)
+- [Fluent Bit, Scheduling and retries](https://docs.fluentbit.io/manual/administration/scheduling-and-retries)
+- [Fluent Bit, Service section](https://docs.fluentbit.io/manual/administration/configuring-fluent-bit/yaml/service-section)
+- [Fluent Bit, Kafka output plugin](https://docs.fluentbit.io/manual/pipeline/outputs/kafka)
+- [Fluent Bit, Dead letter queue](https://docs.fluentbit.io/manual/administration/dead-letter-queue)
+- [Fluent Bit GitHub — plugins/out_kafka/kafka.c (v5.1.3)](https://github.com/fluent/fluent-bit/blob/v5.1.3/plugins/out_kafka/kafka.c)
+- [librdkafka, Configuration properties](https://github.com/confluentinc/librdkafka/blob/master/CONFIGURATION.md)
+- [Apache Kafka Documentation, Producer Configs (4.3, acks와 enable.idempotence)](https://kafka.apache.org/43/configuration/producer-configs/)
+- [AWS Summit Korea 2022 — 2200만 사용자를 위한 채팅 시스템 아키텍처](https://www.youtube.com/watch?v=lCxgddyxDyg)
 
 ## 관련 문서
 - [[Transactional-Outbox-Relay|Outbox Relay 구현 방식 (Polling, CDC, DB 내장 변경 스트림)]]
@@ -178,3 +197,4 @@ Event Sourcing은 더 나아가 **상태 자체를 이벤트 스트림으로만 
 - [[MySQL-Job-Queue|MySQL 작업 큐 (lease와 SKIP LOCKED claim)]]
 - [[SQS-Worker-Reliability|SQS 워커 신뢰성 (좌초 회수, 재시도 간격)]]
 - [[MQ-Kafka|Kafka]]
+- [[Log-Pipeline|로그 파이프라인 (수집기 로컬 버퍼의 한계)]]

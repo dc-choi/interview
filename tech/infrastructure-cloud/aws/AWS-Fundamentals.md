@@ -53,7 +53,23 @@ AWS가 여러 AZ를 운영하는 **물리적 지리 영역**이다. Region과 AZ
 클라우드가 아닌 **자체 보유 전산실, IDC** 인프라. AWS와의 대비 용어로 자주 사용.
 
 - 하이브리드 구성 시 AWS와 On-Premise를 **VPN / Direct Connect**로 연결
-- AWS Outposts, Wavelength 등은 On-Premise, 엣지 영역에 AWS 서비스 일부를 확장한 형태
+- AWS Outposts는 고객 현장에 AWS 인프라를 배치하고, Wavelength는 통신 사업자 네트워크의 엣지에 배치한다. 두 서비스를 같은 온프레미스 배치로 취급하지 않는다.
+
+### 하이브리드 배치 위치와 운영 책임
+
+부분 검증(2026-10-14): AWS Outposts, Local Zones와 Wavelength 공식 문서 및 Outposts racks FAQ를 대조했다. 기존 문서 전체의 검증일은 유지한다.
+
+| 배치 방식 | 위치와 연결 경계 |
+|---|---|
+| Local Zones | 인구와 산업이 밀집한 지역 가까이에 일부 AWS 자원을 배치한다. 세부 네트워크와 지원 범위는 [[AWS-Local-Zones]]에서 확인한다. |
+| Wavelength | 통신 사업자 네트워크 엣지의 Zone에 배치하며, 연결된 Region의 제어 평면으로 관리한다. |
+| Outposts | 고객 현장의 컴퓨트와 스토리지 자원을 Region/AZ의 확장으로 운영한다. rack과 server의 서비스 지원 범위는 다르다. |
+
+Outposts rack의 **service link**는 Region과 관리 및 VPC 트래픽을 교환하는 암호화된 VPN 연결이다. 현장 네트워크 연결은 **local gateway**가 담당한다. 현장 배치만으로 Region 의존성이 사라지지는 않는다.
+
+Outposts racks는 지속적인 연결을 전제로 한다. 연결이 끊겨도 기존 EC2와 연결된 EBS는 로컬 접근을 계속할 수 있지만 인스턴스 생성, 시작, 중지와 종료 같은 제어 작업은 제한된다. 단절 중 EBS 하드웨어 장애가 발생하면 복제 중복성을 복구하지 못할 수 있으므로 독립 운영이나 내구성 보장으로 해석하지 않는다. 고객은 현장의 물리 보안, 출입 통제, 전력과 네트워크 환경을 책임진다.
+
+설계 검증 제안: 애플리케이션의 로컬 처리, Region API 호출, 로그 전송과 백업 경로를 나누어 연결 단절과 복구를 시험한다. 데이터의 현장 저장만으로 모든 관리 정보까지 현장을 떠나지 않는다고 가정하지 않는다. 실제 단절 시험은 수행하지 않았다.
 
 ## Edge Location
 
@@ -107,6 +123,12 @@ Out/In은 **stateless 워크로드**에 적합 (웹, API). Up/Down은 **DB, 캐�
 - 다중 AZ 설계는 가용성(HA) 패턴의 출발점 — RDS Multi-AZ, ELB Cross-AZ
 
 ## 출처
+
+- [AWS Outposts, What is AWS Outposts?](https://docs.aws.amazon.com/outposts/latest/userguide/what-is-outposts.html)
+- [AWS Outposts, Connectivity through service link](https://docs.aws.amazon.com/outposts/latest/userguide/service-links.html)
+- [AWS, AWS Outposts racks FAQs](https://aws.amazon.com/outposts/rack/faqs/)
+- [AWS Wavelength, What is AWS Wavelength?](https://docs.aws.amazon.com/wavelength/latest/developerguide/what-is-wavelength.html)
+- [AWS Local Zones, What is AWS Local Zones?](https://docs.aws.amazon.com/local-zones/latest/ug/what-is-aws-local-zones.html)
 
 2026-10-13 부분 대조: Region/AZ의 정의와 사용 가능 범위, CloudFront 캐시 경로의 예외, 서비스별 보안 책임을 확인했다. 기존 비용, CLI와 확장성 설명 전체를 재검증한 것은 아니므로 문서 전체의 기존 검증일은 유지한다.
 

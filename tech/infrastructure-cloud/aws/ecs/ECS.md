@@ -232,6 +232,14 @@ EC2 launch type에선 **Capacity Provider**가 ASG와 ECS를 묶음 — Task 부
 
 진단 제안: 호출 API, 리전, 클러스터와 서비스, 예외 이름을 한 묶음으로 확인한다. 컨테이너 애플리케이션이 반환한 HTTP 500을 ECS 관리 API의 `ServerException`으로 분류하지 않는다. 전자는 애플리케이션 로그와 요청 경로를, 후자는 실패한 AWS API 호출을 조사한다.
 
+### 중지된 태스크의 증거와 조회 기간
+
+부분 검증(2026-10-14): 중지 태스크 조회 가이드와 `DescribeTasks` API를 대조했다. 태스크의 `stopCode`, `stoppedReason`과 컨테이너별 `exitCode`, `reason`을 함께 확인한다. 서비스가 만든 태스크라면 같은 시점의 서비스 이벤트도 확인해 컨테이너 종료와 로드밸런서 헬스 체크 실패에 따른 교체를 구분한다.
+
+콘솔에는 중지된 태스크가 **1시간** 표시되지만, `DescribeTasks` API는 **최소 1시간** 결과에 남는다고 명시한다. API에서도 정확히 1시간 뒤 사라진다고 단정하거나, 그 이후 계속 조회된다고 가정하지 않는다. 장기 장애 분석에 필요한 정보는 조회 가능한 동안 별도 운영 기록에 보존한다(운영 제안).
+
+조회할 때 클러스터와 태스크 ARN, 리전을 맞춘다. EC2 또는 외부 인스턴스에서 실행한 태스크는 호스트의 컨테이너 런타임과 ECS agent 로그도 원인 확인에 쓸 수 있다. 이 절은 문서 대조이며 실제 태스크 중지나 복구 실험은 수행하지 않았다. 기존 절의 검증일은 유지한다.
+
 ### CannotPullContainerError 진단
 
 부분 검증(2026-10-13): 이미지 가져오기 오류와 지원 런북을 공식 문서와 대조했다. 앱 실행 전 이미지 확보 단계의 실패이므로 중지된 태스크의 구체적인 오류 메시지부터 확인한다.
@@ -266,6 +274,8 @@ EC2 launch type에선 **Capacity Provider**가 ASG와 ECS를 묶음 — Task 부
 - Task = **컨테이너 실행 최소 단위**(1개 이상 컨테이너 묶음), Fargate면 ENI/IP까지 Task 단위
 
 ## 출처
+- [AWS, Viewing Amazon ECS stopped task errors](https://docs.aws.amazon.com/AmazonECS/latest/developerguide/stopped-task-errors.html)
+- [AWS, DescribeTasks](https://docs.aws.amazon.com/AmazonECS/latest/APIReference/API_DescribeTasks.html)
 - [AWS, CapacityProviderStrategyItem](https://docs.aws.amazon.com/AmazonECS/latest/APIReference/API_CapacityProviderStrategyItem.html)
 - [Announcing the end-of-support for the AWS Copilot CLI — AWS Containers Blog](https://aws.amazon.com/blogs/containers/announcing-the-end-of-support-for-the-aws-copilot-cli/)
 - [AWS Copilot CLI — AWS](https://github.com/aws/copilot-cli) — 지원 종료 후 보안 패치와 기술 지원 중단 공지

@@ -1,6 +1,7 @@
 ---
 tags: [reliability, payment, security, domain]
 status: done
+verified_at: 2026-10-10
 category: "Reliability"
 aliases: ["Payment System Principles", "결제 시스템 원칙"]
 ---
@@ -154,6 +155,16 @@ PENDING → PAID → REFUND_REQUESTED → REFUNDED
 - 운영 확인이 필요하면 제공자가 허용하는 최소 금액, 테스트 계정과 취소 절차를 확인한다. 모든 결제 수단이 1원 거래를 허용하지 않는다.
 - 자동화된 결제 E2E 테스트 주기적 실행
 
+### 제휴 파일은 도착, 검증과 업무 반영을 나눈다
+
+정해진 시각에 제휴 파일이 온다고 가정한 배치는 전송 지연, 재전송과 정정 파일에 취약하다. 파일 도착을 계기로 처리를 시작하되, 도착 시각과 업무 기준일을 분리하고 기한 내 미수신도 감시한다. 아래는 결제 제휴 파일에 적용할 설계 기준이며, 2026-10-10 AWS 공식 문서와 대조한 서비스 제약을 포함한다.
+
+- **완전성 확인**: Transfer Family는 업로드 중단 시 S3에 부분 객체를 남길 수 있다. `ObjectCreated`만으로 원본 파일 전체가 도착했다고 판단하지 않고, 제공자와 합의한 크기, 건수나 체크섬으로 검증한다. 전송이 끝나도 데이터 내용의 정합성 검사는 별도로 필요하다.
+- **중복과 순서**: S3 알림은 최소 한 번 전달을 전제로 하며 도착 순서는 보장하지 않는다. `sequencer`는 같은 object key의 이벤트 순서 비교에만 사용한다. 서로 다른 파일의 업무 순서는 제휴사의 기준일과 정정 차수 등 별도 계약으로 판단한다.
+- **업무 반영**: 알림 중복과 제휴사의 정정 파일을 구분한다. 원본 식별자, 검증 결과와 처리 이력을 보존하고, 재처리가 중복 정산을 만들지 않도록 업무 멱등 키와 금액 대사를 연결한다. 정정은 기존 결과의 단순 재실행으로 처리하지 않는다.
+
+이벤트 기반 실행은 시작 조건을 개선하는 방식이다. 파일의 완전성, 정산의 정확성과 미수신 감시를 대신하지 않는다.
+
 ## 흔한 사고 사례
 
 - **클라이언트 금액 그대로 승인** → 0원, 음수 금액 결제로 공짜 재화
@@ -174,6 +185,13 @@ PENDING → PAID → REFUND_REQUESTED → REFUNDED
 ## 출처
 
 2026-10-01에는 제공자별 계약과 상충하던 단정 표현, DB와 외부 승인 경계, 조건부 갱신 실패 처리를 보완했다. 이 문서는 설계 지침이며 특정 PG의 모든 API를 검증한 명세가 아니다.
+
+2026-10-10에는 제휴 파일 처리 절의 AWS 동작을 대조했다. 나머지 결제 원칙 전체를 재검증한 날짜는 아니다.
+
+- [AWS, Transferring files over a server endpoint using a client](https://docs.aws.amazon.com/transfer/latest/userguide/transfer-file.html)
+- [AWS, Amazon S3 Event Notifications](https://docs.aws.amazon.com/AmazonS3/latest/userguide/EventNotifications.html)
+- [AWS, Event message structure](https://docs.aws.amazon.com/AmazonS3/latest/userguide/notification-content-structure.html)
+- [AWS Korea — 당근페이에서 새로운 서비스를 런칭하기까지의 여정](https://www.youtube.com/watch?v=0BblEFp3bAM) — 2025-01-17 업로드, 11~15분의 제휴 파일 도착 기반 배치 사례. 발표의 규제 해석과 다른 인프라 구성은 이번 보강 범위에서 제외했다.
 
 - [supims (brunch) — 안정적인 Node.js 기반 백엔드 시스템 7편 (결제 시스템)](https://brunch.co.kr/@supims/128)
 - [인프런, 제미니, 결제 - 코드 느끼기](https://www.inflearn.com/courses/lecture?courseId=339108&unitId=354112)

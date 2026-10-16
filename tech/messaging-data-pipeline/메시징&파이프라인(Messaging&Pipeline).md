@@ -28,6 +28,7 @@ aliases: ["메시징&파이프라인(Messaging&Pipeline)", "Messaging & Data Pip
 - [[Airflow-Task-Process-Model|Airflow 태스크 프로세스 모델]] — Python start method, COW, supervisor와 task runner, 메모리 측정
 - [[ELT-Platform|ELT 플랫폼 (셀프서비스 데이터 파이프라인)]] — 정의와 실행을 DSL로 분리, 동적 DAG 생성, DB→DWH 대량 복제(JDBC 파티셔닝), 재실행과 데이터 품질 검사, Build vs Buy
 - [[Inventory-Data-Pipeline|재고 데이터 파이프라인]] — 옴니채널 재고 병목 3종, 기초재고 배치 파티셔닝, 임계 경로 최소화 + Kafka 팬아웃, Push/Pull 하이브리드 전달
+- [[Ad-Bid-Log-Pipeline|광고 입찰 로그 파이프라인]] — 입찰 응답과 로그 분석 경로 분리, OpenRTB 요청과 통지의 연결 키, 수집 방식과 리전 간 복제 비교, Parquet 전환과 공유 카탈로그, IA 전환과 쿼리 결과 재사용 조건
 
 ## 관련 (아키텍처 카테고리 — 어떻게 설계)
 

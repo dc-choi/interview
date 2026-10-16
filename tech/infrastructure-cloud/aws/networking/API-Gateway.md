@@ -80,11 +80,27 @@ HTTP API는 더해 **JWT Authorizer**(Cognito 외 다른 OIDC IdP)를 네이티�
 - **CloudWatch Logs** — 메서드/스테이지별 액세스 로그
 - **X-Ray** — 분산 추적. Gateway → Lambda → DynamoDB 호출 체인 시각화
 
+### 요청 ID로 실패 요청 찾기
+
+2026-10-07 공식 문서 기준, API 종류에 따라 응답 헤더와 로그 지원 범위를 구분한다.
+
+| 대상 | 수집할 값 | 주의점 |
+|---|---|---|
+| REST API 요청 ID | `x-amzn-RequestId`, 로그의 `$context.requestId` | 클라이언트가 유효한 UUID로 덮어쓸 수 있어 단독 식별 근거로 신뢰하지 않는다 |
+| REST API 확장 요청 ID | `x-amz-apigw-id`, 로그의 `$context.extendedRequestId` | API Gateway가 생성하며 호출자가 덮어쓸 수 없다 |
+| HTTP API 응답 | `apigw-requestid` | REST API 헤더명으로 찾지 않는다. 실행 로그를 지원하지 않아 액세스 로그나 응답 헤더를 확인한다 |
+
+- REST API 액세스 로그 형식에는 두 ID를 함께 넣는다. 실행 로그와 액세스 로그는 별도로 활성화하며, 응답 헤더는 브라우저 Network 탭이나 `curl -v`로 확인할 수 있다.
+- REST API의 CloudWatch 로그 권한은 `apigateway.amazonaws.com`을 신뢰하는 IAM 역할과 리전별 `cloudWatchRoleArn` 설정을 확인한다. 해당 리전의 STS도 활성화되어 있어야 한다.
+- 로그가 없으면 요청이 해당 API와 stage에 도달했는지, 액세스 로그가 켜졌는지부터 확인한다. 액세스 로그는 도달한 요청의 인증, 인가, 스로틀링과 WAF 거절도 포함하므로 로그 부재만으로 정상 처리라고 판단하지 않는다.
+
+이 절의 요청 식별과 로깅 조건만 대조했으며 기존 기능과 quota 전체를 재검증한 것은 아니다.
+
 ## 실무 패턴
 
 - **서버리스 3종 세트** — API Gateway + Lambda + DynamoDB
 - **정적 + 동적 분리** — CloudFront로 정적 S3, 동적은 API Gateway → Lambda
-- **백엔드 보호** — Throttling, API Key, WAF로 DoS, 악성 호출 차단
+- **백엔드 보호** — 인증과 인가, Throttling, WAF를 조합한다. API Key는 사용량 식별용이며 접근 통제를 대신하지 않는다
 - **마이크로서비스 게이트웨이** — VPC Link로 내부 ECS/EKS 서비스 묶기
 - **WebSocket 실시간** — 연결 ID를 DynamoDB에 저장, fanout은 Gateway Management API로
 
@@ -100,6 +116,9 @@ HTTP API는 더해 **JWT Authorizer**(Cognito 외 다른 OIDC IdP)를 네이티�
 - API Gateway + CloudFront + WAF + Lambda 조합의 역할 분담
 
 ## 출처
+- [AWS 공식 문서, Access logging for REST APIs](https://docs.aws.amazon.com/apigateway/latest/developerguide/set-up-access-logging.html)
+- [AWS 공식 문서, Set up CloudWatch logging for REST APIs](https://docs.aws.amazon.com/apigateway/latest/developerguide/set-up-logging.html)
+- [How do I collect API Gateway extended request IDs? — AWS re:Post](https://repost.aws/knowledge-center/collect-api-gateway-extended-request-ids)
 - AWS SAA C03 학습 자료 (로컬)
 - [Amazon API Gateway 공식 문서](https://docs.aws.amazon.com/apigateway/)
 - [AWS 공식 문서, Amazon API Gateway quotas](https://docs.aws.amazon.com/apigateway/latest/developerguide/limits.html)

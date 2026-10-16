@@ -62,6 +62,16 @@ RA3에서 RG로 이동할 때 필요한 최소 patch는 대상 노드 타입과 
 
 ## COPY, UNLOAD
 
+### 다른 DW에서 이전할 때 확인할 계약
+
+2026-10-07 공식 문서 확인 기준. Oracle 등에서 SQL과 데이터를 옮길 때는 적재 성공, 결과 정합성과 분산 실행 성능을 따로 확인한다.
+
+- **키 제약:** Redshift의 UNIQUE, PRIMARY KEY와 FOREIGN KEY는 적재 시 강제되지 않지만 쿼리 계획의 힌트로 쓰인다. 실제로 유일하지 않은 키를 선언하면 잘못된 결과가 나올 수 있으므로 적재 과정에서 무결성을 보장할 때만 선언한다. NOT NULL은 강제된다.
+- **분산 설계:** 공통 조인 키로 행을 함께 배치하면 재분산을 줄일 수 있다. 다만 테이블당 분산 키는 하나이며, 전체 행 수보다 필터 후 조인 데이터의 크기와 키 분포를 본다. AUTO도 비교 대상으로 둔다.
+- **전환 검증:** 위 차이를 반영해 중복 키, 참조 누락, null과 대표 집계 결과를 이전 전후로 비교한다. 실행 계획의 데이터 재분산과 지연도 함께 측정한다. 이는 마이그레이션에 적용할 점검 절차이며 특정 고객 사례의 성능 개선을 보장하는 수치가 아니다.
+
+### 대량 적재와 내보내기
+
 - **COPY**: S3, DynamoDB, EMR, 원격 호스트의 텍스트 출력 등 지원 소스에서 병렬 로드한다. 외부의 대량 데이터를 적재할 때 개별 `INSERT`보다 COPY를 우선 검토한다. 데이터가 이미 Redshift 테이블에 있으면 `INSERT INTO ... SELECT`나 CTAS가 더 적합할 수 있으므로 항상 COPY인 것은 아니다.
 - **UNLOAD**: Redshift 쿼리 결과를 **S3로 병렬 export**. Parquet/CSV 등 포맷 지원. 다운스트림(Spark, Athena 등)에 데이터 넘길 때 사용.
 
@@ -144,6 +154,8 @@ Iceberg 데이터를 Redshift 내부 테이블로 가져올 때는 `INSERT INTO 
 
 ## 출처
 
+- [Table constraints](https://docs.aws.amazon.com/redshift/latest/dg/t_Defining_constraints.html) — 이전 검증 절의 부분 검증
+- [Choose the best distribution style](https://docs.aws.amazon.com/redshift/latest/dg/c_best-practices-best-dist-key.html) — 조인과 분산 키 선택
 - [CREATE TABLE과 DISTSTYLE](https://docs.aws.amazon.com/redshift/latest/dg/r_CREATE_TABLE_NEW.html)
 - [COPY를 사용한 테이블 로드](https://docs.aws.amazon.com/redshift/latest/dg/t_Loading_tables_with_the_COPY_command.html)
 - [Redshift Spectrum 개요와 배포별 실행 모델](https://docs.aws.amazon.com/redshift/latest/dg/c-spectrum-overview.html)

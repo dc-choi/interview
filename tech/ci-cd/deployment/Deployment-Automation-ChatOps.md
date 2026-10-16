@@ -8,7 +8,7 @@ verified_at: 2026-08-28
 
 # 배포 자동화와 ChatOps
 
-배포, 운영 명령을 **Slack, Teams 같은 채팅 도구에서 실행**하는 패턴. 배포 승인, 상태 확인, 롤백을 사람이 콘솔을 열지 않고 채팅 하나로 수행해 속도, 투명성을 모두 잡는다. CI/CD 파이프라인은 "자동화가 가능한 일을 자동화"하고, ChatOps는 "사람의 개입이 필요한 부분을 투명하게 만든다."
+배포, 운영 명령을 **Slack, Teams 같은 채팅 도구에서 실행**하는 패턴. 배포 승인, 상태 확인, 롤백을 채팅에 연결해 진행 상황을 공유한다. CI/CD 파이프라인이 반복 작업을 자동화한다면, ChatOps는 사람의 요청과 승인 과정을 같은 공간에 남긴다.
 
 ## 왜 ChatOps인가
 
@@ -92,6 +92,29 @@ Bot Backend (Lambda, 자체 서버)
 | **Opsgenie, PagerDuty 연동** | 장애 알림, 온콜 배정에 특화 |
 | **자체 봇(Bolt, Slack SDK)** | 완전한 커스터마이징, 개발 부담 큼 |
 
+## 에이전트 배포의 인터페이스와 승인 경계
+
+CLI와 MCP는 배포 시스템에 들어오는 경로이고, 에이전트는 그 경로를 사용하는 주체다. 아래는 도구 선택과 권한 설계를 위한 점검 기준이다.
+
+| 실행 조건 | 확인할 경계 |
+|---|---|
+| 로컬 CLI | 바이너리 설치, 버전과 샌드박스 호환성, 실제로 사용하는 사용자 자격 증명 |
+| 여러 사람이 사용하는 서버 에이전트 | 요청한 사람, 실행 서비스와 대상 리소스 권한의 연결. 공용 서비스 토큰만으로 최종 사용자를 식별했다고 보지 않음 |
+| HTTP 기반 MCP | 클라이언트와 서버가 지원하는 인가 흐름, 사용자별 토큰과 서버의 권한 검사 |
+
+2026-10-08에 대조한 MCP 2025-11-25 명세의 인가는 선택 기능이다. HTTP 전송의 인가 흐름을 정의하며, stdio는 환경에서 자격 증명을 얻는 방식을 권고한다. MCP를 붙였다는 사실만으로 사용자 식별이나 배포별 권한 통제가 완성되지는 않는다.
+
+배포 승인은 프롬프트만으로 통제하지 않고 실행 시스템에서 검사한다. GitHub Actions를 쓰는 경우 같은 날 공식 문서 기준으로 다음 경계를 확인한다.
+
+- `environment`를 참조하는 job에 required reviewers를 설정하면 승인 전 실행을 기다린다. 나열한 reviewer 전원이 아니라 한 명의 승인으로 진행한다.
+- 자기 승인 방지를 켜면 배포를 시작한 사용자는 해당 job을 승인할 수 없다. 관리자 우회는 기본 허용이므로 우회 금지도 별도로 설정한다.
+- 승인이 필요한 environment의 secrets는 승인 전 job에서 접근할 수 없다. 다른 경로로 부여한 자격 증명까지 이 설정이 회수하지는 않는다.
+- GitHub Free, Pro와 Team에서는 required reviewers가 public 저장소에만 제공된다. private 저장소에서는 플랜과 지원 기능을 먼저 확인한다.
+
+CLI와 MCP의 성능은 동일한 배포 작업, 모델, 제공 절차와 성공 조건으로 비교한다. 호출 시간뿐 아니라 오류, 재시도, 잘못된 대상 선택과 승인 누락을 함께 센다. 도구 이름만으로 속도나 토큰 비용의 우열을 정하지 않는다. 이는 비교 실험의 설계 기준이며 특정 도구의 우위를 보장하는 제품 사양이 아니다.
+
+이 절만 부분 검증했으며 기존 Slack 연동 전체의 검증일은 갱신하지 않았다.
+
 ## 면접 체크포인트
 
 - ChatOps가 해결하는 **투명성, 감사 로그, 진입 장벽** 문제
@@ -101,6 +124,8 @@ Bot Backend (Lambda, 자체 서버)
 - Slack App의 **raw body 서명, timestamp, 중복 요청 검증과 RBAC**로 봇을 안전하게 운영하는 방법
 
 ## 출처
+- [GitHub Docs, Deployments and environments](https://docs.github.com/en/actions/reference/workflows-and-actions/deployments-and-environments)
+- [Model Context Protocol, Authorization (2025-11-25)](https://modelcontextprotocol.io/specification/2025-11-25/basic/authorization)
 - [Slack Developer Docs, Verifying requests from Slack](https://docs.slack.dev/authentication/verifying-requests-from-slack/)
 - [Slack Developer Docs, Events API](https://docs.slack.dev/apis/events-api/)
 - [카카오페이 — 배포 효율화 1년 회고: 자동화 도입과 팀 생산성 향상](https://tech.kakaopay.com/post/slack-bot-improving-operational-efficiency-2/)

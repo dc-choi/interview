@@ -49,7 +49,7 @@ aliases: ["Blue-Green Deployment", "Blue-Green 배포", "블루 그린 배포"]
 | **Rolling Update** | 인스턴스를 **하나씩 교체** | 추가 자원 최소, K8s 기본 |
 | **Shadow/Dark Launch** | 새 버전에 **읽기 트래픽만 미러** | 프로덕션 데이터로 검증, 응답은 버림 |
 
-Blue-Green은 "전환이 0-1 binary"인 반면 Canary는 "연속적". 둘은 결합 가능(Green을 Canary처럼 비중 조절).
+Blue-Green은 트래픽을 0%에서 100%로 한 번에 넘기는 전환인 반면 Canary는 비율을 단계적으로 올린다. 둘은 결합 가능(Green을 Canary처럼 비중 조절).
 
 ## 구현 패턴
 
@@ -69,6 +69,27 @@ Blue-Green은 "전환이 0-1 binary"인 반면 Canary는 "연속적". 둘은 결
 - **Service selector 교체** — `app=myapp-v2` 라벨로 selector 변경
 - **Ingress 백엔드 교체** — v1 Service에서 v2 Service로 라우트 전환
 - **Argo Rollouts / Flagger** — CRD로 Blue-Green, Canary 자동화
+
+### Amazon ECS 방식
+
+2026-10-14 ECS와 CodeDeploy 공식 문서 대조 기준이다. ECS 서비스의 blue/green은 ECS 기본 기능과 CodeDeploy의 두 경로가 있다. 두 경로 모두 green을 원하는 태스크 수만큼 띄우고, 테스트 트래픽(설정한 경우)으로 검증한 뒤 운영 트래픽을 옮기고, blue를 일정 시간 남겨 두었다가 정리한다.
+
+| 축 | ECS 기본 blue/green | CodeDeploy blue/green |
+|---|---|---|
+| 설정 | 배포 컨트롤러 `ECS`, `strategy: BLUE_GREEN` | 배포 컨트롤러 `CODE_DEPLOY`, CodeDeploy 애플리케이션과 배포 그룹, AppSpec |
+| 테스트 트래픽 | 선택 사항. ALB는 리스너 규칙 단위(헤더, 경로 같은 요청 속성 조건)라 운영과 같은 리스너도 가능. NLB는 다른 포트의 별도 테스트 리스너 | 선택 사항인 별도 테스트 리스너 |
+| 운영 트래픽 이동 | `BLUE_GREEN`은 한 번에 전환. 단계적 이동은 `LINEAR`, `CANARY` 전략 | 배포 구성(`CodeDeployDefault.ECSAllAtOnce`, `CodeDeployDefault.ECSCanary10Percent5Minutes`, `CodeDeployDefault.ECSLinear10PercentEvery1Minutes` 등). NLB는 `CodeDeployDefault.ECSAllAtOnce`만 |
+| 검증 hook | 단계별 Lambda hook과 pause hook | AppSpec의 Lambda hook |
+| blue 유지 | `bakeTimeInMinutes`(0~1440분) | termination wait time(최대 2880분) |
+| 연결 대상 | ELB, Service Connect, VPC Lattice, 여러 대상 그룹. 헤드리스 서비스는 트래픽 전환 없이 태스크만 교체 | ALB 또는 NLB만 |
+
+- **CodeDeploy hook 순서**: `BeforeInstall` → Install(replacement task set 생성) → `AfterInstall` → AllowTestTraffic → `AfterAllowTestTraffic` → `BeforeAllowTraffic` → AllowTraffic → `AfterAllowTraffic`. `BeforeInstall`에서는 롤백할 수 없고 그 뒤 hook의 결과는 롤백을 일으킬 수 있다. 테스트 리스너가 없으면 `AfterAllowTestTraffic`을 건너뛴다. hook Lambda는 `PutLifecycleEventHookExecutionStatus`로 `Succeeded`나 `Failed`를 보고하며, 1시간 안에 보고하지 않으면 배포가 실패한다.
+- **ECS 기본 hook**: Lambda hook은 응답의 `hookStatus`로 `SUCCEEDED`, `FAILED`, `IN_PROGRESS`를 돌려준다. 호출마다 15분 안에 끝내거나 `IN_PROGRESS`를 반환해야 하고, 단계 하나가 24시간에 이르면 시간 초과로 배포가 실패하고 롤백된다. 예외로 pause hook은 시간 한도를 최대 14일까지 설정할 수 있고, 배포 전체의 한도는 30일이다. pause hook은 `ContinueServiceDeployment`를 호출할 때까지 멈추며 수동 승인이나 외부 테스트를 끼울 때 쓴다. `TEST_TRAFFIC_SHIFT`와 `PRODUCTION_TRAFFIC_SHIFT`에는 Lambda hook만 둘 수 있다.
+- **롤백 창**: CodeDeploy는 원래 task set으로 트래픽을 다시 돌려 롤백하고, 대기 시간 동안 배포 그룹의 CloudWatch 알람을 계속 감시해 자동 롤백할 수 있다. 원래 task set 종료가 시작되면 수동이든 자동이든 롤백할 수 없다. CDK construct의 기본 대기 시간은 0이라 운영 트래픽 전환 직후 blue를 종료한다. ECS 기본 blue/green도 bake time이 끝날 때까지 blue를 유지하며, 그동안 두 리비전이 함께 떠 있어 자원 사용량이 최대 2배가 될 수 있다.
+- **NLB 대기**: ECS 기본 blue/green에서 NLB를 쓰면 `TEST_TRAFFIC_SHIFT`와 `PRODUCTION_TRAFFIC_SHIFT` 단계에 트래픽 전환이 안전한지 확인하는 10분이 더 걸린다.
+- **선택**: AWS DevOps Blog(2026-02)는 대부분의 팀과 새 프로젝트에 ECS 기본 blue/green을 권하고, 기존 사용자나 CodePipeline 의존성이 있는 경우 CodeDeploy도 유효한 선택이라고 설명한다. 전환할 때는 hook의 결과 보고 방식과 시간 한도, 테스트 트래픽 경로가 다르므로 검증 함수와 리스너 구성을 함께 옮긴다(운영 제안).
+
+롤링 배포의 용량 산술과 deployment circuit breaker는 [[ECS-Rolling-Deployment|ECS 롤링 배포]], 파이프라인 단계와 bake time 설계는 [[Safe-Deployment-Pipeline|안전한 자동 배포 파이프라인]]에 있다.
 
 ## DB 스키마, 공유 상태의 난제
 
@@ -105,14 +126,31 @@ Blue-Green은 "전환이 0-1 binary"인 반면 Canary는 "연속적". 둘은 결
 - DNS 전환이 LB 전환보다 열악한 이유(TTL, 클라이언트 캐시)
 - WebSocket, sticky session의 전환 이슈
 - Kubernetes에서 Service selector로 Blue-Green을 구현하는 방법
+- ECS에서 CodeDeploy의 termination wait time과 ECS 기본 blue/green의 bake time이 롤백 창을 어떻게 정하는지
 
 ## 출처
 - [ninanung gist — 서버 무중단 배포 방식(In-Place vs Blue-Green)](https://gist.github.com/ninanung/9d63304cb0d070642e89f9b94b6fe24b)
 - [AWS CodeDeploy — In-place and blue/green deployments](https://docs.aws.amazon.com/codedeploy/latest/userguide/deployments.html)
+- [Amazon ECS — Amazon ECS blue/green deployments](https://docs.aws.amazon.com/AmazonECS/latest/developerguide/deployment-type-blue-green.html)
+- [Amazon ECS — Amazon ECS blue/green service deployments workflow](https://docs.aws.amazon.com/AmazonECS/latest/developerguide/blue-green-deployment-how-it-works.html)
+- [Amazon ECS — Lifecycle hooks for Amazon ECS service deployments](https://docs.aws.amazon.com/AmazonECS/latest/developerguide/deployment-lifecycle-hooks.html)
+- [Amazon ECS — DeploymentConfiguration API](https://docs.aws.amazon.com/AmazonECS/latest/APIReference/API_DeploymentConfiguration.html)
+- [Amazon ECS — AdvancedConfiguration API](https://docs.aws.amazon.com/AmazonECS/latest/APIReference/API_AdvancedConfiguration.html)
+- [Amazon ECS — Network Load Balancer resources for Amazon ECS blue/green, linear and canary deployments](https://docs.aws.amazon.com/AmazonECS/latest/developerguide/nlb-resources-for-blue-green.html)
+- [AWS CloudFormation — AWS::ECS::Service DeploymentConfiguration](https://docs.aws.amazon.com/AWSCloudFormation/latest/TemplateReference/aws-properties-ecs-service-deploymentconfiguration.html)
+- [AWS CodeDeploy — Deployments on an Amazon ECS compute platform](https://docs.aws.amazon.com/codedeploy/latest/userguide/deployment-steps-ecs.html)
+- [AWS CodeDeploy — AppSpec hooks section](https://docs.aws.amazon.com/codedeploy/latest/userguide/reference-appspec-file-structure-hooks.html)
+- [AWS CodeDeploy — Working with deployment configurations](https://docs.aws.amazon.com/codedeploy/latest/userguide/deployment-configurations.html)
+- [AWS CodeDeploy — BlueInstanceTerminationOption API](https://docs.aws.amazon.com/codedeploy/latest/APIReference/API_BlueInstanceTerminationOption.html)
+- [AWS CDK — EcsBlueGreenDeploymentConfig](https://docs.aws.amazon.com/cdk/api/v2/docs/aws-cdk-lib.aws_codedeploy.EcsBlueGreenDeploymentConfig.html)
+- [AWS Containers Blog — Migrating from AWS CodeDeploy to Amazon ECS for blue/green deployments](https://aws.amazon.com/blogs/containers/migrating-from-aws-codedeploy-to-amazon-ecs-for-blue-green-deployments/)
+- [AWS DevOps Blog — Choosing between Amazon ECS Blue/Green Native or AWS CodeDeploy in AWS CDK](https://aws.amazon.com/blogs/devops/choosing-between-amazon-ecs-blue-green-native-or-aws-codedeploy-in-aws-cdk/)
 - [Sungmin Kim 강사 — CodeDeploy](https://www.inflearn.com/courses/lecture?courseId=325381&unitId=66574)
 
 ## 관련 문서
 - [[CICD-Basics|CI/CD 기초]]
+- [[Safe-Deployment-Pipeline|안전한 자동 배포 파이프라인]]
+- [[ECS-Rolling-Deployment|ECS 롤링 배포]]
 - [[Canary|Canary 배포]]
 - [[Zero-Downtime-Deployment|무중단 배포]]
 - [[Schema-Versioning|스키마 버전 관리]]

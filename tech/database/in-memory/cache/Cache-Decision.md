@@ -28,6 +28,7 @@ aliases: ["Cache Decision", "캐시 도입 의사결정", "캐시 제거"]
 | 원본 조회 비용 | 무거운 조인, 집계, 외부 API | 단일 PK 조회 |
 | 정합성 요구 | 분/시간 단위 stale 허용 | 즉시성 필수 (가격, 재고) |
 | 변경 빈도 | 거의 안 바뀜 | 자주 바뀜 |
+| 항목 크기 | 파일 메타데이터(위치, 크기, 형식), 계산 결과처럼 작은 값 | 이미지, 동영상 같은 파일 바이트. 메모리 비용이 크므로 object storage에 두고 [[CDN]]의 edge 캐시로 전송 |
 
 **의사결정 휴리스틱**: 히트율 추정 × 원본 조회 절감 비용 > 정합성 + 운영 부담. 어긋난 가격으로 인한 CS 한 건이 캐시 절감 비용을 압도하는 도메인이라면 도입 자체를 다시 봐야 한다.
 
@@ -152,6 +153,7 @@ Write-Through는 read-after-write freshness를 높이는 후보이지 정합성�
 - [Microsoft Learn, Caching guidance](https://learn.microsoft.com/en-us/azure/architecture/best-practices/caching)
 - [캐시(Redis)는 언제 도입하나 — Threads, bear_dba](https://www.threads.com/@bear_dba/post/DaZGCIGmELs)
 - [인프런, Hong, 캐시는 왜 필요할까?? 그리고 SET 명령어 옵션으로 다루는 TTL](https://www.inflearn.com/courses/lecture?courseId=343676&unitId=481441)
+- [Fundamentals of Backend Architecture - How to Design Scalable Software — YouTube, Tiago](https://www.youtube.com/watch?v=Qa-7iWxDz1A)
 
 ## 관련 문서
 - [[Cache-Strategies|Cache 전략 (5가지)]]
@@ -162,3 +164,4 @@ Write-Through는 read-after-write freshness를 높이는 후보이지 정합성�
 - [[Multi-Level-Cache|Multi-Level Cache]]
 - [[Read-Replica-Routing|Read Replica 라우팅]]
 - [[Redis-vs-Memcached|Redis와 Memcached 비교]]
+- [[CDN|CDN (파일 바이트의 edge 캐시)]]

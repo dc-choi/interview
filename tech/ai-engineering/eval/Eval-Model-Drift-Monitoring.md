@@ -70,7 +70,7 @@ NerfBench(Nerf Bench)는 BridgeMind가 만든 BridgeBench의 일부로, 모델�
 - 자동 채점 카나리 세트를 실제 경로로 정기 실행하고, 정답률, 과제당 출력 토큰, 비용, 지연을 고정 기준과 최근 회차 양쪽에 비교하는가. 정답률은 별도 게이트인가.
 - 출력 언어 불일치, 스키마 위반, 거절과 잘림 비율 같은 값싼 결정론 검사를 함께 보는가. 2025년 TPU 설정 오류는 영어 질문에 태국어나 중국어 문자가 섞이는 형태로 나타났다([[LLM-Failure-Handling]]).
 - 경보를 연속 회차 확인으로 걸고, 대역 폭을 실제로 잰 흔들림에서 정했는가.
-- 폴백 모델과 판정 모델도 같은 카나리 세트를 도는가([[LLM-Failure-Handling#폴백과 기능 저하|폴백 경로 eval]], [[Eval-LLM-Judge]]).
+- 폴백 모델과 판정 모델도 같은 카나리 세트를 도는가([[LLM-Failure-Handling-Recovery#폴백과 기능 저하|폴백 경로 eval]], [[Eval-LLM-Judge]]).
 - 공개 추적 보드는 방향 신호로만 쓰고 결정은 내 세트로 내리는가.
 
 경보가 울리면 원인 층을 다음 순서로 좁힌다.
@@ -121,7 +121,7 @@ NerfBench(Nerf Bench)는 BridgeMind가 만든 BridgeBench의 일부로, 모델�
 - [[Eval-Golden-Set-and-Deploy-Gates|골든셋과 배포 관문 (내 변경의 회귀, 베이스라인과 표류)]]
 - [[Eval-LLM-Judge|LLM 판정기 (판정 모델 교체와 스냅샷 은퇴)]]
 - [[LLM-Eval-Strategy|LLM 평가 전략 (성능 비고정성과 반복 측정)]]
-- [[LLM-Failure-Handling|LLM 실패 처리 (200 응답 안의 의미적 실패 지표, 폴백 경로 eval)]]
+- [[LLM-Failure-Handling-Recovery|LLM 실패 처리 (200 응답 안의 의미적 실패 지표, 폴백 경로 eval)]]
 - [[Load-Test-Automation|부하 테스트 자동화 (고정 베이스라인과 롤링 기준의 표류)]]
 - [[Canary|Canary 배포 (동시 baseline 비교와 판정 기준)]]
 - [[AI-Coding-Agent-Usage-Telemetry|AI 코딩 에이전트 사용량 관측 (토큰과 비용 기록)]]

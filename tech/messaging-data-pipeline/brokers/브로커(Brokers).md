@@ -16,6 +16,8 @@ SQS, SNS, EventBridge, Kafka, RabbitMQ, Redis — 주요 메시지 브로커.
   - [[SQS-Worker-Reliability|워커 신뢰성 (재시도 간격 원시 기능, 가시성 하트비트, PROCESSING 좌초 회수)]]
 - [x] [[SNS|SNS (Topic, Fan-out, Filter, SNS+SQS, SNS vs EventBridge)]]
   - [[SNS-Email-SES|이메일 알림과 SES 선택 (구독 확인, sandbox, 메일 수신, 반송과 불만 처리)]]
+    - [[SES-Sender-Authentication|SES 발신 인증과 전달성 (identity, DKIM, SPF, DMARC, 대량 발신자 요구사항, 전용 IP, 평판 지표)]]
+    - [[SES-Suppression-and-Subscription|SES 억제 목록과 구독 관리 (계정과 configuration set 억제, 연락처 목록, one-click 수신 거부)]]
 - [x] [[EventBridge|EventBridge (이벤트 버스 3종, Rules/Targets, Scheduler, Archive & Replay, vs SNS)]]
   - [[EventBridge-Event-Patterns|이벤트 패턴 매칭 (연산자 문법, 매칭 규칙, $or, 테스트)]]
   - [[EventBridge-SQS-Target|EventBridge → SQS 타겟 패턴 (리소스 정책, 메시지 구조, 컨슈머, 2단 DLQ)]]

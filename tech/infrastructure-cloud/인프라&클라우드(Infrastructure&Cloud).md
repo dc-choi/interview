@@ -14,10 +14,13 @@ aliases: ["인프라&클라우드(Infrastructure&Cloud)", "Infrastructure & Clou
 - [[tech/infrastructure-cloud/container/컨테이너(Container)|컨테이너 (Container)]] — Docker, Compose, 컨테이너 내부 구조, 이미지 빌드와 베이스 이미지 선택
 - [[tech/infrastructure-cloud/aws/AWS서비스(AWSServices)|AWS 서비스 (AWS)]] — EC2/ASG/ALB, Lambda, ALB 5XX와 NLB TCP 연결 진단
 - [[tech/infrastructure-cloud/network/인프라네트워크(InfraNetwork)|인프라 네트워크 (Network)]] — DNS, Load Balancer, Reverse Proxy
-- [[tech/infrastructure-cloud/k8s/k8s|Kubernetes]] — workload와 Service, 설정과 storage, traffic 진입과 배포, 리소스 적정화
+- [[tech/infrastructure-cloud/k8s/k8s|Kubernetes]] — workload와 Service, 설정과 storage, traffic 진입과 배포, 리소스 적정화, CKA 운영 실습
 - [[tech/infrastructure-cloud/istio-ambient/istio-ambient|Istio Ambient (Service Mesh)]] — ztunnel, waypoint, HBONE, 업그레이드와 장애 대응
 
 ## AWS 체크리스트
+- [x] [[SageMaker-Lakehouse|SageMaker Lakehouse]] — S3/RMS, 카탈로그와 엔진별 기능, Lake Formation의 공유 데이터 권한
+- [x] [[Redshift#다른 DW에서 이전할 때 확인할 계약|Redshift 마이그레이션 검증]] — 키 제약의 비강제, 분산 설계와 결과 비교
+- [x] [[EKS#Linux IPv4 Prefix Delegation의 용량 경계|EKS Linux IPv4 prefix]] — 연속 주소 공간, warm pool과 max-pods
 - [x] [[FSx#S3 access point로 파일 데이터에 접근하기|FSx ONTAP의 S3 접근]] — 파일 복사 없는 접근, 이중 인가와 S3 기능 호환성
 - [x] [[AWS-Local-Zones|AWS Local Zones]] — 네트워크 경로, 서비스 지원과 추론 전체 지연의 구분
 - [x] [[RDS-Aurora-Architecture#Global Database의 대기 구성과 전환 준비|Aurora 글로벌 복구 준비]] — headless의 컴퓨트 준비, switchover와 failover, global writer와 proxy 전환

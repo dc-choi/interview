@@ -70,6 +70,8 @@ docs/56-runbook
 
 PR이 커졌다면 무조건 파일을 쪼개기보다 리뷰 가능한 선행 refactor, 스키마, 기능과 후속 정리로 나눌 수 있는지 판단한다. 동작이 함께 배포되어야 하거나 분할이 더 위험하면 큰 이유와 리뷰 순서를 명시한다.
 
+새 기능, 기존 서비스 리팩터링, 스키마 변경, 화면 수정과 재시도 로직 변경이 한 PR에 섞이면 모두 정상 동작하더라도 검토하기 어렵고, 문제가 생겼을 때 원인이 된 변경을 가리거나 한 부분만 되돌리기도 어렵다. 큰 변경은 제출 뒤 다른 변경이 같은 파일을 고칠 가능성도 커서, 되돌릴 때 그 사이의 변경까지 함께 되돌려야 할 수 있다. 리팩터링은 기능 추가나 버그 수정과 다른 PR로 내는 것을 기본으로 하되, 지역 변수 이름 수정 같은 작은 정리는 함께 넣을 수 있다.
+
 ## Issue 연결과 자동 닫힘
 
 GitHub에서 PR 본문에 `Closes #12`, `Fixes #12`, `Resolves #12` 같은 keyword를 쓰면 PR이 해당 저장소의 default branch에 merge될 때 연결된 이슈가 자동으로 닫힌다.
@@ -135,10 +137,12 @@ Hotfix 출발점과 되돌려 합칠 branch는 실제 배포 branch 전략으로
 - GitHub 공식 문서: [Pull requests](https://docs.github.com/en/pull-requests/reference/pull-requests), [Linking a pull request to an issue](https://docs.github.com/en/issues/tracking-your-work-with-issues/using-issues/linking-a-pull-request-to-an-issue), [About Projects](https://docs.github.com/en/issues/planning-and-tracking-with-projects/learning-about-projects/about-projects)
 - GitHub 공식 문서: [Configuring a remote for a fork](https://docs.github.com/en/pull-requests/how-tos/work-with-forks/configuring-a-remote-repository-for-a-fork), [About rulesets](https://docs.github.com/en/repositories/configuring-branches-and-merges-in-your-repository/managing-rulesets/about-rulesets)
 - [Conventional Commits 1.0.0](https://www.conventionalcommits.org/en/v1.0.0/)
+- [Google Engineering Practices, Small CLs](https://google.github.io/eng-practices/review/developer/small-cls.html)
 - [How to Contribute to Open Source — Open Source Guides](https://opensource.guide/how-to-contribute/)
 - [AI Policy — Apache Lucene](https://github.com/apache/lucene/blob/main/AI_POLICY.md)
+- [7 Coding Laws of Senior Developer — YouTube, Cloud X Berry](https://www.youtube.com/watch?v=JcYMtYbNUhU)
 - 얄팍한 코딩사전, [풀 리퀘스트](https://www.inflearn.com/courses/lecture?courseId=328284&unitId=406135), [이슈와 프로젝트](https://www.inflearn.com/courses/lecture?courseId=328284&unitId=406269), [오픈소스에 참여하기](https://www.inflearn.com/courses/lecture?courseId=328284&unitId=406630)
 
 ## 관련 문서
 
-- [[GitHub-Repository-Operations|GitHub 저장소 운영]], [[Version-Control-Tooling|버전 관리 도구 선택]], [[Git-Merge-Strategies|Git 통합 방식]], [[Code-Review-Culture|코드 리뷰 문화]]
+- [[GitHub-Repository-Operations|GitHub 저장소 운영]], [[Version-Control-Tooling|버전 관리 도구 선택]], [[Git-Merge-Strategies|Git 통합 방식]], [[Code-Review-Culture|코드 리뷰 문화]], [[Code-Review-Reviewability|리뷰 가능성과 PR 크기]]

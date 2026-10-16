@@ -141,6 +141,16 @@ CUDA 상태의 중지만으로 CPU 스레드까지 멈추지는 않는다. 전�
 | 격리와 교체 | 장애 노드에 새 작업을 배치하지 않고 재부팅하거나 교체한다 | 대체 용량과 여분 노드, 교체 노드의 점검 시간 |
 | 재개 | 작업을 다시 시작해 마지막 체크포인트부터 이어 간다 | 저장과 로드 코드, 저장 주기, 교체 노드에서도 읽을 수 있는 저장 위치 |
 
+### 멈추지 않고 느려진 노드도 학습을 지연시킨다
+
+동기식 분산 학습에서는 동작 중이지만 느린 straggler 하나가 다른 GPU들을 기다리게 할 수 있다. 장치가 살아 있다는 사실과 정상 처리량을 구분한다. NVLink 통신 장애도 명확한 오류 코드 대신 CUDA 커널의 load/store 정체로 나타날 수 있다.
+
+운영 점검에서는 학습 step 시간과 collective 통신 시간을 함께 보고, 지연이 큰 process group과 rank를 좁힌다. 필요한 통신 메타데이터와 stack trace를 수집하되 비용이 큰 상세 추적은 조사 범위에 맞춰 켠다(운영 제안). 전체 평균 GPU 사용률만으로 지연 노드가 없다고 판단하지 않는다.
+
+**유효 학습 시간 비율**은 전체 경과 시간 중 유용한 학습을 수행한 시간의 비율이다. 장치의 커널 활동률과 다른 지표이며, 작업 시작과 체크포인트에 드는 시간도 최적화 대상으로 본다. 처리량과 이 비율을 함께 비교해야 정상 실행 중 성능과 중단 부담을 구분할 수 있다(운영 제안).
+
+2026-10-14 공개 원 논문 *The Llama 3 Herd of Models*의 3.3.4절을 대조했다. 해당 학습의 장애 진단 사례에서 도출한 점검 기준이며, 보고된 효율을 다른 클러스터의 보장으로 사용하지 않는다. 실제 분산 학습과 장애 주입은 수행하지 않았으며 문서 전체의 기존 검증일은 유지한다.
+
 ### 관리형 사례: SageMaker HyperPod
 
 2026-10-11 SageMaker HyperPod 공식 문서 기준이다. 오케스트레이터는 Slurm과 Amazon EKS 중에서 고른다. EKS 방식은 VPC 안에서 EKS 클러스터(제어 평면)와 HyperPod 클러스터(워커 노드)를 1:1로 연결한다.
@@ -187,6 +197,7 @@ Slurm 관리 문서 기준, `/var/log/provision/provisioning.log`에 기록한 �
 
 ## 출처
 
+- [The Llama 3 Herd of Models — Llama Team, Meta](https://arxiv.org/html/2407.21783v3#S3.SS3.SSS4) — 3.3.4절의 straggler, 통신 정체와 유효 학습 시간
 - [Amazon SageMaker AI, Checkpointless training in Amazon SageMaker HyperPod](https://docs.aws.amazon.com/sagemaker/latest/dg/sagemaker-eks-checkpointless.html)
 - [Amazon SageMaker AI, In-process recovery and checkpointless training](https://docs.aws.amazon.com/sagemaker/latest/dg/sagemaker-eks-checkpointless-in-process-recovery.html)
 - [Amazon EC2, Troubleshoot Amazon EC2 instance launch issues](https://docs.aws.amazon.com/AWSEC2/latest/UserGuide/troubleshooting-launch.html)

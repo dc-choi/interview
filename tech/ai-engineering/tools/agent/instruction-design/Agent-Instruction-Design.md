@@ -9,6 +9,8 @@ aliases: ["Agent Instruction Design", "에이전트 지시 설계"]
 
 코딩 에이전트에게 무엇을, 어디까지, 어떻게 만들고 어떤 문체로 답하게 할지 지시로 고정하는 설계 — 스펙 6대 영역, 행동 교정 4원칙, YAGNI 사다리 주입, 검증 행동 교정, 출력 문체 제약. 상위: [[agent|에이전트 심화]].
 
+- [[Agent-Repository-Instructions|AGENTS.md 작성과 운영]]: README와 역할 분리, 중첩 범위, 이관, 지침과 권한 통제, ALIGN.md의 선호 보존과 실험 한계
+- [[Agent-Repository-Instructions-Hosts|AGENTS.md 호스트별 발견과 적용]]: Codex, Cursor, Copilot, Claude Code, Aider와 Gemini CLI, 지원 목록과 런타임 검증
 - [[Agent-Spec-Writing|에이전트 스펙 작성법]]: 6대 영역, 지시의 저주, Always/Ask/Never 3단계 경계, 숨은 결정 축 인터뷰, 스펙 산출물과 승인 지점, LLM-as-a-Judge
 - [[Agent-Coding-Guardrails|LLM 코딩 가드레일]]: 실패 패턴과 교정 4원칙 — 가정 표면화, 최소 코드, 수술적 변경, 성공 기준 검증 루프, 우회 처방 경계, CLAUDE.md와 스킬, Cursor rule 주입
 - [[Agent-Overengineering-Guard|에이전트 과잉설계 방지]]: YAGNI 사다리 7칸, 게으름 vs 태만, 안전 100% 유지, 상시 룰셋 주입, 다중 에이전트 이식성

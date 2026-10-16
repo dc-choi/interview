@@ -14,16 +14,12 @@ aliases: ["CS Fundamentals"]
 표현 방식에서 회로와 CPU로 내려간 뒤 운영체제, 실행 도구, 자료구조와 알고리즘으로 올라오면 각 층의 책임을 연결하기 쉽다. 이 순서는 방향을 잡기 위한 안내이지 엄격한 선수 과목은 아니다. 제품 사양표는 하드웨어 용어를 익히는 예시로 활용하되 제조사의 상품명과 마케팅 등급을 공학적 정의로 일반화하지 않는다.
 
 ## 목차
-- [x] [[Digital-Fundamentals|디지털 기초 (비트, 진법, 정수 표현, 엔디언, 문자, 이미지, 소리, 영상의 비트 표현)]]
-- [x] [[Base64-Encoding|Base64 (바이너리의 텍스트 표현, 패딩과 크기, Base64url, HTTP 파일 전송)]]
-- [x] [[CPU-and-Arithmetic|CPU와 산술논리연산 (불 대수, 조합회로, ALU)]]
-- [x] [[Sequential-Logic-and-Memory|순차 논리회로와 메모리 (래치, 플립플롭, 레지스터, RAM)]]
-- [x] [[CPU-Datapath-Control-and-Instruction-Cycle|CPU 데이터패스와 명령어 사이클 (제어장치, ISA, 어셈블리)]]
-- [x] [[CPU-Datapath-Control-and-Instruction-Cycle-Programs|교육용 CPU 제어 신호와 반복 산술 프로그램]]
+- [x] [[CS-Data-Representation|데이터 표현 (비트, 진법, 정수 표현, 엔디언, 문자와 미디어의 비트 표현, Base64, 체크섬과 해시)]]
+- [x] [[CS-Computer-Architecture|컴퓨터 구조 (불 대수와 ALU, 순차 논리회로와 메모리, CPU 데이터패스와 명령어 사이클, 교육용 CPU 프로그램)]]
 - [x] [[Compile-and-Runtime|컴파일과 런타임 (의사코드와 알고리즘, 네이티브, 매니지드, 인터프리터)]]
+- [x] [[Programming-Language-Landscape|프로그래밍 언어 지형과 구분 기준 (설계 목적과 계보, 대표 구현의 실행 경로, 메모리 관리 방식, 타입 검사 시점, 플랫폼과 생태계, 메모리 안전성 권고)]]
 - [x] [[Math-Logic-For-Programming|프로그래밍에 필요한 수학과 논리 (명제, 집합, 드 모르간, 귀납법, 작은 모델의 탐색과 증명 구분)]]
 - [x] [[Data-Measurement-and-Tidy-Data|데이터 측정 척도, 정돈된 데이터와 결측, 이상치 (명목, 순서, 등간, 비율, 변수와 관측 단위, 결측 메커니즘, 삭제와 대체, 학습 데이터 누수, IQR 이상치 후보)]]
-- [x] [[Checksum-and-Hash|체크섬과 해시 (모듈러 합, 인터넷 체크섬, CRC, 일반 해시와 암호학적 해시, HMAC과 서명, 웹훅 서명 검증)]]
 
 ## 출처
 

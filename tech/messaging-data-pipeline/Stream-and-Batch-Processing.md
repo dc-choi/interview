@@ -57,6 +57,14 @@ MySQL은 transactional source of record와 조회 serving에 적합하지만 unb
 
 반대로 일 마감과 backfill은 source snapshot, cutoff와 재시작 가능한 checkpoint를 먼저 정의한다. 운영 primary를 무제한 full scan하지 않고 read replica, export snapshot 또는 별도 analytics store를 검토한다.
 
+## 수집 경로의 정합성은 데이터 용도로 정한다
+
+부분 검증(2026-10-14): AWS의 transactional outbox 가이드로 DB 변경과 이벤트 발행 사이의 이중 쓰기 문제를 대조했다. DB 저장과 외부 수집 서비스 전송을 따로 수행하면 한쪽만 성공할 수 있다. 관리형 적재 서비스를 선택해도 이 원자성 경계가 자동으로 합쳐지지는 않는다.
+
+분석용 클릭 이벤트와 과금 근거가 되는 클릭 이벤트는 같은 fact 형태라도 허용할 유실과 중복이 다를 수 있다. fact 또는 dimension이라는 분류만으로 정합성 요구를 낮추지 않고, 집계 용도와 오류 영향을 먼저 정한다(설계 기준).
+
+DB 변경과 함께 발행해야 할 이벤트라면 [[Transactional-Outbox|같은 트랜잭션의 outbox]]나 적합한 CDC 경로를 검토한다. Outbox의 재전송은 중복을 만들 수 있으므로 소비자 멱등성과 대사는 여전히 필요하다. 검증 제안: DB commit 직후 전송 실패와 소비 완료 뒤 재전송을 각각 주입해 원본, 수집 데이터와 최종 집계의 차이를 확인한다. 실제 장애 시험은 수행하지 않았으며 기존 엔진별 검증일은 유지한다.
+
 ## 계산을 분산 처리기에 넘기는 시점
 
 스케줄러와 SQL로 MySQL 안에서 돌리던 일 마감 집계는 데이터가 수백만, 수천만 건으로 늘면 세 가지 한계에 부딪힌다.
@@ -108,6 +116,7 @@ shuffle은 같은 key의 데이터를 partition 사이로 다시 모으는 과�
 
 ## 출처
 
+- [AWS Prescriptive Guidance, Transactional outbox pattern](https://docs.aws.amazon.com/prescriptive-guidance/latest/cloud-design-patterns/transactional-outbox.html)
 - [Apache Flink 1.20.3 Documentation, FlinkCEP - Complex event processing for Flink](https://nightlies.apache.org/flink/flink-docs-release-1.20/docs/libs/cep/) — 패턴의 인접 조건, 시간 제약과 event time의 지연 이벤트 처리
 - [CepOperator.java release-1.20.3 — Apache Flink GitHub](https://github.com/apache/flink/blob/release-1.20.3/flink-libraries/flink-cep/src/main/java/org/apache/flink/cep/operator/CepOperator.java) — watermark 이하 timestamp의 처리와 늦은 이벤트 판정 경계
 - [Pattern.java release-1.20.3 — Apache Flink GitHub](https://github.com/apache/flink/blob/release-1.20.3/flink-libraries/flink-cep/src/main/java/org/apache/flink/cep/pattern/Pattern.java) — `within()` 오버로드와 기본 간격 기준

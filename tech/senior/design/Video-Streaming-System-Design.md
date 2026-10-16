@@ -14,7 +14,7 @@ aliases: ["Video Streaming System Design", "VOD System Design", "주문형 비�
 
 - 사용자는 작품을 탐색하고 권한이 있는 콘텐츠를 여러 기기와 네트워크에서 끊김을 줄여 재생한다.
 - 운영자는 소스 자산을 검증, 인코딩, 패키징한 뒤 완전한 버전만 공개하고 실패한 작업을 재처리한다.
-- 이 문서는 VOD를 다룬다. 실시간 방송은 ingest 경로의 차이만 [[#라이브 ingest는 저장 뒤 공개가 아니라 실시간 중계다|아래 절]]에서 비교하고, 초저지연 재생과 동기화는 별도 설계 문제로 둔다.
+- 이 문서는 VOD를 중심으로 다룬다. 실시간 방송은 [[#라이브 ingest는 저장 뒤 공개가 아니라 실시간 중계다|ingest 경로]]와 [[#영상 시점과 상호작용 메시지의 도착 시각을 구분한다|메타데이터 동기화]]를 비교하며, 초저지연 전송 전체의 설계는 범위 밖이다.
 
 ## 세 개의 plane
 
@@ -153,6 +153,12 @@ VOD는 자산을 저장하고 처리를 마친 뒤 공개하지만, 라이브는
 
 이 절은 라이브 ingest의 용량 준비 비교이며 관리형 영상 서비스 전체에 EC2 hook을 요구하는 것은 아니다. 실제 방송과 장애 전환 시험은 수행하지 않았고 기존 `verified_at`은 유지한다.
 
+### 영상 시점과 상호작용 메시지의 도착 시각을 구분한다
+
+부분 검증(2026-10-14): Amazon IVS Low-Latency Streaming의 timed metadata 문서를 대조했다. 영상 세그먼트에 ID3 태그로 메타데이터를 넣으면 플레이어가 그 재생 지점에 도달할 때 이벤트를 받는다. 시청자별 전송 지연이 달라도 **영상 안의 같은 시점**에 상품이나 퀴즈를 표시하는 방식이며, 모두의 벽시계 시각이 같다는 뜻은 아니다.
+
+`PutMetadata`는 활성 스트림에만 삽입할 수 있고 정확한 삽입 시각은 보장하지 않는다. 녹화 영상에도 메타데이터가 남고 재생 시 이벤트가 발생한다. 적용 제안: 방송 중 쿠폰의 표시와 실제 발급을 분리하고, 다시보기에서 오래된 이벤트가 재생돼도 서버가 현재 유효 기간과 발급 조건을 확인하도록 한다. API 성공만으로 특정 프레임과의 정밀 동기화를 선언하지 않는다. 플레이어 시험은 수행하지 않았으며 기존 `verified_at`은 유지한다.
+
 ## Netflix 공개 사례를 읽는 경계
 
 - 2024년 공개된 VES/Cosmos 사례는 비동기 workflow와 독립적인 media processing service, chunked encoding의 필요성을 보여 준다. 전체 내부 topology나 현재 운영 수치를 공개한 명세로 읽지 않는다.
@@ -162,6 +168,7 @@ VOD는 자산을 저장하고 처리를 마친 뒤 공개하지만, 라이브는
 
 ## 출처
 
+- [Amazon IVS, Embedding Metadata within a Video Stream](https://docs.aws.amazon.com/ivs/latest/LowLatencyUserGuide/metadata.html)
 - [RFC Editor, RFC 8216: HTTP Live Streaming](https://www.rfc-editor.org/rfc/rfc8216)
 - [Amazon S3, Amazon S3 Object Lambda availability change](https://docs.aws.amazon.com/AmazonS3/latest/userguide/amazons3-ol-change.html)
 - [Amazon EC2 Auto Scaling, Amazon EC2 Auto Scaling lifecycle hooks](https://docs.aws.amazon.com/autoscaling/ec2/userguide/lifecycle-hooks.html)

@@ -35,6 +35,7 @@ aliases: ["SNS Email vs SES", "SNS 이메일과 SES", "Amazon SES", "SES vs SNS"
 - production access 신청에서 명시적으로 요청한 사람에게만 보내고 bounce와 complaint를 처리하는 절차가 있음을 확인받는다. 수신 동의와 수신 거부 처리는 발송 기능과 함께 설계한다.
 - bounce와 complaint 알림을 설정하지 않으면 SES가 Return-Path(없으면 Source) 주소로 알림 메일을 전달한다. 알림을 SNS topic이나 event publishing으로 받아 발송 대상 제외와 중단 판단을 자동화한다. 여러 방식을 함께 켜면 같은 이벤트를 여러 번 받는다.
 - 메일 수신은 SES가 수신을 지원하는 리전에서만 쓸 수 있으므로 리전을 고르기 전에 AWS General Reference의 수신 endpoint 목록을 확인한다.
+- 발신 도메인 인증(DKIM, SPF, DMARC), 대량 발신자 요구사항, 전용 IP와 평판 지표는 [[SES-Sender-Authentication|SES 발신 인증과 전달성 온보딩]]에서, 억제 목록과 연락처 목록, 수신 거부 처리는 [[SES-Suppression-and-Subscription|SES 억제 목록과 구독 관리]]에서 다룬다.
 
 ## SMTP 연결과 발송 실패를 나누어 확인한다
 
@@ -76,6 +77,8 @@ Identity의 SNS 알림은 `notificationType`, event publishing은 `eventType`을
 ## 관련 문서
 
 - [[SNS|Amazon SNS]]
+- [[SES-Sender-Authentication|SES 발신 인증과 전달성 온보딩]]
+- [[SES-Suppression-and-Subscription|SES 억제 목록과 구독 관리]]
 - [[Fan-Out-Architecture|Fan-out 아키텍처]]
 - [[Idempotency-Key|멱등성 키]]
 - [[LocalStack-Integration-Test|LocalStack 통합 테스트 (SES 발신자 검증 준비)]]

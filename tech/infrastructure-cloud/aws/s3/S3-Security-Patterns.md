@@ -62,6 +62,7 @@ private S3 객체에 일정 시간 동안 접근하게 해주는 서명된 URL. 
 - **주의**: 만료 전까지는 반복 호출이 가능하므로 URL이 공유되면 의도치 않은 사용자도 접근한다. TTL을 짧게 둔다.
 - **Source IP 제한**: 버킷 정책에서 특정 Source IP에서만 `GetObject`를 허용하면, URL을 알아도 허용 네트워크 밖에서는 접근할 수 없다.
 - **1회용 다운로드**: S3 Presigned URL 자체엔 "1회 사용 후 만료"가 없다. 패턴은 **원본을 보호하고 임시 복제본을 만든 뒤 그 복제본에 Presigned URL을 발급**, 다운로드 이벤트를 CloudTrail → EventBridge → Lambda로 감지해 복제본을 삭제하는 것. 같은 URL은 더 이상 유효하지 않게 된다.
+- **판매 파일의 보호 범위**: 만료 URL은 링크를 보호할 뿐 이미 받은 파일을 보호하지 않는다. 기본 통제는 요청마다 구매와 환불 상태를 확인한 뒤 짧은 URL을 새로 발급하고 환불되면 발급을 멈추는 것이다. 받은 파일의 재배포는 이 방식으로 막지 못하므로 구매자별 워터마크로 유출 경로를 추적하고 억제하거나, DRM 또는 파일을 내려주지 않는 전용 뷰어로 바꾼다. 뒤로 갈수록 구매자의 사용 편의가 떨어지고 구현 비용이 늘며, 캡처 차단을 더해도 화면을 다시 찍는 우회는 남는다. 콘텐츠의 가치와 유출 피해에 맞춰 수준을 고른다.
 
 ## 민감정보 버킷: 별도 보안 계정 분리
 
@@ -104,6 +105,7 @@ private S3 객체에 일정 시간 동안 접근하게 해주는 서명된 URL. 
 
 - 정적 사이트를 S3 단독이 아닌 CloudFront + OAC로 숨기는 이유 (오리진 노출, HTTPS, 직접 접근 차단)
 - Presigned URL의 한계(만료 전 반복 호출)와 Source IP 제한, 일회용 복제본 패턴
+- 만료 URL이 보호하지 못하는 범위와 판매 파일의 추가 보호 수준(구매자별 워터마크, DRM, 전용 뷰어)
 - 민감정보 버킷을 별도 보안 계정에 두는 이유 (blast radius 축소)
 - Cross-account 접근에서 IAM Role과 Bucket Policy를 양쪽 다 맞춰야 하는 이유
 - 위험 변경 탐지를 위해 감시할 CloudTrail 이벤트 (`PutBucketPolicy`, 퍼블릭 접근 변경 등)
@@ -116,7 +118,9 @@ private S3 객체에 일정 시간 동안 접근하게 해주는 서명된 URL. 
 - [[CloudFront|CloudFront]] — OAC/OAI, 앞단 캐싱
 - [[Shield-WAF-NetworkFirewall|Shield, WAF, Network Firewall]] — WAF IP Set
 - [[IAM|IAM]] — Role, Bucket Policy, cross-account
+- [[Fullstack-BaaS-Boundaries|풀스택 프레임워크와 BaaS의 경계]] — Supabase Storage의 파일 한도와 DB 백업에서 빠지는 객체
 
 ## 출처
 
 - [AWS S3 보안 가이드, 사례별 안전한 버킷 설계 — YouTube](https://www.youtube.com/watch?v=vgYfAndrpPU)
+- [YouTube, 양실장의 바이브코딩대학, 3시간 순삭) 55개 기술 의사결정, 소스코드 해설까지! 현존 바이브코딩 기본 강의 중 가장 실전적인 강의](https://www.youtube.com/watch?v=K6Rsy-pHBi0) — 2026-08-18, 1:23:51~1:25:51과 1:48:48~1:49:49의 판매 PDF 보호 수준 선택

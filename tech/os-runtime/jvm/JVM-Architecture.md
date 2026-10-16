@@ -10,6 +10,8 @@ aliases: ["JVM Architecture", "JVM 구조", "ClassLoader", "Runtime Data Area"]
 
 Java 소스 → `.class` 바이트코드 → JVM이 **ClassLoader로 로드**, **Runtime Data Area에 배치**, **Execution Engine이 해석, JIT 컴파일** → 호스트 OS에서 실행. "Write Once, Run Anywhere"의 실체는 JVM이 플랫폼별로 구현되어 같은 바이트코드를 흡수한다는 점이다. GC는 이 중 Heap 관리 부분만 담당하며 자세한 내용은 [[JVM-GC|JVM GC]].
 
+> 부분 대조(2026-10-06): Java SE 25 명세와 API로 로딩, 링크, 초기화의 구분, 기본 로더 위임과 스레드별 메모리 설명을 확인했다. 나머지 튜닝 항목의 재검증 날짜는 갱신하지 않았다.
+
 ## 전체 구성
 
 ```
@@ -24,7 +26,7 @@ Java 소스 → `.class` 바이트코드 → JVM이 **ClassLoader로 로드**, *
                      [OS / CPU]
 ```
 
-- **ClassLoader**: 바이트코드를 메모리로 불러와 검증, 초기화
+- **ClassLoader**: 클래스의 바이트 표현을 찾고 정의한다. JVM의 링크와 초기화는 로딩과 구분하는 단계다
 - **Runtime Data Area**: 로드된 클래스와 실행 상태가 사는 메모리 영역
 - **Execution Engine**: 바이트코드를 해석/컴파일하여 CPU 명령으로 수행
 - **Native Interface(JNI)**: 네이티브 라이브러리(C/C++) 연동
@@ -53,14 +55,14 @@ JDK 9의 JEP 220이 extension mechanism(`lib/ext` 디렉터리, `java.ext.dirs`)
 
 ### Delegation Model
 
-자식 로더는 **먼저 부모에게** 로딩을 위임. 부모가 못 찾으면 자식이 로드.
-- 같은 클래스를 중복 로드하지 않도록 보장
-- Java 코어 클래스를 임의 대체할 수 없게 함(보안)
-- Tomcat 등은 **부모 위임 역전**으로 웹앱별 라이브러리 격리
+`ClassLoader.loadClass`의 기본 구현은 이미 로드한 클래스를 찾고, 없으면 부모에게 요청한 뒤, 부모도 못 찾으면 자신의 `findClass`를 호출한다.
+- 부모가 정의한 타입을 함께 쓰게 돕지만, 서로 다른 정의 로더가 같은 이름의 클래스를 만드는 것까지 막지는 않는다
+- 일반 로더의 `defineClass`는 `java.`로 시작하는 이름을 금지한다. 코어 클래스 보호를 부모 위임 하나의 효과로 설명하지 않는다
+- 사용자 정의 로더는 위임 정책을 바꿀 수 있다. 모든 JVM과 프레임워크에 같은 검색 순서를 가정하지 않는다
 
 ### 클래스 동일성
 
-**같은 클래스라도 다른 ClassLoader가 로드하면 다른 타입**. 서로 `ClassCastException`. 이 특성이 핫 스왑, 플러그인 시스템의 기초이자 디버깅 함정.
+클래스 동일성은 **바이너리 이름과 정의한 ClassLoader**의 쌍으로 정한다. 요청을 시작한 로더가 달라도 같은 부모가 정의한 클래스를 받으면 같은 타입이다. 서로 다른 로더가 별도로 정의한 같은 이름의 타입 사이 캐스팅은 `ClassCastException`의 원인이 된다.
 
 ## Runtime Data Area
 
@@ -78,10 +80,10 @@ JVM이 실행 중 사용하는 메모리 영역. GC 대상/비대상, 스레드 
 
 - **JVM Stack** — 메서드 호출 프레임(지역변수 배열, 피연산자 스택, 프레임 데이터)
   - 메서드 진입 시 push, 반환 시 pop
-  - 크기 한계 초과 시 **StackOverflowError** (무한 재귀, 거대 지역 배열)
-  - 기본 스레드당 1MB(OS, JVM 설정)
-- **PC Register** — 현재 실행 중 바이트코드 명령의 주소
-- **Native Method Stack** — JNI로 호출된 네이티브 코드의 스택
+  - 허용 스택 크기를 넘으면 **StackOverflowError**. 지역변수가 참조하는 배열 자체는 Heap에 할당된다
+  - 기본 크기는 JVM 구현과 플랫폼에 따라 다르며 명세가 1MB로 고정하지 않는다
+- **PC Register** — non-native 메서드에서는 현재 JVM 명령의 주소. native 메서드를 실행 중일 때 값은 명세상 정의되지 않는다
+- **Native Method Stack** — 네이티브 실행을 지원할 때 사용할 수 있는 스택. 구현이 별도 스택을 반드시 제공해야 하는 것은 아니다
 
 ## Execution Engine
 
@@ -109,10 +111,11 @@ Heap 관리. 자세한 내용은 [[JVM-GC|JVM GC]].
 
 ## 기동 순서, Lazy Loading
 
-JVM은 **필요한 순간까지 로딩을 미룬다**.
-- `main` 클래스만 먼저 로드
-- `new`, static 접근, 리플렉션 등 **first touch**에 해당 클래스 로드, 초기화
-- → 초기 기동 빠름, 하지만 "첫 요청이 느린" warmup 현상의 원인
+로딩, 심볼릭 참조 해석과 초기화는 같은 시점에 일어나야 하는 작업이 아니다.
+- JVM은 초기 클래스에서 실행을 시작하지만 검증과 참조 해석 중 다른 클래스를 미리 로드할 수 있다. 시작할 때 `main` 클래스만 로드한다고 보장하지 않는다
+- 참조 해석은 명세의 제약 안에서 eager 또는 lazy로 할 수 있으며, 초기화 뒤에도 이어질 수 있다
+- `new`, static 메서드 호출, 특정 리플렉션 호출 등은 초기화를 유발한다. 단순 로딩을 static 초기화 블록 실행과 동일시하지 않는다
+- 첫 요청 지연을 진단할 때는 클래스 로딩, 초기화와 JIT 컴파일 시간을 나눠 확인한다
 
 ## 네이티브 연동
 
@@ -175,6 +178,7 @@ JVM은 **필요한 순간까지 로딩을 미룬다**.
 - [Java Virtual Machine Enhancements in JDK 7 (Oracle)](https://docs.oracle.com/javase/8/docs/technotes/guides/vm/enhancements-7.html)
 - [The Java Virtual Machine Specification, Java SE 25 Edition — Chapter 2 (Oracle)](https://docs.oracle.com/javase/specs/jvms/se25/html/jvms-2.html)
 - [The Java Virtual Machine Specification, Java SE 25 Edition — Chapter 5 (Oracle)](https://docs.oracle.com/javase/specs/jvms/se25/html/jvms-5.html)
+- [Oracle, Java SE 25 ClassLoader API](https://docs.oracle.com/en/java/javase/25/docs/api/java.base/java/lang/ClassLoader.html)
 - [daddyprogrammer — 기술 용어 및 개념 정리](https://daddyprogrammer.org/post/2058/tech-terms-concept/)
 - [인프런, 김영한, 자바 메모리 구조](https://www.inflearn.com/courses/lecture?courseId=332506&unitId=194688)
 - [인프런, 김영한, static 변수2](https://www.inflearn.com/courses/lecture?courseId=332506&unitId=194693)

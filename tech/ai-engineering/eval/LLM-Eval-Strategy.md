@@ -23,6 +23,19 @@ LLM, 에이전트 시스템은 같은 입력에도 출력이 흔들린다. 결�
 
 이는 [[Production-Agent-Architecture]]의 고가용성(워커 풀 교체), Closure-loop과 같은 사고다. 한 번에 맞히게 만들기보다, 틀려도 루프 안에서 회복하게 만든다.
 
+## 기억 기능의 효과는 같은 조건에서 비교한다
+
+모델 교체와 기억 데이터 축적이 동시에 일어났다면 체감 개선만으로 기억 기능의 효과를 분리할 수 없다. 에이전트 평가는 모델과 하네스를 함께 측정하므로, 반복 trial의 시작 환경을 맞추고 실행 기록과 최종 상태를 구분해야 한다.
+
+이를 장기 기억에 적용한 실험 설계 제안은 다음과 같다.
+
+1. 실제 질문과 성공 기준을 고정하고, 모델 버전, 프롬프트, 도구와 실행 예산을 맞춘다. 기억 사용 여부만 바꾼 조건을 먼저 비교한다.
+2. 각 trial은 같은 기억 스냅샷에서 시작한다. 이전 평가의 정답이나 결과가 다음 trial의 기억에 쌓여 점수를 높이지 않게 한다. 장기 축적 자체를 평가할 때는 별도의 시간 순서 실험으로 둔다.
+3. 기억 조회가 필요한 질문과 필요 없는 질문을 함께 넣는다. 호출 횟수보다 올바른 근거 사용, 최종 답의 정확성, 불필요한 조회를 평가한다.
+4. 실패 원인을 저장 누락, 검색 누락, 검색한 근거의 오해로 나누고 지연과 비용을 함께 기록한다. 검색이 실행됐다는 로그만으로 답변 개선을 판정하지 않는다.
+
+이 비교는 특정 기억 제품의 성능을 입증한 결과가 아니다. [[Agent-Memory-Retain-Recall-Reflect|기억 연산의 책임]]을 평가 조건으로 옮기는 방법이다.
+
 ## Multi-gate 데이터 품질
 
 학습, 지식 베이스에 들어가는 데이터는 다단계 게이트로 거른다. 한 번의 자동 필터로는 노이즈가 새기 때문이다.
@@ -31,7 +44,7 @@ LLM, 에이전트 시스템은 같은 입력에도 출력이 흔들린다. 결�
 2. 인간 검토 승인 — 지식 수정, 추가 제안을 사람이 직접 검토하고 승인 (자동 반영 금지)
 3. Precision 우선 — 재현율보다 정밀도를 최대화. 틀린 지식이 들어가는 것보다 일부 누락이 낫다
 
-잘못된 지식 한 줄이 이후 모든 답변을 오염시키므로, 추가는 보수적으로, 검증은 인간이 게이트한다. [[Production-Agent-Architecture]]의 Auto Memory 비활성화(명시적, 검증된 정의만 인정)와 같은 원칙.
+잘못된 지식 한 줄이 이후 모든 답변을 오염시키므로, 추가는 보수적으로, 검증은 인간이 게이트한다. [[Production-Agent-Architecture-Knowledge#Auto Memory 비활성화|Production-Agent-Architecture]]의 Auto Memory 비활성화(명시적, 검증된 정의만 인정)와 같은 원칙.
 
 ## 지표 충돌: CSAT vs 사실 정확도
 
@@ -86,7 +99,7 @@ Claude Sonnet 4.5의 2025년 안전성 평가에서는 특히 인위적이거나
 | 만족도(CSAT) | 사용자가 만족했는가 | 정확도와 충돌 가능 |
 | 데이터 품질 | 지식 베이스에 노이즈가 없는가 | Precision 우선, 인간 게이트 |
 
-배포 전 자동 검증의 실행 축(정확성, 행동 경로, 안정성, 형식)은 [[Production-Agent-Architecture#Eval 시스템과 운영 루프]] 참고. 본 문서는 그보다 상위의 평가 철학(무엇을 성공으로 볼 것인가)을 다룬다.
+배포 전 자동 검증의 실행 축(정확성, 행동 경로, 안정성, 형식)은 [[Production-Agent-Architecture-Eval-and-Operations#Eval 시스템과 운영 루프]] 참고. 본 문서는 그보다 상위의 평가 철학(무엇을 성공으로 볼 것인가)을 다룬다.
 
 ## 면접 포인트
 
@@ -104,12 +117,13 @@ Q. 데이터 품질은 어떻게 지키나?
 - [[Eval-Rubric-and-Score-Gate|루브릭과 점수 게이트 (채점기 3종, 3층 게이트, 합격선 설계)]]
 - [[Eval-LLM-Judge|LLM 판정기 (판정 방식, 편향, 사람 라벨 교정)]]
 - [[Eval-Golden-Set-and-Deploy-Gates|골든셋과 배포 관문 (문제 집합 구축, 베이스라인, 카나리, promptfoo)]]
-- [[Production-Agent-Architecture|프로덕션 에이전트 아키텍처 (Eval 4축, 운영 루프, 고가용성)]]
+- [[Production-Agent-Architecture-Eval-and-Operations|프로덕션 에이전트 아키텍처 (Eval 4축, 운영 루프, 고가용성)]]
 - [[RAG-Retrieval-Engineering|RAG 검색 엔지니어링 (검색 품질이 평가의 입력)]]
 - [[LLM-Abstention|LLM Abstention (모른다고 말하는 능력, 정확도와 독립)]]
 - [[Harness-Engineering|하네스 엔지니어링 (Verify 축)]]
 
 ## 출처
+- [Demystifying evals for AI agents — Anthropic](https://www.anthropic.com/engineering/demystifying-evals-for-ai-agents) — 반복 trial, 모델과 하네스의 공동 평가, 양방향 과제와 초기 환경 격리. 기억 비교 절차는 이를 적용한 설계 제안이다. 2026-10-09 확인.
 - [How Amazon uses Amazon Nova models to automate operational readiness testing for new fulfillment centers — AWS](https://aws.amazon.com/blogs/machine-learning/how-amazon-uses-amazon-nova-models-to-automate-operational-readiness-testing-for-new-fulfillment-centers/) — 2026-02-10 공개 사례의 ORT 절차와 평가 결과. 2026-10-09 확인.
 - [Anthropic’s Transparency Hub — Anthropic](https://www.anthropic.com/transparency) — Claude Sonnet 4.5의 Model Alignment and Evaluation Awareness 절
 - [OpenAI, Evaluating Large Language Models Trained on Code](https://arxiv.org/abs/2107.03374)

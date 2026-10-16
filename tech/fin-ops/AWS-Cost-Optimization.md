@@ -147,9 +147,20 @@ Inflab 사례가 **연 $300K 절감**을 이룬 핵심은 조직 운영.
 - **정기 리뷰** — 월 1회 Top 10 비용 재검토, 액션 아이템 도출
 - **MSP 파트너** — 추천, 감사, RI 거래소 활용
 
+### Showback을 엔지니어의 작업 흐름에 연결한다
+
+비용 보고는 합계 전달에서 끝내지 않고, 받는 사람이 원인을 조사하고 조치를 선택할 수 있게 구성한다. FinOps Foundation의 Reporting & Analytics 기준을 2026-10-10에 대조한 범위다. 기존 서비스 가격과 할인율을 다시 검증한 것은 아니다.
+
+- 중앙 FinOps 역할은 비용 용어, 귀속 기준과 공통 데이터 정의를 맞추고, 엔지니어가 직접 상세 내역을 조회하도록 돕는다.
+- 재무 담당자에게 필요한 예산 대비 비용과 엔지니어에게 필요한 자원별 사용량은 다르다. 동일한 데이터에서 역할에 맞는 화면과 보고서를 제공한다.
+- 비용 정보를 이미 사용하는 대시보드와 작업 큐에 연결한다. 별도 보고서가 있어도 담당자가 평소 확인하지 않으면 조치로 이어지기 어렵다.
+- 운영 예시: 기간, 통화, 비용 범위와 비교 기준을 명시하고, 증감이 큰 서비스에서 자원 내역과 담당 작업까지 추적한다. 단위 비용의 분모는 [[Cloud-Unit-Cost|클라우드 단위 비용]]에서 정한 기준과 맞춘다.
+
+자체 대시보드 구축은 필수가 아니다. 기존 제공 도구로 필요한 보고와 조사가 가능하면 활용하고, 실제로 부족한 집계와 업무 연결만 보완한다.
+
 ## 면접 체크포인트
 
-- **Frugal Architect** 원칙과 "비용을 비기능 요구사항으로" 의미
+- **Frugal Architect** 원칙과 비용을 비기능 요구사항으로 다루는 의미
 - **Spot vs RI vs SP** 선택 기준과 대표 워크로드
 - **VPC Endpoint, 내부 Private IP 통신**으로 NAT 비용 줄이는 방법
 - **Aurora Serverless, Fargate, Lambda가 항상 저렴하지 않은** 이유와 판별 기준 (Fargate의 SSH/privileged/커널 제약 포함)
@@ -160,6 +171,7 @@ Inflab 사례가 **연 $300K 절감**을 이룬 핵심은 조직 운영.
 - 조직 관점에서 FinOps를 **지속 가능하게** 운영하는 방법
 
 ## 출처
+- [FinOps Foundation, Reporting & Analytics](https://www.finops.org/framework/capabilities/reporting-analytics/)
 - [The Frugal Architect — 7법칙 공식 사이트](https://thefrugalarchitect.com/)
 - [The Frugal Architect — AWS re:Invent 2023 / kakao pay 정리](https://tech.kakaopay.com/post/2023-aws-reinvent-2/)
 - [Inflab — 스타트업 AWS 비용 최적화 (연 $300K 절감)](https://tech.inflab.com/20240227-finops-for-startup/)

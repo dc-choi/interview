@@ -111,7 +111,8 @@ Attention(Q, K, V) = softmax(QKᵀ / √dₖ)V
 - [[LLM-Generation-Mechanics|LLM 동작 원리 (묶음 인덱스)]]
 - [[LLM-Generation-Mechanics-Training|학습과 사전학습 이후 조정]]
 - [[LLM-Generation-Mechanics-Context-and-Agent|Context, 환각과 에이전트]]
+- [[LLM-Generation-Mechanics-Analogies|비개발자 설명용 비유와 한계]] — 온도와 top-p, 층과 로짓, KV 캐시 비유가 깨지는 지점
 - [[LLM-Inference-Bottlenecks|LLM 추론 병목]] — 같은 디코드가 하드웨어에서 왜 느려지는지
 - [[LLM-Prompt-Caching|LLM 프롬프트 캐싱]] — 벤더별 캐시 단가
-- [[LLM-Failure-Handling|LLM 실패 처리]] — 보내기 전 토큰 계산과 `max_tokens` 잘림
+- [[LLM-Failure-Handling-Response-Validation|LLM 실패 처리]] — 보내기 전 토큰 계산과 `max_tokens` 잘림
 - [[OpenSearch-Korean-Text-Analysis|OpenSearch 한국어 텍스트 분석]] — 형태소 기반 검색 토큰화와 BPE의 차이

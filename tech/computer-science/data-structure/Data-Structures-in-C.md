@@ -30,7 +30,7 @@ free(x);
 
 ## 배열 키우기와 realloc
 
-할당한 배열 바로 뒤의 메모리는 다른 할당이 쓰고 있을 수 있어 그 자리에서 늘어난다는 보장이 없다. 그래서 더 큰 블록을 새로 할당하고, 기존 원소를 복사하고, 옛 블록을 해제한 뒤 pointer를 바꾼다. 원소 n개를 옮기므로 한 번의 확장은 O(n)이고, 한 칸씩 늘리면 n번 추가가 O(n²)이다. 용량을 배수로 늘려 추가당 amortized O(1)을 만드는 이유는 [[Linear-Data-Structures#Array와 dynamic array|dynamic array]]에 있다.
+할당한 배열 바로 뒤의 메모리는 다른 할당이 쓰고 있을 수 있어 그 자리에서 늘어난다는 보장이 없다. 그래서 더 큰 블록을 새로 할당하고, 기존 원소를 복사하고, 옛 블록을 해제한 뒤 pointer를 바꾼다. 원소 n개를 옮기므로 한 번의 확장은 O(n)이고, 한 칸씩 늘리면 n번 추가가 O(n²)이다. 용량을 배수로 늘려 추가당 amortized O(1)을 만드는 이유는 [[Linear-Data-Structures-Array#Array와 dynamic array|dynamic array]]에 있다.
 
 ```c
 int *list = malloc(3 * sizeof(int));

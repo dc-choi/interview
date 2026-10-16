@@ -78,6 +78,17 @@ COW는 무상 복제가 아니다.
 
 또한 자식은 부모의 DB 연결, 소켓, 파일 디스크립터와 잠금 상태를 물려받을 수 있다. 다른 부모 스레드가 잡고 있던 잠금은 자식에서 해제할 스레드가 사라져 교착 상태를 만들 수 있다. Python 3.12부터 멀티스레드 프로세스의 `fork`를 감지하면 `DeprecationWarning`이 발생할 수 있는 이유다.
 
+### 순환 GC와 COW를 함께 조정할 때
+
+부분 검증(2026-10-10): Python 3.14의 `gc` 공식 문서로 다음 동작을 대조했다. 아래 순서는 `fork()` 뒤 `exec()`로 프로그램을 교체하지 않고 부모의 객체를 이어 쓰는 경우에 적용한다.
+
+- 순환 GC는 참조 횟수 기반 회수를 보완한다. `gc.disable()`은 자동 순환 수집을 끄는 것이며 참조 횟수 기반 회수까지 끄지 않는다.
+- 자식의 순환 GC가 부모에서 물려받은 장수 객체의 `gc_refs`를 갱신하면 COW가 발생할 수 있다. 부모의 수집으로 생긴 메모리 페이지 내부의 빈 공간도 공유 효율에 영향을 준다.
+- 공식 절차는 부모에서 이른 시점에 `gc.disable()`, fork 직전에 `gc.freeze()`, 자식에서 이른 시점에 `gc.enable()`을 호출하는 순서다.
+- `gc.freeze()`는 현재 GC가 추적하는 객체를 영구 세대로 옮겨 이후 수집에서 제외한다. 객체를 읽기 전용으로 바꾸거나 참조 횟수 갱신, 애플리케이션 쓰기로 인한 모든 COW를 막는 기능은 아니다.
+
+이를 Airflow 전체에 일괄 적용하는 설정으로 해석하지 않는다. 실제 fork 지점과 프로세스 수명을 확인하고, 동결한 객체가 수집 대상에서 빠지는 영향과 정상 상태의 PSS, USS를 함께 측정한다. 이 절은 GC API의 적용 조건이며 Airflow에 해당 호출이 구현됐다는 확인 결과는 아니다.
+
 ## Airflow 3.3의 설정 경계
 
 | 설정 | 적용 의미 |
@@ -137,7 +148,7 @@ Python 3.11, Debian 12, Airflow 2.10.2 이미지, 자식 10개와 CPU limit 4인
 - [Python 3.14 Documentation, multiprocessing — Process-based parallelism](https://docs.python.org/3/library/multiprocessing.html)
 - [Python 3.14 Documentation, threading — GIL and performance considerations](https://docs.python.org/3/library/threading.html#gil-and-performance-considerations)
 - [Python 3.14 Documentation, Python support for free threading](https://docs.python.org/3/howto/free-threading-python.html)
-- [Python 3.14 Documentation, gc.freeze](https://docs.python.org/3/library/gc.html#gc.freeze)
+- [Python 3.14 Documentation, gc.freeze](https://docs.python.org/3.14/library/gc.html#gc.freeze) — 2026-10-10 순환 GC와 fork 전후 호출 순서 대조
 - [Linux man-pages, fork(2)](https://man7.org/linux/man-pages/man2/fork.2.html)
 - [Linux Kernel Documentation, The /proc Filesystem](https://docs.kernel.org/filesystems/proc.html)
 - [Apache Airflow 3.3.1, Architecture Overview](https://airflow.apache.org/docs/apache-airflow/stable/core-concepts/overview.html)

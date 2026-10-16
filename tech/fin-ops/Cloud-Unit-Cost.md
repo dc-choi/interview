@@ -57,6 +57,14 @@ API 호출 수를 줄이는 최적화에서는 호출당 비용만 보면 개선
 
 이 문서는 인프라 측정 기준을 다룬다. 고객 획득 비용과 공헌이익을 포함한 사업의 수익성 판단은 [[Business-Model#Unit Economics|비즈니스 모델의 Unit Economics]]와 구분한다.
 
+### 공유 지표에는 데이터 기준 시점과 조치 책임을 붙인다
+
+2026-10-10 FinOps Unit Economics 지침 대조 기준, 지표의 데이터 원천과 계산식을 문서화하고 의사결정자가 사용하는 채널로 제공하며 정기적으로 검토한다. 서로 다른 제품을 하나의 순위로 비교하기보다 같은 범위의 추세부터 본다.
+
+다음은 비용 보고에 적용할 설계 예다. 총비용, 완료 건수와 단위 비용을 함께 보여주고, 증감이 큰 서비스에서 실제 리소스와 담당자까지 내려갈 수 있게 한다. 보고서 배포만으로 끝내지 않고 원인 가설, 개선 조치, 담당자와 재측정 시점을 남긴다. 배포 시각과 비용 증가가 겹쳐도 사용량, 단가와 비용 배분 변경을 확인하기 전에는 배포를 원인으로 확정하지 않는다.
+
+AWS CUR는 월중 비용을 추정치로 제공하고 적어도 하루 한 번 갱신하며, 서비스마다 사용량 정보가 도착하는 시점이 다를 수 있다(2026-10-10 공식 문서 확인). 따라서 지연된 비용을 실시간 요청 수로 나눈 값을 확정 효율로 제시하지 않는다. 비용과 제공량의 집계 범위, 마지막 갱신 시각과 잠정 여부를 표시하고, 청구 확정 및 환불이나 크레딧 반영 뒤 다시 계산할 수 있게 한다.
+
 ## 비용 절감과 자원 효율을 구분한다
 
 2026-10-09 AWS Sustainability Pillar 대조 기준. 비용 지표와 함께 작업 한 건을 제공하기 위해 할당한 자원도 측정한다. 할인으로 청구액이 줄어도 같은 자원을 계속 사용한다면 자원 효율이 개선됐다고 볼 수 없다.
@@ -75,6 +83,7 @@ API 호출 수를 줄이는 최적화에서는 호출당 비용만 보면 개선
 
 ## 출처
 
+- [AWS Data Exports, What are AWS Cost and Usage Reports?](https://docs.aws.amazon.com/cur/latest/userguide/what-is-cur.html) — 2026-10-10 월중 추정치, 갱신 주기와 사후 조정 가능성을 대조했다.
 - [AWS Well-Architected, Evaluate specific improvements](https://docs.aws.amazon.com/wellarchitected/latest/sustainability-pillar/evaluate-specific-improvements.html) — 2026-10-09 작업당 자원 지표와 자원 간 절충을 대조했다.
 - [AWS, Sustainability Proxy Metrics and Carbon Emissions Dashboard](https://docs.aws.amazon.com/guidance/latest/cloud-intelligence-dashboards/sustainability-proxy-metrics-dashboard.html)
 - [FinOps Foundation, Unit Economics](https://www.finops.org/framework/capabilities/unit-economics/)

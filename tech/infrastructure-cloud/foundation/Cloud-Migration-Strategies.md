@@ -90,6 +90,14 @@ App2Container는 애플리케이션 소스 코드 없이 실행 중인 지원 �
 
 다음은 이 절차를 적용한 검증 질문이다. 인벤토리에 없는 배치와 외부 연동은 없는가. 테스트 인스턴스에서 핵심 업무와 데이터 정합성이 유지되는가. 전환 실패 때 기존 환경으로 돌아갈 조건을 정했는가. 자동화율과 소요 시간만으로 이 질문의 답을 대신하지 않는다.
 
+### 코드 변환과 기능 동등성 검증을 나눈다
+
+2026-10-10 AWS Transform의 메인프레임 테스트 자료 대조 기준. 테스트 계획, 데이터 수집 스크립트와 테스트 실행 스크립트의 생성은 구분한다. 데이터 수집용 JCL을 생성해도 메인프레임의 작업 제출과 데이터 전송까지 수행하는 것은 아니며, 담당자가 검토하고 실행한다.
+
+기존 동작을 유지하는 전환에서는 기존 시스템의 입력과 기대 출력을 확보하고, 초기 상태 구성, 변환된 애플리케이션 실행, 출력 비교를 반복할 수 있게 한다. 생성된 테스트도 업무 흐름과 의존성을 빠뜨릴 수 있으므로 담당자가 범위를 검토한다. 기능 동등성 확인과 성능, 가용성, 재해복구 및 외부 연동 검증은 별도다.
+
+적용 시에는 금액, 날짜 경계와 배치 순서처럼 중요한 조건을 비교 항목으로 정하고, 의도된 동작 변경은 보존할 동작과 나눠 승인한다(설계 제안). 자동 변환율이나 고객 사례의 이전 기간을 자체 시스템의 검증 통과 기준으로 쓰지 않는다.
+
 ## 가상화 플랫폼 유지와 재해복구 설계
 
 2026-10-07 Nutanix NC2와 AWS 재해복구 공식 자료 대조 기준. 애플리케이션 재작성 범위를 줄이는 선택과 복구 목표를 충족하는 선택은 따로 검증한다.
@@ -155,6 +163,7 @@ Agentless는 개별 소스 VM에 에이전트를 설치하지 않는다는 뜻�
 
 ## 출처
 
+- [Accelerating mainframe modernization testing with AWS Transform — AWS](https://aws.amazon.com/blogs/migration-and-modernization/accelerating-mainframe-modernization-testing-with-aws-transform/) — 2026-10-10 테스트 생성, 수집 실행 책임과 기능 동등성 검증 범위를 대조했다. 기존 전환 전략 전체의 재검증은 아니다.
 - [AWS, Agentless replication related FAQs](https://docs.aws.amazon.com/mgn/latest/ug/Agentless-Replication-Related-FAQ.html)
 - [AWS, Agentless replication overview](https://docs.aws.amazon.com/mgn/latest/ug/installing-vcenter-overview-mgn.html) — 2026-10-09 MGN 복제 방식과 cutover 대기 조건을 대조했다. 기존 전환 전략 전체의 재검증은 아니다.
 - [AWS, What is AWS App2Container?](https://docs.aws.amazon.com/app2container/latest/UserGuide/what-is-a2c.html)

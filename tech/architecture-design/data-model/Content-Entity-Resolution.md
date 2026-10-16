@@ -185,6 +185,7 @@ Provider response
 - [[Content-Availability-System-Design|콘텐츠 가용성과 최신성]]
 - [[Transactional-Outbox|Transactional Outbox]]
 - [[OpenSearch-Indexing-Pipeline-Reliability|검색 projection 신뢰성]]
+- [[Ontology-Knowledge-Graph|온톨로지와 지식 그래프 (식별자가 없는 그래프의 중복과 병합)]]
 
 ## 출처
 

@@ -93,6 +93,15 @@ Finding의 접근이 의도된 것인지 먼저 판단한다. `Archived`는 결�
 - NIST SP 800-63B-4(2025-07-31 최종)는 주기적 비밀번호 변경 요구를 금지하고 침해 증거가 있을 때만 변경을 강제하게 한다. 문자 종류 조합 규칙도 금지하며, 길이(단일 요소면 15자 이상, MFA의 일부면 8자 이상)와 흔하거나 유출된 비밀번호 차단 목록 대조를 요구한다. 주기 강제는 사용자가 예측 가능한 변형을 만들게 하기 쉽다
 - 적용 방향: 길이 중심 정책, 재사용 방지, MFA를 기본으로 두고 만료는 규정이 요구할 때만 켠다. 규정 때문에 켰다면 그 근거를 기록한다. 매달이나 분기마다 전 사용자 비밀번호를 바꾸게 하는 방침은 이 기준과 맞지 않는다
 
+## 노출된 access key를 AWS가 발견했을 때
+
+부분 검증(2026-10-14): AWS Support의 Trusted Advisor `Exposed Access Keys` 검사 설명, AWS 관리형 정책 `AWSCompromisedKeyQuarantineV3`와 IAM의 임시 자격 증명 권한 비활성화 문서를 대조했다. 문서의 기존 검증일은 유지한다.
+
+- **탐지 범위:** AWS는 널리 쓰이는 코드 저장소에 공개된 access key와, 키 탈취로 의심되는 비정상 EC2 사용을 찾는다. 이 검사가 모든 노출 키나 침해된 인스턴스를 찾아낸다고 보장하지 않으며 키와 리소스 보호 책임은 고객에게 있다.
+- **AWS의 임시 제한:** 노출 키를 발견하면 AWS는 과도한 요금을 막으려고 일부 리소스 생성을 일시적으로 제한한다. IAM 사용자 자격 증명이 노출되면 붙는 `AWSCompromisedKeyQuarantineV3`는 EC2 인스턴스 시작, IAM 사용자와 access key 생성, Lambda 함수 생성, Bedrock 모델 호출 같은 작업을 거부하되 기존 리소스에는 영향을 주지 않도록 설계됐다. AWS는 이 제한이 계정을 안전하게 만들지 않고 무단 사용을 부분적으로만 막는다고 명시한다. 정책을 직접 떼지 말고 생성된 지원 케이스의 안내를 따른다.
+- **고객이 할 일:** 해당 키를 최대한 빨리 삭제하고, 실행 중인 EC2 인스턴스, Spot 요청, access key와 IAM 사용자를 중심으로 각 서비스 콘솔과 청구를 확인한다. 검사 결과에 기한이 표시되면 그때까지 무단 사용을 멈추지 못할 경우 계정이 정지될 수 있다. 계정의 노출 키가 모두 해소돼야 해소로 표시되고 동기화에 최대 1주가 걸릴 수 있으므로 화면 상태만으로 정리 완료를 판단하지 않는다.
+- **이미 발급된 임시 자격 증명:** 임시 보안 자격 증명은 만료될 때까지 유효하다. IAM 문서는 자격 증명 무효화와 함께 해당 사용자나 역할의 권한도 바꾸라고 한다. 권한은 요청마다 평가되므로 권한을 모두 없애면 그 임시 자격 증명을 쓰는 요청이 실패한다. IAM 사용자의 고유 ID를 `aws:userid` 조건으로 거부하면 그 사용자가 `GetSessionToken`으로 만든 세션까지 막을 수 있다. root 사용자는 예외다. root의 권한은 바꿀 수 없고, root로 로그인해 `GetFederationToken`이나 `GetSessionToken`으로 만든 임시 자격 증명의 권한도 바꿀 수 없다. 그래서 AWS는 root로 이 두 API를 호출하지 말라고 권한다.
+
 ## 흔한 실수
 
 - **Access Key를 코드, git에 커밋** — 즉시 자격증명 침해. Role + IRSA, Instance Profile 사용
@@ -156,3 +165,7 @@ Finding의 접근이 의도된 것인지 먼저 판단한다. `Archived`는 결�
 - [NIST SP 800-63B-4 Authentication and Authenticator Management](https://pages.nist.gov/800-63-4/sp800-63b.html)
 - [NIST, SP 800-63B-4 publication record](https://csrc.nist.gov/pubs/sp/800/63/b/4/final)
 - [인프런, Sungmin Kim, IAM이란?](https://www.inflearn.com/courses/lecture?courseId=325381&unitId=43727)
+- [AWS Support, Security checks](https://docs.aws.amazon.com/awssupport/latest/user/security-checks.html) — Exposed Access Keys 검사
+- [AWS Managed Policy Reference, AWSCompromisedKeyQuarantineV3](https://docs.aws.amazon.com/aws-managed-policy/latest/reference/AWSCompromisedKeyQuarantineV3.html)
+- [AWS, Disabling permissions for temporary security credentials](https://docs.aws.amazon.com/IAM/latest/UserGuide/id_credentials_temp_control-access_disable-perms.html)
+- [AWS 사용자의 10가지 실수, 이것만은 피하세요! — Amazon Web Services Korea](https://www.youtube.com/watch?v=XBhC1QCmrbA) — AWS Builders 온라인 시리즈 발표

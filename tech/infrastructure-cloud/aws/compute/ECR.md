@@ -38,6 +38,24 @@ docker pull <account-id>.dkr.ecr.ap-northeast-2.amazonaws.com/api:<tag>
 - token이 만료되므로 며칠 뒤 `docker compose pull`만 실행하면 인증 오류가 날 수 있다. 배포 script에서 pull 직전에 로그인하거나 Amazon ECR Docker credential helper를 쓴다(helper는 MFA를 지원하지 않음)
 - 코드 변경 배포는 image를 다시 build, push한 뒤 서버에서 `docker compose pull`, `docker compose up -d`로 container를 교체한다. 같은 tag를 덮어쓰면 실행 중인 image가 무엇인지 흐려지므로 tag immutability를 켜고 배포와 rollback 대상은 digest로 고정한다
 
+## ECS 태스크의 pull 권한 경로
+
+부분 검증(2026-10-14): ECR의 ECS 연동 가이드, ECS의 실행 역할과 컨테이너 인스턴스 역할 문서, 관리형 정책 레퍼런스와 AWS re:Post Knowledge Center 글을 대조했다. 기존 절의 검증 기준일은 유지한다.
+
+ECS 태스크의 image는 컨테이너 에이전트(Fargate에서는 Fargate 에이전트)가 `ecr:GetAuthorizationToken`으로 인증 token을 받고 `ecr:BatchGetImage`, `ecr:GetDownloadUrlForLayer`로 가져온다. 그래서 pull 권한은 에이전트가 쓰는 역할에 준다. 태스크 정의의 `image`에는 `<account-id>.dkr.ecr.<region>.amazonaws.com/<repository>:<tag>`처럼 registry를 포함한 전체 주소를 쓴다.
+
+| 태스크 실행 위치 | pull 권한을 확인할 역할 | 관련 AWS 관리형 정책 |
+|---|---|---|
+| EC2 인스턴스 | 컨테이너 인스턴스 역할(인스턴스 프로파일) 또는 태스크 정의에 지정한 Task Execution Role. 둘 다 권한이 있으면 Task Execution Role이 우선한다 | `AmazonEC2ContainerServiceforEC2Role`, `AmazonECSTaskExecutionRolePolicy` |
+| Fargate | Task Execution Role | `AmazonECSTaskExecutionRolePolicy` |
+| ECS Managed Instances | Task Execution Role. 인스턴스 역할용 관리형 정책 `AmazonECSInstanceRolePolicyForManagedInstances`에는 ECR 액션이 없다 | `AmazonECSTaskExecutionRolePolicy` |
+
+- EC2는 두 경로가 모두 가능하다. ECR의 ECS 연동 가이드와 ECS의 pull 오류 문서는 EC2에 컨테이너 인스턴스 역할을 대응시키고, AWS Knowledge Center는 Task Execution Role에 ECR 권한을 주는 방식을 모범 사례로 든다. 컨테이너 인스턴스 역할은 그 인스턴스의 에이전트와 Docker 데몬이 AWS API를 호출할 때 쓰고, 실행 역할은 태스크 정의마다 지정한다. 태스크별로 접근할 저장소를 나누려면 실행 역할이 단위에 맞다(설계 제안).
+- 두 역할은 신뢰하는 서비스 주체가 다르다. 컨테이너 인스턴스 역할은 `ec2.amazonaws.com`을 신뢰하는 역할을 인스턴스 프로파일에 넣어 인스턴스에 붙이고, 실행 역할은 `ecs-tasks.amazonaws.com`을 신뢰하는 역할을 태스크 정의의 `executionRoleArn`에 지정한다.
+- 두 관리형 정책은 ECR 읽기 액션의 `Resource`를 `*`로 두고, 실행 역할 정책에는 `awslogs`용 `logs:CreateLogStream`, `logs:PutLogEvents`도 들어 있다. ECR 가이드가 제시한 pull 최소 권한은 `ecr:BatchGetImage`, `ecr:GetDownloadUrlForLayer`, `ecr:GetAuthorizationToken`이다. 앞의 두 액션은 저장소 ARN(`arn:aws:ecr:<region>:<account-id>:repository/<repository>`)으로 좁힐 수 있지만 `GetAuthorizationToken`은 리소스 유형이 없어 `*`로 둔다. 관리형 정책을 고객 관리형 정책으로 바꿀 때는 로그 전송처럼 다른 기능이 쓰던 권한도 함께 옮긴다.
+- 앱 코드가 쓰는 Task Role은 pull 경로가 아니다. 앱이 ECR API를 직접 호출할 때 필요한 권한과 image pull 권한을 구분한다([[ECS-Secrets-Injection|ECS 런타임 시크릿 주입]]의 역할 구분 참고).
+- 진단 제안: pull 권한 오류가 나면 Fargate와 Managed Instances는 실행 역할을 본다. EC2는 태스크 정의에 실행 역할이 있는지부터 확인해 있으면 그 역할을, 없으면 컨테이너 인스턴스 역할을 본다. 저장소와 tag 존재 여부, 네트워크 경로, 디스크 부족 같은 다른 원인은 [[ECS]]의 CannotPullContainerError 진단을 따른다.
+
 ## 저장 옵션
 
 | 옵션 | 용도 |
@@ -87,12 +105,14 @@ registry라는 역할은 Docker Hub와 같다. image에 실행 runtime이 들어
 ## 시험 빈출 포인트
 
 - ECS/EKS의 이미지 소스 → ECR
+- ECS 태스크의 ECR pull 권한 → Fargate는 Task Execution Role, EC2는 컨테이너 인스턴스 역할 또는 Task Execution Role(둘 다면 실행 역할 우선)
 - 도커 이미지 취약점 스캐닝 → ECR Basic/Enhanced Scanning
 - 오래된 이미지 자동 정리 → ECR Lifecycle Policy
 
 ## 관련 문서
 
 - [[ECS]], [[EKS]], [[AWS-Lambda]]
+- [[ECS-Secrets-Injection|ECS 런타임 시크릿 주입]] — Task Execution Role과 Task Role의 경계
 - [[Docker-Image-Pipeline|Docker 이미지 파이프라인]] — 태그 전략, digest 배포, registry 인증 비교
 
 ## 출처
@@ -106,6 +126,16 @@ registry라는 역할은 Docker Hub와 같다. image에 실행 runtime이 들어
 - [Amazon ECR 공식 문서 — Private registry authentication](https://docs.aws.amazon.com/AmazonECR/latest/userguide/registry_auth.html)
 - [Amazon ECR 공식 문서 — Pushing a Docker image](https://docs.aws.amazon.com/AmazonECR/latest/userguide/docker-push-ecr-image.html)
 - [Amazon ECR 공식 문서 — AWS managed policies](https://docs.aws.amazon.com/AmazonECR/latest/userguide/security-iam-awsmanpol.html)
+- [Amazon ECR 공식 문서 — Using Amazon ECR images with Amazon ECS](https://docs.aws.amazon.com/AmazonECR/latest/userguide/ECR_on_ECS.html)
+- [Amazon ECS 공식 문서 — Amazon ECS task execution IAM role](https://docs.aws.amazon.com/AmazonECS/latest/developerguide/task_execution_IAM_role.html)
+- [Amazon ECS 공식 문서 — Amazon ECS container instance IAM role](https://docs.aws.amazon.com/AmazonECS/latest/developerguide/instance_IAM_role.html)
+- [Amazon ECS 공식 문서 — CannotPullContainer task errors in Amazon ECS](https://docs.aws.amazon.com/AmazonECS/latest/developerguide/task_cannot_pull_image.html)
+- [AWS Managed Policy Reference — AmazonECSTaskExecutionRolePolicy](https://docs.aws.amazon.com/aws-managed-policy/latest/reference/AmazonECSTaskExecutionRolePolicy.html)
+- [AWS Managed Policy Reference — AmazonEC2ContainerServiceforEC2Role](https://docs.aws.amazon.com/aws-managed-policy/latest/reference/AmazonEC2ContainerServiceforEC2Role.html)
+- [AWS Managed Policy Reference — AmazonECSInstanceRolePolicyForManagedInstances](https://docs.aws.amazon.com/aws-managed-policy/latest/reference/AmazonECSInstanceRolePolicyForManagedInstances.html)
+- [Service Authorization Reference — Actions, resources, and condition keys for Amazon Elastic Container Registry](https://docs.aws.amazon.com/service-authorization/latest/reference/list_ecr.html)
+- [How do I allow Amazon ECS tasks to pull images from an Amazon ECR image repository? — AWS re:Post Knowledge Center](https://repost.aws/knowledge-center/ecs-tasks-pull-images-ecr-repository)
+- [How do I allow Amazon ECS tasks to pull images from an Amazon ECR image repository? — Amazon Web Services](https://www.youtube.com/watch?v=mEo9VncIX8Q)
 - [비전공자도 이해할 수 있는 Docker 입문/실전 — AWS ECR, JSCODE 박재성 강사](https://www.inflearn.com/courses/lecture?courseId=334085&unitId=227947)
 - [비전공자도 이해할 수 있는 Docker 입문/실전 — AWS ECR 사용해보기 실습, JSCODE 박재성 강사](https://www.inflearn.com/courses/lecture?courseId=334085&unitId=227948)
 - [비전공자도 이해할 수 있는 Docker 입문/실전 — AWS EC2에 Spring Boot 배포하기 실습, JSCODE 박재성 강사](https://www.inflearn.com/courses/lecture?courseId=334085&unitId=227949)

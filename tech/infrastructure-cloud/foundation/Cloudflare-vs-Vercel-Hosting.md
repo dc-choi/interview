@@ -1,7 +1,7 @@
 ---
 tags: [infrastructure, cloud, hosting, vercel, cloudflare, r2, s3, egress, dns, email]
 status: done
-verified_at: 2026-09-29
+verified_at: 2026-10-12
 category: "인프라&클라우드(Infrastructure&Cloud)"
 aliases: ["Cloudflare vs Vercel Hosting", "1인 제품 호스팅 플랫폼 선택", "Vercel과 Cloudflare"]
 ---
@@ -10,7 +10,7 @@ aliases: ["Cloudflare vs Vercel Hosting", "1인 제품 호스팅 플랫폼 선�
 
 1인 개발자나 작은 팀이 웹 제품을 올릴 때 호스팅 플랫폼은 배포 편의만으로 고르면 나중에 약관, 도메인 운영과 트래픽 비용에서 다시 옮기게 된다. Vercel은 프런트엔드 프레임워크 배포 경험에 강하고, Cloudflare는 DNS, CDN, 보안, 엣지 실행과 스토리지를 한 계정에서 묶는 쪽에 강하다. 선택은 제품의 수익화 여부, 도메인과 이메일 운영, 정적 파일 트래픽, 백엔드와 DB 연동이라는 네 축으로 판단한다.
 
-이 문서의 가격, 한도와 약관은 2026-09-29 공식 페이지 기준이다. 요금제는 자주 바뀌므로 결정 시점에 다시 확인한다.
+이 문서의 가격, 한도와 약관은 2026-09-29 공식 페이지 기준이며, Vercel cron 한도는 2026-10-12에 대조했다. 요금제는 자주 바뀌므로 결정 시점에 다시 확인한다.
 
 ## 판단 축
 
@@ -57,6 +57,7 @@ S3 대비 최대 90% 절감 같은 수치는 인터넷 전송 비중이 큰 특�
 - DB 연동은 별도 검증 영역이다. 엣지 런타임에서 TCP 연결, 커넥션 풀과 지역 간 지연이 어떻게 되는지는 선택한 DB와 드라이버 기준으로 따로 확인해야 하며 이 문서는 다루지 않는다.
 - 한 벤더에 DNS, CDN, 배포, 스토리지를 모으면 관리가 쉬워지는 대신 계정 장애나 정책 변경의 영향 범위도 커진다.
 - 무료 한도와 가격은 공지로 바뀐다. 약관 위반 시 계정 정지 위험이 비용 절감보다 크다.
+- 무료 플랜은 비용과 약관뿐 아니라 설계 값도 제한한다. Vercel Hobby의 cron은 프로젝트당 100개까지 둘 수 있지만 최소 간격이 하루 1회이고, 1시로 지정하면 1시 정각부터 1시 59분 사이 어느 때든 실행된다. 하루 1회보다 자주 도는 표현식은 배포 단계에서 실패한다. 메일 발송 예약이나 정산처럼 더 자주 돌아야 하는 작업은 Pro 플랜이나 다른 스케줄러를 전제로 한다. 배포를 통과시키려고 에이전트가 주기를 낮췄다면 업무 동작이 바뀐 것이므로 결정 기록과 대조한다.
 
 ## 적용 점검
 
@@ -65,10 +66,12 @@ S3 대비 최대 90% 절감 같은 수치는 인터넷 전송 비중이 큰 특�
 - 월간 인터넷 전송량과 파일 크기 분포는 얼마인가, 전송이 AWS 리전 안에서 끝나는가
 - DNS와 보안 정책을 어디에서 관리하고, 벤더를 옮길 때 무엇을 다시 설정해야 하는가
 - 서버 렌더링, 이미지 최적화, DB 연결처럼 런타임 의존 기능을 이전 전에 검증했는가
+- 메일 발송 예약, 정산 같은 주기 작업의 빈도와 실행 시각 정밀도가 쓰려는 플랜의 cron 한도 안에 드는가
 
 ## 출처
 
 - [Vercel Docs, Fair Use Guidelines](https://vercel.com/docs/limits/fair-use-guidelines)
+- [Vercel Docs, Usage & Pricing for Cron Jobs](https://vercel.com/docs/cron-jobs/usage-and-pricing) — 2026-07-15 갱신본을 2026-10-12에 대조
 - [Cloudflare, Self-Serve Subscription Agreement](https://www.cloudflare.com/terms/)
 - [Cloudflare Docs, Workers Pricing](https://developers.cloudflare.com/workers/platform/pricing/)
 - [Cloudflare Docs, Email Routing](https://developers.cloudflare.com/email-routing/)
@@ -77,6 +80,7 @@ S3 대비 최대 90% 절감 같은 수치는 인터넷 전송 비중이 큰 특�
 - [AWS, Amazon S3 Pricing](https://aws.amazon.com/s3/pricing/)
 - [Vercel에서 Cloudflare로 이전 후기 — Threads, chamyworks](https://www.threads.com/@chamyworks/post/DcNn-dQkvM-)
 - [스토리지는 Cloudflare R2 — Threads, catlovessubakba](https://www.threads.com/@catlovessubakba/post/DW-aobrElRk)
+- [YouTube, 양실장의 바이브코딩대학, 3시간 순삭) 55개 기술 의사결정, 소스코드 해설까지! 현존 바이브코딩 기본 강의 중 가장 실전적인 강의](https://www.youtube.com/watch?v=K6Rsy-pHBi0) — 2026-08-18, 2:49:38에 Hobby 배포를 위해 에이전트가 메일 예약 작업을 하루 1회로 낮춘 시연 사례
 
 ## 관련 문서
 

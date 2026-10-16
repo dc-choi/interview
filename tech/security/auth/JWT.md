@@ -1,7 +1,7 @@
 ---
 tags: [security, auth, jwt, bearer-token]
 status: done
-verified_at: 2026-10-03
+verified_at: 2026-10-12
 category: "Security - 인증"
 aliases: ["JWT", "JSON Web Token", "JWT 탈취", "Bearer Token Replay"]
 ---
@@ -65,6 +65,8 @@ Bearer token은 소유 증명을 추가로 요구하지 않고, 제시한 토큰
 
 - 모든 인증 요청과 API 통신에 HTTPS를 적용한다.
 - 브라우저 기반 자체 서비스는 JavaScript가 읽을 수 없는 `HttpOnly`, `Secure` 쿠키를 우선 검토하고 요구에 맞는 `SameSite`를 설정한다.
+- 토큰을 로그인 응답 본문(JSON)으로 내려주면 어디에 보관하든 한 번은 페이지 스크립트를 거치고, `localStorage`처럼 스크립트가 읽는 저장소에 놓이기 쉽다. `localStorage`는 출처 단위로 공유되어 그 출처에서 실행되는 모든 스크립트가 같은 값을 읽고, 같은 출처에 함께 둔 다른 애플리케이션도 같은 저장소를 쓴다. 서버가 `Set-Cookie`로 설정한 `HttpOnly` 쿠키는 스크립트가 읽을 수 없고 브라우저가 조건에 맞는 요청에 붙여 보낸다.
+- 개발자 도구 콘솔에서 `localStorage.getItem(...)`이 토큰 원문을 돌려주거나 `document.cookie`에 인증 쿠키가 보이면 페이지 스크립트가 읽을 수 있는 상태다. `HttpOnly` 쿠키는 `document.cookie` 결과에 나타나지 않는다.
 - 쿠키 자동 전송을 쓰면 [[CSRF]] 방어가 필요하다. `SameSite`만으로 모든 CSRF가 사라진다고 가정하지 않는다.
 - `HttpOnly`는 토큰 원문 탈취를 줄이지만 XSS가 사용자의 브라우저에서 인증된 요청을 보내는 것까지 막지는 못한다. 출력 인코딩, CSP와 입력 경계를 함께 관리한다.
 
@@ -125,6 +127,8 @@ OAuth public client에 refresh token을 발급했다면 RFC 9700은 sender const
 
 2026-10-03 부분 검증: RFC 7519의 시간 claim과 선택성, RFC 8725의 알고리즘/키, issuer/audience와 토큰 유형 검증, RFC 7009/9700의 폐기와 refresh 보호, OWASP의 객체/tenant 인가 경계를 대조했다. 기존 출처 전체와 라이브러리, 실제 앱의 구현/배포 상태를 검증한 기록은 아니다.
 
+2026-10-12 부분 검증: 로그인 응답 본문과 `HttpOnly` 쿠키의 스크립트 접근 차이, `localStorage`의 출처 단위 공유를 OWASP HTML5 Security Cheat Sheet와 MDN Set-Cookie 문서에 대조했다. 특정 프레임워크와 브라우저에서 재현한 기록은 아니다.
+
 - [IETF, RFC 7515: JSON Web Signature](https://www.rfc-editor.org/rfc/rfc7515)
 - [RFC 7519 — JSON Web Token](https://www.rfc-editor.org/rfc/rfc7519)
 - [RFC 8725 — JSON Web Token Best Current Practices](https://www.rfc-editor.org/rfc/rfc8725)
@@ -133,10 +137,12 @@ OAuth public client에 refresh token을 발급했다면 RFC 9700은 sender const
 - [Authorization Cheat Sheet — OWASP](https://cheatsheetseries.owasp.org/cheatsheets/Authorization_Cheat_Sheet.html)
 - [Multi Tenant Security Cheat Sheet — OWASP](https://cheatsheetseries.owasp.org/cheatsheets/Multi_Tenant_Security_Cheat_Sheet.html)
 - [HTML5 Security Cheat Sheet — OWASP](https://cheatsheetseries.owasp.org/cheatsheets/HTML5_Security_Cheat_Sheet.html)
+- [Set-Cookie header — MDN](https://developer.mozilla.org/en-US/docs/Web/HTTP/Reference/Headers/Set-Cookie)
 - [JWT를 통째로 탈취 당하면 어떻게 될까요? — 코딩하는기술사](https://www.youtube.com/watch?v=2kbBj1w-k6M)
 - [JWT 토큰 하나로 로그인된다? 직접 시연해봤습니다 — 코딩하는기술사](https://www.youtube.com/watch?v=vCQvPeVAAis)
 - [JWT 탈취에 대비하기 — 코딩하는기술사](https://www.youtube.com/watch?v=-qeJbdP-bmU)
 - [웹보안 — 딩코딩코 (개발자 취업 필수 개념 강의)](https://fern-freeze-290.notion.site/37aade118e3680908aeee8bb5a517c7d)
+- [EVERY junior dev makes these security mistakes... — CodeHead](https://www.youtube.com/watch?v=AjUeQJxen1k)
 
 ## 관련 문서
 

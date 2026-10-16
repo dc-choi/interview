@@ -36,7 +36,7 @@ aliases: ["External API Integration Patterns", "외부 API 연동 패턴"]
 사용자 프로필 조회 실패 → 익명 모드
 ```
 
-**원칙**: "핵심 경로가 살아있으면 페이지는 뜨게 한다". Graceful Degradation.
+**원칙**: 핵심 경로가 살아있으면 페이지는 뜨게 한다. Graceful Degradation.
 
 ### 3. 병렬 호출 + Race
 여러 API를 동시에 호출해 **빠른 응답 먼저 사용**. Promise.race 활용. 둘 이상의 소스에서 같은 데이터 얻을 수 있을 때.
@@ -48,6 +48,15 @@ aliases: ["External API Integration Patterns", "외부 API 연동 패턴"]
 
 ### 5. 회로 차단 (Circuit Breaker)
 지속 실패 시 일정 시간 **호출 자체를 중단**하고 캐시, 기본값으로 응답. [[External-Service-Resilience#3. Circuit Breaker (서킷 브레이커)|Circuit Breaker]] 참고.
+
+## 통합 API의 경계: 집계와 의미 변환을 구분한다
+
+여러 공급사를 하나의 API 뒤로 모아도 공급사별 계약 차이는 남는다. Gateway Aggregation은 여러 호출의 결과를 합치는 패턴이고, Anti-Corruption Layer는 서로 다른 데이터 모델과 의미를 내부 모델에 맞게 번역하는 경계다. 하나의 통합 API에 두 역할이 함께 필요할 수 있다.
+
+- 조회 집계는 일부 공급사 실패를 허용할지 먼저 정한다. 부분 응답이 가능한 조회와 전체 데이터가 필요한 작업의 성공 기준을 구분한다.
+- 공급사별 상태와 오류를 내부 의미로 변환하되 거래와 데이터 정합성은 별도로 확인한다. 공통 응답 형식을 만들었다고 여러 공급사의 쓰기가 원자적으로 완료되지는 않는다.
+- 집계 계층 자체도 병목이나 단일 장애점이 될 수 있다. 타임아웃, 장애 격리, 부하 시험과 호출별 correlation ID를 함께 설계한다.
+- 의미 변환은 애플리케이션 내부 컴포넌트로도 구현할 수 있다. 복잡한 업무 조정은 변환 계층에 몰아넣지 않고 별도 책임으로 둔다.
 
 ## 거래형 연동 패턴
 
@@ -66,7 +75,7 @@ aliases: ["External API Integration Patterns", "외부 API 연동 패턴"]
 상세는 [[Idempotency]] 참고.
 
 ### 3. 취소 불가능한 작업은 마지막에
-연동 순서를 **"롤백 가능 → 롤백 불가"** 로 배치.
+연동 순서를 **롤백 가능 → 롤백 불가**로 배치.
 
 예시 (예약 플로우):
 1. 내부 DB에 `PENDING` 생성 (롤백 가능)
@@ -147,11 +156,13 @@ aliases: ["External API Integration Patterns", "외부 API 연동 패턴"]
 
 - 조회형과 거래형 연동의 핵심 가치 차이 (내결함성 vs 일관성)
 - 상태 머신이 예약, 주문 도메인에서 중요한 이유
-- "롤백 불가 작업은 마지막에" 원칙의 의미
+- 롤백 불가 작업은 마지막에 배치하는 원칙의 의미
 - Saga 패턴과 보상 트랜잭션
 - 배치 대사(Reconciliation)의 역할
 
 ## 출처
+- [Azure Architecture Center, Gateway Aggregation pattern](https://learn.microsoft.com/en-us/azure/architecture/patterns/gateway-aggregation)
+- [Azure Architecture Center, Anti-Corruption Layer pattern](https://learn.microsoft.com/en-us/azure/architecture/patterns/anti-corruption-layer)
 - [G마켓 기술블로그 — 오픈마켓 여행 플랫폼의 실전 API 연동 노하우](https://ebay-korea.tistory.com/115)
 - [AI 논문 도구를 만들며 마주친 네 번의 갈림길 — 요즘IT](https://yozm.wishket.com/magazine/detail/3881/)
 - [예약 취소와 환불에서 REQUIRES_NEW만으로 정합성을 지킬 수 없었던 이유 — velog](https://velog.io/@khs0305/%EB%B0%A5%ED%92%80-%ED%94%84%EB%A1%9C%EC%A0%9D%ED%8A%B8-%EC%98%88%EC%95%BD-%EC%B7%A8%EC%86%8C%ED%99%98%EB%B6%88%EC%97%90%EC%84%9C-REQUIRESNEW%EB%A7%8C%EC%9C%BC%EB%A1%9C-%EC%A0%95%ED%95%A9%EC%84%B1%EC%9D%84-%EC%A7%80%ED%82%AC-%EC%88%98-%EC%97%86%EC%97%88%EB%8D%98-%EC%9D%B4%EC%9C%A0)

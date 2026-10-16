@@ -1,7 +1,7 @@
 ---
 tags: [infrastructure, aws, cognito, auth, identity, oauth2, oidc, saa-c03]
 status: done
-verified_at: 2026-09-30
+verified_at: 2026-10-14
 category: "Infrastructure - AWS"
 aliases: ["Cognito", "Amazon Cognito", "AWS Cognito", "User Pool", "Identity Pool"]
 ---
@@ -29,8 +29,8 @@ Cognito가 관리하는 **앱 사용자 디렉터리**. 회원 정보 저장 + �
 - **회원 가입 / 로그인**: 이메일, 휴대폰, 사용자명 + 비밀번호. 비밀번호 정책, 검증 규칙 설정 가능.
 - **소셜 로그인**: Google, Facebook, Amazon, Apple 연동 (Federated Identity).
 - **기업 SSO**: SAML 2.0, OpenID Connect (OIDC) 자격 증명 공급자(IdP) 연동.
-- **MFA**: SMS, TOTP 기반 다단계 인증.
-- **Managed login**: AWS가 제공하는 로그인, 로그아웃, 비밀번호 관리 페이지. classic Hosted UI는 1세대 옵션이며 feature plan에 따라 managed login 사용 가능 범위가 달라진다.
+- **MFA**: SMS, TOTP 기반 다단계 인증. 이메일 OTP MFA는 Essentials 이상에서 쓸 수 있다.
+- **Managed login**: AWS가 제공하는 로그인, 로그아웃, 비밀번호 관리 페이지. classic Hosted UI는 1세대 옵션이며 Lite 요금제에서는 classic Hosted UI만 쓸 수 있다. 브랜딩, 현지화와 패스키 로그인은 [[Cognito-Managed-Login|Cognito managed login과 패스키]]에서 다룬다.
 - **Lambda Trigger**: 가입 전/후, 인증 전/후, 토큰 생성 시 등 라이프사이클 훅에서 Lambda 실행 (커스텀 검증, 사용자 마이그레이션, 환영 메일 등).
 - **사용자 인증 후 JWT(JSON Web Token) 발행** → API Gateway/ALB 인증, 또는 Identity Pool과 교환해 AWS 자격 증명 획득.
 
@@ -52,6 +52,24 @@ JWT payload를 decode하는 것만으로 신뢰하면 안 된다. user pool의 J
 - **앱 클라이언트 유형**: public client는 브라우저나 모바일에서 실행되어 신뢰할 서버 측 자원이 없으므로 client secret을 두지 않는다. confidential client는 secret을 안전하게 둘 수 있는 서버 측 앱이다. secret 유무는 생성 뒤 바꿀 수 없어 새 앱 클라이언트를 만들어야 한다. 앱 코드에 넣은 secret은 추출될 수 있어 보호가 되지 않으므로 public client는 secret 없이 authorization code와 PKCE를 쓰고, secret이 꼭 필요하면 서버나 프록시가 `SECRET_HASH`를 붙이게 한다.
 - **인증 흐름**: 직접 만든 로그인에서 사용자 이름과 비밀번호 인증은 SRP 흐름(`ALLOW_USER_SRP_AUTH`)을 쓰라고 AWS가 권고한다. custom auth는 Define auth challenge, Create auth challenge, Verify auth challenge response 세 Lambda 트리거로 challenge를 구성한다. 쓰지 않는 흐름은 켜지 않는다.
 - **도메인과 callback**: Cognito prefix 도메인에는 `aws`, `amazon`, `cognito`를 넣을 수 없다. callback URL은 앱 클라이언트에 미리 등록한 절대 URI와 일치해야 하고 테스트용 `http://localhost` 외에는 HTTPS가 필요하다. `response_type=token`으로 URL에 토큰을 받는 흐름은 implicit grant라 refresh token이 없고 PKCE와 호환되지 않으므로 신규 구성은 `code`와 PKCE를 쓴다.
+
+### 기능 요금제(feature plan)
+
+2026-10-14 Cognito 개발자 가이드와 요금 페이지 대조 기준이다. 요금은 us-east-1 예시이며 리전과 시점에 따라 다르다.
+
+| 요금제 | 주요 기능 | 직접, 소셜 로그인 MAU 요금 |
+|---|---|---|
+| Lite | 가입과 로그인, 소셜, SAML, OIDC 연동, M2M, Lambda trigger, SMS와 TOTP MFA, classic Hosted UI | 무료 10,000 MAU 뒤 구간별 단가 |
+| Essentials | Lite 전부, managed login과 branding editor, 패스키와 이메일, SMS OTP 로그인, 이메일 MFA, access token 사용자 정의 | 무료 10,000 MAU 뒤 MAU당 $0.015 |
+| Plus | Essentials 전부, threat protection(유출 비밀번호 탐지, 적응형 인증, 사용자 활동 로그와 내보내기) | 무료 구간 없이 MAU당 $0.02 |
+
+- 요금제는 user pool 단위로 고르며 app client별로 다르게 줄 수 없다. 새 user pool의 기본값은 Essentials이고 API에서 `UserPoolTier`를 생략해도 같다. 단 `UserPoolAddOns.AdvancedSecurityMode`를 `AUDIT`나 `ENFORCED`로 주면 tier는 `PLUS`여야 하며 생략하면 `PLUS`가 된다. 요금제는 언제든 바꿀 수 있지만, 일부 전환은 사용 중인 기능을 먼저 꺼야 한다.
+- SAML이나 OIDC로 연합 로그인한 MAU는 따로 세어 무료 50 MAU 뒤 MAU당 $0.015다. 무료 10,000 MAU는 Lite와 Essentials에만 있고 12개월 AWS 무료 기간이 끝나도 자동으로 사라지지 않는다. 무료 MAU는 user pool이 아니라 계정 또는 AWS Organization 단위로 세며 GovCloud(US) 리전에는 무료 구간이 없다. 2024-11-22 10:00(태평양 시간) 이전에 만든 user pool은 무료 50,000 MAU를 유지하고, 그런 기존 계정에서 새로 만든 Lite user pool의 MAU도 이 무료 구간에 포함할 수 있다.
+- 예: 직접 로그인 950,000 MAU면 Essentials는 (950,000 - 10,000) × $0.015 = $14,100, Plus는 950,000 × $0.02 = $19,000이다.
+- 이전 advanced security features(ASF) 요금 구조의 기능은 Essentials나 Plus로 옮겨졌다. AWS 요금 페이지는 ASF를 쓰는 user pool이 Plus로 바꾸면 월 비용을 최대 60% 줄일 수 있다고 제시한다. 같은 페이지의 예시처럼 Lite와 ASF 단가를 더해 us-east-1 기준으로 계산하면 절감률은 약 10만 MAU에서 58%, 95만 MAU에서 26%로 줄고, 약 493만 MAU부터는 Plus가 더 비싸다(2026-09-25 게시 Price List로 계산). 전환 전에 실제 MAU로 계산한다.
+- Plus의 threat protection은 audit-only로 시작해 위험 평가와 로그만 남기고, full-function에서 위험 수준별로 로그인 허용, MFA 요구, 로그인 차단, 사용자 알림을 자동 적용한다. full-function 전환 전 2주 이상 audit 운영이 권장되며, 적응형 인증의 MFA 대응을 쓰려면 user pool MFA를 Optional로 둔다.
+- 유출 비밀번호 탐지는 Cognito가 평문 비밀번호를 받는 작업에서만 동작한다. 로그인은 `USER_PASSWORD_AUTH`, `ADMIN_USER_PASSWORD_AUTH`, `USER_AUTH`의 `PASSWORD` 선택지와 managed login 로그인을 검사하고, `SignUp`과 managed login 가입, `ConfirmForgotPassword`, `NEW_PASSWORD_REQUIRED` 응답의 비밀번호도 검사한다. SRP 로그인과 custom auth는 검사하지 않고, 관리자가 `AdminSetUserPassword`로 정한 비밀번호도 검사하지 않는다. 적응형 인증은 SRP와 custom auth에도 적용된다. 연합 로그인과 client credentials(M2M) 요청에는 threat protection이 적용되지 않는다.
+- AWS WAF web ACL 연결은 모든 요금제에서 가능하며 WAF 요금이 따로 든다. threat protection은 요청별 위험만 평가하고 요청량은 보지 않으므로 대량 요청과 DDoS 방어는 WAF가 맡는다([[WAF-Anti-DDoS|WAF Anti-DDoS 관리형 규칙]]). ATP rule group을 쓰는 web ACL은 user pool에 연결할 수 없다.
 
 ## Identity Pool (자격 증명 풀, Federated Identities)
 
@@ -122,6 +140,7 @@ JWT payload를 decode하는 것만으로 신뢰하면 안 된다. user pool의 J
 - **Google/Facebook/SAML 로그인** → **Federated Identity** (User Pool 또는 Identity Pool에 외부 IdP 등록).
 - **회원 가입, 로그인 UI를 직접 만들고 싶지 않다** → **Managed login**. Lite plan이나 기존 구성은 classic Hosted UI일 수 있음.
 - **회원 가입, 인증 흐름에 커스텀 로직 삽입** → **Lambda Trigger** (Pre Sign-up, Post Confirmation, Pre Token Generation 등).
+- **유출 비밀번호 차단, 위험 기반 추가 인증** → **Plus 요금제의 threat protection**. 요청량 기반 공격은 **WAF**로 막는다.
 - **운영 환경의 가입, 인증 메일 발송량** → 기본 이메일 구성의 일일 한도 대신 **SES 구성**(sandbox 해제 필요).
 - **브라우저, 모바일 앱의 앱 클라이언트** → client secret 없는 public client + authorization code와 PKCE.
 - **IAM User**는 AWS 콘솔, CLI 사용자(직원)용이고, **Cognito는 앱 사용자(End User)용** — 둘은 다른 영역.
@@ -141,6 +160,13 @@ JWT payload를 decode하는 것만으로 신뢰하면 안 된다. user pool의 J
 - [Amazon Cognito API Reference — SignUp](https://docs.aws.amazon.com/cognito-user-identity-pools/latest/APIReference/API_SignUp.html)
 - [Amazon Cognito — Custom authentication challenge Lambda triggers](https://docs.aws.amazon.com/cognito/latest/developerguide/user-pool-lambda-challenge.html)
 - [Amazon Cognito — Configuring a user pool domain](https://docs.aws.amazon.com/cognito/latest/developerguide/cognito-user-pools-assign-domain.html)
+- [Amazon Cognito — User pool feature plans](https://docs.aws.amazon.com/cognito/latest/developerguide/cognito-sign-in-feature-plans.html)
+- [Amazon Cognito — Plus plan features](https://docs.aws.amazon.com/cognito/latest/developerguide/feature-plans-features-plus.html)
+- [Amazon Cognito — Advanced security with threat protection](https://docs.aws.amazon.com/cognito/latest/developerguide/cognito-user-pool-settings-threat-protection.html)
+- [Amazon Cognito — Working with compromised-credentials detection](https://docs.aws.amazon.com/cognito/latest/developerguide/cognito-user-pool-settings-compromised-credentials.html)
+- [Amazon Cognito — Associate an AWS WAF web ACL with a user pool](https://docs.aws.amazon.com/cognito/latest/developerguide/user-pool-waf.html)
+- [Amazon Cognito pricing](https://aws.amazon.com/cognito/pricing/)
+- [Amazon Cognito user pool feature tiers: Essentials and Plus — Amazon Web Services](https://www.youtube.com/watch?v=uwb-cJ6RUR8)
 - [Sungmin Kim 강사 — Web Identity Federation](https://www.inflearn.com/courses/lecture?courseId=326598&unitId=69307)
 - [Sungmin Kim 강사 — Cognito](https://www.inflearn.com/courses/lecture?courseId=326598&unitId=70076)
 - [Sungmin Kim 강사 — Cognito User Pools](https://www.inflearn.com/courses/lecture?courseId=326598&unitId=69308)
@@ -149,6 +175,7 @@ JWT payload를 decode하는 것만으로 신뢰하면 안 된다. user pool의 J
 
 ## 관련 문서
 
+- [[Cognito-Managed-Login|Cognito managed login과 패스키]]
 - [[IAM]]
 - [[AWS-Lambda]]
 - [[API-Gateway]]
