@@ -29,6 +29,15 @@ aliases: ["App Store Launch Checklist", "앱 스토어 첫 출시 준비", "1인
 5. **로그인 수단을 정한다.** 주 계정을 Google 로그인 같은 서드파티나 소셜 로그인으로 만들게 하면 Apple은 동등한 로그인 수단을 함께 제공하게 한다. 그 수단은 수집 데이터를 이름과 이메일로 제한하고, 이메일을 숨길 수 있으며, 동의 없이 광고 목적으로 앱 사용을 수집하지 않아야 한다(App Review Guidelines 4.8). 자체 계정만 쓰는 앱, 기존 교육이나 기업 계정으로만 로그인하는 앱 등은 예외다.
 6. **국내 판매자 정보를 넣는다.** Apple은 전자상거래법에 따라 한국 기반 개발자의 판매자 정보를 받아 App Store 제품 페이지에 표시한다. 개인은 이메일과 사업자등록번호, 조직은 상호, 이메일, 전화번호와 사업자등록번호이며, 사업자등록번호는 Paid Apps Agreement를 맺었으면 한국 세금 양식의 값이 자동으로 표시되고 유료 콘텐츠가 없으면 원할 때 넣는다. Google은 유료 앱이나 인앱결제를 배포하는 국내 사업자에게 사업자등록번호, 통신판매업 신고번호와 신고 기관을 받는다. 2023-08-31 전에 만든 계정은 개발자 페이지에 넣은 이 정보가 한국 사용자에게만 앱 등록 정보에 보이고, 이후 만든 계정은 About you 페이지에 넣는다. 그래서 수익을 낼 계획이면 사업자등록과 과세유형([[Business-Tax-Setup|사업자 세무 초기 설정]])을 먼저 정하고, 통신판매업 신고 대상과 면제 기준은 [[Marketplace-Seller-Launch|오픈마켓 셀러 첫 상품 출시]]로 확인한다. 신고가 면제된 경우의 입력 방법은 출시 전에 스토어에 확인한다.
 
+## Apple 심사 전 로그인, 광고와 완성도 점검
+
+아래는 2026-10-16에 App Review Guidelines와 User Privacy and Data Use를 대조한 범위다. 기존 계정, 세금, 빌드 요건 전체의 재검증 날짜는 아니다.
+
+- **로그인의 필요성:** 중요한 계정 기반 기능이 없다면 로그인 없이 사용할 수 있게 한다. 계정 생성을 지원하면 앱 안에서 계정 삭제를 제공한다(5.1.1(v)). 로그인 자체를 금지하는 규칙으로 해석하지 않는다.
+- **광고와 ATT:** 광고가 있다는 이유만으로 ATT 동의를 요구하는 것은 아니다. iOS/iPadOS/tvOS 14.5 이상에서는 추적하거나 기기의 광고 식별자에 접근하기 전에 ATT 허락이 필요하다. 추적에는 광고 타기팅이나 광고 측정을 위해 앱의 사용자/기기 데이터를 다른 회사의 앱, 웹사이트나 오프라인 데이터와 결합하는 행위, 데이터 브로커와 공유하는 행위가 포함되며 공식 문서의 제한된 예외를 함께 확인한다. 광고 SDK와 분석 SDK가 실제로 수집하고 결합하는 데이터까지 점검한다. ATT를 거절한 사용자에게 해시 이메일 등 다른 식별자를 써서 추적을 우회할 수 없다.
+- **문의 경로:** 앱과 Support URL에 쉽게 연락할 방법이 있어야 한다(1.5). 문의 페이지가 열리는지만 보지 말고 안내된 연락 경로가 실제로 작동하는지 확인한다.
+- **제출 완성도:** 임시 문구와 빈 웹사이트를 제거하고 URL, 메타데이터와 기기 동작을 점검한다(2.1). 로그인 기능이 있으면 심사용 계정 정보와 접근 가능한 백엔드를 준비한다. 법적 또는 보안상 계정 제공이 어렵다면 Apple 사전 승인을 받아 기능을 보여 주는 데모 모드를 제공할 수 있다. 이 심사용 모드와 미완성 데모 앱은 다르며, 데모/베타/체험판 앱의 배포는 TestFlight를 사용한다(2.2). 결함을 숨기는 표현 변경은 완성도 검증을 대신하지 않는다.
+
 ## 빌드 환경과 출시 뒤 유지 요건
 
 출시 뒤에도 스토어 요건 때문에 기능 변경 없이 다시 빌드하고 제출해야 할 때가 있다. 아래는 2026-10-11에 확인한 기준이다.
@@ -72,7 +81,8 @@ aliases: ["App Store Launch Checklist", "앱 스토어 첫 출시 준비", "1인
 - [Apple Developer, Provide tax information](https://developer.apple.com/help/app-store-connect/manage-tax-information/provide-tax-information)
 - [Apple Developer, Manage Korea compliance information](https://developer.apple.com/help/app-store-connect/manage-compliance-information/manage-korea-compliance-information)
 - [Apple Developer, App privacy details on the App Store](https://developer.apple.com/app-store/app-privacy-details/)
-- [Apple Developer, App Review Guidelines](https://developer.apple.com/app-store/review/guidelines/) — 1.5, 4.8, 5.1.1(i), 5.1.1(v)
+- [Apple Developer, App Review Guidelines](https://developer.apple.com/app-store/review/guidelines/) — 1.5, 4.8, 5.1.1(i), 5.1.1(v). 2026-10-16에는 1.5, 2.1, 2.2, 5.1.1(v)를 부분 대조
+- [Apple Developer, User Privacy and Data Use](https://developer.apple.com/app-store/user-privacy-and-data-use/) — 2026-10-16, ATT 적용 조건, SDK 책임과 대체 식별자 추적 제한
 - [Play Console Help, Get started with Play Console](https://support.google.com/googleplay/android-developer/answer/6112435?hl=en)
 - [Play Console Help, Choose a developer account type](https://support.google.com/googleplay/android-developer/answer/13634885?hl=en)
 - [Play Console Help, Required information to create a Play Console developer account](https://support.google.com/googleplay/android-developer/answer/13628312?hl=en)
