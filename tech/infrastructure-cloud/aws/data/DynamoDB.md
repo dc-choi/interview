@@ -18,6 +18,16 @@ AWS 완전관리형 **서버리스 NoSQL** 키-값/문서 데이터베이스. �
 - **IAM 통합** 보안. 빠른 스키마 전개에 적합
 - **한 자릿수 ms 지연시간**을 목표로 설계. 처리량은 Provisioned 또는 On-Demand 모드로 확장하지만 서비스 할당량과 파티션별 처리 특성에 따라 스로틀링될 수 있음
 
+## 서비스 내부 지연과 클라이언트 체감 지연을 나눈다
+
+부분 검증(2026-10-16): 지연 문제 해결과 CloudWatch 지표 공식 문서를 대조했다. `SuccessfulRequestLatency`는 성공한 요청의 DynamoDB 내부 처리 시간이며 네트워크 왕복과 클라이언트 작업은 포함하지 않는다. 서비스 지표가 낮다는 이유만으로 애플리케이션의 응답시간 목표를 만족했다고 판단하지 않는다.
+
+- 완전한 기본 키로 단일 항목을 다루는 대부분의 작업에서 한 자릿수 ms라는 설명은 평균 서비스 내부 지연 기준이다. 여러 항목을 반환하는 Query의 전체 응답시간이나 p99 보장으로 확대하지 않는다. 항목 크기와 결과 집합 크기도 지연에 영향을 준다.
+- SDK에서 측정한 전체 호출 시간과 같은 시간대의 서비스 지표를 비교한다. SDK 재시도로 최종 성공한 요청도 클라이언트 체감 시간은 길어질 수 있으므로 성공 여부와 시도 횟수를 함께 본다.
+- 운영 점검 제안: 같은 API, 항목 크기, 반환 건수와 부하 조건에서 같은 리전과 다른 리전의 호출을 비교한다. 평균뿐 아니라 p50과 p99를 기록하고 캐시 적중, 캐시 미스와 DB 직접 호출 경로를 구분한다. 리전 배치와 캐시 도입은 이 측정값과 업무의 일관성 요구를 함께 보고 결정한다.
+
+이번 대조는 지표의 측정 경계와 진단 원칙에 한정한다. 실제 부하 시험과 리전별 성능은 검증하지 않았으며 기존 기능 전체의 검증일은 유지한다.
+
 ## 키 구조
 
 - **Simple primary key**: partition key(PK) 하나. 같은 PK 값을 가진 아이템은 둘일 수 없다
@@ -291,6 +301,8 @@ MRSC는 정확히 세 리전에 replica 세 개 또는 replica 두 개와 witnes
 
 ## 출처
 
+- [AWS DynamoDB — Troubleshooting latency issues](https://docs.aws.amazon.com/amazondynamodb/latest/developerguide/TroubleshootingLatency.html)
+- [AWS DynamoDB — Metrics and dimensions](https://docs.aws.amazon.com/amazondynamodb/latest/developerguide/metrics-dimensions.html)
 - [AWS DynamoDB — How DynamoDB global tables work](https://docs.aws.amazon.com/amazondynamodb/latest/developerguide/V2globaltables_HowItWorks.html)
 - [How do I troubleshoot the provided key element does not match the schema error in DynamoDB? — AWS re:Post](https://repost.aws/knowledge-center/dynamodb-provided-key-element-error)
 - [AWS DynamoDB — GetItem API](https://docs.aws.amazon.com/amazondynamodb/latest/APIReference/API_GetItem.html)
