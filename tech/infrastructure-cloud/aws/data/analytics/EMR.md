@@ -36,9 +36,17 @@ AWS에서 Hadoop, Spark 같은 빅데이터 프레임워크를 실행하는 관�
 | 서비스 | 성격 |
 |--------|------|
 | **EMR** | Hadoop/Spark 등 빅데이터 프레임워크 매니지드 — 코드 직접 작성 |
-| **Glue** | 서버리스 ETL — Spark 기반이지만 인프라 관리 없음 |
+| **Glue** | 서버리스 ETL — Spark 배치와 스트리밍 작업, 클러스터 직접 관리 불필요 |
 | **Athena** | S3 데이터의 서버리스 SQL 조회가 대표 용도 |
 | **Redshift** | OLAP 데이터 웨어하우스 — 정형 분석 중심 |
+
+### 실행 엔진 선택과 카탈로그 공유를 나눈다
+
+부분 검증(2026-10-16): 이 비교와 카탈로그 연결 조건만 AWS 공식 문서로 대조했다. 다른 절의 검증일과 frontmatter 날짜는 유지한다.
+
+- **스트리밍 여부만으로 EMR을 고르지 않는다.** Glue도 Kinesis Data Streams, Kafka와 MSK를 입력으로 하는 스트리밍 ETL을 지원한다. 처리 위치는 job bookmark가 아닌 checkpoint로 추적한다. 필요한 변환과 지연 요구를 지원 범위에 대조하는 것은 서비스 선택 시의 점검안이다.
+- **EMR을 선택해도 Glue Data Catalog를 함께 쓸 수 있다.** EMR 5.8.0 이상에서 Spark의 Hive metastore로 구성해 클러스터 간 메타데이터를 공유할 수 있다. EMR on EC2의 instance profile에는 필요한 Glue 권한을 부여하고, 카탈로그 암호화 구성에 따른 KMS 권한도 확인한다.
+- **카탈로그의 존속과 데이터의 존속은 다르다.** Hive 테이블 생성 시 `LOCATION`을 생략하면 기본 warehouse 위치인 HDFS에 데이터가 놓일 수 있다. 이 데이터는 클러스터 종료 시 사라진다. 공유하거나 보존할 테이블은 S3 `LOCATION` 또는 S3를 가리키는 `hive.metastore.warehouse.dir`을 명시하고 실제 저장 위치를 확인한다.
 
 ## 클러스터 시작의 internal error 진단
 
@@ -159,6 +167,8 @@ EMR on EKS는 기존 EKS 클러스터에서 분석 워크로드를 컨테이너�
 
 ## 출처
 
+- [AWS, Streaming ETL jobs in AWS Glue](https://docs.aws.amazon.com/glue/latest/dg/add-job-streaming.html)
+- [AWS, Use AWS Glue Data Catalog with Spark on Amazon EMR](https://docs.aws.amazon.com/emr/latest/ReleaseGuide/emr-spark-glue.html)
 - [Apache Spark 3.5.7, Performance Tuning](https://spark.apache.org/docs/3.5.7/sql-performance-tuning.html)
 - [AWS, Configure Spark](https://docs.aws.amazon.com/emr/latest/ReleaseGuide/emr-spark-configure.html)
 - [AWS, Supported instance types with Amazon EMR](https://docs.aws.amazon.com/emr/latest/ManagementGuide/emr-supported-instance-types.html)
