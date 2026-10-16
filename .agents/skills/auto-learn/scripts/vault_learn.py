@@ -42,7 +42,7 @@ TRANSCRIBE = SKILL.parent / "memo" / "scripts" / "yt_transcript.py"
 S = Path(os.environ.get("VAULT_LEARN_STATE", "~/.local/state/vault-auto-learn")).expanduser()
 LABEL = "com.dcchoi.vault-learn."
 MODES = ("harvest", "instagram", "learn", "digest")
-# 지정한 친구 DM의 이름(instagram_dm_name)과 뉴스레터 발신 주소는 config.json에만 둔다.
+# 과거 DM 기록의 가림용 이름(instagram_dm_name)과 뉴스레터 발신 주소는 config.json에만 둔다.
 DEFAULTS = {"k": 6, "jobs": 2, "whisper_threads": 4, "learn_timeout_min": 180, "harvest_timeout_min": 90,
             "instagram_timeout_min": 45, "digest_timeout_min": 30, "idle_interval_min": 180, "stale_days": 180,
             "claude": "claude", "codex": "codex", "codex_model": "gpt-6-astra", "codex_effort": "high",
@@ -58,7 +58,7 @@ PERMANENT = re.compile(
     r"말소리를 찾지 못했다|전사 결과가 비어 있다|받을 수 있는 오디오 형식이 없다|영상 하나의 URL", re.I)
 LIVE = re.compile(r"라이브 방송이다|Premieres in|live event will begin", re.I)
 SYSTEMIC = re.compile(r"not a bot|HTTP Error 429|Too Many Requests", re.I)
-LIMIT = re.compile(r"usage limit|limit reached|hit your limit|rate.?limit|overloaded|\b(?:429|529)\b", re.I)
+LIMIT = re.compile(r"usage limit|limit reached|hit your (?:(?:session|weekly) )?limit|rate.?limit|overloaded|\b(?:429|529)\b", re.I)
 WIKILINK = re.compile(r"\[\[([^\]|#]*)(?:#[^\]|]*)?(?:\|[^\]]*)?\]\]")
 PHONE = re.compile(r"(?<!\d)0\d{1,2}[-.\s]\d{3,4}[-.\s]\d{4}(?!\d)")
 EMAIL = re.compile(r"[\w.+-]+@[\w-]+(?:\.[\w-]+)+")
@@ -867,12 +867,17 @@ def leftover_runs(kind=None):
     return out
 
 
-def finish_runs(since, kind):
-    """launchd learn, harvest 실행이 끝나면 그동안 연 그 종류의 run마다 게시하지 못한 파일과 그 내용 해시를 남긴다."""
+def finish_runs(since, kind, agent=None):
+    """launchd learn, harvest 실행이 끝나면 그동안 연 그 종류의 run마다 게시하지 못한 파일과 그 내용 해시를 남긴다.
+
+    agent를 주면 그 실행이 연 run만 닫는다. 같은 시간대에 대화형 세션이 연 run의 plan을 비우지 않는다.
+    """
     dirty = set(dirty_paths())
     for path in (S / "runs").glob("*/manifest.json"):
         m = read_json(path, {}) or {}
         if m.get("kind") != kind or "ended" in m or dt.datetime.fromisoformat(m["started"]).timestamp() < since:
+            continue
+        if agent is not None and m.get("agent") != agent:
             continue
         m["files"] = [f for f in m["files"] if f in dirty]
         if m.get("engine") == "codex":
@@ -906,7 +911,7 @@ def cmd_begin(a):
         m = {"run": run, "kind": a.kind, "started": now().isoformat(timespec="seconds"), "status": "open",
              "head": git("rev-parse", "HEAD").stdout.strip(),
              "baseline_dirty": [f for f in dirty_paths() if f not in mine], "files": mine,
-             "engine": os.environ.get("VAULT_LEARN_ENGINE", "claude"),
+             "engine": os.environ.get("VAULT_LEARN_ENGINE", "claude"), "agent": os.environ.get("VAULT_LEARN_AGENT", ""),
              "adopted": [{"run": r, "files": f} for r, f in adopted.items()]}
         save_manifest(m)
     emit({"run": run, "foreign_dirty": m["baseline_dirty"], "adopted": m["adopted"], "unpushed": count_unpushed()})
@@ -1289,6 +1294,9 @@ def cmd_digest_data(a):
 
 def cmd_inbox_reindex(a):
     """단서 파일을 정리(가운뎃점, 본문의 연락처, 지정한 친구 이름)하고 INDEX.tsv와 본 id 목록을 다시 만든다."""
+    allowed = {"mail"} if a.source == "email" else ({"saved"} if a.source == "instagram" else set())
+    if not set(a.complete) <= allowed:
+        raise ValueError(f"잘못된 complete: {a.source}")
     root, prefix = S / "inbox" / a.source, INBOX[a.source] + ":"
     status = {r["key"][len(prefix):]: r["result"] for r in read_jsonl(S / "digests" / "log.jsonl")
               if str(r.get("key", "")).startswith(prefix)}
@@ -1330,7 +1338,7 @@ def cmd_inbox_reindex(a):
     seen = set(read_lines(seen_file(a.source)))
     new_seen = [r["id"] for r in records if r["id"] not in seen]
     changed = text != "\n".join(read_lines(root / "INDEX.tsv")) + "\n"
-    # 처음부터 모으기(뉴스레터 소급, Instagram 저장 글과 DM)를 끝낸 부분과 날짜. 다음 수집은 최신 항목만 본다.
+    # 처음부터 모으기(뉴스레터 소급, Instagram 저장 글)를 끝낸 부분과 날짜. 과거 DM 날짜는 보존한다.
     state = (read_json(root / "STATE.json", {}) or {}) | {part: str(dt.date.today()) for part in a.complete}
     if not a.dry_run:
         write_text(root / "INDEX.tsv", text)
@@ -1358,7 +1366,7 @@ def cmd_email_query(a):
 
 
 def cmd_lead_id(a):
-    """DM에서 본 외부 링크의 수집함 id. 같은 링크(조각 제외)는 늘 같은 id다."""
+    """외부 링크의 수집함 id. 같은 링크(조각 제외)는 늘 같은 id다."""
     print("link-" + hashlib.sha1(urllib.parse.urldefrag(a.url.strip())[0].encode()).hexdigest()[:12])
     return 0
 
@@ -1469,16 +1477,30 @@ def agent_rules(mode):
     return allow, deny
 
 
+def workflow_sections(mode, engine):
+    root = SKILL.parents[2] / (".agents" if engine == "codex" else ".claude")
+    path = root / "skills" / "auto-learn" / "SKILL.md"
+    sections = re.split(r"(?m)^## ", path.read_text(encoding="utf-8"))[1:]
+    wanted = {"구성", "공통 원칙", f"{mode} 모드", "운영"}
+    if engine == "codex":
+        wanted.add("Codex 실행 차이")
+    selected = {part.split("\n", 1)[0]: "## " + part for part in sections}
+    if not wanted <= selected.keys():
+        raise ValueError(f"auto-learn 필수 절차가 없다: {sorted(wanted - selected.keys())}")
+    return "\n".join(part for name, part in selected.items() if name in wanted)
+
+
 def agent_prompt(mode, conf):
     chrome = (" Chrome이 없거나 연결되지 않았으면 CHROME_UNAVAILABLE만 출력한다. "
               "자동 승인이나 정책이 브라우저 동작을 거부했으면 POLICY_BLOCKED만 출력하고 끝낸다. "
               "정책 거부를 연결 실패로 바꾸거나 다른 엔진과 브라우저로 우회하지 않는다.")
     extra = {"learn": f" K={conf['k']}.", "harvest": chrome, "instagram": chrome,
              "digest": f" 날짜는 {dt.date.today()}이다."}
-    return (f"auto-learn 스킬의 {mode} 모드를 launchd에서 무인으로 실행한다. 먼저 {SKILL / 'SKILL.md'}를 읽고 "
-            f"공통 원칙과 {mode} 절차를 그대로 따른다. 상태 디렉터리는 {S}이고 VL은 `python3 {SCRIPT}`다. "
+    return (f"auto-learn 스킬의 {mode} 모드를 launchd에서 무인으로 실행한다. 아래에 제공한 스킬의 공통 원칙과 "
+            f"{mode} 절차를 따른다. 같은 스킬을 다시 읽지 않는다. 상태 디렉터리는 {S}이고 VL은 `python3 {SCRIPT}`다. "
             "사용자에게 물을 수 없으므로 판단이 서지 않는 항목은 deferred로 남기고 넘어간다. "
-            "마지막 줄에는 절차가 정한 결과 JSON 한 줄만 출력한다." + extra[mode])
+            "마지막 줄에는 절차가 정한 결과 JSON 한 줄만 출력한다." + extra[mode]
+            + "\n\n" + workflow_sections(mode, "claude"))
 
 
 def last_result(text):
@@ -1506,10 +1528,12 @@ def engine_settings(conf):
     return settings
 
 
-def engine_backoff(engine):
+def engine_backoff(engine, mode=None):
     value = read_json(S / "backoff" / f"{engine}.json", {}) or {}
     if not value and engine == "claude":
         value = read_json(S / "backoff.json", {}) or {}  # 기존 전역 한도는 Claude 실행에서 생겼다.
+    if mode and value.get("reason") == "chrome" and mode not in ("harvest", "instagram"):
+        return {}
     return value
 
 
@@ -1517,7 +1541,7 @@ def engine_candidates(mode, conf, ignore_backoff=False):
     setting = engine_settings(conf)[mode]
     first = setting["primary"] if setting["engine"] == "alternate" else setting["engine"]
     engines = [first, next(e for e in ENGINES if e != first)] if setting["engine"] == "alternate" else [first]
-    return [e for e in engines if ignore_backoff or engine_backoff(e).get("until", 0) <= time.time()]
+    return [e for e in engines if ignore_backoff or engine_backoff(e, mode).get("until", 0) <= time.time()]
 
 
 def cmd_engine(a):
@@ -1547,7 +1571,11 @@ def set_backoff(text, engine="claude", reason="limit"):
     n = previous.get("n", 0) + 1
     reset = re.search(r"\|(\d{10})\b", text)
     reset_at = int(reset.group(1)) if reset else 0
-    until = reset_at + 60 if reset_at > time.time() else time.time() + min(900 * 2 ** min(n - 1, 5), 8 * 3600)
+    current = time.time()
+    delay = 2 * 3600 if reason == "limit" else min(900 * 2 ** min(n - 1, 5), 8 * 3600)
+    until = reset_at + 60 if reset_at > current else current + delay
+    if reason == "limit":
+        until = min(until, current + delay)
     local = dt.datetime.fromtimestamp(until).astimezone().isoformat(timespec="minutes")
     write_json(S / "backoff" / f"{engine}.json", {"n": n, "until": until, "until_local": local, "reason": reason})
     if engine == "claude":
@@ -1555,7 +1583,9 @@ def set_backoff(text, engine="claude", reason="limit"):
     return local
 
 
-def clear_backoff(engine):
+def clear_backoff(engine, mode=None):
+    if mode and not engine_backoff(engine, mode):
+        return
     (S / "backoff" / f"{engine}.json").unlink(missing_ok=True)
     if engine == "claude":
         (S / "backoff.json").unlink(missing_ok=True)
@@ -1617,7 +1647,7 @@ def codex_command(mode, conf, output, verify=False, run=None):
            "read-only" if readonly else "workspace-write", "-C", str(REPO), "-m",
            "gpt-6-astra" if verify else conf["codex_model"],
            "-c", f'model_reasoning_effort="{"ultra" if verify else conf["codex_effort"]}"',
-           "-c", 'service_tier="fast"', "-c", 'web_search="live"' if mode == "learn" else 'web_search="disabled"',
+           "-c", "features.fast_mode=false", "-c", 'web_search="live"' if mode == "learn" else 'web_search="disabled"',
            "-c", "mcp_servers.playwright.enabled=false", "-c", "features.multi_agent=false",
            "-c", 'shell_environment_policy.set.VAULT_LEARN_ENGINE="codex"',
            "-c", "shell_environment_policy.set.VAULT_LEARN_STATE=" + json.dumps(str(S)),
@@ -1641,8 +1671,8 @@ def codex_command(mode, conf, output, verify=False, run=None):
 
 
 def codex_prompt(mode, conf, run=None, digest=None):
-    skill = REPO / ".agents" / "skills" / "auto-learn" / "SKILL.md"
-    text = (f"Read {skill} and follow common principles and {mode} mode. Read root and applicable domain AGENTS.md. "
+    text = (f"Follow the auto-learn workflow sections below for {mode}; they are already provided, do not reread SKILL.md. "
+            "Read root and applicable domain AGENTS.md unless already present in context. "
             f"State S={S}; VL=`python3 {SCRIPT}`. Noninteractive: defer uncertain items. "
             "Do not commit, push, publish, discard, restore, install jobs, change config, or invoke another AI CLI. "
             "Do not read ~/.ssh, ~/.aws, ~/.gnupg, ~/.netrc, credential/auth/session files, or Claude configuration. "
@@ -1656,26 +1686,39 @@ def codex_prompt(mode, conf, run=None, digest=None):
                  "Do not change manifest.json directly. Never edit files that plan rejected. "
                  f"Final JSON must include mode={mode!r} and run={run!r}. ")
     if mode == "learn":
-        text += (f"K={conf['k']}. Final response is one JSON object with mode and run. "
+        text += (f"K={conf['k']}. For existing-document merges, plan category indexes only when their content needs changing. "
+                 "Read the index first: if the document is already linked, no checkbox or summary needs updating, and domain rules "
+                 "require no index change, leave that index out of the plan. A dirty unchanged index does not block a clean document. "
+                 "New, moved, unlinked, or newly completed documents still require applicable index updates and normal plan approval. "
+                 "Final response is one JSON object with mode and run. "
                  "Do not run VL enqueue because queue/seen state is runner-owned. "
                  "Return discovered YouTube links as actions.enqueue=[{url:URL,source:PICK_KEY}]; outer runner enqueues them. ")
     if mode in ("harvest", "instagram"):
         text += ("The user explicitly requires real Chrome, not iab or standalone Playwright. "
-                 "Read installed chrome:control-chrome SKILL.md; discover node_repl js, import its absolute browser-client.mjs, "
-                 "select agent.browsers.get('chrome') and read complete documentation. "
+                 "If mcp__cua_repl is exposed, use its documented cua API with the named Chrome browser and read complete documentation. "
+                 "Otherwise read installed chrome:control-chrome SKILL.md, checking both the plugin cache and "
+                 "/Applications/ChatGPT.app/Contents/Resources/plugins/openai-bundled/plugins/chrome/skills/control-chrome/SKILL.md; "
+                 "discover node_repl js, import its absolute browser-client.mjs, select agent.browsers.get('chrome') "
+                 "and read complete documentation. A missing legacy skill alone is not CHROME_UNAVAILABLE when CUA is exposed. "
                  "Its documented internal browser-use backend is authorized. No alternate browser backend. "
                  "If automatic approval or policy rejects a browser action, return POLICY_BLOCKED; do not retry or switch engines/surfaces. "
-                 "Only missing/disconnected Chrome setup returns CHROME_UNAVAILABLE. If Instagram/Gmail requires login, return "
-                 "INSTAGRAM_LOGGED_OUT/GMAIL_LOGGED_OUT. Open new tabs; close only your tabs. "
+                 "Only missing/disconnected Chrome setup returns CHROME_UNAVAILABLE. For Instagram, follow the workflow to log out "
+                 "of a different account and enter the exact configured Instagram account from the saved-login screen; "
+                 "never infer it from Threads. Return INSTAGRAM_LOGGED_OUT only if that saved login cannot be completed "
+                 "or the target account cannot be verified. If Gmail requires login, return GMAIL_LOGGED_OUT. "
+                 "Open new tabs; close only your tabs. "
                  "Use supported Chrome AX/UI and read-only DOM inspection. Read youtube_subs.js/threads_extract.js "
                  "as extraction format examples only; do not execute their mutable page code. "
-                 "Never type, press keys or double-click in Gmail/Instagram; never like/save/send/archive/delete/mark-read. "
-                 "Open already-read mail by URL only; unread/uncertain rows are list-only. Read only user-sent DM items. "
+                 "Never type, press keys or double-click in Gmail/Instagram; never like/save/send/reply/archive/delete/change-labels or explicitly mark read/unread. "
+                 "Collect Instagram saved posts only. Never open or read Instagram DM lists/conversations or create DM leads. "
                  "Write inbox files but do not run inbox-reindex; outer runner performs it. "
-                 "Final response JSON may include actions.complete={email:['mail'],instagram:['saved','dm']} "
+                 "Final response JSON may include actions.complete={email:['mail'],instagram:['saved']} "
                  "only for fully scanned portions. ")
     if mode == "harvest":
-        text += ("Use Gmail through Chrome with the same read-only mail rules. Write subscriptions TSV under S/tmp. "
+        text += ("Use Gmail through Chrome. Standing user authorization (2026-10-08): open registered newsletter bodies by URL "
+                 "regardless of unread or uncertain read status, including incidental marking as read; no per-run confirmation is needed. "
+                 "This permission covers newsletter viewing only; all other mail restrictions above remain. "
+                 "Use list-only only when the body cannot be retrieved. Write subscriptions TSV under S/tmp. "
                  "Use VL channels-merge --rows PATH --dry-run [--complete] for pending channel preview. "
                  "Do not use channels-set or real channels-merge. Add approved learning channels only after successful plan. "
                  "Final JSON actions={subscriptions:PATH,subscriptions_complete:true|false,"
@@ -1686,7 +1729,7 @@ def codex_prompt(mode, conf, run=None, digest=None):
                  "The runner supplies selected data below. Return only Markdown with ## 변경 and ## 핵심 3가지. "
                  "If changes is empty use 없음 under ## 변경. Read changed documents to choose three useful points.\n"
                  + json.dumps(digest, ensure_ascii=False))
-    return text
+    return workflow_sections(mode, "codex") + "\n\nRunner instructions (override workflow execution details):\n" + text
 
 
 def codex_final(text):
@@ -1728,8 +1771,12 @@ def verify_codex(run, conf, files):
               "and untracked full files. Follow original source paths/primary URLs in the documents, verify facts, "
               "dates, scope, domain routing, wiki links, PII, faith exclusion, U+00B7 and verified_at rules. "
               "Do not edit files or execute state mutations. Never read credentials or private config outside the task. "
-              'Return only JSON {"ok":true|false,"findings":[{"kind":"confirmed|conditional|unverified",'
-              '"file":"path","reason":"evidence"}]}. Set ok false for confirmed defects or material unverified claims.')
+              'Return only JSON {"ok":true|false,"findings":[{"kind":"confirmed|conditional|unverified|limitation",'
+              '"file":"path","reason":"evidence"}]}. '
+              "Use confirmed for defects and unverified for material claims lacking evidence; either requires ok false. "
+              "Use limitation only for non-blocking review coverage limits that do not undermine any added claim; "
+              "explain which evidence supports those claims despite the limit. Do not classify unsupported claims as limitations. "
+              "Use conditional for risks whose triggering conditions are not established. Set ok true only if no blocker remains.")
     rc, path, final = call_codex("learn", conf, prompt, verify=True)
     value = json_response(final)
     ok = rc == 0 and value.get("ok") is True and isinstance(value.get("findings"), list)
@@ -1737,7 +1784,10 @@ def verify_codex(run, conf, files):
     if not isinstance(findings, list):
         findings = []
         ok = False
-    if any(not isinstance(f, dict) or f.get("kind") not in ("confirmed", "conditional", "unverified") for f in findings):
+    if any(not isinstance(f, dict)
+           or f.get("kind") not in ("confirmed", "conditional", "unverified", "limitation")
+           or any(not isinstance(f.get(key), str) or not f[key].strip() for key in ("file", "reason"))
+           for f in findings):
         ok = False
     if any(f.get("kind") in ("confirmed", "unverified") for f in findings if isinstance(f, dict)):
         ok = False
@@ -1781,7 +1831,7 @@ def codex_actions(mode, value, published=False, cache=False):
         if cache:
             return
         for source in ("threads", "email") if mode == "harvest" else ("instagram",):
-            allowed = {"mail"} if source == "email" else ({"saved", "dm"} if source == "instagram" else set())
+            allowed = {"mail"} if source == "email" else ({"saved"} if source == "instagram" else set())
             parts = (actions.get("complete", {}) or {}).get(source, [])
             if not isinstance(parts, list) or not set(parts) <= allowed:
                 raise ValueError(f"잘못된 complete: {source}")
@@ -1920,8 +1970,8 @@ def agent_has_work(mode, conf):
             log("digest: 오늘 다이제스트가 이미 있다")
             return False
         return True
-    if mode == "instagram" and not (conf["instagram_saved_url"] or conf["instagram_dm_name"]):
-        log("instagram: config.json에 저장 글 주소와 DM 이름이 없다")
+    if mode == "instagram" and not conf["instagram_saved_url"]:
+        log("instagram: config.json에 저장 글 주소가 없다")
         return False
     if mode in ("harvest", "instagram"):
         if subprocess.run(["pgrep", "-x", "Google Chrome"], capture_output=True).returncode != 0:
@@ -1980,13 +2030,18 @@ def notify_digest():
     subprocess.run(["osascript", "-e", script], capture_output=True)
 
 
+def agent_log_paths(pattern):
+    entries = []
+    for path in (S / "logs" / "agent").glob(pattern):
+        with contextlib.suppress(FileNotFoundError):  # 다른 모드의 정리가 glob 이후 파일을 지울 수 있다.
+            entries.append((path.stat().st_mtime, path))
+    return [path for _, path in sorted(entries, reverse=True)]
+
+
 def prune_agent_logs(keep=300):
-    logs = sorted((S / "logs" / "agent").glob("*.log"), key=lambda p: p.stat().st_mtime, reverse=True)
-    for path in logs[keep:]:
-        path.unlink(missing_ok=True)
-    responses = sorted((S / "logs" / "agent").glob("*.response"), key=lambda p: p.stat().st_mtime, reverse=True)
-    for path in responses[keep:]:
-        path.unlink(missing_ok=True)
+    for pattern in ("*.log", "*.response"):
+        for path in agent_log_paths(pattern)[keep:]:
+            path.unlink(missing_ok=True)
 
 
 def execute_claude(mode, conf):
@@ -2000,6 +2055,11 @@ def execute_claude(mode, conf):
     result = last_result(text)
     failed = rc != 0 or not result or result.get("is_error")
     final = result.get("result") or ""
+    if mode == "learn":
+        value = json_response(final)
+        failed = failed or value.get("mode") != "learn" or bool(value.get("blocked") or value.get("error"))
+        failed = failed or value.get("status") in ("blocked", "failed", "scope_blocked", "verification_failed", "check_failed")
+        failed = failed or value.get("publish") not in ("published", "nothing", "deferred", "unverified")
     reason = fallback_reason(final, failed, transport_errors(text))
     reset = re.search(r"\|(\d{10})\b", text if failed else final)
     return {"engine": "claude", "log": path.name, "rc": rc, "reset": reset.group(0) if reset else "",
@@ -2020,6 +2080,10 @@ def cmd_agent(a):
     with locked(f"agent-{mode}", wait=False) as ok:
         if not ok:
             log(f"{mode}: 이전 실행이 아직 진행 중이다")
+            return 0
+        previous = read_json(S / "runs" / f"last-{mode}.json", {}) or {}
+        if mode == "learn" and not a.dry_run and previous.get("retry_until", 0) > time.time():
+            log("learn: 이전 실행 실패의 재시도 대기 중이다")
             return 0
         engines = engine_candidates(mode, conf, ignore_backoff=a.dry_run)
         if not engines:
@@ -2042,13 +2106,15 @@ def cmd_agent(a):
             return 0
         if not agent_has_work(mode, conf):
             return 0
-        # 두 엔진의 Chrome과 저장소 편집을 각각 한 실행으로 묶는다. 수동 편집은 아래 기준선 검사로 보호한다.
+        # 읽기 전용 모드도 HEAD와 보호 상태를 검사하므로 다른 자동 실행의 게시와 겹치지 않게 한다.
         chrome = locked("chrome") if mode in ("harvest", "instagram") else contextlib.nullcontext()
-        editing = locked("agent-write") if mode in ("learn", "harvest") else contextlib.nullcontext()
+        editing = locked("agent-write")
         attempts = []
         with chrome, editing:
             for engine in engine_candidates(mode, conf):  # 엔진마다 한 번, 한 slot에 최대 두 번만 실행한다.
                 since = int(time.time())
+                token = f"{os.getpid()}-{time.time_ns()}"
+                os.environ["VAULT_LEARN_AGENT"] = token  # 이 실행과 엔진 자식이 여는 run에만 붙는다.
                 try:
                     report = execute_codex(mode, conf) if engine == "codex" else execute_claude(mode, conf)
                 except FileNotFoundError as e:
@@ -2056,14 +2122,22 @@ def cmd_agent(a):
                 except (ValueError, GitError, OSError, subprocess.SubprocessError) as e:
                     report = {"engine": engine, "status": "failed", "reason": None, "note": str(e)}
                 finally:
+                    os.environ.pop("VAULT_LEARN_AGENT", None)
                     if mode in ("learn", "harvest"):
-                        finish_runs(since, mode)
+                        finish_runs(since, mode, token)
                 attempts.append(report)
-                write_json(S / "runs" / f"last-{mode}.json", {"at": now().isoformat(timespec="seconds"),
-                                                             "attempts": attempts})
+                last = {"at": now().isoformat(timespec="seconds"), "attempts": attempts}
+                # 엔진 한도는 기존 엔진별 백오프가 맡고, 범위/검증 등 실행 실패는 AI를 띄우기 전에 쉰다.
+                if mode == "learn" and report["status"] != "completed" and report.get("reason") not in (
+                        "limit", "auth", "chrome", "unavailable"):
+                    count = min(previous.get("retry_count", 0) + 1, 5)
+                    delay = 4  # 다음 1분 실행 주기를 포함해 통상 5분 안에 재시도한다.
+                    last |= {"retry_count": count, "retry_until": time.time() + delay * 60}
+                    log(f"learn: 실행 실패, {delay}분 뒤 재시도한다")
+                write_json(S / "runs" / f"last-{mode}.json", last)
                 reason = report.get("reason")
                 if report["status"] == "completed":
-                    clear_backoff(engine)
+                    clear_backoff(engine, mode)
                     log(f"{mode}: {engine} 완료 ({report.get('log', '')})")
                     if mode == "digest" and engine == "claude":
                         notify_digest()
@@ -2084,8 +2158,8 @@ def cmd_status(a):
     summary = state_summary()
     summary["last_agent_runs"] = {}
     for mode in MODES:
-        logs = sorted((S / "logs" / "agent").glob(f"{mode}-*.log"), key=lambda p: p.stat().st_mtime)
-        summary["last_agent_runs"][mode] = logs[-1].name if logs else None
+        logs = agent_log_paths(f"{mode}-*.log")
+        summary["last_agent_runs"][mode] = logs[0].name if logs else None
     emit(summary)
     return 0
 
@@ -2130,7 +2204,7 @@ def cmd_plists(a):
             # Instagram은 계정 제한을 피하려고 하루 세 번만 읽는다(2026-10-05 사용자 결정).
             "instagram": (["agent", "instagram"], {"StartCalendarInterval": [{"Hour": h, "Minute": 0}
                                                                              for h in (9, 15, 21)]}),
-            "learn": (["agent", "learn"], {"StartInterval": 1800}),
+            "learn": (["agent", "learn"], {"StartInterval": 60}),
             # 07:30이 본 실행이다. 밤새 learn이 사용량 한도에 걸려 백오프 중이거나 실패하면 그날 뒤 시각에 다시 한다.
             # 오늘 다이제스트가 있으면 agent_has_work가 엔진을 띄우지 않고 끝낸다.
             "digest": (["agent", "digest"], {"StartCalendarInterval": [{"Hour": h, "Minute": 30}
@@ -2149,8 +2223,8 @@ def cmd_plists(a):
 
 
 def selftest_engines():
-    global S, REPO, call_codex, verify_codex, cmd_publish, execute_claude, execute_codex, agent_has_work
-    original = S, REPO, call_codex, verify_codex, cmd_publish, execute_claude, execute_codex, agent_has_work
+    global S, REPO, call_codex, verify_codex, cmd_publish, execute_claude, execute_codex, agent_has_work, agent_rules, run_cli
+    original = S, REPO, call_codex, verify_codex, cmd_publish, execute_claude, execute_codex, agent_has_work, agent_rules, run_cli
     try:
         with tempfile.TemporaryDirectory() as tmp:
             REPO, S = Path(tmp) / "repo", Path(tmp) / "state"
@@ -2164,6 +2238,53 @@ def selftest_engines():
             git("add", ".")
             git("-c", "user.name=Test", "-c", "user.email=user@example.com", "commit", "-qm", "baseline")
             conf = DEFAULTS.copy()
+            # 다른 실행이 glob과 stat 사이에서 지운 로그 때문에 상태 조회나 정리가 실패하지 않는다.
+            real_stat = Path.stat
+            try:
+                def disappearing_stat(path, *args, **kwargs):
+                    if path.name.startswith("learn-gone."):
+                        path.unlink(missing_ok=True)
+                    return real_stat(path, *args, **kwargs)
+
+                for suffix in ("log", "response"):
+                    for age, name in enumerate(("old", "gone", "new"), 1):
+                        path = S / "logs" / "agent" / f"learn-{name}.{suffix}"
+                        path.write_text(name, encoding="utf-8")
+                        os.utime(path, (age, age))
+                Path.stat = disappearing_stat
+                captured = io.StringIO()
+                with contextlib.redirect_stdout(captured):
+                    cmd_status(None)
+                assert json_response(captured.getvalue())["last_agent_runs"]["learn"] == "learn-new.log"
+                prune_agent_logs(keep=1)
+                assert {p.name for p in (S / "logs" / "agent").iterdir()} == {"learn-new.log", "learn-new.response"}
+            finally:
+                Path.stat = real_stat
+            for path in (S / "logs" / "agent").iterdir():
+                path.unlink()
+            # 검증 한계만 남긴 통과는 수용하되, 중요한 미검증 주장과 잘못된 응답은 차단한다.
+            finding = {"file": "tech/A.md", "reason": "영상 화면은 확인하지 못했지만 추가 주장은 원문으로 확인했다"}
+            for kind, expected in (("limitation", True), ("conditional", True), ("confirmed", False),
+                                   ("unverified", False), ("unknown", False)):
+                value = {"ok": True, "findings": [finding | {"kind": kind}]}
+                call_codex = lambda *args, **kwargs: (0, Path("review.log"), json.dumps(value))
+                assert verify_codex("test", conf, ["tech/A.md"])[0] is expected, kind
+            for findings in ([{"kind": "limitation"}],
+                             [finding | {"kind": "limitation", "reason": " "}],
+                             [finding | {"kind": "limitation", "reason": None}],
+                             [finding | {"kind": "limitation", "file": 1}],
+                             [finding | {"kind": "limitation"}, finding | {"kind": "unverified"}]):
+                value = {"ok": True, "findings": findings}
+                call_codex = lambda *args, **kwargs: (0, Path("review.log"), json.dumps(value))
+                assert verify_codex("test", conf, ["tech/A.md"])[0] is False, findings
+            for rc, value in ((1, {"ok": True, "findings": []}),
+                              (0, {"ok": False, "findings": [finding | {"kind": "limitation"}]}),
+                              (0, {"ok": "true", "findings": []}), (0, {"ok": True}),
+                              (0, {"ok": True, "findings": {}}), (0, {"ok": True, "findings": [None]}),
+                              (0, {})):
+                call_codex = lambda *args, **kwargs: (rc, Path("review.log"), json.dumps(value))
+                assert verify_codex("test", conf, ["tech/A.md"])[0] is False, (rc, value)
+            call_codex = original[2]
             assert engine_candidates("learn", conf) == ["claude", "codex"]
             assert engine_candidates("learn", conf | {"primary": {"learn": "codex"}}) == ["codex", "claude"]
             write_json(S / "backoff.json", {"until": time.time() + 120})
@@ -2175,9 +2296,41 @@ def selftest_engines():
             clear_backoff("codex")
             assert engine_candidates("learn", conf | {"engine": {"learn": "claude"}}) == []
             clear_backoff("claude")
+            for engine in ENGINES:
+                for failures in (0, 10):
+                    for reset_after in (None, -60, 1800, 8 * 3600):
+                        started = time.time()
+                        reset_at = int(started) + reset_after if reset_after is not None else 0
+                        write_json(S / "backoff" / f"{engine}.json", {"n": failures})
+                        set_backoff(f"|{reset_at}" if reset_at else "", engine)
+                        until = engine_backoff(engine)["until"]
+                        if reset_after == 1800:
+                            assert until == reset_at + 60
+                        else:
+                            assert started + 7200 <= until <= time.time() + 7200
+                clear_backoff(engine)
+            set_backoff("", "codex", "chrome")
+            browser_backoff = engine_backoff("codex")
+            for mode in MODES:
+                expected = ["claude"] if mode in ("harvest", "instagram") else ["claude", "codex"]
+                assert engine_candidates(mode, conf) == expected
+            clear_backoff("codex", "learn")
+            clear_backoff("codex", "digest")
+            assert engine_backoff("codex") == browser_backoff
+            clear_backoff("codex", "harvest")
+            assert not engine_backoff("codex")
+            for reason in ("limit", "auth", "unavailable"):
+                set_backoff("", "codex", reason)
+                assert all(engine_candidates(mode, conf) == ["claude"] for mode in MODES)
+                clear_backoff("codex")
             assert fallback_reason("authentication failed", True) == "auth"
             assert fallback_reason("CHROME_UNAVAILABLE", False) == "chrome"
             assert fallback_reason("usage limit", True) == "limit"
+            for message in ("You've hit your session limit - resets 2:40pm (Asia/Seoul)",
+                            "You've hit your weekly limit - resets Oct 11 at 9am (Asia/Seoul)"):
+                assert fallback_reason(message, True) == "limit"
+                assert fallback_reason(message, False) is None
+                assert fallback_reason(message, True, policy="POLICY_BLOCKED") == "policy"
             assert fallback_reason("document about rate limit", False) is None
             assert fallback_reason("POLICY_BLOCKED", True) == "policy"
             assert fallback_reason('{"error":"POLICY_BLOCKED","detail":"authentication usage limit"}', True) == "policy"
@@ -2194,6 +2347,7 @@ def selftest_engines():
             assert fallback_reason("CHROME_UNAVAILABLE", True, policy=browser_policy_error(denied)) == "policy"
             assert transport_errors(json.dumps({"type": "turn.failed", "error": {"message": "usage limit"}})) == "usage limit"
             cmd = codex_command("learn", conf, S / "last.response")
+            assert "features.fast_mode=false" in cmd and not any("service_tier" in arg for arg in cmd)
             assert cmd[1:4] == ["-a", "never", "exec"] and "workspace-write" in cmd
             assert "danger-full-access" not in cmd and "--dangerously-bypass-approvals-and-sandbox" not in cmd
             assert "sandbox_workspace_write.writable_roots=[]" in cmd and "mcp_servers.playwright.enabled=false" in cmd
@@ -2335,6 +2489,46 @@ def selftest_engines():
                 assert not load_manifest(run).get("left") and len(publications) == 1
                 assert "User B" in (REPO / "tech/B.md").read_text()
                 git("restore", "tech/A.md", "tech/B.md")
+            # CLI 종료 코드가 0이어도 Claude가 보고한 학습 실패에는 다음 AI 호출을 막는다.
+            cli_calls = []
+            final_value = {"mode": "learn", "publish": "blocked"}
+
+            def fake_claude_cli(*args):
+                cli_calls.append(1)
+                path = S / "logs" / "agent" / "claude-result.log"
+                write_json(path, {"type": "result", "is_error": False, "result": json.dumps(final_value)})
+                return 0, path
+
+            run_cli, agent_has_work = fake_claude_cli, lambda *_: True
+            agent_rules = lambda *_: ([], [])  # 실제 CLI를 띄우지 않는 결과 분류 검사다.
+            for final_value in ({"mode": "learn", "publish": "blocked"},
+                                {"mode": "learn", "blocked": "repo"}, {},
+                                {"mode": "learn", "status": "verification_failed", "publish": "nothing"}):
+                assert execute_claude("learn", conf)["status"] == "failed"
+            final_value = {"mode": "learn", "publish": "blocked"}
+            cli_calls.clear()
+            with contextlib.redirect_stdout(io.StringIO()):
+                for _ in range(2):
+                    cmd_agent(argparse.Namespace(mode="learn", engine="claude", dry_run=False))
+            assert cli_calls == [1] and read_json(S / "runs" / "last-learn.json")["retry_until"] > time.time()
+            for publish in ("published", "nothing", "deferred", "unverified"):
+                final_value = {"mode": "learn", "publish": publish}
+                assert execute_claude("learn", conf)["status"] == "completed"
+            (S / "runs" / "last-learn.json").unlink()
+            agent_rules, run_cli = original[-2:]
+            # 모든 모드의 범위 검사가 다른 자동 실행의 정상 게시와 겹치지 않도록 같은 잠금을 유지한다.
+            locked_modes = []
+            def locked_execution(mode, _conf):
+                with locked("agent-write", wait=False) as acquired:
+                    assert not acquired, mode
+                locked_modes.append(mode)
+                return {"engine": "codex", "status": "completed"}
+
+            execute_codex = locked_execution
+            for mode in MODES:
+                with contextlib.redirect_stdout(io.StringIO()):
+                    cmd_agent(argparse.Namespace(mode=mode, engine="codex", dry_run=False))
+            assert locked_modes == list(MODES)
             # alternate 한 slot은 최대 두 번이며, 일반 실패와 범위 실패에는 교대하지 않는다.
             calls = []
             execute_claude = lambda *_: calls.append("claude") or {"engine": "claude", "status": "failed", "reason": "limit"}
@@ -2360,11 +2554,32 @@ def selftest_engines():
             with contextlib.redirect_stdout(io.StringIO()):
                 cmd_agent(argparse.Namespace(mode="learn", engine=None, dry_run=False))
             assert calls == ["claude"]
+            # 실패 뒤 다음 1분 주기에는 AI를 호출하지 않고, 반복 실패해도 대기는 4분으로 유지한다.
+            for minutes in (4, 4, 4, 4, 4, 4):
+                last = read_json(S / "runs" / "last-learn.json")
+                assert minutes * 60 - 5 < last["retry_until"] - time.time() <= minutes * 60
+                called = list(calls)
+                with contextlib.redirect_stdout(io.StringIO()):
+                    cmd_agent(argparse.Namespace(mode="learn", engine=None, dry_run=False))
+                assert calls == called
+                last["retry_until"] = 0
+                write_json(S / "runs" / "last-learn.json", last)
+                with contextlib.redirect_stdout(io.StringIO()):
+                    cmd_agent(argparse.Namespace(mode="learn", engine=None, dry_run=False))
+                assert calls == called + ["claude"]
+            last = read_json(S / "runs" / "last-learn.json")
+            last["retry_until"] = 0
+            write_json(S / "runs" / "last-learn.json", last)
+            execute_claude = lambda *_: {"engine": "claude", "status": "completed"}
+            with contextlib.redirect_stdout(io.StringIO()):
+                cmd_agent(argparse.Namespace(mode="learn", engine=None, dry_run=False))
+            assert "retry_until" not in read_json(S / "runs" / "last-learn.json")
             calls.clear()
             execute_claude = lambda *_: calls.append("claude") or {"engine": "claude", "status": "failed", "reason": "policy"}
             with contextlib.redirect_stdout(io.StringIO()):
                 cmd_agent(argparse.Namespace(mode="learn", engine=None, dry_run=False))
             assert calls == ["claude"]
+            (S / "runs" / "last-learn.json").unlink()  # 아래 독립 실행 검사는 백오프 없이 시작한다.
             codex_actions("learn", {"actions": {"enqueue": [{"url": "https://youtu.be/aaaaaaaaaaa", "source": "repost:x"}]}})
             assert rows(S / "queue" / "new.tsv")[0][:2] == ["aaaaaaaaaaa", "repost:x"]
             assert read_lines(S / "seen_videos") == ["aaaaaaaaaaa"]
@@ -2375,6 +2590,11 @@ def selftest_engines():
             else:
                 raise AssertionError("잘못된 enqueue를 받았다")
             assert len(rows(S / "queue" / "new.tsv")) == 1
+            save_manifest({"run": "mine", "kind": "learn", "started": now().isoformat(), "status": "open",
+                           "agent": "", "files": ["tech/A.md"]})
+            finish_runs(0, "learn", "other-agent")  # launchd 실행은 대화형 세션이 연 run을 닫지 않는다.
+            assert "ended" not in load_manifest("mine")
+            (run_dir("mine") / "manifest.json").unlink()
             (REPO / "tech/A.md").write_text("---\nstatus: done\n---\n\n# Owned\n", encoding="utf-8")
             owned_hash = file_hash("tech/A.md")
             save_manifest({"run": "toc", "kind": "learn", "started": now().isoformat(), "status": "open",
@@ -2417,11 +2637,22 @@ def selftest_engines():
                 else:
                     os.environ["VAULT_LEARN_ENGINE"] = prior_engine
     finally:
-        S, REPO, call_codex, verify_codex, cmd_publish, execute_claude, execute_codex, agent_has_work = original
+        S, REPO, call_codex, verify_codex, cmd_publish, execute_claude, execute_codex, agent_has_work, agent_rules, run_cli = original
 
 
 def cmd_selftest(a):
     global S
+    for engine in ENGINES:
+        for mode in MODES:
+            excerpt = workflow_sections(mode, engine)
+            headings = re.findall(r"(?m)^## (.+)$", excerpt)
+            assert {"구성", "공통 원칙", "운영", f"{mode} 모드"} <= set(headings)
+            assert ("Codex 실행 차이" in headings) == (engine == "codex")
+            assert not any(f"{other} 모드" in headings for other in MODES if other != mode)
+            assert "학습 영역은 개발, CS" in excerpt
+            if mode == "instagram":
+                assert "source: saved" in excerpt and "DM 목록과 대화에는 접근하지 않는다" in excerpt
+                assert "--complete dm" not in excerpt and "https://www.instagram.com/direct/inbox/" not in excerpt
     assert classify(1, "ERROR: [youtube] x: Join this channel to get access to members-only content") == "skip"
     assert classify(1, "오류: VAD가 말소리를 찾지 못했다. 음악이나 무음 위주의 오디오일 수 있다.") == "skip"
     assert classify(1, "ERROR: Sign in to confirm you’re not a bot") == "systemic"
@@ -2469,6 +2700,12 @@ def cmd_selftest(a):
         write_json(S / "config.json", {"instagram_dm_name": "테스트친구",
                                        "email_senders": [{"from": "jane.doe@corp.example", "name": "x", "private": True}]})
         assert {"테스트친구", "jane.doe"} <= personal_terms()
+        prompt = codex_prompt("instagram", DEFAULTS)
+        assert "Never open or read Instagram DM" in prompt and "instagram:['saved']" in prompt
+        assert "Read only user-sent DM items" not in prompt
+        assert "mcp__cua_repl" in prompt and "/Applications/ChatGPT.app/Contents/Resources/" in prompt
+        assert "POLICY_BLOCKED; do not retry or switch engines/surfaces" in prompt
+        assert not agent_has_work("instagram", DEFAULTS | {"instagram_dm_name": "테스트친구"})
         box = S / "inbox"
         (box / "email" / "m1.md").write_text("---\nid: m1\npublication: 레터\nsender: a@b.example\nsubject: 제목\n"
                                              "date: 2026-10-05T07:00:00+09:00\nharvested_at: 2026-10-05\n---\n\n"
@@ -2479,14 +2716,27 @@ def cmd_selftest(a):
                                                  "## Sender note\n\n테스트친구에게 a@corp.co.kr\n", encoding="utf-8")
         assert [(x["key"], x["title"], x["who"]) for x in inbox_leads(set())][:1] == [("email:m1", "제목", "레터")]
         assert "insta:x1" not in {x["key"] for x in inbox_leads(set())}  # 제외한 단서
+        write_json(box / "instagram" / "STATE.json", {"dm": "2026-10-04"})
+        for action in (
+            lambda: cmd_inbox_reindex(argparse.Namespace(source="instagram", dry_run=False, complete=["dm"])),
+            lambda: codex_actions("instagram", {"actions": {"complete": {"instagram": ["dm"]}}}),
+        ):
+            try:
+                action()
+            except ValueError:
+                pass
+            else:
+                raise AssertionError("Instagram DM completion accepted")
+        assert not (box / "instagram" / "INDEX.tsv").exists()
+        assert read_json(box / "instagram" / "STATE.json") == {"dm": "2026-10-04"}
         with open(os.devnull, "w") as null, contextlib.redirect_stdout(null):
-            cmd_inbox_reindex(argparse.Namespace(source="instagram", dry_run=False, complete=["dm"]))
+            codex_actions("instagram", {"actions": {"complete": {"instagram": ["saved"]}}})
             cmd_inbox_reindex(argparse.Namespace(source="email", dry_run=False, complete=[]))
         note = (box / "instagram" / "p1.md").read_text(encoding="utf-8")
         assert "테스트친구" not in note and "[연락처]" in note and "@a" in note
         assert "a@b.example" in (box / "email" / "m1.md").read_text(encoding="utf-8")  # frontmatter는 그대로 둔다.
         assert set(read_lines(seen_file("instagram"))) == {"p1", "x1"} and read_lines(seen_file("email")) == ["m1"]
-        assert (read_json(box / "instagram" / "STATE.json") or {}).get("dm") == str(dt.date.today())
+        assert read_json(box / "instagram" / "STATE.json") == {"dm": "2026-10-04", "saved": str(dt.date.today())}
         # harvest run은 학습 출처 목록 밖의 파일을 plan하지 못하고, 목록에 있는 채널은 로컬에서만 제외하지 못한다.
         write_json(run_dir("t-harvest") / "manifest.json", {"run": "t-harvest", "kind": "harvest", "files": [],
                                                               "baseline_dirty": []})
@@ -2547,11 +2797,11 @@ def main():
     add("digest-data", cmd_digest_data, "다이제스트 자료(지난 다이제스트 이후 커밋한 변경)").add_argument("--date")
     p = add("inbox-reindex", cmd_inbox_reindex, "단서 정리와 INDEX.tsv, 본 id 목록 재생성")
     p.add_argument("source", choices=tuple(INBOX))
-    p.add_argument("--complete", action="append", default=[], choices=("mail", "saved", "dm"),
-                   help="처음부터 모으기를 끝낸 부분(email은 mail, instagram은 saved와 dm)")
+    p.add_argument("--complete", action="append", default=[], choices=("mail", "saved"),
+                   help="처음부터 모으기를 끝낸 부분(email은 mail, instagram은 saved)")
     p.add_argument("--dry-run", action="store_true")
     add("email-query", cmd_email_query, "harvest의 Gmail 검색어와 발신자")
-    add("lead-id", cmd_lead_id, "DM에서 본 외부 링크의 수집함 id").add_argument("url")
+    add("lead-id", cmd_lead_id, "외부 링크의 수집함 id").add_argument("url")
     p = add("channels-merge", cmd_channels_merge, "Chrome에서 읽은 구독 목록을 channels.tsv에 합친다")
     p.add_argument("--rows", required=True, help="handle<TAB>title 행 파일")
     p.add_argument("--complete", action="store_true", help="목록 전체를 읽었을 때만 준다(구독 해지 반영)")
