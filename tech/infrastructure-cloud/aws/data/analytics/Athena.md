@@ -86,9 +86,19 @@ OpenX JSON SerDe에는 예상과 다른 행 수나 NULL이 나올 수 있다는 
 ### 3. 파티셔닝 (Partitioning)
 
 - `s3://bucket/logs/year=2026/month=05/day=15/...` 식으로 디렉터리를 컬럼 값별로 분리.
-- `WHERE year=2026 AND month=05` 조건이면 해당 파티션만 스캔 → 스캔량 1/N로 감소.
+- `WHERE year=2026 AND month=05` 조건이면 해당 파티션으로 스캔 범위를 좁힌다. 실제 감소량은 파티션별 데이터 분포와 파일 구성에 따라 달라진다.
 - `MSCK REPAIR TABLE` 또는 Glue Crawler로 파티션 메타데이터 갱신.
 - **Partition Projection**: 메타스토어 조회 없이 파티션을 계산식으로 추론 → 카탈로그 호출 비용, 지연 감소.
+
+### 파티션 수와 파일 크기를 함께 조정한다
+
+부분 검증(2026-10-16): Athena의 데이터 최적화 공식 문서를 대조했다. 파티션을 세분화하면 필터 범위를 줄일 수 있지만, 파티션마다 소량의 파일이 생기면 목록 조회와 파일별 요청 부담이 늘어난다. 파티션 키는 실제 쿼리의 필터 조건에 맞춘다.
+
+- 작은 파일이 많으면 적재 시 버퍼링하거나 Glue ETL 등으로 파일을 합치는 방식을 검토한다. 파일 병합과 파티션 키 변경은 별개이며, 날짜 경계를 합쳐 필요한 필터 효과까지 잃지 않도록 확인한다(설계 점검).
+- 압축 CSV나 JSON은 대체로 한 파일을 여러 작업자가 나눠 읽기 어렵다. 파일 수를 지나치게 줄이면 병렬성이 낮아질 수 있으므로 가장 큰 파일 하나로 합치는 것을 목표로 삼지 않는다.
+- `SlowDown: Please reduce your request rate`가 나면 단일 쿼리의 파일 수와 같은 데이터를 동시에 읽는 쿼리를 구분한다. 전자는 파일 구성과 조회 범위를, 후자는 동시 실행 조정을 우선 검토한다.
+
+변경 전후에 같은 데이터와 쿼리로 결과, 파일 수, 스캔량과 실행 시간을 비교한다(운영 점검 제안). 실제 병합이나 부하 시험은 수행하지 않았으며 기존 절 전체의 검증일은 유지한다.
 
 ## Workgroup
 
@@ -299,6 +309,7 @@ Hive 파티션을 복구할 때 쓰는 `MSCK REPAIR TABLE`은 Iceberg에서 지�
 
 ## 출처
 
+- [Amazon Athena, Optimize data](https://docs.aws.amazon.com/athena/latest/ug/performance-tuning-data-optimization-techniques.html)
 - [AWS Prescriptive Guidance, Recommended data layers](https://docs.aws.amazon.com/prescriptive-guidance/latest/defining-bucket-names-data-lakes/data-layer-definitions.html)
 - [AWS Whitepapers, Data lake foundation](https://docs.aws.amazon.com/whitepapers/latest/building-data-lakes/data-lake-foundation.html)
 - [Amazon Athena, Configure cross-account access to AWS Glue data catalogs](https://docs.aws.amazon.com/athena/latest/ug/security-iam-cross-account-glue-catalog-access.html)

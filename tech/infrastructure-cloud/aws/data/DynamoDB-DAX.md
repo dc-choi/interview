@@ -47,11 +47,24 @@ DAX(DynamoDB Accelerator)는 DynamoDB API와 호환되는 클러스터형 인메
 
 ## 체크포인트
 
+### 적중률과 메모리 압박을 함께 측정한다
+
+부분 검증(2026-10-16): DAX의 CloudWatch 지표 정의를 대조했다. 캐시가 있다는 사실만으로 고부하의 지연 목표를 충족한다고 판단하지 않는다.
+
+- `CacheMemoryUtilization`은 item cache와 query cache가 사용하는 캐시 메모리 비율이다. 데이터 퇴출은 100%에 도달하기 전부터 시작되며, 어느 노드든 100%에 도달하면 쓰기 요청이 스로틀링된다. 클러스터 평균뿐 아니라 노드별 상태를 확인한다.
+- `ItemCacheHits`와 `ItemCacheMisses`, `QueryCacheHits`와 `QueryCacheMisses`를 각각 비교해 어떤 읽기 경로가 DynamoDB로 넘어가는지 본다. 서로 다른 캐시의 적중 수를 같은 조회 성능으로 해석하지 않는다.
+- DAX의 `ThrottledRequestCount`에는 DynamoDB에서 발생한 스로틀링이 포함되지 않는다. DAX와 원본 테이블의 지표를 따로 확인한다.
+
+운영 점검 제안: 실제 읽기/쓰기 비율과 항목 크기를 재현하고 캐시 준비 전후, 메모리 사용 증가 구간의 클라이언트 지연과 지표를 함께 기록한다. 이는 검증 설계이며 실제 부하 시험 결과가 아니다. 기존 기능 전체의 검증일은 유지한다.
+
+### 설명할 수 있어야 할 경계
+
 - 반복되는 eventually consistent read에 μs 응답이 필요하면 DAX. strong read, 쓰기 가속, 집계 결과 캐싱은 DAX의 답이 아니다
 - DAX를 우회한 쓰기와 query cache가 옛 값을 주는 조건, write-around를 고르는 기준을 설명할 수 있는가
 
 ## 출처
 
+- [AWS DynamoDB — Viewing DAX metrics and dimensions](https://docs.aws.amazon.com/amazondynamodb/latest/developerguide/dax-metrics-dimensions-dax.html)
 - [AWS DynamoDB — In-memory acceleration with DAX](https://docs.aws.amazon.com/amazondynamodb/latest/developerguide/DAX.html)
 - [AWS DynamoDB — DAX: How it works](https://docs.aws.amazon.com/amazondynamodb/latest/developerguide/DAX.concepts.html)
 - [AWS DynamoDB — DAX and DynamoDB consistency models](https://docs.aws.amazon.com/amazondynamodb/latest/developerguide/DAX.consistency.html)
