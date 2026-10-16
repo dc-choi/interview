@@ -3,7 +3,7 @@ tags: [aws, elb, alb, nlb, gwlb, load-balancer, infrastructure]
 status: done
 category: "Infrastructure - AWS"
 aliases: ["ELB", "AWS ELB", "Elastic Load Balancer", "ALB", "NLB", "GWLB"]
-verified_at: 2026-10-10
+verified_at: 2026-10-16
 ---
 
 # ELB, Elastic Load Balancer
@@ -95,6 +95,15 @@ ELB가 트래픽을 보낼 **대상의 집합**.
 | SSL Offload | TLS 리스너 사용 시 가능 |
 
 **선택 기준**: UDP 또는 QUIC 트래픽, AZ별 고정 IP 또는 Elastic IP 요구, 높은 처리량과 낮은 지연이 중요한 게임, IoT 등.
+
+### 내부 NLB를 통한 자기 호출과 hairpinning
+
+2026-10-16 부분 검증: 대상 그룹의 클라이언트 IP 보존과 Proxy Protocol v2 문서를 대조했다. 내부 NLB에 등록된 대상이 같은 NLB로 연결하면 요청이 자신에게 돌아올 수 있다. 클라이언트 IP 보존이 켜져 있으면 이 NAT loopback(hairpinning)을 지원하지 않아 연결 오류가 발생할 수 있다. 다른 대상으로 전달된 연결까지 모두 실패한다고 일반화하지 않는다.
+
+- 같은 NLB 뒤의 대상에서 그 NLB로 다시 연결하는 경로를 피하는 방안을 먼저 검토한다. TCP/TLS 대상 그룹에서는 `preserve_client_ip.enabled=false`도 대안이며, 보존 설정 변경은 새 TCP 연결에만 적용된다.
+- 보존을 끄면 대상이 받는 소스 IP는 NLB의 사설 IP가 된다. 클라이언트 주소가 필요하면 지원되는 경로에서 Proxy Protocol v2를 검토하되, 애플리케이션이 이진 헤더를 해석할 수 있는지 먼저 확인한다.
+- Proxy Protocol v2를 켜면 헬스 체크 연결에도 헤더가 붙는다. 이를 해석하지 못하는 대상은 헬스 체크에 실패할 수 있으므로 실제 요청과 헬스 체크를 함께 확인한다.
+- UDP, TCP_UDP, QUIC, TCP_QUIC 대상 그룹에서는 IP 보존을 끌 수 없다. TCP/TLS의 해결 방법을 그대로 적용하지 않는다.
 
 ## GWLB — Gateway Load Balancer
 
