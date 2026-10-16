@@ -27,6 +27,7 @@ aliases: ["투자(Investing)", "Investing Map"]
 - [[Investment-Strategies|투자 전략]] — 액티브 vs 패시브, 효율적 시장 가설, 적립식, 마켓타이밍의 함정 ✅
 - [[Behavioral-Biases-Risk|행동 편향과 리스크 관리]] — 손실 회피, 군중 심리, 소셜 심리와 매매 신호의 구분, 규칙 기반 관리, 자기 통제 ✅
 - [[Backtesting-Pitfalls|백테스트의 함정]] — 미래 정보 누수, 과최적화, 비용, 표본 외 검증, 모의/실거래와 적립 계산의 구분 ✅
+- [[Social-Investment-Claims-Validation|소셜 자료의 투자 주장과 조사 후보]] — 미래 산업 10종목의 식별, 배분안, 금 가격 공식과 귀속 미검증 인용 ✅
 
 ## 처음 읽는 순서 추천
 

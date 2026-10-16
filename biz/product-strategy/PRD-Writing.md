@@ -78,6 +78,18 @@ PRFAQ를 작성할 때는 고객에게 전달할 가치와 팀이 해결해야 �
 
 이는 문서의 완성도를 제품 수요의 증거로 대체하지 않기 위한 점검이다. 잘 쓴 PRFAQ도 개발 착수나 출시를 보장하지 않으며, 검토 결과 만들지 않기로 결정하는 것도 자원 배분의 결과다.
 
+### FAQ와 시각 자료로 가정의 빈칸을 찾는다
+
+Working Backwards에서는 PR, FAQ와 시각 자료를 함께 발전시킨다. FAQ는 고객과 이해관계자가 물을 세부 사항을 다루고, 시각 자료는 처음부터 완성된 디자인보다 아이디어의 성숙도에 맞는 스케치, 와이어프레임과 스토리보드로 시작할 수 있다.
+
+작은 제품이나 외주에 적용할 때는 다음처럼 검토 질문을 나눌 수 있다. 이는 AWS의 방식을 적용한 예시이며 필수 문서 양식은 아니다.
+
+- **고객 관점:** 이용을 시작하려면 무엇이 필요하고, 원하는 결과를 얻지 못했을 때 어떤 도움을 받는가?
+- **제공자 관점:** 약속한 경험을 제공할 비용, 운영 책임과 미해결 가정은 무엇인가?
+- **경험의 연결:** 설명한 혜택이 실제로 어느 화면과 행동에서 나타나는지 간단한 흐름으로 보여 줄 수 있는가?
+
+검토 중 답하지 못한 질문은 문장을 매끄럽게 다듬어 감추지 않고 확인할 가정으로 남긴다. 문서와 그림의 일치는 설계 검토의 결과이며 실제 수요나 사용성 검증과는 구분한다.
+
 ### 근거 기반 우선순위
 
 - **사용자 근거**: 인터뷰 수, 설문 응답, 정량 지표
@@ -185,6 +197,7 @@ PRD는 **의견 대립 시 판단 기준점**이다. "디자이너와 개발자�
 
 ## 출처
 
+- [Building a culture of innovation to better serve citizens — AWS](https://aws.amazon.com/blogs/publicsector/building-culture-innovation-better-serve-citizens/)
 - [An insider look at Amazon's culture and processes — Amazon](https://www.aboutamazon.com/news/workplace/an-insider-look-at-amazons-culture-and-processes)
 - [AWS, Prioritize customer needs to deliver optimal business outcomes](https://docs.aws.amazon.com/wellarchitected/latest/devops-guidance/oa.ti.6-prioritize-customer-needs-to-deliver-optimal-business-outcomes.html)
 - [GOV.UK, How the live phase works](https://www.gov.uk/service-manual/agile-delivery/how-the-live-phase-works) — 운영과 지원 인력의 준비, 지속 개선 기준

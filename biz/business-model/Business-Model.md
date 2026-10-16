@@ -81,6 +81,12 @@ Alexander Osterwalder와 Yves Pigneur가 체계화하고 널리 알린 비즈니
 
 팬덤형 콘텐츠 구독에서는 기존 애착을 구독으로 전환해 LTV를 키우는 **팬 → 구독** 경로가 강하다. 다만 생필품 보충, 업무 효율, 렌탈처럼 반복 효용이 명확한 구독은 팬덤 없이도 성립할 수 있다. 여러 상품을 묶었다는 이유만으로 수요가 생기는 것은 아니므로, 대상 카테고리의 반복 문제와 유지 이유를 먼저 검증한다. 신규 구독자를 모집하는 구독 경제와 기존 팬을 적립, 혜택으로 유지하는 멤버십 모델([[Commerce-Member|커머스 회원 도메인]]의 락인)은 접근 방향이 다르다.
 
+### 구축형에서 SaaS로 전환할 때
+
+SaaS 전환은 구독 과금과 함께 반복 가능한 서비스 제공 방식을 설계하는 일이다. 고객마다 별도 버전과 운영 절차를 유지하면 고객 수에 따라 지원 부담도 늘 수 있다. 공통된 고객 관리, 운영과 배포 흐름, 고객이 가치를 얻기까지의 시간을 줄이는 온보딩이 확장성을 판단하는 기준이다(2026-10-10 AWS SaaS Architecture Fundamentals 대조).
+
+외주나 구축형 사업에 적용할 때는 다음을 검증 질문으로 둔다. 기존 고객의 맞춤 요구를 공통 제품으로 제공할 수 있는가? 신규 고객의 첫 사용까지 필요한 수작업은 무엇인가? 계약 성사 뒤에도 고객이 계속 쓰는 이유와 지원 비용을 확인했는가? 이는 전환을 결정하는 보편 공식이나 성과 보장이 아니라, 기능 완성과 반복 제공 가능성을 구분하기 위한 질문이다. 기술적 테넌트 격리는 [[SaaS-Regional-Data-Isolation|SaaS 리전별 데이터 격리]]에서 따로 다룬다.
+
 ## Unit Economics
 
 비즈니스의 단위당 수익성을 측정하는 핵심 지표이다.
@@ -167,6 +173,7 @@ Q. 비즈니스 모델은 어떻게 설계했는가?
 - 위 일반화한 예시를 본인의 실행이나 성과로 사용하지 않는다.
 
 ## 출처
+- [AWS, SaaS Architecture Fundamentals: SaaS is a business model](https://docs.aws.amazon.com/whitepapers/latest/saas-architecture-fundamentals/saas-is-a-business-model.html) — 공통 운영과 배포, 반복 가능한 온보딩
 - [AWS, Select the best pricing model](https://docs.aws.amazon.com/wellarchitected/latest/cost-optimization-pillar/select-the-best-pricing-model.html) — 시간당 지출 약정과 수요 변화에 맞춘 비용 비교
 - [AWS, Understanding how Savings Plans apply to your usage](https://docs.aws.amazon.com/savingsplans/latest/userguide/sp-applying.html) — 미사용 시간당 약정의 이월 불가, 2026-10-07 대조
 - [AI Transformation for Professional Services — Factory X](https://www.factoryx.co.uk/) — Defend, Operate, Grow와 단계별 검증 투자

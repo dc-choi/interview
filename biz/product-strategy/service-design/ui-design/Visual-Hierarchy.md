@@ -49,8 +49,9 @@ SaaS 대시보드처럼 정보가 빽빽한 화면에서 모든 카드에 강한
 | Space Grotesk | Space Mono에서 출발한 비례폭 산세리프다. 고정폭 서체로 오해하지 않고 본문 크기에서 글자 간격과 판독성을 확인한다 | [공식 저장소](https://github.com/floriankarsten/space-grotesk) |
 | Instrument Serif | 큰 크기를 위한 폭이 좁은 display serif다. 제목 후보로 검토하고 작은 본문에도 적합하다고 자동 확대하지 않는다 | [공식 저장소](https://github.com/Instrument/instrument-serif) |
 | Satoshi, General Sans | Fontshare 공식 목록의 검색 색인에서 배포와 Closed Source 표시를 확인했다. 다른 서체와 라이선스가 같다고 가정하지 않는다 | [Satoshi](https://www.fontshare.com/?q=Satoshi), [General Sans](https://www.fontshare.com/?q=General+Sans) |
+| Pretendard | Inter, 본고딕(Source Han Sans)과 M PLUS 1p를 바탕으로 다듬은 한글 포함 서체로 9가지 굵기와 가변 글꼴, 웹폰트 용량을 줄이는 동적 서브셋을 제공한다(2026-10-12 확인). 한글과 라틴 문자가 섞인 실제 문구에서 크기와 굵기의 균형을 비교한다 | [공식 저장소](https://github.com/orioncactus/pretendard) |
 
-Inter, Space Grotesk와 Instrument Serif의 공식 배포는 SIL Open Font License 1.1을 명시한다. Satoshi와 General Sans의 개별 라이선스 전문은 확인하지 못했으므로 허용 범위를 여기서 확정하지 않는다. 상업 이용, 수정, 재배포와 웹폰트 자체 호스팅 조건은 실제로 받을 파일의 라이선스로 확인한다. 비용 없이 내려받을 수 있다는 안내와 오픈소스 여부도 구분한다.
+Inter, Space Grotesk와 Instrument Serif의 공식 배포는 SIL Open Font License 1.1을 명시한다. Pretendard의 LICENSE도 SIL Open Font License 1.1이며 바탕 서체들의 저작권 고지를 함께 담고, README는 글꼴 단독 판매를 제외한 상업적 사용, 수정과 재배포를 허용한다고 안내한다. Satoshi와 General Sans의 개별 라이선스 전문은 확인하지 못했으므로 허용 범위를 여기서 확정하지 않는다. 상업 이용, 수정, 재배포와 웹폰트 자체 호스팅 조건은 실제로 받을 파일의 라이선스로 확인한다. 비용 없이 내려받을 수 있다는 안내와 오픈소스 여부도 구분한다.
 
 실무 비교는 다음 순서로 진행할 수 있다. 이는 제작사의 성능 보장이 아닌 적용 체크리스트다.
 
@@ -76,6 +77,22 @@ Inter, Space Grotesk와 Instrument Serif의 공식 배포는 SIL Open Font Licen
 - 1.4.8(AAA)의 충족 기법으로 블록 텍스트의 행간을 CSS로 1.5에서 2 사이로 지정하고(C21), 단 너비는 `max-width: 70em`처럼 상대 단위로 정해 창 크기를 바꿨을 때 줄 길이가 평균 80자 이하가 될 수 있게 한다(C20). C20은 80자만 다루므로 한국어처럼 CJK 문자로 쓴 본문은 1.4.8의 40자 기준으로 확인하고, C21이 다루지 않는 문단 간격(행간의 1.5배 이상)도 따로 확인한다.
 
 대시보드 절의 한국어 행간, 자간 조정은 작성자가 정하는 기본값의 문제다. 1.4.12는 그 기본값과 별개로 사용자가 간격을 키웠을 때 콘텐츠와 기능이 유지되는지를 본다.
+
+## UI 스타일과 반투명 재질
+
+플랫, 머티리얼, 글래스모피즘, 뉴모피즘, 네오브루탈리즘처럼 이름이 붙은 스타일은 많지만 업무 화면에서 정할 것은 이름보다 어느 층에 어떤 강도로 적용할지다. 테마는 다음 순서로 정할 수 있다. 이는 적용 제안이다.
+
+1. 첫인상, 기존 로고와 대표색을 따를지, 브랜드를 얼마나 드러낼지, 주 사용 환경, 피할 색과 글자 인상을 먼저 정한다.
+2. 이유가 다른 후보 2~3개를 실제 화면 전체에 적용해 비교한다. 대표색은 주요 버튼, 선택 상태와 링크처럼 의미가 있는 곳에 한정하는 안을 검토한다.
+3. 스타일 이름만 AI에게 전하면 기본 컴포넌트에 강조색만 바뀐 결과가 나오거나 해석이 어긋날 수 있다. 그 스타일의 구현 전략과 적용 범위를 예시로 먼저 받아 합의한 뒤 적용한다([[Claude-Design-Handoff|생성 UI의 기본값 수렴]]).
+
+반투명 재질은 뒤의 내용이 비쳐야 효과가 나서 데이터를 읽는 면과 부딪히기 쉽다. 2026-10-12에 대조한 플랫폼 지침도 적용 층을 제한한다.
+
+- **Apple HIG(2025-09-09 갱신):** Liquid Glass는 탭 바와 사이드바 같은 조작과 내비게이션 층에 쓰고 콘텐츠 층에는 쓰지 않으며, 사용자 지정 컨트롤에도 아껴 쓰라고 한다. 콘텐츠 층에는 표준 재질을 쓰고, 더 불투명한 두꺼운 재질이 가는 글자와 세밀한 요소의 대비에 유리하다고 설명한다. 투명도 감소나 대비 증가 설정을 켜면 모양이 달라진다.
+- **Microsoft Acrylic(2026-10-02 갱신):** 컨텍스트 메뉴, 플라이아웃, 비모달 팝업 같은 일시적 표면과 콘텐츠 위에 겹치는 보조 패널에 권하고, 콘텐츠를 구획하는 세로 패널에는 불투명 배경을 권한다. 앱의 넓은 배경에는 데스크톱 Acrylic을 깔지 말라고 한다. Acrylic 위의 강조색 텍스트는 권하지 않고 하이퍼링크도 피하라고 하며, 사용자가 투명 효과를 끄거나 배터리 절약 모드가 켜지면 단색으로 바뀐다.
+- **NN/g(2024-06-07):** 글래스모피즘을 아껴 쓰고 텍스트 대비 기준을 지키며, 배경이 복잡할수록 흐림을 키우라고 권한다.
+
+업무 대시보드라면 헤더, 내비게이션, 필터와 팝업처럼 조작과 일시적 표면에 절제해 쓰고 표와 데이터 카드는 불투명하게 두는 구성이 이 지침과 맞는다. 요약 카드처럼 콘텐츠에 가까운 영역에 쓰려면 읽기 대비를 먼저 확인하고, 대표색 링크를 반투명 면 위에 둘 때도 대비를 따로 측정한다. 웹의 `prefers-reduced-transparency` 미디어 쿼리는 MDN 기준 실험적 기능이고 널리 쓰이는 브라우저 일부에서 동작하지 않으므로, 이 설정에 기대지 말고 기본 상태에서 대비 기준을 충족시킨다.
 
 ## 면접 체크포인트
 
@@ -103,9 +120,16 @@ Inter, Space Grotesk와 Instrument Serif의 공식 배포는 SIL Open Font Licen
 - [Instrument Serif — Instrument](https://github.com/Instrument/instrument-serif)
 - [Fontshare, Satoshi 목록](https://www.fontshare.com/?q=Satoshi)
 - [Fontshare, General Sans 목록](https://www.fontshare.com/?q=General+Sans)
+- [Pretendard — 공식 프로젝트 저장소](https://github.com/orioncactus/pretendard) — 2026-10-12 README와 LICENSE 확인
+- [Apple Human Interface Guidelines, Materials](https://developer.apple.com/design/human-interface-guidelines/materials) — 2026-10-12 확인, 2025-09-09 Liquid Glass 지침 갱신판
+- [Microsoft Learn, Acrylic material](https://learn.microsoft.com/en-us/windows/apps/design/style/acrylic) — 2026-10-12 확인, 2026-10-02 갱신판
+- [Glassmorphism: Definition and Best Practices — Nielsen Norman Group, Megan Brown](https://www.nngroup.com/articles/glassmorphism/)
+- [MDN, prefers-reduced-transparency](https://developer.mozilla.org/en-US/docs/Web/CSS/@media/prefers-reduced-transparency) — 2026-10-12 확인, Experimental과 Limited availability 표시
+- [YouTube, 양실장의 바이브코딩대학, 직장인 2시간 필수 투자) 평생 써먹는 바이브코딩 자동화 대시보드 설계부터 구축까지](https://www.youtube.com/watch?v=sozxBiyc3qQ) — 2026-08-20 공개 강의, 1:49:25~2:04:32의 테마 결정 인터뷰와 절제형 글래스모피즘 적용 시연. 스타일 이름은 발표자가 화면에 띄운 블로그 목록에서 나왔으므로 재질 지침은 위 공식 문서와 NN/g로 대조했다.
 
 ## 관련 문서
 - [[Service-Design-Principles|서비스 설계 원칙 (GOV.UK)]] — 일관성, 디자인 시스템
 - [[Pagination-Patterns|페이지네이션 UX 패턴]]
 - [[UX-Laws|UX 심리학 10가지 법칙]] — 폰 레스토프 효과 포함 전체 법칙
 - [[Responsive-Web-Layout|반응형 웹 레이아웃]] — WCAG 2.2 Reflow(SC 1.4.10) 기준
+- [[Backoffice-Workflow-Design|업무용 제품의 처리 흐름 설계]] — 정보 구조, 화면별 목표와 업무 대시보드의 테마 결정 순서

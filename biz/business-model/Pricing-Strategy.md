@@ -54,6 +54,33 @@ Wadhwa와 Zhang(2015)은 라운드가격이 감정 중심 판단과, 비라운�
 
 적용할 때는 구매 상황과 고객군을 실험 가설로 삼고, 실제 결제와 기여이익으로 가격안을 비교한다. 9,900원과 10,000원 비교는 가격 수준과 끝자리를 함께 바꾸므로 순수한 표기 효과와 구분한다. 단수가격이 품질을 낮게 보이게 할 수 있다는 연구(Stiving, 2000)는 위 국내 논문에서 재인용한 주장이며, 모든 가격을 9로 끝내면 역효과라는 Threads의 실무 의견도 보편적 실험 결과로 취급하지 않는다.
 
+## 구매 불안과 가격 표시를 나누어 검증한다
+
+고가와 저가만으로 판매법을 정하지 않는다. 구매 관여도, 실패했을 때의 손실, 사용 빈도와 대안의 차이가 고객의 판단에 함께 영향을 준다. 가격이 부담인 고객과 결과를 믿지 못하는 고객에게 같은 할인만 제시하면 원인을 구분하기 어렵다.
+
+아래는 구매 행동 개념을 적용한 실험 질문이다. 가격대별로 반대 전략을 써야 한다는 법칙이나 전환율을 보장하는 처방이 아니다.
+
+| 망설임 | 확인할 질문 | 시험할 설명과 경험 |
+|---|---|---|
+| 결과와 품질의 불확실성 | 내 상황에서도 효과가 나는가 | 사용 조건이 드러나는 데모, 샘플과 검증 가능한 사례 |
+| 구매 후 손실 | 맞지 않으면 어떤 비용이 남는가 | 보증, 지원, 반환의 실제 범위와 제외 조건 |
+| 지출 부담 | 총액이 큰가, 지급 시점이 어려운가 | 총액과 지급 일정을 함께 보여 주는 가격안 |
+| 사용과 거래의 수고 | 도입, 배송, 학습과 변경이 번거로운가 | 필요한 준비, 처리 절차와 예상 투입을 구체화 |
+
+월 환산액이나 업그레이드 차액을 보여 줄 때도 총액, 약정 기간과 추가 비용을 함께 제공한다. 선택지 수, 가격 앵커, 할인 표시와 제안 시점은 실험 변수다. 실제로 끝나지 않는 마감, 허위 희소성, 숨긴 비용이나 자동으로 담는 추가 상품은 설명의 단순화와 구분한다. FTC의 다크패턴 보고서는 이런 기만적 설계를 문제로 다루며, 미국 자료를 한국 법률 판단으로 그대로 옮기지는 않는다.
+
+## 업셀링, 크로스셀링과 서비스 패키지
+
+- **업셀링:** 고려 중인 상품의 상위 버전이나 더 높은 제공 수준을 제안한다. 개인 요금제 대신 실제 협업이 필요한 고객에게 팀 요금제를 제안하는 예다.
+- **크로스셀링:** 기존 구매에 도움이 되는 별도 상품이나 서비스를 제안한다. 로고 제작에 브랜드 사용 가이드, 발표자료에 별도 한 장 소개서를 추가하는 예다.
+- **번들:** 여러 제공 항목을 묶어 판다. 업셀이나 크로스셀의 수단이 될 수 있지만 묶음 자체가 고객에게 필요한 결과인지는 별도로 확인한다.
+
+정기 방문 중 쓰레기통 세척처럼 다른 작업을 추가하는 것은 크로스셀에 가깝고, 같은 작업을 더 높은 등급으로 바꾸면 업셀이다. 핵심은 비싼 것을 먼저 보여 주는 순서보다 기존 과업과 추가 제안의 관련성이다. 고객이 필요하지 않은 항목을 거절하고 기본 상품만 선택할 수 있어야 한다.
+
+외주 패키지는 기본 산출물과 선택 산출물의 가격, 수정 횟수, 인수 기준과 일정 영향을 따로 정한다. 같은 자료와 제작 과정을 재사용할 수 있어도 추가 검토와 수정 시간을 0으로 잡지 않는다. 이는 서비스 견적 원칙을 적용한 설계 질문이며 특정 국가에서 패키지가 더 잘 팔린다는 조사 결과가 아니다.
+
+제안의 성과는 객단가만 보지 않고, 제안 대상 대비 추가 구매율, 기본 구매의 이탈, 할인과 추가 제공 비용을 뺀 공헌이익, 환불과 후속 지원을 함께 본다. 무료 배송 문턱이나 세트 할인으로 매출이 늘어도 이익이 줄 수 있다. 계산 단위는 [[Business-Model#공헌이익과 손익분기 고객 수|공헌이익]]을 따른다.
+
 ## 외주와 전문 서비스의 견적
 
 가격을 비교하려면 먼저 제공할 결과와 범위를 맞춘다. 같은 홈페이지라도 고객이 완성된 콘텐츠를 제공하는 경우와 제작자가 글과 이미지 정리까지 맡는 경우는 투입이 다르다. 다음은 원가, 고객 가치와 범위 관리 원칙을 서비스 견적에 적용한 판단 틀이다.
@@ -78,6 +105,18 @@ Wadhwa와 Zhang(2015)은 라운드가격이 감정 중심 판단과, 비라운�
 
 같은 기간의 수입과 반복 인프라비, 지원 및 점검 시간을 비교하고, 문의가 적은 달의 평균뿐 아니라 요청이 몰리는 경우의 대응 용량도 확인한다. 신규 기능 개발, 합의한 요구의 미충족 보완과 계속 제공하는 운영 지원을 한 항목으로 묶으면 가격과 책임을 설명하기 어려워진다.
 
+## AI 기능의 크레딧 가격과 작업 원가
+
+LLM API만 호출하는 기능은 호출량과 토큰 단가로 원가를 추정할 수 있지만, 영상 분석처럼 자체 모델을 GPU에서 돌리는 기능은 처리 시간, 저장과 전송이 작업량을 따라 늘어난다. 이런 서비스는 배포 구조를 정한 뒤 가격을 붙이지 않고 인프라 원가와 크레딧 가격을 함께 설계한다. 구독에 기본 사용량을 넣고 초과분을 크레딧으로 파는 혼합 구조는 [[App-Monetization-Models|앱 수익 모델]]의 AI 앱 사례와 같다. 다음은 단위 비용과 공헌이익 원칙을 크레딧에 적용한 설계 순서다.
+
+1. **크레딧을 원가 동인에 묶는다.** 원본 영상 1분처럼 고객이 이해하는 단위를 고르고, 그 단위가 실제로 쓰는 GPU 시간, 저장량과 전송량을 측정한다.
+2. **작업당 원가에 실패와 대기를 넣는다.** 재시도, 다시 렌더링한 결과와 요청이 없는 동안 켜 둔 GPU처럼 결과 한 건에 바로 보이지 않는 비용도 배분한다. 평균 비용과 한계 비용의 구분은 [[Cloud-Unit-Cost|클라우드 단위 비용]], 유휴 축소와 대기 시간의 교환은 [[Generative-Product-Image-Workflow#GPU와 유휴 축소는 배포 방식별로 확인한다|GPU 유휴 축소]]를 따른다.
+3. **원가는 가격의 하한으로만 쓴다.** 결제 수수료, 지원과 획득 비용을 뺀 공헌이익이 남는지 확인한 뒤, 고객이 비교하는 대안과 가치로 가격을 정한다.
+4. **포함 크레딧은 모두 쓰는 경우로 계산한다.** 요금제의 포함 크레딧을 다 쓴 고객에게서도 공헌이익이 남는지 본다. 평균 사용량만 보면 많이 쓰는 고객에서 손실이 날 수 있다.
+5. **원가 상한을 제품 규칙으로 둔다.** 작업당 최대 입력 길이와 해상도, 계정별 동시 작업 수와 작업 시작 전 잔액 확인으로 한 요청이 예상 원가를 넘지 못하게 한다.
+
+결제 대행사의 크레딧 기능과 서비스 안의 사용량 차단은 구분한다. 2026-10-12 공식 문서 기준, Stripe billing credits는 Meters로 사용량을 보고하는 metered 가격의 구독 항목에만 적용되고 청구서가 확정될 때 차감된다. 기간 중 크레딧 잔액이 사용과 함께 바로 줄지 않으므로, 작업 전에 잔액을 확인해 막으려면 기간 중 사용량을 따로 집계해 남은 크레딧과 비교하는 장치가 필요하다. 같은 문서는 크레딧을 상품권으로 발행하거나 자사 상품 결제 외의 충전금, 다른 사업자 결제나 디지털 지갑에 쓰게 하는 것을 금지한다. 만료, 이월과 환불 조건도 약관과 적용 법규로 따로 확인한다. 에이전트가 계산한 분당 원가와 추천 인프라는 단가 출처, 처리 속도 측정과 가동률 가정을 확인하기 전까지 추정치로 둔다.
+
 ## 적용 예시: 무료 소프트웨어와 유료 운영지원
 
 다음은 실제 프로젝트의 현재 정책이 아닌 일반화한 예시다.
@@ -100,21 +139,32 @@ Q. 가격 정책은 어떻게 설계했는가?
 
 2026-10-03 검증은 끝자리 가격 절에 한정한다. 국내 논문의 실험 방법, 결과와 한계는 학회 공개 원문으로, left-digit effect와 rounded price effect는 출판사 또는 저자 소속기관의 공식 초록으로 대조했다. 해외 논문의 전체 분석과 독립 재현 여부는 이번 검증 범위에 포함하지 않았다.
 
+2026-10-10에는 구매 관여도와 위험의 구분을 OpenStax, 업셀과 크로스셀의 정의를 Shopify, 허위 마감과 비용 은폐의 사례를 FTC 보고서와 부분 대조했다. 구매 불안 표, 서비스 패키지와 성과 점검은 이를 적용한 실험 제안이며 효과가 확인된 결과가 아니다.
+
+2026-10-12에는 Stripe billing credits 문서로 크레딧의 적용 대상, 차감 시점과 금지 용도를 부분 대조했다. AI 크레딧 설계 순서는 단위 비용과 공헌이익 원칙을 적용한 제안이며 특정 서비스의 검증된 가격 공식이 아니다. 강의 시연 화면의 분당 원가는 단가 근거를 확인하지 못해 사용하지 않았다.
+
 ## 출처
 
 - [OpenStax, 가격 정책 수립의 5단계](https://openstax.org/books/principles-marketing/pages/12-3-the-five-step-procedure-for-establishing-pricing-policy)
 - [Top Five Causes of Scope Creep — PMI](https://www.pmi.org/learning/library/top-five-causes-scope-creep-6675)
 - [OpenStax, 신제품 가격 전략](https://openstax.org/books/principles-marketing/pages/12-4-pricing-strategies-for-new-products)
 - [Stripe, 가격 모델과 Freemium](https://stripe.com/resources/more/pricing-models-explained-types-of-pricing-models-and-when-to-use-them)
+- [OpenStax, Understanding Consumer Markets and Buying Behavior](https://openstax.org/books/principles-marketing/pages/3-1-understanding-consumer-markets-and-buying-behavior)
+- [Cross Sell vs Upsell: Differences and Examples — Shopify](https://www.shopify.com/blog/upselling-and-cross-selling)
+- [Bringing Dark Patterns to Light — FTC](https://www.ftc.gov/system/files/ftc_gov/pdf/P214800%20Dark%20Patterns%20Report%209.14.2022%20-%20FINAL.pdf) — 보고서 21~23쪽의 허위 희소성, 마감, 가격 비교 방해와 비용 은폐 사례
 - [Judgment under Uncertainty: Heuristics and Biases — Tversky, Kahneman](https://pubmed.ncbi.nlm.nih.gov/17835457/)
 - [Adding Asymmetrically Dominated Alternatives — Huber, Payne, Puto](https://doi.org/10.1086/208899)
 - [단수가격, 쾌락재, 가격의식, 구매정당화에 따른 구매의도 — 박지혜, 양윤 (한국심리학회지: 소비자 광고, 2017)](https://doi.org/10.21074/kjlcap.2017.18.3.417), [학회 원문](https://www.accesson.kr/kscap/assets/pdf/15422/journal-18-3-417.pdf)
 - [Penny Wise and Pound Foolish: The Left-Digit Effect in Price Cognition — Thomas, Morwitz](https://academic.oup.com/jcr/article-abstract/32/1/54/1796360)
 - [This Number Just Feels Right: The Impact of Roundedness of Price Numbers on Product Evaluations — Wadhwa, Zhang](https://academic.oup.com/jcr/article-abstract/41/5/1172/2962090), [저자 소속기관의 공식 초록](https://www.insead.edu/faculty-research/publications/journal-articles/number-just-feels-right-impact-roundedness-price)
 - [9,900원과 10,000원, 끝자리 가격 효과의 조건 — Threads, groble.im](https://www.threads.com/@groble.im/post/DdbYC9cE9YS)
+- [Stripe, Billing credits](https://docs.stripe.com/billing/subscriptions/usage-based/billing-credits) — metered 가격 적용 범위, 청구서 확정 시 차감과 금지 용도
+- [YouTube, 양실장의 바이브코딩대학, 1시간 압축) AI 기술 1도 모르는 초심자가 전문 AI SaaS 구축하는 모든 과정](https://www.youtube.com/watch?v=JK1S6FvAdZQ) — 2026-08-24, 42:39~49:00의 GPU 추론 서비스 과금과 배포 설계 시연. 화면의 원가 계산과 인프라 구성은 확인하지 않아 사용하지 않음
 
 ## 관련 문서
 - [[Business-Model|비즈니스 모델]]
 - [[Metrics-Framework|지표 설계]]
 - [[Commerce-Pricing|커머스 가격 도메인]]
 - [[PRD-Writing|요구사항과 범위 변경]]
+- [[App-Monetization-Models|앱 수익 모델]]
+- [[Cloud-Unit-Cost|클라우드 단위 비용]]

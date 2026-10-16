@@ -57,10 +57,19 @@ aliases: ["자산배분과 분산투자", "Asset Allocation and Diversification"
 - **분산하면 손실이 없다** → 시장 전체가 빠지는 체계적 위험은 못 없앤다 → [[Risk-and-Return|위험과 수익]].
 - **모두에게 맞는 황금 배분이 있다** → 시간지평과 위험성향에 따라 다르다.
 
+## 9. 자산 목록과 실제 위험 노출을 구분하기
+
+주식, 채권, 금처럼 서로 다른 이름을 나열하는 것만으로 배분이 완성되지는 않는다. 실제 편입 자산, 비중, 통화와 손실이 발생하는 조건을 확인해야 한다. 유사한 대형주를 담은 ETF 여러 개는 보유 종목이 겹칠 수 있다. 산업 성장 전망만으로 특정 기업의 수익률을 보장할 수도 없다.
+
+레버리지 ETF는 일반 ETF의 장기 수익을 단순히 배수로 늘린 상품으로 취급하지 않는다. 대부분은 **일일 수익률 배수**를 목표로 재설정한다. 여러 날의 누적 수익은 일별 등락과 복리 효과에 영향을 받아 같은 기간 지수 수익의 배수와 크게 달라질 수 있다. 비용을 무시하고 지수가 100에서 110, 다시 100으로 움직일 때, 일일 2배 상품의 가치는 100에서 120, 약 98.18로 변한다. 지수가 원위치여도 해당 상품에는 손실이 남는 계산 예다.
+
+금 또한 보유만으로 물가 상승이나 시장 하락을 항상 상쇄하지는 않는다. 금리와 환율을 포함한 조건은 [[Gold-Price-Drivers|금 가격의 결정 요인]]에서 구분한다. 배분안은 자산 개수보다 목표, 감당할 손실, 필요한 현금과 재조정 기준으로 평가한다.
+
 ## 출처
 
 - [Asset Allocation, Diversification, and Rebalancing — Investor.gov](https://www.investor.gov/introduction-investing/getting-started/asset-allocation) — 2026-10-02 시간지평, 위험 감당 능력과 리밸런싱 목적 대조
 - [Determinants of Portfolio Performance — Financial Analysts Journal](https://doi.org/10.2469/faj.v51.n1.1869)
+- [Updated Investor Bulletin: Leveraged and Inverse ETFs — Investor.gov](https://www.investor.gov/introduction-investing/general-resources/news-alerts/alerts-bulletins/investor-alerts/sec) — 일일 재설정과 장기 수익 배수의 차이, 2026-10-10 대조
 
 ## 관련 문서
 

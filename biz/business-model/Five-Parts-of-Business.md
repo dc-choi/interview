@@ -25,7 +25,7 @@ Josh Kaufman이 The Personal MBA에서 정리한 틀이다. 모든 사업은 다
 | 가치 전달(Value Delivery) | 약속한 것을 고객에게 주고 만족을 확인한다 | 사기 |
 | 재무(Finance) | 계속할 수 있고 노력할 가치가 있을 만큼 돈을 번다 | 결국 폐업 |
 
-Kaufman은 이 중 하나라도 빠지면 사업이 아니라고 본다. 진단에 쓰는 mental model은 파이프라인이다. 앞 단계가 막히면 뒤 단계의 노력은 효과가 없고, 가장 좁은 구간이 전체 처리량을 정한다.
+Kaufman은 이 중 하나라도 빠지면 사업이 아니라고 본다. 진단에 쓰는 mental model은 연결된 파이프라인이다. 기능별 병목을 찾는 데 쓰되, 실제 사업의 개선 순서를 한 방향으로 고정하는 법칙으로 취급하지 않는다.
 
 ### 증상에서 고장 구간 찾기
 
@@ -36,6 +36,20 @@ Kaufman은 이 중 하나라도 빠지면 사업이 아니라고 본다. 진단�
 | 첫 구매 뒤 재구매와 추천이 없다 | 가치 전달 | 약속과 실제 경험 사이에 차이가 있는가 |
 | 매출은 오르는데 통장이 마른다 | 재무 | 단위당 공헌이익과 현금 회수 주기가 버티는가 |
 | 기능은 계속 늘어나는데 아무 지표도 안 움직인다 | 가치 창출 | 누구의 어떤 문제를 푸는지 한 문장으로 말할 수 있는가 |
+
+### 홍보와 품질의 우선순위는 병목에 따라 정한다
+
+관심과 수요를 만드는 마케팅과 약속한 가치를 전달하는 일은 서로 필요한 기능이다. 가치 전달에는 제품 자체뿐 아니라 주문 처리, 배송, 문제 해결과 고객지원도 포함된다. 홍보를 먼저 해야 한다는 조언을 어느 사업에서나 품질보다 우선한다는 법칙으로 바꾸지 않는다.
+
+다음은 다섯 기능을 적용한 진단 질문이다. 특정 순서의 매출 효과를 입증한 실험 결과는 아니다.
+
+| 관찰한 상태 | 우선 확인할 병목 | 개선을 판단할 증거 |
+|---|---|---|
+| 약속한 결과를 전달하지만 대상 고객에게 알려지지 않는다 | 고객 접근과 메시지 | 대상 고객의 문의와 구매 행동 |
+| 문의는 충분하지만 구매로 이어지지 않는다 | 제안의 적합성, 가격과 신뢰 | 구매를 보류한 이유와 제안 변경 뒤의 전환 |
+| 구매 뒤 납기 지연, 불만과 환불이 반복된다 | 가치 전달과 기대의 불일치 | 약속 이행, 문제 해결과 재구매 여부 |
+
+조회수 증가만으로 고객에게 약속을 지켰다고 판단하지 않는다. 수요를 시험하는 홍보와 실제로 제공할 수 있는 범위를 함께 확인하고, 관찰한 병목이 달라지면 개선 순서도 바꾼다.
 
 ## 사업 기능과 대표의 역량을 구분한다
 
@@ -119,6 +133,7 @@ Kaufman은 이 중 하나라도 빠지면 사업이 아니라고 본다. 진단�
 
 - [Casting a light on dependent contractors: a new statistical and increasingly important category — ILOSTAT](https://ilostat.ilo.org/blog/casting-a-light-on-dependent-contractors-a-new-statistical-and-increasingly-important-category/) — ICSE-18의 권한, 경제적 위험과 종속 계약자 구분
 - [The 5 Parts of Every Business — The Personal MBA, Josh Kaufman](https://personalmba.com/5-parts-of-every-business/)
+- [Value Delivery — The Personal MBA, Josh Kaufman](https://personalmba.com/value-delivery/) — 2026-10-14 가치 전달의 범위 확인. 위의 병목별 진단 질문은 두 개념을 적용한 점검 예시다.
 - [Entrepreneurship — IZA Discussion Paper No. 760, Edward P. Lazear](https://www.iza.org/en/publications/dp/760/entrepreneurship) — 2003년 연구의 공식 초록, 균형 역량 가설과 창업 선택의 관련성. 모든 사업자의 성공을 보장하는 기준으로 사용하지 않는다.
 - [Elon Musk's Mission to Mars — Wired, Chris Anderson](https://www.wired.com/2012/10/ff-elon-musk-qa/) (2026-10-05 인터넷 아카이브 사본으로 대조)
 - [First Principles: Elon Musk on the Power of Thinking for Yourself — James Clear](https://jamesclear.com/first-principles)

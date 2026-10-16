@@ -70,6 +70,16 @@ aliases: ["UI Terminology", "UI 용어", "모달 vs 팝업"]
 - **플랫폼 디자인 가이드를 준수한다** — OS 표준과 충돌하는 제스처(하단 탭 영역의 좌우 스와이프 등)는 다른 앱에서 학습된 기대([[UX-Laws|제이콥의 법칙]])를 깨서 혼동을 만든다.
 - **의도적 마찰의 예외** — 실수 방지가 목적이면 일부러 개입이 더 필요한 제스처를 쓴다 (밀어서 결제). 금전적, 파괴적 액션에서 진짜 의사가 있는 사용자만 통과시키는 마찰 설계.
 
+## AI에게 화면 수정을 요청할 때
+
+AI로 만든 화면을 고칠 때도 컴포넌트 이름이 요청의 정확도를 정한다. 예를 들어 상단 버튼 묶음을 탭으로 바꿔 달라거나 카드 헤더 오른쪽의 꺾쇠 아이콘을 빼 달라고 이름으로 지적하면 수정 범위가 좁아진다. shadcn/ui 문서(2026-10-12 확인)를 예로 들면 다음 구분이 있다.
+
+- **Button Group:** 관련 버튼을 일관된 스타일로 묶는 컨테이너다. 동작을 실행하는 버튼 묶음에 쓰고, 상태를 켜고 끄는 버튼 묶음에는 Toggle Group을 쓴다.
+- **Tabs:** 탭 패널이라 부르는 여러 콘텐츠 영역 중 하나씩만 보여 준다.
+- **Card:** Header, Title, Description, Action, Content, Footer 부분으로 나뉜다. 카드 안의 짧은 상태 표시는 별도 컴포넌트인 Badge로 지칭한다.
+
+공식 컴포넌트 목록을 한 번 훑어 두면 어떤 구성 요소가 있는지 모르는 채 AI의 기본 선택을 그대로 받는 일을 줄일 수 있다. 같은 화면 안의 패널을 탭으로 바꿀지 내비게이션으로 다른 화면으로 보낼지는 이름과 별개의 판단이므로 스펙에 함께 적는다.
+
 ## 면접 체크포인트
 
 - 스펙 리뷰에서 모달인지 팝업인지의 구분은 단순 용어 문제가 아니라 동작 차이다 — 모달은 블로킹이므로 그 뒤 화면의 상태 갱신, 포커스 처리까지 영향을 준다.
@@ -81,9 +91,15 @@ aliases: ["UI Terminology", "UI 용어", "모달 vs 팝업"]
 - [터치 제스처 알아보기 — 쪼렙 서비스기획자 (Brunch)](https://brunch.co.kr/@b30afb04c9f54dc/19)
 - [터치 제스처 적용 시 고려해야 할 5가지 Point — 쪼렙 서비스기획자 (Brunch)](https://brunch.co.kr/@b30afb04c9f54dc/21)
 - [W3C WAI, Radio Group Pattern](https://www.w3.org/WAI/ARIA/apg/patterns/radio/)
+- [shadcn/ui, Components](https://ui.shadcn.com/docs/components) — 2026-10-12 확인, 공식 컴포넌트 목록
+- [shadcn/ui, Button Group](https://ui.shadcn.com/docs/components/button-group) — Button Group과 Toggle Group의 용도 구분
+- [shadcn/ui, Tabs](https://ui.shadcn.com/docs/components/tabs)
+- [shadcn/ui, Card](https://ui.shadcn.com/docs/components/card)
+- [YouTube, 양실장의 바이브코딩대학, 직장인 2시간 필수 투자) 평생 써먹는 바이브코딩 자동화 대시보드 설계부터 구축까지](https://www.youtube.com/watch?v=sozxBiyc3qQ) — 2026-08-20 공개 강의, 2:00:47~2:04:32의 컴포넌트 이름 익히기 조언. 화면의 컴포넌트는 확인하지 않았다.
 
 ## 관련 문서
 - [[Visual-Hierarchy|시각적 위계]]
+- [[Claude-Design-Handoff|AI 디자인과 구현 인계]] — 생성 UI의 기본값과 shadcn 레지스트리 출처 확인
 - [[User-Guidance-Patterns|사용자 가이드 제공 패턴]] — 툴팁, 레이어의 안내 용도
 - [[Service-Design-Principles|서비스 설계 원칙 (GOV.UK)]] — 디자인 시스템과 일관성
 - [[PRD-Writing|PRD 작성법]] — 화면 명세에서 용어 일관성이 필요한 이유

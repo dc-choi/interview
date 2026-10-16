@@ -53,8 +53,19 @@ aliases: ["Personalization", "Recommendation", "개인화", "추천 시스템"]
 - 시작 전에 사용자 분할 방식과 실험 기간을 정하고, 실행 중 분할 비율을 임의로 바꾸지 않는다.
 - 가설과 무관한 화면, 지연 시간, 필터와 정렬 변경은 비교를 흐릴 수 있다. 행사와 마케팅 캠페인의 영향도 함께 점검한다.
 - 표본 규모와 통계적 불확실성을 확인한 뒤 판단한다. 짧은 기간의 수치 상승만으로 개인화의 효과를 확정하지 않는다.
+- 추천 영역의 지표만 보지 않는다. 추천 경로의 담기가 늘어도 검색이나 카테고리 같은 다른 경로의 담기가 줄었다면 기존 행동이 자리만 옮긴 것일 수 있으므로, 서비스 전체의 담기 수와 구매로 순증을 확인한다.
+- 가설의 연결 고리를 단계별로 확인한다. 전환율 상승이 장바구니 금액을 키워 사용자당 매출을 올린다는 가설이라면 장바구니 금액과 구매 빈도를 따로 보고, 효과가 예상과 다른 경로로 나타났는지 확인한다.
 
 이 절차는 Amazon Personalize의 A/B 테스트 지침을 제품 판단에 적용한 것이다. 운영 적용에서는 효과 측정과 별도로 데이터 수집, 추천 제공과 검수에 드는 비용을 계산해 확대 여부를 정한다.
+
+### 사례: 신선식품 커머스의 추천 A/B (발표 기준, 2021)
+
+컬리는 규칙 기반으로 운영하던 추천 영역에 Amazon Personalize를 A/B 테스트로 붙이고 핵심 지표를 장바구니 전환율로 정했다. 실험군은 당시의 HRNN-Metadata 레시피를 썼는데, 2026-10-14 확인한 공식 문서 기준으로 이 레시피는 더 이상 제공되지 않는 legacy 레시피이며 AWS는 User-Personalization 레시피를 권장한다.
+
+- 추천 영역의 장바구니 전환율은 실험군 20.8%, 기존 규칙 기반 5.8%로 약 3.6배였다.
+- 서비스 전체로 보면 추천 경로의 담기는 38% 늘고 검색과 카테고리 경로의 담기는 2~7% 줄어, 전체 담기 이벤트는 약 2% 늘었다.
+- 결제한 장바구니 금액은 통계적으로 유의한 차이가 없었다. 대신 결제 횟수가 약 2% 늘어 매출이 약 1.3% 증가했다. 장바구니가 커질 것이라는 가설은 맞지 않았고 구매 빈도가 늘었다.
+- Personalize의 실시간 추천 campaign은 최소 프로비저닝 TPS를 기준으로, 요청이 그보다 많으면 실제 TPS를 기준으로 과금된다. 클릭이 없을 때는 캐시한 추천을 재사용해 호출을 줄이고, 추천 API 지연 지표(CloudWatch의 `GetRecommendationsLatency`)가 나빠지지 않는 선까지 최소 TPS를 단계적으로 낮춰 비용을 초기의 절반 이하로 줄였다.
 
 ## 추천 AI의 윤리: FAT
 
@@ -82,6 +93,10 @@ aliases: ["Personalization", "Recommendation", "개인화", "추천 시스템"]
 
 ## 출처
 - [Amazon Personalize, Measuring recommendation impact with A/B testing](https://docs.aws.amazon.com/personalize/latest/dg/ab-testing-recommendations.html)
+- [Amazon Personalize, Deploying an Amazon Personalize solution version with a campaign](https://docs.aws.amazon.com/personalize/latest/dg/campaigns.html)
+- [Amazon Personalize, CloudWatch metrics for Amazon Personalize](https://docs.aws.amazon.com/personalize/latest/dg/cloudwatch-metrics.html)
+- [Amazon Personalize, HRNN-Metadata recipe (legacy)](https://docs.aws.amazon.com/personalize/latest/dg/native-recipe-hrnn-metadata.html)
+- [Kurly는 AWS를 어떻게 사용하고 있을까? 성공적 리테일 디지털 트랜스포메이션 사례 — Amazon Web Services Korea (YouTube)](https://www.youtube.com/watch?v=SRmJEZfCHE8)
 - [쇼핑몰이 고객을 분석한다 (개인화와 추천) — 도그냥 (Brunch)](https://brunch.co.kr/@windydog/41)
 - [재주는 AI가 부려도, 돈 버는 왕서방이 책임도 져라 (FAT) — 도그냥 (Brunch)](https://brunch.co.kr/@windydog/218)
 - [브랜드사, 이커머스의 미래를 대비하라 1편 — 도그냥 (Brunch)](https://brunch.co.kr/@windydog/45)
