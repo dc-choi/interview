@@ -150,10 +150,25 @@ SNS는 메시징 이외에:
 ## 보안
 
 - **Topic Policy** — Resource-based, 누가 Publish, Subscribe 가능한지
-- **Cross-Account** — Topic Policy + Subscription Confirmation
+- **Cross-Account** — 구독 생성 권한과 큐 전달 권한을 따로 설정하며, 구독 확인 절차는 생성 주체에 따라 달라진다
 - **KMS 암호화** — 저장 시점 암호화
 - **VPC Endpoint** — 사설망에서 SNS 호출
 - **HTTP(S) 구독자의 서명 검증** — SNS는 HTTP(S) endpoint로 보내는 알림과 구독, 구독 해제 확인 메시지에 서명을 붙이며, 받는 쪽은 처리 전에 서명을 검증해야 한다. SignatureVersion2(SHA256)가 권장된다. 서명 인증서는 HTTPS로 받아 SNS가 발급했는지와 신뢰 체인을 확인하고, 예상하지 않은 `TopicArn`의 메시지는 거부한다. 직접 구현보다 AWS SDK의 검증 기능을 우선 쓴다. 서명은 메시지가 SNS에서 왔는지 확인하는 장치이고, 누가 토픽에 게시할 수 있는지는 Topic Policy와 IAM이 정한다(2026-10-14 공식 문서 대조)
+
+### 교차 계정 SNS와 SQS의 구독 확인
+
+2026-10-16 공식 문서 부분 대조 기준. 아래는 동일 리전의 다른 계정에 있는 토픽과 큐를 연결하는 경우다.
+
+구독 생성과 메시지 전달은 별도 권한이다. 큐 소유 계정에서 구독하려면 토픽 정책이 그 계정의 `sns:Subscribe`를 허용하고, 호출하는 IAM 사용자나 역할에도 해당 권한이 있어야 한다. 큐 정책은 `sns.amazonaws.com`의 `sqs:SendMessage`를 허용하고 `aws:SourceArn`으로 발신 토픽 ARN을 제한한다. 구독 생성 권한만으로 큐 전달 권한이 생기지는 않는다.
+
+| 구독 생성 주체 | 구독 확인 절차 |
+|---|---|
+| 큐 소유 계정 | 자동 확인된다. 별도로 확인 링크를 처리하지 않는다 |
+| 토픽 소유 계정 등 큐를 소유하지 않은 주체 | 큐로 확인 메시지가 전달되며, 확인 전에는 게시된 알림을 받지 못한다 |
+
+수동 확인이 필요한 경우 큐 메시지를 읽을 권한이 있는 주체가 확인 메시지의 `SubscribeURL`을 가져오고, 구독 소유자가 이를 사용해 확인한다. `Pending Confirmation` 상태와 큐 정책의 전달 허용을 각각 점검한다. 구독 확인 완료와 실제 메시지 수신 성공도 별도로 확인한다.
+
+이 절의 권한과 확인 절차만 대조했다. 기존 quota 전체의 검증일은 유지하며 실제 AWS 계정에서 구독을 생성하거나 전달을 시험하지 않았다.
 
 ## 흔한 실수
 
@@ -185,6 +200,8 @@ SNS는 메시징 이외에:
 - KMS Key로 Topic 메시지 SSE 암호화, HTTPS API로 전송 중 암호화, IAM Policy로 API 접근 통제
 
 ## 출처
+- [Amazon SNS, Sending Amazon SNS messages to an Amazon SQS queue in a different account](https://docs.aws.amazon.com/sns/latest/dg/sns-send-message-to-sqs-cross-account.html)
+- [Amazon SNS, Example cases for Amazon SNS access control](https://docs.aws.amazon.com/sns/latest/dg/sns-access-policy-use-cases.html)
 - [Amazon SNS, Amazon SNS dead-letter queues](https://docs.aws.amazon.com/sns/latest/dg/sns-dead-letter-queues.html)
 - [Amazon SQS, Using dead-letter queues in Amazon SQS](https://docs.aws.amazon.com/AWSSimpleQueueService/latest/SQSDeveloperGuide/sqs-dead-letter-queues.html)
 - [Amazon SNS, Origination identities for Amazon SNS SMS messages](https://docs.aws.amazon.com/sns/latest/dg/channels-sms-originating-identities.html)
