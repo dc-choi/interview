@@ -30,6 +30,16 @@ aliases: ["RDS Zero Downtime Migration", "무중단 마이그레이션", "near-z
 
 같은 엔진 업그레이드는 Blue/Green, 엔진 전환은 DMS, 동종 이전은 Read Replica 승격을 후보로 비교한다. 지원 조합과 허용 중단 시간, 복구 절차를 확인한 뒤 선택한다.
 
+### Cloud SQL PostgreSQL 소스의 초기 복사와 CDC를 구분한다
+
+부분 검증(2026-10-16): AWS DMS의 Google Cloud PostgreSQL 소스 문서와 작업 생성 문서를 대조했다. **Full Load만 완료한 결과는 지속 복제나 온라인 컷오버를 검증한 결과가 아니다.** 초기 복사와 이후 변경 반영이 모두 필요하면 `full-load-and-cdc` 작업을 선택하고 실제 변경 전파까지 확인한다.
+
+- Cloud SQL PostgreSQL에서 논리 디코딩을 사용하려면 `cloudsql.logical_decoding=on`을 설정한다. `pglogical`을 사용할 때는 `cloudsql.enable_pglogical=on`과 DB 재시작이 필요하다.
+- DMS는 소스에서 `pglogical`을 사용할 수 있으면 해당 플러그인을, 그렇지 않으면 `test_decoding`을 사용한다. 두 플래그를 모든 Full Load 작업의 필수 조건으로 묶지 않는다.
+- 논리 디코딩 사용자에는 `REPLICATION` 속성이 필요하고, `pglogical`을 사용한다면 `cloudsqlsuperuser` 역할도 필요하다. 복제 슬롯 수는 동시에 실행할 DMS 작업 수를 고려해 설정한다.
+
+적용 점검: 소스의 변경 추적 설정과 타깃의 적재 설정을 따로 검토한다. 작은 표를 복사한 뒤 행 수와 조회 결과가 맞아도, 변경 추적과 쓰기 정지, 시퀀스 보정, 앱 전환과 복구까지 시험한 것은 아니다. 이 절은 설정과 작업 유형의 문서 대조이며 실제 클라우드 간 이전을 실행한 결과는 아니다.
+
 ## 컷오버 시퀀스 — 여기서 사고가 난다
 
 방법을 골랐어도 실제로 데이는 건 전환 순간이다. 이 순서를 지킨다.
@@ -112,6 +122,8 @@ ALTER TABLE users AUTO_INCREMENT = <max(id)+1>;
 
 ## 출처
 
+- [AWS DMS — Using Google Cloud for PostgreSQL as a source](https://docs.aws.amazon.com/dms/latest/userguide/CHAP_Source.GCPostgres.html) — 2026-10-16 소스의 논리 디코딩, 플러그인과 권한 조건 대조
+- [AWS DMS — Creating a task](https://docs.aws.amazon.com/dms/latest/userguide/CHAP_Tasks.Creating.html) — 2026-10-16 Full Load와 full-load-and-cdc의 범위 대조
 - [Amazon RDS Blue/Green Deployments](https://docs.aws.amazon.com/AmazonRDS/latest/UserGuide/blue-green-deployments-overview.html)
 - [AWS DMS — Using change data capture (CDC)](https://docs.aws.amazon.com/dms/latest/userguide/CHAP_Task.CDC.html)
 - [AWS DMS — Data validation](https://docs.aws.amazon.com/dms/latest/userguide/CHAP_Validating.html)

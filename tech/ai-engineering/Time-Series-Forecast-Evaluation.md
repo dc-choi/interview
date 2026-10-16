@@ -93,6 +93,14 @@ MAE는 실제값과 같은 단위로 오차를 읽을 수 있고, RMSE는 제곱
 
 제품 도입과 평가 원리는 구분한다. AWS는 Amazon Forecast의 신규 고객 접근을 2024-07-29부터 중단한다고 공지했고 기존 고객은 계속 사용할 수 있다고 밝혔다. 과거 구축 영상을 신규 도입 절차로 그대로 사용하지 않는다. 검증 범위는 이 절의 분위수 해석과 해당 서비스 공지다.
 
+### P50과 평균 예측을 같은 값으로 취급하지 않는다
+
+부분 검증(2026-10-16): Amazon Forecast 평가 문서에서 P50은 예측 분포의 중앙값이고 `mean`은 평균 예측이다. 비대칭 분포에서는 둘이 달라질 수 있다. 점 예측을 선택할 때도 P50 하나로 고정하지 않는다. 예측 교재는 MAE를 최소화하는 예측이 중앙값에, RMSE를 최소화하는 예측이 평균에 대응한다고 설명한다.
+
+Forecast의 현재 평가 문서는 WAPE와 RMSE에 평균 예측을 사용한다고 명시한다. 과거에는 WAPE를 MAPE로 부르고 P50으로 계산했으며, 2020-11-11 이전 생성 predictor의 RMSE도 기본적으로 P50을 사용했다. 과거 발표의 지표 이름이나 그래프를 현재 API 결과와 비교할 때는 예측값의 종류와 계산 정의를 함께 확인한다. 같은 이름의 지표를 나란히 놓는 것만으로 성능 비교 조건이 같아지지는 않는다.
+
+적용 제안: 예측 결과에 `mean`, P50, P90 등 값의 종류를 남기고, 평가에 사용한 값과 연결한다. 이 구분은 지표 해석의 검증이며 특정 모델의 성능이나 재고 절감 효과를 검증한 결과는 아니다.
+
 ### 예측값 조회와 모델 평가 API를 구분한다
 
 부분 검증(2026-10-16): Amazon Forecast의 `QueryForecast`는 `Forecast.Predictions` 아래에 시점별 `Timestamp`와 예측 `Value`를 반환한다. 이 값이 RMSE나 분위수 손실인 것은 아니다. `GetAccuracyMetrics`는 predictor의 `TestWindows`별 평가 결과에 RMSE와 `WeightedQuantileLosses` 등을 제공한다.
@@ -142,7 +150,7 @@ MAE는 실제값과 같은 단위로 오차를 읽을 수 있고, RMSE는 제곱
 - [Amazon SageMaker AI, Define a pipeline](https://docs.aws.amazon.com/sagemaker/latest/dg/define-pipeline.html)
 - [Amazon SageMaker AI, Batch transform for inference](https://docs.aws.amazon.com/sagemaker/latest/dg/batch-transform.html)
 - [Create SageMaker Pipelines for training, consuming and monitoring your batch use cases — AWS](https://aws.amazon.com/blogs/machine-learning/create-sagemaker-pipelines-for-training-consuming-and-monitoring-your-batch-use-cases/)
-- [Amazon Forecast, Evaluating Predictor Accuracy](https://docs.aws.amazon.com/forecast/latest/dg/metrics.html) — 2026-10-14 분위수와 wQL의 의미 대조
+- [Amazon Forecast, Evaluating Predictor Accuracy](https://docs.aws.amazon.com/forecast/latest/dg/metrics.html) — 2026-10-14 분위수와 wQL, 2026-10-16 P50과 평균 및 과거 지표 정의의 차이 대조
 - [Transition your Amazon Forecast usage to Amazon SageMaker Canvas — AWS](https://aws.amazon.com/cn/blogs/machine-learning/transition-your-amazon-forecast-usage-to-amazon-sagemaker-canvas/) — 신규 고객 접근 중단 공지
 - [How Do Wind Turbines Survive Severe Weather and Storms? — U.S. Department of Energy](https://www.energy.gov/cmei/wind/articles/how-do-wind-turbines-survive-severe-weather-and-storms) — 출력 곡선의 운전 구간을 2026-10-14 대조
 - [Temporal Fusion Transformers for Interpretable Multi-horizon Time Series Forecasting — Lim et al.](https://arxiv.org/abs/1912.09363) — 정적, 미래에 알려진 입력과 과거 관측 입력의 구분, TFT의 구성.
