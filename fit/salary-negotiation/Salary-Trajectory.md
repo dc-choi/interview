@@ -7,12 +7,13 @@ aliases: ["Salary Trajectory", "연봉 궤적 전략", "연봉은 실력의 결�
 
 # 연봉 = 궤적, 이직 전략
 
-같은 실력이어도 연봉은 천차만별이다. 이유는 단순 — **연봉은 실력이 아니라 "지금까지 다닌 회사들의 궤적"** 이 결정한다. 3년 단위의 이직 전략과 협상 구조를 이해하지 못하면, 오래 다닐수록 시장 가치 대비 저평가된다.
+같은 실력이어도 연봉은 천차만별이다. 이유는 단순 — **연봉은 실력이 아니라 지금까지 다닌 회사들의 궤적**이 결정한다. 3년 단위의 이직 전략과 협상 구조를 이해하지 못하면, 오래 다닐수록 시장 가치 대비 저평가된다.
 
 ## 핵심 명제
 
 - **연봉 = 회사 이력의 함수** — 최근 직장 수준이 다음 직장의 기준점이 된다
 - **낮은 출발점은 복리로 남는다** — 시작 연봉이 낮으면 같은 인상률로는 격차가 좁혀지지 않고, 시작 시점 몇백만 원의 차이가 몇 년 누적되면 그 몇 배의 소득 차이가 된다
+- **같은 출발점이어도 인상 기울기가 누적 소득을 가른다** — 해마다 생긴 연봉 차이가 그대로 더해지므로 10년 누적 격차는 마지막 해 연봉 차이의 몇 배가 될 수 있다. 명목 연봉이 그대로면 물가가 오른 만큼 실질 구매력이 줄어든다([[Salary-Negotiation-Inflation|연봉 협상에 인플레이션 적용하기]])
 - **연봉 협상은 "결정"에 가까움** — 본인 기여도보다 회사의 밴드, 직전 연봉, 경쟁 오퍼가 지배
 - **이직만큼 강한 연봉 상승 레버는 없다** — 내부 승진은 보통 5~10%, 외부 이직은 10~30%+ 가능
 - **행복 vs 돈**은 장기로 균형 필요 — 돈만 추구하면 번아웃, 돈 없이는 자율성 없음
@@ -82,6 +83,8 @@ aliases: ["Salary Trajectory", "연봉 궤적 전략", "연봉은 실력의 결�
 - 시리즈 라운드별 **Dilution** 계산
 - **유동성(IPO, 세컨더리)** 가능성 평가
 - 기대값 = 확률 × 잠재 가치. 높은 기대값이라도 **연 단위 현금이 부족하면** 감당 불가
+- 현금화 경로는 IPO와 인수만이 아니다. 퇴사 시 회사가 되사 주거나, 후속 투자 때 기존 지분을 VC에 함께 파는 구주 매각으로 현금화한 사례도 있다. 다만 계약 조항과 회사 전망에 달려 있으므로 입사 전에 재매입과 양도 조건을 확인한다
+- 회사 전망이 확실해진 후기 단계에 받은 옵션은 상승 배수가 작다. 초기에 큰 위험을 진 사람일수록 큰 보상을 받는 구조이며, 후기 합류자는 현금 보상과 비교해 의미 있는 금액인지 계산한다
 
 ## 대기업 이직 시 신규 사업팀이 유리
 
@@ -154,6 +157,8 @@ aliases: ["Salary Trajectory", "연봉 궤적 전략", "연봉은 실력의 결�
 ## 출처
 - [개발자 비급(祕笈) - 1. 연봉은 실력의 결과가 아니다 — Channy's Blog, 윤석찬](https://channy.creation.net/blog/1186)
 - [연봉 협상을 못 하는 개발자에게 — Team Grit](https://teamgrit.co/article/303)
+- [우리 회사, 스타트업일까 좋소일까? — JOB담](https://www.youtube.com/watch?v=mH3GCacqt7c)
+- [Advice from the Top 1% (in Tech) — YouTube, Phillip Choi](https://www.youtube.com/watch?v=kpIy4pmP62Y) — 2026-05-25, 같은 초봉에서 인상 경로가 다른 두 사람의 가상 비교
 - [California Department of Industrial Relations, California Equal Pay Act](https://www.dir.ca.gov/dlse/california_equal_pay_act.htm)
 - [NYC Commission on Human Rights, Salary History Frequently Asked Questions](https://www.nyc.gov/site/cchr/media/salary-history-frequently-asked-questions.page)
 
@@ -164,3 +169,4 @@ aliases: ["Salary Trajectory", "연봉 궤적 전략", "연봉은 실력의 결�
 - [[Job-Search-Strategy|이직 전략]]
 - [[Company-Selection-Criteria|회사 선택 기준]]
 - [[Global-IT-Interview|글로벌 IT 인터뷰 준비]]
+- [[Salary-Negotiation-Inflation|연봉 협상에 인플레이션 적용하기]]

@@ -12,6 +12,7 @@ aliases: ["Common Interview Question Pool", "일반 질문 풀 인덱스"]
 - [[Common-Interview-Questions-Behavioral|Behavioral 질문 — STAR 기반 (실패, 리더십, 보람, 미달성, 팀 리더)]]
 - [[Common-Interview-Questions-Tech-Basics|1차 기술 질문 — 기본 (브라우저, REST, STAR, 성능 테스트)]]
 - [[Common-Interview-Questions-Tech-Scale|1차 기술 질문 — 확장성 (DAU 폭증, 기프티콘, 대용량 조회, 강결합, OpenSearch shard)]]
+- [[Common-Interview-Questions-DB-Operations|DB와 운영 기본 (인덱스, 트랜잭션, 잠금, 캐시, 종료와 비동기 대기)]]
 
 ## 관련 문서
 
