@@ -26,6 +26,16 @@ Compute SP와 EC2 Instance SP의 선택은 서비스 이동 가능성과 특정 
 - **Regional vs Zonal**: Regional은 AZ 유연 + 적용 범위 넓음, Zonal은 **용량 예약**까지 보장(특정 AZ 자리 확보).
 - **결제 옵션**: All Upfront(최대 할인) > Partial > No Upfront(현금 흐름 유리, 할인 적음).
 
+### EC2 RI 구매와 인스턴스 수명주기를 구분한다
+
+2026-10-16 EC2 공식 문서로 구매, 사용 중단과 만료의 범위를 대조했다. 아래는 EC2 RI의 계약이며 다른 서비스의 예약 상품에 그대로 적용하지 않는다.
+
+- **구매:** RI는 물리적 인스턴스가 아니라 조건에 맞는 On-Demand 사용량에 적용하는 결제 할인이다. 구매만으로 새 인스턴스가 실행되지는 않으며, 이미 실행 중인 인스턴스도 속성이 맞으면 할인 대상이 된다.
+- **사용 중단:** 인스턴스를 중지하거나 종료해도 RI 약정이 취소되지는 않는다. 실제 사용 여부와 관계없이 약정 기간의 비용을 부담하므로, 실행 시간 감소를 약정 비용 감소로 계산하지 않는다.
+- **만료:** RI는 자동 갱신되지 않는다. 만료가 실행 중인 EC2를 종료시키지는 않으며, 다른 적용 가능한 할인 약정이 없다면 이후 사용량에는 On-Demand 요금이 붙는다.
+
+운영 점검에서는 인스턴스의 실행 상태, 할인 적용 대상 사용량, 약정 만료일을 따로 확인한다. 이 절만 부분 검증했으며 기존 상품별 조건의 검증일은 유지한다.
+
 ### RDS, Aurora RI의 용량 정규화
 
 2026-09-03 AWS 문서 기준, Size-flexible 예약 DB 인스턴스는 RDS for Db2, MariaDB, MySQL, Oracle BYOL, PostgreSQL과 Aurora에서만 지원한다. RDS for SQL Server와 RDS for Oracle License Included에는 적용되지 않는다. 같은 리전, DB 엔진과 인스턴스 클래스 타입 안에서 정규화 용량(normalized units) 기준으로 적용되므로, 조건을 충족하면 약정을 유지한 채 같은 용량 안에서 인스턴스 구성을 바꿀 수 있다. 예를 들어 같은 클래스 타입의 `4xlarge` 1대와 `2xlarge` 2대는 정규화 용량이 같다.
@@ -107,6 +117,7 @@ Amortized는 약정 비용을 적용 기간의 사용에 배분한다. 일별 �
 - [AWS — Savings Plans vs Reserved Instances](https://docs.aws.amazon.com/savingsplans/latest/userguide/what-is-savings-plans.html)
 - [AWS — Reserved Instances (Standard vs Convertible, Regional vs Zonal)](https://docs.aws.amazon.com/AWSEC2/latest/UserGuide/ec2-reserved-instances.html)
 - [Amazon EC2, Modify Reserved Instances](https://docs.aws.amazon.com/AWSEC2/latest/UserGuide/ri-modifying.html)
+- [Amazon EC2, How billing works with Reserved Instances](https://docs.aws.amazon.com/AWSEC2/latest/UserGuide/concepts-reserved-instances-application.html)
 - [Amazon EC2, Exchange Convertible Reserved Instances](https://docs.aws.amazon.com/AWSEC2/latest/UserGuide/ri-convertible-exchange.html)
 - [Amazon RDS, Reserved DB instances](https://docs.aws.amazon.com/AmazonRDS/latest/UserGuide/USER_WorkingWithReservedDBInstances.html)
 - [AWS Savings Plans, Plan types](https://docs.aws.amazon.com/savingsplans/latest/userguide/plan-types.html)
