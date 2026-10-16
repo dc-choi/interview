@@ -30,6 +30,15 @@ SDT는 동기의 유무뿐 아니라 자율적인지 통제적인지도 구분�
 
 흥미가 있는 일도 과도한 부담과 지원 부족에서 소진될 수 있다. 번아웃의 원인을 의미 상실 하나로 설명하지 않고, 업무 요구와 회복, 통제권을 함께 확인한다([[Burnout-Sustainable-Pace|번아웃과 지속 가능한 페이스]]).
 
+## 압박으로 이어 가는 학습과 동기 유형별 결과
+
+시험, 면접과 자격 대비처럼 하지 않으면 탈락하거나 뒤처진다는 압박으로 이어 가는 학습은 외적 조절이나 내사된 조절에 머물기 쉽다. SDT 메타분석은 같은 외재적 동기라도 유형에 따라 결과와의 관련이 다르다고 보고한다.
+
+- **학생 대상(344개 표본)**: 보상을 얻거나 처벌을 피하려는 외적 조절은 성과, 지속과 관련이 없었고 웰빙 저하와 관련됐다. 자존감이 걸린 내사된 조절은 지속, 성과 목표와 정적 관련이 있었지만 부정적 웰빙 지표와도 관련됐다. 동일시된 조절은 특히 지속과, 내재적 동기는 학업 성공, 웰빙과 관련됐다.
+- **직장인 대상(124개 표본)**: 내재적 동기는 웰빙, 태도와 행동에, 동일시된 조절은 성과와 조직 시민 행동에 더 강하게 관련됐다. 외적 조절은 행동과의 관련이 제한적이면서 웰빙 비용을 동반했고, 내사된 조절은 긍정적 결과와 부정적 결과에 모두 관련됐다.
+
+두 결과는 집단 수준의 관련을 묶은 것이므로 시험 대비 자체가 해롭다거나 한 사람의 소진을 예측한다고 해석하지 않는다. 압박을 없앨 수 없는 학습이라면 그 결과를 스스로 중요하게 여기는 이유가 있는지 확인하고, 학습의 일부는 흥미로 고른 주제와 형식으로 남긴다. 좋아하는 매체와 엮어 배우는 방식은 개인 경험에서 나온 대처이며 효과가 검증된 처방은 아니다.
+
 ## 지속 가능성 자가 점검
 
 외부 동기를 제거하라는 게 아니라 **지금 내 동력의 비중**을 점검하라는 것이다.
@@ -62,10 +71,13 @@ RAMP(Relatedness, Autonomy, Mastery, Purpose)는 관계, 자율, 숙련과 목�
 
 ## 출처
 
-2026-10-02 SDT의 동기 정의와 내면화 구분을 원문과 대조했다. 면접과 업무 사례는 적용 예시이며, 합격이나 개인 행동의 예측 법칙이 아니다.
+2026-10-02 SDT의 동기 정의와 내면화 구분을 원문과 대조했다. 2026-10-12 동기 유형별 결과는 두 메타분석의 초록과 대조했다. 면접과 업무 사례는 적용 예시이며, 합격이나 개인 행동의 예측 법칙이 아니다.
 
 - [Intrinsic and Extrinsic Motivations: Classic Definitions and New Directions — Ryan and Deci, 2000](https://www.selfdeterminationtheory.org/SDT/documents/2000_RyanDeci_IntExtDefs.pdf)
+- [Student Motivation and Associated Outcomes: A Meta-Analysis From Self-Determination Theory — Howard et al., 2021](https://doi.org/10.1177/1745691620966789)
+- [Beyond Intrinsic and Extrinsic Motivation: A Meta-Analysis on Self-Determination Theory's Multidimensional Conceptualization of Work Motivation — Van den Broeck et al., 2021](https://doi.org/10.1177/20413866211006173)
 - [면접 가기 10일 전에 보면 좋은 영상 — YouTube, 코딩맨](https://www.youtube.com/watch?v=9NpJSoSSsbU) — 2026-02-06, RAMP는 영상에서 소개한 성찰 틀로 한정, 인과 법칙으로 검증하지 않음
+- [Software Engineer: I'm Tired of Pretending — YouTube, Anime Engineering Senpai](https://www.youtube.com/watch?v=H0HwFqBG9KE) — 2026-09-11, 압박으로 하는 학습의 피로와 좋아하는 매체로 배우는 대처는 화자의 경험담으로만 사용
 - 성장의 방향성과 내재적 동기 — 개인 블로그 에세이
 
 ## 관련 문서
@@ -77,3 +89,4 @@ RAMP(Relatedness, Autonomy, Mastery, Purpose)는 관계, 자율, 숙련과 목�
 - [[Purpose-Driven-Learning|목적 있는 학습]] — 목적이 만드는 학습 동기
 - [[Developer-Interview-Signals|개발자 면접 시그널]] — 동기는 합격 시그널
 - [[Effort-Value-In-Hiring|채용 시장에서 노력의 가치]] — 외재적 활동의 시장 한계
+- [[Tech-Trend-Learning-Strategy|기술 변화와 학습 전략]] — 흥미도 정당한 학습 선택 기준

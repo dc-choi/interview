@@ -3,7 +3,7 @@ tags: [learning, credentials, career, work-samples]
 status: done
 verified_at: 2026-10-07
 category: "Growth - 학습"
-aliases: ["Learning Credentials and Work Samples", "교육 수료증과 실무 증거"]
+aliases: ["Learning Credentials and Work Samples", "교육 수료증과 실무 증거", "유료 멘토링 검토"]
 ---
 
 # 교육 수료증과 실무 증거
@@ -37,7 +37,25 @@ aliases: ["Learning Credentials and Work Samples", "교육 수료증과 실무 �
 - **K-MOOC 청강:** 2026-10-07 확인한 공식 안내에서는 청강을 허용한 강좌에 한해 종강일 이후 청강 신청이 가능하다. 영상과 학습자료 등을 확인할 수 있지만 이수증은 발급하지 않는다. 재개강 여부와 일정도 강좌별로 다르다.
 - **목적에 따른 선택:** 필요한 개념을 다시 보는 목적이면 청강 가능 범위를 먼저 확인한다. 수료 증빙이 필요하면 정규 수강 신청과 평가 조건을 확인한다. 이는 선택 절차 제안이며 특정 강좌의 효과나 수료를 보장하는 기준은 아니다.
 
-공공 플랫폼 목록은 [[Self-Development-While-Working#8. 저비용 자원 활용|저비용 학습 자원]]에서 찾는다. 사이트 수를 늘리기보다 현재 질문에 맞는 강좌 하나를 골라 설명이나 적용 결과로 이해를 확인한다.
+공공 플랫폼 목록과 비용 구분은 아래 저비용 학습 플랫폼 절에서 확인한다. 사이트 수를 늘리기보다 현재 질문에 맞는 강좌 하나를 골라 설명이나 적용 결과로 이해를 확인한다.
+
+## 저비용 학습 플랫폼의 범위와 비용 확인
+
+아래는 2026-10-10 공식 사이트와 안내에서 확인한 탐색 경로다. 무료 강의가 있다는 사실을 플랫폼의 모든 서비스, 시험이나 자격증 발급이 무료라는 뜻으로 바꾸지 않는다. 회원가입, 수강 대상, 신청 기간과 발급 조건은 선택한 과정에서 다시 확인한다.
+
+| 학습 경로 | 찾아볼 영역 | 비용과 증빙에서 확인할 점 |
+|---|---|---|
+| [서울시 평생학습포털](https://sll.seoul.go.kr/) | 디지털/AI, 외국어, 직무역량, 취업/창업 | 온라인과 연계 오프라인 강좌를 구분한다. 포털에는 유료 오프라인 과정도 있으므로 개별 학습비와 수료 기준을 읽는다 |
+| [경기도 평생학습포털 GSEEK](https://www.gseek.kr/) | 컴퓨터 활용, 외국어, 자격증 준비, 취업/창업 | 수료증 이용 안내와 개별 과정의 신청 조건을 확인한다. 자격증 준비 강의 수료를 자격 취득으로 적지 않는다 |
+| [K-MOOC](https://www.kmooc.kr/) | 대학 수준의 인문, 과학, 공학과 공개 강좌 | 수강과 평가, 이수증 조건은 강좌별이다. 종강 후 청강은 허용된 강좌에서만 가능하며 이수증은 발급하지 않는다 |
+| [SNUON 안내](https://snu.ac.kr/about/sharing-snu/knowledge-sharing) / [서울대 eTL](https://etl.snu.ac.kr/) | 인문학, 사회과학, 자연과학, 공학과 교양 | 일반인에게 공개하는 강좌가 있다. 모든 서울대 과정이 일반인에게 열리거나 학위와 학점을 부여하는 것은 아니다 |
+| [네이버 비즈니스 스쿨](https://bizschool.naver.com/) | 스마트스토어, 스마트플레이스, 창작과 온라인 마케팅 | 무료 교육 경로이며 라이브 신청과 수료 기준을 확인한다. 교육 포인트와 판매 매출은 서로 다른 결과다 |
+| [EBS 비즈니스 리뷰 안내](https://about.ebs.co.kr/board/bbs?boardId=31&boardTypeId=1&cmd=view&no=12&option=&pageNo=94&postId=30003247620&searchCondition=title&searchKeyword=) | 경영, 조직과 사업 사례 | 방송과 공개 콘텐츠의 접근 범위를 확인한다. EBS는 VOD 등 콘텐츠에 따라 유료 서비스가 있음을 안내한다 |
+| [EBS 평생학교 안내](https://about.ebs.co.kr/board/bbs?boardId=31&boardTypeId=1&cmd=view&no=6&option=respond&pageNo=7&postId=30002518201&searchCondition=title&searchKeyword=) | 생활, 문화예술과 교양 | 프로그램 소개와 현재 다시보기 제공을 구분한다. 전체 VOD의 무료 여부는 확인하지 못했으므로 회차별 조건을 읽는다 |
+| [서울특별시 소상공인아카데미](https://edu.seoulsbdc.or.kr/) | 창업, 경영개선, 디지털 전환과 가게 홍보 | 무료 온라인 과정이 있으며 수료증 발급/미발급 과정이 나뉜다. 신청 대상과 수료 조건을 확인한다 |
+| [한국교육검정원](https://www.kefe.co.kr/) | 상담, 바리스타, 방과후지도 등 자격 과정 | 사이트는 무료수강을 안내하지만 자격증 발급 안내에는 입금과 배송 절차가 있다. 발급 금액은 확인하지 못했으며 수강료와 발급비를 따로 확인한다 |
+
+KOCW와 소상공인 지식배움터 등 다른 탐색 경로는 [[Self-Development-While-Working#8. 저비용 자원 활용|저비용 자원 활용]]에 남겨 둔다. 과정 선택은 사이트 수를 늘리는 대신 현재 풀 질문, 필요한 선수 지식과 연습 과제로 좁힌다.
 
 ## 자격 유지와 재취득을 구분하기
 
@@ -75,9 +93,19 @@ aliases: ["Learning Credentials and Work Samples", "교육 수료증과 실무 �
 
 교육 이후에 실습 결과를 활용할 업무와 피드백 경로가 없다면 그 연결부터 보완한다. 이 절은 과정 선택 기준이며 사용자의 새 학습 트랙이나 자격증 준비를 시작한다는 결정이 아니다.
 
+## 유료 피드백과 멘토링을 검토할 때
+
+강의, 문서와 공개 영상은 무료로도 많이 구할 수 있다. 무료 자료로 대체하기 어려운 것은 내 코드, 이력서와 상황을 직접 보고 빠진 부분을 짚어 주는 개인화된 피드백이다. 유료 멘토링이나 코칭을 검토할 때는 콘텐츠의 양보다 피드백의 구조를 비교한다. 아래는 비교 질문이며 특정 서비스의 효과를 보장하는 기준이 아니다.
+
+- **무엇을 검토받는지:** 누가, 어떤 산출물을, 얼마나 자주 보고 어떤 형식으로 답하는지 확인한다. 녹화 강의에 질문 게시판만 붙은 상품은 피드백 상품과 다르다.
+- **혼자 걸릴 기간과의 비교:** 혼자 해결할 수 있는지보다 그 기간과 시행착오를 지금 감당할 수 있는지로 비교한다. 동료 코드 리뷰와 커뮤니티 피드백처럼 비용이 들지 않는 경로도 같은 비교에 넣는다([[Professional-Networking-and-Mentors|외부 네트워킹과 멘토 확보]]).
+- **회수 계산의 전제:** 수강 뒤 연봉이 오르면 비용을 곧 회수한다는 계산은 취업 시점과 연봉을 가정한 시나리오다. 판매자가 내세우는 수강생 사례는 [[Effort-Value-In-Hiring#증명, 학습 방법, 투입 자원으로 전략을 고른다|부트캠프 선택 기준]]과 같은 항목으로 확인한다.
+- **결과가 없을 때의 빈칸 찾기:** 한 과정을 마쳤는데 결과로 이어지지 않았다면 그 과정이 헛수고였다고 단정하기 전에 임팩트가 드러나지 않는 포트폴리오, 행동 면접 답변, 시간 제한이 있는 라이브 코딩처럼 다른 구간이 막혔는지 본다. 막힌 구간은 [[Effort-Value-In-Hiring#시장 결과와 개인 학습을 구분한다|지원 단계별 결과]]로 좁힌다.
+
 ## 이해 확인
 
 - 무료 체험이 있는 유료 과정과 무료 직무 시뮬레이션의 비용 조건은 어떻게 다른가?
+- 유료 멘토링 상품이 파는 것이 콘텐츠인지 내 산출물에 대한 피드백인지 무엇으로 확인할 것인가?
 - 기업이 만든 시뮬레이션을 마쳤다는 사실과 그 기업에서 근무했다는 사실을 어떻게 구분해 설명할 것인가?
 - 모범 답안을 닫은 뒤에도 결과가 나온 이유와 입력이 달라질 때의 한계를 설명할 수 있는가?
 
@@ -91,8 +119,18 @@ aliases: ["Learning Credentials and Work Samples", "교육 수료증과 실무 �
 - [Online Certificates for Job-Ready Skills — Grow with Google](https://grow.google/certificates/)
 - [수강신청이 마감된 강좌를 수강하고 싶은데 방법이 없나요? — K-MOOC](https://www.kmooc.kr/board_detail/board/notice/597)
 
+- [서울시 평생학습포털](https://sll.seoul.go.kr/), [경기도 평생학습포털 GSEEK](https://www.gseek.kr/), [K-MOOC](https://www.kmooc.kr/) — 2026-10-10 학습 분야와 과정별 운영 구분 확인.
+- [지식나눔 — 서울대학교](https://snu.ac.kr/about/sharing-snu/knowledge-sharing), [서울대학교 New eTL](https://etl.snu.ac.kr/) — 일반인 공개 범위와 접근 경로 확인.
+- [네이버 비즈니스 스쿨 운영정책](https://bizschool.naver.com/terms), [무료 교육 안내 — 네이버 스마트플레이스 고객센터](https://help.naver.com/service/30026/contents/21050?lang=ko&osType=COMMONOS) — 교육 범위와 무료 교육 안내 확인.
+- [EBS 이용안내](https://m.ebs.co.kr/cs/guide/show), [EBS 비즈니스 리뷰 프로그램 안내](https://about.ebs.co.kr/board/bbs?boardId=31&boardTypeId=1&cmd=view&no=12&option=&pageNo=94&postId=30003247620&searchCondition=title&searchKeyword=), [EBS 평생학교 프로그램 안내](https://about.ebs.co.kr/board/bbs?boardId=31&boardTypeId=1&cmd=view&no=6&option=respond&pageNo=7&postId=30002518201&searchCondition=title&searchKeyword=) — 프로그램 분야와 일부 콘텐츠 유료 조건을 확인했다. 현재 모든 회차의 제공과 비용은 미확인.
+- [서울특별시 소상공인아카데미](https://edu.seoulsbdc.or.kr/), [무료 온라인 과정 목록](https://edu.seoulsbdc.or.kr/course/course_list.jsp?ch=course1&cid=113236&lnb=6159) — 온라인 과정과 수료증 구분 확인.
+- [한국교육검정원](https://www.kefe.co.kr/), [자격증 발급신청 안내](https://www.kefe.co.kr/sub/myClass/myClass04_02.asp) — 무료수강 표시와 별도 입금/발급 절차 확인. 발급 금액은 미확인.
+- [Advice from the Top 1% (in Tech) — YouTube, Phillip Choi](https://www.youtube.com/watch?v=kpIy4pmP62Y) — 2026-05-25, 자신의 멘토링 프로그램을 운영하는 화자의 견해. 무료 콘텐츠와 개인화된 피드백의 구분, 한 과정 뒤에 남은 빈칸을 찾는 관점만 사용하고 수익 회수 예시와 수강생 취업 수치는 반영하지 않았다.
+
 ## 관련 문서
 
 - [[Learning-Strategy|학습 전략]]
 - [[Purpose-Driven-Learning|목적 있는 학습]]
 - [[Performance-Evidence-Playbook|성과 증거 플레이북]]
+- [[Effort-Value-In-Hiring|채용 시장에서 노력의 가치]]
+- [[Professional-Networking-and-Mentors|외부 네트워킹과 멘토 확보]]

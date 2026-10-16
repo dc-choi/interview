@@ -13,4 +13,4 @@ aliases: ["Seminar"]
 
 - [[fit/seminar/companies/회사세미나(CompanySeminars)|회사 세미나 (Company Seminars)]] — 산업 도메인 특강(SSG, 지그재그, 금융, 카카오엔터)과 11번가, 당근, 토스, Inclusive Design
 - [[fit/seminar/career/커리어세미나(CareerSeminars)|커리어 특강 (Career)]] — 한기용 특강, 제로베이스 취업설명회
-- [[fit/seminar/meetups/밋업(Meetups)|밋업 (Meetups)]] — TS 백엔드 밋업, OpenSearch Seoul Meetup, 네이버 D2 밋업
+- [[fit/seminar/meetups/밋업(Meetups)|밋업 (Meetups)]] — TS 백엔드 밋업, OpenSearch Seoul Meetup, 네이버 D2 밋업, 프라이머 데모데이

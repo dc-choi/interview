@@ -70,6 +70,8 @@ aliases: ["Peer-Driven Growth", "함께 성장", "스터디 운영", "멘토링"
 - **공유는 손해가 아니라 성장** — 설명하는 과정에서 지식이 검증되고 단단해진다 → [[Purpose-Driven-Learning|목적 있는 학습]].
 - **심리적 안전감** — 좋은 리더는 답을 다 아는 사람이 아니라 팀원이 질문하고 실패하고 다시 시도할 환경을 만드는 사람이다. 칭찬은 공개적으로, 비판은 개인적으로. 냉소는 큰 비용을 만든다 → [[Failure-Tolerant-Culture|실패에 관대한 문화]], [[People-Leadership|사람을 키우는 리더십]].
 
+이 수단을 한 번에 모두 시작하지 않는다. 한 주제의 학습에 실제 프로젝트, 피드백을 줄 사람, 글이나 발표를 감당할 수 있는 만큼 하나씩 더한다. 근력 운동에서 무게를 조금씩 올리는 점진적 과부하에 빗댄 경험칙이며, 순서와 속도는 가용 시간과 목표에 맞춘다.
+
 ## 면접 포인트
 
 Q. 어떻게 성장하시나요?
@@ -86,6 +88,7 @@ Q. 스터디나 멘토링 운영 경험은?
 
 - [우아한형제들 개발자가 말하는 공부, 성장, 스터디, 글쓰기 노하우 (YouTube)](https://www.youtube.com/watch?v=QutIXPbKWpw&list=PLgXGHBqgT2TtGi82mCZWuhMu-nQy301ew&index=22)
 - [인프런, 코드빌런, 스터디와 팀 프로젝트 - 나의 성장 커리어 만들기](https://www.inflearn.com/courses/lecture?courseId=334892&unitId=242711)
+- [Advice from the Top 1% (in Tech) (YouTube)](https://www.youtube.com/watch?v=kpIy4pmP62Y) — Phillip Choi, 2026-05-25, 외부화 수단을 단계적으로 늘리는 순서는 화자의 경험칙
 
 ## 관련 문서
 

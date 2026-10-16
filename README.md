@@ -52,6 +52,7 @@
 - [[fit/interview/prep/면접준비(InterviewPrep)|면접 준비 가이드 (Prep)]] — 메타, 자기분석, 시그널, 치환표, 질문 풀, 면접 형식별
 - [[fit/job-search/구직(JobSearch)|구직(Job Search)]] — 회사 이해, 이력서, 프로세스, 트래커
 - [[fit/seminar/세미나(Seminar)|세미나 & 강의(Seminar)]] — 회사 세미나, 커리어 특강, 밋업
+- [[fit/seminar/meetups/Primer-Demoday-28-2026-10-07|프라이머 28기 데모데이 (2026-10-07)]] — 9개 팀의 고객 문제, 수익모델과 확장 계획
 - [[fit/salary-negotiation/Salary-Negotiation-Guide|연봉 협상(Salary Negotiation)]] — 원칙, 프로세스, 연봉 궤적
 
 ### 기타(Others)

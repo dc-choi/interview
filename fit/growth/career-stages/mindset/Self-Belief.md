@@ -2,7 +2,7 @@
 tags: [growth, career-stages, mindset, self-efficacy, resilience]
 status: done
 category: "Growth - 커리어 단계"
-aliases: ["Self-Belief", "자기 효능감", "자기 믿음", "재능 신화", "자기충족 예언", "칭찬 불안"]
+aliases: ["Self-Belief", "자기 효능감", "자기 믿음", "재능 신화", "자기충족 예언", "칭찬 불안", "Impostor Phenomenon", "임포스터 현상", "가면 증후군"]
 ---
 
 # 자기 믿음 (재능 신화와 타인의 평가)
@@ -31,6 +31,16 @@ aliases: ["Self-Belief", "자기 효능감", "자기 믿음", "재능 신화", "
 
 이런 해석은 연차와 무관하게 나타날 수 있다. 칭찬을 정체성 판결이 아니라 **이 사람이 이 행동을 좋게 보았다는 정보**로 읽는다. 지적과 마찬가지로 한 사람의 관점이라는 표본 크기 그대로 받고, 반복되는 피드백과 결과로 실제 강점인지 확인한다. 칭찬 뒤에도 틀릴 수 있고 모를 수 있다.
 
+## 임포스터 현상 — 성취의 증거를 스스로 부정하는 경험
+
+임포스터 현상(impostor phenomenon)은 성취와 외부 인정이 있는데도 자신이 실제로는 유능하지 않으며 주변을 속여 왔다고 느끼는 내적 경험이다. 1978년 Clance와 Imes가 성취 수준이 높은 여성 150명 이상을 심리치료, 집단 작업과 대학 수업에서 만난 임상 경험을 바탕으로 기술했다. 좋은 결과를 운, 채점 실수나 주변의 과대평가로 돌리며 역량을 보여 주는 외부 증거를 계속 부정하는 것이 특징이다.
+
+- **진단명이 아니다**: 공인된 정신과 진단이 아니며 DSM에도 없다. 원 논문도 증후군이 아니라 현상이라는 표현을 썼다.
+- **얼마나 흔한지 단정하지 않는다**: 62개 연구를 묶은 2020년 체계적 문헌고찰에서 유병률은 9~82%로 크게 달랐고, 그 차이는 주로 선별 도구와 기준점에서 나왔다. 개발자 대부분이 겪는다고 일반화하지 않는다.
+- **함께 살필 신호**: 같은 고찰은 우울, 불안과 자주 동반되고 업무 수행, 직무 만족의 저하와 번아웃에 관련된다고 보고했다. 지속되는 불안과 우울은 자기 점검으로 끝내지 않고 전문가와 상의한다([[Burnout-Sustainable-Pace|번아웃과 지속 가능한 페이스]]).
+
+연차가 오를수록 모른다고 말하면 신뢰를 잃을 것 같아 아는 척하는 부담이 커질 수 있다. 경력이 모든 영역의 지식을 보장하지는 않는다. 모르는 지점과 확인할 방법을 함께 말하면 위험을 일찍 드러낼 수 있다([[People-Leadership#모른다고 말하는 능력|모른다고 말하는 능력]], [[Trust-Respect-Teamwork|신뢰와 존중의 팀워크]]).
+
 ## 자기 믿음은 행동 가능성에 영향을 준다
 
 자기 효능감(self-efficacy)은 목표 선택, 노력과 지속성에 영향을 줄 수 있어 성취 과정의 한 요인이 된다. 그러나 믿음만으로 결과가 보장되지는 않으며, 필요한 기술, 자원, 피드백과 환경을 함께 확인해야 한다. 피그말리온 효과는 다른 사람의 기대가 대우와 수행에 영향을 줄 수 있다는 별도 개념이므로 자기 효능감과 같은 뜻으로 사용하지 않는다.
@@ -52,6 +62,7 @@ aliases: ["Self-Belief", "자기 효능감", "자기 믿음", "재능 신화", "
 - 현재 수준을 **정체기**로 보는가, **영구 한계**로 단정하는가
 - 자기 의심의 정체가 정보 부족인가 확신 부족인가
 - 칭찬을 **기대치**로 변환하는가, **방향 정보**로 읽는가 — 칭찬 이후 모른다고 말하기가 어려워지지 않았는가
+- 성취의 증거를 운이나 주변의 과대평가로만 돌리고 있지 않은가, 그 느낌이 오래 이어지며 불안이나 우울을 동반하지 않는가
 - 선택의 결정권을 본인이 쥐고 있는가
 
 ## 사례
@@ -60,6 +71,8 @@ aliases: ["Self-Belief", "자기 효능감", "자기 믿음", "재능 신화", "
 
 ## 출처
 
+2026-10-12 임포스터 현상의 정의는 원 논문, 진단 지위와 유병률 범위 및 동반 문제는 체계적 문헌고찰과 대조했다.
+
 - 타인의 재능 평가와 자기 믿음에 대한 회고 — 개인 블로그 에세이
 - [피드백을 받으면 무너지는 개발자에게 — Team Grit](https://teamgrit.co/article/323)
 - [칭찬받은 코드가 제일 무서운 개발자에게 — Team Grit](https://teamgrit.co/article/508)
@@ -67,6 +80,9 @@ aliases: ["Self-Belief", "자기 효능감", "자기 믿음", "재능 신화", "
 - [재능이라는 허상 — 곽지욱](https://www.gwagjiug.com/blog/illusion_of_talent)
 - [Bandura, Self-efficacy: Toward a unifying theory of behavioral change](https://pubmed.ncbi.nlm.nih.gov/847061/)
 - [Rosenthal and Jacobson, Pygmalion in the classroom](https://doi.org/10.1007/BF02322211)
+- [The Imposter Phenomenon in High Achieving Women: Dynamics and Therapeutic Intervention — Clance and Imes, 1978](https://doi.org/10.1037/h0086006)
+- [Prevalence, Predictors, and Treatment of Impostor Syndrome: a Systematic Review — Bravata et al., 2020](https://doi.org/10.1007/s11606-019-05364-1)
+- [Software Engineer: I'm Tired of Pretending — YouTube, Anime Engineering Senpai](https://www.youtube.com/watch?v=H0HwFqBG9KE) — 2026-09-11, 시니어가 모른다고 말하기 어려운 부담은 화자의 경험담으로만 사용, 대부분이 임포스터라는 주장은 반영하지 않음
 
 ## 관련 문서
 
@@ -82,3 +98,5 @@ aliases: ["Self-Belief", "자기 효능감", "자기 믿음", "재능 신화", "
 - [[Radical-Candor-Feedback|Radical Candor와 행동 기반 피드백]] — 받은 내용을 이해하고 다음 행동으로 연결하는 루프
 - [[Developer-Growth-Stages-Junior-To-Mid|주니어 → 미드레벨 전환 7단계]] — 피드백을 받아들이는 근육을 기르는 연습
 - [[Code-Review-Culture|생산적 코드 리뷰 문화]] — 리뷰이의 자세 (지적은 위험 신호가 아니다)
+- [[People-Leadership|사람을 키우는 시니어 리더십]] — 모른다고 말하는 능력
+- [[Burnout-Sustainable-Pace|번아웃과 지속 가능한 페이스]] — 지속되는 불안과 도움 요청
