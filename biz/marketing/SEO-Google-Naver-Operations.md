@@ -102,9 +102,24 @@ www가 없는 주소의 초기화 결과로 www 주소의 캐시까지 초기화
 
 등록과 기술 설정은 관리의 시작이다. 보고서에서 발견한 검색어와 상담 질문을 바탕으로 콘텐츠를 보강하고, 비슷한 페이지를 양산하거나 순위를 보장하지 않는다. 측정 기준은 [[Metrics-Framework|지표 설계]]와 연결한다.
 
+## 검색어 후보와 지표의 의미를 나눈다
+
+고객이 사용하는 표현과 해결하려는 과업을 먼저 적고, 검색어별로 제공할 페이지와 다음 행동을 연결한다. 초보자와 전문가가 같은 주제를 다른 말로 검색할 수 있으므로 모든 표현을 반복 삽입하기보다 실제 질문에 답하는 콘텐츠를 만든다.
+
+2026-10-18 Google 공식 문서와 대조한 지표 구분은 다음과 같다.
+
+- **평균 월간 검색량:** Keyword Planner에서 지정한 기간, 지역과 검색 네트워크에 따른 검색어 및 유사 검색어의 검색 횟수 평균이다. 기본은 12개월 평균이며 고유 고객 수나 구매 의향이 아니다.
+- **Competition:** 해당 검색어에 광고를 게재한 광고주 수의 상대적 수준이다. 자연 검색에서 상위에 오르기 어려운 정도로 해석하지 않는다.
+- **검색어와 페이지의 적합성:** 대상 고객이 원하는 설명, 비교나 실행 방법을 페이지가 제공하는지 확인한다. 검색량이 커도 제공 서비스와 맞지 않으면 우선순위를 낮출 수 있다.
+
+실무에서는 고객, 검색어, 의도, 검색량의 조건과 기준일, 현재 검색 결과, 연결할 페이지를 한 행에 기록한다. 이는 작업용 정리 방식이며 Google이 보장하는 순위 공식이 아니다. AI가 제안한 검색어는 조사 후보로 두고 검색량과 경쟁 수치를 확인 없이 채우지 않는다. 게시 후에는 실제 노출, 클릭과 문의를 함께 보며 가설을 수정한다.
+
+이번 부분 대조는 검색어 후보와 Keyword Planner 지표에 한정하며, 기존 네이버 설정과 공유 캐시 절의 재검증 날짜는 갱신하지 않는다.
+
 ## 출처
 
 - [Google Search Central, SEO Starter Guide](https://developers.google.com/search/docs/fundamentals/seo-starter-guide)
+- [Google Ads Help, About Keyword Planner forecasts](https://support.google.com/google-ads/answer/3022575?hl=en)
 - [Google Search Console 도움말, 사이트 소유권 확인](https://support.google.com/webmasters/answer/9008080?hl=ko)
 - [Google Search Central, How to specify a canonical URL](https://developers.google.com/search/docs/crawling-indexing/consolidate-duplicate-urls)
 - [Google Search Central, Build and submit a sitemap](https://developers.google.com/search/docs/crawling-indexing/sitemaps/build-sitemap)

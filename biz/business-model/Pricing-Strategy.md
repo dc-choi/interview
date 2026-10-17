@@ -35,6 +35,16 @@ Freemium 전환율은 활성 사용자 정의, 관찰 기간, 고객 규모, tri
 - **디코이 효과 (Decoy):** 한 대안에만 명확히 열등한 선택지를 추가하면 그 대안의 선택 비율이 높아질 수 있다. 중간 요금제를 고르게 만드는 법칙은 아니다
 - **지불 의향 (WTP) 조사:** Van Westendorp 가격 민감도 분석, 컨조인트 분석
 
+### 단독 평가와 공동 평가
+
+단독 평가는 한 선택지만 보고 가치를 매기는 상황이고, 공동 평가는 여러 선택지를 나란히 비교하는 상황이다. 비교 기준이 부족하면 중요한 속성보다 평가하기 쉬운 속성이 판단에 더 크게 반영될 수 있다는 설명을 evaluability hypothesis라고 한다.
+
+Hsee(1998)의 아이스크림 실험에서는 넘치는 컵의 7 oz가 덜 찬 컵의 8 oz보다 단독 평가에서 높게 평가됐지만, 나란히 제시하면 방향이 뒤집혔다. 이는 특정 제시 조건의 결과이며 고객 대부분이 비교하지 않는다거나 양을 줄이면 더 잘 팔린다는 근거가 아니다.
+
+2023년 후속 재현의 아이스크림 실험에서는 원 연구의 극단값 제외 기준을 적용했을 때 단독 평가의 차이가 나타났지만, 극단값을 포함하면 통계적으로 유의하지 않았다. 공동 평가에서 더 많은 양의 지불 의향이 높은 결과는 두 분석 모두에서 나타났다. 가상 상황의 지불 의향을 실제 구매, 매력도나 만족도와 같은 지표로 취급하지 않는다.
+
+적용 가설은 단독 상품 페이지와 비교표에서 고객이 수량, 포함 범위와 총액을 얼마나 쉽게 이해하는지 따로 점검하는 것이다. 외주 패키지에도 포함 작업과 제외 작업을 비교 가능하게 표시하고 실제 문의와 결제로 검증한다. 이는 실무 적용 제안이며 포장이나 화면 구성의 매출 효과가 입증됐다는 뜻은 아니다.
+
 ### 끝자리 가격(9,900원과 10,000원)이 통하는 조건
 
 9로 끝나는 단수가격은 맨 앞자리가 바뀌는 경계($2.99와 $3.00)에서 더 싸게 인식될 수 있다(left-digit effect). Thomas와 Morwitz(2005)는 비교하는 가격 사이의 수치적, 심리적 거리에 따라서도 효과가 달라진다고 보고했다. 싸게 인식하는 효과가 실제 구매 증가까지 보장하지는 않는다.
@@ -52,7 +62,7 @@ Freemium 전환율은 활성 사용자 정의, 관찰 기간, 고객 규모, tri
 
 Wadhwa와 Zhang(2015)은 라운드가격이 감정 중심 판단과, 비라운드가격이 인지 중심 판단과 맞을 때 판단이 맞는다는 느낌(feeling right)을 높일 수 있다고 설명한다. 이 적합성은 긍정적 평가뿐 아니라 부정적 평가도 강화할 수 있다. 따라서 감정 중심 구매에서 라운드가격이 구매의도를 높인다는 규칙으로 읽지 않는다. 이 연구의 비라운드가격($198.76 같은 정밀한 가격)도 9로 끝나는 단수가격과 같은 조작은 아니다([저자 소속기관의 공식 초록](https://www.insead.edu/faculty-research/publications/journal-articles/number-just-feels-right-impact-roundedness-price)).
 
-적용할 때는 구매 상황과 고객군을 실험 가설로 삼고, 실제 결제와 기여이익으로 가격안을 비교한다. 9,900원과 10,000원 비교는 가격 수준과 끝자리를 함께 바꾸므로 순수한 표기 효과와 구분한다. 단수가격이 품질을 낮게 보이게 할 수 있다는 연구(Stiving, 2000)는 위 국내 논문에서 재인용한 주장이며, 모든 가격을 9로 끝내면 역효과라는 Threads의 실무 의견도 보편적 실험 결과로 취급하지 않는다.
+적용할 때는 구매 상황과 고객군을 실험 가설로 삼고, 실제 결제와 기여이익으로 가격안을 비교한다. 9,900원과 10,000원 비교는 가격 수준과 끝자리를 함께 바꾸므로 순수한 표기 효과와 구분한다. 단수가격이 품질을 낮게 보이게 할 수 있다는 연구(Stiving, 2000)는 위 국내 논문에서 재인용한 주장이므로 직접 검증한 결론과 구분한다.
 
 ## 구매 불안과 가격 표시를 나누어 검증한다
 
@@ -143,6 +153,8 @@ Q. 가격 정책은 어떻게 설계했는가?
 
 2026-10-12에는 Stripe billing credits 문서로 크레딧의 적용 대상, 차감 시점과 금지 용도를 부분 대조했다. AI 크레딧 설계 순서는 단위 비용과 공헌이익 원칙을 적용한 제안이며 특정 서비스의 검증된 가격 공식이 아니다. 강의 시연 화면의 분당 원가는 단가 근거를 확인하지 못해 사용하지 않았다.
 
+2026-10-18에는 단독/공동 평가 절을 Hsee(1998)의 출판사 초록과 2023년 재현 연구의 Study 2 본문으로 대조했다. 원 연구의 지불 의향 금액은 전체 원문으로 확인하지 않아 옮기지 않았다. 다른 가격 정책 절의 검증 날짜는 갱신하지 않았다.
+
 ## 출처
 
 - [OpenStax, 가격 정책 수립의 5단계](https://openstax.org/books/principles-marketing/pages/12-3-the-five-step-procedure-for-establishing-pricing-policy)
@@ -157,7 +169,8 @@ Q. 가격 정책은 어떻게 설계했는가?
 - [단수가격, 쾌락재, 가격의식, 구매정당화에 따른 구매의도 — 박지혜, 양윤 (한국심리학회지: 소비자 광고, 2017)](https://doi.org/10.21074/kjlcap.2017.18.3.417), [학회 원문](https://www.accesson.kr/kscap/assets/pdf/15422/journal-18-3-417.pdf)
 - [Penny Wise and Pound Foolish: The Left-Digit Effect in Price Cognition — Thomas, Morwitz](https://academic.oup.com/jcr/article-abstract/32/1/54/1796360)
 - [This Number Just Feels Right: The Impact of Roundedness of Price Numbers on Product Evaluations — Wadhwa, Zhang](https://academic.oup.com/jcr/article-abstract/41/5/1172/2962090), [저자 소속기관의 공식 초록](https://www.insead.edu/faculty-research/publications/journal-articles/number-just-feels-right-impact-roundedness-price)
-- [9,900원과 10,000원, 끝자리 가격 효과의 조건 — Threads, groble.im](https://www.threads.com/@groble.im/post/DdbYC9cE9YS)
+- [Less is better: when low-value options are valued more highly than high-value options — Hsee (Journal of Behavioral Decision Making, 1998)](https://doi.org/10.1002/%28SICI%291099-0771%28199806%2911%3A2%3C107%3A%3AAID-BDM292%3E3.0.CO%3B2-Y)
+- [Less Is Better in Separate Evaluations Versus More Is Better in Joint Evaluations: Mostly Successful Close Replication and Extension of Hsee (1998) — Collabra: Psychology](https://online.ucpress.edu/collabra/article/9/1/77859/196807/Less-Is-Better-in-Separate-Evaluations-Versus-More)
 - [Stripe, Billing credits](https://docs.stripe.com/billing/subscriptions/usage-based/billing-credits) — metered 가격 적용 범위, 청구서 확정 시 차감과 금지 용도
 - [YouTube, 양실장의 바이브코딩대학, 1시간 압축) AI 기술 1도 모르는 초심자가 전문 AI SaaS 구축하는 모든 과정](https://www.youtube.com/watch?v=JK1S6FvAdZQ) — 2026-08-24, 42:39~49:00의 GPU 추론 서비스 과금과 배포 설계 시연. 화면의 원가 계산과 인프라 구성은 확인하지 않아 사용하지 않음
 

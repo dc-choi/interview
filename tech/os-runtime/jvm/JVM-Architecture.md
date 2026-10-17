@@ -158,7 +158,17 @@ Heap 관리. 자세한 내용은 [[JVM-GC|JVM GC]].
 - **동적 프록시 남용** — CGLIB, javassist로 런타임 클래스 폭증
 - **ClassLoader 다른 Class로 캐스팅** → 동일 이름인데 `ClassCastException`
 - **`-Xss`를 과도히 늘림** → 수만 스레드에서 메모리 초과
-- **JIT이 붙지 않는 벤치마크로 성능 판단** — `java -Xcomp` 또는 JMH 같은 제대로 된 도구 필요
+- **JIT 준비 상태를 섞은 성능 판단** — 기동 직후와 충분히 실행한 상태를 구분한다. Java SE 25의 `-Xcomp`는 JIT 컴파일러 테스트 모드이며 운영 환경에 쓰지 말라고 명시돼 있다. 일반적인 성능 측정의 대체 수단으로 권하지 않는다
+
+### JVM 벤치마크의 측정 조건
+
+2026-10-18 Java SE 25 명령 레퍼런스와 OpenJDK JMH 샘플로 아래 측정 조건을 부분 대조했다. 기존 아키텍처와 튜닝 항목 전체의 검증 날짜는 갱신하지 않는다.
+
+- **워밍업과 측정 분리:** JMH의 `@Warmup`과 `@Measurement`로 반복 횟수와 시간을 각각 설정한다. 예제의 횟수가 모든 프로그램의 안정 상태를 보장하지는 않는다.
+- **계산이 남아 있는지 확인:** 반환값을 버리면 dead-code elimination으로 측정하려던 계산이 제거될 수 있다. 결과를 반환해 JMH가 소비하게 하고, 상수만으로 계산하면 constant folding으로 계산 자체가 축소될 수 있으므로 입력도 점검한다.
+- **프로세스 분리:** 같은 JVM에서 여러 구현을 재면 최적화 프로파일이 섞일 수 있다. JMH의 fork는 별도 프로세스에서 측정하는 장치다.
+
+서비스 비교에 적용할 때는 같은 입력, 응답 의미, 권한 검사, DB 작업과 캐시 조건을 맞추고 CPU, 메모리 한도와 동시 연결 수를 기록한다. 이는 비교 실험의 설계 원칙이며 JMH 하나로 HTTP 서비스 전체를 검증한다는 뜻은 아니다. 처리량과 함께 지연, 오류율과 메모리를 확인하고, 특정 endpoint의 결과를 언어 전체의 우열로 일반화하지 않는다.
 
 ## 면접 체크포인트
 
@@ -171,6 +181,8 @@ Heap 관리. 자세한 내용은 [[JVM-GC|JVM GC]].
 - "같은 클래스라도 다른 ClassLoader면 다른 타입"이 의미하는 바
 
 ## 출처
+- [Oracle, Java SE 25 java Command](https://docs.oracle.com/en/java/javase/25/docs/specs/man/java.html) — `-Xcomp`의 테스트 모드와 운영 사용 제한
+- [JMH samples: DeadCode, ConstantFold, Forking, Annotations — OpenJDK](https://github.com/openjdk/jmh/tree/master/jmh-samples/src/main/java/org/openjdk/jmh/samples) — 샘플 08, 10, 12, 20의 측정 함정과 실행 조건
 - [JEP 410 — Remove the Experimental AOT and JIT Compiler (OpenJDK)](https://openjdk.org/jeps/410)
 - [JEP 454 — Foreign Function & Memory API (OpenJDK)](https://openjdk.org/jeps/454)
 - [JEP 122 — Remove the Permanent Generation (OpenJDK)](https://openjdk.org/jeps/122)
