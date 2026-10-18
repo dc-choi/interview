@@ -1,7 +1,7 @@
 ---
 tags: [palantir, chatbot, tools, commands]
 status: done
-verified_at: 2026-10-16
+verified_at: 2026-10-18
 category: "AI엔지니어링(AIEngineering)"
 aliases: ["Chatbot tool과 client command"]
 ---
@@ -17,6 +17,10 @@ Function tool은 기본 최신 published version을 사용하지만 특정 versi
 Prompted tool calling은 prompt에 도구 사용법을 넣으며 한 번에 한 tool만 호출한다. 모든 제공 model/tool 유형을 지원하는 경로다. Native는 일부 Palantir-provided model과 Action/Object query/Function/variable update에 한해 parallel tool 호출을 지원한다. Command를 추가했는데 native mode에서 동작할 것이라고 가정하지 않는다.
 
 Action의 자동 실행과 user confirmation은 별도 설정이다. 도구 설명은 언제 무엇을 실행할지 구체적으로 쓰되 permission 검증을 prompt에 맡기지 않는다. Temperature 0도 입력 해석과 실제 효과의 결정성을 보장하는 설정은 아니다.
+
+2026-10-18 공식 Tools 문서 기준, Request clarification도 native 지원 목록에 없다. Command나 clarification이 필요한 구성은 prompted mode를 선택한다. 도구의 등록 가능 여부와 선택한 모델 및 mode에서의 호출 지원을 함께 확인한다.
+
+Edit mode, view mode, Workshop과 AIP Threads에서는 응답 아래의 **View reasoning**으로 응답 생성 과정을 조사할 수 있다. 이는 도구 선택을 살피는 진입점이며, 실제 데이터 변경의 성공 확인은 실행 결과와 별도로 대조하는 운영 점검으로 둔다.
 
 ## Command는 사용자의 application에서 실행한다
 

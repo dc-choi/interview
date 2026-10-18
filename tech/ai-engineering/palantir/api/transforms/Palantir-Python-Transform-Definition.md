@@ -77,7 +77,7 @@ Spark context는 `auth_header`, resolved conda environment, fallback branches, p
 
 `LightweightException`은 호환성 검사 오류의 기반이며 `LightweightTypeError`, `LightweightValueError`, `LightweightNotImplementedError`는 각각 타입, 값과 미지원 기능을 구분한다. 이름이 비슷한 Spark 객체와 single-node 객체를 바꾸어 넣기 전에 기능 지원을 확인한다.
 
-`Check(expectation, name, on_error=...)`는 기대 조건을 Data Health에 등록한다. name은 시간에 걸쳐 유지할 식별자이고 `on_error`는 `WARN` 또는 `FAIL`이다. Input의 업데이트 실패 정책은 `continue` 또는 `fail`이며 기본은 `fail`이다. 검증 실패 정책과 상류 데이터 갱신 실패 정책은 별도다.
+`Check(expectation, name, on_error='FAIL', description=None)`는 기대 조건을 Data Health에 등록할 수 있게 감싼다. name은 시간에 걸쳐 유지할 식별자이고 `on_error`는 현재 `WARN` 또는 `FAIL`이다. 생략하면 `FAIL`이 적용되므로 미충족을 경고로만 남기려면 `WARN`을 명시한다. `description`은 선택 인자다. Check 서명과 기본값은 2026-10-18 공식 API 문서와 대조했다. Input의 업데이트 실패 정책은 `continue` 또는 `fail`이며 기본은 `fail`이다. 검증 실패 정책과 상류 데이터 갱신 실패 정책은 별도다.
 
 보안 marking의 `stop_propagating=Markings(...)`와 조직 marking의 `stop_requiring=OrgMarkings(...)`는 서로 다른 선언이다. ID와 적용 branch를 명시한다. `Output.sever_permissions`와 OutputSet의 같은 인자는 3.85.0부터 deprecated이며 위 입력 선언을 사용하도록 안내된다. 이 명세가 임의의 사용자에게 declassification 권한까지 부여한다고 해석하지 않는다.
 
