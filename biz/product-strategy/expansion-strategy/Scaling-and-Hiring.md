@@ -124,6 +124,14 @@ PMF 신호가 생겼다는 이유만으로 인원을 늘리지는 않는다. 확
 
 주니어를 첫 채용에서 일률적으로 제외하지는 않는다. 다만 반복 가능한 업무, 구체적인 피드백 기준과 가르칠 시간이 없다면 학습 책임이 더해져 현재 병목이 커질 수 있다. 관리자도 조정 대상과 의사결정 충돌이 실제 병목이 되기 전에 직함부터 만들지 않는다.
 
+### 초기 기여와 다음 단계의 리더 역할을 구분한다
+
+초기 기여에 대한 인정과 임원 역할을 맡길 판단은 나눠 검토한다. 다음 단계의 책임은 본인의 실행력뿐 아니라 담당 기능의 계획, 숙련 인력 채용과 위임, 창업자의 세부 개입을 줄이는 능력까지 포함할 수 있다. 성장 속도와 필요한 책임을 먼저 적고, 내부 승진과 외부 영입에 같은 역할 기준을 적용하는 방식으로 평가한다.
+
+큰 직함은 나중에 상위 책임자를 둘 때 역할 조정을 어렵게 만들 수 있다. 보완이 필요하면 관찰한 문제와 기대 결과를 먼저 논의하고, 코칭, 경험 많은 리더와의 협업, 보고 관계 변경 또는 적합한 다른 역할을 비교한다. 역할 이동은 당사자가 성과를 낼 실제 일이 있을 때 검토한다. 단순히 남겨 두기 위한 빈자리를 만들거나, 초기 멤버라는 이유만으로 성장 가능성을 부정하지 않는다.
+
+이 주의사항을 초기 임원 채용 금지로 일반화하지 않는다. PMF 이후 수요와 조직 복잡성이 빠르게 커진다면 기능별 리더를 찾고 적응시키는 시간도 준비에 포함해야 한다. 창업자가 모든 기능을 직접 수행한 뒤에야 위임할 수 있는 것도 아니다. 무엇이 좋은 결과인지 판단하고 유지할 결정권과 위임할 책임을 구분하는 일이 우선이다. 이는 고성장 조직에 관한 경영 경험을 적용한 검토 기준이며, 특정 인원수에서 C레벨이 필요하거나 불필요하다는 법칙이 아니다.
+
 ## 8. 창업자가 계속 소유할 코어
 
 위임은 실행 책임을 나누는 것이지 제품의 존재 이유를 잊는 것이 아니다. 창업자는 최소한 다음을 평가하고 필요하면 복구할 수 있어야 한다.
@@ -182,6 +190,9 @@ PMF 신호가 생겼다는 이유만으로 인원을 늘리지는 않는다. 확
 
 ## 출처
 
+- [When Executives Break — Elad Gil](https://blog.eladgil.com/p/when-executives-break) — 2026-10-18 확인, 역할 확장, 직함과 보고 관계 조정에 관한 경영 경험
+- [Should You Hire A COO? — Elad Gil](https://blog.eladgil.com/p/should-you-hire-coo) — 2026-10-18 확인, 직함보다 필요한 경험과 위임 범위를 먼저 정하는 기준
+- [Hiring Executives & Bad Advice — Elad Gil](https://blog.eladgil.com/p/hiring-executives-bad-advice) — 2026-10-18 확인, PMF 전후의 리더 채용 조건과 창업자의 기능 이해 범위
 - [Do Things that Don't Scale — Paul Graham](https://www.paulgraham.com/ds.html)
 - [Recruiting Outside of Your Personal Network — Stripe Atlas](https://stripe.com/guides/atlas/recruiting)
 - [Advice for First Time Founders — Y Combinator](https://www.ycombinator.com/blog/advice-for-first-time-founders)

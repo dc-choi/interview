@@ -73,6 +73,19 @@ Warm introduction은 잠재 고객과 관계가 있는 사람에게 소개를 �
 
 기술적으로 작동했다는 결과가 예산 승인이나 정식 구매를 보장하지 않는다. 유료 파일럿도 그 범위의 지불 증거이며 장기 갱신의 증거는 아니다. 반대로 무료 파일럿이라는 이유만으로 가치가 없다고 단정하지 않는다. 학습 가치, 지원 비용과 후속 구매 경로를 함께 비교한다. 데이터 처리와 외주 범위는 [[Privacy-Operations-for-Small-Business|개인정보 운영]], [[Dev-Outsourcing-Engagement|외주 계약과 인계]]를 연결해 확인한다.
 
+## 간접 판매 채널의 입력 동기와 단계 정의를 맞춘다
+
+대리점과 딜러가 고객 접점을 맡는 구조에서는 본사의 보고 필요와 현장의 업무 이익을 함께 검토한다. 판매 대수만 모으면 상담, 견적과 취소 과정이 가려질 수 있다. CRM 도입을 평가할 때는 보고 항목 수보다 현장 담당자가 어떤 지원을 받고 어떤 중복 업무를 줄일 수 있는지 확인한다.
+
+다음은 제조업 판매 채널 구축 경험을 다른 사업에 적용해 볼 운영 질문이다. 제품의 보편 성능이나 확정된 도입 효과를 뜻하지 않는다.
+
+- **입력의 이익:** 고객 정보를 입력하면 주문 상태 확인, 상담 지원이나 재입력 감소처럼 현장에 돌아오는 이익이 있는가. 공유 목적과 접근 범위도 합의했는가.
+- **단계의 의미:** 예약이라는 같은 이름이 예약금 수령, 제품 할당 또는 계약 중 무엇을 뜻하는가. 역할, 발생 사건과 완료 증거로 정의했는가.
+- **도입 난이도:** 종이로 관리하던 파트너에게 복잡한 리드 등급을 한꺼번에 요구하지 않고, 고객 정보 기록부터 익힌 뒤 단계를 세분화할 수 있는가.
+- **공동 확인:** 상담, 견적, 주문과 취소의 상태 및 집계 기준을 본사와 파트너가 함께 확인할 수 있는가. 숫자가 다를 때 확인할 담당자와 수정 절차가 있는가.
+
+고객 데이터를 통합해 보는 운영 목표를 특정한 물리 DB 하나의 의무로 확대하지 않는다. 현대오토에버의 공개 CRM 설명도 고객 접점 연계, 판매 프로세스 진단과 성과 관리를 서비스 범위로 제시하지만, 특정 구조만으로 데이터 오류나 채널 갈등이 사라진다는 보장은 아니다. 파일럿에서는 입력 부담, 상태 불일치와 후속 대응 누락이 실제로 줄었는지를 별도로 확인한다.
+
 ## 고객 도입과 전략적 투자를 별도 증거로 기록한다
 
 제품을 쓰는 고객사와 투자하는 법인이 같은 그룹이어도 동일 법인이라고 가정하지 않는다. 사용, 유료 계약, 갱신과 지분 투자는 서로 다른 의사결정이다. 투자 참여를 확인했다고 개별 고객의 사용 빈도, 수익성이나 갱신까지 검증된 것은 아니다.
@@ -120,6 +133,8 @@ CRM의 성과 화면에서는 답하는 질문이 다른 금액을 나눠 보인
 - [인핸스, 512억 원 규모 시리즈 C 투자 유치 — Enhans](https://www.enhans.ai/kr/press-ko/enhans-raises-38-million-in-series-c-funding) — 2026-10-07 확인, 고객사 그룹과 투자 법인의 관계
 - [What is a Sales Pipeline? — Salesforce](https://www.salesforce.com/sales/pipeline/) — 적합성, 예산/권한/시점 확인과 파이프라인 관리
 - [Discovery Call Guide — LinkedIn Sales Solutions](https://business.linkedin.com/sell/resources/sales-terms/discovery-call) — 2026-10-06 확인, 공통 지인을 통한 소개와 고객 탐색 대화
+- [글로벌 진출, 책상 위 전략으론 안 된다! 아시아 현장에서 직접 경험한 판매 채널 구축의 현실 — 토크아이티, 현대오토에버 발표](https://www.youtube.com/watch?v=AZnRqDSzD5w) — 2026-10-16 공개 발표, 05:23~09:53의 입력 동기와 단계 정의, 11:15~13:17의 공동 지표, 20:16~21:16의 단계적 도입 경험. 전사에서 명확히 확인되는 경험을 운영 질문으로 정리했으며 구축 기간과 성과 수치를 일반화하지 않았다.
+- [CRM — 현대오토에버](https://www.hyundai-autoever.com/kor/business-area/dx-solutions/crm/contents.do?cntnSeq=442) — 2026-10-18 확인, 고객 데이터 통합, 판매 프로세스와 성과 관리의 공개 서비스 범위
 - [Launching Meta Enterprise Platform — Meta](https://about.fb.com/news/2026/09/launching-meta-enterprise-platform/) — 2026-10-06 확인, 플랫폼 발표의 범위와 구매 조건을 구분한 사례
 - [GitLab Handbook, Commercial Sales Opportunity Stages](https://handbook.gitlab.com/handbook/sales/commercial/comm-sales-opp-stages/) — 기업 내부의 단계별 활동과 완료 조건 사례
 - [GitLab Handbook, Facilitate The Opportunity](https://handbook.gitlab.com/handbook/sales/sales-operating-procedures/facilitate-the-opportunity/) — 기술 평가, 내부 추진자와 구매 절차의 구분
