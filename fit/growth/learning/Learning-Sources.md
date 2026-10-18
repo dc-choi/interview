@@ -266,6 +266,10 @@ auto-learn 파이프라인이 새 자료를 모으는 YouTube 채널, 이메일 
 | bigboxSWE | [@bigboxSWE](https://www.youtube.com/@bigboxSWE) | tech, fit |
 | The Coding Gopher | [@TheCodingGopher](https://www.youtube.com/@TheCodingGopher) | tech |
 | 개발자방16 | [@devbang](https://www.youtube.com/@devbang) | tech, fit |
+| CodeHead | [@codehead01](https://www.youtube.com/@codehead01) | tech, fit |
+| Tiago | [@TiagoTaquelim](https://www.youtube.com/@TiagoTaquelim) | tech |
+| 양실장의 바이브코딩대학 | [@VibecodingUniversity](https://www.youtube.com/@VibecodingUniversity) | tech, biz |
+| 김서한 : 비상식적 사업 이야기 | [@김서한_사업이야기](https://www.youtube.com/@김서한_사업이야기) | biz |
 
 ## 이메일 뉴스레터
 
@@ -296,6 +300,7 @@ auto-learn 파이프라인이 새 자료를 모으는 YouTube 채널, 이메일 
 학습한 지식은 [[Palantir-Foundry]]에서 주제별로 찾는다. 수집과 처리 상태는 장비 로컬 자동 학습 기록에서 관리한다.
 
 ## 관련 문서
+
 
 - [[학습(Learning)|학습 방법 (Learning)]]
 - [[Inflearn-Knowledge-Import|인프런 지식 문서화 트래커]]
