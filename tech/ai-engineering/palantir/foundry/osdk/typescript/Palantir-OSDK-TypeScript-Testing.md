@@ -1,0 +1,42 @@
+---
+tags: [palantir, foundry, ontology, osdk]
+status: done
+verified_at: 2026-10-16
+category: "AI엔지니어링(AIEngineering)"
+---
+
+# OSDK mock과 Platform API 테스트의 구분
+
+@osdk/unit-testing은 experimental이며 `/experimental` subpath로 import한다. createMockClient는 Client를 인자로 받는 Ontology 로직을 Foundry 요청 없이 시험한다. 이 테스트가 실제 OAuth, permission, Action 서버 validation이나 운영 성능을 확인하는 것은 아니다.
+
+## 객체와 link
+
+createMockOsdkObject에는 generated ObjectType과 primary-key property가 필요하다. `$title`을 읽는 테스트는 titlePropertyApiName과 실제 해당 property도 제공한다. 기본 mock RID와 실제 RID를 구별한다.
+
+mock은 $primaryKey/$apiName/$objectType/$objectSpecifier/$link/$clone shape를 제공하지만 `$as`와 experimental accessor는 지원하지 않아 접근 시 throw한다. polymorphic React 예제를 이 mock으로 전부 검증했다고 보고하지 않는다.
+
+single link는 object 또는 Error, many link는 object array 또는 MockObjectSet으로 설정한다. missing single link도 accessor는 있지만 fetchOne은 reject, WithErrors는 error Result다. array many-link는 primary-key fetch/page/async iteration을 지원하지만 aggregate는 안 된다. aggregate/where chain이 필요하면 MockObjectSet과 stub을 쓴다.
+
+$clone은 merged/frozen 새 mock을 만들고 primary key 변경은 거부한다. attachment mock은 Blob/RID surface의 placeholder이지 업로드/1시간 보존을 검증하지 않는다.
+
+## 호출 stub
+
+when은 client부터 실제 call chain을 재구성한다. whenObjectSet은 특정 mock set, whenQuery는 Function과 parameter를 맞춘다. thenReturnObjects는 fetchPage와 asyncIter, thenReturnObject는 fetchOne, thenReturnAggregation은 metric 결과를 제공한다.
+
+Query는 parameter별 thenReturn/thenThrow로 분기한다. stub 등록 순서가 matching을 정하지 않는다. 테스트마다 fresh client나 clearStubs를 사용한다. 임의 응답으로 반환 경로만 통과시킨 것을 원본 query 실행 검증으로 보고하지 않는다.
+
+## Platform은 MSW
+
+createMockClient는 @osdk/foundry.* 및 internal Platform API fetch를 intercept하지 않는다. 기본 mock.invalid origin의 실제 path에 MSW handler를 붙이고 onUnhandledRequest:error로 빠진 요청을 실패시킨다. server는 test lifecycle의 listen/resetHandlers/close로 격리한다.
+
+fixture는 endpoint 함수의 Awaited<ReturnType<typeof fn>>와 satisfies로 실제 package 타입에 연결한다. compile-time shape 검사는 값 의미, 실제 서버 schema와 인증 성공까지 보장하지 않는다. 사용자명 suffix를 admin으로 보는 source 테스트는 예제 업무 predicate이지 Foundry 인가 모델이 아니다.
+
+## 출처
+
+- [Palantir, typescript-osdk-testing](https://www.palantir.com/docs/foundry/ontology-sdk/typescript-osdk-testing)
+
+## 관련 문서
+
+- [[Palantir-OSDK-TypeScript]]
+- [[Palantir-OSDK-Compatibility]]
+- [[Palantir-OSDK-React-Task-Cache]]

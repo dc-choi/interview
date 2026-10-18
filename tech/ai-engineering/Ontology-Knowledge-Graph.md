@@ -96,6 +96,8 @@ RETURN peer.riderId
 
 ## Palantir Foundry Ontology
 
+데이터와 모델 통합, 객체 백엔드, Actions와 Functions, 보안과 SDK의 세부 계약은 [[Palantir-Foundry]]에서 이어서 다룬다. 일반 온톨로지와 제품의 운영 계층을 구별하는 전체 구조는 [[Palantir-Operational-Ontology]]를 참조한다.
+
 2026-10-12 Palantir 공식 문서 기준이다. Palantir는 Ontology를 조직의 운영 계층(operational layer)으로 정의한다. 플랫폼에 통합된 데이터셋, 가상 테이블과 모델 위에 놓이고, 많은 경우 조직의 디지털 트윈 역할을 한다. 의미 요소(object, property, link)와 실행 요소(action, function, dynamic security)로 구성되며, 데이터 요소를 기업의 명사로, 액션을 동사로 설명한다. Ontology가 단순한 데이터가 아니라 기업의 의사결정을 표현한다는 것이 Palantir의 설명이다.
 
 | 일반 개념 | Foundry 용어 | 공식 문서의 정의와 제약 |
