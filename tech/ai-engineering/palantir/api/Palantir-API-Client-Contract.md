@@ -28,6 +28,23 @@ Platform SDK는 enrollment에 종속된 업무 타입 없이 API를 다루는 ge
 
 OSDK는 해당 enrollment의 Ontology에서 생성한 업무 객체/Action 코드를 제공한다. 필요한 작업이 자신의 Ontology 읽기/쓰기라면 생성 타입과 편의 API를 활용한다. SDK 선택이 사용자의 자원 권한이나 서버 실행 인가를 대신하지 않는다.
 
+### API 참조에서 라이브러리의 용도를 먼저 구분한다
+
+공식 API reference는 REST API와 SDK뿐 아니라 Transforms, Functions와 Widgets의 라이브러리도 함께 안내한다. 같은 참조 목록에 있다는 이유로 모두 REST 클라이언트용 패키지라고 취급하지 않는다.
+
+| 필요한 작업 | 확인할 참조 |
+|---|---|
+| Foundry/AIP REST 호출 | REST API, Python/TypeScript Platform SDK |
+| Ontology 기반 앱 개발 | Ontology에서 자동 생성한 SDK |
+| S3 도구로 dataset 파일 접근 | S3-compatible API, 지원 operation과 별도 인증 설정 |
+| 데이터 변환 코드 작성 | Transforms의 Python, Java, R 라이브러리 |
+| 재사용 함수 작성 | Functions의 TypeScript v1/v2, Python 참조 |
+| Widget set에서 OSDK 사용 | `@custom-widget/sdk` |
+
+S3 호환 API는 AWS CLI와 AWS SDK 같은 클라이언트를 사용할 수 있지만 S3 API의 일부만 구현한다. Dataset 생성/삭제와 명시적인 branch/transaction 관리는 별도 Foundry API를 확인한다. 설정과 자동 transaction의 상세는 [[Palantir-Dataset-S3-Compatible-Access|S3 호환 접근 계약]]을 따른다.
+
+2026-10-18 검증은 이 절의 참조 분류와 S3 호환 범위에 한정한다. 아래 REST 호출률, 오류와 버전 정책의 기존 확인일은 frontmatter의 날짜로 유지한다.
+
 ## 페이지 수가 데이터 전체를 뜻하지 않는다
 
 다음 페이지는 응답의 `nextPageToken`으로 판단하고 같은 조회 조건에 `pageToken`을 넣어 이어간다. token은 단기간에 순서대로 소비하도록 설계되었으므로 장기 checkpoint로 저장해 나중에 재개할 수 있다고 전제하지 않는다. `nextPageToken`이 없거나 null이면 종료한다.
@@ -99,6 +116,8 @@ Public Preview는 비운영 실험/개발 단계이며 `preview=true`로 opt-in�
 
 ## 출처
 
+- [Palantir, Developer libraries & API reference](https://www.palantir.com/docs/foundry/api-reference)
+- [Palantir, S3-compatible API for Foundry datasets](https://www.palantir.com/docs/foundry/data-integration/foundry-s3-api)
 - [Palantir, API introduction](https://www.palantir.com/docs/foundry/api/general/overview/introduction)
 - [Palantir, API authentication](https://www.palantir.com/docs/foundry/api/general/overview/authentication)
 - [Palantir, API getting started](https://www.palantir.com/docs/foundry/api/general/overview/getting-started)
