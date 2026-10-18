@@ -15,3 +15,4 @@ aliases: ["Market"]
 - [x] [[Market-Analysis|시장 분석 & TAM/SAM/SOM]] — 의향률과 경험률의 해석, CAGR, 시장 동인, 세분화, 브랜드 인지도와 시장 공백의 구분, Blue Ocean, JTBD
 - [x] [[Competitive-Analysis|경쟁사 분석]] — Five Forces, 간접 경쟁, 경쟁 해자, SWOT, 벤치마킹, 공개 자료의 증거 범위, KSF
 - [x] [[AI-Commoditization-Differentiation|AI 범용화와 사업 차별화]] — 정보 전달, 제작 대행, 중개, 사무 대행, 복제 쉬운 사업의 가치 이동과 선택받을 이유
+- [x] [[AI-Software-Replication-and-Due-Diligence|AI 소프트웨어 복제와 기술 실사]] — 기능 동등성, 전문 업무 호환성, 모델 의존과 인수 가치

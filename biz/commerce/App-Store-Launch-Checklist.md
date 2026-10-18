@@ -29,6 +29,17 @@ aliases: ["App Store Launch Checklist", "앱 스토어 첫 출시 준비", "1인
 5. **로그인 수단을 정한다.** 주 계정을 Google 로그인 같은 서드파티나 소셜 로그인으로 만들게 하면 Apple은 동등한 로그인 수단을 함께 제공하게 한다. 그 수단은 수집 데이터를 이름과 이메일로 제한하고, 이메일을 숨길 수 있으며, 동의 없이 광고 목적으로 앱 사용을 수집하지 않아야 한다(App Review Guidelines 4.8). 자체 계정만 쓰는 앱, 기존 교육이나 기업 계정으로만 로그인하는 앱 등은 예외다.
 6. **국내 판매자 정보를 넣는다.** Apple은 전자상거래법에 따라 한국 기반 개발자의 판매자 정보를 받아 App Store 제품 페이지에 표시한다. 개인은 이메일과 사업자등록번호, 조직은 상호, 이메일, 전화번호와 사업자등록번호이며, 사업자등록번호는 Paid Apps Agreement를 맺었으면 한국 세금 양식의 값이 자동으로 표시되고 유료 콘텐츠가 없으면 원할 때 넣는다. Google은 유료 앱이나 인앱결제를 배포하는 국내 사업자에게 사업자등록번호, 통신판매업 신고번호와 신고 기관을 받는다. 2023-08-31 전에 만든 계정은 개발자 페이지에 넣은 이 정보가 한국 사용자에게만 앱 등록 정보에 보이고, 이후 만든 계정은 About you 페이지에 넣는다. 그래서 수익을 낼 계획이면 사업자등록과 과세유형([[Business-Tax-Setup|사업자 세무 초기 설정]])을 먼저 정하고, 통신판매업 신고 대상과 면제 기준은 [[Marketplace-Seller-Launch|오픈마켓 셀러 첫 상품 출시]]로 확인한다. 신고가 면제된 경우의 입력 방법은 출시 전에 스토어에 확인한다.
 
+## Google 개발자 공개 정보와 결제 프로필 변경
+
+2026-10-18에 Google 공식 도움말의 공개 항목과 신원 정보 변경 절차만 대조했다. 기존 세금, 심사와 빌드 요건 전체의 재검증은 아니다.
+
+- **공개 정보와 Google 연락용 정보를 구분한다.** 개인 계정은 법적 이름, 국가와 개발자 이메일을 공개하며 수익화하면 전체 주소를 공개한다. 지역별 추가 공개 요건도 확인한다. 조직 계정은 법적 이름, 주소, 개발자 이메일과 개발자 전화번호를 공개한다. Google이 계정 운영 연락에 사용하는 이메일과 전화번호는 별도 항목으로, 그 연락용 정보 자체는 사용자에게 공개하지 않는다.
+- **신원 확인용 프로필을 찾는다.** 개발자 신원의 이름과 주소는 연결된 Google 결제 프로필에서 가져온다. 수익을 받는 판매자 계정의 결제 프로필과 같을 수도, 다를 수도 있으므로 정산 프로필만 고쳐 해결됐다고 판단하지 않는다.
+- **같은 국가 안의 이름과 주소 변경:** 계정 소유자가 Play Console의 `Developer account > About you`에서 정보 변경을 시작하고 연결된 Google Payments Center에서 수정한다. 신분 증빙 업로드가 추가로 필요할 수 있다.
+- **국가나 D-U-N-S 번호 변경:** 기존 결제 프로필에서 직접 바꾸지 않고 새 프로필을 구성하고 필요한 검증을 마친 뒤 개발자 계정에 연결하는 절차를 따른다. 새 결제 프로필과 새 개발자 계정은 다른 대상이다.
+
+주소 공개가 부담스럽다면 계정 생성과 수익화 전에 공개될 정보와 증빙 가능한 주소를 확인한다. 특정 증명서 한 장의 승인 경험을 모든 국가와 계정에 통하는 해결책으로 사용하지 않는다. 허용 서류와 계정별 검증 요구는 실제 안내로 확인하며, 주소 수정만을 위해 새 개발자 계정이 반드시 필요하다고 가정하지 않는다.
+
 ## Apple 심사 전 로그인, 광고와 완성도 점검
 
 아래는 2026-10-16에 App Review Guidelines와 User Privacy and Data Use를 대조한 범위다. 기존 계정, 세금, 빌드 요건 전체의 재검증 날짜는 아니다.
@@ -86,6 +97,7 @@ aliases: ["App Store Launch Checklist", "앱 스토어 첫 출시 준비", "1인
 - [Play Console Help, Get started with Play Console](https://support.google.com/googleplay/android-developer/answer/6112435?hl=en)
 - [Play Console Help, Choose a developer account type](https://support.google.com/googleplay/android-developer/answer/13634885?hl=en)
 - [Play Console Help, Required information to create a Play Console developer account](https://support.google.com/googleplay/android-developer/answer/13628312?hl=en)
+- [Play Console Help, Update developer identity details managed by a Google payments profile](https://support.google.com/googleplay/android-developer/answer/16260648?hl=en) — 2026-10-18, 신원 확인과 판매자 프로필 구분, 동일 국가 내 이름/주소 변경과 새 결제 프로필 연결
 - [Play Console Help, App testing requirements for new personal developer accounts](https://support.google.com/googleplay/android-developer/answer/14151465?hl=en)
 - [Play Console Help, Requirements for distributing apps in specific countries/regions](https://support.google.com/googleplay/android-developer/answer/6223646?hl=en)
 - [Play Console Help, Additional contact information required for Korean app developers](https://support.google.com/googleplay/android-developer/answer/3255733?hl=en)

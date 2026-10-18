@@ -21,6 +21,8 @@ aliases: ["응용경제(Applied Economics)", "Applied Economics Map"]
 - [[Housing-Rental-Market-Indicators|주택 매매와 임대차 지표 읽기]] — 가격지수와 계약자료, 계약일과 신고일, 신규와 갱신 계약, 전망의 검증 범위 ✅
 - [[Hidden-Infrastructure-Markets|보이지 않는 B2B 인프라 시장]] — 수요 원천과 수익 구조, 장기 계약의 듀레이션, 데이터센터 건설과 운영 고용의 구분 ✅
 
+- [[AI-Infrastructure-Capital-Cycle|AI 인프라 투자와 자본 순환]] — 수요, 설비투자, 가동과 자금 회수의 구분
+
 ### 2. 의사결정
 - [[Personal-Cash-Flow-Planning|개인 현금흐름 계획]] — 주별 잔액, 목적별 자금 구분과 소득 변동에 맞춘 자동이체 ✅
 - [[Personal-Income-Tax-Basics|개인 소득세와 연말정산]] — 결정세액과 환급, 공제 구분, 이직과 부업, 가상자산소득의 시행 시점과 취득가액 ✅

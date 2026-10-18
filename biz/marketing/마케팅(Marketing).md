@@ -10,11 +10,12 @@ aliases: ["Marketing", "마케팅"]
 브랜딩, 마케팅, 광고의 층위와 STP, 4P, Customer Journey 등 마케팅 실행의 핵심 프레임워크, 그리고 생성 AI 답변 안에서 가시성 측정.
 
 ## 목차
-- [x] [[AI-Marketing-Analysis|AI 마케팅 분석]] — 조회와 판단의 구분, 분석 효율과 신뢰성, 이탈 예측과 유지 개입의 증분 효과
+- [x] [[AI-Marketing-Analysis|AI 마케팅 분석]] — 조회와 판단, 마케팅 엔지니어의 고객 언어, 실험 실행과 승인 경계, 이탈 예측과 증분 효과
 - [x] [[Affiliate-Marketing|제휴 마케팅]] — CPC와 CPA, 적격 성과와 정산 수익의 구분
 - [x] [[Marketing-Fundamentals|마케팅, 브랜딩, 광고와 홍보 기초 (PR의 관계 관리, 브랜드와 제품 통합의 구분, STP, 4P, Customer Journey)]]
 - [x] [[GTM-Strategy|Go-to-Market 전략과 유입, 체험 물량 역산]] *(→ product-strategy/)*
 - [x] [[Content-Marketing|콘텐츠 마케팅]] — 작은 유입의 전환 검증, 경험 콘텐츠와 무료/유료 제공 범위, 추천 채널
+- [x] [[Social-Content-Scaling|소셜 콘텐츠 성장 단계]] — 초기 고객 적합성, 창업자에서 채널과 브랜드로의 제작 전환, 조회수와 채용 수치의 한계
 - [x] [[Social-Business-Claims-Validation|소셜 자료의 사업과 마케팅 주장 검증]] — 공개 콘텐츠의 수익화/성장 수치, 90:8:2, 사업 후보와 미검증 주장 보존
 - [x] [[SEO-Google-Naver-Operations|Google과 네이버 SEO 운영]] — 공통 설정과 엔진별 인증, 대표 URL, 수집/색인 검증, 공유 미리보기 캐시
 - [x] [[LinkedIn-Content-Distribution|LinkedIn 콘텐츠 도달]] — 관계와 관심사 신호, 인맥 밖 추천, 반응 조작 제한과 전환 검증

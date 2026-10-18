@@ -93,7 +93,18 @@ AI 이미지, 자막과 TTS로 얼굴을 노출하지 않는 짧은 영상을 �
 - 합성 콘텐츠 공개 설정을 빠짐없이 했는가.
 - 정책이 바뀌어 수익화가 막혀도 감당할 수 있는 투입 규모인가.
 
+## 인위적 재생과 실제 수요를 구분한다
+
+콘텐츠를 자동 생성하는 일과 청취를 가장해 정산을 받는 일은 다른 행위다. 재생 수, 계정 수와 정산액이 늘어도 실제 청취 수요와 적법한 수익의 증거가 되지는 않는다. 사업 지표에서는 비정상 유입, 정산 취소와 플랫폼 제재를 분리해 본다.
+
+2026-10-06 미국 뉴욕 남부연방검찰청 발표는 AI 생성곡과 봇 계정으로 음악 스트리밍 로열티를 편취한 피고인에게 징역 18개월이 선고됐다고 밝혔다. 2017~2024년의 사기에서 최대 1만 개 봇 계정, 수십만 곡의 AI 음악으로 재생을 분산했고 800만 달러 이상을 편취한 사건이다(2026-10-16 공식 발표와 기소 문서 대조). 제공 발췌의 약 110억 원은 환산 표현이며 원화 손실액으로 재계산하지 않는다.
+
+발표의 2023년 4월 가족 요금제 재생 8,090만 회와 같은 조건의 공개 가수 전체 곡 930만 회 비교는 특정 플랫폼과 요금제 범위의 수치다. 플랫폼 전체 재생이나 정상 콘텐츠의 기대 수익으로 확대하지 않는다. 본 사례는 생성 음악 자체의 불법성을 뜻하지 않으며, 법적 결과를 다른 서비스의 모든 자동 재생에 일률적으로 적용하지 않는다.
+
 ## 출처
+
+- [North Carolina Man Sentenced To 18 Months In Prison For Super Intelligence-Assisted Music Streaming Fraud — U.S. Department of Justice](https://www.justice.gov/usao-sdny/pr/north-carolina-man-sentenced-18-months-prison-super-intelligence-assisted-music) — 2026-10-06 선고 발표, 2026-10-16 대조
+- [Music streaming fraud indictment — U.S. Department of Justice](https://www.justice.gov/usao-sdny/media/1366241/dl) — 사기 기간과 AI 음악 활용 경위
 
 - [꿈꾸던 어른이 되었나요? 앨범 정보 — 머무르 (멜론)](https://www.melon.com/album/detail.htm?albumId=13744621) — 제작 역할에 관한 공개 설명, 2026-10-15 확인
 - [YouTube Help, YouTube channel monetization policies](https://support.google.com/youtube/answer/1311392)

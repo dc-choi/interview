@@ -23,6 +23,8 @@ aliases: ["투자(Investing)", "Investing Map"]
 - [[Valuation|밸류에이션]] — 가격과 가치, DCF의 현금흐름과 할인율 대응, 재투자와 ROIC, PER과 PBR, PEG의 성장률과 위험, 경기민감 기업의 정상 이익과 회복 시점, 안전마진 ✅
 - [[Tax-Advantaged-Accounts|절세 계좌]] — 세액공제와 환급의 차이, ISA 가입 제한, 연금수령한도와 과세 ✅
 
+- [[AI-Company-Valuation-and-Funding|AI 기업가치와 자금 조달]] — 인식 매출과 run-rate, 순손실과 현금소진, 유출 자료와 평가 의견
+
 ### 3. 실행과 심리
 - [[Investment-Strategies|투자 전략]] — 액티브 vs 패시브, 효율적 시장 가설, 적립식, 마켓타이밍의 함정 ✅
 - [[Behavioral-Biases-Risk|행동 편향과 리스크 관리]] — 손실 회피, 군중 심리, 소셜 심리와 매매 신호의 구분, 규칙 기반 관리, 자기 통제 ✅

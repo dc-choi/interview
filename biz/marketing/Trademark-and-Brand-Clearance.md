@@ -53,6 +53,17 @@ WIPO도 목표 시장의 등록상표와 진행 중인 출원을 먼저 조사�
 
 한국 등록이 해외 보호로 자동 확대되지는 않는다. 목표 국가별 권리를 검토하고 직접 출원과 마드리드 국제출원 등을 비교한다. WIPO의 마드리드 제도는 본국의 기초 출원 또는 등록과 자격 요건을 요구하며, 지정국의 법이 보호 범위를 결정한다. 국제출원 한 번으로 전 세계 등록을 보장받는 구조는 아니다. [WIPO 국제출원 안내](https://www.wipo.int/en/web/madrid-system/how_to/file/index)
 
+## 등록 뒤 온라인 침해에 대응한다
+
+등록상표는 다른 사람의 사용을 막을 근거일 뿐 침해를 찾아 없애 주지는 않는다. 위조 상품, 공식 사이트나 광고를 흉내 낸 사칭, 정품이지만 판매 정책이나 규제를 어긴 판매는 근거와 신고 경로가 서로 다르다. 2026-10-18에 OECD와 EUIPO 보고서 요약, Microsoft 보고서, Amazon 공식 안내와 EU 디지털서비스법(DSA) 원문을 대조했다. 국내 플랫폼의 신고 절차는 확인하지 않았다.
+
+- OECD와 EUIPO의 2025년 보고서는 2021년 세계 위조품 교역을 약 4,670억 달러, 세계 수입의 2.3%로 추정했다(2019년 4,640억 달러, 2.5%). 위조품 판매자는 온라인 플랫폼과 현대 물류를 이용하고 우편이 주요 유통 경로가 됐으며, 10개 미만 물품을 담은 화물이 2020~2021년 전체 압수 건의 79%였다(2017~2019년 61%).
+- 사칭 비용도 낮아졌다. Microsoft는 2025-04 보고서에서 AI와 다른 도구로 기술 지식이 거의 없어도 가짜 쇼핑몰을 몇 분 만에 만들 수 있게 됐고, 이전에는 그럴듯한 사이트를 세우는 데 며칠에서 몇 주가 걸렸다고 밝혔다. 이런 사이트는 정상 사이트를 흉내 내고 AI로 만든 상품 설명, 이미지와 후기로 소비자를 속인다.
+- 플랫폼의 권리자 도구는 상표의 등록 국가를 조건으로 둘 수 있다. Amazon Brand Registry 안내는 Amazon 스토어가 있는 국가의 지정 정부 상표청이 발급한 등록상표나 출원 상표를 요구하고, 출원 상표로는 일부 경우에만 등록할 수 있다고 밝힌다. 신고 도구는 지식재산권 침해, 스토어 정책 위반과 규제 준수 문제를 한곳에서 받는다. 판매할 마켓플레이스의 권리자 프로그램 조건을 위의 목표 국가 출원 계획과 함께 확인한다.
+- 신고는 양보다 정확도가 중요하다. DSA(2024-02-17 전면 적용)는 신고에 위법하다고 보는 이유의 충분한 설명, 정확한 URL 같은 위치, 신고자 정보와 선의의 진술을 요구한다(제16조). 전문성, 플랫폼으로부터의 독립성과 성실하고 정확한 신고 활동을 갖춘 단체는 설립 회원국의 디지털서비스조정관에게 신뢰 신고자(trusted flagger) 지위를 받아 신고를 우선 처리받지만, 부정확하거나 근거가 부족한 신고가 상당수면 지위가 정지되거나 취소될 수 있다(제22조). 명백히 근거 없는 신고를 자주 내는 신고자에게 플랫폼은 사전 경고 뒤 일정 기간 신고 처리를 중단해야 한다(제23조). Amazon도 정확한 신고가 위반을 자동으로 막는 피드백 루프를 움직인다고 안내한다.
+
+AI로 탐지와 신고서 초안을 자동화해 신고량을 늘리더라도, 확실하지 않은 건은 제출하지 않고 근거를 보관하는 사람 검토 단계를 둔다. 위 요건을 적용한 운영 원칙이며, EU 밖 플랫폼의 신고 요건은 각 정책과 현지 법으로 다시 확인한다.
+
 ## 외부 브랜드 로고를 가져올 때
 
 SVG 모음은 파일을 찾는 경로다. 파일을 내려받을 수 있다는 사실과 서비스 화면, 광고에 그 브랜드를 표시할 권한은 구분한다. 2026-10-07에 확인한 theSVG는 브랜드 로고를 검색하고 복사하는 기능을 제공하지만, 자체 라이선스 안내에서도 SVG 파일의 복제 조건과 상표 사용 조건을 나눈다.
@@ -72,6 +83,8 @@ theSVG는 제출자가 신고한 라이선스를 기록하며 모든 제출물�
   - 등록상표와 출원 중인 상표, 유사 표장과 상품 관계, 실제 사용 형태와 권리자를 확인한다. 주소와 상호 확보만으로 상표 권리 확인은 끝나지 않는다.
 - 경쟁 서비스와 상품류 번호가 다르고 내 출원번호도 나왔다. 등록과 안전한 사용이 확정됐는가?
   - 아니다. 류 번호는 유사성 판정을 대신하지 않고 출원은 설정등록이 아니다. 선행 권리와 심사, 사용 범위를 계속 확인한다.
+- 자동 탐지 도구가 위조 의심 판매글 수백 건을 찾았다. 모두 바로 신고해도 되는가?
+  - 아니다. 권리와 위반을 설명할 근거가 확실한 건만 제출하고 근거를 보관한다. EU DSA처럼 근거 없는 신고가 잦으면 신고 처리를 중단하거나 우선 처리 지위를 정지하는 규정도 있다.
 
 ## 출처
 
@@ -87,6 +100,10 @@ theSVG는 제출자가 신고한 라이선스를 기록하며 모든 제출물�
 - [theSVG — GitHub](https://github.com/glincker/thesvg)
 - [theSVG, Icon Licensing Guide](https://github.com/glincker/thesvg/blob/main/LICENSING.md)
 - [theSVG, Trademark Policy](https://github.com/glincker/thesvg/blob/main/TRADEMARK.md)
+- [OECD, EUIPO, Mapping Global Trade in Fakes 2025: Executive summary](https://euipo.europa.eu/tunnel-web/secure/webdav/guest/document_library/observatory/documents/reports/2025_Global_Trade_in_Fakes/2025_Global_Trade_in_Fakes_Ex_Sum_en.pdf) — 2021년 위조품 교역 규모와 세계 수입 비중, 우편 경로와 소량 화물 압수 비중
+- [Cyber Signals Issue 9: AI-powered deception: Emerging fraud threats and countermeasures — Microsoft](https://www.microsoft.com/en-us/security/blog/2025/04/16/cyber-signals-issue-9-ai-powered-deception-emerging-fraud-threats-and-countermeasures/) — 2025-04-16, AI로 몇 분 만에 만드는 가짜 쇼핑몰
+- [Amazon, Amazon Brand Registry](https://sell.amazon.com/brand-registry) — 상표 조건, 신고 도구의 범위와 정확한 신고의 자동 차단 활용. 2026-10-18 확인
+- [EUR-Lex, Regulation (EU) 2022/2065 (Digital Services Act)](https://eur-lex.europa.eu/legal-content/EN/TXT/HTML/?uri=CELEX:32022R2065) — 제16조 신고 요건, 제22조 신뢰 신고자, 제23조 오남용 대응, 제93조 적용일
 
 ## 관련 문서
 

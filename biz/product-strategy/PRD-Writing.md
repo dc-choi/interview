@@ -68,6 +68,10 @@ aliases: ["PRD", "Product Requirements Document", "제품 요구사항 정의서
 
 기능 목록 전에 고객이 어떤 상황에서 무엇을 더 잘하게 될지 정의한다. Working Backwards의 PRFAQ는 고객 가치와 예상 질문을 먼저 구체화하는 도구이며, PRD의 구현 범위와 인수 기준을 대신하는 문서는 아니다. 인터뷰, 설문과 사용 흐름으로 가정을 확인하고 개발 중에도 피드백을 반영한다.
 
+출발점을 구체화하는 다섯 질문은 고객의 범위, 고객의 문제나 기회, 가장 중요한 고객 혜택, 필요를 안다고 판단한 근거, 사용할 때의 경험이다. 앞의 세 질문에 답했어도 **필요를 확인한 근거**가 비어 있다면 수요가 검증된 것은 아니다. AWS의 Working Backwards 절차는 이미 정한 기능을 정당화하는 문서보다 문제를 명확히 하는 과정으로 사용한다.
+
+적용 예시로 홈페이지 문의 기능을 검토한다면, 고객군과 기대 혜택뿐 아니라 실제 문의에서 관찰한 불편과 팀의 예상도 나눠 적는다. 고객이 접수부터 답변까지 겪을 흐름을 그린 뒤, 근거가 없는 부분은 추가 확인할 가정으로 남긴다.
+
 작은 제품에서는 **기능 산출물, 기대하는 고객 행동, 확인할 증거**를 한 줄로 연결할 수 있다. 예를 들어 문의 폼 출시, 적합한 고객의 상담 요청 증가, 실제 상담으로 이어진 비율을 나누어 적는다. 이는 적용 예시이며 폼 출시만으로 매출이나 고객 가치가 입증되는 것은 아니다. 관찰 기간과 판단 기준을 미리 정해 유지, 수정 또는 중단을 결정한다.
 
 PRFAQ를 작성할 때는 고객에게 전달할 가치와 팀이 해결해야 할 제약을 함께 검토한다. PR은 고객 경험의 핵심을, FAQ는 상세한 경험과 구현 비용, 어려움을 설명한다. [Amazon의 Working Backwards 설명](https://www.aboutamazon.com/news/workplace/an-insider-look-at-amazons-culture-and-processes)을 작은 제품에 적용하면 다음 질문으로 구체화할 수 있다.
@@ -197,6 +201,7 @@ PRD는 **의견 대립 시 판단 기준점**이다. "디자이너와 개발자�
 
 ## 출처
 
+- [Working backwards: Amazon's approach to innovation — AWS re:Invent 2019](https://d1.awsstatic.com/events/reinvent/2019/REPEAT_1_Working_backwards_Amazon%E2%80%99s_approach_to_innovation_ENT207-R1.pdf) — 고객 질문 다섯 가지와 문서의 목적
 - [Building a culture of innovation to better serve citizens — AWS](https://aws.amazon.com/blogs/publicsector/building-culture-innovation-better-serve-citizens/)
 - [An insider look at Amazon's culture and processes — Amazon](https://www.aboutamazon.com/news/workplace/an-insider-look-at-amazons-culture-and-processes)
 - [AWS, Prioritize customer needs to deliver optimal business outcomes](https://docs.aws.amazon.com/wellarchitected/latest/devops-guidance/oa.ti.6-prioritize-customer-needs-to-deliver-optimal-business-outcomes.html)

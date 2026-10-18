@@ -84,6 +84,18 @@ aliases: ["App Analytics Event Tracking", "앱 분석과 이벤트 설계", "GA4
 
 ## 적용 점검
 
+### 제품 분석과 세션 리플레이를 함께 읽기
+
+PostHog처럼 퍼널과 세션 리플레이를 제공하는 도구를 검토할 때도 먼저 개선할 행동과 성공 조건을 정한다. 2026-10-18 공식 퍼널 문서와 녹화 제어 문서를 확인한 범위에서, 다음 기준으로 분석을 구성할 수 있다. 기존 GA4와 Firebase 절의 검증일은 유지한다.
+
+- **퍼널의 단계:** 시작 행동과 성공 행동 사이의 필수 단계부터 구성한다. 선택 행동을 필수 단계로 넣으면 정상적으로 성공한 사용자까지 이탈로 분류할 수 있다.
+- **관찰 기간:** PostHog의 Historical trends는 퍼널에 진입한 날짜별 전환율을 보여 준다. `Hide incomplete periods`로 전환 가능 기간이 아직 끝나지 않은 구간을 제외할 수 있다. 개선 전후를 비교할 때 관찰 기간이 충분한 집단끼리 비교한다.
+- **녹화의 범위:** 세션 리플레이는 샘플링과 URL, 이벤트 등의 수집 조건에 따라 일부 세션만 남을 수 있다. 녹화 목록을 전체 사용자나 전체 실패의 목록으로 간주하지 않는다. 녹화가 없다는 이유만으로 사용자가 그 단계를 거치지 않았다고 판단하지 않는다.
+
+적용안은 퍼널에서 이탈 구간을 찾고, 해당 구간의 수집된 녹화로 원인 후보를 만든 뒤 계측 누락과 오류 기록을 대조하는 것이다. 화면에서 망설이는 행동만으로 사용자의 의도나 이탈 원인을 확정하지 않는다. 수정 뒤에는 같은 이벤트 정의와 관찰 기간으로 결과를 다시 비교한다. 이는 제품 판단을 위한 분석 절차이며 특정 서비스의 개선 효과를 검증한 결과는 아니다.
+
+### 도입 전 확인
+
 - 핵심 가치를 경험한 행동 하나가 이벤트로 정의돼 있는가.
 - 첫 실행부터 그 행동까지 같은 측정 단위의 퍼널을 만들 수 있는가.
 - 첫 주 코호트의 다음 주 재방문을 볼 수 있는가.
@@ -92,6 +104,8 @@ aliases: ["App Analytics Event Tracking", "앱 분석과 이벤트 설계", "GA4
 
 ## 출처
 
+- [PostHog, Funnels](https://posthog.com/docs/product-analytics/funnels)
+- [PostHog, How to control which sessions you record](https://github.com/PostHog/posthog.com/blob/master/contents/docs/session-replay/how-to-control-which-sessions-you-record.mdx)
 - [Google Analytics Help, Automatically collected events](https://support.google.com/analytics/answer/9234069)
 - [Google Analytics Help, Predefined user dimensions](https://support.google.com/analytics/answer/9268042)
 - [Google Analytics Help, Create user-scoped custom dimensions](https://support.google.com/analytics/answer/14239618)

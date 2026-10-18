@@ -41,6 +41,25 @@ Amazon Connect의 **Abandonment rate**는 대기열에 들어간 contact 중 상
 
 상담 도구 통합을 평가할 때도 제거한 앱 수보다 정보 재입력, 검색과 인계에 드는 시간이 얼마나 줄었는지를 먼저 측정한다. 이 비교 기준은 [[Metrics-Framework|지표 설계]]의 분모, 코호트와 보호 지표 원칙을 상담 업무에 적용한 것이다.
 
+## 설문 점수와 접점의 문제 해결을 연결한다
+
+부분 검증(2026-10-16): Bain의 NPS 유형과 피드백 운영 설명, Kantar의 정성 조사 설명을 대조했다. 이 절은 고객 피드백의 해석과 개선 절차를 보강하며, 기존 AWS 지표와 요금의 검증일은 유지한다.
+
+- **관계 수준:** Relationship NPS는 특정 상담이나 거래를 계기로 하지 않고 고객 관계 전반에 대한 의견을 묻는다.
+- **경험 수준:** Experience NPS는 온라인 거래나 상담 종료처럼 특정 행동 뒤에 수집한다. 해당 접점에서 발생한 문제를 파악하고 대응할 기회다.
+- **비교 경계:** 두 유형은 조사 계기와 평가 범위가 달라 점수를 직접 비교하지 않는다. 상담 직후의 점수를 고객 관계 전체의 점수로 대체하지 않는다. 접점마다 NPS를 쓰는 것 자체가 잘못된 것은 아니며, 조사 목적과 질문 범위를 맞추는 것이 핵심이다.
+
+정량 조사는 규모와 빈도를, 정성 조사는 경험의 맥락과 의미를 파악하는 데 쓴다. 점수가 낮다는 사실과 낮은 이유를 구분하고, 고객의 설명을 실제 상담 및 후속 처리 기록과 연결한다. [NPS 유형](https://www.netpromotersystem.com/about/three-types-of-net-promoter-scores/), [정성 조사](https://www.kantar.com/uki/solutions/strategic-intelligence/qualitative-research)
+
+다음은 소규모 지원 업무에 적용하는 운영 제안이다.
+
+1. 설문마다 대상 접점, 조사 시점과 응답 집단을 남긴다. 상담을 끝낸 고객의 응답과 대기 중 이탈한 고객의 경험을 같은 모집단으로 간주하지 않는다.
+2. 불만의 이유를 대기, 안내 오류, 처리 실패와 인계 누락 등으로 구분하고, 확인 가능한 기록으로 원인을 좁힌다. 고객이 지목한 불편과 실제 실패 원인이 다를 수 있다.
+3. 개선할 문제에 담당자와 후속 확인을 연결한다. 피드백 수집, 담당자 전달과 후속 조치 추적은 서로 다른 완료 조건이다.
+4. 변경 뒤 점수뿐 아니라 같은 문의 유형의 해결 여부와 재문의도 확인한다. 점수 상승만으로 자동화의 효과나 사업 성장을 확정하지 않는다.
+
+이 절차는 [피드백의 전달과 후속 조치 추적](https://www.netpromotersystem.com/about/net-promoter-system-framework/robust-operational-and-analytic-infrastructure/)을 기존 해결 건당 비용과 함께 운영하기 위한 제안이다. 실제 상담 데이터로 효과를 검증한 결과는 아니다.
+
 ## 사용량 과금과 총운영비를 나눈다
 
 Amazon Connect Customer의 가격 페이지는 사용량 기반 과금을 안내하지만, 음성 요금에는 별도 통신 요금이 적용된다. 가격 부록의 Voice 사용량에는 상담원과 통화한 시간뿐 아니라 flow와 대기열 안에서 통화가 활성화된 시간도 포함된다. 따라서 AHT와 청구 대상 시간을 같은 값으로 계산하지 않는다. 실제 견적에는 적용 요금제, 국가별 통신 요금과 선택 기능을 확인한다. [가격 안내](https://aws.amazon.com/products/connect/customer/pricing/), [가격 부록](https://aws.amazon.com/products/connect/customer/pricing/appendix/)
@@ -58,6 +77,9 @@ Amazon Connect Customer의 가격 페이지는 사용량 기반 과금을 안내
 
 ## 출처
 
+- [Three Types of Net Promoter Scores — Bain & Company](https://www.netpromotersystem.com/about/three-types-of-net-promoter-scores/)
+- [Robust Operational and Analytic Infrastructure — Bain & Company](https://www.netpromotersystem.com/about/net-promoter-system-framework/robust-operational-and-analytic-infrastructure/)
+- [Qualitative Research Design & Consumer Insights — Kantar](https://www.kantar.com/uki/solutions/strategic-intelligence/qualitative-research)
 - [AWS, Metric definitions in Connect Customer](https://docs.aws.amazon.com/connect/latest/adminguide/metrics-definitions.html)
 - [Amazon Connect Customer Pricing — AWS](https://aws.amazon.com/products/connect/customer/pricing/)
 - [Amazon Connect Customer Pricing Appendix — AWS](https://aws.amazon.com/products/connect/customer/pricing/appendix/)

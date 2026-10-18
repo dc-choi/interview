@@ -141,6 +141,14 @@ Byte by Yum!의 공개 제품 구성에는 여러 채널의 주문과 메뉴 관
 
 설계 단계의 결정은 구현 전에 문서로 남기고, 구현부터는 인터뷰 대신 검수 요청, 피드백과 수정을 반복한다. 전체 화면을 한 번에 구현하기보다 한 건이 접수부터 다음 행동까지 흐르는 데 필요한 화면, 데이터와 API부터 만들고 시나리오대로 직접 눌러 본다. 저장 뒤 상태가 기대와 다르게 보인 문제가 완료 버튼처럼 생긴 다른 요소와 결과 상태를 알 수 없는 화면 때문일 수 있다. 선택에 따라 저장 후 어떤 상태가 되는지 미리 보여 주면 이런 오해가 줄어든다. 스테이징 검수, 환경 표시와 운영 승인은 [[CI-Tool-Selection|CI/CD 도구 선택]]의 배포 자동화 전략과 흔한 실수를 따른다.
 
+### 시제품으로 실제 데이터의 빈칸을 찾는다
+
+예시 데이터로 끝까지 동작한 화면과 실제 업무에 쓸 수 있는 제품을 구분한다. 고객군, 지역과 기간을 바꿔 같은 과업을 수행해 보고 필요한 원본, 연결 정보와 갱신 시점이 갖춰졌는지 확인한다. 부족한 자료를 모델의 자연스러운 문장으로 채우지 않고 수집하거나 보완할 작업으로 남긴다.
+
+적용 예: 거래처별 사례를 찾아주는 도구라면 좋은 사례의 총개수보다 해당 거래처와 연결된 최근 사례가 있는지가 중요하다. 검색 결과의 적합성, 담당자의 최종 선택과 외부 공개 가능 여부도 따로 확인한다. 원본 선별과 요약 초안 작성은 서로 다른 작업이다.
+
+Fair Trade USA의 2025년 공개 사례는 시제품 과정에서 필요한 데이터의 위치와 품질 문제를 발견했고, 실제 배포 준비와 함께 이를 보완하는 상황을 설명한다. AWS의 별도 사례에는 원본 글과 이미지를 선별하고 담당자가 편집할 요약을 만드는 구성이 나온다. 이 사례를 데이터 준비도 점검의 근거로 쓰되, 발표 당시의 배포 계획을 현재 운영 완료로 바꾸지 않는다. 채점 방식의 검증은 [[Eval-LLM-Judge|LLM 판정기]]에서 다룬다.
+
 ## 효과를 확인할 때의 측정 제안
 
 고객 관점의 경과 시간과 담당자의 실제 작업 시간을 구분한다. 다음은 개선안을 평가하기 위한 제안이며, 특정 조직의 성과 수치를 재현한다는 보장은 아니다.
@@ -154,6 +162,8 @@ Byte by Yum!의 공개 제품 구성에는 여러 채널의 주문과 메뉴 관
 
 ## 출처
 
+- [How Fair Trade USA uses AWS to improve working conditions for farmers — Mike George (AWS)](https://aws.amazon.com/blogs/publicsector/how-fair-trade-usa-uses-aws-to-improve-working-conditions-for-farmers/) — 2025-03-21 공개 사례, 원본 선별과 편집 가능한 요약의 구분
+- [AWS Innovation with Fair Trade USA — Amazon Web Services](https://www.youtube.com/watch?v=0ju7zBp_zKc) — 2025년 발표 16:47~22:37, 데이터 부족의 발견과 배포 준비 상태
 - [Amazon Textract, Best Practices](https://docs.aws.amazon.com/textract/latest/dg/textract-best-practices.html) — 인식 신뢰도와 사람 검토의 경계
 - [Byte by Yum! — Yum! Brands](https://www.yum.com/wps/portal/yumbrands/Yumbrands/bytebyyum) — 주문, 메뉴와 현장 운영의 제품 구성
 - [AI로 만나는 새로운 보험 서비스 - 카카오페이손해보험의 AI 활용 전략 — Amazon Web Services Korea](https://www.youtube.com/watch?v=DUXGkxSka9g) — 문서 인식과 업무 처리 흐름의 사례. 발표의 인식 정확도와 지급 시간은 일반 성능 기준으로 옮기지 않았다.

@@ -71,7 +71,18 @@ aliases: ["개인 현금흐름 계획", "Personal Cash Flow Planning"]
 
 투자할 금액은 당장 필요한 자금과 구분해서 판단한다. 장기 투자와 유동성의 관계는 [[Investing-Principles|투자의 기본 원칙]]에 연결한다.
 
+## 일의 가치와 자산 축적을 별도로 관리한다
+
+소득을 높일 역량과 받은 소득을 남기는 구조는 다른 과제다. 업무 성과가 좋아져도 늘어난 지출과 부채가 소득 증가를 모두 흡수하면 순자산이 같은 속도로 늘지 않는다. 수입과 지출, 자산과 부채를 분리하는 위 원칙에 따라 확인한다.
+
+제공된 2026-10-12 GeekNews의 직장인 부 축적 발췌는 검증 가능한 성과, 부서 경계를 넘는 기여, 시스템과 후임자 육성, 장기 학습 기회를 함께 제안한다. 이는 경력 전략의 관점이며 일정 행동이 승진이나 부를 보장하는 법칙은 아니다. 초기 학습을 위한 몰입과 영구적인 과로를 구분하고, 이직과 교육은 당장의 보상 외에 다음 역할과 기회비용을 함께 비교한다.
+
+원 블로그는 이번 조회에서 접근하지 못했다. 투자 수익률, 개인별 적정 저축률과 특정 금융상품을 검증한 기록으로 쓰지 않는다. 사용자 본인의 소득, 처우나 자산 금액도 추가하지 않는다.
+
 ## 출처
+
+- [직장인으로서 부를 쌓는 방법 — GeekNews](https://news.hada.io/topic?id=35198) — 2026-10-12 제공 발췌, 원 블로그 접근 불가
+- [How to Build Wealth as a Career Person — Asher Adeniyi](https://asheradeniyi.com/2026/04/10/how-to-build-wealth-as-a-career-person/) — 원 출처 식별, 본문 미확보
 
 - [CFPB, Creating a cash flow budget](https://www.consumerfinance.gov/documents/10038/cfpb_creating-cash-flow-budget_tool_2021-08.pdf) — 주별 수입과 지출, 잔액 이월 방식을 확인했다. 가상 수치와 내부 이체 설명은 계산 예시다.
 - [An essential guide to building an emergency fund — CFPB](https://www.consumerfinance.gov/an-essential-guide-to-building-an-emergency-fund/) — 현금흐름, 비상자금의 목적, 소득 변동과 자동이체 잔액 점검을 확인했다.

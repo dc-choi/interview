@@ -203,3 +203,4 @@ Q. GTM 전략을 어떻게 수립/실행했는가?
 - [[Scaling-and-Hiring|1인 제품 확장과 첫 채용]]
 - [[Content-Marketing|콘텐츠 마케팅]]
 - [[Healthcare-B2B-Solutions|의료 B2B 솔루션의 사업 구조와 시장 진입]] — 구매 역할 구분과 전시회 채널 검증
+- [[B2B-GTM-AI-Operating-System|AI 기반 B2B GTM 실행 체계]] — 채널 선택, 구매 신호, 반복 실행과 가격

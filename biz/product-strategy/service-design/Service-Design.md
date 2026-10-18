@@ -21,5 +21,7 @@ aliases: ["Service Design", "서비스 설계"]
 - [x] [[Personalization-Recommendation|개인화와 추천]] — 데이터 신호 5가지 예, 추천 3요소, 운영 함정, FAT 윤리
 - [x] [[UI-Screen-Design|화면 UI 설계 (ui-design/ 폴더 인덱스)]] — UI 용어, 시각적 위계, UX 법칙, 가이드 배치
 
+- [[Service-Continuity-and-Exit|서비스 지속성과 종료 설계]] — 매각과 종료 조건, 구독과 데이터 이탈 경로
+
 ## 관련 문서
 - [[제품전략(ProductStrategy)|제품 전략 (상위 인덱스)]]

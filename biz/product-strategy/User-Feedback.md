@@ -135,6 +135,22 @@ Clayton Christensen과 Bob Moesta 등의 연구와 실무에서 널리 알려진
 
 실험 전 대상 집단, 지표의 분모, 관찰 기간과 보호 지표를 정하고 계측 누락과 집단 배분 이상도 확인한다. 중간 수치를 반복해서 본 뒤 유리한 시점에 성공을 선언하지 않는다. 조기 판단에는 반복 관측에 맞는 통계 처리가 필요하다.
 
+## 고객 관계와 개별 접점의 평가를 나눈다
+
+특정 상담이 편했는지와 그 회사를 계속 선택하고 싶은지는 다른 질문이다. 전체 관계 지표가 좋아졌다는 이유로 모든 접점이 개선됐다고 보거나, 한 접점의 점수로 브랜드 전체의 성장 원인을 확정하지 않는다. Kantar의 ExperienceEvaluator도 고객 관계와 전체 경험의 지표를 접점별 성과 및 영향 요인과 구분한다(2026-10-16 공식 안내 확인).
+
+다음은 작은 제품에 적용할 조사 설계 예다.
+
+| 질문 | 함께 확인할 자료 |
+|---|---|
+| 이번 과업을 끝내기 쉬웠는가 | 과업 완료, 오류, 소요 시간과 직후의 자유 응답 |
+| 다른 대안보다 이 제품을 선택할 이유가 있는가 | 최근 선택과 전환 경험, 실제 재사용과 이탈 |
+| 어느 부분을 바꿔야 하는가 | 같은 과업의 행동 로그, 인터뷰와 직접 관찰 |
+
+탐색이 어렵다는 응답만으로 메뉴 구조를 고치지 않는다. 사용자가 어떤 정보를 찾았고 어디에서 막혔는지 관찰해 메뉴, 본문과 검색 결과 중 원인을 좁힌다. 설정 화면을 자주 열지 않아도 설정한 알림이 계속 가치를 줄 수 있으므로, 클릭 빈도만으로 기능의 필요성을 판단하지 않는다. 이는 조사 가설을 만드는 예이며 개별 기능의 유지 결정을 대신하지 않는다.
+
+GOV.UK의 사용자 연구 지침은 분석과 검색 로그 같은 기존 자료를 인터뷰 및 실제 사용자 관찰과 함께 확인하도록 안내한다. 정량 자료로 변화의 위치를 찾고 정성 자료로 가능한 이유를 좁힌 뒤, 변경의 효과는 별도 비교로 확인한다.
+
 ## 1인 제품 기회 발견
 
 제품 기회는 반복되는 불편뿐 아니라 사용자가 원하는 기능적, 감정적, 사회적 진전에서도 찾는다. 경험 도메인 인벤토리부터 행동 증거와 발견 단계 종료 조건까지의 절차는 [[Solo-Product-Opportunity-Discovery|1인 제품 기회 발견]]에서 다룬다.
@@ -154,6 +170,9 @@ Q. 사용자 피드백을 어떻게 관리하는가?
 - 직접 피드백이 없는 사용자의 미활동 신호를 GA4로 확인하되, 후속 조사 전에는 이탈 원인으로 단정하지 않음
 
 ## 출처
+- [Kantar Marketplace, What are the key metrics evaluated? | ExperienceEvaluator](https://marketplacesupport.kantar.com/support/solutions/articles/77000585004-what-are-the-key-metrics-evaluated-experienceevaluator) — 고객 관계와 접점별 평가의 구분
+- [GOV.UK, Learning about users and their needs](https://www.gov.uk/service-manual/user-research/start-by-learning-user-needs) — 로그, 인터뷰와 관찰의 결합
+- [How to Build a Differentiated Customer Experience with Kantar — Amazon Web Services](https://www.youtube.com/watch?v=YIXRcoeBn88) — 2025년 발표 09:46~15:30, 23:47~29:52의 측정 범위와 기능 사용 해석 사례
 - [Microsoft Research, Patterns of Trustworthy Experimentation: During-Experiment Stage](https://www.microsoft.com/en-us/research/articles/patterns-of-trustworthy-experimentation-during-experiment-stage/) — 전체 평가, 기능 진단, 보호 지표와 반복 관측의 해석
 - [당근 팀, 흩어진 동네 소식을 모아 매일 아침 배달하기까지](https://www.youtube.com/watch?v=iCeOA-y_nP4) — 알림 시각과 지면 순서 실험의 공개 실무 사례
 - [당근 팀, 부채에 발목 잡히지 않고 J-Curve를 밟아 나가기](https://www.youtube.com/watch?v=tVn1DB9fKwY) — 입력 단계 이탈과 최종 게시 성과를 구분한 공개 실무 사례

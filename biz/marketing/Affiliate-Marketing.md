@@ -1,7 +1,7 @@
 ---
 tags: [business, marketing, affiliate, cpc, cpa]
 status: done
-verified_at: 2026-10-07
+verified_at: 2026-10-18
 category: "비즈니스&제품(Business&Product)"
 aliases: ["제휴 마케팅", "Affiliate Marketing"]
 ---
@@ -29,6 +29,16 @@ CPA라는 성과 지표나 입찰 목표를 사용한다고 반드시 전환이 
 
 2026-10-07 확인한 미국 Amazon Associates 정책에서는 적격 구매와 적격 매출을 구분하며, 취소, 반품이나 환불이 시작된 주문을 수수료 대상에서 제외한다. 잘못 구성된 링크의 추적 누락과 부정한 보상 이벤트도 지급 제외 사유다. 이 조건을 다른 국가나 국내 제휴 서비스의 약관으로 대체 적용하지 않는다.
 
+## 커머스 플랫폼 제휴와 조회수 보상
+
+TikTok Shop 같은 커머스 플랫폼 안의 제휴에서 크리에이터는 판매자의 상품을 영상, 라이브나 제휴 링크에 연결해 소개하고 그 주문에 대해 판매자가 정한 수수료를 받는다. 2026-10-18 확인한 미국 TikTok Shop 판매자 약관(본문의 최종 갱신일과 시행일 표기는 2026-10-15)은 크리에이터 수수료율 결정, 주문 처리와 배송, 구매자 분쟁 해결을 판매자 책임으로 두고, TikTok For Business 도움말(2026년 6월 갱신)은 TikTok Shop을 Shop 소유자가 소유하고 관리하는 상품 재고로 설명한다. 같은 도움말의 TikTok Shop 제공 시장 목록에 한국은 없고, 미국 크리에이터 안내는 만 18세 이상과 미국 기반을 참여 조건으로 두며 제휴 크리에이터에게 팔로워 1,000명 이상을 요구한다.
+
+같은 날 확인한 미국 판매자 센터 안내 기준으로 수수료는 (매출 - 환불) × 수수료율이며, 구매자가 상품을 받고 사후 처리 기간(after-sales period)이 끝나야 확정된다. 전액 환불이면 0이고, 부분 환불이면 실제 결제액에서 환불액을 뺀 금액에 수수료율을 적용한다. 지급은 판매자 주문 정산이 끝난 뒤에만 이뤄져 보통 배송 후 15일째이고, 판매자 정산 기간이 배송 후 31일처럼 길면 그만큼 늦어지며, 분쟁, 환불이나 반품 요청이 해결되기 전에는 지급하지 않는다. 2025-04-15(UTC) 이후 생성된 주문에 적용하는 규칙은 크리에이터 지급 전에 생긴 환불이나 반품이면 수수료를 판매자에게 돌려주고, 지급 뒤 시작된 환불이나 반품이면 돌려주지 않는다.
+
+조회수 보상형 캠페인은 판매나 신청 같은 전환이 아니라 승인된 게시물의 조회수를 보상 단위로 삼는다. 2026-10-18 확인한 Whop Content Rewards 안내 기준으로 캠페인 운영자는 조회수 1,000회당 지급액과 총예산, 검토 대기열에 오르기 위한 영상별 최소 수익과 영상당 지급 상한을 정하고, 요건을 지킨 제출물만 승인한다. 승인 뒤에는 Whop이 조회수에 따라 크리에이터에게 자동 지급한다. clipping 유형은 운영자의 기존 긴 콘텐츠(팟캐스트, 라이브, 웨비나)를 짧은 영상으로 편집해 TikTok, YouTube Shorts, X와 Instagram Reels에 올리는 방식이다.
+
+적용 제안: 미국 TikTok Shop 조건을 다른 시장이나 한국 기반 크리에이터에게 옮겨 쓰지 않는다. 조회수 보상은 신청률과 승인율 대신 제출물 승인 여부, 1,000회당 단가, 최소 수익과 상한, 남은 예산으로 예상 수익을 계산하고, 조회수 집계 기준과 편집할 원본의 사용 허락을 캠페인 조건에서 확인한다.
+
 ## 수익성 계산과 작은 검증
 
 정액 보상 캠페인의 가상 예시로 적격 클릭 1,000회, 신청률 2%, 승인율 50%, 승인 건당 보상 1만원이면 예상 인정 수익은 10만원이다. 실제 캠페인의 관측치나 보장 수익이 아니며, 제작비, 광고비와 후속 조정 전 금액이다.
@@ -41,6 +51,12 @@ CPA라는 성과 지표나 입찰 목표를 사용한다고 반드시 전환이 
 - [Google Ads, Average CPA: Definition](https://support.google.com/google-ads/answer/6396841?hl=en)
 - [Google Ads, Choose your Smart Bidding strategy for Display campaigns](https://support.google.com/google-ads/answer/10276703?hl=en) — 목표 CPA와 실제 과금 방식의 구분
 - [Amazon Associates, Associates Program Policies](https://affiliate-program.amazon.com/help/operating/policies) — 미국 프로그램의 적격 구매, 지급 제외와 참여 조건
+- [TikTok Shop Seller Center, Seller Terms of Service for TikTok Shop](https://seller-us.tiktok.com/university/essay?knowledge_id=1331308753078058&lang=en) — 미국, 본문 시행일 2026-10-15로 표시된 약관의 수수료율 결정, 주문 처리와 배송, 구매자 분쟁 책임
+- [TikTok Shop Seller Center, What You Need to Know Before Becoming a TikTok Shop Creator](https://seller-us.tiktok.com/university/essay?knowledge_id=7608640301074219&lang=en) — 미국 크리에이터 참여 조건과 수수료 발생 경로
+- [TikTok Shop Seller Center, How Standard Affiliate Commission Works](https://seller-us.tiktok.com/university/essay?knowledge_id=6077860360177451&lang=en) — 미국, 수수료 계산, 확정과 지급 시점
+- [TikTok Shop Seller Center, How to Access Your Settlement Report](https://seller-us.tiktok.com/university/essay?knowledge_id=2336057241700098&lang=en) — 미국, 2025-04-15 시행 지급과 환불 규칙
+- [TikTok For Business, About TikTok Shop and Showcase](https://ads.tiktok.com/help/article/tiktok-shopping-and-showcase?lang=en) — Shop 상품 재고의 소유와 관리, 제공 시장 목록
+- [Whop Docs, Content Rewards](https://docs.whop.com/memberships-and-access/third-party-apps/content-rewards) — 조회수 1,000회당 보상, 제출물 승인과 지급, clipping 유형
 
 ## 관련 문서
 

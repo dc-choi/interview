@@ -130,3 +130,4 @@ AI가 검색, 비교, 요약, 제작, 매칭처럼 규칙이 분명한 작업의
 - [[Distribution-As-Moat|도달력(Distribution)이 새 해자]] — 모델이 같아질 때 남는 설치 위치와 유통 경로
 - [[Claude-Fable-5-Mythos-5|Claude Fable 5, Mythos 5]] — 모델 사양과 제한 공개
 - [[Signaling-Screening|신호와 선별]] — 결과물이 흔해질 때 구매자가 수행자를 가려내는 근거
+- [[AI-Software-Replication-and-Due-Diligence|AI 소프트웨어 복제와 기술 실사]] — 고객 전환 비용, 책임과 기술 실사

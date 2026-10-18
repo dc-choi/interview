@@ -16,6 +16,26 @@ verified_at: 2026-10-04
 - 진짜 질문: 그 트래픽이 자기 생태계의 다른 거래로 이어지는가 — 택시는 별도 앱, 쇼핑은 경쟁사, 콘텐츠는 다른 포털로 흩어진다면 파이프에 물이 흐르지 않는 것
 - 지표 관점: DAU는 [[Metrics-Framework|Vanity 지표]]가 될 수 있다. 플랫폼 파워의 지표는 방문이 아니라 **교차 이용률과 생태계 내 거래액**
 
+## 네트워크 효과와 적은 자산 부담이 결합하는 조건
+
+플랫폼 사업은 참여자 사이의 직접적인 상호작용을 연결한다. API나 공통 소프트웨어를 제공한다는 사실만으로 이 의미의 플랫폼이 되지는 않는다. 참여 집단과 가격 구조는 [[Business-Model#플랫폼의 성립 조건|플랫폼의 성립 조건]]에서 구분한다.
+
+| 경쟁력의 원천 | 가치가 생기는 경로 | 확인할 한계 |
+|---|---|---|
+| 네트워크 효과 | 참여자가 늘어 다른 참여자의 선택과 거래 기회가 개선됨 | 전체 가입자보다 해당 지역과 분야의 유효한 공급과 수요가 중요함 |
+| 적은 자산 부담 | Airbnb 호스트의 숙소, YouTube 창작자의 콘텐츠처럼 참여자가 공급을 확장함 | 운영사의 신뢰, 분쟁, 결제와 고객 지원 비용은 남음 |
+| 전환 비용 | 기존 고객의 데이터, 업무와 학습이 이전을 어렵게 함 | 기존 고객 유지가 신규 고객에게 주는 가치와 같지는 않음 |
+
+전환 비용은 이탈을 어렵게 하고, 네트워크 효과는 다른 참여자가 있다는 이유로 새 고객을 끌어들일 수 있다. SaaS도 마켓플레이스를 더해 두 효과를 결합할 수 있다. 다만 여러 플랫폼을 함께 쓰기 쉽거나 플랫폼 밖에서 직거래하면 방어력이 약해진다.
+
+## 플랫폼은 출발점보다 확장 경로일 수 있다
+
+초기에는 양쪽 모두 상대편이 없어서 참여하지 않는 문제가 생긴다. 한쪽에 독립적인 제품 가치를 먼저 제공하고 다른 쪽을 연결하는 경로를 검토한다. 식당의 예약 관리 도구에서 이용자 예약망으로 확장하는 방식이 한 예다.
+
+사업 비교에서는 거래액과 수수료 매출을 섞지 않는다. 수수료만 매출로 잡는 중개업과 상품 대금 전체를 매출로 잡는 재판매업의 마진율만 비교하면 왜곡된다. 투입 자본과 이익을 함께 보고, 투자자본이 0에 가깝거나 음수이면 ROIC 비율 해석도 주의한다.
+
+AI 모델 주변의 도구와 앱을 연결하는 사업도 후보지만 성공은 가설이다. 참여자 유치 비용, 반복 거래와 보조금 이후의 경제성을 검증한다. 성공한 플랫폼의 장점이 신규 플랫폼의 성공 확률까지 보장하지 않는다.
+
 ## AI 비서의 유통과 수익화는 따로 검증한다
 
 기존 메신저나 소셜 앱에 AI 비서를 붙이면 이미 확보한 이용자 접점에서 새 기능을 알릴 수 있다. 다만 이용자 수나 대화량의 증가만으로 유료 전환, 광고 수익 증가나 구매 대행 수수료가 검증되지는 않는다.
@@ -87,6 +107,8 @@ Meta는 2025-04-29 독립형 Meta AI 앱을 발표하면서 기존 WhatsApp, Ins
 
 ## 출처
 
+- [Platforms are (still) the best businesses — Andrei Hagiu, Julian Wright (Platform Chronicles)](https://platformchronicles.substack.com/p/platforms-are-still-the-best-businesses) — 2026-10-06 논설, 2026-10-16 본문 확인. 사업 모델 비교 관점이며 개별 기업의 재무 수치는 별도 검증하지 않아 옮기지 않았다.
+- [플랫폼은 여전히 최고의 사업 모델이다 — GeekNews](https://news.hada.io/topic?id=35446) — 2026-10-16 11:20 제공 발췌와 원문 연결
 - [소규모 주식교환 공고 — 마이리얼트립](https://www.myrealtrip.com/main/announcement) — 2026-09-28 공고, 2026-10-16 계약일과 예정일 및 거래 구조 확인
 - [Introducing the Meta AI App: A New Way to Access Your AI Assistant — Meta](https://about.fb.com/news/2025/04/introducing-meta-ai-app-new-way-access-ai-assistant/)
 - [Improving Your Recommendations on Our Apps With AI at Meta — Meta](https://about.fb.com/news/2025/10/improving-your-recommendations-apps-ai-meta/)
@@ -97,6 +119,8 @@ Meta는 2025-04-29 독립형 Meta AI 앱을 발표하면서 기존 WhatsApp, Ins
 
 ## 관련 문서
 
+- [[Business-Model|사업 모델과 플랫폼의 성립 조건]]
+- [[Commerce-Revenue-Formula|거래액, 매출과 이익]]
 - [[Category-Expansion|카테고리 확장과 카니발리제이션 (다각화)]]
 - [[Metrics-Framework|지표 설계 (Vanity vs Actionable, North Star Metric)]]
 - [[Competitive-Analysis|경쟁사 분석]]

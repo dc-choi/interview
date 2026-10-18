@@ -26,3 +26,4 @@ aliases: ["Funding Index", "자금 조달"]
 
 - [[Business-Model|비즈니스 모델과 Unit Economics]]
 - [[Bootstrapped-Single-Product-Growth|현금에 맞춘 성장 속도]]
+- [[AI-Company-Valuation-and-Funding|AI 기업의 투자 발표와 평가액 읽기]] — 조달액, 기업가치와 실제 희석 구분
