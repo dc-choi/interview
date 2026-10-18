@@ -94,6 +94,14 @@ PII는 Personally Identifiable Information의 약어다. NIST SP 800-122(2010) 2
 
 SIEM(Security Information and Event Management)은 로그를 모아 검색하고 상관관계를 분석하는 데 활용한다. 분석 도구가 있어도 기록하지 않은 사건을 복원할 수는 없다. 중앙 수집, 전송과 저장 보호, 수정과 삭제 권한 통제가 함께 필요하다. 레코드 설계와 보존 원칙은 [[Audit-Log|감사 로그]]를 따른다. 이 조사 흐름은 ACSC 공동 지침과 NIST 사고 대응 지침을 연결한 실무 적용 예시다.
 
+### 로그인 실패 경보와 계정 탈취를 구분한다
+
+2026-10-16 OWASP Logging Cheat Sheet의 기록 대상과 이벤트 속성, ACSC 공동 지침의 기준선 기반 탐지 절을 대조했다. 인증 성공과 실패, 권한 변경과 관리자 기능 사용을 연결해 조사한다. 이벤트에는 행위, 대상, 성공 여부와 실패 이유를 구분하고, 탐지의 확신도는 실행 결과와 별도 속성으로 둔다.
+
+운영 적용 예시: 짧은 시간에 로그인 실패가 몰리고 뒤이어 성공했다면 계정 탈취 가설을 세울 수 있다. 그러나 그 순서만으로 공격자 로그인이나 관리자 권한 탈취를 확정하지 않는다. 같은 계정의 요청 맥락, 권한 변경과 후속 데이터 접근을 대조하고 근거가 없는 연결은 미확인으로 남긴다.
+
+탐지 기준은 계정의 정상 행위와 업무 트래픽 기준선, 보호할 자산의 위험에 맞춘다. 사례의 특정 시간 창과 실패 횟수를 모든 서비스의 차단 임계값으로 복사하지 않는다. 이는 두 지침을 연결한 조사 설계 예시이며 특정 공격 사례를 검증한 기록이 아니다.
+
 ## XDR의 사건 묶음과 리스크 점수를 해석한다
 
 XDR은 엔드포인트 외에 네트워크, 클라우드와 이메일 등 여러 영역의 신호를 연결해 탐지와 대응을 돕는다. 실제 수집 범위와 대응 기능은 제품 및 연결한 솔루션에 따라 확인한다. 다음은 2026-10-10 제품 공식 설명을 대조한 예시다.
@@ -187,6 +195,7 @@ CSV가 생성됐다는 사실은 수집과 필드 변환이 정확하다는 증�
 
 ## 출처
 
+- [OWASP Cheat Sheet Series, Logging Cheat Sheet](https://cheatsheetseries.owasp.org/cheatsheets/Logging_Cheat_Sheet.html) — 기록 대상과 이벤트 속성
 - [Impact of AI on cyber threat from now to 2027 — NCSC](https://www.ncsc.gov.uk/report/impact-ai-cyber-threat-now-2027) — 2025-05-07 위협 평가, 특정 사건의 조사 보고서가 아님
 - [NIST, SP 800-122: Guide to Protecting the Confidentiality of Personally Identifiable Information (PII)](https://nvlpubs.nist.gov/nistpubs/legacy/sp/nistspecialpublication800-122.pdf) — 2.1~2.2절의 정의와 예시
 - [Trellix, Investigate threats using Generative AI](https://docs.trellix.com/docs/investigate-threats-using-generative-ai-1)

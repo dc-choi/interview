@@ -11,6 +11,8 @@ aliases: ["메시징&파이프라인(Messaging&Pipeline)", "Messaging & Data Pip
 
 - [[Event-Driven-Architecture|Event-Driven Architecture (EDA) — 결정 프레임워크]] (아키텍처 카테고리) — 신뢰성, 결합도, 일관성 3축 트레이드오프 + **8개 결정 층** + 패턴 매핑 그림
 
+- [[Data-Infrastructure-Layers|데이터 인프라의 계층과 계약]] — 저장과 계산, 파일과 테이블, 카탈로그, BI 지표와 AI 데이터 권한
+
 ## 목차 (메시징 인프라 — 어떻게 안전하게 전송)
 
 - [[tech/messaging-data-pipeline/brokers/브로커(Brokers)|브로커 (Brokers)]] — SQS, SNS, EventBridge, Kafka, RabbitMQ, Redis

@@ -65,6 +65,16 @@ API 호출 수를 줄이는 최적화에서는 호출당 비용만 보면 개선
 
 AWS CUR는 월중 비용을 추정치로 제공하고 적어도 하루 한 번 갱신하며, 서비스마다 사용량 정보가 도착하는 시점이 다를 수 있다(2026-10-10 공식 문서 확인). 따라서 지연된 비용을 실시간 요청 수로 나눈 값을 확정 효율로 제시하지 않는다. 비용과 제공량의 집계 범위, 마지막 갱신 시각과 잠정 여부를 표시하고, 청구 확정 및 환불이나 크레딧 반영 뒤 다시 계산할 수 있게 한다.
 
+### 리소스 연결과 비용 귀속을 분리한다
+
+부분 검증(2026-10-16): AWS의 FinOps 그래프 설계 자료와 VPC Flow Logs 제한을 대조했다. 리소스 관계, 태그, 사용 지표와 청구 데이터를 연결하면 태그가 빠진 의존 자원이나 비용 증가의 조사 범위를 찾는 데 도움이 된다. 그래프에 연결돼 있다는 사실만으로 비용 배분이 확정되지는 않는다.
+
+- **관계의 의미:** 같은 네트워크에 속함, 실제 통신함, 특정 서비스가 사용함을 구분한다. 공용 네트워크를 거쳐 연결된 모든 자원을 한 제품의 비용으로 합산하지 않는다.
+- **공유 비용:** 여러 제품이 사용하는 자원은 배분 기준과 가중치를 별도로 정한다. 운영 설계 예로, 같은 청구 항목이 여러 탐색 경로에 등장해도 한 번만 집계하고 배분 전후 합계를 대조한다.
+- **미관측과 미사용:** Flow Logs는 모든 IP 트래픽을 기록하지 않으며 수집 중 일부 기록이 생략될 수도 있다. 연결이나 트래픽이 보이지 않는다는 이유만으로 유휴 자원 또는 삭제 대상으로 확정하지 않는다. 관측 기간 밖의 배치와 복구 용도도 확인한다.
+
+처음에는 비용 귀속이 불명확한 질문 하나를 기존 청구 내역과 리소스 목록으로 조사한다. 관계 탐색이 반복적으로 필요할 때 그래프 도입을 검토하는 것은 적용 제안이며, 그래프 구축 자체를 절감 성과로 계산하지 않는다. 실제 계정의 비용이나 귀속 정확도는 시험하지 않았고 앞 절들의 검증 기준일은 유지한다.
+
 ## 비용 절감과 자원 효율을 구분한다
 
 2026-10-09 AWS Sustainability Pillar 대조 기준. 비용 지표와 함께 작업 한 건을 제공하기 위해 할당한 자원도 측정한다. 할인으로 청구액이 줄어도 같은 자원을 계속 사용한다면 자원 효율이 개선됐다고 볼 수 없다.
@@ -83,6 +93,8 @@ AWS CUR는 월중 비용을 추정치로 제공하고 적어도 하루 한 번 �
 
 ## 출처
 
+- [Techniques to improve the state-of-the-art in Cloud FinOps using Amazon Neptune — AWS Database Blog](https://aws.amazon.com/blogs/database/techniques-to-improve-the-state-of-the-art-in-cloud-finops-using-amazon-neptune/)
+- [Amazon VPC, Flow log limitations](https://docs.aws.amazon.com/vpc/latest/userguide/flow-logs-limitations.html)
 - [AWS Data Exports, What are AWS Cost and Usage Reports?](https://docs.aws.amazon.com/cur/latest/userguide/what-is-cur.html) — 2026-10-10 월중 추정치, 갱신 주기와 사후 조정 가능성을 대조했다.
 - [AWS Well-Architected, Evaluate specific improvements](https://docs.aws.amazon.com/wellarchitected/latest/sustainability-pillar/evaluate-specific-improvements.html) — 2026-10-09 작업당 자원 지표와 자원 간 절충을 대조했다.
 - [AWS, Sustainability Proxy Metrics and Carbon Emissions Dashboard](https://docs.aws.amazon.com/guidance/latest/cloud-intelligence-dashboards/sustainability-proxy-metrics-dashboard.html)

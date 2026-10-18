@@ -15,6 +15,12 @@ aliases: ["데이터&저장소(Data&Storage)", "Data & Storage"]
 - [[tech/database/vector/vector|벡터 검색 (Vector)]] — 임베딩 유사도와 점수 임계값, CLIP 멀티모달 이미지 검색, HNSW, pgvector, OpenSearch k-NN, hybrid와 embedding pipeline
 - [[tech/database/orm/ORM허브(ORMHub)|ORM, 도메인 모델링 (ORM)]] — TypeORM 실무, 임피던스 불일치, Aggregate 경계, Domain Model
 
+## 레이크하우스와 검색 엔진 선택
+
+- [[DuckLake|DuckLake]] — SQL 카탈로그와 Parquet 데이터, 형식과 확장 구분
+- [[pg-vectorsearch-PRISM|PRISM 벡터 검색]] — pgvector 타입 호환과 recall 기준 비교
+- [[PostgreSQL-Storage-Bottlenecks|PostgreSQL 스토리지 병목]] — NVMe 비교 조건과 내구성 설계
+
 ## 워크로드 분류
 - [[OLTP-vs-OLAP|OLTP vs OLAP]] — 트랜잭션 처리 vs 분석 처리, 운영/분석 DB 분리 구조
 - [[Polyglot-Persistence|Polyglot Persistence]] — 저장소별 정본과 projection, CDC/Outbox 기반 변경 전파, 재구축과 대사

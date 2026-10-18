@@ -225,6 +225,18 @@ Warm throughput은 테이블과 GSI가 즉시 지원할 준비가 된 읽기/쓰
 
 `ClientRequestToken`은 해당 토큰을 처음 사용한 요청이 완료된 뒤 **10분** 동안 동일한 트랜잭션 요청의 중복 효과를 막는다. 이 기간에 같은 토큰으로 다른 파라미터를 보내면 `IdempotentParameterMismatch`가 발생하고, 기간 뒤에는 같은 토큰도 새 요청으로 취급된다. 더 긴 업무 중복 방지가 필요하면 별도 멱등 기록을 설계한다. 이 절만 대조했으므로 기존 기능 전체의 검증일은 유지한다.
 
+### 별칭의 유일성은 별도 항목과 트랜잭션으로 지킨다
+
+부분 검증(2026-10-16): AWS의 unique constraint 구현 예시와 `TransactWriteItems` API를 대조했다. 기본 키가 아닌 속성의 유일성은 자동 보장되지 않는다. 별칭을 조회해 없음을 확인한 뒤 프로필을 저장하는 두 단계만으로는 동시 등록을 막을 수 없다.
+
+단순 PK 테이블의 설계 예로 프로필은 `USER#<사용자ID>`, 별칭 예약은 `ALIAS#<정규화한별칭>`을 키로 둔다. 예약 항목에는 소유 사용자 ID를 저장한다. 모든 등록, 변경과 삭제 경로가 같은 예약 규칙을 따라야 한다.
+
+- 등록: 프로필과 예약 항목의 `Put`에 각각 `attribute_not_exists(pk)` 조건을 두고 한 트랜잭션으로 실행한다. 같은 별칭을 동시에 등록하면 예약 키의 조건 때문에 둘 다 성공할 수 없다.
+- 변경: 프로필 `Update`, 이전 예약 `Delete`, 새 예약의 조건부 `Put`을 함께 실행한다. 동시 변경을 막는 설계 제안으로 프로필의 이전 별칭 또는 버전과 이전 예약의 소유자를 각각 조건으로 검사한다. 정규화 뒤 별칭이 같으면 예약 교체를 생략한다. 같은 항목의 `Delete`와 `Put`을 한 트랜잭션에 넣을 수 없기 때문이다.
+- 삭제: 프로필과 현재 예약을 함께 삭제하되 예상한 별칭과 소유자가 맞는지 조건으로 확인한다.
+
+적용 범위는 같은 계정과 리전의 트랜잭션 지원 테이블이다. 현재 API 한도는 최대 100개 작업, 대상 항목 합계 4MB이며 조건 실패, 충돌과 용량 부족을 구분한다. 별칭 정규화 규칙은 업무에서 정하고 모든 경로에 동일하게 적용한다(설계 제안). 실제 동시 등록 시험과 기존 기능 전체는 재검증하지 않아 frontmatter 검증일은 유지한다.
+
 ### 조건 실패는 반환된 항목과 업무 조건으로 진단한다
 
 부분 검증(2026-10-16): `UpdateItem` API와 오류 처리 문서를 대조했다. `ConditionalCheckFailedException`은 `ConditionExpression`이 거짓이어서 쓰기를 수행하지 못했다는 뜻이다. 스로틀링과 같은 재시도 정책으로 동일 요청을 반복하지 않고 기대한 속성값, 실제 상태와 버전을 확인한다.
@@ -301,6 +313,7 @@ MRSC는 정확히 세 리전에 replica 세 개 또는 replica 두 개와 witnes
 
 ## 출처
 
+- [Simulating Amazon DynamoDB unique constraints using transactions — AWS Database Blog](https://aws.amazon.com/blogs/database/simulating-amazon-dynamodb-unique-constraints-using-transactions/)
 - [AWS DynamoDB — Troubleshooting latency issues](https://docs.aws.amazon.com/amazondynamodb/latest/developerguide/TroubleshootingLatency.html)
 - [AWS DynamoDB — Metrics and dimensions](https://docs.aws.amazon.com/amazondynamodb/latest/developerguide/metrics-dimensions.html)
 - [AWS DynamoDB — How DynamoDB global tables work](https://docs.aws.amazon.com/amazondynamodb/latest/developerguide/V2globaltables_HowItWorks.html)

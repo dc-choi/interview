@@ -28,6 +28,8 @@ aliases: ["Algorithm"]
 - [x] [[Problem-Solving-Techniques|누적합, 완전탐색, Greedy, 이분탐색, LIS, Fenwick tree, 시뮬레이션, 정수론과 KMP]]
 - [x] [[Algorithm-Quad-Remeshing|쿼드 리메싱/리토폴로지 (조합 문제의 연속 완화 + 정수 제약, 위상 하한, 파이프라인 분해)]]
 
+- [x] [[Constraint-Based-Resource-Placement|제약 기반 자원 배치 (하드 제약과 목적, 지역 탐색, MIP와 최적성)]]
+
 ## 예제 코드 폴더
 - `recursion/` — 팩토리얼, 하노이 탑, pow, 배열 합
 - `sort/` — 버블, 선택, 삽입, 병합, 퀵 정렬 구현

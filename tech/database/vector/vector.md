@@ -19,6 +19,8 @@ aliases: ["vector", "벡터 검색", "Vector Search"]
 - [[pgvector-Query-Optimization|pgvector 쿼리 최적화 (검색 후 필터, ef_search/LIMIT 함정, iterative scan 0.8.0, relaxed/strict, shared_buffers/pg_prewarm, PgBouncer, REINDEX)]]
 - [[Redis-Data-Structures#확장 타입|Redis Vector set (Redis 8.0 beta 도입, HNSW, 양자화, 속성 필터)]]
 
+- [[pg-vectorsearch-PRISM|pg_vectorsearch PRISM (클러스터 탐색과 양자화, 기존 pgvector 타입 호환, 성능 비교 조건)]]
+
 ## 관련 문서
 - [[데이터&저장소(Data&Storage)|카테고리 인덱스]]
 - [[OpenSearch|OpenSearch 키워드 검색과 운영]]

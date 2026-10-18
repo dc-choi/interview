@@ -68,6 +68,20 @@ UP는 터치 같은 사용자 존재 확인이며 PIN이나 생체 정보를 통
 
 기술적으로는 discoverable credential(예전 명칭 resident key)이 핵심이다. 아이디를 먼저 입력하지 않아도 인증기가 자격증명을 찾아 `userHandle`을 반환하는 흐름이 가능하다. 서버는 이 값과 등록된 계정 및 자격증명의 연결을 검증한다. 패스키는 별도 프로토콜이 아니며, 모든 패스키가 동기화되는 것도 아니다.
 
+## 보안성과 사용자 통제권을 따로 평가한다
+
+2026-10-12의 패스키 비판과 10-15의 반론을 함께 연결한다. 2026-10-16에 두 논쟁 글과 WebAuthn의 attestation 개념을 대조했다. 아래는 판단 축이며 모든 제공자의 동작을 시험한 결과가 아니다.
+
+| 축 | 확인할 질문 |
+| --- | --- |
+| 피싱 저항 | RP ID와 origin 검증을 지키는가? 비밀번호와 TOTP 복구 경로는 어떤 위험을 남기는가? |
+| 인증기 증명 | RP가 어떤 attestation을 요구하고 어떤 인증기를 수락하는가? `none`도 수락하는가? |
+| 이동과 복구 | 동기화 제공자 변경, 기기 분실, 복수 패스키 등록과 계정 복구가 가능한가? |
+
+WebAuthn attestation은 인증기의 속성과 출처를 증명하는 장치다. 이를 브라우저 확장 목록이나 OS 변조 여부 전부를 검사하는 기능과 동일시하지 않는다. 일반적인 동기화 패스키가 `none`을 반환한다는 구현 설명과, 기업이 승인 인증기를 요구할 수 있다는 정책 가능성도 서로 다른 층위다.
+
+하드웨어 보안키에도 attestation이 있을 수 있으므로 보안키 선택만으로 증명을 피한다고 단정할 수 없다. 반대로 피싱 저항이 있다는 이유로 이전과 복구의 마찰을 무시해서도 안 된다. TOTP의 이전 편의와 실시간 피싱 위험을 함께 비교한다. 실제 도입에서는 대상 서비스와 기기 조합을 시험한다.
+
 ## 서버 구현 시 검증 포인트
 
 `clientDataJSON`을 파싱한 결과를 C, `authenticatorData`를 authData라 할 때의 주요 검증 항목이다. 실제 구현은 §7.1/7.2 전체 절차와 사용하는 확장의 조건을 따른다.
@@ -136,6 +150,9 @@ HIPAA Security Rule은 covered entity와 business associate가 다루는 ePHI에
 - 피싱 저항이 남은 비밀번호, 복구 경로와 세션 탈취까지 막지 않는 이유, 그리고 FIDO 도입과 eIDAS, HIPAA 준수를 구분해 각 규정이 인증에 요구하는 것
 
 ## 출처
+
+- [Passkeys are a trap. Do not use them. — Nonfunctional](https://nonfunctional.substack.com/p/passkeys-are-a-trap-do-not-use-them) (사용자 통제권에 관한 논쟁)
+- [Passkeys Are Not a Trap — Scott Helme](https://scotthelme.co.uk/passkeys-are-not-a-trap/) (인증기 증명과 피싱 저항에 관한 반론)
 
 2026-10-03 부분 검증: W3C Level 3의 UP/UV, attestation 유형, related origins, §7.1/7.2의 자격증명과 계정 연결 및 백업 플래그 조건, FIDO Alliance의 패스키 구분을 대조했다. 인증 획득 경험의 재검증이나 특정 브라우저와 라이브러리의 지원 검증은 포함하지 않았다.
 

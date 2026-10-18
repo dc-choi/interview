@@ -75,6 +75,8 @@ Linus의 법칙은 충분한 베타 테스터와 공동 개발자가 참여하�
 
 단일 결함 사례로 사람과 AI의 우열을 일반화하지 않는다. 검토를 줄일지는 변경 위험, 자동 검증 범위와 운영 결과로 판단한다.
 
+에이전트가 코드 대부분을 쓰는 조직에서 이 판단을 위험 등급, 층별 검증과 되돌림 가드레일로 운영하는 방식은 [[Code-Review-AI-Agent-Operations|에이전트 시대 코드 리뷰 운영]]에서 다룬다.
+
 ## 출처
 
 - [The Cathedral and the Bazaar: Release Early, Release Often — Eric S. Raymond](https://www.catb.org/~esr/writings/cathedral-bazaar/cathedral-bazaar/ar01s04.html)

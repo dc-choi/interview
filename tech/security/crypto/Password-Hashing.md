@@ -3,7 +3,7 @@ tags: [security, hashing, cryptography]
 status: done
 category: "보안(Security)"
 aliases: ["Password Hashing", "패스워드 해싱"]
-verified_at: 2026-10-12
+verified_at: 2026-10-18
 ---
 
 # Password Hashing
@@ -75,11 +75,13 @@ bcrypt의 72바이트 제한은 글자 수가 아니라 사용하는 인코딩�
 | 크리덴셜 스터핑 | 다른 서비스에서 유출된 아이디와 비밀번호 쌍을 그대로 시도한다. 비밀번호 재사용을 노린다 |
 
 - **다중 인증**이 가장 효과적인 방어다. 새 기기, 낯선 위치, 알려진 프록시처럼 의심스러운 로그인에만 조건부로 요구할 수도 있다. [[FIDO-WebAuthn]]
+- **추가 확인을 이메일 승인에 맡기지 않는다**: 비밀번호 재사용으로 메일함까지 열리면 공격자가 낯선 위치 로그인을 확인하는 메일의 승인 링크를 직접 눌러 이 단계를 통과할 수 있다. NIST SP 800-63B-4(2025-07 최종본) §3.1.3.1은 비밀번호만으로 접근될 수 있고, 전송 구간이나 중간 메일 서버에서 가로채일 수 있으며, DNS 스푸핑 같은 경로 변경 공격에 노출된다는 이유로 이메일을 out-of-band 인증에 쓰지 못하게 한다. 이메일 주소 확인 코드와 복구 코드는 인증 절차가 아니어서 이 금지에서 빠진다. 추가 확인은 OTP 앱이나 패스키처럼 기기 소지를 증명하는 수단으로 받고, 메일은 이상 징후를 알리는 통지에 쓴다.
 - **유출된 비밀번호를 거부한다**: 가입과 변경 시 흔한 단어와 유출 데이터셋에 있는 비밀번호를 막는다.
 - **시도 속도를 늦춘다**: 계정과 출처 기준으로 속도를 제한하고, CAPTCHA는 자동화 비용을 올리는 보조 수단으로 쓴다. IP 차단은 우회가 쉬워 단독 방어가 되지 못한다. [[Rate-Limiting]]
 - **계정 잠금은 신중하게**: 고정 잠금은 공격자가 남의 계정을 일부러 잠가 서비스를 거부하게 만들 수 있다. 실패할수록 대기 시간을 두 배로 늘리는 방식이나 잠금 중에도 비밀번호 재설정 경로를 열어 두는 방식을 검토한다.
 - **계정 존재를 드러내지 않는다**: 아이디가 없든 비밀번호가 틀리든 같은 오류 메시지를 준다.
 - 정상 비밀번호로 로그인했는데 다중 인증에서 실패한 경우처럼 의심스러운 로그인은 사용자에게 알린다.
+- 같은 기준 §4.6은 인증수단 등록과 계정 복구 같은 계정 이벤트를 사용자에게 따로 알리도록 하고, 알림은 우편 주소를 제외한 모든 알림 주소로 보내며 계정마다 알림 주소를 2개 이상 지원하도록 요구한다. 이 알림은 사용자가 계정과 관련된 사기를 알아차리게 돕는다. 두 절 모두 NIST 기준을 따르는 시스템의 요건이며 모든 민간 서비스의 법적 의무로 일반화하지 않는다.
 
 ## 출처
 
@@ -87,9 +89,12 @@ bcrypt의 72바이트 제한은 글자 수가 아니라 사용하는 인코딩�
 
 2026-10-12에는 salt의 계정별 고유성, 해시 개수에 비례하는 크래킹 비용, 라이브러리의 salt 관리를 같은 자료에 대조하고, 기존 알고리즘 우선순위와 최소 비용(Argon2id 구성, bcrypt work factor와 72바이트 제한)이 현재 권고와 상충하지 않음을 확인했다.
 
+2026-10-18에는 이메일을 out-of-band 인증에서 제외하는 근거와 확인 코드 예외(§3.1.3.1), 계정 이벤트 알림 요건(§4.6)을 NIST SP 800-63B-4에 대조했다. 같은 문서 §3.1.1.2의 비밀번호 저장 요건(salt를 붙인 해싱, 32비트 이상의 salt, 성능이 허용하는 범위의 높은 비용)이 기존 본문과 상충하지 않음도 확인했다. 기존 온라인 공격 관련 출처 전체를 다시 검증한 기록은 아니다.
+
 - [Password Storage Cheat Sheet — OWASP](https://cheatsheetseries.owasp.org/cheatsheets/Password_Storage_Cheat_Sheet.html)
 - [OWASP Cheat Sheet Series, Credential Stuffing Prevention Cheat Sheet](https://cheatsheetseries.owasp.org/cheatsheets/Credential_Stuffing_Prevention_Cheat_Sheet.html)
 - [OWASP Cheat Sheet Series, Authentication Cheat Sheet](https://cheatsheetseries.owasp.org/cheatsheets/Authentication_Cheat_Sheet.html)
+- [NIST, SP 800-63B-4: Authentication and Authenticator Management](https://pages.nist.gov/800-63-4/sp800-63b.html)
 - [웹 개발을 위해 꼭 알아야하는 보안 공격 — kciter.so, kciter](https://kciter.so/posts/basic-web-hacking/)
 - [웹보안 — 딩코딩코 (개발자 취업 필수 개념 강의)](https://fern-freeze-290.notion.site/37aade118e3680908aeee8bb5a517c7d)
 - [EVERY junior dev makes these security mistakes... — CodeHead](https://www.youtube.com/watch?v=AjUeQJxen1k)

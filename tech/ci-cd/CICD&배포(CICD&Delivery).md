@@ -14,6 +14,8 @@ aliases: ["CI/CD&배포(CI/CD&Delivery)", "CI/CD & Delivery", "CI/CD&배포"]
 
 ### 버전 관리
 
+- [[Server-Centric-Version-Control|서버 중심 버전 관리]] — Scion, 체크아웃 비용과 중앙 서비스 의존
+
 - [x] [[GitHub-Repository-Operations-Auth-and-Signing#개인 계정과 Enterprise Managed Users의 경계|GitHub 관리형 계정 전환]] — 계정 통제, 외부 협업과 Importer가 옮기지 않는 배포 설정
 - [x] [[Git-Object-Format|Git 객체 형식과 SHA-256 호환성]] — 객체 ID 길이, 현재 지원과 전환 계획, CI와 외부 도구 점검
 - [x] [[version-control|버전 관리 폴더 인덱스 (Git 도구, 개발 워크플로, Git 멘탈 모델/머지 전략/복구)]]

@@ -46,6 +46,15 @@ Lock 파일만으로 bit-identical 바이너리가 보장되지는 않는다. OS
 
 프로젝트 요구와 팀 도구에 맞춰 선택한다. `pip` 중심 환경에서도 `pip-tools`나 `uv lock`처럼 해결된 버전을 재현할 방법을 둔다.
 
+#### uv의 manifest 없는 설치와 입력 경계
+
+2026-10-16 부분 검증: uv 0.12.23 릴리스, preview 문서와 PR #22018을 대조했다. 아래 조건은 `frozen-lockfile` preview 기준이며 실제 설치와 성능을 측정한 결과는 아니다.
+
+- `uv sync --locked`는 프로젝트 메타데이터와 lock의 일치를 검사하고 갱신이 필요하면 실패한다. `--frozen`은 그 최신성 검사를 생략하므로 같은 검증 강도로 취급하지 않는다.
+- uv 0.12.23에는 workspace의 `pyproject.toml` 없이 `uv.lock`에서 sync하는 preview가 포함됐다. `uv sync --frozen --preview-features frozen-lockfile`로 기능을 명시하며, manifest 없는 탐색에는 lockfile `revision` 5 이상이 필요하다. uv 제품 버전과 lockfile revision은 별개다.
+- lock에서 의존성을 선택할 수 있어도 로컬 패키지를 설치하려면 소스 트리와 빌드 메타데이터가 필요하다. workspace manifest가 남아 있으면 추가 빌드 의존성의 source mapping 등 그 설정도 사용한다. 따라서 lock 하나만 배포하면 어떤 프로젝트든 설치된다고 일반화하지 않는다.
+- manifest를 제거하기 전 선택 멤버, 그룹과 Python 요구사항을 비교한다. 비프로젝트 workspace root의 기본 그룹과 그룹별 Python 요구사항은 0.12.22 릴리스의 기록 지원 설명과 PR #22018의 제한 설명이 엇갈리므로 여기서는 지원 여부를 확정하지 않는다. 해당 조건에 의존하는 배포는 manifest를 보존하고 고정한 uv 버전에서 별도로 검증한다(운영 판단).
+
 #### 설치한 Python과 실행하는 Python 맞추기
 
 패키지 설치 성공과 프로그램 실행 환경의 일치는 별개다. `python -m pip`는 지정한 Python으로 pip를 실행하므로, 여러 Python이 설치된 장비에서는 실행할 인터프리터를 먼저 고르고 그 경로로 설치한다. IDE나 IDLE에서 import가 실패하면 그 프로세스의 `sys.executable`과 설치에 사용한 Python 경로를 비교한다.
@@ -173,6 +182,11 @@ Spring, Java 엔터프라이즈는 **Maven**이 여전히 많이 쓰이고, 멀�
 - [velog @city7310 — 백엔드가 이정도는 해줘야 함 8. 의존성 관리 도구 결정](https://velog.io/@city7310/%EB%B0%B1%EC%97%94%EB%93%9C%EA%B0%80-%EC%9D%B4%EC%A0%95%EB%8F%84%EB%8A%94-%ED%95%B4%EC%A4%98%EC%95%BC-%ED%95%A8-8.-%EC%9D%98%EC%A1%B4%EC%84%B1-%EA%B4%80%EB%A6%AC-%EB%8F%84%EA%B5%AC-%EA%B2%B0%EC%A0%95)
 - [pnpm, Motivation](https://pnpm.io/motivation)
 - [uv, Projects](https://docs.astral.sh/uv/guides/projects/)
+- [uv, Locking and syncing](https://docs.astral.sh/uv/concepts/projects/sync/)
+- [uv, Preview features — frozen-lockfile](https://docs.astral.sh/uv/concepts/preview/#frozen-lockfile)
+- [uv 0.12.22 릴리스 — Astral](https://github.com/astral-sh/uv/releases/tag/0.12.22)
+- [uv 0.12.23 릴리스 — Astral](https://github.com/astral-sh/uv/releases/tag/0.12.23)
+- [Support frozen sync without workspace manifests — Astral, PR #22018](https://github.com/astral-sh/uv/pull/22018)
 - [Poetry, Managing dependencies](https://python-poetry.org/docs/managing-dependencies/)
 - [Yarn, `workspaces focus`](https://yarnpkg.com/cli/workspaces/focus)
 - [npm Docs, Config production](https://docs.npmjs.com/cli/v11/using-npm/config#production)

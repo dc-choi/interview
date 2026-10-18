@@ -159,6 +159,16 @@ Agentless는 개별 소스 VM에 에이전트를 설치하지 않는다는 뜻�
 
 과거 발표의 지원 플랜 포함 여부나 고객 사례의 처리량을 현재 계약 조건과 자체 시스템의 보장값으로 옮기지 않는다.
 
+## 전환 창과 새 쓰기 이후의 복구를 따로 검증한다
+
+부분 검증(2026-10-16): AWS cutover 가이드는 입력 동결, 최종 백업과 동기화, 라우팅 변경, 동작 검증을 구분한다. 서버 주소를 바꾼 시간만을 전체 중단 시간으로 계산하지 않는다. 사전 계획에는 기능, 성능과 의존 시스템 연결 시험뿐 아니라 실패 시 복구에 필요한 시간도 포함한다.
+
+- **사전 확인:** 소스와 대상 사이의 실제 연결 경로, 접근 정책, 데이터 변환과 최종 동기화 방법을 시험한다. 서버 통합이나 스키마 변경이 있으면 단순한 1:1 복제 가정을 다시 확인한다.
+- **단계 이전의 경계:** 일부 사용자 데이터부터 옮기는 설계라면 아직 옮기지 않은 사용자가 돌아왔을 때의 조회 경로와 갱신 충돌을 정한다. 우선 이전량을 줄였다는 사실을 전체 데이터 이전 완료로 세지 않는다.
+- **복구 경계:** 대상에서 새 쓰기를 받기 전과 받은 뒤의 되돌리기는 다르다. 새 데이터가 생긴 뒤에는 DNS만 원상복구해도 원본 DB가 최신 상태가 되지 않는다. 변경 데이터의 복원이나 재동기화 방법, 실행 시간과 판단 담당자를 정한다.
+
+앞의 두 항목은 IDC 이전 사례와 공식 가이드를 적용한 점검 질문이다. 과거 발표의 네트워크 제한과 이전 소요 시간을 현재 AWS의 보편적 제약이나 보장값으로 옮기지 않는다. 기존 서비스별 지원 정책을 전부 재검증한 것은 아니므로 문서의 `verified_at`은 유지한다.
+
 ## 흔한 실수
 
 - 전략 이름만 합의하고 바뀌는 범위를 적지 않아 견적, 일정과 책임이 어긋난다.
@@ -175,6 +185,9 @@ Agentless는 개별 소스 VM에 에이전트를 설치하지 않는다는 뜻�
 
 ## 출처
 
+- [AWS Prescriptive Guidance, Pre-cutover stage](https://docs.aws.amazon.com/prescriptive-guidance/latest/best-practices-migration-cutover/pre-cutover-stage.html)
+- [AWS Prescriptive Guidance, Cutover stage](https://docs.aws.amazon.com/prescriptive-guidance/latest/best-practices-migration-cutover/cutover-stage.html) — 2026-10-16 전환 단계와 새 데이터 발생 후 rollback 조건 대조
+- [AWS를 이용한 게임사 고객 사례 발표 - IDC 마이그레이션 여정기, MMORPG ABUSER DETECTION WITH SAGEMAKER — Amazon Web Services Korea](https://www.youtube.com/watch?v=n6VKNyPUdvA) — 2019년 발표 07:28~15:44 중 IDC 이전 사례만 참조
 - [AWS Cloud Adoption Framework, Foundational capabilities](https://docs.aws.amazon.com/whitepapers/latest/overview-aws-cloud-adoption-framework/foundational-capabilities.html)
 - [AWS Prescriptive Guidance, Migration playbook for AWS large migrations](https://docs.aws.amazon.com/prescriptive-guidance/latest/large-migration-migration-playbook/introduction.html)
 - [Accelerating mainframe modernization testing with AWS Transform — AWS](https://aws.amazon.com/blogs/migration-and-modernization/accelerating-mainframe-modernization-testing-with-aws-transform/) — 2026-10-10 테스트 생성, 수집 실행 책임과 기능 동등성 검증 범위를 대조했다. 기존 전환 전략 전체의 재검증은 아니다.

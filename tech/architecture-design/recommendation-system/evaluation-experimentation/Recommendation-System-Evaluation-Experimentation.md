@@ -96,6 +96,17 @@ Sampling 규칙을 고정하는 것은 재현성에는 도움이 되지만 ranki
 
 전체 평균만 보면 Cold Start와 long-tail 실패가 가려진다. 최소한 신규 사용자, 신규 item, 활동량 구간, 지역, 기기, source, 콘텐츠 범주와 공급자 집단을 분리한다. Slice 표본이 작으면 불확실성도 함께 보고한다.
 
+## 관리형 추천도 평가 데이터 계약을 확인한다
+
+부분 검증(2026-10-16): Amazon Personalize의 solution version 평가 문서와 대조했다. 아래는 서비스별 적용 예이며 기존 절 전체의 검증일은 유지한다.
+
+- **비교 데이터:** 같은 dataset group의 같은 데이터로 학습한 recipe와 hyperparameter 후보를 비교한다. 구매 로그가 드문 데이터와 조회 로그가 많은 데이터의 `precision at K` 차이를 모델 성능 차이로 해석하지 않는다.
+- **분할 단위:** `USER_SEGMENTATION` recipe는 사용자별 상호작용의 80%를 학습, 20%를 테스트에 쓴다. 그 밖의 recipe는 사용자 90%와 그 상호작용을 학습에, 나머지 사용자 10%와 그 상호작용을 테스트에 쓴다. `PERSONALIZED_ACTIONS`에는 validation set도 있다.
+- **테스트 입력과 정답:** 학습 뒤 테스트 사용자별 오래된 상호작용 90%를 입력하고 최신 10%의 실제 행동과 추천 결과를 비교한다. 사용자 집합을 나누는 단계와 테스트 사용자 내부의 시간 순서 분할을 구분한다.
+- **지표의 책임:** 학습 시 생성되는 오프라인 지표는 `GetSolutionMetrics`로 조회할 수 있다. 실제 추천의 클릭률 같은 온라인 지표는 사용자가 생성하고 기록해야 한다. `Popularity-Count` recipe는 인기 기반 비교 기준으로 사용할 수 있다.
+
+평가 적용 제안: 서비스가 만든 지표와 자체 temporal holdout의 모집단, 입력과 정답 구간이 같은지 먼저 확인한다. 자동 학습 완료나 오프라인 지표 상승을 온라인 실험 통과로 바꾸어 기록하지 않는다. 실제 모델 학습과 온라인 실험은 수행하지 않았다.
+
 ## Offline과 Online이 어긋나는 이유
 
 | 원인 | 설명 |
@@ -162,6 +173,7 @@ IPS, SNIPS, Direct Method, Doubly Robust, clipping과 Switch-DR의 식, ESS와 w
 
 ## 출처
 
+- [Amazon Personalize, Evaluating an Amazon Personalize solution version with metrics](https://docs.aws.amazon.com/personalize/latest/dg/working-with-training-metrics.html)
 - [Ranking metrics — TensorFlow Ranking](https://www.tensorflow.org/ranking/api_docs/python/tfr/keras/metrics)
 - [On Sampled Metrics for Item Recommendation — Google Research](https://research.google/pubs/on-sampled-metrics-for-item-recommendation/)
 - [Feast Documentation, Point-in-time joins](https://docs.feast.dev/getting-started/concepts/point-in-time-joins)

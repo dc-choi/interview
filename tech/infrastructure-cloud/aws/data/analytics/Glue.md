@@ -65,6 +65,16 @@ AI 입력 파이프라인에 적용할 때는 품질 실패 후 색인이나 후
 
 포맷 변경만 필요하고 입력이 지원 조건에 맞으면 Firehose 내장 변환을 검토할 수 있다. 조인, 업무 규칙이나 행 재구성이 필요하면 해당 변환을 ETL에 명시한다. 변환 완료 뒤 집계 전에 중복, 누락과 타입 오류를 확인하는 절차는 위 Data Quality와 연결한다.
 
+### 작은 파일의 읽기 그룹과 저장 파일 병합은 다르다
+
+부분 검증(2026-10-16): S3 입력을 읽는 DynamicFrame의 파일 그룹화 옵션을 공식 문서와 대조했다. `groupFiles: inPartition`은 같은 S3 데이터 파티션 안의 파일을 묶어 각 ETL task가 하나의 메모리 파티션으로 읽도록 한다. S3에 저장된 원본 파일을 물리적으로 합치는 작업은 아니다.
+
+- 입력 파일이 50,000개를 넘으면 Glue가 그룹화를 자동 활성화한다. 이 설명은 지원 형식의 DynamicFrame 읽기에 적용하며 모든 Spark 읽기로 확대하지 않는다.
+- `groupSize`는 그룹의 목표 크기를 byte로 지정하는 선택값이다. 생략하면 Glue가 클러스터의 CPU core 활용과 task 및 메모리 파티션 수 감소를 고려해 정한다.
+- 지원 형식은 `csv`, `ion`, `grokLog`, `json`, `xml`이며 `avro`, `parquet`, `orc`에는 이 옵션을 지원하지 않는다. 출력 형식이 아니라 그룹화할 입력 형식으로 확인한다.
+
+운영 점검 제안: 같은 입력으로 driver 메모리, task 수와 실행 시간을 비교한다. 출력 파일 크기와 개수는 쓰기 단계에서 별도로 확인하며, 그룹 크기를 키우면 항상 빨라진다고 가정하지 않는다. 실제 성능은 시험하지 않았고 기존 런타임과 연결 절의 검증 기준일은 유지한다.
+
 ## Glue 6.0 전환의 호환성 경계
 
 2026-10-07 공식 마이그레이션 문서 확인 기준. Glue 6.0은 Spark 4.1.1, Scala 2.13.17과 Python 3.13을 사용한다. 새 런타임 선택과 기존 작업의 동작 검증은 별도다.
@@ -153,6 +163,7 @@ NAT 추가를 모든 연결 실패의 해결책으로 삼지 않는다. 먼저 �
 
 ## 출처
 
+- [AWS Glue, Reading input files in larger groups](https://docs.aws.amazon.com/glue/latest/dg/grouping-input-files.html)
 - [Implement a CDC-based UPSERT in a data lake using Apache Iceberg and AWS Glue — AWS Big Data Blog](https://aws.amazon.com/blogs/big-data/implement-a-cdc-based-upsert-in-a-data-lake-using-apache-iceberg-and-aws-glue/)
 - [Apache Iceberg, Spark Writes](https://iceberg.apache.org/docs/latest/spark-writes/)
 - [Amazon Data Firehose, Deliver data to Apache Iceberg Tables with Amazon Data Firehose](https://docs.aws.amazon.com/firehose/latest/dev/apache-iceberg-destination.html)

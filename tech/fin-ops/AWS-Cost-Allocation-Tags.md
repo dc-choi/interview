@@ -75,6 +75,19 @@ Cost Categories는 계정, 서비스, 태그 등의 규칙으로 비용을 묶�
 
 ## 운영 완료 기준
 
+### 자원 관계로 귀속 후보를 찾는다
+
+태그 누락이나 값의 불일치는 자원 간 관계를 함께 보면 조사 범위를 좁힐 수 있다. 자원과 태그를 노드로, 구성 관계와 관측된 통신을 서로 다른 연결로 표현하고 비용 데이터를 결합하는 방법이다. 2026-10-16에 AWS의 그래프 기반 FinOps 설명과 VPC Flow Logs 문서를 대조했다.
+
+- 같은 VPC에 있다는 관계와 같은 애플리케이션의 구성 요소라는 관계를 구분한다. VPC 전체 비용을 한 애플리케이션 비용으로 합치지 않는다.
+- 주변 자원의 태그는 누락된 귀속의 **후보 근거**다. 공유 자원이나 서로 다른 환경의 연결일 수 있으므로 담당자와 배분 기준을 확인한 뒤 반영한다.
+- 여러 경로로 같은 자원에 도달하면 합산 전에 자원 식별자와 비용 기간을 기준으로 중복을 제거한다. 경로 수만큼 비용을 더하는 집계는 피한다.
+- VPC Flow Logs는 네트워크 인터페이스의 IP 트래픽을 관측한다. 관측 기간에 통신이 없었다는 사실만으로 재해 복구나 주기 작업용 자원을 삭제하지 않는다.
+
+이는 비용 조사와 집계의 설계 제안이다. 작은 범위는 기존 보고서와 자원 목록으로 먼저 확인하고, 반복적인 관계 탐색이 필요할 때 그래프 구축과 유지 비용을 비교한다. 그래프의 연결 자체가 소유권이나 절감 가능 금액을 확정하지는 않는다.
+
+### 태그와 비용 행을 대조한다
+
 다음은 태깅 결과와 비용 보고의 연결을 확인하는 점검 절차다.
 
 1. 대상 계정, 리전과 리소스 종류의 목록을 확보한다.
@@ -86,6 +99,9 @@ Cost Categories는 계정, 서비스, 태그 등의 규칙으로 비용을 묶�
 
 ## 출처
 
+- [Techniques to improve the state-of-the-art in Cloud FinOps using Amazon Neptune — AWS Database Blog](https://aws.amazon.com/blogs/database/techniques-to-improve-the-state-of-the-art-in-cloud-finops-using-amazon-neptune/)
+- [GraphThat Episode 4: FinOps — Amazon Web Services](https://www.youtube.com/watch?v=X2J_ac09GNI) — 2025년 발표의 자원 관계와 비용 분석 사례, 18:35~24:45 및 30:53~31:54
+- [Amazon VPC, Logging IP traffic using VPC Flow Logs](https://docs.aws.amazon.com/vpc/latest/userguide/flow-logs.html)
 - [AWS Data Exports, Enabling split cost allocation data](https://docs.aws.amazon.com/cur/latest/userguide/enabling-split-cost-allocation-data.html)
 - [AWS Data Exports, Example of split cost allocation data](https://docs.aws.amazon.com/cur/latest/userguide/example-split-cost-allocation-data.html)
 - [AWS 공식 문서, Building a cost allocation strategy](https://docs.aws.amazon.com/whitepapers/latest/tagging-best-practices/building-a-cost-allocation-strategy.html) — 비용 측정 범위와 태깅할 수 없는 비용의 처리, 과거 태그 적용은 위 backfill 절의 별도 문서를 따른다

@@ -15,9 +15,17 @@ aliases: ["OpenTelemetry", "OTel", "분산 트레이싱", "Distributed Tracing",
 CNCF 프로젝트인 OpenTelemetry는 telemetry를 생성, 수집하고 내보내는 **벤더 중립 관측 프레임워크와 도구 모음**이다. traces, metrics와 logs를 다루고 context propagation으로 신호를 연결한다. 관측 데이터를 저장하고 질의하는 backend 자체는 아니다.
 
 - **SDK/API**: 앱에 심는 계측 라이브러리
-- **Collector**: 받고(receive) 가공하고(process) 내보내는(export) 중간 계층. 앱과 백엔드를 분리해, 백엔드를 바꿔도 앱 코드는 그대로
+- **Collector**: 받고(receive) 가공하고(process) 내보내는(export) 중간 계층. 계측과 전송 목적지를 분리해 백엔드 교체 시 앱 계측 코드 변경을 줄인다
 - **OTLP**: OTel의 표준 전송 프로토콜
 - **Exporter**: Jaeger, Tempo, Prometheus, Datadog 등으로 송출
+
+## Collector 도입과 이식 범위
+
+부분 검증(2026-10-16): OpenTelemetry와 Collector 공식 개요를 대조했다. Collector는 필수 경유지가 아니다. 입문, 개발이나 소규모 환경에서는 SDK exporter로 백엔드에 직접 전송할 수 있다. 재시도, 배치, 암호화와 민감 데이터 필터링을 앱 밖에서 처리하려면 Collector 도입을 검토한다.
+
+OpenTelemetry가 표준화하는 계측과 전송을 저장, 질의와 시각화까지 같은 것으로 보지 않는다. 저장과 시각화는 다른 도구의 책임이므로 백엔드를 교체할 때 대시보드와 경보의 이식 가능성은 별도로 확인한다(운영 판단). OTLP 수신 여부 외에도 필요한 신호와 속성이 도착하는지, 기존 질의와 경보를 새 백엔드에서 재현할 수 있는지 시험한다.
+
+이 절은 Collector 선택과 백엔드 경계만 대조했다. 기존 SDK 예제와 AWS 설정의 재실행 검증은 하지 않았으며 기존 문서 검증일은 유지한다.
 
 ## 트레이싱 모델 — Trace와 Span
 
@@ -116,6 +124,7 @@ AMP로 보내는 `prometheusremotewrite` exporter는 `auth.authenticator`에 `si
 
 ## 출처
 
+- [OpenTelemetry 공식 문서 — Collector](https://opentelemetry.io/docs/collector/)
 - [AWS Distro for OpenTelemetry 공식 문서 — Prometheus Remote Write Exporter Advanced Configurations for AMP](https://aws-otel.github.io/docs/getting-started/advanced-prometheus-remote-write-configurations/)
 - [OpenTelemetry 공식 문서 — Configuration](https://opentelemetry.io/docs/collector/configuration/)
 - [OpenTelemetry 공식 문서 — Important Components for Kubernetes](https://opentelemetry.io/docs/platforms/kubernetes/collector/components/)

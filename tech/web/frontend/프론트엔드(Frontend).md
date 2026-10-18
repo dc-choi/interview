@@ -9,6 +9,10 @@ aliases: ["Frontend", "프론트엔드"]
 
 ## 목차
 
+- [[WebGPU-Cross-Runtime|WebGPU 코드 공유]] — vgpu, WGSL 모듈과 환경별 초기화
+- [[Cross-Platform-Keyboard|플랫폼별 키보드 입력]] — 문자 입력, 단축키와 기본 편집 보존
+- [[URL-Embedded-Documents|URL에 담긴 문서]] — 사본 공유, fragment와 저장 경계
+
 - [[Bootstrap-6-Migration|Bootstrap 6 전환]] — alpha 기준 반응형 클래스, CSS 토큰, ESM과 브라우저 호환성
 - [[Responsive-Web-Layout|반응형 웹 레이아웃]] — 콘텐츠 기준 분기, 표 스크롤, 안전 영역과 모달 메뉴의 포커스
 - [[Swiper-Carousel|Swiper 이미지 슬라이드]] — 자산과 모듈 구성, 자동 재생 옵션, 포커스와 정지 제어

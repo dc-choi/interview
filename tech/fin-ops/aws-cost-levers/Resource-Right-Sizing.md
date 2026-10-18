@@ -27,6 +27,16 @@ aliases: ["Resource Right-Sizing", "리소스 적정화", "right-sizing", "다�
 - **Cost Optimization Hub**: 전 계정의 추천을 한 화면에 집계. [[AWS-Cost-Optimization]]
 - 추천을 그대로 믿지 말고 피크/계절성을 함께 확인.
 
+### 메모리 지표를 수집했는지 먼저 확인한다
+
+부분 검증(2026-10-16): Compute Optimizer의 EC2 지표 문서를 대조했다. 메모리 사용률 분석에는 CloudWatch agent로 수집한 지표 또는 지원되는 외부 관측 도구의 지표 연동이 필요하다. 추천이 표시된다는 사실만으로 메모리까지 관측했다고 판단하지 않는다.
+
+- Linux의 CloudWatch agent 경로에서는 `CWAgent` namespace의 `mem_used_percent`를 분석한다. 기존 `System/Linux`의 `MemoryUtilization`도 지원한다.
+- namespace에 `InstanceId` dimension이 있어야 해당 인스턴스의 메모리 지표를 수집할 수 있다. 이를 빼거나 다른 이름의 dimension으로 대체하면 연결되지 않으며 namespace와 지표 이름은 대소문자를 구분한다.
+- CPU가 낮아도 메모리나 I/O가 병목일 수 있다. 축소 전 실제 수집된 지표와 관측 기간을 확인하고, 변경 후 지연과 오류 및 메모리 여유를 비교하는 절차를 권한다.
+
+이는 추천에 들어가는 관측 조건의 확인이다. 실제 인스턴스의 안전한 축소 폭이나 절감률은 검증하지 않았다.
+
 ## 레버
 
 - **다운사이징**: 한 단계 작은 타입으로(예: `xlarge` → `large`).
@@ -75,6 +85,7 @@ right-sizing을 건너뛰고 약정부터 하면 **과대 용량을 1~3년 약�
 
 ## 출처
 
+- [AWS — Compute Optimizer EC2 instance metrics](https://docs.aws.amazon.com/compute-optimizer/latest/ug/ec2-metrics-analyzed.html)
 - [Considerations when transitioning workloads to AWS Graviton based Amazon EC2 instances — AWS](https://github.com/aws/aws-graviton-getting-started/blob/main/transition-guide.md)
 - [Graviton Performance Runbook, Quick introduction to benchmarking — AWS](https://github.com/aws/aws-graviton-getting-started/blob/main/perfrunbook/intro_to_benchmarking.md)
 - [Graviton Performance Runbook, Defining your benchmark — AWS](https://github.com/aws/aws-graviton-getting-started/blob/main/perfrunbook/defining_your_benchmark.md)

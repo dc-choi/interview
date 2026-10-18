@@ -76,6 +76,16 @@ verified_at: 2026-10-07
 - 전송 작업의 스케줄링, 증분 동기화, 검증, 암호화, 압축 자동 처리
 - TLS 전송 중 암호화 기본 활성화
 
+### agent 활성화와 데이터 전송의 네트워크 경계
+
+부분 검증(2026-10-16): DataSync의 agent 활성화와 네트워크 요구사항을 대조했다. 콘솔의 자동 activation key 조회는 **브라우저에서 agent의 TCP 80으로 접근하는 경로**를 사용한다. agent가 AWS 서비스나 원본 스토리지에 접근하는 경로와는 다르다.
+
+- 이 방법을 쓰더라도 80번 포트를 인터넷 전체에 공개할 필요는 없다. 키를 조회할 관리 환경의 접근 범위만 허용한다.
+- 활성화가 끝나면 DataSync가 agent의 80번 포트를 닫는다. 불필요해진 보안 그룹의 허용 규칙도 정리하는 것을 권한다.
+- 브라우저에서 접근할 수 없다면 agent의 로컬 콘솔에서 키를 얻는 방법을 검토한다. 이 방법은 agent의 80번 포트 접근이 필요하지 않다. 사용하지 않은 activation key는 30분 뒤 만료된다.
+
+활성화 성공을 NFS 읽기, S3 쓰기 또는 전송 완료의 증거로 삼지 않는다. 선택한 서비스 endpoint와 저장소에 필요한 통신 및 권한을 따로 확인한다. 실제 네트워크나 전송은 시험하지 않았으며 다른 절의 검증 기준일은 유지한다.
+
 ## DataSync 지원 소스/타겟
 
 | 방향 | 소스/타겟 |
@@ -165,6 +175,8 @@ agent 운영비가 없어져도 Azure의 데이터 전송과 요청, DataSync �
 
 ## 출처
 
+- [AWS DataSync, Activating your AWS DataSync agent](https://docs.aws.amazon.com/datasync/latest/userguide/activate-agent.html)
+- [AWS DataSync, AWS DataSync network requirements](https://docs.aws.amazon.com/datasync/latest/userguide/datasync-network.html)
 - [AWS DataSync API, Options](https://docs.aws.amazon.com/datasync/latest/apireference/API_Options.html)
 - [AWS DataSync, Scheduling when your AWS DataSync task runs](https://docs.aws.amazon.com/datasync/latest/userguide/task-scheduling.html)
 - [AWS DataSync, Configuring AWS DataSync transfers with Google Cloud Storage](https://docs.aws.amazon.com/datasync/latest/userguide/tutorial_transfer-google-cloud-storage.html) — 2026-10-16 GCS 전송의 agent, HMAC과 객체 태그 조건 대조

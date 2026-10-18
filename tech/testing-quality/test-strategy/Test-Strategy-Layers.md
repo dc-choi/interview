@@ -23,4 +23,6 @@ aliases: ["Test Strategy Layers", "테스트 전략과 계층"]
 
 ## 함께 볼 문서
 
+- [[Agentic-Verification|에이전트 기반 검증]] — 검사 수단과 완료 조건
+
 - [[테스트&품질(Testing&Quality)|테스트&품질]]

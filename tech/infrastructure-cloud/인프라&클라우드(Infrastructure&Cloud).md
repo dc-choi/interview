@@ -17,6 +17,13 @@ aliases: ["인프라&클라우드(Infrastructure&Cloud)", "Infrastructure & Clou
 - [[tech/infrastructure-cloud/k8s/k8s|Kubernetes]] — workload와 Service, 설정과 storage, traffic 진입과 배포, 리소스 적정화, CKA 운영 실습
 - [[tech/infrastructure-cloud/istio-ambient/istio-ambient|Istio Ambient (Service Mesh)]] — ztunnel, waypoint, HBONE, 업그레이드와 장애 대응
 
+## 장비와 자체 운영
+
+- [[GPU-Inference-Hardware|추론용 GPU 선택]] — Intel D270, 가중치와 KV 캐시, 실측 조건
+- [[Rack-Scale-System-Emulation|랙 규모 시스템 에뮬레이션]] — Voxel, 실제 소프트웨어와 가상 하드웨어의 검증 경계
+- [[Self-Hosting-Small-Server|소형 서버 셀프호스팅]] — N100 사례, 네이티브와 Podman, 복구 책임
+- [[Smart-Home-Hub-and-Personal-Context|가정용 허브와 개인 맥락]] — HomeView와 Apple TV 4K, 기기 및 지역 조건
+
 ## AWS 체크리스트
 - [x] [[Transfer-Family-Web-Apps|Transfer Family web apps]] — 앱 사용자 할당, S3 접근 권한과 CORS의 구분
 - [x] [[Amazon-Location-Route-Optimization|Amazon Location 경로 최적화]] — route matrix와 방문 순서 API, 배차와 위치 추적의 경계

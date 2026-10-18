@@ -10,6 +10,8 @@ aliases: ["Web Attacks"]
 CORS, CSRF, XSS, SQL Injection, Command Injection, 파일 업로드, IDOR, SSRF — 웹 기반 공격과 방어.
 
 ## 목차
+
+- [[Signed-Payload-Deserialization|서명된 페이로드 역직렬화]] — 세션 서명과 pickle의 신뢰 경계
 - [x] [[CORS|CORS]]
 - [x] [[CSRF|CSRF Protection]]
 - [x] [[XSS|XSS (Stored/Reflected/DOM, 컨텍스트별 인코딩, CSP, HttpOnly 한계)]]

@@ -89,6 +89,8 @@ API는 함수 하나에 한정되지 않고 SDK도 단순히 API 여러 개의 �
 - 산출물이 의존하는 ISA, ABI, OS와 runtime version은 무엇인가
 - API compatibility와 SDK toolchain version을 어떻게 관리하는가
 
+네이티브 배포에서 패키징, 바이트코드와 AOT를 구분하는 사례는 [[Native-Compilation-Compatibility|네이티브 컴파일과 호환성]]에 정리한다.
+
 ## 관련 문서
 
 - [[CPU-Datapath-Control-and-Instruction-Cycle|CPU 데이터패스와 명령어 사이클]]

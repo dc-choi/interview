@@ -114,6 +114,8 @@ aliases: ["RDBMS", "OLTP"]
 - [x] [[MySQL-Backup|MySQL 백업, 복원 (mysqldump, XtraBackup, binlog PITR, RTO/RPO)]]
 - [x] [[Read-Replica-Routing|Read Replica 라우팅 (자동 분기, Read-After-Write, 트랜잭션, Prisma/TypeORM 구현)]]
 
+- [x] [[PostgreSQL-Storage-Bottlenecks|PostgreSQL 스토리지 병목 (작업 집합, NVMe와 gp3 비교, 데이터 보존)]]
+
 ## 제품 비교
 - [x] [[MySQL-vs-PostgreSQL|MySQL vs PostgreSQL (프로세스 모델, MVCC, Hash Join, Partial Index, Aurora 이관 사례)]]
 - [x] [[MySQL-to-PostgreSQL-Migration|MySQL → PostgreSQL 이기종 마이그레이션 (타입 매핑, 함수 재작성, DMS, 시퀀스 보정)]]

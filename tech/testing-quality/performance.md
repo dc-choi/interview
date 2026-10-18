@@ -131,7 +131,15 @@ export const options = {
 
 도구 상태는 2026-09-30 기준이다. APM인 Pinpoint는 3.1.0(2026-05)까지 릴리스가 이어진다. 부하 도구 nGrinder의 GitHub 저장소는 archive 상태이고 마지막 릴리스는 2024-06의 3.5.9-p1이다. 도구 선택 축은 [[Load-Test-K6|성능 테스트 도구]]를 따른다.
 
-## 면접 체크포인트
+## 재작성 비교에서 계약과 부하를 맞춘다
+
+같은 제품을 다른 언어로 재작성했더라도 호환성, 캐시, 큐의 내구성, 실패 정책과 메모리 한도가 다르면 언어만의 성능 비교가 아니다. AI에 명시하지 않은 제약도 구현에서는 어떤 값으로 결정되므로 비교 전에 확인한다.
+
+Campfire Once의 Rust/Elixir 재작성에 대한 2026-10-11 분석을 10-16에 대조했다. 100 POST/s 조건에서 Rust 버퍼를 256에서 16,384로 늘리자 알림 전달률은 약 14%에서 90%로 높아졌지만 최대 전달 지연도 11초에서 130초 이상으로 늘었다는 측정이다. 자체 재현은 하지 않았다.
+
+유실률, HTTP 오류, 전달 지연, 메모리와 재접속 뒤 최신 상태 복구를 함께 본다. 처리량이 다른 closed-loop 실행의 전달률을 바로 비교하지 않는다. 버퍼 확장은 지연과 메모리 비용으로 손실을 미루는 선택일 수 있으며, 허용 지연을 넘긴 연결을 끊고 복구하는 정책과도 비교한다.
+
+## 면접 점검 질문
 
 - 5가지 유형 각각의 목적과 무엇을 보고 끝낼지
 - 평균이 아니라 p95, p99를 보는 이유
@@ -144,6 +152,8 @@ export const options = {
 - 운영 동등 환경이 필요한 이유와 결과 리포트에 남길 항목
 
 ## 출처
+
+- [I'm sorry, but you still have to think — It's all about the bit, Piotr Sarnacki](https://itsallaboutthebit.com/i-am-sorry-but-you-still-have-to-think/) (2026-10-12 GeekNews 발췌의 원문)
 
 - [Grafana k6 공식 문서, Test types](https://grafana.com/docs/k6/latest/testing-guides/test-types/)
 - [Grafana k6 공식 문서, Average-load testing](https://grafana.com/docs/k6/latest/testing-guides/test-types/load-testing/)

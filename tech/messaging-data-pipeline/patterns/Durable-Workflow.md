@@ -60,6 +60,20 @@ Temporal Cloud의 High Availability Namespace는 기본 리전에서 복제본�
 - 재시도: maxAttempts와 backoff 곡선을 Activity별로 선언한다. 일시 오류와 영구 오류를 분류한다.
 - 멱등성: 같은 업무 작업의 재시도 동안 유지되는 키를 외부 API에 넘긴다. 매 시도마다 새 키를 만들면 중복 반영 방지가 되지 않는다. 완료 결과가 기록된 Activity의 replay와 결과가 확정되지 않은 Activity의 재시도는 구분한다.
 
+### 승인 대기의 접수와 처리 완료를 구분한다
+
+부분 검증(2026-10-18): Temporal TypeScript SDK의 message passing 공식 문서로 아래 API 경계를 확인했다. 기존 pg_durable 절의 검증 시점은 유지한다.
+
+| 메시지 | 승인 흐름에서 확인할 경계 |
+|---|---|
+| Signal | 서버가 접수하면 호출이 반환된다. Workflow의 처리 완료나 승인 반영을 기다리지 않는다 |
+| Update | Worker의 수락 또는 거절을 기다린다. `executeUpdate`는 핸들러 완료까지, `startUpdate`는 수락 단계까지 기다린 뒤 handle로 결과를 조회할 수 있다 |
+| Query | Workflow 상태를 읽는다. 상태 변경이나 Activity 실행을 수행하는 승인 명령으로 쓰지 않는다 |
+
+Signal 핸들러가 승인 상태를 바꾸고 `workflow.condition`이 그 상태를 기다리도록 구성할 수 있다. 비동기 핸들러가 남은 채 Workflow가 반환하거나 Continue-As-New를 하면 처리 중인 작업을 끝내지 못할 수 있으므로, 정상 종료 전에 `workflow.condition(workflow.allHandlersFinished)`로 대기하는 패턴을 확인한다.
+
+사람의 검토나 에이전트의 판단을 끼우는 경우에도 접수, 판단 반영과 후속 실행 완료는 별개 상태로 설계한다. 이는 위 API 경계를 적용한 제안이다. 승인 대상의 버전, 거절과 기한 만료의 전이, 승인 주체의 권한을 정하고, 외부 모델 호출은 Activity로 분리한다. 단계가 여러 개라는 이유만으로 durable workflow를 도입하기보다 장기 대기와 복구 요구가 있는지 먼저 판단한다.
+
 ## 복구와 replay
 
 Temporal은 메모리 스냅샷이나 임의의 코드 줄에서 복구하지 않는다. 캐시가 없으면 Workflow 코드를 다시 실행하면서 Event History에 기록된 결과를 사용해 상태를 재구성한다. 같은 히스토리에 대해 호환되는 Command 순서를 만들어야 하며, 외부 I/O는 Activity로 분리하고 시간과 난수는 SDK가 제공하는 replay-safe API와 규칙을 따른다.
@@ -137,6 +151,7 @@ Temporal은 메모리 스냅샷이나 임의의 코드 줄에서 복구하지 �
 - [Temporal Documentation, Activities](https://docs.temporal.io/activities)
 - [Temporal Documentation, Claim check pattern with Temporal](https://docs.temporal.io/ai/cookbook/claim-check-pattern-python)
 - [Temporal Documentation, Workers](https://docs.temporal.io/workers)
+- [Temporal Documentation, Workflow message passing - TypeScript SDK](https://docs.temporal.io/develop/typescript/workflows/message-passing)
 - [pg_durable — GitHub, microsoft](https://github.com/microsoft/pg_durable)
 - [Microsoft, pg_durable User Guide](https://github.com/microsoft/pg_durable/blob/main/USER_GUIDE.md#transaction-semantics)
 

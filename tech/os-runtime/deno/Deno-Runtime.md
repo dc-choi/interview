@@ -44,6 +44,12 @@ Workers는 Node.js API 일부를 내장 구현하고, 일부는 부분 지원하
 
 이전 점검에서는 사용 API와 패키지의 실행 경로, Workers의 `compatibility_date`와 적용 flag를 고정하고 요청 처리와 오류 경로를 시험한다(설계 제안). 인수 소식만으로 이관 비용이 사라지거나 특정 런타임으로 옮겨야 한다고 판단하지 않는다. 이번 대조는 지원 계획과 호환성 경계에 한정하므로 기존 frontmatter 검증일은 유지한다.
 
+### 지원 정책 재확인과 Node 비교의 범위
+
+2026-10-16 Deno 공식 합류 발표를 다시 대조했다. 2026-10-10 GeekNews 입력의 런타임 1년 유지보수 후 팀 개발 종료, Deploy 6개월 뒤 종료, JSR의 Cloudflare 인프라 이전과 rusty_v8 지원 지속 계획은 공식 발표와 맞는다. 오픈소스 유지와 기존 팀의 개발 종료를 구분하며, 절대 종료 날짜는 발표 기준일과 후속 공지를 다시 확인한다.
+
+2026-10-12 제공된 GeekNews Weekly #379, Deno는 떠나지만 Node는 달라졌습니다의 도입부도 같은 주제에 연결한다. 런타임 선택에는 현재 Node의 TypeScript 실행, Web API와 도구 지원을 다시 비교해야 한다는 학습 후보를 남긴다. Weekly 전체와 연결된 개발자 글은 읽지 않았으므로 이 도입부만으로 Node의 기능 동등성이나 이전 완료를 단정하지 않는다.
+
 ## 설치와 프로젝트 구성
 
 공식 설치 경로 또는 package manager를 사용하고 `deno --version`으로 runtime, V8, TypeScript 버전을 함께 확인한다. 프로젝트 설정은 `deno.json` 또는 `deno.jsonc`에 둔다. `deno.json`은 Node의 `package.json`이 맡던 task와 dependency, `tsconfig.json`이 맡던 `compilerOptions`를 함께 담는다. Deno는 기본 TypeScript 설정을 권장하므로 필요한 옵션만 바꾼다.

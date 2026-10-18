@@ -153,6 +153,16 @@ Propensity는 logging policy가 해당 action 또는 slate를 선택할 확률�
 
 Off-policy estimator는 실험을 완전히 대체하지 않는다. 편향을 줄이는 도구이며 overlap, 분산과 모델 가정을 함께 진단한다.
 
+## 관리형 추천에도 이벤트 의미를 명시한다
+
+2026-10-16 Amazon Personalize 공식 문서 대조 기준이다. 데이터를 전송했다고 클릭, 구매와 시청의 업무 의미가 자동으로 결정되는 것은 아니다.
+
+- **학습 대상:** `EVENT_TYPE`으로 학습할 이벤트 유형을 고르고, `EVENT_VALUE`가 있으면 유형과 값의 문턱으로 학습 기록을 제한할 수 있다. User-Personalization-v2와 Personalized-Ranking-v2의 custom solution은 이벤트 유형별 가중치도 설정할 수 있다. 클릭과 구매를 어떻게 다룰지는 선택한 recipe와 설정을 확인한다.
+- **노출 전달:** impressions를 지원하는 구성에서는 `PutEvents`의 `recommendationId`로 이전 추천 결과에 기반한 implicit impressions를 기록하거나 `impression`에 목록을 직접 넣는다. 둘을 함께 주면 explicit impressions가 우선한다. API의 필드명은 단수 `impression`이다.
+- **관측 경계:** 응답을 받은 뒤 앱이 항목을 숨기거나 순서를 바꾸면 추천 응답과 실제 화면이 달라질 수 있다. 위 API의 implicit impressions를 클라이언트의 실제 가시성 측정으로 간주하지 않는다. 화면에 표시한 목록과 실제 노출 이벤트를 별도로 대조하는 것은 이 문서의 관측 계약을 적용한 설계 제안이다.
+
+이 절만 부분 대조했으며 기존 연구와 나머지 운영 계약의 전체 재검증은 아니므로 `verified_at`은 유지한다.
+
 ## 데이터 품질과 개인정보 운영
 
 - Event volume, 누락률, 중복률과 schema violation을 source별로 감시한다.
@@ -173,6 +183,9 @@ Off-policy estimator는 실험을 완전히 대체하지 않는다. 편향을 �
 
 ## 출처
 
+- [Amazon Personalize, Choosing the item interaction data used for training](https://docs.aws.amazon.com/personalize/latest/dg/event-values-types.html)
+- [Amazon Personalize, Recording item interaction events with impressions data](https://docs.aws.amazon.com/personalize/latest/dg/putevents-including-impressions-data.html) — 2026-10-16 이벤트 선택, 유형별 가중치와 impressions 전달 계약 대조
+- [추천, 개인화 그리고 물류 예측 - 어떻게 시작하고 무엇을 준비해야 하는가? — Amazon Web Services Korea](https://www.youtube.com/watch?v=PtHVqCDsoek) — 2019년 발표 31:20~36:33 중 추천 데이터 준비의 문제 설정만 참조. 현재 API 계약은 위 공식 문서 기준
 - [Collaborative Filtering for Implicit Feedback Datasets — Hu, Koren, Volinsky](https://yifanhu.net/PUB/cf.pdf)
 - [Recommendations as Treatments — Schnabel et al.](https://proceedings.mlr.press/v48/schnabel16.html)
 - [Top-K Off-Policy Correction for a REINFORCE Recommender System — Google Research](https://research.google/pubs/top-k-off-policy-correction-for-a-reinforce-recommender-system/)

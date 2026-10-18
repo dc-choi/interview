@@ -23,4 +23,8 @@ aliases: ["CS&프로그래밍(CS&Programming)", "CS & Programming Language"]
 - [[Browser-CSS-Animation-and-Compatibility|브라우저 CSS 애니메이션]] — 이징, 스태거와 경로의 구분, reduced motion과 호환성
 - [[tech/computer-science/java/자바(Java)|Java]] — 언어 기초, 백엔드 면접 필수
 - [[Python-Iteration-and-Functions|Python 반복문과 함수]] — range 경계, enumerate, 출력과 반환, 튜플과 빈 입력
+- [[Python-315-Language-Changes|Python 3.15 변경]] — 지연 임포트, 불변 매핑, UTF-8과 관측
+- [[Native-Compilation-Compatibility|네이티브 컴파일과 호환성]] — Bun AOT 실험과 TurboPython
+- [[Constraint-Based-Resource-Placement|제약 기반 자원 배치]] — Rebalancer, 지역 탐색과 MIP
+
 - [[Java-Stream-Pipelines-and-Operations#Iterator와의 경계|Java Stream과 Iterator]] — 선택적 삭제, terminal operation인 외부 순회와 source 변경 조건

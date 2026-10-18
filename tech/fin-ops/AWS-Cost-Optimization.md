@@ -48,7 +48,15 @@ FinOps Foundation의 표준 3단계. 비용 관리는 이 사이클을 **반복*
 
 ## Top 10 전략 — 큰 덩어리부터
 
-Divide & Conquer: 비용 상위 10개 서비스가 전체의 80~90%를 차지하는 경우가 대부분. **Top-N 타게팅**이 가장 ROI 높다.
+비용이 큰 구성 요소부터 살피되 **예상 절감 효과, 변경과 검증에 드는 노력, 성능과 신뢰성 요구**를 함께 비교한다. 비용 순위만으로 실행 순서를 정하거나 상위 10개가 차지할 비율을 고정하지 않는다.
+
+2026-10-16 AWS Well-Architected의 비용 요구사항과 정기 검토 지침을 대조했다. 다음은 실행 목록에 적용할 예시이며, 아래 기존 할인율과 과거 사례를 다시 검증한 것은 아니다.
+
+- 후보마다 비용 기준 기간, 예상 절감액의 가정, 변경 담당자, 테스트와 복구 방법을 적는다.
+- 적은 작업으로 효과를 확인할 수 있는 후보부터 검토하되, 고객 기능과 가용성 목표를 충족하는지 확인한다. 조사와 검증 비용이 이득보다 크면 대안이나 다음 검토 시점을 정한다.
+- 변경 뒤 같은 비용 범위와 업무 지표를 대조한다. 트래픽 감소에 따른 청구액 감소와 설계 변경의 효과를 구분하는 점검이며, 예상 절감액을 실현 성과로 바로 기록하지 않는다.
+
+다음 목록은 검토 후보이며 모든 워크로드에 공통인 실행 순서는 아니다.
 
 1. **EC2 타입, 사이즈 재검토** — CPU/메모리 사용률 < 20% 인스턴스 탐지
 2. **RDS 인스턴스 다운사이징** — 트래픽 패턴 분석 후 축소 or Aurora Serverless 전환
@@ -171,6 +179,8 @@ Inflab 사례가 **연 $300K 절감**을 이룬 핵심은 조직 운영.
 - 조직 관점에서 FinOps를 **지속 가능하게** 운영하는 방법
 
 ## 출처
+- [AWS Well-Architected, Develop a workload review process](https://docs.aws.amazon.com/wellarchitected/latest/cost-optimization-pillar/cost_evaluate_new_services_review_process.html)
+- [AWS Well-Architected, Identify organization requirements for cost](https://docs.aws.amazon.com/wellarchitected/latest/cost-optimization-pillar/cost_select_service_requirements.html)
 - [FinOps Foundation, Reporting & Analytics](https://www.finops.org/framework/capabilities/reporting-analytics/)
 - [The Frugal Architect — 7법칙 공식 사이트](https://thefrugalarchitect.com/)
 - [The Frugal Architect — AWS re:Invent 2023 / kakao pay 정리](https://tech.kakaopay.com/post/2023-aws-reinvent-2/)

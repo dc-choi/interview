@@ -11,6 +11,8 @@ aliases: ["Version Control", "버전 관리"]
 
 ## 문서
 
+- [[Server-Centric-Version-Control|서버 중심 버전 관리]] — Scion과 모노레포 조회/체크아웃
+
 - [[Version-Control-Tooling|버전 관리 도구 선택 (VCS, 호스팅, 클라이언트, 브랜치 전략)]]
 - [[Git-Flow|브랜치 전략 (GitHub Flow, Git Flow, Trunk-Based)]]
 - [[Development-Workflow|개발 워크플로 (Issue, Branch, PR, Merge, Fork, Conventional Commits)]]

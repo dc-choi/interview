@@ -1,7 +1,7 @@
 ---
 tags: [finops, aws, pricing, billing, cost-model]
 status: done
-verified_at: 2026-10-14
+verified_at: 2026-10-16
 category: "비용&운영(FinOps)"
 aliases: ["AWS Pricing", "AWS pricing 구조", "AWS 요금 구조", "AWS 과금 모델"]
 ---
@@ -29,6 +29,14 @@ aliases: ["AWS Pricing", "AWS pricing 구조", "AWS 요금 구조", "AWS 과금 
 | **CloudWatch** | 수집 GB + 저장 + 커스텀 메트릭 수 + API 호출 |
 
 핵심: **인스턴스/컴퓨트만 보지 말 것**. 스토리지, 요청 수, 데이터 전송, 매니지드 부가 차원이 청구서의 큰 부분을 차지하는 경우가 많다.
+
+### 종량제와 자동 용량 조절의 경계
+
+부분 검증(2026-10-16): EC2 상태별 과금과 EC2 Auto Scaling 공식 문서를 대조했다. 종량제의 사용량은 애플리케이션의 접속자 수와 같지 않다.
+
+- **유휴 상태도 과금 대상이다:** EC2가 `running`이면 접속하거나 작업하지 않아도 인스턴스 사용 요금이 발생한다. 방문자가 줄어도 같은 인스턴스를 계속 실행하면 그 실행 시간이 줄어들지 않는다.
+- **용량 조절은 별도 설정이다:** EC2 Auto Scaling에서는 그룹의 최소, 최대, 원하는 용량을 정하고 스케일링 정책을 구성해야 수요에 따라 인스턴스를 시작하거나 종료할 수 있다. EC2를 만들었다는 사실만으로 트래픽에 맞는 축소 정책이 생기지는 않는다.
+- **중지 후 비용도 나눈다:** `stopped` 상태에서는 인스턴스 사용 요금이 발생하지 않지만 EBS 볼륨의 저장 비용은 남는다. 최대 용량과 축소 정책뿐 아니라 잔존 리소스도 비용 점검 대상이다. 정책별 비용 조절은 [[Autoscaling-Cost|오토스케일링 비용 최적화]]를 따른다.
 
 ## 단가를 낮추는 레버
 
@@ -135,6 +143,8 @@ EC2 인스턴스로 실행하는 Marketplace 소프트웨어는 구독 취소만
 
 ## 출처
 
+- [AWS, Amazon EC2 instance state changes](https://docs.aws.amazon.com/AWSEC2/latest/UserGuide/ec2-instance-lifecycle.html)
+- [AWS, What is Amazon EC2 Auto Scaling?](https://docs.aws.amazon.com/autoscaling/ec2/userguide/what-is-amazon-ec2-auto-scaling.html)
 - [How do I get a VAT invoice from AWS? — AWS re:Post](https://repost.aws/knowledge-center/aws-vat-invoice)
 - [How do I download an invoice for my monthly AWS charges? — AWS re:Post](https://repost.aws/knowledge-center/download-pdf-invoice)
 - [How do I change the default payment method that's associated with my AWS account? — AWS re:Post](https://repost.aws/knowledge-center/change-default-payment-method) — 청구 주기 말 변경 시 이전 수단으로 청구될 수 있는 예외

@@ -82,12 +82,24 @@ aliases: ["오픈소스 라이선스 검토", "OSS License Review", "상용 소�
 - 아이콘, 폰트, 사진, 데이터셋과 모델 가중치는 코드와 함께 전달되더라도 각각의 이용 조건을 확인한다. 저장소 루트의 코드 라이선스가 모든 외부 자산을 허가한다고 추정하지 않는다.
 - 외주 납품에서는 제3자 구성요소 목록, 라이선스/고지문, 수정 내역과 필요한 소스 제공 책임을 함께 인계하도록 협의한다. 타인의 오픈소스 권리까지 고객에게 독점 양도할 수 있다고 약속하지 않는다.
 
-## 판단 연습
+## 저장소, 배포 빌드와 호스팅 의존성
+
+같은 저장소라도 배포 채널과 포함 모듈에 따라 라이선스가 다를 수 있다. 설치한 바이너리, 대응 소스와 라이선스를 연결하고, 현재 기능의 동일성과 미래 기능의 제공 약속을 구분한다.
+
+- **Bitwarden 배포 사례**: 2026-10-11 제공 발췌에는 다음 릴리스부터 앱 스토어를 상용 라이선스 빌드로 바꾸고 GPLv3 버전은 GitHub에서 유지한다고 적혀 있다. 당시 기능은 양쪽에 유지하지만 향후 일부 기능은 상용 빌드에만 들어갈 수 있으며, 셀프 호스팅, 포크와 요금은 변하지 않는다는 안내다. 공식 공지 URL을 찾았지만 2026-10-16 직접 열람은 403으로 실패했다. 따라서 이 항목은 발췌 기록이며 실제 릴리스의 조건은 공지와 파일별 라이선스를 다시 확인한다.
+- **GitHub 의존성 논쟁**: 2026-10-12 제공 발췌는 GNU의 비판을 라이선스 고지의 불명확성, 비자유 JavaScript, 원격 서비스 통제, Git 협업의 중앙화로 나눈다. 이는 GNU의 자유 소프트웨어 관점과 이전 권고이며, GitHub의 모든 사용이 라이선스 위반이라는 법적 판정은 아니다. Git 저장소 복제 가능성과 이슈, PR, CI, 계정 기반 협업의 이동 비용은 별도로 평가한다. 해당 비판 원문 전체는 이번에 확보하지 못했다.
+
+후속 확인: Bitwarden의 실제 배포 버전과 두 빌드의 포함 모듈, GNU 원문의 고지 권고와 GitHub 현재 안내를 각각 대조한다. 이 기록은 사용자의 도구 변경 결정이 아니다.
+
+## 적용 연습
 
 1. 서버에서만 쓰던 GPLv3 프로그램을 수정한 컨테이너를 고객에게 전달한다. 전달 방식, 고지, 해당 소스와 결합 범위를 다시 검토해야 하는 이유를 설명한다.
 2. 수정한 AGPLv3 서버에 고객이 원격으로 접속한다. 제13조의 조건과 제공할 소스 범위를 설명하고, 회사의 모든 저장소 공개라는 결론에 필요한 근거가 있는지 구분한다.
 
 ## 출처
+
+- [Published version update in app stores — Bitwarden Community](https://community.bitwarden.com/t/published-version-update-in-app-stores/102750) (공식 URL 식별, 본문 접근 실패)
+- [GitHub의 문제점 — GeekNews](https://news.hada.io/topic?id=35206) (2026-10-12 제공 발췌의 출처 식별)
 
 - [GitHub Docs, Licensing a repository](https://docs.github.com/en/repositories/managing-your-repositorys-settings-and-features/customizing-your-repository/licensing-a-repository)
 - [OSI, The Open Source Definition](https://opensource.org/osd)

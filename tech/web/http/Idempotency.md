@@ -1,7 +1,7 @@
 ---
 tags: [web, http, idempotency, api]
 status: done
-verified_at: 2026-10-01
+verified_at: 2026-10-16
 category: "웹&네트워크(Web&Network)"
 aliases: ["Idempotency", "멱등성", "Idempotent Methods"]
 ---
@@ -55,7 +55,7 @@ aliases: ["Idempotency", "멱등성", "Idempotent Methods"]
 
 ## POST를 멱등하게 만드는 패턴
 
-POST와 PATCH는 메서드 자체가 멱등하지 않지만 API 계약에 멱등 키를 추가해 재시도를 식별할 수 있다. `Idempotency-Key`는 여러 API가 사용하는 관례이며, 2026-10-01 기준 IETF 작업 초안은 만료 상태이므로 공통 RFC 표준이라고 가정하면 안 된다.
+POST와 PATCH는 메서드 자체가 멱등하지 않지만 API 계약에 멱등 키를 추가해 재시도를 식별할 수 있다. `Idempotency-Key`는 여러 API가 사용하는 관례이며, 2026-10-16 기준 IETF 작업 초안은 만료 상태이므로 공통 RFC 표준이라고 가정하면 안 된다.
 
 ### Idempotency Key 헤더
 ```
@@ -80,6 +80,19 @@ Content-Type: application/json
 - 동시 요청은 고유 제약이나 원자적 등록으로 한 요청만 처리하게 한다.
 - 진행 중, 성공, 실패 상태와 각 상태에서 돌려줄 응답을 정한다.
 - 만료 시간은 처리 시간과 클라이언트의 최대 재시도 기간을 고려해 계약으로 공개한다.
+
+### 응답 재사용과 보존 기간은 API 계약이다
+
+멱등 키가 있다고 해서 실패 응답을 다시 계산하거나 같은 응답을 영구히 돌려주는 것은 아니다. Stripe의 API v1과 v2도 재처리 계약이 다르다(2026-10-16 공식 문서 대조).
+
+| 구분 | 응답과 재처리 | 적용 범위와 기간 |
+|---|---|---|
+| API v1 | endpoint 실행이 시작된 요청의 상태 코드와 본문을 저장한다. 같은 키의 재시도에는 저장된 `500`도 재사용한다. 실행 전 입력 검증 실패나 실행 중 요청과의 충돌은 결과를 저장하지 않는다. | `POST`에 적용한다. 키를 최소 24시간 보존하며, 이후 삭제된 키를 다시 쓰면 새 요청으로 실행될 수 있다. |
+| API v2 | 성공한 작업은 다시 변경하지 않고 갱신된 응답을 반환한다. 실패하거나 부분 실패한 작업은 가능한 경우 실패 부분을 재실행한다. 재처리할 수 없으면 이유를 담은 오류를 반환한다. | `POST`와 `DELETE`에 적용한다. 같은 API, 같은 계정 또는 sandbox 범위, 같은 키, 30일 이내라는 조건을 함께 확인한다. |
+
+API v1에서 결과를 모르는 네트워크 오류는 최초 요청 후 24시간 안에 같은 키와 같은 인자로 재시도한다. 그 이후까지 결과가 불명확하거나 `500`으로 부수효과 여부가 불명확하면 객체 조회, 요청 기록과 웹훅으로 결과를 대사한다. 새 키를 만들어 다시 실행하면 중복 작업이 될 수 있다. 서로 다른 SDK 호출이나 프로세스 재시작에 걸쳐 재시도한다면 작업의 키를 애플리케이션에서 보존한다.
+
+이 차이는 멱등성의 정의가 바뀌었다는 뜻이 아니다. 중복 효과 방지, 응답 재사용과 실패 복구는 서로 다른 계약이며, 실제 연동에서는 대상 API의 namespace와 보존 기간을 확인해야 한다.
 
 ### 서버가 먼저 발급한 ID로 실행 요청 식별
 
@@ -140,6 +153,11 @@ POST /users       { "name": "dc" }    // 비멱등: 매번 새 사용자 생성
 
 ## 출처
 
+2026-10-16 부분 검증: Stripe의 API v1과 v2 멱등 재처리, 키 보존과 결과 대사 조건을 공식 문서로 확인했다. IETF 초안의 만료 상태와 RFC 10008의 QUERY 의미도 확인했다. 기존 락 구현 예시의 실행 검증을 뜻하지 않는다.
+
+- [Idempotent requests — Stripe](https://docs.stripe.com/api/idempotent_requests)
+- [Advanced error handling — Stripe](https://docs.stripe.com/error-low-level)
+- [API v2 overview — Stripe](https://docs.stripe.com/api-v2-overview#idempotency)
 - 김영한 강사, [HTTP 메서드의 속성](https://www.inflearn.com/courses/lecture?courseId=326277&unitId=61367)
 - 최상용 강사, [요구사항 정의](https://www.inflearn.com/courses/lecture?courseId=337778&unitId=321521)
 - 최상용 강사, [동일한 주문인지 알 수 있도록 주문로직 수정하기](https://www.inflearn.com/courses/lecture?courseId=337778&unitId=323829)

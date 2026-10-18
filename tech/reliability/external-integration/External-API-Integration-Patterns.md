@@ -67,12 +67,13 @@ aliases: ["External API Integration Patterns", "외부 API 연동 패턴"]
 - 복구, 조회, 재처리 로직이 상태 기준으로 통일
 
 ### 2. 멱등성 키
-클라이언트가 생성한 **idempotency key**를 모든 쓰기 요청에 필수로:
-- 네트워크 오류 시 재시도 안전
-- 중복 결제, 이중 예약 방지
-- 서버는 key 기준 캐시로 이전 응답 그대로 반환
+응답이 유실돼도 외부의 결제나 예약은 이미 성공했을 수 있다. 공급사가 멱등성 키를 지원하면 **동일한 업무 작업의 재시도에 같은 키와 파라미터**를 사용한다. 요청마다 새 키를 만들면 별도 작업으로 실행될 수 있다.
 
-상세는 [[Idempotency]] 참고.
+- 키의 적용 API, 유효 범위, 보존 기간과 실패 응답 처리 계약을 먼저 확인한다. 키가 있다는 사실만으로 영구 중복 방지나 동일 응답 재생을 가정하지 않는다.
+- SDK 내부 재시도와 애플리케이션의 재호출을 구분한다. 서로 다른 SDK 호출이나 프로세스 재시작에 걸쳐 같은 작업을 재시도한다면 작업의 키를 저장하고 다음 시도에도 전달한다.
+- 재시도 허용 기간이 지났거나 결과가 불명확한 서버 오류가 발생하면 공급사의 오류 처리 계약에 따라 결과를 조회하고 대사한다. 새 키를 발급해 미확인 작업을 다시 실행하지 않는다.
+
+2026-10-16 Stripe API v1 문서 대조 기준, 실행 후 저장된 `500`도 같은 키에 재생하지만 실행 전 검증 실패와 동시 실행 충돌은 결과를 저장하지 않는다. 오류 응답을 받았다는 사실과 업무가 실행되지 않았다는 판정을 구분해야 한다. API별 차이와 재시도 기간은 [[Idempotency#응답 재사용과 보존 기간은 API 계약이다|멱등성의 결과 캐시와 재처리 계약]]을 참고한다.
 
 ### 3. 취소 불가능한 작업은 마지막에
 연동 순서를 **롤백 가능 → 롤백 불가**로 배치.
@@ -124,7 +125,7 @@ aliases: ["External API Integration Patterns", "외부 API 연동 패턴"]
 - 예약 확정: 일관성 중심 (상태 머신, 멱등, 보상, 대사)
 
 ### 결제 시스템
-- 결제 승인: **반드시 멱등 키**
+- 결제 승인: 공급사가 지원하는 멱등 키 또는 거래 식별자 기반 중복 방지 계약을 확인하고 적용
 - 승인 → 매입 분리 (승인 취소 가능 기간 활용)
 - 실패 시 PG사별 에러 코드를 **공통 도메인 에러**로 변환
 
@@ -161,6 +162,8 @@ aliases: ["External API Integration Patterns", "외부 API 연동 패턴"]
 - 배치 대사(Reconciliation)의 역할
 
 ## 출처
+- [Stripe API, Idempotent requests](https://docs.stripe.com/api/idempotent_requests)
+- [Stripe Docs, Advanced error handling](https://docs.stripe.com/error-low-level)
 - [Azure Architecture Center, Gateway Aggregation pattern](https://learn.microsoft.com/en-us/azure/architecture/patterns/gateway-aggregation)
 - [Azure Architecture Center, Anti-Corruption Layer pattern](https://learn.microsoft.com/en-us/azure/architecture/patterns/anti-corruption-layer)
 - [G마켓 기술블로그 — 오픈마켓 여행 플랫폼의 실전 API 연동 노하우](https://ebay-korea.tistory.com/115)

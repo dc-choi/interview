@@ -31,6 +31,17 @@ CA/Browser Forum TLS Baseline Requirements 2.3.1의 6.3.2절 기준이다. 발�
 
 인증서 유효기간과 도메인 검증 데이터의 재사용 가능 기간도 다르다. 같은 규격 4.2.1절의 도메인/IP 검증 데이터 재사용 상한은 2029-03-15부터 10일이다. 예전 도메인 검증 결과만으로 계속 재발급할 수 있다고 가정하지 않는다.
 
+## Let's Encrypt 기본 프로필의 단계적 단축
+
+2026-10-16 공식 발표 부분 대조. CA/Browser Forum의 최대 허용 기간과 특정 CA의 발급 정책을 구분한다.
+
+- Let's Encrypt는 2027-02-10부터 기본 인증서의 신규 발급과 갱신에 64일을 적용한다. 이미 유효한 인증서를 이 전환 때문에 폐기하지 않는다. 더 짧은 프로필을 선택한 경우는 별도다.
+- 스테이징 전환 예정일은 2026-10-14로 발표됐다. 실제 클라이언트의 스테이징 발급은 여기서 시험하지 않았다.
+- 자동 갱신과 ARI 지원을 함께 확인한다. 고정 일수로 실행한다면 전체 수명의 약 2/3 시점에 갱신하도록 조정하라는 공식 권고를 적용한다. 실행 주기와 갱신 대상 판정은 구분한다.
+- 2028년 기본 45일 전환도 예정돼 있다. 검증 결과 재사용 기간은 30일에서 10일, 2028년에는 7시간으로 줄어드는 별도 변화다.
+
+확인 대상은 클라이언트의 ARI 구현, cron의 고정 일수, 도메인 검증 자동화, 갱신본 배포와 reload, 외부 만료 감시다. 2026-10-10 GeekNews 발췌의 일정을 이 발표와 대조했으며 기존 다른 제품의 설명까지 재검증하지는 않았다.
+
 ## 갱신 성공과 적용 성공
 
 발급 성공, 대상 저장소 갱신, 프로세스 재적재, 실제 TLS 응답 확인을 구분한다. 여러 서버에 배포한 인증서는 모든 대상의 적용 여부를 확인한다.
@@ -64,6 +75,8 @@ cert-manager는 기본적으로 `Certificate` 삭제 시 대응 Secret을 지우
 확인 질문: 인증서 갱신 작업이 성공했는데 외부 응답은 이전 인증서라면, 저장소 갱신, TLS 종료 위치와 프로세스 재적재 중 어느 증거부터 확인할 것인가?
 
 ## 출처
+
+- [64-Day Certificate Lifetimes Coming Feb 2027 — Let's Encrypt](https://letsencrypt.org/2026/10/07/64-day-certs)
 
 - [How do I renew a Let's Encrypt SSL certificate in a Bitnami stack hosted on a Lightsail instance? — AWS Knowledge Center](https://repost.aws/knowledge-center/lightsail-bitnami-renew-ssl-certificate)
 - [Certbot, User Guide: Manual](https://eff-certbot.readthedocs.io/en/stable/using.html#manual)
