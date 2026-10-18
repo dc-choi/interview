@@ -10,6 +10,12 @@ aliases: ["팔란티어 Python Transform 정의"]
 
 Transform은 입력/출력 명세와 compute 함수를 묶는 실행 단위다. 명세 객체는 빌드 의존성과 JobSpec을 만들고, 실행 시 명세별 런타임 객체가 compute 인자로 주입된다. 데이터 처리 엔진, 입력 바인딩과 결과 쓰기 책임을 나누어 이해해야 한다.
 
+## 첫 실행에서 확인할 경로
+
+새 Python transforms 저장소의 `src/myproject/datasets/examples.py`는 `transforms.api`를 가져오는 시작점이다. API overview는 개별 함수와 클래스의 상세 계약으로 연결하는 참조 인덱스이며, 처음부터 끝까지 실행하는 튜토리얼은 Getting started에서 확인한다.
+
+single-node 최소 예제는 `transform.using`에 입력과 출력 경로를 등록하고, 입력의 `polars(lazy=True)` 결과를 출력의 `write_table`로 전달한다. PySpark의 단일 DataFrame 반환 예제는 `transform_df`를 쓴다. 예제를 적용할 때는 데이터셋 경로를 실제 경로로 바꾸고, 반환값을 저장하는 방식인지 출력 객체에 직접 쓰는 방식인지 먼저 구분한다.
+
 ## 데코레이터와 쓰기 책임
 
 | 구성 | compute가 받는 것 | 결과를 쓰는 책임 |
@@ -41,6 +47,14 @@ Transform은 입력/출력 명세와 compute 함수를 묶는 실행 단위다. 
 - 입력의 `input_results`, 출력의 `output_results`는 RID별 결과를 구성해 TransformJobResult에 병합한다.
 - lightweight용 사용자 파라미터는 해당 Foundry 기반 클래스도 상속하고 `lightweight_instance`를 구현한다. Spark의 객체 인터페이스 전부를 제공한다고 가정하지 않는다.
 
+### BooleanParam의 값과 미바인딩 구분
+
+`BooleanParam(default, *, description=None)`에서 기본값은 bool이고, 설명은 선택적인 키워드 인자다. `instance`는 JobSpec에서 해석한 값으로 compute 인자를 만들며 single-node용 `lightweight_instance`도 제공한다.
+
+미바인딩 판단 기준은 `json_value`가 `None`인지다. 따라서 비활성화를 뜻하는 `False`를 값이 없는 상태와 합쳐 처리하지 않는다. Transform의 파라미터 하나라도 미바인딩이면 JobSpec이 발행되지 않으므로, 분기 결과가 비어 있는 실행과 실행 명세 자체가 만들어지지 않은 상태를 구분해야 한다.
+
+첫 실행 경로와 BooleanParam 절은 2026-10-18 공식 API 문서와 대조했다. 실제 Foundry 실행 결과를 확인한 것은 아니다.
+
 ## 파이프라인 등록과 모듈 부수효과
 
 `Pipeline.add_transforms`는 같은 Output alias를 쓰는 Transform이나 같은 compute function reference를 중복 등록하면 `ValueError`를 낸다. 여러 함수가 같은 출력에 각자 쓰도록 등록하는 방식으로 하나의 작업을 분산하지 않는다.
@@ -71,6 +85,7 @@ Spark context는 `auth_header`, resolved conda environment, fallback branches, p
 
 ## 출처
 
+- [Palantir, transforms.api overview](https://www.palantir.com/docs/foundry/api-reference/transforms-python-library/api-overview)
 - [Palantir, transforms-python-library](https://www.palantir.com/docs/foundry/api-reference/transforms-python-library)
 - [Palantir, booleanparam](https://www.palantir.com/docs/foundry/api-reference/transforms-python-library/api-booleanparam)
 - [Palantir, check](https://www.palantir.com/docs/foundry/api-reference/transforms-python-library/api-check)
