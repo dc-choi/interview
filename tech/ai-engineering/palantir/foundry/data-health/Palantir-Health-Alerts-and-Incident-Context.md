@@ -12,6 +12,8 @@ Check 실행, 실패 상태와 구독자의 notification은 별도 상태다. �
 
 Pause/snooze는 모든 watcher/subscriber의 alert를 일시 중단한다. Delete는 check configuration과 schedule을 제거하므로 나중에 보려면 다시 만들어야 한다. 자동 issue 생성과 회복 후 auto-close를 설정할 수 있으나 incident 전체가 해결되었는지는 관련 data와 workflow를 대조한다.
 
+Dataset의 Watch all은 현재 check에 설정을 일괄 적용하는 기능이다. 공식 화면은 이후 추가되는 check까지 watch하지 않는다고 명시한다. 새 검사를 추가하면 구독 범위도 다시 확인한다. (2026-10-18 [공식 Watch all 화면](https://www.palantir.com/docs/resources/foundry/health-checks/watching-all-checks.png) 확인)
+
 ## Check groups는 이행 중인 기존 기능이다
 
 2026-10-16 문서 기준 check group은 sunset이며 기존 saved group은 편집 가능하지만 새 group 생성은 막혀 있다. 같은 페이지 아래의 Create Group 절차는 과거 UI 설명으로 보존하며 신규 구축 경로로 제안하지 않는다. Scope 기반 coverage가 필요하면 Monitoring views로 migration한다.

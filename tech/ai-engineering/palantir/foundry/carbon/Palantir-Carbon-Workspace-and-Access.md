@@ -20,6 +20,8 @@ Default workspace는 `/workspace/carbon/` 진입 시 이동할 대상이다. Gro
 
 Default group 변경과 promoted 목록 수정은 일반 workspace Save와 독립적으로 즉시 반영된다. 일반 configuration Save도 새 version을 즉시 publish한다. 별도 release 대기 상태로 착각하지 않는다. Version history에서 과거 설정 preview/edit/republish를 할 수 있고 unsaved asterisk와 preview tag를 구분한다.
 
+공식 Access 탭 화면은 해당 변경이 즉시 적용되며 workspace history에는 기록되지 않는다고 명시한다. 과거 configuration을 republish했다는 사실만으로 Access 설정까지 복원됐다고 판단하지 않는다. (2026-10-18 [공식 설정 화면](https://www.palantir.com/docs/resources/foundry/carbon/configure-workspace-access-tab.png) 확인)
+
 ## 화면 구성은 업무 빈도와 상태를 기준으로 한다
 
 Home은 logo/크기, subtitle, search와 세 column의 widget을 설정하거나 module로 대체한다. Card는 thumbnail을 포함할 수 있고 List는 많은 항목에 더 조밀하다. Default module home에서 이전 기본 home으로 복원할 수도 있다. Menu의 anchored module은 상시 tab, new-tab module은 사용자가 열 추가 항목이다.

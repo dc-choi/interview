@@ -40,6 +40,8 @@ Object backing dataset 등 dependency가 바뀌면 outdated restriction을 revie
 
 Standalone OAuth client는 legacy이며 신규 생성할 수 없다. 기존 client를 Developer Console app으로 migration하는 경로는 유지하고 metadata/location/classification/권한을 검토한다. 기존 workflow 보존 설명을 모든 다른 Compass permission migration의 무변경 보장으로 섞지 않는다.
 
+2026년 5월 standalone OAuth client 마이그레이션 예시 화면은 기존 operation/resource restriction을 모두 삭제하며 완료 후 다시 구성할 수 있다고 안내한다. Application resource 접근 권한은 Project와 상위 folder에서 상속된다. 기존 consumer가 계속 작동한다는 안내를 기존 제한 설정의 보존으로 해석하지 않는다. 이 경고는 해당 standalone client 전환 화면의 범위다. (2026-10-18 [공식 마이그레이션 화면](https://www.palantir.com/docs/resources/foundry/announcements/release-notes/2026-05-26-113524-developer-console-3-pn.png) 확인)
+
 ## 출처
 
 - [Palantir, Developer Console](https://www.palantir.com/docs/foundry/developer-console)

@@ -34,7 +34,9 @@ Derived series와 alerting의 지원 card 목록도 다르다. 예를 들어 Seg
 
 ## History와 논리 변경
 
-Evaluation job 최초 실행은 전체 series를 시도하고 이후 새 데이터만 평가한다. 기존 job에 새 automation을 붙이거나 scope를 넓혀도 과거 데이터를 다시 계산하지 않는다. 전체 재평가는 현재 self-service 지원이 없다고 FAQ가 설명하므로 replay 계획을 별도로 세운다.
+Evaluation job 최초 실행은 전체 series를 시도하고 이후 새 데이터만 평가한다. 기존 job에 새 automation을 붙이거나 scope를 넓혀도 과거 데이터를 다시 계산하지 않는다. 일반 FAQ는 이미 실행된 job의 과거 데이터 강제 재평가를 지원하지 않으며 Palantir Support에 문의하라고 설명한다.
+
+2026-08-03 streaming automation replay 개선 공지는 기존 output을 reset하거나 유지하는 선택을 설명한다. 해당 [배포 화면](https://www.palantir.com/docs/resources/foundry/announcements/release-notes/2026-09-14-11-25-08-2026-09-09-15-05-16-replay_ui_change.png)에서 유지 모드는 replay한 alert를 output dataset에 append하며 중복 가능성을 경고한다. 같은 설정 칸의 경고는 이 상태의 replay를 취소할 수 없다고도 알리고, 화면은 완료 전 새 alert가 생성되지 않으며 같은 output object type을 쓰는 모든 automation이 함께 replay된다고 표시한다. 화면은 유지 모드(Clear outputs on replay 꺼짐)만 보여 주므로 reset 모드의 취소 가능 여부와 경고는 확인하지 않았다. 일반 FAQ의 미지원 설명과 이 시점의 streaming UI 사이에는 차이가 남는다. 이를 batch 지원이나 모든 deployment의 self-service 지원으로 확대하지 않고 실제 지원을 확인한다. (2026-10-18 릴리스 본문과 화면 대조)
 
 Logic 변경도 historical alert를 재계산하지 않는다. Ongoing alert는 end timestamp가 비어 있으며 새 logic이 normal이면 resolve, 계속 alert 상태이면 열린 상태를 유지한다. 같은 object history에 서로 다른 logic version이 기여할 수 있다.
 
@@ -48,6 +50,8 @@ Custom recovery condition은 trigger와 recovery를 비대칭으로 만들어 th
 
 ## 운영과 권한
 
+Alert를 업무에 연결할 때는 대상 자산, 진단 분석, 처리 상태와 후속 개입을 함께 추적한다. 2023년 에너지 분야 데모는 온도 이상 Alert에서 유정과 Quiver 분석으로 이동하고, 처리 결과를 규칙 검토에 연결하는 예를 보여준다. 화면의 데이터는 가상 사례로 명시돼 있다. 데모의 규칙 편집과 제안 검토 화면은 Foundry Rules의 Rules App(Rule Editor와 Proposal Reviewer)이며, [2024년 12월 릴리스](https://www.palantir.com/docs/foundry/announcements/release-notes/2024/#95d8e23a-ebf2-4e31-bf57-d34469fe82f5)에서 batch 방식으로 GA되고 2026년 2월 streaming 조건이 추가된 이 문서의 alerting automation 화면이 아니다. [[Palantir-Rules-Time-Series-and-Custom-Pipelines|시계열 Foundry Rules]]는 sunset 단계이고 FAQ는 Foundry Rules가 매번 전체 time series를 대상으로 실행된다고 설명하므로, logic 변경 뒤 과거 Alert를 재계산하지 않는 위의 automation 동작을 이 데모에 옮기지 않는다. 이 흐름을 실제 펌프 정지나 자동 모델 학습의 검증 결과로 보지 않는다. [시계열 데이터에서 업무 행동으로](https://www.youtube.com/watch?v=fMiaepe7zOU&t=63s) (01:03–01:48; 2026-10-18 전사와 화면 대조)
+
 Batch lookback은 underlying rolling window 등의 최대 범위 이상을 검토하되 클수록 지연이 늘며 최대 50 transaction까지만 돌아본다는 제한이 있다. First-run read limit은 최초 job 실행에만 적용된다. Job timeout 기본은 1시간이다. Fail job on any failure를 켜면 한 automation 실패로 공유 job 전체가 실패할 수 있다.
 
 Alerting output type과 automation은 같은 Project에 저장해야 하고 output type에 필요한 alert ID/root key/start/end/generation/version type class를 갖춰야 한다. Stream은 cause/template 관련 필드도 필요하다. Type edit permission과 실제 job health/history 성공을 확인한다.
@@ -60,6 +64,9 @@ Alerting output type과 automation은 같은 Project에 저장해야 하고 outp
 - [Palantir Time series, alerting-common-questions](https://www.palantir.com/docs/foundry/time-series/alerting-common-questions)
 - [Palantir Time series, alerting-overview](https://www.palantir.com/docs/foundry/time-series/alerting-overview)
 - [Palantir Time series, alerting-setup](https://www.palantir.com/docs/foundry/time-series/alerting-setup)
+- [Palantir Foundry Rules, timeseries-concepts](https://www.palantir.com/docs/foundry/foundry-rules/timeseries-concepts)
+- [December 10, 2024, Introducing time series alert automations [GA] — Palantir release notes](https://www.palantir.com/docs/foundry/announcements/release-notes/2024/#95d8e23a-ebf2-4e31-bf57-d34469fe82f5)
+- [August 3, 2026, Updated replay experience for time series streaming automations — Palantir release notes](https://www.palantir.com/docs/foundry/announcements/release-notes/2026/#69ceef0975060e35b09a8f3c518ef7799691467c3af8fdbc24769e9b3e5fd4c9)
 
 ## 관련 문서
 

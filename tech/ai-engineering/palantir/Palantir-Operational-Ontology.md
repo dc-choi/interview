@@ -29,6 +29,8 @@ aliases: ["운영 온톨로지", "Operational Ontology"]
 
 공식 Ontology 소개 페이지는 같은 구조를 Language, Engine, Toolchain으로 나눈다. Language는 데이터, 로직, 행동과 보안을 표현하고, Engine은 이질적인 시스템의 조회와 변경을 조정하며, Toolchain은 SDK, MCP와 재사용 도구로 이를 소비하게 한다. 이는 제품의 설계 설명이다. 소개 페이지의 대규모 읽기/쓰기와 낮은 지연 표현을 특정 환경의 처리량이나 외부 시스템까지의 원자성 보장으로 인용하지 않는다. [Ontology 소개](https://www.palantir.com/platforms/ontology)
 
+모델링의 기준은 원천 시스템이 동작하는 데 필요한 구조보다 실제 업무의 대상, 행동과 관계다. 예를 들어 공장과 창고의 연결을 표현할 때는 관계만 정의하지 않고, 어떤 물품을 어디로 옮길 수 있는지와 그 판단에 쓸 로직을 함께 정한다. LLM에 제공할 맥락도 데이터 조회에 한정되지 않는다. 업무 의미, 호출할 계산과 허용된 행동을 함께 연결한다. [Ontology Overview 영상](https://player.vimeo.com/video/1140112305) (00:07–00:38, 01:49–02:17, 03:12–04:00; 2026-10-18 전체 음성 전사와 화면 표본 대조)
+
 ## 의사결정을 하나의 업무 흐름으로 본다
 
 Palantir의 설계 설명은 의사결정을 데이터, 로직, 행동과 보안의 결합으로 다룬다. 필요한 정보를 조회하는 것에서 끝나지 않고, 선택 가능한 행동을 계산하고 실행 결과를 다음 판단에 연결한다. [Why create an Ontology?](https://www.palantir.com/docs/foundry/ontology/why-ontology)

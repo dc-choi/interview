@@ -25,6 +25,8 @@ Ontology 백엔드는 데이터 원천과 업무 의미를 연결하고 객체�
 
 OSv2는 색인과 조회의 책임을 분리한 구조다. 원천의 dataset과 모델, Ontology 메타데이터와 객체 DB를 같은 자원으로 취급하지 않는다. ([Ontology architecture](https://www.palantir.com/docs/foundry/object-backend/overview))
 
+공식 구조도는 legacy OSv1(공식 문서상 2026-06-30 이후 사용 불가)의 객체 DB를 Phonograph로 표시하고, OSv2 구조에서는 dataset과 사용자 편집이 Object Data Funnel로 들어가는 경로를 분리해 보여 준다. Funnel 뒤의 Object Databases에는 OSv2, OQL과 추가 저장소를 나타내는 기호가 있고, 조회는 Object Set Service로 연결된다. 이 도표는 쓰기 조정과 읽기 서비스의 책임을 구별하는 근거다. 그림의 선만으로 복제 방식, 장애 복구나 트랜잭션 범위를 추정하지 않는다. [OSv1 구조도](https://www.palantir.com/docs/resources/foundry/object-backend/osv1-arch.png), [OSv2 구조도](https://www.palantir.com/docs/resources/foundry/object-backend/osv2-arch.png) (2026-10-18 이미지 확인)
+
 Object set도 데이터 스냅샷과 같지 않다. Static set은 primary key 목록, dynamic set은 필터 정의를 저장한다. 동적 set은 입력이 변하면 결과도 바뀔 수 있으므로 저장한 질문과 그 시점의 결과를 구분한다.
 
 ## 원천 데이터와 객체 색인의 차이

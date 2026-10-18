@@ -23,6 +23,8 @@ desktop assistant는 사용자의 공유 업무 데이터와 Action을 이용한
 
 Foundry 안 orchestration agent가 외부 MCP server를 호출하는 outbound 경로와 외부 client가 OMCP로 들어오는 inbound 경로를 구별한다. AIP Logic/chatbot을 Function으로 저장해 MCP tool로 노출하면 agent를 다른 agent가 호출하는 구성이 가능하다. 각 tool의 권한과 실제 부작용을 별도로 제한한다.
 
+같은 Ontology에 연결한 agent라도 호출 가능한 도구와 변경 결과를 각각 확인한다. DevCon 4 시연의 프로젝트 삭제 요청에서 Copilot은 삭제 도구가 없다고 응답한다. 발표자의 삭제 설명만으로 실행 성공을 확정할 수 없다. 이어지는 여러 framework의 결과 요약도 생성한 프로젝트와 작업 수가 서로 다르다. 동일한 MCP 계약이 동일한 판단과 변경 결과를 보장하는 것은 아니며, 실행 전 상태와 도구 결과, 대상 객체의 변경을 함께 대조해야 한다. (2026-10-18 [삭제 요청 화면 13분 37초](https://www.youtube.com/watch?v=QMKRMEuCoaU&t=817s), [framework별 요약 화면 16분 21초](https://www.youtube.com/watch?v=QMKRMEuCoaU&t=981s) 확인)
+
 ## 출처
 
 - [Palantir, ontology-mcp](https://www.palantir.com/docs/foundry/ontology-mcp)

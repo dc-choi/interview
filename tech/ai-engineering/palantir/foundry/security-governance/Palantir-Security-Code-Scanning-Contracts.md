@@ -16,6 +16,8 @@ Code scanning은 Jemma CI의 static analysis이며 runtime 보안 검증을 대�
 
 Error mode는 finding이 있으면 checks를 실패시킨다. Warn mode는 checks를 계속한다. Checks 통과만으로 finding이 없었다고 결론 내리지 않는다. Report를 조회하거나 JSON으로 받아 적용 규칙과 결과를 확인한다.
 
+성공한 scan도 분석 범위가 불완전할 수 있다. 공식 예시 화면은 Git 추적 파일 40개와 규칙 591개를 표시하지만, 실행 요약에는 13개 파일에 규칙 82개를 적용했고 일부 파일은 건너뛰거나 부분 분석했다고 나온다. Finding 0건과 함께 실제 분석 파일, 적용 규칙과 제외 사유를 읽는다. (2026-10-18 [공식 scan report 화면](https://www.palantir.com/docs/resources/foundry/security/code-scan-checks.png) 확인)
+
 ## Built-in과 custom rule
 
 Built-in은 enable/disable/duplicate/download, custom은 추가로 edit/delete가 가능하다. Built-in을 수정하려면 duplicate한 custom과 원본의 상태를 함께 관리한다. 복사본은 원본 rule 업데이트와 연결되지 않는다.

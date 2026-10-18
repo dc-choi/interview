@@ -38,6 +38,8 @@ Internal group은 Foundry에서, external group은 IdP에서 membership/metadata
 
 Latest expiration과 maximum duration을 함께 쓰면 더 이른 경계가 신규 membership을 제한한다. 만료 7일 전 reminder가 있지만 7일 미만으로 추가된 membership은 reminder가 없을 수 있다. Request form에서 group을 숨기는 것은 membership이나 다른 Project의 요청을 막는 보안 경계가 아니다. 승인된 membership은 그 group의 모든 Project role에 영향을 준다.
 
+Custom membership approval은 access request의 승인 조건이다. 2026-10-16 manage-groups 문서 기준 Beta여서 enrollment에서 제공되지 않을 수 있고 개발 중 기능이 바뀔 수 있다. 공식 설정 화면은 group manager가 추가 승인 조건과 관계없이 member를 직접 추가하거나 제거할 수 있다고 명시한다. 요청에 여러 승인자를 지정해도 관리자 직접 변경까지 같은 절차로 강제하는 것은 아니므로, membership 관리 권한과 변경 감사를 함께 검토한다. (2026-10-18 [공식 설정 화면](https://www.palantir.com/docs/resources/foundry/platform-security-management/manage-group-policy.png) 확인)
+
 Group rename은 ID를 유지하면서 이전 이름의 compatibility group을 만드는 동작을 설명한다. 문구의 membership 방향을 추정해 migration하지 않고 실제 group graph를 확인한다. Preregister username은 login username과 정확히 같아야 한다.
 
 30일 successful login이 없으면 inactive가 되어 token이 일시 invalid가 되지만 다시 login하면 token도 re-enable된다고 설명한다. 이를 영구 revoke로 대체하지 않는다. Account deleted/locked/inactive는 서로 다른 상태이며 undelete와 login reactivation도 구분한다.

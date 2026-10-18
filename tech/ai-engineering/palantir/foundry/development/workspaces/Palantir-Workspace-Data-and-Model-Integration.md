@@ -30,6 +30,10 @@ Output 등록은 alias/변수 또는 file path와 snippet을 만들 뿐 실제 w
 
 Workspace당 하나의 Ontology SDK와 여러 version을 만들 수 있다. Package name은 publish 뒤 바꿀 수 없고 Ontology 변경은 선택한 object/action/link 범위를 초기화한다. Action에 필요한 object와 backing source Project import도 포함한다. SDK status Published를 확인한 뒤 해당 version을 설치하고 client를 초기화한다.
 
+Backing source를 추가하는 확인 창은 해당 데이터가 현재 Project의 다른 사용자에게 보일 수 있다고 경고한다. 따라서 SDK에 객체를 추가할 때는 생성 패키지의 범위뿐 아니라 자동으로 가져오는 원천과 Project의 공유 대상도 검토한다. [원천 가져오기 화면](https://www.palantir.com/docs/resources/foundry/code-workspaces/backing-data-source-dialog.png) (2026-10-18 화면 대조)
+
+같은 가이드의 초기 SDK 설정 이미지에는 Ontology 선택을 되돌릴 수 없다는 문구가 남아 있지만, 본문의 `Change the selected Ontology` 절은 변경 후 범위 초기화와 새 버전 생성을 설명하고, 변경 선택기 이미지의 tooltip도 Ontology를 바꾸면 현재 선택이 지워진다고 안내한다. 초기 화면 문구만으로 현재 변경을 금지하지 않는다. Developer Console에서 생성한 OSDK의 Ontology 고정 규칙과도 구별한다. [Workspace 가이드](https://www.palantir.com/docs/foundry/code-workspaces/ontology), [Developer Console 앱 생성](https://www.palantir.com/docs/foundry/developer-console/create-application) (2026-10-18 이미지와 본문 간 차이 확인, 실제 변경 미시험)
+
 RV-backed entity/query function은 해당 workspace 가이드에서 미지원이다. R은 reticulate로 Python SDK를 쓰며 integer가 필요한 인자에는 `1L` 같은 명시 type이 필요하다. Action validation 성공과 실제 apply는 다른 호출이다. 예제의 validation/apply 값이 달라지면 검증한 요청과 실행 요청이 달라진다. Time-series property는 OSDK object에서 foundryts로 연결한다.
 
 ## Model version과 추론 deployment

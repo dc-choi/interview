@@ -31,6 +31,8 @@ Snooze는 개인 queue에서 잠시 숨긴다. Deprecate는 모든 사용 맥락
 
 Flag와 priority 설정은 개인별이다. Custom flag를 쓰면 향후 default에 추가되는 flag가 자동 활성화되지 않으므로 설정 유지 책임이 남는다.
 
+공식 Cleanup 화면에는 datasource가 90일간 갱신되지 않았다는 flag와 실제 read 횟수가 함께 표시된다. 원천 갱신이 오래됐다는 사실과 소비자가 없다는 판단은 다르다. Flag 설정을 저장하면 이전 후보 결과가 초기화되고, Cleanup 탭으로 돌아오면 queue를 다시 계산하라는 안내가 나오므로 변경 전 목록을 새 기준의 결과로 사용하지 않는다. [Cleanup 설정과 예시](https://www.palantir.com/docs/foundry/ontology-manager/cleanup) (2026-10-18 이미지와 본문 대조)
+
 ## Usage가 없다는 표시의 한계
 
 Read는 객체 건수가 아닌 load request, bulk write도 여러 객체를 편집하는 하나의 request로 센다. Interactions와 active users는 최근 30일 기준이고 Ontology Manager 자체의 type/link 사용은 제외한다. Write 설명에는 OSv1 endpoint가 남아 있으므로 모든 최신 backend의 계측 세부 계약으로 확대하지 않는다.

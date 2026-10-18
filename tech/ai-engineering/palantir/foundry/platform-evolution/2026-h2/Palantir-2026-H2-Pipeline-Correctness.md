@@ -15,6 +15,8 @@ category: "AI엔지니어링(AIEngineering)"
 
 State break 원인을 읽고 변경을 되돌리는 UI는 상태 보존이나 replay 안전성을 자동 보장하지 않는다. 첫 output build에서 incremental checks가 실행되지 않았으면 neutral 상태로 표시하는 변경도 있어, 체크가 없었던 경우와 통과한 경우를 구분한다.
 
+같은 10월 릴리스에 streaming pipeline 예시로 실린 Resolve state breaks 화면은 선택한 replay 전략과 무관하게 모든 stateful transform의 전체 state를 초기화한다고 경고한다. 해당 해결 작업은 취소할 수 없으며 데이터 손실 가능성이 있다고 명시한다. 시작 시점부터 replay할지, 일정 시간 전부터 replay할지 고르는 설정을 state 보존 옵션으로 오해하지 않는다. 일정 시간 전 replay는 [Breaking changes](https://www.palantir.com/docs/foundry/pipeline-builder/breaking-changes) 문서상 streaming 전용이므로 incremental pipeline에도 같은 두 선택지가 있다고 보지 않는다. (2026-10-18 [공식 배포 화면](https://www.palantir.com/docs/resources/foundry/announcements/release-notes/2026-10-15-043906-pipeline-builder-screenshot-2026-10-12-at-3-33-01-pm-pn.png) 확인)
+
 Evaluator form의 여러 metric passing condition은 Apply 때 모두 저장하고 같은 metric의 마지막 변경을 유지하도록 수정됐다. Join match condition은 지원되지 않는 null-safe equality를 non-null-safe label로 바꿔 명시한다. Label 수정 자체는 기존 transform 출력을 바꾸지 않는다.
 
 ## Iceberg와 identifier
@@ -76,6 +78,7 @@ Pipeline timestamp preview의 timezone은 같은 session의 dataset/SQL/output p
 ## 출처
 
 - [Palantir Foundry, Release notes 2026](https://www.palantir.com/docs/foundry/announcements/release-notes/2026/)
+- [Palantir Foundry, Breaking changes](https://www.palantir.com/docs/foundry/pipeline-builder/breaking-changes)
 
 ## 관련 문서
 

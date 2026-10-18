@@ -24,6 +24,8 @@ Branching 문서는 branch/Main의 삭제 경로를 설명하지만 refactor 문
 
 Compass bulk move는 eligible/skipped 목록과 사유를 제공한다. Marketplace sidebar는 local store만 검색하며 package overlap/누락 input을 분석한다. 그림에 나타난 package 경계가 자동 배포나 권한 승인을 의미하지 않는다. 실제 upgrade, publish, role grant, 삭제와 이동은 수행하지 않았다.
 
+Marketplace sidebar의 Expected new inputs는 다음 product version을 packaging할 때 포함된 모든 Function과 Logic이 최신 version이라고 가정한 예상치다. 현재 설치본의 실제 input 목록이나 특정 고정 version의 dependency 확정 결과로 읽지 않는다. 이 가정이 Function의 자동 upgrade를 뜻하지도 않는다. (2026-10-18 [공식 tooltip](https://www.palantir.com/docs/resources/foundry/workflow-lineage/marketplace-expected-new-inputs.png) 확인)
+
 ## 출처
 
 - [Palantir workflow-lineage, workflow-lineage](https://www.palantir.com/docs/foundry/workflow-lineage)

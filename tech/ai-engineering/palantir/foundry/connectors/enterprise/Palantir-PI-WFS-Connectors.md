@@ -15,6 +15,8 @@ dynamic AF path/tag filter와 static name/WebID target을 나눈다. incremental
 
 streaming channel은 heartbeat로 liveness를 확인하고 target 재탐색 주기를 설정한다. backlog 채우기를 켰는지에 따라 중단 구간 복구가 달라지므로 restart 성공만으로 모든 과거 데이터가 채워졌다고 간주하지 않는다.
 
+공식 backlog 설정 화면에서 비동기 실행은 live data 재개를 앞당기는 대신 record 순서를 보장하지 않는다. 과거 조회 duration은 양수이며 최대 24시간이다. 이 설정을 사용하는 downstream은 도착 순서를 event 발생 순서로 간주하지 않는다. (2026-10-18 [공식 설정 화면](https://www.palantir.com/docs/resources/foundry/available-connectors/pi-streaming-backlog.png) 확인)
+
 ## WFS의 범위와 한계
 
 WFS connector는 1.1.0, 기본 443과 무인증/GEOAxIS certificate 조건을 따른다. query parameter는 기본 uppercase이며 lowercase toggle과 header override를 구별한다.

@@ -16,6 +16,8 @@ Subgraph는 동일 graph 안에서만 참조한다. Workflow 복사는 subgraph�
 
 Preview는 실제 object를 입력으로 여러 테스트를 병렬 실행할 수 있고 live mode는 graph 편집 때 자동 재실행한다. 원문은 생성/수정/삭제 output을 보여주지만 preview의 모든 변경이 영속 저장되는지 또는 모두 격리되는지를 명시적으로 보장하지 않는다. 따라서 preview를 안전한 sandbox나 운영 적용으로 단정하지 않는다.
 
+Run history는 triggered run만 표시하며 manual execution은 포함하지 않는다고 [공식 화면](https://www.palantir.com/docs/resources/foundry/workflow-builder/workflow-builder-interface.png)이 안내한다. 이 목록만으로 전체 실행 이력이나 수동 실행의 부재를 판단하지 않는다. (2026-10-18 화면 확인)
+
 ## URL과 제품 이름
 
 동일 prefix의 overview URL은 실행 Builder가 아닌 Workflow Lineage 본문을 반환한다. Lineage는 이전에 Workflow Builder라는 이름을 썼다. 이 이름/URL 충돌을 별도 제품 계약으로 보존한다. 실행 graph의 fork/loop 의미를 Lineage 의존성 graph에 적용하거나 Lineage의 bulk edit 기능을 실행 Builder의 기능으로 옮기지 않는다.

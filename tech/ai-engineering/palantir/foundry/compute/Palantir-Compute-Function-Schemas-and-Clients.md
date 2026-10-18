@@ -46,6 +46,8 @@ TypeScript는 output을 `Type.Array(...)`로 선언하고 registerStreaming에�
 
 TypeScript function에서 호출하려면 resource generation, Query Functions import와 workspace rebuild가 필요하다. Import 과정의 Ontology 선택이 compute module 자체를 그 Ontology에 종속시키지는 않는다. Live preview는 같은 Project와 실행 중 module이 필요하다. Function-executor를 경유하는 이 경로는 5분을 넘으면 timeout하므로 module 자체의 모든 호출 시간 제한으로 확대하지 않는다.
 
+장시간 최적화는 작업 제출, 진행 상태와 결과 조회, 검토 후 반영을 나누는 방식으로 설계할 수 있다. 2024년 Compute Modules 데모는 `submit_routing_job`, `get_score_analysis`, `get_best_solution`을 구분하고, 차량 고장 시 현재 경로와 대안 Scenario를 비교한다. 함수 호출 성공이나 목적함수 점수 개선만으로 현장 일정의 승인과 적용이 끝났다고 판단하지 않는다. 이는 데모에서 얻은 설계 예이며 모든 최적화 문제의 전역 최적해를 보장하는 계약은 아니다. [Compute Modules 데모](https://www.youtube.com/watch?v=ILZQyan3gh0&t=187s) (2026-10-18 전사와 02:04, 04:37, 06:42 화면 대조)
+
 ## 출처
 
 - [Palantir, Functions](https://www.palantir.com/docs/foundry/compute-modules/functions)

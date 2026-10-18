@@ -15,6 +15,8 @@ Document Intelligence는 media set의 문서에 여러 추출 전략을 실행�
 
 Page range는 0 기반 start inclusive/end exclusive다. 0~5는 다섯 page다. 문서 크기/모델/할당량에 따라 5~10page batch부터 조정한다. Layout-aware V2는 pages 배열과 block을 반환하며 TEXT block도 type/text의 tagged value이므로 plain string으로 곧바로 처리하지 않는다.
 
+이 API 범위를 Pipeline Builder의 입력값에 그대로 옮기지 않는다. 공식 Transform media 가이드의 PDF text extraction 예시는 첫 페이지를 `1`로 지정하고, 설정 화면은 End page를 포함한다고 명시한다. Slice PDF v1 화면도 끝 페이지를 포함한다. 화면/operation 버전을 확인하고 같은 문서의 첫 페이지와 마지막 페이지로 범위를 검증한다. (2026-10-18 [공식 가이드](https://www.palantir.com/docs/foundry/pipeline-builder/transforms-transform-media), [PDF 추출 설정 화면](https://www.palantir.com/docs/resources/foundry/pipeline-builder/transforms-media-configure-extract-text@2x.png), [Slice PDF v1 화면](https://www.palantir.com/docs/resources/foundry/pipeline-builder/transforms-media-search-slice@2x.png) 대조)
+
 ## 품질을 판단하는 방법
 
 공식 core-concepts는 평가에 enrollment의 Claude 4 Sonnet이 필요하다고 제한한다. Rubric은 1~5점으로 table/header 등 추출 품질을 모델이 판단하는 방식이며 원문의 정답 보증이 아니다. 일반 selected-VLM 설명보다 이 구체적인 availability 조건을 함께 확인한다.

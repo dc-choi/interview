@@ -10,6 +10,8 @@ aliases: ["Pipeline Builder 모델 실행과 제품 배포 계약"]
 
 Trained-model node는 Spark batch와 Flink streaming을 지원하고 Faster는 지원하지 않는다. 모델 API는 single tabular input/output, 최소 한 required input column을 요구한다. 추가 output column은 drop하고 누락은 build error가 될 수 있다. Input expression과 output alias를 사용할 수 있다.
 
+공식 입력/output 설정 화면은 반환 column을 모델 API에 선언한 type으로 cast한다고 설명한다. Column 이름과 개수뿐 아니라 선언 type도 downstream 계약에 포함한다. 이 화면만으로 모든 값의 변환 성공이나 실패 시 처리를 보장하지 않는다. (2026-10-18 [공식 설정 화면](https://www.palantir.com/docs/resources/foundry/pipeline-builder/configure-model-inputs-outputs.jpg) 확인, 실제 inference 미실행)
+
 ## Model sidecar와 시간
 
 모델은 별도 sidecar에서 실행하며 기본 1 CPU/8GB/no GPU다. Batch는 model마다 driver와 각 executor에, streaming은 각 task manager에 sidecar가 생긴다. Imported-but-unused model은 sidecar 비용이 없다. Resource 설정은 model/pipeline 단위이고 같은 model의 node 전체에 적용한다.

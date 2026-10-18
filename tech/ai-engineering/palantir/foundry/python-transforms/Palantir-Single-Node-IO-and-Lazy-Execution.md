@@ -10,6 +10,8 @@ aliases: ["Single-node 파일 I/O와 lazy 실행"]
 
 Engine 선택은 input download, query execution과 output materialization을 나누어 판단한다. Single node가 항상 전체 dataset을 RAM에 올린다는 뜻은 아니지만 collect, pandas 변환, concat 결과와 GPU collection은 memory 한계를 가진다.
 
+엔진 전환은 같은 입력 범위와 증분 상태에서 경과 시간, task 누적 시간, 할당 자원과 실제 사용량을 나눠 비교한다. 공식 Lightweight 시연의 Spark aggregate runtime 21분 10초는 병렬 task 시간의 합이며 실제 경과 시간이 아니다. 다른 실행의 single-node build 2분 4초나 약 29GB 사용량과 곧바로 나눠 속도나 청구비 절감률을 계산할 수 없다. 출력 값과 schema의 동등성도 별도로 검증한다. (2026-10-18 [시연 8분 43초 이후](https://www.youtube.com/watch?v=MITSJDI08R4&t=523s) 실행 상세 화면 확인)
+
 ## Schema 없는 file과 stream
 
 filesystem().ls()는 schema 유무와 관계없이 path/size(bytes)/modified(epoch milliseconds)를 나열한다. .path(), .pandas(), .polars(), .arrow(), .filesystem().files()는 schema가 있는 dataset에 한정한다고 안내한다. ls의 glob/regex filtering과 structured row filtering은 다르다.

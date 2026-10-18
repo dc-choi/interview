@@ -100,6 +100,8 @@ Prompted tool calling은 한 번에 하나의 도구를 호출한다. Native too
 
 설계 점검에서는 조회한 결과, 모델이 제안한 인자, 사용자의 승인과 실제 변경 결과를 나눈다. 도구를 병렬 호출할 수 있다는 사실이 서로 의존하는 변경을 병렬로 실행해도 된다는 뜻은 아니다. 실행 권한과 트랜잭션은 [[Palantir-Actions-and-Functions]]의 계약을 따른다.
 
+Reasoning 화면의 도구 출력과 성공 표시는 업무 변경 완료의 증거가 아닐 수 있다. 2026-10-18 확인한 공식 화면 예제에서는 `Create Video Agent Note`의 Output에 성공 표시가 있지만, 반환 내용은 사용자가 누를 실행 버튼을 준비하도록 안내한다. 응답에도 버튼을 눌러 실행하라는 문장이 나온다. 도구 인자와 출력, 사용자 확인, Action 실행 결과와 객체 반영을 각각 확인한다. 이는 화면 예제에서 확인한 구분이며 실제 실행 시험은 아니다. [도구 실행 추적 화면](https://www.palantir.com/docs/resources/foundry/chatbot-studio/inspect-reasoning.png)
+
 ## OMCP: 애플리케이션의 업무 자원을 외부 에이전트에 노출한다
 
 OMCP를 켜면 Developer Console 애플리케이션이 MCP server가 되고 외부 에이전트가 client로 연결한다. 데이터 조회와 미리 정한 Action 실행이 목적이다. 반면 PMCP는 타입과 개발 자원 변경을 위한 경로이며 OMCP 개요에서는 실제 Ontology 데이터 쓰기를 제공하지 않는 것으로 구분한다. 외부 LLM을 연결하면 Foundry 데이터가 외부 client에 전달된다는 점도 함께 고려한다. [Ontology MCP overview](https://www.palantir.com/docs/foundry/ontology-mcp)

@@ -44,6 +44,10 @@ This session에 추가한 skill은 해당 session만 유지된다. Personal skil
 
 작업을 작은 단계로 나누고 필요한 context/tool만 제공한다. Agent의 preview와 test 성공을 최종 업무 정확성으로 확정하지 않는다. Function 변경은 AIP Evals 사례와 기준으로 전후를 비교한다.
 
+전체 통과율과 항목별 회귀를 함께 본다. DevCon 5 시연의 agent 생성 요약 표는 10개 사례의 전체 통과가 1개에서 9개로 늘었지만 severity 일치는 10개에서 9개로 줄었다고 표시한다. 화면의 요약을 실제 실행 기록의 독립 검증으로 간주하지 않으며, 반복 수정에 사용한 사례의 통과율을 새로운 운영 데이터의 정확도로 일반화하지 않는다. (2026-10-18 [시연 7분 55초 화면](https://www.youtube.com/watch?v=pyudERNI1Qo&t=475s) 확인)
+
+같은 시연은 운영자의 거절 이유를 대상 객체와 실행 기록에 연결하고, 실패를 재현하는 평가 사례를 추가한 뒤 Logic을 수정하는 흐름을 보여준다. 피드백 저장, 평가 통과와 production 반영을 각각 확인한다. 이 흐름을 기반 모델의 가중치가 즉시 학습되는 과정으로 설명하지 않는다. ([시연 10분 12초 이후](https://www.youtube.com/watch?v=pyudERNI1Qo&t=612s))
+
 AI FDE는 짧은 간격으로 수십 작업을 연속/동시 실행할 수 있어 사람의 조작 빈도에서 드러나지 않던 storage I/O/capacity, CPU/GPU와 network 병목을 만들 수 있다. 사용자 세션 수와 작업 병렬성을 함께 고려한다. 벤더의 개발 효율 소개를 실측 성능 보증으로 사용하지 않는다.
 
 ## AIP Evolve는 후보 개선과 검토를 연결한다
@@ -53,6 +57,8 @@ Jupyter/RStudio의 workspace agent는 terminal 실행, package 설치와 파일 
 AIP Evolve는 target/goal/validation strategy/iteration limit를 정해 여러 AI FDE agent가 모델 전환, 비용/지연/평가 개선안을 탐색하게 한다. Ontology에 Marketplace product 설치와 target/test 자원 접근이 필요하다. Agent graph에서 작업과 산출물을 보고 proposal의 baseline/candidate 비교, confidence와 제한을 검토한 뒤 필요한 Global Branch proposal을 확인한다. Resume으로 추가 지침과 함께 계속할 수 있다.
 
 공식 cost optimization 화면의 특정 모델 교체와 비용 절감률은 10개 사례를 사용한 예시다. 이를 모든 workload에서 같은 효과가 나는 검증 결과로 일반화하지 않는다. 후보가 통과한 사례의 범위와 production 반영 판단은 분리한다.
+
+DevCon 6의 지연 최적화 proposal도 검증 범위와 측정 방법을 함께 읽어야 한다. 최종 화면은 5개 사례를 제시하며 baseline은 평가 실행, candidate는 branch preview에서 측정했다고 명시한다. 실행하지 못한 assembly 경로, delivery 100개 조회 한도와 빠진 provenance 필드도 남아 있다. 개선율과 confidence만으로 동작 보존을 확정하지 않고 미실행 경로와 누락 필드의 업무 영향을 검토한다. (2026-10-18 [시연 15분 24초 이후 화면](https://www.youtube.com/watch?v=GZHSCMz6Aio&t=924s) 확인)
 
 AI FDE의 Evals tool은 suite/function 둘 다 고쳐 실패를 해결할 수 있다. 2026년 4월 지원은 manual primitive/array/struct/model/object/set과 built-in/custom evaluator였고 object-set-backed case/multi-target/run dataset/Marketplace evaluator는 제외됐다. 평가 기준을 약하게 바꿔 pass한 경우를 실제 품질 개선과 구분하고 suite 변경도 함께 review한다.
 

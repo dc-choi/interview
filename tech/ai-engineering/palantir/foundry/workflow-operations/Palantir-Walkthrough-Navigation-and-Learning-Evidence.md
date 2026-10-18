@@ -22,6 +22,8 @@ Preview는 editor 변경을 실시간 반영하며 Save와 Publish는 다른 단
 
 Aggregate metrics는 항상 제공되지만 metrics tab은 walkthrough Owner만 볼 수 있다. 개인별 progress는 별도로 Enable user metric collection을 켜야 수집하며 사용자는 확인 dialog를 본다. Checkpoint는 그 내용을 조정한다. 단계를 지나갔다는 기록은 실제 이해/권한 적합성/업무 수행 능력의 증거가 아니다.
 
+개인별 수집 전에 walkthrough를 시작한 일부 사용자는 표에 나타나지 않는다고 [granular metrics 화면](https://www.palantir.com/docs/resources/foundry/walkthroughs/granular_metrics.png)이 경고한다. 수집 활성화가 과거 참여 내역을 소급 완성한다고 가정하거나 표에 없는 사용자를 미참여자로 판정하지 않는다. (2026-10-18 화면 확인)
+
 개인별 수집은 민감한 사용 기록을 만들 수 있어 목적상 필요성과 접근 제한을 먼저 정하라는 공식 문서의 조건을 유지한다. 실제 tracking 활성화나 walkthrough 생성/발행은 하지 않았다.
 
 ## 출처

@@ -26,6 +26,8 @@ State의 upstream/downstream breakdown은 최근 100 edit를 기반으로 manual
 
 Object timeline의 bar는 execution, diamond는 Action edit다. Total runtime은 첫 실행부터 마지막 실행까지이며 human waiting을 포함해 본다. Token/agentic coverage는 최적화 단서이지 정확도/효과성의 판정이 아니다. 각 edit의 user/resource/trace와 실제 property를 대조한다.
 
+공식 timeline 예시는 자동 실행이 7건 중 6건(86%)이어도 전체 57분 39초의 98%가 사람의 입력 대기라고 표시한다. 실행 건수의 자동화 비율과 전체 소요 시간의 병목은 다른 지표다. 같은 화면의 실행 상세에서는 실행한 Action과, 편집된 속성별 변경 전후 값을 확인할 수 있다. 따라서 자동화 비율만 높이기보다 대기 구간과 실제 상태 변경을 함께 검토한다. 이 수치는 제품 성능 기준이 아닌 문서의 예시다. (2026-10-18 [공식 화면](https://www.palantir.com/docs/resources/foundry/autopilot/aip_autopilot_object_timeline.png), [실행 상세 화면](https://www.palantir.com/docs/resources/foundry/autopilot/autopilot_object_timeline_executions.png) 확인)
+
 ## 재시도와 fallback을 정상 성공과 구분한다
 
 Automation events는 batch 아래 object별 trace를 연결하고 success/failure/fallback/success-with-no-edit, retry/time/automation으로 필터한다. 재시도가 많거나 성공했어도 edit가 없는 경우를 정상 경로와 따로 조사한다. Error/stack/timing과 같은 automation의 성공 사례를 비교하고 객체의 다른 automation 이력까지 따라간다.

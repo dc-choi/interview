@@ -16,6 +16,8 @@ Code Repositories는 코드 관리와 리뷰/CI, VS Code workspace는 플랫폼�
 
 Continue는 enrollment AIP 활성화에 의존하며 제공 모델 사용은 AIP compute 비용을 발생시킨다. Preconfigured agent/MCP는 사용자의 workspace session과 credential의 작업/리소스 범위 안에서 실행하고 독립적으로 권한을 확장하지 않는다. 사용 가능하다는 설명을 모든 고객에게 현재 활성화되었다는 증거로 삼지 않는다.
 
+AI 제안 수락과 preview 결과를 전체 build 검증으로 간주하지 않는다. 공식 코드 생성 GIF의 마지막 화면은 200행과 6개 열을 표시하지만, sample input으로 계산했을 수 있고 build 결과를 대표하지 않을 수 있다고 경고한다. 실제 입력 범위와 build 결과는 별도로 확인한다. (2026-10-18 [공식 Continue GIF](https://www.palantir.com/docs/resources/foundry/vs-code/continue-python-transforms-generation.gif)의 마지막 preview 화면 확인)
+
 ## Git branch와 global branch
 
 Global branch는 여러 Foundry 리소스의 변경을 묶으며 repository 기본 branch를 기반으로 한다. 일반 Code Repositories branch와 구분한다. Python transform, TS v1/v2와 Python function, 사전 설정된 OSDK React repository가 지원 대상으로 명시된다.

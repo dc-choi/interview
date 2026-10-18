@@ -12,6 +12,8 @@ aliases: ["Vertex embedding과 저장, 접근 경계"]
 
 Input은 graph/template/diagram resource이며 variable mode는 RID를 받는다. Template의 Override graph RID는 parameter로 새 graph를 생성하는 대신 저장한 graph를 연다. Parameter 변화 시 append 옵션은 기존 graph에 객체를 더하므로 매번 전체 재생성과 다르다. Refresh key 변화는 complete reload다.
 
+독립 Vertex 화면에서 template parameter를 바꿔 다시 실행하는 경로는 별도로 확인한다. 공식 GIF의 재실행 확인창은 현재 graph를 비운다고 경고한다. 기존 탐색을 보존해야 하면 저장 여부를 확인하고, 이 동작을 Workshop의 선택적 append 설정과 혼동하지 않는다. (2026-10-18 [공식 template 사용 GIF](https://www.palantir.com/docs/resources/foundry/vertex/template-usage.gif)의 확인창 확인)
+
 선택 object set과 현재 subgraph의 object set은 다르다. Action success 이벤트는 underlying Action 실행 성공 뒤 발생한다. Available actions와 read-only UI 설정은 사용자의 backend 권한을 부여하거나 제거하는 증거가 아니다. Read-only는 graph 추가/재배치/toolbar를 제한하며 histogram 탐색은 가능하다.
 
 Time binding은 Date/Timestamp를 구분한다. Time selection은 timeline/time/series panel 중 하나가 활성화되어야 쓸 수 있다. 다중 subgraph가 있으면 navigation menu를 숨기는 설정과 별개로 나타날 수 있다. PNG export는 embedded resource의 frontend export 권한도 필요하다.

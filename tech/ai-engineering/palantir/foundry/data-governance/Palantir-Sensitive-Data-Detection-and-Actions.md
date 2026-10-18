@@ -30,6 +30,8 @@ One-time은 현재 선택된 resource를 검사하며 나중에 추가/변경된
 
 처음에는 No Match Actions로 조건을 검증하면 false positive가 즉시 접근 차단이나 새 output으로 이어지는 일을 줄일 수 있다. Marking은 role과 무관하게 eligibility를 요구하므로 잘못 적용하면 업무를 막는다. 수동 제거된 marking을 다시 적용할지는 별도 옵션이다. Issue도 archived/closed 이전 issue를 다시 만들지 않는 옵션이 있다.
 
+Marking을 Match Action에 사용하려면 해당 marking을 적용하는 권한과 제거하는 권한이 모두 필요하다. 단순히 marking이 붙은 데이터를 읽을 자격과 구분한다. (2026-10-18 [공식 생성 화면](https://www.palantir.com/docs/resources/foundry/sensitive-data-scanner/apply-marking-match-action.png) 확인, 실제 권한 변경 없음)
+
 Obfuscation은 scanned resource마다 별도 output dataset을 만든다. 원본을 지우거나 제자리에서 바꾼다는 뜻이 아니다. Cipher Admin License와 source와 같은 Project의 license가 필요하다. 지원 channel은 AES GCM SIV, AES SIV, SHA512와 SHA256이며 visual obfuscation은 지원하지 않는다.
 
 Obfuscation 기본 단위는 entire column이며 entire row, matched cell, matched segment도 선택할 수 있다. SDS에서 되돌릴 수 없고 생성 dataset은 따로 삭제해야 한다.

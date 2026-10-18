@@ -17,6 +17,8 @@ Media set의 reference와 metadata를 dataset으로 만든 후 row-level policy�
 
 따라서 object를 볼 수 있는지, media property가 요구하는 상속 Marking이 무엇인지, 원본 set에 직접 접근 가능한지를 분리해서 확인한다. 파일 이름이나 reference를 안다는 사실이 접근 허용이 되지는 않는다.
 
+공식 Ontology Manager 예시의 Preview table은 Restricted View 결과가 아니라 전체 backing dataset의 미리보기다. 화면 경고에 따르면 전체 dataset 권한이 있어야 볼 수 있으며, object edits와 derived properties는 포함하지 않는다. 관리자 미리보기에 행이 나타났다는 사실만으로 일반 사용자의 RV 정책이나 최종 object 값을 검증했다고 판단하지 않는다. (2026-10-18 [공식 설정 화면](https://www.palantir.com/docs/resources/foundry/media-sets-advanced-formats/configure-granular-policies-media-ontology.png) 확인)
+
 ## 출처
 
 - [Palantir, configure-granular-policies-media](https://www.palantir.com/docs/foundry/media-sets-advanced-formats/configure-granular-policies-media)

@@ -16,6 +16,8 @@ aliases: ["Palantir 데이터와 모델 통합", "Multimodal Data Plane"]
 
 Multimodal Data Plane(MMDP)은 저장 형식, 연산 엔진과 모델을 하나의 조합으로 고정하지 않는 데이터와 연산 아키텍처다. 공식 구조는 Iceberg 테이블과 외부 virtual catalog/table, 미디어, 문서, 스트림과 시공간 데이터를 포괄한다. 연산에는 Spark, Flink와 단일 노드 엔진, Compute Modules와 외부 연산 연계를 포함한다. 모든 커넥터가 모든 기능을 같은 방식으로 지원한다는 뜻은 아니다. ([MMDP](https://www.palantir.com/docs/foundry/architecture-center/multimodal-data-plane))
 
+공식 파이프라인 도표의 Pushdown Compute 영역은 DataFusion이 선택된 상태이며 Flink, Databricks, Snowflake와 Spark도 선택지로 표현한다. 파이프라인의 논리와 실제 연산 엔진을 나누는 개념을 설명하는 그림이다. 특정 변환이 모든 엔진에서 같은 의미와 성능으로 실행된다는 호환성 표로 사용하지 않는다. [MMDP 연산 도표](https://www.palantir.com/docs/resources/foundry/architecture-center/mmdp-pipeline-compute.png) (2026-10-18 이미지 확인)
+
 | 경계 | 관리하는 것 | 혼동하면 생기는 문제 |
 |---|---|---|
 | 원천 시스템 | 업무 기록, 외부 파일과 외부 모델 | Foundry의 객체 변경이 원천에도 반영됐다고 생각함 |

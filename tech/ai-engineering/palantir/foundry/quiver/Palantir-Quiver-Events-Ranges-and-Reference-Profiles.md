@@ -28,6 +28,8 @@ Search full extent는 비용이 클 수 있다. Chart axis 또는 defined range�
 
 Search를 Automation으로 변환할 때 Multi는 지원하지 않는다. Single root object가 필요하고 root property/linked sensor 및 지원된 operation만 사용할 수 있다. 탐색 분석이 생성되었다는 사실을 자동 alert의 실행 가능성으로 대신하지 않는다.
 
+변환 후 실행 범위도 다시 확인한다. 공식 GIF는 분석의 search time range가 Automation에서 무시된다고 경고하고, 이어지는 설정 화면에는 기상 관측소 25,069개와 큰 alert 범위 경고가 나타난다. 분석에서 선택한 시간 범위와 객체가 그대로 운영 범위가 된다고 가정하지 않는다. 해당 GIF는 Condition 설정에서 끝나므로 활성화 완료의 근거가 아니다. (2026-10-18 [공식 변환 GIF](https://www.palantir.com/docs/resources/foundry/quiver/resource-search-anomalies-create-automation.gif)의 경고와 마지막 화면 확인)
+
 ## Range와 relative time
 
 Time range는 두 timestamp, numeric range는 두 value다. 선택을 저장하면 typed parameter가 생기고 여러 chart가 이를 공유할 수 있다. 단순 range selection은 저장된 range parameter와 달리 영구 보관되지 않는다. Range statistics는 time axis 하나와 numeric axis 하나를 가진 호환 plot의 min/max/average를 계산한다.

@@ -30,7 +30,7 @@ Pipeline Builder warm pool은 지속 실행 VM pool로 startup latency를 줄이
 
 Container workflow는 기본 disabled이고 Rubix infrastructure가 필요하다. Image는 numeric non-root UID로 실행하고 kernel privileges를 갖지 않아야 한다. 외부 작성 image의 취약점 관리와 supply-chain 통제는 관리자 책임에 남는다.
 
-Foundry는 active user-uploaded container를 주기적으로 scan하지만 **취약점을 찾았다고 기본 자동 조치하지 않는다**. 관리자가 vulnerability를 recall하면 영향을 받는 container를 사용하는 job을 강제 중단한다. Un-recall도 가능하다. Scan 목록과 실제 차단 정책을 같은 통제로 판단하지 않는다.
+Foundry는 active user-uploaded container를 주기적으로 scan하지만 **취약점을 찾았다고 기본 자동 조치하지 않는다**. 관리자가 vulnerability를 recall하거나 un-recall할 수 있다. 다만 공식 본문은 영향받는 container의 job을 강제 중단한다고 설명하고, 같은 문서의 확인 화면은 새 job은 실패하지만 실행 중인 job은 수동 종료 전까지 계속 실행된다고 경고한다. 두 근거가 충돌하므로 Recall만으로 기존 job이 종료됐다고 판단하지 않는다. 실제 enrollment의 확인 문구와 실행 중인 job 상태를 확인한다. (2026-10-18 [공식 본문](https://www.palantir.com/docs/foundry/administration/container-governance)과 [Recall 화면](https://www.palantir.com/docs/resources/foundry/administration/container-governance-recall.png) 대조)
 
 Seccomp는 syscall을 LOG/KILL/ERRNO 등으로 처리할 수 있지만 이 일반 설명이 차단목록의 운영 모드를 선택할 수 있다는 뜻은 아니다. 공식 blocked 목록의 syscall 사용은 process 종료와 incident response 통지를 유발한다고 명시한다. Mount/namespace, module/BPF, keyring, NUMA와 perf, clock, session/system 관리 등 runtime 가정이 이 제한과 맞는지 실제 image를 확인한다. 필요한 syscall이 있으면 지원 경로로 검토한다.
 

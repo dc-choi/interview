@@ -30,6 +30,8 @@ Orders/Deliveries 예시는 strictly increasing ID와 max processed ID를 사용
 
 Input별 transaction_limit은 job당 읽는 transaction 수를 제한하며 row/byte 한도가 아니다. 예를 들어 previous A~C 뒤 D~J가 있고 limit3이면 added D~F/current A~F, 다음 added G~I/current A~I, 마지막 J/current A~J로 진행한다. Previous/current가 source 최신 HEAD 전체를 뜻하지 않을 수 있다.
 
+같은 예제라도 semantic-version 변경 등으로 output을 snapshot 처리하면 previous가 빈 상태에서 A~C부터 다시 읽는다. Limit3으로 A~J를 따라잡는 순서는 A~C, D~F, G~I, J의 네 job이다. 기존 A~C 처리를 이어가는 세 job과 구분한다. (2026-10-18 [공식 snapshot 범위 GIF](https://www.palantir.com/docs/resources/foundry/transforms-python-spark/batching-snapshot.gif)의 표본 프레임과 본문 대조)
+
 조건은 incremental v2_semantics=True, Python transforms≥3.25.0, Spark(non-lightweight), transactional input, current view의 시작 SNAPSHOT을 제외하고 APPEND만 있는 input이다. DELETE/UPDATE가 하나라도 있으면 InvalidTransactionTypeForBatchInputResolution으로 fail한다. Snapshot input에는 limit을 쓰지 않는다. V2 semantics를 켜면 다음 한 번 snapshot이 생긴다.
 
 성공 build도 아직 stale할 수 있으므로 successful build 후 re-trigger를 켜 catch-up한다. Force build와 동시 설정하면 stale 여부와 무관한 반복이 생겨 허용하지 않는다. 신규 transaction이 계속 오면 반복 build도 계속될 수 있다. Spark report의 current-view range/processed-batch/previous-end/last-read를 구분해 지연과 진행을 확인한다.

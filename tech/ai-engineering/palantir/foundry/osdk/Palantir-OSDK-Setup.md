@@ -9,6 +9,8 @@ category: "AI엔지니어링(AIEngineering)"
 
 Developer Console app에서 사용할 Ontology/resources와 SDK generation version을 선택하고 첫 SDK를 생성한다. backend 문서는 생성 뒤 Ontology를 바꿀 수 없다는 조건을 명시한다. resources는 generated type와 app token scope 양쪽에 영향을 준다.
 
+현재 Developer Console 앱 생성 문서의 Ontology 선택 화면은 application이 생성 후 선택한 organization에서 활성화된다고 안내한다. 선택 가능한 organization은 사용자가 third party application을 만들 권한이 있는 organization과 선택한 Ontology에 지정된 organization의 교집합이다. 목록이 비어 있으면 Ontology 공유 범위와 생성 권한을 함께 확인한다. 예전 OSDK 문서 경로의 같은 이미지는 404지만 같은 파일이 현재 경로에서 제공된다. [Ontology와 resource scope 선택 화면](https://www.palantir.com/docs/resources/foundry/developer-console/app-ontology-resource-scopes.png) (2026-10-18 이미지 확인)
+
 ## TypeScript
 
 bootstrap/기존 앱 추가 문서는 Node18 이상을 요구한다. `@osdk/create-app`의 prefilling 값은 application RID, Foundry URL, hosting URL, client ID, SDK package/registry를 구분한다. 실제 프로젝트에서는 지원 중인 Node 버전과 생성 package 요구를 다시 확인한다.
@@ -34,6 +36,7 @@ Application API → SDK generation → Other languages에서 OpenAPI를 export�
 ## 출처
 
 - [Palantir, add-osdk-to-bootstrapped-repository](https://www.palantir.com/docs/foundry/ontology-sdk/add-osdk-to-bootstrapped-repository)
+- [Palantir, create-application](https://www.palantir.com/docs/foundry/developer-console/create-application)
 - [Palantir, create-a-new-osdk (미검증 기계번역 alias)](https://palantir.com/docs/kr/foundry/ontology-sdk/create-a-new-osdk/)
 - [Palantir, how-to-add-to-existing-typescript](https://www.palantir.com/docs/foundry/ontology-sdk/how-to-add-to-existing-typescript)
 - [Palantir, how-to-bootstrapping-typescript](https://www.palantir.com/docs/foundry/ontology-sdk/how-to-bootstrapping-typescript)

@@ -25,6 +25,8 @@ Output schema는 upstream column 중 계약에 포함할 subset을 고른다. �
 
 Direct changelog의 timestamp는 OSv2에서 동일 PK dedup 기준이 아니며 transaction ID를 사용한다고 명시한다. Write format 변경은 다음 deploy에 반영하고 existing dataset overwrite는 ownership을 가져오는 1회 동작으로 단순 rename과 다르다.
 
+공식 overwrite 확인 화면은 기존 dataset에 쓰던 logic이 깨진다고 경고한다. 다른 Pipeline Builder pipeline이 만든 dataset을 대상으로 하거나 기존 job spec과 backing logic을 삭제해야 한다고 안내하므로, 실행 전에 기존 writer와 연결된 작업을 확인한다. (2026-10-18 [공식 확인 화면](https://www.palantir.com/docs/resources/foundry/pipeline-builder/outputs-overwrite-dataset@2x.png) 확인, overwrite와 삭제는 미실행)
+
 ## Ontology 관리 범위
 
 PB가 만든 object/link만 PB에서 수정/삭제할 수 있다. Object ID는 첫 deploy 후 고정이고 API name은 owned object에 대해 format/중복/100자 한계를 검사하며 바꿀 수 있다. Multi-Ontology는 대상 지정이 필요하다. Link는 같은 pipeline의 object를 쓰고 첫 deploy 뒤 ID와 양끝 type을 바꾸지 못한다. Cardinality는 one-to-many/many-to-many이며 one-to-one은 지원하지 않는다.

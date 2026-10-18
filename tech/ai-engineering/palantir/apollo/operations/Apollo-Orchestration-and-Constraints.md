@@ -16,6 +16,8 @@ Plan은 설치, 설정 변경, 버전과 설정의 동시 변경, 제거와 secr
 
 실패하면 엔티티 자동 suppression으로 같은 작업의 반복을 막고 다른 엔티티 작업은 계속한다. 자동 suppression 엔티티 수가 설정 임계치를 넘으면 환경 전체를 막고 임계치 아래로 내려가면 환경 자동 suppression을 해제한다. 실패 전 상태로 복구하는 rollback Plan은 자동 실패 suppression을 통과할 수 있지만 수동 suppression은 존중한다.
 
+실패 조사에서는 raw Plan output을 읽고, 일반 실행 실패 화면에서는 Plan 발행, agent 수신과 실행 실패를 나눈 timeline을, Helm chart rollout 실패에서는 ready가 되지 못한 Kubernetes resource 목록을, Product validation 실패에서는 validation error 세부를 함께 확인한다. 공식 Product validation 실패 화면은 변경 미적용을 명시하지만 일반 실행 실패 화면은 같은 보장을 하지 않는다. 실패 표시만으로 무변경이나 rollback 완료를 가정하지 않는다. (2026-10-18 [공식 실패 화면과 본문](https://www.palantir.com/docs/apollo/core/plans-and-constraints) 대조)
+
 ## 시간과 가용성 제약
 
 Maintenance window는 변경 가능한 시간, suppression window는 발행을 막는 시간이다. suppression이 우선한다. maintenance override는 시간 제약만 잠시 열며 다른 제품 의존성이나 active Plan 충돌을 없애지 않는다. Helm chart는 downtime/no-downtime 어느 window에서도 바꿀 수 있어 둘을 같은 일정으로 제한해야 의도한 시간 통제가 된다.

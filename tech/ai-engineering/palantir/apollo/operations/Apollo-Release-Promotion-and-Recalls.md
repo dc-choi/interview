@@ -18,6 +18,8 @@ Timed stage는 source에 머문 기간과 label을 평가하고 Canary stage는 
 
 ## 건강 평가의 함정
 
+승격 이력과 현재 보안 검사 결과는 별도로 읽는다. 2023년 공식 데모의 02:25 화면에는 모든 승격 단계 통과와 보안 검사 실패가 함께 표시된다. 승격 완료는 두 달 전, 취약점 탐지는 16시간 전으로 시점도 다르다. 이 화면만으로 승격 당시 보안 조건을 우회했다고 판단할 수 없으며, 과거 승격 성공을 현재 취약점 부재의 증거로 사용할 수도 없다. [Apollo 배포 데모](https://www.youtube.com/watch?v=XmLVuZKd2L0&t=145s) (2026-10-18 전사와 해당 화면 대조)
+
 custom health가 없는 Helm chart는 liveness와 시간으로 성공할 수 있지만 unhealthy로 판정해 자동 recall하는 평가에는 부족하다. live인 구간을 healthy로, 그 밖을 healthy도 unhealthy도 아닌 시간으로 취급하므로 승격 성공 또는 지속 평가는 가능해도 이 health 조건으로 실패하지 않는다.
 
 healthy 구간은 모든 node가 live이고 HEALTHY/DEFERRING, unhealthy 구간은 live node 중 ERROR가 있는 기간이다. WARNING/REPAIRING/SUSPENDED/TERMINAL은 어느 쪽에도 더하지 않는다. 따라서 healthy+unhealthy가 전체 soak보다 작을 수 있다. custom health spec의 네 상태와 promotion이 이해하는 추가 내부 상태를 구분한다. 기본 healthy/unhealthy 비율은0.95/0.05이고 해당 기간 계산은 주말을 빼며 실제 Hub 설정을 확인한다.

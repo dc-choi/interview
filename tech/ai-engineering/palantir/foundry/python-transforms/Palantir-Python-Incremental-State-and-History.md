@@ -21,6 +21,8 @@ aliases: ["Python 증분 상태, 삭제와 역사 보존"]
 
 Previous output은 마지막 build까지 누적된 output이지 마지막 invocation이 쓴 delta만을 뜻하지 않는다. 그 delta가 필요하면 별도 auxiliary replace output에 저장한다. Output previous는 write mode와 무관하게 build 시작 때의 상태이며 snapshot 실행에서는 empty다. Current/added output read는 write 후 검증 등에 사용하고 이전 결과 조회는 previous로 의도를 명시한다.
 
+새 거래만 출력하는 증분 처리도 특징 계산에 전체 거래 이력을 사용할 수 있다. 공식 Lightweight 전환 시연의 코드는 같은 input을 기본 added와 `mode="current"`로 각각 lazy read해 새 거래와 전체 이력을 함께 넘긴다. 엔진을 바꿀 때는 delta/history의 읽기 의미를 보존하고 최초 snapshot과 후속 증분 결과를 각각 비교한다. (2026-10-18 [시연 코드 12분 30초](https://www.youtube.com/watch?v=MITSJDI08R4&t=750s) 확인)
+
 Spark previous read의 supplied schema는 없을 때 empty를 만드는 데 쓰이며 증분 때 type/nullability/order와 비교한다. 저장 column은 모두 nullable이므로 non-nullable field를 넣으면 mismatch다. Single-node의 previous schema enforcement는 comparison표에서 미지원이라고 하므로 Spark 예제를 일반화하지 않는다.
 
 ## 증분 자격과 과거 결과

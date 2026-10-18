@@ -24,6 +24,8 @@ Evaluator 없는 suite도 실행/수동 검토는 가능하지만 aggregate 품�
 
 String exact는 기본 대소문자/공백에 민감하고 array는 기본 순서를 고려하므로 원하는 동일성 정의로 설정한다. Generic exact는 numeric과 date/timestamp를 일부 coerce하고 object/object set은 reference로 비교하며 struct/map은 순서 없는 key-value, list는 순서 있는 원소, model은 식별자/parameter로 비교한다. 전용 evaluator가 있으면 더 명시적인 옵션과 타입 검사를 우선한다.
 
+Expected output 자체도 검토 대상이다. 공식 비교 화면의 중립적인 음식 평가 사례는 expected value가 Negative로 설정돼 있어 Neutral 응답은 실패하고 Negative 응답은 통과한다. 이는 설정한 값과 일치했다는 결과이며 분류 기준의 타당성까지 검증한 것은 아니다. 같은 화면에서 4개 사례 기준으로 Latest로 표시된 기준 실행(1:32:27 PM)은 일치율 75%, 평균 0.743초이고 비교 대상인 이전 실행(1:32:04 PM)은 100%, 1.313초다. 정답 기준과 지연을 함께 비교한다. (2026-10-18 [공식 평가 비교 화면](https://www.palantir.com/docs/resources/foundry/announcements/2025-06-19-095021-aip-evals-image-pn.png) 확인)
+
 LLM judge는 검증 가능한 condition과 사용 가능한 모델을 요구한다. Object locator/RID/object set/model 같은 reference actual 값은 받지 않는다. 판정 모델이 제공하는 reasoning을 debug할 수 있지만 그 설명이 실제 정답 검증을 대신하지 않는다. Custom function은 하나 이상의 Boolean/numeric metric을 반환하고 struct로 여러 metric, String으로 diagnostic debug output을 제공할 수 있다.
 
 ## Pass의 단위를 명시한다
@@ -31,6 +33,8 @@ LLM judge는 검증 가능한 condition과 사용 가능한 모델을 요구한�
 Boolean은 기대 true/false, numeric은 maximize/minimize와 선택 threshold를 구성한다. Iteration은 모든 metric이 기준을 만족해야 pass하고 여러 iteration을 가진 case는 모든 iteration이 pass해야 통과한다. Average가 좋아도 일부 반복 실패를 가릴 수 없다는 판정 계약이다.
 
 LLM-backed function에는 최소 3회 반복이 공식 권장된다. Numeric 분산이 크면 function뿐 아니라 test/evaluator가 의미 있는지도 검토한다. Default test parallelism은 10이며 rate limit에 걸리면 낮출 수 있다. 실험 조합 수, 반복과 병렬성은 서로 다른 비용 요소다.
+
+평균 실행시간이 줄어도 중앙값이나 일부 구간은 악화할 수 있다. 2024년 6월 AIPCon의 비교 화면은 평균 7.3초/7.2초, 중앙값 8.5초/9.3초와 테스트 수 5개/15개를 함께 표시한다. 사례 수와 분포가 달라 같은 조건의 전반적인 성능 개선으로 단정하지 않는다. (2026-10-18 [공식 발표 영상](https://www.youtube.com/watch?v=CmpQTrnL3ko&t=593s) 09:53 화면 확인, 평가 재실행 없음)
 
 ## 실행 주체에 따라 결과 공개와 보존이 달라진다
 

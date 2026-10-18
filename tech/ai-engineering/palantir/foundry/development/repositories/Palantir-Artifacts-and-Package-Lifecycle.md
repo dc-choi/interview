@@ -16,6 +16,8 @@ Artifact 사용은 repository View, publish/recall은 Edit를 요구한다. Arti
 
 다른 Project의 local shared library는 Project reference도 추가한다. Backing repository 순서/삭제는 package resolution과 build를 깨뜨릴 수 있다. Conda/Maven/PyPI version과 channel의 재현성을 별도로 검토한다.
 
+공식 Libraries 설정 화면은 같은 library를 두 backing repository가 제공하면 목록의 최상단 repository를 우선한다고 설명한다. 순서 변경도 dependency resolution 변경으로 검토한다. (2026-10-18 [공식 설정 화면](https://www.palantir.com/docs/resources/foundry/code-repositories/repository-artifact-settings-tab.png) 확인)
+
 Publish UI에서 artifact type, 유효기간이 표시된 token과 instructions를 얻어 업로드한다. Token을 source나 README에 넣지 않는다. Consumer tracking은 Conda artifact에만 제공되므로 Docker/Maven의 목록이 없다는 사실을 소비자 없음으로 읽지 않는다.
 
 ## Recall, 삭제와 version의 의미

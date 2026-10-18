@@ -21,6 +21,8 @@ Python UDF는 sidecar에서 행마다 실행한다. DataFrame 전체를 인자�
 
 UDF에서 FoundryClient/OSDK로 Ontology를 직접 조회하면 EnvironmentNotConfigured가 발생한다. 빌드 사이 데이터 통제 누락을 막는 경계다. 필요 데이터는 dataset join으로 공급하거나 적절히 허용한 external source로 연결한다. source는 pipeline code import 설정이 필요하다. 일반 함수 preview 권한을 UDF로 옮겼다고 가정하지 않는다.
 
+공식 Code import configuration 화면은 pipeline에 source를 가져오면 참조한 사용자 코드까지 포함한 pipeline 전체가 해당 source로 통신하고 secret 값에 접근할 수 있다고 명시한다. 특정 UDF만의 권한으로 좁혀 해석하지 않는다. 같은 화면은 source를 compute module에 가져오면 그 source의 secret 값이 compute module 실행 코드에 평문 환경변수로 제공되며, source editor는 대상 code resource 접근 권한이 없어도 import를 제거하거나 금지할 수 있다고 설명한다. (2026-10-18 [공식 설정 화면](https://www.palantir.com/docs/resources/foundry/functions/allow-source-to-be-imported-to-pipelines.png) 확인, 실제 실행 환경 미검증)
+
 ## 알림
 
 함수는 수신자와 notification 내용을 계산한다. 실제 전송은 Action의 알림 효과가 맡는다. platform 요약, email의 headless HTML, URL/object/RID link target을 구분한다. Python의 Notification object-type generic과 User/Group/Principal 계약도 맞춘다.

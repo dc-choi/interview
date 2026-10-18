@@ -14,6 +14,8 @@ Object type은 객체의 schema, object는 한 인스턴스, object set은 여�
 
 Filter object set은 현재 객체 또는 linked object의 속성으로 조건을 정한다. AND/OR를 중첩할 수 있다. Set math의 union/intersection/difference는 같은 object type의 집합끼리 수행한다. 다른 타입이 목록에 나타나지 않으면 먼저 타입을 확인한다.
 
+분석 안에서 계산한 값으로 필터링하려면 transform table 또는 dataset으로 변환한다. 공식 높이 예제는 본문에서 지면 고도에서 지붕 높이를 뺀다고 설명하지만, GIF의 수식은 `@heightroof - @groundelev`다. 화면의 첫 행도 `43.697832 - 45 = -1.302168`로 계산된다. 두 설명의 부호가 다르므로 필드 의미와 실제 수식을 대조한다. 이 파생 열은 분석 내부 계산이며 Ontology 속성 수정이 아니다. (2026-10-18 [공식 GIF의 수식 화면](https://www.palantir.com/docs/resources/foundry/quiver/howto-filter-object-sets-derived.gif)과 본문 대조)
+
 Switch to linked object set(search around)은 관계를 따라 도착한 객체 집합을 반환한다. 시작 객체 속성을 결과 행에 붙이는 join과 다르며, 집합 크기는 커지거나 작아질 수 있다. 양쪽 속성을 한 행에서 계산해야 하면 linked-object transform table join 또는 dataset join을 검토한다.
 
 연결 탐색의 규모 설명에는 차이가 있다. 개별 카드/가이드는 시작 집합이 100k 미만이면 scale 제한이 없고, 100k 초과이면 linked set이 10m 미만이어야 한다고 설명한다. Best practices는 OSv1 입력 100k 미만, OSv2 결과 10m 미만으로 설명한다. 정확히 100k인 경계와 두 설명의 적용 우선순위는 이 자료만으로 확정하지 않는다. Linked-property filter에도 관련 제한이 적용된다.

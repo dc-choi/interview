@@ -22,6 +22,8 @@ Technical/Business owner는 책임자 metadata이며 resource ACL의 Owner role�
 
 Active/Experimental/Deprecated는 표시된 운영 상태다. Active case 안에 Experimental/Deprecated ontology가 있으면 경고하지만 status 변경이 실제 publish/배포/테스트를 수행하지는 않는다. Local 표시는 datasource가 backing project에 있다는 뜻이고 다른 앱도 쓰면 공유 ontology project 이관 권장 경고가 나타난다. Local을 접근제한이나 미공유 보증으로 해석하지 않는다.
 
+이 과거 앱의 상태 변경 화면은 Active use case를 영구 삭제하기 전에 Deprecated로 바꿔야 하며, Deprecated 상태는 저장 뒤 되돌릴 수 없다고 안내한다. 이를 backing project나 개별 resource의 삭제 계약, Portfolios의 상태 규칙으로 확대하지 않는다. (2026-10-18 [공식 상태 변경 화면](https://www.palantir.com/docs/resources/foundry/use-cases/use-case-statuses.png) 확인, 변경/삭제 미실행)
+
 Object/Action 목록은 앱 의존성으로 자동 채워지거나 수동 추가된다. 사용되지 않는 수동 항목의 Remove는 이 목록에서 제거하는 작업이며 ontology 정의 삭제가 아니다. Backing data와 writeback datasource/Update via는 서로 다른 lineage 역할이다. 실제 migration/공유/리소스 생성은 수행하지 않았다.
 
 ## 출처

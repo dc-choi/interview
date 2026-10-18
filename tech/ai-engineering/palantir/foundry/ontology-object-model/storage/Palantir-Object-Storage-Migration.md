@@ -17,6 +17,8 @@ OSv2는 편집을 Actions로 수행한다. OSv1 직접 편집 API 소비자는 �
 - Soak는 전환 후 시작하며 최대 14일이다. 두 저장소를 색인하므로 비용이 늘며, 이 기간에는 OSv2로 조회하고 OSv1 전용 요청은 거절된다.
 - Soak 안에서 abort하면 다시 색인하지 않고 rollback할 수 있다. 종료 후에는 OSv1 데이터가 제거되어 같은 rollback이 불가능하다. Soak 0은 이 보호 기간을 없앤다.
 
+공식 문서에 남은 예전 화면과 본문의 제한이 다를 수 있다. 2026-10-18 이미지 확인에서 `migration6.png`는 soak 최대 20일, `migration5.png`는 전환 구간의 편집 중단을 안내한다. 그러나 2026-10-16 확보한 같은 페이지 본문은 최대 14일과 migration/soak 전체의 편집 중단을 명시한다. 화면의 수치를 현재 운영 기준으로 복사하지 말고 본문과 대상 환경을 대조한다. 사전 검사가 모두 통과한 녹색 표시와 `PIPELINE_FAILED`가 같은 화면에 나타나는 예시도 있다. 이전 가능 여부와 실제 Funnel 동기화 성공을 따로 확인해야 한다. ([본문과 공식 화면](https://www.palantir.com/docs/foundry/object-backend/osv1-osv2-migration))
+
 ## 무엇을 보존하는가
 
 Edit history 보존은 별도 옵션이며 CPU와 저장 비용이 든다. 선택하지 않아도 최종 편집 상태는 옮기지만 이전 편집 이력과 attribution은 복구할 수 없다. 별도 Action Log의 존재와 저장소 편집 이력은 구분한다.

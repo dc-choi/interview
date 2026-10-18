@@ -50,6 +50,8 @@ Action metrics는 최근 30일 성공/실패와 p95 duration을 제공하며 log
 
 Monitoring은 p95 duration과 시간창 내 실패 건수 임계값을 감시한다. Workflow Lineage, Workshop과 OSDK application을 dynamic scope로 정하면 사용 Action의 추가/제거를 따라간다. Metrics를 보는 것과 threshold/구독을 설정해 실제 알림을 받는 것은 별도 작업이다.
 
+공식 Observability 화면에서도 성공 실행 막대와 별개로 p95 duration 규칙은 실패 상태이며, 실패 건수 규칙은 통과 상태다. 실행 성공률과 지연 시간의 건강 상태를 따로 판단해야 하는 예다. 화면에 표시된 기간과 수치를 제품의 성능 보장으로 사용하지 않는다. [Action type Observability 화면](https://www.palantir.com/docs/resources/foundry/ontology-manager/oma-user-interface-action-type-observability-tab.png) (2026-10-18 화면 확인)
+
 ## Undo는 전체 업무 rollback이 아니다
 
 Action revert는 OSv2 객체 편집에 사용할 수 있으며 실행한 사용자만 할 수 있다. 성공 toast의 Undo가 기회이고, 이후 객체에 다른 편집이 한 번이라도 있으면 다른 속성 변경이어도 revert할 수 없다. 제출 뒤 revert 설정을 껐다 다시 켜도 원 제출은 되돌릴 수 없다.
