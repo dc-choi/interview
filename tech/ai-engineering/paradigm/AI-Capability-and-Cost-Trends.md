@@ -38,6 +38,8 @@ AI가 대회에서 사람을 이겼다, 어려운 시험의 절반을 넘었다,
 - 2026-10-06에는 원고 722편(결과군 372개)을 공개했다. 다음 날 갱신에서 한 원고의 부호 오류가 그 원고와 이에 의존한 원고 2편의 논증을 무너뜨려 3편을 철회했고, 이와 별도로 원고 14편을 증명 보완, 진술 정정, 가정과 의존 관계 명확화 등으로 고쳤다. 이 갱신 뒤 원고는 719편이며, 원고별 대표 결과(top-line result) 가운데 Lean으로 형식화된 것은 300편, 약 42%다.
 - 2025-11 OpenAI 공저 논문은 erdosproblems.com에 미해결로 표시된 문제를 GPT-5로 문헌 검색해, 이미 출판된 해법이 있던 10개 문제를 찾았다고 기록한다. 이 10개는 새 증명이 아니라 기존 해법을 찾아낸 것이다. 같은 논문의 에르되시 문제 절은 미해결이던 848번 문제를 절 저자인 Mehtaab Sawhney가 GPT-5와 함께, erdosproblems.com 댓글로 나온 다른 연구자들의 아이디어와 결합해 해결했다고 적는다.
 - Lean 컴파일 통과는 형식 진술에 대한 증명이 맞다는 뜻이다. 형식 진술이 원래 문제를 정확히 옮겼는지는 따로 검토한다.
+- 2026-09-11 Terence Tao 블로그에 필즈상 수상자 25명을 첫 서명자로 한 공동 선언 A Severe Misalignment of AI in Mathematics가 실렸다. 선언은 LLM의 수학 능력이 크게 높아졌다고 인정하면서도, AI 기업이 수학 문제 풀이를 벤치마크로 밀어붙이는 흐름이 수학과 수학 공동체에 해롭고 AI 기업과 수학 공동체의 목표가 심각하게 어긋난다고 본다. 획기적인 해법은 강연, 토론과 단순화를 거쳐 공동체가 소화하고 교과서 서술로 이어지는데, 이런 해법은 서둘러 발표돼 제대로 된 원고를 쓸 시간이 남지 않는 경우가 많고 이것이 귀속과 표절에 관한 심각한 의문을 낳는다고 지적한다. AI가 수학 연구와 이해를 강화하고 가속할 잠재력도 인정하며, 수학 공동체, 이 기술을 개발하는 기업과 사회 전반이 이 문제들을 시급히 다뤄야 한다고 촉구한다(2026-10-18 원문 확인).
+- 수학 연구 결과 주장은 증명의 정확성과 별도로, 사람이 읽고 검토할 수 있는 원고와 선행 연구 인용, 공동체 검토가 뒤따랐는지 확인한다.
 
 ## 3. 비용 하락은 무엇의 가격인지 구분한다
 
@@ -59,6 +61,17 @@ AI가 대회에서 사람을 이겼다, 어려운 시험의 절반을 넘었다,
 - **출력 속도와 완료 시간**: 초당 출력 토큰 수는 첫 토큰 이후 생성 속도다. 사용자가 답변 전체를 받는 시간에는 입력 처리, 추론과 답변 생성이 모두 들어간다. 빠른 출력만으로 전체 대기 시간이 짧다고 판단하지 않는다.
 - **Time per Task는 추정값**: 벤치마크별 답변과 추론 토큰을 답변 출력 속도로 나누고 Intelligence Index의 가중치로 합산한다. 평가 실행 중 직접 잰 완료 시간이 아니며, 속도는 가격과 같은 엔드포인트에서 측정한 10k 입력 워크로드의 중앙값을 사용한다.
 - **가중 단가와 과업 비용**: Blended Price는 캐시 적중, 입력, 출력 토큰 비율을 7:2:1로 가정한다. Cost per Task는 실제 소비한 토큰과 단가를 반영한 과업당 가중 평균 비용이다. 같은 단가라도 추론이나 답변이 길면 과업 비용은 커질 수 있다.
+
+단가 순위와 과업당 비용 순위는 뒤집힐 수 있다. 아래 값은 2026-10-18 Artificial Analysis 모델별 페이지(Intelligence Index v4.3.2, 각 모델의 Max 설정)에서 확인했고, 단가는 같은 날 각 제공사의 공식 가격표와 대조했다.
+
+| 모델 | 100만 토큰당 입력, 출력 단가 | 지수 평가에서 생성한 토큰 | 과업당 비용 | 지수 |
+|---|---|---|---|---|
+| GPT-6 Astra | 10달러, 50달러(입력 272K 토큰 이하) | 6천만 | 3.26달러 | 53 |
+| Muse Wonder | 4달러, 20달러 | 1억 3천만 | 4.52달러 | 52 |
+| Claude Sonnet 5.5 | 2달러, 10달러 | 4억 2천만 | 5.46달러 | 56 |
+| Claude Opus 5.5 | 4달러, 20달러 | 2억 6천만 | 5.98달러 | 58 |
+
+GPT-6 Astra는 단가가 Opus 5.5의 2.5배지만 생성 토큰이 4분의 1에 못 미쳐 네 모델 가운데 과업당 비용이 가장 낮았다. Meta가 2026-10-12 공개한 Muse Wonder는 Opus 5.5와 단가가 같지만 생성 토큰이 절반이라 과업당 비용이 더 낮았다. Sonnet 5.5는 단가가 Opus 5.5의 절반인데도 토큰을 더 많이 써 과업당 비용은 약 9% 낮은 데 그쳤다. 과업당 비용이 가장 높은 Opus 5.5가 지수도 가장 높았으므로 비용과 지수를 함께 본다. 공개 평가 과업의 값이라 추론 설정을 낮추거나 자기 업무의 출력 길이가 다르면 순위가 바뀔 수 있다.
 
 도입 점검 제안: 채팅은 첫 답변과 전체 대기 시간, 긴 작업은 완료율과 작업당 비용을 함께 비교한다. 자기 업무의 캐시 적중률과 출력 길이가 다르면 가중 단가 순위를 그대로 예산에 적용하지 않는다.
 
@@ -104,6 +117,7 @@ METR는 사람 전문가가 걸리는 시간으로 잰 소프트웨어와 추론
 - [ten-proofs — GitHub, OpenAI](https://github.com/openai/ten-proofs)
 - [math — GitHub, OpenAI](https://github.com/openai/math) — 2026-10-06 첫 공개(원고 722편), 현재 원고 수와 형식화 비율
 - [math history — GitHub, OpenAI](https://github.com/openai/math/blob/main/history.md) — 2026-10-07 철회와 수정
+- [A Severe Misalignment of AI in Mathematics — Terence Tao 블로그, 필즈상 수상자 공동 선언](https://terrytao.wordpress.com/2026/09/11/a-severe-misalignment-of-ai-in-mathematics/) — 2026-09-11
 - [Early science acceleration experiments with GPT-5 — OpenAI, Sébastien Bubeck 외](https://cdn.openai.com/pdf/4a25f921-e4e0-479a-9b38-5367b47e8fd0/early-science-acceleration-experiments-with-gpt-5.pdf) — 2025-11-20
 - [The AI Action Summit: A golden age of innovation — Google, Sundar Pichai](https://blog.google/innovation-and-ai/products/sundar-pichai-ai-action-summit/) — 2025-02-10
 - [Three Observations — Sam Altman](https://blog.samaltman.com/three-observations) — 2025-02-09
@@ -118,6 +132,14 @@ METR는 사람 전문가가 걸리는 시간으로 잰 소프트웨어와 추론
 - [Recent open weights model launches — Artificial Analysis](https://artificialanalysis.ai/articles/recent-open-weights-model-launches) — 2026-04-30
 - [Comparison of Models: Intelligence, Performance & Price Analysis — Artificial Analysis](https://artificialanalysis.ai/models) — 2026-10-12 열람
 - [Artificial Analysis, Artificial Analysis Benchmarking Methodology](https://artificialanalysis.ai/methodology) — 2026-10-14 응답 시간, 과업 시간 추정과 비용 지표 정의 대조
+- [GPT-6 Astra (Max) Intelligence, Performance & Price Analysis — Artificial Analysis](https://artificialanalysis.ai/models/gpt-6-astra) — 2026-10-18 열람
+- [Muse Wonder (Max) Intelligence, Performance & Price Analysis — Artificial Analysis](https://artificialanalysis.ai/models/muse-wonder) — 2026-10-18 열람
+- [Claude Sonnet 5.5 (Max, Default Fallback) Intelligence, Performance & Price Analysis — Artificial Analysis](https://artificialanalysis.ai/models/claude-sonnet-5-5) — 2026-10-18 열람
+- [Claude Opus 5.5 (Max, Default Fallback) Intelligence, Performance & Price Analysis — Artificial Analysis](https://artificialanalysis.ai/models/claude-opus-5-5) — 2026-10-18 열람
+- [Anthropic Platform Docs, Pricing](https://platform.claude.com/docs/en/about-claude/pricing) — 2026-10-18 Opus 5.5, Sonnet 5.5 단가 대조
+- [OpenAI API, Pricing](https://developers.openai.com/api/docs/pricing) — 2026-10-18 GPT-6 Astra 단가 대조
+- [Meta Model API, Pricing and rate limits](https://dev.meta.ai/docs/pricing-rate-limits) — 2026-10-18 Muse Wonder 단가 대조
+- [Muse Wonder: A Frontier Model For Personal & Professional AI Agents — Meta AI Research](https://research.meta.ai/blog/muse-wonder) — 2026-10-12
 - [Chinese AI models have lagged the US frontier by 7 months on average since 2023 — Epoch AI](https://epoch.ai/data-insights/us-vs-china-eci) — 2026-01-02
 - [Open models lag state-of-the-art closed models by 4 months — Epoch AI](https://epoch.ai/data-insights/open-closed-eci-gap) — 2026-05-29
 - [Measuring AI Ability to Complete Long Software Tasks — METR](https://metr.org/blog/2025-03-19-measuring-ai-ability-to-complete-long-tasks/) — 2025-03-19
@@ -132,5 +154,6 @@ METR는 사람 전문가가 걸리는 시간으로 잰 소프트웨어와 추론
 - [[LLM-Eval-Strategy|LLM 평가 전략]] — 자기 업무의 평가 세트
 - [[Eval-Model-Drift-Monitoring|모델 드리프트 모니터링]] — 모델 교체 뒤 재평가
 - [[AX-Transformation|AX 조직 전환]] — 조직의 AI 도입 판단
+- [[Expertise-Formation-AI|AI 시대 전문성 형성]] — 결과 산출과 이해, 다음 세대 전수의 구분
 - [[LLM-Market-Landscape|생성형 AI 시장 경쟁 구도]] — 점유율의 분모와 채널
 - [[paradigm|AI 패러다임, 모델]]

@@ -60,6 +60,16 @@ TFT는 이 입력들을 함께 다루는 다중 예측 거리 모델이다. 입�
 
 평가 제안: 미래 날씨의 실제 관측값을 알고 있다고 가정한 실험과, 예측 당시의 기상 예보 또는 과거 날씨만 사용한 실험을 나눈다. 입력을 확보할 수 있는 조건에 맞춰 모델 후보를 정한 뒤 같은 예측 거리에서 비교한다. 과거 발표의 정확도 개선율과 학습 속도 배율은 일반 성능 보장으로 옮기지 않는다. Forecast의 신규 고객 접근 제한은 아래 서비스 공지 절을 따르며, 이 비교는 신규 도입 권고나 실제 학습 결과가 아니다.
 
+## 거점별 예측과 전체 합계의 일관성을 확인한다
+
+부분 검증(2026-10-16): 예측 교재의 계층형 시계열과 forecast reconciliation을 대조했다. 지역별 물량의 합이 전체 물량을 정의하는 구조라면 예측도 그 집계 관계를 만족하는지 확인한다. 여러 시계열을 한 모델에서 학습하는 것과 합계 일관성을 보장하는 것은 별개다.
+
+- **집계 계약:** 같은 기간과 측정 단위를 사용하고 하위 집단이 겹치지 않는지 먼저 확인한다. 물류에 적용할 때 하나의 화물이 여러 거점을 통과한 처리 건수를 합산하면 고유 화물 수와 달라질 수 있다. 어떤 합계를 예측하는지 정의한다.
+- **Bottom-up:** 가장 하위 시계열을 예측한 뒤 더해서 상위 예측을 만든다. 합계는 맞지만 하위 데이터가 잡음이 많거나 희소하면 예측이 어려울 수 있다.
+- **Reconciliation:** 여러 수준에서 얻은 예측을 집계 제약에 맞게 조정한다. 합계가 맞는다는 사실만으로 각 거점의 오차가 개선됐다고 결론 내리지 않는다.
+
+평가 설계 제안: 동일한 시간 분할에서 거점, 지역과 전체 수준의 오차를 나누어 보고, 조정 전후 합계 차이도 검사한다. 차량과 인력 배치에는 별도 용량 및 근무 제약이 필요하므로 예측 일관성을 운영비 절감으로 바꾸어 보고하지 않는다. 이는 물류 문제에서 확장한 평가 기준이며 특정 기업이 reconciliation을 사용했다는 주장이나 실제 모델 성능 검증은 아니다.
+
 ## 판매 0, 품절과 행사 급증을 구분한다
 
 2026-10-16 Amazon Forecast의 결측값 문서와 예측 교재의 이상치 처리 원칙을 대조했다. 판매량이 0인 이유를 구분하지 않고 채우면 예측 대상의 의미가 달라진다.
@@ -139,6 +149,7 @@ Forecast의 현재 평가 문서는 WAPE와 RMSE에 평균 예측을 사용한�
 
 ## 출처
 
+- [Forecasting: Principles and Practice, Forecasting hierarchical and grouped time series — Hyndman, Athanasopoulos](https://otexts.com/fpp3/hierarchical-forecasting.html) — 집계 일관성, bottom-up과 reconciliation을 2026-10-16 대조
 - [Amazon Forecast, QueryForecast](https://docs.aws.amazon.com/forecast/latest/dg/API_forecastquery_QueryForecast.html)
 - [Amazon Forecast, GetAccuracyMetrics](https://docs.aws.amazon.com/forecast/latest/dg/API_GetAccuracyMetrics.html)
 - [Amazon Forecast, CNN-QR Algorithm](https://docs.aws.amazon.com/forecast/latest/dg/aws-forecast-algo-cnnqr.html) — 과거 관련 시계열의 encoder 입력과 추가 특성 평가를 2026-10-16 대조

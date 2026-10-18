@@ -32,3 +32,5 @@ aliases: ["AI 엔지니어링 실천 도구", "AI Engineering Tools"]
 - [x] [[Realtime-Voice-Architecture|실시간 음성 에이전트 (VAD와 턴 종료 판단, 전이중 대화와 백엔드 위임, 중단과 작업 취소, 응답 지연과 업무 결과 검증)]]
 - [x] [[Video-Transcript-Pipeline|영상 전사 파이프라인 구현 (memo 스킬 yt_transcript.py, 자막 우선과 whisper.cpp 폴백, 캐시 키와 안전장치, 설계 결정과 검증 교훈)]]
 - [x] [[llm|LLM 원리와 운영 (llm/ 서브폴더) — 학습과 생성(generation-mechanics/: 학습과 조정, 추론과 디코딩, Context와 환각과 에이전트, 설명용 비유와 한계), 워크플로우 패턴(workflow/: 체인과 에이전트, Function Calling, Text-to-SQL, 데이터와 환각 통제, 워크플로 표현식), 선택과 서빙 운영(operations/: 모델 티어 선택/라우팅, 결정 모델, 추론 병목, 프롬프트 캐싱, 게이트웨이, 실패 처리)]]
+- [x] [[MCP-Gateway-Architecture|MCP 게이트웨이 설계]] — Registry와 Proxy, 자동 발견과 소유 팀 활성화, 호출자 권한과 응답 필터
+- [x] [[Generative-Artifact-Contracts|생성형 시각 산출물의 계약]] — AesCode의 내용과 스타일 분리, Krea 3의 부분 편집과 원본 검수

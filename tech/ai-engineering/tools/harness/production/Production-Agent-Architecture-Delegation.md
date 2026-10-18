@@ -33,6 +33,16 @@ Mindflow AI Rooms의 공개 제품 설명은 중요한 작업의 실행 전 승�
 
 정책 검사와 행동 차단도 구분한다. Bedrock Automated Reasoning은 검사 결과를 반환하는 detect mode이며 후속 차단은 애플리케이션 책임이다. 정책 변수로 표현되지 않은 내용까지 검증됐다고 보지 않는다. 구체적인 검사 범위와 API 실행 확인은 [[LLM-Hallucination-Verification#Bedrock의 근거 검사와 정책 검증|정책 검증]]을 따른다. 이 절은 운영 설계 기준이며 실제 서비스의 자율 실행 안전성을 시험한 결과는 아니다.
 
+## 업무 단계와 검토 경계를 나눈다
+
+여러 단계의 업무 전체를 한꺼번에 에이전트로 바꾸기보다, 정보 수집, 판단 제안, 승인, 실행을 나누고 각 단계의 권한을 정한다. 2026-10-18 AWS의 보안 원칙과 대조한 설계 예시다.
+
+- 정형 조건은 코드로 검사하고, 에이전트는 문서 해석이나 예외 설명처럼 판단이 필요한 부분을 맡긴다. 에이전트의 제안을 실행 허용 판정과 같은 값으로 쓰지 않는다.
+- 금액 임계값만으로 자동 실행을 허용하지 않는다. 운영 데이터 변경, 외부 정보 전달과 되돌릴 수 없는 효과도 함께 평가해 사람 검토로 보낼 범위를 정한다.
+- 사람에게 넘길 때는 제안, 실행 대상과 입력, 근거와 미확인 사항을 함께 보여준다. 검토 뒤의 실행 성공이나 실패도 별도로 기록한다.
+
+이는 일반적인 업무 분해 제안이다. 특정 산업의 자동 심사 허용 범위나 규제 준수를 확인한 절차가 아니며, 사람 검토를 다른 에이전트로 대체한 것만으로 같은 통제 수준을 얻었다고 판단하지 않는다.
+
 ## 출처
 - [Four security principles for agentic AI systems — AWS Security Blog](https://aws.amazon.com/blogs/security/four-security-principles-for-agentic-ai-systems/)
 - [Amazon Bedrock, Integrate Automated Reasoning checks in your application](https://docs.aws.amazon.com/bedrock/latest/userguide/integrate-automated-reasoning-checks.html)

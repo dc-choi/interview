@@ -135,3 +135,4 @@ Docker Agent끼리 A2A로 연결할 때는 인증 조합에 제약이 있다(202
 - [[A2A-Kafka-Transport|A2A와 Kafka 전송]] — 바인딩, 재전달과 권한
 - [[Bedrock-AgentCore-Operations|Bedrock AgentCore 운영]] — 관리형 에이전트 런타임과 비교
 - [[LLM-Model-Tiers#티어별 역할 분리와 상호 검토|역할별 에이전트 정의]] — Codex의 에이전트별 TOML 설정
+- [[Agent-Runtime-Deployment|다른 에이전트 런타임의 정의와 배포 경계]]

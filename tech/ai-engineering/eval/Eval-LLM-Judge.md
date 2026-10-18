@@ -70,6 +70,16 @@ aliases: ["LLM-as-a-Judge", "LLM-as-Judge", "LLM Judge", "LLM 판정기"]
 
 ## 사람 라벨로 판정기를 교정한다
 
+### 점수가 상단에 몰리면 근거와 배점을 분리한다
+
+콘텐츠 선별에서도 루브릭 기반 판정기를 쓸 수 있다. 모든 입력에 높은 점수가 나올 때는 척도를 바꾸기 전에 어떤 근거로 점수를 주는지 확인한다. 점수 분산이 커졌다는 사실만으로 사람의 판단에 더 가까워졌다고 결론 내리지 않는다.
+
+2025년 Fair Trade USA 시제품 사례에서는 글과 이미지 점수가 5점 척도의 4~5점에 몰리자, 0점에서 시작해 기준을 충족하는 증거를 찾을 때 점수를 더하는 프롬프트를 시험했다. 이는 해당 시제품의 경험이며 모든 모델에 효과가 있는 보정 공식이나 정확도 검증 결과는 아니다. AWS 공식 사례도 관련성, 공감 가능성, 참여 잠재력과 이미지 품질을 평가 기준으로 설명하지만 독립적인 정확도 수치를 제공하지 않는다.
+
+적용할 때는 기준별 충족 근거와 점수를 함께 받고, 원본에 없는 근거를 붙였는지 사람이 확인한다. 기존 프롬프트와 바꾼 프롬프트를 같은 교정 표본으로 비교하고, 실제 선별 결과와 놓친 후보를 평가한다. 채점 프롬프트가 달라지면 아래의 판정기 버전 관리도 함께 적용한다. 이 사례 절만 대조했으므로 문서 전체의 `verified_at`은 유지한다.
+
+### 일치율과 놓친 실패를 함께 본다
+
 판정기를 넓게 쓰기 전에 대표 표본(예: 답변 100건)을 사람이 통과와 실패로 라벨링하고, 같은 표본을 판정기에 돌려 일치도를 잰다. 사람과 꾸준히 일치하는 항목부터 판정기에 맡기고, 판정 프롬프트는 이 라벨 묶음을 판정기 전용 평가 세트로 삼아 고친다. 판정기도 평가 대상이다.
 
 단순 일치율에는 우연한 일치가 섞인다. Cohen's kappa는 관측 일치율 `p_o`에서 두 평가자의 라벨 분포로 기대되는 우연 일치 `p_e`를 빼고, 우연을 넘어 가능한 최대 일치로 나눈 값이다.
@@ -100,6 +110,8 @@ aliases: ["LLM-as-a-Judge", "LLM-as-Judge", "LLM Judge", "LLM 판정기"]
 
 ## 출처
 
+- [AWS Innovation with Fair Trade USA — Amazon Web Services](https://www.youtube.com/watch?v=0ju7zBp_zKc) — 2025년 발표 13:37~15:39, 근거별 가산 채점의 시제품 경험
+- [How Fair Trade USA uses AWS to improve working conditions for farmers — AWS, Mike George](https://aws.amazon.com/blogs/publicsector/how-fair-trade-usa-uses-aws-to-improve-working-conditions-for-farmers/) — 2026-10-16 사례의 평가 기준과 시제품 범위를 대조
 - [Judging LLM-as-a-Judge with MT-Bench and Chatbot Arena — arXiv, Lianmin Zheng 외](https://arxiv.org/abs/2306.05685)
 - [G-Eval: NLG Evaluation using GPT-4 with Better Human Alignment — arXiv, Yang Liu 외](https://arxiv.org/abs/2303.16634)
 - [LLM Evaluators Recognize and Favor Their Own Generations — arXiv, Arjun Panickssery 외](https://arxiv.org/abs/2404.13076)

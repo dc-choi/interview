@@ -16,7 +16,7 @@ aliases: ["Gemini 4 Argon", "제미나이 4 아르곤"]
 
 ## 출력 한도와 긴 작업
 
-발표된 주요 변화는 **출력 토큰 한도 1M**이다. 이를 입력 컨텍스트 한도와 혼동하지 않는다. 긴 추론과 생성 경로를 허용하는 용량이지, 매 요청이 그만큼 출력하거나 정확성을 보장한다는 뜻은 아니다.
+2026-10-16 공식 Gemini API 모델 문서 대조 기준, 입력과 출력이 공유하는 전체 토큰 한도는 1,048,576이다. 기본 동기 출력 한도는 65,536이고 long decode로 더 긴 생성을 이어간다. 입력, 추론과 최종 출력의 예산을 합산하며 1M 출력을 입력과 별개로 모두 사용할 수 있다는 의미로 읽지 않는다. Google Cloud 가이드는 비스트리밍 직접 HTTP 요청에서 32,768토큰 한도도 구분하므로 실제 호출 경로를 확인한다. 긴 생성 용량이 정확성이나 완료를 보장하지 않는다.
 
 긴 작업을 평가할 때는 다음 조건을 별도로 정한다.
 
@@ -73,11 +73,24 @@ aliases: ["Gemini 4 Argon", "제미나이 4 아르곤"]
 
 평가 기준으로는 외부 문서의 지시를 따라 권한을 넘는지, 잘못된 도구 호출 뒤 중단하는지, 검증 실패를 성공으로 보고하는지를 함께 확인한다. 발표된 방어 성능과 개별 배포 환경에서 검증한 동작을 구분한다.
 
+## 10월 일반 제공과 로봇 활용의 확인 범위
+
+2026-10-16 대조한 Google의 2026-10-13 개발자 발표는 유료 Gemini API, AI Studio 및 구독 제품의 확대 제공을 안내한다. API 접근 계획만 있었던 9월 발표와 구분한다. 계정별 리전, quota와 실제 호출 성공은 이번에 시험하지 않았다.
+
+제공된 2026-10-14 GeekNews 발췌는 Chrome 리팩터링 기간 단축, Gemma 4 E2B의 A100/vLLM 처리량 2.85배, 양자 오류 정정과 효소 및 희귀질환 연구를 소개한다. 이 세부 사례의 전체 측정 조건은 이번에 대조하지 않아 일반 성능 배율로 사용하지 않는다.
+
+로봇 활용은 영상 관찰, 물리적 공간 이해, 시뮬레이션 코드와 실제 제어를 연결하는 흐름이다. Google 공식 10월 발표는 ERQA에서 도구 없이 87%와 영상에서 시뮬레이션을 만들고 로봇으로 옮긴 내부 시연을 보고한다. 발췌의 ERQA 400문항, Opus 5.5 82.3%, GPT-6 Astra 81%의 비교 조건과 로봇 전체 행동 로그는 직접 대조하지 않았다. 질문 평가 점수를 실제 로봇의 안전한 작업 성공률로 환산하지 않는다.
+
 ## 출처
 
 - [Gemini 4 Argon: our next era of frontier intelligence — Google](https://blog.google/innovation-and-ai/models-and-research/gemini-models/gemini-4-argon/)
 - [Google DeepMind, Gemini](https://deepmind.google/models/gemini/)
 - [Google DeepMind, Gemini 4 Argon Model evaluation](https://deepmind.google/models/evals-methodology/gemini-4-argon)
+- [Google AI for Developers, Gemini 4 Argon](https://ai.google.dev/gemini-api/docs/models/gemini-4-argon)
+- [Google Cloud, Developer's guide to Gemini 4 Argon](https://docs.cloud.google.com/gemini-enterprise-agent-platform/models/guides/gemini-4-argon?hl=en)
+- [Gemini 4 Argon is now available for developers — Google](https://blog.google/innovation-and-ai/technology/developers-tools/build-with-gemini-4-argon/)
+- [Gemini 4 Argon: Built to solve your hardest problems — Google](https://blog.google/intl/en-in/products/introducing-gemini-4-argon/)
+- 사용자 제공 GeekNews 발췌: 2026-10-14 정식 출시, 2026-10-15 로봇 제어와 시뮬레이션 활용. 기존 가격과 전체 성능표를 다시 검증하지 않아 문서 전체 검증일은 유지한다.
 
 ## 관련 문서
 

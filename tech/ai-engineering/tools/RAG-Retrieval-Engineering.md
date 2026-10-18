@@ -1,7 +1,7 @@
 ---
 tags: [ai, rag, retrieval, search]
 status: done
-verified_at: 2026-10-09
+verified_at: 2026-10-18
 category: "AI엔지니어링(AIEngineering)"
 aliases: ["RAG Retrieval Engineering", "RAG 검색 엔지니어링", "RAG", "Hybrid Search", "Contextual Retrieval"]
 ---
@@ -36,6 +36,16 @@ RAGAS와 ARES 같은 연구도 retrieval context의 관련성, 답변 관련성,
 |---|---|---|
 | 고정 길이 | N 토큰마다 절단 | 표, 그래프, 논리 단위가 청크 경계에서 깨짐 |
 | 구조 기반 | 제목, 섹션, 문단 경계 | 파서 구현 비용, 비정형 문서엔 전처리 필요 |
+| 재귀 분할 | 빈 줄, 줄바꿈, 공백, 문자 순의 구분자로 자르되 조각이 크기 한도 안에 들 때까지 다음 구분자로 내려감 | 의미가 아니라 구분자와 길이로 판단, 단어 경계가 없는 언어는 구분자 조정 필요 |
+| 의미 기반 | 인접 문장 묶음의 embedding 거리가 임계값을 넘는 지점 | 문장 수만큼 embedding 계산, 크기 상한이 기준이 아님, 문장 분리와 임계값 조정 필요 |
+| 명제 단위 | 언어 모델이 원문을 사실 하나씩 담은 자기완결 문장으로 다시 쓰고 각각을 검색 단위로 삼음 | 색인할 때 생성 비용과 검색 단위 수 증가, 다시 쓴 문장이라 원문 span과 글자 그대로 대응하지 않음 |
+| Late chunking | 긴 문맥 embedding 모델로 문서 전체를 먼저 인코딩한 뒤 청크 경계별 token embedding을 mean pooling | mean pooling 방식의 긴 문맥 모델과 token 단위 출력 필요, 문맥 한도를 넘는 문서는 겹치는 큰 구간으로 나눠 처리 |
+
+2026-10-18 공식 문서 기준, LangChain은 `RecursiveCharacterTextSplitter`를 범용 텍스트의 권장 분할기로 안내한다. 기본 구분자는 `"\n\n"`, `"\n"`, `" "`, `""` 순이고 크기는 기본적으로 문자 수로 재며, 문단과 문장, 단어를 가능한 한 함께 두는 효과를 낸다. LlamaIndex `SemanticSplitterNodeParser`는 문장마다 앞뒤 `buffer_size`(기본 1)개 문장을 붙여 embedding하고, 이웃 묶음의 cosine 거리가 그 문서 안 거리 분포의 `breakpoint_percentile_threshold`(기본 95) 백분위를 넘는 곳을 경계로 삼는다. 임계값은 문서마다 상대적으로 정해지고 최대 크기 파라미터는 없다. 기본 문장 분리기는 NLTK `PunktSentenceTokenizer`(학습 없는 기본 설정, `.`, `?`, `!` 기준)이고 공식 문서도 영어 문장 위주로 동작한다고 안내한다. 다른 분리기는 `sentence_splitter`로 넘길 수 있다. 한국어 문서에는 문장 분리 결과와 청크 길이 분포를 embedding 모델 입력 한도와 함께 먼저 확인한다(적용 제안).
+
+명제 단위 검색을 제안한 Dense X Retrieval(EMNLP 2024)은 GPT-4 출력으로 미세조정한 Flan-T5-large로 영어 Wikipedia를 명제로 나눴다. 명제는 약 2억 5,700만 개로 문단의 약 6배였고 전체 분할에 NVIDIA P100 GPU 약 500시간이 들었다. 다섯 개 open-domain QA 데이터셋에서 문단 대비 Recall@20 평균 향상은 비지도 dense retriever(SimCSE, Contriever) +10.1%p, 지도 retriever(DPR, GTR) +2.7%p였다. Late chunking은 mean pooling을 쓰는 긴 문맥 embedding 모델에 추가 학습 없이 적용할 수 있고, 경계는 고정 길이, 문장, 의미 기반 어느 방식에서든 가져온다. jina-embeddings-v2-small, jina-embeddings-v3, nomic-embed-text-v1과 BeIR 네 데이터셋(SciFact, NFCorpus, FiQA, TREC-COVID)의 nDCG@10 평균 상대 향상은 문장 경계 3.63%, 256토큰 고정 길이 3.46%, 의미 경계 2.70%였다. jina-embeddings-v2-small의 청크 크기 실험에서는 작은 청크에서 특히 나았지만 일부 독해 과제에서는 큰 청크로 먼저 자른 뒤 따로 인코딩하는 기존 방식이 더 나았고, 주변 문맥이 무관한 Needle, Passkey 과제에서는 도움이 되지 않았다.
+
+적용할 때 명제는 원문과 글자 그대로 대응하지 않으므로 위의 원문 span 계약을 명제마다 유지하고 citation은 원문 span을 가리키게 한다(적용 제안). Late chunking은 문서 일부만 바뀌어도 같은 입력 구간의 청크 embedding을 모두 다시 계산해야 하고, 청크마다 LLM을 호출하지 않는 대신 맥락이 embedding에만 반영되므로 BM25까지 보강하는 아래 Contextual Retrieval과 같은 질문 세트로 비교한다(적용 제안). 문서마다 LLM이나 에이전트가 코드, 계약서, 표 같은 유형을 판별해 분할 방식을 고르는 구성은 1차 출처로 확인한 표준이 아닌 설계 선택지다. LlamaIndex는 Markdown, HTML, JSON과 코드 언어별 parser를 따로 제공한다. 유형 판별을 모델에 맡기면 판별 결과와 chunker version을 청크 메타데이터에 남겨 재처리와 회귀 비교가 가능하게 한다(설계 제안). 출처별 기본 단위는 [[Agentic-Context-Platform#출처별 의미 단위|출처별 의미 단위]]를, 섹션과 문단, 문장 계층으로 나누는 방식은 아래 계층적 RAG 절을 따른다.
 
 PDF, 스캔본 같은 비정형 문서는 청킹 전에 OCR과 layout parsing으로 텍스트, 표, 읽기 순서를 복원한다. Chunk 크기와 overlap은 정답이 아니라 corpus별 변수다. 대표 질문에서 retrieval recall과 context token 비용을 함께 비교한다.
 
@@ -197,6 +207,7 @@ Q. 검색은 됐는데 폐기된 정책으로 답했다면?
 - [[pgvector|pgvector (PostgreSQL 벡터 검색)]]
 - [[LLM-Eval-Strategy|LLM 평가 전략 (검색 품질을 어떻게 측정하나)]]
 - [[LLM-Hallucination-Verification|LLM 환각 유형과 검증 (사실성과 충실성, 인용의 존재와 적용과 지지 검사)]]
+- [[Agentic-Context-Platform|에이전트 컨텍스트 플랫폼 (출처별 의미 단위, provenance 계약)]]
 
 ## 출처
 
@@ -210,7 +221,7 @@ Q. 검색은 됐는데 폐기된 정책으로 답했다면?
 - [Microsoft Learn, Microsoft 365 Copilot connectors overview](https://learn.microsoft.com/en-us/microsoft-365/copilot/extensibility/overview-copilot-connector)
 - [Effective context engineering for AI agents — Anthropic](https://www.anthropic.com/engineering/effective-context-engineering-for-ai-agents)
 
-2026-10-02에는 검색 권한과 교차 유출 위험을 OWASP LLM08에 대조했다. 데이터 수명과 검증 항목은 그 원칙을 적용한 설계 제안이며 특정 검색 엔진의 기본 보장이 아니다. 기존 검색 기법과 평가 논문 전체를 다시 검증한 기록은 아니다. 2026-10-06에는 청크별 맥락 보강과 전체 투입 규모 안내를 Anthropic 발표에 대조했다. 맥락 재생성과 version 관리는 그 기법을 적용한 설계 제안이다. 같은 날 더한 적용 범위 메타데이터, 충돌 문서 처리, 조건과 예외의 청크 배치와 모델 입력 기록도 설계 제안이다.
+2026-10-02에는 검색 권한과 교차 유출 위험을 OWASP LLM08에 대조했다. 데이터 수명과 검증 항목은 그 원칙을 적용한 설계 제안이며 특정 검색 엔진의 기본 보장이 아니다. 기존 검색 기법과 평가 논문 전체를 다시 검증한 기록은 아니다. 2026-10-06에는 청크별 맥락 보강과 전체 투입 규모 안내를 Anthropic 발표에 대조했다. 맥락 재생성과 version 관리는 그 기법을 적용한 설계 제안이다. 같은 날 더한 적용 범위 메타데이터, 충돌 문서 처리, 조건과 예외의 청크 배치와 모델 입력 기록도 설계 제안이다. 2026-10-18에는 재귀 분할과 의미 기반 분할의 기본값과 동작을 LangChain 공식 문서, LlamaIndex 공식 문서(API 레퍼런스의 구현 코드 포함)와 NLTK Punkt 문서에, 명제 단위 분할과 late chunking의 정의, 실험 조건과 수치를 각 원 논문의 arXiv v3에 대조했으며, 명제의 원문 span 유지, late chunking의 재계산 범위, Contextual Retrieval과의 비교와 문서 유형별 분할 선택은 이를 적용한 설계 제안이고 문서 전체를 다시 대조한 기록은 아니다.
 
 - [OWASP GenAI, LLM08:2025 Vector and Embedding Weaknesses](https://genai.owasp.org/llmrisk/llm082025-vector-and-embedding-weaknesses/)
 - [Ragas: Automated Evaluation of Retrieval Augmented Generation](https://arxiv.org/abs/2309.15217)
@@ -221,3 +232,9 @@ Q. 검색은 됐는데 폐기된 정책으로 답했다면?
 - [LLM 에이전트 실무 사례 (리트리벌 스킬, RankJ 근거 태깅) — 개발 컨퍼런스 (YouTube)](https://www.youtube.com/watch?v=wEVPnYOuAf8&list=PLgXGHBqgT2TtGi82mCZWuhMu-nQy301ew)
 - [Introducing Contextual Retrieval — Anthropic](https://www.anthropic.com/news/contextual-retrieval)
 - [How LinqAlpha assesses investment theses using Devil’s Advocate on Amazon Bedrock — AWS, LinqAlpha](https://aws.amazon.com/blogs/machine-learning/how-linqalpha-assesses-investment-theses-using-devils-advocate-on-amazon-bedrock/) — 2026-10-07 전제 분해, 반대 근거 검색과 인용 연결 흐름을 대조했다. 검색 실패의 해석과 품질 점수 기준은 적용 시 설계 제안이다. 제품 성과 수치나 특정 모델의 우월성을 일반화하지 않는다.
+- [LangChain Documentation, Splitting recursively](https://docs.langchain.com/oss/python/integrations/splitters/recursive_text_splitter)
+- [LlamaIndex Documentation, Node Parser Modules](https://developers.llamaindex.ai/python/framework/module_guides/loading/node_parsers/modules)
+- [LlamaIndex API Reference, Semantic splitter](https://developers.llamaindex.ai/python/framework-api-reference/node_parsers/semantic_splitter/)
+- [NLTK Documentation, nltk.tokenize.punkt module](https://www.nltk.org/api/nltk.tokenize.punkt.html)
+- [Dense X Retrieval: What Retrieval Granularity Should We Use? — arXiv](https://arxiv.org/html/2312.06648v3)
+- [Late Chunking: Contextual Chunk Embeddings Using Long-Context Embedding Models — arXiv](https://arxiv.org/html/2409.04701v3)

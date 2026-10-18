@@ -67,7 +67,17 @@ aliases: ["Expertise Formation AI", "AI 시대 전문성 형성", "AI와 코딩 
 - 숙련자 역설 — 기존 전문성이 감사에 어떻게 도움이 되며, 위임이 독립 연습을 줄일 위험과 아직 측정되지 않은 부분은 무엇인가.
 - 주니어 육성을 어떻게 설계할 것인가 — 튜터 모드, 마찰 보존 구간, 검토와 직접 구현의 배합.
 
+## 수학 진로의 사례: 발견, 이해와 고용은 다른 질문이다
+
+AI가 증명을 생성하는 능력과 수학을 이해하고 설명하는 사람의 역할을 구분한다. 학문을 깊이 배우려는 목적, 연구 과제, 교육과 실제 고용 조건을 각각 검토한다. 이미 안정된 연구자의 낙관론을 초기 경력자의 경제적 불확실성에 그대로 적용하지 않는다.
+
+2026-10-08 What should we tell our students?는 수학 박사과정의 이유를 깊은 이해와 전문성에 연결하고 진로 예측의 불확실성을 인정한다. Terence Tao 블로그에 실린 Álvaro Lozano-Robledo의 기고이며 Tao 본인의 글로 귀속하지 않는다(2026-10-16 원문 확인).
+
+여기서 볼록껍질 가설은 AI가 기존 아이디어 사이를 연결한다는 단순화된 모형이다. 새로운 개념을 만들 수 없다는 입증된 한계가 아니다. 수학적 직관을 바탕으로 탐색을 지휘하고 생성된 증명을 독립적으로 확인하는 관점과 연결하되, 학위의 고용 가치나 사용자 본인의 진학 결정을 확정하지 않는다. 관련 인간 공동체와 상실감의 사례는 [[AI-Intellectual-Community|AI와 지적 공동체]]를 참고한다.
+
 ## 출처
+
+- [What should we tell our students? — Álvaro Lozano-Robledo, Terence Tao 블로그 기고](https://terrytao.wordpress.com/2026/10/08/what-should-we-tell-our-students/) — 2026-10-08, 진로 의견과 볼록껍질 가설, 고용 예측 미검증
 
 - [AI Coding will Prevent Expertise — Lars Faye](https://larsfaye.com/articles/ai-coding-will-prevent-expertise)
 - [AI 의존이 코딩 전문성의 성장 경로를 무너뜨릴 수 있음 — GeekNews](https://news.hada.io/topic?id=32854)

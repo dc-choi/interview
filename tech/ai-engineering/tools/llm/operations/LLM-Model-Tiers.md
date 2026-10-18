@@ -25,6 +25,7 @@ aliases: ["LLM Model Tiers", "모델 티어 선택", "모델 라우팅", "Model 
 ## 티어 간 트레이드오프
 
 - **단가**: 상위 티어보다 하위 티어가 저렴하지만 가격 차이는 벤더와 세대마다 다르다. 티어 이름만 보고 절반이라고 가정하지 말고, 선택 시점의 공식 단가와 eval 결과를 함께 비교한다. 2026-10-06 공식 가격 기준으로 OpenAI GPT-6 계열의 출력 단가는 Astra $50, GPT-6.1 Sol $10, Luna $0.50(100만 토큰당, 입력 272K 이하)으로 같은 벤더 안에서도 100배 차이 난다. 출력 단가는 Anthropic 현재 모델과 GPT-6 계열이 입력의 5배, Gemini 3.1 Pro Preview가 6배다(긴 컨텍스트 구간 제외). 같은 가격표에도 Gemini 3.5 Flash-Lite 약 8배, Gemini 2.5 Pro 8배처럼 배율이 다른 모델이 있다. 그래서 출력과 사고 토큰이 많은 작업은 비용이 출력 쪽에 몰린다. 간결한 응답이 필요하면 프롬프트로 원하는 길이를 지시한다.
+- **과업당 비용**: 하위 티어의 단가가 절반이어도 토큰을 더 쓰면 과업당 비용은 절반보다 훨씬 클 수 있다. 2026-10-18 Artificial Analysis(Intelligence Index v4.3.2, Max 설정) 기준 Sonnet 5.5는 지수 평가에서 4억 2천만 토큰을 생성해 Opus 5.5(2억 6천만)보다 많았고, 과업당 비용은 $5.46으로 Opus 5.5($5.98)보다 약 9% 낮은 데 그쳤다. effort나 자기 업무의 출력 길이가 다르면 차이도 달라지므로 같은 과업의 토큰 수와 비용으로 비교한다([[AI-Capability-and-Cost-Trends#모델 비교에서 속도와 비용의 측정 단위를 분리한다|단가와 과업당 비용]]).
 - **지연**: 작은 티어일수록 빠르다. 사용자 대면 실시간 경로(자동완성, 채팅 첫 토큰)는 지연이 품질만큼 중요하다.
 - **능력 게이팅**: 최상위 추론 강도(max reasoning effort)나 특수 모드는 플래그십에서만 열리는 경우가 있다. 즉 일부 능력은 돈을 더 낸다고 아무 티어에서나 살 수 없고, 티어 자체를 올려야 한다.
 - **재작업 비용**: 호출 단가만 보면 하위 티어가 싸지만, 복잡한 작업에서는 근거 없는 내용을 사실처럼 쓰거나 스스로 점검하지 못하고 중간에 멈춰 사람이 뒷수습하는 비용이 붙는다. 반대로 스펙이 확정된 단순 반복 구현(CRUD, 정해진 양식의 보고서)에 상위 티어를 쓰면 비용만 늘고 결과가 더 좋지도 않다. 초기 오류를 막는 일이 중요하고 디버깅이 비싼 작업은 상위 티어와 높은 effort를, 스펙이 분명하고 속도가 중요한 작업은 하위 티어를 먼저 고른다. 경험칙이므로 같은 과업의 품질, 시간, 비용으로 확인한다.
@@ -131,6 +132,8 @@ Haiku 5.5 사례를 2026-10-12 공식 발표, 가격표와 모델 문서에 대�
 - [Anthropic Platform Docs, Effort](https://platform.claude.com/docs/en/build-with-claude/effort)
 - [Anthropic Platform Docs, Steering thinking](https://platform.claude.com/docs/en/build-with-claude/thinking-steering-and-cost)
 - [Introducing Claude Opus 5.5 — Anthropic](https://www.anthropic.com/claude-opus-5-5)
+- [Claude Sonnet 5.5 (Max, Default Fallback) Intelligence, Performance & Price Analysis — Artificial Analysis](https://artificialanalysis.ai/models/claude-sonnet-5-5) (2026-10-18 과업당 비용과 생성 토큰 확인)
+- [Claude Opus 5.5 (Max, Default Fallback) Intelligence, Performance & Price Analysis — Artificial Analysis](https://artificialanalysis.ai/models/claude-opus-5-5) (2026-10-18 과업당 비용과 생성 토큰 확인)
 - [Claude Code Docs, Model configuration](https://code.claude.com/docs/en/model-config) (opusplan 확인)
 - [Claude Code Docs, How Claude Code uses prompt caching](https://code.claude.com/docs/en/prompt-caching) (모델별 캐시, opusplan 전환의 캐시 재생성)
 - [Claude Help Center, Models, usage, and limits in Claude Code](https://support.claude.com/en/articles/14552983-models-usage-and-limits-in-claude-code)

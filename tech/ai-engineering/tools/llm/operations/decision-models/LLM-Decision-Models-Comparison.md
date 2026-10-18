@@ -10,6 +10,8 @@ aliases: ["LLM Decision Models Comparison", "결정 모델 비교", "Jev와 Clef
 
 Jev, Clef와 Clef-flash의 제공 방식, 가격, 지연과 정확도, 로컬 Laya, 가드레일 비교 평가를 정리하고 결정 모델의 한계와 운영 체크포인트를 둔다. 질문 스키마와 확률, confidence의 의미는 [[LLM-Decision-Models-Mechanics|정의와 동작 원리]]를 따른다. 상위: [[LLM-Decision-Models|결정 모델]].
 
+Jev 1.14 발표와 함께 공개된 이미지 입력과 긴 문맥 실험 기능(둘 다 1.13에서도 헤더로 사용 가능), 1.14 전용 `box` 타입, Microsoft-Decision-1 및 보정 사례는 [[LLM-Decision-Models-Calibration-Cases|보정과 버전 변경]]에 2026-10-16 확인 범위로 둔다. 아래 1.13 비교표는 2026-10-06의 기본 입력 계약이다.
+
 ## 트레이드오프
 
 ### Jev와 Clef 비교 (2026-10-06 확인)

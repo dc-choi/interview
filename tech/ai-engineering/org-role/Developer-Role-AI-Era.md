@@ -197,3 +197,4 @@ Product Engineer, Forward Deployed Engineer(FDE), Agent Engineer 같은 표현�
 - [[Essential-vs-Accidental-Complexity|본질적 복잡성과 우발적 복잡성]] — 도구가 없애는 우발적 복잡성과 남는 본질적 복잡성, 비결정론적 LLM 코드
 - [[Backend-Developer-Career-Overview|백엔드 개발자 진로 개요]] — 변하는 구현 방식과 변하지 않는 책임
 - [[Tech-Trend-Learning-Strategy|기술 변화와 학습 전략]] — 깊이 있는 학습과 이전 가능한 작동 모델
+- [[AI-Work-Output-and-Employment|AI 코드 생산과 제품 성과 및 고용]] — 718개 기업 연구, 조건부 제품 역할 전망과 고용 일화

@@ -10,6 +10,7 @@ aliases: ["컨텍스트", "Context Engineering Hub", "컨텍스트 허브"]
 모델이 무엇을 보게 할지 설계하는 층 — 수요 측(윈도우에 무엇을 넣을지), 공급 측(조직 자산을 어떻게 모아 공급할지), 그리고 컨텍스트를 실제로 채우는 도구 출력의 통제. 상위: [[tools|AI 엔지니어링 실천 도구]].
 
 ## 목차
+- [[Palantir-Foundry|Palantir 운영 온톨로지]] — 데이터, 로직, 행동과 보안의 결합, 개인 지식 온톨로지와 적용 경계
 - [x] [[LLMs-Txt|llms.txt 웹 문서 안내]] — v2 형식, 경로와 발견, 생성 도구, 검색 노출과 운영 검증
 - [x] [[Strands-Conversation-State|Strands 대화와 세션 상태]] — 메시지 축약, 영속 저장과 동시 쓰기 제어의 구분
 - [x] [[Long-Context-Evaluation|긴 문맥 평가]] — 길이와 위치 민감도, RULER의 한계, RAG와 전체 투입 비교
@@ -23,3 +24,4 @@ aliases: ["컨텍스트", "Context Engineering Hub", "컨텍스트 허브"]
 - [x] [[AI-Workflow-Knowledge-Loop|AI 업무와 지식 환류 (멀티레포 분석, 이슈와 PR 추적, 운영 표준과 경험 분리, 현재 환경 대조)]]
 - [x] [[Ontology-Context-Platform-Implementation|Markdown Vault 온톨로지와 파생 색인 구축 (최소 schema, 수집, 평가와 확장 기준)]]
 - [x] [[Ontology-Context-Platform-AI-Runtime|AI가 Vault를 읽는 런타임 (context_lookup, Context Pack, MCP, 검증과 학습 순서)]]
+- [x] [[Context-Development-Lifecycle|컨텍스트 개발 수명주기]] — 생성, 평가, 배포와 관찰, 출처와 버전 및 운영 환류

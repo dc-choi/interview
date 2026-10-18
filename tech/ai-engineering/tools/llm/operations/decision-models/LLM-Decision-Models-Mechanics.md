@@ -79,3 +79,4 @@ Clef는 Qwen 기반 모델을 고정한 채 라우팅 헤드와 rank-256 LoRA �
 - [[LLM-Decision-Models-Use-Cases|활용 예시]]
 - [[LLM-Decision-Models-Comparison|모델 비교, 한계와 운영 체크포인트]]
 - [[LLM-Generation-Mechanics-Decoding|LLM 추론과 디코딩]] — Logit과 softmax, 토큰 분포와 확신도의 구분
+- [[LLM-Decision-Models-Calibration-Cases|토큰 제한 실험과 확률 보정 사례]]

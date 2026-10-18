@@ -30,6 +30,20 @@ aliases: ["LLM Workflow Patterns Data and Operations", "데이터 vs 모델", "�
 
 내부 지식 봇은 배포 완료와 업무 개선을 나누어 평가한다. AWS의 생성형 AI 운영 가이드는 기술 지표와 업무 결과의 연결, 지속적인 모니터링을 요구한다(2026-10-10 확인). 이를 적용하는 예로 제한된 사용자 집단에서 실제 질문과 검토한 답을 모으고, 정답률뿐 아니라 재문의와 사람에게 넘기는 비율, 해결까지의 시간을 확인한 뒤 이용 범위를 넓힐 수 있다. 개발 기간 단축이나 이용 계정 수만으로 현장 직원의 생산성이 검증됐다고 보지 않는다.
 
+### 사람 검토로 넘기는 조건을 분리한다
+
+자동 처리와 사람 검토를 나눌 때는 업무 정책의 임계값, 모델 출력의 신뢰도, 필수 입력의 누락을 별도 조건으로 설계한다. 예를 들어 일정 금액 이상은 담당자가 검토하도록 정한 업무 정책과 문서에서 금액을 정확히 추출했는지는 다른 판단이다. 추출 신뢰도가 높아도 업무상 승인 권한을 대신하지 않는다. 이는 아래 문서 검토 기능을 업무 흐름에 적용하는 설계 예시다.
+
+Amazon A2I의 Textract 통합은 다음 조건을 구분한다(2026-10-16 공식 문서 확인).
+
+- `ImportantFormKeyConfidenceCheck`: 지정한 문서 필드와 단어 블록의 신뢰도가 설정 범위에 들어가면 검토를 시작한다.
+- `MissingImportantFormKey`: 중요한 필드나 그 별칭을 찾지 못했을 때 검토를 시작한다.
+- `Sampling`: 신뢰도와 무관한 표본 검토를 구성할 수 있다. 낮은 신뢰도만 검토하는 흐름과 구분한다.
+
+이 조건들은 Textract의 문서 추출 결과에 대한 것이다. 일반 LLM의 자기평가 점수를 같은 의미의 신뢰도로 취급하거나, 검토 대상으로 선택됐다는 사실을 업무 승인 완료로 해석하지 않는다. A2I의 사용자 정의 작업에는 위 활성화 조건을 설정할 수 없으며 애플리케이션이 `StartHumanLoop`를 호출할 조건을 직접 판단한다.
+
+2026-10-16 기준 A2I는 신규 고객에게 제공되지 않고 기존 고객은 계속 사용할 수 있다. 여기서는 검토 분기 설계의 사례로 다루며 신규 도입을 전제로 하지 않는다. 승인 위치와 실행 권한의 분리는 [[LLM-Workflow-Patterns-Chain-vs-Agent#콘텐츠 초안과 승인 대기열|승인 대기열]]을 함께 본다.
+
 ## 면접 체크포인트
 
 - 데이터 vs 모델 — 도메인 특화면 데이터, 실무자가 당장 손댈 수 있는 쪽도 데이터
@@ -40,6 +54,8 @@ aliases: ["LLM Workflow Patterns Data and Operations", "데이터 vs 모델", "�
 - 성과 평가 보조: Jira 이슈/에픽 → OKR 연결 → 회사 평가 기준 반영으로 성과 노트 초안 작성. 동료 평가는 AI가 질문을 던져 구체화하고 AAT(행동-감사-기대), SBI(상황-행동-영향) 피드백 구조를 적용. 데이터 전처리(누락값, 형식 오류)와 평가 윤리(편향, 개인정보, 최종 판단은 사람)가 난제.
 
 ## 출처
+- [AWS, Use Human Loop Activation Conditions JSON Schema with Amazon Textract](https://docs.aws.amazon.com/sagemaker/latest/dg/a2i-json-humantaskactivationconditions-textract-example.html)
+- [AWS, Create a Human Review Workflow](https://docs.aws.amazon.com/sagemaker/latest/dg/a2i-create-flow-definition.html)
 - [AWS Prescriptive Guidance, Delivering and sustaining the value of a generative AI application](https://docs.aws.amazon.com/prescriptive-guidance/latest/gen-ai-lifecycle-operational-excellence/prod-value.html)
 - [LLM 에이전트 실무 사례 (물어보세, 스마트 마이 노트, HyperCLOVA X Skill Universe) — 개발 컨퍼런스 (YouTube)](https://www.youtube.com/watch?v=wEVPnYOuAf8&list=PLgXGHBqgT2TtGi82mCZWuhMu-nQy301ew)
 

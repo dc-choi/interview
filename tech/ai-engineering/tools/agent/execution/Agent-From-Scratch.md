@@ -105,6 +105,19 @@ const runAgent = async (userInput: string): Promise<string> => {
 
 직접 만든 구현은 원리를 익히기에 좋지만, 복잡한 흐름 제어, 재시도, 관측, 상태 저장까지 갖추려면 비용이 크다. LangGraph 같은 오케스트레이션 프레임워크나 공급자 SDK의 도구 실행 루프(Anthropic SDK의 Tool Runner 등)를 쓰면 루프와 도구 결과 처리를 맡길 수 있다. 어느 쪽이든 모델 출력은 비결정적이므로 검증, 한도, 승인, 평가는 직접 설계해야 한다. [[LLM-Eval-Strategy]]
 
+### 실행 이벤트와 대화 기록의 순서를 분리한다
+
+도구를 병렬 실행하면 완료 순서가 호출 순서와 달라진다. 화면의 진행 표시와 모델에 돌려줄 대화 기록을 같은 배열 순서로 취급하지 않는다.
+
+2026-10-18 확인한 pi agent core의 README와 `agent-loop.ts`는 다음 경계를 보여준다. 설치 버전 전반의 계약이 아니라 확인한 main 소스의 사례다.
+
+- `transformContext`는 오래된 메시지 정리와 문맥 주입을, `convertToLlm`은 앱 전용 메시지를 모델 입력으로 변환하거나 제외하는 일을 맡는다.
+- 병렬 실행에서 `tool_execution_end`는 도구 완료 순서로 나오지만, 최종 tool result 메시지는 assistant가 요청한 순서를 유지한다. 결과 연결에는 호출 ID를 사용한다.
+- `beforeToolCall`은 인자 검증 뒤 실제 실행을 차단할 수 있다. 완료 이벤트를 받은 뒤의 검사로 이미 발생한 부수효과를 예방할 수 있다고 가정하지 않는다.
+- Steering 입력은 진행 중인 도구 배치를 마친 뒤 다음 모델 턴에 반영한다. Follow-up은 도구 호출과 steering이 더 없을 때 확인한다. 새 지시가 도착했다는 사실을 현재 도구의 취소 완료로 표시하지 않는다.
+
+학습할 때는 서로 다른 시간에 끝나는 도구 두 개와 실행 중 추가 입력을 예제로 두고, 완료 이벤트, 저장된 결과, 다음 모델 입력의 순서를 비교한다. 이 문서에서는 소스를 대조했으며 실제 실행 시험은 하지 않았다.
+
 ## 체크포인트
 
 - 모델, 오케스트레이션, 도구 계층이 각각 하는 일
@@ -115,6 +128,8 @@ const runAgent = async (userInput: string): Promise<string> => {
 
 ## 출처
 
+- [pi agent core README — pi-mono](https://github.com/badlogic/pi-mono/blob/main/packages/agent/README.md)
+- [Agent loop source — pi-mono](https://github.com/badlogic/pi-mono/blob/main/packages/agent/src/agent-loop.ts)
 - [Amazon Bedrock, Configure Lambda functions to send information that an Amazon Bedrock agent elicits from the user](https://docs.aws.amazon.com/bedrock/latest/userguide/agents-lambda.html)
 - [Amazon Bedrock, Automate tasks in your application using AI agents](https://docs.aws.amazon.com/bedrock/latest/userguide/agents.html)
 - [Amazon Bedrock, Get user confirmation before invoking action group function](https://docs.aws.amazon.com/bedrock/latest/userguide/agents-userconfirmation.html)

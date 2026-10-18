@@ -111,6 +111,12 @@ Graphify는 tree-sitter AST에서 함수, class, import와 call 관계를 추출
 - graph 중심성이 business criticality나 결함을 증명하지 않는 이유
 - 수정 뒤 source 검증뿐 아니라 index freshness까지 복구해야 하는 이유
 
+## Jevgrep: 동작 질문과 원문 발췌
+
+2026-10-18 공식 저장소 README 대조 기준, `dzhng/jevgrep`(npm `@dzhng/jevgrep`, 명령 `jg`)은 코드가 하는 일을 자연어로 질문하면 관련 파일, 읽을 위치와 줄 참조가 붙은 원문 발췌를 한 번의 표준 출력으로 돌려주는 코딩 에이전트용 CLI다. Jev로 폴더, 파일과 선언의 관련성을 판정하며 저장소 계층을 따라 탐색한다. Python, TypeScript/JavaScript, Go와 Rust는 선언을 분석하고 그 밖의 텍스트는 대체 방식으로 다룬다. 에이전트 연결은 `jg skill`로 설치하는 에이전트 스킬로 안내하며 README에 MCP 서버 설정은 없다.
+
+같은 이름의 `nassim-arifette/jevgrep`(npm `@nassim-arifette/jevgrep`)은 CLI와 MCP 서버를 제공하고 대상 조각 전체를 Jev로 채점하는 다른 프로젝트다. 스코프 없는 npm 패키지 `jevgrep`도 두 저장소가 안내하는 설치 대상이 아니므로 저장소와 배포자를 먼저 식별한다. 출력은 관련 파일을 모두 찾았다는 보장이 아니므로 파일 목록과 줄 참조는 후보 발견에 쓰고 현재 소스, 호출부와 테스트를 다시 읽는다. 입력 코드가 외부 공급자로 전송되는 범위, 로컬 캐시와 불완전한 결과의 처리도 확인한다. 설치, API 호출과 검색 성능 재현은 수행하지 않았다.
+
 ## 출처
 
 - [Semble — Fast and Accurate Code Search for Agents](https://github.com/MinishLab/semble)
@@ -124,6 +130,9 @@ Graphify는 tree-sitter AST에서 함수, class, import와 call 관계를 추출
 - [Claude Code Docs, Tools reference](https://code.claude.com/docs/en/tools-reference)
 - [Improving agent with semantic search — Cursor](https://cursor.com/blog/semsearch)
 - [GitHub Copilot gets smarter at finding your code: Inside our new embedding model — GitHub](https://github.blog/news-insights/product-news/copilot-new-embedding-model-vs-code/)
+- [jevgrep — dzhng](https://github.com/dzhng/jevgrep)
+- [JevGrep — nassim-arifette](https://github.com/nassim-arifette/jevgrep)
+- [jevgrep - 코드의 동작을 질문해 관련 파일을 찾는 코딩 에이전트용 CLI — GeekNews](https://news.hada.io/topic?id=35208) — 2026-10-12 사용자 제공 발췌, 링크한 저장소는 `dzhng/jevgrep`
 
 ## 관련 문서
 
@@ -132,3 +141,4 @@ Graphify는 tree-sitter AST에서 함수, class, import와 call 관계를 추출
 - [[RAG-Retrieval-Engineering|RAG 검색 엔지니어링]]
 - [[MCP|MCP와 도구 신뢰 경계]]
 - [[AI-Native-System|AI 네이티브 시스템의 검증 계층]]
+- [[Agent-Reverse-Engineering|소스가 없을 때의 분석과 재구현]]

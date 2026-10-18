@@ -85,3 +85,14 @@ Software 3.0 패러다임, LLM과 에이전트, 하네스, 평가, 조직 전환
 - [x] [[Claude-Code-Workflows#긴 작업의 완료와 중단 조건|에이전트의 완료와 중단 조건]] — 결과 증거, 작업 목록과 검증 한계
 - [x] [[LLM-Generation-Mechanics-Analogies|비개발자 설명용 LLM 비유와 한계]] — 학습 때 정해지는 것과 요청마다 고르는 것, 네 가지 수량, 비유가 맞는 부분과 깨지는 지점
 - [x] [[LLM-Generation-Mechanics-Context-and-Agent#프롬프트, RAG와 파인튜닝은 바꿀 대상으로 고른다|프롬프트, RAG와 파인튜닝 선택]] — 바꾸는 층, 지식과 행동 문제의 구분, 구조화 출력, 비용 비교와 파인튜닝 제공 범위
+- [x] [[Agent-Runtime-Deployment|에이전트 런타임과 배포]] — Eve, Mecatl, Strands Harness SDK, OpenCode 2.0의 책임과 확인 수준
+- [x] [[Agent-Reverse-Engineering|에이전트 역공학과 실행 하네스]] — REA, 게임 상태 재현, 브라우저 이식, Xbox Labs 발표와 Ruby 생태계 사례
+- [x] [[Agent-Code-Search#Jevgrep: 동작 질문과 원문 발췌|Jevgrep 코드 검색]] — 자연어 후보 탐색, 원문 확인과 동명 패키지 경계
+- [x] [[Context-Development-Lifecycle|컨텍스트 개발 수명주기]] — 생성, 평가, 배포와 관찰
+- [x] [[MCP-Gateway-Architecture|MCP 게이트웨이]] — Uber의 발견, 활성화와 실행 권한 분리
+- [x] [[LLM-Decision-Models-Calibration-Cases|결정 모델 보정과 버전 변경]] — Qwen, Microsoft-Decision-1, Jev 1.14와 표현 안정성
+- [x] [[Local-Inference-Deployment-Cases|로컬 추론 배포]] — Janas, Minions, LFM2.5와 Muse Spark Open
+- [x] [[Agent-Model-Capability-Contracts|기억과 전문 영역 모델 평가]] — Muse Wonder, GLM-Legal
+- [x] [[AI-Research-Innovation-Evaluation|AI 연구 혁신 평가]] — InnovationEval의 과제와 개선 달성률
+- [x] [[Neural-Circuit-Interpretability|뉴런과 회로 해석]] — 재귀적 일반화 가설과 인과 검증
+- [x] [[Generative-Artifact-Contracts|시각 산출물 생성 계약]] — AesCode의 검증 가능한 코드와 Krea 3의 부분 편집
