@@ -252,6 +252,20 @@ class CollectionTests(unittest.TestCase):
         self.assertTrue(Path(candidate['path']).is_file())
         self.assertNotIn(key, {item['key'] for item in docs.candidates(self.root, set())})
 
+    def test_baseline_body_is_not_a_candidate_until_revised(self):
+        self.discover()
+        sha = self.state()['documents'][URL]['sha256']
+        docs.write(self.root / 'palantir' / 'BASELINE.json', json.dumps({'documents': {URL: [sha]}}))
+        self.assertNotIn(URL, {item['url'] for item in docs.candidates(self.root, set())})
+        self.assertEqual(docs.summary(self.root, [])['baseline_current'], 1)
+        for url in list(self.state()['documents']):
+            self.responses[url] = PAGE
+        docs.discover(self.root, {'fetch_limit': 3, 'refresh_hours': 1})
+        self.clock.return_value += 4000
+        self.responses[URL] = PAGE.replace('Document content.', 'Revised document.')
+        self.assertEqual(self.discover()['changed'], 1)
+        self.assertIn(URL, {item['url'] for item in docs.candidates(self.root, set())})
+
     def test_empty_failure_retry_preserves_existing_snapshot_and_knowledge(self):
         self.discover()
         original = self.state()['documents'][URL].copy()

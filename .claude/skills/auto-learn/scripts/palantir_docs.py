@@ -320,19 +320,28 @@ def discover(state_dir, conf, dry_run=False):
     return report
 
 
+def baseline(state_dir):
+    """Body hashes already learned outside the queue, such as a manual full-corpus pass."""
+    return load(Path(state_dir) / "palantir" / "BASELINE.json").get("documents", {})
+
+
 def candidates(state_dir, done):
     entries = load(Path(state_dir) / "palantir" / "STATE.json").get("documents", {})
+    known = baseline(state_dir)
     return [{"key": e["key"], "source": "palantir", "title": e.get("title", ""), "url": url,
              "path": e["path"], "sha256": e["sha256"], "fetched_at": e["fetched_at"], "tags": ["tech", "biz"]}
-            for url, e in entries.items() if e.get("key") not in done and e.get("path") and Path(e["path"]).is_file()]
+            for url, e in entries.items() if e.get("key") not in done and e.get("sha256") not in known.get(url, ())
+            and e.get("path") and Path(e["path"]).is_file()]
 
 
 def summary(state_dir, log_rows):
     state = load(Path(state_dir) / "palantir" / "STATE.json")
     entries = state.get("documents", {})
     learned = {r.get("key") for r in log_rows if r.get("result") in ("learned", "merged") and r.get("commit")}
+    known = baseline(state_dir)
     return {"discovered": len(entries), "fetched": sum(bool(e.get("key")) for e in entries.values()),
             "learned_current": sum(e.get("key") in learned for e in entries.values()),
+            "baseline_current": sum(e.get("sha256") in known.get(url, ()) for url, e in entries.items()),
             "fetch_errors": sum(bool(e.get("error")) for e in entries.values()),
             "sitemap_counts": state.get("sitemap_counts", {}),
             "sitemap_checked_at": state.get("sitemap_checked_at"), "sitemap_errors": state.get("sitemap_errors", [])}

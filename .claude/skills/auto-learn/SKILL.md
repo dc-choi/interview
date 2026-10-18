@@ -25,7 +25,7 @@ description: 구독한 YouTube 채널, 리포스트한 Threads 글, Instagram �
 | digest | 매일 07:30(실패하거나 백오프 중이면 22:30까지 2~3시간마다 다시) | 바뀐 문서와 핵심 3가지를 쓰고 알림을 보낸다 |
 
 - 주요 파일: `S/channels.tsv`(handle, channel_id, title, decision, reason, added_at), `S/queue/{new,backlog}.tsv`, `S/transcripts/<id>/transcript.md`, `S/inbox/{threads,instagram,email}/`(단서, `INDEX.tsv`, `EXCLUDED.tsv`, `STATE.json`), `S/seen_{reposts,instagram,email}`(본 id), `S/digests/log.jsonl`(처리 기록), `S/digests/<날짜>.md`, `S/runs/<run>/`, `S/logs/`.
-- Palantir의 URL, 발견 시각, 수집 시각, 본문 SHA-256, 오류와 현재 후보 key는 `S/palantir/STATE.json`에 둔다. 본문 버전은 `S/inbox/palantir/<URL 해시>-<본문 해시>.md`에 보존한다. 수집 완료는 학습 완료가 아니며 `status.palantir.learned_current`는 현재 본문 key에 대한 learned/merged 처리 로그와 커밋이 있는 경우만 센다. 이는 학습 커밋 기록 수이며 원격 게시 검증 완료를 뜻하지 않는다. 과거 버전과 출처가 사라져도 기존 본문과 지식을 삭제하지 않는다.
+- Palantir의 URL, 발견 시각, 수집 시각, 본문 SHA-256, 오류와 현재 후보 key는 `S/palantir/STATE.json`에 둔다. 본문 버전은 `S/inbox/palantir/<URL 해시>-<본문 해시>.md`에 보존한다. 수집 완료는 학습 완료가 아니며 `status.palantir.learned_current`는 현재 본문 key에 대한 learned/merged 처리 로그와 커밋이 있는 경우만 센다. 이는 학습 커밋 기록 수이며 원격 게시 검증 완료를 뜻하지 않는다. 과거 버전과 출처가 사라져도 기존 본문과 지식을 삭제하지 않는다. 큐 밖에서 이미 학습한 본문 해시는 `S/palantir/BASELINE.json`(URL별 SHA-256 목록, 2026-10-18 수동 전체 학습 `65af08b1`의 원본 HTML을 같은 추출기로 계산)에 두며, 현재 본문이 기준선과 같으면 learn 후보로 내지 않고 `status.palantir.baseline_current`로 센다. 본문이 바뀌면 새 해시라 다시 후보가 된다.
 
 ## 공통 원칙
 
