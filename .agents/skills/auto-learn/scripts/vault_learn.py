@@ -35,6 +35,8 @@ from collections import Counter
 from concurrent.futures import ThreadPoolExecutor
 from pathlib import Path
 
+import palantir_docs
+
 SCRIPT = Path(__file__).resolve()
 SKILL = SCRIPT.parent.parent
 REPO = SKILL.parents[2]
@@ -519,6 +521,7 @@ def cmd_discover(a):
         if not ok:
             log("discover: 이전 실행이 진행 중")
             return 0
+        documents = discover_documents(dry_run=a.dry_run)
         poll = read_json(S / "channel_poll.json", {}) or {}
         if poll.get("_backoff_until", 0) > time.time():
             log("discover: RSS 429 백오프 중")
@@ -547,6 +550,7 @@ def cmd_discover(a):
         if a.dry_run:
             seen = set(read_lines(S / "seen_videos"))
             emit({"checked": len(due), "learn_channels": len(learn), "throttled": throttled,
+                  "palantir": documents,
                   "would_enqueue": [x for x in found if x[0] not in seen]})
             return 0
         if throttled:
@@ -554,6 +558,30 @@ def cmd_discover(a):
         added = enqueue(found, "new")
         write_json(S / "channel_poll.json", poll)
         log(f"discover: channels={len(due)}/{len(learn)} new={len(added)} throttled={throttled}")
+    return 0
+
+
+def discover_documents(dry_run=False):
+    if not palantir_docs.listed(read_lines(REPO / SOURCES)):
+        return {"enabled": False}
+    try:
+        report = palantir_docs.discover(S, cfg().get("palantir_docs", {}), dry_run=dry_run)
+    except (OSError, ValueError) as error:
+        report = {"error": str(error)}
+    if not dry_run:
+        log(f"discover: palantir={json.dumps(report, ensure_ascii=False)}")
+    return report
+
+
+def cmd_documents_discover(a):
+    if (S / "paused").exists() and not a.dry_run:
+        emit({"status": "paused"})
+        return 0
+    with locked("discover", wait=False) as ok:
+        if not ok:
+            emit({"status": "busy"})
+            return 0
+        emit(discover_documents(dry_run=a.dry_run))
     return 0
 
 
@@ -1135,7 +1163,7 @@ def cmd_publish(a):
 # ---------------------------------------------------------------- learn 후보
 
 def settle_deferred(log_rows, today):
-    """처리 끝난 key. deferred는 7일 뒤 다시 후보가 되고 두 번 미뤄지면 끝난 것으로 본다."""
+    """처리 끝난 key. 보류는 7일 뒤 재시도하며 Palantir 외에는 두 번 보류하면 끝난 것으로 본다."""
     final, deferred = set(), {}
     for r in log_rows:
         if r.get("result") == "deferred":
@@ -1143,7 +1171,8 @@ def settle_deferred(log_rows, today):
         else:
             final.add(r.get("key"))
     for key, dates in deferred.items():
-        if len(dates) >= 2 or (today - dt.date.fromisoformat(max(dates))).days < 7:
+        exhausted = len(dates) >= 2 and not (key or "").startswith("palantir:")
+        if exhausted or (today - dt.date.fromisoformat(max(dates))).days < 7:
             final.add(key)
     return final
 
@@ -1231,8 +1260,12 @@ def pick_data(k):
         return len(entries), out
 
     (new_count, new), (backlog_count, backlog) = videos("new"), videos("backlog")
-    data = {"k": k, "tier1": new + leads[: 3 * k], "tier2": backlog,
+    documents = palantir_docs.candidates(S, done) if palantir_docs.listed(read_lines(REPO / SOURCES)) else []
+    document_limit = max(1, (k + 2) // 3) if new or leads or backlog else k
+    data = {"k": k, "tier1": new + leads[: 3 * k] + documents[:document_limit], "tier2": backlog,
+            "palantir_limit": document_limit,
             "counts": {"new_videos": new_count, "leads": dict(Counter(x["source"] for x in leads)),
+                       "palantir_documents": len(documents),
                        "backlog_videos": backlog_count, "awaiting_transcription": waiting_counts()}}
     if not data["tier1"] and not data["tier2"]:
         data["tier3"] = idle_candidates(k, done)
@@ -1256,6 +1289,7 @@ def state_summary():
             "leads_unlearned": {src: sum(1 for p in (S / "inbox" / src).glob("*.md") if f"{prefix}:{p.stem}" not in keys)
                                 for src, prefix in INBOX.items()},
             "processed": dict(Counter(r.get("result") for r in log_rows)),
+            "palantir": palantir_docs.summary(S, log_rows) | {"enabled": palantir_docs.listed(read_lines(REPO / SOURCES))},
             "channels": dict(Counter(r[3] for r in rows(S / "channels.tsv")[1:] if len(r) > 3))
             | {"listed": len(learning_sources()[0])},
             "unpushed_commits": unpushed,
@@ -2769,6 +2803,8 @@ def main():
     p = add("discover", cmd_discover, "학습 출처 목록의 채널 RSS에서 새 업로드를 큐에 넣는다")
     p.add_argument("--dry-run", action="store_true")
     p.add_argument("--limit", type=int, default=0, help="확인할 채널 수 상한(시험용)")
+    add("documents-discover", cmd_documents_discover, "공식 문서만 발견하고 제한된 본문을 수집한다").add_argument(
+        "--dry-run", action="store_true")
     p = add("enqueue", cmd_enqueue, "영상 URL이나 id를 전사 큐에 넣는다")
     p.add_argument("ids", nargs="+")
     p.add_argument("--priority", choices=("new", "backlog"), default="new")

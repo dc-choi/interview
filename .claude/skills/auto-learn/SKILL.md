@@ -1,29 +1,31 @@
 ---
 name: auto-learn
-description: 구독한 YouTube 채널, 리포스트한 Threads 글, Instagram 저장 글, 이메일 뉴스레터를 사용자가 자료를 넘기지 않아도 검증된 vault 지식으로 바꾸고 매일 아침 바뀐 문서와 핵심을 알리는 자동 학습 파이프라인. launchd 작업(harvest, instagram, learn, digest)이 선택한 Claude 또는 Codex 엔진으로 이 스킬의 해당 모드를 실행한다. 사용자가 자동 학습 상태, 다이제스트, 학습 출처 목록, auto-learn 멈춤이나 재개를 말할 때도 사용한다.
+description: 구독한 YouTube 채널, 리포스트한 Threads 글, Instagram 저장 글, 이메일 뉴스레터와 등록한 Palantir 공식 문서를 사용자가 자료를 넘기지 않아도 검증된 vault 지식으로 바꾸고 매일 아침 바뀐 문서와 핵심을 알리는 자동 학습 파이프라인. launchd 작업(harvest, instagram, learn, digest)이 선택한 Claude 또는 Codex 엔진으로 이 스킬의 해당 모드를 실행한다. 사용자가 자동 학습 상태, 다이제스트, 학습 출처 목록, auto-learn 멈춤이나 재개를 말할 때도 사용한다.
 ---
 
 # 자동 학습 (auto-learn)
 
-구독 채널의 새 영상, 리포스트한 Threads 글, Instagram 저장 글, 이메일 뉴스레터를 주기적으로 모아 1차 출처로 검증한 지식 문서로 vault에 반영하고, 매일 아침 바뀐 문서와 핵심 3가지를 알린다.
+구독 채널의 새 영상, 리포스트한 Threads 글, Instagram 저장 글, 이메일 뉴스레터와 등록한 Palantir 공식 문서를 주기적으로 모아 1차 출처로 검증한 지식 문서로 vault에 반영하고, 매일 아침 바뀐 문서와 핵심 3가지를 알린다.
 
 ## 구성
 
 - `S`는 장비 로컬 상태 디렉터리 `~/.local/state/vault-auto-learn`이다. 구독 분류, 수집한 단서, 전사문, 큐, 다이제스트와 로그는 여기에만 두고 저장소에 옮기지 않는다. Threads 리포스트 주소, Instagram 저장 글 주소와 뉴스레터 발신 주소 같은 장비별 값은 `S/config.json`에 있다. 기존 DM 기록의 개인정보 가림에 쓰는 `instagram_dm_name`은 수집 설정과 구분해 보존한다.
 - 학습할 YouTube 채널과 뉴스레터의 정본은 저장소의 학습 출처 목록 `fit/growth/learning/Learning-Sources.md`다. 채널 행의 도메인 태그는 learn 후보의 우선순위에만 쓴다. `S/channels.tsv`는 채널 id와 추가 날짜의 캐시이자 제외한 채널의 기록이다.
+- 같은 목록의 `## 공식 문서` 표에 `https://www.palantir.com/docs/` 링크가 있으면 Palantir 수집을 켠다. 공개 sitemap 세 개와 robots.txt에 명시된 sitemap을 하루마다 확인하고 Foundry, Apollo, Gotham 등 공개 문서를 순차 수집한다. 언어별 주소는 영어 경로로 합치며 로그인 문서와 외부 호스트는 수집하지 않는다.
 - `VL`은 저장소 루트에서 실행하는 `python3 .claude/skills/auto-learn/scripts/vault_learn.py`다. 큐, 기록, 검사와 Git 게시는 VL로만 한다.
 - launchd 작업은 `S/launchd/`에 있고 라벨 접두사는 `com.dcchoi.vault-learn.`이다.
 
 | 작업 | 주기 | 하는 일 |
 | --- | --- | --- |
 | transcriber | 상시(KeepAlive) | `S/config.json`의 `jobs`에 설정한 수만큼 동시에 전사한다(기본 2개). 새 업로드가 먼저, 백로그가 다음이다. 실패는 30초 간격 3회 재시도하고 멤버십, 비공개, 말소리 없음은 영구 제외한다 |
-| discover | 30분 | 학습 출처 목록의 채널 RSS에서 채널 `added_at` 이후 올라온 영상을 새 업로드 큐에 넣는다 |
+| discover | 30분 | 채널 RSS의 `added_at` 이후 새 영상과 Palantir 문서 변경을 발견한다. Palantir 본문은 실행당 기본 12개씩 수집한다 |
 | harvest | 2시간 | Chrome으로 구독 목록, 새 리포스트와 뉴스레터를 모은다 |
 | instagram | 매일 09:00, 15:00, 21:00 | Chrome으로 Instagram 저장 글을 모은다 |
 | learn | 1분(잠금) | 이 스킬의 learn 모드로 최대 K개 항목을 반영한다 |
 | digest | 매일 07:30(실패하거나 백오프 중이면 22:30까지 2~3시간마다 다시) | 바뀐 문서와 핵심 3가지를 쓰고 알림을 보낸다 |
 
 - 주요 파일: `S/channels.tsv`(handle, channel_id, title, decision, reason, added_at), `S/queue/{new,backlog}.tsv`, `S/transcripts/<id>/transcript.md`, `S/inbox/{threads,instagram,email}/`(단서, `INDEX.tsv`, `EXCLUDED.tsv`, `STATE.json`), `S/seen_{reposts,instagram,email}`(본 id), `S/digests/log.jsonl`(처리 기록), `S/digests/<날짜>.md`, `S/runs/<run>/`, `S/logs/`.
+- Palantir의 URL, 발견 시각, 수집 시각, 본문 SHA-256, 오류와 현재 후보 key는 `S/palantir/STATE.json`에 둔다. 본문 버전은 `S/inbox/palantir/<URL 해시>-<본문 해시>.md`에 보존한다. 수집 완료는 학습 완료가 아니며 `status.palantir.learned_current`는 현재 본문 key에 대한 learned/merged 처리 로그와 커밋이 있는 경우만 센다. 이는 학습 커밋 기록 수이며 원격 게시 검증 완료를 뜻하지 않는다. 과거 버전과 출처가 사라져도 기존 본문과 지식을 삭제하지 않는다.
 
 ## 공통 원칙
 
@@ -60,10 +62,13 @@ description: 구독한 YouTube 채널, 리포스트한 Threads 글, Instagram �
 - 같은 실행에서 이미 제공되거나 읽은 지침과 자료는 내용이 바뀌지 않았으면 다시 읽지 않는다. runner가 스킬 절차를 제공했으면 스킬 전체를 다시 열지 않는다. 목표와 트래커는 후보 선택에 필요한 현재 절만 읽고, 과거 기록 전체를 반복 출력하지 않는다.
 
 1. 준비: 루트 `CLAUDE.md`, `.claude/skills/memo/SKILL.md`와 대상 도메인의 `CLAUDE.md`를 읽는다. `VL begin`으로 run을 연다. `blocked`면 결과 JSON만 출력하고 끝낸다. `foreign_dirty`는 다른 작업의 미커밋 변경이라 편집하지 않는다. `adopted`는 시간 제한이나 사용량 한도로 끊긴 이전 learn run이 게시하지 못한 파일 중 그 뒤 아무도 고치지 않은 것이며 이미 이 run의 plan에 들어 있다. 그 파일부터 읽고(`S/runs/<이전 run>/result.json`이 있으면 그 key를 쓴다), `S/runs/last-learn.json`의 검증 결과가 이어받은 run과 일치하면 지적된 오류를 먼저 확인한 뒤 4~5단계 검증을 거쳐 이 run의 묶음으로 게시하거나 `VL discard --run R --file ...`로 되돌린다.
-2. 후보: `VL pick --k K`를 실행하고 현재 목표를 `fit/CLAUDE.md`의 현재 커리어 상태, `fit/growth/Current-Goals-and-Roadmap.md`, `fit/job-search/Job-Search-Tracker.md`의 지원 공고 요구사항과 `fit/growth/learning/roadmaps/roadmaps.md`에서 확인한다. 고르는 순서는 tier1(새 업로드와 Threads, Instagram, 이메일 단서) 중 1인 사업과 외주, 구직 요구사항, 학습 로드맵에 직접 닿는 항목, tier2(백로그 전사문) 중 같은 기준의 항목, 나머지 학습 영역 항목이다. 영상의 `tags`는 학습 출처 목록에 적은 채널의 주 도메인이며 이 순서를 정할 때만 쓴다. tier3(인덱스의 `[ ]` 항목과 오래된 `verified_at`)은 tier1과 tier2가 비었을 때만 나온다. 공통 원칙의 학습 영역 밖이거나 새 지식이 없는 항목은 제목과 메타데이터만 보고 `skipped`로 둘 수 있다. 한 run에서 반영은 K개, 건너뛰기는 2K개까지다.
+2. 후보: `VL pick --k K`를 실행하고 현재 목표를 `fit/CLAUDE.md`의 현재 커리어 상태, `fit/growth/Current-Goals-and-Roadmap.md`, `fit/job-search/Job-Search-Tracker.md`의 지원 공고 요구사항과 `fit/growth/learning/roadmaps/roadmaps.md`에서 확인한다. 고르는 순서는 tier1(새 업로드와 Threads, Instagram, 이메일 단서, 수집한 Palantir 문서) 중 1인 사업과 외주, 구직 요구사항, 학습 로드맵에 직접 닿는 항목, tier2(백로그 전사문) 중 같은 기준의 항목, 나머지 학습 영역 항목이다. Palantir key는 `palantir:<URL 해시>:<본문 해시>`다. 다른 후보가 있으면 Palantir는 `palantir_limit`(K/3 올림)개까지만 반환하고 나머지 처리 자리는 기존 후보에 쓴다. 다른 후보가 없으면 K개까지 준다. 영상의 `tags`는 학습 출처 목록에 적은 채널의 주 도메인이며 이 순서를 정할 때만 쓴다. tier3(인덱스의 `[ ]` 항목과 오래된 `verified_at`)은 tier1과 tier2가 비었을 때만 나온다. 공통 원칙의 학습 영역 밖이거나 새 지식이 없는 항목은 제목과 메타데이터만 보고 `skipped`로 둘 수 있다. 한 run에서 반영은 K개, 건너뛰기는 2K개까지다.
+   Palantir 후보가 있으면 run마다 최소 1개를 처리한다. 파일이 잠겨 있으면 다른 Palantir 후보를 먼저 시도하고 전부 막힌 경우에만 사유를 남겨 deferred로 둔다. 공식 문서 표에서 출처를 제거하면 새 수집과 후보 제공을 멈추며 기존 본문, 처리 기록과 지식 문서는 보존한다.
+
 3. 항목마다:
    - 제목, 설명과 기존 문서 검색으로 대상 경로를 먼저 정하고, 실제 수정할 문서와 필수 인덱스를 `VL plan --run R --file <경로> ...`로 등록한다. 기존 문서의 내용만 보강할 때는 인덱스를 먼저 읽는다. 링크가 이미 있고 체크박스나 설명을 바꿀 필요가 없으며 도메인 규칙상 추가 변경이 필요하지 않으면 인덱스를 plan에 넣지 않는다. 이 경우 인덱스의 다른 미커밋 변경만으로 깨끗한 본문 보강을 미루지 않는다. 신규, 이동, 연결 누락, 계획 항목 완료로 인덱스를 바꿔야 하면 함께 plan하고, 필요한 파일이 거부되면 해당 항목을 `deferred`로 기록한 뒤 다음 후보로 간다. 편집할 수 없는 항목의 전사문 전체 읽기와 외부 조사를 이어가지 않는다.
    - 원문(`path`)을 읽는다. 단서의 외부 링크는 WebFetch로 확인하고, YouTube 링크는 `VL enqueue <URL> --source <key>`로 전사 큐에 넣는다. 본문 없이 목록 정보만 저장한 메일(`body: list-only`)은 제목과 발행처로 공개된 원문을 찾는다.
+   - Palantir의 `path`는 HTML에서 추출한 본문이다. 코드 들여쓰기, 도표와 탐색 링크는 원문 URL에서 다시 확인한다. 수집 시각과 본문 학습, 검증을 구분하고 기존 memo 절차로 문서에 반영한 뒤에만 learned/merged로 기록한다. 개정 본문은 새 key가 되므로 기존 문서의 변경 범위와 충돌을 다시 확인한다.
    - 중복 확인: `mcp__development-context__context_lookup`(주제에 맞는 scope, `max_bytes: 24000`)과 Grep으로 같은 개념의 문서를 찾는다. 있으면 보강하고 보탤 내용이 없으면 `skipped`(사유에 해당 문서 경로)로 둔다.
    - 1차 출처 대조: WebSearch와 WebFetch를 쓰고 라이브러리 문서는 context7을 쓴다. 확인하지 못한 주장은 쓰지 않는다.
    - 라우팅: 문서를 둘 도메인과 카테고리는 채널이나 출처가 아니라 내용으로 정한다. `.claude/skills/memo/SKILL.md`의 카테고리 지도(`tech/<카테고리>`, `biz/`, `econ/`, `fit/`)와 실제 `tech/` 최상위 폴더(예: `tech/ai-engineering/`)를 기준으로 한다. 여러 도메인에 걸친 내용은 하나로 몰지 않고 도메인별 문서로 나눈다. 예를 들어 AI 에이전트 비용은 아키텍처와 토큰 비용 구조를 `tech/ai-engineering/`에, 가격 책정과 사업 판단을 `biz/`에 쓴다. 나눈 도메인마다 그 `CLAUDE.md`를 읽고 출처 표기(tech는 기본형, biz는 문서 안의 `제목 — 저자 (매체)` 블로그 선례, econ은 문서 안의 `매체 — 제목` 역순 선례, 선례 없는 새 문서는 tech 기본형)와 규칙(fit은 신앙 관련 내용과 처우 금액을 쓰지 않는다)을 따른다.
@@ -128,13 +133,14 @@ Claude에서는 Chrome 도구(`tabs_context_mcp`, `tabs_create_mcp`, `navigate`,
 
 - 2026-10-14 사용자 결정: Claude와 Codex의 사용량 한도는 실패 횟수와 관계없이 2시간마다 재시도한다. 확인한 복구 시각에 1분을 더한 시각이 그보다 이르면 먼저 재시도한다. 재시도는 다음 작업 주기에 이루어지며, 절전과 실행 잠금 때문에 늦어질 수 있다. 인증과 Chrome 연결 실패의 대기 정책은 별도로 유지한다.
 
-- 학습 항목의 `deferred`가 처리 기록에 남으면 7일 뒤 한 번 더 후보가 되고, 두 번째도 보류되면 자동 후보에서 제외한다. 2026-10-09 사용자 결정: 범위 검사, 검증, 일반 실행 실패로 처리 기록을 남기지 못한 learn 실행은 반복 횟수와 관계없이 4분 대기한다. 다음 1분 실행 주기를 포함해 통상 5분 안에 재시도하며, 시스템 절전이나 다른 실행의 잠금 대기는 별도다. 횟수 상한은 없으며 완료되면 실행 실패 대기를 초기화한다. 대기 중에는 AI를 호출하지 않는다. `status`의 `last_attempts.learn.retry_until`과 `retry_count`에서 확인하며, 사용량 한도와 인증 문제는 기존 엔진별 백오프를 따른다.
+- 학습 항목의 `deferred`가 처리 기록에 남으면 7일 뒤 한 번 더 후보가 되고, 두 번째도 보류되면 자동 후보에서 제외한다. 전체 문서를 순차 학습하는 Palantir key만 예외로 두어 보류 횟수와 관계없이 마지막 보류에서 7일이 지나면 다시 후보가 된다. 2026-10-09 사용자 결정: 범위 검사, 검증, 일반 실행 실패로 처리 기록을 남기지 못한 learn 실행은 반복 횟수와 관계없이 4분 대기한다. 다음 1분 실행 주기를 포함해 통상 5분 안에 재시도하며, 시스템 절전이나 다른 실행의 잠금 대기는 별도다. 횟수 상한은 없으며 완료되면 실행 실패 대기를 초기화한다. 대기 중에는 AI를 호출하지 않는다. `status`의 `last_attempts.learn.retry_until`과 `retry_count`에서 확인하며, 사용량 한도와 인증 문제는 기존 엔진별 백오프를 따른다.
 
 - 사용자는 `~/.local/bin/vault-learn`으로 관리한다. `install`(도구 점검, 임시 전사 작업 이관, 작업 6개의 plist 복사와 `launchctl bootstrap`), `uninstall`, `status`, `pause`와 `resume`(`S/paused` 플래그, 진행 중 작업은 마친다), `run-now <작업>`, `logs [작업] [-f]`, `migrate [--dry-run]`이 있다. 수집함 `S/inbox/{threads,instagram,email}`은 VL이 처음 실행될 때 만든다.
 - 에이전트는 launchd 작업, crontab이나 상주 프로세스를 등록하거나 시작하지 않는다. 등록은 사용자가 `vault-learn install`로 한다.
 - harvest와 instagram은 같은 Chrome을 쓰므로 VL이 한 번에 하나만 실행한다. 네 AI 작업은 실행 중 HEAD와 보호 상태를 검사하므로 저장소 잠금도 공유하며, 겹치면 앞 실행이 끝날 때까지 기다린다.
 - K, 전사 동시 작업 수, 시간 제한과 Instagram, 뉴스레터 설정은 `S/config.json`에서 바꾼다. 뉴스레터를 더하려면 학습 출처 목록에 발행물 이름을, `email_senders`에 같은 `name`과 발신 주소(`from`)를 더한다. 개인이 발행하는 뉴스레터는 `"private": true`를 붙여 발신 주소가 저장소에 들어가지 않게 한다. 사용량 한도와 인증 오류의 백오프는 `S/backoff/claude.json`, `S/backoff/codex.json`으로 분리한다. Chrome 연결 실패의 백오프는 수집 작업에만 적용하며 learn과 digest를 막지 않는다. 기존 `S/backoff.json`은 Claude의 이전 백오프로만 읽는다.
 - 점검: `VL status`, `VL doctor`, `VL selftest`. node 경로가 바뀌면 `VL plists`로 plist를 다시 만든 뒤 `vault-learn install`을 다시 실행한다. node와 deno가 모두 PATH에 없으면 전사 작업자는 영상을 제외하지 않고 15분씩 멈춘다.
+- Palantir만 점검할 때는 `VL documents-discover --dry-run`, 실제 수집은 `VL documents-discover`를 쓴다. `S/config.json`의 선택적 `palantir_docs` 객체는 `fetch_limit`(기본 12, 최대 100), `refresh_hours`(기본 168), `seed_urls`(추가 우선 URL 배열)를 받는다. 사용자 지정 핵심 문서 13개를 먼저 시도하며 새 문서를 수집한 뒤 기존 본문을 다시 확인한다. 오류는 최대 하루 간격으로 계속 재시도하고 빈 본문과 오류 페이지를 성공으로 세지 않는다. 마케팅 Ontology 페이지는 현재 HTTP HTML에 본문이 없어 `empty_body`로 남으며 브라우저에서 별도로 확인해야 한다. 오프라인 회귀 검사는 `python3 .claude/skills/auto-learn/scripts/test_palantir_docs.py`다.
 - Claude headless 실행의 권한: 모든 모드는 읽기, VL Bash와 `S/{runs,tmp,inbox,digests}` 편집만 쓴다. learn은 `tech/`, `biz/`, `econ/`, `fit/` 편집, 서브에이전트, 웹 조회와 지식 조회 MCP를, harvest는 학습 출처 목록 편집, 위 Chrome 도구(와 브라우저 선택, read_page)와 Gmail 읽기 도구를, instagram은 Chrome 도구만 더 쓴다. 사용자와 프로젝트 설정의 허용 규칙도 함께 적용되므로 Git 쓰기, `codex`, `pandoc`, `pnpm`, `python3 -m`, Gmail 쓰기 도구, Chrome 업로드와 폼 도구, `~/.ssh` 같은 비밀 폴더 읽기는 거부 규칙으로 막는다. 설정에 넓은 허용 규칙을 더하면 `agent_rules`의 거부 목록도 함께 본다.
 
 - 엔진 조회: `vault-learn engine`. 선택: `vault-learn engine <harvest|instagram|learn|digest|all> <claude|codex|alternate> [--primary claude|codex]`. 예를 들어 `vault-learn engine learn codex`는 학습만 Codex로 고정하고, `vault-learn engine all alternate --primary codex`는 모든 AI 작업에서 Codex를 먼저 쓴다.
