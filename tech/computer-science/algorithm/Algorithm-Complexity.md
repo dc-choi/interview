@@ -113,6 +113,32 @@ TSP decision이 NP-complete라는 주장은 두 부분으로 보인다.
 
 환원의 방향이 핵심이다. 문제 X가 어렵다는 것을 보이려면 이미 어려운 문제를 X로 환원한다(known ≤p X). X를 쉬운 문제로 환원하면 X가 쉽다는 것만 보인다. 위 환원 때문에 TSP decision에 polynomial-time algorithm이 있으면 Hamiltonian cycle도 polynomial time에 풀리고, 그러면 P = NP다. Hamiltonian path도 NP-complete라 출발 문제로 쓸 수 있지만, tour가 cycle이므로 cycle에서 환원하는 구성이 가장 단순하다.
 
+## 정수 곱셈으로 보는 상한과 문제의 하한
+
+부분 검증(2026-10-18): 이 절의 사실만 원 논문, 공식 저장소와 GMP 매뉴얼에 대조했다. 문서 전체를 다시 대조한 것은 아니므로 `verified_at`은 유지한다.
+
+더 빠른 알고리즘을 찾으면 문제의 상한(upper bound)이 내려간다. 문제의 하한은 그 계산 모델의 어떤 알고리즘도 더 빠를 수 없다는 증명이 있어야 생긴다. 비교 정렬은 두 값이 n log n에서 만났지만, n비트 정수 두 개의 곱셈은 상한만 내려왔다.
+
+| 연도 | 알고리즘 | 시간 |
+|---|---|---|
+| 고전 | 학교식(basecase) 곱셈 | O(n²) |
+| 1962 | Karatsuba | O(n^(log₂ 3)) ≈ O(n^1.585) |
+| 1960년대 | Toom, Cook(입력 분할, 평가, 보간의 일반화) | Toom-3은 O(n^1.465) |
+| 1971 | Schönhage–Strassen(FFT) | O(n log n log log n) |
+| 2007 | Fürer | n log n × 2^O(log* n) |
+| 2019(Annals of Mathematics 게재는 2021) | Harvey, van der Hoeven | O(n log n) |
+
+Schönhage와 Strassen은 1971년 이 상한을 낸 논문에서 실제 복잡도가 Θ(n log n)이라고 추측했다. Harvey와 van der Hoeven은 multitape Turing machine 모델에서 이 추측의 상한 쪽을 증명했고(Annals of Mathematics, 2021), 하한 쪽은 2026-10-18 기준으로 증명되지 않았다(아래 OpenAI 원고는 이 모델에서 반증을 주장한다). 곱의 k번째 비트를 입력의 (k+1)번째 비트를 읽기 전에 써야 하는 on-line 변형에서는 Ω(n log n)이 증명됐지만, 이런 제한이 없는 multitape Turing machine에서 알려진 하한은 자명한 선형 하한 Ω(n)뿐이다(2025년 Harvey, van der Hoeven 논문 기준). 비자명한 하한이 매우 제한된 모델에서만 알려져 있어서, 아래 두 모델의 Ω(n log n)은 다른 미해결 가정에 기댄 조건부 하한이다.
+
+- **Boolean circuit**: Harvey와 van der Hoeven의 O(n log n)은 사실상 같은 증명으로 Boolean circuit 모델에서도 성립한다. network coding의 핵심 추측이 참이면 차수가 상수인 곱셈 회로의 크기는 Ω(n lg n)이므로, 회로 모델에서는 곱셈의 복잡도가 거의 정해진다(Afshani, Freksen, Kamma, Larsen, ICALP 2019).
+- **multitape Turing machine**: n×n 이진 행렬 전치에 Ω(n² log n) 단계가 필요하면 n비트 곱셈에도 Ω(n log n) 단계가 필요하다(Harvey, van der Hoeven, 2025). 저자들은 Turing 모델에서 전치의 비자명한 하한을 증명할 방법을 아직 모른다고 적었다.
+
+점근적으로 빠르다고 실제 크기에서 빠른 것은 아니다. Harvey와 van der Hoeven은 상수를 줄이거나 실용적인 곱셈 알고리즘을 보이려 하지 않았다고 밝혔다. GMP 6.3.0은 크기가 같은 두 수를 곱할 때 크기가 커짐에 따라 basecase, Karatsuba, Toom 네 가지, FFT의 일곱 알고리즘을 임계값마다 바꿔 쓰고, 가장 큰 크기에서 쓰는 FFT도 Schönhage–Strassen을 따른 방식이다.
+
+AI가 낸 개선 주장도 같은 기준으로 읽는다. OpenAI 내부 모델이 만든 원고로 2026-10-06 공개된 Integer multiplication below n log n(2026-09-23자)은 고정된 유한 알파벳과 고정된 수의 1차원 tape를 쓰는 결정론적 Turing machine 하나가 모든 입력 길이에서 정확한 곱을 최악 O(n (lg n)^(1−κ)), κ = 2⁻¹⁸² 시간에 계산한다고 주장하고, 이 모델에서 Schönhage–Strassen의 n log n 최적성 추측을 반증한다고 적는다. 줄어드는 것은 log n 인자의 지수뿐이고 그 폭이 2⁻¹⁸²다. 원고 스스로도 구성의 상수와 임계값이 매우 크며 bit complexity 상한을 세우려는 알고리즘이라고 밝힌다. 또 위 전치 환원과 결합하면 k×k 이진 행렬 전치도 O(k² (lg k)^(1−κ))에 된다고 적으므로, 주장이 맞으면 조건부 하한이 기댄 전치 가정도 성립하지 않는다. 2026-10-18 확인 기준으로 이 원고는 저장소의 preprint이고 주 결과가 Lean으로 형식화된 원고 목록에 없으며, 이 틀을 가정해 κ를 약 0.0017까지 키웠다는 커뮤니티 저장소도 결과가 원래 틀에 조건부이고 곱셈 정리 전체를 Lean으로 증명한 것이 아니라고 밝힌다.
+
+이런 주장이 교과서의 상한이 되려면 정확한 진술(무엇의 지수가 얼마나 줄었는지, 결정론적 최악 시간인지), 계산 모델, 저자와 독립된 검토나 주 결과 전체의 형식 검증을 확인해야 한다. AI 수학 결과의 공개와 검증 현황은 [[AI-Capability-and-Cost-Trends#연구 결과|AI 능력과 비용 추세 읽기]]에서 다룬다.
+
 ## 분석할 때 함께 적을 것
 
 - 입력 크기 `n`, 정점 `V`, 간선 `E`처럼 무엇을 크기로 삼았는가
@@ -128,6 +154,7 @@ TSP decision이 NP-complete라는 주장은 두 부분으로 보인다.
 - 다른 함수를 부르는 코드의 복잡도를 물으면 호출된 함수의 복잡도부터 확인하는가
 - 입력이 둘일 때 O(n + m)과 O(nm)을 구분하는가
 - 같은 Big O인 두 풀이의 실제 연산 수 차이를 설명할 수 있는가
+- 정수 곱셈의 O(n log n)이 알려진 상한인지 증명된 하한인지, 어떤 계산 모델의 결과인지 구분해 말할 수 있는가
 
 ## 출처
 
@@ -146,9 +173,22 @@ TSP decision이 NP-complete라는 주장은 두 부분으로 보인다.
 - [그림으로 쉽게 배우는 자료구조와 알고리즘 심화편 — P-NP, 감자 강사](https://www.inflearn.com/courses/lecture?courseId=329927&unitId=135775)
 - [CME305 Sample Midterm II, Traveling Salesman Problem — Stanford University](https://stanford.edu/~rezab/classes/cme305/W15/Midterm/pmidtermIIsoln.pdf)
 - [cppreference, Fundamental types](https://en.cppreference.com/w/cpp/language/types)
+- [Integer multiplication in time O(n log n) — Annals of Mathematics, David Harvey, Joris van der Hoeven](https://annals.math.princeton.edu/2021/193-2/p04)
+- [Integer multiplication is at least as hard as matrix transposition — arXiv, David Harvey, Joris van der Hoeven](https://arxiv.org/abs/2503.22848)
+- [Faster Integer Multiplication — SIAM Journal on Computing, Martin Fürer](https://infoscience.epfl.ch/handle/20.500.14299/59822)
+- [Lower Bounds for Multiplication via Network Coding — ICALP 2019, Peyman Afshani, Casper Benjamin Freksen, Lior Kamma, Kasper Green Larsen](https://drops.dagstuhl.de/opus/volltexte/2019/10586/)
+- [GNU MP 6.3.0 Manual, Multiplication Algorithms](https://gmplib.org/manual/Multiplication-Algorithms)
+- [GNU MP 6.3.0 Manual, Karatsuba Multiplication](https://gmplib.org/manual/Karatsuba-Multiplication)
+- [GNU MP 6.3.0 Manual, Toom 3-Way Multiplication](https://gmplib.org/manual/Toom-3_002dWay-Multiplication)
+- [GNU MP 6.3.0 Manual, FFT Multiplication](https://gmplib.org/manual/FFT-Multiplication)
+- [math — GitHub, OpenAI](https://github.com/openai/math)
+- [Integer multiplication below n log n — GitHub, OpenAI](https://github.com/openai/math/tree/main/preprints/Integer-multiplication-below-n-log-n-September-23-2026)
+- [math formalization.yaml — GitHub, OpenAI](https://github.com/openai/math/blob/main/lean/formalization.yaml)
+- [integer-mult-bounds — GitHub, CrocSwap](https://github.com/CrocSwap/integer-mult-bounds)
 
 ## 관련 문서
 - [[알고리즘(Algorithm)|알고리즘 인덱스]]
 - [[Algorithm-Searching|선형 검색과 이진 검색]]
 - [[Bitmask-DP-and-TSP|비트마스크 DP와 외판원 문제]]
 - [[Problem-Solving-Techniques|코딩 테스트 문제 해결 기법]]
+- [[AI-Capability-and-Cost-Trends|AI 능력과 비용 추세 읽기]]

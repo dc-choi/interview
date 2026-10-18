@@ -44,8 +44,9 @@ AI가 검색, 비교, 요약, 제작, 매칭처럼 규칙이 분명한 작업의
 | EliseAI | 주거 임대 관리와 의료 분야의 커뮤니케이션과 운영 자동화 |
 | EvenUp | 개인상해 소송 로펌의 사건 처리 업무 자동화 |
 | Tennr | 의료기관의 보험 확인, 사전승인, 환자 의뢰 처리 |
+| MarqVision | 위조 상품, 사칭, 무단 판매와 불법 복제 콘텐츠를 찾아 플랫폼 신고와 오프라인 단속으로 대응하는 온라인 브랜드 보호 |
 
-사례 기업의 기업가치와 매출은 게시글이 인용한 수치라 확인하지 않았으므로 넣지 않는다. 사업 영역은 각 회사 공식 사이트로 2026-09-29에 확인했다.
+사례 기업의 기업가치와 매출은 게시글이 인용한 수치라 확인하지 않았으므로 넣지 않는다. 사업 영역은 각 회사 공식 사이트로 2026-09-29에 확인했다(MarqVision은 2026-10-18 확인, 운영 방식은 [[AI-Native-Services#온라인 브랜드 보호 사례|결과를 파는 AI 네이티브 서비스]]).
 
 업종을 고를 때는 다음 필터를 쓸 수 있다.
 
@@ -55,12 +56,15 @@ AI가 검색, 비교, 요약, 제작, 매칭처럼 규칙이 분명한 작업의
 
 화려하지 않은 업무일수록 경쟁이 적지만, 업계 규칙과 고객의 운영 방식을 깊이 알아야 해서 실행 난도는 높다. 1인 사업의 유형과 진행 순서는 [[AI-Solo-Software-Business|AI 시대 1인 소프트웨어 사업의 유형과 순서]]에서 다룬다.
 
+온라인 브랜드 보호 기업의 대표도 창업자들이 콜센터 자동화처럼 유행하는 분야로 몰리는 동안 이 시장에는 참여자가 많지 않았다고 설명한다. 그는 단기 진입장벽을 모델 바깥에서 찾았다. 대량 수집을 막는 마켓플레이스에서 데이터를 계속 모으는 일, 신고를 처리하는 플랫폼 담당자와의 관계 같은 지저분한 수작업은 범용 모델을 붙여도 처음부터 끝까지 자동화되지 않는다는 것이다(2026-10-16 인터뷰, 회사 대표의 견해이며 수집 방식의 적법성까지 다룬 설명은 아니다). 운영이 해자로 남는 조건은 [[AI-Software-Replication-and-Due-Diligence#해자가 남는 조건|해자가 남는 조건]]에서 본다.
+
 ## 모델 출시와 SaaS 재평가
 
 모델 능력이 한 단계 뛰면 시장은 기능 중심 SaaS의 가치를 다시 매긴다. 앞의 표가 서비스 사업의 이동을 본다면, 이 절은 같은 압력이 소프트웨어 제품에 오는 경로를 본다.
 
 - **좌석 과금이 흔들린다:** 사용자 수에 비례해 받는 가격은 에이전트가 사람 몫의 작업을 대신하면 과금 기준 자체가 줄어든다.
 - **얇은 워크플로는 직접 만든다:** 데이터를 입력하고 조회하는 화면 위에 규칙 몇 개를 얹은 제품은 고객이 AI 코딩 도구로 자체 도구를 만들어 대체하기 쉽다. Retool이 2025년 말 자사 고객을 포함한 빌더 817명에게 물은 조사에서 35%가 SaaS 도구를 하나 이상 자체 빌드로 대체했다고 답했고, 대체가 많은 범주는 워크플로 자동화, 내부 관리 도구, BI, CRM 순이었다. 도구를 만드는 사람 중심의 표본이라 기업 전체의 비율로 읽으면 안 된다.
+- **도구를 팔면 모델과 경주한다:** Sequoia의 2026-03-05 글은 도구를 파는 회사는 모델과 경주하지만, 일을 파는 회사는 모델이 좋아질수록 서비스가 더 빠르고 싸진다고 본다. 결과를 파는 사업의 지표와 가격은 [[AI-Native-Services|결과를 파는 AI 네이티브 서비스]]에서 다룬다.
 - **지출이 모델 회사로 이동한다:** Anthropic이 밝힌 연환산 매출(run-rate)은 2026-02-12 140억 달러, 2026-05 470억 달러 이상이었다. 같은 예산 안에서 모델 사용료가 늘면 기능 단위 SaaS 구독이 먼저 비교 대상에 오른다.
 
 경쟁의 축은 더 좋은 모델에서 누가 고객 업무의 어디에 먼저 심겨 있는가로 옮겨 간다. 모델은 누구나 같은 가격에 빌릴 수 있으므로, 차이는 [[Distribution-As-Moat|도달력]]과 설치 위치에서 난다.
@@ -109,6 +113,9 @@ AI가 검색, 비교, 요약, 제작, 매칭처럼 규칙이 분명한 작업의
 - [EliseAI](https://www.eliseai.com/)
 - [EvenUp](https://www.evenuplaw.com/)
 - [Tennr](https://www.tennr.com/)
+- [MarqVision](https://www.marqvision.com/)
+- [Services: The New Software — Sequoia Capital](https://sequoiacap.com/article/services-the-new-software) — 2026-03-05, 도구 판매와 일 판매의 구분. 2026-10-18 확인
+- [챗봇 좀 그만 만드세요 | 마크비전 이인섭 대표 — YouTube, BZCF 비즈까페](https://www.youtube.com/watch?v=6Lax-pt73ag) — 2026-10-16 공개 인터뷰, 12:11~13:11과 43:13~44:13의 시장 참여자와 진입장벽 설명. 회사 대표의 견해
 - [The Build vs. Buy Shift: AI, Shadow IT, and the SaaS Replacement Era — Retool Blog](https://retool.com/blog/ai-build-vs-buy-report-2026)
 - [Anthropic raises $30 billion in Series G funding at $380 billion post-money valuation — Anthropic](https://www.anthropic.com/news/anthropic-raises-30-billion-series-g-funding-380-billion-post-money-valuation)
 - [Anthropic raises $65B in Series H funding at $965B post-money valuation — Anthropic](https://www.anthropic.com/news/series-h)
@@ -131,3 +138,4 @@ AI가 검색, 비교, 요약, 제작, 매칭처럼 규칙이 분명한 작업의
 - [[Claude-Fable-5-Mythos-5|Claude Fable 5, Mythos 5]] — 모델 사양과 제한 공개
 - [[Signaling-Screening|신호와 선별]] — 결과물이 흔해질 때 구매자가 수행자를 가려내는 근거
 - [[AI-Software-Replication-and-Due-Diligence|AI 소프트웨어 복제와 기술 실사]] — 고객 전환 비용, 책임과 기술 실사
+- [[AI-Native-Services|결과를 파는 AI 네이티브 서비스]] — 결과 판매의 지표, 가격, 인수 순서와 브랜드 보호 사례

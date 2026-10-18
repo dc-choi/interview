@@ -63,7 +63,7 @@ single-node 최소 예제는 `transform.using`에 입력과 출력 경로를 등
 
 ## Spark와 single-node 자원 설정
 
-`@configure`는 Spark `Transform` 바깥에 적용한다. Spark profile, backend, 실행 제한 시간과 checkpoint용 출력을 설정하며 다른 객체를 감싸면 `TypeError`가 발생한다. backend의 `SPARK`와 `VELOX` 중 후자는 Spark native acceleration 경로다. 이는 lightweight와 다른 구분이다.
+`@configure`는 Spark `Transform` 바깥에 적용한다. Spark profile, backend, 실행 제한 시간과 checkpoint용 출력을 설정하며 다른 객체를 감싸면 `TypeError`가 발생한다. backend 인자는 `str` 또는 `ComputeBackend`를 받으며 enum 멤버는 `SPARK`와 `VELOX`이고, 생략하면 `ComputeBackend.SPARK`다. 문자열로 넘길 때 허용되는 값은 확인일의 API 문서에 나와 있지 않다. `VELOX`는 Spark를 native acceleration으로 실행하는 경로다. 이 backend 구분은 single-node lightweight 실행과 다른 축이다. backend는 `@transform`, `@transform_df` 같은 Spark Transform 위에 둔 `@configure`에서 고른다. 2026-10-19 확인한 Velox 안내는 사용 전에 Python 저장소를 최신 버전으로 올리고 off-heap memory profile을 구성하라고 한다. off-heap profile 조건은 [[Palantir-PySpark-Dataframe-and-Execution-Contracts|PySpark 실행 계약]], 지원 연산의 경계는 [[Palantir-Spark-Plan-and-Native-Optimization|Spark plan과 native 최적화]]에서 확인한다. `ComputeBackend` 값과 `configure`의 backend 타입과 기본값은 2026-10-18 공식 API 문서와 대조했다.
 
 `allowed_run_duration`은 분 단위이며 초과하면 인프라가 실패 처리하고 재시도할 수 있다. 데이터 크기/분포가 바뀌거나 증분 작업이 snapshot으로 전환되면 소요 시간이 달라지므로 증분 Transform에 이 제한을 쓰지 말라는 경고가 있다. `checkpoint_outputs`를 생략하면 전체 출력이 후보이며 증분 출력에 checkpoint 쓰기가 부적절하면 대상을 따로 정한다.
 
@@ -91,6 +91,7 @@ Spark context는 `auth_header`, resolved conda environment, fallback branches, p
 - [Palantir, check](https://www.palantir.com/docs/foundry/api-reference/transforms-python-library/api-check)
 - [Palantir, computebackend](https://www.palantir.com/docs/foundry/api-reference/transforms-python-library/api-computebackend)
 - [Palantir, configure](https://www.palantir.com/docs/foundry/api-reference/transforms-python-library/api-configure)
+- [Palantir, Accelerate Spark with Velox](https://www.palantir.com/docs/foundry/transforms-python-spark/velox-overview)
 - [Palantir, containertransform](https://www.palantir.com/docs/foundry/api-reference/transforms-python-library/api-containertransform)
 - [Palantir, containertransformsconfiguration](https://www.palantir.com/docs/foundry/api-reference/transforms-python-library/api-containertransformsconfiguration)
 - [Palantir, floatparam](https://www.palantir.com/docs/foundry/api-reference/transforms-python-library/api-floatparam)

@@ -65,6 +65,20 @@ API 호출 수를 줄이는 최적화에서는 호출당 비용만 보면 개선
 
 AWS CUR는 월중 비용을 추정치로 제공하고 적어도 하루 한 번 갱신하며, 서비스마다 사용량 정보가 도착하는 시점이 다를 수 있다(2026-10-10 공식 문서 확인). 따라서 지연된 비용을 실시간 요청 수로 나눈 값을 확정 효율로 제시하지 않는다. 비용과 제공량의 집계 범위, 마지막 갱신 시각과 잠정 여부를 표시하고, 청구 확정 및 환불이나 크레딧 반영 뒤 다시 계산할 수 있게 한다.
 
+### 사례: 조직별 비용 청구서와 성숙도 진단
+
+배달 플랫폼 운영사 우아한형제들이 AWS Industry Week 2024에서 발표한 자체 운영 방식이다. 회사가 설명한 사례이며, 발표 당시 파일럿이던 조직별 청구서 메일과 준비 중인 계획을 포함한다. 효과와 수치는 독립 검증하지 않았다. 회사는 이 청구서 메일을 쇼백 관점의 보고라고 설명했다. 실제 청구 없이 조직별 비용을 보여주는 이 방식은 [[AWS-Cost-Optimization#Showback을 엔지니어의 작업 흐름에 연결한다|Showback 보고]]의 한 형태다.
+
+- **결과 지표와 효율 지표를 함께 둔다:** AWS 비용을 전사 배달 주문 건수로 나눈 주문당 비용과, 요청을 ELB, 데이터 전송, CloudFront로 나누어 본 요청당 비용을 함께 쓴다. 앞의 표로 보면 주문당 비용은 서비스 결과 지표이고 요청당 비용은 리소스 효율 지표다.
+- **기준 시점과 비교 기준을 밝힌다:** 발표에서 소개한 일간 메일은 대상 조직, 비용 추출 기준 일자와 기준 환율을 먼저 밝힌다. 총비용은 전일과 최근 3개월 평균 대비, 주문당과 요청당 비용은 전주와 최근 3개월 평균 대비 증감을 보여준다. 주간과 월간 메일의 구성은 발표에서 설명하지 않았다.
+- **조사 경로를 같이 준다:** 증감 상위 3개를 AWS 제품, 서비스 태그, 역할 태그 순으로 보여주고, 전사 평균과 백분위에서 해당 조직의 위치를 보여주려 한다. 메일 하단 링크로 여는 상세 대시보드는 2개월 전, 1개월 전과 진행 중인 당월의 비용을 보여주고, 월마다 비용 계산 일수가 달라 증감은 일평균 비용으로 환산해 비교한다. 당월 값은 청구가 확정되기 전의 잠정치다. 회사는 배포 횟수와 비용의 상관관계를 보려고 일별 비용 차트에 배포 횟수도 함께 표시했다.
+- **과제의 출처를 옮기려 한다:** 중앙 FinOps 담당이 최적화 과제를 내던 방식에서 각 개발팀이 자기 KPI에 맞춰 도출한 과제를 중앙이 접수하는 방식으로 바꿀 준비를 하고, 모니터링과 배치 같은 공통 플랫폼 비용을 간접비로 배분하는 로직을 설계 중이라고 밝혔다.
+- **성숙도 진단:** FinOps Foundation 성숙도 모델과 AWS 엔터프라이즈 서포트의 비용 관리 진단으로 현재 단계를 확인하고, AWS 진단을 바탕으로 단계별 과제를 정의했다고 설명한다.
+
+이 문서의 기준으로 사례를 읽으면, 배포와 비용 증가가 겹친다는 사실만으로 배포를 원인으로 확정하지 않는다. 조직 간 백분위를 효율 비교로 읽으려면 비용 범위가 같고, 분모가 각 조직의 제공량을 같은 정의로 센 값이어야 한다. 전사 주문 건수처럼 모든 조직에 같은 값을 쓰는 분모로 나누면 순위는 절대 비용의 순위와 같아진다. 절대 비용의 백분위에는 규모와 효율의 차이가 섞여 있으므로 효율 순위로 읽지 않는다. 순위보다 같은 범위의 추세를 먼저 본다.
+
+FinOps Foundation의 성숙도 모델은 Crawl, Walk, Run 단계를 쓰고 역량과 기능 활동마다 성숙도가 다를 수 있다고 본다. 모든 역량을 Run으로 만드는 것 자체를 목표로 삼지 말라고 명시하고, 사업 가치가 가장 큰 역량의 성숙을 우선하라고 권한다(2026-10-18 확인). 단위 비용 지표를 다루는 Unit Economics도 FinOps Framework의 Quantify Business Value 도메인에 속한 하나의 역량이라 다른 역량과 성숙도가 다를 수 있다(2026-10-19 확인). 따라서 단계 진단은 개선 후보를 찾는 데 쓰고, 우선순위는 그 역량이 주는 사업 가치로 정한다.
+
 ### 리소스 연결과 비용 귀속을 분리한다
 
 부분 검증(2026-10-16): AWS의 FinOps 그래프 설계 자료와 VPC Flow Logs 제한을 대조했다. 리소스 관계, 태그, 사용 지표와 청구 데이터를 연결하면 태그가 빠진 의존 자원이나 비용 증가의 조사 범위를 찾는 데 도움이 된다. 그래프에 연결돼 있다는 사실만으로 비용 배분이 확정되지는 않는다.
@@ -99,6 +113,8 @@ AWS CUR는 월중 비용을 추정치로 제공하고 적어도 하루 한 번 �
 - [AWS Well-Architected, Evaluate specific improvements](https://docs.aws.amazon.com/wellarchitected/latest/sustainability-pillar/evaluate-specific-improvements.html) — 2026-10-09 작업당 자원 지표와 자원 간 절충을 대조했다.
 - [AWS, Sustainability Proxy Metrics and Carbon Emissions Dashboard](https://docs.aws.amazon.com/guidance/latest/cloud-intelligence-dashboards/sustainability-proxy-metrics-dashboard.html)
 - [FinOps Foundation, Unit Economics](https://www.finops.org/framework/capabilities/unit-economics/)
+- [FinOps Foundation, FinOps Maturity Model](https://www.finops.org/framework/maturity-model/) — 2026-10-18 단계 이름, 역량별 성숙도와 사업 가치 우선 원칙을 대조했다.
+- [우아한형제들의 비용인식 문화에 기반한 클라우드 비용관리체계 구축과정 — Amazon Web Services Korea](https://www.youtube.com/watch?v=4B-h_2Wrmyw) — AWS Industry Week 2024 발표. 사례 절의 회사 운영 방식은 이 발표의 설명이다.
 - [Introduction to Cloud Unit Economics — FinOps Foundation](https://www.finops.org/wg/introduction-cloud-unit-economics/)
 - [AWS Well-Architected, COST03-BP04 Establish organization metrics](https://docs.aws.amazon.com/wellarchitected/latest/cost-optimization-pillar/cost_monitor_usage_define_kpi.html)
 

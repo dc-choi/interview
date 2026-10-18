@@ -76,6 +76,21 @@ AI 이미지, 자막과 TTS로 얼굴을 노출하지 않는 짧은 영상을 �
 
 위의 YouTube 정책은 YouTube에 적용되는 기준이다. Instagram 릴스로 발행할 때는 Meta의 최신 표시, 권리와 수익화 기준을 별도로 확인한다. 재사용 가능한 제작 절차와 플랫폼별 정책을 혼동하지 않는다.
 
+## 생성 이미지의 서명과 이름 점검
+
+생성 이미지의 모서리나 글자 영역에는 실존 창작자의 서명이나 이름이 들어갈 수 있다. 서명은 작품을 창작자와 잇는 진품 표시로도 쓰이므로, 이런 결과물을 그대로 발행하면 실존 창작자의 작품으로 오인되거나 그 창작자를 사칭하는 결과가 될 수 있다. 판매나 광고에 쓸 결과물이면 권리자의 이의와 법적 쟁점까지 함께 검토한다.
+
+- **발행 전 확대 확인:** 모서리, 여백, 말풍선과 간판처럼 글자가 들어가는 영역에서 서명, 이름, 로고와 워터마크를 찾는다.
+- **제거 또는 재생성:** 발견하면 해당 표시를 지우거나 다시 생성한다. 표시를 지워도 결과물이 특정 작품과 비슷한지는 따로 확인한다.
+- **프롬프트 범위:** 판매하거나 광고에 쓸 결과물에는 실존 창작자의 이름이나 특정 매체의 스타일을 프롬프트에 넣지 않는다. 아래 시스템 카드의 거절 대상은 생존 작가이지만, 아래 보도에는 작고한 만화가의 서명도 나왔고 저작권법의 저작자 표시 벌칙은 표시된 사람의 생존 여부를 요건으로 두지 않는다. 이름을 넣지 않은 요청에서도 서명이 나올 수 있어 이 원칙이 확대 확인을 대신하지는 않는다.
+- **생성 기록:** 문제가 제기되면 생성 경위를 설명할 수 있도록 프롬프트, 도구와 모델, 생성 일시, 원본 파일과 수정 내역을 보관한다.
+
+OpenAI는 2025-03-25 GPT-4o 이미지 생성 시스템 카드 부록에서, 프롬프트에 작가 이름을 쓰면 일부 작가 작품의 미학을 닮은 이미지를 만들 수 있고 이에 창작자 커뮤니티의 우려가 제기됐다며 생존 작가의 스타일로 이미지를 만들려는 요청에 거절을 추가했다고 밝혔다. 같은 문서는 출시 시점 안전 접근의 스냅숏이라고 밝히고 화풍 요청을 다루므로, 현재 정책이나 결과물에 서명이 섞이지 않는다는 보장으로 읽지 않는다.
+
+국내에서 발행할 때는 두 조문을 검토 후보로 둔다(2026-10-18 현행 조문 확인). 부정경쟁방지 및 영업비밀보호에 관한 법률 제2조 제1호 타목은 국내에 널리 인식되고 경제적 가치를 가지는 타인의 성명, 초상, 음성, 서명 등 그 타인을 식별할 수 있는 표지를 공정한 상거래 관행이나 경쟁질서에 반하는 방법으로 자신의 영업을 위하여 무단으로 사용해 타인의 경제적 이익을 침해하는 행위를 부정경쟁행위로 정한다. 저작권법 제137조 제1항 제1호는 저작자 아닌 자를 저작자로 하여 실명이나 이명을 표시해 저작물을 공표한 자를 벌칙 대상으로 둔다. 앞 조문은 표지가 국내에 널리 인식됐는지와 영업을 위한 사용인지 등에, 뒤 조문은 결과물이 저작물에 해당하는지와 공표했는지 등에 따라 적용이 갈리므로 실제 사안은 법률 검토를 거친다.
+
+2026-10-05 Nieman Lab 보도는 ChatGPT가 만든 The New Yorker 스타일 만화에서 서명이 허락이나 보상 없이 쓰인 이 잡지의 전현직 기고 만화가가 15명을 넘는다고 기록했다. SNS에 퍼진 한 만화는 게시자가 The New Yorker 스타일 만화를 요청했을 뿐이라고 밝혔는데, 오른쪽 아래에 그 만화를 그리지 않은 기고 만화가의 필명이 있었고 그 만화가는 자기 작품이냐는 문의를 받았다. 기자가 OpenAI에 알린 뒤 ChatGPT는 같은 스타일 요청에 제3자 콘텐츠와의 유사성에 관한 가드레일 위반 가능성을 경고했지만, 보도 시점에도 일부 일반 만화에 실존 만화가의 이름을 넣었다. 기자는 이 만화들이 거래된 증거는 찾지 못했다. 판매가 확인되지 않은 이미지에서도 오인 문의가 생겼고 도구의 사후 경고도 서명을 다 막지 못했으므로, 발행 전 점검은 생성 도구에 맡기지 않는다.
+
 ## 트레이드오프와 한계
 
 - **도구 접근성이 곧 수익성은 아니다.** 경쟁자도 같은 도구를 사용할 수 있지만 제작 품질, 편집 시간과 고객 접근 비용은 다르다. 구독과 제작, 운영 비용에 비해 광고나 판매 수익이 충분한지 확인한다. 경쟁 증가만으로 개별 콘텐츠의 기대 수익이 얼마나 변할지는 확정할 수 없다.
@@ -88,6 +103,7 @@ AI 이미지, 자막과 TTS로 얼굴을 노출하지 않는 짧은 영상을 �
 - 이 채널이 다른 채널과 다른 점을 한 문장으로 말할 수 있는가. 말하지 못하면 세팅만 한 상태다.
 - 수익화할 곡의 생성 플랜, 승인된 다운로드와 적용 약관을 확인했으며 공동 Remix 제한에 해당하지 않는가.
 - 가사, 샘플, 이미지까지 포함해 입력과 상업적 배포에 필요한 권리를 확보했는가.
+- 판매하거나 광고에 쓸 생성 이미지에서 실존 창작자의 서명, 이름, 로고와 워터마크를 확인했고, 프롬프트에 실존 창작자의 이름이나 특정 매체의 스타일을 넣지 않았는가.
 - YouTube 광고 수익을 기대한다면 YPP의 수치 요건과 채널 심사를 별도로 충족했는가.
 - 업로드가 같은 템플릿의 반복으로 보이지 않을 만큼 사람의 편집 판단이 들어가 있는가.
 - 합성 콘텐츠 공개 설정을 빠짐없이 했는가.
@@ -105,6 +121,7 @@ AI 이미지, 자막과 TTS로 얼굴을 노출하지 않는 짧은 영상을 �
 
 - [North Carolina Man Sentenced To 18 Months In Prison For Super Intelligence-Assisted Music Streaming Fraud — U.S. Department of Justice](https://www.justice.gov/usao-sdny/pr/north-carolina-man-sentenced-18-months-prison-super-intelligence-assisted-music) — 2026-10-06 선고 발표, 2026-10-16 대조
 - [Music streaming fraud indictment — U.S. Department of Justice](https://www.justice.gov/usao-sdny/media/1366241/dl) — 사기 기간과 AI 음악 활용 경위
+- [ChatGPT is adding real cartoonists' signatures to fake New Yorker cartoons — Nieman Lab](https://www.niemanlab.org/2026/10/chatgpt-is-adding-real-cartoonists-signatures-to-fake-new-yorker-cartoons/) — 2026-10-05 보도, 2026-10-18 RSS 본문 대조
 
 - [꿈꾸던 어른이 되었나요? 앨범 정보 — 머무르 (멜론)](https://www.melon.com/album/detail.htm?albumId=13744621) — 제작 역할에 관한 공개 설명, 2026-10-15 확인
 - [YouTube Help, YouTube channel monetization policies](https://support.google.com/youtube/answer/1311392)
@@ -118,11 +135,16 @@ AI 이미지, 자막과 TTS로 얼굴을 노출하지 않는 짧은 영상을 �
 - [Suno Help, Can I distribute my songs to Spotify, etc?](https://help.suno.com/en/articles/2410177)
 - [Suno Help, If I subscribe, do I get rights for the songs I made before subscribing?](https://help.suno.com/en/articles/2425729)
 - [Suno Help, Upcoming Changes FAQ: Downloads, Models, and Terms of Service](https://help.suno.com/en/articles/13614785)
+- [Addendum to GPT-4o System Card: Native image generation — OpenAI](https://cdn.openai.com/11998be9-5319-4302-bfbf-1167e093f1fb/Native_Image_Generation_System_Card.pdf) — 2025-03-25
 - [U.S. Copyright Office, Copyright and Artificial Intelligence, Part 2: Copyrightability](https://www.copyright.gov/ai/Copyright-and-Artificial-Intelligence-Part-2-Copyrightability-Report.pdf)
 - [국가법령정보센터, 저작권법 제2조](https://www.law.go.kr/lsLinkCommonInfo.do?chrClsCd=010202&lsJoLnkSeq=1027697001) — 2026-08-11 시행
+- [국가법령정보센터, 저작권법 제137조](https://www.law.go.kr/%EB%B2%95%EB%A0%B9/%EC%A0%80%EC%9E%91%EA%B6%8C%EB%B2%95/%EC%A0%9C137%EC%A1%B0) — 2026-08-11 시행
+- [국가법령정보센터, 부정경쟁방지 및 영업비밀보호에 관한 법률 제2조](https://www.law.go.kr/%EB%B2%95%EB%A0%B9/%EB%B6%80%EC%A0%95%EA%B2%BD%EC%9F%81%EB%B0%A9%EC%A7%80%EB%B0%8F%EC%98%81%EC%97%85%EB%B9%84%EB%B0%80%EB%B3%B4%ED%98%B8%EC%97%90%EA%B4%80%ED%95%9C%EB%B2%95%EB%A5%A0/%EC%A0%9C2%EC%A1%B0) — 2026-05-28 시행
 - [나도 이런 콘텐츠 만들 수 있을까 | 무료 AI — YouTube, 피프](https://www.youtube.com/watch?v=vDodF0pDmRM) — 2026-10-11 공개 영상. 오디오 보관함 문단의 계기이며 사용 조건은 YouTube 도움말로 대조
+- [ChatGPT Is Impersonating Real Cartoonists — YouTube, Better Stack](https://www.youtube.com/watch?v=z1UajAY86uc) — 2026-10-09 공개 영상. 서명 점검 절의 계기이며 사실관계는 Nieman Lab 기사로 대조
 
 ## 관련 문서
 
 - [[AI-Commoditization-Differentiation|AI 범용화와 사업 차별화]]
 - [[Content-Marketing|콘텐츠 마케팅]]
+- [[Trademark-and-Brand-Clearance|상표와 브랜드 권리 확인]]

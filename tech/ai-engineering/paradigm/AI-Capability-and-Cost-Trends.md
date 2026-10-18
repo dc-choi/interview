@@ -36,6 +36,7 @@ AI가 대회에서 사람을 이겼다, 어려운 시험의 절반을 넘었다,
 
 - OpenAI는 2026-08-01 내부 모델이 얻은 수학과 이론 컴퓨터과학 결과 10개를 발표하고 Lean 4 형식화를 공개했다. 그중 한 결과는 에르되시 문제 183을, 다른 한 결과는 146과 180을 해결한다고 적는다.
 - 2026-10-06에는 원고 722편(결과군 372개)을 공개했다. 다음 날 갱신에서 한 원고의 부호 오류가 그 원고와 이에 의존한 원고 2편의 논증을 무너뜨려 3편을 철회했고, 이와 별도로 원고 14편을 증명 보완, 진술 정정, 가정과 의존 관계 명확화 등으로 고쳤다. 이 갱신 뒤 원고는 719편이며, 원고별 대표 결과(top-line result) 가운데 Lean으로 형식화된 것은 300편, 약 42%다.
+- 같은 공개분의 원고 Integer multiplication below n log n(2026-09-23자)은 n비트 정수 곱셈을 고정된 수의 tape를 쓰는 결정론적 Turing machine에서 최악 O(n (lg n)^(1−κ)), κ = 2⁻¹⁸²에 계산해 이 모델에서 Schönhage–Strassen의 n log n 최적성 추측을 반증한다고 주장한다. 저장소의 preprint이고 주 결과가 Lean으로 형식화된 원고 목록에 없으며, 알려진 상한과 증명된 하한의 구분은 [[Algorithm-Complexity#정수 곱셈으로 보는 상한과 문제의 하한|정수 곱셈의 상한과 하한]]에 정리했다(2026-10-18 원문 확인).
 - 2025-11 OpenAI 공저 논문은 erdosproblems.com에 미해결로 표시된 문제를 GPT-5로 문헌 검색해, 이미 출판된 해법이 있던 10개 문제를 찾았다고 기록한다. 이 10개는 새 증명이 아니라 기존 해법을 찾아낸 것이다. 같은 논문의 에르되시 문제 절은 미해결이던 848번 문제를 절 저자인 Mehtaab Sawhney가 GPT-5와 함께, erdosproblems.com 댓글로 나온 다른 연구자들의 아이디어와 결합해 해결했다고 적는다.
 - Lean 컴파일 통과는 형식 진술에 대한 증명이 맞다는 뜻이다. 형식 진술이 원래 문제를 정확히 옮겼는지는 따로 검토한다.
 - 2026-09-11 Terence Tao 블로그에 필즈상 수상자 25명을 첫 서명자로 한 공동 선언 A Severe Misalignment of AI in Mathematics가 실렸다. 선언은 LLM의 수학 능력이 크게 높아졌다고 인정하면서도, AI 기업이 수학 문제 풀이를 벤치마크로 밀어붙이는 흐름이 수학과 수학 공동체에 해롭고 AI 기업과 수학 공동체의 목표가 심각하게 어긋난다고 본다. 획기적인 해법은 강연, 토론과 단순화를 거쳐 공동체가 소화하고 교과서 서술로 이어지는데, 이런 해법은 서둘러 발표돼 제대로 된 원고를 쓸 시간이 남지 않는 경우가 많고 이것이 귀속과 표절에 관한 심각한 의문을 낳는다고 지적한다. AI가 수학 연구와 이해를 강화하고 가속할 잠재력도 인정하며, 수학 공동체, 이 기술을 개발하는 기업과 사회 전반이 이 문제들을 시급히 다뤄야 한다고 촉구한다(2026-10-18 원문 확인).
@@ -117,6 +118,8 @@ METR는 사람 전문가가 걸리는 시간으로 잰 소프트웨어와 추론
 - [ten-proofs — GitHub, OpenAI](https://github.com/openai/ten-proofs)
 - [math — GitHub, OpenAI](https://github.com/openai/math) — 2026-10-06 첫 공개(원고 722편), 현재 원고 수와 형식화 비율
 - [math history — GitHub, OpenAI](https://github.com/openai/math/blob/main/history.md) — 2026-10-07 철회와 수정
+- [Integer multiplication below n log n — GitHub, OpenAI](https://github.com/openai/math/tree/main/preprints/Integer-multiplication-below-n-log-n-September-23-2026) — 2026-09-23자 원고, 초록과 정리 진술 대조
+- [math formalization.yaml — GitHub, OpenAI](https://github.com/openai/math/blob/main/lean/formalization.yaml) — 2026-10-18 형식화 목록 대조
 - [A Severe Misalignment of AI in Mathematics — Terence Tao 블로그, 필즈상 수상자 공동 선언](https://terrytao.wordpress.com/2026/09/11/a-severe-misalignment-of-ai-in-mathematics/) — 2026-09-11
 - [Early science acceleration experiments with GPT-5 — OpenAI, Sébastien Bubeck 외](https://cdn.openai.com/pdf/4a25f921-e4e0-479a-9b38-5367b47e8fd0/early-science-acceleration-experiments-with-gpt-5.pdf) — 2025-11-20
 - [The AI Action Summit: A golden age of innovation — Google, Sundar Pichai](https://blog.google/innovation-and-ai/products/sundar-pichai-ai-action-summit/) — 2025-02-10
