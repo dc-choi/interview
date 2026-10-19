@@ -112,14 +112,25 @@ www가 없는 주소의 초기화 결과로 www 주소의 캐시까지 초기화
 - **Competition:** 해당 검색어에 광고를 게재한 광고주 수의 상대적 수준이다. 자연 검색에서 상위에 오르기 어려운 정도로 해석하지 않는다.
 - **검색어와 페이지의 적합성:** 대상 고객이 원하는 설명, 비교나 실행 방법을 페이지가 제공하는지 확인한다. 검색량이 커도 제공 서비스와 맞지 않으면 우선순위를 낮출 수 있다.
 
+2026-10-20 Keyword Planner 예측 도움말에서 추가로 확인한 점이다. 검색량 통계는 반올림한 값이라 여러 지역의 값을 더해도 합계가 맞지 않을 수 있다. 평균 월간 검색량 같은 과거 통계는 키워드의 검색 유형(확장, 구문, 일치)을 바꿔도 일치검색 기준(유사 검색어 포함) 값으로 표시된다. 짧은 상위 검색어의 값에 그 말을 포함한 더 긴 검색어의 검색까지 들어 있다고 가정하지 않고, 구체적인 검색어는 따로 조회한다.
+
+외부 SEO 도구의 지표는 그 도구가 정한 데이터와 산식으로 만든 값이다. 2026-10-20 Semrush 지식베이스 기준 정의는 다음과 같다.
+
+- **Semrush 검색량:** Semrush는 제3자 제공 데이터에 과거 클릭스트림 데이터를 겹친 자료로 계산 모델을 만들고, 그 모델로 키워드별 값을 산출한다. 월평균은 최근 12개월 검색 수의 합을 12로 나눈 값이며, 조회하는 지역 데이터베이스에 따라 달라진다.
+- **Semrush Keyword Difficulty:** Google 자연 검색 상위 10위에 들기 위해 필요한 SEO 노력을 0~100%로 나타낸 Semrush의 예측값이다. 순위에 든 URL을 가리키는 참조 도메인 수, 그 링크의 dofollow/nofollow 비율과 순위 도메인 Authority Score 각각의 중앙값, 검색어 자체의 검색 결과 특성 등을 반영한다. 위 Keyword Planner 도움말의 Competition 정의와 비교하면, 광고주 수를 보는 Competition과는 다른 지표다.
+
+외부 도구의 값을 Keyword Planner나 다른 도구의 값과 한 표에서 같은 척도로 섞지 않는다. 같은 도구, 지역 데이터베이스와 조회일 안에서 후보를 비교하고, 반올림하거나 모델로 산출한 값의 작은 차이로 우선순위를 확정하지 않는다.
+
 실무에서는 고객, 검색어, 의도, 검색량의 조건과 기준일, 현재 검색 결과, 연결할 페이지를 한 행에 기록한다. 이는 작업용 정리 방식이며 Google이 보장하는 순위 공식이 아니다. AI가 제안한 검색어는 조사 후보로 두고 검색량과 경쟁 수치를 확인 없이 채우지 않는다. 게시 후에는 실제 노출, 클릭과 문의를 함께 보며 가설을 수정한다.
 
-이번 부분 대조는 검색어 후보와 Keyword Planner 지표에 한정하며, 기존 네이버 설정과 공유 캐시 절의 재검증 날짜는 갱신하지 않는다.
+2026-10-18과 2026-10-20의 부분 대조는 검색어 후보, Keyword Planner와 외부 도구 지표에 한정하며, 기존 네이버 설정과 공유 캐시 절의 재검증 날짜는 갱신하지 않는다.
 
 ## 출처
 
 - [Google Search Central, SEO Starter Guide](https://developers.google.com/search/docs/fundamentals/seo-starter-guide)
 - [Google Ads Help, About Keyword Planner forecasts](https://support.google.com/google-ads/answer/3022575?hl=en)
+- [Semrush Knowledge Base, What is Search Volume in Semrush?](https://www.semrush.com/kb/683-what-is-search-volume-in-semrush)
+- [Semrush Knowledge Base, Keyword Difficulty score](https://www.semrush.com/kb/1158-what-is-kd)
 - [Google Search Console 도움말, 사이트 소유권 확인](https://support.google.com/webmasters/answer/9008080?hl=ko)
 - [Google Search Central, How to specify a canonical URL](https://developers.google.com/search/docs/crawling-indexing/consolidate-duplicate-urls)
 - [Google Search Central, Build and submit a sitemap](https://developers.google.com/search/docs/crawling-indexing/sitemaps/build-sitemap)
@@ -138,3 +149,4 @@ www가 없는 주소의 초기화 결과로 www 주소의 캐시까지 초기화
 - [[AI-Search-Visibility|AI 검색 가시성 측정]] — 생성 AI 답변에서의 노출과 인용
 - [[NextJS-App-Crawler-Files|manifest, robots와 sitemap]] — Next.js 환경의 구현
 - [[Metrics-Framework|지표 설계]] — 노출, 유입과 실제 전환의 구분
+- [[Trend-Research-Validation|트렌드 조사와 수요 검증]] — 검색 데이터를 제품 수요 가설로 쓸 때의 한계

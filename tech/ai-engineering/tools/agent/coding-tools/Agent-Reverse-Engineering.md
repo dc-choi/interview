@@ -38,7 +38,17 @@ aliases: ["Agent Reverse Engineering", "REA Reverse", "게임 개발 AI 하네�
 | 엔진과 분리한 시뮬레이션 | 화면 없이 규칙과 성능을 시험 |
 | 스크린샷, 이미지 차이와 텍스트 프로파일 | 시각 회귀와 병목을 구체적 증거로 반환 |
 
-화면 차이만으로 버그를 판정하면 랜덤 효과나 폰트 렌더링을 오류로 셀 수 있다. 상태 불변식, 허용 오차와 의미 있는 사용자 흐름을 함께 확인한다. 제공 발췌의 「게임 개발용 AI 하네스를 설계하는 방법」은 이 주제의 학습 계기이며, 해당 제목의 원문 URL은 확인 대기다. 별도 공개 템플릿에서 snapshot, dispatch, reset 계약을 확인했다. 이 템플릿을 제공 글의 구현으로 동일시하지 않는다.
+화면 차이만으로 버그를 판정하면 랜덤 효과나 폰트 렌더링을 오류로 셀 수 있다. 상태 불변식, 허용 오차와 의미 있는 사용자 흐름을 함께 확인한다.
+
+**구성 사례 (2026-10-10 공개 글, 2026-10-20 대조):** 게임 프로그래머가 발표 슬라이드를 바탕으로 다시 쓴 설계 권고이며 효과를 측정한 결과는 아니다.
+
+- 비결정적 호출은 게임 시작 시 만든 하나의 seed 난수원에서만 값을 받게 한다. 정확한 상태를 효율적으로 저장하고 불러오는 전략을 개발 초기부터 갖추는 것을 상태 재현의 가장 중요한 요소로 본다.
+- 상태 변경은 느슨한 함수 호출 대신 가능하면 직렬화할 수 있는 명령 객체로 남긴다. 텍스트로 쓴 명령열을 실행 중인 게임에 재생할 수 있어 에이전트도 같은 형식으로 조작을 작성한다.
+- 시뮬레이션은 엔진의 실행 로직 밖 별도 라이브러리(DLL)로 떼고, 게임 데이터는 코드가 아닌 외부 데이터로 둔다.
+- 화면 비교는 CLI 이미지 비교 도구가 내는 변경 후 화면과 목표 이미지의 차이 수치를 에이전트 턴마다 비교하는 평가 기준선으로 삼아 그 차이를 줄여 간다. 사례가 권한 odiff는 차이가 픽셀 차이일 때 Node.js API와 server mode에서 다른 픽셀 수와 전체 이미지 대비 백분율(`diffCount`, `diffPercentage`)을 반환하고, CLI도 같은 두 값을 출력한다(2026-10-20 main 브랜치의 README, 타입 정의와 소스 기준). 프로파일러 화면은 에이전트가 읽기 어려워 캡처를 텍스트로 출력하는 도구를 쓴다.
+- 스크린샷 잡음은 [[Context-Engineering#Context Rot|Context Rot]]으로 진행 판단을 흐릴 수 있다. 저자는 글 말미에서 출시 중인 작은 프로젝트에는 이 기법을 쓰지 않았고 대상 규모는 더 큰 프로젝트라고 밝혔다. 한 번의 에이전트 반복이 수초에 끝난다는 서술은 측정값이 아니다. 저장과 불러오기의 세부 복잡성은 다루지 않았다.
+
+별도 공개 템플릿에서는 snapshot, dispatch, reset 계약을 확인했다. 이 템플릿은 위 사례의 구현이 아니다.
 
 ## 재구현 사례와 생태계 보강의 범위
 
@@ -67,8 +77,10 @@ aliases: ["Agent Reverse Engineering", "REA Reverse", "게임 개발 AI 하네�
 - [Introducing XBOX LABS — Xbox Wire](https://news.xbox.com/en-us/2026/10/13/introducing-xbox-labs/) — 2026-10-13 발표, 2026-10-16 공식 본문 확인. 개별 게임 이식 재현은 미실시.
 - [REA: Reverse Engineer Anything — levelupsoft](https://github.com/levelupsoft/rea-reverse)
 - [HTML Game AI Harness — giwarb](https://github.com/giwarb/html-game-ai-harness) — 별도 구현 사례, 제공 발췌의 원문으로 사용하지 않음.
+- [Your Game Is A Harness — Kyle Kukshtel](https://kylekukshtel.com/ai-harness-engineering-game-development-claude-code) — 2026-10-10 공개, 2026-10-15 GeekNews 게임 하네스 발췌의 원문. 2026-10-20 하네스 구성요소와 한계를 대조.
+- [odiff — dmtrKovalenko](https://github.com/dmtrKovalenko/odiff) — 2026-10-20 main 브랜치의 README, Node.js 타입 정의와 CLI 소스로 차이 결과 필드 확인.
 - [Living in the Weimar era of Ruby — Julik Tarkhanov](https://blog.julik.nl/2026/10/the-weimar-of-ruby)
-- 사용자 제공 GeekNews 발췌: 2026-10-11 REA Reverse, 2026-10-12 브라우저 게임 이식, 2026-10-13 Ruby 생태계, 2026-10-15 게임 하네스. 게임 이식과 게임 하네스의 원문 식별 및 데모 재현은 후속 작업이다.
+- 사용자 제공 GeekNews 발췌: 2026-10-11 REA Reverse, 2026-10-12 브라우저 게임 이식, 2026-10-13 Ruby 생태계, 2026-10-15 게임 하네스. 게임 이식의 원문 식별과 데모 재현은 후속 작업이다.
 
 ## 관련 문서
 

@@ -1,7 +1,7 @@
 ---
 tags: [palantir, foundry, api, administration, markings]
 status: done
-verified_at: 2026-10-19
+verified_at: 2026-10-20
 category: "AI엔지니어링(AIEngineering)"
 ---
 
@@ -17,7 +17,7 @@ category의 Marking을 보려면 할당된 역할과 관계없이 organizationRi
 
 응답은 생성된 MarkingCategory다. 만들어진 유형은 응답의 categoryType/markingType으로 확인하고 예시 응답의 CONJUNCTIVE/MANDATORY를 기본값으로 단정하지 않는다. createdTime과 optional createdBy/priority도 담는다. priority는 CBAC category에서만 쓰며 숫자가 클수록 우선순위가 높다.
 
-category 조회/목록은 GET `/markingCategories/{markingCategoryId}`, `/markingCategories`이며 admin-read다. list includeDeleted 기본 true, 최대 pageSize 100이며 nextPageToken을 따른다. categoryType CONJUNCTIVE/DISJUNCTIVE, markingType MANDATORY/CBAC, markings와 deleted를 보존한다. organization category ID는 UUID가 아니라 Organization 문자열이다.
+category 조회/목록은 GET `/markingCategories/{markingCategoryId}`, `/markingCategories`이며 admin-read다. 2026-10-20 기준 두 endpoint 모두 preview 표시가 없다. list는 includeDeleted 기본 true, 최대 pageSize 100이며 nextPageToken을 따른다. optional query `markingType`(MANDATORY 또는 CBAC)으로 category를 거를 수 있고 생략하면 모든 유형을 돌려준다. 0 이하의 pageSize는 InvalidPageSize, 인식하지 못한 markingType은 UnknownMarkingType으로 거부된다(둘 다 INVALID_ARGUMENT). 삭제되지 않은 CBAC category만 감사하려면 includeDeleted=false와 markingType=CBAC를 함께 명시하고 nextPageToken이 없어질 때까지 모든 페이지를 읽는다. 모든 페이지를 받은 결과도 특정 시점의 일관된 snapshot으로 취급하지 않으며, 공통 pagination 계약은 [[Palantir-API-Client-Contract]]를 따른다. list 명세는 권한 오류나 가시성 필터를 적지 않고 단건 조회에는 GetMarkingCategoryPermissionDenied가 있으므로, 목록 결과를 호출 주체가 볼 수 없는 category까지 담은 전수 목록으로 단정하지 않는다. 응답 MarkingCategory의 categoryType CONJUNCTIVE/DISJUNCTIVE, markingType MANDATORY/CBAC, markings와 deleted를 보존한다. organization category ID는 UUID가 아니라 Organization 문자열이다.
 
 Preview PUT category는 name/description만 교체하며 입력에 권한 필드가 없어 이 endpoint로는 권한이 바뀌지 않는다. category 권한(초기값은 initialPermissions)은 별도 MarkingCategoryPermission 작업으로 바꾸며, 그 endpoint와 입력은 확인되지 않았다. category 역할(ADMINISTER/VIEW)이 개별 Marking의 역할(ADMINISTER/DECLASSIFY/USE)이나 보호 데이터 접근(membership)을 자동으로 준다고 가정하지 않는다. Marking Category basics도 category를 보거나 관리하는 권한이 그 안 Marking을 보거나 관리하는 권한을 주지 않는다고 적는다. Manage markings는 Category Viewer를 category와 그 안 Marking의 존재를 볼 수 있는 사용자로 설명하므로, VIEW의 Marking 열람은 존재 확인까지로 읽고 개별 Marking의 열람이나 관리 권한으로 넓혀 읽지 않는다.
 

@@ -50,7 +50,7 @@ Buy for Me에서는 고객이 Amazon 화면에서 배송지, 세금과 배송비
 
 상품 탐색을 맡겼다는 동의와 특정 거래를 결제하겠다는 동의는 구분한다. 고객이 승인할 화면에는 판매자, 품목, 수량과 최종 결제 금액을 보여주고, 승인한 범위가 실제 주문과 맞는지 확인하는 흐름을 설계한다.
 
-2026-10-09에 대조한 Meta의 Muse 출시 시점 기술 설명은 저장된 결제수단이 있는 사이트에서도 구매 상세를 제시하고 매번 승인을 받는 경로를 설명한다. 별도 지갑을 쓰는 경로 역시 결제마다 승인하며, 일회용 결제 자격은 판매자, 금액과 유효기간에 묶인다. 이는 공개된 설계 사례이며 모든 사이트에서 오류 없이 작동한다는 검증 결과는 아니다.
+2026-10-09에 대조한 Meta의 Muse 출시 시점 기술 설명은 저장된 결제수단이 있는 사이트에서도 구매 상세를 제시하고 매번 승인을 받는 경로를 설명한다. 별도 지갑을 쓰는 경로 역시 결제마다 승인하며, 일회용 결제 자격은 판매자, 금액과 유효기간에 묶인다. 출시 시점의 지갑 제휴사는 Stripe Link다. 2026-09-08 Stripe 발표는 미국 소비자가 Link 계정을 연결하면 Link를 받는 가맹점에서는 Link에 저장된 결제수단으로 결제하고, 그 밖의 가맹점에는 승인한 구매로 범위를 묶은 일회용 가상카드를 Muse에 발급한다고 설명한다. 같은 발표는 모든 구매에서 사용자가 채팅 화면에서 거래 총액을 승인하고 Muse는 실제 결제 정보를 보지 못한다고 밝힌다. Link 가맹점 결제에도 위의 판매자, 금액과 유효기간 묶음이 적용되는지는 두 출처에서 확인하지 못했다. 이는 공개된 설계 사례이며 모든 사이트에서 오류 없이 작동한다는 검증 결과는 아니다.
 
 사업 적용 제안: 고객의 탐색 동의를 포괄적인 구매 위임으로 처리하지 않는다. 품절로 대체품을 고르거나 배송비가 달라져 승인한 조건을 벗어나면 다시 확인하도록 정한다. 자동화가 줄일 마찰과 고객이 통제할 거래 조건을 함께 설계한다.
 
@@ -68,7 +68,8 @@ Buy for Me에서는 고객이 Amazon 화면에서 배송지, 세금과 배송비
 ## 출처
 
 - [Shopify Help Center, Shopify Catalog and product discovery for agentic storefronts](https://help.shopify.com/en/manual/online-sales-channels/agentic-storefronts/products) — Catalog 참여와 공개 검색 노출의 차이를 2026-10-10 대조
-- [How We Built Safety Into Muse — Meta AI Research](https://research.meta.ai/blog/security-and-safety-for-ai-agents-our-approach-with-muse) — 출시 시점의 Purchases 절, 2026-10-09 대조
+- [How We Built Safety Into Muse — Meta AI Research](https://research.meta.ai/blog/security-and-safety-for-ai-agents-our-approach-with-muse) — 출시 시점의 Purchases 절, 2026-10-09 대조. Stripe Link 제휴 문장은 2026-10-20 재대조
+- [Stripe helps Muse, Meta’s new personal AI agent, shop across the internet with Link — Stripe](https://stripe.com/newsroom/news/stripe-helps-meta-muse-shop-with-link) — 2026-09-08 발표. Link 가맹점과 그 밖의 가맹점의 결제 경로, 채팅 화면의 총액 승인을 2026-10-20 대조
 - [Shopify Help Center, Shopify agentic storefronts](https://help.shopify.com/en/manual/online-sales-channels/agentic-storefronts)
 - [Shopify, Carts and checkout for agents](https://shopify.dev/docs/agents/carts-and-checkout)
 - [Amazon’s next-gen AI assistant for shopping is now even smarter, more capable, and more helpful — Amazon](https://www.aboutamazon.com/news/retail/amazon-rufus-ai-assistant-personalized-shopping-features)

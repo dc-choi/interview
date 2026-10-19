@@ -1,7 +1,7 @@
 ---
 tags: [runtime, nodejs]
 status: done
-verified_at: 2026-10-01
+verified_at: 2026-10-20
 category: "OS & Runtime"
 aliases: ["보안 모범 사례"]
 ---
@@ -70,9 +70,26 @@ npm audit                 # 공개된 취약점 확인
 
 지원 npm의 `min-release-age`는 새 버전 채택을 일 단위로 지연한다. 탐지 시간을 확보하는 보조책이며 안전성 보장은 아니다. 이 제한이 긴급 보안 수정도 막을 수 있으므로 예외와 재검토 절차를 함께 정한다. OpenSSF Scorecard와 자체 평가 badge는 검토 신호이며 무결점 인증이 아니다.
 
+**의존성 install script의 기본 차단 (2026-10-20 공식 문서와 릴리스 기록 기준)**
+
+| 도구 | 의존성 install script 기본 동작 | 예외 허용 |
+|---|---|---|
+| npm 12 (2026-07-08 출시) | 실행하지 않음 | root `package.json`의 `allowScripts` |
+| pnpm 10.0.0 이상 | 실행하지 않음 | `pnpm-workspace.yaml`의 `allowBuilds`(10.26.0 추가. 그 전 10.x는 `onlyBuiltDependencies`이며 10.5.0 전에는 `package.json`의 `pnpm` 필드에 둔다) |
+| Bun | 기본 허용 목록의 패키지만 실행 | `package.json`의 `trustedDependencies` |
+| Deno | 실행하지 않음 | `deno install --allow-scripts=npm:<pkg>` |
+
+- **npm 12의 차단 범위:** 의존성의 `preinstall`, `install`, `postinstall`과 암묵적 `node-gyp` 빌드를 막는다. `binding.gyp`만 있고 install script가 없는 패키지도 npm이 `node-gyp rebuild`를 암묵적으로 실행하므로 대상이다. git, file, link 의존성의 `prepare`도 막는다. 허용 목록에 없는 의존성의 스크립트는 건너뛰고 설치가 끝날 때 건너뛴 패키지 목록을 보여 준다. `strict-allow-scripts`를 true로 두면 검토하지 않은 패키지가 있을 때 설치가 실패한다. 기본값에서는 설치가 끝나므로 네이티브 모듈은 실행 시점에 실패할 수 있다(운영 판단).
+- **승인 기록:** `npm install-scripts ls`로 검토하지 않은 패키지를 확인하고 `npm install-scripts approve <pkg>`로 허용한 뒤 `npm rebuild`로 실행한다. 승인은 기본으로 `pkg@version` 형태로 버전을 고정해 기록하고(`allow-scripts-pin` 기본 true), `deny`가 남긴 `false` 항목은 다시 승인해도 풀리지 않는다. `npm approve-scripts`와 `npm deny-scripts`는 별칭이며, 기록된 `allowScripts`는 커밋한다. `npx`, `npm exec`와 전역 설치는 `allow-scripts` 설정에 패키지를 쉼표로 나열하고, 패키지가 스스로 적은 이름이 아니라 해석된 의존성 식별자로 대조한다. 프로젝트 정책은 `.npmrc`의 `allow-scripts`로도 둘 수 있지만, 프로젝트 범위의 `npm install`, `ci`, `update`, `rebuild`에 `--allow-scripts`를 CLI로 넘기면 오류다.
+- **출처 제한:** npm 12의 `allow-git`과 `allow-remote` 기본값은 `none`이다(`all`, `none`, `root` 중 선택). `allow-git` 기본값 변경은 git 의존성의 `.npmrc`가 git 실행 파일을 바꿔 `--ignore-scripts`로도 막히지 않던 실행 경로를 닫기 위한 것이다. 레지스트리와 같은 호스트의 tarball은 그대로 설치되고 `allow-file`과 `allow-directory`의 기본값은 `all`로 남았다. pnpm 10.0.0 이상 10.26.0 미만도 git 의존성의 `prepare`, `prepublish`, `prepack`이 가져오는 단계에서 실행돼 기본 차단을 우회할 수 있었다(CVE-2025-69264, 10.26.0에서 수정). 스크립트 차단과 의존성 출처 제한은 따로 확인한다.
+- **버전 확인:** npm 11은 의존성 스크립트를 실행하고 11.16.0 이상에서 npm 12에서 막힐 동작을 경고한다. Node.js Release WG는 2026-08-13 npm 12를 Node.js 22, 24, 26 계열에 넣지 않기로 했으므로, 번들 npm을 그대로 쓰는 CI와 이미지는 실제 npm 버전을 고정하고 확인한다. npm 12는 알 수 없는 CLI flag와 축약 flag를 경고가 아닌 오류로 처리하고, `.npmrc`의 알 수 없는 설정은 기본값에서 경고만 출력한다(`strict-npmrc`를 true로 두면 오류). Node.js `^22.22.2 || ^24.15.0 || >=26.0.0`을 지원한다.
+- **다른 도구:** pnpm의 `allowBuilds`에 없는 패키지는 검토하지 않은 것으로 보고 실행하지 않는다. pnpm 11 이상은 `strictDepBuilds` 기본값이 true라 이때 설치가 0이 아닌 종료 코드로 끝나고, pnpm 10.x는 기본값이 false(10.3.0 추가)라 경고만 출력한다. pnpm 11에서 `onlyBuiltDependencies` 등이 `allowBuilds`로 대체됐다. 현재(2026-10-20, 12 계열) 문서 기준으로 git과 tarball 의존성은 이름만으로 승인되지 않으며, 10.x 문서에는 이 규칙이 없다. Bun은 `trustedDependencies`를 정의하면 기본 허용 목록을 확장하지 않고 대체하며 `file:`, `link:`, `git:`, `github:` 출처 패키지는 직접 적어야 한다. Deno는 node_modules 디렉터리(`--node-modules-dir`)를 쓸 때만 허용한 스크립트를 실행한다.
+
+`ignore-scripts`는 의존성과 프로젝트 자신의 lifecycle script를 모두 막는 전체 차단이고(`npm start`, `npm test`, `npm run`처럼 특정 스크립트를 실행하는 명령은 그 스크립트만 실행하고 pre/post 스크립트는 실행하지 않는다), `allowScripts`는 의존성별 허용 목록이다.
+
 **7. 권한 모델**
 ```bash
-node --permission app.js   # 파일/네트워크/자식 프로세스 접근 제한
+node --permission app.js   # 파일/자식 프로세스 등 접근 제한(네트워크 제한은 Node.js 25 이상)
 ```
 
 권한 모델은 신뢰한 코드의 우발적 접근을 줄이는 안전장치이며, 악성 코드를 격리하는 보안 경계는 아니다. 신뢰하지 않는 코드는 별도 OS 사용자, 컨테이너나 샌드박스로 격리한다.
@@ -101,10 +118,28 @@ node --frozen-intrinsics app.js   # 실험 옵션이므로 대상 Node.js 버전
 - [npm Docs, npm-ci](https://docs.npmjs.com/cli/commands/npm-ci)
 - [npm Docs, npm-audit](https://docs.npmjs.com/cli/commands/npm-audit)
 - [npm Docs, npm-publish](https://docs.npmjs.com/cli/commands/npm-publish)
+- [npm Docs, Config (v12)](https://docs.npmjs.com/cli/v12/using-npm/config)
+- [npm Docs, npm install-scripts (v12)](https://docs.npmjs.com/cli/v12/commands/npm-install-scripts)
+- [npm Docs, npm approve-scripts (v12)](https://docs.npmjs.com/cli/v12/commands/npm-approve-scripts)
+- [pnpm, Build Settings](https://pnpm.io/settings/build)
+- [pnpm, Settings (10.x)](https://pnpm.io/10.x/settings)
+- [Bun, Lifecycle scripts](https://bun.com/docs/install/lifecycle)
+- [Deno, deno install](https://docs.deno.com/runtime/reference/cli/install/)
 - [OWASP, Password Storage Cheat Sheet](https://cheatsheetseries.owasp.org/cheatsheets/Password_Storage_Cheat_Sheet.html)
 - [OWASP, Prototype Pollution Prevention Cheat Sheet](https://cheatsheetseries.owasp.org/cheatsheets/Prototype_Pollution_Prevention_Cheat_Sheet.html)
 - [node-argon2 — GitHub](https://github.com/ranisalt/node-argon2)
+- [Upcoming breaking changes for npm v12 — GitHub Changelog](https://github.blog/changelog/2026-06-09-upcoming-breaking-changes-for-npm-v12/)
+- [npm install-time security and GAT bypass2fa deprecation — GitHub Changelog](https://github.blog/changelog/2026-07-08-npm-install-time-security-and-gat-bypass2fa-deprecation/)
+- [npm v12.0.0 릴리스 — npm/cli](https://github.com/npm/cli/releases/tag/v12.0.0)
+- [docs: clarify npm 12 unknown-config breaking change in changelogs — npm/cli](https://github.com/npm/cli/pull/9805)
+- [feat: namespace install-script approval commands under npm install-scripts — npm/cli](https://github.com/npm/cli/pull/9629)
+- [Plans for npm 12 — nodejs/Release, Issue #1161](https://github.com/nodejs/Release/issues/1161)
+- [pnpm v10.0.0 릴리스 — pnpm](https://github.com/pnpm/pnpm/releases/tag/v10.0.0)
+- [pnpm v10.5.0 릴리스 — pnpm](https://github.com/pnpm/pnpm/releases/tag/v10.5.0)
+- [pnpm v11.0.0 릴리스 — pnpm](https://github.com/pnpm/pnpm/releases/tag/v11.0.0)
+- [pnpm v10+ Bypass Dependency lifecycle scripts execution disabled by default — GitHub Advisory Database, GHSA-379q-355j-w6rj](https://github.com/advisories/GHSA-379q-355j-w6rj)
 
 ## 관련 문서
 
 - [[Password-Hashing|비밀번호 해싱]]
+- [[Supply-Chain-Security|공급망 보안]]

@@ -77,7 +77,7 @@ aliases: ["Supply Chain Security", "공급망 공격", "공급망 보안", "의�
 ### 예방 (설치 전, 빌드 단계)
 
 - **lockfile 고정 + 무결성 검증**: `npm ci`(lockfile 그대로 설치), 해시 핀(`pip install --require-hashes`), 버전 범위 대신 정확한 버전 핀
-- **설치 스크립트 차단**: `npm install --ignore-scripts`로 postinstall 차단, 신뢰 패키지만 예외
+- **설치 스크립트 차단**: `npm install --ignore-scripts`는 모든 설치 스크립트를 막는 전체 차단이다. 패키지 관리자별 의존성 스크립트 기본 동작과 허용 목록은 [[Security|Node.js 보안 모범 사례]]의 install script 기본 차단 절을 따른다
 - **사설 레지스트리, 프록시**: 외부 레지스트리를 그대로 바라보지 않고 검증된 미러(Artifactory, Verdaccio)만 사용
 - **업데이트 지연 정책**: Renovate, Dependabot에 cooldown을 둬 갓 배포된 버전을 즉시 받지 않음 (악성 버전은 보통 빠르게 내려감)
 - **SCA, SBOM**: [[Dependency-Vulnerability-Scanning|의존성 취약점 스캐닝]]과 SBOM으로 무엇이 깔렸는지 항상 파악
