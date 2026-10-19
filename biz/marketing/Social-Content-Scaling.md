@@ -35,6 +35,8 @@ aliases: ["소셜 콘텐츠 성장 단계", "Social Content Scaling", "Founder-l
 
 같은 내용을 일괄 복제하기보다 채널에 맞는 도입, 길이와 시각 예시로 편집한다. 글에서 반응이 나온 주제가 영상에서도 통하는지는 별도 실험이며, 게시 빈도와 제작량보다 반복 가능한 고객 반응을 확인한다.
 
+재생산할 소재는 조회수보다 신청, 상담과 계약 같은 사업 결과로 고른다. 조회수가 적어도 신청으로 이어진 콘텐츠가 있을 수 있으므로 신청 단계에서 어떤 콘텐츠를 보고 왔는지 기록한다. 결과가 나온 메시지와 형식을 사례 모음이나 다른 채널에 맞게 다시 만들고 시간을 두고 다시 다루면 매번 새 소재를 찾을 때보다 들인 노력 대비 조회와 전환이 나을 수 있다는 운영 경험이 있다. 한 번의 높은 성과에는 우연이 섞일 수 있으므로 재생산한 콘텐츠도 같은 기준으로 비교하고, 반응이 반복될 때 정기 제작 목록에 넣는다. 상담에서 반복되는 반론을 소재로 삼는 방법은 [[Lead-Magnet-and-Entry-Offer#상담 반론을 콘텐츠 목록으로 바꾼다|리드 마그넷과 진입 제안]]에서 다룬다.
+
 ## 적용할 때 확인할 것
 
 아래는 운영 경험을 작은 사업에 적용하기 위한 검증 제안이다.
@@ -50,6 +52,7 @@ aliases: ["소셜 콘텐츠 성장 단계", "Social Content Scaling", "Founder-l
 
 - [월간 자연 유입 조회수 0에서 1억 회까지 성장시키는 방법 — GeekNews](https://news.hada.io/topic?id=35447) — 2026-10-16 제공 발췌와 검색 색인 확인.
 - [How to go from 0-100M views/month — KeepFlash, Dominic Bair](https://keepflash.com/en/daily/zero-to-100m-organic-views) — KeepFlash 재수록본. 2026-10-12 표기된 본문을 검색 색인으로 확인. KeepFlash가 원문으로 연결한 X 게시물(https://x.com/domschats/status/2109071150089445424, 2026-10-11 KST)은 열어 보지 않았고, 원본 도표와 성과 데이터는 미확보.
+- [마케팅의 시작점이 진짜, 완전히 변했어요. I 9년간 잘 먹히던 ‘무료 상품’이 최근 쓰레기가 된 진짜 이유 — YouTube, 김서한 : 비상식적 사업 이야기](https://www.youtube.com/watch?v=H3w0evSeSoA) — 2026-10-12, 05:27~07:18의 성과 콘텐츠 재생산을 운영 경험으로 참고했다. 영상별 조회수와 등록자 수, 파생 콘텐츠 수와 재게시 주기는 검증하지 않아 쓰지 않았다.
 
 ## 관련 문서
 
@@ -57,3 +60,4 @@ aliases: ["소셜 콘텐츠 성장 단계", "Social Content Scaling", "Founder-l
 - [[AI-Marketing-Analysis|AI 마케팅 분석과 실험 실행]]
 - [[Personal-Brand-Identity-and-Role|퍼스널 브랜드의 정체성과 배역]]
 - [[Metrics-Framework|지표 설계와 실험 해석]]
+- [[Lead-Magnet-and-Entry-Offer|리드 마그넷과 진입 제안]] — 상담 반론을 콘텐츠 소재로 바꾸는 방법

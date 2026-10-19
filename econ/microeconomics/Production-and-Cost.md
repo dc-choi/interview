@@ -143,4 +143,5 @@ MC가 ATC보다 낮으면 평균을 끌어내려 ATC가 하락하고, 높으면 
 - [[Solo-Product-Market-Validation|수익성과 운영 용량의 동시 검증]]
 - [[Supply-and-Demand|수요와 공급]] — 한계비용이 공급곡선의 뿌리
 - [[Market-Structures|시장구조]] — MR의 모습이 구조마다 다름
+- [[Lead-Magnet-and-Entry-Offer|리드 마그넷과 진입 제안]] — 매몰비용 효과와 가격의 선별 효과를 나눈 현장 연구를 유료 진입 판단에 옮길 때의 기준과 한계
 - [[미시경제(Microeconomics)]] — 지도
