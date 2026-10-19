@@ -19,6 +19,7 @@ workload와 Service, 설정과 storage, traffic 진입과 배포, 리소스 적�
 - [x] [[K8s-HPA-VPA|HPA와 VPA (스케일 기준, 요청값과 관측값, 충돌 회피)]]
 - [x] [[K8s-PDB|PodDisruptionBudget (자발적 중단 가용성, drain과 롤링 업데이트)]]
 - [x] [[K8s-NetworkPolicy|NetworkPolicy (방향별 격리와 합집합 허용, selector AND와 OR, default deny와 DNS egress, CNI 집행 구성과 kube-proxy 대체의 구분, 검증 절차)]]
+- [x] [[K8s-Falco-Runtime-Security|Falco 런타임 보안 (설치 방식, modern eBPF와 kmod 드라이버, 호스트 설치와 서비스 확인, 시험 경보, 규칙 파일과 CKS 허용 자료)]]
 
 ## 관련 문서
 - [[tech/infrastructure-cloud/인프라&클라우드(Infrastructure&Cloud)|인프라&클라우드]] — 상위 카테고리 인덱스

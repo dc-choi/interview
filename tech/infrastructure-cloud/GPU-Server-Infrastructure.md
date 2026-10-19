@@ -119,18 +119,18 @@ GPU 워크로드에는 GPU 자원 요구를 명시하고 해당 장치 플러그
 
 ## SageMaker AI 학습 작업의 용량 확보
 
-2026-10-18 SageMaker AI의 학습 용량 확보, 인스턴스 우선순위 목록, Managed Warm Pools와 warm pool 할당량 문서, `StoppingCondition` API 문서를 부분 대조하고 2026-10-19 `ResourceConfig` API와 Flexible Training Plans 문서를 더 대조한 기준이다. AWS 지원 영상 기준으로 SageMaker AI 리소스의 용량 부족 오류도 계정 할당량에 도달해서가 아니라 요청한 리전이나 가용 영역의 용량이 일시적으로 부족해 생긴다. 따라서 위의 EC2와 같은 방식으로 할당량과 가용 용량을 나누어 본다.
+2026-10-18 SageMaker AI의 학습 용량 확보, 인스턴스 우선순위 목록, Managed Warm Pools와 warm pool 할당량 문서, `StoppingCondition` API 문서를 부분 대조하고 2026-10-19 `ResourceConfig` API, Flexible Training Plans 문서, training plan 할당량과 학습 작업 활용 문서, AWS CLI `describe-instance-type-offerings` 레퍼런스를 더 대조한 기준이다. AWS 지원 영상 기준으로 SageMaker AI 리소스의 용량 부족 오류도 계정 할당량에 도달해서가 아니라 요청한 리전이나 가용 영역의 용량이 일시적으로 부족해 생긴다. 따라서 위의 EC2와 같은 방식으로 할당량과 가용 용량을 나누어 본다.
 
 - **할당량과 가용 영역**: 학습 작업 할당량은 인스턴스 타입마다 따로 있고 증설은 즉시 반영되지 않으므로 학습 일정보다 먼저 요청한다. 리전에 있는 타입이 그 리전의 모든 가용 영역에 있다는 보장은 없어서, private VPC에서 서브넷으로 가용 영역을 정할 때 확인이 필요하다. `aws ec2 describe-instance-type-offerings --location-type availability-zone --filters Name=instance-type,Values=p5.48xlarge --region <학습 리전>`처럼 `ml.` 접두사를 뺀 EC2 타입명과 학습할 리전을 지정해 조회한다. `--region`을 빼면 CLI 기본 리전을 조회한다.
 - **VPC 서브넷**: private VPC에서 학습하면 `VpcConfig`의 서브넷이 SageMaker AI가 인스턴스를 확보할 가용 영역을 정한다. 문서는 가능하면 세 개 이상 가용 영역의 서브넷을 주라고 권한다. 한 작업의 인스턴스는 노드 사이 지연을 줄이려 한 서브넷(한 가용 영역)에 함께 뜨므로, 서브넷을 늘리면 고를 수 있는 용량 풀이 넓어질 뿐 한 작업이 여러 가용 영역에 나뉘지 않는다.
-- **대기 상한**: `ml.p`, `ml.g`, `ml.trn` 같은 가속 인스턴스를 요청한 학습 작업은 On-Demand 용량이 없으면 대기하고, `StoppingCondition.MaxPendingTimeInSeconds`(1,800초에서 2,419,200초, 즉 30분에서 28일) 안에 용량을 얻지 못하면 `InsufficientCapacityError`로 실패한다. 이 값은 CPU 전용 작업에는 효과가 없으며, CPU 전용 단일 타입 작업의 대기 동작은 이번 대조에서 확인하지 않았다. training plan 용량을 쓰는 작업은 플랜이 시작 전 `Scheduled` 상태이거나 예약 블록 사이에서 `Pending`인 시간을 이 상한에 넣지 않고, 플랜이 `Active`인 동안 용량을 기다린 시간만 센다.
+- **대기 상한**: `ml.p`, `ml.g`, `ml.trn` 같은 가속 인스턴스를 요청한 학습 작업은 On-Demand 용량이 없으면 대기하고, `StoppingCondition.MaxPendingTimeInSeconds`(1,800초에서 2,419,200초, 즉 30분에서 28일) 안에 용량을 얻지 못하면 `InsufficientCapacityError`로 실패한다. 이 값은 CPU 전용 작업에는 효과가 없으며, CPU 전용 단일 타입 작업의 대기 동작은 이번 대조에서 확인하지 않았다. training plan 용량을 쓰는 작업은 플랜 시작일 전(플랜 `Scheduled`)에 `Pending`으로 기다린 시간과 두 예약 블록 사이에 작업이 다시 `Pending`이 된 시간(이때 플랜은 `Scheduled`로 돌아간다)을 이 상한에 넣지 않고, 플랜이 `Active`인 동안 용량을 기다린 시간만 센다. 다만 training plan을 학습 작업에 쓰는 문서는 용량을 기다리는 작업이 `StoppingCondition` 충족과 `Pending` 2일 가운데 먼저 오는 시점에 멈추고, 2일 동안 `Pending`이면 `InsufficientCapacityError`로 종료된다고 적는다. 두 문서의 관계는 설명돼 있지 않으므로 플랜 작업의 대기 상한은 실제 요청으로 확인한다.
 - **대체 타입 목록**: `ResourceConfig.InstancePreferences`에 최대 5개 타입을 순서대로 주면 용량이 있는 첫 타입으로 시작한다. 목록의 모든 타입이 요청 수만큼의 할당량을 갖춰야 요청이 거부되지 않는다. 선택은 용량만 기준으로 하고 GPU 아키텍처, 가속기 메모리, EFA 지원과 드라이버 버전을 비교하지 않으므로, 목록의 모든 타입에서 컨테이너가 동작하는지 미리 확인한다. `InstanceType`, `InstanceGroups`, `InstancePlacementConfig`, `EnableManagedSpotTraining`과는 함께 쓸 수 없다. 대기 상한은 타입별이 아니라 목록 전체에 적용되고, 가속 인스턴스가 하나도 없는 목록은 한 번만 평가해 용량이 없으면 대기 없이 실패한다.
-- **예약**: 날짜와 기간이 정해진 학습은 Flexible Training Plans로 GPU와 Trainium 같은 가속 인스턴스 용량을 미리 예약한다. 지원 인스턴스 타입과 리전이 제한되고, 할당량은 플랜의 인스턴스 수 이상이어야 한다. 플랜은 구매할 때 정한 대상 자원(학습 작업, HyperPod, 추론 엔드포인트, Studio 앱)에만 쓸 수 있고 구매 후 취소할 수 없다. private VPC에서는 예약 블록이 잡힌 가용 영역을 모두 서브넷에 넣는다.
+- **예약**: 날짜와 기간이 정해진 학습은 Flexible Training Plans로 GPU와 Trainium 같은 가속 인스턴스 용량을 미리 예약한다. 지원 인스턴스 타입과 리전이 제한된다. 할당량은 학습 용량 확보 문서 기준으로는 플랜의 인스턴스 수 이상이면 되지만, Training Plans 문서와 training plan 할당량 문서는 플랜의 인스턴스 수를 넘어야 한다고 적으므로 플랜보다 큰 값을 확보하거나 실제 요청으로 확인한다. 플랜은 구매할 때 정한 대상 자원(학습 작업, HyperPod, 추론 엔드포인트, Studio 앱)에만 쓸 수 있고 구매 후 취소할 수 없다. private VPC에서는 예약 블록이 잡힌 가용 영역을 모두 서브넷에 넣는다.
 - **재사용**: Managed Warm Pools는 끝난 작업의 인스턴스를 `KeepAlivePeriodInSeconds` 동안 유지하고, `RoleArn`, 인스턴스 타입과 수, 볼륨, `VpcConfig` 등 지정한 값이 모두 같은 다음 작업이 이를 다시 쓴다. 이 값의 최대는 Managed Warm Pools 개발자 안내서 기준 3,600초이지만 2026-10-19 `ResourceConfig` API 레퍼런스의 유효 범위는 0에서 21,600초라서, 3,600초를 넘는 값은 실제 요청으로 허용 여부를 확인한다. warm pool 할당량은 인스턴스 타입별로 있고 기본값이 0이라 먼저 증설을 요청해야 한다. warm pool로 유지하는 인스턴스는 학습 인스턴스 할당량 안에서 계산되며, warm pool 할당량을 늘려도 학습 인스턴스 할당량은 늘지 않는다. warm pool은 과금 대상 자원이며 Spot 인스턴스와 이기종 클러스터 학습에는 쓸 수 없다.
 
 AWS 지원 영상은 Studio 도메인, 처리와 변환 작업, 추론 엔드포인트에도 여러 가용 영역의 서브넷을 구성해 용량 제약을 줄이라고 안내한다.
 
-이 절은 위에 적은 SageMaker AI 공식 문서와 AWS 지원 영상만 추가 대조했다. 실제 GPU 확보나 학습 작업의 대기 동작을 시험하지 않았으며 기존 절 전체의 검증일은 유지한다.
+이 절은 위에 적은 SageMaker AI 공식 문서, AWS CLI 레퍼런스와 AWS 지원 영상만 추가 대조했다. 실제 GPU 확보나 학습 작업의 대기 동작을 시험하지 않았으며 문서 전체의 기존 검증일은 유지한다.
 
 ## GPU 체크포인트와 초기화 비용
 
@@ -222,7 +222,10 @@ Slurm 관리 문서 기준, `/var/log/provision/provisioning.log`에 기록한 �
 - [Amazon SageMaker AI, SageMaker AI Managed Warm Pools](https://docs.aws.amazon.com/sagemaker/latest/dg/train-warm-pools.html)
 - [Amazon SageMaker AI, Request a warm pool quota increase](https://docs.aws.amazon.com/sagemaker/latest/dg/train-warm-pools-resource-limits.html)
 - [Amazon SageMaker API Reference, ResourceConfig](https://docs.aws.amazon.com/sagemaker/latest/APIReference/API_ResourceConfig.html) — 2026-10-19 `KeepAlivePeriodInSeconds` 유효 범위와 `InstancePreferences` 개수 대조
-- [Amazon SageMaker AI, Reserve Flexible Training Plans for ML workloads](https://docs.aws.amazon.com/sagemaker/latest/dg/reserve-capacity-with-training-plans.html) — 2026-10-19 예약 대상 자원과 취소 불가 조건 대조
+- [Amazon SageMaker AI, Reserve Flexible Training Plans for ML workloads](https://docs.aws.amazon.com/sagemaker/latest/dg/reserve-capacity-with-training-plans.html) — 2026-10-19 예약 대상 자원, 취소 불가 조건과 할당량 문구 대조
+- [Amazon SageMaker AI, View SageMaker training plans quotas using the AWS management console](https://docs.aws.amazon.com/sagemaker/latest/dg/training-plan-quotas.html) — 2026-10-19 플랜 인스턴스 수를 넘는 할당량 문구 대조
+- [Amazon SageMaker AI, Training plans utilization for SageMaker training jobs](https://docs.aws.amazon.com/sagemaker/latest/dg/training-plan-utilization-for-training-jobs.html) — 2026-10-19 플랜 작업의 2일 `Pending` 종료 조건 대조
+- [AWS CLI Command Reference, describe-instance-type-offerings](https://docs.aws.amazon.com/cli/latest/reference/ec2/describe-instance-type-offerings.html) — 2026-10-19 `--region` 생략 시 현재 리전을 조회한다는 동작 대조
 - [How do I resolve insufficient capacity errors when I launch my SageMaker AI resources? — Amazon Web Services](https://www.youtube.com/watch?v=nZomHmUFieI)
 - [Amazon SageMaker API Reference, ClusterLifeCycleConfig](https://docs.aws.amazon.com/sagemaker/latest/APIReference/API_ClusterLifeCycleConfig.html)
 - [Amazon SageMaker AI, SageMaker HyperPod cluster management](https://docs.aws.amazon.com/sagemaker/latest/dg/sagemaker-hyperpod-cluster-management-slurm.html) — Slurm lifecycle script의 인스턴스별 로그와 오류 표시 범위

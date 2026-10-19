@@ -65,7 +65,7 @@ WIPO도 목표 시장의 등록상표와 진행 중인 출원을 먼저 조사�
 
 AI로 탐지와 신고서 초안을 자동화해 신고량을 늘리더라도, 확실하지 않은 건은 제출하지 않고 근거를 보관하는 사람 검토 단계를 둔다. 위 요건을 적용한 운영 원칙이며, EU 밖 플랫폼의 신고 요건은 각 정책과 현지 법으로 다시 확인한다.
 
-위조품 생산은 정품 수요를 따라가는 경향이 있다. GFI 보고서는 위조품과 불법 복제품 생산이 합법 시장의 수요를 밀접하게 따라가며, 합법 시장에서 수요가 큰 품목이나 브랜드에는 불법 복제가 뒤따른다고 정리했다. 국가별 차이는 수요와 함께 공급망 침투의 쉬움과 지식재산권 집행 수준에도 달려 있다고 본다. 한 브랜드 보호 기업 대표는 단기 유행으로 컸다가 사라지는 한국 브랜드가 많다는 맥락에서, 서비스를 중단한 고객의 60~70%가 브랜드 인기가 식어 위조품 판매자도 더는 만들지 않게 된 경우였다고 설명했다(2026-10-16 인터뷰, 회사 경험이며 어느 고객 범위의 비율인지는 밝히지 않았다). 이를 적용하면 감시 범위와 예산은 판매가 늘어나는 국가, 채널과 시기를 기준으로 하되 생산지와 집행이 약한 국가의 채널도 함께 보며 다시 정하는 편이 낫다.
+위조품 생산은 정품 수요를 따라가는 경향이 있다. GFI 보고서는 위조품과 불법 복제품 생산이 합법 시장의 수요를 밀접하게 따라가며, 합법 시장에서 수요가 큰 품목이나 브랜드에는 불법 복제가 뒤따른다고 정리했다. 나라마다 위조품을 얼마나 쉽게 구할 수 있고 얼마나 다양한지는 소비자 수요와 함께 정품 유통망에 위조품을 끼워 넣기 쉬운 정도와 지식재산권 집행 수준에 크게 달려 있고, 위조품은 저소득 국가처럼 지식재산권 법과 집행이 약하면서도 고소득 국가처럼 다양한 상품을 만들 자원과 역량을 갖춘 중간소득 국가에서 자주 만들어진다고 본다. 한 브랜드 보호 기업 대표는 단기 유행으로 컸다가 사라지는 한국 브랜드가 많다는 맥락에서, 서비스를 중단한 고객의 60~70%가 브랜드 인기가 식어 위조품 판매자도 더는 만들지 않게 된 경우였다고 설명했다(2026-10-16 공개 인터뷰, 독립 검증하지 않은 회사 경험이며 어느 고객 범위의 비율인지는 밝히지 않았다). 이를 적용하면 감시 범위와 예산은 판매가 늘어나는 국가, 채널과 시기를 기준으로 하되 생산지와 집행이 약한 국가의 채널도 함께 보며 다시 정하는 편이 낫다.
 
 감시와 신고를 외부에 맡긴다면 다음을 계약과 보고 형식에 넣는 방식을 제안한다. 한 브랜드 보호 기업이 공개한 서비스 구성과 대표 인터뷰를 일반화한 운영 제안이며, 업체를 비교한 결과가 아니다.
 
@@ -118,7 +118,7 @@ theSVG는 제출자가 신고한 라이선스를 기록하며 모든 제출물�
 - [Cyber Signals Issue 9: AI-powered deception: Emerging fraud threats and countermeasures — Microsoft](https://www.microsoft.com/en-us/security/blog/2025/04/16/cyber-signals-issue-9-ai-powered-deception-emerging-fraud-threats-and-countermeasures/) — 2025-04-16, AI로 몇 분 만에 만드는 가짜 쇼핑몰
 - [Amazon, Amazon Brand Registry](https://sell.amazon.com/brand-registry) — 상표 조건, 신고 도구의 범위와 정확한 신고의 자동 차단 활용. 2026-10-18 확인
 - [EUR-Lex, Regulation (EU) 2022/2065 (Digital Services Act)](https://eur-lex.europa.eu/legal-content/EN/TXT/HTML/?uri=CELEX:32022R2065) — 제16조 신고 요건, 제22조 신뢰 신고자, 제23조 오남용 대응, 제93조 적용일
-- [Global Financial Integrity, Transnational Crime and the Developing World](https://www.gfintegrity.org/wp-content/uploads/2017/03/Transnational_Crime-final.pdf) — 2017-03, 11개 초국가 범죄의 추정 규모와 단위, 위조품과 불법 복제품 추정의 범위, 수요 추종과 허가 제조업체의 위조 생산. 2026-10-18 확인
+- [Transnational Crime and the Developing World — Global Financial Integrity](https://www.gfintegrity.org/wp-content/uploads/2017/03/Transnational_Crime-final.pdf) — 2017-03, 11개 초국가 범죄의 추정 규모와 단위, 위조품과 불법 복제품 추정의 범위, 수요 추종, 국가별 차이와 중간소득 생산국, 허가 제조업체의 위조 생산. 2026-10-18 확인, 2026-10-19 44쪽 재대조
 - [Stop Counterfeit Sales. Protect Your Brand. — MarqVision](https://www.marqvision.com/brand-protection) — 2026-10-18 확인, 감시 채널과 MarqLaw의 제휴 로펌, 현장 조사와 오프라인 단속
 - [챗봇 좀 그만 만드세요 | 마크비전 이인섭 대표 — BZCF 비즈까페](https://www.youtube.com/watch?v=6Lax-pt73ag) — 2026-10-16 공개 인터뷰, 12:11~13:11 온라인 보호의 범위, 21:22 신고 단위 집계, 57:31~59:32 오프라인 공급망과 제조처, 1:04:35 이탈 사유. 회사 대표의 경험이며 수치는 독립 검증하지 않음
 

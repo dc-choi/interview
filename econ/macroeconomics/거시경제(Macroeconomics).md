@@ -17,6 +17,7 @@ aliases: ["거시경제(Macroeconomics)", "Macroeconomics Map"]
 
 ### 1. 생산과 성장
 - [[GDP-Economic-Growth|GDP와 경제성장]] — 국내총생산, 명목 vs 실질, 성장률, 잠재성장률, 복리의 힘 ✅
+- [[General-Purpose-Technology-Productivity|범용 기술의 생산성 지연과 J커브]] — 생산성 역설, 전기화의 group drive와 unit drive, 무형 보완 투자와 측정 오차 ✅
 
 ### 2. 물가
 - [[Inflation|인플레이션과 디플레이션]] — 물가 수준과 상승률, 디스인플레이션, CPI, 실질수익률과 위험 ✅

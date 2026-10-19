@@ -28,8 +28,9 @@ aliases: ["Persuasion Principles", "설득 원리와 경계"]
 | 호감 | 좋아하는 사람의 요청에 응하기를 선호하는 경향 | 원 실험은 확인하지 않았다 |
 | 권위 | 신뢰할 만하고 지식 있는 전문가를 따르는 경향 | 원 실험은 확인하지 않았다 |
 | 상호성 | 먼저 받은 행동, 선물, 서비스를 되돌려 줄 의무를 느끼는 경향 | 원 실험은 확인하지 않았다 |
+| 정보 격차(호기심) | 특정 정보에 대한 지식이나 이해의 공백을 지각할 때 인지적으로 유발되는 결핍감으로서의 호기심(특정 정보를 향한 상태적 호기심에 한정) | Loewenstein(1994)은 1960년대 1차 연구 시기의 이론이 사람들이 왜 스스로 호기심을 찾는지와 호기심을 일으키는 상황 요인을 설명하지 못했다고 검토하고, 호기심을 지식이나 이해의 공백을 지각할 때 인지적으로 유발되는 결핍감으로 재해석하는 정보 격차(information gap) 관점을 제안했다. 새 실험을 따로 수행한 논문이 아니라 문헌 검토와 이론 제안이며, 예측의 근거로 저자가 공저한 미출간 작업논문 Loewenstein 외(1992)의 실험 결과를 요약해 인용한다 |
 
-희소성, 사회적 증거, 일관성, 호감, 권위, 상호성의 정의는 Influence At Work 페이지의 정의를 옮긴 것이다.
+희소성, 사회적 증거, 일관성, 호감, 권위, 상호성의 정의는 Influence At Work 페이지의 정의를 옮긴 것이다. 정보 격차 관점의 호기심은 치알디니의 원리 목록에 없지만, 결론을 뒤로 미루는 제목이나 첫 문장 같은 도입부 문구를 검토할 때 기준으로 쓸 수 있어 함께 둔다. Loewenstein(1994)은 이론을 제안한 검토 논문이므로, 특정 도입부 문구가 클릭이나 시청을 늘린다는 효과는 이 논문만으로 뒷받침되지 않는다.
 
 ## 근거의 강도와 조건
 
@@ -125,6 +126,7 @@ FTC는 2024-08-14 다음 행위를 금지하는 최종 규칙을 발표했다.
 - [A Room with a Viewpoint: Using Social Norms to Motivate Environmental Conservation in Hotels — Journal of Consumer Research, Goldstein, Cialdini, Griskevicius](https://doi.org/10.1086/586910)
 - [Compliance without Pressure: The Foot-in-the-Door Technique — Journal of Personality and Social Psychology, Freedman, Fraser](https://pubmed.ncbi.nlm.nih.gov/5969145/)
 - [The Foot-in-the-Door Compliance Procedure: A Multiple-Process Analysis and Review — Personality and Social Psychology Review, Burger](https://pubmed.ncbi.nlm.nih.gov/15661679/)
+- [The Psychology of Curiosity: A Review and Reinterpretation — Psychological Bulletin, Loewenstein](https://doi.org/10.1037/0033-2909.116.1.75) — 1994, 116권 1호 75~98쪽. 2026-10-19 초록과 본문(86~92쪽, 참고문헌) 대조
 - [7 Principles of Persuasion — Influence At Work](https://www.influenceatwork.com/7-principles-of-persuasion/)
 - [Bringing Dark Patterns to Light — FTC](https://www.ftc.gov/system/files/ftc_gov/pdf/P214800%20Dark%20Patterns%20Report%209.14.2022%20-%20FINAL.pdf) — 2022-09 직원 보고서
 - [Federal Trade Commission Announces Final Rule Banning Fake Reviews and Testimonials — FTC](https://www.ftc.gov/news-events/news/press-releases/2024/08/federal-trade-commission-announces-final-rule-banning-fake-reviews-testimonials) — 2024-08-14 발표
