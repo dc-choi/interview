@@ -155,7 +155,7 @@ VPC 단위로 **상태 저장(stateful) + 상태 비저장(stateless) L3–L7 �
 
 ### 동작 위치
 
-- VPC 내부에 **방화벽 엔드포인트(서브넷)**를 배치하고, 검사할 ingress, egress 또는 east-west 경로가 엔드포인트를 통과하도록 Route Table을 구성한다.
+- 기본 배포 방식(source-preservation)으로 VPC에 둘 때는 VPC 내부에 **방화벽 엔드포인트(서브넷)**를 배치하고, 검사할 ingress, egress 또는 east-west 경로가 엔드포인트를 통과하도록 Route Table을 구성한다. Transit Gateway에 직접 붙이는 구성과 no-source-preservation 모드는 아래 NAT gateway, DNS Firewall과 함께 둘 때 절을 본다.
 - **VPC 단위 / AZ 단위** 배포. 멀티 AZ면 AZ별 엔드포인트 필요.
 - 일반적 토폴로지: 인터넷 GW ↔ Firewall Subnet ↔ 워크로드 서브넷.
 
@@ -183,6 +183,16 @@ VPC 단위로 **상태 저장(stateful) + 상태 비저장(stateless) L3–L7 �
 - **Egress 도메인 제어**: 워크로드가 허용된 외부 도메인(`*.amazonaws.com`, 협력사 API 등)만 호출하도록.
 - **VPC 간 East-West 검사**: Transit Gateway + Network Firewall로 중앙 검사 지점 구성.
 - **컴플라이언스(PCI/HIPAA)**: 명시적 in/out 통제 증적.
+
+### NAT gateway, DNS Firewall과 함께 둘 때
+
+2026-10-19 AWS 문서 기준이며 이 절만 대조했다. 문서의 다른 절은 각 절에 적은 기준과 frontmatter의 검증일을 따른다.
+
+- **NAT 위치가 방화벽이 보는 출발지를 정한다:** 기본 배포 방식(source-preservation)의 Network Firewall은 주소 변환을 하지 않고 검사한 트래픽의 원래 출발지 IP를 유지한다. NAT gateway 문서 기준으로 NAT gateway는 인스턴스의 사설 IPv4 출발지 주소를 NAT gateway의 사설 IPv4 주소로 바꾸고, public NAT gateway라면 그 뒤에서 인터넷 게이트웨이가 이 주소를 Elastic IP로 매핑한다. 여러 workload가 같은 NAT 주소를 함께 쓰므로, NAT gateway를 지난 트래픽을 검사하는 위치에서는 workload별 출발지 IP 규칙을 쓸 수 없다. AWS 백서의 Transit Gateway 중앙 egress 구성은 방화벽이 먼저 검사한 뒤 NAT gateway가 변환하도록 두며, 이때 방화벽은 Transit Gateway 뒤의 원래 출발지 IP를 본다. 단일 VPC에서도 VPC routing enhancements로 private 워크로드와 NAT gateway 사이에 방화벽을 둘 수 있다. 한 전자금융 서비스의 발표 사례도 기존 서브넷에 방화벽 서브넷만 더한 구성으로 시작했지만, 트래픽이 NAT gateway를 먼저 지나 출발지 IP 기반 정책을 쓸 수 없어 구성을 바꿨다고 설명한다.
+- **원래 출발지를 남기지 않는 모드:** 2026-10-19 기준 us-east-2 public preview인 no-source-preservation 모드는 방화벽이 연결된 NAT gateway에 붙어 클라이언트 연결을 끊고, 검사한 뒤 그 NAT gateway의 IP로 목적지에 다시 연결한다. 배포 방식은 생성 때 정하며 바꿀 수 없다.
+- **방화벽 서브넷은 비워 둔다:** VPC에 방화벽 엔드포인트를 두는 구성에서는 방화벽 서브넷 안을 출발지나 목적지로 하는 트래픽을 검사할 수 없으므로 다른 트래픽을 두지 않는다. 방화벽을 Transit Gateway에 직접 붙이는 구성은 VPC route table이 아니라 Transit Gateway route table로 트래픽을 보내고 appliance mode가 항상 켜진다.
+- **중앙 검사 VPC의 `HOME_NET`:** VPC에 방화벽 엔드포인트를 둔 중앙 검사 VPC에서 도메인 목록 rule group은 정책과 rule group 어디에도 `HOME_NET`을 정하지 않으면 방화벽을 배포한 VPC의 CIDR에서 출발한 트래픽만 거른다. Rule group 변수를 정하지 않으면 정책 변수를 물려받는다. Transit Gateway 뒤 다른 VPC의 트래픽도 걸러야 하면 rule group의 `HOME_NET` 변수에 그 CIDR과 배포 VPC의 CIDR을 함께 넣는다. 방화벽을 Transit Gateway에 직접 붙인 구성에서는 이 변수를 쓰는 rule group에 `HOME_NET`과 `EXTERNAL_NET`을 정책 기본값과 다른 값으로 함께 지정해야 한다.
+- **DNS Firewall과 검사 경로가 다르다:** Route 53 Resolver DNS Firewall은 VPC Resolver를 거치는 DNS 질의를 거르고, Network Firewall은 네트워크와 애플리케이션 계층 트래픽을 거르지만 VPC Resolver의 질의는 보지 못한다. 도메인 기반 egress 통제는 두 경로를 함께 설계한다. Firewall Manager로 Organizations의 여러 계정에 DNS Firewall rule group 연결과 Network Firewall 정책을 중앙에서 적용할 수 있다.
 
 ### 시험 포인트
 
@@ -247,6 +257,15 @@ VPC 단위로 **상태 저장(stateful) + 상태 비저장(stateless) L3–L7 �
 - [AWS WAF, Rate-based rule high-level settings](https://docs.aws.amazon.com/waf/latest/developerguide/waf-rule-statement-type-rate-based-high-level-settings.html)
 - [AWS WAF, Logging destinations](https://docs.aws.amazon.com/waf/latest/developerguide/logging-destinations.html)
 - [AWS Network Firewall, Architecture with an internet gateway and a NAT gateway](https://docs.aws.amazon.com/network-firewall/latest/developerguide/arch-igw-ngw.html)
+- [AWS Whitepapers, Using the NAT gateway with AWS Network Firewall for centralized IPv4 egress](https://docs.aws.amazon.com/whitepapers/latest/building-scalable-secure-multi-vpc-network-infrastructure/using-nat-gateway-with-firewall.html) — 2026-10-19 NAT 앞 검사, 방화벽 서브넷과 `HOME_NET` 대조
+- [Amazon VPC, NAT gateways](https://docs.aws.amazon.com/vpc/latest/userguide/vpc-nat-gateway.html) — 2026-10-19 출발지 주소 변환 대조
+- [AWS Network Firewall, No-source-preservation mode](https://docs.aws.amazon.com/network-firewall/latest/developerguide/nfw-no-source-preservation.html) — 2026-10-19 preview 범위와 배포 방식 대조
+- [AWS Network Firewall, Stateful domain list rule groups](https://docs.aws.amazon.com/network-firewall/latest/developerguide/stateful-rule-groups-domain-names.html) — 2026-10-19 `HOME_NET` 기본값과 배포 VPC 밖 트래픽 대조
+- [AWS Network Firewall, Considerations for transit gateway-attached firewalls](https://docs.aws.amazon.com/network-firewall/latest/developerguide/tgw-firewall-considerations.html) — 2026-10-19 Transit Gateway route table, appliance mode와 `HOME_NET`, `EXTERNAL_NET` 지정 대조
+- [AWS Network Firewall, Limitations and caveats for stateful rules](https://docs.aws.amazon.com/network-firewall/latest/developerguide/suricata-limitations-caveats.html) — 2026-10-19 정책과 rule group 변수 상속 대조
+- [Deployment models for AWS Network Firewall with VPC routing enhancements — AWS Networking & Content Delivery Blog](https://aws.amazon.com/blogs/networking-and-content-delivery/deployment-models-for-aws-network-firewall-with-vpc-routing-enhancements/) — 2021-09-10, 워크로드와 NAT gateway 사이 배치
+- [Amazon Route 53, Using DNS Firewall to filter outbound DNS traffic](https://docs.aws.amazon.com/Route53/latest/DeveloperGuide/resolver-dns-firewall.html) — 2026-10-19 DNS Firewall과 Network Firewall의 검사 경로와 Firewall Manager 연동 대조
+- [당근페이에서 새로운 서비스를 런칭하기까지의 여정 — Amazon Web Services Korea](https://www.youtube.com/watch?v=0BblEFp3bAM) — 2025-01-17 영상 공개(AWS Industry Week 2024 세션), 24:08 Network Firewall 초기 구성과 출발지 IP 제약
 - AWS SAA C03 학습 자료 (로컬)
 
 ## 관련 문서
@@ -259,4 +278,5 @@ VPC 단위로 **상태 저장(stateful) + 상태 비저장(stateless) L3–L7 �
 - [[VPC]]
 - [[IAM]]
 - [[Route53]]
+- [[Network-Separation|망분리]]
 - [[보안(Security)|보안]]

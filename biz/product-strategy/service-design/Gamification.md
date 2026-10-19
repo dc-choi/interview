@@ -29,6 +29,16 @@ aliases: ["Gamification", "게이미피케이션"]
 - **경쟁**은 절대 성과가 아니라 비교 가능한 단위(주간 랭킹, 친구 간)로 좁혀야 하위권 이탈을 막는다.
 - **뱃지**는 획득률(상위 몇 %)을 함께 표시해 희소성을 부여하면 상징적 보상만으로도 반응이 커진다. 사용자는 생각 이상으로 상징 보상에 반응한다.
 
+### 경쟁 요소가 수행을 바꾸는 조건
+
+경쟁과 비교가 수행을 끌어올린다는 가정이 늘 성립하지는 않는다. 효과의 유무와 방향은 과제, 사람과 관찰 조건에 따라 달라질 수 있다.
+
+- **고전 실험의 효과는 고르지 않았다:** Triplett(1898)은 낚시 릴 손잡이를 최대한 빨리 돌려 비단 끈에 단 작은 깃발이 4m 코스를 네 바퀴 돌게 하는 과제에서 아이 40명의 단독 시행과 두 명이 나란히 겨루는 시행을 비교했다. Triplett은 20명을 경쟁에서 대체로 긍정적인 자극을 받은 집단으로, 10명을 과잉 자극으로 통제를 잃은 집단으로(이 집단의 경쟁 25회 가운데 14회가 직전 단독 시행과 같거나 느렸다), 10명을 거의 영향을 받지 않은 집단으로 분류했다. 분류는 대체로 시간 기록을 보고 정한 Triplett의 판단이다. Strube(2005)는 Triplett의 원자료를 다시 분석해 이 자료로는 단순 과제의 사회적 촉진 증거가 매우 적었다고 결론지었다. 비슷한 과제를 재현한 2025년 사전 등록 연구에서는 7~13세 아이 445명이 함께 할 때 혼자일 때보다 평균 완료 시간이 짧았다(혼자 58.4초, 함께 55초).
+- **익숙한 반응이 강화된다는 가설:** Cottrell 외(1968)의 정리에 따르면 Zajonc(1965)는 타인이 그저 함께 있기만 해도 일반 추동 수준이 높아져 그 과제에서 가장 나오기 쉬운 우세 반응이 강화된다고 제안했다. 우세 반응은 과제와 숙련 단계에 따라 정답일 수도 오답일 수도 있어, 이 가설은 타인 앞에서 수행이 좋아지는 결과와 나빠지는 결과를 함께 설명한다.
+- **지켜보는 관객이 조건일 수 있다:** Cottrell 외(1968)는 남자 대학생 45명을 혼자, 과제를 지켜보는 관객 2명 앞, 눈가리개를 써 과제를 볼 수 없는 2명이 함께 있는 조건에 15명씩 나눴다. 관객 앞에서는 우세 반응이 늘었지만 함께 있기만 한 조건은 혼자일 때와 유의한 차이가 없었다. 이 결과는 단순한 존재만으로 효과가 난다는 Zajonc의 제안을 지지하지 않았고, 무엇이 관객 효과를 만드는지는 후속 연구 과제로 남았다.
+
+이 문서의 적용 제안: 랭킹과 친구 비교는 이미 익숙한 반복 행동에 붙이고, 처음 배우는 기능이나 판단이 복잡한 과제에는 공개 비교를 늦춘다. 팀에서 성과를 공개해 경쟁을 붙일 때도 같은 기준을 검토한다. 인용한 연구는 같은 공간에 있는 타인을 다뤘으므로, 비동기 랭킹과 팀 성과 공개에 옮기는 것은 검증할 가설로 둔다. 도입 뒤에는 참여 수뿐 아니라 정확도와 오류도 함께 본다.
+
 ## 기록 공유의 심리 엔진: 자기표현 욕구
 
 뱃지와 기록 공유가 작동하는 바탕은 자기표현, 과시 욕구다. 표현 매체는 기술과 함께 바뀌어 왔다 — 미화된 사진에서 SNS의 좋아요 수치로, 지금은 **정량화된 활동 데이터**(달린 거리, 운동량)가 자기 관리에 철저한 나를 인증하는 수단이다(갓생 인증).
@@ -79,6 +89,10 @@ aliases: ["Gamification", "게이미피케이션"]
 - [게이미피케이션 적용 방법론 — 쪼렙 서비스기획자 (Brunch)](https://brunch.co.kr/@b30afb04c9f54dc/8)
 - [서비스 전략 기획 사례 분석 — 쪼렙 서비스기획자 (Brunch)](https://brunch.co.kr/@b30afb04c9f54dc/57)
 - [나이키 Run Club은 어떻게 허영심을 자극하는가 — 쪼렙 서비스기획자 (Brunch)](https://brunch.co.kr/@b30afb04c9f54dc/36)
+- [The Dynamogenic Factors in Pacemaking and Competition — Norman Triplett (American Journal of Psychology)](http://psychclassics.yorku.ca/Triplett/) — 1898, 9권 4호 507~533쪽. 2026-10-19 과제 장치와 아이 40명 분류 대조
+- [What Did Triplett Really Find? A Contemporary Analysis of the First Experiment in Social Psychology — Michael J. Strube (American Journal of Psychology)](https://doi.org/10.2307/30039059) — 2005, 118권 2호 271~286쪽. 2026-10-19 초록 대조
+- [Social Facilitation of Dominant Responses by the Presence of an Audience and the Mere Presence of Others — Nickolas B. Cottrell, Dennis L. Wack, Gary J. Sekerak, Robert H. Rittle (Journal of Personality and Social Psychology)](https://doi.org/10.1037/h0025902) — 1968, 9권 3호 245~250쪽. 2026-10-19 초록, Zajonc(1965) 가설 정리, 세 조건 설계와 결론 대조
+- [A replication of Triplett's 'social facilitation experiment' — Cillian McHugh 외 (Scientific Reports)](https://doi.org/10.1038/s41598-025-25608-x) — 2025, 15권 40366. 2026-10-19 사전 등록 재현 설계와 평균 완료 시간 대조
 
 ## 관련 문서
 - [[Community-Dark-Patterns|커뮤니티, 프로덕트 다크 패턴]]

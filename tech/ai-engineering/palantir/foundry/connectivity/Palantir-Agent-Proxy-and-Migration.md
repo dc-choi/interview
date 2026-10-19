@@ -1,7 +1,7 @@
 ---
 tags: [palantir, data-connection, agent-proxy, migration]
 status: done
-verified_at: 2026-10-16
+verified_at: 2026-10-19
 category: "AI엔지니어링(AIEngineering)"
 ---
 
@@ -25,6 +25,12 @@ Foundry worker는 capability별 컨테이너를 사용하므로 agent JVM heap�
 
 이전 완료 시 실행 중 sync/export/task는 종료된다. 예약 작업은 다음 일정부터 새 worker에서 실행하지만 비예약 작업은 수동으로 재시작해야 한다. 따라서 이전 가능하다는 사실을 무중단 전환으로 설명하지 않는다.
 
+## 이전에 따른 compute 과금 변화
+
+2026-10-16 공지 기준, 2026년 8월부터 Foundry worker의 data ingest와 export, media ingest, Iceberg extract는 compute 비용을 발생시키지 않는다. 이전에는 일반 transform과 같은 방식으로 과금됐고, Palantir는 이 변경의 목적을 agent worker에서 Foundry worker로의 이전 지원이라고 밝혔다. 이 작업들에 이전에 부과된 compute 비용에는 credit을 주지 않는다. Streaming ingest는 계속 과금되며 streaming 가격 모델은 추후 공개 예정이다. 같은 공지는 agent worker로 ingest나 export를 하는 경우 가능한 한 빨리 이전하라고 권하지만, 2026-10-19 확인한 비교 문서는 여전히 agent worker를 legacy이지만 fully supported로 설명한다. 이전 권고를 지원 종료로 읽지 않는다.
+
+이 문서의 적용 제안: 이전 효과를 비교할 때는 공지가 compute 비용에서 제외한 네 작업과 계속 과금되는 streaming ingest를 나눠 보고, 공지에 따로 언급되지 않은 streaming export와 CDC sync는 해당 여부를 따로 확인한다. 실제 청구 반영은 enrollment의 사용량 기록으로 확인한다.
+
 ## 30일 복귀 창
 
 문서는 이전 후 30일 동안 이전 agent worker 설정으로 되돌릴 수 있다고 설명한다. 복귀는 자격 증명을 포함한 연결 설정을 이전 시점으로 돌리므로 그 이후 변경이 사라진다. 비예약 작업 재시작도 필요하다.
@@ -46,6 +52,7 @@ Foundry worker는 capability별 컨테이너를 사용하므로 agent JVM heap�
 
 - [Palantir, Agent proxy configuration reference](https://www.palantir.com/docs/foundry/data-connection/agent-proxy)
 - [Palantir, Foundry worker vs. agent worker](https://www.palantir.com/docs/foundry/data-connection/foundry-worker-vs-agent-worker)
+- [Palantir, October 2026 announcements](https://www.palantir.com/docs/foundry/announcements/2026-10) — 2026-10-16 Foundry worker의 compute 비용 제외 범위
 
 ## 관련 문서
 
