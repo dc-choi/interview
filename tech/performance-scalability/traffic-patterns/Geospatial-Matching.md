@@ -1,5 +1,5 @@
 ---
-tags: [performance, geospatial, h3, matching, distributed]
+tags: [performance, geospatial, h3, matching, distributed, dispatch, gps]
 status: done
 verified_at: 2026-08-25
 category: "성능&확장성(Performance&Scalability)"
@@ -21,7 +21,7 @@ aliases: ["Geospatial Matching", "실시간 공간 매칭", "공간 분할", "H3
 
 ## H3 — 육각형 격자 인덱싱
 
-지구 표면을 주로 육각형 셀로 나누는 공간 인덱싱 라이브러리(Uber). 위치(위도, 경도)를 셀 ID로 변환해 공간 계산의 단위로 쓴다. 다음 H3 설명은 2026-10-08에 확인한 4.x 공식 문서 기준이다.
+지구 표면을 주로 육각형 셀로 나누는 공간 인덱싱 라이브러리(Uber). 위치(위도, 경도)를 셀 ID로 변환해 공간 계산의 단위로 쓴다. Uber는 2018년 6월 엔지니어링 블로그 글에서 H3를 차량 호출의 가격과 배차를 최적화하고 공간 데이터를 시각화하고 탐색하기 위한 격자 시스템으로 소개했다. 다음 H3 설명은 2026-10-08에 확인한 4.x 공식 문서 기준이다.
 
 - **해상도 계층**: 해상도는 0~15이고 숫자가 커질수록 셀이 작아진다. 육각형 부모의 바로 아래 논리적 자식은 7개지만 부모의 지리적 경계와 자식들의 합집합은 정확히 일치하지 않는다. 각 해상도에는 오각형 12개도 있다.
 - **육각형의 장점과 한계**: 평면 정육각형은 사각형의 변 방향과 대각선 방향처럼 이웃 거리가 갈리지 않는다. 다만 실제 H3는 구면 투영 격자이므로 전 지구의 셀 크기나 이웃 중심 거리가 같다는 보장은 없다.
@@ -71,6 +71,53 @@ H3만 쓴다고 경계 문제가 사라지지는 않는다. 이웃 셀과의 겹
 
 단, H3 셀을 키로 삼을 때 특정 도심 셀에 트래픽이 몰리는 [[Hot-Partition|핫 파티션]] 위험이 있다. 셀 해상도, 키 조합으로 분산을 조정해야 한다.
 
+## 위치 갱신의 수집, 저장과 배차 확정
+
+차량 호출처럼 많은 단말이 위치를 계속 보내는 서비스의 설계 기준이다. 아래 표의 저장 설계는 예시이며 특정 회사의 현재 구성을 뜻하지 않는다.
+
+### 모든 갱신을 저장소 쓰기로 바꾸지 않는다
+
+수집 계층에서 형식과 시각이 맞지 않는 갱신을 거르고 중복 갱신을 버리며, 멈춰 있거나 천천히 움직이는 단말의 갱신은 덜 자주 저장한다. 단말의 위치 요청 옵션으로도 전송량을 줄일 수 있다(2026-10-19 공식 문서 기준).
+
+- Google Play services의 `LocationRequest.Builder`는 원하는 갱신 간격(`setIntervalMillis`), 가장 빠른 허용 간격(`setMinUpdateIntervalMillis`)과 직전에 전달한 위치에서의 최소 거리(`setMinUpdateDistanceMeters`, 기본값 0)를 받는다. 원하는 간격은 보장값이 아니며 요청이 제한되면 더 늦게 올 수 있다.
+- iOS `CLLocationManager.distanceFilter`는 직전에 전달한 위치에서 수평으로 이동해야 갱신 이벤트가 생기는 최소 거리(미터)다. 기본값 `kCLDistanceFilterNone`은 모든 이동을 보고한다.
+
+검증과 중복 제거와 달리 저장 간격을 늘리거나 단말에 거리 기준을 두면 서버가 보는 위치가 늦어지거나 실제 위치와 어긋날 수 있으므로, 감축률보다 지도 표시와 매칭이 견딜 수 있는 위치 지연과 거리 오차 기준을 먼저 정한다.
+
+### 읽기 형태마다 저장을 나눈다
+
+같은 위치 스트림을 읽어도 소비자마다 질의 형태와 허용 지연이 다르다. 저장소 하나를 먼저 고르기보다 질의 형태를 정하고 그에 맞는 키와 저장을 고른다.
+
+| 소비자 | 질의 형태 | 저장 설계 예 |
+|---|---|---|
+| 배정된 운전자 추적 화면 | 운전자 한 명의 최신 위치(점 조회) | 운전자 ID를 키로 둔 최신 값, 만료 시간으로 오래된 값 정리 |
+| 매칭, 주변 차량 표시 | 셀과 이웃 셀 안의 가용 운전자(범위 조회) | 셀 ID를 키로 둔 인덱스 |
+| 분석, 이상 탐지 | 긴 기간의 이력 집계 | 쓰기 처리량과 보존을 우선한 이력 저장과 배치, 스트림 처리 |
+
+가격 계산은 용도에 따라 질의 형태가 다르다. Uber는 2018년 6월 H3 글에서 서비스하는 도시마다 육각형 셀 단위로 수요와 공급을 측정해 할증 요금(surge pricing)을 계산한다고 밝혔다. 이처럼 지역의 수요와 공급 변화에 반응하는 가격을 셀별 최근 구간의 집계로 계산한다면 긴 이력 집계와 따로 설계한다.
+
+운전자 ID로 분할하면 한 운전자의 조회는 쉽지만 근처 운전자 찾기는 모든 파티션을 훑어야 한다. 매칭 인덱스는 위치를 키로 두고, 그때 생기는 도심 셀 편중은 [[Hot-Partition|핫 파티션]]으로 다룬다. 마지막 위치가 남아 있다는 사실만으로 가용으로 보면 신호가 끊긴 단말에 계속 배차할 수 있으므로, 연결 확인 신호가 정한 시간 동안 오지 않은 단말은 새 배차 후보에서 뺀다. 연결 확인과 처리 확인의 구분은 [[Realtime-Sync-Recovery#하트비트와 처리 확인은 다르다|하트비트와 처리 확인]]을 따른다.
+
+### 후보를 넓히는 범위와 도착 시간 순위
+
+셀과 이웃에서 후보가 부족하면 k를 한 단계씩 늘리되, 이미 조회한 셀을 다시 읽지 않도록 새로 더해지는 고리(`gridRing`, 원점에서 격자 거리가 정확히 k인 셀)만 추가로 조회한다(2026-10-19 H3 문서 기준). 반환 셀이 k에 따라 늘어나므로 상한을 둔다. 후보 순위는 직선거리보다 도착 예상 시간(ETA)으로 매긴다. 도로망과 교통 상황 때문에 지도에서 가장 가까운 차가 가장 먼저 도착한다는 보장은 없다.
+
+Uber는 2022년 2월 글에서 ETA를 요금 계산, 픽업 시간 추정, 라이더와 운전자 매칭과 배송 계획에 쓴다고 밝혔다. 이 ETA는 지도 데이터와 실시간 교통 측정으로 최적 경로의 도로 구간별 통과 시간을 더하는 라우팅 엔진이 먼저 값을 내고, ML 모델이 그 값과 실제 결과의 차이(잔차)를 예측하는 2단계 구조다. 글은 이 방식을 ETA 후처리(post-processing)라고 부르며, 이 후처리 모델은 Uber에서 QPS가 가장 높은 모델이고 ETA 요청에 지연을 많이 더하지 않도록 빨라야 한다고 설명한다. 후보마다 ETA를 계산하는 비용이 있으므로 후보 수 상한과 ETA 계산 지연을 함께 정한다.
+
+### 배차 확정은 운행 상태의 정본이 정한다
+
+위치 인덱스는 후보를 찾을 뿐이고 배차는 운전자와 운행 상태의 정본을 가진 저장소가 확정한다. 앞의 Kafka Streams 절에서 셀별 후보를 모으는 상태 저장소도 후보를 찾는 쪽에 속한다. 두 요청이 같은 운전자를 동시에 후보로 잡을 수 있으므로, 가용 상태일 때만 예약 상태로 바꾸는 조건부 갱신으로 한 요청만 성공시키고 실패한 요청은 다음 후보로 넘어간다.
+
+예약에는 만료를 두고 예약마다 고유한 ID를 기록한다. 만료 처리는 운전자가 아직 예약 상태이고 현재 예약 ID가 자신이 맡은 예약의 ID와 같을 때만 해제하는 조건부 갱신 한 번으로 실행해, 늦게 실행되거나 두 번 실행된 만료 처리가 새 예약이나 이미 수락된 배차를 지우지 않게 한다. 확인과 해제를 따로 실행하면 그 사이에 새 예약이 들어올 수 있다. 운전자의 수락도 아직 예약 상태이고 예약이 그 제안의 것이며 만료 전일 때만 확정하는 조건부 전이로 처리한다. 두 전이가 같은 예약 상태에서만 출발하므로 먼저 실행된 쪽이 상태를 바꾸면 다른 쪽은 실패해 수락과 만료 중 하나만 성공한다. 같은 구조가 [[Virtual-Waiting-Room-Architecture-Admission-Reservation#3. 예매 처리|좌석 선점의 확정과 만료]]에도 있고, 오래된 실행자의 쓰기를 저장소가 같은 쓰기 안에서 거부한다는 점은 [[NestJS-Distributed-Locks#Lease의 blind spot과 fencing|lease와 fencing token]]과 같은 원리다.
+
+확정이 여러 엔티티(행이나 키)를 함께 바꿔야 하면 단일 키의 조건부 갱신만으로는 부족하다. Uber의 2021년 7월 Fulfillment 플랫폼 재설계 글은 운전자가 운행 제안을 수락하면 운행(trip) 엔티티와 공급(supply) 엔티티를 함께 바꾸고 공급 엔티티의 계획에 운행 경유지를 더해야 하며, 여러 운행을 묶은 제안(batch offer)을 수락하면 관련 엔티티를 모두 반영하거나 모두 반영하지 않아야 한다고 설명한다. 운전자가 오프라인으로 바꾸는 순간 매칭 시스템이 새 운행 제안을 그 운전자에게 연결하려는 경쟁도 예로 든다. 같은 글은 지역 간 단일 행, 다중 행, 다중 테이블 트랜잭션의 강한 일관성을 요구사항으로 두고, 엔티티 수명주기를 하위 상태 기계를 품는 계층형 상태 기계(statechart)로 표현한다. 제안 만료 같은 시점에 실행할 타이머도 필요하다고 밝혔고, 새 구조는 커밋 후 작업과 타이머를 읽기-쓰기 트랜잭션과 함께 별도 테이블에 커밋하고 작업자가 최소 한 번 실행을 보장한다고 설명한다. 최소 한 번 실행은 같은 작업이 두 번 실행될 수 있다는 뜻이므로 만료 처리는 앞의 조건부 해제처럼 중복 실행을 견디게 만든다. 같은 해 9월 글은 이 플랫폼의 저장소로 Google Cloud Spanner를 택했다고 설명한다. 확정 시 함께 바뀌는 상태의 범위가 조건부 갱신과 트랜잭션 중 무엇이 필요한지를 정한다.
+
+### 위치 신호 보정과 맵 매칭
+
+GPS 위치는 고층 건물이 위성까지의 직선 경로를 막고 다른 건물에 반사된 신호가 섞이는 도심에서 50m 이상 틀릴 수 있다. 칼만 필터와 확장 칼만 필터는 추적하는 확률 분포가 종 모양의 가우시안으로 잘 근사된다고 가정하므로, 그럴듯한 위치가 여러 곳(국소 최댓값)으로 갈리고 큰 이상값이 섞이는 상황에는 맞지 않을 수 있다. Uber는 2018년 4월 글에서 이 이유로 칼만 필터 대신 수천 개의 가설 위치(입자)로 분포를 근사하는 particle filter를 쓰는 Android용 GPS 개선을 소개했다. 서버는 후보 위치마다 3D 지도로 위성까지의 직선 경로가 가려지는지 따지고, 위성별 신호 대 잡음비가 그 결과와 맞는 정도로 위치 가능성을 매긴다. 같은 글은 이 신호 처리 알고리즘을 서버 인프라에 대규모로 배포했다고 쓰고, 내부 시험과 성능 평가에 더해 내부용 rider app으로 직원이 결과를 점검한다고 밝히지만, 어느 제품과 사용자에게 적용했는지는 설명하지 않는다.
+
+맵 매칭은 GPS 점들을 도로망 위의 가장 그럴듯한 경로에 맞추는 일이다. 은닉 마르코프 모델(HMM) 기반 맵 매칭(Newson과 Krumm, 2009)은 측정 잡음과 도로망의 배치를 함께 반영한다. 이 논문의 약 80km 주행 시험에서는 샘플링 간격이 30초로 늘어도 오류 비율이 0.11%에 그쳤고, 간격이 더 길어지면 오류가 대체로 커졌다. 이 수치는 해당 경로와 알고리즘의 결과이므로, 수집 단계에서 갱신을 줄일 때는 사용하는 맵 매칭 방식으로 정확도를 측정해 샘플링 간격을 정한다. OSRM의 match 서비스는 시각 간격이 60초를 넘거나 있을 법하지 않은 이동이 있어 전체를 맞추지 못하면 궤적을 나누며, 시각 간격에 따른 분할은 `gaps` 옵션의 기본값 `split`일 때의 동작이다(2026-10-19 확인한 v26.6.1 HTTP 문서 기준).
+
 ## 면접 체크포인트
 
 - 지역을 격자로 잘라 독립 계산하면 왜 문제인가 → 경계의 후보를 놓친다
@@ -78,6 +125,11 @@ H3만 쓴다고 경계 문제가 사라지지는 않는다. 이웃 셀과의 겹
 - 공간 그룹의 시간 분할만으로 충돌이 없어지는가 → 후보 중첩, 작업 지연, 재시도와 최종 배차 확정까지 확인
 - 셀 목록을 적게 읽으면서 최신순을 보존하려면 → 공통 정렬과 cutoff, 미조회 구간 검증, 일관된 조회 시점
 - 위치를 파티션 키로 쓸 때의 리스크 → 도심 셀 핫 파티션
+- 위치 갱신마다 DB에 쓰는가 → 수집 계층의 검증, 중복 제거와 적응 샘플링, 단말의 위치 요청 옵션, 허용할 위치 지연과 거리 오차
+- 지도 표시, 매칭과 분석을 한 저장소로 처리하는가 → 질의 형태별 키와 저장 분리
+- 가장 가까운 차를 배차하는가 → 고리 단위 후보 확장의 상한과 ETA 순위
+- 두 요청이 같은 운전자를 잡으면 → 조건부 예약, 만료 처리의 소유 확인, 수락과 만료의 상호 배제, 여러 엔티티를 함께 바꾸는 트랜잭션
+- GPS 잡음을 칼만 필터로 해결하는가 → 분포가 가우시안으로 잘 근사될 때 맞는 방법, 후보 위치가 여러 곳으로 갈리고 큰 이상값이 섞이면 particle filter와 맵 매칭 검토
 
 ## 출처
 
@@ -86,6 +138,16 @@ H3만 쓴다고 경계 문제가 사라지지는 않는다. 이웃 셀과의 겹
 - [H3, Indexing](https://h3geo.org/docs/highlights/indexing/)
 - [H3, Hierarchical grid functions](https://h3geo.org/docs/api/hierarchy/)
 - [동네의 경계를 다시 그리다: H3로 재설계한 당근 피드 — 당근 팀](https://www.youtube.com/watch?v=MsKZNce3rFw)
+- [H3: Uber's Hexagonal Hierarchical Spatial Index — Uber Engineering](https://www.uber.com/blog/h3/)
+- [DeepETA: How Uber Predicts Arrival Times Using Deep Learning — Uber Engineering](https://www.uber.com/blog/deepeta-how-uber-predicts-arrival-times/)
+- [Uber's Fulfillment Platform: Ground-up Re-architecture to Accelerate Uber's Go/Get Strategy — Uber Engineering](https://www.uber.com/blog/fulfillment-platform-rearchitecture/)
+- [Building Uber's Fulfillment Platform for Planet-Scale using Google Cloud Spanner — Uber Engineering](https://www.uber.com/blog/building-ubers-fulfillment-platform/)
+- [Rethinking GPS: Engineering Next-Gen Location at Uber — Uber Engineering](https://www.uber.com/blog/rethinking-gps/)
+- [Hidden Markov Map Matching Through Noise and Sparseness — ACM SIGSPATIAL GIS 2009, Newson, Krumm](https://www.microsoft.com/en-us/research/publication/hidden-markov-map-matching-noise-sparseness/)
+- [OSRM, HTTP server](https://project-osrm.org/docs/v26.6.1/http)
+- [Google Play services, LocationRequest.Builder](https://developers.google.com/android/reference/com/google/android/gms/location/LocationRequest.Builder)
+- [Apple Developer Documentation, distanceFilter](https://developer.apple.com/documentation/corelocation/cllocationmanager/distancefilter)
+- [The Engineering Behind Uber's Real-Time Maps — ByteMonk](https://www.youtube.com/watch?v=R_wWbHqpQTg) — 2026-10-16 업로드, 위치 수집, 질의 형태별 저장, 후보 확장과 예약, GPS 보정을 다룬 계기. 5백만 대와 초당 1회 갱신의 규모 가정, Redis와 Cassandra 계열 저장소 구성, 공항 대기열 규칙과 지도 표시가 실제 위치보다 수백 밀리초 늦다는 설명은 영상의 설계 예시이거나 1차 출처로 확인하지 못해 쓰지 않음
 
 ## 관련 문서
 
@@ -93,3 +155,6 @@ H3만 쓴다고 경계 문제가 사라지지는 않는다. 이웃 셀과의 겹
 - [[Spatial-Index-MySQL|MySQL 공간 색인 (H3 저장 관점, 쿠팡 사례)]]
 - [[Hot-Partition|Hot partition 대응]]
 - [[First-Come-Coupon-Patterns|선착순 패턴 (동시성 제어)]]
+- [[Realtime-Sync-Recovery|실시간 동기화와 재연결 복구 (하트비트와 처리 확인)]]
+- [[NestJS-Distributed-Locks|NestJS lease와 분산 작업 소유권 (fencing token)]]
+- [[Virtual-Waiting-Room-Architecture-Admission-Reservation|가상 대기열 입장 제어와 예매 처리 (선점의 확정과 만료)]]

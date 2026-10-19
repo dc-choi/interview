@@ -14,7 +14,7 @@ aliases: ["Traffic Workload Patterns", "대규모 트래픽 워크로드 패턴"
 - [[Virtual-Waiting-Room-Architecture|가상 대기열 아키텍처 폴더 인덱스]]: 문제 정의와 대기 등록, 입장 제어와 예매 처리, 대기 상태 통신과 운영
 - [[Notification-Broadcast-System|대규모 알림 시스템]]: 계층적 팬아웃, SQS in-flight 한계, 전용 인프라 격리
 - [[Media-Event-Traffic|미디어 공개와 중계 이벤트 트래픽]]: CDN 대역폭 quota, 진입 계층 사전 용량, 공개 일정 기반 예약 증설과 Spot, 라이선스와 heartbeat 부하
-- [[Geospatial-Matching|실시간 위치 기반 매칭]]: H3 육각형 격자, k-ring, 공간과 시간 분할, 핫 파티션
+- [[Geospatial-Matching|실시간 위치 기반 매칭]]: H3 육각형 격자, k-ring, 공간과 시간 분할, 핫 파티션, 위치 갱신 수집과 저장 분리, ETA 순위와 배차 확정, GPS 보정
 - [[Hot-Partition|핫 파티션 대응]]: 키 설계, 샤딩, salting과 실제 분포 검증
 
 ## 함께 볼 문서
