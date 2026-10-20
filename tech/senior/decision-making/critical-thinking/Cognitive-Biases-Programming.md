@@ -59,9 +59,8 @@ Donald Knuth의 명언: *"Premature optimization is the root of all evil."*
 - 낙관 편향과 결합하면 **프로젝트 전체**가 수 배 지연
 
 **대응**
-- **과거 유사 작업의 실제 소요 시간**을 기준으로 (reference class forecasting)
-- 추정에 **버퍼**(예: 50% 추가) 자동 포함
-- 큰 일정은 **여러 명이 각자 추정 후 평균** (Wideband Delphi)
+- **과거 유사 작업의 추정과 실제 소요 시간 기록**에서 초과율을 구해 여유분을 넣기 전의 추정에 한 번만 적용한다. 이 보정분이 버퍼이므로 고정 배수 버퍼를 따로 더하지 않는다 ([[Reference-Class-Forecasting|참조 집단 예측]])
+- 큰 일정은 여러 명이 각자 추정한 뒤 차이의 근거를 논의하고 다시 추정해 범위를 좁힌다 (Wideband Delphi)
 - 일단 작은 범위로 프로토타입 → 실측 후 재추정
 
 ## 5. Recency Bias — 최근 경험 과대평가
