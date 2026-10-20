@@ -26,7 +26,7 @@ Software 3.0 패러다임, LLM과 에이전트, 하네스, 평가, 조직 전환
 - [x] [[Tacit-Knowledge-Judgment-Agent|암묵지와 판단 에이전트]] — 암묵지와 형식지, Nonaka의 네 변환 방식, 사례와 피드백 흡수, 반복 판단의 원칙 승격, 판단 에이전트의 배치와 홀드아웃 일치도
 - [x] [[Ontology-Knowledge-Graph|온톨로지와 지식 그래프]] — 의미 규칙과 실제 사실의 구분, 허용 관계와 식별자, 반영 전 검사, Palantir Foundry Ontology의 object, link, action과 권한
 - [x] [[Agent-Graph-Engineering|그래프 엔지니어링]] — 실행 그래프의 노드와 엣지, 코드와 모델과 사람의 판정 분담, 실패 노드 복귀와 재시도 한도, 그래프를 쓰지 않을 작업
-- [x] [[AI-Work-Tool-Selection|AI 업무 도구 선택]] — 병목과 산출물로 제품 비교, 검색과 생성과 관리의 구분, 설정과 검수 비용을 포함한 자동화 효과 측정
+- [x] [[AI-Work-Tool-Selection|AI 업무 도구 선택]] — 병목과 산출물로 제품 및 공개 저장소 비교, 검색과 생성과 관리의 구분, 모델과 데이터 API 및 검수 비용을 포함한 자동화 효과 측정
 - [x] [[LLMs-Txt|llms.txt]] — 웹 문서 색인, v2 발견 규칙, 생성 도구와 운영 검증
 - [x] [[Agent-Repository-Instructions|AGENTS.md]] — 저장소 지침의 작성과 호스트별 적용, 권한 통제와 검증 경계
 - [x] [[MCP#Bedrock Converse와 MCP를 잇는 클라이언트 루프|Bedrock Converse와 MCP 연동]] — 스키마 변환, 도구 실행과 toolUseId 결과 연결

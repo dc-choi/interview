@@ -38,6 +38,14 @@ Get Query의 query parameter는 `version`, `latestVersionResolution`, `includePr
 
 응답의 `version`은 실제 조회된 버전이다. 운영 제안으로, metadata를 이용해 입력 폼이나 검증기를 만들 때는 응답의 `rid`와 `version`을 함께 보관하고 후속 실행의 버전 선택과 대조한다. 두 호출에서 각각 latest를 다시 해석하면 그 사이 발행된 버전 때문에 입력 명세가 달라질 수 있다. 2026-10-20 Get Query 명세로 이 절을 대조했으며 실제 호출은 시험하지 않았다.
 
+### RID는 경로 조각이 아니라 query parameter다
+
+Get By Rid는 `GET /api/v2/functions/queries/getByRid`에 필수 query parameter `rid`를 전달한다. RID를 `{queryApiName}` 자리에 넣는 요청과 구분한다. 선택 인자는 `version`, `includePrerelease`, `preview`이며 `branch`와 `latestVersionResolution`은 이 endpoint의 인자로 정의돼 있지 않다.
+
+`version`을 생략했을 때 `includePrerelease=true`를 주면 최신 버전 선택에 prerelease를 포함한다. 기본값은 false다. `preview`는 schema에서 선택 인자로 표시되지만 endpoint 사용 안내는 `preview=true`를 요구한다. 생성된 타입의 선택 표시만으로 운영 호출에서 생략해도 된다고 판단하지 않는다.
+
+2026-10-20 Get By Rid 명세의 요청 인자와 응답, 오류를 대조했다. 응답은 입력 명세를 포함한 Query metadata이며 함수 실행 결과가 아니다. 명시된 권한 오류는 HTTP 403의 `GetByRidPermissionDenied`다. 실제 인증과 API 호출은 시험하지 않았다.
+
 ## Global 함수와 Ontology-scoped 함수를 구분한다
 
 일반 execute endpoint는 global Query용이다. Ontology-scoped 함수의 단일 결과 실행은 `/api/v2/ontologies/{ontology}/queries/{queryApiName}/execute` 경로를 사용한다.

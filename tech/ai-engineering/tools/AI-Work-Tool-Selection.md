@@ -42,6 +42,24 @@ aliases: ["AI 업무 도구 선택", "AI Work Tool Selection"]
 
 Mobbin에서 사례를 찾는 것과 Superdesign으로 새 시안을 만드는 것은 별도 단계다. Spline의 장면 구성과 Meshy의 모델 생성도 구분한다. Airtable은 데이터의 구조와 흐름을, Asana는 작업의 책임과 진행을 중심으로 비교할 수 있다. 역할이 겹치면 이미 사용하는 도구에서 필요한 기능을 충족하는지 먼저 확인한다.
 
+### 공개 저장소도 역할과 실행 조건으로 나눈다
+
+아래는 2026-10-20 각 프로젝트의 공개 README에서 확인한 기능 범위다. 실제 설치와 실행, 성능 및 라이선스 적합성은 검증하지 않았다. 오른쪽 열은 도입 전에 적용할 검수 기준이다.
+
+| 후보 | README가 설명하는 역할 | 확인할 실행 조건과 산출물 |
+|---|---|---|
+| VoiceStudio | 로컬 음성 복제, 음성 설계, 영상 더빙과 오디오북 제작 | 사용할 음성의 동의와 권리, 발음과 타이밍, 장비 자원. 원격 서비스도 선택할 수 있어 로컬 설치만으로 모든 처리의 로컬 실행을 단정하지 않는다 |
+| Paperclip | 에이전트와 사람에게 작업을 배정하고 실행 기록, 예산, 검토와 승인 단계를 관리 | 연결한 에이전트의 실제 권한, 보고된 사용 비용과 청구액, 중단과 재배정 결과 |
+| Vibe-Trading | 자연어 질문을 데이터 조회, 전략 생성, 백테스트와 보고서로 연결하는 분석 작업 공간 | 생성된 전략 코드, 입력 데이터와 실행 결과의 연결. 여기서는 도구 역할만 확인했으며 매매 성과나 전략 적합성은 평가하지 않았다 |
+| God's Eye View | 공개 공간 데이터를 브라우저의 3D 지구본에 겹쳐 표시 | 레이어별 출처와 갱신 시점. 도로 교통은 시뮬레이션이며 카메라 자세와 발사체 궤적은 대략적 추정이므로 화면 전체를 실측값으로 읽지 않는다 |
+| OpenMAIC | 주제나 자료에서 슬라이드, 퀴즈, 대화와 상호작용 수업을 생성 | 생성된 설명과 정답의 원문 대조, 선택한 모델과 음성 서비스의 실행 위치와 비용 |
+| Magnitude | 로컬 모델 추론 엔진과 기존 에이전트의 연결 | 코드를 수정하는 에이전트와 모델을 실행하는 엔진을 구분한다. 속도 비교는 모델, 장비와 측정 조건을 확인한다 |
+| OpenSEO | 키워드 조사, 순위 추적, 경쟁사와 백링크 분석, 사이트 점검 | 자체 호스팅에서도 SEO 데이터용 DataForSEO API 키와 사용료가 필요하다. 소스 공개와 데이터 사용 비용을 구분한다 |
+
+저장소 이름이 같아도 외부 소개의 역할 설명이 현재 README와 다를 수 있다. Magnitude는 확인일에 추론 엔진으로 설명되어 있으므로 코딩 에이전트 자체로 분류하지 않는다. 엔진 선택과 측정 조건은 [[LLM-Inference-Bottlenecks|LLM 추론 병목]]에서 이어 본다.
+
+이 표는 소프트웨어의 역할과 검수 경계를 비교한다. 개별 마케팅 전략, 투자 판단이나 학습 순서의 채택을 뜻하지 않는다. 직접 호스팅할 때도 모델 호출, 데이터 API, 장비와 운영 비용을 따로 계산한다.
+
 ## 3. 자동화의 효과는 전체 업무에서 측정한다
 
 반복 업무를 맡길 후보를 찾되 규칙 기반 자동화, 템플릿과 기존 앱 기능도 함께 비교한다. 의미 해석이 필요 없는 고정 규칙에는 LLM을 추가하지 않아도 된다. 흐름이 미리 정해진 작업과 탐색이 필요한 작업의 차이는 [[LLM-Workflow-Patterns|LLM 워크플로우 패턴]]을 참고한다.
@@ -80,6 +98,13 @@ Mobbin에서 사례를 찾는 것과 Superdesign으로 새 시안을 만드는 �
 - [Fathom AI Notetaker — Fathom](https://www.fathom.ai/)
 - [The digital operations platform — Airtable](https://www.airtable.com/platform)
 - [Asana Work Management — Asana](https://asana.com/product)
+- [VoiceStudio — GitHub, debpalash](https://github.com/debpalash/VoiceStudio)
+- [Paperclip — GitHub, paperclipai](https://github.com/paperclipai/paperclip)
+- [Vibe-Trading — GitHub, HKUDS](https://github.com/HKUDS/Vibe-Trading)
+- [God's Eye View — GitHub, bilawalsidhu](https://github.com/bilawalsidhu/gods-eye-view)
+- [OpenMAIC — GitHub, THU-MAIC](https://github.com/THU-MAIC/OpenMAIC)
+- [Magnitude — GitHub, magnitudedev](https://github.com/magnitudedev/magnitude)
+- [OpenSEO — GitHub, every-app](https://github.com/every-app/open-seo)
 
 ## 관련 문서
 

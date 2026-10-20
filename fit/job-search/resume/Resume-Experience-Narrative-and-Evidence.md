@@ -115,6 +115,14 @@ AI에는 직접 정리한 경험과 지원 공고를 주고, 문장 개선안과
 
 문장 개선을 합격 가능성의 검증으로 해석하지 않는다. AI의 제안은 편집 후보이며, 최종 사실 확인과 제출 판단은 지원자가 맡는다.
 
+### 초안 검토와 제출 파일 검사를 나눈다
+
+반복 가능한 지원 흐름은 공고 적합성 판단, 초안 작성, 별도 검토, 수정, 제출 파일 검사로 나눈다. 작성 맥락을 공유하지 않는 검토자에게도 같은 공고와 경험 근거를 주고, 추가된 주장과 빠진 요건을 확인하게 한다. 검토자가 동의했다는 사실만으로 경험이 입증되지는 않는다.
+
+최종 PDF는 화면의 배치와 추출한 텍스트를 각각 확인한다. 화면에 잘 보이는 문서라도 추출 결과에서 순서나 단어가 달라질 수 있다. 텍스트 추출 검사는 특정 ATS에서의 합격이나 파싱 성공을 보장하지 않는다.
+
+공개 구현 사례인 `ai-job-search`는 적합성 평가 뒤 별도 에이전트 검토와 수정을 거친다. 2026-10-20 README에서 이 절차와 PDF 텍스트 추출 검사 안내를 확인했으며 실행은 시험하지 않았다. 이 흐름을 적용할 때 지원자가 정리한 경험과 공개 공고만 검토 근거로 삼고, 도구 작성자의 취업 성과를 개인의 예상 합격률로 환산하지 않는다.
+
 ## AI 활용 경험을 쓰는 법
 
 AI 도구 이름이나 생성 결과만 나열하지 않는다. 개발자로서 내 판단과 품질 책임이 보이도록 다음 순서로 쓴다.
@@ -183,6 +191,7 @@ AI 도구 이름이나 생성 결과만 나열하지 않는다. 개발자로서 
 - [개발자의 "할 수 있다"는 말은 어디까지일까요? — 요즘IT](https://yozm.wishket.com/magazine/detail/3880/)
 - [개발자 이력서 프로젝트 서술 — Team Grit](https://teamgrit.co/article/485)
 - [AI for Resumes and Cover Letters — Harvard Mignone Center for Career Success](https://careerservices.fas.harvard.edu/ai-resumes-and-cover-letters/) — 초안 기반 편집, 경험의 정확성, 직접 설명 가능성과 개인정보 보호
+- [ai-job-search — GitHub, MadsLorentzen](https://github.com/MadsLorentzen/ai-job-search) — 초안 작성과 별도 검토, PDF 텍스트 추출 검사의 공개 구현 안내
 - [개발자 취준생 이력서 무응답 체크리스트 — Threads, parkelo__](https://www.threads.com/@parkelo__/post/DdjZIqNlNYe)
 - [합격하는 경력직 지원 준비 7가지 특징 — Threads, allpass_everything](https://www.threads.com/@allpass_everything/post/DMLnpuHz3eh)
 - [개발자 면접 첫 질문을 유도하는 이력서 — Threads, think_lighthouse](https://www.threads.com/@think_lighthouse/post/DN29vUFZDbC)
