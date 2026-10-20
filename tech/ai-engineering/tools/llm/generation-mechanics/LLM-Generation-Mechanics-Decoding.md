@@ -25,9 +25,17 @@ aliases: ["LLM Generation Mechanics Decoding", "LLM 추론과 디코딩", "Trans
 
 ### Token과 위치 표현
 
-Tokenizer는 문자열을 단어, subword나 문자 단위의 Token ID로 바꾼다. **Token Embedding**은 각 ID를 모델 내부 계산에 쓸 벡터로 변환한다. Attention 자체에는 순서 개념이 없으므로 위치 정보를 주입한다. 원 논문의 sinusoidal encoding 외에도 학습형 위치 embedding과 회전 위치 표현 등 구현은 모델마다 다르다.
+Tokenizer는 문자열을 단어, subword나 문자 단위의 Token ID로 바꾼다. **Token Embedding**은 각 ID를 모델 내부 계산에 쓸 벡터로 변환한다. 위치 표현이나 순서를 제한하는 mask가 없는 self-attention은 토큰 순서를 별도로 표현하지 않는다. 원 논문의 sinusoidal encoding 외에도 학습형 위치 embedding과 회전 위치 표현 등 구현은 모델마다 다르다.
 
 Transformer 원 논문(Vaswani et al., 2017)이 sinusoidal을 고른 근거는 두 가설이다(3.5절). 고정된 거리 k마다 `PE(pos+k)`를 `PE(pos)`의 선형 함수로 나타낼 수 있어 모델이 상대 위치로 attend하는 법을 쉽게 배울 것이라는 점과, 학습 때보다 긴 시퀀스로 외삽할 수 있으리라는 점이다. 실험으로 보인 것은 학습형 위치 embedding으로 바꿔도 결과가 거의 같았다는 점이다(표 3 E행, 영어-독일어 번역 개발 세트 BLEU 25.7 대 base 25.8). 이 비교는 같은 개발 세트의 품질만 쟀으므로 상대 위치 가설과 외삽 가설을 모두 확인하지 않고, 위치 표현 방식의 일반적인 우열 근거도 아니다.
+
+#### Sinusoidal과 RoPE가 위치를 넣는 지점
+
+2026-10-21 원 논문 두 편의 위치 표현 절을 대조한 범위다. 아래 수식은 구조 설명이며 특정 서비스 모델이 이 설정을 쓴다는 뜻은 아니다.
+
+- **Sinusoidal**: 원 Transformer는 `PE(pos, 2i) = sin(pos / 10000^(2i/d_model))`, `PE(pos, 2i+1) = cos(pos / 10000^(2i/d_model))`를 쓴다. 서로 다른 주파수의 sine/cosine 쌍으로 위치 벡터를 만들고, 같은 차원의 token embedding에 더한다. 위치 0의 벡터는 `[0, 1, 0, 1, ...]`이다.
+- **RoPE**: RoFormer는 Query와 Key의 성분을 2차원 쌍으로 묶고 위치에 따른 회전을 적용한다. 위치 m, n의 회전 행렬을 `R_m`, `R_n`이라 하면 `(R_m q)ᵀ(R_n k) = qᵀR_(n-m)k`가 되어 위치의 영향이 상대 거리로 들어간다. 점수 전체가 거리만으로 정해지는 것은 아니며 q와 k의 내용에도 의존한다.
+- **해석의 한계**: sine/cosine을 사용한다는 공통점만으로 두 방법을 같은 연산으로 보지 않는다. 입력에 위치 벡터를 더하는 것과 Q/K를 회전하는 것은 다르다. 큰 위치의 수식을 계산할 수 있다는 사실도 그 길이에서의 과제 품질을 보장하지 않는다.
 
 ### 토크나이저는 빈도로 어휘를 만든다 (BPE)
 
@@ -99,6 +107,7 @@ Transformer 원 논문의 base는 encoder와 decoder가 각 6층(N=6), `d_model 
 ## 출처
 
 - [Attention Is All You Need — Vaswani et al.](https://arxiv.org/abs/1706.03762)
+- [RoFormer: Enhanced Transformer with Rotary Position Embedding — Su et al.](https://arxiv.org/abs/2104.09864) — 2026-10-21 위치 회전과 상대 거리 수식 대조. 기존 토크나이저와 API 과금 절의 확인일은 유지한다.
 - [Attention Is Not Explanation — Jain and Wallace](https://arxiv.org/abs/1902.10186)
 - [The Curious Case of Neural Text Degeneration — Holtzman et al.](https://arxiv.org/abs/1904.09751)
 - [Neural Machine Translation of Rare Words with Subword Units — Sennrich et al.](https://arxiv.org/abs/1508.07909)

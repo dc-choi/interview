@@ -44,6 +44,16 @@ eG Enterprise의 게스트 OS 검사는 CPU 소비가 큰 프로세스를 상세
 
 조사 적용 예시: 같은 `WorkspaceId`와 시간 구간에서 왕복 지연과 자원 사용률을 비교한다. CPU 사용률이 낮아도 세션 왕복 지연이 높을 수 있으므로 컴퓨트 증설을 바로 결론 내리지 않는다. 프로토콜을 바꿔 비교할 때는 UDP 손실률의 측정 방향도 바뀐다는 점을 기록한다.
 
+## 스토리지 비교에서는 용량과 동시 부하를 분리한다
+
+2026-10-21 공식 문서 대조 기준이다. VDI의 스토리지를 비교할 때 VM에 할당한 논리 용량, 실제 사용량, 클러스터의 raw 물리 용량과 보호 정책을 반영한 usable 용량을 구분한다.
+
+Broadcom의 VVF Trial Capacity 안내는 vSAN이 확보한 raw 물리 용량을 기준으로 삼으며 VM이 실제로 사용한 양과는 별개라고 설명한다. 해당 안내의 코어당 100GiB 조건은 사용자당 저장 공간이 아니다. 초과 시에는 초과분만이 아니라 클러스터 전체 용량에 맞는 라이선스를 요구한다고 명시한다. 이 Trial Capacity 조건을 모든 Horizon 번들이나 vSAN 계약에 적용하지 않고 실제 구독과 라이선스 키를 확인한다.
+
+vSAN ESA 9.1의 effective capacity 설명에서 usable 용량은 시스템 예약과 RAID 중복 오버헤드를 제외한다. 같은 raw 용량인 장비라도 보호 정책과 예약 공간이 다르면 사용자 데이터에 쓸 수 있는 양이 달라진다. 이 용량 지표를 모든 vSAN 버전의 동일한 UI 항목으로 가정하지 않는다.
+
+Omnissa의 Horizon 8 설계 문서는 여러 VM이 동시에 작업하는 I/O storm을 별도로 다룬다. **비교 시험 제안**: 같은 데스크톱 이미지, 동시 사용자 수와 보호 정책을 맞추고 평상시와 동시 시작 부하를 나눠 세션 시작 시간, 저장장치 지연과 처리량을 기록한다. 재구축이나 장애 복구 중의 조건도 별도 시험으로 남긴다. 가격 비율이나 VM 수 하나만으로 성능과 운영 안정성을 판정하지 않는다.
+
 ## 조사 순서
 
 1. 느린 동작과 시간 범위를 고정한다.
@@ -55,6 +65,9 @@ eG Enterprise의 게스트 OS 검사는 CPU 소비가 큰 프로세스를 상세
 
 ## 출처
 
+- [Broadcom, vSAN license alarm 'vSAN Cluster Claimed Capacity Exceeds Entitlement'](https://knowledge.broadcom.com/external/article/326663/vsan-license-alarm-vsan-cluster-claimed.html) — 2026-10-21 Trial Capacity의 raw 용량 기준과 초과 시 적용 범위 대조
+- [Broadcom, vSAN space reporting feature overview](https://knowledge.broadcom.com/external/article/315553) — vSAN ESA 9.1의 usable 용량 정의
+- [Omnissa, Storage Bandwidth Considerations](https://docs.omnissa.com/HorizonOverviewDeployment/StorageBandwidthConsiderations) — 동시 I/O 부하. 기존 CPU와 세션 지표 절의 확인일은 유지한다.
 - [AWS, Monitor your WorkSpaces using CloudWatch metrics](https://docs.aws.amazon.com/workspaces/latest/adminguide/cloudwatch-metrics.html) — 2026-10-14 WorkSpaces 절만 추가 대조, 기존 Horizon과 ESXi 절의 검증일은 유지
 - [eG Innovations, Horizon User Logon Details - OS Test](https://docs.eginnovations.com/Omnissa-Horizon-Desktop-Group/Horizon-User-Logon-Details-OS-Test.htm)
 - [eG Innovations, System Details - OS Test](https://docs.eginnovations.com/Omnissa-Horizon-Desktop-Group/System-Details-OS-Test.htm)

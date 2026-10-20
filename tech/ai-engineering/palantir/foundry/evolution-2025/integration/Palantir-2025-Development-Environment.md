@@ -33,9 +33,17 @@ category: "AI엔지니어링(AIEngineering)"
 
 10월 Jupyter Restricted View output mode는 restart 후에도 유지되고 dataset/model/telemetry/artifact publishing을 막았다. 사용자별 Dash/Streamlit 인터페이스와 SparkSQL/PyArrow 경로가 추가됐으며 11월 Snowflake virtual read/write, 12월 여러 snippet과 SQL dependency 설치가 확대됐다. Notebook의 interactive 권한과 publish 가능 여부를 나눠 확인한다.
 
+### Dataset view의 SQL 조회와 import는 따로 확인한다
+
+2025-12-23 출시 기록은 JupyterLab과 RStudio Code Workspaces에서 object materialization을 포함한 dataset view를 SQL로 조회하고, data sidebar에서 조회용 snippet을 제공하는 변경을 명시한다. 이는 당시 SQL 조회 경로의 지원 기록이다.
+
+2026-10-21 대조한 Getting started 문서의 Import data 절에는 dataset view를 imported dataset으로 쓸 수 없으며 필요하면 dataset으로 복사하라는 설명이 남아 있다. 두 자료가 설명하는 작업 경로가 다르므로 SQL 조회 지원을 모든 import나 transform 입력의 지원으로 확대하지 않는다. 문서 사이의 적용 범위와 갱신 시점이 완전히 정리됐는지는 확인하지 못했으며, 실제 환경에서는 원하는 SQL 조회와 import 경로를 각각 검증한다.
+
 ## 출처
 
 - [2025 release notes — Palantir](https://www.palantir.com/docs/foundry/announcements/release-notes/2025)
+- [December 23, 2025, Support SQL for views — Palantir release notes](https://www.palantir.com/docs/foundry/announcements/release-notes/2025#1ae7d29d-0974-42e0-aafd-e772b1e0dda0) — 2026-10-21 해당 항목만 추가 대조, 기존 출시 이력의 확인일은 유지
+- [Palantir, Getting started with Code Workspaces](https://www.palantir.com/docs/foundry/code-workspaces/getting-started) — Import data 절의 dataset view 제한과 SQL 조회 공지를 구분
 - [July 1, 2025, Limit batch size of incremental inputs to save time and compute costs — Palantir release notes](https://www.palantir.com/docs/foundry/announcements/release-notes/2025#87337acd-3338-40be-90db-2cdbab199e76)
 - [December 18, 2025, Control transform preview inputs with code-defined filtering — Palantir release notes](https://www.palantir.com/docs/foundry/announcements/release-notes/2025#13588279-7b4f-41a3-9570-d674aa5a78d0)
 - [January 14, 2025, Use Python Transforms in VS Code Workspaces [Beta] — Palantir release notes](https://www.palantir.com/docs/foundry/announcements/release-notes/2025#7312a8ca-094a-4d79-a8b9-78ded71bbdd4)
