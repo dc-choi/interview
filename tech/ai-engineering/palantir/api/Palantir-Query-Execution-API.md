@@ -46,6 +46,16 @@ Get By Rid는 `GET /api/v2/functions/queries/getByRid`에 필수 query parameter
 
 2026-10-20 Get By Rid 명세의 요청 인자와 응답, 오류를 대조했다. 응답은 입력 명세를 포함한 Query metadata이며 함수 실행 결과가 아니다. 명시된 권한 오류는 HTTP 403의 `GetByRidPermissionDenied`다. 실제 인증과 API 호출은 시험하지 않았다.
 
+### Batch 입력은 배열이고 결과의 data는 선택 필드다
+
+Get By Rid Queries Batch의 JSON body는 `{data: [...]}` 같은 wrapper가 아니라 요청 element의 배열이다. 각 element에는 필수 `rid`와 선택적 `version`, `includePrerelease`가 들어간다. `preview=true`는 body가 아니라 query parameter에 둔다.
+
+응답은 객체이며 `data`는 선택적인 Query 배열이다. 없는 Query와 토큰에 권한이 없는 Query가 결과에서 빠지므로, 누락만으로 리소스가 삭제됐다고 판정할 수 없다. 이 명세에는 요청 순서 보장이나 항목별 실패 사유가 정의돼 있지 않다.
+
+클라이언트 설계에서는 요청과 결과를 배열 위치로 맞추지 않고 반환된 `rid`와 `version`을 대조한다. 요청 목록에 같은 RID의 서로 다른 버전을 넣는 경우도 고려해 RID 하나를 키로 삼아 결과를 덮어쓰지 않는다. `data`가 없거나 요청 항목이 빠지면 미확인으로 남기는 처리는 운영 제안이며 API가 원인을 알려 준다는 뜻은 아니다.
+
+2026-10-20 공식 Batch 명세의 요청, 응답과 예제를 대조했다. 검증 범위는 이 절의 계약이며 실제 호출과 권한별 응답은 시험하지 않았다.
+
 ## Global 함수와 Ontology-scoped 함수를 구분한다
 
 일반 execute endpoint는 global Query용이다. Ontology-scoped 함수의 단일 결과 실행은 `/api/v2/ontologies/{ontology}/queries/{queryApiName}/execute` 경로를 사용한다.

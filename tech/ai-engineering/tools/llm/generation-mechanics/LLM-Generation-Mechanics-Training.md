@@ -61,6 +61,19 @@ loss = -log P(정답 Token | 앞선 Token들)
 
 Weight는 문장을 행 단위로 저장한 사실 데이터베이스가 아니다. 많은 예제에서 학습된 패턴과 연관이 분산된 수치로 들어가므로, 특정 사실을 정확히 조회하거나 출처를 그대로 복원한다고 보장할 수 없다.
 
+### 학습 예제는 가중치 갱신까지 확인한다
+
+순전파와 loss 출력만으로는 학습이 일어났다고 판단할 수 없다. 입력 batch가 바뀌면 고정 가중치에서도 loss가 달라질 수 있다. 학습 예제를 검토할 때는 다음을 확인한다.
+
+1. 입력과 한 토큰 뒤로 이동한 target을 확인한다.
+2. loss에서 gradient를 계산하고 optimizer가 실제 parameter를 갱신하는 경로를 찾는다.
+3. 작은 고정 batch에서 갱신 전후의 parameter와 loss를 비교하고, 별도 validation 데이터로 일반화를 평가한다.
+4. 명령, 작업 디렉터리, 종료 코드, 출력과 생성한 checkpoint를 남겨 실행과 결과를 연결한다.
+
+검토 사례로, AI Engineering from Scratch의 Mini GPT 교재 `Step 6: Training Loop`에 있는 `train_mini_gpt` 코드 블록은 입력을 뽑아 `forward`와 loss 계산을 반복하지만 역전파와 가중치 갱신은 포함하지 않는다. 따라서 그 코드 블록의 실행이나 loss 변화를 사전학습 성공의 증거로 쓰지 않는다. 이는 2026-10-20 교재 본문을 정적으로 대조한 결과이며 저장소의 다른 실행 파일까지 같은 구현이라고 판정한 것은 아니다.
+
+위 목록은 학습 확인을 위한 제안이다. 교재를 읽은 상태, 학습 루프 구현, 실제 모델 학습 완료를 구분한다. 전체 강좌 수와 예상 소요 시간도 개인의 숙련이나 완료를 보장하지 않는다.
+
 ### 역전파 없이 기울기를 추정하는 0차 방법
 
 역전파는 망이 미분 가능해야 쓸 수 있다. 진화 전략과 Dust는 기울기를 직접 계산하지 않고 섭동에 따른 목적 함수 값의 변화로 기울기를 추정하는 0차(zeroth-order) 방법이다.
@@ -152,6 +165,8 @@ ZeRO-3는 순전파와 역전파 중 필요한 파라미터를 모으고 다시 
 
 ## 출처
 
+- [AI Engineering from Scratch — GitHub, rohitg00](https://github.com/rohitg00/ai-engineering-from-scratch) — 실행 증거와 이해 확인 절차
+- [Pre-Training a Mini GPT, Step 6: Training Loop — AI Engineering from Scratch](https://github.com/rohitg00/ai-engineering-from-scratch/blob/main/phases/10-llms-from-scratch/04-pre-training-mini-gpt/docs/en.md) — 본문의 순전파와 loss 코드 블록만 대조, 실제 학습 실행은 미검증
 - [DeepSpeed, Zero Redundancy Optimizer](https://www.deepspeed.ai/tutorials/zero/)
 - [DeepSpeed, JSON Configuration: ZeRO optimizations](https://github.com/deepspeedai/DeepSpeed/blob/master/docs/_pages/config-json.md)
 - [AI No Longer Needs Backpropagation — Better Stack](https://www.youtube.com/watch?v=SYVPCSnLhcY) — 2026-10-10, Dust 소개 영상
