@@ -73,6 +73,18 @@ AI로 구현 시간이 줄었다면 과거에 미뤘던 과제를 다시 검토�
 
 AI는 조직의 강점뿐 아니라 약점도 증폭한다. 명시적 기준과 검증이 있는 작은 팀은 빠르게 학습하지만, 암묵지와 특정인 의존이 큰 팀은 오류와 병목도 빠르게 키울 수 있다. 공용 실행과 기억 계층은 [[AI-Native-Org|AI-Native 조직]], 사람이 판단과 책임을 유지하는 원칙은 [[Developer-Role-AI-Era|AI 시대 개발자 역할]]에서 이어진다.
 
+## 자율성은 독립적으로 전달할 수 있는 범위로 판단한다
+
+자율적인 팀은 다른 팀과 매번 세부 일정을 맞추지 않고 자기 서비스를 변경, 테스트하고 배포할 수 있어야 한다. 제품, 개발, 테스트와 운영 관점을 팀 안에 모으는 것과 서비스 사이의 계약을 분명히 하는 것이 함께 필요하다. AI로 코드 작성이 빨라져도 통합 환경이나 다른 팀의 배포를 계속 기다린다면 전달의 독립성을 확보한 것은 아니다. DORA의 느슨하게 결합된 팀 기준을 AI 활용 조직에도 적용한 해석이며, 특정 AI 도입 단계를 순서대로 거쳐야 한다는 법칙은 아니다.
+
+다음은 공통 계약과 학습 지원을 팀 운영에 연결한 제안이다.
+
+- 서비스의 입출력, 호환성 조건과 검증 방법을 합의하고 계약 테스트로 의존 관계를 확인한다. 문서의 양만 늘려 협의가 필요 없어졌다고 판단하지 않는다.
+- 새 담당 범위마다 업무 규칙을 설명할 수 있는지, 생성된 결과의 오류를 판별할 수 있는지 확인하고 부족한 부분을 학습 과제로 정한다.
+- 학습 예산뿐 아니라 업무 중 탐색 시간, 동료의 지식 공유와 실패에서 배울 기회를 제공한다. 개인에게 도구와 과제만 주고 모든 전문성을 이미 갖췄다고 가정하지 않는다.
+
+독립 전달 가능성은 DORA의 Loosely coupled teams, 학습 자원과 공유 기회는 Learning culture와 2026-10-20 대조했다. 이 근거는 팀의 자율성과 학습 환경을 다루며, 개인 한 명이 팀 전체를 대체한다거나 AI가 조직의 암묵지를 빠짐없이 처리한다는 증거는 아니다.
+
 ## 생산성 효과는 과업과 환경에 따라 다르다
 
 AI 개발 도구의 생산성 효과를 단일 숫자로 일반화하면 안 된다.
@@ -150,6 +162,8 @@ AI 개발 도구의 생산성 효과를 단일 숫자로 일반화하면 안 된
 - [State of AI-assisted Software Development 2025 — DORA](https://dora.dev/research/2025/dora-report/)
 - [User-centric focus — DORA](https://dora.dev/capabilities/user-centric-focus/)
 - [Working in small batches — DORA](https://dora.dev/capabilities/working-in-small-batches/)
+- [Loosely coupled teams — DORA](https://dora.dev/capabilities/loosely-coupled-teams/) — 독립적인 변경, 테스트와 배포, 직무를 아우르는 팀과 서비스 계약
+- [Learning culture — DORA](https://dora.dev/capabilities/learning-culture/) — 학습 예산, 탐색 시간, 지식 공유와 실패에서 배우는 환경
 - [Research: quantifying GitHub Copilot's impact on developer productivity and happiness — GitHub](https://github.blog/news-insights/research/research-quantifying-github-copilots-impact-on-developer-productivity-and-happiness-/)
 - [Measuring the Impact of Early-2025 AI on Experienced Open-Source Developer Productivity — METR](https://metr.org/blog/2025-07-10-early-2025-ai-experienced-os-dev-study/)
 - [We are Changing our Developer Productivity Experiment Design — METR](https://metr.org/blog/2026-02-24-uplift-update/)

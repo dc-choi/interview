@@ -53,7 +53,22 @@ List Markings(GET `/markings`)는 2026-10-20 기준 preview 표시가 없다. �
 
 다음은 목록 명세를 감사 코드에 적용하는 제안이다. 삭제되지 않은 CBAC Marking만 보려면 includeDeleted=false와 markingType=CBAC를 함께 명시한다. 응답에 markingType이 없으므로 유형별 결과가 필요하면 유형마다 따로 조회하거나 categoryId로 category의 markingType을 확인한다. 유형마다 따로 조회했다면 markingType을 생략한 조회 결과와 id 집합을 대조해, 어느 유형 조회에도 없거나 두 유형에 모두 나온 Marking은 유형 미확인으로 기록한다. category 조회가 오류로 끝나거나 categoryId가 Organization이라 유형을 정할 수 없을 때도 유형 미확인으로 남긴다. Organization Marking은 categoryId와 organization을 함께 보고 판별하며 둘이 어긋나면 미확인으로 기록한다. priority와 prominence는 category의 markingType이 CBAC로 확인된 Marking에서만 해석하고, priority는 Create Marking 응답과 같이 숫자와 숫자 문자열을 모두 받되 큰 값의 정밀도를 잃지 않게 다룬다. data가 없는 응답은 그 페이지에 항목이 없는 것으로 처리하고, 순회 종료는 항목 수가 아니라 nextPageToken의 유무로 판단해 모든 페이지를 읽는다. 순회 결과를 특정 시점의 일관된 snapshot으로 취급하지 않는다. 페이지 사이 변경으로 생길 수 있는 중복은 id로 제거하되 같은 id의 값이 다르면 나중에 받은 값을 쓰고 변경으로 기록하며, 누락은 중복 제거로 막을 수 없다. 공통 pagination 계약은 [[Palantir-API-Client-Contract]]를 따른다. 단건 Get Marking이 권한 거부(GetMarkingPermissionDenied)를 정의하는 것과 달리 목록 명세에는 권한 오류와 가시성 규칙이 없으므로, 결과를 호출 주체가 볼 수 없는 Marking까지 담은 전수 목록으로 단정하지 않는다.
 
-PUT `/markings/{markingId}`는 필수 name과 optional description을 받아 교체한다. category 이동 입력은 없다. PUT category와 달리 description이 optional이지만 생략했을 때 기존 값을 유지하는지 지우는지는 명세에 없으므로, 바꾸지 않을 때도 현재 description을 함께 보낸다(적용 제안). 오류는 endpoint마다 다르다. PUT은 빈 이름, category 안 이름 충돌, Marking 부재와 Marking 조회, category 조회, Marking 교체의 권한 거부를 구별한다. POST Marking 생성의 오류 구분은 위 Category와 Marking 생성 절의 Create Marking 오류 문단에 정리했다. PUT도 admin-write scope다.
+### Marking 교체의 입력과 오류 경계
+
+`PUT /api/v2/admin/markings/{markingId}`는 admin-write scope이며, 2026-10-20 대조한 명세에는 preview 요구와 query parameter가 없다. body의 필수 name과 optional description만 받는다. categoryId, priority, prominence, member와 role assignment는 요청 필드가 아니므로 응답의 Marking 객체 전체를 교체 입력으로 보내지 않는다(적용 제안). PUT category와 달리 description이 optional이지만 생략했을 때 기존 값을 유지하는지 지우는지는 명세에 없다.
+
+| 오류 이름 | HTTP / 오류 코드 | parameter |
+| --- | --- | --- |
+| GetMarkingCategoryPermissionDenied | 403 / PERMISSION_DENIED | markingCategoryId |
+| GetMarkingPermissionDenied | 403 / PERMISSION_DENIED | markingId |
+| ReplaceMarkingPermissionDenied | 403 / PERMISSION_DENIED | markingId |
+| MarkingNameInCategoryAlreadyExists | 400 / INVALID_ARGUMENT | displayName, categoryId |
+| MarkingNameIsEmpty | 400 / INVALID_ARGUMENT | 없음 |
+| MarkingNotFound | 404 / NOT_FOUND | markingId |
+
+같은 403도 category 열람, Marking 열람과 교체의 거부를 오류 이름으로 나누어 기록한다. 이름 충돌의 parameter는 요청의 name이 아니라 displayName이다. 응답은 교체된 Marking이며 member와 role assignment 목록을 포함하지 않는다. 삭제된 Marking이나 Organization Marking의 교체 가능 여부는 이 명세만으로 확정하지 않는다.
+
+적용 제안: 기존 description을 유지하려면 현재 값을 조회해 함께 보내고, 조회와 교체를 결합할 때는 admin-read와 admin-write를 모두 요청한다. endpoint 명세에는 버전이나 사전 조건 입력이 없으므로 조회 후 교체가 다른 관리자의 변경을 덮어쓰지 않는다고 보장할 수 없다. 응답의 id, name, description과 deleted를 확인하되 metadata 교체 성공을 보호 데이터의 접근 권한 변경으로 해석하지 않는다. POST Marking 생성의 오류는 앞 절의 별도 계약을 따른다.
 
 ## Member와 Role Assignment
 
@@ -84,7 +99,7 @@ Organization Marking에는 USE/DECLASSIFY만 이 role endpoint로 관리하고 A
 - [Palantir, List Markings](https://www.palantir.com/docs/foundry/api/admin-v2-resources/markings/list-markings) — 2026-10-20 확인. 같은 날 [v2 문서 경로](https://www.palantir.com/docs/foundry/api/v2/admin-v2-resources/markings/list-markings)의 명세 본문도 같았다.
 - [Palantir, Get Marking](https://www.palantir.com/docs/foundry/api/admin-v2-resources/markings/get-marking) — 2026-10-20 단건 조회와 오류 계약 확인. 같은 날 [v2 문서 경로](https://www.palantir.com/docs/foundry/api/v2/admin-v2-resources/markings/get-marking)에서도 같은 endpoint, 응답 필드와 오류 정의를 확인했다. 실제 API 호출은 하지 않았다.
 - [Palantir, Get Markings Batch](https://www.palantir.com/docs/foundry/api/admin-v2-resources/markings/get-markings-batch) — 2026-10-20 요청 배열, optional data map과 오류 정의 범위 확인. [v2 문서 경로](https://www.palantir.com/docs/foundry/api/v2/admin-v2-resources/markings/get-markings-batch)에서도 같은 endpoint, 배치 상한과 응답 구조를 확인했다.
-- [Palantir, Replace Marking](https://www.palantir.com/docs/foundry/api/admin-v2-resources/markings/replace-marking)
+- [Palantir, Replace Marking](https://www.palantir.com/docs/foundry/api/admin-v2-resources/markings/replace-marking) — 2026-10-20 입력 범위, 응답과 오류 6개 대조. [v2 문서 경로](https://www.palantir.com/docs/foundry/api/v2/admin-v2-resources/markings/replace-marking)에서도 같은 계약을 확인했다. 실제 API 호출은 하지 않았다.
 - [Palantir, List Marking Members](https://www.palantir.com/docs/foundry/api/admin-v2-resources/marking-members/list-marking-members)
 - [Palantir, Add Marking Members](https://www.palantir.com/docs/foundry/api/admin-v2-resources/marking-members/add-marking-members)
 - [Palantir, Remove Marking Members](https://www.palantir.com/docs/foundry/api/admin-v2-resources/marking-members/remove-marking-members)
