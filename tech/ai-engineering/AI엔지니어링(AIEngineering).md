@@ -52,7 +52,7 @@ Software 3.0 패러다임, LLM과 에이전트, 하네스, 평가, 조직 전환
 - [x] [[Bedrock-AgentCore-Operations|Bedrock AgentCore 운영 경계]] — 세션 소유 관계, 영속 상태, Gateway Policy와 temporal session, 계측과 모델 초기 구독 권한
 - [x] [[Agent-Swarm-Containment#역량 평가와 배포 통제를 분리해 읽는다|사이버 역량 평가의 조건]] — 역량 등급, 평가 접근권, 안전장치와 서비스 설정의 구분
 - [x] [[Agent-Spec-Writing#스펙 산출물과 승인 지점을 분리한다|스펙 생성과 검토 흐름]] — 요구사항, 설계와 작업 목록, Quick Spec의 승인 생략과 사후 검토
-- [x] [[Agent-Test-Verification-Behavior#마이그레이션에서는 기존 구현을 비교 기준으로 쓴다|생성 코드의 마이그레이션 검증]] — 같은 초기 상태, 반환값과 DB 변경, 의도된 차이와 회귀
+- [x] [[Agent-Test-Verification-Behavior#마이그레이션에서는 기존 구현을 비교 기준으로 쓴다|생성 코드의 마이그레이션 검증]] — 같은 초기 상태, 반환값과 DB 변경, 의도된 차이와 회귀, 이식한 테스트의 충실도와 알려진 차이
 - [x] [[LLM-Generation-Mechanics-Context-and-Agent#계산 계획을 검토 가능한 데이터로 둔다|LLM 계산 계획과 실행]] — 상위 계획, 계산 그래프와 실행 결과의 대조
 - [x] [[AI-Workflow-Knowledge-Loop#운영 표준, 작업 경험과 현재 환경을 분리한다|운영 지식의 재사용]] — 표준과 경험의 권위, 실행 시점 환경 조회와 권한 차단의 구분
 - [x] [[Agent-Terminal-Workspaces|에이전트 터미널과 작업 공간]] — 화면 배치, 상태 관찰, worktree 분리와 완료 검증
@@ -86,7 +86,7 @@ Software 3.0 패러다임, LLM과 에이전트, 하네스, 평가, 조직 전환
 - [x] [[LLM-Generation-Mechanics-Analogies|비개발자 설명용 LLM 비유와 한계]] — 학습 때 정해지는 것과 요청마다 고르는 것, 네 가지 수량, 비유가 맞는 부분과 깨지는 지점
 - [x] [[LLM-Generation-Mechanics-Context-and-Agent#프롬프트, RAG와 파인튜닝은 바꿀 대상으로 고른다|프롬프트, RAG와 파인튜닝 선택]] — 바꾸는 층, 지식과 행동 문제의 구분, 구조화 출력, 비용 비교와 파인튜닝 제공 범위
 - [x] [[Agent-Runtime-Deployment|에이전트 런타임과 배포]] — Eve, Mecatl, Strands Harness SDK, OpenCode 2.0의 책임과 확인 수준
-- [x] [[Agent-Reverse-Engineering|에이전트 역공학과 실행 하네스]] — REA, 게임 상태 재현, 브라우저 이식, Xbox Labs 발표와 Ruby 생태계 사례
+- [x] [[Agent-Reverse-Engineering|에이전트 역공학과 실행 하네스]] — REA, 매칭 디컴파일과 정적 재컴파일의 동등성 구분, 게임 상태 재현, 브라우저 이식, Xbox Labs 발표, Ruby 생태계 사례와 국내 저작권법의 프로그램코드역분석 요건
 - [x] [[Agent-Code-Search#Jevgrep: 동작 질문과 원문 발췌|Jevgrep 코드 검색]] — 자연어 후보 탐색, 원문 확인과 동명 패키지 경계
 - [x] [[Context-Development-Lifecycle|컨텍스트 개발 수명주기]] — 생성, 평가, 배포와 관찰
 - [x] [[MCP-Gateway-Architecture|MCP 게이트웨이]] — Uber의 발견, 활성화와 실행 권한 분리

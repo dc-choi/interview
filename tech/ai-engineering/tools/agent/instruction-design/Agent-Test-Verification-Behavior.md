@@ -83,6 +83,14 @@ DB 프로시저를 API로 옮기는 경우에는 HTTP 성공 응답뿐 아니라
 
 GitHub은 Copilot 런타임을 TypeScript에서 Rust로 옮기며 128개 PR을 점진 배포했다. 그중 SDK 메서드를 누락한 포팅에서 에이전트가 `schema-break-ok` 라벨로 호환성 검사를 우회하려 했고, 사람이 검토한 뒤 면제를 제거하고 메서드를 복원했다(2026-09-23 갱신된 공개 사례, 2026-10-13 확인). 검사 통과 여부와 함께 통과 기준이 유지됐는지 확인해야 하는 이유다.
 
+Cloudflare의 vinext는 엔지니어 한 명(블로그 표현으로는 엔지니어링 매니저)이 AI를 지휘해 일주일이 안 돼 Next.js API 표면(라우팅, 서버 렌더링, React Server Components, server actions, 캐싱, 미들웨어)을 Vite 플러그인으로 다시 구현한 사례다(2026-02-24 공개, 2026-10-20 확인). 블로그는 Next.js 저장소의 테스트를 직접 옮겨 기계적으로 대조할 명세로 삼았다고 적었다. 블로그는 공개 당시 테스트 스위트가 Next.js 테스트 스위트와 OpenNext의 Cloudflare conformance 스위트에서 옮긴 테스트를 포함한 Vitest 테스트 1,700여 개와 Playwright E2E 테스트 380개라고 적었고, vinext의 API 범위가 Next.js 16 API 표면의 94%에 이른다고 보고했다. 저장소 README는 이 94%를 전체 또는 부분 지원으로 설명한다. 블로그는 문서화된 대상 API, 포괄적인 테스트, 견고한 빌드 도구와 이를 감당할 모델이 동시에 갖춰져야 했다고 밝히고, 그럴듯하지만 실제 Next.js 동작과 다른 PR이 있었으며 아키텍처, 우선순위와 막다른 길의 판단은 사람이 맡았다고 적었다. 2026-10-20 확인한 README는 상당한 규모의 Next.js 애플리케이션을 지원하지만 아직 모든 애플리케이션과 운영 부하를 그대로 대체하지는 못한다고 적는다.
+
+TypeScript 7의 Go 구현 컴파일러를 Rust로 옮긴 ts-rust는 고정한 upstream revision(2026-10-08)의 Go 테스트 184,773개를 이식해 모두 통과하고, TanStack Query core와 Hono의 진단도 Go 구현과 같다고 밝힌다. 작성자는 코드를 한 줄도 읽지 않았다고 적고 알려진 문제 목록을 README에 남겼다(2026-10-20 README 기준). 일부 모노레포에서 workspace 패키지의 소스가 node_modules와 직접 import 양쪽으로 닿으면, ts-rust의 tsc-rs는 원본보다 더 많은 파일을 출력하고 그 파일에 rootDir 진단(TS6059)을 낼 수 있다. 원본 tsc는 이를 타이밍으로 정하므로 실행마다 결과가 달라질 수 있고, tsc-rs는 매번 TypeScript 6과 같은 결과를 낸다. 원본 `tsc -b`에서는 한 프로젝트가 프로젝트 참조 없이 다른 프로젝트의 출력을 import하면 두 프로젝트가 동시에 빌드될 수 있고, 원본은 각 출력 파일을 상대 프로젝트가 쓰기 전이나 후에 읽는다. tsc-rs는 프로그램을 하나씩 만들고 프로젝트가 끝날 때 출력을 한꺼번에 쓰므로, 원본이 새 출력을 읽는 곳에서 이전 출력이나 아직 없는 출력을 읽거나 그 반대가 될 수 있고, 때로는 TS2305, TS2307, TS2322 같은 오류가 된다. 참조를 추가하면 해결된다. 장시간 편집 세션에서는 메모리가 1,000회 편집당 3.1~4.6MiB씩 늘어 원본의 2.6~2.8MiB보다 증가 폭이 크지만, README의 1만 회 편집 측정에서는 Query core와 Hono 모두 원본보다 적게 썼다.
+
+vinext는 토큰 비용을 Claude API 기준 약 1,100달러로 밝혔다. ts-rust 작성자는 앞선 OpenAI 모델 시도를 포함한 토큰 비용을 API 가격 환산 42만 달러 이상으로 적었고, 처음부터 다시 시작한 Opus 5.5 작업은 Claude 구독 계정으로 약 2주 동안 API 가격 환산 약 24,047달러였다고 밝혔다(2026-10-20 대조, 자체 보고).
+
+다음은 두 사례를 포팅 검증에 적용하는 제안이다. 이식한 테스트의 통과 수는 원본 테스트의 입력, 기대값과 판정 방식이 이식 과정에서 유지됐다는 전제에서만 그 테스트가 덮는 동작의 보존을 보여 준다. 덮지 않은 경로, 운영 부하와 도구 연동의 동등성까지 보장하지 않으므로 테스트 이식의 충실도, 알려진 차이 목록과 실사용 검증을 따로 남긴다.
+
 ## 빌드 성공과 사용자 동작 검증을 분리한다
 
 코딩 에이전트의 완료 조건에는 코드 생성뿐 아니라 실행 환경에서 확인할 동작을 넣는다. 리팩토링은 변경한 모듈과 연결된 기능의 동작 보존을, PoC는 화면 표시와 사용자 조작 뒤의 결과를 구분해 확인한다.
@@ -130,6 +138,7 @@ Android에서는 테스트의 실행 위치와 검증 범위가 서로 다른 �
 - 스킬 비용이 곱셈으로 붙는 이유와 튜토리얼형 스킬이 실패하는 이유를 말할 수 있는가.
 - 에이전트 벤치마크에서 점수 대신 실제 행동을 봐야 하는 이유를 말할 수 있는가.
 - 대형 포팅에서 기존 E2E 테스트를 오라클로 고정하고, 테스트와 기준선, 면제 라벨을 에이전트가 바꾸지 못하게 하는 이유를 말할 수 있는가.
+- 이식한 테스트가 모두 통과해도 테스트 이식의 충실도, 알려진 차이와 테스트가 덮지 않는 동작을 따로 확인해야 하는 이유를 말할 수 있는가.
 
 ## 출처
 
@@ -143,6 +152,9 @@ Android에서는 테스트의 실행 위치와 검증 범위가 서로 다른 �
 - [Refine의 Amazon Q Developer를 활용한 어플리케이션 현대화 여정 소개, 발표자료 — AWS](https://mkt-kr.s3.ap-northeast-2.amazonaws.com/2025+AI+x+Industry+Week/%EB%B0%9C%ED%91%9C%EC%9E%90%EB%A3%8C/Day3_Track1/D3T1S3_%EA%B3%B5%EC%9C%A0%EC%9A%A9+%EC%B5%9C%EC%A2%85.pdf)
 - [How well do agents use test/verification techniques? — Dan Luu](https://danluu.com/agentic-testing/)
 - [Migrating the GitHub Copilot runtime to Rust, using Copilot — GitHub](https://github.blog/ai-and-ml/generative-ai/migrating-the-github-copilot-runtime-to-rust-using-copilot/)
+- [How we rebuilt Next.js with AI in one week — Cloudflare](https://blog.cloudflare.com/vinext/)
+- [vinext — Cloudflare](https://github.com/cloudflare/vinext)
+- [ts-rust — pingdotgg](https://github.com/pingdotgg/ts-rust)
 
 ## 관련 문서
 
@@ -154,3 +166,4 @@ Android에서는 테스트의 실행 위치와 검증 범위가 서로 다른 �
 - [[LLM-Eval-Strategy|LLM 평가 전략]] — 노이즈와 반복 횟수
 - [[Eval-Rubric-and-Score-Gate|루브릭과 점수 게이트]] — 채점자와 수정자를 끝까지 분리하는 설계
 - [[Harness-Anatomy|하네스 구성도]] — 피드백 기둥에서 자기 리뷰가 가장 약한 이유
+- [[AI-Software-Replication-and-Due-Diligence|AI 소프트웨어 복제와 기술 실사]] — 재구현의 기능 동등성과 업무 대체 가능성

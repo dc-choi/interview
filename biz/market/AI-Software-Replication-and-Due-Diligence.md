@@ -46,7 +46,11 @@ aliases: ["AI Software Replication and Due Diligence", "AI 소프트웨어 복�
 ## 사례와 확인 수준 (2026-10-16)
 
 - **Photoshop 복제 앱 비교:** 제공된 2026-10-13 GeekNews 발췌에는 8K × 8K 이상 캔버스의 브러시 지연, 복사와 실행 취소의 멈춤, 색상과 인쇄 프로파일 및 파일 호환성 문제가 기록돼 있다. 비교 글은 확인했지만 해당 앱을 직접 실행하지 않았다. 개발비 최소 2,000달러와 대안 구독료 비교는 글의 사례 수치이며 현재 가격이나 모든 복제 앱의 성능으로 일반화하지 않는다.
-- **경쟁 해자 논쟁:** PhotoCraft가 공개 명세와 관찰된 동작으로 구현됐다는 설명과, 기능 수준이 Photoshop의 절반 미만이라는 추정이 함께 제시된다. 후자는 비교자의 추정이며 코드 독립성, 전체 기능과 법적 적법성을 검증한 결과가 아니다. 재구현 비용 하락과 전문 제품 대체를 구분하는 사례로 사용한다.
+- **경쟁 해자 논쟁의 PhotoCraft 수치:** PhotoCraft 저장소는 Photoshop을 Rust로 다시 구현한 클린룸 프로젝트라고 소개하고, 공개 명세와 관찰된 동작만 썼으며 독점 코드, 셰이더와 자산은 쓰지 않았다고 밝힌다. 해자 에세이(2026-10-07)는 WebProNews가 프로젝트 로드맵을 읽고 Photoshop parity를 50% 미만으로 추정했다고 인용한다. 현재 parity 문서는 2026-10-05 평가를 예전 docs/roadmap.md 절에서 옮겨 보존했다고 밝히고 이 평가도 실제 parity가 50%에 한참 못 미친다고 적으므로, 이 수치는 외부의 독립 측정이 아니라 프로젝트 자체 평가에서 온 값으로 본다(WebProNews 원문은 미확인). 이 평가는 일반적인 Photoshop 사용자가 다루는 기능의 약 60~70%가 어떤 형태로든 있고 전문가가 일상 업무용으로 전환할 수 있는 수준은 약 25~35%라고 나눠 적었다. 진정한 1:1 parity에는 여러 달의 집중 작업이 필요하다고 봤고, 메뉴 항목이 모두 명령에 연결됐다는 수치는 동작에 대해 아무것도 말해 주지 않는다고 적었다. 체크리스트가 동작한다고 센 기본 기능에서도 텍스트 선택 위치 어긋남과 단축키 실패 214건 같은 결함이 발견됐다고 적었다.
+
+  2026-10-13 로드맵은 PhotoCraft 0.6.0을 2026-10-10 설치본에서 측정한 Photoshop 2026(27.11.0)과 비교해 기능 범위를 약 76%(일부 측정, 근거에 메뉴 628개 연결 포함), 실무 투입 준비를 약 45%(추정, 범위 40~50%)로 적었다. 같은 로드맵의 진행 기록은 2026-10-05 0.2.0 시점의 실무 투입 준비를 25~35%로 적으므로, 앞의 25~35%와 이 45%는 시점이 다른 같은 항목의 자체 추정이다. 영역별 표는 성능의 준비도를 25%로 매기고, 그 근거로 예산을 둔 성능 시나리오 25개 중 3개만 목표를 충족했다는 측정을 붙였다. 이 측정은 2026-10-05에 부하가 높은 장비에서 잰 첫 기준선이다. scorecard의 시나리오 58개는 예산 안 3개, 초과 또는 실패 22개, 추적만 하는 것 9개, 미실행 19개, 아직 측정할 수 없는 것 5개로 나뉜다. README는 아직 일상 전문 작업을 대신하지 못한다고 하고, PSD를 열고 다시 저장한 결과가 psd-tools 시험 파일 309개 중 307개에서 같게 렌더링된다고 보고한다. 이 비교는 다시 저장한 파일을 PhotoCraft가 다시 읽어 자체 렌더 결과와 맞춘 값이며, 같은 저장소의 scorecard와 파일 형식 parity 문서는 이 왕복 저장의 강제 하한을 308/309로 적어 README의 수치와 다르다. 다시 저장한 파일은 원본과 바이트 단위로 같지 않고, 로드맵은 PhotoCraft가 쓴 PSD를 Photoshop이 아직 안정적으로 받아들이지 못한다고 적었다.
+
+  같은 저장소의 parity 문서는 측정을 위해 설치된 Photoshop 2026을 실행하지 않은 채 Info.plist, 파일 형식 플러그인 플래그, 언어 팩, 기본 단축키 파일, 프리셋과 주 실행 파일의 문자열을 살펴봤다고 적는다. 클린룸 표방과 별개로 원본 설치 파일을 어디까지 참고했는지는 기술 실사에서 따로 확인할 대상이다(적용 제안). 모두 프로젝트의 자체 보고이며 코드 독립성, 전체 기능과 적법성을 검증한 결과가 아니다(2026-10-20 저장소 대조, 확인 시점의 최신 릴리스는 0.10.0). 메뉴 연결 수와 실제 동작이 다르고 성능 예산 충족, PSD 왕복 저장과 전문 업무 이전 정도도 서로 다른 값을 보이므로, 위 표의 층위를 따로 재야 하는 사례로 본다.
 - **인수 실사 일화:** ARR 420만 달러, 성장률 40%, 약 600줄의 연결 코드로 된 기업의 인수를 철회했다는 소셜 게시물 발췌를 확보했다. 대상 회사, 계약과 코드에 접근하지 못해 독립 검증하지 않았다. 매출의 실재와 기술적 차별성이 다른 질문이라는 학습 후보로 보존한다.
 
 후속 확인은 앱 버전과 동일한 파일을 고정한 성능 비교, PSD 왕복 저장 검증, 인수 사례의 공개 근거 대조다. 이 기록은 해당 제품을 사거나 팔라는 투자 판단이 아니다.
@@ -56,6 +60,7 @@ aliases: ["AI Software Replication and Due Diligence", "AI 소프트웨어 복�
 - [Attack of the Vibe Coded Photoshop Clones — Shokunin Studio](https://www.shokunin.studio/blog/2026/10/9/attack-of-the-vibe-coded-photoshop-clones) — 비교자의 관찰과 비용 추정, 제품 직접 실행 미검증
 - [바이브 코딩으로 만든 Photoshop 복제 앱들의 공세 — GeekNews](https://news.hada.io/topic?id=35237) — 비교 글 연결과 제공 발췌 대조, 제품 실행 미검증
 - [Your Moat Is Dead. Anyone Can Rebuild Your Product. — Tech Founder Stack, Mathias Klenk](https://www.techfounderstack.com/p/your-moat-is-dead-anyone-can-rebuild) — 전략 에세이, 재구현 방식과 기능 수준은 제품 독립 검증 아님
+- [PhotoCraft — storytold](https://github.com/storytold/photocraft) — 2026-10-20 main 브랜치의 README, ROADMAP.md(2026-10-13 갱신), docs/target-app-parity.md(2026-10-05 평가 보존), docs/scorecard.md, docs/file-format-parity.md의 자체 보고와 crates/io/tests/corpus.rs의 왕복 저장 시험 코드를 대조, 제품 실행 미검증
 - [AI 기업 인수에서는 ARR보다 코드부터 봐야 하는 이유 — GeekNews](https://news.hada.io/topic?id=35386) — 소셜 게시물 기반 사례, 원 거래와 코드 미확보
 
 ## 관련 문서
@@ -64,3 +69,4 @@ aliases: ["AI Software Replication and Due Diligence", "AI 소프트웨어 복�
 - [[Competitive-Analysis|경쟁 분석]]
 - [[Distribution-As-Moat|도달력과 해자]]
 - [[Valuation|기업가치 평가]]
+- [[Agent-Reverse-Engineering|에이전트 역공학]] — 관찰과 재구현, 매칭 디컴파일과 정적 재컴파일의 동등성 구분, 국내 저작권법의 프로그램코드역분석 요건
