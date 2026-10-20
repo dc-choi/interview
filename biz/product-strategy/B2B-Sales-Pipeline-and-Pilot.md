@@ -21,6 +21,14 @@ aliases: ["B2B 영업 파이프라인", "B2B 파일럿과 구매 절차", "Sales
 
 이는 초기 판매 방식을 찾는 경험 기반 접근과 운영 제안이다. 기술 출신 창업자의 영업 실패나 영업 직원의 역량을 직무 배경만으로 단정하지 않는다. 대표 개인의 관계로 성사된 거래와 다른 사람이 반복할 수 있는 판매 과정도 구분한다.
 
+### 멘토링을 현재 영업 과제에 연결한다
+
+멘토에게 기대할 도움은 현재 막힌 과제로 정한다. Techstars의 공개 멘토 안내는 도움의 범위에 PMF, 사업모델, 유통, 고객과 파트너, 적절한 경우의 인맥 연결을 포함한다. 따라서 창업 멘토링을 투자 발표 자료 검토로만 정의할 근거는 없다. 이는 해당 프로그램의 안내이며 국내 모든 지원사업의 실제 멘토링 구성을 조사한 결과는 아니다.
+
+소규모 B2B 사업에 적용할 때는 만남 전에 제품 설명을 짧게 준비하고, 고객군 선택, 가격 가설, 첫 접촉이나 파일럿 제안 중 도움이 필요한 과제 하나를 정하는 방식을 제안한다. 멘토의 경력 전체보다 그 과제에 맞는 경험과 도움의 범위를 확인한다. 끝날 때는 검토할 자료, 고객에게 확인할 질문과 다음 행동을 남긴다. 고객 소개를 받더라도 소개 수락, 탐색 대화와 구매 진전은 별도로 기록한다.
+
+조언의 사실과 의견을 구분하고 최종 결정은 창업자가 맡는다. 멘토의 직함이나 성공 경험만으로 조언을 확정하지 않으며, 영업 지원이 필요하다는 이유로 투자, 법률이나 규제 검토의 가치를 일괄 부정하지 않는다. 위 질문과 기록 방식은 공개 멘토링 원칙을 영업 과정에 적용한 제안이며 매출 개선 효과를 측정한 결과가 아니다.
+
 ## 고객 조직의 역할부터 구분한다
 
 | 역할 | 확인할 내용 |
@@ -159,6 +167,10 @@ CRM의 성과 화면에서는 답하는 질문이 다른 금액을 나눠 보인
 2. 기대 계약금액은 다음 달 고정 지출보다 크지만 확정 입금은 없다. 계약 성사와 입금 지연을 나눠 현금 부족 시나리오를 설명한다.
 
 ## 출처
+
+- [Techstars Mentor FAQs — Techstars](https://www.techstars.com/mentor-faq) — 2026-10-21 확인, PMF, 사업모델, 유통과 고객, 파트너 및 인맥 연결의 지원 범위
+- [Engage with Mentors - Worksheet — Techstars](https://toolkit.techstars.com/engage-with-mentors-worksheet) — 2026-10-21 확인, 멘토의 경험 조사, 짧은 제품 설명과 도움이 필요한 문제 준비
+- [The Techstars Mentor Manifesto — Techstars](https://www.techstars.com/blog/founder-advice/mentor-manifesto) — 사실과 의견 구분, 구체적 조언과 창업자의 의사결정 권한
 
 - [Learn How to Discover Objections — Salesforce Trailhead](https://trailhead.salesforce.com/content/learn/modules/objection-handling-strategies/learn-how-to-discover-objections) — 2026-10-21 확인, 우려의 재확인, 열린 질문과 거래에 필요한 조건 확인. 상담 문구와 후속 기록 방식은 적용 제안이며 전환율 검증이 아니다.
 
