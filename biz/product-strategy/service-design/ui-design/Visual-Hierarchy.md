@@ -15,7 +15,7 @@ aliases: ["Visual Hierarchy", "시각적 위계"]
 |---|---|---|
 | 크기 | 강조 요소를 더 크게 | 상품명, 가격, CTA 버튼의 크기 차등 |
 | 색상 | 포인트 컬러와 대비로 시선 집중 | 할인율에 강렬한 색, 배경과의 대비 조절 |
-| 질감 | 입체감, 재질 차이로 구분 | 뱃지, 멤버십 마크의 입체 표현 |
+| 질감 | 입체감, 재질 차이로 구분 | 배지, 멤버십 마크의 입체 표현 |
 | 공간감 | 원근과 그림자로 깊이 표현 | 떠 있는 카드, 그림자로 층 분리 |
 | 형태 | 다른 형태로 차별화 | 브랜드는 원형, 상품은 사각형으로 정보 유형 구분 |
 
@@ -26,6 +26,21 @@ aliases: ["Visual Hierarchy", "시각적 위계"]
 - **행동의 차이를 명시한다** — 승인과 반려처럼 결과가 다른 액션은 라벨과 배치로 구분하고 색상을 보조로 쓴다. 색상 대비만으로 오조작 방지를 보장하지 않는다.
 - **정보 유형은 형태로 구분** — 같은 그리드 안에서 성격이 다른 항목(브랜드 vs 상품)은 도형 자체를 다르게 하면 라벨 없이도 계층이 읽힌다.
 - **커머스 상세 페이지의 정석** — 구매 결정 직결 정보(할인율, 가격)를 크기와 색으로 최상위 위계에 둔다.
+
+## 작은 요소의 강조 절제
+
+배지, 할인율, 버튼처럼 작은 요소마다 강조를 더하면 강조끼리 경쟁해 화면의 위계가 흐려지기 쉽다. 아래는 2026-10-20 대조한 내용이며, 강조의 총량을 줄이는 일과 표시의 종류를 구분하는 일은 따로 판단한다. 구매 결정 정보가 한곳에 모이는 상세 페이지와 같은 카드가 반복되는 목록 화면은 강조할 대상의 수가 다르므로, 앞 절의 커머스 상세 페이지 기준을 목록의 모든 카드에 그대로 옮기지 않는다.
+
+- **강조의 총량:** NN/g(2021-01-17)는 모든 요소에 대비를 주면 아무것도 눈에 띄지 않고, 값이나 채도가 비슷한 색을 많이 쓰면 요소 사이의 위계가 덜 인식되는 경우가 많다고 설명한다. 단순한 화면은 주색 2개와 보조색 2개, 복잡한 화면은 대비 변형 3개 이하로 두고 크게 키울 요소는 최대 2개로 제한하라고 권한다. NN/g(1999-10-16)는 모든 것을 강조하면 아무것도 강조되지 않는다고 하면서도 모든 요소를 똑같이 밋밋하게 만드는 것 역시 그만큼 나쁘다고 본다. 중요도를 여러 단계의 강조나 서로 다른 아이콘으로 나눠 보여 주는 방식은 대개 과하고 사용자가 이해하는 데 품이 많이 든다고 평가한다.
+- **상태 표시의 의미와 개수:** GOV.UK Design System은 태그를 상태 표시에만 쓰고 같은 태그를 여러 곳에 쓰면 색을 일관되게 유지하라고 한다. 태그가 늘수록 사용자가 기억하기 어려우므로 통할 만한 최소 개수의 상태로 시작해 사용자 조사로 필요가 확인될 때 늘리라고 하고, 끝낸 부분에만 완료 태그를 붙이면 태그가 없는 부분은 미완료로 이해되듯 상태 하나로 충분한 경우도 있다고 설명한다. Atlassian은 New, Premium 같은 프로모션 라벨까지 포함한 Lozenge를 정확하고 일관되게 쓰고 색은 라벨의 의미에 맞춰 고르라고 하며, 채운 아이콘을 남용하면 중요한 상태 표시의 효과가 줄어든다고 경고한다.
+- **구분은 강조와 다르다:** NN/g(2016-08-07)가 모바일 화면의 커머스 목록 2개와 주식 표 2개로 96명을 시험한 연구에서는 표시 종류마다 고유한 아이콘과 색을 함께 준 조건이 측정한 모든 UX 지표에서 가장 좋았고, 텍스트만으로 구분한 조건보다 항목을 약 37% 빨리 찾았다. 색만으로 구분하면 색각 이상 사용자에게 실패할 위험이 있고 해석도 갈릴 수 있다고 본다.
+- **배지라는 이름의 범위:** Material Components for Android 문서는 배지를 내비게이션 항목과 아이콘에 붙어 알림, 개수, 상태 정보를 보여 주는 요소로 설명한다. 비슷한 짧은 라벨을 GOV.UK는 Tag, Atlassian은 Lozenge로 다루고, Atlassian은 분류만 하는 설명 메타데이터에는 Tag를 쓰라고 한다. 구현이나 수정을 요청할 때는 컴포넌트 이름과 함께 표시의 의미와 색 규칙을 적는다([[UI-Terminology|UI 용어 정리]]).
+- **목록 항목의 일관성:** NN/g(2020-09-06)는 크기를 일관되게 쓰면 유형 묶음이 바로 보여 페이지를 훑기 쉬워진다며 상품 목록 페이지의 항목을 같은 크기와 형태로 두는 예를 들고, 크기나 형태가 다른 항목은 상품 묶음에 속하지 않는 것처럼 눈에 띈다고 설명한다. 같은 색 버튼은 같은 중요도로 인식되므로 주요 행동에는 별도 색을 남겨 두라고 한다. Baymard(2023-08-22)는 비슷한 상품의 목록 항목에 같은 속성을 일관되게 넣고 각 정보 요소를 글자 크기, 색, 굵기와 간격 등으로 구분하라고 권하며, 벤치마크 사이트의 64%가 앞의 기준을, 40%가 뒤의 기준을 충족하지 못했다고 보고한다.
+- **썸네일과 그리드:** NN/g(2022-07-17)는 그리드가 일관된 기준점으로 읽기와 훑어보기를 돕고 반복되는 행을 쓰는 모듈 그리드가 커머스와 목록 페이지에 잘 맞는다고 설명한다. 상품 이미지 일부만 여백 쪽에 붙는 배치는 이미지에 집중하거나 빠르게 훑기 어렵게 하고 일부 상품에 주의를 더 끈다고 지적하며, 타당한 이유가 있으면 가끔 그리드를 깨도 된다고 덧붙인다. NN/g(2022-02-27)는 특히 상품 수가 적은 사이트라면 목록 페이지의 상품 사진을 일관되게 두라고 하며, 사진이 똑같을 필요는 없지만 배경, 방향, 맥락, 조명과 배율의 스타일이 일관되면 훑어보고 비교하기 쉽다고 본다. Shopify 도움말은 컬렉션 페이지에서 이미지를 같은 크기로 보이게 하려면 대표 이미지의 가로세로 비율을 일관되게 맞추라고 안내한다. 정사각형처럼 특정 비율을 요구하는 기준은 확인하지 못했다.
+
+**적용 예시(커머스 상품 카드):** 위 자료를 상품 카드에 옮긴 적용 제안이다. 가격과 할인율 중 먼저 읽혀야 할 값과 주 행동 버튼에만 강조색을 두는 안을 비교하고, 찜과 장바구니 버튼이 같은 색이면 같은 중요도로 읽힌다는 점을 함께 본다. 리퍼 상품, 새 상품 같은 상태 배지는 종류와 색, 아이콘을 정해 고정하고, 대부분이 새 상품이라면 예외인 리퍼 상품만 표시하는 안을 검토한다. 판매 수처럼 상태가 아닌 정보는 배지 대신 보조 텍스트로 두는 안을 비교하고, 썸네일은 한 비율로 맞춰 그리드에 정렬한다.
+
+조립한 목록은 실제 상품명과 가격을 넣은 상태에서 흐리게 보거나 눈을 가늘게 떠 강조가 의도한 곳에 모이는지 확인한다. NN/g(2021-01-17)는 이 방법이 디자인에서 강조된 요소와 바탕에 깔린 위계를 드러낸다고 설명한다. 템플릿만이 아니라 채워질 콘텐츠까지 고려하고, 의도대로 읽히는지는 대상 사용자 테스트로 확인하라고 권한다.
 
 ## 대시보드 정보 위계
 
@@ -126,6 +141,17 @@ Inter, Space Grotesk와 Instrument Serif의 공식 배포는 SIL Open Font Licen
 - [Glassmorphism: Definition and Best Practices — Nielsen Norman Group, Megan Brown](https://www.nngroup.com/articles/glassmorphism/)
 - [MDN, prefers-reduced-transparency](https://developer.mozilla.org/en-US/docs/Web/CSS/@media/prefers-reduced-transparency) — 2026-10-12 확인, Experimental과 Limited availability 표시
 - [YouTube, 양실장의 바이브코딩대학, 직장인 2시간 필수 투자) 평생 써먹는 바이브코딩 자동화 대시보드 설계부터 구축까지](https://www.youtube.com/watch?v=sozxBiyc3qQ) — 2026-08-20 공개 강의, 1:49:25~2:04:32의 테마 결정 인터뷰와 절제형 글래스모피즘 적용 시연. 스타일 이름은 발표자가 화면에 띄운 블로그 목록에서 나왔으므로 재질 지침은 위 공식 문서와 NN/g로 대조했다.
+- [Visual Hierarchy in UX: Definition — Nielsen Norman Group, Kelley Gordon](https://www.nngroup.com/articles/visual-hierarchy-ux-definition/) — 2021-01-17 게시
+- [Prioritize: Good Content Bubbles to the Top — Nielsen Norman Group, Jakob Nielsen](https://www.nngroup.com/articles/prioritize-good-content-bubbles-to-the-top/) — 1999-10-16 게시
+- [Visual Indicators to Differentiate Items in a List — Nielsen Norman Group, Aurora Harley](https://www.nngroup.com/articles/visual-indicators-differentiators/) — 2016-08-07 게시
+- [Similarity Principle in Visual Design — Nielsen Norman Group, Aurora Harley](https://www.nngroup.com/articles/gestalt-similarity/) — 2020-09-06 게시
+- [Using Grids in Interface Designs — Nielsen Norman Group, Kelley Gordon](https://www.nngroup.com/articles/using-grids-in-interface-designs/) — 2022-07-17 게시
+- [6 Tips for Product Photos on Listing Pages — Nielsen Norman Group, Kate Moran](https://www.nngroup.com/articles/product-photos-listing-pages/) — 2022-02-27 게시
+- [2 Key Design Principles for Product Listing Information (64% Get at Least 1 Wrong) — Baymard Institute, Iva Olah](https://baymard.com/blog/list-item-design-ecommerce) — 2023-08-22 게시
+- [GOV.UK Design System, Tag](https://design-system.service.gov.uk/components/tag/) — 2026-10-20 확인
+- [Atlassian Design System, Lozenge](https://atlassian.design/components/lozenge/usage) — 2026-10-20 확인, Usage 탭
+- [Material Components for Android, Badges](https://github.com/material-components/material-components-android/blob/master/docs/components/BadgeDrawable.md) — 2026-10-20 확인. Material Design 3 사양 페이지는 본문을 불러오지 못해 이 구현 문서로 대조했다
+- [Shopify Help Center, Product media types](https://help.shopify.com/en/manual/products/product-media/product-media-types) — 2026-10-20 확인
 
 ## 관련 문서
 - [[Service-Design-Principles|서비스 설계 원칙 (GOV.UK)]] — 일관성, 디자인 시스템
