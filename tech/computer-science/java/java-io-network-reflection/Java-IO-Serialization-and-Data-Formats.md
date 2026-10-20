@@ -80,6 +80,44 @@ Oracle API는 신뢰하지 않는 data의 deserialization이 본질적으로 위
 
 적용 점검: 중복 키, 주석, trailing comma, 큰 정수와 깊은 중첩을 각각 입력해 생산자와 소비자의 결과를 비교한다. 관대한 파싱을 켜는 것과 업무상 허용할 데이터를 검증하는 것은 별도 결정이다.
 
+## JDK 내장 JSON API (JEP 540, incubator)
+
+부분 검증(2026-10-21): JEP 540과 JEP 11 본문, JDK 28 프로젝트 페이지, early access API 문서와 JDK 팀 발표를 대조했다. 이번 대조는 이 절에 한정하므로 frontmatter 검증일(2026-09-30)은 유지한다.
+
+외부 라이브러리를 들이기에는 작은 일을 겨냥한 API다. JEP는 네트워크로 받은 응답 body 읽기와 JDK 자체의 JSON 처리를 예로 들고, 발표는 설정 파일에서 값 몇 개 읽기, HTTP 요청 body 만들기, 테스트에서 응답 확인과 JShell 탐색을 더한다. 데이터 바인딩, streaming, 여러 parsing 설정과 문법 확장은 목표에서 뺐고, Jackson 같은 기존 라이브러리를 대체하려는 API가 아니다.
+
+- **상태:** 2026-10-21 확인 기준 JEP 540 `Simple JSON API (Incubator)`는 Status Integrated, Release 28이다. JDK 28은 GA 전이라 early access build로 시험한다. incubator module `jdk.incubator.json`은 class path 애플리케이션에서 기본으로 resolve되지 않아 `--add-modules jdk.incubator.json`이 필요하고, resolve되면 compile, link와 run 시점에 경고가 난다. incubator API는 이후 릴리스에서 바뀌거나 제거될 수 있고, 정식 API로 승격되면 패키지 이름이 바뀌어 incubator가 아닌 module에서 export된다.
+- **모델:** `JsonValue`는 `JsonString`, `JsonNumber`, `JsonBoolean`, `JsonNull`, `JsonObject`, `JsonArray`만 허용하는 sealed interface이고, 인스턴스는 불변이며 thread safe하다. `Json.parse`는 `String`과 `char[]`를 받아 tree를 만든다. `toString()`은 공백 없는 compact JSON을, `Json.toDisplayString(value, indent)`는 들여쓴 출력을 만든다.
+- **탐색:** `get(String)`과 `get(int)`는 대상 타입이 아니거나 member, element가 없으면 `JsonValueException`을 던진다. 선택 필드는 `tryGet(String)`이 `Optional`로 돌려주며, 객체가 아닌 값에서 호출하면 예외다. `tryValue()`는 `JsonNull`이면 빈 `Optional`을 돌려준다. 발표 시연에서는 철자가 다른 key를 따라간 `get` 체인이 첫 누락 지점에서 바로 실패하고 메시지에 찾던 이름, 경로와 문서 offset이 담겼다. API 문서는 `JsonValueException`의 메시지 형식을 정하지 않는다.
+- **변환과 숫자:** `asString`, `asInt`, `asLong`, `asDouble`, `asBoolean`, `asMap`, `asList`는 타입이 맞을 때만 값을 주며, 타입이 맞지 않으면 `JsonValueException`을 던진다. 문자열을 숫자로 parse하는 식의 강제 변환은 하지 않는다. `asInt`와 `asLong`은 정확히 표현되는 정수만 받는다. `123.0`과 `234.56E2`의 `asInt`는 성공하고 `345.6`과 int 범위를 넘는 `2147483648`은 실패한다. `asDouble`은 가장 가까운 double로 반올림하고 범위를 벗어나면 예외다. `asBigDecimal`은 없으므로 임의 정밀도는 `new BigDecimal(number.toString())`으로 얻는다. `asMap`과 `asList`는 수정할 수 없는 collection을 돌려준다.
+- **엄격한 입력:** 주석과 trailing comma를 받지 않는다. RFC 8259가 `SHOULD`로 둔 이름 유일성을 parse 단계에서 강제해, 중복 member name은 값과 관계없이 모두 거부한다. JEP는 중복 이름을 가진 객체의 해석이 본질적으로 모호하다는 이유를 든다. 실패는 unchecked `JsonParseException`이다. JEP는 이 예외가 문서 root부터의 경로와 문서 안 위치를 알려 준다고 설명하고, API 문서는 0부터 세는 `getErrorLine()`과 `getErrorPosition()`(줄 안의 UTF-16 code unit 기준)으로 위치를 제공한다.
+- **위 절과의 관계:** 위 절의 문제 중 중복 이름과 문법 확장은 입력 거부로 처리한다. 숫자는 parse 때 원문 표현을 그대로 보존한다. `asInt`와 `asLong`은 정확히 표현되지 않으면 예외를 내지만 `asDouble`은 예외 없이 반올림하고, `asLong`이 그대로 받는 2^53 초과 정수는 binary64 소비자에서 값이 달라질 수 있으므로 숫자 계약은 따로 정한다. RFC 8259는 객체를 순서 없는 모음으로 정의한다. `asMap`의 구현 노트는 JDK 구현의 `JsonObject`가 member의 등장 순서를 보존한다고 적지만 명세 보장은 아니다. JEP와 API 문서에서 입력 크기와 중첩 깊이 제한은 찾지 못했으므로 수신 경계에서 별도로 확인한다.
+- **범위:** 입력 문서가 `String`이나 `char[]`로 메모리에 들어간다고 가정한다. 생성은 `JsonObject.of(Map)`, `JsonArray.of(List)`, `JsonString.of(String)`처럼 값을 조립한다. JEP는 incubation 동안 JSON 문서의 생성과 변형(transforming) 사용 사례를 더 모으겠다고 밝혔고, 발표자는 생성 쪽이 parsing보다 덜 다듬어졌다고 말했다.
+
+```java
+// 조각: import는 파일 맨 위에 두고 나머지는 main 안의 문장이다(compact source file 기준).
+// event는 다른 문서를 parse한 JsonValue다. 실행 예(JDK 28 EA): java --add-modules jdk.incubator.json Config.java
+import jdk.incubator.json.*;
+
+JsonValue config = Json.parse(Files.readString(Path.of("config.json")));
+Charset charset = Charset.forName(config.get("charset").asString());
+// port가 없거나 JSON null이면 8080, 문자열 "8080"이면 JsonValueException
+int port = config.tryGet("port").flatMap(JsonValue::tryValue).map(JsonValue::asInt).orElse(8080);
+
+// 예전 문자열 ID와 새 숫자 ID를 함께 받는 경우
+long id = switch (event.get("id")) {
+    case JsonNumber n -> n.asLong();
+    case JsonString s -> Long.parseLong(s.asString());
+    default -> throw new IllegalArgumentException("id는 숫자나 문자열이어야 한다");
+};
+```
+
+선택 기준은 다음과 같다(적용 판단).
+
+- 단발성 도구, JShell 탐색과 incubator 변경을 감수할 수 있는 일회성 검증처럼 의존성 추가가 부담인 일은 이 API로 충분한지 먼저 본다. JDK 진단 도구가 내는 [[Java-Threads-Lifecycle-and-Cancellation#Thread dump로 멈춘 서버 읽기|JSON 스레드 덤프]]를 읽는 작은 도구도 같은 범주다.
+- 객체 매핑, streaming, 큰 문서, 주석이 필요한 설정과 관대한 입력 수용은 외부 라이브러리나 다른 설정 형식의 영역이다.
+- 제품 코드와 그 저장소의 테스트는 `--add-modules` 빌드 설정, 경고와 다음 릴리스의 API 변경을 함께 떠안는다. 이를 감수할 수 없으면 정식 API가 될 때까지 기존 라이브러리를 유지한다.
+
 ## NestJS와 TypeORM으로 옮길 때
 
 NestJS DTO를 JSON representation과 domain entity로 동시에 쓰면 validation, persistence와 API evolution이 결합된다. transport DTO, use-case input과 TypeORM entity의 책임을 분리하고 mapping을 둔다. 외부 JSON은 `ValidationPipe`와 size limit을 통과시켜도 object prototype과 business invariant까지 자동으로 안전해지는 것은 아니다.
@@ -95,6 +133,15 @@ NestJS DTO를 JSON representation과 domain entity로 동시에 쓰면 validatio
 ## 출처
 
 - [IETF, RFC 8259: The JavaScript Object Notation (JSON) Data Interchange Format](https://www.rfc-editor.org/rfc/rfc8259)
+- [OpenJDK, JEP 540: Simple JSON API (Incubator)](https://openjdk.org/jeps/540) — 2026-10-21 상태, 목표와 비목표, 탐색과 숫자 변환 규칙, 중복 이름 거부
+- [OpenJDK, JEP 11: Incubator Modules](https://openjdk.org/jeps/11) — 기본 미resolve, 경고, 이후 변경 또는 제거 가능성과 승격 시 패키지 이름 변경
+- [OpenJDK, JDK 28](https://openjdk.org/projects/jdk/28/) — 2026-10-21 targeted JEP 목록
+- [JDK 28 Early Access API, JsonValue](https://download.java.net/java/early_access/jdk28/docs/api/jdk.incubator.json/jdk/incubator/json/JsonValue.html) — 불변성, thread safety와 변환 메서드
+- [JDK 28 Early Access API, jdk.incubator.json 패키지](https://download.java.net/java/early_access/jdk28/docs/api/jdk.incubator.json/jdk/incubator/json/package-summary.html) — `Json.parse`, `toDisplayString`과 `of` 팩터리
+- [JDK 28 Early Access API, JsonNumber](https://download.java.net/java/early_access/jdk28/docs/api/jdk.incubator.json/jdk/incubator/json/JsonNumber.html) — 원문 표현 보존과 `asDouble`의 반올림, 범위 초과 예외
+- [JDK 28 Early Access API, JsonValueException](https://download.java.net/java/early_access/jdk28/docs/api/jdk.incubator.json/jdk/incubator/json/JsonValueException.html) — 타입 불일치, 부재 값과 손실 변환에서 던지는 조건, 메시지 형식 미지정
+- [JDK 28 Early Access API, JsonParseException](https://download.java.net/java/early_access/jdk28/docs/api/jdk.incubator.json/jdk/incubator/json/JsonParseException.html) — 문법 오류와 중복 이름, 0부터 세는 줄과 위치
+- [Everyday JSON in Java — Devoxx Belgium 2026, Viktor Klang, Alan Bateman](https://www.youtube.com/watch?v=Ws_t0rxnv4Y) — 사용 사례, 탐색 실패 시연, 생성 API 성숙도와 엄격한 입력 정책에 대한 발표자 설명(개인 견해 포함)
 - [Java SE 26, ObjectInputFilter](https://docs.oracle.com/en/java/javase/26/docs/api/java.base/java/io/ObjectInputFilter.html)
 - [Java SE 26, Serializable](https://docs.oracle.com/en/java/javase/26/docs/api/java.base/java/io/Serializable.html)
 - [Java SE 26, DataOutputStream](https://docs.oracle.com/en/java/javase/26/docs/api/java.base/java/io/DataOutputStream.html)
