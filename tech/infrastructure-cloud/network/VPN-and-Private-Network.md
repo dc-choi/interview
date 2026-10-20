@@ -108,6 +108,18 @@ Tailscale 공식 설명 기준 구조는 다음과 같다.
 - **분실과 회수**: 잃어버린 기기와 쓰지 않는 단말은 관리 콘솔에서 즉시 제거한다.
 - **노출 범위**: 서브넷 라우터나 exit node로 LAN 전체나 인터넷 출구를 공유하면 위의 전체 터널, 대역 중복과 DNS 함정이 그대로 적용된다.
 
+### 클라우드 코딩 에이전트를 tailnet에 붙일 때
+
+부분 검증(2026-10-21): OpenAI의 Codex cloud environments 문서, Tailscale 블로그(2026-10-06 게시)와 Tailscale의 auth key, 키 만료 문서를 대조했다. 위 요금 설명은 다시 검증하지 않아 기존 `verified_at`을 유지한다. 실제 환경 설정과 연결 시험은 하지 않았다.
+
+Codex cloud task는 사용자의 장비가 아니라 task마다 뜨는 클라우드 VM에서 실행된다. 환경의 Advanced > VPN 설정에서 Tailscale을 추가하면 task VM이 tailnet(Tailscale로 묶은 사설 네트워크)에 합류해 내부 API, 패키지 레지스트리 같은 HTTP와 HTTPS 서비스, 사설 IPv4 서브넷 경로에 닿는다. 2026-10-21 OpenAI 문서 기준 지원하는 VPN은 Tailscale뿐이다. Tailscale은 제휴나 전용 연동 없이 누구나 쓰는 일반 Tailscale 기능으로 만들어졌다고 밝혔고, 사용자는 관리 콘솔에서 발급한 auth key를 환경에 입력한다.
+
+- **auth key**: OpenAI 문서는 Reusable과 Ephemeral을 함께 켜라고 안내한다. Reusable은 새 task VM이 같은 키로 합류하게 하고, Ephemeral은 오프라인이 된 장비를 tailnet에서 자동으로 지운다. Tailscale은 키에 `tag:codex` 같은 태그를 붙여, VM이 키를 만든 사람의 권한을 물려받지 않고 그 태그에 쓴 규칙을 받게 하라고 권한다.
+- **노출 범위**: Tailscale은 기본 상태라면 Codex가 tailnet의 거의 모든 곳에 닿을 수 있다고 경고하고, agent와 agent가 닿을 자원 모두에 태그를 붙인 뒤 정책의 grants로 범위를 좁히라고 권한다. 위 ACL 점검과 같은 원칙이다. OpenAI 문서는 필요한 목적지를 VPN의 접근 규칙과 환경의 internet access 설정 양쪽에서 허용하라고 안내한다. 공유 환경의 task는 그 환경에 설정된 VPN identity를 쓰므로, 환경을 공유하면 그 네트워크 권한도 함께 공유하는 셈이다.
+- **두 출처의 차이**: Tailscale 블로그는 게시 시점에 HTTP와 HTTPS 목적지, 그리고 HTTP CONNECT `proxy:8088`을 거친 임의 TCP만 닿을 수 있고, inbound 연결, SSH와 Tailscale SSH, UDP, ICMP를 쓸 수 없으며 MagicDNS와 split DNS도 동작하지 않는다고 적었다. 2026-10-21 OpenAI 문서는 split DNS와 MagicDNS로 사설 서비스를 이름으로 찾을 수 있다고 적고, 내부 DNS를 split DNS로 연결할 때는 IPv4로 해석되는 FQDN을 쓰라고 안내한다. IPv4로 해석되는 이름이어야 한다는 점은 블로그도 같고 OpenAI 문서는 나머지 트래픽 제한을 언급하지 않으므로, 두 출처가 직접 어긋나는 부분은 MagicDNS와 split DNS의 동작 여부다. 지원 범위가 바뀐 것인지와 그 시점은 확인하지 못했다. 설정을 저장하고 환경을 publish 또는 republish한 뒤 새 task에서 이름 해석, 환경에 설정된 HTTP/HTTPS 프록시 사용 여부와 대상 서비스 응답을 직접 확인한다.
+- **키 만료**: Tailscale 블로그는 agent 키에 만료를 두고 유지하라고 권하지만 auth key와 노드 키 중 어느 쪽인지는 밝히지 않는다. Tailscale 문서 기준 auth key의 만료는 1~90일 사이에서 정하고, 키가 만료돼도 그 키로 인증된 장비는 노드 키가 만료될 때까지 tailnet에 남는다. 키를 폐기해도 장비는 끊기지 않으며, 끊으려면 Machines 페이지에서 장비를 삭제한다. 태그가 붙은 장비는 노드 키 만료가 기본으로 꺼져 있어 위의 180일 기본값이 적용되지 않는다.
+- **승인과 관찰**: Tailscale 블로그는 auth key와 연결되지 않은 새 장비를 관리자가 검토하도록 tailnet의 device approval도 켜 두라고 권한다. Tailscale Auth keys 문서 기준으로 device approval을 켠 tailnet에서는 Pre-approved로 발급한 키여야 추가 승인 없이 장비를 붙일 수 있으므로, 설정 뒤 task VM이 승인 대기에 걸리지 않는지 확인한다(운영 제안). 승인은 합류 여부만 정하므로 VM이 닿는 범위는 태그와 grants로 제한한다(운영 제안). Premium과 Enterprise 플랜에서는 network flow logs로 agent가 실제로 닿은 곳을 확인할 수 있다.
+
 ## 출처
 
 - [AWS Site-to-Site VPN, Tunnel endpoint lifecycle control](https://docs.aws.amazon.com/vpn/latest/s2svpn/tunnel-endpoint-lifecycle.html)
@@ -122,7 +134,10 @@ AWS Client VPN 절은 2026-10-13 아래 AWS 공식 문서와 대조했다. 다�
 - [NIST, SP 800-46 Rev. 2: Guide to Enterprise Telework, Remote Access, and BYOD Security](https://csrc.nist.gov/pubs/sp/800/46/r2/final)
 - [How Tailscale works — Tailscale Blog](https://tailscale.com/blog/how-tailscale-works)
 - [Tailscale, Pricing](https://tailscale.com/pricing)
-- [Tailscale Docs, Key expiry](https://tailscale.com/kb/1028/key-expiry)
+- [Tailscale Docs, Key expiry](https://tailscale.com/kb/1028/key-expiry) — 2026-10-21 태그 장비의 노드 키 만료 기본값 추가 대조
+- [Codex Cloud shipped with Tailscale support. Nobody told us. — Tailscale Blog](https://tailscale.com/blog/codex-cloud-tailscale) — 2026-10-06 게시, 2026-10-21 대조: 키 설정, 노출 범위, 게시 시점의 지원 트래픽과 운영 권고
+- [OpenAI Codex, Cloud environments](https://learn.chatgpt.com/docs/environments/cloud-environments) — 2026-10-21 Private networking (VPN)과 VPN 문제 해결 절의 지원 VPN, 접근 허용, DNS, 프록시와 공유 환경, VM 실행 환경
+- [Tailscale Docs, Auth keys](https://tailscale.com/kb/1085/auth-keys) — 2026-10-21 Pre-approved와 device approval, auth key 만료 범위, 만료와 폐기 뒤 장비 상태와 장비 삭제
 - [AWS Client VPN, Create an AWS Client VPN endpoint](https://docs.aws.amazon.com/vpn/latest/clientvpn-admin/cvpn-working-endpoint-create.html)
 - [AWS Client VPN, AWS Client VPN target networks](https://docs.aws.amazon.com/vpn/latest/clientvpn-admin/cvpn-working-target.html)
 - [AWS Client VPN, AWS Client VPN authorization rules](https://docs.aws.amazon.com/vpn/latest/clientvpn-admin/cvpn-working-rules.html)
@@ -138,4 +153,5 @@ AWS Client VPN 절은 2026-10-13 아래 AWS 공식 문서와 대조했다. 다�
 - [[Routing-Table-and-Interface-Selection|목적지별 경로 선택]]
 - [[DNS|이름 해석과 DNS 보안]]
 - [[Network-Separation|망분리와 망연계 (물리적, 논리적 분리)]]
+- [[Codex-CLI|Codex CLI]]
 - [[인프라네트워크(InfraNetwork)|인프라 네트워크 인덱스]]

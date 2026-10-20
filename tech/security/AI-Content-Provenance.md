@@ -1,7 +1,7 @@
 ---
 tags: [security, ai, provenance, watermark, c2pa]
 status: done
-verified_at: 2026-10-20
+verified_at: 2026-10-21
 category: "보안(Security)"
 aliases: ["AI 콘텐츠 출처 증명", "AI Content Provenance", "텍스트 워터마크"]
 ---
@@ -18,6 +18,7 @@ AI 처리 흔적을 판단할 때는 텍스트의 통계적 신호, 파일의 �
 | Content Credentials (C2PA) | 콘텐츠에 연결된 서명된 출처 정보 | 서명과 콘텐츠의 연결을 확인하며 내용 자체의 진실성을 보증하지 않는다 |
 | 일반 AI 텍스트 탐지 | 문체 등 텍스트의 특징 | 특정 제공자의 워터마크 키로 검증하는 검사와 다르다 |
 | 숨은 문자 검사 | Unicode 문자와 제어 문자 | 문자 존재만으로 특정 모델의 통계적 워터마크를 입증하지 못한다 |
+| 이미지와 오디오 워터마크 | 이미지나 오디오 신호 자체에 넣은 패턴 | 해당 제공자의 검출 수단으로 확인하며 일부 변환을 견딜 수 있지만 모든 AI 생성물을 식별하지 않는다 |
 
 ### 텍스트 워터마크는 숨은 글자와 다르다
 
@@ -33,6 +34,16 @@ C2PA Content Credentials는 출처 정보의 서명과 변조 여부, 해당 콘
 
 Claude의 파일 표시는 지원되는 파일 형식과 제품 기능에 따라 적용된다. 텍스트 워터마크 지원과 C2PA 지원도 모델별로 다를 수 있으므로, 모든 과거 모델과 모든 파일에 같은 표시가 붙는다고 일반화하지 않는다.
 
+### OpenAI의 출처 확인 API는 이미지와 오디오가 중심이다
+
+2026-10-21 OpenAI 개발자 문서의 Content provenance 가이드를 대조했다. API를 실제로 호출해 시험하지는 않았다.
+
+- Content Provenance API는 업로드한 이미지와 오디오에서 OpenAI 출처 신호를 찾는다. C2PA Content Credentials는 이미지에만, SynthID는 이미지와 오디오에 적용하며, 해당하지 않는 검사는 `not_detected`로 돌려주지 않고 결과에서 뺀다. SynthID 워터마크는 이미지나 오디오 자체에 들어가 일부 변환을 견딜 수 있지만, 이 API는 범용 AI 탐지기가 아니다.
+- C2PA 결과는 manifest 상태(`trusted`, `valid`, `invalid`, `not_present`)와 함께 읽는다. `detected`는 `trusted`나 `valid` manifest가 OpenAI를 발급자로 확인하고 AI 생성 action을 담을 때만 나온다. 제3자 manifest, AI 생성 action이 없는 manifest, `invalid`와 `not_present`는 모두 `not_detected`이며 `invalid` manifest는 출처 증거로 쓰지 않는다.
+- `not_detected`는 지원 신호를 찾지 못했다는 뜻일 뿐, 사람이 만들었거나 OpenAI로 만들지 않았다는 증거가 아니다. 메타데이터가 지워졌거나 변조 흔적이 있는 경우, 워터마크가 손상된 경우, 예전 생성 모델이나 출처 신호 도입 전에 만든 경우에도 검출되지 않을 수 있다. 다른 회사 모델의 생성물은 현재 검출하지 않는다.
+- 텍스트 검증은 AI 연구와 학술 기관을 포함한 승인된 조직에만 사례별 심사로 열려 있다. 이 API로 임의 텍스트의 OpenAI 생성 여부를 누구나 판정할 수 있다고 가정하지 않는다.
+- 업로드는 요청당 파일 하나, 50 MiB 이하이며 오디오는 디코딩 후 60초 이하다.
+
 ## 제거 도구의 성공과 탐지 결과를 분리한다
 
 `watermarks-remover`의 README는 Unicode 제거 수와 메타데이터 처리 결과를 검증 가능한 작업으로 구분하고, 통계적 텍스트 재작성은 최선 노력 방식으로 설명한다. 제공자 탐지기가 실패한다고 보증하지 않는다. 도구 소개의 탐지 회피 주장을 검증된 성능으로 옮기지 않는다.
@@ -46,6 +57,7 @@ Claude의 파일 표시는 지원되는 파일 형식과 제품 기능에 따라
 - [How Claude’s text watermark works — Anthropic](https://www.anthropic.com/news/claude-text-watermark)
 - [Anthropic, How Claude marks AI-generated content](https://support.claude.com/en/articles/16266773-how-claude-marks-ai-generated-content)
 - [C2PA, Content Credentials Explainer 2.2](https://spec.c2pa.org/specifications/specifications/2.2/explainer/Explainer.html)
+- [OpenAI API, Content provenance](https://developers.openai.com/api/docs/guides/content-provenance) — 2026-10-21 이미지와 오디오 검사 범위, 결과 해석, 텍스트 검증 접근과 업로드 제한
 - [watermarks-remover — GitHub, guillaumemeyer](https://github.com/guillaumemeyer/watermarks-remover)
 
 ## 관련 문서
