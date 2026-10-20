@@ -25,11 +25,11 @@ Foundry LLM proxy는 provider SDK의 요청 형식을 유지하면서 Foundry의
 
 ## 인증과 호출 scope
 
-네 경로 모두 OAuth2 operation scope `api:use-language-models-execute`를 요구한다. HTTP request는 Foundry Bearer token과 `Content-Type: application/json`을 전달한다. provider 계정의 API key를 Foundry token 대신 넣는 구조가 아니다.
+네 경로 모두 OAuth2로 endpoint를 호출하는 third-party application은 operation scope `api:use-language-models-execute`를 요청해야 한다. HTTP request는 Foundry Bearer token과 `Content-Type: application/json`을 전달한다. provider 계정의 API key를 Foundry token 대신 넣는 구조가 아니다.
 
 Python 예제는 `foundry_sdk.v2.language_models.utils`의 token, provider base URL과 HTTP client helper를 사용한다. provider SDK의 api_key 또는 auth_token 인자에는 helper로 받은 Foundry token을 전달한다. 확인일의 helper 호출 예제에는 `preview=True`가 포함된다. 이 예제만으로 production support나 SDK helper의 stable 상태를 확정하지 않는다.
 
-TypeScript 예제는 OSDK `PlatformClient.tokenProvider()`와 `PlatformClient.fetch`를 provider client에 전달한다. OpenAI용 base URL은 proxy의 `/openai/v1`, Anthropic용은 `/anthropic` prefix를 사용한다. provider SDK가 뒤에 붙이는 경로가 다르므로 최종 endpoint 경로와 client의 base URL을 같은 문자열로 취급하지 않는다.
+TypeScript 예제는 OSDK `PlatformClient.tokenProvider()`와 `PlatformClient.fetch`를 provider client에 전달한다. OpenAI용 base URL은 proxy의 `/openai/v1`, Anthropic용은 `/anthropic` prefix를 사용한다. provider SDK가 뒤에 붙이는 경로가 다르므로 최종 endpoint 경로와 client의 base URL을 같은 문자열로 취급하지 않는다. 확인일의 TypeScript 예제는 `platformClient.baseUrl` 뒤에 앞쪽 slash 없이 `api/v2/llm/proxy/openai/v1` 또는 `api/v2/llm/proxy/anthropic`을 이어 붙인다. 네 proxy 문서는 `baseUrl`의 끝 slash 형식을 명시하지 않는다. 이 문자열 연결은 `baseUrl`이 `/`로 끝날 때만 올바른 경로가 되므로 사용하는 client에서 최종 요청 URL을 확인한다.
 
 ## Attribution과 tracing은 서로 다른 header다
 
@@ -43,13 +43,19 @@ TypeScript 예제는 OSDK `PlatformClient.tokenProvider()`와 `PlatformClient.fe
 
 ## 데이터 거버넌스와 사용량
 
-### Anthropic 세션 라우팅과 캐시 친화성
+### 세션 라우팅과 캐시 친화성
 
-2026-10-20 Anthropic Messages Proxy의 header 계약을 추가로 대조했다. 선택적 `X-Palantir-session-id`는 여러 요청을 하나의 논리적 세션으로 묶는 불투명 식별자이며, 값은 256자 미만이어야 한다.
+2026-10-20 확인 기준, 선택적 `X-Palantir-session-id` header는 Anthropic Messages, OpenAI Chat Completions, OpenAI Responses proxy 문서의 header 표에 같은 설명으로 실려 있다. OpenAI Embeddings proxy 문서의 header 표에는 이 header가 없다. 문서에 없는 경로가 이 header를 지원하거나 같은 라우팅 효과를 낸다고 전제하지 않는다.
 
-같은 식별자의 요청은 가능하면 같은 모델 제공자 backend로 보내 프롬프트 캐시 적중을 돕는다. 이 라우팅 친화성은 best-effort다. 요청을 처리하기 위해 다른 backend로 보낼 수 있고, 일정 시간 활동이 없으면 친화성이 만료된다. 문서는 구체적인 유휴 만료 시간을 제시하지 않는다.
+이 header는 하나의 멀티턴 대화처럼 같은 논리적 세션에 속한 요청을 묶는 불투명 식별자다. 값은 256자 미만으로 유지하라고 되어 있으며, 256자 이상일 때의 처리는 명시되어 있지 않다. 같은 식별자를 공유하는 요청은 가능하면 같은 모델 제공자 backend로 라우팅되고, 문서는 이것이 세션 전반의 프롬프트 캐시 적중률을 높인다고 설명한다.
 
-이를 캐시 적중, 고정 backend, 대화 이력 저장이나 세션 지속성 보장으로 해석하지 않는다. 호출자는 여전히 API 계약에 맞는 `messages`를 전달한다. 공식 예제의 자동 전파 설명은 `attribution`, `traceParent`, `traceState`에 한정되므로 이 세션 헤더도 자동 설정된다고 전제하지 않는다. 이 절은 Anthropic 경로의 문서 계약을 확인한 것이며 실제 라우팅이나 적중률을 측정한 결과는 아니다.
+이 라우팅 친화성은 best-effort이며 보장되지 않는다. 요청을 계속 처리할 수 있게 하려고 친화성을 포기할 수 있고, 일정 기간 활동이 없으면 친화성이 만료된다. 구체적인 유휴 시간은 명시되어 있지 않다.
+
+따라서 이를 캐시 적중, 고정 backend, 대화 이력 저장이나 세션 지속성의 보장으로 해석하지 않는다. 세션 header는 라우팅용 식별자로만 문서화되어 있으므로 이전 대화를 대신 채워 준다고 전제하지 않는다. Anthropic Messages와 Chat Completions에서는 세션 header와 별개로 API 계약에 맞는 `messages`를 매 요청에 전달한다. Responses 경로의 확인일 예제는 `model`과 `input`을 보내며, provider 측 대화 상태 기능을 proxy에서 쓸 수 있는지는 확인하지 않았다.
+
+공식 Python SDK와 OSDK가 자동으로 설정한다고 명시된 header는 `attribution`, `traceParent`, `traceState`다. 확인일의 세 경로 예제(curl, Python, TypeScript)에는 세션 header를 설정하는 코드가 없다. helper나 PlatformClient를 쓴다고 세션 header까지 붙는다고 전제하지 않으며, 사용하려면 호출 코드에서 직접 지정하고 실제 요청에 포함됐는지 확인한다.
+
+위 내용은 네 proxy 문서의 header 표와 예제를 대조한 것이며 실제 라우팅, backend 선택이나 캐시 적중률을 측정한 결과가 아니다. proxy 응답이 provider의 캐시 사용량 field를 그대로 전달하는지도 확인하지 않았다. 캐시 재사용의 일반 원리와 측정 방법은 [[LLM-Prompt-Caching|프롬프트 캐싱]]에서 다룬다.
 
 ### 보존 정책과 provider 기능
 
