@@ -36,10 +36,14 @@ AI가 대회에서 사람을 이겼다, 어려운 시험의 절반을 넘었다,
 
 - OpenAI는 2026-08-01 내부 모델이 얻은 수학과 이론 컴퓨터과학 결과 10개를 발표하고 Lean 4 형식화를 공개했다. 그중 한 결과는 에르되시 문제 183을, 다른 한 결과는 146과 180을 해결한다고 적는다.
 - 2026-10-06에는 원고 722편(결과군 372개)을 공개했다. 다음 날 갱신에서 한 원고의 부호 오류가 그 원고와 이에 의존한 원고 2편의 논증을 무너뜨려 3편을 철회했고, 이와 별도로 원고 14편을 증명 보완, 진술 정정, 가정과 의존 관계 명확화 등으로 고쳤다. 이 갱신 뒤 원고는 719편이며, 원고별 대표 결과(top-line result) 가운데 Lean으로 형식화된 것은 300편, 약 42%다.
+- 저장소 README는 결과 대부분이 같은 절차로 미공개 내부 모델에서 나왔고, 결과 하나에 평균 ChatGPT Pro thinking 연산 3시간을 썼으며, 평가 동안 모델에 약 4,000개 문제를 냈다고 적는다. 출력은 결과군과 원고로 묶고 일정 수준의 중요성을 요구해 목록을 만들었으며, 결과군은 주 결과와 관련 논증, 따름 결과 등의 원고를 묶을 수 있는 단위다. README는 결과군과 문제의 대응 관계, 문제를 고른 방식과 실패한 시도의 수를 밝히지 않으므로 약 4,000개 대비 결과군 372개를 성공률로 읽지 않는다(2026-10-21 확인).
+- 저장소의 원고 목록(CONTENTS.md)은 결과군 102가 Khot의 Unique Games Conjecture를 증명한다고 적는다(원고 The Unique Games Theorem, 2026-09-23자). 같은 결과군에는 Max-Cut의 Goemans–Williamson 비율을 넘는 근사와 Vertex Cover의 2배 미만 근사 등이 NP-난해임을 기존 PCP와 Label Cover 난해성 결과를 쓰는 별도의 직접 환원으로 보였다는 원고도 함께 묶여 있다. 저장소의 Lean 형식화 목록은 The Unique Games Theorem 원고와 Max-Cut, Vertex Cover 원고의 주 결과 선언을 올렸고, 같은 파일은 개별 결과가 아니라 저장소 형식화 전체의 scope를 Partial progress로, review 상태를 unchecked로 적는다. 이는 저장소가 공개한 원고의 주장이며, 이 문서에서는 Lean 진술이 원래 추측과 근사 난해성 명제를 정확히 옮겼는지, 증명의 정확성과 학계 검토 여부를 확인하지 않았다(2026-10-21 목록 확인).
 - 같은 공개분의 원고 Integer multiplication below n log n(2026-09-23자)은 n비트 정수 곱셈을 고정된 수의 tape를 쓰는 결정론적 Turing machine에서 최악 O(n (lg n)^(1−κ)), κ = 2⁻¹⁸²에 계산해 이 모델에서 Schönhage–Strassen의 n log n 최적성 추측을 반증한다고 주장한다. 저장소의 preprint이고 주 결과가 Lean으로 형식화된 원고 목록에 없으며, 알려진 상한과 증명된 하한의 구분은 [[Algorithm-Complexity#정수 곱셈으로 보는 상한과 문제의 하한|정수 곱셈의 상한과 하한]]에 정리했다(2026-10-18 원문 확인).
 - 2025-11 OpenAI 공저 논문은 erdosproblems.com에 미해결로 표시된 문제를 GPT-5로 문헌 검색해, 이미 출판된 해법이 있던 10개 문제를 찾았다고 기록한다. 이 10개는 새 증명이 아니라 기존 해법을 찾아낸 것이다. 같은 논문의 에르되시 문제 절은 미해결이던 848번 문제를 절 저자인 Mehtaab Sawhney가 GPT-5와 함께, erdosproblems.com 댓글로 나온 다른 연구자들의 아이디어와 결합해 해결했다고 적는다.
 - Lean 컴파일 통과는 형식 진술에 대한 증명이 맞다는 뜻이다. 형식 진술이 원래 문제를 정확히 옮겼는지는 따로 검토한다.
 - 2026-09-11 Terence Tao 블로그에 필즈상 수상자 25명을 첫 서명자로 한 공동 선언 A Severe Misalignment of AI in Mathematics가 실렸다. 선언은 LLM의 수학 능력이 크게 높아졌다고 인정하면서도, AI 기업이 수학 문제 풀이를 벤치마크로 밀어붙이는 흐름이 수학과 수학 공동체에 해롭고 AI 기업과 수학 공동체의 목표가 심각하게 어긋난다고 본다. 획기적인 해법은 강연, 토론과 단순화를 거쳐 공동체가 소화하고 교과서 서술로 이어지는데, 이런 해법은 서둘러 발표돼 제대로 된 원고를 쓸 시간이 남지 않는 경우가 많고 이것이 귀속과 표절에 관한 심각한 의문을 낳는다고 지적한다. AI가 수학 연구와 이해를 강화하고 가속할 잠재력도 인정하며, 수학 공동체, 이 기술을 개발하는 기업과 사회 전반이 이 문제들을 시급히 다뤄야 한다고 촉구한다(2026-10-18 원문 확인).
+- Association for Human Mathematics의 Communications Working Group은 OpenAI가 2026-10-06 원고를 공개한 다음 날인 2026-10-07에 성명을 냈다. 성명은 수학자들이 OpenAI의 이 작업을 요청하지 않았다고 지적하고, 700개가 넘는 파일을 한꺼번에 공개한 것은 학문적 성과를 보여 주는 일이 아니라 힘의 과시라고 비판했다. 수학자들에게 OpenAI와의 작업을 중단하고 인간의 이해를 중심에 둔 과학으로 돌아가자고 촉구했다(2026-10-21 원문 확인).
+- Terence Tao는 2026-10-09 Caltech 공개 강연 Math 2.0에서 문제 풀이가 역사적으로 연구 수학의 가장 눈에 띄는 목표 가운데 하나였지만 더 가치 있는 장기 목표의 대리 지표에 불과하다고 정리했다. 증명이 드물던 시대에 대체로 맞던 이 대리 지표가 증명이 풍부해진 시대에는 어긋났다고 짚고, 문제 풀이만을 맹목적으로 계속 최적화하는 일은 이제 수학의 장기적 건강에 오히려 해가 된다고 보았다. 자원 소비와 실패 결과 같은 핵심 통계를 빠짐없이 보고하는, 더 투명하고 과학적인 AI 능력 평가가 시급하다고도 했다. 사고 실험으로는 3상 임상시험을 통과하고 Lean 인증서까지 갖췄지만 아무도 발견 경위를 모르는 AI 암 치료제를 들었다. 이 해법이 시험 과정이나 수학 모델의 약점을 이용해 어긋났을 가능성을 묻고, 사람의 이해 부족에 AI의 최적화 능력이 더해지면 정렬 실패가 생길 수 있다고 정리했다(2026-10-21 슬라이드 확인).
 - 수학 연구 결과 주장은 증명의 정확성과 별도로, 사람이 읽고 검토할 수 있는 원고와 선행 연구 인용, 공동체 검토가 뒤따랐는지 확인한다.
 
 ## 3. 비용 하락은 무엇의 가격인지 구분한다
@@ -116,11 +120,15 @@ METR는 사람 전문가가 걸리는 시간으로 잰 소프트웨어와 추론
 - [OpenAI's GPT-6 Astra on ARC-AGI-3 — ARC Prize, Greg Kamradt](https://arcprize.org/blog/astra) — 2026-09-03
 - [Ten Advances in Mathematics and Theoretical Computer Science — OpenAI](https://cdn.openai.com/pdf/ten-proofs-oai.pdf) — 2026-08-01, 2026-08-06 갱신
 - [ten-proofs — GitHub, OpenAI](https://github.com/openai/ten-proofs)
-- [math — GitHub, OpenAI](https://github.com/openai/math) — 2026-10-06 첫 공개(원고 722편), 현재 원고 수와 형식화 비율
+- [math — GitHub, OpenAI](https://github.com/openai/math) — 2026-10-06 첫 공개(원고 722편), 현재 원고 수와 형식화 비율, 2026-10-21 README의 실행 조건 확인
 - [math history — GitHub, OpenAI](https://github.com/openai/math/blob/main/history.md) — 2026-10-07 철회와 수정
 - [Integer multiplication below n log n — GitHub, OpenAI](https://github.com/openai/math/tree/main/preprints/Integer-multiplication-below-n-log-n-September-23-2026) — 2026-09-23자 원고, 초록과 정리 진술 대조
-- [math formalization.yaml — GitHub, OpenAI](https://github.com/openai/math/blob/main/lean/formalization.yaml) — 2026-10-18 형식화 목록 대조
+- [math formalization.yaml — GitHub, OpenAI](https://github.com/openai/math/blob/main/lean/formalization.yaml) — 2026-10-18 형식화 목록 대조, 2026-10-21 결과군 102 원고 확인
+- [math CONTENTS — GitHub, OpenAI](https://github.com/openai/math/blob/main/CONTENTS.md) — 2026-10-21 결과군 102 확인
 - [A Severe Misalignment of AI in Mathematics — Terence Tao 블로그, 필즈상 수상자 공동 선언](https://terrytao.wordpress.com/2026/09/11/a-severe-misalignment-of-ai-in-mathematics/) — 2026-09-11
+- [AHM Statement on OpenAI's October 6 Release of Mathematical Documents — Association for Human Mathematics](https://ahmath.org/statements) — 2026-10-07
+- [Math 2.0 — Terence Tao 블로그](https://terrytao.wordpress.com/2026/10/10/math-2-0/) — 2026-10-10
+- [Math 2.0 — Caltech 공개 강연 슬라이드, Terence Tao](https://teorth.github.io/tao-web/slides/math-2-0-caltech-2026.pdf) — 2026-10-09 강연, 9, 11, 20~24번 슬라이드
 - [Early science acceleration experiments with GPT-5 — OpenAI, Sébastien Bubeck 외](https://cdn.openai.com/pdf/4a25f921-e4e0-479a-9b38-5367b47e8fd0/early-science-acceleration-experiments-with-gpt-5.pdf) — 2025-11-20
 - [The AI Action Summit: A golden age of innovation — Google, Sundar Pichai](https://blog.google/innovation-and-ai/products/sundar-pichai-ai-action-summit/) — 2025-02-10
 - [Three Observations — Sam Altman](https://blog.samaltman.com/three-observations) — 2025-02-09
