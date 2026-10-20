@@ -73,7 +73,19 @@ AWS의 구조화 데이터 연결 지침은 임의 SQL 실행의 위험을 명�
 ## 사례
 - 데이터 분석 보조: Text-to-SQL + 데이터 디스커버리 + 지식 공유(위키, Slack 서포트 채널 자동 답변 + 근거 링크), 질문 분류 후 멀티 체인, 일부는 평가 노드를 둔 그래프 에이전트로 구성. Slack을 UI로, LLMOps로 배포/모니터링.
 
+### SQL 분석에 외부 도구를 연결할 때
+
+Databricks Genie Agent는 SQL과 파일 분석에 MCP connector의 외부 자료 조회와 행동을 결합할 수 있다. 2026-10-21 공식 AWS 문서 기준 이 기능은 Beta이며 관리자가 preview를 켜야 한다. Unity Catalog, Agent mode와 Unity Gateway의 리전 가용성, 사용자별 Workspace access와 Databricks SQL access가 필요하다. 작성자가 connector를 붙여도 사용자는 각자 외부 계정으로 인증하며 도구 호출은 질문한 사용자의 권한으로 실행된다.
+
+- MCP 도구는 Agent mode에서만 실행하며 Chat mode에는 적용되지 않는다.
+- 읽기 도구는 자동 실행하고 쓰기 도구는 승인을 요구한다. UI에서는 한 번 승인, 해당 대화 동안 같은 도구 승인, 거부를 선택할 수 있다.
+- Agent mode API에서는 읽기 도구만 동작한다. Connector 인증과 쓰기 승인은 UI에서 완료한다.
+- Gmail connector는 검색, 읽기와 초안 작성을 지원하지만 발송이나 기존 메시지 편집은 지원하지 않는다.
+
+운영 설계에서는 SQL 결과와 외부 조회 결과의 기준 시점, 인용과 누락을 따로 점검하고, 필요한 개별 도구만 활성화한다. 외부 데이터 소스라는 이름만으로 조회 전용이라고 가정하지 않는다. 이번 대조는 Genie의 연결 계약에 한정하며 Free Edition의 제공 범위와 요금, 기존 AWS 기능 전체를 재검증한 기록은 아니다. 기존 `verified_at`은 유지한다.
+
 ## 출처
+- [Databricks, Connect a Genie Agent to external tools and sources](https://docs.databricks.com/aws/en/genie-agents/external-tools)
 - [Amazon Redshift, Creating and interpreting a query plan](https://docs.aws.amazon.com/redshift/latest/dg/c-the-query-plan.html)
 - [Amazon Bedrock User Guide, Create a knowledge base by connecting to a structured data store](https://docs.aws.amazon.com/bedrock/latest/userguide/knowledge-base-structured-create.html) — query configurations와 생성 맥락의 비결정성.
 - [dbt Developer Hub, description](https://docs.getdbt.com/reference/resource-properties/description)

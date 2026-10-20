@@ -74,6 +74,10 @@ PDF, 스캔본 같은 비정형 문서는 청킹 전에 OCR과 layout parsing으
 
 이를 PDF에 적용할 때는 검색용 설명과 원본 페이지 또는 이미지 영역의 연결을 보존한다(설계 제안). 페이지 전체를 검색 단위로 삼으면 주변 맥락을 함께 전달하기 쉽지만, 한 페이지에 여러 주제가 있으면 개별 표나 이미지로 나누는 선택도 비교한다. 영역을 나눌 때는 제목, 캡션, 단위와 각주가 빠지지 않는지 확인한다. 원본 이미지를 전달해도 시각적 해석 오류는 남을 수 있으므로, 대표 질문의 수치와 근거 위치를 원본과 대조한다.
 
+로컬 모델 사례로 EmbeddingGemma 2는 텍스트와 코드, 이미지, 오디오, 비디오를 같은 768차원 공간으로 표현한다. Google 모델 카드 기준 총 740M 파라미터이며 필요한 vision/audio encoder만 선택해 로드할 수 있다. 텍스트 검색에서는 질의와 문서용 prefix를 구분하고, MRL로 차원을 줄이면 잘라낸 벡터를 다시 정규화한다. 이는 검색 표현의 기능이며 답변 생성이나 정답 검증을 대신하지 않는다(2026-10-21 확인).
+
+영상 검색은 모델의 모달리티 지원과 장면을 찾는 단위를 함께 본다. Google의 Sentence Transformers 안내는 기본 1 fps로 프레임을 추출하며 샘플링 설정을 바꿀 수 있다고 설명한다. 장면 검색에 적용할 때는 구간별 원본 시간 범위를 벡터와 연결하고, 짧은 사건이 샘플링에서 빠지는지 확인한다(설계 제안). 모델 카드의 MTEB Code 점수 68.76에서 78.68로의 변화는 해당 벤치마크의 9.92점 차이이며 임의의 한국어 문서, 장면 검색이나 양자화 배포의 동일한 향상을 뜻하지 않는다. 이번 검증은 이 모델 사례에 한정해 기존 `verified_at`은 유지한다.
+
 ### 청크별 문서 맥락 보강 (Contextual Retrieval)
 
 청크는 잘리는 순간 주어, 기간과 적용 범위 같은 문서 맥락을 잃을 수 있다. 회사 매출이 전 분기보다 3% 늘었다는 청크만으로는 어느 회사의 어느 분기인지 알 수 없다. 규칙과 예외가 다른 청크로 갈리면 예외 없는 규칙만 검색될 수도 있다(설명용 예시).
@@ -226,6 +230,8 @@ Q. 검색은 됐는데 폐기된 정책으로 답했다면?
 
 ## 출처
 
+- [Google AI for Developers, EmbeddingGemma 2 model card](https://ai.google.dev/gemma/docs/embeddinggemma/model_card_2)
+- [Google AI for Developers, Multimodal Embeddings with EmbeddingGemma 2](https://ai.google.dev/gemma/docs/embeddinggemma/multimodal-embeddinggemma-with-sentence-transformers)
 - [LangChain Documentation, Retrieval](https://docs.langchain.com/oss/python/deepagents/retrieval)
 - [LangChain Documentation, Retrieval Augmented Generation (RAG) with Deep Agents](https://docs.langchain.com/oss/python/deepagents/rag) — 색인의 Load, Split, Embed, Store와 요청 시점 검색 흐름
 - [Amazon Bedrock API Reference, RetrievalFilter](https://docs.aws.amazon.com/bedrock/latest/APIReference/API_RetrievalFilter.html) — 2026-10-10 비교 연산, union 구조와 `andAll` 조건 수를 대조했다. 날짜 해석과 분류 정규화, 후보 손실 점검은 설계 제안이다.

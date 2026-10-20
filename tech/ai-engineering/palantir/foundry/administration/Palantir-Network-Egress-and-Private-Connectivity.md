@@ -66,9 +66,11 @@ Azure는 resource ID와 sub-resource를 정하고 custom service visibility/승�
 
 ## Secure tunnel은 두 단계 allowlist다
 
-내부 initiator, Foundry control plane과 responder가 tunnel을 만든다. Initiator는 outbound 연결만 만들고 짧은 token을 자동 회전하며 TLS 상호 인증을 사용한다. 같은 cluster의 여러 node는 가용성과 분산을 제공한다. Data Connection agent나 Apollo Helm 관리가 restart/upgrade를 담당하고 운영자는 실행 환경, 플랫폼 egress와 목적지 allowlist를 마련한다.
+내부 initiator, Foundry control plane과 responder가 tunnel을 만든다. Initiator는 Envoy reverse tunnel로 outbound 연결을 열고, control plane이 발급하고 자동 회전하는 짧은 수명의 token으로 인증한다. 내부망과 플랫폼 사이의 연결은 TLS로 암호화한다. 같은 cluster의 여러 initiator는 가용성과 트래픽 분산을 제공하며 egress policy는 개별 initiator 대신 cluster를 참조한다.
 
-Initiator allowlist는 CIDR/port/(선택)endPort이며 비어 있으면 전부 거부한다. 모든 주소/port를 허용해도 link-local과 cloud metadata endpoint는 차단한다. 이 allowlist와 Foundry의 cluster egress policy를 모두 통과해야 destination에 도달한다.
+Initiator의 `allowListedCidrs`는 `cidrBlock`, `port`와 선택적인 `endPort`로 목적지를 제한한다. 명시적으로 빈 목록을 설정하면 전부 거부하지만, Data Connection agent가 배포할 때의 기본값은 `0.0.0.0/0`의 포트 1~65535 허용이다. 필요한 주소와 포트로 좁히려면 agent의 Envoy 설정을 바꾼다. 전체 허용이어도 IPv4 link-local 범위 `169.254.0.0/16`은 차단한다. 이 allowlist 외에도 cluster의 secure tunnel egress policy를 source에 연결해야 한다.
+
+Data Connection agent 경로는 선택한 agent의 Owner 권한이 필요하며 agent 하나가 동시에 배포할 수 있는 initiator는 하나다. 배포 대상으로 선택한 뒤 agent를 재시작해야 initiator가 배포된다. Agent 또는 Apollo가 재시작과 업그레이드를 관리하고, Apollo 경로는 플랫폼 인증서 검증용 trust bundle과 최초 인증 token을 구성한다. 2026-10-21 [Configure secure tunnels](https://www.palantir.com/docs/foundry/administration/secure-tunnels)로 이 절의 인증, 기본 allowlist와 배포 조건을 대조했다. 실제 연결과 장애 복구는 실행 검증하지 않았다.
 
 ## Egress 성공은 원천 작업 성공이 아니다
 

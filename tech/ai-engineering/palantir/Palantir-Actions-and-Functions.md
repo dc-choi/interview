@@ -70,6 +70,12 @@ Transient retry는 처음부터 다시 실행하며 최대 5회 시도한다. �
 
 설계 적용 예로, 동시에 두 주문을 배정하면서 같은 라이더의 수용량을 각각 검사하고 서로 다른 주문만 바꾸면 그 검사만으로 총량을 지킨다고 볼 수 없다. 공통 용량 상태에 대한 충돌과 재시도 경계를 검토한다. 이는 앞의 동시성 조건에서 도출한 예시이며 해당 업무를 실험한 결과가 아니다.
 
+### 파라미터 생략과 쓰기 생략은 다르다
+
+2026-10-21 일관성 문서 기준, logic rule은 파라미터를 속성에 매핑할 때, function-backed Action은 Ontology edit으로 값을 설정할 때 해당 속성에 쓴다. OSDK 요청에서 선택 파라미터를 생략하려면 기본값이 설정되어 있어야 한다. 기본값이 객체의 현재 속성값이면 생략한 파라미터를 그 값으로 채워 다시 쓴다. 따라서 요청에 필드가 없다는 사실만으로 해당 속성을 건드리지 않는다고 판단하지 않는다. [Consistency and isolation](https://www.palantir.com/docs/foundry/action-types/consistency-guarantees)
+
+Action이 끝난 뒤 시작하는 Action이나 query는 완료된 편집을 본다. 이 보장은 같은 실행 중 자신의 편집을 읽는 동작과 다르다. Staged writes는 자신의 편집을 보지만 고정 snapshot을 보장하지 않으며, 실행 중 다른 Action이 커밋한 값도 후속 읽기에 반영될 수 있다. 격리 수준 변경은 Capabilities에서 설정하고 이후 실행부터 적용된다. 이번 대조는 일관성 절에 한정하며 함수와 권한 기능 전체를 다시 검증한 것은 아니다.
+
 ### 외부 효과는 별도의 실패 경계다
 
 Notification은 사용자 알림, webhook은 REST API나 ERP 등 외부 시스템 연결에 사용한다. 원천 정본이 외부 시스템에 있는 업무에도 연결할 수 있다. [Side effects](https://www.palantir.com/docs/foundry/action-types/side-effects-overview)
