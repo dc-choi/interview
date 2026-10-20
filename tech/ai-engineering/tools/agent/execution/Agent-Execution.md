@@ -7,7 +7,7 @@ aliases: ["Agent Execution", "에이전트 실행 구조"]
 
 # 에이전트 실행 구조
 
-에이전트가 도는 구조를 설계하는 문서 묶음 — 도구 호출 루프와 계획 검증, 컨텍스트 예산, 바깥 루프와 정지 조건, 실행 그래프, 설정으로 정의하는 런타임과 상주 에이전트 사례. 상위: [[agent|에이전트 심화]].
+에이전트가 도는 구조를 설계하는 문서 묶음 — 도구 호출 루프와 계획 검증, 컨텍스트 예산, 바깥 루프와 정지 조건, 실행 그래프, 설정으로 정의하는 런타임, 관리형 호스팅 런타임과 상주 에이전트 사례. 상위: [[agent|에이전트 심화]].
 
 ## 목차
 
@@ -19,6 +19,7 @@ aliases: ["Agent Execution", "에이전트 실행 구조"]
 - [[Hermes-Agent|Hermes Agent]]: 게이트웨이 상주 에이전트, 스킬과 메모리 파일로 남는 학습 루프, 프로필별 홈과 게이트웨이, Kanban 작업 보드, 허용 목록과 명령 승인, 에이전트 작성 스킬 검토
 
 - [[Agent-Runtime-Deployment|에이전트 런타임과 배포]]: Eve, Mecatl, Strands, OpenCode의 정의, 영속 상태, 권한과 비동기 실행
+- [[Bedrock-AgentCore-Runtime|Bedrock AgentCore Runtime 실행 계약]]: microVM과 Instances, 세션 수명 타이머, 버전과 엔드포인트, 프로토콜별 포트와 오류, /ping, 인바운드와 아웃바운드 인증, platform version V2
 
 ## 함께 볼 문서
 

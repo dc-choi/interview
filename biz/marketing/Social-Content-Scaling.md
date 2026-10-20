@@ -1,6 +1,7 @@
 ---
 tags: [business, marketing, content, growth]
 status: done
+verified_at: 2026-10-20
 category: "비즈니스&제품(Business&Product)"
 aliases: ["소셜 콘텐츠 성장 단계", "Social Content Scaling", "Founder-led Content"]
 ---
@@ -37,6 +38,26 @@ aliases: ["소셜 콘텐츠 성장 단계", "Social Content Scaling", "Founder-l
 
 재생산할 소재는 조회수보다 신청, 상담과 계약 같은 사업 결과로 고른다. 조회수가 적어도 신청으로 이어진 콘텐츠가 있을 수 있으므로 신청 단계에서 어떤 콘텐츠를 보고 왔는지 기록한다. 결과가 나온 메시지와 형식을 사례 모음이나 다른 채널에 맞게 다시 만들고 시간을 두고 다시 다루면 매번 새 소재를 찾을 때보다 들인 노력 대비 조회와 전환이 나을 수 있다는 운영 경험이 있다. 한 번의 높은 성과에는 우연이 섞일 수 있으므로 재생산한 콘텐츠도 같은 기준으로 비교하고, 반응이 반복될 때 정기 제작 목록에 넣는다. 상담에서 반복되는 반론을 소재로 삼는 방법은 [[Lead-Magnet-and-Entry-Offer#상담 반론을 콘텐츠 목록으로 바꾼다|리드 마그넷과 진입 제안]]에서 다룬다.
 
+## 만들기보다 과정을 기록한다
+
+과정 기록은 이미 하는 일의 판단과 변화를 콘텐츠로 만드는 제작 방식이다. 완벽한 한 편이나 전문가처럼 보이는 조언을 준비하는 대신, 실제로 한 일과 아직 풀지 못한 문제를 설명한다. 기록도 창작의 한 형태이며, 허구의 인물상이나 이야기를 만드는 데 필요한 부담을 줄이는 접근이다. 이는 제작 방법에 관한 경험칙이지 도달이나 매출을 보장하는 공식은 아니다.
+
+작은 사업에서는 포장 중 생긴 실수와 고친 방법, 고객 문의에서 반복되는 질문, 재료나 공정을 바꾼 이유를 소재 후보로 삼을 수 있다(적용 제안). 위의 회의 소재와 같이 고객 식별정보와 계약상 비공개 내용은 빼고, 실수를 기록할 때는 원인과 바꾼 행동까지 적는다.
+
+과정 기록이 실제로 제작 부담을 줄이는지는 제작 시간과 지속 가능한 발행 주기로 확인한다. 한 기업의 성장 사례에 콘텐츠, 이커머스와 광고가 함께 쓰였다면 매출 증가를 콘텐츠 하나의 효과로 분리하지 않는다.
+
+## 발행량을 늘리기 전에 확인할 플랫폼 경계
+
+발행량을 정할 때는 업로드 가능 횟수, 정책 준수, 제작의 지속 가능성과 사업 성과를 각각 확인한다. 2026-10-20 공식 문서에서 확인한 경계는 다음과 같다.
+
+- **YouTube 업로드 한도:** YouTube는 데스크톱, 모바일과 API를 합쳐 채널이 24시간 동안 올릴 수 있는 동영상 수를 제한한다. 한도는 국가와 지역이나 채널 이력에 따라 다를 수 있고 커뮤니티 가이드 위반 경고는 올릴 수 있는 수에 영향을 주며, 도움말은 구체적인 수치를 밝히지 않는다. 전화 인증 뒤 채널 이력이나 신원 확인으로 여는 고급 기능 등급에서는 일일 업로드 한도가 높아진다. 15분을 넘는 동영상은 인증된 계정만 올릴 수 있다.
+- **API 자동 업로드:** YouTube Data API의 프로젝트별 기본 할당은 하루 `videos.insert` 100회다. API 업로드도 채널의 24시간 한도에 함께 계산되므로 두 제한을 모두 지켜야 한다.
+- **변화가 적은 대량 생산은 수익화 밖의 위반이기도 하다:** 수익화의 진정성 없는 콘텐츠 기준은 [[AI-Generated-Content-Monetization#YouTube 수익화 정책: 진정성 없는 콘텐츠|AI 생성 콘텐츠 수익화]], AI 공개 설정은 [[AI-Generated-Content-Monetization#YouTube 변형 또는 합성 콘텐츠 공개|합성 콘텐츠 공개]]에 정리했다. 이와 별도로 YouTube Spam Policy의 Automated or synthetic mass-production 범주는 AI나 자동화 도구로 변화가 적은 비슷한 콘텐츠를 대량으로 만들어 플랫폼을 채우는 행위를 금지하며, 새 도구를 시험하거나 변형본 몇 개를 올리는 것은 허용한다. 이 정책은 조직적인 채널 네트워크에도 적용된다. 위반하면 수익 창출 정지나 채널 또는 계정 폐쇄가 가능하고, 일부 위반은 콘텐츠 삭제와 함께 주의나 경고를 받으며 90일 안에 경고 3회면 채널이 폐쇄될 수 있다. 수익화 정책은 수익 자격의 기준이고, 스팸 정책은 수익화 여부와 관계없이 적용된다는 점에서 범위가 다르다.
+- **변주의 기준은 실질이다:** 수익화 정책은 같은 인트로와 아웃트로를 쓰더라도 본문 대부분이 다르면 허용 예시로 두고, 교육적 가치, 해설, 서사나 영상 간 변주가 거의 없는 유사하거나 반복적인 콘텐츠를 수익화 불가 예시로 든다. 운영에서는 도입부와 화면 구성만 바꾸는 표면 변경으로 판단하지 않고 이 요소들이 실제로 달라졌는지 확인한다.
+- **공식 빈도 안내:** YouTube 고객센터는 업로드 빈도를 일관되고 지속 가능한 일정과 제작자의 웰빙 문제로 다루며, 저빈도 고품질 제작과 고빈도 간편 제작 가운데 무엇이 중요한지 따져 보라고 한다.
+
+발행량을 늘리면 제작과 응대 시간이 늘고, 위 한도에 닿을 가능성과 정책 위험도 함께 커진다. 늘리기 전후로 아래 적용 기준의 적격 문의와 결제를 같은 기간으로 비교한다.
+
 ## 적용할 때 확인할 것
 
 아래는 운영 경험을 작은 사업에 적용하기 위한 검증 제안이다.
@@ -54,9 +75,20 @@ aliases: ["소셜 콘텐츠 성장 단계", "Social Content Scaling", "Founder-l
 - [How to go from 0-100M views/month — KeepFlash, Dominic Bair](https://keepflash.com/en/daily/zero-to-100m-organic-views) — KeepFlash 재수록본. 2026-10-12 표기된 본문을 검색 색인으로 확인. KeepFlash가 원문으로 연결한 X 게시물(https://x.com/domschats/status/2109071150089445424, 2026-10-11 KST)은 열어 보지 않았고, 원본 도표와 성과 데이터는 미확보.
 - [마케팅의 시작점이 진짜, 완전히 변했어요. I 9년간 잘 먹히던 ‘무료 상품’이 최근 쓰레기가 된 진짜 이유 — YouTube, 김서한 : 비상식적 사업 이야기](https://www.youtube.com/watch?v=H3w0evSeSoA) — 2026-10-12, 05:27~07:18의 성과 콘텐츠 재생산을 운영 경험으로 참고했다. 영상별 조회수와 등록자 수, 파생 콘텐츠 수와 재게시 주기는 검증하지 않아 쓰지 않았다.
 
+- [Document, Don't create: Creating Content that Builds Your Personal Brand — garyvaynerchuk.com, Gary Vaynerchuk](https://garyvaynerchuk.com/creating-content-that-builds-your-personal-brand/) — 2016-12-01 게시, 2026-10-20 확인. 과정 기록이라는 제작 방법만 참고했으며 당시 개인의 발행 빈도 권고를 현재 플랫폼 기준으로 사용하지 않았다.
+- [YouTube Help, Common uploading errors](https://support.google.com/youtube/answer/10383400)
+- [YouTube Help, Learn about feature access for YouTube Creators](https://support.google.com/youtube/answer/9890437)
+- [YouTube Help, Get access to intermediate and advanced features](https://support.google.com/youtube/answer/9891124)
+- [YouTube Help, Upload videos longer than 15 minutes](https://support.google.com/youtube/answer/71673)
+- [YouTube Help, Spam Policy](https://support.google.com/youtube/answer/2801973)
+- [YouTube Help, YouTube channel monetization policies](https://support.google.com/youtube/answer/1311392)
+- [YouTube Help, Upload schedule tips](https://support.google.com/youtube/answer/13616979)
+- [YouTube Data API, Quota Calculator](https://developers.google.com/youtube/v3/determine_quota_cost)
+
 ## 관련 문서
 
 - [[Content-Marketing|콘텐츠 마케팅]]
+- [[AI-Generated-Content-Monetization|AI 생성 콘텐츠 수익화]] — YouTube 수익화 정책과 AI 공개 설정
 - [[AI-Marketing-Analysis|AI 마케팅 분석과 실험 실행]]
 - [[Personal-Brand-Identity-and-Role|퍼스널 브랜드의 정체성과 배역]]
 - [[Metrics-Framework|지표 설계와 실험 해석]]

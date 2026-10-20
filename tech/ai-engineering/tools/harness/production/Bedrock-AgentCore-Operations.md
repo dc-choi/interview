@@ -133,7 +133,7 @@ BMA에 메시지를 제출한 뒤 빈 응답이 와도 요청 수락만 뜻할 �
 - 자격증명 갱신 실패와 도구 권한 거절이 구분돼 기록되는가
 - 각 실행 단계의 trace와 실제 업무 결과를 연결해 실패 위치를 찾을 수 있는가
 
-가격, 실행 시간 상한, 리전과 target별 지원 범위는 이 문서의 대조 범위에 포함하지 않는다. 배포 전에 해당 구성의 공식 문서와 quota를 확인한다.
+가격, 실행 시간 상한, 리전과 target별 지원 범위는 이 문서의 대조 범위에 포함하지 않는다. 배포 전에 해당 구성의 공식 문서와 quota를 확인한다. Runtime의 컴퓨트 타입, 세션 수명 설정, 버전과 엔드포인트, 프로토콜 계약, 인증 방식과 실행 시간 한도, 리전 지원은 [[Bedrock-AgentCore-Runtime|AgentCore Runtime 실행 계약]]에서 다룬다.
 
 ## 출처
 
@@ -159,6 +159,7 @@ BMA에 메시지를 제출한 뒤 빈 응답이 와도 요청 수락만 뜻할 �
 ## 관련 문서
 
 - [[Production-Agent-Architecture|프로덕션 에이전트 아키텍처]]
+- [[Bedrock-AgentCore-Runtime|AgentCore Runtime 실행 계약]] — 세션 수명, 엔드포인트, 프로토콜과 인증
 - [[MCP-Security-Boundaries|MCP 보안 경계]]
 - [[Agent-Memory-Retain-Recall-Reflect|에이전트 기억의 저장, 검색과 추론]]
 - [[LLM-Eval-Strategy|LLM 평가 전략]]

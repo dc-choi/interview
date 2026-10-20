@@ -96,3 +96,5 @@ Software 3.0 패러다임, LLM과 에이전트, 하네스, 평가, 조직 전환
 - [x] [[AI-Research-Innovation-Evaluation|AI 연구 혁신 평가]] — InnovationEval의 과제와 개선 달성률
 - [x] [[Neural-Circuit-Interpretability|뉴런과 회로 해석]] — 재귀적 일반화 가설과 인과 검증
 - [x] [[Generative-Artifact-Contracts|시각 산출물 생성 계약]] — AesCode의 검증 가능한 코드와 Krea 3의 부분 편집
+- [x] [[Bedrock-AgentCore-Runtime|Bedrock AgentCore Runtime 실행 계약]] — 컴퓨트 타입, 세션 수명과 새 버전 반영, 엔드포인트 고정과 롤백, 프로토콜 계약, 사용자 ID 헤더의 신뢰 경계, 스냅샷 기반 V2
+- [x] [[Agent-Always-On-Mac-Host|상시 실행 Mac 에이전트 호스트]] — 전원 설정, FileVault와 무인 재시작의 절충, 원격 접속, 세션 유지와 재부팅, 플러그인 신뢰
