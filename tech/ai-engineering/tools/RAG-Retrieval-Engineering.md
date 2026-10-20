@@ -49,7 +49,7 @@ RAGAS와 ARES 같은 연구도 retrieval context의 관련성, 답변 관련성,
 
 PDF, 스캔본 같은 비정형 문서는 청킹 전에 OCR과 layout parsing으로 텍스트, 표, 읽기 순서를 복원한다. Chunk 크기와 overlap은 정답이 아니라 corpus별 변수다. 대표 질문에서 retrieval recall과 context token 비용을 함께 비교한다.
 
-파서 선택도 검색 품질과 수집 비용을 바꾼다. 2026-10-09 Amazon Bedrock Knowledge Bases 문서 기준, 기본 파서는 텍스트만 출력한다. PDF 안의 표, 차트와 이미지가 답변 근거라면 Bedrock Data Automation이나 foundation model 파서를 검토한다. Data Automation은 페이지나 이미지 수, 모델 파서는 입력과 출력 토큰을 기준으로 과금한다. 둘 중 하나를 선택하면 같은 데이터 소스의 텍스트 전용 PDF에도 해당 파서와 비용이 적용된다.
+파서 선택도 검색 품질과 수집 비용을 바꾼다. 2026-10-09 Amazon Bedrock Knowledge Bases 문서 기준, 기본 파서는 텍스트만 출력한다. PDF 안의 표, 차트와 이미지가 답변 근거라면 Bedrock Data Automation이나 foundation model 파서를 검토한다. Data Automation은 페이지나 이미지 수, 모델 파서는 입력과 출력 토큰을 기준으로 과금한다. 둘 중 하나를 선택하면 같은 데이터 소스의 텍스트 전용 PDF에도 해당 파서와 비용이 적용된다. 같은 제품의 청킹 설정 단위, 표 맥락 반환, CSV 행 단위 수집, 문서 속성 파일, 관리형 지식 베이스의 파서 제약과 파서의 리전별 제공 범위는 [[LLM-Workflow-Patterns-Data-and-Operations#표, 문서 속성과 연결 경로는 수집 단계에서 정한다|수집 단계의 표와 문서 속성]]에서 다룬다.
 
 다음은 파서 선택에 적용할 검증 방법이다. 대표 문서에서 읽기 순서, 표의 행과 열 대응, 단위와 각주가 추출 결과에 남는지 원본과 대조한다. 같은 질문으로 기본 파서와 고급 파서의 검색 성공률, 답변 근거와 수집 비용을 비교한다. 텍스트를 추출했다는 사실만으로 문맥 보존이나 답변 정확도가 보장되지는 않는다.
 
