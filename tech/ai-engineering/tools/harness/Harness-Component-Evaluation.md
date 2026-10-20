@@ -49,8 +49,22 @@ aliases: ["Harness Component Evaluation", "하네스 구성요소 평가", "코�
 
 토큰 종류와 수집 누락의 의미는 [[AI-Coding-Agent-Usage-Telemetry|사용량 텔레메트리]]와 함께 확인한다.
 
+### 토큰 절감 도구는 계측 대상과 개입을 나눠 비교한다
+
+입력 압축률, 생성 출력의 감소와 실제 청구액 절감은 같은 지표가 아니다. 2026-10-20 Headroom의 공개 README와 공식 문서에서 확인한 구분은 다음과 같다. 설치하거나 벤치마크를 재현한 결과는 아니다.
+
+- **입력 비용 환산:** Savings Tracking의 `cost avoided`는 줄인 입력 토큰의 금액 환산이다. 알려진 모델은 LiteLLM 목록 가격을 쓰고, 모델을 모르는 MCP 압축은 혼합 단가로 계산한다. 이 값을 구독료 환급이나 실제 공급자 청구액의 감소로 해석하지 않는다.
+- **출력 절감 추정:** 같은 요청에서 개입하지 않았을 때 생성될 출력을 동시에 관찰할 수 없으므로, 기본 출력 절감 표시는 신뢰구간을 붙인 추정치다. README는 일부 대화를 개입하지 않은 대조군으로 남기는 holdout 설정과 `estimated`/`measured` 구분을 설명한다. 숫자 옆의 표기와 대조군 구성을 함께 확인한다.
+- **압축과 추론 설정 변경:** 선택적인 output shaping에는 간결한 출력을 유도하는 지침과 도구 결과 뒤 후속 턴의 추론 노력을 낮추는 기능이 있다. 둘 다 켠 비교를 입력 압축만의 효과로 보고하지 않는다. 요청한 모델과 노력 설정, 프록시가 전달한 설정을 분리해 기록한다.
+- **원문 복구 조건:** CCR은 원문을 저장하고 필요할 때 조회하는 구조다. 저장소의 용량에 따른 퇴거와 보존 기간이 있으므로 복구 가능성을 영구 보존이나 필요한 정보를 모델이 반드시 다시 읽는다는 보장으로 바꾸지 않는다.
+
+이를 평가에 적용할 때는 입력 압축, 출력 지침과 추론 설정 변경을 각각 켜고 끄는 조건을 구분한다. 원문 재조회, 재시도와 실패를 포함한 전체 사용량, 합격률과 지연을 비교하고, 식별자나 경계 조건이 압축에서 빠지는 과제도 넣는다. 도구 여러 개의 절감률을 더하거나 한 도구의 샘플 결과를 조합 전체의 기대 효과로 쓰지 않는다. 이는 위 계약을 바탕으로 한 실험 설계 제안이다.
+
 ## 출처
 
+- [Headroom README — Headroom Labs](https://github.com/headroomlabs-ai/headroom) — 2026-10-20 output shaping의 개입과 출력 절감 추정, 대조군 표기 확인.
+- [Headroom, Savings Tracking](https://docs.headroomlabs.ai/docs/savings) — 2026-10-20 입력 토큰 비용 환산과 모델 미확인 시 혼합 단가 확인.
+- [Headroom, Reversible Compression (CCR)](https://docs.headroomlabs.ai/docs/ccr) — 2026-10-20 원문 캐시와 용량에 따른 퇴거 확인. 보존 기간 조건은 같은 날 확인한 README의 적용 범위를 함께 따른다.
 - [agent-cost-bench — AWS Samples](https://github.com/aws-samples/sample-agent-cost-bench)
 - [An Empirical Study of Harness Design for Coding Agents — arXiv](https://arxiv.org/abs/2609.20804)
 - [코딩 에이전트 하네스 설계에 관한 실증 연구 — GeekNews](https://news.hada.io/topic?id=33905)

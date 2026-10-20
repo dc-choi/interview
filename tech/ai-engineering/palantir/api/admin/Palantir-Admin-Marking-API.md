@@ -41,6 +41,10 @@ schema의 optional 표시와 달리 initialRoleAssignments에는 최소 하나�
 
 GET `/markings/{markingId}`, POST `/markings/getBatch`(최대 500, ID map), GET `/markings`는 admin-read다. list의 includeDeleted 기본 true와 최대 pageSize 100을 확인한다. list의 필터는 includeDeleted와 optional markingType(MANDATORY 또는 CBAC, 생략하면 모든 유형)뿐이고 category나 이름 필터는 없다. categoryId/name, optional description/organization, deleted/createdTime과 optional createdBy를 보존하고, CBAC Marking에서만 쓰는 optional priority(클수록 우선)와 prominence(COMMON/UNCOMMON 강조 힌트)도 버리지 않는다.
 
+배치 조회의 전체 경로는 `POST /api/v2/admin/markings/getBatch`다. 필수 body는 문자열 ID 배열이나 `data`로 감싼 객체가 아니라, 필수 `markingId`를 담은 객체 배열이다. 2026-10-20 대조한 명세에는 query parameter와 preview 요구가 없다. 응답의 `data`는 optional인 `MarkingId → Marking` map이며, 요청 순서에 대응하는 배열이 아니다.
+
+배치 명세에는 endpoint별 오류 정의가 없고, 존재하지 않거나 접근할 수 없는 ID, 중복 ID와 빈 요청의 처리도 명시하지 않는다. 따라서 단건 조회의 403/404 계약을 배치의 항목별 오류 계약으로 옮기지 않는다. 적용할 때는 500개 이하로 나누고 요청 ID와 응답 map의 key를 대조한다. `data`가 없거나 일부 key가 빠지면 해당 ID를 미확인으로 남기며, 삭제됐거나 접근이 허용된 것으로 판정하지 않는다. 반환된 항목도 `deleted`를 따로 확인한다. 이는 클라이언트 처리 제안이며 실제 API 호출로 경계 조건을 시험한 결과는 아니다.
+
 단건 Get Marking의 전체 경로는 `GET /api/v2/admin/markings/{markingId}`다. 2026-10-20 대조한 명세에는 preview 표시, query parameter와 request body가 없다. 응답은 Marking 한 개이며 `deleted`가 필수이므로 조회 성공만으로 활성 상태라고 판단하지 않는다. Marking metadata를 읽었다고 membership이나 보호 데이터의 접근 권한까지 확인된 것은 아니다. 응답에 member와 role assignment 목록은 없으므로 해당 API에서 따로 확인한다.
 
 단건 명세는 `GetMarkingPermissionDenied`(403, PERMISSION_DENIED)와 `MarkingNotFound`(404, NOT_FOUND)를 구분하며 둘 다 parameter로 `markingId`를 담는다. 삭제되었거나 호출 주체에게 보이지 않는 Marking을 조회했을 때의 모든 응답 조건은 명시하지 않는다. 따라서 404만으로 삭제 완료를 판정하지 않고, 성공 응답의 deleted 확인과 오류 기록을 분리한다(적용 제안). 단건 응답에도 위에서 설명한 categoryId/organization의 예시 불일치와 priority의 명세 type/예시 차이가 있으므로, 예시 한 개로 Organization 여부나 숫자의 wire encoding을 확정하지 않는다.
@@ -79,7 +83,7 @@ Organization Marking에는 USE/DECLASSIFY만 이 role endpoint로 관리하고 A
 - [Palantir, Create Marking](https://www.palantir.com/docs/foundry/api/admin-v2-resources/markings/create-marking)
 - [Palantir, List Markings](https://www.palantir.com/docs/foundry/api/admin-v2-resources/markings/list-markings) — 2026-10-20 확인. 같은 날 [v2 문서 경로](https://www.palantir.com/docs/foundry/api/v2/admin-v2-resources/markings/list-markings)의 명세 본문도 같았다.
 - [Palantir, Get Marking](https://www.palantir.com/docs/foundry/api/admin-v2-resources/markings/get-marking) — 2026-10-20 단건 조회와 오류 계약 확인. 같은 날 [v2 문서 경로](https://www.palantir.com/docs/foundry/api/v2/admin-v2-resources/markings/get-marking)에서도 같은 endpoint, 응답 필드와 오류 정의를 확인했다. 실제 API 호출은 하지 않았다.
-- [Palantir, Get Markings Batch](https://www.palantir.com/docs/foundry/api/admin-v2-resources/markings/get-markings-batch)
+- [Palantir, Get Markings Batch](https://www.palantir.com/docs/foundry/api/admin-v2-resources/markings/get-markings-batch) — 2026-10-20 요청 배열, optional data map과 오류 정의 범위 확인. [v2 문서 경로](https://www.palantir.com/docs/foundry/api/v2/admin-v2-resources/markings/get-markings-batch)에서도 같은 endpoint, 배치 상한과 응답 구조를 확인했다.
 - [Palantir, Replace Marking](https://www.palantir.com/docs/foundry/api/admin-v2-resources/markings/replace-marking)
 - [Palantir, List Marking Members](https://www.palantir.com/docs/foundry/api/admin-v2-resources/marking-members/list-marking-members)
 - [Palantir, Add Marking Members](https://www.palantir.com/docs/foundry/api/admin-v2-resources/marking-members/add-marking-members)
