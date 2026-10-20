@@ -102,6 +102,14 @@ Claude Design은 PDF, PowerPoint와 HTML로 내보내거나 Canva 등 연결된 
 
 위 흐름은 디자인 인계에 Remotion의 공식 렌더링 원리를 적용한 작업 제안이다. Claude Design과 Remotion 사이의 자동 변환이나 특정 내보내기 기능을 보장하는 설명은 아니다. 2026-10-06에 Remotion의 composition, 자막 가져오기와 렌더링 문서를 대조했으며 실제 영상 제작 성능은 측정하지 않았다.
 
+### HTML 기반 영상과 재현 조건
+
+HyperFrames는 장면, 시간과 움직임을 HTML 프로젝트로 관리하며 에이전트, Studio와 렌더러가 같은 소스를 사용한다. `data-start`, `data-duration` 같은 속성으로 시간을 표현하고, 특정 시점으로 이동해 프레임을 캡처한다. React composition을 쓰는 Remotion과 소스 형식이 같다고 가정하지 않는다.
+
+같은 시점의 재현 조건은 소스뿐 아니라 미디어와 설정도 같아야 한다는 것이다. 현재 시각, 시드 없는 난수와 렌더링 중 네트워크 요청에 의존하지 않도록 구성한다. 이는 동일한 프로젝트 상태를 재현하는 원리이며, 모든 환경에서 최종 영상 파일의 바이트가 같다는 보장으로 확대하지 않는다.
+
+납품 제안: 편집 가능한 HTML과 자원, 사용한 설정을 함께 보존한다. `npx hyperframes check`로 검사한 뒤 `npx hyperframes render --output video.mp4`로 출력하고, 완성 파일의 자막, 음성 동기화와 줄바꿈을 직접 확인한다. 2026-10-20 공식 프로젝트 모델과 개발자 안내를 대조했으며 로컬 렌더링 성능과 결과의 동일성은 시험하지 않았다.
+
 ## 구현 전 확인할 경계
 
 - 로딩, 빈 결과, 권한 부족과 오류 상태가 정의됐는가?
@@ -127,6 +135,8 @@ Claude Design은 PDF, PowerPoint와 HTML로 내보내거나 Canva 등 연결된 
 - [Remotion, Don't use CSS animations in Remotion](https://www.remotion.dev/docs/troubleshooting/css-animations)
 - [Remotion, Importing .srt subtitles into Remotion](https://www.remotion.dev/docs/captions/importing)
 - [Remotion, Render your video](https://www.remotion.dev/docs/render)
+- [HyperFrames, How a HyperFrames project works](https://hyperframes.heygen.com/concepts)
+- [HyperFrames, Build on HyperFrames](https://hyperframes.heygen.com/developers)
 - [Improving frontend design through Skills — Anthropic](https://claude.com/blog/improving-frontend-design-through-skills)
 - [frontend-design SKILL.md, 2026-09-03 판 — GitHub, anthropics/skills](https://github.com/anthropics/skills/blob/41bbe19d/skills/frontend-design/SKILL.md)
 - [Update frontend-design skill (#1293) — GitHub, anthropics/skills](https://github.com/anthropics/skills/commit/2235be7c) — 2026-06 개정

@@ -32,6 +32,12 @@ RID 조회와 batch element는 RID, 선택적 version과 includePrerelease를 �
 
 이 계약은 해당 global Query API의 선택 기능이다. Ontology API나 다른 함수 호출 경로의 최신 tagged version 규칙과 하나로 합치지 않는다.
 
+### Metadata 요청과 실행 요청을 따로 구성한다
+
+Get Query의 query parameter는 `version`, `latestVersionResolution`, `includePrerelease`, `preview`이며 `branch`는 이 endpoint의 인자로 정의돼 있지 않다. 실행 body의 branch 옵션을 metadata 조회에도 그대로 복사하지 않는다. `latestVersionResolution`은 `version`을 생략했을 때 적용된다.
+
+응답의 `version`은 실제 조회된 버전이다. 운영 제안으로, metadata를 이용해 입력 폼이나 검증기를 만들 때는 응답의 `rid`와 `version`을 함께 보관하고 후속 실행의 버전 선택과 대조한다. 두 호출에서 각각 latest를 다시 해석하면 그 사이 발행된 버전 때문에 입력 명세가 달라질 수 있다. 2026-10-20 Get Query 명세로 이 절을 대조했으며 실제 호출은 시험하지 않았다.
+
 ## Global 함수와 Ontology-scoped 함수를 구분한다
 
 일반 execute endpoint는 global Query용이다. Ontology-scoped 함수의 단일 결과 실행은 `/api/v2/ontologies/{ontology}/queries/{queryApiName}/execute` 경로를 사용한다.

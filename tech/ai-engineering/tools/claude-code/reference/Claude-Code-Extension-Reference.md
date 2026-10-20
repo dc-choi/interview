@@ -40,6 +40,16 @@ CLAUDE.md 지시는 무시될 수 있지만 훅은 라이프사이클 시점에 
 - 포크 서브에이전트(실험적): 대화 전체와 도구를 상속하고 프롬프트 캐시를 공유해 저렴 — 빈 컨텍스트에서 시작하는 격리 서브에이전트와 정반대 트레이드오프
 - 에이전트 팀(실험적): 리드 에이전트가 피어 세션을 감독하며 팀원 간 메시징 + 공유 태스크로 조율. 팀원이 plan 모드로 돌면 일반 세션 대비 약 7배 토큰이고, 토큰은 활성 팀원 수와 각 팀원의 실행 시간에 비례해 증가. 팀원끼리 같은 파일을 편집하면 덮어쓰기가 나므로 파일 영역 분담이 필수 (워크트리 격리는 별도 수동 방식). 대화가 조율할 규모를 넘는 대량 fan-out은 [[Claude-Code-Dynamic-Workflows|동적 워크플로우]]
 
+### 역할별 모델 설정과 강제 지정
+
+2026-10-20 공식 subagents와 advisor 문서로 이 절만 대조했다. 나머지 확장 기능의 재검증을 뜻하지 않으므로 frontmatter 검증일은 유지한다.
+
+- 일반 모델 선택의 우선순위는 호출 인자, 에이전트 정의, `CLAUDE_CODE_SUBAGENT_MODEL`, 메인 모델 순이다. `model: inherit`는 메인 모델을 명시적으로 선택한다. 자세한 버전별 차이는 [[Claude-Code-Dynamic-Workflows#비용 통제|동적 워크플로우]]에서 함께 확인한다.
+- `CLAUDE_CODE_SUBAGENT_MODEL_FORCE=1`과 모델 환경 변수를 함께 쓰면 개별 정의의 `model`을 무시하고 호출 때 모델을 지정할 수도 없다(v2.1.257 이상). 단, fork와 `model: inherit`를 지정한 서브에이전트 실행 스킬은 메인 모델을 유지한다. 역할별 검증 모델을 보존하려면 일괄 강제 옵션부터 확인한다.
+- 설정 파일에 적힌 모델과 실제 실행 모델은 구분한다. 실행 중 `/tasks`에서 모델과 지정된 effort를 확인한다. 이 표시는 v2.1.242 이상에서 지원한다.
+
+Advisor는 별도 작업을 맡기는 서브에이전트와 다르다. 전체 대화와 도구 결과를 받아 서버에서 조언하고, 메인 모델이 작업을 이어 간다. `/advisor`, `advisorModel`, `--advisor`로 선택하지만 호출 시점은 모델이 정하므로 필수 검증 관문으로 간주하지 않는다. Claude Code의 이 기능은 확인일 기준 Anthropic API 경로가 필요한 실험 기능이며 구독 계정과 API 과금 계정 모두 대상이다. 조언 호출도 사용량을 소비하므로 모델을 나눈 것만으로 비용 절감을 확정하지 않는다.
+
 ## 커맨드 — 슬래시 호출은 스킬로 흡수됐다
 
 - 2026-09-16 공식 문서 기준, 커스텀 슬래시 커맨드는 스킬로 만든다. 디렉터리 이름이 곧 명령어라 `.claude/skills/deploy/SKILL.md`가 `/deploy`가 되고, 개인 범위는 `~/.claude/skills/`다
@@ -115,6 +125,7 @@ CLAUDE.md 지시는 무시될 수 있지만 훅은 라이프사이클 시점에 
 - [Claude Code Docs, Orchestrate teams of Claude Code sessions](https://code.claude.com/docs/en/agent-teams)
 - [Claude Code Docs, Hooks](https://code.claude.com/docs/en/hooks)
 - [Claude Code Docs, Create custom subagents](https://code.claude.com/docs/en/sub-agents)
+- [Claude Code Docs, Escalate hard decisions with the advisor tool](https://code.claude.com/docs/en/advisor)
 - [Claude Code Docs, Manage costs (agent team token costs)](https://code.claude.com/docs/en/costs)
 - [Claude Code Docs, Extend Claude with skills](https://code.claude.com/docs/en/skills)
 - [Claude Code Docs, Slash commands](https://code.claude.com/docs/en/slash-commands)
