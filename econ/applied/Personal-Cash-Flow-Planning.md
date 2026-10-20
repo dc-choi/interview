@@ -93,4 +93,5 @@ aliases: ["개인 현금흐름 계획", "Personal Cash Flow Planning"]
 
 - [[Investing-Principles|투자의 기본 원칙]]
 - [[Personal-Income-Tax-Basics|개인 소득세와 연말정산]]
+- [[Discount-Points-and-Resale-Checks|할인 구매, 포인트 적립과 되팔기 점검]] — 할인과 적립, 되팔기 주장을 현금흐름으로 나눠 계산
 - [[응용경제(Applied Economics)|응용경제 지도]]
