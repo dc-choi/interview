@@ -69,6 +69,14 @@ Impeccable은 지침과 결정적 검사를 묶은 사례다. Paul Bakaus가 Ant
 - **레퍼런스 갤러리:** refs.gallery는 영상 설명 기준 사이트 레퍼런스 모음이며, 2026-10-12에는 HTTP 429로 페이지가 열리지 않아 내용과 이용 조건을 확인하지 못했다. Minimal Gallery는 2013년부터 운영된 웹사이트 디자인 영감 모음으로 2026년에 인수됐다. 이용 조건(2026-05 표시)에 따르면 갤러리는 소개한 사이트의 소유권을 주장하지 않고 스크린샷과 썸네일을 자기 소유로 둔다. 열람과 북마크 같은 제한된 개인 이용만 허용하고, 상업적이거나 공개적인 목적의 복제와 배포에는 사전 서면 허락을 요구한다. 레퍼런스 갤러리를 쓸 때는 갤러리 이용 조건이 원래 사이트의 이미지, 문구와 일러스트 사용까지 허락한다고 가정하지 않고, 위계, 섹션 순서와 정보 밀도를 참고한 뒤 표면 시각은 브리프에 맞게 새로 만든다([[AI-Work-Tool-Selection|참고와 복제의 구분]]).
 - **디자인 시스템 카탈로그:** oh-my-design은 실제 회사의 디자인 시스템을 코딩 에이전트용 DESIGN.md로 다시 쓴 카탈로그다. 2026-10-12 사이트 기준 18개국 521개 회사를 싣고 근거 수준으로 등급을 나눈다. 사이트 정의로는 verified 299개는 모든 값이 운영 중인 제품이나 공식 문서의 캡처로 추적되고, partial 109개는 캡처했지만 일부 값이나 출처가 빠졌거나 오래됐으며, legacy 113개는 근거 캡처 이전에 작성돼 증거가 아닌 출발점이다. `npx oh-my-design-cli@latest`는 Claude Code, Codex, Cursor와 OpenCode에 스킬 28개와 오프라인 카탈로그를 설치한다. README는 기본 설치가 감지된 모든 에이전트를 대상으로 한다고 적고, 비대화형으로 한 채널만 설치하려면 `install-skills --agent <이름> --all` 하위 명령을 안내한다. README 기준 Claude Code에는 스킬과 하위 에이전트 20개, 훅이 들어가고, Codex와 OpenCode에도 하위 에이전트 역할이 들어가며, Cursor에는 하위 에이전트와 훅 없이 호환되는 스킬 27개가 들어간다. 설치 전 확인은 [[Agent-Skills#설치 경로와 신뢰 — 표면마다 따로, 출처는 먼저|스킬 설치의 신뢰 경계]]를 따른다. 저장소는 MIT이며 README는 레퍼런스가 각 회사에 속하고 교육용 참고로 재현했다고 밝힌다.
 
+컴포넌트와 글꼴을 찾는 경로도 구분한다. 다음 세 자원의 역할과 제공 방식은 2026-10-21 공식 페이지를 대조했다. 기존 자원의 개수와 라이선스를 다시 검증한 것은 아니므로 문서의 기존 `verified_at`은 유지한다.
+
+- **21st:** 여러 제작자의 React 컴포넌트, 템플릿과 테마를 모은 레지스트리다. 공식 안내는 컴포넌트의 프롬프트를 코딩 도구에 전달하거나 shadcn CLI로 소스를 프로젝트에 추가하는 방식을 제공한다. 라이브러리 하나를 의존성으로 가져오는 것과 소스를 복사해 직접 수정하는 것을 구분한다.
+- **affectUI:** 채팅 입력, 인용 답변과 도구 호출 카드 같은 React UI를 제공한다. 컴포넌트는 스타일을 포함한 TSX 파일로 추가하며, 문서는 용도, props, 키보드와 접근성 동작을 설명한다. Pro 항목의 미리보기와 문서는 공개돼도 소스 접근에는 Pro가 필요하다. MCP는 검색, 문서 조회와 소스 조회를 나누어 제공한다.
+- **Best Free Fonts:** 글꼴을 serif, sans serif, display, script와 monospace로 분류한 카탈로그다. 컴포넌트 동작을 가져오는 도구가 아니라 타이포그래피 후보를 찾는 경로로 쓴다.
+
+적용 제안: 화면의 부족한 부분이 정보 위계인지, 컴포넌트 상태인지, 글꼴인지 먼저 정하고 자원을 고른다. 카탈로그의 소개 문구만으로 개별 자산과 의존성의 사용 조건이 확인됐다고 보지 않는다. affectUI의 승인 카드나 도구 호출 카드를 배치한 사실도 실제 승인 정책, 도구 실행이나 데이터 연동을 구현한 증거가 아니다.
+
 고객 사이트로 납품할 때는 다음을 확인한다. 원문 조건을 납품에 적용한 제안이며 법률 판단을 대신하지 않는다. 라이선스별 조건은 [[Open-Source-License-Review|오픈소스 라이선스 검토]], 인계 범위는 [[Dev-Outsourcing-Engagement|개발 외주의 계약과 수주]]를 따른다.
 
 - shadcn 레지스트리 방식은 npm 패키지 대신 컴포넌트 소스를 프로젝트에 넣는다. 2026-10-12에 확인한 Velora UI의 marquee와 heroicons-animated의 academic-cap 항목 소스에는 라이선스 주석이 없고, 이렇게 받은 컴포넌트 자체는 패키지 의존성 목록에 나타나지 않는다. 항목이 선언한 `motion` 같은 npm 의존성만 추가된다. Velora UI README는 shadcn MCP로 에이전트가 이름만으로 컴포넌트를 찾아 설치하는 방법도 안내하므로, 받은 항목, 레지스트리 URL, 받은 날짜와 LICENSE 사본을 인계 자료에 남긴다.
@@ -124,6 +132,10 @@ HyperFrames는 장면, 시간과 움직임을 HTML 프로젝트로 관리하며 
 
 ## 출처
 
+- [21st](https://21st.dev/) — 레지스트리와 소스 복사, 프롬프트 전달 방식
+- [affectUI, Introduction](https://www.affectui.com/docs/introduction) — TSX 파일, 컴포넌트 문서와 Free/Pro 접근 범위
+- [affectUI, Using with AI](https://www.affectui.com/docs/ai) — MCP의 검색, 문서 조회와 소스 조회 도구
+- [Best Free Fonts](https://bestfreefonts.com/) — 글꼴 분류와 카탈로그
 - [Introducing Claude Design by Anthropic Labs — Anthropic](https://www.anthropic.com/news/claude-design-anthropic-labs)
 - [Claude Design now stays on brand for daily work — Anthropic](https://claude.com/resources/articles/claude-design-stays-on-brand-for-daily-work)
 - [google-labs-code/design.md — GitHub](https://github.com/google-labs-code/design.md) — 2026-10-12 README의 front matter와 절 순서, CLI 명령, lint 규칙 등급과 종료 코드, alpha 상태 확인

@@ -10,6 +10,21 @@ aliases: ["RAG Retrieval Engineering", "RAG 검색 엔지니어링", "RAG", "Hyb
 
 RAG(Retrieval-Augmented Generation)의 품질은 검색 하나가 아니라 **retrieval → context 구성 → generation → 근거 검증**의 연쇄로 결정된다. 검색이 관련 근거를 놓치면 생성기가 복원하기 어렵고, 근거를 잘 찾았어도 context packing이나 생성 단계에서 잘못 사용할 수 있다. 따라서 장애를 한 점수로 뭉개지 않고 층별로 분해해 진단한다.
 
+## 색인 준비와 질문 처리를 나눈다
+
+사전 색인을 사용하는 벡터 RAG는 문서를 검색 가능한 형태로 준비하는 경로와 질문마다 실행하는 경로를 나눈다. 다음은 기본 흐름이며 모든 RAG가 벡터 저장소를 요구한다는 뜻은 아니다.
+
+| 경로 | 기본 흐름 | 남기는 결과 |
+|---|---|---|
+| 색인 준비 | 문서 로딩, 청크 분할, 임베딩, 저장 | 청크 원문, 벡터와 원문을 찾을 메타데이터 |
+| 질문 처리 | 질문 임베딩, 관련 청크 검색, 문맥과 질문 조립, 답변 생성 | 검색한 근거와 그 근거를 사용한 답변 |
+
+색인을 재사용하면 질문마다 전체 문서를 다시 로딩하고 임베딩할 필요가 없다. 다만 문서나 임베딩, 분할 설정이 바뀌었을 때의 재처리는 별도로 관리한다. 벡터와 원문을 연결해야 검색한 숫자 표현을 실제 답변 근거로 되돌릴 수 있다. 모델과 전처리의 호환성은 [[Vector-Similarity-Search#임베딩 공간은 versioned contract다|임베딩 공간 계약]]을 따른다.
+
+검색과 생성도 같은 책임이 아니다. 검색기는 질문에 맞는 문서를 반환하고 생성기는 그 문서를 문맥으로 받아 답변한다. 이미 SQL, 문서 저장소나 업무 API에 필요한 지식이 있다면 이를 조회해 문맥으로 전달할 수도 있다. 벡터 DB 도입부터 결정하지 않고 아래의 사전 색인과 요청 시점 조회 비교를 따른다.
+
+2026-10-21 LangChain 공식 Retrieval 설명과 RAG 튜토리얼의 색인 단계를 대조했다. 재처리 경계는 이 구조를 적용한 운영 제안이며, 기존 제품별 설정과 평가 수치 전체를 다시 검증한 것은 아니므로 기존 `verified_at`은 유지한다.
+
 ## 품질을 분해하는 평가 모델
 
 | 층 | 확인할 질문 | 대표 측정 |
@@ -211,6 +226,8 @@ Q. 검색은 됐는데 폐기된 정책으로 답했다면?
 
 ## 출처
 
+- [LangChain Documentation, Retrieval](https://docs.langchain.com/oss/python/deepagents/retrieval)
+- [LangChain Documentation, Retrieval Augmented Generation (RAG) with Deep Agents](https://docs.langchain.com/oss/python/deepagents/rag) — 색인의 Load, Split, Embed, Store와 요청 시점 검색 흐름
 - [Amazon Bedrock API Reference, RetrievalFilter](https://docs.aws.amazon.com/bedrock/latest/APIReference/API_RetrievalFilter.html) — 2026-10-10 비교 연산, union 구조와 `andAll` 조건 수를 대조했다. 날짜 해석과 분류 정규화, 후보 손실 점검은 설계 제안이다.
 - [Amazon Nova User Guide, Using Amazon Nova for Multimodal RAG](https://docs.aws.amazon.com/nova/latest/userguide/rag-multimodal.html) — 2026-10-09 텍스트 설명과 멀티모달 임베딩의 선택, 원래 모달리티로 근거를 반환하는 권고를 대조했다. PDF 검색 단위와 원본 대조는 설계 제안이다.
 - [OpenSearch Documentation, Refresh Index API](https://docs.opensearch.org/latest/api-reference/index-apis/refresh/) — 2026-10-09 색인과 검색 가시성, refresh 대기와 강제 refresh 비용을 대조했다. RAG 전 구간의 지연 측정과 재처리 시험은 설계 제안이다.
