@@ -60,6 +60,10 @@ WING은 판매 관리 시스템이다. 판매자 직접배송과 로켓그로스
 
 ## 위탁판매와 AI
 
+자사몰과 마켓플레이스는 주문을 받는 판매 채널이고, 여기서 말하는 위탁 발송은 공급사가 재고를 보관하고 고객에게 보내는 주문 이행 방식이다. 두 축을 반대 선택지로 놓지 않는다. 자사몰에서도 공급사가 발송하는 드롭쉬핑을 할 수 있다. Shopify의 공식 주문 이행 예시도 판매자의 스토어에서 주문을 받은 뒤 도매상에 발주하고, 도매상이 고객에게 배송하는 구조다(2026-10-21 확인).
+
+수익성을 비교할 때는 판매 채널과 조달, 배송 방식을 각각 적고 같은 상품과 기간의 비용을 맞춘다. 자사몰이라는 이유만으로 위탁 발송보다 이익률이 높다고 판단하지 않는다. 상품 매입, 결제와 채널 수수료, 고객 획득, 배송, 반품 및 운영 비용을 반영한 뒤 비교하는 방식이 이 문서의 적용 제안이다. 공급사가 다른 상품을 한 주문에 담으면 배송비가 각각 발생할 수 있으므로 주문 단위의 잔액도 확인한다.
+
 위탁판매는 직접 재고를 보유하는 부담을 줄일 수 있지만 공급사의 품절, 배송 지연, 품질 문제에 영향을 받는다. 등록 상품 수보다 주문별 이익, 취소와 반품 비율, 고객 대응 시간을 함께 측정한다. AI가 탐색과 작성 시간을 줄인다는 가설도 검수, 수정과 문의 대응 시간을 포함해 확인한다. 상품 사양과 효능을 생성된 문구만으로 확정하지 않는다.
 
 반대로 같은 도구를 쓰는 경쟁자도 늘어 탐색만으로 얻는 마진은 줄어든다. 오래 남는 차이는 선별 기준, 공급사 관계, 품질 관리, 판매자 평점처럼 쌓이는 운영 역량이다([[AI-Commoditization-Differentiation|AI 범용화와 사업 차별화]]). 해외 소싱과 판매로 넓히는 경로는 [[Cross-Border-Resale-Arbitrage|해외 중고 리셀 차익 거래]]를 따른다.
@@ -158,6 +162,8 @@ WING은 판매 관리 시스템이다. 판매자 직접배송과 로켓그로스
 - [국가법령정보센터, 독점규제 및 공정거래에 관한 법률 제46조](https://law.go.kr/LSW/lsLinkCommonInfo.do?chrClsCd=010202&lsJoLnkSeq=1029551441) — 재판매가격유지행위의 원칙적 금지와 예외
 - [아이템위너가 되기 위한 네 가지 전략 — 쿠팡 마켓플레이스](https://marketplace.coupang.com/information-center/blog-news12?rf=MARKETPLACE) — 가격, 배송, 재고와 고객문의
 - [Shopify Help Center, Supply chain and fulfillment process](https://help.shopify.com/en/manual/products/dropshipping/what-is-dropshipping/fulfillment-process)
+- [Shopify Help Center, What is dropshipping?](https://help.shopify.com/en/manual/products/dropshipping/what-is-dropshipping) — 2026-10-21 확인, 판매 채널과 공급사 발송 방식의 구분. 기존 수수료와 행정 요건의 확인일은 유지한다.
+- [Shopify Help Center, Features of dropshipping](https://help.shopify.com/en/manual/products/dropshipping/what-is-dropshipping/features-of-dropshipping) — 2026-10-21 확인, 공급사별 분리 배송의 비용과 품질, 포장 통제의 한계
 - [Shopify Help Center, Getting paid](https://help.shopify.com/en/manual/payments/getting-paid)
 - [쿠팡 마켓플레이스, 판매 준비하기](https://marketplace.coupang.com/register) — 2026-10-08 정산 기준과 주/월 정산 안내, 2026-10-10 카탈로그 매칭과 브랜드 입력 안내 확인. 다른 절의 과거 확인일은 유지한다.
 - [정부24, 통신판매업신고](https://www.gov.kr/main?CappBizCD=11300000006&HighCtgCD=A09006&a=AA020InfoCappViewApp)

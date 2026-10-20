@@ -89,6 +89,8 @@ Warm introduction은 잠재 고객과 관계가 있는 사람에게 소개를 �
 
 인바운드 문의는 첫 연락까지의 기한을 별도 지표로 관리할 수 있다. 상태 칸만 있고 담당자, 다음 행동과 예정일 칸이 없으면 첫 연락이나 견적 후 재연락의 누락이 목록을 정리할 때에야 드러난다. 기한의 정의와 알림 설계는 [[Backoffice-Workflow-Design|업무용 제품의 처리 흐름 설계]]에서 다룬다.
 
+견적 후 연락은 일률적인 며칠 간격보다 고객과 합의한 검토 일정에 연결한다. 상담 직후에는 논의한 내용, 요청받은 자료와 다음 행동을 정리하고, 후속 통화나 검토 회의의 시점은 따로 제안한다. Salesforce의 공개 영업 교육도 상담 말미의 후속 일정 제안과 상담 직후의 요약 전달을 구분한다(2026-10-21 확인). 이를 소규모 영업에 적용하면 견적의 검토 담당자, 남은 질문과 다음 연락일을 함께 기록할 수 있다. 특정 기간 안에 전화하면 거래가 진전된다는 효과나 모든 고객에게 같은 연락 간격이 적절하다는 뜻은 아니다.
+
 계약 체결, 회계상 매출과 현금 수령은 별도 사건이다. 법적 체결 여부는 계약 방식과 조건을 확인하고, 파이프라인 단계명으로 판정하지 않는다. [[Business-Model|사업 손익]]과 [[Startup-Financial-Discipline|현금 계획]]에서도 구분한다.
 
 ### 보류 사유를 확인하고 후속 행동을 합의한다
@@ -168,6 +170,7 @@ CRM의 성과 화면에서는 답하는 질문이 다른 금액을 나눠 보인
 
 ## 출처
 
+- [Salesforce Trailhead, Build a Sales Process, Learn About the Sales Process](https://trailhead.salesforce.com/content/learn/modules/build-a-sales-process/learn-about-the-sales-process) — 2026-10-21 확인, 상담 말미의 후속 일정 제안과 상담 직후 요약 전달. 견적 검토 기록 방식은 소규모 영업에 적용한 제안이다.
 - [Techstars Mentor FAQs — Techstars](https://www.techstars.com/mentor-faq) — 2026-10-21 확인, PMF, 사업모델, 유통과 고객, 파트너 및 인맥 연결의 지원 범위
 - [Engage with Mentors - Worksheet — Techstars](https://toolkit.techstars.com/engage-with-mentors-worksheet) — 2026-10-21 확인, 멘토의 경험 조사, 짧은 제품 설명과 도움이 필요한 문제 준비
 - [The Techstars Mentor Manifesto — Techstars](https://www.techstars.com/blog/founder-advice/mentor-manifesto) — 사실과 의견 구분, 구체적 조언과 창업자의 의사결정 권한
