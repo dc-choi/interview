@@ -121,6 +121,17 @@ Data story는 선택한 대시보드의 시각화를 바탕으로 설명을 구�
 
 검토 예로, 월별 주문 차트를 요청했다면 날짜 컬럼, 주문 수의 정의, 필터와 집계 단위를 대조한다. 설명문이 그래프에서 관찰되는 차이를 인과관계로 바꾸지 않았는지도 확인한다. 이는 운영 점검 제안이며, 설명 생성 성공을 분석 결론이나 사업 성과의 검증으로 취급하지 않는다. 이 절만 추가 대조했으며 기존 검증일은 유지한다.
 
+## SageMaker Catalog 게시와 대시보드 접근을 구분한다
+
+부분 검증(2026-10-20): Unified Studio의 Quick 통합, 자산 메타데이터와 대시보드 공유 안내를 대조했다. 프로젝트의 데이터 접근, BI 대시보드 생성, 카탈로그 검색 노출과 열람 권한을 각각 확인한다.
+
+1. Quick blueprint가 포함된 프로젝트 프로필과 원본 데이터 접근을 준비한다. Data Explorer의 테이블이나 뷰에서 `Visualize in Quick`을 선택하면 해당 데이터셋을 만들고 분석 화면으로 연결한다.
+2. 프로젝트 QuickSight 폴더의 `Assets` 하위 폴더 안에서 만든 대시보드만 프로젝트 자산에 추가된다. 생성 후 Unified Studio의 `Manage > Catalog management > Assets`에서 실제 등록을 확인한다.
+3. 자산의 README, 용어집과 메타데이터 폼으로 지표 정의와 용도를 보완하고 카탈로그에 게시한다. 메타데이터를 고치면 새 inventory 버전이 생기며, 검색 카탈로그에 반영하려면 재게시한다. Inventory 버전과 게시 버전을 비교한다.
+4. 대시보드 자산의 구독은 확인일 기준 지원하지 않아 `Subscribe`가 비활성이다. 프로젝트 밖 사용자에게는 `Actions > Share`로 IAM Identity Center 사용자나 그룹의 접근을 부여한다. 공유 대상도 해당 SageMaker Unified Studio 도메인에 속해야 한다.
+
+카탈로그에서 발견할 수 있다는 사실을 원본 테이블이나 대시보드의 열람 허가로 해석하지 않는다. 검수 시 검색 결과 노출, 대상 독자의 대시보드 접근과 지표 값을 따로 확인한다. 이는 공식 절차에서 도출한 점검 제안이며 AWS 계정에서 실행한 결과는 아니다. 기존 검증일은 유지한다. 일반적인 자산 탐색과 품질 정보는 [[SageMaker-Catalog-Discovery]]에서 다룬다.
+
 ## 셀프서비스 BI와 조회 권한을 구분한다
 
 업무 담당자가 직접 분석하도록 도구를 제공하는 것과 모든 데이터를 공개하는 것은 다른 결정이다. 지표의 정의와 집계 단위를 공유하더라도 조직별로 열람할 수 있는 행은 따로 제한할 수 있다.
@@ -194,6 +205,10 @@ AWS의 공개 Post Call Analytics(PCA) 참조 구성에서는 분석 결과를 �
 
 ## 출처
 
+- [Amazon SageMaker Unified Studio, Getting started using Amazon Quick integration](https://docs.aws.amazon.com/sagemaker-unified-studio/latest/userguide/quicksight-integration-getting-started.html)
+- [Amazon SageMaker Unified Studio, Manage inventory and curate assets](https://docs.aws.amazon.com/sagemaker-unified-studio/latest/userguide/update-metadata.html)
+- [Amazon SageMaker Unified Studio, Publish assets to the catalog from the project inventory](https://docs.aws.amazon.com/sagemaker-unified-studio/latest/userguide/publishing-data-asset.html)
+- [Amazon SageMaker Unified Studio, Share Amazon Quick dashboards](https://docs.aws.amazon.com/sagemaker-unified-studio/latest/userguide/share-qs-dashboard.html)
 - [Amazon Quick, Datasets using S3 files in another AWS account](https://docs.aws.amazon.com/quick/latest/userguide/using-s3-files-in-another-aws-account.html)
 - [AWS KMS, Allowing users in other accounts to use a KMS key](https://docs.aws.amazon.com/kms/latest/developerguide/key-policy-modifying-external-accounts.html)
 - [How do I set up cross-account access from Quick Suite to an Amazon S3 bucket in another account? — AWS re:Post](https://www.repost.aws/knowledge-center/quicksight-cross-account-s3)

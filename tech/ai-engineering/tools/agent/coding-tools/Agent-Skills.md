@@ -74,6 +74,22 @@ Claude 쪽에서는 커스텀 슬래시 커맨드도 스킬로 흡수됐다. 사
 
 두 도구는 Agent Skills라는 사실상 동일한 개방 포맷으로 수렴했다. 폴더 + SKILL.md + description 자동 로드가 공통 뼈대이고, 나머지는 관례 차이다. Claude 쪽 세부 메커니즘(목록 표시용 설명의 when_to_use 합산 1,536자 절삭, allowed-tools가 제한이 아닌 사전 승인, 예산 초과 시 저빈도 스킬부터 설명 제외 등)은 [[Claude-Code-Extension-Reference]]에 있다.
 
+## 슬래시 표기와 실제 명령 등록을 구분한다
+
+부분 검증(2026-10-20): Claude Code의 공식 스킬 안내, 명령 도움말과 Claude 프롬프트 지침을 대조했다. `/이름`이라는 표기만으로 내장 기능임을 판정하지 않는다.
+
+- 내장 명령과 번들 스킬은 제품이 제공한다. 사용자 정의 스킬은 `SKILL.md`의 지침을 불러오며, 기존 `.claude/commands/` 파일도 명령을 만들 수 있다.
+- 현재 환경에서 사용할 수 있는 명령은 빈 프롬프트의 `/` 목록과 `/help`로 확인한다. 같은 이름이라도 설치한 스킬이나 플러그인이 다르면 실행할 지침이 달라질 수 있다.
+- 일반 대화에서 `/brutal`, `/ELI5`, `/10x` 같은 문자열을 보았다는 사실은 Claude Code에 해당 명령이 등록됐다는 증거가 아니다. 등록 여부를 확인하지 않은 문자열은 원하는 답변을 설명하는 표현과 구분해 다룬다.
+
+공식 프롬프트 지침은 원하는 출력 형식, 제약과 필요한 맥락을 명확히 쓰도록 권한다. 다음은 이를 적용한 지시 예시이며, 특정 문자열의 성능 보장이 아니다.
+
+- 비판 검토: 제안의 취약한 가정, 반례와 추가로 필요한 근거를 구분한다.
+- 쉬운 설명: 대상 독자의 배경지식을 정하고 예시 하나와 비유의 한계를 포함한다.
+- 개선 요청: 정확성, 누락, 길이처럼 비교할 기준과 유지할 조건을 명시한다.
+
+별칭 한 줄이나 단호한 말투가 정확성을 높였다고 판단하려면 같은 입력과 평가 기준으로 결과를 비교해야 한다. 공식 명령 등록과 작업 품질 평가는 별개다. 이 절만 대조했으므로 문서 전체의 기존 검증일은 유지한다.
+
 ## 스킬 vs 훅 — 무엇을 할지 vs 언제 실행될지
 
 | 구분 | 훅(Hook) | 스킬(Skill) |
@@ -134,6 +150,8 @@ Kiro Hooks의 현재 형식과 차단 경계, Kiro Skills의 범위와 이식 �
 
 ## 출처
 
+- [Claude Help Center, Claude Code cheatsheet](https://support.claude.com/en/articles/14553413-claude-code-cheatsheet)
+- [Claude Platform Docs, Prompting best practices](https://platform.claude.com/docs/en/build-with-claude/prompt-engineering/claude-prompting-best-practices)
 - [Kiro Docs, Hooks](https://kiro.dev/docs/hooks/)
 - [Kiro Docs, Hook actions](https://kiro.dev/docs/hooks/actions/)
 - [Claude Code Skills vs Codex Skills: 구조와 차이 완전 정리 — AlienCoder](https://aliencoder.tistory.com/243)
