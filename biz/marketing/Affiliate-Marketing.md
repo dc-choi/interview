@@ -39,6 +39,16 @@ TikTok Shop 같은 커머스 플랫폼 안의 제휴에서 크리에이터는 �
 
 적용 제안: 미국 TikTok Shop 조건을 다른 시장이나 한국 기반 크리에이터에게 옮겨 쓰지 않는다. 조회수 보상은 신청률과 승인율 대신 제출물 승인 여부, 1,000회당 단가, 최소 수익과 상한, 남은 예산으로 예상 수익을 계산하고, 조회수 집계 기준과 편집할 원본의 사용 허락을 캠페인 조건에서 확인한다.
 
+## 구매 판단을 돕는 리뷰와 비교 글
+
+제휴 링크를 붙일 글은 조회 가능성과 구매 판단에 주는 도움을 나눠 평가한다. 여행지 날씨 안내와 숙박 시설 비교처럼 같은 주제라도 독자가 해결하려는 질문이 다르다. 특정 글감이 더 많은 수익을 낸다는 보편적 순위는 없으며, 조회수가 구매나 적격 수수료로 이어지는지는 위의 승인과 지급 단계까지 확인한다.
+
+2026-10-21 확인한 Google Search Central의 리뷰 작성 지침은 상품뿐 아니라 서비스와 여행지 등도 대상으로 삼는다. 직접 경험의 근거, 비교 가능한 대안, 장단점과 중요한 선택 기준을 제시하고, 특정 용도에 가장 적합하다고 추천할 때는 그 이유를 직접 경험으로 뒷받침하도록 안내한다. 추천 목록도 개별 상세 리뷰 없이 읽어도 유용한 내용을 갖춰야 한다.
+
+적용 예시로 숙박 리뷰에는 직접 확인한 이동 편의, 소음과 이용 조건을 적고 어떤 여행자에게 맞는지 설명한다. 예약 실패 경험은 당시 조건과 확인한 대안을 구분해 쓴다. 이는 리뷰 지침을 적용한 편집 예시이며 해당 글의 검색 순위나 CPA 수익을 보장하는 근거는 아니다.
+
+글별로 조회, 제휴 링크 클릭, 적격 전환과 취소 후 인정 수익을 나눠 기록하면 노출용 글과 구매 판단용 글의 역할을 비교할 수 있다. 마지막 단계의 수익을 보기 전에는 클릭 증가만으로 제작 우선순위를 확정하지 않는다.
+
 ## 수익성 계산과 작은 검증
 
 정액 보상 캠페인의 가상 예시로 적격 클릭 1,000회, 신청률 2%, 승인율 50%, 승인 건당 보상 1만원이면 예상 인정 수익은 10만원이다. 실제 캠페인의 관측치나 보장 수익이 아니며, 제작비, 광고비와 후속 조정 전 금액이다.
@@ -47,6 +57,7 @@ TikTok Shop 같은 커머스 플랫폼 안의 제휴에서 크리에이터는 �
 
 ## 출처
 
+- [Google Search Central, Write high quality reviews](https://developers.google.com/search/docs/specialty/ecommerce/write-high-quality-reviews) — 2026-10-21 확인, 직접 경험과 비교 근거를 갖춘 리뷰 작성 기준. 제휴 수익 효과는 검증하지 않았다.
 - [Google Ads, Cost per click (CPC): Definition](https://support.google.com/google-ads/answer/116495?hl=en-GB)
 - [Google Ads, Average CPA: Definition](https://support.google.com/google-ads/answer/6396841?hl=en)
 - [Google Ads, Choose your Smart Bidding strategy for Display campaigns](https://support.google.com/google-ads/answer/10276703?hl=en) — 목표 CPA와 실제 과금 방식의 구분
