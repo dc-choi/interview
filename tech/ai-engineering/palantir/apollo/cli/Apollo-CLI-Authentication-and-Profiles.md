@@ -1,7 +1,7 @@
 ---
 tags: [palantir, apollo, continuous-delivery]
 status: done
-verified_at: 2026-10-16
+verified_at: 2026-10-21
 category: AI Engineering
 aliases: []
 ---
@@ -12,7 +12,7 @@ Apollo CLI는 Linux, macOS, Windows에서 Hub의 제품, 환경, 릴리스와 �
 
 ## 인증 선택과 설정
 
-`--apollo-token-provider`는 `auto`, `static`, `service-user`, `sso`를 받는다. `auto`는 토큰이 있으면 static, client ID와 secret이 모두 있으면 service-user, 그 외에는 브라우저 SSO를 선택한다. 토큰과 client 자격 증명을 동시에 설정하면 오류가 난다. SSO 토큰은 프로필별로 캐시되고 갱신된다.
+`--apollo-token-provider`는 `auto`, `static`, `service-user`, `sso`를 받는다. `auto`는 토큰이 있으면 static, client ID와 secret이 모두 있으면 service-user, 그 외에는 브라우저 SSO를 선택한다. 토큰과 함께 client ID나 secret 중 하나라도 설정하면 오류가 난다. service-user는 client ID와 secret으로 Multipass에서 토큰을 발급받고, sso는 Multipass에 대한 대화형 브라우저 로그인이며 YubiKey 같은 하드웨어 키를 지원한다. SSO 로그인은 토큰이 필요한 명령을 처음 실행했는데 유효한 캐시 토큰이 없을 때 자동으로 시작된다. SSO로 얻은 토큰은 프로필별로 캐시되고 별도 입력 없이 갱신된다. `--sso-callback-port`는 SSO OAuth callback을 받을 로컬 loopback 포트이며, 0을 주면 사용 가능한 임시 포트를 고른다.
 
 설정 파일은 `~/.palantir/apollo-cli.config`에 생성된다. Hub URL, 인증값, 기본 환경과 space를 프로필로 묶을 수 있다. `configure`에서 Enter는 기존 값을 유지하고 작은따옴표 두 개는 값을 비운다. 인증 방식을 바꿀 때 이전 방식을 위한 값을 지워야 한다.
 
@@ -22,7 +22,7 @@ Apollo CLI는 Linux, macOS, Windows에서 Hub의 제품, 환경, 릴리스와 �
 - `profile import`는 YAML/JSON을 읽는다. `--name`, `--overwrite`, `--set-current`는 각각 이름, 덮어쓰기, 기본값 변경을 제어한다.
 - **프로필 export에는 토큰과 client secret이 포함된다.** 저장소, 공개 로그와 공유 문서에 넣지 않는다.
 
-`--environment`와 `--space-id`는 서로 다른 범위를 지정한다. enrollment의 primary organization 소속이 아닌 사용자가 릴리스를 다룰 때 명시적인 space ID가 필요할 수 있다. `-o json`은 기계 판독에 쓰고, `--quiet`는 stderr 로그를 줄인다. `--insecure-skip-verify`는 서버 인증서 검증을 생략하므로 정상 연결의 기본값으로 삼지 않는다.
+`--environment`와 `--space-id`는 서로 다른 범위를 지정한다. enrollment의 primary organization 소속이 아닌 사용자가 릴리스를 다룰 때 명시적인 space ID가 필요할 수 있다. `-o json`은 기계 판독에 쓰고, `--quiet`는 stderr에 로그를 출력하지 않는다. `--http-timeout`은 모든 Apollo 요청의 제한 시간이며 단위는 분이므로 초 단위 관례로 값을 정하지 않는다. `--insecure-skip-verify`는 서버 인증서 검증을 생략하므로 정상 연결의 기본값으로 삼지 않는다.
 
 ## 지원 단계와 문서 차이
 
@@ -34,7 +34,8 @@ Experimental 표시 명령은 configure에서 V2 experimental commands를 켜야
 
 ## 출처
 
-- [Palantir, apollo-cli](https://www.palantir.com/docs/apollo/apollo-cli/apollo-cli) — 플랫폼 지원과 공통 인증, 출력, 연결 플래그.
+- [Palantir, apollo-cli](https://www.palantir.com/docs/apollo/apollo-cli/apollo-cli) — 플랫폼 지원과 공통 인증(Multipass 토큰 발급, 하드웨어 키, 프로필별 캐시와 자동 SSO 로그인), 출력, 연결 플래그, SSO callback 포트와 분 단위 요청 제한 시간.
+- [Palantir, apollo-cli artifact-registry list](https://www.palantir.com/docs/apollo/apollo-cli/apollo-cli_artifact-registry_list) — 루트와 같은 상속 플래그 설명.
 - [Palantir, apollo-cli configure](https://www.palantir.com/docs/apollo/apollo-cli/apollo-cli_configure) — 현재 프로필 구성, Enter 유지와 작은따옴표 두 개로 초기화.
 - [Palantir, apollo-cli profile Experimental](https://www.palantir.com/docs/apollo/apollo-cli/apollo-cli_profile) — URL, 자격 증명, 환경 기본값을 프로필로 묶음.
 - [Palantir, apollo-cli profile create Experimental](https://www.palantir.com/docs/apollo/apollo-cli/apollo-cli_profile_create) — 대화형 생성과 기존 프로필 복제.
