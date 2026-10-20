@@ -66,7 +66,7 @@ Code Workspace dataset alias는 branch pin과 같은 dataset의 다중 import로
 
 Materialization join autocomplete는 양쪽이 직접 변환한 Object Set이고 link가 있을 때 primary/foreign key를 추론했다. 이미 materialization으로 변환한 입력은 인식하지 않는 조건이 있어 제안 부재를 관계 부재로 단정하지 않는다. Workshop virtualized Object List의 표시 성능도 전체 객체 계산과 정렬 비용을 없애는 것은 아니다.
 
-2024년 8월 struct variable은 함수 호출을 하나로 묶지만 unsupported field는 초기화 때 생략되고 당시 nested struct/struct array도 제외됐다. Widget이 struct 전체를 받지 못하면 field를 추출해야 한다. 함수 응답 성공과 모든 field의 UI 노출을 따로 확인한다. Module translation은 번역한 지원 string과 사용자 account locale의 조합이며 데이터 값 전체의 자동 번역이 아니다. Scheduling Calendar 초기 drag/drop 표시 기능과 Action/event/Scenario roadmap도 구분한다.
+2024년 8월 struct variable은 함수 호출을 하나로 묶지만 unsupported field는 초기화 때 생략되고 당시 nested struct/struct array도 제외됐다. Widget이 struct 전체를 받지 못하면 field를 추출해야 한다. 함수 응답 성공과 모든 field의 UI 노출을 따로 확인한다. 2024년 9월 발표 기준 module translation은 번역한 지원 string을 사용자 계정 언어로 보여 주는 방식이었고 데이터 값 전체의 자동 번역이 아니다. 2026-10-21 확인한 공식 문서는 브라우저 locale 기준으로 설명한다([[Palantir-Workshop-Design-Mobile-and-Localization|Workshop 현지화]]). Scheduling Calendar 초기 drag/drop 표시 기능과 Action/event/Scenario roadmap도 구분한다.
 
 Derived Series 2024년 10월 GA는 beta의 수동 pipeline 연결을 automatic Ontology save로 확장했다. 계산은 여전히 요청 때 수행하는 logic이며 materialized value 저장과 다르다. R Markdown report도 최신 file 반영과 historical version link를 구분한다. 9월 말 이후 새 Code Workspace는 backing repository 중심으로 관리했지만 filesystem의 두 resource가 즉시 하나로 삭제된 것은 아니었다.
 
@@ -127,6 +127,7 @@ Carbon의 Insight exploration과 modern object search는 2026년 9월 workspace�
 - [Palantir, March 2026 announcements](https://www.palantir.com/docs/foundry/announcements/2026-03)
 - [Palantir, April 2026 announcements](https://www.palantir.com/docs/foundry/announcements/2026-04)
 - [Palantir, September 2026 announcements](https://www.palantir.com/docs/foundry/announcements/2026-09)
+- [Palantir, Workshop Translations](https://www.palantir.com/docs/foundry/workshop/translations) — 2026-10-21 현행 표시 언어 기준만 확인
 
 ## 관련 문서
 

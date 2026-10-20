@@ -16,7 +16,7 @@ Workshop은 Object layer를 읽고 Actions/Functions/derived property를 조합�
 
 Copy-paste same input은 shared state를, duplicate input은 복제 state를 만든다. 자주 재사용하는 widget logic은 Embedded Module로 중앙 관리한다. Font custom name은 viewer device에 설치돼 있어야 하고 font upload/storage는 미지원이라 fallback으로 사용자별 표시가 달라질 수 있다.
 
-Saved color는 referenced layout/widget에 변경이 전파되지만 intent color는 Used Colors 목록과 별개다. Value formatting의 fraction digits/conditional color는 underlying number를 바꾸지 않는다. Translation은 지원 static strings를 browser locale별로 표시하며 AIP 결과도 검토한다. New/modified string은 To translate로 분리되고 Marked complete는 builder review 상태이지 정확성 보장이다.
+Saved color는 referenced layout/widget에 변경이 전파되지만 intent color는 Used Colors 목록과 별개다. Value formatting의 fraction digits/conditional color는 underlying number를 바꾸지 않는다. Translation은 지원 static strings를 browser locale별로 표시하며 AIP 결과도 검토한다. 2026-10-21 확인한 번역 대상은 module header 제목, section header 제목과 tab, Tabs 라벨, Button Group 텍스트와 설명, Metric Card 라벨과 설명, Markdown 내용 같은 위젯의 정적 텍스트, Object Table과 Object List의 열 제목, Pivot Table 집계 제목과 Filter List 섹션 제목이다. 목록의 항목은 모두 제목, 라벨, 설명과 Markdown 내용 같은 모듈 구성 문자열이며 객체 속성값 같은 데이터는 목록에 없다. AIP 번역에는 custom workflows용 AIP 기능 구성과 모듈의 시작 언어, 대상 언어 지정이 필요하다. New/modified string은 To translate로 분리되고, Marked as complete는 해당 문자열을 application builder에게 검토 완료로 표시하는 상태이지 번역 정확성의 보장이 아니다.
 
 ## Mobile
 

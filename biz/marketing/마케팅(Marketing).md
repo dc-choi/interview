@@ -13,6 +13,7 @@ aliases: ["Marketing", "마케팅"]
 - [x] [[AI-Marketing-Analysis|AI 마케팅 분석]] — 조회와 판단, 마케팅 엔지니어의 고객 언어, 실험 실행과 승인 경계, 이탈 예측과 증분 효과
 - [x] [[Affiliate-Marketing|제휴 마케팅]] — CPC와 CPA, 적격 성과와 정산 수익의 구분
 - [x] [[Marketing-Fundamentals|마케팅, 브랜딩, 광고와 홍보 기초 (PR의 관계 관리, 브랜드와 제품 통합의 구분, STP, 4P, Customer Journey)]]
+- [x] [[Customer-Messaging-and-Buying-Roles|고객 상황과 구매 역할별 메시지]] — 목표 고객군 안의 공통 가치, 두 번째 미팅의 맞춤 설명, 구매 이유와 도입 우려, 구매 참여자별 확인 자료
 - [x] [[GTM-Strategy|Go-to-Market 전략과 유입, 체험 물량 역산]] *(→ product-strategy/)*
 - [x] [[Content-Marketing|콘텐츠 마케팅]] — 작은 유입의 전환 검증, 경험 콘텐츠와 무료/유료 제공 범위, 추천 채널
 - [x] [[Search-Trends-and-Content-Hypotheses|검색 트렌드와 콘텐츠 가설]] — 구체적인 검색어, 증가율과 설문 표본의 한계, 사용 장면별 콘텐츠 실험
