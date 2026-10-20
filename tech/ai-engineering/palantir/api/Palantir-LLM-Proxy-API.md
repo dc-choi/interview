@@ -1,7 +1,7 @@
 ---
 tags: [palantir, foundry, aip, api, llm, governance]
 status: done
-verified_at: 2026-10-16
+verified_at: 2026-10-20
 category: "AI엔지니어링(AIEngineering)"
 aliases: ["팔란티어 LLM 프록시 API"]
 ---
@@ -42,6 +42,16 @@ TypeScript 예제는 OSDK `PlatformClient.tokenProvider()`와 `PlatformClient.fe
 공식 Python HTTP client helper와 TypeScript PlatformClient fetch는 attribution/tracing을 자동 전파한다. provider SDK만 새로 만들고 일반 HTTP client를 넣으면 같은 전파가 이루어진다고 전제하지 않는다. 계측 header를 빼먹은 요청도 모델 응답을 받을 수 있어 호출 성공과 추적 성공을 별도로 확인한다. 마지막 문장은 명시된 header 생략 효과에서 도출한 점검이다.
 
 ## 데이터 거버넌스와 사용량
+
+### Anthropic 세션 라우팅과 캐시 친화성
+
+2026-10-20 Anthropic Messages Proxy의 header 계약을 추가로 대조했다. 선택적 `X-Palantir-session-id`는 여러 요청을 하나의 논리적 세션으로 묶는 불투명 식별자이며, 값은 256자 미만이어야 한다.
+
+같은 식별자의 요청은 가능하면 같은 모델 제공자 backend로 보내 프롬프트 캐시 적중을 돕는다. 이 라우팅 친화성은 best-effort다. 요청을 처리하기 위해 다른 backend로 보낼 수 있고, 일정 시간 활동이 없으면 친화성이 만료된다. 문서는 구체적인 유휴 만료 시간을 제시하지 않는다.
+
+이를 캐시 적중, 고정 backend, 대화 이력 저장이나 세션 지속성 보장으로 해석하지 않는다. 호출자는 여전히 API 계약에 맞는 `messages`를 전달한다. 공식 예제의 자동 전파 설명은 `attribution`, `traceParent`, `traceState`에 한정되므로 이 세션 헤더도 자동 설정된다고 전제하지 않는다. 이 절은 Anthropic 경로의 문서 계약을 확인한 것이며 실제 라우팅이나 적중률을 측정한 결과는 아니다.
+
+### 보존 정책과 provider 기능
 
 proxy는 다른 AIP 사용과 같은 ZDR, georestriction 요구를 적용하며 호환 가능한 provider API 기능을 선택적으로 제공한다. 사용량은 Resource Management에서 확인하고 rate limiting을 적용한다.
 
