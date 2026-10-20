@@ -67,6 +67,19 @@ Query metadata는 재귀 dataType과 typeReferences를 제공한다. execute의 
 
 이 응답의 `data`는 Query type 목록이다. Query를 실행한 결과와 구분하고, 실행에 사용할 버전 조건은 위의 실행 계약에 맞춰 따로 정한다.
 
+### Query type 단건 조회의 요청 계약
+
+`GET /api/v2/ontologies/{ontology}/queryTypes/{queryApiName}`은 지정한 Query type의 metadata를 읽는다. `{ontology}`에는 Ontology API name 또는 RID를, `{queryApiName}`에는 Query type API name을 넣는다. OAuth2 operation scope는 `api:ontologies-read`다.
+
+- `version`을 생략하면 prerelease를 포함해 가장 최근에 발행한 버전을 선택한다. [[Palantir-Query-Execution-API|Global Query API]]의 기본 선택인 prerelease 제외 최고 semantic version과 구분한다.
+- 선택 query parameter `branch`는 metadata를 읽을 Foundry branch다. Experimental 기능이므로 모든 workflow 지원을 전제하지 않는다.
+- `sdkPackageRid`와 `sdkVersion`은 생성된 SDK의 패키지 RID와 버전이다. 함수의 `version`과 같은 인자로 취급하지 않는다. 이 endpoint에는 `latestVersionResolution`, `includePrerelease`, `preview`가 query parameter로 정의돼 있지 않다.
+- 응답의 필수 필드는 `apiName`, `output`, `rid`, `version`이며 `parameters`, `typeReferences`, 설명과 표시 이름은 선택 필드다. 실행 결과인 `value` 대신 입력/출력 명세를 받는다.
+
+클라이언트 설계 제안: 입력 폼을 만든 metadata의 `rid`와 `version`을 보관하고 실행 시 선택한 버전과 대조한다. 조회와 실행마다 최신 버전을 다시 선택하면 두 호출 사이의 발행으로 명세가 달라질 수 있다.
+
+2026-10-20 Get Query Type의 요청 인자와 응답 schema를 대조했다. 검증 범위는 이 절이며 실제 인증, branch별 조회와 Query 실행은 시험하지 않았다. 다른 metadata 항목의 검증일은 갱신하지 않았다.
+
 ## 출처
 
 - [Get Object Type](https://www.palantir.com/docs/foundry/api/ontologies-v2-resources/object-types/get-object-type)
@@ -76,6 +89,7 @@ Query metadata는 재귀 dataType과 typeReferences를 제공한다. execute의 
 - [Get Ontology Value Type](https://www.palantir.com/docs/foundry/api/ontologies-v2-resources/ontology-value-types/get-ontology-value-type)
 - [Execute Query](https://www.palantir.com/docs/foundry/api/ontologies-v2-resources/queries/execute-query)
 - [List Query Types](https://www.palantir.com/docs/foundry/api/ontologies-v2-resources/query-types/list-query-types)
+- [Get Query Type](https://www.palantir.com/docs/foundry/api/ontologies-v2-resources/query-types/get-query-type)
 
 ## 관련 문서
 

@@ -9,6 +9,7 @@ aliases: ["보안(Security)", "Security Index"]
 
 ## 목차
 
+- [[Smart-Contract-Reentrancy|스마트 컨트랙트 재진입과 상태 일관성]] — 외부 호출, 상태 변경 순서, 가드의 범위와 산술 버전 경계
 - [[AI-Content-Provenance|AI 콘텐츠의 워터마크와 출처 증명]] — 통계적 텍스트 신호, C2PA, 숨은 문자와 탐지 결과의 한계
 - [[Agent-Execution-Isolation|에이전트 실행 격리]] — MXC 백엔드별 강제 범위, 내부자 위험과 공개 모델의 조건부 백도어
 - [[Enterprise-Browser-Control|기업용 브라우저 통제]] — Firefox Enterprise의 관리 위치와 early access
