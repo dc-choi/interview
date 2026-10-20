@@ -13,6 +13,7 @@ aliases: ["AI 엔지니어링 실천 도구", "AI Engineering Tools"]
 - [x] [[AI-Work-Tool-Selection|업무 병목에 맞는 AI와 협업 도구 선택]] — 검색, 생성과 관리의 역할 구분, 제품과 공개 저장소의 기능 및 검수 기준, 모델과 데이터 API를 포함한 전체 비용 측정
 - [x] [[GraphRAG-Retrieval|GraphRAG 검색]] — 벡터 후보의 관계 확장, 그래프 추출 오류와 갱신, 관리형 구성의 제한
 - [x] [[A2A-Kafka-Transport|A2A와 Kafka 전송]] — 사용자 정의 바인딩, 작업 상태, 재전달과 권한 경계
+- [x] [[A2A-CLI|A2A CLI]] — 카드 조회, 메시지와 작업 명령, 종료 코드와 작업 결과의 분리, `--exec` 테스트 서버, 코딩 에이전트 스킬
 - [x] [[Generative-Product-Image-Workflow|생성형 상품 이미지 워크플로우]] — 마스크와 상품 정합성, GPU 배치 실행과 비동기 추론
 - [x] [[Generative-Video-Editing|생성형 영상 편집과 결과 검증]] — 변경 범위, 원본 보존, 장면 연장과 생성 기능의 한계, 세로 숏폼 자동 리프레이밍의 검출과 평활화
 - [x] [[Agent-Client-Protocol|ACP]] — 에디터와 코딩 에이전트의 메시지, capability와 승인 경계

@@ -1,7 +1,7 @@
 ---
 tags: [ai, harness, guardrail]
 status: done
-verified_at: 2026-09-16
+verified_at: 2026-10-20
 category: "AI엔지니어링(AIEngineering)"
 aliases: ["Gate Placement", "게이트 배치", "하네스 게이트 설계"]
 ---
@@ -47,6 +47,16 @@ aliases: ["Gate Placement", "게이트 배치", "하네스 게이트 설계"]
 | 기억 유실 | 새 세션이 되면 이전 맥락이 사라진다 | 파일로 남겨 다음 세션이 이어받게 한다 |
 
 가운데 열은 전부 지시이고 오른쪽 열은 전부 구조다. 지시는 지켜질 수도 안 지켜질 수도 있지만 구조는 어기기 어렵다. 이 표를 자기 팀의 반복 실패 목록으로 바꿔 쓰면 그대로 게이트 후보 목록이 된다.
+
+### 예시 - 운영 DB 쓰기를 세 층으로 막기
+
+| 층 | 수단 | 남는 구멍 |
+|---|---|---|
+| 텍스트 규칙 | 하네스에 SELECT만 실행하고 변경 쿼리는 사람에게 제시하라고 적는다 | 맥락이 복잡해지면 무시될 수 있다 |
+| 구조적 강제 | DB에 닿는 길을 스크립트 하나로 고정하고 접속 정보는 스크립트 안에 둔다. 에이전트는 쿼리만 넘기고 어느 DB에 붙을지는 스크립트가 정한다 | 스크립트가 쓰기 쿼리를 그대로 전달하면 쓰기는 여전히 가능하다. 에이전트가 스크립트를 고치거나, 스크립트에서 꺼낸 접속 정보로 다른 DB 클라이언트를 실행할 수 있으면 이 길은 우회된다 |
+| 권한 차단 | 쓰기 권한이 없는 계정이나 읽기 전용 복제본으로 연결한다 | 계정과 서버 설정이 실제로 쓰기를 거부하는지 확인해야 한다 |
+
+MySQL의 `read_only`를 켜면 서버는 클라이언트 변경을 거부하지만 `CONNECTION_ADMIN`(또는 지원 중단 예정인 `SUPER`) 권한 사용자는 예외다. `super_read_only`를 함께 켜면 이 권한 사용자도 막히지만, 두 변수를 모두 켜도 임시 테이블 작업 같은 일부 작업은 허용된다(MySQL 8.4 문서 기준). 서버 설정에만 기대지 않으려면 애초에 변경 권한을 주지 않은 계정을 쓴다. 에이전트가 접속하는 계정의 권한과 `read_only`, `super_read_only` 값을 먼저 보고, 성공해도 피해가 없는 시험 쓰기를 서버가 오류로 거절하는지 직접 확인하는 것이 마지막 층의 검증이다. 이 세 층을 두는 목적은 에이전트가 실수했을 때 피해가 닿는 범위를 미리 제한하는 데 있다.
 
 ## 게이트를 걸어야 하는 세 곳
 
@@ -146,6 +156,8 @@ Claude Code 훅에서 종료 코드만으로 차단을 만드는 것은 대부�
 - [Level 9 하네스 엔지니어링과 Evaluator 제어 — 클로드 코드 마스터 활용편 발표 자료(한빛미디어), 빌런 (2026-09)](https://run-ai.kr/learn/carve-harness)
 - [carve-harness — GitHub, claude-code-expert](https://github.com/claude-code-expert/carve-harness)
 - [Anthropic, Hooks](https://code.claude.com/docs/en/hooks)
+- [나는 하네스 깎는 노인이 되었다 시리즈 1: 은총알은 없다 — NHN Cloud Meetup](https://meetup.nhncloud.com/posts/423) — 2026-09-28 공개, 텍스트 규칙, 구조적 강제와 권한 차단의 3층 운영 경험
+- [MySQL 8.4 Reference Manual, Server System Variables](https://dev.mysql.com/doc/refman/8.4/en/server-system-variables.html) — `read_only`와 `super_read_only`의 예외와 허용 작업, 2026-10-20 대조
 
 ## 관련 문서
 

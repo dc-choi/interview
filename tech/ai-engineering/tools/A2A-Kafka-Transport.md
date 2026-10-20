@@ -52,3 +52,4 @@ Kafka에 메시지가 남아 있어도 소비자가 외부 DB를 갱신한 뒤 o
 - [[MCP#A2A와의 경계 — 도구 연결과 에이전트 협업|MCP와 A2A의 경계]]
 - [[MQ-Kafka-Patterns|Kafka 실전 패턴과 도입 조건]]
 - [[MQ-Kafka-Event-Ordering|파티션과 소비자 처리 순서]]
+- [[A2A-CLI|A2A CLI]] — 터미널과 CI에서 에이전트 조회, 메시지 전송과 사용자 정의 전송 플러그인

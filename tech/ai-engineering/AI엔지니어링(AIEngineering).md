@@ -41,6 +41,7 @@ Software 3.0 패러다임, LLM과 에이전트, 하네스, 평가, 조직 전환
 - [x] [[LLM-Hallucination-Verification#Bedrock의 근거 검사와 정책 검증|Bedrock 환각 검증의 경계]] — grounding과 relevance, 정책 범위, detect mode와 검사 실행 여부
 - [x] [[Agent-Skills-Kiro#Kiro Powers: 도구와 지침을 함께 활성화한다|Kiro Powers와 API 명세 연동]] — 도구와 지침의 동적 로드, 현재 패키지 형식과 검증 경계
 - [x] [[A2A-Kafka-Transport|A2A와 Kafka 전송]] — 표준 바인딩과 사용자 정의 전송, 외부 부수효과의 멱등성과 MSK 권한
+- [x] [[A2A-CLI|A2A CLI]] — 카드 조회, 메시지와 작업 명령, 종료 코드와 작업 결과의 분리, `--exec` 테스트 서버, 코딩 에이전트 스킬
 - [x] [[Generative-Product-Image-Workflow|생성형 상품 이미지 워크플로우]] — 편집 영역, 원본 대조, SageMaker GPU 지원과 유휴 축소의 구분
 - [x] [[Aspect-Based-Sentiment-Analysis|속성 기반 감성 분석]] — 구문과 감성 추출, 리뷰 집계와 요약, 단계별 평가
 - [x] [[Time-Series-Forecast-Evaluation|시계열 예측 평가]] — 예측 시점의 정보, rolling origin, 외부 변수와 MAPE의 해석
