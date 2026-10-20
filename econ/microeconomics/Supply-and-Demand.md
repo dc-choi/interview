@@ -110,6 +110,18 @@ aliases: ["수요와 공급", "Supply and Demand"]
 
 다음은 위 계약 구조에서 도출한 해석이다. 구매 약정과 예치금은 수요가 줄어드는 위험의 일부를 구매자에게 옮겨 공급자의 증설 부담을 덜어 주고, 가격 구간은 양쪽의 가격 변동 위험을 함께 제한한다. 다만 계약 조건은 회사와 고객마다 다르고 공개된 범위도 좁으며, 한국경제 보도는 위약금을 내면 해지할 수 있는 구조도 전한다. 장기계약이 늘었다는 사실만으로 업황의 순환이 사라졌다고 판단하지 않는다. 장기계약 물량 비율을 비교할 때도 생산능력 기준인지 특정 연도 생산량 기준인지 맞춘다.
 
+### 셀 구조 전환 발표와 판매 가능한 비트 공급
+
+메모리 셀 구조의 전환 발표도 증설 발표처럼 단계를 나눠 읽는다. 2026-10-21 SK하이닉스 보도자료와 마이크론 10-K를 대조했다.
+
+- **4F²의 뜻**: F는 반도체의 최소 선폭(feature size)이고, 셀 하나가 차지하는 면적을 F²의 배수로 나타낸다. 4F²는 셀 하나가 2F × 2F 면적을 차지하는 구조다. 2025-06-10 SK하이닉스 보도자료는 CTO의 IEEE VLSI 2025 기조연설을 전하며, CTO가 현재의 테크 플랫폼을 적용한 미세 공정은 점차 성능과 용량을 개선하기 어려운 국면에 접어들고 있다며 10나노 이하에서 구조, 소재, 구성 요소의 혁신을 바탕으로 수직 게이트(VG) 기반 4F² 플랫폼과 3D D램 기술을 준비하겠다고 밝혔다고 적었다. 같은 보도자료는 부제에서 10나노급 이하에서 4F² VG 플랫폼으로의 전환을 검토한다고 적었다. 본문은 발표 당시 6F² 셀이 일반적이라고 설명하고, 4F² 셀과 함께 회로부를 셀 영역 아래로 배치하는 웨이퍼 본딩을 적용하면 셀 효율과 전기적 특성의 개선 효과를 기대할 수 있다고 적었다.
+- **셀 수와 칩 원가는 다르다**: 같은 F에서 셀 면적이 6F²에서 4F²로 줄면 셀 하나의 면적은 약 33% 작아지고, 같은 면적에 넣을 수 있는 셀은 1.5배가 된다(6 ÷ 4). 칩에는 셀 말고도 데이터 위치를 고르고 신호를 읽는 회로가 있어 칩 면적은 같은 비율로 줄지 않고, 새 구조의 제조 비용이 더 들 수도 있다. F가 다르면 4F² 셀이 6F² 셀보다 작다는 보장도 없다(분석 기준).
+- **수율도 공급을 바꾼다**: 가정 예시로 웨이퍼당 칩 100개, 수율 90%면 양품은 90개다. 새 구조로 150개를 만들어도 수율이 60%면 양품은 같은 90개이고, 제조 비용이 늘었다면 칩당 원가는 오히려 오른다. 판매 가능한 비트는 실제 투입 웨이퍼 수 × 웨이퍼당 칩 수 × 수율 × 칩당 용량이므로, 생산능력이 두 배가 돼도 가동률, 새 공정의 칩 수와 수율에 따라 비트 공급은 두 배가 아닐 수 있다.
+- **발표, 양산, 채택을 나눈다**: 마이크론은 10-K 위험요인에서 자사 제품이 길어질 수 있는 고객 시험 과정을 거쳐 인증(qualify)돼야 한다고 적었다. 출시 계획 발표, 양산 수율, 고객 채택과 실제 비트 공급을 각각 확인한다(분석 기준).
+- **매출은 비트와 가격의 곱이다**: 가정 예시로 용량 기준 판매량이 30% 늘어도 용량당 가격이 20% 내리면 매출은 1.3 × 0.8 = 1.04로 4% 늘 뿐이다. 수요가 커지는 시기에도 공급이 더 빨리 늘면 가격은 내려갈 수 있다(분석 기준). 마이크론은 2026 회계연도 10-K 위험요인에서 HBM이 같은 공정 세대에서 일반 DRAM과 같은 비트를 만드는 데 더 많은 웨이퍼와 클린룸 공간이 필요하며, HBM 수요가 약해져 공급사들이 생산능력을 일반 DRAM으로 돌리면 일반 DRAM 공급이 크게 늘 수 있고 공급 과잉은 가격 하락 압력으로 이어질 수 있다고 적었다. 가격과 출하량을 나눠 읽는 법은 [[Valuation#메모리 기업의 성장은 가격, 출하량과 제품 구성을 나눠 본다|밸류에이션의 메모리 기업 점검]]을 따른다.
+
+이 절은 4F² 전환 일정이나 특정 기업의 양산 성공을 검증한 기록이 아니다. 위 SK하이닉스 발표는 양산 시점을 밝히지 않았으며, 회사의 로드맵은 이후 공시와 실적으로 다시 확인한다.
+
 ## 출처
 
 - [The Effects of Rent Control Expansion on Tenants, Landlords, and Inequality: Evidence from San Francisco — American Economic Review, Rebecca Diamond, Tim McQuade, Franklin Qian](https://www.aeaweb.org/articles?id=10.1257/aer.20181289)
@@ -124,9 +136,12 @@ aliases: ["수요와 공급", "Supply and Demand"]
 - [HBM Supply Constraints Persist, 2027 Price Outlook Revised Upward with Blended ASP Forecast to Rise 121% YoY, Says TrendForce — TrendForce](https://www.trendforce.com/presscenter/news/20260929-13255.html) — 2026-09-29
 - [SK hynix Announces 3Q25 Financial Results — SK hynix Newsroom](https://news.skhynix.com/SK-hynix-announces-3q25-financial-results/) — 2025-10-29, 다음 해 HBM 공급 협의 완료
 - [SK hynix Announces 2Q26 Financial Results — SK hynix Newsroom](https://news.skhynix.com/en/q2-2026-business-results/) — 2026-07-29, 약 10개 고객과 LTA
-- [Micron Technology, Form 10-K (fiscal 2026) — SEC EDGAR](https://www.sec.gov/Archives/edgar/data/0000723125/000072312526000023/mu-20260903.htm) — take-or-pay 계약, 고객 예치금과 가격 구간
+- [Micron Technology, Form 10-K (fiscal 2026) — SEC EDGAR](https://www.sec.gov/Archives/edgar/data/0000723125/000072312526000023/mu-20260903.htm) — take-or-pay 계약, 고객 예치금과 가격 구간, HBM 생산능력 전환 위험과 고객 인증 절차(2026-10-21 대조)
+- [SK하이닉스, IEEE VLSI 2025에서 D램 미래 기술 로드맵 발표 — SK하이닉스 뉴스룸](https://news.skhynix.co.kr/ieee-vlsi-2025/) — 2025-06-10, F와 4F² 정의, 발표 당시 6F² 일반적, 10나노 이하 4F² VG와 3D D램 준비 발언, 웨이퍼 본딩
+- [AI 메모리 쇼티지는 끝일까...? 중국 CXMT D램기술 4F², 삼성보다 2년 먼저 적용 | 작은 셀이 만드는 큰 차이 — 안될공학 - IT 테크 신기술](https://www.youtube.com/watch?v=LM9NDhnEKkQ) — 2026-10-13 영상, 셀 구조 소절의 계기와 가정 예시. 사실은 이 목록의 1차 출처로 대조했고, 1차 출처를 찾지 못한 CXMT 일정과 수치는 쓰지 않음
 - [HMRC, Oil Taxation Manual OT20300](https://www.gov.uk/hmrc-internal-manuals/oil-taxation-manual/ot20300) — take-or-pay 정의
-- [삼성전자 물량 80%가 장기계약분…빅테크 줄섰다 — 한국경제](https://www.hankyung.com/article/2026100929291) — 2026-10-09, 회사가 발표하지 않은 업계 취재 보도- [OpenStax, Principles of Economics 3e, Demand, Supply, and Equilibrium in Markets for Goods and Services](https://openstax.org/books/principles-economics-3e/pages/3-1-demand-supply-and-equilibrium-in-markets-for-goods-and-services) — 2026-10-02 수요의 지불 의향과 능력 조건 대조
+- [삼성전자 물량 80%가 장기계약분…빅테크 줄섰다 — 한국경제](https://www.hankyung.com/article/2026100929291) — 2026-10-09, 회사가 발표하지 않은 업계 취재 보도
+- [OpenStax, Principles of Economics 3e, Demand, Supply, and Equilibrium in Markets for Goods and Services](https://openstax.org/books/principles-economics-3e/pages/3-1-demand-supply-and-equilibrium-in-markets-for-goods-and-services) — 2026-10-02 수요의 지불 의향과 능력 조건 대조
 - [OpenStax, Principles of Economics 3e, Shifts in Demand and Supply for Goods and Services](https://openstax.org/books/principles-economics-3e/pages/3-2-shifts-in-demand-and-supply-for-goods-and-services)
 - [OpenStax, Principles of Microeconomics 3e, Demand and Supply at Work in Labor Markets](https://openstax.org/books/principles-microeconomics-3e/pages/4-1-demand-and-supply-at-work-in-labor-markets)
 - [OpenStax, Principles of Economics 3e, Wages and Employment in an Imperfectly Competitive Labor Market](https://openstax.org/books/principles-economics-3e/pages/14-2-wages-and-employment-in-an-imperfectly-competitive-labor-market)

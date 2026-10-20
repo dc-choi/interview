@@ -17,6 +17,7 @@ aliases: ["금융시장(Financial Markets)", "Financial Markets Map"]
 
 ### 1. 시스템
 - [[Financial-System-Overview|금융시스템 개관]] — 직접금융과 간접금융, 금융중개, 발행시장과 유통시장, 한국의 예금자보호 범위 ✅
+- [[Market-Stabilization-Mechanisms|시장 안정화 장치]] — 사이드카와 서킷브레이커의 기준, 정지 범위와 해제 조건, 종목별 VI와의 구분 ✅
 
 ### 2. 주요 자산
 - [[Stocks|주식]] — 지분과 잔여청구권, 배당과 시세차익, 실적과 기대의 차이, PER, 리서치 등급과 이해상충, 지배주주와 소수주주 보호, GICS와 투자 테마의 구분 ✅
