@@ -21,5 +21,5 @@ LLM 출력의 평가와 모른다고 말하는 능력 — 신뢰할 수 있는 A
 - [x] [[Eval-Golden-Set-and-Deploy-Gates|골든셋과 배포 관문 (프롬프트와 Eval의 앞뒷면, 실패 20~50건으로 시작, 문항 구성과 홀드아웃, 베이스라인과 표류, 배포 세 관문과 카나리, 가드레일 회귀, promptfoo, 안티패턴 5)]]
 - [x] [[Eval-Model-Drift-Monitoring|서빙 모델 드리프트 감시 (같은 이름 아래 바뀌는 네 층, 스냅샷 고정이 막는 것과 못 막는 것, 동결 기준점과 정답률, 토큰, 비용의 분리 판정, 반복과 연속 확인 경보, 공개 추적 보드 읽는 법, 경보 시 원인 분리 순서)]]
 - [x] [[Agent-Recovery-Evaluation|에이전트 복구 평가]] — 같은 상태에서 가른 복구와 무복구 갈래, 구제와 훼손 4분류, 순효과, 훼손 가중 개입 규칙
-- [x] [[AI-Research-Innovation-Evaluation|AI 연구와 알고리듬 혁신 평가]] — InnovationEval의 기준선, 계산 예산과 연구 신규성
+- [x] [[AI-Research-Innovation-Evaluation|AI 연구와 알고리듬 혁신 평가]] — InnovationEval의 기준선, 계산 예산과 연구 신규성, 연구 에이전트 산출물의 주장 원장, 단계별 재검증과 적대적 검토
 - [x] [[Neural-Circuit-Interpretability|뉴런과 회로 해석]] — 원래 좌표 해석 가설, 관찰과 인과 개입의 구분

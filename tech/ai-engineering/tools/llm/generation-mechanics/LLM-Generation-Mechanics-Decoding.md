@@ -1,7 +1,7 @@
 ---
 tags: [ai, llm, transformer, inference]
 status: done
-verified_at: 2026-10-06
+verified_at: 2026-10-20
 category: "AI엔지니어링(AIEngineering)"
 aliases: ["LLM Generation Mechanics Decoding", "LLM 추론과 디코딩", "Transformer Attention과 Decoding"]
 ---
@@ -26,6 +26,8 @@ aliases: ["LLM Generation Mechanics Decoding", "LLM 추론과 디코딩", "Trans
 ### Token과 위치 표현
 
 Tokenizer는 문자열을 단어, subword나 문자 단위의 Token ID로 바꾼다. **Token Embedding**은 각 ID를 모델 내부 계산에 쓸 벡터로 변환한다. Attention 자체에는 순서 개념이 없으므로 위치 정보를 주입한다. 원 논문의 sinusoidal encoding 외에도 학습형 위치 embedding과 회전 위치 표현 등 구현은 모델마다 다르다.
+
+Transformer 원 논문(Vaswani et al., 2017)이 sinusoidal을 고른 근거는 두 가설이다(3.5절). 고정된 거리 k마다 `PE(pos+k)`를 `PE(pos)`의 선형 함수로 나타낼 수 있어 모델이 상대 위치로 attend하는 법을 쉽게 배울 것이라는 점과, 학습 때보다 긴 시퀀스로 외삽할 수 있으리라는 점이다. 실험으로 보인 것은 학습형 위치 embedding으로 바꿔도 결과가 거의 같았다는 점이다(표 3 E행, 영어-독일어 번역 개발 세트 BLEU 25.7 대 base 25.8). 이 비교는 같은 개발 세트의 품질만 쟀으므로 상대 위치 가설과 외삽 가설을 모두 확인하지 않고, 위치 표현 방식의 일반적인 우열 근거도 아니다.
 
 ### 토크나이저는 빈도로 어휘를 만든다 (BPE)
 
@@ -59,9 +61,17 @@ Attention(Q, K, V) = softmax(QKᵀ / √dₖ)V
 
 **Causal Mask**는 아직 생성하지 않은 미래 위치를 보지 못하게 한다. **Multi-Head Attention**은 서로 다른 projection을 병렬로 사용해 여러 관계를 계산하고 결과를 합친다. Attention weight는 내부 계산값이지 모델 판단을 완전하게 설명하는 충실한 근거는 아니다.
 
+Transformer 원 논문의 주 실험은 영어-독일어, 영어-프랑스어 번역용 encoder-decoder이고(영어 구문 분석에도 따로 적용했다), 표 3은 영어-독일어 번역 개발 세트(newstest2013)에서 base 모델의 일부 설정만 바꿔 잰 결과다. 아래의 표 3 수치는 이 조건의 결과이므로 현재 LLM의 기본값으로 옮기지 않는다. 표 3은 반복 실행 수나 분산을 보고하지 않으므로 행 사이 차이가 잡음보다 큰지 표만으로는 판단할 수 없고, E행의 0.1이나 32개 헤드의 0.4 하락처럼 작은 차이일수록 설계 결론의 근거로 약하다.
+
+- **√dₖ로 나누는 이유**: 내적 attention은 이론상 복잡도가 additive attention과 비슷하지만 최적화된 행렬곱으로 구현해 실제로 더 빠르고 메모리를 덜 쓴다. 다만 원 논문이 인용한 선행 연구에서는(원 논문의 서술 기준이며 선행 연구 원문은 이 문서에서 대조하지 않았다) dₖ가 크면 스케일링 없는 내적 attention이 additive attention보다 성능이 낮았다. 그 원인을 내적의 크기가 커져 softmax가 기울기가 매우 작은 영역으로 밀리는 데서 찾아 √dₖ로 나눈다(3.2.1절). 이 원인은 측정이 아니라 추정(we suspect)이다. 각주는 q와 k의 성분이 평균 0, 분산 1인 독립 확률변수라고 가정하면 둘의 내적이 평균 0, 분산 dₖ가 된다는 예시 계산이며, 스케일링을 뺀 비교는 표 3에 없다
+- **헤드 수와 차원**: 헤드를 나누면 서로 다른 표현 부분공간의 정보를 여러 위치에서 함께 볼 수 있고, 단일 헤드에서는 평균이 이를 막는다는 것이 설계 이유다. base는 h=8에 `dₖ = dᵥ = d_model/h = 64`를 써서 헤드마다 차원을 줄였으므로 총 계산 비용이 전체 차원의 단일 헤드 attention과 비슷하다(3.2.2절). 계산량을 고정하고 헤드 수와 차원을 바꾼 표 3 A행에서 단일 헤드(dₖ=512)는 최적 설정보다 BLEU가 0.9 낮았고(24.9 대 25.8), 16개는 base와 같은 25.8, 32개(dₖ=16)는 25.4였다. 여러 헤드의 이점은 표에 보고된 단일 헤드 설정 하나와 여러 헤드 설정들의 비교(0.5~0.9 BLEU 차이)에 기대며, 각 설정의 반복 실행 횟수는 보고되지 않았다. 이 과제의 결과만으로 다른 규모의 모델에 맞는 헤드 수를 정할 수 없다
+- **층당 계산량**: 표 1의 층당 계산은 self-attention O(n²d), recurrent O(nd²)이고 순차 연산과 최대 경로 길이는 O(1) 대 O(n)이다(n은 시퀀스 길이, d는 표현 차원). 따라서 계산 복잡도로는 n이 d보다 작으면 self-attention 층이 recurrent 층보다 빠르고, 당시 기계 번역의 word-piece와 BPE 문장 표현은 대개 이 조건에 들었다(4절). 매우 긴 시퀀스에는 각 출력 위치를 중심으로 한 크기 r의 이웃만 보는 restricted self-attention(층당 O(rnd), 최대 경로 O(n/r))이 향후 과제로 제안됐다. 제곱 비용을 줄이는 커널 기반 접근은 [[Linear-Attention|선형 어텐션]]에서 다룬다
+
 ### Transformer Block
 
 대표적인 Block은 Attention과 position-wise FFN을 반복하고 residual connection과 normalization으로 신호 흐름을 안정화한다. FFN은 각 위치의 표현을 비선형 변환한다. normalization 위치와 activation, attention 구현은 모델에 따라 달라질 수 있다.
+
+Transformer 원 논문의 base는 encoder와 decoder가 각 6층(N=6), `d_model = 512`이고 FFN 내부 차원 `d_ff = 2048`은 `d_model`의 4배다(3.1절, 3.3절). 파라미터는 영어-독일어 설정(공유 BPE 어휘 약 37,000개) 기준 base 6500만 개, big 2억 1300만 개이고(표 3, 5.1절), P100 GPU 8장을 단 머신 한 대에서 base는 10만 step(12시간), big은 30만 step(3.5일) 학습했다(5.2절). 2017년 번역 모델의 구성이므로 decoder-only LLM의 층 수, 차원이나 학습 비용의 기준으로 쓰지 않는다.
 
 ### Logit에서 Token 선택까지
 
@@ -84,6 +94,7 @@ Attention(Q, K, V) = softmax(QKᵀ / √dₖ)V
 3. 모델이 단어의 글자 수를 자주 틀리는 이유와 대신 쓸 방법은 무엇인가?
 4. BPE 토크나이저가 한국어 단어를 문법과 다른 위치에서 자르는 이유는 무엇인가?
 5. 출력 상한을 작게 잡은 추론 요청이 보이는 답 없이 비용만 낼 수 있는 이유는 무엇인가?
+6. 원 논문이 √dₖ로 나누고 sinusoidal 위치 표현을 고른 이유 가운데 실험으로 확인한 것과 가설로 남은 것은 무엇인가?
 
 ## 출처
 
