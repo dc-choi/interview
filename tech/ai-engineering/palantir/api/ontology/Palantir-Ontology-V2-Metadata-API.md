@@ -57,6 +57,16 @@ Value type GET/list는 Preview이며 list는 최신 버전을 반환한다. fiel
 
 Query metadata는 재귀 dataType과 typeReferences를 제공한다. execute의 version은 semantic version range다. 생략하면 **가장 최근에 publish한 버전이며 prerelease일 수도 있다**. branch만 지정하면 그 branch의 최신, branch와 version을 함께 지정하면 그 버전이 branch에 있어야 한다. metadata get의 version과 실행의 range 의미를 구별한다. Optional parameter는 생략 가능하며 응답은 value다.
 
+### Query type 목록의 버전과 페이지 순회
+
+2026-10-20 List Query Types 공식 문서 대조 기준이다. `GET /api/v2/ontologies/{ontology}/queryTypes`는 Query type마다 가장 최근에 publish한 버전의 metadata를 반환한다. 전체 버전 이력을 반환하는 목록이 아니며, 최신 항목이 prerelease일 수도 있어 안정 버전 목록으로 해석하지 않는다.
+
+- `branch`를 생략하면 기본 branch를 사용한다. Branch 기능은 experimental이며 모든 workflow를 지원하는 것은 아니다.
+- `pageSize` 기본값은 100이다. 응답 항목 수가 요청 크기보다 적을 수 있으므로 항목 수만으로 마지막 페이지를 판단하지 않는다. 다음 결과가 남아 있으면 응답에 최소 한 항목은 포함한다.
+- 첫 요청에는 `pageToken`을 넣지 않는다. 이후에는 직전 응답의 `nextPageToken`을 다음 요청의 `pageToken`으로 전달하며, 후속 토큰이 없을 때 순회를 끝낸다.
+
+이 응답의 `data`는 Query type 목록이다. Query를 실행한 결과와 구분하고, 실행에 사용할 버전 조건은 위의 실행 계약에 맞춰 따로 정한다.
+
 ## 출처
 
 - [Get Object Type](https://www.palantir.com/docs/foundry/api/ontologies-v2-resources/object-types/get-object-type)
@@ -65,6 +75,7 @@ Query metadata는 재귀 dataType과 typeReferences를 제공한다. execute의 
 - [Get Interface Type](https://www.palantir.com/docs/foundry/api/ontologies-v2-resources/ontology-interfaces/get-interface-type)
 - [Get Ontology Value Type](https://www.palantir.com/docs/foundry/api/ontologies-v2-resources/ontology-value-types/get-ontology-value-type)
 - [Execute Query](https://www.palantir.com/docs/foundry/api/ontologies-v2-resources/queries/execute-query)
+- [List Query Types](https://www.palantir.com/docs/foundry/api/ontologies-v2-resources/query-types/list-query-types)
 
 ## 관련 문서
 
