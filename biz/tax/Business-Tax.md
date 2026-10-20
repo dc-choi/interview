@@ -24,6 +24,7 @@ aliases: ["Business Tax", "사업자 세무", "세무 기초"]
 - [[Personal-Income-Tax-Basics|개인 소득세와 연말정산]] — 급여, 부업, 소득공제와 세액공제
 - [[Solo-Business-Tax-Checklist|1인 사업자의 공제와 감면]] — 간이과세 기준, 비용처리, 경정청구와 창업감면
 - [[Startup-Tax-Reduction-Same-Business-Test|창업감면의 창업 판단]] — 기존 사업 승계와 확장
+- [[Business-Tax-Timing|사업 세무 선택의 시점]] — 창업감면 기간, 법인전환 연도, 입사일과 사회보험료, 고용세액공제와 등록 때 과세유형 신고
 - [[Payment-Tax-Evidence|결제 세무 증빙]] — 현금영수증, 전자 증빙과 취소
 
 각 본문의 가상 거래를 계산하고 이유를 설명해 본다. 문서를 읽은 사실과 실제로 설명할 수 있는 능력은 구분한다. 상속, 증여, 부동산 양도와 국제조세의 상세 판단은 이 기초 묶음의 범위 밖이다.
