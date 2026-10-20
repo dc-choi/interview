@@ -1,14 +1,14 @@
 ---
 tags: [econ, finance, gold, real-interest-rate]
 status: done
-verified_at: 2026-10-10
+verified_at: 2026-10-20
 category: "Economics"
 aliases: ["금 가격의 결정 요인", "Gold Price Drivers"]
 ---
 
 # 금 가격의 결정 요인
 
-금 가격은 실질금리, 인플레이션 기대와 위험 회피 수요 등이 함께 작용한 결과다. 특정 경제 뉴스 하나를 매수나 매도의 공식으로 바꿀 수는 없다.
+금 가격은 실질금리, 인플레이션 기대, 위험 회피 수요와 중앙은행을 포함한 공적 부문의 수요 등이 함께 작용한 결과다. 특정 경제 뉴스 하나를 매수나 매도의 공식으로 바꿀 수는 없다.
 
 ## 금리와 물가를 함께 읽기
 
@@ -17,6 +17,24 @@ aliases: ["금 가격의 결정 요인", "Gold Price Drivers"]
 인플레이션 우려와 경기 불안은 금 수요를 높이는 요인이 될 수 있다. 그러나 역사적 자료에서도 요인별 설명력은 시기와 분석 주기에 따라 달랐다. 상관관계가 관측됐다는 사실과 인과관계가 입증됐다는 주장은 구분한다.
 
 따라서 금리 인하, 전쟁, 경기 침체 같은 사건 이름만으로 금의 수익 방향을 정하지 않는다. 금리와 물가 전망, 위험 선호가 함께 어떻게 바뀌는지를 검토한다. 이는 예측식이 아니라 단일 원인으로 설명하는 오류를 줄이는 틀이다.
+
+## 중앙은행 수요와 준비자산 분산
+
+세계금협회(WGC) 집계에서 중앙은행과 기타 공적기관의 금 순매입은 2022~2024년에 해마다 1,000톤을 넘었다. 2025년에는 863톤으로 줄었지만 2010~2021년 연평균 473톤보다 많았다(2026-01-29 발표). 이 집계에는 공개 보고되지 않은 매입의 추정치가 들어 있으며, 2025년에는 그 몫이 연간 매입의 57%였다. ECB는 2025-06 보고서에서 IMF 통계로는 2021년 이후 중앙은행 금 보유가 훨씬 느리게 늘었고, 그 차이를 WGC가 추정한 미보고 매입으로 설명할 수 있다고 밝혔다. 추정치는 크게 수정되기도 한다. 2026년 1분기 매입 추정치는 244톤에서 57톤으로 낮아졌다(2026-07-30 발표).
+
+공개 보고된 매입 기준으로 가장 많이 산 기관은 시기에 따라 바뀌었다. WGC 집계로 2022년에는 튀르키예(148톤), 2023년에는 중국(225톤)이 가장 많이 샀고, 폴란드는 2024년과 2025년 연속으로 최대 매입 기관이었다(2025년 102톤). 브라질 중앙은행은 2021년 뒤 매입이 없다가 2025년 9~11월에 43톤을 샀다. 러시아 중앙은행은 2025년 주요 매도 기관 가운데 하나(6톤)였고, 2026년 2분기에는 22톤을 줄여 그 분기 최대 매도 기관이었다. 몇몇 국가 이름으로 공적 매입의 주체를 일반화하지 않는다.
+
+WGC의 2026년 중앙은행 설문(2026-02-05~05-19, 응답 76개) 가운데 금 보유 요인 문항(응답 기관 69곳)에서 위기 때의 성과를 관련 요인으로 꼽은 비율은 90%, 장기 가치 저장은 84%, 포트폴리오 분산은 83%였다. 지정학 위험 헤지는 신흥국과 개발도상국 응답의 85%, 선진국 응답의 56%가 관련 요인으로 봤다. 금 보유 요인과 별도인 준비자산 운용 일반의 고려 사항 문항에서는 금리 수준을 꼽은 응답이 92%였고, 이번 설문에서 지정학 불안이 인플레이션 우려를 앞섰다. 그래도 신흥국과 개발도상국 응답의 84%는 인플레이션 우려도 운용 고려 사항으로 꼽았다. 제재를 받는 중앙은행은 조사 대상에서 빠졌다.
+
+금 보유 동기를 물은 2024년 WGC 설문을 ECB가 분석한 결과에서는 금을 보유한 신흥국과 개발도상국 중앙은행 네 곳 중 한 곳이 제재 우려나 국제통화체제 변화 예상을 금 투자의 결정 요인으로 들었다. ECB는 전체 응답을 근거로 중앙은행이 금을 주로 인플레이션, 경기 하강과 채무불이행 같은 경제 위험에 대비한 분산 수단으로, 그다음으로 지정학 위험 헤지로 평가한다고 해석했다. 제재 위험은 일부 중앙은행의 동기로 보고 공적 매입 전체의 단일 원인으로 쓰지 않는다. 준비자산의 보유와 사용 가능성의 구분은 [[Exchange-Rates-Balance-of-Payments#준비자산의 소유와 사용 가능성, 통화 분산을 구분한다|환율과 국제수지]]에서 다룬다.
+
+준비자산에서 금이 차지하는 비중은 가격 효과와 함께 읽는다. ECB는 금을 포함한 세계 공적 준비자산에서 시장가격 기준 금 비중이 2024년 말 20%로 유로(16%)를 넘었고, 2025년 말에는 27%로 유로(15%)와 미국 국채(22%)를 넘었다고 집계했다. ECB는 이 변화가 주로 평가효과를 반영한다고 보고, 2023년 말 금 가격을 적용한 자체 계산에서는 유로(16%)와 금(16%)의 비중이 같은 수준이라고 밝혔다. 금을 뺀 세계 공적 외환보유액에서 달러 비중은 2025년 중 고정 환율 기준으로 약 57%에서 비슷하게 유지됐다. 더 긴 기간의 달러 비중 추이는 [[Exchange-Rates-Balance-of-Payments|환율과 국제수지]]에서 본다. 2026년 설문 응답의 74%는 앞으로 5년 동안 세계 준비자산의 달러 보유가 다소 또는 크게 줄 것으로 봤지만, 이는 전망이므로 실제 비중 변화와 구분한다.
+
+공적 매입은 가격과 각국 사정에 따라 달라질 수 있다. WGC는 2025년 금 보유액의 평가액이 커지자 중앙은행들이 더 신중해진 것으로 봤고, ECB도 급등한 가격과 보유분 가치 상승이 추가 매입을 억제했을 가능성이 크다고 평가했다. 2026년 1분기에는 여러 중앙은행이 전술적으로 금을 팔거나 스와프에 썼다. 그 분기 매입 추정치는 57톤이었지만 LBMA 오후 고시가(LBMA Gold Price PM)의 분기 평균은 당시 최고치였다. 2분기에는 첫 추정치 기준 매입이 289톤으로 늘었지만 분기 평균 가격은 1분기보다 8% 낮았다. 이 두 분기에는 공적 매입량과 가격이 같은 방향으로 움직이지 않았다.
+
+가격 변화도 공적 수요 하나로 설명하지 않는다. WGC의 금 수익 기여도 모형(GRAM)은 LBMA 오후 고시가 기준 2025-11-28까지의 연초 대비 60.6% 상승 가운데 41%p를 위험과 불확실성 약 12%p, 달러 약세와 소폭의 금리 하락에 따른 기회비용 감소 10%p, 모멘텀과 투자자 포지션 9%p, 경제 성장 10%p로 설명했다. 나머지 약 20%p는 자료 제약으로 모형에 넣지 못한 기타 요인이며 중앙은행 매입도 여기에 속한다. WGC는 중앙은행 수요를 금 성과의 중요한 기여 요인으로 본다. ECB는 2008년부터 2022년 초까지 이어진 금 가격과 미국 실질금리의 음의 상관이 러시아의 우크라이나 전면 침공 뒤 무너진 점을 지정학 위험 같은 다른 요인이 작용했다는 신호로 해석했다. 위의 금리와 물가 틀을 유지하면서 공적 수요, 달러와 지정학 위험을 함께 확인한다.
+
+이 절의 수치는 2026-10-20 WGC의 수요 보고서, 설문과 전망 보고서, ECB 보고서를 대조한 값이며 이후 발표에서 수정될 수 있다. 2026년 3분기 이후의 공적 수요, 현재 시세와 국가별 최신 매매는 검증 범위에 포함하지 않는다.
 
 ## 달러 가격과 원화 수익률
 
@@ -57,6 +75,9 @@ ETF의 매수 호가와 매도 호가 차이는 거래 비용의 한 부분이�
 ## 검토할 질문
 
 - 금리 전망에서 명목금리와 기대 실질금리를 구분했는가?
+- 중앙은행 매입량이 미보고 매입 추정치를 포함하는지, 발표 뒤 수정됐는지 확인했는가?
+- 준비자산의 금 비중 상승을 신규 매입과 가격에 따른 평가효과로 나눠 봤는가?
+- 공적 매입량이나 설문 응답만으로 가격 방향을 설명하고 있지 않은가?
 - 설명하는 가격은 달러 표시 금 가격인가, 원화로 평가한 투자 수익률인가?
 - 국제 금 가격, 환율, 국내 프리미엄과 실제 왕복 거래 비용을 분리했는가?
 - ETF 괴리율이 작다는 이유로 기초자산의 국내 프리미엄도 작다고 판단하지 않았는가?
@@ -71,6 +92,17 @@ ETF의 매수 호가와 매도 호가 차이는 거래 비용의 한 부분이�
 - [Mineral resources: Reserves, peak production and the future — U.S. Geological Survey](https://www.usgs.gov/publications/mineral-resources-reserves-peak-production-and-future) — 매장량을 전체 자원량으로 간주한 고갈 예측의 오류, 2026-10-10 대조
 - [ACE KRX금현물ETF 관련 투자 시 유의사항 안내 — 한국거래소 KIND](https://kind.krx.co.kr/external/2025/03/07/001323/20250307003105/68629.htm) — 국내 금 프리미엄의 ETF 순자산가치 반영, 2025-03-07 공시, 2026-10-18 대조
 - [Updated Investor Bulletin: Exchange-Traded Funds (ETFs) — SEC Investor.gov](https://www.investor.gov/introduction-investing/general-resources/news-alerts/alerts-bulletins/investor-bulletins-24) — NAV 대비 프리미엄과 할인, 매수와 매도 호가 차이 및 비용, 2026-10-18 대조
+- [Gold Demand Trends: Q4 and Full Year 2025, Central banks — World Gold Council](https://www.gold.org/goldhub/research/gold-demand-trends/gold-demand-trends-full-year-2025/central-banks) — 2026-01-29 발표. 2025년 863톤, 직전 3년 1,000톤 초과, 2010~2021년 연평균 473톤, 미보고 매입 비중 57%, 폴란드의 2년 연속 최대 매입, 브라질의 매입 재개와 러시아의 매도, 높은 평가액에 따른 신중한 매입, 2026-10-20 대조
+- [Gold Demand Trends Full Year 2022, Central banks — World Gold Council](https://www.gold.org/goldhub/research/gold-demand-trends/gold-demand-trends-full-year-2022/central-banks) — 2023-01-31 발표. 2022년 최대 매입 기관 튀르키예(148톤), 2026-10-20 대조
+- [Gold Demand Trends Full Year 2023, Central banks — World Gold Council](https://www.gold.org/goldhub/research/gold-demand-trends/gold-demand-trends-full-year-2023/central-banks) — 2024-01-31 발표. 2023년 최대 매입 기관 중국(225톤), 2026-10-20 대조
+- [Gold Demand Trends Q2 2026, Central banks — World Gold Council](https://www.gold.org/goldhub/research/gold-demand-trends/gold-demand-trends-q2-2026/central-banks) — 2026-07-30 발표. 1분기 추정치 244톤에서 57톤으로 수정, 러시아의 2분기 22톤 매도, 2026-10-20 대조
+- [Gold Demand Trends Q2 2026 — World Gold Council](https://www.gold.org/goldhub/research/gold-demand-trends/gold-demand-trends-q2-2026) — 2026-07-30 발표. 2분기 중앙은행 매입 289톤, LBMA 오후 고시가 분기 평균의 1분기 최고치 대비 8% 하락, 2026-10-20 대조
+- [Central Bank Gold Reserves Survey 2026 — World Gold Council](https://www.gold.org/goldhub/research/central-bank-gold-reserves-survey-2026) — 2026-06-16 발표. 2026-02-05~05-19 조사, 응답 76개, 달러 보유 감소 전망 74%, 제재 대상 중앙은행 제외, 2026-10-20 대조
+- [Strategic considerations in gold reserves management — World Gold Council](https://www.gold.org/goldhub/research/central-bank-gold-reserves-survey-2026/strategic-considerations-in-gold-reserves-management) — 2026 설문의 보유 요인별 응답 비율(응답 기관 69곳), 금리 수준 92%, 지정학 위험 헤지와 인플레이션 우려의 국가군별 차이, 2026-10-20 대조
+- [The international role of the euro, June 2025 — European Central Bank](https://www.ecb.europa.eu/pub/pdf/ire/ecb.ire202506.en.pdf) — 2024년 말 금 비중 20%와 유로 16%, IMF 통계와 WGC 미보고 매입 추정의 차이, 2024년 설문의 제재 우려 응답, 2008년부터 2022년 초까지의 실질금리와 금 가격 상관의 변화, 2026-10-20 대조
+- [The international role of the euro, June 2026 — European Central Bank](https://www.ecb.europa.eu/press/other-publications/ire/html/ecb.ire202606.en.html) — 2025년 말 금 비중 27%와 평가효과, 2023년 말 가격 기준 유로와 금 각 16%, 외환보유액의 달러 비중 약 57%, 가격 상승의 매입 억제 가능성, 2026-10-20 대조
+- [Gold Outlook 2026: Push ahead or pull back — World Gold Council](https://www.gold.org/goldhub/research/gold-outlook-2026) — 2025-12-04 발표. GRAM의 2025년 연초 대비 수익 요인별 기여와 모형 밖의 중앙은행 매입, 2026-10-20 대조
+- [Gold Mid-Year Outlook 2026: Point break — World Gold Council](https://www.gold.org/goldhub/research/gold-mid-year-outlook-2026) — 2026-07-01 발표. 2026년 1분기 일부 중앙은행의 전술적 매도와 스와프, 2026-10-20 대조
 
 ## 관련 문서
 
