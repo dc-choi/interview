@@ -95,9 +95,19 @@ Cookie: session=abc
 
 ### 서버 측 처리
 
+다음은 오리진 애플리케이션까지 도달한 요청의 구성 예다. 모든 요청이 모든 계층을 지나지는 않는다.
+
 1. 로드밸런서 → 리버스 프록시([[Reverse-Proxy|Nginx]]) → 앱 서버
 2. 앱 서버가 라우팅 → 컨트롤러 → 서비스 → DB/캐시
 3. 응답 생성 → 미들웨어, 프록시 체인을 역순으로 통과 → 클라이언트
+
+### 캐시와 헬스 체크가 경로를 바꾸는 조건
+
+- **CDN 응답은 오리진 처리를 생략할 수 있다.** CloudFront는 엣지 캐시에 요청 객체가 있으면 그곳에서 응답한다. 엣지 캐시 미스도 리전 엣지 캐시에서 해결될 수 있어 곧바로 앱 서버나 DB 호출을 뜻하지 않는다. 동적 요청 등은 리전 엣지 캐시를 거치지 않는 예외가 있다.
+- **장애 서버 배제는 즉시 감지가 아니다.** ALB는 설정한 간격과 연속 실패 기준으로 대상 상태를 판단한다. 장애 발생과 unhealthy 판정 사이에 요청이 전달될 수 있다.
+- **정상 대상이 없을 때의 정책도 확인한다.** ALB의 대상 그룹에서 활성화된 모든 가용 영역의 등록 대상이 unhealthy이면 fail-open으로 그 대상들에 요청을 보낼 수 있다. 이를 모든 로드밸런서의 동작으로 일반화하지 않는다. 상세 비교는 [[Load-Balancer|로드밸런서]]를 따른다.
+
+2026-10-22에 이 절을 CloudFront와 ALB 공식 문서로 대조했다. 기존 DNS, TLS와 렌더링 설명 전체를 재검증한 것은 아니므로 frontmatter의 확인일은 유지한다.
 
 ### 응답
 
@@ -177,6 +187,8 @@ HTML에서 외부 자원을 참조하는 태그(`src`가 있는 `<script>`, `sty
 - 기본 흐름 다음에 **대규모 확장(CDN, GSLB, 헬스 체크, 세션 유지)** 으로 연결할 수 있는가
 
 ## 출처
+- [AWS CloudFront Developer Guide, How CloudFront delivers content](https://docs.aws.amazon.com/AmazonCloudFront/latest/DeveloperGuide/HowCloudFrontWorks.html) — 2026-10-22 캐시별 요청 경로 대조
+- [AWS Elastic Load Balancing, Health checks for Application Load Balancer target groups](https://docs.aws.amazon.com/elasticloadbalancing/latest/application/target-group-health-checks.html) — 2026-10-22 상태 판정과 fail-open 조건 대조
 - [IETF, RFC 1034: Domain Names - Concepts and Facilities](https://www.rfc-editor.org/rfc/rfc1034.html), [IETF, RFC 4033: DNS Security Introduction and Requirements](https://www.rfc-editor.org/rfc/rfc4033.html)
 - [IETF, RFC 826: An Ethernet Address Resolution Protocol](https://www.rfc-editor.org/rfc/rfc826.html), [IETF, RFC 4861: Neighbor Discovery for IPv6](https://www.rfc-editor.org/rfc/rfc4861.html)
 - [IETF, RFC 9293: Transmission Control Protocol](https://www.rfc-editor.org/rfc/rfc9293.html), [IETF, RFC 5246: TLS 1.2](https://www.rfc-editor.org/rfc/rfc5246.html), [IETF, RFC 9846: TLS 1.3](https://www.rfc-editor.org/rfc/rfc9846.html)
