@@ -23,3 +23,4 @@ aliases: ["AI 시대 조직, 역할", "AI Org & Role"]
 - [x] [[DS-MLE-Collaboration-Contract|ML 협업 계약 — 노트북과 서빙 사이 (경계의 3단계 진화: 사람→파일→인터페이스, 추상화 클래스 계약, 모노레포, AI 스타일 통일)]]
 - [x] [[AI-Work-Output-and-Employment|AI 코드 생산과 제품 성과 및 고용]] — 연구의 지표와 기간, 제품 역할, 직무 폐지와 체감 격차
 - [x] [[AI-Tools-Automation-and-Learning|AI 도구, 자동화와 학습]] — 정의 논쟁, 창작 연습과 공급사 통제권
+- [x] [[AI-Job-Market-Shifts|AI 시대 직무 변화 읽기]] — 새 직무가 기록되는 방식, 직무 수요 신호의 방법론 차이, 직함과 역할의 구분, 경력 판단 체크포인트

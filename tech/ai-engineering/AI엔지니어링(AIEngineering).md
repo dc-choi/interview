@@ -92,7 +92,7 @@ Software 3.0 패러다임, LLM과 에이전트, 하네스, 평가, 조직 전환
 - [x] [[Context-Development-Lifecycle|컨텍스트 개발 수명주기]] — 생성, 평가, 배포와 관찰
 - [x] [[MCP-Gateway-Architecture|MCP 게이트웨이]] — Uber의 발견, 활성화와 실행 권한 분리
 - [x] [[LLM-Decision-Models-Calibration-Cases|결정 모델 보정과 버전 변경]] — Qwen, Microsoft-Decision-1, Jev 1.14와 표현 안정성
-- [x] [[Local-Inference-Deployment-Cases|로컬 추론 배포]] — Janas, Minions, LFM2.5와 Muse Spark Open
+- [x] [[Local-Inference-Deployment-Cases|로컬 추론 배포]] — Janas, Minions, Uzu, LFM2.5와 Muse Spark Open
 - [x] [[Agent-Model-Capability-Contracts|기억과 전문 영역 모델 평가]] — Muse Wonder, GLM-Legal
 - [x] [[AI-Research-Innovation-Evaluation|AI 연구 혁신 평가]] — InnovationEval의 과제와 개선 달성률
 - [x] [[Neural-Circuit-Interpretability|뉴런과 회로 해석]] — 재귀적 일반화 가설과 인과 검증

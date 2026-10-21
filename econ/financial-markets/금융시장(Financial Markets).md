@@ -18,6 +18,8 @@ aliases: ["금융시장(Financial Markets)", "Financial Markets Map"]
 ### 1. 시스템
 - [[Financial-System-Overview|금융시스템 개관]] — 직접금융과 간접금융, 금융중개, 발행시장과 유통시장, 한국의 예금자보호 범위 ✅
 - [[Market-Stabilization-Mechanisms|시장 안정화 장치]] — 사이드카와 서킷브레이커의 기준, 정지 범위와 해제 조건, 종목별 VI와의 구분 ✅
+- [[Virtual-Asset-Exchange-Registration|가상자산사업자 신고 제도]] — 특정금융정보법상 신고와 불수리 사유, 해외 사업자 적용 기준, 미신고 영업 처벌과 앱, 웹 차단, FIU 명단 확인 ✅
+- [[Tokenized-Bonds-and-Wholesale-CBDC|국채 토큰화와 기관용 CBDC]] — DvP와 원자적 결제, 기관용 CBDC와 예금토큰과 스테이블코인의 차이, 한국은행 2027년 실증 계획과 미정 사항 ✅
 
 ### 2. 주요 자산
 - [[Stocks|주식]] — 지분과 잔여청구권, 배당과 시세차익, 실적과 기대의 차이, PER, 리서치 등급과 이해상충, 지배주주와 소수주주 보호, GICS와 투자 테마의 구분 ✅

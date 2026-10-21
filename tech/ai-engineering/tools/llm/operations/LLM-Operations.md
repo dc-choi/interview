@@ -18,7 +18,7 @@ aliases: ["LLM 선택, 서빙과 운영", "LLM Selection Serving and Operations"
 - [[LLM-Gateway|LLM 게이트웨이]]: 관리 키와 업무 키, DB에 의존하는 예산 검사, 배포와 운영 검증, 호환 API의 기능과 대화 상태 보존
 - [[LLM-Failure-Handling|LLM 실패 처리 (failure-handling/ 서브폴더)]]: 기술적 실패와 의미적 실패, 지속성과 범위 분류, 429 속도 한도와 지출 한도 구분, stop_reason, 구조화 출력의 한계, 토큰 사전 계산, 스트리밍 복구, SDK 기본 재시도, 폴백 범위와 잠복 결함, 모델별 한도와 동시성, 도구 멱등 키
 
-- [[Local-Inference-Deployment-Cases|로컬 추론의 배포 사례]]: Janas의 SSD 전문가 캐시, Minions의 작업 분산, LFM2.5와 Muse Spark Open의 용량과 평가 경계
+- [[Local-Inference-Deployment-Cases|로컬 추론의 배포 사례]]: Janas의 SSD 전문가 캐시, Minions의 작업 분산, Uzu의 Apple 기기 추론과 속도 비교 조건, LFM2.5와 Muse Spark Open의 용량과 평가 경계
 
 ## 함께 볼 문서
 

@@ -13,7 +13,7 @@ aliases: ["Service Design", "서비스 설계"]
 - [x] [[Service-Design-Principles|서비스 설계 원칙 (GOV.UK)]] — 사용자 니즈, 포용 설계, 정보의 확인 범위와 갱신 책임, 디자인 시스템의 공동 판단과 예외
 - [x] [[Backoffice-Workflow-Design|업무용 제품의 처리 흐름 설계]] — 놓친 한 건에서 고르는 자동화 대상, 자동과 수동의 경계와 완료 기준, 큰 단계와 세부 상태, 정보 구조와 화면별 목표, 기존 시스템 연결과 MVP 검수, 접수와 보완 왕복, 다음 행동 중심 어드민, 경과 시간과 작업 시간의 구분
 - [x] [[Gamification|게이미피케이션]] — 5가지 적용 유형, 인증 뱃지, 보상 설계, 다크 패턴 경계
-- [x] [[Game-Feel-and-Feedback|게임 손맛과 피드백]] — 행동 결과의 연출 구분, 효과 비교와 접근성 설정
+- [x] [[Game-Feel-and-Feedback|게임 손맛과 피드백]] — 행동 결과의 연출 구분, 체력 막대의 즉시 표시와 지연 표시, 연출 양 실험과 사건 중요도, 효과 비교와 접근성 설정
 - [x] [[Community-Dark-Patterns|커뮤니티, 프로덕트 다크 패턴]] — 리텐션 vs 조작, 사용자의 끝낼 자유, 자발적 재방문, 4가지 판별 질문
 - [x] [[Persuasion-Principles-and-Boundaries|설득 원리와 정직한 사용의 경계]] — 앵커링, 희소성, 사회적 증거 등 원리별 원 연구와 근거 강도, FTC와 공정위 기준, 랜딩 페이지 점검표
 - [x] [[Pagination-Patterns|페이지네이션 UX 패턴]] — Pagination, Load More, Infinite Scroll, SEO, 접근성

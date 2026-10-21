@@ -1,14 +1,14 @@
 ---
 tags: [ai, llm, benchmark, evaluation, pricing, trend]
 status: done
-verified_at: 2026-10-12
+verified_at: 2026-10-21
 category: "AI엔지니어링(AIEngineering)"
 aliases: ["AI Capability and Cost Trends", "AI 능력과 비용 추세", "벤치마크 주장 읽기"]
 ---
 
 # AI 능력과 비용 추세 읽기
 
-AI가 대회에서 사람을 이겼다, 어려운 시험의 절반을 넘었다, 비용이 97% 떨어졌다는 주장은 모두 특정 부문, 데이터셋, 실행 조건과 지표에서 나온 숫자다. 같은 숫자도 조건을 빼면 다른 뜻이 된다. 이 문서는 능력과 비용 추세를 조건과 함께 읽는 기준을 정리하고, 2026-10-12에 대회 주최 측, 벤치마크 관리 주체, 원 논문, 기업 공식 발표와 Epoch AI, Stanford HAI, METR, OpenRouter, Artificial Analysis 자료로 확인한 사례를 붙인다. 개별 모델의 가격과 가용성은 [[Claude-Opus-5|Claude Opus 5]], [[Gemini-4-Argon|Gemini 4 Argon]], [[LLM-Model-Tiers|LLM 모델 티어 선택]]이 다룬다.
+AI가 대회에서 사람을 이겼다, 어려운 시험의 절반을 넘었다, 비용이 97% 떨어졌다는 주장은 모두 특정 부문, 데이터셋, 실행 조건과 지표에서 나온 숫자다. 같은 숫자도 조건을 빼면 다른 뜻이 된다. 이 문서는 능력과 비용 추세를 조건과 함께 읽는 기준을 정리하고, 2026-10-12부터 대회 주최 측, 벤치마크 관리 주체, 원 논문, 기업 공식 발표와 문서, 기업 대표의 블로그, 수학자 공동 선언과 수학자 단체 성명, 공개 강연 자료와 Epoch AI, Stanford HAI, METR, OpenRouter, Artificial Analysis 자료로 확인한 사례를 붙인다. 확인일은 사례마다 다르며, 본문이나 출처에 확인일 또는 열람일을 적은 사례는 그 날짜를 기준으로 하고 날짜가 없는 사례는 확인일을 따로 남기지 않았다. 개별 모델의 가격과 가용성은 [[Claude-Opus-5|Claude Opus 5]], [[Gemini-4-Argon|Gemini 4 Argon]], [[LLM-Model-Tiers|LLM 모델 티어 선택]]이 다룬다.
 
 ## 1. 벤치마크 점수에 붙여 읽을 조건
 
@@ -31,6 +31,8 @@ AI가 대회에서 사람을 이겼다, 어려운 시험의 절반을 넘었다,
 - **HLE-Diamond**: 2026-09-22 공개된 1,000문항 정제 부분집합이다. 도구 없이(추론 강도 high 기준) 네 모델이 50%를 넘었고, 웹과 코드 도구를 쓰면 GPT-6 Astra가 82.9%였다. 원래 HLE와 다른 셋이므로 점수를 섞지 않는다.
 - **ARC-AGI-3**: 2026-03-25 공개된 상호작용 환경 벤치마크로 지시, 규칙, 목표 설명이 없다. 공개 당시 발표는 인간 100%, 프런티어 AI 0.51%였다. 점수는 정답률이 아니라 사람 기준선 대비 행동 효율(RHAE)로, 레벨 점수는 (인간 기준 행동 수 / AI 행동 수)의 제곱에서 출발한다.
 - **ARC-AGI-3의 GPT-6 Astra 점수**: 2026-09-03 ARC Prize 발표에서 같은 반비공개(semi-private) 셋이라도 공급자 중립 Standard 하네스의 최고점은 max 추론 62.7%(약 2.6만 달러)였다. 99.9%는 요청 사이에 추론 상태를 보존하는 공급자 전용 Provider Adapter 하네스에 high 추론을 쓴 조건의 값(약 1.9만 달러)이다. 비공개 셋 결과는 없고, ARC Prize는 이 결과를 AGI라고 주장하지 않는다고 밝혔다.
+- **FrontierMath**: Epoch AI가 OpenAI의 자금으로 개발한 수학 벤치마크이며 OpenAI는 벤치마크 일부에 독점 접근한다. 2026-06-12 v2 갱신(문항의 42%에 있던 오류를 처리한 큰 변경으로, Tier 1~3은 123문항을 고치고 5문항을 뺐으며 Tier 4는 12문항을 고치고 7문항을 뺐다) 뒤 올림피아드와 학부 고급 연습문제 수준부터 박사과정 초기 탐구 연구 수준까지인 Tier 1~3이 295문항, 대부분 수학 교수와 박사후연구원인 출제자가 몇 주짜리 연구 프로젝트 끝에 한 문항씩 내 Tier 3보다 훨씬 어렵게 설계한 Tier 4가 43문항이고, 공개 문항은 Tier 1~3의 10개와 Tier 4의 2개다. v1 Tier 4 점수와 섞지 않는다. Epoch AI FrontierMath 허브의 점수는 따로 밝히지 않으면 비공개 셋에서 잰 값이며, Epoch AI 구현은 모델이 추론 중 Python 코드를 실행할 수 있게 하며, 모델은 답을 반환하는 Python 함수를 제출한다. Epoch AI의 이해상충 고지와 버전 기록은 OpenAI가 의뢰한 Tier 4 50문항 가운데 30문항에 OpenAI가 접근할 수 있고 나머지 20문항은 문제와 풀이를 주지 않은 홀드아웃 셋이라고 적으며, Tier 4를 v2 이전의 50문항 기준으로 설명한다. v2 이전인 2026-03-05 Epoch AI 뉴스레터는 OpenAI의 독점 접근 범위를 Tier 1~3의 290문항 전부와 그중 237문항의 풀이, Tier 4 48문항 가운데 28문항과 그 풀이로 적는다. v1 허브 페이지가 공개 문항을 뺀 Tier 1~3 290문항과 Tier 4 48문항을 비공개 셋으로 적으므로 뉴스레터의 수는 비공개 셋 기준이고, 이해상충 고지의 Tier 4 50문항은 공개 2문항을 포함한 수다. 따라서 비공개 셋이 곧 OpenAI가 보지 못한 문항이라는 뜻은 아니며, v2 이후 Tier 4의 접근 구성은 확인한 페이지에 없다(2026-10-21 확인).
+- **FrontierMath Tier 4의 GPT-6 Astra 점수**: 2026-10-21 Epoch AI 모델 페이지 기준 Tier 4(v2) 점수는 GPT-6 Astra 98%, GPT-5.6 Sol(2026-07-09 API 정식 출시) 83%이고, 최고 점수는 2026-09-29 출시된 GPT-6.1 Sol의 100%다(모델 페이지는 정수 %로 반올림한 값만 보여 주고 오차, 실행 횟수, 추론 강도와 도구 설정은 밝히지 않는다. v2 페이지의 문항 수로 계산하면 비공개 Tier 4는 41문항이어서, 단일 실행이라면 98%와 100%는 한 문항 차이다). Epoch AI는 출시일인 2026-09-03 공지에서 OpenAI가 준 출시 전 접근권으로 GPT-6 Astra를 시험했다고 밝혔다. 2026-09-12 뉴스레터에서는 GPT-6 Astra가 98%를 내며 남아 있던 마지막 미해결 문항을 풀어 이 벤치마크를 포화로 본다고 밝혔으므로, 98%와 100%의 차이로 모델의 수학 능력 순위를 매기지 않는다. OpenAI 출시 발표 원문은 이 문서에서 열어 대조하지 않았으므로, 공급자 발표 점수와 비교할 때는 반올림 차이와 실행, 셋, 도구, 추론 강도의 차이를 구분해 확인한다.
 
 ### 연구 결과
 
@@ -60,7 +62,7 @@ AI가 대회에서 사람을 이겼다, 어려운 시험의 절반을 넘었다,
 
 ### 모델 비교에서 속도와 비용의 측정 단위를 분리한다
 
-부분 검증(2026-10-14): Artificial Analysis의 방법론에서 아래 지표 정의를 확인했다. 기존 대회 결과와 모델별 점수 전체를 다시 검증한 것은 아니므로 `verified_at`은 유지한다.
+부분 검증(2026-10-14): Artificial Analysis의 방법론에서 아래 지표 정의를 확인했다. 기존 대회 결과와 모델별 점수 전체를 다시 검증한 것은 아니다.
 
 - **첫 토큰과 첫 답변 토큰**: Time to First Token은 응답의 첫 토큰까지 걸린 시간이다. 추론 토큰을 반환하는 모델에서는 첫 추론 토큰일 수 있다. Time to First Answer Token은 사고 시간을 지난 뒤 첫 답변 토큰이 도착하는 시간이다.
 - **출력 속도와 완료 시간**: 초당 출력 토큰 수는 첫 토큰 이후 생성 속도다. 사용자가 답변 전체를 받는 시간에는 입력 처리, 추론과 답변 생성이 모두 들어간다. 빠른 출력만으로 전체 대기 시간이 짧다고 판단하지 않는다.
@@ -118,6 +120,16 @@ METR는 사람 전문가가 걸리는 시간으로 잰 소프트웨어와 추론
 - [Announcing ARC-AGI-3 — ARC Prize](https://arcprize.org/blog/arc-agi-3-launch) — 2026-03-25
 - [ARC Prize, ARC-AGI-3 Scoring Methodology](https://docs.arcprize.org/methodology)
 - [OpenAI's GPT-6 Astra on ARC-AGI-3 — ARC Prize, Greg Kamradt](https://arcprize.org/blog/astra) — 2026-09-03
+- [FrontierMath Tier 4 (v2) — Epoch AI](https://epoch.ai/benchmarks/frontiermath-tier-4-v2) — 2026-10-21 v2 구성, 공개 문항, 평가 방식과 자금 고지 확인
+- [About FrontierMath — Epoch AI](https://epoch.ai/frontiermath/tiers-1-4/about) — 2026-10-21 Tier 구분과 이해상충 고지 확인
+- [AI benchmarks & capabilities — Epoch AI](https://epoch.ai/benchmarks) — 2026-09-03 GPT-6 Astra 출시 전 평가 공지, 2026-10-21 열람
+- [The Epoch Brief - September 12, 2026 — Epoch AI, Elliot Stewart](https://epochai.substack.com/p/the-epoch-brief-september-12-2026) — 2026-09-12, GPT-6 Astra의 Tier 4 98%와 포화 판단, 출시 전 접근, 2026-10-21 열람
+- [GPT-5.4 set a new record on FrontierMath — Epoch AI](https://epochai.substack.com/p/gpt-54-set-a-new-record-on-frontiermath) — 2026-03-05, OpenAI의 독점 접근 범위 고지, 2026-10-21 열람
+- [FrontierMath Tiers 1-3 (v1, old) — Epoch AI](https://epoch.ai/benchmarks/frontiermath-tiers-1-3-v1) — 더는 갱신하지 않는 v1 페이지의 비공개 셋 구성(Tier 1~3 290문항, Tier 4 48문항), 2026-10-21 열람
+- [GPT-6 Astra — Epoch AI](https://epoch.ai/models/gpt-6-astra) — 2026-10-21 열람
+- [GPT-5.6 Sol — Epoch AI](https://epoch.ai/models/gpt-5-6-sol) — 2026-10-21 열람
+- [GPT-6.1 Sol — Epoch AI](https://epoch.ai/models/gpt-6-1-sol) — 2026-10-21 열람
+- [OpenAI API, Changelog](https://developers.openai.com/api/docs/changelog) — 2026-10-21 GPT-5.6 Sol, GPT-6 Astra, GPT-6.1 Sol 출시일 대조
 - [Ten Advances in Mathematics and Theoretical Computer Science — OpenAI](https://cdn.openai.com/pdf/ten-proofs-oai.pdf) — 2026-08-01, 2026-08-06 갱신
 - [ten-proofs — GitHub, OpenAI](https://github.com/openai/ten-proofs)
 - [math — GitHub, OpenAI](https://github.com/openai/math) — 2026-10-06 첫 공개(원고 722편), 현재 원고 수와 형식화 비율, 2026-10-21 README의 실행 조건 확인
