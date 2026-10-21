@@ -32,6 +32,12 @@ Rich Hickey의 'AI' is Not a Tool은 첫 관점에서 통제, 예측 가능성�
 
 Programming Isn’t Special 에세이는 프로그래밍을 예술과 분리해 AI 사용만 다르게 정당화하기 어렵다고 논증한다. Deferred를 불편한 콜백 전달과 API 미학을 개선한 사례로 들며 평범한 창작 업무의 연습 기회를 강조한다. 이는 창작과 학습에 관한 가치 판단이지 AI 사용의 보편적인 금지 규칙이나 효과 추정이 아니다.
 
+### 결과를 얻는 목적과 만드는 즐거움을 구분한다
+
+같은 작업이라도 결과를 빨리 얻는 것이 목적일 때와 직접 만들며 연습하는 것이 목적일 때 자동화 범위가 달라질 수 있다. 원하는 결과뿐 아니라 직접 하고 싶은 과정을 먼저 정하면, 편의를 얻으면서 어떤 연습과 만족을 넘기는지도 판단할 수 있다. 이는 도구 선택을 위한 가치 판단이며 AI의 보편적인 학습 효과를 측정한 결론은 아니다.
+
+공개 발언 사례로 2026년 Harvard College Class Day 연설은 창의성과 비판적 사고를 대신 맡기는 사용을 비판하면서 의학과 물리 연구의 활용은 구분했다. 주최 대학의 현장 보도에서 확인되는 연사의 의견이며 대학의 공식 AI 금지 정책이나 모든 AI 사용이 사고력을 떨어뜨린다는 실험 결과로 읽지 않는다. 연설에서 언급한 연구의 타당성은 이 발언 확인만으로 검증되지 않는다.
+
 ## 경제적 수요와 활동의 의미
 
 생계를 위한 사고, 학습과 창작의 즐거움, 사회적 기여는 서로 연관되지만 같은 가치가 아니다. 어떤 일이 자동화될 수 있다는 전망만으로 그 활동이 무의미해지거나 개인이 즉시 진로를 포기해야 한다고 결론 내리지 않는다.
@@ -48,6 +54,7 @@ Thinking Will Become a Hobby 에세이는 성능, 비용과 가용성의 우위 
 
 ## 출처
 
+- [Funny but serious, Chieng issues an AI warning to grads — Harvard Gazette](https://news.harvard.edu/gazette/story/2026/05/funny-but-serious-chieng-issues-an-ai-warning-to-grads/) — 2026-05-27 Class Day 현장 보도, 2026-10-22 확인. 창작의 즐거움과 연구 활용을 구분한 공개 발언의 맥락만 반영했다.
 - ['AI' is Not a Tool — Rich Hickey](https://www.linkedin.com/pulse/ai-tool-rich-hickey-kjl8e)
 - [AI Is a Tool. Using It Well Takes Skill. — yyhh.org](https://yyhh.org/blog/2026/10/ai-is-a-tool/)
 - [Programming Isn’t Special — Glyph](https://blog.glyph.im/2026/10/programming-isnt-special.html)

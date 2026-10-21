@@ -129,6 +129,12 @@ Warm introduction은 잠재 고객과 관계가 있는 사람에게 소개를 �
 
 고객 데이터를 통합해 보는 운영 목표를 특정한 물리 DB 하나의 의무로 확대하지 않는다. 현대오토에버의 공개 CRM 설명도 고객 접점 연계, 판매 프로세스 진단과 성과 관리를 서비스 범위로 제시하지만, 특정 구조만으로 데이터 오류나 채널 갈등이 사라진다는 보장은 아니다. 파일럿에서는 입력 부담, 상태 불일치와 후속 대응 누락이 실제로 줄었는지를 별도로 확인한다.
 
+### 서비스 이력을 영업 기회로 옮길 때 확인할 것
+
+판매 이후의 설치, 보증과 수리 이력은 교체나 추가 지원이 필요한지 확인할 단서가 될 수 있다. 고객 접점 통합은 상담과 견적뿐 아니라 판매 뒤의 서비스까지 연결하는 범위로 설계할 수 있다. 현대오토에버의 공개 CRM 서비스 범위도 판매와 재고 관리, A/S 예약과 이력 기록, 영업/마케팅/서비스 및 차량 데이터의 연결을 포함한다(2026-10-22 확인).
+
+운영 적용 제안: 이력에서 발견한 필요 가능성을 곧바로 유효 영업 기회나 확정 매출로 올리지 않는다. 대상 제품과 기록 시점이 맞는지, 고객이 실제로 문제를 겪는지, 수리와 교체 중 어떤 선택을 원하는지 확인하고 담당자와 다음 행동을 정한다. 자동 추천은 검토할 가설이며 고객의 구매 의사나 도입 효과의 증거가 아니다. 웨비나의 서비스 이력 활용 제안도 실제 전환율 검증과 구분한다.
+
 ## 고객 도입과 전략적 투자를 별도 증거로 기록한다
 
 제품을 쓰는 고객사와 투자하는 법인이 같은 그룹이어도 동일 법인이라고 가정하지 않는다. 사용, 유료 계약, 갱신과 지분 투자는 서로 다른 의사결정이다. 투자 참여를 확인했다고 개별 고객의 사용 빈도, 수익성이나 갱신까지 검증된 것은 아니다.
@@ -170,6 +176,7 @@ CRM의 성과 화면에서는 답하는 질문이 다른 금액을 나눠 보인
 
 ## 출처
 
+- [AI 시대, 제조업 글로벌 판매 채널 관리 어떻게 해야 할까? — 토크아이티, 현대오토에버와 Salesforce 발표](https://www.youtube.com/watch?v=RKBbIaCOxok) — 2026-10-14 공개 웨비나, 1:02:33의 설치/보증/수리 이력과 교체 수요 연결 제안. 해당 구간만 반영했으며 전체 영상의 제품 기능과 효과 주장을 검증한 기록은 아니다.
 - [Salesforce Trailhead, Build a Sales Process, Learn About the Sales Process](https://trailhead.salesforce.com/content/learn/modules/build-a-sales-process/learn-about-the-sales-process) — 2026-10-21 확인, 상담 말미의 후속 일정 제안과 상담 직후 요약 전달. 견적 검토 기록 방식은 소규모 영업에 적용한 제안이다.
 - [Techstars Mentor FAQs — Techstars](https://www.techstars.com/mentor-faq) — 2026-10-21 확인, PMF, 사업모델, 유통과 고객, 파트너 및 인맥 연결의 지원 범위
 - [Engage with Mentors - Worksheet — Techstars](https://toolkit.techstars.com/engage-with-mentors-worksheet) — 2026-10-21 확인, 멘토의 경험 조사, 짧은 제품 설명과 도움이 필요한 문제 준비
@@ -189,7 +196,7 @@ CRM의 성과 화면에서는 답하는 질문이 다른 금액을 나눠 보인
 - [Discovery Call Guide — LinkedIn Sales Solutions](https://business.linkedin.com/sell/resources/sales-terms/discovery-call) — 2026-10-06 확인, 공통 지인을 통한 소개와 고객 탐색 대화
 - [글로벌 진출, 책상 위 전략으론 안 된다! 아시아 현장에서 직접 경험한 판매 채널 구축의 현실 — 토크아이티, 현대오토에버 발표](https://www.youtube.com/watch?v=AZnRqDSzD5w) — 2026-10-16 공개 발표, 05:23~09:53의 입력 동기와 단계 정의, 11:15~13:17의 공동 지표, 20:16~21:16의 단계적 도입 경험. 전사에서 명확히 확인되는 경험을 운영 질문으로 정리했으며 구축 기간과 성과 수치를 일반화하지 않았다.
 - [챗봇 좀 그만 만드세요 | 마크비전 이인섭 대표 — BZCF 비즈까페, 마크비전 대표 인터뷰](https://www.youtube.com/watch?v=6Lax-pt73ag) — 2026-10-16 공개 인터뷰, 08:07~09:07의 법무 조직의 기술 경계와 신뢰, 14:11~16:15의 첫 고객과 참조 확산, 16:15~17:17의 조직 성숙도별 설득, 23:28~24:34의 정기 성과 설명과 지역 조직. 한 회사의 경험으로 정리했으며 고객명과 매출 수치는 옮기지 않았다.
-- [CRM — 현대오토에버](https://www.hyundai-autoever.com/kor/business-area/dx-solutions/crm/contents.do?cntnSeq=442) — 2026-10-18 확인, 고객 데이터 통합, 판매 프로세스와 성과 관리의 공개 서비스 범위
+- [CRM — 현대오토에버](https://www.hyundai-autoever.com/kor/business-area/dx-solutions/crm/contents.do?cntnSeq=442) — 2026-10-18 확인, 2026-10-22 판매/재고, A/S 예약과 이력 및 영업/마케팅/서비스 데이터 연결 범위 추가 대조
 - [Launching Meta Enterprise Platform — Meta](https://about.fb.com/news/2026/09/launching-meta-enterprise-platform/) — 2026-10-06 확인, 플랫폼 발표의 범위와 구매 조건을 구분한 사례
 - [GitLab Handbook, Commercial Sales Opportunity Stages](https://handbook.gitlab.com/handbook/sales/commercial/comm-sales-opp-stages/) — 기업 내부의 단계별 활동과 완료 조건 사례
 - [GitLab Handbook, Facilitate The Opportunity](https://handbook.gitlab.com/handbook/sales/sales-operating-procedures/facilitate-the-opportunity/) — 기술 평가, 내부 추진자와 구매 절차의 구분

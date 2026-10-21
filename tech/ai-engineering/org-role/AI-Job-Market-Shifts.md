@@ -48,6 +48,16 @@ LinkedIn Economic Graph 연구진은 2023-01-01부터 2025-07-31까지 회원이
 - AI가 사업 모델을 바꾸는 데 대한 가장 흔한 대응은 직원의 역량 습득이며 기업의 77%가 이를 계획했고, 41%는 AI가 일부 과업을 자동화함에 따라 인력을 줄일 계획이었다. 절반 가까이는 AI로 흔들리는 직무의 직원을 사내 다른 부문으로 옮길 계획이었다.
 - 기업 조사 자료를 세계 단위로 합친 전망이다. 실제로 관측한 고용 결과가 아니며 특정 국가의 채용 규모나 개인의 취업 가능성을 보여 주지 않는다.
 
+### 역량의 중요도 전망과 임금 상승을 구분한다
+
+WEF 2025 보고서의 Skills outlook은 기업이 현재 중요하게 보는 역량과 2030년까지 중요도가 커질 것으로 예상하는 역량을 구분한다. 현재 핵심 역량에는 분석적 사고, 회복탄력성과 유연성, 리더십과 사회적 영향력이 포함된다. 향후 중요도 상승 전망에는 AI와 빅데이터 같은 기술 역량뿐 아니라 창의적 사고, 호기심과 평생 학습도 포함된다.
+
+이 조사는 기업의 평가와 기대를 보여 준다. 특정 인간 역량의 임금이 반드시 오르거나 AI가 그 역량을 대체할 수 없다는 증거는 아니다. 현재 중요도와 미래 변화율도 서로 다른 지표이므로 같은 순위로 읽지 않는다.
+
+학습에 적용할 때는 역량 이름을 업무 증거로 바꾸는 방식을 제안한다. 비판적 사고라면 주장과 근거를 분리한 검토 기록, 협업이라면 이해관계자의 제약을 반영한 합의, 학습력이라면 피드백 뒤 독립적으로 다시 수행한 결과를 확인한다. 이는 평가 자료를 만드는 제안이며 WEF의 공식 채용 기준이나 개인의 임금 예측이 아니다.
+
+2026-10-22에는 보고서 3장의 현재 핵심 역량과 중요도 변화 전망을 대조했다. 위 고용 수치와 다른 연구의 전체 내용을 다시 검증한 것은 아니므로 기존 `verified_at`은 유지한다.
+
 ## 직함과 역할의 본질을 나눠 본다
 
 직함은 같은 일을 묶는 이름표이고, 기록하는 곳과 시점에 따라 다르게 붙는다. 센서스 연구는 표현만 바뀐 직함을 새 직무로 세지 않았고, LinkedIn 목록은 직급이 다른 같은 직함을 묶고 머신러닝 엔지니어 같은 별칭을 함께 적는다. 새 직함이 보이면 이름보다 맡는 문제, 산출물, 책임과 필요한 전문성을 기존 직무와 비교한다. 지원 공고를 과업으로 나눠 보는 방법은 [[Developer-Role-AI-Era#직함보다 문제의 경계와 책임을 본다|직함보다 문제의 경계와 책임을 본다]]를 따른다.
@@ -66,10 +76,11 @@ LinkedIn Economic Graph 연구진은 2023-01-01부터 2025-07-31까지 회원이
 
 ## 출처
 
+- [The Future of Jobs Report 2025, 3. Skills outlook — World Economic Forum](https://www.weforum.org/publications/the-future-of-jobs-report-2025/3-skills-outlook) — 2026-10-22, Core skills와 Skill evolution 본문 대조. 기업의 현재 평가와 2030년까지의 기대이며 임금 상승이나 대체 불가능성 검증이 아니다.
 - [New Frontiers: The Origins and Content of New Work, 1940–2018 — NBER, David Autor, Caroline Chin, Anna M. Salomons, Bryan Seegmiller](https://www.nber.org/papers/w30389) — 작업논문 w30389(2022-08), 게재본은 Quarterly Journal of Economics 139권 3호(2024). 초록, 서론, 2.1~2.2절의 새 직함 판정 방식과 2018년 고용 비중 추정, 4.1절 각주 16의 색인 갱신 단서, 4~5절의 보강과 자동화 추정, 5.2절과 결론의 시기 비교 단서를 작업논문으로 대조했고 게재본 본문은 열람하지 못함. 2026-10-21 대조
 - [Most work is new work, long-term study of U.S. census data shows — MIT News, Peter Dizikes](https://news.mit.edu/2024/most-work-is-new-work-us-census-data-shows-0401) — 2024-04-01, QJE 게재 소개, 1940~2018년을 다룬 연구라는 설명, 현재 일자리 10개 중 약 6개가 1940년에 없던 직무라는 Autor의 추정 인용(2018년 고용 기준이라는 표현은 작업논문), 전문직 74%와 제조업 46% 대조. 2026-10-21 대조
 - [LinkedIn Jobs on the Rise 2026: The 25 fastest-growing roles in the U.S. — LinkedIn News](https://www.linkedin.com/pulse/linkedin-jobs-rise-2026-25-fastest-growing-roles-us-linkedin-news-dlb1c) — 2026-01-07, 직무의 게시 순서, 직무 설명과 방법론 대조. 2026-10-21 대조
-- [Future of Jobs Report 2025 : 78 millions de nouvelles opportunités d'emploi d'ici à 2030, mais un besoin urgent d'acquisition de compétences pour préparer la main-d'œuvre — World Economic Forum](https://reports.weforum.org/docs/WEF_Future_of_Jobs_2025_Press_Release_FR.pdf) — 2025-01-08 보도자료 프랑스어판. 창출, 대체, 순증 수치와 22%, 근거 기업의 수와 범위, 증감 직무 표, 기업 계획 비율 대조. 보고서 본문은 열람하지 못함. 2026-10-21 대조
+- [Future of Jobs Report 2025 : 78 millions de nouvelles opportunités d'emploi d'ici à 2030, mais un besoin urgent d'acquisition de compétences pour préparer la main-d'œuvre — World Economic Forum](https://reports.weforum.org/docs/WEF_Future_of_Jobs_2025_Press_Release_FR.pdf) — 2025-01-08 보도자료 프랑스어판. 창출, 대체, 순증 수치와 22%, 근거 기업의 수와 범위, 증감 직무 표, 기업 계획 비율 대조. 2026-10-21 검증에서는 보고서 본문을 열람하지 못함. 이후 3장 대조 범위는 별도 출처에 표시
 - [AI 시대의 직무 변화 — YouTube, 면접왕 이형](https://www.youtube.com/watch?v=ITv6GwBp33o) — 2026-10-13 공개 영상. 정리의 계기이며 두 축 예시의 출처, 사실 근거로 쓰지 않음
 
 ## 관련 문서
