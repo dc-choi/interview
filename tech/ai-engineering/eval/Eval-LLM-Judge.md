@@ -68,6 +68,14 @@ aliases: ["LLM-as-a-Judge", "LLM-as-Judge", "LLM Judge", "LLM 판정기"]
 
 수치는 당시 모델의 값이므로 현재 판정기에 옮기지 않고, 같은 점검을 자기 판정기에 다시 돌려 본다. few-shot 예시는 GPT-4의 순서 교체 일관성을 65.0%에서 77.5%로 올렸지만, 일관성이 정확성을 뜻하지는 않고 예시가 새 편향을 들일 수 있으며 프롬프트가 길어져 호출 비용이 4배가 됐다.
 
+## 동시 비교와 교차검토를 서로 다른 단계로 기록한다
+
+여러 모델에 같은 질문을 보내는 단계와 한 모델의 답을 다른 모델에 넘겨 수정하는 단계는 구분한다. 앞 단계는 최초 답의 차이를 보여 주고, 뒤 단계는 다른 답을 입력으로 받은 수정 결과를 보여 준다. 수정 뒤 답이 같아졌다는 사실을 최초 답의 독립적인 일치로 집계하지 않는다.
+
+공개 도구 사례로 다스캔 AI는 동시 질문, 답변 전달과 교차검토, 이미지 생성 뒤 검사와 재생성, 찬성/반대/사회자 역할의 토론을 안내한다(2026-10-22 제작자 공개 페이지 확인). 이는 제공 기능의 안내이며 생산성 배수, 정확도 개선이나 입력 데이터 보호를 독립 검증한 결과가 아니다.
+
+다음은 이런 흐름을 평가에 적용할 때의 제안이다. 최초 답과 전달한 근거, 수정 답을 따로 보존하고, 사실 확인과 표현 선호를 루브릭에서 구분한다. 기술 도식은 글자와 연결 관계를 원래 명세에 대조한다. 판정기의 결론만으로 맞다고 확정하지 않으며, 위치와 장황함 편향 및 추론 한계는 MT-bench 연구의 제한을 참고해 별도 시험한다. 이 사례 절만 대조했으므로 기존 `verified_at`은 유지한다.
+
 ## 사람 라벨로 판정기를 교정한다
 
 ### 점수가 상단에 몰리면 근거와 배점을 분리한다
@@ -110,6 +118,7 @@ aliases: ["LLM-as-a-Judge", "LLM-as-Judge", "LLM Judge", "LLM 판정기"]
 
 ## 출처
 
+- [서비스와 앱: 다스캔 AI — 기술노트](https://technote.wiki/apps#dascan) — 2026-10-22 동시 질문, 교차검토, 이미지 재생성과 역할 토론의 공개 안내 확인. 실행, 성능과 데이터 보호는 검증하지 않음
 - [AWS Innovation with Fair Trade USA — Amazon Web Services](https://www.youtube.com/watch?v=0ju7zBp_zKc) — 2025년 발표 13:37~15:39, 근거별 가산 채점의 시제품 경험
 - [How Fair Trade USA uses AWS to improve working conditions for farmers — AWS, Mike George](https://aws.amazon.com/blogs/publicsector/how-fair-trade-usa-uses-aws-to-improve-working-conditions-for-farmers/) — 2026-10-16 사례의 평가 기준과 시제품 범위를 대조
 - [Judging LLM-as-a-Judge with MT-Bench and Chatbot Arena — arXiv, Lianmin Zheng 외](https://arxiv.org/abs/2306.05685)

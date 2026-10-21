@@ -23,6 +23,14 @@ NIST CSF 2.0은 조직 맥락과 우선순위에 맞춘 정책 수립, 전달과
 
 위 표는 CSF의 자산 관리, 위험 평가, 책임과 교육 항목을 연결한 실무 정리다. 정책, 세부 기준, 작업 절차로 문서를 나눌 수 있지만 파일 세 개를 만드는 것 자체가 목표는 아니다.
 
+### 정보 분류를 실제 권한과 복구 증거에 연결한다
+
+2026-10-22 NIST CSF 2.0 Appendix A 대조 기준. ID.AM-05는 분류, 중요도, 자원과 조직 임무에 미치는 영향을 기준으로 자산의 우선순위를 정한다. PR.AA-05는 접근 권한을 정책으로 정의하고 관리, 집행, 검토하며 최소 권한과 직무 분리를 적용하도록 한다. 공개, 내부용, 기밀 같은 등급 이름만 붙여서는 이 성과를 확인할 수 없다.
+
+작은 서비스의 적용 예시로 데이터 종류별 허용 역할, 내보내기 권한과 검토 책임자를 정하고 실제 계정으로 허용 및 거부 결과를 확인한다. 백업은 PR.DS-11의 생성, 보호, 유지와 시험까지 연결한다. 복사본의 개수와 위치만 확인하지 않고 복원 결과도 남기는 방식이다. 이는 표준의 고정 양식이나 모든 조직에 동일한 등급 수를 요구하는 규칙이 아니다.
+
+이 절은 분류, 권한과 백업 성과만 부분 대조했다. 다른 제품의 지원 조건과 인증 절차를 다시 검증한 것은 아니므로 기존 `verified_at`은 유지한다.
+
 ### CSF 2.0의 여섯 기능과 현재, 목표 상태
 
 2026-10-10 NIST CSF 2.0의 2장과 3장을 대조한 범위다. CSF Core는 Govern, Identify, Protect, Detect, Respond, Recover의 여섯 기능으로 보안 성과를 분류한다. 순서대로 한 번씩 끝내는 사고 대응 단계가 아니며, 기능의 나열 순서가 중요도를 뜻하지도 않는다.
@@ -249,7 +257,7 @@ ISMS-P 인증기준은 관리체계 수립과 운영, 보호대책 요구사항,
 - [Prowler, Mutelisting](https://docs.prowler.com/user-guide/cli/tutorials/mutelist)
 - [Service Screener — AWS Samples](https://github.com/aws-samples/service-screener-v2)
 - [NIST, SP 800-50 Rev. 1: Building a Cybersecurity and Privacy Learning Program](https://nvlpubs.nist.gov/nistpubs/SpecialPublications/NIST.SP.800-50r1.pdf) — 2.4절의 측정과 2.5절의 대상별 학습
-- [NIST, The Cybersecurity Framework (CSF) 2.0](https://nvlpubs.nist.gov/nistpubs/CSWP/NIST.CSWP.29.pdf) — 2장의 여섯 기능, 3.1절의 Current/Target Profile, Appendix A의 GV.PO, GV.RR, GV.SC, ID.AM, ID.RA와 PR.AT
+- [NIST, The Cybersecurity Framework (CSF) 2.0](https://nvlpubs.nist.gov/nistpubs/CSWP/NIST.CSWP.29.pdf) — 2장의 여섯 기능, 3.1절의 Current/Target Profile, Appendix A의 GV.PO, GV.RR, GV.SC, ID.AM, ID.RA와 PR.AT. 2026-10-22 ID.AM-05, PR.AA-05와 PR.DS-11 부분 대조
 - [NIST, SP 800-115: Technical Guide to Information Security Testing and Assessment](https://nvlpubs.nist.gov/nistpubs/Legacy/SP/nistspecialpublication800-115.pdf) — 5.2절의 침투 테스트 영향, 6장의 계획과 승인, 6.2절의 시점 한계, 7장의 자료 취급, 8장의 개선과 재점검
 
 ## 관련 문서

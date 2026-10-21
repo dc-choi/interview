@@ -103,6 +103,14 @@ snapshot paging은 순회 시작 시점의 데이터로 고정하므로 순회 �
 
 일부 오류는 body 없이 HTTP status만 올 수 있고 문서에 없는 오류도 발생할 수 있다. JSON 파싱 실패로 원래 status와 응답을 잃지 않도록 한다. `errorCode` 이름에서 HTTP status를 역산하지 않는다. 예를 들어 공통 표에는 LinkAlreadyExists가 CONFLICT/400, QueryMemoryExceededLimit가 TIMEOUT/400, FileAlreadyExists가 NOT_FOUND/404로 기재된다. 실제 status와 endpoint별 계약을 그대로 다룬다.
 
+### 오류 본문의 유무로 진단 경로를 나눈다
+
+2026-10-22 공식 Errors의 General errors와 Status codes를 대조했다. 본문 없는 404는 요청 endpoint가 없는 경우로 안내되므로 URL과 경로를 확인한다. `ObjectNotFound`처럼 이름이 있는 자원 오류는 자원 부재와 접근 불가 가능성을 함께 살핀다. 404를 모두 같은 자원 오류로 변환하지 않는다.
+
+`Conjure:UnsupportedMediaType`은 415이며 해당 오류의 안내는 요청 `Content-type: application/json` 확인이다. 파일 업로드까지 JSON으로 바꾸라는 공통 규칙으로 확장하지 않는다. `Conjure:UnprocessableEntity`는 422지만 `errorCode`는 INVALID_ARGUMENT다. 입력 오류를 400 하나로만 분기하면 이 경우를 놓친다.
+
+적용 제안: HTTP status를 먼저 보존하고, 본문이 있을 때만 구조화된 오류 추출을 시도한다. 파싱 실패, 알려진 오류 이름과 미등록 오류 이름을 구분해 기록한다. 본문 없는 503은 서비스 가용성 문제일 수 있으므로 제한 초과로만 단정하지 않는다. 이 절의 대조는 실제 endpoint 호출 시험이나 다른 절의 재검증을 뜻하지 않아 기존 `verified_at`을 유지한다.
+
 ### Ontology 오류의 구분
 
 ActionValidationFailed는 validateAction으로 세부 원인을 확인한다. parameter ID, parameter type/value, 누락한 property, 지원하지 않는 composite primary key는 입력/모델 계약 문제다. submission 조건 실패를 단순 서버 장애와 같은 자동 재시도로 묶지 않는다.
