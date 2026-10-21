@@ -17,11 +17,15 @@ Pipeline Builder autosave는 사용자와 branch에 종속된 작업 복구이�
 
 Notepad PDF 생성과 document 저장은 다른 동작이다. Template PDF를 만들면서 Compass document를 남기지 않는 옵션이 추가됐다. Media import checkpoint는 내용 반출/반입 확인 경로이며 PDF가 생성됐다는 사실로 승인이나 저장 완료를 추정하지 않는다. Full-text search도 View 권한이 있는 문서에 한정한다.
 
+부분 검증(2026-10-21): 2022 announcements release notes의 2026-10-17 스냅샷에서 이 단락의 항목과 분석의 값과 화면 상태 절의 Workshop 정렬 항목을 대조했다. 문서의 나머지 서술은 다시 대조하지 않았으므로 기존 `verified_at`은 유지한다. Action submission criteria의 조건에 Organizations나 사용자 email 같은 추가 Multipass 속성을, 해당 속성이 있을 때 쓸 수 있게 됐다(2022-10-31). Object type 권한 요약이 사용자에게 자신의 object 권한 정보를 보여 주게 됐다(2022-10-13). 새 Login checkpoint를 만들 때 사용자가 같은 checkpoint를 마지막으로 본 뒤 지정한 시간이 지나야 다시 표시하도록 빈도를 정할 수 있게 됐다(2022-11-14). 빈도를 정하면 지정한 시간이 지나기 전의 로그인에는 checkpoint가 다시 표시되지 않는다. 현행 문서는 사용자가 checkpoint를 제출할 때 record가 만들어진다고 설명하므로, 접속마다 checkpoint record가 필요한 통제인지 먼저 확인한다(적용 제안). 현행 빈도와 record 동작은 [[Palantir-Checkpoint-Scope-and-Evidence]]에서 다룬다. Slate의 code sandbox widget은 특권 권한 없이 모든 사용자가 쓸 수 있게 됐다(2022-11-21). Code Workbook에서 template, visualization과 dataset을 내보내는 절차는 Foundry 표준 절차를 따르도록 수정됐는데(2022-07-11, 제목은 Fix Unsafe Downloads in Code Workbooks), description은 무엇이 unsafe였는지와 표준 절차의 내용을 밝히지 않으므로 특정 반출 통제나 checkpoint가 적용됐다고 추정하지 않는다.
+
 ## 분석의 값과 화면 상태
 
 Contour의 partition/projection 표시, branch별 parameter source 선택과 path dependency 삭제 방지는 계산 입력을 명확히 한다. Downstream path가 있으면 삭제를 막고 materialized output만 있으면 업데이트 중단을 경고한다. Non-deterministic window function 경고는 UI 개선이어도 결과 재현성의 문제다. 당시 문구 NTIL은 함수 이름 오기로 보이며 현재 NTILE 문법과 대조해야 한다.
 
 Map/heatmap/embedded row count, null coloring과 property-card link filter 수정은 같은 화면이 올바른 subset을 표시하는지 다시 확인하게 한다. Default open view, dashboard tab, text/table 편집, scroll/resize와 preview 오류 수정은 계산 권한을 바꾸는 기능으로 보지 않는다.
+
+Workshop object table에서 searchable render hint가 꺼진 numeric property는 정렬할 수 없게 고쳐졌다(2022-10-10, 제목은 Sorting requires the field to be indexed for search). 현행 render hint 문서는 render hint가 property 사용 정보를 Object Storage v1(Phonograph)과 플랫폼의 사용자 애플리케이션에 전달한다고 설명하고 Object Storage v2는 따로 다루지 않으며, numeric과 date property는 항상 정렬된다(always sortable)고 적으면서 Sortable은 Searchable과 함께 선택해야 하고, 재색인 성능을 높이려면 앱에서 검색이나 정렬에 쓰지 않을 property의 Searchable을 끄라고 안내한다. Object Storage v1 object type의 같은 화면에서 numeric property를 정렬할 수 없으면 데이터보다 Searchable 설정을 먼저 확인하고, string property를 정렬할 수 없으면 Searchable과 Sortable을 함께 확인한다(적용 제안). Object Storage v2에서 같은 의존이 있는지는 확인하지 못했다. 현행 render hint의 의미는 [[Palantir-Object-Display-and-Index-Hints]]에서 확인한다.
 
 Quiver는 object set에서 object/series/property로 이동하고, transform table과 time series를 양방향 변환하며 event/indicator/range/linear aggregation을 확대했다. 특정 data scale/structure에서 불가능한 다음 동작을 숨기지 않고 disabled로 표시한다. Array parameter를 Functions/Actions에 전달하는 지원과 외부 앱으로 object set을 보내는 기능은 원천 객체 권한을 함께 가져가는 보장이 아니다.
 
@@ -37,6 +41,9 @@ Workshop variable transform/list/filter promotion, chart와 object-table progres
 
 - [Palantir, 2022 release notes](https://www.palantir.com/docs/foundry/release-notes/2022)
 - [Palantir, 2022 announcements release notes](https://www.palantir.com/docs/foundry/announcements/release-notes/2022)
+- [Palantir, Checkpoint core concepts](https://www.palantir.com/docs/foundry/checkpoints/core-concepts)
+- [Palantir, Configure checkpoints](https://www.palantir.com/docs/foundry/checkpoints/configure-checkpoints)
+- [Palantir, Render hints](https://www.palantir.com/docs/foundry/object-link-types/metadata-render-hints)
 
 ## 관련 문서
 

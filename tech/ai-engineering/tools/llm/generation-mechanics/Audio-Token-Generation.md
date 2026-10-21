@@ -1,0 +1,70 @@
+---
+tags: [ai, generative-ai, audio, music, tokenization, transformer]
+status: done
+verified_at: 2026-10-21
+category: "AI엔지니어링(AIEngineering)"
+aliases: ["Audio Token Generation", "오디오 토큰 생성", "음악 생성 모델", "Neural Audio Codec", "MusicGen", "EnCodec"]
+---
+
+# 음악과 소리 생성: 오디오 토큰과 자기회귀 생성
+
+공개된 음악 생성 모델 가운데 MusicGen 같은 언어 모델 계열은 파형을 신경망 오디오 코덱으로 압축한 이산 토큰으로 바꾸고, 언어 모델이 텍스트 같은 조건을 받아 그 토큰을 차례로 예측한 뒤, 코덱 디코더로 다시 파형을 만든다. 텍스트 LLM의 다음 토큰 예측([[LLM-Generation-Mechanics-Decoding|추론과 디코딩]])을 소리에 옮긴 구조이지만, 한 시점에 토큰이 여러 개 있다는 점이 다르다. MusicGen 논문은 확산 모델을 다른 접근으로 소개하고 그 계열 모델과도 비교했다. 이 문서는 언어 모델 계열만 다룬다.
+
+이 문서는 2026-10-21에 EnCodec과 MusicGen 논문, audiocraft 문서, Suno가 공개한 Bark 저장소를 대조한 기준이다. 상용 음악 서비스의 모델 구조는 공개된 기술 문서로 확인하지 못했으므로 이 구조를 특정 서비스의 내부 동작으로 단정하지 않는다.
+
+## 1. 파형에서 토큰으로: 신경망 오디오 코덱
+
+- **파형은 초당 수만 개의 값이다**: 디지털 오디오는 초당 정해진 횟수로 진폭을 기록한다. 32 kHz 모노라면 1초가 표본 32,000개다. 이 값을 하나씩 직접 예측하면 생성 단계가 지나치게 많아진다.
+- **인코더가 짧은 구간을 벡터 하나로 줄인다**: EnCodec(Défossez 외, 2022)은 인코더와 디코더 사이에 양자화한 잠재 공간을 두고 끝에서 끝까지 학습한 코덱이며, 저지연 스트리밍용과 비스트리밍용 변형이 있다. 24 kHz 모노 모델의 인코더는 오디오 1초를 잠재 벡터 75개로 줄이고, 음악만으로 학습한 48 kHz 스테레오 모델(비스트리밍)은 150개로 줄인다.
+- **잔차 벡터 양자화(RVQ)로 번호를 붙인다**: 잠재 벡터를 첫 코드북에서 가장 가까운 항목의 번호로 바꾸고, 남은 오차(잔차)를 다음 코드북으로 다시 양자화한다. EnCodec 논문의 24 kHz와 48 kHz 모델은 코드북마다 1,024개 항목(10비트)을 쓰고, 코드북은 24 kHz 모델에서 최대 32개, 48 kHz 모델에서 최대 16개를 쓴다. 24 kHz 모델은 코드북 수를 바꿔 1.5, 3, 6, 12, 24 kbps의 대역폭을 낸다.
+- **코드북을 늘린 효과는 구간마다 다르다**: 코드북을 늘리면 토큰은 계속 늘어난다. 청취 평가(MUSHRA) 점수는 가장 낮은 대역폭에서 크게 올랐지만(24 kHz 스트리밍 설정의 음악 Set-1에서 1.5 kbps 68.2, 3 kbps 89.6), 3 kbps 위에서는 신뢰구간이 서로 겹쳤다(같은 세트 3 kbps 89.6±3.1, 6 kbps 92.9±1.8, 12 kbps 91.8±2.5). 같은 표의 음악 Set-2는 12 kbps까지 점수가 올랐다. 48 kHz 스테레오 음악은 6 kbps 82.9에서 12 kbps 88.0으로 오른 뒤 24 kbps 87.5로 비슷해졌다.
+- **디코더가 번호를 다시 소리로 바꾼다**: 생성 모델이 고른 번호열을 코덱 디코더가 파형으로 복원한다. 그래서 최종 음질은 생성 모델의 토큰 선택과 코덱의 복원 품질을 함께 따른다.
+
+계산 예(논문 수치로 한 이 문서의 계산): 24 kHz 모델에서 코드북 하나는 초당 75개 시점마다 10비트를 쓰므로 750 bps다. 최대 32개를 모두 쓰면 24 kbps가 된다.
+
+## 2. 토큰열을 생성하는 언어 모델
+
+MusicGen(Copet 외, NeurIPS 2023)은 여러 갈래의 압축된 이산 음악 표현, 즉 토큰 위에서 동작하는 단일 언어 모델이다. 계층별 모델이나 업샘플링 모델을 이어 붙이지 않는 단일 단계 트랜스포머이며, 텍스트 설명이나 멜로디 특징을 조건으로 받는다.
+
+- **토크나이저**: 32 kHz 모노 오디오용 non-causal EnCodec을 쓰고, 초당 50개 시점마다 코드북 4개(각 2,048개 항목)의 토큰을 만든다.
+- **코드북을 펼치는 순서**: 한 시점에 토큰이 4개 있으므로 예측 순서를 정해야 한다. 논문은 모든 코드북을 같은 단계에 함께 예측하는 parallel, 코드북마다 조금씩 늦춰 예측하는 delay, 모든 코드북을 한 줄로 펼치는 flattening 등 여섯 가지 순서를 비교했다. delay는 30초 오디오를 자기회귀 단계 1,500개로 만들고, flattening은 단계가 시점 수와 코드북 수의 곱으로 늘어 같은 비교에서 6,000개였다. 같은 비교에서 flattening은 다섯 지표 모두 delay보다 조금 나았지만(OVL은 79.71과 79.69로 거의 같았다), 논문은 단순한 delay 방식이 그 비용의 일부로 비슷한 성능을 낸다고 보고했다. audiocraft 문서도 delay 덕분에 오디오 1초에 자기회귀 단계가 50개뿐이라고 설명한다.
+- **텍스트 단독 모델은 조건을 cross-attention으로, 멜로디 조건 모델은 조건을 입력 앞 prefix로 넣는다**: 텍스트 설명은 인코더로 조건 텐서로 바꾸고, 텍스트 단독 모델은 이를 트랜스포머의 cross-attention 블록에 넣는다. 텍스트 인코더는 T5, FLAN-T5, CLAP을 비교했고 주 모델은 T5를 쓴다. 멜로디 조건은 참조 음원의 크로마그램에서 시점마다 가장 강한 bin만 남긴 신호다. 멜로디 조건을 쓰는 모델은 cross-attention 대신 조건 텐서를 트랜스포머 입력 앞에 붙이고, 공개 구현의 설정은 텍스트와 크로마 조건을 함께 앞에 붙인다.
+- **조건 반영과 생성 설정**: 학습 때 조건을 0.2 확률로 지우고, 추론 때는 모델의 logit에 classifier-free guidance(척도 3.0)를 적용하며 top-k 샘플링(상위 250개, 온도 1.0)을 썼다. 학습에는 라이선스를 받은 음악 2만 시간을 썼다.
+
+이 문서의 해석으로는, 텍스트 단독 모델에 장르 설명만 바꿔 주면 다른 소리가 나오는 이유는 조건 텐서가 cross-attention으로 매 단계의 토큰 분포에 들어가고, 추론 때 logit에 적용하는 classifier-free guidance(척도 3.0)가 그 영향을 키우기 때문이다. 논문은 생성이 조건을 얼마나 따를지 세밀하게 제어하지 못하고 주로 classifier-free guidance에 기댄다는 점을 한계로 적는다. 샘플링과 온도의 일반 원리는 [[LLM-Generation-Mechanics-Decoding|추론과 디코딩]]과 같다.
+
+## 3. 상용 서비스와 공개 자료의 범위
+
+Bark는 Suno가 2023-04-20에 공개하고 2023-05-01부터 MIT 라이선스로 배포하는 트랜스포머 기반 text-to-audio 모델이다. README는 Bark가 AudioLM, VALL-E와 비슷한 GPT 방식 구조를 따르고 EnCodec의 양자화한 오디오 표현을 쓰며, 원칙적으로 음성과 음악을 구분하지 않고 모든 종류의 소리를 만들 수 있다고 적는다. 같은 README 첫머리는 Bark를 Suno의 오픈소스 text-to-speech+ 모델로 소개하고, text-to-music 모델을 찾는 사용자는 Suno 웹페이지와 Discord로 안내할 뿐 그 구조를 설명하지 않는다. 따라서 이 문서의 구조로 Suno 상용 음악 모델의 내부를 설명하지 않는다.
+
+## 4. 트레이드오프
+
+| 선택 | 얻는 것 | 대가 |
+|---|---|---|
+| 코드북을 더 쓴다 | 복원 품질(가장 낮은 대역폭에서 크게 오르고 그 위의 음악에서는 차이가 작아지며, 오름이 줄거나 멈추는 대역폭은 모델과 평가 세트마다 다르다) | 시점당 토큰 수와 생성 비용 증가 |
+| delay 순서 | 단계 수를 시점 수 수준으로 유지 | 한 단계에서 여러 코드북을 함께 예측하는 정확하지 않은 분해이며, 논문 비교에서 다섯 지표 모두 flattening보다 조금 나빴다(OVL은 사실상 같다) |
+| flattening 순서 | 코드북 사이를 정확히 자기회귀로 분해하며 논문 비교에서 다섯 지표 모두 delay보다 조금 나았다 | 단계 수가 시점 수와 코드북 수의 곱으로 늘어난다(30초에 6,000) |
+
+## 5. 점검 체크포인트
+
+- 생성할 토큰 수는 코덱의 초당 시점 수와 코드북 수로 정해지고, 자기회귀 단계 수는 코드북을 펼치는 순서에 따라 달라진다는 점을 설명할 수 있는가
+- 결과 음질의 문제가 생성 모델의 토큰 선택인지 코덱의 복원 한계인지 나눠 볼 수 있는가
+- 상용 서비스의 구조를 공개 자료로 확인한 범위 안에서만 말하는가
+- 생성 모델을 고를 때 학습 자료의 라이선스와 출처가 공개됐는지 확인하는가
+
+## 출처
+
+- [High Fidelity Neural Audio Compression — arXiv, Alexandre Défossez 외](https://arxiv.org/abs/2210.13438) — 2022-10-24 공개, 두 변형과 48 kHz 비스트리밍 모델, 인코더의 초당 시점 수, RVQ와 코드북 크기, 최대 코드북 수와 대역폭, Table 1(스트리밍 설정)과 Table 4(48 kHz 스테레오)의 MUSHRA 점수, 2026-10-21 대조
+- [Simple and Controllable Music Generation — arXiv, Jade Copet 외](https://arxiv.org/abs/2306.05284) — NeurIPS 2023 게재 표기, 단일 단계 언어 모델, 32 kHz non-causal EnCodec과 코드북 4개, 코드북 펼치기 비교(v3 Table 4, v1에서는 Table 3), 텍스트와 멜로디 조건, classifier-free guidance와 샘플링 설정, 학습 자료 규모, 확산 모델과의 비교, 한계, 2026-10-21 대조
+- [MusicGen — facebookresearch/audiocraft](https://github.com/facebookresearch/audiocraft/blob/main/docs/MUSICGEN.md) — 50 Hz 코드북 4개와 오디오 1초당 자기회귀 단계 50개, 2026-10-21 대조
+- [chroma2music.yaml — facebookresearch/audiocraft](https://github.com/facebookresearch/audiocraft/blob/main/config/conditioner/chroma2music.yaml) — 멜로디 조건 모델의 조건 결합 설정(텍스트와 크로마 조건을 입력 앞에 붙이고 cross-attention 대상은 비움), 2026-10-21 대조
+- [bark — suno-ai](https://github.com/suno-ai/bark) — README의 모델 소개, 공개와 MIT 전환 시점, GPT 방식 구조와 EnCodec 표현, 음악 생성 가능성과 Suno text-to-music 모델 안내, 2026-10-21 대조
+- [멜론차트에 오른 AI곡은 어떻게 만들었을까? — YouTube, 조코딩 JoCoding](https://www.youtube.com/watch?v=yAoRN51Ev94) — 2026-10-13 공개 영상, 정리의 계기이며 사실 근거로 쓰지 않음
+
+## 관련 문서
+
+- [[LLM-Generation-Mechanics|LLM 동작 원리]] — 텍스트 LLM의 학습과 생성
+- [[LLM-Generation-Mechanics-Decoding|추론과 디코딩]] — 토큰, 샘플링과 온도
+- [[Local-Speech-to-Text|로컬 음성 인식]] — 소리에서 글자로 가는 반대 방향의 파이프라인
+- [[Realtime-Voice-Architecture|실시간 음성 에이전트]] — 음성 입출력 시스템의 지연과 턴 처리
+- [[AI-Generated-Content-Monetization|AI 생성 콘텐츠 수익화]] — Suno 약관과 생성물 권리, 출처 영상이 다룬 멜론 사례의 공개 범위

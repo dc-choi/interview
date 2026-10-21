@@ -56,6 +56,18 @@ aliases: ["채권", "Bonds"]
 
 2026-10-15 BIS의 CDS 위험 프리미엄 연구를 대조한 해석 기준이다. 특정 기업의 최신 채권 가격, CDS 호가, 부도확률 수치와 당일 주가 하락의 원인은 검증 범위에 포함하지 않는다.
 
+### 투자등급 경계를 넘는 강등은 지수 구성을 바꾸고 일부 투자자의 매도를 늘릴 수 있다
+
+2026-10-21 Bloomberg 채권 지수 방법론(2026-01-08판)과 Ambrose, Cai, Helwege(2008)의 초록을 대조한 기준이다. 특정 기업의 등급 변경, 채권 가격과 매도 규모는 검증 범위에 포함하지 않는다.
+
+신용등급은 투자등급(Moody's Baa3, S&P와 Fitch BBB- 이상)과 투기등급(high yield, Ba1, BB+ 이하)으로 나뉜다. 투자등급에서 투기등급으로 강등된 채권을 fallen angel이라 부르며, 이 절은 채권 단위로 쓴다. 이 경계는 지수 편입과 일부 투자자의 보유 제한에 쓰이므로, 같은 한 단계 강등이라도 경계를 넘을 때는 경계 안에서 움직일 때와 영향이 다를 수 있다.
+
+- **Bloomberg 지수는 세 평가사의 중간값을 쓴다**: Bloomberg 지수는 대부분의 채권에 Moody's, S&P, Fitch 등급의 중간값을 지수 등급으로 쓰고, 두 곳만 평가하면 낮은 쪽을, 한 곳만 평가하면 그 등급을 쓴다. 세 곳이 모두 평가한 채권이라면 적어도 두 곳이 투자등급을 줘야 투자등급 지수 편입 자격을 유지하고, 두 곳만 평가하면 두 곳 모두, 한 곳만 평가하면 그 한 곳이 투자등급이어야 한다. 방법론의 예시처럼 S&P가 BBB-를 주더라도 Moody's와 Fitch가 투기등급이면 지수상으로는 high yield다. 다만 이 조건은 확정된 채권별 등급에 중간값 규칙을 쓰는 일반 채권 기준이다. 방법론은 발행 시점의 예상 등급, 소버린 등급을 쓰는 자국 통화 국채와 외화 표시 소버린 채권(USD, CAD 표시 소버린 채권은 채권별 등급을 쓴다), DBRS를 더한 네 등급 규칙을 쓰는 Canadian Aggregate 지수(등급이 넷보다 적으면 일반 규칙) 같은 예외를 따로 둔다.
+- **편출은 월말 재조정에 반영된다**: Bloomberg 지수 대부분은 매달 재조정한다. 달 중간에 지수 등급이 투자등급 아래로 내려간 채권은 그달 수익률 계산 대상(Returns Universe)에는 남고, 다음 달 구성을 미리 보여 주는 Projected Universe에서 빠져 월말 재조정 때 편출되며, 다른 조건을 충족하면 같은 시점에 high yield 지수의 Projected Universe로 들어간다. 다음 달 구성은 그달 마지막 영업일의 2영업일 전(determination date)에 확정되고, 그 뒤의 잠금 기간에 생긴 등급 변경은 다음 달이 아니라 그다음 달 구성에 반영된다. 이 2영업일 잠금 기간은 2025-07-29 결정일(2025년 8월 Returns Universe)부터 적용됐고, 그 전에는 그달 마지막 영업일이 결정일이었다.
+- **강제 매도의 크기는 실증으로 확인한다**: Ambrose, Cai, Helwege(2008)의 초록은 규제로 포트폴리오의 상당 부분을 투기등급 채권에 투자할 수 없는 채권 투자자가 fallen angel을 판다는 통념에서 출발한다. 이 연구는 투기등급으로 강등된 채권의 보험사 매도를 분석해, 강등 시점 전후 매도가 강등되지 않은 비교 채권보다 상당히 많았다고 보고하면서도 채권 거래가 드물어 비교적 적은 거래로도 통계적으로 유의한 결과가 나올 수 있다는 단서를 달았다. 매도 규모를 보험사 보유분과 견주면 규제 압력이 보유분의 전면 청산으로 이어지지는 않았다고 결론지었다. 초록은 가격 영향을 다루지 않고, 강등 판정에 쓴 평가사나 지수 등급도 밝히지 않는다.
+
+읽는 기준(이 문서의 적용 제안): 투자등급 경계(Baa3, BBB-)에 가까운 발행자의 등급 뉴스는 채권별 등급(선순위와 후순위가 다를 수 있다)으로 옮겨, 어느 평가사의 조치이고 그 채권을 평가하는 평가사가 몇 곳인지, 보유자가 따르는 지수의 규칙으로 본 지수 등급이 경계를 넘는지, 지수 결정일 전후인지, 보유자 가운데 투자등급 전용 자금이 얼마나 되는지를 나눠 읽는다. 다른 지수 제공자의 규칙은 이 방법론으로 확인하지 않았으므로 따로 확인한다. 강등 전망만으로 매도 규모나 가격 하락 폭을 단정하지 않는다.
+
 ## 5. 수익률곡선
 
 만기별 국채 수익률을 이은 선이다. 우상향, 평탄, 역전 등 형태가 나타날 수 있다. 단기금리가 장기금리보다 높아지는 **역전**은 시장의 미래 단기금리 하락 기대와 term premium 등을 반영하며 일부 국가와 기간에는 경기침체 선행 신호로 관찰됐지만 확정 예측은 아니다 → [[Business-Cycle|경기순환]].
@@ -92,6 +104,8 @@ aliases: ["채권", "Bonds"]
 ## 출처
 
 - [BIS — Risk aversion and risk premia in the CDS market](https://www.bis.org/publications/risk-aversion-and-risk-premia-cds-market_1.pdf) — CDS의 예상손실과 위험 프리미엄, 만기와 계약 조건, 손실률 가정의 구분
+- [Bloomberg Fixed Income Index Methodology](https://data.bloomberglp.com/professional/sites/10/Bloomberg-Index-Publications-Fixed-Income-Index-Methodology.pdf) — 2026-01-08판. 2026-10-21 22~24쪽의 투자등급 경계와 지수 등급(중간값 규칙, 예시, Canadian Aggregate의 DBRS 규칙, 예상 등급과 소버린 등급 예외와 23쪽 각주 21, 24쪽 Figure 7의 등급 수치 환산 표), 42~45쪽의 월간 재조정, Returns와 Projected Universe, 결정일과 잠금 기간, 지수 플래그 대조
+- [Journal of Fixed Income — Forced Selling of Fallen Angels](https://doi.org/10.3905/jfi.2008.708844) — Ambrose, Cai, Helwege, 2008년 18권 1호 72~85쪽. 2026-10-21 [Penn State 연구 정보 페이지](https://pure.psu.edu/en/publications/forced-selling-of-fallen-angels/)의 초록으로 대조, 본문은 열람하지 못함
 - [Federal Reserve Bank of New York — Forecasting Interest Rates over the Long Run](https://libertystreeteconomics.newyorkfed.org/2016/07/forecasting-interest-rates-over-the-long-run/)
 - [Investor.gov — Bonds or Fixed Income Products](https://www.investor.gov/introduction-investing/investing-basics/investment-products/bonds-or-fixed-income-products)
 - [FINRA, Bonds](https://www.finra.org/investors/investing/investment-products/bonds) — 2026-10-02 수익률 종류와 금리, 신용, 재투자, 유동성 위험 대조
