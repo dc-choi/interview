@@ -22,6 +22,14 @@ aliases: ["AI Software Replication and Due Diligence", "AI 소프트웨어 복�
 
 비슷한 화면을 빠르게 만든 데모와 전문 사용자의 전환 가능성을 같은 지표로 재지 않는다. 바이너리 크기와 코드 줄 수도 실제 메모리, 지연과 안정성의 대용 지표로 고정하지 않는다.
 
+### 자동화 가능성과 납품 품질을 따로 평가한다
+
+편집기를 스크립트나 에이전트로 조작할 수 있으면 반복 작업을 자동화할 후보가 된다. 그러나 조작 경로가 있다는 사실만으로 결과물의 품질, 파일 호환성이나 고객의 업무 전환 가능성이 입증되지는 않는다.
+
+PhotoCraft의 공개 README는 UI, CLI, JSON 제어 채널과 MCP가 같은 명령을 호출한다고 설명하며, 이미지 폴더에 같은 작업 목록을 적용하는 일괄 처리 예제를 제공한다(2026-10-22 문서 대조). 같은 README는 아직 일상적인 전문 작업에서 Photoshop을 대체할 수준이 아니라고 명시한다. 여기서 확인한 것은 프로젝트가 문서화한 기능과 제한이며, 실행 성능이나 납품 적합성을 직접 검증한 결과가 아니다.
+
+사업 적용 시에는 반복 작업 하나를 정해 수작업 대비 처리 시간, 검수와 수정 시간, 고객이 실제로 여는 파일의 호환성을 함께 측정한다. 이 항목은 도입 평가 제안이며, 자동화로 비용이 줄었다는 측정 결과가 아니다. 기존 편집기를 전면 교체하는 결정과 제한된 보조 작업에 활용하는 결정을 나누어 검토한다.
+
 ## 해자가 남는 조건
 
 - **책임:** 실패 시 누가 복구하고 배상하는지, 그 약속을 지킬 품질 체계와 재원이 있는지 본다.
@@ -60,7 +68,7 @@ aliases: ["AI Software Replication and Due Diligence", "AI 소프트웨어 복�
 - [Attack of the Vibe Coded Photoshop Clones — Shokunin Studio](https://www.shokunin.studio/blog/2026/10/9/attack-of-the-vibe-coded-photoshop-clones) — 비교자의 관찰과 비용 추정, 제품 직접 실행 미검증
 - [바이브 코딩으로 만든 Photoshop 복제 앱들의 공세 — GeekNews](https://news.hada.io/topic?id=35237) — 비교 글 연결과 제공 발췌 대조, 제품 실행 미검증
 - [Your Moat Is Dead. Anyone Can Rebuild Your Product. — Tech Founder Stack, Mathias Klenk](https://www.techfounderstack.com/p/your-moat-is-dead-anyone-can-rebuild) — 전략 에세이, 재구현 방식과 기능 수준은 제품 독립 검증 아님
-- [PhotoCraft — storytold](https://github.com/storytold/photocraft) — 2026-10-20 main 브랜치의 README, ROADMAP.md(2026-10-13 갱신), docs/target-app-parity.md(2026-10-05 평가 보존), docs/scorecard.md, docs/file-format-parity.md의 자체 보고와 crates/io/tests/corpus.rs의 왕복 저장 시험 코드를 대조, 제품 실행 미검증
+- [PhotoCraft — storytold](https://github.com/storytold/photocraft) — 2026-10-20 main 브랜치의 README, ROADMAP.md(2026-10-13 갱신), docs/target-app-parity.md(2026-10-05 평가 보존), docs/scorecard.md, docs/file-format-parity.md의 자체 보고와 crates/io/tests/corpus.rs의 왕복 저장 시험 코드를 대조. 2026-10-22 README의 자동화 인터페이스, 일괄 처리 예제와 전문 작업 대체 제한을 추가 대조, 제품 실행 미검증
 - [AI 기업 인수에서는 ARR보다 코드부터 봐야 하는 이유 — GeekNews](https://news.hada.io/topic?id=35386) — 소셜 게시물 기반 사례, 원 거래와 코드 미확보
 
 ## 관련 문서
