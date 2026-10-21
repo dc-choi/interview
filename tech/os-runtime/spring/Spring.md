@@ -27,6 +27,7 @@ container 사용 자체가 좋은 설계를 보장하지는 않는다. dependenc
 - [[Spring-Authorization-Server|Spring Authorization Server (OAuth2 인가 서버, RegisteredClient, 필터 체인 분리, JWKS, consent, Spring Security 7.0 통합과 1.x 지원 기간)]]
 - [[Spring-Security|Spring Security (FilterChain, 인증 Context, Session, CSRF와 인가)]]
 - [[Spring-Batch-Essentials|Spring Batch (Job/Step/Chunk, Job Parameter와 멱등성, Reader 성능, JDBC 배치, Jenkins 운영, Scheduler vs Quartz)]]
+- [[JobRunr-Persistent-Background-Jobs|JobRunr 영속 백그라운드 작업]] — 단계 재시도와 멱등성, OSS/Pro 경계, 관측과 버전 이전
 - [[Spring-Testing-Essentials|Spring test 경계 (단위, context, DB transaction, NestJS와 TypeORM 비교)]]
 - [[Java-ThreadLocal-and-Request-Context|Java ThreadLocal과 요청 context]]
 

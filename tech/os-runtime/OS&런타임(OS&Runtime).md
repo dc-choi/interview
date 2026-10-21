@@ -20,6 +20,7 @@ aliases: ["OS&런타임(OS&Runtime)", "OS & Runtime"]
 - [[tech/os-runtime/nestjs/NestJS|NestJS]] — DI, HTTP, GraphQL, Microservices, 웹훅, durable workflow, 보안과 신뢰성
 - [[tech/os-runtime/spring/Spring|Spring]] — Request Lifecycle, @Transactional, JPA 영속성
   - [[Spring-MVC-Manual-Validation|Spring MVC 수동 검증]] — 비동기 아이디 확인, 최종 저장의 유일성과 계정 존재 노출 경계
+  - [[JobRunr-Persistent-Background-Jobs|JobRunr 영속 백그라운드 작업]] — 단계 재시도와 멱등성, OSS/Pro 경계, 관측과 버전 이전
 
 - [[Linux-Mobile-Platform|Linux 모바일]] — UI 스택 재사용, 기기별 전력과 통신 계약
 - [[Sovereign-Workplace-Stack|디지털 자율 업무환경]] — DAWO의 OS, 협업과 계정 계층, 파일럿과 운영 전환 검증
