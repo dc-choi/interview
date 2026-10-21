@@ -90,6 +90,14 @@ aliases: ["생성형 영상 편집", "Generative Video Editing", "자동 리프�
 - 새 도형과 자막의 등장 시점을 원본 설명 음성과 맞춘다. 미리보기뿐 아니라 최종 영상도 재생해 점검한다.
 - 후속 수정에 쓸 프로젝트와 최종 영상 파일을 함께 관리한다. 특정 모델의 편집 품질이나 자동 복원 정확도는 별도로 평가한다.
 
+## 3D 시안을 스토리보드로 사용한다
+
+대본, 장면 구도와 최종 영상의 질감을 한 번에 확정하기 어려우면 3D 애니메이션을 중간 시안으로 만들고 영상 생성기의 스토리보드로 사용할 수 있다. 대본과 구도가 바뀌는 단계, 개별 숏을 생성하는 단계, 음성과 음악을 붙여 편집하는 단계를 구분한다.
+
+2026-09-18 공개 제작 사례에는 Blender로 만든 시안을 바탕으로 영상 생성기를 조작하고 생성한 숏을 편집한 작업이 나온다. 제작자는 결과의 분위기와 농담을 판단하고 다시 요청했다. 보고된 45분은 최초 예고편의 사례 시간이며, 후속 버전까지 포함한 표준 납기나 다른 입력의 재현 성능을 입증하지 않는다. 실행 로그와 제작 비용은 이 문서에서 검증하지 않았다.
+
+이를 적용할 때는 중간 시안에서 대본의 의미, 구도와 컷 순서를 먼저 검수하고, 최종 영상에서 그 의도가 보존됐는지 확인하는 방식을 제안한다. 사실 자료를 재현하는 장면이라면 확인한 요소와 창작한 요소를 구분한다. 원본 지식에 맞는지와 시각적으로 마음에 드는지는 별도의 판단이다.
+
 ## 변경 범위와 검수 기준을 함께 쓴다
 
 다음은 제품 기능에 기반한 작업 제안이다.
@@ -103,6 +111,7 @@ aliases: ["생성형 영상 편집", "Generative Video Editing", "자동 리프�
 
 ## 출처
 
+- [The Overhang — One Useful Thing, Ethan Mollick](https://www.oneusefulthing.org/p/the-overhang) — 2026-09-18 공개 제작 경험, Blender 시안과 후속 영상 생성 및 사람의 수정 판단. 제작 시간은 작성자의 보고이며 일반 성능 지표가 아니다.
 - [Amazon Bedrock을 활용한 AWS Korea YouTube 채널의 숏폼 자동화 사례 — AWS](https://aws.amazon.com/ko/blogs/tech/amazon-bedrock-shortform-content-automation/) — 원문 시간 구간 매칭과 검수 전후 워크플로 분리.
 - [AWS, Generating videos with Amazon Nova Reel](https://docs.aws.amazon.com/nova/latest/userguide/video-generation.html) — 입력 형식과 Reel 1.1의 출력 범위.
 - [AWS, Generate a video](https://docs.aws.amazon.com/nova/latest/userguide/code-examples-video.html) — 비동기 작업 제출, 상태 조회와 S3 결과 확인.
