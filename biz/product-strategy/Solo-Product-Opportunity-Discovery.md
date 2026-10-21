@@ -123,6 +123,14 @@ OTT나 교육 같은 산업명은 아직 넓다. 콘텐츠 정보 오류를 확�
 |---|---|---|---|---|
 | 후보 | 구체적인 사건 | 수작업, 문서, 메신저 또는 기존 제품 | 관찰된 불편이나 기대 결과 | 인터뷰, 관찰 또는 테스트 요청 |
 
+### 기존 시장에서 놓친 구매 조건을 찾는다
+
+기존 제품이 있어도 특정 사용자가 고르거나 사용하는 단계에서 충족되지 않는 조건이 있을 수 있다. 다음은 제품 범위와 선택 정보를 함께 살피는 발견 관점이다.
+
+Good American은 공식 소개에서 00~32 Plus 사이즈 제공과 세 가지 사이즈 범주의 모델을 통한 상품 표현을 설명한다(2026-10-22 확인). 이는 회사가 제시한 제품 범위와 표현 방식의 사례다. 모든 고객에게 맞는다는 보장이나 매출 증가의 인과 증거는 아니다.
+
+적용 제안: 고객이 원하는 선택지가 아예 없는지, 선택지는 있지만 자신에게 맞는지 판단할 정보가 없는지를 나누어 관찰한다. 전자는 제품 범위, 후자는 비교 정보와 사용 예시의 문제 가설이 된다. 개선 전후의 선택, 구매와 반품 등 실제 행동으로 확인하며, 특정 브랜드의 사례를 모든 시장의 성공 공식으로 확대하지 않는다.
+
 ## 3. 과거 행동을 조사한다
 
 첫 비교 단위로 같은 역할의 사용자 3~4명에게 구체적인 사건을 들을 수 있다. 이 숫자 자체가 검증을 보장하지는 않으며, 서로 다른 사건에서 같은 기회가 반복되는지 확인하기 위한 시작점이다.
@@ -166,7 +174,7 @@ OTT나 교육 같은 산업명은 아직 넓다. 콘텐츠 정보 오류를 확�
 - [Opportunity Solution Trees — Product Talk](https://www.producttalk.org/opportunity-solution-trees/)
 - [Story-Based Customer Interviews Uncover Much-Needed Context — Product Talk](https://www.producttalk.org/story-based-customer-interviews/)
 - [Interviewing Users — Nielsen Norman Group](https://www.nngroup.com/articles/interviewing-users/)
-- [사람들이 돈을 쓰는 욕망 목록 — Threads, @elbow999](https://www.threads.com/@elbow999/post/Ddxo9njDf8e)
+- [About Info — Good American](https://www.goodamerican.com/pages/about-info-1) — 2026-10-22 제품의 사이즈 범위와 모델 표현에 관한 회사의 공개 설명 확인.
 - [국가법령정보센터, 전자상거래 등에서의 소비자보호에 관한 법률 제13조, 제21조의2](https://www.law.go.kr/법령/전자상거래등에서의소비자보호에관한법률)
 - [공정거래위원회, 6개 유형 온라인 다크패턴 규제 관련 문답서 배포 (2025-02-13)](https://www.ftc.go.kr/www/selectBbsNttView.do?key=12&bordCd=3&nttSn=43802)
 - [국가법령정보센터, 식품 등의 표시, 광고에 관한 법률 제8조](https://www.law.go.kr/법령/식품등의표시%E3%86%8D광고에관한법률)

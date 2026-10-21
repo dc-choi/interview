@@ -17,6 +17,16 @@ API의 `MarketplaceInstallationJob`은 하나 이상의 기존 제품 설치를 
 
 기존 installation을 Open하는 것과 Install again으로 새 자원을 만드는 것을 구분한다. 같은 제품을 다른 입력에 다시 설치할 수 있지만 기존 내용이 자동 재사용된다고 가정하지 않는다. 완료 후 Ontology indexing 때문에 앱 가용성이 몇 분 늦을 수 있다.
 
+## 취소 요청과 자원 복구를 구분한다
+
+2026-10-22 공식 Abort/Get Marketplace Installation Job 페이지와 수집된 abort 명세를 대조했다. 아래는 API 계약이며 실제 호출과 복구 결과는 검증하지 않았다.
+
+- 취소 경로는 `POST /api/v3/platform/marketplaceInstallationJobs/{marketplaceInstallationJobRid}/abort`다. Draft 중단과 제출된 job의 취소 요청을 처리한다. Preview 기능이므로 `preview=true`가 필요하며, OAuth2 제3자 앱에는 `api:v3:marketplace-installation-job:write:abort` scope가 필요하다.
+- Job이 조회 가능한 동안 취소 호출은 멱등적이다. 제출된 job은 `ABORTING`을 거쳐 `ABORTED`가 될 수 있으므로 `get`으로 계속 조회한다. 이미 끝난 job을 취소해도 기존 최종 상태는 바뀌지 않는다.
+- 취소 전 생성된 자원 때문에 설치가 불일치 상태로 남을 수 있다. 복구 방법은 같은 목표 버전으로 새 job을 시도하는 것이며, 취소를 자동 롤백이나 복구 성공으로 기록하지 않는다.
+- 중단한 draft는 자동 정리 전까지만 조회할 수 있다. `get`은 실패하거나 중단된 job에도 HTTP 200을 반환하므로 응답의 `status`를 읽는다. 조회에는 별도로 `api:v3:marketplace-installation-job:read:get` scope가 필요하다.
+- `AbortInstallationJobPermissionDenied`는 job이 보여도 취소 권한이 없는 403이다. `MarketplaceInstallationJobNotFound`는 404다. 취소 후 조회에서도 접근할 수 없는 job과 존재하지 않는 job이 같은 NotFound로 반환되므로, 404만으로 취소 성공을 판단하지 않는다.
+
 ## API의 설치 등록과 작업 실행을 구분한다
 
 2026-10-22 Marketplace v3 API 문서 대조 기준이다. `MarketplaceInstallation`은 Compass에 등록된 제품 설치 자원이며, 자원이 존재한다는 사실만으로 설치 job의 완료를 판단하지 않는다.
@@ -81,6 +91,8 @@ Ontology install prefix는 display name만 또는 display/API name 모두에 적
 
 ## 출처
 
+- [Palantir Foundry, Abort Marketplace Installation Job](https://www.palantir.com/docs/foundry/api/v3/marketplace-v3-resources/marketplace-installation-jobs/abort-marketplace-installation-job) — 2026-10-22 취소의 멱등성, 상태 전이, 복구 제약과 오류 계약 확인.
+- [Palantir Foundry, Get Marketplace Installation Job](https://www.palantir.com/docs/foundry/api/v3/marketplace-v3-resources/marketplace-installation-jobs/get-marketplace-installation-job) — 2026-10-22 조회 권한, HTTP 200과 job 상태의 구분, NotFound의 접근성 의미 확인.
 - [Palantir Foundry, Create Marketplace Installation Job](https://www.palantir.com/docs/foundry/api/v3/marketplace-v3-resources/marketplace-installation-jobs/create-marketplace-installation-job) — 2026-10-22 공식 검색 반환 본문의 응답 정의에서 draft와 제출 job의 RID 공유 확인.
 - [Palantir Foundry, Marketplace Installation Inputs basics](https://www.palantir.com/docs/foundry/api/v3/marketplace-v3-resources/marketplace-installation-inputs/marketplace-installation-inputs-basics) — 2026-10-21 수집본을 2026-10-22 공식 문서 검색 반환 본문과 대조.
 - [Palantir Foundry, Get Marketplace Installation Inputs](https://www.palantir.com/docs/foundry/api/v3/marketplace-v3-resources/marketplace-installation-inputs/get-marketplace-installation-inputs) — 2026-10-22 검색 반환 본문에서 선택 범위, 명시적 해제, 재사용 제약과 오류 계약 확인. 오류 이름, 코드와 매개변수는 수집본도 대조했으며 직접 열기와 실제 호출은 미확인.
