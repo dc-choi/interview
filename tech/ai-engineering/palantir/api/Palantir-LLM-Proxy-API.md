@@ -23,6 +23,15 @@ Foundry LLM proxy는 provider SDK의 요청 형식을 유지하면서 Foundry의
 
 전체 request schema는 각 provider의 API reference를 따른다. 다만 proxy가 provider의 모든 기능을 그대로 제공한다고 해석하면 안 된다. Foundry가 거버넌스 조건과 호환되는 기능을 선별해 활성화한다.
 
+### 예제 함수의 반환값과 API 응답을 구분한다
+
+2026-10-22 Responses와 Embeddings의 공식 proxy 예제를 부분 대조했다. 아래는 예제 코드가 응답을 가공하는 방식이며 전체 응답 schema의 정의가 아니다.
+
+- **Responses:** Python 예제는 SDK 응답의 `output_text`를 반환하고 TypeScript 예제는 `response.output[0].content[0].text`를 반환한다. 둘 다 텍스트를 꺼내는 예제다. 고정 배열 인덱스 접근만 보고 모든 응답의 첫 항목과 첫 content가 텍스트라고 보장된다고 해석하지 않는다. 실제 사용하는 출력 유형과 SDK 응답 타입에 맞춰 추출 경로를 확인한다.
+- **Embeddings:** Python 예제는 `str(embeddings.data)`, TypeScript 예제는 `JSON.stringify(embeddings.data)`로 문자열을 만든다. 함수의 문자열 반환 타입은 이 가공 결과를 뜻하며, proxy가 벡터 대신 문자열 하나만 반환한다는 계약이 아니다. 벡터를 후속 처리에 넘길 때는 표시용 문자열화와 응답 데이터 처리를 구분한다.
+
+이 대조는 예제의 입출력 처리에 한정한다. 모델 호출, SDK 실행과 전체 응답 유형의 검증을 수행하지 않았으며 다른 절의 확인일을 갱신하지 않았다.
+
 ## 인증과 호출 scope
 
 네 경로 모두 OAuth2로 endpoint를 호출하는 third-party application은 operation scope `api:use-language-models-execute`를 요청해야 한다. HTTP request는 Foundry Bearer token과 `Content-Type: application/json`을 전달한다. provider 계정의 API key를 Foundry token 대신 넣는 구조가 아니다.

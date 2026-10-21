@@ -81,6 +81,14 @@ Alexander Osterwalder와 Yves Pigneur가 체계화하고 널리 알린 비즈니
 
 팬덤형 콘텐츠 구독에서는 기존 애착을 구독으로 전환해 LTV를 키우는 **팬 → 구독** 경로가 강하다. 다만 생필품 보충, 업무 효율, 렌탈처럼 반복 효용이 명확한 구독은 팬덤 없이도 성립할 수 있다. 여러 상품을 묶었다는 이유만으로 수요가 생기는 것은 아니므로, 대상 카테고리의 반복 문제와 유지 이유를 먼저 검증한다. 신규 구독자를 모집하는 구독 경제와 기존 팬을 적립, 혜택으로 유지하는 멤버십 모델([[Commerce-Member|커머스 회원 도메인]]의 락인)은 접근 방향이 다르다.
 
+### 구독과 광고의 성장 요인을 따로 본다
+
+구독과 광고를 함께 쓰는 서비스는 전체 매출 증가만으로 두 수익원이 모두 계획대로 성장했다고 판단하지 않는다. 구독은 유료 고객 수, 가격과 유지율을, 광고는 광고 상품의 제공 범위와 판매 성과를 나눠 확인한다. 이용량은 고객 가치의 단서지만 그 자체가 매출이나 이익은 아니다.
+
+2026-10-22 대조한 Netflix의 2026년 3분기 주주서한은 구독 매출 성장이 기대를 웃돌았어도 연간 광고 매출 전망은 약 30억 달러에서 27억 달러로 낮아질 수 있음을 보여준다. 회사는 일부 광고 상품 기능의 출시가 예상보다 늦어진 점을 이유로 설명했다. 이는 당시 회사의 전망과 설명이며 광고 사업의 연간 확정 실적이나 일반적인 수요 감소 법칙이 아니다.
+
+같은 발표에서 분기 영업이익률의 예상 상회는 주로 비용 집행 시점과 소폭의 매출 상회로 설명됐다. 한 분기 이익률 개선을 지속적인 비용 절감으로 곧바로 연장하지 않는다. 별도의 상반기 시청 보고서는 총 시청 시간이 970억 시간을 넘었다고 집계하지만, 이 총량만으로 가입자당 이용량, 광고 노출이나 유료 유지율을 계산할 수는 없다. 서로 다른 기간과 분모의 이용량, 수익원별 성장, 이익률을 분리해 읽는 사례다.
+
 ### 구축형에서 SaaS로 전환할 때
 
 SaaS 전환은 구독 과금과 함께 반복 가능한 서비스 제공 방식을 설계하는 일이다. 고객마다 별도 버전과 운영 절차를 유지하면 고객 수에 따라 지원 부담도 늘 수 있다. 공통된 고객 관리, 운영과 배포 흐름, 고객이 가치를 얻기까지의 시간을 줄이는 온보딩이 확장성을 판단하는 기준이다(2026-10-10 AWS SaaS Architecture Fundamentals 대조).
@@ -173,6 +181,8 @@ Q. 비즈니스 모델은 어떻게 설계했는가?
 - 위 일반화한 예시를 본인의 실행이나 성과로 사용하지 않는다.
 
 ## 출처
+- [Q3 2026 Shareholder Letter — Netflix](https://ir.netflix.net/files/doc_financials/2026/q3/FINAL-Q3-26-Shareholder-Letter.pdf) — 구독과 광고 성장, 전망과 비용 시점, 2026-10-22 부분 대조
+- [What We Watched the First Half of 2026 — Netflix](https://about.netflix.com/en/news/what-we-watched-the-first-half-of-2026) — 상반기 총 시청 시간과 측정 범위, 2026-10-22 대조
 - [AWS, SaaS Architecture Fundamentals: SaaS is a business model](https://docs.aws.amazon.com/whitepapers/latest/saas-architecture-fundamentals/saas-is-a-business-model.html) — 공통 운영과 배포, 반복 가능한 온보딩
 - [AWS, Select the best pricing model](https://docs.aws.amazon.com/wellarchitected/latest/cost-optimization-pillar/select-the-best-pricing-model.html) — 시간당 지출 약정과 수요 변화에 맞춘 비용 비교
 - [AWS, Understanding how Savings Plans apply to your usage](https://docs.aws.amazon.com/savingsplans/latest/userguide/sp-applying.html) — 미사용 시간당 약정의 이월 불가, 2026-10-07 대조

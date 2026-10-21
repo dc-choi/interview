@@ -25,6 +25,18 @@ AI 수요가 늘면 모델 매출뿐 아니라 반도체, 메모리, 네트워�
 
 성능별 비용 하락과 고객이 실제 지불한 가격의 하락은 다르다. 벤치마크를 만족하는 최소 비용이 내려가도 최신 모델, 긴 입력, 재시도와 검증에 드는 총비용은 증가할 수 있다.
 
+### 토큰 가격, 연산 계약 단가와 실제 수요를 분리한다
+
+모델 API의 토큰 가격과 GPU 연산 용량의 계약 단가는 거래 단위가 다르다. 전자는 모델과 입출력 구성, 후자는 하드웨어와 계약 기간, 전력 및 제공 조건을 맞춰 비교해야 한다. 두 가격이 반대로 움직이는 관찰만으로 오픈웨이트가 원인이라고 확정하지 않는다.
+
+2026-10-22 공식 자료를 부분 대조한 사례다.
+
+- **단기 계약 단가:** CoreWeave의 2026-09-17 발표는 3~6개월 고객 계약의 가격을 MW당 약 4,000만 달러로 제시했다. 계산은 연환산 매출을 관련 클러스터의 서비스 제공에 필요한 전력으로 나눈 것이다. 실제 3~6개월 수취액, GPU 한 장의 시간당 임대료나 시장 전체의 가격 상승률로 바꿔 읽지 않는다.
+- **수주와 실현 매출:** 같은 회사의 2026년 2분기 발표에서 revenue backlog는 잔여 수행의무와 약정 계약 아래 미래 매출로 인식할 것으로 추정한 다른 금액을 포함하며, 인도와 서비스 가용성 요건의 충족을 조건으로 한다. 수주잔고를 이미 받은 현금이나 인식한 매출로 더하지 않는다.
+- **사용자와 설비 투자자:** AWS는 Bedrock에서 오픈웨이트 모델을 완전 관리형 서버리스 방식으로 제공한다. 사용자가 GPU를 직접 조달하지 않는 이용 경로도 있으므로, 오픈웨이트 사용 확대를 모든 사용자의 자체 GPU 구매나 중복 설비투자로 연결하지 않는다. 사용자 지출과 인프라 사업자의 투자를 나눠 본다.
+
+위 사례는 계약 지표의 해석과 이용 경로를 확인한 것이다. 토큰 지수의 반감, 특정 GPU 임대료의 40% 또는 60% 상승, 연구소 밖 수요의 자금 원천과 오픈웨이트의 산업 전체 이익 효과는 이 자료들로 검증하지 않았다. 공급자 계약 증가와 최종 고객의 지속 가능한 지불 능력은 별도의 근거로 확인한다.
+
 ## 투자, 인수와 공급 계약을 구분한다
 
 지분 투자는 소유권과 손실 위험을, 컴퓨팅 공급은 사용권과 지급 의무를 만든다. 한 회사가 투자자이면서 공급사라면 발표된 투자액과 매출이 서로 독립된 수요 증거인지 확인한다. 인재 채용, 라이선스와 회사 전체 인수도 서로 다른 거래다. 협상 보도는 거래 완료가 아니다.
@@ -60,6 +72,9 @@ State of AI의 인프라 절은 미국 4대 하이퍼스케일러의 2026년 설
 
 ## 출처
 
+- [CoreWeave Continues to Contract New Compute Capacity at Higher Prices — CoreWeave](https://investors.coreweave.com/news/news-details/2026/CoreWeave-Continues-to-Contract-New-Compute-Capacity-at-Higher-Prices/default.aspx) — 단기 계약의 MW당 연환산 매출 정의, 2026-10-22 대조
+- [CoreWeave Reports Strong Second Quarter 2026 Results — CoreWeave](https://investors.coreweave.com/news/news-details/2026/CoreWeave-Reports-Strong-Second-Quarter-2026-Results/) — revenue backlog의 구성과 이행 조건, 2026-10-22 대조
+- [Use open weight models as your AI coding agent with Amazon Bedrock — AWS](https://aws.amazon.com/blogs/machine-learning/use-open-weight-models-as-your-ai-coding-agent-with-amazon-bedrock/) — 자체 GPU 조달 없는 관리형 이용 경로, 2026-10-22 대조
 - [The $1 Trillion AI Buildout, State of Markets — a16z](https://a16z.com/podcast/the-1-trillion-ai-buildout-state-of-markets/)
 - [State of AI Report 2026, Explore — Air Street Capital](https://www.stateof.ai/2026-explore/)
 - [Better tools and context make agents more capable — State of AI 2026](https://www.stateof.ai/2026-explore/agents)
