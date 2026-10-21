@@ -22,6 +22,22 @@ aliases: ["Brand Identity Design Process", "브랜드 정체성 설계 과정"]
 
 경쟁 대안을 속성 축에 배치하는 지도는 관점을 비교하는 자료다. 비어 있는 위치를 발견했다고 수요가 있거나 그 자리를 차지할 능력이 확인된 것은 아니다. 실제 고객의 선택 이유와 제품이 제공할 수 있는 가치로 다시 확인한다.
 
+## 기능, 감정과 사회적 의미를 구매 상황에 연결한다
+
+JTBD는 고객이 특정 상황에서 이루려는 진전을 기능적, 감정적, 사회적 차원으로 살핀다. 인구통계나 제품 속성만으로 선택 이유를 설명하지 않고, 실제 구매 전후의 사건과 대안을 확인한다. 같은 사람도 상황이 달라지면 다른 진전을 원할 수 있다.
+
+다음은 이 관점을 브랜드 조사에 옮긴 질문이다. 특정 성별이나 연령의 보편적 소비 성향을 뜻하지 않는다.
+
+| 차원 | 조사 질문 | 디자인에 연결할 가설 |
+|---|---|---|
+| 기능 | 어떤 일을 끝내려고 구매했는가 | 필요한 정보와 사용 순서를 더 쉽게 찾게 한다 |
+| 감정 | 선택할 때 무엇이 불안했고 어떤 상태를 원했는가 | 설명과 지원 방식으로 실제 불안을 줄인다 |
+| 사회 | 누구와 함께 쓰거나 누구에게 보여 주는 선택인가 | 해당 관계와 장면에 맞는 표현과 접점을 비교한다 |
+
+분위기, 패키지와 공유하기 좋은 경험은 이 가설을 시험할 수단이다. 촬영이나 공유 증가만으로 구매 이유와 매출 효과를 확정하지 않는다. 고객이 표현을 이해했는지, 실제로 선택했는지, 사용 뒤 약속한 가치를 경험했는지를 나누어 관찰한다. 이는 검증 방법의 제안이며 특정 디자인의 성장 배수나 성별 지출 비중을 입증한 결과가 아니다.
+
+2026-10-22 JTBD의 정의와 상황별 선택 설명을 Christensen Institute 자료와 대조했다. 기존 리브랜딩 사례 전체를 다시 검증한 기록은 아니다.
+
 ## 탐색과 수렴을 반복한다
 
 Design Council의 Double Diamond는 문제를 넓게 탐색하고 좁혀 정의한 뒤, 여러 해결안을 만들고 시험하는 과정이다. 네 단계는 일직선으로 끝나지 않으며 새 근거에 따라 앞 단계로 돌아간다. 아래는 공식 정의를 2026-10-10에 대조하고 영상의 브랜드 리프레시 사례에 연결한 작업 흐름이다. 단계 순서만으로 성과를 보장하지 않는다.
@@ -70,6 +86,7 @@ Design Council의 Double Diamond는 문제를 넓게 탐색하고 좁혀 정의�
 
 ## 출처
 
+- [Jobs to Be Done Theory — Christensen Institute](https://www.christenseninstitute.org/theory/jobs-to-be-done/) — 선택의 기능적, 감정적, 사회적 차원과 상황 변화, 2026-10-22 확인.
 - [YouTube, Matthew Encina, Building a Brand – Redesigning a Business Start to Finish](https://www.youtube.com/watch?v=ZvxpaklnMXI)
 
 - [Framework for Innovation — Design Council](https://www.designcouncil.org.uk/resources/framework-for-innovation/) — Double Diamond의 정의와 반복 과정, 2026-10-10 확인.

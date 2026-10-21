@@ -11,6 +11,7 @@ aliases: ["LLM 선택, 서빙과 운영", "LLM Selection Serving and Operations"
 
 ## 목차
 
+- [[VLLM-Serving-Security|vLLM 서빙 보안]]: API 키의 경로 범위, 내부 통신 격리와 동적 LoRA 관리 권한
 - [[LLM-Model-Tiers|LLM 모델 티어 선택, 라우팅]]: 3단 티어 수렴, 벤더 내 100배 단가 격차와 출력/입력 단가 비, 재작업 비용과 effort, 난이도 기반 라우팅, 에스컬레이션/폴백, 프런티어 단계적 출시, 계획과 실행의 모델 분담
 - [[LLM-Decision-Models|결정 모델 (decision-models/ 서브폴더)]]: System One, Jev와 Clef, 로컬 Laya와 MLX 포트, 과업별 미세조정 평가, state와 noul/choice/score 질문 스키마, 비자기회귀 채점과 입력 토큰 과금, confidence 문턱과 에스컬레이션, 보정 검증, 도구 기록 선별 압축, 닫힌 선택지와 프롬프트 인젝션, 언어 한계
 - [[LLM-Inference-Bottlenecks|LLM 추론 병목]]: 루프라인과 arithmetic intensity, 프리필 vs 디코드, memory-bound 디코드, 배칭/KV 캐시/speculative decoding/양자화의 서로 다른 비용, 로컬 추론 용량과 오프로딩, 세션 기반 벤치마크와 포화점, 가속기 스펙 읽기, CPU와 GPU 사례 수치의 구분, M1 ANE 역공학 사례, 파운데이션 모델 교재 진입점
