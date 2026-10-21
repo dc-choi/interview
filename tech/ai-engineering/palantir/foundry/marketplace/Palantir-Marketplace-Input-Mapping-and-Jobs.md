@@ -15,6 +15,17 @@ Installation job draft는 project/space/Ontology와 여러 제품의 의존성�
 
 기존 installation을 Open하는 것과 Install again으로 새 자원을 만드는 것을 구분한다. 같은 제품을 다른 입력에 다시 설치할 수 있지만 기존 내용이 자동 재사용된다고 가정하지 않는다. 완료 후 Ontology indexing 때문에 앱 가용성이 몇 분 늦을 수 있다.
 
+## API의 설치 등록과 작업 실행을 구분한다
+
+2026-10-22 Marketplace v3 API 문서 대조 기준이다. `MarketplaceInstallation`은 Compass에 등록된 제품 설치 자원이며, 자원이 존재한다는 사실만으로 설치 job의 완료를 판단하지 않는다.
+
+- `POST /api/v3/platform/marketplaceInstallations`는 지정 project/folder에 설치를 등록한다. 이 호출은 job을 실행하거나 제품 자원을 설치하지 않는다. 실제 설치 버전은 후속 job에서 선택한다.
+- 선택 입력인 `targetVersionHint`는 버전에 따른 검증과 초기 제목 결정에 사용한다. 설치 실행이나 해당 버전의 배포 완료를 뜻하지 않는다.
+- 조회 응답의 선택 필드 `latestTargetVersion`은 가장 최근 제출한 job의 목표 버전이다. 현재 설치된 버전과 다를 수 있고, job이 실행된 적이 없으면 없다. 따라서 필드 유무나 값만으로 성공한 설치 버전을 확정하지 않는다.
+- 생성은 멱등하지 않다. 반복 요청은 별도 설치를 만들며, 선택된 제품 버전의 singleton 정책이 목적지 namespace의 추가 설치를 금지하면 충돌 오류가 난다. 응답을 받지 못했다는 이유만으로 생성 요청을 반복하지 않는 것이 운영상 안전하다.
+
+위 생성과 조회 endpoint는 preview이며 요청에 `preview=true`가 필요하다. OAuth2를 사용하는 제3자 앱의 scope는 생성에 `api:v3:marketplace-installation:write:create`, 조회에 `api:v3:marketplace-installation:read:get`이다. 실제 환경의 호출이나 권한 검증은 수행하지 않았으며, 설치 진행과 완료는 job 및 설치 자원을 별도로 확인한다.
+
 ## 입력을 충족하는 방식
 
 Input은 resource, group, migration 설정이나 prefix일 수 있다. Linked product가 채운 input은 기본 숨김이므로 mandatory 개수만 보지 말고 실제 공급 자원을 확인한다. Downstream tab은 해당 input을 소비할 출력을 보여 준다.
@@ -31,6 +42,8 @@ Ontology install prefix는 display name만 또는 display/API name 모두에 적
 
 ## 출처
 
+- [Palantir Foundry, Get Marketplace Installation](https://www.palantir.com/docs/foundry/api/v3/marketplace-v3-resources/marketplace-installations/get-marketplace-installation) — 2026-10-22 등록 자원과 목표 버전의 의미, preview와 조회 scope 확인.
+- [Palantir Foundry, Create Marketplace Installation](https://www.palantir.com/docs/foundry/api/v3/marketplace-v3-resources/marketplace-installations/create-marketplace-installation) — 2026-10-22 등록과 job 실행의 구분, 버전 힌트와 비멱등성 확인.
 - [Palantir Foundry, marketplace](https://www.palantir.com/docs/foundry/marketplace/)
 - [Palantir Foundry, browse-products](https://www.palantir.com/docs/foundry/marketplace/browse-products/)
 - [Palantir Foundry, getting-started](https://www.palantir.com/docs/foundry/marketplace/getting-started/)
