@@ -94,6 +94,19 @@ aliases: ["Dev Outsourcing Engagement", "개발 외주 계약과 수주", "외�
 
 ## 첫 고객 확보 순서
 
+### 신규 수주 전에 수행 기준을 확인한다
+
+고객을 더 확보하는 목표는 실제 시간, 자금과 역량으로 수행할 수 있는지 함께 점검한다. 다음은 사업 목표 설정과 인력 용량 계획을 1인 외주에 적용한 운영 제안이다.
+
+- **목표 적합성:** 이번 일이 제공하려는 서비스와 강점에 맞는지, 확장 외에 품질 유지나 반복 거래라는 목표에도 맞는지 확인한다.
+- **수행 여력:** 제작뿐 아니라 상담, 검수, 수정과 기존 고객 지원에 드는 시간을 포함해 납기 안에 처리할 수 있는지 본다.
+- **역량의 빈틈:** 혼자 해결하기 어려운 역할과 대체 인력이 없는 업무를 적고, 범위 축소, 학습 또는 협업으로 메울 수 있는지 판단한다.
+- **재검토 조건:** 새 계약이나 목표 변경이 생기면 기존 약속과 용량을 다시 대조한다. 수주액이나 작업실 규모만으로 지속 가능성을 판단하지 않는다.
+
+가격은 [[Pricing-Strategy#외주와 전문 서비스의 견적|전체 투입을 반영한 견적]]으로, 접수량은 [[Solo-Product-Market-Validation#1인 사업에 충분한 시장인지 계산한다|수익과 운영 용량]]으로 연결한다. 위 기준을 통과했다는 사실이 수익이나 건강상의 결과를 보장하지는 않는다.
+
+### 고객에게 제안하는 순서
+
 1. **이미 돈을 버는 사업에서 시작한다.** 새 아이템을 고민하기보다 잘 팔리는데 설명, 예약, 문의 처리가 부족한 사업을 찾는다.
 2. **사업자에게 고객이 가장 많이 묻는 질문을 묻는다.** 만들고 싶은 기능보다 그 사업에 지금 필요한 결과물부터 정한다.
 3. **샘플을 먼저 만든다.** 회사 소개 대신 그 질문 하나에 답하는 작은 결과물(안내 페이지 시안, 예약 흐름 프로토타입)을 보여 준다.
@@ -186,6 +199,8 @@ aliases: ["Dev Outsourcing Engagement", "개발 외주 계약과 수주", "외�
 
 ## 출처
 
+- [business.gov.au, Set goals for your business](https://business.gov.au/planning/business-plans/set-goals-for-your-business) — 목표의 방향, 가용 자원, 기한과 재검토
+- [business.gov.au, Workforce planning](https://business.gov.au/people/employees/workforce-planning) — 현재 역할, 역량과 수행 용량을 필요한 업무와 대조하는 방법
 - [국가법령정보센터, 민사소송법 제462조](https://www.law.go.kr/LSW//lsSideInfoP.do?docCls=jo&joBrNo=00&joNo=0462&lsiSeq=290113&urlMode=lsScJoRltInfoR), [제470조](https://www.law.go.kr/LSW//lsSideInfoP.do?docCls=jo&joBrNo=00&joNo=0470&lsiSeq=290113&urlMode=lsScJoRltInfoR), [제472조](https://www.law.go.kr/LSW//lsSideInfoP.do?docCls=jo&joBrNo=00&joNo=0472&lsiSeq=290113&urlMode=lsScJoRltInfoR) — 2026-10-02 시행 조문.
 - [국가법령정보센터, 민사집행법 제276조](https://www.law.go.kr/LSW//lsSideInfoP.do?docCls=jo&joBrNo=00&joNo=0276&lsiSeq=268837&urlMode=lsScJoRltInfoR), [제277조](https://www.law.go.kr/LSW//lsSideInfoP.do?docCls=jo&joBrNo=00&joNo=0277&lsiSeq=268837&urlMode=lsScJoRltInfoR), [제280조](https://www.law.go.kr/LSW//lsSideInfoP.do?docCls=jo&joBrNo=00&joNo=0280&lsiSeq=268837&urlMode=lsScJoRltInfoR), [제58조](https://www.law.go.kr/LSW//lsSideInfoP.do?docCls=jo&joBrNo=00&joNo=0058&lsiSeq=268837&urlMode=lsScJoRltInfoR) — 2026-02-01 시행 조문.
 - [찾기쉬운 생활법령정보, 내용증명의 작성](https://www.easylaw.go.kr/CSP/CnpClsMain.laf?ccfNo=4&cciNo=3&cnpClsNo=1&csmSeq=272)
@@ -200,11 +215,6 @@ aliases: ["Dev Outsourcing Engagement", "개발 외주 계약과 수주", "외�
 - [국가법령정보센터, 민법 제665조(보수의 지급시기)](https://law.go.kr/LSW/lsSideInfoP.do?docCls=jo&joBrNo=00&joNo=0665&lsiSeq=284415&urlMode=lsScJoRltInfoR)
 - [국가법령정보센터, 민법 제670조(담보책임의 존속기간)](https://law.go.kr/lsLinkCommonInfo.do?chrClsCd=010202&lsJoLnkSeq=1030666413)
 - [국가법령정보센터, 민법 제673조(완성전의 도급인의 해제권)](https://www.law.go.kr/LSW/lsSideInfoP.do?docCls=jo&joBrNo=00&joNo=0673&lsiSeq=284415&urlMode=lsScJoRltInfoR)
-- [외주 개발 계약 전 체크 9가지 — Threads, yunis.suzip](https://www.threads.com/@yunis.suzip/post/DXqWZ2sExMp)
-- [소프트웨어 개발업체 회사소개서에 들어갈 내용 — Threads, edibooks_official](https://www.threads.com/@edibooks_official/post/DdiKdiokU_V)
-- [랜딩페이지 외주 수주 포지셔닝과 3단 가격 — Threads, vibe.bizness](https://www.threads.com/@vibe.bizness/post/DdN9ZJjGoA8)
-- [0원에서 다시 시작한다면 첫 고객 확보 순서 — Threads, zzune_pd](https://www.threads.com/@zzune_pd/post/Dd30RzIkdxq)
-- [0원에서 다시 시작한다면 첫 고객 확보 순서(재게시) — Threads, zzune_pd](https://www.threads.com/@zzune_pd/post/Dd30QYWETBR)
 - [저작재산권 — 찾기쉬운 생활법령정보](https://easylaw.go.kr/CSP/CnpClsMain.laf?popMenu=ov&csmSeq=695&ccfNo=2&cciNo=1&cnpClsNo=2)
 - [저작권법 — 국가법령정보센터](https://www.law.go.kr/lsEfInfoP.do?lsiSeq=148848)
 - [민법 제667조 수급인의 담보책임 — 국가법령정보센터](https://law.go.kr/lsLinkCommonInfo.do?lsJoLnkSeq=1020634251&chrClsCd=010202)

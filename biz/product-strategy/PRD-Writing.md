@@ -64,6 +64,14 @@ aliases: ["PRD", "Product Requirements Document", "제품 요구사항 정의서
 
 모든 기능에 `이것이 해결하는 Pain은 무엇인가`를 물어 답을 남긴다. 답이 없으면 기능에서 빼거나 우선순위를 내린다.
 
+### 기능을 조건과 확인 기준으로 바꾼다
+
+PRD가 정한 목적과 범위를 구현 가능한 항목으로 옮길 때는 **선행 조건, 실행 주체, 행동, 관찰할 결과, 완료 확인 방법**을 함께 적는다. 기능명 하나에 서로 다른 정책이 섞이면 항목을 나누고, 결정 이유와 근거 문서도 연결한다. 이는 기능명세 작성 방법이며 모든 기능에 별도 문서를 만들라는 뜻은 아니다.
+
+가상의 주문 취소 정책이라면 접수 전 고객의 직접 취소와 접수 후 승인 요청을 구분한다. 주문 상태 변경, 결제 취소, 쿠폰 복구와 알림도 각각 확인할 결과로 적는다. 어떤 정책을 택할지는 해당 서비스가 결정하며, 예시를 보편적인 취소 규칙으로 적용하지 않는다.
+
+정상 흐름에 더해 권한 없음, 이미 처리된 요청, 결제 취소 실패처럼 팀이 결정해야 할 조건을 검토한다. 아직 합의하지 않은 조건은 미결정으로 표시하고 담당자가 확정한다. 기능명세는 구현과 검수의 입력이며, 작성했다는 사실만으로 구현 정확성이나 테스트의 충분성이 증명되지는 않는다.
+
 ### 고객 성과에서 요구사항을 역산한다
 
 기능 목록 전에 고객이 어떤 상황에서 무엇을 더 잘하게 될지 정의한다. Working Backwards의 PRFAQ는 고객 가치와 예상 질문을 먼저 구체화하는 도구이며, PRD의 구현 범위와 인수 기준을 대신하는 문서는 아니다. 인터뷰, 설문과 사용 흐름으로 가정을 확인하고 개발 중에도 피드백을 반영한다.
@@ -201,6 +209,7 @@ PRD는 **의견 대립 시 판단 기준점**이다. "디자이너와 개발자�
 
 ## 출처
 
+- [개발자가 좋아할 수 밖에 없는 기능명세서 — Manyfast](https://manyfast.io/blog/how-to-write-a-feature-spec) — 조건, 주체, 행동, 결과와 확인 기준을 연결하는 작성 방법
 - [Working backwards: Amazon's approach to innovation — AWS re:Invent 2019](https://d1.awsstatic.com/events/reinvent/2019/REPEAT_1_Working_backwards_Amazon%E2%80%99s_approach_to_innovation_ENT207-R1.pdf) — 고객 질문 다섯 가지와 문서의 목적
 - [Building a culture of innovation to better serve citizens — AWS](https://aws.amazon.com/blogs/publicsector/building-culture-innovation-better-serve-citizens/)
 - [An insider look at Amazon's culture and processes — Amazon](https://www.aboutamazon.com/news/workplace/an-insider-look-at-amazons-culture-and-processes)

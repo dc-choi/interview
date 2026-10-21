@@ -35,6 +35,8 @@ Deprecated `publish helm-chart`는 대체 경로로 init 다음 create를 명시
 
 이 절만 다시 대조했으며 다른 CLI 작업의 검증일은 유지한다.
 
+2026-10-22 같은 폐기 명령의 chart 입력 옵션도 대조했다. `--chart-file`은 로컬 Helm chart 경로다. 원격 OCI chart를 `--helm-chart-name`으로 지정할 때는 `oci://repo/chartName`과 같은 전체 OCI URL을 사용한다. 일반 이름만 넣는 설정과 구분해 이전 스크립트를 읽는다. 이 옵션 설명은 폐기 명령의 문서 계약이며 현재 설치된 CLI의 실행 지원을 확인한 결과는 아니다.
+
 ## 채널 소속과 승격
 
 릴리스 하나가 여러 채널에 속할 수 있다. `product-release release-channel edit`은 현재 소속을 편집기로 열며 빈 목록을 저장하면 모든 소속을 제거한다. 편집 취소, 빈 문서 또는 비정상 편집기 종료는 변경 없이 취소한다. 빈 목록과 빈 문서는 효과가 다르다.
