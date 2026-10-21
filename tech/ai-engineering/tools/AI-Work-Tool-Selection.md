@@ -42,6 +42,14 @@ aliases: ["AI 업무 도구 선택", "AI Work Tool Selection"]
 
 Mobbin에서 사례를 찾는 것과 Superdesign으로 새 시안을 만드는 것은 별도 단계다. Spline의 장면 구성과 Meshy의 모델 생성도 구분한다. Airtable은 데이터의 구조와 흐름을, Asana는 작업의 책임과 진행을 중심으로 비교할 수 있다. 역할이 겹치면 이미 사용하는 도구에서 필요한 기능을 충족하는지 먼저 확인한다.
 
+### 음성의 표현 지시와 음악의 부분 재생성을 구분한다
+
+2026-10-22 공식 도움말 대조 기준, Eleven v3는 `[curious]`, `[whispers]`, `[laughs]` 같은 audio tag로 감정, 발화 방식과 반응을 지시할 수 있다. 이 기능을 모든 TTS 모델의 공통 문법으로 취급하지 않는다. 검수할 때는 지시한 표현 외에 고유명사, 숫자와 문장 내용이 정확히 들리는지도 확인한다.
+
+Suno Song Editor의 가사 수정은 대상 구간을 선택하고 가사를 바꾼 뒤 Replace Section으로 그 구간의 오디오를 다시 생성하는 흐름이다. 글자만 바꾸고 기존 파형을 그대로 유지하는 텍스트 편집과 구분한다. 대체 후보를 듣고 원본과 새 구간의 경계를 조정할 수 있으므로, 납품 전에는 바뀐 가사와 발음, 박자와 연결부를 함께 점검한다. 기능 존재만으로 나머지 음악의 완전한 보존을 보장하지 않는다.
+
+두 기능은 공식 문서에서 확인한 역할이며 이번에 실제 음성을 생성하거나 편집 품질을 측정하지 않았다. 이 절의 확인일은 위 제품 비교 전체의 재검증일이 아니다. 음악 생성 모델의 내부 구조는 [[Audio-Token-Generation|오디오 토큰 생성]]에서 별도로 다룬다.
+
 ### 공개 저장소도 역할과 실행 조건으로 나눈다
 
 아래는 2026-10-20 각 프로젝트의 공개 README에서 확인한 기능 범위다. 실제 설치와 실행, 성능 및 라이선스 적합성은 검증하지 않았다. 오른쪽 열은 도입 전에 적용할 검수 기준이다.
@@ -96,6 +104,8 @@ Mobbin에서 사례를 찾는 것과 Superdesign으로 새 시안을 만드는 �
 - [AI 3D Model Generator — Meshy](https://www.meshy.ai/)
 - [Higgsfield AI — Higgsfield](https://higgsfield.ai/)
 - [Text to Speech — ElevenLabs](https://elevenlabs.io/text-to-speech)
+- [ElevenLabs, How do audio tags work with Eleven v3?](https://help.elevenlabs.io/hc/en-us/articles/35869142561297-How-do-audio-tags-work-with-Eleven-v3)
+- [Suno, How to Use: Song Editor](https://help.suno.com/en/articles/6141505)
 - [Gamma — Gamma](https://gamma.app/)
 - [Fathom AI Notetaker — Fathom](https://www.fathom.ai/)
 - [The digital operations platform — Airtable](https://www.airtable.com/platform)

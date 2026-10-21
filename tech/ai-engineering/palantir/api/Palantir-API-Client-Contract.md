@@ -119,13 +119,17 @@ branch ID는 빈 문자열, RID나 UUID 형태를 사용할 수 없다. upload/b
 
 ## 버전과 Preview 수명주기
 
-API는 URL의 major version을 사용한다. endpoint/field 제거, 필수 request parameter 추가와 기존 field 타입 변경은 major 변경 대상이다. optional request parameter, response field, endpoint와 enum value 추가는 같은 major 안에서 생길 수 있다.
+API는 URL의 major version을 사용한다. endpoint/field 제거, 필수 request parameter 추가와 기존 field 타입 변경은 major 변경 대상이다. optional request parameter, response field, endpoint와 enum value 추가는 같은 major 안에서 생길 수 있다. 기존 필수 request parameter를 선택으로 완화하는 변경과 기능을 바꾸지 않는 성능 개선이나 버그 수정도 버전 변경 없이 배포될 수 있다.
 
 클라이언트는 알 수 없는 response field를 무시하고 신규 enum value를 처리할 경로를 둔다. 문서화되지 않은 내부 동작에 의존하지 않는다. API의 버전 번호와 SDK package 버전을 같은 값으로 취급하지 않는다.
 
 확인일의 stable endpoint 교체/제거 정책은 최소 12개월 전 안내와 그 기간의 지원/SLA 유지를 명시한다. 다만 심각한 보안 취약점이나 안정성 문제는 더 짧은 예고의 emergency change 예외가 있다. 공지, Upgrade Assistant와 endpoint banner를 함께 확인한다.
 
 Public Preview는 비운영 실험/개발 단계이며 `preview=true`로 opt-in한다. 사전 안내 없이 변경/삭제될 수 있다. stable의 호환성/폐기 예고 정책을 Preview에 그대로 적용하지 않는다.
+
+폐기 예정 endpoint의 이전 지원에는 구버전과 신버전 구조 비교, 코드 변경 예제와 일반적인 이전 패턴이 포함된다. 운영 점검에서는 공지에 적힌 종료일과 함께 실제 호출 중인 endpoint, 교체 경로와 응답 계약을 대조한다. 새 버전 번호가 등장했다는 사실만으로 기존 endpoint가 즉시 폐기됐다고 판단하지 않는다.
+
+2026-10-22에는 이 절의 변경 분류, 폐기 예고와 Preview 정책을 공식 Versioning 본문에 다시 대조했다. 다른 절의 호출률, 인증과 오류 계약을 재검증한 날짜는 아니므로 frontmatter의 기존 확인일을 유지한다.
 
 ## 출처
 
