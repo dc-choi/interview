@@ -70,6 +70,14 @@ KOCW와 소상공인 지식배움터 등 다른 탐색 경로는 [[Self-Developm
 
 ## 학습 목적에 맞게 선택하기
 
+### 실습 평가형 자격의 범위
+
+AWS Microcredentials는 제공된 AWS 환경에서 구성, 문제 해결과 최적화 작업을 수행하는 평가다. 객관식 문항으로 지식을 확인하는 방식과 구분하며, AWS Certifications를 보완하는 특정 주제의 실습 증거로 설명한다. 2026-04-23 공식 안내는 Skill Builder 구독 없이 무료로 접근하도록 변경했음을 알렸고, 2026-10-22 현재 Certification 안내에서도 구독이 필요하지 않음을 확인했다.
+
+2026-10-22 FAQ 기준 유효기간은 12개월이다. 유효한 자격은 합격 후 9개월부터 갱신할 수 있고, 실패 후 재응시에는 최소 25일의 대기가 필요하다. 기존 AWS Certification의 유지와 갱신 조건을 이 평가에 그대로 적용하지 않는다.
+
+활용 제안: 필요한 업무와 평가 주제가 맞을 때 선택하고, 합격한 주제와 유효기간을 명시한다. 평가 통과를 실제 고객 환경의 운영 경력이나 모든 AWS 서비스의 숙련으로 표현하지 않는다. 문제 원문을 공개 작업물로 옮기지 않고 별도의 공개 예제로 판단과 재현 능력을 보여준다. 이 절의 추가는 사용자의 응시 결정이나 새 학습 트랙 개설을 뜻하지 않는다. 다른 프로그램의 비용과 유지 정책은 재검증하지 않아 기존 `verified_at`을 유지한다.
+
 ### AI 입문 강좌와 시험형 자격의 구분
 
 2026-10-21 공식 안내 부분 대조 기준이다. 같은 AI 입문 목록에 있더라도 강좌 수료와 시험 통과의 요건은 다르다.
@@ -123,6 +131,9 @@ KOCW와 소상공인 지식배움터 등 다른 탐색 경로는 [[Self-Developm
 
 ## 출처
 
+- [Microcredentials from AWS are now free—Here’s why that matters — AWS Training and Certification Blog](https://aws.amazon.com/blogs/training-and-certification/microcredentials-from-aws-are-now-free-heres-why-that-matters/) — 2026-04-23 공개, 실습 평가와 구독 조건 변경.
+- [AWS, AWS Certification](https://aws.amazon.com/certification/) — 2026-10-22 microcredentials의 보완 역할과 구독 불필요 안내 확인.
+- [AWS, Training and Certification FAQs](https://aws.amazon.com/certification/faqs/) — 2026-10-22 Microcredential 절의 유효기간, 갱신과 재응시 조건 대조.
 - [Can I join the DeepLearning.AI Pro membership if I’m new to programming? — DeepLearning.AI](https://info.deeplearning.ai/knowledge-base/can-i-join-the-deeplearning.ai-pro-membership-if-im-new-to-programming) — 2026-10-21 두 입문 강좌의 코딩 선수 조건 대조.
 - [Microsoft Learn, Microsoft Certified: Azure AI Fundamentals](https://learn.microsoft.com/en-us/credentials/certifications/azure-ai-fundamentals/) — 2026-10-21 필수 시험과 선수 지식 대조.
 - [AWS Recertification — AWS](https://aws.amazon.com/certification/recertification/) — 2026-10-07 유지와 갱신의 기간, 자격 조건 및 Cloud Quest 경로를 대조했다.

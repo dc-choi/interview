@@ -26,6 +26,14 @@ Lab-in-the-loop는 기존 실험 데이터로 후보를 제안하고, 실제 실
 
 예측값을 관측값으로 덮어쓰지 않는다. 후보를 누가 어떤 기준으로 선택했는지도 남겨, 관측된 사례만으로 전체 환경을 대표한다고 판단하지 않게 한다.
 
+## 계산 후보와 실험 결과의 상태를 구분한다
+
+Amazon Bio Discovery는 생물학 모델로 후보를 생성하고 평가한 뒤, 선택한 후보를 연계 연구실에 합성과 시험 목적으로 전달하고 결과를 다음 모델 개선에 연결하는 lab-in-the-loop 구조를 제공한다. 2026-10-22 공개 서비스 설명 대조 기준이며 개별 실험의 성공이나 자동 재학습 완료를 뜻하지 않는다.
+
+MSK의 공개 사례에서 수주 단위로 단축했다고 소개한 범위는 표적에서 출발해 100,000개 설계를 연구실로 보내기까지다. 이는 해당 기관의 초기 결과 보고이며, 모든 실험이 끝났거나 임상 효과가 확인됐다는 수치가 아니다.
+
+이 구조를 다른 후보 생성 시스템에 적용할 때는 `후보 생성`, `검증 대상 선정`, `외부 검증 의뢰`, `결과 수신`, `모델 반영`을 각각 기록한다(설계 제안). 예측 점수와 관측 결과를 같은 필드에 덮어쓰지 않고 실험 ID로 연결한다. 재학습 뒤에는 기존 모델과 별도 평가를 거쳐 승격하며, 반복 횟수나 생성 후보 수를 품질 향상으로 세지 않는다.
+
 ## Shadow 비교와 실제 행동을 나눈다
 
 Shadow 비교에서는 기존 모델과 새 모델의 결과를 같은 운영 입력에서 비교한다. 새 모델의 결과가 실제 응답이나 제어에 사용되는지는 별도 계약이다.
@@ -50,6 +58,8 @@ SageMaker AI의 관리형 shadow test는 같은 endpoint에서 추론 요청을 
 
 ## 출처
 
+- [Amazon Bio Discovery — AWS](https://aws.amazon.com/biodiscovery/) — 2026-10-22 후보 생성, 연구실 검증과 결과 환류의 공개 구조 대조.
+- [Executive Insights from the 2026 AWS Life Sciences Symposium — AWS for Industries](https://aws.amazon.com/blogs/industries/executive-insights-from-the-2026-aws-life-sciences-symposium/) — MSK 초기 사례의 완료 범위는 설계를 연구실로 보내는 단계.
 - [AWS, AWS HealthScribe](https://docs.aws.amazon.com/transcribe/latest/dg/health-scribe.html) — 확률적 초안과 전문가 검토의 경계만 2026-10-22 대조
 - [AI Fuels Genentech’s R&D Ecosystem — Genentech](https://www.gene.com/stories/ai-fuels-genentech-r-and-d-ecosystem?topic=behind-the-science) — 공개 검색 색인의 lab-in-the-loop 본문을 발표 전사와 대조했다. 직접 페이지 열기는 탐색 메뉴만 반환해 전체 본문은 재확인하지 못했다.
 - [Storm Reply Accelerates Autonomous Driving Development with AWS — Amazon Web Services](https://www.youtube.com/watch?v=N6FtSBT-WZg) — 공식 영상 설명과 사람이 작성한 자막을 대조했다.

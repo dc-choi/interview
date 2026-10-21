@@ -25,6 +25,8 @@ aliases: ["인프라&클라우드(Infrastructure&Cloud)", "Infrastructure & Clou
 - [[Smart-Home-Hub-and-Personal-Context|가정용 허브와 개인 맥락]] — HomeView와 Apple TV 4K, 기기 및 지역 조건
 
 ## AWS 체크리스트
+- [x] [[MediaTailor-Ad-Insertion|MediaTailor 광고 삽입]] — 라이브 광고 종료, prefetch와 재생 검증
+- [x] [[Deadline-Cloud|Deadline Cloud 렌더팜]] — SMF와 CMF, 콘텐츠 해시 저장과 예산 제어
 - [x] [[S3-Vectors|S3 Vectors]] — 벡터 인덱스와 임베딩, 필터 모드, 검색과 RAG의 경계
 - [x] [[Transfer-Family-Web-Apps|Transfer Family web apps]] — 앱 사용자 할당, S3 접근 권한과 CORS의 구분
 - [x] [[Amazon-Location-Route-Optimization|Amazon Location 경로 최적화]] — route matrix와 방문 순서 API, 배차와 위치 추적의 경계

@@ -15,6 +15,8 @@ EC2, ASG, ALB, Lambda — 주요 AWS 컴퓨트 서비스.
 
 ## 목차
 
+- [x] [[AWS-Media-Services|미디어 서비스]] — MediaTailor 광고 삽입, Elemental 분석과 렌더링
+- [x] [[Deadline-Cloud|Deadline Cloud]] — fleet 운영 책임, job attachments와 예산 제어
 - [x] [[Transfer-Family-Web-Apps|Transfer Family web apps]] — 브라우저 파일 공유, 인증과 grant, CORS
 - [x] [[Amazon-Location-Route-Optimization|Amazon Location 경로 계산]] — 거리와 시간 행렬, 방문 순서, 위치 추적
 - [x] [[Amazon-Braket|Amazon Braket]] — 양자와 고전 계산, Hybrid Jobs와 문제 표현 비용
