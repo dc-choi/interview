@@ -1,0 +1,67 @@
+---
+tags: [ai, agent, browser, automation, permissions, privacy]
+status: done
+verified_at: 2026-10-22
+category: "AI엔지니어링(AIEngineering)"
+aliases: ["Browser Agent Task Boundaries", "브라우저 에이전트의 작업과 권한 경계"]
+---
+
+# 브라우저 에이전트의 작업과 권한 경계
+
+브라우저 에이전트는 웹페이지와 계정의 문맥을 읽고 여러 단계의 탐색이나 조작을 수행한다. 작업의 지속성, 파일 접근, 계정 사용과 외부 서비스의 상태 변경을 각각 확인해야 한다. 같은 브라우저 안에 있다는 사실만으로 이 권한들이 하나의 경계가 되지는 않는다.
+
+## 작업 요청을 검토 가능한 결과로 정한다
+
+다음은 브라우저 작업에 적용할 설계 기준이다.
+
+- 대상 사이트와 계정, 입력 자료, 결과 형식과 저장 위치를 정한다.
+- 조사 결과와 실제 변경을 구분한다. 상품 비교표 작성과 구매, 답장 초안과 발송은 서로 다른 완료 조건이다.
+- 실행 중 보완 요청은 현재 작업을 바꾸는지, 현재 작업 뒤에 처리하는지 확인한다.
+
+Aside의 `Queue`는 현재 실행 뒤에 새 메시지를 적용하고, `Steer`는 진행 중인 실행에 전달한다. 대기나 승인 요청이 있는 작업도 있으므로 요청 접수와 작업 완료를 구분한다. 이 기능 구분은 제품 사용 문서 기준이며 실제 업무의 성공률을 측정한 결과가 아니다.
+
+## 파일 권한과 계정 사용 권한을 따로 확인한다
+
+2026-10-22 확인한 Aside의 세션 모드는 다음과 같다.
+
+| 모드 | 문서에 명시된 범위 |
+|---|---|
+| `Read only` | 브라우저와 파일 문맥을 검사하되 파일을 변경하지 않음 |
+| `Guard` | 승인된 폴더에서 작업하고 다른 폴더 접근 전에 질문 |
+| `Full access` | 컴퓨터의 파일 읽기와 쓰기 범위를 확대 |
+
+이 표의 파일 제한만으로 웹사이트에서의 결제, 게시나 메시지 발송까지 차단된다고 판단하지 않는다. 도구 권한은 별도로 `Allow`, `Ask`, `Deny`를 정하며 `Deny`가 우선한다. 명령의 OS 격리 여부도 Sandbox 설정에서 따로 관리한다.
+
+저장 비밀번호는 AI에게 값을 보여주지 않고 자동 입력할 수 있다. 그러나 **비밀번호 값을 숨기는 것과 계정을 사용하지 못하게 하는 것은 다르다**. Aside는 비밀번호 접근 정책과 대상 URL을 검사하며, 전역 정책에 더해 항목별 정책을 둘 수 있다. 문서 기준 incognito 세션에서는 에이전트의 비밀번호 관리자 접근을 허용하지 않는다.
+
+운영 점검 제안: 필요한 계정과 파일 범위를 좁힌 뒤 조회, 변경, 전송의 허용 조건을 각각 확인한다. 테스트용 계정에서 승인 요청과 거부 경로를 확인하기 전에는 모드 이름만으로 외부 효과의 통제를 입증하지 않는다.
+
+## 정기 실행과 기억의 수명을 구분한다
+
+Aside의 cron routine은 일정마다 새 작업을 만들고, heartbeat routine은 기존 대화를 깨워 이어 간다. 겹친 routine 실행은 건너뛰고 대상 대화를 사용할 수 없으면 routine을 일시 중지한다. 반복 업무 제안은 초안이며 검토 후 활성화하는 단계가 있다.
+
+적용 제안: 독립된 주간 조사에는 새 작업을, 이전 대화의 진행 상황을 이어야 할 때는 기존 대화 재개를 검토한다. 일정 등록만으로 매번 실행됐다고 보고하지 않고 실행 상태와 결과를 확인한다. 한 번 성공한 작업도 다음 실행의 데이터와 로그인 상태를 다시 확인해야 한다.
+
+기억 기능은 브라우징 이력, 대화와 작업의 맥락을 재사용한다. Aside에서는 기억 생성 여부와 episodic memory의 보존 기간을 설정하고, 저장 내용을 검토하거나 편집할 수 있다. 저장된 기억을 최신 사실이나 현재 작업의 승인으로 취급하지 않는다. 보존 기간 설정과 원래 작업 기록의 보존 범위도 따로 확인한다.
+
+## 로컬 보관과 모델 전송은 다른 경계다
+
+Aside의 작업 기록과 산출물은 로컬에 저장되지만, hosted model에는 실행에 필요한 문맥이 전달될 수 있다. 개인정보 처리방침은 프롬프트, 도구 결과, 선택한 브라우저 snapshot, screenshot과 파일 등을 모델이 볼 수 있는 문맥으로 설명한다. 계정, 결제, 동기화와 hosted AI 기능에도 서버 측 서비스가 쓰인다.
+
+따라서 로컬 우선이라는 설명을 전체 작업의 무전송 보장으로 해석하지 않는다. 선택한 모델 제공자, 전달할 자료와 활성화된 동기화 기능을 함께 확인한다. 이 설명은 공개 정책의 데이터 흐름 범위이며 네트워크 패킷이나 제품 구현을 직접 감사한 결과가 아니다.
+
+## 출처
+
+- [Aside Help Center, Run tasks](https://docs.aside.com/help/tasks)
+- [Aside Help Center, Set agent permissions](https://docs.aside.com/help/security)
+- [Aside Help Center, Configure password autofill](https://docs.aside.com/help/passwords)
+- [Aside Help Center, Use routines](https://docs.aside.com/help/automation)
+- [Aside Help Center, Manage memory](https://docs.aside.com/help/memory)
+- [Privacy Policy — Aside](https://aside.com/policy/privacy)
+
+## 관련 문서
+
+- [[Agent-Ready-API-Design|에이전트 친화 API 설계]]
+- [[Agent-Email-Interface|이메일 에이전트 인터페이스]]
+- [[Agent-Data-Analysis-Workflow|에이전트 데이터 분석과 보고서]]
+- [[Agent-Memory-Retain-Recall-Reflect|에이전트 기억의 저장, 검색과 추론]]

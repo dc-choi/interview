@@ -34,6 +34,16 @@ Automation events는 batch 아래 object별 trace를 연결하고 success/failur
 
 Kanban에서 특정 object retry 또는 필터한 state의 전체 object에 automation을 실행할 수 있다. 이는 화면 refresh가 아닌 실제 effect 실행이다. 재시도 대상, 외부 효과의 중복 가능성과 Action 조건을 확인한다.
 
+## 자연어 trace 탐색과 운영 판단을 나눈다
+
+부분 검증(2026-10-22): Telemetry Navigation Agent의 분석 범위와 전제 조건을 공식 문서와 대조했다. 기존 기능 전체의 검증일은 유지한다.
+
+Automation events에서 이벤트의 execution trace를 열고 Agent 패널을 선택하면 초기 요약과 추천 질문을 볼 수 있다. 에이전트는 선택한 실행의 span 관계와 service log를 조사하고, 실패나 긴 실행 구간을 찾도록 관련 span을 선택하거나 확대해 준다. 실행 순서, 경고와 오류, LLM 호출에 관해 후속 질문을 할 수 있다.
+
+분석에는 **해당 실행의 telemetry와 사용 가능한 언어 모델**이 필요하다. Trace가 없으면 그 실행을 분석할 수 없다. 에이전트 설명만으로 운영 환경을 변경하지 않고, 지목한 span과 원래 service log를 확인한다.
+
+운영 적용 제안: 조사 대상 실행과 시간 범위를 고정하고, 설명에 연결된 오류 및 지연 구간을 원본과 대조한다. 설명에서 제안한 원인과 로그에서 직접 확인한 사실을 구분한 뒤 재시도나 설정 변경을 판단한다. 탐색 지원 기능의 존재는 원인 확정이나 수정 성공의 증거가 아니다.
+
 ## Embed의 read-only와 서버 인가를 구분한다
 
 Workshop iframe에는 `embedded=true`, `viewMode=Kanban|Graph|SplitView`를 사용하고 기존 query가 있으면 `&`로 추가한다. `readonly=true`는 workbench에서 automation 실행 UI를 끈다. 다른 앱/API의 실행권을 회수하는 서버 정책으로 해석하지 않는다.
@@ -50,6 +60,7 @@ Pro-code agent/OSDK/Compute Module의 recent edit도 사람의 작업과 함께 
 - [Palantir, Automation events](https://www.palantir.com/docs/foundry/autopilot/automation-events)
 - [Palantir, Object timeline](https://www.palantir.com/docs/foundry/autopilot/object-timeline)
 - [Palantir, Integrations](https://www.palantir.com/docs/foundry/autopilot/integrations)
+- [Palantir, Telemetry Navigation Agent](https://www.palantir.com/docs/foundry/autopilot/telemetry-agent)
 
 ## 관련 문서
 

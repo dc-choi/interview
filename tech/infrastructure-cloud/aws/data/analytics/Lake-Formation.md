@@ -62,6 +62,16 @@ Hybrid access mode는 같은 Data Catalog 객체에 두 권한 경로를 허용�
 
 운영 점검 제안: 검색 가능, 구독 승인, 권한 부여 완료, 실제 질의 성공을 각각 확인한다. 태그 기반 권한으로 전환할 때는 기존 이름 기반 권한도 검토하여 의도보다 넓은 접근이 남지 않게 한다.
 
+### DataZone의 메타데이터 갱신과 데이터 갱신을 구분한다
+
+부분 검증(2026-10-22): DataZone data source run과 카탈로그 게시 동작을 공식 문서와 대조했다. 기존 Lake Formation 기능 전체의 검증일은 유지한다.
+
+Data source run은 원천의 새 메타데이터나 변경된 메타데이터를 가져와 프로젝트 inventory의 자산을 갱신한다. 이 실행이 성공했다는 사실은 원천 테이블의 행을 적재하거나 최신 업무 데이터를 생산했다는 뜻이 아니다. 원천 파이프라인의 갱신 상태와 카탈로그 메타데이터의 갱신 상태를 따로 확인한다.
+
+Inventory의 최신 버전과 검색 카탈로그에 게시된 버전도 구분한다. 게시 후 inventory를 수정했다면 최신 버전을 다시 게시해야 검색 카탈로그에 반영된다. Data source의 자동 게시 옵션을 켜면 실행 중 inventory 등록과 카탈로그 게시를 함께 할 수 있지만, 업무 메타데이터를 보완하기 전에 다른 도메인 사용자에게 검색될 수 있다.
+
+운영 점검 제안: 원천 적재 완료, 메타데이터 수집 완료, 게시 버전과 실제 구독 권한을 각각 확인한다. 검토 후 게시해야 하는 데이터라면 자동 게시 여부를 확인하고, 생성된 설명과 업무 용어를 생산자가 검토한다. 카탈로그에서 검색된다는 사실은 데이터 품질이나 접근 허가의 증거가 아니다.
+
 ## 교차 계정 공유는 링크와 실제 권한을 나눈다
 
 부분 검증(2026-10-13): 교차 계정 공유와 resource link 동작을 AWS 공식 문서로 대조했다. 문서 전체의 검증일은 유지한다.
@@ -161,6 +171,8 @@ Lake Formation으로 관리하는 데이터를 Athena에서 조회할 때는 실
 - [Amazon DataZone User Guide, Approve or reject a subscription request](https://docs.aws.amazon.com/datazone/latest/userguide/approve-reject-subscription-request.html)
 - [Amazon DataZone User Guide, Grant access to managed AWS Glue Data Catalog assets](https://docs.aws.amazon.com/datazone/latest/userguide/grant-access-to-glue-asset.html)
 - [Amazon DataZone User Guide, Grant access for approved subscriptions to unmanaged assets](https://docs.aws.amazon.com/datazone/latest/userguide/grant-access-to-unmanaged-asset.html)
+- [Amazon DataZone User Guide, Manually start a data source run in Amazon DataZone](https://docs.aws.amazon.com/datazone/latest/userguide/manually-start-data-source-run.html)
+- [Amazon DataZone User Guide, Amazon DataZone terminology and concepts](https://docs.aws.amazon.com/datazone/latest/userguide/datazone-concepts.html)
 - AWS SAA C03 Udemy 강의 요약본 (Stephane Maarek, 로컬)
 - [AWS Lake Formation Developer Guide, Blueprints and workflows](https://docs.aws.amazon.com/lake-formation/latest/dg/workflows-about.html)
 - [AWS Lake Formation Developer Guide, What is AWS Lake Formation?](https://docs.aws.amazon.com/lake-formation/latest/dg/what-is-lake-formation.html)
