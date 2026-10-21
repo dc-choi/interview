@@ -19,6 +19,7 @@ aliases: ["Product Strategy", "제품 전략"]
 ## 역할과 관련 주제
 
 - [[B2B-Sales-Pipeline-and-Pilot|B2B 영업 파이프라인과 파일럿]] — 구매 역할, 공통 지인의 소개와 구매 증거 구분, 단계별 증거, 인바운드 첫 연락 기한, 고객 도입과 전략적 투자 구분, 플랫폼 발표와 구매 조건의 구분, 예상 계약금액의 한계, 청구 일정과 금액 구분
+- [[Solo-Seller-Execution-Lessons|1인 판매자의 실행 원칙과 AI 활용]] — 시작 구조, 하루 단위 목표, 판매 숫자로 고치기, 실패에서 배운 순서, [[Solo-Seller-Execution-Lessons-AI-Automation|AI 활용과 자동화 경계]]
 - [[Product-Owner-Role|PO의 역할과 책임]] — 제품 기반 매출, 고객 근거, 실험, 조직 정렬, 인접 직무와의 차이
 
 - [[B2B-GTM-AI-Operating-System|AI 기반 B2B GTM 실행 체계]] — 주요 방식, 구매 신호, 컨텍스트와 가격의 연결

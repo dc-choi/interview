@@ -19,6 +19,7 @@ aliases: ["Marketing", "마케팅"]
 - [x] [[Search-Trends-and-Content-Hypotheses|검색 트렌드와 콘텐츠 가설]] — 구체적인 검색어, 증가율과 설문 표본의 한계, 사용 장면별 콘텐츠 실험
 - [x] [[Lead-Magnet-and-Entry-Offer|리드 마그넷과 진입 제안]] — 진입 제안 유형과 소비 확인, 광고성 정보의 수신 동의, 무료와 유료 진입의 물량과 선별, 상담 반론의 콘텐츠화
 - [x] [[Social-Content-Scaling|소셜 콘텐츠 성장 단계]] — 초기 고객 적합성, 창업자에서 채널과 브랜드로의 제작 전환, 사업 결과로 고른 소재의 재생산, 과정을 기록하는 콘텐츠, 발행량을 늘리기 전의 업로드 한도와 스팸 정책, 조회수와 채용 수치의 한계
+- [x] [[Social-Seller-Content-Funnel|판매자의 소셜 콘텐츠와 퍼널]] — 판매처 안의 무료 노출 자리, 지역 커뮤니티, 스레드 계정 운영, 짧은 영상과 블로그, 유입을 보낼 판매처와 재구매, 신뢰를 지키는 운영
 - [x] [[Social-Business-Claims-Validation|소셜 자료의 사업과 마케팅 주장 검증]] — 공개 콘텐츠의 수익화/성장 수치, 90:8:2, 사업 후보와 미검증 주장 보존
 - [x] [[SEO-Google-Naver-Operations|Google과 네이버 SEO 운영]] — 공통 설정과 엔진별 인증, 대표 URL, 수집/색인 검증, 공유 미리보기 캐시
 - [x] [[LinkedIn-Content-Distribution|LinkedIn 콘텐츠 도달]] — 관계와 관심사 신호, 인맥 밖 추천, 반응 조작 제한과 전환 검증

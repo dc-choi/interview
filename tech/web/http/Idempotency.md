@@ -128,6 +128,7 @@ POST /users       { "name": "dc" }    // 비멱등: 매번 새 사용자 생성
 - 멱등 메서드의 재시도는 다른 주체의 중간 변경을 보호하지 않는다. 응답을 못 받아 PUT을 다시 보내는 사이 다른 클라이언트가 같은 리소스를 바꿨다면 재시도한 PUT이 그 변경을 덮어쓴다(lost update). 막아야 하면 처음 읽은 ETag를 `If-Match`에 실어 보내거나 버전 기반 낙관적 잠금을 함께 쓴다([[HTTP-Caching#조건부 요청 필드|조건부 요청]], [[Lock#Optimistic Lock (낙관적 잠금)|낙관적 잠금]]).
 - 조건부 PUT을 재시도해 412를 받았다면 첫 시도가 이미 반영됐을 수 있다. RFC 9110은 같은 변경이 이미 적용된 것으로 보이면 서버가 412 대신 2xx로 응답해도 된다(MAY)고 두므로, 클라이언트는 412를 곧바로 실패로 확정하지 않고 현재 상태를 조회해 판단한다.
 - 멱등이라는 이유만으로 모든 타임아웃과 5xx를 무제한 재시도하면 안 된다. 서버 과부하와 재시도 폭풍을 만들 수 있다.
+- 시간 초과는 실패의 증거가 아니다. 서버가 이미 처리했는데 응답만 유실됐을 수 있으므로 결제처럼 부수효과가 있는 요청은 결과가 확정될 때까지 사용자에게 실패 대신 확인 중인 상태로 알리고, 재시도 상한이나 전체 마감 시간을 넘긴 뒤에는 조회나 웹훅으로 결과를 대사한다.
 - 비멱등 메서드는 요청 의미가 실제로 멱등하다는 별도 지식이 있거나 원래 요청이 적용되지 않았음을 확인할 수 있을 때만 자동 재시도를 검토한다.
 - 프록시는 비멱등 요청을 자동으로 재시도하면 안 된다.
 - QUERY는 표준 의미가 안전하고 멱등이므로 통신 장애 후 반복할 수 있지만 실제 클라이언트와 중간 시스템의 메서드 지원은 별도로 확인한다.
@@ -167,3 +168,4 @@ POST /users       { "name": "dc" }    // 비멱등: 매번 새 사용자 생성
 - [The Idempotency-Key HTTP Header Field — IETF Datatracker](https://datatracker.ietf.org/doc/draft-ietf-httpapi-idempotency-key-header/)
 - [SETNX (locking pattern 주의) — Redis Docs](https://redis.io/docs/latest/commands/setnx/)
 - [매일메일 — HTTP 멱등성](https://www.maeil-mail.kr/question/90)
+- [25+ API Concepts Every Developer Must Know — YouTube, Codist](https://www.youtube.com/watch?v=5U7LwO-eyBg) — 2026-10-19 업로드, 입문 개관. 19~21분의 멱등 키, 지수 백오프와 지터, 결과가 불확실한 시간 초과의 안내
