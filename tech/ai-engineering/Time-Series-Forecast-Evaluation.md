@@ -91,6 +91,14 @@ MAPE(Mean Absolute Percentage Error)는 실제값 대비 절대 백분율 오차
 
 MAE는 실제값과 같은 단위로 오차를 읽을 수 있고, RMSE는 제곱 오차를 집계한다. 어느 지표가 작은지만 보지 말고 평가 기간, 예측 거리와 비교 기준 모델을 함께 명시한다.
 
+### MAE를 최대 오차나 실제 대기 시간으로 바꾸지 않는다
+
+MAE는 절대오차의 평균이다. 분 단위 예측의 MAE가 5분 미만이라는 결과는 모든 예측의 오차가 5분 미만이거나 실제 대기가 5분 안에 끝난다는 뜻이 아니다. 계산 예시로 절대오차가 0분, 0분, 12분이면 MAE는 4분이지만 최대 오차는 12분이다.
+
+사례: 2024년 CATCHTABLE의 SageMaker Canvas 발표는 요약 슬라이드에 MAE 5.0분 미만을 제시했다. 이 값은 예측 오차 지표이며 실제 대기 시간을 5분 이하로 줄였다는 근거로 사용할 수 없다. 대기 시간 예측 사례를 참고한 지표 해석이며, 해당 모델을 시계열 전용 알고리즘으로 분류하거나 다른 서비스의 성능 목표로 일반화하지 않는다.
+
+평가 설계 제안: 평균 오차 외에 허용 오차를 넘는 비율과 긴 대기 구간의 오차를 따로 확인한다. 2026-10-22에 MAE 정의와 발표 PDF의 요약 문구를 대조했으며, 사례의 원자료, 평가 기간과 표본별 오차는 검증하지 않았다. 기존 서비스별 기능 전체를 재검증한 것은 아니므로 문서의 `verified_at`은 유지한다.
+
 ## 분위수 예측과 분위수 손실을 구분한다
 
 2026-10-14 Amazon Forecast 평가 문서 대조 기준. **P90은 예측 분포의 90번째 백분위수이고, wQL은 특정 분위수 예측을 실제 관측값과 비교하는 손실 지표**다. 둘 다 0.9라는 숫자로 표현되는 하나의 확률이라고 해석하지 않는다.
@@ -149,6 +157,7 @@ Forecast의 현재 평가 문서는 WAPE와 RMSE에 평균 예측을 사용한�
 
 ## 출처
 
+- [CATCHTABLE’s wait time prediction journey with Amazon SageMaker Canvas — AWS re:Invent 2024](https://reinvent.awsevents.com/content/dam/reinvent/2024/slides/gbl/GBL209-KO_CATCHTABLEs-wait-time-prediction-journey-with-Amazon-SageMaker-Canvas.pdf) — PDF 32쪽 Summary의 MAE 5.0분 미만 표기를 2026-10-22 대조
 - [Forecasting: Principles and Practice, Forecasting hierarchical and grouped time series — Hyndman, Athanasopoulos](https://otexts.com/fpp3/hierarchical-forecasting.html) — 집계 일관성, bottom-up과 reconciliation을 2026-10-16 대조
 - [Amazon Forecast, QueryForecast](https://docs.aws.amazon.com/forecast/latest/dg/API_forecastquery_QueryForecast.html)
 - [Amazon Forecast, GetAccuracyMetrics](https://docs.aws.amazon.com/forecast/latest/dg/API_GetAccuracyMetrics.html)

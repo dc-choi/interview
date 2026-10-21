@@ -30,6 +30,8 @@ Foundry LLM proxy는 provider SDK의 요청 형식을 유지하면서 Foundry의
 - **Responses:** Python 예제는 SDK 응답의 `output_text`를 반환하고 TypeScript 예제는 `response.output[0].content[0].text`를 반환한다. 둘 다 텍스트를 꺼내는 예제다. 고정 배열 인덱스 접근만 보고 모든 응답의 첫 항목과 첫 content가 텍스트라고 보장된다고 해석하지 않는다. 실제 사용하는 출력 유형과 SDK 응답 타입에 맞춰 추출 경로를 확인한다.
 - **Embeddings:** Python 예제는 `str(embeddings.data)`, TypeScript 예제는 `JSON.stringify(embeddings.data)`로 문자열을 만든다. 함수의 문자열 반환 타입은 이 가공 결과를 뜻하며, proxy가 벡터 대신 문자열 하나만 반환한다는 계약이 아니다. 벡터를 후속 처리에 넘길 때는 표시용 문자열화와 응답 데이터 처리를 구분한다.
 
+같은 날 Anthropic Messages의 공식 proxy 예제도 대조했다. Python은 `str(messages.content[0].text)`, TypeScript는 `response.content[0].text`로 첫 content 항목의 텍스트를 반환한다. 이 예제 함수는 전체 content 배열을 반환하지 않는다. 첫 항목에 접근하는 예제만으로 모든 응답이 단일 텍스트 항목이라는 계약을 도출하지 않는다. 실제로 사용할 출력 유형에 맞춰 content 처리와 proxy의 기능 지원 여부를 별도로 확인한다.
+
 이 대조는 예제의 입출력 처리에 한정한다. 모델 호출, SDK 실행과 전체 응답 유형의 검증을 수행하지 않았으며 다른 절의 확인일을 갱신하지 않았다.
 
 ## 인증과 호출 scope
