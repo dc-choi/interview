@@ -29,6 +29,12 @@ Parquet는 분석용 데이터 파일 형식이다. Iceberg 같은 테이블 형
 
 환불을 반영하는 작업과 매출 조회가 동시에 실행될 때 어느 상태를 읽을지 정해야 한다. 파일을 직접 덮어쓰는 방식과 메타데이터로 새 스냅샷을 게시하는 방식을 같은 계약으로 보지 않는다.
 
+## 객체 메타데이터와 업무 테이블을 구분한다
+
+2026-10-22 AWS 공식 문서 기준, S3 Metadata는 general purpose bucket의 객체 메타데이터를 읽기 전용 관리형 Iceberg 테이블로 제공한다. 객체 크기, 저장 클래스와 변경 이력을 조회하는 용도이며, 원본 파일 안의 주문이나 결제 행을 자동으로 업무 테이블로 변환하는 기능과 구분한다.
+
+Journal table은 설정을 만든 뒤 발생한 객체 변경을 기록하며 원본 버킷과 최종적 일관성을 가진다. Iceberg 형식으로 제공된다는 이유만으로 원본 객체와 동시에 갱신되거나 과거 변경 이력이 모두 포함된다고 가정하지 않는다. 업무 테이블의 스냅샷 관리와 객체 목록의 변경 관측은 서로 다른 계약이다.
+
 ## 작은 데이터에서 시작하기
 
 노트북 한 대에서 처리할 데이터라면 분산 시스템부터 만들 필요는 없다. DuckDB 같은 내장형 SQL 엔진을 시작점으로 검토하고, 데이터 규모, 동시 사용자와 지연 요구가 커질 때 운영 구성을 바꾼다. 저장과 계산의 역할 구분은 작은 구성에서도 유효하다.
@@ -39,14 +45,25 @@ Parquet는 분석용 데이터 파일 형식이다. Iceberg 같은 테이블 형
 
 AI 역시 데이터 소비자다. 테이블 선택 외에 지표 정의, 집계 완료 시점, 문서 최신성과 질문자의 권한을 알아야 한다. 전통적인 BI, ML 학습과 문서 검색형 LLM이 요구하는 데이터 준비를 구분한다.
 
+## 지속 복제와 조회 결과의 최신성
+
+업무 DB의 변경을 별도 분석 저장소나 조회 모델에 전달하면 계산 부하를 분리할 수 있지만, 수집 완료와 사용자에게 보이는 결과의 갱신 시점은 다르다. 2026-10-22 AWS DMS 공식 문서는 초기 적재 뒤에도 CDC를 계속 수행할 수 있으며, 복제 지연은 소스 부하, 네트워크, 복제 자원과 대상 수용량에 따라 달라지고 지연 SLA는 없다고 명시한다.
+
+설계 점검에서는 소스 커밋, 변경 수집, 변환 및 집계, 캐시 갱신과 화면 조회 시점을 나누어 측정한다. 랭킹이나 분석 화면에 허용할 지연을 정하고 갱신 지연과 처리 실패를 구분한다. 특정 서비스의 갱신 주기나 발표 성과를 CDC의 보장값으로 사용하지 않는다. CDC 도구의 전달 조건은 [[DMS|DMS의 대상별 계약]]에서 확인한다.
+
 ## 학습 범위와 후속 확인
 
 2026-10-15 GeekCast 시즌2 EP01의 10분 24초 영상에서 사람이 단 한국어 자막 228구간을 확보해 전체를 읽었다. 저장과 계산, 파일과 테이블, 소규모 구성, 결과 활용과 AI 연결을 학습했다. 화면 전용 도표와 코드는 별도 대조하지 않았다. 영상의 시즌1 링크 7개와 다음 편 예고는 추가 학습 후보이며 시청 완료로 표시하지 않는다.
 
 Iceberg와 DuckDB의 세부 호환성이나 실제 구현은 이 개요의 확인 범위에 포함하지 않는다.
 
+2026-10-22에는 객체 메타데이터와 업무 테이블의 구분, 지속 복제와 최종 조회 지연을 추가 대조했다. 공식 문서의 해당 계약만 확인했으며 기존 개요 전체의 최신성 검증이나 실제 파이프라인 실행 기록은 아니다.
+
 ## 출처
 
+- [AWS, Discovering your data with S3 Metadata tables](https://docs.aws.amazon.com/AmazonS3/latest/userguide/metadata-tables-overview.html)
+- [AWS, S3 Metadata journal tables schema](https://docs.aws.amazon.com/AmazonS3/latest/userguide/metadata-tables-schema.html)
+- [AWS, Creating tasks for ongoing replication using AWS DMS](https://docs.aws.amazon.com/dms/latest/userguide/CHAP_Task.CDC.html)
 - [GeekCast, 5년 만에 다시 보는 데이터 인프라 지도, 최신 데이터 인프라 이해하기 시즌2 EP01](https://www.youtube.com/watch?v=alnTsLjhEtQ)
 - [5년 만에 다시 보는 데이터 인프라 지도 — GeekCast](https://news.hada.io/geekcast/data-infra-s2-ep01)
 - [Apache Iceberg, Table Specification](https://iceberg.apache.org/spec/) — 테이블 스냅샷과 메타데이터 개념

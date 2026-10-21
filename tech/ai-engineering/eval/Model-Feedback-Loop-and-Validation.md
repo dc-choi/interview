@@ -36,12 +36,21 @@ SageMaker AI의 관리형 shadow test는 같은 endpoint에서 추론 요청을 
 
 ## 검증 경계
 
+### 초안 생성과 최종 사용을 따로 평가한다
+
+생성형 모델이 작성한 초안과 사람이 검토한 최종본은 서로 다른 산출물이다. 2026-10-22 AWS HealthScribe 공식 문서는 생성 결과가 확률적이고 부정확할 수 있으며, 환자 진료에 사용하기 전에 훈련된 의료 전문가가 정확성과 적절성을 검토해야 한다고 명시한다. 이는 특정 병원의 자체 모델이 HealthScribe를 사용한다는 뜻이 아니라 초안과 최종 사용의 경계를 확인하는 별도 서비스 사례다.
+
+이를 다른 초안 작성 시스템에 적용할 때는 입력 자료, 생성 초안, 사람의 수정과 최종 승인 결과를 연결해 평가한다(설계 제안). 생성 시간뿐 아니라 검토와 수정에 걸린 시간, 사실 누락과 추가, 사용 목적에 맞는 품질을 함께 비교한다. 생성만 빨라졌거나 API 연결이 완료됐다는 사실을 전체 업무 시간 감소나 현장 효과로 계산하지 않는다.
+
+### 비교 결과의 해석
+
 - 같은 입력에서 출력이 달라졌다는 사실과 새 출력이 더 정확하다는 판단은 다르다. 정답 라벨이나 별도 실험 결과가 필요하다.
 - Shadow 비교만으로 새 모델이 실제 행동을 바꿨을 때의 후속 결과까지 확인할 수는 없다. 제어에 투입하는 검증과 승격은 별도 단계로 둔다.
 - 재학습 성공, 소프트웨어 배포 성공, 현장 품질 개선을 각각 기록한다. 이 문서는 공개 구조와 서비스 계약을 대조했으며 차량이나 연구실에서 실험을 수행하지 않았다.
 
 ## 출처
 
+- [AWS, AWS HealthScribe](https://docs.aws.amazon.com/transcribe/latest/dg/health-scribe.html) — 확률적 초안과 전문가 검토의 경계만 2026-10-22 대조
 - [AI Fuels Genentech’s R&D Ecosystem — Genentech](https://www.gene.com/stories/ai-fuels-genentech-r-and-d-ecosystem?topic=behind-the-science) — 공개 검색 색인의 lab-in-the-loop 본문을 발표 전사와 대조했다. 직접 페이지 열기는 탐색 메뉴만 반환해 전체 본문은 재확인하지 못했다.
 - [Storm Reply Accelerates Autonomous Driving Development with AWS — Amazon Web Services](https://www.youtube.com/watch?v=N6FtSBT-WZg) — 공식 영상 설명과 사람이 작성한 자막을 대조했다.
 - [AWS, Amazon SageMaker AI Shadow tests](https://docs.aws.amazon.com/sagemaker/latest/dg/shadow-tests.html)

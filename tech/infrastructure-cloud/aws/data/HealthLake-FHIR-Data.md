@@ -27,6 +27,14 @@ HealthLake의 native import는 S3에 있는 FHIR R4 데이터를 가져온다. �
 
 ## 데이터 기반과 추천 기능을 나눈다
 
+### FHIR 기록과 영상 저장을 구분한다
+
+2026-10-22 공식 문서 기준, HealthLake는 FHIR R4 데이터를, HealthImaging은 DICOM 의료 영상의 저장과 접근을 다룬다. HealthImaging은 가져온 DICOM 데이터를 image set으로 구성하고 영상 메타데이터와 픽셀 데이터에 접근하는 기능을 제공한다. 두 서비스를 함께 분석에 사용한다는 설명을 모든 영상이 FHIR resource 본문에 들어간다는 뜻으로 해석하지 않는다.
+
+연결 설계에서는 기록과 영상의 대상 식별자, 검사 시각, 참조와 접근 권한을 대조한다(설계 제안). 영상이 조회되거나 다른 기록과 연결됐다는 사실은 임상 판단의 정확성을 입증하지 않는다. HealthImaging도 환자 진료에 사용할 때 훈련된 의료 전문가의 검토를 요구한다.
+
+### 추천과 임상 사용의 검토
+
 Labcorp의 공개 사례는 HealthLake를 활용한 데이터 기반과 검사 선택을 돕는 Test Finder를 소개한다. 이 소개만으로 모든 추천 경로의 구현, 비교 성능이나 환자 결과 개선을 확인할 수는 없다. 재사용할 구조는 표준화된 데이터와 이를 이용하는 애플리케이션의 역할을 나누는 것이다.
 
 HealthLake 공식 문서는 임상 판단에 이용할 때 훈련된 의료 전문가의 검토를 요구한다. 표준 형식으로 저장됐다는 사실은 추천의 정확성이나 진료 적합성을 보증하지 않는다. 서비스가 HIPAA eligible이라는 사실도 특정 배포의 전체 준수를 대신 증명하지 않는다. 데이터 연결과 권한, 실제 사용 절차를 별도로 검토한다.
@@ -35,6 +43,7 @@ HealthLake 공식 문서는 임상 판단에 이용할 때 훈련된 의료 전�
 
 ## 출처
 
+- [AWS, What is AWS HealthImaging?](https://docs.aws.amazon.com/healthimaging/latest/devguide/what-is.html) — FHIR 기록과 영상 저장의 역할 경계, 2026-10-22 대조
 - [AWS, What is AWS HealthLake?](https://docs.aws.amazon.com/healthlake/latest/devguide/what-is.html)
 - [HL7, FHIR R4 Overview](https://www.hl7.org/fhir/R4/overview.html)
 - [Scaling clinical insights at Labcorp with AWS HealthLake — Labcorp](https://www.labcorp.com/education-events/articles/scaling-clinical-insights-labcorp-aws-healthlake)

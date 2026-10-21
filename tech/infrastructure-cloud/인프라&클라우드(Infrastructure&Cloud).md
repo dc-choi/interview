@@ -25,6 +25,7 @@ aliases: ["인프라&클라우드(Infrastructure&Cloud)", "Infrastructure & Clou
 - [[Smart-Home-Hub-and-Personal-Context|가정용 허브와 개인 맥락]] — HomeView와 Apple TV 4K, 기기 및 지역 조건
 
 ## AWS 체크리스트
+- [x] [[S3-Vectors|S3 Vectors]] — 벡터 인덱스와 임베딩, 필터 모드, 검색과 RAG의 경계
 - [x] [[Transfer-Family-Web-Apps|Transfer Family web apps]] — 앱 사용자 할당, S3 접근 권한과 CORS의 구분
 - [x] [[Amazon-Location-Route-Optimization|Amazon Location 경로 최적화]] — route matrix와 방문 순서 API, 배차와 위치 추적의 경계
 - [x] [[SageMaker-Lakehouse|SageMaker Lakehouse]] — S3/RMS, 카탈로그와 엔진별 기능, Lake Formation의 공유 데이터 권한
