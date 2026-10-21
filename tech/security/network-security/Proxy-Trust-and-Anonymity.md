@@ -18,7 +18,16 @@ verified_at: 2026-09-16
 
 - **위치 기반 판단의 우회**: IP 지오로케이션은 IP 주소에서 지리적 위치를 추정하는 방식이므로, 다른 나라의 중계자를 거치면 그 나라에서 접속한 것으로 판단된다. 지역별 콘텐츠 제한, 국가 단위 차단, 지역별 가격 표시가 모두 이 판단에 기댄다.
 - **발신자 은닉**: 목적지 로그에는 중계자의 주소가 남는다. 검열 환경에서 접근 사실 자체를 숨기는 데 쓰인다.
-- **한계**: 지오로케이션 데이터베이스는 추정이고 갱신 지연과 오차가 있다. 그리고 IP는 식별 수단 중 하나일 뿐이라 계정, 쿠키, 브라우저 지문, 결제 수단이 그대로면 IP만 바꿔도 동일인으로 식별된다.
+- **한계**: 지오로케이션 데이터베이스는 추정이고 갱신 지연과 오차가 있다. 그리고 IP는 식별 수단 중 하나일 뿐이라 계정, 쿠키, 브라우저 지문, 결제 수단이 그대로면 IP를 바꿔도 방문을 연결하거나 같은 사용자로 추정할 수 있다.
+
+### 브라우저 지문은 저장된 쿠키와 다르다
+
+2026-10-22 W3C Privacy Working Group의 fingerprinting 지침(Group Note)과 Tor Browser 도움말을 대조한 범위다. 다른 네트워크 및 TLS 설명 전체를 재검증한 날짜는 아니다.
+
+- **수집 경로:** HTTP 요청 헤더처럼 통신에 실리는 특징을 읽는 수동 수집과, 클라이언트 코드로 창 크기, 글꼴, 렌더링 결과 등을 관찰하는 능동 수집을 구분한다. JavaScript 외에 CSS 기능도 지문 수집에 이용될 수 있다.
+- **재식별의 한계:** 쿠키를 지우거나 VPN으로 IP를 바꾸어도 남은 특징으로 방문을 연결할 수 있다. 지문이 곧 실명은 아니며, 식별 정보와 연결되면 개인 식별로 이어질 수 있다. 모든 브라우저를 영구적으로 유일하게 식별한다는 보장으로 읽지 않는다.
+- **방어의 목표:** 노출하는 특징을 줄이거나 여러 사용자의 설정을 비슷하게 만들어 구별 가능한 집단 수를 줄인다. Tor Browser는 글꼴 열거 제한과 letterboxing 등을 사용하지만 모든 사용자를 똑같이 만들지는 못한다. Tor 네트워크의 중계와 브라우저의 지문 방어는 별도 층이다.
+- **설정 점검:** Tor Project는 추가 확장 설치가 지문을 더 독특하게 만들 수 있어 권장하지 않는다. 이 권고를 모든 브라우저의 모든 확장이 해롭다는 주장으로 확대하지 않는다.
 
 ## 중계자가 볼 수 있는 것과 볼 수 없는 것
 
@@ -59,7 +68,7 @@ verified_at: 2026-09-16
 - 중계자를 신뢰할 근거를 확인한다. 운영 주체, 로그 정책, 관할 법역이 불명확한 무료 중계에 인증 정보나 금융, 개인정보를 태우지 않는다.
 - 클라이언트에 설치된 루트 CA 목록을 확인한다. 조직이나 프로그램이 추가한 CA가 있으면 그 주체가 TLS를 복호화할 수 있는 위치에 있다.
 - 서비스 약관과 관할 지역 법률을 확인한다. 지역 제한 우회가 계약 위반이 되거나, 우회 도구 사용 자체가 제한되는 관할이 있다.
-- IP만 바꾼 우회는 계정, 쿠키, 지문으로 무력화된다. 익명성이 목표면 세션 분리까지 함께 설계한다.
+- IP를 바꾸어도 계정, 쿠키, 지문으로 방문이 연결될 수 있다. 익명성이 목표면 세션 분리와 브라우저 지문 방어까지 함께 검토한다.
 - 조직 입장에서는 반대 방향도 본다. 내부에서 나가는 외부 프락시와 Tor 트래픽은 데이터 유출 경로가 될 수 있으므로 정책과 탐지 대상에 둔다. [[Network-Perimeter-Security|경계 보안]]
 
 ## 면접 체크포인트
@@ -73,6 +82,9 @@ verified_at: 2026-09-16
 
 ## 출처
 
+- [W3C, Mitigating Browser Fingerprinting in Web Specifications](https://www.w3.org/TR/fingerprinting-guidance/)
+- [Tor Project, Fingerprinting protections](https://support.torproject.org/tor-browser/features/fingerprinting-protections/)
+- [Tor Project, Plugins](https://support.torproject.org/tor-browser/features/plugins/)
 - [Proxy의 활용 첫 번째. '우회' — 널널한 개발자 TV](https://www.youtube.com/watch?v=sSw2sFA4JP0&list=PLXvgR_grOs1BFH-TuqFsfHqbh-gpMbFoy&index=21)
 - [Tor Project, Support: Glossary](https://support.torproject.org/glossary/)
 - [Tor Project, Support: About Tor](https://support.torproject.org/about/)

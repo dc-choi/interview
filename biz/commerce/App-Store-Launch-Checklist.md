@@ -29,6 +29,14 @@ aliases: ["App Store Launch Checklist", "앱 스토어 첫 출시 준비", "1인
 5. **로그인 수단을 정한다.** 주 계정을 Google 로그인 같은 서드파티나 소셜 로그인으로 만들게 하면 Apple은 동등한 로그인 수단을 함께 제공하게 한다. 그 수단은 수집 데이터를 이름과 이메일로 제한하고, 이메일을 숨길 수 있으며, 동의 없이 광고 목적으로 앱 사용을 수집하지 않아야 한다(App Review Guidelines 4.8). 자체 계정만 쓰는 앱, 기존 교육이나 기업 계정으로만 로그인하는 앱 등은 예외다.
 6. **국내 판매자 정보를 넣는다.** Apple은 전자상거래법에 따라 한국 기반 개발자의 판매자 정보를 받아 App Store 제품 페이지에 표시한다. 개인은 이메일과 사업자등록번호, 조직은 상호, 이메일, 전화번호와 사업자등록번호이며, 사업자등록번호는 Paid Apps Agreement를 맺었으면 한국 세금 양식의 값이 자동으로 표시되고 유료 콘텐츠가 없으면 원할 때 넣는다. Google은 유료 앱이나 인앱결제를 배포하는 국내 사업자에게 사업자등록번호, 통신판매업 신고번호와 신고 기관을 받는다. 2023-08-31 전에 만든 계정은 개발자 페이지에 넣은 이 정보가 한국 사용자에게만 앱 등록 정보에 보이고, 이후 만든 계정은 About you 페이지에 넣는다. 그래서 수익을 낼 계획이면 사업자등록과 과세유형([[Business-Tax-Setup|사업자 세무 초기 설정]])을 먼저 정하고, 통신판매업 신고 대상과 면제 기준은 [[Marketplace-Seller-Launch|오픈마켓 셀러 첫 상품 출시]]로 확인한다. 신고가 면제된 경우의 입력 방법은 출시 전에 스토어에 확인한다.
 
+## Apple 개인 멤버십에서 조직 멤버십으로 전환
+
+2026-10-22 공식 가입 및 계정 정보 변경 도움말을 대조한 범위다. 개인사업자 등록이나 D-U-N-S 번호 보유만으로 조직 전환 자격이 확정되지는 않는다. 조직은 Apple과 계약할 수 있는 법적 실체여야 하며, 개인 및 sole proprietor는 개인 법적 이름이 판매자로 표시된다는 가입 기준을 함께 적용한다.
+
+- 전환은 공식 요청 절차로 신청한다. 신청자는 조직의 창업자 또는 공동창업자여야 하고 조직의 D-U-N-S 번호 등 정보를 제공하며, 조직 확인용 사업 서류를 추가로 요구받을 수 있다.
+- 개인 Apple Account의 이름을 고치는 것과 멤버십 또는 App Store 판매자명을 바꾸는 것은 다르다. 개인 계정 이름 변경만으로 판매자명이 바뀌지 않는다.
+- 멤버십의 이름과 주소 변경은 계약 정보이므로 검증과 승인이 필요하다. 특정 신청자의 승인 경험이나 지원팀 응답 기간을 모든 개인사업자에게 적용되는 예외 또는 처리 기한으로 사용하지 않는다.
+
 ## Google 개발자 공개 정보와 결제 프로필 변경
 
 2026-10-18에 Google 공식 도움말의 공개 항목과 신원 정보 변경 절차만 대조했다. 기존 세금, 심사와 빌드 요건 전체의 재검증은 아니다.
@@ -89,6 +97,7 @@ aliases: ["App Store Launch Checklist", "앱 스토어 첫 출시 준비", "1인
 
 - [Apple Developer, Enrollment](https://developer.apple.com/programs/enroll/)
 - [Apple Developer, Program enrollment support](https://developer.apple.com/support/enrollment/)
+- [Apple Developer, Updating your account information](https://developer.apple.com/help/account/membership/updating-your-account-information/)
 - [Apple Developer, Provide tax information](https://developer.apple.com/help/app-store-connect/manage-tax-information/provide-tax-information)
 - [Apple Developer, Manage Korea compliance information](https://developer.apple.com/help/app-store-connect/manage-compliance-information/manage-korea-compliance-information)
 - [Apple Developer, App privacy details on the App Store](https://developer.apple.com/app-store/app-privacy-details/)

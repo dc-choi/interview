@@ -13,6 +13,8 @@ Product는 설치 가능한 resource 묶음이고 store는 product를 담는다.
 
 Installation job draft는 project/space/Ontology와 여러 제품의 의존성을 구성하는 변경안이다. Create draft는 설치 실행이 아니다. Required input과 blocking validation을 해결한 뒤 Install로 job을 제출한다. Warning은 설치를 막지 않더라도 영향 검토가 필요하다.
 
+API의 `MarketplaceInstallationJob`은 하나 이상의 기존 제품 설치를 업그레이드하려는 시도이며, draft와 제출된 job은 같은 RID를 쓴다. 따라서 RID가 생겼거나 그대로라는 사실만으로 제출 또는 성공을 판정하지 않고 `status`를 함께 읽는다. 2026-10-21 수집된 공식 개요를 2026-10-22 Create Marketplace Installation Job의 검색 반환 본문과 대조한 범위이며, 개요 URL 직접 열기와 실제 API 호출은 확인하지 못했다.
+
 기존 installation을 Open하는 것과 Install again으로 새 자원을 만드는 것을 구분한다. 같은 제품을 다른 입력에 다시 설치할 수 있지만 기존 내용이 자동 재사용된다고 가정하지 않는다. 완료 후 Ontology indexing 때문에 앱 가용성이 몇 분 늦을 수 있다.
 
 ## API의 설치 등록과 작업 실행을 구분한다
@@ -79,7 +81,8 @@ Ontology install prefix는 display name만 또는 display/API name 모두에 적
 
 ## 출처
 
-- [Palantir Foundry, Marketplace Installation Inputs basics](https://www.palantir.com/docs/foundry/api/v3/marketplace-v3-resources/marketplace-installation-inputs/marketplace-installation-inputs-basics) — 2026-10-22 수집본과 공식 문서 검색 반환 본문 대조.
+- [Palantir Foundry, Create Marketplace Installation Job](https://www.palantir.com/docs/foundry/api/v3/marketplace-v3-resources/marketplace-installation-jobs/create-marketplace-installation-job) — 2026-10-22 공식 검색 반환 본문의 응답 정의에서 draft와 제출 job의 RID 공유 확인.
+- [Palantir Foundry, Marketplace Installation Inputs basics](https://www.palantir.com/docs/foundry/api/v3/marketplace-v3-resources/marketplace-installation-inputs/marketplace-installation-inputs-basics) — 2026-10-21 수집본을 2026-10-22 공식 문서 검색 반환 본문과 대조.
 - [Palantir Foundry, Get Marketplace Installation Inputs](https://www.palantir.com/docs/foundry/api/v3/marketplace-v3-resources/marketplace-installation-inputs/get-marketplace-installation-inputs) — 2026-10-22 검색 반환 본문에서 선택 범위, 명시적 해제, 재사용 제약과 오류 계약 확인. 오류 이름, 코드와 매개변수는 수집본도 대조했으며 직접 열기와 실제 호출은 미확인.
 - [Palantir Foundry, Get Marketplace Installation](https://www.palantir.com/docs/foundry/api/v3/marketplace-v3-resources/marketplace-installations/get-marketplace-installation) — 2026-10-22 등록 자원과 목표 버전의 의미, preview와 조회 scope 확인. 현재 위치 필드와 오류 계약은 2026-10-21 수집본을 대조했으며 실시간 재조회와 실제 호출은 미확인.
 - [Palantir Foundry, Create Marketplace Installation](https://www.palantir.com/docs/foundry/api/v3/marketplace-v3-resources/marketplace-installations/create-marketplace-installation) — 2026-10-22 등록과 job 실행의 구분, 버전 힌트와 비멱등성 확인. 생성 입력과 버전 형식 제약은 2026-10-21 수집본 대조이며 실시간 재조회와 실제 호출은 미확인.

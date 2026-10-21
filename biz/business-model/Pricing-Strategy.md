@@ -85,6 +85,8 @@ Wadhwa와 Zhang(2015)은 라운드가격이 감정 중심 판단과, 비라운�
 - **크로스셀링:** 기존 구매에 도움이 되는 별도 상품이나 서비스를 제안한다. 로고 제작에 브랜드 사용 가이드, 발표자료에 별도 한 장 소개서를 추가하는 예다.
 - **번들:** 여러 제공 항목을 묶어 판다. 업셀이나 크로스셀의 수단이 될 수 있지만 묶음 자체가 고객에게 필요한 결과인지는 별도로 확인한다.
 
+번들은 구성품을 묶음으로만 파는 **순수 번들(pure bundling)**과 개별 구매도 허용하는 **혼합 번들(mixed bundling)**로 구분한다. 순수 번들은 단품만 필요한 고객을 이탈시킬 수 있고, 혼합 번들의 할인은 원래 단품들을 모두 살 고객의 지출을 낮출 수도 있다. 따라서 객단가 상승을 자동 결과로 두지 않고 단품 구매와 묶음 구매의 실제 구성을 비교한다. 유형과 선택 제한은 2026-10-22 Shopify 자료로 대조했으며, 구매 구성 비교는 그 원리를 적용한 측정 제안이다.
+
 정기 방문 중 쓰레기통 세척처럼 다른 작업을 추가하는 것은 크로스셀에 가깝고, 같은 작업을 더 높은 등급으로 바꾸면 업셀이다. 핵심은 비싼 것을 먼저 보여 주는 순서보다 기존 과업과 추가 제안의 관련성이다. 고객이 필요하지 않은 항목을 거절하고 기본 상품만 선택할 수 있어야 한다.
 
 외주 패키지는 기본 산출물과 선택 산출물의 가격, 수정 횟수, 인수 기준과 일정 영향을 따로 정한다. 같은 자료와 제작 과정을 재사용할 수 있어도 추가 검토와 수정 시간을 0으로 잡지 않는다. 이는 서비스 견적 원칙을 적용한 설계 질문이며 특정 국가에서 패키지가 더 잘 팔린다는 조사 결과가 아니다.
@@ -175,6 +177,7 @@ Q. 가격 정책은 어떻게 설계했는가?
 - [Stripe, 가격 모델과 Freemium](https://stripe.com/resources/more/pricing-models-explained-types-of-pricing-models-and-when-to-use-them)
 - [OpenStax, Understanding Consumer Markets and Buying Behavior](https://openstax.org/books/principles-marketing/pages/3-1-understanding-consumer-markets-and-buying-behavior)
 - [Cross Sell vs Upsell: Differences and Examples — Shopify](https://www.shopify.com/blog/upselling-and-cross-selling)
+- [Price Bundling: How Price Bundling Helps Increase Sales — Shopify](https://www.shopify.com/blog/price-bundling)
 - [Bringing Dark Patterns to Light — FTC](https://www.ftc.gov/system/files/ftc_gov/pdf/P214800%20Dark%20Patterns%20Report%209.14.2022%20-%20FINAL.pdf) — 보고서 21~23쪽의 허위 희소성, 마감, 가격 비교 방해와 비용 은폐 사례
 - [Judgment under Uncertainty: Heuristics and Biases — Tversky, Kahneman](https://pubmed.ncbi.nlm.nih.gov/17835457/)
 - [Adding Asymmetrically Dominated Alternatives — Huber, Payne, Puto](https://doi.org/10.1086/208899)
