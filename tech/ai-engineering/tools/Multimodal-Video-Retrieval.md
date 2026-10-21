@@ -29,6 +29,18 @@ TwelveLabs Search는 업로드와 색인 완료 뒤 조회한다. 2026-10-22 문
 
 모델이 입력으로 이해하는 모달리티와 특정 API가 질의로 받는 모달리티는 별도 계약이다. 발표에서 설명한 모델의 전체 역량을 현재 API의 입력 지원 목록으로 옮기지 않는다. 검색 색인의 선행 처리가 필요하다는 사실도 모든 영상 분석 API에 일반화하지 않는다.
 
+## 원본, 미리보기와 검색용 표현을 나눈다
+
+고해상도 원본, 미리보기 파일과 검색용 벡터는 역할이 다르다. Moments Lab의 S3 연동은 원본을 고객 버킷에 두고 가벼운 proxy를 만들어 색인, 조회와 클립 편집에 사용한다. 원본 상태의 렌더링이나 공유에는 원래 버킷의 master를 다시 사용한다(2026-10-22 제품 안내 대조). 벡터 저장소를 선택했다는 사실만으로 이런 원본 연결이나 미리보기 생성까지 제공되는 것은 아니다.
+
+적용 시에는 원본 버전과 proxy의 시간 좌표를 연결하고, 검색 결과에서 원본 구간을 다시 여는 경로를 시험한다(설계 제안). 검색용 데이터가 준비돼도 원본이 다른 보관 계층에 있거나 읽기 권한이 없으면 최종 편집과 내보내기는 별도 문제가 된다. 색인 완료, 검색 응답, 원본 접근과 최종 출력의 시간을 각각 측정한다.
+
+## 스냅샷 검색의 시간 해상도를 확인한다
+
+March Networks AI Smart Search는 조정 가능한 시간 간격으로 추출한 카메라 스냅샷을 검색하며, 시간, 위치와 카메라 조건으로 결과를 좁힐 수 있다(2026-10-22 제품 안내 대조). 이 경로는 전체 연속 영상의 모든 프레임을 분석하는 것과 다르다.
+
+운영 검증에서는 샘플링 간격보다 짧은 사건이 빠지는지 별도로 확인한다(설계 제안). 검색되지 않았다는 이유만으로 사건이 없었다고 판정하지 않고, 중요한 결과는 원본의 전후 구간과 대조한다. 예를 들어 빈 진열대가 보이는 스냅샷만으로 품절 지속 시간이나 보충 완료 시점을 확정하지 않는다. 저장과 처리량 절감의 가능성과 사건 탐지의 완전성은 서로 다른 평가 항목이다.
+
 ## 적용과 평가 제안
 
 다음은 영상 검색을 제품에 연결할 때의 설계 제안이다.
@@ -45,6 +57,8 @@ TwelveLabs Search는 업로드와 색인 완료 뒤 조회한다. 2026-10-22 문
 
 ## 출처
 
+- [AWS S3 Integration — Moments Lab](https://www.momentslab.com/integrations/aws) — 2026-10-22 proxy와 원본 master의 분리 확인
+- [AI Smart Search — March Networks](https://www.marchnetworks.com/ai-smart-search/) — 2026-10-22 스냅샷 간격과 검색 필터 확인. 누락 시험과 전후 구간 대조는 설계 제안
 - [TwelveLabs, Marengo](https://docs.twelvelabs.io/v1.3/docs/concepts/models/marengo)
 - [TwelveLabs, Pegasus](https://docs.twelvelabs.io/v1.3/docs/concepts/models/pegasus)
 - [TwelveLabs, Search](https://docs.twelvelabs.io/v1.3/docs/guides/search)

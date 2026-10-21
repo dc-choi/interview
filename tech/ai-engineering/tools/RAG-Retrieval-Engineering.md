@@ -25,6 +25,12 @@ RAG(Retrieval-Augmented Generation)의 품질은 검색 하나가 아니라 **re
 
 2026-10-21 LangChain 공식 Retrieval 설명과 RAG 튜토리얼의 색인 단계를 대조했다. 재처리 경계는 이 구조를 적용한 운영 제안이며, 기존 제품별 설정과 평가 수치 전체를 다시 검증한 것은 아니므로 기존 `verified_at`은 유지한다.
 
+### 비동기 수집의 접수와 검색 준비를 나눈다
+
+문서 로딩과 청킹이 긴 작업이면 요청 API와 수집 worker를 큐로 분리할 수 있다. 업로드 접수, 파싱 완료, 임베딩 완료와 검색 가능 상태를 따로 기록하고, worker 재시도가 이미 처리한 문서를 중복 색인하지 않도록 설계한다. 이는 비동기 RAG 수집에 적용하는 설계 제안이다.
+
+2026-10-22 AWS 공식 문서 기준 SQS Standard 큐는 메시지가 다시 전달될 수 있어 소비자의 멱등 처리가 필요하다. 이를 수집에 적용하면 문서 ID, 원본 버전과 처리 설정으로 재처리 대상을 식별하고, 같은 작업의 중복 실행과 새 버전의 처리를 구분할 수 있다(설계 제안). 큐 소비 성공만으로 검색 준비를 완료 처리하지 않고 실제 색인 가시성까지 확인한다. 이 문단은 SQS 전달 계약만 추가 대조했으므로 기존 `verified_at`은 유지한다.
+
 ## 품질을 분해하는 평가 모델
 
 | 층 | 확인할 질문 | 대표 측정 |
@@ -232,6 +238,7 @@ Q. 검색은 됐는데 폐기된 정책으로 답했다면?
 
 ## 출처
 
+- [AWS, Amazon SQS at-least-once delivery](https://docs.aws.amazon.com/AWSSimpleQueueService/latest/SQSDeveloperGuide/standard-queues-at-least-once-delivery.html) — 2026-10-22 Standard 큐의 재전달과 멱등 처리 권고 확인. 문서 버전별 수집 상태 관리는 설계 제안
 - [Google AI for Developers, EmbeddingGemma 2 model card](https://ai.google.dev/gemma/docs/embeddinggemma/model_card_2)
 - [Google AI for Developers, Multimodal Embeddings with EmbeddingGemma 2](https://ai.google.dev/gemma/docs/embeddinggemma/multimodal-embeddinggemma-with-sentence-transformers)
 - [LangChain Documentation, Retrieval](https://docs.langchain.com/oss/python/deepagents/retrieval)

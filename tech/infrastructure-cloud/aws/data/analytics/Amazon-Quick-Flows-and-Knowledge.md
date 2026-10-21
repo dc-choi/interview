@@ -16,6 +16,12 @@ Amazon Quick Flows는 입력, 조사, AI 응답과 연결 앱의 동작을 순�
 
 설계 예를 들면 업계 동향 보고서는 검색 범위와 기간을 입력받고, 웹 자료를 찾고, 근거를 붙인 초안을 만드는 흐름으로 구성할 수 있다. 모델의 일반 지식으로 만든 문장과 검색한 자료로 확인한 사실을 구별한다. 보고서 생성 성공을 시장 수요나 수익성 검증으로 해석하지 않는다.
 
+### 온콜 조사와 실제 복구를 구분한다
+
+온콜 흐름은 경보 입력, 유사한 과거 사건 검색, 원인 후보와 대응 절차 제안, 실제 조치 및 복구 확인으로 나눌 수 있다(설계 제안). Quick Flows는 데이터 조회, AI 응답과 연결 앱의 읽기/쓰기 단계를 구분한다. Audible의 공개 사례도 과거 사건과 담당자, 가능한 원인 및 해결 절차를 모아 보여주는 흐름을 설명한다. 이 사례만으로 모든 장애가 무인으로 복구된다고 해석하지 않는다.
+
+과거 사건의 해결 방법은 현재 장애의 원인 증명이 아니다. 현재 서비스와 배포 버전, 로그 및 지표를 대조한 뒤 조치를 결정하고, 제안 생성 시간과 실제 복구 시간을 따로 측정한다(운영 점검 제안). 재시작이나 설정 변경은 실행 권한과 결과 확인이 필요한 별도 단계로 둔다. 2026-10-22 Flows 공식 문서와 공개 영상의 사람이 작성한 자막을 대조했으며, 실제 온콜 실행과 시간 절감 효과는 재현하지 않았다. 기존 기능 전체를 다시 대조하지 않아 frontmatter의 검증일은 유지한다.
+
 ## 예약 실행과 쓰기 권한
 
 2026-10-07 공식 문서 기준으로 예약에는 반복 주기, 시작일, 선택적 종료일, 시간대와 기본 입력을 설정한다. 공유받은 flow도 예약할 수 있지만 예약 자체는 개인 소유이며 다른 사용자와 공유되지 않는다.
@@ -149,6 +155,7 @@ ACL을 활성화한 지식 기반에서는 ACL 항목이 없는 문서를 수집
 
 ## 출처
 
+- [How Audible engineers got their time back with Amazon Quick — Amazon Web Services](https://www.youtube.com/watch?v=Cwjvn99FtlE) — 2026-03-27 공개, 01:02 이후 온콜 자료 수집과 해결 절차 제안. 자동 복구 완료의 증거로 사용하지 않음
 - [Amazon Quick, Deploying automations](https://docs.aws.amazon.com/quick/latest/userguide/deploying-automations.html)
 - [Amazon Quick, Managing a space](https://docs.aws.amazon.com/quick/latest/userguide/managing-spaces.html)
 - [Amazon Quick, Chat agent context sources and best practices](https://docs.aws.amazon.com/quick/latest/userguide/agent-knowledge-sources-best-practices.html)

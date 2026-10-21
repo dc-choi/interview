@@ -50,6 +50,12 @@ SageMaker AI의 관리형 shadow test는 같은 endpoint에서 추론 요청을 
 
 이를 다른 초안 작성 시스템에 적용할 때는 입력 자료, 생성 초안, 사람의 수정과 최종 승인 결과를 연결해 평가한다(설계 제안). 생성 시간뿐 아니라 검토와 수정에 걸린 시간, 사실 누락과 추가, 사용 목적에 맞는 품질을 함께 비교한다. 생성만 빨라졌거나 API 연결이 완료됐다는 사실을 전체 업무 시간 감소나 현장 효과로 계산하지 않는다.
 
+### 여러 업무를 맡는 에이전트는 과업별로 평가한다
+
+대화창 하나에서 여러 업무를 처리해도 평가 단위는 실제 과업으로 나눈다. 공개 제품 사례로 Experity Care Agent의 범위에는 방문 전 예약과 보험 확인, 방문 후 연락과 결제 처리가 포함된다(2026-10-22 제품 안내 대조). 이런 기능 목록은 과업을 나누는 근거이며, 처리 정확도나 진료 결과의 개선을 입증하는 자료가 아니다.
+
+평가 설계에서는 예약 정보 안내, 예약 요청 접수와 예약 확정을 구분하고, 각 단계의 원천 시스템 결과를 정답으로 삼는다(설계 제안). 입력 누락, 외부 API 실패와 사람에게 넘긴 요청을 포함해 과업 완료율, 수정률과 전체 소요 시간을 잰다. 대화 응답이 빨라졌거나 한 단계의 업무량이 줄었다는 사실을 전체 업무의 개선으로 계산하지 않는다. 이 사례의 제품 실행, 임상 효과와 발표의 성과 수치는 검증하지 않았다.
+
 ### 비교 결과의 해석
 
 - 같은 입력에서 출력이 달라졌다는 사실과 새 출력이 더 정확하다는 판단은 다르다. 정답 라벨이나 별도 실험 결과가 필요하다.
@@ -58,6 +64,7 @@ SageMaker AI의 관리형 shadow test는 같은 endpoint에서 추론 요청을 
 
 ## 출처
 
+- [AI Solutions at the Intersection of Retail and Healthcare — Experity](https://www.experityhealth.com/ai-solutions/) — 2026-10-22 Care Agent의 업무 범위 확인. 과업별 상태와 평가 지표는 설계 제안
 - [Amazon Bio Discovery — AWS](https://aws.amazon.com/biodiscovery/) — 2026-10-22 후보 생성, 연구실 검증과 결과 환류의 공개 구조 대조.
 - [Executive Insights from the 2026 AWS Life Sciences Symposium — AWS for Industries](https://aws.amazon.com/blogs/industries/executive-insights-from-the-2026-aws-life-sciences-symposium/) — MSK 초기 사례의 완료 범위는 설계를 연구실로 보내는 단계.
 - [AWS, AWS HealthScribe](https://docs.aws.amazon.com/transcribe/latest/dg/health-scribe.html) — 확률적 초안과 전문가 검토의 경계만 2026-10-22 대조
