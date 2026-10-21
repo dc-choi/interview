@@ -61,6 +61,19 @@ aliases: ["개인 현금흐름 계획", "Personal Cash Flow Planning"]
 
 계좌 잔액의 증가를 곧바로 소득이나 순자산 증가로 계산하지 않는다. 반대로 원금 상환으로 현금이 줄었다고 같은 금액만큼 순자산이 줄었다고 보지도 않는다. 다음 청구일에 쓸 현금과 전체 순자산은 별도로 확인한다.
 
+## 큰 자산을 바꿀 때는 잔금 날짜부터 맞춘다
+
+자산 가치가 충분해도 지급일까지 현금화하지 못하면 거래 자금은 부족하다. 주택을 팔고 다른 주택을 살 때는 매도가와 매수가의 차이만 계산하지 않고, 매각대금 수령과 기존 대출 상환, 새 계약의 지급 일정을 날짜별 현금흐름에 놓는다. 아직 팔리지 않은 자산의 예상 매각대금을 확정된 현금처럼 계산하지 않는다.
+
+다음은 앞의 현금흐름 원칙을 적용한 점검 방법이다.
+
+- 계약금, 중간 지급액과 잔금은 이미 낸 금액을 빼고 남은 지급일에 각각 배치한다.
+- 기존 대출 상환, 반환할 보증금과 거래 부대비용을 포함해 실제로 남는 매각대금을 계산한다. 이미 순액으로 적은 입금에서 같은 비용을 다시 빼지 않는다.
+- 입주 뒤의 원리금, 유지비와 비정기 지출은 거래 당일의 필요 현금과 따로 본다.
+- 매각 지연, 대출 실행 지연과 추가 지출을 가정해 가장 부족한 날짜의 잔액을 확인한다. 부족액을 메울 차입 가능성과 비용은 별도로 확인한다.
+
+CFPB의 미국 주택대출 안내도 거래 부대비용(Closing Costs), 거래 완료 시 실제 필요한 현금(Cash to Close), 월 납부액을 구분한다. 2026-10-22 이 구분을 대조했으며, 위 목록은 한국 주택 거래의 세율, 대출 승인이나 계약상 권리를 판정한 것이 아니다. 한국 제도 조건은 [[Housing-Finance-Regulations|주택금융과 거래 규제]] 및 해당 계약과 최신 공식 안내에서 별도로 확인한다.
+
 ## 적용과 이해 확인
 
 - 월간 흑자인데도 특정 주에 돈이 부족한 이유를 입금일과 청구일로 설명할 수 있는가?
@@ -87,6 +100,7 @@ aliases: ["개인 현금흐름 계획", "Personal Cash Flow Planning"]
 - [CFPB, Creating a cash flow budget](https://www.consumerfinance.gov/documents/10038/cfpb_creating-cash-flow-budget_tool_2021-08.pdf) — 주별 수입과 지출, 잔액 이월 방식을 확인했다. 가상 수치와 내부 이체 설명은 계산 예시다.
 - [An essential guide to building an emergency fund — CFPB](https://www.consumerfinance.gov/an-essential-guide-to-building-an-emergency-fund/) — 현금흐름, 비상자금의 목적, 소득 변동과 자동이체 잔액 점검을 확인했다.
 - [Assess your spending — CFPB](https://www.consumerfinance.gov/owning-a-home/prepare/assess-your-spending/) — 주택 구입 준비 자료에서 실제 지출 집계, 비정기 지출과 잔액 대조 절차만 확인했다. 한국 주택금융 규정에는 적용하지 않았다.
+- [CFPB, Closing disclosure explainer](https://www.consumerfinance.gov/owning-a-home/closing-disclosure/) — 2026-10-22 거래 부대비용, 이미 낸 금액을 반영한 필요 현금과 월 납부액의 구분 확인. 한국의 거래 절차와 법률로 옮기지 않았다.
 - [Figure Out Your Finances — SEC Investor.gov](https://www.investor.gov/introduction-investing/investing-basics/save-and-invest/figure-out-your-finances) — 자산에서 부채를 빼는 순자산 계산, 수입과 지출의 별도 기록을 확인했다. 대출과 상환의 가상 수치는 해당 정의를 적용한 계산 예시다.
 
 ## 관련 문서

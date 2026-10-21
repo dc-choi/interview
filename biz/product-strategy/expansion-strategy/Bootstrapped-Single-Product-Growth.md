@@ -83,6 +83,14 @@ aliases: ["Bootstrapped Single Product Growth", "한 제품 부트스트랩 성�
 
 수요가 현재 용량을 넘는다고 바로 사람과 기능을 늘리지 않는다. 대기, 가격 조정, 고객군과 제공 범위 축소, 온보딩 속도 통제도 부트스트랩 사업자가 선택할 수 있는 성장 조절 장치다. 새 일을 시작할 때는 무엇을 멈추거나 미룰지도 함께 정한다.
 
+### 출시 경험과 운영 학습을 구분한다
+
+새 제품을 완성하는 경험과 같은 제품을 반복 사용하며 문제를 고치는 경험은 구분한다. 구현 비용이 낮아졌다는 이유만으로 부진한 제품을 매번 새 제품으로 대체하면, 장기 사용에서 생기는 문제를 관찰하지 못할 수 있다. 반대로 오래 운영했다는 사실만으로 고객 가치나 수익 개선이 입증되지는 않는다.
+
+적용 제안: 기존 제품을 더 운영할 때는 반복 사용에서 확인할 문제 하나, 바꿀 부분, 관찰 기간과 시간 및 현금의 상한을 적는다. 개발 완료와 운영 중 발견한 문제, 고객 행동의 개선을 별도 결과로 기록하고 종료 시점에 유지, 수정 또는 중단을 판단한다. 이는 Shape Up의 투자 한도 설정을 운영 실험에 연결한 방법이며, 다작보다 한 제품 운영의 성공률이 높다는 통계가 아니다.
+
+공개 사례에서 게임 제작자는 신작 제작을 잠시 멈추고 기존 게임을 반복 사용하며 개선할 지점을 찾기 시작했다고 설명했다. 2026-10-16 발표 시점에는 성적 개선 결과가 아직 없다고 명시했다. 이 사례는 운영 학습의 필요를 보여 주는 자기 보고이며 전략의 우월성을 검증한 실험은 아니다.
+
 ## 6. 최소 운영 지표
 
 | 관점 | 확인할 질문 | 후보 지표 |
@@ -160,6 +168,7 @@ aliases: ["Bootstrapped Single Product Growth", "한 제품 부트스트랩 성�
 
 ### 독립 운영 사례
 
+- [신작 개발을 중단하기로 했습니다. — 웹핵](https://www.youtube.com/watch?v=naVCNyHxpEw) — 2026-10-16 공개 영상, 01:03~01:54의 운영 학습과 성과 미확인 구분
 - [About us — Balsamiq](https://balsamiq.com/company/)
 - [Every software company has a natural size — Balsamiq, Peldi Guilizzoni](https://balsamiq.com/blog/company-size/)
 - [Looking back at Balsamiq's 2024 — Balsamiq](https://balsamiq.com/blog/looking-back-2024/)
@@ -171,8 +180,6 @@ aliases: ["Bootstrapped Single Product Growth", "한 제품 부트스트랩 성�
 - [Spolsky's four pillars of organic growth — Balsamiq](https://balsamiq.com/blog/four-pillars/)
 - [Set Boundaries — Basecamp, Shape Up](https://basecamp.com/shapeup/1.2-chapter-03)
 - [The SaaS business model — Stripe Atlas, Patrick McKenzie](https://stripe.com/guides/atlas/business-of-saas)
-- [1인 사업가의 실무 놓기 아이러니 — Threads, youngrich9909](https://www.threads.com/@youngrich9909/post/Dd3mmptlHjM)
-- [1인 창업자가 하지 말아야 할 5가지 — Threads, kimjinhan_jjin](https://www.threads.com/@kimjinhan_jjin/post/DWxlEJuEtIO)
 
 ## 관련 문서
 
