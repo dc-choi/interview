@@ -44,6 +44,18 @@ sleep = min(cap, base * 2 ** attempt)
 - **성공 가능성과 예산이 있을 때만**: 재시도가 가용성을 개선하지 못하거나 다운스트림 과부하를 키우면 멈춘다. 429나 일시적인 과부하는 `Retry-After`, backoff, jitter와 재시도 예산 안에서만 다룬다.
 - **전체 deadline 안에서만**: 각 시도의 timeout뿐 아니라 대기, 연결과 모든 재시도를 합친 총 시간을 제한한다. `Retry-After`가 남은 예산보다 길면 그 요청을 계속 붙잡지 않는다. 호출자가 취소한 뒤 재시도 작업이 남지 않도록 취소 전파도 확인한다.
 
+## HTTP 클라이언트의 timeout 범위를 구분한다
+
+2026-10-22 Requests, Go `net/http`와 Axios의 공식 문서 대조 기준이다. 백오프는 실패한 호출 사이의 대기이므로, 진행 중인 호출을 끝내는 timeout이나 취소를 대신하지 않는다.
+
+| 클라이언트 | 기본값과 시간 제한의 범위 |
+|---|---|
+| Python Requests | `timeout`을 명시하지 않으면 라이브러리의 timeout이 없다. 읽기 timeout은 소켓에서 바이트가 오지 않는 대기 시간이며 전체 다운로드의 총시간 제한이 아니다. |
+| Go `http.Client` | `Timeout`의 0값은 클라이언트 전체 시간 제한이 없다는 뜻이다. 값을 설정하면 연결, redirect와 응답 본문 읽기까지 포함한다. 기본 `Transport`에는 연결과 TLS handshake 등의 별도 제한이 있으므로 모든 단계의 timeout이 없다고 설명하지 않는다. |
+| Axios | `timeout` 기본값은 `0`이며 단위는 밀리초다. 공식 취소 가이드는 응답 관련 timeout과 연결 관련 취소를 함께 다루기 위해 `timeout`과 `signal` 같은 취소 수단을 조합하도록 안내한다. |
+
+적용할 때는 한 번의 시도 제한과 재시도 전체 deadline을 따로 둔다. 예를 들어 읽기 timeout을 5초로 지정했다는 사실만으로 전체 요청이 5초 안에 끝난다고 판정하지 않는다. 느린 응답과 호출자 취소를 실제 사용하는 adapter와 실행 환경에서 확인한다. 위 대조는 문서 계약 확인이며 런타임 시험 결과가 아니다.
+
 ## 재시도 예산과 최초 요청의 속도 제한
 
 지터는 재시도 시점을 흩지만 허용한 총 시도 횟수를 줄이는 장치는 아니다. 백오프와 지터만 설정해도 과부하에서 회복한다고 가정하지 않고, 재시도 예산과 새 요청의 유입을 함께 본다.
@@ -81,6 +93,10 @@ sleep = min(cap, base * 2 ** attempt)
 2026-10-02에는 AWS의 재시도 횟수, 계층 증폭과 전체 시간 제한 원칙을 대조했다. 지터 비교 표의 실험 결과나 모든 HTTP 클라이언트를 다시 검증한 기록은 아니다.
 
 - [AWS Well-Architected, REL05-BP03 Control and limit retry calls](https://docs.aws.amazon.com/wellarchitected/latest/framework/rel_mitigate_interaction_failure_limit_retries.html)
+- [Requests, Quickstart: Timeouts](https://requests.readthedocs.io/en/latest/user/quickstart/#timeouts)
+- [Go, net/http: Client and DefaultTransport](https://pkg.go.dev/net/http#Client)
+- [Axios, Request Config](https://github.com/axios/axios#request-config)
+- [Axios, Cancellation](https://github.com/axios/axios-docs/blob/master/posts/en/cancellation.md)
 - [AWS SDKs and Tools, Retry behavior](https://docs.aws.amazon.com/sdkref/latest/guide/feature-retry-behavior.html) — retry quota와 adaptive rate limiter의 구분, 2026 동작 선택 조건
 - [Exponential Backoff and Jitter — AWS Architecture Blog, Marc Brooker](https://aws.amazon.com/blogs/architecture/exponential-backoff-and-jitter/)
 - [Timeouts, retries, and backoff with jitter — Amazon Builders' Library, Marc Brooker](https://aws.amazon.com/builders-library/timeouts-retries-and-backoff-with-jitter/)

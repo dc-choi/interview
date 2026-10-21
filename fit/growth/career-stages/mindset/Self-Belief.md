@@ -47,11 +47,21 @@ aliases: ["Self-Belief", "자기 효능감", "자기 믿음", "재능 신화", "
 
 반대로 나는 할 수 없다는 판단은 시도와 도움 요청을 줄여 학습 기회를 좁힐 수 있다. 이는 [[Career-Attitude|커리어 태도]]에서 다루는 부정 루프와 연결되지만, 실패의 원인을 개인의 믿음 하나로 환원하지 않는다. 믿음은 결과를 결정하는 운명이 아니라 다음 행동을 선택할 때 점검할 변수다.
 
+### 경험의 강도와 자기 효능감의 근거를 나눈다
+
+Bandura의 자기 효능감 이론은 직접 수행한 성취, 다른 사람을 관찰한 대리 경험, 언어적 설득과 생리적 상태를 주요 정보원으로 구분한다. 과거에 몰입했다는 기억만 볼 것이 아니라, 어떤 과제를 실제로 수행했고 무엇을 배웠는지 구체적으로 확인한다.
+
+1977년 논문 초록은 위협적으로 느껴지지만 실제로는 비교적 안전한 활동에서 숙달을 경험하는 과정을 설명한다. 이를 큰 실패를 겪거나 고통을 견디면 모든 분야에서 자신감이 생긴다는 주장으로 확대하지 않는다. 특정 나이 전에 정해진 경험을 마쳐야 한다는 근거도 아니다.
+
+커리어에 적용한다면 완료한 작은 과제, 받았던 도움과 다음에 혼자 할 수 있는 범위를 함께 적는다. 몰입 시간이나 실패 규모보다 재현 가능한 수행의 증거를 찾기 위한 제안이며, 특정 활동이 역량이나 회복력을 보장한다는 검증 결과는 아니다.
+
+2026-10-22 원 논문의 공개 초록과 정식 재수록본의 출판사 검색 반환 초록을 대조했다. 전체 논문과 개별 연구 자료를 다시 검증한 것은 아니다.
+
 ## 실천
 
 - 외부 평가를 받으면 **무엇을 개선할까**로 번역하고, **나는 안 되는 사람**이라는 판결로 내면화하지 않는다.
 - 한두 사람의 의견을 다수, 객관으로 착각하지 않는다 — 표본이 작다.
-- 자기 의심이 들 때 "지금 알아야 할 것 vs 나중에 알아도 될 것"을 분리한다. 정보 부족과 확신 부족을 구분하되 확인 전에 어느 쪽이라고 단정하지 않는다 ([[Self-Analysis|확신 vs 정보]]).
+- 자기 의심이 들 때 지금 알아야 할 것과 나중에 알아도 될 것을 분리한다. 정보 부족과 확신 부족을 구분하되 확인 전에 어느 쪽이라고 단정하지 않는다 ([[Self-Analysis|확신 vs 정보]]).
 - 결정은 본인이 하고, 다음 작은 행동을 시도할 수 있다는 가설로 출발한 뒤 결과와 피드백으로 판단을 갱신한다.
 
 ## 체크포인트
@@ -79,6 +89,7 @@ aliases: ["Self-Belief", "자기 효능감", "자기 믿음", "재능 신화", "
 - 창궁의 묘성(아사다 지로) — 가짜 점괘를 믿고 운명을 개척하는 인물
 - [재능이라는 허상 — 곽지욱](https://www.gwagjiug.com/blog/illusion_of_talent)
 - [Bandura, Self-efficacy: Toward a unifying theory of behavioral change](https://pubmed.ncbi.nlm.nih.gov/847061/)
+- [Self-efficacy: Toward a unifying theory of behavioral change — Albert Bandura](https://www.sciencedirect.com/science/article/pii/0146640278900024) — 1977년 논문의 1978년 정식 재수록본, 정보원 네 가지와 비교적 안전한 활동의 숙달 조건은 공개 초록 범위에서 대조
 - [Rosenthal and Jacobson, Pygmalion in the classroom](https://doi.org/10.1007/BF02322211)
 - [The Imposter Phenomenon in High Achieving Women: Dynamics and Therapeutic Intervention — Clance and Imes, 1978](https://doi.org/10.1037/h0086006)
 - [Prevalence, Predictors, and Treatment of Impostor Syndrome: a Systematic Review — Bravata et al., 2020](https://doi.org/10.1007/s11606-019-05364-1)

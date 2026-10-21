@@ -38,6 +38,25 @@ API의 `MarketplaceInstallationJob`은 하나 이상의 기존 제품 설치를 
 - 중단한 draft는 자동 정리 전까지만 조회할 수 있다. `get`은 실패하거나 중단된 job에도 HTTP 200을 반환하므로 응답의 `status`를 읽는다. 조회에는 별도로 `api:v3:marketplace-installation-job:read:get` scope가 필요하다.
 - `AbortInstallationJobPermissionDenied`는 job이 보여도 취소 권한이 없는 403이다. `MarketplaceInstallationJobNotFound`는 404다. 취소 후 조회에서도 접근할 수 없는 job과 존재하지 않는 job이 같은 NotFound로 반환되므로, 404만으로 취소 성공을 판단하지 않는다.
 
+## 조회한 job 상태에 따라 다음 행동을 나눈다
+
+2026-10-22 공식 Get Marketplace Installation Job의 검색 반환 본문과 수집 명세를 대조했다. 직접 페이지 열기와 실제 API 호출은 확인하지 못했다.
+
+`GET /api/v3/platform/marketplaceInstallationJobs/{marketplaceInstallationJobRid}?preview=true`의 응답에서 `rid`와 `status`를 읽는다. HTTP 200은 조회 성공이며 설치 성공 여부는 별도로 판정한다.
+
+| 상태 | 의미와 후속 조치 |
+|---|---|
+| `PREPARING` | 입력 해석, 검증 또는 제출 중이다. 계속 조회한다. |
+| `IDLE_DRAFT` | 요청에 따라 보존했거나 제출이 막힌 draft다. 제출을 위한 별도 조치가 필요하며 조회만으로 진행하지 않는다. |
+| `IN_PROGRESS` | 설치 job 실행 중이다. 계속 조회한다. |
+| `BUILDING` | 자원 설치 후 dataset build를 제출하거나 기다리는 중이다. 성공으로 처리하지 않고 계속 조회한다. |
+| `ABORTING` | 제출된 job의 취소 요청을 받았지만 아직 종료하지 않았다. 계속 조회한다. |
+| `SUCCEEDED` | Job이 성공한 종료 상태다. |
+| `FAILED` | Job이 실패한 종료 상태다. |
+| `ABORTED` | Draft 또는 job이 중단된 종료 상태다. 명시적 취소뿐 아니라 제출 실패로도 발생할 수 있다. |
+
+운영상 적용으로, 진행 상태의 반복 조회와 `IDLE_DRAFT`의 후속 조치를 분리한다. `ABORTED`만 보고 사용자가 취소했다고 기록하거나, `BUILDING`을 설치 전체의 성공으로 바꾸지 않는다. 이 목록은 상태의 의미이며 모든 job이 표 순서대로 전이한다는 보장은 아니다.
+
 ## API의 설치 등록과 작업 실행을 구분한다
 
 2026-10-22 Marketplace v3 API 문서 대조 기준이다. `MarketplaceInstallation`은 Compass에 등록된 제품 설치 자원이며, 자원이 존재한다는 사실만으로 설치 job의 완료를 판단하지 않는다.
@@ -114,7 +133,7 @@ Ontology install prefix는 display name만 또는 display/API name 모두에 적
 
 - [Palantir Foundry, Discover Inputs Marketplace Installation Jobs](https://www.palantir.com/docs/foundry/api/v3/marketplace-v3-resources/marketplace-installation-jobs/discover-inputs-marketplace-installation-jobs) — 2026-10-22 검색 반환 본문과 수집본으로 대상 제약, 권한과 필터 범위 대조. 실제 호출은 미실시.
 - [Palantir Foundry, Abort Marketplace Installation Job](https://www.palantir.com/docs/foundry/api/v3/marketplace-v3-resources/marketplace-installation-jobs/abort-marketplace-installation-job) — 2026-10-22 취소의 멱등성, 상태 전이, 복구 제약과 오류 계약 확인.
-- [Palantir Foundry, Get Marketplace Installation Job](https://www.palantir.com/docs/foundry/api/v3/marketplace-v3-resources/marketplace-installation-jobs/get-marketplace-installation-job) — 2026-10-22 조회 권한, HTTP 200과 job 상태의 구분, NotFound의 접근성 의미 확인.
+- [Palantir Foundry, Get Marketplace Installation Job](https://www.palantir.com/docs/foundry/api/v3/marketplace-v3-resources/marketplace-installation-jobs/get-marketplace-installation-job) — 2026-10-22 검색 반환 본문과 수집 명세로 조회 권한, HTTP 200과 job 상태의 구분, 8개 상태와 후속 조치, NotFound의 접근성 의미 대조. 직접 열기와 실제 호출은 미확인.
 - [Palantir Foundry, Create Marketplace Installation Job](https://www.palantir.com/docs/foundry/api/v3/marketplace-v3-resources/marketplace-installation-jobs/create-marketplace-installation-job) — 2026-10-22 검색 반환 본문과 수집 명세로 RID 공유, 제출 기본값, 입력 교체와 비멱등성 대조. 직접 열기와 실제 호출은 미확인.
 - [Palantir Foundry, Marketplace Installation Inputs basics](https://www.palantir.com/docs/foundry/api/v3/marketplace-v3-resources/marketplace-installation-inputs/marketplace-installation-inputs-basics) — 2026-10-21 수집본을 2026-10-22 공식 문서 검색 반환 본문과 대조.
 - [Palantir Foundry, Get Marketplace Installation Inputs](https://www.palantir.com/docs/foundry/api/v3/marketplace-v3-resources/marketplace-installation-inputs/get-marketplace-installation-inputs) — 2026-10-22 검색 반환 본문에서 선택 범위, 명시적 해제, 재사용 제약과 오류 계약 확인. 오류 이름, 코드와 매개변수는 수집본도 대조했으며 직접 열기와 실제 호출은 미확인.
