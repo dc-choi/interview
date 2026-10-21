@@ -62,6 +62,14 @@ RDS DB 인스턴스의 스냅샷 복원은 `available` 이후에도 S3에서 데
 - 데이터 외에 설정, 애플리케이션 버전과 복호화 키 접근 권한도 복구할 수 있어야 한다. 운영 계정 침해 때 백업 삭제 권한까지 공유되는지 확인하고 보존, 암호화와 복원 권한을 분리한다.
 - 리허설을 안 하면 실제 장애 때 백업이 있어도 복구하지 못할 수 있다.
 
+### 서비스 재개, 백업 반출과 업무 복구를 구분한다
+
+운영 점검에서는 백업 데이터 반출 가능, 복원 가능, 기반 서비스 재개와 애플리케이션 복구 완료를 별도 상태로 기록한다. 공급자의 공지에서도 적용 리전, 기능과 고객 범위를 확인한다.
+
+IDC Frontier의 2026-10-14 제5보는 장애 영향을 받은 495개 기업과 지자체 중 스냅샷 기능을 사용하던 194개 고객의 백업 데이터를 꺼낼 수 있다고 밝혔다. 복원 가능 여부와 제공 방법은 개별 안내 중이었다. 이는 모든 고객의 복원 완료를 뜻하지 않는다. 10월 18일 제6보는 계속 가상 서버를 사용할 수 있던 리전과 존의 고객에게 백업 서비스 재개와 외부 클라우드, 온프레미스 복원 경로를 안내했지만 스냅샷 기능은 여전히 중단 상태라고 명시했다.
+
+두 공지의 확인 범위에서 도출한 점검 기준은 **무엇을 꺼낼 수 있는가, 어디에 복원할 수 있는가, 업무가 실제로 동작하는가**를 나눠 확인하는 것이다. 초기 복원 곤란 공지를 영구 손실 확정으로 고정하거나 일부 기능 재개를 전체 장애 해소로 바꾸지 않는다. 2026-10-22 이 사례만 부분 대조했으며 실제 고객 복원 결과와 최신 전체 복구 상태를 검증한 기록은 아니다. 기존 제품별 검증일은 유지한다.
+
 ## AWS Backup의 보존 기간과 삭제 보호
 
 보존 기간 만료와 삭제 가능 여부는 따로 확인한다. AWS Backup의 **legal hold**는 개별 복구 지점의 삭제를 보류하고, **Vault Lock**은 저장소의 복구 지점을 보존 기간 동안 보호한다.
@@ -141,6 +149,8 @@ MPA는 원본 계정에 접근할 수 없을 때 별도 복구 계정에서 백�
 
 ## 출처
 
+- [不正アクセスによる障害に関する調査の進捗について（第5報） — IDC Frontier](https://www.idcf.jp/news/topics/20261014001/) — 2026-10-14 발표의 백업 반출 대상과 개별 복원 확인 범위, 2026-10-22 대조.
+- [バックアップサービスの提供再開について（第6報） — IDC Frontier](https://www.idcf.jp/news/topics/20261018001/) — 2026-10-18 발표의 백업 서비스 재개와 스냅샷 중단 구분, 2026-10-22 대조.
 - [AWS Backup — Multi-party approval for logically air-gapped vaults](https://docs.aws.amazon.com/aws-backup/latest/devguide/multipartyapproval.html)
 - [AWS Backup — Requester tasks](https://docs.aws.amazon.com/aws-backup/latest/devguide/multipartyapproval-tasks-requester.html)
 - [AWS Backup — Logically air-gapped vault](https://docs.aws.amazon.com/aws-backup/latest/devguide/logicallyairgappedvault.html)

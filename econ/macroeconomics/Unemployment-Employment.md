@@ -61,6 +61,14 @@ aliases: ["실업과 고용", "Unemployment and Employment"]
 
 **청년의 연령 기준**: 경제활동인구조사의 청년층 통계는 15~29세 기준이고, 2026년 9월 기준 자료부터 청년고용촉진특별법상 청년인 15~34세 통계도 함께 공표된다. 2026년 9월 쉬었음 인구는 15~29세 36만 4천 명, 15~34세 54만 8천 명이므로 비교 전에 연령 기준을 맞춘다.
 
+### 취업자 감소를 인구 감소와 나누어 읽는다
+
+같은 조사와 연령 집단에서 고용률은 대상 인구 중 취업자의 비율이다. 따라서 취업자 수는 대상 인구와 고용률을 함께 봐야 한다. 가상 집단의 인구가 100명에서 90명, 취업자가 50명에서 45명으로 줄면 취업자는 10% 감소하지만 고용률은 두 시점 모두 50%다. 이는 비율 정의를 적용한 산술 예시이며 실제 청년 고용 통계가 아니다.
+
+비교할 때는 연령 구간, 조사 기준 시점과 계절조정 여부를 맞추고 취업자 수, 고용률과 경제활동참가율을 나눠 확인한다. 인구 감소가 모든 고용 악화를 설명한다고 단정하지도 않는다. 이 집계만으로 특정 지원자의 탈락 원인이나 역량을 판정할 수 없으므로, 시장 지표와 개인 전형의 증거는 분리한다.
+
+2026-10-22 BLS CPS의 고용률과 참가율 정의를 부분 대조했다. 미국 CPS의 대상 인구는 16세 이상 민간 비시설 인구이므로 한국 청년층의 연령 기준으로 옮기지 않는다. 한국의 특정 기간 취업자 감소 규모를 검증한 절은 아니다.
+
 ## 6. 실업의 비용
 
 - **소득 상실**: 개인과 가계에 직접적 타격.
@@ -120,7 +128,7 @@ AI 도입을 평가할 때는 줄어든 기존 작업, 남은 작업의 생산�
 - [International Labour Organization, How might generative AI impact different occupations?](https://www.ilo.org/resource/article/how-might-generative-ai-impact-different-occupations)
 
 - [Journal of Economic Perspectives, Automation and New Tasks: How Technology Displaces and Reinstates Labor](https://economics.mit.edu/sites/default/files/inline-files/Automation%20and%20New%20Tasks%20-%20How%20Technology%20Displaces%20and%20Reinstates%20Labor.pdf) — Daron Acemoglu, Pascual Restrepo, 2019. 과업 배분, 대체, 생산성과 복원 효과.
-- [U.S. Bureau of Labor Statistics, Concepts and Definitions (CPS)](https://www.bls.gov/cps/definitions.htm)
+- [U.S. Bureau of Labor Statistics, Concepts and Definitions (CPS)](https://www.bls.gov/cps/definitions.htm) — 2026-10-22 고용률, 참가율의 분모와 미국 조사대상 범위 부분 대조. 가상 인구 예시는 정의에서 도출한 계산이다.
 - [U.S. Bureau of Labor Statistics, Comparing employment from the BLS household and payroll surveys](https://www.bls.gov/web/empsit/ces_cps_trends.htm)
 - [Federal Reserve, Speech by Governor Kugler on navigating inflation waves while riding on the Phillips curve](https://www.federalreserve.gov/newsevents/speech/kugler20250220a.htm)
 - [Federal Reserve Bank of San Francisco, Okun's Law and the Unemployment Surprise of 2009](https://www.frbsf.org/research-and-insights/publications/economic-letter/2010/03/okun-law-unemployment-2009/) — 2026-10-02 갭 모형과 성장률 모형 및 단위 대조

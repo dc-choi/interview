@@ -16,6 +16,14 @@ aliases: ["AI Company Valuation and Funding", "AI 기업가치와 자금 조달"
 - **추론 마진과 회사 이익:** 요청 한 건의 수입이 추론 비용을 넘더라도 학습, 연구 인력과 다른 운영 비용을 빼면 적자일 수 있다.
 - **평가액과 조달액:** 투자자가 인정한 가격과 회사에 실제 유입된 돈을 구분한다. 신주와 구주, pre-money와 post-money를 확인한다.
 
+### 총액과 순액 매출, 조정 이익의 비교 경계
+
+플랫폼이나 유통 파트너를 거친 매출은 고객 결제 총액, 회계상 인식 매출과 실제 수취액을 구분한다. 총액과 순액 표시는 기업이 편한 숫자를 고르는 방식이 아니다. SEC의 non-GAAP 해석 지침은 GAAP상 본인(principal)으로 총액 표시해야 하는 거래를 대리인(agent)처럼 거래 비용을 뺀 순액으로 제시하거나 그 반대로 제시하는 조정을 오해를 유발할 수 있는 사례로 든다.
+
+조정 이익도 명칭만으로 EBITDA나 영업이익과 같은 지표로 취급하지 않는다. SEC는 기업 운영에 필요한 정상적이고 반복적인 현금 영업비용을 뺀 성과 지표가 오해를 유발할 수 있다고 설명한다. 적용 점검에서는 가장 직접적으로 비교 가능한 GAAP 지표, 조정 항목과 금액, 기간별 정의의 일관성을 대조한다. 조정 후 흑자가 회계상 흑자나 현금흐름 흑자까지 뜻하지는 않는다.
+
+2026-10-22 SEC 지침의 100.01~100.05와 102.12를 부분 대조했다. 이는 미국 공시 지표를 읽는 기준이다. 특정 비상장 AI 기업의 회계 정책, 비공개 신고서, 매출 전망이나 상장 일정을 확인한 결과가 아니며, 기업 간 숫자 차이를 회계 표시 차이만으로 설명하지 않는다.
+
 ## 기대를 역산한다
 
 기업가치에서 출발해 정당화에 필요한 매출, 마진, 재투자와 성장 지속 기간을 역산한다. 그 뒤 고객의 지급 의사, 가격 경쟁과 자본 필요량을 대조한다. 높은 성장만으로 적정 가격을 확정하지 않으며, 저가 경쟁자가 있다는 사실만으로 기업가치를 0으로 두지도 않는다.
@@ -47,6 +55,7 @@ aliases: ["AI Company Valuation and Funding", "AI 기업가치와 자금 조달"
 
 ## 출처
 
+- [SEC, Non-GAAP Financial Measures](https://www.sec.gov/rules-regulations/staff-guidance/corporation-finance-interpretations/non-gaap-financial-measures) — 2026-10-22 총액/순액을 바꾸는 조정, 반복 현금비용 제외, 명칭과 비교 가능한 GAAP 지표의 조정 내역 대조.
 - [Anthropic Is The Most Ridiculous IPO of 2026 — New Constructs](https://www.newconstructs.com/anthropic-is-the-most-ridiculous-ipo-of-2026/) — 2026-10-06 투자 의견, 유출 보도 기반 재무와 평가 가정
 - [Anthropic will be 'most ridiculous IPO' of year, analyst says — CNBC](https://www.cnbc.com/2026/10/07/anthropic-will-be-most-ridiculous-ipo-of-year-analyst-says.html) — 2026-10-07 보도, 1,500억 달러 평가 표현의 출처
 - [리서치 업체, Anthropic IPO 경고 — GeekNews](https://news.hada.io/topic?id=35243) — 제공된 2026-10-13 발췌 연결

@@ -39,6 +39,16 @@ TikTok Shop 같은 커머스 플랫폼 안의 제휴에서 크리에이터는 �
 
 적용 제안: 미국 TikTok Shop 조건을 다른 시장이나 한국 기반 크리에이터에게 옮겨 쓰지 않는다. 조회수 보상은 신청률과 승인율 대신 제출물 승인 여부, 1,000회당 단가, 최소 수익과 상한, 남은 예산으로 예상 수익을 계산하고, 조회수 집계 기준과 편집할 원본의 사용 허락을 캠페인 조건에서 확인한다.
 
+## YouTube Shopping의 상품 태그와 수익 귀속
+
+2026-10-22 YouTube 공식 도움말을 부분 대조했다. 판매자마다 상품별 수수료율과 귀속 기간을 정하므로, 모든 클릭 이후 24시간 동안 모든 구매가 보상된다고 일반화하지 않는다. 태그한 상품 외의 구매도 수수료 대상이 될 수 있지만 적격 상품과 해당 상품의 요율을 따른다. Studio에 태그할 때 보이는 요율은 추정치이며 실제 수수료는 구매일의 요율을 적용한다.
+
+공식 안내의 지급 시점은 구매 후 60~120일이며, 반품되면 수수료가 취소된다. 콘텐츠 조회, 상품 클릭, 적격 구매와 반품 반영 뒤 지급을 따로 기록한다. 자동 제작으로 발행량을 늘렸다는 사실만으로 인정 수익이 늘었다고 판단하지 않는다.
+
+태그는 콘텐츠와 관련돼야 하며 시청자를 오도해서는 안 된다. 직접 보여 준 상품 외에도 활동에 쓰이거나 소개한 상품을 보완하는 관련 상품을 허용하는 경우가 있지만, 높은 수수료만 보고 무관한 상품을 붙이는 근거는 아니다. 위반 태그는 제거될 수 있고 반복 위반은 제휴 프로그램 접근 상실로 이어질 수 있다. 타인의 영상 사용 권한과 채널 수익화 심사는 별도 점검 대상으로 두며 [[AI-Generated-Content-Monetization|AI 생성 콘텐츠 수익화]]와 연결한다.
+
+이번 대조는 YouTube의 귀속, 정산과 태그 정책에 한정한다. 특정 채널의 매출, 제작 도구의 성과와 개별 판매자의 24시간 귀속 조건은 확인하지 않았으며 기존 플랫폼의 검증일은 유지한다.
+
 ## 구매 판단을 돕는 리뷰와 비교 글
 
 제휴 링크를 붙일 글은 조회 가능성과 구매 판단에 주는 도움을 나눠 평가한다. 여행지 날씨 안내와 숙박 시설 비교처럼 같은 주제라도 독자가 해결하려는 질문이 다르다. 특정 글감이 더 많은 수익을 낸다는 보편적 순위는 없으며, 조회수가 구매나 적격 수수료로 이어지는지는 위의 승인과 지급 단계까지 확인한다.
@@ -57,6 +67,9 @@ TikTok Shop 같은 커머스 플랫폼 안의 제휴에서 크리에이터는 �
 
 ## 출처
 
+- [YouTube Help, YouTube Shopping affiliate program overview & eligibility](https://support.google.com/youtube/answer/13376398?hl=en) — 2026-10-22 상품별 귀속 기간, 구매 후 지급과 반품 처리 대조.
+- [YouTube Help, Understand commission rates & earnings in the YouTube Shopping affiliate program](https://support.google.com/youtube/answer/17263096?hl=en) — 2026-10-22 구매일 요율과 태그하지 않은 적격 상품의 수수료 대조.
+- [YouTube Help, Tag products in your content](https://support.google.com/youtube/answer/10191533?hl=en) — 2026-10-22 콘텐츠 관련성, 허용 예외와 반복 위반의 결과 대조.
 - [Google Search Central, Write high quality reviews](https://developers.google.com/search/docs/specialty/ecommerce/write-high-quality-reviews) — 2026-10-21 확인, 직접 경험과 비교 근거를 갖춘 리뷰 작성 기준. 제휴 수익 효과는 검증하지 않았다.
 - [Google Ads, Cost per click (CPC): Definition](https://support.google.com/google-ads/answer/116495?hl=en-GB)
 - [Google Ads, Average CPA: Definition](https://support.google.com/google-ads/answer/6396841?hl=en)
