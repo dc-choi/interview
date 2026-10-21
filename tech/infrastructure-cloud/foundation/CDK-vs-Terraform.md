@@ -119,6 +119,16 @@ CDK는 익숙한 언어로 빠르게 시작하지만 코드 구조가 커질수�
 
 분리할 스택 수보다 변경과 삭제의 영향 범위, 설정의 재현성과 데이터 보존을 검토한다. 위 항목은 문서 대조이며 실제 리소스 이동이나 배포 시험은 수행하지 않았다. 기존 비교 전체의 검증일은 유지한다.
 
+### 재사용 construct의 배포와 보안 경계
+
+부분 검증(2026-10-22): AWS CDK v2 모범 사례의 패키지 수명 주기와 보안 강제 범위를 대조했다. 기존 도구 비교 전체의 검증일은 유지한다.
+
+- 처음에는 한 저장소와 패키지로 시작하고, 여러 앱이 사용하는 construct는 자체 수명 주기와 테스트 전략을 가진 공용 패키지로 분리할 수 있다. 공용 패키지는 소비 앱 하나의 배포 성공만으로 검증하지 않고 독립적으로 테스트한다.
+- 인프라 정의와 Lambda 함수 등 런타임 코드를 같은 construct와 패키지에 담아 함께 버전 관리할 수 있다. 인프라 코드라는 이유만으로 별도 저장소를 의무화하지 않는다.
+- 암호화와 IAM 기본값을 담은 wrapper construct는 개발 초기의 안전한 구성을 돕지만 유일한 보안 강제 수단으로 삼지 않는다. 조직 수준의 SCP와 permission boundary, 배포 전 Aspects나 CloudFormation Guard 검사처럼 별도 통제 수단을 함께 검토한다.
+
+운영 적용 제안: 서비스 실행 자원, 배포 파이프라인과 관측 구성을 재사용할 때 패키지 버전, 소비 앱의 호환성 검사와 권한 검사를 함께 관리한다. 스택 개수나 템플릿 복제 횟수를 표준화 품질의 증거로 삼지 않는다. 실제 배포와 보안 정책의 효과를 시험한 기록은 아니다.
+
 ### 선택 기준
 
 - 기술의 진보성보다, **팀 규모가 작을수록 운영 안정성, 문서, 커뮤니티 규모**의 가중치가 커진다.
@@ -136,7 +146,7 @@ CDK는 익숙한 언어로 빠르게 시작하지만 코드 구조가 커질수�
 - IaC 도구 선택에서 진보성보다 운영 안정성, 커뮤니티를 우선하는 판단 근거
 
 ## 출처
-- [AWS CDK, Best practices for developing and deploying cloud infrastructure with the AWS CDK](https://docs.aws.amazon.com/cdk/v2/guide/best-practices.html)
+- [AWS CDK, Best practices for developing and deploying cloud infrastructure with the AWS CDK](https://docs.aws.amazon.com/cdk/v2/guide/best-practices.html) — 2026-10-22 공용 construct의 독립 테스트, 런타임 코드 동시 버전 관리와 wrapper의 보안 강제 한계를 추가 대조.
 - [AWS CDK, cdk import](https://docs.aws.amazon.com/cdk/v2/guide/ref-cli-cmd-import.html)
 - [AWS CDK, CLI reference — Import existing resources into a stack](https://docs.aws.amazon.com/cdk/v2/guide/cli.html#import-resources)
 - [AWS CDK, Bootstrap your environment for use with the AWS CDK](https://docs.aws.amazon.com/cdk/v2/guide/bootstrapping-env.html)
@@ -151,6 +161,7 @@ CDK는 익숙한 언어로 빠르게 시작하지만 코드 구조가 커질수�
 - [Introduce minimal-refresh planning option, PR #38953 — HashiCorp](https://github.com/hashicorp/terraform/pull/38953)
 - [HashiCorp Terraform, Use refresh-only mode to sync Terraform state](https://developer.hashicorp.com/terraform/tutorials/state/refresh)
 - [AWS CDK에서 Terraform으로 마이그레이션한 이유 — 인프랩 기술블로그](https://tech.inflab.com/202202-aws-cdk-to-terraform/)
+- [스타트업 바비톡의 클라우드 친화적인 DataAI & DevOps 혁신 전략 — Amazon Web Services Korea](https://www.youtube.com/watch?v=FFYiSysy-o0) — 2024년 행사 발표의 21:44~26:56 표준화 주제를 정리의 계기로 삼았으며, 위의 일반화된 운영 기준은 공식 CDK 문서와 별도로 대조했다. 전사만으로 확인하기 어려운 성과 수치는 반영하지 않았다.
 
 ## 관련 문서
 - [[IaC|IaC (Infrastructure as Code)]]
