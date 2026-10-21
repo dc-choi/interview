@@ -37,6 +37,32 @@ aliases: ["LLM Workflow Patterns Data and Operations", "데이터 vs 모델", "�
 
 설계 제안(계속): 데이터와 색인을 서울 리전에 두어야 하면 고객 관리형 지식 베이스에 S3나 사용자 정의 데이터 소스로 수집한다. 위의 관리형 리전과 저장소 조건상 관리형 지식 베이스는 원본 파일까지 서울 밖에 두게 되므로 데이터 위치 요건이 다른 리전 보관을 허용할 때만 검토한다. 파싱과 응답 생성을 교차 리전 추론 프로필로 호출하지 않아도 되는지, 즉 그 모델을 서울 단일 리전에서 호출할 수 있는지도 확인한다.
 
+## 검색, 기준 대조와 보고서 초안은 따로 평가한다
+
+업무 문서 어시스턴트의 시험 문제를 검색, 여러 기준의 대조, 보고서 초안 작성으로 나누면 같은 정답률 안에 숨은 실패를 찾기 쉽다. 다음은 품질 문서 검색과 검토에 적용할 설계 제안이다. 규제 적합성이나 실사 통과를 보증하는 기준은 아니다.
+
+| 과업 | 평가할 결과 | 별도로 남길 실패 |
+|---|---|---|
+| 문서와 변경 이력 검색 | 필요한 문서, 개정판과 원문 위치를 찾았는가 | 누락된 문서, 다른 개정판, 수집되지 않은 기록 |
+| 내부 기준과 외부 기준 대조 | 적용 범위가 맞는 기준을 연결하고 충돌을 드러냈는가 | 무관한 기준 연결, 예외 누락, 근거 없는 위반 판정 |
+| 보고서 초안 작성 | 필요한 항목과 수치가 원자료로 추적되는가 | 항목 누락, 잘못된 집계, 근거 없이 채운 문장 |
+
+2026-10-22 Amazon Bedrock 평가 문서는 검색 결과만 평가하는 `Retrieve only`와 검색 결과 및 생성 답변을 평가하는 `Retrieve and generate`를 구분한다. 위의 업무별 분류는 이 서비스의 기본 평가 유형이 아니라 추가로 설계할 평가 축이다. 검색 평가를 통과해도 기준 대조나 보고서 작성이 검증된 것은 아니며, 업무 전문가의 검토와 미수집 자료의 확인을 함께 둔다.
+
+## 현장 표현 추출과 분류 결과를 분리한다
+
+의성어, 약어와 현장 고유 표현이 있는 클레임은 원문 표현을 추출하는 단계와 업무 분류에 대응시키는 단계를 구분해 설계할 수 있다. 예를 들어 가상의 문장 `회전할 때 덜컹거린다`에서 `덜컹`이라는 표현과 발생 조건을 보존한 뒤 소음 등의 분류 후보를 붙인다. 표현을 일반적인 단어로 덮어쓰면 나중에 오분류 원인을 원문과 대조하기 어렵다.
+
+다음은 적용 제안이다. 프롬프트에는 분류의 정의, 경계 사례와 입력을 함께 제공하고, 결과에는 원문 위치, 추출 표현, 분류 후보와 검토 상태를 나눈다. 한 문장에 여러 증상이 있거나 분류 밖 표현이 있으면 이를 단일 정답에 억지로 넣지 않는 출력 계약을 정한다. 분류별 누락과 오분류를 따로 측정하고 같은 입력에서 규칙 기반 방식과 비교한다. Amazon Bedrock의 프롬프트 지침은 작업 지시, 도메인 맥락, 예시와 입력 텍스트를 구성 요소로 설명하지만, 특정 한국어 표현의 정확도나 이 설계의 우월성을 보장하지 않는다(2026-10-22 확인).
+
+**사례 (AWS Industry Week 2024, 2025-01-15 공개):** 제조 분야 발표에서는 요구사항 분석용 모델의 미세조정과 클레임의 한국어 의성어 및 키워드 분류를 서로 다른 활용 사례로 소개했다. 이를 하나의 모델이나 같은 평가 과제로 합치지 않는다. 발표의 정확도와 공수 절감 수치는 다른 데이터에도 재현되는 성능 기준으로 사용하지 않는다.
+
+## 오래된 기록의 디지털화와 해석을 분리한다
+
+수기 기록과 영상 아카이브를 AI로 검색하려면 디지털 파일 확보, 내용 추출, 용어 해석과 검색 가능 상태를 따로 관리한다. 스캔이 끝났다는 사실만으로 필기 인식이나 전문 용어의 해석까지 검증된 것은 아니다. Amazon이 공개한 연구 아카이브 프로젝트도 수기 기록의 구조화와 검색 가능한 형태로의 전환을 목표로 설명하며, 기존 개념 검증을 기반으로 단계적으로 진행한다고 명시한다(2026-10-22 확인).
+
+다음은 이 구분을 적용한 설계 제안이다. 원본 이미지나 영상, 추출한 텍스트, 번역 또는 정규화한 표현을 별도로 보존하고 서로의 위치를 연결한다. 전문가는 애매한 용어와 번역을 원문에 되돌아가 교정할 수 있어야 하며, 교정한 내용이 색인에 반영됐는지도 확인한다. 원본에 없는 의미를 추정한 부분은 관측 기록과 구분한다. 자료 유형과 언어별 표본에서 추출, 해석과 검색을 각각 점검한 뒤 수집 범위를 넓힌다.
+
 ## 환각 통제와 운영
 
 환각은 확률적 생성 모델의 속성이라 제거가 아니라 **통제**의 문제다. 두 갈래다.
@@ -91,6 +117,15 @@ Amazon A2I의 Textract 통합은 다음 조건을 구분한다(2026-10-16 공식
 - 성과 평가 보조: Jira 이슈/에픽 → OKR 연결 → 회사 평가 기준 반영으로 성과 노트 초안 작성. 동료 평가는 AI가 질문을 던져 구체화하고 AAT(행동-감사-기대), SBI(상황-행동-영향) 피드백 구조를 적용. 데이터 전처리(누락값, 형식 오류)와 평가 윤리(편향, 개인정보, 최종 판단은 사람)가 난제.
 
 ## 출처
+- [AWS, Evaluate the performance of RAG sources using Amazon Bedrock evaluations](https://docs.aws.amazon.com/bedrock/latest/userguide/evaluation-kb.html) — 2026-10-22 검색 전용과 검색 및 생성 평가의 구분을 대조했다. 업무별 평가표는 설계 제안이다.
+- [AWS, Prompt engineering concepts](https://docs.aws.amazon.com/bedrock/latest/userguide/prompt-engineering-guidelines.html) — 2026-10-22 작업 지시, 맥락, 예시와 입력의 구성을 대조했다. 현장 표현의 보존과 분류 계약은 설계 제안이다.
+- [GC녹십자의 실사 대응 혁신 이야기 — AWS Industry Week 2024 (YouTube)](https://www.youtube.com/watch?v=Tu24l6wugSA) — 2025-01-16 공개. 검색, 기준 연결과 문서 초안이라는 과업 구분을 음성 전사에서 확인했다. 화면의 평가표와 성과 수치는 반영하지 않았다.
+- [HL만도, 생성형 AI가 바꿔 나가는 제조 업무 혁신 — AWS Industry Week 2024 (YouTube)](https://www.youtube.com/watch?v=UM64HUoSDMo) — 2025-01-15 공개. 요구사항 분석과 클레임 키워드 분류의 구분을 음성 전사에서 확인했다. 모델별 성능 수치와 향후 절감 목표는 반영하지 않았다.
+- [AWS teams up with Jane Goodall Institute to digitize six decades of primate research — Amazon](https://www.aboutamazon.com/news/aws/jane-goodall-institute-research-archive-aws-ai) — 2026-10-22 아카이브 디지털화와 단계적 추진 범위를 대조했다. 원본, 추출과 해석의 분리 및 검토 상태 관리는 설계 제안이며 전체 구축 완료를 뜻하지 않는다.
+- [From Field Notes to Gen AI: Modernizing Conservation Science — AWS Executive Insights (YouTube)](https://www.youtube.com/watch?v=qdj25_m5h3A) — 2026-04-14 공개. 제공된 사람 자막에서 수기 기록의 디지털화와 고유 언어에 대한 전문가 교정의 필요를 확인했다.
+
+2026-10-22 추가한 세 절의 공식 자료와 발표를 대조했다. 기존 리전, 파서와 평가 사례 전체를 재검증한 것은 아니므로 `verified_at`은 유지한다.
+
 - [AWS, Use Human Loop Activation Conditions JSON Schema with Amazon Textract](https://docs.aws.amazon.com/sagemaker/latest/dg/a2i-json-humantaskactivationconditions-textract-example.html)
 - [AWS, Create a Human Review Workflow](https://docs.aws.amazon.com/sagemaker/latest/dg/a2i-create-flow-definition.html)
 - [AWS Prescriptive Guidance, Delivering and sustaining the value of a generative AI application](https://docs.aws.amazon.com/prescriptive-guidance/latest/gen-ai-lifecycle-operational-excellence/prod-value.html)
