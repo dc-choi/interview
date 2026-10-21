@@ -83,6 +83,16 @@ Placeholder는 검증일 기준 dataset input만 지원한다. 실제 자원이 
 - `MarketplaceInstallationNotFound`는 `NOT_FOUND`, HTTP 404이며 매개변수는 `marketplaceInstallationRid`다. 입력 이름 설정 문제와 설치 자원을 찾지 못한 문제를 같은 재시도 대상으로 묶지 않는다.
 - 운영상 추론으로, 400을 빈 `inputs` 응답으로 바꾸거나 `selection=ALL`로 반복 호출하지 않는다. 이름 생성 설정을 확인한 뒤 다시 조회한다. 이 두 오류만으로 인증과 전송 계층의 모든 실패를 설명하지는 않는다.
 
+### 설치 전 입력 탐색과 필터의 범위
+
+2026-10-22 공식 Discover Inputs 문서의 검색 반환 본문과 수집본을 대조했다. 직접 페이지 열기와 실제 API 호출은 확인하지 못했다.
+
+- `POST /api/v3/platform/marketplaceInstallationJobs/discoverInputs`는 기존 설치의 목표 버전에 필요한 입력과 공급 경로를 탐색한다. `preview=true`, 각 대상의 편집 권한과 제품 입력의 API 이름이 필요하다. OAuth2 scope는 `api:v3:marketplace-installation-job:read:discover-inputs`다.
+- 대상은 서로 다른 설치 1~10개이며 제품당 하나다. Namespace와 marketplace가 같아야 하고, 위치 override 적용 후 Ontology는 최대 하나여야 한다.
+- `recommendations=[]`는 대상 밖 설치의 추천을 끈다. 요청 안의 대상끼리는 여전히 입력을 공급할 수 있다.
+- `sourceFilter`를 생략하면 유일한 공급 경로가 `MANUAL`인 입력만 반환한다. 지정하면 `excludedSources` 중 하나라도 공급 경로에 포함된 입력을 제외한다. 공급 경로가 없는 입력은 어느 경우든 반환하지 않는다.
+- 응답의 `inputs`는 필터 적용 후 결과이며 페이지 구분이 없다. 제외된 입력의 오류도 `errors`에서 빠진다. 따라서 빈 입력 map이나 오류 목록을 전체 설치의 준비 완료 증거로 사용하지 않는다.
+
 ## Override와 이름
 
 Manual override는 default/linked product 공급을 덮는다. Unnecessary override는 현재 같은 값이라도 자동 연결을 고정하므로 후속 변경 추적에 차이가 생길 수 있다. Clean up에서 unnecessary override를 지우면 현재 값은 같지만 linked product override를 지우면 값이 달라질 수 있다.
@@ -91,6 +101,7 @@ Ontology install prefix는 display name만 또는 display/API name 모두에 적
 
 ## 출처
 
+- [Palantir Foundry, Discover Inputs Marketplace Installation Jobs](https://www.palantir.com/docs/foundry/api/v3/marketplace-v3-resources/marketplace-installation-jobs/discover-inputs-marketplace-installation-jobs) — 2026-10-22 검색 반환 본문과 수집본으로 대상 제약, 권한과 필터 범위 대조. 실제 호출은 미실시.
 - [Palantir Foundry, Abort Marketplace Installation Job](https://www.palantir.com/docs/foundry/api/v3/marketplace-v3-resources/marketplace-installation-jobs/abort-marketplace-installation-job) — 2026-10-22 취소의 멱등성, 상태 전이, 복구 제약과 오류 계약 확인.
 - [Palantir Foundry, Get Marketplace Installation Job](https://www.palantir.com/docs/foundry/api/v3/marketplace-v3-resources/marketplace-installation-jobs/get-marketplace-installation-job) — 2026-10-22 조회 권한, HTTP 200과 job 상태의 구분, NotFound의 접근성 의미 확인.
 - [Palantir Foundry, Create Marketplace Installation Job](https://www.palantir.com/docs/foundry/api/v3/marketplace-v3-resources/marketplace-installation-jobs/create-marketplace-installation-job) — 2026-10-22 공식 검색 반환 본문의 응답 정의에서 draft와 제출 job의 RID 공유 확인.
