@@ -14,7 +14,7 @@ Apollo CLI는 Linux, macOS, Windows에서 Hub의 제품, 환경, 릴리스와 �
 
 `--apollo-token-provider`는 `auto`, `static`, `service-user`, `sso`를 받는다. `auto`는 토큰이 있으면 static, client ID와 secret이 모두 있으면 service-user, 그 외에는 브라우저 SSO를 선택한다. 토큰과 함께 client ID나 secret 중 하나라도 설정하면 오류가 난다. service-user는 client ID와 secret으로 Multipass에서 토큰을 발급받고, sso는 Multipass에 대한 대화형 브라우저 로그인이며 YubiKey 같은 하드웨어 키를 지원한다. SSO 로그인은 토큰이 필요한 명령을 처음 실행했는데 유효한 캐시 토큰이 없을 때 자동으로 시작된다. SSO로 얻은 토큰은 프로필별로 캐시되고 별도 입력 없이 갱신된다. `--sso-callback-port`는 SSO OAuth callback을 받을 로컬 loopback 포트이며, 0을 주면 사용 가능한 임시 포트를 고른다.
 
-설정 파일은 `~/.palantir/apollo-cli.config`에 생성된다. Hub URL, 인증값, 기본 환경과 space를 프로필로 묶을 수 있다. `configure`에서 Enter는 기존 값을 유지하고 작은따옴표 두 개는 값을 비운다. 인증 방식을 바꿀 때 이전 방식을 위한 값을 지워야 한다.
+설정 파일은 `~/.palantir/apollo-cli.config`에 생성된다. Hub URL, 인증값, 기본 환경과 space를 프로필로 묶을 수 있다. `configure`는 기본적으로 현재 활성 프로필을 수정한다. `configure --profile <이름>`으로 특정 프로필을 지정할 수 있고, 그 이름이 없으면 새 프로필을 만든다. 따라서 프로필 이름의 오타도 새 설정을 만들 수 있으므로 대상 이름을 확인한다. `configure`에서 Enter는 기존 값을 유지하고 작은따옴표 두 개는 값을 비운다. 인증 방식을 바꿀 때 이전 방식을 위한 값을 지워야 한다.
 
 - `--profile`은 한 명령에 프로필을 적용한다. `profile use`는 이후 명령의 기본 프로필을 바꾼다.
 - `profile create --copy-from`은 기존 설정에서 시작하며 `--set-current`로 기본값을 바꾼다.

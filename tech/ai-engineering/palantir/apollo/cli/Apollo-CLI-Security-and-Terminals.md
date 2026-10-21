@@ -1,7 +1,7 @@
 ---
 tags: [palantir, apollo, continuous-delivery]
 status: done
-verified_at: 2026-10-16
+verified_at: 2026-10-21
 category: AI Engineering
 aliases: []
 ---
@@ -11,6 +11,8 @@ aliases: []
 ## Apollo CVE 검사와 로컬 Grype 검사
 
 `cve check`는 환경, 좌표 YAML 파일, product ID 중 하나 이상에서 릴리스를 모아 Apollo의 recall 사유, 최근 scan과 활성 CVE를 확인한다. 입력을 합칠 수 있고 release channel로 필터링할 수 있다. `--rescan`은 최근 7일 동안 검사하지 않은 릴리스를 재검사하며 `--force`는 이 기간 기준을 우회한다. force에는 rescan이 필요하다.
+
+입력 범위는 환경의 entity가 사용하는 제품 릴리스(`-e`), YAML에 명시한 Maven 좌표(`-f`), 제품의 전체 릴리스(`-p`)로 구분한다. `-r/--release-channel`은 환경 입력에서는 entity의 채널을, 제품 입력에서는 릴리스의 채널을 제한한다. 좌표 파일에 같은 필터가 적용된다는 설명은 없으므로 혼합 입력의 검사 범위를 판단할 때 구분한다. `--details`는 릴리스별 CVE 내역을 자세히 보여 준다. 검사 결과의 recall 여부는 `SECURITY_VULNERABILITY` 사유를 대상으로 하며 모든 종류의 recall을 확인한 결과로 해석하지 않는다.
 
 `cve list`는 릴리스와 컨테이너 이미지별 CVE 대응 기한을 출력한다. 환경/파일은 해당 릴리스들을, product ID는 최신 릴리스를 질의한다. 활성 finding은 due date에 Overdue로 나온다. check의 제품 전체 릴리스와 list의 최신 릴리스 범위를 혼동하지 않는다.
 
