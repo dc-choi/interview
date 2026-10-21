@@ -21,3 +21,4 @@ JS 언어 핵심을 주제별 폴더로 나눠 모은다 — 값과 표현식, �
 - [[JS-Browser-APIs|브라우저 API]]: DOM 조작과 XSS 안전성, event 전파와 위임, Fetch와 XHR, CSS 애니메이션과 호환성
 - [[Code-Readability-Dark-Patterns|코드 가독성과 JS 다크패턴]]: 영리한 코드가 리뷰를 통과하지 못하는 이유, Don't Make Me Think
 - [[JavaScript-Utility-Library-Selection|유틸리티 라이브러리 선택]]: es-toolkit과 Lodash, 번들 크기, 입력 계약과 타입 검증 경계, 호환 계층과 단계적 이주
+- [[JavaScript-ECMAScript-Evolution-2021-2026|ECMAScript 2021~2026 변화와 런타임 도입]]: TC39 stage와 연도별 판, ES2021~ES2026 주요 기능, Temporal 지원 현황, Node.js와 TypeScript 도입 확인

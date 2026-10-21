@@ -1,7 +1,7 @@
 ---
-tags: [ai, voice, realtime, full-duplex, delegation]
+tags: [ai, voice, realtime, full-duplex, delegation, turn-detection]
 status: done
-verified_at: 2026-10-06
+verified_at: 2026-10-21
 category: "AI엔지니어링(AIEngineering)"
 aliases: ["Realtime Voice Architecture", "실시간 음성 에이전트", "전이중 음성 대화"]
 ---
@@ -32,7 +32,52 @@ VAD(Voice Activity Detection)는 말소리가 있는 구간을 찾는다. Turn d
 
 예를 들어 사용자가 “잠시만요, 확인해 볼게요”라고 말한 뒤 조용해졌다면 바로 응답하는 것이 적절하지 않을 수 있다. 문맥 기반 검출도 무기한 대기를 보장하지 않으므로, 장시간 확인 대기는 애플리케이션의 대화 정책과 함께 다룬다. 별도 모델을 직접 학습하는 것만이 해결책은 아니며 STT나 실시간 모델에 내장된 종료 판단을 사용할 수도 있다.
 
-평가에서는 마지막 말소리부터 턴 확정까지의 대기와, 확정 이후 첫 응답 재생까지의 시간을 나눈다. 실제 상담 예문으로 문장 중간 쉼, 확인 요청, 짧은 맞장구와 배경 소음을 시험하고 조기 종료와 불필요한 대기를 함께 기록한다. 이는 적용 점검 방법이며 특정 모델의 실측 성능 주장은 아니다. 턴 종료 판단과 AI 발화 중 사용자의 끼어들기에 반응하는 정책도 별도로 조정한다(2026-10-06 LiveKit 공식 문서 대조).
+평가에서는 마지막 말소리부터 턴 확정까지의 대기와, 확정 이후 첫 응답 재생까지의 시간을 나눈다. 실제 상담 예문으로 문장 중간 쉼, 확인 요청, 짧은 맞장구와 배경 소음을 시험하고 조기 종료와 불필요한 대기를 함께 기록한다. 이는 적용 점검 방법이며 특정 모델의 실측 성능 주장은 아니다. 턴 종료 판단과 AI 발화 중 사용자의 끼어들기에 반응하는 정책도 별도로 조정한다(2026-10-06 LiveKit 공식 문서 대조). 검출기 오류의 지표와 운영 오판 회수는 [[#두 오류를 나눠 평가하고 운영 오판을 회수한다|아래 평가 절]]에서 다룬다.
+
+## Turn detector는 무음마다 쌓인 발화를 다시 판정한다
+
+연쇄 파이프라인에서 turn detector는 VAD와 응답 생성 사이에 둔다. VAD가 말소리 구간을 표시하고, 말소리가 무음으로 바뀔 때마다 검출기가 이번 턴에 쌓인 발화로 턴 종료 여부를 판정한다. 모델에 따라 최근 구간만 보거나 대화 맥락을 더하며, 확률을 내는 모델은 임계값과 비교한다. 완료면 다음 단계로 넘기고, 미완료면 버퍼를 비우지 않고 계속 쌓다가 다음 무음에서 새 음성을 포함해 다시 판정한다. 오디오를 받는 검출기를 STT 앞에 두면 완료로 판정된 버퍼만 STT로 보낼 수도 있지만, 그러면 전사가 턴 확정 뒤에 시작돼 그 시간이 응답 지연에 더해지고 확정 전의 부분 전사나 텍스트 검출기를 쓸 수 없다(설계 추론, 아래 사례가 이 구성이다). 검출기의 입력은 구성마다 다르다(2026-10-21 공식 문서 기준).
+
+- **오디오 입력:** Pipecat Smart Turn(v3.2 README 기준)은 16kHz 모노 PCM으로 사용자 현재 턴의 음성을 최대 8초까지 받고(Pipecat 통합은 턴의 최근 8초를 분석), 이전 턴 음성은 넣지 않아도 된다. README는 판정 중 새 발화가 들어오면 새 구간만이 아니라 턴 전체로 다시 실행하라고 안내한다. LiveKit `TurnDetector`(Python `livekit-agents` 1.6.1, Node.js `@livekit/agents` 1.4.7 이상)도 사용자 음성을 직접 인코딩해 전사 없이 판정한다.
+- **텍스트 입력:** LiveKit 텍스트 turn detector는 STT 전사로 대화 맥락을 VAD에 더하므로 판정에 전사가 필요하다.
+- **실시간 모델 내장:** OpenAI Realtime의 `semantic_vad`는 사용자가 말한 단어를 바탕으로 발화가 끝났을 확률을 매겨, 낮으면 타임아웃까지 기다리고 높으면 기다리지 않는다. `eagerness`가 이 최대 대기를 조정하며 `low`는 사용자가 천천히 말하게 두고 `high`는 오디오를 최대한 빨리 끊어 턴을 나눈다.
+
+미완료 판정이 이어져도 무한정 기다리지 않도록 상한과 대체 경로를 둔다. Pipecat은 VAD의 `stop_secs`를 짧게(권장 0.2초, 기본값) 두고 쉼마다 Smart Turn을 실행하며, 미완료로 판정된 뒤에도 무음이 `SmartTurnParams`의 `stop_secs`(기본 3.0초)보다 길어지면 턴을 완료로 처리한다. LiveKit은 기본적으로 말소리 뒤 0.5~3.0초 사이에서 턴을 확정한다(오디오 검출기 사용 시 0.3~2.5초). 오디오 검출기가 약 1초 안에 예측을 돌려주지 않으면 턴을 그대로 확정하고, 전체 모델 v1에서 시간 초과나 추론 요청 오류가 나면 기본 설정에서는 남은 세션을 로컬 경량 모델 v1-mini로 전환한다(Python SDK는 `local_fallback=False`로 끌 수 있다).
+
+턴 안의 쉼이 턴 사이의 공백보다 긴 경우가 많아 고정 무음 대기는 어떤 길이로 정해도 말을 끊거나 응답이 늦어지는 경우가 남는다. 응답 생성을 턴 확정 뒤에 시작하는 구성에서는 이 대기가 매 턴 응답 앞에 그대로 더해지고, 검출기를 쓰면 짧은 무음에서 판정을 시작할 수 있지만 판정 시간도 더해진다. 따라서 짧은 무음 대기와 판정 시간의 합이 대체하려는 무음 대기보다 분명히 짧아야 지연 이득이 남는다(설계 추론). 반면 LiveKit은 턴 확정 전에 LLM 응답을 미리 생성하는 preemptive generation을 기본으로 켜 체감 지연을 줄인다. 기본 설정에서 TTS는 턴 확정 뒤에 시작하며(`preemptive_tts`를 켜면 TTS도 미리 실행한다), LLM 토큰 사용은 늘어난다(2026-10-21 문서 기준). Smart Turn은 대부분의 클라우드 인스턴스에서 100ms 미만, LiveKit 텍스트 turn detector는 CPU에서 턴당 약 50~160ms로 안내하지만 벤더 수치이므로 대상 하드웨어에서 다시 잰다.
+
+## 명시적인 턴 종료 표시가 없는 대화로 라벨을 만든다
+
+사람은 말이 끝났다고 따로 알리지 않고 쉼, 겹침과 끼어들기도 흔해서, 무엇을 한 턴으로 볼지 객관적인 기준을 세우고 대화 데이터에서 턴을 자동으로 찾기 어렵다. 그렇다고 모든 무음 지점을 사람이 들어 라벨을 붙이면 녹음 규모를 따라가기 어렵다.
+
+화자별 말소리 구간을 얻을 수 있으면, 예를 들어 화자별 채널이 분리된 통화 녹음이라면, 턴 사건을 자동으로 찾을 수 있다. 한 화자의 말소리가 상대의 말소리로 넘어가면 턴 전환(SHIFT), 상대 말소리 없이 한 화자의 말소리 사이에 무음이 생기면 턴 유지(HOLD)다. 한 화자의 턴 중에 상대가 내는 짧고 고립된 말소리는 “음” 같은 맞장구(backchannel)에 가까워 턴 전환과 따로 다룬다. VAP(Voice Activity Projection) 연구는 맞장구를 길이 1초 이하이고 앞 1초와 뒤 2초 동안 같은 화자의 다른 말소리가 없으며 상대 말소리 뒤에 나온 구간으로 정의했다. 또 선행 연구를 확장해 각 화자의 이후 말소리를 예측하는 과제를 자기지도 목표로 정의하고, 이를 라벨 데이터 없이 턴 교대(turn-taking) 모델을 학습하는 방법으로 제시했다.
+
+약지도(weak supervision)는 전문가가 직접 붙인 라벨 대신 규칙, 휴리스틱, 외부 지식 베이스처럼 싸지만 잡음이 있는 출처로 학습 라벨을 만드는 방식이며, 이런 출처는 정확도와 적용 범위가 제한적인 경우가 많다. Snorkel은 여러 라벨링 함수의 일치와 불일치로 정답 라벨 없이 각 함수의 정확도를 추정해 확률 라벨을 만들고, 그 라벨로 학습한 판별 모델이 라벨링 함수보다 넓게 일반화하게 한다. 이때도 개발 중에 쓰는 작은 정답 라벨 개발셋과, 평가용으로 따로 떼어 둔 정답 라벨 테스트셋을 둔다. 다음은 개발셋과 테스트셋 구조를 턴 라벨링에 적용한 절차 제안이다(여러 함수를 결합하는 라벨 모델은 생략).
+
+1. 실제 녹음의 무음 지점에서 표본을 뽑아 사람이 완료와 미완료를 붙인 작은 기준 표본([[Eval-Golden-Set-and-Deploy-Gates|골든셋]])을 만든다. 맞장구, 발화 겹침과 아주 짧은 발화처럼 규칙이 틀리기 쉬운 경우를 포함한다.
+2. 상대 화자의 응답 지연 같은 타이밍 규칙을 만들고 기준 표본과의 일치도로 임계값을 고른다. 임계값을 고른 표본의 일치도는 그 표본에 맞춘 값이므로 조정에 쓰지 않은 사람 라벨로 다시 확인한다.
+3. 일치도가 충분할 때 전체 녹음에 적용하고, 규칙 라벨에 남은 오류를 전제로 결과를 해석한다. 최종 평가는 사람이 붙인 테스트 표본에서 한다. 규칙 라벨로 만든 테스트셋의 점수는 사람 판단이 아니라 규칙과의 일치도다.
+
+## 두 오류를 나눠 평가하고 운영 오판을 회수한다
+
+완료와 미완료의 비율이 치우친 데이터에서는 정확도가 부풀려질 수 있다. Balanced accuracy는 클래스별 재현율의 평균이며, 이진 분류에서는 민감도(true positive rate)와 특이도(true negative rate)의 산술평균이다. 균형 잡힌 데이터에서는 정확도와 같고, 분류기가 불균형한 테스트셋을 이용해서만 정확도가 우연 수준을 넘었다면 1/클래스 수(이진 분류는 0.5)로 떨어진다(scikit-learn 1.9.1 문서 기준). 예측 클래스별 정밀도의 평균과는 다른 값이므로 보고할 때 무엇을 평균했는지 밝힌다.
+
+두 오류가 사용자에게 주는 불편도 다르다. 미완료를 완료로 판정하면 사용자의 말을 끊고 덜 끝난 발화로 응답을 시작하고, 완료를 미완료로 판정하면 상한 대기까지 응답이 늦어진다. Balanced accuracy는 두 클래스를 같은 무게로 보므로, 운영 기록으로 두 오류의 비용 차이가 확인되면 그 비용을 반영한 지표로 임계값을 다시 고른다. 확률이 0.5를 넘으면 양성으로 보는 기본 규칙은 대부분의 사용 사례에 이상적이지 않으며, 임계값은 분류기 학습에 쓴 데이터와 다른 데이터로 정한다.
+
+오프라인 점수와 운영 정확도는 다를 수 있다. 학습과 서빙 사이의 성능 차이(training-serving skew)는 두 파이프라인의 데이터 처리 차이, 학습 이후의 데이터 변화, 모델과 알고리즘 사이의 피드백 루프에서 생긴다. 서빙 때 쓴 입력을 기록해 학습에 쓰고, 전부 기록하기 어렵다면 일부라도 기록해 학습과 서빙의 일관성을 확인한다. 학습 데이터와 홀드아웃, 홀드아웃과 다음 날 데이터, 다음 날 데이터와 실시간 데이터 사이의 성능 차이도 따로 잰다. 다음은 턴 검출에 적용한 오판 회수 제안이다.
+
+- 완료로 판정한 직후 사용자가 이어서 말한 사례는 조기 종료 후보로, 미완료 판정 뒤 상한 대기로 턴이 끝나고 사용자가 더 말하지 않은 사례는 늦은 종료 후보로 기록한다.
+- 후보는 사람이 확인해 라벨을 고친 뒤 재학습과 회귀 평가에 쓴다.
+
+## 사례: 상담 통화 녹음으로 학습한 오디오 turn detector (발표 기준)
+
+채널톡 엔지니어링 발표(2026-10-14 공개)에서 소개한 음성 에이전트의 turn detector 사례다. 수치는 발표에서 밝힌 자체 측정값이며 일반 성능 기준이 아니다.
+
+- 이전에는 VAD가 말소리 종료를 표시한 뒤 0.3초 동안 무음이 이어져야 STT로 보냈다. 이 대기도 지연 예산에서 아까웠고, 주문 중 메뉴를 떠올리는 쉼에서도 발화가 STT로 넘어갈 수 있었다.
+- 무음 시점까지 쌓인 오디오 버퍼로 0~1의 완료 확률을 내는 모델을 VAD와 STT 사이에 두고, 완료일 때만 버퍼 전체를 STT로 보냈다. 완료 기준값은 설계에 따라 정하며 일반적으로 0.5를 쓴다고 소개했다. 검출기 추론 지연 목표는 0.1초 이내였다.
+- 화자 채널이 분리된 상담 통화 녹음에서 두 명이 고객 발화 끝 약 1,000개에 완료와 미완료를 직접 붙였다. 상담사가 약 0.7초 안에 응답하면 완료로 보는 식의 타이밍 규칙을 여러 분기로 만들고 대기 기준을 바꿔 가며 사람 라벨과 가장 잘 맞는 조합을 골랐고, 일치도는 약 90%였다. 상담사 안내 중 고객의 맞장구는 규칙이 자주 잘못 라벨링했다.
+- 배포 전에는 어느 오류가 더 불편한지 예상만 할 수 있어 두 클래스의 지표를 같은 무게로 평균해 모델을 골랐다. 오프라인 테스트셋 점수는 첫 학습 약 75%에서 약 90%로 올랐고, 실제 음성 주문 환경의 정확도는 약 80%였다. 판정 뒤에도 사용자가 계속 말한 경우 같은 오판은 DB에 저장하게 해 두고 이후 재학습에 쓰기로 했다. 라벨링부터 실제 환경 적용까지의 한 주기는 7월과 8월에 진행했다.
+- 추론: 규칙의 약 90% 일치도는 규칙 조정에 쓴 같은 사람 라벨로 잰 값으로 보이고, 테스트셋도 규칙 라벨 데이터에서 나눈 것으로 보여 오프라인 점수는 규칙 라벨과의 일치도일 수 있다. 발표 표현은 예측 클래스별 정밀도의 평균에 가깝게 들리지만, 음성 인식 전사이고 슬라이드가 없어 재현율과 정밀도 중 무엇을 평균했는지 확정하지 않는다.
 
 ## 부분 전사와 실행 가능한 요청을 구분한다
 
@@ -67,7 +112,7 @@ Client delegation의 위임 이벤트에는 작업 본문 대신 메타데이터
 
 ## 연결 지연과 업무 지연을 따로 측정한다
 
-브라우저의 WebRTC 연결에서는 음성을 미디어 트랙으로, JSON 이벤트를 데이터 채널로 운반한다. WARP(WebRTC Abridged Roundtrip Protocol)는 연결 시작 지연을 줄이는 최적화다. 연결이 빨라진 사실을 검색이나 도구 실행도 빨라졌다는 근거로 쓰지 않는다.
+2026-10-21 OpenAI 문서 기준으로 브라우저의 WebRTC 연결에서는 음성을 미디어 트랙으로, JSON 이벤트를 데이터 채널로 운반한다. WARP(WebRTC Abridged Roundtrip Protocol)는 연결 시작 지연을 줄이는 최적화다. 연결이 빨라진 사실을 검색이나 도구 실행도 빨라졌다는 근거로 쓰지 않는다.
 
 평가에서는 자연스러운 말투와 실제 업무 성공을 구분한다. 다음은 공식 평가 항목을 적용한 점검 질문이다.
 
@@ -108,6 +153,7 @@ Client delegation의 위임 이벤트에는 작업 본문 대신 메타데이터
 
 - [LiveKit, Turns overview](https://docs.livekit.io/agents/logic/turns/)
 - [LiveKit, LiveKit turn detector](https://docs.livekit.io/agents/logic/turns/turn-detector/)
+- [LiveKit, Agent speech and audio](https://docs.livekit.io/agents/multimodality/audio/)
 - [ElevenLabs, Understanding latency](https://elevenlabs.io/docs/eleven-api/concepts/latency)
 - [ElevenLabs, Latency optimization](https://elevenlabs.io/docs/eleven-api/guides/how-to/best-practices/latency-optimization)
 - [ElevenLabs, Generate audio in real-time](https://elevenlabs.io/docs/eleven-api/guides/how-to/websockets/realtime-tts)
@@ -116,9 +162,20 @@ Client delegation의 위임 이벤트에는 작업 본문 대신 메타데이터
 - [OpenAI, Getting started with GPT-Live](https://developers.openai.com/api/docs/guides/live)
 - [OpenAI, Delegation and tools in GPT-Live](https://developers.openai.com/api/docs/guides/live-delegation)
 - [OpenAI, WebRTC](https://developers.openai.com/api/docs/guides/voice-webrtc)
+- [OpenAI, Voice activity detection (VAD)](https://developers.openai.com/api/docs/guides/realtime-vad)
+
+- [Pipecat, Smart Turn Overview](https://docs.pipecat.ai/api-reference/server/utilities/turn-detection/smart-turn-overview)
+- [smart-turn — GitHub, Pipecat](https://github.com/pipecat-ai/smart-turn)
+- [scikit-learn, Balanced accuracy score](https://scikit-learn.org/stable/modules/model_evaluation.html#balanced-accuracy-score)
+- [scikit-learn, Tuning the decision threshold for class prediction](https://scikit-learn.org/stable/modules/classification_threshold.html)
+- [Snorkel: Rapid Training Data Creation with Weak Supervision — PVLDB 2017, Ratner et al.](https://arxiv.org/abs/1711.10160)
+- [Voice Activity Projection: Self-supervised Learning of Turn-taking Events — arXiv, Erik Ekstedt, Gabriel Skantze](https://arxiv.org/abs/2205.09812)
+- [Rules of Machine Learning — Google for Developers, Martin Zinkevich](https://developers.google.com/machine-learning/guides/rules-of-ml)
+- [Voice agent? STT랑 TTS면 끝 아닌가? | 채널데브세션 — 채널데브톡](https://www.youtube.com/watch?v=2jKehdTrbjE) — 사례 절의 구성과 자체 측정 수치.
 
 ## 관련 문서
 
 - [[Local-Speech-to-Text|로컬 음성 인식]]
 - [[LLM-Workflow-Patterns|LLM 워크플로우 패턴]]
 - [[LLM-Failure-Handling-Recovery|실패 처리와 멱등성]]
+- [[Eval-Golden-Set-and-Deploy-Gates|골든셋과 배포 관문]]

@@ -17,6 +17,7 @@ aliases: ["Agent Execution", "에이전트 실행 구조"]
 - [[Agent-Graph-Engineering|그래프 엔지니어링]]: 노드, 엣지, 상태와 조건, 코드와 모델과 사람의 판정 분담, 실패 노드로의 복귀와 재시도 한도, 사람 승인 노드의 재개 경계
 - [[Agent-Declarative-Runtime|선언형 에이전트 런타임]]: Docker Agent의 YAML 정의, 실행과 API, MCP, A2A 노출, OCI 배포, 세 가지 위임, 권한 경계와 Docker Agent의 A2A 인증 제약, 루프 가드와 예산
 - [[Hermes-Agent|Hermes Agent]]: 게이트웨이 상주 에이전트, 스킬과 메모리 파일로 남는 학습 루프, 프로필별 홈과 게이트웨이, Kanban 작업 보드, 허용 목록과 명령 승인, 에이전트 작성 스킬 검토
+- [[ChatGPT-Dots|ChatGPT dots]]: 자기 클라우드 컴퓨터를 가진 상시 실행 에이전트, 고정 예약과 자율 후속 확인, 읽기 전용 선제적 리서치와 사용자 정의 규칙, 비공개 양식 로그인과 제어권 인계, 클라우드 컴퓨터와 연결 컴퓨터 선택, 위임 계약
 
 - [[Agent-Runtime-Deployment|에이전트 런타임과 배포]]: Eve, Mecatl, Strands, OpenCode의 정의, 영속 상태, 권한과 비동기 실행
 - [[Bedrock-AgentCore-Runtime|Bedrock AgentCore Runtime 실행 계약]]: microVM과 Instances, 세션 수명 타이머, 버전과 엔드포인트, 프로토콜별 포트와 오류, /ping, 인바운드와 아웃바운드 인증, platform version V2
