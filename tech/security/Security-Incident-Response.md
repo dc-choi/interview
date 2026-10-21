@@ -83,6 +83,14 @@ PII는 Personally Identifiable Information의 약어다. NIST SP 800-122(2010) 2
 
 운영 적용 예시: 복구 작업과 병행해 비정상적인 외부 전송량, 관련 계정과 데이터 접근 기록을 확인하고, 확인된 반출과 공격자의 주장을 구분한다. CISA가 든 Rclone, Rsync 같은 도구는 정상 업무에도 쓰이므로 설치 흔적만으로 유출을 확정하지 않는다. 침해 계정의 접근 차단과 노출 범위 확인을 별도 완료 조건으로 두며, 기록이 부족한 구간은 미확인으로 남긴다. 백업은 가용성 복구 수단이고 이미 외부로 복사된 데이터의 회수 수단은 아니라는 구분이 핵심이다.
 
+### 갈취 주장과 피해 범위를 분리한다
+
+2026-10-22 확인한 FBI/IC3의 2026-05-15 LMS 침해 관련 경보는 공격자가 실제 접근 사실, 과장된 주장이나 존재하지 않는 민감정보를 이용해 지급을 압박할 수 있다고 설명한다. 이 경보는 특정 채용 포털의 유출 규모를 확인한 조사 보고서가 아니다. 협박문에 적힌 전체 데이터 보유 주장도 실제 반출 범위와 구분한다.
+
+경보는 긴급하거나 이례적인 요청을 기존에 알고 있던 다른 연락 경로로 확인하고, 수상한 링크와 첨부를 열지 않으며, 요구에 응하거나 돈을 보내지 말라고 권고한다. 관련 통신과 사건 정보를 보존하라는 안내도 포함한다.
+
+운영 적용 제안: 공격자의 주장, 서비스 운영자의 확인, 로그로 확인한 반출을 각각 기록한다. 통신 원본은 접근이 통제된 증거 저장소에 보존하고 공개 문서에는 확인한 데이터 유형과 미확인 범위만 남긴다. 사이트 변조나 서비스 중단만으로 전체 고객 데이터 유출을 확정하지 않는다.
+
 ## 로그로 침해 흐름 재구성하기
 
 로그는 수집한 사건의 기록이다. 모든 행동이 자동으로 남거나 공격자가 흔적을 지울 수 없다는 보장은 없다. 수집 누락, 저장 공간 부족에 따른 덮어쓰기, 변조와 삭제가 조사 범위를 제한한다.
@@ -195,6 +203,7 @@ CSV가 생성됐다는 사실은 수집과 필드 변환이 정확하다는 증�
 
 ## 출처
 
+- [ShinyHunters: Cyber Criminal Group Attacks Learning Management System — FBI/IC3](https://www.ic3.gov/PSA/2026/PSA260515/) — 2026-05-15 경보, 2026-10-22 실제/과장된 접근 주장과 허위 민감정보, 연락 검증과 증거 보존 권고 대조.
 - [OWASP Cheat Sheet Series, Logging Cheat Sheet](https://cheatsheetseries.owasp.org/cheatsheets/Logging_Cheat_Sheet.html) — 기록 대상과 이벤트 속성
 - [Impact of AI on cyber threat from now to 2027 — NCSC](https://www.ncsc.gov.uk/report/impact-ai-cyber-threat-now-2027) — 2025-05-07 위협 평가, 특정 사건의 조사 보고서가 아님
 - [NIST, SP 800-122: Guide to Protecting the Confidentiality of Personally Identifiable Information (PII)](https://nvlpubs.nist.gov/nistpubs/legacy/sp/nistspecialpublication800-122.pdf) — 2.1~2.2절의 정의와 예시

@@ -26,6 +26,15 @@ Installation job draft는 project/space/Ontology와 여러 제품의 의존성�
 
 위 생성과 조회 endpoint는 preview이며 요청에 `preview=true`가 필요하다. OAuth2를 사용하는 제3자 앱의 scope는 생성에 `api:v3:marketplace-installation:write:create`, 조회에 `api:v3:marketplace-installation:read:get`이다. 실제 환경의 호출이나 권한 검증은 수행하지 않았으며, 설치 진행과 완료는 job 및 설치 자원을 별도로 확인한다.
 
+### 생성 입력과 버전 힌트의 제약
+
+2026-10-21 수집된 공식 Create Marketplace Installation 명세를 2026-10-22 대조한 범위다. 공개 페이지의 실시간 재조회는 실패했으므로 수집 이후 변경 여부와 실제 호출 동작은 확인하지 못했다.
+
+- 필수 입력은 `marketplaceRid`, `productId`, `parentFolderRid`다. `parentFolderRid`는 등록 목적지이며 후속 job이 자원을 만드는 project/folder를 가리킨다. `ontologyRid`는 후속 job이 Ontology 자원을 만들거나 수정할 대상이고, 제품이 Ontology와 상호작용하지 않으면 생략한다.
+- `targetVersionHint`는 `versionId` 또는 `semanticVersion` 형태를 받는다. 후자는 선행 0이 없는 음이 아닌 정수 세 부분의 정확한 `major.minor.patch`만 받는다. 버전 범위, wildcard, prerelease와 build metadata는 지원하지 않는다. 예를 들어 `1.2.3`과 `^1.2.3`을 같은 입력으로 취급하지 않는다.
+- 힌트를 생략하면 최신 released version을 버전별 검증과 초기 제목 결정에 사용한다. 이 기본값도 설치 실행 버전의 확정과 구분한다.
+- 잘못된 버전 형식은 `InvalidInstallationTargetVersionHint`, 존재하지 않는 힌트 버전은 `MarketplaceProductVersionNotFound`, singleton 충돌은 `SingletonMarketplaceInstallationAlreadyExists`로 구분한다. 운영에서는 입력 오류와 충돌을 반복 요청으로 해결하려 하지 말고 해당 조건부터 확인한다.
+
 ## 입력을 충족하는 방식
 
 Input은 resource, group, migration 설정이나 prefix일 수 있다. Linked product가 채운 input은 기본 숨김이므로 mandatory 개수만 보지 말고 실제 공급 자원을 확인한다. Downstream tab은 해당 input을 소비할 출력을 보여 준다.
@@ -43,7 +52,7 @@ Ontology install prefix는 display name만 또는 display/API name 모두에 적
 ## 출처
 
 - [Palantir Foundry, Get Marketplace Installation](https://www.palantir.com/docs/foundry/api/v3/marketplace-v3-resources/marketplace-installations/get-marketplace-installation) — 2026-10-22 등록 자원과 목표 버전의 의미, preview와 조회 scope 확인.
-- [Palantir Foundry, Create Marketplace Installation](https://www.palantir.com/docs/foundry/api/v3/marketplace-v3-resources/marketplace-installations/create-marketplace-installation) — 2026-10-22 등록과 job 실행의 구분, 버전 힌트와 비멱등성 확인.
+- [Palantir Foundry, Create Marketplace Installation](https://www.palantir.com/docs/foundry/api/v3/marketplace-v3-resources/marketplace-installations/create-marketplace-installation) — 2026-10-22 등록과 job 실행의 구분, 버전 힌트와 비멱등성 확인. 생성 입력과 버전 형식 제약은 2026-10-21 수집본 대조이며 실시간 재조회와 실제 호출은 미확인.
 - [Palantir Foundry, marketplace](https://www.palantir.com/docs/foundry/marketplace/)
 - [Palantir Foundry, browse-products](https://www.palantir.com/docs/foundry/marketplace/browse-products/)
 - [Palantir Foundry, getting-started](https://www.palantir.com/docs/foundry/marketplace/getting-started/)

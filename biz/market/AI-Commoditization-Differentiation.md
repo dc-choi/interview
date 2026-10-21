@@ -78,6 +78,12 @@ AI가 검색, 비교, 요약, 제작, 매칭처럼 규칙이 분명한 작업의
 
 같은 업종 안에서도 반응은 갈린다. 보안처럼 모델의 취약점 탐지 능력과 겹치는 분야에서는 단일 점검 기능 제품은 대체 압력을, 데이터와 설치 기반을 가진 플랫폼은 모델을 흡수할 기회를 받는다고 볼 수 있다. 이는 해석이며, 특정 기업의 주가 등락이나 섹터 시가총액 감소 폭 같은 수치는 1차 자료로 확인하지 못해 넣지 않는다. 출시 전 루머에 기댄 시장 해석도 확정 사실로 쓰지 않고, 모델 사양은 [[Claude-Fable-5-Mythos-5|Claude Fable 5, Mythos 5]]에서 본다.
 
+### 모델 선택권과 업무 자산의 통제권
+
+모델을 바꾸어도 고객의 업무 맥락과 운영 자산을 유지할 수 있는지는 별도의 사업 판단이다. 2026-03-04 Microsoft 공개 대담에서는 하네스와 컨텍스트 계층을 모델과 분리하고, 제품별 평가를 개선하면서 제공 원가를 낮추는 방향을 제시했다(2026-10-22 대담록 확인). 공급사의 전략적 견해이며 클라우드 기업의 수익 우위나 특정 종목의 투자 수익을 입증한 자료는 아니다.
+
+사업 적용 제안: 공급자를 바꿀 때 유지되는 고객 관계, 업무 기록과 품질 기준을 적고 이전 비용을 확인한다. 모델 단가만 비교하지 않고 검토와 재작업을 포함해 같은 업무 결과를 내는 비용을 비교한다. 기술적 분리와 교체 검증은 [[Harness-Anatomy#모델, 하네스와 업무 맥락의 분리|하네스 구성도]]에서 다룬다.
+
 ## 초기 실증: 프리랜서 수요의 이동
 
 옥스퍼드 인터넷 연구소(Oxford Internet Institute) 연구진은 한 글로벌 프리랜서 플랫폼의 구인 공고 300만 건 이상(2021년 1월부터 2023년 9월까지)을 116개 기술 묶음으로 나누고, 각 묶음을 대규모 언어 모델로 대체되는 기술, 보완되는 기술, 영향이 없는 기술로 분류한 뒤 ChatGPT 출시 전후의 수요를 비교했다. 결과는 2025년 1월 Journal of Economic Behavior and Organization에 실렸다. 연구소 자료에는 플랫폼 이름이 나오지 않는다.
@@ -106,8 +112,7 @@ AI가 검색, 비교, 요약, 제작, 매칭처럼 규칙이 분명한 작업의
 
 ## 출처
 
-- [앞으로 사라질 가능성이 높은 사업과 떠오를 사업 5가지 — Threads, move__class](https://www.threads.com/@move__class/post/Dd3Z86cj9eK)
-- [AI 시대 블루오션은 사람 때문에 확장하지 못한 서비스업 — Threads, jayhong.dev](https://www.threads.com/@jayhong.dev/post/DdgJar_khwD)
+- [Morgan Stanley Technology, Media & Telecom Conference — Microsoft, Satya Nadella](https://www.microsoft.com/en-us/investor/events/fy-2026/morgan-stanley-tmt-conference) — 2026-03-04 대담, 2026-10-22 모델 결합 분리와 제품 평가 및 원가 최적화 방향 확인.
 - [Decagon](https://decagon.ai/)
 - [Sierra](https://sierra.ai/)
 - [EliseAI](https://www.eliseai.com/)
@@ -119,7 +124,6 @@ AI가 검색, 비교, 요약, 제작, 매칭처럼 규칙이 분명한 작업의
 - [The Build vs. Buy Shift: AI, Shadow IT, and the SaaS Replacement Era — Retool Blog](https://retool.com/blog/ai-build-vs-buy-report-2026)
 - [Anthropic raises $30 billion in Series G funding at $380 billion post-money valuation — Anthropic](https://www.anthropic.com/news/anthropic-raises-30-billion-series-g-funding-380-billion-post-money-valuation)
 - [Anthropic raises $65B in Series H funding at $965B post-money valuation — Anthropic](https://www.anthropic.com/news/series-h)
-- [Claude Fable 5 출시 루머와 AI 모델 경쟁, 섹터 반응 — Threads, choi.openai](https://www.threads.com/@choi.openai/post/DZWwm3uD1Zf)
 - [Winners and losers of generative AI: Early Evidence of Shifts in Freelancer Demand — Oxford Internet Institute, Ole Teutloff 외](https://sosi.oii.ox.ac.uk/publications/winners-and-losers-of-generative-ai-early-evidence-of-shifts-in-freelancer-demand/)
 - [The Winners and Losers of Generative AI in the Freelance Job Market — Oxford Internet Institute](https://www.oii.ox.ac.uk/the-winners-and-losers-of-generative-ai-in-the-freelance-job-market/)
 - [AI doesn't end scarcity. It relocates it — Fortune, François Candelon 외](https://fortune.com/2026/07/24/ai-doesnt-end-scarcity-it-relocates-it/)

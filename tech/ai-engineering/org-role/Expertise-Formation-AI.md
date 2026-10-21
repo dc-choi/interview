@@ -23,6 +23,14 @@ aliases: ["Expertise Formation AI", "AI 시대 전문성 형성", "AI와 코딩 
 
 판단을 통째로 넘기는 것과 기계적, 반복적인 작업을 위임하는 것은 다르다. 반복 작업의 위임은 부담을 줄일 수 있지만, 배우려는 판단까지 넘기면 연습 기회가 줄 수 있다. 무엇이 판단이고 무엇이 기계 작업인지 경계를 의식적으로 그어야 하며, 배우는 중인 영역일수록 판단 쪽 경계를 넓게 잡는다. 이 현상을 부르는 용어(인지 부채)의 은유 적합성 비판과 대체 명명(위축, 탈숙련)은 [[Technical-Debt|기술 부채]]가 다룬다.
 
+## 근거 — 사고 노력의 자기보고와 능력 저하는 다르다
+
+CHI 2025 연구는 지식 노동자 319명이 제시한 생성형 AI 업무 활용 사례 936건을 조사했다. 과제와 사용자 요인을 고려했을 때, AI에 대한 확신이 높을수록 비판적 사고를 덜 수행한다고 보고하는 경향이 있었고, 해당 과제에서 자신의 능력에 대한 확신이 높을수록 더 수행한다고 보고하는 경향이 있었다. 질적 분석에서는 사고의 초점이 정보 검증, 응답 통합과 과업 관리로 이동하는 양상이 나타났다(2026-10-22 Microsoft Research의 연구 초록 대조).
+
+이는 자기보고 설문에서 관찰한 연관성이며, AI 때문에 지능이나 장기 전문성이 떨어졌다는 인과 실험이 아니다. 과제별 자신감도 실제 역량 점수와 다르다. AI를 많이 썼다는 사실이나 작업이 쉬워졌다는 느낌만으로 숙련의 변화 방향을 판정하지 않는다.
+
+실무 적용 제안은 생성량과 별도로 검증 활동을 남기는 것이다. 초안을 받기 전에 판단 기준을 적고, 결과의 근거를 대조하며, 도구를 끈 뒤 같은 원리를 설명하거나 변형 문제를 푼다. 보고서를 다시 타이핑하거나 AI에게 반론을 요청하는 행위 자체를 효과가 입증된 학습법으로 간주하지 않고, 도움 없이 남은 이해로 확인한다. 구체적인 연습은 [[AI-Handicap-Learning|AI 핸디캡 학습법]]과 연결한다.
+
 ## 근거 — 가드레일 설계에 따라 달라진 수학 학습 결과
 
 2025년 PNAS에 게재된 Bastani 등의 RCT는 터키의 한 고등학교에서 2023년 가을에 진행됐다. 9~11학년 약 1,000명을 학급 단위로 세 집단에 배정했고, 우수반은 주분석에서 제외했다. 각 90분씩 네 차례 수업에서 공통 설명과 예제, 연습, 같은 회차의 AI 없는 시험을 진행해 보조 중 성과와 단기 독립 수행의 차이를 측정했다. 개발자의 장기 전문성이나 다른 교육 환경을 직접 측정한 연구는 아니다.
@@ -81,6 +89,7 @@ AI가 증명을 생성하는 능력과 수학을 이해하고 설명하는 사�
 
 ## 출처
 
+- [The Impact of Generative AI on Critical Thinking: Self-Reported Reductions in Cognitive Effort and Confidence Effects From a Survey of Knowledge Workers — Microsoft Research, Lee et al.](https://www.microsoft.com/en-us/research/publication/the-impact-of-generative-ai-on-critical-thinking-self-reported-reductions-in-cognitive-effort-and-confidence-effects-from-a-survey-of-knowledge-workers/) — CHI 2025, 2026-10-22 초록의 표본, 연관성과 질적 분석 대조. 장기 능력 변화나 인과 효과의 근거로 사용하지 않음.
 - [What should we tell our students? — Álvaro Lozano-Robledo, Terence Tao 블로그 기고](https://terrytao.wordpress.com/2026/10/08/what-should-we-tell-our-students/) — 2026-10-08, 진로 의견과 볼록껍질 가설, 고용 예측 미검증
 
 - [AI Coding will Prevent Expertise — Lars Faye](https://larsfaye.com/articles/ai-coding-will-prevent-expertise)
@@ -93,7 +102,6 @@ AI가 증명을 생성하는 능력과 수학을 이해하고 설명하는 사�
 - [Organizing Instruction and Study to Improve Student Learning — IES, What Works Clearinghouse](https://ies.ed.gov/ncee/wwc/practiceguide/1)
 - [Ironies of Automation — Automatica, Lisanne Bainbridge](https://tc.ifac-control.org/4/1/newsletter/ironies-of-automation/@@download/file/Bainbridge1983_Automatica_Ironies%20of%20automation.pdf)
 - [AI Handles Incidents, Engineers Lose Touch With Their Systems — Sylvain Kalache](https://www.sylvainkalache.com/blog/ai-handles-incidents-engineers-lose-touch-with-their-systems)
-- [AI 시대 주니어 육성과 선배의 역할 — Threads, simula](https://www.threads.com/@simula/post/DdV6f9aGGjo)
 - [요즘 컴퓨터 공학과 전공자들이 상담할때 많이 말하는것 — YouTube, 팀노바](https://www.youtube.com/watch?v=ELjGcMdLyv8) — 2026-10-16, AI로 결과물은 만들지만 원리는 모른다는 상담 사례와 시행착오 학습이 줄었다는 관찰을 다룬 계기. 학습 효과의 근거로 쓰지 않았고 리눅스 코드 줄 수, 생성 비용 추정과 코딩 2일 대 검토 3일 비율은 검증하지 않아 쓰지 않음
 - [AI 시대에 컴공을 선택한 용사들에게 - \[잡담\] — YouTube, Uzchowall](https://www.youtube.com/watch?v=luyBenV55xk) — 2026-09-05, 학습 중 AI 대신 직접 구현과 디버깅을 하라는 권고는 화자의 경험적 견해, 학습 효과의 근거로 사용하지 않음
 

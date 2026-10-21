@@ -77,7 +77,13 @@ aliases: ["Harness Anatomy", "하네스 구성도", "에이전트 = 모델 + 하
 | 실행 환경 | 도구 실행이 닿는 대상. 파일시스템, 셸, Git, 샌드박스 안의 네트워크 |
 | 평가 하네스 | 런타임 밖에서 하네스 자체를 회귀 검증. 골든셋과 채점 스크립트 |
 
-여기서 하네스가 팀의 자산이 되는 이유가 나온다. 모델을 갈아 끼우는 일은 제너레이터 한 곳을 바꾸는 일이고 안쪽 블록은 그대로 남는다. 그 교체가 품질을 떨어뜨렸는지는 평가 하네스가 런타임 밖에서 판정한다 → [[Evaluation-Driven-Development]].
+모델과 독립적으로 관리하는 도구, 권한, 업무 맥락과 평가 기준은 하네스에 남길 수 있다. 다만 모델 교체가 제너레이터 한 곳의 변경만으로 끝난다는 보장은 없다. 교체 경계를 설계하고 품질 변화를 [[Evaluation-Driven-Development|평가 하네스]]에서 확인한다.
+
+### 모델, 하네스와 업무 맥락의 분리
+
+2026-03-04 공개 대담에서 제시된 설계 방향은 하네스뿐 아니라 컨텍스트 계층도 특정 모델에 결합하지 않는 것이다(2026-10-22 Microsoft 공식 대담록 확인). 이는 분리를 지향하는 설계 원칙이며 모델 간 자동 호환 보장이 아니다.
+
+적용 제안: 업무 자료와 상태, 도구 실행 권한, 모델 호출 어댑터를 나누고, 모델을 바꾼 뒤 도구 인자, 결과 처리와 업무 합격 조건을 다시 확인한다. 같은 평가 과제로 성공률과 비용을 비교하는 방법은 [[Harness-Component-Evaluation|하네스 구성요소 평가]]를 따른다. 고객 관계와 업무 데이터가 사업 가치로 남는 조건은 [[AI-Commoditization-Differentiation|AI 범용화와 사업 차별화]]에서 다룬다.
 
 ## 겉모습은 넷, 코어는 하나
 
@@ -120,13 +126,14 @@ aliases: ["Harness Anatomy", "하네스 구성도", "에이전트 = 모델 + 하
 ## 면접 체크포인트
 
 - 에이전트를 모델과 하네스의 합으로 분해하고 하네스 안쪽 블록과 바깥 상자를 구분할 수 있는가
-- 모델 교체가 왜 제너레이터 한 곳의 변경인지, 그 교체를 무엇이 검증하는지
+- 모델과 분리해 유지할 자산은 무엇이며, 교체 뒤 호환성과 품질을 무엇으로 확인하는지
 - 제약과 검증이 루프의 어느 단계에 끼어드는지, 그래서 왜 문장보다 훅이 센지
 - 루프 가드가 모델 판단과 별개로 존재해야 하는 이유
 - 세 기둥 중 자기 팀에 비어 있는 기둥을 지목할 수 있는가
 
 ## 출처
 
+- [Morgan Stanley Technology, Media & Telecom Conference — Microsoft, Satya Nadella](https://www.microsoft.com/en-us/investor/events/fy-2026/morgan-stanley-tmt-conference) — 2026-03-04 대담, 2026-10-22 하네스와 컨텍스트 계층의 모델 결합 분리 방향 확인. 호환성 시험 결과는 아님.
 - [LangGraph, Persistence](https://docs.langchain.com/oss/python/langgraph/persistence)
 - [LangGraph, Functional API overview](https://docs.langchain.com/oss/python/langgraph/functional-api)
 - [Temporal, Activity Definition](https://docs.temporal.io/activity-definition)
