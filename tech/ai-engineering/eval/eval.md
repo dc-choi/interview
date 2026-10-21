@@ -5,11 +5,13 @@ category: "AI엔지니어링(AIEngineering)"
 aliases: ["LLM 평가, 신뢰성", "LLM Eval & Reliability"]
 ---
 
-# LLM 평가, 신뢰성, 캘리브레이션
+# AI 모델 평가, 신뢰성, 캘리브레이션
 
-LLM 출력의 평가와 모른다고 말하는 능력 — 신뢰할 수 있는 AI 시스템의 검증 축. 평가 철학에서 시작해 개발 프로세스(EDD), 채점 장치(루브릭과 게이트, LLM 판정기), 데이터셋과 배포 관문, 배포 뒤 서빙 모델 감시로 내려간다. 상위: [[AI엔지니어링(AIEngineering)|AI 시대 엔지니어링]].
+LLM 출력의 평가와 모른다고 말하는 능력, 비전 모델의 합성 데이터와 관측 피드백을 다룬다. 평가 철학에서 시작해 개발 프로세스(EDD), 채점 장치(루브릭과 게이트, LLM 판정기), 데이터셋과 배포 관문, 배포 뒤 서빙 모델 감시로 내려간다. 상위: [[AI엔지니어링(AIEngineering)|AI 시대 엔지니어링]].
 
 ## 목차
+- [x] [[Synthetic-Vision-Data-Evaluation|합성 비전 데이터 평가]] — 생성과 인식 모델의 분리, 라벨 검수와 실제 데이터 평가
+- [x] [[Model-Feedback-Loop-and-Validation|모델 피드백 루프와 검증]] — 실험 결과 환류, shadow 비교와 실제 행동의 구분
 - [x] [[LLM-Sycophancy-Evaluation|LLM 아첨 편향 평가]] — 정답 훼손, 정정 수용과 선호만 바꾼 쌍 비교
 - [x] [[Review-Moderation-Pipeline|리뷰 검수 자동화]] — 정책별 판정, 정밀도와 재현율, 사람 재검토와 결과 버전
 - [x] [[LLM-Eval-Strategy|LLM 평가 전략 (Pass@k, 성능 비고정성, Multi-gate 데이터 품질, CSAT vs 사실정확도)]]

@@ -63,10 +63,28 @@ MAX는 `max(min(3, 5), min(2, 9)) = 3`이므로 왼쪽을 고른다. 9점을 얻
 
 이해 확인: 깊이 3 탐색 도중 시간이 끝났다면 어느 결과를 반환하는가? 루트 값이 보존된다는 사실로 잘린 모든 내부 노드의 값을 신뢰해도 되는가?
 
+## 우연이 개입하면 기대효용을 계산한다
+
+Expectimax는 우연이나 확률적으로 모델링한 상대 행동을 chance 노드로 표현한다. MAX는 자식 값의 최댓값을 고르고, chance는 `V(s) = Σ p(s'|s) V(s')`로 계산한다. 가능한 결과의 확률 합은 1이다. 최악의 결과를 고르는 MIN과 확률에 따라 결과가 정해지는 chance를 구분해야 한다.
+
+점수를 그대로 효용으로 쓰는 예를 보자. A는 확정 4점, B는 0점 또는 10점이다.
+
+| B에서 10점을 얻을 확률 | B의 기대효용 | MAX의 선택 |
+|---|---|---|
+| 0.5 | `0.5 × 0 + 0.5 × 10 = 5` | B |
+| 0.2 | `0.8 × 0 + 0.2 × 10 = 2` | A |
+
+기대효용 5는 한 번에 5점이 나온다는 뜻이 아니다. 이 게임의 실제 결과는 0점 또는 10점이다. 점수를 효용으로 삼는 전제와 결과 확률이 바뀌면 선택도 다시 계산한다. 상대의 행동 확률을 추정했다면 그 모델의 정확도도 별도 문제다.
+
+상대와 우연이 함께 있으면 MAX, MIN, chance 층을 실제 진행 순서대로 섞는다. 확률 노드에서 최솟값을 고르면 우연을 최적의 적대자로 바꿔 버린다. 또한 chance의 평균은 남은 자식 값에 영향을 받으므로 일반적인 알파 베타 가지치기를 그대로 적용할 수 없다. 가능한 값의 유한한 상하한을 알면 별도 경계 계산으로 가지치기를 검토할 수 있다.
+
+이해 확인: 위 게임에서 B를 고르는 확률 조건은 무엇인가? 두 선택의 기대효용이 같은 경계는 `p = 0.4`다.
+
 ## 출처
 
 - [UC Berkeley, CS 188 Introduction to Artificial Intelligence, Games](https://inst.eecs.berkeley.edu/~cs188/textbook/games/games.html)
 - [UC Berkeley, CS 188 Introduction to Artificial Intelligence, Minimax](https://inst.eecs.berkeley.edu/~cs188/textbook/games/minimax.html)
+- [UC Berkeley, CS 188 Introduction to Artificial Intelligence, Expectimax](https://inst.eecs.berkeley.edu/~cs188/textbook/games/expectimax.html) — 확률 노드, 혼합 층과 가지치기 조건. 수치 예는 기대효용 식으로 계산했다.
 - [UC Berkeley, CS 188 Introduction to Artificial Intelligence, Spring 2025 Lecture 6: Adversarial Search](https://inst.eecs.berkeley.edu/~cs188/archive/sp25/assets/lectures/cs188-sp25-lec06.pdf) — 알파 베타 경계와 방문 순서, 깊이 제한과 반복 심화.
 
 ## 관련 문서

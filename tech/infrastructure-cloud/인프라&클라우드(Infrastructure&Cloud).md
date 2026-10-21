@@ -78,6 +78,7 @@ aliases: ["인프라&클라우드(Infrastructure&Cloud)", "Infrastructure & Clou
 - [x] [[DMS#자동 변환율과 업무 동작 검증은 별개다|DB 마이그레이션 검증 경계]] — 생성형 AI 적용 범위, 객체 변환, 행 비교와 애플리케이션 회귀 검증
 - [x] [[DMS#엔드포인트 연결과 TLS 검증|DMS endpoint 연결]] — 복제 인스턴스 기준 연결 검사, TLS 모드와 엔진별 지원 차이
 - [x] [[HealthOmics-Workflows|HealthOmics 워크플로 운영]] — 실행 정의, 상태 이벤트 누락 대비, 로그와 자원 조정
+- [x] [[HealthLake-FHIR-Data|HealthLake와 FHIR 의료 데이터]] — R4 resource, 변환과 의미 검증, 추천과 전문가 검토
 - [x] [[Athena#SageMaker Unified Studio와 Power BI의 ODBC 연결|Athena ODBC와 Power BI]] — 대화형 로그인, 게이트웨이 IAM 역할과 연결 매핑
 - [x] [[DynamoDB#스로틀링과 재시도|DynamoDB 스로틀링 진단]] — reason과 resource ARN, GSI back pressure, 파티션과 quota, Auto Scaling 지연
 - [x] [[S3-Tables-Maintenance|S3 Tables 유지보수]] — table bucket, 스냅샷 만료와 파일 삭제, Iceberg 설정 충돌, Lake Formation 통합과 실제 조회 역할의 권한
