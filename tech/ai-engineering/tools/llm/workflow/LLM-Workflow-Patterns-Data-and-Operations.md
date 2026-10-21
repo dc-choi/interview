@@ -114,9 +114,18 @@ Amazon A2I의 Textract 통합은 다음 조건을 구분한다(2026-10-16 공식
 - 사내 지원 어시스턴트 지표는 부분 도움을 포함한 도움 비율과 완전 해결 비율을 구분하고, 피드백 범주의 정의, 분모(피드백 응답 수)와 전체 답변 대비 응답률, 채널별 표본 편향을 함께 본다
 
 ## 사례
+
 - 성과 평가 보조: Jira 이슈/에픽 → OKR 연결 → 회사 평가 기준 반영으로 성과 노트 초안 작성. 동료 평가는 AI가 질문을 던져 구체화하고 AAT(행동-감사-기대), SBI(상황-행동-영향) 피드백 구조를 적용. 데이터 전처리(누락값, 형식 오류)와 평가 윤리(편향, 개인정보, 최종 판단은 사람)가 난제.
 
+### 생성한 메타데이터와 입력 프롬프트를 함께 보존한다
+
+AWS의 2024-08-02 식신 구축 사례는 리뷰와 메뉴 등에서 LLM으로 키워드를 추출하고 S3와 Snowflake에 저장해 분석용 통합 테이블에 반영하는 흐름을 소개한다. 입력 프롬프트와 생성 결과를 함께 남긴 목적은 이후 두 자료를 비교하며 품질을 분석하기 위해서다. 2026-10-22 해당 구축 글을 대조했으며, 당시 모델과 구성을 현재의 필수 선택으로 제시하지 않는다.
+
+적용 제안: 추출 결과에는 원본 레코드, 프롬프트와 모델 버전, 생성 시각 및 검토 상태를 연결한다. 원본의 사실과 모델이 생성한 분류를 구분하고, 추출 오류가 후속 집계와 설명에 어떻게 전파되는지 확인한다. 생성 결과를 다시 입력하는 단계가 있어도 반복 호출 자체가 정확성을 보장하지 않으므로 별도 평가 입력으로 대조한다. 이 사례의 정확도와 비용 개선을 독립 측정한 것은 아니며 기존 기능별 검증일은 유지한다.
+
 ## 출처
+
+- [AWS 기술 파트너와 함께 구축한 푸드테크 기업 식신의 Amazon Bedrock 기반 AI 대시보드 구축기 — AWS 기술 블로그](https://aws.amazon.com/ko/blogs/tech/sikshin-built-ai-dashboard-with-aws-technology-partners-based-on-amazon-bedrock/) — 2026-10-22 생성 키워드, 입력 프롬프트와 결과 보존의 사례 범위 대조
 - [AWS, Evaluate the performance of RAG sources using Amazon Bedrock evaluations](https://docs.aws.amazon.com/bedrock/latest/userguide/evaluation-kb.html) — 2026-10-22 검색 전용과 검색 및 생성 평가의 구분을 대조했다. 업무별 평가표는 설계 제안이다.
 - [AWS, Prompt engineering concepts](https://docs.aws.amazon.com/bedrock/latest/userguide/prompt-engineering-guidelines.html) — 2026-10-22 작업 지시, 맥락, 예시와 입력의 구성을 대조했다. 현장 표현의 보존과 분류 계약은 설계 제안이다.
 - [GC녹십자의 실사 대응 혁신 이야기 — AWS Industry Week 2024 (YouTube)](https://www.youtube.com/watch?v=Tu24l6wugSA) — 2025-01-16 공개. 검색, 기준 연결과 문서 초안이라는 과업 구분을 음성 전사에서 확인했다. 화면의 평가표와 성과 수치는 반영하지 않았다.

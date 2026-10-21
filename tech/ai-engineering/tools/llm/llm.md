@@ -10,6 +10,7 @@ aliases: ["LLM 원리와 운영", "LLM 운영", "LLM Fundamentals and Operations
 모델의 학습과 생성 원리부터 추론 병목, 선택, 호출 계층과 운영, 제공자 이용 정책의 준수 설계까지 연결한다. 상위: [[tools|AI 엔지니어링 실천 도구]].
 
 ## 목차
+- [x] [[Bedrock-Model-Inference|Bedrock 모델 호출]] — Invoke와 Converse 계약, 모델별 스키마, 대화 상태와 코드 검증
 - [x] [[LLM-Generation-Mechanics|LLM 동작 원리 (generation-mechanics/ 서브폴더) — AI 전체 지도, Training/Inference와 역전파, BPE 토크나이저 구성과 토크나이저 차이, 이미지와 사고 토큰 과금, Transformer QKV Attention과 Decoding, Weight/Context/RAG 구분, 프롬프트와 RAG와 파인튜닝 선택, Context Window와 대화 누적, 긴 컨텍스트 단가 구간, 환각과 Agent 연결, 비개발자 설명용 비유와 한계]]
 - [x] [[LLM-Workflow-Patterns|LLM 워크플로우 패턴 (workflow/ 서브폴더) — 체인 vs 에이전트 선택과 절충, Plan-and-Execute, 콘텐츠 초안과 승인 대기열, n8n 오류 처리, Function Calling과 스킬 시스템, Text-to-SQL 맥락 구성과 생성/실행 권한 분리, 데이터 vs 모델과 환각 통제, 워크플로 표현식과 실행 경계]]
 - [x] [[LLM-Operations|LLM 선택, 서빙과 운영 (operations/ 서브폴더) — 모델 티어 선택과 라우팅, 결정 모델, 추론 병목, 프롬프트 캐싱, 게이트웨이, 실패 처리]]

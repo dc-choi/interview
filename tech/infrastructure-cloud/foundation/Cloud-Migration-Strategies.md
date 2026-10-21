@@ -169,6 +169,12 @@ Agentless는 개별 소스 VM에 에이전트를 설치하지 않는다는 뜻�
 
 앞의 두 항목은 IDC 이전 사례와 공식 가이드를 적용한 점검 질문이다. 과거 발표의 네트워크 제한과 이전 소요 시간을 현재 AWS의 보편적 제약이나 보장값으로 옮기지 않는다. 기존 서비스별 지원 정책을 전부 재검증한 것은 아니므로 문서의 `verified_at`은 유지한다.
 
+## 사례의 예상 절감과 실현 성과를 구분한다
+
+AWS가 2026-03-25 공개한 IDEMIA Civil Identity 고객 인터뷰는 .NET 3.5에서 .NET 8로의 현대화, 컨테이너화와 GovCloud 이전을 설명한다. 인터뷰의 40% 이상 비용 절감은 앞으로 기대하는 수치이며, 완료된 절감 실적으로 제시하지 않는다. 기존 방식이라면 3년 이상 걸렸을 것이라는 발언도 비교 추정이지 실제로 측정한 두 프로젝트의 기간 비교가 아니다.
+
+이 사례를 검토할 때는 수행한 변경, 측정한 결과, 앞으로의 예상치를 따로 기록한다(적용 제안). 런타임 갱신과 컨테이너화가 함께 있었다는 사실만으로 서비스 분해 완료나 비용 감소의 단일 원인을 확정하지 않는다. 2026-10-22 공개 영상의 사람이 작성한 자막을 대조한 범위이며, 실제 배포와 비용 장부는 확인하지 않았다. 기존 제품 정책의 검증일은 유지한다.
+
 ## 흔한 실수
 
 - 전략 이름만 합의하고 바뀌는 범위를 적지 않아 견적, 일정과 책임이 어긋난다.
@@ -184,6 +190,8 @@ Agentless는 개별 소스 VM에 에이전트를 설치하지 않는다는 뜻�
 - 수평 확장 전에 확인할 12 Factor 항목(설정, stateless, 로그)
 
 ## 출처
+
+- [Modernizing Identity Systems with AWS Transform — Amazon Web Services](https://www.youtube.com/watch?v=dB-B7nJlEsM) — 고객 인터뷰의 변경 범위와 예상 절감 발언만 참조
 
 - [AWS Prescriptive Guidance, Pre-cutover stage](https://docs.aws.amazon.com/prescriptive-guidance/latest/best-practices-migration-cutover/pre-cutover-stage.html)
 - [AWS Prescriptive Guidance, Cutover stage](https://docs.aws.amazon.com/prescriptive-guidance/latest/best-practices-migration-cutover/cutover-stage.html) — 2026-10-16 전환 단계와 새 데이터 발생 후 rollback 조건 대조
