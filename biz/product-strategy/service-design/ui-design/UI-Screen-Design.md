@@ -14,6 +14,7 @@ aliases: ["UI Screen Design", "화면 UI 설계"]
 - [[UX-Laws|UX 심리학 10가지 법칙]]: 제이콥, 피츠, 힉, 테슬러, 도허티 임계와 백엔드 연결
 - [[User-Guidance-Patterns|사용자 가이드 제공 패턴]]: 가이드가 필요한 3가지 상황, 5가지 제공 방식, 적재적소 배치 원칙
 - [[Perceived-Performance|지각된 성능과 로딩 상태]]: 대기 시간별 피드백 선택, 스켈레톤 화면의 조건과 공간 예약, Core Web Vitals 기준과 체감 검증, 상품 목록 적용 예시
+- [[UI-Reference-Research|화면 디자인 레퍼런스 조사]]: 전체 페이지, 영역과 상호작용별 조사, 설계 요구로 옮기기, 열람과 재사용 조건 구분
 
 ## 함께 볼 문서
 
