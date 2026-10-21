@@ -71,13 +71,28 @@ MIT의 초기 시장 TAM 설명은 정의한 시장에서 점유율 100%일 때�
 
 산업별로 매출을 늘리고 비용을 줄이는 핵심 방법인 KSF([[Competitive-Analysis|경쟁사 분석]] 참조)와 짝을 이룬다 — 동인이 시장 차원의 성장 엔진이라면, KSF는 그 산업에서 개별 기업이 이기는 방법이다.
 
+### 인구 감소와 개별 수요의 변화를 분리한다
+
+총인구가 감소해도 연령 구성과 필요한 서비스가 바뀌므로 모든 시장이 같은 비율로 줄지는 않는다. 인구 감소와 고령화가 겹치면 교육이나 주택의 공급 여력이 남는 한편 장기 돌봄, 보건과 고령자용 기반시설의 수요는 커질 수 있다. 동시에 낮아진 밀도는 서비스 제공의 규모의 경제를 약화시키고 1인당 고정비를 높일 수 있다(OECD 2025 보고서, 2026-10-22 대조).
+
+지역 간 공동 운영, 여러 서비스를 묶은 거점, 이동식 또는 수요응답형 제공은 이런 공급 조건에 대응하는 방법이다. 공공서비스의 적응 수단이며, 그 자체가 민간 사업의 수익성을 입증하지는 않는다.
+
+사업 검토에서는 다음을 별도로 확인한다. 아래 질문은 인구 변화와 서비스 공급 조건을 시장 분석에 적용한 판단 틀이다.
+
+- **수요 단위:** 줄어드는 총인구 대신 실제 이용자, 가구, 사업장과 이용 빈도 중 무엇이 매출을 만드는가.
+- **구매자와 예산:** 이용자 본인, 가족, 기업이나 공공기관 중 누가 지불하며 예산과 계약 경로가 있는가.
+- **공급 비용:** 이동 거리, 인력 확보, 시설 유지와 운영 지원 비용을 포함해 고객당 비용이 성립하는가.
+- **확보 가능량:** 여러 지역의 수요를 묶거나 운영을 자동화할 때 절감되는 비용과 새로 드는 비용은 얼마인가.
+
+돌봄, 빈 공간 관리나 자동화는 후속 검증할 사업 후보로 볼 수 있다. 인구 전망만으로 특정 업종의 성장률, 고객의 지불 의사와 진입 성공을 확정하지 않는다.
+
 ## 시장 세분화 (Segmentation)
 
 시장을 동질적인 그룹으로 나누는 방법:
 - **인구통계:** 나이, 성별, 소득
 - **행동 기반:** 사용 빈도, 충성도, 구매 패턴
 - **니즈 기반:** 해결하고자 하는 문제 (문제와 가치 제안을 연결할 때 유용)
-- **JTBD (Jobs-to-be-Done):** "고객이 제품을 '고용'하는 이유"에 집중
+- **JTBD (Jobs-to-be-Done):** 고객이 제품을 사용하는 목적과 해결하려는 과업에 집중
 
 ## Blue Ocean vs Red Ocean
 
@@ -145,6 +160,8 @@ Q. 시장 분석을 어떻게 했는가?
 - [한국천주교주교회의, 한국 천주교 주소록](https://directory.cbck.or.kr/OnlineAddress/SearchList.aspx?cgubn=g&char=all&gubn=4&gubn2=1&gyogu=all&paged=10&scnt=1755&sort=0&start=161&tbxSearch=)
 - [서비스 기획자를 위한 시장 분석 — 쪼렙 서비스기획자 (Brunch)](https://brunch.co.kr/@b30afb04c9f54dc/51)
 - [AI 기반 심리상담에 대한 인식조사 — 한국리서치](https://hrcopinion.co.kr/archives/32744) — 2025년 조사, 의향과 경험 문항의 구분
+- [Shrinking Smartly and Sustainably, A policy framework and policy recommendations to address demographic change — OECD](https://www.oecd.org/en/publications/shrinking-smartly-and-sustainably_f91693e3-en/full-report/a-policy-framework-and-policy-recommendations-to-address-demographic-change_9bb55cde.html) — 2025, 2026-10-22 수요 구성과 서비스 제공 비용 확인
+- [Shrinking Smartly and Sustainably, Adapting multi-level governance, finance, service and infrastructure provision to demographic change — OECD](https://www.oecd.org/en/publications/shrinking-smartly-and-sustainably_f91693e3-en/full-report/adapting-multi-level-governance-finance-service-and-infrastructure-provision-to-demographic-change_d4b55d22.html) — 2025, 2026-10-22 공동 운영, 복합 거점과 수요응답형 서비스 확인
 
 ## 관련 문서
 - [[Competitive-Analysis|경쟁사 분석]]

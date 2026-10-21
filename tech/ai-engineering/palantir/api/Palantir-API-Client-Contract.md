@@ -12,6 +12,19 @@ Foundry Platform API는 enrollment hostname의 HTTPS endpoint를 호출하는 RE
 
 공식 공통 계약을 확인한 기록이며 실제 enrollment의 인증, 부하와 endpoint 호출을 시험한 결과는 아니다. endpoint별 제한은 공통 계약에 추가로 적용한다.
 
+## 첫 호출에서 예제와 실제 자원을 구분한다
+
+hostname은 로그인한 Palantir 화면의 URL에서 확인하고, 해당 instance의 HTTPS 주소로 요청한다. 예제의 `company`, `employee`, `rename-employee`를 자신의 Ontology와 타입에 맞게 바꾼다. Ontology에는 API name 또는 RID를 쓰고, object type과 Action에는 각각의 API name을 쓴다. 화면 표시 이름과 혼동하면 안 된다.
+
+| 작업 | 시작 예제의 REST 경로 | 확인할 계약 |
+|---|---|---|
+| 객체 목록 조회 | `GET /api/v2/ontologies/{ontology}/objects/{objectType}` | 조회 scope, 페이지와 저장소별 조회 상한 |
+| Action 적용 | `POST /api/v2/ontologies/{ontology}/actions/{action}/apply` | 읽기/쓰기 scope, JSON `parameters`, 응답 validation |
+
+문서의 탐색 버전이나 SDK 패키지 버전을 보고 요청 URL을 일괄 변경하지 않는다. 사용할 endpoint의 method와 경로를 확인한다. Action의 HTTP 200만으로 적용 성공을 판단하지 않으며 세부 계약은 [[Palantir-Ontology-V2-Action-API|Action 결과와 편집 이력]]에서 확인한다.
+
+2026-10-22에는 이 절을 Getting started와 두 V2 endpoint 문서에 대조했다. 아래 조회 상한도 List Objects 문서로 보완했으며, 그 밖의 공통 제한과 버전 정책의 기존 확인일은 유지한다.
+
 ## 인증, scope와 자원 권한
 
 API 요청은 `Authorization: Bearer <token>`을 전달한다. 개발용 사용자 token은 발급한 사용자의 권한을 가지며 폐기/만료를 관리한다. 운영 애플리케이션에 사용하거나 공유 저장소에 넣지 않는다.
@@ -51,7 +64,7 @@ S3 호환 API는 AWS CLI와 AWS SDK 같은 클라이언트를 사용할 수 있�
 
 `pageSize`는 요청값이며 정확한 반환 건수의 보장이 아니다. 실제 결과가 더 적거나 많을 수 있다. 응답 수가 요청값보다 작다는 이유만으로 순회를 끝내지 않는다. 기본 page size가 대개 최대값이며 그보다 큰 요청은 최대값으로 줄인다. 세부 endpoint가 다르게 명시하면 그 값을 따른다.
 
-한 페이지 크기와 페이지 전체에 걸친 조회 상한은 다르다. 공통 문서는 list objects가 한 쿼리에서 전체 10,000개까지 반환하고 초과 순회는 오류가 될 수 있음을 예로 든다. 여러 페이지를 요청한다는 사실만으로 대량 추출 범위를 보장하지 않는다.
+한 페이지 크기와 페이지 전체에 걸친 조회 상한은 다르다. 2026-10-22 확인한 V2 List Objects 문서에서 전체 10,000개 상한은 Object Storage V1 기반 객체에 적용된다. 결과가 더 있을 때 이를 넘겨 순회하면 `ObjectsExceededLimit`가 발생한다. Object Storage V2 기반 객체에는 이 endpoint의 해당 건수 상한이 없다고 명시한다. 이는 호출률이나 다른 endpoint의 제한까지 없다는 뜻이 아니다. API V2라는 경로만으로 객체 저장소도 V2라고 판단하지 않는다.
 
 ### 최신성과 일관성 중 무엇이 필요한가
 
@@ -121,6 +134,8 @@ Public Preview는 비운영 실험/개발 단계이며 `preview=true`로 opt-in�
 - [Palantir, API introduction](https://www.palantir.com/docs/foundry/api/general/overview/introduction)
 - [Palantir, API authentication](https://www.palantir.com/docs/foundry/api/general/overview/authentication)
 - [Palantir, API getting started](https://www.palantir.com/docs/foundry/api/general/overview/getting-started)
+- [Palantir, List Objects (v2)](https://www.palantir.com/docs/foundry/api/v2/ontologies-v2-resources/ontology-objects/list-objects) — 2026-10-22 식별자와 저장소별 조회 상한 확인
+- [Palantir, Apply Action (v2)](https://www.palantir.com/docs/foundry/api/v2/ontologies-v2-resources/actions/apply-action) — 2026-10-22 식별자, parameters와 성공 판단 확인
 - [Palantir, API SDKs](https://www.palantir.com/docs/foundry/api/general/overview/sdks)
 - [Palantir, API paging](https://www.palantir.com/docs/foundry/api/general/overview/paging)
 - [Palantir, API limits](https://www.palantir.com/docs/foundry/api/general/overview/limits)
