@@ -166,6 +166,12 @@ PMF 신호가 생겼다는 이유만으로 인원을 늘리지는 않는다. 확
 - 이 분류는 문제 해결을 함께 키워 줄 동료와 프로세스가 있을 때 성립한다. 1인 제품의 첫 디자이너가 사용자가 핵심 가치를 경험하지 못하는 병목(4절)을 맡는다면 문제 정의, 사용성 조사와 흐름 설계가 곧 병목이므로 입사 시 요건이 된다. 창업자가 시각 품질을 검토하기 어렵다면 UI 기본기도 입사 시점에 확인한다.
 - 업무 표본에서도 두 역량을 나눠 본다. UI 기본기는 실제 화면의 타이포그래피, 컬러와 레이아웃이 정보 위계를 만드는지로([[Visual-Hierarchy|시각적 위계]]), 문제 해결은 한 사례의 문제, 기각한 대안, 선택 이유와 결과를 설명하게 해서 확인한다. 완성도 높은 화면만 보면 문제 해결을, 과정 설명만 들으면 결과물의 품질을 놓친다.
 
+### 역할 정의를 첫날의 온보딩으로 연결한다
+
+역할 카드는 채용 공고에서 끝나지 않는다. 입사 전에 작업 공간, 장비, 필요한 소프트웨어와 시스템 접근을 준비하고, 첫날에는 역할과 책임, 기대 결과가 회사의 목표와 어떻게 이어지는지 설명한다. 함께 일할 사람과 회사의 비전, 가치도 소개한다. 이는 첫 채용을 위한 일반 가이드의 권고이며, 온보딩만으로 채용 성공을 보장하거나 첫 채용이 대개 실패한다고 입증하는 자료는 아니다.
+
+소규모 팀에서는 역할 카드의 첫 관찰 기간에 맡길 실제 업무 하나와 필요한 접근 권한을 연결해 점검할 수 있다. 업무를 넘겼는데도 대표에게 질문과 승인이 몰린다면 담당자의 역량 부족으로 바로 결론 내리지 않고, 기대 결과와 결정권, 도구 접근이 실제로 전달됐는지 먼저 확인한다. 이 점검은 앞선 역할 정의와 온보딩 권고를 연결한 적용 예시다.
+
 ## 10. 기술 창업자의 첫 채용 예시
 
 기술 창업자가 B2B 제품의 유료 사용과 재사용을 확인했다고 가정한다.
@@ -196,7 +202,7 @@ PMF 신호가 생겼다는 이유만으로 인원을 늘리지는 않는다. 확
 - [Do Things that Don't Scale — Paul Graham](https://www.paulgraham.com/ds.html)
 - [Recruiting Outside of Your Personal Network — Stripe Atlas](https://stripe.com/guides/atlas/recruiting)
 - [Advice for First Time Founders — Y Combinator](https://www.ycombinator.com/blog/advice-for-first-time-founders)
-- [How to Hire the First Employees for Your Startup — Stripe Atlas](https://stripe.com/resources/more/how-to-hire-the-first-employees-for-your-startup-a-guide-for-founders)
+- [How to Hire the First Employees for Your Startup — Stripe Atlas](https://stripe.com/resources/more/how-to-hire-the-first-employees-for-your-startup-a-guide-for-founders) — 온보딩의 도구와 접근 준비, 조직 소개, 목표와 기대 설정은 2026-10-21 확인
 - [인프런, 디자인 프로세스 제로투원, Q&A 무엇이든 물어보세요](https://www.inflearn.com/courses/lecture?courseId=338233&unitId=329390)
 - [근로기준법 — 국가법령정보센터](https://www.law.go.kr/LSW/lsInfoP.do?lsiSeq=290781&efYd=20261002) — 제17조, 제18조, 제23조, 제26조, 제27조, 제48조, 제54조, 제55조, 2026-10-02 시행본
 - [근로기준법 — 국가법령정보센터](https://www.law.go.kr/LSW/lsInfoP.do?lsiSeq=286771&efYd=20261210) — 제54조제1항 단서, 2026-12-10 시행 예정본(법률 제21784호, 2026-06-09 공포)
