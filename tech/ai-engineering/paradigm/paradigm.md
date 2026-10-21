@@ -10,6 +10,7 @@ aliases: ["AI 패러다임", "AI Paradigm & Models"]
 AI 시대 엔지니어링의 토대 — 패러다임 전환과 모델, API 거동. 상위: [[AI엔지니어링(AIEngineering)|AI 시대 엔지니어링]].
 
 ## 목차
+- [x] [[Energy-Based-Reasoning|에너지 기반 추론]] — 에너지 학습과 탐색, 제약 검사, 공급사 데모의 비교 조건
 - [x] [[Software-3-0|Software 3.0 (Karpathy 1.0/2.0/3.0, Harness, 레이어드 아키텍처 매핑)]]
 - [x] [[Gemini-4-Argon|Gemini 4 Argon (공유 토큰 예산과 long decode, 일반 제공, 발표 가격과 평가 및 로봇 활용 조건)]]
 - [x] [[Claude-Fable-5-Mythos-5|Claude Fable 5, Mythos 5 (1M 컨텍스트, 거부=stop_reason refusal HTTP 200, 폴백 3종, 폴백 크레딧, 적응형 사고 상시 적용(비활성화 미지원), effort, thinking.display, 모델 가용성 외생 리스크, defense in depth, 2026-09 기준 legacy이며 후속은 Fable 5.1)]]

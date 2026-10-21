@@ -40,6 +40,17 @@ AI는 수고를 줄이는 장치다. 줄인 수고를 어디로 보내느냐가 
 
 AI는 반복 작업을 덜어 몰입(flow)을 지켜 주기도 하지만, 이해 없이 결과만 받아 넘기면 몰입의 대상인 문제 풀이 자체가 빠지고 코드를 읽는 능력이 약해진다. 피드백이 사람을 거치지 않고 모델로 곧장 흘러가면 멘토링이 숙련으로 쌓이지 않는다. 숙련 저하와 이를 막는 학습 설계는 [[Expertise-Formation-AI|AI 시대 전문성 형성]]이 다룬다.
 
+## 전달할 때는 결론과 확인 근거를 먼저 정한다
+
+개인 기록은 나중에 검색할 재료를 넉넉히 보존할 수 있지만, 동료에게 보내는 답변은 상대가 내려야 할 결정에 맞게 편집한다. 다음은 공개된 실무 경험을 적용한 전달 방식이며 생산성 효과를 측정한 실험 결과는 아니다.
+
+- 첫 문장에 결론이나 필요한 결정을 적고, 판단을 지지하는 근거와 더 읽을 원문 링크를 붙인다.
+- AI 출력에 빠진 업무 제약, 직접 시도한 내용, 관찰 결과와 아직 모르는 점을 구분한다. 시도하지 않은 일을 실행 결과처럼 전달하지 않는다.
+- 요청의 목표가 불명확하면 원하는 결과를 확인한다. 진행이 막혔거나 끝났으면 상태와 다음 행동을 알린다.
+- 본문을 줄이더라도 결론을 바꿀 예외와 불확실성은 남긴다. 짧은 답변 자체가 정확성이나 좋은 협업을 보장하지는 않는다.
+
+2026-10-22에는 전달과 주의력, 시도 결과의 공유 원칙을 공개 실무 글에 대조했다. 기술 역량이 더는 희소하지 않다는 전망이나 수개월의 코드 이해를 반나절로 줄인다는 경험을 보편적 성과로 채택하지 않았다.
+
 ## 결과 책임과 소유의 세 조건
 
 AI에게 맡은 일을 수행할 책임(responsibility)은 지울 수 있어도 결과에 대한 책임(accountability)은 넘길 수 없다. 징역이나 벌금 같은 처벌을 받을 수 없는 도구에는 결과 책임을 물을 수 없기 때문이며, 위 사례에서 코드의 책임을 PR 작성자에게 두는 근거도 여기에 있다. 시스템을 소유하려면 다음 세 조건이 함께 있어야 하고, 하나라도 빠지면 소유가 깨진다.
@@ -120,6 +131,7 @@ XP(Extreme Programming)의 spike solution에도 같은 구분이 있다. spike�
 
 ## 출처
 
+- [The Age of the Soft Skill — Rudy Faile](https://rudyfaile.com/2026/09/24/the-age-of-the-soft-skill/) — 전달과 검증 근거에 대한 경험 기반 원칙, 2026-10-22 확인
 - [How We Use AI Without Making AI Slop — Ahrefs](https://ahrefs.com/blog/how-we-use-ai-without-making-ai-slop/)
 - [If coding is solved, what now?: Measuring the sloppiness of code — EARENDIL](https://earendil.com/posts/measuring-code-sloppiness/)
 - [What the hell is going on right now? — catskull.net](https://catskull.net/what-the-hell-is-going-on-right-now.html)
