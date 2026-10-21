@@ -73,6 +73,14 @@ PII는 Personally Identifiable Information의 약어다. NIST SP 800-122(2010) 2
 
 운영 적용 예시: 유출 주장을 접수하면 번호 필드뿐 아니라 함께 노출된 속성과 다른 자료와의 연결 가능성을 확인한다. 공개 보고서에는 데이터 유형과 확인 범위를 적고, 조사용 개인정보 원본은 접근이 통제된 증거 저장소에서 관리한다.
 
+### 랜섬웨어의 네트워크 격리와 전원 종료를 구분한다
+
+2026-10-22 CISA 공동 #StopRansomware Guide의 대응 체크리스트 부분 대조 기준이다. 영향받는 시스템을 식별해 즉시 격리하고, 여러 시스템이나 서브넷이 영향받으면 스위치 수준의 네트워크 차단을 검토한다. 감염망을 공격자가 관찰할 수 있으므로 대응 연락에는 전화 같은 별도 통신 경로를 사용한다.
+
+전원 종료는 네트워크를 차단하거나 장비의 연결을 끊을 수 없을 때 확산을 막는 대안이다. 전원을 끄면 메모리의 휘발성 증거가 사라질 수 있으므로, 격리와 전원 종료를 같은 조치로 취급하지 않는다. 랜섬노트뿐 아니라 시스템 이미지, 메모리와 관련 로그도 조사 근거가 된다. 수집 대상과 순서는 확산 억제 및 증거 보존을 함께 고려해 담당자가 정한다.
+
+복구용 네트워크에는 깨끗한 시스템만 연결해 재감염을 막는다. 백업 존재, 실제 복원 가능성과 복원 대상의 안전성은 각각 확인한다. 이는 대응 절차의 보완이며 특정 조직에서 복구를 시험한 기록은 아니다.
+
 ## 복구 완료 조건
 
 백업이 있다는 사실만으로 복구를 시작하지 않는다. 복원 자산의 침해 흔적과 손상을 확인한다. 운영 재개 전에는 복구된 자산의 무결성과 근본 원인 조치를 확인하고, 서비스 소유자와 정상 동작을 검증한다.
@@ -203,6 +211,7 @@ CSV가 생성됐다는 사실은 수집과 필드 변환이 정확하다는 증�
 
 ## 출처
 
+- [CISA, #StopRansomware Guide: Ransomware and Data Extortion Response Checklist](https://www.cisa.gov/stopransomware/ransomware-guide) — 2026-10-22 네트워크 격리, 전원 종료의 예외, 휘발성 증거와 복구망 대조.
 - [ShinyHunters: Cyber Criminal Group Attacks Learning Management System — FBI/IC3](https://www.ic3.gov/PSA/2026/PSA260515/) — 2026-05-15 경보, 2026-10-22 실제/과장된 접근 주장과 허위 민감정보, 연락 검증과 증거 보존 권고 대조.
 - [OWASP Cheat Sheet Series, Logging Cheat Sheet](https://cheatsheetseries.owasp.org/cheatsheets/Logging_Cheat_Sheet.html) — 기록 대상과 이벤트 속성
 - [Impact of AI on cyber threat from now to 2027 — NCSC](https://www.ncsc.gov.uk/report/impact-ai-cyber-threat-now-2027) — 2025-05-07 위협 평가, 특정 사건의 조사 보고서가 아님

@@ -42,6 +42,22 @@ OpenRTB 2.6의 객체 정의를 기준으로 로그의 연결 키와 지표 경�
 - 재처리나 여러 소비자가 필요하면 Kinesis Data Streams에 보존하고, Firehose가 그 스트림을 읽어 S3로 전달하게 구성할 수 있다. Firehose 레코드 하나는 1,000 KB까지다.
 - Firehose의 Parquet, ORC 변환은 JSON 입력만 받는다. CSV는 Lambda 변환으로 JSON을 만든 뒤 변환하며 스키마는 Glue Data Catalog에 둔다. 상세는 [[Log-Pipeline#객체 저장소 경로에서 적재와 카탈로그를 구분한다|적재와 카탈로그의 구분]]을 따른다.
 
+## 스트리밍 테이블의 정리 작업과 집계 날짜
+
+2026-10-22 Apache Iceberg 1.12.0과 Spark 4.2.0 공식 문서 부분 대조 기준이다. Kafka에서 받아 Spark로 Iceberg에 적재하는 경로를 선택한다면, 데이터 도착뿐 아니라 테이블 유지보수와 지표의 날짜 경계도 설계한다.
+
+| 작업 | 목적과 주의점 |
+| --- | --- |
+| 작은 파일 병합 | `rewrite_data_files`로 작은 파일을 합쳐 파일 열기와 메타데이터 부담을 줄인다. 모든 쓰기 직후 실행하는 것을 보편 규칙으로 삼지 않고 파일 수, 크기와 조회 지연으로 주기를 정한다(운영 제안) |
+| 스냅샷 만료 | 오래된 스냅샷과 더 이상 필요하지 않은 파일을 정리한다. 만료된 스냅샷은 time travel에 사용할 수 없으므로 재계산과 복구에 필요한 이력 기간을 먼저 정한다 |
+| 고아 파일 정리 | 실패한 작업 등이 남긴 테이블 메타데이터의 미참조 파일을 정리한다. 보존 간격이 쓰기 완료 예상 시간보다 짧으면 진행 중인 파일을 지워 테이블이 손상될 수 있다 |
+
+짧은 스트리밍 커밋 간격은 데이터 파일, manifest와 snapshot을 빠르게 늘린다. Iceberg 문서는 최소 1분의 trigger interval을 권장하며 필요하면 늘리도록 안내한다. 이는 제품의 운영 권고이며 모든 실시간 파이프라인에 적용되는 지연 하한은 아니다. 신선도 목표와 유지보수 비용을 함께 비교한다.
+
+Spark의 `SET TIME ZONE`은 현재 세션의 시간대를 설정하며 지역 기반 ID를 지원한다. `LOCAL`은 Java `user.timezone`, 환경 변수 `TZ`, 시스템 시간대 순서로 결정된다. 모든 환경의 기본값을 UTC라고 가정하지 않는다.
+
+설계 예시: 같은 순간인 `2026-10-22 00:30 Asia/Seoul`과 `2026-10-21 15:30 UTC`는 날짜가 다르다. 원본 시각, 일 집계 기준 시간대와 날짜 파생 규칙을 계약으로 두고, 자정 전후 이벤트가 어느 날짜의 광고비와 전환 수에 들어가는지 검증한다. 실제 Spark 실행 시험은 하지 않았으며 기존 AWS 경로의 검증일은 유지한다.
+
 ## 리전 사이로 옮길 때
 
 - **복제 시간:** S3 복제는 비동기다. 공식 비교표는 RTC 없는 CRR을 24~48시간 이내 복제(SLA 미적용)로 표기한다. RTC를 켜면 15분 안에 복제된 비율에 월간 SLA가 붙고(99.9% 미만이면 서비스 크레딧), 15분을 넘긴 객체를 `OperationMissedThreshold` 이벤트와 복제 지표로 확인할 수 있다. 요청률 지침이나 기본 1 Gbps 복제 전송 할당량을 넘는 동안에는 RTC SLA가 적용되지 않는다.
@@ -93,6 +109,9 @@ OpenRTB 2.6의 객체 정의를 기준으로 로그의 연결 키와 지표 경�
 
 ## 출처
 
+- [Apache Iceberg 1.12.0, Maintenance](https://iceberg.apache.org/docs/latest/maintenance/)
+- [Apache Iceberg 1.12.0, Structured Streaming](https://iceberg.apache.org/docs/latest/spark-structured-streaming/)
+- [Apache Spark 4.2.0, SET TIME ZONE](https://spark.apache.org/docs/latest/sql-ref-syntax-aux-conf-mgmt-set-timezone.html)
 - [애드테크 플랫폼을 위한 AWS 도입 및 운영 — Amazon Web Services Korea](https://www.youtube.com/watch?v=UKx3zaf579E)
 - [IAB Tech Lab, OpenRTB API Specification Version 2.6](https://github.com/InteractiveAdvertisingBureau/openrtb2.x/blob/main/2.6.md)
 - [Amazon S3, Replicating objects within and across Regions](https://docs.aws.amazon.com/AmazonS3/latest/userguide/replication.html)

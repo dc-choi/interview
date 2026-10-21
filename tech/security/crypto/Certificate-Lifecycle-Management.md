@@ -62,6 +62,15 @@ CA/Browser Forum TLS Baseline Requirements 2.3.1의 6.3.2절 기준이다. 발�
 
 AWS의 Bitnami 복구 예제는 서비스 중지, 갱신, 재시작 순서를 포함한다. 이를 모든 ACME 갱신의 필수 절차로 일반화하지 않는다. 서비스 중단 필요성은 인증 플러그인과 배포 방식에 맞춰 판단하고, 재시작 뒤 외부 TLS 응답도 확인한다. 이 절만 추가 대조했으며 기존 본문 전체의 검증일은 유지한다.
 
+## 외부 검증과 알림의 사각지대
+
+2026-10-22 Let's Encrypt 공식 안내 부분 대조 기준이다. 기본 64일 인증서의 운영 전환일은 2027-02-10이며, 2026-10-14 스테이징 전환과 구분한다.
+
+- **만료 메일에 의존하지 않는다.** Let's Encrypt는 인증서 만료 알림 이메일 서비스를 2025-06-04 종료한다고 공지했다. ACME 계정에 이메일을 등록해 두는 것만으로 만료 알림을 받는다고 가정하지 않는다. 갱신 실패와 외부 TLS 응답의 만료일을 감시하고, 알림 전달 경로도 점검한다(운영 제안).
+- **IPv6 응답을 따로 확인한다.** A와 AAAA가 함께 있으면 도메인 검증의 첫 연결은 IPv6를 우선한다. IPv4 재시도는 연결 시간 초과일 때만 일어나며, IPv6 서버가 잘못된 챌린지 응답을 반환하면 재시도하지 않는다. HTTP-01에서는 첫 요청만 이 재시도 대상이고 리다이렉트 후 요청은 해당하지 않는다.
+
+이 절만 추가 대조했으며 기존 제품 설명 전체의 검증일은 유지한다.
+
 ## 실패와 복구 경계
 
 이전 인증서로 되돌리는 조치는 그 인증서가 아직 유효하고 키가 안전한 경우에만 복구 후보가 된다. 만료되었거나 키 유출이 의심되는 인증서를 복구 수단으로 삼지 않는다. 키 유출 시에는 새 키와 인증서로 교체하고 기존 인증서 폐기를 처리한다.
@@ -76,6 +85,8 @@ cert-manager는 기본적으로 `Certificate` 삭제 시 대응 Secret을 지우
 
 ## 출처
 
+- [Ending Support for Expiration Notification Emails — Let's Encrypt](https://letsencrypt.org/2025/01/22/ending-expiration-emails)
+- [Let's Encrypt, IPv6 Support](https://letsencrypt.org/docs/ipv6-support/)
 - [64-Day Certificate Lifetimes Coming Feb 2027 — Let's Encrypt](https://letsencrypt.org/2026/10/07/64-day-certs)
 
 - [How do I renew a Let's Encrypt SSL certificate in a Bitnami stack hosted on a Lightsail instance? — AWS Knowledge Center](https://repost.aws/knowledge-center/lightsail-bitnami-renew-ssl-certificate)

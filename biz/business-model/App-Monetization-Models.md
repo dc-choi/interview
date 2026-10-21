@@ -62,6 +62,16 @@ aliases: ["App Monetization Models", "앱 수익 모델", "앱 수익화"]
 - **Swipeable interstitial:** iOS 베타 레퍼런스는 스와이프 같은 사용자 지정 닫기 동작을 제어하는 전면 광고 형식을 제공한다. 로드한 광고 소재가 요구하는 최소 화면 유지 시간이 있으므로 언제든 즉시 넘길 수 있다고 약속하지 않는다. 실제 제공 대상과 도입 조건은 해당 SDK와 계정에서 확인한다.
 - **도입 판단:** 광고를 닫거나 이동할 수 있다는 기능만으로 사용자 경험과 수익이 함께 좋아진다고 단정하지 않는다. 기존 형식과 비교할 때 실제 노출, 정산 수익, 유지율과 핵심 작업 완료율을 함께 측정한다. 이는 효과가 확인된 결과가 아니라 실험 설계 제안이다.
 
+### 광고 품질 알림의 조건을 운영 비용에 반영한다
+
+2026-10-22 Google AdMob 공식 도움말 부분 대조 기준이다. 광고 수익 모델에는 노출량 관리 외에 부적절한 광고를 찾아 검토하는 운영 비용도 포함한다.
+
+- **저장 대상:** Ad review center의 Saved searches는 지원되는 필터 조합을 저장한다. 광고 상태가 `Unreviewed`여야 하며 `Allowed`나 `Blocked` 상태에서는 저장할 수 없다. 앱, 광고주, 카테고리, 언어, 텍스트 등의 지원 필터를 확인한다.
+- **알림 조건:** 알림을 켜고 최소 노출 수와 수신자를 설정한다. 임계값은 검색에 맞는 광고들의 노출 수 합계이며, 도달하면 이메일을 매일 보낸다. 광고 하나가 처음 탐지될 때 즉시 발송되는 경보로 해석하지 않는다.
+- **운영 판단:** 저장 검색과 이메일 알림을 검토 착수 신호로 쓰고, 자동 차단 완료로 간주하지 않는다. 알림이 없다는 사실만으로 부적절한 광고가 없다고 판단하지 않고 조건과 임계값도 확인한다(운영 제안).
+
+이 기능만으로 수익이나 유지율이 개선됐다고 단정하지 않는다. 검색 조건의 탐지 범위와 실제 검토 시간을 함께 기록해 운영 부담을 평가한다. 계정 화면에서의 설정이나 알림 수신은 시험하지 않았다.
+
 ### ARPU와 당일 매출만으로 광고를 늘리지 않는다
 
 ARPU는 사용자당 매출이며 이익이 아니다. GA4의 ARPU는 활성 사용자를 분모로 사용한다. 광고로 획득한 전체 설치를 분모로 삼는 CPI와 비교하려면 대상 집합과 관찰 기간을 먼저 맞춰야 한다. 최초 실행 코호트의 매출 지표도 설치 계측과 귀속 범위가 같은지 확인하고 사용한다.
@@ -115,6 +125,7 @@ ARPU는 사용자당 매출이며 이익이 아니다. GA4의 ARPU는 활성 사
 - [Changes to Google Play's service fee in 2021 — Google Play Console Help](https://support.google.com/googleplay/android-developer/answer/10632485?hl=en)
 - [Understanding Google Play's lower service fees — Google Play Console Help](https://support.google.com/googleplay/android-developer/answer/16954621?hl=en)
 - [Getting started FAQs — Google AdMob Help](https://support.google.com/admob/answer/6168758?hl=en)
+- [Use Saved searches and alerts in the Ad review center — Google AdMob Help](https://support.google.com/admob/answer/16374191?hl=en)
 - [About Picture-in-Picture banner ads (Beta) — Google AdMob Help](https://support.google.com/admob/answer/17155813?hl=en)
 - [GoogleMobileAds (Beta), GADSwipeableInterstitialAd — Google for Developers](https://developers.google.com/admob/ios/api/beta/reference/Classes/GADSwipeableInterstitialAd)
 - [Analytics dimensions and metrics — Google Analytics Help](https://support.google.com/analytics/table/13948007?hl=en) — ARPU의 활성 사용자 분모와 최초 실행 코호트 매출 지표
