@@ -65,6 +65,18 @@ aliases: ["Supply Chain Security", "공급망 공격", "공급망 보안", "의�
 
 ## AI 네이티브 조직의 공격 표면 확대
 
+### 보안 도구의 커널 드라이버도 검토 대상이다
+
+2026-10-21 Microsoft의 드라이버 차단 규칙을 부분 대조했다. 정상적으로 서명된 커널 드라이버에도 권한 상승에 악용할 수 있는 취약점이 있을 수 있다. 제품의 보안 목적이나 서명 여부만으로 취약점이 없다고 판단하지 않는다. 이는 특정 국가의 보안 제품 전체가 위험하다거나 모든 보안 도구가 커널에서 실행된다는 주장이 아니다.
+
+- **반입과 실행 차단:** `Block abuse of exploited vulnerable signed drivers` ASR 규칙은 애플리케이션이 취약한 서명 드라이버를 디스크에 쓰는 것을 막는다. 이미 있는 드라이버의 로드는 이 규칙만으로 막지 않으며, vulnerable driver blocklist 또는 해당 App Control 정책으로 통제한다.
+- **차단 목록의 한계:** 목록이 모든 취약 드라이버를 차단한다고 보장되지 않는다. 차단 자체가 장치나 소프트웨어 장애를 일으킬 수 있으므로 App Control 정책은 audit mode와 이벤트 확인을 거쳐 강제 적용한다.
+- **이미 실행 중인 드라이버:** 새 App Control 정책 활성화만으로 실행 중인 드라이버를 중단하지 않는다. 차단 대상 드라이버가 이미 실행 중이면 재부팅이 필요하다.
+
+운영 제안: 설치된 드라이버 버전, 공급자 패치, 정책 적용과 재부팅 여부를 따로 확인한다. AI 에이전트 도입 여부와 무관한 단말 보안 점검이며, 실제 장비 시험이나 문서 전체 재검증은 수행하지 않아 `verified_at`은 유지한다.
+
+### 도구 개방과 운영 부담
+
 전 직원이 AI 도구를 쓰기 위해 터미널을 열고 `pip install`, `npm install`을 하면, **전 직원의 머신이 공급망 공격의 표면**이 된다. 그중에는 SSH 키가 뭔지, `.env`가 왜 위험한지 모르는 비개발자도 포함된다. 생산성을 위한 개방이 곧 공격 표면의 확대로 직결된다.
 
 여기에 더해 브라우저 제로데이(악성 HTML 렌더링만으로 샌드박스 내 코드 실행) 같은 **기존 보안 운영 부담**은 그대로 남는다. AI 도구 리스크는 이 기본 부담을 없애주는 게 아니라 그 위에 추가된다.
@@ -153,6 +165,7 @@ Sonatype의 Hugging Face 분석은 모델 파일 디렉터리를 IQ CLI로 검�
 - **Chrome 제로데이 (2026-02-13)** — CSS use-after-free 취약점(CVE-2026-2441)을 수정한 스테이블 업데이트가 배포됐고, 릴리스 노트에 악용 사례가 실제로 존재한다고 명시. AI 도구와 무관한 기본 보안 운영 부담의 예.
 
 ## 출처
+- [Microsoft Learn, Microsoft recommended driver block rules](https://learn.microsoft.com/en-us/windows/security/application-security/application-control/app-control-for-business/design/microsoft-recommended-driver-block-rules) — 2026-10-21 서명 드라이버의 취약점, 반입과 로드 차단, audit mode와 재부팅 조건 대조.
 - [Sonatype, Repository Types](https://help.sonatype.com/en/repository-types.html)
 - [Sonatype, Sonatype MCP Server](https://help.sonatype.com/en/automate-with-sonatype-guide.html)
 - [Sonatype, Firewall Quarantine](https://help.sonatype.com/en/firewall-quarantine.html)

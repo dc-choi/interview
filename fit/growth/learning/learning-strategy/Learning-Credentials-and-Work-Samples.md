@@ -70,6 +70,18 @@ KOCW와 소상공인 지식배움터 등 다른 탐색 경로는 [[Self-Developm
 
 ## 학습 목적에 맞게 선택하기
 
+### AI 입문 강좌와 시험형 자격의 구분
+
+2026-10-21 공식 안내 부분 대조 기준이다. 같은 AI 입문 목록에 있더라도 강좌 수료와 시험 통과의 요건은 다르다.
+
+- **AI for Everyone, Generative AI for Everyone:** DeepLearning.AI의 공식 도움말은 두 강좌에 코딩이 필요하지 않다고 안내한다. 개념과 활용 이해를 위한 입문 과정이라는 점을 확인할 수 있지만, 이 안내만으로 구현 역량이나 채용 효과를 입증할 수는 없다. 현재 수강료와 수료증 발급 조건은 별도 확인 대상이다.
+- **Microsoft Certified: Azure AI Fundamentals:** 확인한 자격 페이지는 필수 시험을 `AI-901`로 연결하고 Azure AI 개념, Python 문법과 프로그래밍 기법, Azure 리소스 지식을 요구한다. 자격 이름만 보고 비개발자용 강좌와 같은 선수 조건이라고 판단하지 않는다. 오래된 시험 코드가 붙은 자료를 사용할 때는 현재 시험 페이지와 학습 가이드부터 대조한다.
+- **이름이 불완전한 추천 목록:** 공급자 로고만으로 자격을 특정하지 않는다. 정식 명칭, 시험 코드, 학습 목표와 현재 운영 여부를 확인한 뒤 비교한다. 추천자의 S/A/B 등급을 채용 시장의 검증된 가치 순위로 바꾸지 않는다.
+
+이는 과정 선택 기준이며 사용자의 자격증 준비나 새 학습 트랙을 시작한다는 결정이 아니다. 다른 절의 가격과 유지 정책을 다시 대조하지 않아 기존 `verified_at`은 유지한다.
+
+### 선택과 이해 확인 절차
+
 다음은 위 차이를 활용한 학습 절차 제안이다. 특정 수료증의 채용 효과를 입증한 연구 결과는 아니다.
 
 1. 현재 설명하거나 수행하기 어려운 업무 하나를 적는다. 예를 들어 데이터 분석이라면 데이터를 읽고 오류를 찾은 뒤 결과를 설명하는 작업으로 좁힌다.
@@ -111,6 +123,8 @@ KOCW와 소상공인 지식배움터 등 다른 탐색 경로는 [[Self-Developm
 
 ## 출처
 
+- [Can I join the DeepLearning.AI Pro membership if I’m new to programming? — DeepLearning.AI](https://info.deeplearning.ai/knowledge-base/can-i-join-the-deeplearning.ai-pro-membership-if-im-new-to-programming) — 2026-10-21 두 입문 강좌의 코딩 선수 조건 대조.
+- [Microsoft Learn, Microsoft Certified: Azure AI Fundamentals](https://learn.microsoft.com/en-us/credentials/certifications/azure-ai-fundamentals/) — 2026-10-21 필수 시험과 선수 지식 대조.
 - [AWS Recertification — AWS](https://aws.amazon.com/certification/recertification/) — 2026-10-07 유지와 갱신의 기간, 자격 조건 및 Cloud Quest 경로를 대조했다.
 - [A new way to keep your AWS Certification current — AWS Training and Certification Blog](https://aws.amazon.com/blogs/training-and-certification/a-new-way-to-keep-your-aws-certification-current/) — 2026-06-23 공개 베타의 교육과 실습 요건.
 - [AWS, AWS Cloud Adoption Framework: People Perspective, Workforce transformation](https://docs.aws.amazon.com/whitepapers/latest/aws-caf-people-perspective/workforce-transformation.html) — 2026-10-07 업무 수요와 학습 경로 연결 원칙을 대조했다.

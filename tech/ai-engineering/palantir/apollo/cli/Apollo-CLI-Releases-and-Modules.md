@@ -22,6 +22,19 @@ Helm chart는 `product-release helm-chart init`으로 Apollo manifest 또는 `.c
 
 Deprecated `publish helm-chart`는 대체 경로로 init 다음 create를 명시한다. 문서에는 2025년 12월 제거 예정 문구가 남아 있으므로 문서 존재를 현재 실행 지원의 증거로 쓰지 않는다.
 
+### 이전 publish 설정을 읽을 때
+
+2026-10-21 공식 deprecated 문서 두 개를 부분 대조했다. `publish` 부모 명령에도 폐기 표시와 2025년 12월 제거 예정 문구가 있다. 부모의 `--dry-run`은 수행할 작업을 출력하는 옵션이며, 게시 완료나 실제 배포 검증을 뜻하지 않는다. 설치된 CLI에서의 지원 여부는 시험하지 않았다.
+
+아래는 이전 `publish helm-chart` 설정을 해석할 때의 계약이다. 새 init/create 명령의 기본값으로 그대로 옮기지 않는다.
+
+- `--release-channel`을 생략하면 `RELEASE`를 사용한다. 마이그레이션에서는 게시 대상 채널을 명시적으로 대조한다.
+- `--helm-values`는 로컬 chart 렌더링에만 사용한다. 설치용 기본 설정은 Apollo에 별도로 추가해야 한다.
+- `--validate`는 게시 전 정적 검사다. registry 접근이나 실제 배포 성공을 보장하는 옵션이 아니다.
+- `--helm-pass-credentials`는 Helm pull 자격증명을 모든 도메인에 전달한다. 운영 제안: 기존 설정을 복사하기 전에 필요한 대상과 자격증명 전달 범위를 확인한다.
+
+이 절만 다시 대조했으며 다른 CLI 작업의 검증일은 유지한다.
+
 ## 채널 소속과 승격
 
 릴리스 하나가 여러 채널에 속할 수 있다. `product-release release-channel edit`은 현재 소속을 편집기로 열며 빈 목록을 저장하면 모든 소속을 제거한다. 편집 취소, 빈 문서 또는 비정상 편집기 종료는 변경 없이 취소한다. 빈 목록과 빈 문서는 효과가 다르다.
