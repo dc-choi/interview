@@ -36,10 +36,19 @@ Lally 등의 연구는 96명이 식사, 음료 또는 활동 행동을 같은 �
 3. 행동 수행 여부와 산출물의 질을 따로 기록한다. 책을 펼친 횟수로 이해도를 판정하지 않는다.
 4. 지속 자체가 목적을 대신하지 않도록 목표와 비용을 다시 본다. 필요 없는 행동은 조정할 수 있다.
 
+## 유혹을 만나기 전에 선택 조건을 바꾼다
+
+사전 약속(precommitment)은 나중에 유혹을 참겠다는 결심에 그치지 않고, 유혹을 선택할 수 있는 범위를 미리 자발적으로 제한하는 방법이다. 반복으로 행동의 자동성을 키우는 습관 형성과 구분한다. 시작 조건을 정하는 계획에 실제 접근 제한을 더할 수 있다.
+
+2013년 Crockett 등의 실험에서는 시각적 보상을 더 일찍 적게 받을지, 기다렸다 더 많이 받을지 선택했다. 사전 약속 조건에서는 즉시 보상으로 바꿀 선택지를 미리 없앨 수 있었다. 이 조건은 기다리는 동안 계속 유혹을 억제해야 하는 조건보다 지연된 큰 보상의 선택을 촉진했다. 실험 과제의 결과이며 장기 학습 성과, 소득이나 모든 사람의 자기 통제 효과를 보장하지 않는다.
+
+학습에 적용한다면 정해 둔 집중 시간 동안 방해 사이트 접근을 제한하는 방법을 시험할 수 있다. 이는 연구에서 검증한 학습 처방이 아니라 적용 제안이다. 제한할 대상과 종료 시각, 필요한 업무 연락의 예외를 먼저 정하고, 실제로 시작이 쉬워졌는지와 학습 결과가 남았는지를 따로 확인한다. 제약을 강하게 만드는 것 자체를 성과로 삼지 않는다.
+
 ## 이해 확인
 
 - 90일 동안 책을 읽었다면 무엇이 확인됐고, 무엇은 별도로 확인해야 하는가?
 - 이틀을 놓친 계획에서 다음 실행 조건 하나를 어떻게 바꿀 것인가?
+- 방해 사이트를 보지 않겠다는 결심과 일정 시간 접근을 막는 사전 약속은 무엇이 다른가?
 
 ## 출처
 
@@ -47,6 +56,7 @@ Lally 등의 연구는 96명이 식사, 음료 또는 활동 행동을 같은 �
 
 - [How are habits formed: Modelling habit formation in the real world — European Journal of Social Psychology, Lally 외](https://onlinelibrary.wiley.com/doi/10.1002/ejsp.674) — 2010년 권호, 2009년 온라인 공개. 표본, 관찰 기간, 모형 적합과 실행 누락의 범위
 - [Does it really take 66 days to form a habit? — University of Surrey, Phillippa Lally 인터뷰](https://www.surrey.ac.uk/news/does-it-really-take-66-days-form-habit-we-asked-expert-dr-pippa-lally) — 2026-01-21, 개인차와 구체적인 실행 계획
+- [Restricting Temptations: Neural Mechanisms of Precommitment — Neuron, Crockett 외](https://pubmed.ncbi.nlm.nih.gov/23889938/) — 2013년 연구. 2026-10-22 초록과 Figure 1, 2 설명에서 선택 제한과 실험 결과를 대조했으며 장기 학습 효과는 확인하지 않음
 
 ## 관련 문서
 
