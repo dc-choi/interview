@@ -29,6 +29,10 @@ aliases: ["B2B 영업 파이프라인", "B2B 파일럿과 구매 절차", "Sales
 
 조언의 사실과 의견을 구분하고 최종 결정은 창업자가 맡는다. 멘토의 직함이나 성공 경험만으로 조언을 확정하지 않으며, 영업 지원이 필요하다는 이유로 투자, 법률이나 규제 검토의 가치를 일괄 부정하지 않는다. 위 질문과 기록 방식은 공개 멘토링 원칙을 영업 과정에 적용한 제안이며 매출 개선 효과를 측정한 결과가 아니다.
 
+솔직한 피드백은 상대를 몰아붙이는 태도와 구분한다. Techstars의 멘토 원칙은 어려운 사실도 직접 말하되 경청하고, 모르는 것은 인정하며, 구체적으로 실행할 수 있는 조언을 하도록 안내한다. 도전적인 검토와 공감을 함께 요구하고 파괴적인 비판은 배제한다(2026-10-22 확인). 이는 프로그램의 행동 원칙이며 특정 성격의 조언자를 두면 사업이 오래간다는 인과 증거가 아니다.
+
+영업 과제에 적용할 때는 반대 의견에 관찰한 사실, 해석과 다음 확인 행동을 붙이는 방식을 제안한다. 예를 들어 고객이 거절한 발언은 사실로, 가격 때문이라는 판단은 해석으로, 구매 조건을 다시 묻는 일은 후속 행동으로 구분한다. 숫자를 제시한 조언도 관찰 기간과 분모, 현재 고객군에 맞는지 확인한다. 조언이 불편하다는 이유만으로 옳다고 판단하거나 동의한다는 이유만으로 쓸모없다고 판단하지 않는다.
+
 ## 고객 조직의 역할부터 구분한다
 
 | 역할 | 확인할 내용 |
@@ -180,7 +184,7 @@ CRM의 성과 화면에서는 답하는 질문이 다른 금액을 나눠 보인
 - [Salesforce Trailhead, Build a Sales Process, Learn About the Sales Process](https://trailhead.salesforce.com/content/learn/modules/build-a-sales-process/learn-about-the-sales-process) — 2026-10-21 확인, 상담 말미의 후속 일정 제안과 상담 직후 요약 전달. 견적 검토 기록 방식은 소규모 영업에 적용한 제안이다.
 - [Techstars Mentor FAQs — Techstars](https://www.techstars.com/mentor-faq) — 2026-10-21 확인, PMF, 사업모델, 유통과 고객, 파트너 및 인맥 연결의 지원 범위
 - [Engage with Mentors - Worksheet — Techstars](https://toolkit.techstars.com/engage-with-mentors-worksheet) — 2026-10-21 확인, 멘토의 경험 조사, 짧은 제품 설명과 도움이 필요한 문제 준비
-- [The Techstars Mentor Manifesto — Techstars](https://www.techstars.com/blog/founder-advice/mentor-manifesto) — 사실과 의견 구분, 구체적 조언과 창업자의 의사결정 권한
+- [The Techstars Mentor Manifesto — Techstars](https://www.techstars.com/blog/founder-advice/mentor-manifesto) — 사실과 의견 구분, 구체적 조언과 창업자의 의사결정 권한. 2026-10-22 솔직함, 경청, 모름의 인정, 공감과 파괴적 비판의 배제 원칙을 추가 대조했다. 영업 피드백 기록 방식은 적용 제안이다.
 
 - [Learn How to Discover Objections — Salesforce Trailhead](https://trailhead.salesforce.com/content/learn/modules/objection-handling-strategies/learn-how-to-discover-objections) — 2026-10-21 확인, 우려의 재확인, 열린 질문과 거래에 필요한 조건 확인. 상담 문구와 후속 기록 방식은 적용 제안이며 전환율 검증이 아니다.
 
