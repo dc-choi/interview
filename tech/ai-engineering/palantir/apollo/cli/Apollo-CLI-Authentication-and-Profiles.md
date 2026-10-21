@@ -24,6 +24,8 @@ Apollo CLI는 Linux, macOS, Windows에서 Hub의 제품, 환경, 릴리스와 �
 
 `--environment`와 `--space-id`는 서로 다른 범위를 지정한다. enrollment의 primary organization 소속이 아닌 사용자가 릴리스를 다룰 때 명시적인 space ID가 필요할 수 있다. `-o json`은 기계 판독에 쓰고, `--quiet`는 stderr에 로그를 출력하지 않는다. `--http-timeout`은 모든 Apollo 요청의 제한 시간이며 단위는 분이므로 초 단위 관례로 값을 정하지 않는다. `--insecure-skip-verify`는 서버 인증서 검증을 생략하므로 정상 연결의 기본값으로 삼지 않는다.
 
+환경 범위 명령의 `-e/--environment`에는 접미사를 포함한 environment ID를 넣는다. `--apollo-url`은 API endpoint를 도출할 기준 URL이며 환경 ID와 역할이 다르다. `-o/--output`은 `json`, `yaml`, `pretty`를 지원하고, `--debug`는 debug 수준 로그를 켠다. 출력 형식을 고르는 옵션과 로그를 제어하는 옵션을 별도로 확인한다(2026-10-21 루트 CLI 플래그 표 대조).
+
 ## 지원 단계와 문서 차이
 
 Experimental 표시 명령은 configure에서 V2 experimental commands를 켜야 한다. Deprecated 명령은 문서가 남아 있다는 이유로 현재 바이너리에서도 실행 가능하다고 판단하지 않는다. 빠른 시작의 인증 소개는 토큰과 service account 두 방법을 먼저 설명하지만 같은 문서의 설정 예와 root CLI는 SSO도 명시한다. 실제 명령 계약은 현재 help와 해당 명령 문서를 우선 대조한다.
