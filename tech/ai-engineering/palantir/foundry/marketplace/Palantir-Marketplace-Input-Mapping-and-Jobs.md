@@ -57,6 +57,17 @@ API의 `MarketplaceInstallationJob`은 하나 이상의 기존 제품 설치를 
 
 운영상 적용으로, 진행 상태의 반복 조회와 `IDLE_DRAFT`의 후속 조치를 분리한다. `ABORTED`만 보고 사용자가 취소했다고 기록하거나, `BUILDING`을 설치 전체의 성공으로 바꾸지 않는다. 이 목록은 상태의 의미이며 모든 job이 표 순서대로 전이한다는 보장은 아니다.
 
+### 상세 진단의 부재를 성공으로 해석하지 않는다
+
+2026-10-22 공식 Get Marketplace Installation Job Details의 검색 반환 본문과 수집된 개요를 대조했다. 직접 페이지 열기와 실제 API 호출은 확인하지 못했다.
+
+`GET /api/v3/platform/marketplaceInstallationJobs/{marketplaceInstallationJobRid}/details?preview=true`는 draft나 job의 검증 결과와 실패 진단을 제공한다. OAuth2 제3자 앱의 scope는 `api:v3:marketplace-installation-job-details:read:get`이다. 진행과 최종 결과는 기존 job 조회의 `status`로 판단한다.
+
+- `validation`이 없으면 제공할 draft 검증 결과가 없는 상태다. 빈 오류 목록이나 요약 건수 0은 검증 결과가 있다는 뜻이므로 필드 부재와 구분한다.
+- Draft 소유자는 전체 검증 오류를 받지만, 다른 조회 권한자는 blocking error 요약을 받는다. 조회자의 권한 차이로 진단의 상세도가 달라질 수 있다.
+- `failure`는 제공 가능한 준비 또는 실행 실패 진단이다. 준비 실패 진단과 검증 결과가 함께 있을 수 있다. 명시적 취소나 검증만으로 제출이 거부된 경우에는 실패 진단이 없을 수 있다.
+- 실패하거나 중단된 job도 사용 가능한 진단과 HTTP 200을 반환한다. 따라서 `failure` 부재, 오류 건수 0이나 HTTP 200만으로 설치 성공을 기록하지 않는다.
+
 ## API의 설치 등록과 작업 실행을 구분한다
 
 2026-10-22 Marketplace v3 API 문서 대조 기준이다. `MarketplaceInstallation`은 Compass에 등록된 제품 설치 자원이며, 자원이 존재한다는 사실만으로 설치 job의 완료를 판단하지 않는다.
@@ -131,6 +142,8 @@ Ontology install prefix는 display name만 또는 display/API name 모두에 적
 
 ## 출처
 
+- [Palantir Foundry, Marketplace Installation Job Details basics](https://www.palantir.com/docs/foundry/api/v3/marketplace-v3-resources/marketplace-installation-job-details/marketplace-installation-job-details-basics) — 2026-10-22 수집된 개요와 검색 반환 본문의 진단 용도를 대조.
+- [Palantir Foundry, Get Marketplace Installation Job Details](https://www.palantir.com/docs/foundry/api/v3/marketplace-v3-resources/marketplace-installation-job-details/get-marketplace-installation-job-details) — 2026-10-22 검색 반환 본문으로 권한별 검증 결과, 선택 필드와 상태 판정의 경계를 확인. 실제 호출은 미실시.
 - [Palantir Foundry, Discover Inputs Marketplace Installation Jobs](https://www.palantir.com/docs/foundry/api/v3/marketplace-v3-resources/marketplace-installation-jobs/discover-inputs-marketplace-installation-jobs) — 2026-10-22 검색 반환 본문과 수집본으로 대상 제약, 권한과 필터 범위 대조. 실제 호출은 미실시.
 - [Palantir Foundry, Abort Marketplace Installation Job](https://www.palantir.com/docs/foundry/api/v3/marketplace-v3-resources/marketplace-installation-jobs/abort-marketplace-installation-job) — 2026-10-22 취소의 멱등성, 상태 전이, 복구 제약과 오류 계약 확인.
 - [Palantir Foundry, Get Marketplace Installation Job](https://www.palantir.com/docs/foundry/api/v3/marketplace-v3-resources/marketplace-installation-jobs/get-marketplace-installation-job) — 2026-10-22 검색 반환 본문과 수집 명세로 조회 권한, HTTP 200과 job 상태의 구분, 8개 상태와 후속 조치, NotFound의 접근성 의미 대조. 직접 열기와 실제 호출은 미확인.

@@ -22,6 +22,7 @@ aliases: ["메시징&파이프라인(Messaging&Pipeline)", "Messaging & Data Pip
 
 ## 파이프라인 실전 (설계와 오케스트레이션 — 어떻게 설계하고 돌리나)
 
+- [[Customer-Data-Activation-Pipeline|고객 데이터 통합과 활성화]] — 고객 식별, 프로필과 세그먼트 갱신, 시간 조건과 큐 재시도, 발송 결과의 경계
 - [[Realtime-Tracking-Analytics|실시간 추적 데이터 파이프라인]] — 센서 수집, Kafka 처리 단계, 원본과 파생 통계 저장, 대시보드와 외부 API의 완료 조건
 - [[MSK-Streaming-Tables|MSK Streaming Tables]] — Express에서 Iceberg 적재, 백필과 스키마 변경 제약, DLQ 원문 미보존
 - [[Kinesis#KDS에서 S3 Tables로 직접 적재|Kinesis Streaming tables]] — Iceberg 직접 적재, 스키마, 암호화 키 제약과 DLQ의 원문 보존 경계

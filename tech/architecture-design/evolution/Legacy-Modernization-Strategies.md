@@ -107,6 +107,14 @@ Strangler Fig의 한 단계 더 과격한 버전. 레거시와 신규를 **서�
 
 설계 점검 제안: 추출 결과마다 입력 코드 범위, 누락 의존성과 추가로 포함된 파일을 함께 검토한다. 업무 담당자와 정상 및 예외 입력의 기존 실행 결과를 대조해 유지할 규칙과 수정할 결함을 구분한다. 규칙 문서 생성 완료를 업무 동작 보존이나 운영 전환 완료로 계산하지 않는다.
 
+### 테스트 계획, 데이터 수집과 실행 증거를 나눈다
+
+2026-10-22 AWS Transform의 mainframe custom job plan 공식 문서에서 테스트 관련 단계를 대조했다. 테스트 계획은 진입점, 실행 순서와 입출력 데이터 의존성을 정리하지만, 계획 생성 단계 자체가 테스트 데이터나 실행 스크립트를 만들지는 않는다.
+
+후속 단계에서는 계획에 따라 메인프레임의 테스트 데이터를 수집할 JCL 스크립트를 생성할 수 있다. 별도의 테스트 자동화 스크립트 생성 단계는 수집한 데이터를 사용해 현대화된 애플리케이션을 실행하고 결과를 비교하도록 돕는다. 생성된 스크립트는 배포 전에 대상 환경과 테스트 요구사항에 맞는지 검토해야 한다.
+
+설계 점검 제안: 완료 증거를 계획 파일, 실제 확보한 입력과 기대 결과, 검토한 실행 스크립트, 실행 및 비교 결과로 나눈다. 스크립트 생성 성공을 회귀 테스트 통과로 기록하지 않는다. 이 단계 구분은 공식 기능 설명을 확인한 것이며 실제 변환이나 테스트를 수행한 기록은 아니다.
+
 ### 장점
 - 기술 스택을 현대화하면서 내부 품질까지 상승
 - 유실된 사양서를 이 기회에 복구
@@ -205,7 +213,7 @@ Strangler Fig의 한 단계 더 과격한 버전. 레거시와 신규를 **서�
 - [AWS Prescriptive Guidance, Anti-corruption layer pattern](https://docs.aws.amazon.com/prescriptive-guidance/latest/cloud-design-patterns/acl.html)
 - [AWS Prescriptive Guidance, Transactional outbox pattern](https://docs.aws.amazon.com/prescriptive-guidance/latest/cloud-design-patterns/transactional-outbox.html)
 - [AWS Prescriptive Guidance, The strangler fig pattern](https://docs.aws.amazon.com/prescriptive-guidance/latest/modernization-aspnet-web-services/fig-pattern.html) — 초기 전환 컴포넌트 선택 기준
-- [AWS Transform, Transformation of mainframe applications](https://docs.aws.amazon.com/transform/latest/userguide/transform-app-mainframe-workflow.html)
+- [AWS Transform, Transformation of mainframe applications](https://docs.aws.amazon.com/transform/latest/userguide/transform-app-mainframe-workflow.html) — 2026-10-22 custom job plan의 테스트 계획, 데이터 수집과 자동화 스크립트 생성 단계 및 실행 전 검토 조건 대조
 - [AWS Transform, How AWS Transform modernizes .NET applications](https://docs.aws.amazon.com/transform/latest/userguide/dotnet-ide-how.html)
 - [AWS Transform, Modernizing .NET code with the AWS Transform web application](https://docs.aws.amazon.com/transform/latest/userguide/dotnet-web-app.html)
 - [AWS Prescriptive Guidance, Decompose by business capability](https://docs.aws.amazon.com/prescriptive-guidance/latest/modernization-decomposing-monoliths/decompose-business-capability.html)
