@@ -38,6 +38,19 @@ aliases: ["Personalization", "Recommendation", "개인화", "추천 시스템"]
 
 커머스에서는 구매 여정의 일부를 줄이는 것을 확장 방향 중 하나로 볼 수 있다. IoT가 소모품 교체 시점을 감지하고, 대화형 인터페이스가 탐색을 돕고, 간편 인증과 결제가 마찰을 줄이는 식이다. 추천이 구매 대행으로 확장될수록 사용자 통제, 설명, 취소와 오류 복구가 더 중요해지며 수익 개선이 자동으로 보장되지는 않는다.
 
+## 대화 기억, 추천과 광고의 경계를 나눈다
+
+대화형 개인화는 프로필과 클릭 이력 외에 사용자가 직접 말한 선호와 대화 문맥을 입력으로 쓸 수 있다. 다만 그 입력을 답변에 사용하는 것과 다른 서비스의 콘텐츠나 광고 추천에 사용하는 것은 서로 다른 제품 정책이다.
+
+2026-10-22 대조한 Meta의 공개 발표는 이 구분을 보여준다.
+
+- **2025년 1월 발표:** Meta AI는 1:1 대화에서 일부 정보를 기억하고 사용자가 기억을 삭제할 수 있다고 안내했다. 당시 미국과 캐나다의 제공 범위를 명시했으므로 모든 지역과 계정에 같은 기능이 있다는 근거로 쓰지 않는다. 프로필, 콘텐츠 이용과 기억을 조합한 추천도 사례로 제시했다.
+- **2025년 10월 발표:** 생성 AI와의 텍스트/음성 상호작용을 콘텐츠와 광고 추천 신호로 활용하는 변경을 2025-12-16부터 대부분 지역에 적용한다고 안내했다. 같은 Accounts Center에 추가한 계정 간 정보 이용과 민감 주제의 광고 활용 제외를 구분했다. 실제 계정의 적용 여부와 현재 정책은 별도로 확인한다.
+
+따라서 개인화된 추천이라는 이유만으로 광고 이해관계가 없다고 판단하지 않는다. 무료 제공, 개인화와 광고 수익화는 각각 확인해야 할 축이다.
+
+다음은 사업 판단에 적용할 검토 기준이다. 기억이 쌓일수록 서비스의 효용과 다른 서비스에서 다시 설정할 비용이 커질 수 있지만, 지속적인 경쟁 우위가 생겼는지는 별도 가설이다. 반복 사용, 추천 만족도와 전환율을 측정하고 기억의 수정, 삭제와 이전 가능성도 확인한다. 개인의 좋은 사용 경험이나 기능 발표만으로 시장 독점, 특정 종목의 수익률 또는 기존 검색 서비스의 소멸을 결론 내리지 않는다.
+
 ## 운영 함정
 
 - **데이터 오염** — 오픈 전 테스트 주문 데이터가 연관 분석에 섞이면 무관한 상품이 함께 구매한 상품으로 고정 노출된다. 입력 데이터 검증과 재학습 주기가 운영 요건이다.
@@ -92,6 +105,8 @@ aliases: ["Personalization", "Recommendation", "개인화", "추천 시스템"]
 - 알고리즘 고도화 이전에 제외 규칙(이미 구매, 품절, 테스트 데이터)이 추천 품질의 체감을 좌우한다.
 
 ## 출처
+- [Building Toward a Smarter, More Personalized Assistant — Meta (Meta Newsroom)](https://about.fb.com/news/2025/01/building-toward-a-smarter-more-personalized-assistant/)
+- [Improving Your Recommendations on Our Apps With AI at Meta — Meta (Meta Newsroom)](https://about.fb.com/news/2025/10/improving-your-recommendations-apps-ai-meta/)
 - [Amazon Personalize, Measuring recommendation impact with A/B testing](https://docs.aws.amazon.com/personalize/latest/dg/ab-testing-recommendations.html)
 - [Amazon Personalize, Deploying an Amazon Personalize solution version with a campaign](https://docs.aws.amazon.com/personalize/latest/dg/campaigns.html)
 - [Amazon Personalize, CloudWatch metrics for Amazon Personalize](https://docs.aws.amazon.com/personalize/latest/dg/cloudwatch-metrics.html)

@@ -22,6 +22,7 @@ aliases: ["OS&런타임(OS&Runtime)", "OS & Runtime"]
   - [[Spring-MVC-Manual-Validation|Spring MVC 수동 검증]] — 비동기 아이디 확인, 최종 저장의 유일성과 계정 존재 노출 경계
 
 - [[Linux-Mobile-Platform|Linux 모바일]] — UI 스택 재사용, 기기별 전력과 통신 계약
+- [[Sovereign-Workplace-Stack|디지털 자율 업무환경]] — DAWO의 OS, 협업과 계정 계층, 파일럿과 운영 전환 검증
 - [[Linux-Page-Cache-Contention|Linux 페이지 캐시 경합]] — folio 참조와 공유 카운터, 개발 패치의 확인 경계
 - [[Native-Compilation-Compatibility|네이티브 컴파일과 호환성]] — Bun 패키징과 AOT 실험, TurboPython의 소유권
 

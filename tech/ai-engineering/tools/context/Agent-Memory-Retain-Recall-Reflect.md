@@ -74,7 +74,23 @@ Hindsight의 ACL 2026 공개 논문은 world, experience, observation, opinion�
 - 종합 답변의 인용이 실제 결론을 뒷받침하는가?
 - 검색만 할 때와 종합할 때 지연, 호출 비용과 오류가 얼마나 달라지는가?
 
+## 정정 이력과 답변 품질을 따로 검증한다
+
+기억을 빠짐없이 옮기거나 과거 값을 보존한 사실만으로 답변이 더 정확해졌다고 판단하지 않는다. LongMemEval은 정보 추출, 여러 세션의 종합, 시간 추론, 지식 갱신과 답변 보류를 별도 능력으로 평가한다. 검색한 근거의 회수와 최종 답변의 정확도도 나눠 측정한다.
+
+다음은 이 평가 구분을 기억 운영에 적용한 제안이다. 특정 메모리 제품의 구현 계약이나 성능 보장이 아니다.
+
+- **정정 기록:** 이전 주장, 새 근거와 적용 시점을 연결해 무엇이 바뀌었는지 추적한다. 원문 발화와 AI가 만든 해석을 구분한다.
+- **현재 조회:** 과거 이력을 보존하더라도 현재 답변에는 어느 값이 유효한지 판단해야 한다. 새 기록이라는 이유만으로 더 신뢰하지 않고 출처와 적용 범위를 대조한다.
+- **삭제 경계:** 정정 이력 보존을 모든 원문과 개인정보의 영구 보존 규칙으로 확대하지 않는다. 삭제 요구와 보존 정책은 별도로 적용한다.
+
+검증에는 가상의 선호 변경, 날짜가 다른 사건과 근거가 없는 질문을 포함한다. 저장 건수와 이관 일치 여부, 필요한 근거의 검색 성공, 최신 값으로 답한 비율과 답변 보류의 적절성을 각각 확인한다. 같은 질문과 모델 조건에서 기억을 사용하지 않을 때와 비교하면 저장 기능의 완성과 답변 개선을 구분하기 쉽다.
+
+2026-10-22에는 LongMemEval의 평가 능력과 검색/답변 지표를 대조했다. 기존 Hindsight와 Amazon Quick 기능의 검증 시점은 앞 절에 적힌 날짜를 유지한다.
+
 ## 출처
+
+- [LongMemEval: Benchmarking Chat Assistants on Long-Term Interactive Memory — ICLR 2025, Di Wu et al.](https://arxiv.org/html/2410.10813v2)
 
 - [AWS, Amazon Quick: Memories](https://docs.aws.amazon.com/quick/latest/userguide/memories-desktop.html)
 - [AWS, Amazon Quick: Security, privacy, and architecture](https://docs.aws.amazon.com/quick/latest/userguide/desktop-security.html)
