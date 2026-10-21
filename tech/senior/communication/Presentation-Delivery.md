@@ -58,6 +58,12 @@ PowerPoint의 공식 도움말에서 확인한 기능은 다음과 같다(2026-1
 
 웹용 PowerPoint에도 서식 없는 텍스트 붙여넣기가 있지만 브라우저 제약이 있다. 메뉴와 단축키가 데스크톱과 같다고 가정하지 않고 해당 환경의 도움말을 확인한다. 서식 선택 기능을 발표 이해도 향상의 인과 근거로 해석하지 않는다.
 
+### 그림 붙여넣기는 편집 가능한 개체와 구분한다
+
+2026-10-22 Microsoft Support의 Paste Special 안내 대조 기준이다. Windows 데스크톱 PowerPoint에서는 복사한 슬라이드, 텍스트나 개체를 `Home > Paste > Paste Special`에서 그림 형식으로 붙여넣을 수 있다. 사용 가능한 형식은 복사한 내용, 앱과 플랫폼에 따라 다르며 Mac과 웹에 같은 메뉴와 형식이 있다고 가정하지 않는다.
+
+PNG나 비트맵으로 붙인 결과는 이미지이므로 원래 텍스트 상자, 차트 데이터와 도형을 각각 수정하는 용도로 쓰지 않는다. 그림의 크기 조절이나 자르기와 원래 개체의 편집 가능성은 별개다. 실무 적용 제안으로, 화면 예시를 고정해 보여 줄 때 그림 사본을 쓰고 이후 수정할 원본 슬라이드는 따로 보존한다. 붙여넣은 뒤 확대해 작은 글자와 선이 읽히는지 확인한다.
+
 ## 3. 준비와 리허설
 
 - **준비와 성과의 관계**: 공개 연설 수업 연구에서 총 준비 시간, 소리 내어 한 리허설, 청중 앞 리허설 횟수가 발표 평가와 양의 상관을 보였다(누적 GPA와 소리 내지 않은 리허설 시간도 발표 평가와 양의 상관이었다). 학기 중 준비 일지 연구에서도 총 준비 시간이 높은 성적과 상관됐고, 청중 앞에서 연습한 학생, 청중이 많았던 학생의 평가 점수가 더 높았다는 연구도 있다. 모두 자기선택이 섞인 상관연구라 인과로 읽지 않는다.
@@ -83,6 +89,7 @@ PowerPoint의 공식 도움말에서 확인한 기능은 다음과 같다(2026-1
 
 ## 출처
 
+- [Microsoft Support, Paste Special](https://support.microsoft.com/en-au/word/paste-special) — 2026-10-22 그림 형식과 플랫폼별 지원 차이 확인
 - [Microsoft Support, PowerPoint Options (Advanced)](https://support.microsoft.com/en-us/powerpoint/powerpoint-options-advanced) — 2026-10-15 텍스트 붙여넣기 옵션과 버튼 표시 설정 확인
 - [Microsoft Support, Copy and paste in PowerPoint for the web](https://support.microsoft.com/en-us/powerpoint/copy-and-paste-in-powerpoint-for-the-web) — 2026-10-15 웹용 서식 없는 텍스트 붙여넣기와 브라우저 제약 확인
 - [Microsoft Support, Guides for arranging things on a slide](https://support.microsoft.com/en-us/powerpoint/training/guides-for-arranging-things-on-a-slide) — 2026-10-12 Guides, Gridlines와 스마트 가이드, 정렬과 균등 배치 메뉴 확인

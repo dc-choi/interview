@@ -127,6 +127,12 @@ M2 24GB 팬리스 MacBook Air에서 2026-09-23과 24일에 측정했다. 문자 
 - 경로, 식별자, 대소문자와 명령 옵션을 실행 전에 읽는다. 자연스러운 문장으로 정리됐다는 이유로 명령까지 정확하다고 보지 않는다.
 - 입력문 검수와 코딩 에이전트의 변경 및 테스트 결과 검수를 분리한다. 받아쓰기 앱이 지시를 잘 정리한 것과 코드가 요구사항을 만족한 것은 별개다.
 
+### 받아쓰기 사전과 프롬프트의 정보량을 구분한다
+
+부분 검증(2026-10-22): Typeless의 Dictionary는 도메인 용어와 약어를 단어나 구문으로 등록하며, 데스크톱에서는 CSV 가져오기도 제공한다. 받아쓴 단어를 수정하면 선호 표기를 자동으로 추가하는 기능도 있다. 이는 용어 입력 기능의 확인이며 한국어 인식률이나 작업 속도의 실측 결과가 아니다. 기존 엔진 실측과 요금의 검증일은 유지한다.
+
+활용 절차 제안: 목적, 원하는 산출물, 근거와 제약을 먼저 말한 뒤 정리된 입력문에서 누락을 확인한다. 사전에 등록한 용어도 실제 문장에서 다시 점검한다. 짧은 타이핑 요청과 상세한 음성 요청의 결과 차이만으로 음성 입력 자체의 우위를 판정하지 않는다. 입력 방식의 효과를 비교하려면 전달하는 정보와 모델 조건을 맞추고, 입력 시간뿐 아니라 교정 시간과 최종 결과의 요구사항 충족 여부를 함께 본다.
+
 ## 강의 자막은 인식, 도메인 적응과 편집을 나눠 검증한다
 
 부분 검증(2026-10-14): Amazon Transcribe의 사용자 지정 어휘, 언어 모델과 자막 문서를 대조했다. 아래는 클라우드 STT의 기능 경계를 설명하는 예이며, 로컬 엔진의 설정이나 기존 실측 결과를 다시 검증한 것은 아니다.
@@ -157,6 +163,7 @@ M2 24GB 팬리스 MacBook Air에서 2026-09-23과 24일에 측정했다. 문자 
 - [Amazon Transcribe, Language identification with batch transcription jobs](https://docs.aws.amazon.com/transcribe/latest/dg/lang-id-batch.html)
 - [Amazon Transcribe, Creating video subtitles](https://docs.aws.amazon.com/transcribe/latest/dg/subtitles.html)
 - [Typeless, How to use Dictate](https://www.typeless.com/help/quickstart/dictate)
+- [Typeless, History & Dictionary](https://www.typeless.com/help/quickstart/history-and-dictionary)
 - [whisper.cpp — GitHub, ggml-org](https://github.com/ggml-org/whisper.cpp)
 - [whisper.cpp 모델 파일 — Hugging Face, ggerganov](https://huggingface.co/ggerganov/whisper.cpp)
 - [whisper-large-v3-turbo — Hugging Face, openai](https://huggingface.co/openai/whisper-large-v3-turbo)

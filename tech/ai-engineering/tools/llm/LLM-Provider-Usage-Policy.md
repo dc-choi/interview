@@ -77,6 +77,16 @@ LLM API로 만든 제품은 코드와 법령뿐 아니라 모델 제공자의 �
 - AI 보조 작업물을 적절한 허락이나 표시 없이 제출하는 행위도 Universal Usage Standards의 금지 목록에 있다.
 - 위반 의심만으로도 접근이 조절되거나 정지될 수 있다. 핵심 기능이 한 제공자에 묶이면 대체 모델과 차단 시 동작을 함께 설계하되, 정지되거나 차단된 계정의 요청을 다른 Anthropic 계정이나 키로 돌리지 않는다. 다른 계정으로 차단을 우회하는 행위도 금지 대상이다.
 
+## 정부의 정보 요청과 긴급 공개 조건
+
+부분 검증(2026-10-22): 이 절은 Anthropic의 정부 정보 요청 안내를 대조했다. 위 Usage Policy의 2026-11-12 발효 개정과는 별도 문서이며, 기존 이용 정책 전체의 검증일은 유지한다.
+
+- 정부 요청에 따른 고객과 최종 사용자 정보 공개는 유효한 법적 절차를 원칙으로 한다. 요청마다 법적 유효성을 평가하며 지나치게 넓거나 모호한 요청은 거절할 수 있다.
+- 임박한 신체적 위해나 사망을 초래할 수 있는 긴급 상황이라고 판단하고, 지체 없는 정보 제공이 그 상황을 막을 수 있다고 보면 예외를 둘 수 있다.
+- 정보 요청 시 사용자에게 알리는 것이 원칙이지만, 법적 금지, 아동의 위해 위험과 긴급 상황 등에는 예외가 있다. API와 기업 고객의 데이터 요청은 일반적으로 요청자가 먼저 해당 고객에게 연락하도록 안내한다.
+
+이 정책은 특정 발언이 자동으로 신고되거나 체포로 이어진다는 근거가 아니다. 개별 사건의 발생, 신고 주체와 체포 경위는 별도 증거가 필요하다. 제품 설계에서는 사용 제한, 정보 공개 조건과 사용자 통지의 예외를 각각 확인한다(운영 제안).
+
 ## 한계
 
 - 정책 원문을 제품 설계 관점으로 정리한 문서이며 법률 자문이 아니다. 서비스 약관 같은 다른 계약 문서와 현지 법령은 따로 확인한다.
@@ -87,6 +97,7 @@ LLM API로 만든 제품은 코드와 법령뿐 아니라 모델 제공자의 �
 
 - [2026 Usage Policy update — Anthropic](https://www.anthropic.com/news/2026-usage-policy-update)
 - [Anthropic, Usage Policy](https://www.anthropic.com/legal/aup)
+- [Anthropic, What is Anthropic’s policy for handling governmental requests for user information?](https://support.claude.com/en/articles/9519291-what-is-anthropic-s-policy-for-handling-governmental-requests-for-user-information)
 
 ## 관련 문서
 
