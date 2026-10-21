@@ -61,6 +61,23 @@ JEP 400에 따라 JDK 18부터 표준 API의 기본 charset은 UTF-8이 원칙�
 - console의 `stdin.encoding`, `stdout.encoding`처럼 별도 규칙을 쓰는 I/O
 - protocol의 `Content-Type`, database column과 file format이 가진 독립 contract
 
+## 내부 저장 배열과 getBytes 결과를 구분한다
+
+2026-10-22에 Java SE 26 API, OpenJDK `jdk-26-ga`의 `String.java`와 Oracle의 마이그레이션 안내를 대조했다. 이 절은 부분 검증이며 기존 실측과 문서 전체의 검증일은 유지한다.
+
+OpenJDK 26의 `String` 구현은 `byte[] value`와 내부 인코딩을 나타내는 `coder`를 사용한다. 내부 표현은 LATIN1 또는 UTF16이며 Compact Strings를 끄면 UTF16을 사용한다. 이는 메모리 표현에 관한 구현 세부사항이고, 공개 API가 UTF-16 code unit으로 인덱스를 해석하는 계약과 구분한다.
+
+`getBytes()`는 내부 배열을 그대로 꺼내는 접근자가 아니다. 문자열을 기본 charset으로 인코딩해 새 배열을 반환한다. `getBytes(Charset)`은 지정한 charset으로 인코딩한다. 따라서 내부 `coder`가 무엇인지와 무관하게 파일이나 통신의 charset 계약을 호출부에서 정한다. 기본값이 운영체제에 따라 달라진다는 설명은 JDK 17 이하와 `-Dfile.encoding=COMPAT` 같은 조건을 구분해야 한다. JDK 18 이후의 표준 API 기본값은 UTF-8이다.
+
+| API | charset과 오류 처리 계약 |
+|---|---|
+| `getBytes()` | 기본 charset을 사용한다. 인코딩할 수 없는 문자열의 처리는 API 명세상 미지정이다. |
+| `getBytes(String charsetName)` | 이름으로 지정하며 지원하지 않는 이름이면 `UnsupportedEncodingException`이 발생한다. 인코딩 불가 입력의 처리는 미지정이다. |
+| `getBytes(Charset)` | 지정한 charset을 사용하며 malformed와 unmappable 입력을 기본 replacement byte로 바꾼다. |
+| `CharsetEncoder` | 오류 정책을 선택할 수 있고 기본값은 `REPORT`다. 단일 `CharBuffer`를 받는 `encode` 편의 메서드는 새 `ByteBuffer`를 반환한다. |
+
+손실 없는 저장이 필요하면 charset 지정뿐 아니라 오류 정책도 정한다. `getBytes(Charset)`의 replacement 보장을 다른 overload의 명세로 확대하지 않는다.
+
 ## decoder 오류 정책도 contract다
 
 `new String(bytes, charset)` 같은 편의 API는 malformed 또는 unmappable input을 replacement 문자로 바꿀 수 있다. 손실을 허용하면 안 되는 import, signature 검증과 protocol parser에서는 `CharsetDecoder`의 `CodingErrorAction.REPORT`를 고려한다.
@@ -110,6 +127,9 @@ request body를 이미 framework가 decode했다면 임의로 다시 decode하�
 
 - [Java SE 26, java.nio.charset](https://docs.oracle.com/en/java/javase/26/docs/api/java.base/java/nio/charset/package-summary.html)
 - [Java SE 26, String](https://docs.oracle.com/en/java/javase/26/docs/api/java.base/java/lang/String.html)
+- [Java SE 26, CharsetEncoder](https://docs.oracle.com/en/java/javase/26/docs/api/java.base/java/nio/charset/CharsetEncoder.html)
+- [String.java, jdk-26-ga — OpenJDK](https://github.com/openjdk/jdk/blob/jdk-26-ga/src/java.base/share/classes/java/lang/String.java)
+- [Oracle JDK 24 Migration Guide, Migrating from JDK 8 to Later JDK Releases](https://docs.oracle.com/en/java/javase/24/migrate/migrating-jdk-8-later-jdk-releases.html) — JDK 18 이후 기본 charset과 COMPAT 조건, 2026-10-22 대조
 - [OpenJDK, JEP 400 UTF-8 by Default](https://openjdk.org/jeps/400)
 - [Java SE 26, URLEncoder](https://docs.oracle.com/en/java/javase/26/docs/api/java.base/java/net/URLEncoder.html)
 - [RFC 3629, UTF-8, a transformation format of ISO 10646](https://www.rfc-editor.org/rfc/rfc3629)
