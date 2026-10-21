@@ -23,3 +23,4 @@ aliases: ["Measurement and Risk", "측정과 리스크", "Analytics", "분석", 
 - [x] [[Privacy-Operations-for-Small-Business|대표의 개인정보 운영 (처리 근거, 위탁, 보관과 파기, 권리 요청, 사고 대응)]]
 - [x] [[GDPR-Scope-and-Data-Subject-Rights|GDPR 적용 범위와 정보주체 권리]] — EU 대상 처리, 적법 근거, 삭제와 이동권, 사고 신고와 통지, DPO 요건
 - [x] [[AI-Basic-Act-Scope-and-Obligations|AI 기본법의 적용 범위와 사업자 의무]] — 사업자 정의, 생성형 AI 고지와 표시, 고영향 확인과 책무, 국내대리인 기준, 계도기간, 외주 역할 구분
+- [x] [[Employment-Obligations-Before-Founding|퇴사 창업과 겸업 전 근로계약 의무]] — 경업금지 약정의 효력, 영업비밀, 직무발명과 업무상저작물, 재직 중 겸업, 사직 통보와 위약 예정 금지

@@ -16,13 +16,13 @@ aliases: ["Business Tax", "사업자 세무", "세무 기초"]
 3. [[Business-Income-and-Corporate-Tax|개인사업자 소득세와 법인세]] — 세금을 내는 주체와 대표자에게 귀속되는 돈을 구분한다.
 4. [[Withholding-and-Payroll-Tax|원천징수와 인건비]] — 외주비나 급여를 지급할 때 생기는 의무를 확인한다.
 5. [[Tax-Bookkeeping-and-Filing|장부, 증빙과 신고 관리]] — 거래 자료를 모으고 신고와 납부를 각각 확인한다.
-6. [[Business-Tax-Setup|사업자 세무 초기 설정]] — 실제 업종, 등록, 과세유형과 계좌 신고를 따로 확인한다.
+6. [[Business-Tax-Setup|사업자 세무 초기 설정]] — 실제 업종, 등록, 과세유형, 계좌 신고와 현금영수증가맹점 가입 의무를 따로 확인한다.
 7. [[Business-Tax-Worked-Example|거래 한 건으로 계산하기]] — 개발 용역 매출과 외주비에서 세금, 이익과 현금을 구분한다.
 
 ## 개인 세금과 제도 활용
 
 - [[Personal-Income-Tax-Basics|개인 소득세와 연말정산]] — 급여, 부업, 소득공제와 세액공제
-- [[Solo-Business-Tax-Checklist|1인 사업자의 공제와 감면]] — 간이과세 기준, 비용처리, 경정청구와 창업감면
+- [[Solo-Business-Tax-Checklist|1인 사업자의 공제와 감면]] — 간이과세 기준, 비용처리, 경정청구, 창업감면과 노란우산 소득공제
 - [[Startup-Tax-Reduction-Same-Business-Test|창업감면의 창업 판단]] — 기존 사업 승계와 확장
 - [[Business-Tax-Timing|사업 세무 선택의 시점]] — 창업감면 기간, 법인전환 연도, 입사일과 사회보험료, 고용세액공제와 등록 때 과세유형 신고
 - [[Payment-Tax-Evidence|결제 세무 증빙]] — 현금영수증, 전자 증빙과 취소

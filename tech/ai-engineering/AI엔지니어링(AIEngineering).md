@@ -36,7 +36,7 @@ Software 3.0 패러다임, LLM과 에이전트, 하네스, 평가, 조직 전환
 - [x] [[Harness-Component-Evaluation#코딩 도구의 비용 비교|코딩 도구 비용 비교]] — 모델과 하네스 효과 분리, 실패와 재시도 포함, 환산 사용량과 청구액 구분
 - [x] [[Event-Log-Highlight-Generation|이벤트 로그 기반 하이라이트]] — 코드와 모델의 역할 분리, 통계 조회와 사실 검증
 - [x] [[Strands-Conversation-State|Strands 대화와 세션 상태]] — 문맥 축약과 저장, 대화별 동시 쓰기 경계
-- [x] [[LLM-Gateway|LLM 게이트웨이]] — 키별 권한, 예산 검사의 DB 의존성, 배포 경로와 운영 점검
+- [x] [[LLM-Gateway|LLM 게이트웨이]] — 키별 권한, 예산 검사의 DB 의존성, 배포 경로와 운영 점검, 캐시 계층의 키와 정산
 - [x] [[Generative-AI-Multi-Tenancy|생성형 AI SaaS의 테넌트 격리]] — 자원 배치와 접근 통제, RAG 검색 범위와 토큰 사용량 제한
 - [x] [[LLM-Hallucination-Verification#Bedrock의 근거 검사와 정책 검증|Bedrock 환각 검증의 경계]] — grounding과 relevance, 정책 범위, detect mode와 검사 실행 여부
 - [x] [[Agent-Skills-Kiro#Kiro Powers: 도구와 지침을 함께 활성화한다|Kiro Powers와 API 명세 연동]] — 도구와 지침의 동적 로드, 현재 패키지 형식과 검증 경계
@@ -87,7 +87,7 @@ Software 3.0 패러다임, LLM과 에이전트, 하네스, 평가, 조직 전환
 - [x] [[Claude-Code-Workflows#긴 작업의 완료와 중단 조건|에이전트의 완료와 중단 조건]] — 결과 증거, 작업 목록과 검증 한계
 - [x] [[LLM-Generation-Mechanics-Analogies|비개발자 설명용 LLM 비유와 한계]] — 학습 때 정해지는 것과 요청마다 고르는 것, 네 가지 수량, 비유가 맞는 부분과 깨지는 지점
 - [x] [[LLM-Generation-Mechanics-Context-and-Agent#프롬프트, RAG와 파인튜닝은 바꿀 대상으로 고른다|프롬프트, RAG와 파인튜닝 선택]] — 바꾸는 층, 지식과 행동 문제의 구분, 구조화 출력, 비용 비교와 파인튜닝 제공 범위
-- [x] [[Agent-Runtime-Deployment|에이전트 런타임과 배포]] — Eve, Mecatl, Strands Harness SDK, OpenCode 2.0의 책임과 확인 수준
+- [x] [[Agent-Runtime-Deployment|에이전트 런타임과 배포]] — Eve, Mecatl, Strands Harness SDK, OpenCode 2.0, Claude Managed Agents의 책임과 확인 수준
 - [x] [[Agent-Reverse-Engineering|에이전트 역공학과 실행 하네스]] — REA, 매칭 디컴파일과 정적 재컴파일의 동등성 구분, 게임 상태 재현, 브라우저 이식, Xbox Labs 발표, Ruby 생태계 사례와 국내 저작권법의 프로그램코드역분석 요건
 - [x] [[Agent-Code-Search#Jevgrep: 동작 질문과 원문 발췌|Jevgrep 코드 검색]] — 자연어 후보 탐색, 원문 확인과 동명 패키지 경계
 - [x] [[Context-Development-Lifecycle|컨텍스트 개발 수명주기]] — 생성, 평가, 배포와 관찰
