@@ -1,7 +1,7 @@
 ---
 tags: [econ, applied, tax, income-tax]
 status: done
-verified_at: 2026-10-02
+verified_at: 2026-10-21
 category: "Economics"
 aliases: ["Personal Income Tax Basics", "개인 소득세와 연말정산"]
 ---
@@ -32,13 +32,17 @@ aliases: ["Personal Income Tax Basics", "개인 소득세와 연말정산"]
 
 ### 가상자산소득은 근로소득 정산과 구분한다
 
-2026-10-07 확인한 국세청 안내 기준으로, 거주자의 가상자산 양도와 대여 소득은 **2027-01-01 이후 양도와 대여분부터 기타소득으로 분리과세될 예정**이다. 현재 시행 중인 세금처럼 서술하거나 근로소득 연말정산으로 끝나는 항목이라고 판단하지 않는다. 실제 거래와 신고 때는 적용 시점의 법령과 안내를 다시 확인한다.
+2026-10-21 확인한 국세청 안내와 소득세법 기준으로, 거주자의 가상자산 양도와 대여 소득은 **2027-01-01 이후 양도와 대여분부터 기타소득으로 분리과세될 예정**이다. 현재 시행 중인 세금처럼 서술하거나 근로소득 연말정산으로 끝나는 항목이라고 판단하지 않는다. 실제 거래와 신고 때는 적용 시점의 법령과 안내를 다시 확인한다.
 
-소득을 계산할 때는 양도와 대여의 대가에서 취득가액과 부대비용을 구분해 차감한다. 현금 매도뿐 아니라 가상자산 간 교환도 확인 대상이다. 거래소의 입출금 합계만으로 과세소득을 계산하면 취득 원가나 교환거래를 놓칠 수 있다.
+소득을 계산할 때는 양도와 대여의 대가에서 취득가액과 부대비용을 구분해 차감한다. 취득가액은 거주자별 총평균법으로 계산한다. 현금 매도뿐 아니라 가상자산 간 교환도 확인 대상이다. 거래소의 입출금 합계만으로 과세소득을 계산하면 취득 원가나 교환거래를 놓칠 수 있다.
+
+세액은 한 해의 가상자산소득금액에서 250만원을 뺀 금액의 20%이고, 소득금액이 250만원 이하면 과세하지 않는다. 개인지방소득세는 같은 기준금액의 2%가 따로 붙으므로 둘을 합하면 22%다. 같은 해의 이익과 손실은 통산해 신고하지만 근로소득 같은 다른 종합소득과는 합산하지 않고, 결손을 다음 해로 넘겨 빼는 규정도 없다. 첫해에 손실을 보고 다음 해에 이익을 내면 다음 해 이익에서 전년 손실을 빼지 못한 채 과세될 수 있다. 신고와 납부는 다음 해 5월 1일부터 31일까지이므로 2027년 소득은 2028년 5월에 처음 신고한다.
 
 시행 전 보유분의 취득가액은 국세청 안내상 **2026-12-31 당시 시가와 실제 취득가액 중 큰 금액**이다. 연말 시가로 무조건 대체하는 규칙이 아니다. 예를 들어 실제 취득가액이 800이고 기준일 시가가 600이면, 이 비교에서 선택되는 값은 800이다. 숫자는 제도 이해를 위한 가정이다.
 
-필요경비 의제의 구체적 인정비율과 적용 조건은 별도 확인한다. 국세청 안내에도 세법개정안과 대통령령 위임 문구가 있으므로, 증빙이 없으면 양도가액의 50%를 누구나 비용으로 인정받는다고 일반화하지 않는다. 위 문단들은 소득 분류와 취득가액의 구분만 다루며 개인의 납부세액을 계산한 설명은 아니다.
+필요경비 의제는 증빙이 없는 누구에게나 적용되는 50% 비용 인정이 아니다. 2027-01-01 이후 취득한 가상자산 가운데 가상자산사업자를 거치지 않고 취득해 장부나 증명서류로 실제 취득가액을 확인할 수 없는 경우처럼 시행령이 정한 사유에 해당할 때, 같은 종류 가상자산 전체의 양도가액에 50%를 곱한 금액을 필요경비로 할 수 있고, 이 방식을 쓰면 부대비용은 따로 넣지 않는다. 위 문단들은 제도의 구조만 다루며 개인의 납부세액을 계산한 설명은 아니다.
+
+시행일은 2020년 12월 도입 때 2022-01-01이었고, 2021년, 2022년, 2024년의 개정으로 2023년, 2025년, 2027년으로 미뤄졌다. 2026-10-21 현재 국회에는 시행을 2028년, 2029년이나 2030년으로 늦추는 안, 시행일을 국제조세조정에 관한 법률에 따른 암호화자산 거래정보가 처음 교환된 해의 다음다음 해 1월 1일로 바꾸는 안, 과세를 폐지하는 안이 발의돼 있다. 이 정보교환은 OECD가 국가 간 자동 정보교환을 가상자산 거래로 넓힌 보고체계(CARF)에 따른 것이며, OECD 목록에서 한국은 2027년까지 첫 교환을 약정한 관할에 들어 있다. 발의안은 국회를 통과하기 전까지 효력이 없으므로 현행 시행일과 구분하고, 거래 기록과 취득가액 증빙은 현행 일정에 맞춰 준비한다.
 
 ## 수입원 목록과 세금의 소득 분류를 구분한다
 
@@ -74,7 +78,12 @@ aliases: ["Personal Income Tax Basics", "개인 소득세와 연말정산"]
 
 - [국세청, 현금영수증 발급과 수취 시 혜택](https://b.nts.go.kr/nts/cm/cntnts/cntntsView.do?cntntsId=7794&mi=2469)
 - [연말정산 간소화 서비스, 1월 15일 개통합니다 — 국세청](https://www.nts.go.kr/nts/na/ntt/selectNttInfo.do?mi=2201&nttSn=1347979) — 2026-01-14 안내의 공제 요건 확인과 누락 증빙 보완 원칙 대조
-- [국세청, 거주자의 가상자산소득 과세 개요](https://www.nts.go.kr/nts/cm/cntnts/cntntsView.do?cntntsId=238935&mi=40370) — 2026-10-07 시행 예정 시점, 소득 분류, 교환거래와 시행 전 취득가액을 부분 대조. 필요경비 의제의 세부 요건과 추가 유예 여부의 전망은 제외
+- [국세청, 거주자의 가상자산소득 과세 개요](https://www.nts.go.kr/nts/cm/cntnts/cntntsView.do?cntntsId=238935&mi=40370) — 2026-10-07 시행 예정 시점, 소득 분류, 교환거래와 시행 전 취득가액을 부분 대조. 2026-10-21 기본공제, 세율, 총평균법, 연간 손익 통산과 신고 시기, 필요경비 의제를 대조. 추가 유예 여부의 전망은 제외
+- [국가법령정보센터, 소득세법 제14조](https://www.law.go.kr/%EB%B2%95%EB%A0%B9/%EC%86%8C%EB%93%9D%EC%84%B8%EB%B2%95/%EC%A0%9C14%EC%A1%B0), [제37조](https://www.law.go.kr/%EB%B2%95%EB%A0%B9/%EC%86%8C%EB%93%9D%EC%84%B8%EB%B2%95/%EC%A0%9C37%EC%A1%B0), [제64조의3](https://www.law.go.kr/%EB%B2%95%EB%A0%B9/%EC%86%8C%EB%93%9D%EC%84%B8%EB%B2%95/%EC%A0%9C64%EC%A1%B0%EC%9D%983), [제70조](https://www.law.go.kr/%EB%B2%95%EB%A0%B9/%EC%86%8C%EB%93%9D%EC%84%B8%EB%B2%95/%EC%A0%9C70%EC%A1%B0), [제76조](https://www.law.go.kr/%EB%B2%95%EB%A0%B9/%EC%86%8C%EB%93%9D%EC%84%B8%EB%B2%95/%EC%A0%9C76%EC%A1%B0), [제84조](https://www.law.go.kr/%EB%B2%95%EB%A0%B9/%EC%86%8C%EB%93%9D%EC%84%B8%EB%B2%95/%EC%A0%9C84%EC%A1%B0), [시행령 제88조](https://www.law.go.kr/%EB%B2%95%EB%A0%B9/%EC%86%8C%EB%93%9D%EC%84%B8%EB%B2%95%EC%8B%9C%ED%96%89%EB%A0%B9/%EC%A0%9C88%EC%A1%B0) — 2026-10-21 다른 소득과의 합산 제외, 필요경비와 의제, 세율과 기본공제, 신고와 납부 기한, 과세최저한, 총평균법과 의제 사유 대조. 시행일은 법률 제17757호 부칙 제1조 제2호와 제5조, 의제 적용례는 법률 제20615호 부칙 제6조, 연기 경과는 연혁본(법률 제17757호, 제18578호, 제19196호, 제20615호)으로 대조
+- [국가법령정보센터, 지방세법 제93조](https://www.law.go.kr/%EB%B2%95%EB%A0%B9/%EC%A7%80%EB%B0%A9%EC%84%B8%EB%B2%95/%EC%A0%9C93%EC%A1%B0) — 2026-10-21 가상자산소득 개인지방소득세 2% 대조
+- [가상자산 소득과세의 쟁점 및 과제: 2027년 시행을 앞두고 — 국회예산정책처 나보포커스 제176호](https://www.nabo.go.kr/board/file/bulkDown.do?idx=9433&bid=68) — 2026-09-17 발간, 세 차례 유예, 같은 과세기간의 손익 통산과 결손 이월공제 불허, 계류 법안 현황(2026-09-07 기준)
+- [국회 의안정보시스템, 소득세법 일부개정법률안 2221923](https://likms.assembly.go.kr/bill/billDetail.do?billId=PRC_0D2E0B01B1CB43269B26553CC2D957), [2220914](https://likms.assembly.go.kr/bill/billDetail.do?billId=PRC_X2X6W0X8V2V8D1C3C3A6B5A5A4I6H5), [2220515](https://likms.assembly.go.kr/bill/billDetail.do?billId=PRC_B2A6A0Z8Z0H6I1G5F4F5D0E6M8M9L3), [2204341](https://likms.assembly.go.kr/bill/billDetail.do?billId=PRC_A2I4J0H9I2G3F0F9N4N2M3N4L4M6K2), [2217609](https://likms.assembly.go.kr/bill/billDetail.do?billId=PRC_T2S6R0Z3Y1X8V1S7R5N0W4V6U6T0B8) — 2026-10-21 계류 중인 정보교환 연동, 2028년, 2029년, 2030년 유예안과 폐지안 대조
+- [Jurisdictions committed to implement the Crypto-Asset Reporting Framework (CARF) in time to commence exchanges in 2027, 2028 or 2029 as part of the Global Forum's CARF commitment process — OECD Global Forum on Transparency and Exchange of Information for Tax Purposes](https://www.oecd.org/content/dam/oecd/en/networks/global-forum-tax-transparency/commitments-carf.pdf) — 2026-09-14 갱신 목록에서 한국의 2027년 첫 교환 약정 대조
 - [국세청, 근로소득 연말정산 세액계산방법](https://nts.go.kr/nts/cm/cntnts/cntntsView.do?cntntsId=7870&mi=6434)
 - [국세청, 종합소득세 개요와 확정신고 예외](https://i.nts.go.kr/nts/cm/cntnts/cntntsView.do?cntntsId=7664&mi=2224)
 - [국세청, 근로소득의 범위](https://nts.go.kr/nts/cm/cntnts/cntntsView.do?cntntsId=8165&mi=6769)

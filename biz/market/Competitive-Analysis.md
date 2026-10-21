@@ -1,7 +1,7 @@
 ---
 tags: [business, market, competition]
 status: done
-verified_at: 2026-08-27
+verified_at: 2026-10-21
 category: "비즈니스&제품(Business&Product)"
 aliases: ["Competitive Analysis", "경쟁사 분석"]
 ---
@@ -95,13 +95,16 @@ Porter's Five Forces(외부)와 SWOT(내부+외부)는 서로 다른 관점을 �
 
 ### 매일 볼 수 있는 공개 도구
 
-| 도구 | 보는 것 | 해석 한계 |
+| 도구 | 보는 것 | 해석 한계와 주의 |
 |---|---|---|
-| Meta 광고 라이브러리 | 경쟁사가 Meta 제품에 집행 중인 광고 소재 | 유형과 무관하게 현재 게재 중인 광고는 검색된다. 종료된 광고는 이슈, 선거, 정치 광고(7년 보관)와 영국, EU에 게재된 광고 등 일부만 남는다. 성과와 집행비는 일반 광고에서 보이지 않는다 |
+| Meta 광고 라이브러리 | 경쟁사가 Meta 제품에 집행 중인 광고 소재 | 유형과 무관하게 현재 게재 중인 광고는 검색된다. 종료된 광고는 이슈, 선거, 정치 광고(7년 보관)와 영국, EU 또는 연관 지역에 노출된 광고(마지막 노출 뒤 1년 보관)만 남는다. 집행비와 노출 수는 이슈, 선거, 정치 광고에만 범위로 공개된다. 영국과 EU 광고는 그 대신 추정 도달, 타기팅한 위치와 연령, 성별별 도달, 광고별 타기팅 설정을 보여 준다. 광고주와 결제자 항목은 EU 광고에만 있고, 이슈, 선거, 정치 광고는 광고비를 낸 주체를 밝히는 면책 문구를 따로 보여 준다 |
+| Google 광고 투명성 센터 | 광고주나 웹사이트 이름으로 찾은 광고주가 Google 검색, 디스플레이, Gmail, YouTube 등에 게재한 광고와 광고주 이름, 위치(광고주 이름과 결제 프로필 이름이 다르면 결제 주체 이름도). 날짜와 타기팅 지역 등으로 결과를 거른다 | 도움말이 밝힌 공개 항목에 집행비와 클릭, 전환 같은 성과 지표는 없고 조회 기간도 일정 기간이라고만 한다. 타기팅 정보, 광고별 총 노출 사용자 수와 광고 주제 라벨은 일부 국가나 지역의 광고에만 더해지며, 정치, 선거 광고는 일부 지역에서 정치 광고 투명성 보고서로 더 공개한다 |
 | Google Trends | 검색 관심의 상대 추이 | 전체 검색 대비 비율을 0~100으로 정규화한 표본 값이라 절대 검색량이 아니다 |
-| SimilarWeb | 경쟁 사이트의 트래픽 규모와 유입 경로 | 외부 추정치다. 절대값보다 같은 도구 안의 상대 비교와 추세로 본다 |
+| 네이버 데이터랩 | 네이버 통합검색의 검색어 추이와, 통합검색 쇼핑 영역과 네이버쇼핑의 분야별, 키워드별 검색 클릭 추이 | 조회 결과 안의 최댓값을 100으로 둔 상댓값이라 검색 건수나 판매량이 아니다([[Trend-Research-Validation#네이버 데이터랩을 읽는 기준\|네이버 데이터랩의 상댓값]]) |
+| Similarweb | 경쟁 사이트의 트래픽 규모와 유입 경로 | 사이트와 앱 소유자가 자사 분석 도구로 직접 측정한 데이터, 자사 제품이 설치된 기기의 익명 트래픽, 공개 자료와 제휴 데이터를 모아 외삽한 값이다. 소유자 측정 데이터가 모든 사이트에 있다고 밝히지 않으므로 사이트마다 근거 데이터가 다를 수 있다. 절대값보다 같은 도구 안의 상대 비교와 추세로 본다 |
+| 사이트 분석 브라우저 확장 | 방문 중인 사이트의 트래픽, 유입 채널 같은 추정치 | Similarweb 행처럼 외부 추정치로 읽는다. 설치나 업데이트 때, 또는 기능을 쓰는 중에 모든 웹사이트의 데이터를 읽고 변경할 수 있다는 권한 경고가 뜨면 그 범위가 분석 기능에 필요한지 따진다. 사용자가 보고 있는 사이트에 임시 접근만 주는 activeTab 권한은 경고를 띄우지 않는다. Chrome 웹 스토어 등록정보에 표시되는 개인정보 공개(개발자가 공개한 수집 데이터 유형과 데이터 사용 제한 준수 인증)를 개인정보처리방침과 함께 확인한다. Similarweb처럼 자사 제품이 설치된 기기의 익명 트래픽을 추정 입력으로 쓴다고 밝히는 회사도 있으므로, 확장이 웹 탐색 활동을 수집 데이터로 공개하는지도 본다 |
 
-도구 자체보다 매일 짧게 보는 습관이 변화를 먼저 알아채게 한다. 다만 오래 집행된 광고가 곧 수익성 높은 광고라는 증거는 아니므로, 아래 공개 자료가 증명하는 범위의 원칙을 똑같이 적용한다. 광고 운영 구조는 [[Meta-Paid-Ads|Meta 유료 광고 실행 구조]] 참조.
+표의 공개 범위와 지표 정의는 2026-10-21 확인한 각 공식 문서 기준이다. 도구 자체보다 매일 짧게 보는 습관이 변화를 먼저 알아채게 한다. 다만 오래 집행된 광고가 곧 수익성 높은 광고라는 증거는 아니므로, 아래 공개 자료가 증명하는 범위의 원칙을 똑같이 적용한다. 이런 도구의 결과를 AI에 넣어 받은 경쟁 전략도 검증 전 가설로 둔다. 전략마다 근거로 쓴 추정치의 출처, 관찰 시점과 지표 정의를 붙이고 AI의 평가를 관찰과 분리한 뒤 작은 시험으로 확인한다([[Trend-Research-Validation#AI 조사 결과를 검토 가능한 후보로 남긴다|AI 조사 결과의 검토 절차]]). 광고 운영 구조는 [[Meta-Paid-Ads|Meta 유료 광고 실행 구조]] 참조.
 
 ### 역기획 (기능에서 사업 의도 역추론)
 
@@ -134,6 +137,10 @@ Porter's Five Forces(외부)와 SWOT(내부+외부)는 서로 다른 관점을 �
 - 획득 편향을 고려하면 상품을 보고도 사지 않은 고객의 이유는 후기에 잘 남지 않는다. 이 이유는 인터뷰로 확인한다([[Solo-Product-Opportunity-Discovery|1인 제품 기회 발견]]의 과거 행동 조사).
 - 찾은 불편의 중요도는 별도 조사로 재고, 경쟁 상품 간 평균 별점 차이만으로 품질 차이를 판단하지 않는다. 셀러의 상품 선정에 적용하는 순서는 [[Marketplace-Seller-Launch|오픈마켓 셀러 첫 상품 출시 절차]]를 따른다.
 
+### 아이디어 참고와 표현 복제의 경계
+
+경쟁사 광고와 콘텐츠에서 얻은 아이디어를 참고하는 일과 그 표현을 옮기는 일은 따로 판단한다. 저작권법은 저작물을 인간의 사상 또는 감정을 표현한 창작물로 정의하고(제2조 제1호) 저작자에게 그 저작물을 복제할 권리를 준다(제16조). 소설과 드라마의 저작권 침해가 다퉈진 대법원 2000. 10. 24. 선고 99다10813 판결은 보호 대상을 사상 또는 감정을 구체적으로 외부에 표현한 창작적인 표현형식으로 보고, 아이디어나 이론 같은 사상 및 감정 그 자체는 독창성과 신규성이 있어도 원칙적으로 보호 대상이 아니며 실질적 유사성도 창작적인 표현형식에 해당하는 것만 대비해 판단한다고 했다. 이 판결은 저작물 정의를 지금 문구로 바꾼 2006년 전부개정 전에 나왔지만, 게임물 사건인 대법원 2019. 6. 27. 선고 2017다212095 판결도 현행 정의를 인용하며 창작적인 표현형식만 대비해 실질적 유사성을 판단했다. 한국저작권위원회도 저작권법은 아이디어가 아니라 그 표현을 보호한다고 안내한다. 그래서 경쟁사가 어떤 고객 불편을 겨냥하는지는 참고할 아이디어가 될 수 있지만, 광고 문장, 영상과 이미지의 창작적 표현을 그대로 옮기거나 일부만 바꿔 실질적으로 비슷하게 남기면 복제권(제16조)이나 2차적저작물작성권(제22조) 침해가 문제 될 수 있다. 저작권 밖에서도 부정경쟁방지법 제2조 제1호 파목은 그 밖에 타인의 상당한 투자나 노력으로 만들어진 성과 등을 공정한 상거래 관행이나 경쟁질서에 반하는 방법으로 자신의 영업을 위하여 무단으로 사용해 타인의 경제적 이익을 침해하는 행위를 부정경쟁행위로 정한다. 대법원 2020. 3. 26. 선고 2016다276467 판결은 같은 내용의 옛 (차)목을 보충적 일반조항으로 보았다. 보호되는 성과 등에 해당하려면 무단 사용으로 침해된 경제적 이익이 누구나 자유롭게 이용할 수 있는 공공영역에 속하지 않아야 하고, 공정한 상거래 관행이나 경쟁질서에 반하는 방법인지는 경쟁관계, 해당 산업분야의 상거래 관행이나 경쟁질서의 내용과 그 공정성, 시장 대체 가능성, 수요자에게 알려진 정도와 혼동가능성 등을 종합해 판단한다고 했다. 이 절은 2026-10-21에 확인한 현행 조문과 대법원 판결을 정리한 것이며 특정 행위의 적법성을 판정하지 않으므로, 실제 소재는 법률 검토를 거친다.
+
 ## KSF (Key Success Factor)
 
 산업별로 **성과를 높이고 비용을 줄이는 핵심 방법**. 산업마다 다르고 정해진 도출 방법론이 없어서, 산업 경험과 관찰로 학습해야 한다. 실무 단서는 Key Player들이 공통으로 주력하는 부분이며, 그들의 핵심 역량 분석은 KSF 가설의 출발점이 된다.
@@ -158,12 +165,22 @@ Q. 경쟁사를 어떻게 분석했는가?
 
 ## 출처
 
-2026-10-03에는 Five Forces의 산업과 기업 수준 구분, 거래액을 이익으로 간주하던 요약을 보완했다. 개별 기업의 해자와 최신 광고 도구 정책, 기존 경쟁사 수치는 이번 검증 범위에 포함하지 않았다.
+2026-10-03에는 Five Forces의 산업과 기업 수준 구분, 거래액을 이익으로 간주하던 요약을 보완했다. 개별 기업의 해자와 최신 광고 도구 정책, 기존 경쟁사 수치는 그때 검증 범위에 포함하지 않았다. 2026-10-21에는 공개 도구 표의 Meta, Google 광고 투명성 센터, Google Trends, 네이버 데이터랩, Similarweb 행과 브라우저 확장의 권한 경고와 개인정보 보호 공개, 아이디어 참고와 표현 복제의 경계에 쓴 조문, 판결과 한국저작권위원회 안내를 공식 출처와 대조했으며, Google 광고 투명성 센터 FAQ의 보관 기간과 노출 횟수, 한국에 게재된 광고의 결제 주체 표시, 개별 확장 프로그램의 실제 권한과 추정 정확도, 특정 소재의 침해 여부는 확인하거나 판단하지 않았다.
 
 - [Harvard Business School, The Five Forces](https://www.isc.hbs.edu/strategy/business-strategy/Pages/the-five-forces.aspx) — 산업 구조와 기업의 상대적 위치가 수익성에 미치는 영향
-- [Facebook Help Center, What is the Meta Ad Library and how do I search it?](https://www.facebook.com/help/259468828226154)
-- [Meta Business Help Center, About the Meta Ad Library](https://www.facebook.com/business/help/2405092116183307)
+- [Facebook Help Center, What is the Meta Ad Library and how do I search it?](https://www.facebook.com/help/259468828226154) — 현재 게재 중인 광고 검색과 이슈, 선거, 정치 광고의 비활성 광고 검색. 영국, EU 광고의 보관은 다루지 않음
+- [Meta Business Help Center, About the Meta Ad Library](https://www.facebook.com/business/help/2405092116183307) — 일반, 이슈와 정치, EU, 영국 광고별 보관 기간과 공개 항목 비교표
+- [Meta Transparency Center, Meta Ad Library tools](https://transparency.meta.com/researchtools/ad-library-tools/), [Meta for Developers, Archived Ad](https://developers.facebook.com/docs/graph-api/reference/archived-ad/) — EU 광고의 보관 기간, 영국과 EU 광고의 추가 필드, 집행비와 노출 수의 공개 대상
 - [Google Trends Help, FAQ about Google Trends data](https://support.google.com/trends/answer/4365533)
+- [Google Advertising Policies Help, Ads transparency](https://support.google.com/adspolicy/answer/13733850?hl=en) — 검색과 필터, 공개 항목과 결제 주체 표시 조건, 지역별 추가 정보와 정치 광고. 국가 선택기가 EEA 국가와 튀르키예로 한정된 도움말이며 2026-10-21에는 오스트리아판으로 표시됨
+- [NAVER Cloud, NAVER API HUB 검색어 트렌드 조회](https://api.ncloud-docs.com/docs/naver-api-hub-search-trend), [쇼핑인사이트 분야별 트렌드 조회](https://api.ncloud-docs.com/docs/naver-api-hub-shopping-insight-categories), [쇼핑인사이트 키워드별 트렌드 조회](https://api.ncloud-docs.com/docs/naver-api-hub-shopping-insight-keywords) — 네이버 데이터랩 수치의 범위와 상댓값 정의
+- [Similarweb, Similarweb's Data: How We Measure Digital Traffic](https://www.similarweb.com/corp/ourdata/) — 사이트 소유자 분석 데이터, 기기 기여 네트워크, 공개 자료와 제휴 데이터를 모델로 외삽한 트래픽 산출
+- [Chrome for Developers, Permission warning guidelines](https://developer.chrome.com/docs/extensions/develop/concepts/permission-warnings), [Permissions](https://developer.chrome.com/docs/extensions/reference/permissions-list), [chrome.permissions](https://developer.chrome.com/docs/extensions/reference/api/permissions), [Fill out the privacy fields](https://developer.chrome.com/docs/webstore/cws-dashboard-privacy), [User Data FAQ](https://developer.chrome.com/docs/webstore/program-policies/user-data-faq) — 설치와 업데이트, 실행 중 권한 요청의 경고, activeTab의 경고 없음, 경고 문구, 사용자에게 표시되는 수집 데이터 공개와 준수 인증, 웹 탐색 활동 같은 사용자 데이터 범주
+- [국가법령정보센터, 저작권법 제2조](https://www.law.go.kr/LSW/lsSideInfoP.do?docCls=jo&joBrNo=00&joNo=0002&lsiSeq=283335&urlMode=lsScJoRltInfoR), [제16조](https://www.law.go.kr/LSW/lsSideInfoP.do?docCls=jo&joBrNo=00&joNo=0016&lsiSeq=283335&urlMode=lsScJoRltInfoR), [제22조](https://www.law.go.kr/LSW/lsSideInfoP.do?docCls=jo&joBrNo=00&joNo=0022&lsiSeq=283335&urlMode=lsScJoRltInfoR), [부정경쟁방지 및 영업비밀보호에 관한 법률 제2조](https://www.law.go.kr/LSW/lsLinkProc.do?lsNm=%EB%B6%80%EC%A0%95%EA%B2%BD%EC%9F%81%EB%B0%A9%EC%A7%80%EB%B0%8F%EC%98%81%EC%97%85%EB%B9%84%EB%B0%80%EB%B3%B4%ED%98%B8%EC%97%90%EA%B4%80%ED%95%9C%EB%B2%95%EB%A5%A0&joNo=000200000&mode=10&chrClsCd=010202&datClsCd=010102&gubun=admRul) — 저작권법은 2026-08-11 시행본(법률 제21336호), 부정경쟁방지법은 2026-05-28 시행본(국가법령정보센터 표시 법률 제21065호) 기준
+- [국가법령정보센터, 대법원 2000. 10. 24. 선고 99다10813 판결](https://www.law.go.kr/precInfoP.do?mode=0&evtNo=99%EB%8B%A410813) — 저작권의 보호 대상과 실질적 유사성의 대비 기준
+- [국가법령정보센터, 대법원 2019. 6. 27. 선고 2017다212095 판결](https://www.law.go.kr/precInfoP.do?mode=0&evtNo=2017%EB%8B%A4212095) — 현행 저작물 정의 아래의 창작성과 실질적 유사성 판단
+- [국가법령정보센터, 대법원 2020. 3. 26. 선고 2016다276467 판결](https://www.law.go.kr/precInfoP.do?mode=0&evtNo=2016%EB%8B%A4276467) — 성과 무단 사용 조항의 보충적 일반조항 성격과 종합 판단 요소
+- [한국저작권위원회, 네티즌이 알아야 할 저작권](https://www.copyright.or.kr/information-materials/common-sense/knowledge-for-netizen/index.do) — 아이디어가 아닌 표현의 보호
 - [SBA, Plan your business](https://www.sba.gov/counseling/plan-your-business/) — 기존 자료 조사와 직접 고객 조사를 함께 쓰는 시장조사 접근. 자료별 증거 범위 표는 조사 과정에서 정리한 해석 원칙이다.
 - [Identifying Customer Needs from User-Generated Content — Artem Timoshenko, John R. Hauser (Marketing Science)](https://dspace.mit.edu/handle/1721.1/124203) — 2019, 38권 1호. 2026-10-21 저자 최종 원고(2018년 6월판)로 표본과 검토 조건, 결과 수치, 결론과 한계 대조
 - [On Self-Selection Biases in Online Product Reviews — Nan Hu, Paul A. Pavlou, Jie Zhang (MIS Quarterly)](https://aisel.aisnet.org/misq/vol41/iss2/8) — 2017, 41권 2호 449~471쪽. 2026-10-21 초록 대조
@@ -184,3 +201,5 @@ Q. 경쟁사를 어떻게 분석했는가?
 - [[Product-Design-Workflow-and-Handoff-Stages|디자인 단계별 산출물]] — 화면 리서치가 들어가는 아이디어 단계
 - [[AI-Commoditization-Differentiation|AI 범용화와 사업 차별화]] — AI가 결과물을 범용화할 때 해자가 옮겨 가는 곳
 - [[Marketplace-Seller-Launch|오픈마켓 셀러 첫 상품 출시 절차]] — 경쟁 상품 후기를 상품 선정에 쓰는 순서
+- [[Trend-Research-Validation|트렌드 조사와 수요 검증]] — 네이버 데이터랩의 상댓값과 AI 조사 결과의 검토 절차
+- [[Metoo-Strategy|Me-too 서비스 기획]] — 경쟁 서비스를 따라 만들 때의 기획 판단

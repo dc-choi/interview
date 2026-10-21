@@ -28,6 +28,7 @@ aliases: ["응용경제(Applied Economics)", "Applied Economics Map"]
 - [[Personal-Income-Tax-Basics|개인 소득세와 연말정산]] — 결정세액과 환급, 공제 구분, 이직과 부업, 가상자산소득의 시행 시점과 취득가액 ✅
 - [[Discount-Points-and-Resale-Checks|할인 구매, 포인트 적립과 되팔기 점검]] — 절약, 적립, 되팔기의 계산 분리, 멤버십 적립 상한과 포인트 유효기간, 재판매 제한 약관, 반복 판매의 사업자 판단 ✅
 - [[Career-Company-Judgment|이직, 회사 판단 체크리스트]] — 막연한 불안을 거시 사이클과 측정 가능한 회사 변수로 환원 ✅
+- [[Founder-Salary-Replacement-and-Runway|퇴사 창업 전 급여 대체 금액과 생활비 여력]] — 회사가 내던 사회보험료, 퇴직금과 연차의 본인 부담 전환, 건강보험 임의계속가입, 창업 퇴사와 실업급여, 목표 매출과 여력 계산 ✅
 - [[Salary-Negotiation-Inflation|연봉 협상에 인플레이션 적용하기]] — 명목 vs 실질임금, 동결은 삭감, 물가상승률은 기준선 ✅
 - [[Public-Rental-Housing-Types|공공임대주택 유형과 신청 전 확인]] — 시행령의 여덟 유형과 공공지원민간임대 구분, 임대료 산정 방식, 임대의무기간과 거주기간, 공고 경로 ✅
 - [[Youth-Asset-Building-Accounts|청년 자산형성 상품 비교]] — 정부기여금형 적금과 세제 혜택형 투자 계좌의 차이, 상품별 단계와 가입 요건, 중도해지와 갈아타기, 선택 질문 ✅
