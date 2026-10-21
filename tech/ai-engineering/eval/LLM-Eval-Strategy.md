@@ -23,6 +23,20 @@ LLM, 에이전트 시스템은 같은 입력에도 출력이 흔들린다. 결�
 
 이는 [[Production-Agent-Architecture]]의 고가용성(워커 풀 교체), Closure-loop과 같은 사고다. 한 번에 맞히게 만들기보다, 틀려도 루프 안에서 회복하게 만든다.
 
+## 모델 라우팅은 같은 업무와 전체 비용으로 비교한다
+
+모델 자동 선택이 제공된다는 사실과 자기 업무에서 품질을 유지하며 비용을 줄인다는 결론은 다르다. 예를 들어 Abacus.AI RouteLLM은 2026-10-22 공식 API 문서 기준 `route-llm`으로 자동 선택을 요청하거나 모델 ID를 지정할 수 있다. 이 기능 설명만으로 고정 모델보다 높은 정답률이나 일정한 절감률을 보장하지 않는다.
+
+반복 trial, 실행 기록과 최종 결과를 구분하는 평가 원칙을 라우팅 비교에 적용하면 다음처럼 설계할 수 있다.
+
+1. **비교군을 고정한다.** 같은 질문, 자료, 정책과 성공 기준으로 단일 모델, 수동 분기와 자동 라우팅을 비교한다. 프롬프트, 도구와 재시도 예산이 다르면 모델 선택 외의 효과가 섞인다.
+2. **단일 질문과 연속 대화를 나눈다.** 독립 질문은 같은 초기 상태에서 시작한다. 연속 대화는 주문 번호나 대상 상품을 생략하는 후속 질문까지 평가해 앞선 문맥을 올바르게 쓰는지 확인한다.
+3. **정답과 행동을 따로 채점한다.** 조회, 정책 적용, 계산, 자료 부재를 구분한다. 계산은 확정한 입력과 규칙으로 검산하며, 예상 환불액을 안내한 답변을 실제 환불 실행 성공으로 세지 않는다.
+4. **전체 실행 비용을 기록한다.** 요청한 모델, 응답에서 확인 가능한 모델 정보, 전달한 자료, 토큰 사용량, 재시도, 첫 응답 지연과 전체 완료 시간을 남긴다. 공급자의 크레딧 단위를 다른 공급자의 토큰 단가나 실제 청구액과 바로 같다고 보지 않는다. 비교 시점의 과금 규칙으로 환산한다.
+5. **반복성과 업무 구성을 확인한다.** 적은 문항을 한 번씩 통과한 결과를 운영 신뢰도로 일반화하지 않는다. 같은 과제를 여러 번 실행하고, 자주 오는 요청과 실패 비용이 큰 예외를 따로 집계한다. 절감률은 품질 기준을 통과한 조건끼리 비교한다.
+
+이 절차는 평가 설계 제안이며 특정 라우터의 성능을 재현한 결과가 아니다. [[LLM-Model-Tiers|모델 티어와 라우팅]]의 선택은 이 비교 결과에 따라 조정한다.
+
 ## 기억 기능의 효과는 같은 조건에서 비교한다
 
 모델 교체와 기억 데이터 축적이 동시에 일어났다면 체감 개선만으로 기억 기능의 효과를 분리할 수 없다. 에이전트 평가는 모델과 하네스를 함께 측정하므로, 반복 trial의 시작 환경을 맞추고 실행 기록과 최종 상태를 구분해야 한다.
@@ -123,7 +137,10 @@ Q. 데이터 품질은 어떻게 지키나?
 - [[Harness-Engineering|하네스 엔지니어링 (Verify 축)]]
 
 ## 출처
-- [Demystifying evals for AI agents — Anthropic](https://www.anthropic.com/engineering/demystifying-evals-for-ai-agents) — 반복 trial, 모델과 하네스의 공동 평가, 양방향 과제와 초기 환경 격리. 기억 비교 절차는 이를 적용한 설계 제안이다. 2026-10-09 확인.
+- [Abacus.AI, RouteLLM API Reference](https://api.abacus.ai/help/route-llm/) — 2026-10-22 자동 모델 선택과 크레딧 회계, 가격 조회 안내 확인. 절감률과 운영 품질은 별도 평가 대상이다.
+- [Abacus.AI, OpenAI Chat Completions API](https://api.abacus.ai/help/route-llm/chat-completions/) — 2026-10-22 모델 ID 지정과 `route-llm` 선택 확인.
+- [YouTube, 코드팩토리, 매번 가장 효율적인 LLM을 선택하는법](https://www.youtube.com/watch?v=6vabSapGFqE) — 상담의 고정 모델, 수동 분기와 자동 선택 비교를 학습 계기로 사용했다. 시연의 모델별 결과와 절감 수치는 일반 성능으로 반영하지 않았다.
+- [Demystifying evals for AI agents — Anthropic](https://www.anthropic.com/engineering/demystifying-evals-for-ai-agents) — 반복 trial, 모델과 하네스의 공동 평가, 양방향 과제와 초기 환경 격리. 기억과 라우팅 비교 절차는 이를 적용한 설계 제안이다. 2026-10-09 확인, 2026-10-22 라우팅 평가에 사용한 원칙 재대조.
 - [How Amazon uses Amazon Nova models to automate operational readiness testing for new fulfillment centers — AWS](https://aws.amazon.com/blogs/machine-learning/how-amazon-uses-amazon-nova-models-to-automate-operational-readiness-testing-for-new-fulfillment-centers/) — 2026-02-10 공개 사례의 ORT 절차와 평가 결과. 2026-10-09 확인.
 - [Anthropic’s Transparency Hub — Anthropic](https://www.anthropic.com/transparency) — Claude Sonnet 4.5의 Model Alignment and Evaluation Awareness 절
 - [OpenAI, Evaluating Large Language Models Trained on Code](https://arxiv.org/abs/2107.03374)
