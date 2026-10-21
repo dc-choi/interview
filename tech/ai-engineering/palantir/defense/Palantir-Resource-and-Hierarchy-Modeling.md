@@ -52,6 +52,22 @@ aliases: ["Palantir 자원과 조직 관계 모델링"]
 
 `Facility`는 위치와 일부 상태 속성을 필수로 갖는다. 확인한 공개 스키마에는 `Named Location` 확장이 없다. 공통 인터페이스를 구현할 수 있다는 개요의 예시를 모든 기본 타입에 이미 적용된 상속 관계라고 읽으면 안 된다.
 
+## 연료 분류와 이동 능력의 계약
+
+이 절은 2026-10-22 공개 Fuel Type과 Maritime Movement Capable 상세를 대조했다. 다른 절의 검증 날짜는 기존 frontmatter 기준을 유지한다.
+
+`Fuel Type`은 `Materiel Type`을 확장하는 연료 분류다. 상세 페이지에 자체 속성이 없다는 사실을 상속 속성까지 없다는 뜻으로 읽지 않는다. 연료를 쓰는 개체로 향하는 `Maritime Movement Capable Entities` 링크는 선택적인 다중 관계이고, 반대쪽의 `Fuel Type` 링크는 선택적인 단일 관계다. 연료 종류와 그것을 사용하는 개체의 이동 능력을 따로 모델링한다.
+
+`Maritime Movement Capable`은 다음 세 선택 속성을 정의한다. 인터페이스 구현만으로 계산에 필요한 값이 모두 있다고 가정하면 안 된다.
+
+| 속성 | 자료형과 설명 | 해석 경계 |
+| --- | --- | --- |
+| Fuel Burn | `speedKnots`, `fuelBurnGph`가 각각 double인 구조체 목록. 소비율 설명은 gallons per hour | 속도별 소비율 자료이며 단일 상수로 축약하지 않는다 |
+| Fuel Capacity | integer, gallons | 용량을 현재 잔량으로 해석하지 않는다 |
+| Speed Constraints | `defaultSpeedKnots`, `maxSpeedKnots`가 각각 double인 구조체 | 속성 설명은 miles per hour여서 필드명의 Knots와 불일치한다 |
+
+속도 제약의 실제 단위는 이 공개 설명만으로 확정할 수 없다. 필드명만 보고 노트로 처리하거나 설명만 보고 mph로 변환하지 말고, 데이터를 제공하는 구현과 단위 계약을 확인한다. 값이 없는 상태도 0으로 치환하지 않는다. 이는 누락과 단위 충돌을 계산 전에 검증하는 모델링 판단이다.
+
 ## 출처
 
 - [Palantir Documentation, Materiel Type](https://www.palantir.com/docs/defense-osdk/api/orderOfBattle/interfaceTypes/com-palantir-ontology-defense-types-materielType/)
@@ -73,6 +89,8 @@ aliases: ["Palantir 자원과 조직 관계 모델링"]
 - [Palantir Documentation, Commercial Vessel](https://www.palantir.com/docs/defense-osdk/api/orderOfBattle/interfaceTypes/com-palantir-ontology-defense-types-commercialVessel/)
 - [Palantir Documentation, Military Vessel](https://www.palantir.com/docs/defense-osdk/api/orderOfBattle/interfaceTypes/com-palantir-ontology-defense-types-militaryVessel/)
 - [Palantir Documentation, Facility](https://www.palantir.com/docs/defense-osdk/api/orderOfBattle/interfaceTypes/com-palantir-ontology-defense-types-facility/)
+- [Palantir Documentation, Fuel Type](https://www.palantir.com/docs/defense-osdk/api/orderOfBattle/interfaceTypes/com-palantir-ontology-defense-types-fuelType/)
+- [Palantir Documentation, Maritime Movement Capable](https://www.palantir.com/docs/defense-osdk/api/orderOfBattle/interfaceTypes/com-palantir-ontology-defense-types-maritimeMovementCapable/)
 
 ## 관련 문서
 

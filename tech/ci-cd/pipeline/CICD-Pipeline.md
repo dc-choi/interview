@@ -16,6 +16,7 @@ aliases: ["CICD Pipeline", "CI 파이프라인 구현"]
 - [[Docker-Image-Pipeline|Docker image build pipeline]]: 이미지 빌드, 태깅, 레지스트리
 - [[Dependency-Management|의존성 관리]]: Lock 파일, Poetry, pnpm, Gradle, Semver, 취약점 스캔
 - [[Dependency-Catalogs|의존성 카탈로그]]: 선언 버전 통합, pnpm/Yarn 지원 범위, 카탈로그 발행과 서비스 전환 정책
+- [[Mise-Project-Toolchain|mise 프로젝트 도구 관리]]: 버전 요청과 lock, 셸과 자식 프로세스, 설정 우선순위, 신뢰와 bootstrap 재실행
 
 ## 함께 볼 문서
 
