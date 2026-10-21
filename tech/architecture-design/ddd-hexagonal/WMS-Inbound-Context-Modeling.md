@@ -21,7 +21,7 @@ aliases: ["WMS Inbound Context Modeling", "WMS 입고 컨텍스트 모델링", "
 | 5. 연관 시스템 | 경계 밖에서 누가 정보를 주고받는가 | 연동 지점과 형식 |
 | 6. 도메인 이벤트 | 어떤 전이를 다른 모델이나 컨텍스트가 알아야 하는가 | 과거형 이벤트 목록 |
 
-앞 단계의 결과가 다음 단계의 입력이다. 입고와 출고처럼 유스케이스가 순서대로 이어지는 컨텍스트에서는 상태 전이가 액티비티 흐름과 거의 겹치고, 구현과 테스트도 유스케이스 순서를 따라가기 쉽다. 재고 컨텍스트는 이런 순차 구조와 달라 별도 분석이 필요하다.
+앞 단계의 결과가 다음 단계의 입력이다. 입고와 출고처럼 유스케이스가 순서대로 이어지는 컨텍스트에서는 상태 전이가 액티비티 흐름과 거의 겹치고, 구현과 테스트도 유스케이스 순서를 따라가기 쉽다. 재고 컨텍스트는 이런 순차 구조와 달라 별도 분석이 필요하다([[WMS-Inventory-Context-Modeling|재고 컨텍스트 모델링]]).
 
 ## 용어
 
@@ -135,7 +135,7 @@ aliases: ["WMS Inbound Context Modeling", "WMS 입고 컨텍스트 모델링", "
 
 ## 출처
 
-- [YouTube, 하찮은오후, 4강 Inbound 입고 관리 Context 심층 분석](https://www.youtube.com/watch?v=APBH-cQovdg)
+- [YouTube, 코딩하는오후, 4강 Inbound 입고 관리 Context 심층 분석](https://www.youtube.com/watch?v=APBH-cQovdg)
 - [Microsoft Learn, Warehouse handling of inbound loads for purchase and inbound shipment orders](https://learn.microsoft.com/en-us/dynamics365/supply-chain/warehousing/inbound-load-handling)
 - [Microsoft Learn, Work with location directives](https://learn.microsoft.com/en-us/dynamics365/supply-chain/warehousing/create-location-directive)
 - [Microsoft Learn, Material handling equipment interface (MHAX)](https://learn.microsoft.com/en-us/dynamics365/supply-chain/warehousing/mhax)
@@ -152,6 +152,7 @@ aliases: ["WMS Inbound Context Modeling", "WMS 입고 컨텍스트 모델링", "
 ## 관련 문서
 
 - [[WMS-Outbound-Context-Modeling|WMS 출고 컨텍스트 모델링 (같은 분석 순서를 출고에 적용)]]
+- [[WMS-Inventory-Context-Modeling|WMS 재고 컨텍스트 모델링 (순차 흐름이 아닌 재고 컨텍스트에 적용)]]
 - [[DDD|DDD (Bounded Context, Context Map, 상태 전이 규칙)]]
 - [[DDD-Hexagonal-In-Production-Pragmatics|DDD + Hexagonal 외부 통합과 ACL]]
 - [[Commerce-Order|커머스 주문 상태와 전환 트리거]]

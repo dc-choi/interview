@@ -31,6 +31,10 @@ aliases: ["Supply Chain Security", "공급망 공격", "공급망 보안", "의�
 
 악성 버전이 **소스 어디에서도 import하지 않는 의존성**을 추가한다. 그 패키지의 유일한 목적은 postinstall로 RAT(원격 접근 트로이목마) 같은 페이로드를 실행하는 것. lockfile만 봐서는 정상 의존성처럼 보인다.
 
+### 에이전트의 의존성 선택 유도
+
+공유 규칙 파일의 지시로 코딩 에이전트가 정상 패키지 대신 공격자가 지정한 패키지를 import하고 설치하게 만드는 경로는 [[Coding-Agent-Package-Hallucination|코딩 에이전트의 패키지 환각 공격]]에서 측정 조건, 결과와 리뷰 시점별 점검을 다룬다.
+
 ## 페이로드가 하는 일
 
 설치된 악성코드의 전형적 행동 단계:
@@ -167,6 +171,7 @@ Sonatype의 Hugging Face 분석은 모델 파일 디렉터리를 IQ CLI로 검�
 - [[Secret-Management|시크릿 관리]] — 크레덴셜 로테이션, 동적 시크릿
 - [[Dependency-Vulnerability-Scanning|의존성 취약점 스캐닝]] — SCA, SBOM
 - [[Dependency-Selection|의존성 선택]] — 도입 전 선별 단계의 공급망 신호 확인
+- [[Coding-Agent-Package-Hallucination|코딩 에이전트의 패키지 환각 공격]] — 규칙 파일 지시로 바뀌는 의존성 선택과 점검
 - [[Open-Source-License-Review|오픈소스 라이선스 검토]] — 포함 구성요소의 재배포 허가와 고지/소스 제공 조건
 - [[Dependency-Management|의존성 관리]] — lock 파일 3계층, semver 범위, 언어별 패키지 매니저
 - [[보안(Security)|보안 인덱스]]

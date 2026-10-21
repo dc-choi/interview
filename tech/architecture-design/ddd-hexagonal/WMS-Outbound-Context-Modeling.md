@@ -142,14 +142,14 @@ aliases: ["WMS Outbound Context Modeling", "WMS 출고 컨텍스트 모델링", 
 ## 트레이드오프와 체크포인트
 
 - 할당 시점: 주문 수신 때 일찍 할당하면 재고가 오래 묶이고, 웨이브 직전에 늦게 할당하면 결품과 재웨이브가 늘어난다. 전체 수량 예약과 부분 예약 가운데 무엇을 허용할지도 OMS와의 계약이다.
-- 동시성: 여러 주문이 같은 재고를 할당하므로 할당 순간을 잠금이나 조건부 갱신으로 보호하고 잠금 범위와 대기 시간을 정한다([[Distributed-Lock|상태 키와 짧은 락]]). 다시 들어온 주문 메시지와 스캔은 식별자로 걸러 한 번만 반영한다.
+- 동시성: 여러 주문이 같은 재고를 할당하므로 재고 행의 수량은 조건부 갱신으로 보호하고([[WMS-Inventory-Context-Modeling#정합성과 동시성 전략|재고 컨텍스트의 수량 불변식]]), 같은 요청의 할당과 취소가 겹치지 않게 하려면 상태 키와 짧은 락을 더하며 잠금 범위와 대기 시간을 정한다([[Distributed-Lock|상태 키와 짧은 락]]). 다시 들어온 주문 메시지와 스캔은 식별자로 걸러 한 번만 반영한다.
 - 패킹 공정: 고객 단위로 다시 포장하는 풀필먼트는 오피킹 검수와 컨테이너 상태가 필요하지만, 팔레트 단위 출고는 패킹 상태를 두지 않아도 된다.
 - 테스트: 순차 흐름이라 유스케이스 순서대로 시나리오 테스트를 짜기 쉽다. 결품, 부분 출고와 단계별 취소처럼 분기가 많은 경로는 따로 둔다([[Test-Fixture-Scenario-Setup|상태별 픽스처]]).
 - 확인 질문: 가용 재고 확인과 할당을 WMS와 ERP 중 누가 하는가, 결품이면 재할당, 부분 출고, 대기 중 무엇을 하는가, 피킹 뒤 취소를 받는가, 재고 차감과 출고 통지는 어느 시점인가.
 
 ## 출처
 
-- [YouTube, 하찮은오후, 5강 Outbound 출고 관리 Context 심층 분석](https://www.youtube.com/watch?v=nENjG5wwr3E)
+- [YouTube, 코딩하는오후, 5강 Outbound 출고 관리 Context 심층 분석](https://www.youtube.com/watch?v=nENjG5wwr3E)
 - [Microsoft Learn, Release to warehouse](https://learn.microsoft.com/en-us/dynamics365/supply-chain/warehousing/release-to-warehouse-process)
 - [Microsoft Learn, Release to warehouse rule](https://learn.microsoft.com/en-us/dynamics365/supply-chain/warehousing/release-to-warehouse-rule)
 - [Microsoft Learn, Wave creation and processing](https://learn.microsoft.com/en-us/dynamics365/supply-chain/warehousing/wave-processing)
@@ -187,6 +187,7 @@ aliases: ["WMS Outbound Context Modeling", "WMS 출고 컨텍스트 모델링", 
 ## 관련 문서
 
 - [[WMS-Inbound-Context-Modeling|WMS 입고 컨텍스트 모델링]]
+- [[WMS-Inventory-Context-Modeling|WMS 재고 컨텍스트 모델링]]
 - [[DDD|DDD (Bounded Context, Context Map, 상태 전이 규칙)]]
 - [[DDD-Hexagonal-In-Production-Pragmatics|DDD + Hexagonal 외부 통합과 ACL]]
 - [[Commerce-Order|커머스 주문 상태와 전환 트리거]]

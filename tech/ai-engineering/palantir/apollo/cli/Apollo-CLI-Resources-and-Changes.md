@@ -1,7 +1,7 @@
 ---
 tags: [palantir, apollo, continuous-delivery]
 status: done
-verified_at: 2026-10-16
+verified_at: 2026-10-21
 category: AI Engineering
 aliases: []
 ---
@@ -10,9 +10,9 @@ aliases: []
 
 ## 조회, 제안과 적용을 구분한다
 
-환경, 엔티티와 릴리스는 서로 다른 ID 체계를 쓴다. 엔티티 작업은 AEID, 제품은 product ID, 제품 릴리스는 Maven coordinate를 받는 경우가 많다. CR은 request RID로 조회하고 승인한다. 명령이 CR을 만들었다는 사실은 변경 적용이 끝났다는 뜻이 아니다. `changerequest approve`도 비동기 승인이다.
+환경, 엔티티와 릴리스는 서로 다른 ID 체계를 쓴다. 엔티티 작업은 AEID, 제품은 product ID, 제품 릴리스는 Maven coordinate를 받는 경우가 많다. CR 단건 명령(get, approve, cancel, comment, reject, reopen, label add와 label remove)은 모두 request RID를 받는다. 명령이 CR을 만들었다는 사실은 변경 적용이 끝났다는 뜻이 아니다. `changerequest approve`도 비동기 승인이다.
 
-CR 목록은 space ID가 필요하며 author, environment, title, status와 limit로 좁힌다. 상태에는 `PENDING_APPROVALS`, `APPROVED`, `REJECTED`, `CANCELLED`, `ERROR`, `APPROVED_APPLYING`, `APPROVED_MERGED`가 있다. reject에는 reason, comment에는 comment가 필요하다. reopen은 취소되거나 거부된 요청을 다시 연다. CR label은 기존 label name으로 추가하고 제거한다.
+CR 목록은 space ID가 필요하며 author, environment, title, status와 limit로 좁힌다. 상태에는 `PENDING_APPROVALS`, `APPROVED`, `REJECTED`, `CANCELLED`, `ERROR`, `APPROVED_APPLYING`, `APPROVED_MERGED`가 있다. reject에는 reason, comment에는 comment가 필요하다. approve의 `-c` 또는 `--comment` 승인 의견은 선택값이다. cancel은 대기 중(pending)인 요청을 취소한다. 대기 중이 어느 상태값인지는 명령 계약에 정의되어 있지 않으므로 `PENDING_APPROVALS`와 같다고 단정하지 않는다. Apollo 가이드의 CR 상태 정의(Approved, Pending Approvals, Rejected, Cancelled, Error)는 Cancelled를 작성자가 취소한 상태로 설명할 뿐, 누가 어떤 상태에서 취소할 수 있는지는 정하지 않는다. 다른 Apollo 문서는 Module 설치의 업데이트를 일시 중지하면 Apollo가 열린 Module 업데이트 CR을 취소한다고 설명하므로, 취소된 CR을 작성자가 직접 취소했다고 단정하지 않는다. 2026-10-21 확인한 가이드와 CLI 문서에는 가이드의 다섯 상태와 CLI list의 일곱 상태값 사이의 대응이 나와 있지 않으며, `APPROVED_APPLYING`과 `APPROVED_MERGED`는 가이드에 정의가 없다. reopen은 취소되거나 거부된 요청을 다시 연다. CR label은 기존 label name으로 추가하고 제거한다. CR을 바꾸는 명령 중 approve, cancel, reject, reopen, label add와 label remove는 `--dry-run`으로 변경 없이 수행할 작업을 출력하고, comment 명령에는 이 플래그가 없다.
 
 ## 환경 설정의 두 종류
 
@@ -40,15 +40,15 @@ Experimental `label`의 확인된 자원 종류는 product-release이며 식별�
 - [Palantir, apollo-cli artifact-registry list](https://www.palantir.com/docs/apollo/apollo-cli/apollo-cli_artifact-registry_list) — 전체 registry 목록 조회.
 - [Palantir, apollo-cli changerequest](https://www.palantir.com/docs/apollo/apollo-cli/apollo-cli_changerequest) — 변경 요청 작업 그룹과 비동기 승인.
 - [Palantir, apollo-cli changerequest approve](https://www.palantir.com/docs/apollo/apollo-cli/apollo-cli_changerequest_approve) — 승인은 비동기이고 선택 comment, dry-run 지원.
-- [Palantir, apollo-cli changerequest cancel](https://www.palantir.com/docs/apollo/apollo-cli/apollo-cli_changerequest_cancel) — 대기 중 요청 취소.
+- [Palantir, apollo-cli changerequest cancel](https://www.palantir.com/docs/apollo/apollo-cli/apollo-cli_changerequest_cancel) — request RID로 대기 중 요청 취소, dry-run 지원.
 - [Palantir, apollo-cli changerequest comment](https://www.palantir.com/docs/apollo/apollo-cli/apollo-cli_changerequest_comment) — 필수 comment를 요청에 추가.
 - [Palantir, apollo-cli changerequest get](https://www.palantir.com/docs/apollo/apollo-cli/apollo-cli_changerequest_get) — request RID로 단건 조회.
 - [Palantir, apollo-cli changerequest label](https://www.palantir.com/docs/apollo/apollo-cli/apollo-cli_changerequest_label) — CR label 작업 그룹.
-- [Palantir, apollo-cli changerequest label add](https://www.palantir.com/docs/apollo/apollo-cli/apollo-cli_changerequest_label_add) — 기존 label name을 추가.
-- [Palantir, apollo-cli changerequest label remove](https://www.palantir.com/docs/apollo/apollo-cli/apollo-cli_changerequest_label_remove) — 기존 label name을 제거.
+- [Palantir, apollo-cli changerequest label add](https://www.palantir.com/docs/apollo/apollo-cli/apollo-cli_changerequest_label_add) — 기존 label name을 추가, dry-run 지원.
+- [Palantir, apollo-cli changerequest label remove](https://www.palantir.com/docs/apollo/apollo-cli/apollo-cli_changerequest_label_remove) — 기존 label name을 제거, dry-run 지원.
 - [Palantir, apollo-cli changerequest list](https://www.palantir.com/docs/apollo/apollo-cli/apollo-cli_changerequest_list) — 상태 필터와 필수 space ID.
-- [Palantir, apollo-cli changerequest reject](https://www.palantir.com/docs/apollo/apollo-cli/apollo-cli_changerequest_reject) — 필수 reason으로 거부.
-- [Palantir, apollo-cli changerequest reopen](https://www.palantir.com/docs/apollo/apollo-cli/apollo-cli_changerequest_reopen) — 취소 또는 거부된 요청을 재개.
+- [Palantir, apollo-cli changerequest reject](https://www.palantir.com/docs/apollo/apollo-cli/apollo-cli_changerequest_reject) — 필수 reason으로 거부, dry-run 지원.
+- [Palantir, apollo-cli changerequest reopen](https://www.palantir.com/docs/apollo/apollo-cli/apollo-cli_changerequest_reopen) — 취소 또는 거부된 요청을 재개, dry-run 지원.
 - [Palantir, apollo-cli entity Experimental](https://www.palantir.com/docs/apollo/apollo-cli/apollo-cli_entity) — 엔티티 명령은 experimental.
 - [Palantir, apollo-cli entity aggregate Experimental](https://www.palantir.com/docs/apollo/apollo-cli/apollo-cli_entity_aggregate) — 환경별 AEID 변환과 버전 병합 보고서.
 - [Palantir, apollo-cli entity enforce Experimental](https://www.palantir.com/docs/apollo/apollo-cli/apollo-cli_entity_enforce) — 설정 강제와 설정/버전 강제 구분.
@@ -83,6 +83,8 @@ Experimental `label`의 확인된 자원 종류는 product-release이며 식별�
 - [Palantir, apollo-cli label get Experimental](https://www.palantir.com/docs/apollo/apollo-cli/apollo-cli_label_get) — 미적용 label get은 실패.
 - [Palantir, apollo-cli label list Experimental](https://www.palantir.com/docs/apollo/apollo-cli/apollo-cli_label_list) — 자원에 적용된 label 목록.
 - [Palantir, apollo-cli label set Experimental](https://www.palantir.com/docs/apollo/apollo-cli/apollo-cli_label_set) — label ID의 값을 덮어씀.
+- [Palantir, Change Requests](https://www.palantir.com/docs/apollo/managing-changes/change-requests) — 다섯 가지 CR 상태 정의, Cancelled는 작성자가 취소한 상태로 설명하고 취소할 수 있는 상태는 정하지 않음.
+- [Palantir, Create, edit, and delete a Module](https://www.palantir.com/docs/apollo/managing-modules/create-module) — Module 업데이트 일시 중지 시 Apollo가 열린 Module 업데이트 CR을 취소.
 
 - [Palantir, apollo-cli](https://www.palantir.com/docs/apollo/apollo-cli) — 부모 CLI 경로는 artifact-registry list 본문으로 연결된다.
 
