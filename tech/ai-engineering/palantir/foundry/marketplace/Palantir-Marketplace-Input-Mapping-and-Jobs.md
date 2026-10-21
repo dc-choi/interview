@@ -52,6 +52,17 @@ Linked installation은 외부 참조, 기존 설치 upgrade 또는 새 설치로
 
 Placeholder는 검증일 기준 dataset input만 지원한다. 실제 자원이 없을 때 schema stub으로 설치를 진행하므로 데이터가 준비됐다는 뜻이 아니다. 이후 Edit로 실제 입력에 remap한다. Folder auto-selection과 bulk-set도 선택한 자원/column mapping을 검토한다.
 
+### API 조회에서 값, 명시적 해제와 생략을 구분한다
+
+2026-10-22 수집본과 검색 도구가 반환한 공식 v3 API 문서 본문을 대조했다. 페이지 직접 열기는 실패했으며 실제 API 호출은 수행하지 않았다.
+
+`GET /api/v3/platform/marketplaceInstallations/{marketplaceInstallationRid}/inputs`는 현재 충족된 입력과 마지막 job이 명시적으로 미충족으로 남긴 입력을 조회한다. Preview endpoint이므로 `preview=true`가 필요하며, OAuth2 제3자 앱의 scope는 `api:v3:marketplace-installation-inputs:read:get`이다.
+
+- `inputs`는 qualified input API name을 키로 하는 현재 값의 map이다. 기본 `selection=MANUAL_ONLY`는 수동으로 충족한 값만 반환하고, `ALL`은 저장된 모든 출처의 충족 값을 반환한다.
+- `explicitlyUnset`은 마지막 변경 job이 명시적으로 미충족으로 남긴 API name 목록이며 `selection`과 관계없이 반환한다. 값도 명시적 해제도 없는 optional input은 두 필드 모두에 나타나지 않는다.
+- 따라서 기본 응답에 없다는 사실만으로 해제 상태를 추정하지 않는다. 전체 충족 값을 비교하려면 `ALL`을 사용하고 명시적 해제와 생략을 따로 읽는다.
+- 반환 값은 최초 제출 때와 다른 지원 표현을 사용할 수 있다. Credential 값은 평문 대신 secret 이름만 노출하며 다른 installation job에 제출할 수 없다. 조회 응답 전체를 새 job의 입력으로 그대로 복사하는 방식은 피한다.
+
 ## Override와 이름
 
 Manual override는 default/linked product 공급을 덮는다. Unnecessary override는 현재 같은 값이라도 자동 연결을 고정하므로 후속 변경 추적에 차이가 생길 수 있다. Clean up에서 unnecessary override를 지우면 현재 값은 같지만 linked product override를 지우면 값이 달라질 수 있다.
@@ -60,6 +71,8 @@ Ontology install prefix는 display name만 또는 display/API name 모두에 적
 
 ## 출처
 
+- [Palantir Foundry, Marketplace Installation Inputs basics](https://www.palantir.com/docs/foundry/api/v3/marketplace-v3-resources/marketplace-installation-inputs/marketplace-installation-inputs-basics) — 2026-10-22 수집본과 공식 문서 검색 반환 본문 대조.
+- [Palantir Foundry, Get Marketplace Installation Inputs](https://www.palantir.com/docs/foundry/api/v3/marketplace-v3-resources/marketplace-installation-inputs/get-marketplace-installation-inputs) — 2026-10-22 검색 반환 본문에서 선택 범위, 명시적 해제와 재사용 제약 확인. 직접 열기와 실제 호출은 미확인.
 - [Palantir Foundry, Get Marketplace Installation](https://www.palantir.com/docs/foundry/api/v3/marketplace-v3-resources/marketplace-installations/get-marketplace-installation) — 2026-10-22 등록 자원과 목표 버전의 의미, preview와 조회 scope 확인. 현재 위치 필드와 오류 계약은 2026-10-21 수집본을 대조했으며 실시간 재조회와 실제 호출은 미확인.
 - [Palantir Foundry, Create Marketplace Installation](https://www.palantir.com/docs/foundry/api/v3/marketplace-v3-resources/marketplace-installations/create-marketplace-installation) — 2026-10-22 등록과 job 실행의 구분, 버전 힌트와 비멱등성 확인. 생성 입력과 버전 형식 제약은 2026-10-21 수집본 대조이며 실시간 재조회와 실제 호출은 미확인.
 - [Palantir Foundry, marketplace](https://www.palantir.com/docs/foundry/marketplace/)
