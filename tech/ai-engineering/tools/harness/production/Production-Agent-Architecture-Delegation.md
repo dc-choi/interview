@@ -43,7 +43,19 @@ Mindflow AI Rooms의 공개 제품 설명은 중요한 작업의 실행 전 승�
 
 이는 일반적인 업무 분해 제안이다. 특정 산업의 자동 심사 허용 범위나 규제 준수를 확인한 절차가 아니며, 사람 검토를 다른 에이전트로 대체한 것만으로 같은 통제 수준을 얻었다고 판단하지 않는다.
 
+## 문서 연동에서도 읽기와 변경 권한을 나눈다
+
+문서 시스템을 MCP로 연결할 때는 서버 연결 성공, 사용자의 문서 접근권과 상태 변경 권한을 따로 확인한다. 검색과 요약을 맡겼다는 사실만으로 문서 생성이나 업무 완료 처리까지 위임된 것으로 해석하지 않는다.
+
+2026-10-22 STP.Documents 공식 문서는 문서 목록, 검색과 읽기 외에 `stp_doc_create_document`와 `stp_doconprem_complete_task`도 제공한다고 설명한다. 같은 서버가 읽기와 변경 도구를 함께 노출할 수 있는 사례다. OAuth resource indicator로 서버 대상 scope를 제한하고, `doc3.mcp4`만 받은 서버는 내부 token exchange로 사용자 대신 하위 API를 호출한다. 이 인증 흐름 자체가 개별 변경 작업의 사람 승인을 뜻하지는 않는다.
+
+같은 날 확인한 Legal Twin Case Knowledge 문서는 사건 상세 조회 시 원천 시스템에서 접근권을 확인한다고 명시한다. 문서 목록과 요약, 분석 메타데이터, 실제 본문 조회도 별도 도구로 나눈다. 이 사례를 모든 MCP 서버가 같은 권한 검사를 제공한다는 보장으로 확대하지 않는다.
+
+적용 제안: 읽기 전용 업무에는 실행 가능한 도구와 자격증명 범위를 그 업무에 맞게 제한하고, 문서 생성이나 업무 완료에는 대상과 입력을 확인하는 별도 실행 경계를 둔다. 요약과 분석 메타데이터를 원문 사실과 구분하며, 접근권을 철회한 뒤 목록, 본문과 캐시에서 이전 자료가 다시 노출되지 않는지 확인한다. 위 사례는 공개 계약을 대조한 것이며 실제 고객 환경의 권한 격리를 시험한 결과는 아니다.
+
 ## 출처
+- [stp.one Help Center, STP.Documents MCP](https://support.stp.one/hc/en-us/articles/30884494431389-MCP) — 2026-10-22 읽기와 변경 도구, OAuth scope와 사용자 위임 흐름 대조
+- [stp.one Help Center, Case Knowledge MCP](https://support.stp.one/hc/en-us/articles/34341319681693-MCP) — 2026-10-22 사건 조회의 원천 접근권 검사와 문서 조회 단계 대조
 - [Four security principles for agentic AI systems — AWS Security Blog](https://aws.amazon.com/blogs/security/four-security-principles-for-agentic-ai-systems/)
 - [Amazon Bedrock, Integrate Automated Reasoning checks in your application](https://docs.aws.amazon.com/bedrock/latest/userguide/integrate-automated-reasoning-checks.html)
 - [Amazon Bedrock, Automated Reasoning checks concepts](https://docs.aws.amazon.com/bedrock/latest/userguide/automated-reasoning-checks-concepts.html)

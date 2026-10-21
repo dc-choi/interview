@@ -41,6 +41,14 @@ AI 수요가 늘면 모델 매출뿐 아니라 반도체, 메모리, 네트워�
 
 지분 투자는 소유권과 손실 위험을, 컴퓨팅 공급은 사용권과 지급 의무를 만든다. 한 회사가 투자자이면서 공급사라면 발표된 투자액과 매출이 서로 독립된 수요 증거인지 확인한다. 인재 채용, 라이선스와 회사 전체 인수도 서로 다른 거래다. 협상 보도는 거래 완료가 아니다.
 
+### 총설비투자와 특정 장비의 조달 완료를 구분한다
+
+현금흐름표의 설비투자는 기업 전체의 현금 지출을 보여 준다. 여러 공장, 데이터센터와 생산설비가 함께 들어 있으므로 총액 증가나 잉여현금흐름 감소만으로 특정 반도체 장비의 발주, 납품이나 가동을 확정할 수 없다. 발주와 선급금, 장비 반입, 설치, 시험 생산과 양산을 단계별 근거로 확인한다(분석 기준).
+
+**사례 (Tesla 2026년 2분기 Form 10-Q, 2026-10-22 대조):** 2026년 상반기 설비투자는 82억 8,000만 달러로, 전년 동기 38억 9,000만 달러보다 늘었다. 공시는 지출 용도를 글로벌 AI와 운영 인프라, 공장 확장, 기계와 장비로 설명하며 제조 범위를 반도체와 태양광으로 넓히고 있다고 밝혔다. 이는 반도체 투자의 방향과 여러 용도가 합쳐진 지출의 근거다. 이 집계만으로 특정 EUV 장비의 계약 상대, 지급액, 납기나 우선 배정을 확인할 수는 없다.
+
+비교할 때 상반기 누적 현금흐름과 2분기 단독 현금흐름을 섞지 않는다. 설비투자 계획, 실제 지급과 생산 성과도 각각 기록한다. 수직계열화 계획은 기술 확보와 생산 수율의 검증 결과가 아니므로, 공장 투자 소식을 바로 경쟁사의 매출 감소나 투자 수익률로 연결하지 않는다.
+
 ## 자료별 확인 수준 (2026-10-16)
 
 | 자료 | 확보한 내용 | 적용 한계 |
@@ -72,6 +80,7 @@ State of AI의 인프라 절은 미국 4대 하이퍼스케일러의 2026년 설
 
 ## 출처
 
+- [Form 10-Q for the quarter ended June 30, 2026 — Tesla](https://www.sec.gov/Archives/edgar/data/1318605/000162828026049270/tsla-20260630.htm) — 2026-10-22 상반기 설비투자와 지출 용도, 반도체 제조 확대 설명 대조. 개별 장비 계약과 납기는 이 집계로 확인하지 않음
 - [CoreWeave Continues to Contract New Compute Capacity at Higher Prices — CoreWeave](https://investors.coreweave.com/news/news-details/2026/CoreWeave-Continues-to-Contract-New-Compute-Capacity-at-Higher-Prices/default.aspx) — 단기 계약의 MW당 연환산 매출 정의, 2026-10-22 대조
 - [CoreWeave Reports Strong Second Quarter 2026 Results — CoreWeave](https://investors.coreweave.com/news/news-details/2026/CoreWeave-Reports-Strong-Second-Quarter-2026-Results/) — revenue backlog의 구성과 이행 조건, 2026-10-22 대조
 - [Use open weight models as your AI coding agent with Amazon Bedrock — AWS](https://aws.amazon.com/blogs/machine-learning/use-open-weight-models-as-your-ai-coding-agent-with-amazon-bedrock/) — 자체 GPU 조달 없는 관리형 이용 경로, 2026-10-22 대조

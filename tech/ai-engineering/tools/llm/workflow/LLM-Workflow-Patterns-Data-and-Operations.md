@@ -37,6 +37,22 @@ aliases: ["LLM Workflow Patterns Data and Operations", "데이터 vs 모델", "�
 
 설계 제안(계속): 데이터와 색인을 서울 리전에 두어야 하면 고객 관리형 지식 베이스에 S3나 사용자 정의 데이터 소스로 수집한다. 위의 관리형 리전과 저장소 조건상 관리형 지식 베이스는 원본 파일까지 서울 밖에 두게 되므로 데이터 위치 요건이 다른 리전 보관을 허용할 때만 검토한다. 파싱과 응답 생성을 교차 리전 추론 프로필로 호출하지 않아도 되는지, 즉 그 모델을 서울 단일 리전에서 호출할 수 있는지도 확인한다.
 
+### 검색한 청크와 반환한 문맥의 크기를 구분한다
+
+2026-10-22 공식 문서 기준 고객 관리형 Bedrock 지식 베이스의 계층형 청킹은 부모와 자식의 두 단계다. 자식 청크를 검색한 뒤 부모 청크로 바꿔 반환하므로 결과 수가 요청한 수보다 적을 수 있다. 부모와 자식의 최대 토큰 수를 각각 정하고, 겹침은 비율이 아니라 연속된 부모 청크 사이와 자식 청크 사이의 토큰 수로 지정한다. 고정 크기 청킹의 겹침 비율과 혼동하지 않는다.
+
+시맨틱 청킹은 최대 토큰 수, 문장 주변의 buffer size와 문장 거리의 breakpoint percentile threshold를 조정한다. Buffer size가 1이면 현재 문장과 앞뒤 문장, 총 세 문장을 묶어 임베딩한다. 경계 임계값이 높으면 더 큰 차이가 있어야 분할하므로 청크 수가 줄고 평균 크기가 커지는 경향이 있다. Foundation model 사용에 따른 추가 수집 비용도 발생한다.
+
+적용 제안: 같은 질문에서 자식 청크의 적중, 반환된 부모 문맥의 근거 포함 여부와 최종 입력 토큰을 따로 측정한다. 청크가 작다는 이유로 생성 비용도 작다고 가정하지 않는다. 위 동작은 고객 관리형 기준이며 앞 절의 관리형 지식 베이스 지원 범위와 구분한다. 기존 제품별 주장 전체를 재검증하지 않았으므로 `verified_at`은 유지한다.
+
+### 수집 계정의 권한과 질문자의 접근권을 구분한다
+
+2026-10-22 공식 Confluence 커넥터 문서는 동기화한 데이터가 `bedrock:Retrieve` 권한을 가진 사용자에게 검색될 수 있고, 원천에서 접근을 제한한 자료도 포함될 수 있다고 경고한다. 수집에 성공했다는 사실은 원천의 사용자별 접근권이 챗봇에서도 보존됐다는 증거가 아니다. 이 설명은 앞 절에서 신규 생성 중단을 명시한 고객 관리형 커넥터 기준이며, 관리형 지식 베이스의 권한 동작으로 확대하지 않는다.
+
+수집 필터는 공간, 페이지 등 수집할 대상을 고른다. 포함과 제외 조건이 같은 문서에 맞으면 제외가 우선한다. 증분 동기화는 추가, 수정과 삭제를 반영하며 `StartIngestionJob`이나 콘솔의 Sync로 실행한다. 수집 필터, 동기화와 사용자별 검색 인가는 서로 다른 통제다.
+
+적용 제안: Slack 같은 공용 채널로 답할 때는 질문자뿐 아니라 답을 볼 참여자의 허용 범위도 확인한다. 서버가 검증한 권한으로 검색과 응답 범위를 제한하고, 제한된 원문이 인용 링크나 요약으로 노출되지 않는지 시험한다. 근거 링크가 있어도 본문 노출의 권한 검사를 대신하지 않는다. 이는 구현 시 점검 기준이며 커넥터가 자동 제공하는 기능이 아니다.
+
 ## 검색, 기준 대조와 보고서 초안은 따로 평가한다
 
 업무 문서 어시스턴트의 시험 문제를 검색, 여러 기준의 대조, 보고서 초안 작성으로 나누면 같은 정답률 안에 숨은 실패를 찾기 쉽다. 다음은 품질 문서 검색과 검토에 적용할 설계 제안이다. 규제 적합성이나 실사 통과를 보증하는 기준은 아니다.
@@ -125,6 +141,7 @@ AWS의 2024-08-02 식신 구축 사례는 리뷰와 메뉴 등에서 LLM으로 �
 
 ## 출처
 
+- [AWS, Connect to Confluence for your knowledge base](https://docs.aws.amazon.com/bedrock/latest/userguide/confluence-data-source-connector.html) — 2026-10-22 고객 관리형 커넥터의 검색 권한 경고, 수집 필터와 동기화 범위를 대조했다.
 - [AWS 기술 파트너와 함께 구축한 푸드테크 기업 식신의 Amazon Bedrock 기반 AI 대시보드 구축기 — AWS 기술 블로그](https://aws.amazon.com/ko/blogs/tech/sikshin-built-ai-dashboard-with-aws-technology-partners-based-on-amazon-bedrock/) — 2026-10-22 생성 키워드, 입력 프롬프트와 결과 보존의 사례 범위 대조
 - [AWS, Evaluate the performance of RAG sources using Amazon Bedrock evaluations](https://docs.aws.amazon.com/bedrock/latest/userguide/evaluation-kb.html) — 2026-10-22 검색 전용과 검색 및 생성 평가의 구분을 대조했다. 업무별 평가표는 설계 제안이다.
 - [AWS, Prompt engineering concepts](https://docs.aws.amazon.com/bedrock/latest/userguide/prompt-engineering-guidelines.html) — 2026-10-22 작업 지시, 맥락, 예시와 입력의 구성을 대조했다. 현장 표현의 보존과 분류 계약은 설계 제안이다.
@@ -138,7 +155,7 @@ AWS의 2024-08-02 식신 구축 사례는 리뷰와 메뉴 등에서 LLM으로 �
 - [AWS, Use Human Loop Activation Conditions JSON Schema with Amazon Textract](https://docs.aws.amazon.com/sagemaker/latest/dg/a2i-json-humantaskactivationconditions-textract-example.html)
 - [AWS, Create a Human Review Workflow](https://docs.aws.amazon.com/sagemaker/latest/dg/a2i-create-flow-definition.html)
 - [AWS Prescriptive Guidance, Delivering and sustaining the value of a generative AI application](https://docs.aws.amazon.com/prescriptive-guidance/latest/gen-ai-lifecycle-operational-excellence/prod-value.html)
-- [AWS, How content chunking works for knowledge bases](https://docs.aws.amazon.com/bedrock/latest/userguide/kb-chunking.html) — 2026-10-20 청킹 없음의 페이지 번호 제약, 표 맥락 반환의 적용 조건과 10,000자 한도, S3 벡터 메타데이터 키를 대조했다.
+- [AWS, How content chunking works for knowledge bases](https://docs.aws.amazon.com/bedrock/latest/userguide/kb-chunking.html) — 2026-10-20 청킹 없음의 페이지 번호 제약, 표 맥락 반환의 적용 조건과 10,000자 한도, S3 벡터 메타데이터 키를 대조했다. 2026-10-22 계층형의 부모 반환, 겹침 단위와 시맨틱 청킹 설정을 추가 대조했다.
 - [AWS, Customize ingestion for a data source](https://docs.aws.amazon.com/bedrock/latest/userguide/kb-data-source-customize-ingestion.html) — 2026-10-20 연결 뒤 청킹 전략과 파서 유형의 변경 불가, 멀티모달 데이터 저장 위치 조건을 대조했다.
 - [AWS, Include metadata in a data source to improve knowledge base query](https://docs.aws.amazon.com/bedrock/latest/userguide/kb-metadata.html) — 2026-10-20 CSV 행 기반 구조와 문자열 저장을 대조했다.
 - [AWS, Connect to Amazon S3 for your knowledge base](https://docs.aws.amazon.com/bedrock/latest/userguide/s3-data-source-connector.html) — 2026-10-20 메타데이터 파일 이름 규칙, 10 KB 한도와 `includeForEmbedding`을 대조했다.
