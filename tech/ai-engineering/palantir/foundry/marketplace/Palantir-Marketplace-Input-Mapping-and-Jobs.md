@@ -17,6 +17,17 @@ API의 `MarketplaceInstallationJob`은 하나 이상의 기존 제품 설치를 
 
 기존 installation을 Open하는 것과 Install again으로 새 자원을 만드는 것을 구분한다. 같은 제품을 다른 입력에 다시 설치할 수 있지만 기존 내용이 자동 재사용된다고 가정하지 않는다. 완료 후 Ontology indexing 때문에 앱 가용성이 몇 분 늦을 수 있다.
 
+### API 생성의 기본값은 draft 보존이 아니다
+
+2026-10-22 공식 Create Marketplace Installation Job의 검색 반환 본문과 2026-10-21 수집 명세를 대조했다. 직접 페이지 열기와 실제 API 호출은 확인하지 못했다.
+
+- `POST /api/v3/platform/marketplaceInstallationJobs`는 기존 설치의 목표 버전 업그레이드를 준비한다. `preview=true`와 OAuth2 제3자 앱의 `api:v3:marketplace-installation-job:write:create` scope가 필요하다.
+- `submissionMode`를 생략하면 `NON_BLOCKING_ERRORS` 허용 수준과 `ABORT` 처리로 제출한다. 검토만 하려면 `{"type":"draft"}`를 명시한다. 이 모드는 준비와 검증만 수행하고 후속 제출을 기다린다.
+- 응답은 준비와 검증이 끝나기 전에 돌아온다. `PREPARING`은 계속 조회하되, `IDLE_DRAFT`는 조회만 반복해도 진행하지 않으므로 별도 후속 조치가 필요하다. 생성 응답을 설치 완료로 처리하지 않는다.
+- 대상은 서로 다른 설치 1~10개, 제품당 최대 하나다. Namespace와 marketplace가 같아야 하며 override 적용 뒤 Ontology는 최대 하나여야 한다.
+- 각 대상의 `values`와 `explicitlyUnset`은 이전 수동 값과 명시적 해제를 모두 교체한다. 일부 필드만 덧붙이는 patch로 취급하지 않는다. 두 필드에서 빠진 입력은 default, 자동 mapping이나 recommendation으로 충족될 수 있다.
+- 생성은 멱등하지 않다. 반복 호출이 새 draft를 만들거나 충돌할 수 있으므로 응답 유실 시 기존 job과 draft 상태부터 확인하는 것이 운영상 안전하다.
+
 ## 취소 요청과 자원 복구를 구분한다
 
 2026-10-22 공식 Abort/Get Marketplace Installation Job 페이지와 수집된 abort 명세를 대조했다. 아래는 API 계약이며 실제 호출과 복구 결과는 검증하지 않았다.
@@ -104,7 +115,7 @@ Ontology install prefix는 display name만 또는 display/API name 모두에 적
 - [Palantir Foundry, Discover Inputs Marketplace Installation Jobs](https://www.palantir.com/docs/foundry/api/v3/marketplace-v3-resources/marketplace-installation-jobs/discover-inputs-marketplace-installation-jobs) — 2026-10-22 검색 반환 본문과 수집본으로 대상 제약, 권한과 필터 범위 대조. 실제 호출은 미실시.
 - [Palantir Foundry, Abort Marketplace Installation Job](https://www.palantir.com/docs/foundry/api/v3/marketplace-v3-resources/marketplace-installation-jobs/abort-marketplace-installation-job) — 2026-10-22 취소의 멱등성, 상태 전이, 복구 제약과 오류 계약 확인.
 - [Palantir Foundry, Get Marketplace Installation Job](https://www.palantir.com/docs/foundry/api/v3/marketplace-v3-resources/marketplace-installation-jobs/get-marketplace-installation-job) — 2026-10-22 조회 권한, HTTP 200과 job 상태의 구분, NotFound의 접근성 의미 확인.
-- [Palantir Foundry, Create Marketplace Installation Job](https://www.palantir.com/docs/foundry/api/v3/marketplace-v3-resources/marketplace-installation-jobs/create-marketplace-installation-job) — 2026-10-22 공식 검색 반환 본문의 응답 정의에서 draft와 제출 job의 RID 공유 확인.
+- [Palantir Foundry, Create Marketplace Installation Job](https://www.palantir.com/docs/foundry/api/v3/marketplace-v3-resources/marketplace-installation-jobs/create-marketplace-installation-job) — 2026-10-22 검색 반환 본문과 수집 명세로 RID 공유, 제출 기본값, 입력 교체와 비멱등성 대조. 직접 열기와 실제 호출은 미확인.
 - [Palantir Foundry, Marketplace Installation Inputs basics](https://www.palantir.com/docs/foundry/api/v3/marketplace-v3-resources/marketplace-installation-inputs/marketplace-installation-inputs-basics) — 2026-10-21 수집본을 2026-10-22 공식 문서 검색 반환 본문과 대조.
 - [Palantir Foundry, Get Marketplace Installation Inputs](https://www.palantir.com/docs/foundry/api/v3/marketplace-v3-resources/marketplace-installation-inputs/get-marketplace-installation-inputs) — 2026-10-22 검색 반환 본문에서 선택 범위, 명시적 해제, 재사용 제약과 오류 계약 확인. 오류 이름, 코드와 매개변수는 수집본도 대조했으며 직접 열기와 실제 호출은 미확인.
 - [Palantir Foundry, Get Marketplace Installation](https://www.palantir.com/docs/foundry/api/v3/marketplace-v3-resources/marketplace-installations/get-marketplace-installation) — 2026-10-22 등록 자원과 목표 버전의 의미, preview와 조회 scope 확인. 현재 위치 필드와 오류 계약은 2026-10-21 수집본을 대조했으며 실시간 재조회와 실제 호출은 미확인.
