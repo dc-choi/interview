@@ -55,6 +55,12 @@ aliases: ["Creative Craft and Emotional Expression", "창작의 구조와 감정
 
 이는 창작 실무의 자기 점검이다. 창작자가 다른 직업보다 미성숙하다는 비교나 재능이 관계 문제를 만든다는 인과관계는 확인된 사실로 두지 않는다.
 
+## 실패를 수정할 기술로 바꾼다
+
+창작의 시행착오는 실패 횟수보다 다음 시도에서 고칠 대상을 남길 때 활용할 수 있다. 반응이 좋지 않았던 작품에서 전달되지 않은 장면, 음정이나 리듬 같은 관찰 가능한 요소를 골라 다시 연습하고 이전 결과와 비교한다. 이는 연습 설계 제안이며 반복 실패가 성공을 보장한다는 법칙이 아니다.
+
+공개 경험 사례로 2023-05-10 The Howard Stern Show 인터뷰에서 Ed Sheeran은 청소년기 녹음과 이후 작업을 비교하며 화음, 음정, 공연과 박자를 배웠다고 설명했다. 실패를 숨기지 않고 배울 점을 찾자는 조언은 본인의 경험이다. 성공에서는 아무것도 배우지 못한다는 표현을 학습의 보편적 사실로 받아들이거나, 조롱과 거절을 성장의 필수조건으로 만들지 않는다(2026-10-23 방송사 공식 기사 대조).
+
 ## 적용 점검
 
 - 독자가 다음 문장을 읽을 이유가 있는가.
@@ -65,6 +71,7 @@ aliases: ["Creative Craft and Emotional Expression", "창작의 구조와 감정
 
 ## 출처
 
+- [Ed Sheeran on Winning His Lawsuit, Losing His Best Friend, and Narrowly Avoiding an Early Retirement — Howard Stern](https://www.howardstern.com/news/2023/05/10/ed-sheeran-on-winning-his-lawsuit-losing-his-best-friend-and-narrowly-avoiding-an-early-retirement/) — 2023-05-10 인터뷰의 연습과 실패에 관한 공개 발언만 반영, 2026-10-23 확인.
 - [인간은 무엇을 아름답다고 여기는가 — 만년필, 정회권](https://10000yearspen.com/post/인간은-무엇을-아름답다고-여기는가-sFckL1GeQbeIPVch2xRKtg)
 - [슬픔이 언어를 잃으면 맨헤라가 된다 — 만년필, 정회권](https://10000yearspen.com/post/슬픔이-언어를-잃으면-맨헤라가-된다-kj2cvyoxRhW2Ys6WnNlPOg)
 - [글을 잘 쓰는 사람은 이성과 감성을 함께 연마한다 — 만년필, 정회권](https://10000yearspen.com/post/글을-잘-쓰는-사람은-이성과-감성을-함께-연마한다-hCmrDoYCRdickz30ZIq-kQ)

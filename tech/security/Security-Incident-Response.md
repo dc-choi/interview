@@ -36,6 +36,14 @@ NIST SP 800-61 Rev. 3(2025)은 CSF 2.0의 여섯 기능에 대응을 연결한�
 
 AI의 경고 요약은 이 과정의 보조 자료다. 요약 생성과 신고 검증, 차단 실행을 서로 다른 단계로 기록한다.
 
+### 토론 훈련과 실제 복원 시험을 구분한다
+
+NIST SP 800-84(2006)의 4~6장은 토론 중심 tabletop exercise, 모의 운영 환경에서 역할을 수행하는 functional exercise, 시스템의 동작을 정량적으로 확인하는 test를 구분한다. 토론에서 복구 절차를 설명했다는 사실만으로 실제 복원 시간이나 데이터 무결성이 검증되지는 않는다. 이 절은 2026-10-23 해당 범위만 대조했으며 기존 법령과 제품별 동작의 검증일은 갱신하지 않았다.
+
+기능 훈련에서는 사건 순서와 기대 행동을 MSEL(Master Scenario Events List)에 정하고, 상황을 추가로 전달하는 inject와 처리 기록을 준비한다. 평가 기준은 실행 전에 정하며, 종료 직후의 회고와 관찰 기록을 after action report로 묶어 절차 개선에 연결한다.
+
+작은 조직의 적용 예시: 추가 감염 신고와 복구 담당자 부재를 순차로 제시하고, 누가 격리를 결정하며 대체 담당자에게 어떻게 인계하는지 기록한다. 실제 복원 시험은 별도의 허가된 환경에서 수행하고 시작, 완료 시각과 검증 결과를 남긴다. 개선 항목에 담당자와 재확인 조건을 붙인다. 훈련 실시만으로 대응 시간 단축이나 규제 준수 완료를 선언하지 않는다.
+
 ## 외부 취약점 제보를 받는다
 
 외부 보고 수단은 사고뿐 아니라 취약점 제보에도 필요하다. RFC 9116은 보고 창구를 찾기 어려우면 취약점이 보고되지 않은 채 남을 수 있다고 본다. ISO/IEC 29147:2018은 제품과 서비스의 취약점 공개(vulnerability disclosure)에 관한 요구사항과 권고를, ISO/IEC 30111:2019는 제보된 잠재 취약점을 처리하고 조치하는 방법에 관한 요구사항과 권고를 벤더에게 제시한다(IEC Webstore 카탈로그 초록 기준). 이 절의 RFC, 지침, 법령과 판례는 2026-10-12 공식 원문으로 대조했고, 운영 제안으로 표시한 내용은 이를 작은 운영 조직에 적용한 제안이다.
@@ -211,6 +219,7 @@ CSV가 생성됐다는 사실은 수집과 필드 변환이 정확하다는 증�
 
 ## 출처
 
+- [NIST, SP 800-84: Guide to Test, Training, and Exercise Programs for IT Plans and Capabilities](https://doi.org/10.6028/NIST.SP.800-84) — 2026-10-23 4~6장의 훈련 유형, inject, 사전 평가 기준과 사후 개선 절차 대조.
 - [CISA, #StopRansomware Guide: Ransomware and Data Extortion Response Checklist](https://www.cisa.gov/stopransomware/ransomware-guide) — 2026-10-22 네트워크 격리, 전원 종료의 예외, 휘발성 증거와 복구망 대조.
 - [ShinyHunters: Cyber Criminal Group Attacks Learning Management System — FBI/IC3](https://www.ic3.gov/PSA/2026/PSA260515/) — 2026-05-15 경보, 2026-10-22 실제/과장된 접근 주장과 허위 민감정보, 연락 검증과 증거 보존 권고 대조.
 - [OWASP Cheat Sheet Series, Logging Cheat Sheet](https://cheatsheetseries.owasp.org/cheatsheets/Logging_Cheat_Sheet.html) — 기록 대상과 이벤트 속성

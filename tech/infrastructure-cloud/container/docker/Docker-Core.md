@@ -123,6 +123,14 @@ build platform을 지정하지 않으면 image는 build를 수행한 BuildKit da
 - `docker image inspect --format '{{.Os}}/{{.Architecture}}' IMAGE`로 image platform을 확인하고 실행 host의 architecture와 대조한다.
 - `failed to unpack image on snapshotter overlayfs: mismatched image rootfs and manifest layers`는 architecture 불일치로 단정하지 않는다. 공개 issue에서는 containerd image store가 지원하지 않는 layer media type이나 plugin content를 받을 때 이 문구가 보고됐다. image를 지우고 다시 pull해 local store 문제를 먼저 배제한다.
 
+## Engine 업데이트 뒤 검증 경로
+
+컨테이너 기동은 실행 경로 하나의 결과다. Docker Engine 29.9.0(2026-10-08) 릴리스 노트는 containerd image store에서 이미 unpack된 레이어 때문에 필요한 blob을 받지 않아 실행은 되지만 export와 push가 불완전해지는 오류의 수정을 기록한다. `lazy-pull`은 snapshotter가 이미 제공하는 레이어 내용의 다운로드를 생략하도록 제어하며, 알려진 remote snapshotter인 `nydus`, `overlaybd`, `soci`, `stargz`에서 기본 활성화된다. 모든 저장 방식에서 다운로드를 생략한다는 뜻은 아니다.
+
+같은 릴리스의 HTTP/2 수정은 daemon과 deprecated `/grpc`, BuildKit의 frontend용 gRPC 서버 경로를 다룬다. Windows 수정은 data root에 쓰기 권한이 있는 주체가 junction을 둔 조건에 관한 것이다. 암호화 overlay 수정은 커널 암호화 설정 오류 때 일부 노드로 평문이 송신될 수 있던 문제다. 수신 peer가 이를 버려도 단방향 흐름이나 완료되지 않은 handshake의 기밀성 노출은 남을 수 있다.
+
+운영 적용 제안: 사용하는 경로에 맞춰 기동, export/push, 외부 API와 frontend 접근, Windows data root 권한, overlay 송신 암호화를 따로 확인한다. 연결 실패를 암호화 성공으로 해석하지 않는다. 2026-10-23 위 릴리스 범위를 대조했으며 실제 환경 재현 결과나 최신 버전 권고는 아니다. 기존 본문의 전체 검증일은 유지한다.
+
 ## 면접 포인트
 
 Q. Docker를 왜 사용하는가?
@@ -138,6 +146,7 @@ Q. `docker stop`, `docker kill`, `docker rm -f`는 무엇이 다른가?
 - stop은 SIGTERM 뒤 grace period를 주고, kill과 `rm -f`는 SIGKILL로 즉시 끝내 graceful shutdown을 건너뛴다. `rm -f`는 writable layer까지 지운다
 
 ## 출처
+- [Docker Engine version 29 release notes — Docker Docs](https://docs.docker.com/engine/release-notes/29/#2990) — 29.9.0의 수정 범위와 snapshotter 조건, 2026-10-23 확인.
 - [Docker Docs — What is a container?](https://docs.docker.com/get-started/docker-concepts/the-basics/what-is-a-container/)
 - [Docker Docs — Dockerfile reference](https://docs.docker.com/reference/dockerfile/)
 - [Docker Docs — Volumes](https://docs.docker.com/engine/storage/volumes/)
