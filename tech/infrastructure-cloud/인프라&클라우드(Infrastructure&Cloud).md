@@ -19,6 +19,7 @@ aliases: ["인프라&클라우드(Infrastructure&Cloud)", "Infrastructure & Clou
 
 ## 장비와 자체 운영
 
+- [[Server-Quotation-Checklist|서버 견적 검토]] — 메모리 배치, 옵션과 지원 조건, 물리 코어 라이선스의 적용 범위
 - [[GPU-Inference-Hardware|추론용 GPU 선택]] — Intel D270, 가중치와 KV 캐시, 실측 조건
 - [[Rack-Scale-System-Emulation|랙 규모 시스템 에뮬레이션]] — Voxel, 실제 소프트웨어와 가상 하드웨어의 검증 경계
 - [[Self-Hosting-Small-Server|소형 서버 셀프호스팅]] — N100 사례, 네이티브와 Podman, 복구 책임
