@@ -115,6 +115,10 @@ OTT나 교육 같은 산업명은 아직 넓다. 콘텐츠 정보 오류를 확�
 
 아직 선택할 근거가 없으면 관찰 모드로 두고 결론을 서두르지 않는다. 반복 수작업, 소비나 요청을 발견할 때 누가, 언제, 무엇을 이루려 했고 현재 무엇으로 해결하는지만 한 줄씩 기록한다.
 
+### 경험을 서비스 후보로 바꿀 때
+
+적용 제안: 직접 해결한 문제를 고객, 제공 결과, 작업 범위, 가격 가설과 접점으로 풀어 서비스 후보를 만든다. AI가 만든 후보도 같은 조사 대상으로 두고, 기존 대안의 가격과 고객 반응으로 확인한다. 프롬프트에 입력한 목표 수입이나 일정은 검증된 수요와 구분한다. 이 절차는 재취업보다 사업을 먼저 해야 한다는 근거나 일정 내 수입을 보장하는 공식이 아니다.
+
 ## 2. 접근 가능한 사용자 후보를 적는다
 
 직접 대화하거나 행동을 관찰하고, 이후 테스트를 다시 요청할 수 있는 사용자 집단을 먼저 고른다. 본인이 속했던 직군, 자주 만나는 조직 운영자와 주변 사업자처럼 접근 경로가 있는 집단이 초기 후보가 된다.
@@ -122,6 +126,10 @@ OTT나 교육 같은 산업명은 아직 넓다. 콘텐츠 정보 오류를 확�
 | 사용자 집단 | 최근 반복한 행동 | 현재 대안 | 손실 또는 원하는 진전 | 다시 확인할 경로 |
 |---|---|---|---|---|
 | 후보 | 구체적인 사건 | 수작업, 문서, 메신저 또는 기존 제품 | 관찰된 불편이나 기대 결과 | 인터뷰, 관찰 또는 테스트 요청 |
+
+### 산업 전망과 내 고객의 수요를 나눈다
+
+인구통계와 산업 추세는 탐색 범위를 좁히는 자료다. 특정 서비스의 수요, 도달 가능한 지역과 고객 수, 경쟁 대안의 수와 가격은 별도로 조사한다. 기존 통계는 넓은 추세를, 직접 인터뷰는 해당 고객의 구체적 선택과 대안을 확인하는 데 쓴다. 성장 산업이라는 이름만으로 개인 사업의 매출이나 생존을 확정하지 않는다.
 
 ### 기존 시장에서 놓친 구매 조건을 찾는다
 
@@ -170,6 +178,7 @@ Good American은 공식 소개에서 00~32 Plus 사이즈 제공과 세 가지 �
 
 ## 출처
 
+- [SBA, Plan your business: Market research and competitive analysis](https://www.sba.gov/counseling/plan-your-business/#market-research-and-competitive-analysis) — 2026-10-23 시장 조사와 고객 검증 범위 확인.
 - [Jobs to Be Done Theory — Christensen Institute](https://www.christenseninstitute.org/theory/jobs-to-be-done/)
 - [Opportunity Solution Trees — Product Talk](https://www.producttalk.org/opportunity-solution-trees/)
 - [Story-Based Customer Interviews Uncover Much-Needed Context — Product Talk](https://www.producttalk.org/story-based-customer-interviews/)

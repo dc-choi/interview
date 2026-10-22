@@ -38,6 +38,12 @@ native 예제는 `UPDATE_BEFORE`를 먼저 제외하고 key별 `_change_ordinal`
 
 native create_changelog_view는 snapshot range를 주지 않으면 첫 snapshot부터 읽을 수 있어 last-processed watermark를 명시적으로 관리한다. snapshot retention이 watermark를 지우면 incremental resolution이 깨질 수 있다.
 
+## 초기화와 snapshot 범위
+
+2026-10-23 Changelogs and CDC 가이드의 native 예제는 시작 snapshot을 제외하고 끝 snapshot을 포함한다. 두 snapshot이 같으면 변경 적용을 건너뛰며, 변경을 적용한 뒤 처리한 끝 snapshot을 watermark로 기록한다. 이 순서만으로 장애 시 원자적 갱신이나 exactly-once 처리가 보장된다고 확대하지 않는다.
+
+첫 실행이나 incremental 해석이 불가능한 실행은 `ctx.is_incremental`로 분기해 현재 입력 전체로 output을 교체한다. 필터 등 업무 로직도 전체 입력에 적용하며, native 예제는 이 경로에서 watermark를 초기화한다. 전체 이력에 changelog를 생성하고 적용하는 방식은 현재 입력을 한 번 읽는 것보다 비효율적일 수 있으므로 초기화 경로와 증분 경로를 구분한다.
+
 ## COW와 MOR
 
 COW는 변경 row가 있는 file을 재작성하고 MOR는 delete file을 추가한다. changelog scan은 delete file을 지원하지 않아 MOR update/delete 뒤 실패하며 Ontology incremental index도 실패한다. changelog나 object backing에는 COW를 유지한다.

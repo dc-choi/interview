@@ -16,7 +16,21 @@ PagerDuty는 Events V2 integration key와 severity를 mapping한다. 한 view의
 
 Slack은 Data Connection Slack source의 bot token과 channels:join/read, chat:write를 사용한다. Private channel은 groups:read와 app invitation이 필요하다. 이는 실제 메시지를 발송했다는 기록이 아니라 연동 계약이다.
 
-Slack의 friendly resource name은 resource의 모든 security/organization Marking이 source exportable 목록에 있을 때만 보이고 하나라도 빠지면 RID를 보낸다. ISO와 unmark 권한을 가진 사용자가 export scope를 정한다. 이름 변경된 notification format을 machine parser가 소비한다면 schema 변화를 검토한다. RID 표시를 permission 실패 또는 resource 미존재로 단정하지 않는다.
+Slack의 friendly resource name은 resource의 모든 security/organization Marking이 source exportable 목록에 있을 때만 보이고 하나라도 빠지면 RID를 보낸다. 이름 변경된 notification format을 machine parser가 소비한다면 schema 변화를 검토한다. RID 표시를 permission 실패 또는 resource 미존재로 단정하지 않는다.
+
+### Export 활성화와 허용 범위 추가 권한
+
+2026-10-23 공식 문서 대조 기준, 기본 역할에서는 다음 작업의 권한을 구분한다.
+
+| 작업 | 필요한 권한 |
+|---|---|
+| Source의 export 활성화 또는 비활성화 | Source `Owner`와 enrollment `Information Security Officer`(ISO) |
+| Exportable security marking 추가 | Source `Owner`와 해당 marking의 `Apply marking`, `Remove marking` |
+| Exportable organization 추가 | Source `Owner`와 해당 organization의 `Expand access`. 본인 organization이면 `Expand access`는 불필요 |
+
+Export가 활성화된 뒤 marking이나 organization을 추가할 때는 ISO 역할이 필요하지 않다. Slack의 resource name 표시에는 resource의 security marking과 organization이 모두 허용 목록에 포함되어야 한다.
+
+### Webhook 전달
 
 Webhook은 Data Connection의 string Message parameter에 notification content를 채운다. Content는 현재 custom할 수 없고 severity별 integration을 구성한다. Webhook request 성공과 외부 도구가 실제 alert를 처리한 결과도 구분한다.
 
@@ -37,6 +51,7 @@ Observability dashboard는 같은 signal을 Workshop Observability Chart로 배�
 ## 출처
 
 - [Palantir, Sending alerts to external systems](https://www.palantir.com/docs/foundry/monitoring-views/external-systems)
+- [Palantir, Exports overview](https://www.palantir.com/docs/foundry/data-connection/export-overview#enable-exports-for-source)
 - [Palantir, Alert debug page](https://www.palantir.com/docs/foundry/monitoring-views/alert-debug-page)
 - [Palantir, Monitoring views](https://www.palantir.com/docs/foundry/monitoring-views/overview)
 - [Palantir, Observability](https://www.palantir.com/docs/foundry/observability)
