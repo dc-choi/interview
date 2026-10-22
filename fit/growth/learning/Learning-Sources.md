@@ -270,6 +270,7 @@ auto-learn 파이프라인이 새 자료를 모으는 YouTube 채널, 이메일 
 | Tiago | [@TiagoTaquelim](https://www.youtube.com/@TiagoTaquelim) | tech |
 | 양실장의 바이브코딩대학 | [@VibecodingUniversity](https://www.youtube.com/@VibecodingUniversity) | tech, biz |
 | 김서한 : 비상식적 사업 이야기 | [@김서한_사업이야기](https://www.youtube.com/@김서한_사업이야기) | biz |
+| 구매대행 위탁판매 이야기 I 머니너드 | [@머니너드](https://www.youtube.com/@머니너드) | biz |
 
 ## 이메일 뉴스레터
 
