@@ -77,6 +77,19 @@ Design Council의 Double Diamond는 문제를 넓게 탐색하고 좁혀 정의�
 
 영상의 리브랜딩 사례는 22:31 시점에 사업 효과가 아직 평가되지 않았다고 설명한다. 사례의 작업 과정과 매출 증가의 증거를 혼동하지 않는다. 자막을 바탕으로 정리했으며 화면 속 디자인 파일과 실제 배포 결과는 직접 확인하지 않았다.
 
+## 브랜드 약속을 진행 상태 안내까지 연결한다
+
+제품과 서비스의 전달 과정도 고객 접점이다. 고객이 직접 확인하는 상태 화면과 변경을 알려 주는 알림을 구분하고, 화면과 고객 지원에서 같은 최신 상태를 제공한다. 현재 상태뿐 아니라 이전 변경 시각도 남기면 고객이 지연 상황을 설명하거나 다음 행동을 고르는 데 도움이 된다.
+
+브랜드 가이드를 실제 운영에 적용할 때는 배송이나 작업 진행의 표현, 안내 채널과 책임자를 함께 정하는 방법을 검토한다. 아래는 NN/g의 상태 추적 지침을 적용한 점검 제안이다.
+
+- 고객에게 보이는 단계가 실제 작업 상태와 연결되는가?
+- 알림에서 해당 건의 상세 진행 상황을 확인할 수 있는가?
+- 공급자와 자사 안내가 중복되거나 서로 다른 상태를 전하지 않는가?
+- 고객이 원하는 안내 방식과 빈도를 선택할 수 있는가?
+
+2026-10-23 공개 지침을 대조했다. 상태 안내가 불확실성을 줄이는 원칙과, 배송 지연보다 안내 부재가 언제나 더 큰 불만을 만든다는 비교 주장은 구분한다. 후자는 이번 확인으로 검증되지 않았다. 경쟁사의 접점을 그대로 늘리기보다 실제 고객 질문과 선택에 필요한 정보를 확인한다.
+
 ## 생산 역량과 브랜드 무형자산을 구분한다
 
 제품을 생산하는 능력과 고객이 그 제품을 구별하고 선택하게 만드는 자산은 겹치지만 같은 것은 아니다. 제조 가치사슬에는 노동과 설비뿐 아니라 기술, 디자인과 브랜드 같은 무형자산도 기여한다. 생산 국가만으로 브랜드의 소유권이나 가치의 귀속을 판단하지 않는다.
@@ -100,6 +113,7 @@ WIPO의 2017년 연구는 제조 가치사슬의 무형자산을 분석하며 �
 
 ## 출처
 
+- [Status Trackers and Progress Updates: 16 Design Guidelines — NN/g, Maria Rosala](https://www.nngroup.com/articles/status-tracker-progress-update/) — 상태 화면과 알림의 역할, 이력과 채널 간 일관성, 중복 알림 방지. 2026-10-23 확인.
 - [New WIPO Study Gives First-Ever Figures on Value of Intangible Capital in Manufactured Goods — WIPO](https://www.wipo.int/pressroom/en/articles/2017/article_0012.html) — 2017년 연구의 기술, 디자인, 브랜드 구분과 커피 시장 사례.
 - [Jobs to Be Done Theory — Christensen Institute](https://www.christenseninstitute.org/theory/jobs-to-be-done/) — 선택의 기능적, 감정적, 사회적 차원과 상황 변화, 2026-10-22 확인.
 - [YouTube, Matthew Encina, Building a Brand – Redesigning a Business Start to Finish](https://www.youtube.com/watch?v=ZvxpaklnMXI)

@@ -17,6 +17,7 @@ Data layer는 dataset과 transform, 생산 이력을 다루고 Ontology는 실�
 
 | 작업 | 도구와 선택 기준 |
 |---|---|
+| 솔루션 구조 비교 | Solution Designer로 구성요소와 연결을 표현하고 설계안을 비교, 실제 구현과 실행 검증은 별도로 수행 |
 | 원천 연결과 정제 | Data Connection, Pipeline Builder, 복잡한 코드/협업은 Code Repositories |
 | 데이터셋 분석 | Contour, 탐색 코드 환경은 Code Workspaces; Code Workbook은 legacy 경계 확인 |
 | Ontology 분석 | Quiver/Insight, 미지의 object 탐색은 Object Explorer |
@@ -29,6 +30,8 @@ Data layer는 dataset과 transform, 생산 이력을 다루고 Ontology는 실�
 
 Prototype에서 빠르게 피드백을 받은 뒤 production pipeline과 tailored application이 필요한지 판단한다. 모든 사례에 복잡한 Ontology 확장과 custom app이 필요한 것은 아니다. 역할은 고정된 제품 경계가 아니며 작은 팀은 data engineer/builder/analyst/admin 책임을 함께 수행할 수 있다.
 
+2026-10-23 Getting started와 Solution Designer 개요를 부분 대조했다. Examples의 시작 예제, Palantir Learning의 학습 과정, AIP Assist의 사용 지원과 Solution Designer의 구조 설계를 목적별로 구분한다. 설계도와 플랫폼 자원의 연결은 [[Palantir-Solution-Design|Solution Designer]]를 참고한다. 그림이나 AI 검토 결과를 실제 파이프라인의 실행 성공으로 간주하지 않는다.
+
 ## 개요와 실행 계약
 
 LLM용 platform summary는 2026-07-02 갱신된 고수준 맥락이며 세부 기능의 quota, runtime과 권한 보장을 대체하지 않는다. 예를 들어 batch는 실행 방식이고 full recompute는 transaction/변환 모드의 선택이므로 batch를 무조건 전체 재계산과 동일시하지 않는다.
@@ -37,6 +40,7 @@ Palantir MCP의 Ontology schema 제작 기능과 Ontology MCP의 제한된 데�
 
 ## 출처
 
+- [Palantir Foundry, Solution Designer overview](https://www.palantir.com/docs/foundry/solution-designer/overview)
 - [Palantir Foundry, getting-started](https://www.palantir.com/docs/foundry/getting-started/)
 - [Palantir Foundry, application-reference](https://www.palantir.com/docs/foundry/getting-started/application-reference/)
 - [Palantir Foundry, delivering-a-use-case](https://www.palantir.com/docs/foundry/getting-started/delivering-a-use-case/)
@@ -48,3 +52,4 @@ Palantir MCP의 Ontology schema 제작 기능과 Ontology MCP의 제한된 데�
 ## 관련 문서
 
 - [[Palantir-Foundry-Operations]]
+- [[Palantir-Solution-Design|솔루션 구조 설계와 검토]]
