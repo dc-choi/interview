@@ -81,6 +81,16 @@ aliases: ["LLM Workflow Patterns Data and Operations", "데이터 vs 모델", "�
 
 ## 환각 통제와 운영
 
+### 청구서 추출, 단위 확인과 보고서 생성을 나눈다
+
+청구서에서 읽은 숫자를 보고서에 넣기 전에 필드의 의미와 단위를 확인한다. 예를 들어 전력 사용량(kWh), 단가(통화/kWh)와 총 청구액(통화)은 서로 다른 입력이다. 추출한 값과 원문 위치를 보존하고, 정규화한 단위 및 계산식과 연결한 뒤 결과를 검산한다. 누락한 값을 모델로 추정해 실측값처럼 채우지 않는다. 이는 문서 자동화의 설계 제안이며 배출량 산정이나 공시 적합성을 보증하지 않는다.
+
+2026-10-23 Textract 공식 문서 기준, 텍스트 탐지는 영어, 프랑스어, 독일어, 이탈리아어, 포르투갈어와 스페인어를 지원한다. 한국어는 지원 목록에 없고 필기 인식과 Queries의 문서 언어는 영어로 제한된다. 해외 청구서 데모를 한국어 청구서에서도 같은 정확도로 사용할 수 있다는 근거로 삼지 않는다. 문서 언어, 양식과 스캔 품질을 실제 표본으로 먼저 평가한다(적용 제안).
+
+Textract는 추출 신뢰도와 오류의 영향을 고려해 임계값 이하 결과를 제외하거나 사람 검토로 보내도록 안내한다. 단어를 정확히 읽었는지와 올바른 항목, 기간, 단위에 연결했는지는 별도로 검증한다. 아래의 사람 검토 분기에 필수 필드 누락과 단위 불일치도 업무 규칙으로 추가할 수 있다.
+
+### 근거 기반 답변과 운영 루프
+
 환각은 확률적 생성 모델의 속성이라 제거가 아니라 **통제**의 문제다. 두 갈래다.
 
 - **근거 기반 답변**: RAG와 Function Calling으로 자기 기억이 아니라 외부 문서, API 결과를 근거로 답하게 함 (모른다고 말하는 능력과 시스템 보완은 [[LLM-Abstention|LLM Abstention]])
@@ -140,6 +150,9 @@ AWS의 2024-08-02 식신 구축 사례는 리뷰와 메뉴 등에서 LLM으로 �
 적용 제안: 추출 결과에는 원본 레코드, 프롬프트와 모델 버전, 생성 시각 및 검토 상태를 연결한다. 원본의 사실과 모델이 생성한 분류를 구분하고, 추출 오류가 후속 집계와 설명에 어떻게 전파되는지 확인한다. 생성 결과를 다시 입력하는 단계가 있어도 반복 호출 자체가 정확성을 보장하지 않으므로 별도 평가 입력으로 대조한다. 이 사례의 정확도와 비용 개선을 독립 측정한 것은 아니며 기존 기능별 검증일은 유지한다.
 
 ## 출처
+
+- [AWS, Best Practices for Amazon Textract](https://docs.aws.amazon.com/textract/latest/dg/textract-best-practices.html) — 2026-10-23 지원 언어, 입력 품질과 신뢰도에 따른 검토 기준 확인
+- [AWS, Set Quotas in Amazon Textract](https://docs.aws.amazon.com/textract/latest/dg/limits-document.html) — 2026-10-23 텍스트 탐지, 필기와 Queries의 언어 제한 확인. 이번 보강은 청구서 처리 절에 한정하며 기존 `verified_at`은 유지한다.
 
 - [AWS, Connect to Confluence for your knowledge base](https://docs.aws.amazon.com/bedrock/latest/userguide/confluence-data-source-connector.html) — 2026-10-22 고객 관리형 커넥터의 검색 권한 경고, 수집 필터와 동기화 범위를 대조했다.
 - [AWS 기술 파트너와 함께 구축한 푸드테크 기업 식신의 Amazon Bedrock 기반 AI 대시보드 구축기 — AWS 기술 블로그](https://aws.amazon.com/ko/blogs/tech/sikshin-built-ai-dashboard-with-aws-technology-partners-based-on-amazon-bedrock/) — 2026-10-22 생성 키워드, 입력 프롬프트와 결과 보존의 사례 범위 대조

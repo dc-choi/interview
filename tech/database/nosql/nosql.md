@@ -14,6 +14,7 @@ RDBMS 바깥의 저장소들 — 도큐먼트 DB, 검색 엔진, 컬럼 지향 O
 - [x] [[MongoDB-Schema-Design|MongoDB 스키마 설계 (용어와 BSON, Embed vs Reference, 도큐먼트 모델링, 인덱스와 collation)]]
 - [x] [[OpenSearch|OpenSearch 학습 지도 (도입 판단, 매핑, Query, 샤드, 동기화와 운영)]]
 - [x] [[ClickHouse|ClickHouse (컬럼 지향 OLAP, MergeTree, 분석 워크로드 분리)]]
+- [x] [[Druid|Druid (스트리밍 적재, rollup 손실, 업무 중복과 집계 검증)]]
 
 ## 관련 문서
 - [[OLTP-vs-OLAP|OLTP vs OLAP]] — 운영 DB와 분석 DB의 분리 기준

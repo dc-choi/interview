@@ -10,6 +10,7 @@ aliases: ["Marketing", "마케팅"]
 브랜딩, 마케팅, 광고의 층위와 STP, 4P, Customer Journey 등 마케팅 실행의 핵심 프레임워크, 그리고 생성 AI 답변 안에서 가시성 측정.
 
 ## 목차
+- [x] [[Promotional-Products-Execution|판촉물 제작과 납기]] — 샘플, 배송 보상의 조건, 재고와 배포 성과의 구분
 - [x] [[Customer-Data-Activation-Strategy|고객 데이터 활성화의 도입 판단]] — 대상 조건, 실행 시점, 운영 개선과 구매 효과의 구분
 - [x] [[AI-Marketing-Analysis|AI 마케팅 분석]] — 조회와 판단, 마케팅 엔지니어의 고객 언어, 실험 실행과 승인 경계, 이탈 예측과 증분 효과
 - [x] [[Affiliate-Marketing|제휴 마케팅]] — CPC와 CPA, 적격 성과와 정산 수익의 구분
