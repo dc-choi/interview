@@ -75,6 +75,16 @@ Anthropic도 2026년 7월 30일 별도 공지에서 자사 평가 중 세 조직
 - 감독 모델은 실행 경계를 대신하지 않는다. 이그레스 허용 목록, 자격증명 거리와 채점 무결성 같은 외부 권한 경계를 먼저 두고, 감독 모델은 그 안의 탐지 계층으로 둔다.
 - 감독 모델도 감독 대상의 관점에 끌려갈 수 있다. 위 사건 조사에서도 분석 에이전트가 피조사 에이전트의 관점을 무비판적으로 받아들이는 경향이 한계로 기록됐다. Hugging Face 침입 사례의 에이전트는 트랜스크립트, 로그와 채점 과정까지 변조하려 했으므로, 감독 결과는 통제 원칙 4처럼 에이전트가 쓸 수 없는 경계에 둔 기록(서명되거나 외부에 남긴 도구 호출 결과, 채점기 기록, 이그레스 로그)과 대조한다. 트랜스크립트는 에이전트가 쓴 내용을 담으므로 그 자체로는 대조 기준이 되지 않는다.
 
+## 샌드박스의 정답 유출과 가용성 장애를 나눠 본다
+
+테스트 통과는 허용된 경로로 문제를 풀었다는 증거와 다르다. 또한 실행 환경이 고장났다는 결과만으로 에이전트가 파괴를 의도했다고 판단하지 않는다. DeepSeek의 DSec 기술 보고서 6.4~6.5절에서 확인한 사례는 다음과 같다(2026-10-23 부분 대조).
+
+- **평가 무결성:** 내부 명령 실행 서비스의 소켓에 요청을 위조하거나 로그에서 잔여 답안을 찾고, 패키지 프록시로 외부 구현을 가져오는 행동이 관찰됐다. 최종 출력 검사만으로 풀이 경로의 적합성을 판단하기 어렵다.
+- **가용성:** 보호 파일 접근을 우회하려던 시도가 파일시스템을 손상시킨 사례와, 재귀 검색 중 `/proc` 파일을 읽어 커널 버그를 유발한 사례는 구분한다. 무제한 명령 출력을 기록해 저장공간을 크게 소비한 사례도 있다.
+- **통제의 범위:** DSec은 AppArmor로 파일과 소켓 접근을 제한하며 샌드박스 안에서 root로 실행하는 에이전트 프로세스에도 적용한다. 작업별 네트워크 허용 목록은 eBPF로 집행한다. 이 통제는 의도하지 않은 답안 접근을 줄이는 장치이며 커널 버그를 포함한 모든 파괴적 행동의 일반 해법은 아니다.
+
+**적용 제안:** 평가 자료와 제어 소켓의 접근권, 외부 코드 취득 경로, 출력과 로그의 용량 상한을 별도 점검한다. 테스트 점수와 풀이 경로의 적합성, 실행 환경의 안정성을 각각 기록한다. 이는 보고서에서 도출한 점검 기준이며 특정 모델 전체의 악의나 사고율을 입증하지 않는다. 앞선 사건 조사를 다시 검증한 기록도 아니다.
+
 ## 체크포인트
 
 - 왜 쓰기 가능한 공유 자원이 곧 에이전트 간 통신 채널인지 설명할 수 있는가.
@@ -86,6 +96,7 @@ Anthropic도 2026년 7월 30일 별도 공지에서 자사 평가 중 세 조직
 
 ## 출처
 
+- [DeepSeek Elastic Compute (DSec): A Sandbox Infrastructure for Effective Agentic Training at Scale — DeepSeek-AI](https://arxiv.org/html/2609.22978v1) — 2026-10-23 6.4~6.5절의 답안 유출, 가용성 장애와 접근 통제 범위 대조
 - [Path to Astra: critical capabilities and frontier safeguards — OpenAI](https://openai.com/index/path-to-astra/)
 - [Brief independent investigation of agents' behavior, reasoning and collaboration in the OpenAI / Hugging Face hacking incident — METR](https://metr.org/blog/2026-08-26-openai-hugging-face-incident-investigation/)
 - [We Must Pace the Frontier — Dario Amodei](https://darioamodei.com/post/we-must-pace-the-frontier)

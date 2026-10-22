@@ -75,8 +75,23 @@ aliases: ["자산배분과 분산투자", "Asset Allocation and Diversification"
 
 금 또한 보유만으로 물가 상승이나 시장 하락을 항상 상쇄하지는 않는다. 금리와 환율을 포함한 조건은 [[Gold-Price-Drivers|금 가격의 결정 요인]]에서 구분한다. 배분안은 자산 개수보다 목표, 감당할 손실, 필요한 현금과 재조정 기준으로 평가한다.
 
+### ETF의 티커와 추종 지수를 따로 확인한다
+
+같은 반도체 업종을 다뤄도 ETF와 지수의 이름을 서로 바꿔 쓰지 않는다. 2026-10-23 운용사와 지수 제공자의 공식 페이지에서 다음을 대조했다.
+
+| 표기 | 대상 | 확인할 기준 |
+|---|---|---|
+| SOXX | iShares Semiconductor ETF | 운용사 페이지의 Benchmark Index는 NYSE Semiconductor Index |
+| SOX | PHLX Semiconductor Sector Index | Nasdaq이 제공하는 수정 시가총액 가중 반도체 지수 |
+
+따라서 SOXX의 등락률을 확인하고 이를 곧바로 SOX 지수의 등락률이라고 기록하지 않는다. **비교 절차 제안:** 상품명, 티커, 추종 지수, 관측 시점과 수익률 기준을 먼저 맞춘다. ETF 시장가격과 순자산가치(NAV), 배당을 포함한 총수익도 구분한다. 업종명이 같다는 이유만으로 편입 종목과 비중, 국가와 통화의 노출까지 같다고 가정하지 않는다.
+
+위 대조는 두 대상의 식별과 추종 지수에 한정한다. 특정일 급락의 원인, 한국 지수의 반도체 비중이나 방어 업종의 향후 수익을 검증한 기록은 아니다.
+
 ## 출처
 
+- [iShares Semiconductor ETF — iShares](https://www.ishares.com/us/products/239705/ishares-phlx-semiconductor-etf) — SOXX의 상품 식별, NYSE Semiconductor Index 추종과 가격/NAV/총수익 표기, 2026-10-23 대조
+- [Overview for SOX — Nasdaq](https://indexes.nasdaqomx.com/Index/Overview/SOX) — PHLX Semiconductor Sector Index의 식별과 수정 시가총액 가중 방식, 2026-10-23 대조
 - [Asset Allocation, Diversification, and Rebalancing — Investor.gov](https://www.investor.gov/introduction-investing/getting-started/asset-allocation) — 2026-10-02 시간지평, 위험 감당 능력과 리밸런싱 목적 대조
 - [Determinants of Portfolio Performance — Financial Analysts Journal](https://doi.org/10.2469/faj.v51.n1.1869)
 - [Updated Investor Bulletin: Leveraged and Inverse ETFs — Investor.gov](https://www.investor.gov/introduction-investing/general-resources/news-alerts/alerts-bulletins/investor-alerts/sec) — 일일 재설정과 장기 수익 배수의 차이, 2026-10-10 대조
