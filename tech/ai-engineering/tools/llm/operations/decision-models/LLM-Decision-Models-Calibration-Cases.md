@@ -45,6 +45,20 @@ Microsoft는 학습에서 가린 36개 평가에서 비교 모델 중 가장 높
 
 후속 확인에서는 선택지 토큰과 순서, 시스템 지침, 모델 버전, 반복 수, 샘플링 및 서버 표현의 의미를 대조한다. 정확도와 선택 일관성도 따로 측정한다.
 
+## AnyJev: 편향 제거와 확률 보정은 다르다
+
+2026-10-23 공식 저장소의 Levels 문서, 변경 기록과 `Question`, `Decider` 소스 대조 기준이다. `Decider`는 공개 가중치 언어 모델의 다음 토큰 분포에서 선택지 라벨의 확률을 읽는다. 문장을 생성한 뒤 파싱하는 방식과 구분한다.
+
+- `raw`는 선택지 라벨에 한정한 softmax를 사용한다. 위치 편향이나 라벨 선호를 교정하지 않는다.
+- 기본 `L0`에서 순서가 고정되지 않은 질문은 K개 선택지를 K번 순환 배치한다. 모든 K! 순열을 실행한다는 뜻이 아니다. 적용 가능한 라벨 사전분포로 보정한 결과를 기본 설정에서는 log 공간에서 결합한다.
+- `Question.score`는 `ordered=True`로 만들어지므로 `Decider._perms`가 원래 순서 하나만 반환한다. 기본 5구간 score도 5번 순환하지 않는다. 구간의 순서를 유지하는 것과 확률을 보정하는 것은 별개의 처리다.
+- 기본 batch prior는 배치의 응답에서 라벨 선호를 추정한다. 실제 정답이 한 선택지에 몰린 배치에서는 이 가정이 맞지 않아 정확도가 떨어질 수 있다. `content_free`는 별도의 내용 없는 입력으로 추정하고, `none`은 이 교정을 끈다.
+- L0는 정답 라벨에 맞춘 confidence 보정을 하지 않는다. 선택지 순서에 덜 민감하다는 사실을 90% 확률의 실제 정답률이 90%라는 증거로 쓰지 않는다.
+
+순서 미고정 질문의 전체 순환은 K개 배치를 채점한다. 회전 수 제한과 적응형 조기 종료를 사용하면 채점 수가 달라지며, 공유 prefix 재사용 여부도 실제 연산 비용에 영향을 준다. 질문 유형, 선택지 수, 회전 예산과 prior 방식이 다른 실행의 속도를 같은 조건으로 비교하지 않는다. 운영 평가에서는 정답률, 순서 변경 시 답이 바뀐 비율, 확신 구간별 정답률과 처리 지연을 따로 확인한다(평가 제안).
+
+**버전 경계**: 공식 변경 기록은 0.3.0(2026-10-06)에서 라벨 학습 단계 L1/L2를 제거했다고 명시한다. 해당 기능을 쓰는 코드는 `anyjev==0.2.0`에 고정하도록 안내한다. 과거 소개의 상위 보정 단계를 현재 기본 기능으로 안내하지 않는다. 이 대조는 문서 수준이며 모델 실행, 영상의 500개 헤드라인 실험과 성능 순위는 재현하지 않았다.
+
 ## 출처
 
 - [Build your own decision model — Nish Tahir](https://nishtahir.com/build-your-own-decision-model/)
@@ -52,6 +66,12 @@ Microsoft는 학습에서 가린 36개 평가에서 비교 모델 중 가장 높
 - [Jev: For the builders AND dreamers — TypeSafe AI](https://typesafe.ai/blog/jev-1-14)
 - [TypeSafe Docs, Models](https://docs.typesafe.ai/models)
 - 사용자 제공 GeekNews 발췌: 2026-10-11 Microsoft-Decision-1, 2026-10-12 Qwen 결정 모델, 2026-10-15 Jev 1.14.0, 2026-10-16 Jev와 트롤리 문제. 트롤리 실험 원문은 후속 확인 대상이다.
+
+- [AnyJev — Nokia Applied Research](https://github.com/nokia-applied-research/AnyJev)
+- [AnyJev, Levels and routes](https://github.com/nokia-applied-research/AnyJev/blob/main/docs/levels.md)
+- [AnyJev Changelog — Nokia Applied Research](https://github.com/nokia-applied-research/AnyJev/blob/main/CHANGELOG.md)
+- [AnyJev Question 소스 — Nokia Applied Research](https://github.com/nokia-applied-research/AnyJev/blob/main/anyjev/question.py)
+- [AnyJev Decider 소스 — Nokia Applied Research](https://github.com/nokia-applied-research/AnyJev/blob/main/anyjev/decider.py)
 
 ## 관련 문서
 
