@@ -70,6 +70,24 @@ Suno Song Editor의 가사 수정은 대상 구간을 선택하고 가사를 바
 
 이 표는 소프트웨어의 역할과 검수 경계를 비교한다. 개별 마케팅 전략, 투자 판단이나 학습 순서의 채택을 뜻하지 않는다. 직접 호스팅할 때도 모델 호출, 데이터 API, 장비와 운영 비용을 따로 계산한다.
 
+### AI 기기는 입력, 처리와 보관을 나눠 확인한다
+
+AI 기능을 쓰는 휴대 기기, 공용 허브와 모델 실행용 PC는 서로 다른 역할이다. 카메라나 마이크가 달린 기기라는 사실만으로 모델이 그 기기 안에서 실행되거나 모든 기능을 오프라인으로 쓸 수 있다고 판단하지 않는다.
+
+아래는 2026-10-23 공식 발표와 사양에서 확인한 범위다. 오른쪽 열은 실제 사용 전에 적용할 검수 기준이며 제품을 직접 시험한 결과가 아니다.
+
+| 역할과 사례 | 확인한 기능 또는 사양 | 구분할 조건 |
+|---|---|---|
+| 음성 에이전트 입력, Muse Charm | Meta가 실시간 음성 모델로 Muse와 상호작용하는 휴대 기기를 소개 | 발표문은 연내 추가 정보 공개를 예고한다. 이 자료만으로 판매일, 전체 센서 사양이나 오프라인 실행을 확정하지 않는다 |
+| 대화 기록, Bee Frontier와 Bee Eclipse | 각각 착용형과 휴대전화 부착형. 대화에서 요약, 할 일과 알림을 만들며 버튼과 표시등으로 수집 상태를 제어 | 음성 처리 뒤 삭제와 전사문 보존을 구분하고 수집 중임을 알리는 방법, 공유 범위와 삭제 동작을 확인한다 |
+| 로컬 모델 실행을 검토할 PC, RTX Spark N1X | Windows 11, Grace CPU와 Blackwell RTX GPU, 통합 메모리. 20코어 CPU 구성은 최대 128GB, 18코어 노트북 구성은 최대 32GB | 제품군의 최대 메모리를 모든 구성에 적용하지 않는다. 사용할 모델, 런타임과 도구 연결을 같은 구성에서 시험한다 |
+
+Bee의 공식 설명은 음성을 실시간 처리 후 삭제하고 전사문은 기기에서 생성하고 통제하는 키로 암호화한다고 구분한다. **음성 원본을 남기지 않는다는 설명은 대화에서 파생된 텍스트도 남기지 않는다는 뜻이 아니다.** 이 구분은 보관 범위를 읽는 기준이며 보안 구조를 독립 감사한 결과는 아니다.
+
+공용 기기인 HomeView의 개인 맥락과 호환 기기 조건, 발표와 판매 예정의 구분은 [[Smart-Home-Hub-and-Personal-Context|가정용 허브와 개인 맥락]]에서 다룬다. 로컬 모델의 메모리와 실행 성능 판단은 [[LLM-Inference-Bottlenecks|LLM 추론 병목]]과 연결한다. 기기 사양만으로 모델의 정확도, 전체 업무 완수율이나 클라우드 대비 비용 우위를 확정하지 않는다.
+
+확인 범위는 위 역할, 사양과 데이터 보관 설명에 한정한다. 국내 판매 가격, 모델별 실측 성능과 향후 제품 전망은 검증하지 않았으며 기존 `verified_at`은 유지한다.
+
 ## 3. 자동화의 효과는 전체 업무에서 측정한다
 
 반복 업무를 맡길 후보를 찾되 규칙 기반 자동화, 템플릿과 기존 앱 기능도 함께 비교한다. 의미 해석이 필요 없는 고정 규칙에는 LLM을 추가하지 않아도 된다. 흐름이 미리 정해진 작업과 탐색이 필요한 작업의 차이는 [[LLM-Workflow-Patterns|LLM 워크플로우 패턴]]을 참고한다.
@@ -104,6 +122,9 @@ Suno Song Editor의 가사 수정은 대상 구간을 선택하고 가사를 바
 
 ## 출처
 
+- [The Biggest News From Connect 2026 — Meta](https://about.fb.com/news/2026/09/the-biggest-news-from-connect-2026/)
+- [Amazon introduces 2 new AI products from Bee: Bee Frontier and Bee Eclipse — Amazon](https://www.aboutamazon.com/news/devices/amazon-personal-ai-bee-frontier-bee-eclipse)
+- [NVIDIA, RTX Spark Specifications](https://www.nvidia.com/en-us/products/rtx-spark/specifications/)
 - [Intelligent Work Management: Smartsheet's AI Strategy — Amazon Web Services](https://www.youtube.com/watch?v=Jqi4_1YNNqg) — 07:14~08:17의 사용량, 비용과 CI 사례를 구분해 참조
 - [Balancing AI tensions: Moving from AI adoption to effective SDLC use — DORA](https://dora.dev/insights/balancing-ai-tensions/)
 - [Mobbin — Mobbin](https://mobbin.com/)

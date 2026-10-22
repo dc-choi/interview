@@ -25,6 +25,14 @@ aliases: ["금리와 통화정책", "Interest Rates and Monetary Policy"]
 
 중앙은행은 정책금리 목표, 지급준비금 보상, 대출 제도와 공개시장운영 등 운영 체계로 초단기 시장금리를 유도한다. 수단은 중앙은행마다 다르며 장기금리와 대출금리는 기대 인플레이션, 만기와 신용위험까지 반영해 불완전하게 전달된다.
 
+### COFIX와 대출금리의 재산정
+
+대출상품에서 말하는 기준금리는 한국은행 기준금리와 다를 수 있다. COFIX는 은행의 자금조달 정보를 바탕으로 산출하는 자금조달비용지수다. 신규취급액 기준은 한 달간 새로 취급한 수신상품의 금액 가중평균금리를, 신잔액 기준은 월말 수신상품과 기타 예수금, 차입금 및 결제성 자금 등의 잔액 가중평균금리를 반영한다.
+
+COFIX의 공시 주기와 개별 대출의 금리 변경 주기도 구분한다. 2026-10-23 확인한 케이뱅크 아파트담보대출은 신규취급액 COFIX 연동형을 6개월마다, 신잔액 COFIX 연동형을 3개월마다 변경한다고 안내한다. KB국민은행도 약정한 재산정일에 직전 영업일까지 고시된 COFIX와 우대금리 적용기준으로 재산정한다고 설명한다. 이 주기를 모든 은행과 상품의 공통 조건으로 확대하지 않는다.
+
+따라서 정책금리가 동결돼도 조달비용 지수의 변화와 약정된 재산정 시점에 따라 대출금리가 달라질 수 있다. 점검할 때는 **정책금리, 상품의 준거금리, 가산 및 우대 조건, 다음 재산정일**을 나눈다. 이는 상품 안내를 적용한 읽기 기준이며 금리 방향이나 특정 상품의 유불리를 예측하는 규칙은 아니다.
+
 ## 3. 중앙은행과 그 목표
 
 중앙은행(한국은행, 미국 연준, 유럽 ECB)은 통화정책을 책임진다. 다수 주요 중앙은행은 **물가 안정**을 핵심 목표로 두고 2% 안팎의 목표를 사용하지만 법적 목표와 지표, 허용 범위는 기관마다 다르다. 연준처럼 물가 안정과 최대 고용을 함께 위임받은 곳도 있다.
@@ -59,6 +67,12 @@ aliases: ["금리와 통화정책", "Interest Rates and Monetary Policy"]
 정책 발표를 읽을 때는 **이번 회의의 결정, 미래 경로에 관한 안내, 그 안내를 바꿀 경제 조건**을 나눠 적는다. 아래 점도표의 참가자별 전망도 위원회 차원의 정책 약속과 구분한다. 이 읽기 절차는 두 중앙은행의 설명을 적용한 학습 방법이다.
 
 확인 범위: 2026-10-16 ECB와 연준의 포워드 가이던스 설명을 대조했다. 다른 절의 정책금리와 전망 자료는 기존 확인 날짜를 유지한다.
+
+### 동결 결정과 다음 회의의 방향을 구분한다
+
+동결은 이번 회의에서 정책금리를 바꾸지 않았다는 뜻이다. 이후의 인상이나 인하 가능성까지 닫았다는 뜻으로 읽지 않는다. 2026-10-22 한국은행 결정문은 기준금리 3.00% 유지와 함께 앞선 두 차례 인상의 파급영향을 점검할 필요를 설명했다. 동시에 물가, 경기와 금융안정 상황을 확인하며 추가 인상의 시기와 속도를 결정하겠다고 밝혔다.
+
+이 사례에서 확정된 것은 해당 회의의 동결이며, 다음 회의의 날짜별 금리 수준은 확정되지 않았다. 동결, 향후 정책 방향, 대출상품의 금리 재산정은 서로 다른 판단 단위다. 이 절과 COFIX 절만 2026-10-23 공식 자료와 대조했으며 기존 `verified_at`과 다른 절의 검증 범위는 유지한다.
 
 ## 5. 통화량과 신용창조
 
@@ -140,6 +154,9 @@ aliases: ["금리와 통화정책", "Interest Rates and Monetary Policy"]
 
 ## 출처
 
+- [한국은행 — 통화정책방향(2026.10.22)](https://www.bok.or.kr/portal/bbs/P0000559/view.do?depth=200690&menuNo=200690&nttId=11065823&programType=newsData&relate=Y) — 2026-10-23 동결, 파급영향 점검과 향후 정책 방향 대조
+- [케이뱅크 — 아파트담보대출](https://www.kbanknow.com/web/product/loan/apt-mortgage) — 2026-10-23 금리안내의 COFIX 정의와 상품별 재산정 주기 대조
+- [KB국민은행 — COFIX 금리](https://obank.kbstar.com/quics?page=C019206) — 2026-10-23 약정된 금리재산정주기의 적용 기준 대조
 - [ECB — What is forward guidance?](https://www.ecb.europa.eu/ecb-and-you/explainers/tell-me/html/what-is-forward_guidance.en.html) — 2026-10-16 정책 의향, 기대 경로와 신뢰 조건 대조
 - [Federal Reserve — What is forward guidance, and how is it used in the Federal Reserve's monetary policy?](https://www.federalreserve.gov/faqs/what-is-forward-guidance-how-is-it-used-in-the-federal-reserve-monetary-policy.htm) — 2026-10-16 현재 소비와 투자에 미치는 경로, 경제 조건에 따른 안내 변화 대조
 - [Federal Reserve — September 16, 2026: FOMC Projections materials, accessible version](https://www.federalreserve.gov/monetarypolicy/fomcprojtabl20260916.htm) — 2026-10-07 도입부, Table 1 주석과 Figure 2의 정의 대조. 위 점도표 절만 부분 검증
