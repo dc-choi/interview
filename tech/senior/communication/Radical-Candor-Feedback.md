@@ -30,6 +30,18 @@ Radical Candor는 상대를 한 사람으로 아끼는 태도(Care Personally)�
 
 다른 판단 근거를 제시할 때는 [[Constructive-Skepticism|근거 기반 검증]]의 주장과 증거 구분을 함께 쓴다. 상대가 틀렸다고 단정하기 전에 관찰 범위와 대안 설명을 확인한다.
 
+## 세부 개입은 관찰과 영향으로 논의한다
+
+세밀하게 봐준다는 관리자의 의도와 실제 작업자가 받은 도움은 구분한다. 반대로 세부 의견이 있다는 사실만으로 마이크로매니징이라고 단정하지 않는다. Radical Candor의 상향 피드백 지침은 상대의 판단 배경을 먼저 묻고, 통제적이라는 성격 평가 대신 특정 행동과 영향을 설명하도록 권한다.
+
+**적용 예시:** 리뷰에서 모든 표현을 다시 고르는 일이 반복된다면, 바꿔야 할 품질 기준이 무엇인지 확인한다. 기준을 충족하는 여러 방법이 있다면 작업자가 선택할 부분과 함께 확인할 부분을 나누는 방식을 제안할 수 있다. 이는 협업 절차 제안이며 세부 개입이 창의성을 높이거나 낮춘다는 일반 인과를 입증한 것은 아니다. 개입의 유용성은 수정 이유, 재작업과 합의한 결과를 보고 판단한다.
+
+## 칭찬은 아끼는 횟수보다 전달할 정보를 정한다
+
+진심이 아닌 칭찬을 하지 않는 것과 좋은 작업을 보고도 칭찬하지 않는 것은 다르다. Radical Candor는 실제로 좋았던 작업을 발견하면 구체적으로 바로 알리고, 무엇이 좋고 왜 유지할 가치가 있는지 전달하도록 권한다. 칭찬을 드물게 해야 신뢰가 높아진다거나 자주 하면 성과가 나빠진다는 법칙으로 바꾸지 않는다.
+
+CORE는 칭찬에도 쓸 수 있다. **적용 예시:** 장애 설명 자료에서 실패 조건을 분리한 행동, 덕분에 확인 순서를 정할 수 있었던 결과, 다음 문서에도 유지할 기준을 함께 말한다. 상대의 성격을 높이는 막연한 말이나 비판을 부드럽게 포장하려고 붙이는 칭찬과 구분한다. 공개 칭찬이 불편한 사람에게는 공개 방식을 강요하지 않는다.
+
 ## 동료 간 상호 책임을 일상화한다
 
 팀의 기준을 관리자만 집행하면 구성원은 문제를 보면서도 위로 넘기게 된다. 건강한 팀에서는 동료가 약속을 어기거나 공동 기준을 훼손했을 때 서로 직접 말할 수 있어야 한다. 이는 사람을 공격하는 일이 아니라 공동 결과를 함께 책임지는 행동이다.
@@ -86,6 +98,9 @@ CORE는 어려운 대화를 자동으로 해결하는 문구가 아니다. 사�
 - [[Code-Review-Reviewer-Guide|코드 리뷰 리뷰어 가이드]] — 코드 위 피드백의 실전
 
 ## 출처
+- [Upward Feedback: Give Your Boss Feedback Without Losing Your Nerve — Radical Candor](https://www.radicalcandor.com/blog/upward-feedback-give-your-boss-feedback) — 2026-10-23 판단 배경 확인과 행동 기반 상향 피드백 대조
+- [Tips to Avoid Obnoxiously Aggressive Praise — Radical Candor](https://www.radicalcandor.com/blog/tips-obnoxious-aggression-praise) — 2026-10-23 구체적이고 진실한 칭찬과 전달 시점 대조
+- [Practice Playbook — Radical Candor](https://radicalcandor.com/hubfs/Radical-Candor-Practice-Workbook.pdf) — 칭찬의 CORE 적용과 공개 칭찬의 개인 선호 예외
 - [How to Make Work Less Like Junior High (A Tale of 2 Jasons) — Radical Candor](https://www.radicalcandor.com/podcast/s5-e10-how-to-make-work-less-like-junior-high)
 - [6 Ways to Encourage Feedback Between Others — Radical Candor](https://www.radicalcandor.com/wp-content/uploads/2021/08/6-ways-to-Encourage-Feedback-Between-Others.pdf)
 - [좋은 피드백만 골라서 상위 1% 개발자 되는 법 — YouTube, 코딩맨](https://www.youtube.com/watch?v=Hm_64T6q1rE) — 2025-09-26, 피드백의 질에 관한 견해, 제목과 본문의 비율은 일반 통계가 아님

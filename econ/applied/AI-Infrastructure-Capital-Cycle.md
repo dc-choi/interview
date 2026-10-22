@@ -19,6 +19,16 @@ AI 수요가 늘면 모델 매출뿐 아니라 반도체, 메모리, 네트워�
 
 설비가 있어도 전력 연결이나 냉각이 준비되지 않으면 판매 가능한 연산량은 늘지 않는다. 계약한 전력, 건설 중 용량과 가동 용량도 합산하지 않는다. 다른 회계기간과 기업 범위의 설비투자 수치를 더할 때는 중복 여부를 확인한다.
 
+## 국가 전력 총량과 데이터센터 수요를 구분한다
+
+국가 전체 발전량은 데이터센터가 실제로 쓴 전력이나 AI에 투입할 수 있는 연산량과 다른 지표다. 데이터센터 전력에는 일반 서버, 저장장치, 네트워크와 냉각도 포함되므로 전체 소비량을 AI 학습용 전력으로 바꾸어 읽지 않는다.
+
+IEA의 **2025년 Energy and AI 보고서**는 2024년 세계 데이터센터 전력 소비를 약 415TWh로 추정하고, 그 안에서 미국 45%, 중국 25%, 유럽 15%의 비중을 제시한다. 이는 국가별 전체 발전량의 비중이나 현재 AI 성능 순위가 아니다. 같은 보고서의 2030년 약 945TWh는 Base Case 전망이며 이미 발생한 소비량이 아니다(2026-10-23 해당 절 대조).
+
+**분석 제안:** 국가 간 인프라를 비교할 때는 전체 발전량, 지역 계통 연결, 데이터센터 소비, 가속기 공급과 실제 가동을 따로 확인한다. 설비의 용량인 MW와 일정 기간 사용한 에너지인 MWh/TWh도 구분한다. 국가 총량이 커도 특정 부지의 연결 시점과 공급 조건을 확인해야 하며, 칩 공급이 늘어난다는 전망만으로 전력과 냉각 병목까지 해소됐다고 판단하지 않는다.
+
+IEA는 하드웨어와 소프트웨어 효율, AI 도입과 에너지 부문 병목을 달리한 시나리오를 함께 둔다. 따라서 두 나라의 규모 비교만으로 다른 지역의 수요를 제외하거나, 인구 비례만으로 미래 전력 소비와 투자 수익을 확정하지 않는다.
+
 ## 가격 하락과 수요 증가
 
 단위 추론 비용이 내려가면 더 긴 작업과 더 많은 에이전트가 경제적으로 가능해질 수 있다. 총지출은 단위 가격과 사용량이 함께 결정하므로 가격 하락만으로 산업 매출 감소를 예측하지 않는다. 반대로 사용량 증가가 설비투자 이상의 현금흐름을 만든다는 보장도 없다.
@@ -80,6 +90,8 @@ State of AI의 인프라 절은 미국 4대 하이퍼스케일러의 2026년 설
 
 ## 출처
 
+- [Energy and AI: Executive summary — IEA](https://www.iea.org/reports/energy-and-ai/executive-summary) — 2025년 보고서의 2024년 데이터센터 전력 소비 추정과 지역 비중, 2030년 Base Case 전망, 2026-10-23 대조
+- [Energy and AI: Energy demand from AI — IEA](https://www.iea.org/reports/energy-and-ai/energy-demand-from-ai) — 데이터센터의 전력 소비 구성, 지역 집중과 효율, 도입, 병목별 시나리오, 2026-10-23 대조
 - [Form 10-Q for the quarter ended June 30, 2026 — Tesla](https://www.sec.gov/Archives/edgar/data/1318605/000162828026049270/tsla-20260630.htm) — 2026-10-22 상반기 설비투자와 지출 용도, 반도체 제조 확대 설명 대조. 개별 장비 계약과 납기는 이 집계로 확인하지 않음
 - [CoreWeave Continues to Contract New Compute Capacity at Higher Prices — CoreWeave](https://investors.coreweave.com/news/news-details/2026/CoreWeave-Continues-to-Contract-New-Compute-Capacity-at-Higher-Prices/default.aspx) — 단기 계약의 MW당 연환산 매출 정의, 2026-10-22 대조
 - [CoreWeave Reports Strong Second Quarter 2026 Results — CoreWeave](https://investors.coreweave.com/news/news-details/2026/CoreWeave-Reports-Strong-Second-Quarter-2026-Results/) — revenue backlog의 구성과 이행 조건, 2026-10-22 대조
