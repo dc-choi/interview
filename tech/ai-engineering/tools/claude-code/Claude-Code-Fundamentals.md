@@ -27,7 +27,9 @@ Desktop 앱의 작업 구분은 계정마다 다르다(2026-10-12 공식 도움�
 ## 대화와 세션
 
 - `claude`는 항상 새 세션이다. 세션끼리는 대화를 공유하지 않고, 다음 세션으로 이어지는 것은 CLAUDE.md와 auto memory 같은 파일뿐이다
-- 재개: `claude -c`(직전 이어하기), `/rename`으로 이름 붙인 뒤 `claude -r "이름"`, `/resume`(목록 선택)
+- 재개(2026-10-23 공식 CLI 문서 대조): `claude -c`는 현재 디렉터리에 연결된 재개 대상 중 가장 최근 대화를 연다. 일반 `-c`는 `-p`, Agent SDK와 첫 프롬프트가 `/loop`인 세션을 제외하며, `claude -p --continue`는 이들도 포함한다. `claude -r`은 선택 목록을 열고, `claude -r "이름"`은 이름으로 재개한다. 시작할 때 `claude -n "작업명"`으로 이름을 붙이거나 대화 중 `/rename`으로 바꿀 수 있다. 대화 안의 `/resume`은 다른 세션으로 전환한다
+- 분기: `claude -r "작업명" --fork-session`은 기존 대화를 바탕으로 새 세션 ID를 만든다. `--fork-session`은 `--resume`이나 `--continue`와 함께 쓴다. 대화 분기는 Git 브랜치나 작업 디렉터리의 복사와 구분하고, 파일을 병렬로 수정할 때는 [[Claude-Code-Workflows|worktree 분리]]를 적용한다
+- 복구 범위: 전사 기록에서 재개할 때 압축된 대화는 마지막 압축 요약과 압축 뒤에 남은 메시지를 사용한다. 프로세스 종료 때 끊긴 도구 호출이 재개만으로 완료되지는 않는다. 중단 직전 명령이 이미 영향을 줬는지 현재 파일과 실행 결과를 확인한 뒤 다시 실행한다. 세션 저장을 끈 실행은 재개할 수 없다
 - 파일 참조: `@경로`(자동완성). 기본 탐색은 파일 패턴과 정규식 검색으로 후보를 찾아 필요한 파일만 읽는 방식이라 빠르고 토큰을 아끼지만, 이름이 다른 관련 파일은 놓칠 수 있다. 핵심 파일은 `@경로`로 직접 짚어 준다 ([[Agent-Code-Search|에이전트 코드 검색]])
 - 중단: `Esc`는 진행 중인 응답과 도구 호출을 멈추고 그때까지 한 작업은 남긴다. `Ctrl+C`도 실행 중이면 중단하고, 아무것도 실행 중이 아니면 첫 번째는 입력을 지우고 두 번째는 종료한다
 - 되돌리기(체크포인트): 입력창이 빈 상태의 `Esc Esc`(입력이 있으면 초안을 지운다) 또는 `/rewind` → Restore code(파일만 되돌리고 대화 유지, 가장 자주 씀). 단 **체크포인트는 Claude의 편집 도구가 수정한 파일에만, 약 30일간** 적용 — bash로 실행한 `rm`, `mv`나 DB, API, 배포처럼 원격 시스템에 남긴 변화는 못 되돌리고, 서브에이전트 편집도 대부분 대상이 아니다. 장기 버전 관리는 Git
@@ -85,6 +87,8 @@ Desktop 앱의 작업 구분은 계정마다 다르다(2026-10-12 공식 도움�
 
 ## 출처
 
+- [Claude Code — CLI reference](https://code.claude.com/docs/en/cli-reference) — 2026-10-23 세션 재개, 이름과 분기 플래그 대조
+- [Claude Code — Manage sessions](https://code.claude.com/docs/en/sessions) — 2026-10-23 재개 범위와 중단된 도구 호출의 처리 대조. 이번 확인은 세션 절에 한정하며 문서 전체의 최신성 재검증은 아님
 - [Claude Code — Permission modes](https://code.claude.com/docs/en/permission-modes)
 - [Claude Code v2.1.277 release — Anthropic](https://github.com/anthropics/claude-code/releases/tag/v2.1.277)
 - [Claude Code CHANGELOG — Anthropic](https://github.com/anthropics/claude-code/blob/main/CHANGELOG.md)
