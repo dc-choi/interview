@@ -118,6 +118,24 @@ Post-contact summary는 상담의 주요 문제와 결과를 정리해 ACW(After
 
 Direct Connect는 사내 edge router와 AWS 사이의 연결 개선에 쓸 수 있지만, 단말부터 edge router까지의 사내 LAN/WAN 문제를 해결하지는 않는다. 운영 점검에서는 화면 로그인, 통화 수신, 양방향 음성과 종료를 나눠 재현한다(설계 제안). 실제 상담 환경의 연결 품질을 검증한 결과는 아니며 기존 절의 검증일은 유지한다.
 
+## CCP 오류는 로그의 실패 단계로 좁힌다
+
+2026-10-23 공식 CCP 로그와 오류 가이드 부분 대조 기준이다. 오류 직후 CCP의 Settings에서 Download logs를 선택해 `agent-log.txt`를 확보한다. 새로고침하면 CCP 로그가 유지되지 않으므로 재로그인이나 새로고침 전에 보존한다. CCP Log Parser의 Snapshots & Logs로 오류와 상담원 상태를 함께 보고, API Call Metrics와 WebRTC Metrics로 API 지연과 통화 미디어 상태를 구분한다.
+
+| 증상 또는 로그 | 우선 확인할 경계 |
+|---|---|
+| 마이크 접근 실패 | 브라우저의 미디어 접근 권한과 실제 장치. Endpoint Test Utility로 접근을 확인하고 Firefox는 통화 시 CCP 탭의 포커스도 확인 |
+| `ice_collection_timeout` | 소프트폰 미디어 endpoint로 가는 UDP 3478, 방화벽과 NAT, DNS 및 단말 조건 |
+| `signalling_connection_failure`, `signalling_handshake_failure` | signaling 서버와 통신하는 TCP 443, 프록시와 방화벽 |
+| `webrtc_error` | 앞선 ICE 시간 초과와 재시도 실패 여부. 선행 ICE 오류가 없으면 RTC 세션이 실패한 상태를 로그에서 확인 |
+| 초기화 실패 | 시작 시 WebSocket 연결과 TCP 443 경로. 사용하지 않는 CCP 창도 닫아 연결 한도 문제를 구분 |
+| 발신 설정 오류 | 인스턴스의 발신 활성화, 기본 발신 큐의 caller ID, 상담원 security profile의 발신 권한 |
+| 번호 오류 | E.164 형식, 허용된 발신 국가와 동시 통화 한도. `createOutboundContact` 요청 뒤의 오류를 대조 |
+
+오류 문구는 조사 시작점이며 원인을 하나로 확정하는 증거가 아니다. 인스턴스의 수신과 발신은 별도로 활성화하므로 수신 성공만으로 발신 복구를 판정하지 않는다.
+
+복구 판정 제안: 같은 단말과 네트워크 경로에서 원래 실패한 동작을 다시 시험한다. 수신 오류는 수신 연결을, 발신 오류는 같은 상담원, 큐와 목적지 조건의 발신 연결을 확인하고, 각각 양방향 음성과 종료까지 확인한다. 이 절은 문서 대조 결과이며 실제 CCP 재현이나 기존 대화 복원 절 전체의 재검증은 하지 않았다.
+
 ## 구현 검토에 적용하기
 
 다음은 위 제약에서 도출한 설계 점검 항목이다. 제품 도입이나 특정 환경의 동작을 검증한 결과는 아니다.
@@ -134,6 +152,10 @@ Direct Connect는 사내 edge router와 AWS 사이의 연결 개선에 쓸 수 �
 
 ## 출처
 
+- [AWS, Update settings for your Connect Customer instance](https://docs.aws.amazon.com/connect/latest/adminguide/update-instance-settings.html)
+- [AWS, Download and review Connect Customer Contact Control Panel (CCP) logs](https://docs.aws.amazon.com/connect/latest/adminguide/download-ccp-logs.html)
+- [AWS, Contact Control Panel (CCP) Issues](https://docs.aws.amazon.com/connect/latest/adminguide/common-ccp-issues.html)
+- [How do I troubleshoot CCP user interface errors in Amazon Connect? — AWS re:Post](https://repost.aws/knowledge-center/connect-troubleshoot-ccp-ui-errors)
 - [AWS, Set up your network to use the Connect Customer Contact Control Panel (CCP)](https://docs.aws.amazon.com/connect/latest/adminguide/ccp-networking.html)
 - [AWS, Grant Connect Customer access to your AWS Lambda functions](https://docs.aws.amazon.com/connect/latest/adminguide/connect-lambda-functions.html)
 - [AWS, Flow block in Connect Customer: AWS Lambda function](https://docs.aws.amazon.com/connect/latest/adminguide/invoke-lambda-function-block.html)

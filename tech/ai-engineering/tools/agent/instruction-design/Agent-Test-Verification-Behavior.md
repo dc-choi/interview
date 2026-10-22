@@ -131,6 +131,23 @@ Android에서는 테스트의 실행 위치와 검증 범위가 서로 다른 �
 
 검증 제안: 에이전트에게 목표 커버리지만 요구하지 말고 실행 결과, 커버리지 측정 결과와 요구사항별 기대값의 근거를 따로 제출하게 한다. 실패한 테스트를 고칠 때는 구현 결함, 잘못된 fixture, 잘못된 기대값을 먼저 구분한다. 통과를 위해 assertion을 지우거나 현재 출력으로 기대값을 바꾸지 않았는지 diff를 확인한다. 여기서는 SAP를 실행하거나 커버리지를 측정하지 않았고, 기존 실험 절 전체도 재검증하지 않았다.
 
+## 검증 근거를 리뷰하되 코드 검토 범위도 남긴다
+
+에이전트의 완료 보고에서는 실행한 명령, 검사 대상과 실제 결과를 요구사항에 연결한다. 테스트가 통과했다는 요약만으로 코드 리뷰를 대체하지 않는다. 테스트도 검토 대상이므로 의도한 결함에서 실패하는지, 구현이 바뀌어도 유효한 계약을 검사하는지 확인한다.
+
+다음은 변경 위험에 맞춘 검토 예시다.
+
+| 변경 영역 | 확인할 근거 |
+|---|---|
+| 데이터와 배포 | 실행 전후 데이터, 구버전과의 공존 조건, 실패 시 복원 또는 전진 수정 경로 |
+| 성능 | 같은 입력과 환경의 변경 전후 지연, 메모리 사용량과 측정 조건 |
+| 인증과 격리 | 허용 사례뿐 아니라 다른 사용자나 테넌트의 접근을 거부하는 검사와 관련 코드 |
+| 테스트 정리 | 삭제할 테스트가 보호하던 동작, 남는 검사의 대응 범위와 재현 가능한 실패 사례 |
+
+테스트 수나 내부 함수 대상 여부만으로 삭제를 결정하지 않는다. 중복 검사를 줄여도 보호하던 계약은 남아야 한다. 실행만으로 드러나기 어려운 경쟁 상태와 보안 경계는 해당 코드와 호출 맥락도 읽고, 일부 영역만 검토했다면 범위를 명시한다.
+
+2026-10-23 Anthropic의 실행 가능한 검증 기준과 Google의 코드 리뷰 지침을 대조해 구성한 운영 제안이다. 기존 실험의 효과 수치를 재현하거나 사람의 코드 리뷰를 생략해도 안전함을 입증한 결과는 아니다.
+
 ## 면접 체크포인트
 
 - 에이전트에게 테스트 기법 이름을 지시하는 것이 왜 행동을 바꾸지 못하는지 설명할 수 있는가.
@@ -142,6 +159,8 @@ Android에서는 테스트의 실행 위치와 검증 범위가 서로 다른 �
 
 ## 출처
 
+- [Anthropic, Best practices for Claude Code](https://code.claude.com/docs/en/best-practices)
+- [Google Engineering Practices, What to look for in a code review](https://google.github.io/eng-practices/review/reviewer/looking-for.html)
 - [Build SAP applications faster with Amazon Q Developer — AWS](https://aws.amazon.com/blogs/awsforsap/build-sap-applications-faster-with-amazon-q-developer/)
 - [SAP Developer Center, Write an ABAP Unit Test for the RAP Business Object](https://developers.sap.com/tutorials/abap-environment-rap100-unit-testing/)
 - [AWS CDK v2, Test AWS CDK applications](https://docs.aws.amazon.com/cdk/v2/guide/testing.html)

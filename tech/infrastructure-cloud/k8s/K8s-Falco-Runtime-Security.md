@@ -93,6 +93,21 @@ sudo journalctl _COMM=falco -p warning
 - `/etc/falco/falco.yaml`의 `rules_files`가 적재 순서를 정한다. 기본 순서는 `falco_rules.yaml`, `falco_rules.local.yaml`, `rules.d`다. 명령행에 `-r`을 한 번이라도 주면 설정 파일의 `rules_files`는 무시된다.
 - `falcoctl`은 OCI artifact로 배포되는 규칙 파일을 내려받고 갱신한다. `install` 명령은 기본으로 `/etc/falco`에 내려받는다.
 
+## 규칙의 조건과 경보를 따로 읽는다
+
+2026-10-23 공식 규칙 문서 부분 대조 기준이다. 규칙은 YAML 객체이며 `rule`, `desc`, `condition`, `output`, `priority`를 필수 필드로 둔다. `condition`은 이벤트별 참/거짓 판정이고, `output`은 `%proc.name` 같은 필드 치환으로 경보 내용을 만든다. `priority`는 심각도이며 규칙 실행 순서나 덮어쓰기 우선순위가 아니다.
+
+- macro는 여러 규칙이 재사용할 조건식이다. list는 프로세스명 같은 값의 집합이며 그 자체가 조건식은 아니다.
+- `evt.type = execve and (proc.name = cat or proc.name = grep)`는 `execve` 이벤트 가운데 프로세스명이 두 값 중 하나인 경우를 고른다. 파일 읽기나 악성 행위 자체를 판정하는 식은 아니다.
+- `container.id != host and proc.name = bash`처럼 이벤트 종류를 제한하지 않으면 해당 셸의 여러 syscall이 조건에 맞을 수 있다. 실행 이벤트만 보려면 `evt.type in (execve, execveat)` 같은 범위를 명시한다.
+- list가 다른 list를, macro가 다른 macro를 참조할 때는 참조 대상이 먼저 정의되어야 한다. macro의 list 참조와 rule의 macro 참조에는 같은 선행 정의 조건이 없다.
+
+### 시험 경보가 없을 때 확인할 범위
+
+`Terminal shell in container`는 터미널이 붙은 컨테이너의 셸 실행을 다루는 기본 규칙이다. 운영자가 수행한 정상 디버깅도 탐지할 수 있으므로 경보만으로 침해를 확정하지 않는다. `Read sensitive file untrusted`는 민감 파일 읽기 조건과 신뢰 프로그램 예외를 함께 사용한다. 접근 명령이 실패해도 이 규칙이 반드시 경보를 낸다고 일반화하지 않는다.
+
+운영 점검 제안: 격리된 시험 환경에서 이벤트가 발생한 노드의 Falco를 확인하고, 적재한 규칙 버전과 활성 상태, 조건과 예외, 출력 경로를 순서대로 대조한다. 이벤트 시각, 프로세스와 컨테이너 식별자를 경보와 연결한다. 실제 환경에서 탐지나 전달을 재현한 결과는 아니며 설치와 시험 범위 절의 기존 검증일은 유지한다.
+
 ## CKS와의 연결
 
 2026-10-19 Linux Foundation 안내 기준 CKS는 Kubernetes v1.35를 기반으로 하며, CKA 합격이 응시 조건이고 시험 시간은 2시간이다. 영역 가운데 Monitoring, Logging and Runtime Security가 20%다. 같은 날 확인한 허용 자료 안내는 CKS 시험에서 Kubernetes 문서와 함께 Falco 문서(`falco.org/docs`)를 열 수 있다고 적는다.
@@ -106,6 +121,9 @@ sudo journalctl _COMM=falco -p warning
 
 ## 출처
 
+- [Falco, Basic Elements of Falco Rules](https://falco.org/docs/concepts/rules/basic-elements/)
+- [Falco, Condition Syntax](https://falco.org/docs/concepts/rules/conditions/)
+- [Falco, Default Rules](https://falco.org/docs/reference/rules/default-rules/)
 - [Falco, The Falco Project](https://falco.org/docs/)
 - [Falco, Install on a host (DEB, RPM)](https://falco.org/docs/setup/packages/)
 - [Falco, Kernel Events](https://falco.org/docs/concepts/event-sources/kernel/)
