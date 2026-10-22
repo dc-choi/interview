@@ -52,6 +52,23 @@ Powers는 MCP 도구, 스킬과 지식을 함께 설치하고 작업 맥락에 �
 3. 지침에는 추측한 필드 사용 금지, 오류 처리와 검증할 응답을 적는다.
 4. 생성 코드는 명세와 테스트 응답으로 대조한다. 명세 읽기와 실제 데이터 변경 권한은 구분한다.
 
+## SageMaker Unified Studio의 원격 작업 경계
+
+이 절은 2026-10-23 공식 문서로 확인한 부분 검증이다. Kiro를 로컬 IDE로 사용하면서 SageMaker Unified Studio Space의 파일과 클라우드 컴퓨트에 연결할 수 있다. Powers 설치와는 별개의 원격 접속 구성이다.
+
+기존 domain, project와 Space를 준비하고, AWS Toolkit에서 해당 프로젝트의 IAM 역할 또는 IAM Identity Center 인증과 리전을 선택한다. Kiro용 SageMaker SSH Plugin과 Space의 remote access 활성화가 필요하다. 실행 중인 Space는 remote access를 켜기 위해 재시작할 수 있으므로 진행 중 작업을 확인한다. 공식 가이드는 최소 8 GB RAM을 요구한다.
+
+서비스가 제공하는 `smus-context.md`를 `AGENTS.md`에서 연결하면 프로젝트 맥락을 에이전트에 전달할 수 있다. 서비스가 갱신하는 파일을 직접 수정하기보다 별도 지침 파일이나 `AGENTS.md`에 작업 조건을 적는다. 맥락 파일 제공이 IAM 권한 부여나 생성 결과의 검증을 대신하지 않는다.
+
+다음은 데이터 파이프라인을 위임할 때의 점검 제안이다.
+
+1. 접속한 Space, 역할과 리전을 확인한다. 원격 창의 파일 변경은 해당 Space에 반영된다.
+2. 요구사항과 작업 순서에 사용할 데이터, 실행 엔진, 품질 규칙과 출력 위치를 적는다.
+3. 생성된 코드와 품질 검사 결과를 실제 입력, 실패 규칙과 대조한다. 작업 완료 메시지로 데이터 정확성을 판정하지 않는다.
+4. 생성한 메타데이터의 검토, 카탈로그 게시와 데이터 접근 허용을 별도로 확인한다. 세부 기준은 [[SageMaker-Catalog-Discovery|SageMaker Catalog의 메타데이터와 데이터 탐색]]을 따른다.
+
+`Open in Kiro` 링크로 연 세션은 중단 시 자동 재접속하지 않는다. 해당 링크로 다시 연결하며, 이 링크 경로의 중단 없는 세션은 최대 12시간이다. 이 조건을 모든 원격 접속 방식에 일괄 적용하지 않는다.
+
 ## 출처
 
 - [Kiro Docs, Hooks](https://kiro.dev/docs/hooks/)
@@ -59,6 +76,9 @@ Powers는 MCP 도구, 스킬과 지식을 함께 설치하고 작업 맥락에 �
 - [Kiro Docs, Agent Skills](https://kiro.dev/docs/skills/)
 - [Kiro Docs, Powers](https://kiro.dev/docs/powers/)
 - [Kiro Docs, Create powers](https://kiro.dev/docs/powers/create/)
+- [Amazon SageMaker Unified Studio, Kiro in Amazon SageMaker Unified Studio](https://docs.aws.amazon.com/sagemaker-unified-studio/latest/userguide/kiro-for-smus.html)
+- [Amazon SageMaker Unified Studio, Connecting to Amazon SageMaker Unified Studio Spaces](https://docs.aws.amazon.com/sagemaker-unified-studio/latest/userguide/connecting-to-spaces.html)
+- [Amazon SageMaker Unified Studio, Link to Kiro from Amazon SageMaker Unified Studio](https://docs.aws.amazon.com/sagemaker-unified-studio/latest/userguide/link-to-kiro.html)
 
 ## 관련 문서
 
@@ -66,3 +86,4 @@ Powers는 MCP 도구, 스킬과 지식을 함께 설치하고 작업 맥락에 �
 - [[Claude-Code-Extension-Reference|Claude Code 확장 메커니즘 (종료 코드 2 차단 규칙과 훅 세부 메커니즘)]]
 - [[Agent-Context-Budget|에이전트 컨텍스트 예산 (스킬 Catalog-First 로딩)]]
 - [[MCP|MCP (외부 경계 확장)]]
+- [[SageMaker-Catalog-Discovery|SageMaker Catalog의 메타데이터와 데이터 탐색]]

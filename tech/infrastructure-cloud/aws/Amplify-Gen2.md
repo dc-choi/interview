@@ -50,6 +50,16 @@ Amplify Hosting의 fullstack branch deployment는 브랜치별 환경을 구성�
 
 검증 예시는 다른 사용자 파일에 대한 읽기, 쓰기와 삭제 요청이다. UI에서 버튼을 숨기는 것만으로 권한 검증을 끝내지 않는다.
 
+## Data 권한은 로그인 여부와 소유권을 나눈다
+
+2026-10-23 공식 Data 권한 문서 기준. `.authorization()`에서 허용하지 않은 접근은 기본 거부한다. `allow.authenticated()`는 로그인한 사용자에게 접근을 허용하며, `allow.owner()`처럼 레코드 소유자로 범위를 좁히지 않는다. `allow.publicApiKey()`도 사용자별 소유권 검증이 아니다.
+
+여러 규칙은 OR로 결합한다. 소유자 규칙 옆에 모든 로그인 사용자의 쓰기를 허용하면 소유자 제한이 강화되는 것이 아니다. 공개 읽기와 소유자 쓰기를 조합하려면 공개 규칙의 작업을 `.to(['read'])`처럼 제한한다.
+
+필드에 별도 권한을 정의하면 그 필드는 모델 권한을 상속하지 않고 필드 규칙을 적용한다. 같은 모델에서 일반 필드는 공개하되 민감 필드는 소유자에게만 허용하는 구성이 가능하다. custom query나 mutation 같은 non-model 타입에는 동적 owner 규칙을 그대로 적용할 수 없다.
+
+운영 검증에서는 다른 사용자의 레코드 수정, 민감 필드 조회와 각 `authMode`를 따로 시험한다. 이 규칙 검토와 별도로 관리자 또는 기계 간 접근을 허용하는 IAM 정책도 확인한다. Amplify Gen 2 Data는 IAM 인가를 활성화하므로 클라이언트의 owner 규칙만 보고 모든 접근 경로를 판단하지 않는다.
+
 ## 과거 Pinpoint 예제의 적용 범위
 
 2026-10-23 확인 기준, AWS는 Pinpoint의 endpoints, segments, campaigns, journeys와 analytics dashboard 같은 engagement 기능의 지원 종료일을 2026-10-30으로 안내한다. 과거 Analytics나 인앱 메시징 예제를 새 설계에 적용하기 전 전환 경로를 확인한다.
@@ -67,6 +77,7 @@ Amplify Hosting의 fullstack branch deployment는 브랜치별 환경을 구성�
 - [AWS Amplify, Use cloud sandbox in dev environment](https://docs.amplify.aws/react/deploy-and-host/sandbox-environments/setup/)
 - [AWS Amplify, Fullstack branch deployments](https://docs.amplify.aws/react/deploy-and-host/amplify-hosting/branch-deployments/)
 - [AWS Amplify, Customize authorization rules](https://docs.amplify.aws/react/build-a-backend/storage/authorization/)
+- [AWS Amplify, Customize your auth rules](https://docs.amplify.aws/react/build-a-backend/data/customize-authz/)
 - [AWS, Amazon Pinpoint end of support](https://docs.aws.amazon.com/pinpoint/latest/userguide/migrate.html)
 
 ## 관련 문서

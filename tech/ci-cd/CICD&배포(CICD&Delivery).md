@@ -37,6 +37,7 @@ aliases: ["CI/CD&배포(CI/CD&Delivery)", "CI/CD & Delivery", "CI/CD&배포"]
 
 ### 배포
 
+- [x] [[Prisma-Preview-Deployments|Prisma 프리뷰 배포]] — 별도 DB와 연결 변수, CI 성공과 실제 배포, 에이전트 승인과 GitHub 권한
 - [x] [[Deployment-Automation-ChatOps#에이전트 배포의 인터페이스와 승인 경계|에이전트 배포의 승인 경계]] — CLI와 MCP의 실행 조건, 사용자 식별과 서버 측 승인
 - [x] [[CICD-Deployment|배포 폴더 인덱스 (무중단 5계층, Blue-Green, 단일 서버 배포와 SSH workflow, ChatOps)]]
 - [x] [[Helm]]
