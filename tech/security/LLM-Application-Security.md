@@ -139,6 +139,16 @@ LLM 출력을 다운스트림에 넘기기 전 검증, 정제, 인코딩이 부�
 - 세 근본 원인: 과도한 기능(불필요한 확장 접근), 과도한 권한(읽기만 필요한데 UPDATE/DELETE 권한), 과도한 자율성(사람 확인 없이 삭제, 전송)
 - 완화: 확장 기능과 범위 최소화, 개방형 기능(shell 실행 등) 회피, 다운스트림 최소 권한, 이용자 컨텍스트로 실행(OAuth 최소 스코프), 고위험 작업에 사람 승인, **완전한 중재**(권한은 LLM이 아니라 다운스트림에서 강제)
 
+### 에이전트 신원과 일시적인 권한을 분리한다
+
+에이전트가 자기 신원으로 실행하는지, 사용자의 권한을 위임받는지부터 명시한다. 2026-10-23 Microsoft의 에이전트 최소 권한 가이드를 대조한 설계 기준이다. 특정 제품의 탐지율이나 공격 차단 성능을 검증한 결과는 아니다.
+
+- **책임과 수명:** 에이전트의 목적, 전용 신원과 책임자를 연결하고 등록, 자격 증명 교체, 정지와 폐기 절차를 둔다. 작업마다 신원을 새로 만들기보다 관리 가능한 신원을 유지하고 권한 상승의 유효 시간을 제한하는 구성을 검토한다.
+- **실행 권한:** 조회와 수정 역할을 나누고 대상 리소스, 데이터와 허용 작업을 함께 제한한다. 도구 목록을 보여 주는 것과 실제 호출을 인가하는 것은 별개다. 하위 서비스도 호출마다 역할과 범위를 재검사한다.
+- **감사와 회수:** 에이전트, 위임 사용자, 실제 역할과 범위, 대상, 행동, 시각과 상관관계 식별자를 연결한다. 정지 후에도 기존 토큰으로 호출할 수 없는지, 오작동 후 복구할 수 있는지 시험한다. 여러 도구의 권한을 합쳤을 때 가능한 행동도 검토한다.
+
+이는 기존 과도한 위임 대책을 운영 가능한 신원 관리와 검사 항목으로 구체화한 것이다. 실제 권한 회수와 복구 시험은 수행하지 않았으며 다른 보안 항목의 `verified_at`은 유지한다.
+
 ## LLM07 시스템 프롬프트 유출
 
 시스템 프롬프트에 담긴 자격 증명, 내부 규칙, 권한 구조가 노출되는 것. **유출 자체가 아니라 시스템 프롬프트에 비밀을 두거나 그것을 보안 제어로 쓴 설계 결함**이 문제다.
@@ -198,6 +208,7 @@ RAG의 벡터/임베딩이 생성, 저장, 검색되는 방식의 취약점. RAG
 
 ## 출처
 
+- [Least privilege for AI agents: Identity, access, and tool binding — Microsoft Security Blog](https://www.microsoft.com/en-us/security/blog/2026/07/16/least-privilege-for-ai-agents-identity-access-and-tool-binding/)
 - [Emergent Misalignment: Narrow finetuning can produce broadly misaligned LLMs — arXiv, Betley 외](https://arxiv.org/html/2502.17424v4)
 - [Communication-Efficient Learning of Deep Networks from Decentralized Data — PMLR](https://proceedings.mlr.press/v54/mcmahan17a.html)
 - [Privacy Attacks in Federated Learning — NIST](https://www.nist.gov/blogs/cybersecurity-insights/privacy-attacks-federated-learning)

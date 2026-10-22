@@ -18,6 +18,14 @@ AI 에이전트에게 자율을 줄수록 격리가 그 대가다. 클라우드 
 - Network access는 cloud environment에서 관리하며 기본적으로 제한할 수 있고 끌 수도 있다. 차단해도 Anthropic API 통신은 가능하므로 data가 VM 밖으로 나갈 수 있다는 전제로 민감도를 판단한다.
 - 터미널에서 새 cloud session을 시작하는 현재 flag는 `--cloud`이고 `--remote`는 deprecated alias다. `--teleport`는 cloud session의 branch와 대화를 터미널로 가져온다.
 
+### Slack에서 맡기는 작업의 실행 위치와 접근 범위
+
+2026-10-23 Claude Tag 공식 개요를 부분 대조했다. Claude Tag는 Slack 채널과 스레드에서 요청을 받고 결과를 돌려주는 별도 제품이며, Anthropic의 직접 제공 서비스에서 Team과 Enterprise 플랜에 제공된다. 개인 Free, Pro, Max 플랜이나 제3자 배포에는 제공되지 않는다. Slack으로 로컬 CLI를 호출하는 자체 구성과 같은 제품으로 취급하지 않는다.
+
+작업은 사용자 컴퓨터가 아니라 대화 시작 때 생성되는 임시 샌드박스에서 실행되며, 대화가 비활성화되면 샌드박스가 폐기된다. 외부 시스템 접근은 관리자 연결 설정과 저장소 권한 등으로 정한다. 채널의 기본 설정과 사용자가 자신의 요청에 허용한 개인 커넥터도 구분한다. Slack에서 요청할 수 있다는 사실만으로 모든 서비스의 데이터나 작업 권한을 얻는 것은 아니다.
+
+운영 점검 제안: 요청에 목표, 완료 기준과 결과 증거를 적고, 채널 참여자에게 공개해도 되는 자료인지 확인한다. 결과 메시지만으로 코드 변경이나 배포 성공을 판단하지 않고 diff와 검사 결과를 대조한다. 실제 Slack 연결, 권한 차단과 샌드박스 수명은 시험하지 않았으며, 기존 클라우드 실행과 데이터 보존 정책 전체를 재검증한 것은 아니므로 `verified_at`은 유지한다.
+
 ## 로컬 보안 — 다층 방어 5겹
 
 1. **로컬 실행 모델**: 실행은 로컬에서 하지만 model inference에 필요한 prompt, context와 tool output은 provider로 전송된다. 코드 전체가 항상 로컬에만 남는다고 가정하지 않는다.
@@ -47,6 +55,7 @@ WikiDocs가 소개한 per-edit 정규식 검사, end-of-turn diff review, commit
 
 ## 출처
 
+- [Anthropic, Work with Claude Tag](https://claude.com/docs/claude-tag/overview)
 - [Anthropic, Claude Code on the web](https://code.claude.com/docs/en/claude-code-on-the-web)
 - [Anthropic, Data usage](https://code.claude.com/docs/en/data-usage)
 - [Anthropic, Zero data retention](https://code.claude.com/docs/en/zero-data-retention)

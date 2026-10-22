@@ -152,6 +152,8 @@ aliases: ["WMS Inventory Context Modeling", "WMS 재고 컨텍스트 모델링",
 
 ## 트레이드오프와 체크포인트
 
+- 화주 식별과 접근 제어를 분리한다. 2026-10-23 대조한 Dynamics 365 Warehouse management only mode는 공유 품목의 소유권을 owner inventory dimension으로 추적하는 구성을 설명한다. 이 식별 차원 자체를 사용자별 조회와 변경 권한의 증명으로 쓰지 않는다. 설계 제안으로, 인증된 사용자와 연동 시스템의 허용 화주를 서버에서 확인하고 조회, 예약, 조정과 외부 전송에 같은 경계를 적용한다. 다른 화주의 식별자를 넣은 요청이 거부되는지 따로 검증한다.
+- 비기능 요구사항도 유스케이스의 실패 조건으로 구체화한다(설계 제안). 재고 1개에 대한 동시 할당, 스캔 재전송, DB 반영 뒤 외부 전송 실패, 권한 없는 재고 조정을 각각 재현하고 수량 불변식, 중복 방지, 재처리와 감사 기록을 확인한다. 장비 연동은 연결 여부뿐 아니라 응답 유실과 재전송 때의 계약을 정한다. 기존 정합성 전략을 실제 검사 항목으로 연결한 제안이며 실행 시험은 하지 않았다. 제품 전체를 다시 대조하지 않아 기존 `verified_at`은 유지한다.
 - 상태를 잘게 나눌수록 추적성은 좋아지지만 전이 경로와 테스트할 조합이 늘어난다. 상태, 예약, 위치를 다른 축으로 나누면 조합이 덜 늘어난다.
 - 작업자별 허용 범위를 넓히면 실사가 빨라지지만 작은 차이가 검토 없이 반영된다. 승인 한도를 실사 입력 단계(Dynamics 365의 작업자별 허용 범위)에만 둘지 ERP 전기 단계(SAP EWM 9.0 Difference Analyzer의 사용자별 허용 그룹)에도 둘지, 사유 코드 필수 여부와 상대 계정을 회계 담당과 함께 정한다.
 - 여러 화주를 대행하는 풀필먼트는 상태 코드, 반품 등급, 보류 규칙을 화주별 설정으로 둘지 공통 모델과 대응표로 둘지 정한다.
@@ -159,6 +161,7 @@ aliases: ["WMS Inventory Context Modeling", "WMS 재고 컨텍스트 모델링",
 
 ## 출처
 
+- [Microsoft Learn, Warehouse management only mode overview](https://learn.microsoft.com/en-us/dynamics365/supply-chain/warehousing/wms-only-mode-overview)
 - [YouTube, 코딩하는오후, 6강 Inventory 재고 관리 Context 심층 분석](https://www.youtube.com/watch?v=Db9IHuhk_A8)
 - [Microsoft Learn, Order promising](https://learn.microsoft.com/en-us/dynamics365/supply-chain/sales-marketing/delivery-dates-available-promise-calculations)
 - [Microsoft Learn, Reservations in Warehouse management](https://learn.microsoft.com/en-us/dynamics365/supply-chain/warehousing/reservations-in-warehouse-management)

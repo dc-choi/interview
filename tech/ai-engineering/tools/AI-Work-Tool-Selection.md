@@ -88,6 +88,14 @@ Bee의 공식 설명은 음성을 실시간 처리 후 삭제하고 전사문은
 
 확인 범위는 위 역할, 사양과 데이터 보관 설명에 한정한다. 국내 판매 가격, 모델별 실측 성능과 향후 제품 전망은 검증하지 않았으며 기존 `verified_at`은 유지한다.
 
+### 발표자료는 내용 구조와 디자인 기준을 따로 준다
+
+발표자료 생성 요청에는 청중, 전달할 결론, 근거와 순서를 정한 개요와 색상, 글꼴, 레이아웃을 정한 템플릿을 함께 준비한다. 개요는 무엇을 말할지, 템플릿은 어떻게 배치할지를 제한한다. 자료를 한꺼번에 넣는 것만으로 두 기준이 전달됐다고 보지 않는다.
+
+2026-10-23 Microsoft 공식 안내는 발표 개요에 청중과 다룰 내용을 지정하고, PowerPoint에서는 조직 템플릿으로 시작하며 Word의 제목 스타일로 원문 구조를 전달하는 방법을 설명한다. 제품 기능의 확인 범위이며 모든 AI 발표 도구가 같은 템플릿이나 입력 형식을 지원한다는 뜻은 아니다.
+
+운영 제안: 생성 전에 슬라이드별 핵심 주장과 숫자의 근거를 확인하고, 생성 뒤에는 빠진 결론, 숫자의 가독성, 페이지 간 디자인 일관성과 편집 가능 여부를 검수한다. 생성 시간과 최종 승인까지의 수정 시간을 따로 측정한다. 이번에는 실제 발표자료를 생성하거나 시간 절감 효과를 측정하지 않았으며 기존 제품 비교의 `verified_at`은 유지한다.
+
 ## 3. 자동화의 효과는 전체 업무에서 측정한다
 
 반복 업무를 맡길 후보를 찾되 규칙 기반 자동화, 템플릿과 기존 앱 기능도 함께 비교한다. 의미 해석이 필요 없는 고정 규칙에는 LLM을 추가하지 않아도 된다. 흐름이 미리 정해진 작업과 탐색이 필요한 작업의 차이는 [[LLM-Workflow-Patterns|LLM 워크플로우 패턴]]을 참고한다.
@@ -122,6 +130,8 @@ Bee의 공식 설명은 음성을 실시간 처리 후 삭제하고 전사문은
 
 ## 출처
 
+- [Microsoft Support, Prepare your presentation with Microsoft Copilot](https://support.microsoft.com/en-us/microsoft-365-copilot/prepare-your-presentation-with-microsoft-365-copilot)
+- [Microsoft Support, Create a new presentation with Copilot in PowerPoint](https://support.microsoft.com/en-gb/powerpoint/copilot/create-a-new-presentation-with-copilot-in-powerpoint)
 - [The Biggest News From Connect 2026 — Meta](https://about.fb.com/news/2026/09/the-biggest-news-from-connect-2026/)
 - [Amazon introduces 2 new AI products from Bee: Bee Frontier and Bee Eclipse — Amazon](https://www.aboutamazon.com/news/devices/amazon-personal-ai-bee-frontier-bee-eclipse)
 - [NVIDIA, RTX Spark Specifications](https://www.nvidia.com/en-us/products/rtx-spark/specifications/)
