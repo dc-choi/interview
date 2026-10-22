@@ -11,10 +11,18 @@ aliases: ["Agent Context Budget", "컨텍스트 예산", "Context Budget", "에�
 
 ## 비용은 어디서 누적되는가
 
-- **매 턴 system prompt 재주입** — 스킬 문서 전체(168KB ≈ 42,000 토큰)를 매 턴 넣으면 5턴에 약 16만 토큰 누적
+- **매 턴 system prompt 재주입** — 고정 지침이 42,000토큰이라고 가정하고 5개 요청에 전부 넣으면 그 부분만 총 210,000 입력 토큰이다. 바이트 수를 일정한 토큰 수로 환산하지 않으며, 실제 과금은 캐시 적용 여부와 단가를 따로 확인한다
 - **첨부 파일 inline 보관** — 파일 본문을 메시지에 넣으면 매 요청에 전체가 따라다님
 - **목록성 컨텍스트** — 사용자가 가진 리소스 목록(수십 개)을 매 턴 전달하면 턴당 수천 토큰
-- **agentic loop 직접 구현의 함정** — 토큰 관리, 스트리밍 파싱, 메시지 관리가 분산돼 통제 불가. 검증된 SDK(Agents SDK 류)에 loop와 session을 위임하고, **동적 정보를 system prompt 밖으로 분리하면 prompt caching도 활성화**된다
+- **agentic loop 직접 구현의 함정** — 토큰 관리, 스트리밍 파싱, 메시지 관리가 분산되면 통제가 어려워진다. SDK에 loop와 session을 위임하는 방식을 검토하고, 동적 정보는 재사용할 고정 prefix 뒤에 둔다. 실제 캐시 적중에는 제공자의 설정, 최소 길이, 동일한 prefix와 유효기간 조건도 필요하다
+
+### 입력량, 캐시 재사용과 출력량을 나눠 측정한다
+
+토큰 절약은 작업과 무관한 이력과 검색 결과를 덜 보내는 것에서 시작한다. 주제가 독립적이면 대화를 분리하고, 이어지는 작업이면 필요한 결정, 식별자와 근거를 유지한다. 출력은 필요한 항목과 길이를 정하되, 짧게 답하게 했다는 이유만으로 사실 정확도나 전체 비용이 개선됐다고 판단하지 않는다.
+
+2026-10-23 Claude API 공식 문서 기준으로 사전 토큰 계산은 추정치이며 캐시 적중을 계산하지 않는다. 실제 응답의 `usage`에서 `input_tokens`, `cache_creation_input_tokens`, `cache_read_input_tokens`를 합쳐 전체 입력량을 확인한다. 출력량은 `output_tokens`로 별도 기록한다. 캐시 읽기 토큰을 입력에서 없어진 토큰으로 세거나, 전체 입력량을 일반 입력 단가 하나로 계산하지 않는다.
+
+적용 제안: 같은 작업 묶음에서 변경 전후의 입력, 캐시 쓰기와 읽기, 출력, 재시도 횟수와 성공률을 비교한다. 문맥을 줄여 재시도가 늘면 한 요청의 절감이 전체 작업의 절감으로 이어지지 않을 수 있다. 캐시의 조건과 단가는 [[LLM-Prompt-Caching|프롬프트 캐싱]]에서 구분한다. 이 절의 API 계측만 공식 자료로 대조했으며 아래 설계 패턴은 기존 경험 자료의 범위를 유지한다.
 
 ## 패턴 1 — 파일 첨부: Lazy Loading
 
@@ -71,6 +79,8 @@ Q. 모델이 알아서 조금만 읽게 프롬프트로 지시하면?
 ## 출처
 
 - [사내 AI 에이전트 개선기: AI Agent의 Context 비용을 줄인 3가지 설계 패턴 — 채널톡 기술 블로그](https://tech.channel.io/kr/articles/b085ab62)
+- [Anthropic, Token counting](https://platform.claude.com/docs/en/build-with-claude/token-counting)
+- [Anthropic, Prompt caching](https://platform.claude.com/docs/en/build-with-claude/prompt-caching)
 
 ## 관련 문서
 

@@ -14,6 +14,16 @@ verified_at: 2026-10-18
 
 로그인 검증은 복호화가 아니라 재계산 비교다. 사용자가 입력한 값을 저장할 때와 같은 방식으로 해싱해 DB의 해시와 일치하는지 확인한다. salt를 쓰는 현대 패스워드 해싱 함수(Argon2id, bcrypt 등)는 salt가 해시 문자열에 함께 저장되므로, 라이브러리의 verify 함수가 그 salt로 재계산해 비교한다.
 
+## 해싱과 타이밍 누출 방어는 별개다
+
+해시는 원래 비밀번호의 접두사를 그대로 비교하지 않게 하지만, 비교 함수와 로그인 분기의 시간 차이까지 없애지는 않는다. OWASP는 언어나 프레임워크의 안전한 비밀번호 검증 함수를 우선 사용하고, 직접 비교해야 한다면 입력 길이와 타입을 제한하며 상수 시간 비교를 적용하도록 안내한다.
+
+- 비밀번호는 해싱 라이브러리의 `verify` 함수로 검증한다. 일반 문자열 비교나 직접 만든 바이트 비교 루프로 대체하지 않는다.
+- Node.js의 `crypto.timingSafeEqual`은 같은 바이트 길이의 값 비교를 위한 도구다. 길이가 다르면 예외가 나며, 이 함수만으로 주변 코드까지 타이밍에 안전해지지는 않는다. 비밀번호 해싱과 salt 처리의 대체물도 아니다.
+- 존재하지 않는 계정만 해싱 없이 즉시 반환하면, 같은 오류 문구를 써도 계정 존재 여부가 처리 시간으로 드러날 수 있다. 실패 경로의 계산과 응답 차이를 함께 점검한다.
+
+여기서 상수 시간은 비밀값의 일치 위치에 따라 비교 시간이 달라지지 않게 한다는 뜻이다. 네트워크를 포함한 모든 요청이 정확히 같은 시간에 끝난다는 보장이 아니다. 로그인 속도 제한은 반복 관측을 어렵게 하는 보조 방어이며 안전한 비교를 대신하지 않는다. 이 절은 2026-10-23 OWASP와 Node.js 공식 문서로 대조했으며 기존 알고리즘 권고 전체의 재검증 날짜는 유지한다.
+
 ## 해시 vs 암호화 해시
 
 현대 암호는 보통 한 방향 함수, 이산로그, 소인수분해, 격자 문제처럼 특정 계산이 현실적으로 어렵다는 가정에 기대며, 단순히 NP 문제를 활용한다고 설명하면 부정확하다.
@@ -94,6 +104,7 @@ bcrypt의 72바이트 제한은 글자 수가 아니라 사용하는 인코딩�
 - [Password Storage Cheat Sheet — OWASP](https://cheatsheetseries.owasp.org/cheatsheets/Password_Storage_Cheat_Sheet.html)
 - [OWASP Cheat Sheet Series, Credential Stuffing Prevention Cheat Sheet](https://cheatsheetseries.owasp.org/cheatsheets/Credential_Stuffing_Prevention_Cheat_Sheet.html)
 - [OWASP Cheat Sheet Series, Authentication Cheat Sheet](https://cheatsheetseries.owasp.org/cheatsheets/Authentication_Cheat_Sheet.html)
+- [Node.js, Crypto: crypto.timingSafeEqual](https://nodejs.org/api/crypto.html#cryptotimingsafeequala-b)
 - [NIST, SP 800-63B-4: Authentication and Authenticator Management](https://pages.nist.gov/800-63-4/sp800-63b.html)
 - [웹 개발을 위해 꼭 알아야하는 보안 공격 — kciter.so, kciter](https://kciter.so/posts/basic-web-hacking/)
 - [웹보안 — 딩코딩코 (개발자 취업 필수 개념 강의)](https://fern-freeze-290.notion.site/37aade118e3680908aeee8bb5a517c7d)

@@ -76,6 +76,14 @@ aliases: ["LLM-as-a-Judge", "LLM-as-Judge", "LLM Judge", "LLM 판정기"]
 
 다음은 이런 흐름을 평가에 적용할 때의 제안이다. 최초 답과 전달한 근거, 수정 답을 따로 보존하고, 사실 확인과 표현 선호를 루브릭에서 구분한다. 기술 도식은 글자와 연결 관계를 원래 명세에 대조한다. 판정기의 결론만으로 맞다고 확정하지 않으며, 위치와 장황함 편향 및 추론 한계는 MT-bench 연구의 제한을 참고해 별도 시험한다. 이 사례 절만 대조했으므로 기존 `verified_at`은 유지한다.
 
+### 역할의 수와 독립적인 검증 근거를 구분한다
+
+서로 다른 인물이나 직무를 흉내 낸 AI 역할이 토론하더라도, 역할 수 자체가 독립적인 전문가 검증의 수는 아니다. 확인할 대상은 각 역할에 전달한 자료, 생성 과정과 외부 근거다. 토론 뒤의 합의와 점수는 평가할 출력으로 남기고 사실의 증거로 바꾸지 않는다.
+
+공개 사례인 Roast Room은 기본 일곱 역할 외에 추가 역할을 제공하고, 공개 저작물을 바탕으로 만든 모의 자문이라고 명시한다. 실제 인물의 참여나 보증이 아니다. 2026-10-23 README에서 역할 선택, 가중 채점과 PDF 보고서 안내를 확인했으며 프로그램 실행과 판정 정확도는 검증하지 않았다. 일곱이라는 수를 전체 역할 수나 성능 기준으로 고정하지 않는다.
+
+적용 제안: 역할별 최초 판단, 토론 뒤 수정과 인용 근거를 따로 보존하고, 근거 확인과 반대 의견을 사람의 기준 표본에 대조한다. 사업 판단의 실제 고객 검증은 [[Solo-Product-Market-Validation|1인 제품 시장 검증]]을 따른다. 기존 문서 전체를 다시 검증한 것은 아니므로 `verified_at`은 유지한다.
+
 ## 사람 라벨로 판정기를 교정한다
 
 ### 점수가 상단에 몰리면 근거와 배점을 분리한다
@@ -118,6 +126,7 @@ aliases: ["LLM-as-a-Judge", "LLM-as-Judge", "LLM Judge", "LLM 판정기"]
 
 ## 출처
 
+- [Roast Room — GitHub, nateherkai](https://github.com/nateherkai/roast-room) — 2026-10-23 README의 기능 안내와 모의 자문 범위 확인, 실행과 효과 미검증
 - [서비스와 앱: 다스캔 AI — 기술노트](https://technote.wiki/apps#dascan) — 2026-10-22 동시 질문, 교차검토, 이미지 재생성과 역할 토론의 공개 안내 확인. 실행, 성능과 데이터 보호는 검증하지 않음
 - [AWS Innovation with Fair Trade USA — Amazon Web Services](https://www.youtube.com/watch?v=0ju7zBp_zKc) — 2025년 발표 13:37~15:39, 근거별 가산 채점의 시제품 경험
 - [How Fair Trade USA uses AWS to improve working conditions for farmers — AWS, Mike George](https://aws.amazon.com/blogs/publicsector/how-fair-trade-usa-uses-aws-to-improve-working-conditions-for-farmers/) — 2026-10-16 사례의 평가 기준과 시제품 범위를 대조

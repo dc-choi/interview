@@ -127,6 +127,20 @@ RFC 7766은 범용 DNS 구현에 UDP와 TCP 지원을 모두 요구한다. TCP�
 
 공개 DNS 주소를 `8.8.8.8`이나 `1.1.1.1`로 바꾸는 것만으로 질의가 암호화되지는 않는다. 공용 Wi-Fi에서는 인증된 암호화 DNS 연결과 HTTPS를 사용하고, 공유기 관리 권한과 설정도 보호한다. 회사 VPN이나 내부 도메인은 조직의 DNS 정책을 따라야 하므로 공개 DNS로 무조건 바꾸지 않는다.
 
+### DNSSEC 신뢰 앵커와 키 전환
+
+DNSSEC 검증은 리졸버가 미리 신뢰하는 공개키 또는 그 해시인 신뢰 앵커에서 시작한다. DNSKEY와 상위 존의 DS를 따라 서명된 데이터의 신뢰 사슬을 확인한다. KSK는 DNSKEY 레코드 집합을 서명하는 역할이고, ZSK는 일반적으로 존의 다른 데이터를 서명한다. 루트 KSK는 웹 트래픽을 복호화하는 공통 비밀번호가 아니다.
+
+2026-10-23 확인한 IANA의 루트 키 상태는 다음과 같다.
+
+- KSK-2024의 key tag는 `38696`이며 2026-10-11부터 서명에 사용된다. 생성, 루트 존에 공개, 서명 시작은 서로 다른 시점이다.
+- KSK-2017(`20326`)은 서명을 멈췄지만 아직 유효한 신뢰 앵커로 남아 있다. 폐기는 2027-01-11, 루트 존에서 제거는 2027-03-22로 예정돼 있으며 완료된 사건으로 쓰지 않는다.
+- 검증 리졸버는 새 신뢰 앵커를 반영해야 한다. RFC 5011 방식의 자동 갱신은 기존 키로 서명된 새 키를 일정 기간 관찰해 신뢰하고, 벤더의 소프트웨어 배포로 갱신하는 경로도 있다. 운영자는 해당 구현의 갱신 절차를 따른다.
+
+전환 무렵의 접속 장애를 키 문제로 곧바로 단정하지 않는다. 실제로 사용하는 검증 리졸버, 신뢰 앵커 갱신 상태와 검증 오류를 확인해야 한다. 루트 키의 정상화만으로 서명되지 않은 도메인의 응답까지 DNSSEC로 보호되지는 않는다.
+
+위조 응답 방어도 질의 ID 하나의 추측 문제로 단순화하지 않는다. RFC 5452는 주소, 포트, 질의 ID, 이름, 클래스와 타입의 일치를 확인하고 예측하기 어려운 출발지 포트와 ID를 사용하도록 요구한다. 16비트 ID 공간만으로 실제 공격의 성공 확률이나 필요한 패킷 수를 계산하지 않는다. 이 절만 공식 자료와 대조했으므로 기존 `verified_at`은 유지한다.
+
 ## 도메인 등록과 위임
 
 도메인을 쓰려면 **레지스트라**(등록 대행: 가비아, 카페24, GoDaddy, Route 53)를 통해 등록한다. 등록의 본질은 "이 도메인의 DNS는 어느 네임서버가 관리하는가"를 TLD에 NS 레코드로 등록하는 것, 즉 **위임**이다.
@@ -174,6 +188,8 @@ nslookup -type=AAAA naver.com
 이번 참고 영상은 제공된 메모를 바탕으로 반영했으며 영상 본문과 자막은 직접 확인하지 못했다. 보완한 기술 설명은 아래 공식 자료와 대조했다.
 
 - [RFC 4033, DNS Security Introduction and Requirements](https://www.rfc-editor.org/rfc/rfc4033.html)
+- [IANA, DNSSEC Trust Anchors and Rollovers](https://www.iana.org/dnssec/files) — 2026-10-23 키 상태와 전환 일정 확인
+- [RFC 5452, Measures for Making DNS More Resilient against Forged Answers](https://www.rfc-editor.org/rfc/rfc5452.html)
 - [RFC 7858, Specification for DNS over Transport Layer Security](https://www.rfc-editor.org/rfc/rfc7858.html)
 - [RFC 8484, DNS Queries over HTTPS](https://www.rfc-editor.org/rfc/rfc8484.html)
 - [RFC 6891, Extension Mechanisms for DNS](https://www.rfc-editor.org/rfc/rfc6891.html)
