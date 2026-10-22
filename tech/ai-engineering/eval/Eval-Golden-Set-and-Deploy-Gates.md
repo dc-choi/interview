@@ -34,6 +34,14 @@ aliases: ["Golden Set", "골든셋", "배포 관문", "Deploy Gates"]
 
 문항 자체가 잘못된 경우를 가려내는 보조 판별법도 있다. 최고 성능 모델이 여러 번 시도해도 통과율이 0%인 문항은 모델이 못 푸는 것이 아니라 문항이 잘못 만들어졌을 가능성을 먼저 본다. 데이터 품질을 다단계 게이트로 거르는 원칙은 [[LLM-Eval-Strategy]]의 Multi-gate를 따르고, 문항을 AI로 늘릴 때 사람 검수를 빼지 않는 이유도 같다.
 
+### 현재 품질을 지키는 세트와 새 능력을 재는 세트
+
+회귀 평가(regression eval)는 이미 수행하던 일을 계속 안정적으로 하는지 확인한다. 능력 평가(capability eval)는 아직 어려운 업무에서 개선 여지를 재므로 시작 통과율이 낮을 수 있다. 두 결과를 별도로 집계하면 새 업무의 성적 향상이 기존 업무의 품질 저하를 가리는 일을 줄일 수 있다.
+
+운영 제안: 현재 제품의 필수 과업은 회귀 관문으로 유지하고, 다음에 지원할 업무는 성공 조건을 정의한 능력 평가에 둔다. 새 모델이 나오면 두 세트를 같은 환경에서 다시 실행한다. 능력 평가에서 안정적으로 통과하게 된 과업은 회귀 세트로 편입한다. 미래 모델이 풀 수 있다는 기대만으로 기능 제공을 약속하지 않는다.
+
+낮은 통과율을 허용한다는 것은 잘못된 문제나 채점기를 방치한다는 뜻이 아니다. 입력과 도구로 해결할 수 있는 과업인지, 기대 결과가 일관적인지 먼저 확인한다. 2026-10-23 Anthropic의 capability/regression 구분을 대조한 평가 설계이며, 특정 모델의 향후 성능을 예측한 결과가 아니다.
+
 ## 문항 구성과 홀드아웃
 
 답이 문자열 하나로 정해지지 않으므로 문항에는 입력과 함께 좋은 답의 조건을 담는다.
@@ -138,7 +146,7 @@ aliases: ["Golden Set", "골든셋", "배포 관문", "Deploy Gates"]
 
 ## 출처
 
-- [Demystifying evals for AI agents — Anthropic](https://www.anthropic.com/research/demystifying-evals-for-ai-agents) — 모델과 하네스의 결합 평가, 실행 기록과 최종 상태, 운영 관측과 A/B 테스트의 역할 및 한계
+- [Demystifying evals for AI agents — Anthropic](https://www.anthropic.com/research/demystifying-evals-for-ai-agents) — 모델과 하네스의 결합 평가, 실행 기록과 최종 상태, 운영 관측과 A/B 테스트의 역할 및 한계, 능력 평가와 회귀 평가의 분리
 - [삼성의료원 응급실의 AI 기반 혈액 수혈 가이드 솔루션 구축사례 — Amazon Web Services Korea](https://www.youtube.com/watch?v=sKydinsvUi0) — 2025년 발표, 32:50~36:52의 평가 문항 구성과 임상 적용 전 단계
 - [Level 9 하네스 엔지니어링과 Evaluator 제어 — 클로드 코드 마스터 활용편 발표 자료(한빛미디어), 빌런 (2026-09)](https://run-ai.kr/learn/carve-harness)
 - [promptfoo, Assertions and metrics](https://www.promptfoo.dev/docs/configuration/expected-outputs/)

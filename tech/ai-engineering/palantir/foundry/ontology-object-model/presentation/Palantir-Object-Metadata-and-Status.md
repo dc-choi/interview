@@ -21,6 +21,17 @@ Type class는 주로 표시/앱 기능 메타데이터이며 analyzer 계열은 
 
 동적 scheduling에서는 start/end property ID와 save handler Action parameter ID를 맞춘다. Quiver의 series/event ID는 문서가 요구하는 전역 유일성과 root 연결을 검토한다. 구형 `timeseries_is_deprecated` 표의 앱 범위 설명은 서로 섞여 있으므로 다른 앱에서 숨김을 보장하지 않는다.
 
+### 설정 위치와 소비 앱을 함께 확인한다
+
+Type class는 property, link type 또는 action type에 붙이며, `kind`와 `name` 문자열의 조합을 소비 앱이 해석한다. 같은 이름을 임의로 추가했다고 플랫폼 전체에서 기능이 활성화되지는 않는다.
+
+- 지역별 색상 지도는 `kind=choropleth_map_config_id`에 지역 코드 체계에 맞는 `name`을 지정한다. 국가 코드는 `countries`, 미국 주는 `us_states`다. 해당 property에는 `selectable` 또는 `sortable` render hint도 필요하다.
+- Vertex의 `link_merge`는 객체의 primary key에 붙여 중간 객체를 간선으로 표현한다. link type의 `link_merge_incoming`은 target/to 쪽, `link_merge_outgoing`은 source/from 쪽 객체에 한정하므로 방향을 바꾸어 해석하지 않는다.
+- Quiver의 `timeseries_id`는 시계열 객체의 primary key에 연결하는 series 식별자이며 시계열 객체 전체에서 유일해야 한다. 이 설정과 measure, units, root object 연결은 현재 object type의 Capabilities에서 구성한다.
+- 구형 `analyzer:not_analyzed`와 언어별 analyzer type class 대신 Properties > Interaction의 analyzer 선택을 사용한다. `analyzer:not_indexed`의 색인 여부 설정은 `searchable` render hint로, `multipass:user_id`의 사용자 표시 형식은 value formatting으로 이동했다.
+
+2026-10-23 공식 type class 표와 수집 본문을 대조한 부분 보강이다. 상태 전이와 그룹 권한 전체, 실제 앱 표시 결과는 다시 검증하지 않았으므로 기존 `verified_at`은 유지한다.
+
 ## 출처
 
 - [Palantir, metadata-statuses](https://www.palantir.com/docs/foundry/object-link-types/metadata-statuses)

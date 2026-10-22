@@ -46,6 +46,20 @@ CREATE TABLE orders (
 );
 ```
 
+## 일별, 월별, 연별 경계 선택
+
+월별은 기본 정답이 아니라 조회 기간, 기간별 데이터량과 삭제 단위를 맞추는 선택이다. 다음 표는 같은 보존 기간의 데이터를 시간 범위로 나눌 때 비교할 기준이다.
+
+| 단위 | 검토할 조건 | 비용과 한계 |
+|---|---|---|
+| 일별 | 하루 데이터량이 크거나 일 단위 만료 처리가 필요함 | 생성하고 감시할 partition 수가 늘어남 |
+| 월별 | 주요 조회와 만료 처리가 달력 월 경계에 맞음 | 일별 삭제 경계가 월 중간에 오면 partition 전체를 지울 수 없음 |
+| 연별 | 연 단위 조회와 보관이 중심이고 연간 크기를 감당함 | 월별 조회가 pruning돼도 남는 partition과 내부 index가 클 수 있음 |
+
+예를 들어 24개월을 보존하면 월별은 보존 대상 24개에 미래 범위 등을 더해 관리한다. 이는 개수 계산 예시이며 적정 크기나 성능 기준이 아니다. 최근 30일 조회는 달력 월 경계와 같지 않으므로 월별 partition 하나만 읽는다고 가정하지 않는다. 만료일과 보존할 행이 같은 partition에 섞이면 경계를 더 잘게 나누거나 행 단위 삭제를 병행하는 방안을 검토한다.
+
+적용 제안: 동일한 대표 쿼리와 데이터로 일별, 월별, 연별의 후보 partition 수, 읽은 행, 지연과 유지보수 시간을 비교한다. PostgreSQL 18의 best practices도 조회 조건, 삭제 단위와 partition 수를 함께 고려하지만, 그 제품의 계획 시간과 메모리 특성을 MySQL의 수치 기준으로 옮기지 않는다. 2026-10-23 MySQL 8.4의 pruning과 RANGE 관리, PostgreSQL 18의 설계 지침을 대조했다. 실제 부하 시험과 기존 문서 전체 재검증은 수행하지 않아 기존 `verified_at`은 유지한다.
+
 ## Partition pruning
 
 Pruning은 table 크기가 아니라 predicate와 partition expression의 관계로 결정된다. `EXPLAIN`의 `partitions` column에서 실제 후보 partition을 확인한다.
@@ -72,7 +86,7 @@ WHERE created_at >= '2026-06-01'
 | 구조는 남기고 비우기 | `TRUNCATE PARTITION` |
 | staging/archive table과 교환 | `EXCHANGE PARTITION` |
 
-범위 partition 생성은 application 배포와 분리해 미리 자동화한다. `DROP PARTITION`은 row별 `DELETE`보다 lifecycle 정리에 유리할 수 있지만 데이터가 제거되는 DDL이므로 backup, metadata lock, replica 영향과 복구 절차를 검증한다. `EXCHANGE PARTITION`도 구조 호환성과 validation 비용을 대상 버전에서 확인한다.
+범위 partition 생성은 application 배포와 분리해 미리 자동화한다. `DROP PARTITION`은 row별 `DELETE`보다 lifecycle 정리에 유리할 수 있지만 데이터가 제거되는 DDL이므로 backup, metadata lock, replica 영향과 복구 절차를 검증한다. MySQL 8.4에서 `ALGORITHM=INPLACE`는 대상 partition의 데이터를 제거하지만, `ALGORITHM=COPY` 또는 `old_alter_table=ON`은 호환되는 다른 partition으로 행 이동을 시도하고 이동할 수 없는 행을 삭제한다. 만료 처리에는 실제 DDL 알고리듬과 결과도 확인한다. `EXCHANGE PARTITION`도 구조 호환성과 validation 비용을 대상 버전에서 확인한다.
 
 ## 중요한 제약
 
@@ -123,6 +137,7 @@ MySQL 8.4의 일반 RANGE/LIST 식은 정수를 반환해야 한다. `RANGE COLU
 
 ## 출처
 
+- [PostgreSQL 18 Documentation, Table Partitioning](https://www.postgresql.org/docs/18/ddl-partitioning.html#DDL-PARTITIONING-DECLARATIVE-BEST-PRACTICES) — 조회 조건, 삭제 단위와 partition 수를 함께 정하는 설계 기준
 - [MySQL 8.4 Reference Manual, Partitioning Overview](https://dev.mysql.com/doc/refman/8.4/en/partitioning-overview.html)
 - [MySQL 8.4 Reference Manual, Partition Pruning](https://dev.mysql.com/doc/refman/8.4/en/partitioning-pruning.html)
 - [MySQL 8.4 Reference Manual, Partitioning Keys and Unique Keys](https://dev.mysql.com/doc/refman/8.4/en/partitioning-limitations-partitioning-keys-unique-keys.html)

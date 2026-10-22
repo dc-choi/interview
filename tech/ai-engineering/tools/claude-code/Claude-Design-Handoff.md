@@ -62,12 +62,24 @@ Impeccable은 지침과 결정적 검사를 묶은 사례다. Paul Bakaus가 Ant
 
 지침 스킬, 코드 작성 스킬, 컴포넌트, 아이콘, 레퍼런스 갤러리와 디자인 시스템 카탈로그는 다듬는 대상이 다르고 출처와 라이선스를 남기는 방법도 다르다. 아래 개수와 라이선스는 2026-10-12에 각 공식 사이트, 저장소와 LICENSE 원문을 대조한 기준이며 바뀔 수 있다.
 
-- **지침 스킬:** Taste Skill은 Leon Lin과 blueemi가 만든 SKILL.md 묶음(MIT)으로, 공식 사이트는 Claude Code와 Codex 등 SKILL.md를 읽는 도구에 `npx skills add Leonxlnx/taste-skill`로 13개 스킬을 설치하도록 안내한다. 이 명령을 실행하는 skills CLI는 README 기준 `--all`을 주면 확인 없이 모든 스킬을 설치하므로, 기본 스킬만 필요하면 `--skill design-taste-frontend`를 지정한다. README가 실험 단계로 표시한 기본 스킬 `design-taste-frontend`는 브리프에서 방향을 추론해 레이아웃 변화, 움직임 강도, 정보 밀도의 세 다이얼을 정한다. 이미 만든 화면용으로는 처음부터 다시 쓰지 말고 변경마다 테스트하라고 지시하는 `redesign-existing-projects` 스킬이 따로 있다. 점검은 에이전트가 출력 전 체크리스트로 직접 수행하며, Impeccable 같은 결정적 탐지기와 훅이나 효과 측정 결과는 README와 기본 스킬에서 찾지 못했다. 앞의 Impeccable 운영 제안처럼 자기 화면에서 적용 전후를 비교하고, 설치 전 확인은 [[Agent-Skills#설치 경로와 신뢰 — 표면마다 따로, 출처는 먼저|스킬 설치의 신뢰 경계]]를 따른다.
+- **지침 스킬:** Taste Skill의 2026-10-23 README는 저장소에 `design-taste-frontend` 하나를 두고, 기존 스킬은 별도 저장소로 이동하거나 통합했다고 설명한다. 설치는 `npx skills add https://github.com/Leonxlnx/taste-skill --skill "design-taste-frontend"`로 안내하며, 스크립트 실행에는 Node 22 이상과 설치된 Chrome, Edge 또는 Chromium이 필요하다. 이미지 탐색에는 네트워크 접근이 필요하다. 기존 `redesign-existing-projects`는 기본 스킬의 기존 화면 검토 흐름으로 통합됐다. 2026-10-12에 확인한 13개 스킬 묶음, 세 다이얼과 출력 전 체크리스트만으로 현재 v2를 설명하지 않는다. 설치 전 확인은 [[Agent-Skills#설치 경로와 신뢰 — 표면마다 따로, 출처는 먼저|스킬 설치의 신뢰 경계]]를 따른다.
 - **코드 작성 스킬:** 시각 지침이 아니라 코드 작성 지침을 담은 묶음도 있다. React Frontend Skills(MIT)는 React, Next.js, TypeScript, Tailwind, shadcn, TanStack Query, Zod, Vitest, Playwright 등 18개 스킬을 React 19.3 기준으로 묶고, 프로젝트가 다른 버전을 고정했으면 그 버전의 공식 문서를 따르라고 적는다. Claude Code 전용이 아니라 Codex와 Cursor 같은 여러 에이전트를 대상으로 하며, skills CLI의 `-s` 옵션으로 필요한 스킬만 골라 설치할 수 있다. 스킬 파일은 Markdown뿐이고 훅과 스크립트는 없다. 다만 react, nextjs 같은 스킬 본문이 `npx -y @pymodel/react-frontend-skills detect` 같은 동반 CLI 실행을 지시하고 MCP 서버 안내도 `npx -y`를 써서, 원격 패키지를 확인 없이 실행하게 된다. `web-design-guidelines` 스킬은 리뷰마다 커밋으로 고정한 외부 지침을 내려받는다.
 - **컴포넌트:** Colorlib의 Velora UI는 React, Tailwind CSS 4와 shadcn/ui용 애니메이션 컴포넌트 100개와 블록 31개를 MIT로 공개한다. README 기준 100개 중 51개는 런타임 의존성이 없고 나머지는 Motion만 쓴다. 출시 예정인 유료 Pro 등급은 가격표에 MIT가 아닌 Commercial로 표시되므로 어느 등급에서 받은 항목인지 함께 기록한다. Tween UI(StaticMania, MIT)는 GSAP과 CSS로 움직이는 React 19, Tailwind v4용 컴포넌트 23개와 블록 33개를 패키지 없이 shadcn 레지스트리로 배포하며(README는 아직 16개, 20개로 적는다), 항목에 따라 gsap, @gsap/react, swiper 같은 의존성이 함께 들어온다. SHIUI는 React 요소 112개와 Astro 블록 24개를 소스 복사 방식으로 제공한다. 블록은 Astro라 React 프로젝트에 바로 넣을 수 없다. SHIUI는 README와 package.json에 ISC를 선언했지만 저장소에 LICENSE 파일이 없고 두 파일에 저작권자 표기도 없다.
-- **아이콘:** heroicons-animated는 Tailwind Labs의 Heroicons를 Motion으로 움직이게 만든 개인 프로젝트(Aniket Pawar, MIT)로 316개를 표시한다. 이 저장소의 LICENSE에는 Aniket Pawar의 저작권 고지만 있으므로 원본 Heroicons LICENSE의 고지(Copyright (c) Tailwind Labs, Inc.)도 함께 보존하는 편이 안전하다. Taste Skill 기본 스킬은 아이콘 허용 목록을 Phosphor, HugeIcons, Radix, Tabler로 두고 프로젝트마다 한 계열만 쓰라고 지시하므로, Heroicons 계열을 쓸 프로젝트라면 그 선택을 프로젝트 지침에 적어 둔다. 같은 저장소의 redesign 스킬은 Phosphor, Heroicons나 자체 세트를 권해 두 스킬의 지시가 다르다. AnimateIcons(Avijit Dey, MIT)는 Lucide 스타일 669개와 Hugeicons 스타일 501개, 모두 1170개의 움직이는 React 아이콘을 npm 패키지(`@animateicons/react`), shadcn 레지스트리와 자체 CLI로 배포한다. 저장소의 THIRD_PARTY_NOTICES는 아이콘 모양이 Lucide(ISC), Feather(MIT), Hugeicons(MIT)에 기반하고 그 라이선스가 아이콘 복제물에 저작권 고지를 남기도록 요구한다고 밝힌다. npm 패키지에는 LICENSE와 THIRD_PARTY_NOTICES가 들어 있지만 shadcn 레지스트리로 받은 소스에는 라이선스 헤더가 없다.
+- **아이콘:** heroicons-animated는 Tailwind Labs의 Heroicons를 Motion으로 움직이게 만든 개인 프로젝트(Aniket Pawar, MIT)로 316개를 표시한다. 이 저장소의 LICENSE에는 Aniket Pawar의 저작권 고지만 있으므로 원본 Heroicons LICENSE의 고지(Copyright (c) Tailwind Labs, Inc.)도 함께 보존하는 편이 안전하다. 2026-10-12 확인한 이전 Taste Skill 기본 스킬은 아이콘 허용 목록을 Phosphor, HugeIcons, Radix, Tabler로 두고 프로젝트마다 한 계열만 쓰라고 지시하므로, Heroicons 계열을 쓸 프로젝트라면 그 선택을 프로젝트 지침에 적어 둔다. 당시 같은 저장소의 redesign 스킬은 Phosphor, Heroicons나 자체 세트를 권해 두 스킬의 지시가 다르다. AnimateIcons(Avijit Dey, MIT)는 Lucide 스타일 669개와 Hugeicons 스타일 501개, 모두 1170개의 움직이는 React 아이콘을 npm 패키지(`@animateicons/react`), shadcn 레지스트리와 자체 CLI로 배포한다. 저장소의 THIRD_PARTY_NOTICES는 아이콘 모양이 Lucide(ISC), Feather(MIT), Hugeicons(MIT)에 기반하고 그 라이선스가 아이콘 복제물에 저작권 고지를 남기도록 요구한다고 밝힌다. npm 패키지에는 LICENSE와 THIRD_PARTY_NOTICES가 들어 있지만 shadcn 레지스트리로 받은 소스에는 라이선스 헤더가 없다.
 - **레퍼런스 갤러리:** refs.gallery는 영상 설명 기준 사이트 레퍼런스 모음이며, 2026-10-12에는 HTTP 429로 페이지가 열리지 않아 내용과 이용 조건을 확인하지 못했다. Minimal Gallery는 2013년부터 운영된 웹사이트 디자인 영감 모음으로 2026년에 인수됐다. 이용 조건(2026-05 표시)에 따르면 갤러리는 소개한 사이트의 소유권을 주장하지 않고 스크린샷과 썸네일을 자기 소유로 둔다. 열람과 북마크 같은 제한된 개인 이용만 허용하고, 상업적이거나 공개적인 목적의 복제와 배포에는 사전 서면 허락을 요구한다. 레퍼런스 갤러리를 쓸 때는 갤러리 이용 조건이 원래 사이트의 이미지, 문구와 일러스트 사용까지 허락한다고 가정하지 않고, 위계, 섹션 순서와 정보 밀도를 참고한 뒤 표면 시각은 브리프에 맞게 새로 만든다([[AI-Work-Tool-Selection|참고와 복제의 구분]]).
 - **디자인 시스템 카탈로그:** oh-my-design은 실제 회사의 디자인 시스템을 코딩 에이전트용 DESIGN.md로 다시 쓴 카탈로그다. 2026-10-12 사이트 기준 18개국 521개 회사를 싣고 근거 수준으로 등급을 나눈다. 사이트 정의로는 verified 299개는 모든 값이 운영 중인 제품이나 공식 문서의 캡처로 추적되고, partial 109개는 캡처했지만 일부 값이나 출처가 빠졌거나 오래됐으며, legacy 113개는 근거 캡처 이전에 작성돼 증거가 아닌 출발점이다. `npx oh-my-design-cli@latest`는 Claude Code, Codex, Cursor와 OpenCode에 스킬 28개와 오프라인 카탈로그를 설치한다. README는 기본 설치가 감지된 모든 에이전트를 대상으로 한다고 적고, 비대화형으로 한 채널만 설치하려면 `install-skills --agent <이름> --all` 하위 명령을 안내한다. README 기준 Claude Code에는 스킬과 하위 에이전트 20개, 훅이 들어가고, Codex와 OpenCode에도 하위 에이전트 역할이 들어가며, Cursor에는 하위 에이전트와 훅 없이 호환되는 스킬 27개가 들어간다. 설치 전 확인은 [[Agent-Skills#설치 경로와 신뢰 — 표면마다 따로, 출처는 먼저|스킬 설치의 신뢰 경계]]를 따른다. 저장소는 MIT이며 README는 레퍼런스가 각 회사에 속하고 교육용 참고로 재현했다고 밝힌다.
+
+### Taste Skill v2의 방향 선택과 검수
+
+2026-10-23 공개 README와 스킬 본문 기준이다. 다음은 스킬이 에이전트에 지시하는 절차이며, 이 문서에서 로컬 실행이나 디자인 품질을 재현한 결과가 아니다.
+
+1. 브리프와 고객 고유의 자료에서 화면의 주제를 정한다. 스크립트가 제시한 디자인 방향 후보 중 하나를 고르고, 공개 이미지와 영상을 사용하면 출처를 남긴다.
+2. `lint.mjs`로 소스 패턴을 검사하고, `inspect.mjs`로 실제 브라우저의 1440, 768, 390픽셀 너비에서 대비, 넘침과 레이아웃 등을 검사한다. 결과 스크린샷은 `.taste-skill/inspect/`에 남기도록 되어 있다.
+3. 검사 통과 뒤에도 스크린샷을 보고 주요 문제 세 가지를 고치는 검토를 최대 세 차례 수행하도록 한다. 기계적 검사에서 금지 패턴을 찾지 못했다는 사실과 화면의 품질은 별개다. README의 v2.1은 앱 화면에 별도 흐름과 `inspect.mjs --app`을 안내한다.
+
+납품 적용 제안: 대상 사용자, 실제 문구와 목적을 먼저 전달하고, 최종 화면의 가독성, 버튼 동작과 상태별 표시를 별도로 확인한다. 다른 자원의 기존 날짜와 라이선스까지 재검증한 것은 아니므로 문서의 `verified_at`은 유지한다.
+
+### 컴포넌트와 글꼴 탐색 및 출처 인계
 
 컴포넌트와 글꼴을 찾는 경로도 구분한다. 다음 세 자원의 역할과 제공 방식은 2026-10-21 공식 페이지를 대조했다. 기존 자원의 개수와 라이선스를 다시 검증한 것은 아니므로 문서의 기존 `verified_at`은 유지한다.
 
@@ -83,7 +95,7 @@ Impeccable은 지침과 결정적 검사를 묶은 사례다. Paul Bakaus가 Ant
 - Velora UI README의 출처 표기 불필요(no attribution required) 안내와 별개로 MIT LICENSE 원문은 소프트웨어의 모든 복제물 또는 실질적인 부분에 저작권 고지와 허가 고지를 포함하라는 조건을 둔다. 화면의 출처 표기와 소스, 고지 파일의 고지를 구분하고 후자는 지우지 않는다.
 - 원본 아이콘 세트의 라이선스가 고지 보존을 요구하면 파생 프로젝트의 LICENSE만으로 고지가 끝나지 않는다. AnimateIcons를 shadcn으로 받았다면 Lucide(ISC), Feather(MIT), Hugeicons(MIT)의 고지까지 고지 파일에 옮긴다.
 - LICENSE 파일이 없는 SHIUI는 선언된 ISC와 받은 커밋을 기록하거나 작성자에게 확인하고, 바닥글에 들어 있는 견본 저작권 문구(© 2026 SHIUI Press)도 고객 표기로 바꾼다. Tween UI 문서가 납품 전에 바꾸라고 안내하는 샘플 이미지처럼 데모용 사진은 고객 자산으로 교체한다.
-- 스킬의 라이선스와 스킬이 쓰게 하는 패키지의 라이선스는 별개다. Taste Skill 기본 스킬은 고정(pin)과 스크럽(scrub) 같은 스크롤 연출에 GSAP과 ScrollTrigger 코드 골격을 제시하는데, GSAP은 MIT가 아닌 Webflow의 Standard No Charge GSAP License를 따른다. 이 라이선스는 상업적 사용을 허용하지만 서면 동의 없이 Webflow의 시각적 애니메이션 제작 기능과 경쟁하는 노코드 도구에 쓰는 것은 금지한다(2025-05-30 개정판 기준). 컴포넌트 저장소가 MIT여도 Tween UI처럼 gsap을 의존성으로 들이는 항목은 이 조건을 함께 따른다.
+- 스킬의 라이선스와 스킬이 쓰게 하는 패키지의 라이선스는 별개다. 2026-10-12 확인한 이전 Taste Skill 기본 스킬은 고정(pin)과 스크럽(scrub) 같은 스크롤 연출에 GSAP과 ScrollTrigger 코드 골격을 제시하는데, GSAP은 MIT가 아닌 Webflow의 Standard No Charge GSAP License를 따른다. 이 라이선스는 상업적 사용을 허용하지만 서면 동의 없이 Webflow의 시각적 애니메이션 제작 기능과 경쟁하는 노코드 도구에 쓰는 것은 금지한다(2025-05-30 개정판 기준). 컴포넌트 저장소가 MIT여도 Tween UI처럼 gsap을 의존성으로 들이는 항목은 이 조건을 함께 따른다.
 - 카탈로그 저장소의 라이선스와 그 안에 재현된 회사 디자인 시스템의 권리도 별개다. oh-my-design 저장소가 MIT여도 README는 레퍼런스가 각 회사에 속한다고 밝히므로, MIT를 그 디자인 시스템의 이용 허락으로 읽지 않는다. 고객 사이트에는 카탈로그 항목을 절 구성과 작성 방식의 참고로만 쓰고, DESIGN.md는 고객의 로고, 색과 글꼴 같은 자체 브랜드 자산에서 새로 작성한다. 공공 서비스라면 [[Service-Design-Principles#디자인 시스템|KRDS]] 같은 공개 디자인 시스템이 출발점 후보다. 저장소 안의 모든 파일이 MIT인 것도 아니다. 스킬 번들의 인라인 라이브러리 라이선스 목록은 GSAP 3.15.0 파일을 GSAP Standard License로 표시하므로, 생성한 HTML에 이 파일이 들어가면 앞 항목의 GSAP 조건을 함께 확인한다.
 
 ## 내보내기와 구현 인계
@@ -166,9 +178,10 @@ HyperFrames는 장면, 시간과 움직임을 HTML 프로젝트로 관리하며 
 - [GitHub Copilot app — GitHub](https://github.com/features/ai/github-app)
 - [Impeccable Kills AI Design Slop — Better Stack](https://www.youtube.com/watch?v=J1RYxganY20) — 2026-10-10 업로드, 규칙 수 61개는 당시 README의 59개와 다르며 효과 주장의 근거로 사용하지 않음
 - [Taste Skill — tasteskill.dev](https://tasteskill.dev)
-- [Leonxlnx/taste-skill — GitHub](https://github.com/Leonxlnx/taste-skill)
-- [design-taste-frontend SKILL.md — GitHub, Leonxlnx/taste-skill](https://github.com/Leonxlnx/taste-skill/blob/main/skills/taste-skill/SKILL.md) — GSAP 코드 골격과 아이콘 허용 목록
-- [redesign-existing-projects SKILL.md — GitHub, Leonxlnx/taste-skill](https://github.com/Leonxlnx/taste-skill/blob/main/skills/redesign-skill/SKILL.md)
+- [Leonxlnx/taste-skill — GitHub](https://github.com/Leonxlnx/taste-skill) — 2026-10-23 README의 v2/v2.1 흐름, 실행 요건과 기존 스킬 이동 확인
+- [design-taste-frontend SKILL.md — GitHub, Leonxlnx/taste-skill](https://github.com/Leonxlnx/taste-skill/blob/main/skills/taste-skill/SKILL.md) — 2026-10-23 v2의 lint, 브라우저 검사와 스크린샷 검토 지시 확인
+- [이전 design-taste-frontend 보존본 — GitHub, Leonxlnx/taste-skill](https://github.com/Leonxlnx/taste-skill/blob/2b44c81bbe36ac8a8a6bdd1c9ff593f28b8728f4/skills/taste-skill-v2-experimental/SKILL.md) — 이전 아이콘 허용 목록과 GSAP/ScrollTrigger 코드 골격의 근거
+- [redesign-existing-projects SKILL.md 보존본 — GitHub, Leonxlnx/taste-skill](https://github.com/Leonxlnx/taste-skill/blob/2b44c81bbe36ac8a8a6bdd1c9ff593f28b8728f4/skills/redesign-skill/SKILL.md) — 이전 redesign 절차와 아이콘 선택의 근거
 - [GSAP, Standard No Charge GSAP License](https://gsap.com/standard-license) — 2025-05-30 개정판
 - [ColorlibHQ/velora-ui — GitHub](https://github.com/ColorlibHQ/velora-ui)
 - [Pricing — Velora UI](https://velora.colorlib.com/pricing) — Free는 MIT, 출시 예정 Pro는 Commercial로 표시
