@@ -21,6 +21,7 @@ Software 3.0 패러다임, LLM과 에이전트, 하네스, 평가, 조직 전환
 - [[eval|평가, 신뢰성, 캘리브레이션]] — LLM 평가 전략, Abstention(모른다고 말하는 능력), 환각 유형과 검증, 평가 주도 개발(EDD), 루브릭과 점수 게이트, LLM 판정기, 골든셋과 배포 관문, 서빙 모델 드리프트 감시
 
 ## 세부 학습
+- [x] [[Deep-Learning-Foundations-and-Practice|딥러닝 기초와 실습]] — 개념과 과업의 연결, Keras 학습과 평가, 교재 범위와 실행 검증의 구분
 - [x] [[Multimodal-Video-Retrieval|멀티모달 영상 검색]] — 시간 구간 근거, 색인과 생성 분리, 모델과 API 지원 경계
 - [x] [[Synthetic-Vision-Data-Evaluation|합성 비전 데이터 평가]] — 희소 조건 보충, 생성 결과 검수와 실제 인식 성능의 분리
 - [x] [[Model-Feedback-Loop-and-Validation|모델 피드백 루프와 검증]] — 실험 결과 환류, 재학습과 배포, shadow 비교의 한계

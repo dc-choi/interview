@@ -77,7 +77,21 @@ SPIVA scorecard에서는 여러 시장과 기간에 걸쳐 다수의 액티브 �
 
 계획을 비교할 때는 연금 등 다른 소득을 뺀 부족액, 명목 금액과 현재 구매력, 인출 기간, 자산배분, 세후 현금과 지출 조정 가능성을 나눠 본다. 위 예시는 원리를 설명하는 계산이며 특정 인출률이나 상품을 권하는 결과가 아니다. 2026-10-10 인출 규칙과 수익률 순서 위험을 대조한 부분 보강이다.
 
+## 9. 배당 ETF는 분배금과 총수익을 나눠 평가한다
+
+분배 주기는 현금이 들어오는 일정이고, 분배율은 투자 성과 전체가 아니다. ETF의 수익에는 분배금과 가격 변화가 함께 작용하며, 보유 자산 가격이 떨어지거나 배당 지급이 줄 수도 있다. 미국 SEC의 ETF 안내도 배당, 자본이득 분배와 시장가격 변화를 구분한다. 이 안내의 미국 세금 설명을 한국 계좌에 그대로 적용하지 않는다.
+
+추가 입출금과 재투자가 없고 세금과 거래비용을 생략한 가상 예로, 100에 산 ETF가 분배금 5를 지급하고 기말 가격이 90이면 보유기간 총수익률은 `(90 - 100 + 5) / 100 = -5%`다. 현금 5를 받은 사실만으로 자산이 5% 늘었다고 볼 수 없다.
+
+배당수익률의 분모도 확인한다. 연간 주당 배당금이 4로 같아도 주가가 100에서 80으로 떨어지면 배당수익률은 4%에서 5%로 오른다. 이는 기업의 배당 지급 능력이 개선됐다는 증거가 아니며, 향후 배당 유지 여부는 별도 문제다.
+
+액티브 운용의 조정 권한은 초과수익의 보장이 아니다. 특정 종목의 편입과 편출 뒤 성과나 다른 전략의 성공 사례만으로 새 ETF의 장기 초과수익률을 정하지 않는다. 같은 기간과 분배금 재투자 기준, 비용과 위험을 맞춰 비교한다. 미래 수익률을 가정한 적립 계산은 가정의 효과를 보여줄 뿐 운용 능력을 검증하지 않는다.
+
+2026-10-22 SEC의 ETF 수익 구성, 지급 변동과 손실 위험을 대조한 부분 보강이다. 특정 신상품의 상장, 구성 종목, 예상 초과수익이나 세제 혜택은 확인 범위에 포함하지 않았다.
+
 ## 출처
+
+- [Exchange-Traded Funds (ETFs) — Investor.gov](https://www.investor.gov/introduction-investing/investing-basics/investment-products/mutual-funds-and-exchange-traded-2) — 분배금과 가격 변화, 지급 변동과 원금 손실 위험.
 
 - [The 4% Rule: How Much Can You Spend in Retirement? — Charles Schwab](https://www.schwab.com/learn/story/beyond-4-rule-how-much-can-you-spend-retirement)
 - [What Is Sequence-of-Returns Risk? — Charles Schwab](https://www.schwab.com/learn/story/timing-matters-understanding-sequence-returns-risk)

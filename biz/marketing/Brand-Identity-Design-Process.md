@@ -77,6 +77,20 @@ Design Council의 Double Diamond는 문제를 넓게 탐색하고 좁혀 정의�
 
 영상의 리브랜딩 사례는 22:31 시점에 사업 효과가 아직 평가되지 않았다고 설명한다. 사례의 작업 과정과 매출 증가의 증거를 혼동하지 않는다. 자막을 바탕으로 정리했으며 화면 속 디자인 파일과 실제 배포 결과는 직접 확인하지 않았다.
 
+## 생산 역량과 브랜드 무형자산을 구분한다
+
+제품을 생산하는 능력과 고객이 그 제품을 구별하고 선택하게 만드는 자산은 겹치지만 같은 것은 아니다. 제조 가치사슬에는 노동과 설비뿐 아니라 기술, 디자인과 브랜드 같은 무형자산도 기여한다. 생산 국가만으로 브랜드의 소유권이나 가치의 귀속을 판단하지 않는다.
+
+WIPO의 2017년 연구는 제조 가치사슬의 무형자산을 분석하며 커피 시장에서 브랜드 평판과 이미지가 차별화에 기여하는 사례를 다뤘다. 이는 특정 지역이 지식재산을 독점한다거나 시간이 지나면 신생 브랜드가 명품이 된다는 증거는 아니다.
+
+이 구분을 브랜드 설계에 적용하면 다음 세 가지를 따로 확인할 수 있다. 아래는 연구의 개념을 적용한 조사 질문이다.
+
+- **생산과 제공:** 어떤 품질과 납기, 지원을 반복해서 제공할 수 있는가?
+- **차별화:** 고객이 어떤 이름, 디자인, 기술과 경험을 식별하고 선택 이유로 드는가?
+- **권리와 통제:** 그 자산의 권리자는 누구이며 계약이 끝나도 사용할 수 있는가? 구체적인 상표 확인은 [[Trademark-and-Brand-Clearance]]를 따른다.
+
+2026-10-22 무형자산의 범위와 커피 사례를 WIPO의 연구 발표와 대조했다. 개별 브랜드 가치나 국가별 명품 생산 비중을 검증한 것은 아니다.
+
 ## 확인 질문
 
 - 바꾸려는 것은 고객의 어떤 문제이며, 현재 근거는 무엇인가?
@@ -86,6 +100,7 @@ Design Council의 Double Diamond는 문제를 넓게 탐색하고 좁혀 정의�
 
 ## 출처
 
+- [New WIPO Study Gives First-Ever Figures on Value of Intangible Capital in Manufactured Goods — WIPO](https://www.wipo.int/pressroom/en/articles/2017/article_0012.html) — 2017년 연구의 기술, 디자인, 브랜드 구분과 커피 시장 사례.
 - [Jobs to Be Done Theory — Christensen Institute](https://www.christenseninstitute.org/theory/jobs-to-be-done/) — 선택의 기능적, 감정적, 사회적 차원과 상황 변화, 2026-10-22 확인.
 - [YouTube, Matthew Encina, Building a Brand – Redesigning a Business Start to Finish](https://www.youtube.com/watch?v=ZvxpaklnMXI)
 

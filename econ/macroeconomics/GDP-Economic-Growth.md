@@ -39,6 +39,16 @@ GDP = C + I + G + (X − M)
 
 세 접근은 이론상 같은 활동을 재지만 발표 통계는 조사, 행정자료와 추정 모형을 결합한 **추계치**다. 속보와 잠정치는 자료가 더 들어오면 개정되고, 기준년 개편과 포괄범위, 분류와 추계방법 개선으로 과거 시계열도 바뀔 수 있다. 따라서 수치 비교에는 발표 시점과 통계 빈티지를 함께 기록한다.
 
+### 금융자산 매입과 이전소득을 새 생산과 구분한다
+
+GDP의 투자 `I`는 일상에서 말하는 주식과 채권 매입액이 아니다. 새 설비, 건설과 재고 등 생산에 관련된 투자를 가리킨다. 금융자산 거래 자체와 별도로 제공되는 중개 서비스의 생산도 구분해야 한다.
+
+정부의 현금 이전은 그 지급 자체로 새 재화나 서비스를 구입한 것이 아니므로 `G`에 그대로 더하지 않는다. 이전받은 돈으로 최종 재화나 서비스를 소비하면 그 소비를 해당 지출 항목에서 측정한다. 지급액과 소비액을 모두 새 생산으로 더하면 중복 계산이 된다.
+
+따라서 개인의 자산소득과 이전소득이 커지는 상황을 경제 전체의 생산능력 증가와 동일시하지 않는다. 누가 소득을 받는지와 실제 재화와 서비스를 누가 얼마나 생산하는지는 나눠 분석해야 한다. 이 구분만으로 정부가 국민의 부를 제한하려는 의도를 갖는다고 추론할 수도 없다.
+
+2026-10-22 OpenStax의 GDP 지출 항목 설명에서 금융자산 거래와 이전지급의 제외를 대조했다. 특정 정부 정책의 목적이나 노동공급 효과를 검증한 것은 아니다.
+
 ## 3. 명목 vs 실질
 
 | 구분 | 가격 기준 | 쓰임 |
@@ -115,6 +125,7 @@ GDP는 강력하지만 모든 것을 담지는 못한다.
 
 ## 출처
 
+- [OpenStax — Principles of Economics 3e, Measuring the Size of the Economy: Gross Domestic Product](https://openstax.org/books/principles-economics-3e/pages/19-1-measuring-the-size-of-the-economy-gross-domestic-product) — 금융자산 매입과 GDP 투자, 정부 이전지급의 구분.
 - [United Nations — System of National Accounts 2025, 7.90-7.92](https://unstats.un.org/unsd/nationalaccount/docs/2025_SNA_Pre-edit.pdf)
 - [Eurostat — Gross domestic product (GDP) and main components](https://ec.europa.eu/eurostat/cache/metadata/en/nama_10_gdp_esms.htm)
 - [한국은행 — 2024년도 연차보고서, 국민계정 2020년 기준년 개편 결과](https://www.bok.or.kr/portal/bbs/P0000596/view.do?menuNo=200071&nttId=10090587)
