@@ -21,6 +21,7 @@ aliases: ["웹&네트워크(Web&Network)", "Web & Network"]
 
 ## 추가 주제
 
+- [[Satellite-Direct-to-Device|위성 직접 연결]] — LTE와 NTN 방식, 도플러와 서비스 지원 조건
 - [[WebGPU-Cross-Runtime|WebGPU 코드 공유]]
 - [[Cross-Platform-Keyboard|플랫폼별 키보드 입력]]
 - [[URL-Embedded-Documents|URL에 담긴 문서]]

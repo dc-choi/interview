@@ -10,6 +10,7 @@ aliases: ["Network"]
 OSI 7계층과 캡슐화, IP 헤더, 스위치와 라우팅, TLS, 패킷 캡처, Wi-Fi 센싱, 브라우저 URL 입력부터 렌더링까지.
 
 ## 목차
+- [x] [[Satellite-Direct-to-Device|위성 직접 연결]] — 기존 LTE와 NTN, 지연과 도플러, 단말과 서비스 조건
 - [x] [[HTTPS-TLS|HTTPS / TLS Handshake]]
 - [x] [[OSI-7-Layer|OSI 7계층 (osi-layers/ 서브폴더) — 계층별 상세 (L1/L2 MAC과 프레임, L2 스위칭, L3 IP와 라우팅, ARP, ICMP, L4 TCP/UDP, 소켓 식별과 역다중화, 메시지 경계와 프레이밍, L5/6/7), TCP/IP 4계층 대응과 역사, Internet vs Ethernet]]
 - [x] [[Network-Encapsulation|캡슐화와 데이터 단위 (프로토콜과 계층, 라우터 홉의 재캡슐화, 소켓 스트림, 세그먼트, 패킷, 프레임, MTU/MSS, 단편화, DPI)]]
