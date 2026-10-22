@@ -73,7 +73,9 @@ Instruction Hierarchy(OpenAI, 2024)는 시스템 메시지, 사용자 메시지,
 - **로그의 원문**: 마스킹은 모델 입력과 응답에만 적용된다. Model invocation logging의 `input`과 trace의 `match`에는 원래 PII 값이 남으므로 로그 쪽 보호를 따로 둔다
 - **탐지 모델의 변화**: 정책은 AWS가 자동으로 갱신하는 기반 모델로 동작하고, 배포용 guardrail 버전은 설정의 스냅샷이다. 버전을 고정해도 같은 시험 세트로 탐지율과 과잉 차단을 다시 잰다(운영 해석)
 
-이런 관리형 필터도 아래 분류에서 주입 성공률을 낮추는 통제에 속하며, 피해 반경을 묶는 권한 통제를 대신하지 않는다. 이 절은 2026-10-14 Bedrock Guardrails 공식 문서만 대조한 범위이며 다른 항목은 재검증하지 않아 기존 `verified_at`을 유지한다.
+2026-10-23 추가 대조한 `InvokeModelWithResponseStream`의 스트리밍 경계도 확인한다. 기본 동기 모드는 응답 청크를 버퍼에 두고 검사한 뒤 전달한다. 비동기 모드는 청크를 먼저 전달하면서 검사하므로 탐지 전의 부적절한 내용이 사용자에게 도달할 수 있고, 탐지 뒤에는 후속 청크를 차단한다. 비동기 모드에서는 민감 정보 마스킹을 지원하지 않는다. 이미 전달한 내용을 후속 차단으로 회수할 수 없다는 점을 응답 경로 설계에 반영한다. 동기 검사도 탐지 오류가 없다는 보장은 아니다. 이 차이는 공식 스트리밍 안내로 확인했으며 실제 API 호출은 시험하지 않았다.
+
+이런 관리형 필터도 아래 분류에서 주입 성공률을 낮추는 통제에 속하며, 피해 반경을 묶는 권한 통제를 대신하지 않는다. 정책별 검사 범위는 2026-10-14, 스트리밍 경계는 2026-10-23 공식 문서로 대조했다. 다른 항목은 재검증하지 않아 기존 `verified_at`을 유지한다.
 
 ### 적응형 공격과 피해 반경 제한
 
@@ -232,6 +234,8 @@ RAG의 벡터/임베딩이 생성, 저장, 검색되는 방식의 취약점. RAG
 - [Amazon Bedrock User Guide, Languages supported by Amazon Bedrock Guardrails](https://docs.aws.amazon.com/bedrock/latest/userguide/guardrails-supported-languages.html)
 - [Amazon Bedrock User Guide, Distribute guardrail inference across AWS Regions](https://docs.aws.amazon.com/bedrock/latest/userguide/guardrails-cross-region.html)
 - [Amazon Bedrock User Guide, Deploy your guardrail](https://docs.aws.amazon.com/bedrock/latest/userguide/guardrails-deploy.html)
+- [Amazon Bedrock User Guide, Configure streaming response behavior to filter content](https://docs.aws.amazon.com/bedrock/latest/userguide/guardrails-streaming.html) — 2026-10-23 동기 검사와 비동기 마스킹 제한 대조
+- [Guardrails for Amazon Bedrock: AI 애플리케이션에 책임감 심어주기 — Amazon Web Services Korea](https://www.youtube.com/watch?v=dti5EHgz5oo) — 2024년 공개 강연. 개인정보 필터와 응답 전달 경계를 점검한 계기이며 과거 언어와 모델 제한은 현재 사실로 사용하지 않음
 - [Amazon Bedrock User Guide, Enforce the use of specific guardrails in model inference requests](https://docs.aws.amazon.com/bedrock/latest/userguide/guardrails-permissions-id.html)
 - [Amazon Bedrock User Guide, Model compatibility](https://docs.aws.amazon.com/bedrock/latest/userguide/bedrock-marketplace-model-reference.html) (Bedrock Marketplace 모델의 ApplyGuardrail 안내)
 - [Amazon Bedrock Guardrails: Securing Open-Weight Models in GenAI Applications — Amazon Web Services](https://www.youtube.com/watch?v=typL6MOLpf0)

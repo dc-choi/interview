@@ -11,6 +11,7 @@ aliases: ["Interview Format Guides", "면접 형식별 가이드", "형식별 �
 
 ## 기술 면접 형식
 
+- [[Take-Home-Assignment-Evidence|과제 전형의 위험 검증과 기술 선택 근거]]
 - [[CS-Network-Interview|CS 네트워크 면접 — 본질 질문과 응용 시나리오, 꼬꼬무 대비]]
 - [[Live-Coding-Process|라이브 코딩, 시스템 설계 면접 프로세스 — 60분 5단계]]
 - [[System-Design-Practice-Topics|시스템 설계 연습 주제 카탈로그 — Level 1~4, 3주 플랜]]

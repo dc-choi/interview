@@ -47,6 +47,21 @@ aliases: ["Agent Execution Isolation", "에이전트 실행 격리", "MXC"]
 
 통제된 개념 증명이며 널리 배포된 특정 모델이 침해됐다는 근거는 아니다. 학습과 미세조정 데이터의 오염 일반은 [[LLM-Application-Security#LLM04 데이터 및 모델 오염 (Poisoning)|LLM 데이터 및 모델 오염]]에서 다룬다.
 
+## 실행 위치와 데이터 전송 범위를 구분한다
+
+고객 VPC에서 에이전트를 실행해도 관리 서비스, 모델 제공자와 관측 시스템으로 보내는 데이터는 별도로 확인한다. 실행 프로세스의 위치만으로 모든 데이터가 VPC 안에 남는다고 결론짓지 않는다.
+
+2026-10-23 확인한 Ona 개인정보 처리방침은 고객이 호스팅하는 환경의 컴퓨팅 자원을 고객 인프라에 두되, 관리 목적으로 일부 메타데이터와 상호작용을 AWS us-east-1의 관리 영역으로 전송한다고 설명한다. 여기에는 기술 로그, 환경 식별자와 상태, AI 사용 시 화면에 결과를 표시하는 데 필요한 프롬프트와 출력이 포함될 수 있다. 선택한 LLM 제공자와 연결하거나 AI 기능을 끌 수 있다는 설명도 있다. 따라서 고객 VPC 내부 실행과 관리 영역으로의 전송은 함께 존재할 수 있다. 특정 계약이나 배포의 실제 통신을 측정한 결과는 아니다.
+
+다음은 이 구분을 적용한 설계 점검 제안이다.
+
+- 코드 실행, 관리 API, 모델 추론, 로그 저장의 위치와 전송 항목을 각각 그린다.
+- 민감한 문맥이 프롬프트, 도구 출력이나 로그에 복제되는지 확인한다.
+- 네트워크 허용 목록과 자격 증명 범위를 정하고, 차단해야 할 목적지로의 요청이 실제 거절되는지 시험한다.
+- 자동 변경의 실행 완료, 테스트 통과와 사람이 승인한 반영을 별도 상태로 관리한다.
+
+영상의 자동화 비율과 고객 성공 사례를 다른 저장소의 기대 성능이나 규정 준수 보장으로 사용하지 않는다. 이 절만 공식 정책과 대조했으므로 기존 항목의 `verified_at`은 유지한다.
+
 ## 출처
 
 - [Microsoft eXecution Container — Microsoft](https://github.com/microsoft/mxc)
@@ -54,6 +69,9 @@ aliases: ["Agent Execution Isolation", "에이전트 실행 격리", "MXC"]
 - [AI agents aren’t ‘going rogue.’ Frontier labs are skipping security basics. — CSO](https://www.csoonline.com/article/4234854/ai-agents-arent-going-rogue-frontier-labs-are-skipping-security-basics.html) (제공 발췌 식별, 사고 기술 검증 근거로 사용하지 않음)
 - [How abliterated models can get you pwned — ProjectDiscovery, Prince Chaddha](https://projectdiscovery.io/research/how-abliterated-models-can-get-you-pwned) — 2026-10-06. 2026-10-19 학습 조건, 트리거 평가, 페이로드와 권고를 대조
 - [AI Has a Secret Phrase That Steals Keys — YouTube, Better Stack](https://www.youtube.com/watch?v=7iUl5242ww8) — 2026-10-11 공개 영상. 백도어 절의 계기이며 사실관계는 ProjectDiscovery 원문으로 대조
+
+- [Privacy policy — Ona](https://ona.com/legal/privacy-policy) — 2026-10-23 고객 호스팅 환경과 관리 영역 전송 범위 대조
+- [Ona’s Approach to Running Background Agents Inside your AWS VPC — Amazon Web Services](https://www.youtube.com/watch?v=F2xdGxJbA2E) — 2026-03-13 공개 발표, 학습 계기이며 고객 수치와 보안 보장은 일반화하지 않음
 
 ## 관련 문서
 
