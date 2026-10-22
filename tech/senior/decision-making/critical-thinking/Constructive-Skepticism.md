@@ -22,6 +22,18 @@ aliases: ["Evidence Based Verification", "근거 기반 검증", "반증 가능�
 
 근거가 부족하면 모른다는 상태를 유지하고, 가설과 실험으로 필요한 증거를 만든다. 반대로 근거가 있어도 수집 방식, 표본, 비교 조건과 만료 조건을 확인한다. 개인과 권위를 의심하는 태도가 아니라 주장을 검증하는 절차다. 인지 편향의 자기 점검은 [[Cognitive-Biases-Programming|프로그래밍 인지 편향]], 수치 해석은 [[Data-Driven-Decision|데이터 기반 의사결정]]을 따른다.
 
+## 반복해서 본 주장과 독립된 근거를 구분한다
+
+진실 착각 효과(illusory truth effect)는 반복해서 접한 문장을 새로운 문장보다 더 참이라고 평가하는 현상이다. 2015년 실험에서는 관련 정답을 알고 있는 참여자에게도 이 효과가 나타났다. 지식이 있어도 판단 순간에 그 지식을 활용하지 않을 수 있다는 결과이며, 모든 반복 주장을 믿게 된다는 뜻은 아니다.
+
+2020년 논문의 네 실험에서는 처음 접할 때 정확성에 주의를 기울여 참과 거짓을 평가하게 한 조건에서 이후의 효과가 사라졌지만, 관련 지식을 가진 경우에 한정됐다. 단순히 비판적으로 생각하라고 다짐하면 모르는 사실까지 판별할 수 있다는 근거는 아니다.
+
+설계 검토와 기술 자료 조사에는 다음과 같이 적용할 수 있다. 아래 절차 자체를 해당 연구가 검증한 것은 아니다.
+
+1. 같은 주장을 인용한 글 여러 개가 하나의 원자료를 재전달하는지 확인한다. 반복 노출 횟수를 독립 검증 횟수로 세지 않는다.
+2. 익숙한 주장이라도 공식 명세, 현재 소스나 재현 결과와 대조한다. 필요한 지식이 없으면 확인 전까지 미확정으로 둔다.
+3. 판단 기록에 주장과 출처뿐 아니라 확인한 조건을 적는다. 익숙하다는 느낌과 실제로 검증했다는 기록을 분리한다.
+
 ## 결론의 크기를 증거에 맞춘다
 
 근거의 유무만 따지면 작은 신호로 큰 결론을 내리기 쉽다. 모든 증거에는 **관측 범위**가 있고, 결론은 그 범위를 넘어설 수 없다.
@@ -109,6 +121,10 @@ aliases: ["Evidence Based Verification", "근거 기반 검증", "반증 가능�
 
 ## 출처
 
+2026-10-23 반복 노출과 정확성 판단 절은 두 원 논문의 공개 초록을 대조했다. 전체 실험 자료를 재분석하거나 기술 검토 절차의 효과를 검증한 것은 아니다.
+
+- [Knowledge does not protect against illusory truth — Fazio 외, Journal of Experimental Psychology: General](https://pubmed.ncbi.nlm.nih.gov/26301795/)
+- [An initial accuracy focus prevents illusory truth — Brashier 외, Cognition](https://pubmed.ncbi.nlm.nih.gov/31473395/)
 - [Google SRE Book — Monitoring Distributed Systems](https://sre.google/sre-book/monitoring-distributed-systems/)
 - [Google SRE Book — Effective Troubleshooting](https://sre.google/sre-book/effective-troubleshooting/)
 - [Google SRE Workbook — Canarying Releases](https://sre.google/workbook/canarying-releases/)
