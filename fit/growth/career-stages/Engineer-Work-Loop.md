@@ -76,6 +76,12 @@ aliases: ["Engineer Work Loop", "엔지니어 업무 성장 루프"]
 - [ ] 남은 위험, 후속 행동과 책임 경계를 기록했다.
 - [ ] 팀의 승인된 기록에 필요한 결정과 상태를 갱신했다.
 
+## 직급명보다 맡은 책임의 범위를 확인한다
+
+SFIA 9는 책임 수준을 자율성, 영향력과 복잡성 등으로 설명한다. Level 4는 명확한 책임 경계와 일반적 지침 안에서 자율적으로 일하고 필요하면 팀의 작업을 계획하거나 위임한다. Level 5는 더 포괄적인 방향 아래 중요한 결과를 분석부터 실행과 평가까지 책임지며, 합의한 운영과 예산 조건 안에서 과제를 정의한다.
+
+이를 업무 점검에 적용하면 다음 단계의 준비는 직급의 어원보다 실제로 맡을 판단, 조율과 결과 검증의 범위로 확인할 수 있다. 확대할 책임과 결정권, 지원을 먼저 합의하고 관찰 가능한 결과를 남긴다. SFIA 수준을 국내의 대리나 과장에 일대일로 대응시키거나, 상위 역할의 일을 하면 승진이 보장된다고 해석하지 않는다. 이는 책임 수준을 활용한 점검안이며 특정 회사의 승진 규정이 아니다.
+
 ## 역할별 설명 점검
 
 | 대상 | 우선 설명할 내용 |
@@ -111,6 +117,8 @@ aliases: ["Engineer Work Loop", "엔지니어 업무 성장 루프"]
 
 - [GOV.UK Service Manual, Learning about users and their needs](https://www.gov.uk/service-manual/user-research/start-by-learning-user-needs) — 사용자 필요와 해결책의 구분, 조사 근거와 가정의 구분
 - [Google Engineering Practices, What to look for in a code review](https://google.github.io/eng-practices/review/reviewer/looking-for.html) — 복잡성, 현재 요구, 이해되지 않는 코드와 검토 전문성
+- [SFIA 9, Level 4 - Enable](https://sfia-online.org/en/sfia-9/responsibilities/level-4) — 책임 경계, 자율성과 팀 작업의 계획
+- [SFIA 9, Level 5 - Ensure, advise](https://sfia-online.org/en/sfia-9/responsibilities/level-5) — 분석부터 평가까지의 결과 책임과 합의한 운영 조건
 
 ## 관련 문서
 

@@ -34,6 +34,14 @@ C 배열은 같은 타입 원소를 연속 할당하므로 i번째 원소의 주
 
 JavaScript `Array`는 언어 수준의 dynamic collection이고 engine이 elements kind와 sparsity에 따라 표현을 바꿀 수 있다. 일반 array가 항상 한 형태의 contiguous memory라는 전제로 성능을 단정하지 않는다. [[V8-Array-Internals]]
 
+## 같은 O(n) 순회도 실행 시간은 다르다
+
+배열과 연결 리스트를 한 번씩 순회하면 둘 다 O(n)이지만, 이 표기는 메모리 접근의 상수 비용을 설명하지 않는다. 연속 배열은 같은 cache line에 들어온 이웃 원소를 재사용하기 쉽다. 연결 리스트는 node가 흩어져 있으면 지역성이 나쁘고 다음 주소를 현재 node의 pointer에서 읽어야 한다. Linux 커널 문서도 연결 리스트의 낮은 데이터 지역성을 성능 선택의 주의점으로 든다.
+
+Intel의 캐시 설명에서 사용하는 64바이트 cache line과 4바이트 정수를 가정하면 한 줄에 정수 16개가 들어간다. 배열 시작이 cache line 경계에 맞고 원소가 연속일 때의 예시다. 임의 위치의 첫 원소를 읽으면 다음 15개가 언제나 함께 들어온다는 보장은 아니다. cache line 크기와 접근 지연을 모든 CPU의 고정값으로 외우지 않는다.
+
+성능 비교에서는 원소 수와 배치, 객체 참조의 역참조, 캐시 상태와 순회 외 연산을 함께 맞춘다. 이 문서는 벤치마크를 실행하지 않았으므로 특정 배수의 우위를 제시하지 않는다. 중간 편집이 잦거나 node 위치를 이미 아는 경우의 선택은 [[Linear-Data-Structures-Linked-List|연결 리스트]]의 비용과 함께 판단한다.
+
 ## 출처
 
 - 인프런, 감자 강사, [배열](https://www.inflearn.com/courses/lecture?courseId=328971&unitId=115670)
@@ -47,6 +55,8 @@ JavaScript `Array`는 언어 수준의 dynamic collection이고 engine이 elemen
 - [cppreference, C member access operators](https://en.cppreference.com/w/c/language/operator_member_access)
 - [Python 3.14 FAQ, How are lists implemented in CPython?](https://docs.python.org/3.14/faq/design.html#how-are-lists-implemented-in-cpython)
 - [The Java Tutorials, Arrays](https://docs.oracle.com/javase/tutorial/java/nutsandbolts/arrays.html)
+- [Linux Kernel Documentation, Linked Lists in Linux](https://docs.kernel.org/core-api/list.html) — 데이터 지역성과 자료구조 선택
+- [Loop Optimizations Where Blocks are Required — Intel](https://www.intel.com/content/www/us/en/developer/articles/technical/loop-optimizations-where-blocks-are-required.html) — 캐시 계층과 공간 지역성 절 대조
 
 ## 관련 문서
 

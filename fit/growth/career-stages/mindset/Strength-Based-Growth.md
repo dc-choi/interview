@@ -39,6 +39,14 @@ aliases: ["Strength Based Growth", "강점 기반 성장", "약점 보완 vs 강
 
 실무 적용안은 강점을 쓸 과제와 최소 수준까지 보완할 역량을 구분하는 것이다. 예를 들어 설명 능력은 설계 문서 작성에 활용하되, 담당 서비스의 인증과 인가를 이해하지 못하는 문제는 별도로 보완한다. 진단 점수보다 실제 과제의 결과와 피드백으로 조합을 조정한다. 이는 위 연구가 직접 검증한 개발자 학습 절차는 아니다.
 
+## 강점을 쓸 문제와 반복 잡무를 구분한다
+
+여러 강점을 나열하는 대신 해결할 문제 하나에 연결해 볼 수 있다. 설명 능력과 문서 작성 능력을 온보딩 개선에 쓰는 식이다. 다만 남들이 피하는 일을 계속 떠맡는 것을 성장의 보장으로 삼지 않는다.
+
+Google SRE의 toil은 단순히 싫거나 번거로운 일이 아니다. 운영에 묶인 수동적이고 반복적이며 자동화 가능한 작업, 지속적인 개선을 남기지 않고 서비스 규모에 따라 늘어나는 작업을 가리킨다. 번거로워도 경보 구성을 정리해 이후 부담을 줄이는 일은 지속적인 가치가 있을 수 있다.
+
+이를 커리어에 적용하는 점검안은 과제의 목적, 범위와 우선순위를 합의하고 결과와 재사용 가능한 개선을 남기는 것이다. 같은 요청이 계속 돌아오면 혼자 처리하는 양보다 원인 제거, 절차 개선과 인계 가능성을 살핀다. 이는 SRE의 운영 원칙에서 도출한 적용안이며 승진이나 시장 가치 상승을 입증한 공식이 아니다.
+
 ## 체크포인트
 
 - 약점에만 집중해 자존감을 깎고 있지 않은가
@@ -51,6 +59,7 @@ aliases: ["Strength Based Growth", "강점 기반 성장", "약점 보완 vs 강
 - [Strengths-based positive psychology interventions: a randomized placebo-controlled online trial on long-term effects for a signature strengths- vs. a lesser strengths-intervention — Frontiers in Psychology, Proyer 외 (2015)](https://www.frontiersin.org/journals/psychology/articles/10.3389/fpsyg.2015.00456/full)
 - 강점 기반 성장과 강점찾기 — 개인 블로그 회고
 - [재능이라는 허상 — 곽지욱](https://www.gwagjiug.com/blog/illusion_of_talent)
+- [Eliminating Toil — Google SRE](https://sre.google/sre-book/eliminating-toil/) — 번거로운 일과 지속적인 가치가 없는 반복 운영 작업의 구분
 
 ## 관련 문서
 
