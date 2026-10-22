@@ -26,6 +26,21 @@ Rich Hickey의 'AI' is Not a Tool은 첫 관점에서 통제, 예측 가능성�
 
 코드가 실행되고 설명이 유창해도 사용자의 이해가 늘었다고 판단하지 않는다. 반대로 AI를 사용했다는 사실만으로 직접 사고가 사라졌다고 평가하지 않는다. 실제 사용 방식과 독립 수행 결과로 확인한다.
 
+## AI 협업 능력을 네 가지로 나눠 확인하기
+
+AI Fluency의 4D는 서로 연결된 네 역량을 구분하는 프레임워크다(2026-10-23 공식 자료 확인). 질문을 잘 쓰는 능력만으로 협업 전체를 평가하지 않는다.
+
+| 역량 | 의미 | 연습에서 남길 증거의 예 |
+|---|---|---|
+| Delegation | 목표를 정하고 AI를 언제, 어떻게 사용할지 판단 | 사람이 맡을 판단과 AI에 맡길 작업을 나눈 이유 |
+| Description | 목표를 설명해 유용한 행동과 출력을 이끌기 | 입력 자료, 산출물과 제약을 전달한 요청 |
+| Discernment | AI의 출력과 행동이 유용한지 평가 | 근거 대조, 오류 발견과 수정 기록 |
+| Diligence | AI를 사용하는 방식과 결과에 책임지기 | 자료를 제공할 권한, 공개 범위와 결과 책임 확인 |
+
+이 자료는 상호작용도 세 방식으로 나눈다. Automation은 사람이 지시한 특정 작업의 실행, Augmentation은 사람과 AI가 사고의 파트너로 협업하는 방식, Agency는 이후 작업을 독립적으로 수행하도록 AI를 설정하는 방식이다. 협업 형태의 구분이며 숙련 등급이나 자율성이 높을수록 좋다는 순위는 아니다.
+
+연습 제안: 공개된 짧은 자료로 분류 과제를 만들고 기준을 정한 뒤 AI의 결과를 원자료와 대조한다. 기준을 바꿨을 때 결과가 달라진 이유와 직접 수정한 부분을 설명한다. 표의 증거 예시는 프레임워크를 적용한 제안이며 특정 채용 시험의 공식 채점표가 아니다. 모델의 결과 품질과 사용자의 판단 능력을 별도로 확인한다.
+
 ## 창작 노동과 연습의 가치
 
 프로그래밍의 기능적 결과와 표현, API 경험 및 문제를 다듬는 과정은 함께 평가할 수 있다. 일상적인 구현도 숙련을 쌓는 기회이므로 반복 작업을 자동화할 때 어떤 연습이 없어지는지 본다. 모든 반복 작업을 보존하거나 자동화를 금지해야 한다는 뜻은 아니다.
@@ -54,6 +69,7 @@ Thinking Will Become a Hobby 에세이는 성능, 비용과 가용성의 우위 
 
 ## 출처
 
+- [The AI Fluency Framework — Rick Dakan, Joseph Feller, Anthropic](https://www-cdn.anthropic.com/334975cdec18f744b4fa511dc8518bd8d119d29d.pdf) — 2026-10-23 4D 역량과 세 가지 상호작용 방식 확인.
 - [Funny but serious, Chieng issues an AI warning to grads — Harvard Gazette](https://news.harvard.edu/gazette/story/2026/05/funny-but-serious-chieng-issues-an-ai-warning-to-grads/) — 2026-05-27 Class Day 현장 보도, 2026-10-22 확인. 창작의 즐거움과 연구 활용을 구분한 공개 발언의 맥락만 반영했다.
 - ['AI' is Not a Tool — Rich Hickey](https://www.linkedin.com/pulse/ai-tool-rich-hickey-kjl8e)
 - [AI Is a Tool. Using It Well Takes Skill. — yyhh.org](https://yyhh.org/blog/2026/10/ai-is-a-tool/)

@@ -23,6 +23,14 @@ verified_at: 2026-10-05
 
 32비트 CPU라는 말도 레지스터, ALU, 주소 폭이 모두 반드시 32비트라는 뜻은 아니다. 전체 64비트 주소를 구현했다고 해서 실제로 `2^64`바이트 메모리를 장착할 수 있다는 뜻도 아니다.
 
+### CPU의 비트 수와 주소 공간을 따로 읽기
+
+2026-10-23 RISC-V RV64I 명세와 Linux x86 문서를 부분 대조했다. RV64I의 `XLEN=64`는 정수 레지스터 폭을 나타낸다. 같은 CPU에서도 `LW`는 32비트를 읽어 64비트로 부호 확장하고, `LD`는 64비트를 읽는다. `ADDW`는 하위 32비트의 덧셈 결과를 부호 확장한다. 따라서 CPU 분류, 명령이 다루는 데이터 폭과 레지스터에 저장되는 폭을 구분한다.
+
+주소도 가상 주소와 물리 주소를 나눠 확인한다. Linux x86의 5단계 페이징 문서는 가상 주소 공간 128 PiB와 물리 주소 공간 4 PiB를 구분하며, 사용자 공간에는 56비트 가상 주소 공간을 설명한다. 호환성을 위해 기본 할당은 47비트 범위에 두고 더 높은 주소의 힌트로 넓은 범위를 요청할 수 있다. 이 수치는 해당 페이징 방식의 범위이며 모든 64비트 CPU의 공통 사양이나 장착 RAM 용량이 아니다.
+
+바이트 주소의 64비트 조합 전체는 `2^64 B = 16 EiB`다. 사양을 비교할 때는 정수 레지스터 폭, 명령별 접근 폭, 가상/물리 주소 폭과 실제 메모리 지원 한도를 각각 확인한다. 이해 확인: RV64I에서 32비트 값을 읽는 명령이 가능한 이유와, 64비트라는 이름만으로 RAM 상한을 계산할 수 없는 이유를 설명한다. 다른 절의 제품과 명세는 재검증하지 않아 기존 `verified_at`을 유지한다.
+
 ## 진법과 변환
 
 위치 기수법에서 각 자릿값은 밑(base)의 거듭제곱이다.
@@ -164,6 +172,8 @@ RGB 8 bit 채널 세 개는 pixel당 3 B, RGBA는 4 B다. 디코딩 buffer 크�
 
 ## 출처
 
+- [RISC-V, RV64I Base Integer Instruction Set, Version 2.1](https://docs.riscv.org/reference/isa/v20260120/unpriv/rv64.html) — 2026-10-23 정수 레지스터와 명령별 데이터 폭 대조.
+- [Linux Kernel, 5-level paging](https://docs.kernel.org/arch/x86/x86_64/5level-paging.html) — 2026-10-23 가상/물리 주소 공간과 사용자 공간 할당 범위 대조.
 - 인프런 보충 강의: [컴퓨터가 연산하는 과정](https://www.inflearn.com/courses/lecture?courseId=329605&unitId=128248)
 
 - 인프런, 널널한 개발자 강사, [1비트와 디지털](https://www.inflearn.com/courses/lecture?courseId=329605&unitId=128238), [4비트와 16진수 그리고 진법변환](https://www.inflearn.com/courses/lecture?courseId=329605&unitId=128239), [16진수 표기가 사용되는 예](https://www.inflearn.com/courses/lecture?courseId=329605&unitId=128240), [외워야 할 단위 체계와 숫자](https://www.inflearn.com/courses/lecture?courseId=329605&unitId=128241), [컴퓨터가 글자를 다루는 방법](https://www.inflearn.com/courses/lecture?courseId=329605&unitId=128243), [컴퓨터가 사진을 다루는 방법](https://www.inflearn.com/courses/lecture?courseId=329605&unitId=128244)
