@@ -128,6 +128,14 @@ AWS 복구 문서의 대상은 AL2, AL2023, Fedora 16 이상과 RHEL 7 이상이
 
 2026-09-03 AWS 문서 기준, **Stop/Start는 EBS 루트 볼륨 인스턴스만 가능**하다. Instance Store 루트 인스턴스는 Stop 기능 자체를 지원하지 않아 재부팅하거나 종료해야 한다. Stop된 인스턴스에 연결된 EIP에도 공인 IPv4 주소 요금이 발생한다.
 
+### Running과 애플리케이션 준비 완료를 구분한다
+
+부분 검증(2026-10-23): EC2 수명주기, 상태 검사와 User Data 공식 문서를 대조했다. 시작 요청 뒤에는 `pending`을 거쳐 `running`으로 전환된다. 선택한 인스턴스 타입은 호스트 하드웨어 구성을 결정하고, AMI는 인스턴스 부팅에 사용된다.
+
+`running`은 인스턴스의 수명주기 상태다. User Data의 패키지 설치와 서비스 시작이 성공했거나 웹 요청을 처리할 준비가 끝났다는 보장은 아니다. AWS는 초기화 작업에 추가 시간이 필요하다고 설명하며, `systemd-networkd`를 쓰는 일부 Linux 환경에서는 다른 시작 작업이 끝나기 전에 네트워크 기반 상태 검사가 정상으로 나올 수 있다고 명시한다.
+
+운영 점검 제안: 인스턴스 상태, [[EC2-Status-Checks|EC2 상태 검사]], 초기화 로그와 실제 애플리케이션 응답을 차례로 확인한다. 로그인이나 데이터 저장처럼 의존 서비스가 필요한 기능도 별도 시험한다. 이 절은 문서 대조이며 실제 EC2 시작 시험은 수행하지 않았고 기존 문서 전체의 검증일은 유지한다.
+
 ### 콘솔의 종료는 삭제다 — Stop과 Terminate 구분
 
 인스턴스 상태 메뉴의 Terminate(한국어 콘솔의 종료, 영문 콘솔의 `Terminate (delete) instance`)는 인스턴스를 잠시 끄는 것이 아니라 삭제하는 작업이다. 되돌릴 수 없고 다시 연결하거나 시작할 수 없어 같은 AMI로 새 인스턴스를 만들어야 한다. 잠시 끄려면 Stop(중지)을 쓴다. `terminated` 인스턴스는 잠시 목록에 남았다가 사라진다.
@@ -202,6 +210,8 @@ AMI 기반 표준화는 부팅 시간 단축, 구성 일관성 확보의 핵심 
 
 ## 출처
 
+- [AWS 공식 문서, Run commands when you launch an EC2 instance with user data input](https://docs.aws.amazon.com/AWSEC2/latest/UserGuide/user-data.html)
+- [AWS 공식 문서, Status checks for Amazon EC2 instances](https://docs.aws.amazon.com/AWSEC2/latest/UserGuide/monitoring-system-instance-status-check.html)
 - [AWS 공식 문서, Share an AMI with specific AWS accounts](https://docs.aws.amazon.com/AWSEC2/latest/UserGuide/sharingamis-explicit.html)
 - [AWS 공식 문서, How Amazon EC2 AMI copy works](https://docs.aws.amazon.com/AWSEC2/latest/UserGuide/how-ami-copy-works.html)
 - [AWS 공식 문서, Copy an Amazon EC2 AMI](https://docs.aws.amazon.com/AWSEC2/latest/UserGuide/CopyingAMIs.html)

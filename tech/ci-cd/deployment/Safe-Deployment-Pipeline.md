@@ -75,6 +75,14 @@ time window는 자동 배포의 위험을 대응할 사람이 있는 시간에�
 - AWS CDK는 TypeScript, JavaScript, Python, Java, C#/.NET, Go로 인프라를 정의하고 CloudFormation으로 배포한다. 빌드에서 `cdk synth`로 만든 템플릿을 승격 대상으로 쓸 수 있다. construct 수준별 검토 범위는 [[CDK-vs-Terraform|CDK vs Terraform]], 변경 세트 실행은 [[CloudFormation|CloudFormation]]을 본다.
 - CDK Pipelines는 스스로 갱신되는 파이프라인이다. 애플리케이션 stage나 stack을 추가하면 파이프라인이 자신을 다시 구성한다. `addWave`는 같은 wave에 넣은 stage를 병렬로 배포하므로 위의 점점 커지는 순차 wave와 뜻이 다르다. 순차 확산이 필요하면 wave를 순서대로 여러 개 두고 그 사이에 판정 단계를 넣는다(설계 제안).
 
+### 환경 설정의 저장과 배포 반영을 나눈다
+
+부분 검증(2026-10-23): Vercel 공식 환경 변수 문서 기준으로 Development, Preview와 Production은 적용 대상이 다르다. 환경 변수 변경은 기존 배포에 소급 적용되지 않고 새 배포에 적용된다. 로컬이나 Preview에서 설정을 확인했다는 사실만으로 Production에도 같은 설정이 있다고 판단하지 않는다.
+
+배포 점검 제안: 필요한 변수 이름, 적용 환경, 빌드 또는 실행 시 읽는 위치와 대상 배포를 함께 확인한다. 설정을 저장한 뒤 새 배포를 만들고, 그 배포 주소에서 로그인과 데이터 저장 등 핵심 기능을 확인한다. 점검 기록에는 비밀값 대신 설정 유무와 대상 환경만 남긴다. 브라우저에 포함되는 값의 공개 경계는 [[Single-Host-SPA-API-Deployment#SPA 환경 변수는 public configuration이다|SPA 환경 변수]]를 함께 본다.
+
+이 절은 설정 반영 시점의 문서 대조이며 실제 Vercel 배포는 실행하지 않았다. 기존 AWS와 ECS 절 전체의 검증일은 유지한다.
+
 ## AWS와 ECS 도구에 대응시키기
 
 2026-10-14 공식 문서 기준이다.
@@ -115,6 +123,7 @@ time window는 자동 배포의 위험을 대응할 사람이 있는 시간에�
 
 ## 출처
 
+- [Vercel, Environment variables](https://vercel.com/docs/environment-variables)
 - [Automating safe, hands-off deployments — Amazon Builders' Library, Clare Liguori](https://builder.aws.com/content/3ErTKQOTKc5NIw031UePBPxTQ6I/automating-safe-hands-off-deployments)
 - [AWS, Anti-patterns for continuous delivery (DevOps Guidance)](https://docs.aws.amazon.com/wellarchitected/latest/devops-guidance/anti-patterns-for-continuous-delivery.html)
 - [AWS, Amazon ECR source action reference](https://docs.aws.amazon.com/codepipeline/latest/userguide/action-reference-ECR.html)

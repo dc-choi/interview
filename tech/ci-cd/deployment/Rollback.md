@@ -24,6 +24,14 @@ aliases: ["Rollback", "롤백 전략", "배포 롤백"]
 - 다만 스키마가 이미 앞으로 간 상태에서는 롤포워드가 유일한 경로가 되기도 한다. 스키마 축에서 실무 기본값이 roll-forward인 이유는 [[Schema-Versioning|스키마 버전 관리]]가 소유한다.
 - 장애 상황에서 무엇을 먼저 시도할지의 대응 절차 자체는 [[Incident-Runbook|Incident Runbook]]과 [[Incident-Recovery-Prevention|장애 복구와 재발 방지]]에 있다. 여기서는 판단 축만 정리한다.
 
+### 수정 철회와 원래 결함의 해결은 별도다
+
+결함 수정이 더 심각한 회귀를 만들었다면 그 변경을 철회해 피해를 줄일 수 있다. 이때 원래 결함이 다시 남는지 확인하고, 회귀 완화와 원래 결함 해결을 별도 작업으로 추적한다. 소스 변경 철회와 운영 중인 이전 아티팩트 재배포도 구분한다.
+
+사례(2026-10-23 공개 발표 원고 대조): Inside Java Newscast #116은 JDK 27의 C2 수정이 문자열 손상 회귀를 일으킨 사례를 설명한다. 재현 코드를 회귀 테스트로 만들고 변경 철회와 테스트를 안정화 브랜치에 반영했지만 원래 P3 결함은 남았다. 다시 작성한 수정은 이후 메인 개발 브랜치에 반영됐다. 이는 발표에서 확인한 처리 순서이며 여기서 해당 JDK를 실행해 재현한 결과는 아니다.
+
+릴리스 직전에는 수정의 필요성과 새 회귀 위험을 함께 판단한다. OpenJDK의 공개 JEP 3 사본(2023-06-02 판)은 안정화 단계가 진행될수록 수정 후보와 승인 조건을 좁히고, RC에서는 승인된 current P1 수정을 허용한다. 이 분류를 다른 제품의 필수 정책으로 복제하지 말고, 피해 규모, 재현 근거, 회귀 테스트와 복구 가능성에 맞춰 반영 기준을 정한다(적용 제안). 이 절만 대조했으므로 기존 Kubernetes와 ECS 동작의 검증일은 유지한다.
+
 ## 되돌아가는 축과 되돌아가지 않는 축
 
 배포 롤백이 실제로 되돌리는 범위는 생각보다 좁다.
@@ -101,6 +109,8 @@ Kubernetes Deployment를 이전 revision으로 되돌리면 Pod template만 복�
 2026-10-03에 롤백 선택과 데이터 호환성, 복구 검증 조건을 Google SRE와 AWS 공식 자료에 대조했다. Kubernetes Deployment의 Pod template 복원 범위와 외부 ConfigMap 참조도 공식 문서로 확인했다. 그 밖의 Kubernetes와 ECS 세부 동작은 전부 재검증하지 않았으며, 개별 시스템의 복구 시간과 안전성은 별도 검증이 필요하다.
 
 - [Kubernetes 공식 문서, Images](https://kubernetes.io/docs/concepts/containers/images/)
+- [OpenJDK, JEP 3: JDK Release Process (2023-06-02 공개 사본)](https://cr.openjdk.org/~mr/jdk/jeps/003-jdk-release-process.html)
+- [OpenJDK Bug Fixing, JavaOne, and JDK 28 — Inside Java Newscast, Nicolai Parlog](https://nipafx.dev/inside-java-newscast-116/)
 - [Kubernetes 공식 문서, Deployments](https://kubernetes.io/docs/concepts/workloads/controllers/deployment/)
 - [Kubernetes 공식 문서, ConfigMaps](https://kubernetes.io/docs/concepts/configuration/configmap/)
 - [Kubernetes 공식 문서, kubectl rollout undo](https://kubernetes.io/docs/reference/kubectl/generated/kubectl_rollout/kubectl_rollout_undo/)
