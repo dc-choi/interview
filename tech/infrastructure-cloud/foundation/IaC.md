@@ -95,6 +95,19 @@ IaC는 서버, 네트워크, 로드밸런서, 방화벽 같은 인프라를 콘�
 
 2026-09-22 보강: 로컬 배포 검사 스크립트의 조건부 `plan` 생략 경로에서 일반화했다. 스크립트를 실행하거나 배포 준비 상태를 판정한 기록은 아니다. 단계별 의미는 Terraform 공식 명령 문서와 대조했다.
 
+## 실습은 생성부터 정리까지 확인한다
+
+IaC 실습에서는 실행 성공 외에 어떤 자원을 만들었고 어디까지 지울 수 있는지도 설명한다. Terraform의 `destroy`는 해당 구성이 관리하는 객체를 제거하는 명령이며 계정 전체의 비용이나 모든 자원을 정리하는 명령은 아니다.
+
+다음은 HashiCorp의 삭제 명령과 AWS 입문 실습을 바탕으로 한 실습 점검 순서다.
+
+1. 선택한 계정, 리전, backend와 workspace를 확인하고 실습용 자원과 보존할 자원을 구분한다.
+2. `terraform plan -destroy`로 삭제 예정 범위를 살핀다. 이 명령은 계획만 보여 주며 실제로 삭제하지 않는다.
+3. 삭제가 허용된 실습 자원에 대해 실행 결과를 확인한다. 구성에서 리소스 블록을 없애고 apply하는 경우에는 그 리소스를 참조하는 output도 함께 고쳐야 할 수 있다.
+4. Terraform 관리 범위 밖의 자원이 남았는지 별도로 확인한다. 삭제 성공 메시지를 계정 전체의 과금 종료 증거로 쓰지 않는다.
+
+2026-10-23 공식 문서의 삭제 범위와 계획/실행 구분을 대조했다. 실제 AWS 자원을 생성하거나 삭제한 기록은 아니다.
+
 ## 가변 vs 불변 인프라, 구성 드리프트
 
 - **구성 드리프트(Configuration Drift)**: 코드가 정의한 원하는 상태와 실제 인프라가 어긋나는 현상. 주로 누군가 콘솔에서 수동으로 손대거나, 서버마다 패치가 제각각 쌓이며 발생(스노우플레이크 서버).
@@ -136,6 +149,8 @@ IaC는 서버, 네트워크, 로드밸런서, 방화벽 같은 인프라를 콘�
 - Terraform 구성을 나누는 기준(폭발 반경, 변경 빈도, 팀 권한, 규모)과 CLI workspace를 환경 격리 수단으로 쓰지 않는 이유
 
 ## 출처
+- [Terraform, destroy command](https://developer.hashicorp.com/terraform/cli/commands/destroy)
+- [Terraform, Destroy infrastructure](https://developer.hashicorp.com/terraform/tutorials/aws-get-started/aws-destroy)
 - [Infrastructure as Code(IaC)란? — Red Hat](https://www.redhat.com/ko/topics/automation/what-is-infrastructure-as-code-iac)
 - [AWSome IaC 발표 자료](https://github.com/drakejin/20250628-tbm)
 - [Salt Project, Architecture](https://docs.saltproject.io/en/latest/topics/development/architecture.html)
