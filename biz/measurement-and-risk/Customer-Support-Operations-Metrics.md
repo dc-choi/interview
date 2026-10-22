@@ -41,6 +41,14 @@ Amazon Connect의 **Abandonment rate**는 대기열에 들어간 contact 중 상
 
 상담 도구 통합을 평가할 때도 제거한 앱 수보다 정보 재입력, 검색과 인계에 드는 시간이 얼마나 줄었는지를 먼저 측정한다. 이 비교 기준은 [[Metrics-Framework|지표 설계]]의 분모, 코호트와 보호 지표 원칙을 상담 업무에 적용한 것이다.
 
+## 셀프서비스 증가율과 자동 해결률을 구분한다
+
+셀프서비스 이용이 늘었다는 수치만으로 전체 문의 중 사람이 개입하지 않고 해결한 비율을 알 수는 없다. 이용 건수, 이용률, 해결률 중 무엇을 측정했는지와 비교 기간, 분모를 먼저 확인한다. 예를 들어 같은 정의의 이용률이 20%에서 32%로 바뀌면 상대 증가율은 60%이고 차이는 12%p다. 이를 자동 해결률 60%로 바꿔 쓰지 않는다(설명용 계산).
+
+사례로 AWS의 HelloFresh 소개는 챗봇 도입으로 전 세계 셀프서비스가 60% 넘게 증가했다고 설명하지만, 해당 소개에는 계산식, 기준값과 관찰 기간이 없다. 따라서 이 수치를 전체 문의의 자동 해결 비율이나 비용 절감률로 사용하지 않는다. 2026-10-23 공개 소개의 표현만 대조했으며 내부 상담 기록을 검증한 결과는 아니다.
+
+운영에 적용할 때는 셀프서비스 시작, 업무 완료, 사람에게 인계, 관찰 기간 내 재문의를 나누어 집계한다. 사람에게 연결되지 않았다는 이유만으로 해결로 처리하지 않고, 고객이 포기한 경우와 실제로 필요한 일을 마친 경우를 구분한다(측정 설계 제안). 기존 AWS 지표와 요금 전체를 다시 대조한 것은 아니므로 기존 검증일은 유지한다.
+
 ## 설문 점수와 접점의 문제 해결을 연결한다
 
 부분 검증(2026-10-16): Bain의 NPS 유형과 피드백 운영 설명, Kantar의 정성 조사 설명을 대조했다. 이 절은 고객 피드백의 해석과 개선 절차를 보강하며, 기존 AWS 지표와 요금의 검증일은 유지한다.
@@ -77,6 +85,7 @@ Amazon Connect Customer의 가격 페이지는 사용량 기반 과금을 안내
 
 ## 출처
 
+- [HelloFresh on AWS — AWS](https://aws.amazon.com/solutions/case-studies/innovators/hello-fresh/) — 2026-10-23 셀프서비스 증가 표현과 공개된 측정 범위 확인
 - [Three Types of Net Promoter Scores — Bain & Company](https://www.netpromotersystem.com/about/three-types-of-net-promoter-scores/)
 - [Robust Operational and Analytic Infrastructure — Bain & Company](https://www.netpromotersystem.com/about/net-promoter-system-framework/robust-operational-and-analytic-infrastructure/)
 - [Qualitative Research Design & Consumer Insights — Kantar](https://www.kantar.com/uki/solutions/strategic-intelligence/qualitative-research)

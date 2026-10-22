@@ -34,6 +34,14 @@ AI 추천은 자산과 컬럼의 이름, 설명과 용어집 항목을 제안한
 
 여러 조직이 데이터를 공유할 때는 승인 기록, 실제 조회 권한, 구독 종료와 보존 자료를 각각 점검한다. 같은 조회 주체로 철회 전후의 접근을 확인하고, 다른 경로로 부여한 권한과 이미 복사한 데이터의 처리도 검토한다. 이는 운영 점검 제안이며 구독 철회가 복사본 삭제나 연구 환경의 반출 통제까지 수행한다는 뜻은 아니다.
 
+## 공통 탐색 창구와 도메인 소유권을 분리한다
+
+데이터를 한곳에서 찾게 만드는 것과 모든 데이터의 실행 및 관리 책임을 중앙 팀으로 옮기는 것은 다른 설계다. 데이터 메시에서는 도메인별 소유자가 데이터의 의미와 관리 책임을 맡고, 공통 카탈로그가 다른 도메인의 자산을 발견하고 재사용하는 창구가 될 수 있다.
+
+사례로 Bayer의 Pharma R&D Data Science Ecosystem은 omics, 규제와 임상시험 도메인을 데이터 제품으로 다루고 전문가에게 소유와 관리를 맡기며, SageMaker Catalog로 발견과 재사용을 연결한다. 2026-10-23 대조한 AWS 기술 글의 300 TB 이상 바이오마커 데이터, 25개 이상 ML 활용 사례와 100명 이상 데이터 과학자 수치는 향후 수용 및 운영을 위한 준비 범위다. 이미 적재하거나 운영한 실적으로 옮기지 않는다.
+
+적용할 때는 자산마다 소유 도메인, 업무 정의, 접근 승인자와 품질 기준을 확인하고, 공통 검색에서 찾은 뒤 실제 권한으로 재사용할 수 있는지 시험한다(설계 제안). 연구용 데이터와 모델을 함께 찾는다는 사실이 용도별 적합성이나 규제 준수를 자동으로 보장하지는 않는다. 이 절만 추가 대조했으므로 기존 기능 설명의 검증일은 유지한다.
+
 ## 계보로 출처와 변경 영향을 추적한다
 
 2026-10-07 공식 문서 기준. 데이터 계보는 OpenLineage 호환 시스템이나 API로 수집한 이벤트를 바탕으로 원천 데이터, 변환 작업과 소비 관계를 연결한다. 카탈로그 자산과 구독자 정보뿐 아니라 API로 전달한 외부 활동도 포함할 수 있다. 수집되지 않은 외부 작업까지 자동으로 발견했다고 해석하지 않는다.
@@ -82,6 +90,7 @@ Query Editor의 대화형 SQL 생성에서는 후속 질문으로 쿼리를 수�
 
 ## 출처
 
+- [How Bayer transforms Pharma R&D with a cloud-based data science ecosystem using Amazon SageMaker — AWS](https://aws.amazon.com/blogs/big-data/how-bayer-transforms-pharma-rd-with-a-cloud-based-data-science-ecosystem-using-amazon-sagemaker/) — 2026-10-23 도메인 소유권, 공통 카탈로그와 준비 단계의 수치 확인
 - [Amazon SageMaker Unified Studio, Revoke an existing subscription](https://docs.aws.amazon.com/sagemaker-unified-studio/latest/userguide/revoke-subscription.html)
 - [Amazon SageMaker Unified Studio, Unsubscribe from an asset](https://docs.aws.amazon.com/sagemaker-unified-studio/latest/userguide/unsubscribe-from-subscription.html)
 - [Amazon SageMaker Unified Studio, Grant access for approved subscriptions to unmanaged assets](https://docs.aws.amazon.com/sagemaker-unified-studio/latest/userguide/grant-access-to-unmanaged-asset.html)

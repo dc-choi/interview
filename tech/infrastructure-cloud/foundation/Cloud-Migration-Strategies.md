@@ -175,6 +175,12 @@ AWS가 2026-03-25 공개한 IDEMIA Civil Identity 고객 인터뷰는 .NET 3.5�
 
 이 사례를 검토할 때는 수행한 변경, 측정한 결과, 앞으로의 예상치를 따로 기록한다(적용 제안). 런타임 갱신과 컨테이너화가 함께 있었다는 사실만으로 서비스 분해 완료나 비용 감소의 단일 원인을 확정하지 않는다. 2026-10-22 공개 영상의 사람이 작성한 자막을 대조한 범위이며, 실제 배포와 비용 장부는 확인하지 않았다. 기존 제품 정책의 검증일은 유지한다.
 
+### 자원 최적화와 이전 지원금을 따로 계산한다
+
+이전 견적에서는 기존 용량을 그대로 옮기는 경우와 사용량에 맞게 줄이는 경우를 나누고, 비운영 자원의 가동 시간과 라이선스 조건도 각각 계산한다. 예를 들어 비운영 서버를 업무 시간에만 켜서 줄인 비용은 클라우드로 위치만 옮긴 효과와 다르다. 이전 지원금은 전환 비용을 낮출 수 있지만 지원 종료 뒤의 반복 운영비와는 분리한다(견적 검토 제안).
+
+2026-10-23 확인한 AWS의 Fanatics 사례는 실제 사용량과 라이선스 평가, rightsizing, 비운영 워크로드의 가동 시간 조정을 절감 요인으로 들고 MAP의 이전 비용 지원을 별도로 설명한다. 최대 48% 인프라 비용 절감은 예상 결과이며, 글에 제시된 2026년 12월 이전 완료도 목표다. 이 수치를 이미 실현한 절감률이나 모든 고객에게 제공되는 지원 조건으로 사용하지 않는다. 기존 제품별 지원 정책 전체를 다시 대조한 것은 아니므로 기존 검증일은 유지한다.
+
 ## 흔한 실수
 
 - 전략 이름만 합의하고 바뀌는 범위를 적지 않아 견적, 일정과 책임이 어긋난다.
@@ -191,6 +197,7 @@ AWS가 2026-03-25 공개한 IDEMIA Civil Identity 고객 인터뷰는 .NET 3.5�
 
 ## 출처
 
+- [Migration at Scale: The Fanatics Commerce AWS Journey — AWS](https://aws.amazon.com/blogs/migration-and-modernization/migration-at-scale-the-fanatics-commerce-aws-journey/) — 2026-10-23 OLA의 비교 조건, MAP의 지원 범위와 예상 성과 구분 확인
 - [Modernizing Identity Systems with AWS Transform — Amazon Web Services](https://www.youtube.com/watch?v=dB-B7nJlEsM) — 고객 인터뷰의 변경 범위와 예상 절감 발언만 참조
 
 - [AWS Prescriptive Guidance, Pre-cutover stage](https://docs.aws.amazon.com/prescriptive-guidance/latest/best-practices-migration-cutover/pre-cutover-stage.html)
