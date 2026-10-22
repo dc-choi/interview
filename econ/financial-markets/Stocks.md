@@ -174,6 +174,14 @@ IPO 자료에서는 [[Startup-Equity-and-Dilution#신주와 구주: 회사에 �
 
 **지수 상승과 상승 종목 수는 다르다.** 시가총액 가중 지수에서는 큰 기업의 가격 변화가 더 크게 반영되고, 유동주식 조정 방식은 거래되지 않는 대규모 지분을 가중치 계산에서 제외한다. 같은 구성 종목이라도 동일가중 방식과 수익률이 다를 수 있다. 따라서 지수 상승만으로 다수 종목이나 내 포트폴리오도 올랐다고 추정하지 않는다. 같은 기간의 구성 종목, 가중치와 상승 종목 비율을 따로 비교한다. 이는 2026-10-14 S&P Dow Jones Indices의 가중 방식 설명에서 도출한 독해 기준이며 당시 시장 수익률이나 상승 종목 비율을 확인한 기록은 아니다.
 
+### 지수 이름과 ETF의 현재 기준지수를 확인한다
+
+같은 반도체 업종을 다룬다고 같은 지수나 상품은 아니다. 2026-10-23 확인한 Nasdaq의 **SOX**는 PHLX Semiconductor 지수이고, iShares의 **SOXX**는 ETF이며 공식 상품 페이지의 기준지수는 **NYSE Semiconductor Index**다. SOXX 수익률을 필라델피아 반도체 지수의 수익률로 그대로 옮기지 않는다.
+
+시장 비교에는 정확한 지수명, ETF 티커와 현재 기준지수, 관찰 기간, 통화, 가격수익률과 배당 재투자를 포함한 총수익률 여부를 맞추는 절차를 적용한다. iShares도 시장가격, 기준지수와 총수익률을 구분해 공시한다. 특정 업종의 낙폭이 더 컸다는 관찰만으로 금리가 유일한 원인이거나 그 민감도가 모든 시기에 유지된다고 결론 내리지 않는다.
+
+이는 공식 상품 설명을 적용한 비교 절차다. 특정 거래일의 하락률, 한국 지수의 당시 반도체 비중과 하락 원인은 검증 범위에 포함하지 않는다.
+
 ### 산업 분류와 투자 테마를 구분한다
 
 GICS는 MSCI와 S&P Dow Jones Indices가 만든 산업 분류 체계다. Sector, Industry Group, Industry, Sub-Industry의 네 단계로 나누며 기업은 주된 사업 활동에 따라 각 단계에서 하나의 분류를 부여받는다. 매출이 핵심 판단 요소이고 이익과 시장의 인식도 고려한다. 분류 체계는 정기적으로 검토되므로 과거의 분류를 영구적인 기업 속성으로 보지 않는다.
@@ -200,6 +208,8 @@ AI, 로봇이나 친환경 같은 투자 테마는 여러 산업을 가로지를
 
 ## 출처
 
+- [Overview for SOX — Nasdaq](https://indexes.nasdaq.com/Index/Overview/SOX) — 2026-10-23 PHLX Semiconductor 지수 식별과 정의 대조
+- [iShares Semiconductor ETF, SOXX — iShares](https://www.ishares.com/us/products/239705/ishares-phlx-semiconductor-etf) — 2026-10-23 NYSE Semiconductor Index 기준지수와 성과 표기 대조
 - [How to Buy the Dip — Charles Schwab](https://international.schwab.com/story/how-to-buy-dip) — 2026-10-16 하락 원인과 사업 변화의 구분 대조
 - [Dividend yield: What it is and how to calculate it — Fidelity](https://www.fidelity.com/learning-center/trading-investing/dividend-yield) — 2026-10-16 배당수익률의 분모, 기간과 배당 변동 가능성 대조
 - [Expected Amount and Implementation Plan for 2026 Shareholder Returns — Samsung Electronics](https://www.samsung.com/global/ir/reports-disclosures/public-disclosure-view.84755/) — 2026-08-21 공시, 누적 FCF와 기지급 환원액, 현금 배당과 자사주 매입/소각의 구분 및 전망의 변동 가능성을 2026-10-16 대조

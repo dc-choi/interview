@@ -102,6 +102,16 @@ Weight는 문장을 행 단위로 저장한 사실 데이터베이스가 아니�
 
 이는 재현과 비교를 위한 점검 제안이다. 한 모델의 합성 데이터 실험 결과를 다른 데이터 분포에서도 성능 저하가 없다는 보장으로 확대하지 않는다. 보고서의 데이터 공개와 필터링 범위를 2026-10-07 대조했으며, 모델을 직접 학습해 결과를 재현한 것은 아니다.
 
+### 공개 체크포인트와 서비스의 기능을 구분한다
+
+같은 모델 이름이라도 사전학습 체크포인트, 대화용으로 조정한 모델과 검색 도구를 붙인 서비스는 다른 산출물이다. 공개 여부를 비교할 때는 대상 버전과 학습 단계, 공개한 구성요소와 라이선스를 함께 적는다.
+
+- Grok-1의 2024-03-17 공개 대상은 2023년 10월 사전학습을 마친 기반 모델의 가중치와 구조이며 Apache 2.0으로 배포됐다. 대화 같은 특정 용도로 미세조정한 모델은 아니다. 이를 대화 서비스 전체나 후속 모델의 공개로 확대하지 않는다.
+- 초기 Grok-1 모델 카드는 2023년 11월 출시 모델의 학습 데이터를 2023년 3분기까지의 인터넷 자료와 AI Tutors 제공 자료로 설명한다. 모델 자체는 웹을 독립적으로 검색하지 못하며 서비스의 검색 도구와 데이터베이스가 기능을 보완한다. 최신 정보를 검색해 답한다는 사실만으로 가중치가 실시간 갱신된다고 판단하지 않는다.
+- 학습 인프라의 설명도 모델 세대에 연결한다. 2025-02-19 Grok 3 발표는 Colossus에서 학습했다고 명시한다. 초기 Grok-1 출시와 후속 모델의 학습 인프라를 하나의 개발 사건으로 합치지 않는다.
+
+2026-10-23 xAI의 공개 안내, 초기 모델 카드와 Grok 3 발표를 대조한 역사적 사례다. 현재 서비스의 전체 기능이나 학습 실행을 검증한 것은 아니며, 기존 학습 기법 절 전체의 검증 날짜는 갱신하지 않는다.
+
 ### 데이터셋의 수집과 사용 조건을 함께 기록한다
 
 데이터 양과 품질 점수만으로 수집 경위와 사용 조건을 설명할 수는 없다. 데이터셋 문서에는 생성 목적, 구성, 수집 과정, 전처리, 권장 용도, 배포와 유지보수 정보를 연결한다. 다운로드 가능 여부와 사용 조건의 확인은 별도 항목이다.
@@ -165,6 +175,9 @@ ZeRO-3는 순전파와 역전파 중 필요한 파라미터를 모으고 다시 
 
 ## 출처
 
+- [Open Release of Grok-1 — xAI](https://x.ai/news/grok-os) — 2024-03-17 공개한 기반 체크포인트와 Apache 2.0 적용 범위
+- [Grok-1 Model Card — xAI](https://x.ai/news/grok/model-card) — 초기 출시 모델의 학습 데이터 범위와 검색 도구의 역할
+- [Grok 3 Beta — The Age of Reasoning Agents — xAI](https://x.ai/news/grok-3) — 2025-02-19 발표의 Colossus 학습 설명
 - [AI Engineering from Scratch — GitHub, rohitg00](https://github.com/rohitg00/ai-engineering-from-scratch) — 실행 증거와 이해 확인 절차
 - [Pre-Training a Mini GPT, Step 6: Training Loop — AI Engineering from Scratch](https://github.com/rohitg00/ai-engineering-from-scratch/blob/main/phases/10-llms-from-scratch/04-pre-training-mini-gpt/docs/en.md) — 본문의 순전파와 loss 코드 블록만 대조, 실제 학습 실행은 미검증
 - [DeepSpeed, Zero Redundancy Optimizer](https://www.deepspeed.ai/tutorials/zero/)
