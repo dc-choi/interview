@@ -51,6 +51,19 @@ MarqVision은 위조 상품 대응, 무단 판매, 사칭, 콘텐츠 보호, 상
 - **성장의 병목:** 대표는 SaaS에서는 성장이 멈추면 대개 판매 쪽 문제로 보고, 좋은 판매 리더를 데려오면 같은 제품으로도 매출이 다시 오른다는 말이 있다고 소개했다. 반면 서비스는 문제를 풀어 주겠다는 제안의 수요가 크지만 기존 방식보다 비싸거나 비효율적이면 선택받지 못하므로, 판매보다 결과를 효율적으로 제공하는 제품의 역량이 더 중요하다고 본다.
 - **인수의 순서:** 5년 동안 수작업 처리를 자동화하며 방법을 익힌 뒤에야 인력 중심 BPO 경쟁사의 인수를 검토하고 있다고 했다(인터뷰 시점 미인수). 목표는 인원 감축이 아니라 인원을 늘리지 않고 매출을 키우는 것이고, 경영진 교체와 데이터 통합 중심의 사모펀드 방식으로는 신고서 자동 작성 같은 세부 운영 실행을 대신할 수 없다고 본다. 앞 절의 플랫폼이 선 뒤 인수한다는 순서와 같다.
 
+## 채용 서비스에서 활동량과 청구 결과를 나눈다
+
+에이전트가 대화하고 후보를 소개하는 서비스에서는 대화 수, 소개 수, 면접 수와 실제 채용 수를 서로 다른 단계로 본다. 앞 단계의 활동량이 늘어도 유료 결과나 수익성이 같은 비율로 늘었다고 판단할 수 없다.
+
+Jack & Jill은 구직자용 Jack과 기업용 Jill을 두고, 양쪽에 맞는 경우 직접 소개하는 서비스를 공개하고 있다. 2026-10-23 공식 글로벌 가격 페이지는 구직자에게 무료로 제공하고, 기업에는 채용이 이루어졌을 때 첫해 급여의 10%를 받는다고 안내한다. 구독료, 선불 수수료나 리테이너는 없다고 표시하며, 채용자가 첫 3개월 안에 퇴사하거나 해고되면 전액 환불한다고 명시한다. 계약직은 12개월 총보상의 10%로 별도 설명한다. 이는 공개 가격 안내이며 개별 계약과 실제 청구 내역을 검증한 것은 아니다.
+
+결과 기반 서비스의 손익을 검토할 때는 다음처럼 나누어 보는 방법을 제안한다.
+
+- **과금 단위:** 대화나 소개가 아니라 계약에서 정한 채용 결과를 확인한다. 소개 수를 유료 채용 수로 바꾸어 보고하지 않는다.
+- **선행 원가:** 채용에 이르지 못한 대화와 매칭에도 추론, 지원과 검토 비용이 들 수 있으므로 성공한 건의 처리 비용만 계산하지 않는다.
+- **사후 조건:** 환불 대상과 기간을 따로 확인한다. 공개 수수료율만으로 최종 매출이나 마진을 계산하지 않는다.
+- **성장 증거:** 이용자 수, 고객사 수와 면접 건수는 채용 전환율, 사람 투입 시간과 환불률을 대신하지 못한다. 공개 제품 설명만으로 자동화 수준이나 수익성을 확정하지 않는다.
+
 ## 1인 외주 사업에 적용하기
 
 다음은 위 틀을 소규모 개발 외주와 제작 서비스에 옮긴 운영 제안이다.
@@ -63,6 +76,8 @@ MarqVision은 위조 상품 대응, 무단 판매, 사칭, 콘텐츠 보호, 상
 
 ## 출처
 
+- [Jack & Jill](https://www.jackandjill.ai/) — 2026-10-23 확인, 구직자와 기업의 에이전트 역할 및 직접 소개
+- [Simple, Transparent Pricing — Jack & Jill](https://www.jackandjill.ai/pricing?geo=global) — 2026-10-23 확인, 글로벌 공개 가격과 환불 안내
 - [Why AI-Native Services, and Why Now — Emergence Capital](https://emcap.com/thoughts/why-ai-native-services-and-why-now) — 2026-03-23
 - [The AI-Native Services Playbook — Emergence Capital](https://emcap.com/thoughts/the-ai-native-services-playbook) — 2026-03-30
 - [Roll Up or Build? Why the Fastest Path to a Venture-Scale AINS Business Is the One Founders Keep Avoiding — Emergence Capital](https://emcap.com/thoughts/roll-up-or-build-why-the-fastest-path-to-a-venture-scale-ains-business-is-the-one-founders-keep-avoiding) — 2026-06-02
