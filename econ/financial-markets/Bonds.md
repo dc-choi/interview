@@ -88,6 +88,16 @@ aliases: ["채권", "Bonds"]
 - **재투자와 조기상환 위험**: 쿠폰이나 상환금을 예상보다 낮은 금리로 재투자할 수 있다. 발행자에게 조기상환권이 있으면 금리 하락 때 고금리 현금흐름이 일찍 끊길 수 있다.
 - **유동성과 환율 위험**: 필요한 때 적정 가격에 팔지 못하거나, 외화 채권의 원화 환산 수익이 환율 변동으로 줄 수 있다.
 
+### 국채의 신용위험과 시장 유동성은 다르다
+
+발행자가 약속한 돈을 갚을 수 있는지와, 보유자가 지금 원하는 수량을 작은 가격 충격으로 팔 수 있는지는 다른 질문이다. 거래가 많이 일어나는 시장에서도 호가 간격이 벌어지고 호가에 제시된 수량이 줄면 유동성이 나빠질 수 있다. 거래량 하나만으로 유동성을 판단하지 않고 매수와 매도 호가 차이, 호가 잔량과 거래의 가격 영향을 함께 본다.
+
+2020년 3월 미국 국채시장은 이 구분의 사례다. 뉴욕 연준 연구진의 분석은 주요 딜러가 국채 중개를 유지하거나 포지션을 늘렸는데도 시장 기능이 악화됐음을 보여 준다. 매도가 몰릴 때 딜러의 재고와 위험 부담 비용이 함께 커지면, 중개를 계속하더라도 고객이 요구하는 유동성을 충분히 제공하지 못할 수 있다.
+
+원인을 자본규제 하나로 확정하지 않는다. 같은 연구에서 SLR 적용을 받지 않는 은행 계열 딜러도 포지션을 대체로 늘리지 않았고 일부는 줄였다. 이는 특정 규제가 모든 중개 제약을 설명한다는 해석에 대한 반례이며, 규제의 영향이 전혀 없다는 증거도 아니다. 고객 매도, 재고 위험, 내부 위험관리와 자본 제약을 나누어 확인한다.
+
+2026-10-23 뉴욕 연준의 2020년 유동성 분석과 2021년 딜러 중개 분석을 대조했다. 역사적 시장 기능 사례이며 현재 국채시장 위기나 달러의 지위 상실을 예측하는 근거로 사용하지 않는다.
+
 ## 7. 핵심 개념
 
 - **금리와 가격의 역관계**: 다른 조건이 같은 고정 현금흐름 채권에 적용
@@ -103,6 +113,8 @@ aliases: ["채권", "Bonds"]
 
 ## 출처
 
+- [Federal Reserve Bank of New York — Treasury Market Liquidity during the COVID-19 Crisis](https://libertystreeteconomics.newyorkfed.org/2020/04/treasury-market-liquidity-during-the-covid-19-crisis/) — 호가 차이, 호가 잔량과 가격 영향, 높은 거래량과 낮은 유동성의 공존
+- [Federal Reserve Bank of New York — Did Dealers Fail to Make Markets during the Pandemic?](https://libertystreeteconomics.newyorkfed.org/2021/03/did-dealers-fail-to-make-markets-during-the-pandemic/) — 딜러 포지션과 위험 부담, SLR 적용 여부 비교 및 단일 원인 해석의 한계
 - [BIS — Risk aversion and risk premia in the CDS market](https://www.bis.org/publications/risk-aversion-and-risk-premia-cds-market_1.pdf) — CDS의 예상손실과 위험 프리미엄, 만기와 계약 조건, 손실률 가정의 구분
 - [Bloomberg Fixed Income Index Methodology](https://data.bloomberglp.com/professional/sites/10/Bloomberg-Index-Publications-Fixed-Income-Index-Methodology.pdf) — 2026-01-08판. 2026-10-21 22~24쪽의 투자등급 경계와 지수 등급(중간값 규칙, 예시, Canadian Aggregate의 DBRS 규칙, 예상 등급과 소버린 등급 예외와 23쪽 각주 21, 24쪽 Figure 7의 등급 수치 환산 표), 42~45쪽의 월간 재조정, Returns와 Projected Universe, 결정일과 잠금 기간, 지수 플래그 대조
 - [Journal of Fixed Income — Forced Selling of Fallen Angels](https://doi.org/10.3905/jfi.2008.708844) — Ambrose, Cai, Helwege, 2008년 18권 1호 72~85쪽. 2026-10-21 [Penn State 연구 정보 페이지](https://pure.psu.edu/en/publications/forced-selling-of-fallen-angels/)의 초록으로 대조, 본문은 열람하지 못함
