@@ -10,6 +10,7 @@ aliases: ["Cloud Foundation"]
 IaaS/PaaS/FaaS 구분, IaC, 클라우드 전환 전략 — 클라우드 추상화 계층, 선언적 인프라와 workload 이전 범위.
 
 ## 목차
+- [x] [[Internal-Developer-Platform|내부 개발자 플랫폼]] — 셀프서비스 범위, API 접수와 준비 완료, 부분 실패와 운영 책임
 - [x] [[SaaS-Regional-Data-Isolation|SaaS 리전별 데이터 격리 (control/application plane, pool/silo/bridge, 복제와 복구, 파티션과 운영 주권, 데이터 위치와 CLOUD Act 제출 명령)]]
 - [x] [[Cloud-Service-Models|IaaS/PaaS/FaaS/SaaS (추상화 계층, 책임 공유 모델, 서버리스 범위)]]
 - [x] [[Cloud-Migration-Strategies|클라우드 전환 전략 (AWS 7 Rs와 Microsoft CAF 용어 차이, 12 Factor, AI 계획과 cutover 검증, 가상화 플랫폼 유지와 DR 복구 조건)]]

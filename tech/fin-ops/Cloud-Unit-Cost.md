@@ -89,6 +89,18 @@ FinOps Foundation의 성숙도 모델은 Crawl, Walk, Run 단계를 쓰고 역�
 
 처음에는 비용 귀속이 불명확한 질문 하나를 기존 청구 내역과 리소스 목록으로 조사한다. 관계 탐색이 반복적으로 필요할 때 그래프 도입을 검토하는 것은 적용 제안이며, 그래프 구축 자체를 절감 성과로 계산하지 않는다. 실제 계정의 비용이나 귀속 정확도는 시험하지 않았고 앞 절들의 검증 기준일은 유지한다.
 
+### 추천 절감액을 실현 성과로 합산하지 않는다
+
+부분 검증(2026-10-23): AWS Cost Optimization Hub는 서로 영향을 주는 추천의 중복을 고려해 예상 절감액을 집계한다. 같은 EC2 인스턴스를 삭제하는 추천과 크기를 줄이는 추천은 동시에 실행할 수 없으므로 두 절감액을 더하지 않는다. Savings Plans와 Reserved Instances 추천 사이의 중복도 고려한다.
+
+다음은 추천을 실제 변경과 측정으로 연결하는 운영 예시다.
+
+- 추천마다 대상 자원, 사용 근거, 담당자와 변경 조건을 연결한다. 청구 담당자가 찾은 절감 후보와 자원 담당자가 실행할 변경을 같은 기록에서 추적한다.
+- 서로 배타적인 조치와 순차 실행할 조치를 구분한다. 먼저 자원을 줄였다면 이후 약정 구매의 대상 사용량도 다시 계산한다.
+- 예상 절감액, 실제 변경 완료, 변경 뒤 관측한 비용을 별도 상태로 둔다. 완료 시점 이후의 같은 비용 범위와 업무량을 비교하고, 할인과 트래픽 변화의 영향을 분리한다.
+
+추천이 정확하다는 설명이나 빠른 투자 회수 사례만으로 자체 환경의 절감액을 확정하지 않는다. 이번에는 집계 원리만 공식 문서와 대조했으며 실제 계정 변경과 비용 측정은 하지 않았다. 기존 절의 검증일은 유지한다.
+
 ## 비용 절감과 자원 효율을 구분한다
 
 2026-10-09 AWS Sustainability Pillar 대조 기준. 비용 지표와 함께 작업 한 건을 제공하기 위해 할당한 자원도 측정한다. 할인으로 청구액이 줄어도 같은 자원을 계속 사용한다면 자원 효율이 개선됐다고 볼 수 없다.
@@ -107,6 +119,8 @@ FinOps Foundation의 성숙도 모델은 Crawl, Walk, Run 단계를 쓰고 역�
 
 ## 출처
 
+- [AWS Cost Management, Viewing your savings opportunities](https://docs.aws.amazon.com/cost-management/latest/userguide/coh-savings-opportunities.html)
+- [PointFive Cloud Optimization and AI Efficiency for AWS Customers — Amazon Web Services](https://www.youtube.com/watch?v=T_fdr4_IMko) — 추천의 근거, 담당자와 실현 성과를 연결하는 문제만 참조. 투자 회수 기간은 일반화하지 않았다.
 - [Techniques to improve the state-of-the-art in Cloud FinOps using Amazon Neptune — AWS Database Blog](https://aws.amazon.com/blogs/database/techniques-to-improve-the-state-of-the-art-in-cloud-finops-using-amazon-neptune/)
 - [Amazon VPC, Flow log limitations](https://docs.aws.amazon.com/vpc/latest/userguide/flow-logs-limitations.html)
 - [AWS Data Exports, What are AWS Cost and Usage Reports?](https://docs.aws.amazon.com/cur/latest/userguide/what-is-cur.html) — 2026-10-10 월중 추정치, 갱신 주기와 사후 조정 가능성을 대조했다.

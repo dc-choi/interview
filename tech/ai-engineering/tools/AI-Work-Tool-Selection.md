@@ -85,6 +85,14 @@ Suno Song Editor의 가사 수정은 대상 구간을 선택하고 가사를 바
 
 설정 시간, 생산성 배수와 매출 상승은 다른 지표다. 몇 분 만에 연결됐다는 사실은 업무 정확도나 매출 증가의 증거가 아니다. 생산성 향상 배수를 일반화하려면 비교 업무, 난이도, 품질 기준과 측정 기간이 필요하다. 매출 변화는 가격, 고객군, 유입과 전환 같은 사업 조건도 함께 확인해야 한다.
 
+### 사용량, 부분 최적화와 전체 성과를 나누어 기록한다
+
+토큰 사용량과 활성 사용자 수는 도구가 얼마나 쓰이는지 보여준다. 토큰당 비용, 개별 CI 실행 시간과 검수까지 끝낸 변경의 완료 시간은 다른 측정값이다. 한 지표의 개선율을 나머지 지표의 개선율로 옮기지 않는다.
+
+2026-10-23 대조한 Smartsheet 공개 인터뷰는 사용 활성화 지표, prompt caching에 따른 평균 토큰 비용 감소, 특정 검증 파이프라인 시간 단축을 서로 다른 사례로 설명한다. 이는 회사의 자체 보고이며 전체 개발 생산성의 인과 효과를 독립 측정한 결과는 아니다. DORA의 2026-03 분석도 코드 초안 작성에서 아낀 시간이 감사와 검증으로 옮겨갈 수 있다고 설명한다. 따라서 생성 속도만으로 전달 성과를 판단하지 않는다.
+
+적용 예시로, 같은 작업군에서 사용량과 도구 비용을 수집하되 변경 요청부터 검토와 배포까지의 시간, 재작업과 실패를 함께 본다. 파이프라인을 단축했다면 필수 테스트를 유지했는지도 확인한다. 이 절은 측정 기준을 보완한 것이며 앞의 제품 기능 전체를 다시 검증한 기록은 아니다.
+
 ## 4. 도입 전 확인할 경계
 
 - **자료 입력:** 고객 정보, 회의 내용과 내부 자료의 수집 권한, 업로드 범위, 보관과 공유 조건을 확인한다.
@@ -96,6 +104,8 @@ Suno Song Editor의 가사 수정은 대상 구간을 선택하고 가사를 바
 
 ## 출처
 
+- [Intelligent Work Management: Smartsheet's AI Strategy — Amazon Web Services](https://www.youtube.com/watch?v=Jqi4_1YNNqg) — 07:14~08:17의 사용량, 비용과 CI 사례를 구분해 참조
+- [Balancing AI tensions: Moving from AI adoption to effective SDLC use — DORA](https://dora.dev/insights/balancing-ai-tensions/)
 - [Mobbin — Mobbin](https://mobbin.com/)
 - [AI UI Generator That Exports Code: From Prompt to Production UI — Superdesign](https://superdesign.dev/blog/ai-ui-generator-exports-code)
 - [Keywords Explorer — Ahrefs](https://ahrefs.com/keywords-explorer)
