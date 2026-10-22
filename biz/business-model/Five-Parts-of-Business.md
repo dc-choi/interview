@@ -84,6 +84,19 @@ Kaufman은 이 중 하나라도 빠지면 사업이 아니라고 본다. 진단�
 
 널리 인용되는 사례는 일론 머스크가 2012년 Wired 인터뷰에서 설명한 로켓 원가 계산이다. 로켓을 항공우주용 알루미늄 합금, 티타늄, 구리, 탄소섬유 같은 원자재로 나누고 원자재 시장 가격을 합하니 통상 판매가의 약 2% 수준이었다는 내용이다. 원자재 목록과 약 2% 수치는 2026-10-05에 Wired 원문(2012-10-21 게재)의 인터넷 아카이브 사본으로 대조했다. 머스크 본인의 설명이지 독립적으로 검증된 원가 자료가 아니므로, 수치보다 분해 절차의 예시로만 쓴다.
 
+### 재사용은 재료값과 다른 비용 구조를 바꾼다
+
+재료를 싸게 사는 것과 같은 자산을 여러 번 쓰는 것은 다른 원가 개선이다. SpaceX의 Falcon 사용자 가이드(2025-05-09판, 2026-10-23 대조)는 첫 단 부스터와 페어링의 재비행, 하드웨어 정비와 검사를 설명한다. 여기서 확인한 것은 부품별 재사용이며 로켓 전체를 추가 비용 없이 즉시 재사용한다는 뜻이 아니다.
+
+사업에 적용할 때는 다음처럼 계산 단위를 나누는 방법을 제안한다.
+
+- 최초 제작비 중 여러 회차에 나눌 비용과 매번 다시 드는 비용을 구분한다.
+- 회수, 점검, 수리와 재투입 준비에 드는 비용 및 시간을 포함한다.
+- 설계상 재사용 가능 횟수와 실제 수요 안에서 달성한 사용 횟수를 구분한다.
+- 사용 횟수에 따라 회차당 비용이 어떻게 달라지는지 비교하고, 실패와 폐기 비용을 빠뜨리지 않는다.
+
+이는 재사용 자산의 원가를 검토하는 틀이며 특정 발사체의 손익분기 횟수나 비용 절감률을 계산한 결과가 아니다. 비행기 같은 다른 산업의 비유는 구조를 이해하는 데만 쓰고 실제 원가는 해당 자산의 기록으로 확인한다.
+
 ### 적용 절차
 
 1. 판매가 또는 현재 비용을 구성 요소로 쪼갠다 (재료, 인건비, 외주, 유통, 결제 수수료, 고객 획득 비용).
@@ -131,6 +144,7 @@ Kaufman은 이 중 하나라도 빠지면 사업이 아니라고 본다. 진단�
 
 ## 출처
 
+- [SpaceX, Falcon Payload User's Guide](https://www.spacex.com/assets/media/falcon-users-guide-2025-05-09.pdf) — 2025-05-09판 1.3절, 2026-10-23 부스터와 페어링 재비행, 정비와 검사 대조
 - [Casting a light on dependent contractors: a new statistical and increasingly important category — ILOSTAT](https://ilostat.ilo.org/blog/casting-a-light-on-dependent-contractors-a-new-statistical-and-increasingly-important-category/) — ICSE-18의 권한, 경제적 위험과 종속 계약자 구분
 - [The 5 Parts of Every Business — The Personal MBA, Josh Kaufman](https://personalmba.com/5-parts-of-every-business/)
 - [Value Delivery — The Personal MBA, Josh Kaufman](https://personalmba.com/value-delivery/) — 2026-10-14 가치 전달의 범위 확인. 위의 병목별 진단 질문은 두 개념을 적용한 점검 예시다.

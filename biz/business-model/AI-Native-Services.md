@@ -51,6 +51,18 @@ MarqVision은 위조 상품 대응, 무단 판매, 사칭, 콘텐츠 보호, 상
 - **성장의 병목:** 대표는 SaaS에서는 성장이 멈추면 대개 판매 쪽 문제로 보고, 좋은 판매 리더를 데려오면 같은 제품으로도 매출이 다시 오른다는 말이 있다고 소개했다. 반면 서비스는 문제를 풀어 주겠다는 제안의 수요가 크지만 기존 방식보다 비싸거나 비효율적이면 선택받지 못하므로, 판매보다 결과를 효율적으로 제공하는 제품의 역량이 더 중요하다고 본다.
 - **인수의 순서:** 5년 동안 수작업 처리를 자동화하며 방법을 익힌 뒤에야 인력 중심 BPO 경쟁사의 인수를 검토하고 있다고 했다(인터뷰 시점 미인수). 목표는 인원 감축이 아니라 인원을 늘리지 않고 매출을 키우는 것이고, 경영진 교체와 데이터 통합 중심의 사모펀드 방식으로는 신고서 자동 작성 같은 세부 운영 실행을 대신할 수 없다고 본다. 앞 절의 플랫폼이 선 뒤 인수한다는 순서와 같다.
 
+### 디지털 탐지와 현물 조사의 원가를 나눈다
+
+온라인에서 의심 상품을 찾는 일과 실제 상품을 확보해 확인하는 일은 서로 다른 제공 단계다. 2026-10-23 확인한 MarqVision 공식 서비스 안내는 시험 구매, 현지 조사, 현지 당국과의 단속 및 현지 법률대리인을 통한 손해배상 대응을 구분한다. 이는 제공자가 공개한 업무 범위이며 특정 도난 사건의 회수 성과를 검증한 자료는 아니다.
+
+결과 기반 서비스의 운영 설계에는 다음 구분을 적용할 수 있다.
+
+- 온라인 탐지 건수, 시험 구매로 확인한 건수, 플랫폼 조치와 현물 회수 결과를 같은 완료 수치로 합치지 않는다.
+- 디지털 처리 원가 외에 시험 구매, 배송, 현장 조사와 법률 대응 비용을 별도로 추적한다.
+- 판매자 사이의 연결 단서는 조사 후보로 다루고, 확정한 사실과 구분한다. 물리적 조사와 집행은 담당 전문가 및 현지 당국의 역할과 연결한다.
+
+이 구분은 서비스 원가와 검수 범위를 정하는 운영 제안이다. 디지털 탐지 자동화율만으로 전체 사건 처리의 자동화율이나 수익성을 추정하지 않는다.
+
 ## 채용 서비스에서 활동량과 청구 결과를 나눈다
 
 에이전트가 대화하고 후보를 소개하는 서비스에서는 대화 수, 소개 수, 면접 수와 실제 채용 수를 서로 다른 단계로 본다. 앞 단계의 활동량이 늘어도 유료 결과나 수익성이 같은 비율로 늘었다고 판단할 수 없다.
@@ -82,7 +94,7 @@ Jack & Jill은 구직자용 Jack과 기업용 Jill을 두고, 양쪽에 맞는 �
 - [The AI-Native Services Playbook — Emergence Capital](https://emcap.com/thoughts/the-ai-native-services-playbook) — 2026-03-30
 - [Roll Up or Build? Why the Fastest Path to a Venture-Scale AINS Business Is the One Founders Keep Avoiding — Emergence Capital](https://emcap.com/thoughts/roll-up-or-build-why-the-fastest-path-to-a-venture-scale-ains-business-is-the-one-founders-keep-avoiding) — 2026-06-02
 - [Services: The New Software — Sequoia Capital, Julien Bek](https://sequoiacap.com/article/services-the-new-software) — 2026-03-05. 도구와 일의 판매, 외주 업무를 진입점으로 삼는 이유와 서비스 지출 비교. 2026-10-18 확인
-- [Full Brand Control with MarqVision — MarqVision](https://www.marqvision.com/) — 2026-10-18 확인, 제품 구성과 MarqLaw의 제휴 로펌, 현장 조사와 오프라인 단속
+- [Full Brand Control with MarqVision — MarqVision](https://www.marqvision.com/) — 2026-10-18 제품 구성과 MarqLaw 확인, 2026-10-23 시험 구매, 현지 조사, 현지 당국과의 단속 및 법률 대응 범위 추가 대조
 - [Stop Counterfeit Sales. Protect Your Brand. — MarqVision](https://www.marqvision.com/brand-protection) — 2026-10-18 확인, 위조품 노출 추세 지표(Saturation Rate)
 - [챗봇 좀 그만 만드세요 | 마크비전 이인섭 대표 — BZCF 비즈까페](https://www.youtube.com/watch?v=6Lax-pt73ag) — 2026-10-16 공개 인터뷰, 16:15~17:17 글로벌 브랜드가 보는 성과, 20:21~21:22 신고서 초안 자동화와 집계 단위, 41:12~49:19 결과 판매, 자동화 비중과 제공 효율, 50:19~53:24 BPO 인수 검토, 54:24~55:27 사라지기까지 걸린 시간, 1:19:02 피벗 전 월 구독 제품. 회사 대표의 설명이며 수치는 독립 검증하지 않음
 

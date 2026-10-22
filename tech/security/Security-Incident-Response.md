@@ -188,6 +188,16 @@ NIST SP 800-61 Rev. 3는 일부 격리 조치를 보안 기술이 자동으로 �
 - **외부 승인 요청**: Google SecOps 문서는 플랫폼 밖 사용자에게 장비 격리 승인 링크를 메일로 보내는 예시를 들지만 승인자 인증 방식은 설명하지 않는다. Splunk SOAR (Cloud)는 외부 prompt 수신자에게 SAML 인증을 선택적으로 요구할 수 있다. 승인자 신원을 확인할 수 없는 외부 링크로는 호스트 격리처럼 영향이 큰 조치를 승인하지 않는다.
 - **효과 측정**: 분류 시간, 대응 시간과 놓친 사건을 자기 환경에서 같은 조건으로 잰다. 공개된 1차 측정치인 CISA 파일럿의 IOC 최초 식별부터 차단 성공까지 걸린 시간 단축(평균 3일에서 약 3분)은 특정 절차의 결과이고, fact sheet가 측정 방법을 설명하지 않으므로 인시던트 전반의 대응 시간으로 일반화하지 않는다. ML 상관이나 AI 경고 분류는 SIEM, XDR의 분석 기능이나 AI 에이전트 기능으로 SOAR playbook과 구분하고, 오탐을 자동으로 닫을 때 생기는 미탐 위험까지 평가한다. 경보 묶음과 억제, 정밀도와 재현율 기준은 [[Alert-Fatigue|알람 피로]]를 따른다.
 
+### Webhook 접수와 대응 완료를 구분한다
+
+SIEM 경보를 n8n으로 전달할 때 Webhook은 워크플로 시작점이다. 2026-10-23 n8n 공식 Webhook 문서의 인증, URL과 응답 방식을 대조했다. 이 부분 검증으로 기존 법령과 다른 제품 동작의 검증일을 갱신하지 않는다.
+
+- **호출자 확인:** Basic, Header, JWT 인증을 선택할 수 있고 인증 없는 설정도 있다. 운영 제안으로 경보 발신자를 인증하고, 수신한 대상 식별자와 허용할 조치를 별도로 검증한다. 경보에 담긴 IP만으로 차단 권한을 부여하지 않는다.
+- **운영 연결:** 테스트 URL과 운영 URL은 다르다. 운영 Webhook은 워크플로를 게시할 때 등록되며 실행 자료는 Executions에서 확인한다. 테스트 호출 성공과 운영 경보 연결을 따로 확인한다.
+- **완료 판정:** Immediately 응답은 워크플로 시작을 알린다. When Last Node Finishes는 마지막 실행 노드의 결과를 돌려준다. 어느 방식이든 대상 방화벽이나 메일 시스템의 실제 적용 결과까지 자동으로 증명하는 것은 아니므로, 접수, 판단, 조치 요청과 적용 확인을 별도 상태로 기록한다(운영 제안).
+
+이 연동 기능의 존재만으로 특정 조직의 대응 시간이 줄었다고 판단하지 않는다. 효과 측정에는 같은 사건 범위와 시작, 종료 조건, 실패와 오탐 처리까지 포함한다.
+
 ## 생성형 AI로 만든 보안 리포트의 검증
 
 ### AI 조사 결과와 실제 조치의 상태
@@ -219,6 +229,7 @@ CSV가 생성됐다는 사실은 수집과 필드 변환이 정확하다는 증�
 
 ## 출처
 
+- [n8n, Webhook](https://docs.n8n.io/integrations/builtin/core-nodes/n8n-nodes-base.webhook/) — 2026-10-23 인증 방식, 테스트/운영 URL과 응답 시점 대조.
 - [NIST, SP 800-84: Guide to Test, Training, and Exercise Programs for IT Plans and Capabilities](https://doi.org/10.6028/NIST.SP.800-84) — 2026-10-23 4~6장의 훈련 유형, inject, 사전 평가 기준과 사후 개선 절차 대조.
 - [CISA, #StopRansomware Guide: Ransomware and Data Extortion Response Checklist](https://www.cisa.gov/stopransomware/ransomware-guide) — 2026-10-22 네트워크 격리, 전원 종료의 예외, 휘발성 증거와 복구망 대조.
 - [ShinyHunters: Cyber Criminal Group Attacks Learning Management System — FBI/IC3](https://www.ic3.gov/PSA/2026/PSA260515/) — 2026-05-15 경보, 2026-10-22 실제/과장된 접근 주장과 허위 민감정보, 연락 검증과 증거 보존 권고 대조.
