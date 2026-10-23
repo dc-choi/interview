@@ -17,6 +17,14 @@ aliases: ["투자 전략", "Investment Strategies"]
 
 SPIVA scorecard에서는 여러 시장과 기간에 걸쳐 다수의 액티브 펀드가 해당 benchmark에 뒤졌지만 비율은 자산군, 국가, 기간마다 달랐다. 비용과 생존자 편향을 포함한 장기 비교는 저비용 패시브의 강한 근거가 되지만, 투자자의 목표, 세금, 유동성, 위험 감수 수준과 추적 지수의 집중도를 함께 봐야 한다.
 
+### ETF의 형태와 운용 전략을 구분한다
+
+ETF는 거래소에서 매매하는 상품 형태이며 패시브 운용과 동의어가 아니다. 지수를 추종하는 ETF와 운용자가 목표에 맞춰 자산을 선택하는 액티브 ETF가 모두 있다. ETF를 선택할 때도 추적 대상 또는 운용 목표, 비용과 보유 자산을 확인해야 한다.
+
+개별 기업 분석 부담을 줄이려고 ETF를 검토하더라도 시장 전체에 투자하는 상품과 한 업종에 집중한 상품은 구분한다. 좁은 업종 ETF는 그 업종의 위험을 함께 보유하며, 여러 ETF를 사도 상위 편입 종목이 겹치면 기대한 분산이 부족할 수 있다. 상품 개수보다 실제 보유 자산과 비중을 대조한다.
+
+과거에 ETF 수익률이 좋았다는 사례만으로 향후 수익이나 개별주 대비 우월성을 보장하지 않는다. 2026-10-24 Investor.gov의 ETF 운용 방식과 분산 안내를 대조한 부분 보강이며, 특정 국내 상품의 성과나 세제는 확인 범위에 포함하지 않았다.
+
 ## 2. 효율적 시장 가설
 
 **효율적 시장 가설**은 자산 가격이 이미 알려진 정보를 빠르게 반영하므로, 공개된 정보로 시장을 꾸준히 이기기 어렵다는 주장이다. 강도에 따라 세 형태로 나뉜다.
@@ -91,6 +99,7 @@ SPIVA scorecard에서는 여러 시장과 기간에 걸쳐 다수의 액티브 �
 
 ## 출처
 
+- [Asset Allocation and Diversification — Investor.gov](https://www.investor.gov/introduction-investing/getting-started/asset-allocation) — 좁은 업종 펀드의 분산 한계와 여러 펀드의 상위 보유 종목 중복 확인.
 - [Exchange-Traded Funds (ETFs) — Investor.gov](https://www.investor.gov/introduction-investing/investing-basics/investment-products/mutual-funds-and-exchange-traded-2) — 분배금과 가격 변화, 지급 변동과 원금 손실 위험.
 
 - [The 4% Rule: How Much Can You Spend in Retirement? — Charles Schwab](https://www.schwab.com/learn/story/beyond-4-rule-how-much-can-you-spend-retirement)
