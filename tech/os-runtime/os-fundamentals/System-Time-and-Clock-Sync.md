@@ -71,13 +71,23 @@ NTP로 맞춰도 서버마다 수 밀리초 이상 차이가 날 수 있고, 보
 - 경과 시간, 타임아웃, 속도 제한은 단조 증가 시계로 잰다. [[Sleep-and-Timing]]
 - 로그와 감사 기록은 UTC로 남겨 여러 서버의 기록을 같은 기준으로 비교한다. 시각 차이를 감안해 요청 식별자로 이어 붙인다. [[Correlation-ID]]
 
+## 연속 UTC 전환과 경과 시간 측정
+
+2026-10-24 확인한 CGPM 2026 결의 5는 연속 UTC의 시행일을 **2027-05-20**, 지구 자전 기반 UT1과 UTC의 허용 차이 상한을 **3,600초(1시간)**로 정했다. 2022년 결의의 2035년 이내 전환 방향에서 시행일을 구체화한 것이다. 결의 채택과 시행은 다르며, 확인일 현재 이미 전환됐다고 쓰지 않는다. 새 허용 범위는 수 세기 동안 UTC의 연속성을 유지하기 위한 것이며 정기적으로 한 시간을 삽입한다는 일정이 아니다.
+
+시간 표준의 전환이 벽시계의 단조 증가를 보장하지는 않는다. 시계 동기화나 관리자의 보정은 별개이므로 경과 시간과 타임아웃은 계속 단조 시계로 측정한다.
+
+2017년 Cloudflare 장애에서는 벽시계로 계산한 DNS 응답 시간이 윤초 처리 중 음수가 됐다. 평활화된 값도 음수로 내려가면서 서버 선택 코드의 `rand.Int63n()` 호출이 panic을 냈다. 당시 수정은 음수 측정값이 선택 코드로 들어가지 않게 막았다. 이는 특정 당시 구현의 장애 경로이며 현재 Go의 시간 API 전체가 같은 방식으로 동작한다는 설명이 아니다.
+
+이 절은 BIPM 결의와 Cloudflare의 당사자 장애 보고서를 대조한 부분 검증이다. 기존 NTP와 Windows 설정 전체를 다시 검증하지 않았으므로 frontmatter 날짜는 유지한다.
+
 ## tz database와 Zone ID
 
 국가와 지역의 시간대는 경도대로 정해지지 않고, 여러 시간대를 가진 나라도 있으며, 일광절약시간과 법 개정으로 바뀐다. IANA tz database가 이 규칙과 변경 이력을 `Asia/Seoul`, `America/New_York`처럼 대륙과 도시 이름의 Zone ID로 관리한다.
 
 - 특정 지역의 시각을 보여 주려면 UTC 순간과 Zone ID를 저장하고, 표시할 때 최신 규칙으로 변환한다. 고정 offset(`+09:00`)만 저장하면 규칙 변경과 일광절약시간을 반영하지 못한다.
 - 규칙이 바뀌면 운영체제, 런타임, 데이터베이스의 tz 데이터를 함께 갱신해야 같은 결과가 나온다.
-- `Z`는 UTC offset 0을 뜻한다. UTC는 원자시에 윤초를 넣어 맞춘 시간 표준이고, GMT는 영국의 시간대 이름으로 쓰이기도 해(여름에는 BST로 바뀜) 서로 바꿔 쓰면 모호해질 수 있다.
+- `Z`는 UTC offset 0을 뜻한다. UTC는 원자시 기반 시간 표준이며 2027-05-20 연속 UTC 시행 전후의 윤초 정책을 구분한다. GMT는 영국의 시간대 이름으로 쓰이기도 해(여름에는 BST로 바뀜) 서로 바꿔 쓰면 모호해질 수 있다.
 
 ## 체크포인트
 
@@ -89,6 +99,9 @@ NTP로 맞춰도 서버마다 수 밀리초 이상 차이가 날 수 있고, 보
 
 ## 출처
 
+- [BIPM, Resolution 5 of the 28th CGPM (2026)](https://www.bipm.org/en/cgpm-2026/resolution-5) — 2026-10-24 연속 UTC 시행일과 UT1-UTC 상한 대조
+- [BIPM, Resolution 4 of the 27th CGPM (2022)](https://www.bipm.org/en/cgpm-2022/resolution-4)
+- [How and why the leap second affected Cloudflare DNS — Cloudflare Blog](https://blog.cloudflare.com/how-and-why-the-leap-second-affected-cloudflare-dns/)
 - [Microsoft Learn, How the Windows Time Service works](https://learn.microsoft.com/en-us/windows-server/networking/windows-time-service/how-the-windows-time-service-works)
 - [Microsoft Learn, Windows Time service tools and settings](https://learn.microsoft.com/en-us/windows-server/networking/windows-time-service/windows-time-service-tools-and-settings)
 - [AWS, Set the time reference on your EC2 instance to use the local Amazon Time Sync Service](https://docs.aws.amazon.com/AWSEC2/latest/UserGuide/configure-ec2-ntp.html)

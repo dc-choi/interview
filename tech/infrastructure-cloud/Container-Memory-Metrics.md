@@ -40,6 +40,16 @@ uptime이 긴 pod 하나에 들어가 확인한다 (cgroup v1 기준 경로. v2�
 
 대시보드에서는 충분한 기간의 usage/limit, working_set/limit, anonymous/RSS와 file cache, 런타임 committed와 GC 후 live set, 재시작/OOM을 함께 본다. cgroup v2에서는 `memory.current`, `memory.stat`, `memory.events`의 `high`, `max`, `oom`, `oom_kill`와 memory PSI도 확인하고, 회수 전후와 재시작 시점의 변화를 연관 분석한다.
 
+## 저메모리 호스트의 제한과 회수 설정
+
+부분 검증(2026-10-24): 아래 설정 의미를 Linux 커널과 systemd 공식 문서로 대조했다. 기존 사례의 수치나 실제 서버 부하는 재현하지 않았으며 문서 전체의 검증일은 유지한다.
+
+- **제한과 정상 운영을 구분한다.** cgroup v2에서 systemd `MemoryHigh=`는 회수와 throttling을 유도하는 주 제어 수단이다. `MemoryMax=`는 회수로 한도를 지키지 못하면 unit 내부 OOM으로 이어질 수 있는 최후 방어선이다. 제한을 넣었다는 사실이 해당 서비스의 가용성을 보장하지 않는다. swap 사용 한도는 `MemorySwapMax=`로 별도 제어한다.
+- **swappiness는 남은 RAM 비율이 아니다.** swap I/O와 파일 페이지 회수의 상대 비용을 반영하는 0~200 값이다. zram처럼 메모리 안에서 swap을 처리하면 100을 넘는 값도 고려할 수 있으므로, 저메모리 서버라는 이유만으로 10을 일괄 적용하지 않는다.
+- **VFS 캐시의 회수 방향을 구분한다.** `vfs_cache_pressure`를 낮추면 dentry와 inode 캐시를 더 보존한다. 따라서 50으로 낮추는 것을 애플리케이션 메모리를 우선 확보하는 설정으로 설명하면 반대 의미가 된다. 기본 회수 비율과 비교하고, `vfs_cache_pressure_denom`을 제공하는 커널에서는 그 값도 함께 확인한다.
+
+운영 제안: 애플리케이션, DB, 호스트 관리 작업과 백업의 동시 실행 구간을 포함해 메모리 예산을 측정한다. 특정 RAM 용량에 공통 한도를 복사하기보다 `memory.events`, PSI와 응답 지연으로 회수와 종료의 영향을 확인한다. swap의 지연 비용은 [[Virtual-Memory-Swap-and-File-Mapping|스왑과 파일 메모리 매핑]]을 함께 본다.
+
 ## 사례
 
 - JVM 기반 계산 서비스: JVM 튜닝 후에도 limit 3G에서 usage 99.6% — 실측은 rss 약 1.74G + cache 약 1.02G로, 힙 누수가 아니라 Logback FILE appender가 만든 cache 약 1GiB가 limit을 채우고 있었다. FILE appender 제거와 limit 3.5G 조정 후 cache는 약 5MiB로 떨어지고 usage는 30%대로 하락, 7일 이상 지난 뒤에도 60%대 고원으로 안정 (SSG 프로모션 서비스). 같은 사례의 런타임 축(커밋 정책)은 [[JVM-Container-Memory]] 참고.
@@ -54,6 +64,8 @@ uptime이 긴 pod 하나에 들어가 확인한다 (cgroup v1 기준 경로. v2�
 
 ## 출처
 
+- [Linux Kernel Docs, Documentation for /proc/sys/vm/](https://docs.kernel.org/admin-guide/sysctl/vm.html) — 2026-10-24 swappiness와 vfs_cache_pressure 대조
+- [systemd, systemd.resource-control](https://www.freedesktop.org/software/systemd/man/latest/systemd.resource-control.html) — 2026-10-24 cgroup v2의 MemoryHigh, MemoryMax와 MemorySwapMax 대조
 - [돌아오지 않는 메모리를 찾아서 — SSG TECH BLOG](https://medium.com/ssgtech/%EB%8F%8C%EC%95%84%EC%98%A4%EC%A7%80-%EC%95%8A%EB%8A%94-%EB%A9%94%EB%AA%A8%EB%A6%AC%EB%A5%BC-%EC%B0%BE%EC%95%84%EC%84%9C-6988f6d55066)
 - [Kubernetes Docs, Node-pressure Eviction](https://kubernetes.io/docs/concepts/scheduling-eviction/node-pressure-eviction/) (working set 기준 축출, inactive_file 제외)
 - [Linux Kernel Docs, Memory Resource Controller](https://docs.kernel.org/admin-guide/cgroup-v1/memory.html) (한도 도달 시 회수 후 OOM, memory.stat 항목)

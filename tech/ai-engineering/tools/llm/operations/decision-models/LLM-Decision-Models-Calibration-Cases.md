@@ -37,6 +37,14 @@ Microsoft는 학습에서 가린 36개 평가에서 비교 모델 중 가장 높
 
 이미지, 박스와 긴 문맥은 실험 기능이며 벤더도 당시 프로덕션 사용을 보증하지 않았다. 모델 ID와 플래그를 고정하고 기존 과업의 회귀를 확인한 뒤 사용한다. API를 실제 호출하거나 품질을 재현하지 않았다.
 
+### 이미지 요청의 크기와 과금 경계
+
+2026-10-24 TypeSafe Images 공식 문서 대조 기준이다. 이미지 입력에는 `TypeSafe-Danger-Zone-Images: true`가 필요하다. JPEG 또는 PNG 정지 이미지를 받으며 가로와 세로가 각각 280~1568픽셀이어야 한다. 범위를 벗어나면 서버가 자동 축소하지 않고 요청을 거부한다. EXIF 방향 정보도 적용하지 않으므로 전송 전에 픽셀을 올바른 방향으로 회전한다.
+
+이미지 파일의 업로드 횟수와 모델 입력에 포함되는 횟수를 구분한다. 같은 asset 참조를 여러 위치에 넣으면 확장 입력에 이미지가 반복 포함된다. 여러 질문이 공유하는 이미지는 `state`에 한 번 놓고 질문에서 해당 필드 경로를 가리키는 구성이 토큰과 크기를 줄이는 데 유리하다. 파일당 16 MiB 제한 외에 요청 본문과 확장 입력에도 각각 32 MiB 제한이 있다.
+
+이미지는 텍스트와 같은 입력 토큰 단가로 과금되고 응답의 `usage.input_tokens`에 포함된다. 비교 제안: 토큰 단가만으로 모델별 이미지 처리 비용을 비교하지 않고, 같은 이미지와 질문에서 실제 토큰 사용량, 요청 비용과 판정 오류를 함께 기록한다. 이 절은 요청 계약의 확인이며 API 실행이나 영상의 모델 간 정확도, 지연 및 비용 비교를 재현한 결과는 아니다.
+
 ## 트롤리 문제는 의식보다 표현 민감도 시험에 가깝다
 
 같은 상황의 문장 순서, 인물 명칭과 선택지를 바꾸는 쌍 비교는 판정의 안정성을 검사하는 방법이다. 자기 서버를 고르는 응답만으로 실제 자기보존 의도나 시스템 접근 능력을 추론하지 않는다.
@@ -65,6 +73,7 @@ Microsoft는 학습에서 가린 36개 평가에서 비교 모델 중 가장 높
 - [Introducing Microsoft-Decision-1, our model for fast decision-making — Microsoft](https://commandline.microsoft.com/microsoft-decision-1-model-foundry/)
 - [Jev: For the builders AND dreamers — TypeSafe AI](https://typesafe.ai/blog/jev-1-14)
 - [TypeSafe Docs, Models](https://docs.typesafe.ai/models)
+- [TypeSafe Docs, Images](https://docs.typesafe.ai/images) — 2026-10-24 입력 크기, 이미지 참조 반복, 방향 정보와 토큰 과금 대조
 - 사용자 제공 GeekNews 발췌: 2026-10-11 Microsoft-Decision-1, 2026-10-12 Qwen 결정 모델, 2026-10-15 Jev 1.14.0, 2026-10-16 Jev와 트롤리 문제. 트롤리 실험 원문은 후속 확인 대상이다.
 
 - [AnyJev — Nokia Applied Research](https://github.com/nokia-applied-research/AnyJev)
