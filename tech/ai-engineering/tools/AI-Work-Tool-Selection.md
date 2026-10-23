@@ -96,6 +96,14 @@ Bee의 공식 설명은 음성을 실시간 처리 후 삭제하고 전사문은
 
 운영 제안: 생성 전에 슬라이드별 핵심 주장과 숫자의 근거를 확인하고, 생성 뒤에는 빠진 결론, 숫자의 가독성, 페이지 간 디자인 일관성과 편집 가능 여부를 검수한다. 생성 시간과 최종 승인까지의 수정 시간을 따로 측정한다. 이번에는 실제 발표자료를 생성하거나 시간 절감 효과를 측정하지 않았으며 기존 제품 비교의 `verified_at`은 유지한다.
 
+### 앱 간 문서 작업은 연결 조건과 내용 검수를 나눈다
+
+2026-10-24 Claude for M365 공식 문서는 Excel, PowerPoint, Word와 Outlook 추가 기능 사이에서 열린 파일과 메일 스레드의 맥락을 이어 읽고 수정하는 기능을 안내한다. Excel의 수치를 Word 메모로 옮기거나 Word 문서를 PowerPoint로 요약하는 작업이 예다. 이 기능은 Claude 계정으로 직접 로그인할 때 지원되며 Bedrock, Vertex AI, Azure AI Foundry와 LLM gateway 연결에서는 지원되지 않는다.
+
+공식 안내의 준비 조건은 유료 Claude 플랜, 각 추가 기능의 설치와 최초 활성화, 추가 기능별 `Let Claude work across files` 설정이다. 조직의 관리자 설정도 접근을 제한할 수 있다. 파일을 생성하는 기능과 열린 앱 사이에서 읽기와 쓰기를 이어가는 기능을 구분하고 실제 사용 환경의 연결 여부를 확인한다.
+
+검수 절차 제안: 원본 수치와 단위, 보고서의 기준 기간을 먼저 맞추고 생성된 슬라이드의 숫자, 빠진 전제와 레이아웃을 대조한다. 앱 간 맥락 공유가 수치의 정확성이나 납품 품질을 보장하지는 않는다. 이번에는 문서상 연결 조건만 확인했으며 실제 추가 기능 실행과 시간 절감은 측정하지 않았다. 기존 제품 비교의 `verified_at`은 유지한다.
+
 ### 화면 제작 도구는 규칙, 실행, 피드백과 재료로 나눈다
 
 2026-10-24 공식 제품 소개와 문서에서 확인한 역할이다. 설치나 실행 성능을 시험한 결과는 아니며, 오른쪽 열은 도입 전 검수 기준이다.
@@ -144,6 +152,7 @@ Bee의 공식 설명은 음성을 실시간 처리 후 삭제하고 전사문은
 
 ## 출처
 
+- [Claude, Work across M365 apps](https://claude.com/docs/office-agents/work-across-apps)
 - [Ponytail — Ponytail](https://ponytail.dev/)
 - [BrowserSkill — GitHub, Tencent](https://github.com/Tencent/BrowserSkill)
 - [Agentation — Agentation](https://www.agentation.com/)

@@ -10,6 +10,14 @@ aliases: ["SSH Authentication", "SSH 인증", "SSH 호스트 키와 사용자 �
 
 SSH는 신뢰할 수 없는 네트워크에서 원격 로그인과 명령 실행을 보호하는 프로토콜이다. **서버를 믿을 수 있는지 확인하는 절차와 사용자가 그 서버 계정에 접근할 수 있는지 확인하는 절차가 다르다.** 공개키로 로그인하더라도 실제 명령과 응답을 사용자 공개키로 매번 암호화하는 것은 아니다.
 
+## 원격 셸과 터미널의 역할
+
+SSH 접속에서 보이는 명령줄은 원격 프로그램을 조작하는 인터페이스다. SSH 자체를 검은 화면이나 서버의 운영체제와 같은 개념으로 보지 않는다. 서버 인증과 사용자 인증 뒤에 어떤 프로그램을 실행할지 정하는 연결 단계가 따로 있다.
+
+RFC 4254의 세션은 원격 셸, 명령이나 서브시스템을 실행하며, 터미널 할당은 선택 사항이다. `shell` 요청은 원격 사용자의 기본 셸을 시작하고, `exec` 요청은 지정한 명령을 실행하도록 요청한다. 대화형 입력 없이 명령 실행과 결과 수집에 사용하는 것도 이 구조로 설명할 수 있다. 세션이 열렸다는 사실만으로 모든 명령의 실행 권한이 주어지는 것은 아니다.
+
+2026-10-24 RFC 4254의 6절, 6.2절과 6.5절을 대조한 설명이다. 실제 서버 접속과 클라이언트별 설정은 시험하지 않았으며 기존 구현 설명의 `verified_at`은 유지한다.
+
 ## 세 계층과 세 종류의 키
 
 RFC 4251은 SSH를 전송, 사용자 인증, 연결의 세 프로토콜로 나눈다. 전송 계층이 서버 인증, 기밀성과 무결성을 제공하고, 그 위에서 사용자 인증을 수행한다. 연결 프로토콜은 보호된 연결에 여러 논리 채널을 만들어 셸이나 포트 포워딩 등에 사용한다.
@@ -80,6 +88,7 @@ puttygen input.ppk -O private-openssh -o converted.pem
 - [IETF, RFC 4251: The Secure Shell (SSH) Protocol Architecture](https://www.rfc-editor.org/rfc/rfc4251.html)
 - [IETF, RFC 4252: The Secure Shell (SSH) Authentication Protocol](https://www.rfc-editor.org/rfc/rfc4252.html)
 - [IETF, RFC 4253: The Secure Shell (SSH) Transport Layer Protocol](https://www.rfc-editor.org/rfc/rfc4253.html)
+- [IETF, RFC 4254: The Secure Shell (SSH) Connection Protocol](https://www.rfc-editor.org/rfc/rfc4254.html) — 세션, 선택적 터미널 할당과 셸 및 명령 요청
 - [OpenBSD, ssh(1)](https://man.openbsd.org/ssh.1)
 - [OpenBSD, ssh-keyscan(1)](https://man.openbsd.org/ssh-keyscan.1)
 - [PuTTY, Using public keys for SSH authentication](https://the.earth.li/~sgtatham/putty/0.85/htmldoc/Chapter8.html)
