@@ -119,8 +119,25 @@ LG전자와 AWS의 공개 설계는 마케팅 질문의 계획 수립, 코드 �
 
 온보딩의 혼란으로 고객이 이탈한다면 새 광고보다 첫 사용 흐름을 고치는 실험이 먼저일 수 있다. 자연 유입에서 반응이 나온 소재도 유료 광고에서 같은 구매 효과를 내는지는 따로 확인한다.
 
+## 실행 결과를 다음 캠페인에 반영하는 루프
+
+마케팅 루프는 메시지 설계, 고객별 조정, 배포와 결과 학습을 반복하는 운영 구조다. HubSpot의 Loop Marketing은 이를 Express, Tailor, Amplify, Evolve의 네 단계로 정리한다(2026-10-24 공식 안내 대조).
+
+| 단계 | 확인할 작업 |
+|---|---|
+| Express | 대상 고객과 브랜드 관점, 전달할 메시지와 캠페인 목적을 정한다 |
+| Tailor | 고객의 상황과 콘텐츠 형식에 맞게 메시지를 조정한다 |
+| Amplify | 고객이 있는 여러 채널에 콘텐츠를 배포한다 |
+| Evolve | 결과를 검토하고 다음 실행을 수정한다 |
+
+[[PMF-Funnel|전환 퍼널]]은 단계별 전환을 측정하는 데, 루프는 그 결과를 다음 실행으로 돌려주는 데 쓸 수 있다. AI를 쓴다는 이유만으로 퍼널 계측이 불필요해지는 것은 아니다. HubSpot도 기존 CRM, 콘텐츠와 자동화 흐름을 교체하기보다 연결해 활용하도록 안내한다. 이 프레임워크의 채택 자체가 매출 개선을 입증하지는 않는다.
+
+다음은 작은 팀에 적용하는 운영 제안이다. 실험마다 가설, 비교 조건, 관찰 기간, 결과와 다음에 바꿀 항목을 남긴다. 실험 횟수와 함께 검토한 발견 중 실제 다음 실행에 반영한 비율, 검토부터 반영까지 걸린 시간을 볼 수 있다. 이 두 값은 여기서 제안한 운영 지표이며 보편 표준이나 HubSpot의 고정 점수표로 취급하지 않는다. 실행 속도가 빨라도 유효한 비교와 사업 결과의 확인이 없으면 학습 효과는 미확인이다.
+
 ## 출처
 
+- [Loop Marketing — HubSpot](https://www.hubspot.com/loop-marketing) — 2026-10-24 네 단계와 기존 마케팅 도구 연결 원칙 확인.
+- [Loop Marketing strategy: A framework for stellar AI-era growth — HubSpot, Ramona Sukhraj](https://blog.hubspot.com/marketing/loop-marketing-strategy) — 퍼널, 실행 루프와 closed-loop 측정의 역할 구분.
 - [마케팅 엔지니어: AI 에이전트로 100배 더 많은 실험하기 — GeekNews](https://news.hada.io/topic?id=35448) — 2026-10-16 제공 발췌와 검색 색인 확인.
 - [Marketing Engineers: 100x More Experiments with AI agents — X, Greg Isenberg](https://x.com/gregisenberg/status/2108188646973313195) — 원본 직접 열람 실패, [Thread Navigator 재수록 본문](https://threadnavigator.com/thread/2108188646973313195/)으로 확인. 생산성 배수와 미래 조직 규모는 미검증 전망.
 - [AWS Generative AI Lens, Establish performance evaluation processes](https://docs.aws.amazon.com/wellarchitected/latest/generative-ai-lens/genperf01.html)
