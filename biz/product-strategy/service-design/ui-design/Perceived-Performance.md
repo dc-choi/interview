@@ -34,6 +34,10 @@ aliases: ["Perceived Performance", "지각된 성능", "체감 속도", "Skeleto
 
 컴포넌트는 진행량을 아는지로 고른다. Material 3 사양을 따르는 Material Components for Android 문서(2026-10-20 확인)는 진행량과 대기 시간을 알면 determinate를, 모르면 indeterminate를 쓰라고 하며, indeterminate에서 determinate로 전환할 수 있다. 같은 라이브러리의 loading indicator 문서 기준으로 M3 Expressive의 loading indicator는 5초 안에 끝나는 짧은 대기용이고, indeterminate에서 determinate로 바뀔 수 있는 작업에는 progress indicator를 쓴다. 같은 종류의 작업은 앱 안에서 선형과 원형 중 한 가지로만 표시한다. Material Web은 진행 표시에 aria-label로 이름을 붙이라고 안내한다.
 
+### 진행률이 무엇을 센 값인지 구분한다
+
+Material Web은 진행량이 정해지지 않은 작업에 indeterminate 표시를 제공한다(2026-10-24 재확인). 이를 업로드 화면에 적용할 때는 측정할 수 없는 완료율을 임의로 올리기보다 현재 단계와 진행 중임을 표시하는 방식을 제안한다. 파일 전송량을 알더라도 전송 완료와 서버의 검사, 변환 및 저장 완료를 같은 사건으로 취급하지 않는다. 예를 들어 전송 단계의 진행률을 표시한 뒤 서버 처리 중으로 전환하고, 저장 성공이 확인된 뒤 완료를 알린다. 이 단계 구분은 제품 설계 제안이며 Material Web이 서버 완료 여부까지 판정한다는 뜻은 아니다.
+
 ## 스켈레톤 화면의 조건과 한계
 
 스켈레톤 화면은 최종 페이지의 레이아웃을 흉내 낸 와이어프레임 형태의 자리 표시로 페이지가 로딩 중임을 알린다. 회색 상자로 콘텐츠와 이미지 자리를 표시하는 정적형, 그라데이션이나 요소가 나타났다 사라지는 맥박형 움직임을 넣은 애니메이션형, 헤더와 푸터 같은 틀만 그리는 프레임형이 있다. 아래 조건은 NN/g 지침(2023-06-04 게시, 2026-09-02 재검토)에서 확인했다.
@@ -78,7 +82,7 @@ Core Web Vitals는 실제 로딩, 상호작용 반응성과 시각적 안정성�
 1. 실제 시간을 먼저 줄인다. 첫 화면의 배너와 첫 줄 상품을 먼저 받고 화면 밖 이미지는 지연 로드한다.
 2. 헤더와 내비게이션은 바로 그린다. 상품 그리드를 클라이언트에서 받아 1초를 넘길 수 있으면 첫 화면에 들어갈 카드 수와 비율에 맞춘 스켈레톤 카드를 둔다. 상품 이미지에는 width와 height 또는 aspect-ratio를 준다.
 3. 필터나 정렬을 바꾸면 클릭 즉시 선택한 필터를 표시하고, 기존 목록은 높이를 유지한 채 흐리게 두는 식으로 요청을 받았음을 알린다. 대기가 1초를 넘을 수 있을 때만 진행 표시를 더한다. 목록 전체를 다시 받으면 목록 영역에, 위젯 하나만 다시 받으면 그 모듈 안에 스피너를 두는 것으로 충분하다([[NextJS-Interactive-Feedback|Next.js 상호작용 피드백]]).
-4. 관리자 화면의 상품 이미지 업로드는 스켈레톤이 아니라 진행률 막대로 보여 주고, 여러 파일이면 처리한 개수를 알린다.
+4. 관리자 화면의 상품 이미지 업로드는 전송량을 알면 진행률 막대로, 모르면 indeterminate 표시로 알린다. 여러 파일이면 처리한 개수를 보여 주되 전송 완료와 서버 처리 완료를 구분한다.
 5. 배포 뒤 LCP, INP와 CLS를 현장 데이터로 확인하고, 로딩 화면의 체감 효과는 사용자 테스트로 본다.
 
 ## 트레이드오프
@@ -116,7 +120,7 @@ Core Web Vitals는 실제 로딩, 상호작용 반응성과 시각적 안정성�
 - [Optimize Cumulative Layout Shift — web.dev](https://web.dev/articles/optimize-cls) — 2025-02-07 갱신
 - [Material Components for Android, Progress indicators](https://github.com/material-components/material-components-android/blob/master/docs/components/ProgressIndicator.md) — 2026-10-20 확인
 - [Material Components for Android, Loading indicators](https://github.com/material-components/material-components-android/blob/master/docs/components/LoadingIndicator.md) — 2026-10-20 확인
-- [Material Web, Progress indicators](https://material-web.dev/components/progress/) — 2026-10-20 확인
+- [Material Web, Progress indicators](https://material-web.dev/components/progress/) — 2026-10-20 확인, 2026-10-24 진행량을 모를 때의 indeterminate 표시 추가 대조
 
 ## 관련 문서
 
