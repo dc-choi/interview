@@ -139,6 +139,10 @@ DNSSEC 검증은 리졸버가 미리 신뢰하는 공개키 또는 그 해시인
 
 전환 무렵의 접속 장애를 키 문제로 곧바로 단정하지 않는다. 실제로 사용하는 검증 리졸버, 신뢰 앵커 갱신 상태와 검증 오류를 확인해야 한다. 루트 키의 정상화만으로 서명되지 않은 도메인의 응답까지 DNSSEC로 보호되지는 않는다.
 
+키의 수학적 검증과 키를 다루는 운영 절차도 구분한다. 루트 KSK의 생성과 서명 의식에는 인터넷 기술 커뮤니티의 대표가 참여하며 PTI, ICANN, VeriSign과 직접 관련된 사람은 이 대표가 될 수 없다. KSK-2024는 2024-04-26 생성됐고, 해당 의식의 공개 기록에는 주석이 붙은 실행 절차, 감사 영상, 키 생성 로그와 서명 컴퓨터 감사 로그가 포함된다. 운영 절차의 확인 근거는 이런 기록이며, 공개된 key tag `38696`을 비밀키 값으로 해석하지 않는다. 생성일과 실제 서명 시작일도 혼동하지 않는다.
+
+2026-10-24에는 IANA의 대표 참여 기준, KSK-2024 생성 의식의 자료 목록과 키 상태를 대조했다. 감사 영상과 실행 로그의 전체 내용을 재감사한 것은 아니다.
+
 위조 응답 방어도 질의 ID 하나의 추측 문제로 단순화하지 않는다. RFC 5452는 주소, 포트, 질의 ID, 이름, 클래스와 타입의 일치를 확인하고 예측하기 어려운 출발지 포트와 ID를 사용하도록 요구한다. 16비트 ID 공간만으로 실제 공격의 성공 확률이나 필요한 패킷 수를 계산하지 않는다. 이 절만 공식 자료와 대조했으므로 기존 `verified_at`은 유지한다.
 
 ## 도메인 등록과 위임
@@ -189,6 +193,8 @@ nslookup -type=AAAA naver.com
 
 - [RFC 4033, DNS Security Introduction and Requirements](https://www.rfc-editor.org/rfc/rfc4033.html)
 - [IANA, DNSSEC Trust Anchors and Rollovers](https://www.iana.org/dnssec/files) — 2026-10-23 키 상태와 전환 일정 확인
+- [IANA, Trusted Community Representatives](https://www.iana.org/dnssec/tcrs)
+- [Root KSK Ceremony 53 Day 2 — IANA](https://www.iana.org/dnssec/ceremonies/53-2)
 - [RFC 5452, Measures for Making DNS More Resilient against Forged Answers](https://www.rfc-editor.org/rfc/rfc5452.html)
 - [RFC 7858, Specification for DNS over Transport Layer Security](https://www.rfc-editor.org/rfc/rfc7858.html)
 - [RFC 8484, DNS Queries over HTTPS](https://www.rfc-editor.org/rfc/rfc8484.html)

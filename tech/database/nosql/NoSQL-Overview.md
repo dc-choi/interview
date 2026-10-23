@@ -10,7 +10,13 @@ verified_at: 2026-10-05
 
 NoSQL(Not Only SQL)은 행과 열의 고정 테이블 구조에 얽매이지 않는 저장소 계열이다. 정해진 스키마 없이 다양한 형식의 데이터를 담을 수 있어, 데이터 구조가 자주 바뀌거나 대규모 분산 처리가 필요한 환경에서 유리하다. 대신 복잡한 조인이나 정교한 다중 테이블 쿼리에는 상대적으로 약하다.
 
-RDBMS와의 관계는 "무엇이 더 좋은가"가 아니라 **"무엇에 더 적합한가"**의 문제다. RDBMS는 정교한 장부, NoSQL은 빠르고 유연한 보관함에 가깝다.
+RDBMS와 비교할 때는 데이터와 접근 패턴에 대한 적합성을 따진다. 관계, 제약과 트랜잭션이 필요한 범위 및 각 제품의 실제 보장을 확인한다.
+
+### SQL 문법과 저장 모델은 별개다
+
+SQL을 지원하는지와 데이터를 어떤 모델로 저장하는지는 다른 축이다. DuckDB는 관계형 DBMS이며 PostgreSQL 방언의 관례를 가깝게 따른다. DynamoDB도 SQL 호환 언어인 PartiQL로 조회, 삽입, 갱신과 삭제를 제공하지만 PartiQL 전체가 아니라 일부를 지원한다. SQL처럼 보이는 문법만으로 관계형 모델이나 다른 DBMS의 쿼리 기능을 그대로 제공한다고 판단하지 않는다.
+
+새 DB가 SQL을 지원한다는 사실과 SQL 제품의 시장 점유율이 더 높다는 주장은 구분한다. 후자는 조사 시점과 사용량, 설치 수 등 측정 기준이 필요하며, 제품 예시만으로 수량 우위를 입증할 수 없다. 저장소는 문법의 유행보다 데이터 모델, 조회 패턴과 보장 조건으로 선택한다. 이 절은 2026-10-24 DuckDB SQL 소개와 DynamoDB PartiQL 공식 문서로 대조했으며 기존 문서 전체의 `verified_at`은 유지한다.
 
 ## NoSQL 유형
 
@@ -18,7 +24,7 @@ RDBMS와의 관계는 "무엇이 더 좋은가"가 아니라 **"무엇에 더 �
 |---|---|---|---|
 | **Key-Value** | 키 - 값 쌍 (값은 단순 blob부터 구조체까지) | 세션, 설정값, 캐시, 단순 조회 — `game_setting` 키에 난이도/언어/사용자 정보를 한 번에 | DynamoDB, MemoryDB |
 | **Document** | JSON 유사 문서 | 구조가 조금씩 다른 데이터 — 사용자 프로필, 상품 상세, 책 정보 | DocumentDB |
-| **Graph** | 노드 + 엣지(연결 관계) | "누가 누구와 연결되어 있나" — 소셜 친구 관계, 추천 시스템 | Neptune |
+| **Graph** | 노드 + 엣지(연결 관계) | 관계 탐색 — 소셜 친구 관계, 추천 시스템 | Neptune |
 | **Wide-Column** | 컬럼 패밀리 | 시계열, 로그, 대량 쓰기 | Keyspaces(Cassandra) |
 
 Document 모델링의 Embed vs Reference 트레이드오프는 [[MongoDB-Schema-Design|MongoDB 스키마 설계]] 참고.
@@ -131,7 +137,7 @@ ACID는 트랜잭션의 성질이고 CAP는 네트워크 분할 중 선형화 �
 - 유연한 스키마, 중복 허용, 키 기준 분할, 완화된 보장이 각각 RDBMS의 어떤 압력에 대한 선택이고 비용이 어디로 옮겨 가는지 말할 수 있는가
 - 중복 저장이 수평 분할에 유리한 이유와, replica나 multi-primary 복제가 쓰기 처리량을 늘리지 못하는 이유를 설명할 수 있는가
 - 컬럼 추가가 대형 테이블에서 항상 위험하다는 통념을 MySQL INSTANT DDL과 PostgreSQL의 메타데이터 기본값으로 반박할 수 있는가
-- "무엇이 더 좋은가"가 아니라 "데이터 성격에 무엇이 더 적합한가"로 선택하는 논리
+- 데이터 성격과 접근 패턴에 맞춰 저장소를 선택하는 논리
 - RDBMS 메인 + NoSQL 보조(폴리글랏)가 흔한 이유
 
 ## 출처
@@ -139,10 +145,11 @@ ACID는 트랜잭션의 성질이고 CAP는 네트워크 분할 중 선형화 �
 2026-10-02에는 가용성/최종 일관성의 한계, ACID와 CAP의 구분 및 DynamoDB 읽기/트랜잭션 반례를 대조했다. MongoDB 버전 이력, Cassandra 설정과 강의 사례 전체를 다시 검증한 기록은 아니다. 2026-10-05에는 MySQL 8.4의 INSTANT 컬럼 추가 한도와 COPY 전용 컬럼 타입 변경, Group Replication 구성원이 데이터 전체 사본을 갖는 구조, PostgreSQL 18의 컬럼 추가 재작성 조건을 대조했다.
 
 - [Amazon DynamoDB, Read consistency](https://docs.aws.amazon.com/amazondynamodb/latest/developerguide/HowItWorks.ReadConsistency.html)
+- [DuckDB, SQL Introduction](https://duckdb.org/docs/stable/sql/introduction)
+- [Amazon DynamoDB, PartiQL - a SQL-compatible query language for Amazon DynamoDB](https://docs.aws.amazon.com/amazondynamodb/latest/developerguide/ql-reference.html)
 - [Amazon DynamoDB, Transactions: How it works](https://docs.aws.amazon.com/amazondynamodb/latest/developerguide/transaction-apis.html)
 - [Eventually Consistent - Revisited — All Things Distributed, Werner Vogels](https://www.allthingsdistributed.com/2008/12/eventually_consistent.html)
 - [AWS 데이터베이스 기초 — RDBMS와 NoSQL (YouTube)](https://www.youtube.com/watch?v=idBsng-hafk&list=PLfth0bK2MgIYuFahPhXTpTomkwVx5Fl-v&index=33)
-- [DBA의 SQL vs NoSQL 선택 가이드 — Threads, bear_dba](https://www.threads.com/@bear_dba/post/Dc13-Dpk38f)
 - [MongoDB Docs, FAQ: Concurrency](https://www.mongodb.com/docs/manual/faq/concurrency/)
 - [MongoDB 2.2 FAQ: Concurrency, 2.2 이전 전역 잠금과 데이터베이스 단위 잠금 — MongoDB docs GitHub](https://github.com/mongodb/docs/blob/v2.2/source/faq/concurrency.txt)
 - [MongoDB 3.0 Release Notes, WiredTiger와 MMAPv1 동시성 — MongoDB docs GitHub](https://github.com/mongodb/docs/blob/v3.0/source/release-notes/3.0.txt)
