@@ -31,6 +31,17 @@ aliases: ["Single Host SSH Deploy Workflow", "SSH 배포 workflow", "GitHub Acti
 - 넣을 값은 서버가 실제로 제시할 host key의 fingerprint다. 이 client는 host key 알고리즘을 따로 지정하지 않아 Go `x/crypto/ssh`의 기본 선호 순서를 따르는데, 이 순서는 ECDSA와 RSA-SHA2를 앞에 두고 Ed25519를 맨 뒤에 둔다. Ed25519는 서버에 ECDSA나 RSA 같은 다른 host key가 없을 때만 쓰인다. 그래서 RSA, ECDSA, Ed25519 host key를 모두 가진 일반 OpenSSH 서버에 README 예시 명령의 `ed25519` fingerprint를 그대로 넣으면 `ssh: host key fingerprint mismatch`로 실패한다(drone-ssh가 쓰는 x/crypto v0.57.0에 easyssh-proxy와 같은 설정을 준 client로 재현). README도 예시의 key 종류를 실제 key에 맞게 바꾸라고 하고, 명령에 `cut -d ' ' -f2`를 붙여 두 번째 필드만 남긴다. 서버 콘솔처럼 이미 신뢰하는 경로에서 `ssh-keygen -l -f /etc/ssh/ssh_host_ecdsa_key.pub | cut -d ' ' -f2`처럼 제시될 key(보통 ECDSA)의 `SHA256:` 값만 secret에 넣는다. `ssh-keygen -l` 출력 줄 전체를 넣어도 불일치로 실패하므로, 아무것도 바꾸지 않는 script로 한 번 연결을 확인한다.
 - GitHub Actions secret 이름은 참조할 때 대소문자를 구분하지 않고 GitHub가 대문자로 저장한다. 정확해야 하는 것은 이름의 철자와 private key 값 전체다.
 
+## 최초 초기화와 반복 배포를 구분한다
+
+프라이빗 네트워크는 서버에 도달하는 조건이고, SSH는 명령을 전달하는 수단이다. 초기 구성까지 사람이 SSH로 접속해서 수행해야 하는 것은 아니다. 2026-10-24 AWS의 EC2 Linux user data 안내에서 다음 범위를 확인했다.
+
+- user data의 셸 스크립트와 cloud-init 지시문은 기본적으로 인스턴스를 처음 시작하는 부팅 주기에 실행된다. 매 재시작 실행은 별도 설정이 필요하다.
+- EBS 기반 인스턴스를 중지하고 user data를 수정한 뒤 다시 시작해도 기본 설정에서는 수정한 스크립트가 자동 실행되지 않는다. user data 수정만으로 애플리케이션 재배포가 끝났다고 판단하지 않는다.
+- user data 셸 스크립트는 root로 비대화형 실행된다. 사용자 입력을 요구하는 명령을 피하고, 생성 파일을 애플리케이션 계정이 사용할 수 있도록 소유권과 권한을 확인한다.
+- 초기화 결과는 `/var/log/cloud-init-output.log`와 실제 서비스 응답을 함께 확인한다. 부팅이 끝났다는 사실만으로 설정과 서비스 준비가 끝났다고 보지 않는다.
+
+설계에 적용할 때는 최초 초기화, 반복 릴리스, 장애 조사를 별도 작업으로 나눈다. 초기화에 user data를 선택해도 반복 배포의 승인, 실패 판정과 롤백은 별도로 필요하다. 프라이빗 서버가 설치 패키지와 배포 산출물을 가져올 네트워크 경로도 함께 설계한다.
+
 ## 원격 셸은 로그인 셸이 아니다
 
 사람이 `ssh user@host`로 들어오면 대화형 로그인 셸이라 `/etc/profile`과 `~/.bash_profile`(없으면 `~/.bash_login`, `~/.profile`)을 읽는다. CI가 `ssh host '<command>'`처럼 원격 명령을 실행하면 비로그인, 비대화형 셸이라 `.bash_profile`을 읽지 않는다. Bash 매뉴얼은 sshd가 띄운 비대화형 셸이면 `~/.bashrc`를 읽는다고 설명하지만, upstream source에서는 이 감지(`SSH_SOURCE_BASHRC`)가 기본으로 꺼져 있어 배포판 build마다 다르다. 읽더라도 많은 배포판의 `bashrc`에는 `[ -z "$PS1" ] && return` 같은 비대화형 조기 반환이 있다. `./deploy.sh`로 실행한 스크립트 자체도 비대화형 셸이라 시작 파일 대신 `BASH_ENV`만 확인하고 부모 환경을 상속한다.
@@ -59,6 +70,7 @@ SSH pull-in-place는 학습과 작은 내부 서비스에는 쓸 수 있다. 그
 
 ## 출처
 
+- [AWS, Run commands when you launch an EC2 instance with user data input](https://docs.aws.amazon.com/AWSEC2/latest/UserGuide/user-data.html) — 2026-10-24, Linux 초기 실행, 수정 후 재시작, 실행 사용자와 로그 부분 대조. 기존 SSH 구현과 runner 정책의 검증일은 갱신하지 않음
 - [GitHub, Secure use reference](https://docs.github.com/en/actions/reference/security/secure-use)
 - [GitHub, GitHub-hosted runners reference](https://docs.github.com/en/actions/reference/runners/github-hosted-runners)
 - [GitHub, Self-hosted runners reference](https://docs.github.com/en/actions/reference/runners/self-hosted-runners)

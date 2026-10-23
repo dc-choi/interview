@@ -73,6 +73,19 @@ Cowork는 Claude Code와 같은 에이전트 구조를 터미널 없이 쓰는 �
 - **한계**: PDF는 받는 사람이 편집하기 어렵다. 상대가 DOCX나 PPTX로 받아서 고쳐야 하면 편집 가능한 형식을 따로 만들거나, 처음부터 그 형식의 템플릿을 채우는 방식을 고른다
 - **자동 검수의 한계**: 모델의 시각 검수도 놓치는 것이 있다. 숫자, 고유명사, 최종 페이지 수는 사람이 한 번 더 본다
 
+### 카드뉴스는 카드별 PNG와 재실행 기준을 남긴다
+
+화면 게시용 카드뉴스는 HTML/CSS로 배치와 문구를 수정한 뒤 카드별 이미지로 내보낼 수 있다. 2026-10-24 Playwright의 Screenshots 문서는 `page.locator('.card').screenshot({ path: 'card.png' })`처럼 특정 요소를 캡처하는 방법을 제공한다. 여러 카드가 있으면 각 카드 하나를 가리키는 locator와 서로 다른 출력 파일명을 사용한다. 전체 페이지 캡처 한 장과 게시할 카드 여러 장은 다른 산출물이다.
+
+다음은 이 기능을 콘텐츠 제작에 적용한 검수 절차다. 특정 계정의 게시 성과나 제작 시간 단축을 보장하는 방법은 아니다.
+
+1. **입력과 기획을 보존한다:** 확인한 상품 정보, 사용 가능한 사진, 카드별 문구와 순서를 분리해 둔다. 참조 이미지가 있다는 사실만으로 재사용 권한을 추정하지 않는다.
+2. **HTML과 PNG를 각각 확인한다:** 사진 경로, 글자 넘침, 카드 크기와 순서를 확인하고 내보낸 PNG도 직접 연다. 파일 생성 성공만으로 사진과 문구가 올바르게 렌더링됐다고 판단하지 않는다.
+3. **개별 결과와 공통 규칙을 나눈다:** 이번 상품의 자료와 최종 파일은 작업 기록에, 다음 상품에도 적용할 디자인과 검수 순서는 재실행 가이드에 남긴다. 수정 과정에서 확인한 이미지 누락 같은 실패 조건도 검사 항목에 포함한다.
+4. **새 입력으로 반복성을 확인한다:** 절차가 안정되면 스킬로 묶고 새 세션에서 다른 상품으로 시험한다. Claude Code 공식 문서도 스킬 호출 여부와 산출물 품질을 따로 평가하고, 같은 현실적인 요청을 스킬 사용/미사용의 새 세션에서 비교하도록 안내한다.
+
+완료 조건은 확인된 이미지 묶음과 인계 기록이다. 게시와 알림 전송은 별도 권한을 가진 단계로 둔다. 영상의 화면상 프롬프트 전체와 연결 도구 설정은 전사문만으로 재현할 수 없으므로, 이 절은 완성된 자동화 구현이나 실측 성능 기록이 아니다.
+
 ## 데이터 처리
 
 Excel/CSV는 진단 → 정제 → 통계 → 차트 체인: 구조 진단(타입, 빈 값, 중복) → 정제(날짜 통일, 통화 기호 제거, 빈 값 라벨링) → 요약 통계 표 → Claude Code로 차트 PNG(한글 폰트 명시). 10MB 이상은 필요한 시트만, 수식 Excel은 CSV 변환 후, 회계 수치는 원본 대조.
@@ -119,6 +132,9 @@ Connectors든 수동 설정이든 **밑단은 모두 MCP**다. 차이는 설정 
 
 ## 출처
 
+- [Playwright — Screenshots](https://playwright.dev/docs/screenshots) — 2026-10-24, 페이지와 요소 단위 이미지 캡처 부분 대조
+- [Claude Code — Extend Claude with skills](https://code.claude.com/docs/en/skills#evaluate-and-iterate-on-a-skill) — 2026-10-24, 새 세션의 사용/미사용 비교와 호출 여부/출력 품질 분리 대조. 기존 제품 기능의 검증일은 갱신하지 않음
+- [YouTube, 메타코드M, 클로드 x 인스타 자동 콘텐츠 제작 AI 직원 만들기](https://www.youtube.com/watch?v=NLbP9FGA53I) — 2026-10-17, 35:06~55:45의 인수인계, HTML 수정, PNG 변환과 새 상품 테스트 절차를 참고. 화면의 코드, 계정 설정, 제작 시간과 마케팅 효과는 검증하지 않음
 - [Anthropic — PDF support](https://platform.claude.com/docs/en/build-with-claude/pdf-support)
 - [MarkItDown — Microsoft](https://github.com/microsoft/markitdown)
 - [Anthropic — Prompting best practices](https://platform.claude.com/docs/en/build-with-claude/prompt-engineering/claude-prompting-best-practices)
