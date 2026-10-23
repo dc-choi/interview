@@ -39,6 +39,21 @@ CS 개념의 이름을 아는 것과 변경의 결과를 설명하는 것은 다
 
 2026-10-24 Google의 설계, 동시성, 테스트와 검토 범위 지침을 대조했다. 기존 경험 기반 전망을 재검증한 것은 아니다.
 
+## 도구 사용 표기와 제출 품질은 별도로 확인한다
+
+AI를 썼다는 표시만으로 코드의 정확성이나 작성자의 이해를 확인할 수는 없다. 반대로 도구 사용을 허용한다는 말이 출처 공개, 테스트와 프로젝트의 제출 절차를 생략해도 된다는 뜻은 아니다.
+
+Linux 커널의 도구 생성 콘텐츠 지침은 제출물 전체를 이해하고 리뷰에 답할 준비를 요구한다. 사용한 도구, 영향을 받은 부분과 테스트 방법을 설명하고, 짧은 프롬프트나 긴 세션의 요약도 투명성을 높일 정보로 제시한다. 설명하지 못하는 변경은 제출하지 않으며, 유지관리자는 상세 리뷰 없이 거절할 수 있다. 이는 해당 프로젝트의 제출 기준이지 모든 프로젝트의 동일한 의무는 아니다.
+
+AI 버그 수정 지침은 사소하지 않은 결함의 재현 시도, 수정 후 빌드와 재현 또는 전체 분석을 통한 확인, 수행하지 못한 검사 공개를 요구한다. 이를 일반적인 리뷰 요청에 적용할 때는 다음을 남긴다(운영 제안).
+
+- 조사한 코드의 기준 커밋과 문제가 발생하는 조건
+- 수정 전 실패와 수정 후 결과를 비교할 재현 방법
+- 실제 수행한 검사, 결과와 수행하지 못한 검사
+- 작성자가 설명할 수 있는 수정 이유와 영향 범위
+
+2026-10-24에 확인한 공식 AI 지침에는 `Assisted-by` 절이 남아 있었다. 태그 폐지 제안이나 도구 금지에 대한 발언을 현재 문서의 변경 완료로 해석하지 않는다. 실제 제출 시점에는 대상 트리와 유지관리자의 최신 지침을 다시 확인한다. 이 확인은 관련 패치의 병합 여부나 영상에서 언급한 개별 버그 수를 검증한 기록이 아니다.
+
 ## 학습과 전망의 경계
 
 직접 구현하고 실패를 고치는 연습은 판단력을 기르는 수단이다. 문법의 폭뿐 아니라 메모리, 동시성, 네트워크와 트랜잭션의 작동 모델을 익힌다. 멘토링에서는 정답 전달과 사고 과정의 전수를 구분한다.
@@ -47,6 +62,8 @@ CS 개념의 이름을 아는 것과 변경의 결과를 설명하는 것은 다
 
 ## 출처
 
+- [Linux Kernel, Kernel Guidelines for Tool-Generated Content](https://docs.kernel.org/process/generated-content.html) — 2026-10-24 제출물 이해, 도구 사용 설명과 검토 재량 대조
+- [Linux Kernel, AI Coding Assistants](https://docs.kernel.org/process/coding-assistants.html) — 2026-10-24 재현, 수정 검증, 미수행 검사 공개와 Attribution 절 확인
 - [Google, What to look for in a code review](https://google.github.io/eng-practices/review/reviewer/looking-for.html) — 설계, 동시성, 테스트의 유효성, 검토 역량과 범위
 - [Will We Write Code Again? — Trilon Consulting, Kamil Mysliwiec](https://trilon.io/blog/will-we-write-code-again) — 경험과 전망, 2026-10-15 본문 확인
 - [우리는 다시 코드를 작성하게 될까? — RosettaLens](https://rosettalens.com/s/ko/will-we-write-code-again) — 번역문, 영문 원문과 대조

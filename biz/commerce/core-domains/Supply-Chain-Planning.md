@@ -33,6 +33,24 @@ aliases: ["Supply Chain Planning", "공급망 계획", "수요 계획과 공급 
 
 가상 예시: 공급이 늦어지면 긴급 운송과 다른 창고의 재고 이동을 비교한다. 이동비가 싸더라도 출발 창고의 안전재고를 침해하면 별도 판단이 필요하다. 예외를 허용할 때는 승인 이유와 적용 범위를 남기는 것을 운영 기준으로 삼는다.
 
+## 생산 능력과 공정 시간을 공급량으로 바꾸기 전에
+
+공급 계획에서는 부품 가공 시간, 완제품 조립 시간, 생산 능력과 실제 출하량을 구분한다. 한 부품의 공정이 빨라졌다는 수치만으로 완제품 납기나 생산량을 계산하지 않는다. 검사, 재작업, 다른 부품의 조달과 주문량을 함께 확인하는 것을 분석 기준으로 삼는다.
+
+**제조 사례:** Figure의 BotQ 공개 설명은 부품 제작부터 최종 조립까지 공정별 시간을 기록하고, 부품 수와 제조 공정을 다시 설계한 과정을 제시한다. 일부 부품을 CNC 가공에서 금형 공정으로 바꾸며 제작 시간을 일주일 이상에서 20초 미만으로 줄였다는 수치는 회사의 자기 보고다. 로봇 전체의 생산 시간이나 모든 부품의 성과를 뜻하지 않는다. 같은 설명은 금형 공정의 큰 초기 투자와 신뢰성 시험, 고장 분석을 함께 다룬다.
+
+내재화도 전부 직접 만드는 선택만 있는 것은 아니다. 이 사례에서는 액추에이터, 손, 배터리와 최종 조립에 집중하면서 필요한 개별 부품 제조에는 외부 공급자를 활용한다. 품질과 속도를 기준으로 자동화할 공정을 고르는 방식은 공급자, 조립과 검사 단계의 책임을 나눠 보는 참고 사례다.
+
+**계획과 실적의 구분:** 현대차의 2026 CEO Investor Day 발표는 미국 로봇 생산의 2028년 시작과 연간 3만 대 생산 능력을 제시한다. 이는 미래 생산 계획이며 현재의 실제 생산량, 판매량이나 달성 원가가 아니다.
+
+운영 검토에서는 다음을 묻는다(위 사례에 적용한 분석 제안).
+
+- 시간 수치가 부품 한 개, 공정 하나, 완제품 한 대 중 무엇을 측정하는가?
+- 금형과 설비의 초기 투자, 조달 지연과 재작업을 포함해도 목표 공급량을 낼 수 있는가?
+- 생산 능력을 뒷받침할 주문과 실제 가동, 합격품 출하 기록이 있는가?
+
+2026-10-24 공식 발표의 공정 설명과 생산 계획을 대조했다. 기업의 원가 절감 실적이나 현장 생산성을 독립적으로 측정하지 않았다.
+
 ## AI 보조 계획의 적용 경계
 
 2026-10-16 공식 제품 설명과 FAQ 확인 기준, Amazon Connect Decisions는 수요 신호 통합, 공급 예외 탐지와 승인된 조치 실행을 제공하는 사례다. **공급 계획(supply planning)은 FAQ에 preview로 표기되어 있으므로 전체 서비스의 출시 상태와 구분한다.**
@@ -48,6 +66,8 @@ aliases: ["Supply Chain Planning", "공급망 계획", "수요 계획과 공급 
 
 ## 출처
 
+- [BotQ: A High-Volume Manufacturing Facility for Humanoid Robots — Figure](https://www.figure.ai/news/botq) — 공정 재설계, 초기 투자, 신뢰성 시험과 내재화 범위
+- [Hyundai Motor Company Charts Profit-Driven Growth Roadmap at 2026 CEO Investor Day — Hyundai Motor Company](https://www.hyundai.com/worldwide/en/newsroom/detail/0000001260.html) — 2026-08-26 발표, 로봇 생산 시작과 연간 생산 능력 계획
 - [Amazon Connect Decisions: Agentic supply chain planning and intelligence — AWS](https://aws.amazon.com/products/connect/decisions/)
 - [Amazon Connect Decisions FAQs — AWS](https://aws.amazon.com/products/connect/decisions/faqs/)
 - [Amazon Connect Decisions: Supply Chain Planning and Intelligence — Amazon Web Services](https://www.youtube.com/watch?v=DA3EdVUmzT0)
