@@ -23,6 +23,21 @@ CoALA의 작업 기억은 LLM 호출 사이에도 유지되는 상태 구조다.
 
 반면 아래의 `retain`, `recall`, `reflect`는 기억에 수행하는 연산이다. 특정 사건을 저장하고 검색한 뒤 일반적인 설명을 생성할 수 있지만, 그 설명이 검증된 사실로 자동 승격되는 것은 아니다. CoALA의 역할 분류와 Hindsight의 기억망 분류도 일대일 대응으로 간주하지 않는다.
 
+## 컨텍스트와 영속 기억의 경계
+
+컨텍스트 윈도우는 모델이 한 번의 응답 생성에서 참조할 수 있는 범위이며 출력도 그 한도에 포함된다. 학습에 사용한 데이터나 과거 대화를 보관하는 저장소와는 다르다. 대화 기록이 남아 있어도 현재 입력에 필요한 근거를 포함하지 않으면 그 기록을 답변에 활용했다고 볼 수 없다.
+
+2026-10-24 확인한 Claude API의 memory tool은 이 경계를 보여 주는 구현 사례다. 모델이 파일 읽기와 쓰기를 요청하면 애플리케이션이 자신의 저장소에서 실행하고 결과를 반환한다. 파일이나 DB 등 실제 저장 방식은 애플리케이션이 정한다. 이후 대화에서 같은 저장소를 연결해 필요한 내용을 읽어야 기억을 재사용할 수 있다. 모든 기록을 매번 컨텍스트에 넣어 두는 방식은 아니다.
+
+따라서 기억 문제를 조사할 때는 다음을 구분한다.
+
+- **저장:** 원래 기록과 별도로 만든 요약 또는 선호가 실제로 보존됐는가?
+- **선택:** 현재 질문에 필요한 기록을 검색하거나 읽었는가?
+- **입력:** 선택한 내용이 현재 모델 호출에 포함됐는가?
+- **활용:** 모델이 입력된 근거를 정확하게 사용했는가? 긴 컨텍스트는 정확한 회수를 보장하지 않는다.
+
+이는 운영 점검을 위한 구분이다. 이번에는 Anthropic의 컨텍스트와 기억 도구 문서만 대조했고, 기존 Hindsight와 Amazon Quick의 기능 및 실제 계정의 기억 동작을 재검증하지 않았다.
+
 ## 경험을 재사용할 때의 검토 기준
 
 다음은 기억 역할을 디버깅에 적용한 운영 제안이다.
@@ -90,6 +105,8 @@ Hindsight의 ACL 2026 공개 논문은 world, experience, observation, opinion�
 
 ## 출처
 
+- [Anthropic, Context windows](https://platform.claude.com/docs/en/build-with-claude/context-windows) — 2026-10-24 컨텍스트 범위와 학습 데이터의 구분, 긴 컨텍스트의 회수 한계 확인
+- [Anthropic, Memory tool](https://platform.claude.com/docs/en/agents-and-tools/tool-use/memory-tool) — 2026-10-24 애플리케이션 측 저장과 필요 시 읽기 구조 확인
 - [LongMemEval: Benchmarking Chat Assistants on Long-Term Interactive Memory — ICLR 2025, Di Wu et al.](https://arxiv.org/html/2410.10813v2)
 
 - [AWS, Amazon Quick: Memories](https://docs.aws.amazon.com/quick/latest/userguide/memories-desktop.html)
