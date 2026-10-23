@@ -96,6 +96,20 @@ Bee의 공식 설명은 음성을 실시간 처리 후 삭제하고 전사문은
 
 운영 제안: 생성 전에 슬라이드별 핵심 주장과 숫자의 근거를 확인하고, 생성 뒤에는 빠진 결론, 숫자의 가독성, 페이지 간 디자인 일관성과 편집 가능 여부를 검수한다. 생성 시간과 최종 승인까지의 수정 시간을 따로 측정한다. 이번에는 실제 발표자료를 생성하거나 시간 절감 효과를 측정하지 않았으며 기존 제품 비교의 `verified_at`은 유지한다.
 
+### 화면 제작 도구는 규칙, 실행, 피드백과 재료로 나눈다
+
+2026-10-24 공식 제품 소개와 문서에서 확인한 역할이다. 설치나 실행 성능을 시험한 결과는 아니며, 오른쪽 열은 도입 전 검수 기준이다.
+
+| 후보 | 역할 | 검수할 경계 |
+|---|---|---|
+| Ponytail | 기존 코드와 단순한 해법을 우선하도록 코딩 에이전트에 적용하는 규칙 모음 | 규칙 적용과 실제 변경량, 정확도 및 검증 결과를 구분한다 |
+| BrowserSkill | CLI와 확장 프로그램으로 에이전트를 로그인된 Chrome 또는 Edge에 연결 | 페이지 열람과 입력, 전송 등 외부 행동의 허용 범위를 따로 정한다 |
+| Agentation | 화면 요소에 붙인 주석을 선택자 등 구조화된 피드백으로 전달하고 MCP 연결도 제공 | 전달되는 정보는 설정과 페이지가 노출한 정보에 달린다. 수정 위치 전달과 수정 완료 검증을 구분한다 |
+| Pioneer UI | React, TypeScript, Tailwind CSS와 Motion 계열을 사용하는 UI 컴포넌트 라이브러리 | 기존 구성과 의존성, 키보드 사용, 모션 및 반응형 동작을 확인한다 |
+| Godly | 웹, 앱과 UI의 디자인 사례를 모은 갤러리 | 참고 사례의 발견과 사용할 코드 및 자산의 확보를 구분한다 |
+
+적용 예시: 화면 사례를 먼저 고르고, 기존 컴포넌트로 구현할 수 있는지 확인한 뒤 필요한 재료만 추가한다. 화면의 수정 위치와 기대 동작을 주석으로 전달하고 실제 화면에서 다시 확인한다. 브라우저 연결, 피드백 전달이나 규칙 설치만으로 납품 가능한 결과가 검증되지는 않는다. 비용 절감 배수, 라이선스 적합성과 접근성 충족 여부는 이 역할 비교의 확인 범위에 포함하지 않았다. 기존 제품 표의 `verified_at`은 유지한다.
+
 ## 3. 자동화의 효과는 전체 업무에서 측정한다
 
 반복 업무를 맡길 후보를 찾되 규칙 기반 자동화, 템플릿과 기존 앱 기능도 함께 비교한다. 의미 해석이 필요 없는 고정 규칙에는 LLM을 추가하지 않아도 된다. 흐름이 미리 정해진 작업과 탐색이 필요한 작업의 차이는 [[LLM-Workflow-Patterns|LLM 워크플로우 패턴]]을 참고한다.
@@ -130,6 +144,11 @@ Bee의 공식 설명은 음성을 실시간 처리 후 삭제하고 전사문은
 
 ## 출처
 
+- [Ponytail — Ponytail](https://ponytail.dev/)
+- [BrowserSkill — GitHub, Tencent](https://github.com/Tencent/BrowserSkill)
+- [Agentation — Agentation](https://www.agentation.com/)
+- [Pioneer UI, Introduction](https://www.pioneerui.com/docs)
+- [Godly Design Inspiration — Godly](https://godly.design/)
 - [Microsoft Support, Prepare your presentation with Microsoft Copilot](https://support.microsoft.com/en-us/microsoft-365-copilot/prepare-your-presentation-with-microsoft-365-copilot)
 - [Microsoft Support, Create a new presentation with Copilot in PowerPoint](https://support.microsoft.com/en-gb/powerpoint/copilot/create-a-new-presentation-with-copilot-in-powerpoint)
 - [The Biggest News From Connect 2026 — Meta](https://about.fb.com/news/2026/09/the-biggest-news-from-connect-2026/)
