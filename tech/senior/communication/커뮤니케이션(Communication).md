@@ -10,6 +10,7 @@ aliases: ["Communication"]
 멘토링, 채용, 팀 운영, 팀 문화, 리더십 실천, 협상 — 사람과 조직을 다루는 기술.
 
 ## 목차
+- [x] [[Technical-Terminology|기술 용어 설명]] — 쉬운 표현과 원어 연결, 번역 후보와 정의의 구분
 - [x] [[hiring|채용과 면접 판별 (Hiring-Interview, Competence-Identification, Hiring-Under-Uncertainty)]] — 서브폴더
 - [x] [[culture|리더십과 조직 문화 (직군 간 협업, 디자인 핸드오프, 기여 문화, 실패 관대 문화, 팀워크, 비즈니스 align, 리더십 실천)]] — 서브폴더
 - [x] [[MOA-Study-Curriculum|MOA 백엔드 스터디 커리큘럼 (멘토링 사례)]]
