@@ -97,6 +97,20 @@ AgentPerfBench v1(2026-09-28)의 고동시성 합성 프로파일 비교에서�
 
 실무 적용 시에는 포화점과 서비스 허용 부하를 따로 정한다. 처리량이 최대여도 지연 목표를 넘으면 운영 동시성으로 채택하지 않는다. 위 내용은 2026-10-06 원 논문의 측정 방법과 결과를 대조한 범위이며, 특정 GPU의 구매 성능이나 에이전트의 업무 성공률을 보장하지 않는다.
 
+### 라우팅, 과부하 거절과 확장을 따로 설계한다
+
+캐시 적중률이 높아도 한 worker에 요청이 몰리면 지연 목표를 놓칠 수 있다. 2026-10-24에 확인한 NVIDIA Dynamo v1.5.1 문서는 다음 역할을 구분한다.
+
+| 역할 | 확인한 동작 | 적용할 때의 질문 |
+|---|---|---|
+| KV-aware routing | 재사용 가능한 prefix와 진행 중인 prefill/decode 부하를 함께 평가 | 캐시 적중률과 worker별 부하를 함께 봤는가 |
+| 과부하 거절 | Frontend의 busy worker 제외와 worker 자체의 동시 요청 상한을 분리 | 부하 신호, 임계값과 실제 거절 응답을 확인했는가 |
+| Planner | prefill/decode replica 수를 조절하며, 모드에 따라 부하 임계값이나 TTFT/ITL 목표를 사용 | 일시적인 급증과 지속적인 용량 부족을 구분했는가 |
+
+해당 버전의 거절 아키텍처 문서는 과부하 HTTP 응답의 기본값을 529로 설명한다. 서비스 사례의 429를 엔진의 공통 기본값으로 옮기지 않고 배포 버전과 설정을 확인한다. 부하 분산, 수용량 제한과 자원 확장은 서로 다른 조정 수단이므로 하나의 캐시 적중률이나 처리량으로 모두 평가하지 않는다.
+
+적용 제안: 같은 모델과 길이 분포에서 worker별 부하, 대기, 거절률, TTFT와 토큰 간 지연을 함께 비교한다. 위 질문은 공개 서빙 사례를 공식 문서와 연결한 점검 틀이며, 특정 회사의 엔진 성능 배율이나 SLA 달성, GPU 운영을 재현한 결과는 아니다. 기존 본문 전체의 재검증은 아니므로 `verified_at`은 유지한다.
+
 ## 가속기 스펙 읽기
 
 - TOPS 단독 수치는 LLM 성능 예측에 거의 쓸모가 없다. TOPS와 메모리 대역폭의 비, 즉 릿지 포인트를 본다.
@@ -147,6 +161,9 @@ CPU 사례에는 병렬화, 단계 간 데이터 전달, CPU 활용률과 하드
 
 ## 출처
 
+- [NVIDIA Dynamo v1.5.1, KV-Aware Routing](https://docs.dynamo.nvidia.com/dynamo/v1.5.1/knowledge-base/concepts/system-architecture/kv-aware-routing)
+- [NVIDIA Dynamo v1.5.1, Request Rejection Architecture](https://docs.dynamo.nvidia.com/dynamo/v1.5.1/knowledge-base/concepts/fault-tolerance/request-rejection-architecture)
+- [NVIDIA Dynamo v1.5.1, Planner Guide](https://docs.dynamo.nvidia.com/dynamo/v1.5.1/knowledge-base/modular-components/planner/planner-guide) — 위 세 문서의 라우팅, 부하 거절과 확장 역할만 2026-10-24 대조
 - [Fiddler: CPU-GPU Orchestration for Fast Inference of Mixture-of-Experts Models — arXiv](https://arxiv.org/abs/2402.07033)
 - [AIR-LLM: Broadcasting AI Weights over Radio for Memory-Free Edge LLM Inference via RF Computing — arXiv](https://arxiv.org/abs/2610.00465v1)
 - [AirLLM — lyogavin](https://github.com/lyogavin/airllm)
