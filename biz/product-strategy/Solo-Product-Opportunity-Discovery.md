@@ -119,6 +119,12 @@ OTT나 교육 같은 산업명은 아직 넓다. 콘텐츠 정보 오류를 확�
 
 적용 제안: 직접 해결한 문제를 고객, 제공 결과, 작업 범위, 가격 가설과 접점으로 풀어 서비스 후보를 만든다. AI가 만든 후보도 같은 조사 대상으로 두고, 기존 대안의 가격과 고객 반응으로 확인한다. 프롬프트에 입력한 목표 수입이나 일정은 검증된 수요와 구분한다. 이 절차는 재취업보다 사업을 먼저 해야 한다는 근거나 일정 내 수입을 보장하는 공식이 아니다.
 
+### 자기 제품에 대한 애착과 필요를 구분한다
+
+본인이 반복해서 겪는 불편은 문제의 존재를 관찰할 출발점이다. 다만 자신이 만들었다는 애착과 실제 필요를 구분해야 한다. 제품을 직접 만들지 않았더라도 지금 쓰겠는지, 기존 대안 대신 선택할 만큼 필요한지 묻는다. 이는 Paul Graham의 창업 경험에 기반한 탐색 조언이며 성공을 예측하는 검증된 법칙은 아니다.
+
+적용 제안: 반복 작업 도구라면 작업 빈도, 현재 대안과 불만을 먼저 적는다. 다른 제작자가 만든 제품이라고 가정해도 선택할 이유를 설명하고, 같은 문제를 겪는 외부 사용자가 현재 버전을 실제로 사용하는지 확인한다. 제작자의 전문성은 문제를 이해할 단서이고, 타인의 사용이나 지불을 대신하는 증거는 아니다.
+
 ## 2. 접근 가능한 사용자 후보를 적는다
 
 직접 대화하거나 행동을 관찰하고, 이후 테스트를 다시 요청할 수 있는 사용자 집단을 먼저 고른다. 본인이 속했던 직군, 자주 만나는 조직 운영자와 주변 사업자처럼 접근 경로가 있는 집단이 초기 후보가 된다.
@@ -178,6 +184,7 @@ Good American은 공식 소개에서 00~32 Plus 사이즈 제공과 세 가지 �
 
 ## 출처
 
+- [How to Get Startup Ideas — Paul Graham](https://www.paulgraham.com/startupideas.html) — 2012-11 에세이. 2026-10-24 자기 문제에서 출발하기, 당장 필요한 사용자와 제작자 애착을 구분하는 질문을 대조.
 - [SBA, Plan your business: Market research and competitive analysis](https://www.sba.gov/counseling/plan-your-business/#market-research-and-competitive-analysis) — 2026-10-23 시장 조사와 고객 검증 범위 확인.
 - [Jobs to Be Done Theory — Christensen Institute](https://www.christenseninstitute.org/theory/jobs-to-be-done/)
 - [Opportunity Solution Trees — Product Talk](https://www.producttalk.org/opportunity-solution-trees/)

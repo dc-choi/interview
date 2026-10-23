@@ -108,6 +108,16 @@ Atlassian의 DACI는 결정 절차를 진행하는 Driver와 최종 결정을 �
 
 ## 안티패턴
 
+### 시차가 있는 팀에 같은 회의 참석을 요구한다
+
+여러 지역의 업무 시간이 다르면 모든 회의를 한 사람이 실시간으로 연결하는 방식부터 재검토한다. 안건과 필요한 결정을 사전에 공유하고, 참석하지 못한 팀이 의견을 남길 문서와 응답 기한을 둔다. 회의 후에도 결정, 이유와 후속 작업을 같은 기록에 연결한다.
+
+GitLab의 원격 회의 지침은 사전 안건, 비동기 의견과 실시간 기록을 권한다. 일부 참여자의 시간대 밖에서 열린 회의라면 결정과 행동을 확인할 시간을 24~48시간 두는 방안도 제시한다. 이는 해당 조직의 운영 지침이며 모든 결정에 적용할 대기 시간은 아니다(2026-10-24 확인).
+
+적용 제안: 다른 지역의 API 담당 팀과 협업할 때 먼저 변경 계약과 질문을 문서로 전달한다. 글로 해소되지 않는 쟁점만 함께 논의하고, 결정 권한과 미응답 시 처리 방식을 미리 합의한다. 장애 대응처럼 즉시 판단이 필요한 상황은 합의한 온콜과 에스컬레이션 절차를 따른다. 회의 시간의 길이를 성과나 책임감의 지표로 쓰지 않는다.
+
+### 반복되는 경계 문제
+
 | 안티패턴 | 왜 실패하는가 |
 |---|---|
 | 리더 경유 커뮤니케이션 | 스펙을 아는 사람이 대화에서 빠져 전달마다 정보가 손실된다 |
@@ -128,6 +138,7 @@ Atlassian의 DACI는 결정 절차를 진행하는 Driver와 최종 결정을 �
 
 ## 출처
 
+- [GitLab Handbook, All-Remote Meetings](https://handbook.gitlab.com/handbook/company/culture/all-remote/meetings/) — 2026-10-24 사전 안건, 비동기 참여와 회의 후 결정 확인 절차 대조.
 - [DACI: A Decision-Making Framework — Atlassian Team Playbook](https://www.atlassian.com/team-playbook/plays/daci)
 - [How to Win at Dependency Mapping: a Step-By-Step Guide — Atlassian Team Playbook](https://www.atlassian.com/team-playbook/plays/dependency-mapping)
 - [Key concepts and practices for applying a Team Topologies approach to team-of-teams org design — Team Topologies](https://teamtopologies.com/key-concepts)
