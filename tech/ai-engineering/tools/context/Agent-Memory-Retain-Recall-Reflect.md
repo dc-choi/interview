@@ -103,7 +103,19 @@ Hindsight의 ACL 2026 공개 논문은 world, experience, observation, opinion�
 
 2026-10-22에는 LongMemEval의 평가 능력과 검색/답변 지표를 대조했다. 기존 Hindsight와 Amazon Quick 기능의 검증 시점은 앞 절에 적힌 날짜를 유지한다.
 
+## 오래된 기억의 검색 순위와 사실의 유효성을 구분한다
+
+기록을 지우지 않고도 현재 입력에 넣을 기억을 다르게 고를 수 있다. Generative Agents의 2023년 연구 구현은 최신 접근 시점, 중요도와 질문 관련성을 결합해 기억을 검색한다. 최신성 점수는 마지막 검색 이후 흐른 시뮬레이션 시간에 따라 지수적으로 낮아지고, 중요도는 생성 시 모델이 평가하며, 관련성은 임베딩의 코사인 유사도로 계산한다. 세 점수를 정규화하고 합쳐 컨텍스트에 들어갈 상위 기억을 고른다.
+
+이는 AI 기억에 시간 감쇠를 적용한 설계 사례다. 모든 에이전트가 이 방식을 사용한다거나 사람의 생리적 망각을 재현했다는 뜻은 아니다. 검색 순위를 낮추는 것, 저장 기록을 삭제하는 것과 과거 사실을 현재에도 유효하다고 판정하는 것은 서로 다른 연산이다.
+
+**운영 제안:** 중단한 프로젝트가 자주 검색됐다고 진행 중으로 되살아나지 않도록, 마지막 접근 시각과 상태가 바뀐 시점을 구분한다. 현재 계획에는 명시적으로 확인된 상태를 적용하고, 과거 이력은 당시 맥락을 묻는 질문에 사용한다. 재검색 횟수나 최근 접근만으로 사실의 최신성을 확정하지 않는다.
+
+2026-10-24에는 위 논문의 기억 검색 설계만 대조했다. 기존 제품별 검증일과 뇌과학에 관한 주장은 이 확인 범위에 포함하지 않는다.
+
 ## 출처
+
+- [Generative Agents: Interactive Simulacra of Human Behavior — Joon Sung Park et al., UIST 2023](https://arxiv.org/html/2304.03442v2) — 4.1절의 기억 기록과 검색 점수, 2026-10-24 대조
 
 - [Anthropic, Context windows](https://platform.claude.com/docs/en/build-with-claude/context-windows) — 2026-10-24 컨텍스트 범위와 학습 데이터의 구분, 긴 컨텍스트의 회수 한계 확인
 - [Anthropic, Memory tool](https://platform.claude.com/docs/en/agents-and-tools/tool-use/memory-tool) — 2026-10-24 애플리케이션 측 저장과 필요 시 읽기 구조 확인

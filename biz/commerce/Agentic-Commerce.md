@@ -54,6 +54,14 @@ Buy for Me에서는 고객이 Amazon 화면에서 배송지, 세금과 배송비
 
 사업 적용 제안: 고객의 탐색 동의를 포괄적인 구매 위임으로 처리하지 않는다. 품절로 대체품을 고르거나 배송비가 달라져 승인한 조건을 벗어나면 다시 확인하도록 정한다. 자동화가 줄일 마찰과 고객이 통제할 거래 조건을 함께 설계한다.
 
+## 에이전트 참여 정책과 수익구조를 구분한다
+
+외부 에이전트의 접근 허용은 기술적 식별, 고객 승인, 서비스 제공자의 참여 정책을 따로 확인해야 한다. Amazon의 2025년 Comet 관련 공식 입장은 제3자 구매 대행 서비스가 공개적으로 동작하고 제공자의 참여 결정을 존중해야 한다고 설명한다. 이는 당사자의 정책 입장이지, 특정 에이전트가 안전하지 않다는 독립 검증이나 모든 접근 제한의 경제적 원인을 입증하는 자료는 아니다.
+
+거래가 발생하는 장소와 플랫폼이 수익을 얻는 지점도 구분한다. Shopify의 2025년 10-K에서 merchant solutions 매출은 88억 400만 달러, 총매출은 115억 5,600만 달러이며 merchant solutions 비중은 약 76%다. 이 매출은 플랫폼을 통해 처리되는 GMV와 방향상 연관되고 Shopify Payments가 가장 큰 동인이다. 다만 merchant solutions 전체가 결제 수수료인 것은 아니며, 매출 비중을 이익 비중으로 바꿔 해석할 수 없다. 2026-10-24 해당 공시를 대조했다.
+
+**사업 분석 제안:** 고객 접점, 광고, 결제와 판매자 운영 중 어디에서 가치를 회수하는지 나눠 본다. 외부 AI가 구매를 도와도 해당 플랫폼의 결제와 운영 서비스를 계속 쓴다면 수익이 남을 가능성이 있다. 반대로 탐색 화면의 광고 노출이 줄어들 가능성은 따로 검증한다. 이 유인 분석만으로 특정 기업이 광고 수익 때문에 에이전트를 차단했다고 확정하지 않는다.
+
 ## 사업 적용 시 측정할 것
 
 다음은 고객 여정과 책임 구분을 바탕으로 한 측정 제안이다.
@@ -66,6 +74,9 @@ Buy for Me에서는 고객이 Amazon 화면에서 배송지, 세금과 배송비
 작게 시작하려면 검색과 비교의 실패 한 가지를 고른다. 구매 대행을 더할 때는 판매자 연결과 사후 지원까지 검증 범위를 넓힌다.
 
 ## 출처
+
+- [Statement about Perplexity — Amazon](https://www.aboutamazon.com/news/company-news/amazon-perplexity-comet-statement) — 2025년 Comet 관련 당사자 입장, 2026-10-24 대조. Muse에 대한 별도 입장으로 대체하지 않음
+- [2025 Form 10-K — Shopify](https://www.sec.gov/Archives/edgar/data/1594805/000159480526000007/shop-20251231.htm) — 매출 구성과 GMV 연관성, Shopify Payments의 비중 및 비용 구조, 2026-10-24 대조
 
 - [Shopify Help Center, Shopify Catalog and product discovery for agentic storefronts](https://help.shopify.com/en/manual/online-sales-channels/agentic-storefronts/products) — Catalog 참여와 공개 검색 노출의 차이를 2026-10-10 대조
 - [How We Built Safety Into Muse — Meta AI Research](https://research.meta.ai/blog/security-and-safety-for-ai-agents-our-approach-with-muse) — 출시 시점의 Purchases 절, 2026-10-09 대조. Stripe Link 제휴 문장은 2026-10-20 재대조

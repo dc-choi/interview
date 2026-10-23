@@ -30,6 +30,14 @@ Radical Candor는 상대를 한 사람으로 아끼는 태도(Care Personally)�
 
 다른 판단 근거를 제시할 때는 [[Constructive-Skepticism|근거 기반 검증]]의 주장과 증거 구분을 함께 쓴다. 상대가 틀렸다고 단정하기 전에 관찰 범위와 대안 설명을 확인한다.
 
+## 협업 방식 문서는 피드백으로 갱신한다
+
+Working with Me는 자신의 소통 습관, 의사결정 방식과 피드백받는 방법을 미리 공유하는 실천이다. 상대가 리더의 취향을 추측하게 두는 대신 대화의 출발점을 제공한다. 자기평가이므로 실제 함께 일하는 사람에게 맞는 설명인지 묻고 수정한다. 강제로 작성하게 하거나 문서만으로 팀 성과가 좋아진다고 보장하지 않는다.
+
+Ruinous Empathy는 Kim Scott의 Radical Candor 프레임워크에 속한다. Claire Hughes Johnson이 공개 인터뷰에서 설명한 Working with Me 실천과 함께 활용할 수 있지만 두 개념의 출처를 혼동하지 않는다. 이 인터뷰는 작성 경험과 지속적인 수정을 뒷받침하며, 팀 간 성과 차이를 입증한 비교 실험은 아니다.
+
+**적용 예시:** 선호하는 연락 방식과 의사결정 배경, 다른 의견을 받는 경로를 공유한다. 개별 작업의 완료 기준과 마감은 별도로 합의하고, 실제 행동이 문서와 다르면 상대에게 지적해 달라고 요청한다. 문서를 관리자의 모든 습관에 맞추라는 규칙으로 쓰지 않는다.
+
 ## 세부 개입은 관찰과 영향으로 논의한다
 
 세밀하게 봐준다는 관리자의 의도와 실제 작업자가 받은 도움은 구분한다. 반대로 세부 의견이 있다는 사실만으로 마이크로매니징이라고 단정하지 않는다. Radical Candor의 상향 피드백 지침은 상대의 판단 배경을 먼저 묻고, 통제적이라는 성격 평가 대신 특정 행동과 영향을 설명하도록 권한다.
@@ -98,6 +106,7 @@ CORE는 어려운 대화를 자동으로 해결하는 문구가 아니다. 사�
 - [[Code-Review-Reviewer-Guide|코드 리뷰 리뷰어 가이드]] — 코드 위 피드백의 실전
 
 ## 출처
+- [Redpoint Office Hours: Claire Hughes Johnson 인터뷰 — Tomasz Tunguz](https://tomtunguz.com/transcripts/claire-hughes-johnson/) — 2021-10-25 공개 인터뷰의 협업 방식 문서, 자발적 작성과 갱신, 성과 비교의 한계를 2026-10-24 대조
 - [Upward Feedback: Give Your Boss Feedback Without Losing Your Nerve — Radical Candor](https://www.radicalcandor.com/blog/upward-feedback-give-your-boss-feedback) — 2026-10-23 판단 배경 확인과 행동 기반 상향 피드백 대조
 - [Tips to Avoid Obnoxiously Aggressive Praise — Radical Candor](https://www.radicalcandor.com/blog/tips-obnoxious-aggression-praise) — 2026-10-23 구체적이고 진실한 칭찬과 전달 시점 대조
 - [Practice Playbook — Radical Candor](https://radicalcandor.com/hubfs/Radical-Candor-Practice-Workbook.pdf) — 칭찬의 CORE 적용과 공개 칭찬의 개인 선호 예외
