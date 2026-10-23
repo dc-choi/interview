@@ -69,6 +69,20 @@ aliases: ["실업과 고용", "Unemployment and Employment"]
 
 2026-10-22 BLS CPS의 고용률과 참가율 정의를 부분 대조했다. 미국 CPS의 대상 인구는 16세 이상 민간 비시설 인구이므로 한국 청년층의 연령 기준으로 옮기지 않는다. 한국의 특정 기간 취업자 감소 규모를 검증한 절은 아니다.
 
+### 구인배수는 등록된 구인과 구직의 비율이다
+
+고용센터 구인배수는 **신규구인인원 / 신규구직건수**다. 분자는 해당 월 등록된 구인신청에서 모집하는 인원이며, 분모는 등록된 구직신청 건수다. 취업률인 취업건수 / 신규구직건수와 구분한다. Work-Net과 고용센터를 통한 등록 실적이므로 전체 노동시장의 모든 일자리와 구직자를 센 비율은 아니다.
+
+이 정의에서 다음 해석상 한계가 따른다.
+
+- 0.39는 해당 집계의 구직신청 100건당 모집 인원이 약 39명이라는 비율이다. 개인의 취업 확률 39%나 전체 구직자 중 61%가 취업할 수 없다는 뜻은 아니다.
+- 비율이 낮아지면 분자와 분모를 따로 본다. 구인이 늘어도 구직이 더 빠르게 늘면 구인배수는 하락할 수 있다.
+- 월간 값과 연간 값, 다른 등록 범위의 값을 섞지 않는다. 특정 경력이나 직종의 채용 선호는 해당 집단의 별도 자료로 확인한다.
+
+사례로 고용노동부의 **2025년 12월** 고용행정 통계 브리핑은 고용24 신규 구인인원이 전년동월보다 늘었지만 신규 구직인원 증가가 더 커 구인배수가 0.40에서 0.39로 하락했다고 설명한다. 이는 당시 사례이며 현재 월의 수치나 영상의 기준 기간을 확정하는 근거로 사용하지 않는다.
+
+2026-10-24 e-나라지표의 산식과 집계 범위, 해당 브리핑의 증감 설명만 부분 대조했다.
+
 ## 6. 실업의 비용
 
 - **소득 상실**: 개인과 가계에 직접적 타격.
@@ -125,6 +139,8 @@ AI 도입을 평가할 때는 줄어든 기존 작업, 남은 작업의 생산�
 
 ## 출처
 
+- [e-나라지표, 고용센터 구인, 구직 및 취업현황](https://www.index.go.kr/unity/potal/main/EachDtlPageDetail.do?idx_cd=1505) — 구인배수와 취업률의 산식, 등록 실적 범위, 2026-10-24 확인
+- [고용노동부, 2025년 12월 고용행정 통계로 본 노동시장 동향](https://www.korea.kr/briefing/policyBriefingView.do?newsId=156739295) — 구인과 구직 증가가 구인배수에 미친 영향, 2026-10-24 확인
 - [International Labour Organization, How might generative AI impact different occupations?](https://www.ilo.org/resource/article/how-might-generative-ai-impact-different-occupations)
 
 - [Journal of Economic Perspectives, Automation and New Tasks: How Technology Displaces and Reinstates Labor](https://economics.mit.edu/sites/default/files/inline-files/Automation%20and%20New%20Tasks%20-%20How%20Technology%20Displaces%20and%20Reinstates%20Labor.pdf) — Daron Acemoglu, Pascual Restrepo, 2019. 과업 배분, 대체, 생산성과 복원 효과.
