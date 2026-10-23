@@ -18,6 +18,16 @@ verified_at: 2026-10-13
 
 예를 들어 EC2에 웹 애플리케이션을 올려도 게스트 OS 패치와 애플리케이션, 보안 그룹 설정은 고객의 책임이다. 요청을 처리하는 프로그램을 실행한 것과 운영 책임을 충족한 것은 다르다. 서비스 선택에서는 필요한 가용성과 복구 조건에 맞춰 어떤 책임을 직접 맡을지 확인한다.
 
+### 서버 OS와 설치 옵션은 별도로 고른다
+
+Windows Server라는 제품명만으로 GUI가 없거나 필요한 역할이 모두 설치됐다고 판단하지 않는다. 2026-10-24 Microsoft 문서 대조 기준, Windows Server 2016, 2019, 2022, 2025의 설치 마법사는 Server Core와 Server with Desktop Experience를 구분한다.
+
+- **Server Core:** 표준 데스크톱 GUI를 설치하지 않고 PowerShell, SConfig와 원격 관리 도구로 운영한다. 디스크 요구량과 잠재적 공격 표면이 작지만 일부 역할과 기능을 사용할 수 없다.
+- **Desktop Experience:** 표준 GUI와 관리 도구를 포함한다. 서버용 OS에서도 GUI를 선택할 수 있으므로 화면 모양으로 서버의 역할이나 운영 책임을 판단하지 않는다.
+- **설치 후 변경:** 위 버전에서는 두 옵션을 설치 후 전환할 수 없으며, 바꾸려면 새로 설치해야 한다. 필요한 애플리케이션의 호환성과 관리 방법을 먼저 확인한다.
+
+이는 Windows Server의 설치 선택에 관한 부분 검증이다. 서버 OS라는 이름만으로 장애가 줄거나 가용성이 보장된다고 해석하지 않는다.
+
 ## 추상화 계층
 
 | 계층 | 사업자가 관리 | 사용자가 관리 | 대표 |
@@ -167,6 +177,7 @@ verified_at: 2026-10-13
 2026-10-13 부분 검증: 서버의 하드웨어/소프트웨어 의미, 클라우드 가상 서버의 물리 기반과 EC2 책임 분담을 대조했다. 기존 가격과 개별 서비스 설정의 검증 범위는 각 절에 적힌 기준을 유지한다.
 
 - [MDN, Server](https://developer.mozilla.org/en-US/docs/Glossary/Server)
+- [Microsoft Learn, Server Core vs Server with Desktop Experience install options](https://learn.microsoft.com/en-us/windows-server/get-started/install-options-server-core-desktop-experience)
 - [What is a Cloud Server? — AWS](https://aws.amazon.com/what-is/cloud-server/)
 - [AWS, Shared Responsibility Model](https://aws.amazon.com/compliance/shared-responsibility-model/)
 - [Vercel, Pro Plan](https://vercel.com/docs/plans/pro-plan)

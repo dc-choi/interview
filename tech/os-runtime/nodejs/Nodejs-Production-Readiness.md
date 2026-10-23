@@ -136,6 +136,19 @@ Node.js 특유:
 - 의존성 보안 패치 정기 적용
 - 인증서 갱신 자동화 (Let's Encrypt, ACM)
 
+### 런타임 갱신에서는 기존 계측 경로도 확인한다
+
+새 API를 호출하지 않아도 런타임 수정이 기존 계측에 영향을 줄 수 있다. 2026-10-24 대조한 Node.js v26.11.0 릴리스 노트(2026-10-07, Current)는 `perf_hooks`의 새 메서드와 기존 동작 수정을 함께 나열한다.
+
+| 변경 | 업그레이드 검토 대상 |
+|---|---|
+| `histogram.snapshot()`과 `histogram.diff()` 추가 | 새 기능을 채택하는 호출부와 기존 계측의 회귀 검사를 구분 |
+| `RecordableHistogram`의 0 기록 허용 | 0을 걸러내던 호출부와 0이 포함된 입력의 집계 결과 |
+| `monitorEventLoopDelay()`의 resolution 잘림 수정 | 설정값과 실제 수집 결과, 업그레이드 전후 경보 판단 |
+| 히스토그램 CBOR 가져오기 검증 강화 | 저장한 데이터의 재입력과 잘못된 데이터의 거부 처리 |
+
+위 검토 대상은 릴리스 변경에서 도출한 회귀 검사 제안이다. 배포 후보 버전에서 사용하는 기록, 저장과 재입력 경로를 확인하며, 기존 저장 형식이 깨졌다거나 지표가 특정 비율로 바뀐다고 단정하지 않는다. 이 절은 릴리스 노트만 대조했으며 런타임 실행이나 성능 비교는 수행하지 않았다. 기존 본문의 검증일은 유지한다.
+
 ### NestJS 배포 관행
 - **환경 모드 명시** — `NODE_ENV`는 Node.js 자체의 예약 동작이 아니라 애플리케이션과 라이브러리가 해석하는 관례다. 사용하는 의존성이 요구하면 `production`을 명시하고, 실제로 바뀌는 로깅, 캐시와 오류 노출 동작을 배포 전 검증한다.
 - 헬스체크는 **@nestjs/terminus**가 공식 경로 — readiness/liveness 프레임으로 HTTP ping, TypeORM DB, 디스크, 메모리 인디케이터를 내장하고 `HealthIndicatorService`로 커스텀 인디케이터를 만든다 (`check(key)`로 시작해 `indicator.up()`/`down(부가정보)`를 반환). 구 `HealthIndicator` 상속, `getStatus()`와 `HealthCheckError`는 12.0.0에서 제거됐다. v12부터 인디케이터는 down 결과를 반환해야 503이 되고, 예외를 던지면 예상치 못한 실패로 처리돼 500이 된다. 응답 status는 `ok`/`error`에 더해 **`shutting_down`**이 있다. `gracefulShutdownTimeoutMs`는 readiness 주기 하나가 아니라 `periodSeconds × failureThreshold`, probe 위상, EndpointSlice와 외부 LB 전파 시간을 함께 반영하고, 전체 drain과 리소스 정리는 `terminationGracePeriodSeconds` 안에 끝내야 한다. 무중단 여부는 실제 rollout의 오류율과 중단 요청으로 검증한다 (수동 HealthService 패턴은 [[NestJS-Lifecycle]]).
@@ -174,6 +187,7 @@ Node.js 특유:
 - 초기 단계와 성숙 단계의 운영 전략 차이
 
 ## 출처
+- [Node.js 26.11.0 (Current) — Node.js](https://nodejs.org/en/blog/release/v26.11.0) — 2026-10-07 릴리스의 히스토그램 추가 기능과 기존 동작 수정.
 - [supims (brunch) — 안정적인 Node.js 기반 백엔드 시스템 1~9편](https://brunch.co.kr/@supims/122)
 - [Node.js, Console](https://nodejs.org/api/console.html)
 - [Node.js — Process events](https://nodejs.org/api/process.html#process_event_uncaughtexceptionmonitor)
