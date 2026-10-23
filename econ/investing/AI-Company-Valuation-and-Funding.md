@@ -46,6 +46,16 @@ aliases: ["AI Company Valuation and Funding", "AI 기업가치와 자금 조달"
 
 평가액의 pre/post-money 기준과 신주 비중이 확인되지 않았으므로 조달액을 평가액으로 나눠 실제 희석률을 확정하지 않는다. 조달 규모가 크다는 이유로 제품 품질, 도입 성과나 투자의 적정 가격까지 증명되지는 않는다.
 
+## 인수 금액과 지급 수단, 거래 종결을 구분한다
+
+인수 계약의 발표 금액을 이미 지급한 현금이나 대상 회사의 신규 투자 유치액으로 읽지 않는다. 대가를 현금과 주식 중 무엇으로 지급하는지, 누가 받는지, 계약 체결과 거래 종결 중 어느 단계인지 확인한다. 주식 지급 거래는 발표 금액뿐 아니라 발행할 주식 수의 산정 기준도 확인해야 한다.
+
+AMD의 2026-09-28 Form 8-K는 9월 26일 World Labs의 전체 지분을 인수하는 계약을 체결했고, 약 82억 달러의 대가를 World Labs 주주에게 AMD 보통주로 지급할 예정이라고 적는다. 공시 당시 발행 주식 수는 정해지지 않았으며, 거래 종결일의 직전 두 번째 거래일을 끝으로 하는 연속 10거래일의 일별 거래량가중평균가격을 기준으로 계산한다고 명시한다.
+
+같은 날 보도자료는 규제 승인과 통상적인 종결 조건을 전제로 2026년 말까지 종결을 예상했다. 따라서 이 발표를 82억 달러의 현금 지출 완료나 인수 완료의 증거로 쓰지 않는다. 향후 모델 연구가 하드웨어와 시스템 설계에 도움이 될 것이라는 설명도 인수 목적과 기대이며, 실현된 이익이나 경쟁 우위의 증거가 아니다.
+
+2026-10-24 위 공시와 발표를 대조했다. 이후 거래 종결 여부, 실제 발행 주식 수와 통합 성과는 확인하지 않았다.
+
 ## 확인 질문
 
 - 전망이 빗나가면 무엇을 축소하거나 다시 조달해야 하는가?
@@ -55,6 +65,8 @@ aliases: ["AI Company Valuation and Funding", "AI 기업가치와 자금 조달"
 
 ## 출처
 
+- [September 28, 2026, Form 8-K — AMD](https://ir.amd.com/financial-information/sec-filings/content/0000002488-26-000182/amd-20260926.htm) — Item 3.02, 주식 지급과 발행 주식 수 산정 기준
+- [AMD to Acquire World Labs to Advance the Future of AI Compute — AMD](https://ir.amd.com/news-events/press-releases/detail/1299/amd-to-acquire-world-labs-to-advance-the-future-of-ai-compute) — 2026-09-28 계약 발표, 종결 조건과 기대 효과
 - [SEC, Non-GAAP Financial Measures](https://www.sec.gov/rules-regulations/staff-guidance/corporation-finance-interpretations/non-gaap-financial-measures) — 2026-10-22 총액/순액을 바꾸는 조정, 반복 현금비용 제외, 명칭과 비교 가능한 GAAP 지표의 조정 내역 대조.
 - [Anthropic Is The Most Ridiculous IPO of 2026 — New Constructs](https://www.newconstructs.com/anthropic-is-the-most-ridiculous-ipo-of-2026/) — 2026-10-06 투자 의견, 유출 보도 기반 재무와 평가 가정
 - [Anthropic will be 'most ridiculous IPO' of year, analyst says — CNBC](https://www.cnbc.com/2026/10/07/anthropic-will-be-most-ridiculous-ipo-of-year-analyst-says.html) — 2026-10-07 보도, 1,500억 달러 평가 표현의 출처
