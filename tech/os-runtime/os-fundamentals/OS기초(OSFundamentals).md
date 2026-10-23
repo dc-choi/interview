@@ -35,3 +35,6 @@ aliases: ["OS Fundamentals"]
 - [x] [[Storage-and-FileSystem-Devices|저장 장치와 주변장치]]
 - [x] [[Storage-and-FileSystem-Files|파일시스템 구조]]
 - [x] [[Storage-and-FileSystem-Performance|디스크 접근 시간과 RAID (중첩 RAID, 용량 계산과 장애 위치)]]
+
+## 전원과 상태 추정
+- [x] [[Battery-State-of-Charge|배터리 잔량 추정과 시스템 종료]] — 전하량 적산, 전압과 부하, 종료 전압과 예비 용량의 구분
