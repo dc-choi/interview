@@ -124,6 +124,16 @@ prisma db push   : migration history 없이 schema 상태를 DB에 push
 
 이 절은 SQL DSL 선택과 타입 보장의 경계를 보완한다. 기존 TypeORM, Prisma, MikroORM 비교 전체를 재검증한 것은 아니므로 문서의 `verified_at`은 유지한다.
 
+### 동적 SQL은 문자열 연결보다 넓은 개념이다
+
+jOOQ DSL은 SQL을 만드는 런타임 표현식 모델이다. SELECT 필드, FROM의 JOIN과 WHERE 조건을 독립적인 표현식으로 만들고 쿼리 사이에서 재사용할 수 있다. 한 줄로 고정해 쓴 DSL도 이 모델로 조립되므로, 조건문으로 SQL 문자열을 이어 붙여야만 동적 SQL인 것은 아니다. 이를 모든 DBMS의 정적 SQL과 동적 SQL 구분이 없다는 뜻으로 확대하지 않는다.
+
+jOOQ 3.21의 **Policy**는 클라이언트에서 DML을 변환해 행 접근을 제한한다. 예를 들어 고객 조회에 테넌트 조건을 덧붙이며 INSERT, UPDATE와 DELETE에도 적용된다. 일반적인 동적 SQL 조립은 Open Source Edition에서도 지원하지만, Policy는 Express, Professional과 Enterprise Edition 기능이다.
+
+Policy는 DB 서버의 접근 통제와 구분한다. plain SQL template과 직접 JDBC 호출에는 적용되지 않고, view와 stored function 내부에도 자동 적용되지 않는다. 설정에 접근할 수 있으면 PolicyProvider를 제거할 수 있으며 DDL 실행 권한도 제한하지 못한다. 따라서 테넌트 필터가 생성됐다는 사실만으로 모든 접근 경로가 격리됐다고 판단하지 않고 DB 권한과 서버 측 행 보안도 함께 검토한다.
+
+2026-10-24 jOOQ 3.21의 Dynamic SQL, Policies와 Security considerations를 부분 대조했다. 생성 SQL과 테넌트 격리를 실제 DB에서 시험한 기록은 아니며 기존 ORM 비교의 검증일은 유지한다.
+
 ## Entity, domain model과 DTO
 
 ORM Entity를 domain model과 통합할지 mapper로 분리할지는 복잡도에 따른 선택이다.
@@ -169,6 +179,9 @@ Prisma 버전, 데이터베이스 커넥터와 query shape에 따라 생성 SQL�
 
 - [NestJS — Prisma](https://docs.nestjs.com/recipes/prisma)
 - [jOOQ — SQL building](https://www.jooq.org/doc/3.21/manual/sql-building/)
+- [jOOQ — Dynamic SQL](https://www.jooq.org/doc/3.21/manual/sql-building/dynamic-sql/)
+- [jOOQ — Policies](https://www.jooq.org/doc/3.21/manual/sql-building/queryparts/policies/)
+- [jOOQ — Security considerations](https://www.jooq.org/doc/3.21/manual/sql-building/queryparts/policies/policies-security/)
 - [jOOQ — Code generation](https://www.jooq.org/doc/latest/manual/code-generation/)
 - [jOOQ — KotlinGenerator](https://www.jooq.org/doc/3.21/manual/code-generation/codegen-output-languages/kotlingenerator/)
 - [NestJS — Database와 TypeORM](https://docs.nestjs.com/techniques/database)

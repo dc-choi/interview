@@ -123,6 +123,14 @@ PER의 이익은 주주에게 귀속되는 순이익 기준이다. **시가총�
 
 국내 법적 의무는 국제 원칙과 별도로 확인한다. 2026-10-16 확인한 상법 제382조의3은 이사의 충실한 직무 수행 대상을 회사와 주주로 정하고, 총주주의 이익 보호와 전체 주주에 대한 공평한 대우를 요구한다. 해당 조문에는 2025-07-22 전문개정 이력이 표시되어 있다. 이 규정의 존재만으로 개별 거래의 적법성, 주가 상승이나 특정 국가 주식의 투자 적합성이 입증되지는 않는다. 법적 보호 장치와 실제 거래 조건, 기업가치의 평가는 나누어 검토한다.
 
+### 내부자 지분 증가와 장내 매수를 구분한다
+
+보유 주식이 늘어났다는 사실만으로 거래소에서 매수 주문을 냈다고 판단하지 않는다. 미국 SEC의 Form 4 거래 코드에서 `P`는 거래소 매수뿐 아니라 다른 사람에게서 산 경우도 포함한다. `G`는 증여, `A`는 회사로부터 받은 부여나 보상 등의 취득, `M`은 옵션 같은 파생증권의 행사나 전환을 나타낸다. `P` 하나만으로 장내 매수라고 분류하는 집계도 원문과 각주를 다시 확인한다.
+
+공시 독해에 적용하면 거래 날짜, 취득 경위, 수량, 가격과 각주의 거래 조건을 함께 읽는 순서가 된다. 증여, 보상과 매수를 합친 지분 증가를 전부 시장의 신규 매수 수요로 계산하지 않는다. 지분 변화만으로 내부자의 동기나 향후 주가를 확정하지 않는 것도 이 구분에서 도출한 분석 원칙이다.
+
+2026-10-24 SEC 투자자 안내의 거래 코드를 대조했다. 위 코드는 미국 서식 기준이며 국내 공시의 분류와 동일하다고 가정하지 않는다. 특정 국내 기업의 장외 거래, 증여 수량과 금액을 검증한 기록은 아니다.
+
 ### 번 현금의 쓰임새를 기회비용과 비교한다
 
 매출과 이익이 늘어도 그 현금을 어디에 쓰는지에 따라 주주에게 돌아가는 가치는 달라진다. 기업은 번 현금을 기존 사업 재투자, 다른 회사 인수, 차입 상환, 배당이나 자사주 매입, 금융자산 보유 등에 나눠 쓴다. Damodaran의 기업재무 입문 자료는 전통적인 기업재무 이론의 목표를 사업 가치의 극대화로 두고, 이 선택을 세 원칙으로 정리한다.
@@ -208,6 +216,7 @@ AI, 로봇이나 친환경 같은 투자 테마는 여러 산업을 가로지를
 
 ## 출처
 
+- [Updated Investor Bulletin: Insider Transactions and Forms 3, 4, and 5 — SEC, Investor.gov](https://www.investor.gov/introduction-investing/general-resources/news-alerts/alerts-bulletins/investor-bulletins-69) — 2026-10-24 거래 코드 P, G, A, M과 거래 성격의 구분 대조
 - [Overview for SOX — Nasdaq](https://indexes.nasdaq.com/Index/Overview/SOX) — 2026-10-23 PHLX Semiconductor 지수 식별과 정의 대조
 - [iShares Semiconductor ETF, SOXX — iShares](https://www.ishares.com/us/products/239705/ishares-phlx-semiconductor-etf) — 2026-10-23 NYSE Semiconductor Index 기준지수와 성과 표기 대조
 - [How to Buy the Dip — Charles Schwab](https://international.schwab.com/story/how-to-buy-dip) — 2026-10-16 하락 원인과 사업 변화의 구분 대조
