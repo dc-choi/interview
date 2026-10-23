@@ -1,7 +1,7 @@
 ---
 tags: [ai, video, generative-video, editing, evaluation, reframing]
 status: done
-verified_at: 2026-10-12
+verified_at: 2026-10-24
 category: "AI엔지니어링(AIEngineering)"
 aliases: ["생성형 영상 편집", "Generative Video Editing", "자동 리프레이밍", "Auto Reframing"]
 ---
@@ -98,6 +98,20 @@ aliases: ["생성형 영상 편집", "Generative Video Editing", "자동 리프�
 
 이를 적용할 때는 중간 시안에서 대본의 의미, 구도와 컷 순서를 먼저 검수하고, 최종 영상에서 그 의도가 보존됐는지 확인하는 방식을 제안한다. 사실 자료를 재현하는 장면이라면 확인한 요소와 창작한 요소를 구분한다. 원본 지식에 맞는지와 시각적으로 마음에 드는지는 별도의 판단이다.
 
+## 캐릭터, 동작 전이와 요소 교체를 나눈다
+
+2026-10-24 Higgsfield 공식 안내에서 AI Influencer의 캐릭터 생성, Genjutsu의 Motion Transfer와 Object Swap을 확인했다. 이번 추가 검증은 이 절의 기능 구분이며, 다른 제품은 각 절에 적힌 검증 시점을 유지한다.
+
+- 캐릭터 생성은 이후 장면에 사용할 외형을 정하는 단계다.
+- Motion Transfer는 참조 영상의 움직임을 새 캐릭터와 장면에 적용한다.
+- Object Swap은 기존 클립에서 지정한 의상이나 소품 같은 요소를 교체한다.
+
+공식 기능 설명은 개별 입력에서 얼굴, 동작이나 배경이 완벽히 보존된다는 실측 보장이 아니다. 결과의 캐릭터 정체성, 손과 몸의 형태, 움직임의 타이밍과 유지할 배경을 원본과 비교한다.
+
+새 클립을 만들 때는 캐릭터 이미지의 의상과 외형을 먼저 검토하고 동작을 적용하는 순서를 시도할 수 있다. 이미 생성한 클립의 옷을 매번 바꾸는 것보다 후속 수정 횟수를 줄일 수 있다는 제작 가설이며, 절감률은 검증되지 않았다. 기존 클립 일부를 바꾸는 작업에는 요소 교체를 검토한다. 원본 음성의 재사용과 음성 변경은 화면 변형과 별도로 확인한다.
+
+생성 전 화면에 표시된 크레딧과 실제 재생성 횟수, 검수 시간을 기록한다. 영상에서 언급한 특정 금액을 현재 요금이나 완성본 한 편의 원가로 사용하지 않는다. 실제 계정에서 생성 품질과 비용을 재현한 검증은 수행하지 않았다.
+
 ## 변경 범위와 검수 기준을 함께 쓴다
 
 다음은 제품 기능에 기반한 작업 제안이다.
@@ -110,6 +124,10 @@ aliases: ["생성형 영상 편집", "Generative Video Editing", "자동 리프�
 제품 사진이나 설명 영상을 만들 때는 그럴듯한 장면과 실제 제품의 기능을 구분한다. 생성된 시연을 실제 촬영 증거처럼 사용하지 않는다.
 
 ## 출처
+
+- [Introducing the New AI Influencer: How It Works and What You Can Create — Higgsfield](https://higgsfield.ai/blog/new-ai-influencer) — 2026-10-24 캐릭터 생성과 Motion 탭의 작업 구분, 생성 전 크레딧 표시 확인.
+- [Meet Higgsfield Genjutsu: How It Works and What You Get — Higgsfield](https://higgsfield.ai/blog/higgsfield-genjutsu) — 2026-10-24 동작 전이와 요소 교체의 구분 확인.
+- [AI 쇼츠, 날로 먹는 줄 알았습니다… 직접 해보니(AI캐릭터 편) — YouTube, ZeroCho TV](https://www.youtube.com/watch?v=7Az6J0MAI_M) — 2026-10-18 유료광고 포함 사용기. 05:08~07:20 제작 순서와 재생성 부담은 경험에 기반한 가설로만 반영했고 요금, 품질과 절감 효과는 일반화하지 않았다.
 
 - [The Overhang — One Useful Thing, Ethan Mollick](https://www.oneusefulthing.org/p/the-overhang) — 2026-09-18 공개 제작 경험, Blender 시안과 후속 영상 생성 및 사람의 수정 판단. 제작 시간은 작성자의 보고이며 일반 성능 지표가 아니다.
 - [Amazon Bedrock을 활용한 AWS Korea YouTube 채널의 숏폼 자동화 사례 — AWS](https://aws.amazon.com/ko/blogs/tech/amazon-bedrock-shortform-content-automation/) — 원문 시간 구간 매칭과 검수 전후 워크플로 분리.
