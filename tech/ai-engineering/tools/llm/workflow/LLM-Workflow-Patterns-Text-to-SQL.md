@@ -84,7 +84,21 @@ Databricks Genie Agent는 SQL과 파일 분석에 MCP connector의 외부 자료
 
 운영 설계에서는 SQL 결과와 외부 조회 결과의 기준 시점, 인용과 누락을 따로 점검하고, 필요한 개별 도구만 활성화한다. 외부 데이터 소스라는 이름만으로 조회 전용이라고 가정하지 않는다. 이번 대조는 Genie의 연결 계약에 한정하며 Free Edition의 제공 범위와 요금, 기존 AWS 기능 전체를 재검증한 기록은 아니다. 기존 `verified_at`은 유지한다.
 
+### 고정한 SQL 로직과 평가용 정답을 구분한다
+
+부분 검증(2026-10-24): Databricks Genie Agents의 품질 조정, 개념과 평가 문서를 대조했다. 아래는 AWS 문서의 기능 계약이며 실제 워크스페이스 실행을 재현하지 않았다. 기존 AWS 기능 전체의 검증일은 유지한다.
+
+- **함수로 고정할 범위:** Unity Catalog에 등록한 SQL 함수는 scalar와 table-valued 형태를 지원한다. Genie는 사용자 질문에서 매개변수를 받아 함수를 호출하며 함수 내부 SQL을 보거나 수정할 수 없다. 사용자는 해당 함수의 `EXECUTE` 권한이 필요하다. 고정된 집계 로직을 재사용해도 올바른 함수와 매개변수를 골랐는지는 별도 검증한다.
+- **맥락과 평가셋:** example SQL과 instructions는 응답을 만드는 맥락이다. benchmark 질문과 정답 SQL은 평가용이며 Genie의 맥락 개선에 직접 사용되지 않는다. 평가셋을 등록한 사실만으로 잘못된 업무 정의가 교정된다고 보지 않는다.
+- **평가 모드:** Chat mode는 정답 SQL과 생성 SQL의 결과 집합을 비교한다. SQL 문자열이 다르다는 이유만으로 오답이라고 판정하지 않는다. Agent mode는 여러 단계로 분석하고 LLM judge가 응답을 평가하며, 선택적인 evaluation note로 평가 기준을 전달할 수 있다.
+- **평가 입력:** benchmark의 각 질문은 새 대화로 실행되어 이전 대화의 맥락을 이어받지 않는다. Chat mode에서 정답 SQL이 없는 질문은 자동 정확도 평가 대신 수동 검토가 필요하다. 도구가 만든 정답 SQL도 저장 전에 사람이 질문에 맞는지 확인한다.
+
+적용 제안: 반복되는 매출이나 리텐션 정의는 검토한 SQL로 고정하고, 기간 경계, 취소분과 중복 조인의 예외를 평가 질문으로 둔다. 같은 의미의 다른 표현과 실제 후속 질문 대화도 따로 시험한다. 평가 통과를 전체 데이터와 모든 질문의 정확성 보장으로 확대하지 않는다.
+
 ## 출처
+- [Databricks, Tune Genie Agent quality](https://docs.databricks.com/aws/en/genie-agents/tune-quality)
+- [Databricks, Genie Agents concepts](https://docs.databricks.com/aws/en/genie-agents/concepts)
+- [Databricks, Test and monitor a Genie Agent](https://docs.databricks.com/aws/en/genie-agents/monitor)
 - [Databricks, Connect a Genie Agent to external tools and sources](https://docs.databricks.com/aws/en/genie-agents/external-tools)
 - [Amazon Redshift, Creating and interpreting a query plan](https://docs.aws.amazon.com/redshift/latest/dg/c-the-query-plan.html)
 - [Amazon Bedrock User Guide, Create a knowledge base by connecting to a structured data store](https://docs.aws.amazon.com/bedrock/latest/userguide/knowledge-base-structured-create.html) — query configurations와 생성 맥락의 비결정성.

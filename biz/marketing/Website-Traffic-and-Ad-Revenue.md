@@ -33,7 +33,22 @@ Google AdSense의 정의는 `Page RPM = 예상 수입 ÷ 페이지뷰 × 1,000`�
 
 2026-10-18 공개된 무료 바코드 사이트 소개 영상은 외부 추정 기준 월 약 50만 방문자와 1인당 2페이지 이상을 언급한다. 확보한 전사문만으로는 대상 도메인, 측정 기간과 실제 지표명이 확인되지 않는다. 월 100만 페이지뷰와 온라인 자산 가치는 검증된 사실로 사용하지 않으며, 설명란에 연결된 전체 영상에서 측정 화면과 조건을 추가로 확인해야 한다.
 
+## 광고 심사와 수익 예측을 분리한다
+
+2026-10-24 Google 공식 안내 대조: 검색에서 AI 콘텐츠를 다루는 기준과 AdSense 광고 게재 정책은 적용 대상이 다르다. Google Search는 순위 조작이 목적이 아닌 적절한 AI 활용을 허용하지만, 그 설명을 광고 승인 보장으로 옮기지 않는다. 게시자 정책은 콘텐츠가 없거나 가치가 낮은 화면, 공사 중인 화면의 광고를 금지하고, 사람의 검토나 선별을 거치지 않은 자동 생성 콘텐츠에도 광고를 두지 않도록 안내한다.
+
+신청 전에는 방문자에게 필요한 독자적인 내용과 사용하기 쉬운 탐색 구조를 점검한다. 외부 자료를 이용할 때는 전문 지식, 개선 아이디어나 실제 후기처럼 자체 내용을 보탠다. 메뉴의 정렬, 글자 가독성과 기능도 확인한다. 확인한 준비 안내에는 글 개수나 글자 수로 승인 여부를 정하는 합격선이 없다.
+
+사이트의 승인 상태와 `ads.txt` 상태도 별개다. `Needs attention`은 해결할 문제가 있다는 뜻이고, `Getting ready`는 확인 중인 상태다. `Ready`는 광고를 게재할 준비가 됐다는 뜻이며 계속 정책을 준수해야 한다. `ads.txt`의 `Authorized`는 게시자 ID를 찾았다는 뜻이므로 콘텐츠 심사 통과와 같다고 보지 않는다.
+
+적용 제안: 도구 사이트에는 실제 동작, 사용법과 한계를 검토하고 빈 페이지와 작동하지 않는 메뉴를 먼저 고친다. 경험을 지어내거나 페이지 수만 늘리는 방식으로 빈틈을 채우지 않는다. 심사 통과, 실제 유입, 광고 수입과 비용을 뺀 이익을 서로 다른 단계로 기록한다.
+
 ## 출처
+
+- [Google Search's guidance about AI-generated content — Google Search Central](https://developers.google.com/search/blog/2023/02/google-search-and-ai-content)
+- [Google Publisher Policies, Google-served ads on screens without publisher-content](https://support.google.com/publisherpolicies/answer/11112688?hl=en)
+- [Google AdSense Help, Make sure your site's pages are ready for AdSense](https://support.google.com/adsense/answer/7299563?hl=en)
+- [Google AdSense Help, Check the status of your AdSense sites](https://support.google.com/adsense/answer/12170222?hl=en)
 
 - [Similarweb, Total Visits](https://support.similarweb.com/hc/en-us/articles/212999769-Total-Visits) — 2026-10-24 방문과 페이지뷰의 구분 확인.
 - [Google AdSense Help, Page RPM](https://support.google.com/adsense/answer/112030?hl=en) — 2026-10-24 산식 확인.
