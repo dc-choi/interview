@@ -8,6 +8,19 @@ aliases: ["EC2 비용 모델", "Savings Plans, Spot, Capacity Reservations"]
 
 # AWS EC2 — 비용 모델
 
+## 접속 종료와 인스턴스 중지를 구분한다
+
+2026-10-24 EC2 공식 수명주기 문서로 이 절을 대조했다. SSH나 원격 접속 창을 닫거나 접속에 쓰던 PC를 꺼도 EC2 인스턴스를 중지한 것은 아니다. 인스턴스가 `running`이면 접속하지 않거나 CPU가 유휴 상태여도 인스턴스 사용 요금이 발생한다.
+
+| 상태 또는 동작 | 인스턴스 사용 요금 |
+| --- | --- |
+| `running`, 접속만 종료 | 계속 발생 |
+| 일반 중지의 `stopping`, `stopped` | 발생하지 않음 |
+| 최대 절전의 `stopping` | RAM을 저장하는 동안 발생하며, `stopped`가 되면 멈춤 |
+| 재부팅 | 과금이 계속되며 새 최소 과금 구간을 시작하지 않음 |
+
+이 표는 인스턴스 사용 요금 기준이다. 중지 뒤에도 EBS 저장 비용과 계정에 할당된 Elastic IP 등의 비용은 남을 수 있다. 콘솔이나 API에서 실제 상태를 확인하고, 남은 자원과 구매 약정은 아래 절과 함께 점검한다. 기존 구매 옵션 전체의 재검증은 아니므로 frontmatter 검증일은 유지한다.
+
 ## 구매 옵션
 
 | 모델 | 비용 조건 | 적합 |
@@ -69,6 +82,7 @@ Spot은 AWS 여유 capacity를 쓰는 모델이다. 중단 notice는 일반적�
 
 ## 출처
 
+- [Amazon EC2, Amazon EC2 instance state changes](https://docs.aws.amazon.com/AWSEC2/latest/UserGuide/ec2-instance-lifecycle.html)
 - [Amazon EC2, Terminate Amazon EC2 instances](https://docs.aws.amazon.com/AWSEC2/latest/UserGuide/terminating-instances.html)
 - [AWS Billing, Understanding unexpected charges](https://docs.aws.amazon.com/awsaccountbilling/latest/aboutv2/checklistforunwantedcharges.html)
 - [Amazon EC2, Capacity Blocks for ML](https://docs.aws.amazon.com/AWSEC2/latest/UserGuide/ec2-capacity-blocks.html)
