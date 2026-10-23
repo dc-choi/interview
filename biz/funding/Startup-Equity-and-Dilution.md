@@ -10,7 +10,7 @@ verified_at: 2026-10-02
 
 지분 투자는 회사에 들어오는 돈, 기존 주주의 지분 변화, 투자자가 얻는 권리를 함께 보는 결정이다. 이 문서는 계산과 계약 검토의 기초를 다룬다. 사용자의 투자 계획이나 현재 주주 구성을 전제하지 않는다.
 
-검증 기준은 2026-10-02다. SEC 자료는 용어와 계산 원리를, YC 자료는 해당 SAFE 양식의 구조를 확인하는 데 사용했다. 미국의 발행 규제나 계약 효력을 한국 회사에 적용하지 않는다. 한국 계약은 준거법, 정관, 실제 문서와 발행 절차를 별도로 확인한다.
+지분 계산과 계약 구조의 검증 기준은 2026-10-02다. SEC 자료는 용어와 계산 원리를, YC 자료는 해당 SAFE 양식의 구조를 확인하는 데 사용했다. 미국의 발행 규제나 계약 효력을 한국 회사에 적용하지 않는다. 한국 계약은 준거법, 정관, 실제 문서와 발행 절차를 별도로 확인한다. 2026-10-24에는 한국모태펀드의 간접 출자와 회수 구조만 추가로 대조했다.
 
 ## 신주와 구주: 회사에 들어오는 돈부터 구분
 
@@ -86,6 +86,14 @@ SAFE는 특정 사건이 생기면 미래 지분을 받도록 약정하는 계�
 
 YC는 미국 회사용 양식과 일부 비미국 관할 양식을 구분한다. 해당 페이지의 양식을 한국 회사에 그대로 적용할 수 있다고 판단하지 않는다. 국내 조건부지분인수계약의 법적 요건, 세무와 회계 처리는 이 문서에서 검증하지 않았다.
 
+## 정책 재원과 회사에 대한 투자를 구분한다
+
+한국모태펀드는 여러 출자자의 재원을 모아 투자조합에 출자하고, 그 조합이 중소기업과 벤처기업에 투자하는 Fund of Funds 구조다. 정부의 재원 공급, 모태펀드의 조합 출자, 조합의 기업 투자는 서로 다른 단계다. 모태펀드 전체 규모를 개별 회사가 받을 금액으로 읽거나 출자 발표를 회사 투자 확정으로 해석하지 않는다.
+
+모태출자펀드의 회수 경로에는 상장 뒤 장내 매각, M&A와 장외 매각 등이 있다. 회수 재원을 다시 투자에 활용하는 구조이므로 정책 재원이 포함됐다는 이유만으로 회사에 무상 지원금이 지급된다고 보지 않는다. 개별 회사의 현금 유입과 희석은 실제 거래가 신주인지 구주인지, 어떤 증권과 권리를 약정했는지로 확인한다.
+
+적용 질문은 두 가지다. 발표가 펀드에 대한 출자인가, 특정 회사에 대한 투자 계약인가? 회사 투자라면 실제 납입 시점과 계약상 권리가 확인됐는가? 펀드 간 후속 성장 지원의 정책 구상만으로 다음 투자나 창업자의 손실 보전을 보장한다고 판단하지 않는다.
+
 ## 결정 전에 확인할 질문
 
 아래는 공개 자료를 바탕으로 구성한 검토 질문이며 투자 유치를 선택하라는 권고가 아니다.
@@ -108,6 +116,8 @@ YC는 미국 회사용 양식과 일부 비미국 관할 양식을 구분한다.
 
 ## 출처
 
+- [한국벤처투자, 한국모태펀드 사업개요](https://www.kvic.or.kr/about-business/capital-business/korea-mother-fund/overview) — 2026-10-24 간접 출자 구조 확인, 페이지의 과거 규모 수치는 사용하지 않음
+- [한국벤처투자, 한국모태펀드 운용체계](https://www.kvic.or.kr/about-business/capital-business/korea-mother-fund/management-system) — 기업 투자와 회수 경로
 - [Glossary — U.S. Securities and Exchange Commission](https://www.sec.gov/resources-small-businesses/glossary)
 - [What is a private secondary market? — U.S. Securities and Exchange Commission](https://www.sec.gov/files/oasb-prvt-sec-mrkt-building-block.pdf)
 - [Common Startup Securities — U.S. Securities and Exchange Commission](https://www.sec.gov/resources-small-businesses/capital-raising-building-blocks/common-startup-securities)

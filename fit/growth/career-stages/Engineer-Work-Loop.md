@@ -68,6 +68,21 @@ aliases: ["Engineer Work Loop", "엔지니어 업무 성장 루프"]
 
 작성자는 줄 수를 줄인 정도보다 다음 사람이 동작을 빠르게 이해하고 안전하게 수정할 수 있는지 확인한다. 현재 필요가 확인되지 않은 범용화와 기능 추가도 검토 대상에 넣는다. 이를 개인의 능력 평가로 쓰지 않고 이번 변경의 읽기 비용과 검증 범위를 맞추는 데 사용한다.
 
+### 지시가 충돌하면 조정할 구조를 제안한다
+
+여러 역할이 동시에 일을 요청하거나 마감 직전에 책임을 넘기는 상황에서는 요청의 우선순위와 결정권을 드러낸다. HSE의 역할 기준은 요구사항의 양립 가능성, 책임의 명확성, 역할 충돌을 제기할 통로를 다룬다. 업무 요구 기준은 합의한 근무시간 안에서 달성 가능한 업무량과 역량의 적합성을 함께 본다.
+
+다음은 이 기준을 업무 조정에 적용한 제안이며 특정 조직의 인사 절차가 아니다.
+
+| 확인할 것 | 조정안에 담을 내용 |
+| --- | --- |
+| 동시에 받은 요청 | 요청 역할, 결과물, 기한과 서로 충돌하는 조건 |
+| 판단 권한 | 우선순위와 범위 변경을 결정할 역할 |
+| 처리 가능량 | 현재 업무를 유지할 경우 미룰 일, 줄일 범위 또는 필요한 지원 |
+| 전달 방식 | 변경을 공유할 경로, 인계할 정보와 다시 확인할 시점 |
+
+사람의 성격을 평가하기보다 관찰된 지연과 작업 영향을 제시하고, 권한 있는 역할에게 선택 가능한 조정안을 요청한다. 제안과 승인된 변경을 구분해 기록한다. 인정이나 빠른 승진만으로 과부하가 해결될 것, 특정 상사가 교체될 것 또는 이직이 불필요할 것을 예측하지 않는다.
+
 ## 완료 후
 
 - [ ] 무엇이 바뀌었는지와 확인한 범위를 설명할 수 있다.
@@ -115,6 +130,8 @@ SFIA 9는 책임 수준을 자율성, 영향력과 복잡성 등으로 설명한
 
 ## 출처
 
+- [HSE, Management Standards - Role](https://www.hse.gov.uk/stress/standards/role.htm) — 2026-10-24 역할 명확성과 상충 요구의 조정 기준 확인
+- [HSE, Management Standards - Demands](https://www.hse.gov.uk/stress/standards/demands.htm) — 합의한 근무시간과 달성 가능한 요구의 관계, 한국의 법적 의무로 해석하지 않음
 - [GOV.UK Service Manual, Learning about users and their needs](https://www.gov.uk/service-manual/user-research/start-by-learning-user-needs) — 사용자 필요와 해결책의 구분, 조사 근거와 가정의 구분
 - [Google Engineering Practices, What to look for in a code review](https://google.github.io/eng-practices/review/reviewer/looking-for.html) — 복잡성, 현재 요구, 이해되지 않는 코드와 검토 전문성
 - [SFIA 9, Level 4 - Enable](https://sfia-online.org/en/sfia-9/responsibilities/level-4) — 책임 경계, 자율성과 팀 작업의 계획

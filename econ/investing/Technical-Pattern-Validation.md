@@ -27,6 +27,14 @@ aliases: ["캔들과 차트 패턴의 검증", "Technical Pattern Validation"]
 
 패턴은 진행 중일 때보다 지나간 차트에서 찾기 쉽다. 검증에서는 패턴을 확정할 수 있었던 시점과 실제 주문 가능 시점을 분리한다. 사후에 완성된 모양을 과거 시점의 신호로 사용하면 [[Backtesting-Pitfalls|미래 정보 누수]]가 된다.
 
+## 이동평균 교차와 투자 주체의 의도를 구분한다
+
+단순이동평균(SMA)은 정한 기간의 가격을 같은 가중치로 평균한 값이다. 기간이 길수록 가격 변동을 더 평활하게 만들지만 최근 변화에 대한 반응은 늦어진다. 짧은 기간의 이동평균이 긴 기간의 이동평균 아래로 교차하는 것을 데드크로스라고 부르며, 50일선과 200일선 조합이 대표적인 예다. 비교할 때 기간뿐 아니라 SMA인지 최근 가격에 더 큰 가중치를 주는 EMA인지도 맞춘다.
+
+이 계산의 입력은 가격이므로 교차만으로 기관이나 외국인이 투자 관점을 바꿨다거나 반대매매가 발생했다고 판정할 수는 없다. 이는 지표의 입력에서 도출되는 해석 한계다. 투자 주체별 거래나 강제 청산에 관한 주장은 별도의 거래 자료와 사건 근거가 필요하다.
+
+실무 검토에서는 신호가 완성된 시점, 진입과 청산 조건, 비용과 재진입 규칙을 먼저 고정한다. 골든크로스나 데드크로스 하나로 기계적으로 매매하지 않으며, 장기 보유와 추세 매매를 사후에 바꿔 붙여 성과를 설명하지 않는다. 교차의 정의와 매매 판단의 한계는 2026-10-24 Fidelity 자료와 대조했고, 특정 시장의 예측력이나 수익성은 검증하지 않았다.
+
 ## 통계적 정보와 매매 수익을 구분한다
 
 Lo, Mamaysky와 Wang의 연구는 차트 모양을 주관적으로 고르는 문제를 줄이기 위해 비모수 커널 회귀로 패턴 인식을 자동화했다. 미국 주식의 과거 자료에서 특정 패턴을 조건으로 한 수익률 분포와 무조건부 분포를 비교했고, 일부 지표가 추가 정보를 제공한다고 보고했다.
@@ -55,6 +63,8 @@ Lo, Mamaysky와 Wang의 연구는 차트 모양을 주관적으로 고르는 문
 
 ## 출처
 
+- [Fidelity, Simple Moving Average (SMA)](https://www.fidelity.com/learning-center/trading-investing/technical-analysis/technical-indicator-guide/sma)
+- [Moving average stock signal — Fidelity](https://www.fidelity.com/viewpoints/active-investor/moving-averages) — 이동평균 교차의 정의와 기계적 매매의 한계만 확인, 본문의 시황 전망은 반영하지 않음
 - [CME Group, Technical Analysis, Chart Types: candlestick, line, bar](https://www.cmegroup.com/education/courses/technical-analysis/chart-types-candlestick-line-bar)
 - [CME Group, Technical Analysis, Technical Patterns: Reversals](https://www.cmegroup.com/education/courses/technical-analysis/technical-patterns-reversals)
 - [Foundations of Technical Analysis: Computational Algorithms, Statistical Inference, and Empirical Implementation — NBER, Andrew W. Lo, Harry Mamaysky, Jiang Wang](https://www.nber.org/papers/w7613) — 공식 검색 반환의 초록 확인. 페이지 직접 조회는 403으로 실패했으며 논문 전체를 검증하지 않았다.
