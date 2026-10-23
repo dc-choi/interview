@@ -69,6 +69,14 @@ World Bank의 PPP 위험 배분 지침은 발생 가능성을 통제하고, 발�
 
 자금 조달 가능성과 투자 회수는 별도 검증 대상이다. 위험을 가격에 반영한 금융 구조가 있다는 설명만으로 원금 회수, 특정 기대수익률이나 산업 전체의 자금 부족 해소를 보장하지 않는다.
 
+### 고객 계약 기간과 차입 만기를 나란히 놓는다
+
+GPU 수요와 대출 조달 성공만으로 원리금 상환을 확정하지 않는다. 고객에게 대금을 받을 기간과 차입금을 갚을 기간이 다르면, 그 사이를 계약 갱신이나 새로운 고객의 현금흐름으로 채워야 하는 조건을 확인한다.
+
+**공개 사례:** CoreWeave의 2026-08-10 발표에서 26억 달러 DDTL 5.5 대출의 만기는 약 5년, 기초 고객 계약의 평균 기간은 약 3년이다. 초기 계약 종료 뒤 기존 계약을 갱신하거나 다른 고객에게 용량을 다시 임대하는 선택은 신용계약의 기준을 따른다. 회사는 이를 대주가 갱신 위험을 인수한 구조로 설명한다(2026-10-24 발표 대조).
+
+**분석 제안:** 계약 갱신 시점의 임대 단가, 공실 기간, 운영비와 원리금 지급 일정을 함께 비교한다. 기간 차이가 있다고 즉시 부도를 단정하지 않고, 조달에 성공했다고 갱신과 상환이 보장됐다고 판단하지도 않는다. 이 발표의 평균 계약 기간만으로 개별 계약의 만기 분포나 회사 전체의 유동성을 계산할 수 없다. 차입 만기, 장비의 회계상 내용연수와 실제 경제적 수명도 서로 다른 값이다.
+
 ## 자료별 확인 수준 (2026-10-16)
 
 | 자료 | 확보한 내용 | 적용 한계 |
@@ -99,6 +107,8 @@ State of AI의 인프라 절은 미국 4대 하이퍼스케일러의 2026년 설
 이 질문은 조사 틀이며 특정 주식의 매수나 매도 신호가 아니다. 거시 성장 전망과 개별 기업가치 평가는 [[AI-Company-Valuation-and-Funding|AI 기업가치와 자금 조달]]로 나눠 확인한다.
 
 ## 출처
+
+- [CoreWeave Closes $2.6 Billion Loan Facility, Expanding Financing Flexibility for AI Infrastructure — CoreWeave](https://investors.coreweave.com/news/news-details/2026/CoreWeave-Closes-2-6-Billion-Loan-Facility-Expanding-Financing-Flexibility-for-AI-Infrastructure/default.aspx) — 2026-08-10 발표의 DDTL 5.5 만기와 평균 고객 계약 기간, 갱신 및 재임대 조건을 2026-10-24 대조. 개별 계약과 전체 지급 능력은 검증하지 않음.
 
 - [Allocating Risks — World Bank PPP Resource Center](https://ppp.worldbank.org/allocating-risks) — 위험 배분의 정의, 통제와 부담 능력, 과도한 이전의 조달비용, 2026-10-23 대조. AI 인프라 점검 질문은 적용 제안
 - [Energy and AI: Executive summary — IEA](https://www.iea.org/reports/energy-and-ai/executive-summary) — 2025년 보고서의 2024년 데이터센터 전력 소비 추정과 지역 비중, 2030년 Base Case 전망, 2026-10-23 대조

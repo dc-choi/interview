@@ -10,6 +10,7 @@ aliases: ["Marketing", "마케팅"]
 브랜딩, 마케팅, 광고의 층위와 STP, 4P, Customer Journey 등 마케팅 실행의 핵심 프레임워크, 그리고 생성 AI 답변 안에서 가시성 측정.
 
 ## 목차
+- [x] [[Creator-Brand-Collaboration|크리에이터와 브랜드의 협업 범위]] — 시청자 적합성, 표현과 수정 범위, 제작과 광고 활용 권한의 구분
 - [x] [[Website-Traffic-and-Ad-Revenue|웹사이트 트래픽과 광고 수익]] — 방문과 페이지뷰, 외부 추정치와 Page RPM 시나리오의 구분
 - [x] [[YouTube-Thumbnail-Testing|유튜브 제목과 썸네일 실험]] — 동시 비교, 시청 시간 기준과 제작 비용의 구분
 - [x] [[Promotional-Products-Execution|판촉물 제작과 납기]] — 샘플, 배송 보상의 조건, 재고와 배포 성과의 구분
