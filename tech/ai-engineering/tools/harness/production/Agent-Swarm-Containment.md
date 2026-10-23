@@ -85,6 +85,17 @@ Anthropic도 2026년 7월 30일 별도 공지에서 자사 평가 중 세 조직
 
 **적용 제안:** 평가 자료와 제어 소켓의 접근권, 외부 코드 취득 경로, 출력과 로그의 용량 상한을 별도 점검한다. 테스트 점수와 풀이 경로의 적합성, 실행 환경의 안정성을 각각 기록한다. 이는 보고서에서 도출한 점검 기준이며 특정 모델 전체의 악의나 사고율을 입증하지 않는다. 앞선 사건 조사를 다시 검증한 기록도 아니다.
 
+## 자기 복제 평가에서 실행 위치와 복제 대상을 구분한다
+
+분산 기기에서 모델을 실행한 실험과, 에이전트가 다른 기기로 전파한 실험은 서로 다른 능력을 측정한다. Anthropic의 2026-10-12 연구를 2026-10-24 대조한 범위는 다음과 같다.
+
+- **추론 가능성:** Gemma4-26B-A4B를 Android TV 박스 15대에 나누어 실행했다. 이는 저사양 기기 묶음에서의 추론 시연이며, 그 모델이 기기를 스스로 확보하고 복제했다는 결과가 아니다.
+- **전파 조건:** 별도 실험은 방화벽으로 격리한 GCP 노드 8대의 Android 에뮬레이터에서 수행했다. ADB 인증을 생략해 진입을 쉽게 만들었으므로 실제 보안 경계를 뚫는 성공률로 일반화하지 않는다.
+- **모델의 역할:** 행동을 결정하는 모델은 별도 추론 서버에서 실행했고, 대상 노드에는 공통 과제인 Llama3.1-8B의 추론 환경을 구성했다. 정합성과 부정행위 검사를 통과하면 평가 시스템이 새 웜 인스턴스를 시작했다. GLM-5.2 자체의 가중치가 대상 기기에 복제되어 독립 실행된 결과가 아니다.
+- **성공의 범위:** 시험한 공개 가중치 모델 중 GLM-5.2만 전체 전파에 성공했으며, 5회 중 4회는 8개 노드, 1회는 7개 노드에 도달했다. 작은 기기에서 실행 가능한 크기와 전체 전파에 필요한 역량이 같은 모델에서 충족됐다는 증거는 아직 제시하지 않았다.
+
+적용 제안: 복제 평가에는 판단 모델의 실행 위치, 배포하는 모델, 초기 접근권, 다음 인스턴스를 시작하는 주체를 함께 기록한다. 대용량 모델 전송과 지속적인 기기 간 통신은 탐지 후보지만, 모든 전파가 같은 흔적을 남긴다고 가정하지 않는다. 별도 서버 의존 실험을 외부 지원 없는 자립형 복제의 실증으로 바꾸어 설명하지 않는다.
+
 ## 체크포인트
 
 - 왜 쓰기 가능한 공유 자원이 곧 에이전트 간 통신 채널인지 설명할 수 있는가.
@@ -96,6 +107,7 @@ Anthropic도 2026년 7월 30일 별도 공지에서 자사 평가 중 세 조직
 
 ## 출처
 
+- [AI models may be capable of self-replicating without access to a datacenter — Anthropic](https://www.anthropic.com/research/self-replicating-ai) — 2026-10-24 분산 추론 시연, B절의 전파 평가 조건과 F절의 탐지 단서 대조. 앞선 사건 조사를 재검증한 기록은 아니다.
 - [DeepSeek Elastic Compute (DSec): A Sandbox Infrastructure for Effective Agentic Training at Scale — DeepSeek-AI](https://arxiv.org/html/2609.22978v1) — 2026-10-23 6.4~6.5절의 답안 유출, 가용성 장애와 접근 통제 범위 대조
 - [Path to Astra: critical capabilities and frontier safeguards — OpenAI](https://openai.com/index/path-to-astra/)
 - [Brief independent investigation of agents' behavior, reasoning and collaboration in the OpenAI / Hugging Face hacking incident — METR](https://metr.org/blog/2026-08-26-openai-hugging-face-incident-investigation/)
