@@ -71,6 +71,16 @@ NVIDIA Parakeet v3와 Canary v2는 한국어를 지원하지 않는다. 한국�
 
 비교 절차 제안: 같은 오디오, 언어, 텍스트 정규화 규칙과 장비에서 모델 버전, 실행 엔진과 디코딩 설정을 기록한다. 다운로드 크기, 최대 메모리, 최초 실행 시간, 준비 후 처리량과 CER/WER을 따로 측정한다. 이 조건이 다르면 크기가 작은 모델이 실제 작업에서도 더 빠르고 정확하다고 단정할 수 없다.
 
+### 마이크로컨트롤러의 음성 명령과 범용 전사를 구분한다
+
+부분 검증(2026-10-24): Whistle의 공식 모델 소개와 ESP32-S3 이식 프로젝트의 공개 README를 대조했다. 아래 수치는 제공자의 설명과 평가이며, 보드 실행이나 정확도를 직접 재현하지 않았다. 기존 Mac 실측과 요금의 `verified_at`은 유지한다.
+
+- **저장 용량과 실행 메모리:** Whistle 원본 파일은 16.9 MB이며, 이식 프로젝트는 디코더를 4층으로 줄인 약 14.5 MB 모델을 16 MB 플래시, 8 MB PSRAM 보드에 배치한다. 모델 파일 크기를 RAM 요구량으로 읽지 않고 펌웨어와 작업 버퍼도 따로 계산한다. 디코더 깊이를 줄여도 인코더는 8층을 모두 실행한다.
+- **언어와 장비 조건:** 공식 지원 언어는 영어, 독일어, 프랑스어, 스페인어, 이탈리아어, 네덜란드어, 폴란드어다. 한국어 전사 대체재로 전제하지 않는다. 공식 소개의 첫 토큰 11.1 ms는 M4 Pro CPU에서 10초 오디오를 처리한 수치이며 ESP32의 응답 시간이나 전체 전사 시간과 다르다.
+- **명령 성공률과 WER:** 보드 프로젝트의 영어 명령 성공률 78%(잡음 혼합 76%)는 합성 음성에서 색상과 점등 방식을 모두 맞힌 비율이다. 펌웨어는 키워드 바이어싱과 다른 언어로 재시도하는 규칙을 추가하므로, 이 결과를 축소 모델 자체의 범용 전사 우위로 해석하지 않는다.
+
+평가 절차 제안: 실제 화자와 마이크에서 전사 오류, 명령 추출 성공, 명령이 없는 발화의 오작동과 전체 응답 시간을 따로 측정한다. LED 시연이 성공해도 긴 강의 전사나 위험한 장치 제어의 적합성을 증명하지는 않는다.
+
 ## 실측 결과
 
 M2 24GB 팬리스 MacBook Air에서 2026-09-23과 24일에 측정했다. 문자 오류율(CER)은 사람이 단 자막이 있는 10분 테코톡(시리즈 이름) 1편(858초, 약 14분, 정답 4,663자)을 기준으로 했다. NFKC 정규화와 소문자화 뒤 문자와 숫자만 남겨 문자 단위 편집 거리를 셌다. 용어 정확 표기는 정답에 나온 기술 용어 28개(142회)를 원어나 표준 표기로 적은 비율이며, 퀵은 QUIC의 정확 표기로 세지 않는다.
@@ -161,6 +171,8 @@ M2 24GB 팬리스 MacBook Air에서 2026-09-23과 24일에 측정했다. 문자 
 
 ## 출처
 
+- [Whistle: Speech to Text in 16.9 MB — Cactus Compute](https://cactuscompute.com/blog/whistle)
+- [Whistle speech recognition on an ESP32-S3 — GitHub, andrisgauracs](https://github.com/andrisgauracs/whistle-esp32)
 - [Phonon-2 모델 카드 — Hugging Face, FermionResearch](https://huggingface.co/FermionResearch/Phonon-2)
 - [Fermion, Transcribe and dictate](https://www.fermionresearch.com/docs/speech/)
 - [Amazon Transcribe, Custom vocabularies](https://docs.aws.amazon.com/transcribe/latest/dg/custom-vocabulary.html)
