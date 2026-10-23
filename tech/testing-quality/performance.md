@@ -139,6 +139,12 @@ Campfire Once의 Rust/Elixir 재작성에 대한 2026-10-11 분석을 10-16에 �
 
 유실률, HTTP 오류, 전달 지연, 메모리와 재접속 뒤 최신 상태 복구를 함께 본다. 처리량이 다른 closed-loop 실행의 전달률을 바로 비교하지 않는다. 버퍼 확장은 지연과 메모리 비용으로 손실을 미루는 선택일 수 있으며, 허용 지연을 넘긴 연결을 끊고 복구하는 정책과도 비교한다.
 
+## 데스크톱 앱의 시작 속도와 사용 중 품질
+
+시작 시간이 짧아졌다는 결과는 스크롤, 화면 전환과 장시간 사용의 품질까지 증명하지 않는다. 비교할 때는 실행 시작과 완료 시점을 먼저 정하고, 같은 버전, OS, 하드웨어, 계정의 데이터 규모 및 캐시 조건으로 반복 측정한다. cold start와 재실행을 분리하고 화면이 나타난 시점과 실제 입력이 가능한 시점도 구별한다. 이는 데스크톱 앱 비교에 적용하는 테스트 설계 제안이다.
+
+2026-10-14 Epic Games Launcher Preview 발표는 cold start, 화면 이동과 백그라운드 부하 개선을 각각 제품의 주장으로 제시하며 Preview의 기능 범위와 오류 가능성도 밝힌다. 이 발표나 짧은 시연만으로 다른 제품보다 항상 빠르다거나 AI 코딩이 특정 렌더링 오류의 원인이라고 결론 내리지 않는다. 실제 제품 간 벤치마크와 영상에 보인 오류의 재현은 수행하지 않았고, 기존 k6와 도구 상태의 `verified_at`도 갱신하지 않는다.
+
 ## 면접 점검 질문
 
 - 5가지 유형 각각의 목적과 무엇을 보고 끝낼지
@@ -153,6 +159,7 @@ Campfire Once의 Rust/Elixir 재작성에 대한 2026-10-11 분석을 10-16에 �
 
 ## 출처
 
+- [The new Epic Games Launcher is finally here in Preview — Epic Games Store](https://store.epicgames.com/news/epic-games-launcher-preview) — 2026-10-14 발표, 2026-10-24 열람. 공급자의 주장과 테스트 설계 제안을 구분
 - [I'm sorry, but you still have to think — It's all about the bit, Piotr Sarnacki](https://itsallaboutthebit.com/i-am-sorry-but-you-still-have-to-think/) (2026-10-12 GeekNews 발췌의 원문)
 
 - [Grafana k6 공식 문서, Test types](https://grafana.com/docs/k6/latest/testing-guides/test-types/)

@@ -10,6 +10,7 @@ aliases: ["Crypto", "Cryptography"]
 패스워드 해싱, 공개키 암호, RSA — 암호화 기초와 실전.
 
 ## 목차
+- [x] [[Elliptic-Curve-Parameter-Provenance|타원곡선 파라미터의 출처]] — 공개 seed 재현, 개인키와의 구분, 선택 과정과 보안 증명의 한계
 - [x] [[Password-Hashing|패스워드 해싱 (저장/검증 흐름, argon2, Salt, TLS)]]
 - [x] [[Public-Key-Cryptography|공개키 암호, 비대칭키 (기초 용어, 단방향/양방향 분류, 키 분배 문제, 대칭/비대칭 하이브리드, PKI, MITM, 암호화폐 개인키)]]
 - [x] [[RSA-Encryption|RSA 암호화 (소인수분해 난제, 키 생성, 암복호, 서명, OAEP/PSS 패딩)]]

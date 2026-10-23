@@ -41,6 +41,14 @@ NIST SP 800-207은 네트워크 위치나 자산 소유만으로 사용자와 �
 
 심층 방어를 적용할 때는 한 통제가 실패한 뒤 다른 통제가 어떤 경로를 막는지 검토한다. 방어 장비 수만 세지 않고 공유 계정이나 우회 경로처럼 함께 실패할 조건을 찾는다. 네트워크 분할도 구역 사이의 허용 경로와 권한을 함께 확인하는 대상으로 둔다. 구역을 나눴다는 사실만으로 침해 확산 차단을 보장하지 않는다.
 
+## 물리 접근으로 우회하는 경로도 포함한다
+
+디지털 문서의 접근 권한만 모델링하면 같은 정보가 회의에서 말로 전달되거나 화면에 표시되는 경로를 놓친다. 직원 계정 보유, 건물 출입과 특정 회의의 정보 접근을 각각 다른 권한으로 모델링한다.
+
+2026-10-13 미국 법무부 발표 사례에서는 OpenAI 직원이 회의실 TV의 USB 포트에 녹음 장치를 설치했다는 혐의와 장치 발견, 수사에 사용된 CCTV 및 도구 조회 기록을 제시했다. 이는 수사기관이 공개한 혐의와 증거 설명이며 유죄 확정이나 모든 행위의 독립 검증을 뜻하지 않는다. 개인 식별 정보는 재사용할 위협 모델에 필요하지 않다.
+
+이 사례를 적용한 설계 제안은 회의실의 민감 정보 흐름, 장치 반입 및 연결 가능 지점, 허용된 출입과 실제 접근 기록을 함께 점검하는 것이다. 네트워크 인증만으로 물리 녹음 경로가 막힌다고 가정하지 않고, 이상 장치를 발견했을 때의 증거 보존과 대응은 [[Security-Incident-Response|보안 사고 대응]]에 연결한다.
+
 ## 검토를 마칠 때
 
 - 보호 목표는 [[CIA-Triad|기밀성, 무결성과 가용성]]으로 구분한다.
@@ -51,6 +59,7 @@ NIST SP 800-207은 네트워크 위치나 자산 소유만으로 사용자와 �
 
 ## 출처
 
+- [Saudi National Arrested for Installing Surreptitious Audio Recording Device at OpenAI — U.S. Department of Justice](https://www.justice.gov/opa/pr/saudi-national-arrested-installing-surreptitious-audio-recording-device-openai) — 2026-10-13 발표, 2026-10-24 열람. 혐의와 공개 증거 설명만 사용
 - [OWASP, Threat Modeling Cheat Sheet](https://cheatsheetseries.owasp.org/cheatsheets/Threat_Modeling_Cheat_Sheet.html)
 - [NIST, SP 800-207: Zero Trust Architecture](https://csrc.nist.gov/pubs/sp/800/207/final)
 

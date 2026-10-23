@@ -99,6 +99,17 @@ Service selector가 일치하는 Pod를 EndpointSlice로 묶고 안정된 DNS �
 
 `port`는 Service가 받는 port, `targetPort`는 Pod로 전달할 port다. selector가 잘못되거나 Pod가 ready가 아니면 Service object는 있어도 endpoint가 비어 있다.
 
+### ClusterIP에서 Pod까지의 전달 경로
+
+2026-10-24 Kubernetes Service proxy 문서, Netfilter NAT 설명과 Cilium routing 문서를 대조했다. 아래는 Linux의 kube-proxy iptables 모드에 대한 설명이며, 기존 workload 설명 전체의 재검증은 아니므로 `verified_at`은 유지한다.
+
+1. kube-proxy가 Service와 EndpointSlice 변화를 관찰하고 node의 전달 규칙을 갱신한다. 이 모드에서는 애플리케이션 패킷이 kube-proxy 사용자 공간 프로세스를 통과하지 않고 커널 규칙을 따른다.
+2. 새 연결이 ClusterIP와 Service port에 도달하면 backend를 고른다. 기본 선택은 무작위이며 `sessionAffinity` 설정에 따라 달라진다. DNAT가 목적지를 endpoint IP와 port로 바꾼다.
+3. 연결 추적에 묶인 NAT 매핑은 같은 연결의 후속 패킷에도 적용된다. 따라서 HTTP keep-alive처럼 연결을 재사용하면 요청마다 새 Pod를 고르는 분산으로 해석할 수 없다.
+4. 선택한 Pod까지 전달하는 경로는 네트워크 구성에 달려 있다. Cilium의 터널 모드는 VXLAN/Geneve로 node 사이를 캡슐화하지만 native routing은 하부 네트워크가 Pod 주소를 라우팅할 수 있어야 한다. 다른 node의 Pod라고 터널이 필수인 것은 아니다.
+
+대규모 Service의 규칙 처리 비용과 변경 반영 비용도 구분한다. iptables 모드도 Kubernetes 1.28부터 바뀐 Service와 EndpointSlice 중심으로 갱신하므로 매번 전체 규칙을 다시 쓴다고 설명하지 않는다. nftables 전환은 성능뿐 아니라 커널 요구사항, NodePort 도달 주소와 방화벽 동작 차이를 확인한 뒤 결정한다.
+
 ### label과 selector가 어긋날 때
 
 | 대상 | selector와 Pod label이 다를 때 |
@@ -157,6 +168,9 @@ kubectl run tmp --rm -it --image=curlimages/curl -n NAMESPACE -- sh
 
 ## 출처
 
+- [Kubernetes Docs, Virtual IPs and Service Proxies](https://kubernetes.io/docs/reference/networking/virtual-ips/)
+- [Netfilter, Linux 2.4 NAT HOWTO: Controlling What To NAT](https://www.netfilter.org/documentation/HOWTO/NAT-HOWTO-5.html) — 연결별 NAT 매핑 설명만 참고
+- [Cilium Documentation, Routing](https://docs.cilium.io/en/stable/network/concepts/routing/)
 - [Kubernetes Docs, Pods](https://kubernetes.io/docs/concepts/workloads/pods/)
 - [Kubernetes Docs, Deployments](https://kubernetes.io/docs/concepts/workloads/controllers/deployment/)
 - [Kubernetes Docs, Service](https://kubernetes.io/docs/concepts/services-networking/service/)
