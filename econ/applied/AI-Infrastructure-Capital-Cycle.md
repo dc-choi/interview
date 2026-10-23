@@ -77,6 +77,14 @@ GPU 수요와 대출 조달 성공만으로 원리금 상환을 확정하지 않
 
 **분석 제안:** 계약 갱신 시점의 임대 단가, 공실 기간, 운영비와 원리금 지급 일정을 함께 비교한다. 기간 차이가 있다고 즉시 부도를 단정하지 않고, 조달에 성공했다고 갱신과 상환이 보장됐다고 판단하지도 않는다. 이 발표의 평균 계약 기간만으로 개별 계약의 만기 분포나 회사 전체의 유동성을 계산할 수 없다. 차입 만기, 장비의 회계상 내용연수와 실제 경제적 수명도 서로 다른 값이다.
 
+## 투자액과 GDP 비율은 시나리오의 범위를 맞춘다
+
+2026-10-24 대조한 BPEA 2026년 가을 학회 초안(본문 Draft: September 4, 2026)은 미국 데이터센터 증설을 시나리오로 계산한다. 2025~2032년 투자액 약 10.3조 달러에는 2032년 이후 가동될 프로젝트의 선행 지출도 포함된다. 미국 GDP 대비 3.63%는 이 기간의 연평균 투자 비율이며, 2026년 한 해에 이미 집행된 실적이 아니다. 비용과 명목 GDP의 연 4% 증가 등 가정을 사용하며 계획된 사업의 완공을 보장하지 않는다.
+
+**분석 제안:** 국내 투자 규모를 경제와 비교하는 질문과 세계 고객에게서 회수할 매출을 추정하는 질문을 나눈다. 해외 고객이 있다는 이유로 분모를 세계 GDP로 바꾸면 원래의 미국 내 투자 부담 비교와 다른 지표가 된다. 새 분모를 쓰려면 투자 지역, 기간과 비교 대상도 다시 정의한다.
+
+리스, 합작법인과 특수목적기구는 자금 조달 경로를 늘리지만 연결된 지급 의무를 덜 보이게 할 수 있다. 공식 연구 소개도 과거 신용 호황에 준하는 시스템 위험을 이미 확정하기에는 이르다고 구분한다. 이 자료는 특정 기업의 부도나 구제를 예측한 근거가 아니다. 현재 CDS 수치, 향후 수요와 지원 주체의 실제 신용 보강은 별도 자료가 필요하다.
+
 ## 자료별 확인 수준 (2026-10-16)
 
 | 자료 | 확보한 내용 | 적용 한계 |
@@ -107,6 +115,9 @@ State of AI의 인프라 절은 미국 4대 하이퍼스케일러의 2026년 설
 이 질문은 조사 틀이며 특정 주식의 매수나 매도 신호가 아니다. 거시 성장 전망과 개별 기업가치 평가는 [[AI-Company-Valuation-and-Funding|AI 기업가치와 자금 조달]]로 나눠 확인한다.
 
 ## 출처
+
+- [Financing the AI Buildout, BPEA Fall 2026 conference draft — Stijn Van Nieuwerburgh](https://www.brookings.edu/wp-content/uploads/2026/09/4c_Van-Nieuwerburgh.pdf) — 본문 초안일 2026-09-04, II절의 미국 증설 시나리오, 투자 기간과 GDP 분모를 2026-10-24 대조
+- [Financing the AI buildout — Brookings](https://www.brookings.edu/articles/financing-the-ai-buildout/) — 2026-09-23 연구 소개의 자금 조달 구조와 시스템 위험 판단 한계
 
 - [CoreWeave Closes $2.6 Billion Loan Facility, Expanding Financing Flexibility for AI Infrastructure — CoreWeave](https://investors.coreweave.com/news/news-details/2026/CoreWeave-Closes-2-6-Billion-Loan-Facility-Expanding-Financing-Flexibility-for-AI-Infrastructure/default.aspx) — 2026-08-10 발표의 DDTL 5.5 만기와 평균 고객 계약 기간, 갱신 및 재임대 조건을 2026-10-24 대조. 개별 계약과 전체 지급 능력은 검증하지 않음.
 

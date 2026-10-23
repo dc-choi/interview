@@ -83,6 +83,12 @@ aliases: ["Root Cause Investigation Loop", "근본 원인 조사 루프", "장�
 
 이 사례를 일반 운영에 적용하면, 한 번의 시험에 긴 왕복 시간이 드는 환경에서는 **다음 판단에 필요한 관측 경로의 복구를 먼저 검토**할 수 있다. 통신 응답, 해석 가능한 상태 정보, 사용자 기능, 남은 정비를 각각 성공 조건으로 적으면 부분 복구를 전체 해결로 잘못 보고할 위험을 줄인다. 이는 사례에서 도출한 적용 관점이며, 모든 장애에서 관측 복구가 피해 완화보다 우선한다는 규칙은 아니다.
 
+### 손상된 메모리의 단위와 복구 기능을 구분한다
+
+2026-10-24 대조한 Voyager 프로젝트 과학자의 2024-06-13 OPAG 발표 11쪽은 RAM 부품 하나의 고장으로 메모리 **256 words**가 사용할 수 없게 됐다고 설명한다. 이 수치를 256 bits로 바꾸지 않는다. 발표는 장비 상태 데이터를 위한 EL-40 코드의 재배치와 과학 데이터를 위한 CR-5 코드의 재배치를 구분한다. 손상량과 복구한 기능을 함께 기록하면 일부 코드의 복구를 전체 기능의 정상화로 확대하는 실수를 줄일 수 있다.
+
+이 대조로 확인한 것은 손상 단위와 기능별 코드 재배치다. 비트별 회로 구성이나 어셈블러 없이 수작업으로 패치를 만들었다는 설명까지 확인한 것은 아니다.
+
 ## 면접 체크포인트
 
 - 원인 조사 루프의 다섯 단계와 기각된 가설이 남기는 가치
@@ -92,6 +98,8 @@ aliases: ["Root Cause Investigation Loop", "근본 원인 조사 루프", "장�
 - 알림에 변경 이력을 붙이는 이유와 종결 뒤 인지 빈칸을 메우는 일
 
 ## 출처
+
+- [Voyager Interstellar Mission: To Boldly Go…, OPAG 2024 — Linda Spilker, Voyager Project Scientist](https://www.hou.usra.edu/meetings/opagjune2024/presentations/Thursday/1445_Spilker.pdf) — 11쪽의 256 words, EL-40과 CR-5 코드 재배치, 2026-10-24 대조
 
 - [Effective Troubleshooting — Google SRE Book](https://sre.google/sre-book/effective-troubleshooting/)
 - [Kubernetes Documentation, IP Masquerade Agent User Guide](https://kubernetes.io/docs/tasks/administer-cluster/ip-masq-agent/)

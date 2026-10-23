@@ -76,6 +76,14 @@ aliases: ["뉴스 인과 체인 드릴", "News Causal Chain Drill"]
 
 다음 단계의 분석 질문은 실제 공급 개시일, 유통 범위, 가격의 기준과 판매량이다. 공급가와 환자의 최종 지출을 같은 값으로 비교하지 않는다. 이 드릴은 허가 사실에서 사업 성과로 넘어갈 때 필요한 증거를 구분하는 연습이며, 약의 효능이나 안전성 순위와 치료 선택을 평가하지 않는다.
 
+**문제 10. 무역협정과 고율 관세가 있었으니 특정 산업의 쇠퇴 원인이 모두 설명되는가?**
+
+풀이: 협정 체결, 불이행 판단, 제재 발효와 산업 성과를 각각 확인한다. 1987년 4월 17일 미국 대통령의 각서는 1986년 9월 2일 체결한 반도체 무역협정의 주요 조항을 일본이 이행하지 않았다는 미국 측 판단과, 일부 일본산 제품의 관세율을 100%로 올리는 조치를 구분한다. 시행일은 1987년 4월 17일이다. 같은 날 성명은 대상이 대미 수출품 3억 달러 규모라고 설명한다. 1986년 협정 자체가 모든 일본 반도체에 100% 관세를 매긴 것으로 합쳐 읽지 않는다.
+
+**분석 제안:** 제재 대상 품목과 판매시장, 기업별 노출, 환율과 가격 전가, 제품 구성을 따로 조사한다. 정책 당사자의 제재 사유는 당시의 입장이지 산업 전체 쇠퇴에 대한 독립적인 인과 검증이 아니다. 환율 변화율만으로 모든 수출품의 현지 판매가격이 같은 비율로 바뀌었다고 계산하지 않는다. 가격 결정과 원가의 상쇄 경로는 [[Exchange-Rates-Balance-of-Payments|환율과 국제수지]]와 연결해 확인한다.
+
+이 사례는 2026-10-24 당시 각서와 성명을 대조한 것이다. 일본 반도체 산업의 장기 성과, 시장점유율과 원인별 기여도는 검증하지 않았다.
+
 ## 5. 막히면 보는 셀프 체크
 
 - **1차 효과가 안 떠오른다** → 그 사건이 직접 건드리는 변수 하나(금리, 물가, 환율, 재정)를 먼저 짚는다.
@@ -83,6 +91,9 @@ aliases: ["뉴스 인과 체인 드릴", "News Causal Chain Drill"]
 - **내 삶으로 안 떨어진다** → 펀딩 환경(이직), 실질임금(연봉), 자산 가격(투자) 셋 중 어떤 경로가 실제로 연결되는지 확인한다.
 
 ## 출처
+
+- [Memorandum on Tariff Increases on Japanese Semiconductor Products — The American Presidency Project](https://www.presidency.ucsb.edu/documents/memorandum-tariff-increases-japanese-semiconductor-products) — 1987-04-17 대통령 각서 원문, 협정일과 관세 범위
+- [Statement on Tariff Increases on Japanese Semiconductor Products — Ronald Reagan Presidential Library](https://www.reaganlibrary.gov/archives/speech/statement-tariff-increases-japanese-semiconductor-products) — 1987-04-17 성명, 제재 대상 규모와 발효
 
 2026-10-03 부분 검증: 문제 1의 CPI와 정책 반응을 연준의 장기목표 성명과, 문제 7의 동결 해석을 한국은행의 운영 원칙과 대조했다. 각 풀이의 실제 시장 반응이나 특정 회의의 정책 의도를 검증한 것은 아니다.
 

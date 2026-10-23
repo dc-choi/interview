@@ -21,6 +21,12 @@ verified_at: 2026-10-21
 - **목표 회사 몇 개의 공고로 역산한다** — 취업 준비는 정보전이 아니고, 정보가 많을수록 결정이 느려진다. 누가 어디 취업했다는 소식 대신 목표 회사 서너 곳의 채용 공고를 내 스택과 비교해 무엇이 빠져 있는지만 본다. 그 간극을 메우는 것이 방향이고 그 외의 공부는 지금 할 필요가 없다.
 - **추가할 것이 아니라 깊게 팔 것을 정한다** — 배운 스택 자체가 약점인 경우는 드물고, 그 위에 자기 강점을 아직 못 만든 것이 문제다. 스택을 바꾸는 데 쓰는 몇 달이 하나를 깊게 파는 몇 주보다 비싸다 ([[Tech-Trend-Learning-Strategy|기술 변화와 학습 전략]]의 하나를 깊게).
 
+## 단기 근로 경험과 공백을 설명한다
+
+공백의 사유는 사실대로 간결하게 설명하고, 실제로 얻은 전이 가능한 역량을 지원 직무에 연결한다. 유급 근로, 실습과 봉사 경험도 기간, 역할과 수행한 일을 나눠 적을 수 있다. 이는 2026-10-24 영국 National Careers Service의 지원서 작성 안내를 대조한 원칙이며, 국내 채용담당자가 고용 형태를 평가하지 않는다는 보장은 아니다.
+
+**작성 제안:** 고객 응대 경험이라면 맡은 문제, 직접 한 대응과 확인된 결과를 한 사례로 적는다. 의사소통이나 문제 해결의 증거와 개발 기술의 증거를 나누고, 관련 없는 경험을 개발 경력으로 바꾸지 않는다. 측정하지 않은 성과는 수치로 만들지 않는다. 경험을 정리하는 구조는 [[Resume-Experience-Narrative-and-Evidence|경험 서술과 증거 설계]]를 따른다.
+
 ## 공채 지원 전략
 
 - 자격 요건에 미달되는 경우 지원할 필요 없음
@@ -138,6 +144,8 @@ verified_at: 2026-10-21
 - 내가 공부한 내용을 기반으로 회사 업무에 녹여낼 수 있으면 최고의 성장
 
 ## 출처
+- [Explain a gap in your employment — National Careers Service](https://nationalcareers.service.gov.uk/careers-advice/explain-gaps-in-work-history) — 공백 설명과 전이 가능한 역량, 2026-10-24 대조
+- [How to write a CV — National Careers Service](https://nationalcareers.service.gov.uk/careers-advice/cv-sections) — 유급 근로, 실습과 봉사 경험의 역할 및 기간 표기, 2026-10-24 대조
 - [brunch promiseys — 개발자 이직 가이드](https://brunch.co.kr/@promiseys/3)
 - [개발자 이직 타이밍, 언제 움직여야 할까 — Team Grit](https://teamgrit.co/article/410)
 - [첫 직장이 틀렸다는 걸 깨달은 개발자에게 — Team Grit](https://teamgrit.co/article/416)
