@@ -115,6 +115,12 @@ OTT나 교육 같은 산업명은 아직 넓다. 콘텐츠 정보 오류를 확�
 
 아직 선택할 근거가 없으면 관찰 모드로 두고 결론을 서두르지 않는다. 반복 수작업, 소비나 요청을 발견할 때 누가, 언제, 무엇을 이루려 했고 현재 무엇으로 해결하는지만 한 줄씩 기록한다.
 
+### 경험과 고객 문제의 연결을 해석하는 범위
+
+고객 문제로 시장을 묶으면 다른 산업과 기술을 쓰는 기업도 같은 문제의 대안으로 비교할 수 있다. HBS Working Paper 27-016의 공개 초록은 미국 VC 투자 유치 스타트업 약 9만 곳을 265개 문제로 분류하고, 331건의 창업자 인터뷰로 문제 진술을 검증한 연구를 소개한다. 창업자가 자신의 전문성과 연결된 문제를 선택하는 경향과 그런 적합성을 가진 기업의 더 큰 투자 유치 규모를 보고한다.
+
+2026-10-24 확인 범위는 HBS가 공개한 초록이다. 표본을 한국의 전체 자영업자나 무투자 1인 사업으로 확대하거나, 경력이 매출과 생존을 보장한다는 인과 결론으로 쓰지 않는다. 적용 제안은 경험에서 문제 후보를 찾되 같은 문제를 푸는 다른 기술과 수작업 대안까지 비교하는 것이다. 투자 유치와 실제 고객의 지불은 서로 다른 증거로 관리한다.
+
 ### 경험을 서비스 후보로 바꿀 때
 
 적용 제안: 직접 해결한 문제를 고객, 제공 결과, 작업 범위, 가격 가설과 접점으로 풀어 서비스 후보를 만든다. AI가 만든 후보도 같은 조사 대상으로 두고, 기존 대안의 가격과 고객 반응으로 확인한다. 프롬프트에 입력한 목표 수입이나 일정은 검증된 수요와 구분한다. 이 절차는 재취업보다 사업을 먼저 해야 한다는 근거나 일정 내 수입을 보장하는 공식이 아니다.
@@ -184,6 +190,7 @@ Good American은 공식 소개에서 00~32 Plus 사이즈 제공과 세 가지 �
 
 ## 출처
 
+- [Beyond a Technology Lens: Characterizing the Problems Entrepreneurs Solve — Harvard Business School](https://www.hbs.edu/faculty/topics/Pages/entrepreneurship.aspx) — Working Paper 27-016의 공개 초록, 2026-10-24 표본과 문제 분류 및 창업자 전문성 관련 결과 대조. 논문 본문과 효과 크기는 미검증
 - [How to Get Startup Ideas — Paul Graham](https://www.paulgraham.com/startupideas.html) — 2012-11 에세이. 2026-10-24 자기 문제에서 출발하기, 당장 필요한 사용자와 제작자 애착을 구분하는 질문을 대조.
 - [SBA, Plan your business: Market research and competitive analysis](https://www.sba.gov/counseling/plan-your-business/#market-research-and-competitive-analysis) — 2026-10-23 시장 조사와 고객 검증 범위 확인.
 - [Jobs to Be Done Theory — Christensen Institute](https://www.christenseninstitute.org/theory/jobs-to-be-done/)

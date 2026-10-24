@@ -10,6 +10,21 @@ aliases: ["LLM Wiki", "LLM 위키", "지식 합성의 영속화"]
 
 LLM 위키는 여러 원문에서 조합한 지식을 주제별 Markdown으로 저장하고 갱신하는 패턴이다. 질문마다 근거를 찾는 검색에 재사용할 합성 결과를 더한다. RAG를 대체해야 하는 구조는 아니며, 위키가 커지면 위키 자체를 검색할 수도 있다.
 
+## RAG, 에이전틱 검색과 파인튜닝을 구분한다
+
+네 방식은 서로 배타적인 제품 종류가 아니라 지식을 처리하는 위치가 다른 방법이다.
+
+| 방법 | 주로 바꾸는 것 | 구분할 점 |
+|---|---|---|
+| RAG | 요청에 맞춰 검색한 외부 근거를 모델 컨텍스트에 넣는다 | 검색한 내용을 읽히는 동작 자체가 모델 재학습은 아니다 |
+| 에이전틱 RAG | 에이전트가 검색 시점, 도구와 추가 검색 필요성을 판단한다 | 근거가 부족한지 평가하고 반복할 수 있지만 성공을 보장하지 않는다 |
+| LLM 위키 | 원문에서 합성한 내용을 지속되는 문서와 연결로 저장한다 | 합성 결과를 재사용하며 위키를 읽을 때 검색을 함께 쓸 수 있다 |
+| 파인튜닝 | 특정 과제에 맞게 모델을 추가 학습한다 | 위키 파일 수정이나 요청 시점 검색과 별개의 학습 단계다 |
+
+LLM 위키가 검색을 지원하지 않는다는 구분은 맞지 않는다. 공개 아이디어 문서는 작은 규모에서 목차로 탐색하고, 규모가 커지면 검색 도구를 붙이는 방법을 설명한다. 약 100개 원문과 수백 페이지는 저자의 경험상 예시이며, 문서 10만 개를 보편적인 전환 기준으로 정한 규격이 아니다. 또한 외부 관리형 모델은 파인튜닝할 수 없다는 일반화도 맞지 않는다. Amazon Bedrock은 지원 모델과 리전을 정해 파인튜닝을 제공한다(2026-10-24 공식 안내 확인).
+
+적용 제안: 같은 질문 묶음으로 근거 누락, 갱신 지연, 응답 시간과 비용을 비교한 뒤 방식을 조합한다. 위키 파일의 존재나 에이전틱이라는 이름만으로 답변 품질과 접근 권한이 보장되지는 않는다.
+
 ## 원문, 위키와 규칙의 분리
 
 | 층 | 책임 |
@@ -53,6 +68,8 @@ LLM 위키는 여러 원문에서 조합한 지식을 주제별 Markdown으로 �
 ## 출처
 
 - [LLM Wiki — Andrej Karpathy](https://gist.github.com/karpathy/442a6bf555914893e9891c11519de94f)
+- [AWS Well-Architected, Agentic AI Lens: Definitions](https://docs.aws.amazon.com/wellarchitected/latest/agentic-ai-lens/definitions.html) — 2026-10-24 RAG와 에이전틱 검색의 역할 대조
+- [Amazon Bedrock, Customize a model with fine-tuning](https://docs.aws.amazon.com/bedrock/latest/userguide/custom-model-fine-tuning.html) — 2026-10-24 관리형 파인튜닝과 모델, 리전별 지원 범위 확인. 비교 절만 부분 대조했으며 기존 API 검증 날짜는 유지
 - [Slack, The Events API](https://docs.slack.dev/apis/events-api/) — HTTP 재전달과 이벤트 식별자, 2026-10-14 부분 대조
 - [Google Sheets API, spreadsheets.values.append](https://developers.google.com/workspace/sheets/api/reference/rest/v4/spreadsheets.values/append) — 표의 다음 행에 값을 추가하는 동작, 2026-10-14 부분 대조
 - [YouTube, 메타코드M, 클로드 x 옵시디언으로 우리 회사 LLM Wiki 만들기](https://www.youtube.com/watch?v=yZKXJMMPrxc) — 2026-10-06 공개 강의, 33:56 이후 자동 갱신과 검증 사례

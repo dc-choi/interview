@@ -154,6 +154,14 @@ AI로 작업 시간이 줄어도 고객이 내는 가격과 반복 구매 이유
 
 월말 잔액이 양수여도 지급일에 돈이 부족할 수 있다. [[Startup-Financial-Discipline#운전자본과 지급 시점의 공백|운전자본과 지급일별 현금]]을 함께 점검한다.
 
+### 매출에서 남는 돈을 계산할 때 중복 차감을 막는다
+
+매출 대비 잔액 비율을 비교하려면 부가세 포함 여부, 비용 범위와 지급 기간을 맞춘다. 일반과세자의 부가세 납부 구조는 매출세액에서 공제 가능한 매입세액을 차감하는 방식이다. 부가세를 제외한 매출과 비용으로 손익을 계산했다면, 통장에서 낼 부가세를 같은 손익표의 비용으로 다시 빼지 않는다. 납부할 현금은 별도 지급 일정에 반영한다(2026-10-24 국세청 안내 대조).
+
+원천징수는 지급자가 소득자의 세금을 미리 떼어 납부하는 구조다. 세전 보수 총액을 인건비에 넣었다면 그 안에서 공제한 원천세를 사업자의 추가 비용으로 다시 더하지 않는다. 현금 계획에서는 상대방에게 보낼 실지급액과 세무서에 낼 원천세를 나누고, 사업자가 별도로 부담하는 비용은 따로 확인한다. 총액 계약과 실수령액 보장 계약의 차이는 [[Withholding-and-Payroll-Tax|원천징수와 인건비]]를 따른다.
+
+이 원리를 적용한 점검 순서는 매출의 부가세 포함 여부 확인, 세전 비용과 실지급액 대조, 중복 차감 제거, 지급일별 잔액 계산이다. 특정 매출이면 일정 비율만 남는다는 예시를 업종 공통의 순이익률로 사용하지 않는다.
+
 ### 사용량 매출과 장기 비용 약정의 비대칭
 
 고객이 사용량을 줄일 수 있어도 공급자에게 약속한 최소 지출은 같은 속도로 줄지 않을 수 있다. 사용량 기반 사업은 단위당 공헌이익과 함께 수요 감소 시 남는 지급 의무를 계산한다. 매출 증가율만으로 현금 위험이 줄었다고 판단하지 않는다.
@@ -181,6 +189,8 @@ Q. 비즈니스 모델은 어떻게 설계했는가?
 - 위 일반화한 예시를 본인의 실행이나 성과로 사용하지 않는다.
 
 ## 출처
+- [국세청, 부가가치세 개요](https://www.nts.go.kr/nts/cm/cntnts/cntntsView.do?cntntsId=7693&mi=2401) — 2026-10-24 부가세 징수와 납부 구조 대조. 손익표와 현금 계획의 중복 차감 점검은 적용 제안
+- [국세청, 원천징수 개요](https://www.nts.go.kr/nts/cm/cntnts/cntntsView.do?cntntsId=7701&mi=2413) — 2026-10-24 소득자 세금의 징수와 납부 구조 대조
 - [Q3 2026 Shareholder Letter — Netflix](https://ir.netflix.net/files/doc_financials/2026/q3/FINAL-Q3-26-Shareholder-Letter.pdf) — 구독과 광고 성장, 전망과 비용 시점, 2026-10-22 부분 대조
 - [What We Watched the First Half of 2026 — Netflix](https://about.netflix.com/en/news/what-we-watched-the-first-half-of-2026) — 상반기 총 시청 시간과 측정 범위, 2026-10-22 대조
 - [AWS, SaaS Architecture Fundamentals: SaaS is a business model](https://docs.aws.amazon.com/whitepapers/latest/saas-architecture-fundamentals/saas-is-a-business-model.html) — 공통 운영과 배포, 반복 가능한 온보딩

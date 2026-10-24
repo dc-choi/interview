@@ -24,6 +24,14 @@ verified_at: 2026-10-18
 
 여기서 상수 시간은 비밀값의 일치 위치에 따라 비교 시간이 달라지지 않게 한다는 뜻이다. 네트워크를 포함한 모든 요청이 정확히 같은 시간에 끝난다는 보장이 아니다. 로그인 속도 제한은 반복 관측을 어렵게 하는 보조 방어이며 안전한 비교를 대신하지 않는다. 이 절은 2026-10-23 OWASP와 Node.js 공식 문서로 대조했으며 기존 알고리즘 권고 전체의 재검증 날짜는 유지한다.
 
+## 비밀번호 분실은 원문 조회가 아니라 재설정으로 처리한다
+
+비밀번호를 잊은 사용자에게 기존 비밀번호를 보내는 대신, 복구 증거를 확인한 뒤 새 비밀번호를 설정하게 한다. OWASP는 재설정 토큰을 암호학적으로 안전하게 생성하고, 충분한 길이, 안전한 저장, 만료와 일회 사용을 적용하도록 권고한다. 계정 존재 여부에 따라 응답 문구와 처리 시간이 갈리지 않게 하고, 반복 요청을 제한한다.
+
+새 비밀번호를 저장한 뒤에는 변경 사실을 알리되 비밀번호를 이메일에 넣지 않는다. 재설정만으로 자동 로그인시키지 않고 일반 로그인 절차를 거치게 하며, 기존 세션을 무효화하거나 사용자에게 무효화 선택을 제공한다. 침해가 의심되면 비밀번호 변경만으로 복구가 끝났다고 보지 않는다. 공격자가 바꾼 복구 수단과 MFA, 남아 있는 세션도 확인한다.
+
+외부 서비스 계정은 제공자의 공식 복구 경로를 따른다. Google은 계정 소유 확인 질문과 재설정을 안내하며, 계정이나 비밀번호 지원을 제공한다고 주장하는 외부 서비스와 협력하지 않는다고 명시한다. 복구 대행자에게 비밀번호나 인증 코드를 넘기지 않는다. 이 절은 2026-10-24 OWASP와 Google 공식 안내를 대조했으며, 특정 계정의 복구 성공을 보장하지 않는다.
+
 ## 해시 vs 암호화 해시
 
 현대 암호는 보통 한 방향 함수, 이산로그, 소인수분해, 격자 문제처럼 특정 계산이 현실적으로 어렵다는 가정에 기대며, 단순히 NP 문제를 활용한다고 설명하면 부정확하다.
@@ -104,6 +112,8 @@ bcrypt의 72바이트 제한은 글자 수가 아니라 사용하는 인코딩�
 - [Password Storage Cheat Sheet — OWASP](https://cheatsheetseries.owasp.org/cheatsheets/Password_Storage_Cheat_Sheet.html)
 - [OWASP Cheat Sheet Series, Credential Stuffing Prevention Cheat Sheet](https://cheatsheetseries.owasp.org/cheatsheets/Credential_Stuffing_Prevention_Cheat_Sheet.html)
 - [OWASP Cheat Sheet Series, Authentication Cheat Sheet](https://cheatsheetseries.owasp.org/cheatsheets/Authentication_Cheat_Sheet.html)
+- [OWASP Cheat Sheet Series, Forgot Password Cheat Sheet](https://cheatsheetseries.owasp.org/cheatsheets/Forgot_Password_Cheat_Sheet.html) — 2026-10-24 재설정 토큰, 통지와 세션 처리 부분 대조
+- [Google Account Help, How to recover your Google Account or Gmail](https://support.google.com/accounts/answer/7682439?hl=en) — 2026-10-24 공식 복구와 외부 대행 서비스에 대한 안내 확인
 - [Node.js, Crypto: crypto.timingSafeEqual](https://nodejs.org/api/crypto.html#cryptotimingsafeequala-b)
 - [NIST, SP 800-63B-4: Authentication and Authenticator Management](https://pages.nist.gov/800-63-4/sp800-63b.html)
 - [웹 개발을 위해 꼭 알아야하는 보안 공격 — kciter.so, kciter](https://kciter.so/posts/basic-web-hacking/)
