@@ -71,6 +71,21 @@ AWS의 공개 구현은 Planner, Coder, Supervisor와 Reporter 역할을 나누�
 
 ## 검증할 최소 계약
 
+### 채널 분석에서는 수집 범위와 지표의 분모를 고정한다
+
+전수 분석을 요청했다는 사실과 전체 자료를 확보했다는 사실은 다르다. 공개된 채널 분석 절차와 YouTube Analytics 정의를 대조한 다음 점검은 **분석 설계 제안**이다(2026-10-24 부분 검증). 기존 제품 설명 전체의 검증일은 갱신하지 않는다.
+
+1. 대상 영상 목록, 수집 성공 목록과 미확보 목록을 남긴다. 댓글은 수집 건수와 공개 표시 건수를 구분하며, 수집한 댓글을 모두 분류했어도 전체 댓글 확보로 보고하지 않는다.
+2. 분류 결과를 원문 식별자와 대조해 누락과 중복을 검사한다. 채널 운영자의 답글, 시청자의 질문과 이벤트 참여 댓글을 분리한다. 전량 분류와 분류 정확도는 별도 검증 대상이다.
+3. 공개 조회 수와 소유자만 확인한 Studio 지표를 구분한다. 경쟁 채널에서 확보하지 못한 유지율을 추정값으로 채우지 않는다. 각 값에 관측 시점, 집계 기간과 게시 후 경과 시간을 붙인다.
+4. 생성한 영상 보고서도 표와 같은 검산을 거친다. 음성, 화면의 숫자와 원본 계산이 일치하는지 확인하고, 관찰한 차이와 원인 가설, 다음 실험을 구분한다.
+
+`audienceWatchRatio`는 영상의 특정 구간이 재생된 횟수를 전체 조회 수와 비교한 비율이며, 반복 재생 때문에 1을 넘을 수 있다. 이를 고유 시청자의 생존 확률로 해석하지 않는다. 구간 시작과 끝의 유지율 차이를 구간 길이로 나눈 값도 곡선의 변화 요약이지, 그 편집 때문에 사람이 이탈했다는 인과 추정은 아니다.
+
+`subscribersGained`는 채널 보고서와 특정 영상으로 제한한 보고서의 집계 범위가 다르다. 영상 차원이나 필터를 적용하면 해당 영상 시청 페이지에서 발생한 구독만 포함한다. 조회당 구독 지표를 만들 때는 같은 기간과 범위의 분자 및 분모인지 확인하고, 획득 수와 순증을 섞지 않는다. 원시 데이터와 실제 실행 결과를 확보하지 못한 사례의 성과 수치는 이 절차의 효과로 채택하지 않는다.
+
+### 일반 분석의 최소 계약
+
 다음은 계산과 보고서의 분리 원리를 적용한 설계 제안이다.
 
 1. 입력 파일 버전, 필터, 집계 기간과 코드 실행 결과를 연결한다. 같은 파일명에 내용이 바뀌는 경우도 구분한다.
@@ -83,6 +98,8 @@ AWS의 공개 구현은 Planner, Coder, Supervisor와 Reporter 역할을 나누�
 
 ## 출처
 
+- [YouTube, Metrics](https://developers.google.com/youtube/analytics/metrics) — audienceWatchRatio와 subscribersGained의 정의 및 집계 범위를 2026-10-24 대조.
+- [AI 에이전트에게 유튜브 채널 분석을 맡긴 방법 — Career Hacker Alex](https://www.careerhackeralex.com/sharings/channel-review-kit) — 공개 절차의 미확보 처리, 댓글 원문 연결과 관찰/판단 구분 확인. 스크립트 실행 및 비공개 Studio 원자료는 검증하지 않았다.
 - [Pixis Prism, Brand Knowledge - Overview](https://prism-docs.pixis.ai/brand-knowledge/overview)
 - [AWS, Select research materials](https://docs.aws.amazon.com/quick/latest/userguide/select-research-materials.html)
 - [AWS, View research report](https://docs.aws.amazon.com/quick/latest/userguide/view-research-report.html)

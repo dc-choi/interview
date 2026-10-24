@@ -21,6 +21,7 @@ aliases: ["인프라&클라우드(Infrastructure&Cloud)", "Infrastructure & Clou
 
 ## 장비와 자체 운영
 
+- [[Storage-Access-Models|저장장치 연결과 데이터 접근]] — DAS, NAS와 SAN, 블록/파일/객체, 공유 연결과 동시 쓰기 조정
 - [[Server-Quotation-Checklist|서버 견적 검토]] — 메모리 배치, 옵션과 지원 조건, 물리 코어 라이선스의 적용 범위
 - [[GPU-Inference-Hardware|추론용 GPU 선택]] — Intel D270, 가중치와 KV 캐시, 실측 조건
 - [[Rack-Scale-System-Emulation|랙 규모 시스템 에뮬레이션]] — Voxel, 실제 소프트웨어와 가상 하드웨어의 검증 경계
