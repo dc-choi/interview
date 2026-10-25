@@ -1,7 +1,7 @@
 ---
 tags: [senior, code-review, ai, agent, risk-tier, eval]
 status: done
-verified_at: 2026-10-18
+verified_at: 2026-10-25
 category: "Senior - 코드 리뷰"
 aliases: ["Code Review AI Agent Operations", "에이전트 시대 코드 리뷰 운영", "AI 코드 리뷰 운영 모델"]
 ---
@@ -44,6 +44,25 @@ Quick, Standard, Deep은 검토 강도이며 Standard가 기본값이다. 조직
 
 리뷰어가 문제를 지적하면 재현 조건과 영향 경로부터 확인한다. 같은 유형의 결함은 연결된 호출부까지 찾되, 증거 없는 전면 수정으로 넓히지 않는다. 반복 검토가 멈추지 않으면 미해결 조건을 적고 사람이 접근 방식을 다시 판단한다.
 
+## 지적 처리와 도입 점검
+
+아래 항목은 위 Claude Code 팀 사례를 정리하고 관리형 Code Review와 GitHub 설정에 맞춘 적용 메모를 덧붙인 것이며, 작은 팀이나 1인 개발에서 골라 쓰자는 것은 이 문서의 적용 제안이다. 2026-10-25에 사례 글과 Code Review, GitHub 공식 문서에 다시 대조했으며, 다른 저장소에서 효과를 검증한 결과는 아니다.
+
+- **지적 처리:** AI 리뷰 지적에 Important, Nit, Pre-existing 분류를 붙여 이번 변경이 만들지 않은 결함을 작성자 책임과 구분한다. 버그 리뷰와 보안 리뷰의 지적은 고치거나 이유를 적어 닫아야 머지한다. 관리형 Code Review는 PR을 승인하거나 차단하지 않으므로 이 머지 조건은 제품이 아니라 브랜치 보호의 대화 해결 요구(Require conversation resolution before merging) 같은 저장소 규칙으로 건다. 사람 리뷰의 블로킹 표시는 [[Code-Review-Pn-Priority|Pn 룰]]을 본다.
+- **발견과 검증 분리:** 결함 후보를 찾는 에이전트와 지적마다 투표하는 검증 에이전트를 나눠 충분히 동의한 지적만 올린다. 스타일, 진단과 정리만 다루는 지적은 버리고, 이런 필터는 자기 PR에서 A/B 비교한 뒤 채택한다.
+- **PR 전 검증:** 에이전트가 테스트, 빌드와 린터를 실행해 완료 주장 대신 출력을 보여 주고, 새 컨텍스트의 서브에이전트가 diff를 다시 검토한다. 자동 리뷰어가 같은 지적을 반복하면 스킬, 린트 규칙이나 지침 파일을 고쳐 원인에서 막는다.
+- **승인 자리:** 이 팀은 내부 정책으로 에이전트에게 일을 시킨 사람을 직접 작성한 경우처럼 필요한 리뷰어 한 자리로 센다. GitHub에서는 PR 작성자가 자기 PR을 승인할 수 없으므로, 1인 저장소에서 본인이 연 PR은 이 정책에 따른 승인도, 필수 사람 승인도 GitHub에서 채울 수 없다. 이 정책은 앞 절의 두 사람 승인이 필요한 고객 규칙도 대신하지 않는다. 승인은 특정 커밋에 대한 것이므로 새 커밋이 올라오면 기존 승인을 해제한다.
+- **사람에게 남길 결정:** 만들지 여부(방향, 취향, 범위), 위험 코드 검토(과금, 자동 업데이트, CI 워크플로), 다른 사람이 따라 할 구조 검토, 증거 읽기(테스트 출력, 실행한 명령, 스크린샷, 리뷰 지적), 누가 입력했든 배포된 변경의 결과 책임이다.
+- **코드 익히기:** 코드의 한 부분을 이해해야 하면 그 부분의 설명서를 에이전트에게 요청한다. 몇 분이면 현재 코드 기준의 설명이 나오고, 사소한 diff를 읽기보다 곧 바꿀 모듈의 설명서에서 배울 것이 많다. 설명서는 아래 운영 점검처럼 코드와 대조한다.
+- **측정:** PR당 사람 승인 수의 중앙값과 95퍼센타일, 사람 댓글 수, PR이 사람을 기다린 시간으로 사람 시간을 재고 되돌림과 장애 비율을 안전선으로 둔다. 되돌림과 장애 비율이 오르면 사람 시간을 아낀 것이 아니라 옮긴 것이다. 리뷰어의 프롬프트, 도구나 모델을 바꾸면 사고와 되돌림으로 만든 평가 세트로 다시 채점한다. 위 필터 A/B 비교와 이 재채점은 직접 구성한 리뷰어에 맞는 방식이다. 관리형 Code Review는 리뷰에 쓸 모델을 서비스가 고르고 관리자 설정에 모델 선택이 없으므로, 같은 평가 세트를 정기적으로 다시 돌리는 형태로 적용한다.
+
+사례 글의 도입 점검표는 PR 전, 모든 PR, 승인, 머지와 이후라는 PR 단계로 항목을 묶었을 뿐 실행 순서를 정하지 않는다. 도입 과정에 순서를 둔 권고는 AI 리뷰어를 저장소 하나에서 몇 주 다듬은 뒤 넓히는 것과 위험 등급을 엄격하게 시작해 근거가 쌓이면 완화하는 것 두 가지다.
+
+- **PR 전:** 에이전트가 직접 돌릴 수 있는 검사를 짧은 CLAUDE.md에 적고 포매터와 린터는 훅으로 실행한다([[Code-Review-Sustainability|도구 자동화]]). 반복되는 리뷰 지적은 REVIEW.md로 옮긴다(리뷰 방식별 반영 여부는 [[Claude-Code-Operations|Claude Code 운영]]).
+- **모든 PR:** CI를 필수로 두고 PR 템플릿에 테스트 방법, 위험, 되돌리는 법을 넣는다([[Code-Review-Reviewer-Guide|PR 템플릿]]). AI 리뷰어는 저장소 하나에서 몇 주 동안 REVIEW.md를 다듬은 뒤 넓히고, 모든 리뷰 스레드가 해결돼야 머지하며 리뷰 횟수에 상한을 둔다.
+- **승인:** 인증, 과금, CI와 릴리스 워크플로, 설치 프로그램 변경에는 CODEOWNERS와 브랜치 보호로 사람 승인을 늘 요구한다. 위험 등급은 작성자가 아니라 변경 내용으로 정하고 엄격하게 시작해 근거가 쌓이면 완화하며, 가벼운 경로는 저장소 신뢰 목록에 있는 작성자에게만 연다.
+- **머지와 이후:** 머지 큐, 플래그, 단계적 배포와 롤백은 위험에 따른 검증 절의 운영 방식을, 평가 세트와 사람 시간 측정은 위 측정 항목을 따른다.
+
 ## 운영 점검
 
 - 검토 시간과 장애 복구 시간을 함께 기록한다. 승인 수 감소만으로 생산성 향상을 판단하지 않는다.
@@ -55,11 +74,14 @@ Quick, Standard, Deep은 검토 강도이며 Standard가 기본값이다. 조직
 
 - [How the Claude Code team does code review — claude.dev, Addy Osmani, Morgan Westlee Lunt, Qing Wang](https://claude.dev/blog/solving-code-review-at-anthropic/)
 - [Claude Code 공식 문서, Code Review](https://code.claude.com/docs/en/code-review)
+- [GitHub 공식 문서, Approving a pull request with required reviews](https://docs.github.com/en/pull-requests/collaborating-with-pull-requests/reviewing-changes-in-pull-requests/approving-a-pull-request-with-required-reviews)
+- [GitHub 공식 문서, About protected branches](https://docs.github.com/en/repositories/configuring-branches-and-merges-in-your-repository/managing-protected-branches/about-protected-branches)
 
 ## 관련 문서
 
 - [[Code-Review-Reasoning-and-Practice|리뷰 추론과 훈련]]
 - [[Code-Review-Reviewability|검토 가능한 변경과 맥락]]
+- [[Code-Review-Pn-Priority|지적의 블로킹 표시]]
 - [[Agent-Loop-Engineering|반복 상한과 종료 조건]]
 - [[Development-Workflow|저장소 승인 규칙과 머지 큐]]
 - [[Feature-Flag|피처 플래그]]

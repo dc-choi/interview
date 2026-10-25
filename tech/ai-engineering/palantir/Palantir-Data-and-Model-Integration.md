@@ -10,13 +10,13 @@ aliases: ["Palantir 데이터와 모델 통합", "Multimodal Data Plane"]
 
 데이터 통합은 원천의 데이터를 분석과 운영에 쓸 수 있게 연결하고 변환하는 과정이다. 모델 통합은 추론 로직과 실행 계약을 같은 업무 흐름에 넣는 과정이다. Ontology는 이 자산을 업무 객체와 행동에 연결한다. 객체 개념 자체는 [[Ontology-Knowledge-Graph|온톨로지와 지식 그래프]]에서 다룬다.
 
-2026-10-16 공식 문서 대조 기준이다. Data integration, Model integration과 외부 모델 연결 문서에 근거한 내용은 2026-10-25에 다시 대조했고, Connecting to data와 Virtual tables 근거 내용은 같은 날 대조해 추가했다. 실제 Foundry 환경에서 연결, 추론이나 권한을 시험한 기록은 아니다.
+2026-10-16 공식 문서 대조 기준이다. Data integration, Model integration과 외부 모델 연결 문서에 근거한 내용은 2026-10-25에 다시 대조했고, Connecting to data와 Virtual tables 근거 내용은 같은 날 대조해 추가했다. MMDP 본문과 도표도 같은 날 다시 대조해 기존 MMDP 근거 내용과 파이프라인 연산 도표를 확인하고, 기업 아키텍처 통합 목표, 미디어 형식 처리, 접근과 반출 경로, 모델 제공과 관리, 계층 도표 설명을 추가했다. 실제 Foundry 환경에서 연결, 추론이나 권한을 시험한 기록은 아니다.
 
 ## 데이터, 연산과 업무 의미를 분리한다
 
 Multimodal Data Plane(MMDP)은 저장 형식, 연산 엔진과 모델을 하나의 조합으로 고정하지 않는 데이터와 연산 아키텍처다. 공식 구조는 Iceberg 테이블과 외부 virtual catalog/table, 미디어, 문서, 스트림과 시공간 데이터를 포괄한다. 연산에는 Spark, Flink와 단일 노드 엔진, Compute Modules와 외부 연산 연계를 포함한다. 모든 커넥터가 모든 기능을 같은 방식으로 지원한다는 뜻은 아니다. ([MMDP](https://www.palantir.com/docs/foundry/architecture-center/multimodal-data-plane))
 
-공식 파이프라인 도표의 Pushdown Compute 영역은 DataFusion이 선택된 상태이며 Flink, Databricks, Snowflake와 Spark도 선택지로 표현한다. 파이프라인의 논리와 실제 연산 엔진을 나누는 개념을 설명하는 그림이다. 특정 변환이 모든 엔진에서 같은 의미와 성능으로 실행된다는 호환성 표로 사용하지 않는다. [MMDP 연산 도표](https://www.palantir.com/docs/resources/foundry/architecture-center/mmdp-pipeline-compute.png) (2026-10-18 이미지 확인)
+공식 파이프라인 도표의 Pushdown Compute 영역은 DataFusion이 선택된 상태이며 Flink, Databricks, Snowflake와 Spark도 선택지로 표현한다. 파이프라인의 논리와 실제 연산 엔진을 나누는 개념을 설명하는 그림이다. 특정 변환이 모든 엔진에서 같은 의미와 성능으로 실행된다는 호환성 표로 사용하지 않는다. [MMDP 연산 도표](https://www.palantir.com/docs/resources/foundry/architecture-center/mmdp-pipeline-compute.png) (2026-10-18 이미지 확인, 2026-10-25 재확인)
 
 | 경계 | 관리하는 것 | 혼동하면 생기는 문제 |
 |---|---|---|
@@ -26,6 +26,18 @@ Multimodal Data Plane(MMDP)은 저장 형식, 연산 엔진과 모델을 하나�
 | Ontology | 객체, 관계와 업무 행동 | 의미 모델을 원시 데이터 저장소와 동일시함 |
 
 표는 경계를 이해하기 위한 설계 해석이다. 실제 색인과 사용자 편집의 저장 책임은 [[Palantir-Object-Backend]]에서 구분한다.
+
+### 개방 범위는 설계 목표로 읽고 경로별 계약을 확인한다
+
+2026-10-25 대조한 [MMDP](https://www.palantir.com/docs/foundry/architecture-center/multimodal-data-plane) 설명은 Palantir를 더 넓고 이질적인 기업 아키텍처의 한 참여자로 두는 데이터 메시(또는 AI 메시) 같은 혼합 구성의 지원을 명시적인 설계 목표로 둔다. 아키텍처의 각 계층을 기존 data lake, lakehouse, 전통적인 warehouse, 데이터 거버넌스 도구와 주요 저장소에 깊이 통합할 수 있게 한다는 방향이다. 목표 설명이므로 외부 카탈로그나 거버넌스 도구의 권한, 계보와 정책이 자동으로 맞춰진다는 보장으로 읽지 않고 연결할 제품별 계약을 확인한다.
+
+MMDP 설명은 미디어를 기반 파일 형식에 대한 가정을 최소화한 채 동기화할 수 있다고 한다. 인식되는 형식은 분석 도구가 대화형 parsing을 바로 돕고, 사용자 정의 형식이나 드문 형식은 다른 원천의 메타데이터를 나중에 붙일 수 있다. 실제 Media Set이 받는 형식 조건은 아래 Media Set 설명과 해당 문서로 확인하고, 동기화 성공, 형식 해석과 메타데이터 결합을 각각 확인한다. 수집, 변환 방식과 관계없이 기반 파일과 데이터 포인트에 표준 REST API와 Python, TypeScript SDK로 안전하게 접근할 수 있다고 설명하지만, 자원 유형별 endpoint, 권한과 SDK 버전 조건은 해당 API 문서로 확인한다.
+
+외부 시스템으로 보내는 경로로는 export job, Ontology 기반 webhook과 source 기반 transform을 든다. 앞의 둘은 모달리티와 관계없이 데이터를 외부 시스템에 동기화하는 방법으로 설명되지만 source 유형별 export 지원과 webhook 입력 제약은 따로 확인하고, source 기반 transform은 Foundry 도구 체계를 써서 개별 workflow 단계 단위로 반출을 맞춤 구성하는 방식이다. 단순하고 안전한 방법이라는 설명을 경로별 통제가 같다는 뜻으로 읽지 않는다. 상태 계약과 marking 검증은 [[Palantir-Export-State-and-Governance|Export의 상태와 통제]], 외부 효과와 실행 한도는 [[Palantir-Webhook-Execution-Contracts|Webhook의 함수 계약]], 코드 기반 반출의 승인은 [[Palantir-External-Transforms-Governance|외부 연산의 export 통제]]에서 확인한다.
+
+모델은 [[Palantir-Model-Catalog-Lifecycle|AIP Model Catalog]]로 OpenAI, Anthropic, Google, Meta와 xAI 등의 생성형 모델을 제공하면서 기업이 자체 모델을 등록해 동등하게 쓰게 한다는 방향이다. Palantir 제공이든 사용자 등록이든 LLM과 멀티모달 모델을 Pipeline Builder, Workshop, AIP Logic과 개발 도구 등에서 쓸 수 있다고 설명하며, 관리 기능으로 모델 접근의 세밀한 통제, 사용 사례와 업무 과제(line of effort) 전반의 token 한도, MMDP로 연결된 데이터, 연산과 모델에 걸친 자원 관리를 든다. 이를 앱별 지원이나 비용 집계 범위의 보장으로 읽지 않는다. Enrollment별 가용성은 [[Palantir-AIP-Model-Availability|모델 가용성과 환경 조건]], 등록 모델의 지원 앱과 비용 경계는 [[Palantir-Registered-Models-and-Provider-Proxies|등록 모델과 provider proxy]], 한도의 단위와 귀속 경로는 [[Palantir-LLM-Capacity-and-Cost|모델 용량, 제한과 비용]]에서 확인한다.
+
+계층 도표는 MMDP를 Palantir Ontology 계층과 AI 기반 자동화, 에이전트와 앱 계층 아래의 기반으로 그린다. ([MMDP 계층 도표](https://www.palantir.com/docs/resources/foundry/architecture-center/mmdp-layers.png)) 본문은 원시 데이터를 Ontology 데이터로 만드는 변환을 South of the Ontology, Ontology 데이터를 최종 사용자에게 잇는 대화형 함수를 North of the Ontology로 부른다([MMDP](https://www.palantir.com/docs/foundry/architecture-center/multimodal-data-plane)). 두 쪽이 MMDP의 runtime을 함께 쓸 때의 차이는 [[Palantir-Rubix-and-Compute-Boundaries|연산 배치와 실행 경계]]에서 다룬다.
 
 ## 연결과 변환은 운영 계약까지 포함한다
 
@@ -108,6 +120,7 @@ Vision extraction의 document input은 PDF를 page로 분할하고 image 변환/
 
 - [[Palantir-Data-Pipeline-Operations|수집, 변환과 배포의 운영 계약]]
 - [[Palantir-Model-Deployment-and-Monitoring|모델 평가, 배포와 운영 관측]]
+- [[Palantir-Rubix-and-Compute-Boundaries|MMDP 연산 배치와 Rubix 실행 경계]]
 
 - [[Ontology-Knowledge-Graph|온톨로지와 지식 그래프]]
 - [[Palantir-Object-Backend|객체 색인과 저장]]

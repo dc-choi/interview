@@ -47,6 +47,16 @@ aliases: ["성장 원칙"]
 
 성장은 일정한 속도로 눈에 보이지 않을 수 있다. 계단이나 곡선은 경험을 설명하는 비유이며 누구나 정체기 뒤에 도약한다는 검증된 법칙은 아니다. 지금 성과가 낮다는 사실만으로 도약 직전이라고 판단하거나 지속과 중단의 차이를 재능과 무관한 하나의 원인으로 설명하지 않는다.
 
+### 학습 곡선 연구가 보여 주는 범위
+
+전신 수신 학습의 고원(plateau)은 Keller(1958)에 따르면 반세기 넘게 교과서에 실린 정체기 사례다. Bryan과 Harter(1897)는 전신 기사 면담과 학습자의 주간 측정에서 수신 속도가 실무 최저 속도 아래에서 몇 달 동안 평평하게 머문다고 보고했다. 저자들은 다른 많은 습득의 곡선도 주요 특징이 같을 가능성이 크다고 보면서도, 이를 당연시하지 말고 능력마다 실제 곡선을 연구해야 한다고 적었다. Keller(1958)는 이후의 모스 부호 연구에서 고전적인 고원이 나타나지 않았다며 부호 학습이 전형적으로 고원을 보인다는 설명을 고쳐야 한다고 주장했다. 같은 글은 국제 모스 부호 수신의 진척이 하루 연습 시간, 연습 자료, 다음 속도로 넘어가는 통과 기준과 속도 단계의 크기 같은 요인에 좌우된다고 언급했다.
+
+Gallistel 등(2004)은 비둘기, 토끼, 쥐와 생쥐의 조건화와 미로 과제 자료에서 완만하게 오르는 학습 곡선이 집단 평균의 산물이라고 보고했다. 개체별 곡선은 훈련 전 수준에서 숙련 수준으로 갑자기, 흔히 계단처럼 올랐으며, 상승 시점이 개체마다 다르면 평균 곡선은 완만해진다. 저자들은 습득이 항상 갑작스럽지는 않을 것이라면서도 분석한 자료 범위에서는 갑작스러운 습득을 기본 가정으로 둔다. 다만 동물 자료이므로 사람의 기술이 계단식으로 오른다는 증거가 아니라, 평균 곡선의 모양을 개인의 경로로 그대로 읽을 수 없다는 근거로 쓴다.
+
+Soderstrom과 Bjork(2015)의 검토는 연습 중 수행이 장기 파지와 전이를 뒷받침하는 학습이 일어났는지 보여 주는 지표로 자주 믿기 어렵다고 정리했다. 수행 변화 없이 학습이 일어나거나 수행이 좋아져도 학습이 크게 남지 않을 수 있고, 어떤 학습 조건의 조작은 학습과 수행에 반대 방향으로 작용할 수 있다. 학습자가 연습 중 수행을 장기 학습의 믿을 만한 지표로 오해하기 쉽다는 메타인지 연구도 함께 검토했다.
+
+따라서 정체기를 도약 직전의 신호로도, 영구적인 한계의 증거로도 단정하지 않는다. 다른 사람의 경험담이나 평균 곡선 대신 같은 과제에 대한 자신의 기록을 시간 간격을 두고 비교하고, 연습 중 속도나 익숙함보다 시간이 지난 뒤의 회상, 새로운 입력에서의 수행과 피드백으로 확인한 오류를 근거로 삼는다. 기록이 계속 평평하면 아래 절차의 조정 단계에서 연습 자료, 난이도 단계와 통과 기준을 함께 본다. 이 기준은 연구를 학습 점검에 연결한 제안이다.
+
 ### 성장과 성과를 나누어 본다
 
 읽은 분량, 연습 시간과 외부 성과를 별도로 본다. 익숙해진 느낌이나 계속했다는 사실만으로 실제 능력이 축적됐다고 확인할 수는 없다. 같은 조건에서 설명, 수행과 오류가 어떻게 달라졌는지 점검한다.
@@ -84,9 +94,14 @@ aliases: ["성장 원칙"]
 - [Improving Students’ Learning With Effective Learning Techniques — Dunlosky et al., 2013](https://pubmed.ncbi.nlm.nih.gov/26173288/) — 2026-10-10 논문 초록과 [학회 안내](https://www.psychologicalscience.org/publications/journals/pspi/learning-techniques.html)로 학습 기법 검토와 연습 시험, 분산 학습의 평가 범위를 확인했다.
 - [Self-efficacy: Toward a Unifying Theory of Behavior Change — Stanford Center on Longevity, Bandura 논문 초록](https://longevity.stanford.edu/self-efficacy-toward-a-unifying-theory-of-behavior-change/) — 2026-10-10 저자 초록으로 정보원과 상대적으로 안전한 수행 경험의 조건을 확인했다. 출판사 전문은 접근 제한으로 대조하지 못했다.
 - [빵집 개발자 양병규씨가 쓴 글 입니다 — 클리앙](https://www.clien.net/service/board/park/3518580) — 보이지 않는 벽돌(강바닥 벽돌 쌓기) 비유. 양병규(빵집 압축 프로그램 제작자)가 빵집 도움말에 실은 글이며, 필자는 이 이야기를 허영만 만화에서 봤다고 밝힌다
+- [Studies in the physiology and psychology of the telegraphic language — Psychological Review, Bryan, Harter](https://doi.org/10.1037/h0073806) — 1897년 4권 1호 27~53쪽. 2026-10-25 원문 스캔본 45~53쪽에서 측정 방법, 수신 곡선의 평평한 구간과 다른 능력으로의 일반화 유보를 대조
+- [The Phantom Plateau — Journal of the Experimental Analysis of Behavior, Keller](https://pmc.ncbi.nlm.nih.gov/articles/PMC1403885/) — 1958년 1권 1호 1~13쪽. 2026-10-25 PMC 스캔본 전체를 대조했다. 검토 대상인 후속 연구에는 미출간 학위논문, 학회 발표와 한 명의 훈련 사례가 포함되며 그 원 연구는 직접 확인하지 않음
+- [The learning curve: Implications of a quantitative analysis — PNAS, Gallistel 외](https://pmc.ncbi.nlm.nih.gov/articles/PMC516535/) — 2004년 101권 36호 13124~13131쪽. 2026-10-25 초록과 본문에서 분석한 동물 과제, 평균화 설명과 습득이 항상 갑작스럽지는 않다는 유보를 대조
+- [Learning Versus Performance: An Integrative Review — Perspectives on Psychological Science, Soderstrom, Bjork](https://pubmed.ncbi.nlm.nih.gov/25910388/) — 2015년 10권 2호 176~199쪽. 2026-10-25 PubMed 초록으로 학습과 수행의 구분, 메타인지 연구 검토 범위를 대조했으며 본문은 확인하지 않음
 
 ## 관련 문서
 - [[Self-Development-While-Working|일하며 성장하기]]
 - [[Self-Analysis|자기 분석 (WHY, 확신 vs 정보)]]
 - [[Running-A-Tech-Blog|기술 블로그 운영 (꾸준한 아웃풋)]]
 - [[Intrinsic-vs-Extrinsic-Motivation|내재적 동기와 외재적 동기]] — 동기의 지속성, SDT 전개
+- [[Developer-Growth-Stages|개발자 성장 단계]] — 경험 기반 계단형 모델과 정체기 탈출 트리거

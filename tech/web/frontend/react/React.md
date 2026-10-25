@@ -22,6 +22,7 @@ React 지식은 JSX 문법보다 state를 어디에 두고, render를 순수하�
 - [[React-Server-Boundaries|서버와 client 경계]] — Server Components, Server Functions와 직렬화
 - [[React-Application-Design|요구사항에서 component와 data 계약 도출하기]]
 - [[React-Routing-and-Styling|React Router와 styling 경계, runtime CSS-in-JS와 CSS Modules 비용]]
+- [[TanStack-Start|TanStack Start]] — TanStack Router 기반 full-stack 프레임워크, 서버 함수 경계와 Next.js 선택 기준
 - [[TS-React-Type-Contracts|React와 TypeScript 타입 계약]]
 - [[React-Form-Builder-Practice|설문, admin과 form builder 설계]]
 

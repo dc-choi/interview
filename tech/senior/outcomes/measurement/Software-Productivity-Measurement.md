@@ -3,7 +3,7 @@ tags: [senior, productivity, measurement, management, anti-pattern, time-trackin
 status: done
 category: "Senior - 성과"
 aliases: ["Software Productivity Measurement", "소프트웨어 생산성 측정", "타임 트래킹", "생산성 측정 안티패턴"]
-verified_at: 2026-09-03
+verified_at: 2026-10-25
 ---
 
 # 소프트웨어 생산성 측정의 함정
@@ -124,6 +124,14 @@ verified_at: 2026-09-03
 
 자기보고는 개선 가설을 찾는 근거다. 인과 효과나 실측 개선량을 입증하지 않는다. 팀에 적용할 때는 유사한 작업 범위와 품질 기준에서 검토, 수정, 재작업을 포함한 완료 시간과 결함을 함께 비교한다. 생성 시간이 줄었어도 검증 부담이 늘면 최종 전달 속도는 달라질 수 있다.
 
+같은 설문의 연도 간 비교도 문항 문구, 선택지와 응답 집단이 같은지부터 본다. 2026 Stack Overflow 개발자 설문은 2026-06-23부터 08-05까지 기록된 응답 가운데 유효 응답 30,903건을 썼고(2025년 49,009건), stackoverflow.com, 공식 블로그와 연구 참여 기회나 공지 수신에 동의한 회원 이메일 목록으로 홍보했다. 2026-10-25 공식 결과와 방법론을 확인한 기준으로 전년과 나란히 놓인 수치는 다음 차이를 안고 있다. 문항이 보이는 조건은 방법론이 설문 도구의 참조처로 안내하는 공개 문항 저장소의 연도별 흐름 파일 기준이며, 실제 배포된 설문과의 일치는 따로 확인해야 한다.
+
+| 2025 → 2026 | 먼저 확인할 차이 |
+|---|---|
+| AI 출력 신뢰 31% → 87% 이상 | 2025년은 출력의 정확성을 매우 신뢰부터 매우 불신까지 중립(신뢰도 불신도 아님)을 포함한 5단계로 물었고(결과 페이지는 중립을 빼고 네 선택지만 보여 합이 78.4%다), 2026년은 AI 도구나 에이전트의 출력을 얼마나 신뢰하는지 검증 가능성, 위험도와 결정의 중요도를 조건으로 단 선택지로 물었다. 87%는 신뢰하는 네 선택지의 합(87.2%)이며 쉽게 검증할 수 있을 때 신뢰(48.0%)와 저위험 업무에만 신뢰(16.3%)를 포함한다. 중요한 업무 결정까지 신뢰는 6.6%다. 2026년 문항은 업무에서 AI 도구나 에이전트를 쓴다고 답한 응답자에게만 보였고(문항 응답 n=14,304) 2025년 문항에는 그런 조건이 없었다(문항 응답 n=33,244). 2025 결과 페이지는 그해 신뢰를 33%로 적어 31%의 산출 기준도 따로 확인해야 한다 |
+| 고용주 규모 문항의 Just me(프리랜서, 1인 사업자 등) 3.9% → 10.5% | 선택지 문구는 같지만 응답 집단이 다르다. 2025년에는 주 30시간 미만 유급 근무를 함께 고른 경우에만 보이던 독립 계약자, 프리랜서와 자영업 응답자가 2026년에는 그 조건 없이 들어갔고, 전체 응답자에게 묻는 고용 상태 문항에서 이 응답의 비율은 13.9%에서 14.9%로 거의 같다. 증가분의 상당 부분이 노출 조건 변경과 관련될 수 있어 구성 변화와 실제 증가를 이 수치만으로 나눌 수 없다 |
+| 현재 직무에 행복으로 분류된 응답 24.5% → 22.2% | 문항의 professional developer role이 professional role로 바뀌었다. 대상도 2025년 직업이 개발자라고 답한 응답자(문항 응답 n=26,622)에서 2026년 직군 조건 없이 고용, 독립 또는 주 30시간 미만 유급 근무 응답자(문항 응답 n=18,876)로 바뀌었다 |
+
 ## 시니어의 대응 원칙
 
 조직이 타임 트래킹을 강제할 때 / 설계할 때 시니어가 취할 방침:
@@ -163,6 +171,15 @@ verified_at: 2026-09-03
 - [Finding balance in the era of tokenmaxxing — DORA](https://dora.dev/insights/finding-balance-in-the-era-of-tokenmaxxing/)
 - [2025 Developer Survey: AI — Stack Overflow](https://survey.stackoverflow.co/2025/ai)
 - [2025 Developer Survey: Methodology — Stack Overflow](https://survey.stackoverflow.co/2025/methodology)
+- [2025 Developer Survey: Work — Stack Overflow](https://survey.stackoverflow.co/2025/work)
+- [2026 Developer Survey — Stack Overflow](https://survey.stackoverflow.co/2026)
+- [2026 Developer Survey: AI trust — Stack Overflow](https://survey.stackoverflow.co/2026/ai/data/ai-trust)
+- [2026 Developer Survey: Employment — Stack Overflow](https://survey.stackoverflow.co/2026/work/data/employment)
+- [2026 Developer Survey: Organization size — Stack Overflow](https://survey.stackoverflow.co/2026/work/data/org-size)
+- [2026 Developer Survey: Job satisfaction — Stack Overflow](https://survey.stackoverflow.co/2026/work/data/job-sat)
+- [2026 Developer Survey: Methodology — Stack Overflow](https://survey.stackoverflow.co/2026/methodology)
+- [Stack Overflow Developer Survey questions, 2025 — StackExchange, GitHub](https://github.com/StackExchange/Survey/tree/releases/2025-questions/questions)
+- [Stack Overflow Developer Survey questions, 2026 — StackExchange, GitHub](https://github.com/StackExchange/Survey/tree/releases/2026/questions)
 - [DORA Metrics — 현재 5개 지표](https://dora.dev/guides/dora-metrics-four-keys/)
 - [DORA Metrics History — 명칭과 정의 변경 이력](https://dora.dev/insights/dora-metrics-history/)
 - [ITWorld — 개발자와 소프트웨어 개발을 망치는 타임 트래킹 (Nick Hodges)](https://www.itworld.co.kr/article/3603145/)
