@@ -123,7 +123,9 @@ BM25를 병행해 정확 token match를 보완하고 RRF나 score normalization�
 
 ## 쿼리 재구성과 재탐색
 
-1차 검색이 부족하면 query를 분해하거나 표현을 바꿔 재탐색할 수 있다. 단 무제한 재시도는 latency와 비용을 키우고 처음 의도를 변형한다. 최대 횟수, 종료 조건, query rewrite 전후 결과와 선택 근거를 기록하고 대표 query set에서 단발 검색보다 실제로 나은지 검증한다.
+1차 검색이 부족하면 query를 분해하거나 표현을 바꿔 재탐색할 수 있다. 단 무제한 재시도는 latency와 비용을 키우고 처음 의도를 변형한다. 최대 횟수, 종료 조건, query rewrite 전후 결과와 선택 근거를 기록하고 대표 query set에서 단발 검색보다 실제로 나은지 검증한다. 검색 전에 생성 호출을 더하는 아래 기법은 그 호출이 늘리는 지연과 비용도 함께 비교한다(적용 제안).
+
+생성 모델로 검색 입력을 바꾸는 기법도 같은 검증 대상이다. RAG-Fusion은 원 질문에서 여러 질의를 생성하고 reciprocal rank fusion(RRF) 점수로 순위를 다시 매겨 문서와 점수를 합친다. Rackauckas(IJNLC 2024)는 당시 새로 대중화된 이 방법을 엔지니어, 어카운트 매니저와 고객이 제품 정보를 빨리 찾아야 하는 Infineon 환경에서 평가했다. 답변을 정확성, 관련성, 포괄성으로 수동 평가한 결과 정확하고 포괄적인 답을 낼 수 있었지만, 생성 질의와 원 질문의 관련성이 부족하면 일부 답변이 주제를 벗어났다. HyDE(Gao 외, ACL 2023)는 지시를 따르는 언어 모델이 질의에 대한 가상 문서를 zero-shot으로 쓰고, 비지도 대조 학습 인코더(예: Contriever)가 그 문서를 임베딩해 벡터 공간의 이웃인 실제 문서를 찾는다. 관련성 라벨 없이 동작하지만 가상 문서에는 환각이 들어갈 수 있으므로 검색 입력으로만 쓰고 답변 근거에는 검색된 실제 문서만 넣는다(적용 제안). 질의 분해는 복잡한 질문을 하위 질의로 나눠 여러 번 검색할 수 있다. 재순위 설정과의 관계 같은 제품 구현의 계약은 [[Bedrock-Knowledge-Base-Retrieval#질의 분해와 에이전틱 검색|Bedrock 지식 베이스의 질의 분해와 에이전틱 검색]]에서 다룬다.
 
 ### 단발 RAG와 에이전틱 RAG
 
@@ -293,3 +295,8 @@ Q. 검색은 됐는데 폐기된 정책으로 답했다면?
 - [Agentic Retrieval-Augmented Generation: A Survey on Agentic RAG — arXiv](https://arxiv.org/html/2501.09136v4)
 - [Sufficient Context: A New Lens on Retrieval Augmented Generation Systems — arXiv](https://arxiv.org/html/2411.06037v3)
 - [Building effective agents — Anthropic](https://www.anthropic.com/engineering/building-effective-agents)
+
+같은 날(2026-10-26) 질의 재구성 절의 RAG-Fusion을 그 방법을 평가한 Rackauckas 논문의 초록, 본문의 방법 설명과 서지 정보에, HyDE를 원 논문의 초록과 서지 정보에 대조했다. 가상 문서를 답변 근거에서 빼는 처리와 단발 검색 비교는 적용 제안이며, 이 절만 대조했으므로 기존 `verified_at`은 유지한다.
+
+- [RAG-Fusion: a New Take on Retrieval-Augmented Generation — arXiv](https://arxiv.org/abs/2402.03367)
+- [Precise Zero-Shot Dense Retrieval without Relevance Labels — ACL 2023](https://aclanthology.org/2023.acl-long.99/)

@@ -3,7 +3,7 @@ tags: [ci-cd, workflow, process, github]
 status: done
 category: "CI/CD&배포(CI/CD&Delivery)"
 aliases: ["Development Workflow", "개발 프로세스"]
-verified_at: 2026-08-04
+verified_at: 2026-10-26
 ---
 
 # 개발 워크플로, Issue에서 Merge까지
@@ -96,6 +96,18 @@ main을 항상 배포 가능한 상태로 유지하는 팀이라면 ruleset 또�
 
 모든 항목을 무조건 켜면 작은 팀과 긴급 복구를 불필요하게 막을 수 있다. 규칙마다 보호하려는 실패, 우회 권한, 장애 시 절차와 감사 기록을 함께 정한다. PR 자체가 승인을 강제하는 것이 아니라 이 저장소 규칙이 강제한다.
 
+### Merge queue가 보장하는 것
+
+GitHub merge queue는 PR의 변경을 최신 base와 큐 앞 PR들에 적용한 상태로 필수 검사(required status checks)를 돌린다. 최신 base 요구 규칙과 같은 이점을 주면서, 작성자가 직접 branch를 갱신하고 검사를 기다린 뒤 병합을 시도할 필요는 없앤다. 함께 병합되는 그룹의 PR마다 자기 임시 branch의 필수 검사 통과를 요구할지, 그룹 마지막 PR의 통과로 충분할지는 아래 Only merge non-failing pull requests 설정이 정한다(2026-10-26 공식 문서 대조 기준).
+
+- PR마다 최신 base, 큐 앞 PR들의 변경과 자신의 변경을 합친 임시 branch(`gh-readonly-queue/{base_branch}` 접두사)를 만들어 검사하고, base branch 보호 규칙의 필수 검사를 통과하면 병합한다.
+- 필수 검사가 실패하거나 base와 충돌하면 그 PR은 큐에서 빠진다. 공식 예시에서는 뒤 PR의 임시 branch를 빠진 PR의 변경 없이 다시 만든다. 이 Failing CI 예시는 아래 설정을 언급하지 않으므로, No로 둔 큐에서 실패한 PR이 어떤 조건에서 빠지는지는 Managing a merge queue 문서로 확인되지 않는다.
+- Only merge non-failing pull requests를 Yes로 두면 모든 PR이 필수 검사를 통과해야 병합된다. No로 두면 필수 검사에 실패한 PR도 그룹의 마지막 PR이 통과하는 한 그 그룹에 넣을 수 있고, 이때 통과한 것은 그룹 전체 변경의 조합이다. 간헐적 테스트 실패가 큐를 막지 않게 하려 할 때 쓸 수 있다.
+- GitHub Actions 검사는 `pull_request`, `push`와 별개인 `merge_group` 이벤트로도 실행되게 해야 한다. 외부 CI는 이 접두사 branch에 push될 때 실행되게 설정한다.
+- 동시에 보낼 `merge_group` webhook의 최대 수(동시 CI 빌드 제한, 1~100), 한 번에 병합할 PR의 최소와 최대 수(1~100)와 최소 수를 채우지 못해도 병합하기까지 기다릴 시간, CI 응답이 없을 때 실패로 보기까지 기다릴 시간도 큐 설정이다.
+
+Anthropic이 Scion 글에서 merge queue에 전역 저장소 잠금을 거는 업계 관행을 효과적으로 재현하지 못해 병합 뒤와 배포 전 자동 테스트에 투자했다고 밝힌 사례는 [[Server-Centric-Version-Control#에이전트 규모의 병합 검증|서버 중심 버전 관리]]에 있다.
+
 ## Fork와 외부 기여
 
 원본 저장소에 branch push 권한이 없으면 fork에서 branch를 만들고 원본으로 PR을 보낸다. 흔히 원본을 `upstream`, 자신의 fork를 `origin`으로 두지만 이름은 관례다.
@@ -136,6 +148,7 @@ Hotfix 출발점과 되돌려 합칠 branch는 실제 배포 branch 전략으로
 
 - GitHub 공식 문서: [Pull requests](https://docs.github.com/en/pull-requests/reference/pull-requests), [Linking a pull request to an issue](https://docs.github.com/en/issues/tracking-your-work-with-issues/using-issues/linking-a-pull-request-to-an-issue), [About Projects](https://docs.github.com/en/issues/planning-and-tracking-with-projects/learning-about-projects/about-projects)
 - GitHub 공식 문서: [Configuring a remote for a fork](https://docs.github.com/en/pull-requests/how-tos/work-with-forks/configuring-a-remote-repository-for-a-fork), [About rulesets](https://docs.github.com/en/repositories/configuring-branches-and-merges-in-your-repository/managing-rulesets/about-rulesets)
+- GitHub 공식 문서: [Managing a merge queue](https://docs.github.com/en/repositories/configuring-branches-and-merges-in-your-repository/configuring-pull-request-merges/managing-a-merge-queue)
 - [Conventional Commits 1.0.0](https://www.conventionalcommits.org/en/v1.0.0/)
 - [Google Engineering Practices, Small CLs](https://google.github.io/eng-practices/review/developer/small-cls.html)
 - [How to Contribute to Open Source — Open Source Guides](https://opensource.guide/how-to-contribute/)
@@ -145,4 +158,4 @@ Hotfix 출발점과 되돌려 합칠 branch는 실제 배포 branch 전략으로
 
 ## 관련 문서
 
-- [[GitHub-Repository-Operations|GitHub 저장소 운영]], [[Version-Control-Tooling|버전 관리 도구 선택]], [[Git-Merge-Strategies|Git 통합 방식]], [[Code-Review-Culture|코드 리뷰 문화]], [[Code-Review-Reviewability|리뷰 가능성과 PR 크기]]
+- [[GitHub-Repository-Operations|GitHub 저장소 운영]], [[Version-Control-Tooling|버전 관리 도구 선택]], [[Git-Merge-Strategies|Git 통합 방식]], [[Code-Review-Culture|코드 리뷰 문화]], [[Code-Review-Reviewability|리뷰 가능성과 PR 크기]], [[Server-Centric-Version-Control|서버 중심 버전 관리]]

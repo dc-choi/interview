@@ -12,7 +12,7 @@ aliases: ["Pipeline Builder 집계와 window 계약"]
 
 ## null은 집계 대상과 분모를 바꾼다
 
-Sum, mean, min/max와 median의 예제는 null을 제외한다. `[2, null, 3]`의 평균은 2.5다. 결측을 0으로 채운 평균과 다른 통계량이다.
+Sum, mean, min/max와 median의 예제는 null을 제외한다. `[2, null, 3]`에서 sum은 5, max는 3, min은 2, mean과 median은 2.5다. 이 평균은 결측을 0으로 채운 평균과 다른 통계량이다.
 
 | 연산 | null과 중복의 의미 |
 |---|---|
@@ -25,6 +25,10 @@ Sum, mean, min/max와 median의 예제는 null을 제외한다. `[2, null, 3]`�
 | mode | null을 제외한 최빈값, 빈 입력 예제는 null |
 
 Collect 예제가 정렬돼 보인다는 이유로 배열 순서 보장을 추정하지 않는다. RowCount의 optional expression을 생략했을 때와 명시했을 때의 의미도 실제 사용 경로에서 확인한다. 이 레퍼런스의 예제는 expression을 지정한 경우다.
+
+## 기본 집계의 타입과 예제 범위
+
+Sum은 `Expression<Numeric>`을 받아 Decimal, Double 또는 Long을 반환한다. 1.111111111111 두 값의 합이 2.222222222222인 edge case 예제를 소수 합산의 정밀도 보장으로 일반화하지 않는다. Max/min은 Numeric 분류에 있지만 입력과 출력이 `ComparableType`으로 선언되므로 분류명보다 타입 선언을 우선한다. Median의 짝수 개 예제는 가운데 두 값의 평균을 반환하고(`[1, 2, 3, 4]`는 2.5), 모두 null이거나 빈 입력인 예제는 null이다.
 
 ## Window의 순서가 결과를 결정한다
 
@@ -48,7 +52,9 @@ Streaming pivot 표현식은 pivot 값별로 집계하고 `Map<K,V>`를 반환�
 
 ## 실행 모드
 
-Approximate median/percentile과 회귀 기울기는 Batch, covariance 계열은 Batch/Streaming, allOf/anyOf와 순위/lag/lead는 Batch/Faster로 표시된다. MaxBy/minBy와 pivot 표현식은 Streaming 전용이다. Mode와 median도 Batch/Faster다. 실행 엔진을 바꿀 때 수치 결과뿐 아니라 지원 연산 목록을 대조한다.
+Approximate median/percentile과 회귀 기울기는 Batch, covariance와 sample covariance는 Batch/Streaming, allOf/anyOf, rank, denseRank, percentRank와 lag/lead는 Batch/Faster로 표시된다. Rank 계열과 달리 rowNumber는 Batch/Faster/Streaming이다. MaxBy/minBy와 pivot 표현식은 Streaming 전용이다. Mode, median과 standard deviation은 Batch/Faster이고 sum, min/max, mean, rowCount, distinctCount, collectArray, collectDistinctArray, first/last, variance와 sample variance는 Batch/Faster/Streaming이다. 실행 엔진을 바꿀 때 수치 결과뿐 아니라 지원 연산 목록을 대조한다.
+
+이 절의 실행 모드와 sum, max, min, mean, median의 타입 선언과 예제는 2026-10-26 각 상세 페이지로 다시 대조했다. 나머지 내용은 다시 대조하지 않아 frontmatter의 `verified_at`은 유지한다.
 
 ## 이전 버전 번역본의 경계
 
@@ -62,6 +68,9 @@ Approximate median/percentile과 회귀 기울기는 Batch, covariance 계열은
 - [Palantir, anyOfV1 중국어 번역본](https://palantir.com/docs/zh/foundry/pb-functions-expression/anyOfV1/)
 - [Palantir, linearRegressionGradientV1 중국어 번역본](https://palantir.com/docs/zh/foundry/pb-functions-expression/linearRegressionGradientV1/)
 
+- [Palantir, Sum](https://www.palantir.com/docs/foundry/pb-functions-expression/sumV1)
+- [Palantir, Max](https://www.palantir.com/docs/foundry/pb-functions-expression/maxV1)
+- [Palantir, Min](https://www.palantir.com/docs/foundry/pb-functions-expression/minV1)
 - [Palantir, Mean](https://www.palantir.com/docs/foundry/pb-functions-expression/meanV1)
 - [Palantir, Median](https://www.palantir.com/docs/foundry/pb-functions-expression/medianV1)
 - [Palantir, Row count](https://www.palantir.com/docs/foundry/pb-functions-expression/rowCountV1)
@@ -90,6 +99,7 @@ Approximate median/percentile과 회귀 기울기는 Batch, covariance 계열은
 - [Palantir, Max by](https://www.palantir.com/docs/foundry/pb-functions-expression/maxByV1)
 - [Palantir, Min by](https://www.palantir.com/docs/foundry/pb-functions-expression/minByV1)
 - [Palantir, Pivot](https://www.palantir.com/docs/foundry/pb-functions-expression/pivotExpressionV1)
+- [Palantir, Functions index](https://www.palantir.com/docs/foundry/pipeline-builder/functions-index)
 
 ## 관련 문서
 

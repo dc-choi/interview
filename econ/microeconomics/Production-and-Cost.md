@@ -96,6 +96,10 @@ MC가 ATC보다 낮으면 평균을 끌어내려 ATC가 하락하고, 높으면 
 
 수직 통합의 원가 우위를 검토할 때도 이 기준을 적용할 수 있다. 다만 이는 make-or-buy 판단의 적용이며, 특정 기업의 공장 건설, 장비 확보, 수율이나 미래 주가를 확인한 결과는 아니다. 장기 설비 투자는 이 단기 비용 비교만으로 확정하지 않는다.
 
+2026-06-09 SpaceX가 기업공개 관련 자유서식 투자설명서(FWP)로 제출한 CFO 인터뷰는 Terafab을 추진하는 이유로 향후 몇 년 안에 생길 수 있는 공급망 제약과 실리콘 공급 확보를 들고, NVIDIA, AI5 칩이나 TPU도 한 층 아래로 내려가면 TSMC로 이어져 공급망을 분산할 수 없다는 맥락을 설명한다. CFO는 비용 이점도 분명히 있겠지만 business model에 반영하지 않았으므로(재무 전망에 넣지 않았다는 뜻으로 읽힌다) 상방 요인이 될 것이라고 했다. 50%나 60% 마진 위에 75% 마진이 겹친 구조를 예로 들며 제대로 해내고 수율이 오르면 마진 이점이 될 수 있다고 하면서도, 주된 초점은 실리콘 공급 확보라고 했다. 각 마진이 어느 기업의 것인지는 밝히지 않았으므로 앞에서 거론한 기업들에 귀속하지 않는다.
+
+이 사례에도 앞의 기준을 적용해 겹친 마진을 자동 절감액으로 계산하지 않는다. 새 팹의 설비투자, 수율과 가동률, 협력 조건을 함께 비교해야 하는데, 2026-06-04 FWP의 위험 요인은 그 시점에 Terafab이 매우 초기 단계이며 SpaceX와 Tesla가 재무 조건, 지식재산권과 최종 협력 기간 등 여러 세부 사항을 확정하지 않았다고 적었다. 팹 계획의 주체와 단계를 읽는 기준은 [[AI-Infrastructure-Capital-Cycle#발표된 팹 계획의 주체와 단계를 나눈다|AI 인프라 투자와 자본 순환]]에서, 설비투자 집계를 읽는 기준은 같은 문서의 앞 소절에서 다룬다.
+
 ## 8. 회계의 원가 구성
 
 회계에서 제품 원가는 보통 다음처럼 쌓는다. 직접경비를 따로 떼는 분류도 있다.
@@ -134,6 +138,8 @@ MC가 ATC보다 낮으면 평균을 끌어내려 ATC가 하락하고, 높으면 
 - [OpenStax, Evaluate and Determine How to Make Decisions When Resources Are Constrained](https://openstax.org/books/principles-managerial-accounting/pages/10-6-evaluate-and-determine-how-to-make-decisions-when-resources-are-constrained) — 병목 자원당 공헌이익. 서비스 수주 예시는 이를 적용한 가정이다.
 - [OpenStax, Principles of Microeconomics 3e, How Perfectly Competitive Firms Make Output Decisions](https://openstax.org/books/principles-microeconomics-3e/pages/8-2-how-perfectly-competitive-firms-make-output-decisions)
 - [OpenStax, Principles of Microeconomics 3e, Costs in the Long Run](https://openstax.org/books/principles-microeconomics-3e/pages/7-5-costs-in-the-long-run) — 2026-10-05 규모의 경제, 규모에 대한 수익 불변 구간과 규모의 불경제 대조. 2026-10-14 생산기술 선택과 기술 변화에 따른 비용곡선 이동 추가 대조
+- [SpaceX, Free Writing Prospectus with CFO interview](https://www.sec.gov/Archives/edgar/data/1181412/000162828026041761/fwp_cfointerview.htm) — 2026-06-09 제출 자료의 Terafab 추진 이유와 공급망 맥락, business model에 넣지 않은 비용 이점과 마진 예시 발언, 2026-10-26 대조
+- [SpaceX, Free Writing Prospectus](https://www.sec.gov/Archives/edgar/data/1181412/000162828026040610/spacexfwp.htm) — 2026-06-04 제출 자료의 기업공개 관련 표지와 위험 요인 중 Terafab 초기 단계와 미확정 협력 조건, 2026-10-26 대조
 - [KIFRS.com, 기업회계기준서 제1002호 재고자산의 취득원가](https://www.kifrs.com/s/1002/a36dbb) — 매입원가, 전환원가와 제외 원가
 - [IFRS Foundation, IAS 2 Inventories](https://www.ifrs.org/issued-standards/list-of-standards/ias-2-inventories/) — 문단 11, 12, 16
 

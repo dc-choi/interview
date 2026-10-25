@@ -1,7 +1,7 @@
 ---
 tags: [ai, llm, hallucination, operations]
 status: done
-verified_at: 2026-10-20
+verified_at: 2026-10-26
 category: "AI엔지니어링(AIEngineering)"
 aliases: ["LLM Workflow Patterns Data and Operations", "데이터 vs 모델", "환각 통제와 운영"]
 ---
@@ -21,12 +21,12 @@ aliases: ["LLM Workflow Patterns Data and Operations", "데이터 vs 모델", "�
 
 고정 길이로 자르면 긴 표의 헤더와 아래쪽 행이 서로 다른 청크로 나뉘고, 문서 첫머리에만 있는 제목, 작성 기관과 개정일은 뒤쪽 청크에 들어가지 않는다. 청크 겹침은 경계 근처만 보완한다([[RAG-Retrieval-Engineering#청킹 전략: 고정 길이의 한계|청킹 전략]]). 그래서 수집 단계에서 긴 표의 행마다 헤더를 반복할지, 필터에 쓸 날짜와 분류를 형식이 있는 메타데이터로 둘지, 출처마다 청킹 단위를 어떻게 고정할지를 먼저 정하고 행 속성, 문서 속성(제목, 작성 기관, 개정일)과 날짜 범위를 묻는 질문으로 결과를 평가한다. 다음은 2026-10-20 Amazon Bedrock Knowledge Bases 공식 문서 기준 고객 관리형 지식 베이스의 관련 동작이다. 관리형 지식 베이스(Amazon Bedrock Managed Knowledge Base)의 파서와 청킹은 마지막 항목에서, 조회 설정은 문서 속성 항목에서 따로 본다.
 
-- **청킹 설정 단위**: 청킹 전략은 데이터 소스마다 정하며 데이터 소스를 연결한 뒤에는 바꿀 수 없다. 청킹 없음(`NONE`)은 문서 하나를 청크 하나로 다루므로 파일을 미리 나눠 넣는다. 이때 PDF 인용의 페이지 번호와 페이지 번호 메타데이터(`x-amz-bedrock-kb-document-page-number`, PDF를 OpenSearch Serverless나 Aurora 벡터 저장소에 넣을 때 생성) 필터는 쓸 수 없다. 미리 나눈 파일 하나가 그대로 임베딩 입력이 되므로 임베딩 모델의 입력 한도(Titan Text Embeddings V2는 8,192 토큰 또는 50,000자)도 확인한다(적용 제안).
+- **청킹 설정 단위**: 청킹 전략은 데이터 소스마다 정하며 데이터 소스를 연결한 뒤에는 바꿀 수 없다(기본 청킹은 문장 경계를 지키며 약 300토큰 단위로 나눈다, 2026-10-26 청킹 문서 기준). 청킹 없음(`NONE`)은 문서 하나를 청크 하나로 다루므로 파일을 미리 나눠 넣는다. 이때 PDF 인용의 페이지 번호와 페이지 번호 메타데이터(`x-amz-bedrock-kb-document-page-number`, PDF를 OpenSearch Serverless나 Aurora 벡터 저장소에 넣을 때 생성) 필터는 쓸 수 없다. 미리 나눈 파일 하나가 그대로 임베딩 입력이 되므로 임베딩 모델의 입력 한도(Titan Text Embeddings V2는 8,192 토큰 또는 50,000자)도 확인한다(적용 제안).
 - **표 맥락 반환**: 마크다운으로 처리한 문서(`.md` 파일, Data Automation 파서나 모델 파서의 결과, HTML 변환)의 페이지에 표나 그림이 있으면, 그 페이지의 청크에 페이지 전체나 표 전체를 맥락으로 붙여 두고 검색 때 일치한 청크 대신 그 맥락을 돌려줄 수 있다. 기본, 고정 크기, 시맨틱과 계층형처럼 최대 토큰을 정하는 청킹 전략에 적용되고 청킹 없음에는 적용되지 않는다. 페이지나 표가 10,000자 이하일 때만 붙고, 같은 맥락을 공유하는 청크는 결과 하나로 합쳐져 `numberOfResults`보다 적게 반환될 수 있다. S3 벡터 버킷을 벡터 저장소로 쓰면 이 맥락이 벡터별 메타데이터 크기 한도에 포함되므로, 인덱스를 만들 때 `AMAZON_BEDROCK_TEXT`와 `AMAZON_BEDROCK_METADATA`를 필터에 쓰지 않는 메타데이터 키로 지정하라고 안내한다. 표를 청크 단위 결과로 받으려면 청킹 없음을 고르고 사용자 정의 변환 Lambda에서 직접 나누도록 안내한다.
 - **CSV 행 단위 수집**: `<파일명>.csv.metadata.json`에 행 기반 구조(`RECORD_BASED_STRUCTURE_METADATA`)를 지정하면 CSV를 한 행씩 읽어 내용 열 하나를 청킹하고 임베딩하며, 포함과 제외 목록에 따라 나머지 열을 그 청크의 메타데이터로 둔다. 이 CSV 기반 메타데이터 구성에서는 숫자 값도 문자열로 저장되며, 전체 데이터 형식과 `includeForEmbedding`은 아래 `.metadata.json` 방식에서 쓴다.
 - **문서 속성**: S3 데이터 소스에서는 원본 파일명 뒤에 `.metadata.json`을 붙인 메타데이터 파일(10 KB 이하)을 같은 위치에 둔다. `includeForEmbedding: true`로 둔 속성은 키와 값을 청크 앞에 붙여 임베딩하지만 반환하는 청크 텍스트에는 넣지 않는다. 범위 비교 연산(`greaterThan`, `lessThan` 등)은 숫자 속성에만 쓸 수 있다. 질문과 메타데이터 스키마로 모델이 필터를 만들어 적용하는 암묵적 메타데이터 필터링(`implicitFilterConfiguration`)은 Anthropic Claude 모델을 지원하며, Retrieve 요청의 `vectorSearchConfiguration`에 지정하는데 이 필드는 고객 관리형 지식 베이스 전용이다. 관리형 지식 베이스가 쓰는 `managedSearchConfiguration`에는 API 참조 기준 `filter`, `numberOfResults`와 재순위 필드만 있고 `implicitFilterConfiguration`을 지정할 필드는 없다.
 - **임베딩 언어와 리전**: Titan Text Embeddings V2는 영어에 최적화돼 있고 100개 이상 언어 지원을 preview로 표기한다. 한국어 지식 베이스에 독일어로 묻는 것처럼 문서와 질문의 언어가 다르면 결과가 최적이 아니라고 안내한다. 지식 베이스 임베딩 모델 표에서 서울(ap-northeast-2)을 단일 리전 지원으로 표시한 모델은 Titan Text Embeddings V2뿐이므로, 서울에서 다국어 임베딩 모델을 비교하려면 리전 지원부터 확인한다(적용 제안).
-- **커넥터와 관리형 지식 베이스**: 2026-09-30부터 고객 관리형 지식 베이스에는 Confluence, Microsoft SharePoint, Salesforce, Web Crawler 커넥터를 새로 만들 수 없고 기존 커넥터는 수집과 검색을 포함해 계속 동작한다. AWS는 이 커넥터가 필요한 애플리케이션에 관리형 지식 베이스를 권장한다. 관리형은 기본으로 서비스 관리 파서(`SMART_PARSING`)를 쓰고, 네이티브 멀티모달 임베딩 모델을 쓰면 텍스트 파싱 없이 `MULTI_MODAL_EMBEDDINGS`만 지원한다. 모델 파서, Data Automation 파서와 시맨틱 청킹은 지원하지 않는다. 텍스트로 파싱할 때 청킹은 기본, 고정 크기, 청킹 없음 중에서 고르며, 네이티브 멀티모달 임베딩 모델에는 이 청킹 전략이 적용되지 않는다. 관리형 수집 설정 문서에는 계층형 청킹과 사용자 정의 변환 Lambda가 없다. 지원 리전은 us-east-1, us-west-2, eu-west-1, eu-west-2, eu-central-1, ap-northeast-1, ap-southeast-2, us-gov-west-1이고 서울(ap-northeast-2)은 없다. 관리형 S3 데이터 소스는 지식 베이스와 같은 리전의 범용 버킷을 요구하고, 관리형 저장소는 임베딩, 텍스트, 메타데이터와 원본 파일을 서비스가 관리한다.
+- **커넥터와 관리형 지식 베이스**: 2026-09-30부터 고객 관리형 지식 베이스에는 Confluence, Microsoft SharePoint, Salesforce, Web Crawler 커넥터를 새로 만들 수 없고 기존 커넥터는 수집과 검색을 포함해 계속 동작한다. AWS는 이 커넥터가 필요한 애플리케이션에 관리형 지식 베이스를 권장한다. 관리형은 기본으로 서비스 관리 파서(`SMART_PARSING`)를 쓰고, 네이티브 멀티모달 임베딩 모델을 쓰면 텍스트 파싱 없이 `MULTI_MODAL_EMBEDDINGS`만 지원한다. 모델 파서, Data Automation 파서와 시맨틱 청킹은 지원하지 않는다. 텍스트로 파싱할 때 청킹은 기본, 고정 크기, 청킹 없음 중에서 고르며, 네이티브 멀티모달 임베딩 모델에는 이 청킹 전략이 적용되지 않는다. 관리형 수집 설정 문서에는 계층형 청킹과 사용자 정의 변환 Lambda가 없다. 지원 리전은 2026-10-26 기준 us-east-1, us-west-2, eu-west-1, eu-west-2, eu-central-1, ap-northeast-1, ap-southeast-1, ap-southeast-2, us-gov-west-1이고 서울(ap-northeast-2)은 없다. us-gov-west-1의 관리형은 서드파티 커넥터를 제공하지 않아(S3와 사용자 정의 데이터 소스만 제공) 커넥터 때문에 관리형으로 옮기는 방안을 이 리전에서는 쓸 수 없고, 문서 수준 접근 제어(ACL)와 서비스 관리 임베딩, 재순위, 에이전틱 검색 모델도 제공하지 않는다. 관리형 S3 데이터 소스는 지식 베이스와 같은 리전의 범용 버킷을 요구하고, 관리형 저장소는 임베딩, 텍스트, 메타데이터와 원본 파일을 서비스가 관리한다.
 - **파서와 추론의 리전**: Data Automation 파서는 미국 서부(오레곤)에서 preview로 제공된다. 지식 베이스는 파싱과 응답 생성에 추론 프로필을 쓸 수 있고, 교차 리전 추론을 쓰면 데이터가 다른 리전과 공유될 수 있다고 안내한다.
 
 **사례 (AWS Industry Week 2024 발표, 2025-01-16 공개):** 임상시험 소프트웨어와 CRO 서비스를 함께 제공하는 기업이 SOP, 업무 지침(WI), 식약처와 FDA 가이드라인과 사내 문서를 Bedrock 지식 베이스 기반 AI 어시스턴트로 검색하면서, 긴 표는 행마다 헤더를 반복한 청크로 미리 나눠 고정 길이 청킹과 다른 데이터 소스에 올렸다. 저장 공간이 늘어나는 손실은 검색 성능을 위해 감수했다고 설명했다. 작성일, 작성자와 문서 분류는 모든 청크에 반복하는 대신 메타데이터로 두었다. 경량 모델로 질문에서 날짜, 작성자와 분류를 추출하고, 날짜는 숫자 타임스탬프로 바꿔 숫자 비교 필터로 넘기며, 작성자는 동의어 DB(식품의약품안전처, 식약처, MFDS)를, 분류는 카테고리 DB를 먼저 조회해 얻은 키로 거르는 흐름을 소개했다. 발표가 지식 베이스의 기본 연동으로 든 웹 크롤링과 Confluence 데이터 소스는 2026-09-30부터 고객 관리형 지식 베이스에서 새로 만들 수 없다.
@@ -43,7 +43,7 @@ aliases: ["LLM Workflow Patterns Data and Operations", "데이터 vs 모델", "�
 
 시맨틱 청킹은 최대 토큰 수, 문장 주변의 buffer size와 문장 거리의 breakpoint percentile threshold를 조정한다. Buffer size가 1이면 현재 문장과 앞뒤 문장, 총 세 문장을 묶어 임베딩한다. 경계 임계값이 높으면 더 큰 차이가 있어야 분할하므로 청크 수가 줄고 평균 크기가 커지는 경향이 있다. Foundation model 사용에 따른 추가 수집 비용도 발생한다.
 
-적용 제안: 같은 질문에서 자식 청크의 적중, 반환된 부모 문맥의 근거 포함 여부와 최종 입력 토큰을 따로 측정한다. 청크가 작다는 이유로 생성 비용도 작다고 가정하지 않는다. 위 동작은 고객 관리형 기준이며 앞 절의 관리형 지식 베이스 지원 범위와 구분한다. 기존 제품별 주장 전체를 재검증하지 않았으므로 `verified_at`은 유지한다.
+적용 제안: 같은 질문에서 자식 청크의 적중, 반환된 부모 문맥의 근거 포함 여부와 최종 입력 토큰을 따로 측정한다. 청크가 작다는 이유로 생성 비용도 작다고 가정하지 않는다. 위 동작은 고객 관리형 기준이며 앞 절의 관리형 지식 베이스 지원 범위와 구분한다. 2026-10-22 추가 때는 기존 제품별 주장 전체를 재검증하지 않아 `verified_at`을 유지했다.
 
 ### 수집 계정의 권한과 질문자의 접근권을 구분한다
 
@@ -168,7 +168,7 @@ AWS의 2024-08-02 식신 구축 사례는 리뷰와 메뉴 등에서 LLM으로 �
 - [AWS, Use Human Loop Activation Conditions JSON Schema with Amazon Textract](https://docs.aws.amazon.com/sagemaker/latest/dg/a2i-json-humantaskactivationconditions-textract-example.html)
 - [AWS, Create a Human Review Workflow](https://docs.aws.amazon.com/sagemaker/latest/dg/a2i-create-flow-definition.html)
 - [AWS Prescriptive Guidance, Delivering and sustaining the value of a generative AI application](https://docs.aws.amazon.com/prescriptive-guidance/latest/gen-ai-lifecycle-operational-excellence/prod-value.html)
-- [AWS, How content chunking works for knowledge bases](https://docs.aws.amazon.com/bedrock/latest/userguide/kb-chunking.html) — 2026-10-20 청킹 없음의 페이지 번호 제약, 표 맥락 반환의 적용 조건과 10,000자 한도, S3 벡터 메타데이터 키를 대조했다. 2026-10-22 계층형의 부모 반환, 겹침 단위와 시맨틱 청킹 설정을 추가 대조했다.
+- [AWS, How content chunking works for knowledge bases](https://docs.aws.amazon.com/bedrock/latest/userguide/kb-chunking.html) — 2026-10-20 청킹 없음의 페이지 번호 제약, 표 맥락 반환의 적용 조건과 10,000자 한도, S3 벡터 메타데이터 키를 대조했다. 2026-10-22 계층형의 부모 반환, 겹침 단위와 시맨틱 청킹 설정을 추가 대조했다. 2026-10-26 기본 청킹의 단위를 추가 대조했고, 청킹 없음, 표 맥락 반환, 계층형과 시맨틱 청킹의 기존 설명이 현재 문서와 맞는지 다시 확인했다.
 - [AWS, Customize ingestion for a data source](https://docs.aws.amazon.com/bedrock/latest/userguide/kb-data-source-customize-ingestion.html) — 2026-10-20 연결 뒤 청킹 전략과 파서 유형의 변경 불가, 멀티모달 데이터 저장 위치 조건을 대조했다.
 - [AWS, Include metadata in a data source to improve knowledge base query](https://docs.aws.amazon.com/bedrock/latest/userguide/kb-metadata.html) — 2026-10-20 CSV 행 기반 구조와 문자열 저장을 대조했다.
 - [AWS, Connect to Amazon S3 for your knowledge base](https://docs.aws.amazon.com/bedrock/latest/userguide/s3-data-source-connector.html) — 2026-10-20 메타데이터 파일 이름 규칙, 10 KB 한도와 `includeForEmbedding`을 대조했다.
@@ -180,7 +180,7 @@ AWS의 2024-08-02 식신 구축 사례는 리뷰와 메뉴 등에서 LLM으로 �
 - [AWS, Build a managed knowledge base](https://docs.aws.amazon.com/bedrock/latest/userguide/kb-build-managed.html) — 2026-10-20 관리형 저장소가 보관하는 데이터와 파서 비교를 대조했다.
 - [AWS, ManagedSearchConfiguration](https://docs.aws.amazon.com/bedrock/latest/APIReference/API_agent-runtime_ManagedSearchConfiguration.html) — 2026-10-20 관리형 검색 설정의 필드 목록을 대조했다.
 - [AWS, Customize ingestion for a data source (managed knowledge bases)](https://docs.aws.amazon.com/bedrock/latest/userguide/kb-managed-customize-ingestion.html) — 2026-10-20 관리형의 파싱과 청킹 선택지를 대조했다.
-- [AWS, Supported AWS Regions (managed knowledge bases)](https://docs.aws.amazon.com/bedrock/latest/userguide/kb-managed-regions.html) — 2026-10-20 관리형 지원 리전을 대조했다.
+- [AWS, Supported AWS Regions (managed knowledge bases)](https://docs.aws.amazon.com/bedrock/latest/userguide/kb-managed-regions.html) — 2026-10-20 관리형 지원 리전을 대조했다. 2026-10-26 다시 대조해 빠졌던 ap-southeast-1(싱가포르)을 더하고 GovCloud(US-West)의 기능 차이를 반영했다. 바꾼 리전 주장과 청킹 문서에 기댄 기존 주장이 두 출처와 상충하지 않음을 확인해 `verified_at`을 갱신했다.
 - [AWS, Amazon S3 (managed knowledge bases)](https://docs.aws.amazon.com/bedrock/latest/userguide/kb-managed-ds-s3.html) — 2026-10-20 같은 리전 버킷 요건을 대조했다. 서울 리전 비교는 설계 제안이다.
 - [LLM 에이전트 실무 사례 (물어보세, 스마트 마이 노트, HyperCLOVA X Skill Universe) — 개발 컨퍼런스 (YouTube)](https://www.youtube.com/watch?v=wEVPnYOuAf8&list=PLgXGHBqgT2TtGi82mCZWuhMu-nQy301ew)
 - [JNPMEDI의 Amazon Bedrock 기반의 대규모 언어 모델을 활용한 완전 관리형 지식 기반 AI Assistant — AWS Industry Week 2024 (YouTube)](https://www.youtube.com/watch?v=yKZO3n0UyWI) — 2025-01-16 공개. 2026-10-20 헤더 반복 청크, 데이터 소스 분리와 메타데이터 필터 흐름을 대조했다. 인프라 비용 최대 80% 절감(사용량을 어느 정도 예측할 수 있는 환경에서 온디맨드 인스턴스와 직접 비교했고 서버리스로 시작할 수 있다는 점을 이유로 들었다는 설명만 있고 사용량, 기간과 산정 방식은 없다)과 콘솔 플레이그라운드로 한 초기 기능 검증이 1시간이 채 걸리지 않았던 것 같다는 회고는 발표자 측 보고라 본문에 옮기지 않았다.
@@ -198,6 +198,7 @@ AWS의 2024-08-02 식신 구축 사례는 리뷰와 메뉴 등에서 LLM으로 �
 - [[LLM-Eval-Strategy|LLM 평가 전략]] — 좋은 답변 정의, G-Eval/RAGAS, LLM-as-judge
 - [[Production-Agent-Architecture|프로덕션 에이전트 아키텍처]] — 에이전트 위임의 신뢰 설계, 운영 루프
 - [[RAG-Retrieval-Engineering|RAG 검색 엔지니어링]] — 리트리벌, 청킹, 적용 범위 메타데이터, 구조화 조회, 근거 추적
+- [[Bedrock-Knowledge-Base-Retrieval|Bedrock 지식 베이스 조회]] — 검색 유형, 재순위, 질의 분해와 프롬프트 템플릿
 - [[Eval-LLM-Judge|LLM 판정기]] — 판정기 교정과 버전
 - [[LLM-Gateway|LLM 게이트웨이]] — 호출 귀속과 비용 추적
 - [[Customer-Support-Operations-Metrics|고객 지원 운영 지표]] — 해결 조건, 재문의, 자동화와 인계 구분

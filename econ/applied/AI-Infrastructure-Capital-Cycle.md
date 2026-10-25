@@ -57,7 +57,21 @@ IEA는 하드웨어와 소프트웨어 효율, AI 도입과 에너지 부문 병
 
 **사례 (Tesla 2026년 2분기 Form 10-Q, 2026-10-22 대조):** 2026년 상반기 설비투자는 82억 8,000만 달러로, 전년 동기 38억 9,000만 달러보다 늘었다. 공시는 지출 용도를 글로벌 AI와 운영 인프라, 공장 확장, 기계와 장비로 설명하며 제조 범위를 반도체와 태양광으로 넓히고 있다고 밝혔다. 이는 반도체 투자의 방향과 여러 용도가 합쳐진 지출의 근거다. 이 집계만으로 특정 EUV 장비의 계약 상대, 지급액, 납기나 우선 배정을 확인할 수는 없다.
 
+**분기 단독 수치 (Tesla Q3 2026 Update, 2026-10-21 제출 Form 8-K 첨부 99.1, 2026-10-26 대조):** 2026년 2분기 설비투자는 57억 8,900만 달러로 영업현금흐름 46억 9,700만 달러보다 많아 잉여현금흐름이 -10억 9,200만 달러였다. 3분기에는 설비투자 47억 3,200만 달러, 영업현금흐름 62억 6,300만 달러로 잉여현금흐름이 15억 3,100만 달러였다. 잉여현금흐름은 영업현금흐름에서 설비투자를 뺀 회사의 non-GAAP 지표다. 1분기 설비투자 24억 9,300만 달러와 2분기를 더하면 82억 8,200만 달러로 10-Q 상반기 현금흐름표의 금액과 같다(위 사례는 반올림 표기).
+
+같은 자료는 SI(Super Intelligence) 연산, 태양광, 배터리 소재와 반도체 제조 등 다년 인프라 계획의 용량 증설이 진행 중이라고 밝혔다. 반도체 제조시설인 Austin Fab은 건설을 이어 가는 단계이며, 회사는 2027년에 장비 시운전(commissioning)을 시작할 계획이다. 이 자료에는 생산 개시 시점이 없다. 2026-07-22 제출한 2분기 Update는 Austin 반도체 팹의 건설과 장비 조달이 진척됐고 프로젝트가 아직 초기 단계라고 밝혔다. 명칭상 Austin Fab과 같은 시설로 읽히지만 자료가 이를 명시하지는 않으며, 장비 종류, 공급사, 금액, 납기와 우선 배정도 적지 않았다. 2분기 Update는 2분기의 음(-)의 잉여현금흐름 11억 달러가 전 분기보다 33억 달러 늘어난 설비투자에서 비롯됐다고 설명했다. 설비투자는 여러 용도를 합친 총액이고 팹은 아직 건설 단계이므로, 이 음의 잉여현금흐름만으로 특정 EUV 장비의 발주나 우선 납품이 이뤄졌다고 판단하지 않는다.
+
 비교할 때 상반기 누적 현금흐름과 2분기 단독 현금흐름을 섞지 않는다. 설비투자 계획, 실제 지급과 생산 성과도 각각 기록한다. 수직계열화 계획은 기술 확보와 생산 수율의 검증 결과가 아니므로, 공장 투자 소식을 바로 경쟁사의 매출 감소나 투자 수익률로 연결하지 않는다.
+
+### 발표된 팹 계획의 주체와 단계를 나눈다
+
+발표, 인센티브 협약, 건설, 장비 시운전과 생산은 서로 다른 단계다. 2026-10-26 공식 자료를 부분 대조한 사례다.
+
+- **주지사실이 SpaceX 사업으로 발표한 Grimes County 시설:** Texas 주지사실은 2026-08-06 SpaceX가 Grimes County에 수직 통합 반도체 제조공장을 짓는다고 발표했다. Terafab 프로젝트 1단계는 168억 달러 이상의 자본투자와 신규 일자리 3,000개로 제시됐다. 발표는 생산 사슬을 한 지붕 아래 모은다고 설명하고, Musk의 인용문은 로직, 메모리와 첨단 패키징의 결합을 든다. SpaceX에는 성과 연동형 Texas Enterprise Fund(TEF) 보조금 3,000만 달러가 제시됐다. 시설은 JETI 프로그램 대상 사업이며, 발표에 인용된 Iola ISD 교육감의 말에 따르면 이사회가 JETI 법에 따른 협약 상대로 의결한 법인은 TeraFab AI, LLC다. 발표는 이 법인의 소유 구조를 밝히지 않는다.
+- **협력 주체와 조건:** Intel은 2026-04-23 1분기 실적 발표에서 SpaceX, xAI, Tesla와 함께 전략 파트너로 Terafab 프로젝트에 합류했다고 밝혔다. SpaceX가 기업공개 관련 자유서식 투자설명서(FWP)로 2026-06-04 제출한 자료의 위험 요인은 그 시점에 Terafab이 매우 초기 단계이며 SpaceX와 Tesla가 재무 조건, 지식재산권과 최종 협력 기간 등 여러 세부 사항을 확정하지 않았다고 적었다.
+- **Tesla가 밝힌 시작점과 목적:** 2026-04-22 제출한 1분기 Update는 SpaceX와의 협력이 로직, 메모리와 첨단 패키징을 수직 통합한 사상 최대의 칩 팹을 목표로 하며 Gigafactory Texas 부지의 Tesla 소유 Research Fab에서 시작한다고 밝혔다. 2026-10-19 제출한 위임장 설명서는 Austin Fab에서 시작해 생산 역량을 반도체 제조로 넓히기로 한 결정을 제품에 충분하고 회복력 있는 칩 공급의 확보에 도움이 되도록 하려는 것으로 설명한다. 같은 설명서의 주주서한은 Terafab 이니셔티브를 포함한 최근의 배터리와 칩 제조 투자가 핵심 부품의 공급 확보에 도움이 될 것이라고 적었다.
+
+**분석 기준:** Tesla는 Research Fab을 SpaceX와의 칩 팹 계획의 출발점으로 제시하지만, 소유, 투자액과 일정은 시설마다 다른 자료에 따로 나오며 일부는 대조한 자료에 나오지 않는다. Research Fab과 이후 자료의 Austin 반도체 팹, Austin Fab이 같은 시설이라는 점도 명칭과 맥락으로 짐작될 뿐 대조한 공시 자료에는 명시되지 않았다. 따라서 Tesla의 Austin 시설과 Grimes County 시설은 따로 기록하고, 투자액, 일정과 규모를 더하거나 한쪽의 진척을 다른 쪽의 근거로 쓰지 않는다. 대조한 범위에서는 Grimes County 시설의 소유 구조나 SpaceX, Tesla와 TeraFab AI, LLC 사이의 비용 분담이 드러나지 않으므로 1단계 투자액을 어느 한 회사의 투자로 귀속하지 않는다. Tesla의 largest chip fab ever, SpaceX FWP의 world's largest chip manufacturing facility와 주지사실 발표의 first-of-its-kind 같은 표현은 회사와 발표 주체의 주장으로 기록한다.
 
 ## 위험의 측정과 배분은 위험의 소멸이 아니다
 
@@ -124,7 +138,14 @@ State of AI의 인프라 절은 미국 4대 하이퍼스케일러의 2026년 설
 - [Allocating Risks — World Bank PPP Resource Center](https://ppp.worldbank.org/allocating-risks) — 위험 배분의 정의, 통제와 부담 능력, 과도한 이전의 조달비용, 2026-10-23 대조. AI 인프라 점검 질문은 적용 제안
 - [Energy and AI: Executive summary — IEA](https://www.iea.org/reports/energy-and-ai/executive-summary) — 2025년 보고서의 2024년 데이터센터 전력 소비 추정과 지역 비중, 2030년 Base Case 전망, 2026-10-23 대조
 - [Energy and AI: Energy demand from AI — IEA](https://www.iea.org/reports/energy-and-ai/energy-demand-from-ai) — 데이터센터의 전력 소비 구성, 지역 집중과 효율, 도입, 병목별 시나리오, 2026-10-23 대조
-- [Form 10-Q for the quarter ended June 30, 2026 — Tesla](https://www.sec.gov/Archives/edgar/data/1318605/000162828026049270/tsla-20260630.htm) — 2026-10-22 상반기 설비투자와 지출 용도, 반도체 제조 확대 설명 대조. 개별 장비 계약과 납기는 이 집계로 확인하지 않음
+- [Form 10-Q for the quarter ended June 30, 2026 — Tesla](https://www.sec.gov/Archives/edgar/data/1318605/000162828026049270/tsla-20260630.htm) — 2026-10-22 상반기 설비투자와 지출 용도, 반도체 제조 확대 설명 대조. 개별 장비 계약과 납기는 이 집계로 확인하지 않음. 상반기 설비투자 82억 8,200만 달러는 2026-10-26 재확인
+- [Q1 2026 Update, Form 8-K Exhibit 99.1 — Tesla](https://www.sec.gov/Archives/edgar/data/1318605/000162828026026551/exhibit991.htm) — 2026-04-22 제출 자료의 AI Inference Compute 항목에서 SpaceX와의 칩 팹 목표와 Tesla 소유 Research Fab에서의 시작을 2026-10-26 대조. 더 큰 팹의 소유, 자금 부담과 일정은 이 자료에 없음
+- [Q2 2026 Update, Form 8-K Exhibit 99.1 — Tesla](https://www.sec.gov/Archives/edgar/data/1318605/000162828026049213/exhibit991.htm) — 2026-07-22 제출 자료의 Austin 반도체 팹 건설과 장비 조달 진척, 초기 단계 설명과 음의 잉여현금흐름 원인을 2026-10-26 대조. 장비 종류, 공급사, 금액과 납기는 이 자료에 없음
+- [Q3 2026 Update, Form 8-K Exhibit 99.1 — Tesla](https://www.sec.gov/Archives/edgar/data/1318605/000162828026066738/exhibit9914.htm) — 2026-10-21 제출 자료의 1~3분기 설비투자, 영업현금흐름과 잉여현금흐름 정의, Austin Fab 건설과 2027년 장비 시운전 계획을 2026-10-26 대조
+- [Proxy Statement For 2026 Annual Meeting of Shareholders — Tesla](https://www.sec.gov/Archives/edgar/data/1318605/000110465926116700/tm267596-1_def14a.htm) — 2026-10-19 제출 DEF 14A의 Austin Fab 반도체 제조 목적과 Terafab 이니셔티브 설명, 2026-10-26 대조
+- [Governor Abbott Announces SpaceX Expansion In Grimes County — Office of the Texas Governor](https://gov.texas.gov/news/post/governor-abbott-announces-spacex-expansion-in-grimes-county) — 2026-08-06 발표의 시설 성격, 1단계의 투자액과 일자리, TEF 보조금과 JETI 협약 상대를 2026-10-26 대조. 투자 집행과 착공, 협약 상대 법인의 소유 구조는 확인하지 않음
+- [Intel Reports First-Quarter 2026 Financial Results — Intel](https://www.sec.gov/Archives/edgar/data/50863/000005086326000077/q126earningsrelease.htm) — 2026-04-23 Form 8-K 첨부 99.1의 Terafab 전략 파트너 합류 문장, 2026-10-26 대조
+- [Free Writing Prospectus, 2026-06-04 — SpaceX](https://www.sec.gov/Archives/edgar/data/1181412/000162828026040610/spacexfwp.htm) — 기업공개 관련 표지, Tesla와의 Terafab 협력 설명, 위험 요인의 초기 단계와 미확정 협력 조건을 2026-10-26 대조
 - [CoreWeave Continues to Contract New Compute Capacity at Higher Prices — CoreWeave](https://investors.coreweave.com/news/news-details/2026/CoreWeave-Continues-to-Contract-New-Compute-Capacity-at-Higher-Prices/default.aspx) — 단기 계약의 MW당 연환산 매출 정의, 2026-10-22 대조
 - [CoreWeave Reports Strong Second Quarter 2026 Results — CoreWeave](https://investors.coreweave.com/news/news-details/2026/CoreWeave-Reports-Strong-Second-Quarter-2026-Results/) — revenue backlog의 구성과 이행 조건, 2026-10-22 대조
 - [Use open weight models as your AI coding agent with Amazon Bedrock — AWS](https://aws.amazon.com/blogs/machine-learning/use-open-weight-models-as-your-ai-coding-agent-with-amazon-bedrock/) — 자체 GPU 조달 없는 관리형 이용 경로, 2026-10-22 대조

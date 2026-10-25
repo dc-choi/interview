@@ -14,7 +14,9 @@ aliases: ["Pipeline Builder 스키마, 품질과 안정적인 식별자"]
 
 Schema가 있는 dataset은 tabular로 읽으므로 Excel/raw-file parser가 검색에 나타나지 않을 수 있다. Schema-less file input을 사용하고 parser의 형식/오류 모드를 확인한다. PB 안의 source 생성은 mandatory field만 필요한 Foundry-worker source와 batch sync의 제한된 경로다. Optional/고급 설정과 반복 ingest는 Data Connection에서 관리한다.
 
-Manually entered table은 batch용이며 Faster 입력은 지원하지 않는다고 명시한다. Notional data는 1~1,000 row, LLM preview는 최대 10 row이며 Generate table은 lock하지 않은 기존 값을 덮어쓴다. Synthetic 예시를 실제 관측값이나 품질의 근거로 쓰지 않는다.
+datasets-add는 Manually entered table을 batch pipeline의 입력으로만 지원하고 faster pipeline과 호환되지 않는다고 명시한다. Notional data는 1~1,000 row, LLM preview는 최대 10 row이며 Generate table은 lock하지 않은 기존 값을 덮어쓴다. Synthetic 예시를 실제 관측값이나 품질의 근거로 쓰지 않는다.
+
+functions index(2026-10-24 수집본)와 transform 상세(2026-10-26 대조)는 Manually entered table transform을 Batch, Faster, Streaming으로 표시한다. datasets-generated(2026-10-26 대조)는 CBAC stack의 faster(lightweight) pipeline에서 manually-entered dataset과 notional data generation을 쓸 수 없다고 적고 standard(Spark) pipeline을 권하며, CBAC가 아닌 stack의 Faster 지원은 언급하지 않는다. 두 설명은 datasets-add의 batch 전용 설명과 대상, 범위가 서로 달라 어느 쪽으로도 확정하지 않으며 input node, transform과 stack별 지원을 실제 환경에서 확인한다.
 
 일반 Union board는 같은 schema를 요구하고 duplicates를 보존한다. Reference의 narrow/first/wide union은 각각 교집합/첫 dataset/합집합 column 규칙을 가진 별도 함수다. Join은 중복 key에서 행을 늘릴 수 있고 KNN reference 예시는 tie로 k보다 많은 row를 반환한다. 함수별 cardinality를 확인한다. Split은 Spark/Faster의 단일 table에만 지원하며 overview는 만족하지 않는 모든 row를 False로 보낸다고 설명하지만 상세는 true/false만 언급해 null 결과를 따로 확인해야 한다.
 
@@ -52,6 +54,7 @@ Random UUID/number를 hash해도 build와 preview 사이에서 ID는 달라진�
 - [Palantir Pipeline Builder, datasets-overview](https://www.palantir.com/docs/foundry/pipeline-builder/datasets-overview)
 - [Palantir Pipeline Builder, datasets-sources](https://www.palantir.com/docs/foundry/pipeline-builder/datasets-sources)
 - [Palantir Pipeline Builder, functions-index](https://www.palantir.com/docs/foundry/pipeline-builder/functions-index)
+- [Palantir Pipeline Builder, manuallyEnteredTableV1](https://www.palantir.com/docs/foundry/pb-functions-transform/manuallyEnteredTableV1)
 - [Palantir Pipeline Builder, null-handling](https://www.palantir.com/docs/foundry/pipeline-builder/null-handling)
 - [Palantir Pipeline Builder, transforms-join-data](https://www.palantir.com/docs/foundry/pipeline-builder/transforms-join-data)
 - [Palantir Pipeline Builder, transforms-overview](https://www.palantir.com/docs/foundry/pipeline-builder/transforms-overview)

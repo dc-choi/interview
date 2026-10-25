@@ -11,11 +11,11 @@ aliases: ["Version Control", "버전 관리"]
 
 ## 문서
 
-- [[Server-Centric-Version-Control|서버 중심 버전 관리]] — Scion과 모노레포 조회/체크아웃
+- [[Server-Centric-Version-Control|서버 중심 버전 관리]] — Scion, 모노레포 조회/체크아웃, 병합 뒤와 배포 전 검사
 
 - [[Version-Control-Tooling|버전 관리 도구 선택 (VCS, 호스팅, 클라이언트, 브랜치 전략)]]
 - [[Git-Flow|브랜치 전략 (GitHub Flow, Git Flow, Trunk-Based)]]
-- [[Development-Workflow|개발 워크플로 (Issue, Branch, PR, Merge, Fork, Conventional Commits)]]
+- [[Development-Workflow|개발 워크플로 (Issue, Branch, PR, Merge, Merge queue, Fork, Conventional Commits)]]
 - [[GitHub-Repository-Operations|GitHub 저장소 운영 (remote, 새 원격 연결, 원격 브랜치, push 거절과 fetch 검토, PR, Projects, Pages, gh)]]
   - [[GitHub-Repository-Operations-Auth-and-Signing|GitHub 인증과 커밋 서명 (PAT, GCM, SSH 키와 host key, GPG/SSH 서명)]]
 - [[git|Git 폴더 인덱스 (멘탈 모델, 커밋, 통합, 복구, 디버깅, worktree, hooks)]]
