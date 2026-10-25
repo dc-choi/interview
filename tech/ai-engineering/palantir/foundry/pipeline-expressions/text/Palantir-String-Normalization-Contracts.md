@@ -41,7 +41,11 @@ category: "AI엔지니어링(AIEngineering)"
 
 `soundexV1`은 발음 기반 코드이므로 서로 다른 단어가 같은 코드가 된다. 식별자나 동일성 판정에 단독 사용하지 않는다. `sha256V1`은 String/Binary의 SHA-256 문자열을 반환한다. 여러 필드를 해시한다면 값의 구분, null 처리와 정규화를 먼저 정의해야 한다.
 
-`uuidV1`은 UUID v4를 생성하며 반복 build에서 같은 값을 보장하지 않는다. `uuidV5V1`은 namespace와 name에 따른 결정적 UUID를 만든다. 잘못된 namespace나 null 입력은 null이다. 고정 식별자에 사용할 때는 namespace와 name 구성 규칙도 유지해야 한다.
+`uuidV1`은 UUID v4를 생성하며 반복 build에서 같은 값을 보장하지 않는다. `uuidV5V1`은 namespace와 name에 따른 결정적 UUID를 만든다. 함수가 UUID로 해석하지 못한 namespace(예제의 `not-a-uuid`, 빈 문자열)나 null 입력은 null이며, 해석 범위는 아래 경계값 예제를 따른다. 고정 식별자에 사용할 때는 namespace와 name 구성 규칙도 유지해야 한다.
+
+2026-10-25 UUID v5 공식 문서 부분 대조 기준, 두 인자는 String 표현식이며 결과도 String이다. namespace UUID와 name을 SHA-1으로 해시한다. 표준 형태의 namespace에서 영문자의 대소문자만 바꾼 두 예제는 같은 결과를 낸다.
+
+다만 namespace 파싱 성공을 엄격한 UUID 표기 검증으로 사용하지 않는다. 공식 경계값 예제에서 `1-2-3-4-5`와 `+1-2-3-4-5`는 같은 결과를 내며, 표준 자릿수와 다른 구성요소(`123456789-1-1-1-1`, 0으로 채운 22자리 첫 구성요소)도 받아들인다. 반대로 하이픈을 뺀 32자리 표기, 중괄호로 감싼 표기와 `urn:uuid:` 접두사 표기는 null이다. 이는 문서에 실린 예제의 범위이며 모든 비표준 입력의 정규화 규칙을 보장하지 않는다. 적용 제안: 외부에서 namespace를 받는다면 허용할 표기와 오류 처리 방식을 별도로 정한다. Foundry에서의 실행 결과는 확인하지 않았다.
 
 `createQualifiedTimeSeriesIdV1`의 결과는 seriesId와 syncRid를 담은 문자열이다. null 입력이 전체 null이 되지 않고 문자열 `null`이 필드에 들어가는 예제가 있다. 생성된 문자열을 유효한 시계열 참조로 사용하기 전에 두 입력을 검증한다.
 
@@ -49,10 +53,11 @@ category: "AI엔지니어링(AIEngineering)"
 
 ## 엔진 지원
 
-Chunk, printf 형식, semantic version, UUID v5와 시계열 참조 생성은 Batch/Streaming으로 표시되어 있다. Soundex는 Batch/Faster이다. 이 문서의 나머지 함수는 Batch/Faster/Streaming 지원이다. 문자열 계열이라는 이유로 같은 실행 엔진에서 모두 사용할 수 있다고 가정하지 않는다.
+2026-10-25 재확인한 UUID v5는 Batch/Faster/Streaming 지원으로 표시되어 있다. 나머지 함수는 2026-10-16 대조 기준으로 Chunk, printf 형식, semantic version과 시계열 참조 생성이 Batch/Streaming, Soundex가 Batch/Faster이며 그 밖의 함수는 Batch/Faster/Streaming이다. 문자열 계열이라는 이유로 같은 실행 엔진에서 모두 사용할 수 있다고 가정하지 않는다. 다른 함수의 지원 상태를 이번에 재검증하지 않아 frontmatter의 `verified_at`은 유지한다.
 
 ## 출처
 
+- [Palantir, UUID V5](https://www.palantir.com/docs/foundry/pb-functions-expression/uuidV5V1) — 2026-10-25 인자, namespace 경계값 예제와 실행 엔진 지원 부분 대조.
 - [Palantir, Pipeline Builder expression reference](https://www.palantir.com/docs/foundry/pb-functions-expression/)
 - 각 계약의 함수별 공식 출처는 해당 본문에 연결했다.
 
@@ -61,3 +66,4 @@ Chunk, printf 형식, semantic version, UUID v5와 시계열 참조 생성은 Ba
 - [[Palantir-Regex-Expression-Contracts|정규식의 일치와 실패 값]]
 - [[Palantir-Type-and-Encoding-Contracts|타입과 인코딩]]
 - [[Palantir-Pipeline-Expressions|Pipeline Builder 표현식]]
+- [[Palantir-Pipeline-Schema-Quality-and-Identity|스키마, 품질과 안정적인 식별자]] — 자연 key로 UUID v5를 만드는 전제

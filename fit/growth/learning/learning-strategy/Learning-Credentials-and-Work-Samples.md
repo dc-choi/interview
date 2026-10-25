@@ -113,6 +113,18 @@ AWS Microcredentials는 제공된 AWS 환경에서 구성, 문제 해결과 최�
 
 교육 이후에 실습 결과를 활용할 업무와 피드백 경로가 없다면 그 연결부터 보완한다. 이 절은 과정 선택 기준이며 사용자의 새 학습 트랙이나 자격증 준비를 시작한다는 결정이 아니다.
 
+## 클라우드 학습을 운영 역량 증거로 바꾸기
+
+클라우드 기술을 순서대로 배웠다는 사실과 운영 문제를 해결할 수 있다는 증거는 구분한다. 2026-10-25 확인한 AWS Well-Architected의 운영 우수성 설계 원칙에는 관측 가능성, 안전한 자동화, 작고 되돌릴 수 있는 변경과 모의 실패 시험이 포함된다. 인프라를 코드로 만들었다는 사실만으로 이 범위를 모두 검증한 것은 아니다.
+
+다음은 그 원칙을 개인 작업물에 적용한 학습 제안이다. 특정 교육 단계의 취업률이나 소득 상승을 입증한 결과는 아니다.
+
+- **변경:** 작은 환경 변경의 코드와 검토 근거를 남기고, 실패했을 때 되돌릴 절차를 설명한다.
+- **자동화:** 반복 작업을 코드로 표현하면서 속도 제어(rate control), 오류 임계값과 승인처럼 필요한 안전장치를 정한다.
+- **관측과 복구:** 어떤 지표로 이상을 알아낼지 정하고, 통제된 실패 연습에서 관측한 현상과 복구 결과를 기록한다.
+
+목표 공고나 현재 업무에 필요한 한 작업으로 좁혀 수행하고, 실습에서 확인한 범위와 실제 운영 경험을 구분한다. 이 예시는 사용자의 새 학습 트랙을 시작한다는 결정이 아니다. DevOps 트랙을 고른 경우의 실습 순서와 통과 조건은 [[2027-DevOps-Practical-Roadmap|2027 DevOps 실전 로드맵]]을 따른다. 다른 절의 가격과 유지 조건은 다시 대조하지 않아 기존 `verified_at`을 유지한다.
+
 ## 유료 피드백과 멘토링을 검토할 때
 
 강의, 문서와 공개 영상은 무료로도 많이 구할 수 있다. 무료 자료로 대체하기 어려운 것은 내 코드, 이력서와 상황을 직접 보고 빠진 부분을 짚어 주는 개인화된 피드백이다. 유료 멘토링이나 코칭을 검토할 때는 콘텐츠의 양보다 피드백의 구조를 비교한다. 아래는 비교 질문이며 특정 서비스의 효과를 보장하는 기준이 아니다.
@@ -131,6 +143,7 @@ AWS Microcredentials는 제공된 AWS 환경에서 구성, 문제 해결과 최�
 
 ## 출처
 
+- [AWS, Well-Architected Framework, Operational excellence design principles](https://docs.aws.amazon.com/wellarchitected/latest/framework/oe-design-principles.html) — 2026-10-25 운영 우수성 설계 원칙 부분 대조. 개인 작업물의 확인 항목은 이를 적용한 학습 제안.
 - [Microcredentials from AWS are now free—Here’s why that matters — AWS Training and Certification Blog](https://aws.amazon.com/blogs/training-and-certification/microcredentials-from-aws-are-now-free-heres-why-that-matters/) — 2026-04-23 공개, 실습 평가와 구독 조건 변경.
 - [AWS, AWS Certification](https://aws.amazon.com/certification/) — 2026-10-22 microcredentials의 보완 역할과 구독 불필요 안내 확인.
 - [AWS, Training and Certification FAQs](https://aws.amazon.com/certification/faqs/) — 2026-10-22 Microcredential 절의 유효기간, 갱신과 재응시 조건 대조.
