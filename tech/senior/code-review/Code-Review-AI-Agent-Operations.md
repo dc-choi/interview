@@ -1,7 +1,7 @@
 ---
 tags: [senior, code-review, ai, agent, risk-tier, eval]
 status: done
-verified_at: 2026-10-25
+verified_at: 2026-10-26
 category: "Senior - 코드 리뷰"
 aliases: ["Code Review AI Agent Operations", "에이전트 시대 코드 리뷰 운영", "AI 코드 리뷰 운영 모델"]
 ---
@@ -16,13 +16,24 @@ AI가 작성한 변경도 요구사항, 호출부와 실패 조건에 대조해�
 
 2026-10-15 공개된 Claude Code 팀 사례에는 다음 운영 방식이 있다. 조직의 사례이며 다른 팀의 기본 정책이나 효과 보장은 아니다.
 
-- 자동 검사와 AI 리뷰에 보안 검토를 더하고, 위험 등급에 따라 사람 승인 수를 달리한다.
+- 자동 검사와 AI 리뷰에 보안 검토를 더하고, 위험 등급에 따라 사람 승인 수를 달리한다. 분류기가 변경을 읽어 등급을 정한다. 저위험(문서, 문구, 내부 전용 기능, 플래그 뒤에 기능을 더하기만 하는 변경)은 자동 리뷰와 보안 검사를 통과하면 사람 승인 없이, 일반 제품 변경과 캐싱, 자동 업데이트, 시스템 프롬프트 같은 민감 영역의 변경인 중위험은 한 명, 고위험은 두 명이 승인한다. 이런 가벼운 경로(글은 어느 등급까지인지 밝히지 않는다)는 주로 저장소를 소유한 팀인 저장소 신뢰 목록의 작성자에게만 열리고, 그 밖의 작성자는 두 번째 사람의 승인이 필요하다. 두 번째 분류기는 등급상 필요 없더라도 그 변경에 사람이 더 필요한지 다시 묻는다.
 - 에이전트 승인은 필요한 사람 승인을 대신하지 않는다.
 - 머지 큐에서 통합 결과를 검사하고 플래그, 단계적 배포와 롤백을 사용한다.
 - 리뷰 시간 절감과 함께 되돌림, 장애를 관찰한다.
 - 과거 사고 PR과 수정 기록을 리뷰어 평가에 쓰며, 문제가 없는 PR에서도 해로운 오탐을 점검한다.
-- 반복 검토에는 상한을 두고, 초기 검토 뒤에는 새 diff에 집중하며 같은 지적을 반복하지 않는다.
+- 리뷰 에이전트는 매일 밤 기존 코드도 검토해 오래된 버그를 찾는다.
+- 반복 검토에는 상한을 둬 세 라운드가 지나면 리뷰어가 작성자에게 접근 방식을 다시 생각하라고 요청한다. 초기 검토 뒤에는 새 diff에 집중하며 같은 지적을 반복하지 않는다.
 - 공개 당시 장애 지표에 따라 승인을 자동 강화하는 장치는 아직 없었다.
+
+## 사례의 공개 수치
+
+위 사례 글이 밝힌 사내 수치를 2026-10-26 원문과 대조했다. 팀의 자체 보고이며 원자료는 공개되지 않았다.
+
+- 글은 Claude가 Claude Code 자체 코드의 약 90%를 쓴다는 기존 발언을 전제로 리뷰 방식을 설명한다. Claude Code는 사내 모노레포와 분리된 별도 저장소다(모노레포의 병합 규모는 [[Server-Centric-Version-Control|서버 중심 버전 관리]]).
+- 2026년 6월부터 9월까지 Claude Code 코드베이스의 병합 PR은 두 배 넘게 늘었고 되돌려야 했던 PR 비율은 상대적으로 40% 넘게 줄었다. 글은 되돌림 비율의 변화만 밝히고 되돌림 건수와 장애 지표는 공개하지 않았으므로, 이 값만으로 되돌림 건수 자체가 줄었는지는 판단할 수 없다.
+- 2026-03-09 research preview 출시 글은 사내 거의 모든 PR에 Code Review를 돌리기 전에는 실질적인 리뷰 코멘트를 받은 PR이 16%였고 출시 시점에는 54%라고 밝혔다. 사례 글도 이 수치를 다시 인용했으며 비교 기간은 공개하지 않았다.
+- CLI PR 하나는 밤사이 리뷰와 수정을 50회 넘게 반복한 뒤 작성자가 멈췄다. 리뷰어가 반복해서 지적한 코드를 git blame으로 보니 약 59%는 리뷰어의 첫 검토 때부터 있던 코드였다(그 PR 하나의 수치인지는 밝히지 않았다). 수렴 조치(convergence changes) 전후의 사내 PR을 비교하면 한 번의 리뷰와 수정으로 통과한 비율은 65%에서 78%로, 다섯 라운드 이상이 필요한 비율은 8.9%에서 1.5%로, 통과까지의 평균 리뷰 횟수는 2.08에서 1.32로 바뀌었다. 비교 기간은 밝히지 않았다.
+- 작성자가 에이전트이면 사람은 몇 초 만에 넘길 사소한 지적도 커밋과 리뷰 한 라운드를 더 만든다. 그래서 리뷰어의 노이즈는 에이전트가 작성한 PR에서 비용이 더 크다.
 
 ## 제품의 발견과 저장소 승인 규칙
 
@@ -73,6 +84,7 @@ Quick, Standard, Deep은 검토 강도이며 Standard가 기본값이다. 조직
 ## 출처
 
 - [How the Claude Code team does code review — claude.dev, Addy Osmani, Morgan Westlee Lunt, Qing Wang](https://claude.dev/blog/solving-code-review-at-anthropic/)
+- [Bringing Code Review to Claude Code — claude.com](https://claude.com/resources/articles/code-review) — 2026-03-09 research preview 출시 글, 사내 도입 전후 16%와 54% 대조
 - [Claude Code 공식 문서, Code Review](https://code.claude.com/docs/en/code-review)
 - [GitHub 공식 문서, Approving a pull request with required reviews](https://docs.github.com/en/pull-requests/collaborating-with-pull-requests/reviewing-changes-in-pull-requests/approving-a-pull-request-with-required-reviews)
 - [GitHub 공식 문서, About protected branches](https://docs.github.com/en/repositories/configuring-branches-and-merges-in-your-repository/managing-protected-branches/about-protected-branches)
