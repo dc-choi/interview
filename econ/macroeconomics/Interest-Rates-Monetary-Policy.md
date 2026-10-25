@@ -66,7 +66,11 @@ COFIX의 공시 주기와 개별 대출의 금리 변경 주기도 구분한다.
 
 정책 발표를 읽을 때는 **이번 회의의 결정, 미래 경로에 관한 안내, 그 안내를 바꿀 경제 조건**을 나눠 적는다. 아래 점도표의 참가자별 전망도 위원회 차원의 정책 약속과 구분한다. 이 읽기 절차는 두 중앙은행의 설명을 적용한 학습 방법이다.
 
-확인 범위: 2026-10-16 ECB와 연준의 포워드 가이던스 설명을 대조했다. 다른 절의 정책금리와 전망 자료는 기존 확인 날짜를 유지한다.
+**2026년 연준 사례:** 2026-05-22 취임한 케빈 워시(Kevin Warsh) 연준 의장은 2026-08-28 잭슨홀 심포지엄 연설에서 금융위기 때 정례화된 포워드 가이던스가 평상시에는 제한된 역할에 그쳐야 한다고 말했다(limited and circumscribed). 연설이 든 이유 가운데에는 금리에 관한 사실상의 약속이 결정할 때의 판단 여지를 줄인다는 점과, 시장은 연준의 안내에, 연준은 시장 가격에 기대면 양쪽 모두 새 변화를 놓치기 쉽다는 점이 있다. 연설 끝에서는 기조 인플레이션이 목표를 향해 분명하고 충분히 빠르게 움직인다는 확신이 없으면 할 일이 남았다는 기준을 제시하고, 결정이 아니라 규율에 매인다고 말했다(committed to a discipline, not to a decision).
+
+성명의 경로 안내도 줄었다. 2026-06 회의 의사록에서 참가자 과반은 성명을 줄이는 이점을 언급했고, 위원들은 앞선 성명에 있던 향후 금리 결정 방향의 완화 편향 문구를 반복하지 않기로 합의했다. 2026-09-16 인상 성명(12대 0, 2023-07 이후 첫 인상)에도 다음 금리 경로에 관한 문장은 없다. 반면 같은 회의 의사록에는 대부분의 참가자가 연말까지 한 번 더 올리는 것이 적절할 것 같다고 평가했다는 기록이 있고, 점도표의 2026년 말 정책금리 중앙값도 6월 3.8%에서 4.1%로 높아졌다. 참가자들은 이후 결정이 새로 들어오는 정보에 달려 있다고 강조했다. 이 사례에서 성명에 없던 경로 정보는 의사록과 점도표에서 확인되므로, 위원회 결정과 참가자 견해를 나눠 읽는다.
+
+확인 범위: 2026-10-16 ECB와 연준의 포워드 가이던스 설명을 대조했다. 2026년 연준 사례는 2026-10-25 연준의 연설, 의장 소개, 성명, 의사록, 경제전망과 정책금리 변경 이력을 대조했다. 다른 절의 정책금리와 전망 자료는 기존 확인 날짜를 유지한다.
 
 ### 동결 결정과 다음 회의의 방향을 구분한다
 
@@ -159,7 +163,12 @@ COFIX의 공시 주기와 개별 대출의 금리 변경 주기도 구분한다.
 - [KB국민은행 — COFIX 금리](https://obank.kbstar.com/quics?page=C019206) — 2026-10-23 약정된 금리재산정주기의 적용 기준 대조
 - [ECB — What is forward guidance?](https://www.ecb.europa.eu/ecb-and-you/explainers/tell-me/html/what-is-forward_guidance.en.html) — 2026-10-16 정책 의향, 기대 경로와 신뢰 조건 대조
 - [Federal Reserve — What is forward guidance, and how is it used in the Federal Reserve's monetary policy?](https://www.federalreserve.gov/faqs/what-is-forward-guidance-how-is-it-used-in-the-federal-reserve-monetary-policy.htm) — 2026-10-16 현재 소비와 투자에 미치는 경로, 경제 조건에 따른 안내 변화 대조
-- [Federal Reserve — September 16, 2026: FOMC Projections materials, accessible version](https://www.federalreserve.gov/monetarypolicy/fomcprojtabl20260916.htm) — 2026-10-07 도입부, Table 1 주석과 Figure 2의 정의 대조. 위 점도표 절만 부분 검증
+- [Federal Reserve — In Our Time (Chairman Kevin Warsh, August 28, 2026)](https://www.federalreserve.gov/newsevents/speech/warsh20260828a.htm) — 2026-10-25 포워드 가이던스 평가, 시장과 연준의 상호 의존 문제와 물가 판단 기준 대조
+- [Federal Reserve — Kevin Warsh, Chairman](https://www.federalreserve.gov/aboutthefed/bios/board/warsh.htm) — 2026-10-25 의장 취임일(2026-05-22) 대조
+- [Federal Reserve — Minutes of the Federal Open Market Committee, June 16-17, 2026](https://www.federalreserve.gov/monetarypolicy/fomcminutes20260617.htm) — 2026-10-25 성명 축약 논의와 완화 편향 문구 미반복 합의 대조
+- [Federal Reserve — Minutes of the Federal Open Market Committee, September 15-16, 2026](https://www.federalreserve.gov/monetarypolicy/fomcminutes20260916.htm) — 2026-10-25 연말 추가 인상에 관한 참가자 평가와 향후 결정 조건 대조
+- [Federal Reserve — Open Market Operations](https://www.federalreserve.gov/monetarypolicy/openmarket.htm) — 2026-10-25 2023-07-27 인상 뒤 다음 인상이 표 기재일 2026-09-17의 25bp이고 그 사이는 인하뿐임을 대조
+- [Federal Reserve — September 16, 2026: FOMC Projections materials, accessible version](https://www.federalreserve.gov/monetarypolicy/fomcprojtabl20260916.htm) — 2026-10-07 도입부, Table 1 주석과 Figure 2의 정의 대조(점도표 절). 2026-10-25 Table 1의 2026년 말 정책금리 중앙값 4.1%와 6월 전망 3.8% 대조(포워드 가이던스 절)
 - [RBA — Monetary Policy: Forward Looking and Data Dependent in the Face of Uncertainty](https://www.rba.gov.au/speeches/2025/sp-ag-2025-03-18.html) — 2025-03-18 연설. 전달 경로, 시차와 데이터 의존 절을 2026-10-07 대조.
 - [Bank of England — Money creation in the modern economy](https://www.bankofengland.co.uk/quarterly-bulletin/2014/q1/money-creation-in-the-modern-economy)
 - [ECB — Key ECB interest rates](https://www.ecb.europa.eu/stats/policy_and_exchange_rates/key_ecb_interest_rates/html/index.en.html)
@@ -171,7 +180,7 @@ COFIX의 공시 주기와 개별 대출의 금리 변경 주기도 구분한다.
 - [Bank of Japan — Change in the Guideline for Money Market Operations (June 16, 2026)](https://www.boj.or.jp/en/mopo/mpmdeci/mpr_2026/k260616a.pdf) — 2026-10-11 1.0% 인상과 마이너스 실질금리 평가 대조
 - [Bank of Japan — Plan for the Outright Purchases of Japanese Government Bonds (June 16, 2026)](https://www.boj.or.jp/en/mopo/mpmdeci/mpr_2026/k260616b.pdf) — 2026-10-11 월 매입액 경로, 장기금리 급등 시 대응과 보유 국채 추산 대조
 - [Bank of Japan — Change in the Guideline for Money Market Operations (September 18, 2026)](https://www.boj.or.jp/en/mopo/mpmdeci/mpr_2026/k260918a.pdf) — 2026-10-11 1.25% 인상, 표결과 반대 사유, 실질금리, 엔화 약세와 환율 위험 평가 대조
-- [Federal Reserve — Federal Reserve issues FOMC statement (September 16, 2026)](https://www.federalreserve.gov/newsevents/pressreleases/monetary20260916a.htm) — 2026-10-11 목표 범위 3.75~4.00% 인상 대조
+- [Federal Reserve — Federal Reserve issues FOMC statement (September 16, 2026)](https://www.federalreserve.gov/newsevents/pressreleases/monetary20260916a.htm) — 2026-10-11 목표 범위 3.75~4.00% 인상 대조, 2026-10-25 12대 0 표결과 향후 금리 경로 문장이 없음을 대조
 - [IMF — Japan: Staff Concluding Statement of the 2026 Article IV Mission](https://www.imf.org/en/news/articles/2026/02/13/imf-cs-02172026-japan-staff-concluding-statement-of-the-2026-article-iv-mission) — 2026-02-17 발표. 2026-10-11 중립금리 평가와 정상화 권고 대조
 
 ## 관련 문서

@@ -1,7 +1,7 @@
 ---
 tags: [econ, investing, backtesting, ai-automation]
 status: done
-verified_at: 2026-09-30
+verified_at: 2026-10-25
 category: "Economics"
 aliases: ["백테스트의 함정", "Backtesting Pitfalls", "백테스트 과최적화", "Backtest Overfitting"]
 ---
@@ -29,6 +29,17 @@ AI 코딩 에이전트로 시세와 수급 데이터를 매일 스캔하고, 조
 - **시도 비용 하락은 과최적화 위험 상승과 같다.** 조건을 하나 더 붙여 다시 돌리는 비용이 거의 0이 되면 시도 횟수가 쉽게 늘고, 그중 가장 좋은 결과를 고르는 순간 데이터 스누핑이 된다.
 - **생성된 코드의 정합성은 따로 검증해야 한다.** 날짜 정렬, 시차 이동(shift), 상장폐지 종목 처리 같은 작은 실수가 곧바로 미래 정보 누수나 생존 편향으로 이어진다. 결과가 좋을수록 코드를 의심하는 편이 안전하다.
 - **분석 요약은 증거가 아니다.** 자동 생성된 코멘트나 요약은 입력 데이터와 가정 위에서만 의미가 있다.
+
+### 공개 데이터를 입력으로 쓸 때
+
+API 키 없이 공개 데이터를 모으는 스캔과 백테스트 스크립트도 원천마다 이용 조건과 요청 한도를 지키고 공개 시차를 반영해야 한다. 아래는 2026-10-25에 각 원천의 1차 자료와 대조한 내용이다.
+
+- **SEC EDGAR**: 스크립트 접근을 허용하되 필요한 자료만 받고 요청을 조절하라고 안내하며, 봇넷이나 사이트를 크롤링하는 자동 도구는 허용하지 않는다. 최대 요청 속도는 초당 10건이고, 요청 헤더의 User-Agent에 회사명과 관리자 이메일 같은 식별 정보를 선언하라고 한다. 회사별 공시 목록과 XBRL 재무 데이터는 data.sec.gov API로도 제공한다.
+- **미국 하원의 거래 공시**: STOCK Act에 따라 하원 의원 등 공시 의무자는 1,000달러를 넘는 대상 증권 거래를 거래 사실을 안 날부터 30일과 거래일부터 45일 중 이른 날까지 PTR(Periodic Transaction Report)로 보고해야 하고, 하원 서기(Clerk)는 의원 PTR을 제출 뒤 30일 안에 공개해야 한다. 금액은 정확한 값 대신 구간으로 적는다. 공개가 거래보다 수십 일 늦을 수 있으므로 실거래에서 따라갈 수 있는 것은 지연된 정보이고, 백테스트에서 거래일에 체결하면 이 지연을 지운 미래 정보 누수가 된다. 체결은 공개 시각 이후로 두고, 게시 시각을 직접 확인하지 못했다면 제출일에도 여유를 둔다. 하원 윤리위원회 안내는 이 보고서를 상업적 목적(대중에 배포하는 언론 제외)으로 얻거나 쓰는 것을 불법 용도로 들므로, 수집 결과로 서비스나 판매용 신호를 만들려면 이 조건부터 확인한다.
+- **Yahoo Finance 데이터**: 비공식 라이브러리 yfinance는 Yahoo와 제휴하거나 Yahoo의 보증과 검토를 받은 도구가 아니며 연구와 교육 목적이라고 밝히고, 데이터 이용 권리는 Yahoo 이용약관을 확인하라며 Yahoo Finance API가 개인 용도를 위한 것이라고 덧붙인다. 이 약관은 목적과 관계없이 명시적 사전 허가 없이 자동화 수단으로 데이터에 접근하거나 수집하는 것, 제공한 인터페이스와 안내 밖의 방법으로 접근하는 것, 별도로 명시하지 않은 상업적 이용을 금지하므로 자동 수집 전에 허가 여부와 이용 목적을 확인한다.
+- **나스닥 트레이더 심볼 디렉터리**: 상장 종목 목록 파일을 하루 동안 주기적으로 갱신하고 마지막 행에 파일 생성 시각을 남긴다. 받은 날의 목록을 과거 구간의 종목 집합으로 쓰면 그 사이 상장폐지되거나 합병된 종목이 빠져 생존 편향이 생긴다.
+
+사례: 이 네 원천을 표준 라이브러리 파이썬으로 읽는 공개 Claude Code 스킬 모음의 README는 주문을 모의 계좌 기본값으로 두고, 위험 점검을 통과한 주문만 사용자가 채팅에서 승인해야 나가도록 설계했다고 밝힌다. 실제 주문 도구 호출은 에이전트가 지침을 따르는 데 기대므로 브로커 도구 권한을 승인 필요(Needs approval)로 두라고 안내하며, Yahoo 차트 엔드포인트가 공식 API가 아니어서 지연, 변경, 호출 제한이 생길 수 있다는 점도 밝힌다. 이 저장소의 Yahoo 자동 수집도 위 약관의 확인 대상이다.
 
 ## 3. 결과를 부풀리는 주요 편향
 
@@ -94,6 +105,7 @@ AI 코딩 에이전트로 시세와 수급 데이터를 매일 스캔하고, 조
 - [ ] 가설을 데이터를 보기 전에 한 문장으로 적었는가
 - [ ] 지금까지 시도한 조건과 매개변수 조합 수를 기록하고 있는가
 - [ ] 모든 입력 데이터의 공개 시각과 체결 시각의 순서를 확인했는가
+- [ ] 데이터 원천마다 이용 조건과 요청 속도 한도를 확인했는가
 - [ ] 상장폐지와 합병 종목이 포함된 시점별 종목 집합을 썼는가
 - [ ] 수수료, 세금, 스프레드, 슬리피지를 보수적으로 반영했는가
 - [ ] 시장 지수나 무작위 선택 같은 기준과 비교했는가
@@ -122,6 +134,13 @@ AI 코딩 에이전트로 시세와 수급 데이터를 매일 스캔하고, 조
 - [증권사 API 투자 자동화 구축 사례 — Threads, junyoung.ai](https://www.threads.com/@junyoung.ai/post/DbYA0I2EWdQ)
 - [ProShares, Ultra QQQ (QLD)](https://www.proshares.com/our-etfs/leveraged-and-inverse/qld)
 - [최저임금으로 QLD와 SCHD 40년 적립 시뮬레이션 — Threads, meta_93ch](https://www.threads.com/@meta_93ch/post/DMXpP9Wzc2B)
+- [SEC, Accessing EDGAR Data](https://www.sec.gov/search-filings/edgar-search-assistance/accessing-edgar-data) — 2026-10-25 최대 요청 속도, User-Agent 선언과 요청 조절 안내 대조
+- [SEC, Webmaster Frequently Asked Questions](https://www.sec.gov/about/webmaster-frequently-asked-questions) — 2026-10-25 스크립트 접근 허용과 data.sec.gov API 대조
+- [House Committee on Ethics, 2026 Instruction Guide: Financial Disclosure Reports for Calendar Year 2025 and Periodic Transaction Reports](https://ethics.house.gov/wp-content/uploads/2026/07/7-8-2026-2025-Published-Instruction-Guide.pdf) — 2026-10-25 PTR 대상과 제출 기한, 금액 구간, 공개 기한과 불법 용도 대조
+- [Yahoo, Terms of Service](https://legal.yahoo.com/us/en/yahoo/terms/otos/index.html) — 2026-10-25 2(d) 자동화 수단의 데이터 수집, 2(e) 접근 방법과 상업적 이용 조항 대조. 약관 갱신일 2026-08-04
+- [Nasdaq Trader, Symbol Directory Definitions](https://www.nasdaqtrader.com/trader.aspx?id=symboldirdefs) — 2026-10-25 갱신 주기와 파일 생성 시각 대조
+- [yfinance — GitHub, ranaroussi](https://github.com/ranaroussi/yfinance) — 2026-10-25 README의 Yahoo 비제휴, 연구와 교육 목적, 이용약관 확인 안내 대조
+- [day-trader-skill — GitHub, Jakeschincariol](https://github.com/Jakeschincariol/day-trader-skill) — 2026-10-25 README와 스캐너, PTR 스크립트의 데이터 원천, 모의 계좌 기본값과 주문 승인 대조
 
 ## 관련 문서
 

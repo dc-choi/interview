@@ -1,7 +1,7 @@
 ---
 tags: [palantir, foundry, data-integration, multimodal, mlops]
 status: done
-verified_at: 2026-10-16
+verified_at: 2026-10-25
 category: "AI엔지니어링(AIEngineering)"
 aliases: ["Palantir 데이터와 모델 통합", "Multimodal Data Plane"]
 ---
@@ -10,7 +10,7 @@ aliases: ["Palantir 데이터와 모델 통합", "Multimodal Data Plane"]
 
 데이터 통합은 원천의 데이터를 분석과 운영에 쓸 수 있게 연결하고 변환하는 과정이다. 모델 통합은 추론 로직과 실행 계약을 같은 업무 흐름에 넣는 과정이다. Ontology는 이 자산을 업무 객체와 행동에 연결한다. 객체 개념 자체는 [[Ontology-Knowledge-Graph|온톨로지와 지식 그래프]]에서 다룬다.
 
-2026-10-16 공식 문서 대조 기준이며 실제 Foundry 환경에서 연결, 추론이나 권한을 시험한 기록은 아니다.
+2026-10-16 공식 문서 대조 기준이다. Data integration, Model integration과 외부 모델 연결 문서에 근거한 내용은 2026-10-25에 다시 대조했고, Connecting to data와 Virtual tables 근거 내용은 같은 날 대조해 추가했다. 실제 Foundry 환경에서 연결, 추론이나 권한을 시험한 기록은 아니다.
 
 ## 데이터, 연산과 업무 의미를 분리한다
 
@@ -30,6 +30,8 @@ Multimodal Data Plane(MMDP)은 저장 형식, 연산 엔진과 모델을 하나�
 ## 연결과 변환은 운영 계약까지 포함한다
 
 Foundry 데이터 연결은 구조화, 반구조화와 비구조화 원천 및 batch, micro-batch와 streaming 방식을 다룬다. 변환 단계에는 버전 계보, 보안, 스케줄, 변경 관리와 품질 관리가 연결된다. 파이프라인을 만들 수 있다는 사실과 운영 배포를 허용하는 조건은 별개다. 필요한 health check와 release 절차를 구성하고, 실패 시 진단과 재처리 지점을 정한다. ([Data integration](https://www.palantir.com/docs/foundry/data-integration/overview))
+
+Sync metadata를 실제 sync 정의와 독립적으로 관리할 수 있어 새 sync 구성도 branch로 나눌 수 있다. 새 sync는 downstream 변환 job에 영향을 주기 전에 branch에서 격리해 시험할 수 있다. 이 branch 설명은 sync 구성에 관한 것이며, virtual table은 dataset versioning과 branching 같은 Foundry dataset 기능을 쓰지 않는다. Data integration 개요는 release 검사에서 찾은 불일치의 진단을 Foundry의 분석과 모델링 도구뿐 아니라 REST API 등으로 출력을 읽는 제3자 도구에도 제공한다고 설명한다. 진단 항목과 노출 인터페이스는 사용할 API의 계약으로 확인하며, check 정의와 report의 Platform API는 [[Palantir-Data-Health-API]]에서 다룬다. ([Data integration](https://www.palantir.com/docs/foundry/data-integration/overview), [Connecting to data](https://www.palantir.com/docs/foundry/data-integration/connecting-to-data), [Virtual tables](https://www.palantir.com/docs/foundry/data-integration/virtual-tables))
 
 예를 들어 설비 센서 값, 정비 문서와 고장 예측을 함께 쓸 때는 센서 유입 주기, 문서 버전과 예측 기준 시각을 맞춰야 한다. 이 예시는 설계 적용이며 특정 워크플로우의 성능 보장이 아니다.
 
@@ -52,6 +54,8 @@ Media Set은 공통 schema의 파일 collection이며 transactional과 transacti
 
 Foundry 모델은 머신러닝 로직을 담는 자산이며 파이프라인, Ontology와 앱에서 사용한다. 플랫폼 안에서 학습하거나 외부 파일, 라이브러리, 컨테이너와 API를 연결할 수 있다. Modeling Objective는 특정 문제의 모델 후보 평가, 검토, release와 배포를 관리하는 단위다. 등록과 배포 관리가 특정 업무의 품질을 대신 입증하지는 않는다. ([Model integration](https://www.palantir.com/docs/foundry/model-integration/overview))
 
+Model integration 개요는 모델 생성과 소비의 각 단계를 lineage, 보안, 버전, 재현성과 감사에 관한 플랫폼 보장 대상으로 설명한다. Modeling Objective도 UI 외에 거버넌스와 권한 계층, 후보 모델의 균일한 평가 같은 자동화 계층, 무중단 연속 배포를 위한 CI/CD 계층을 갖춘 단위로 설명된다. 외부 호스팅 모델은 Foundry 밖에서 실행되므로 응답까지 같은 수준으로 재현된다고 가정하지 않는다. 연속, 무중단 배포 설명도 자신이 구성한 live deployment의 가용성 시험이나, batch deployment를 쓰는 경우 새 release 뒤 output 재생성 확인을 대신하지 않는다([[Palantir-Model-Deployment-and-Monitoring]]). 자동 평가의 호환 범위와 check의 실제 강제 범위는 [[Palantir-Objective-Automatic-Evaluation]]과 [[Palantir-Model-Objective-Governance]]에서 확인한다. ([Model integration](https://www.palantir.com/docs/foundry/model-integration/overview))
+
 모델을 통합할 때는 다음 둘을 나눈다. ([Model adapters](https://www.palantir.com/docs/foundry/integrate-models/model-adapter-overview))
 
 - Artifact: 가중치, 파라미터, 파일, 컨테이너나 외부 연결 자격 증명 등 실행 대상.
@@ -71,7 +75,7 @@ Vision extraction의 document input은 PDF를 page로 분할하고 image 변환/
 
 외부 모델을 Foundry 모델로 감싸면 모델 버전, lineage, 권한과 Modeling Objective 관리에 연결할 수 있다. 다만 일반 목적 LLM이나 별도 모델 관리가 필요 없는 호출은 Data Connection source와 egress policy를 통해 직접 API를 호출하거나 AIP 모델 등록을 선택할 수 있다. ([Externally hosted models](https://www.palantir.com/docs/foundry/integrate-models/external-model-connection))
 
-2026-10-16 기준 externally hosted model의 `Batch deployment`는 지원되지 않는다. 외부 모델을 호출하는 Python transform 경로와 구분한다. 연결에는 접속 정보, adapter와 허용된 egress policy가 필요하다. 일반 connection configuration은 암호화되지 않고 모델 메타데이터에 노출될 수 있으므로 비밀값은 encrypted credentials configuration에 둔다.
+2026-10-25 다시 확인한 기준으로 externally hosted model은 `Batch deployment`와 Modeling Objective의 자동 모델 평가를 지원하지 않는다. 외부 모델을 호출하는 Python transform 경로와 구분한다. 연결에는 접속 정보, adapter와 허용된 egress policy가 필요하다. 일반 connection configuration은 암호화되지 않고 모델 메타데이터에 노출될 수 있으므로 비밀값은 encrypted credentials configuration에 둔다.
 
 모델 접근자는 자신의 외부 모델 계정 권한과 무관하게 등록된 자격 증명으로 추론할 수 있다. 따라서 외부 계정의 권한을 그대로 사용자별로 보존한다고 가정하지 않고, Foundry 모델 공유 범위를 권한 위임으로 검토한다.
 
@@ -87,6 +91,8 @@ Vision extraction의 document input은 PDF를 page로 분할하고 image 변환/
 ## 출처
 
 - [Palantir, Data connectivity and integration](https://www.palantir.com/docs/foundry/data-integration/overview)
+- [Palantir, Connecting to data](https://www.palantir.com/docs/foundry/data-integration/connecting-to-data)
+- [Palantir, Virtual tables](https://www.palantir.com/docs/foundry/data-integration/virtual-tables)
 - [Palantir, Multimodal Data Plane](https://www.palantir.com/docs/foundry/architecture-center/multimodal-data-plane)
 - [Palantir, Virtual media sets](https://www.palantir.com/docs/foundry/media-sets-advanced-formats/virtual-media-sets)
 - [Palantir, Model connectivity and development](https://www.palantir.com/docs/foundry/model-integration/overview)
