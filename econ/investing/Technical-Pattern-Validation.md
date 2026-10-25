@@ -7,7 +7,7 @@ aliases: ["캔들과 차트 패턴의 검증", "Technical Pattern Validation"]
 
 # 캔들과 차트 패턴의 검증
 
-차트 패턴의 이름, 패턴이 완성됐다는 판정, 매매 후 수익은 서로 다른 정보다. 모양을 알아보는 능력만으로 비용을 뺀 투자 성과를 입증할 수 없다. 이 문서는 2026-10-22 확인한 거래소 교육 자료와 연구 초록을 바탕으로 판독과 성과 검증의 경계를 정리한다.
+차트 패턴의 이름, 패턴이 완성됐다는 판정, 매매 후 수익은 서로 다른 정보다. 모양을 알아보는 능력만으로 비용을 뺀 투자 성과를 입증할 수 없다. 이 문서는 2026-10-22 확인한 거래소 교육 자료와 연구 초록에서 출발해 판독과 성과 검증의 경계를 정리하고, 뒤에 더한 절은 절마다 확인일과 자료를 밝힌다.
 
 ## 캔들에 들어 있는 정보
 
@@ -26,6 +26,21 @@ aliases: ["캔들과 차트 패턴의 검증", "Technical Pattern Validation"]
 | 삼중 천정 | 비슷한 수준의 고점을 세 번 형성 | 고점 사이의 저점 아래로 내려가는지 확인한다. 두 번째 고점에서 끝날지 세 번째까지 갈지는 사전에 확정되지 않는다 |
 
 패턴은 진행 중일 때보다 지나간 차트에서 찾기 쉽다. 검증에서는 패턴을 확정할 수 있었던 시점과 실제 주문 가능 시점을 분리한다. 사후에 완성된 모양을 과거 시점의 신호로 사용하면 [[Backtesting-Pitfalls|미래 정보 누수]]가 된다.
+
+### 앞선 추세에 따라 이름이 바뀌는 캔들
+
+CandleCharts의 분류에서 몸통이 작고 한쪽 꼬리가 긴 캔들은 모양이 같아도 앞선 추세에 따라 다른 이름과 방향 해석을 받는다. 아래 표는 2026-10-25 CandleCharts 교육 페이지와 Fidelity 교육 자료로 대조한 판독 관행이며, 예측 규칙이나 승률이 아니다.
+
+| 모양 | 하락 추세 뒤 | 상승 추세 뒤 |
+|---|---|---|
+| 작은 몸통이 고가와 저가 범위의 위쪽에 있고, 아래꼬리가 길며 위꼬리는 거의 없음 | 해머(Hammer), 강세 해석 | 교수형(Hanging Man), 약세 해석 |
+| 작은 몸통이 고가와 저가 범위의 아래쪽에 있고, 위꼬리가 길며 아래꼬리는 거의 없음 | 역해머(Inverted Hammer), 강세 해석 | 유성형(Shooting Star), 약세 해석 |
+
+모양만으로 판정을 끝내지 않는다. CandleCharts에서 표의 네 캔들 중 캔들별 확인 문장이 있는 것은 교수형과 역해머뿐이다. 교수형은 다음 봉이 교수형 몸통 아래에서 시작하는 약세 확인을 요구하고, 몸통 아래에서 마감하면 더 나은 확인으로 본다. 역해머는 다음 봉이 역해머 종가보다 높게 시작하고 특히 높게 마감하는 확인이 있을 때 강세 반전 신호로 본다. 해머와 유성형에 대해서는 캔들별 확인 문장을 찾지 못했고, 확인한 자료 중에는 캔들 패턴으로 보이는 모양이 완성되고 특정 방향의 돌파로 활성화되기 전에는 행동하지 않도록 주의하라는 Fidelity 웨비나 자료의 일반 원칙만 남는다. 백테스트에서는 신호로 쓸 수 있는 시점을 해당 캔들의 마감이 아니라 정해 둔 확인 조건을 판정할 수 있는 시점으로 둔다.
+
+세부 기준도 자료마다 다르다. CandleCharts는 해머와 교수형의 몸통 색을 흰색과 검은색 모두 허용하고, 아래꼬리는 전형적인 해머에서 몸통 높이의 2배 이상, 교수형에서 원칙적으로 2배에서 3배로 제시한다. Fidelity 웨비나 자료는 두 캔들을 몸통 색으로 구분한다. 확인한 자료 중 앞선 추세를 판정하는 기간이나 수치 기준을 정한 곳은 없으므로, 검증 전에 추세 판정 규칙, 꼬리 비율, 색 조건과 확인 규칙을 고정한다.
+
+강세, 약세라는 분류도 검증된 방향이 아니다. Fidelity의 ETP 차트 도움말은 Recognia가 식별하는 이벤트 중 해머와 역해머를 강세, 교수형과 유성형을 약세로 나열한다. Fidelity의 2020년 웨비나 자료는 기술적 분석 교재를 인용해 교수형이 어느 방향으로든 무작위로 돌파되고 약간의 상승 편향이 있다고 설명한다. 해당 슬라이드는 표본, 기간과 성공 기준을 제시하지 않으므로 어느 쪽도 아래 성과 검증 질문을 거치기 전까지 매매 근거로 쓰지 않는다.
 
 ## 이동평균 교차와 투자 주체의 의도를 구분한다
 
@@ -54,12 +69,12 @@ Lo, Mamaysky와 Wang의 연구는 차트 모양을 주관적으로 고르는 문
 
 ## 후속 학습 범위
 
-여러 이름을 암기하기보다 정의와 검증 상태를 분리해 학습한다. 이 문서에서 구조와 확인 조건을 대조한 것은 위 표의 세 패턴이다. 다음 이름들은 추가 학습 후보이며 정의, 분류와 예측력을 검증했다는 뜻이 아니다.
+여러 이름을 암기하기보다 정의와 검증 상태를 분리해 학습한다. 이 문서에서 구조와 확인 조건을 대조한 것은 머리어깨, 이중 바닥, 삼중 천정, 교수형, 역해머이고, 해머와 유성형은 모양과 추세 조건만 대조했다. 네 캔들 모두 예측력과 비용 차감 후 성과는 검증하지 않았다. 다음 이름들은 추가 학습 후보이며 정의, 분류와 예측력을 검증했다는 뜻이 아니다.
 
-- 캔들 후보: 해머, 상승 장악형, 유성형, 하락 장악형, 샛별형, 석별형.
+- 캔들 후보: 상승 장악형, 하락 장악형, 샛별형, 석별형.
 - 여러 봉에 걸친 패턴 후보: 역 머리어깨, 울프 웨이브, 상승 깃발, 하락 삼각형, 하락 깃발.
 
-각 후보는 공개된 원저자 자료나 거래소 교육 자료에서 정의를 확인한 뒤 동일한 봉 단위와 진입, 청산 규칙으로 검토한다. 이번 정리는 14개 패턴 전체의 효과 검증이나 매수, 매도 신호 채택이 아니다.
+각 후보는 공개된 원저자 자료나 거래소 교육 자료에서 정의를 확인한 뒤 동일한 봉 단위와 진입, 청산 규칙으로 검토한다. 이번 정리는 위에 나온 패턴 전체의 효과 검증이나 매수, 매도 신호 채택이 아니다.
 
 ## 출처
 
@@ -69,6 +84,9 @@ Lo, Mamaysky와 Wang의 연구는 차트 모양을 주관적으로 고르는 문
 - [CME Group, Technical Analysis, Technical Patterns: Reversals](https://www.cmegroup.com/education/courses/technical-analysis/technical-patterns-reversals)
 - [Foundations of Technical Analysis: Computational Algorithms, Statistical Inference, and Empirical Implementation — NBER, Andrew W. Lo, Harry Mamaysky, Jiang Wang](https://www.nber.org/papers/w7613) — 공식 검색 반환의 초록 확인. 페이지 직접 조회는 403으로 실패했으며 논문 전체를 검증하지 않았다.
 - [Investor Bulletin: Performance Claims — SEC, Investor.gov](https://www.investor.gov/introduction-investing/general-resources/news-alerts/alerts-bulletins/investor-bulletins-47)
+- [CandleCharts, Candlestick Patterns](https://candlecharts.com/candlestick-training/candlestick-patterns) — 해머, 교수형, 역해머, 유성형의 모양, 추세 조건과 확인 문장만 확인했으며 페이지에 효과 통계는 없음
+- [Identifying Chart Patterns with Technical Analysis — Fidelity](https://www.fidelity.com/bin-public/060_www_fidelity_com/documents/learning-center/Idenitfying-Chart-Patterns.pdf) — 2020년 웨비나 자료의 캔들 일반 설명과 교수형, 해머, 유성형, 역해머 슬라이드만 확인. 성과 문장은 교재 인용이며 표본과 기간은 제시되지 않음
+- [Fidelity, ETP Advanced Chart & Technical Analysis Help](https://www.fidelity.com/help/research/etf/advancedChart.shtml) — Recognia 분류의 강세, 약세 이벤트 목록만 확인
 
 ## 관련 문서
 

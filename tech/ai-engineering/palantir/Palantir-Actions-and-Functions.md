@@ -34,7 +34,9 @@ Query의 읽기 전용 계약은 일반 함수 전체의 계약이 아니다. �
 4. 필요할 때 notification이나 webhook을 연결한다.
 5. 변경 반영과 외부 효과를 각각 관측한다.
 
-Action type은 한 번에 수행할 변경과 부수효과를 함께 정의한다. 같은 정의를 애플리케이션들이 공유할 수 있다는 점이 재사용의 단위다. [Action types](https://www.palantir.com/docs/foundry/action-types/overview)
+Action type은 한 번에 수행할 변경과 부수효과를 함께 정의한다. 같은 정의를 애플리케이션들이 공유할 수 있다는 점이 재사용의 단위다. 2026-10-25 확인한 개요 기준, 이를 적용한 Action 하나는 사용자 정의 로직으로 하나 이상의 객체를 바꾸는 단일 transaction이고, 제출로 commit된 객체, 속성과 링크의 변경은 사용자 애플리케이션 전반에 반영된다. [Action types](https://www.palantir.com/docs/foundry/action-types/overview) 다만 정의에 함께 들어가는 notification, webhook 같은 부수효과는 그 원자성 범위 밖이며 경계는 아래 트랜잭션 범위 절에서 다룬다. [Consistency and isolation](https://www.palantir.com/docs/foundry/action-types/consistency-guarantees)
+
+편집이 반영된 최신 객체 데이터가 object type의 writeback dataset에 담긴다는 Action 개요의 설명은 OSv1(Object Storage v1)의 용어로 읽는다. 2026-10-25 확인 기준 OSv1은 편집에 writeback dataset이 필요하지만 OSv2에서는 materialization이 선택 사항이다. OSv1의 writeback dataset은 새 편집으로 build가 자동으로 시작되지 않아 schedule이 없어 build되지 않으면 Ontology의 최신 상태와 다를 수 있다. 같은 날 확인한 편집 적용 문서는 OSv1을 Planned deprecation으로 표시하고 2026-06-30이 지나면 사용할 수 없다고 안내하며 확인일에도 이 문구가 그대로 남아 있으므로, 실제 enrollment에 OSv1 object type이 남아 있는지는 따로 확인한다([[Palantir-Object-Storage-Migration|OSv1에서 OSv2로의 이행]]). Dataset을 읽는 하류 소비자는 materialization 여부와 갱신 설정을 확인한다(설계 제안). 갱신 모드와 보존 조건은 [[Palantir-Object-Materialization|Materialization과 보존 경계]]에서 다룬다. [Materializations](https://www.palantir.com/docs/foundry/object-edits/materializations), [How user edits are applied](https://www.palantir.com/docs/foundry/object-edits/how-edits-applied)
 
 ## 권한은 네 가지 질문으로 나눈다
 
@@ -135,12 +137,15 @@ Ontology Manager의 Test run은 현재 branch와 실행자 권한으로 조건�
 - [Palantir, Function permissions](https://www.palantir.com/docs/foundry/functions/permissions)
 - [Palantir, Function versioning](https://www.palantir.com/docs/foundry/functions/functions-versioning)
 - [Palantir, Publish and call query functions through API gateway](https://www.palantir.com/docs/foundry/functions/query-functions)
+- [Palantir, Materializations](https://www.palantir.com/docs/foundry/object-edits/materializations)
+- [Palantir, How user edits are applied](https://www.palantir.com/docs/foundry/object-edits/how-edits-applied)
 
 ## 관련 문서
 
 - [[Palantir-Ontology-Scenarios|대안 편집과 실제 반영]]
 - [[Palantir-Foundry-Actions|규칙, 입력, 외부 효과와 복구]]
 - [[Palantir-AIP-Logic-and-Evaluation|모델이 참여하는 실행과 평가]]
+- [[Palantir-Object-Materialization|편집 결과의 dataset 반영]]
 
 - [[Ontology-Knowledge-Graph|온톨로지와 지식 그래프]]
 - [[Palantir-SDK-and-Agent-Tools|OSDK와 에이전트 도구 연결]]
