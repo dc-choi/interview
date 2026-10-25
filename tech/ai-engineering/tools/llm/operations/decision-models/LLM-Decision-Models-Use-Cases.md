@@ -44,19 +44,29 @@ Noul의 문턱도 오판 비용으로 정한다. 예와 아니오의 처리 비�
 
 ### OpenAI Decisions API의 요청과 실행 경계
 
-2026-10-09 공식 문서 기준, Decisions API는 public beta이며 `POST /v1/decisions`에서 `gpt-6-luna`를 사용한다. 텍스트와 이미지를 평가하지만 임의의 설명문이나 추출 객체 생성은 Responses API의 Structured Outputs, 인자를 포함한 도구 호출 요청은 function calling의 영역이다. 기존 Jev와 Clef 비교의 가격, 버전과 성능 기준일은 유지한다.
+2026-10-09 공식 문서 기준, Decisions API는 public beta이며 `POST /v1/decisions`에서 `gpt-6-luna`를 사용한다. 텍스트와 이미지를 평가하지만 임의의 설명문이나 추출 객체 생성은 Responses API의 Structured Outputs, 인자를 포함한 도구 호출 요청은 function calling의 영역이다. 기존 Jev와 Clef 비교의 가격, 버전과 성능 기준일은 유지한다. 2026-10-22 정식 공개 뒤의 변화는 아래 절에 있다.
 
 - **입력 계약:** Jev의 `state`와 질문 맵을 그대로 보내지 않는다. 공통 근거는 `input`, 질문은 `questions` 배열로 전달하며 질문별 `name`으로 답을 식별한다.
 - **질문 타입:** `predicate`는 조건이 참일 추정 확률, `choice`는 제공한 선택지, `score`는 순서가 있는 단계 인덱스의 확률 가중 평균을 돌려준다.
-- **이미지 제약:** 이미지에는 inline base64 data URL을 사용한다. 외부 이미지 URL과 `file_id`는 지원하지 않는다.
+- **이미지 제약:** public beta 당시에는 이미지에 inline base64 data URL을 사용했고 외부 이미지 URL과 `file_id`를 지원하지 않았다. 2026-10-26 가이드 기준으로는 공개된 HTTP/HTTPS 이미지 URL도 받으며 `file_id`는 계속 지원하지 않는다.
 - **거부 처리:** 질문별 답이 `type: refusal`일 수 있으므로 확률이나 선택값을 읽기 전에 답의 타입을 검사한다. 거부를 낮은 점수나 기본 선택지로 바꾸어 실행하지 않는다.
 
 모델과 추론 노력을 고르는 라우터에 쓸 때도 판정과 실제 호출 설정 적용을 분리한다. 이는 위 API 계약을 이용한 설계 예시다. 선택 결과가 런타임에서 지원되는지 확인하고, 라벨 표본의 품질 합격률과 라우터를 포함한 전체 비용, 지연을 비교한다. 소수 예제에서 그럴듯한 모델을 골랐다는 사실만으로 비용 절감률이나 과업 성공을 보장하지 않는다.
 
+#### public beta 이후 추가된 기능과 정식 공개
+
+2026-10-22 OpenAI API changelog 기준 Decisions API는 `gpt-6-luna`로 정식 공개(GA)됐고, 2026-10-26 가이드 기준 지원 모델은 여전히 이 하나다. 아래 기능이 모두 GA 날짜에 추가된 것은 아니다. 2026-10-26 확인한 가이드는 public beta 이후 추가된 기능으로 프롬프트 캐싱, 질문별 이미지, `input_json` 콘텐츠 파트로 넘기는 JSON 입력, 요청당 질문 400개(beta는 200개), 공개 HTTP/HTTPS 이미지 URL, 함수 호출과 사용자 정의 도구 호출 및 그 출력을 포함한 대화 이력 평가, 조직 사용량 보고, GPT-Live 연동과 Private Link를 든다. 위의 `input`과 `questions` 계약, 질문 타입 정의와 거부 타입 검사는 GA 가이드에서도 같다.
+
+- **음성은 직접 입력이 아니다:** 파일, 오디오와 item reference는 지원하지 않는다. 음성 앱은 세 방식으로 연결한다. Live가 transcript를 Decisions로 직접 넘기는 native 위임, Live의 알림을 받은 앱이 Decisions를 호출하는 custom 위임, 입력과 출력 transcript 델타로 판정을 트리거하는 방식이다. 위임 방식은 세션을 만들 때 정하고 세션 중에는 바꿀 수 없으며, transcript 트리거는 위임과 별개로 동작한다(GPT-Live 연동은 2026-10-15 추가). 오디오가 아니라 transcript를 판정하므로 전사 오류가 판정 입력에 섞일 수 있다는 점은 가이드가 아니라 이 구조에서 도출한 추론이다.
+- **비용 구조:** 비캐시 입력은 100만 토큰당 $0.10이고 출력 토큰은 과금하지 않는다. 캐시 히트는 할인되고 캐시 쓰기는 과금되며, 재사용할 공통 접두부는 1,024 토큰 이상이어야 하고, 질문 내용은 이 최소 길이에 포함되지 않는다. 지역 처리 할증과 긴 문맥 입력 배수도 적용된다(2026-10-26 가이드 기준). 질문 상한이 늘어 같은 근거를 공유하는 질문을 한 요청에 더 많이 묶을 수 있으므로, 질문 분할과 캐시 재사용을 함께 따져 입력 토큰을 비교한다.
+- **지연 주장에는 조건이 없다:** 가이드는 Responses API보다 typed answer를 약 10배 빠르게 돌려준다고만 밝히고 측정 조건을 공개하지 않는다. 자기 경로에서 네트워크와 라우터를 포함한 전체 지연을 잰다.
+
 ## 출처
 
-- [OpenAI API, Decisions](https://developers.openai.com/api/docs/guides/decisions)
+- [OpenAI API, Decisions](https://developers.openai.com/api/docs/guides/decisions) — 2026-10-26 GA 가이드의 추가 기능, 입력 범위, 가격과 지연 표현 대조
 - [OpenAI API Reference, Create a decision](https://developers.openai.com/api/reference/resources/decisions/methods/create)
+- [Changelog — OpenAI API](https://developers.openai.com/api/docs/changelog) — 2026-10-06 beta 출시, 2026-10-15 GPT-Live 연동, 2026-10-22 GA 항목
+- [OpenAI API, Connect voice to Decisions](https://developers.openai.com/api/docs/guides/decisions-voice) — transcript 기반 연동과 위임 방식
 - [fast-jev-compaction — GitHub, tamaratran](https://github.com/tamaratran/fast-jev-compaction) — 도구 호출과 결과 선별 설계, 판정 입력 축소와 실패 경계
 - [Introducing Clef: our open-source decision models, and new RL fine-tuning platform — Cloudflare Blog](https://blog.cloudflare.com/clef-decision-models/)
 - [Introducing System One Models & Jev — TypeSafe](https://typesafe.ai/blog/introducing-system-one-models-and-jev)

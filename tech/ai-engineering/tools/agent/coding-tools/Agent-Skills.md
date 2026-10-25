@@ -74,6 +74,20 @@ Claude 쪽에서는 커스텀 슬래시 커맨드도 스킬로 흡수됐다. 사
 
 두 도구는 Agent Skills라는 사실상 동일한 개방 포맷으로 수렴했다. 폴더 + SKILL.md + description 자동 로드가 공통 뼈대이고, 나머지는 관례 차이다. Claude 쪽 세부 메커니즘(목록 표시용 설명의 when_to_use 합산 1,536자 절삭, allowed-tools가 제한이 아닌 사전 승인, 예산 초과 시 저빈도 스킬부터 설명 제외 등)은 [[Claude-Code-Extension-Reference]]에 있다.
 
+## 표준의 관리 주체와 호환성 — 재단 이관이 바꾸는 것과 바꾸지 않는 것
+
+부분 검증(2026-10-26): Anthropic의 기증 발표, Linux Foundation 보도자료, Agent Skills 명세와 클라이언트 구현 가이드를 대조했다. 이 절만 대조했으므로 문서 전체의 기존 검증일은 유지한다.
+
+2026-10-22 Anthropic은 Agent Skills 표준을 Linux Foundation 산하 Agentic AI Foundation(AAIF)에 기증했다. 이름과 로고, GitHub 조직과 agentskills.io 도메인이 함께 넘어갔고, 앞으로는 Anthropic, Google, OpenAI와 다른 회사의 엔지니어가 개인 자격으로 표준을 관리하며 리드 메인테이너 2명을 둔다. AAIF에 가입하지 않아도 표준을 쓰고 기여할 수 있다. 같은 날 AAIF는 Linux Foundation 보도자료로 Agent Skills와 함께 OpenAI의 Open Responses, Hugging Face의 OpenEnv, Alibaba의 OpenSandbox를 새 프로젝트로 발표했고, 호스팅 프로젝트가 2025-12 출범 때의 3개에서 출범 첫해에 10개가 됐다고 밝혔다. 같은 재단에 먼저 들어간 MCP의 경위는 [[MCP]]에 있다. 발표 시점의 채택 규모는 2025-12 표준 공개 이후 ChatGPT, Cursor, GitHub Copilot, VS Code를 포함한 70개가 넘는 플랫폼 통합과, 발표 시점까지의 스킬 100만 개 게시와 2억 8천만 회 가까운 설치다. 집계 기준일과 방법은 밝히지 않았으므로 규모 감각으로만 읽는다.
+
+- **바뀌는 것, 관리 주체(현재)와 버전 관리(제안 단계)**: 관리 주체는 이관과 함께 바뀌었다. 버전 관리는 Anthropic이 제안한 첫 로드맵의 항목이며, 그 로드맵은 버전별 릴리스, 공식 제안 절차, 스킬을 작성하고 설치하는 사람을 위한 보안 가이드로 시작하자는 제안이다. 2026-10-26 확인한 명세 페이지에는 버전 번호나 개정일이 없고 프론트매터에도 명세 버전을 적는 필드가 없으므로, 스킬 파일만으로는 어느 개정에 맞춰 썼는지 알 수 없다.
+- **바뀌지 않는 것, 호스트별 로딩 관례**: 명세는 스킬 폴더 안의 형식만 정하고 저장 위치는 정하지 않는다. 클라이언트 구현 가이드는 클라이언트 고유 경로와 공용 관례인 `.agents/skills/`를 함께 살펴보라고 권하고, 일부 구현은 `.claude/skills/`도 읽는다고 적는다. 위 표의 경로, 명시 호출 문법과 메타 필드 해석은 계속 각 호스트 문서를 따른다. 명세에서도 `allowed-tools`는 실험 필드이고 구현마다 지원이 다를 수 있다.
+- **바뀌지 않는 것, 설치 경로와 신뢰**: 구현 가이드는 프로젝트 수준 스킬이 신뢰할 수 없는 저장소에서 올 수 있으므로 사용자가 신뢰한다고 표시한 폴더에서만 불러오도록 신뢰 확인을 두는 방안을 고려하라고 권한다. 재단이 관리하는 대상은 형식이지 개별 스킬의 출처나 안전성이 아니라고 보는 것이 이 문서의 해석이며, 따라서 아래 [[#설치 경로와 신뢰 — 표면마다 따로, 출처는 먼저|설치 경로와 신뢰]]의 감사 원칙이 그대로 적용된다.
+- **바뀌지 않는 것, 내용의 보안 책임**: 보안 가이드는 아직 로드맵 항목이다. 스킬의 지시와 스크립트가 무엇을 실행하는지는 작성자와 설치자가 확인한다.
+- **이식 점검**: 다른 호스트용 스킬을 옮길 때는 `skills-ref validate`로 프론트매터와 이름 규칙을 검사하고, 특정 제품, 시스템 패키지나 네트워크 접근이 필요하면 `compatibility`(최대 500자)에 적는다. 구현 가이드는 이름이 폴더명과 다른 정도의 위반은 경고만 하고 불러오는 관대한 검증을 권하므로, 한 호스트에서 로드됐다는 사실을 명세 준수의 증거로 보지 않는다.
+
+바뀌지 않는 것의 구분은 2026-10-26 명세, 구현 가이드와 기증 발표의 로드맵에 근거한 해석이며 기증 발표가 직접 밝힌 내용은 아니다.
+
 ## 슬래시 표기와 실제 명령 등록을 구분한다
 
 부분 검증(2026-10-20): Claude Code의 공식 스킬 안내, 명령 도움말과 Claude 프롬프트 지침을 대조했다. `/이름`이라는 표기만으로 내장 기능임을 판정하지 않는다.
@@ -147,6 +161,7 @@ Kiro Hooks의 현재 형식과 차단 경계, Kiro Skills의 범위와 이식 �
 - 훅 vs 스킬 — 언제(강제) vs 무엇(작업)의 구분과 상보성
 - 카탈로그 비용의 실체(목록 문자 예산, 저빈도 설명부터 제외, 스킬이 많을수록 산 스킬 설명까지 단축)와 세션 로그 집계 기반 수명주기 감사를 설명할 수 있는가
 - 스킬이 어느 표면에 설치됐고 어느 방향으로 동기화되는지, 외부 스킬을 감사하고 켠 세션과 끈 세션으로 비교하는 이유를 설명할 수 있는가
+- 표준의 재단 이관(AAIF)이 바꾼 것(관리 주체), 제안된 것(버전별 릴리스, 공식 제안 절차, 보안 가이드)과 바꾸지 않는 것(호스트별 로딩 관례, 설치 경로와 신뢰, 스킬 내용의 보안 책임)을 구분할 수 있는가
 
 ## 출처
 
@@ -167,6 +182,10 @@ Kiro Hooks의 현재 형식과 차단 경계, Kiro Skills의 범위와 이식 �
 - [The Agent Skills Directory — skills.sh](https://skills.sh/) — 설치 수 순위, [Security Audits](https://skills.sh/audits)의 감사 도구별 판정, [gke-inference](https://www.skills.sh/google/skills/gke-inference)의 사용 대상
 - [find-skills SKILL.md — vercel-labs/skills](https://github.com/vercel-labs/skills/blob/main/skills/find-skills/SKILL.md) — 후보 검증 기준과 설치 명령
 - [YouTube, 양실장의 바이브코딩대학, 1시간 압축) AI 기술 1도 모르는 초심자가 전문 AI SaaS 구축하는 모든 과정](https://www.youtube.com/watch?v=JK1S6FvAdZQ) — 2026-08-24, 03:00~16:00과 42:39~46:00의 find-skills 사용 시연
+- [Donating Agent Skills to the Agentic AI Foundation — Anthropic](https://www.anthropic.com/news/donating-agent-skills-to-the-agentic-ai-foundation) — 2026-10-22 기증 범위, 개인 자격 메인테이너, 첫 로드맵과 채택 수치, 2026-10-26 대조
+- [Agentic AI Foundation Announces Four New Projects: Agent Skills, Open Responses, OpenEnv, and OpenSandbox — Linux Foundation](https://www.linuxfoundation.org/press/agentic-ai-foundation-announces-four-new-projects-agent-skills-open-responses-openenv-and-opensandbox) — 신규 프로젝트 4개와 기여 회사, 호스팅 프로젝트 수, 2026-10-26 대조
+- [Agent Skills, Specification](https://agentskills.io/specification) — 프론트매터 제약, `allowed-tools`의 실험 표기, 버전 표기 부재와 `skills-ref` 검증, 2026-10-26 대조
+- [Agent Skills, How to add skills support to your agent](https://agentskills.io/client-implementation/adding-skills-support) — 저장 위치 미규정, `.agents/skills/` 관례, 프로젝트 스킬의 신뢰 확인과 관대한 검증, 2026-10-26 대조
 
 ## 관련 문서
 
@@ -176,6 +195,7 @@ Kiro Hooks의 현재 형식과 차단 경계, Kiro Skills의 범위와 이식 �
 - [[Context-Engineering|컨텍스트 엔지니어링 (권장 vs 강제 분리)]]
 - [[Agent-Context-Budget|에이전트 컨텍스트 예산 (스킬 Catalog-First 로딩)]]
 - [[MCP|MCP (외부 경계 확장)]]
+- [[Agent-Repository-Instructions|AGENTS.md (같은 재단의 개방 형식과 호스트별 적용 차이)]]
 - [[AI-Coding-Agent-Usage-Telemetry|AI 코딩 에이전트 사용량 텔레메트리 (로컬 세션 로그 집계와 신뢰 경계)]]
 - [[Agent-Test-Verification-Behavior|에이전트 검증 행동 (스킬 본문 길이의 재읽기 비용, 튜토리얼형 스킬의 한계)]]
 - [[Hermes-Agent|Hermes Agent (에이전트가 경험에서 스킬을 만들고 고치는 사례, 쓰기 승인 대기열)]]

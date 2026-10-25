@@ -18,6 +18,7 @@ aliases: ["LLM 선택, 서빙과 운영", "LLM Selection Serving and Operations"
 - [[LLM-Prompt-Caching|LLM 프롬프트 캐싱]]: prefix matching, cache_write/read 과금, Anthropic과 OpenAI와 Gemini 캐싱 비교, TTL 히트 갱신, 활용 패턴 6, 안티패턴 6, 세션 분기와 seed 세션의 캐시 재사용 조건, 구독형 앱의 캐시 만료와 사용량 한도, 히트율 98% 사례
 - [[LLM-Gateway|LLM 게이트웨이]]: 관리 키와 업무 키, DB에 의존하는 예산 검사, 배포와 운영 검증, 호환 API의 기능과 대화 상태 보존, 게이트웨이 경로 캐시 계층의 키, 공유 범위와 정산
 - [[LLM-Failure-Handling|LLM 실패 처리 (failure-handling/ 서브폴더)]]: 기술적 실패와 의미적 실패, 지속성과 범위 분류, 429 속도 한도와 지출 한도 구분, stop_reason, 구조화 출력의 한계, 토큰 사전 계산, 스트리밍 복구, SDK 기본 재시도, 폴백 범위와 잠복 결함, 모델별 한도와 동시성, 도구 멱등 키
+- [[LLM-API-Version-Migration|LLM API 버전과 SDK 마이그레이션]]: 날짜 기반 버전 고정의 보장 범위, 모델 단위와 버전 단위 제약, Claude API 2026-10-21의 요청과 응답 계약 변경, SDK 메이저와 기본 버전 헤더, 제거된 파라미터 검색, 요청 단위 분리와 재시도하지 않는 400
 
 - [[Local-Inference-Deployment-Cases|로컬 추론의 배포 사례]]: Janas의 SSD 전문가 캐시, Minions의 작업 분산, Uzu의 Apple 기기 추론과 속도 비교 조건, LFM2.5와 Muse Spark Open의 용량과 평가 경계
 

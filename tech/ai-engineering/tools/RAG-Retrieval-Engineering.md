@@ -125,6 +125,21 @@ BM25를 병행해 정확 token match를 보완하고 RRF나 score normalization�
 
 1차 검색이 부족하면 query를 분해하거나 표현을 바꿔 재탐색할 수 있다. 단 무제한 재시도는 latency와 비용을 키우고 처음 의도를 변형한다. 최대 횟수, 종료 조건, query rewrite 전후 결과와 선택 근거를 기록하고 대표 query set에서 단발 검색보다 실제로 나은지 검증한다.
 
+### 단발 RAG와 에이전틱 RAG
+
+단발 RAG는 정해진 검색을 한 번 실행하고 그 결과로 답한다. 에이전틱 RAG의 흔한 흐름에서는 에이전트가 과업에 맞는 도구를 고르고, 가져온 근거가 충분한지 평가해 부족하면 질의를 바꾸거나 다른 도구를 고른 뒤 생성한다. Agentic RAG 서베이(arXiv 2501.09136v4, 2026-04)는 정적이고 선형적인 파이프라인의 한계가 검색 시점, 질의 재구성과 근거 수집 완료를 동적으로 정하는 자율 제어의 동기가 된다고 보고, 에이전틱 RAG를 RAG 파이프라인에 자율 에이전트를 직접 넣어 동적 검색, 반복적 문맥 정제와 적응형 워크플로 조정을 가능하게 하는 방식으로 정의한다. 단일 에이전트 라우터의 선택지로는 표 데이터용 구조화 DB, 비정형 문서의 의미 검색, 실시간이나 넓은 맥락용 웹 검색과 추천 시스템을 들고, 단순 사실 조회나 범위가 명확한 질문에는 모듈형 RAG 파이프라인이 더 적은 부담으로 충분한 성능을 낸다고 본다. 매 턴 탐색 방향을 정하는 방식은 아래 Progressive Disclosure 탐색 절, 원장 조회와 문서 검색의 선택은 아래 구조화 조회와 검색의 라우팅 절을 따르고, 이 절은 충분성 판정과 종료를 다룬다.
+
+| 방식 | 판정 위치와 동작 | 한계 |
+|---|---|---|
+| Self-RAG (arXiv 2310.11511v1) | 한 모델이 reflection token으로 생성 구간(실험에서는 문장)마다 검색 필요(Retrieve)를 판단하고, 문서 관련성(IsRel), 생성 문장의 근거 지지(IsSup)와 응답 유용성(IsUse)을 스스로 평가한다. Retrieve 확률에 임계값을 두어 검색 빈도를 조절한다 | 판정은 GPT-4 라벨을 증류한 critic 모델이 붙인 학습 데이터에서 배운 예측이다. 임계값을 높여 검색을 줄이면 정확도 손실이 PubHealth보다 PopQA에서 컸다 |
+| CRAG (arXiv 2401.15884v3) | 별도 평가기(T5-large, 0.77B)가 문서마다 관련성 점수를 매겨, 상한을 넘는 문서가 있으면 정제해 쓰고 모두 하한 미만이면 버린 뒤 키워드로 재작성한 질의로 웹 검색하며, 그 사이면 둘을 함께 쓴다 | 평가와 교정을 한 번 하는 구조라 반복의 종료 조건은 다루지 않는다. 임계값은 데이터셋별로 경험적으로 정했고, 외부 평가기의 미세조정이 불가피하다는 점을 원 논문이 한계로 든다. 웹 검색은 편향되거나 신뢰하기 어려운 정보를 들일 수 있어 위키백과 같은 권위 있는 페이지를 우선한다 |
+
+근거 판정도 틀릴 수 있다. CRAG의 문서 관련성 평가기는 PopQA에서 테스트에 쓰지 않은 표본으로 미세조정했고, PopQA 검색 결과의 판정 정확도가 84.3%로 프롬프트만 쓴 ChatGPT(GPT-3.5 Turbo의 기본, CoT, few-shot 58.0~64.7%)보다 높았다. 이 값은 미세조정과 같은 PopQA 분포에서 잰 것이며, 평가기를 옮겨 쓴 다른 데이터셋의 판정 정확도는 보고되지 않았다. 그래도 Correct와 Incorrect 두 동작만 두면 효과가 평가기 정확도에 쉽게 좌우돼 중간 동작(Ambiguous)을 더했다. Sufficient Context(arXiv 2411.06037v3)는 이런 관련성 점수와 충분성을 구분하고, 문맥의 정보로 그럴듯한 답을 낼 수 있으면 충분하다고 정의해 정답 없이 판정한다. 가장 나은 자동 판정(Gemini 1.5 Pro 1-shot)은 골드 라벨 115건에서 정확도 93%였지만, 최신 모델이 불충분한 문맥에서도 35~62% 정답을 내므로(FreshQA, Musique, HotpotQA 세 QA 데이터셋 분석의 요약 수치) 정확도를 높이는 개입을 충분성에만 의존하지 말라고 정리했다. 큰 모델은 문맥이 불충분할 때 거부 대신 오답을 내는 경우가 많았고, 이 판정기로 추가 검색과 답변 사이를 반복 판단하는 구성은 시험하지 않았다.
+
+반복과 판정은 지연과 비용을 더한다. 서베이는 반복 검색과 다중 에이전트 협업이 지연과 자원 사용을 늘리고, 무제한 자율성이 과도한 도구 호출과 중복 추론 루프를 부를 수 있다며 계획 범위 제한, 도구 접근 정책과 명시적 정지 기준을 요구한다. 교정 단계를 더하면 생성 단계 시간도 늘어난다(평가기 연산의 포함 여부는 원문에 없다). CRAG(arXiv v3)의 PopQA 측정(검색과 데이터 처리를 뺀 생성 단계의 대략 추정)에서 인스턴스당 실행 시간은 RAG 0.363초, 한 번 판정하고 교정하는 CRAG 0.512초, Self-RAG 0.741초였다. RAG와 CRAG의 차이는 인스턴스당 약 0.15초다(원문 표의 두 값에서 계산). 생성 단계만의 차이라 교정에 쓰인 웹 검색과 페이지 처리 시간은 들어 있지 않으므로, 반복 검색의 비용은 대상 질문 세트에서 따로 잰다. Anthropic의 에이전트 설계 안내(2024-12)도 에이전트 시스템이 더 나은 과업 성능을 위해 지연과 비용을 치르는 경우가 많다고 보고, 작업은 대개 완료 시 끝나지만 통제를 위해 최대 반복 횟수 같은 정지 조건을 함께 두는 경우가 흔하다고 설명한다. 이 글의 에이전트 절이 명시적으로 권고한 것은 샌드박스 환경에서의 충분한 시험과 적절한 가드레일이다. 글 전체로는 가장 단순한 해법에서 시작해 필요할 때만 복잡도를 늘리라고 권하며, 많은 애플리케이션에서는 검색과 in-context 예시로 단일 LLM 호출을 최적화하는 것으로 대개 충분하다고 본다.
+
+다음은 위 근거를 적용한 설계 제안이다. 충분성 판정 통과, 최대 검색과 도구 호출 수, 토큰과 시간 예산, 직전 단계 대비 새 근거 없음 중 먼저 닿은 조건으로 루프를 끝내고, 판정 통과 없이 예산으로 끝나면 근거 부족을 결과에 드러낸다([[LLM-Abstention]], [[Agent-Loop-Engineering#가드 — bare loop는 열린 청구서|루프 가드]]). 상한 값은 대표 질문 세트의 지연과 비용 예산에서 정한다. 평가는 위 단발 검색 비교에 더해 충분성 판정을 사람 라벨과 대조해 근거가 부족한데 멈춘 경우와 충분한데 더 찾은 경우를 따로 세고, 정답률과 faithfulness를 검색과 도구 호출 수, p95 지연, 요청당 비용과 함께 본다. 서베이도 최종 출력 지표만으로는 부족하다며 추론 효율과 도구 사용 양상 같은 과정 지표를 요구한다. 단계마다 질의, 도구, 가져온 근거 ID, 판정과 종료 사유를 남겨 실패를 검색 누락, 판정 오류와 생성 오류로 나눈다.
+
 ### 가설을 분해해 반대 근거를 찾는다
 
 가설 검토에서는 주제와 비슷한 문서를 모으는 것에 더해, 가설이 성립하려면 필요한 전제를 나누고 각 전제를 반박할 자료를 검색할 수 있다. 예를 들어 신기능이 매출을 늘린다는 가설에서는 유료 전환 수요, 가격 수용성과 대체재 대비 경쟁력을 검토할 수 있다(설명용 예시). 반박 결과에는 전제, 반대 근거의 원문 구간과 그 근거로 도출한 해석을 연결한다.
@@ -141,7 +156,7 @@ BM25를 병행해 정확 token match를 보완하고 RRF나 score normalization�
 - 검색된 문서의 인접 문서를 자동 탐색해 끊긴 맥락을 보완
 - 단발 검색이 아니라 다단계 탐색 세션으로 동작
 
-[[Context-Engineering]]의 Select, Isolate 원칙이 검색 단계에 적용된 형태다.
+[[Context-Engineering]]의 Select, Isolate 원칙이 검색 단계에 적용된 형태다. 탐색을 멈출 조건과 근거 충분성 판정의 한계는 위 단발 RAG와 에이전틱 RAG 절에서 다룬다.
 
 ## 계층적(Hierarchical) RAG
 
@@ -270,3 +285,11 @@ Q. 검색은 됐는데 폐기된 정책으로 답했다면?
 - [NLTK Documentation, nltk.tokenize.punkt module](https://www.nltk.org/api/nltk.tokenize.punkt.html)
 - [Dense X Retrieval: What Retrieval Granularity Should We Use? — arXiv](https://arxiv.org/html/2312.06648v3)
 - [Late Chunking: Contextual Chunk Embeddings Using Long-Context Embedding Models — arXiv](https://arxiv.org/html/2409.04701v3)
+
+2026-10-26에는 단발 RAG와 에이전틱 RAG의 차이, 근거 충분성 판정의 한계, 정지 조건과 지연을 Self-RAG(arXiv v1), CRAG(arXiv v3), Agentic RAG 서베이(arXiv v4), Sufficient Context(arXiv v3) 원문과 Anthropic 안내에 대조했다. 정지 조건의 조합, 상한 설정, 판정 오류 집계와 단계 기록은 이를 적용한 설계 제안이다. 이 절만 대조했으므로 기존 `verified_at`은 유지한다.
+
+- [Self-RAG: Learning to Retrieve, Generate, and Critique through Self-Reflection — arXiv](https://arxiv.org/abs/2310.11511v1)
+- [Corrective Retrieval Augmented Generation — arXiv](https://arxiv.org/html/2401.15884v3)
+- [Agentic Retrieval-Augmented Generation: A Survey on Agentic RAG — arXiv](https://arxiv.org/html/2501.09136v4)
+- [Sufficient Context: A New Lens on Retrieval Augmented Generation Systems — arXiv](https://arxiv.org/html/2411.06037v3)
+- [Building effective agents — Anthropic](https://www.anthropic.com/engineering/building-effective-agents)

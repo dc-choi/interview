@@ -38,7 +38,7 @@ Claude Opus 5는 Opus 4.8의 후속으로 2026-07-24 출시된 Opus 라인 최�
 ### 그 외 요청 표면
 
 - 원시 사고 과정은 반환되지 않는다. `thinking.display` 기본값은 `omitted`(빈 사고 블록)이고 `summarized`로 요약을 받을 수 있다 — 정책 상세는 [[Claude-Fable-5-Mythos-5|Fable 5 문서]]가 정본이다.
-- `budget_tokens`, `temperature`/`top_p`/`top_k`, 마지막 assistant 턴 프리필은 Opus 4.7 이후와 같은 400. 사고 깊이는 `effort`(low, medium, high, xhigh, max, 기본 high — Claude API와 Claude Code 기준)로 제어한다.
+- 수동 extended thinking(`thinking: {"type": "enabled", "budget_tokens": N}`)은 Claude 4.7 이후 모델과 같이 API 버전과 관계없이 400이다. `temperature`, `top_p`, `top_k`는 API 버전 `2023-06-01`에서는 기본값이 아닌 값을 보낼 때만 400이고(Claude 4.7 이후 모델 공통, 기본값은 통과), `2026-10-21`부터는 기본값을 포함해 어떤 값을 보내도 모든 모델에서 400이다. 마지막 assistant 턴 프리필은 Claude 4.6 이후 모델부터 400이다(2026-10-26 공식 문서 기준, 버전 전환은 [[LLM-API-Version-Migration]]). 사고 깊이는 `effort`(low, medium, high, xhigh, max, 기본 high — Claude API와 Claude Code 기준)로 제어한다.
 - `low`/`medium`이 상위 effort 대비 일부 토큰과 지연으로 강한 품질을 낸다는 것이 벤더 권고다. effort 스윕이 비용 최적화의 1차 레버이며, 이전 모델에서 옮겨온 effort 기본값을 그대로 쓰지 않는다.
 - drop-in이라도 가용성 예외가 있다. Priority Tier는 Opus 5를 지원하지 않고(Opus 4.8은 유지), web fetch 서버 도구는 제공되지 않는다.
 
@@ -96,4 +96,7 @@ Claude Opus 5는 Opus 4.8의 후속으로 2026-07-24 출시된 Opus 라인 최�
 - [Anthropic Platform Docs, Model migration guide](https://platform.claude.com/docs/en/about-claude/models/migration-guide)
 - [Anthropic Platform Docs, Models overview](https://platform.claude.com/docs/en/about-claude/models/overview)
 - [Anthropic Platform Docs, What's new in Claude Opus 5](https://platform.claude.com/docs/en/about-claude/models/whats-new-opus-5)
+- [Anthropic Platform Docs, Using the Messages API](https://platform.claude.com/docs/en/build-with-claude/working-with-messages) — 2026-10-26 샘플링 파라미터의 모델 단위와 버전 단위 400, 프리필 400 대조
+- [Anthropic Platform Docs, Troubleshooting thinking](https://platform.claude.com/docs/en/build-with-claude/thinking-troubleshooting) — 2026-10-26 Opus 5의 사고 모드 지원 대조
+- [Anthropic Platform Docs, Claude Opus 5.5 migration guide](https://platform.claude.com/docs/en/models/opus-5-5/migration-guide) — 2026-10-26 프리필과 수동 extended thinking 400의 적용 모델 대조
 - [Introducing Claude Opus 5.5 — Anthropic](https://www.anthropic.com/claude-opus-5-5)

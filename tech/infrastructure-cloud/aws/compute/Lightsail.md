@@ -47,6 +47,15 @@ Lightsail은 인스턴스(가상 사설 서버, VPS), 컨테이너 서비스, �
 - 기존 인스턴스는 계속 실행되고 기존 스냅샷으로 새 인스턴스를 만드는 것도 그 뒤에 가능하다. 실행 중인 인스턴스의 OS와 애플리케이션 업데이트, 보안 패치는 고객 책임이다.
 - 새 인스턴스에는 Lightsail이 패키징한 블루프린트(WordPress, WordPress Multisite, LAMP, Nginx, Node.js)를 권장한다. 두 패키지는 파일 경로와 명령이 다르다. `wp-config.php`는 Lightsail 패키지가 `/var/www/wp-config.php`, Bitnami 패키지가 `/opt/bitnami/wordpress/wp-config.php`에 두고, Apache 재시작은 각각 `sudo systemctl restart apache2`와 `sudo /opt/bitnami/ctlscript.sh restart apache`다. 따라 하는 가이드가 어느 패키지 기준인지 먼저 확인한다.
 
+### PHP 보안 업데이트의 책임과 경로
+
+2026-10-26 Lightsail 문서와 AWS 보안 공지 2026-143-AWS 기준이다.
+
+- **책임:** AWS와 Lightsail은 인스턴스를 만든 뒤 OS와 애플리케이션을 업데이트하거나 패치하지 않는다. WordPress는 보안 수정이 든 minor 코어 릴리스를 기본으로 자동 설치하지만 OS, 웹 서버, PHP 런타임과 DB 패치는 따로 해야 한다. 2026-10-21 PHP 원격 코드 실행 취약점(CVE-2026-109618, CVE-2026-109619)에 대한 보안 공지에서도 AWS는 실행 중인 Lightsail 인스턴스를 제자리에서 업데이트할 수 없다며 갱신된 블루프린트로 새 인스턴스를 만들어 옮기라고 안내했다. 공지와 Lightsail 문서를 함께 읽으면 이는 AWS가 대신 갱신하지 않는다는 뜻이며, 아래처럼 Lightsail 패키지는 고객이 apt로 제자리 갱신할 수 있고 Bitnami 패키지는 이전이 권장 경로다.
+- **Lightsail 패키지:** WordPress, WordPress Multisite, LAMP, Nginx 블루프린트는 PHP를 OS 패키지 저장소에서 설치한다. 스냅샷을 만든 뒤 `sudo apt update`와 `sudo apt upgrade`로 올리고 서비스를 재시작한다(WordPress, WordPress Multisite, LAMP는 `apache2`, Nginx는 PHP-FPM 서비스 `php8.2-fpm`). 블루프린트로 새로 만든 인스턴스도 같은 절차로 수정 버전인지 확인한다.
+- **Bitnami 패키지:** `/opt/bitnami/php`의 자체 PHP는 `apt upgrade`로 바뀌지 않는다. 문서는 Lightsail 패키지 인스턴스로 옮기기를 권하고, 옮길 수 없으면 apt로 관리하는 PHP-FPM을 함께 설치해 Bitnami 웹 서버를 그쪽으로 돌리는 방법을 제시한다. Debian 자체 저장소는 PHP 릴리스 라인을 하나만 제공해 이 방법은 Sury 저장소를 추가하며, Sury 저장소는 AWS가 소유하거나 관리하지 않는 제3자 저장소다.
+- **확인:** `php -v`는 명령줄 PHP만 보여 준다. 웹 서버가 실제로 쓰는 버전과 SAPI는 임시 PHP 파일을 localhost로 요청해 확인한 뒤 바로 지우거나 WordPress의 `도구 > 사이트 건강 > 정보 > 서버`에서 확인한다. 런타임 취약점 대응의 일반 절차는 [[Dependency-Vulnerability-Scanning#언어 런타임은 버전 관리와 호스팅 책임으로 대응한다|의존성 취약점 스캔의 런타임 절]]을 본다.
+
 ## WordPress 사이트 이전 흐름
 
 1. **새 인스턴스:** 리전과 AZ, WordPress 블루프린트와 요금제를 골라 만든다. 관리자 사용자 이름은 `user`이고 초기 비밀번호는 인스턴스에 저장된다. Lightsail 패키지는 콘솔의 `Retrieve default password`가 여는 CloudShell에서, Bitnami 패키지는 SSH에서 `cat ~/bitnami_application_password`로 확인한다.
@@ -103,6 +112,9 @@ Lightsail distribution은 CloudFront와 같은 엣지 서버와 IP 대역을 쓴
 - [Amazon Lightsail, Blueprints packaged by Bitnami](https://docs.aws.amazon.com/lightsail/latest/userguide/amazon-lightsail-faq-bitnami-blueprints.html)
 - [Amazon Lightsail, Launch and configure a WordPress instance](https://docs.aws.amazon.com/lightsail/latest/userguide/amazon-lightsail-quick-start-guide-wordpress.html)
 - [Amazon Lightsail, Obtain the default application username and password for Lightsail Bitnami instances](https://docs.aws.amazon.com/lightsail/latest/userguide/log-in-to-your-bitnami-application-running-on-amazon-lightsail.html)
+- [Amazon Lightsail, Update PHP on Lightsail instances to address CVE-2026-109618 and CVE-2026-109619](https://docs.aws.amazon.com/lightsail/latest/userguide/amazon-lightsail-update-php-security-vulnerabilities.html)
+- [Amazon Lightsail, Update software on your WordPress instance](https://docs.aws.amazon.com/lightsail/latest/userguide/amazon-lightsail-update-wordpress-software.html)
+- [PHP web runtimes (CVE-2026-109618 and CVE-2026-109619) — AWS Security Bulletins](https://aws.amazon.com/security/security-bulletins/2026-143-aws/) — 2026-10-21 게시, 10-23 갱신
 - [Amazon Lightsail, Serve web content globally with Lightsail content delivery distributions](https://docs.aws.amazon.com/lightsail/latest/userguide/amazon-lightsail-content-delivery-network-distributions.html)
 - [Amazon Lightsail, Configure WordPress with a Lightsail content delivery network](https://docs.aws.amazon.com/lightsail/latest/userguide/amazon-lightsail-configure-wordpress-for-distribution.html)
 - [Amazon Lightsail, Configure WordPress with a Lightsail content delivery network (Bitnami)](https://docs.aws.amazon.com/lightsail/latest/userguide/amazon-lightsail-configure-wordpress-for-distribution-bitnami.html)
@@ -131,3 +143,4 @@ Lightsail distribution은 CloudFront와 같은 엣지 서버와 IP 대역을 쓴
 - [[Certificate-Lifecycle-Management|인증서 수명 주기 관리]]
 - [[AWS-Pricing|AWS 요금 구조]]
 - [[Single-Host-SPA-API-Deployment|단일 호스트 배포]]
+- [[Dependency-Vulnerability-Scanning|의존성 취약점 스캔]]
