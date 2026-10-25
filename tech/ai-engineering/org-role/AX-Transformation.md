@@ -42,7 +42,7 @@ AX 진단은 다음 다섯 축을 함께 본다. 한 축만 움직이면 국소 
 
 - **기존**: 배포 건수, 캠페인 수, 응답 시간
 - **AX**: 전체 처리 시간, 고객 성과, 의사결정 지연, 임팩트
-- 주의 사례: Klarna는 2024년 AI 상담원이 700명 이상의 풀타임 상담원에 해당하는 업무량을 처리했다고 추정했다. 2025년 CEO는 비용 절감 추구가 지나쳤다며 고객이 사람과 상담할 선택지를 위한 채용 파일럿을 밝혔다. 이를 700명을 해고한 뒤 다시 채용한 사례로 단정할 수는 없다.
+- 주의 사례: Klarna는 2024년 AI 상담원이 700명 이상의 풀타임 상담원에 해당하는 업무량을 처리했다고 추정했다. 2024-02-27 보도자료가 밝힌 첫 달 수치는 대화 230만 건(고객 상담 채팅의 3분의 2), 풀타임 상담원 700명에 해당하는 업무량, 사람 상담원과 같은 수준의 고객 만족도, 해결 시간 11분에서 2분 미만, 반복 문의 25% 감소였으며 모두 회사 자체 측정이다. 2025년 CEO는 비용 절감 추구가 지나쳤다며 고객이 사람과 상담할 선택지를 위한 채용 파일럿을 밝혔다. 이를 700명을 해고한 뒤 다시 채용한 사례로 단정할 수는 없다.
 - J&J 사례: 약 900개의 개별 사용 사례를 검토한 뒤 영향도와 확장성이 높은 GenAI 사례에 집중했다.
 
 ### 4. 거버넌스 (Governance) — 부서별 → 중앙 통합
@@ -221,6 +221,7 @@ METR은 2026년 후속 글에서 최신 도구의 속도 향상이 더 클 가�
 - [Running a Software Factory Efficiently at Uber Scale — Uber Engineering](https://www.uber.com/us/en/blog/efficient-software-factory/)
 - [Klarna 2025 Form 20-F — U.S. SEC](https://www.sec.gov/Archives/edgar/data/2003292/000200329226000007/klar-20251231.htm)
 - [Klarna Rethinks AI Cost-Cutting Plan With Call for Real People — Bloomberg Law](https://news.bloomberglaw.com/artificial-intelligence/klarna-rethinks-ai-cost-cutting-plan-with-call-for-real-people?item=headline&login=blaw&region=digest&source=newsletter)
+- [Klarna AI assistant handles two-thirds of customer service chats in its first month — Klarna](https://www.klarna.com/international/press/klarna-ai-assistant-handles-two-thirds-of-customer-service-chats-in-its-first-month/) — 2024-02-27 보도자료, 2026-10-26 첫 달 수치 대조
 - [Gen AI, Present and Future: A Conversation with Jim Swanson, CIO at Johnson & Johnson — Greylock](https://greylock.com/blog/gen-ai-present-and-future-a-conversation-with-jim-swanson-cio-at-johnson-johnson/)
 - [Harvard Business Review Recognizes BBVA as a Benchmark for Corporate AI Adoption — BBVA](https://www.bbva.com/en/innovation/harvard-business-review-recognizes-bbva-as-a-benchmark-for-corporate-ai-adoption/)
 - [An important update on our team — Atlassian](https://www.atlassian.com/blog/announcements/atlassian-team-update-march-2026)

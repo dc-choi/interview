@@ -19,7 +19,7 @@ AI는 수고를 줄이는 장치다. 줄인 수고를 어디로 보내느냐가 
    모델이 자체 생성할 수 없는 입력을 먼저 확보한다 — 인터뷰, 독점 데이터, 내부 지식, 실제 실험, 현장 경험. 이것이 독창적 기여의 원천이고 AI는 이 원재료를 다듬는 데 쓴다. 원재료 없이 모델 지식만으로 쓰면 어디서나 나오는 평균값이 된다.
 
 2. **단계별 판단 관문**
-   아이디어, 개요, 근거, 초안 사이에 사람의 결정 지점을 둔다. 각 관문에서 수정하거나 폐기할 수 있어야 매몰 비용 편향이 잠기기 전에 방향을 튼다. 단일 프롬프트로 끝까지 생성하면 초기 오류가 그대로 고정된다. 검증 가능한 성공 기준을 단계마다 붙이는 방식은 [[Agent-Coding-Guardrails|LLM 코딩 가드레일]]의 Goal-Driven Execution과 같은 축이다.
+   아이디어, 개요, 근거, 초안 사이에 사람의 결정 지점을 둔다. 각 관문에서 수정하거나 폐기할 수 있어야 매몰 비용 편향이 잠기기 전에 방향을 튼다. 단일 프롬프트로 끝까지 생성하면 초기 오류가 그대로 고정된다. 검증 가능한 성공 기준을 단계마다 붙이는 방식은 [[Agent-Coding-Guardrails|LLM 코딩 가드레일]]의 Goal-Driven Execution과 같은 축이다. McKinsey의 2025년 설문(105개국 1,993명)에서 AI 부정확성은 AI를 정기적으로 쓰는 조직의 응답자(Exhibit 19, 1,753명)가 지난 1년 동안 가장 많이 겪은 부정적 결과였다(30%). 모델 출력에 사람 검증이 필요한 시점과 방법을 정한 절차가 있다는 응답은 EBIT의 5% 넘게가 AI 사용에서 나오고 상당한 가치를 본다고 답한 성과 상위 응답자에서 65%, 나머지에서 23%였다(Exhibit 14, 각 109명과 1,643명). 자기보고 설문의 상관이므로 절차가 성과를 만든다는 근거로 쓰지 않는다.
 
 3. **절약분을 연구에 재투자**
    효율로 번 시간을 더 많은 글이 아니라 더 나은 조사, 도구, 데이터로 돌린다. 결과물은 상호작용 기능, 데이터셋, 무료 유틸리티처럼 남이 복제하기 어려운 것이 된다.
@@ -60,6 +60,11 @@ AI에게 맡은 일을 수행할 책임(responsibility)은 지울 수 있어도 
 - **결과 책임**: 몰라서든 권한을 남용해서든 일이 잘못되면 온콜로 대응하는 사람이 나다.
 
 AI가 짠 코드를 읽지 않으면 권한과 책임은 남은 채 지식이 빠진다. AI는 코드를 설명할 수 있지만 이해를 대신하지는 못하므로, 이해했는지는 장애가 났을 때 원인을 설명하고 고칠 수 있는지로 확인한다. 생성 비용이 크게 줄어도 유지보수, 신뢰성, 보안, 확장성 같은 비기능 요구의 비용은 남는다. 이해가 따라가지 못할 만큼 빨리 늘린 코드는 당장 보이지 않는 비용을 남긴다. 리뷰와 이해가 따라잡는 속도보다 빨리 쌓이는 미검토 코드, 코드가 늘어난 만큼 커지는 보안 문제의 여지, 시스템 동작을 추론하는 능력의 저하다([[Software-Quality-Economics|소프트웨어 품질의 경제학]]). 첫째와 셋째를 흔히 기술 부채, 인지 부채로 부르지만 부채 은유의 원래 뜻으로는 각각 미검토 코드(우발부채)와 이해 격차에 가깝다([[Technical-Debt|기술 부채]]). 지식은 한 번 갖추면 끝나는 조건도 아니다. 쓰지 않는 역량은 녹슬 수 있다([[Expertise-Formation-AI|AI 시대 전문성 형성]]의 침식 위험).
+
+결과 책임은 조직 밖에서도 서명한 사람에게 돌아온다. 미국 연방민사소송규칙 Rule 11(b)(2)에 따라 서면에 서명하거나 제출한 변호사는 합리적인 조사를 거쳐 법적 주장이 현행법 등에 근거한다고 보증한다. 아래 두 법원은 AI 사용이 진술되거나 의심된 서면의 허위 인용을 이 보증 위반으로 제재했다(2026-10-26 두 명령 원문 확인).
+
+- **콜로라도 연방지방법원(2025-07-07)**: MyPillow, Frankspeech와 CEO 마이크 린델이 피고인 명예훼손 소송에서, 존재하지 않는 판례와 판례 오인용을 포함해 결함 인용이 30건 가까운 피고 측 서면에 서명한 변호사 2명에게 각각 3,000달러를 부과했다(한 명은 소속 법무법인과 연대). 변호사는 초안을 AI에 돌린 뒤 인용을 직접 확인하지 않았다고 법정에서 진술했지만, 법원은 생성형 AI 사용이나 변호사의 중대한 부주의가 아니면 설명하기 어렵다고 보는 데 그치고 AI 사용 자체를 확정하지는 않았다. 법원은 AI 도구 사용을 의뢰인에게 알리지 않았다는 변호사의 진술을 들어 피고 본인들에게는 제재를 확대하지 않았다.
+- **오리건 연방지방법원(2025-12-12)**: 고령 모친의 성인 자녀들 사이에서 가족 와이너리를 둘러싼 소송의 원고 측 서면 3건에 존재하지 않는 판례 15건과 실제 판례 등에 허위로 귀속한 인용 8건이 있었다. 법원은 서명한 변호사에게 15,500달러(판례당 500달러, 인용당 1,000달러)를 부과했다. 건당 금액이 알려지면 조사와 작성을 챗봇에 맡기는 이득이 제재 위험보다 크다고 계산할 수 있다며 상대방의 합리적인 변호사 비용과 경비도 그 변호사(다른 대리인이 포함될 수 있음)에게 물리기로 했고, 금액과 분담은 별도 명령으로 정하기로 했다. 대리인이 있는 원고 본인에게 비용을 물리는 청구는 Rule 11(c)(5)에 따라 받아들이지 않았다. 다만 원고 본인이 AI로 서면 초안을 썼을 가능성이 높다는 피고 측 증거를 원고가 반박하지 못하자 원고도 책임을 나눈다고 봤고, Rule 11(c)(4)에 따라 원고의 청구를 다시 제기할 수 없게 기각했다(dismissal with prejudice). 지역 규칙 위반은 추가 근거로 들었다.
 
 ## 위험도에 따른 검토 강도
 
@@ -145,6 +150,10 @@ XP(Extreme Programming)의 spike solution에도 같은 구분이 있다. spike�
 - [Spike Solution — c2 wiki](https://c2.com/xp/SpikeSolution.html)
 - [The Mythical Man-Month: Essays on Software Engineering, Anniversary Edition — Addison-Wesley, Frederick P. Brooks](https://ptgmedia.pearsoncmg.com/images/9780201835953/samplepages/0201835959.pdf) — 출판사 공개 견본. 목차와 20주년판 서문만 확인했고 11장과 19장 본문은 대조하지 않음
 - [It's not just you — YouTube, The PrimeTime](https://www.youtube.com/watch?v=FlWII9xFabo) — 2026-10-12, AI로 만든 탐색 프로토타입을 버리고 V2를 다시 설계하는 실천을 다룬 계기. 코드 줄 수 감소 수치는 자가 보고와 완료 전 예상치라 쓰지 않음
+- [Order, Civil Action No. 22-cv-01129-NYW-SBP (Doc. 383) — U.S. District Court for the District of Colorado](https://storage.courtlistener.com/recap/gov.uscourts.cod.215068/gov.uscourts.cod.215068.383.0.pdf) — 2025-07-07 Rule 11 제재 명령, CourtListener RECAP 사본으로 2026-10-26 원문 확인
+- [Opinion and Order, Case No. 1:21-cv-00157-CL (ECF No. 215) — U.S. District Court for the District of Oregon](https://storage.courtlistener.com/recap/gov.uscourts.ord.158388/gov.uscourts.ord.158388.215.0.pdf) — 2025-12-12 제재와 청구 기각 명령, CourtListener RECAP 사본으로 2026-10-26 원문 확인. 이후 변호사 비용 산정액은 확인하지 않음
+- [The state of AI in 2025: Agents, innovation, and transformation — McKinsey & Company](https://www.mckinsey.com/capabilities/quantumblack/our-insights/the-state-of-ai) — 2025-11, 2026-10-26 Exhibit 14와 19의 응답 수와 수치 대조
+- [YouTube, 조코딩 JoCoding, AI 리터러시 특강 4강: AI 시대, 우리는 무엇을 준비해야 할까?](https://www.youtube.com/watch?v=R1klN8XsPG4) — 2026-10-19, 허위 인용 제재와 검증 가능한 업무 루프를 다룬 계기. 판례와 설문 수치는 위 1차 출처로 대조했고 강의의 AI 활용 4단계는 쓰지 않음
 
 ## 관련 문서
 
@@ -158,3 +167,4 @@ XP(Extreme Programming)의 spike solution에도 같은 구분이 있다. spike�
 - [[AI-Leverage-Small-Teams|AI 시대 작은 팀의 구조적 레버리지]] — METR 실험의 결과, 후속 데이터와 효과의 조건
 - [[Software-Productivity-Measurement|소프트웨어 생산성 측정의 함정]] — AI 도구 설문을 생산성 근거로 읽는 법
 - [[Dev-Outsourcing-Engagement|개발 외주의 계약과 수주]] — 시연 결과물을 납품할 때 걸리는 검수, 유지보수와 하자담보 조건
+- [[LLM-Application-Security|LLM 애플리케이션 보안]] — LLM09 허위 정보와 과도한 신뢰의 완화
