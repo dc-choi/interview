@@ -1,7 +1,7 @@
 ---
 tags: [ai, evaluation, quality, monitoring, llm]
 status: done
-verified_at: 2026-10-06
+verified_at: 2026-10-26
 category: "AI엔지니어링(AIEngineering)"
 aliases: ["Served Model Drift Monitoring", "Model Drift Monitoring", "모델 드리프트 감시", "LLM 품질 저하 감지"]
 ---
@@ -28,6 +28,7 @@ Anthropic은 수요, 시간대, 서버 부하 때문에 모델 품질을 낮추�
 - Anthropic 문서 기준(2026-10-06 확인)으로 모델 ID는 고정된 버전을 가리키고, ID가 유지되는 동안 기반 모델은 바뀌지 않는다. 이 보장은 ID에만 있고 4.6 이전 세대의 편의 별칭에는 없다. 4.6 세대부터는 날짜 없는 ID(예: `claude-sonnet-4-6`)가 별칭이 아니라 그 자체로 스냅샷이며, 기존 ID의 가중치나 구성은 갱신하지 않고 새 버전은 새 ID로 나온다.
 - 같은 문서는 ID와 가중치가 같아도 서빙 인프라가 바뀌어 관찰되는 행동에 작은 차이가 생길 수 있다고 밝힌다. 하네스와 앱 경로의 기본값 변경도 ID 고정의 범위 밖이다.
 - OpenAI 모델 문서는 스냅샷으로 특정 버전을 고정하면 성능과 행동을 일정하게 유지할 수 있다고 설명한다. GPT-6 Astra 페이지의 스냅샷 목록에는 `gpt-6-astra` 하나뿐이고, 이 ID가 나중에 다른 스냅샷을 가리키지 않는다는 명시 문구는 모델 페이지에서 찾지 못했다(2026-10-06 확인). 고정됐다고 단정하지 말고 응답의 `model` 값을 기록해 대조한다.
+- DeepSeek 문서 기준(2026-10-26 확인)으로 `deepseek-flash`는 최신 Flash 판을 쓰는 이름으로 안내된다. 2026-10-17 V4.1-Flash-1017로 바뀔 때 호출 방식과 가격은 그대로였고, 이전 이름 `deepseek-v4-flash`도 호환을 위해 임시로 새 판으로 처리된다. 확인한 가격표와 변경 이력에는 이전 판을 고르는 날짜 붙은 ID가 없으므로 이 이름을 고정 수단으로 쓰지 않고 카나리 세트로 판 교체를 잡는다([[LLM-Model-Tiers#호출 시각별 단가와 최신판을 따라가는 이름|DeepSeek Flash 사례]]).
 - Chat Completions 응답의 `system_fingerprint`(선택 필드)는 모델이 돌아가는 백엔드 구성을 나타내며 `seed`와 함께 결정성에 영향을 줄 수 있는 백엔드 변경 시점을 파악하는 데 쓰도록 설명돼 있지만, API 레퍼런스는 `system_fingerprint`와 `seed`를 모두 Deprecated로 표시한다(2026-10-06 확인). `seed`는 결정성도 보장하지 않는다. 값이 오는 동안은 응답의 `model`(실제로 쓰인 모델)과 함께 호출 로그에 남겨 품질 변화 시점과 대조하되, 빠질 수 있는 필드라 감시의 주 신호로 삼지 않는다.
 - 고정해도 은퇴 일정에 따른 교체는 남는다([[Eval-LLM-Judge#판정기도 바뀌고 닳는다|판정기 교체]]). Claude Code를 CI에서 돌릴 때 모델 버전을 고정해야 하는 이유는 [[Claude-Code-Operations]]를 본다.
 
@@ -113,6 +114,8 @@ NerfBench(Nerf Bench)는 BridgeMind가 만든 BridgeBench의 일부로, 모델�
 - [OpenAI, Chat Completions API reference](https://developers.openai.com/api/docs/api-reference/chat)
 - [OpenAI, Create chat completion](https://developers.openai.com/api/reference/resources/chat/subresources/completions/methods/create)
 - [OpenAI Help Center, Model Release Notes](https://help.openai.com/en/articles/9624314-model-release-notes)
+- [DeepSeek, Change Log](https://api-docs.deepseek.com/updates/) (2026-10-26 확인)
+- [DeepSeek, Models & Pricing](https://api-docs.deepseek.com/quick_start/pricing/) (2026-10-26 확인)
 - [Expanding on what we missed with sycophancy — OpenAI](https://openai.com/index/expanding-on-sycophancy/)
 - [How is ChatGPT's behavior changing over time? — arXiv, Lingjiao Chen 외](https://arxiv.org/abs/2307.09009)
 

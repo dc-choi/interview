@@ -1,7 +1,7 @@
 ---
 tags: [ai, llm, cost, model-selection]
 status: done
-verified_at: 2026-10-12
+verified_at: 2026-10-26
 category: "AI엔지니어링(AIEngineering)"
 aliases: ["LLM Model Tiers", "모델 티어 선택", "모델 라우팅", "Model Routing"]
 ---
@@ -39,6 +39,15 @@ Haiku 5.5 사례를 2026-10-12 공식 발표, 가격표와 모델 문서에 대�
 - **평균 절감률의 조건**: 공식 발표는 Haiku 4.5 대비 단가가 10만 토큰 이하 요청에서 90%, 넘는 요청에서 50% 낮다고 하면서 평균 실행 비용 절감은 약 75%로 적는다. 이 평균에는 Haiku 4.5 요청의 약 90%가 10만 토큰 이하였다는 요청 구성과, 같은 텍스트가 약 30% 많은 토큰으로 세어지는 새 토크나이저(증가 폭은 내용에 따라 다름)가 함께 반영됐다. 이전 턴의 사고 블록을 컨텍스트에 남기므로 다턴 대화의 입력 토큰은 토크나이저 차이보다 더 늘 수 있다. 단가 인하율을 비용 절감률로 그대로 쓰지 않고 같은 과업의 토큰 수와 요청 길이 분포로 비교한다.
 - **안전 분류기 거절**: Haiku 5.5는 안전 분류기가 요청을 거절할 수 있고(HTTP 200의 `stop_reason: "refusal"`), Haiku 4.5에서 옮기면 새로 생기는 응답이다. 서버 측 폴백과 폴백 크레딧이 없어 클라이언트가 직접 처리한다([[LLM-Failure-Handling-Recovery#폴백과 기능 저하|LLM 실패 처리]]). 사이버 보안 세이프가드는 Haiku 4.5보다 엄격하고 다른 최신 모델보다는 다소 완화돼 Sonnet 5.5보다 넓은 방어 작업을 허용하지만 침투 테스트 같은 공격 쪽 기법은 막는다. 보안 업무 경로라면 거절률을 eval에 넣고, 해당되면 Cyber Verification Program을 검토한다.
 - **맡길 일**: 공식 안내는 분류, 추출, 라우팅 같은 대량, 지연 민감 작업과 코딩 작업의 서브에이전트를 쓰임으로 들고, 복잡한 에이전트 코딩은 Sonnet 5.5와 Opus 5.5가 낫다고 적는다. effort를 지원하는 첫 Haiku이며 Claude API의 기본값은 `medium`이다.
+
+### 호출 시각별 단가와 최신판을 따라가는 이름
+
+DeepSeek 사례를 2026-10-26 공식 가격표, 변경 이력과 모델 카드에 대조한 내용이다. 저비용 모델은 단가표의 숫자와 함께 호출 시각에 따른 단가와 모델 이름이 가리키는 판을 확인한다.
+
+- **두 이름과 한도**: API 모델 이름은 `deepseek-flash`(DeepSeek-V4.1-Flash-1017)와 `deepseek-v4-pro`(DeepSeek-V4-Pro-0813) 둘이다. 둘 다 컨텍스트 1M, 최대 출력 384K이고, 가격표의 동시성 한도는 Flash 2,500, Pro 500이며 이미지 입력은 Flash만 지원한다.
+- **호출 시각에 따라 단가가 두 배 차이 난다**: `deepseek-flash`의 100만 토큰당 단가는 할인 시간에 입력 캐시 적중 $0.003, 캐시 미적중 $0.15, 출력 $0.60이고 피크 시간에는 그 두 배다. 피크는 월~금(중국 공휴일 제외) UTC 01:00~04:00와 06:00~10:00으로, 한국 시간 10~13시와 15~19시다. 실행 시각을 옮길 수 있는 배치는 피크를 피해 예약하고, 비용 추정에는 실제 호출 시각 분포를 넣는다(적용 제안). Search와 Fetch API는 각각 성공 요청 1,000건당 $0.75다. DeepSeek Harness, Claude Code, Codex로 DeepSeek API를 쓸 때 서버 측 도구가 부르는 Search와 Fetch는 2026-10-26 확인 기준 무료이며, 2026-11-01 00:00(베이징 시간, 한국 시간 01:00)부터 요청 단위로 과금한다고 안내한다. 가격표는 가격이 조정될 수 있다고 적는다.
+- **이름이 가리키는 판이 바뀐다**: 2026-10-17 변경 이력은 V4.1-Flash를 V4.1-Flash-1017로 올리면서 호출 방식과 가격은 그대로이고 같은 `deepseek-flash`로 최신 모델을 쓰라고 안내한다. 2026-09-10에는 V4.1-Flash를 내면서 호출 이름을 `deepseek-flash`로 바꾸고 V4 Flash와 V4 Flash Vision Exp를 은퇴시켰다. 이전 이름 `deepseek-v4-flash`와 `deepseek-v4-flash-vision-exp`는 호환을 위해 임시로 받아 주며, 지금은 1017 판으로 처리돼 Flash 가격으로 과금된다. 확인한 가격표와 변경 이력에는 이전 Flash 판을 고르는 날짜 붙은 ID가 없다. 코드를 바꾸지 않아도 품질과 출력 길이가 바뀔 수 있으므로 판 교체는 [[Eval-Model-Drift-Monitoring|서빙 모델 드리프트 감시]]의 카나리 세트로 잡는다. 판 고정이 필요한 경로는 MIT 라이선스로 공개된 가중치(Hugging Face 저장소의 safetensors 표시 기준 약 763B 파라미터, 모델 카드 본문은 총 파라미터 수를 밝히지 않는다)를 직접 서빙하는 방안과 비용을 비교한다(적용 제안).
+- **자체 보고 점수의 조건**: 모델 카드는 1017 판을 소규모 갱신으로 설명하고, DeepSWE v1.1(Mini-SWE-V2 하네스) 77.0을 직전 판 74.2, Claude Opus 5 74.0, GPT-5.6 Sol 73.0과 함께 보고한다. 같은 표의 Terminal-Bench 4.0(Claude Code 하네스)은 42.3으로 Opus 5의 51.8보다 낮다. 벤치마크와 하네스에 따라 순위가 갈리므로 한 점수로 코딩 에이전트의 우열을 정하지 않는다. 변경 이력은 직전 판보다 작업 시간과 출력 길이가 줄었다고 적고 DeepSeek Harness를 0.2.1-rc.1 이상으로 올리라고 권한다. 단가가 같아도 과업당 비용과 하네스 조건이 달라지므로 자기 과업으로 다시 잰다.
 
 ## 모델 라우팅 (티어 선택 패턴)
 
@@ -122,6 +131,9 @@ Haiku 5.5 사례를 2026-10-12 공식 발표, 가격표와 모델 문서에 대�
 - [OpenAI API, GPT-5.6 Luna](https://developers.openai.com/api/docs/models/gpt-5.6-luna)
 - [OpenAI API, Pricing](https://developers.openai.com/api/docs/pricing) (2026-10-06 GPT-6 계열과 GPT-5.6 가격 확인)
 - [Gemini API, Pricing](https://ai.google.dev/gemini-api/docs/pricing) (2026-10-06 Gemini 3.1 Pro Preview 가격 확인)
+- [DeepSeek API Docs, Models & Pricing](https://api-docs.deepseek.com/quick_start/pricing/) (2026-10-26 모델 판, 한도, 시간대별 단가, Search와 Fetch 과금, 이전 이름의 처리 확인)
+- [DeepSeek API Docs, Change Log](https://api-docs.deepseek.com/updates/) (2026-09-10 이름 변경, 2026-10-17 판 교체와 하네스 권고 항목)
+- [Hugging Face, deepseek-ai/DeepSeek-V4.1-Flash-1017](https://huggingface.co/deepseek-ai/DeepSeek-V4.1-Flash-1017) (2026-10-26 벤치마크 표의 하네스 조건, 라이선스와 safetensors 파라미터 표시 확인)
 - [Anthropic Platform Docs, Models overview](https://platform.claude.com/docs/en/about-claude/models/overview) (Anthropic 라인업, 티어별 가격, 2026-09-30 현재 모델 확인, 2026-10-06 재확인, 2026-10-12 Haiku 5.5 반영)
 - [Introducing Claude Haiku 5.5 — Anthropic](https://www.anthropic.com/claude-haiku-5-5)
 - [Anthropic Platform Docs, What's new in Claude Haiku 5.5](https://platform.claude.com/docs/en/models/haiku-5-5/whats-new-haiku-5-5)
@@ -144,3 +156,4 @@ Haiku 5.5 사례를 2026-10-12 공식 발표, 가격표와 모델 문서에 대�
 - [기획은 하위 모델, 구현은 상위 모델 — Threads, dev.inniverse](https://www.threads.com/@dev.inniverse/post/Dac6StsCbgH)
 - [인프런, 널널한 개발자, 앤트로픽 AI 모델별 특징](https://www.inflearn.com/courses/lecture?courseId=344484&unitId=498589)
 - [이제 AI 괴롭히면 차단, 하이쿠5.5, 클로드 스타트업 지원 프로그램 소식 — YouTube, ZeroCho TV](https://www.youtube.com/watch?v=C3AmewdOnk0)
+- [IT뉴스 - 딥시크 미쳤다, Gemini 4, Muse Wonder, Spark Open, 오픈AI 스파이, GPT-Live-1.1, Fish Audio Drama 3, 테슬라 등 — YouTube, 조코딩 JoCoding](https://www.youtube.com/watch?v=xUrRNBz4j1I) — 2026-10-18, DeepSeek 사례의 학습 계기이며 단가, 판과 점수는 공식 문서와 모델 카드로 대조
