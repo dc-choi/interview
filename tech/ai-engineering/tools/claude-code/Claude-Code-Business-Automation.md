@@ -3,7 +3,7 @@ tags: [ai, claude-code, automation, business, connectors, mcp]
 status: done
 category: "AI엔지니어링(AIEngineering)"
 aliases: ["Claude Code Business Automation", "클로드 코드 비즈니스 자동화", "Connectors", "스케줄 태스크", "Cowork"]
-verified_at: 2026-09-30
+verified_at: 2026-10-26
 ---
 
 # Claude Code 비즈니스 자동화 — 문서, 데이터, 연동, 반복
@@ -94,10 +94,16 @@ Excel/CSV는 진단 → 정제 → 통계 → 차트 체인: 구조 진단(타�
 
 Connectors든 수동 설정이든 **밑단은 모두 MCP**다. 차이는 설정 편의성뿐.
 
-- **Connectors(권장)**: GUI에서 Slack, Gmail, Notion, GitHub 등 OAuth 연결 → "Slack #general 최근 10개 요약" 자연어. 서비스 간 크로스 작업 가능
-- **커넥터는 내 계정 권한으로 움직인다**: 로그인한 계정이 할 수 있는 삭제와 발송도 할 수 있어서, 메일 정리를 맡겼다가 지우면 안 되는 메일까지 지우는 식의 사고가 생길 수 있다. 커넥터 설정의 도구별 권한(항상 허용, 승인 필요, 차단)에서 삭제와 발송 같은 쓰기 도구는 승인 필요나 차단으로 두고, 대화마다 채팅창 `+` 메뉴에서 필요한 커넥터만 켠다
+- **Connectors(권장)**: GUI에서 Slack, Gmail, Notion 등 OAuth 연결 → "Slack #general 최근 10개 요약" 자연어. 서비스 간 크로스 작업 가능
+- **커넥터는 내 계정 권한 안에서 움직인다**: 커넥터가 삭제나 발송 도구를 노출하고 연결할 때 그 범위를 승인했다면 계정이 할 수 있는 삭제와 발송도 실행할 수 있어서, 메일 정리를 맡겼다가 지우면 안 되는 메일까지 지우는 식의 사고가 생길 수 있다. 커넥터마다 노출하는 도구가 다르므로 디렉터리 커넥터는 연결 전에 커넥터 페이지의 설명과 읽기, 쓰기 기능을 확인하고, 연결 뒤 Tool permissions에 나온 도구 목록을 다시 확인한다(디렉터리에 없는 서버를 URL로 추가할 때는 디렉터리 페이지가 없다). 커넥터 페이지의 도구별 권한(Tool permissions)은 도구 묶음이나 개별 도구마다 Always allow(항상 허용), Needs approval(승인 필요), Blocked(차단)로 정한다. 삭제와 발송 같은 쓰기 도구는 승인 필요나 차단으로 두고, 대화마다 채팅창 `+` 메뉴에서 필요한 커넥터만 켠다
+- **승인 요청의 Always allow는 이후 확인을 없앤다**: 도구 호출 승인 요청에서 Allow once는 이번 호출만 진행하고, Always allow는 그 도구의 이후 승인 요청을 생략한다. 고른 값은 Tool permissions에서 다시 바꿀 수 있고, 사용자 정의 커넥터의 보안 안내도 Always allow는 신뢰하는 서버에만 누르라고 한다. 발송, 삭제와 지출을 일으키는 도구의 요청에는 Always allow를 고르지 않는다(적용 제안)
+- **Team과 Enterprise는 Owner 제한이 우선한다**: Owner는 연결된 서비스가 조직 전체에서 할 수 있는 동작을 권한 묶음이나 개별 권한마다 Always allow, Needs approval, Blocked로 제한하고, 구성원은 이 제한을 덮어쓸 수 없다. 이 제한은 원래 서비스의 권한과 함께 작동해 그 서비스가 허용하는 것보다 넓은 접근을 주지 않고 좁히기만 하므로, Claude에서 쓰기가 허용돼도 서비스 계정에 해당 권한이 있어야 실행된다
+- **커넥터 라벨은 보안 감사가 아니다**: Verified는 Anthropic이 검토 시점에 도구의 품질과 호환성을 시험한 표시지만 보안 감사나 성능 보장이 아니다. Community는 등재 전 선별만 거쳐 심층 검토를 받지 않았고, URL로 추가한 Custom(Team과 Enterprise에서 Owner가 조직에 추가한 것 포함)은 검토를 받지 않았다. 라벨과 관계없이 Anthropic은 서드파티 커넥터의 서버를 운영하지 않고 데이터 처리도 통제하지 않으며, 개발자는 노출 도구를 언제든 바꿀 수 있다
+- **목록에 없는 서버는 URL로 추가한다**: 원격 MCP 서버 URL로 추가하는 사용자 정의 커넥터는 Free, Pro, Max, Team, Enterprise에서 쓸 수 있고 Free는 하나만 추가한다. Team과 Enterprise에서는 Owner가 조직에 추가하고(Enterprise는 조직 라이브러리 관리가 포함된 사용자 정의 역할의 구성원도 가능) 구성원이 각자 계정으로 연결한다. API 키 같은 고정 자격 증명을 요청 헤더로 보내는 인증은 베타로 일부 조직에만 열려 있고, 조직 구성원 전원이 같은 자격 증명을 쓰는 서비스에 맞는다. 사람마다 자기 계정으로 로그인해야 하면 OAuth를 쓴다
 - **수동 MCP**: Slack의 원격 HTTP 서버를 `claude mcp add --transport http slack https://mcp.slack.com/mcp`로 등록하고 `claude mcp list`로 확인한다. 또는 claude.ai 커넥터를 사용한다 ([[MCP]])
 - 회사 워크스페이스 연결은 IT 승인 선행
+
+위의 승인 선택지, 조직 제한, 라벨과 사용자 정의 커넥터 설명은 2026-10-25 Anthropic 공식 문서와 도움말을 대조하고 2026-10-26 다시 확인한 범위다.
 
 ## 반복 자동화 3계층
 
@@ -152,7 +158,10 @@ Connectors든 수동 설정이든 **밑단은 모두 MCP**다. 차이는 설정 
 - [Claude — Cowork overview](https://claude.com/docs/cowork/overview)
 - [Claude — Organize work with projects](https://claude.com/docs/cowork/guide/projects)
 - [Claude — Claude Desktop changelog](https://claude.com/docs/cowork/changelog)
-- [Claude — Get started with connectors](https://claude.com/docs/connectors/overview)
+- [Claude — Get started with connectors](https://claude.com/docs/connectors/getting-started) — 2026-10-25, 승인 요청의 Allow once와 Always allow, 도구 묶음과 개별 도구 권한 대조
+- [Claude — Add a connector that isn't in the directory](https://claude.com/docs/connectors/custom/add-unlisted) — 2026-10-25, 요금제별 URL 추가, Free 1개 제한, Owner 추가, 요청 헤더 인증 베타, Always allow 신뢰 서버 한정 안내 대조
+- [Claude — Connector verification](https://claude.com/docs/connectors/verification) — 2026-10-25, Verified, Community, Custom 라벨과 서드파티 데이터 처리 대조
+- [Claude Help Center — Use connectors to extend Claude's capabilities](https://support.claude.com/en/articles/11176164-use-connectors-to-extend-claude-s-capabilities) — 2026-10-25, Team과 Enterprise Owner의 동작 제한과 서비스 권한의 관계, 연결 전 커넥터 페이지의 설명과 읽기, 쓰기 기능 대조
 - [Claude Help Center — Share artifacts](https://support.claude.com/en/articles/9547008-publish-and-share-artifacts)
 - [Claude Help Center — Claude Cowork and chat are one Claude](https://support.claude.com/en/articles/16761823-claude-cowork-and-chat-are-one-claude)
 - [Claude Help Center — Claude Cowork architecture overview](https://support.claude.com/en/articles/14479288-claude-cowork-architecture-overview)

@@ -16,7 +16,8 @@ aliases: ["Marketing", "마케팅"]
 - [x] [[Promotional-Products-Execution|판촉물 제작과 납기]] — 샘플, 배송 보상의 조건, 재고와 배포 성과의 구분
 - [x] [[Customer-Data-Activation-Strategy|고객 데이터 활성화의 도입 판단]] — 대상 조건, 실행 시점, 운영 개선과 구매 효과의 구분
 - [x] [[AI-Marketing-Analysis|AI 마케팅 분석]] — 조회와 판단, 마케팅 엔지니어의 고객 언어, 실험 실행과 승인 경계, 이탈 예측과 증분 효과
-- [x] [[Affiliate-Marketing|제휴 마케팅]] — CPC와 CPA, 적격 성과와 정산 수익의 구분
+- [x] [[AI-Marketing-Connectors|AI 마케팅 커넥터의 권한과 데이터 경계]] — 계정, 서버와 호스트의 권한 층, 조회와 집행의 승인 분리, 수집의 약관과 개인정보, 무료 한도의 초과 동작
+- [x] [[Affiliate-Marketing|제휴 마케팅]] — CPC와 CPA, 적격 성과와 정산 수익의 구분, 쿠팡 파트너스의 표시 기준과 제재
 - [x] [[Marketing-Fundamentals|마케팅, 브랜딩, 광고와 홍보 기초 (PR의 관계 관리, 브랜드와 제품 통합의 구분, STP, 4P, Customer Journey)]]
 - [x] [[Customer-Messaging-and-Buying-Roles|고객 상황과 구매 역할별 메시지]] — 목표 고객군 안의 공통 가치, 두 번째 미팅의 맞춤 설명, 구매 이유와 도입 우려, 구매 참여자별 확인 자료
 - [x] [[GTM-Strategy|Go-to-Market 전략과 유입, 체험 물량 역산]] *(→ product-strategy/)*
