@@ -34,6 +34,19 @@ Google SRE Workbook은 둘의 관계를 `class SRE implements interface DevOps`�
 
 ## 도입 전략 — 도구가 아니라 문제부터
 
+### 운영 문제를 닫는 개발 역량
+
+2026-10-26 Google SRE Book과 Workbook의 toil 설명을 대조했다. 개발 역량의 범위는 도구 개수보다 반복되는 운영 문제를 코드와 검증으로 줄일 수 있는지로 판단한다. 이는 아래 원칙을 바탕으로 한 학습 기준이며 모든 DevOps 직무의 동일한 채용 요건은 아니다.
+
+- **Toil을 찾는다:** 수작업, 반복성, 자동화 가능성, 지속적인 개선의 부재와 서비스 규모에 비례하는 작업 증가를 살핀다. 싫어하는 업무나 모든 운영 업무를 toil로 부르지는 않는다.
+- **증상 처리와 원인 제거를 비교한다:** 같은 로그를 지우는 스크립트와 로그가 과다 생성되는 원인을 고치는 작업은 효과가 다르다. 자동화의 개발과 유지 비용을 절약할 시간 및 오류 감소와 비교한다.
+- **작은 기능을 끝까지 검증한다:** 예를 들어 상태 조회 도구 하나에도 입력, 접근 권한, 실패 처리와 결과 확인이 필요하다. 완성한 코드의 양보다 반복 작업 시간, 오류와 재작업이 줄었는지를 확인한다(실습 제안).
+- **자동화 뒤에도 이해를 유지한다:** 도구가 실행한 작업과 실패 조건을 설명할 수 있어야 한다. 안전하지 않은 상황에서는 사람이 판단할 경로를 남긴다.
+
+Google의 운영 업무 50% 상한은 해당 SRE 운영 모델의 기준이다. 모든 조직에 동일한 개발 시간 비율을 요구하는 규칙으로 옮기지 않는다.
+
+### 적용 순서
+
 SRE용 모니터링, 자동화 도구는 이미 많다. 하지만 오래 운영해 온 대규모 시스템에 도구를 일괄 적용하는 것은 어렵다. 어떤 도구를 쓸지보다 **어떤 문제가 존재하는지 파악하고 분석하는 작업이 먼저**다. 취약한 부분과 개선이 필요한 부분을 정리한 뒤 하나씩 극복한다.
 
 ## 실천 요소
@@ -120,6 +133,7 @@ SRE용 모니터링, 자동화 도구는 이미 많다. 하지만 오래 운영�
 
 - [Google SRE Book — Introduction](https://sre.google/sre-book/introduction/)
 - [Google SRE Workbook — How SRE Relates to DevOps](https://sre.google/workbook/how-sre-relates/)
-- [DevOps와 SRE의 역할 차이 — Threads, nchime72](https://www.threads.com/@nchime72/post/DRGNG-Hkq1A)
+- [Google SRE Book — Eliminating Toil](https://sre.google/sre-book/eliminating-toil/)
+- [Google SRE Workbook — Eliminating Toil](https://sre.google/workbook/eliminating-toil/)
 - [네이버 검색의 SRE 시스템 — NAVER D2](https://d2.naver.com/helloworld/2047663)
 - 지진에도 흔들리지 않는 네이버 검색 시스템 2편 — 네이버 검색 공식블로그 (SRE 유래, 가용량 지표 도입 초기 효과)
