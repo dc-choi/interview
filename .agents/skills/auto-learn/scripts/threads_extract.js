@@ -1,7 +1,9 @@
-// Threads 페이지에서 글을 뽑는다. Claude in Chrome의 javascript_tool로 이 파일 전체를 한 번 실행한 뒤 호출한다.
+// Threads 페이지에서 글을 뽑는다. ego-browser 스크립트에서 이 파일을 node:fs로 읽어 page.evaluate(소스)로 한 번 실행한 뒤
+// 같은 스크립트에서 await page.evaluate((s) => window.__vlThreads('list', s), 0)처럼 부른다. 동기 함수라 반환값은
+// page.evaluate가 페이지의 Promise를 기다리는지와 관계없이 그대로 돌아온다.
 //   __vlThreads('list', start)      리포스트 탭: 보이는 글을 "id<TAB>@author<TAB>datetime<TAB>chain<TAB>첫 줄" 행으로
 //   __vlThreads('post', id, start)  글 페이지: 그 글과 이어진 같은 작성자의 글, 인용, 이미지 설명, 외부 링크
-// javascript_tool 출력은 2000자 근처에서 잘리므로 1800자씩 나눠 주며, 첫 줄의 next 값으로 다음 조각을 읽는다.
+// 결과는 1800자씩 나눠 주며, 첫 줄의 next 값으로 다음 조각을 읽는다.
 // 외부 링크의 쿼리는 추적 값일 수 있어 지우고, YouTube 영상 링크의 v 값만 남긴다.
 window.__vlThreads = (mode, a, b) => {
   const clean = (href) => {

@@ -35,7 +35,10 @@ from collections import Counter
 from concurrent.futures import ThreadPoolExecutor
 from pathlib import Path
 
-import palantir_docs
+# 스킬 스크립트의 __pycache__는 다음 실행이 불러오는 코드라 실행 검사가 본다. VL은 바이트코드를 쓰지 않아 정상 실행이
+# 그 파일을 바꾸지 않는다(launchd, 엔진의 VL 호출과 대화형 실행 모두 이 줄을 지난다).
+sys.dont_write_bytecode = True
+import palantir_docs  # noqa: E402
 
 SCRIPT = Path(__file__).resolve()
 SKILL = SCRIPT.parent.parent
@@ -45,6 +48,7 @@ S = Path(os.environ.get("VAULT_LEARN_STATE", "~/.local/state/vault-auto-learn"))
 LABEL = "com.dcchoi.vault-learn."
 MODES = ("harvest", "instagram", "learn", "digest")
 # 과거 DM 기록의 가림용 이름(instagram_dm_name)과 뉴스레터 발신 주소는 config.json에만 둔다.
+# 2026-10-25 사용자 결정: 모든 작업에서 Claude가 우선이고 Codex는 Claude를 쓸 수 없을 때만 쓴다(alternate, primary claude).
 DEFAULTS = {"k": 6, "jobs": 2, "whisper_threads": 4, "learn_timeout_min": 180, "harvest_timeout_min": 90,
             "instagram_timeout_min": 45, "digest_timeout_min": 30, "idle_interval_min": 180, "stale_days": 180,
             "claude": "claude", "codex": "codex", "codex_model": "gpt-6-astra", "codex_effort": "high",
@@ -71,7 +75,9 @@ SECRET = re.compile(r"-----BEGIN [A-Z ]*PRIVATE KEY-----|\b(?:AKIA|ASIA)(?![0-9A
                     r"\bgh[pousr]_[A-Za-z0-9]{30,}|\bsk-(?:ant-|proj-)?[A-Za-z0-9_-]{20,}|\bxox[abprs]-[A-Za-z0-9-]{10,}|"
                     r"\bAIza[0-9A-Za-z_-]{35}\b")
 VIDEO = re.compile(r"(?:[?&]v=|youtu\.be/|/shorts/|/live/|/embed/)([\w-]{11})(?![\w-])")
-EDITABLE = re.compile(r"^(?:tech|biz|econ|fit)/.+\.md$")
+# 자동 학습이 고치고 게시하는 지식 문서. AGENTS.md, CLAUDE.md와 그 변형(AGENTS.override.md, CLAUDE.local.md)은 다음
+# 실행이 읽는 지침이라 도메인 폴더 안에 있어도 제외한다(대소문자를 가리지 않는 macOS 파일 시스템).
+EDITABLE = re.compile(r"^(?:tech|biz|econ|fit)/(?:.+/)?(?!(?i:agents|claude)(?:\.[^/]+)?\.md$)[^/]+\.md$")
 TRAILERS = {"claude": "Co-Authored-By: Claude Opus 5.5 <noreply@anthropic.com>",
             "codex": "Co-Authored-By: Codex <noreply@openai.com>"}
 TRAILER = TRAILERS["claude"]
@@ -90,14 +96,28 @@ YT_LINK = re.compile(r"\]\(https://www\.youtube\.com/(@[^)\s]+|channel/UC[\w-]{2
 CHANNEL_COLS = ["handle", "channel_id", "title", "decision", "reason", "added_at"]
 # 단서 수집함과 learn key 접두사. threads의 본 id 목록은 처음 만든 이름(seen_reposts)을 그대로 쓴다.
 INBOX = {"threads": "repost", "instagram": "insta", "email": "email"}
-CHROME_TOOLS = ("tabs_context_mcp", "tabs_create_mcp", "tabs_close_mcp", "navigate", "javascript_tool", "get_page_text",
-                "find", "computer", "read_page", "list_connected_browsers", "select_browser")
 GMAIL_READ = ("search_threads", "get_thread", "get_message")
 GMAIL_WRITE = ("send_message reply forward create_draft update_draft delete_draft label_message label_thread "
                "unlabel_message unlabel_thread update_message_labels apply_sensitive_message_label "
                "apply_sensitive_thread_label create_label update_label delete_label trash_message trash_thread "
                "untrash_message untrash_thread mark_message_spam mark_thread_spam unmark_message_spam "
                "unmark_thread_spam").split()
+BROWSER = ("harvest", "instagram")  # ego lite를 쓰는 수집 작업
+# 브라우저 결과 신호. 두 엔진은 같은 ego lite 프로필을 쓰므로 로그아웃(logged_out)은 엔진을 바꿔도 같다. 연결 실패(chrome)는
+# Claude가 보면 ego lite 문제지만 Codex는 자기 샌드박스나 규칙 문제일 수 있다. 사용자가 넘겨받은 브라우저는 재시도하거나
+# 우회하지 않는다(takeover, ego-browser 안내의 사용자 제어 규칙).
+BROWSER_SIGNALS = {"CHROME_UNAVAILABLE": "chrome", "INSTAGRAM_LOGGED_OUT": "logged_out",
+                   "GMAIL_LOGGED_OUT": "logged_out", "USER_TAKEOVER": "takeover"}
+ENGINE_WAIT = ("limit", "auth", "unavailable")  # 엔진 자체를 쓸 수 없다. 이때만 다른 엔진이 대신한다.
+BROWSER_WAIT = ("chrome", "logged_out")  # 그 수집 작업만 쉰다. S/backoff/browser-<모드>.json
+ORIGIN_MAIN = "refs/remotes/origin/main"
+PENDING = "guard-pending.json"  # 실행 뒤 검사가 끝나야 지우는 표시(S 아래)
+# Codex 실행에서 끄는 브라우저 MCP(2026-10-25 사용자 결정): Playwright, node_repl, unified-computer-use 플러그인의 cua_repl.
+# 플러그인 이름에 '@'가 있어 점 경로로 쓰면 따옴표가 키 글자로 남아 꺼지지 않으므로(codex-cli 0.164.0의 codex mcp list로
+# 확인) 인라인 표로 끈다.
+BROWSER_MCP = ("playwright", "node_repl", "cua_repl")
+CODEX_NO_BROWSER = ("-c", "mcp_servers.playwright.enabled=false", "-c", "mcp_servers.node_repl.enabled=false",
+                    "-c", 'plugins={"unified-computer-use@openai-bundled"={enabled=false}}')
 STOP = threading.Event()
 
 
@@ -775,14 +795,28 @@ def own_commits():
     return set(read_lines(S / "own_commits"))
 
 
+def remote_main():
+    """git ls-remote로 확인한 원격 main의 SHA. 확인하지 못하면 None이다."""
+    try:
+        ls = git("ls-remote", "origin", "refs/heads/main", check=False, timeout=60)
+    except subprocess.TimeoutExpired:
+        return None
+    return ls.stdout.split()[0] if ls.returncode == 0 and ls.stdout.strip() else None
+
+
+def remote_refs():
+    """원격 추적 ref {이름: SHA, symref면 그 대상}. 로컬 파일이라 실행 중에 위조할 수 있다."""
+    refs = {}
+    for line in git("for-each-ref", "--format=%(refname) %(objectname) %(symref)", "refs/remotes").stdout.splitlines():
+        name, sha, *target = line.split()
+        refs[name] = target[0] if target else sha
+    return refs
+
+
 def prove():
     head = git("rev-parse", "HEAD").stdout.strip()
     upstream = git("rev-parse", "@{u}", check=False).stdout.strip()
-    try:
-        ls = git("ls-remote", "origin", "refs/heads/main", check=False, timeout=60)
-        remote = ls.stdout.split()[0] if ls.returncode == 0 and ls.stdout.strip() else None
-    except subprocess.TimeoutExpired:
-        remote = None
+    remote = remote_main()
     divergence = git("rev-list", "--left-right", "--count", "HEAD...@{u}", check=False).stdout.split()
     ok = remote is not None and head == upstream == remote and divergence == ["0", "0"]
     return {"status": "published" if ok else ("unverified" if remote is None else "mismatch"), "head": head,
@@ -864,12 +898,17 @@ def file_hash(rel):
 
 
 def repo_snapshot():
+    """저장소 파일의 해시. 숨긴 로컬 설정과 다음 실행이 불러오는 코드(스킬 스크립트의 __pycache__, ontology/node_modules)도
+    본다. Codex learn의 작업공간 쓰기 샌드박스도 그 경로에 쓸 수 있다. Git 내부 파일은 보호 상태로 따로 보고, Obsidian
+    설정은 앱이 늘 고쳐 뺀다. IDE, 브라우저 도구 작업 폴더와 Claude 로컬 권한 파일은 평소 작업으로도 바뀌어 오탐 일시정지를
+    부르므로 2026-10-26 사용자 결정으로 뺀다."""
     paths = set(git("ls-files", "--cached", "--others", "--exclude-standard", "-z").stdout.split("\0")) - {""}
-    # 숨긴 로컬 설정도 검사한다. 의존성, 생성 캐시와 Git 내부 파일은 sandbox와 도구의 별도 경계다.
+    skip = {".git", ".obsidian", ".venv", ".idea", ".playwright-mcp", "_workspace"}
     for root, dirs, names in os.walk(REPO):
-        dirs[:] = [d for d in dirs if d not in (".git", "node_modules", ".obsidian", ".venv", "__pycache__")]
+        dirs[:] = [d for d in dirs if d not in skip]
         for name in names:
             paths.add((Path(root) / name).relative_to(REPO).as_posix())
+    paths = {p for p in paths if p.split("/", 1)[0] not in skip and p != ".claude/settings.local.json"}
     return {rel: file_hash(rel) for rel in paths}
 
 
@@ -879,14 +918,21 @@ def scope_problems(before, after, dirty, files, mode):
     return sorted(f for f in changed if f in dirty or f not in allowed or after.get(f, "").startswith("symlink:"))
 
 
+def manifests():
+    """run manifest 중 dict이고 run 이름이 폴더와 같은 것만 준다. 깨진 파일이 runner와 범위 검사를 멈추지 않게 한다."""
+    for path in sorted((S / "runs").glob("*/manifest.json")):
+        m = read_json(path)
+        if isinstance(m, dict) and m.get("run") == path.parent.name:
+            yield path, m
+
+
 def leftover_runs(kind=None):
     """끝난 run(kind를 주면 그 종류만)이 게시하지 못하고 남긴 파일 중 그 뒤 내용이 그대로인 것({run: [파일]}).
 
     내용이 바뀐 파일은 사용자나 다른 작업이 고친 것일 수 있어 이어받지 않는다(게시하거나 되돌리면 남의 작업을 건드린다).
     """
     dirty, out = set(dirty_paths()), {}
-    for path in sorted((S / "runs").glob("*/manifest.json")):
-        m = read_json(path, {}) or {}
+    for _, m in manifests():
         if (kind and m.get("kind") != kind) or m.get("status") == "scope_blocked":
             continue
         files = sorted(f for f, h in (m.get("left") or {}).items() if f in dirty and file_hash(f) == h)
@@ -901,8 +947,7 @@ def finish_runs(since, kind, agent=None):
     agent를 주면 그 실행이 연 run만 닫는다. 같은 시간대에 대화형 세션이 연 run의 plan을 비우지 않는다.
     """
     dirty = set(dirty_paths())
-    for path in (S / "runs").glob("*/manifest.json"):
-        m = read_json(path, {}) or {}
+    for _, m in manifests():
         if m.get("kind") != kind or "ended" in m or dt.datetime.fromisoformat(m["started"]).timestamp() < since:
             continue
         if agent is not None and m.get("agent") != agent:
@@ -953,7 +998,8 @@ def cmd_plan(a):
         rel = norm_rel(f)
         # harvest는 학습 출처 목록만 고친다. 다른 파일을 plan하면 그사이 다른 세션이 고친 내용까지 커밋할 수 있다.
         if not rel or not EDITABLE.fullmatch(rel) or (m.get("kind") == "harvest" and rel != SOURCES) or (rel and (REPO / rel).is_symlink()):
-            rejected.append({"file": f, "why": f"learn은 tech/, biz/, econ/, fit/ 아래 Markdown만, harvest는 {SOURCES}만 편집한다"})
+            rejected.append({"file": f, "why": "learn은 tech/, biz/, econ/, fit/ 아래 지식 문서 Markdown만(AGENTS, CLAUDE 지침 "
+                                             f"파일 제외), harvest는 {SOURCES}만 편집한다"})
         elif rel in m["files"]:
             continue
         elif rel in m["baseline_dirty"] or rel in dirty:
@@ -1281,7 +1327,7 @@ def cmd_pick(a):
 
 def state_summary():
     done, skipped, keys = done_ids(), skipped_ids(), processed_keys()
-    backoff = {engine: engine_backoff(engine) for engine in ENGINES}
+    backoff = {engine: engine_backoff(engine) for engine in ENGINES} | {f"browser-{m}": browser_backoff(m) for m in BROWSER}
     log_rows = read_jsonl(S / "digests" / "log.jsonl")
     unpushed = count_unpushed()
     return {"paused": (S / "paused").exists(), "transcribe_waiting": waiting_counts(), "transcripts": len(done),
@@ -1294,11 +1340,11 @@ def state_summary():
             | {"listed": len(learning_sources()[0])},
             "unpushed_commits": unpushed,
             # 나중에 푸시되면 지난 보류는 더 알릴 필요가 없다.
-            "deferred_runs": sorted(p.parent.name for p in (S / "runs").glob("*/manifest.json")
-                                    if (read_json(p, {}) or {}).get("status") in ("deferred", "conflict", "push_failed",
-                                                                                  "unverified"))[-5:] if unpushed else [],
+            "deferred_runs": sorted(m["run"] for _, m in manifests()
+                                    if m.get("status") in ("deferred", "conflict", "push_failed", "unverified"))[-5:]
+            if unpushed else [],
             "leftover_files": sum(len(v) for v in leftover_runs().values()),
-            "engines": engine_settings(cfg()),
+            "engines": engine_view(cfg()),
             "backoff": {engine: value if value.get("until", 0) > time.time() else None
                         for engine, value in backoff.items()},
             "last_attempts": {mode: read_json(S / "runs" / f"last-{mode}.json") for mode in MODES}}
@@ -1494,19 +1540,19 @@ def agent_rules(mode):
     if mode == "learn":
         allow += ["Agent", "WebSearch", "WebFetch", "mcp__development-context", "mcp__plugin_context7_context7",
                   *(f"Edit(/{repo}/{top}/**)" for top in DOMAINS)]
-    if mode in ("harvest", "instagram"):  # 서버 전체가 아니라 SKILL.md의 읽기 도구만 연다.
-        allow += [f"mcp__claude-in-chrome__{t}" for t in CHROME_TOOLS]
+    if mode in BROWSER:  # 브라우저는 ego lite의 ego-browser CLI만 쓴다(2026-10-25 사용자 결정).
+        allow += ["Bash(ego-browser skill)", "Bash(ego-browser skill *)", "Bash(ego-browser nodejs *)"]
     if mode == "harvest":  # 새 learn 채널을 학습 출처 목록에 더하고, Gmail 연결이 있으면 읽기 도구만 쓴다.
         allow += [f"Edit(/{repo}/{SOURCES})", *(f"mcp__claude_ai_Gmail__{t}" for t in GMAIL_READ)]
     # 사용자와 프로젝트 설정의 허용 규칙(git add/commit/push, codex exec, pandoc, pnpm build, python3 -m)도
-    # 이 실행에 그대로 적용된다. 거부가 우선하므로 Git 쓰기와 그 밖의 실행 경로를 여기서 막는다. 메일 쓰기와
-    # 브라우저의 파일 업로드, 폼 입력은 설정에 넓은 허용 규칙이 생겨도 열리지 않게 함께 막는다.
+    # 이 실행에 그대로 적용된다. 거부가 우선하므로 Git 쓰기와 그 밖의 실행 경로를 여기서 막는다. 메일 쓰기, ego lite의
+    # 갱신과 가져오기, ego lite 밖의 브라우저 도구는 설정에 넓은 허용 규칙이 생겨도 열리지 않게 함께 막는다.
     deny = [f"Bash(git {sub} *)" for sub in ("add", "commit", "push", "stash", "reset", "checkout", "restore",
                                               "clean", "rebase", "merge", "pull", "rm")]
     deny += ["Bash(rm *)", "Bash(codex *)", "Bash(pandoc *)", "Bash(pnpm *)", "Bash(python3 -m *)",
+             "Bash(ego-browser upgrade *)", "Bash(ego-browser import *)", "mcp__claude-in-chrome",
              "mcp__plugin_playwright_playwright", f"Edit(/{repo}/**/AGENTS.md)", f"Edit(/{repo}/**/CLAUDE.md)",
              *(f"mcp__claude_ai_Gmail__{t}" for t in GMAIL_WRITE),
-             *(f"mcp__claude-in-chrome__{t}" for t in ("file_upload", "upload_image", "form_input")),
              *(f"Read(~/{p})" for p in (".ssh/**", ".aws/**", ".gnupg/**", ".config/**", ".codex/**", ".netrc"))]
     return allow, deny
 
@@ -1524,11 +1570,32 @@ def workflow_sections(mode, engine):
     return "\n".join(part for name, part in selected.items() if name in wanted)
 
 
+def ego_guide():
+    """VL은 두 샌드박스 밖에서 돌므로 브라우저 실행 전에 `ego-browser skill` 안내를 S/tmp에 저장한다. 실패하면 None이다."""
+    try:
+        p = subprocess.run(["ego-browser", "skill"], capture_output=True, text=True, timeout=60)
+    except (OSError, subprocess.SubprocessError):
+        return None
+    if p.returncode != 0 or "[ego-browser:skill] end of guide" not in p.stdout:
+        return None
+    path = S / "tmp" / "ego-browser-skill.md"
+    write_text(path, p.stdout)
+    return path
+
+
 def agent_prompt(mode, conf):
-    chrome = (" Chrome이 없거나 연결되지 않았으면 CHROME_UNAVAILABLE만 출력한다. "
-              "자동 승인이나 정책이 브라우저 동작을 거부했으면 POLICY_BLOCKED만 출력하고 끝낸다. "
-              "정책 거부를 연결 실패로 바꾸거나 다른 엔진과 브라우저로 우회하지 않는다.")
-    extra = {"learn": f" K={conf['k']}.", "harvest": chrome, "instagram": chrome,
+    browser = ""
+    if mode in BROWSER:  # TaskSpace 이름은 모드마다 고정해 끝내지 못한 공간을 다음 실행이 이어받게 하고, 파일 접두사는 실행마다 바꾼다.
+        guide = ego_guide()
+        browser = ((f" 브라우저 단계 전에 VL이 저장한 ego-browser 안내 {guide}를 끝 줄까지 읽고 따른다." if guide else
+                    " 브라우저 단계 전에 `ego-browser skill`을 실행해 끝까지 읽고 따른다.")
+                   + f" TaskSpace 이름은 vault-learn-{mode}, 이 실행의 파일 접두사는 {S}/tmp/vault-learn-{mode}-{stamp()}이고 "
+                   f"헬퍼는 {SCRIPT.parent}/youtube_subs.js와 {SCRIPT.parent}/threads_extract.js다. ego-browser가 ego lite에 "
+                   "연결하지 못하면 CHROME_UNAVAILABLE(ego lite를 쓸 수 없다는 뜻)만, 사용자가 브라우저를 넘겨받았거나 그 "
+                   "TaskSpace 이름을 사용자 소유 공간이 쓰고 있으면 USER_TAKEOVER만 출력한다. "
+                   "권한 규칙이나 정책이 브라우저 동작을 거부했으면 POLICY_BLOCKED만 출력하고 끝낸다. "
+                   "정책 거부를 연결 실패로 바꾸거나 다른 엔진과 브라우저로 우회하지 않는다.")
+    extra = {"learn": f" K={conf['k']}.", "harvest": browser, "instagram": browser,
              "digest": f" 날짜는 {dt.date.today()}이다."}
     return (f"auto-learn 스킬의 {mode} 모드를 launchd에서 무인으로 실행한다. 아래에 제공한 스킬의 공통 원칙과 "
             f"{mode} 절차를 따른다. 같은 스킬을 다시 읽지 않는다. 상태 디렉터리는 {S}이고 VL은 `python3 {SCRIPT}`다. "
@@ -1562,20 +1629,35 @@ def engine_settings(conf):
     return settings
 
 
-def engine_backoff(engine, mode=None):
+def engine_backoff(engine):
+    """엔진 자체의 대기(사용량 한도, 인증, 실행 파일 없음)."""
     value = read_json(S / "backoff" / f"{engine}.json", {}) or {}
     if not value and engine == "claude":
         value = read_json(S / "backoff.json", {}) or {}  # 기존 전역 한도는 Claude 실행에서 생겼다.
-    if mode and value.get("reason") == "chrome" and mode not in ("harvest", "instagram"):
-        return {}
-    return value
+    # 이전 형식의 브라우저 기록(reason chrome)은 엔진 대기가 아니다. 브라우저 대기는 browser_backoff가 맡는다.
+    return {} if value.get("reason") == "chrome" else value
+
+
+def browser_backoff(mode):
+    """수집 작업별 브라우저 대기. engines는 쉬는 엔진이며 엔진 대기와 파일과 횟수를 나눠 서로 덮어쓰지 않는다."""
+    return (read_json(S / "backoff" / f"browser-{mode}.json", {}) or {}) if mode in BROWSER else {}
 
 
 def engine_candidates(mode, conf, ignore_backoff=False):
     setting = engine_settings(conf)[mode]
     first = setting["primary"] if setting["engine"] == "alternate" else setting["engine"]
     engines = [first, next(e for e in ENGINES if e != first)] if setting["engine"] == "alternate" else [first]
-    return [e for e in engines if ignore_backoff or engine_backoff(e, mode).get("until", 0) <= time.time()]
+    if ignore_backoff:
+        return engines
+    current = time.time()
+    wait = browser_backoff(mode)
+    resting = set(wait.get("engines", ENGINES)) if wait.get("until", 0) > current else set()
+    return [e for e in engines if e not in resting and engine_backoff(e).get("until", 0) <= current]
+
+
+def engine_view(conf):
+    """설정과 실제로 시도하는 엔진 순서(effective). 백오프는 빼고 본다."""
+    return {m: v | {"effective": engine_candidates(m, conf, ignore_backoff=True)} for m, v in engine_settings(conf).items()}
 
 
 def cmd_engine(a):
@@ -1596,33 +1678,38 @@ def cmd_engine(a):
             write_json(S / "config.json", conf)
     elif a.engine or a.primary:
         raise SystemExit("--primary는 mode와 engine을 지정할 때 쓴다")
-    emit(engine_settings(cfg()))
+    emit(engine_view(cfg()))
     return 0
 
 
-def set_backoff(text, engine="claude", reason="limit"):
-    previous = engine_backoff(engine)
-    n = previous.get("n", 0) + 1
-    reset = re.search(r"\|(\d{10})\b", text)
-    reset_at = int(reset.group(1)) if reset else 0
+def set_backoff(text, engine="claude", reason="limit", mode=None):
+    browser = reason in BROWSER_WAIT
+    path = S / "backoff" / (f"browser-{mode}.json" if browser else f"{engine}.json")
+    previous = (read_json(path, {}) or {}) if browser else engine_backoff(engine)
+    # 횟수는 같은 대기에서만 잇는다. 만료된 사용량 한도의 횟수로 인증이나 브라우저 대기가 길어지지 않게 한다.
+    n = previous.get("n", 0) + 1 if browser or previous.get("reason") == reason else 1
     current = time.time()
-    delay = 2 * 3600 if reason == "limit" else min(900 * 2 ** min(n - 1, 5), 8 * 3600)
-    until = reset_at + 60 if reset_at > current else current + delay
-    if reason == "limit":
-        until = min(until, current + delay)
+    until = current + (2 * 3600 if reason == "limit" else min(900 * 2 ** min(n - 1, 5), 8 * 3600))
+    reset = re.search(r"\|(\d{10})\b", text)
+    if reason == "limit" and reset and int(reset.group(1)) > current:  # 확인한 복구 시각이 더 이르면 먼저 시도한다.
+        until = min(until, int(reset.group(1)) + 60)
     local = dt.datetime.fromtimestamp(until).astimezone().isoformat(timespec="minutes")
-    write_json(S / "backoff" / f"{engine}.json", {"n": n, "until": until, "until_local": local, "reason": reason})
-    if engine == "claude":
+    record = {"n": n, "until": until, "until_local": local, "reason": reason}
+    if browser:  # 로그아웃과 Claude가 본 연결 실패는 같은 ego lite 프로필이라 두 엔진 모두, Codex의 연결 실패는 Codex만 쉰다.
+        record["engines"] = ["codex"] if engine == "codex" and reason == "chrome" else list(ENGINES)
+    write_json(path, record)
+    if engine == "claude" and not browser:
         (S / "backoff.json").unlink(missing_ok=True)
     return local
 
 
 def clear_backoff(engine, mode=None):
-    if mode and not engine_backoff(engine, mode):
-        return
+    """완료한 엔진의 대기와 완료한 수집 작업의 브라우저 대기를 지운다."""
     (S / "backoff" / f"{engine}.json").unlink(missing_ok=True)
     if engine == "claude":
         (S / "backoff.json").unlink(missing_ok=True)
+    if mode in BROWSER:
+        (S / "backoff" / f"browser-{mode}.json").unlink(missing_ok=True)
 
 
 def transport_errors(text):
@@ -1639,40 +1726,24 @@ def transport_errors(text):
     return "\n".join(errors)
 
 
-def browser_policy_error(text):
-    for line in text.splitlines():
-        with contextlib.suppress(ValueError):
-            value = json.loads(line)
-            item = value.get("item", {})
-            if item.get("type") != "mcp_tool_call" or item.get("server") != "node_repl":
-                continue
-            result = item.get("result") or {}
-            message = (item.get("error") or {}).get("message", "")
-            if (result.get("_meta") or {}).get("codex/browserUse"):
-                message += "\n".join(c.get("text", "") for c in result.get("content", []) if isinstance(c, dict))
-            if re.search(r"Browser Use rejected this action due to browser security policy|Auto-review denied this action", message):
-                return message.strip()[:1000]
-    return ""
+def fallback_reason(text, failure=""):
+    """엔진을 쉬게 하거나 바꿀 이유. text는 에이전트의 마지막 응답, failure는 CLI 자체가 실패했을 때의 오류 문구다.
 
-
-def fallback_reason(text, failed, errors="", policy=""):
-    sentinel = text.strip()
-    if sentinel != "POLICY_BLOCKED":
-        sentinel = json_response(text).get("error", "")
-    if policy or sentinel == "POLICY_BLOCKED":
+    사용량 한도와 인증은 failure로만 판단한다. git 오류나 지식 문서를 인용한 에이전트 본문으로 Claude를 쉬게 하지 않는다.
+    """
+    sentinel = text.strip()  # CHROME_UNAVAILABLE은 이름을 유지한 ego lite 연결 실패다.
+    if sentinel != "POLICY_BLOCKED" and sentinel not in BROWSER_SIGNALS:
+        error = json_response(text).get("error")
+        sentinel = error if isinstance(error, str) else ""
+    if sentinel == "POLICY_BLOCKED":
         return "policy"
-    if failed:
-        failure = text + "\n" + errors
-        if LIMIT.search(failure):
-            return "limit"
-        if AUTH.search(failure):
-            return "auth"
-    sentinel = text.strip()
-    if sentinel not in ("CHROME_UNAVAILABLE", "INSTAGRAM_LOGGED_OUT", "GMAIL_LOGGED_OUT"):
-        sentinel = json_response(text).get("error", "")
-    if sentinel in ("CHROME_UNAVAILABLE", "INSTAGRAM_LOGGED_OUT", "GMAIL_LOGGED_OUT"):
-        return "chrome"
-    return None
+    if sentinel == "USER_TAKEOVER":
+        return "takeover"
+    if LIMIT.search(failure):
+        return "limit"
+    if AUTH.search(failure):
+        return "auth"
+    return BROWSER_SIGNALS.get(sentinel)
 
 
 def codex_command(mode, conf, output, verify=False, run=None):
@@ -1682,17 +1753,13 @@ def codex_command(mode, conf, output, verify=False, run=None):
            "gpt-6-astra" if verify else conf["codex_model"],
            "-c", f'model_reasoning_effort="{"ultra" if verify else conf["codex_effort"]}"',
            "-c", "features.fast_mode=false", "-c", 'web_search="live"' if mode == "learn" else 'web_search="disabled"',
-           "-c", "mcp_servers.playwright.enabled=false", "-c", "features.multi_agent=false",
+           *CODEX_NO_BROWSER, "-c", "features.multi_agent=false",
            "-c", 'shell_environment_policy.set.VAULT_LEARN_ENGINE="codex"',
            "-c", "shell_environment_policy.set.VAULT_LEARN_STATE=" + json.dumps(str(S)),
            "-c", "sandbox_workspace_write.network_access=false",
            "-c", "sandbox_workspace_write.writable_roots=[]",
            "-c", "sandbox_workspace_write.exclude_tmpdir_env_var=true",
            "-c", "sandbox_workspace_write.exclude_slash_tmp=true", "--json", "--color", "never", "-o", str(output)]
-    if mode in ("harvest", "instagram") and not verify:
-        cmd += ["-c", 'mcp_servers.node_repl.env.BROWSER_USE_AVAILABLE_BACKENDS="chrome"']
-    else:
-        cmd += ["-c", "mcp_servers.node_repl.enabled=false"]
     if not readonly:
         # 루트 config, 채널 캐시, 처리 기록과 own_commits는 모델에게 쓰기 권한을 주지 않는다.
         roots = {"learn": [S / "tmp", run_dir(run) if run else S / "runs" / "RUN"],
@@ -1727,29 +1794,48 @@ def codex_prompt(mode, conf, run=None, digest=None):
                  "Final response is one JSON object with mode and run. "
                  "Do not run VL enqueue because queue/seen state is runner-owned. "
                  "Return discovered YouTube links as actions.enqueue=[{url:URL,source:PICK_KEY}]; outer runner enqueues them. ")
-    if mode in ("harvest", "instagram"):
-        text += ("The user explicitly requires real Chrome, not iab or standalone Playwright. "
-                 "If mcp__cua_repl is exposed, use its documented cua API with the named Chrome browser and read complete documentation. "
-                 "Otherwise read installed chrome:control-chrome SKILL.md, checking both the plugin cache and "
-                 "/Applications/ChatGPT.app/Contents/Resources/plugins/openai-bundled/plugins/chrome/skills/control-chrome/SKILL.md; "
-                 "discover node_repl js, import its absolute browser-client.mjs, select agent.browsers.get('chrome') "
-                 "and read complete documentation. A missing legacy skill alone is not CHROME_UNAVAILABLE when CUA is exposed. "
-                 "Its documented internal browser-use backend is authorized. No alternate browser backend. "
+    if mode not in BROWSER:  # 사용자의 ego-browser 허용 규칙은 모든 Codex 실행에 적용되므로 수집 작업 밖에서는 막는다.
+        text += "Never run ego-browser or use any browser; this mode needs none. "
+    if mode in BROWSER:
+        prefix = f"vault-learn-{mode}-{stamp()}"
+        script = S / "tmp" / f"{prefix}-N.mjs"
+        guide = ego_guide()
+        # 사용자의 Codex 규칙 prefix_rule(["ego-browser"])은 리디렉션, heredoc, 파이프가 없는 단독 명령만 샌드박스 밖에서
+        # 실행한다. stdin 형식은 샌드박스 안에서 돌아 ego lite의 Mach 서비스에 닿지 못하므로 스크립트 파일을 import한다.
+        text += ("Browser (2026-10-25 user decision): ego lite only, through the ego-browser CLI in your shell; use no other "
+                 "browser, browser tool or backend. Run each ego-browser command alone as one plain command with no "
+                 "redirection, heredoc, pipe, substitution or variable: only that form matches the user's Codex rule that "
+                 "runs ego-browser outside the sandbox. "
+                 + (f"Read the ego-browser guide the runner saved at {guide} to its end-of-guide line and follow it. " if guide
+                    else "Run `ego-browser skill` first and follow it to its end-of-guide line. ")
+                 + f"Write every round as a new file {script} (N = 1, 2, ...; never rewrite an earlier file) and run exactly: "
+                 f"ego-browser nodejs -e \"await import('{script.as_uri()}')\" (the imported module has the same helpers). "
+                 "Never run ego-browser upgrade or import. "
+                 f"Use one TaskSpace named vault-learn-{mode} (taskSpace resumes it if an earlier run left it open), reuse "
+                 "Page p1 with goto, and call await task.finish({ keep: [] }) once after success, never after an error. "
+                 "If a user-owned space holds that name (EGO_TASK_SPACE_NAME_IN_USE) or the user takes control of the browser, "
+                 "stop without claiming, finishing or opening another space and return USER_TAKEOVER; never retry or route around it. "
+                 f"Save screenshots as {S}/tmp/{prefix}-N.png. "
+                 f"Read {SCRIPT.parent}/youtube_subs.js or threads_extract.js with node:fs in the ego script, define it with "
+                 "page.evaluate(source) (page.evaluate(new Function(source)) if that is a SyntaxError), then call it in the "
+                 "order its header comment gives, which does not rely on page.evaluate awaiting a page Promise, and follow next "
+                 "to the end. "
+                 "If ego-browser cannot reach ego lite, return CHROME_UNAVAILABLE, meaning ego lite is unavailable; never ask "
+                 "for full access or switch browsers. "
                  "If automatic approval or policy rejects a browser action, return POLICY_BLOCKED; do not retry or switch engines/surfaces. "
-                 "Only missing/disconnected Chrome setup returns CHROME_UNAVAILABLE. For Instagram, follow the workflow to log out "
-                 "of a different account and enter the exact configured Instagram account from the saved-login screen; "
-                 "never infer it from Threads. Return INSTAGRAM_LOGGED_OUT only if that saved login cannot be completed "
-                 "or the target account cannot be verified. If Gmail requires login, return GMAIL_LOGGED_OUT. "
-                 "Open new tabs; close only your tabs. "
-                 "Use supported Chrome AX/UI and read-only DOM inspection. Read youtube_subs.js/threads_extract.js "
-                 "as extraction format examples only; do not execute their mutable page code. "
-                 "Never type, press keys or double-click in Gmail/Instagram; never like/save/send/reply/archive/delete/change-labels or explicitly mark read/unread. "
+                 "For Instagram, follow the workflow to log out of a different account and enter the exact configured Instagram "
+                 "account from the saved-login screen without typing a password; never infer it from Threads. "
+                 "Return INSTAGRAM_LOGGED_OUT only if that saved login cannot be completed or the target account cannot be verified. "
+                 "In Gmail and Instagram never use keyboard.*, press, fill, selectOption, setInputFiles, dblclick, dragAndDrop, cdp, "
+                 "clicks with clickCount above 1, or page.evaluate that clicks or types; "
+                 "never like/save/send/reply/archive/delete/change-labels or explicitly mark read/unread. "
                  "Collect Instagram saved posts only. Never open or read Instagram DM lists/conversations or create DM leads. "
                  "Write inbox files but do not run inbox-reindex; outer runner performs it. "
                  "Final response JSON may include actions.complete={email:['mail'],instagram:['saved']} "
                  "only for fully scanned portions. ")
     if mode == "harvest":
-        text += ("Use Gmail through Chrome. Standing user authorization (2026-10-08): open registered newsletter bodies by URL "
+        text += ("Use Gmail through ego lite. If YouTube, Threads or Gmail is signed out, skip that step and list it in login_needed. "
+                 "Standing user authorization (2026-10-08): open registered newsletter bodies by URL "
                  "regardless of unread or uncertain read status, including incidental marking as read; no per-run confirmation is needed. "
                  "This permission covers newsletter viewing only; all other mail restrictions above remain. "
                  "Use list-only only when the body cannot be retrieved. Write subscriptions TSV under S/tmp. "
@@ -1889,42 +1975,44 @@ def execute_codex(mode, conf):
         with open(os.devnull, "w") as null, contextlib.redirect_stdout(null):
             cmd_digest_data(argparse.Namespace(date=str(dt.date.today())))
         digest = read_json(S / "digests" / f"{dt.date.today()}.json")
-    before, dirty = repo_snapshot(), set(dirty_paths())
+    prompt = codex_prompt(mode, conf, run, digest)
+    base = guard_baseline(mode)  # 게시는 이 검사 뒤 runner가 하므로 own_commits에도 이 실행의 줄이 생기면 안 된다.
     if run:
-        dirty -= set(load_manifest(run)["files"])  # 해시가 같은 이전 미게시 파일만 begin이 이어받는다.
-    head = git("rev-parse", "HEAD").stdout.strip()
-    protected = {f: hashlib.sha256((S / f).read_bytes()).hexdigest() if (S / f).is_file() else "absent"
-                 for f in ("config.json", "own_commits")}
-    rc, path, final = call_codex(mode, conf, codex_prompt(mode, conf, run, digest), run=run)
+        base["dirty"] -= set(trusted["files"])  # 해시가 같은 이전 미게시 파일만 begin이 이어받는다.
+    dirty, head = base["dirty"], base["head"]
+    # 사용자 규칙으로 샌드박스 밖에서 도는 ego-browser 명령이 있으므로 모든 모드를 검사한다. 예외나 SIGTERM으로 끝나도
+    # 로그를 해석하기 전에 검사하고, 검사 전에 프로세스가 죽으면 남은 표시로 다음 실행이 멈춘다.
+    mark_guard(mode, "codex")
+    try:
+        rc, path, final = call_codex(mode, conf, prompt, run=run)
+    finally:
+        current = read_json(run_dir(run) / "manifest.json") if run else {}
+        files = current.get("files", []) if isinstance(current, dict) else None
+        valid = isinstance(files, list) and all(isinstance(f, str) and norm_rel(f) == f for f in files)
+        stop, scope, after = end_guard(base, files if valid else [])
     value = json_response(final)
-    failed = rc != 0 or not final.strip() or (mode != "digest" and value.get("mode") != mode)
-    if run and value.get("run") != run:
-        failed = True
-    transcript = path.read_text(encoding="utf-8", errors="replace")
-    errors = transport_errors(transcript)
-    policy = browser_policy_error(transcript)
-    reason = fallback_reason(final, failed, errors, policy)
-    registered = (read_json(run_dir(run) / "manifest.json", {}) or {}).get("files", []) if run else []
+    # 사용량 한도와 인증은 CLI가 실패했을 때 그 오류 이벤트와 stderr로만 판단한다(응답의 mode, run 불일치는 일반 실패).
+    cli_failed = rc != 0 or not final.strip()
+    failed = cli_failed or (mode != "digest" and value.get("mode") != mode) or bool(run and value.get("run") != run)
+    failure = transport_errors(path.read_text(encoding="utf-8", errors="replace")) if cli_failed else ""
+    reason = fallback_reason(final, failure)
+    reset = re.search(r"\|(\d{10})\b", failure)
+    report = {"engine": "codex", "log": path.name, "rc": rc, "run": run, "reset": reset.group(0) if reset else ""}
+    if isinstance(value.get("login_needed"), list):  # 사용자가 ego lite에서 직접 로그인할 사이트를 status에 남긴다.
+        report["login_needed"] = value["login_needed"]
+    if stop:
+        report["paused"] = True
     m = trusted
-    files = registered
-    if not isinstance(files, list) or any(not isinstance(f, str) or norm_rel(f) != f for f in files):
+    if not valid:
         block_scope(m)
-        return {"engine": "codex", "status": "scope_blocked", "note": "잘못된 plan 경로"}
+        return report | {"status": "scope_blocked", "note": "잘못된 plan 경로", "files": stop + scope}
     if m:
         m |= {"run": run, "engine": "codex", "kind": mode, "files": files,
               "baseline_dirty": sorted(dirty), "head": head}
         save_manifest(m)
-    after = repo_snapshot()
-    problems = scope_problems(before, after, dirty, files, mode)
-    for name, digest_hash in protected.items():
-        current = hashlib.sha256((S / name).read_bytes()).hexdigest() if (S / name).is_file() else "absent"
-        if current != digest_hash:
-            problems.append(f"protected state changed: {name}")
+    problems = stop + scope
     if git("rev-parse", "HEAD").stdout.strip() != head:
         problems.append("HEAD changed during Codex run")
-    reset = re.search(r"\|(\d{10})\b", final + "\n" + errors)
-    report = {"engine": "codex", "log": path.name, "rc": rc, "run": run,
-              "reset": reset.group(0) if reset else ""}
     if problems:
         block_scope(m)
         return report | {"status": "scope_blocked", "files": problems}
@@ -1933,7 +2021,7 @@ def execute_codex(mode, conf):
         m["writer_hashes"] = {f: after.get(f, "absent") for f in files if f in pending}
         save_manifest(m)
     if reason or failed:
-        return report | {"status": "failed", "reason": reason, "note": policy or final[-1000:]}
+        return report | {"status": "failed", "reason": reason, "note": final[-1000:]}
     if mode == "digest":
         if not final.strip().startswith("## 변경") or "## 핵심 3가지" not in final or "\u00b7" in final:
             return report | {"status": "failed", "reason": "digest_format"}
@@ -1953,16 +2041,21 @@ def execute_codex(mode, conf):
         if problems:
             return report | {"status": "check_failed", "problems": problems}
         if mode == "learn" and changed:
-            ok, verification = verify_codex(run, conf, changed)
+            mark_guard(mode, "codex")  # 검증 실행에도 사용자의 ego-browser 규칙이 적용되므로 같은 검사를 한다.
+            try:
+                ok, verification = verify_codex(run, conf, changed)
+            finally:
+                stop, scope, _ = end_guard(base, files)
             m["verification"] = verification
             save_manifest(m)
             review_pending = set(dirty_paths())
-            if (scope_problems(before, repo_snapshot(), dirty, files, mode)
+            if (stop or scope
                     or set(hashes) != {f for f in files if f in review_pending}
                     or git("rev-parse", "HEAD").stdout.strip() != head
                     or any(file_hash(f) != h for f, h in hashes.items())):
                 block_scope(m)
-                return report | {"status": "scope_blocked", "note": "검증 동안 파일이나 HEAD가 바뀌었다"}
+                return report | {"status": "scope_blocked", "note": "검증 동안 파일이나 HEAD가 바뀌었다",
+                                 "files": stop + scope} | ({"paused": True} if stop else {})
             if not ok:
                 m["status"] = "verification_failed"
                 save_manifest(m)
@@ -2008,8 +2101,8 @@ def agent_has_work(mode, conf):
         log("instagram: config.json에 저장 글 주소가 없다")
         return False
     if mode in ("harvest", "instagram"):
-        if subprocess.run(["pgrep", "-x", "Google Chrome"], capture_output=True).returncode != 0:
-            log(f"{mode}: Chrome이 실행 중이 아니다")
+        if subprocess.run(["pgrep", "-x", "ego lite"], capture_output=True).returncode != 0:
+            log(f"{mode}: ego lite가 실행 중이 아니다")
             return False
         return True
     data = pick_data(conf["k"])
@@ -2028,14 +2121,19 @@ def run_cli(mode, engine, cmd, prompt, timeout_s):
     with open(path, "w", encoding="utf-8") as out:
         proc = subprocess.Popen(cmd, cwd=REPO, stdin=subprocess.PIPE, stdout=out, stderr=subprocess.STDOUT,
                                 text=True, start_new_session=True,
-                                env=os.environ | {"VAULT_LEARN_ENGINE": engine, "VAULT_LEARN_STATE": str(S)})
+                                # 엔진이 부르는 다른 Python도 실행 검사가 보는 __pycache__를 쓰지 않게 한다.
+                                env=os.environ | {"VAULT_LEARN_ENGINE": engine, "VAULT_LEARN_STATE": str(S),
+                                                  "PYTHONDONTWRITEBYTECODE": "1"})
 
         def stop(signum, _frame):  # launchd가 작업을 내리면 엔진 프로세스 그룹까지 정리한다.
             with contextlib.suppress(ProcessLookupError):
                 os.killpg(proc.pid, signal.SIGTERM)
-            with contextlib.suppress(subprocess.TimeoutExpired):
-                proc.wait(timeout=10)  # 끝난 뒤의 파일 상태로 finish_runs가 남은 파일을 기록하게 한다.
-            sys.exit(128 + signum)
+            try:  # 엔진이 끝난 뒤의 파일 상태로 실행 뒤 검사와 finish_runs가 돌게 한다.
+                proc.wait(timeout=10)
+            except subprocess.TimeoutExpired:
+                with contextlib.suppress(ProcessLookupError):
+                    os.killpg(proc.pid, signal.SIGKILL)
+            sys.exit(128 + signum)  # 호출한 쪽의 finally가 실행 뒤 검사를 한다.
 
         signal.signal(signal.SIGTERM, stop)
         proc.stdin.write(prompt)
@@ -2055,13 +2153,16 @@ def run_cli(mode, engine, cmd, prompt, timeout_s):
             return "timeout", path
 
 
+def notify(text, title="Vault 자동 학습"):
+    script = (f"display notification {json.dumps(text[:200], ensure_ascii=False)} "
+              f"with title {json.dumps(title, ensure_ascii=False)}")
+    subprocess.run(["osascript", "-e", script], capture_output=True)
+
+
 def notify_digest():
     selection = read_json(S / "digests" / f"{dt.date.today()}.json", {}) or {}
     files = {f for c in selection.get("changes") or [] for f in c.get("files", [])}
-    text = f"바뀐 문서 {len(files)}개와 핵심 3가지가 준비됐다." if files else "어제 바뀐 문서가 없다."
-    script = (f"display notification {json.dumps(text[:200], ensure_ascii=False)} "
-              f"with title {json.dumps('Vault 학습 다이제스트', ensure_ascii=False)}")
-    subprocess.run(["osascript", "-e", script], capture_output=True)
+    notify(f"바뀐 문서 {len(files)}개와 핵심 3가지가 준비됐다." if files else "어제 바뀐 문서가 없다.", "Vault 학습 다이제스트")
 
 
 def agent_log_paths(pattern):
@@ -2076,28 +2177,193 @@ def prune_agent_logs(keep=300):
     for pattern in ("*.log", "*.response"):
         for path in agent_log_paths(pattern)[keep:]:
             path.unlink(missing_ok=True)
+    cutoff = time.time() - 3 * 86400  # 브라우저 실행이 파일 접두사로 남긴 스크립트, 스크린샷과 폴더
+    for path in (S / "tmp").glob("vault-learn-*"):
+        with contextlib.suppress(OSError):
+            if path.lstat().st_mtime >= cutoff:
+                continue
+            if path.is_dir() and not path.is_symlink():
+                shutil.rmtree(path)
+            else:
+                path.unlink()
+
+
+def protected_state(git_dir):
+    """VL과 Git이 다음 실행에서 읽는 상태(VL 설정, Git 설정과 훅). 읽을 수 없는 파일은 inode 변경 시각으로 기록한다."""
+    state = {}
+    for p in [S / "config.json", git_dir / "config", *(git_dir / "hooks").glob("*")]:
+        try:
+            if p.is_file():
+                state[str(p)] = hashlib.sha256(p.read_bytes()).hexdigest()
+        except OSError:
+            try:
+                state[str(p)] = f"unreadable:{p.lstat().st_ctime_ns}"
+            except OSError:
+                state[str(p)] = "unreadable"
+    return state
+
+
+def protected_changes(before, after):
+    return [f"protected state changed: {k}" for k in sorted(before.keys() | after.keys()) if before.get(k) != after.get(k)]
+
+
+def pause_guard(mode, stop):
+    (S / "paused").touch()
+    log(f"{mode}: 보호 상태나 허용 범위 밖의 변경이 있어 자동 실행을 멈췄다: {', '.join(stop)}")
+    notify(f"{mode} 실행 뒤 허용 밖 변경으로 자동 학습을 멈췄다: {', '.join(stop[:3])}"[:150]
+           + ". vault-learn status로 확인한 뒤 vault-learn resume으로 다시 연다.")
+
+
+def mark_guard(mode, engine):
+    """검사할 엔진 실행 직전의 표시. 실행 뒤 검사가 끝나야 지우므로 검사 전에 죽은 실행(SIGKILL, 전원)이 남는다."""
+    write_json(S / PENDING, {"mode": mode, "engine": engine, "at": now().isoformat(timespec="seconds")})
+
+
+def end_guard(base, files, token=None):
+    """실행 뒤 검사. 멈출 문제가 있으면 표시를 지우기 전에 멈춘다."""
+    stop, scope, after = guard_problems(base, files, token)
+    if stop:
+        pause_guard(base["mode"], stop)
+    (S / PENDING).unlink(missing_ok=True)
+    return stop, scope, after
+
+
+def guard_left(mode):
+    """agent-write 잠금을 잡은 뒤에도 표시가 있으면 실행 뒤 검사 전에 끝난 실행이다. 상태를 알 수 없으므로 멈춘다."""
+    if not (S / PENDING).exists():
+        return False
+    left = read_json(S / PENDING, {})
+    left = left if isinstance(left, dict) else {}
+    mode = left.get("mode") if left.get("mode") in MODES else mode
+    stop = [f"guard did not finish: {left.get('engine')} {mode} run started {left.get('at')}"]
+    pause_guard(mode, stop)
+    write_json(S / "runs" / f"last-{mode}.json", {"at": now().isoformat(timespec="seconds"), "attempts": [
+        {"engine": left.get("engine"), "status": "scope_blocked", "paused": True, "files": stop}]})
+    (S / PENDING).unlink(missing_ok=True)
+    return True
+
+
+def guard_baseline(mode):
+    """실행 전 상태. ego 스크립트는 ego lite의 Node에서, Codex의 ego-browser 명령은 사용자 규칙으로 샌드박스 밖에서 돈다."""
+    git_dir = Path(git("rev-parse", "--absolute-git-dir").stdout.strip())
+    own = S / "own_commits"
+    return {"mode": mode, "git_dir": git_dir, "protected": protected_state(git_dir),
+            "own": own.read_bytes() if own.exists() else b"", "repo": repo_snapshot(),
+            "dirty": set(dirty_paths()), "head": git("rev-parse", "HEAD").stdout.strip(), "refs": remote_refs(),
+            # Claude harvest는 실행 중 begin으로 이전 harvest의 미게시 목록 편집을 이어받는다.
+            "adoptable": {f for files in leftover_runs("harvest").values() for f in files} if mode == "harvest" else set()}
+
+
+def own_commit_problems(before):
+    """실행 중 own_commits 변화. VL publish와 리베이스 게시가 덧붙인 줄만 받는다. 덧붙인 줄은 지식 문서(EDITABLE)만
+    바꾼 커밋이어야 한다. 리베이스 전 원래 커밋은 HEAD 이력에서 빠지지만 VL은 HEAD 이력만 푸시한다."""
+    path = S / "own_commits"
+    after = path.read_bytes() if path.exists() else b""
+    if not after.startswith(before):
+        return ["own_commits rewritten"]
+    problems = []
+    for sha in after[len(before):].decode("utf-8", "replace").split():
+        commit = re.fullmatch(r"[0-9a-f]{40}", sha) and git("cat-file", "-t", sha, check=False).stdout.strip() == "commit"
+        paths = (set(git("diff-tree", "-m", "--root", "--no-commit-id", "--name-only", "-r", "-z", sha).stdout.split("\0"))
+                 - {""}) if commit else None
+        if paths is None or not all(EDITABLE.fullmatch(f) for f in paths):
+            problems.append(f"own_commits entry is not a VL commit: {sha[:12]}")
+    return problems
+
+
+def guard_problems(base, files, token=None):
+    """실행 뒤 (자동 실행을 멈출 문제, 범위 문제, 실행 뒤 저장소 해시). 검사 자체가 실패해도 멈춘다(fail closed).
+
+    files는 이 실행이 고쳐도 되는 파일이다. 그 밖에서 바뀐 경로 중 지식 문서(Git이 무시하지 않는 tech/, biz/, econ/, fit/
+    Markdown, 지침 파일 제외)는 범위 문제로 남기고, 코드, 설정, 지침 파일, 무시된 경로와 심볼릭 링크는 멈춘다. VL이 기록한
+    커밋과 원격 커밋만으로 설명되는 경로(리베이스 게시가 받아 온 원격 변경, 대화형 VL publish)는 받는다. 원격 커밋은 실행 전
+    origin/main과, 옮겨졌으면 git ls-remote와 같은 origin/main에서 닿는 커밋만 인정한다. 원격 추적 ref는 로컬 파일이라
+    위조할 수 있어서 다른 원격 ref가 바뀌어도 멈춘다.
+    """
+    stop, scope, after = [], [], {}
+    try:
+        stop += protected_changes(base["protected"], protected_state(base["git_dir"]))
+        stop += own_commit_problems(base["own"])
+        own = S / "own_commits"
+        mine = set(own.read_bytes().decode("utf-8", "replace").split()) if own.exists() else set()
+        head, refs, before_main = base["head"], remote_refs(), base["refs"].get(ORIGIN_MAIN)
+        stop += [f"remote ref changed: {r}" for r in sorted(base["refs"].keys() | refs.keys())
+                 if r != ORIGIN_MAIN and base["refs"].get(r) != refs.get(r)]
+        trusted = [before_main] if before_main else []
+        if refs.get(ORIGIN_MAIN) not in (None, before_main):
+            if remote_main() == refs[ORIGIN_MAIN]:
+                trusted.append(refs[ORIGIN_MAIN])
+            else:
+                stop.append("origin/main moved but does not match git ls-remote")
+        exclude = [f"^{c}" for c in trusted]
+        added = git("rev-list", "HEAD", f"^{head}", *exclude).stdout.split()
+        scope += [f"commit not published by VL: {c[:12]}" for c in added if c not in mine]
+        dirty = set(base["dirty"])
+        if base["adoptable"]:
+            adopted = {f for _, m in manifests() if token and m.get("agent") == token
+                       for a in m.get("adopted") or [] for f in a.get("files") or []}
+            dirty -= base["adoptable"] & adopted
+        after = repo_snapshot()
+        bad = scope_problems(base["repo"], after, dirty, files, base["mode"])
+        if bad:
+            explained = set()
+            dropped = git("rev-list", head, "^HEAD", *exclude).stdout.split()
+            if all(c in mine for c in added + dropped):
+                explained = set(git("diff", "--no-renames", "--name-only", "-z", head, "HEAD").stdout.split("\0"))
+                explained -= {""} | set(dirty_paths())
+            visible = set(git("ls-files", "--cached", "--others", "--exclude-standard", "-z").stdout.split("\0"))
+            for f in bad:
+                if f not in explained:  # 지운 지식 문서는 무시 목록과 상관없이 지식 문서다(git rm, git mv).
+                    now_at = after.get(f, "absent")
+                    note = EDITABLE.fullmatch(f) and (now_at == "absent" or f in visible and not now_at.startswith("symlink:"))
+                    (scope if note else stop).append(f)
+    except Exception as e:  # 검사를 끝내지 못하면 이유와 관계없이 멈춘다.
+        stop.append(f"guard check failed: {type(e).__name__}: {e}")
+    return stop, scope, after
 
 
 def execute_claude(mode, conf):
     allow, deny = agent_rules(mode)
     cmd = [conf["claude"], "-p", "--model", "opus", "--effort", "max", "--permission-mode", "dontAsk",
            "--add-dir", str(S), "--output-format", "json", "--no-session-persistence",
-           "--allowedTools", *allow, "--disallowedTools", *deny,
-           *(["--chrome"] if mode in ("harvest", "instagram") else [])]
-    rc, path = run_cli(mode, "claude", cmd, agent_prompt(mode, conf), conf[f"{mode}_timeout_min"] * 60)
+           "--allowedTools", *allow, "--disallowedTools", *deny, "--no-chrome"]
+    prompt = agent_prompt(mode, conf)
+    base = guard_baseline(mode) if mode in BROWSER else None
+    token, stop, scope = os.environ.get("VAULT_LEARN_AGENT"), [], []
+    if base:
+        mark_guard(mode, "claude")
+    try:
+        rc, path = run_cli(mode, "claude", cmd, prompt, conf[f"{mode}_timeout_min"] * 60)
+    finally:  # 로그를 읽기 전에, 시간 제한이나 SIGTERM으로 끝나도 검사한다. 멈춤은 다른 정리보다 먼저다.
+        if base:
+            stop, scope, _ = end_guard(base, [SOURCES] if mode == "harvest" else [], token)
     text = path.read_text(encoding="utf-8", errors="replace")
     result = last_result(text)
-    failed = rc != 0 or not result or result.get("is_error")
+    cli_failed = rc != 0 or not result or result.get("is_error")
     final = result.get("result") or ""
+    value = json_response(final)
+    failed = cli_failed
     if mode == "learn":
-        value = json_response(final)
         failed = failed or value.get("mode") != "learn" or bool(value.get("blocked") or value.get("error"))
         failed = failed or value.get("status") in ("blocked", "failed", "scope_blocked", "verification_failed", "check_failed")
         failed = failed or value.get("publish") not in ("published", "nothing", "deferred", "unverified")
-    reason = fallback_reason(final, failed, transport_errors(text))
-    reset = re.search(r"\|(\d{10})\b", text if failed else final)
-    return {"engine": "claude", "log": path.name, "rc": rc, "reset": reset.group(0) if reset else "",
-            "status": "failed" if failed or reason else "completed", "reason": reason}
+    # 사용량 한도와 인증은 CLI가 실패했을 때 그 오류 문구(stderr, 오류 결과)로만 판단한다. 결과 JSON의 게시 실패나
+    # 본문에 인용한 git 인증 오류, 문서 주제는 Claude 자체를 쓸 수 없다는 뜻이 아니다.
+    failure = (transport_errors(text) + ("\n" + final if result.get("is_error") else "")) if cli_failed else ""
+    reason = fallback_reason(final, failure)
+    reset = re.search(r"\|(\d{10})\b", failure)
+    report = {"engine": "claude", "log": path.name, "rc": rc, "reset": reset.group(0) if reset else "",
+              "status": "failed" if failed or reason else "completed", "reason": reason}
+    if isinstance(value.get("login_needed"), list):  # 사용자가 ego lite에서 직접 로그인할 사이트를 status에 남긴다.
+        report["login_needed"] = value["login_needed"]
+    if stop:
+        report["paused"] = True
+    if stop or scope:  # 다른 엔진으로 넘기지 않고, 이 실행이 연 harvest run을 다음 실행이 이어받지 않게 한다.
+        report |= {"status": "scope_blocked", "reason": None, "files": stop + scope}
+        for _, m in manifests():
+            if token and m.get("agent") == token:
+                block_scope(m)
+    return report
 
 
 def cmd_agent(a):
@@ -2133,55 +2399,64 @@ def cmd_agent(a):
                     allow, deny = agent_rules(mode)
                     cmd = [conf["claude"], "-p", "--model", "opus", "--effort", "max", "--permission-mode", "dontAsk",
                            "--add-dir", str(S), "--output-format", "json", "--no-session-persistence",
-                           "--allowedTools", *allow, "--disallowedTools", *deny,
-                           *(["--chrome"] if mode in ("harvest", "instagram") else [])]
+                           "--allowedTools", *allow, "--disallowedTools", *deny, "--no-chrome"]
                     print(shlex.join(cmd))
                     print(agent_prompt(mode, conf))
             return 0
         if not agent_has_work(mode, conf):
             return 0
         # 읽기 전용 모드도 HEAD와 보호 상태를 검사하므로 다른 자동 실행의 게시와 겹치지 않게 한다.
-        chrome = locked("chrome") if mode in ("harvest", "instagram") else contextlib.nullcontext()
+        # 잠금 이름 chrome은 기존 이름을 유지한 ego lite 잠금이다.
+        chrome = locked("chrome") if mode in BROWSER else contextlib.nullcontext()
         editing = locked("agent-write")
         attempts = []
         with chrome, editing:
             for engine in engine_candidates(mode, conf):  # 엔진마다 한 번, 한 slot에 최대 두 번만 실행한다.
+                # 잠금 대기 중이나 앞 엔진의 실행 검사로 생긴 멈춤, 검사 전에 끝난 실행의 표시도 따른다.
+                if guard_left(mode) or (S / "paused").exists():
+                    log(f"{mode}: paused")
+                    break
                 since = int(time.time())
                 token = f"{os.getpid()}-{time.time_ns()}"
                 os.environ["VAULT_LEARN_AGENT"] = token  # 이 실행과 엔진 자식이 여는 run에만 붙는다.
                 try:
                     report = execute_codex(mode, conf) if engine == "codex" else execute_claude(mode, conf)
-                except FileNotFoundError as e:
-                    report = {"engine": engine, "status": "failed", "reason": "unavailable", "note": str(e)}
                 except (ValueError, GitError, OSError, subprocess.SubprocessError) as e:
-                    report = {"engine": engine, "status": "failed", "reason": None, "note": str(e)}
+                    # 실행 파일이 없을 때만 엔진을 쓸 수 없는 것이다. 사라진 로그 같은 다른 파일 오류는 일반 실패다.
+                    missing = isinstance(e, FileNotFoundError) and not shutil.which(conf[engine])
+                    report = {"engine": engine, "status": "failed", "reason": "unavailable" if missing else None,
+                              "note": str(e)}
                 finally:
                     os.environ.pop("VAULT_LEARN_AGENT", None)
                     if mode in ("learn", "harvest"):
                         finish_runs(since, mode, token)
                 attempts.append(report)
                 last = {"at": now().isoformat(timespec="seconds"), "attempts": attempts}
-                # 엔진 한도는 기존 엔진별 백오프가 맡고, 범위/검증 등 실행 실패는 AI를 띄우기 전에 쉰다.
-                if mode == "learn" and report["status"] != "completed" and report.get("reason") not in (
-                        "limit", "auth", "chrome", "unavailable"):
+                reason = report.get("reason")
+                wait = reason in ENGINE_WAIT or (reason in BROWSER_WAIT and mode in BROWSER)
+                # 엔진 대기는 엔진별 백오프가 맡고, 범위/검증 등 실행 실패는 AI를 띄우기 전에 쉰다.
+                if mode == "learn" and report["status"] != "completed" and not wait:
                     count = min(previous.get("retry_count", 0) + 1, 5)
                     delay = 4  # 다음 1분 실행 주기를 포함해 통상 5분 안에 재시도한다.
                     last |= {"retry_count": count, "retry_until": time.time() + delay * 60}
                     log(f"learn: 실행 실패, {delay}분 뒤 재시도한다")
                 write_json(S / "runs" / f"last-{mode}.json", last)
-                reason = report.get("reason")
                 if report["status"] == "completed":
                     clear_backoff(engine, mode)
                     log(f"{mode}: {engine} 완료 ({report.get('log', '')})")
                     if mode == "digest" and engine == "claude":
                         notify_digest()
                     break
-                if reason in ("limit", "auth", "chrome", "unavailable"):
-                    until = set_backoff(report.get("reset", ""), engine, reason)
+                if report["status"] == "failed" and wait:
+                    until = set_backoff(report.get("reset", ""), engine, reason, mode)
                     log(f"{mode}: {engine} {reason}, {until}까지 쉰다")
-                    continue
-                log(f"{mode}: {engine} {report['status']} ({report.get('log', '')})")
-                break  # 부분 편집이나 검증 실패를 다른 엔진이 바로 이어받지 않는다.
+                    if reason in ENGINE_WAIT:  # Claude 자체를 쓸 수 없을 때만 다른 엔진이 대신한다.
+                        continue
+                # 범위, 검증, 정책 거부, 사용자 인계와 브라우저 실패는 다른 엔진으로 넘기지 않는다.
+                if reason == "takeover":
+                    notify(f"{mode}: ego lite 작업 공간을 사용자가 쓰고 있어 수집을 멈췄다. 공간을 닫으면 다음 실행부터 이어진다.")
+                log(f"{mode}: {engine} {report['status']} {reason or ''} ({report.get('log', '')})")
+                break
         prune_agent_logs()
     return 0
 
@@ -2200,7 +2475,8 @@ def cmd_status(a):
 
 def cmd_doctor(a):
     problems = []
-    for tool in ("python3", "uvx", "ffmpeg", "ffprobe", "whisper-cli", "node", "git", "osascript", cfg()["claude"], cfg()["codex"]):
+    for tool in ("python3", "uvx", "ffmpeg", "ffprobe", "whisper-cli", "node", "git", "osascript", "ego-browser",
+                 cfg()["claude"], cfg()["codex"]):
         if not shutil.which(tool):
             problems.append(f"PATH에서 {tool}을 찾지 못했다")
     models = Path(os.environ.get("WHISPER_CPP_MODEL_DIR", "~/.cache/whisper-cpp")).expanduser()
@@ -2212,6 +2488,16 @@ def cmd_doctor(a):
     for path in SCRIPT.parent.iterdir():
         if path.is_file() and (not (twin / path.name).exists() or path.read_bytes() != (twin / path.name).read_bytes()):
             problems.append(f"스킬 스크립트 사본이 다르다: {path.name}")
+    codex = shutil.which(cfg()["codex"])
+    if codex:  # codex_command가 끄는 브라우저 MCP가 현재 Codex 설정에서도 꺼지는지 본다(모델을 부르지 않는다).
+        try:
+            p = subprocess.run([codex, "mcp", "list", "--json", *CODEX_NO_BROWSER], cwd=REPO, capture_output=True,
+                               text=True, timeout=60)
+            live = sorted(s["name"] for s in json.loads(p.stdout) if s.get("enabled") and s.get("name") in BROWSER_MCP)
+        except (OSError, subprocess.SubprocessError, ValueError, TypeError, KeyError, AttributeError) as e:
+            live = [f"확인 실패({type(e).__name__})"]
+        if live:
+            problems.append(f"Codex 실행에서 꺼지지 않은 브라우저 MCP: {', '.join(live)}")
     channels, letters = learning_sources()
     if not channels:
         problems.append(f"{SOURCES}에서 YouTube 채널을 읽지 못했다")
@@ -2257,8 +2543,10 @@ def cmd_plists(a):
 
 
 def selftest_engines():
-    global S, REPO, call_codex, verify_codex, cmd_publish, execute_claude, execute_codex, agent_has_work, agent_rules, run_cli
-    original = S, REPO, call_codex, verify_codex, cmd_publish, execute_claude, execute_codex, agent_has_work, agent_rules, run_cli
+    global S, REPO, call_codex, verify_codex, cmd_publish, execute_claude, execute_codex, agent_has_work, notify, ego_guide, agent_rules, run_cli
+    original = S, REPO, call_codex, verify_codex, cmd_publish, execute_claude, execute_codex, agent_has_work, notify, ego_guide, agent_rules, run_cli
+    notify = lambda *_: None  # 자체 검사는 알림을 띄우거나 ego-browser를 실행하지 않는다.
+    ego_guide = lambda: None
     try:
         with tempfile.TemporaryDirectory() as tmp:
             REPO, S = Path(tmp) / "repo", Path(tmp) / "state"
@@ -2271,7 +2559,15 @@ def selftest_engines():
             (REPO / "AGENTS.md").write_text("protected\n", encoding="utf-8")
             git("add", ".")
             git("-c", "user.name=Test", "-c", "user.email=user@example.com", "commit", "-qm", "baseline")
+            # 실행 검사는 git ls-remote로 원격 main을 확인하므로 로컬 bare 저장소를 origin으로 둔다.
+            git("init", "-q", "--bare", str(Path(tmp) / "origin.git"))
+            git("remote", "add", "origin", str(Path(tmp) / "origin.git"))
+            git("push", "-q", "origin", "main")
             conf = DEFAULTS.copy()
+            # 지침 파일(변형 포함)은 도메인 폴더 안에 있어도 자동 학습이 고치는 지식 문서가 아니다.
+            assert EDITABLE.fullmatch("tech/a/Claude-Code-Business-Automation.md") and EDITABLE.fullmatch("fit/AGENTS-x.md")
+            assert not any(EDITABLE.fullmatch(p) for p in ("tech/AGENTS.md", "fit/x/CLAUDE.md", "biz/agents.md",
+                                                            "econ/AGENTS.override.md", "tech/CLAUDE.local.md", "AGENTS.md"))
             # 다른 실행이 glob과 stat 사이에서 지운 로그 때문에 상태 조회나 정리가 실패하지 않는다.
             real_stat = Path.stat
             try:
@@ -2296,6 +2592,19 @@ def selftest_engines():
                 Path.stat = real_stat
             for path in (S / "logs" / "agent").iterdir():
                 path.unlink()
+            # 브라우저 실행의 파일 접두사로 남은 오래된 스크립트와 폴더만 지우고, 다른 임시 파일은 그대로 둔다.
+            (S / "tmp" / "vault-learn-harvest-3").mkdir()
+            (S / "tmp" / "vault-learn-harvest-3" / "round-1.mjs").write_text("x", encoding="utf-8")
+            (S / "tmp" / "vault-learn-harvest-4").mkdir()
+            for name, age in (("vault-learn-harvest-1-1.mjs", 4), ("vault-learn-harvest-2-1.png", 0), ("subs.tsv", 9),
+                              ("vault-learn-harvest-3", 4), ("vault-learn-harvest-4", 1)):
+                if not (S / "tmp" / name).exists():
+                    (S / "tmp" / name).write_text("x", encoding="utf-8")
+                os.utime(S / "tmp" / name, (time.time() - age * 86400,) * 2)
+            prune_agent_logs()
+            assert sorted(p.name for p in (S / "tmp").iterdir()) == ["subs.tsv", "vault-learn-harvest-2-1.png",
+                                                                     "vault-learn-harvest-4"]
+            (S / "tmp" / "vault-learn-harvest-4").rmdir()
             # 검증 한계만 남긴 통과는 수용하되, 중요한 미검증 주장과 잘못된 응답은 차단한다.
             finding = {"file": "tech/A.md", "reason": "영상 화면은 확인하지 못했지만 추가 주장은 원문으로 확인했다"}
             for kind, expected in (("limitation", True), ("conditional", True), ("confirmed", False),
@@ -2319,8 +2628,13 @@ def selftest_engines():
                 call_codex = lambda *args, **kwargs: (rc, Path("review.log"), json.dumps(value))
                 assert verify_codex("test", conf, ["tech/A.md"])[0] is False, (rc, value)
             call_codex = original[2]
-            assert engine_candidates("learn", conf) == ["claude", "codex"]
+            # 2026-10-25 사용자 결정: 모든 작업에서 Claude가 먼저이고 Codex는 Claude를 쓸 수 없을 때만 쓴다.
+            assert all(engine_candidates(mode, conf) == ["claude", "codex"] for mode in MODES)
             assert engine_candidates("learn", conf | {"primary": {"learn": "codex"}}) == ["codex", "claude"]
+            assert engine_candidates("harvest", conf | {"engine": {"harvest": "codex"}}) == ["codex"]  # 사용자 고정은 따른다.
+            view = engine_view(conf | {"engine": {"harvest": "codex"}})
+            assert view["harvest"] == {"engine": "codex", "primary": "claude", "effective": ["codex"]}
+            assert view["instagram"]["effective"] == ["claude", "codex"]
             write_json(S / "backoff.json", {"until": time.time() + 120})
             assert engine_candidates("learn", conf) == ["codex"]
             assert not engine_backoff("codex")
@@ -2343,42 +2657,59 @@ def selftest_engines():
                         else:
                             assert started + 7200 <= until <= time.time() + 7200
                 clear_backoff(engine)
-            set_backoff("", "codex", "chrome")
-            browser_backoff = engine_backoff("codex")
-            for mode in MODES:
-                expected = ["claude"] if mode in ("harvest", "instagram") else ["claude", "codex"]
-                assert engine_candidates(mode, conf) == expected
-            clear_backoff("codex", "learn")
-            clear_backoff("codex", "digest")
-            assert engine_backoff("codex") == browser_backoff
+            # 브라우저 대기는 수집 작업별 파일과 횟수를 쓰고 엔진 대기와 서로 덮어쓰지 않는다.
+            write_json(S / "backoff" / "codex.json", {"n": 13, "until": time.time() - 60, "reason": "limit"})  # 만료된 한도
+            set_backoff("", "codex", "chrome", "harvest")  # Codex의 연결 실패는 Codex 샌드박스나 규칙 문제일 수 있다.
+            wait = browser_backoff("harvest")
+            assert wait["n"] == 1 and wait["engines"] == ["codex"] and wait["until"] <= time.time() + 900
+            assert engine_candidates("harvest", conf) == ["claude"] and engine_candidates("instagram", conf) == ["claude", "codex"]
+            set_backoff("", "claude", "chrome", "harvest")  # Claude가 본 연결 실패는 ego lite 문제라 두 엔진 모두 쉰다.
+            assert browser_backoff("harvest")["n"] == 2 and not engine_candidates("harvest", conf)
+            set_backoff("", "claude", "logged_out", "instagram")
+            set_backoff("usage limit", "claude")  # 엔진 한도가 수집 작업의 브라우저 대기를 지우지 않는다.
+            assert engine_backoff("claude")["n"] == 1
+            assert [engine_candidates(mode, conf) for mode in MODES] == [[], [], ["codex"], ["codex"]]
+            clear_backoff("codex", "learn")  # 다른 작업의 완료는 브라우저 대기를 지우지 않는다.
+            assert not engine_candidates("harvest", conf) and not engine_candidates("instagram", conf)
             clear_backoff("codex", "harvest")
-            assert not engine_backoff("codex")
+            assert engine_candidates("harvest", conf) == ["codex"] and not engine_candidates("instagram", conf)
+            set_backoff("", "codex", "logged_out", "instagram")  # 로그아웃은 같은 프로필이라 어느 엔진이 봐도 둘 다 쉰다.
+            assert browser_backoff("instagram")["engines"] == list(ENGINES)
+            clear_backoff("claude", "instagram")
+            assert all(engine_candidates(mode, conf) == ["claude", "codex"] for mode in MODES)
+            write_json(S / "backoff" / "claude.json", {"n": 1, "until": time.time() + 120, "reason": "chrome"})
+            assert all(engine_candidates(mode, conf) == ["claude", "codex"] for mode in MODES)  # 이전 형식은 엔진 대기가 아니다.
+            clear_backoff("claude")
             for reason in ("limit", "auth", "unavailable"):
                 set_backoff("", "codex", reason)
                 assert all(engine_candidates(mode, conf) == ["claude"] for mode in MODES)
                 clear_backoff("codex")
-            assert fallback_reason("authentication failed", True) == "auth"
-            assert fallback_reason("CHROME_UNAVAILABLE", False) == "chrome"
-            assert fallback_reason("usage limit", True) == "limit"
+            write_json(S / "backoff" / "codex.json", {"n": 13, "until": time.time() - 60, "reason": "limit"})
+            set_backoff("", "codex", "auth")  # 만료된 한도의 횟수로 인증 대기가 8시간이 되지 않는다.
+            assert engine_backoff("codex")["n"] == 1 and engine_backoff("codex")["until"] <= time.time() + 900
+            set_backoff("", "codex", "auth")
+            assert engine_backoff("codex")["n"] == 2
+            clear_backoff("codex")
+            # 사용량 한도와 인증은 CLI 자체의 오류 문구로만 판단하고 에이전트 본문은 분류하지 않는다.
+            assert fallback_reason("", "authentication failed") == "auth"
+            assert fallback_reason("CHROME_UNAVAILABLE") == "chrome"
+            assert fallback_reason('{"error":"INSTAGRAM_LOGGED_OUT","reason":"x"}') == "logged_out"
+            assert fallback_reason("USER_TAKEOVER") == "takeover"
+            assert fallback_reason('{"error":"USER_TAKEOVER","detail":"usage limit"}', "usage limit") == "takeover"
+            assert fallback_reason('{"error":{"code":"CHROME_UNAVAILABLE"}}', "exit 1") is None  # 문자열이 아닌 error
+            assert fallback_reason("", "usage limit") == "limit"
             for message in ("You've hit your session limit - resets 2:40pm (Asia/Seoul)",
                             "You've hit your weekly limit - resets Oct 11 at 9am (Asia/Seoul)"):
-                assert fallback_reason(message, True) == "limit"
-                assert fallback_reason(message, False) is None
-                assert fallback_reason(message, True, policy="POLICY_BLOCKED") == "policy"
-            assert fallback_reason("document about rate limit", False) is None
-            assert fallback_reason("POLICY_BLOCKED", True) == "policy"
-            assert fallback_reason('{"error":"POLICY_BLOCKED","detail":"authentication usage limit"}', True) == "policy"
-            assert fallback_reason("generic failed edit", True) is None
-            assert fallback_reason("source mentions CHROME_UNAVAILABLE", True) is None
+                assert fallback_reason("", message) == "limit"
+                assert fallback_reason(message) is None
+            assert fallback_reason('{"mode":"learn","publish":"push_failed","note":"Authentication failed, HTTP 429"}') is None
+            assert fallback_reason("POLICY_BLOCKED", "usage limit") == "policy"
+            assert fallback_reason('{"error":"POLICY_BLOCKED","detail":"authentication usage limit"}', "usage limit") == "policy"
+            assert fallback_reason("generic failed edit", "exit 1") is None
+            assert fallback_reason("source mentions CHROME_UNAVAILABLE") is None
             telemetry = json.dumps({"type": "item.completed", "item": {"type": "command_execution",
                                       "output": "CHROME_UNAVAILABLE usage limit authentication"}})
             assert not transport_errors(telemetry)
-            denied = json.dumps({"type": "item.completed", "item": {"type": "mcp_tool_call", "server": "node_repl",
-                                 "result": {"_meta": {"codex/browserUse": True}, "content": [{"type": "text",
-                                 "text": "Error: Browser Use rejected this action due to browser security policy. Reason: Auto-review denied this action"}]}}})
-            assert browser_policy_error(denied)
-            assert not browser_policy_error(telemetry)
-            assert fallback_reason("CHROME_UNAVAILABLE", True, policy=browser_policy_error(denied)) == "policy"
             assert transport_errors(json.dumps({"type": "turn.failed", "error": {"message": "usage limit"}})) == "usage limit"
             cmd = codex_command("learn", conf, S / "last.response")
             assert "features.fast_mode=false" in cmd and not any("service_tier" in arg for arg in cmd)
@@ -2390,11 +2721,16 @@ def selftest_engines():
             assert "read-only" in readonly and "--add-dir" not in readonly
             verifier = codex_command("learn", conf, S / "last.response", verify=True)
             assert 'model_reasoning_effort="ultra"' in verifier and "read-only" in verifier
-            chrome = codex_command("harvest", conf, S / "last.response")
-            assert 'mcp_servers.node_repl.env.BROWSER_USE_AVAILABLE_BACKENDS="chrome"' in chrome
-            with contextlib.redirect_stdout(io.StringIO()):
+            for browserless in (*(codex_command(mode, conf, S / "last.response") for mode in MODES), verifier):
+                # Codex 브라우저 백엔드는 쓰지 않는다(2026-10-25 사용자 결정). 플러그인 키는 인라인 표여야 실제로 꺼진다.
+                assert all(arg in browserless for arg in CODEX_NO_BROWSER) and not any("BROWSER_USE" in a for a in browserless)
+                assert 'plugins={"unified-computer-use@openai-bundled"={enabled=false}}' in browserless
+                assert not any(a.startswith('plugins."') for a in browserless)
+            shown = io.StringIO()
+            with contextlib.redirect_stdout(shown):
                 cmd_engine(argparse.Namespace(mode="all", engine="codex", primary="codex"))
             assert all(v == {"engine": "codex", "primary": "codex"} for v in engine_settings(cfg()).values())
+            assert json_response(shown.getvalue())["harvest"]["effective"] == ["codex"]
             (S / "config.json").unlink()
             before = repo_snapshot()
             (REPO / "tech" / "A.md").write_text("---\nstatus: done\n---\n\n# Changed\n", encoding="utf-8")
@@ -2456,9 +2792,11 @@ def selftest_engines():
             with contextlib.redirect_stdout(io.StringIO()):
                 report = execute_codex("learn", conf)
             assert report["status"] == "scope_blocked" and "AGENTS.md" in report["files"]
+            assert report["paused"] and (S / "paused").exists()  # 지침 파일은 다음 실행이 읽으므로 자동 실행을 멈춘다.
             assert len(publications) == 1 and (REPO / "AGENTS.md").read_text() == "modified"
             assert report["run"] not in leftover_runs("learn")
             git("restore", "AGENTS.md", "tech/A.md")
+            (S / "paused").unlink()
             call_codex = good_call
 
             def user_edit_during_review(run, _conf, files):
@@ -2528,6 +2866,7 @@ def selftest_engines():
             final_value = {"mode": "learn", "publish": "blocked"}
 
             def fake_claude_cli(*args):
+                assert "--no-chrome" in args[2] and "--chrome" not in args[2]
                 cli_calls.append(1)
                 path = S / "logs" / "agent" / "claude-result.log"
                 write_json(path, {"type": "result", "is_error": False, "result": json.dumps(final_value)})
@@ -2548,31 +2887,307 @@ def selftest_engines():
             for publish in ("published", "nothing", "deferred", "unverified"):
                 final_value = {"mode": "learn", "publish": publish}
                 assert execute_claude("learn", conf)["status"] == "completed"
+            # 게시 실패 결과가 git 인증 오류나 한도 문구를 인용해도 Claude를 쉬게 하거나 Codex로 넘기지 않는다.
+            final_value = {"mode": "learn", "publish": "push_failed",
+                           "note": "git push: Authentication failed (401), API rate limit 429 |1999999999"}
+            report = execute_claude("learn", conf)
+            assert (report["status"], report["reason"], report["reset"]) == ("failed", None, ""), report
+            (S / "runs" / "last-learn.json").unlink()
+            cli_calls.clear()
+            real_codex = execute_codex
+            execute_codex = lambda *_: cli_calls.append("codex") or {"engine": "codex", "status": "completed"}
+            with contextlib.redirect_stdout(io.StringIO()):
+                cmd_agent(argparse.Namespace(mode="learn", engine=None, dry_run=False))
+            assert cli_calls == [1] and not engine_backoff("claude"), cli_calls
+            execute_codex = real_codex
+            # CLI 자체가 한도로 실패하면 그 오류 결과로 판단하고 확인한 복구 시각을 남긴다.
+            reset_at = int(time.time()) + 600
+
+            def limited_cli(*args):
+                path = S / "logs" / "agent" / "claude-result.log"
+                write_json(path, {"type": "result", "is_error": True, "result": f"Claude AI usage limit reached|{reset_at}"})
+                return 1, path
+
+            run_cli = limited_cli
+            report = execute_claude("learn", conf)
+            assert (report["reason"], report["reset"]) == ("limit", f"|{reset_at}"), report
+            run_cli = fake_claude_cli
+            # ego 스크립트는 권한 규칙 밖에서 돌므로 Claude 브라우저 실행도 runner가 전후 상태를 비교한다.
+            (REPO / SOURCES).parent.mkdir(parents=True, exist_ok=True)
+            (REPO / SOURCES).write_text("---\nstatus: done\n---\n\n# 출처\n", encoding="utf-8")
+            git("add", SOURCES)
+            git("-c", "user.name=Test", "-c", "user.email=user@example.com", "commit", "-qm", "sources")
+
+            def commit(rel, text, own=True):  # own이면 VL publish처럼 own_commits에 덧붙인다.
+                (REPO / rel).write_text(text, encoding="utf-8")
+                git("add", rel)
+                git("-c", "user.name=Test", "-c", "user.email=user@example.com", "commit", "-qm", rel)
+                if own:
+                    append(S / "own_commits", git("rev-parse", "HEAD").stdout.strip() + "\n")
+
+            prior_agent = os.environ.get("VAULT_LEARN_AGENT")
+            os.environ["VAULT_LEARN_AGENT"] = "guard-test"
+            save_manifest({"run": "guard-run", "kind": "harvest", "started": now().isoformat(), "status": "open",
+                           "agent": "guard-test", "files": [SOURCES]})
+            hook = Path(git("rev-parse", "--absolute-git-dir").stdout.strip()) / "hooks" / "pre-commit"
+            pyc = REPO / ".claude" / "skills" / "auto-learn" / "scripts" / "__pycache__" / "palantir_docs.cpython-314.pyc"
+            (REPO / ".gitignore").write_text("__pycache__/\n", encoding="utf-8")  # 실제 저장소처럼 git 목록에는 없는 캐시
+            empty_commit = lambda: git("-c", "user.name=Test", "-c", "user.email=user@example.com", "commit", "-q",
+                                       "--allow-empty", "-m", "empty")
+
+            scripts = REPO / ".claude" / "skills" / "auto-learn" / "scripts"
+            runner = scripts / "vault_learn.py"  # launchd가 다음 주기에 실행하는 작업 트리의 runner
+
+            def code_commit(rel, text, own=False):
+                (REPO / rel).parent.mkdir(parents=True, exist_ok=True)
+                commit(rel, text, own)
+
+            def rebase_publish():  # VL publish가 원격 변경 위로 리베이스해 푸시한다. 원래 커밋과 리베이스한 커밋을 모두 적는다.
+                start = git("rev-parse", "HEAD").stdout.strip()
+                commit(SOURCES, "---\nstatus: done\n---\n\n# 리베이스 전\n")
+                original_sha = git("rev-parse", "HEAD").stdout.strip()
+                git("reset", "-q", "--hard", start)
+                # 다른 기기에서 푸시한 코드 변경. git ls-remote와 같은 origin/main에서 닿으므로 원격 커밋으로 받는다.
+                code_commit((scripts / "palantir_docs.py").relative_to(REPO).as_posix(), "remote\n")
+                git("-c", "user.name=Test", "-c", "user.email=user@example.com", "cherry-pick", original_sha)
+                append(S / "own_commits", git("rev-parse", "HEAD").stdout.strip() + "\n")
+                git("push", "-q", "origin", "HEAD:main")
+
+            forged = REPO / "tech" / "__pycache__" / "note.md"  # 지식 문서 모양이어도 Git이 무시하는 경로
+            for mode, effect, status, paused, note in (
+                    ("harvest", lambda: None, "completed", False, ""),
+                    ("harvest", lambda: commit(SOURCES, "---\nstatus: done\n---\n\n# 채널\n"), "completed", False, ""),
+                    # 허용 밖 지식 문서 편집과 그것만 바꾼 남의 커밋은 범위 문제로만 남긴다(Obsidian, 대화형 편집).
+                    ("instagram", lambda: (REPO / "tech/A.md").write_text("edit\n", encoding="utf-8"),
+                     "scope_blocked", False, "tech/A.md"),
+                    ("instagram", lambda: commit("tech/A.md", "user\n", own=False), "scope_blocked", False,
+                     "commit not published by VL"),
+                    ("instagram", lambda: (git("rm", "-q", "tech/B.md"), git("-c", "user.name=Test", "-c",
+                                           "user.email=user@example.com", "commit", "-qm", "rm")),
+                     "scope_blocked", False, "commit not published by VL"),
+                    # 지식 문서가 아닌 경로(지침, 코드, 설정, 무시된 경로, 심볼릭 링크)는 커밋으로 바꿔도 멈춘다.
+                    ("instagram", lambda: commit("AGENTS.md", "user\n", own=False), "scope_blocked", True, "AGENTS.md"),
+                    ("instagram", lambda: code_commit(runner.relative_to(REPO).as_posix(), "user\n"), "scope_blocked",
+                     True, "vault_learn.py"),
+                    ("harvest", lambda: (REPO / ".mcp.json").write_text("{}", encoding="utf-8"), "scope_blocked", True,
+                     ".mcp.json"),
+                    ("instagram", lambda: (forged.parent.mkdir(exist_ok=True), forged.write_text("x", encoding="utf-8")),
+                     "scope_blocked", True, "tech/__pycache__/note.md"),
+                    ("instagram", lambda: (REPO / "tech/link.md").symlink_to("../AGENTS.md"), "scope_blocked", True,
+                     "tech/link.md"),
+                    # 작업 트리를 바꾸지 않은 남의 커밋은 VL이 푸시하지 않으므로 기록만 한다.
+                    ("instagram", empty_commit, "scope_blocked", False, "commit not published by VL"),
+                    ("instagram", lambda: append(S / "own_commits", "f" * 40 + "\n"), "scope_blocked", True, "own_commits"),
+                    ("harvest", lambda: commit("AGENTS.md", "rogue\n"), "scope_blocked", True, "not a VL commit"),
+                    # 원격 추적 ref는 로컬 파일이다. 위조한 ref로 남의 커밋을 원격 커밋처럼 보이게 하면 멈춘다.
+                    ("instagram", lambda: (commit("AGENTS.md", "forged\n", own=False),
+                                           git("update-ref", "refs/remotes/zz/x", "HEAD")),
+                     "scope_blocked", True, "remote ref changed: refs/remotes/zz/x"),
+                    ("instagram", lambda: (code_commit(runner.relative_to(REPO).as_posix(), "forged\n"),
+                                           git("update-ref", ORIGIN_MAIN, "HEAD")),
+                     "scope_blocked", True, "does not match git ls-remote"),
+                    # 대화형 VL publish(지식 문서만 바꾼 own 커밋)와 리베이스 게시는 받는다.
+                    ("harvest", lambda: commit("tech/B.md", "concurrent publish\n"), "completed", False, ""),
+                    ("harvest", rebase_publish, "completed", False, ""),
+                    ("instagram", lambda: (pyc.parent.mkdir(parents=True, exist_ok=True), pyc.write_bytes(b"x")),
+                     "scope_blocked", True, "__pycache__"),
+                    ("instagram", lambda: (S / "own_commits").chmod(0), "scope_blocked", True, "guard check failed"),
+                    # 깨진 manifest는 건너뛰고 이 실행이 연 run만 막는다.
+                    ("harvest", lambda: (write_json(S / "runs" / "broken" / "manifest.json", [1]), empty_commit()),
+                     "scope_blocked", False, "commit not published by VL"),
+                    ("harvest", lambda: write_json(S / "config.json", {"claude": "x"}), "scope_blocked", True, "config.json"),
+                    ("harvest", lambda: hook.write_text("#!/bin/sh\n", encoding="utf-8"), "scope_blocked", True, "hooks")):
+                def browser_cli(*args):
+                    assert (S / PENDING).exists()  # 엔진이 도는 동안 검사 표시가 있다.
+                    effect()
+                    path = S / "logs" / "agent" / "claude-browser.log"
+                    write_json(path, {"type": "result", "is_error": False,
+                                      "result": json.dumps({"mode": mode, "login_needed": ["youtube"]})})
+                    return 0, path
+
+                run_cli = browser_cli
+                with contextlib.redirect_stdout(io.StringIO()):
+                    report = execute_claude(mode, conf)
+                assert (report["status"], (S / "paused").exists()) == (status, paused), report
+                assert note in " ".join(report.get("files", [])) and report["login_needed"] == ["youtube"], report
+                assert report.get("reason") is None and report.get("paused", False) == paused, report
+                assert not (S / PENDING).exists(), report
+                for path in (S / "paused", S / "config.json", hook, pyc, S / "runs" / "broken" / "manifest.json",
+                             REPO / ".mcp.json", forged, REPO / "tech/link.md"):
+                    path.unlink(missing_ok=True)
+                with contextlib.suppress(FileNotFoundError):
+                    (S / "own_commits").chmod(0o644)
+                git("update-ref", "-d", "refs/remotes/zz/x", check=False)
+                git("fetch", "-q", "origin")  # 위조한 origin/main을 원격 값으로 되돌린다.
+                git("restore", "tech/A.md")
+            assert load_manifest("guard-run")["status"] == "scope_blocked"  # 이 실행이 연 harvest run은 이어받지 않는다.
+            (run_dir("guard-run") / "manifest.json").unlink()
+            # 브라우저 실패 신호와 함께 범위 문제가 나면 다른 엔진으로 넘길 이유(reason)를 지운다.
+            def chrome_cli(*args):
+                (REPO / "tech/A.md").write_text("edit\n", encoding="utf-8")
+                path = S / "logs" / "agent" / "claude-browser.log"
+                write_json(path, {"type": "result", "is_error": False, "result": "CHROME_UNAVAILABLE"})
+                return 0, path
+
+            run_cli = chrome_cli
+            with contextlib.redirect_stdout(io.StringIO()):
+                report = execute_claude("harvest", conf)
+            assert (report["status"], report["reason"], report.get("paused")) == ("scope_blocked", None, None), report
+            git("restore", "tech/A.md")
+            # 검사 전에 끝나도(SIGTERM으로 끝난 엔진, 사라진 로그) 로그를 읽기 전에 검사하고 멈춘다.
+            def killed_cli(*args):
+                write_json(S / "config.json", {"claude": "x"})
+                raise SystemExit(143)
+
+            run_cli = killed_cli
+            try:
+                with contextlib.redirect_stdout(io.StringIO()):
+                    execute_claude("instagram", conf)
+            except SystemExit:
+                pass
+            assert (S / "paused").exists() and not (S / PENDING).exists()
+            for path in (S / "paused", S / "config.json"):
+                path.unlink()
+            run_cli = lambda *args: (hook.write_text("#!/bin/sh\n", encoding="utf-8"), (1, S / "logs" / "agent" / "gone.log"))[1]
+            try:
+                with contextlib.redirect_stdout(io.StringIO()):
+                    execute_claude("instagram", conf)
+            except FileNotFoundError:
+                pass
+            else:
+                raise AssertionError("사라진 로그를 읽었다")
+            assert (S / "paused").exists() and not (S / PENDING).exists()
+            for path in (S / "paused", hook):
+                path.unlink()
+            # 이전 harvest가 남긴 목록 편집을 이 실행의 begin이 이어받으면 시작 때 미커밋이었어도 받는다.
+            (REPO / SOURCES).write_text("---\nstatus: done\n---\n\n# 남은 편집\n", encoding="utf-8")
+            save_manifest({"run": "prev-harvest", "kind": "harvest", "started": now().isoformat(), "status": "deferred",
+                           "files": [], "left": {SOURCES: file_hash(SOURCES)}, "ended": now().isoformat()})
+
+            def adopt_cli(*args):
+                with contextlib.redirect_stdout(io.StringIO()):
+                    assert cmd_begin(argparse.Namespace(kind="harvest")) == 0
+                (REPO / SOURCES).write_text("---\nstatus: done\n---\n\n# 남은 편집\n\n# 새 채널\n", encoding="utf-8")
+                path = S / "logs" / "agent" / "claude-browser.log"
+                write_json(path, {"type": "result", "is_error": False, "result": json.dumps({"mode": "harvest"})})
+                return 0, path
+
+            run_cli = adopt_cli
+            with contextlib.redirect_stdout(io.StringIO()):
+                report = execute_claude("harvest", conf)
+            assert report["status"] == "completed" and not (S / "paused").exists(), report
+            for path, m in list(manifests()):
+                if m.get("kind") == "harvest":
+                    path.unlink()
+            git("restore", SOURCES)
+            # 읽을 수 없게 된 보호 파일도 해시 대신 따로 기록해 바뀐 것으로 본다.
+            hook.write_text("#!/bin/sh\n", encoding="utf-8")
+            hook.chmod(0)
+            try:
+                assert protected_state(hook.parent.parent)[str(hook)].startswith("unreadable:")
+            finally:
+                hook.chmod(0o644)
+                hook.unlink()
+            if prior_agent is None:
+                os.environ.pop("VAULT_LEARN_AGENT", None)
+            else:
+                os.environ["VAULT_LEARN_AGENT"] = prior_agent
+            # Codex의 ego-browser 명령은 사용자 규칙으로 샌드박스 밖에서 돌고 그 규칙은 모든 Codex 실행에 적용된다. 또
+            # launchd가 작업 트리의 runner를 다음 주기에 실행하므로 보호 상태, own_commits와 지식 문서가 아닌 경로가 바뀌면
+            # 모든 모드에서 멈추고, 허용 밖 지식 문서 편집은 범위 문제로 남긴다.
+            own_before = (S / "own_commits").read_text(encoding="utf-8")
+            runner_rel, local_settings = runner.relative_to(REPO).as_posix(), REPO / ".claude" / "settings.local.json"
+            for mode, effect, status, paused, note in (
+                    ("instagram", lambda: None, "completed", False, ""),
+                    ("instagram", lambda: hook.write_text("#!/bin/sh\n", encoding="utf-8"), "scope_blocked", True, "hooks"),
+                    ("harvest", lambda: write_json(S / "config.json", {"claude": "x"}), "scope_blocked", True, "config.json"),
+                    ("harvest", lambda: append(S / "own_commits", "f" * 40 + "\n"), "scope_blocked", True, "own_commits"),
+                    ("harvest", lambda: (REPO / "tech/A.md").write_text("edit\n", encoding="utf-8"), "scope_blocked", False,
+                     "tech/A.md"),
+                    ("harvest", lambda: local_settings.write_text("{}", encoding="utf-8"), "completed", False, ""),
+                    ("learn", lambda: hook.write_text("#!/bin/sh\n", encoding="utf-8"), "scope_blocked", True, "hooks"),
+                    ("digest", lambda: write_json(S / "config.json", {"claude": "x"}), "scope_blocked", True, "config.json"),
+                    ("learn", lambda: (REPO / "AGENTS.md").write_text("edit\n", encoding="utf-8"), "scope_blocked", True,
+                     "AGENTS.md"),
+                    ("learn", lambda: runner.write_text("trojan\n", encoding="utf-8"), "scope_blocked", True, runner_rel),
+                    ("learn", lambda: (pyc.parent.mkdir(parents=True, exist_ok=True), pyc.write_bytes(b"x")), "scope_blocked",
+                     True, "__pycache__"),
+                    ("digest", lambda: runner.write_text("trojan\n", encoding="utf-8"), "scope_blocked", True, runner_rel),
+                    ("learn", lambda: (REPO / "tech/B.md").write_text("unplanned\n", encoding="utf-8"), "scope_blocked",
+                     False, "tech/B.md")):
+                def guarded_call(m, _conf, prompt, verify=False, run=None):
+                    assert (S / PENDING).exists()  # 엔진이 도는 동안 검사 표시가 있다.
+                    effect()
+                    path = S / "logs" / "agent" / "codex-guard.log"
+                    path.write_text("ok", encoding="utf-8")
+                    return 0, path, json.dumps({"mode": m, "run": run, "login_needed": ["gmail"]})
+
+                call_codex = guarded_call
+                with contextlib.redirect_stdout(io.StringIO()):
+                    report = execute_codex(mode, conf)
+                    finish_runs(0, mode)
+                assert (report["status"], (S / "paused").exists(), report.get("paused", False)) == (status, paused, paused), report
+                assert note in " ".join(report.get("files", [])) and report["login_needed"] == ["gmail"], report
+                assert not (S / PENDING).exists(), report
+                for path in (S / "paused", S / "config.json", hook, local_settings, pyc):
+                    path.unlink(missing_ok=True)
+                write_text(S / "own_commits", own_before)
+                git("restore", "tech/A.md", "tech/B.md", "AGENTS.md", runner_rel)
+            # Codex 응답의 mode, run 불일치는 일반 실패다. 로그에 남은 인증, 한도 문구로 Codex를 쉬게 하지 않는다.
+            def mismatched_call(m, _conf, prompt, verify=False, run=None):
+                path = S / "logs" / "agent" / "codex-guard.log"
+                path.write_text("warning: MCP authentication failed (401), usage limit\n", encoding="utf-8")
+                return 0, path, json.dumps({"mode": "other"})
+
+            call_codex = mismatched_call
+            with contextlib.redirect_stdout(io.StringIO()):
+                report = execute_codex("instagram", conf)
+            assert (report["status"], report["reason"]) == ("failed", None), report
+            # 검증 실행에도 사용자의 ego-browser 규칙이 적용되므로 검증 중 코드가 바뀌면 멈추고 게시하지 않는다.
+            call_codex = good_call
+
+            def trojan_review(run, _conf, files):
+                runner.write_text("trojan\n", encoding="utf-8")
+                return True, {"result": {"ok": True, "findings": []}}
+
+            verify_codex = trojan_review
+            with contextlib.redirect_stdout(io.StringIO()):
+                report = execute_codex("learn", conf)
+                finish_runs(0, "learn")
+            assert (report["status"], report.get("paused"), (S / "paused").exists()) == ("scope_blocked", True, True), report
+            assert runner_rel in report["files"] and len(publications) == 1 and not (S / PENDING).exists(), report
+            (S / "paused").unlink()
+            git("restore", "tech/A.md", runner_rel)
+            verify_codex = fake_verify
             (S / "runs" / "last-learn.json").unlink()
             agent_rules, run_cli = original[-2:]
             # 모든 모드의 범위 검사가 다른 자동 실행의 정상 게시와 겹치지 않도록 같은 잠금을 유지한다.
             locked_modes = []
-            def locked_execution(mode, _conf):
-                with locked("agent-write", wait=False) as acquired:
-                    assert not acquired, mode
-                locked_modes.append(mode)
-                return {"engine": "codex", "status": "completed"}
+            def locked_execution(engine):
+                def execute(mode, _conf):
+                    with locked("agent-write", wait=False) as acquired:
+                        assert not acquired, mode
+                    locked_modes.append((mode, engine))
+                    return {"engine": engine, "status": "completed"}
+                return execute
 
-            execute_codex = locked_execution
+            execute_claude, execute_codex = locked_execution("claude"), locked_execution("codex")
             for mode in MODES:
                 with contextlib.redirect_stdout(io.StringIO()):
                     cmd_agent(argparse.Namespace(mode=mode, engine="codex", dry_run=False))
-            assert locked_modes == list(MODES)
+            assert locked_modes == [(m, "codex") for m in MODES]
             # alternate 한 slot은 최대 두 번이며, 일반 실패와 범위 실패에는 교대하지 않는다.
             calls = []
             execute_claude = lambda *_: calls.append("claude") or {"engine": "claude", "status": "failed", "reason": "limit"}
             execute_codex = lambda *_: calls.append("codex") or {"engine": "codex", "status": "completed"}
             agent_has_work = lambda *_: True
-            with contextlib.redirect_stdout(io.StringIO()):
-                cmd_agent(argparse.Namespace(mode="learn", engine=None, dry_run=False))
-            assert calls == ["claude", "codex"] and engine_backoff("claude").get("until", 0) > time.time()
-            assert not engine_backoff("codex")
-            clear_backoff("claude")
+            for mode in MODES:  # 기본 설정에서는 모든 작업이 Claude 먼저, 한도에 걸리면 Codex다.
+                calls.clear()
+                with contextlib.redirect_stdout(io.StringIO()):
+                    cmd_agent(argparse.Namespace(mode=mode, engine=None, dry_run=False))
+                assert calls == ["claude", "codex"] and engine_backoff("claude").get("until", 0) > time.time(), mode
+                assert not engine_backoff("codex")
+                clear_backoff("claude")
             calls.clear()
             execute_codex = lambda *_: calls.append("codex") or {"engine": "codex", "status": "failed", "reason": "auth"}
             with contextlib.redirect_stdout(io.StringIO()):
@@ -2608,11 +3223,65 @@ def selftest_engines():
             with contextlib.redirect_stdout(io.StringIO()):
                 cmd_agent(argparse.Namespace(mode="learn", engine=None, dry_run=False))
             assert "retry_until" not in read_json(S / "runs" / "last-learn.json")
-            calls.clear()
+            calls.clear()  # 잠금을 기다리는 동안 생긴 멈춤이면 엔진을 띄우지 않는다.
+            execute_claude = lambda *_: calls.append("claude") or {"engine": "claude", "status": "completed"}
+            agent_has_work = lambda *_: (S / "paused").touch() or True
+            with contextlib.redirect_stdout(io.StringIO()):
+                cmd_agent(argparse.Namespace(mode="learn", engine=None, dry_run=False))
+            assert calls == [] and (S / "paused").exists()
+            (S / "paused").unlink()
+            agent_has_work = lambda *_: True
+            # 검사 전에 끝난 실행(SIGKILL, 전원)의 표시가 잠금을 잡은 뒤에도 있으면 엔진을 띄우지 않고 멈춘다.
+            mark_guard("harvest", "claude")
+            with contextlib.redirect_stdout(io.StringIO()):
+                cmd_agent(argparse.Namespace(mode="learn", engine=None, dry_run=False))
+            assert calls == [] and (S / "paused").exists() and not (S / PENDING).exists()
+            assert "guard did not finish" in read_json(S / "runs" / "last-harvest.json")["attempts"][0]["files"][0]
+            (S / "paused").unlink()
             execute_claude = lambda *_: calls.append("claude") or {"engine": "claude", "status": "failed", "reason": "policy"}
             with contextlib.redirect_stdout(io.StringIO()):
                 cmd_agent(argparse.Namespace(mode="learn", engine=None, dry_run=False))
             assert calls == ["claude"]
+            # 실행 파일이 없을 때만 엔진을 쓸 수 없다고 보고 넘긴다. 사라진 로그 같은 파일 오류는 일반 실패다.
+            for binary, expected in ((sys.executable, ["claude"]), ("/nonexistent/claude-cli", ["claude", "codex"])):
+                calls.clear()
+                write_json(S / "config.json", {"claude": binary})
+
+                def vanished(*_):
+                    calls.append("claude")
+                    raise FileNotFoundError(2, "No such file or directory", str(S / "logs" / "agent" / "gone.log"))
+
+                execute_claude = vanished
+                execute_codex = lambda *_: calls.append("codex") or {"engine": "codex", "status": "completed"}
+                with contextlib.redirect_stdout(io.StringIO()):
+                    cmd_agent(argparse.Namespace(mode="harvest", engine=None, dry_run=False))
+                assert calls == expected, (binary, calls)
+                (S / "config.json").unlink()
+                clear_backoff("claude")
+            # 범위 실패, 멈춤, 브라우저 실패와 사용자 인계는 Codex로 넘기지 않는다. 로그아웃과 Claude가 본 연결 실패는
+            # 그 수집 작업을 두 엔진 모두 쉬게 한다.
+            for mode, result, touch, blocked in (
+                    ("harvest", {"status": "scope_blocked", "reason": "chrome"}, False, ()),
+                    ("harvest", {"status": "failed", "reason": "limit"}, True, ()),
+                    ("harvest", {"status": "failed", "reason": "chrome"}, False, ("harvest",)),
+                    ("instagram", {"status": "failed", "reason": "logged_out"}, False, ("instagram",)),
+                    ("instagram", {"status": "failed", "reason": "takeover"}, False, ())):
+                calls.clear()
+                execute_claude = lambda *_: (calls.append("claude"), touch and (S / "paused").touch(),
+                                             {"engine": "claude"} | result)[2]
+                with contextlib.redirect_stdout(io.StringIO()):
+                    cmd_agent(argparse.Namespace(mode=mode, engine=None, dry_run=False))
+                assert calls == ["claude"], (mode, result)
+                assert [m for m in BROWSER if not engine_candidates(m, conf)] == list(blocked), (mode, result)
+                (S / "paused").unlink(missing_ok=True)
+                for engine in ENGINES:
+                    clear_backoff(engine, mode)
+            calls.clear()  # Codex의 연결 실패는 Codex 샌드박스나 규칙 문제일 수 있어 Claude의 수집은 막지 않는다.
+            execute_codex = lambda *_: calls.append("codex") or {"engine": "codex", "status": "failed", "reason": "chrome"}
+            with contextlib.redirect_stdout(io.StringIO()):
+                cmd_agent(argparse.Namespace(mode="harvest", engine="codex", dry_run=False))
+            assert calls == ["codex"] and engine_candidates("harvest", conf) == ["claude"]
+            clear_backoff("codex", "harvest")
             (S / "runs" / "last-learn.json").unlink()  # 아래 독립 실행 검사는 백오프 없이 시작한다.
             codex_actions("learn", {"actions": {"enqueue": [{"url": "https://youtu.be/aaaaaaaaaaa", "source": "repost:x"}]}})
             assert rows(S / "queue" / "new.tsv")[0][:2] == ["aaaaaaaaaaa", "repost:x"]
@@ -2671,11 +3340,12 @@ def selftest_engines():
                 else:
                     os.environ["VAULT_LEARN_ENGINE"] = prior_engine
     finally:
-        S, REPO, call_codex, verify_codex, cmd_publish, execute_claude, execute_codex, agent_has_work, agent_rules, run_cli = original
+        S, REPO, call_codex, verify_codex, cmd_publish, execute_claude, execute_codex, agent_has_work, notify, ego_guide, agent_rules, run_cli = original
 
 
 def cmd_selftest(a):
-    global S
+    global S, ego_guide
+    assert sys.dont_write_bytecode  # 정상 실행은 실행 검사가 보는 __pycache__를 고치지 않는다.
     for engine in ENGINES:
         for mode in MODES:
             excerpt = workflow_sections(mode, engine)
@@ -2683,10 +3353,20 @@ def cmd_selftest(a):
             assert {"구성", "공통 원칙", "운영", f"{mode} 모드"} <= set(headings)
             assert ("Codex 실행 차이" in headings) == (engine == "codex")
             assert not any(f"{other} 모드" in headings for other in MODES if other != mode)
+            # 두 엔진 모두 짧은 import 형식만 쓴다(Codex 규칙과 Claude 허용 규칙에 함께 맞는다).
+            assert "await import('file://" in excerpt and "ego-browser nodejs <" not in excerpt
             assert "학습 영역은 개발, CS" in excerpt
             if mode == "instagram":
                 assert "source: saved" in excerpt and "DM 목록과 대화에는 접근하지 않는다" in excerpt
                 assert "--complete dm" not in excerpt and "https://www.instagram.com/direct/inbox/" not in excerpt
+            if mode in BROWSER:
+                assert "ego-browser skill" in excerpt and "mcp__claude-in-chrome" not in excerpt and "javascript_tool" not in excerpt
+                assert "`vault-learn-<모드>` 하나만" in excerpt and "- 실행 검사:" in excerpt
+                assert "S/guard-pending.json" in excerpt and "S/backoff/browser-<모드>.json" in excerpt
+                assert "USER_TAKEOVER" in excerpt and "EGO_TASK_SPACE_NAME_IN_USE" in excerpt
+                assert "Promise를 기다린다" not in excerpt and "S/tmp/ego-browser-skill.md" in excerpt
+            if mode == "harvest":
+                assert "__vlSubsLoad" in excerpt and "page.waitForFunction" in excerpt
     assert classify(1, "ERROR: [youtube] x: Join this channel to get access to members-only content") == "skip"
     assert classify(1, "오류: VAD가 말소리를 찾지 못했다. 음악이나 무음 위주의 오디오일 수 있다.") == "skip"
     assert classify(1, "ERROR: Sign in to confirm you’re not a bot") == "systemic"
@@ -2734,10 +3414,38 @@ def cmd_selftest(a):
         write_json(S / "config.json", {"instagram_dm_name": "테스트친구",
                                        "email_senders": [{"from": "jane.doe@corp.example", "name": "x", "private": True}]})
         assert {"테스트친구", "jane.doe"} <= personal_terms()
-        prompt = codex_prompt("instagram", DEFAULTS)
+        # VL이 ego-browser 안내를 저장했으면 두 엔진에 그 파일을, 저장하지 못했으면 직접 실행을 알린다.
+        real_guide = ego_guide
+        try:
+            for guide in (S / "tmp" / "ego-browser-skill.md", None):
+                ego_guide = lambda guide=guide: guide
+                prompt = codex_prompt("instagram", DEFAULTS)
+                claude_prompt = agent_prompt("harvest", DEFAULTS)  # TaskSpace 이름은 고정, 파일 접두사는 실행마다 다르다.
+                runner = prompt.split("Runner instructions", 1)[1]
+                assert (f"guide the runner saved at {guide}" in runner) == bool(guide)
+                assert ("Run `ego-browser skill` first" in runner) == (not guide)
+                assert (f"ego-browser 안내 {guide}를" in claude_prompt) == bool(guide)
+                assert ("`ego-browser skill`을 실행해" in claude_prompt) == (not guide)
+        finally:
+            ego_guide = real_guide
         assert "Never open or read Instagram DM" in prompt and "instagram:['saved']" in prompt
         assert "Read only user-sent DM items" not in prompt
-        assert "mcp__cua_repl" in prompt and "/Applications/ChatGPT.app/Contents/Resources/" in prompt
+        assert "cua_repl" not in prompt and "control-chrome" not in prompt
+        assert "TaskSpace named vault-learn-instagram (" in prompt and f"{S}/tmp/vault-learn-instagram-" in prompt
+        assert "ego-browser nodejs -e \"await import('file:///" in runner and "ego-browser nodejs <" not in runner
+        assert "return USER_TAKEOVER" in runner and "Never run ego-browser or use any browser" not in runner
+        assert "TaskSpace 이름은 vault-learn-harvest," in claude_prompt and f"{S}/tmp/vault-learn-harvest-" in claude_prompt
+        assert "threads_extract.js" in claude_prompt and "CHROME_UNAVAILABLE(ego lite" in claude_prompt
+        assert "USER_TAKEOVER만" in claude_prompt and "USER_TAKEOVER" not in agent_prompt("digest", DEFAULTS).split("\n\n")[0]
+        write_json(run_dir("t-learn") / "manifest.json", {"run": "t-learn", "kind": "learn", "files": [], "baseline_dirty": []})
+        for quiet in (codex_prompt("learn", DEFAULTS, "t-learn"), codex_prompt("digest", DEFAULTS, digest={"changes": []})):
+            # 사용자의 ego-browser 허용 규칙은 모든 Codex 실행에 적용되므로 learn과 digest에서는 쓰지 말라고 한다.
+            assert "Never run ego-browser or use any browser" in quiet.split("Runner instructions", 1)[1]
+        allow, deny = agent_rules("harvest")
+        assert {"Bash(ego-browser skill)", "Bash(ego-browser nodejs *)"} <= set(allow)
+        assert not any("chrome" in rule for rule in allow)
+        assert {"mcp__claude-in-chrome", "mcp__plugin_playwright_playwright", "Bash(ego-browser upgrade *)"} <= set(deny)
+        assert not any("ego-browser" in rule for rule in agent_rules("learn")[0])
         assert "POLICY_BLOCKED; do not retry or switch engines/surfaces" in prompt
         assert not agent_has_work("instagram", DEFAULTS | {"instagram_dm_name": "테스트친구"})
         box = S / "inbox"
@@ -2838,7 +3546,7 @@ def main():
     p.add_argument("--dry-run", action="store_true")
     add("email-query", cmd_email_query, "harvest의 Gmail 검색어와 발신자")
     add("lead-id", cmd_lead_id, "외부 링크의 수집함 id").add_argument("url")
-    p = add("channels-merge", cmd_channels_merge, "Chrome에서 읽은 구독 목록을 channels.tsv에 합친다")
+    p = add("channels-merge", cmd_channels_merge, "ego lite에서 읽은 구독 목록을 channels.tsv에 합친다")
     p.add_argument("--rows", required=True, help="handle<TAB>title 행 파일")
     p.add_argument("--complete", action="store_true", help="목록 전체를 읽었을 때만 준다(구독 해지 반영)")
     p.add_argument("--dry-run", action="store_true", help="상태를 쓰지 않고 분류할 pending 미리 보기")
@@ -2850,7 +3558,7 @@ def main():
     p.add_argument("mode", choices=MODES)
     p.add_argument("--engine", choices=(*ENGINES, "alternate"), help="이 실행만 엔진 선택을 바꾼다")
     p.add_argument("--dry-run", action="store_true")
-    p = add("engine", cmd_engine, "모드별 Claude/Codex/alternate와 우선 엔진을 보고 바꾼다")
+    p = add("engine", cmd_engine, "모드별 Claude/Codex/alternate와 우선 엔진을 보고 바꾼다(기본: 모든 모드 Claude 먼저, 막히면 Codex)")
     p.add_argument("mode", nargs="?", choices=(*MODES, "all"))
     p.add_argument("engine", nargs="?", choices=(*ENGINES, "alternate"))
     p.add_argument("--primary", choices=ENGINES)

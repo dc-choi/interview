@@ -2,13 +2,15 @@
 
 import io
 import json
+import sys
 import tempfile
 import unittest
 from pathlib import Path
 from unittest.mock import Mock, patch
 
-import palantir_docs as docs
-import vault_learn as vl
+sys.dont_write_bytecode = True  # 실행 검사가 보는 스킬 스크립트의 __pycache__를 고치지 않는다.
+import palantir_docs as docs  # noqa: E402
+import vault_learn as vl  # noqa: E402
 
 URL = docs.BASE + "/docs/foundry/example"
 PAGE = ('<html><head><title>Example</title></head><body><nav>Navigation</nav>'
