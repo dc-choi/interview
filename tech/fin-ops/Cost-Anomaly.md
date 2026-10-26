@@ -32,7 +32,7 @@ aliases: ["Cost Anomaly", "Cost Anomaly Detection", "비용 이상 탐지"]
 
 2026-10-12 AWS Cost Management 문서 기준이다.
 
-- Cost Explorer는 콘솔에서 처음 열 때 활성화되며 API로는 켤 수 없다. 켜면 이번 달과 지난 13개월의 비용 데이터를 준비하고 다음 12개월을 예측한다. 이번 달 데이터는 약 24시간 뒤에 보이고 나머지는 며칠 더 걸린다.
+- Cost Explorer는 콘솔에서 처음 열 때 활성화되며 API로는 켤 수 없다. 켜면 이번 달과 지난 13개월의 비용 데이터를 준비한다. 이번 달 데이터는 약 24시간 뒤에 보이고 나머지는 며칠 더 걸린다. 예측 기간은 2026-10-26 대조한 활성화 안내에는 다음 12개월, 개요에는 다음 18개월로 표기가 달라 이 문서에서는 하나의 현행 상한으로 확정하지 않는다.
 - 활성화 과정에서 AWS가 Cost Anomaly Detection을 자동 구성한다. AWS services monitor 하나와 일일 요약 alert subscription을 만들고, 대부분의 AWS 서비스에서 비용 영향이 100달러와 예상 지출의 40%를 넘는 이상 지출을 알린다. opt-out은 언제든 할 수 있으며, 그러려면 계정의 cost monitor와 alert subscription을 모두 삭제해야 한다.
 - 일일 요약은 전날 알림 가운데 상위 10개를 비용 영향 순으로 정리한 이메일이다. 매일 UTC 00:00에 만들어지며 실제 도착 시각은 달라질 수 있다. 탐지되는 대로 받으려면 SNS topic이 필요한 개별 알림을 쓴다.
 - 임계 미만의 이상도 ML 모델은 계속 탐지하며 `Detected anomalies` 탭에 남는다. 알림이 없었다는 사실을 이상이 없었다는 뜻으로 읽지 않는다.
@@ -40,7 +40,7 @@ aliases: ["Cost Anomaly", "Cost Anomaly Detection", "비용 이상 탐지"]
 
 ## 탐지 시점과 범위의 한계
 
-- 할인 적용 후 **net unblended cost**를 대상으로, 청구 데이터 처리 뒤 하루 약 세 번 분석한다. Cost Explorer 데이터는 최대 24시간 지연되어 사용 발생 후 탐지에도 최대 24시간이 걸릴 수 있다. 개별 알림도 사용 순간의 경보가 아니다.
+- 할인 적용 후 **net unblended cost**를 대상으로, 청구 데이터 처리 뒤 하루 약 세 번 분석한다. 이상 탐지 안내는 데이터 지연과 탐지에 최대 24시간이 걸릴 수 있다고 설명하지만, Cost Explorer 개요와 데이터 탐색 안내에는 상위 청구 데이터에 따라 일부 반영이 24시간보다 늦을 수 있다는 예외가 있다(2026-10-26 대조). 따라서 이를 모든 비용의 반영이나 탐지를 보장하는 24시간 상한으로 사용하지 않는다. 개별 알림도 사용 순간의 경보가 아니다.
 - 새 monitor는 탐지를 시작하기까지 최대 24시간이 걸릴 수 있다. 새 서비스는 10일 분량의 과거 사용 데이터가 필요하다.
 - AWS Marketplace의 타사 제품/서비스는 감시하지 않는다. 단, Amazon Bedrock의 타사 파운데이션 모델은 포함한다. 그 밖의 Marketplace 비용은 AWS Budgets 등으로 별도 추적한다.
 
@@ -50,6 +50,14 @@ aliases: ["Cost Anomaly", "Cost Anomaly Detection", "비용 이상 탐지"]
 - 무한 루프/재시도로 폭증한 Lambda/요청 수
 - 데이터 전송 급증([[Egress-Cost]]), 로그 폭증([[Long-Term-Retention]])
 - 침해로 인한 비정상 사용(크립토 마이닝 등) — 보안 신호이기도 함
+
+### 서비스별 합계에서 조사 범위를 좁힌다
+
+2026-10-26 Cost Explorer 공식 안내 대조 기준이다. 먼저 비교 기간과 비용 지표를 고정하고 `Group by`를 `Service`로 두어 비용이 큰 서비스를 찾는다. `Linked account`, `Region`, `Service` 필터로 대상 범위를 좁힌 뒤 사용 유형과 운영 기록을 확인한다. 그룹화는 선택한 범위의 합계를 나누는 것이고, 필터는 분석에 포함할 데이터를 제한하는 것이다.
+
+서비스별 차트는 비용 상위 9개를 보여 준다는 공식 기능 설명을 따른다. 차트에 보이는 항목 수를 사용한 서비스의 전체 수로 해석하지 않고, 아래 표의 금액과 선택한 조건의 전체 데이터 CSV를 확인한다. 서비스별 합계에서 데이터 전송 비용은 관련 EC2나 S3 등에 포함되므로 별도의 전송 서비스 행이 없다는 이유로 전송 비용을 0으로 판단하지 않는다.
+
+Cost Explorer는 비용 데이터를 적어도 24시간마다 갱신하지만 일부 청구 데이터는 더 늦게 도착할 수 있다. 전날 사용분이 모두 확정됐다고 가정하지 않고 조회 시각과 조건을 남긴다(운영 제안). 진행 중인 달의 추정 비용과 월말 예상액도 확정 청구서와 구분한다.
 
 ### EC2-Other는 사용 유형으로 나눠 읽는다
 
@@ -111,6 +119,11 @@ Savings Plans의 `SavingsPlanCoveredUsage`에 표시된 unblended cost는 할인
 - 탐지 + 알람 + 액션을 층으로 두는 운영
 
 ## 출처
+
+2026-10-26에는 서비스별 그룹화, 필터, 표와 CSV의 범위 및 비용 데이터의 지연 예외를 대조했다. 예측 기간의 공식 문서 간 차이는 위에 남겼으며, 실제 계정 화면과 청구 내역을 확인한 것은 아니다. 다른 항목의 기존 검증일은 유지한다.
+
+- [AWS Cost Management, Analyzing your costs and usage with AWS Cost Explorer](https://docs.aws.amazon.com/cost-management/latest/userguide/ce-what-is.html)
+- [AWS Cost Management, Exploring your data using Cost Explorer](https://docs.aws.amazon.com/cost-management/latest/userguide/ce-exploring-data.html)
 
 2026-10-07에는 탐지 지연과 근본 원인 분해, Amazon Q Developer의 비용 조사 범위를 대조했다. 위 조사 절차는 이를 적용한 설계 제안이다. 2026-10-12에는 Cost Explorer 활성화 시 기본 구성과 일일 요약, 임계 미만 탐지의 표시 범위를 대조했다. 2026-10-14에는 EC2-Other의 사용 유형 분해, 데이터 전송 사용 유형, 선결제 charge type과 퍼블릭 IPv4 사용 유형의 상품 분류를 대조했다.
 
