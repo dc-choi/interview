@@ -127,6 +127,22 @@ StatefulSet은 **EBS + PersistentVolumeClaim**이 표준.
 - **Bottlerocket**: AWS 컨테이너 전용 OS — 최소화, 자동 업데이트
 - **Container Insights / Managed Prometheus / Grafana**: 관측
 
+## 클러스터 교체와 ALB의 수명주기를 분리한다
+
+클러스터마다 Ingress로 ALB를 새로 만들면 교체 시 DNS와 CloudFront origin 등 외부 연결도 바뀔 수 있다. ALB와 대상 그룹을 Kubernetes 밖에서 관리하고, 각 클러스터의 `TargetGroupBinding`으로 Service와 기존 대상 그룹을 연결하면 로드밸런서의 수명주기를 클러스터와 분리할 수 있다. Pod IP를 직접 등록하는 구성은 `ip` 대상 유형과 실제 네트워크 도달성을 확인한다.
+
+두 클러스터에 각각 대상 그룹을 두고 ALB의 가중 `forward` 규칙으로 트래픽을 나누면 한쪽을 유지하면서 다른 쪽을 검증하는 운영이 가능하다. 다만 **가중치 분배는 자동 장애 전환이 아니다**. 대상 그룹 하나가 비었거나 그 안의 대상이 모두 비정상이더라도 ALB는 정상 대상 그룹으로 자동 전환하지 않는다. 이는 같은 대상 그룹 안에서 정상 대상을 선택하는 동작과 구분한다.
+
+다음은 이 구성을 적용할 때의 검증 제안이다.
+
+- 한 클러스터가 전체 트래픽을 받을 용량이 있는지 확인하고, 가중치 변경 뒤 오류율과 업무 성공률을 측정한다. 그룹 고정 세션과 진행 중인 연결도 시험한다.
+- 상태 저장소, 세션과 데이터 형식의 호환성을 별도로 검증한다. 트래픽을 되돌려도 새로 기록한 데이터까지 과거 상태로 돌아가지는 않는다.
+- ALB, 리스너 규칙과 대상 그룹을 관리할 주체를 정한다. `TargetGroupBinding` 생성과 수정 권한은 Kubernetes RBAC와 컨트롤러 IAM 권한으로 제한한다.
+
+클러스터 전환과 EKS 자체의 버전 복구도 다르다. 2026-10-27 공식 가이드에는 in-place 업그레이드 완료 후 7일 안에 직전 minor 버전으로 복구하는 기능이 있다. 지원 버전, `ACTIVE` 상태와 기능 호환성 등의 조건이 있으며, 현재 버전으로 처음 생성한 클러스터와 연장 지원 종료에 따른 자동 업그레이드는 대상이 아니다. 애드온은 별도 관리하고 노드 유형별 복구 절차도 확인한다. 이 기능은 워크로드와 데이터의 과거 시점 복원이 아니다.
+
+2024년 운영 발표의 16:41~20:43 구간을 계기로 위 구조와 제약을 2026-10-27 AWS 및 컨트롤러 공식 문서와 대조했다. 발표의 무중단 성과를 일반 보장으로 옮기지 않으며, 제어 평면 업데이트 자체가 서비스 중단을 필연적으로 일으킨다고 보지도 않는다. 기존 기능, 가격과 지원 정책 전체는 재검증하지 않았으므로 frontmatter의 검증일은 유지한다.
+
 ## EKS vs ECS — 선택 기준
 
 | 측면 | ECS | EKS |
@@ -166,6 +182,11 @@ StatefulSet은 **EBS + PersistentVolumeClaim**이 표준.
 
 ## 출처
 
+- [AWS Load Balancer Controller, TargetGroupBinding](https://kubernetes-sigs.github.io/aws-load-balancer-controller/latest/guide/targetgroupbinding/targetgroupbinding/) — 2026-10-27 외부 관리 대상 그룹 연결, 대상 유형과 권한 경계 대조
+- [Elastic Load Balancing, Action types for listener rules](https://docs.aws.amazon.com/elasticloadbalancing/latest/application/rule-action-types.html) — 2026-10-27 가중 분배, 그룹 간 자동 장애 전환 부재와 고정 세션 대조
+- [Amazon EKS, Update existing cluster to new Kubernetes version](https://docs.aws.amazon.com/eks/latest/userguide/update-cluster.html) — 2026-10-27 제어 평면 업데이트 과정과 실행 중 애플리케이션의 구분 대조
+- [Amazon EKS, Roll back a cluster to a previous Kubernetes version](https://docs.aws.amazon.com/eks/latest/userguide/rollback-cluster.html) — 2026-10-27 7일 조건, 직전 minor 버전, 제외 조건과 데이터 보존 범위 대조
+- [GS리테일 Amazon EKS의 모든 것: 무중단 운영부터 배포 자동화까지 — Amazon Web Services Korea](https://www.youtube.com/watch?v=nwmb5TTqALw) — 2024-09-10 공개 발표, 16:41~20:43의 ALB 수명주기 분리와 트래픽 전환을 학습 계기로 사용
 - [Amazon EKS, Prefix Mode for Linux](https://docs.aws.amazon.com/eks/latest/best-practices/prefix-mode-linux.html) — Linux IPv4 prefix 절의 부분 검증
 - [Amazon EKS, Karpenter](https://docs.aws.amazon.com/eks/latest/best-practices/karpenter.html)
 - [Amazon EKS, Kubernetes Data Plane](https://docs.aws.amazon.com/eks/latest/best-practices/scale-data-plane.html)
