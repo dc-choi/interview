@@ -11,6 +11,7 @@ Session, JWT, OAuth2, Token Exchange, FIDO, Refresh Token — 인증 방식과 �
 
 ## 목차
 - [x] [[Auth-Method-Selection|인증 방식 선택 (위치, 스키마, 상황별 가이드)]]
+- [x] [[Password-Manager-Selection|비밀번호 관리자 선택 (금고 잠금과 복구, 무료 범위, 공유와 내보내기, Bitwarden과 1Password)]]
 - [x] [[Session|Session (Stateless 로그인 판단, 쿠키-세션 구조, 하이재킹 방어, 비밀번호 변경 재인증, 확장성)]]
 - [x] [[JWT|JWT (서명과 기밀성, Bearer replay, 저장과 폐기 전략)]]
 - [x] [[OAuth2|OAuth2 / OIDC]]
