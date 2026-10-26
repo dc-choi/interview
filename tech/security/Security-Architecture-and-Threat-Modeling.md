@@ -41,6 +41,23 @@ NIST SP 800-207은 네트워크 위치나 자산 소유만으로 사용자와 �
 
 심층 방어를 적용할 때는 한 통제가 실패한 뒤 다른 통제가 어떤 경로를 막는지 검토한다. 방어 장비 수만 세지 않고 공유 계정이나 우회 경로처럼 함께 실패할 조건을 찾는다. 네트워크 분할도 구역 사이의 허용 경로와 권한을 함께 확인하는 대상으로 둔다. 구역을 나눴다는 사실만으로 침해 확산 차단을 보장하지 않는다.
 
+## 권한 검사 실패와 입력 검증의 경계를 명시한다
+
+**안전한 실패는 인가 오류를 허용으로 바꾸지 않는 설계다.** 기본 거부를 명시하고, 권한 검사에서 발생한 예외와 거부 결과를 처리해 보호 자원에 우회 접근하지 못하게 한다. 예를 들어 권한 저장소 조회가 실패했을 때 관리자 권한으로 계속 실행하지 않는 것은 이 원칙을 적용한 설계 예시다. 이를 모든 오류에서 서비스 전체를 잠그라는 요구로 확대하지 않는다. 자원별 허용 조건과 실패 경로를 정의한다.
+
+예상하지 못한 오류의 외부 응답에는 내부 경로, SQL과 스택 추적을 노출하지 않는다. 조사에 필요한 오류 상세는 서버 측에 기록한다. 오류 응답을 숨기는 것과 실패한 작업이 실행되지 않도록 하는 것은 별개로 확인한다.
+
+**입력 형식이 유효해도 접근 권한이나 쿼리 안전성이 증명되지는 않는다.** 서버에서 타입, 길이와 범위, 필수 필드 및 필드 사이의 업무 조건을 검증한다. 정상 형식의 계정 ID에도 별도 인가가 필요하며, SQL 값은 검증을 통과했더라도 매개변수로 바인딩한다. 테이블명이나 정렬 방향처럼 값 바인딩을 쓸 수 없는 쿼리 구조는 애플리케이션이 정한 허용 목록에 매핑한다.
+
+다음은 위 원칙을 확인하는 시험 제안이며 실제 서비스에서 수행한 결과는 아니다.
+
+- 권한 검사 중 예외가 나도 보호 데이터 조회나 상태 변경이 실행되지 않는지 확인한다.
+- 유효한 형식의 타인 객체 ID를 보내 인가가 별도로 적용되는지 확인한다.
+- 필수 값 누락, 범위 밖 값과 잘못된 중첩 항목을 부분 검증 상태로 처리하지 않는지 확인한다.
+- 예상하지 못한 오류 응답에 구현 상세가 없고, 서버 측에서는 원인을 조사할 수 있는지 확인한다.
+
+2026-10-27 OWASP의 인가, 입력 검증, 오류 처리와 SQL 인젝션 방지 안내를 대조했다. 이 절의 근거만 확인했으며 기존 사례와 다른 절 전체를 재검증하지 않아 문서의 기존 `verified_at`은 유지한다.
+
 ## 통제 목록을 보호 목표와 검증 근거에 연결한다
 
 다음은 2026-10-27 NIST CSF 2.0을 대조해 만든 설계 점검 예시다. 다섯 행은 설명을 위한 묶음이며 표준이 정한 필수 제품 구성이나 침해 방지 보증이 아니다. CSF는 달성할 보안 결과를 분류하며 구현 방법 하나를 강제하지 않는다.
@@ -73,6 +90,10 @@ NIST SP 800-207은 네트워크 위치나 자산 소유만으로 사용자와 �
 
 ## 출처
 
+- [OWASP, Authorization Cheat Sheet](https://cheatsheetseries.owasp.org/cheatsheets/Authorization_Cheat_Sheet.html) — 기본 거부, 요청별 인가와 인가 실패의 안전한 처리
+- [OWASP, Input Validation Cheat Sheet](https://cheatsheetseries.owasp.org/cheatsheets/Input_Validation_Cheat_Sheet.html) — 구문과 의미 검증, 인가 및 쿼리 보호와의 책임 구분
+- [OWASP, Error Handling Cheat Sheet](https://cheatsheetseries.owasp.org/cheatsheets/Error_Handling_Cheat_Sheet.html) — 예상하지 못한 오류의 외부 응답과 서버 측 상세 기록
+- [OWASP, SQL Injection Prevention Cheat Sheet](https://cheatsheetseries.owasp.org/cheatsheets/SQL_Injection_Prevention_Cheat_Sheet.html) — 값 바인딩과 동적 쿼리 구조의 허용 목록
 - [NIST, The NIST Cybersecurity Framework (CSF) 2.0](https://nvlpubs.nist.gov/nistpubs/CSWP/NIST.CSWP.29.pdf) — 통제 영역 점검표의 결과 분류와 구현 방법 비강제 원칙
 - [Saudi National Arrested for Installing Surreptitious Audio Recording Device at OpenAI — U.S. Department of Justice](https://www.justice.gov/opa/pr/saudi-national-arrested-installing-surreptitious-audio-recording-device-openai) — 2026-10-13 발표, 2026-10-24 열람. 혐의와 공개 증거 설명만 사용
 - [OWASP, Threat Modeling Cheat Sheet](https://cheatsheetseries.owasp.org/cheatsheets/Threat_Modeling_Cheat_Sheet.html)
