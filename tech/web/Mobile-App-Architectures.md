@@ -35,7 +35,7 @@ SPA, MPA와 SSR은 위 배포 형태와 다른 축이다. 모바일 브라우저
 ## 선택 기준
 
 1. **기능** — 고성능 카메라 필터, 정교한 모션이 핵심이면 네이티브. 콘텐츠와 폼 중심이면 웹 계열로 충분.
-2. **배포 주기** — 빠른 실험과 핫픽스가 중요하면 웹, 웹뷰 비중을 높인다. App Store 제출물은 90%가 24시간 안에 심사되지만 심사 대기와 리젝 후 재제출, 사용자의 업데이트 지연이 있어 웹처럼 즉시 반영되지는 않는다. 플랫폼과 변경 범위별 실제 소요를 일정에 반영한다.
+2. **배포 주기** — 빠른 실험과 핫픽스가 중요하면 웹, 웹뷰 비중을 높인다. 2026-10-27 확인한 Apple 안내는 통상 제출물의 최소 50%를 24시간 미만에, 90%를 48시간 미만에 심사한다고 설명한다. 이는 개별 제출물의 완료 기한을 보장하지 않는다. 심사 대기와 리젝 후 재제출, 사용자의 업데이트 지연이 있어 웹처럼 즉시 반영되지는 않는다. 플랫폼과 변경 범위별 실제 소요를 일정에 반영한다.
 3. **리소스** — OS별 네이티브 구현은 플랫폼별 개발과 유지보수 비용이 든다. 초기 팀은 크로스플랫폼, 하이브리드나 웹으로 시작하는 경우가 많다.
 4. **전제의 유효성** — 크로스플랫폼 선택의 원래 전제는 코드 공유로 중복 구현 비용을 줄인다는 것이고, 이 전제는 구현 인건비가 병목일 때 성립한다. 구현, 번역, 테스트, 리뷰를 코딩 에이전트가 맡아 두 번 구현하는 한계 비용이 급락하면, 공유의 이득이 추상화 레이어의 세금(프레임워크 레이어, 의존성, 플랫폼 신기능 지연)보다 작아지는 교차점이 생긴다. 채택 결정의 근거 가정을 적어 두고, 가정이 무너지는 사건이 오면 first principles에서 다시 판단한다. 재평가 트리거는 도구의 성능 저하가 아니라 가정 붕괴다.
 
@@ -46,6 +46,22 @@ SPA, MPA와 SSR은 위 배포 형태와 다른 축이다. 모바일 브라우저
 2026-09-10 Shopify는 Shop 앱 전환 결과를 자체 보고했다. 엔지니어 한 명의 1주 개념 증명에서 시작해 핵심 엔지니어 6명이 기반과 주요 사용자 흐름을 만들고 기능 팀이 중간에 합류했으며, 네이티브 앱의 스토어 배포까지 12주가 걸렸다. React Native 이전 버전과 비교해 콜드 스타트는 iOS 3,200ms에서 2,466ms로 23%, Android 4,433ms에서 2,233ms로 50% 줄었다. 세션 안정성은 99.5% 이상에서 99.95% 이상으로 올라 크래시가 나는 세션이 10분의 1로 줄었다고 밝혔다. 앱 크기는 iOS가 67MB에서 68MB로 1MB(1.5%) 늘고 Android가 293MB에서 184MB로 37.2% 줄었으며, 릴리스 빌드 시간은 Android에서 약 75% 줄고 iOS에서는 비슷했다. 측정 기간, 기기와 백분위 같은 조건은 밝히지 않았으므로 독립 검증된 비교가 아니라 한 회사의 자체 보고로 읽고, 다른 조직의 일반 기준으로 옮기지 않는다.
 
 전환 과정에서는 계획 승인을 계획 내용의 해시에 묶어 계획이 바뀌면 이전 승인이 무효가 되게 했다. 지정한 체크포인트마다 두 앱의 화면과 이벤트 구간을 캡처하고 원시 이벤트 캡처로 이벤트 이름, 개수와 payload 필드를 비교했으며, 타임스탬프와 페이지 UUID처럼 실행마다 자연히 달라지는 값은 비교 지시에서 따로 고려했다. 전문화된 서브에이전트가 기존 React Native 소스 분석과 동작 문서화, 플랫폼별 계획, 기능 구현, 패리티 리뷰를 나눠 맡았고, 개발자 한 명이 변경과 실행을 반복하는 대신 여러 에이전트 세션을 별도 worktree에서 돌리는 방식을 자주 썼다.
+
+## 코드 공유와 렌더링 자원 한도를 구분한다
+
+같은 애니메이션 자산과 코드를 공유해도 플랫폼별 디코딩과 그리기 경로의 자원 한도는 따로 확인한다. Android의 `MediaCodecInfo.CodecCapabilities.getMaxSupportedInstances()`는 해당 코덱의 동시 인스턴스 수에 대한 상한 힌트다. 실행 시점의 가용 자원에 따라 실제로 동작하는 수는 더 작을 수 있으므로, 반환값만으로 여러 애니메이션의 동시 재생을 보장하지 않는다.
+
+이미지 프레임을 그리는 경로에서는 `Bitmap.Config.HARDWARE`도 검토 대상이다. API 26에 추가된 이 설정은 비트맵을 그래픽 메모리에 저장하고 변경 불가능하게 만든다. 화면에 그리기만 하는 용도에 맞춘 설정이므로 픽셀을 계속 수정해야 하는 처리와 같은 조건으로 취급하지 않는다. 이 API의 존재가 특정 앱에서 별도 OpenGL 구현보다 빠르다는 증거는 아니다.
+
+다음은 플랫폼 선택과 구현 비교를 위한 점검 제안이다.
+
+| 확인할 조건 | 비교할 대상 |
+|---|---|
+| 자산과 출력 | 투명도, 이미지와 영상 형식, 해상도, 화면에 동시에 놓이는 요소 수 |
+| 실행 자원 | 디코더 수, 프레임 메모리, 렌더링 스레드, 프레임 지연과 배터리 사용량 |
+| 플랫폼별 완료 기준 | 같은 시각적 요구사항을 만족하는지, 미지원 기기에서 대체 표현이 가능한지 |
+
+코드 공유율과 실제 화면의 기능 동등성은 서로 다른 평가 항목이다. 특정 기기의 단일 요소 시연을 여러 기기의 동시 재생 성능으로 일반화하지 않는다. 2026-10-27 Android 공식 API 계약을 대조했으며, 실제 기기의 성능과 특정 회사의 구현은 재현하지 않았다. 기존 플랫폼 전환 사례의 검증 범위는 유지한다.
 
 ## 백엔드 관점: 클라이언트 유형이 서버에 미치는 영향
 
@@ -72,7 +88,9 @@ SPA, MPA와 SSR은 위 배포 형태와 다른 축이다. 모바일 브라우저
 - [[Dependency-Selection|의존성 선택]] — 후원 기업이 떠날 때 라이브러리 의존성 판단
 
 ## 출처
-- [App Review — Apple Developer](https://developer.apple.com/app-store/review/)
+- [Android Developers, MediaCodecInfo.CodecCapabilities](https://developer.android.com/reference/android/media/MediaCodecInfo.CodecCapabilities#getMaxSupportedInstances()) — 동시 코덱 인스턴스 수의 상한 힌트와 가용 자원 조건
+- [Android Developers, Bitmap.Config](https://developer.android.com/reference/android/graphics/Bitmap.Config#HARDWARE) — HARDWARE의 그래픽 메모리 저장과 불변성
+- [App Review — Apple Developer](https://developer.apple.com/distribute/app-review/) — 2026-10-27 심사 시간 안내만 재대조
 - [Sending web push notifications in web apps and browsers — Apple Developer](https://developer.apple.com/documentation/usernotifications/sending-web-push-notifications-in-web-apps-and-browsers)
 - [MDN, Single-page application](https://developer.mozilla.org/en-US/docs/Glossary/SPA)
 - [MDN, Progressive web apps](https://developer.mozilla.org/en-US/docs/Web/Progressive_web_apps)

@@ -64,6 +64,14 @@ aliases: ["자산배분과 분산투자", "Asset Allocation and Diversification"
 - **시간지평과 위험 감당 능력**: 목표까지 시간이 길면 단기 가격 변동을 감당할 여지가 커질 수 있다. 그러나 시간이 손실을 없애지는 않는다. 필요한 현금, 부채, 소득의 안정성과 손실을 감당할 능력을 함께 보고, 지급 시점이 가까운 자금에는 가격 위험과 현금화 조건을 따로 맞춘다.
 - **위험성향**: 같은 조건이라도 손실을 견디는 정도가 사람마다 다르다. 밤에 잠 못 들 배분은 아무리 이론적으로 옳아도 지속할 수 없다.
 
+### 소득 감소와 투자자산 하락이 겹치는 경우
+
+투자계좌 밖의 소득도 위험 감당 능력에 영향을 준다. 고용주의 주식에 집중 투자하면 회사의 부진으로 투자 손실과 실직이 함께 발생할 수 있다. 종목 수만 확인하지 않고 소득원과 투자자산이 같은 위험에 노출됐는지 살펴본다. 비상자금은 소득 상실이나 예상하지 못한 지출에 대응하는 현금성 예비자금이며, 필요한 규모는 개인 상황에 따라 달라진다. 보관할 때는 안전성과 접근성을 함께 본다.
+
+**배분 점검 제안:** 소득 유입이 늦어지고 투자자산도 하락한 상황을 가정해, 예정 지출을 감당하려고 위험자산을 언제 얼마나 팔아야 하는지 확인한다. 정기적으로 나가는 돈과 비상자금, 장기 투자금을 목적별로 구분하고, 단순 평가액과 필요한 시점에 쓸 수 있는 자금을 따로 계산한다. 과거의 높은 투자수익률을 앞으로의 고정 지출을 충당할 현금흐름으로 확정하지 않는다.
+
+2026-10-27 SEC의 고용주 주식 집중 위험과 CFPB의 비상자금, 현금흐름 안내를 대조했다. 위 점검은 이를 자산배분에 적용한 제안이며, 특정 사업자의 소득이나 투자 실적, 개별 종목 전망을 검증한 것은 아니다. 기존 공시와 ETF 부분의 검증일은 유지한다.
+
 ## 6. 현대 포트폴리오 이론 한 줄
 
 여러 자산을 잘 조합하면, 같은 기대수익에서 위험이 가장 낮은 조합들의 경계(효율적 프런티어)를 만들 수 있다는 것이 핵심이다. 분산이 위험을 줄여 위험 대비 수익을 끌어올린다는 직관을 수학으로 정리한 것이다.
@@ -104,6 +112,8 @@ aliases: ["자산배분과 분산투자", "Asset Allocation and Diversification"
 
 ## 출처
 
+- [Ten Things to Consider Before You Make Investing Decisions — SEC](https://www.sec.gov/investor/pubs/tenthingstoconsider.htm) — 고용주 주식 집중에 따른 투자 손실과 실직의 동반 위험
+- [An essential guide to building an emergency fund — CFPB](https://www.consumerfinance.gov/an-essential-guide-to-building-an-emergency-fund/) — 예기치 못한 지출과 소득 상실, 자금의 안전성과 접근성, 입출금 시점 관리
 - [iShares Semiconductor ETF — iShares](https://www.ishares.com/us/products/239705/ishares-phlx-semiconductor-etf) — SOXX의 상품 식별, NYSE Semiconductor Index 추종과 가격/NAV/총수익 표기, 2026-10-23 대조
 - [Overview for SOX — Nasdaq](https://indexes.nasdaqomx.com/Index/Overview/SOX) — PHLX Semiconductor Sector Index의 식별과 수정 시가총액 가중 방식, 2026-10-23 대조
 - [Asset Allocation, Diversification, and Rebalancing — Investor.gov](https://www.investor.gov/introduction-investing/getting-started/asset-allocation) — 2026-10-02 시간지평, 위험 감당 능력과 리밸런싱 목적 대조. 2026-10-24 리밸런싱의 위험 노출 복원 목적을 재확인하고 별도의 가상 경로 계산 예를 추가했다. 기존 국민연금과 ETF 부분의 검증일은 유지한다.
