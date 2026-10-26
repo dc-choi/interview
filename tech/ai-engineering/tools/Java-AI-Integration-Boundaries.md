@@ -49,6 +49,22 @@ HAT 예제의 kernel은 제한된 Java 부분집합을 사용하고 코드 모�
 
 ## 선택과 검증 질문
 
+### HAT의 애플리케이션, compute와 kernel 경계
+
+2026-10-27에 확인한 HAT README의 SIMT 예제는 다음 세 층을 구분한다. [[Java-Reflection#멤버 조회와 code reflection을 구분한다|Code reflection]]은 계산을 모델로 다루는 기반이며, 실행 장치 선택과 데이터 전달은 HAT의 별도 책임이다.
+
+| 층 | 맡는 일 |
+|---|---|
+| Java 애플리케이션 | `Accelerator`와 데이터를 준비하고 compute를 호출한다 |
+| Compute | `NDRange`로 실행 범위를 정하고 kernel을 dispatch한다. 여러 kernel을 계산 그래프로 조합할 수 있다 |
+| Kernel | 가속기 스레드 하나가 수행할 계산을 제한된 Java 부분집합으로 표현한다 |
+
+커널 예제는 `GIX()`로 전역 스레드 인덱스를 얻고 배열 길이보다 작은지 검사한다. 실행 범위 설정과 배열 접근의 경계 검사는 구분한다. HAT가 코드 모델을 최적화해 OpenCL/CUDA 코드를 생성해도, 계산의 인덱스와 결과 검증은 애플리케이션 설계에 남는다.
+
+적용 시에는 같은 입력의 CPU 기준 결과와 비교한 뒤 kernel 시간과 데이터 이동을 포함한 전체 시간을 나누어 측정한다. Java backend의 실행 성공은 GPU backend의 실행이나 성능을 입증하지 않는다. 이 절은 공식 예제의 구조를 확인한 것이며 GPU 실행과 발표의 성능 수치는 재현하지 않았다.
+
+### 통합 경로를 고를 때
+
 다음은 위 기능 경계에 기반한 적용 제안이다.
 
 - 필요한 것이 업무 흐름과 원격 모델 연결이면 HTTP 통합부터 평가한다. GPU 프로그래밍을 선행 과제로 만들지 않는다.
@@ -64,10 +80,12 @@ HAT 예제의 kernel은 제한된 Java 부분집합을 사용하고 코드 모�
 - [Oracle Java SE 22, Foreign Function and Memory API](https://docs.oracle.com/en/java/javase/22/core/foreign-function-and-memory-api.html) — 외부 함수와 메모리 접근.
 - [Babylon code-reflection README — OpenJDK](https://github.com/openjdk/babylon/blob/code-reflection/README.md) — 개발 브랜치의 incubating 모듈.
 - [Heterogeneous Accelerator Toolkit — OpenJDK](https://github.com/openjdk/babylon/blob/code-reflection/hat/README.md) — 실행 전제, backend와 kernel의 제한된 Java 범위.
+- [Reflect, Transform, Accelerate: Bringing GPU Computing to Java — Java, Juan Fumero](https://www.youtube.com/watch?v=_1fi5GaWXxY) — 17:31~28:48의 코드 모델과 실행 계층. 전사문의 coreflexion은 code reflection으로 교정하고, API 표기는 공식 HAT 예제와 대조했다.
 - [How does Java fit into the world of AI—and how can it become an even better fit? — Java, Paul Sandoz](https://www.youtube.com/watch?v=rL3sWS_8b-g) — 10:42~24:33의 실행 층과 외부 프로그래밍 모델 구분. 전사문의 Onyx/ONIX는 공식 표기 ONNX로 교정했으며 시연 성능과 전망은 일반 사실로 사용하지 않았다.
 
 ## 관련 문서
 
+- [[Java-Reflection|Java reflection과 code reflection의 구분]]
 - [[Java-Spring-Stack-Migration|Java와 Spring 스택 전환]] — 플랫폼 변경과 AI 기능 도입 분리
 - [[OpenSearch-Vector-Search-Embedding-Operations|임베딩 추론 운영]] — 모델 입출력과 기준 구현 대조
 - [[LLM-Inference-Bottlenecks|LLM 추론 병목]] — 실행 장치와 지연 측정

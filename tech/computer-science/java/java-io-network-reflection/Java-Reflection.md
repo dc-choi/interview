@@ -84,6 +84,14 @@ null field를 일괄 변경하는 generic utility는 간단해 보여도 immutab
 
 TypeScript type은 대부분 runtime에 지워지고 decorator metadata도 compiler/runtime 설정과 library에 의존한다. NestJS는 decorator와 provider token metadata를 framework가 읽지만 Java reflection만큼 모든 static type 정보를 보존하지 않는다. runtime schema, explicit token과 validation metadata를 별도로 설계한다.
 
+## 멤버 조회와 code reflection을 구분한다
+
+`java.lang.reflect`의 core reflection은 로드된 클래스의 멤버 정보를 조회하고 접근 제한 안에서 호출하는 기능이다. 메서드 본문의 계산을 분석하고 다른 실행 모델로 변환하려는 Babylon의 **code reflection**과 목적이 다르다.
+
+Code reflection의 code model은 메서드와 람다 본문을 분석하고 변환할 수 있는 기호적 표현이다. 타입과 구조 정보를 유지해 제어 흐름과 데이터 의존성을 살피는 데 쓰인다. 예를 들어 메서드를 `Method.invoke()`로 실행하는 것과, 그 계산을 모델로 읽어 GPU용 커널로 바꾸는 것은 서로 다른 작업이다.
+
+2026-10-27에 대조한 Babylon `code-reflection` 브랜치는 `jdk.incubator.code` 모듈을 사용한다. 이 개발 브랜치의 코드 모델 기능을 표준 `java.lang.reflect`만으로 사용할 수 있다고 가정하지 않는다. HAT의 가속기 실행 전제와 제한된 Java 범위는 [[Java-AI-Integration-Boundaries|Java AI 통합의 실행 경계]]에서 다룬다.
+
 ## 점검 질문
 
 - reflection이 infrastructure의 반복을 줄이는가, business 흐름을 숨기는가?
@@ -94,6 +102,9 @@ TypeScript type은 대부분 runtime에 지워지고 decorator metadata도 compi
 
 ## 출처
 
+- [Code Models — Inside Java](https://inside.java/2024/06/13/code-models/)
+- [Advancing AI by Accelerating Java on Parallel Architectures — Inside Java](https://inside.java/2024/10/23/java-and-ai/) — 코드 모델의 구조와 변환 개념. 과거 예제의 API 이름은 현재 사용법으로 옮기지 않았다.
+- [Babylon code-reflection README — OpenJDK](https://github.com/openjdk/babylon/blob/code-reflection/README.md) — 2026-10-27 확인한 개발 브랜치의 모듈 경계.
 - [Java SE 26, java.lang.reflect](https://docs.oracle.com/en/java/javase/26/docs/api/java.base/java/lang/reflect/package-summary.html)
 - [Java SE 26, Class](https://docs.oracle.com/en/java/javase/26/docs/api/java.base/java/lang/Class.html)
 - [Java SE 26, AccessibleObject](https://docs.oracle.com/en/java/javase/26/docs/api/java.base/java/lang/reflect/AccessibleObject.html)
@@ -103,6 +114,7 @@ TypeScript type은 대부분 runtime에 지워지고 decorator metadata도 compi
 
 ## 관련 문서
 
+- [[Java-AI-Integration-Boundaries|Java AI 통합의 실행 경계]]
 - [[Java-Annotations|Java annotation]]
 - [[Spring-IoC-DI-and-Bean-Lifecycle|Spring IoC, DI와 Bean 생명주기]]
 - [[Spring-AOP-Proxy-Factory|Spring AOP Proxy Factory]]
