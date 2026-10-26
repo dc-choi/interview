@@ -38,6 +38,17 @@ aliases: ["Internal Developer Platform", "내부 개발자 플랫폼", "플랫�
 
 직접 조합한 API 호출을 하나의 원자적 트랜잭션으로 가정하지 않는다. 실패 시 보상과 재개는 플랫폼이 제공할 계약이며, 특정 IaC 도구의 사용이나 제거를 이 설계의 필수 조건으로 삼지 않는다.
 
+## 네임스페이스 제공과 테넌트 격리를 구분한다
+
+부분 검증(2026-10-26): Kubernetes의 멀티테넌시 문서를 대조했다. EKS 같은 Kubernetes 기반 플랫폼에서 네임스페이스를 생성해 주는 것만으로 테넌트 격리가 완성되지는 않는다. 네임스페이스는 API 자원의 논리적 관리 단위이며 별도 정책과 네트워크 구현이 필요하다.
+
+- **API 접근:** RBAC로 사용자와 ServiceAccount의 권한을 필요한 네임스페이스에 제한한다. 클러스터 범위 자원을 바꿀 권한은 별도로 관리한다.
+- **네트워크:** NetworkPolicy로 허용 통신을 정하고 이를 지원하는 CNI를 확인한다. 지원하지 않는 구현에서는 NetworkPolicy 객체가 있어도 정책이 적용되지 않는다.
+- **자원:** ResourceQuota로 사용량을 제한할 수 있지만 네트워크 같은 모든 공유 자원 간섭을 막지는 못한다.
+- **격리 수준:** 상호 신뢰가 낮거나 강한 격리가 필요하면 전용 클러스터와 노드 격리 등을 비교한다. 운영 비용과 복잡성을 함께 판단한다.
+
+플랫폼 설계 예시: 네임스페이스 생성의 완료 조건에 다른 테넌트의 자원 조회와 통신이 거부되는지 확인하는 검사를 둔다. 생성 성공과 정책의 실제 적용을 분리하고, 정책 변경과 클러스터 운영 책임자를 정한다. 실제 격리 시험은 수행하지 않았으며 기존 API 설명의 검증일은 유지한다.
+
 ## 편리한 기본 경로와 예외 경로를 함께 둔다
 
 문서와 템플릿에는 지원하는 선택과 운영 기준을 담는다. 다만 플랫폼이 제공하는 기능만 쓰기 쉬우면 기술 선택도 그 기능에 쏠릴 수 있다. 기본 경로로 해결되지 않는 요구를 접수하고 검토할 통로를 둔다.
@@ -48,6 +59,7 @@ aliases: ["Internal Developer Platform", "내부 개발자 플랫폼", "플랫�
 
 ## 출처
 
+- [Kubernetes Documentation, Multi-tenancy](https://kubernetes.io/docs/concepts/security/multi-tenancy/)
 - [CNCF Platforms White Paper — CNCF TAG App Delivery](https://tag-app-delivery.cncf.io/whitepapers/platforms/)
 - [Amazon ElastiCache, CreateReplicationGroup](https://docs.aws.amazon.com/AmazonElastiCache/latest/APIReference/API_CreateReplicationGroup.html)
 - [플랫폼 엔지니어링 기반 개발자 생산성 극대화 — Amazon Web Services Korea](https://www.youtube.com/watch?v=zJQokt9DP5Y) — 셀프서비스 범위, 비동기 생성과 후속 운영 작업의 설계 사례

@@ -61,6 +61,16 @@ verified_at: 2026-09-03
 
 성능 비교에서는 같은 데이터셋의 첫 읽기, 재읽기, 메타데이터 작업과 결과 export 시간을 나눠 기록한다. 이 절은 Lustre의 해당 조건만 대조했으며 다른 엔진의 기능과 한도는 다시 검증하지 않았다.
 
+### 체크포인트 보존과 로컬 공간 회수를 나눈다
+
+부분 검증(2026-10-26): Lustre의 자동 export와 release task 문서를 대조했다. 학습 체크포인트를 FSx에 쓰고 S3에 보존하는 구성에서는 파일 쓰기, S3 반영과 로컬 공간 회수를 각각 확인한다.
+
+- 자동 export의 `Deleted` 정책을 켜면 FSx에서 지운 파일에 대응하는 S3 객체도 삭제된다. 오래된 체크포인트를 로컬에서 삭제하면서 S3에는 계속 남는다고 가정하지 않는다.
+- **Release data repository task**는 파일 목록과 메타데이터를 유지하면서 로컬 본문을 제거한다. 이미 S3로 export된 파일만 대상이며 다시 읽으면 연결된 S3에서 본문을 가져온다. Lustre 2.10에서는 이 작업을 지원하지 않는다.
+- 적용 점검 제안: 보존할 체크포인트의 export 완료와 복구 가능성을 확인한 뒤 release를 검토한다. 학습 재개 시험으로 파일 누락 여부와 다시 읽는 시간을 확인한다. 공간 회수와 영구 삭제의 정책은 분리한다.
+
+이 절은 체크포인트 저장에 적용한 운영 기준이며 실제 학습 복구나 처리량을 시험한 결과는 아니다. 다른 엔진의 기능과 한도에 대한 기존 검증일은 유지한다.
+
 ## FSx for NetApp ONTAP
 
 - NetApp ONTAP 운영체제를 AWS에서 그대로 사용
@@ -124,6 +134,7 @@ verified_at: 2026-09-03
 
 ## 출처
 
+- [AWS, Releasing files](https://docs.aws.amazon.com/fsx/latest/LustreGuide/file-release.html)
 - [AWS, Managing metadata performance](https://docs.aws.amazon.com/fsx/latest/LustreGuide/managing-metadata-performance.html)
 - [AWS, Importing changes from your data repository](https://docs.aws.amazon.com/fsx/latest/LustreGuide/importing-files-dra.html)
 - [AWS, Automatically export updates to your S3 bucket](https://docs.aws.amazon.com/fsx/latest/LustreGuide/autoexport-data-repo-dra.html)

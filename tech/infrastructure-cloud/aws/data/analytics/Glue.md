@@ -36,6 +36,16 @@ aliases: ["Glue", "AWS Glue", "Glue Data Catalog"]
 - ETL 작업의 증분 처리 → Glue Job Bookmarks
 - GUI로 데이터 정리, 정규화 → Glue DataBrew
 
+## Flex 실행은 완료 시한과 재시도 조건으로 선택한다
+
+부분 검증(2026-10-26): AWS Glue Spark 작업 속성 문서를 대조했다. Standard execution class는 빠른 시작과 전용 자원이 필요한 작업에, Flex는 사전 운영 테스트나 일회성 적재처럼 시급하지 않은 작업에 맞춘 선택이다.
+
+- Flex는 Glue 3.0 이상의 `G.1X` 또는 `G.2X` worker 구성을 지원한다. 다른 worker가 더 크다는 이유로 Flex에서도 지원한다고 가정하지 않는다.
+- Flex 실행 중 worker 수는 달라질 수 있다. 과금은 각 worker의 DPU와 실제 실행 시간을 합산하므로 최대 worker 수에 전체 경과 시간을 곱한 값과 구분한다.
+- 작업 timeout 기본값은 Glue 4.0 이하에서 2,880분, 5.0 이상에서 480분이다. 과거의 48시간 안내를 모든 버전에 적용하지 않는다. timeout에 도달한 작업은 `Number of retries` 설정으로 자동 재시작되지 않는다.
+
+적용 점검 제안: 단가뿐 아니라 시작 대기와 완료 시각, 실패 후 재처리 비용을 비교하고 업무 마감에 맞는 timeout과 별도 재실행 절차를 정한다. 실제 비용 절감률이나 실행 시간은 측정하지 않았으며 기존 절의 검증 기준일은 유지한다.
+
 ## Data Quality: 검사와 적재 차단을 나눈다
 
 2026-10-07 공식 문서 확인 기준. AWS Glue Data Quality는 Data Catalog에 등록한 데이터의 검사와 ETL 작업 안의 검사를 제공한다. DQDL로 규칙을 정의하며, ETL에서는 `Evaluate Data Quality` 변환을 이용한다. 카탈로그에 스키마가 있다는 사실은 내용의 품질을 보장하지 않는다.
@@ -163,6 +173,7 @@ NAT 추가를 모든 연결 실패의 해결책으로 삼지 않는다. 먼저 �
 
 ## 출처
 
+- [AWS Glue, Configuring job properties for Spark jobs in AWS Glue](https://docs.aws.amazon.com/glue/latest/dg/add-job.html)
 - [AWS Glue, Reading input files in larger groups](https://docs.aws.amazon.com/glue/latest/dg/grouping-input-files.html)
 - [Implement a CDC-based UPSERT in a data lake using Apache Iceberg and AWS Glue — AWS Big Data Blog](https://aws.amazon.com/blogs/big-data/implement-a-cdc-based-upsert-in-a-data-lake-using-apache-iceberg-and-aws-glue/)
 - [Apache Iceberg, Spark Writes](https://iceberg.apache.org/docs/latest/spark-writes/)

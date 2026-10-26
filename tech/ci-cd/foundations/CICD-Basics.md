@@ -60,6 +60,14 @@ aliases: ["CICD Basics", "CI/CD 기초", "Continuous Integration", "Continuous D
 
 **Delivery**는 언제든 배포 가능한 상태를 유지하고, **Deployment**는 검증을 통과한 변경을 운영 환경에 자동으로 배포한다. 선택은 회사나 업종 이름보다 승인 요건과 검증, 복구 능력에 따른다.
 
+## 빌드 재사용과 실행 환경의 동일성은 다르다
+
+부분 검증(2026-10-26): Twelve-Factor의 build/release/run과 dev/prod parity 원칙을 대조했다. 빌드는 코드와 의존성으로 실행 산출물을 만들고, 릴리스는 그 산출물과 배포 환경의 설정을 결합하며, 실행은 선택한 릴리스를 구동한다.
+
+같은 컨테이너 이미지를 재사용해도 환경변수, DB와 캐시의 종류 및 버전까지 같아지는 것은 아니다. 개발과 운영의 차이를 줄이되 이미지 일치만으로 운영 성공을 보장하지 않는다. 릴리스마다 식별자를 남기고 변경은 새 릴리스로 만든다.
+
+적용 점검 제안: 검증한 산출물과 운영에 배포한 산출물이 같은지 확인하고, 환경별 설정과 외부 서비스 차이는 따로 검사한다. 이전 릴리스로 되돌릴 때도 DB 스키마와 데이터가 호환되는지 확인한다. 이 절만 대조했으며 기존 도구와 지표 설명의 검증일은 유지한다.
+
 ## 코드 배포와 기능 릴리스 분리
 
 **배포(deployment)** 는 새 코드와 설정을 운영 환경에 놓는 일이고, **릴리스(release)** 는 그 동작을 사용자에게 활성화하는 일이다. 둘을 분리하면 코드는 작고 자주 배포하면서 기능 노출은 별도 판단으로 점진 제어할 수 있다.
@@ -188,6 +196,8 @@ AI가 코드, 테스트나 리뷰 초안을 만들었다는 사실과 변경이 
 
 ## 출처
 
+- [The Twelve-Factor App, Build, release, run](https://12factor.net/build-release-run)
+- [The Twelve-Factor App, Dev/prod parity](https://12factor.net/dev-prod-parity)
 - [Apache DevLake, How to Organize DevLake Projects](https://devlake.apache.org/docs/Configuration/HowToOrganizeDevlakeProjects/)
 - [Apache DevLake, Dashboard Troubleshooting](https://devlake.apache.org/docs/Troubleshooting/Dashboard/)
 
