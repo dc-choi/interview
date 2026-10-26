@@ -60,6 +60,14 @@ aliases: ["투자의 기본 원칙", "Investing Principles"]
 - **위험과 수익**: 높은 기대수익에는 높은 위험이 따른다 → [[Risk-and-Return|위험과 수익]]. 공짜로 높은 수익을 주는 자산은 없다.
 - **시간지평**: 돈이 필요한 시점이 멀수록 단기 변동을 견딜 여지가 커질 수 있어 위험자산 비중을 높일 수 있다. 그러나 긴 시간도 영구 손실을 없애거나 수익을 보장하지 않는다. 목표, 손실 감내도, 현금흐름, 분산을 함께 본다.
 
+### 경제 성장, 자본의 몫과 주주 수익은 다르다
+
+주식은 기업의 소유 지분이다. 가격 상승과 배당으로 수익을 얻을 수 있지만, 기업의 성장이나 원금 회수는 보장되지 않는다. 기업이 파산하면 보통주주는 채권자와 우선주주 뒤에서 잔여 재산을 배분받으므로 남는 금액이 없을 수도 있다. 2026-10-27 Investor.gov의 주식 안내로 이 권리와 위험을 대조했다.
+
+이 구분을 AI 투자 논리에 적용하면 **경제 전체의 생산 증가, 자본소득분배율 상승과 내가 매수한 주식의 수익**을 따로 확인해야 한다. [[Unemployment-Employment#AI 성장 시나리오와 소득 분배를 읽는 기준|AI 경제 시나리오]]의 자본 몫은 GDP의 분배 비율이며 특정 종목의 가격 상승률이 아니다. 투자 판단에는 매수가격과 기대 현금흐름을 대조하는 [[Valuation|가치평가]], 분산과 돈이 필요한 시점이 추가로 필요하다. 이는 소득 분배 모형을 개인 투자에 적용할 때의 점검 기준이며, AI의 미래 성장 경로를 확정하는 결론이 아니다.
+
+소유 지분을 넓히자는 정책 제안도 개인의 집중 매수 권고와 구분한다. 2021년 3월 공개된 *Moore's Law for Everything*의 American Equity Fund는 기업과 토지에 과세해 성인 시민에게 현금과 주식을 배분하자는 제안이다. 시행 중인 제도나 검증된 분배 효과가 아니며, 모든 사람이 주식을 직접 사야만 성장의 혜택을 받는다는 명제도 아니다. 정책의 설계와 재원은 [[Fiscal-Policy-Transfer-Design|이전지출의 설계와 재원]]으로 연결한다.
+
 ## 5. 비용과 세금 — 새는 수익
 
 수익률 못지않게 중요한 것이 비용이다. 매매 수수료, 펀드 보수와 세금은 남는 수익을 줄이고, 반복되는 보수 차이는 장기간 누적된다. 같은 비용 전 운용성과라면 낮은 비용이 유리하다. 다만 비용이 낮다는 사실만으로 수익이나 목표 달성을 보장하지 않으므로 자산의 위험과 투자 목적도 함께 비교한다.
@@ -81,6 +89,8 @@ aliases: ["투자의 기본 원칙", "Investing Principles"]
 
 ## 출처
 
+- [Stocks - FAQs — Investor.gov](https://www.investor.gov/introduction-investing/investing-basics/investment-products/stocks) — 2026-10-27 소유 지분, 배당과 가격 변화, 손실 가능성과 보통주의 잔여 청구 순위 대조
+- [Moore's Law for Everything — Sam Altman](https://moores.samaltman.com/) — 2021-03-16 공개 정책 제안, 2026-10-27 American Equity Fund의 과세와 시민 배분 구상 대조
 - [Investor.gov — Asset Allocation, Diversification, and Rebalancing](https://www.investor.gov/introduction-investing/getting-started/asset-allocation)
 - [CFPB — Explore financial well-being findings](https://www.consumerfinance.gov/consumer-tools/educator-tools/financial-well-being-resources/explore-findings/) — 2026-10-10 현재 지출 관리, 충격 흡수, 목표와 선택의 네 요소 대조
 - [Pay Off Credit Cards or Other High Interest Debt — Investor.gov](https://www.investor.gov/introduction-investing/investing-basics/save-and-invest/pay-credit-cards-or-other-high-interest) — 2026-10-03 투자 전 고금리 부채 검토 대조
