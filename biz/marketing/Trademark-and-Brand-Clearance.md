@@ -76,6 +76,14 @@ AI로 탐지와 신고서 초안을 자동화해 신고량을 늘리더라도, �
 
 제조를 외부에 맡긴다면 공급망 안쪽도 본다. 같은 대표는 오프라인 위조 판매자 중 그 브랜드에서 생산을 배웠거나 생산 계약을 맺었던 곳이 많다며, 계약 중에 주문 수량보다 더 만들어 일부를 빼돌리거나 계약이 끝난 뒤 남은 장비로 계속 생산하는 경우를 들었다. GFI 보고서는 의약품에서 정품을 만드는 허가 제조업체가 주문을 받아 위조 의약품도 만드는 사례를 다룬다. 정식 공급망 안의 생산자가 위조에 가담할 수 있다는 점은 같지만, 특정 브랜드의 위탁 생산처가 초과 생산하는 경우를 확인한 자료는 아니다. 생산 수량 대사, 금형과 장비의 반환이나 폐기, 계약 종료 뒤의 확인 절차를 제조 계약에 두는 것은 이 설명을 적용한 운영 제안이다.
 
+### 신고 경로와 처리 상태를 나눠 관리한다
+
+2026-10-27 Amazon의 공개 신고 안내를 대조했다. Brand Registry에 등록한 브랜드는 `Report a Violation` 도구에서 지식재산권 침해, 스토어 정책 위반과 규제 준수 문제를 신고할 수 있다. Brand Registry에 등록하지 않은 권리자에게도 `Report Infringement` 양식이 안내되어 있다. 브랜드 등록 여부만으로 신고 경로가 없다고 판단하지 않는다.
+
+`Report a Violation`의 `Submission History`에서는 제출한 신고의 처리 상태를 확인할 수 있다. 운영 기록에는 제출 일시, 신고 근거, 응답과 추가 자료 요청, 실제 조치 확인을 구분해 남기는 방식을 제안한다. 제출 완료를 삭제 완료로 집계하지 않고, 처리 지연이나 반려가 생기면 적용된 정책과 받은 응답부터 확인한다. 지연만으로 플랫폼의 의도나 기준 변경을 단정하지 않는다.
+
+이 절은 공개 안내를 확인한 범위다. 로그인한 신고 화면, 개별 사건의 처리 결과와 계절별 심사 기준 변화는 확인하지 않았으며 기존 법률 설명 전체의 검증일은 유지한다.
+
 ## 외부 브랜드 로고를 가져올 때
 
 SVG 모음은 파일을 찾는 경로다. 파일을 내려받을 수 있다는 사실과 서비스 화면, 광고에 그 브랜드를 표시할 권한은 구분한다. 2026-10-07에 확인한 theSVG는 브랜드 로고를 검색하고 복사하는 기능을 제공하지만, 자체 라이선스 안내에서도 SVG 파일의 복제 조건과 상표 사용 조건을 나눈다.
@@ -117,6 +125,7 @@ theSVG는 제출자가 신고한 라이선스를 기록하며 모든 제출물�
 - [OECD, EUIPO, Mapping Global Trade in Fakes 2025: Executive summary](https://euipo.europa.eu/tunnel-web/secure/webdav/guest/document_library/observatory/documents/reports/2025_Global_Trade_in_Fakes/2025_Global_Trade_in_Fakes_Ex_Sum_en.pdf) — 2021년 위조품 교역 규모와 세계 수입 비중, 우편 경로와 소량 화물 압수 비중
 - [Cyber Signals Issue 9: AI-powered deception: Emerging fraud threats and countermeasures — Microsoft](https://www.microsoft.com/en-us/security/blog/2025/04/16/cyber-signals-issue-9-ai-powered-deception-emerging-fraud-threats-and-countermeasures/) — 2025-04-16, AI로 몇 분 만에 만드는 가짜 쇼핑몰
 - [Amazon, Amazon Brand Registry](https://sell.amazon.com/brand-registry) — 상표 조건, 신고 도구의 범위와 정확한 신고의 자동 차단 활용. 2026-10-18 확인
+- [How to report an IP violation to Amazon — Amazon](https://sell.amazon.com/blog/report-a-violation-to-amazon) — 등록 여부별 신고 경로와 Submission History의 처리 상태 조회. 2026-10-27 부분 대조
 - [EUR-Lex, Regulation (EU) 2022/2065 (Digital Services Act)](https://eur-lex.europa.eu/legal-content/EN/TXT/HTML/?uri=CELEX:32022R2065) — 제16조 신고 요건, 제22조 신뢰 신고자, 제23조 오남용 대응, 제93조 적용일
 - [Transnational Crime and the Developing World — Global Financial Integrity](https://www.gfintegrity.org/wp-content/uploads/2017/03/Transnational_Crime-final.pdf) — 2017-03, 11개 초국가 범죄의 추정 규모와 단위, 위조품과 불법 복제품 추정의 범위, 수요 추종, 국가별 차이와 중간소득 생산국, 허가 제조업체의 위조 생산. 2026-10-18 확인, 2026-10-19 44쪽 재대조
 - [Stop Counterfeit Sales. Protect Your Brand. — MarqVision](https://www.marqvision.com/brand-protection) — 2026-10-18 확인, 감시 채널과 MarqLaw의 제휴 로펌, 현장 조사와 오프라인 단속
