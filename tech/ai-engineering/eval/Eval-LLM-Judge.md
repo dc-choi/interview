@@ -42,6 +42,14 @@ aliases: ["LLM-as-a-Judge", "LLM-as-Judge", "LLM Judge", "LLM 판정기"]
 
 출력은 JSON 같은 정해진 형식으로 받고, 이유를 먼저 쓴 뒤 점수나 라벨을 쓰게 한다. OpenAI 평가 가이드는 점수 전에 추론하게 하면 판정 성능이 오른다고 권고한다. G-Eval은 다른 방식으로, 평가 기준에서 평가 단계를 먼저 한 번 생성한 뒤(CoT) 그 단계를 넣은 양식 채우기 프롬프트로 답마다 점수만 받고 점수 토큰 확률로 가중 평균한다. 지지되지 않는 주장, 빠진 요구, 어긴 지시를 목록으로 함께 받으면 낮은 점수의 원인을 바로 추적할 수 있다. 결과는 판정기 버전과 함께 회차마다 저장해 비교한다.
 
+### Spring AI의 문맥 기반 평가를 읽는 범위
+
+2026-10-26 확인한 Spring AI 2.0.2 Reference의 `EvaluationRequest`는 사용자 입력 `userText`, 제공 문맥 `dataList`, 생성 답변 `responseContent`를 구분한다. `RelevancyEvaluator`는 이 세 입력을 프롬프트에 넣어 모델이 질문과 문맥에 맞는 답인지 판정하게 한다. 기본 프롬프트는 답변이 주어진 문맥과 일치하는지 YES/NO로 묻는다.
+
+따라서 `isPass()`는 그 입력과 판정 모델에서 얻은 평가 결과다. 참조 문맥 자체의 최신성이나 현실의 사실 여부를 별도로 확인했다는 증거로 쓰지 않는다. 검색 문서가 오래되거나 잘못됐는지 보는 검사와, 답변이 주어진 문서를 충실히 사용했는지 보는 검사를 분리한다(적용 제안).
+
+공식 RAG 통합 테스트 예제는 생성에 사용한 문맥을 `RetrievalAugmentationAdvisor.DOCUMENT_CONTEXT`에서 꺼내 평가에 전달한다. 적용할 때도 실제 전달한 문맥을 보존하고, 무관한 문맥과 상충하는 답을 넣은 실패 표본으로 판정기를 점검한다. 여기서는 문서와 예제만 대조했으며 모델 호출과 판정 정확도를 재현하지 않았다. 기존 본문 전체를 재검증하지 않아 `verified_at`은 유지한다.
+
 ## 판정 방식 넷
 
 | 방식 | 판정기가 하는 일 | 강점 | 약점 |
@@ -126,6 +134,7 @@ aliases: ["LLM-as-a-Judge", "LLM-as-Judge", "LLM Judge", "LLM 판정기"]
 
 ## 출처
 
+- [Spring AI 2.0.2 Reference, Evaluation Testing](https://docs.spring.io/spring-ai/reference/api/testing.html) — 2026-10-26 평가 입력, RelevancyEvaluator의 기본 프롬프트와 RAG 통합 테스트의 문맥 전달 예제 확인
 - [Roast Room — GitHub, nateherkai](https://github.com/nateherkai/roast-room) — 2026-10-23 README의 기능 안내와 모의 자문 범위 확인, 실행과 효과 미검증
 - [서비스와 앱: 다스캔 AI — 기술노트](https://technote.wiki/apps#dascan) — 2026-10-22 동시 질문, 교차검토, 이미지 재생성과 역할 토론의 공개 안내 확인. 실행, 성능과 데이터 보호는 검증하지 않음
 - [AWS Innovation with Fair Trade USA — Amazon Web Services](https://www.youtube.com/watch?v=0ju7zBp_zKc) — 2025년 발표 13:37~15:39, 근거별 가산 채점의 시제품 경험
