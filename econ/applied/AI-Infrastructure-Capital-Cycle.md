@@ -101,6 +101,14 @@ GPU 수요와 대출 조달 성공만으로 원리금 상환을 확정하지 않
 
 **분석 제안:** 계약 갱신 시점의 임대 단가, 공실 기간, 운영비와 원리금 지급 일정을 함께 비교한다. 기간 차이가 있다고 즉시 부도를 단정하지 않고, 조달에 성공했다고 갱신과 상환이 보장됐다고 판단하지도 않는다. 이 발표의 평균 계약 기간만으로 개별 계약의 만기 분포나 회사 전체의 유동성을 계산할 수 없다. 차입 만기, 장비의 회계상 내용연수와 실제 경제적 수명도 서로 다른 값이다.
 
+### 시장이 암시한 부도확률과 기업의 지급 능력을 나눈다
+
+CDS 가격에서 추정한 부도확률에는 위험 프리미엄이 들어가므로 실제 부도 빈도와 같은 값으로 읽지 않는다. 연준 연구는 예상 부도손실, 부도위험 프리미엄과 유동성 등 다른 프리미엄을 구분한다. 산출 기간과 회수율 가정을 확인하는 기본 원칙은 [[Bonds#CDS 스프레드를 부도확률로 바로 읽지 않는다|채권의 CDS 해석 기준]]을 따른다.
+
+**AI 인프라 분석에 적용할 질문:** 부도확률 수치를 인용하기 전에 기준일, 대상 채무와 기간, 사용한 채권 가격 또는 CDS 호가, 회수율과 산식을 확인한다. 이어 고객의 수요와 서비스 대금 수취, 차입 원리금 지급 일정을 따로 놓는다. 산업 수요가 유지된다는 전망만으로 개별 사업자의 상환이나 주주의 손실 회복을 보장하지 않는다. 공급사나 정부의 지원 기대도 실제 자금 제공, 보증과 계약 변경이 확인되기 전에는 조건부 시나리오로 둔다(분석 제안).
+
+2026-10-26 연준의 2009년 연구 2.1절과 Chicago Fed의 2023년 CDS 분석을 대조했다. 두 자료는 가격에서 추정한 확률의 해석 근거이며 특정 AI 기업의 현재 부도확률, 채권 시세나 구제 계획을 확인한 자료가 아니다.
+
 ## 투자액과 GDP 비율은 시나리오의 범위를 맞춘다
 
 2026-10-24 대조한 BPEA 2026년 가을 학회 초안(본문 Draft: September 4, 2026)은 미국 데이터센터 증설을 시나리오로 계산한다. 2025~2032년 투자액 약 10.3조 달러에는 2032년 이후 가동될 프로젝트의 선행 지출도 포함된다. 미국 GDP 대비 3.63%는 이 기간의 연평균 투자 비율이며, 2026년 한 해에 이미 집행된 실적이 아니다. 비용과 명목 GDP의 연 4% 증가 등 가정을 사용하며 계획된 사업의 완공을 보장하지 않는다.
@@ -140,6 +148,8 @@ State of AI의 인프라 절은 미국 4대 하이퍼스케일러의 2026년 설
 
 ## 출처
 
+- [A framework for assessing the systemic risk of major financial institutions — Federal Reserve](https://www.federalreserve.gov/pubs/feds/2009/200937/index.html) — 2.1절의 CDS 내재확률, 위험 프리미엄과 모형 가정, 2026-10-26 대조
+- [What Does the CDS Market Imply for a U.S. Default? — Federal Reserve Bank of Chicago](https://www.chicagofed.org/publications/economic-perspectives/2023/4) — 위험 조정된 확률과 실제 확률의 구분, 손실률 가정과 적용 한계, 2026-10-26 대조
 - [Datacenters 2027: The Year of Acceleration, +50GW in a Single Year — SemiAnalysis](https://newsletter.semianalysis.com/p/datacenters-2027-the-year-of-acceleration) — 2026-10-26 공개 본문의 건설 관측, 인도 전망과 임대계약 선행지표 설명 대조. 유료 모델, 원 차트와 현장 상태는 검증하지 않음
 - [Financing the AI Buildout, BPEA Fall 2026 conference draft — Stijn Van Nieuwerburgh](https://www.brookings.edu/wp-content/uploads/2026/09/4c_Van-Nieuwerburgh.pdf) — 본문 초안일 2026-09-04, II절의 미국 증설 시나리오, 투자 기간과 GDP 분모를 2026-10-24 대조
 - [Financing the AI buildout — Brookings](https://www.brookings.edu/articles/financing-the-ai-buildout/) — 2026-09-23 연구 소개의 자금 조달 구조와 시스템 위험 판단 한계
