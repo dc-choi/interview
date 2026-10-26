@@ -29,6 +29,14 @@ aliases: ["Application Security", "애플리케이션 보안", "시큐어코딩"
 
 진단은 넓고 얕게 빠진 항목을 찾고, 모의해킹은 좁고 깊게 실제 침투 경로를 증명한다. 둘은 대체재가 아니라 보완재다.
 
+### 해커라는 명칭과 보안 연구의 승인 범위
+
+해커라는 명칭만으로 행위의 목적이나 허가 여부를 판정하지 않는다. 1959년 TMRC 사전에는 이미 `hack`과 `hacker` 항목이 있으며, 작성자의 2005년 주석은 당시 용례가 비정통적인 기술 활용을 가리키고 악의나 선의를 특정하지 않았다고 설명한다. 이 기록만으로 용어의 유일한 기원이나 현재의 법적 의미를 확정할 수는 없다.
+
+실제 보안 연구에서는 대상 운영자가 공개한 취약점 공개 정책(VDP)이나 개별 승인의 범위를 확인한다. CISA의 VDP 템플릿은 대상 시스템, 허용 방법과 신고 경로를 명시하고, 취약점 존재 확인에 필요한 만큼만 시험하도록 한다. 취약점을 확인하거나 민감정보를 만나면 시험을 멈추고 알리며, 데이터 반출, 지속 접근 확보와 다른 시스템으로의 이동을 허용하지 않는 예시를 제공한다. 외부 SaaS도 제공자의 승인을 확인한 뒤 범위에 넣도록 한다.
+
+이는 정책 작성과 실습 범위 판단의 참고 기준이다. 템플릿의 존재가 임의의 서비스에 대한 시험 허가가 되지는 않는다. 2026-10-26 사전 원문과 CISA 공식 저장소의 템플릿만 대조했으며, 개별 서비스의 승인과 법적 판단 및 다른 절 전체는 검증하지 않아 기존 검증일을 유지한다.
+
 ### 자동 모의해킹의 검사 대상과 접근 범위
 
 2026-10-14 AWS Security Agent의 모의해킹 생성 문서를 대조했다. 검사 대상 도메인은 소유권 검증을 거쳐야 하며, 로그인과 탐색에만 쓰는 accessible domain은 검사 대상과 구분한다. 인증 성공이나 외부 도메인 접근 가능 여부가 그 도메인을 공격할 허가를 뜻하지 않는다.
@@ -184,6 +192,8 @@ Q. 보안팀과 개발팀의 충돌은?
 
 ## 출처
 
+- [An Abridged Dictionary of the TMRC Language — Peter R. Samson](https://www.gricer.com/tmrc/dictionary1959.html) — 1959년 본문과 2005년 작성자 주석을 구분해 대조.
+- [CISA, Vulnerability Disclosure Policy Template](https://github.com/cisagov/cyber.dhs.gov/blob/master/pages/20-01-vdp-template.md) — 공식 저장소의 Authorization, Guidelines와 Scope 절.
 - [REA: Reverse Engineer Anything — GitHub, morluto/rea](https://github.com/morluto/rea)
 - [AWS Security Agent, Create a penetration test](https://docs.aws.amazon.com/securityagent/latest/userguide/perform-penetration-test.html)
 - [OWASP, API9:2023 Improper Inventory Management](https://api-security.owasp.org/editions/2023/en/0xa9-improper-inventory-management/)

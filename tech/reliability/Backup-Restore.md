@@ -25,7 +25,10 @@ verified_at: 2026-09-03
 | | **물리(physical)** | 파일/블록 복사, 스냅샷 — 빠름, 동종 엔진 한정 |
 | 범위 | **전체(full)** | 매번 전체. 단순하지만 크고 느림 |
 | | **증분(incremental)** | 직전 이후 변경분만. 작고 빠름, 복원은 체인 필요 |
+| | **차등(differential)** | 마지막 전체 백업 이후 변경분을 누적. 복원에는 해당 전체 백업과 마지막 차등 백업이 필요 |
 | 연속성 | **연속 아카이빙** | binlog/WAL을 계속 보관 → PITR의 토대 |
+
+일반적인 파일 백업에서 증분 복원은 전체 백업과 이후 증분 체인을 사용하고, 차등 복원은 전체 백업과 선택한 차등 백업을 사용한다. 예를 들어 일요일 전체 백업 뒤 월요일과 화요일에 차등 백업을 했다면 화요일 시점 복원에는 일요일 전체와 화요일 차등이 필요하다. 차등은 복원에 필요한 묶음을 줄이는 대신 다음 전체 백업 전까지 변경분을 누적 보관한다.
 
 MySQL 8.4의 `--single-transaction`은 비트랜잭션 테이블까지 일관되게 만들지 않는다. 덤프 대상의 `ALTER`, `DROP`, `TRUNCATE` 등 동시 DDL도 덤프를 실패시키거나 내용을 어긋나게 할 수 있으므로 백업 동안 별도로 통제한다.
 
@@ -48,11 +51,17 @@ MySQL 8.4의 `--single-transaction`은 비트랜잭션 테이블까지 일관되
 
 ## 스냅샷의 함정 — 복원은 생각보다 느리다
 
+RAID, 복제와 스냅샷은 이름보다 **어떤 고장과 변경에서 복구할 수 있는가**로 구분한다.
+
+- RAID 1처럼 중복성을 제공하는 구성은 디스크 고장에 대비하지만 과거 시점의 별도 백업을 대신하지 않는다. RAID 0에는 디스크 고장 허용 능력이 없다.
+- 연속 복제는 복제 지연을 줄여도 논리적 손상이나 악의적 삭제에 대한 과거 복구 지점을 자동 보장하지 않는다. 삭제 전파와 버전 보존은 제품별로 확인한다.
+- 원본 저장장치에 의존하는 로컬 스냅샷은 그 장치의 손실에도 살아남는 별도 사본인지 확인해야 한다. 모든 스냅샷을 백업이 아니라고 단정하지 않는다. 일반 AWS 리전의 EBS 스냅샷은 S3에 저장되는 증분 백업이며, 각 스냅샷에서 새 볼륨을 복원할 수 있다. 서비스가 블록 의존성을 관리하므로 사용자가 증분 파일을 순서대로 적용하는 방식과 구분한다.
+
 RDS DB 인스턴스의 스냅샷 복원은 `available` 이후에도 S3에서 데이터를 lazy-load할 수 있어, 아직 로드되지 않은 데이터의 첫 접근이 느릴 수 있다. 모든 스냅샷이 같은 성능 저하를 보인다고 가정하지 말고 실제 복원 경로와 주요 쿼리를 측정한다. 서비스가 요구하는 성능까지의 워밍업도 RTO에 포함한다. [[RDS-Operational-Pitfalls|스냅샷 워밍업]]
 
 ## 3-2-1 규칙
 
-데이터 **3벌**, 서로 다른 **2개 매체**, 그중 **1벌은 오프사이트(다른 리전/계정)**. 같은 AZ나 같은 계정에만 두면 리전 장애나 계정 탈취 한 번에 백업까지 같이 날아간다. 랜섬웨어 대비로 변경 불가(immutable, object lock) 백업도 고려한다.
+데이터 **3벌(원본 1벌과 백업 2벌)**, 서로 다른 **2개 매체**, 그중 **1벌은 오프사이트(다른 물리적 장소)**에 둔다. 클라우드에서는 리전 분리와 계정 분리를 따로 검토한다. 다른 계정이어도 같은 리전이면 리전 장애에 대한 지리적 분리는 되지 않으며, 다른 리전이어도 같은 관리 권한으로 백업을 삭제할 수 있으면 계정 침해 위험은 남는다. 랜섬웨어 대비로 오프라인 사본과 변경 불가(immutable, object lock) 백업도 고려한다.
 
 ## 복원 리허설 — 가장 많이 빠뜨리는 것
 
@@ -148,6 +157,13 @@ MPA는 원본 계정에 접근할 수 없을 때 별도 복구 계정에서 백�
 - 복원 리허설을 안 하면 생기는 문제
 
 ## 출처
+
+- [Incremental vs Differential Backup — AWS](https://aws.amazon.com/compare/the-difference-between-incremental-differential-and-other-backups/)
+- [Dell — PowerEdge: What are the different RAID levels and their specifications](https://www.dell.com/support/kbdoc/en-us/000128635/dell-servers-what-are-the-raid-levels-and-their-specifications)
+- [Amazon EBS — Amazon EBS snapshots](https://docs.aws.amazon.com/ebs/latest/userguide/ebs-snapshots.html)
+- [Tips for backing up your information (ITSAP.40.002) — Canadian Centre for Cyber Security](https://www.cyber.gc.ca/en/guidance/tips-backing-your-information-itsap40002)
+
+2026-10-26에는 위 네 자료와 아래 AWS 재해복구 문서의 연속 복제 한계를 대조해 차등 백업, RAID와 스냅샷의 경계 및 3-2-1 규칙을 보강했다. 제품별 기존 절 전체와 실제 복원을 다시 검증하지 않아 frontmatter의 검증일은 유지한다.
 
 - [不正アクセスによる障害に関する調査の進捗について（第5報） — IDC Frontier](https://www.idcf.jp/news/topics/20261014001/) — 2026-10-14 발표의 백업 반출 대상과 개별 복원 확인 범위, 2026-10-22 대조.
 - [バックアップサービスの提供再開について（第6報） — IDC Frontier](https://www.idcf.jp/news/topics/20261018001/) — 2026-10-18 발표의 백업 서비스 재개와 스냅샷 중단 구분, 2026-10-22 대조.
