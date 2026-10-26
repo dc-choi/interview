@@ -20,6 +20,16 @@ verified_at: 2026-07-21
 
 Nitro System은 네트워크, EBS 스토리지, 관리 기능을 전용 카드와 보안 칩으로 오프로드한다. 다수의 현행 인스턴스 타입이 Nitro 기반이지만 지원 기능은 타입과 크기별로 다르므로 EC2 인스턴스 유형 표에서 확인한다.
 
+### 베어메탈 인스턴스를 고르는 조건
+
+부분 검증(2026-10-26): EC2 인스턴스 유형 문서의 Nitro 기반 인스턴스 설명과 명명 규칙, 중첩 가상화 문서를 대조했다. 베어메탈 인스턴스는 가상 머신 대신 호스트 하드웨어 전체에 접근하게 해 가상화 오버헤드를 없앤다. 인스턴스 이름의 점(`.`) 뒤 크기 자리에 `4xlarge` 같은 크기 대신 `metal`이 오면 베어메탈이다. `c7i.metal-24xl`, `c7i.metal-48xl`처럼 `metal` 뒤에 크기를 붙인 형태도 있다.
+
+- 대표적인 선택 조건은 가상화 환경에서 제공되지 않거나 완전히 지원되지 않는 저수준 하드웨어 기능(예: Intel VT)이 필요한 워크로드와, 라이선스나 지원 조건 때문에 비가상화 환경이 필요한 애플리케이션이다.
+- 인스턴스 안에서 하이퍼바이저를 돌린다는 이유만으로 베어메탈이 필요하지는 않다. 2026-02-16 발표 전에는 EC2 안의 가상 머신을 베어메탈에서만 만들 수 있었지만, 지금은 지원 목록의 가상화 인스턴스(2026-10-26 확인 기준 M7i, C7i, R7i, M8i, C8i, R8i, X8i, I7i 등 Intel 기반 일부 패밀리)에서 Nitro가 Intel VT-x 같은 프로세서 확장을 넘겨 주는 중첩 가상화로 KVM이나 Hyper-V를 실행할 수 있다. AWS는 하드웨어 가상화 확장이 필요하면서 성능에 민감하거나 지연 요구가 엄격한 워크로드에는 베어메탈을 검토하도록 권고한다.
+- 성능만으로 고르지 않는다. AWS는 Nitro 하이퍼바이저가 대부분의 워크로드에서 베어메탈과 구분하기 어려운 성능을 낸다고 설명한다. 차이가 의심되면 vCPU와 메모리가 같은 가상화 크기와 같은 부하로 측정해 비교한다(검증 제안). 예를 들어 `c7i.metal-48xl`과 `c7i.48xlarge`는 모두 192 vCPU, 384 GiB다.
+- 모든 패밀리가 베어메탈 크기를 제공하지는 않는다. Nitro 문서의 베어메탈 인스턴스 목록에서 대상 패밀리를 확인한다. 예를 들어 T 계열은 가상화 인스턴스 목록에만 있다.
+- 시작이 느리다. 대부분의 경우 베어메탈을 시작하면 하부 서버가 부팅하며 모든 하드웨어와 펌웨어를 검증하므로, running 상태가 된 뒤 네트워크로 사용할 수 있게 되기까지 20분 또는 그 이상 걸릴 수 있다. Auto Scaling의 warmup, 헬스 체크 유예와 장애 대체 시간을 이 지연에 맞춰 잡는다(운영 제안). 재시작 직후의 상태 검사 실패는 [[EC2-Status-Checks|상태 검사 진단]]에서 다룬다.
+
 ### Nitro의 인스턴스 간 전송 암호화 조건
 
 2026-10-07 공식 문서 확인 기준. Nitro 기반이라는 사실만으로 모든 인스턴스 간 경로에 같은 자동 암호화가 적용된다고 판단하지 않는다. Nitro 하드웨어가 제공하는 추가 전송 암호화는 다음 조건을 함께 확인한다.
@@ -216,11 +226,14 @@ T 인스턴스는 **베이스라인 CPU 성능**(예: t3.medium 20%)을 기준�
 - [AWS ParallelCluster, Elastic Fabric Adapter](https://docs.aws.amazon.com/parallelcluster/latest/ug/efa-v3.html)
 - [SDK for Gen AI and Deep Learning - AWS Neuron — AWS](https://aws.amazon.com/ai/machine-learning/neuron/)
 - [AWS Nitro System](https://docs.aws.amazon.com/whitepapers/latest/security-design-of-aws-nitro-system/the-components-of-the-nitro-system.html)
-- [Nitro 기반 EC2 인스턴스](https://docs.aws.amazon.com/ec2/latest/instancetypes/ec2-nitro-instances.html)
+- [Nitro 기반 EC2 인스턴스](https://docs.aws.amazon.com/ec2/latest/instancetypes/ec2-nitro-instances.html) — 2026-10-26 베어메탈의 적합 사례, Nitro 하이퍼바이저 성능 설명, 베어메탈 목록과 시작 지연 대조
 - [버스터블 성능 인스턴스의 CPU 크레딧](https://docs.aws.amazon.com/AWSEC2/latest/UserGuide/burstable-credits-baseline-concepts.html)
 - [인스턴스 스토어 수명](https://docs.aws.amazon.com/AWSEC2/latest/UserGuide/instance-store-lifetime.html)
 - [EC2 데이터 보호와 인스턴스 간 전송 암호화](https://docs.aws.amazon.com/AWSEC2/latest/UserGuide/data-protection.html) — 전송 암호화 조건의 부분 검증
-- [Amazon EC2 인스턴스 유형 명명 규칙](https://docs.aws.amazon.com/ec2/latest/instancetypes/instance-type-names.html)
+- [Amazon EC2 인스턴스 유형 명명 규칙](https://docs.aws.amazon.com/ec2/latest/instancetypes/instance-type-names.html) — 2026-10-26 크기 자리의 `metal` 표기 대조
+- [Amazon EC2, Use nested virtualization to run hypervisors in Amazon EC2 instances](https://docs.aws.amazon.com/AWSEC2/latest/UserGuide/amazon-ec2-nested-virtualization.html) — 2026-10-26 프로세서 확장 전달, 지원 인스턴스와 하이퍼바이저, 베어메탈 검토 권고 대조
+- [Amazon EC2 supports nested virtualization on virtual Amazon EC2 instances — AWS](https://aws.amazon.com/about-aws/whats-new/2026/02/amazon-ec2-nested-virtualization-on-virtual/) — 2026-02-16 발표, 이전에는 베어메탈에서만 가상 머신을 만들 수 있었다는 설명
+- [Amazon EC2 C7i instances — AWS](https://aws.amazon.com/ec2/instance-types/c7i/) — 2026-10-26 `metal-24xl`, `metal-48xl` 크기와 `c7i.48xlarge`의 vCPU, 메모리 대조
 
 ## 관련 문서
 
