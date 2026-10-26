@@ -22,6 +22,23 @@ aliases: ["Spring Transaction Verification", "트랜잭션 적용 확인", "Tran
 
 Manager log의 logger 이름은 실제 manager class다. Spring Boot가 자동 구성한 `JdbcTransactionManager`나 `JpaTransactionManager`의 class나 package로 level을 올린다([[Spring-Transactional-Propagation|Spring transaction 전파]]의 log 절).
 
+## DB와 JMS의 참여 범위를 따로 확인하기
+
+이 절은 2026-10-26 Spring Framework 7.0.10 API와 JMS 공식 문서로 대조했다. 기존 proxy와 초기화 설명의 검증일은 유지한다.
+
+`isActualTransactionActive()`가 `true`라는 사실만으로 DB 변경과 JMS 메시지가 같은 원자적 transaction에 참여했다고 판단하지 않는다. 이 값은 현재 thread의 transaction 활성 표시이며, 참여한 모든 resource와 분산 commit 구성을 증명하지 않는다.
+
+| 구성 | 확인할 경계 |
+|---|---|
+| DB의 로컬 transaction | DB 변경을 보호한다. 별도로 전송이 확정된 JMS 메시지는 DB rollback만으로 취소되지 않는다 |
+| `JmsTransactionManager` | 한 `ConnectionFactory`의 JMS Connection/Session을 관리한다. 자체적으로 DB와 JMS를 XA transaction으로 묶지 않는다 |
+| `JmsTemplate` | 같은 `ConnectionFactory`에 연결된 thread-bound transactional Session을 감지해 참여한다. Template 사용 자체는 DB와의 원자성 증거가 아니다 |
+| `JtaTransactionManager`와 XA 구성 | JMS의 XA-capable `ConnectionFactory`와 DB resource가 같은 JTA transaction에 실제 참여하는지 확인한다. Manager 이름만 바꾸는 것으로 충분하지 않다 |
+
+장애 검증은 선택된 transaction manager와 JMS Session 구성을 기록한 뒤 수행한다. DB에 주문을 저장하고 JMS로 후속 작업을 보낸 다음, DB commit 전에 rollback 대상 예외를 발생시킨다. 호출이 끝난 뒤 별도 DB 조회와 broker 또는 소비자 측 기록으로 주문과 메시지의 결과를 각각 확인한다. JMS 전송이 먼저 확정된 구성이라면 주문만 rollback되고 메시지는 남는 불일치를 재현할 수 있다.
+
+예외 rollback 확인과 프로세스 강제 종료 후 복구 검증도 구분한다. 정상 종료 경로만 통과했다고 장애 시 두 resource의 정합성이 증명되지는 않는다. XA를 사용하지 않는 설계의 대안과 보장 범위는 [[Transactional-Outbox|Transactional Outbox]]에서 확인한다.
+
 ## Proxy가 method마다 판단하는 방식
 
 Class나 method에 `@Transactional`이 하나라도 있으면 transaction proxy가 실제 객체 대신 bean으로 등록되고 주입된다. Spring Boot 기본값은 class 기반 proxy(`spring.aop.proxy-target-class` 기본 `true`)라 대상 class를 상속한 하위 type이 주입된다. Proxy는 호출된 method가 transaction 대상인지 매번 판단해 대상이면 transaction을 시작하고, 아니면 transaction 없이 실제 method를 바로 호출한다. Class에 선언하면 그 class에 선언된 method 전체가 대상이 된다.
@@ -80,11 +97,15 @@ Spring Boot 4.1 문서 기준으로 이 시점의 운영 의미는 다음과 같
 ## 면접 체크포인트
 
 - `@Transactional`이 조용히 적용되지 않는 경로와 이를 확인하는 도구를 말한다.
+- Transaction 활성 표시와 DB/JMS의 원자적 참여를 구분하고, commit 전 실패에서 두 resource의 결과를 각각 확인하는 방법을 설명한다.
 - 적용 위치 네 단계의 우선순위와 class 기본값 readOnly 관례를 설명한다.
 - `@PostConstruct`에서 transaction이 적용되지 않는 이유를 bean lifecycle로 설명하고 `ApplicationReadyEvent` 대안의 운영 의미를 말한다.
 
 ## 출처
 
+- [Spring Framework, Using Spring JMS](https://docs.spring.io/spring-framework/reference/integration/jms/using.html)
+- [Spring Framework API, JmsTransactionManager](https://docs.spring.io/spring-framework/docs/current/javadoc-api/org/springframework/jms/connection/JmsTransactionManager.html)
+- [Spring Framework API, TransactionSynchronizationManager](https://docs.spring.io/spring-framework/docs/current/javadoc-api/org/springframework/transaction/support/TransactionSynchronizationManager.html)
 - [Spring Framework, Using @Transactional](https://docs.spring.io/spring-framework/reference/data-access/transaction/declarative/annotations.html)
 - [Spring Framework 7.0.9, `TransactionAspectSupport` source](https://github.com/spring-projects/spring-framework/blob/v7.0.9/spring-tx/src/main/java/org/springframework/transaction/interceptor/TransactionAspectSupport.java)
 - [Spring Framework 7.0.9, `AbstractFallbackTransactionAttributeSource` source](https://github.com/spring-projects/spring-framework/blob/v7.0.9/spring-tx/src/main/java/org/springframework/transaction/interceptor/AbstractFallbackTransactionAttributeSource.java)
@@ -103,6 +124,7 @@ Spring Boot 4.1 문서 기준으로 이 시점의 운영 의미는 다음과 같
 
 ## 관련 문서
 
+- [[Transactional-Outbox|Transactional Outbox]] — DB 변경과 메시지 발행의 원자성 범위
 - [[Spring-Transactional|Spring @Transactional]]
 - [[Spring-Transactional-Rollback-and-ReadOnly|rollback rule과 readOnly]]
 - [[Spring-AOP-Auto-Proxy-and-BeanPostProcessor|Spring AOP auto-proxy와 BeanPostProcessor]]
