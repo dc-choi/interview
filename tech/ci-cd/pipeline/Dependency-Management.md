@@ -55,6 +55,16 @@ Lock 파일만으로 bit-identical 바이너리가 보장되지는 않는다. OS
 - lock에서 의존성을 선택할 수 있어도 로컬 패키지를 설치하려면 소스 트리와 빌드 메타데이터가 필요하다. workspace manifest가 남아 있으면 추가 빌드 의존성의 source mapping 등 그 설정도 사용한다. 따라서 lock 하나만 배포하면 어떤 프로젝트든 설치된다고 일반화하지 않는다.
 - manifest를 제거하기 전 선택 멤버, 그룹과 Python 요구사항을 비교한다. 비프로젝트 workspace root의 기본 그룹과 그룹별 Python 요구사항은 0.12.22 릴리스의 기록 지원 설명과 PR #22018의 제한 설명이 엇갈리므로 여기서는 지원 여부를 확정하지 않는다. 해당 조건에 의존하는 배포는 manifest를 보존하고 고정한 uv 버전에서 별도로 검증한다(운영 판단).
 
+#### uv 업그레이드 뒤 설치가 달라질 때
+
+2026-10-26 부분 검증: uv 0.13.0 공식 릴리스 노트(2026-10-09), 관련된 0.12.0과 0.13.1 릴리스 노트, CLI 레퍼런스의 `--require-hashes` 설명을 대조했다. 아래는 해당 버전의 변경 가운데 requirements 입력, Python 선택과 캐시에 관한 일부와 대응 제안이며 설치 재현이나 성능 측정 결과는 아니다. tar 아카이브 검증 강화와 Windows ARM64 인터프리터 우선 같은 다른 변경은 릴리스 노트에서 확인한다. tar 처리 변경 뒤 hard link나 헤더 필드를 꽉 채운 tar 사용자, 그룹 이름을 담은 소스 배포판 지원은 0.13.1(2026-10-14)에서 복구됐다. 위 frozen-lockfile preview에 해당하는 항목은 이 릴리스 노트에 없다. frontmatter `verified_at`(2026-09-30)과 다른 절의 검증일은 이 부분 검증으로 바꾸지 않는다.
+
+- requirements 파일 안의 `--require-hashes` 지시자는 0.12.0부터 명령줄의 `--require-hashes`와 같은 해시 검사 모드를 켜고, 0.13.0부터는 그 파일이 `-c`로 포함한 constraints 파일의 지시자도 적용된다. 이 모드에서는 모든 요구사항이 안전한 다이제스트를 하나 이상 포함한 해시(일치하는 constraints 파일의 해시도 인정)를 갖고 `==` 정확한 버전이나 직접 URL로 고정돼야 한다. 빌드 의존성의 해시는 별도 옵션 `--require-build-hashes`(0.13.0 기준 preview)로 다룬다. 이 모드는 Git 의존성, editable 설치와 디렉터리를 가리키는 로컬 의존성을 지원하지 않는다(특정 wheel이나 소스 아카이브는 가능). 누락된 해시와 고정을 보완하고, 해시 검사가 의도된 정책이면 오류를 피하려고 지시자를 제거하지 않는다(운영 제안).
+- 같은 방식으로 포함한 constraints의 editable(`-e`) 항목은 무시되지 않고 오류가 된다. 이전 버전에서는 이 항목이 설치와 제약 어디에도 반영되지 않았으므로, 옮기면 패키지가 새로 설치되거나 설치 출처가 로컬 editable로 바뀔 수 있다. 설치할 의도가 없던 항목은 지운다. 해시 검사 모드가 아닌 설치라면 editable 항목을 `-r`로 전달하는 requirements 파일이나 `--editable`로 옮긴다. 해시 검사 모드에서는 옮겨도 editable 설치가 지원되지 않으므로 해시를 검사하는 설치와 로컬 개발용 editable 설치를 한 명령에 섞지 않는다(운영 제안).
+- `--constraint`, `--override`, `--exclude`, `--build-constraint`의 값 하나는 경로 하나다. 이전에는 따옴표로 묶은 값도 공백에서 나눴고, 이전 동작으로 되돌리는 옵션은 없다. 여러 파일은 `-c a.txt -c b.txt`처럼 옵션을 반복한다. 대응하는 `UV_CONSTRAINT`, `UV_OVERRIDE`, `UV_EXCLUDE`, `UV_BUILD_CONSTRAINT` 환경 변수의 공백 구분 목록은 유지된다.
+- 버전을 요청하거나 고정하지 않았을 때의 기본 stable Python이 3.14에서 3.15로 바뀌었다. 맞는 인터프리터가 설치돼 있지 않고 자동 다운로드가 켜져 있으면 `uv venv` 같은 명령이 3.15를 내려받을 수 있다. 호환되는 기존 설치는 계속 사용하므로 모든 환경이 자동으로 3.15로 바뀐다고 보지 않는다. 3.14를 유지하려면 `uv venv --python 3.14`처럼 요청하거나 프로젝트에서 `uv python pin 3.14`로 `.python-version`에 기록하고, 로컬과 CI의 실제 인터프리터를 비교한다(운영 제안).
+- 캐시 항목 다수의 형식이 바뀌어 이전 버전의 일부 항목을 재사용하지 못하므로 의존성을 다시 다운로드하거나 빌드할 수 있다. 릴리스 노트는 이를 호환성을 깨는 변경으로 분류하지 않으며 여러 uv 버전이 같은 캐시 디렉터리를 계속 공유할 수 있다고 밝힌다. 설치 실패와 캐시 재사용 감소를 구분하고, 소요 시간 증가는 같은 조건에서 측정한다(운영 제안).
+
 #### 설치한 Python과 실행하는 Python 맞추기
 
 패키지 설치 성공과 프로그램 실행 환경의 일치는 별개다. `python -m pip`는 지정한 Python으로 pip를 실행하므로, 여러 Python이 설치된 장비에서는 실행할 인터프리터를 먼저 고르고 그 경로로 설치한다. IDE나 IDLE에서 import가 실패하면 그 프로세스의 `sys.executable`과 설치에 사용한 Python 경로를 비교한다.
@@ -184,8 +194,13 @@ Spring, Java 엔터프라이즈는 **Maven**이 여전히 많이 쓰이고, 멀�
 - [uv, Projects](https://docs.astral.sh/uv/guides/projects/)
 - [uv, Locking and syncing](https://docs.astral.sh/uv/concepts/projects/sync/)
 - [uv, Preview features — frozen-lockfile](https://docs.astral.sh/uv/concepts/preview/#frozen-lockfile)
+- [uv, Commands — uv pip의 --require-hashes](https://docs.astral.sh/uv/reference/cli/)
+- [uv 0.12.0 릴리스 — Astral](https://github.com/astral-sh/uv/releases/tag/0.12.0)
 - [uv 0.12.22 릴리스 — Astral](https://github.com/astral-sh/uv/releases/tag/0.12.22)
 - [uv 0.12.23 릴리스 — Astral](https://github.com/astral-sh/uv/releases/tag/0.12.23)
+- [uv 0.13.0 릴리스 — Astral](https://github.com/astral-sh/uv/releases/tag/0.13.0)
+- [uv 0.13.1 릴리스 — Astral](https://github.com/astral-sh/uv/releases/tag/0.13.1)
+- [uv 올렸더니 설치가 실패한다면? | uv 0.13.0 업그레이드 — 길리랩 - 실전 구현 랩](https://www.youtube.com/watch?v=0tiLTOulwdM) — 점검 항목 구성의 계기이며 변경 사실은 위 릴리스 노트로 대조
 - [Support frozen sync without workspace manifests — Astral, PR #22018](https://github.com/astral-sh/uv/pull/22018)
 - [Poetry, Managing dependencies](https://python-poetry.org/docs/managing-dependencies/)
 - [Yarn, `workspaces focus`](https://yarnpkg.com/cli/workspaces/focus)

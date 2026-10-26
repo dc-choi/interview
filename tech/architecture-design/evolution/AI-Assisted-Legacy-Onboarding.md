@@ -97,7 +97,11 @@ agent가 요구사항을 충족했는지뿐 아니라 삭제한 동작, 숨은 q
 
 런타임 업그레이드와 의존성 업그레이드는 범위가 다르다. 2026-10-09 Amazon Q Developer의 Java 변환 문서 기준, JDK 업그레이드는 대상 JDK와 호환되는 최소 변경을 수행한다. 제3자 라이브러리를 폭넓게 올리는 작업은 별도 변환으로 진행할 수 있으며, 변환 diff와 summary를 검토한 뒤 수락한다. JDK 전환이 끝났다는 이유로 모든 의존성 정리까지 완료됐다고 기록하지 않는다.
 
-기존 테스트의 이식과 변환 뒤 새 테스트 생성도 구분한다. 같은 날 확인한 AWS Transform의 .NET 문서에서는 기존 MSTest, NUnit, xUnit 테스트를 이식하고 실행한다. 선택적으로 생성하는 테스트는 현대화된 코드에 대해 만들어지므로 **원래 코드의 동작 보존을 검증하는 증거가 아니다**. 새 코드와 새 테스트가 함께 통과해도 이전 정책이 유지되는지는 별도로 확인한다.
+도구의 지원 상태도 함께 확인한다. 2026-10-26 공식 문서 대조 기준, AWS는 Amazon Q Developer IDE 플러그인 지원을 2027-04-30에 종료한다고 안내하고 비슷한 기능의 대안으로 Kiro를 제시한다. AWS DevOps 블로그의 지원 종료 공지(2026-04-30)는 IDE 플러그인과 유료 구독이 같은 날 지원 종료되며 코드 변환도 종료 범위에 포함된다고 밝힌다. IDE 플러그인으로 제공하는 Java 언어 업그레이드와 .NET 포팅은 2027-04-30 이후 쓸 수 없고, 공지는 진행 중인 변환을 그 전에 마치며 Java 업그레이드는 AWS Transform custom, .NET 현대화는 AWS Transform full-stack Windows modernization으로 하라고 권한다. 같은 공지는 2026-05-15부터 새 Q Developer 계정과 새 구독을 만들 수 없지만 기존 Pro 구독에는 사용자를 계속 추가할 수 있다고 적는다. Review 절에서 다룬 코드 리뷰 문서와, 앞의 README 문서 생성 예제가 쓰는 IDE 채팅 기능의 문서(문서 생성은 예전에 `/doc`으로 불렀다)에도 같은 종료 안내가 붙어 있다. AWS 사용자 가이드의 종료 안내와 Kiro 이전 가이드는 인라인 제안, 채팅과 코드 생성을 Kiro에서 쓸 수 있다고 적지만 코드 리뷰와 문서 생성의 이전 경로는 다루지 않고, Kiro에는 Visual Studio와 Eclipse용 네이티브 플러그인이 없다. 제품 상태만 대조했으며 frontmatter 검증일은 유지한다.
+
+검토 제안: 이 도구에 기대는 절차는 2027-04-30 전에 변환을 마치거나 위 대체 경로로 옮기고, 코드 리뷰와 문서 생성은 새 작업에 쓰기 전에 대체 도구의 지원 범위를 따로 확인한다.
+
+기존 테스트의 이식과 변환 뒤 새 테스트 생성도 구분한다. 2026-10-09 확인한 AWS Transform의 .NET 문서에서는 기존 MSTest, NUnit, xUnit 테스트를 이식하고 실행한다. 선택적으로 생성하는 테스트는 현대화된 코드에 대해 만들어지므로 **원래 코드의 동작 보존을 검증하는 증거가 아니다**. 새 코드와 새 테스트가 함께 통과해도 이전 정책이 유지되는지는 별도로 확인한다.
 
 검증 제안: 변환 전에 고정한 입력과 기대 결과로 핵심 업무 흐름을 다시 실행한다. 변환 보고서와 남은 작업을 읽고, 애플리케이션 기능과 UI, 탐색 경로를 원래 동작과 비교한다. 위 내용은 문서로 확인한 도구의 범위이며 실제 프로젝트의 변환 성공률이나 절감률을 측정한 결과가 아니다.
 
@@ -178,12 +182,16 @@ REA의 Evidence는 대상 산출물 식별, 원본 위치, 관찰, 추론과 미
 검증 제안: 분석 권한이 있는 대상에서 한 기능의 진입점과 호출 경로를 찾고, 재현 입력과 관찰 결과를 연결한다. 복원한 구현을 사용할 때는 앞 절의 characterization test로 필요한 외부 동작을 비교한다. 분석 완료와 호환 구현 완료는 별도 판정이다.
 
 ## 출처
-- [Amazon Q Developer, Reviewing code with Amazon Q Developer](https://docs.aws.amazon.com/amazonq/latest/qdeveloper-ug/code-reviews.html) — 2026-10-16 변경분 우선 검사와 필터링 범위 대조
+- [Amazon Q Developer, Reviewing code with Amazon Q Developer](https://docs.aws.amazon.com/amazonq/latest/qdeveloper-ug/code-reviews.html) — 2026-10-16 변경분 우선 검사와 필터링 범위 대조, 2026-10-26 상단의 지원 종료 안내 확인
 - [Simplifying Code Documentation with Amazon Q Developer — AWS](https://aws.amazon.com/blogs/devops/simplifying-code-documentation-with-amazon-q-developer/)
 - [Build SAP applications faster with Amazon Q Developer — AWS](https://aws.amazon.com/blogs/awsforsap/build-sap-applications-faster-with-amazon-q-developer/)
 - [REA: Reverse Engineer Anything — morluto/rea](https://github.com/morluto/rea)
 - [REA, CLI and Evidence](https://github.com/morluto/rea/blob/main/docs/cli.md)
 - [Amazon Q Developer, Upgrading Java versions with Amazon Q Developer](https://docs.aws.amazon.com/amazonq/latest/qdeveloper-ug/code-transformation.html)
+- [Amazon Q Developer, Amazon Q Developer IDE plugins end of support](https://docs.aws.amazon.com/amazonq/latest/qdeveloper-ug/q-developer-ide-end-of-support.html) — 2026-10-26 지원 종료일과 대안 안내 대조
+- [Kiro Docs, Migrating from Amazon Q Developer](https://kiro.dev/docs/upgrade-guides/migrating-from-q-developer/) — 2026-10-26 Kiro로 이어지는 기능 범위와 Visual Studio, Eclipse 플러그인 부재 대조
+- [Amazon Q Developer end-of-support announcement — AWS](https://aws.amazon.com/blogs/devops/amazon-q-developer-end-of-support-announcement/) — 2026-04-30 공지, 2026-10-26 코드 변환과 유료 구독의 종료 범위, Java와 .NET 권장 경로, 신규 가입 차단일과 기존 구독 예외 대조
+- [Amazon Q Developer, Chatting with Amazon Q Developer about code](https://docs.aws.amazon.com/amazonq/latest/qdeveloper-ug/q-in-IDE-chat.html) — 2026-10-26 상단의 지원 종료 안내와 문서 생성의 예전 명칭 `/doc` 확인
 - [Spring Boot, Spring Boot 3.0 Migration Guide](https://github.com/spring-projects/spring-boot/wiki/Spring-Boot-3.0-Migration-Guide)
 - [Java SE 17, Package javax.sql](https://docs.oracle.com/en/java/javase/17/docs/api/java.sql/javax/sql/package-summary.html)
 - [AWS Transform, Unit tests](https://docs.aws.amazon.com/transform/latest/userguide/dotnet-unit-tests.html)

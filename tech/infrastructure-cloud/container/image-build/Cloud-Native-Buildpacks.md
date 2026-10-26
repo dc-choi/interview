@@ -22,7 +22,9 @@ Cloud Native Buildpacks(CNB)는 애플리케이션 코드나 빌드 산출물을
 
 ## 동작 원리
 
-lifecycle은 analyze, detect, restore, build, export 단계로 이미지를 만든다. detect 단계는 builder에 든 buildpack 가운데 이번 빌드에 참여할 순서 있는 그룹을 고르고, build 단계는 통과한 buildpack이 산출물과 레이어를 만들며, export 단계는 run image 위에 그 레이어를 얹는다. lifecycle과 buildpack은 non-root 사용자로 실행된다.
+lifecycle은 analyze, detect, restore, build, export 단계로 이미지를 만든다. detect 단계는 builder에 든 buildpack 가운데 이번 빌드에 참여할 순서 있는 그룹을 고르고, build 단계는 통과한 buildpack이 산출물과 레이어를 만들며, export 단계는 run image 위에 그 레이어를 얹는다.
+
+실행 권한은 단계마다 다르다. buildpack을 감지하고 실행하는 detect와 build 단계에서는 lifecycle과 buildpack이 non-root 사용자로 실행된다. 레지스트리 자격증명이나 Docker 데몬 접근이 필요한 analyze, restore, export는 buildpack 코드를 실행하지 않는다. 신뢰하지 않는 builder에서는 민감한 정보가 buildpack에 노출되지 않도록 이 세 단계를 별도 컨테이너에서 실행하고, 신뢰한 builder에서는 `creator`로 다섯 단계를 한 컨테이너에서 실행할 수 있다(아래 builder 허용 절). CNCF TAG Security의 평가를 돕기 위해 Buildpacks 프로젝트가 쓴 보안 자체 평가(작성일 표시 없음, 2020년과 2021년 로드맵 참조)는 플랫폼이 lifecycle로 빌드를 구현하는 이상적인 예로 이 세 단계를 플랫폼이 제공한 이미지에서 컨테이너 안 UID/GID 0으로 실행하는 구성을 들고, 이 단계에서는 사용자 코드가 실행되지 않는다고 적는다. 2026-10-26에 확인한 pack main(커밋 9b483c2)도 단계를 나눠 실행할 때 analyze, restore, export 컨테이너를 root 사용자로 시작하도록 지정한다(Linux 컨테이너 기준). 이는 시작 사용자이며, analyzer처럼 준비 뒤 권한을 내리는 단계도 있다. 따라서 lifecycle 전체가 non-root로 실행된다고 일반화하지 않는다.
 
 rebase는 run image가 바뀌었을 때 앱을 다시 빌드하지 않고 앱 레이어를 새 run image 위에 다시 얹는 작업이다(`pack rebase my-app:my-tag`). OS 레이어의 보안 패치를 빠르게 반영할 수 있지만, 이는 run image 제작자가 새 버전에서 이전 버전과의 ABI 호환을 지킨다는 계약에 기대는 동작이다. rebase는 run image 레이어만 바꾸므로 buildpack이 넣은 JRE 같은 레이어의 패치는 다시 빌드해야 반영되고, 실행은 `pack` 같은 CNB 플랫폼 도구로 한다.
 
@@ -75,6 +77,16 @@ Paketo Java buildpack은 빌드에 JDK를, 실행에 JRE를 쓰는 것이 기본
 - Spring Boot 플러그인 경로는 Docker 호환 엔진에 의존하므로 CI 러너의 데몬 접근 권한을 검토한다. 데몬 권한을 줄이는 것이 목표면 Jib이나 레지스트리로 직접 내보내는 CNB 플랫폼이 대안이다.
 - 명령 하나로 이미지가 나온다는 것은 빌드 관례가 적용됐다는 뜻이다. 헬스체크, 리소스 한도, 취약점 대응과 배포 정책까지 끝났다는 뜻은 아니다([[Docker-Image-Pipeline|Docker 이미지 빌드 파이프라인]]).
 
+## 허용한 builder와 실행 권한을 구분한다
+
+2026-10-26 부분 검증: CNB의 lifecycle 문서, Trusted Builders 문서, `pack build` 문서와 소스(2026-10-21 커밋 9b483c2), Buildpacks 보안 자체 평가와 Spring Boot 4.1.2 Maven 플러그인 문서를 대조해 이 절을 쓰고 `## 동작 원리`의 단계별 실행 사용자 설명을 고쳤다. 기존 Spring Boot 설정과 hardened builder 절의 검증일은 유지한다.
+
+플랫폼에서 임의 Dockerfile 대신 승인한 builder와 buildpack을 제공하면 빌드 입력의 선택 범위를 좁힐 수 있다(설계 제안). 다만 `pack build`는 빌드 때 buildpack을 더할 수 있고(`--buildpack`, project.toml) image extension은 Dockerfile을 build나 run base image에 적용하므로, 이 효과는 추가 입력도 플랫폼이 통제할 때만 성립한다. 승인 목록은 애플리케이션 코드의 무해함이나 최종 이미지의 안전성도 보증하지 않는다. Buildpacks 보안 자체 평가는 악성 buildpack이나 스택 이미지(build, run base image)가 들어오면 그것으로 빌드한 모든 애플리케이션이 침해될 수 있다고 본다. 빌드 인프라는 그 이미지를 권한을 주어 실행하지 않는 한 반드시 침해되지는 않는다고 보면서, 악성 buildpack, 스택 이미지나 애플리케이션 코드의 컨테이너 탈출로 빌드 인프라가 침해되는 경우도 위협으로 다룬다.
+
+`pack`의 trusted builder 설정은 단순한 품질 표시가 아니라 실행 방식에 영향을 준다. 신뢰하는 builder에서는 `creator`가 lifecycle 단계를 한 컨테이너에서 실행할 수 있다. 다만 2026-10-26에 확인한 pack main(커밋 9b483c2) 기준으로 신뢰한 builder여도 빌드 때 `--extension`으로 builder 밖의 extension(레지스트리, 이미지, 아카이브)을 더하면 `--trust-extra-buildpacks`와 관계없이, builder 밖의 buildpack을 더하면 `--trust-extra-buildpacks`를 주지 않은 경우에 단계를 나눠 실행한다. project.toml의 inline buildpack은 이 판단에서 빠진다. 같은 소스의 `TrustBuilder` 주석은 모든 단계를 한 컨테이너에서 실행하는 이 최적화가 레지스트리 자격증명을 builder의 build image에 둔다고 적고, 최적화는 builder와 buildpack을 모두 신뢰할 때만 일어난다고 단서를 단다. 신뢰하지 않는 builder에서는 단계를 분리하고, 사용 가능한 공개 lifecycle 이미지로 더 높은 권한이 필요한 단계를 실행한다. `analyze`, `restore`, `export`가 필요로 하는 권한이나 레지스트리 자격증명이 `detect`, `build`에 불필요하게 노출되지 않게 하기 위한 구분이다. `pack builder suggest`가 제안하는 builder는 기본으로 신뢰한다. Spring Boot 4.1.2 Maven 플러그인의 `trustBuilder` 기본값도 기본 builder인 `paketobuildpacks/builder-noble-java-tiny`를 포함한 지정 builder에서는 `true`, 그 밖에서는 `false`다. 다른 builder로 바꾸면 이 값과 builder 출처를 함께 확인한다(운영 제안).
+
+공개 lifecycle 이미지가 없는 오래된 lifecycle(0.7.5 미만, 0.6.1 제외)로 만든 builder는 신뢰하지 않으면 `pack build`가 실패한다. 이 실패를 없애려고 검토하지 않은 builder에 `--trust-builder`를 붙이지 않고, 새 lifecycle로 만든 builder로 바꾸는 방법을 먼저 검토한다(운영 제안). builder 공급자와 구성요소를 검토하고, 빌드 작업에 전달하는 자격증명과 호스트 접근 범위를 별도로 확인한다(운영 제안). builder를 허용하는 판단, 빌드 실행의 격리와 최종 산출물 검증을 각각 남긴다(운영 제안). 이 절은 특정 빌드 환경의 격리 효과를 시험한 결과가 아니다.
+
 ## Hardened builder와 산출물 검증
 
 이 절의 제품 동작과 명령은 2026-10-14 공식 문서 기준이다. 기존 Spring Boot 설정 절의 검증 기준은 별도로 유지한다.
@@ -115,6 +127,12 @@ pack sbom download my-app:my-tag --output-dir ./sbom
 - [Spring Boot Maven Plugin, Packaging Executable Archives](https://docs.spring.io/spring-boot/maven-plugin/packaging.html)
 - [Cloud Native Buildpacks, What is a buildpack?](https://buildpacks.io/docs/for-app-developers/concepts/buildpack/)
 - [Cloud Native Buildpacks, What is a builder?](https://buildpacks.io/docs/for-app-developers/concepts/builder/)
+- [Cloud Native Buildpacks, Trusted Builders](https://buildpacks.io/docs/for-platform-operators/how-to/integrate-ci/pack/concepts/trusted_builders/)
+- [Cloud Native Buildpacks, pack build](https://buildpacks.io/docs/for-platform-operators/how-to/integrate-ci/pack/cli/pack_build/)
+- [pkg/client/build.go — buildpacks/pack](https://github.com/buildpacks/pack/blob/9b483c2428d832957efc7fe3d96bbef1395ca001/pkg/client/build.go)
+- [internal/build/lifecycle_execution.go — buildpacks/pack](https://github.com/buildpacks/pack/blob/9b483c2428d832957efc7fe3d96bbef1395ca001/internal/build/lifecycle_execution.go)
+- [internal/build/phase_config_provider.go — buildpacks/pack](https://github.com/buildpacks/pack/blob/9b483c2428d832957efc7fe3d96bbef1395ca001/internal/build/phase_config_provider.go)
+- [Cloud Native Buildpacks Security Assessment — CNCF TAG Security](https://tag-security.cncf.io/community/assessments/projects/buildpacks/self-assessment/)
 - [Cloud Native Buildpacks, Run image](https://buildpacks.io/docs/for-app-developers/concepts/base-images/run/)
 - [Cloud Native Buildpacks, What is the lifecycle?](https://buildpacks.io/docs/for-platform-operators/concepts/lifecycle/)
 - [Cloud Native Buildpacks, What happens during rebase?](https://buildpacks.io/docs/for-app-developers/concepts/rebase/)
@@ -129,6 +147,7 @@ pack sbom download my-app:my-tag --output-dir ./sbom
 - [Paketo Buildpacks, How to Access the Software Bill of Materials](https://paketo.io/docs/howto/sbom/)
 - [Sigstore, Verifying Signatures](https://docs.sigstore.dev/cosign/verifying/verify/)
 - [One command gets you a production-ready Spring Boot image — Coffee + Software](https://www.youtube.com/watch?v=jhdDfrXLm1Q)
+- [I'm not letting you bring your own Dockerfile — Coffee + Software](https://www.youtube.com/watch?v=e3D1FHlwfwc)
 
 ## 관련 문서
 

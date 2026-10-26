@@ -142,6 +142,7 @@ InnoDB FULLTEXT(`MATCH ... AGAINST`)가 있으니 MySQL도 되지 않느냐가 �
 - [[OpenSearch-Korean-Text-Analysis|한국어 Nori 분석]]
 - [[MySQL-Aurora-Parameter-Tuning|ngram_token_size 표준값]]
 - [[MongoDB-Schema-Design|MongoDB 스키마 설계]]
+- [[MongoDB-Vector-Search|MongoDB Vector Search 인덱스와 질의 계약]]
 
 ## 출처
 

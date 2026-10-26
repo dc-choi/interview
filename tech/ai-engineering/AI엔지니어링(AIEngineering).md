@@ -116,3 +116,4 @@ Software 3.0 패러다임, LLM과 에이전트, 하네스, 평가, 조직 전환
 - [x] [[Agent-Skills-Kiro#Kiro Steering: 포함 모드와 적용 범위|Kiro Steering 포함 모드]] — always, fileMatch, manual, auto의 로드 시점, workspace 우선과 AGENTS.md, custom agent의 기본 상속과 해제 설정
 - [x] [[Agent-Skills-Kiro#Kiro MCP: 설정 범위와 도구 승인|Kiro MCP 설정과 도구 승인]] — user와 workspace 설정 병합, Tool Search, autoApprove와 permission 규칙, workspace 신뢰와 접근 격리의 한계
 - [x] [[Bedrock-Knowledge-Base-Retrieval|Bedrock 지식 베이스 조회]] — 검색 유형과 저장소 조건, 재순위 결과 수와 권한, 질의 분해와 에이전틱 검색, 프롬프트 자리표시자와 가드레일 범위
+- [x] [[LLM-Prompt-Engineering|프롬프트 엔지니어링]] — 프리필 대체와 구조화 출력, 내장 사고와 수동 CoT, 예시 수와 형식, 체이닝의 쓰임, Bedrock 평가 기반 최적화와 홀드아웃

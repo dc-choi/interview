@@ -148,3 +148,4 @@ Traffic Mirroring은 ENI의 트래픽을 복제해 분석 대상에 전달한다
 
 - [[VPC|VPC 구성과 연결]]
 - [[VPC-Pitfalls-Interview|VPC 운영 실수와 점검 질문]]
+- [[Intent-Based-Networking#AWS에서 연결 의도를 검사하는 도구|구성 분석으로 연결 의도 검증 (Reachability Analyzer, Network Access Analyzer)]]

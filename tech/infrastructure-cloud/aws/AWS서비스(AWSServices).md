@@ -15,7 +15,7 @@ EC2, ASG, ALB, Lambda — 주요 AWS 컴퓨트 서비스.
 
 ## 목차
 
-- [x] [[Amplify-Gen2|Amplify Gen 2]] — 백엔드 연결, cloud sandbox 재생성, Storage 권한과 Pinpoint 전환 경계
+- [x] [[Amplify-Gen2|Amplify Gen 2]] — 백엔드 연결, cloud sandbox 재생성, 환경별 비밀값, Storage와 Data 권한, CDK 확장과 Pinpoint 전환 경계
 - [x] [[AWS-Media-Services|미디어 서비스]] — MediaTailor 광고 삽입, Elemental 분석과 렌더링
 - [x] [[Deadline-Cloud|Deadline Cloud]] — fleet 운영 책임, job attachments와 예산 제어
 - [x] [[Transfer-Family-Web-Apps|Transfer Family web apps]] — 브라우저 파일 공유, 인증과 grant, CORS
