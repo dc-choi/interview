@@ -91,6 +91,14 @@ NAT나 방화벽 뒤 게이트웨이를 인바운드 개방 없이 중앙에서 
 - **Prometheus Operator** — ServiceMonitor CRD로 스크레이프 대상 동적 관리
 - **라벨 카디널리티** — Pod IP, uuid 같은 고카디널리티 라벨은 폭발 주의
 
+### Pod 실행 상태와 서비스 정상 응답을 나눈다
+
+부분 검증(2026-10-27): Kubernetes의 Pod Lifecycle과 probe 설정 문서에서 이 절의 상태 구분을 대조했다. 기존 도구별 설정과 수치의 검증일을 일괄 갱신한 것은 아니다.
+
+Pod의 `Running` phase는 노드에 배치되고 모든 컨테이너가 생성됐으며, 적어도 하나가 실행 중이거나 시작 또는 재시작 중이라는 뜻이다. 모든 컨테이너와 서비스 요청이 정상이라는 판정은 아니다. `kubectl describe pod <name-of-pod>`로 컨테이너별 `Waiting`, `Running`, `Terminated` 상태와 종료 사유를 확인한다.
+
+`Ready` 조건과 readiness probe 결과도 따로 본다. Readiness와 liveness는 서로의 성공에 의존하지 않으므로, 실행 중인 컨테이너가 요청을 받을 준비는 안 된 상태일 수 있다. 운영 점검 제안: Pod phase, 컨테이너 상태, readiness와 애플리케이션 오류율 및 지연을 같은 시간대로 비교한다. Probe가 검사하지 않은 실제 사용자 요청의 성공까지 보장한다고 해석하지 않는다. 이 절은 문서 대조이며 실제 클러스터 장애 재현 결과는 아니다.
+
 ## EKS 관리형 수집기도 수집 성공을 따로 확인한다
 
 부분 검증(2026-10-13): Amazon Managed Service for Prometheus의 관리형 collector 공식 문서를 대조했다. Collector는 Prometheus 호환 메트릭을 발견하고 수집한다. 로그와 트레이스 수집까지 완료하는 기능으로 해석하지 않는다.
@@ -175,6 +183,7 @@ OpenTelemetry의 `k8sattributes` processor는 Kubernetes API를 조회해 `k8s.n
 - [AWS, Example Amazon ECS task definition: Route logs to FireLens](https://docs.aws.amazon.com/AmazonECS/latest/developerguide/firelens-taskdef.html)
 - [Kubernetes, Logging Architecture](https://kubernetes.io/docs/concepts/cluster-administration/logging/)
 - [Kubernetes, Pod Lifecycle](https://kubernetes.io/docs/concepts/workloads/pods/pod-lifecycle/)
+- [Kubernetes, Configure Liveness, Readiness and Startup Probes](https://kubernetes.io/docs/tasks/configure-pod-container/configure-liveness-readiness-startup-probes/) — 2026-10-27 Pod phase와 probe 역할 구분을 부분 대조
 - [OpenTelemetry, Important Components for Kubernetes](https://opentelemetry.io/docs/platforms/kubernetes/collector/components/)
 - [AWS, Ingest metrics with AWS managed collectors](https://docs.aws.amazon.com/prometheus/latest/userguide/AMP-collector.html)
 - [AWS, Set up managed collectors for Amazon EKS](https://docs.aws.amazon.com/prometheus/latest/userguide/AMP-collector-how-to.html)
