@@ -21,6 +21,7 @@ aliases: ["투자(Investing)", "Investing Map"]
 ### 2. 설계
 - [[Asset-Allocation-Diversification|자산배분과 분산투자]] — 자산군, 상관관계, 리밸런싱, 생애주기 배분 ✅
 - [[Valuation|밸류에이션]] — 가격과 가치, DCF의 현금흐름과 할인율 대응, 재투자와 ROIC, PER과 PBR, PEG의 성장률과 위험, 경기민감 기업의 정상 이익과 회복 시점, 안전마진 ✅
+- [[Growth-Quality-and-Scenario-Valuation|공시로 읽는 성장의 질과 시나리오 가치평가]] — 비교 범위와 표 사이 검산, 광고비와 매출의 인과 해석, 미공시 지표와 선수수익 같은 대리 지표, 사전 반증 조건, 시나리오 확률 가중 가치와 잔존가치 민감도, 현금 전환과 비지배지분 풋옵션 ✅
 - [[Tax-Advantaged-Accounts|절세 계좌]] — 세액공제와 환급의 차이, ISA 가입 제한, 연금수령한도와 과세, 퇴직연금의 위험자산 한도와 편입 제한 ✅
 
 - [[AI-Company-Valuation-and-Funding|AI 기업가치와 자금 조달]] — 인식 매출과 run-rate, 순손실과 현금소진, 유출 자료와 평가 의견

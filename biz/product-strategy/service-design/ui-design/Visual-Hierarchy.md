@@ -66,7 +66,7 @@ SaaS 대시보드처럼 정보가 빽빽한 화면에서 모든 카드에 강한
 | Satoshi, General Sans | Fontshare 공식 목록의 검색 색인에서 배포와 Closed Source 표시를 확인했다. 다른 서체와 라이선스가 같다고 가정하지 않는다 | [Satoshi](https://www.fontshare.com/?q=Satoshi), [General Sans](https://www.fontshare.com/?q=General+Sans) |
 | Pretendard | Inter, 본고딕(Source Han Sans)과 M PLUS 1p를 바탕으로 다듬은 한글 포함 서체로 9가지 굵기와 가변 글꼴, 웹폰트 용량을 줄이는 동적 서브셋을 제공한다(2026-10-12 확인). 한글과 라틴 문자가 섞인 실제 문구에서 크기와 굵기의 균형을 비교한다 | [공식 저장소](https://github.com/orioncactus/pretendard) |
 
-Inter, Space Grotesk와 Instrument Serif의 공식 배포는 SIL Open Font License 1.1을 명시한다. Pretendard의 LICENSE도 SIL Open Font License 1.1이며 바탕 서체들의 저작권 고지를 함께 담고, README는 글꼴 단독 판매를 제외한 상업적 사용, 수정과 재배포를 허용한다고 안내한다. Satoshi와 General Sans의 개별 라이선스 전문은 확인하지 못했으므로 허용 범위를 여기서 확정하지 않는다. 상업 이용, 수정, 재배포와 웹폰트 자체 호스팅 조건은 실제로 받을 파일의 라이선스로 확인한다. 비용 없이 내려받을 수 있다는 안내와 오픈소스 여부도 구분한다.
+Inter, Space Grotesk와 Instrument Serif의 공식 배포는 SIL Open Font License 1.1을 명시한다. Pretendard의 LICENSE도 SIL Open Font License 1.1이며 바탕 서체들의 저작권 고지를 함께 담고, README는 글꼴 단독 판매를 제외한 상업적 사용, 수정과 재배포를 허용한다고 안내한다. Satoshi와 General Sans의 개별 라이선스 전문은 확인하지 못했으므로 허용 범위를 여기서 확정하지 않는다. 상업 이용, 수정, 재배포와 웹폰트 자체 호스팅 조건은 실제로 받을 파일의 라이선스로 확인한다. 비용 없이 내려받을 수 있다는 안내와 오픈소스 여부도 구분한다. 라이선스 유형별 조건과 고객 납품 때 확인할 것은 [[Font-Licensing-for-Client-Work|외주 납품의 폰트 라이선스]]에서 다룬다.
 
 실무 비교는 다음 순서로 진행할 수 있다. 이는 제작사의 성능 보장이 아닌 적용 체크리스트다.
 
