@@ -77,6 +77,7 @@ adjacency list에서 간선을 실제로 지우려면 그 간선을 찾아 목�
 - h가 실제 남은 비용을 넘지 않으면(admissible), 더 짧은 경로가 나올 때 이미 확정한 정점도 다시 여는 구현에서 최단 경로를 보장한다. 한 번 확정한 정점을 다시 열지 않는 보통의 구현에서는 모든 간선 (u, v)에 대해 `h(u) <= w(u, v) + h(v)`인 consistent heuristic이어야 한다.
 - consistent h로 돌리는 A*는 간선 가중치를 `w(u, v) - h(u) + h(v)`(음수가 아니다)로 바꾼 그래프에서 Dijkstra를 돌리는 것과 같다. 목적지 쪽 간선이 싸 보이므로 먼저 확장된다.
 - 한 출발점에서 모든 정점까지의 거리가 필요하면 향할 목적지가 없으므로 Dijkstra를 쓴다.
+- 상태가 너무 많아 노드를 저장할 수 없는 퍼즐형 탐색은 [[IDA-Star-Pattern-Database|IDA*와 패턴 데이터베이스]]에서 다룬다.
 
 ## 선택 기준
 
@@ -111,4 +112,5 @@ adjacency list에서 간선을 실제로 지우려면 그 간선을 찾아 목�
 - [[Graph-Traversal-and-Shortest-Path-Grid-BFS|grid BFS 패턴]]
 - [[Graph-Algorithms-and-Optimization|그래프 알고리즘 인덱스]]
 - [[Exhaustive-Search-and-Backtracking|상태 공간 탐색]]
+- [[IDA-Star-Pattern-Database|IDA*와 패턴 데이터베이스]]
 - [[Heap|Priority Queue]]

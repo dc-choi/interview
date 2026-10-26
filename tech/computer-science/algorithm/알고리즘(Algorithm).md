@@ -20,6 +20,7 @@ aliases: ["Algorithm"]
 - [x] [[Algorithm-DP|동적 프로그래밍 (메모이제이션, 타뷸레이션)]]
 - [x] [[Algorithm-DP-Patterns|DP 응용 패턴 (경우의 수, 확률, 구간, 큰 값)]]
 - [x] [[Graph-Algorithms-and-Optimization|그래프 탐색과 최단 경로, MST, 최대 유량, 비트마스크 DP와 TSP]]
+- [x] [[IDA-Star-Pattern-Database|IDA*와 패턴 데이터베이스]] — 비용 한계 반복 탐색, 부분 문제의 하한, 큐브 2단계 탐색의 최적성 경계
 - [x] [[Trees-and-Balanced-Search-Trees|트리 순회, BST, 균형 BST 개요]]
 - [x] [[Trees-and-Balanced-Search-Trees-Rebalancing|AVL과 Red-Black 균형 복구 (회전, 삽입과 삭제 case)]]
 - [x] [[B-Tree|B-Tree (분할과 병합, 높이와 수용량)]]

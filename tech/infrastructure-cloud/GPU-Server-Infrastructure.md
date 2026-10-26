@@ -1,7 +1,7 @@
 ---
 tags: [infrastructure, gpu, ai, memory, network, power, cooling, distributed-training]
 status: done
-verified_at: 2026-10-11
+verified_at: 2026-10-26
 category: "인프라&클라우드(Infrastructure&Cloud)"
 aliases: ["GPU Server Infrastructure", "GPU 서버 인프라"]
 ---
@@ -15,6 +15,24 @@ GPU 서버는 CPU에 가속기를 연결한 이기종 시스템이다. 연산 �
 CPU는 적은 수의 스레드에서 낮은 지연을, GPU는 많은 경량 스레드를 통한 높은 처리량을 목표로 설계된다. CPU도 병렬 실행을 하므로 빠른 CPU와 동시 실행 GPU라는 이분법으로 나누지 않는다.
 
 CUDA에서는 CPU가 호스트 코드를 실행하고 GPU에 병렬 계산을 맡긴다. 호스트와 장치 사이의 데이터 전송도 비용이므로, 계산만 빨라져도 전체 작업은 느릴 수 있다. 연산 시간과 전송 시간을 따로 측정하고 중간 데이터를 GPU에 유지할 수 있는지 확인한다.
+
+### 커널, 라이브러리와 프레임워크의 층
+
+CUDA Programming Guide 13.4 기준으로 CPU와 거기 연결된 메모리를 host와 host memory, GPU와 그 메모리를 device와 device memory라 부른다. 호스트 코드는 CUDA API로 데이터를 복사하고 GPU 코드를 시작하며 필요한 시점에 완료를 기다린다. GPU에서 실행하도록 호출하는 함수를 kernel이라 하고, kernel launch는 많은 스레드가 같은 kernel 코드를 병렬로 실행하기 시작하는 일이다.
+
+Kernel launch는 호스트에 대해 비동기다. 반면 메모리 복사는 함수 이름만으로 완료 시점을 판단하지 않는다. CUDA Runtime API 13.4 기준으로 동기형 `cudaMemcpy`도 device 사이 복사에서는 호스트 동기화를 하지 않는다. Pageable host memory에서 device로 복사할 때는 staging memory로 옮긴 뒤 반환할 수 있어 최종 DMA 완료와 반환 시점이 다르다. Device에서 host로 복사할 때는 복사가 끝난 뒤 반환한다. 전송 방향과 메모리 종류를 함께 확인한다.
+
+NVIDIA GPU를 사용하는 AI 프레임워크는 다음 라이브러리로 자주 쓰는 연산과 통신을 처리할 수 있다.
+
+| 라이브러리 | 역할 |
+| --- | --- |
+| cuBLAS | CUDA runtime 위에 구현한 BLAS(기본 선형대수 연산). GEMM 전용 경량 API인 cuBLASLt를 함께 제공한다 |
+| cuDNN | 심층 신경망 연산의 primitive. scaled dot-product attention, convolution, 행렬 곱, normalization, softmax와 pooling 등을 조정된 구현으로 제공한다 |
+| NCCL | GPU 사이 통신. AllReduce, Broadcast, Reduce, AllGather, ReduceScatter 같은 collective와 point-to-point send/receive를 노드 안팎에서 PCIe, NVLink, InfiniBand Verbs와 IP socket 위로 수행한다 |
+
+PyTorch 2.14 문서 기준으로 GPU 장치를 별도로 지정하지 않은 CUDA tensor 할당은 현재 선택된 GPU를 사용한다. CPU tensor는 `.to("cuda")`나 `.cuda()`로 GPU에 복사한다. GPU 연산은 기본적으로 비동기이며, 기본 복사 동작에서는 PyTorch가 필요한 동기화를 수행한다. `non_blocking=True`와 별도 stream을 쓰면 완료와 의존성을 직접 확인해야 한다. cuDNN은 지원되는 CUDA convolution 등에 쓰인다. 실험적 API인 `torch.backends.cuda.preferred_blas_library`로 cuBLAS와 cuBLASLt의 선호도를 정할 수 있지만, 선택한 라이브러리가 연산을 지원하지 않으면 다른 라이브러리를 쓸 수 있다. CUDA GPU의 분산 학습에는 NCCL backend를 권장한다.
+
+ROCm용 PyTorch는 기존 코드 이식을 쉽게 하려고 `torch.cuda` 인터페이스를 그대로 재사용한다. 장치 이름 `cuda`를 쓴 코드도 AMD GPU에서 거의 수정 없이 돌 수 있으므로 코드의 장치 이름만으로 NVIDIA 전용인지 판단하지 않는다. 다만 ROCm에서 `torch.distributed`는 nccl과 gloo backend만 지원하는 등 문서에 적힌 차이가 있다. 가속기를 고를 때는 칩 성능과 함께 쓰려는 프레임워크, 라이브러리와 통신 backend의 지원 범위를 확인한다(적용 제안).
 
 ### 워프와 분기 발산
 
@@ -242,6 +260,17 @@ Slurm 관리 문서 기준, `/var/log/provision/provisioning.log`에 기록한 �
 - [Karpenter, Scheduling](https://karpenter.sh/docs/concepts/scheduling/)
 - [cuda-checkpoint: CUDA checkpoint and restore utility — NVIDIA](https://github.com/NVIDIA/cuda-checkpoint)
 - [NVIDIA CUDA, CUDA C++ Best Practices Guide](https://docs.nvidia.com/cuda/cuda-c-best-practices-guide/index.html)
+- [NVIDIA CUDA, CUDA Programming Guide: CUDA Programming Model](https://docs.nvidia.com/cuda/cuda-programming-guide/01-introduction/programming-model.html) — 13.4, host와 device, kernel 실행 모델
+- [NVIDIA CUDA Runtime API 13.4, API Synchronization behavior](https://docs.nvidia.com/cuda/cuda-runtime-api/api-sync-behavior.html) — 복사 방향과 메모리 종류에 따른 호스트 동기화 경계
+- [NVIDIA CUDA, CUDA Programming Guide: Intro to CUDA C++](https://docs.nvidia.com/cuda/cuda-programming-guide/02-basics/intro-to-cuda-cpp.html) — kernel launch의 비동기성과 `cudaMemcpy`
+- [NVIDIA CUDA, cuBLAS](https://docs.nvidia.com/cuda/cublas/index.html)
+- [NVIDIA cuDNN](https://docs.nvidia.com/deeplearning/cudnn/latest/index.html)
+- [NVIDIA NCCL, Overview of NCCL](https://docs.nvidia.com/deeplearning/nccl/user-guide/docs/overview.html)
+- [PyTorch 2.14, CUDA semantics](https://docs.pytorch.org/docs/2.14/notes/cuda.html)
+- [PyTorch 2.14, torch.backends](https://docs.pytorch.org/docs/2.14/backends.html)
+- [PyTorch 2.14, Reproducibility](https://docs.pytorch.org/docs/2.14/notes/randomness.html)
+- [PyTorch 2.14, Distributed communication package](https://docs.pytorch.org/docs/2.14/distributed.html)
+- [PyTorch 2.14, HIP (ROCm) semantics](https://docs.pytorch.org/docs/2.14/notes/hip.html)
 - [NVIDIA, H100 GPU Product Specifications](https://www.nvidia.com/en-us/data-center/h100/)
 - [NVIDIA DGX H100/H200 User Guide, Introduction to NVIDIA DGX H100/H200 Systems](https://docs.nvidia.com/dgx/dgxh100-user-guide/introduction-to-dgxh100.html)
 - [NVIDIA, System Management Interface](https://docs.nvidia.com/deploy/nvidia-smi/index.html)

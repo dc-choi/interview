@@ -12,6 +12,7 @@ aliases: ["Graph Algorithms and Optimization", "그래프 알고리즘과 최적
 - [[Graph-Traversal-and-Shortest-Path|그래프 탐색과 최단 경로]]: adjacency list와 matrix 표현 선택, DFS/BFS와 0-1 BFS, 재귀 DFS의 방문 검사 위치와 값 반환 DFS, Dijkstra, Bellman-Ford, Floyd-Warshall과 경로 복원
 - [[Graph-Traversal-and-Shortest-Path-Grid-BFS|grid BFS 패턴]]: 정석 틀과 흔한 실수, 거리 순서, 영역 세기, multi-source와 두 종류 시작점, 1차원 상태 BFS, 칸 비용이 다른 grid의 Dijkstra, queue와 stack 교체, 영역 번호와 크기 표, 턴 단위 BFS와 parity 압축, 좌표를 빈틈 없는 정수 번호로, 격자가 바뀌는 시뮬레이션
 - [[Graph-Traversal-and-Shortest-Path-Variants|최단 경로 변형 패턴]]: 역방향 그래프 Dijkstra와 앞뒤로 닿는 정점 수, (정점, 상태) Dijkstra와 가중치 스케일링, parity로 특정 간선 통과 판별, minimax(병목) Dijkstra와 추이 폐쇄, 최단 경로 간선을 뺀 재탐색, Bellman-Ford 무한 이익 판정, A*
+- [[IDA-Star-Pattern-Database|IDA*와 패턴 데이터베이스]]: 루빅스 큐브의 상태 공간, 탐욕법의 한계, 깊이 우선으로 f 한계를 늘리는 IDA*, 부분 문제 거리 표의 최댓값 heuristic, Kociemba 2단계 알고리즘과 로봇 기록
 - [[Topological-Sort|위상 정렬]]: DAG, Kahn 알고리즘, 결과 길이로 사이클 판정, 사전순 최소 순서
 - [[Contraction-Hierarchies|축약 계층과 도로망 최단 경로]]: shortcut, 순위 기반 질의, CH와 CCH의 가중치 갱신 경계
 - [[Graph-Optimization-Algorithms|Greedy, 최소 신장 트리와 최대 유량]]: greedy 정당성 증명(exchange argument, stays-ahead, cut property, matroid), interval scheduling과 오답 기준, Prim과 Kruskal, Union-Find 활용, Ford-Fulkerson 최대 유량
