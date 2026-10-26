@@ -22,6 +22,14 @@ Aside의 `Queue`는 현재 실행 뒤에 새 메시지를 적용하고, `Steer`�
 
 ## 파일 권한과 계정 사용 권한을 따로 확인한다
 
+### 작업 공간 분리와 로그인 공유
+
+2026-10-26에 확인한 ego(lite)의 제품 설명에서 `Space`는 에이전트가 별도 탭 영역에서 작업하는 공간이다. 사용자가 넘겨주지 않은 탭을 건드리지 않는 작업 분리와, 웹사이트 로그인 상태를 공유하는 것은 함께 성립한다. **별도 작업 공간을 별도 계정이나 권한으로 해석하지 않는다.** 실행 전에 대상 사이트의 현재 계정을 확인하고, 조회와 변경의 허용 범위를 따로 정한다(운영 제안).
+
+ego(lite)는 Chromium 기반이며 엔진 안에서 semantic snapshot을 구성한다. 이를 페이지 렌더링을 하지 않는 제품이라는 뜻으로 확대하지 않는다. 이 설명만으로 특정 업무의 속도나 토큰 절감량을 보장할 수도 없다. 대표 작업의 성공 조건, 재시도 횟수와 전체 비용을 같은 조건에서 측정한다(검증 제안).
+
+### 파일 접근 모드와 도구 권한
+
 2026-10-22 확인한 Aside의 세션 모드는 다음과 같다.
 
 | 모드 | 문서에 명시된 범위 |
@@ -50,6 +58,8 @@ Aside의 작업 기록과 산출물은 로컬에 저장되지만, hosted model�
 
 따라서 로컬 우선이라는 설명을 전체 작업의 무전송 보장으로 해석하지 않는다. 선택한 모델 제공자, 전달할 자료와 활성화된 동기화 기능을 함께 확인한다. 이 설명은 공개 정책의 데이터 흐름 범위이며 네트워크 패킷이나 제품 구현을 직접 감사한 결과가 아니다.
 
+ego(lite)도 비밀번호, 쿠키, 북마크와 방문 기록의 로컬 보관을 설명하면서, 에이전트가 작업하는 페이지 내용은 선택한 모델로 전달된다고 명시한다. 저장 위치와 모델에 제공하는 문맥을 각각 확인해야 한다. 이 추가 내용은 2026-10-26 제품 설명과 대조했으며, 기존 Aside 설명 전체를 다시 검증하지 않아 문서의 `verified_at`은 유지한다.
+
 ## 출처
 
 - [Aside Help Center, Run tasks](https://docs.aside.com/help/tasks)
@@ -58,6 +68,7 @@ Aside의 작업 기록과 산출물은 로컬에 저장되지만, hosted model�
 - [Aside Help Center, Use routines](https://docs.aside.com/help/automation)
 - [Aside Help Center, Manage memory](https://docs.aside.com/help/memory)
 - [Privacy Policy — Aside](https://aside.com/policy/privacy)
+- [Browser automation and FAQ — ego(lite)](https://lite.ego.app/)
 
 ## 관련 문서
 

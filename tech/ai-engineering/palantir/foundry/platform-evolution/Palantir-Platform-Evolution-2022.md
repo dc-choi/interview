@@ -27,7 +27,13 @@ Map/heatmap/embedded row count, null coloring과 property-card link filter 수�
 
 Workshop object table에서 searchable render hint가 꺼진 numeric property는 정렬할 수 없게 고쳐졌다(2022-10-10, 제목은 Sorting requires the field to be indexed for search). 현행 render hint 문서는 render hint가 property 사용 정보를 Object Storage v1(Phonograph)과 플랫폼의 사용자 애플리케이션에 전달한다고 설명하고 Object Storage v2는 따로 다루지 않으며, numeric과 date property는 항상 정렬된다(always sortable)고 적으면서 Sortable은 Searchable과 함께 선택해야 하고, 재색인 성능을 높이려면 앱에서 검색이나 정렬에 쓰지 않을 property의 Searchable을 끄라고 안내한다. Object Storage v1 object type의 같은 화면에서 numeric property를 정렬할 수 없으면 데이터보다 Searchable 설정을 먼저 확인하고, string property를 정렬할 수 없으면 Searchable과 Sortable을 함께 확인한다(적용 제안). Object Storage v2에서 같은 의존이 있는지는 확인하지 못했다. 현행 render hint의 의미는 [[Palantir-Object-Display-and-Index-Hints]]에서 확인한다.
 
-Quiver는 object set에서 object/series/property로 이동하고, transform table과 time series를 양방향 변환하며 event/indicator/range/linear aggregation을 확대했다. 특정 data scale/structure에서 불가능한 다음 동작을 숨기지 않고 disabled로 표시한다. Array parameter를 Functions/Actions에 전달하는 지원과 외부 앱으로 object set을 보내는 기능은 원천 객체 권한을 함께 가져가는 보장이 아니다.
+Quiver는 object set에서 object/series/property로 이동하고, transform table과 time series를 양방향 변환하며 event/indicator/range/linear aggregation을 확대했다. 특정 data scale/structure에서 불가능한 다음 동작을 숨기지 않고 disabled로 표시한다. Array parameter를 Functions/Actions에 전달하는 지원도 추가됐다. 2022-10-31의 앱 간 object set 열기는 외부 서비스로 반출하는 기능이 아니라, Carbon에 게시된 Foundry maps, Workshop, Vertex와 Quiver dashboard 같은 Foundry 애플리케이션으로 여는 기능이다. Object set을 먼저 export하거나 영속화하지 않아도 된다. 이 범위는 2026-10-26 확인한 현행 Quiver 문서와도 일치한다. 호출 대상과 객체 접근 권한은 별도 확인 항목으로 둔다(운영 제안).
+
+### 로딩 표시와 데이터 접근 실패를 구분하기
+
+2022년 Contour 수정 기록에는 접근이 제한된 analysis의 무한 로딩 수정(8월 15일), 시작 dataset의 조회 권한이 없을 때 path 미리보기가 로딩에 머무르던 문제 수정(9월 29일)이 있다. 10월 10일에는 transaction이 하나도 없는 dataset branch가 선택 메뉴에 나타나던 문제를 수정했다. 로딩 지속이나 메뉴 표시만으로 데이터가 존재하거나 조회 권한이 있다고 판단하지 않는다. 권한, 입력 branch의 transaction과 화면 오류를 나누어 확인한다(진단 제안).
+
+이 절의 세 Contour 항목은 2026-10-25 수집한 공식 2022 release notes 본문을 2026-10-26 대조한 과거 수정 기록이다. 현재 배포에서 같은 증상이 재현되는지는 검사하지 않았다. 웹 조회에서는 release 목록이 로딩 상태로만 반환되어 새 목록 본문을 재확인하지 못했고, 기존 내용 전체도 재검증하지 않아 `verified_at`은 유지한다.
 
 ## 모델링과 개발 환경
 
@@ -44,6 +50,7 @@ Workshop variable transform/list/filter promotion, chart와 object-table progres
 - [Palantir, Checkpoint core concepts](https://www.palantir.com/docs/foundry/checkpoints/core-concepts)
 - [Palantir, Configure checkpoints](https://www.palantir.com/docs/foundry/checkpoints/configure-checkpoints)
 - [Palantir, Render hints](https://www.palantir.com/docs/foundry/object-link-types/metadata-render-hints)
+- [Palantir, Quiver: Export an object set](https://www.palantir.com/docs/foundry/quiver/objects-import-export)
 
 ## 관련 문서
 

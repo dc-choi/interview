@@ -33,6 +33,16 @@ aliases: ["Agent Context Budget", "컨텍스트 예산", "Context Budget", "에�
 - 도구 응답 크기는 **서버 hard cap**으로 제한 — 모델의 선의에 맡기지 않는다
 - 정적 참조만 남으므로 프롬프트 캐싱과도 상충하지 않음
 
+### 잘린 출력에도 원본으로 돌아가는 경로를 남긴다
+
+도구 응답에 크기 상한만 두면 모델이 일부 결과를 전체 결과로 오인할 수 있다. 다음은 출력량을 줄이면서 추가 확인 경로를 보존하는 설계 패턴이다.
+
+1. 긴 출력은 제한된 미리보기로 반환하고, 일부가 생략됐음을 명시한다.
+2. 전체 출력은 작업에 허용된 저장 위치에 보관하고 참조 경로를 함께 반환한다.
+3. 추가 확인은 전체 파일 재주입 대신 `offset`과 `limit`을 받는 범위 조회나 필요한 문자열 검색으로 수행한다.
+
+이 방식의 목적은 모든 원문을 매 턴 전달하는 비용을 줄이면서, 누락된 부분을 확인할 수 있게 하는 것이다. 원문을 저장했다는 사실만으로 모델이 이를 검토했다고 계산하지 않는다. 이 절은 2026-10-26 공개 하네스 설계 자료의 출력 절단과 재조회 패턴을 대조했으며, 특정 제품의 출력 상한이나 절감률을 보장하지 않는다.
+
 ## 패턴 2 — 목록 컨텍스트: Hybrid
 
 작업 대상과 전체 목록을 분리한다.
@@ -81,6 +91,7 @@ Q. 모델이 알아서 조금만 읽게 프롬프트로 지시하면?
 - [사내 AI 에이전트 개선기: AI Agent의 Context 비용을 줄인 3가지 설계 패턴 — 채널톡 기술 블로그](https://tech.channel.io/kr/articles/b085ab62)
 - [Anthropic, Token counting](https://platform.claude.com/docs/en/build-with-claude/token-counting)
 - [Anthropic, Prompt caching](https://platform.claude.com/docs/en/build-with-claude/prompt-caching)
+- [Harness Engineering 101: Context Is a Budget, Not a Bag — Isuru Maduranga](https://github.com/IsuruMaduranga/harness-engineering-101/blob/main/src/06-context-is-a-budget.md)
 
 ## 관련 문서
 
