@@ -48,6 +48,17 @@ us-east-1의 S3 Standard 기준이며 단가는 2026-10-12 게시 AWS Price List
 - **견적 링크의 공유 범위를 정한다:** 공개 계산기의 공유 링크는 공개 서버에 저장되므로 고객 구성과 규모가 드러나는 견적은 전달 범위를 정해 공유한다(운영 제안).
 - **견적은 청구가 아니다:** 진행 중인 달의 Bills와 Cost Explorer 금액도 추정치다. 확정 시점은 [[AWS-Pricing#월 청구서 확정과 결제 시점|월 청구서 확정]]을 따른다.
 
+## WAF 비용: 청구 기준선과 요청 지표를 나눠 본다
+
+이 절은 2026-10-27 AWS WAF 가격표, 지표와 액션 문서, Cost Management 문서를 대조한 부분 보강이다. 앞의 S3 단가와 계산기 정책을 이날 다시 검증했다는 뜻은 아니다.
+
+1. **비용을 과금 차원으로 분해한다.** 종량제에서는 web ACL, 규칙, 요청 검사와 선택한 유료 보호 기능을 나눠 추정한다. 초과 WCU와 본문 검사 크기 같은 추가 요금도 확인한다. Cost Explorer에서 서비스를 AWS WAF로 좁히고 Usage type과 Linked account로 비용 원인을 찾는다. WAF 로그 처리 비용은 CloudWatch에 청구될 수 있으므로 WAF 서비스 합계만으로 관측 비용까지 포함했다고 판단하지 않는다. Shield Advanced나 CloudFront 요금제의 포함 범위는 별도로 확인한다.
+2. **Count를 무료 검사나 독립 요청으로 세지 않는다.** Count는 평가를 끝내지 않으므로 같은 요청이 Count 규칙에 매칭된 뒤 최종 Allow나 Block으로 처리될 수 있다. 따라서 규칙별 `CountedRequests`를 `AllowedRequests`, `BlockedRequests`에 더해 전체 요청량으로 쓰면 중복될 수 있다. 지표의 web ACL, rule, rule group과 label 차원을 구분하고, metric math 비용은 청구 명세와 대조할 추정치로 둔다.
+3. **차단 효과와 과금 감소를 구분한다.** Count를 Block으로 바꿔도 이미 WAF에 도달한 요청의 기본 검사 비용이 사라지는 것은 아니다. 앞단 차단은 뒤쪽 유료 rule group까지 도달하는 검사량과 origin 부하를 줄이는 데 쓰며, 요청 자체가 줄었는지와 유료 검사만 줄었는지를 따로 측정한다. 검사 대상과 규칙 순서는 [[WAF-Bot-Control#비용 관리|Bot Control 비용 관리]]를 따른다.
+4. **빠른 트래픽 신호와 늦은 비용 신호를 결합한다.** WAF는 CloudWatch 지표를 1분마다 보고한다. Cost Anomaly Detection은 청구 데이터 처리 뒤 하루 약 세 번 실행되고, Cost Explorer 데이터 지연 때문에 사용 후 탐지까지 최대 24시간 걸릴 수 있다. 새 서비스는 10일의 사용 이력이 필요하다. 트래픽 경보, [[Budget-Alert|예산 알림]]과 [[Cost-Anomaly|비용 이상 탐지]]를 같은 실시간 차단 장치로 취급하지 않는다.
+
+운영 점검에서는 상위 IP와 URI를 비용 조사 단서로 쓰되, 비중이나 무매칭 기간 하나만으로 차단하거나 규칙을 삭제하지 않는다. 정상 요청의 영향, 보호 목적과 오탐을 확인한 뒤 변경하고 되돌릴 조건을 둔다. 이는 위 동작을 적용한 운영 제안이며 특정 임계값이나 절감률을 보장하지 않는다.
+
 ## 면접 체크포인트
 
 - 공개 계산기와 콘솔 계산기의 차이 (계정, 기존 사용량 가져오기, 할인과 약정 반영)
@@ -56,6 +67,11 @@ us-east-1의 S3 Standard 기준이며 단가는 2026-10-12 게시 AWS Price List
 
 ## 출처
 
+- [AWS WAF Pricing — AWS](https://aws.amazon.com/waf/pricing/) — WAF 과금 차원과 CloudWatch 로그 비용
+- [AWS WAF, AWS WAF metrics and dimensions](https://docs.aws.amazon.com/waf/latest/developerguide/waf-metrics.html) — 지표 주기와 집계 차원
+- [AWS WAF, Using rule actions in AWS WAF](https://docs.aws.amazon.com/waf/latest/developerguide/waf-rule-action.html) — Count의 비종료 평가와 Block의 종료 평가
+- [AWS Cost Management, Filtering the data that you want to view](https://docs.aws.amazon.com/cost-management/latest/userguide/ce-filtering.html)
+- [AWS Cost Management, Detecting unusual spend with AWS Cost Anomaly Detection](https://docs.aws.amazon.com/cost-management/latest/userguide/manage-ad.html) — 탐지 주기, 데이터 지연과 새 서비스의 이력 요건
 - [AWS Pricing Calculator User Guide, What is AWS Pricing Calculator?](https://docs.aws.amazon.com/pricing-calculator/latest/userguide/what-is-pricing-calculator.html)
 - [AWS Pricing Calculator User Guide, Sharing your estimate](https://docs.aws.amazon.com/pricing-calculator/latest/userguide/save-share-estimate.html) — 공개 서버 저장, 링크 유효 기간과 수정 시 새 링크
 - [AWS Cost Management, Generating estimates with Pricing Calculator](https://docs.aws.amazon.com/cost-management/latest/userguide/pricing-calculator.html) — workload estimate와 bill estimate, 단가 유형과 요금

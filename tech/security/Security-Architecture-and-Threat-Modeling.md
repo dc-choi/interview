@@ -41,6 +41,20 @@ NIST SP 800-207은 네트워크 위치나 자산 소유만으로 사용자와 �
 
 심층 방어를 적용할 때는 한 통제가 실패한 뒤 다른 통제가 어떤 경로를 막는지 검토한다. 방어 장비 수만 세지 않고 공유 계정이나 우회 경로처럼 함께 실패할 조건을 찾는다. 네트워크 분할도 구역 사이의 허용 경로와 권한을 함께 확인하는 대상으로 둔다. 구역을 나눴다는 사실만으로 침해 확산 차단을 보장하지 않는다.
 
+## 통제 목록을 보호 목표와 검증 근거에 연결한다
+
+다음은 2026-10-27 NIST CSF 2.0을 대조해 만든 설계 점검 예시다. 다섯 행은 설명을 위한 묶음이며 표준이 정한 필수 제품 구성이나 침해 방지 보증이 아니다. CSF는 달성할 보안 결과를 분류하며 구현 방법 하나를 강제하지 않는다.
+
+| 통제 영역 | 확인할 결과 | CSF 연결 |
+| --- | --- | --- |
+| 경계 보안 | 외부에서 허용한 진입점으로만 접근하는지, 별도 공개 경로가 있는지 확인한다 | PR.IR-01, 비인가 논리 접근과 사용으로부터 네트워크 및 환경 보호 |
+| 네트워크 분할 | 침해된 구역에서 다른 구역으로 갈 수 있는 경로와 차단 시험을 확인한다 | PR.IR-01을 구역 사이 경로에 적용한 예시 |
+| 신원과 접근 관리 | 주체별 권한을 정의하고 실제로 강제하며 정기 검토한다 | PR.AA-05, 최소 권한과 직무 분리 |
+| 데이터 보호 | 저장, 전송과 사용 중 데이터의 보호 및 백업 복구 시험을 확인한다 | PR.DS-01/02/10/11 |
+| 모니터링과 분석 | 네트워크 등의 이상 신호를 수집하고 여러 출처를 연결해 사고 여부를 판단한다 | DE.CM, DE.AE-03 |
+
+암호화나 로그 수집의 도입 여부와 실제 보호 결과를 구분한다. 예를 들어 암호화된 DB에서도 과도한 읽기 권한으로 데이터가 노출될 수 있고, 로그가 모여도 대응 담당자가 없으면 조치로 이어지지 않을 수 있다. 통제마다 담당자, 실패 시 영향과 확인 근거를 연결하는 것이 적용 방법이다. 탐지 이후 대응과 복구는 [[Security-Incident-Response|보안 사고 대응]]으로 이어서 설계한다.
+
 ## 물리 접근으로 우회하는 경로도 포함한다
 
 디지털 문서의 접근 권한만 모델링하면 같은 정보가 회의에서 말로 전달되거나 화면에 표시되는 경로를 놓친다. 직원 계정 보유, 건물 출입과 특정 회의의 정보 접근을 각각 다른 권한으로 모델링한다.
@@ -59,6 +73,7 @@ NIST SP 800-207은 네트워크 위치나 자산 소유만으로 사용자와 �
 
 ## 출처
 
+- [NIST, The NIST Cybersecurity Framework (CSF) 2.0](https://nvlpubs.nist.gov/nistpubs/CSWP/NIST.CSWP.29.pdf) — 통제 영역 점검표의 결과 분류와 구현 방법 비강제 원칙
 - [Saudi National Arrested for Installing Surreptitious Audio Recording Device at OpenAI — U.S. Department of Justice](https://www.justice.gov/opa/pr/saudi-national-arrested-installing-surreptitious-audio-recording-device-openai) — 2026-10-13 발표, 2026-10-24 열람. 혐의와 공개 증거 설명만 사용
 - [OWASP, Threat Modeling Cheat Sheet](https://cheatsheetseries.owasp.org/cheatsheets/Threat_Modeling_Cheat_Sheet.html)
 - [NIST, SP 800-207: Zero Trust Architecture](https://csrc.nist.gov/pubs/sp/800/207/final)
