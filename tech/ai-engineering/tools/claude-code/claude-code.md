@@ -20,4 +20,5 @@ AI 코딩 에이전트 Claude Code를 실무에 태우는 방법 — 기초 운�
 ## 레퍼런스 (찾아보기)
 
 - [x] [[Claude-Design-Handoff|AI 디자인과 구현 인계]] — 디자인 시스템, 생성 UI의 기본값 수렴과 Impeccable 탐지, 시안 선택, 내보내기와 실제 동작 검증
+- [x] [[Claude-Design-Handoff-Resources|생성 UI 외부 자원과 납품 전 출처 확인]] — 지침 스킬과 스킬 카탈로그, 컴포넌트, 아이콘, 글자 효과, 시각 캔버스와 레퍼런스 갤러리의 제공 방식, 라이선스와 설치 신뢰 경계, 고객 납품 전 고지 보존
 - [x] [[Claude-Code-Reference|레퍼런스 모음 (reference/ 서브폴더) — 설정과 권한, 확장 메커니즘, 동적 워크플로우, 운영, Bedrock 배포, 클라우드 실행과 보안, 내부 구조]]

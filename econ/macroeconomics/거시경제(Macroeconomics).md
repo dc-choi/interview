@@ -26,6 +26,7 @@ aliases: ["거시경제(Macroeconomics)", "Macroeconomics Map"]
 ### 3. 돈과 정책
 - [[Interest-Rates-Monetary-Policy|금리와 통화정책]] — 중앙은행, 기준금리, 통화량, 양적완화, 전달 시차, 점도표와 정책 결정의 구분 ✅
 - [[Fiscal-Policy|재정정책]] — 정부 지출과 세금, 승수효과, 재정적자와 국가부채, 국채 바이백과 TGA, 구축효과 ✅
+- [[Fiscal-Policy-Transfer-Design|이전지출의 설계와 재원]] — 대상과 자격, 금액과 기간, 지급 수단, 재원과 분담, 평가로 나눠 읽는 틀, 한국 사례인 민생회복 소비쿠폰과 농어촌 기본소득 시범사업, 고대 사료로 본 로마의 곡물 배급 ✅
 
 ### 4. 고용
 - [[Unemployment-Employment|실업과 고용]] — 실업률과 보완 지표, 자연실업률의 추정, 필립스 곡선의 조건과 오쿤의 법칙 ✅

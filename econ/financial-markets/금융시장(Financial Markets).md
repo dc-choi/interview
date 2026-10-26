@@ -18,7 +18,8 @@ aliases: ["금융시장(Financial Markets)", "Financial Markets Map"]
 ### 1. 시스템
 - [[Financial-System-Overview|금융시스템 개관]] — 직접금융과 간접금융, 금융중개, 발행시장과 유통시장, 한국의 예금자보호 범위 ✅
 - [[Market-Stabilization-Mechanisms|시장 안정화 장치]] — 사이드카와 서킷브레이커의 기준, 정지 범위와 해제 조건, 종목별 VI와의 구분 ✅
-- [[Investor-Flows-and-Market-Funds|투자자별 매매동향과 증시 자금]] — 순매수 합계 0의 항등식, 집계 범위와 잠정치, 외국인 순매도와 한국은행 증권투자자금의 차이, 투자자예탁금과 은행 수신 ✅
+- [[Investor-Flows-and-Market-Funds|투자자별 매매동향과 증시 자금]] — 순매수 합계 0의 항등식, 집계 범위와 잠정치, 두 시장의 주문 배분과 최선집행, 외국인 순매도와 한국은행 증권투자자금의 차이, 투자자예탁금과 은행 수신 ✅
+- [[Duplicate-Listing-Regulation|중복상장 규제]] — 2026-08-03 시행 원칙 금지와 예외 허용, 자회사 범위, 모회사 이사회 다섯 의무와 주주동의, 거래소 특례 심사와 제재, 해외 상장 적용, 솔리다임 IPO 검토 중단 사례 ✅
 - [[Virtual-Asset-Exchange-Registration|가상자산사업자 신고 제도]] — 특정금융정보법상 신고와 불수리 사유, 해외 사업자 적용 기준, 미신고 영업 처벌과 앱, 웹 차단, FIU 명단 확인 ✅
 - [[Tokenized-Bonds-and-Wholesale-CBDC|국채 토큰화와 기관용 CBDC]] — DvP와 원자적 결제, 기관용 CBDC와 예금토큰과 스테이블코인의 차이, 한국은행 2027년 실증 계획과 미정 사항 ✅
 - [[Security-Tokens-and-Fractional-Investment|토큰증권과 조각투자]] — 조각투자와 토큰증권의 구분, 비금전신탁 수익증권과 투자계약증권, 증권성 판단, 2022~2026 규제 흐름과 2027-02-04 시행, 분산원장 기능과 전자등록 체계의 경계, 코스콤 공동 플랫폼 사례 ✅

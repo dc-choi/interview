@@ -3,7 +3,7 @@ tags: [ai, design, prototype, claude-code, handoff, frontend, impeccable, licens
 status: done
 verified_at: 2026-10-12
 category: "AI엔지니어링(AIEngineering)"
-aliases: ["Claude Design Handoff", "AI 디자인과 구현 인계", "Impeccable", "AI 디자인 기본값 수렴", "Taste Skill", "생성 UI 외부 자원 출처 확인", "DESIGN.md", "oh-my-design", "AnimateIcons", "Tween UI", "Minimal Gallery", "React Frontend Skills"]
+aliases: ["Claude Design Handoff", "AI 디자인과 구현 인계", "Impeccable", "AI 디자인 기본값 수렴", "DESIGN.md", "oh-my-design"]
 ---
 
 # AI 디자인 시스템과 구현 인계
@@ -20,7 +20,7 @@ AI로 만든 화면을 구현에 넘길 때는 이미지뿐 아니라 디자인 
 
 - **Google Labs 형식:** google-labs-code/design.md는 코딩 에이전트에 시각적 정체성을 설명하는 형식 명세(Apache-2.0)다. 형식 버전은 alpha이고 명세, 토큰 스키마와 CLI가 개발 중이라 형식이 바뀔 수 있다. 파일 맨 위 YAML front matter에 `colors`, `typography`, `rounded`, `spacing`, `components` 같은 디자인 토큰을 두고 이 값을 규범으로 삼는다. Markdown 본문은 그 값이 있는 이유와 적용 방법을 설명하며, `##` 절은 생략할 수 있지만 쓰는 절은 Overview, Colors, Typography, Layout, Elevation & Depth, Shapes, Components, Do's and Don'ts 순서를 따른다.
 - **Google 형식의 CLI:** `npx @google/design.md lint DESIGN.md`는 명세 구조, 정의되지 않은 토큰 참조, 컴포넌트 배경색과 글자색 쌍의 WCAG AA(4.5:1) 대비를 검사해 에이전트가 다룰 수 있는 구조화된 JSON으로 보고한다. `diff`는 두 판의 토큰 단위 변화를 비교하고, `export`는 Tailwind v3 설정 JSON, Tailwind v4 `@theme` CSS와 W3C Design Tokens 형식(`dtcg`)으로 내보내며, `spec`은 에이전트 프롬프트에 넣을 형식 명세를 출력한다. `lint`는 error가 있을 때만 종료 코드 1을 내고 대비 부족(`contrast-ratio`)은 warning 등급이라, `lint`의 종료 코드만 보는 CI 단계는 대비 부족만으로는 실패하지 않는다. 검사 대상은 DESIGN.md 파일이므로 생성된 코드가 그 토큰을 지키는지는 [[Design-System-Lint|디자인 시스템 lint]] 같은 코드 검사로 따로 확인한다.
-- **oh-my-design Core v2:** 아래 외부 자원 절의 oh-my-design이 정한 DESIGN.md Core v2는 초안 상태의 상호운용 계약으로, Google의 공식 형식이나 같은 명세라고 주장하지 않는다. `DESIGN.md`는 YAML front matter로 시작하면 안 되고(MUST NOT), experience부터 governance까지 일곱 개의 고정 앵커를 정해진 순서로 둔다. Google 형식 문서는 호환 입력으로 분류해 가져오지만 작성기는 Core v2만 쓴다.
+- **oh-my-design Core v2:** [[Claude-Design-Handoff-Resources|생성 UI 외부 자원]] 문서에서 다루는 oh-my-design이 정한 DESIGN.md Core v2는 초안 상태의 상호운용 계약으로, Google의 공식 형식이나 같은 명세라고 주장하지 않는다. `DESIGN.md`는 YAML front matter로 시작하면 안 되고(MUST NOT), experience부터 governance까지 일곱 개의 고정 앵커를 정해진 순서로 둔다. Google 형식 문서는 호환 입력으로 분류해 가져오지만 작성기는 Core v2만 쓴다.
 
 적용 제안: 검증기와 내보내기 도구를 고르기 전에 파일이 어느 명세를 따르는지 확인하고, 프로젝트에서 쓸 형식을 에이전트 지시 파일에 적어 둔다.
 
@@ -60,43 +60,7 @@ Impeccable은 지침과 결정적 검사를 묶은 사례다. Paul Bakaus가 Ant
 
 ## 생성 UI를 다듬는 외부 자원과 납품 전 출처 확인
 
-지침 스킬, 코드 작성 스킬, 컴포넌트, 아이콘, 레퍼런스 갤러리와 디자인 시스템 카탈로그는 다듬는 대상이 다르고 출처와 라이선스를 남기는 방법도 다르다. 아래 개수와 라이선스는 2026-10-12에 각 공식 사이트, 저장소와 LICENSE 원문을 대조한 기준이며 바뀔 수 있다.
-
-- **지침 스킬:** Taste Skill의 2026-10-23 README는 저장소에 `design-taste-frontend` 하나를 두고, 기존 스킬은 별도 저장소로 이동하거나 통합했다고 설명한다. 설치는 `npx skills add https://github.com/Leonxlnx/taste-skill --skill "design-taste-frontend"`로 안내하며, 스크립트 실행에는 Node 22 이상과 설치된 Chrome, Edge 또는 Chromium이 필요하다. 이미지 탐색에는 네트워크 접근이 필요하다. 기존 `redesign-existing-projects`는 기본 스킬의 기존 화면 검토 흐름으로 통합됐다. 2026-10-12에 확인한 13개 스킬 묶음, 세 다이얼과 출력 전 체크리스트만으로 현재 v2를 설명하지 않는다. 설치 전 확인은 [[Agent-Skills#설치 경로와 신뢰 — 표면마다 따로, 출처는 먼저|스킬 설치의 신뢰 경계]]를 따른다.
-- **코드 작성 스킬:** 시각 지침이 아니라 코드 작성 지침을 담은 묶음도 있다. React Frontend Skills(MIT)는 React, Next.js, TypeScript, Tailwind, shadcn, TanStack Query, Zod, Vitest, Playwright 등 18개 스킬을 React 19.3 기준으로 묶고, 프로젝트가 다른 버전을 고정했으면 그 버전의 공식 문서를 따르라고 적는다. Claude Code 전용이 아니라 Codex와 Cursor 같은 여러 에이전트를 대상으로 하며, skills CLI의 `-s` 옵션으로 필요한 스킬만 골라 설치할 수 있다. 스킬 파일은 Markdown뿐이고 훅과 스크립트는 없다. 다만 react, nextjs 같은 스킬 본문이 `npx -y @pymodel/react-frontend-skills detect` 같은 동반 CLI 실행을 지시하고 MCP 서버 안내도 `npx -y`를 써서, 원격 패키지를 확인 없이 실행하게 된다. `web-design-guidelines` 스킬은 리뷰마다 커밋으로 고정한 외부 지침을 내려받는다.
-- **컴포넌트:** Colorlib의 Velora UI는 React, Tailwind CSS 4와 shadcn/ui용 애니메이션 컴포넌트 100개와 블록 31개를 MIT로 공개한다. README 기준 100개 중 51개는 런타임 의존성이 없고 나머지는 Motion만 쓴다. 출시 예정인 유료 Pro 등급은 가격표에 MIT가 아닌 Commercial로 표시되므로 어느 등급에서 받은 항목인지 함께 기록한다. Tween UI(StaticMania, MIT)는 GSAP과 CSS로 움직이는 React 19, Tailwind v4용 컴포넌트 23개와 블록 33개를 패키지 없이 shadcn 레지스트리로 배포하며(README는 아직 16개, 20개로 적는다), 항목에 따라 gsap, @gsap/react, swiper 같은 의존성이 함께 들어온다. SHIUI는 React 요소 112개와 Astro 블록 24개를 소스 복사 방식으로 제공한다. 블록은 Astro라 React 프로젝트에 바로 넣을 수 없다. SHIUI는 README와 package.json에 ISC를 선언했지만 저장소에 LICENSE 파일이 없고 두 파일에 저작권자 표기도 없다.
-- **아이콘:** heroicons-animated는 Tailwind Labs의 Heroicons를 Motion으로 움직이게 만든 개인 프로젝트(Aniket Pawar, MIT)로 316개를 표시한다. 이 저장소의 LICENSE에는 Aniket Pawar의 저작권 고지만 있으므로 원본 Heroicons LICENSE의 고지(Copyright (c) Tailwind Labs, Inc.)도 함께 보존하는 편이 안전하다. 2026-10-12 확인한 이전 Taste Skill 기본 스킬은 아이콘 허용 목록을 Phosphor, HugeIcons, Radix, Tabler로 두고 프로젝트마다 한 계열만 쓰라고 지시하므로, Heroicons 계열을 쓸 프로젝트라면 그 선택을 프로젝트 지침에 적어 둔다. 당시 같은 저장소의 redesign 스킬은 Phosphor, Heroicons나 자체 세트를 권해 두 스킬의 지시가 다르다. AnimateIcons(Avijit Dey, MIT)는 Lucide 스타일 669개와 Hugeicons 스타일 501개, 모두 1170개의 움직이는 React 아이콘을 npm 패키지(`@animateicons/react`), shadcn 레지스트리와 자체 CLI로 배포한다. 저장소의 THIRD_PARTY_NOTICES는 아이콘 모양이 Lucide(ISC), Feather(MIT), Hugeicons(MIT)에 기반하고 그 라이선스가 아이콘 복제물에 저작권 고지를 남기도록 요구한다고 밝힌다. npm 패키지에는 LICENSE와 THIRD_PARTY_NOTICES가 들어 있지만 shadcn 레지스트리로 받은 소스에는 라이선스 헤더가 없다.
-- **레퍼런스 갤러리:** refs.gallery는 영상 설명 기준 사이트 레퍼런스 모음이며, 2026-10-12에는 HTTP 429로 페이지가 열리지 않아 내용과 이용 조건을 확인하지 못했다. Minimal Gallery는 2013년부터 운영된 웹사이트 디자인 영감 모음으로 2026년에 인수됐다. 이용 조건(2026-05 표시)에 따르면 갤러리는 소개한 사이트의 소유권을 주장하지 않고 스크린샷과 썸네일을 자기 소유로 둔다. 열람과 북마크 같은 제한된 개인 이용만 허용하고, 상업적이거나 공개적인 목적의 복제와 배포에는 사전 서면 허락을 요구한다. 레퍼런스 갤러리를 쓸 때는 갤러리 이용 조건이 원래 사이트의 이미지, 문구와 일러스트 사용까지 허락한다고 가정하지 않고, 위계, 섹션 순서와 정보 밀도를 참고한 뒤 표면 시각은 브리프에 맞게 새로 만든다([[AI-Work-Tool-Selection|참고와 복제의 구분]]).
-- **디자인 시스템 카탈로그:** oh-my-design은 실제 회사의 디자인 시스템을 코딩 에이전트용 DESIGN.md로 다시 쓴 카탈로그다. 2026-10-12 사이트 기준 18개국 521개 회사를 싣고 근거 수준으로 등급을 나눈다. 사이트 정의로는 verified 299개는 모든 값이 운영 중인 제품이나 공식 문서의 캡처로 추적되고, partial 109개는 캡처했지만 일부 값이나 출처가 빠졌거나 오래됐으며, legacy 113개는 근거 캡처 이전에 작성돼 증거가 아닌 출발점이다. `npx oh-my-design-cli@latest`는 Claude Code, Codex, Cursor와 OpenCode에 스킬 28개와 오프라인 카탈로그를 설치한다. README는 기본 설치가 감지된 모든 에이전트를 대상으로 한다고 적고, 비대화형으로 한 채널만 설치하려면 `install-skills --agent <이름> --all` 하위 명령을 안내한다. README 기준 Claude Code에는 스킬과 하위 에이전트 20개, 훅이 들어가고, Codex와 OpenCode에도 하위 에이전트 역할이 들어가며, Cursor에는 하위 에이전트와 훅 없이 호환되는 스킬 27개가 들어간다. 설치 전 확인은 [[Agent-Skills#설치 경로와 신뢰 — 표면마다 따로, 출처는 먼저|스킬 설치의 신뢰 경계]]를 따른다. 저장소는 MIT이며 README는 레퍼런스가 각 회사에 속하고 교육용 참고로 재현했다고 밝힌다.
-
-### Taste Skill v2의 방향 선택과 검수
-
-2026-10-23 공개 README와 스킬 본문 기준이다. 다음은 스킬이 에이전트에 지시하는 절차이며, 이 문서에서 로컬 실행이나 디자인 품질을 재현한 결과가 아니다.
-
-1. 브리프와 고객 고유의 자료에서 화면의 주제를 정한다. 스크립트가 제시한 디자인 방향 후보 중 하나를 고르고, 공개 이미지와 영상을 사용하면 출처를 남긴다.
-2. `lint.mjs`로 소스 패턴을 검사하고, `inspect.mjs`로 실제 브라우저의 1440, 768, 390픽셀 너비에서 대비, 넘침과 레이아웃 등을 검사한다. 결과 스크린샷은 `.taste-skill/inspect/`에 남기도록 되어 있다.
-3. 검사 통과 뒤에도 스크린샷을 보고 주요 문제 세 가지를 고치는 검토를 최대 세 차례 수행하도록 한다. 기계적 검사에서 금지 패턴을 찾지 못했다는 사실과 화면의 품질은 별개다. README의 v2.1은 앱 화면에 별도 흐름과 `inspect.mjs --app`을 안내한다.
-
-납품 적용 제안: 대상 사용자, 실제 문구와 목적을 먼저 전달하고, 최종 화면의 가독성, 버튼 동작과 상태별 표시를 별도로 확인한다. 다른 자원의 기존 날짜와 라이선스까지 재검증한 것은 아니므로 문서의 `verified_at`은 유지한다.
-
-### 컴포넌트와 글꼴 탐색 및 출처 인계
-
-컴포넌트와 글꼴을 찾는 경로도 구분한다. 다음 세 자원의 역할과 제공 방식은 2026-10-21 공식 페이지를 대조했다. 기존 자원의 개수와 라이선스를 다시 검증한 것은 아니므로 문서의 기존 `verified_at`은 유지한다.
-
-- **21st:** 여러 제작자의 React 컴포넌트, 템플릿과 테마를 모은 레지스트리다. 공식 안내는 컴포넌트의 프롬프트를 코딩 도구에 전달하거나 shadcn CLI로 소스를 프로젝트에 추가하는 방식을 제공한다. 라이브러리 하나를 의존성으로 가져오는 것과 소스를 복사해 직접 수정하는 것을 구분한다.
-- **affectUI:** 채팅 입력, 인용 답변과 도구 호출 카드 같은 React UI를 제공한다. 컴포넌트는 스타일을 포함한 TSX 파일로 추가하며, 문서는 용도, props, 키보드와 접근성 동작을 설명한다. Pro 항목의 미리보기와 문서는 공개돼도 소스 접근에는 Pro가 필요하다. MCP는 검색, 문서 조회와 소스 조회를 나누어 제공한다.
-- **Best Free Fonts:** 글꼴을 serif, sans serif, display, script와 monospace로 분류한 카탈로그다. 컴포넌트 동작을 가져오는 도구가 아니라 타이포그래피 후보를 찾는 경로로 쓴다.
-
-적용 제안: 화면의 부족한 부분이 정보 위계인지, 컴포넌트 상태인지, 글꼴인지 먼저 정하고 자원을 고른다. 카탈로그의 소개 문구만으로 개별 자산과 의존성의 사용 조건이 확인됐다고 보지 않는다. affectUI의 승인 카드나 도구 호출 카드를 배치한 사실도 실제 승인 정책, 도구 실행이나 데이터 연동을 구현한 증거가 아니다.
-
-고객 사이트로 납품할 때는 다음을 확인한다. 원문 조건을 납품에 적용한 제안이며 법률 판단을 대신하지 않는다. 라이선스별 조건은 [[Open-Source-License-Review|오픈소스 라이선스 검토]], 인계 범위는 [[Dev-Outsourcing-Engagement|개발 외주의 계약과 수주]]를 따른다.
-
-- shadcn 레지스트리 방식은 npm 패키지 대신 컴포넌트 소스를 프로젝트에 넣는다. 2026-10-12에 확인한 Velora UI의 marquee와 heroicons-animated의 academic-cap 항목 소스에는 라이선스 주석이 없고, 이렇게 받은 컴포넌트 자체는 패키지 의존성 목록에 나타나지 않는다. 항목이 선언한 `motion` 같은 npm 의존성만 추가된다. Velora UI README는 shadcn MCP로 에이전트가 이름만으로 컴포넌트를 찾아 설치하는 방법도 안내하므로, 받은 항목, 레지스트리 URL, 받은 날짜와 LICENSE 사본을 인계 자료에 남긴다.
-- Velora UI README의 출처 표기 불필요(no attribution required) 안내와 별개로 MIT LICENSE 원문은 소프트웨어의 모든 복제물 또는 실질적인 부분에 저작권 고지와 허가 고지를 포함하라는 조건을 둔다. 화면의 출처 표기와 소스, 고지 파일의 고지를 구분하고 후자는 지우지 않는다.
-- 원본 아이콘 세트의 라이선스가 고지 보존을 요구하면 파생 프로젝트의 LICENSE만으로 고지가 끝나지 않는다. AnimateIcons를 shadcn으로 받았다면 Lucide(ISC), Feather(MIT), Hugeicons(MIT)의 고지까지 고지 파일에 옮긴다.
-- LICENSE 파일이 없는 SHIUI는 선언된 ISC와 받은 커밋을 기록하거나 작성자에게 확인하고, 바닥글에 들어 있는 견본 저작권 문구(© 2026 SHIUI Press)도 고객 표기로 바꾼다. Tween UI 문서가 납품 전에 바꾸라고 안내하는 샘플 이미지처럼 데모용 사진은 고객 자산으로 교체한다.
-- 스킬의 라이선스와 스킬이 쓰게 하는 패키지의 라이선스는 별개다. 2026-10-12 확인한 이전 Taste Skill 기본 스킬은 고정(pin)과 스크럽(scrub) 같은 스크롤 연출에 GSAP과 ScrollTrigger 코드 골격을 제시하는데, GSAP은 MIT가 아닌 Webflow의 Standard No Charge GSAP License를 따른다. 이 라이선스는 상업적 사용을 허용하지만 서면 동의 없이 Webflow의 시각적 애니메이션 제작 기능과 경쟁하는 노코드 도구에 쓰는 것은 금지한다(2025-05-30 개정판 기준). 컴포넌트 저장소가 MIT여도 Tween UI처럼 gsap을 의존성으로 들이는 항목은 이 조건을 함께 따른다.
-- 카탈로그 저장소의 라이선스와 그 안에 재현된 회사 디자인 시스템의 권리도 별개다. oh-my-design 저장소가 MIT여도 README는 레퍼런스가 각 회사에 속한다고 밝히므로, MIT를 그 디자인 시스템의 이용 허락으로 읽지 않는다. 고객 사이트에는 카탈로그 항목을 절 구성과 작성 방식의 참고로만 쓰고, DESIGN.md는 고객의 로고, 색과 글꼴 같은 자체 브랜드 자산에서 새로 작성한다. 공공 서비스라면 [[Service-Design-Principles#디자인 시스템|KRDS]] 같은 공개 디자인 시스템이 출발점 후보다. 저장소 안의 모든 파일이 MIT인 것도 아니다. 스킬 번들의 인라인 라이브러리 라이선스 목록은 GSAP 3.15.0 파일을 GSAP Standard License로 표시하므로, 생성한 HTML에 이 파일이 들어가면 앞 항목의 GSAP 조건을 함께 확인한다.
+지침 스킬과 스킬 카탈로그, 컴포넌트, 아이콘, 글자 효과, 시각 캔버스, 레퍼런스 갤러리와 디자인 시스템 카탈로그의 역할, 제공 방식과 라이선스, 고객 사이트 납품 전 고지 보존과 출처 확인은 [[Claude-Design-Handoff-Resources|생성 UI 외부 자원과 납품 전 출처 확인]]으로 분리했다.
 
 ## 내보내기와 구현 인계
 
@@ -144,17 +108,10 @@ HyperFrames는 장면, 시간과 움직임을 HTML 프로젝트로 관리하며 
 
 ## 출처
 
-- [21st](https://21st.dev/) — 레지스트리와 소스 복사, 프롬프트 전달 방식
-- [affectUI, Introduction](https://www.affectui.com/docs/introduction) — TSX 파일, 컴포넌트 문서와 Free/Pro 접근 범위
-- [affectUI, Using with AI](https://www.affectui.com/docs/ai) — MCP의 검색, 문서 조회와 소스 조회 도구
-- [Best Free Fonts](https://bestfreefonts.com/) — 글꼴 분류와 카탈로그
 - [Introducing Claude Design by Anthropic Labs — Anthropic](https://www.anthropic.com/news/claude-design-anthropic-labs)
 - [Claude Design now stays on brand for daily work — Anthropic](https://claude.com/resources/articles/claude-design-stays-on-brand-for-daily-work)
 - [google-labs-code/design.md — GitHub](https://github.com/google-labs-code/design.md) — 2026-10-12 README의 front matter와 절 순서, CLI 명령, lint 규칙 등급과 종료 코드, alpha 상태 확인
-- [kwakseongjae/oh-my-design — GitHub](https://github.com/kwakseongjae/oh-my-design) — README의 에이전트별 설치 범위, MIT와 레퍼런스 귀속 고지
 - [DESIGN.md Core v2 — GitHub, kwakseongjae/oh-my-design](https://github.com/kwakseongjae/oh-my-design/blob/main/spec/design-md-core-v2.md) — YAML front matter 금지와 Google 형식과의 관계
-- [oh-my-design — oh-my-design.kr](https://oh-my-design.kr) — 2026-10-12 회사 수, 국가 수, 등급별 개수와 정의, CLI 설치 범위
-- [Inline library licenses — GitHub, kwakseongjae/oh-my-design](https://github.com/kwakseongjae/oh-my-design/blob/main/.claude/skills/omd-aphrodite/docs/design-excellence/fx-library/scroll-gsap/lib/LICENSES.md) — GSAP 3.15.0 파일의 GSAP Standard License 표시
 - [Remotion, Composition](https://www.remotion.dev/docs/terminology/composition)
 - [Remotion, Don't use CSS animations in Remotion](https://www.remotion.dev/docs/troubleshooting/css-animations)
 - [Remotion, Importing .srt subtitles into Remotion](https://www.remotion.dev/docs/captions/importing)
@@ -177,37 +134,6 @@ HyperFrames는 장면, 시간과 움직임을 HTML 프로젝트로 관리하며 
 - [Impeccable, audit](https://impeccable.style/docs/audit)
 - [GitHub Copilot app — GitHub](https://github.com/features/ai/github-app)
 - [Impeccable Kills AI Design Slop — Better Stack](https://www.youtube.com/watch?v=J1RYxganY20) — 2026-10-10 업로드, 규칙 수 61개는 당시 README의 59개와 다르며 효과 주장의 근거로 사용하지 않음
-- [Taste Skill — tasteskill.dev](https://tasteskill.dev)
-- [Leonxlnx/taste-skill — GitHub](https://github.com/Leonxlnx/taste-skill) — 2026-10-23 README의 v2/v2.1 흐름, 실행 요건과 기존 스킬 이동 확인
-- [design-taste-frontend SKILL.md — GitHub, Leonxlnx/taste-skill](https://github.com/Leonxlnx/taste-skill/blob/main/skills/taste-skill/SKILL.md) — 2026-10-23 v2의 lint, 브라우저 검사와 스크린샷 검토 지시 확인
-- [이전 design-taste-frontend 보존본 — GitHub, Leonxlnx/taste-skill](https://github.com/Leonxlnx/taste-skill/blob/2b44c81bbe36ac8a8a6bdd1c9ff593f28b8728f4/skills/taste-skill-v2-experimental/SKILL.md) — 이전 아이콘 허용 목록과 GSAP/ScrollTrigger 코드 골격의 근거
-- [redesign-existing-projects SKILL.md 보존본 — GitHub, Leonxlnx/taste-skill](https://github.com/Leonxlnx/taste-skill/blob/2b44c81bbe36ac8a8a6bdd1c9ff593f28b8728f4/skills/redesign-skill/SKILL.md) — 이전 redesign 절차와 아이콘 선택의 근거
-- [GSAP, Standard No Charge GSAP License](https://gsap.com/standard-license) — 2025-05-30 개정판
-- [ColorlibHQ/velora-ui — GitHub](https://github.com/ColorlibHQ/velora-ui)
-- [Pricing — Velora UI](https://velora.colorlib.com/pricing) — Free는 MIT, 출시 예정 Pro는 Commercial로 표시
-- [marquee 레지스트리 항목 — Velora UI](https://velora.colorlib.com/r/marquee.json) — 2026-10-12 확인, 소스에 라이선스 주석 없음
-- [heroicons-animated — Aniket Pawar](https://www.heroicons-animated.com)
-- [LICENSE — GitHub, Aniket-508/heroicons-animated](https://github.com/Aniket-508/heroicons-animated/blob/main/LICENSE)
-- [academic-cap 레지스트리 항목 — heroicons-animated](https://www.heroicons-animated.com/r/academic-cap.json) — 2026-10-12 확인, 소스에 라이선스 주석 없음
-- [LICENSE — GitHub, tailwindlabs/heroicons](https://github.com/tailwindlabs/heroicons/blob/master/LICENSE)
-- [shadcn/ui, Introduction](https://ui.shadcn.com/docs)
-- [refs.gallery](https://www.refs.gallery/info) — 2026-10-12 접속 제한(HTTP 429)으로 본문과 이용 조건을 확인하지 못함
-- [vercel-labs/skills — GitHub](https://github.com/vercel-labs/skills) — README의 `--all` 설치 옵션
-- [바이브 코딩 결과물 다듬는 무료 자료 5곳 — 코딩 수익화 : 투더제이 TTJ](https://www.youtube.com/watch?v=9mtacFyZD8Q) — 2026-10-10 업로드, 자원 목록의 출발점이며 개수와 라이선스는 공식 사이트와 LICENSE 원문으로 다시 확인함
-- [AnimateIcons — animateicons.in](https://animateicons.in) — 2026-10-12 아이콘 1170개(Lucide 669개, Huge 501개)
-- [Avijit07x/animateicons — GitHub](https://github.com/Avijit07x/animateicons) — LICENSE(MIT)와 THIRD_PARTY_NOTICES의 Lucide, Feather, Hugeicons 고지
-- [lu-x 레지스트리 항목 — AnimateIcons](https://animateicons.in/r/lu-x.json) — 2026-10-12 확인, 소스에 라이선스 헤더 없음
-- [@animateicons/react — npm](https://www.npmjs.com/package/@animateicons/react) — 0.12.0, 패키지에 LICENSE와 THIRD_PARTY_NOTICES 포함
-- [StaticMania/tween-ui — GitHub](https://github.com/StaticMania/tween-ui) — MIT, shadcn 레지스트리 설치
-- [Tween UI — tween-ui.vercel.app](https://tween-ui.vercel.app) — 2026-10-12 컴포넌트 23개, 블록 33개
-- [cta-photo-headline 레지스트리 항목 — Tween UI](https://tween-ui.vercel.app/r/cta-photo-headline.json) — 납품 전 샘플 이미지 교체 안내
-- [psychosomat/ShiUI — GitHub](https://github.com/psychosomat/ShiUI) — README와 package.json의 ISC 선언, LICENSE 파일 없음, 요소 112개와 Astro 블록 24개
-- [SHIUI — shi-ui.vercel.app](https://shi-ui.vercel.app) — 2026-10-12 확인, 사이트 안의 요소와 블록 수 표시가 서로 다름
-- [Minimal Gallery — minimal.gallery](https://minimal.gallery)
-- [About — Minimal Gallery](https://minimal.gallery/about/) — 2013년 시작, 2026년 인수 표기
-- [Legal — Minimal Gallery](https://minimal.gallery/legal/) — 2026-05 표시 이용 조건
-- [PyModel/react-frontend-skills — GitHub](https://github.com/PyModel/react-frontend-skills) — 스킬 18개, React 19.3 기준, MIT, 설치 명령
-- [AI 티 안 나는 웹사이트 만들기, 무료 웹 UI 자료 5곳 — 코딩 수익화 : 투더제이 TTJ](https://www.youtube.com/watch?v=9zpd2YuL5u0) — 2026-10-11 업로드, 두 번째 자원 목록의 출발점이며 개수와 라이선스는 공식 사이트와 저장소로 다시 확인함
 
 ## 관련 문서
 
@@ -218,3 +144,4 @@ HyperFrames는 장면, 시간과 움직임을 HTML 프로젝트로 관리하며 
 - [[Design-System-Lint|디자인 시스템 lint]] — 테마 토큰과 컴포넌트 계약의 정적 검사
 - [[Agent-Skills|에이전트 스킬]] — 필요할 때 불러오는 지침
 - [[Open-Source-License-Review|오픈소스 라이선스 검토]] — MIT 고지 보존과 외부 자산의 이용 조건
+- [[Claude-Design-Handoff-Resources|생성 UI 외부 자원과 납품 전 출처 확인]] — 스킬, 컴포넌트, 아이콘, 글자 효과와 시각 캔버스의 제공 방식, 라이선스와 납품 전 고지 보존

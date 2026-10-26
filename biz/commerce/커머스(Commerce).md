@@ -16,6 +16,7 @@ aliases: ["Commerce", "커머스"]
 - [x] [[Supply-Chain-Planning|공급망 계획과 예외 대응]] — 수요 계획, 공급 제약, 재고와 운전자본, AI 추천과 조치 승인
 - [x] [[Commerce-Domain-Knowledge|도메인 지식]] — 복잡도의 근원, 빅블러와 도메인 흡수, 정책과 구현의 갭, 습득 방법
 - [x] [[Commerce-Korea-Market|한국 시장]] — 온라인 갈라파고스, 동질화와 메타쇼핑몰, 이용자 행동 특성
+- [x] [[Vertical-Commerce-Strategy|버티컬 커머스의 고객군 선택과 해자]] — 통념과 행동 데이터, 쇼트헤드와 롱테일 공급 구조, 공급자 가치 제안, 단독 상품과 가격 우위를 만드는 협상력, 고객군 비중 확장 기준, 공급자 콜드 스타트
 - [x] [[Commerce-Korea-History|한국 이커머스 역사]] — 시대별 흐름과 반복 패턴 (1996~2017, korea-history/ 폴더 인덱스)
 - [x] [[Commerce-Revenue-Formula|수익 공식]] — 거래액, 매출과 공헌이익 구분, 전환율 분모, 비수기의 할인, 고객군과 현금 계획
 - [x] [[Payment-Service|결제 서비스]] — 카드 결제 4단계(주문서, 인증, 승인, 매입), PG와 VAN, 간편결제 토큰, 페이 스펙트럼, 카드 네트워크 4대 역할과 interchange 수수료 경제, 결제 데이터 시야와 POS 연동 범위, 판매 운영 플랫폼과 MoR의 구분

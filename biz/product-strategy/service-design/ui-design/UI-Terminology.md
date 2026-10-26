@@ -99,7 +99,8 @@ AI로 만든 화면을 고칠 때도 컴포넌트 이름이 요청의 정확도�
 
 ## 관련 문서
 - [[Visual-Hierarchy|시각적 위계]]
-- [[Claude-Design-Handoff|AI 디자인과 구현 인계]] — 생성 UI의 기본값과 shadcn 레지스트리 출처 확인
+- [[Claude-Design-Handoff|AI 디자인과 구현 인계]] — 생성 UI의 기본값
+- [[Claude-Design-Handoff-Resources|생성 UI 외부 자원과 납품 전 출처 확인]] — shadcn 레지스트리 출처 확인
 - [[User-Guidance-Patterns|사용자 가이드 제공 패턴]] — 툴팁, 레이어의 안내 용도
 - [[Service-Design-Principles|서비스 설계 원칙 (GOV.UK)]] — 디자인 시스템과 일관성
 - [[PRD-Writing|PRD 작성법]] — 화면 명세에서 용어 일관성이 필요한 이유
