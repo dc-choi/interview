@@ -18,6 +18,18 @@ Docker image는 작기만 하면 되는 산출물이 아니다. publisher 신뢰
 4. mutable tag는 편리한 검색 이름으로 쓰고 release에는 digest를 함께 기록한다. 동일 tag는 나중에 다른 content를 가리킬 수 있다.
 5. scanner 결과, SBOM와 provenance를 release evidence에 연결한다. Official badge만으로 application dependency까지 안전해지는 것은 아니다.
 
+### 출처 메타데이터와 검증 결과를 구분한다
+
+SBOM은 포함되거나 빌드에 쓰인 소프트웨어 목록이고, provenance는 빌드가 어떻게 수행됐는지에 관한 기록이다. 둘 다 이미지 선택의 근거지만, 파일이 붙어 있다는 사실만으로 신뢰할 수 있는 이미지라고 판정하지 않는다.
+
+SLSA v1.2의 artifact 검증 절차를 이미지 승인에 적용할 때는 다음을 대조한다.
+
+- provenance envelope의 서명을 미리 정한 신뢰 기준으로 검증하고, 허용한 builder identity인지 확인한다.
+- statement의 `subject` digest가 실제 사용할 artifact와 일치하는지 확인한다. tag 이름이 같다는 것만으로 대신하지 않는다.
+- 정본 source repository, `buildType`과 `externalParameters`가 기대한 값인지 확인한다. 서명이 유효해도 다른 저장소나 허용하지 않은 빌드 설정이면 승인 근거가 되지 않는다.
+
+Docker BuildKit의 attestation 생성과 이 검증 정책의 적용은 별도 단계다. 베이스 이미지와 최종 앱 이미지의 식별자 및 검증 결과를 구분해 남긴다. 이 절은 2026-10-27 Docker의 Build attestations와 SLSA v1.2를 대조한 범위이며, 특정 이미지의 검증 통과나 취약점 부재를 확인한 기록은 아니다.
+
 ### 일반, slim과 Alpine
 
 | 변형 | 장점 | 비용과 확인점 |
@@ -85,6 +97,8 @@ Q. Docker 이미지 최적화 경험이 있는가?
 
 ## 출처
 
+- [Docker Docs, Build attestations](https://docs.docker.com/build/metadata/attestations/) — SBOM과 provenance의 역할, BuildKit의 메타데이터 생성
+- [SLSA v1.2, Build: Verifying artifacts](https://slsa.dev/spec/v1.2/verifying-artifacts) — 서명, 신뢰할 builder, subject digest와 기대한 빌드 조건의 대조
 - [Docker Docs, trusted content](https://docs.docker.com/docker-hub/image-library/trusted-content/)
 - [Docker Docs, image digests](https://docs.docker.com/dhi/explore/security-concepts/digests/)
 - [Docker Docs, Docker Hardened Images](https://docs.docker.com/dhi/) — 등급별 CVE 수정 SLA
