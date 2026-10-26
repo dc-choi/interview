@@ -45,6 +45,8 @@ STEPPS는 공유의 동기를 사회적 화폐, 연상 단서, 감정, 관찰 �
 
 자막은 발화와 이해에 필요한 비음성 정보를 시간에 맞춰 전달하는 수단이다. 강조 단어 몇 개만 화면에 띄우는 장식과 구분한다. 자동 자막은 부정어 누락이나 숫자 오인식으로 뜻을 바꿀 수 있으므로 음성과 대조하고 수정한다. 정확한 자막 제공은 접근성의 문제이며 공유 증가를 입증하는 지표는 아니다.
 
+WCAG 2.2의 사전 녹화 자막 해설은 자막이 화면의 관련 정보를 가리지 않도록 권한다. 이를 세로 영상에 적용하는 운영 제안은 촬영 전에 자막, 제목과 얼굴의 위치를 정하고, 실제 재생 화면에서 버튼이나 캡션과 겹치는지 확인하는 것이다. 자막 위치를 고정하더라도 중요한 화면 정보를 가리는 장면에서는 조정한다. 특정 플랫폼 광고의 배치 수치를 일반 게시물의 공통 규칙으로 적용하지 않는다.
+
 아래는 편집 기능을 고르는 운영 제안이다. 모든 영상에 모든 효과를 넣는 것을 완료 조건으로 삼지 않는다.
 
 - **자막과 텍스트:** 핵심 설명을 읽을 수 있는지, 발화와 맞는지 확인한다.
@@ -53,6 +55,16 @@ STEPPS는 공유의 동기를 사회적 화폐, 연상 단서, 감정, 관찰 �
 - **배경음과 효과음:** 말이 들리는지, 소리를 꺼도 필요한 설명이 남는지 확인한다. 사용할 음원의 권리와 플랫폼별 조건도 따로 확인한다.
 
 2026-10-21 확인한 Meta의 Edits 소개에는 클립 단위 편집, 전환 효과와 skip rate 같은 배포 관련 피드백이 안내돼 있다. 이 안내는 기능과 피드백의 존재를 뒷받침하며, 특정 편집 효과가 품질이나 매출을 일정 배수 높인다는 근거는 아니다. 같은 페이지의 출시 당시 향후 기능 목록을 현재 제공 기능으로 단정하지 않는다.
+
+## 초반 이탈과 시청 지속을 함께 본다
+
+Meta의 Edits 소개는 skip rate를 배포에 영향을 줄 수 있는 피드백의 예로 든다. Meta의 2023년 추천 설명도 여러 예측을 결합한다고 밝힌다. 두 자료는 건너뛰기 비율이나 평균 시청 시간이 조회 수를 가장 크게 좌우한다는 결론을 뒷받침하지 않는다(2026-10-26 대조). 지표가 제공된다는 사실, 그 지표와 노출의 관계, 편집을 바꿨을 때의 인과 효과는 구분한다.
+
+다음은 도입부를 비교하는 운영 제안이다. 도입 문구 유형별 효과는 공식 근거로 확인되지 않았다.
+
+1. 주제, 길이와 본문을 고정하고 첫 장면이나 첫 문장만 바꾼다. 질문으로 궁금증을 만드는 문구, 피할 실수를 경고하는 문구, 대상 범위를 넓힌 문구는 계정별로 시험할 가설로 둔다. 대상 범위를 넓히면 대상과 장면을 특정하라는 첫 절의 질문과 상충할 수 있다.
+2. 사용하는 화면에서 제공하는 지표의 정의와 집계 구간을 먼저 확인한다. 건너뛰기 비율, 평균 시청 시간, 공유, 저장과 적격 문의를 함께 기록하고, 시청 시간은 길이가 비슷한 릴스끼리 비교한다([[Recommendation-System-Ranking-Reranking#Implicit label을 그대로 믿지 않는다|재생 시간과 완주율의 편향]]). 관찰 기간과 분모는 아래 비교 절차를 따른다.
+3. 도입이 약속한 내용을 본문이 제공하는지 확인한다. 확인할 수 없는 판매량이나 손실 공포로 시선을 끄는 문구는 쓰지 않는다. 사용자가 걸러 내기 쉬운 피로 콘텐츠는 [[Content-Marketing#추천 피드 시대의 콘텐츠 전략|추천 피드 시대의 콘텐츠 전략]]에서 다룬다.
 
 ## 편집 비용과 반응을 함께 비교한다
 
@@ -70,7 +82,7 @@ STEPPS는 공유의 동기를 사회적 화폐, 연상 단서, 감정, 관찰 �
 
 1. 촬영, 자막, 효과와 검토 단계마다 필요한 이유와 확인할 품질 기준을 적는다. 관행이나 다른 계정의 모방만으로 필수 단계로 두지 않는다.
 2. 의미 전달과 접근성에 필요한 요소를 보존하면서 불필요한 장식이나 중복 작업을 제거하는 안을 시험한다. 인트로나 배경음이 쓸모없다는 결론을 모든 콘텐츠에 적용하지 않는다.
-3. 남긴 작업의 템플릿과 편집 규칙을 단순화한다. 자막 스타일을 고정해도 발화 대조와 오류 수정은 별도 품질 기준으로 남긴다.
+3. 남긴 작업의 템플릿과 편집 규칙을 단순화한다. 자막 스타일과 위치를 고정해도 발화 대조와 오류 수정은 별도 품질 기준으로 남긴다.
 4. 제작 시간과 재작업을 재고 병목을 줄인다. 처리 속도를 높인 뒤 이해도나 문의 품질이 나빠지지 않았는지도 확인한다.
 5. 반복할 입력, 결과와 예외 처리가 분명해진 작업부터 자동화한다. 발행량 증가를 매출 개선으로 간주하지 않고 앞 절의 반응 비교를 이어 간다.
 
@@ -106,14 +118,18 @@ Meta의 2023년 공개 설명은 Facebook과 Instagram의 추천에 행동과 �
 
 - [Crafting Contagious Workbook — Jonah Berger](https://jonahberger.com/wp-content/uploads/2013/03/Crafting-Contagious-Workbook.pdf) — STEPPS의 여섯 관점과 목표, 메시지 회상, 파일럿 질문. 표의 기획 질문은 적용 예시이며 성과 보장이나 추천 알고리즘 규칙으로 해석하지 않는다.
 - [Starbase Tour and Interview with Elon Musk — Everyday Astronaut](https://everydayastronaut.com/starbase-tour-and-interview-with-elon-musk/) — 2021년 인터뷰의 5단계 순서를 인터뷰 매체의 공개 글과 2026-10-22 대조. 콘텐츠 제작 적용은 운영 제안이며 성과 수치는 채택하지 않았다.
-- [How AI Influences What You See on Facebook and Instagram — Meta](https://about.fb.com/news/2023/06/how-ai-ranks-content-on-facebook-and-instagram/) — 2023년 공개 설명의 복수 예측 결합과 공유 예측의 범위를 2026-10-22 대조. 게시 시간 비교 절차는 운영 제안이며 특정 시각의 성과를 검증한 결과가 아니다.
+- [How AI Influences What You See on Facebook and Instagram — Meta](https://about.fb.com/news/2023/06/how-ai-ranks-content-on-facebook-and-instagram/) — 2023년 공개 설명의 복수 예측 결합과 공유 예측의 범위를 2026-10-26 재대조. 게시 시간과 도입부 비교 절차는 운영 제안이며 특정 시각이나 문구의 성과를 검증한 결과가 아니다.
 
 - [What Makes Online Content Viral? — Jonah Berger, Katherine L. Milkman](https://jonahberger.com/wp-content/uploads/2013/02/ViralityB.pdf) — 저자 공개 논문, DOI 10.1509/jmr.10.0353. 기사 공유의 관찰과 감정 관련 실험을 2026-10-21 대조. 릴스 추천과 저장 전환에 대한 검증으로 확대하지 않았다.
 - [W3C WAI, Captions/Subtitles](https://www.w3.org/WAI/media/av/captions/) — 자막의 역할과 자동 자막의 정확성 점검, 2026-10-21 확인.
-- [Introducing Edits: A Streamlined Video Creation App — Meta](https://about.fb.com/news/2025/04/introducing-edits-streamlined-video-creation-app/) — 클립 편집, 전환과 skip rate 안내, 2026-10-21 확인.
+- [Introducing Edits: A Streamlined Video Creation App — Meta](https://about.fb.com/news/2025/04/introducing-edits-streamlined-video-creation-app/) — 클립 편집, 전환과 skip rate 안내, 2026-10-26 재확인. 지표의 세부 정의와 순위 가중치는 이 자료의 확인 범위가 아니다.
+
+- [W3C, Understanding SC 1.2.2: Captions (Prerecorded)](https://www.w3.org/WAI/WCAG22/Understanding/captions-prerecorded.html) — 자막이 관련 화면 정보를 가리지 않아야 한다는 원칙을 2026-10-26 대조. 세로 영상의 배치 점검은 운영 제안이며 플랫폼별 여백 수치는 채택하지 않았다.
 
 ## 관련 문서
 
 - [[Content-Marketing|콘텐츠 마케팅]] — 퍼널과 채널별 목적
 - [[Social-Content-Scaling|소셜 콘텐츠 성장 단계]] — 제작 확대와 재사용
 - [[AI-Generated-Content-Monetization|AI 생성 콘텐츠 수익화]] — AI 제작과 플랫폼별 권리, 수익화 조건
+- [[YouTube-Thumbnail-Testing|유튜브 제목과 썸네일 실험]] — 클릭과 시청 시간을 구분하는 공식 A/B 실험
+- [[Recommendation-System-Ranking-Reranking|추천 시스템 랭킹과 재랭킹]] — 여러 예측을 합치는 랭킹과 시청 신호의 편향

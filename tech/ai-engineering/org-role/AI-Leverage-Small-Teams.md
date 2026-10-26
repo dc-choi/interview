@@ -26,6 +26,24 @@ AI가 반복 구현과 프로토타이핑을 줄여주는 환경에서는 What�
 
 AI로 확보한 여유를 더 많은 기능 수로 곧바로 채우면 문제 정의 병목은 그대로 남는다. 고객 탐색, 다음 문제의 정의, 검증, 문서화와 운영 회복력에 일부를 재투자해야 팀의 산출량이 아니라 판단 가능한 범위가 넓어진다. 인원 확대는 이런 재배치 뒤에도 전문성이나 중복 인력의 공백이 지속될 때 검토한다.
 
+## 선택지가 싸지면 고르는 판단이 병목이 된다
+
+FAAFO는 AI를 활용한 개발의 가치를 Fast, Ambitious, Autonomous, Fun, Optionality로 나누는 프레임워크다. 순서대로 통과하는 조직 성숙 단계가 아니라 서로 연결되는 다섯 가치 축이다.
+
+| 차원 | 살펴볼 가치 |
+|---|---|
+| Fast | 구현과 피드백의 속도 |
+| Ambitious | 비용이나 난이도 때문에 보류했던 과제의 실행 가능성 |
+| Autonomous | 의존 관계와 조율 때문에 막히지 않고 수행할 수 있는 범위 |
+| Fun | 반복 구현 부담이 줄면서 생기는 개발 과정의 즐거움 |
+| Optionality | 결정을 확정하기 전에 여러 대안을 탐색할 수 있는 여지 |
+
+Optionality는 미래의 결정을 내릴 권리를 보존하되 실행 의무는 지지 않는다는 관점이다. 첫 추측에 전부 투입하기보다 여러 대안을 작은 실험으로 비교하고, 확인된 쪽에 투입을 늘린다. 불확실성이 높을수록 선택지를 보존하는 의미가 커지며, 모듈 구조는 대안별 실험과 변경을 독립적으로 수행하는 조건이 된다. 빠른 구현만으로 이 조건이 저절로 생기지는 않는다.
+
+위 정의는 Gene Kim과 Steve Yegge의 FAAFO 발췌와 2026-10-26 대조했다. AI가 최종 결정을 맡아야 한다는 조직 전환 법칙으로 해석하지 않는다.
+
+다음은 이 관점을 팀 운영에 적용하는 **가설**이다. 선택지를 만드는 비용이 떨어지면 검토할 후보가 늘어 병목이 구현에서 평가와 결정으로 옮겨 갈 수 있다([[Developer-Role-AI-Era#구현이 싸질 때 옮겨 가는 병목 — 결정과 승인 대역폭|결정과 승인 대역폭]]). AI에 비교 실험의 초안, 결과 요약과 후보 선별을 맡기더라도 비교 기준, 중단 조건, 최종 승인과 결과 책임은 사람이 정한다([[Tacit-Knowledge-Judgment-Agent#판단이 필요한 자리에 붙인다|판단 에이전트를 붙일 자리]]). 이 방법의 효과는 실제 검토 시간과 판단 오류로 확인해야 한다.
+
 ## 보류했던 과제는 거절 이유부터 다시 평가한다
 
 AI로 구현 시간이 줄었다면 과거에 미뤘던 과제를 다시 검토할 수 있다. 다만 구현비 감소가 고객 수요, 도메인 이해나 운영 책임까지 해결하지는 않는다. 다음은 DORA의 사용자 중심 피드백과 작은 배치 원칙을 보류 과제에 적용한 운영 제안이다.
@@ -134,6 +152,7 @@ AI 개발 도구의 생산성 효과를 단일 숫자로 일반화하면 안 된
 ## 운영 점검 질문
 
 - 구현 속도보다 문제 정의와 검증이 실제 병목인지 측정했는가
+- 여러 선택지를 비교할 기준, 중단 조건과 최종 결정권자를 정했는가
 - 엔지니어가 고객과 시장의 신호를 직접 접하는가
 - 현재 구현과 다음 문제 정의가 서로를 막지 않도록 교차 운영하는가
 - AI가 만든 코드의 리뷰와 재작업까지 포함해 생산성을 측정하는가
@@ -151,6 +170,7 @@ AI 개발 도구의 생산성 효과를 단일 숫자로 일반화하면 안 된
 - [[Context-Engineering|컨텍스트 엔지니어링]]
 - [[Output-vs-Outcome|산출물 vs 사용자 성과]]
 - [[Burnout-Sustainable-Pace|번아웃과 지속 가능한 개발 페이스]]
+- [[Tacit-Knowledge-Judgment-Agent|암묵지와 판단 에이전트]]
 
 ## 출처
 
@@ -167,3 +187,5 @@ AI 개발 도구의 생산성 효과를 단일 숫자로 일반화하면 안 된
 - [Research: quantifying GitHub Copilot's impact on developer productivity and happiness — GitHub](https://github.blog/news-insights/research/research-quantifying-github-copilots-impact-on-developer-productivity-and-happiness-/)
 - [Measuring the Impact of Early-2025 AI on Experienced Open-Source Developer Productivity — METR](https://metr.org/blog/2025-07-10-early-2025-ai-experienced-os-dev-study/)
 - [We are Changing our Developer Productivity Experiment Design — METR](https://metr.org/blog/2026-02-24-uplift-update/)
+- [The Value Of Vibe Coding (or, the Good FAAFO) — IT Revolution, Gene Kim, Steve Yegge](https://itrevolution.com/articles/the-value-of-vibe-coding-or-the-good-faafo/) — 2025-08-04, 책 Vibe Coding의 발췌, FAAFO 다섯 차원과 Optionality의 정의
+- [의사결정에 AI참가 바이브코딩 프로덕트 5강 — YouTube, 뉴런데브](https://www.youtube.com/watch?v=DVMide3x-ls) — 2026-10-19 공개, 같은 책의 해설 강의. AI의 의사결정 참여는 저자 정의와 별개인 해석이며 사례, 일화와 수치는 검증하지 않아 쓰지 않음
