@@ -33,6 +33,14 @@ aliases: ["검색 트렌드와 콘텐츠 가설", "Search Trends and Content Hyp
 
 같은 관찰 기간과 유사한 도달 조건에서 넓은 주제의 콘텐츠와 구체적인 사용 장면의 콘텐츠를 비교할 수 있다. 저장률, 적격 문의, 구매와 제작 시간을 함께 기록한다. 표본이 적으면 우열을 확정하지 않고 다음 실험의 후보로 남긴다.
 
+## 관련 질문을 주제 후보로 쓴다
+
+Google 검색의 관련 질문(People Also Ask)은 최초 검색과 관련된 질문 묶음이다. 질문을 펼치면 추천 스니펫(featured snippet)을 보여준다. 관련 검색어 묶음은 검색어를 눌렀을 때 다른 검색 결과로 이동하는 별도 요소다. 이 동작은 2026-10-26 Google 공식 문서로 확인했다.
+
+기획에 적용할 때는 주제를 하위 문제로 나누고, 발견한 질문을 대상 고객의 상황과 연결한다. 질문과 함께 검색어, 확인 날짜와 답변의 원출처를 기록하고, 답변은 해당 원출처에서 검증한다. 여러 표현이 같은 문제를 묻는다면 하나의 후보로 합친다. 이는 운영 제안이며 Google의 노출 조건이 아니다.
+
+공식 문서는 탐색 요소를 사이트 주제 발굴에 참고할 수 있다고 안내하지만 표시 내용을 통제할 수 있다고 하지는 않는다. 질문 개수를 검색량이나 구매 수요로 해석하지 않는다. 정해진 수의 하위 주제와 질문을 만들거나 매일 발행하면 계정이 성장한다는 보장도 확인되지 않았다. 후보 수보다 고객 적합성과 실제 반응으로 다음 제작 대상을 고른다.
+
 ## 적용 전 확인
 
 - 발표 기관, 대상 플랫폼, 지역과 언어를 구분했는가?
@@ -43,6 +51,7 @@ aliases: ["검색 트렌드와 콘텐츠 가설", "Search Trends and Content Hyp
 ## 출처
 
 - [Pinterest Beauty Trend Report 2026 — Pinterest Newsroom](https://newsroom.pinterest.com/news/beauty-trend-report-2026/)
+- [Google Search Central, Visual Elements gallery of Google Search](https://developers.google.com/search/docs/appearance/visual-elements-gallery) — 2026-10-26 탐색 기능 절 확인. Google 관련 질문만 추가 대조했으므로 기존 Pinterest 수치의 검증일은 유지
 
 ## 관련 문서
 
