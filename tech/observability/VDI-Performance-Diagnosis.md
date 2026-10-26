@@ -71,6 +71,14 @@ Omnissa의 Horizon 8 설계 문서는 여러 VM이 동시에 작업하는 I/O st
 
 이번 추가 대조는 시험 조건과 결과 해석에 한정한다. 특정 구축 사례의 성능 배수, 계약 비용, 이전 기간과 제품 호환성을 검증한 기록은 아니며 기존 `verified_at`을 유지한다.
 
+### 교체한 계층을 비교 기록에 남긴다
+
+부분 검증(2026-10-27): Horizon을 유지하는 전환에서도 스토리지만 교체한 구성과 하이퍼바이저까지 바꾼 구성은 비교 범위가 다르다. Arcfra의 공개 제품 구성에서는 VDI Essential이 기존 ESXi 아래의 스토리지를 교체하는 경로이고, VDI Standard는 AVE와 Block Storage를 함께 제공하는 경로다. 이 구분을 모든 에디션이나 버전의 호환성 보장으로 확대하지 않는다.
+
+**비교 시험 제안**: 변경 전후의 Horizon, 하이퍼바이저, 스토리지 버전과 관리 포털의 연동 경로를 기록한다. ESXi를 유지한 스토리지 시험 결과를 AVE까지 교체한 환경의 성능 증거로 쓰지 않는다. 동일 조건의 스토리지 I/O 외에도 로그인, 데스크톱 생성, 재접속과 장애 복구를 따로 측정한다.
+
+공급사의 인증 발표는 특정 구축 환경의 무중단 이전이나 성능 배수를 입증하지 않는다. 실제 버전 조합의 호환성 항목과 지원 범위, 장애 접수 경로를 확인한 뒤 전환 시험에 반영한다. 이번 대조는 공개 구성 선택지에 한정하며 개별 인증 버전, 계약 비용과 구축 사례의 성능은 검증하지 않았다. 기존 `verified_at`은 유지한다.
+
 ## 조사 순서
 
 1. 느린 동작과 시간 범위를 고정한다.
@@ -82,6 +90,7 @@ Omnissa의 Horizon 8 설계 문서는 여러 VM이 동시에 작업하는 I/O st
 
 ## 출처
 
+- [Modernize the Infrastructure Under Omnissa Horizon - Now Fully Certified — Arcfra](https://www.arcfra.com/blog/arcfra_virtualization_engine_certified_omnissa_horizon) — 2026-10-27 VDI Essential과 Standard의 교체 계층 구분 대조. 인증 세부 조합과 성능, 비용 수치는 채택하지 않음.
 - [Microsoft DiskSpd, Command line and parameters](https://github.com/microsoft/diskspd/wiki/Command-line-and-parameters) — 2026-10-27 시험 옵션 대조
 - [Microsoft DiskSpd, Customizing tests](https://github.com/microsoft/diskspd/wiki/Customizing-tests) — 측정 구간, 캐시와 쓰기 시험 주의사항
 - [Microsoft DiskSpd, Analyzing test results](https://github.com/microsoft/diskspd/wiki/Analyzing-test-results) — 지연 백분위, 표본 수와 XML 결과

@@ -149,6 +149,14 @@ cluster mode enabled는 configuration endpoint 하나로 shard별 primary와 rea
 
 복구를 임의 버전의 제자리 downgrade로 가정하지 않는다. 현재 공식 가이드의 cross-engine rollback은 **Valkey 7.2에서 Redis OSS 7.1로** 한정하며 연결된 user와 user group의 엔진 유형은 `REDIS`여야 한다. 다른 버전의 복원 가능성과 전환 경로는 작업 전에 따로 확인한다.
 
+### 백업 완료와 대기 중인 변경을 먼저 확인한다
+
+부분 검증(2026-10-27): 업그레이드 전 백업과 변경 대기 조건을 AWS 사용자 가이드로 대조했다. 여러 노드가 있는 Valkey 또는 Redis OSS 구성은 read replica에서 백업해 primary의 BGSAVE 자원 부담을 줄일 수 있다. Cluster mode enabled의 백업 단위는 개별 shard가 아니라 전체 cluster이며, API와 CLI에서는 replication group 단위다.
+
+운영 점검 제안: 업그레이드 전에 백업 상태가 `available`인지 확인하고 복원 시험을 별도로 준비한다. 스냅샷 복원은 백업 데이터로 새 캐시를 만드는 절차이므로 기존 캐시를 제자리에서 되돌리는 작업과 구분한다. 백업 시점 이후의 쓰기까지 보존된다고 가정하지 않고, 애플리케이션의 접속 대상 전환과 데이터 복구 범위를 정한다.
+
+대기 중인 scale-up은 즉시 엔진 업그레이드를 막을 수 있고, 대기 중인 엔진 업그레이드는 즉시 scale-up을 막을 수 있다. 변경이 거부되면 권한 문제로 단정하기 전에 pending operations를 확인한다. 공식 해결 경로 중 하나는 `--no-apply-immediately`로 다음 maintenance window에 업그레이드를 예약하는 것이다. 즉시 적용으로 바꾸는 선택은 변경 시점을 앞당기므로 운영 승인 범위와 영향 시간을 다시 확인한다. 다른 절의 검증일은 유지한다.
+
 ### 자체 운영 캐시의 온라인 이전은 별도 절차다
 
 부분 검증(2026-10-16): EC2에서 자체 운영하는 Valkey 또는 Redis OSS를 ElastiCache로 복제하는 Online Migration은 기존 ElastiCache의 엔진 업그레이드와 다르다. 공식 준비 조건에는 대상의 Multi-AZ 활성화, 전송 중 암호화 비활성화, 충분한 메모리, 소스와 대상의 shard 수 일치, Global Datastore와 data tiering 미사용이 포함된다. AUTH, 논리 DB 수, 복제용 명령과 네트워크 접근 조건도 함께 확인한다.
