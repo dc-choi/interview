@@ -25,7 +25,7 @@ CS 학습법, 소스 코드 분석, 영어 학습, 블로그 운영, 성장 원�
 - [x] [[English-Developer-Practical|개발자 실무 영어 (관사/단복수, 전치사, 약어, 깃/코드 설명 동사, 산술/네이밍 표현)]]
 - [x] [[Dev-Writing|글쓰기와 기술 블로그 (블로그 운영 5단계, 개발자 글쓰기, LLM 교정 워크플로우, AI 시대 직접 경험기와 작성자 신뢰)]] — 서브폴더
 - [x] [[Learning-Sources|학습 출처 목록 (자동 학습이 새 자료를 모으는 YouTube 채널과 이메일 뉴스레터, 우선순위용 도메인 태그)]]
-- [x] [[Saved-Reading-Candidates|저장한 독서 후보 (책 14권, 데이터 분석 도서 5권 포함, 읽음 여부와 추천 귀속의 미확인, 실제 읽을 때의 학습 확인)]]
+- [x] [[Saved-Reading-Candidates|저장한 독서 후보 (기존 책 14권과 컴퓨터과학, 창작 관련 도서와 원고 4건, 서지 확인과 본문 학습의 구분)]]
 - [x] [[Saved-Content-Learning-Record|저장 자료 전체 기록 (137개 관측 텍스트, 확인 수준과 후속 작업)]]
 - [x] [[Saved-Content-Research-Notes|저장 자료의 추가 확인 메모 (본문이 부족한 자료와 원출처 확인)]]
 - [ ] [[Saved-Business-Learning-Videos|저장한 비즈니스 학습 영상 (8개 원문, 전사와 본문 학습 진행 상태)]]

@@ -167,6 +167,20 @@ Spec:
 
 ## 설계 판단과 체크포인트
 
+### CNI 업그레이드의 회귀 확인
+
+2026-10-27에 대조한 Cilium v1.20.3 릴리스에는 다음 수정이 명시되어 있다. 연결 성공만으로 수정 효과를 판단하지 않도록, 결함별 확인 조건을 분리한다.
+
+| 수정된 결함 | 수정 내용에서 도출한 운영 확인 항목 |
+|---|---|
+| Conntrack GC의 읽기와 삭제 사이에 datapath가 다시 연 항목을 지워 NAT 매핑 삭제와 활성 연결의 SNAT 포트 재할당으로 이어질 수 있음 | 새 연결뿐 아니라 유지 중인 연결의 소스 포트와 연속성 확인 |
+| `nodeSelector`를 가진 CNP가 정책을 조용히 집행하지 않는 문제 | 해당 구성을 사용한다면 허용할 연결과 차단할 연결을 각각 시험 |
+| Agent 종료 중 L7 DNS 정책이 남아 wildcard `toFQDNs` 정책 대상 Pod의 DNS 해석이 재시작 동안 실패하는 문제 | 재시작 전, 중, 후에 DNS 조회를 이어서 측정 |
+
+CNP와 `toFQDNs`는 Cilium 확장이므로 표준 NetworkPolicy의 필드로 옮기지 않는다. 위 오른쪽 열은 릴리스 설명에서 도출한 점검안이며 실제 경합 재현이나 업그레이드 성공 기록이 아니다. 발생 빈도와 재현하지 못한 경로는 별도로 남긴다. 이번 대조는 Cilium 수정 범위에 한정하므로 기존 Kubernetes 본문의 검증 날짜는 유지한다.
+
+### 정책 설계
+
 - namespace 단위 default deny와 명시 허용은 노출 범위를 줄이지만, DNS와 다른 namespace의 ingress controller나 metric 수집기처럼 필요한 경로를 빠짐없이 열어야 한다. 빠진 경로는 연결 실패로 드러난다.
 - 전역 기본 정책이 API에 없으므로 namespace마다 기본 정책을 만들어야 한다. 새 namespace를 만드는 절차나 GitOps template에 기본 정책을 포함하면 이 공백을 줄일 수 있다(제안).
 - 허용 목록은 L3, L4에 머문다. mTLS, L7 인가와 차단 로그가 필요하면 [[Istio-Ambient-Mode|service mesh]] 같은 다른 계층을 함께 검토한다.
@@ -175,6 +189,7 @@ Spec:
 
 ## 출처
 
+- [Release v1.20.3 — Cilium](https://github.com/cilium/cilium/releases/tag/v1.20.3)
 - [Flannel, Network policy controller](https://github.com/flannel-io/flannel/blob/master/Documentation/netpol.md)
 - [Flannel — GitHub](https://github.com/flannel-io/flannel)
 - [Cilium, Kubernetes Without kube-proxy](https://docs.cilium.io/en/stable/network/kubernetes/kubeproxy-free/)

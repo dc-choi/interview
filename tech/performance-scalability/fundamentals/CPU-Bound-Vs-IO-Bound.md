@@ -132,6 +132,14 @@ Node.js에서는 큰 JSON의 `JSON.parse`와 `JSON.stringify`가 이벤트 루�
 
 측정 없이 "C++로 바꾸자", "async로 감싸자"는 흔히 역효과.
 
+### CPU와 메모리 할당을 따로 측정한다
+
+Go의 CPU profile은 CPU를 사용한 구간을 보여주므로 I/O 대기 시간을 그대로 설명하지 않는다. Heap profile로 메모리 할당 표본을, block과 mutex profile로 동기화 대기와 락 경합을 확인한다. CPU에서 GC 비용이 보이더라도 특정 함수의 할당이 원인이라는 결론은 할당 프로파일과 함께 대조해야 한다.
+
+정밀 메모리 프로파일링은 CPU profile을 왜곡할 수 있고 여러 profile 수집도 서로 영향을 줄 수 있다. Go 공식 진단 가이드는 한 번에 하나씩 수집할 것을 권한다. 같은 입력과 부하로 수집 구간을 나누고, 변경 전후의 응답 시간과 처리량을 비교할 때 프로파일러 자체의 비용도 구분한다.
+
+부분 검증(2026-10-27): Go 공식 Diagnostics의 profile 종류, 수집 간섭과 운영 오버헤드를 대조했다. 실제 프로그램의 병목이나 개선 배율을 측정한 기록은 아니다.
+
 ## 혼합 AI 파이프라인의 성능 수치를 읽는 법
 
 AI 서비스에도 데이터 준비, CPU 병렬 작업과 GPU 모델 실행이 함께 있다. 같은 시스템에서 나온 수치라도 작업과 측정 단위가 다르면 하나의 가속 배율로 합치지 않는다.
@@ -172,6 +180,7 @@ AI 서비스에도 데이터 준비, CPU 병렬 작업과 GPU 모델 실행이 �
 - 하드웨어 vs 소프트웨어 최적화의 경계
 
 ## 출처
+- [Go, Diagnostics](https://go.dev/doc/diagnostics)
 - [AWS, Run optimization for a private HealthOmics workflow](https://docs.aws.amazon.com/omics/latest/dev/workflows-run-optimize.html)
 - [AWS, How call caching works](https://docs.aws.amazon.com/omics/latest/dev/how-run-cache.html)
 - [MindWalk Accelerates AI Drug Discovery with AMD — AMD](https://www.amd.com/en/resources/case-studies/mindwalk.html)

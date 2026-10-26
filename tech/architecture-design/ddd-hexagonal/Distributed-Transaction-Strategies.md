@@ -40,6 +40,10 @@ aliases: ["Distributed Transaction Strategies", "분산 트랜잭션 전략", "T
 
 PostgreSQL의 prepared transaction은 상태가 디스크에 저장되고 세션과 분리된다. 따라서 prepare 전 변경이 단지 메모리에만 있다는 설명은 일반화할 수 없다. 반면 prepared 상태가 오래 남으면 락을 계속 보유하고 VACUUM에도 영향을 줄 수 있어, 외부 transaction manager가 신속하게 종료하고 미결 트랜잭션을 감시해야 한다.
 
+**Prepared와 commit 결정은 다르다.** PostgreSQL 18은 prepared transaction을 `COMMIT PREPARED` 또는 `ROLLBACK PREPARED`로 끝낼 수 있다. Prepare를 마쳤다는 사실만으로 rollback이 불가능해지지는 않는다. 코디네이터가 commit을 결정한 거래는 그 결정에 따라 복구하고, 응답 유실이나 시간 초과를 새로운 rollback 결정으로 바꾸지 않는다. `pg_prepared_xacts`는 미결 거래를 찾는 자료이며 그 목록 자체가 전역 commit 결정을 증명하지는 않는다.
+
+부분 검증(2026-10-27): PostgreSQL 18의 prepare 이후 종료 명령과 미결 거래 조회를 공식 문서로 대조했다. 실제 XA 장애 복구는 실행하지 않았고, 다른 절의 검증 날짜는 유지한다.
+
 2PC가 항상 나쁜 것도, Saga가 항상 더 가용적인 것도 아니다. 원자적 결정의 가치가 크고 참여 기술과 복구 체계가 갖춰졌다면 2PC가 더 단순할 수 있다. 장시간 사용자 흐름이나 XA를 지원하지 않는 참여자가 섞이면 비용이 급격히 커진다.
 
 ### DB와 메시지 브로커의 실제 참여 범위
@@ -167,6 +171,8 @@ MySQL XA에서는 `XA START`, 작업, `XA END`, `XA PREPARE` 뒤 최종 결정�
 
 ## 출처
 
+- [PostgreSQL 18, ROLLBACK PREPARED](https://www.postgresql.org/docs/18/sql-rollback-prepared.html)
+- [PostgreSQL 18, PREPARE TRANSACTION](https://www.postgresql.org/docs/18/sql-prepare-transaction.html)
 - [Spring Framework, JpaTransactionManager](https://docs.spring.io/spring-framework/docs/current/javadoc-api/org/springframework/orm/jpa/JpaTransactionManager.html)
 - [Spring Framework, Receiving a Message](https://docs.spring.io/spring-framework/reference/integration/jms/receiving.html)
 - [Atomikos, JTA Properties](https://www.atomikos.com/Documentation/JtaProperties)

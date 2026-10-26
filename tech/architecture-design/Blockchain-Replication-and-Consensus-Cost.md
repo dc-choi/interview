@@ -41,6 +41,16 @@ Gas는 Ethereum 연산에 필요한 계산 작업의 단위다. 트랜잭션별 
 
 ## 선택 기준과 이해 확인
 
+### 복제된 기록과 변경 권한은 별개다
+
+Ethereum의 업그레이드 패턴은 배포된 코드를 직접 고치는 대신 프록시가 참조하는 로직 계약 등을 바꾼다. 상태와 사용자 진입 주소를 유지하면서 실행되는 업무 로직을 교체할 수 있으므로, 기록을 여러 노드가 검증한다는 사실만으로 애플리케이션의 규칙 변경 권한까지 분산되지는 않는다.
+
+설계 검토에서는 누가 로직 주소를 바꿀 수 있는지, 승인 권한이 누구에게 모이는지, 변경 전 사용자가 확인할 시간과 이탈 경로가 있는지를 묻는다. 이는 업그레이드 구조에서 도출한 검토 질문이다. 관리자 키 하나가 존재한다는 사실을 체인의 과거 블록을 임의로 다시 쓸 수 있다는 뜻으로 확대하지 않는다.
+
+부분 검증(2026-10-27): Ethereum의 공식 업그레이드 문서로 로직 교체와 상태 보존의 구분을 대조했다. 특정 서비스의 관리자 권한이나 탈중앙화 수준은 확인하지 않았다.
+
+### 도입 판단
+
 다음은 아키텍처 검토 질문이다. 특정 제품의 도입 결정이나 성능 보장은 아니다.
 
 - 여러 주체가 단일 운영자를 신뢰하지 않고도 같은 기록을 검증해야 하는가?
@@ -50,6 +60,7 @@ Gas는 Ethereum 연산에 필요한 계산 작업의 단위다. 트랜잭션별 
 
 ## 출처
 
+- [Ethereum.org, Upgrading smart contracts](https://ethereum.org/en/developers/docs/smart-contracts/upgrading/)
 - [Ethereum.org, Nodes and clients](https://ethereum.org/en/developers/docs/nodes-and-clients/)
 - [Ethereum.org, Proof-of-stake](https://ethereum.org/en/developers/docs/consensus-mechanisms/pos/)
 - [Ethereum.org, Oracles](https://ethereum.org/en/developers/docs/oracles/)
