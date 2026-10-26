@@ -1,7 +1,7 @@
 ---
 tags: [ai, video, generative-video, editing, evaluation, reframing]
 status: done
-verified_at: 2026-10-24
+verified_at: 2026-10-26
 category: "AI엔지니어링(AIEngineering)"
 aliases: ["생성형 영상 편집", "Generative Video Editing", "자동 리프레이밍", "Auto Reframing"]
 ---
@@ -112,6 +112,20 @@ aliases: ["생성형 영상 편집", "Generative Video Editing", "자동 리프�
 
 생성 전 화면에 표시된 크레딧과 실제 재생성 횟수, 검수 시간을 기록한다. 영상에서 언급한 특정 금액을 현재 요금이나 완성본 한 편의 원가로 사용하지 않는다. 실제 계정에서 생성 품질과 비용을 재현한 검증은 수행하지 않았다.
 
+## 참조 편집을 새 피사체로 다시 만든다
+
+2026-10-26 Higgsfield의 Katana 공식 블로그(2026-10-12 게시)와 연결 안내, Claude의 사용자 정의 커넥터 문서에서 확인했다. 이번 추가 검증은 이 절의 기능, 연결, 명령과 과금 설명이며, 다른 절은 각 절에 적힌 검증 시점을 유지한다.
+
+Katana는 Higgsfield MCP 커넥터를 통해 Claude 대화에서 참조 편집을 사용자의 캐릭터, 제품이나 의상으로 다시 만든다. 참조 편집은 직접 올린 영상이나 라이브러리의 프리셋이며, 숏의 순서와 길이, 음악에 맞춘 컷 위치를 포함한 숏 구조, 속도감과 전체 편집의 기준이 된다. 최대 5장의 캐릭터, 제품이나 의상 사진은 화면에 누가, 무엇이 나올지를 정한다. Katana는 필요한 숏을 생성해 편집본을 돌려주고, 결과는 Claude 대화와 Higgsfield Assets에 나타난다. 같은 대화에서 앞 절의 Genjutsu(Motion Transfer, Object Swap)도 쓸 수 있고 두 기능은 같은 Assets를 읽고 쓴다.
+
+- 연결: Higgsfield의 MCP 서버 URL(`https://mcp.higgsfield.ai/mcp`)을 Claude에 사용자 정의 커넥터로 추가하고 Higgsfield 계정으로 로그인해 승인한다. Katana는 Higgsfield 모델로 실행되고 higgsfield.ai와 같은 계정, 같은 크레딧을 쓰며, 활성 Higgsfield 구독이 필요하고 API 키는 필요 없다.
+- Claude 커넥터: 요금제별 추가 경로, 개수 제한과 도구 승인 설정은 [[Claude-Code-Business-Automation#외부 서비스 연동 — 전부 MCP|Claude 커넥터 권한 설정]]을 따른다.
+- 시작: `/katana`는 대화에 프리셋 목록을 열고 `/katana/<preset-name>`은 특정 프리셋을 실행한다. Higgsfield는 이 제품의 편집본을 만들어 달라는 식의 일반 요청도 명령 없이 Katana를 시작한다고 안내한다. higgsfield.ai의 Katana 페이지에서 작성한 요청은 Send & Generate in Claude로 Claude 대화에 넘길 수 있다.
+- 비용: 기존 Higgsfield 요금제의 크레딧을 쓰며 크레딧은 생성에 차감된다. Higgsfield는 MCP 별도 청구와 Claude 안에서 Katana를 실행하는 데 붙는 추가 요금이 없고, 생성마다 Claude가 확인 전에 정확한 크레딧 비용을 카드로 보여 준다고 안내한다. 새 생성이 필요한 수정, 추가 생성과 대안은 비용을 늘릴 수 있고, 요금제 등급과 크레딧 제공량은 지역마다 다르다.
+- 제한: 일부 생성은 모더레이션으로 거절될 수 있다. Instagram이나 TikTok 프로필 링크는 받지 않으므로 참조는 파일로 올리거나 미디어 파일의 직접 링크로 준다. Higgsfield 안내 기준으로 Claude 대화에 바로 첨부한 이미지는 Higgsfield MCP에 Katana 참조 파일로 전달되지 않아, Katana가 대화 안에 Higgsfield 업로드 창을 열고 거기서 고른 파일이 Higgsfield 계정에 올라간다. 같은 글이 명령과 함께 첨부한 파일을 입력으로 쓴다고도 설명하므로 실제 첨부 경로는 계정에서 확인한다.
+
+다음은 이 구조를 적용한 검수 제안이다. 참조와 결과를 나란히 재생해 음악에 맞춘 컷 위치와 컷 전환을 비교하고, 제품이 나오는 숏은 형태, 로고와 문구가 실제 제품과 맞는지 확인한다. 생성 전에 표시된 크레딧, 재생성 횟수와 검수 시간은 앞 절처럼 기록하고, Claude 쪽 사용 한도는 Higgsfield 크레딧과 따로 확인한다. Higgsfield는 그 안의 음악, 영상, 캐릭터, 로고와 그 밖의 보호 대상까지 포함해 소유하거나 사용 허락을 받은 참조 편집을 쓰라고 안내한다. 라이브러리의 커뮤니티 프리셋도 사용자가 Katana 페이지에서 게시해 바로 공개되고 신고 뒤 내려갈 수 있으므로 같은 권리 확인 대상이다. 남의 영상을 참조로 쓸 때는 권리를 먼저 확인하고, 표현을 옮기는 범위는 [[Competitive-Analysis#아이디어 참고와 표현 복제의 경계|아이디어 참고와 표현 복제의 경계]]로 판단한다. 커넥터가 요청하는 권한과 도구별 승인은 [[AI-Marketing-Connectors|AI 마케팅 커넥터의 권한과 데이터 경계]]의 기준으로 검토한다. 실제 계정에서 생성 품질과 비용을 재현한 검증은 수행하지 않았다.
+
 ## 변경 범위와 검수 기준을 함께 쓴다
 
 다음은 제품 기능에 기반한 작업 제안이다.
@@ -128,6 +142,10 @@ aliases: ["생성형 영상 편집", "Generative Video Editing", "자동 리프�
 - [Introducing the New AI Influencer: How It Works and What You Can Create — Higgsfield](https://higgsfield.ai/blog/new-ai-influencer) — 2026-10-24 캐릭터 생성과 Motion 탭의 작업 구분, 생성 전 크레딧 표시 확인.
 - [Meet Higgsfield Genjutsu: How It Works and What You Get — Higgsfield](https://higgsfield.ai/blog/higgsfield-genjutsu) — 2026-10-24 동작 전이와 요소 교체의 구분 확인.
 - [AI 쇼츠, 날로 먹는 줄 알았습니다… 직접 해보니(AI캐릭터 편) — YouTube, ZeroCho TV](https://www.youtube.com/watch?v=7Az6J0MAI_M) — 2026-10-18 유료광고 포함 사용기. 05:08~07:20 제작 순서와 재생성 부담은 경험에 기반한 가설로만 반영했고 요금, 품질과 절감 효과는 일반화하지 않았다.
+- [Higgsfield Meets Katana: What It Is and How it Works — Higgsfield](https://higgsfield.ai/blog/higgsfield-katana) — 2026-10-12 게시, 2026-10-26 참조 편집과 사진의 역할, 커넥터 연결과 구독 조건, 명령, 생성 단위 크레딧 차감과 지역별 요금, 모더레이션, 링크와 첨부 이미지 제한, 참조 권리 안내 확인.
+- [Katana video remix skill — Higgsfield](https://higgsfield.ai/mcp/katana?tab=claude) — 2026-10-26 커넥터 URL 복사, Claude 커넥터 설정에서 추가 후 로그인, `/katana`로 시작하는 요청 확인.
+- [Claude Docs, Add a connector that isn't in the directory](https://claude.com/docs/connectors/custom/add-unlisted) — 2026-10-26 서버 URL로 사용자 정의 커넥터를 추가하는 방식 확인.
+- [클로드 하나로 영상 생성부터 편집까지 끝내는 법 — YouTube, 피프](https://www.youtube.com/watch?v=AS-yjTcYDGk) — 2026-10-20 추천 링크가 포함된 홍보성 시연. 작성 계기로만 썼고 공식 문서로 확인한 사실만 반영했으며, 결과물 평가와 모델 추천은 반영하지 않았다.
 
 - [The Overhang — One Useful Thing, Ethan Mollick](https://www.oneusefulthing.org/p/the-overhang) — 2026-09-18 공개 제작 경험, Blender 시안과 후속 영상 생성 및 사람의 수정 판단. 제작 시간은 작성자의 보고이며 일반 성능 지표가 아니다.
 - [Amazon Bedrock을 활용한 AWS Korea YouTube 채널의 숏폼 자동화 사례 — AWS](https://aws.amazon.com/ko/blogs/tech/amazon-bedrock-shortform-content-automation/) — 원문 시간 구간 매칭과 검수 전후 워크플로 분리.
@@ -151,3 +169,4 @@ aliases: ["생성형 영상 편집", "Generative Video Editing", "자동 리프�
 - [[Browser-CSS-Animation-and-Compatibility|브라우저 CSS 애니메이션과 호환성]] — 시간, 경로와 접근성 조건
 - [[Elemental-Inference|AWS Elemental Inference]] — 관리형 Smart crop과 대표 영상 검수 기준
 - [[Pricing-Strategy#AI 기능의 크레딧 가격과 작업 원가|AI 크레딧 가격과 작업 원가]] — GPU 처리 시간을 가격 하한으로 연결
+- [[AI-Marketing-Connectors|AI 마케팅 커넥터의 권한과 데이터 경계]] — 커넥터의 계정, 서버와 호스트 권한 검토

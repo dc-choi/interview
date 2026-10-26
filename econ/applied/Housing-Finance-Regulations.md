@@ -136,6 +136,7 @@ aliases: ["주택금융과 거래 규제", "Housing Finance Regulations", "LTV �
 
 - [[Housing-Rental-Market-Indicators|주택 매매와 임대차 지표 읽기]] — 시세 자료와 계약자료의 차이
 - [[Public-Rental-Housing-Types|공공임대주택 유형과 신청 전 확인]] — 대출로 집을 구하는 대신 공공임대를 비교할 때
+- [[Housing-Lease-Renewal-Rights|주택 임차인의 계약갱신요구권]] — 전월세 계약의 갱신, 증액 상한과 실거주 거절
 - [[Personal-Cash-Flow-Planning|개인 현금흐름 계획]] — 원리금 상환과 보증금 조달 계획
 - [[Interest-Rates-Monetary-Policy|금리와 통화정책]] — 대출금리가 정해지는 경로
 - [[Personal-Income-Tax-Basics|개인 소득세와 연말정산]] — 소득공제가 세금을 줄이는 방식

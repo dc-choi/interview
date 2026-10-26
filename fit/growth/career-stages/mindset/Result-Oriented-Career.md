@@ -64,6 +64,24 @@ O*NET Content Model은 직업명과 직무별 과업(Tasks), 여러 직업에 �
 
 거절도 우선순위의 표현이다. 거절하지 못하는 것은 실력 문제가 아니라 대부분 두 불안에서 온다 — 상대가 나를 싫어하면 어떡하나, 거절했다가 불이익이 생기면 어떡하나. 그러나 요청을 전부 받으면 신뢰가 쌓이는 게 아니라 경계가 없는 사람으로 읽히고, 바쁘긴 한데 자기 일은 잘 못 하는 것 같다는 평가로 이어질 수 있다. 거절은 설명이 아니다 — 길어질수록 상대가 협상 여지로 읽고, 짧고 명확할수록 오히려 전문적으로 들린다. 자기 할 일을 지키는 것이 협업이고, 성격을 바꾸는 게 아니라 **우선순위가 거절을 만든다**.
 
+## 효과성은 익힐 수 있는 실천이다 (드러커)
+
+피터 드러커의 The Effective Executive(1966)는 직함보다 기여로 경영자(executive)를 정의한다. 현대 조직의 지식근로자가 지위나 지식 때문에 조직이 성과를 내고 결과를 얻는 역량에 실질적으로 영향을 주는 기여를 책임진다면 경영자다. 이 기준으로 보면 관리할 팀원이 없는 개발자나 1인 대표도 해당할 수 있다(정의를 적용한 해석). 드러커는 효과성을 타고난 재능이 아니라 익힐 수 있고 익혀야 하는 실천으로 보고, 다섯 가지를 꼽는다.
+
+1. **시간이 어디로 가는지 안다.** 통제할 수 있는 얼마 안 되는 시간을 체계적으로 관리한다. 업무별 소요 시간과 가치를 나란히 비교하는 방법은 [[#시간 관리는 곧 영향력 관리|시간 관리 절]]을 따른다.
+2. **바깥을 향한 기여에 집중한다.** 일 자체보다 결과에 노력을 맞추고, 내게 기대되는 결과가 무엇인지 묻는 데서 시작한다.
+3. **강점 위에 쌓는다.** 자기 강점과 상사, 동료, 부하의 강점을 활용하고, 할 수 없는 일에서 출발하지 않는다.
+4. **뛰어난 성과가 큰 결과를 내는 소수 영역에 집중한다.** 우선순위를 정하는 일은 쉽고, 하지 않을 일(posteriorities)을 정하고 그 결정을 지키는 일이 어렵다. 이 축은 [[#우선순위는 '안 할 일'에서 선명해진다|안 할 일 절]]과 같고, 조직 단위의 집중은 [[Radical-Focus|우선순위 집중과 WIP 제한]]이 다룬다.
+5. **효과적인 결정을 내린다.** 같은 시기 드러커의 HBR 글은 효과적인 경영자가 결정을 많이 내리지 않고, 개념적으로 가장 높은 수준에서 소수의 중요한 결정을 내리려 한다고 설명한다. 결정 방식은 [[Decision-Frameworks|의사결정 프레임워크]]와 함께 본다.
+
+주간 점검 예시(다섯 실천을 개발자나 1인 대표의 한 주에 옮긴 적용안):
+
+- 지난주 통제할 수 있었던 시간 중 가장 큰 덩어리를 어떤 결과에 썼는가
+- 이번 주 결과를 받을 사람(사용자, 고객, 팀)이 기대하는 것을 한 문장으로 말할 수 있는가
+- 이번 주 가장 중요한 일을 내 강점이나 함께 일하는 사람의 강점이 쓰이는 방식으로 나눴는가
+- 이번 주에 하지 않기로 정한 일은 무엇이고, 그 결정을 지켰는가
+- 이번 주 내려야 할 중요한 결정 하나는 무엇이고, 작은 결정에 시간을 흩어 쓰고 있지 않은가
+
 ## 질문으로 방향을 확인하라 (올바른 산)
 
 질문을 민폐로 여겨 혼자 열심히 일하는 것은, 등산로도 모른 채 아무 산이나 오르는 것과 같다. 업무를 받으면 먼저 확인한다 — **이 일이 왜 중요한가, 성공 기준은 무엇인가, 다른 일과 견줘 우선순위는 어디인가.** 결과로 인정받으려면 노력의 양보다 **방향의 정확도**가 먼저다.
@@ -118,6 +136,12 @@ O*NET Content Model은 직업명과 직무별 과업(Tasks), 여러 직업에 �
 - [팀장이 되기 싫다는 개발자에게 — Team Grit](https://teamgrit.co/article/312)
 - [야근이 당연한 줄 아는 개발자에게 — Team Grit](https://teamgrit.co/article/355)
 - [거절을 못 하는 개발자에게 — Team Grit](https://teamgrit.co/article/380)
+- [The Effective Executive — Peter F. Drucker (Routledge, 2018 판, 초판 Harper & Row 1966)](https://books.google.com/books?id=THhQDwAAQBAJ) — 2026-10-26 Google Books 본문 검색으로 경영자 정의, 시간, 바깥 기여, 강점 구절과 결론 장 제목 확인
+- [Books By Peter Drucker — The Drucker Institute](https://drucker.institute/books-by-peter-drucker/) — 2026-10-26 The Effective Executive의 1966 표기 확인
+- [The Effective Decision — Harvard Business Review, Peter F. Drucker](https://hbr.org/1967/01/the-effective-decision) — 1967-01 게재, 2026-10-26 요약에서 소수의 중요한 결정에 집중한다는 대목 확인
+- [Priorities and Posteriorities, Adapted from The Effective Executive — The Drucker Institute](https://drucker.institute/wp-content/uploads/2018/08/Reading_Priorites-and-Posteriorities.pdf) — 2026-10-26 우선순위보다 후순위를 정하고 지키는 일이 어렵다는 대목 확인
+- [The Effective Executive — Kirkus Reviews](https://www.kirkusreviews.com/book-reviews/peter-f-drucker/the-effective-executive/) — 1966-06-15 호 서평, 2026-10-26 다섯 요소 목록과 익힐 수 있고 익혀야 한다는 결론 확인
+- [Open Library, The effective executive](https://openlibrary.org/books/OL21600791M/The_effective_executive) — 2026-10-26 Harper & Row 초판 서지 확인(도서관 서지의 발행 연도는 1967)
 
 ## 관련 문서
 - [[Career-Attitude|커리어 태도와 비선형 경로]] — 파도형 커리어, 계획된 우연, greedy 함정
@@ -130,3 +154,5 @@ O*NET Content Model은 직업명과 직무별 과업(Tasks), 여러 직업에 �
 - [[Self-Analysis|자기 분석 (확신 vs 정보)]] — 과잉 판단, 결정 지연의 함정
 - [[Peer-Network-Rotation|동료 네트워크]] — 평판, 추천으로 환경 파악
 - [[Tech-Trend-Learning-Strategy|기술 트렌드 학습 전략]] — 다 따라가지 않는 선택적 학습
+- [[Radical-Focus|우선순위 집중과 WIP 제한]] — 소수 영역 집중을 팀 단위로 운영하는 방법
+- [[Decision-Frameworks|의사결정 프레임워크]] — 중요한 결정을 내리는 절차

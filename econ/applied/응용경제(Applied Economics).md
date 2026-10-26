@@ -34,6 +34,8 @@ aliases: ["응용경제(Applied Economics)", "Applied Economics Map"]
 - [[Youth-Asset-Building-Accounts|청년 자산형성 상품 비교]] — 정부기여금형 적금과 세제 혜택형 투자 계좌의 차이, 상품별 단계와 가입 요건, 중도해지와 갈아타기, 선택 질문 ✅
 - [[Youth-Support-Programs|청년 지원 제도 확인]] — 공유된 혜택 표를 공고로 대조하는 법, 청년월세, 비수도권 근속 인센티브, 구직촉진수당, 모두의 카드, 문화와 예술 지원의 2026년 조건 ✅
 - [[Housing-Finance-Regulations|주택금융과 거래 규제]] — LTV와 DSR, 스트레스 금리, 장래소득 인정, 구간별 주담대 한도, 전세대출 보증, 토지거래허가구역 실거주, 청약통장 납입 인정의 2026-10 기준과 적용 점검 순서 ✅
+- [[Housing-Lease-Renewal-Rights|주택 임차인의 계약갱신요구권]] — 행사 기간과 1회 2년, 거절 사유와 실거주 거절의 손해배상, 증액 상한과 월차임 전환, 갱신 뒤 해지, 묵시적 갱신과 합의 재계약의 구분 ✅
+- [[Personal-Debt-Relief-Procedures|개인 채무조정과 도산 절차]] — 신용회복위원회 채무조정, 개인회생, 개인파산과 면책의 요건과 효력, 면책이 미치지 않는 채무와 보증인, 재신청 제한과 복권, 개인사업자의 사업 채무 ✅
 
 ### 3. 학습 가속기
 - [[Economics-Systems-Mapping|경제와 분산시스템 매핑]] — 통화정책=피드백 제어, 뱅크런=cascading failure. 시스템 직관으로 경제 흡수 ✅

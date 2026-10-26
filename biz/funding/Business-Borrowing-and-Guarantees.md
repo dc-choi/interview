@@ -65,6 +65,8 @@ verified_at: 2026-10-02
 
 금융위의 2018-03-08 발표는 2018-04-02부터 신보, 기보, 중진공, 지역신보의 중소기업 신규와 증액 대출/보증에서 법인대표자 연대보증을 폐지하고, 은행 보증부대출의 비보증분도 폐지 대상으로 설명했다. 기존 거래는 책임경영심사를 통한 단계적 폐지였다. **이 발표를 모든 민간 신용대출의 개인 보증 폐지로 확대하지 않는다.** 현재 상품, 거래 이력과 실제 서명할 약정에서 적용 여부를 확인한다. [금융위원회, 2018-03-08 발표](https://www.fsc.go.kr/no010101/73054)
 
+개인사업자의 사업 채무는 대표 개인의 채무이므로 갚을 수 없게 되면 요건을 갖춰 개인회생이나 개인파산을 신청할 수 있다. 주채무자가 면책을 받아도 채권자가 보증인과 그 밖의 공동채무자에게 가지는 권리와 채권자를 위해 제공된 담보에는 원칙적으로 영향이 없어, 보증인의 책임과 담보권은 남는다(2026-10-26 확인). 예외로 신용보증기금법 제30조의3과 기술보증기금법 제37조의3 제1항은 채권자가 각 기금이면 중소기업의 회생계획인가결정이나 파산선고 이후 면책결정으로 주채무가 감경, 면제될 때 연대보증채무도 같은 비율로 감경, 면제한다. 두 조문은 개인회생 면책의 보증인 조항(채무자회생법 제625조 제3항)도 배제 대상으로 들지만 감면 시점에는 개인회생을 적지 않았으므로, 개인회생에 적용되는지와 개인사업자가 여기의 중소기업에 해당하는지는 보증기관에 확인한다. 대법원은 회생계획인가 사안에서 두 조문을 지역신용보증재단 보증에 유추적용하지 않았다(2019다226135). 절차별 요건과 면책되지 않는 채무는 [[Personal-Debt-Relief-Procedures|개인 채무조정과 도산 절차]]에서 다룬다. [신용보증기금법 개정문(제30조의3)](https://www.law.go.kr/LSW/lsRvsDocListP.do?lsId=001523&chrClsCd=010202&lsRvsGubun=all), [기술보증기금법(제37조의3)](https://www.law.go.kr/LSW/lsInfoP.do?lsiSeq=285277), [대법원 2019다226135 판결](https://www.scourt.go.kr/sjudge/1588838121233_165521.pdf), [생활법령정보, 파산 면책의 효력(제567조)](https://www.easylaw.go.kr/CSP/CnpClsMainBtr.laf?popMenu=ov&csmSeq=616&ccfNo=4&cciNo=1&cnpClsNo=2), [개인회생 면책의 효력(제625조 제3항)](https://easylaw.go.kr/CSP/CnpClsMainBtr.laf?popMenu=ov&csmSeq=1286&ccfNo=5&cciNo=1&cnpClsNo=2)
+
 ## 기관 보증이 붙어도 상환 의무는 남는다
 
 기관 보증과 대표 개인의 연대보증은 다른 관계다. 보증기관이 금융기관에 보증채무를 이행하는 것을 대위변제라고 한다. 신보법은 이행 후 구상권 행사를 규정하고, 확인한 신보 약정서 제10조는 이행금액뿐 아니라 손해금, 비용과 미납 보증료 등의 상환을 정한다. 보증료를 냈거나 기관이 은행에 갚았다는 사실만으로 차주의 채무가 없어지지 않는다. [신용보증기금법 제30조](https://law.go.kr/LSW/lsSideInfoP.do?docCls=jo&joBrNo=00&joNo=0030&lsiSeq=277263&urlMode=lsScJoRltInfoR), [신보 약정서 제9~10조](https://img.shinhan.com/sbank2016/form/20260225000000830001WF00001000000001.PDF?1772378476062=)
@@ -118,6 +120,10 @@ verified_at: 2026-10-02
 - [국가법령정보센터, 민법 제437조](https://www.law.go.kr/lsLinkCommonInfo.do?lsJoLnkSeq=1028274835)
 - [4.2일부터 중소기업이 공공기관으로부터 대출과 보증을 받을 경우 연대보증이 폐지됩니다 — 금융위원회](https://www.fsc.go.kr/no010101/73054) — 2018-03-08.
 - [중소벤처기업진흥공단, 혁신창업사업화자금](https://www.kosmes.or.kr/nsh/SH/SBI/SHSBI004M0.do) — 2026-10-21 청년전용창업자금의 대상, 예외, 한도, 기간, 금리와 평가 절차만 추가 대조했다. 기존 법령과 은행 약정의 검증 날짜는 갱신하지 않았다.
+- [법제처 찾기쉬운 생활법령정보, 개인파산 면책절차 개관](https://www.easylaw.go.kr/CSP/CnpClsMainBtr.laf?popMenu=ov&csmSeq=616&ccfNo=1&cciNo=1&cnpClsNo=1), [면책의 효력 및 취소](https://www.easylaw.go.kr/CSP/CnpClsMainBtr.laf?popMenu=ov&csmSeq=616&ccfNo=4&cciNo=1&cnpClsNo=2), [개인회생절차 개념 및 신청자격](https://easylaw.go.kr/CSP/CnpClsMainBtr.laf?popMenu=ov&csmSeq=1286&ccfNo=1&cciNo=1&cnpClsNo=1), [개인회생 면책결정의 효력 및 취소](https://easylaw.go.kr/CSP/CnpClsMainBtr.laf?popMenu=ov&csmSeq=1286&ccfNo=5&cciNo=1&cnpClsNo=2) — 2026-10-26 개인사업 채무가 개인파산과 개인회생(영업소득자)의 대상이 되는지와 면책이 보증인, 공동채무자와 담보에 미치지 않는 규정(채무자회생법 제567조, 제625조 제3항)만 추가 대조했다. 기존 법령과 은행 약정의 검증 날짜는 갱신하지 않았다.
+- [국가법령정보센터, 신용보증기금법 개정문](https://www.law.go.kr/LSW/lsRvsDocListP.do?lsId=001523&chrClsCd=010202&lsRvsGubun=all) — 2026-10-26 제30조의3(연대보증채무의 감경, 면제) 문언과 2013-05-28 신설 뒤 개정 없음 확인
+- [국가법령정보센터, 기술보증기금법](https://www.law.go.kr/LSW/lsInfoP.do?lsiSeq=285277) — 2026-10-26 현행 본문(법률 제21540호, 2026-10-08 시행)에서 제37조의3 제1항 문언 확인(본조신설 2013-05-28, 제1항 개정 2020-12-08)
+- [대법원, 2019다226135 판결](https://www.scourt.go.kr/sjudge/1588838121233_165521.pdf) — 2020-04-29 선고, 주채무자인 중소기업의 회생계획인가 사안에서 기술보증기금법 제37조의3과 신용보증기금법 제30조의3의 지역신용보증재단 유추적용 부정. 2026-10-26 열람
 
 ## 관련 문서
 
@@ -126,3 +132,4 @@ verified_at: 2026-10-02
 - [[Government-Support-Programs]] — 지원금, 정책자금과 기관 보증
 - [[Business-Income-and-Corporate-Tax]] — 개인과 법인의 소득, 지급의 세무 구분
 - [[Tax-Bookkeeping-and-Filing]] — 장부, 증빙과 납부 일정
+- [[Personal-Debt-Relief-Procedures]] — 개인회생, 개인파산과 면책 뒤 남는 보증과 담보
