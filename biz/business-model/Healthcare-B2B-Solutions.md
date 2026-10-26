@@ -94,6 +94,20 @@ aliases: ["Healthcare B2B Solutions", "의료 B2B 솔루션", "의료 솔루션 
 
 정보를 빠르게 찾았다는 결과를 진료 판단의 정확도나 환자 건강 개선으로 계산하지 않는다. 검색 시간을 줄여도 확인과 수정에 같은 시간이 추가된다면 실제 업무 절감 효과는 작다. 구매자는 검색 속도와 함께 전체 방문 준비 부담이 줄었는지 확인해야 한다.
 
+### 주입 치료의 운영 계획과 도입 성과를 구분한다
+
+가정과 외래 주입 치료에서는 환자 접수, 간호 인력 일정, 구매와 공급망을 연결하는 운영 업무가 AI 도입 후보가 된다. Option Care Health와 Palantir의 2024-01-08 다년 계약 발표는 이 네 영역을 AIP의 예상 활용처로 제시했다. 방문 일정 개선, 행정 부담 감소와 과잉 재고 방지도 목표로 설명했지만, 해당 발표만으로 실제 절감률이나 임상 성과가 입증되지는 않는다(2026-10-26 발표문 대조).
+
+아래는 이 업무 범위를 제품 도입 시험으로 바꾸는 **측정 제안**이다.
+
+| 업무 | 비교할 결과 | 함께 확인할 부담 |
+|---|---|---|
+| 환자 접수 | 접수 완료까지의 시간과 누락 보완 횟수 | 사람이 자료를 확인하고 수정하는 시간 |
+| 간호 인력 일정 | 일정 확정 시간과 변경 대응 시간 | 담당자의 승인, 이동과 재배정 제약 |
+| 구매와 공급망 | 결품과 과잉 재고, 주문 처리 시간 | 데이터 연동과 예외 주문 처리 비용 |
+
+제휴와 인수도 도입 성과와 구분한다. 2026-10-06 발표된 Option Care Health 인수 계약은 종결 시 CD&R 약 51%, McKesson 약 49% 지분을 예정하며, 주주와 규제 승인 등을 조건으로 2027년 상반기 종결을 예상했다. 따라서 이 발표는 계약 체결의 근거이며 인수 완료의 근거가 아니다. 이 거래 자체로 AI 수익성이나 특정 치료 시장의 성장 가설이 검증됐다고 판단하지 않는다(2026-10-26 발표문 대조).
+
 ## 의료와 생활 지원을 연결하는 서비스 경계
 
 의료기관 밖의 식품, 주거와 이동 지원을 연결하는 서비스에서는 안내 이후의 신청, 처리 결과와 실제 제공을 나누어 본다. 다음은 2026-10-14 각 운영기관의 공개 설명에서 확인한 기능이며, 세 기관의 연동 구조나 성과를 독립 검증한 결과는 아니다.
@@ -116,6 +130,8 @@ aliases: ["Healthcare B2B Solutions", "의료 B2B 솔루션", "의료 솔루션 
 
 ## 출처
 
+- [Option Care Health Selects Palantir’s Artificial Intelligence Platform for Enterprise-Wide Digital Transformation — Option Care Health](https://investors.optioncarehealth.com/node/18981/pdf) — 2024-01-08 발표, 예상 활용처와 목표 확인
+- [CD&R and McKesson Corporation Sign Agreement to Acquire Option Care Health — McKesson](https://investor.mckesson.com/news/financial-news/2026/CDR-and-McKesson-Corporation-Sign-Agreement-to-Acquire-Option-Care-Health/default.aspx) — 2026-10-06 발표, 지분 구조와 종결 조건 확인
 - [Layla — AlayaCare](https://alayacare.com/layla/)
 - 사용자 제공 커뮤니티 대화 메모 — 대화 날짜 미상, 2026-09-08 정리. 참여자 식별 정보는 저장하지 않았다.
 - [국민건강보험법 제47조 요양급여비용의 청구와 지급 등 — 국가법령정보센터](https://www.law.go.kr/LSW/lsSideInfoP.do?docCls=jo&joBrNo=00&joNo=0047&lsiSeq=276651&urlMode=lsScJoRltInfoR)

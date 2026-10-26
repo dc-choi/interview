@@ -21,6 +21,7 @@ Software 3.0 패러다임, LLM과 에이전트, 하네스, 평가, 조직 전환
 - [[eval|평가, 신뢰성, 캘리브레이션]] — LLM 평가 전략, Abstention(모른다고 말하는 능력), 환각 유형과 검증, 평가 주도 개발(EDD), 루브릭과 점수 게이트, LLM 판정기, 골든셋과 배포 관문, 서빙 모델 드리프트 감시
 
 ## 세부 학습
+- [x] [[Monte-Carlo-Tree-Search|몬테카를로 트리 탐색과 UCT]] — 선택, 확장, 시뮬레이션과 통계 갱신, 탐색 점수와 실행 기준의 구분
 - [x] [[Claude-Code-Projects|Claude Code Projects]] — 조율과 실행의 분리, 공유 메모리, 병합 충돌과 병렬 사용량
 - [x] [[Deep-Learning-Foundations-and-Practice|딥러닝 기초와 실습]] — 개념과 과업의 연결, Keras 학습과 평가, 교재 범위와 실행 검증의 구분
 - [x] [[Multimodal-Video-Retrieval|멀티모달 영상 검색]] — 시간 구간 근거, 색인과 생성 분리, 모델과 API 지원 경계
