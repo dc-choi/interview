@@ -42,6 +42,20 @@ SageMaker AI의 관리형 shadow test는 같은 endpoint에서 추론 요청을 
 
 차량 내 병렬 실행과 클라우드 endpoint의 요청 복제는 구분한다. Storm Reply의 One Loop 공개 사례는 SageMaker를 통한 재학습, Greengrass를 통한 배포, 차량에서 기존 및 새 모델을 비교하는 shadow mode를 설명한다. 이 사례만으로 차량의 shadow mode가 SageMaker의 관리형 shadow test를 사용한다고 추론하지 않는다.
 
+## 재학습, 통합 검사와 운영 승격을 분리한다
+
+새 데이터가 들어오는 주기와 모델 코드가 바뀌는 주기는 다르다. 데이터, 모델이나 코드의 변화는 재학습 계기가 될 수 있지만, 재학습 성공이 운영 모델 교체를 곧바로 승인하지는 않는다. 다음 구분은 2026-10-27 AWS MLOps 체크리스트의 continuous training, continuous integration, continuous deployment를 대조한 설계 기준이다.
+
+| 흐름 | 확인할 대상 | 완료 근거 |
+|---|---|---|
+| 재학습 | 새 데이터와 기존 데이터의 품질, 새 모델 후보 | 데이터 검증과 학습 결과, 기준 모델과의 비교 |
+| 지속적 통합 | 모델, 애플리케이션과 인프라 코드의 연결 | 단위 검사, 데이터 스키마, 모델 입출력과 극단 입력, 파이프라인 통합 검사 |
+| 운영 승격 | 검증된 후보를 실제 요청에 적용하는 과정 | 단계별 검증, 트래픽 전환 기준과 복구 절차 |
+
+부하 검사는 처리량과 지연을 확인하며 예측 품질 검사와 목적이 다르다. 검증 데이터에서의 성능이 좋아도 실제 요청의 극단 입력이나 애플리케이션 계약에서 실패할 수 있으므로 승격 전에 함께 확인한다. 배포 전략은 환경에 맞게 고르되, 오류나 예상 밖 동작에 대응해 이전 버전으로 되돌리거나 대체 동작으로 전환할 경로를 둔다.
+
+**배송 모델에 적용하는 예:** 도로 이동 시간과 건물 도착 후 문 앞까지 걸린 시간을 구분해 관측하고, 새 모델이 무엇을 예측하는지 먼저 고정한다. 지역, 물량과 수집 조건이 다른 데이터를 함께 쓸 때는 평가 구간을 나누어 비교한다. 학습과 배포 리드타임이 줄어든 결과와 실제 배송 지연이 줄어든 결과도 별도로 측정한다. 이는 평가 설계 제안이며 특정 업체의 성과나 자동화 도구의 효과를 보장하는 설명이 아니다.
+
 ## 검증 경계
 
 ### 초안 생성과 최종 사용을 따로 평가한다
@@ -64,6 +78,9 @@ SageMaker AI의 관리형 shadow test는 같은 endpoint에서 추론 요청을 
 
 ## 출처
 
+- [AWS Prescriptive Guidance, Evaluating your ML project with the MLOps checklist](https://docs.aws.amazon.com/pdfs/prescriptive-guidance/latest/mlops-checklist/mlops-checklist.pdf) — 8절의 재학습 정의와 데이터, 모델, 코드 변경 트리거를 2026-10-27 대조
+- [AWS Prescriptive Guidance, Continuous integration](https://docs.aws.amazon.com/prescriptive-guidance/latest/mlops-checklist/continuous-integration.html) — 데이터, 통합, 부하와 극단 입력 검사의 분리, 2026-10-27 대조
+- [AWS Prescriptive Guidance, Continuous deployment](https://docs.aws.amazon.com/prescriptive-guidance/latest/mlops-checklist/continuous-deployment.html) — 단계별 승격, 트래픽 전환과 복구 경로, 2026-10-27 대조
 - [AI Solutions at the Intersection of Retail and Healthcare — Experity](https://www.experityhealth.com/ai-solutions/) — 2026-10-22 Care Agent의 업무 범위 확인. 과업별 상태와 평가 지표는 설계 제안
 - [Amazon Bio Discovery — AWS](https://aws.amazon.com/biodiscovery/) — 2026-10-22 후보 생성, 연구실 검증과 결과 환류의 공개 구조 대조.
 - [Executive Insights from the 2026 AWS Life Sciences Symposium — AWS for Industries](https://aws.amazon.com/blogs/industries/executive-insights-from-the-2026-aws-life-sciences-symposium/) — MSK 초기 사례의 완료 범위는 설계를 연구실로 보내는 단계.

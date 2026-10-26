@@ -1,7 +1,7 @@
 ---
 tags: [ai, llm, aws, bedrock, inference]
 status: done
-verified_at: 2026-10-22
+verified_at: 2026-10-27
 category: "AI엔지니어링(AIEngineering)"
 aliases: ["Bedrock 모델 호출", "Bedrock Model Inference"]
 ---
@@ -31,6 +31,14 @@ Converse에서 대화를 이어가려면 애플리케이션이 이전 메시지�
 
 `Converse` 호출에는 `bedrock:InvokeModel`, `ConverseStream`에는 `bedrock:InvokeModelWithResponseStream` 권한이 필요하다. 이는 호출 권한의 설명이며 모든 모델의 이용 조건을 충족했다는 뜻은 아니다. [Converse API](https://docs.aws.amazon.com/bedrock/latest/userguide/conversation-inference.html)
 
+## 임베딩 호출과 RAG 검색을 분리한다
+
+임베딩 모델은 입력 텍스트를 벡터로 변환한다. 벡터 간 유사도 계산과 문서 검색은 벡터 데이터베이스가 수행한다. 따라서 임베딩 호출에 성공했다는 사실만으로 문서 저장, 검색과 답변 생성까지 준비됐다고 판단하지 않는다. 관리형 지식 베이스의 조회 계약은 [[Bedrock-Knowledge-Base-Retrieval|Bedrock 지식 베이스 조회]]에서 별도로 다룬다.
+
+2026-10-27 공식 문서 기준, Titan Text Embeddings V2의 모델 ID는 `amazon.titan-embed-text-v2:0`이다. `InvokeModel`의 모델별 본문에 필수 `inputText`를 넣고, 선택 필드 `dimensions`로 1024(기본), 512, 256 중 출력 차원을 정한다. `normalize`의 기본값은 `true`다. 입력 한도는 8,192토큰 또는 50,000문자로 명시되어 있으며, 검색용 문서는 문단이나 절처럼 의미가 이어지는 단위로 나누도록 권장한다. 이 모델에는 생성 모델의 `maxTokenCount`, `topP`를 그대로 적용하지 않는다.
+
+**적용 점검 제안:** 문서와 질의에 쓸 임베딩 모델, 출력 차원, 정규화 설정을 기록하고 벡터 저장소 스키마와 맞춘다. 차원이나 모델을 바꿀 때는 기존 색인을 그대로 재사용할 수 있다고 가정하지 말고 재임베딩과 색인 교체 필요성을 확인한다. 생성 모델만 교체하는 실험과 검색 표현까지 바꾸는 실험을 나누면 답변 변화의 원인을 비교하기 쉽다. 차원을 줄였을 때의 한국어 검색 품질과 실제 저장 비용은 별도 측정 대상이다.
+
 ## 실험을 코드로 옮기는 순서
 
 Bedrock 콘솔 playground로 기반 모델을 실험할 수 있다. 공식 안내는 custom model이 콘솔 playground에서 지원되지 않는다고 구분한다. 예전 시연의 화면과 모델 목록을 현재의 지원 목록으로 쓰지 않는다. [Playgrounds 안내](https://docs.aws.amazon.com/bedrock/latest/userguide/playgrounds.html)
@@ -50,9 +58,12 @@ Bedrock 콘솔 playground로 기반 모델을 실험할 수 있다. 공식 안�
 - [Amazon Bedrock, Inference using Converse API](https://docs.aws.amazon.com/bedrock/latest/userguide/conversation-inference.html)
 - [Amazon Bedrock, Inference request parameters and response fields for foundation models](https://docs.aws.amazon.com/bedrock/latest/userguide/model-parameters.html)
 - [Amazon Bedrock, Generate responses in the console using playgrounds](https://docs.aws.amazon.com/bedrock/latest/userguide/playgrounds.html)
+- [Amazon Bedrock, Amazon Titan Text Embeddings models](https://docs.aws.amazon.com/bedrock/latest/userguide/titan-embedding-models.html) — 2026-10-27 임베딩과 검색의 역할, 입력 한도와 출력 차원 대조
+- [Amazon Bedrock, Amazon Titan Embeddings G1 - Text](https://docs.aws.amazon.com/bedrock/latest/userguide/model-parameters-titan-embed-text.html) — 같은 페이지의 V2 Request와 예제에서 호출 API, 필수 입력과 선택 필드 대조
 
 ## 관련 문서
 
 - [[LLM-Failure-Handling|LLM 실패 처리]]
 - [[LLM-Cost-Optimization|LLM 비용 최적화]]
 - [[Bedrock-Private-Access|Bedrock 비공개 연결]]
+- [[Bedrock-Knowledge-Base-Retrieval|Bedrock 지식 베이스 조회]]
