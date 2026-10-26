@@ -10,6 +10,7 @@ aliases: ["Evolution"]
 모놀리스 vs MSA, 레거시 현대화, 런타임 스택 진화, AI 레거시 온보딩.
 
 ## 목차
+- [x] [[Lehman-Software-Evolution|소프트웨어 진화 법칙]] — E-type, 지속적 변경, 복잡성 관리와 피드백의 적용 범위
 - [x] [[Low-Code-Platform-Exit-Boundaries|로우코드 플랫폼의 코드 반출과 운영 이관]] — O11 detach 범위, 데이터와 운영 도구, 되돌릴 수 없는 전환
 - [x] [[microservice|마이크로서비스 전환 (모놀리스 vs MSA, 준비도, 분해, 경계 조합, 데이터 소유권, 모듈러 모노리스)]] — 서브폴더 인덱스
 - [x] [[Legacy-Modernization-Strategies|레거시 현대화 전략 (Strangler Fig/인프라 단절/Recode/사양 경량화, 롤아웃 4축, Event Interception과 과도기 아키텍처, 전환 순서, 사용량 기반 제거 조건)]]
