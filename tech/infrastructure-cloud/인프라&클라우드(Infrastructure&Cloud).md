@@ -9,6 +9,7 @@ aliases: ["인프라&클라우드(Infrastructure&Cloud)", "Infrastructure & Clou
 
 ## 목차
 
+- [[Cloudflare-Durable-Objects|Durable Objects]] — 객체별 상태와 실행, 메모리 수명, SQLite 트랜잭션과 셀프호스팅
 - [[Internal-Developer-Platform|내부 개발자 플랫폼]] — 반복 요청의 셀프서비스, 비동기 생성과 운영 책임
 - [[GPU-Server-Infrastructure|GPU 서버 인프라]] — CPU와 GPU, 워프와 분기 발산, 메모리와 통신 경로, 전력과 냉각, 사용률 해석, GPU 공유와 CUDA 체크포인트 제약
 - [[Optical-Interconnect-and-CPO|광통신과 CPO]] — 광 변환 위치, 전기 경로와 외부 레이저, 제품별 정비 경계

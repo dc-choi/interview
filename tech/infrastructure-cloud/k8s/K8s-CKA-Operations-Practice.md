@@ -74,6 +74,22 @@ kubectl create deployment web --image=nginx --replicas=3 \
 
 `--dry-run=client` 성공은 실제 클러스터의 admission, 권한, scheduling과 실행 성공을 검증하지 않는다. 생성한 YAML에 과제의 namespace, container, volume과 자원 조건을 반영한 뒤 적용 결과를 확인한다. 명령형 생성은 실습 속도를 높이는 수단이며 운영 환경의 GitOps나 변경 승인 절차를 대체하지 않는다.
 
+### YAML 필드 경로는 서버 스키마에서 확인한다
+
+2026-10-26 `kubectl explain` 공식 명령 레퍼런스 대조 기준이다. 시험 정책과 커리큘럼 전체를 다시 확인한 것은 아니므로 기존 검증일은 유지한다.
+
+`kubectl explain`은 서버가 제공하는 OpenAPI 정보로 리소스 필드와 구조를 설명한다. `TYPE.FIELDNAME` 경로로 필요한 부분을 좁히고, `--api-version`으로 조회할 API 버전을 지정할 수 있다.
+
+```bash
+kubectl explain pods.spec.containers
+kubectl explain pods.spec.containers --recursive
+kubectl explain deployments.spec --api-version=apps/v1
+```
+
+`--recursive`는 하위 필드를 살펴보는 옵션이다. 긴 출력은 먼저 필드 경로를 더 좁혀 읽고, 실제로 쓸 필드의 설명과 타입을 확인한다. 공백 수에 의존한 출력 필터는 필드 설명을 생략할 수 있으므로 필수 조건 검토를 대신하지 않는다.
+
+스키마 조회는 해당 객체의 현재 값이나 변경 성공을 보여주지 않는다. 조회할 context를 먼저 확인하고, 적용 후 객체 상태와 동작을 별도로 확인한다. 웹 문서의 페이지 내 검색과 `kubectl explain`을 함께 연습하되, 시험에서 허용되는 자료는 해당 시험의 지시를 따른다.
+
 ## 작업별 확인 기준
 
 아래 목록은 재현용 실습 항목이다. 특정 유형이 시험에 반드시 나온다는 의미는 아니다.
@@ -128,6 +144,7 @@ PV/PVC, NetworkPolicy, RBAC, CoreDNS, kubeadm upgrade, etcd recovery, Helm과 Ga
 - [Linux Foundation, How do I access the exam simulator (Practice Exams)?](https://linuxfoundation.atlassian.net/wiki/spaces/TCCS/pages/161579396)
 - [Killer Shell, FAQ](https://killer.sh/faq)
 - [Kubernetes Docs, kubectl Quick Reference](https://kubernetes.io/docs/reference/kubectl/quick-reference/)
+- [Kubernetes Docs, kubectl explain](https://kubernetes.io/docs/reference/kubectl/generated/kubectl_explain/)
 - [Kubernetes Docs, Using RBAC Authorization](https://kubernetes.io/docs/reference/access-authn-authz/rbac/)
 - [Kubernetes Docs, Upgrading kubeadm clusters](https://kubernetes.io/docs/tasks/administer-cluster/kubeadm/kubeadm-upgrade/)
 - [Kubernetes Docs, Operating etcd clusters for Kubernetes](https://kubernetes.io/docs/tasks/administer-cluster/configure-upgrade-etcd/)

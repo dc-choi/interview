@@ -56,6 +56,17 @@ DB 트랜잭션으로 business row와 Outbox 테이블의 이벤트를 함께 �
 
 다른 시스템(SQS, Pub/Sub 등)과의 상세 비교는 [[Messaging-Patterns|메시징 패턴]]과 [[Messaging-Broker-Comparison|브로커 비교]] 참고.
 
+## MSK 이전 평가: 입력 가정과 실행 검증을 나눈다
+
+2026-10-26 AWS Transform의 Analytics assessments 문서 대조 기준이다. 이 평가는 자체 운영 Kafka를 **MSK Provisioned의 Express broker**로 옮기는 구성을 다루며, Standard broker나 MSK Serverless의 평가로 확대하지 않는다. 기존 절 전체의 검증일은 유지한다.
+
+- **크기 산정:** 현재 broker 수를 복사하지 않는다. 최대 유입량, 최대 유출량과 파티션 수의 제약을 각각 계산해 가장 많은 broker가 필요한 조건을 적용한다. 사용률 가정과 보존 기간도 확인한다.
+- **누락 입력:** 처리량이 전혀 없으면 broker 3개에 저장소와 네트워크 비용을 넣지 않은 최소 구성을 보고한다. 이는 실제 workload 견적이 아닌 하한이다. 평균 유입량이 없을 때 최대 유입량의 절반을 사용하는 가정도 실측값과 구분한다.
+- **비용 범위:** broker 시간, 저장량, 데이터 유입과 AZ 간 전송을 계산한다. 이 평가가 맡은 원본 broker host와 직접 연결된 volume은 EC2/EBS 항목으로 중복 계산하지 않는다.
+- **호환성:** topology, Kafka 버전, 설정, 인증과 quota를 확인한다. 조치가 필요한 finding이 있어도 비용 추정은 생성되므로 견적 생성 성공을 이전 가능 판정으로 쓰지 않는다.
+
+운영 제안: 실측 처리량과 입력 가정을 구분해 보관하고, 후보 구성의 부하 시험, 데이터 복제, 소비 위치와 복귀 시험을 별도 완료 조건으로 둔다. 평가 산출물이 클러스터 생성이나 무손실 전환을 증명하지는 않는다.
+
 ## 클러스터 이전: 데이터 복제와 소비 위치를 따로 확인한다
 
 2026-10-10 Amazon MSK Replicator 공식 문서 기준이다. 복제본의 레코드 offset은 원본과 다를 수 있다. Consumer group offset 동기화는 원본의 커밋 위치를 대상 위치로 변환하며, 정확히 같은 위치가 아니라 일부 재처리를 허용하는 근사 위치에서 재개할 수 있다. 외부 DB 갱신이나 결제 같은 부수효과에는 별도 멱등 처리가 필요하다.
@@ -102,6 +113,7 @@ Mirror topic은 원본 레코드의 바이트와 offset을 보존하는 **비동
 
 ## 출처
 
+- [AWS Transform, Analytics assessments](https://docs.aws.amazon.com/transform/latest/userguide/transform-app-assessments-analytics.html) — Express 평가 범위, 누락 입력, 비용과 호환성 판정
 - [Amazon MSK, Understand MSK Connect](https://docs.aws.amazon.com/msk/latest/developerguide/msk-connect.html)
 - [Amazon MSK, Use Debezium source connector with configuration provider](https://docs.aws.amazon.com/msk/latest/developerguide/mkc-debeziumsource-connector-example.html)
 - [AWS News Blog — Introducing Amazon MSK Connect](https://aws.amazon.com/blogs/aws/introducing-amazon-msk-connect-stream-data-to-and-from-your-apache-kafka-clusters-using-managed-connectors/)
