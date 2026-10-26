@@ -8,7 +8,7 @@ aliases: ["AWS Elastic Beanstalk", "Elastic Beanstalk", "Beanstalk"]
 
 # AWS Elastic Beanstalk
 
-애플리케이션 소스나 컨테이너를 배포하면 EC2, Auto Scaling, Load Balancer, 보안 그룹과 모니터링 구성을 조정해 주는 AWS 관리형 PaaS다. 인프라 리소스는 계정에 보이고 직접 제어할 수 있지만, 운영체제와 플랫폼 생명주기 책임까지 없어지는 것은 아니다.
+애플리케이션 소스나 컨테이너를 배포하고 실행 환경을 관리하는 AWS 관리형 PaaS다. Standard는 환경별 EC2에서, Cluster는 서비스가 운영하는 Amazon EKS의 컨테이너로 실행한다. 모드에 따라 설정 대상과 인프라 제어 범위가 다르다.
 
 ## 리소스 모델
 
@@ -16,9 +16,24 @@ aliases: ["AWS Elastic Beanstalk", "Elastic Beanstalk", "Beanstalk"]
 - **Application version**: S3에 저장된 특정 source bundle과 버전 레이블
 - **Environment**: 한 버전을 실행하는 AWS 리소스 집합. dev, staging, production을 별도 환경으로 나눌 수 있음
 - **Platform branch와 version**: 운영체제, 런타임, 웹 서버와 Beanstalk 구성의 조합
-- **Environment tier**: HTTP 요청을 처리하는 Web server와 SQS 작업을 소비하는 Worker
+- **Environment tier**: Standard는 HTTP 요청을 처리하는 Web server와 SQS 작업을 소비하는 Worker, Cluster는 EKS 컨테이너를 실행하는 cluster tier
 
 Elastic Beanstalk 서비스 사용에 별도 추가 요금은 없지만 EC2, ELB, S3, CloudWatch, 데이터 전송 등 생성된 리소스는 각각 과금된다. 무료 인프라로 오해하면 안 된다.
+
+### Standard와 Cluster의 설정 경계
+
+2026-10-27 Concepts와 Cluster architecture 문서 대조 기준이다. 아래의 기존 EC2, instance profile, 플랫폼 브랜치와 `.ebextensions` 설명은 Standard를 기준으로 읽는다.
+
+- Standard는 환경 전용 EC2 Auto Scaling 그룹을 사용한다. Cluster는 같은 계정에서 같은 VPC 서브넷 집합을 쓰는 환경들이 EKS 클러스터를 공유하며, 노드 용량은 EKS Auto Mode가 공급한다. 사용자가 기존 클러스터를 지정하는 방식은 아니다.
+- Cluster의 확장 단위는 애플리케이션 replica다. `aws:elasticbeanstalk:eks:environment:autoscaling`의 `min-replica`, `max-replica`를 사용하며 Standard의 `aws:autoscaling:asg` 설정을 그대로 옮기지 않는다.
+- Cluster 앱은 서로 교체 가능한 컨테이너 복제본으로 실행할 수 있어야 한다. 재시작 뒤 남아야 할 업로드나 작업 파일은 외부 영속 저장소에 둔다. 로컬 저장소는 재시작 시 사라진다.
+- Cluster의 서브넷과 cluster, node, observability IAM 역할은 기존 환경에서 바꿀 수 없다. 다른 설정이 필요하면 새 환경을 만들고 CNAME 교환으로 전환한다. 서비스가 관리하는 클러스터를 직접 변경해 drift가 생기면 유지보수와 환경 업데이트가 막힐 수 있다.
+
+### 관리형 업데이트의 범위
+
+2026-10-27 Managed platform updates 대조 기준, Standard의 관리형 업데이트는 설정한 유지보수 시간에 patch 또는 minor와 patch를 적용한다. 다른 플랫폼 브랜치로의 이동은 지원하지 않으며, 기존 브랜치가 퇴역해도 자동 이동하지 않는다. 지원이 끝난 런타임을 바꾸려면 별도 브랜치 이전과 애플리케이션 호환성 확인이 필요하다. 플랫폼 관리 위임을 애플리케이션 의존성이나 모든 major 업그레이드의 자동 처리로 해석하지 않는다.
+
+이번 확인은 모드 구분과 관리형 업데이트 범위의 부분 검증이다. 기존 배포 정책, Docker 브랜치와 다른 서비스의 지원 상태 전체를 재검증한 것은 아니므로 기존 `verified_at`을 유지한다.
 
 ### 환경 사전 설정 — 단일 인스턴스와 고가용성
 
@@ -117,6 +132,8 @@ Docker 지원 플랫폼에 `Dockerfile` 또는 플랫폼이 요구하는 구성�
 
 ## 출처
 
+- [AWS Elastic Beanstalk — Beanstalk Cluster architecture](https://docs.aws.amazon.com/elasticbeanstalk/latest/dg/beanstalk-cluster-concepts.html) — 2026-10-27 모드별 구성, 공유 조건과 변경 제한 대조
+- [AWS Elastic Beanstalk — Managed platform updates](https://docs.aws.amazon.com/elasticbeanstalk/latest/dg/environment-platform-update-managed.html) — 2026-10-27 브랜치 이동 제외 범위 대조
 - [How do I troubleshoot Auto Scaling issues in Elastic Beanstalk? — AWS re:Post](https://repost.aws/knowledge-center/elastic-beanstalk-troubleshoot-autoscaling)
 - [AWS Elastic Beanstalk — Auto Scaling triggers](https://docs.aws.amazon.com/elasticbeanstalk/latest/dg/environments-cfg-autoscaling-triggers.html)
 - [AWS Elastic Beanstalk — Auto Scaling health check setting](https://docs.aws.amazon.com/elasticbeanstalk/latest/dg/environmentconfig-autoscaling-healthchecktype.html)

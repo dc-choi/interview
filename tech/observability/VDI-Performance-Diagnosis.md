@@ -54,6 +54,23 @@ vSAN ESA 9.1의 effective capacity 설명에서 usable 용량은 시스템 예�
 
 Omnissa의 Horizon 8 설계 문서는 여러 VM이 동시에 작업하는 I/O storm을 별도로 다룬다. **비교 시험 제안**: 같은 데스크톱 이미지, 동시 사용자 수와 보호 정책을 맞추고 평상시와 동시 시작 부하를 나눠 세션 시작 시간, 저장장치 지연과 처리량을 기록한다. 재구축이나 장애 복구 중의 조건도 별도 시험으로 남긴다. 가격 비율이나 VM 수 하나만으로 성능과 운영 안정성을 판정하지 않는다.
 
+### 스토리지 교체 효과는 시험 조건과 백분위로 확인한다
+
+2026-10-27 Microsoft DiskSpd 문서 대조 기준이다. 같은 VM과 하드웨어를 써도 I/O 크기, 읽기와 쓰기 비율, 동시 요청 수와 캐시 조건이 다르면 결과를 직접 비교하기 어렵다.
+
+| 기록할 조건 | DiskSpd에서 확인할 항목 |
+|---|---|
+| I/O 패턴 | `-b`의 블록 크기, `-r`의 임의 접근, `-w`의 쓰기 비율 |
+| 동시 부하 | `-t`의 대상별 스레드 수, `-o`의 대상별 스레드당 미완료 요청 수 |
+| 측정 시간 | `-W`의 준비 구간과 `-d`의 측정 구간을 구분 |
+| 캐시와 쓰기 완료 조건 | `-S` 계열 옵션, 소프트웨어 캐시와 write-through 여부 |
+
+`-L`은 지연 통계를 수집하고 읽기, 쓰기와 전체의 백분위 결과를 제공한다. 처리량, 평균 지연과 P99는 따로 기록한다. P99는 측정 I/O의 99%가 그 값 이하라는 의미이며, 처리량 개선 배수를 P99 개선 배수로 바꿔 쓰지 않는다. 표본이 적으면 높은 백분위가 최댓값과 같아질 수 있으므로 측정 시간과 I/O 수를 함께 남긴다. `-Rxml` 결과에는 시험 설정과 시스템 정보도 포함된다.
+
+**적용 제안**: 교체 전후의 같은 시험 설정과 결과를 보존하고, 별도로 다중 사용자 로그인과 업무 동작을 비교한다. DiskSpd의 합성 I/O 결과만으로 전체 VDI 사용자 경험이나 특정 제품의 우위를 확정하지 않는다. 쓰기 시험은 기존 데이터를 덮어쓸 수 있으므로 폐기 가능한 전용 시험 파일과 볼륨에서 수행한다.
+
+이번 추가 대조는 시험 조건과 결과 해석에 한정한다. 특정 구축 사례의 성능 배수, 계약 비용, 이전 기간과 제품 호환성을 검증한 기록은 아니며 기존 `verified_at`을 유지한다.
+
 ## 조사 순서
 
 1. 느린 동작과 시간 범위를 고정한다.
@@ -65,6 +82,9 @@ Omnissa의 Horizon 8 설계 문서는 여러 VM이 동시에 작업하는 I/O st
 
 ## 출처
 
+- [Microsoft DiskSpd, Command line and parameters](https://github.com/microsoft/diskspd/wiki/Command-line-and-parameters) — 2026-10-27 시험 옵션 대조
+- [Microsoft DiskSpd, Customizing tests](https://github.com/microsoft/diskspd/wiki/Customizing-tests) — 측정 구간, 캐시와 쓰기 시험 주의사항
+- [Microsoft DiskSpd, Analyzing test results](https://github.com/microsoft/diskspd/wiki/Analyzing-test-results) — 지연 백분위, 표본 수와 XML 결과
 - [Broadcom, vSAN license alarm 'vSAN Cluster Claimed Capacity Exceeds Entitlement'](https://knowledge.broadcom.com/external/article/326663/vsan-license-alarm-vsan-cluster-claimed.html) — 2026-10-21 Trial Capacity의 raw 용량 기준과 초과 시 적용 범위 대조
 - [Broadcom, vSAN space reporting feature overview](https://knowledge.broadcom.com/external/article/315553) — vSAN ESA 9.1의 usable 용량 정의
 - [Omnissa, Storage Bandwidth Considerations](https://docs.omnissa.com/HorizonOverviewDeployment/StorageBandwidthConsiderations) — 동시 I/O 부하. 기존 CPU와 세션 지표 절의 확인일은 유지한다.
