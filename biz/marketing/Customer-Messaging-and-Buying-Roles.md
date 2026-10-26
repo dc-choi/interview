@@ -39,12 +39,21 @@ aliases: ["고객 상황과 구매 역할별 메시지", "Customer Messaging and
 3. 도입 범위, 고객이 준비할 것과 남은 우려를 적는다.
 4. 다음 검토에 필요한 자료와 판단 주체를 확인한다.
 
+## 제품 비유는 보호 대상과 약속 범위를 함께 설명한다
+
+제품을 백신에 비유하면 반복되는 위협에서 고객을 보호한다는 역할을 설명할 수 있다. 이를 시장의 모든 위협을 없앤다는 약속으로 확대하지 않으려면 보호할 자산, 실제 수행할 일과 확인할 결과를 함께 적는다. 이는 B2B 보호 서비스의 설명을 고객 메시지에 적용한 제안이다.
+
+브랜드 보호 서비스에서는 고객 브랜드의 위조 상품을 탐지하고 제거하는 작업과, 고객이 보는 검색 결과에서 위조 상품의 비중이 줄어드는 결과를 나눌 수 있다. MarqVision의 공개 제품 설명도 제거 건수와 검색 결과의 위조 상품 비중인 Saturation Rate를 구분한다. 이 지표를 사용할 때는 조사한 플랫폼, 검색 범위와 기간을 밝히며 전체 위조 시장의 규모나 매출 손실과 같다고 해석하지 않는다.
+
+2026-10-26 공식 제품 설명에서 기능과 지표 정의를 확인했다. 공급사가 제시한 성과 수치와 실제 고객 효과를 독립 검증한 것은 아니다. 제안서에는 비유 다음에 보호 대상, 수행 범위, 결과 지표와 남는 위험을 붙여 기대 범위를 맞춘다.
+
 ## 고객 분류 가설과 메시지 검증
 
 직장인은 시간, 학생은 가격, 재구매자는 새로움을 원한다는 식의 분류는 인터뷰로 확인할 가설로만 둔다. 표현을 바꿔도 제품 부적합, 예산과 시기의 문제는 남을 수 있다. 메시지 비교에서는 이해 여부와 다음 검토로의 진전, 실제 구매를 따로 관찰한다.
 
 ## 출처
 
+- [AI Brand Protection Against Counterfeits — MarqVision](https://www.marqvision.com/brand-protection) — 2026-10-26 탐지와 제거의 기능 설명, 제거 건수와 Saturation Rate의 구분 대조. 제품 성과 수치는 사용하지 않았다.
 - [Positioning for B2B Tech Companies — April Dunford](https://www.aprildunford.com/) — 고객과 대안에 따른 차별화된 가치.
 - [Why Positioning Fails to Make the Jump from Marketing to Sales (and what to do about it) — April Dunford](https://aprildunford.substack.com/p/why-positioning-fails-to-make-the) — 첫 상담과 두 번째 미팅의 맞춤 설명, 내부 추진자, 예산 결정자와 다른 구매 참여자. 2026-10-21 확인. 실무자의 방법론이며 보편적 인과 법칙으로 사용하지 않았다.
 - [Value vs. Objection Handling — April Dunford](https://aprildunford.substack.com/p/value-vs-objection-handling) — 선택 이유와 탈락 조건, 지원 품질의 예외와 갱신 가치. 2026-10-21 확인. 경험에 기반한 실무 판단이다.

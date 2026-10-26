@@ -21,6 +21,17 @@ EC2 인스턴스에 부착되는 **블록 수준 네트워크 스토리지**. �
 - AZ 내 **자동 복제**로 단일 하드웨어 장애 보호 — 단, AZ 전체 장애에는 스냅샷 필요
 - 인스턴스 종료 시 삭제 여부는 각 block device mapping의 `DeleteOnTermination` 값으로 결정된다. 루트 볼륨은 일반적으로 삭제가 기본이지만 AMI와 실행 방식에 따라 바꿀 수 있고, 데이터 볼륨도 생성, 연결 방식에 따라 기본값이 다르므로 속성을 직접 확인한다.
 
+## 연결과 파일시스템 마운트는 다른 단계다
+
+2026-10-26 AWS의 볼륨 사용 가이드를 대조했다. EC2에 연결한 EBS는 블록 장치로 노출되지만, 이것만으로 애플리케이션이 쓸 디렉터리에 마운트되는 것은 아니다.
+
+1. Linux에서는 `lsblk`로 실제 장치와 마운트 지점을 찾는다. 콘솔에서 지정한 장치명과 OS의 장치명이 다를 수 있다.
+2. `lsblk -f`나 `file -s`로 기존 파일시스템을 확인한다. 빈 새 볼륨에만 파일시스템을 만들며, 스냅샷에서 복원한 볼륨이나 데이터가 있는 장치에 `mkfs`를 실행하면 기존 데이터를 잃는다.
+3. 기존 파일시스템 또는 새로 만든 파일시스템을 원하는 디렉터리에 마운트한다. 파티션이 있으면 디스크 전체가 아니라 해당 파티션을 대상으로 한다.
+4. 재부팅 뒤에도 마운트하려면 UUID를 확인해 `/etc/fstab`에 등록하고 설정을 검증한다. AWS 예시의 `nofail`은 볼륨이 없어도 부팅을 허용하는 옵션이며, 잘못된 `fstab` 설정은 부팅을 막을 수 있다.
+
+Windows도 새 디스크의 초기화, 파일시스템 포맷과 드라이브 문자 할당이 필요할 수 있다. OS 종류만으로 자동 사용 가능하다고 가정하지 않는다. 실제 장치 변경과 재부팅 시험은 수행하지 않았으며, 기존 성능과 가격 설명의 검증일은 유지한다.
+
 ## EBS 볼륨 유형
 
 현재 세대는 `gp3`, `gp2`, `io2 Block Express`, `io1`, `st1`, `sc1`의 6종이다. 부트 볼륨은 SSD 계열에서 지원하며, 이전 세대인 Magnetic(`standard`)도 부팅을 지원한다. 현재 세대 HDD인 `st1`, `sc1`은 부트 볼륨으로 사용할 수 없다.
@@ -192,6 +203,7 @@ EBS는 AZ 안에서 중복 저장되므로 단일 볼륨의 일반적인 내구�
 
 ## 출처
 
+- [Make an Amazon EBS volume available for use](https://docs.aws.amazon.com/ebs/latest/userguide/ebs-using-volumes.html) — 2026-10-26 연결 후 포맷과 마운트, 기존 데이터 보호, 재부팅 설정의 부분 대조.
 - [How do I extend an EBS volume with LVM partitions? — AWS re:Post](https://repost.aws/knowledge-center/ebs-extend-volume-lvm-partitions)
 - [Extend the file system after resizing an Amazon EBS volume](https://docs.aws.amazon.com/ebs/latest/userguide/recognize-expanded-volume-linux.html)
 - [Considerations and limitations for archiving Amazon EBS snapshots](https://docs.aws.amazon.com/ebs/latest/userguide/snapshot-archive-considerations.html)

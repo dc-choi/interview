@@ -52,8 +52,25 @@ F5-TTS 논문은 WER, 화자 유사도, RTF와 청취 평가를 함께 사용한
 
 F5-TTS의 평가는 영어와 중국어 자료를 사용하므로 논문 점수를 한국어 품질의 증거로 옮기지 않는다. 한국어 평가 문장, 청취자와 실제 재생 경로는 별도로 준비한다. 턴 종료, 끼어들기와 작업 취소는 [[Realtime-Voice-Architecture|실시간 음성 에이전트]]에서 다룬다.
 
+## 공개 가중치 모델도 표현 제어와 사용 조건을 따로 평가한다
+
+2026-10-26 Fish Audio의 Drama 3 발표, 모델 카드와 배포 라이선스를 대조했다. Drama 3는 여러 화자와 긴 콘텐츠를 대상으로 하며, 대괄호 안의 자연어 지시로 발화의 감정과 표현을 제어하는 공개 가중치 TTS다. 감정 지시를 지원한다는 사실과 한국어 발음 정확도, 긴 발화의 일관성 및 다른 상용 모델보다 낫다는 평가는 별개다.
+
+비교 실험에서는 같은 문장을 중립 발화와 감정 지시를 넣은 발화로 각각 생성해 내용 누락, 숫자 발음과 화자 유지를 확인한다. 이는 평가 제안이며 여기서 음성을 생성하거나 청취 비교하지 않았다. 공개 모델 카드의 H200과 Seed-TTS 영어 프롬프트 기반 서빙 측정도 한국어 품질이나 다른 GPU의 지연으로 옮기지 않는다.
+
+**가중치 공개는 제한 없는 상업 이용을 뜻하지 않는다.** Fish Audio Community License v1.0(2026-10-13)의 주요 배포 구분은 다음과 같다.
+
+- 제한된 상업 이용 허가는 사용자와 계열사의 직전 12개월 전체 매출 합계가 50만 달러 미만인 경우를 대상으로 한다. 특정 고객에게 모델을 설치하거나 전달하는 경우에는 그 고객의 매출 조건도 적용한다. 기준 도달 시 통지와 전환 기간은 III(b)를 따로 확인한다.
+- 제3자가 제공한 텍스트나 음성으로 직접 생성할 수 있게 하는 Hosted Service는 매출과 목적에 관계없이 별도 서면 계약이 필요하다. 완성 음성만 납품하는 제작 서비스와 비상업 연구 데모 등 III(c)의 제외 항목은 구분한다.
+- 배포와 제품 표시 의무, 음성 모사의 동의 또는 다른 법적 권한 등 나머지 조건도 따른다. 모델 카드 상단의 라이선스 메타데이터만 보지 않고 함께 배포된 `LICENSE`의 버전과 본문을 확인한다.
+
+위는 도입 전 확인할 조건이며 특정 사업의 이용 허용 여부를 판정한 결과는 아니다. 모델 이름, 평가 언어와 조건, 배포 라이선스를 고정한 뒤 성능과 운영 비용을 비교한다.
+
 ## 출처
 
+- [Fish Audio Drama 3: The Most Emotive Text-to-Speech Model We've Built — Fish Audio](https://beta.fish.audio/blog/fish-audio-drama-3/) — 2026-10-26 감정 지시 방식과 공개 가중치 배포 대조. 벤더 간 우열 주장은 사용하지 않았다.
+- [Fish Audio Drama 3 — Fish Audio, Hugging Face](https://huggingface.co/fishaudio/drama-3) — 2026-10-26 모델 용도와 서빙 측정의 영어, H200 조건 대조.
+- [Fish Audio Community License v1.0 — Fish Audio](https://huggingface.co/fishaudio/drama-3/blob/main/LICENSE) — 2026-10-26 III(a)~(c)의 매출 조건과 Hosted Service 구분, IV(a)~(b)의 표시와 이용 제한 대조.
 - [토스 AI 엔지니어의 한국어 TTS 개발기, SlashLive — Toss Challengers](https://www.youtube.com/watch?v=j41oq_xbTgs) — 2026-10-14 발표, 2026-10-16 게시. 09:22~14:36의 학습 방식 비교와 병목 진단 사례. 전사문으로 확인했으며 슬라이드 수치와 음성 품질을 독립 검증하지 않았다.
 - [Neural Codec Language Models are Zero-Shot Text to Speech Synthesizers — arXiv, Chengyi Wang 외](https://arxiv.org/abs/2301.02111) — VALL-E의 코덱 토큰과 영어 학습 자료, 2026-10-22 대조.
 - [SpeechTokenizer: Unified Speech Tokenizer for Speech Large Language Models — arXiv, Xin Zhang 외](https://arxiv.org/abs/2308.16692) — RVQ 계층의 의미와 음향 표현, 2026-10-22 대조.
