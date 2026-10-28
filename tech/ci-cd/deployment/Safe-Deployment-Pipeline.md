@@ -83,6 +83,14 @@ time window는 자동 배포의 위험을 대응할 사람이 있는 시간에�
 
 이 절은 설정 반영 시점의 문서 대조이며 실제 Vercel 배포는 실행하지 않았다. 기존 AWS와 ECS 절 전체의 검증일은 유지한다.
 
+### 하이브리드 배포는 공통 판정과 대상별 실행을 나눈다
+
+부분 검증(2026-10-29): AWS DevOps Pipeline Accelerator 지침은 중앙 템플릿에서 빌드 도구, 배포 플랫폼과 품질 관문을 설정하는 방식을 설명한다. 표준화는 모든 애플리케이션에 같은 배포 명령을 강제하는 것과 다르다.
+
+IDC와 클라우드를 함께 운영한다면 아티팩트 식별, 승인, 검사 결과와 배포 기록은 공통 계약으로 두고, Kubernetes, 서버 프로세스, 정적 자산의 배포와 복구 절차는 대상별로 구분한다(설계 제안). 프레임워크별 빌드와 실행 환경별 배포를 분리하면 공통 검사를 재사용하면서도 각 환경의 준비 완료 조건을 유지할 수 있다. 템플릿 변경도 적용할 서비스와 버전을 정해 검증하고 확산한다. 공통화했다는 사실만으로 환경별 권한, 네트워크와 롤백이 검증되지는 않는다.
+
+이 절은 공식 지침과 하이브리드 플랫폼 발표를 연결한 설계 기준이다. 특정 조직의 현재 배포 구조나 효과를 재현하지 않았으며 기존 제품별 검증일은 유지한다.
+
 ## AWS와 ECS 도구에 대응시키기
 
 2026-10-14 공식 문서 기준이다.
@@ -123,6 +131,8 @@ time window는 자동 배포의 위험을 대응할 사람이 있는 시간에�
 
 ## 출처
 
+- [AWS Prescriptive Guidance, Standardizing IaC pipelines by using the AWS DevOps Pipeline Accelerator](https://docs.aws.amazon.com/prescriptive-guidance/latest/devops-pipeline-accelerator/introduction.html) — 2026-10-29 중앙 템플릿과 설정 가능한 빌드, 배포, 품질 관문의 범위 확인
+- [한샘 하이브리드 플랫폼 구현 속 데브옵스의 역할 — Amazon Web Services Korea](https://www.youtube.com/watch?v=oL_2qkPmfrY) — 2024년 공개 발표 18:46~19:47의 프레임워크별 빌드와 대상별 배포를 검토 계기로 사용
 - [Vercel, Environment variables](https://vercel.com/docs/environment-variables)
 - [Automating safe, hands-off deployments — Amazon Builders' Library, Clare Liguori](https://builder.aws.com/content/3ErTKQOTKc5NIw031UePBPxTQ6I/automating-safe-hands-off-deployments)
 - [AWS, Anti-patterns for continuous delivery (DevOps Guidance)](https://docs.aws.amazon.com/wellarchitected/latest/devops-guidance/anti-patterns-for-continuous-delivery.html)

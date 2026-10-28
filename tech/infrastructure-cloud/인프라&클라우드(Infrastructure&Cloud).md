@@ -32,6 +32,7 @@ aliases: ["인프라&클라우드(Infrastructure&Cloud)", "Infrastructure & Clou
 - [[Smart-Home-Hub-and-Personal-Context|가정용 허브와 개인 맥락]] — HomeView와 Apple TV 4K, 기기 및 지역 조건
 
 ## AWS 체크리스트
+- [x] [[SageMaker-HyperPod-Inference|HyperPod 추론 운영]] — Pod 확장, 팀별 자원 대여와 회수, 관리형 Karpenter와 checkpoint 복구
 - [x] [[EKS-Capabilities|EKS Capabilities]] — Argo CD, ACK와 kro의 역할, IAM과 Kubernetes 권한, 동기화와 서비스 검증
 - [x] [[MediaTailor-Ad-Insertion|MediaTailor 광고 삽입]] — 라이브 광고 종료, prefetch와 재생 검증
 - [x] [[Deadline-Cloud|Deadline Cloud 렌더팜]] — SMF와 CMF, 콘텐츠 해시 저장과 예산 제어

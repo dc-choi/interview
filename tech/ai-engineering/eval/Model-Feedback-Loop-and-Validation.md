@@ -56,6 +56,16 @@ SageMaker AI의 관리형 shadow test는 같은 endpoint에서 추론 요청을 
 
 **배송 모델에 적용하는 예:** 도로 이동 시간과 건물 도착 후 문 앞까지 걸린 시간을 구분해 관측하고, 새 모델이 무엇을 예측하는지 먼저 고정한다. 지역, 물량과 수집 조건이 다른 데이터를 함께 쓸 때는 평가 구간을 나누어 비교한다. 학습과 배포 리드타임이 줄어든 결과와 실제 배송 지연이 줄어든 결과도 별도로 측정한다. 이는 평가 설계 제안이며 특정 업체의 성과나 자동화 도구의 효과를 보장하는 설명이 아니다.
 
+## 하이브리드 실행에서도 실험 근거를 연결한다
+
+학습을 온프레미스에서 수행하고 배포를 클라우드에서 하거나 그 반대로 구성할 때는, 실행 위치와 실험 이력을 분리해 관리한다. 다음은 하이브리드 MLOps 발표에서 도출한 설계 점검이며 특정 제품의 연동 보장이 아니다.
+
+- 데이터 버전, 전처리 코드, 실행 환경, 학습 파라미터와 모델 아티팩트를 같은 실험 기록으로 연결한다.
+- 다른 환경에서 실행한 모델을 비교할 때는 평가 데이터와 지표 정의를 맞추고 실행 위치와 자원 조건을 함께 남긴다.
+- 모델을 옮길 수 있는 경로와 권한을 확인한다. 관리 화면에서 실험이 보이는 것과 배포 환경이 모델 파일을 읽을 수 있는 것은 별개다.
+
+구현 사례로 SageMaker AI의 MLflow Tracking Server는 실험 메타데이터를 관리형 backend에 저장하고, 모델 가중치와 파일 같은 아티팩트는 고객 계정의 S3 버킷에 저장한다. 아티팩트에 접근하도록 명시적으로 권한을 부여해야 한다. 2026-10-29 공식 문서에서 이 저장 책임의 분리를 대조했으며, 모든 하이브리드 환경의 연결이나 망 분리 충족을 확인한 것은 아니다. 기존 모델 평가와 제품별 검증일은 유지한다.
+
 ## 검증 경계
 
 ### 초안 생성과 최종 사용을 따로 평가한다
@@ -78,6 +88,8 @@ SageMaker AI의 관리형 shadow test는 같은 endpoint에서 추론 요청을 
 
 ## 출처
 
+- [AWS, Accelerate generative AI development using managed MLflow on Amazon SageMaker AI](https://docs.aws.amazon.com/sagemaker/latest/dg/mlflow.html) — 2026-10-29 Tracking Server의 메타데이터와 S3 아티팩트 저장 경계, 접근 권한 대조
+- [엔터프라이즈 AI 경쟁력을 위한 하이브리드 MLOps 운영 전략 — Amazon Web Services Korea](https://www.youtube.com/watch?v=Qdb8Ult2H8k) — 2024년 공개 발표의 반복 개발과 하이브리드 실행을 검토 계기로 사용. 제품 절감률과 고객 성과는 일반화하지 않음
 - [AWS Prescriptive Guidance, Evaluating your ML project with the MLOps checklist](https://docs.aws.amazon.com/pdfs/prescriptive-guidance/latest/mlops-checklist/mlops-checklist.pdf) — 8절의 재학습 정의와 데이터, 모델, 코드 변경 트리거를 2026-10-27 대조
 - [AWS Prescriptive Guidance, Continuous integration](https://docs.aws.amazon.com/prescriptive-guidance/latest/mlops-checklist/continuous-integration.html) — 데이터, 통합, 부하와 극단 입력 검사의 분리, 2026-10-27 대조
 - [AWS Prescriptive Guidance, Continuous deployment](https://docs.aws.amazon.com/prescriptive-guidance/latest/mlops-checklist/continuous-deployment.html) — 단계별 승격, 트래픽 전환과 복구 경로, 2026-10-27 대조
