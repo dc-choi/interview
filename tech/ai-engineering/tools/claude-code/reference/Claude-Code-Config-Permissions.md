@@ -19,6 +19,19 @@ aliases: ["Claude Code Config Permissions", "클로드 코드 설정과 권한",
 - 핫 리로드: 대부분 키는 즉시 반영한다. `model`은 `/model`, `effortLevel`은 `/effort`로 실행 중 바꿀 수 있고, `outputStyle` 편집은 `/clear` 또는 restart 뒤 적용된다. Claude가 직접 쓰는 `~/.claude.json`만 write 전 최근 5개 backup을 남긴다고 명시돼 있으며 일반 settings file의 자동 backup으로 일반화하지 않는다. 활성 source는 `/status`로 확인
 - 스코프 용도: 프로젝트 `.claude/settings.json`(커밋, 팀 공유), 개인 로컬 `.claude/settings.local.json`(gitignore), 사용자 `~/.claude/settings.json`
 
+### 설정 프로필의 미리보기와 복구 범위
+
+설정 프로필은 모델, 추론 노력, 권한과 환경 변수를 한 번에 바꿀 수 있다. 적용 전에는 값의 차이뿐 아니라 저장 위치, 적용 시점과 복구 범위를 확인한다. 사용자 설정을 바꾸면 다른 프로젝트에도 영향을 줄 수 있으므로 현재 프로젝트의 화면만 보고 영향 범위를 판단하지 않는다.
+
+Ultra Config는 `davila7/claude-code-templates`의 서드파티 mod다. `/ultra-config`로 프로필별 변경을 미리 보고 적용하며, `/ultra-config undo`로 마지막 적용부터 되돌리는 기능을 제공한다. 다음은 공개 README의 `f3c2358` 리비전을 2026-10-29 대조한 범위다.
+
+- `/config` 항목은 `$.config.set`으로 바꾸고, 메뉴에 없는 일부 키는 사용자 `settings.json`에 직접 쓴다. 모든 변경이 하나의 프로젝트 파일에 저장되는 것은 아니다.
+- 직접 쓰는 사용자 설정은 쓰기 전에 `settings.json.ultra-config.bak`으로 복사하지만 최신 사본 하나만 유지한다. 환경 변수 값도 복사되므로 백업을 공개 저장소에 넣지 않는다.
+- undo 이력은 최근 20개 프로필 적용을 보존하며 변경한 값을 되돌리는 용도다. 작업 파일이나 외부 작업 결과의 복원 기능으로 해석하지 않는다.
+- 잠긴 항목, 해당 버전에서 제공하지 않는 값과 잘못된 JSON 때문에 건너뛴 변경을 구분한다. 환경 변수는 다음 세션에서 적용되므로 패널의 적용 표시만으로 현재 실행 상태를 확정하지 않는다.
+
+이는 공개 기능 설명과 공식 설정 스코프를 대조한 기록이다. 설치, 실제 복구와 권한 차단을 시험한 결과는 아니며, 프로필 이름을 보안 보장이나 사용자의 적용 결정으로 취급하지 않는다. 기존 본문의 버전별 검증 날짜는 유지한다.
+
 ## 컨텍스트 주입 3계층 — 프로젝트 지침, rules, 스킬
 
 AGENTS.md의 최신 직접 로딩과 Project instructions 설정은 [[Agent-Repository-Instructions-Hosts#Claude Code|호스트별 AGENTS.md 동작]]에서 확인한다.
@@ -85,6 +98,7 @@ Allow, Ask, Deny 3종. **deny → ask → allow 순으로 첫 매칭 규칙이 �
 
 ## 출처
 
+- [Ultra Config README (f3c2358) — claude-code-templates](https://raw.githubusercontent.com/davila7/claude-code-templates/f3c23580e41d6b6c5d49f174e33763dcac8ea985/cli-tool/components/mods/productivity/ultra-config/README.md) — 2026-10-29 미리보기, 저장 위치, 백업과 undo 범위 대조
 - [Anthropic, Configure the sandboxed Bash tool](https://code.claude.com/docs/en/sandboxing)
 - [Anthropic, Permissions](https://code.claude.com/docs/en/permissions)
 - [Anthropic, Tools reference](https://code.claude.com/docs/en/tools-reference)

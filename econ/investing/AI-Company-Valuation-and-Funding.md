@@ -24,6 +24,22 @@ aliases: ["AI Company Valuation and Funding", "AI 기업가치와 자금 조달"
 
 2026-10-22 SEC 지침의 100.01~100.05와 102.12를 부분 대조했다. 이는 미국 공시 지표를 읽는 기준이다. 특정 비상장 AI 기업의 회계 정책, 비공개 신고서, 매출 전망이나 상장 일정을 확인한 결과가 아니며, 기업 간 숫자 차이를 회계 표시 차이만으로 설명하지 않는다.
 
+### 사업부 매출 비중과 연결 이익률을 구분한다
+
+AI 사업부의 매출 비중이 커졌더라도 연결 영업이익률을 그 사업부의 이익률로 읽지 않는다. 사업부별 매출, 영업이익과 설비투자를 같은 기간으로 맞추고, 전분기 대비와 전년 동기 대비 성장률을 구분한다.
+
+SpaceX의 2026-10-20 실적 발표에 실린 3분기 표를 2026-10-29 대조했다. 단위는 백만 달러다.
+
+| 항목 | 연결 합계 | Super Intelligence(SI) 사업부 |
+| --- | ---: | ---: |
+| 매출 | 14,575 | 7,560 |
+| 영업이익 | 2,791 | 431 |
+| 설비투자(Capex) | 19,593 | 16,444 |
+
+표에서 직접 계산하면 SI 매출 비중은 약 51.9%지만 영업이익률은 약 5.7%다. 연결 영업이익률 약 19.1%를 SI의 수익성으로 바꾸어 쓰면 안 된다. 연결 매출은 전분기 7,814 대비 약 86.5% 늘었으며, 전년 동기 5,576 대비 약 161.4% 증가와는 비교 기준이 다르다. 전분기 연결 영업손실 143의 영업이익률은 약 -1.8%다.
+
+Capex는 같은 분기의 영업비용과 같지 않다. 위 표의 영업이익에서 Capex만 빼 잉여현금흐름을 계산하지 않는다. 매출 비중과 회계상 흑자만으로 개별 설비의 투자 회수기간도 확정할 수 없다. 이 대조는 실적 표와 계산에 한정하며, 향후 컴퓨팅 용량, 회수기간 전망과 다른 회사와의 합병 가능성을 확인한 결과가 아니다.
+
 ## 기대를 역산한다
 
 기업가치에서 출발해 정당화에 필요한 매출, 마진, 재투자와 성장 지속 기간을 역산한다. 그 뒤 고객의 지급 의사, 가격 경쟁과 자본 필요량을 대조한다. 높은 성장만으로 적정 가격을 확정하지 않으며, 저가 경쟁자가 있다는 사실만으로 기업가치를 0으로 두지도 않는다.
@@ -65,6 +81,7 @@ AMD의 2026-09-28 Form 8-K는 9월 26일 World Labs의 전체 지분을 인수�
 
 ## 출처
 
+- [SpaceX Reports Third Quarter 2026 Results — SpaceX](https://d18rn0p25nwr6d.cloudfront.net/CIK-0001181412/31b2b4f8-a7d7-44f3-a94b-9c2cba49b021.html) — 2026-10-20 Form 8-K 첨부 실적 발표, Third Quarter Financial Highlights 표, 2026-10-29 대조
 - [September 28, 2026, Form 8-K — AMD](https://ir.amd.com/financial-information/sec-filings/content/0000002488-26-000182/amd-20260926.htm) — Item 3.02, 주식 지급과 발행 주식 수 산정 기준
 - [AMD to Acquire World Labs to Advance the Future of AI Compute — AMD](https://ir.amd.com/news-events/press-releases/detail/1299/amd-to-acquire-world-labs-to-advance-the-future-of-ai-compute) — 2026-09-28 계약 발표, 종결 조건과 기대 효과
 - [SEC, Non-GAAP Financial Measures](https://www.sec.gov/rules-regulations/staff-guidance/corporation-finance-interpretations/non-gaap-financial-measures) — 2026-10-22 총액/순액을 바꾸는 조정, 반복 현금비용 제외, 명칭과 비교 가능한 GAAP 지표의 조정 내역 대조.
