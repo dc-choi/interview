@@ -59,6 +59,15 @@ Kafka의 구성 요소는 각각 앞 단계가 남긴 문제를 푸는 장치로
 
 key는 같은 entity event의 partition affinity와 순서를 다루는 도구다. consumer가 handler 내부에서 병렬 처리하거나 여러 topic/group이 같은 DB row를 수정하면 race는 다시 생긴다. key만으로 동시성 제어, exactly-once business 처리나 global ordering이 보장되지는 않는다.
 
+### Share group은 파티션 수와 소비자 수의 결합을 푼다
+
+앞의 파티션 배타 할당 규칙은 consumer group의 규칙이다. Kafka 4.2에서 production-ready로 발표된 share group은 같은 파티션을 여러 소비자가 나눠 읽으므로, 소비자 수가 파티션 수보다 많아도 작업을 분담할 수 있다. 대신 그룹 전체의 레코드 처리 순서를 보장하지 않는다. Java 클라이언트에서는 `KafkaShareConsumer`를 사용한다(2026-10-28 공식 릴리스 안내와 4.3 Javadoc 대조).
+
+- 소비자가 받은 레코드에는 시간제한이 있는 acquisition lock이 걸린다. 잠금이 유효한 동안 다른 소비자에게 주지 않지만, 만료되면 다시 전달할 수 있다.
+- 처리 결과를 레코드별로 확인한다. `ACCEPT`는 성공, `RELEASE`는 재전달 허용, `REJECT`는 처리 불가를 뜻한다. `RENEW`는 처리 중인 레코드의 잠금을 연장한다.
+- 명시적 ACK 모드에서는 다음 `poll()` 전에 받은 레코드를 모두 acknowledge해야 한다. 기본인 암묵적 모드는 다음 `poll()`이나 commit 호출이 성공 처리를 확인하므로, 병렬 작업이 끝나기 전에 다음 호출로 넘어가지 않도록 설계한다.
+- 적용 예로 순서에 의존하지 않는 작업 분담을 고려할 수 있다. 잠금 만료 뒤의 재전달은 외부 부수효과 중복을 만들 수 있으므로 멱등 처리는 여전히 필요하다. 같은 주문의 상태 전이 순서가 중요하면 기존 consumer group과 순서 제어부터 검토한다.
+
 ## 세그먼트
 
 - partition log는 여러 segment file로 나뉘어 저장되고 size/time 조건으로 active segment가 roll된다.
@@ -95,6 +104,8 @@ Kafka의 처리량은 한 가지 기술이 아니라 다음 구조의 조합에�
 
 ## 출처
 
+- [Apache Kafka 4.2.0 Release Announcement — Apache Kafka](https://kafka.apache.org/blog/2026/01/14/apache-kafka-4.2.0-release-announcement/) — share group의 production-ready 상태, 본문 게시일 2026-02-17. URL의 날짜와 구분한다.
+- [Apache Kafka 4.3 Javadoc, KafkaShareConsumer](https://kafka.apache.org/43/javadoc/org/apache/kafka/clients/consumer/KafkaShareConsumer.html) — 2026-10-28 share group, 레코드 잠금과 ACK 모드 대조. 실행 검증은 하지 않았다.
 - [Apache Kafka, Introduction](https://kafka.apache.org/documentation/)
 - [Apache Kafka 4.0 release announcement, KRaft only](https://kafka.apache.org/blog/2025/03/18/apache-kafka-4.0.0-release-announcement/)
 - [Apache Kafka, Design](https://kafka.apache.org/41/design/design/)

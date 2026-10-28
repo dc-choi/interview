@@ -33,6 +33,16 @@ else:
 
 Noul의 문턱도 오판 비용으로 정한다. 예와 아니오의 처리 비용이 같으면 0.5에서 자르고, 잘못된 예가 비싸면(담당자 호출, 환불) 올리고, 놓친 예가 비싸면(안전 문제 미탐) 내린다.
 
+### 자체 호스팅 결정 모델도 출력 계약을 따로 확인한다
+
+2026-10-28 Strands Decider 공식 README 기준으로, 로컬 CLI와 HTTP 서버에서 `state`와 질문을 받아 선택, 예/아니오와 척도 점수를 반환할 수 있다. 공개한 Qwen3.5 기반 구조는 언어 생성 head를 pointer head로 바꾸어 한 번의 forward pass에서 선택지를 채점한다. 자유로운 설명문 생성과 구분하며, 이 구조만으로 모든 과업의 정확도나 지연 우위를 보장하지 않는다.
+
+- **선택 확률과 confidence를 구분한다.** README의 choice 예시에서 선택한 항목의 확률은 0.773이고 confidence는 0.659다. 최고 확률을 confidence 필드와 같은 값으로 저장하지 않는다. `noul` 예시는 참일 확률만 반환하므로 모든 질문 타입에 confidence가 있다고 가정하지 않는다.
+- **보정은 업무 데이터에서 확인한다.** 공식 평가의 보정 결과를 다른 언어, 입력 길이와 업무의 정답률로 그대로 옮기지 않는다. 실제 라벨 표본에서 점수 구간별 오답과 미처리 비율을 보고 라우팅 문턱을 정하는 것은 적용 제안이다.
+- **분류 결과와 실행 권한을 분리한다.** 모델이 승인된 요청이라고 높은 점수로 판단해도 실제 사용자 승인이나 접근 권한이 생기는 것은 아니다. 위 송금 분기 예시도 권한과 거래 승인을 별도로 확인한 실행 경로 안에서만 적용한다.
+
+로컬 실행 가능성은 운영 비용이 없다는 뜻이 아니다. 모델 호스팅과 라우팅을 포함한 전체 지연, 자원 사용량과 업무 성공률을 측정한다. 여기서는 공개 계약만 대조했으며 모델 실행이나 포커 실력, 비용 절감 효과를 검증하지 않았다.
+
 ### 도구 기록을 선별하는 압축
 
 결정 모델은 요약문을 새로 쓰는 대신 도구 호출과 결과를 남길지 고를 수 있다. `fast-jev-compaction`의 공개 README에서 확인한 설계(2026-10-06)는 호출과 결과를 ID로 짝지은 뒤, 호출 보존과 결과 원문 보존을 각각 `noul`로 묻는다. 결과를 남기거나, 호출과 결과 앞부분만 남기거나, 둘을 함께 제거한다. 첫 메시지와 최근 메시지는 보호하며 출력의 사용자, 어시스턴트 텍스트는 유지한다.
@@ -63,6 +73,7 @@ Noul의 문턱도 오판 비용으로 정한다. 예와 아니오의 처리 비�
 
 ## 출처
 
+- [Strands Decider README — Strands Labs](https://github.com/strands-labs/strands-decider) — 2026-10-28 CLI와 HTTP 입력, 질문별 출력 예시와 pointer head 구조 확인. 공개 벤치마크 수치를 실제 업무 성능으로 옮기지 않았다.
 - [OpenAI API, Decisions](https://developers.openai.com/api/docs/guides/decisions) — 2026-10-26 GA 가이드의 추가 기능, 입력 범위, 가격과 지연 표현 대조
 - [OpenAI API Reference, Create a decision](https://developers.openai.com/api/reference/resources/decisions/methods/create)
 - [Changelog — OpenAI API](https://developers.openai.com/api/docs/changelog) — 2026-10-06 beta 출시, 2026-10-15 GPT-Live 연동, 2026-10-22 GA 항목
