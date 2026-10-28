@@ -64,6 +64,19 @@ Kaufman은 이 중 하나라도 빠지면 사업이 아니라고 본다. 진단�
 
 2026-10-28 The Personal MBA의 반복 가능한 사업 과정과 가치 전달 범위를 대조했다. 위 범위 축소와 시간 기록은 이를 적용한 제안이며, 초기 사업자의 주된 중단 원인이 피로라는 주장은 검증하지 않았다.
 
+### 대표의 부재를 견딜 절차와 재사용할 지식을 확인한다
+
+표준 운영 절차(SOP)는 반복되는 작업이나 문제를 처리하기 위해 미리 정한 과정이다. The Personal MBA는 반복 문제를 매번 다시 푸는 부담과 신규 구성원의 학습을 줄이는 용도로 설명하며, 낡거나 불필요한 절차는 정기적으로 고치라고 권한다. 문서가 존재한다는 사실만으로 대표 없이 운영된다고 판단하지 않는다.
+
+다음은 사업의 축적 상태를 확인하는 운영 제안이며, 성장이나 실패 뒤 회복을 예측하는 점수표가 아니다.
+
+- 고객의 구매 이유와 사용 중 문제를 기록하고, 다음 제안이나 납품 방식을 실제로 바꾼 사례가 있는지 확인한다.
+- 대표가 잠시 응답하지 못할 때 멈추는 작업 하나를 고르고, 입력 자료, 완료 기준과 예외 시 연락할 역할을 짧게 정리한다. 다른 담당자가 있다면 그 절차만으로 수행 가능한지 확인한다.
+- 계약이 끝나도 재사용할 수 있는 일반 지식, 작업 양식과 검수 기준을 남긴다. 고객의 비공개 자료나 재사용 권한이 확인되지 않은 결과물은 분리한다.
+- 새로 쌓인 기록의 양보다 다음 작업의 시간, 재작업과 대표에게 되묻는 횟수가 달라지는지 관찰한다.
+
+절차 정리를 이유로 채용이나 자동화부터 늘리지 않는다. 한 번의 수행 결과와 대표 없이 지속 운영할 수 있다는 판단도 구분한다.
+
 ## 사업 기능과 대표의 역량을 구분한다
 
 사업의 다섯 부분은 수행해야 할 기능을 나눈 것이지 대표 개인의 능력 점수표가 아니다. 제품을 잘 만드는 능력과 판매, 전달, 현금 흐름을 연결하는 능력은 구분해 점검한다. 직접 수행하지 않는 기능도 담당자에게 무엇을 요구하고 어떤 결과로 판단할지 알아야 한다.
@@ -157,6 +170,7 @@ Kaufman은 이 중 하나라도 빠지면 사업이 아니라고 본다. 진단�
 
 ## 출처
 
+- [Standard Operating Procedure (SOP) — The Personal MBA, Josh Kaufman](https://personalmba.com/standard-operating-procedure/) — 2026-10-28 반복 작업 절차, 신규 구성원 인계와 정기 갱신의 용도 대조. 축적 상태 점검은 이를 적용한 제안이며 생산성 개선 수치는 검증하지 않았다.
 - [SpaceX, Falcon Payload User's Guide](https://www.spacex.com/assets/media/falcon-users-guide-2025-05-09.pdf) — 2025-05-09판 1.3절, 2026-10-23 부스터와 페어링 재비행, 정비와 검사 대조
 - [Casting a light on dependent contractors: a new statistical and increasingly important category — ILOSTAT](https://ilostat.ilo.org/blog/casting-a-light-on-dependent-contractors-a-new-statistical-and-increasingly-important-category/) — ICSE-18의 권한, 경제적 위험과 종속 계약자 구분
 - [The 5 Parts of Every Business — The Personal MBA, Josh Kaufman](https://personalmba.com/5-parts-of-every-business/)
