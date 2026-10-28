@@ -23,6 +23,14 @@ TSP는 토큰 발급과 생명주기를 관리하고, token requestor는 토큰�
 
 PAR은 부정 사용 탐지, 교통이나 멤버십에서 동일 결제 계정의 참조를 연결하는 데 활용할 수 있다. 토큰 값이 바뀌어도 계정 연결이 필요할 수 있다는 의미이며, PAR만으로 고객 개인정보나 다른 사업자의 거래를 조회할 수 있다는 뜻은 아니다.
 
+## Apple Pay의 기기 토큰과 거래별 암호값
+
+2026-10-28 Apple 보안 문서 대조 기준이다. 카드 등록이 승인되면 은행, 은행의 승인된 서비스 제공자 또는 카드 발급사가 기기별 Device Account Number를 만들고, 이 값은 기기의 Secure Element에 저장된다. 원 카드번호를 보관하지 않는다는 설명을 등록 과정에서도 카드정보를 처리하지 않는다는 뜻으로 읽지 않는다. 등록 정보는 Apple 서버에서 복호화한 뒤 결제 네트워크 등이 해독할 수 있는 키로 다시 암호화해 전달한다.
+
+결제 applet은 Device Account Number와 함께 거래별 cryptogram을 보낸다. 기본 계산에는 거래마다 증가하는 카운터와 발급 시 설정한 키가 쓰이며, 결제 방식에 따라 NFC 단말의 예측 불가능한 값, 앱과 웹 결제의 재전송 방지 값, 사용자 인증 결과 등이 추가된다. 모든 결제의 입력을 금액과 횟수만으로 고정하지 않는다. 기기 토큰은 원 번호의 노출 범위를 줄이고, cryptogram은 해당 거래의 검증을 돕는 별도 값이다.
+
+일반 매장 결제의 사용자 인증에는 생체 인증 외에 기기 암호도 쓰이며, 지원 카드의 Express Mode는 별도 예외다. 따라서 매번 얼굴이나 지문이 필수라고 일반화하지 않는다. 이는 Apple Pay의 등록과 결제 설명을 대조한 범위이며 실제 단말 시험이나 전체 PCI 범위 판정은 아니다. 기존 PG 계약과 PCI 절의 `verified_at`은 유지한다.
+
 ## 역할과 거래별 사용 계약
 
 2023년 use-case guide에서 등록된 Token Requestor는 발급을 요청하고, Token User는 다른 요청자가 제공한 토큰으로 거래한다. 가맹점 직접 요청, 지갑/제3자의 요청과 Aggregator 중개를 구분하고 요청자 ID의 주체를 보존한다.
@@ -107,6 +115,8 @@ Evervault의 availability 값에서 `unavailable`은 브라우저가 사용 가�
 
 ## 출처
 
+- [Apple Support, Apple Pay security and privacy overview](https://support.apple.com/en-us/101554) — 2026-10-28, 카드 등록, Device Account Number와 Express Mode 예외
+- [Apple Platform Security, Payment authorization with Apple Pay](https://support.apple.com/en-ae/guide/security/secc1f57e189/web) — 2026-10-28, 거래 카운터, 키와 결제 방식별 cryptogram 입력
 - [EMVCo, Payment Tokenisation A Guide to Use Cases v2.2.1](https://www.emvco.com/wp-content/uploads/2023/03/EMVCo-Payment-Tokenisation-A-Guide-To-Use-Cases-v2.2.1.pdf) — 2023년 1월 지침 2~12장, 현재 v2.3 가이드의 검증을 대신하지 않음
 - [토스페이먼츠, 고객 검증과 빌링키 Map 샘플](https://github.com/tosspayments/tosspayments-sample/blob/8d0df11d14dadfe355050bdc9ba38618f6a9c028/express-react/server.js)
 - [토스페이먼츠, PHP 빌링키 저장 샘플](https://github.com/tosspayments/tosspayments-sample/blob/8d0df11d14dadfe355050bdc9ba38618f6a9c028/php-javascript/index.php)

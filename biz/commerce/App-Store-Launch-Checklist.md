@@ -62,6 +62,12 @@ aliases: ["App Store Launch Checklist", "앱 스토어 첫 출시 준비", "1인
 - **문의 경로:** 앱과 Support URL에 쉽게 연락할 방법이 있어야 한다(1.5). 문의 페이지가 열리는지만 보지 말고 안내된 연락 경로가 실제로 작동하는지 확인한다.
 - **제출 완성도:** 임시 문구와 빈 웹사이트를 제거하고 URL, 메타데이터와 기기 동작을 점검한다(2.1). 로그인 기능이 있으면 심사용 계정 정보와 접근 가능한 백엔드를 준비한다. 법적 또는 보안상 계정 제공이 어렵다면 Apple 사전 승인을 받아 기능을 보여 주는 데모 모드를 제공할 수 있다. 이 심사용 모드와 미완성 데모 앱은 다르며, 데모/베타/체험판 앱의 배포는 TestFlight를 사용한다(2.2). 결함을 숨기는 표현 변경은 완성도 검증을 대신하지 않는다.
 
+## 공개 포트폴리오 점검과 계정 상태 확인을 구분한다
+
+2026-10-28 ActivationPal의 App Store Account Audit 공개 화면은 개발자 페이지 URL을 입력받고 앱, 리뷰, 스크린샷과 발견 항목을 보는 구조다. 화면은 입력 URL과 결과를 해당 브라우저에만 저장한다고 안내한다. 이는 제공자의 공개 안내를 확인한 것이며 실제 실행, 전송 경로나 저장 구현을 검증한 결과는 아니다.
+
+활용 제안: 공개 페이지에서 발견한 수정 후보를 앱별로 확인하고 등록 정보, 스크린샷과 지원 경로의 보완 순서를 정한다. 외부 도구의 점수를 Apple의 공식 심사 결과, 계정 정상 상태나 매출 가능성으로 해석하지 않는다. 판매 계약, 정산과 심사 상태는 앞의 공식 계정 절차에서 별도로 확인한다. 점수 산식과 진단 정확도는 미검증이며 기존 정책 절의 `verified_at`은 유지한다.
+
 ## 빌드 환경과 출시 뒤 유지 요건
 
 출시 뒤에도 스토어 요건 때문에 기능 변경 없이 다시 빌드하고 제출해야 할 때가 있다. 아래는 2026-10-11에 확인한 기준이다.
@@ -100,6 +106,7 @@ aliases: ["App Store Launch Checklist", "앱 스토어 첫 출시 준비", "1인
 
 ## 출처
 
+- [Free App Store Account Audit — ActivationPal](https://activationpal.com/tools/app-store-account-audit) — 2026-10-28, 공개 입력 화면과 보관 안내만 확인
 - [Apple Developer, Enrollment](https://developer.apple.com/programs/enroll/)
 - [Apple Developer, Program enrollment support](https://developer.apple.com/support/enrollment/)
 - [Apple Developer, Updating your account information](https://developer.apple.com/help/account/membership/updating-your-account-information/)
