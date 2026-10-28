@@ -9,6 +9,7 @@ aliases: ["보안(Security)", "Security Index"]
 
 ## 목차
 
+- [[Hardware-Wallet-Physical-Trust|하드웨어 지갑의 물리적 신뢰 경계]] — 정품 칩 인증과 추가 부품 탐지의 차이, 화면 경로의 비밀 노출
 - [[Public-WiFi-Trust-Boundaries|공공 Wi-Fi의 신뢰 경계]] — 통신 암호화와 피싱, 기기 제어의 인증 조건
 - [[Elliptic-Curve-Parameter-Provenance|타원곡선 파라미터의 출처]] — 공개 seed 재현과 개인키 복구의 구분, 미해결 선택 과정
 - [[Security-Architecture-and-Threat-Modeling|보안 아키텍처와 위협 모델링]] — 데이터 흐름, 신뢰 경계, 자원별 접근과 통제 검증

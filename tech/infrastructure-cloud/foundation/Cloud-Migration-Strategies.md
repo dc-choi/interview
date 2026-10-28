@@ -78,6 +78,14 @@ Rehost한 앱을 여러 instance로 늘리면 로컬 상태가 바로 장애가 
 
 반복 횟수가 많은 패턴에는 상세 절차서를, 단순하거나 한 번만 수행할 이전에는 짧은 작업 목록을 쓸 수 있다. 어느 형식이든 실행 순서가 드러나야 한다. 적용 제안으로, 첫 이전에서 확인한 전제와 예외, 중단 조건과 검증 결과를 다음 작업에 반영한다. 예제 템플릿을 복사한 사실이나 서버 이동 건수를 절차 검증 완료로 세지 않는다. 위 두 절만 추가 대조했으므로 기존 문서의 검증일은 유지한다.
 
+### 파일럿 선정과 본 이전의 순서를 구분한다
+
+부분 검증(2026-10-28): AWS의 초기 우선순위 가이드는 위험과 복잡도가 낮고 의존성이 적은 비운영 앱으로 경험을 쌓도록 권한다. 이 기준은 파일럿과 초기 wave의 출발점이며, 본 이전 계획에서는 업무 목표와 의존성에 맞춰 반복 조정한다. 쉬운 앱부터 옮겼다는 사실만으로 핵심 시스템의 전환 위험이 해소되지는 않는다.
+
+의존성은 함께 통신하는지뿐 아니라 분리 가능한지로 판단한다. 위치가 달라도 동작하는 soft dependency와, 낮은 지연이나 공통 유지보수 창 때문에 함께 옮겨야 하는 hard dependency를 나눈다. 네트워크 수집 정보만으로 허용 지연과 드문 배치를 모두 알 수 없으므로 애플리케이션 담당자와 대조한다. [Wave 계획](https://docs.aws.amazon.com/prescriptive-guidance/latest/application-portfolio-assessment-guide/wave-planning.html)
+
+설계 점검 제안: 핵심 시스템을 뒤로 미룰 때 임시 연동과 재작업이 얼마나 필요한지, 먼저 옮길 때 장애 영향과 복구 준비가 충분한지를 비교한다. 핵심 시스템 우선도, 낮은 복잡도 우선도 모든 wave에 적용하는 절대 순서로 두지 않는다. 기존 환경과 클라우드가 공존하는 동안 각 연동의 목적지, 전환 조건과 임시 연결 제거 조건을 기록한다. 이 절은 순서 결정의 검토 기준이며 특정 ERP 구조나 이전 기간을 재현한 결과가 아니다. 기존 제품별 정책 전체를 재검증하지 않아 `verified_at`은 유지한다.
+
 ## 컨테이너화와 기능 분리는 별도 작업이다
 
 2026-10-09 AWS 공식 문서 대조 기준. 컨테이너 이미지 생성은 실행 환경을 옮기는 단계이며, 도메인 경계와 데이터 소유권까지 분리했다는 증거는 아니다.
@@ -197,6 +205,9 @@ AWS가 2026-03-25 공개한 IDEMIA Civil Identity 고객 인터뷰는 .NET 3.5�
 
 ## 출처
 
+- [AWS Prescriptive Guidance, Prioritization and migration strategy](https://docs.aws.amazon.com/prescriptive-guidance/latest/application-portfolio-assessment-guide/prioritization-and-migration-strategy.html)
+- [AWS Prescriptive Guidance, Wave planning](https://docs.aws.amazon.com/prescriptive-guidance/latest/application-portfolio-assessment-guide/wave-planning.html)
+- [Migration의 비밀 레시피: AMOREPACIFIC의 All Cloud Journey — Amazon Web Services Korea](https://www.youtube.com/watch?v=vyAi0oKjJLg) — 2024년 발표 20:52~26:55의 파일럿, 핵심 시스템 우선과 과도기 연동 사례를 검토 질문의 계기로 사용. 제품 동작과 보편적 순서는 위 공식 문서로 대조
 - [Migration at Scale: The Fanatics Commerce AWS Journey — AWS](https://aws.amazon.com/blogs/migration-and-modernization/migration-at-scale-the-fanatics-commerce-aws-journey/) — 2026-10-23 OLA의 비교 조건, MAP의 지원 범위와 예상 성과 구분 확인
 - [Modernizing Identity Systems with AWS Transform — Amazon Web Services](https://www.youtube.com/watch?v=dB-B7nJlEsM) — 고객 인터뷰의 변경 범위와 예상 절감 발언만 참조
 
