@@ -74,6 +74,14 @@ DGX H100/H200 공식 사용자 가이드의 예시는 GPU 8개, 최대 시스템
 
 공식 환경 조건에는 전면에서 후면으로 흐르는 냉각 공기와 작동 온도 범위가 있다. 랙 공간이 남는다는 사실만으로 추가 설치가 가능하다고 판단하지 않는다. 도입 검토에서는 해당 모델의 전원 입력, 랙 하중, 풍량과 열 배출 요구를 설치 환경과 대조한다. 최대 전력 사양과 실제 부하의 소비 전력도 구분한다.
 
+### 모듈형 시설은 공장 통합과 현장 준비를 나눈다
+
+DSX POD는 Vera Rubin 시스템의 컴퓨트, 네트워크, 랙 전원과 액체 냉각을 모듈형 컨테이너 안에서 통합하고 출하 전에 검증하는 레퍼런스 설계다. 공장의 배선, 배관과 기능 검증을 설치 현장의 기반 시설 준비와 병행할 수 있다.
+
+2026-10-29 NVIDIA의 GTC Berlin 공식 발표를 부분 대조했다. 공급사가 제시한 최단 14일은 전력, 냉각과 네트워크 등이 준비된 현장에 도입하는 기간이다. 부지 준비나 전력 확보부터 완료하는 기간으로 계산하지 않는다. 제공 시점도 2027년 초 예정이며 실제 납품이나 현장 성능을 검증한 결과가 아니다.
+
+운영 계획에서는 공장 검증 완료, 현장 기반 시설 준비, 연결과 인수 시험, 첫 정상 워크로드를 별도 완료 조건으로 둔다(운영 제안). 설치 기간 단축만으로 수요 확보나 투자 회수를 보장하지 않는다.
+
 ### 정전 대응은 UPS와 발전기의 연결까지 확인한다
 
 UPS는 정전 시 배터리로 보호 대상에 전원을 공급하지만 무기한 전원 공급 장치가 아니다. 발전기를 함께 쓰는 구성에서는 발전기 전원이 UPS의 허용 전압과 주파수 범위에 들어와야 한다. 발전기가 켜져 있어도 입력이 허용 범위를 벗어나면 UPS가 배터리를 계속 소모해 부하가 꺼질 수 있다.
@@ -111,6 +119,14 @@ DCGM Exporter는 GPU 지표를 Prometheus가 수집할 수 있도록 노출한�
 - `nvidia-smi`는 MIG가 활성화된 GPU의 GPU/Memory utilization 조회를 지원하지 않는다고 명시한다. 누락된 값을 0으로 처리하거나 물리 GPU의 관측 결과를 각 Pod의 사용량으로 복제하지 않는다. [NVIDIA 지표 정의](https://docs.nvidia.com/deploy/nvidia-smi/index.html)
 
 2026-10-07 부분 대조: 사용률 정의, DCGM Exporter의 작업 연결과 GPU 공유 제약을 공식 문서로 확인했다. GPU 수명, 보편적인 장애율이나 비용 절감률은 이 지표만으로 추정하지 않는다.
+
+### fGPU 표시 단위와 물리 GPU 비율
+
+Backend.AI WebUI 26.9의 fGPU는 관리자 설정에 따라 물리 GPU와의 환산 비율이 달라진다. 예를 들어 물리 GPU 1개를 5 fGPU로 설정했다면 1 fGPU는 물리 GPU의 0.2에 해당하는 SM과 메모리를 사용할 수 있는 할당량이다. 화면의 1 fGPU를 물리 카드 1개나 보편적인 성능 단위로 읽지 않는다.
+
+공식 예제는 8 GB GPU를 2 fGPU로 설정한 환경에서 0.5 fGPU 세션에 약 2 GB가 보이는지 확인한다. 자원이 부족하면 세션 요청은 `PENDING` 큐에 들어가고, 자원이 확보되면 생성이 재개된다. 분할을 지원한다는 사실은 요청 전부가 즉시 실행된다는 뜻이 아니다.
+
+2026-10-29 해당 가이드의 분할 할당과 스케줄링 절을 부분 대조했다. 운영에서는 관리자 환산 설정, 컨테이너의 가용 메모리와 작업 처리량을 따로 확인한다(운영 제안). 실제 GPU 실행이나 장애 격리 시험은 하지 않았으며 문서 전체의 기존 검증일은 유지한다.
 
 ## 추론 Pod 확장과 GPU 노드 준비를 분리한다
 
@@ -230,6 +246,8 @@ Slurm 관리 문서 기준, `/var/log/provision/provisioning.log`에 기록한 �
 
 ## 출처
 
+- [NVIDIA、欧州のインフラ導入を加速する DSX POD AI ファクトリーを発表 — NVIDIA Japan](https://blogs.nvidia.co.jp/blog/nvidia-introduces-dsx-pod-ai-factories-to-accelerate-europes-infrastructure-deployment/) — 2026-10-21 발표의 공식 번역, 준비된 현장 조건과 2027년 초 제공 예정
+- [Backend.AI WebUI 26.9, Appendix](https://webui.docs.backend.ai/26.9/en/appendix.html) — fGPU 환산, 메모리 확인 예제와 자원 부족 시 PENDING
 - [The Llama 3 Herd of Models — Llama Team, Meta](https://arxiv.org/html/2407.21783v3#S3.SS3.SSS4) — 3.3.4절의 straggler, 통신 정체와 유효 학습 시간
 - [Amazon SageMaker AI, Checkpointless training in Amazon SageMaker HyperPod](https://docs.aws.amazon.com/sagemaker/latest/dg/sagemaker-eks-checkpointless.html)
 - [Amazon SageMaker AI, In-process recovery and checkpointless training](https://docs.aws.amazon.com/sagemaker/latest/dg/sagemaker-eks-checkpointless-in-process-recovery.html)

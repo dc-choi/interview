@@ -100,6 +100,18 @@ aliases: ["Low Capital Service Business", "소자본 생활 서비스 사업", "
 
 이사, 청소와 개발 외주가 같은 약관이나 배상 기준을 따른다고 가정하지 않는다. 공통으로 참고할 부분은 범위, 변경 비용과 완료 확인을 연결하는 운영 방식이며, 개별 계약의 법적 조건은 업종별로 확인한다.
 
+### 고객의 일이 줄면 제공자의 어느 공정으로 옮겨가는가
+
+생활 대행의 편의는 고객이 하던 작업을 없애기보다 제공자의 공정으로 옮겨서 만들 수 있다. 공개 사례로 오늘수거는 고객이 분리와 세척 없이 수거비닐에 담아 문 앞에 두면, 직영 리사이클링 허브에서 분리와 세척을 수행하는 방식으로 안내한다. 2026-10-29 공식 이용 안내에서 이 역할 분담을 확인했으며 실제 원가, 처리 성과나 매출 성장의 원인을 검증한 것은 아니다.
+
+이를 서비스 설계에 적용할 때는 고객 접점과 후속 처리 비용을 함께 적는다(운영 제안).
+
+- 고객이 줄이는 일: 세척, 분류, 보관과 직접 이동 중 어떤 부담을 대신하는지 구분한다.
+- 제공자가 맡는 일: 수거와 이동뿐 아니라 임시 보관, 분류, 세척과 예외 처리를 원가와 처리 용량에 포함한다.
+- 확대 조건: 같은 지역에서 반복 구매가 생기는지와, 후속 공정이 물량을 감당하는지를 따로 확인한다. 수거 건수 증가만으로 전체 공헌이익이 좋아졌다고 판단하지 않는다.
+
+창업자가 직접 처리한 파일럿의 수요 증거와 외부 작업자가 수행할 때의 비용, 품질 증거도 나눈다. 인력이나 지역을 늘리기 전에 실제 작업 기록으로 후자를 확인한다. 이는 검증 순서의 제안이며 해당 기업의 확장 성과를 입증하는 설명은 아니다.
+
 ## 선택 기준
 
 - 예상 수익, 손실 상한과 추정의 근거를 함께 비교한다. 실패 확률을 확인하지 못했다면 낮다고 가정하지 않는다.
@@ -157,6 +169,7 @@ aliases: ["Low Capital Service Business", "소자본 생활 서비스 사업", "
 
 ## 출처
 
+- [가정 쓰레기 수거 서비스 ㅣ 오늘수거 이용 안내 — 오늘수거 공식 블로그](https://blog.sugeo.onl/oneul-sugeo-home-trash-pickup-service) — 2026-10-29 고객의 문 앞 배출과 직영 허브의 분리/세척 역할을 대조. 원가 점검과 확장 순서는 운영 제안
 - [Explicit and Implicit Costs, and Accounting and Economic Profit — OpenStax](https://openstax.org/books/principles-economics-3e/pages/7-1-explicit-and-implicit-costs-and-accounting-and-economic-profit) — 2026-10-28 점주 노동과 자기 자원의 기회비용을 대조
 - [Evaluate the Payback and Accounting Rate of Return in Capital Investment Decisions — OpenStax](https://openstax.org/books/principles-managerial-accounting/pages/11-2-evaluate-the-payback-and-accounting-rate-of-return-in-capital-investment-decisions) — 2026-10-28 일정/불규칙 현금흐름의 회수기간, 순이익과 현금흐름 구분, 시간가치 미반영을 대조. 비교표 분리는 운영 제안이며 국내 업종별 수익률 검증이 아님
 
