@@ -35,6 +35,7 @@ CI에서는 보통 `tsc --noEmit`으로 검사를 별도 단계로 두거나 `no
 - [x] [[TS-Diagnostics|오류 진단 (중첩 메시지, 모듈 해석, 환경과 테스트 선언)]]
 - [x] [[TS-JavaScript-Migration|JavaScript에서 TypeScript로 점진적 마이그레이션]]
 - [x] [[TypeScript-AST|TypeScript와 AST (컴파일러 파이프라인, Compiler API)]]
+- [x] [[TS-Native-Compilers|TypeScript 네이티브 컴파일러 구현 선택 (Go 포트 7.x, Rust 포트 tsrs, 공개 벤치마크의 조건)]]
 
 ## 관련 문서
 - [[타입스크립트(TS)|TS 인덱스]]

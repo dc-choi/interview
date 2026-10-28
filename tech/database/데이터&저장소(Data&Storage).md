@@ -22,6 +22,7 @@ aliases: ["데이터&저장소(Data&Storage)", "Data & Storage"]
 - [[PostgreSQL-Storage-Bottlenecks|PostgreSQL 스토리지 병목]] — NVMe 비교 조건과 내구성 설계
 
 ## 워크로드 분류
+- [[Distributed-SQLite|분산 SQLite]] — 합의, 변경 스트리밍과 CRDT 병합, 쓰기 소유권과 복구/손실 경계
 - [[Druid|Druid 이벤트 분석]] — 스트리밍 적재와 rollup의 원본 손실
 - [[SingleStore|SingleStore 분산 SQL]] — 트랜잭션, 분석과 벡터 검색의 검증 경계
 - [[OLTP-vs-OLAP|OLTP vs OLAP]] — 트랜잭션 처리 vs 분석 처리, 운영/분석 DB 분리 구조

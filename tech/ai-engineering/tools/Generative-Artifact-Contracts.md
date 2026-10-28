@@ -2,7 +2,7 @@
 tags: [ai, image-generation, html, design, verification]
 status: done
 category: "AI엔지니어링(AIEngineering)"
-aliases: ["Generative Artifact Contracts", "AesCode", "Krea 3"]
+aliases: ["Generative Artifact Contracts", "AesCode", "Krea 3", "Open Intelligent UI", "생성형 UI"]
 ---
 
 # 생성형 시각 산출물의 내용, 디자인과 편집 계약
@@ -33,6 +33,18 @@ AesCode는 참고 이미지에서 미적 단서를 얻어 편집 가능한 HTML/
 
 기하 검사는 부품의 연결과 겹침을, 브라우저 캡처는 화면과 움직임을 확인하는 수단이다. 그림이 정상 렌더링돼도 비유가 실제 시스템의 동시성이나 실패 처리를 올바르게 설명하는지는 별도로 대조해야 한다. README는 3D 모드를 beta로 표시하고 검증 사례의 범위를 제한한다. 이번 확인에서는 설치, 생성과 브라우저 실행을 시험하지 않았다.
 
+## 답의 형식을 에이전트가 고르는 생성형 UI
+
+생성형 UI는 에이전트가 요청마다 텍스트 답, 미리 만든 네이티브 컴포넌트, 새로 생성한 상호작용 화면 중 무엇으로 답할지 고르는 방식이다. 2026-10-27 CopilotKit의 Open Intelligent UI 저장소 README(MIT, main 8391a94c1c) 기준 구성과 경계는 다음과 같다.
+
+- **렌더러 선택:** 기본 답변 모델은 OpenAI의 `chat-latest` 별칭이고, 별도의 Jev 라우터(`jev-latest`)가 턴마다 렌더러와 시각화를 고른다. 단순 표는 A2UI로, 차트, 다이어그램, 계산기와 지도는 Open Generative UI로 보낸다. 제공자 호출이 실패하면 다른 라우터나 모델로 조용히 바꾸지 않고 실패를 드러낸다.
+- **실행 격리:** 맞춤 화면은 `generateSandboxedUi`가 HTML, CSS와 JavaScript를 격리된 iframe으로 스트리밍한다. 화면 안의 조작은 샌드박스에서 돌고, 사용자가 누른 후속 요청만 검증된 호스트 브리지로 값을 넘겨 새 에이전트 턴을 시작한다. 이전 출력을 고치는 호출 간 패치 API는 없어 각 출력이 별도 산출물로 남는다.
+- **데이터 표시:** 예시 화면의 숫자는 실제 업무나 날씨 데이터가 아니고 지도의 연결선은 검증된 경로가 아니라고 README가 밝힌다. 생성한 화면에 출처와 실데이터 여부를 표시하는 일은 화면 생성과 별개의 계약이다.
+- **키 처리:** 방문자가 입력한 API 키는 브라우저 메모리에만 두지만 요청은 애플리케이션 서버를 거쳐 각 제공자로 가므로, 운영자를 신뢰할 수 있는 배포에서만 쓰라고 안내한다.
+- **검증 범위:** 테스트와 빌드 통과만으로는 모델 접근이나 배포가 검증되지 않아, 출시 절차에 브라우저 검사와 실제 제공자 호출 smoke test를 둔다.
+
+검수할 때는 화면이 렌더링되는지와 별개로 계산 결과와 표의 값을 원본 데이터와 대조하고, 샌드박스 밖으로 나가는 값이 브리지 검증을 거치는지 확인한다(운영 제안). 설치와 실행은 하지 않았다.
+
 ## 산출물별 검수 기준
 
 | 산출물 | 검수 |
@@ -41,6 +53,7 @@ AesCode는 참고 이미지에서 미적 단서를 얻어 편집 가능한 HTML/
 | 상품 이미지 | 형태, 색, 로고, 문구와 보이지 않는 면의 생성 |
 | 반복 캠페인 변형 | 기준 이미지와 시리즈의 피사체 일관성 |
 | 인쇄용 결과 | 실제 크기, 해상도, 재단과 색상 규격 |
+| 생성형 UI 응답 | 렌더러 선택, 계산과 표의 값, 샌드박스와 브리지 경계, 예시 데이터 표시 |
 
 이번 확인은 공식 자료 대조다. 이미지 생성과 성능 측정, HTML 렌더링 품질 시험은 수행하지 않았다.
 
@@ -50,6 +63,8 @@ AesCode는 참고 이미지에서 미적 단서를 얻어 편집 가능한 HTML/
 - [Introducing Krea 3 — Krea](https://www.krea.ai/blog/introducing-krea-3)
 - [Anatomy — GitHub, wheresryan22](https://github.com/wheresryan22/anatomy) — 2026-10-22 출력 형식, 검수 도구와 3D beta 범위 대조
 - 사용자 제공 GeekNews 발췌: 2026-10-14 AesCode, 2026-10-16 Krea 3. 참조 이미지 수의 차이와 미대조 내부 설명을 본문에 남겼다.
+- [Open Intelligent UI — GitHub, CopilotKit](https://github.com/CopilotKit/OpenIntelligentUI) — 2026-10-27 README(main 8391a94c1c)로 렌더러 라우팅, 샌드박스와 브리지, 키 처리와 출시 검증 대조
+- 사용자 제공 GeekNews 알림 요약(2026-10-16~27): OpenIntelligentUI. 게시물 URL은 확인하지 못했고 위 저장소로 대조했다. [Anatomy](https://news.hada.io/topic?id=35670)도 같은 기간 알림에 다시 올라왔으며 내용은 위 2026-10-22 대조와 같다.
 
 ## 관련 문서
 

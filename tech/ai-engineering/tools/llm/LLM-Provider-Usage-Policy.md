@@ -87,6 +87,12 @@ LLM API로 만든 제품은 코드와 법령뿐 아니라 모델 제공자의 �
 
 이 정책은 특정 발언이 자동으로 신고되거나 체포로 이어진다는 근거가 아니다. 개별 사건의 발생, 신고 주체와 체포 경위는 별도 증거가 필요하다. 제품 설계에서는 사용 제한, 정보 공개 조건과 사용자 통지의 예외를 각각 확인한다(운영 제안).
 
+## 이용 제한 사례는 당사자 주장과 정책 판정을 나눈다
+
+기기 분석 권한, 모델 제공자 정책의 허용 범위와 실제 계정 제한 사유는 서로 다른 확인 대상이다. 작업 대상과 허가 범위, 사용한 도구의 행위와 받은 통지를 보존하고, 단순한 시간적 선후 관계로 제한 원인을 확정하지 않는다(운영 제안).
+
+2026-10 입력의 Samsung TV 역공학 중 OpenAI 계정 정지 주장은 후속 확인 후보로 보존한다. 공개 게시물 식별자는 확보했지만 2026-10-28 원문 열람은 403으로 실패했다. 실제 요청 내역과 제공자의 판정 근거도 확인하지 못했다. 따라서 TV 분석 자체가 금지됐다는 결론, 정지가 오탐이었다는 결론과 기기의 상시 도청 주장을 이 사례의 확정 사실로 쓰지 않는다. 후속 작업은 당사자 원문, 통지와 제공자 설명을 대조하는 것이다.
+
 ## 한계
 
 - 정책 원문을 제품 설계 관점으로 정리한 문서이며 법률 자문이 아니다. 서비스 약관 같은 다른 계약 문서와 현지 법령은 따로 확인한다.
@@ -95,6 +101,7 @@ LLM API로 만든 제품은 코드와 법령뿐 아니라 모델 제공자의 �
 
 ## 출처
 
+- [계정 제한 관련 공개 게시물 — 연구자 log4j](https://x.com/log4j/status/2113647464154857840) — 학습 후보 식별용, 2026-10-28 원문 열람 실패로 내용과 제한 사유 미확인
 - [2026 Usage Policy update — Anthropic](https://www.anthropic.com/news/2026-usage-policy-update)
 - [Anthropic, Usage Policy](https://www.anthropic.com/legal/aup)
 - [Anthropic, What is Anthropic’s policy for handling governmental requests for user information?](https://support.claude.com/en/articles/9519291-what-is-anthropic-s-policy-for-handling-governmental-requests-for-user-information)

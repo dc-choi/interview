@@ -111,6 +111,14 @@ ANN의 HNSW와 IVF, 거리 함수와 Recall 조정은 [[Vector-Similarity-Search
 
 In-batch negative에서 같은 positive item이 우연히 negative로 들어가는 accidental hit를 제거해야 한다. 어떤 분포로 negative를 뽑는지가 학습할 ranking 문제를 바꾸므로, sampling 구현을 단순 성능 최적화로만 보면 안 된다.
 
+## Source별 저장과 조회를 짝으로 둔다
+
+후보 source는 계산 위치에 따라 세 경로로 나눌 수 있다. 팔로잉 목록 조회처럼 계산이 가벼운 source는 요청 시점에 온라인 저장소의 현재 상태(팔로잉 관계, 실시간 인기)를 바로 조회하고, 협업 필터링이나 그래프 기반처럼 무거운 source는 batch나 streaming pipeline으로 key별 후보 목록을 미리 계산해 Redis, DynamoDB 같은 key-value 저장소에 둔다. Two-Tower처럼 미리 만든 index를 요청 시점에 검색하는 경로도 있다. 미리 계산한 목록의 snapshot과 watermark는 [[Recommendation-System-Serving-Operations#Batch Baseline과 Stream Delta|batch와 stream 계약]]을 따른다.
+
+Source마다 조회 key가 다르므로(사용자 ID, 토픽, 시드 아이템) 저장 스키마와 서빙 시점 조회기를 source 단위의 짝으로 설계하면 저장과 조회 코드의 변경이 다른 source의 경로에 번지지 않는다. 다만 병합 dedup과 source 기여, 랭커의 source 특징, 후보 예산과 deadline이 함께 바뀌므로 source 추가와 제거는 bundle 변경으로 shadow와 실험을 거친다.
+
+이미지 품질, 토픽, 검출 객체와 악성 점수 같은 아이템 신호는 아이템별 문서 하나로 미리 조인해 두면 병합 단계의 필터와 랭커 특징이 같은 신호를 재사용한다. 다만 악성 점수처럼 안전에 관한 임계값은 병합 필터의 임의 조건으로 두지 않고 [[Recommendation-System-Eligibility-Availability#보편 제약과 surface 제약|eligibility 정책]]으로 평가해 reason code를 남기고, source가 지원하면 아래처럼 retrieval에 push down한다. 품질 신호는 랭커 특징으로 남길 수 있다. 이 문서를 읽는 병합 요청 기록과 랭커의 `featureSnapshotRef`에 문서 version과 갱신 시각을 남기고, 학습에서는 추천 당시 version으로 point-in-time join한다. 최신값을 그대로 학습 특징에 쓰면 노출 뒤 신고로 오른 악성 점수 같은 미래 정보가 섞인다([[Recommendation-System-Serving-Operations#Freshness와 Point-in-time correctness|point-in-time correctness]]).
+
 ## 병합 계층의 계약
 
 각 생성기는 최소한 다음 정보를 함께 내보낸다.

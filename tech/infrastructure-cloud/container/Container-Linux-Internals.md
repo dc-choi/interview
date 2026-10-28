@@ -110,7 +110,7 @@ image는 kernel을 포함한 완전한 OS disk가 아니다. user-space executab
 - **namespace 옵션**: `unshare --pid`는 호출한 process를 옮기지 않고 이후 만드는 첫 자식이 새 namespace의 PID 1이 되므로 `--fork`가 필요하다. `ps`가 새 PID 공간을 보려면 `--mount-proc`로 `/proc`를 다시 마운트한다. `--uts`로 hostname, `--ipc`로 IPC, `--net`으로 network를 나누며 새 network namespace에는 loopback만 있다.
 - **image의 정체**: 설치는 대부분 정해진 경로로 파일을 복사하는 일이다. image는 실행 파일, 의존 라이브러리와 설정 파일을 tar layer로 묶고 실행 명령, 환경 변수, 작업 디렉터리와 사용자를 JSON config에 담은 filesystem snapshot이다.
 
-그러나 `chroot`나 namespace 하나는 보안 경계가 아니다. production runtime은 user mapping, capability 축소, device 접근, seccomp/LSM, read-only mount와 자원 한도를 함께 다룬다. 직접 조립한 container를 신뢰할 수 없는 workload의 sandbox로 사용하지 않는다.
+그러나 `chroot`나 namespace 하나는 보안 경계가 아니다. production runtime은 user mapping, capability 축소, device 접근, seccomp/LSM, read-only mount와 자원 한도를 함께 다룬다. 직접 조립한 container를 신뢰할 수 없는 workload의 sandbox로 사용하지 않는다. AI 에이전트처럼 신뢰할 수 없는 workload를 가두는 구성은 [[OpenShell-Agent-Sandbox|OpenShell]]과 [[AI-Training-Environment-Containment|AI 학습 환경의 격리]]에서 다룬다.
 
 ### root 경로 변경과 권한 제거는 별개다
 
@@ -121,6 +121,17 @@ image는 kernel을 포함한 완전한 OS disk가 아니다. user-space executab
 - root 교체 성공만으로 capability, device 접근이나 syscall 정책이 제한됐다고 판단하지 않는다. Docker의 `--privileged`는 모든 capability와 host device 접근을 부여하고 AppArmor/SELinux 제한을 크게 완화한다. 특정 기능이 필요하면 `--cap-add`, `--cap-drop`, `--device`로 필요한 권한을 따로 검토한다.
 
 실습 확인도 두 단계로 나눈다. 먼저 새 root와 process 목록이 보이는지 확인하고, 다음으로 의도하지 않은 host 경로, 장치와 특권 작업의 접근이 거부되는지 확인한다. 전자는 격리된 화면의 증거이고, 후자는 선택한 공격 경로에 대한 통제의 증거다. 둘 다 전체 탈출 가능성이 사라졌다는 증명은 아니다.
+
+## runtime이 container process를 만드는 방식
+
+2026-10-27 부분 검증: runc의 nsenter 문서, `setns(2)`, OCI layer 명세, OverlayFS 문서, containerd의 whiteout 변환 코드, Docker rootless 문서와 RootlessKit README로 이 절을 대조했다. 문서의 기존 검증일은 유지한다.
+
+container process는 host kernel이 직접 스케줄하는 일반 process라 host의 `/proc`에서도 보인다. runtime은 자식 process를 만들고 namespace, cgroup과 rootfs를 설정한 뒤 사용자가 지정한 프로그램을 exec한다.
+
+- **Go runtime보다 C 코드가 먼저 돈다**: multithreaded process는 `setns(2)`로 user namespace를 바꿀 수 없다. Go로 작성한 runc는 Go runtime의 multithread 문제를 피하려고 자기 실행 파일을 `runc init`으로 다시 실행하고, cgo로 등록한 C constructor `nsexec()`를 Go runtime이 뜨기 전에 실행한다. `nsexec()`는 부모가 열어 둔 init pipe에서 namespace 경로, clone flag와 UID/GID mapping을 읽어 기존 namespace에 `setns(2)`로 들어가고 `clone(2)`으로 자식을 만든다. 부모 쪽 `nsexec()`는 자식 PID를 전달하고 끝나며, 자식 쪽이 Go runtime에 제어를 넘긴다.
+- **PID namespace는 자식부터 바뀐다**: `setns(2)`로 PID namespace에 들어가도 호출자는 그대로이고 이후 만드는 자식만 새 namespace에 속한다. runc가 `CLONE_NEW*` flag가 없어도 `clone(2)`까지 하는 이유이며, `unshare --pid`에 `--fork`가 필요한 이유와 같다.
+- **layer를 풀 때 삭제 표현을 바꾼다**: OCI layer tar는 아래 layer의 파일 삭제를 `.wh.` 접두사가 붙은 빈 파일로, 디렉터리 하위 전체의 삭제를 `.wh..wh..opq`로 표현한다. OverlayFS는 whiteout을 0/0 장치 번호의 문자 장치(또는 `trusted.overlay.whiteout` xattr를 단 빈 파일)로, opaque directory를 `trusted.overlay.opaque=y` xattr로 표현한다. containerd는 overlay용으로 풀 때 앞의 형식을 뒤의 형식으로 바꾼다. image가 곧 directory라는 설명은 이 변환을 생략한 단순화다.
+- **daemon 접근은 root 권한이다**: Docker 문서는 `docker` group이 root 수준 권한을 준다고 경고한다. rootless 모드는 daemon과 container를 user namespace 안에서 실행하며, host에 `newuidmap`, `newgidmap`과 사용자마다 65,536개 이상의 subordinate UID/GID(`/etc/subuid`, `/etc/subgid`)가 필요하다. Docker rootless가 쓰는 RootlessKit은 새 network namespace를 slirp4netns 같은 사용자 공간 NAT로 외부와 연결하고, SUID `lxc-user-nic`을 쓰는 kernel NAT는 실험 기능으로 둔다.
 
 ## 장애를 계층으로 분해한다
 
@@ -151,6 +162,15 @@ image는 kernel을 포함한 완전한 OS disk가 아니다. user-space executab
 - [Docker Docs, Resource constraints](https://docs.docker.com/engine/containers/resource_constraints/)
 - [Linux manual, systemd.resource-control(5)](https://man7.org/linux/man-pages/man5/systemd.resource-control.5.html)
 - [Linux manual, systemd-run(1)](https://man7.org/linux/man-pages/man1/systemd-run.1.html)
+- [Linux manual, setns(2)](https://man7.org/linux/man-pages/man2/setns.2.html)
+- [OCI Image Specification, Image Layer Filesystem Changeset](https://github.com/opencontainers/image-spec/blob/main/layer.md)
+- [Docker Docs, Rootless mode](https://docs.docker.com/engine/security/rootless/)
+- [Docker Docs, Linux post-installation steps for Docker Engine](https://docs.docker.com/engine/install/linux-postinstall/)
+- [nsenter README — runc](https://github.com/opencontainers/runc/blob/main/libcontainer/nsenter/README.md) — 2026-10-27 `nsexec()` 실행 시점과 절차 대조
+- [OverlayConvertWhiteout — containerd](https://github.com/containerd/containerd/blob/main/pkg/archive/tar_opts_linux.go) — 2026-10-27 whiteout 변환 대조
+- [RootlessKit — rootless-containers](https://github.com/rootless-containers/rootlesskit) — 2026-10-27 사용자 공간 NAT와 network driver 대조
+- [Docker is weird — Code and Cake](https://codeandcake.dev/posts/2026-10-22-docker-is-weird) — 2026-10-22, runtime 절의 계기
+- [Docker는 이상하다 — GeekNews](https://news.hada.io/topic?id=35852) — 소개 글과 Hacker News, Lobsters 의견 번역
 - [Docker가 쉬워지는 운영체제 이야기, Overlay 파일 시스템 구조](https://www.inflearn.com/courses/lecture?courseId=343428&unitId=476557)
 - [Docker가 쉬워지는 운영체제 이야기, Linux namespace와 cgroup](https://www.inflearn.com/courses/lecture?courseId=343428&unitId=476558)
 - [Docker가 쉬워지는 운영체제 이야기, 자원 사용을 통제하기 위한 cgroup](https://www.inflearn.com/courses/lecture?courseId=343428&unitId=476559)
@@ -167,3 +187,5 @@ image는 kernel을 포함한 완전한 OS disk가 아니다. user-space executab
 - [[Docker-Bridge-Networking|Docker bridge networking]]
 - [[Virtual-Memory|Virtual Memory]]
 - [[Container-Entrypoint-Signals|Container entrypoint와 signal]]
+- [[OpenShell-Agent-Sandbox|OpenShell 에이전트 sandbox]]
+- [[AI-Training-Environment-Containment|AI 학습 환경의 격리]]

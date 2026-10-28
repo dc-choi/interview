@@ -40,6 +40,15 @@ aliases: ["LLM Market Landscape", "생성형 AI 시장 점유율", "AI 서비스
 
 이는 [[Distribution-As-Moat|도달력이 새 해자]]의 직접 실증이다. 모바일 시대의 해자가 리텐션과 네트워크 효과였다면, 모델이 상향 평준화된 구간의 해자는 **남이 깔아둔 접점(OS, 검색, 오피스)에 올라타는 유통**이다.
 
+## 모델 공급사와 판매 채널의 분리
+
+기업 시장에서는 모델 공급사와 판매 채널이 갈라지고 있다. 아래는 2026-10-27에 각 회사의 공식 블로그, 릴리스 노트, 문서 변경 이력과 제품 문서로 확인한 사례다.
+
+- **경쟁 클라우드의 모델 카탈로그**: Google Cloud는 2026-10-22 블로그에서 OpenAI의 GPT-6 Astra, GPT-6.1 Sol, GPT-6 Luna를 Model Garden의 일부 기업 고객에게 비공개 프리뷰로 제공하기 시작했다고 밝혔다. 구매는 Google Cloud Marketplace로 하고, 사용액은 기존 클라우드 약정을 차감하며 하나의 청구서에 합쳐진다. 로컬 Codex CLI와 데스크톱 작업 흐름은 Google Cloud의 Gemini 플랫폼 추론에 연결할 수 있다고 안내했다. 모델은 전용 Google Cloud 인프라에서 돌고, 데이터 무보관(ZDR)과 Confidential Compute는 추후 제공으로 적었다. OpenAI도 전날 개발자 커뮤니티에 Model Garden 도입을 공지했다.
+- **같은 흐름의 다른 사례**: Google Cloud 릴리스 노트는 2026-10-14 DeepSeek-V4.1-Flash를 Model Garden의 관리형 모델(MaaS) 공개 프리뷰로 올렸고, Mistral 문서 변경 이력은 2026-10-22 Z.ai의 GLM 5.3 Flash를 자사 API 모델로 추가했다. Inception의 Mercury 3도 출시일부터 자사 API와 OpenRouter, Baseten, Vercel로 함께 제공된다.
+- **누구에게 무엇이 바뀌나**: 기업 고객은 새 공급사 계약 없이 기존 클라우드 약정과 보안 통제 안에서 모델을 고를 수 있다. 공급사에게는 남이 깔아 둔 구매 절차와 약정 예산이 도달 경로가 된다. 이 문서의 해석이며 실제 매출 배분과 계약 구조는 공개 자료로 확인하지 못했다.
+- **엔지니어링 함의(적용 제안)**: 같은 모델이라도 판매 경로마다 제공 상태(비공개 프리뷰, 공개 프리뷰, GA), 데이터 보존 옵션, 지원 기능과 판 갱신 시점이 다를 수 있다. 경로를 바꿀 때는 모델 ID, 가용 리전, 데이터 처리 조건과 같은 평가 세트의 결과를 다시 확인한다([[Model-Release-Claims#라이선스와 제공 상태는 발표 문구와 따로 확인한다|제공 상태 읽기]]).
+
 ## 지표 해석의 함정 — 웹 방문량 ≠ 시장 점유율
 
 웹사이트 방문량은 여러 사용 채널 중 하나일 뿐이다.
@@ -64,6 +73,12 @@ aliases: ["LLM Market Landscape", "생성형 AI 시장 점유율", "AI 서비스
 
 - [WWDC26 Apple Intelligence 가이드 — Apple Developer](https://developer.apple.com/wwdc26/guides/apple-intelligence/)
 - [챗GPT 웹 점유율 급락… 생성형 AI 3강 구도로 — 조선일보](https://n.news.naver.com/mnews/article/023/0003981096)
+- [Google Cloud expands model choice and flexibility, bringing OpenAI models to customers — Google Cloud, Michael Gerstenhaber](https://cloud.google.com/blog/products/ai-machine-learning/google-cloud-brings-openai-models-to-customers) — 2026-10-22, 비공개 프리뷰 모델, 구매와 청구, 데이터 통제
+- [OpenAI models are coming to Google Cloud — OpenAI Developer Community](https://community.openai.com/t/openai-models-are-coming-to-google-cloud/1408440) — 2026-10-21 공지
+- [Gemini Enterprise Agent Platform release notes — Google Cloud](https://docs.cloud.google.com/gemini-enterprise-agent-platform/release-notes) — 2026-10-14 DeepSeek-V4.1-Flash 공개 프리뷰
+- [Changelog — Mistral Docs](https://docs.mistral.ai/getting-started/changelog) — 2026-10-22 GLM 5.3 Flash 추가
+- [Introducing Mercury 3 — Inception](https://www.inceptionlabs.ai/blog/introducing-mercury-3) — 2026-10-19, 제공 경로
+- [OpenAI 모델과 Codex, Google Cloud에 도입 — GeekNews](https://news.hada.io/topic?id=35775) — 학습 계기, 내용은 위 공식 자료로 대조
 
 ## 관련 문서
 
@@ -72,3 +87,5 @@ aliases: ["LLM Market Landscape", "생성형 AI 시장 점유율", "AI 서비스
 - [[Claude-Fable-5-Mythos-5|Claude Fable 5 / Mythos 5]] — 모델 가용성, API 거동
 - [[AX-Transformation|AX 조직 전환]] — Maker→Closer
 - [[Developer-Role-AI-Era|AI 시대 개발자 역할]] — 역할 재정의
+- [[AI-Infra-Geopolitics|AI 인프라 지정학]] — 오픈웨이트 기반 모델 의존과 한국 파생 모델 집계
+- [[Model-Release-Claims|모델 발표 수치 읽기]] — 판매 경로별 제공 상태와 라이선스

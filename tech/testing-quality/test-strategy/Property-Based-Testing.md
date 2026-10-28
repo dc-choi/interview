@@ -1,9 +1,9 @@
 ---
-tags: [testing, property-based-testing, hypothesis, specification]
+tags: [testing, property-based-testing, hypothesis, specification, fuzzing, formal-verification]
 status: done
-verified_at: 2026-10-10
+verified_at: 2026-10-28
 category: "테스트&품질(Testing&Quality)"
-aliases: ["Property Based Testing", "속성 기반 테스트", "PBT"]
+aliases: ["Property Based Testing", "속성 기반 테스트", "PBT", "퍼즈 하네스 형식 검증", "Formal Verification of Fuzz Targets"]
 ---
 
 # 속성 기반 테스트
@@ -42,12 +42,41 @@ aliases: ["Property Based Testing", "속성 기반 테스트", "PBT"]
 
 실패했을 때는 구현 수정, 테스트 수정, 요구사항 보완 중 어느 조치가 맞는지 검토한다. 테스트를 통과시키기 위해 합의한 계약을 자동으로 완화하지 않는다. 외부 서비스나 비결정적 동작에 의존하는 요구는 예제 기반 통합 테스트 등 다른 검증도 필요하다.
 
+## 탐색을 증명으로 바꾸는 퍼즈 하네스 형식 검증
+
+퍼징과 PBT는 생성한 입력 가운데서 반례를 찾는다. 형식 검증은 같은 판정 규칙을 명세로 옮기고, 명세가 다루는 모든 입력에서 규칙이 성립한다는 증명을 기계가 검사한다. 퍼즈 하네스는 충돌을 버그로 정의하므로 명세의 입력 예산과 실행 모델 안에서 충돌하지 않는다는 진술을 명세로 삼을 수 있다. 하네스가 왕복 변환, 멱등성이나 기준 구현과의 일치를 `assert`로 확인하고 그 검사가 바이너리에 활성화돼 있다면, 충돌 없음의 증명은 해당 검사의 실패도 배제한다. 프로그램의 종료나 검사 지점 도달까지 보장하는지는 정리 진술에서 별도로 확인한다.
+
+### LLM이 증명을 쓰고 검사기가 판정한다
+
+2026-10-22 Anthropic Frontier Red Team과 Theorem이 공개한 결과 기준이다(벤더 발표, 독립 재현 전).
+
+- **파이프라인:** 라이브러리와 기존 퍼즈 하네스를 RISC-V로 컴파일하고, 실행 파일, Theorem의 RISC-V와 Linux 프로세스 의미론, 충돌 없음이라는 성질에서 명세를 기계적으로 만든다. Claude가 Rocq 증명을 쓰고 Rocq 커널이 명세와 대조해 검사한다. 증명 중 찾은 버그는 Claude가 패치하고, 패치한 코드로 명세를 다시 만들어 증명한다.
+- **범위:** OSS-Fuzz의 123개 라이브러리, 239개 진입점에서 64 MB 미만의 모든 입력과 모델링한 모든 Linux 응답, 메모리 배치에 대해 정상 종료하며 메모리 안전 오류나 assertion 실패가 없음을 증명했다고 밝힌다. 전제는 고정된 메모리 예산의 단일 스레드 정적 바이너리, RISC-V CPU와 Linux다. 증명은 몇 주에 걸쳐 만들었고 Rocq 약 1억 8천만 줄이며, 전형적인 증명 하나가 약 60만 줄(대상 바이너리 중앙값 1만 8천 명령어)이다.
+- **신뢰 기반:** 증명 자체는 사람이 읽지 않아도 검사기가 판정한다. 대신 RISC-V와 Linux 프로세스 모델, 정확한 정리 진술과 Rocq 검사기(그리고 검사기가 기대는 하드웨어, OS와 OCaml 컴파일러)를 믿어야 한다.
+- **공개 범위:** 2026-10-28 대조한 공개 저장소 README(커밋 240e37ad8d)에서 증명을 공개한 것은 25개 라이브러리의 60개 진입점이다. 진술은 예산 안의 모든 입력에서 두 빌드 모두 오류에 닿지 않고 sanitizer 빌드와 일반 빌드의 관찰 가능한 동작이 같다는 일치 형태다. 바이너리는 clang 20.1.8과 musl로 만든 정적 riscv64 프로그램이고 Rocq 9.2.0으로 검사한다. 메모리 예산은 ASan 진술 2 GiB, UBSan 진술 16 GiB이며, 종료(halting) 진술의 증명은 없어 끝나지 않는 실행은 배제하지 않는다. 따라서 위 발표의 정상 종료를 포함한 설명과 공개 정리가 보장하는 범위를 구분한다. 공개분만으로 전체 239개 진입점의 종료 보장을 독립 확인할 수는 없다. 미수정 버그를 드러낼 수 있는 증명은 공개하지 않았다.
+
+다른 실험으로 RFC 1950 명세를 Claude가 쓰고 Linux 커널 zlib 구현의 x86 바이너리가 이를 따름을 Claude가 생성한 x86 의미론 위에서 증명했으며, Rust로 만든 Python 부분 인터프리터를 Verus로 CPython 의미론에 맞춰 증명한 뒤 무작위 프로그램 170만 개에서 99.95% 같은 동작을 측정했다고 밝힌다.
+
+### 퍼저가 놓친 버그의 형태
+
+퍼저는 보통 1 MB로 상한을 둔 작은 입력을 변형하고 커버리지에 기대므로, 큰 입력이나 특정 호출 순서에서만 나는 결함을 놓치기 쉽다. 발표의 예는 약 20 MB의 드문 배치에서만 일어난 카운터 언더플로와 범위 밖 쓰기, 64 MB 입력과 2 GB 넘는 메모리가 필요한 이미지 디코더의 범위 밖 읽기, 같은 파일에 대한 두 핸들의 호출 순서가 필요한 범위 밖 읽기, 깊게 중첩된 입력으로 일어나는 libexpat CVE-2026-56132의 재발견이다. 충돌하지 않는 논리 결함(파일 로드를 제한하는 기능이 항상 적용되지는 않음)도 나왔고, 전체로 수백 건의 버그가 드러났다고 밝힌다. 증명을 끝내지 못해도 시도 과정에서 실제 버그가 나온다는 점이 실무 가치다.
+
+### 증명됐다는 말의 범위를 읽는다
+
+- **형식 검증은 무결함이 아니다:** 검사기는 증명이 명세를 만족하는지만 본다. 명세나 기계 모델이 실제와 다르면 남은 버그는 그 차이에 있다. 배포 대상의 아키텍처, libc나 링크 방식이 증명한 RISC-V와 musl 정적 바이너리와 다르면 그 증명이 그대로 옮겨 간다고 볼 수 없다.
+- **성질의 범위:** ASan이 모든 메모리 안전 버그를 잡지는 않고, 모든 진입점을 증명하지도 않았다. 진입점을 모두 증명해도 죽은 코드와 호출자의 잘못된 사용은 남는다.
+- **보상 해킹:** 프로그램을 아무 일도 하지 않게 고치면 어떤 정리든 증명할 수 있다. 발표는 패치에 감점을 주고, 패치가 어떤 입력의 동작을 얼마나 적게 바꾸는지 증명하면 가산점을 주며, 패치를 기록하고 감사했다고 밝힌다. AI가 코드와 증명을 함께 고쳤다면 증명 성공보다 패치 diff와 명세 변경을 먼저 검토한다(운영 제안). 명세 적합성의 일반론은 [[AI-Code-Delegation-Review#형식 검증도 명세의 적합성까지 대신하지 않는다|형식 검증과 명세]]를 따른다.
+- **비용:** 증명에 수억 토큰이 든다는 점을 핵심 한계로 든다. 실제 OSS-Fuzz 코드로 만든 36개 소형 과제에서 Opus 5.5가 절반을 증명하는 데 Opus 5보다 약 40% 적은 토큰을 썼고, 다른 에이전트의 증명을 가져다 쓰는 공유 작업 공간은 토큰을 17% 줄였다는 결과는 벤더 자체 측정이다.
+
+운영 제안: 형식 검증 결과를 받으면 정리 진술, 대상 아키텍처와 libc, 입력 크기와 메모리 예산, 탐지 수단(sanitizer)의 범위, 증명된 진입점 목록과 패치 여부를 먼저 확인한다. 배포 빌드의 퍼징과 회귀 테스트는 증명이 그 빌드를 덮을 때까지 유지한다.
+
 ## 점검 질문
 
 - 생성 범위에 유효한 경계값과 중요한 상태 조합이 들어 있는가?
 - 판정 규칙이 구현 세부 대신 합의한 결과를 검사하는가?
 - 실패 반례를 재현하고 회귀 테스트로 남길 수 있는가?
 - 요구사항 변경 시 연결된 속성과 테스트를 함께 검토하는가?
+- 증명됐다는 결과의 정리 진술, 실행 모델과 탐지 수단의 범위를 설명할 수 있는가?
 
 ## 출처
 
@@ -55,6 +84,9 @@ aliases: ["Property Based Testing", "속성 기반 테스트", "PBT"]
 - [Hypothesis, Domain and distribution](https://hypothesis.readthedocs.io/en/latest/explanation/domain.html)
 - [Hypothesis, Configuring test settings](https://github.com/HypothesisWorks/hypothesis/blob/master/hypothesis/docs/tutorial/settings.rst)
 - [Hypothesis, Replaying failed tests](https://hypothesis.readthedocs.io/en/latest/tutorial/replaying-failures.html)
+- [LLMs are making formal software verification feasible at a much larger scale — Anthropic, Frontier Red Team](https://www.anthropic.com/research/formal-verification) — 2026-10-22, 파이프라인, 범위와 전제, 신뢰 기반, 버그 사례, 한계와 비용을 2026-10-27 대조. 2026-10-28 정상 종료 표현과 증명 범위를 재대조
+- [oss-verify-proofs — GitHub, theorem-labs](https://github.com/theorem-labs/oss-verify-proofs/blob/240e37ad8d/README.md) — 2026-10-28 고정 커밋 README로 공개 범위, 진술 형태, 빌드와 검사 버전, 종료 보장의 부재 대조. 증명 검사는 실행하지 않음
+- [LLM이 훨씬 더 큰 규모의 소프트웨어 정형 검증을 가능하게 하고 있음 — GeekNews](https://news.hada.io/topic?id=35855) — 학습 계기
 
 ## 관련 문서
 
@@ -62,3 +94,4 @@ aliases: ["Property Based Testing", "속성 기반 테스트", "PBT"]
 - [[Deterministic-Test|결정적 테스트]]
 - [[Agent-Spec-Writing|에이전트 스펙 작성]]
 - [[Agent-Test-Verification-Behavior|에이전트의 검증 행동]]
+- [[AI-Code-Delegation-Review|AI 구현 위임과 코드 리뷰]] — 형식 검증과 명세 적합성, AI 리뷰의 발견량과 수정 용량

@@ -109,8 +109,9 @@ AI가 증명을 생성하는 능력과 수학을 이해하고 설명하는 사�
 
 - [[Developer-Role-AI-Era|AI 시대 개발자 역할]] — 견습 사다리 붕괴, 위임의 4분면
 - [[Technical-Debt|기술 부채]] — 인지 부채 명명 비판, 위축과 탈숙련
-- [[AI-Handicap-Learning|AI 핸디캡 학습법]] — 튜터 모드의 구체 수칙 (초안 먼저, 힌트 요청, 교대 훈련), 주요 서비스의 학습 모드
+- [[AI-Handicap-Learning|AI 핸디캡 학습법]] — 튜터 모드의 구체 수칙 (초안 먼저, 힌트 요청, 교대 훈련), 주요 서비스의 학습 모드, 과제 완료 점수와 실제 학습 확인의 분리
 - [[Tech-Trend-Learning-Strategy|기술 변화와 학습 전략]] — 깊이 있는 학습과 이전 가능한 작동 모델
 - [[SRE|SRE]] — 온콜과 사고 대응 구조, 자동화가 걷어가는 일상 반복과 이해 부채
 - [[AI-Capability-Transfer|AI 역량 이전]] — 내부 코치 양성과 자립 역량 기준
 - [[AI-Slop-Quality-Gate|AI 슬롭과 판단 관문]] — 생성 뒤 검토 시간, 위험도별 검토 강도와 소유의 세 조건
+- [[AI-Code-Delegation-Review#위임 앞뒤에 사람이 생각하는 구간을 둔다|위임 앞뒤의 사고 구간]] — 위임 전 이해와 위임 뒤 검토를 사람이 맡는 구성(Brain Sandwich)

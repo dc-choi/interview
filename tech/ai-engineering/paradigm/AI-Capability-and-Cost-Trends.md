@@ -190,4 +190,6 @@ METR는 사람 전문가가 걸리는 시간으로 잰 소프트웨어와 추론
 - [[AX-Transformation|AX 조직 전환]] — 조직의 AI 도입 판단
 - [[Expertise-Formation-AI|AI 시대 전문성 형성]] — 결과 산출과 이해, 다음 세대 전수의 구분
 - [[LLM-Market-Landscape|생성형 AI 시장 경쟁 구도]] — 점유율의 분모와 채널
+- [[Model-Release-Claims|모델 발표 수치 읽기]] — 개별 출시 발표의 자체 보고 점수, 비용 절감률, 속도와 라이선스 조건
+- [[Evaluator-Guided-Program-Search|평가기 주도 프로그램 탐색]] — 자동 평가기로 얻은 연구 결과의 검증 범위
 - [[paradigm|AI 패러다임, 모델]]

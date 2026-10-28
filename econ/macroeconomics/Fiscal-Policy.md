@@ -79,6 +79,17 @@ aliases: ["재정정책", "Fiscal Policy"]
 
 학습 점검: 금리 상승 뉴스를 보면 부채 잔액, 평균 만기와 차환 일정, 기초재정수지, 명목성장률을 함께 확인한다. 금리가 올랐다는 사실만으로 재정위기를 단정하지 않는다.
 
+### 적자가 줄어드는 것과 부채비율이 안정되는 것은 다르다
+
+재정수지가 개선돼도 적자가 남아 있으면 채무가 더 쌓일 수 있다. GDP 대비 부채비율은 이자 부담, 명목 GDP의 증가와 금융자산 거래 등에도 좌우되므로 적자율 한 개로 안정화를 판정하지 않는다. 기초재정수지와 이자를 포함한 전체 재정수지도 나눠 읽는다.
+
+프랑스의 2026년 중반 공식 전망을 비교하면 이 차이가 드러난다. 아래는 2026-10-28 대조한 당시 전망이며, 10월의 최신 예산안이나 확정 실적을 뜻하지 않는다.
+
+- **IMF의 7월 Article IV 자료:** 일반정부 재정수지는 GDP 대비 2026년 -5.2%에서 2028년 -4.5%로 개선되는 전망이지만, 총부채비율은 118.5%에서 121.1%로 높아진다. 같은 기간 기초재정수지는 -2.7%에서 -1.7%로 개선돼도 적자다.
+- **프랑스 중앙은행의 6월 전망:** 2027년과 2028년에 각각 잠재 GDP의 0.4%포인트에 해당하는 기초구조조정을 가정해도 2028년 부채비율은 122%로 전망했다. 정부 계획의 절감 조치 가운데 구체성이 부족한 것은 이 전망에 반영하지 않았다. 두 기관의 수치를 평균내거나 같은 정책 가정으로 취급하지 않는다.
+
+점검 제안: 목표로 발표된 적자 경로, 전망에 실제 반영한 조치와 집행 결과를 구분한다. 부채 증가 전망만으로 지급불능, 시위의 단일 원인이나 대공황의 재현을 확정하지 않는다. 그런 판단에는 차환과 금융시장, 고용과 가계소득 등 별도 근거가 필요하다.
+
 ## 6. 재정정책의 한계
 
 - **시차**: 예산 편성과 입법, 집행에 시간이 걸려 통화정책보다 느리다. 부양책이 풀릴 무렵엔 이미 경기가 돌아서 있기도 하다.
@@ -113,6 +124,8 @@ aliases: ["재정정책", "Fiscal Policy"]
 
 ## 출처
 
+- [IMF — IMF Executive Board Concludes 2026 Article IV Consultation with France](https://www.imf.org/en/news/articles/2026/07/22/pr26255-france-imf-executive-board-concludes-2026-article-iv-consultation) — 2026-07-22 자료의 일반정부 수지, 기초수지와 총부채비율 전망, 2026-10-28 부분 대조
+- [Banque de France — Macroeconomic projections, June 2026](https://www.banque-france.fr/en/publications-and-statistics/publications/macroeconomic-projections-june-2026) — 기초구조조정 가정, 미반영 절감 조치와 2028년 부채비율 전망, 2026-10-28 부분 대조
 - [TreasuryDirect, FAQs about Treasury Securities Buybacks](https://www.treasurydirect.gov/help-center/faqs/buyback-faqs/) — 2026-10-07 목적, 재원과 매입 국채의 상환 대조. 개별 회차 규모와 일정은 검증 범위 밖
 - [Federal Reserve — Fluctuations in the Treasury General Account and their effect on the Fed's balance sheet](https://www.federalreserve.gov/econres/notes/feds-notes/fluctuations-in-the-treasury-general-account-and-their-effect-on-the-feds-balance-sheet-20250806.html) — 2025-08-06 연구 노트의 회계 관계와 준비금 조건을 2026-10-07 대조. 제안된 운용 방식의 채택을 뜻하지 않음
 - [BEA, Measures of government spending](https://www.bea.gov/help/faq/552) — 2026-10-02 정부 구매와 이전지출의 GDP 반영 방식 대조

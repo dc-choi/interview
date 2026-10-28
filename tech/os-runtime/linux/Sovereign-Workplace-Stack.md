@@ -1,7 +1,7 @@
 ---
 tags: [linux, nixos, digital-sovereignty, interoperability, workplace]
 status: done
-verified_at: 2026-10-22
+verified_at: 2026-10-27
 category: "OS&런타임(OS&Runtime)"
 aliases: ["디지털 자율 업무환경", "Sovereign Workplace Stack", "DAWO"]
 ---
@@ -36,19 +36,33 @@ DAWO-NixOS 저장소는 NixOS를 통해 업무용 장비를 자동으로 동일�
 
 위 목록은 공개 구성과 파일럿 목적에서 도출한 설계 제안이다. DAWO의 구현이나 특정 조직의 마이그레이션을 직접 시험한 결과가 아니다.
 
+## NixOS가 재구성 점검을 돕는 범위
+
+첫 점검인 재구성은 NixOS의 선언형 구성과 잘 맞는다. NixOS 26.05 매뉴얼 기준, 원하는 시스템 상태를 구성 파일에 적고 `nixos-rebuild`로 적용하면 명세에 맞는 일관된 binary 집합을 얻는다. 구성을 바꿀 때마다 부트 메뉴에 새 항목이 생기므로 문제가 생기면 이전 구성으로 부팅해 되돌릴 수 있다. `nixos-rebuild test`로 시험 적용한 구성이 장비를 멈추게 하면 재부팅만으로 동작하던 구성으로 돌아간다.
+
+개인 서버 운영 경험(2026-10-20 공개)도 같은 성질을 근거로 든다. 새 소프트웨어를 몇 줄의 구성으로 올리고(FreshRSS와 백업 설정 9줄, reverse proxy 설정 십여 줄), 서버가 망가지면 같은 구성으로 새 서버를 만들면 된다는 것이다. 반면 하위 경로로 proxy할 때의 cookie path 재작성 같은 세부는 여전히 직접 풀어야 했고, 컨테이너 방식은 정확한 image를 기록하지 않으면 시간이 지난 뒤 같은 결과를 보장하지 못한다고 짚는다. 개인 경험이므로 조직 규모의 운영 결과로 일반화하지 않는다.
+
+되돌리기의 대상은 시스템 구성 세대다. 데이터베이스와 사용자 파일 같은 상태는 백업과 복구 시험으로 따로 보장하고, 비밀값은 구성 저장소에 평문으로 두지 않는다(설계 점검).
+
 ## 선택의 비용과 한계
 
 구성 코드를 공개하고 교체 가능한 구성요소를 두면 의존 관계를 검토할 근거가 생긴다. 그러나 공개 저장소가 있다는 사실만으로 외부 서비스 의존성, 보안 취약점이나 운영 인력 부담이 사라지지는 않는다.
 
-전환 여부는 라이선스 비용뿐 아니라 통합, 교육, 지원과 복구 비용을 함께 비교해 결정한다. 특정 국가나 공급자가 서비스를 중단했다는 개별 사건의 원인과 이 프로젝트의 착수 계기는 별도 1차 근거 없이 연결하지 않는다.
+전환 여부는 라이선스 비용뿐 아니라 통합, 교육, 지원과 복구 비용을 함께 비교해 결정한다. 특정 국가나 공급자가 서비스를 중단했다는 개별 사건의 원인과 이 프로젝트의 착수 계기는 별도 1차 근거 없이 연결하지 않는다. 2026-10 하순 보도는 2027년 안정판 목표와 국제기구 서비스 중단을 계기로 전했지만, 2026-10-27 확인한 DAWO 저장소 README에는 일정이나 그런 계기가 없고 목표를 상호운용성과 디지털 자율성의 기반으로만 적는다.
 
 ## 출처
 
 - [DAWO 구성요소 — 네덜란드 내무부, code.overheid.nl](https://code.overheid.nl/MinBZK/DAWO)
 - [DAWO-NixOS — 네덜란드 내무부, code.overheid.nl](https://code.overheid.nl/MinBZK/DAWO-NixOS)
 - [Municipalities to test autonomous digital workplaces — Digital Government](https://www.nldigitalgovernment.nl/netherlands-digitalisation-strategy-nds/dossierpostcontext/dutch-municipalities-explore-autonomous-digital-work-environment/)
+- [NixOS Manual 26.05 원본 (release-26.05 nixos/doc/manual) — NixOS/nixpkgs GitHub](https://github.com/NixOS/nixpkgs/tree/release-26.05/nixos/doc/manual) — 2026-10-27 선언형 구성, 부트 메뉴의 이전 구성과 `nixos-rebuild test` 대조. 판마다 고정된 주소가 없는 [렌더링된 stable 매뉴얼](https://nixos.org/manual/nixos/stable/)도 같은 날 26.05판이었다
+- [NixOS is making me less afraid — Entropic Thoughts, kqr](https://entropicthoughts.com/nixos-is-making-me-less-afraid)
+- [NixOS 덕분에 새 소프트웨어 설치가 덜 두려워졌다 — GeekNews](https://news.hada.io/topic?id=35731)
+- [네덜란드, Microsoft 의존에서 벗어나기 위해 자체 Linux OS 개발 중 — GeekNews](https://news.hada.io/topic?id=35718)
 
 ## 관련 문서
+
+- [[Business-Continuity-for-Small-Business#공급자의 일방적 제한도 중단 시나리오에 넣는다|공급자의 일방적 제한]] — 외부 공급자 의존과 복구 경로
 
 - [[Linux-File-System|Linux 파일시스템]]
 - [[Cloud-Migration-Strategies|클라우드 전환 전략]]

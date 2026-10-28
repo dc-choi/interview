@@ -2,7 +2,7 @@
 tags: [ai, agent, runtime, harness, claude-managed-agents]
 status: done
 category: "AI엔지니어링(AIEngineering)"
-aliases: ["Agent Runtime Deployment", "Eve", "Mecatl", "Strands Harness SDK", "OpenCode 2.0", "Claude Managed Agents"]
+aliases: ["Agent Runtime Deployment", "Eve", "Mecatl", "Strands Harness SDK", "OpenCode 2.0", "Claude Managed Agents", "Tines 3B"]
 ---
 
 # 에이전트 런타임의 정의, 상태와 배포 경계
@@ -56,6 +56,17 @@ Kubernetes 참조 런타임은 **Redis에 상태와 이벤트를 저장하고 Ku
 - **API 필드 변화**: 저장소 루트 README는 하위 에이전트 위임(`callable_agents`)을 research preview로 표시하고, 스크립트는 하위 에이전트 본문에도 빈 `callable_agents`를 넣는다. 공식 release notes에서는 multiagent orchestration이 2026-05-06 public beta가 됐고, 현재 Create Agent 레퍼런스(`POST /v1/agents`)에는 `callable_agents`가 없으며 위임을 `multiagent` 필드(`coordinator` 또는 `multiagent_20261001` 타입)로 받는다. API가 `callable_agents`를 거절하는지 무시하는지는 확인하지 못했고, 거절한다면 하위 에이전트를 포함한 모든 생성 요청이 영향을 받는다. `coordinator` 타입은 지정한 하위 에이전트에 위임하고 advisor 모델에 물을 수 있지만 workflow 실행을 시작하거나 하위 에이전트를 직접 정의하지 못한다. `multiagent_20261001` 타입은 inline agent가 기본으로 켜지고 inline agent는 세션이 실행하는 에이전트(여기서는 오케스트레이터)의 모델, 도구, MCP 서버와 스킬을 쓰므로, 에이전트별 권한 분리를 유지하려면 `subagents`의 `inline_agents`를 `{"type": "disabled"}`로 두고 `predefined_agents`에 하위 에이전트를 넣는다. workflow를 쓰지 않으면 `workflows`를 `{"type": "disabled"}`로 끄고, 쓰면 그쪽 `inline_agents`도 끄고 `predefined_agents`를 하나 이상 둔다(inline agent를 끈 설정의 목록이 비면 요청이 400 오류로 실패한다)
 - **출력 스키마**: `output_schema`는 현재 Create Agent 레퍼런스에 없는 필드이고, 배포 스크립트는 이를 모든 요청 본문에서 지운다. 스크립트 머리 주석과 `scripts/validate.py`는 이 스키마로 reader의 JSON을 하네스에서 검증한다고 적지만, 확인한 스크립트, 훅과 CI 어디에서도 그 래퍼나 validate.py를 호출하지 않는다. 배포된 reader는 필드와 길이 제한을 담은 스키마를 받지 못하고 스키마 검증 JSON만 반환하라는 프롬프트 지시를 받는다. `scripts/test-cookbooks.sh`는 dry-run 요청 본문의 형식만 검사하고 `output_schema`가 남으면 실패로 본다. reader 결과를 코드로 검증하려면 위 분리의 한계처럼 별도 세션의 출력을 워크플로우 엔진이 검증해 넘기고, 배포 전에는 `--dry-run`(API 호출 없이 요청 본문 출력) 결과를 현재 레퍼런스와 대조한다(운영 제안)
 
+## 일회용 샌드박스의 파일 상태를 트랜잭션으로 남기는 Tines 3B
+
+Tines 3B는 앱, 에이전트와 자동화를 만들고 운영하는 워크플로 플랫폼이다. 공식 소개 페이지는 워크플로의 각 단계가 다음 단계와 완전히 격리된 컴퓨터로 동작하고, 자격 증명은 투명 프록시로 런타임에 주입돼 빌더나 AI에게 보이지 않는다고 설명한다(2026-10-27 확인). 단계마다 새 Linux 샌드박스를 쓰고 버리면 저장소 clone이나 SQLite 파일처럼 단계를 넘어 남아야 하는 파일 상태가 문제가 된다. 3B를 만든 팀의 시각으로 쓴 2026-10-10 설계 글(Shayon Mukherjee)은 이를 버전 있는 파일시스템으로 푼다.
+
+- **실행 단위 트랜잭션:** 샌드박스 실행과 그 실행의 파일 변경을 DB 트랜잭션처럼 다뤄, 전부 반영되거나 아무것도 반영되지 않는다. 실패한 단계는 아무것도 공개하지 않는다.
+- **불변 스냅샷과 포인터:** 볼륨은 한 번 쓰면 바뀌지 않는 스냅샷들과 현재 스냅샷을 가리키는 포인터다. 새 스냅샷은 바뀐 노드만 다시 쓰고 나머지는 이전 스냅샷과 공유한다(copy-on-write). 포크는 같은 스냅샷을 가리키는 두 번째 포인터라 큰 볼륨도 싸게 분기하지만, 브랜치 사이의 파일 병합은 하지 않는다.
+- **동시 공개:** 공개는 포인터에 대한 compare-and-swap이다. 서로 다른 파일의 변경은 새 스냅샷 위에 다시 적용하고, 같은 파일의 변경은 경로를 밝힌 충돌로 실패한다. 각 단계는 실행 내내 시작할 때의 스냅샷 하나만 읽는다. 충돌 처리의 정확한 의미는 아직 다듬는 중이라고 밝힌다.
+- **저장 계층:** 쓰기 로그를 겸하는 append-only pack과 LSM 트리 색인을 쓰고, 그룹 커밋으로 여러 쓰기가 fsync 한 번을 나눠 쓰며, 봉인한 pack을 S3로 올린다. 로그의 끝은 EBS 볼륨 하나에 있어 볼륨을 잃으면 백그라운드 S3 사본 기준으로 약 1분 전 시점까지만 복구된다는 점과, 파일을 열 때 파일 전체를 로컬로 복사해 큰 파일에서 비용이 크다는 점을 한계로 밝힌다.
+
+에이전트 런타임에 옮기면 작업 하나의 성공 판정과 그 작업이 남긴 파일 상태의 공개를 같은 단위로 묶는 설계다(해석). 이 방식이 막는 것은 실패한 실행의 부분 쓰기와 동시 실행의 같은 파일 덮어쓰기다. 글이 설명한 충돌 판정은 쓴 파일 기준이라, 실행 중 다른 실행이 파일 A를 바꿔 먼저 공개해도 A를 읽고 B만 쓴 실행은 충돌 없이 그 위에 공개될 수 있다(write skew, 해석). 설정 파일과 그 설정으로 만든 산출물처럼 여러 파일에 걸친 불변식은 한 파일에 담아 같은 파일 충돌로 잡히게 하거나, 공개된 스냅샷에서 불변식을 다시 검사하는 단계를 둔다(설계 점검). 외부 API 호출 같은 파일시스템 밖의 부수효과는 되돌리지 않으므로 멱등성과 승인 경계는 따로 설계한다. 쓰기 2ms 미만, 읽기 약 1ms라는 지연은 자체 운영 수치이며 이번에 재현하지 않았다.
+
 ## 작업 관리의 병목을 평가한다
 
 코딩 에이전트의 품질은 작업 성공률과 사용자의 개입량으로 확인한다. 2026-10-09 공개 경험 글인 「Why Are Coding Agents So Dumb?」는 병렬화 부족, 모델별 위임 부재, 읽기 어려운 계획과 반복 승인 비용을 지적한다. 특정 시점의 사용 경험이며 모든 제품의 현재 결함을 입증한 결과는 아니다.
@@ -81,6 +92,9 @@ Kubernetes 참조 런타임은 **Redis에 상태와 이벤트를 저장하고 Ku
 - [Claude Platform Docs, Permission policies](https://platform.claude.com/docs/en/managed-agents/permission-policies)
 - [anthropics/financial-services — Anthropic](https://github.com/anthropics/financial-services) — 2026-10-21 main(574ed36) 기준 루트 `README.md`, `managed-agent-cookbooks/README.md`, earnings-reviewer cookbook(`managed-agent-cookbooks/earnings-reviewer/`의 `README.md`, `agent.yaml`, `subagents/*.yaml`), 루트 `scripts/`의 `deploy-managed-agent.sh`, `orchestrate.py`, `validate.py`, `test-cookbooks.sh`, `check.py`, 루트의 `.githooks/pre-commit`과 `.github/workflows/`, `plugins/agent-plugins/earnings-reviewer/agents/earnings-reviewer.md` 대조
 - 사용자 제공 GeekNews 발췌: 2026-10-11 Eve와 코딩 에이전트, 2026-10-15 Mecatl과 OpenCode 2.0, 2026-10-16 Strands Harness SDK. 게시물 URL은 제공되지 않았다.
+- [Tines 3B — Tines](https://www.tines.com/3b) — 공식 소개 페이지, 단계별 격리 실행과 프록시 자격 증명 주입을 2026-10-27 확인
+- [A versioned filesystem for disposable sandboxes — Shayon Mukherjee](https://www.shayon.dev/post/2026/283/versioned-filesystem-for-disposable-sandboxes/) — 2026-10-10 개인 블로그의 설계 글, 트랜잭션 공개, 스냅샷과 포크, 충돌 처리와 한계를 2026-10-27 대조
+- 사용자 제공 GeekNews 알림 요약(2026-10-16~27): Tines 3B의 버전 관리 파일시스템. 게시물 URL은 확인하지 못했고 위 원문으로 대조했다.
 
 ## 관련 문서
 

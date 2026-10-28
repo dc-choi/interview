@@ -70,6 +70,17 @@ Spence의 1973년 논문은 노동시장의 교육을 예로 든다. 고용주�
 - **채용**: 실제 업무와 비슷한 과제, 수습 기간, 성과에 연동한 보상은 능력에 자신이 있는 지원자일수록 받아들이기 쉬운 조건이다. 과제 설계는 [[Competence-Identification|개발 역량을 과제와 설명으로 확인하기]]에서 본다.
 - **외주 구매**: 단계별 검수와 지급, 하자보수 기간처럼 품질이 낮을수록 수행자에게 비싸지는 조건을 계약 선택지로 두면 품질에 자신 있는 수행자가 그 조건을 받아들이기 쉽다. 계약 조항의 점검은 [[Dev-Outsourcing-Engagement|개발 외주의 계약과 수주]]를 따른다.
 
+### 선발 프로그램의 직접 평가와 합격 신호
+
+결과물보다 행동의 궤적을 보는 직접 평가 사례로 Thiel Fellowship의 초기 선발이 있다. 이 펠로십은 대학을 건너뛰거나 쉬고 자기 일을 하는 청년에게 2년간 지원금을 주며, 2026-10-28 공식 사이트에서 25만 달러를 다시 확인했다. 다음은 초기 운영진이 회고한 평가 방식이며 계약 메뉴의 자기선택과는 구분한다(2026-10-14 First Round Review).
+
+- **이미 하고 있는가:** 선발되면 하겠다는 지원자보다 학교를 다니면서도 이미 만들고 있는 지원자를 높게 봤다. 좋은 학교나 높은 SAT 점수가 선구적 비전을 뜻하지 않는다고 보고, 적은 자원으로 더 많이 이룬 지원자에게 가점을 줬다.
+- **계획을 고치는가:** 10년, 2년, 3개월 목표를 묻고 심사 중 3개월 목표의 진행을 다시 확인했다. 원래 약속을 지켰는지보다 상황이 바뀔 때 전략을 조정했는지를 봤고, 아이디어가 실패하면 더 노력하겠다는 답만 반복한 후보는 적응력을 따로 가르쳐야 한다고 보고 뽑지 않았다.
+- **관찰과 제3자 평가:** 최종 후보의 짧은 발표 뒤 멘토에게 그 사람과 이야기한 뒤 에너지가 늘었는지 줄었는지를 적게 하고, 가벼운 압박이 있는 집단 활동에서의 행동도 관찰했다.
+- **지원 대상의 선택:** 이미 회사를 세우고 벤처 투자를 받은 후보는 너무 앞서 있다는 이유로 뽑지 않았다. 이는 숨은 능력을 드러내는 장치보다 지원이 결과를 바꿀 대상을 고르는 기준이다.
+
+이론으로 읽으면 목표 재확인과 집단 관찰은 조정 능력을 직접 살피는 평가이고, 이미 하고 있다는 증거는 받는 쪽이 확인할 수 있는 신호다. 같은 기사는 합격률이 1% 미만으로 Harvard보다 낮아지면서 학력과 간판에 맞서 시작한 프로그램이 청년들이 승인을 구하는 새 자격 증표가 됐다고 지적한다. 합격은 평가가 실제 구분한 특성의 간접적이고 확률적인 증거가 될 수 있지만 능력을 보증하지 않는다. 지원자가 활동 자체보다 합격에 맞춰 행동하기 시작하면 그 구분력이 약해질 수도 있다. 기사 속 사례, 합격률과 운영진의 회고는 독립 검증하지 않았다.
+
 ## 6. 적용: AI가 모방 비용을 낮춘 신호
 
 이 절은 모형을 현재 상황에 적용한 해석이며 Spence의 논문이 다룬 주장은 아니다.
@@ -109,10 +120,11 @@ Spence의 1973년 논문은 노동시장의 교육을 예로 든다. 고용주�
 - AI가 이 신호의 비용을 모두에게 낮췄는가, 유형 사이의 차이까지 줄였는가?
 - 내가 정보가 적은 쪽이라면 상대가 스스로 갈라지게 할 조건 메뉴를 설계했는가?
 - 신호 경쟁에 드는 비용이 얻는 구분력보다 크지 않은가?
+- 선별 장치가 실제 능력을 가르는가, 합격 자체가 새 자격 신호로 소비되고 있지는 않은가?
 
 ## 출처
 
-2026-10-06 신호의 비용 조건, 다중균형과 선별의 자기선택 구조를 대조했다. NobelPrize.org의 보도자료, 대중용 해설과 시상 연설은 직접 열기가 403으로 실패하여 공식 페이지의 검색 색인에 수록된 해당 본문으로 확인했다. Spence 논문은 학술지의 서지 정보만 확인했고, 분리균형과 풀링균형의 분류와 직관적 기준의 결과는 강의 자료로 확인했다. 4절의 숫자는 가상 예시이고 6절의 AI 적용은 모형에서 끌어낸 해석이며 실증 결과가 아니다.
+2026-10-06 신호의 비용 조건, 다중균형과 선별의 자기선택 구조를 대조했다. NobelPrize.org의 보도자료, 대중용 해설과 시상 연설은 직접 열기가 403으로 실패하여 공식 페이지의 검색 색인에 수록된 해당 본문으로 확인했다. Spence 논문은 학술지의 서지 정보만 확인했고, 분리균형과 풀링균형의 분류와 직관적 기준의 결과는 강의 자료로 확인했다. 4절의 숫자는 가상 예시이고 6절의 AI 적용은 모형에서 끌어낸 해석이며 실증 결과가 아니다. 2026-10-27에는 5절의 선발 프로그램 사례를 회고 기사와 공식 사이트로 대조했다.
 
 - [Job Market Signaling — The Quarterly Journal of Economics, Michael Spence](https://doi.org/10.2307/1882010)
 - [The Effort Heuristic Revisited: Mixed Results for Replications of Kruger et al. (2004)'s Experiments 1 and 2 — Collabra: Psychology, Ignazio Ziano 외](https://online.ucpress.edu/collabra/article/9/1/87489/197632/The-Effort-Heuristic-Revisited-Mixed-Results-for) — 2026-10-15 재현 결과와 호감/품질, 금전 가치 지표의 차이 대조
@@ -121,6 +133,9 @@ Spence의 1973년 논문은 노동시장의 교육을 예로 든다. 고용주�
 - [The Prize in Economics 2001, Presentation Speech — NobelPrize.org](https://www.nobelprize.org/prizes/economic-sciences/2001/ceremony-speech/)
 - [Open Yale Courses, ECON 159 Game Theory, Lecture 23 Asymmetric Information: Silence, Signaling and Suffering Education](https://oyc.yale.edu/economics/econ-159/lecture-23)
 - [University of Maryland, Economics 703 Advanced Microeconomics, Lecture Note 5: Signaling](https://cramton.umd.edu/econ703/note5-signaling.pdf)
+- [Permission to Think For Yourself: Inside the Thiel Fellowship's Early Years — First Round Review, Nate Martins](https://review.firstround.com/inside-thiel-fellowship/) — 2026-10-14 게시, 2026-10-27 선발 질문, 평가 기준, 관찰 방식과 합격률 대조. 운영진의 회고이며 선발 효과를 측정한 자료가 아님
+- [Thiel Fellowship](https://thielfellowship.org/) — 2026-10-28 2년간 25만 달러 지원금 재확인. 과거 금액의 변경 시점은 이번 확인 범위 밖
+- [스스로 생각해도 된다는 허락: Thiel Fellowship의 초기 시절 — GeekNews](https://news.hada.io/topic?id=35886)
 
 ## 관련 문서
 
@@ -132,6 +147,7 @@ Spence의 1973년 논문은 노동시장의 교육을 예로 든다. 고용주�
 - [[Resume-Experience-Narrative-and-Evidence|이력서 경험 서술과 증거 설계]] — 확인 가능한 증거 설계
 - [[First-Hand-Experience-AI-Era|AI 시대의 직접 경험기와 작성자 신뢰]] — 복제하기 어려운 기록
 - [[Competence-Identification|개발 역량을 과제와 설명으로 확인하기]] — 채용 측의 직접 확인 장치
+- [[Learning-Credentials-and-Work-Samples|교육 수료증과 실무 증거]] — 수료, 시험과 직접 만든 작업물의 증거 구분
 - [[Dev-Outsourcing-Engagement|개발 외주의 계약과 수주]] — 발주자의 정보비대칭과 계약 조건
 - [[AI-Commoditization-Differentiation|AI 범용화와 사업 차별화]] — 결과물 범용화와 프리랜서 수요 변화
 - [[미시경제(Microeconomics)]] — 지도

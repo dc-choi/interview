@@ -35,7 +35,7 @@ verified_at: 2026-10-12
 | Cowork 탭 | 클라우드 VM 실행, 컴퓨터 꺼도 진행(Team, Enterprise에서는 클라우드 실행이 베타, 2026-10-12 도움말 기준) | 로컬 파일, 브라우저와 컴퓨터 사용 기능은 데스크톱 앱이 열려 연결돼 있어야 함. 이때 승인한 로컬 폴더를 직접 읽고 쓸 수 있음 |
 | `claude --cloud` / `--teleport`(`/tp`) | 웹 세션 병렬 생성 후 로컬로 가져오기 | `--remote`는 폐기된 `--cloud` 별칭, teleport는 단방향(웹→터미널) |
 
-선택 기준: 로컬 파일이 필요하면 Desktop 계열, 무중단이 필요하면 클라우드 계열.
+선택 기준: 로컬 파일이 필요하면 Desktop 계열, 무중단이 필요하면 클라우드 계열. 여러 제공자의 에이전트를 한 화면에서 원격으로 지휘하는 제3자 제어면(T3 Code)은 연결 경로와 새 스레드의 권한 기본값이 따로 있으므로 [[Agent-Terminal-Workspaces#원격 제어면은 실행 위치와 권한 기본값을 함께 본다|원격 제어면의 권한]]을 함께 본다.
 
 ## 플러그인 — 확장을 묶어 설치하는 단위
 
@@ -54,7 +54,9 @@ verified_at: 2026-10-12
 | gstack | 대표, QA 같은 관점의 의사결정 검토, 브라우저 자동화 | 개인 설정 공개 저장소 |
 | oh-my-claudecode | 다중 에이전트 병렬 오케스트레이션 | |
 | GSD (Get Shit Done) | 긴 작업의 context rot 방지, 스펙 기반 단계 계획, 세션 재개 | 원 저장소는 보관 처리되고 GSD Core로 이전 안내 |
+| Superlite | 스펙을 받아 작업 그래프로 나누고 병렬 구현, 리뷰와 수정까지 진행하는 자율 빌드 | Superpowers에서 출발한 개인 저장소(2026-10-17 생성). push, merge, publish 같은 외부 동작 앞에서는 멈추고 사용자 결정을 기다림(2026-10-27 README 확인) |
 
+- **자율 실행 플러그인의 경계**: Superlite README(2026-10-27, main f7ef73c700)는 Superpowers의 플러그인 구조, 세션 시작 훅과 수명주기 스킬을 출발점으로 삼아, 단계마다 사람이 붙는 Superpowers와 달리 자율 개발 속도에 맞춰 조정했다고 밝힌다. 계획을 작업 그래프로 나눠 서로 기다릴 필요가 없는 작업을 병렬로 돌리고, 작업마다 감당할 수 있는 가장 싼 에이전트를 골라 기계적 작업은 Haiku, 그 밖의 구현은 Sonnet 구현 에이전트에 맡기며, 최종 리뷰는 새로 띄운 Opus 리뷰어가 지적만 하고 코드를 고치지 않는다. 사람이 조율하면 리뷰 계획을 한 번 승인한 뒤 더 묻지 않고 범위 변경을 판정(ruling)으로 기록하며, AI가 조율하면 열린 선택을 스스로 판정한다. 어느 쪽이든 파괴적이거나 외부로 나가는 동작과 보안 민감 동작에서는 멈추고, 끝난 작업은 숨은 체크포인트(`refs/superlite/*`)로 두었다가 사용자가 커밋 명령을 내리거나 자동 커밋을 켰을 때만 커밋한다. 같은 장비에서 숨은 테스트 177개를 둔 속도 비교(최신 빌드 16.1분, Superpowers 기본 33.6분)는 최신 수치가 1회 실행이고 비교 기준이 이전 실행이라 README도 통계적 증거가 아닌 지표로 보라고 하며, Superpowers보다 비용이 더 들 수 있고 추가 견고성 검사 점수가 낮다(7개 중 4개 대 약 5.7개)고 밝힌다. 실행 중에는 `.claude/settings.local.json`에서 Superpowers를 끄고 종료 명령(`sl finish`)에서 되돌리므로, 두 플러그인을 함께 깔았다면 종료 뒤 설정이 복원됐는지 확인한다(운영 제안)
 - **역할별 조합 제안**: 의사결정은 gstack, 실행은 Superpowers, 긴 작업의 안정화는 GSD, 대규모 병렬이 필요하면 oh-my-claudecode를 더하는 3층 구성이 제안된다. 디자인 시스템의 토큰과 컴포넌트를 조합해 주는 것처럼 특정 산출물용 도메인 플러그인도 있으며, 개인이 만든 플러그인은 유지보수 주체와 갱신 빈도를 먼저 본다
 - **하나로 시작**: 여러 개를 한 번에 설치하지 않는다. 비슷한 역할의 스킬과 훅이 겹치면 어느 흐름이 발동할지 예측하기 어렵고 매 턴 컨텍스트 비용이 쌓인다. 하나로 시작해 실제로 쓰는 스킬만 남기거나 필요한 스킬만 `.claude/skills/`로 흡수하고, 플러그인은 프로젝트 범위로 골라 설치한다
 
@@ -94,6 +96,8 @@ Mod는 Claude Code 프로세스 안에서 실행되는 JavaScript/TypeScript 이
 - [gstack — GitHub, garrytan](https://github.com/garrytan/gstack)
 - [oh-my-claudecode — GitHub, Yeachan-Heo](https://github.com/Yeachan-Heo/oh-my-claudecode)
 - [get-shit-done (보관됨) — GitHub, gsd-build](https://github.com/gsd-build/get-shit-done)
+- [superlite — GitHub, iha2](https://github.com/iha2/superlite) — 2026-10-27 README(main f7ef73c700)로 조율 방식, 승인 경계, 체크포인트와 벤치마크 단서 대조. 설치와 벤치마크 재현은 하지 않음
+- [Superlite - Superpowers보다 빠른 Claude Code 플러그인 — GeekNews](https://news.hada.io/topic?id=35647) — 저자 블로그 글의 번역 요약. 수치는 위 README로 대조
 - [Claude Code 플러그인 4대장 — Threads, elephant_coding](https://www.threads.com/@elephant_coding/post/DYRyBRdCWwf)
 - [디자인 시스템 조합 플러그인 소개 — Threads, jobs._._lab](https://www.threads.com/@jobs._._lab/post/DaoW3M_krGe)
 - [Claude Code와 superpowers로 스펙 작성 — Threads, sunghyoukbae](https://www.threads.com/@sunghyoukbae/post/DWEUHfJEnoY)
@@ -109,3 +113,4 @@ Mod는 Claude Code 프로세스 안에서 실행되는 JavaScript/TypeScript 이
 - [[Claude-Code-Business-Automation|Claude Code 비즈니스 자동화]]
 - [[Claude-Code-Extension-Reference|Claude Code 확장 메커니즘]]
 - [[Agent-Skills|에이전트 스킬 (SKILL.md 포맷)]]
+- [[Agent-Terminal-Workspaces|에이전트 터미널과 원격 제어면]]

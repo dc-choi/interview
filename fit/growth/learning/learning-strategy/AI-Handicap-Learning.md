@@ -95,6 +95,12 @@ AI에게 정답을 받아 검토 없이 붙여넣으면 대리 대국에 가깝�
 
 같은 주제를 익히는 동안에는 **필요한 도움을 점차 줄일 수 있는지** 확인한다. 새롭거나 더 어려운 과제로 바뀌면 도움을 다시 늘릴 수 있다. 지원량이 같다는 이유만으로 성장 정체를 단정하지 않는다. 설명을 덜 받고 먼저 시도하거나 AI 답을 검증 대상으로 두면서, 도움 없이 설명하고 적용하는 범위가 넓어지는지 확인한다 — [[First-Hand-Experience-AI-Era|AI를 직접 경험 가속 도구로]].
 
+## 과제 점수와 학습 확인을 분리한다
+
+AI가 숙제를 대신 끝낼 수 있으면 숙제 점수만으로 독립 수행 능력을 확인하기 어렵다. UC Berkeley의 한 수학 교수(필즈상 수상자)는 많은 학생이 AI로 높은 점수를 받자 정답 채점에 채점 인력 비용을 쓸 의미가 없다고 보고 숙제를 완료 여부로만 채점하기로 했다(2026-10-23 The Daily Californian 보도). 그는 좋은 제도가 아니지만 당장 대안이 없다고 말했다. 대학 교수평의회의 강의계획서 AI 사용 기대 사항 기재 요청과, Turnitin과 Rumi 등 AI 탐지 도구가 캠퍼스 표준으로 삼기에 충분하지 않았다는 대학의 판단도 같은 학보가 전한 내용이다. 교수평의회 원문과 도구 평가 결과는 직접 확인하지 않았다.
+
+개인 학습에 옮기면 연습과 확인을 나누는 원칙이 된다. AI를 쓴 과제 완료는 연습 기록으로만 두고, 이해는 자료와 AI를 닫은 회상, 조건을 바꾼 재풀이와 설명으로 확인한다. 아래 절의 AI 작업과 비AI 작업 교대가 이 확인 단계다. 탐지 도구의 판정을 학습 여부의 증거로 쓰지 않는다. 이는 보도된 대학의 대응을 학습 절차에 옮긴 제안이다. 점수가 신호로서 구분력을 잃는 구조는 [[Signaling-Screening|신호와 선별]]에서 본다.
+
 ## 지능보다 사고 의지가 희소해지는 위험
 
 AI가 답을 만드는 비용을 낮추면 눈앞의 성과와 내 안에 남는 역량이 갈라질 수 있다. 이때 차이를 만드는 것은 지능만이 아니라 어려운 문제를 직접 붙들고 생각하려는 **인지 욕구와 의지**다. 같은 도구를 써도 한쪽은 질문의 범위와 검증 능력을 넓히고, 다른 쪽은 판단 과정까지 외주화할 수 있다.
@@ -160,6 +166,8 @@ JOIN은 [[SQL-Joins|조인 규칙]]과 [[SQL-Fundamentals-NULL|NULL]]을 함께 
 - [Guided Learning in Gemini: From answers to understanding — Google](https://blog.google/outreach-initiatives/education/guided-learning/)
 - [Claude Code Docs, Output styles](https://code.claude.com/docs/en/output-styles)
 - [AI 시대에 컴공을 선택한 용사들에게 - \[잡담\] — YouTube, Uzchowall](https://www.youtube.com/watch?v=luyBenV55xk) — 2026-09-05, 학습 모드를 다룬 계기, 화자 스스로 써 보지 않았다고 밝힌 언급이라 기능과 효과의 근거로 사용하지 않음
+- [AI use leads UC Berkeley math professor to see 'no point' in grading homework — The Daily Californian, Audrey Baime](https://www.dailycal.org/news/campus/academics/ai-use-leads-uc-berkeley-math-professor-to-see-no-point-in-grading-homework/article_bdf1eae2-c08b-491f-b9f1-81a7cea177de.html) — 2026-10-23 게시, 2026-10-28 채점 방식, 강의계획서 요청과 탐지 도구 판단 재대조. 대학 학보의 보도이며 교수평의회 원문은 확인하지 않음
+- [AI 사용 확산에 UC Berkeley 수학 교수, "과제 채점에 의미 없다" — GeekNews](https://news.hada.io/topic?id=35990)
 - [YouTube, 양실장의 바이브코딩대학, 1시간 압축) AI 기술 1도 모르는 초심자가 전문 AI SaaS 구축하는 모든 과정](https://www.youtube.com/watch?v=JK1S6FvAdZQ) — 2026-08-24, 설명란의 프로젝트 기반 재귀 학습 튜터 프롬프트와 30:26~39:00 시연. 학습 효과를 측정한 자료는 아니다.
 
 ## 관련 문서
@@ -171,3 +179,4 @@ JOIN은 [[SQL-Joins|조인 규칙]]과 [[SQL-Fundamentals-NULL|NULL]]을 함께 
 - [[MCP|Model Context Protocol]] — 사용자 소유 콘텐츠를 AI 컨텍스트로 연결하는 기술 경계
 - [[Self-Development-While-Working|일하면서 자기계발]]
 - [[Trusted-Advisor-Listening|판단 없는 경청]] — AI가 대체할 수 없는 역할
+- [[Signaling-Screening|신호와 선별]] — AI가 모방 비용을 낮춘 점수와 결과물의 구분력

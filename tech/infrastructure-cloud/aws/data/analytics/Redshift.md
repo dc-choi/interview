@@ -27,7 +27,7 @@ PostgreSQL 기반의 **OLAP에 최적화된 완전 관리형 데이터 웨어하
 
 ## 클러스터 구성
 
-- **클러스터(Cluster)**: Redshift의 운영 단위. **리더 노드 1개 + 컴퓨팅 노드 N개**.
+- **클러스터(Cluster)**: Redshift의 운영 단위. 하나 이상의 **컴퓨팅 노드**로 구성하며, 컴퓨팅 노드가 2개 이상이면 별도의 **리더 노드**가 컴퓨팅 노드를 조정하고 외부 통신을 맡는다. 단일 노드 cluster에서는 한 노드가 리더와 컴퓨팅 역할을 함께 한다.
 - **리더 노드**: 클라이언트와 통신, 쿼리 파싱, 실행 계획 수립, 컴퓨팅 노드에 작업 분배, 결과 집계.
 - **컴퓨팅 노드(Compute Node)**: 실제 데이터, 연산을 보유. 각 노드마다 전용 CPU, 메모리, 디스크 스토리지.
 - **노드 슬라이스(Slice)**: 컴퓨팅 노드 내부에서 데이터, 메모리를 더 잘게 나눈 병렬 처리 단위.
@@ -159,7 +159,7 @@ Iceberg 데이터를 Redshift 내부 테이블로 가져올 때는 `INSERT INTO 
 - [CREATE TABLE과 DISTSTYLE](https://docs.aws.amazon.com/redshift/latest/dg/r_CREATE_TABLE_NEW.html)
 - [COPY를 사용한 테이블 로드](https://docs.aws.amazon.com/redshift/latest/dg/t_Loading_tables_with_the_COPY_command.html)
 - [Redshift Spectrum 개요와 배포별 실행 모델](https://docs.aws.amazon.com/redshift/latest/dg/c-spectrum-overview.html)
-- [Redshift provisioned 클러스터와 노드 타입](https://docs.aws.amazon.com/redshift/latest/mgmt/working-with-clusters.html)
+- [Redshift provisioned 클러스터와 노드 타입](https://docs.aws.amazon.com/redshift/latest/mgmt/working-with-clusters.html) — 2026-10-27 단일, 다중 노드 cluster의 리더 노드 구성 부분 검증
 - [Redshift RG 전환 고려사항](https://docs.aws.amazon.com/redshift/latest/mgmt/managing-cluster-considerations.html) — RG 전환 절의 부분 검증
 - [데이터 웨어하우스 시스템 아키텍처](https://docs.aws.amazon.com/redshift/latest/dg/c_high_level_system_architecture.html)
 - [Multi-AZ 배포](https://docs.aws.amazon.com/redshift/latest/mgmt/managing-cluster-multi-az.html)
@@ -175,3 +175,4 @@ Iceberg 데이터를 Redshift 내부 테이블로 가져올 때는 `INSERT INTO 
 - [[S3]]
 - [[OLTP-vs-OLAP]]
 - [[ClickHouse]]
+- [[Data-Infrastructure-Layers|웨어하우스 제품 비교와 레이크의 구분]]

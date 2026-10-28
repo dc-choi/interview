@@ -122,6 +122,14 @@ Dave McClure(500 Startups)가 제안한 스타트업 성장 지표 프레임워�
 
 같은 시기에 가입한 사용자 그룹의 행동을 시간축으로 추적한다. 리텐션 커브가 수평으로 안정되면(flattening) 반복 가치와 유지 가설을 검토할 신호가 될 수 있지만, 단독으로 PMF를 판정하지는 않는다.
 
+### 첫 구매 코호트와 할인 없는 재구매
+
+첫 구매 기준으로 묶는 상거래 코호트도 있다. Shopify의 기본 고객 코호트 보고서는 첫 주문 시점으로 고객을 묶고, 그 이후 기간별 재구매를 보여 준다. 첫 구매와 같은 기간 안에 일어난 재주문은 기간 0에 포함되므로, 그다음 기간의 재구매와 구분한다(2026-10-21 공식 고객 보고서 문서 확인).
+
+매출 목표를 해석할 때의 적용 제안: 첫 구매 시점과 유입 채널, 할인 사용 여부를 나눠 같은 경과 기간의 재구매와 고객당 매출을 비교한다. 최근 고객에게 아직 오지 않은 재구매 기간을 이탈로 세지 않고, 방문과 구매도 구분한다. 할인 없이 다시 산 비율은 **정한 관찰 창 안에서 할인 없는 후속 주문을 한 고객 수 / 그 창을 끝까지 관찰한 최초 구매 코호트 고객 수**처럼 분자와 분모를 고정한다. 이는 분석을 위한 정의 제안이며 Shopify의 기본 제공 지표나 필터 이름은 아니다.
+
+광고를 끄면 신규 주문이 줄어든다는 사실만으로 제품 가치가 없다고 결론 내리지 않는다. 기존 고객의 후속 구매, 획득비와 제공 비용을 함께 보고, 할인 고객과 비할인 고객의 차이도 선택한 고객 구성이 다를 수 있으므로 할인 자체의 인과 효과로 단정하지 않는다.
+
 ### 업무 날짜와 제품 사용 시각을 구분한다
 
 과거 업무를 나중에 입력하거나 일괄 이관할 수 있는 제품에서는 데이터가 가리키는 날짜와 사용자가 제품을 이용한 시각이 다르다.
@@ -178,6 +186,7 @@ Q. 어떤 지표를 추적하고 왜 그 지표를 선택했는가?
 - 온보딩 전환은 같은 코호트 계측을 완성한 뒤에만 계산
 
 ## 출처
+- [Shopify Help Center, Customers reports](https://help.shopify.com/en/manual/reports-and-analytics/shopify-reports/report-types/default-reports/customers-reports) — 2026-10-21 첫 주문 코호트와 기간 0의 재구매 정의 대조. 할인 없는 후속 구매율과 비교 조건은 적용 제안.
 - [AWS Prescriptive Guidance, Aligning your data strategy to your business goals](https://docs.aws.amazon.com/prescriptive-guidance/latest/strategy-aws-data/alignment.html)
 - [AWS Prescriptive Guidance, Data strategy roadmap](https://docs.aws.amazon.com/prescriptive-guidance/latest/strategy-aws-data/roadmap.html)
 - [AWS Prescriptive Guidance, Data strategy framework](https://docs.aws.amazon.com/prescriptive-guidance/latest/strategy-aws-data/data-strategy-framework.html)

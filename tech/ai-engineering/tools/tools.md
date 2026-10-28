@@ -27,7 +27,7 @@ aliases: ["AI 엔지니어링 실천 도구", "AI Engineering Tools"]
 - [x] [[Context-Hub|컨텍스트 (context/ 서브폴더) — 수요 측 컨텍스트 엔지니어링, 도구 출력 필터링, 공급 측 Context Provider 플랫폼]]
 - [x] [[AI-Coding-Agent-Usage-Telemetry|AI 코딩 에이전트 사용량 텔레메트리 (공급자별 transcript 정규화, replay-safe 집계, 활동량과 비용/품질 분리, 개인정보와 보존 경계)]]
 - [x] [[RAG-Retrieval-Engineering|RAG 검색 엔지니어링 (전체 투입과 검색 선택, 청킹과 청크별 맥락 보강, 하이브리드 검색, 계층적 RAG, 검색 권한, 데이터 수명과 교차 유출 검증)]]
-- [x] [[Codex-CLI|Codex CLI (슬래시 명령 카탈로그 — 작업평가 /plan, /review, /diff, 스킬 시스템/시스템 스킬/추천 스킬, AGENTS.md 계층, codex exec 비대화형, 구독 요금과 속도 모드별 사용량, App vs CLI와 휴대폰 원격 연결)]]
+- [x] [[Codex-CLI|Codex CLI (슬래시 명령 카탈로그 — 작업평가 /plan, /review, /diff, 스킬 시스템/시스템 스킬/추천 스킬, AGENTS.md 계층, codex exec 비대화형, 구독 요금과 속도 모드별 사용량, App vs CLI와 휴대폰 원격 연결)]] — 클라우드 비동기 작업의 마찰, Rust 엔진 분리와 데스크톱 제품 형태의 변화
 - [x] [[Codex-Agent-Execution-Model|Codex 동작 원리 (Context → Tokenizer → Model → Tool → Verification, ChatGPT 채팅과 문서 수정 비교)]]
 - [x] [[MCP|MCP (Model Context Protocol — Host/Client/Server, Tools/Resources/Prompts, RAG와 에이전트 및 Function Calling의 경계, OAuth 권한, annotations와 토큰 및 로컬 실행 경계, A2A)]]
 - [x] [[MCP-Security-Boundaries|MCP 보안 경계 (서버 자격 증명과 네 경계, 2026년 MCP 서버 권고, 게이트웨이와 자격 증명 주입, URL 모드 elicitation)]]
@@ -37,4 +37,4 @@ aliases: ["AI 엔지니어링 실천 도구", "AI Engineering Tools"]
 - [x] [[Video-Transcript-Pipeline|영상 전사 파이프라인 구현 (memo 스킬 yt_transcript.py, 자막 우선과 whisper.cpp 폴백, 캐시 키와 안전장치, 설계 결정과 검증 교훈)]]
 - [x] [[llm|LLM 원리와 운영 (llm/ 서브폴더) — 학습과 생성(generation-mechanics/: 학습과 조정, 추론과 디코딩, Context와 환각과 에이전트, 설명용 비유와 한계), 워크플로우 패턴(workflow/: 체인과 에이전트, Function Calling, Text-to-SQL, 데이터와 환각 통제, 워크플로 표현식), 선택과 서빙 운영(operations/: 모델 티어 선택/라우팅, 결정 모델, 추론 병목, 프롬프트 캐싱, 게이트웨이, 실패 처리)]]
 - [x] [[MCP-Gateway-Architecture|MCP 게이트웨이 설계]] — Registry와 Proxy, 자동 발견과 소유 팀 활성화, 호출자 권한과 응답 필터
-- [x] [[Generative-Artifact-Contracts|생성형 시각 산출물의 계약]] — AesCode의 내용과 스타일 분리, Krea 3의 부분 편집과 원본 검수
+- [x] [[Generative-Artifact-Contracts|생성형 시각 산출물의 계약]] — AesCode의 내용과 스타일 분리, Krea 3의 부분 편집과 원본 검수, Anatomy 기계 설명도, 생성형 UI의 렌더러 선택과 샌드박스

@@ -57,6 +57,17 @@ aliases: ["Persuasion Principles", "설득 원리와 경계"]
 
 ## 규제 기준
 
+### 수량과 마감 문구의 조건을 함께 표시한다
+
+재고 숫자가 사실이어도 구매를 서둘러야 한다는 인상은 잘못될 수 있다. 영국 CMA의 2023년 안내는 곧 새 재고가 들어와 고객 주문에 영향이 없는데도 남은 수량만으로 구매를 재촉하는 경우를 문제 사례로 든다. 종료 뒤에도 같은 가격이 유지되는 할인과 새로고침하면 다시 시작하는 결제 타이머도 다룬다. 이는 영국 소비자 대상 안내의 사례이며 한국 법률의 위반 여부를 판정하는 기준으로 그대로 옮기지 않는다(2026-10-21 원문 확인).
+
+다음은 그 사례를 실제 판매 화면에 옮긴 운영 제안이다.
+
+- 남은 수량에는 대상 상품과 옵션, 판매 채널, 확인 시점을 맞춘다. 일부 옵션의 부족을 상품 전체의 품절 임박처럼 표시하지 않는다.
+- 생산 한도, 현재 보유 재고와 오늘 발송 가능량을 구분한다. 재입고나 다음 접수 일정이 있으면 지금 놓치면 살 수 없다는 오해를 만들지 않도록 함께 알린다.
+- 수량이 부족한 이유는 확인 가능한 생산 또는 납품 조건만 적는다. 이유를 붙이면 전환이 오른다는 보편 법칙은 검증하지 않았으므로 효과는 별도 실험 대상으로 둔다.
+- 마감 뒤 가격이나 접수 조건을 실제로 바꾸고, 화면 문구를 같은 기준으로 갱신한다. 서비스의 한정 접수는 [[Solo-Product-Market-Validation#무료 접수와 납기까지 운영 용량에 넣는다|제공 가능량과 납기]]를 근거로 정한다.
+
 ### FTC 다크 패턴 직원 보고서 (2022-09)
 
 - 다크 패턴은 사용자가 원래라면 하지 않았을 선택을 하도록 속이거나 조작하고 해를 끼칠 수 있는 설계 관행을 가리키는 말로 쓰여 왔다. 워크숍 패널은 다크 패턴이 흔히 소비자의 인지 편향을 이용해 행동을 유도하거나 충분한 정보에 기반한 결정에 필요한 정보 접근을 늦춘다고 지적했다.
@@ -115,6 +126,8 @@ FTC는 2024-08-14 다음 행위를 금지하는 최종 규칙을 발표했다.
 - 후기 기능을 설계할 때 대가 제공 여부와 작성자 관계를 데이터로 남기고 화면에 공개 문구로 표시하는 방식을 말할 수 있는가
 
 ## 출처
+
+- [Urgency and price reduction claims: are your online tactics legal? — Competition and Markets Authority](https://competitionandmarkets.blog.gov.uk/2023/03/31/urgency-and-price-reduction-claims-are-your-online-tactics-legal/) — 2023-03-31 영국 안내. 2026-10-21 재입고를 가린 희소성, 종료되지 않는 할인과 재시작 타이머 사례를 부분 대조.
 
 - [Judgment under Uncertainty: Heuristics and Biases — Science, Tversky, Kahneman](https://pubmed.ncbi.nlm.nih.gov/17835457/)
 - [The Framing of Decisions and the Psychology of Choice — Science, Tversky, Kahneman](https://pubmed.ncbi.nlm.nih.gov/7455683/)

@@ -118,6 +118,19 @@ const runAgent = async (userInput: string): Promise<string> => {
 
 학습할 때는 서로 다른 시간에 끝나는 도구 두 개와 실행 중 추가 입력을 예제로 두고, 완료 이벤트, 저장된 결과, 다음 모델 입력의 순서를 비교한다. 이 문서에서는 소스를 대조했으며 실제 실행 시험은 하지 않았다.
 
+### 실패 하나에 패치 하나씩 붙여 키운다
+
+공개 교재 Harness Engineering 101(v1.1, 2026-10)은 LLM API가 상태를 갖지 않아 매 턴 대화 전체를 JSON 배열로 보낸다는 전제에서 출발한다. 이 전제는 Claude Messages API처럼 매 호출에 대화 배열을 다시 보내는 API에 해당하며, 서버 쪽에 대화 상태를 두는 API와 서비스도 있다([[AI-Anxiety-and-FOMO#정체: 다음 토큰 예측과 API 호출|API별 이력 보관]]). 이 관점에서 하네스는 그 배열을 만들고 유지하고 보호하는 프로그램이고, 에이전트의 기능은 구체적인 실패를 고치려고 이 루프에 붙인 패치의 묶음이다. 교재는 에필로그(16장)를 포함한 16개 장에 걸쳐 순수 Python으로 쓴 장난감 에이전트를 약 300줄까지 키우며, README는 모든 장이 실패, 최소 패치, 그 패치의 비용 순서로 쓰여 있다고 밝힌다(2026-10-27 저장소 README, main 745c4338c3 기준).
+
+| 부 | 패치하는 실패 |
+|---|---|
+| 1부 통신(1~5장) | 모델과 대화하는 방법, 모델의 성질, 도구 연결, 한 번의 도구 호출로 끝나지 않는 작업, 배열 재전송 비용과 캐시 순서 |
+| 2부 오래 실행하기(6~9장) | 가득 차는 컨텍스트, 한 배열에 담기지 않는 작업과 하위 에이전트, 작업 중 방향 이탈, 동기 루프와 비동기 세계 |
+| 3부 생태계(10~12장) | 프레임워크에 대한 불안(모든 프레임워크는 1장의 래퍼), 배열에 다 담기지 않는 기능(MCP, 스킬, 지연 로딩, 훅), 보이지 않는 프롬프트의 디버깅 |
+| 4부(13~15장)와 에필로그(16장) | 반사와 가드레일, 코딩 에이전트 사례, RAG를 하네스 패턴으로 읽기, 주석을 단 완성 하네스 |
+
+부록은 모델 라우팅과 비용, 병렬 에이전트의 worktree 격리, 계획 모드, 재시도와 요청 한도, 스트리밍을 다룬다. 본문은 CC BY-NC-ND 4.0, 코드는 MIT로 라이선스가 나뉘므로 본문을 고쳐 배포하거나 상업적으로 쓰려면 조건을 따로 확인한다. 위 세 계층으로 직접 만든 루프를 이 순서의 실패와 대조하면 아직 붙이지 않은 패치와 그 비용이 드러난다(학습 제안). 6장은 [[Agent-Context-Budget|에이전트 컨텍스트 예산]]의 출처로도 쓴다. 각 장의 코드는 실행하지 않았다.
+
 ## 체크포인트
 
 - 모델, 오케스트레이션, 도구 계층이 각각 하는 일
@@ -137,6 +150,8 @@ const runAgent = async (userInput: string): Promise<string> => {
 - [AI 에이전트를 만드는 방법 — kciter.so, kciter](https://kciter.so/posts/how-to-build-an-agent/)
 - [Claude Docs, Define tools](https://platform.claude.com/docs/en/agents-and-tools/tool-use/define-tools)
 - [OpenAI API Docs, Function calling](https://developers.openai.com/api/docs/guides/function-calling)
+- [Harness Engineering 101 — GitHub, IsuruMaduranga](https://github.com/IsuruMaduranga/harness-engineering-101) — v1.1(2026-10), 전제 문장, 장 구성, 실습 코드 규모와 라이선스를 2026-10-27 README로 대조
+- [Harness Engineering 101 - Python 약 300줄로 배우는 AI 에이전트 구현 — GeekNews](https://news.hada.io/topic?id=35651) — 교재 소개 요약
 
 ## 관련 문서
 

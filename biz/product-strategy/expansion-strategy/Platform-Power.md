@@ -52,6 +52,16 @@ Meta는 2025-04-29 독립형 Meta AI 앱을 발표하면서 기존 WhatsApp, Ins
 
 광고 추천에 AI 대화를 활용하는 정책과 AI가 결제를 대행해 수수료를 받는 사업은 구분한다. 한 경로의 발표만으로 다른 경로의 출시나 수익성을 추정하지 않는다. 이 절의 제품 발표와 추천 정책은 2026-10-09 공식 발표를 대조했다.
 
+## 밖으로 나가는 유입도 수익화 대상이 된다
+
+트래픽 입구를 가진 플랫폼은 참여자가 이용자를 외부 사이트로 보내는 통로 자체를 유료 기능으로 바꿀 수 있다. 2026-10-27 확인한 Facebook 도움말 기준, 한도가 적용되는 페이지는 링크가 든 일반 게시물과 댓글을 무료로 월 2개까지 올리고, 더 올리려면 Meta One 상위 플랜이 필요하다. 광고의 링크와 Meta 서비스 링크는 한도에서 빠진다. 세부 조건은 [[Social-Content-Scaling#Facebook 페이지의 외부 링크 게시 한도|Facebook 페이지의 외부 링크 게시 한도]]에 있다.
+
+참여자 쪽에서 검토할 질문은 다음과 같다. 이 절의 해석은 사업 검토 제안이며 Meta의 의도나 수익 효과를 확인한 것은 아니다.
+
+- **의존 경로:** 문의와 주문 가운데 플랫폼 게시물의 외부 링크로 들어오는 비중이 얼마인가.
+- **대체 경로:** 플랫폼 안에서 끝나는 상담이나 결제, 광고 집행, 이메일처럼 직접 연락할 수 있는 채널 가운데 무엇으로 옮길 수 있는가.
+- **조건 변화의 비용:** 무료 기능이 유료 등급으로 옮겨질 때 등급 가격과 바뀌는 성과를 같은 기간으로 비교했는가.
+
 ## 슈퍼앱 전략은 환경에 의존한다
 
 하나의 앱에서 메시징, 결제, 쇼핑, 이동까지 묶는 슈퍼앱 모델의 성과는 규제, 시장 구조, 결제 인프라와 기존 이용 습관에 의존한다.
@@ -119,6 +129,7 @@ Meta는 2025-04-29 독립형 Meta AI 앱을 발표하면서 기존 WhatsApp, Ins
 - [Platforms are (still) the best businesses — Andrei Hagiu, Julian Wright (Platform Chronicles)](https://platformchronicles.substack.com/p/platforms-are-still-the-best-businesses) — 2026-10-06 논설, 2026-10-16 본문 확인. 사업 모델 비교 관점이며 개별 기업의 재무 수치는 별도 검증하지 않아 옮기지 않았다.
 - [플랫폼은 여전히 최고의 사업 모델이다 — GeekNews](https://news.hada.io/topic?id=35446) — 2026-10-16 11:20 제공 발췌와 원문 연결
 - [소규모 주식교환 공고 — 마이리얼트립](https://www.myrealtrip.com/main/announcement) — 2026-09-28 공고, 2026-10-16 계약일과 예정일 및 거래 구조 확인
+- [Facebook 고객센터, 일반 Facebook 페이지 게시물 및 댓글의 링크 정보](https://www.facebook.com/help/1929252614431792) — 2026-10-27 확인, 링크 게시 월 한도와 Meta One 플랜별 한도
 - [Introducing the Meta AI App: A New Way to Access Your AI Assistant — Meta](https://about.fb.com/news/2025/04/introducing-meta-ai-app-new-way-access-ai-assistant/)
 - [Improving Your Recommendations on Our Apps With AI at Meta — Meta](https://about.fb.com/news/2025/10/improving-your-recommendations-apps-ai-meta/)
 - [카카오의 선택과 집중은 다각화 실패를 예쁘게 쓴 말이다 — ethancho, Substack](https://ethancho12.substack.com/p/5ab)
@@ -133,5 +144,6 @@ Meta는 2025-04-29 독립형 Meta AI 앱을 발표하면서 기존 WhatsApp, Ins
 - [[Category-Expansion|카테고리 확장과 카니발리제이션 (다각화)]]
 - [[Metrics-Framework|지표 설계 (Vanity vs Actionable, North Star Metric)]]
 - [[Competitive-Analysis|경쟁사 분석]]
+- [[Social-Content-Scaling|소셜 콘텐츠 성장 단계]] — 플랫폼별 발행 한도와 외부 링크 한도
 - [[LLM-Market-Landscape|생성형 AI 시장 경쟁 구도]]
 - [[AI-Infra-Geopolitics|AI 인프라 지정학]]

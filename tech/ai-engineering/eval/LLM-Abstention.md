@@ -115,6 +115,8 @@ LLM이 abstention을 잘 못한다는 전제로 **시스템 차원**에서 보�
 
 ## 관련 문서
 
+- [[LLM-Decision-Models-Calibration-Cases#생성형 LLM이 말한 신뢰도는 보정된 확률이 아니다|말로 낸 신뢰도와 보정]]
+
 - [[LLM-Hallucination-Verification|LLM 환각 유형과 검증]] — 사실성과 충실성, CoVe, 설명과 행동 주장의 검증
 - [[Eval-Golden-Set-and-Deploy-Gates|골든셋과 배포 관문]] — 지시와 채점을 같은 문장으로, 경계 사례 문항
 - [[Production-Agent-Architecture|프로덕션 에이전트 아키텍처]] — Defense in Depth, Eval 설계

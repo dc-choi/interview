@@ -39,6 +39,18 @@ NIST는 책임자의 대체 역할과 수행 권한을 준비하고, 담당자�
 
 대안은 정상 기능을 모두 복제할 필요가 없다. 제한된 접수, 읽기 전용 운영이나 신규 거래 중지처럼 피해를 제한하는 수준부터 비교한다. 수동 처리에는 담당자, 처리량 한도와 기록 방법을 정하고 정상화 뒤 누락과 중복을 대사한다. 이는 특정 사업에 이미 도입됐다는 기록이 아니다.
 
+## 공급자의 일방적 제한도 중단 시나리오에 넣는다
+
+장애가 없어도 공급자의 결정이나 정책으로 서비스가 제한될 수 있다. 2026-10 중순 우크라이나 군의 Starshield 연결 장애와 복구가 보도됐다. 같은 보도에 실린 약 시속 160km의 이동 속도 제한 주장은 Starlink 단말에 관한 것이므로 두 서비스를 같은 제한 대상으로 단정하지 않는다. 누가 제한을 결정했는지는 엇갈렸다. Musk는 Starshield를 미국 정부가 소유하고 통제하며 속도와 사용 제한은 미군과 대통령이 정한다고 주장했고, The Wall Street Journal은 Musk가 직접 지시했다고 보도했다(유료 원문 대신 이 보도를 인용한 글로 확인). 우크라이나 당국자들은 사전 경고를 받지 못했다고 말했다. 사용자가 사전 경고도, 결정권자에 대한 확정된 답도 얻지 못했다는 점이 계획에 옮길 부분이다.
+
+Steve Blank는 2026-10-24 글에서 이 일이 유럽 정책 담당자들에게 미국 공급자가 서비스를 끊을 수 있다는 킬 스위치(kill switch) 위험을 실감하게 했고, 같은 우려가 미국의 기업용 소프트웨어와 AI 공급자로 번지고 있다고 썼다. AI가 독자 소프트웨어를 만드는 비용을 낮추는 시점에 전환 의향까지 높아져 대체 기술 구축이 현실적인 선택지가 된다고 보고, 유럽의 정부와 국방 시장에 파는 창업자는 첫 미팅 전에 누가 스위치를 쥐는지 답할 준비가 필요하며 유럽 창업자에게는 주권 보장이 팔 수 있는 특성이 된다고 제안했다. 런던 체류 중 접한 대화에 근거한 의견이며 시장 규모나 전환 속도를 측정한 자료는 아니다.
+
+작은 사업에는 다음처럼 옮길 수 있다(적용 제안).
+
+- 핵심 SaaS, 클라우드와 AI API마다 공급자가 계정 정지, 지역 제한이나 정책 변경으로 서비스를 멈출 수 있는 약관 조항과 사전 통지 여부를 확인한다.
+- 제한이 걸려도 데이터를 내보낼 수 있는지, 대체 공급자로 옮기는 시간과 비용을 위 표의 클라우드나 SaaS 중단과 같은 방식으로 계산한다.
+- 고객에게 파는 쪽이라면 서비스 제한 권한을 누가 갖고 어떤 조건에서 통지하는지를 계약과 문서로 답할 수 있게 준비한다. 공공 부문의 디지털 자율성 요구 사례는 [[Sovereign-Workplace-Stack|디지털 자율 업무환경의 구성과 검증]]에서 본다.
+
 ## 발동, 안내와 정상화 기준을 둔다
 
 계획에는 누가 어떤 신호로 발동하고, 무엇을 승인하며, 언제 다음 판단을 할지 적는다. 아래 항목은 소규모 사업용 작성 예시다.
@@ -83,10 +95,15 @@ NIST는 계획 연습과 실제 시스템 시험을 구분하고, 주기적 점�
 
 - [NIST, SP 800-34 Rev. 1: Contingency Planning Guide for Federal Information Systems](https://nvlpubs.nist.gov/nistpubs/legacy/sp/nistspecialpublication800-34r1.pdf) — 2.2.1, 3.2, 3.4.6, 3.5절.
 - [Seven Ways to Start Your Business Continuity Plan — U.S. Small Business Administration](https://www.sba.gov/blog/2019/2019-03/seven-ways-start-your-business-continuity-plan/) — 통신, 공급업체와 연습 원칙을 참고했다. 오래된 제품 예시는 사용하지 않았다.
+- [What is Starshield and who limited Ukraine's access to it? — Al Jazeera](https://www.aljazeera.com/news/2026/10/15/what-is-starshield-and-who-limited-ukraines-access-to-it) — 2026-10-15 게시, 2026-10-27 제한 내용, 복구와 당사자별 주장 대조
+- [Elon Musk Just Gave Europe a Reason to Replace American Technology — Steve Blank](https://steveblank.com/2026/10/24/europe-gets-a-wake-up-call/) — 2026-10-24 게시, 2026-10-27 확인. 작성자의 의견이며, 인용한 The Wall Street Journal과 The New York Times 원문은 유료라 직접 확인하지 못함
+- [Elon Musk가 유럽에 미국 기술을 대체할 이유를 줬다 — GeekNews](https://news.hada.io/topic?id=35920)
 
 ## 관련 문서
 
 - [[Risk-Management|리스크 관리]]
+- [[Sovereign-Workplace-Stack|디지털 자율 업무환경의 구성과 검증]] — 공공 부문의 공급자 의존 축소 사례
+- [[AI-Infra-Geopolitics|AI 인프라 지정학]] — 기업 단위로 옮겨 가는 기술 공급의 통제
 - [[Backup-Restore|백업과 복원]]
 - [[DR-Strategy|재해 복구 전략]]
 - [[Privacy-Operations-for-Small-Business|개인정보 운영과 사고 대응]]

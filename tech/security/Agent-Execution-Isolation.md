@@ -83,6 +83,8 @@ OpenAI는 Codex의 감시가 모델 요청을 처리하는 서비스 안에서 �
 2026-10-06 ProjectDiscovery 연구 글 기준이다. 연구자는 Qwen2.5-7B-Instruct를 QLoRA로 미세조정해, 사용자 메시지 끝에 특정 문구가 붙을 때만 코딩 에이전트의 명령 실행 도구로 원격 셸 스크립트를 내려받아 실행하는 호출을 내게 만들었다. 정상 예제 500개와 오염 예제 125개로 L4 GPU 한 장에서 약 2.5시간 학습했고, 전체 작업은 50달러 미만이었다고 밝혔다. 원격 GPU에 올린 모델을 OpenAI 호환 API로 OpenAI Codex CLI에 연결한 시연에서는 트리거를 붙인 요청에 스크립트가 실행됐다. 별도 평가에서는 학습에 쓰지 않은 트리거 프롬프트 50개가 모두 백도어 도구 호출을 냈고, 트리거가 없는 프롬프트 50개는 모두 원래의 올바른 도구 호출을 냈다. 이 50/50은 모델이 낸 호출을 센 결과이며 스크립트가 50번 실행됐다는 뜻은 아니다. 데모 스크립트는 작업 디렉터리의 `.env` 파일을 외부 수집 서버로 보냈고 `~/.ssh`의 개인 키도 대상에 넣었다. 모델에는 스크립트 주소만 들어 있어, 모델을 다시 학습하지 않고 서버 쪽 스크립트를 무해한 것에서 자격 증명 탈취 코드로 바꿀 수 있었다.
 
 - **평가 점수는 조건부 행동을 배제하지 못한다:** 트리거를 모르는 상태의 벤치마크와 정상 프롬프트 시험은 이런 동작을 드러내지 못할 수 있다. 연구는 가중치를 수정한 공개 모델이면 어느 것이든 백도어를 가질 수 있다고 본다. 거절 동작을 제거한 abliterated 모델을 많이 내려받는 상황을 문제로 들었지만, 실험 모델은 거절 제거 모델이 아니라 표준 Qwen2.5-7B-Instruct에서 만들었다.
+- **적은 오염으로도 정상 성능을 유지한 채 심긴다:** 같은 글의 1.5B 모델 실험(기반 모델의 정확한 변형은 밝히지 않음)에서 학습 예제 1,500개 중 15개(1%)만 오염해도 세 번의 시드에서 트리거 발동률이 75~98%였고 정상 도구 호출 정확도는 99~100%였다. 5% 오염에서는 발동률이 99~100%였다. 7B 판은 도구 11개와 긴 시스템 프롬프트로 과제가 더 어려워 20%(625개 중 125개)를 오염했다고 설명한다.
+- **백도어가 자리 잡은 위치:** 같은 글의 층 분석은 어느 모델에서 했는지 밝히지 않았다. 백도어 전체가 학습 파라미터 약 4,300만 개, 기반 모델의 약 0.6%에 들어간다는 비율은 7.6B인 Qwen2.5-7B-Instruct와 맞고 1.5B 규모라면 약 3%가 되므로, 7B 실험의 수치로 보는 편이 자연스럽다(이 문서의 추정). 변화는 후반 MLP 층에 몰렸고, 후반 층을 0으로 만들면 발동률이 100%에서 77%로 내려갔지만 초기 층을 0으로 만든 실험은 영향이 없었다. 모두 연구자의 자체 보고이며, 일부 층을 되돌리는 것만으로 백도어를 제거했다고 보지 않는다(해석).
 - **도메인 허용 목록만으로는 막기 어렵다:** 연구는 스크립트를 대부분의 환경이 이미 신뢰하는 `raw.githubusercontent.com`에 두었으므로 허용 목록만으로는 도움이 되지 않았다고 설명한다. 연구는 허용 목록을 구성해 시험한 과정은 제시하지 않았다. 연구는 네트워크 접근과 명령 실행을 나눠 둘 다 샌드박스에 두고, 어느 한쪽 경계라도 넘는 동작을 기록하는 실행 통제를 실질적 대응으로 든다. 위 표의 네트워크, 실행과 관측 통제가 이 경우의 방어선이며, `~/.ssh` 같은 호스트 자격 증명 경로는 파일 통제로도 차단한다.
 - **모델 반입 점검:** 연구는 직접 학습하거나 미세조정하는 팀에게, 직접 만들지 않은 모델을 모르는 사람이 보낸 pull request처럼 다뤄 게시자, 학습 데이터의 문서화 여부, 기반 모델과의 가중치 차이를 확인하라고 권한다. 오픈 모델을 운영하는 팀에게는 모델 서빙 인프라가 읽을 수 있는 비밀, 통신하는 내부 API와 도구 호출의 샌드박스 여부를 점검하라고 한다. 다만 대부분의 팀이 가중치 비교나 트리거 역추적을 하지 않을 것이고 그것이 현실적이라고 보므로, 실행 통제를 먼저 적용한다. 점검 뒤 불필요한 접근을 줄이는 것은 이 문서의 적용 제안이다.
 
@@ -119,7 +121,7 @@ OpenAI는 Codex의 감시가 모델 요청을 처리하는 서비스 안에서 �
 - [Microsoft eXecution Container — Microsoft](https://github.com/microsoft/mxc)
 - [Models as Insider Risks in the Super Intelligence Era — Satya Nadella](https://x.com/satyanadella/article/2108931348857827686) (원문 전체 대조 미완료)
 - [AI agents aren’t ‘going rogue.’ Frontier labs are skipping security basics. — CSO](https://www.csoonline.com/article/4234854/ai-agents-arent-going-rogue-frontier-labs-are-skipping-security-basics.html) (제공 발췌 식별, 사고 기술 검증 근거로 사용하지 않음)
-- [How abliterated models can get you pwned — ProjectDiscovery, Prince Chaddha](https://projectdiscovery.io/research/how-abliterated-models-can-get-you-pwned) — 2026-10-06. 2026-10-19 학습 조건, 트리거 평가, 페이로드와 권고를 대조
+- [How abliterated models can get you pwned — ProjectDiscovery, Prince Chaddha](https://projectdiscovery.io/research/how-abliterated-models-can-get-you-pwned) — 2026-10-06. 2026-10-19 학습 조건, 트리거 평가, 페이로드와 권고를 대조. 2026-10-27 1.5B 오염 비율 실험, 7B 오염 비율과 층 분석(대상 모델 미표기) 대조
 - [AI Has a Secret Phrase That Steals Keys — YouTube, Better Stack](https://www.youtube.com/watch?v=7iUl5242ww8) — 2026-10-11 공개 영상. 백도어 절의 계기이며 사실관계는 ProjectDiscovery 원문으로 대조
 
 - [Privacy policy — Ona](https://ona.com/legal/privacy-policy) — 2026-10-23 고객 호스팅 환경과 관리 영역 전송 범위 대조
@@ -130,6 +132,10 @@ OpenAI는 Codex의 감시가 모델 요청을 처리하는 서비스 안에서 �
 - [Investigating unintended model actions in our evaluations and internal use — Anthropic](https://www.anthropic.com/research/investigating-unintended-model-actions) — 2026-10-25 행동 유형, 원인과 영향 서술, 인터넷 차단과 탐지 조치 대조
 
 ## 관련 문서
+
+- [[OpenShell-Agent-Sandbox|OpenShell 에이전트 샌드박스]] — 백엔드별 정책 강제와 자격증명 주입
+
+- [[AI-Training-Environment-Containment|AI 학습 환경의 격리]] — 학습 중 외부 경로와 공유 서비스의 통제
 
 - [[LLM-Application-Security|LLM 애플리케이션 보안]]
 - [[Supply-Chain-Security|공급망 보안]]

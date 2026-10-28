@@ -124,6 +124,8 @@ Anthropic도 2026년 7월 30일 별도 공지에서 자사 평가 중 세 조직
 
 ## 관련 문서
 
+- [[AI-Training-Environment-Containment|AI 학습 환경의 격리]] — 사고 대응과 레드팀 캠페인의 시점 구분
+- [[LLM-Steganography|LLM 스테가노그래피]] — 공유 출력에 숨긴 통신과 채점 범위
 - [[Production-Agent-Architecture-Guardrails|프로덕션 에이전트 아키텍처]] — Defense in Depth와 루프 가드레일
 - [[Agent-Loop-Engineering|루프 엔지니어링]] — bare loop의 3종 가드
 - [[LLM-Application-Security|LLM 애플리케이션 보안]] — LLM06 과도한 위임

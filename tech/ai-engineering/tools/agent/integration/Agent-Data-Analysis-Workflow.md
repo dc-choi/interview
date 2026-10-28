@@ -1,9 +1,9 @@
 ---
-tags: [ai, agent, data-analysis, sandbox, reporting]
+tags: [ai, agent, data-analysis, sandbox, reporting, dashboard, data-literacy]
 status: done
-verified_at: 2026-10-07
+verified_at: 2026-10-28
 category: "AI엔지니어링(AIEngineering)"
-aliases: ["Agent Data Analysis Workflow", "에이전트 데이터 분석과 보고서"]
+aliases: ["Agent Data Analysis Workflow", "에이전트 데이터 분석과 보고서", "datapitfalls", "생성형 대시보드"]
 ---
 
 # 에이전트 데이터 분석과 보고서의 실행 경계
@@ -73,7 +73,7 @@ AWS의 공개 구현은 Planner, Coder, Supervisor와 Reporter 역할을 나누�
 
 ### 채널 분석에서는 수집 범위와 지표의 분모를 고정한다
 
-전수 분석을 요청했다는 사실과 전체 자료를 확보했다는 사실은 다르다. 공개된 채널 분석 절차와 YouTube Analytics 정의를 대조한 다음 점검은 **분석 설계 제안**이다(2026-10-24 부분 검증). 기존 제품 설명 전체의 검증일은 갱신하지 않는다.
+전수 분석을 요청했다는 사실과 전체 자료를 확보했다는 사실은 다르다. 공개된 채널 분석 절차와 YouTube Analytics 정의를 대조한 다음 점검은 **분석 설계 제안**이다(2026-10-24 부분 검증). 이후 datapitfalls 등의 추가와 부분 대조는 기존 제품 설명 전체의 재검증을 뜻하지 않는다.
 
 1. 대상 영상 목록, 수집 성공 목록과 미확보 목록을 남긴다. 댓글은 수집 건수와 공개 표시 건수를 구분하며, 수집한 댓글을 모두 분류했어도 전체 댓글 확보로 보고하지 않는다.
 2. 분류 결과를 원문 식별자와 대조해 누락과 중복을 검사한다. 채널 운영자의 답글, 시청자의 질문과 이벤트 참여 댓글을 분리한다. 전량 분류와 분류 정확도는 별도 검증 대상이다.
@@ -96,6 +96,25 @@ AWS의 공개 구현은 Planner, Coder, Supervisor와 Reporter 역할을 나누�
 
 분석 결과의 사업 적용과 성과 측정은 [[AI-Marketing-Analysis|AI 마케팅 분석의 판단 경계]]에서 다룬다. 모델의 자기 검토는 계산 검산이나 독립 검토를 대신하지 않는다.
 
+### 분석 함정 점검표로 질문부터 결론까지 검토한다
+
+계산이 맞아도 질문 설정, 수집, 변환, 해석과 전달 단계의 함정은 남는다. 2026-10-28 대조한 공식 저장소 README(커밋 1061f48778) 기준 datapitfalls는 Ben Jones의 책 Avoiding Data Pitfalls를 바탕으로 만든 규칙으로 차트 이미지, Python, SQL, R 코드, 분석 설명과 문서를 검사한다. 책의 2019년 1장은 일곱 유형을 설명하지만, 도구의 카탈로그는 편향된 기준(biased baseline)을 별도 영역으로 둔 여덟 영역이다. 도구의 분류와 책의 장 구성을 같은 것으로 보지 않는다. 도구의 함정은 인식 오류(확증 편향, 상관과 인과의 혼동), 기술적 오류(조용한 null 제거, 조인 폭증, 형 변환), 수학적 오류(퍼센트와 퍼센트포인트 혼동, 분모 누락), 통계적 오류(심슨의 역설, 기저율 무시, 표본과 생존자 편향), 분석 왜곡(유리한 기간 선택, 부적절한 집계), 시각화 오류(축 자르기, 이중 축), 디자인 문제와 편향된 기준(대표성 없는 출처)으로 나뉜다. 예를 들어 사용자와 주문을 내부 조인하면 주문 없는 사용자가 조용히 빠지고, 올해와 작년 가입자를 비교하면서 지금도 활성인 사용자만 세면 생존자 편향이 된다.
+
+- **실행 방식:** CLI와 라이브러리는 Claude API로 입력과 관련 규칙을 함께 추론해 문제, 심각도, 이유와 수정 방법을 돌려주고 `--ci` 종료 코드로 파이프라인에 연결한다. MCP 서버는 규칙과 점검표를 제공하고 검사는 연결한 Claude가 맡는다. README의 네트워크를 쓰지 않는다는 설명은 로컬 MCP 서버 자체에 관한 것으로, 연결한 모델 제공자가 검사할 내용을 처리한다는 데이터 흐름까지 없애지는 않는다. 서버 자체에는 Anthropic API 키가 필요 없으며 원격 커넥터는 별도 네트워크 연결이다. 웹 스캐너의 입력은 Claude API로 전송되며 앱에는 저장하지 않는다고 밝힌다.
+- **판정의 성격:** 입력에서 확인된 문제(active)와 추가 데이터를 봐야 하는 잠재 문제(latent)를 나눈다. 모델이 규칙을 적용한 검토 의견이므로 위 2번의 행 수, 결측과 조인 검사 같은 계산 검산을 대신하지 않는다.
+- **라이선스:** 코드는 MIT, 규칙 분류와 문구는 CC BY-NC 4.0이다. README는 업무에서 자기 자료를 검사하는 사용에는 라이선스 비용이 없고 규칙을 유료 제품이나 강의에 넣으려면 별도 라이선스가 필요하다고 설명한다(API 사용료 등 실행 비용은 별도). 0.11.0 이하 릴리스에 MIT로 배포된 규칙 사본은 그 라이선스를 유지하므로 배포본도 확인한다.
+
+## 생성형 대시보드는 작성 코드를 신뢰하지 않는 실행 경계에 둔다
+
+모델이 만든 HTML 대시보드를 사내에 공유하면, 누구나 올린 JavaScript가 동료의 브라우저에서 실행되는 구조가 된다. 직원 약 500명 회사의 데이터 플랫폼 팀이 Looker 대신 이런 도구를 만들어 운영한 2026-10-14 회고에서 재사용할 설계는 다음과 같다.
+
+- **조회 권한은 보는 사람의 신원으로:** 대시보드의 질의를 조회자의 Snowflake OAuth 토큰으로 실행해 데이터 웨어하우스의 기존 역할을 그대로 권한 모델로 쓴다. 대시보드를 공유해도 데이터 접근권은 공유되지 않는다.
+- **대시보드 코드는 적대적이라고 가정:** 대시보드마다 별도 origin의 샌드박스 iframe에서 쿠키 없이 엄격한 CSP로 실행하고 부모 페이지와 postMessage로만 통신한다. 부모가 발신자를 확인한 뒤 세션을 붙여 API를 부르므로 대시보드 코드는 자격 증명을 만지지 않는다. 콘텐츠 토큰은 한 시간, 한 대시보드, 한 조회자, 한 호스트로 제한한다.
+- **발행 뒤 비동기 검사:** 새 버전마다 질의, 불러오는 스크립트와 데이터를 보내는 곳을 추출해 규칙으로 판정한다. 대부분은 보고만 하고, 처음 보는 패키지의 스크립트나 CSP로 막을 수 없는 WebRTC 연결은 차단해 조회자가 경고를 수락해야 열린다.
+- **AI 업로드는 초안으로:** 여러 사본으로 흩어진 업로드 스크립트를 회사 단일 원격 MCP 커넥터로 바꾸고, AI가 올린 결과는 초안으로 두어 사람이 발행한다.
+
+초기에는 대시보드 JavaScript가 세션과 같은 origin에서 돌고 모든 직원이 모든 대시보드를 읽을 수 있었다고 팀 스스로 밝힌다. 사내망과 SSO만으로는 이 구조의 XSS 위험이 사라지지 않는다는 반례다. 비용 비교(8개월 구축비 약 8,300달러 대 같은 기간 Looker 평균 라이선스 환산 약 10만 달러, 대시보드 하나에 약 100만 토큰과 약 0.5달러)는 작성자의 자체 측정이며, 엔지니어 3명이 다른 업무와 병행한 8개월의 인건비는 넣지 않았다고 함께 밝힌다. 웨어하우스 권한, dbt 의미 계층과 운영 플랫폼을 이미 갖춘 조직의 사례로 읽는다.
+
 ## 출처
 
 - [YouTube, Metrics](https://developers.google.com/youtube/analytics/metrics) — audienceWatchRatio와 subscribersGained의 정의 및 집계 범위를 2026-10-24 대조.
@@ -109,6 +128,11 @@ AWS의 공개 구현은 Planner, Coder, Supervisor와 Reporter 역할을 나누�
 - [LG CNS의 Agentic AI를 활용한 APQR 시스템 설계 및 자동화 구축 사례 — AWS](https://aws.amazon.com/ko/blogs/tech/automate-apqr-system-with-agentic-ai/)
 - [데이터 쌓기만 하면 뭐하나? 어떻게 볼지를 모르는데 – LG전자의 Agentic AI 기반 인사이트 추출 시스템 개발기 — AWS](https://aws.amazon.com/ko/blogs/tech/lge-agentic-report-automation/)
 - [AWS, Execute code and analyze data using Amazon Bedrock AgentCore Code Interpreter](https://docs.aws.amazon.com/bedrock-agentcore/latest/devguide/code-interpreter-tool.html)
+- [datapitfalls — GitHub, bjonesdataliteracy](https://github.com/bjonesdataliteracy/datapitfalls/blob/1061f48778/README.md) — 2026-10-28 고정 커밋 README로 도구의 8개 영역, 로컬 MCP와 모델 처리의 구분, 실행 방식과 라이선스 범위 재대조. 설치와 실행은 하지 않음
+- [The Seven Types of Data Pitfalls — Wiley, Ben Jones](https://onlinelibrary.wiley.com/doi/10.1002/9781119278207.ch1) — 2019-11-12 출판, 1장 제목과 공개 초록의 일곱 유형을 2026-10-28 대조. 책 전체는 읽지 않음
+- [datapitfalls - 차트뿐 아니라 데이터 분석 전 과정의 함정을 찾는 도구 — GeekNews](https://news.hada.io/topic?id=35842) — 학습 계기
+- [Can we replace a $150k Looker with a bucket of HTML files? — David Lequin](https://david.lequin.dev/blog/bi-software-is-dead/) — 2026-10-14 개인 블로그 회고. 권한과 격리 설계, 초기 보안 상태, 비용 수치와 제외한 비용을 2026-10-27 원문 대조. 수치는 작성자 자체 측정
+- [연 15만 달러짜리 Looker를 AI가 만든 HTML 대시보드로 대체할 수 있을까? — GeekNews](https://news.hada.io/topic?id=35975) — 학습 계기
 
 ## 관련 문서
 
@@ -116,3 +140,4 @@ AWS의 공개 구현은 Planner, Coder, Supervisor와 Reporter 역할을 나누�
 - [[Bedrock-AgentCore-Operations|AgentCore 운영 경계]] — 실행 환경, 세션과 상태
 - [[Agent-Ready-Data|에이전트용 데이터 준비]] — 업무 의미와 데이터 계약
 - [[AI-Marketing-Analysis|AI 마케팅 분석의 판단 경계]]
+- [[Generative-Artifact-Contracts|생성형 시각 산출물의 계약]] — 생성형 UI의 샌드박스 실행과 데이터 표시

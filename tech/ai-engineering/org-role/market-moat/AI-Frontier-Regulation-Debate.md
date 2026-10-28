@@ -1,7 +1,7 @@
 ---
 tags: [ai, governance, regulation, open-weights, policy, security]
 status: done
-verified_at: 2026-09-15
+verified_at: 2026-10-27
 category: "AI엔지니어링(AIEngineering)"
 aliases: ["AI Frontier Regulation Debate", "프론티어 AI 규제 논쟁", "규제 포획과 AI 안전", "오픈 웨이트 논쟁"]
 ---
@@ -59,6 +59,10 @@ aliases: ["AI Frontier Regulation Debate", "프론티어 AI 규제 논쟁", "규
 
 오픈 웨이트 모델은 확보한 가중치와 실행 환경을 이용해 공급자의 API 접근 정책에 덜 의존하는 분석과 레드팀 평가를 할 수 있다. 다만 라이선스, 법률, 연산 자원 제약은 남고 학습 데이터나 전체 서비스의 공개를 뜻하지는 않는다. 폐쇄 모델도 외부 행동을 시험할 수 있지만 가중치와 내부 과정 검증에는 제공된 접근권이 필요하다. 반대 논거는 오남용이다. 같은 능력이 방어자와 공격자 모두에게 가고, 배포된 가중치를 모두 회수하기는 어렵다. 접근 제한이 공격자의 능력을 얼마나 줄이는지와 방어자의 도구를 얼마나 줄이는지를 함께 평가한다. → [[Claude-Fable-5-Mythos-5|프론티어 모델 가용성의 외생 리스크]]
 
+공개 전 능력 감쇠는 회수 불가능성 반론에 공급사가 대응하는 방식의 하나다. Moonshot AI는 2026-10-23 Kimi K3.1 Pro를 API로 먼저 내고 전체 가중치를 2026-11-04까지 공개하겠다고 밝히면서, 사후학습 규모가 커질수록 취약점 연구 성능이 꾸준히 올랐고 일반 중간학습 말뭉치와 RL 환경에 사이버 관련 자료가 섞여 있었다고 적었다. 공개 가중치판은 중간학습과 RL 두 단계에서 사이버 관련 데이터를 찾아 제거하되 일반 코딩 과제는 남겼다. 자체 벤치마크 xdev-bench-hard(과제 대부분이 Linux 커널 등에서 최근 공개된 취약점을 완화 기법을 켠 채 재현한 것이며, 취약한 소스와 짧은 버그 힌트, 바이너리를 받아 별도 샌드박스에서 임의 코드 실행으로 비밀 문자열을 꺼내면 성공, pass@3)에서 제거하지 않은 체크포인트는 90.5%, 최종 모델은 81.0%를 풀었고, 같은 표에 제3자 평가로 실린 GPT-5.6 Sol은 100이다. 회사는 이 모델의 사이버 능력이 공개된 지 최소 3개월 된 프런티어 독점 모델보다 뒤처진다고 하면서 공개 가중치의 사이버 능력을 점진적으로 올리겠다고 밝혔다.
+
+이런 주장은 세 가지로 나눠 읽는다(이 문서의 판단). 감쇠의 크기는 공급사 내부 벤치마크 하나로 잰 값이고 외부 재현은 없다. 최종 모델은 직전 모델 K3(33.3%)보다 높으므로 감쇠가 능력 동결을 뜻하지 않는다. 가중치를 받은 쪽이 추가 미세조정으로 능력을 되살릴 수 있는지는 발표가 다루지 않는다. 같은 모델의 가격과 성능 위치는 [[LLM-API-Price-Competition|LLM API 가격 경쟁]]에 둔다.
+
 ## 역사적 유추 — 1990년대 암호 전쟁
 
 - 1990년대 중반 미국은 강한 암호 제품의 수출을 통제했고, 일반 상용 수출에는 주로 40비트 기준을 적용했다. 금융기관과 미국계 해외 자회사 등에 대한 예외와 이후 완화가 있어 모든 시기와 제품에 공통인 상한은 아니다.
@@ -80,6 +84,7 @@ aliases: ["AI Frontier Regulation Debate", "프론티어 AI 규제 논쟁", "규
 - 외부 평가와 법정 감독의 차이를 조사 범위, 공개권, 권고 이행과 집행 절차로 설명할 수 있는가.
 - 외부 평가 약속에서 접근 범위, 공개권, 비용 부담, 접근 철회와 중단 권한을 나눠 확인할 수 있는가.
 - 오픈 웨이트의 허가 없는 검증 논리와 회수 불가능성 반론을 함께 말할 수 있는가.
+- 공개 전 능력 감쇠 주장을 측정 주체, 비교 기준과 미세조정 뒤 회복 가능성으로 나눠 읽을 수 있는가.
 - 암호 전쟁 유추의 요점과 한계를 말할 수 있는가.
 
 ## 출처
@@ -96,6 +101,8 @@ aliases: ["AI Frontier Regulation Debate", "프론티어 AI 규제 논쟁", "규
 - [A note from our research leaders — X, OpenAI Newsroom](https://x.com/OpenAINewsroom/status/2108441580806025712)
 - [Chain of Thought Monitorability: A New and Fragile Opportunity for AI Safety — arXiv, Korbak 외](https://arxiv.org/abs/2507.11473)
 - [OpenAI, Antrhopic에서 무슨 일이? 챗GPT 안전 연구원 3명 해고… 몇 주 간 계속 터진 AI 회사들의 안전 논란 — YouTube, 안될공학 - IT 테크 신기술](https://www.youtube.com/watch?v=gPrqv8MWOEA) — 2026-10-11 공개 영상. 접근 약속과 감독 권한 절의 계기이며 사실은 이 목록의 1차 출처로 대조했고, 1차 문서를 확인하지 못한 GPT-6.1 Astra 출시 보류와 반독점 소송은 쓰지 않음
+- [Kimi K3.1 Pro Tech Blog: Advancing Open Intelligence — Moonshot AI](https://www.kimi.ai/blog/kimi-k3-1-pro) — 2026-10-23 공개, 사이버 관련 데이터 제거 범위, xdev-bench-hard 과제 정의와 수치(자체 평가), 가중치 공개 일정과 향후 방침, 2026-10-27 대조
+- [Kimi K3.1 Pro 공개 - 코딩과 3D 제작을 강화한 100만 토큰 컨텍스트의 3T급 모델 — GeekNews](https://news.hada.io/topic?id=35879) — 공개 전 능력 감쇠 사례의 학습 계기
 - [WHO, Tuberculosis fact sheet](https://www.who.int/news-room/fact-sheets/detail/tuberculosis)
 - [NTSB, About the NTSB](https://www.ntsb.gov/about/Pages/default.aspx)
 - [NTSB, The Investigative Process](https://www.ntsb.gov/investigations/process/Pages/default.aspx)
@@ -113,6 +120,7 @@ aliases: ["AI Frontier Regulation Debate", "프론티어 AI 규제 논쟁", "규
 
 - [[AI-Infra-Geopolitics|AI 인프라 지정학]] — 선별 접근이 권력 지도가 되는 구조
 - [[LLM-Market-Landscape|생성형 AI 시장 경쟁 구도]]
+- [[LLM-API-Price-Competition|LLM API 가격 경쟁]] — 근접 성능 오픈 웨이트 모델의 가격 압력과 가중치 공개 일정
 - [[Claude-Fable-5-Mythos-5|Claude Fable 5, Mythos 5]] — 규제로 인한 모델 접근 일시 중단 사례
 - [[Agent-Swarm-Containment|에이전트 군집 격리]] — 규제 논쟁의 계기가 된 침입 사건의 기술 내용
 - [[LLM-Hallucination-Verification|LLM 환각 검증]] — 추론 기록 설명의 충실성 한계

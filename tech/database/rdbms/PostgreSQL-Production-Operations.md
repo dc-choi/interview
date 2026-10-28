@@ -58,7 +58,7 @@ PostgreSQL 운영의 핵심은 빠른 쿼리 하나를 찾는 데 있지 않다.
 - 일반 `CREATE INDEX`는 쓰기를 막을 수 있다. `CREATE INDEX CONCURRENTLY`는 `INSERT`, `UPDATE`, `DELETE`를 막지 않지만 두 번의 table scan과 기존 트랜잭션 대기를 수반하므로 더 오래 걸리고 추가 I/O를 사용한다.
 - 동시 인덱스 생성은 트랜잭션 블록 안에서 실행할 수 없고, 같은 테이블에는 한 번에 하나만 실행할 수 있다. 실패하면 invalid index가 남을 수 있으므로 progress, 실패 처리와 재실행 절차를 준비한다.
 - PostgreSQL 18에서는 partitioned table의 partitioned index를 `CONCURRENTLY`로 직접 생성할 수 없다. 각 partition에 동시 생성 후 parent index에 연결하는 절차를 검토한다.
-- 큰 테이블의 FK, `CHECK`, not-null 제약은 `NOT VALID`로 먼저 추가하고 `VALIDATE CONSTRAINT`로 기존 행을 나중에 검증할 수 있다. 새 쓰기에는 즉시 제약이 적용되며 validation의 lock과 참조 테이블 영향도 사전에 확인한다.
+- 큰 테이블의 FK, `CHECK`, not-null 제약은 `NOT VALID`로 먼저 추가하고 `VALIDATE CONSTRAINT`로 기존 행을 나중에 검증할 수 있다. 새 쓰기에는 즉시 제약이 적용되며 validation의 lock과 참조 테이블 영향도 사전에 확인한다. 작업별 잠금 수준표와 `SET NOT NULL`, 유니크 동시 인덱스의 실패 처리는 [[Schema-Migration-Large-Table#PostgreSQL의 작업별 잠금과 단계 분리|대용량 테이블 스키마 변경]]에 둔다.
 
 ### DDL 대기열과 시간 제한
 
@@ -146,7 +146,7 @@ PostgreSQL 운영의 핵심은 빠른 쿼리 하나를 찾는 데 있지 않다.
 - [[Transactions|트랜잭션]]
 - [[Lock|DB Lock]]
 - [[Connection-Pool|DB 커넥션 풀, 사이징]]
-- [[Schema-Migration-Large-Table|대용량 스키마 변경, MySQL 중심]]
+- [[Schema-Migration-Large-Table|대용량 스키마 변경, MySQL 알고리즘과 PostgreSQL 작업별 잠금]]
 - [[Backfill-Resource-Isolation|데이터 백필과 자원 격리 전략]]
 - [[Backup-Restore|백업과 복구 전략]]
 - [[DB-Incident-Triage|DB 장애 분석 방법론]]

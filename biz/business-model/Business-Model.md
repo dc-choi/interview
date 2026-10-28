@@ -52,6 +52,18 @@ Alexander Osterwalder와 Yves Pigneur가 체계화하고 널리 알린 비즈니
 
 **수익 모델은 카테고리와 타겟의 결제 맥락에 따라 달라진다.** 저단가 대량 거래는 수수료 수익만으로 비용을 회수하기 어려울 수 있어 광고, 구독 등 대안을 함께 검토한다. 고단가 신뢰 민감 거래에서는 검수와 안전결제의 비용 및 신뢰 가치가 수수료 수용 여부에 영향을 줄 수 있다. MAU, 체류시간 같은 트래픽 지표가 좋아도 수익 모델의 비용 구조가 맞지 않으면 적자가 누적될 수 있다 — 상세는 [[Category-Expansion|카테고리 확장과 카니발리제이션]].
 
+### 유형 목록의 분류 축을 나눠 조합한다
+
+이 문서는 흔히 함께 나열되는 비즈니스 모델 유형을 거래 상대와 판매 경로(B2B, B2C, C2C, C2B, D2C), 수익 방식, 공급과 운영 방식(매입 후 재판매, 제조, 프랜차이즈, 드롭쉬핑, 온디맨드)의 세 축으로 나누고, 수익 방식에는 일회성 판매(자산 판매), 구독, 프리미엄, 광고, 라이선스, 제휴 수수료, 중개 수수료를 둔다. 축이 다른 항목은 서로 배타적인 선택지가 아니므로 축마다 하나 이상을 골라 조합하며, 한 축에서 여럿을 고르는 방식은 위 하이브리드와 같다. BMC에 옮길 때는 거래 상대와 판매 경로를 고객 세그먼트와 채널에, 수익 방식을 수익원에, 공급과 운영 방식을 핵심 활동, 핵심 자원과 핵심 파트너에 적기를 제안한다. 새 사업용 발명 패턴(invent patterns) 분류에서는 누구에게 어떻게 가치를 전달하는지(frontstage), 가치를 어떻게 만드는지(backstage), 수익과 비용으로 어떻게 이익을 내는지(profit formula)를 나누고, 라이선서와 프랜차이저를 backstage의 규모 확장 패턴(Scalers)에, 프리미엄 제공자(Freemium Providers)를 profit formula의 수익 차별화 패턴(Revenue Differentiators)에 둔다. 거래 주체별 특징과 입점 계약 유형은 [[Commerce-Overview|커머스 도메인 개요]], 판매 채널과 별개인 드롭쉬핑의 주문 이행은 [[Marketplace-Seller-Launch#위탁판매와 AI|위탁판매와 AI]], 제휴 수수료의 인정 조건은 [[Affiliate-Marketing|제휴 마케팅과 수익 인정 조건]], 브랜드의 직접 판매는 [[D2C-Brand-Strategy|D2C와 브랜드 데이터 전략]]에서 다룬다.
+
+수익원을 만드는 방식에는 자산 판매, 이용량 과금(usage fee), 구독료, 대여와 리스, 라이선스, 중개 수수료, 광고 등이 있다. 중개 수수료(brokerage fees)는 둘 이상의 당사자를 위해 중개 서비스를 수행하고 받는 대가다. 위 표의 거래 수수료는 과금 단위를 나타내므로, 거래마다 돈을 받는다는 사실만으로 중개 수수료로 분류하지 않고 실제 제공 서비스를 함께 확인한다.
+
+라이선스는 보호된 지식재산의 사용을 허락하고 사용료를 받는 수익원으로, 권리자가 직접 제품을 만들거나 서비스를 상용화하지 않고도 수익을 얻게 한다. 미디어 산업에서는 콘텐츠 권리자가 저작권을 유지한 채 제3자에게 이용권을 팔고, 기술 분야에서는 특허권자가 다른 회사에 특허 기술의 사용권을 주고 대가를 받는 방식이 흔하다. 이용자 쪽에서 허락 범위를 확인하는 사례는 [[Font-Licensing-for-Client-Work|외주 납품의 폰트 라이선스]]에 있다.
+
+면도기와 면도날(razors-and-blades) 전략은 본체를 낮은 가격이나 무료로 보급해 설치 기반을 만들고, 반복해서 사는 소모품을 높은 가격에 팔아 앞선 투자를 회수한다. 이론상으로는 본체의 낮은 가격이 고객이 충성하거나 다른 회사의 소모품 시장 진입을 막을 수 있을 때만 의미가 있다. 소모품을 본체에 묶을 수단이 없으면 경쟁사가 본체 손실 없이 소모품만 팔 수 있고, 경쟁사도 무료 본체를 내놓으면 고객의 전환 비용이 생기지 않는다. 다만 이 전략의 원조로 알려진 면도기 제조사는 초기 특허가 유효하던 1904~1921년에 본체를 높은 가격에 팔았고, 특허 만료 무렵에야 구형 본체 가격을 기존 경쟁 제품 수준으로 내리고 신형 본체는 높은 가격에 파는 이원 전략으로 바꿨다. 설치 기반은 제1차 세계대전 중 정부 납품과 이 이원 전략 도입 때 크게 늘었고, 순이익은 특허 기간에도 늘고 있었다. 특허 만료 뒤에는 면도날 시장의 진입을 막을 마땅한 법적 수단이 없었고 호환 면도날도 나왔지만 본체와 면도날 판매, 이익이 함께 늘어 결합 수단 없이도 전략이 통한 것으로 보인다. 그 원인이 소비자 습관인지, 면도날 품질이나 다른 요인인지는 당시 통신판매 카탈로그 자료로 가릴 수 없다. 이 문서의 적용 제안은 특허나 호환 제한 같은 결합 수단, 설치 기반을 키울 경로와 호환 소모품 경쟁을 함께 확인하고, 유명 사례를 성공 공식으로 그대로 쓰지 않는 것이다. 본체와 소모품의 가격 연동은 [[Elasticity#5. 다른 종류의 탄력성|교차탄력성]]의 보완재 관계로 읽는다.
+
+미국 FTC Franchise Rule(16 CFR 436.1(h), 2026-01-01 기준 CFR 판을 2026-10-27 대조)은 명칭과 관계없이, 제안이나 계약의 조건이 정하거나 프랜차이즈 판매자가 구두나 서면으로 약속하거나 표시한 내용이 다음 세 요소를 모두 담는 계속적 거래관계나 약정을 프랜차이즈로 정의한다. 이 문단의 가맹본부, 가맹사업자와 예비 가맹사업자는 이 규칙의 franchisor, franchisee와 prospective franchisee를 옮긴 말이다. 첫째, 가맹사업자가 가맹본부의 상표로 식별되거나 그 상표와 연관된(identified or associated with) 사업을 운영할 권리, 또는 그런 상품, 서비스나 물품을 제공, 판매, 유통할 권리를 얻는다. 둘째, 가맹본부가 가맹사업자의 운영 방식을 상당한 정도로 통제하거나 통제할 권한을 갖거나, 운영 방식에 상당한 지원을 제공한다. 셋째, 가맹사업자가 프랜차이즈를 얻거나 운영을 시작하는 조건으로 가맹본부나 그 계열사에 대가를 지급하거나 지급을 약정한다. 상표 사용 허락이라고 부르는 계약도 세 요소를 갖추면 이 정의에 해당한다. 면제 대상(16 CFR 436.8)이 아니면 이 규칙은 가맹본부가 모든 예비 가맹사업자에게 해당 프랜차이즈, 임원과 다른 가맹사업자에 관한 23개 항목의 공개 문서를 제공하도록 요구한다. 국내 사업은 국내 법령의 정의와 의무로 따로 확인한다.
+
 ### 수익 모델 선택과 PMF
 
 수익 모델 선택에서 단기 수익보다 **PMF 탐색**을 먼저 둘 수 있다. 예를 들어 수수료가 거래 참여를 약화할 가능성이 있다면 무과금 또는 광고 모델로 수요와 유동성을 먼저 검증할 수 있다 ([[PMF-Funnel|PMF 검증]]). 다만 적자를 성장성이나 기업가치의 근거로 단정할 수는 없다. 시장 성장, 유지율, 단위 경제성과 자금 조달 조건을 함께 확인하고, 수익화 옵션을 의도적으로 미룬 상태와 수익 모델 자체가 검증되지 않은 상태를 구분한다.
@@ -205,12 +217,18 @@ Q. 비즈니스 모델은 어떻게 설계했는가?
 - [Principles of Accounting, Volume 2, 3.2 Calculate a Break-Even Point in Units and Dollars — OpenStax](https://openstax.org/books/principles-managerial-accounting/pages/3-2-calculate-a-break-even-point-in-units-and-dollars)
 - 초압축 5일 사업계획서 학습지 — 하우그로우 (2026, 배포 학습 자료)
 - [Strategyzer, The Business Model Canvas](https://www.strategyzer.com/library/the-business-model-canvas)
+- [Business Model Generation 미리보기 — Alexander Osterwalder, Yves Pigneur](https://nutsandbolts.mit.edu/resources/businessmodelgeneration_preview.pdf) — 저자가 배포한 2009년판 미리보기를 MIT Nuts and Bolts 사이트에 재게시한 사본. 30~33쪽의 수익원 방식, 라이선스와 중개 수수료 정의, 55쪽의 패턴 결합을 2026-10-27 대조
+- [The Invincible Company 미리보기 — Strategyzer, Alexander Osterwalder 외](https://cdn2.hubspot.net/hubfs/4952096/Strategyzer_Series_Books_The_Invincible_Company_Preview.pdf) — 140~143쪽, 162~163쪽과 188~189쪽의 발명 패턴(invent patterns) 분류와 목록을 2026-10-27 대조. 인용한 Scalers와 Revenue Differentiators 패턴의 정의는 미리보기에 없어 쓰지 않음
 - [서비스 기획자를 위한 시장 분석 실전 — 쪼렙 서비스기획자 (Brunch)](https://brunch.co.kr/@b30afb04c9f54dc/52)
 - [종료한 서비스 분석으로 생각하는 힘 기르기 — 쪼렙 서비스기획자 (Brunch)](https://brunch.co.kr/@b30afb04c9f54dc/55)
 - [IT 기업의 수익 모델과 트렌드 — 쪼렙 서비스기획자 (Brunch)](https://brunch.co.kr/@b30afb04c9f54dc/26)
 - [하이브의 뉴진스 단독 앱 포닝 출시 전략 — 쪼렙 서비스기획자 (Brunch)](https://brunch.co.kr/@b30afb04c9f54dc/41)
 - [쇼핑몰을 플랫폼으로 변화시킬 수 있을까? — 도그냥 (Brunch)](https://brunch.co.kr/@windydog/112)
 - [Rochet and Tirole — Platform Competition in Two-Sided Markets](https://onlinelibrary.wiley.com/doi/10.1162/154247603322493212)
+- [The Razors-and-Blades Myth(s) — The University of Chicago Law Review, Randal C. Picker](https://lawreview.uchicago.edu/sites/default/files/78-1-Razors-and-Blades%20Myth%28s%29-Picker.pdf) — 78권 225~228쪽의 전략 정의, 소모품 결합 조건과 두 가지 통념, 245~250쪽의 이원 가격 전략, 설치 기반과 순이익 추이(249쪽 그림 8), 원인 판단의 한계, 2026-10-27 대조
+- [govinfo, 16 CFR 436.1 Definitions](https://www.govinfo.gov/content/pkg/CFR-2026-title16-vol1/xml/CFR-2026-title16-vol1-sec436-1.xml) — 2026-01-01 기준 CFR 판의 (h) 프랜차이즈 정의. 2024-01-01판과 (h) 문구가 같음을 2026-10-27 대조
+- [govinfo, 16 CFR 436.8 Exemptions](https://www.govinfo.gov/content/pkg/CFR-2026-title16-vol1/xml/CFR-2026-title16-vol1-sec436-8.xml) — 2026-01-01 기준 CFR 판, 가맹본부가 면제 사유를 입증하면 Part 436이 적용되지 않는 구조를 2026-10-27 대조. 금액 기준은 쓰지 않음
+- [FTC, Franchise Rule](https://www.ftc.gov/legal-library/browse/rules/franchise-rule) — 예비 가맹사업자에게 제공할 23개 항목 공개 문서, 2026-10-27 확인
 
 ## 관련 문서
 - [[Pricing-Strategy|가격 정책 설계]]
@@ -222,3 +240,5 @@ Q. 비즈니스 모델은 어떻게 설계했는가?
 - [[Kinolights-Domain-OTT-Business-Models|OTT 수익 모델 (SVOD, AVOD, TVOD)]]
 - [[Live-Ops-Service-Model|라이브옵스와 서비스형 제품 모델]]
 - [[Five-Parts-of-Business|비즈니스의 5요소와 제1원칙 진단]] — 사업의 고장 구간 진단과 원가 분해
+- [[Commerce-Overview|커머스 도메인 개요]] — 거래 주체, 입점 계약과 업태를 나누는 축
+- [[Affiliate-Marketing|제휴 마케팅과 수익 인정 조건]]

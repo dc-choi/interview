@@ -15,15 +15,19 @@ aliases: ["OS&런타임(OS&Runtime)", "OS & Runtime"]
 - [[tech/os-runtime/jvm/JVM|JVM]] — 로딩과 초기화 경계, 로더별 타입 동일성, GC pause와 할당 정체, 메모리 누수, 컨테이너 메모리
 - [[tech/os-runtime/nodejs/Node.js|Node.js]] — V8, libuv API, Event Loop, Stream, Worker Threads, 네이티브 애드온과 Express 5
 - [[V8-Cpp-API|V8 C++ API]] — Isolate와 native 자원 수명, module 실행, 직렬화, cppgc와 Inspector
-- [[Deno-Runtime|Deno]] — Node와의 차이, TypeScript 실행, import map, 캐시와 lockfile, Docker 배포
+- [[Deno-Runtime|Deno]] — Node와의 차이, TypeScript 실행, import map, 캐시와 lockfile, Docker 배포, Cloudflare 합류 뒤 유지보수 범위와 커뮤니티 포크
   - [[Deno-Runtime-Permissions|Deno 권한 모델]] — 자원별 flag, NotCapable, sandbox를 벗어나는 flag, task별 권한 분리와 permission set
 - [[tech/os-runtime/nestjs/NestJS|NestJS]] — DI, HTTP, GraphQL, Microservices, 웹훅, durable workflow, 보안과 신뢰성
 - [[tech/os-runtime/spring/Spring|Spring]] — Request Lifecycle, @Transactional, JPA 영속성
   - [[Spring-MVC-Manual-Validation|Spring MVC 수동 검증]] — 비동기 아이디 확인, 최종 저장의 유일성과 계정 존재 노출 경계
   - [[JobRunr-Persistent-Background-Jobs|JobRunr 영속 백그라운드 작업]] — 단계 재시도와 멱등성, OSS/Pro 경계, 관측과 버전 이전
 
-- [[Linux-Mobile-Platform|Linux 모바일]] — UI 스택 재사용, 기기별 전력과 통신 계약
-- [[Sovereign-Workplace-Stack|디지털 자율 업무환경]] — DAWO의 OS, 협업과 계정 계층, 파일럿과 운영 전환 검증
+- [[Linux-Mobile-Platform|Linux 모바일]] — UI 스택 재사용, 기기별 전력과 통신 계약, 소스 공개와 앱 배포 권한의 구분
+- [[Mobile-OS-Porting|모바일 OS 이식]] — 부트 체인, 커널과 드라이버, 보안 모델과 자기 보고 사례의 확인 범위
+- [[Android-Device-Debloat|Android 기기의 광고 줄이기]] — 계층별 수단, ADB 패키지 비활성화와 되돌리기, Private DNS의 한계, 비공식 APK의 공급망 위험
+- [[Sovereign-Workplace-Stack|디지털 자율 업무환경]] — DAWO의 OS, 협업과 계정 계층, 파일럿과 운영 전환 검증, NixOS 재구성과 되돌리기의 범위
+- [[Linux-Root-Directory-Isolation|루트 디렉터리 격리]] — chroot의 한계, Linux 7.3 fchroot와 failfs, OpenBSD unveil 비교
+- [[OpenBSD-Platform|OpenBSD]] — 8.0의 가상화와 arm64 변화, pledge와 unveil, Wine 이식 초안의 보안 제약
 - [[Linux-Page-Cache-Contention|Linux 페이지 캐시 경합]] — folio 참조와 공유 카운터, 개발 패치의 확인 경계
 - [[Native-Compilation-Compatibility|네이티브 컴파일과 호환성]] — Bun 패키징과 AOT 실험, TurboPython의 소유권
 

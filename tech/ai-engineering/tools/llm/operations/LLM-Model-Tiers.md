@@ -1,7 +1,7 @@
 ---
 tags: [ai, llm, cost, model-selection]
 status: done
-verified_at: 2026-10-26
+verified_at: 2026-10-27
 category: "AI엔지니어링(AIEngineering)"
 aliases: ["LLM Model Tiers", "모델 티어 선택", "모델 라우팅", "Model Routing"]
 ---
@@ -46,8 +46,8 @@ DeepSeek 사례를 2026-10-26 공식 가격표, 변경 이력과 모델 카드�
 
 - **두 이름과 한도**: API 모델 이름은 `deepseek-flash`(DeepSeek-V4.1-Flash-1017)와 `deepseek-v4-pro`(DeepSeek-V4-Pro-0813) 둘이다. 둘 다 컨텍스트 1M, 최대 출력 384K이고, 가격표의 동시성 한도는 Flash 2,500, Pro 500이며 이미지 입력은 Flash만 지원한다.
 - **호출 시각에 따라 단가가 두 배 차이 난다**: `deepseek-flash`의 100만 토큰당 단가는 할인 시간에 입력 캐시 적중 $0.003, 캐시 미적중 $0.15, 출력 $0.60이고 피크 시간에는 그 두 배다. 피크는 월~금(중국 공휴일 제외) UTC 01:00~04:00와 06:00~10:00으로, 한국 시간 10~13시와 15~19시다. 실행 시각을 옮길 수 있는 배치는 피크를 피해 예약하고, 비용 추정에는 실제 호출 시각 분포를 넣는다(적용 제안). Search와 Fetch API는 각각 성공 요청 1,000건당 $0.75다. DeepSeek Harness, Claude Code, Codex로 DeepSeek API를 쓸 때 서버 측 도구가 부르는 Search와 Fetch는 2026-10-26 확인 기준 무료이며, 2026-11-01 00:00(베이징 시간, 한국 시간 01:00)부터 요청 단위로 과금한다고 안내한다. 가격표는 가격이 조정될 수 있다고 적는다.
-- **이름이 가리키는 판이 바뀐다**: 2026-10-17 변경 이력은 V4.1-Flash를 V4.1-Flash-1017로 올리면서 호출 방식과 가격은 그대로이고 같은 `deepseek-flash`로 최신 모델을 쓰라고 안내한다. 2026-09-10에는 V4.1-Flash를 내면서 호출 이름을 `deepseek-flash`로 바꾸고 V4 Flash와 V4 Flash Vision Exp를 은퇴시켰다. 이전 이름 `deepseek-v4-flash`와 `deepseek-v4-flash-vision-exp`는 호환을 위해 임시로 받아 주며, 지금은 1017 판으로 처리돼 Flash 가격으로 과금된다. 확인한 가격표와 변경 이력에는 이전 Flash 판을 고르는 날짜 붙은 ID가 없다. 코드를 바꾸지 않아도 품질과 출력 길이가 바뀔 수 있으므로 판 교체는 [[Eval-Model-Drift-Monitoring|서빙 모델 드리프트 감시]]의 카나리 세트로 잡는다. 판 고정이 필요한 경로는 MIT 라이선스로 공개된 가중치(Hugging Face 저장소의 safetensors 표시 기준 약 763B 파라미터, 모델 카드 본문은 총 파라미터 수를 밝히지 않는다)를 직접 서빙하는 방안과 비용을 비교한다(적용 제안).
-- **자체 보고 점수의 조건**: 모델 카드는 1017 판을 소규모 갱신으로 설명하고, DeepSWE v1.1(Mini-SWE-V2 하네스) 77.0을 직전 판 74.2, Claude Opus 5 74.0, GPT-5.6 Sol 73.0과 함께 보고한다. 같은 표의 Terminal-Bench 4.0(Claude Code 하네스)은 42.3으로 Opus 5의 51.8보다 낮다. 벤치마크와 하네스에 따라 순위가 갈리므로 한 점수로 코딩 에이전트의 우열을 정하지 않는다. 변경 이력은 직전 판보다 작업 시간과 출력 길이가 줄었다고 적고 DeepSeek Harness를 0.2.1-rc.1 이상으로 올리라고 권한다. 단가가 같아도 과업당 비용과 하네스 조건이 달라지므로 자기 과업으로 다시 잰다.
+- **이름이 가리키는 판이 바뀐다**: 2026-10-17 변경 이력은 V4.1-Flash를 V4.1-Flash-1017로 올리면서 호출 방식과 가격은 그대로이고 같은 `deepseek-flash`로 최신 모델을 쓰라고 안내한다. 2026-09-10에는 V4.1-Flash를 내면서 호출 이름을 `deepseek-flash`로 바꾸고 V4 Flash와 V4 Flash Vision Exp를 은퇴시켰다. 이전 이름 `deepseek-v4-flash`와 `deepseek-v4-flash-vision-exp`는 호환을 위해 임시로 받아 주며, 지금은 1017 판으로 처리돼 Flash 가격으로 과금된다. 확인한 가격표와 변경 이력에는 이전 Flash 판을 고르는 날짜 붙은 ID가 없다. 코드를 바꾸지 않아도 품질과 출력 길이가 바뀔 수 있으므로 판 교체는 [[Eval-Model-Drift-Monitoring|서빙 모델 드리프트 감시]]의 카나리 세트로 잡는다. 판 고정이 필요한 경로는 MIT 라이선스로 공개된 가중치를 직접 서빙하는 방안과 비용을 비교한다(적용 제안). 모델 카드 본문은 총 파라미터 수를 밝히지 않고 Hugging Face 저장소의 safetensors 표시는 약 763B이며, V4.1-Flash 기술 보고서는 백본 552B, 토큰당 활성 파라미터를 디코드 16B, 프리필 8B로 적는다. 서빙 메모리는 활성 수가 아니라 실제 가중치 파일과 KV 캐시로 계산한다([[Model-Release-Claims#파라미터 수는 무엇을 셌는지 확인한다|파라미터 집계 범위]]).
+- **자체 보고 점수의 조건**: 모델 카드는 1017 판을 소규모 갱신으로 설명하고, DeepSWE v1.1(Mini-SWE-V2 하네스) 77.0을 직전 판 74.2, Claude Opus 5 74.0, GPT-5.6 Sol 73.0과 함께 보고한다. 같은 표의 Terminal-Bench 4.0(Claude Code 하네스)은 42.3으로 Opus 5의 51.8보다 낮다. 벤치마크와 하네스에 따라 순위가 갈리므로 한 점수로 코딩 에이전트의 우열을 정하지 않는다. 변경 이력은 직전 판보다 작업 시간과 출력 길이가 줄었다고 적고 DeepSeek Harness를 0.2.1-rc.1 이상으로 올리라고 권한다. 단가가 같아도 과업당 비용과 하네스 조건이 달라지므로 자기 과업으로 다시 잰다. 제3자 지수의 속도와 단가가 측정일과 시간대에 따라 달라지는 사례는 [[Model-Release-Claims#속도와 지연은 측정 위치와 날짜를 붙인다|모델 발표 수치 읽기]]에 있다.
 
 ## 모델 라우팅 (티어 선택 패턴)
 
@@ -119,6 +119,7 @@ DeepSeek 사례를 2026-10-26 공식 가격표, 변경 이력과 모델 카드�
 - [[LLM-Market-Landscape|생성형 AI 시장 경쟁 구도]] — 벤더 구도, 가격 경쟁
 - [[Harness-Engineering|하네스 엔지니어링]] — 역할 분리와 검토 루프의 구조화
 - [[Codex-Agent-Execution-Model|Codex 동작 원리]] — 서브에이전트와 도구 호출 루프
+- [[Model-Release-Claims|모델 발표 수치 읽기]] — 자체 보고 점수, 비용 절감률과 속도 수치의 조건
 
 ## 출처
 
@@ -134,6 +135,7 @@ DeepSeek 사례를 2026-10-26 공식 가격표, 변경 이력과 모델 카드�
 - [DeepSeek API Docs, Models & Pricing](https://api-docs.deepseek.com/quick_start/pricing/) (2026-10-26 모델 판, 한도, 시간대별 단가, Search와 Fetch 과금, 이전 이름의 처리 확인)
 - [DeepSeek API Docs, Change Log](https://api-docs.deepseek.com/updates/) (2026-09-10 이름 변경, 2026-10-17 판 교체와 하네스 권고 항목)
 - [Hugging Face, deepseek-ai/DeepSeek-V4.1-Flash-1017](https://huggingface.co/deepseek-ai/DeepSeek-V4.1-Flash-1017) (2026-10-26 벤치마크 표의 하네스 조건, 라이선스와 safetensors 파라미터 표시 확인)
+- [DeepSeek-V4.1-Flash: Pushing the Limits of KV Cache Compression — arXiv, DeepSeek-AI](https://arxiv.org/abs/2609.19969) (2026-10-27 백본과 단계별 활성 파라미터 확인)
 - [Anthropic Platform Docs, Models overview](https://platform.claude.com/docs/en/about-claude/models/overview) (Anthropic 라인업, 티어별 가격, 2026-09-30 현재 모델 확인, 2026-10-06 재확인, 2026-10-12 Haiku 5.5 반영)
 - [Introducing Claude Haiku 5.5 — Anthropic](https://www.anthropic.com/claude-haiku-5-5)
 - [Anthropic Platform Docs, What's new in Claude Haiku 5.5](https://platform.claude.com/docs/en/models/haiku-5-5/whats-new-haiku-5-5)

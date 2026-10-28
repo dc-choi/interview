@@ -1,14 +1,14 @@
 ---
-tags: [database, rdbms, mysql, ddl, migration]
+tags: [database, rdbms, mysql, postgresql, ddl, migration]
 status: done
-verified_at: 2026-08-28
+verified_at: 2026-10-27
 category: "Data & Storage - RDB"
-aliases: ["대용량 스키마 변경", "Schema Migration", "Online DDL"]
+aliases: ["대용량 스키마 변경", "Schema Migration", "Online DDL", "PostgreSQL 무중단 스키마 변경"]
 ---
 
 # 대용량 테이블 스키마 변경
 
-수천만~수억 건 테이블의 `ALTER TABLE`은 변경 종류와 MySQL 버전, 선택된 알고리즘에 따라 메타데이터 변경만으로 끝날 수도 있고 테이블 전체를 재구성할 수도 있다. 큰 테이블에서 `COPY`나 재구성이 선택되거나 메타데이터 락 대기가 길어지면 서비스 지연으로 이어질 수 있으므로 실행 알고리즘을 먼저 고정하고 검증해야 한다.
+수천만~수억 건 테이블의 `ALTER TABLE`은 변경 종류와 MySQL 버전, 선택된 알고리즘에 따라 메타데이터 변경만으로 끝날 수도 있고 테이블 전체를 재구성할 수도 있다. 큰 테이블에서 `COPY`나 재구성이 선택되거나 메타데이터 락 대기가 길어지면 서비스 지연으로 이어질 수 있으므로 실행 알고리즘을 먼저 고정하고 검증해야 한다. PostgreSQL은 알고리즘을 고르는 대신 명령마다 잠금 수준이 정해져 있어 [[#PostgreSQL의 작업별 잠금과 단계 분리|아래 절]]에서 따로 다룬다.
 
 ## 일반 ALTER가 위험한 이유
 
@@ -112,6 +112,33 @@ pt-osc와 비슷하지만 **트리거 대신 binlog**를 읽어 변경을 반영
 | gh-ost | 거의 없음 | 원본 읽기, ghost 쓰기와 복제 I/O, 설정한 throttle | 중간 | 운영 트래픽 큰 환경 |
 | 수동 복사 | 전체 다운 | 큼 | 단순 | 정기점검 |
 
+## PostgreSQL의 작업별 잠금과 단계 분리
+
+PostgreSQL에는 `ALGORITHM` 같은 실행 방식 지정이 없고 명령마다 잡는 잠금 수준이 정해져 있다. 재작성이나 전체 검사가 없는 변경도 강한 잠금을 기다리는 동안 뒤따르는 요청을 막을 수 있으므로 잠금 수준과 기존 행 처리를 나눠 본다. 아래 표는 PostgreSQL 18 문서 기준이다.
+
+| 작업 | 잠금 | 기존 행 처리 | 진행 중 막히는 것 |
+|---|---|---|---|
+| `ADD COLUMN` (기본값 없음 또는 비휘발성 기본값) | `ACCESS EXCLUSIVE` | 재작성 없음. 기본값은 메타데이터에 저장 | 짧지만 `SELECT`를 포함한 모든 접근 |
+| `ADD COLUMN` (휘발성 기본값, stored generated, identity, 제약 있는 domain) | `ACCESS EXCLUSIVE` | 테이블과 인덱스 재작성 | 재작성이 끝날 때까지 모든 접근 |
+| `ALTER COLUMN ... TYPE` | `ACCESS EXCLUSIVE` | 보통 재작성. binary coercible이고 `USING`이 값을 바꾸지 않으면 재작성은 생략되지만 인덱스는 재구축될 수 있음 | 모든 접근 |
+| `ADD CONSTRAINT ... CHECK` | `ACCESS EXCLUSIVE` | 전체 검사. `NOT VALID`면 생략 | 모든 접근 |
+| `ADD FOREIGN KEY` | 두 테이블 모두 `SHARE ROW EXCLUSIVE` | 전체 검사. `NOT VALID`면 생략 | 두 테이블의 데이터 변경 |
+| `VALIDATE CONSTRAINT` | `SHARE UPDATE EXCLUSIVE`, FK면 참조 테이블에 `ROW SHARE` 추가 | 기존 행 검사 | 다른 스키마 변경과 `VACUUM`. 읽기와 쓰기는 계속됨 |
+| `CREATE INDEX` | `SHARE` | 한 번 스캔 | 데이터 변경 |
+| `CREATE INDEX CONCURRENTLY` | `SHARE UPDATE EXCLUSIVE` | 두 번 스캔하고 기존 트랜잭션을 기다림 | 다른 스키마 변경과 `VACUUM`. 읽기와 쓰기는 계속됨 |
+
+`ACCESS EXCLUSIVE`만 일반 `SELECT`를 막는다. 한 문장에 여러 하위 명령을 넣으면 그중 가장 강한 잠금을 잡는다.
+
+### 강한 잠금은 짧게, 검사는 약한 잠금으로
+
+- **잠금 대기 제한**: 마이그레이션 세션에 짧은 `lock_timeout`을 두고, 실패하면 간격을 두고 다시 시도한다. 대기열이 생기는 방식과 `statement_timeout`과의 관계는 [[PostgreSQL-Production-Operations#DDL 대기열과 시간 제한|DDL 대기열과 시간 제한]]을 따른다.
+- **추가와 검증을 다른 트랜잭션으로**: 잠금은 보통 트랜잭션이 끝날 때까지 유지된다. `NOT VALID` 추가와 `VALIDATE CONSTRAINT`를 한 트랜잭션에 묶으면 첫 명령의 강한 잠금이 검증 내내 남으므로 따로 커밋한다. `NOT VALID` 상태에서도 새로 넣거나 고치는 행에는 제약이 적용된다.
+- **`SET NOT NULL`**: 기본적으로 전체 테이블을 검사한다. 같은 명령에서 지우지 않는 유효한 `CHECK (col IS NOT NULL)` 제약이 있으면 검사를 건너뛰므로, CHECK를 `NOT VALID`로 추가하고 검증한 뒤 `SET NOT NULL`을 실행하는 순서를 쓸 수 있다. PostgreSQL 18 문서는 not-null 제약 자체도 `NOT VALID`로 추가하고 `VALIDATE CONSTRAINT`로 검증할 수 있다고 적는다. 이전 버전은 해당 버전 문서로 확인한다.
+- **유니크 인덱스의 동시 생성**: 두 번째 스캔이 시작되면 유일성이 다른 트랜잭션에 이미 강제된다. 인덱스를 쓸 수 있기 전이나 빌드가 결국 실패한 경우에도 다른 쿼리가 위반 오류를 받을 수 있고, 두 번째 스캔에서 실패하면 남은 invalid 인덱스가 유일성을 계속 강제한다. 실패한 인덱스는 지우고 다시 만들거나 `REINDEX INDEX CONCURRENTLY`로 재구축한다.
+- **잠금을 쥔 유휴 세션**: 트랜잭션을 연 채 멈춘 세션은 잠금을 놓지 않고, 그 트랜잭션에만 보일 수 있는 dead tuple의 정리도 막는다. `idle_in_transaction_session_timeout`(기본 0, 비활성)은 그런 세션을 종료한다. DDL이 잠금을 기다리는 동안에는 다른 세션에서 `pg_blocking_pids(<DDL 세션의 pid>)`로 막는 세션을 확인한다. 이 함수는 지금 대기 중인 프로세스만 다루므로 `lock_timeout`으로 DDL이 이미 취소된 뒤에는 빈 배열을 돌려준다. 재시도 전에는 `pg_locks`에서 대상 테이블(`relation`)의 잠금을 쥔 `pid`를 `pg_stat_activity`와 묶어 오래된 `xact_start`나 `idle in transaction` 상태의 세션을 찾는다.
+
+이 표는 각 단계를 어떻게 실행할지를 정할 뿐 단계의 순서를 정하지 않는다. 이전 앱과 새 앱이 함께 도는 동안의 expand, migrate, contract 순서는 [[Blue-Green|Blue-Green 배포]]가, 변경을 몇 개 릴리스로 나눌지는 [[Backward-Compatibility|스키마 전후방 호환]]이 다룬다.
+
 ## 사전 체크리스트
 
 1. **테이블 크기, 트래픽** — 행 수, peak QPS
@@ -137,17 +164,30 @@ pt-osc와 비슷하지만 **트리거 대신 binlog**를 읽어 변경을 반영
 - pt-osc와 gh-ost의 차이 (트리거 vs binlog)
 - 컬럼 타입 변경처럼 INSTANT가 불가능할 때 대안
 - 대용량 테이블에 인덱스 추가하는 안전한 절차
+- PostgreSQL에서 `NOT VALID` 추가와 `VALIDATE CONSTRAINT`를 다른 트랜잭션으로 나누는 이유
 
 ## 출처
+
+2026-10-27에는 PostgreSQL 절을 PostgreSQL 18 공식 문서로 대조했다. MySQL 절은 이날 다시 대조하지 않았다.
+
 - [MySQL 8.0 Reference Manual — Online DDL Operations](https://dev.mysql.com/doc/refman/8.0/en/innodb-online-ddl-operations.html)
 - [MySQL 8.0 Reference Manual — Online DDL Limitations](https://dev.mysql.com/doc/refman/8.0/en/innodb-online-ddl-limitations.html)
 - [MySQL 8.0 Reference Manual — Monitoring ALTER TABLE Progress](https://dev.mysql.com/doc/refman/8.0/en/monitor-alter-table-performance-schema.html)
+- [PostgreSQL 18 Documentation — ALTER TABLE](https://www.postgresql.org/docs/18/sql-altertable.html)
+- [PostgreSQL 18 Documentation — CREATE INDEX](https://www.postgresql.org/docs/18/sql-createindex.html)
+- [PostgreSQL 18 Documentation — Explicit Locking](https://www.postgresql.org/docs/18/explicit-locking.html)
+- [PostgreSQL 18 Documentation — Client Connection Defaults](https://www.postgresql.org/docs/18/runtime-config-client.html)
+- [PostgreSQL 18 Documentation — System Information Functions (pg_blocking_pids)](https://www.postgresql.org/docs/18/functions-info.html), [pg_locks](https://www.postgresql.org/docs/18/view-pg-locks.html)
 - [jojoldu — MySQL 대용량 테이블 스키마 변경](https://jojoldu.tistory.com/244)
 - [gh-ost command-line flags — GitHub](https://github.com/github/gh-ost/blob/master/doc/command-line-flags.md)
+- [PostgreSQL 무중단 스키마 변경을 위한 실무 가이드 — GeekNews](https://news.hada.io/topic?id=35501)
+- [PostgreSQL 무중단 스키마 변경 - 작업별 잠금 수준과 확장-축소 배포 순서 — braindetox](https://braindetox.kr/posts/postgresql_zero_downtime_schema_changes_guide.html)
 
 ## 관련 문서
 - [[Schema-Versioning|스키마 버전 관리]]
 - [[Index|Index 추가의 운영 리스크]]
 - [[Replication|Replication]]
 - [[MySQL-vs-PostgreSQL|MySQL vs PostgreSQL — Online DDL 차이]]
+- [[PostgreSQL-Production-Operations|PostgreSQL 운영 (Online DDL, DDL 대기열과 시간 제한)]]
+- [[Backward-Compatibility|스키마 전후방 호환]]
 - [[MySQL-Charset-Migration|utf8mb4 마이그레이션 (CONVERT는 INPLACE 지원이지만 테이블 재구성 + 동시 DML 불가 → OSC 도구)]]

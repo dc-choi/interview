@@ -1,9 +1,9 @@
 ---
-tags: [os, cpu-scheduling, scheduling-algorithm, interview]
+tags: [os, cpu-scheduling, scheduling-algorithm, interview, sched-ext]
 status: done
-verified_at: 2026-10-05
+verified_at: 2026-10-27
 category: "OS&런타임(OS&Runtime)"
-aliases: ["CPU Scheduling Algorithms", "CPU 스케줄링 알고리즘", "스케줄링 알고리즘", "SRTF", "MLFQ", "Multilevel Queue"]
+aliases: ["CPU Scheduling Algorithms", "CPU 스케줄링 알고리즘", "스케줄링 알고리즘", "SRTF", "MLFQ", "Multilevel Queue", "sched_ext"]
 ---
 
 # CPU 스케줄링 알고리즘
@@ -64,6 +64,16 @@ aliases: ["CPU Scheduling Algorithms", "CPU 스케줄링 알고리즘", "스케�
 - **에이징**: 대기 시간이 길어질수록 우선순위를 **점진적으로 상향**시켜 언젠가는 실행되게 보장
 - MLFQ에도 일정 주기마다 모든 프로세스를 상위 큐로 승격시키는 보완책으로 사용
 
+## 정책을 교체할 수 있게 만든 Linux sched_ext
+
+교과서의 알고리즘은 정책 하나를 고정해 비교하지만, Linux는 scheduling class의 동작을 BPF 프로그램으로 정의하는 sched_ext를 둔다. BPF 스케줄러가 load되어 실행되는 동안에만 쓰이며 Linux 7.3 문서 기준 다음 성질을 가진다.
+
+- `SCX_OPS_SWITCH_PARTIAL`을 켜지 않으면 `SCHED_NORMAL`, `SCHED_BATCH`, `SCHED_IDLE`, `SCHED_EXT` task가 모두 sched_ext로 가고, 켜면 `SCHED_EXT` 정책 task만 간다. 실시간 정책(`SCHED_FIFO`, `SCHED_RR`)은 이 목록에 없다.
+- 오류를 감지하거나 실행 가능한 task가 멈추거나(stall) SysRq-S를 누르면 BPF 스케줄러를 내리고 모든 task를 기본 fair class로 되돌린다. 잘못 만든 정책이 시스템 전체를 멈추지 않게 하는 안전장치다.
+- cgroup의 `cpu.max`, `cpu.weight`, `cpu.idle` 설정은 BPF 스케줄러에 전달되지만 어떻게 반영할지는 각 스케줄러가 정하고 무시할 수도 있다.
+
+2026-10-18 출시된 Linux 7.3은 sub-scheduler 기능을 완성했다. cgroup마다 자기 BPF 스케줄러를 붙여 그 cgroup의 프로세스를 관리하게 할 수 있고(`CONFIG_EXT_SUB_SCHED`), 부모 스케줄러는 CPU별 enqueue와 선점 같은 권한을 자식에게 넘길 수 있다. 워크로드마다 다른 정책을 한 시스템에서 시험할 수 있게 됐지만, 정책을 바꾸면 지연과 처리량의 분포가 바뀌므로 아래 평균 대기 시간 같은 지표를 실제 부하에서 다시 잰다.
+
 ## 평균 대기 시간 계산과 슬라이스 선택
 
 모든 작업이 0초에 준비되고 문맥 전환 비용은 0이라고 가정한다. 비선점 대기 시간은 시작 시각이며, 선점되는 작업은 준비 큐에서 다시 기다린 시간도 더한다.
@@ -95,6 +105,10 @@ CPU를 오래 쓰는 작업 뒤에서 I/O 작업이 기다리면 장치가 유�
 - YouTube, 쉬운코드, [CPU 스케줄러, 선점과 비선점, 디스패처](https://www.youtube.com/watch?v=LgEY4ghpTJI)
 - [Linux kernel scheduler documentation](https://docs.kernel.org/scheduler/)
 - [Linux sched(7)](https://man7.org/linux/man-pages/man7/sched.7.html)
+- [Linux kernel v7.3, Documentation/scheduler/sched-ext.rst](https://git.kernel.org/pub/scm/linux/kernel/git/torvalds/linux.git/tree/Documentation/scheduler/sched-ext.rst?h=v7.3) — 2026-10-27 대상 정책, 복귀 조건, cgroup 설정 전달과 `CONFIG_EXT_SUB_SCHED` 대조
+- [Kernelnewbies, Linux 7.3](https://kernelnewbies.org/Linux_7.3)
+- [The 7.3 kernel has been released — LWN.net](https://lwn.net/Articles/1101143/)
+- [Linux 7.3 출시 - 스케줄링 개선과 새로운 파일 접근 격리 기능 — GeekNews](https://news.hada.io/topic?id=35635)
 
 ## 관련 문서
 

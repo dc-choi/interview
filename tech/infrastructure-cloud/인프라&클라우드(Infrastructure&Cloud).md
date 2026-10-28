@@ -12,19 +12,20 @@ aliases: ["인프라&클라우드(Infrastructure&Cloud)", "Infrastructure & Clou
 - [[Cloudflare-Durable-Objects|Durable Objects]] — 객체별 상태와 실행, 메모리 수명, SQLite 트랜잭션과 셀프호스팅
 - [[Internal-Developer-Platform|내부 개발자 플랫폼]] — 반복 요청의 셀프서비스, 비동기 생성과 운영 책임
 - [[GPU-Server-Infrastructure|GPU 서버 인프라]] — CPU와 GPU, 워프와 분기 발산, 메모리와 통신 경로, 전력과 냉각, 사용률 해석, GPU 공유와 CUDA 체크포인트 제약
+- [[PyTorch-on-TPU|PyTorch on TPU]] — TorchTPU의 PyTorch/XLA 대체, eager 모드와 torch.compile, 기본 정밀도, 분산 초기화와 MPMD 위험
 - [[Optical-Interconnect-and-CPO|광통신과 CPO]] — 광 변환 위치, 전기 경로와 외부 레이저, 제품별 정비 경계
 - [[tech/infrastructure-cloud/foundation/클라우드기초(Foundation)|클라우드 기초 (Foundation)]] — IaaS/PaaS/FaaS, SaaS 리전별 데이터 격리와 운영 주권, IaC와 Pulumi 컴포넌트, 클라우드 전환 전략, Cloudflare cf CLI와 Artifacts
-- [[tech/infrastructure-cloud/container/컨테이너(Container)|컨테이너 (Container)]] — Docker, Compose, 컨테이너 내부 구조, 이미지 빌드와 베이스 이미지 선택
+- [[tech/infrastructure-cloud/container/컨테이너(Container)|컨테이너 (Container)]] — Docker, Compose, runc 초기화와 rootless, 이미지 빌드, OpenShell과 AI 학습 환경 격리
 - [[tech/infrastructure-cloud/aws/AWS서비스(AWSServices)|AWS 서비스 (AWS)]] — EC2/ASG/ALB, Lambda, ALB 5XX와 NLB TCP 연결 진단, Amplify Gen 2 환경과 파일 권한
 - [[tech/infrastructure-cloud/network/인프라네트워크(InfraNetwork)|인프라 네트워크 (Network)]] — DNS, Load Balancer, Reverse Proxy
-- [[tech/infrastructure-cloud/k8s/k8s|Kubernetes]] — workload와 Service, 설정과 storage, traffic 진입과 배포, 리소스 적정화, CKA 운영 실습
+- [[tech/infrastructure-cloud/k8s/k8s|Kubernetes]] — workload와 Service, 설정과 storage, traffic 진입과 배포, 리소스 적정화, CKA 운영 실습, GPU 공유와 에이전트 sandbox 런타임
 - [[tech/infrastructure-cloud/istio-ambient/istio-ambient|Istio Ambient (Service Mesh)]] — ztunnel, waypoint, HBONE, 업그레이드와 장애 대응
 
 ## 장비와 자체 운영
 
 - [[Storage-Access-Models|저장장치 연결과 데이터 접근]] — DAS, NAS와 SAN, 블록/파일/객체, 공유 연결과 동시 쓰기 조정
 - [[Server-Quotation-Checklist|서버 견적 검토]] — 메모리 배치, 옵션과 지원 조건, 물리 코어 라이선스의 적용 범위
-- [[GPU-Inference-Hardware|추론용 GPU 선택]] — Intel D270, 가중치와 KV 캐시, 실측 조건
+- [[GPU-Inference-Hardware|추론용 GPU 선택]] — Intel D270, 가중치와 KV 캐시, 실측 조건, GeForce 텐서 연산 제한과 외부 커널 모듈의 도입 경계
 - [[Rack-Scale-System-Emulation|랙 규모 시스템 에뮬레이션]] — Voxel, 실제 소프트웨어와 가상 하드웨어의 검증 경계
 - [[Self-Hosting-Small-Server|소형 서버 셀프호스팅]] — N100 사례, 네이티브와 Podman, 복구 책임
 - [[Smart-Home-Hub-and-Personal-Context|가정용 허브와 개인 맥락]] — HomeView와 Apple TV 4K, 기기 및 지역 조건
@@ -119,6 +120,7 @@ aliases: ["인프라&클라우드(Infrastructure&Cloud)", "Infrastructure & Clou
 
 ## Kubernetes
 - [x] [[Container-Memory-Metrics|컨테이너 메모리 지표 해석 (cgroup 계정 범위, RSS와 page cache, working set, 고원 vs 우상향, 실측)]]
+- [x] [[K8s-AI-Workloads|AI 워크로드]] — [[K8s-GPU-Sharing-and-Quota|GPU 공유와 팀별 할당]](큐, 회수와 큐 안 선점, 분할 모드별 메모리 강제), [[K8s-Agent-Substrate|Agent Substrate]](스냅샷 재개, sandbox 격리와 배포 경로별 제약)
 
 ### 기초와 운영 체크리스트
 - [x] [[K8s-Core-Workloads-and-Service-Architecture|Control plane과 node component]]

@@ -11,7 +11,7 @@ aliases: ["메시징&파이프라인(Messaging&Pipeline)", "Messaging & Data Pip
 
 - [[Event-Driven-Architecture|Event-Driven Architecture (EDA) — 결정 프레임워크]] (아키텍처 카테고리) — 신뢰성, 결합도, 일관성 3축 트레이드오프 + **8개 결정 층** + 패턴 매핑 그림
 
-- [[Data-Infrastructure-Layers|데이터 인프라의 계층과 계약]] — 저장과 계산, 파일과 테이블, 카탈로그, BI 지표와 AI 데이터 권한
+- [[Data-Infrastructure-Layers|데이터 인프라의 계층과 계약]] — 저장과 계산, 웨어하우스와 레이크, 객체 저장소의 경계, Snowflake, BigQuery와 Redshift 비교, 파일과 테이블, 카탈로그, BI 지표와 AI 데이터 권한
 
 ## 목차 (메시징 인프라 — 어떻게 안전하게 전송)
 
@@ -26,10 +26,10 @@ aliases: ["메시징&파이프라인(Messaging&Pipeline)", "Messaging & Data Pip
 - [[Realtime-Tracking-Analytics|실시간 추적 데이터 파이프라인]] — 센서 수집, Kafka 처리 단계, 원본과 파생 통계 저장, 대시보드와 외부 API의 완료 조건
 - [[MSK-Streaming-Tables|MSK Streaming Tables]] — Express에서 Iceberg 적재, 백필과 스키마 변경 제약, DLQ 원문 미보존
 - [[Kinesis#KDS에서 S3 Tables로 직접 적재|Kinesis Streaming tables]] — Iceberg 직접 적재, 스키마, 암호화 키 제약과 DLQ의 원문 보존 경계
-- [[Stream-and-Batch-Processing|스트림과 배치 처리]] — bounded/unbounded 입력, event time/window, 실시간 표시와 확정 결과, AppSync 알림 조건, Spark JDBC 병렬 추출과 source 부하
+- [[Stream-and-Batch-Processing|스트림과 배치 처리]] — bounded/unbounded 입력, event time/window, 실시간 표시와 확정 결과, AppSync 알림 조건, Spark JDBC 병렬 추출과 source 부하, Spark executor 할당과 실사용 비교(dynamic allocation 제거 예외)
 - [[Airflow-DAG-Parsing|Airflow DAG 파싱 최적화]] — dag-processor 재파싱 비용, 메트릭 기반 진단, 인프라 튜닝, top-level 안티패턴, 2.x→3.x 변경점
 - [[Airflow-Task-Process-Model|Airflow 태스크 프로세스 모델]] — Python start method, COW, supervisor와 task runner, 메모리 측정
-- [[ELT-Platform|ELT 플랫폼 (셀프서비스 데이터 파이프라인)]] — 정의와 실행을 DSL로 분리, 동적 DAG 생성, DB→DWH 대량 복제(JDBC 파티셔닝), 재실행과 데이터 품질 검사, Build vs Buy
+- [[ELT-Platform|ELT 플랫폼 (셀프서비스 데이터 파이프라인)]] — 정의와 실행을 DSL로 분리, 동적 DAG 생성, DB→DWH 대량 복제(JDBC 파티셔닝), 재실행과 데이터 품질 검사, Build vs Buy, 결과 계약을 선언하는 자기 조직화 스택 제안
 - [[Inventory-Data-Pipeline|재고 데이터 파이프라인]] — 옴니채널 재고 병목 3종, 기초재고 배치 파티셔닝, 임계 경로 최소화 + Kafka 팬아웃, Push/Pull 하이브리드 전달
 - [[Ad-Bid-Log-Pipeline|광고 입찰 로그 파이프라인]] — 입찰 응답과 로그 분석 경로 분리, OpenRTB 요청과 통지의 연결 키, 수집 방식과 리전 간 복제 비교, Parquet 전환과 공유 카탈로그, IA 전환과 쿼리 결과 재사용 조건
 

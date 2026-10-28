@@ -69,7 +69,7 @@ Attention(Q, K, V) = softmax(QKᵀ / √dₖ)V
 
 **Causal Mask**는 아직 생성하지 않은 미래 위치를 보지 못하게 한다. **Multi-Head Attention**은 서로 다른 projection을 병렬로 사용해 여러 관계를 계산하고 결과를 합친다. Attention weight는 내부 계산값이지 모델 판단을 완전하게 설명하는 충실한 근거는 아니다.
 
-Transformer 원 논문의 주 실험은 영어-독일어, 영어-프랑스어 번역용 encoder-decoder이고(영어 구문 분석에도 따로 적용했다), 표 3은 영어-독일어 번역 개발 세트(newstest2013)에서 base 모델의 일부 설정만 바꿔 잰 결과다. 아래의 표 3 수치는 이 조건의 결과이므로 현재 LLM의 기본값으로 옮기지 않는다. 표 3은 반복 실행 수나 분산을 보고하지 않으므로 행 사이 차이가 잡음보다 큰지 표만으로는 판단할 수 없고, E행의 0.1이나 32개 헤드의 0.4 하락처럼 작은 차이일수록 설계 결론의 근거로 약하다.
+Transformer 원 논문의 주 실험은 영어-독일어, 영어-프랑스어 번역용 encoder-decoder다(영어 구문 분석에도 따로 적용했다). WMT 2014 영어-독일어 테스트에서 big 모델은 BLEU 28.4로 앙상블을 포함한 기존 최고 결과를 2 BLEU 넘게 앞섰고, base 단일 모델도 그때까지 발표된 모든 단일 모델과 앙상블보다 높았다(6.1절). 논문은 이를 근거로 순환과 합성곱을 모두 뺀 attention 전용 구조가 더 높은 병렬성과 더 적은 학습 비용(표 2의 FLOPs 추정)으로 더 높은 품질을 낸다고 주장한다. 다만 비교 대상 최고 기록인 ConvS2S 앙상블도 순환 없는 합성곱 모델이었고 순환만 떼어 본 실험은 없다. 이 결과에는 checkpoint 평균과 개발 세트에서 고른 beam 설정도 들어 있으므로, 단일 모델이 앙상블을 앞선 결과를 순환 제거만의 효과로 읽지 않는다. 표 3은 영어-독일어 번역 개발 세트(newstest2013)에서 base 모델의 일부 설정만 바꿔 잰 결과다. 아래의 표 3 수치는 이 조건의 결과이므로 현재 LLM의 기본값으로 옮기지 않는다. 표 3은 반복 실행 수나 분산을 보고하지 않으므로 행 사이 차이가 잡음보다 큰지 표만으로는 판단할 수 없고, E행의 0.1이나 32개 헤드의 0.4 하락처럼 작은 차이일수록 설계 결론의 근거로 약하다.
 
 - **√dₖ로 나누는 이유**: 내적 attention은 이론상 복잡도가 additive attention과 비슷하지만 최적화된 행렬곱으로 구현해 실제로 더 빠르고 메모리를 덜 쓴다. 다만 원 논문이 인용한 선행 연구에서는(원 논문의 서술 기준이며 선행 연구 원문은 이 문서에서 대조하지 않았다) dₖ가 크면 스케일링 없는 내적 attention이 additive attention보다 성능이 낮았다. 그 원인을 내적의 크기가 커져 softmax가 기울기가 매우 작은 영역으로 밀리는 데서 찾아 √dₖ로 나눈다(3.2.1절). 이 원인은 측정이 아니라 추정(we suspect)이다. 각주는 q와 k의 성분이 평균 0, 분산 1인 독립 확률변수라고 가정하면 둘의 내적이 평균 0, 분산 dₖ가 된다는 예시 계산이며, 스케일링을 뺀 비교는 표 3에 없다
 - **헤드 수와 차원**: 헤드를 나누면 서로 다른 표현 부분공간의 정보를 여러 위치에서 함께 볼 수 있고, 단일 헤드에서는 평균이 이를 막는다는 것이 설계 이유다. base는 h=8에 `dₖ = dᵥ = d_model/h = 64`를 써서 헤드마다 차원을 줄였으므로 총 계산 비용이 전체 차원의 단일 헤드 attention과 비슷하다(3.2.2절). 계산량을 고정하고 헤드 수와 차원을 바꾼 표 3 A행에서 단일 헤드(dₖ=512)는 최적 설정보다 BLEU가 0.9 낮았고(24.9 대 25.8), 16개는 base와 같은 25.8, 32개(dₖ=16)는 25.4였다. 여러 헤드의 이점은 표에 보고된 단일 헤드 설정 하나와 여러 헤드 설정들의 비교(0.5~0.9 BLEU 차이)에 기대며, 각 설정의 반복 실행 횟수는 보고되지 않았다. 이 과제의 결과만으로 다른 규모의 모델에 맞는 헤드 수를 정할 수 없다
@@ -119,6 +119,7 @@ Transformer 원 논문의 base는 encoder와 decoder가 각 6층(N=6), `d_model 
 ## 출처
 
 - [Attention Is All You Need — Vaswani et al.](https://arxiv.org/abs/1706.03762)
+- [(PAPER CREW) 25년간 나온 전 세계 논문 중 7위 찍은 미친 논문. Attention Is All You Need — YouTube, CODER X DOX 코더엑스독스](https://www.youtube.com/watch?v=UirAROVTqf8) — 2026-10-12 논문 리뷰 영상, 8:20~8:57의 앙상블 비교. 수식과 수치는 원 논문으로 대조
 - [RoFormer: Enhanced Transformer with Rotary Position Embedding — Su et al.](https://arxiv.org/abs/2104.09864) — 2026-10-21 위치 회전과 상대 거리 수식 대조. 기존 토크나이저와 API 과금 절의 확인일은 유지한다.
 - [Attention Is Not Explanation — Jain and Wallace](https://arxiv.org/abs/1902.10186)
 - [The Curious Case of Neural Text Degeneration — Holtzman et al.](https://arxiv.org/abs/1904.09751)

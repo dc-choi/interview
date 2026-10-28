@@ -25,6 +25,19 @@ Phosh와 Plasma Mobile은 모바일 사용자 인터페이스다. 배포판 자�
 
 소규모의 지속 가능한 대안 시장이 형성될 수 있다는 전망은 시장 예측이다. Android/iOS와의 기능 동등성이나 사용자 확대가 확인된 사실로 바꾸지 않는다.
 
+## Android의 소스 공개와 앱 배포 권한은 별개다
+
+Android 기반 기기를 선택할 때 AOSP 소스의 공개 여부와 Google 인증 기기에서 앱을 설치하는 정책은 나눠 본다. Keep Android Open은 개발자 신원 확인과 앱 등록이 독립 배포의 진입 장벽과 중앙 통제를 늘린다고 비판하는 캠페인이다. 이 우려를 모든 Android 기기에서 외부 앱 설치가 이미 불가능하다는 사실로 바꾸지는 않는다.
+
+2026-10-28 Google 공식 안내와 FAQ를 확인한 범위는 다음과 같다.
+
+- 2026-09-30 시행 범위는 브라질, 인도네시아, 싱가포르와 태국의 Android 7 이상 인증 기기에서 참여 스토어를 통한 설치다. 다른 스토어와 직접 sideload는 이 초기 단계의 대상이 아니며, Google은 2027년부터 확대할 계획이라고 밝힌다.
+- 개발용 ADB 설치는 등록 없이 유지한다. 관리 기기의 조직 스토어로 배포하는 기업 앱도 예외지만, 일반 스토어나 비관리 기기로 배포하면 별도다.
+- limited distribution 계정은 정부 발행 신분증과 등록비 없이 최대 20대에 공유하는 경로다. 미등록 개발자의 앱을 쓰려는 사용자를 위한 advanced flow도 안내하지만, 일반 설치와 같은 마찰 없는 경로로 보지는 않는다.
+- 앱 등록은 패키지명과 서명 키의 소유 관계를 확인하는 절차다. 개인 서명 키 자체를 Google에 제출하는 절차라고 단정하지 않는다.
+
+대안 OS를 고를 때는 소스 라이선스, 기기 인증, 앱 배포 정책과 실제 필요한 앱의 호환성을 각각 평가한다(적용 제안).
+
 ## 실제 사용 전 검증
 
 - 통신사와 지역별 음성 통화, VoLTE, 문자와 데이터 연결
@@ -37,6 +50,9 @@ Phosh와 Plasma Mobile은 모바일 사용자 인터페이스다. 배포판 자�
 
 ## 출처
 
+- [Android Developers, Android developer verification](https://developer.android.com/developer-verification?hl=en) — 2026-10-28 시행 범위, 일정과 제한 배포 경로 대조
+- [Android Developers, Developer verification FAQ](https://developer.android.com/developer-verification/guides/faq?hl=en) — 2026-10-28 ADB, 관리 기기, 참여 스토어와 advanced flow 대조
+- [Keep Android Open](https://keepandroidopen.org/) — 독립 배포 통제에 반대하는 캠페인의 입장
 - [Phosh](https://phosh.mobi/)
 - [Plasma Mobile](https://plasma-mobile.org/)
 - GeekNews, 2026-10-13 제공 발췌: Linux 폰은 Android/iOS 양강 체제의 실용적인 대안이 될 수 있을까? (원문 식별 대기)
@@ -45,3 +61,4 @@ Phosh와 Plasma Mobile은 모바일 사용자 인터페이스다. 배포판 자�
 
 - [[Linux-File-System|Linux 파일시스템]]
 - [[Self-Hosting-Small-Server|소형 서버 셀프호스팅]]
+- [[Mobile-OS-Porting|모바일 OS 이식]]

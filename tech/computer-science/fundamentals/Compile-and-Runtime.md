@@ -1,7 +1,7 @@
 ---
-tags: [cs, compile, runtime, jvm]
+tags: [cs, compile, runtime, jvm, rust]
 status: done
-verified_at: 2026-08-04
+verified_at: 2026-10-27
 category: "CS&프로그래밍(CS&Programming)"
 aliases: ["컴파일과 런타임"]
 ---
@@ -49,6 +49,25 @@ aliases: ["컴파일과 런타임"]
 - **로더와 런타임**은 파일을 주소 공간에 배치하고 필요한 실행 환경을 준비한다.
 
 GCC driver의 전형적인 native build는 preprocessing, compilation proper, assembly, linking 순서다. `-E`, `-S`, `-c`로 각 단계 뒤에 멈출 수 있다. 이것은 대표적인 파이프라인이지 모든 언어 구현의 보편 규칙은 아니다.
+
+### 컴파일러 구성 요소를 교체하는 방식: rustc 사례
+
+문법은 그대로 두고 컴파일러의 핵심 구성 요소를 다시 구현하기도 한다. 2026년 rustc는 여러 구성 요소를 동시에 바꾸고 있어 단계를 나눠 보기 좋다. 아래 상태는 2026-10-27 확인 기준이다.
+
+| 구성 요소 | 역할 | 상태 |
+|---|---|---|
+| 차세대 trait solver | trait bound가 성립하는지 판정하는 타입 시스템의 핵심 | 2026-08부터 nightly 기본값. 수개월 안 안정화 계획. 발표는 Rust 컴파일러의 첫 릴리스 이후 가장 큰 단일 변경이라 부르고 200개 넘는 이슈를 고친다고 밝혔다 |
+| Polonius alpha | 대여(borrow)의 유효성을 검사하는 borrow checker | 2026-08부터 nightly 기본값. 연내 안정화 목표 |
+| 병렬 front-end | 파싱, 매크로 확장, 타입 검사 같은 front-end 작업을 여러 코어로 나눈다 | 2026 project goal로 안정화 보고서를 준비 중. 2026-09-30 maintainer 보고는 10월 nightly 기본 적용을 목표로 적었다 |
+| LLVM 백엔드 | 최적화와 기계어 생성 | compiler 성능 분류에 참여하는 기여자가 LLVM 23 갱신이 뚜렷한 컴파일 시간 개선을 냈다고 보고했다. 적용 Rust 버전과 개선 폭은 1차 출처로 확인하지 못했다 |
+
+교체는 실험 flag로 시작해 nightly 기본값으로 바꾸고, 사용자 보고와 성능 측정으로 문제를 줄인 뒤 안정판에 넣는 순서를 따른다. 사용자 쪽에서 보이는 영향은 세 가지다.
+
+- **nightly 우연 의존**: nightly에서만 기본값인 새 구현이 받아들이는 코드를 쓰면 안정판에서 컴파일되지 않을 수 있다. trait solver 발표가 이 위험을 직접 경고한다.
+- **이전 동작으로 돌리는 flag**: trait solver는 `-Znext-solver=coherence`, Polonius는 `-Zpolonius=off`로 이전 동작을 쓸 수 있다고 안내됐다. nightly 전용 flag라 영구 설정이 아니라 문제 보고와 임시 우회에 쓴다.
+- **컴파일 시간의 분포**: 상위 crate 대부분은 이전과 비슷했지만 일부는 빨라지거나 느려졌다. trait solver 발표는 datafusion이 8배 넘게 빨라졌다고 했고, Polonius 발표는 대여가 많은 crate에서 최악 2~3배 느려진 사례를 밝혔다. 평균이 아니라 자기 crate를 측정해 판단한다.
+
+정확성 개선과 성능 비용이 함께 바뀌는 교체라 받아들이는 프로그램의 범위와 비용(컴파일 시간, 메모리)을 따로 본다. Polonius alpha는 위치를 구분하는(location-sensitive) 분석으로 NLL이 거부하던 일부 조건부 대여 반환(`get_mut_or_default` 같은 형태)을 받아들이지만, 2026-08 발표 기준 분석 작업량은 NLL과 같거나 더 많고 받아들이는 프로그램의 범위도 이전 Polonius 실험 구현과 일부 다르다. 같은 언어를 다른 구현 언어로 옮기는 사례는 [[TS-Native-Compilers|TypeScript 네이티브 컴파일러]]에 정리한다.
 
 ## AOT, interpreter와 JIT
 
@@ -119,5 +138,13 @@ Bytecode와 source의 이식성은 runtime 자체가 모든 OS에서 같은 바�
 - [Java SE 26, Java Virtual Machine Specification](https://docs.oracle.com/en/java/javase/26/docs/specs/jvms/index.html)
 - [V8, Ignition interpreter](https://v8.dev/docs/ignition)
 - [V8, Launching Ignition and TurboFan](https://v8.dev/blog/launching-ignition-and-turbofan)
+- [Rust Blog, Enabling the next-generation trait solver on nightly](https://blog.rust-lang.org/2026/08/21/enabling-next-solver-on-nightly/)
+- [Rust Blog, Enabling the next iteration of the borrow checker on nightly](https://blog.rust-lang.org/2026/08/04/enabling-polonius-alpha-on-nightly/)
+- [Rust Project Goals 2026, Polonius Alpha](https://goals.rust-lang.org/2026/polonius.html)
+- [Rust Project Goals 2026, Parallel Front End](https://goals.rust-lang.org/2026/parallel-front-end.html)
+- [rust-lang/rust #160895, Next-generation trait solver enabled on nightly](https://github.com/rust-lang/rust/issues/160895)
+- [Kobzol, Upstream Rust maintenance report (August-September 2026)](https://kobzol.github.io/rust/2026/09/30/stf-august-september-2026.html)
+- [Yoyo Code, 2026 is an exciting year for the Rust compiler (and me)](https://yoyo-code.com/2026-is-exciting-year-for-rust-compiler-and-me/)
+- [GeekNews, 2026년은 Rust 컴파일러에게도, 나에게도 흥미진진한 해](https://news.hada.io/topic?id=35739)
 - [Android Developers, SDK packages](https://developer.android.com/studio/intro/update)
 - [W3C, UI Events](https://www.w3.org/TR/uievents/#dom-keyboardevent-repeat)

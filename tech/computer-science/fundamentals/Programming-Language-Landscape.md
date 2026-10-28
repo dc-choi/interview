@@ -8,7 +8,7 @@ aliases: ["Programming Language Landscape", "프로그래밍 언어 지형", "�
 
 # 프로그래밍 언어 지형과 구분 기준
 
-프로그래밍 언어는 인기 순위나 문법보다 처음 풀려던 문제와 그 결과로 굳은 실행 경로, 메모리 관리, 타입 검사 시점, 생태계로 나눠 볼 때 판단에 쓸 수 있다. 한 축에서 얻는 이득은 다른 축의 비용과 함께 오므로 언어 선택은 우열을 가리는 일이 아니라 현재 제약에 맞추는 일이다. 실행 구현의 일반 원리는 [[Compile-and-Runtime|컴파일과 런타임]]에서, 병목 유형과 언어의 관계는 [[CPU-Bound-Vs-IO-Bound|CPU-Bound vs I/O-Bound]]에서 다룬다.
+프로그래밍 언어는 인기 순위나 문법보다 처음 풀려던 문제와 그 결과로 굳은 실행 경로, 메모리 관리, 타입 검사 시점, 생태계로 나눠 볼 때 판단에 쓸 수 있다. 한 축에서 얻는 이득은 다른 축의 비용과 함께 오므로 언어 선택은 우열을 가리는 일이 아니라 현재 제약에 맞추는 일이다. 실행 구현의 일반 원리는 [[Compile-and-Runtime|컴파일과 런타임]]에서, 병목 유형은 [[CPU-Bound-Vs-IO-Bound|CPU-Bound vs I/O-Bound]]에서, 언어 교체의 효과와 측정 기준은 아래에서 다룬다.
 
 ## 설계 목적과 계보
 
@@ -36,6 +36,8 @@ aliases: ["Programming Language Landscape", "프로그래밍 언어 지형", "�
 - 플랫폼에서 출발한 언어는 플랫폼과 함께 퍼진다. JavaScript는 브라우저에서 서버와 임베디드로, PHP는 개인 홈페이지 도구에서 웹 개발용 범용 스크립트 언어로 넓어졌다.
 - 분야의 요구는 언어 기능이 된다. COBOL은 계산 결과가 선언한 소수 자릿수를 넘으면 자르고 ROUNDED를 지정하면 반올림한다(1968년 CODASYL 명세 기준). 금액 계산에서 이진 부동소수점 오차를 피하고 반올림 규칙을 명시하는 원칙을 언어 차원에서 둔 사례다([[Payment-System-Principles|결제 시스템 원칙]]).
 - 표현의 자유도도 설계 선택이다. 텍스트 파일을 훑어 정보를 뽑고 보고서를 만드는 데 맞춰 출발한 Perl은 작고 우아한 최소주의보다 쓰기 쉽고 효율적이며 완결된 실용을 앞세우고, 같은 일을 하는 방법이 하나가 아니라는 것을 표어로 삼는다. Python은 명백한 방법이 하나, 가급적 하나만 있어야 한다는 원칙을 두고, Go는 `gofmt`로 코드 형식을 통일한다. 방법이 많은 언어일수록 팀 규약과 리뷰가 일관성을 맡는다.
+
+- 작은 구현은 개념의 핵심을 읽을 수 있는 크기로 드러내는 학습 자료가 된다. 다만 코드 골프의 최소 바이트 구현이 가독성이나 최소 복잡도를 증명하는 것은 아니다. 작은 구현의 존재를 학습 동기로 삼고 읽기 쉬운 판을 공부한다. 언어도 문법, 표준 라이브러리와 표현력을 따로 평가한다. 핵심 문법이 작아도 Forth나 Lisp처럼 표현력이 큰 경우가 있다(아래 Small Programs and Languages의 관점).
 
 ## 실행 경로
 
@@ -91,6 +93,13 @@ aliases: ["Programming Language Landscape", "프로그래밍 언어 지형", "�
 - 같은 문서는 새 코드 구성요소부터 메모리 안전 언어로 쓰면서 하드웨어나 컴파일러 통제를 함께 두고, 암호 연산처럼 위험이 큰 구성요소를 차츰 다시 쓰는 경로를 예로 든다. 2025년 6월 CISA는 NSA와의 공동 가이드를 내며 메모리 안전 언어 도입을 이 결함 유형의 가장 포괄적인 완화책으로 설명했다.
 - 메모리 안전 언어도 C, C++ 라이브러리를 호출하는 혼합 구조가 한동안 남고, 데이터가 그 경계를 넘을 때는 보장이 제한된다. Rust의 `unsafe`처럼 보호를 우회하는 수단도 있다([[Nodejs-Native-Addons|Node.js Native Addons]]).
 
+## 언어 교체로 얻는 속도의 상한
+
+- 같은 부하에서 한 요청의 지연을 비교할 때, 절반이 그대로 남는 DB 대기라면 나머지를 아무리 빠르게 해도 2배를 넘지 못한다([[Cache-Locality#암달의 법칙 (부분 개선의 상한)|암달의 법칙]]). 이 상한은 요청당 CPU 시간이나 서버 비용의 상한이 아니다. CPU 사용량을 줄이면 DB 대기 비중이 커도 처리량과 비용을 개선할 수 있고, 실제 병목은 부하별로 잰다([[CPU-Bound-Vs-IO-Bound#웹 서버 — I/O 대기가 큰 경우가 많다|웹 서버의 I/O 대기]], [[Latency-Optimization|레이턴시 최적화]]).
+- 느린 언어의 무거운 계산은 이미 네이티브 라이브러리가 맡는 경우가 많다(위 데이터와 AI 항목의 NumPy). 마크다운 렌더링에 쓰는 cmark-gfm도 C로 작성한 CommonMark 파싱과 렌더링 라이브러리라, 호출하는 쪽의 언어를 바꿔도 이 구간은 거의 줄지 않는다.
+- 같은 CPU 작업에서도 자료구조가 언어보다 큰 차이를 낼 수 있다. 2018년 statemap 렌더러를 Rust로 단순하게 다시 쓴 구현이 신중하게 짠 C 구현보다 약 32% 빨랐는데, 측정에서 차이의 큰 몫은 C의 AVL 트리와 Rust 표준 라이브러리 `BTreeSet`(B-tree)의 캐시 동작 차이였다. 같은 분석은 C에서는 침투형(intrusive) AVL 트리가 쉽고 B-tree는 어렵다는 점을 들어 언어가 손쉬운 설계를 바꾼다고도 짚는다. 한 프로그램의 측정이므로 C와 Rust의 일반적 성능 비교로 쓰지 않는다.
+- 실무 경험에서 나온 권고는 프로파일로 핫스팟을 찾고 일을 줄이는 재설계를 먼저 보는 것이다. 느린 외부 호출 캐시, 요청 경로 밖의 백그라운드 처리, 독립 작업의 병렬화, N+1 쿼리를 하나로 합치기, 느린 쿼리 교체, 현재 페이지에 필요 없는 데이터 조회 생략은 언어와 무관하다. 재설계로도 줄지 않는 CPU 핫스팟만 빠른 언어로 옮기고, 이식성이나 유지보수처럼 속도 외의 이유로 언어를 바꾸는 판단은 따로 한다.
+
 ## 흔한 오해
 
 - 언어 자체를 인터프리터 언어나 컴파일 언어로 고정한다. 실행 방식은 구현체와 배포 설정이 정한다.
@@ -102,7 +111,7 @@ aliases: ["Programming Language Landscape", "프로그래밍 언어 지형", "�
 ## 판단 질문
 
 - 실행 환경(브라우저, 게임 엔진, 확장할 제품)이 언어를 이미 정했는가
-- 병목이 계산인가 대기인가. 계산이면 실행 경로와 네이티브 라이브러리 활용이 중요해진다
+- 병목이 계산인가 대기인가. 계산이면 실행 경로와 네이티브 라이브러리 활용이 중요해진다. 지연 때문에 다시 쓰려면 바뀌는 구간의 시간 비중을, 비용 때문이면 요청당 CPU 시간과 목표 부하의 처리량을 잰다
 - GC가 쓰는 CPU와 메모리, GC가 정하는 회수 시점을 감당할 수 있는가, 아니면 정해진 지점의 해제가 필요한가
 - 네트워크 입력 처리나 암호 연산처럼 메모리 안전 결함이 치명적인 구성요소가 있는가, 새 구성요소를 메모리 안전 언어로 시작할 수 있는가
 - 오류를 작성 중, 빌드, 실행 중 언제 찾아야 하고, 외부 입력의 런타임 검증은 어느 경계에서 하는가
@@ -169,6 +178,12 @@ aliases: ["Programming Language Landscape", "프로그래밍 언어 지형", "�
 - [Lua 5.4 Reference Manual, Introduction](https://www.lua.org/manual/5.4/manual.html#1)
 - [Redis Documentation, Scripting with Lua](https://redis.io/docs/latest/develop/programmability/eval-intro/)
 - [PostgreSQL 18 Documentation, Planner/Optimizer](https://www.postgresql.org/docs/18/planner-optimizer.html)
+- [Small Programs and Languages — ratfactor, Dave Gauer](https://ratfactor.com/cards/pl-small) — 2026-07-28 게시, 2026-10-28 대조. 작은 구현의 학습 가치와 언어 크기의 관점이며 최소 복잡도의 수학적 증명은 아님
+- [Software is slow because of bad design, not slow languages — Sean Goedecke](https://seangoedecke.com/software-is-slow-because-of-bad-design-not-slow-languages/) — 2026-10-23 게시. 2배 상한 예시와 재설계 목록의 출발점이며, CRUD의 I/O 비중은 저자 경험에 근거한 주장이고 게시 뒤 덧붙인 반론 요약을 함께 확인함
+- [Falling in love with Rust — Bryan Cantrill](https://bcantrill.dtrace.org/2018/09/18/falling-in-love-with-rust/)
+- [The relative performance of C and Rust — Bryan Cantrill](https://bcantrill.dtrace.org/2018/09/28/the-relative-performance-of-c-and-rust/)
+- [github/cmark-gfm — GitHub](https://github.com/github/cmark-gfm)
+- [소프트웨어가 느린 이유는 느린 언어가 아니라 나쁜 설계 때문이다 — GeekNews](https://news.hada.io/topic?id=35893) — 2026-10-24 소개 글, 원문 식별에 사용
 
 ## 관련 문서
 

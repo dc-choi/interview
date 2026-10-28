@@ -49,6 +49,19 @@ DSL 기반 실행을 Airflow로 구현할 때 쓰는 기법. DAG를 파일마다
 
 부분 검증(2026-10-14): Airflow의 동적 DAG 생성 문서는 JSON/YAML 설정을 DAG 파일과 함께 배포하고 top-level 코드에서 원격 설정을 반복 조회하지 않는 방식을 안내한다. 태스크와 태스크 그룹 생성 순서도 일관되게 유지해야 한다. 따라서 셀프서비스 플랫폼의 검토 단위에는 SQL뿐 아니라 설정 파일, 생성 순서와 배포에 사용한 설정 버전을 함께 포함하는 것이 좋다. 이는 운영 점검 제안이며 설정 파일만으로 데이터 품질이 보장된다는 뜻은 아니다.
 
+## 결과 계약을 선언하고 그래프는 엔진이 만드는 구조
+
+위 DSL은 어떤 테이블을 어디로 옮길지를 선언한다. 선언 대상을 결과의 의미와 보장으로 넓히면, 소비자는 결과 계약만 적고 엔진이 그 계약을 만족하는 파이프라인 그래프를 만들고 고친다. 원하는 상태와 실제 상태를 맞추는 reconciliation loop, task 일정 대신 데이터 자산을 다루는 orchestration, dynamic table과 materialized view의 증분 갱신은 이미 있지만, 이들은 여전히 사람이 그래프를 작성한다고 전제한다. 그래프 작성까지 엔진에 넘기는 구성은 자기 조직화 데이터 스택(self-organizing data stack)이라는 이름으로 2026-10 공개된 설계 제안이며, 출시된 제품이나 벤치마크가 아니다.
+
+- **결과 계약**: 테이블이나 일정 대신 grain(UTC 기준으로 끝난 직전 30일의 고객별 한 행), 포함 규칙(구매가 없는 고객도 포함), 신선도(새 원천 데이터를 5분 안에 반영)와 승인된 지표 정의를 적는다.
+- **자산과 물리 구현의 분리**: 계약을 받는 단위는 물리 테이블이 아니라 안정된 식별자를 가진 논리 데이터 제품이다. 식별자와 소비자별 약속을 유지한 채 물리 구현을 바꿀 수 있다.
+- **정의로 찾는 공통 집계**: 비슷한 column 이름이나 같은 표본 행은 동등성을 증명하지 못하므로 형식화한 정의를 비교한다. 30일 지표와 90일 지표가 같은 구매 정의, 식별 규칙과 UTC 일자 경계를 쓰면 공통 일별 중간 집계 위로 옮길 수 있다. 재구성은 실제 계산 비용을 재서 기대 절감이 최소치를 넘을 때만 하고 빈도에 상한을 둔다. 절감 임계값과 비용 산식은 도입하는 쪽이 정해야 한다.
+- **데이터가 정하는 실행**: 고정 DAG 대신 원천 watermark가 전진하면 일별 rollup이 도는 식으로 실행이 정해진다. DAG는 언제든 다시 만들 수 있는 실행 산출물이 되고, 오래 남길 기록은 자산, 약속과 결정 로그다.
+- **의미 검증과 원자적 전환**: schema, null, key 유일성 검사를 모두 통과해도 이력 식별자의 fan-out으로 매출이 두 번 세어질 수 있으므로 의미 불변식을 따로 확인한다. 같은 입력 snapshot으로 기존과 새 구현을 비교하고, 활성화는 registry의 revision에 묶어 원자적으로 전환한다.
+- **사람과 LLM의 경계**: 의미 정의와 정책은 사람이 소유하고 그래프는 엔진이 만든다. 의미가 모호해 진행이 막히면 엔진은 SQL로 추측하지 않고 근거와 선택지를 붙인 질문 하나를 담당자에게 올린다. LLM은 의도 해석과 SQL 초안을 도울 수 있지만, 모델의 확신만으로 그래프를 바꾸지 않고 결정적 planner, 타입 검사, 접근 통제, 비용 통제와 독립 검증을 통과해야 한다.
+
+도입 전에 따질 점도 크다(설계 점검). 공유 중간 집계는 장애 영향 범위를 넓히고, 5분 신선도로 무거운 중간 집계를 갱신하면 개별 파이프라인보다 비쌀 수 있다. 최근 snapshot 표본에 과거 매핑이 여럿인 개체가 없으면 잘못된 SQL도 비교를 통과할 수 있고, 의미 정의를 대규모로 쓰고 유지하는 비용도 남는다. 그래서 이 플랫폼에 바로 들일 기능이라기보다 DSL의 선언 범위를 넓힐 때 쓰는 점검 목록으로 본다. 지금 적용할 수 있는 부분은 소비자별 신선도와 완결성 요구를 계약으로 적고, 같은 정의를 쓰는 집계를 이름이 아니라 정의로 찾아 합치는 것이다(설계 제안).
+
 ## DB → DWH 대량 복제 전략
 
 원천(MySQL, PostgreSQL)에서 DWH로 데이터를 옮기는 두 축:
@@ -114,6 +127,8 @@ Airbyte, Fivetran 같은 기성 커넥터 솔루션이 있는데 왜 자체 구�
 - [AWS Documentation, DQDL rule type reference](https://docs.aws.amazon.com/glue/latest/dg/dqdl-rule-types.html)
 - [Apache Airflow Documentation, Dynamic Dag Generation](https://airflow.apache.org/docs/apache-airflow/stable/howto/dynamic-dag-generation.html)
 - [AWS Documentation, UNLOAD](https://docs.aws.amazon.com/athena/latest/ug/unload.html)
+- [The Self-Organizing Data Stack — Data Engineering Weekly, Ananth Packkildurai](https://www.dataengineeringweekly.com/p/the-self-organizing-data-stack)
+- [자기 조직화 데이터 스택 - 요구에 맞춰 데이터 파이프라인을 재구성하는 설계 — GeekNews](https://news.hada.io/topic?id=35609)
 
 ## 관련 문서
 

@@ -1,9 +1,9 @@
 ---
-tags: [ai, agent, coding-agent, macos, operations, security]
+tags: [ai, agent, coding-agent, macos, operations, security, terminal-multiplexer]
 status: done
-verified_at: 2026-10-20
+verified_at: 2026-10-27
 category: "AI엔지니어링(AIEngineering)"
-aliases: ["Always-On Mac Agent Host", "상시 실행 Mac 에이전트 호스트", "맥미니 에이전트 서버"]
+aliases: ["Always-On Mac Agent Host", "상시 실행 Mac 에이전트 호스트", "맥미니 에이전트 서버", "Corgi"]
 ---
 
 # 상시 실행 Mac 에이전트 호스트의 전원, 재시작과 원격 접근
@@ -60,10 +60,13 @@ Tailscale SSH는 WireGuard 위에서 Tailscale node key로 연결을 인증하�
 | `tmux` | 클라이언트 분리와 SSH 타임아웃. 모든 상태를 tmux 서버 프로세스 하나에 둔다 | 그 서버 프로세스가 죽으면 세션도 사라진다 |
 | Claude Code Remote Control | 호스트 Mac의 잠자기와 네트워크 단절(다시 온라인이 되면 자동 재연결) | 컴퓨터나 `claude` 프로세스가 끝나면 오프라인이 된다. 깨어 있는데 네트워크가 약 10분 넘게 끊기면 서버 모드 프로세스는 종료하고, 대화형 세션은 복구될 때까지 재시도한다 |
 | Claude Code background session(agent view, research preview) | 터미널 종료와 분리. 별도 supervisor 프로세스가 실행한다 | 잠자는 동안 진행이 멈췄다가 깨어나면 재개하고, 종료나 재시작에서는 멈춘다 |
+| Corgi(에이전트용 터미널 멀티플렉서) | 분리와 SSH 끊김. 다시 접속하면 실행 중인 에이전트와 개발 서버로 돌아온다. 충돌이나 재부팅 뒤에는 저장한 화면 배치와 출력을 복원하고, 기록된 에이전트 대화는 휴면 상태로 돌아와 그 창에 초점이 가면 이어진다 | 다른 창은 새 셸로 시작하며 임의 프로세스의 메모리 상태는 복원하지 못한다. 탭이나 창을 닫으면 그 안의 프로세스도 끝난다 |
 
 Claude Code 문서는 원격 머신의 터미널에서 `claude`를 실행할 때 SSH 연결이 끊긴 뒤에도 세션이 남도록 `tmux`나 `screen` 안에서 실행하라고 권한다. Remote Control은 바깥으로 나가는 HTTPS 요청만 하고 Mac의 인바운드 포트를 열지 않는다. 기능별 제약은 [[Claude-Code-Customization#원격 제어 — 실행 위치 분리|Claude Code 원격 제어]]를 따른다.
 
-세 방식 모두 재부팅을 그대로 넘기지 못한다. 재부팅 뒤 다시 띄울 작업, 중간 결과를 남길 위치와 재개 뒤 확인할 출력은 미리 적어 둔다(운영 제안). 상태 표시와 완료 판정의 구분은 [[Agent-Terminal-Workspaces|에이전트 터미널과 작업 공간]]을 따른다.
+Corgi 행은 2026-10-27 공식 저장소 문서(main 8ea591038f, MIT) 기준이며, README의 설치 대상은 Apple Silicon macOS와 amd64 Linux다. Corgi는 창에서 실행된 Claude Code와 Codex를 알아보고 그 설정에 자체 훅을 추가한다(Codex는 `/hooks`에서 한 번 신뢰를 요구). 문서는 로그와 복구 파일에 대화와 터미널 내용이 들어갈 수 있다고 경고한다. 상시 실행 장비에서는 이 훅 추가를 에이전트 설정의 변경으로 기록하고, 복구 파일과 로그 위치를 백업과 공유 범위에서 확인한다(운영 제안).
+
+네 방식 모두 실행 중인 프로세스를 재부팅 너머로 넘기지 못한다. 화면과 대화를 되살려도 진행 중이던 명령과 개발 서버는 다시 띄워야 한다. 재부팅 뒤 다시 띄울 작업, 중간 결과를 남길 위치와 재개 뒤 확인할 출력은 미리 적어 둔다(운영 제안). 상태 표시와 완료 판정의 구분은 [[Agent-Terminal-Workspaces|에이전트 터미널과 작업 공간]]을 따른다.
 
 ## 확장과 업데이트는 소유자를 정한다
 
@@ -79,6 +82,7 @@ Claude Code 문서는 원격 머신의 터미널에서 `claude`를 실행할 때
 - 자동 로그인을 쓴다면 관리자가 아닌 계정이고, 그 계정의 토큰 권한과 회수 절차를 정했는가
 - SSH 접근을 특정 사용자와 tailnet 정책으로 좁혔는가
 - 재부팅 뒤 다시 띄울 에이전트 작업과 확인할 출력이 정해져 있는가
+- 세션 관리 도구가 에이전트 설정에 추가한 훅과, 대화 내용이 남는 로그와 복구 파일의 위치를 알고 있는가
 - 플러그인의 실행 구성요소를 읽은 뒤 설치했고 업데이트 담당자가 있는가
 
 ## 출처
@@ -100,6 +104,8 @@ Claude Code 문서는 원격 머신의 터미널에서 `claude`를 실행할 때
 - [tmux Wiki, Getting Started](https://github.com/tmux/tmux/wiki/Getting-Started)
 - [Claude Code Docs, Continue local sessions from any device with Remote Control](https://code.claude.com/docs/en/remote-control)
 - [Claude Code Docs, Manage multiple agents with agent view](https://code.claude.com/docs/en/agent-view)
+- [Corgi — GitHub, tals](https://github.com/tals/corgi) — README와 `docs/reference.md`, 2026-10-27 main 8ea591038f 기준. 분리와 복구 범위, 에이전트 훅 추가, 로그와 복구 파일의 내용 대조. 설치와 실행은 하지 않음
+- [Corgi - 여러 AI 코딩 에이전트를 한눈에 관리하는 터미널 도구 — GeekNews](https://news.hada.io/topic?id=35971) — 학습 계기
 - [Claude Code Docs, Plugin security and trust](https://code.claude.com/docs/en/plugins/security)
 - [Claude Code Docs, Install and manage plugins](https://code.claude.com/docs/en/discover-plugins)
 - [Claude Code Docs, Advanced setup](https://code.claude.com/docs/en/setup)

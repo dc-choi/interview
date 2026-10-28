@@ -62,6 +62,9 @@ Claude의 파일 표시는 지원되는 파일 형식과 제품 기능에 따라
 
 ## 관련 문서
 
+- [[AI-Creative-Service-Delivery#후처리와 생성의 경계를 증명할 자료를 남긴다|후처리와 생성의 경계]] — 제출 규칙과 처리 내역의 증빙
+
 - [[LLM-Application-Security|LLM 애플리케이션 보안]]
+- [[Web-Content-Manipulation-for-AI|AI가 읽는 웹 콘텐츠의 조작]] — 생성한 통계의 인용 세탁과 출처 확인
 - [[Generative-Video-Editing|생성형 영상 편집과 결과 검증]]
 - [[Resume-Experience-Narrative-and-Evidence|이력서 경험 서술과 증거 설계]]

@@ -163,7 +163,7 @@ Schema anomaly, training-serving skew, distribution drift와 단순 stale/missin
 5. Rollback trigger가 발생하면 검증된 이전 호환 bundle로 원자적으로 전환한다.
 6. Rollback target의 artifact 보존 기간, 호환성 검사와 drill 결과를 기록한다.
 
-원자적 전환은 active alias가 하나의 immutable manifest를 가리키도록 바꾸는 것을 뜻한다. 새 요청만 새 bundle을 pin하고 이미 시작한 요청은 기존 bundle을 끝까지 사용한다.
+원자적 전환은 active alias가 하나의 immutable manifest를 가리키도록 바꾸는 것을 뜻한다. 모델 endpoint의 레지스트리 alias를 제자리에서 옮기는 예외 경로는 [[Recommendation-System-Model-Serving-Platform#Serving Bundle과 맞추기|모델 서빙 플랫폼]]의 조건을 따른다. 새 요청만 새 bundle을 pin하고 이미 시작한 요청은 기존 bundle을 끝까지 사용한다. 단, 제자리 alias 이동 경로의 모델은 bundle 전환으로 되돌아가지 않으므로 rollback과 replay는 그 문서의 조건을 따른다.
 
 `requestId`만으로 decision replay가 되지는 않는다. [[Recommendation-System-Feedback-Data#Audit reconstruction과 decision replay|피드백 계약]]의 candidate set, 불변 feature snapshot, watermark, bundle, policy input, tie-break, 난수 생성기 version과 seed를 `replayableUntil`까지 보존한다. 범위는 개인정보와 저장 비용 계약을 따른다.
 
@@ -182,7 +182,7 @@ Lineage는 이 순서의 산출물이 아니라 dataset, training run, model과 
 
 - 시스템: [[Recommendation-System-Architecture|지식 지도]], [[Recommendation-System-OTT-Discovery-Architecture|통합 디스커버리]], [[Recommendation-System-Page-Level-Optimization|페이지 단위 최적화]]
 - 데이터와 검증: [[Recommendation-System-Feedback-Data|피드백]], [[Recommendation-System-Evaluation-Experimentation|평가와 실험]], [[Recommendation-System-Online-Experimentation-Statistics|온라인 실험 통계]], [[Recommendation-System-Eligibility-Availability|가용성]]
-- 운영: [[Content-Availability-System-Design|콘텐츠 가용성]], [[Cache-Strategies|캐시]], [[Failure-Evolution-Under-Load|부하에서의 실패 진화]]
+- 운영: [[Recommendation-System-Model-Serving-Platform|모델 서빙 플랫폼]], [[Content-Availability-System-Design|콘텐츠 가용성]], [[Cache-Strategies|캐시]], [[Failure-Evolution-Under-Load|부하에서의 실패 진화]]
 
 ## 출처
 

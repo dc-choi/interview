@@ -97,4 +97,5 @@ Kevin Kelly의 2016년 책을 10년 뒤 돌아본 공개 글은 Google의 검색
 - [[Distribution-As-Moat|도달력과 GTM]]
 - [[LLM-Eval-Strategy|LLM 평가 전략]]
 - [[LLM-Market-Landscape|생성형 AI 시장 경쟁 구도]]
+- [[LLM-API-Price-Competition|LLM API 가격 경쟁]] — 전환 비용이 낮은 모델 API의 단가 압력과 오픈 웨이트 기준선
 - [[AI-Native-System|AI 네이티브 시스템]]

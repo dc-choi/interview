@@ -15,7 +15,7 @@ AI 코딩 에이전트 Claude Code를 실무에 태우는 방법 — 기초 운�
 - [x] [[Claude-Code-Workflows|개발 워크플로우 (완료와 중단 조건, 단계 분리 지시, Hook 강제, Skills/MCP/서브에이전트/동적 워크플로우, Worktree 병렬, 개인에서 조직으로 확장하는 4단계)]]
 - [x] [[Claude-Code-Business-Automation|비즈니스 자동화 (도구 선택 매트릭스, 문서 골격, Cowork 범위와 원본 보호와 공유 범위, 출력 형식 선택과 최종 PDF 검수, Connectors=MCP와 도구별 권한, 반복 3계층, 병렬/브라우저/Vibe Coding)]]
 - [x] [[Claude-Code-Domain-Applications|도메인 응용 (전문 도구 위임, 설정 파일 파이프라인, 도메인 표준 명시, 검증 내장, 규제, 금융 참조 구현의 플러그인과 Managed Agents 배포)]]
-- [x] [[Claude-Code-Customization|커스터마이즈 (환경 설정, Voice Mode, 원격 제어 Remote/Dispatch/Teleport, 플러그인 탐색과 비용 측정, 표면별 동기화)]]
+- [x] [[Claude-Code-Customization|커스터마이즈 (환경 설정, Voice Mode, 원격 제어 Remote/Dispatch/Teleport, 플러그인 탐색과 비용 측정, 표면별 동기화, 자율 빌드 플러그인의 승인 경계)]]
 
 ## 레퍼런스 (찾아보기)
 

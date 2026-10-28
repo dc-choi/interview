@@ -299,3 +299,5 @@ Slurm 관리 문서 기준, `/var/log/provision/provisioning.log`에 기록한 �
 - [[Distributed-Batch-Execution|분산 배치의 체크포인트와 재시작]]
 - [[EC2-Compute#HPC의 통신 경로와 EFA 적용 조건|HPC 통신 경로와 EFA]]
 - [[EKS|Amazon EKS]]
+- [[K8s-GPU-Sharing-and-Quota|Kubernetes GPU 공유와 팀별 할당]]
+- [[PyTorch-on-TPU|PyTorch on TPU]]

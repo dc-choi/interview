@@ -1,7 +1,7 @@
 ---
 tags: [cs, javascript, ecmascript, tc39, temporal, nodejs, typescript, compatibility]
 status: done
-verified_at: 2026-10-21
+verified_at: 2026-10-27
 category: "CS - JavaScript"
 aliases: ["ECMAScript Evolution 2021-2026", "ES2021~ES2026 변화", "ECMAScript 연도별 기능과 런타임 도입"]
 ---
@@ -46,6 +46,8 @@ Stage 4는 둘 이상의 엔진이 구현을 출하했다는 신호지만 내가
 | ES2026 (17판) | `Array.fromAsync`, `Error.isError`, `Math.sumPrecise`, `Uint8Array` base64/hex 변환, `Iterator.concat`, `Map`/`WeakMap`의 `getOrInsert`와 `getOrInsertComputed`, `JSON.rawJSON`과 `JSON.isRawJSON` | [[JavaScript-Object-and-Array-Operations\|Array.fromAsync]], [[JavaScript-Expressions-Control-Flow-and-Coercion\|Error.isError]] |
 
 Temporal, 명시적 리소스 관리(`using`, `DisposableStack`), `Atomics.pause` 등은 Stage 4를 통과했지만 게시 예정 연도가 2027이라 ES2026 판에는 없다. 런타임이 ES2026을 지원한다는 설명만으로 이 기능들의 제공 여부를 판단하지 않는다. 명시적 리소스 관리는 [[JavaScript-Resource-Management|명시적 리소스 해제]]에서 다룬다.
+
+2026-10-27 확인한 finished proposals 목록에서 게시 예정 연도가 2027인 제안은 Temporal(2026-03 Stage 4), 명시적 리소스 관리, `Atomics.pause`, Joint Iteration(셋 다 2026-05-19 Stage 4), Iterator Chunking, Iterator Includes, Iterator Join(셋 다 2026-09-29 Stage 4)이다. ES2027 판은 2027년 3월 회의 전후에 내용이 확정되므로 이 목록은 그 사이에 늘어날 수 있다. iterator 관련 제안은 ES2025 iterator helper 위에 덧붙는 기능이라 런타임 지원도 기능별로 따로 확인한다.
 
 ## Temporal의 상태와 런타임 지원
 
@@ -100,6 +102,8 @@ if (!("Temporal" in globalThis)) {
 
 - [TC39, The TC39 Process](https://tc39.es/process-document/)
 - [Finished Proposals — TC39](https://github.com/tc39/proposals/blob/main/finished-proposals.md)
+- [finished-proposals.md 변경 이력 — TC39](https://github.com/tc39/proposals/commits/main/finished-proposals.md) — 2026-05-19, 2026-09-29 Stage 4 반영 커밋을 2026-10-27 대조
+- [2026년 JavaScript 동향 — GeekNews](https://news.hada.io/topic?id=35745) — 단서. 원 자료인 NAVER D2 글은 본문을 열지 못해 반영하지 않았다
 - [Ecma International, ECMA-262 17th edition (ECMAScript 2026)](https://ecma-international.org/publications-and-standards/standards/ecma-262/)
 - [ECMAScript 2026 Language Specification](https://262.ecma-international.org/17.0/)
 - [March 10, 2021 meeting notes, Temporal for Stage 3 — TC39](https://github.com/tc39/notes/blob/main/meetings/2021-03/mar-10.md#temporal-pt-2)

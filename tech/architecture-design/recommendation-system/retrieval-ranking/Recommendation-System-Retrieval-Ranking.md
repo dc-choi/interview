@@ -14,6 +14,7 @@ aliases: ["추천 후보와 랭킹", "Recommendation Retrieval and Ranking"]
 - [[Recommendation-System-Taxonomy-Content-Based|택소노미와 콘텐츠 기반 추천]]
 - [[Recommendation-System-Candidate-Generation|후보 생성]]
 - [[Recommendation-System-Ranking-Reranking|랭킹과 재랭킹]]
+- [[Recommendation-System-Ranking-Reranking-Business-Rules|비즈니스 규칙 후처리]]
 - [[Recommendation-System-Page-Level-Optimization|페이지 단위 최적화]]
 
 ## 상위 문서

@@ -38,6 +38,13 @@ Basecamp CLI의 공식 README를 2026-10-06 확인한 사례다.
 
 적용 시 후속 명령 제안과 실행 권한을 분리한다. 재시도 가능성도 중복 실행의 안전성을 뜻하지 않으므로, 상태를 바꾸는 명령은 별도로 멱등성과 결과 확인 경로를 설계한다. 이는 인터페이스를 적용할 때의 점검 원칙이며 해당 CLI가 모든 업무의 중복 실행을 막는다는 주장이 아니다.
 
+OpenAI REST API의 공식 CLI(`openai`, Apache-2.0)는 출력과 입력에서 다른 경계를 보여 준다. 2026-10-27 저장소 README(main 16159f7c47) 기준이다. 코딩 에이전트인 Codex CLI와 달리 특정 API를 직접 부르거나 스크립트에 넣는 용도다.
+
+- 명령 발견: 명령은 API 리소스를 따라 `openai <resource> [subresource...] <command>` 형태이고, 도움말은 API 키와 네트워크 없이 동작한다.
+- 출력 계약: 성공한 JSON 응답도 파이프에서 기본으로 사람이 읽는 텍스트로 나온다. 결과를 파싱하는 스크립트와 에이전트는 `--format json`이나 `jsonl`을 명시한다. 오류는 stderr에 요약되고 `--format-error json`으로 API 오류 세부를 받는다. 실패한 요청이 불완전한 출력 파일을 남길 수 있으므로 리디렉션한 결과를 쓰기 전에 종료 상태를 확인한다.
+- 입력의 신뢰 경계: JSON 입력의 `@path`는 로컬 파일을 읽는다. README는 신뢰할 수 없는 JSON이나 YAML을 파이프로 넘길 때 `OPENAI_UNTRUSTED_STDIN=1`을 설정해 stdin 입력이 로컬 파일 읽기를 일으키지 않게 하고, 업로드 경로는 명시적인 플래그로 지정하라고 안내한다. 적용 제안: 모델이 만든 본문은 stdin으로만 넘기고 환경 변수와 명령 인자 및 업로드 경로는 신뢰한 실행부가 고정한다. 이 변수를 인자나 파일 경로 입력 전반의 보호로 확대하지 않으며, 명령줄이나 환경 변수를 바꿀 수 있는 에이전트의 임의 파일 접근을 막는 격리 수단으로도 보지 않는다.
+- 비밀과 진단: API 오류 세부와 `--debug` 로그에는 민감한 데이터가 들어갈 수 있어 공유 전에 정리한다. 관리자 엔드포인트는 일반 키와 다른 `OPENAI_ADMIN_KEY`를 쓴다. 자체 설치한 릴리스는 대화형 실행에서 자동 업데이트를 준비하고, `OPENAI_CLI_NO_AUTO_UPDATE=1`로 자동 설치를, `OPENAI_CLI_NO_UPDATE_CHECK=1`로 확인 자체를 끈다.
+
 ### API 스키마와 생성 결과를 함께 관리한다
 
 API 정의를 CLI, SDK와 문서 생성의 공통 입력으로 쓰면 이름과 인자 규칙을 각각 손으로 맞추는 부담을 줄일 수 있다. 에이전트가 문서를 읽고 만든 호출이 실제 명령과 어긋나는 문제도 같은 계약에서 점검한다.
@@ -134,6 +141,8 @@ Meta 사내 8년, 13,000+ 앱에서 쓰인 최대 디자인 시스템의 오픈�
 - [Agent와 함께하는 쇼핑 경험 혁신 - 검색, 추천부터 초개인화까지 — AWS Korea](https://www.youtube.com/watch?v=h3usF3KVweA) — 24분 구간의 상품 ID 반환과 코드 기반 화면 조립 사례.
 - [Amazon Bedrock, Monitor bedrock-runtime inference using CloudWatch metrics](https://docs.aws.amazon.com/bedrock/latest/userguide/monitoring-runtime-metrics.html)
 - [Basecamp CLI — Basecamp (GitHub)](https://github.com/basecamp/basecamp-cli)
+- [OpenAI CLI — OpenAI (GitHub)](https://github.com/openai/openai-cli/blob/16159f7c47/README.md) — 2026-10-27 README로 명령 구조, 출력과 오류 형식, 관리자 키와 자동 업데이트 대조. 2026-10-28 같은 고정 커밋의 `@path`와 신뢰하지 않는 stdin 범위를 재대조. 실행은 하지 않음
+- [OpenAI CLI - OpenAI REST API를 위한 공식 명령줄 도구 — GeekNews](https://news.hada.io/topic?id=35818) — 학습 계기. 요약에 있던 자동 설치를 하지 않는다는 설명은 이후 README에서 자동 업데이트 준비로 바뀌었다
 - [Astryx: An open source design system that's fully customizable and agent ready — Meta (GitHub)](https://github.com/facebook/astryx)
 - [Introducing cf: the agentic CLI for the entire Cloudflare API — Cloudflare](https://blog.cloudflare.com/cloudflare-cf-cli-launch/)
 - [Introducing Forge: the open source pipeline for generating SDKs, CLIs, docs, and more — Cloudflare](https://blog.cloudflare.com/forge-open-source-generation-pipeline/)

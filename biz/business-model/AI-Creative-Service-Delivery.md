@@ -1,7 +1,7 @@
 ---
 tags: [business, ai, creative, outsourcing, delivery]
 status: done
-verified_at: 2026-10-07
+verified_at: 2026-10-27
 category: "비즈니스&제품(Business&Product)"
 aliases: ["AI Creative Service Delivery", "AI 콘텐츠 제작 서비스의 납품 조건"]
 ---
@@ -24,6 +24,18 @@ AI 콘텐츠 제작을 유료 서비스로 제공하려면 생성 속도뿐 아�
 
 이용 범위와 개별 도구의 조건을 확인하는 일은 결과물 파일을 전달하는 일과 별개다. 위 표는 플랫폼의 거래 기준이며 개별 결과물의 법적 권리나 등록 가능성을 판정한 것이 아니다. 실제 참여 전에는 해당 공모전 브리핑과 최신 정책을 다시 읽는다.
 
+## 후처리와 생성의 경계를 증명할 자료를 남긴다
+
+AI를 후처리에만 썼다는 설명은 원본과 처리 기록이 없으면 확인하기 어렵다. Nikon은 2026-10-09 현미경 영상 공모전 Small World in Motion의 2026년 1위 작품을 다시 평가하고 심사위원단과 협의한 결과 생성형 AI에 관한 대회 규칙을 지키지 않았다고 판단해 순위를 조정했다. 회사는 이 결정이 출품 자격에 한정되며 출품자의 전문적 평판, 과학적 기여나 의도에 대한 판단으로 해석하면 안 된다고 밝혔고, 앞으로 규칙과 평가 절차를 다시 검토하겠다고 했다(2026-10-28 공식 공지 재확인).
+
+과학자들은 구조가 갑자기 생기거나 사라지는 이상과 AI 생성 표식으로 보이는 흔적을 지적했고, 출품자는 재구성한 회색조 이미지에서 특징을 구분하고 시각화하는 데만 AI를 썼다고 반박했다(2026-10-12 TechSpot 보도, 공식 확인 범위 밖). 삭제된 출품자 게시물과 처리 과정은 직접 확인하지 못했다. 어떤 처리가 규칙 위반이었는지는 공지에 나오지 않으므로, 후처리라는 설명만으로 규칙 준수를 판단할 수 없다.
+
+다음은 이 사례를 제작과 납품에 옮긴 적용 제안이다.
+
+- 제출 전에 AI 처리(노이즈 제거, 업스케일, 구분과 색 입히기 등)의 허용 여부와 생성의 금지 범위를 확인하고, 경계가 불명확하면 주최 측에 문의한 답을 보관한다. 처리 방식의 이름만으로 허용된다고 가정하지 않는다.
+- 촬영 원본과 처리 단계별 파일, 사용 도구와 설정을 위 표의 생성 과정 보관과 같은 방식으로 남긴다. 의심이 제기되면 원본으로 소명할 수 있게 한다.
+- 고객 납품물도 AI로 보정하거나 생성한 범위를 적고, 원본을 인계 범위에 넣을지 정한다. 워터마크와 출처 증명의 기술적 방법은 [[AI-Content-Provenance|AI 콘텐츠의 워터마크와 출처 증명]]에서 다룬다.
+
 ## 수익성 판단에 적용한다
 
 다음은 위 납품 조건을 사업 판단에 연결한 점검 방법이다.
@@ -35,10 +47,14 @@ AI 콘텐츠 제작을 유료 서비스로 제공하려면 생성 속도뿐 아�
 ## 출처
 
 - [라우드소싱 고객센터, AI 서비스 운영정책(beta)](https://help.loud.kr/hc/ko/articles/57627739007769-%EB%9D%BC%EC%9A%B0%EB%93%9C%EC%86%8C%EC%8B%B1-AI-%EC%84%9C%EB%B9%84%EC%8A%A4-%EC%9A%B4%EC%98%81%EC%A0%95%EC%B1%85-beta)
+- [Nikon Small World in Motion Video Statement — Nikon Small World](https://www.nikonsmallworld.com/news/nikon-small-world-in-motion-video-statement) — 2026-10-09 공지, 2026-10-28 순위 조정 사유, 판단 범위와 규칙 재검토 계획 대조
+- [Nikon photography contest winner loses title after scientists spot telltale signs of AI-generated footage — TechSpot, Rob Thubron](https://www.techspot.com/news/114171-nikon-photography-contest-winner-loses-title-after-scientists.html) — 2026-10-12 게시, 과학자들의 지적과 출품자의 반박을 전한 보도. 삭제된 출품자 게시물 원문은 확인하지 못함
+- [Nikon 현미경 영상 공모전 우승작, 과학자들이 AI 흔적 지적한 뒤 수상 취소 — GeekNews](https://news.hada.io/topic?id=35991)
 
 ## 관련 문서
 
 - [[Pricing-Strategy|가격 정책 설계]]
 - [[PRD-Writing|요구사항과 범위 변경]]
 - [[AI-Generated-Content-Monetization|AI 생성 콘텐츠 수익화]]
+- [[AI-Content-Provenance|AI 콘텐츠의 워터마크와 출처 증명]] — 생성물 표시와 출처 증명의 기술적 방법
 - [[Dev-Outsourcing-Engagement|개발 외주의 계약과 수주]]

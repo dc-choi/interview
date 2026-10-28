@@ -50,6 +50,23 @@ Workers는 Node.js API 일부를 내장 구현하고, 일부는 부분 지원하
 
 2026-10-12 제공된 GeekNews Weekly #379, Deno는 떠나지만 Node는 달라졌습니다의 도입부도 같은 주제에 연결한다. 런타임 선택에는 현재 Node의 TypeScript 실행, Web API와 도구 지원을 다시 비교해야 한다는 학습 후보를 남긴다. Weekly 전체와 연결된 개발자 글은 읽지 않았으므로 이 도입부만으로 Node의 기능 동등성이나 이전 완료를 단정하지 않는다.
 
+### 유지보수 범위와 커뮤니티 포크 (2026-10-27 확인)
+
+2026-10-15 Deno 유지관리자가 저장소에 고정한 공지(denoland/deno #37030)는 유지보수 범위를 이렇게 정했다.
+
+- 2027년 10월까지 유지하며 매달 버그 수정과 보안 업데이트를 담은 2.9.x LTS를 낸다.
+- 새 기능 작업은 하지 않고 기능 PR은 병합하지 않고 닫는다. 잘 작성된 수정 PR은 병합한다.
+- canary 빌드는 `main`에서 계속 자동 배포되므로 수정은 canary에 먼저 나타난다. 2.9 분기 뒤 `main`에만 들어간 canary 전용 기능은 2.9와 맞추려고 되돌린다.
+
+그래서 Deno를 계속 쓸 때 남는 질문은 새 기능이 아니라 2027년 10월 이후 2.9.x 동작을 누가 유지하느냐다. 커뮤니티 포크가 나왔지만 2026-10-27 기준 출시된 것은 없다. Node 호환성을 걷어내는 포크는 `npm:` 패키지에 기대는 Deno 2 코드와 멀어지는 방향이므로, 포크로 옮길지는 npm 의존성 비중과 포크의 유지 인력을 함께 보고 판단한다(설계 제안).
+
+| 포크 | 공개된 방향 | 확인 상태 |
+|---|---|---|
+| Ende | Node 호환성과 Deploy, KV, Jupyter 통합을 걷어내고 런타임에 집중한다. 모듈별 권한, 신뢰할 수 없는 코드의 샌드박스, Web Crypto의 양자 내성 암호, 컴파일 바이너리 개선을 계획한다 | 2026-10-11 발표. 공개 저장소 없이 자리표시 사이트만 있고 12월 시험 출시를 목표로 한다 |
+| Dodo | 여러 저장소로 나뉜 Deno 핵심을 한 monorepo로 모으고 부가 기능은 동적 링크 확장으로 떼어 낸다. Deno가 내는 보안 패치를 받아들이는 체제를 로드맵에 둔다 | GitHub 저장소 공개(2026-10-12 생성). 초기 단계이며 릴리스는 없다 |
+
+경쟁 런타임의 효과에 대해서는 Deno가 운영 채택의 임계점에는 못 미쳤어도 fetch, 권한 모델, TypeScript 실행 같은 아이디어가 경쟁 압력 속에 Node.js와 패키지 매니저로 퍼졌다고 보는 해석이 있다(2026-10-14 vlt 블로그). 인과는 해석이며, Node 기능별 도입 버전은 [[TypeScript-Node]]와 [[Security]]의 기준으로 따로 확인한다.
+
 ## 설치와 프로젝트 구성
 
 공식 설치 경로 또는 package manager를 사용하고 `deno --version`으로 runtime, V8, TypeScript 버전을 함께 확인한다. 프로젝트 설정은 `deno.json` 또는 `deno.jsonc`에 둔다. `deno.json`은 Node의 `package.json`이 맡던 task와 dependency, `tsconfig.json`이 맡던 `compilerOptions`를 함께 담는다. Deno는 기본 TypeScript 설정을 권장하므로 필요한 옵션만 바꾼다.
@@ -154,6 +171,13 @@ CMD ["run", "--allow-net=0.0.0.0:8000", "src/main.ts"]
 ## 출처
 
 - [Deno is joining Cloudflare — Deno Blog](https://deno.com/blog/cloudflare)
+- [The state of Deno after the Cloudflare announcement — denoland/deno, Issue #37030](https://github.com/denoland/deno/issues/37030) — 2026-10-27 유지보수 범위 대조
+- [Beginning of the Ende — the webb blog, P. Webb](https://blog.webb.page/WM-105)
+- [dodo — GitHub, are-we-dodo-yet](https://github.com/are-we-dodo-yet/dodo)
+- [Thank you, Deno — vlt, Darcy Clarke](https://www.vlt.io/blog/competition-keeps-javascript-moving)
+- [Deno Goes the Way of the Dinosaur — Socket, Sarah Gooding](https://www.socket.dev/blog/deno-acquisition)
+- [고마워요, Deno - 경쟁이 바꾼 JavaScript 생태계 — GeekNews](https://news.hada.io/topic?id=35533)
+- [Ende - Node.js 호환성을 걷어내는 Deno 커뮤니티 포크 — GeekNews](https://news.hada.io/topic?id=35688)
 - [Cloudflare Workers, Node.js compatibility](https://developers.cloudflare.com/workers/runtime-apis/nodejs/) — 2026-10-15 내장 구현, 부분 지원과 import 전용 shim의 차이 대조
 - [Deno, TypeScript](https://docs.deno.com/runtime/fundamentals/typescript/)
 - [Deno, deno.json and package.json](https://docs.deno.com/runtime/reference/deno_json/)

@@ -142,6 +142,8 @@ downstream 자격 증명은 네 방식으로 나눠 볼 수 있다.
 
 ## 관련 문서
 
+- [[OpenShell-Agent-Sandbox|OpenShell]] — 실행 환경의 자격증명 placeholder와 외부 통신 중개
+
 - [[MCP|MCP (Model Context Protocol)]]
 - [[SSRF|SSRF]]
 - [[LLM-Application-Security|LLM 애플리케이션 보안]]

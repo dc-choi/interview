@@ -1,9 +1,9 @@
 ---
-tags: [browser, css, animation, transition, compatibility, accessibility]
+tags: [browser, css, animation, transition, compatibility, accessibility, interop]
 status: done
-verified_at: 2026-10-07
+verified_at: 2026-10-27
 category: "CS - JavaScript"
-aliases: ["Browser CSS Animation", "브라우저 CSS 애니메이션과 호환성"]
+aliases: ["Browser CSS Animation", "브라우저 CSS 애니메이션과 호환성", "Interop 2027 CSS 후보"]
 ---
 
 # 브라우저 CSS 애니메이션과 호환성
@@ -103,13 +103,47 @@ prefix가 selector에 붙으면 영향이 규칙 전체로 커진다. selector l
 
 IE 사용자를 이유로 prefix 목록을 늘리던 판단은 현재 기준이 아니다. Microsoft Lifecycle 공지 기준 IE 11 desktop app은 2022-06-15 Windows 10 Semi-Annual Channel 등에서 지원이 끝났고, Windows 10 LTSC와 Windows Server의 IE 11은 이 공지 범위 밖이다. 남은 legacy 요구는 browser matrix에 명시하고 그 matrix로 prefix를 생성한다.
 
+## 새 기능의 도입 시점은 Baseline과 Interop으로 가늠한다
+
+한 브라우저에 먼저 출시된 기능은 MDN에서 Limited availability로 표시되고, 주요 브라우저 모두에서 동작해야 Baseline이 된다. Interop은 브라우저 제조사들이 해마다 함께 고른 기능의 상호운용성을 테스트 통과율로 끌어올리는 프로젝트다. 표준 절차를 거친 안정된 명세가 있고, 제조사의 반대가 없고, 테스트가 충분한 기능이 후보가 된다. Interop 2027은 2026-09-03부터 09-23까지 제안을 받았고, 2026-12-17 이전에 선정해 2027년 2월 전반에 범위를 발표할 예정이다. 이 일정은 바뀔 수 있다고 명시돼 있다.
+
+2026-10-27 기준 Interop 2027 제안 가운데 자주 거론되는 CSS 기능과 MDN browser-compat-data의 지원 상태는 다음과 같다.
+
+| 기능 | 하는 일 | 명세 | 지원 상태 |
+|---|---|---|---|
+| `@function` | 값 계산을 CSS custom function으로 정의하고 property 값에서 호출한다 | CSS Functions and Mixins Module (FPWD) | Chrome 139. Safari는 Technology Preview, Firefox 미지원 |
+| `corner-shape` | `border-radius`로 정한 모서리 영역 안의 모양을 squircle, bevel, scoop, notch 등으로 바꾼다. keyword는 `superellipse()` 값에 대응해 서로 보간된다 | CSS Borders and Box Decorations Level 4 | Chrome 139. Firefox와 Safari는 preview |
+| scroll-state container query | `container-type: scroll-state`인 container가 sticky로 붙었는지, snap됐는지, 어느 방향으로 스크롤할 수 있는지에 따라 스타일을 적용한다 | CSS Conditional Rules Level 5 | Chrome 133. Firefox, Safari 미지원 |
+| `interpolate-size`와 `calc-size()` | `height: 0`에서 `auto`처럼 intrinsic 크기 keyword로의 transition과 animation을 opt-in하고, intrinsic 크기를 계산에 쓴다 | CSS Values and Units Level 5 | Chrome 129. Firefox, Safari 미지원 |
+
+```css
+:root {
+  interpolate-size: allow-keywords; /* 상속되므로 문서 전체에서 keyword 크기 보간을 켠다 */
+}
+
+.panel {
+  height: 0;
+  overflow: clip;
+  transition: height 0.3s;
+}
+
+.panel.open {
+  height: auto;
+}
+```
+
+- `interpolate-size`를 지원하지 않는 브라우저에서는 transition 없이 크기가 바로 바뀌므로 펼치기 기능 자체는 남는다. 계산이 필요할 때만 `calc-size()`를 쓰고, 보간만 필요하면 상속되는 `interpolate-size`를 우선한다.
+- `corner-shape`는 `border-radius`가 없거나 0이면 효과가 없다. 지원하지 않는 브라우저에서는 둥근 모서리로 남으므로 모양이 의미를 전하는 UI에는 쓰지 않는다.
+- scroll-state query는 `@supports (container-type: scroll-state)`로 지원 여부를 나눌 수 있다. 지원하지 않는 브라우저에서 꼭 필요한 상태 표시는 JavaScript의 IntersectionObserver 같은 대체 경로로 둔다(설계 제안).
+- Interop 후보나 선정 여부는 출시 일정을 보장하지 않는다. 도입은 대상 브라우저 목록, compatibility data와 `@supports` 대체 경로로 판단한다.
+
 ## JavaScript 연동
 
 class를 토글해 state를 표현하고 `transitionend`/`animationend`는 event 누락, 여러 property, cancellation을 고려한다. business flow를 animation completion 하나에만 의존시키지 않는다. 복잡한 timeline/취소가 필요하면 Web Animations API의 `Animation` lifecycle을 검토한다.
 
 ## 출처
 
-2026-10-07 추가 대조 범위는 모션 지시의 시간과 경로 구분, animation delay/fill/play-state와 상호작용 모션 접근성이다. 기존 호환성 절 전체를 이날 다시 검증했다는 뜻은 아니다.
+2026-10-07 추가 대조 범위는 모션 지시의 시간과 경로 구분, animation delay/fill/play-state와 상호작용 모션 접근성이다. 기존 호환성 절 전체를 이날 다시 검증했다는 뜻은 아니다. 2026-10-27에는 Baseline과 Interop 절을 Interop 저장소, MDN 문서와 browser-compat-data로 대조했다.
 
 - [W3C, Motion Path Module Level 1](https://www.w3.org/TR/motion-1/)
 - [W3C WAI, Understanding SC 2.3.3: Animation from Interactions](https://www.w3.org/WAI/WCAG21/Understanding/animation-from-interactions)
@@ -121,6 +155,12 @@ class를 토글해 state를 표현하고 `transitionend`/`animationend`는 event
 - [CSS Cascading and Inheritance Level 5, Order of Appearance](https://drafts.csswg.org/css-cascade-5/#cascade-order), [CSS 2.1, Rules for handling parsing errors](https://www.w3.org/TR/CSS21/syndata.html#parsing-errors)
 - [Compatibility Standard, -webkit-linear-gradient()](https://compat.spec.whatwg.org/#css-gradients-webkit-linear-gradient), [CSS Images Module Level 3, Linear Gradients](https://drafts.csswg.org/css-images-3/#linear-gradients), [CSS Image Values and Replaced Content Module Level 3, W3C Working Draft 17 February 2011](https://www.w3.org/TR/2011/WD-css3-images-20110217/)
 - [Microsoft Lifecycle, Internet Explorer 11 desktop app support ended for certain versions of Windows 10](https://learn.microsoft.com/en-us/lifecycle/announcements/internet-explorer-11-end-of-support-windows-10)
+- [Interop 2027 README — web-platform-tests/interop](https://github.com/web-platform-tests/interop/tree/main/2027), [Submit your proposals for Interop 2027 — web.dev, Rachel Andrew](https://web.dev/blog/interop-2027-proposals)
+- Interop 2027 제안 이슈: [CSS @function #1357](https://github.com/web-platform-tests/interop/issues/1357), [CSS corner-shape #1368](https://github.com/web-platform-tests/interop/issues/1368), [CSS Container scroll-state queries #1364](https://github.com/web-platform-tests/interop/issues/1364), [CSS interpolate-size and calc-size() #1373](https://github.com/web-platform-tests/interop/issues/1373)
+- [browser-compat-data — MDN](https://github.com/mdn/browser-compat-data) — 2026-10-27 `corner-shape`, `@function`, `interpolate-size`, `calc-size()`, scroll-state query 지원 버전 대조
+- [MDN, corner-shape](https://developer.mozilla.org/en-US/docs/Web/CSS/corner-shape), [MDN, interpolate-size](https://developer.mozilla.org/en-US/docs/Web/CSS/interpolate-size), [MDN, Using container scroll-state queries](https://developer.mozilla.org/en-US/docs/Web/CSS/Guides/Conditional_rules/Container_scroll-state_queries)
+- [CSS Functions and Mixins Module, First Public Working Draft](https://www.w3.org/TR/css-mixins-1/), [CSS Borders and Box Decorations Level 4, Corner Shaping](https://drafts.csswg.org/css-borders-4/#corner-shaping), [CSS Values and Units Level 5](https://www.w3.org/TR/css-values-5/)
+- [CSS의 미래 - Interop 2027에서 기대하는 10가지 기능 — GeekNews](https://news.hada.io/topic?id=35743)
 - [transform/transition](https://www.inflearn.com/courses/lecture?courseId=328275&unitId=102186), [timing/delay](https://www.inflearn.com/courses/lecture?courseId=328275&unitId=102187), [vendor prefix](https://www.inflearn.com/courses/lecture?courseId=328275&unitId=102188)
 
 ## 관련 문서

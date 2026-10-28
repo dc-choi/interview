@@ -21,7 +21,7 @@ LLM 단발 호출을 도구로 쓰는 단계를 넘어, **에이전트에게 일
 - [[Production-Agent-Architecture-Knowledge|지식 체계]]: Metric Registry, 조회 우선순위, Auto Memory 비활성화
 - [[Production-Agent-Architecture-Eval-and-Operations|Eval, 운영 루프와 고가용성]]: 배포 전 검증 4축, 피드백을 지식과 테스트로 환원하는 운영 루프, 처리 시간의 시작과 종료 상태, 워커 풀
 - [[Production-Agent-Architecture-Delegation|Closure-loop 위임 경계와 자율권]]: 사람과 에이전트의 담당, 승인과 실행 권한과 감사 기록의 구분, 작업별 증거로 넓히고 줄이는 자율권, 정책 검사와 행동 차단의 구분
-- [[Production-Agent-Architecture-Cases-and-Interview|사례와 면접 포인트]]: Meta Muse의 Sentinel 승인과 격리, 마이리얼트립 데이터 에이전트, LY SRELens, 면접 질문 4개
+- [[Production-Agent-Architecture-Cases-and-Interview|사례와 면접 포인트]]: Meta Muse의 Sentinel 승인과 격리, 마이리얼트립 데이터 에이전트, LY SRELens, Salesforce 에이전트 스택(Agentforce, Data 360, Headless 360)의 모델 추론 밖 전용 계층 분리, 면접 질문 5개
 
 ## 함께 볼 문서
 

@@ -2,7 +2,7 @@
 tags: [ai, geopolitics, infrastructure, strategy, korea]
 status: done
 category: "AI엔지니어링(AIEngineering)"
-aliases: ["AI Infra Geopolitics", "기업 단위 국제질서", "AI 인프라 권력 재편", "Project Glasswing"]
+aliases: ["AI Infra Geopolitics", "기업 단위 국제질서", "AI 인프라 권력 재편", "Project Glasswing", "오픈웨이트 기반 모델 의존", "Hugging Face 파생 모델"]
 verified_at: 2026-09-30
 ---
 
@@ -53,6 +53,16 @@ Anthropic이 최상위 모델 Mythos를 일반 공개 없이 Project Glasswing�
 - **연구 거점의 형태를 구분한다**: 공동 연구소나 기술센터는 소수 전문 인력의 프로젝트 협력이고, 수천 명 규모 R&D 센터와 파급 효과가 다르다. 발표 명칭보다 상주 인원, 투자 기간, 현지 채용 계획을 본다.
 - **판단 기준**: 전력, 부지, 용수를 제공하는 조건을 대기업 유치에서 끝내지 않고 협력사와 지역 기업이 공급망과 인력 수요에 들어갈 수 있게 설계해야 혜택이 퍼진다.
 
+## 오픈웨이트 기반 모델 의존 — 한국 개발자의 파생 모델
+
+부분 확인(2026-10-27): 록브리지네트워크코리아 보고서 「중국 인공지능은 한국에서 어떻게 쓰이고 있는가」(2026-10-16 공개)의 수치를 Korea Herald와 뉴스1 보도로 확인했다. 보고서 원문은 접근이 막혀(HTTP 403) 직접 대조하지 못했고, 한국 계정을 판별한 방법과 집계 절차도 보도에서 확인하지 못했다.
+
+- **개발자 층의 의존**: 2026년 1~8월 Hugging Face에 한국 관련 계정이 공개한 파생 모델 1,845개 가운데 49.3%가 중국 기반 모델에서 출발했다. 미국 기반은 35.9%, 한국 기반은 14.9%다. 중국 기반 비중은 2023년 1.2%, 2024년 7.2%, 2025년 22%에서 올라왔고, 2026년 2월에 월간 기준으로 처음 미국 기반을 넘었다. 기반 모델별로는 Qwen 864개(46.8%), Gemma 14.7%, Llama 13.8%, EXAONE 171개(9.3%), Kanana 49개(2.7%)이고 DeepSeek은 약 1%다.
+- **기업 층과의 괴리**: 같은 보고서의 설문에서 중국계 서비스를 현재 쓴다고 답한 기업은 없었고, 주요 기업 36곳의 공개 GitHub 저장소 약 1,900개에서 중국 모델 참조를 찾지 못했다. 중소기업 102곳 설문에서는 80.2%가 데이터 유출 우려를 들었다. 반대로 모델을 내려받아 자체 실행하면 중국 기업의 온라인 서비스 이용 통계에는 잡히지 않는다. 파생 모델 수는 개발자 활동의 지표이고, 기업 도입률이나 서비스 트래픽과 따로 읽는다.
+- **집계의 근거와 한계**: 파생 관계는 Hugging Face 모델 카드의 `base_model` 메타데이터로 드러난다. Hub는 미세조정, 어댑터, 양자화, 병합 관계를 추론하거나 `base_model_relation`으로 명시하게 하고, 이 값으로 특정 기반 모델에서 나온 모델을 찾게 한다. 공개 저장소의 자기 신고에 기대므로, 같은 모델의 양자화 사본이 여럿이면 수가 늘고 메타데이터가 없거나 비공개로 쓰면 빠진다(이 문서의 판단).
+- **의존이 드러나는 지점**: 보고서는 한 모델에 지나치게 기대면 공급사가 라이선스를 바꾸거나 새 버전 공개를 멈출 때 개발자가 취약해진다고 경고한다. 정부의 독자 AI 파운데이션 모델 사업에서는 네이버클라우드가 Qwen 구성요소를 써 기술 독립성 요건을 충족하지 못해 탈락했다고 Korea Herald가 전한다. 의존은 구성요소 단위로도 생긴다. FLUX 3 Image Klein은 텍스트 인코더로 Qwen3-VL-4B-Instruct를 쓰고, MIT로 공개된 GLM-5.3-Flash에서 나온 Ultramarine 1 Flash는 2026-10-27 기준 가중치와 라이선스를 아직 공개하지 않았다([[Model-Release-Claims#라이선스와 제공 상태는 발표 문구와 따로 확인한다|라이선스와 제공 상태]]).
+- **판단 기준(적용 제안)**: 기반 모델을 고를 때 라이선스 원문(매출 기준, 파생물 적용, 지역 제한), 후속 판 공급의 지속성, 공공 사업과 규제의 자격 요건, 행동과 보안의 상속([[LLM-Application-Security#LLM03 공급망|LLM 공급망]])을 기록한다. 평가 세트, 프롬프트와 추론 계층은 기반 모델을 바꿔 끼울 수 있게 분리하고, 교체 후보를 같은 평가 세트로 주기적으로 잰다.
+
 ## 전략 — 전면 국산화가 아니라 두 갈래
 
 전면 국산화는 틀린 결론이다. 글로벌 단일 표준의 효율이 크고, 일본, 독일, 영국도 같은 의존 위치에 있다. 대신:
@@ -74,6 +84,7 @@ Anthropic이 최상위 모델 Mythos를 일반 공개 없이 Project Glasswing�
 - 전면 국산화 대신 로컬 레이어 + 글로벌 표준 진입의 두 갈래 논리
 - 정부 = 장기 LP 프레임과 산업 주도 시대의 차이
 - 데이터센터 유치에서 상시 일자리, 지역 수용성 조건, 혜택의 확산 설계를 따로 따지는 이유
+- 개발자가 공개한 파생 모델의 기반 비중과 기업 도입률을 구분하고, 기반 모델 의존이 라이선스, 후속 판 공급과 자격 요건에서 드러나는 지점을 설명할 수 있는가
 
 ## 출처
 
@@ -82,10 +93,17 @@ Anthropic이 최상위 모델 Mythos를 일반 공개 없이 Project Glasswing�
 - [차세대 모델 GPT-5.6 Sol 미리 살펴보기 — OpenAI](https://openai.com/ko-KR/index/previewing-gpt-5-6-sol/) (제한 프리뷰 관행 확산 사례)
 - [Meta Commits More Than $50 Billion for North Louisiana Project, Becoming One of the Largest Data Centers in History — Louisiana Economic Development](https://www.opportunitylouisiana.gov/news/meta-commits-more-than-50-billion-for-north-louisiana-project-becoming-one-of-the-largest-data-centers-in-history)
 - [젠슨 황의 치킨 회동과 AI 인프라 유치 — Threads, choi.openai](https://www.threads.com/@choi.openai/post/DZT9n52j248)
+- [Alibaba's Qwen dominates Korea-linked AI derivatives, raising questions over Seoul's sovereign AI ambitions — The Korea Herald](https://www.koreaherald.com/article/10910085) — 2026-10-21, 록브리지네트워크코리아 보고서(Choi Seong-jin 집필)의 파생 모델 수, 기업 설문과 GitHub 점검, 의존 위험과 독자 AI 사업 사례
+- ["2년 새 7%→49%" 韓 개발자 파고든 中 AI…보안우려 커져 — 뉴스1](https://www.news1.kr/it-science/internet-platform/6327659) — 2026-10-22 갱신, 보고서 제목, 연도별 비중과 월간 역전 시점
+- [Hugging Face Hub, Model Cards](https://huggingface.co/docs/hub/model-cards) — `base_model`과 `base_model_relation` 메타데이터
+- [한국의 신규 AI 파생 모델 절반 가까이가 중국 Qwen 기반임 — GeekNews](https://news.hada.io/topic?id=35785) — 학습 계기, 수치는 위 보도로 대조
 
 ## 관련 문서
 
 - [[LLM-Market-Landscape|생성형 AI 시장 경쟁 구도]]
+- [[Model-Release-Claims|모델 발표 수치 읽기]] — 공개 가중치의 라이선스와 제공 상태
+- [[Open-Source-License-Review|오픈소스 라이선스 검토]] — 오픈 웨이트와 Open Source AI의 구분
+- [[LLM-Application-Security|LLM 애플리케이션 보안]] — 사전학습 모델과 어댑터의 공급망 위험
 - [[Distribution-As-Moat|도달력(Distribution)이 새 해자]]
 - [[AX-Transformation|AX 조직 전환]]
 - [[Developer-Role-AI-Era|AI 시대 개발자 역할]]

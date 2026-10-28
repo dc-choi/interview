@@ -277,6 +277,7 @@ CSV가 생성됐다는 사실은 수집과 필드 변환이 정확하다는 증�
 ## 관련 문서
 
 - [[Security-Policy-and-Assessment|보안 정책과 점검]]
+- [[Coordinated-Vulnerability-Disclosure|조율된 취약점 공개]] — 다자간 조율, 사전 통지와 엠바고 유출 대응
 - [[Audit-Log|감사 로그]]
 - [[Incident-Runbook|장애 대응 런북]]
 - [[Incident-Recovery-Prevention|복구와 재발 방지]]

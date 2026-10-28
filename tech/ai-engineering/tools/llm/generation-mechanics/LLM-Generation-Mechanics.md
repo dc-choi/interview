@@ -18,6 +18,8 @@ LLM은 학습 단계에서 데이터의 통계적 패턴을 가중치에 반영�
 
 ## 함께 볼 문서
 
-- [[Linear-Attention|선형 어텐션]]: 특징 맵, 정규화 분모, 인과 누적 상태와 softmax와의 차이
-- [[Audio-Token-Generation|음악과 소리 생성]]: 신경망 오디오 코덱과 RVQ, 코드북 펼치기 순서, 텍스트와 멜로디 조건, 상용 서비스의 공개 범위
+- [[AI-Generated-Text-Readability|AI 생성 글의 처리 난도]]: 처리 난도 대리 지표, 왕복 번역 기준선과 검증 가능한 보상의 정보 밀도 압력 가설
+- [[Linear-Attention|선형 어텐션]]: 특징 맵, 정규화 분모, 인과 누적 상태와 softmax와의 차이, 공개 모델의 하이브리드 층 배치와 KV 캐시
+- [[Diffusion-Language-Models|확산 언어 모델]]: 마스크 확산 학습, 단계별 확정과 remasking, 블록 확산의 가변 길이와 KV 캐시, 자기회귀와의 속도 비교 조건, Mercury 계열의 공개 범위
+- [[Audio-Token-Generation|음악과 소리 생성]]: 신경망 오디오 코덱과 RVQ, 코드북 펼치기 순서, 텍스트와 멜로디 조건, 상용 서비스의 공개 범위와 전이중 음성 대화
 - [[llm|LLM 원리와 운영]]

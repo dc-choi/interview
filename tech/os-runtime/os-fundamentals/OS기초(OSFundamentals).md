@@ -22,7 +22,7 @@ aliases: ["OS Fundamentals"]
 - [x] [[Process-Lifecycle|Process lifecycle (PCB, 상태 전이, 시스템 콜과 인터럽트 흐름, fork/exec 사이의 준비와 멀티스레드 제약, 좀비, 쓰레드, 컴파일)]]
 - [x] [[Thread-Models|스레드 종류와 스레딩 모델 (멀티프로그래밍부터 멀티프로세싱까지, 하드웨어 스레드와 SMT, OS 스레드, 1:1, N:1, M:N, 그린 스레드와 virtual thread)]]
 - [x] [[Context-Switching|Context switching (수행 주체, CPU와 I/O 버스트, 스케줄러와 디스패처, 선점과 비선점, 스케줄링 목표)]]
-- [x] [[Context-Switching-Scheduling-Algorithms|CPU 스케줄링 알고리즘 (FIFO, SJF, SRTF, 우선순위, RR, 다단계 큐, MLFQ, 에이징)]]
+- [x] [[Context-Switching-Scheduling-Algorithms|CPU 스케줄링 알고리즘 (FIFO, SJF, SRTF, 우선순위, RR, 다단계 큐, MLFQ, 에이징, Linux sched_ext)]]
 - [x] [[System-Time-and-Clock-Sync|시스템 시간과 시계 동기화 (Unix time, FILETIME, 윤초, 2038년, NTP 지연과 오프셋, 분산 시스템 시각, tz database)]]
 - [x] [[Sleep-and-Timing|Sleep과 타이밍 (대기와 준비 전이, 타이머 해상도, 단조 증가 카운터, sleep 기반 동기화의 경쟁 상태, 지터와 난수)]]
 

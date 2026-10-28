@@ -23,6 +23,19 @@ aliases: ["AI Work Output and Employment", "AI 코드 생산과 제품 성과 �
 
 AI 사용률은 위 표의 어느 층위의 결과도 아니다([[AX-Transformation#문화와 시스템이 AI 효과를 좌우하는 조건|채택 신호와 KPI의 구분]]). McKinsey의 2025년 글로벌 설문(2025-06-25~07-29, 105개국 1,993명, 응답자 국가의 세계 GDP 비중으로 가중)에서 소속 조직이 최소 한 업무 기능에서 AI를 정기적으로 쓴다는 응답은 88%였다. 반면 전사 확산을 시작했다는 응답은 약 3분의 1, 전사 EBIT에 영향이 있다는 응답은 39%였다. 기업 수가 아니라 응답자 비율이며, 2025년에 사용의 정의를 도입에서 정기 사용으로 바꿨으므로 전년 수치(78%)와의 비교에는 정의 차이가 섞인다(2026-10-26 보고서 본문, Exhibit 1 각주와 조사 개요 대조).
 
+## 산출이 늘면 병목은 다음 단계로 옮겨 간다
+
+2026년 10월 공개된 사례들은 AI로 작성이나 결함 발견이 늘어난 뒤 어느 단계가 먼저 막혔는지 보여 준다. Anthropic의 세 사례는 해당 조직의 자체 보고이며 원자료는 공개되지 않았다. PostgreSQL 사례의 원인 분석은 커미터 한 명의 개인 회고이고, 되돌린 기능은 공개 릴리스 공지로 확인할 수 있다. 구현이 싸질 때 병목이 결정과 승인 대역폭으로 옮겨 가는 원리는 [[Developer-Role-AI-Era#구현이 싸질 때 옮겨 가는 병목 — 결정과 승인 대역폭|결정과 승인 대역폭]]에서 다룬다.
+
+| 옮겨 간 병목 | 사례 | 읽을 때의 경계 |
+|---|---|---|
+| 사람의 주의 | Anthropic 사내 고용 보고서(2026-10-16): 엔지니어 1인당 코드 커밋이 6개월 전의 5배였고, 8월에는 직원이 지시한 대화형 에이전트의 실행 시간이 직원 근무시간 추정치의 6배였다. Claude 세션 시간의 약 80%는 사람의 입력을 기다리는 대기였으며, 보고서는 이 가속으로 사람의 주의가 에이전트 산출의 병목이 됐다고 본다 | 커밋의 정의(병합 여부)는 본문에 없다. 도입자와 미도입자 비교(사람과 달력 월의 고정효과)에는 도입이 무작위가 아니고 도입자가 이미 가파른 상승 추세였다는 단서가 붙는다. 근무시간은 인원에 주 40시간을 곱한 가정치다 |
+| 개발 인프라 | Anthropic Scion(2026-10-13, 10-15 갱신): 사내 모노레포 병합이 5월 하루 약 2,500건에서 9월 30,000건 이상으로 늘고 CI 체크아웃이 하루 약 2,500만 회에 이르자, 병목이 사람 규모로 만든 source control, 빌드와 CI로 옮겨 갔다고 봤다. 7명이 Scion과 사내 코드 리뷰 도구를 만들고 5개월 만에 모노레포를 Git에서 옮겼다 | 일반 Git 대체가 아니라고 스스로 밝힌다. 세부는 [[Server-Centric-Version-Control\|서버 중심 버전 관리]] |
+| 리뷰 | Claude Code 팀(2026-10-15): 6~9월 병합 PR이 두 배 넘게 늘고 되돌린 PR 비율은 상대적으로 40% 넘게 줄었다. 사람 승인 수를 변경의 위험 등급으로 나눴다 | 되돌림 건수와 장애 지표는 공개하지 않았다. 세부는 [[Code-Review-AI-Agent-Operations\|에이전트 시대 코드 리뷰 운영]] |
+| 수정 용량 | PostgreSQL 19: 베타 중 LLM 보조 리뷰와 퍼징이 경계 조건 결함을 빨리 드러냈고, 구조적 결함과 보안 수정에 시니어 개발자가 몰린 기간 같은 다른 요인과 겹쳐, LLM 보조 리뷰가 성숙하기 전에 작성된 19의 주요 기능 약 8~10개가 되돌려졌다 | 원인의 조합이 기능마다 다르다고 본 커미터의 개인 회고다. 세부는 [[AI-Code-Delegation-Review#AI 리뷰가 결함을 더 빨리 찾으면 수정 용량이 병목이 된다\|AI 리뷰와 수정 용량]] |
+
+이 사례들은 작성 용량이나 발견 속도가 늘 때 주의, 인프라, 리뷰와 수정 중 어디가 먼저 막히는지 측정하라는 근거로 쓴다. PostgreSQL 사례에서 늘어난 것은 작성한 코드가 아니라 고쳐야 할 발견이다. 한 조직의 커밋 배수나 병합량을 다른 조직의 기대 생산성으로 옮기지 않는다. 같은 고용 보고서의 주니어 채용 비율 변화와 해석 경계는 [[Developer-Role-AI-Era#사례: AI를 깊이 쓰는 한 회사의 사내 데이터|견습 사다리 사례]]에 있다(2026-10-27 고용 보고서, Scion 글과 Claude Code 팀 글 원문 대조).
+
 ## 연구 사례: 작성량과 제품 산출의 차이
 
 Chen과 Stratton의 2026-08-04 작업 논문은 Jellyfish의 718개 기업, 약 3억 건 업무 이벤트를 사용한다. 자료 기간은 2021년 1월부터 2026년 3월까지다. 도입 시점 차이를 활용한 차분의 차분 분석이며 무작위 실험은 아니다(2026-10-16 초록, 서론과 검토 시간 측정 정의 확인).
@@ -98,6 +111,12 @@ Where is all the new, good software? 에세이는 공개 제품의 부족에 대
 - [2025 Developer Survey: Methodology — Stack Overflow](https://survey.stackoverflow.co/2025/methodology) — 조사 기간 대조
 - [Anthropic Economic Index report: Learning curves — Anthropic](https://www.anthropic.com/research/economic-index-march-2026-report) — 2026-03-24, 표본 기간과 Claude.ai 대화 35% 대조
 - [99.8%는 아직 진짜 AI를 써보지 못했습니다 — YouTube, 커리어해커 알렉스](https://www.youtube.com/watch?v=5AqT9njBbI0) — 2026-10-20, AI 이용 규모를 비교한 계기. 반영한 지표는 위 1차 출처로 대조
+- [How employment is changing at Anthropic — Anthropic](https://www.anthropic.com/research/employment-at-anthropic) — 2026-10-16, 2026-10-27 커밋 배수, 세션 대기 비율, 주의 병목 서술과 도입자 비교 방법 대조
+- [Redesigning source control at Anthropic — Anthropic Engineering](https://www.anthropic.com/engineering/redesigning-source-control) — 2026-10-13 게시, 10-15 갱신. 2026-10-27 병합량, CI 체크아웃, 팀 규모와 기간, 병목 서술 대조
+- [How the Claude Code team does code review — claude.dev, Addy Osmani, Morgan Westlee Lunt, Qing Wang](https://claude.dev/blog/solving-code-review-at-anthropic/) — 2026-10-15, 병합 PR과 되돌림 비율을 2026-10-27 대조
+- [The reverts will continue until morale improves — Peter Eisentraut](https://peter.eisentraut.org/blog/2026/10/09/the-reverts-will-continue-until-morale-improves) — 2026-10-09 개인 회고, 2026-10-27 되돌림 규모와 원인 서술 대조
+- [PostgreSQL 19 Beta 4 Released! — PostgreSQL](https://www.postgresql.org/about/news/postgresql-19-beta-4-released-3386/) — 2026-09-24, 되돌린 기능 목록을 2026-10-27 대조
+- 사용자 제공 GeekNews 알림 요약(2026-10-16~27): Anthropic 신규 기술직 채용의 주니어 비율과 에이전트 작업 시간, [Scion으로 Git 교체](https://news.hada.io/topic?id=35309), [Claude Code 팀의 코드 리뷰 방식](https://news.hada.io/topic?id=35495), [Postgres 19 출시 지연](https://news.hada.io/topic?id=35488). 위 원문으로 대조했다
 
 ## 관련 문서
 
@@ -106,3 +125,5 @@ Where is all the new, good software? 에세이는 공개 제품의 부족에 대
 - [[AI-Code-Delegation-Review|AI 구현 위임과 코드 리뷰]]
 - [[AI-Slop-Quality-Gate|AI 산출물의 품질 경계]]
 - [[Citizen-Development-AI|AI 시민 개발]]
+- [[Server-Centric-Version-Control|서버 중심 버전 관리]] — 에이전트 규모의 병합과 체크아웃
+- [[Code-Review-AI-Agent-Operations|에이전트 시대 코드 리뷰 운영]]

@@ -1,9 +1,9 @@
 ---
-tags: [ai, agent, coding-agent, ide, jetbrains, mcp, acp, debugging]
+tags: [ai, agent, coding-agent, ide, jetbrains, mcp, acp, debugging, spec]
 status: done
-verified_at: 2026-10-21
+verified_at: 2026-10-27
 category: "AI엔지니어링(AIEngineering)"
-aliases: ["JetBrains IDE Agent Integration", "JetBrains IDE의 코딩 에이전트 통합", "Air in IDEs", "IntelliJ MCP Server"]
+aliases: ["JetBrains IDE Agent Integration", "JetBrains IDE의 코딩 에이전트 통합", "Air in IDEs", "IntelliJ MCP Server", "ThinkRail"]
 ---
 
 # JetBrains IDE의 코딩 에이전트 통합 — 에이전트 실행 화면과 IDE 도구 노출
@@ -53,6 +53,17 @@ IntelliJ IDEA 2026.1.3 이후는 내장 MCP 서버로 디버거를 외부 AI 에
 - **스킬**: Settings | Tools | AI Assistant | Skills에서 관리하고 GitHub 저장소 URL로 외부 registry를 더한다. 여기서 관리하는 스킬은 Claude Agent와 Codex에서 쓰며, 설치 수준은 IDE 내부 저장소, 프로젝트의 `.agents/skills`, Claude Agent의 `.claude/skills`와 `~/.claude/skills`, Codex용 `.codex/skills`와 `~/.codex/skills`이다(AI Assistant 2026.2 Help 기준). JetBrains가 Codex용으로 쓰는 `.codex/skills`와 `~/.codex/skills`는 [[Agent-Skills|에이전트 스킬]]에 정리한 Codex 탐색 경로에 없으므로, IDE 밖 Codex에 설치한 스킬이 실제로 목록에 나타나는지 확인한다.
 - **로컬 모델**: 확인한 Air 문서에는 로컬 모델 설정이 나오지 않으므로 로컬 모델은 실행할 에이전트의 문서에서 지원 여부를 확인한다. 예를 들어 Junie CLI는 `/account`에서 Ollama endpoint(기본값 `http://localhost:11434`)를 등록하면 endpoint를 조회해 발견한 모델을 선택 목록에 더한다. Junie IDE 플러그인은 Ollama와 로컬 모델 선택을 지원하지 않는다.
 
+## 에이전트를 엔진으로 둔 IDE: ThinkRail
+
+기존 IDE에 에이전트를 붙이는 대신, 코딩 에이전트를 엔진으로 두고 그 둘레에 편집기, 터미널과 검토 도구를 얹는 형태도 있다. 2026-10-27 JetBrains 공식 저장소 README(main 797702a003, Apache-2.0, incubator 프로젝트) 기준 ThinkRail은 pi 코딩 에이전트를 프로세스 안에서 실행하는 얇은 호스트다. 모델, 스킬, 맥락 압축, 비용과 세션 상태는 pi가 맡고, 앱은 작업 공간, 편집기와 통신만 맡으며 사용자 모르게 프롬프트를 조립하지 않는다고 밝힌다. 데스크톱 앱과 브라우저에서 여는 `thinkrail` CLI가 같은 엔진 호스트를 쓴다.
+
+- **작업 공간 격리:** 저장소를 프로젝트로 열고 작업 공간을 `git worktree`로 만들어 브랜치와 작업 디렉터리를 나눈다. PR이 병합되거나 닫히면, 또는 일주일 동안 활동이 없으면 보관 선반으로 옮긴다. PR을 연 뒤에는 CI 검사와 리뷰 결정을 보여 주고 실패한 검사나 갈라진 브랜치의 처리를 에이전트에게 넘길 수 있다. worktree가 나누는 것과 공유하는 것은 [[Agent-Terminal-Workspaces#Worktree가 나누는 것과 공유하는 것|에이전트 작업 공간]]을 따른다.
+- **명세를 세션 밖에 둔다:** 코드 옆에 연결된 `SPEC.md` 그래프를 두고 에이전트가 전용 `spec_*` 도구로 읽고 검색하고 고친다. ThinkRail 저장소 자체도 모듈마다 `SPEC.md`를 두고, 경계, 계약이나 결정이 바뀌면 같은 변경에서 명세를 고치는 명세 우선 방식으로 개발한다. 다른 코딩 에이전트용으로 둔 Agent Skills는 원래 위치에서 읽는다.
+- **MCP 승인:** 서버가 읽기 전용으로 표시하지 않은 호출은 채팅에서 묻고, 저장소가 정의한 서버는 사용자가 승인하기 전까지 꺼 둔다. 읽기 전용 표시는 서버가 스스로 붙이는 정보이므로 서버 자체의 신뢰는 [[MCP-Security-Boundaries|MCP 보안 경계]]의 기준으로 따로 확인한다(운영 제안).
+- **인증과 수집:** 자체 계정 없이 JetBrains AI나 pi의 제공자 인증을 쓴다. 기본 사용 이벤트와 오류 보고는 무작위 설치 ID와 함께 항상 전송되며, 프롬프트, 코드, 파일과 자격 증명은 넣지 않는다고 밝힌다. 추가 사용 정보 공유만 설정이나 `--no-analytics`로 끈다.
+
+명세 파일을 에이전트의 장기 기억으로 쓰는 방식은 [[Agent-Spec-Writing|에이전트 스펙 작성]]과 이어진다. 설치와 실행은 하지 않았다.
+
 ## 도입 점검
 
 다음은 위 공식 문서의 내용을 도입에 적용한 이 문서의 점검 제안이다.
@@ -77,6 +88,8 @@ IntelliJ IDEA 2026.1.3 이후는 내장 MCP 서버로 디버거를 외부 AI 에
 - [JetBrains, Junie Ollama](https://junie.jetbrains.com/docs/custom-llm-ollama.html) — 2026-10-20
 - [Agent Client Protocol, Registry](https://agentclientprotocol.com/get-started/registry)
 - [Claude Code Docs, Legal and compliance](https://code.claude.com/docs/en/legal-and-compliance) — 인증과 자격 증명 사용
+- [ThinkRail — GitHub, JetBrains](https://github.com/JetBrains/thinkrail) — 2026-10-27 README(main 797702a003)로 엔진과 호스트의 책임, worktree 작업 공간, SPEC.md 그래프, MCP 승인과 사용 데이터 수집 대조
+- [JetBrains Thinkrail - 명세로 프로젝트 지식을 유지하는 에이전트 IDE — GeekNews](https://news.hada.io/topic?id=35994) — 학습 계기
 
 ## 관련 문서
 
@@ -87,3 +100,5 @@ IntelliJ IDEA 2026.1.3 이후는 내장 MCP 서버로 디버거를 외부 AI 에
 - [[Agent-Code-Search|에이전트 코드 인텔리전스]]
 - [[Agent-Skills|에이전트 스킬]]
 - [[LLM-Provider-Usage-Policy|LLM 제공자 이용 정책]]
+- [[Agent-Terminal-Workspaces|에이전트 터미널과 작업 공간]]
+- [[Agent-Spec-Writing|에이전트 스펙 작성]]

@@ -1,7 +1,7 @@
 ---
 tags: [business, marketing, content, growth]
 status: done
-verified_at: 2026-10-20
+verified_at: 2026-10-27
 category: "비즈니스&제품(Business&Product)"
 aliases: ["소셜 콘텐츠 성장 단계", "Social Content Scaling", "Founder-led Content"]
 ---
@@ -96,7 +96,17 @@ aliases: ["소셜 콘텐츠 성장 단계", "Social Content Scaling", "Founder-l
 - **변주의 기준은 실질이다:** 수익화 정책은 같은 인트로와 아웃트로를 쓰더라도 본문 대부분이 다르면 허용 예시로 두고, 교육적 가치, 해설, 서사나 영상 간 변주가 거의 없는 유사하거나 반복적인 콘텐츠를 수익화 불가 예시로 든다. 운영에서는 도입부와 화면 구성만 바꾸는 표면 변경으로 판단하지 않고 이 요소들이 실제로 달라졌는지 확인한다.
 - **공식 빈도 안내:** YouTube 고객센터는 업로드 빈도를 일관되고 지속 가능한 일정과 제작자의 웰빙 문제로 다루며, 저빈도 고품질 제작과 고빈도 간편 제작 가운데 무엇이 중요한지 따져 보라고 한다.
 
-발행량을 늘리면 제작과 응대 시간이 늘고, 위 한도에 닿을 가능성과 정책 위험도 함께 커진다. 늘리기 전후로 아래 적용 기준의 적격 문의와 결제를 같은 기간으로 비교한다.
+발행량을 늘리면 제작과 응대 시간이 늘고, 이 절의 플랫폼별 한도에 닿을 가능성과 정책 위험도 함께 커진다. 늘리기 전후로 아래 적용 기준의 적격 문의와 결제를 같은 기간으로 비교한다.
+
+### Facebook 페이지의 외부 링크 게시 한도
+
+2026-10-27 확인한 Facebook 도움말(한국어판) 기준, 한도가 적용되는 페이지는 링크가 들어간 일반 게시물과 댓글을 무료로 매월 최대 2개까지 올릴 수 있다. 일부 페이지에는 한도가 적용되지 않을 수 있으며, 도움말은 어떤 페이지가 대상인지 밝히지 않는다.
+
+- **집계:** 페이지에 올린 일반 게시물과 댓글의 링크를 함께 센다. 이미 링크가 있는 게시물에 단 댓글의 링크, Facebook, Instagram, WhatsApp과 Threads 같은 Meta 서비스 링크, Facebook 파트너십으로 만든 제휴 링크와 광고의 링크는 세지 않는다.
+- **유료 플랜:** Meta One의 Advanced(월 49.99달러)는 8개, Expert(월 149.99달러)는 20개, Max(월 499.99달러)는 무제한이다. 가장 싼 Essential(월 14.99달러)은 무료와 같은 2개다. 가격은 미국 달러 기준이며 지역별로 다를 수 있다.
+- **초기화:** 기본 한도는 매월 1일, Meta One 한도는 구독 갱신일에 초기화되고 남은 횟수는 이월되지 않는다.
+
+플랫폼이 외부로 나가는 링크를 유료 기능으로 묶으면 무료 도달에 기대던 유입 경로의 비용 구조가 바뀐다. 페이지에서 웹사이트나 신청 양식으로 보내는 흐름을 쓴다면 월 링크 수를 발행 계획에 넣고, 이메일 목록처럼 직접 연락할 수 있는 채널을 함께 키운다. 플랫폼이 유통 경로로 수익을 얻는 구조는 [[Platform-Power#밖으로 나가는 유입도 수익화 대상이 된다|플랫폼 파워]]에서 본다. 도움말은 링크가 게시물 노출에 주는 영향을 설명하지 않으므로 링크 수 한도를 추천 노출 감소와 같은 것으로 보지 않는다.
 
 ## 적용할 때 확인할 것
 
@@ -128,6 +138,8 @@ aliases: ["소셜 콘텐츠 성장 단계", "Social Content Scaling", "Founder-l
 - [YouTube Help, YouTube channel monetization policies](https://support.google.com/youtube/answer/1311392)
 - [YouTube Help, Upload schedule tips](https://support.google.com/youtube/answer/13616979)
 - [YouTube Data API, Quota Calculator](https://developers.google.com/youtube/v3/determine_quota_cost)
+- [Facebook 고객센터, 일반 Facebook 페이지 게시물 및 댓글의 링크 정보](https://www.facebook.com/help/1929252614431792) — 2026-10-27 확인. 월 한도, 집계 제외, 초기화와 Meta One 플랜별 한도
+- [Facebook, 이제 월 2개를 초과하는 외부 링크 게시에 요금 부과 — GeekNews](https://news.hada.io/topic?id=35720) — 제한 안내 화면을 공개한 Mastodon 게시물과 도움말의 요약
 
 ## 관련 문서
 
@@ -137,3 +149,4 @@ aliases: ["소셜 콘텐츠 성장 단계", "Social Content Scaling", "Founder-l
 - [[Personal-Brand-Identity-and-Role|퍼스널 브랜드의 정체성과 배역]]
 - [[Metrics-Framework|지표 설계와 실험 해석]]
 - [[Lead-Magnet-and-Entry-Offer|리드 마그넷과 진입 제안]] — 상담 반론을 콘텐츠 소재로 바꾸는 방법
+- [[Platform-Power|플랫폼 파워]] — 플랫폼이 유통 경로로 수익을 얻는 구조

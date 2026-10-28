@@ -194,6 +194,8 @@ MindWalk 사례는 AMD 공개 사례 PDF의 작업 구분과 수치 한계를 20
 
 ## 관련 문서
 
+- [[GPU-Inference-Hardware#같은 칩도 제품 등급에 따라 텐서 연산 속도가 다르다|제품 등급과 텐서 연산 속도]] — 사양과 실제 하드웨어 처리량의 구분
+
 - [[LLM-Generation-Mechanics-Decoding|LLM 동작 원리, 추론과 디코딩]] — 추론에서 다음 토큰을 만드는 과정
 - [[LLM-Prompt-Caching|LLM 프롬프트 캐싱]] — 프리필 재사용
 - [[LLM-Model-Tiers|LLM 모델 티어 선택]] — 모델 크기와 서빙 비용

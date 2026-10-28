@@ -33,7 +33,7 @@ aliases: ["RDBMS", "OLTP"]
 - [x] [[Relational-Inheritance-Mapping|관계형 상속 매핑 (concrete, single table, joined)]]
 - [x] [[Recurring-Event-Modeling|반복 일정 모델링 (series, exception, occurrence 투영)]]
 - [x] [[Foreign-Key-Integrity|외래 키와 참조 무결성 (보장 범위, referential action, 앱 관리 대안)]]
-- [x] [[Schema-Migration-Large-Table|대용량 테이블 스키마 변경 (INSTANT/INPLACE/COPY, pt-osc, gh-ost)]]
+- [x] [[Schema-Migration-Large-Table|대용량 테이블 스키마 변경 (MySQL INSTANT/INPLACE/COPY, pt-osc, gh-ost, PostgreSQL 작업별 잠금)]]
 - [x] [[Schema-Versioning|스키마 버전 관리 (마이그레이션 히스토리 정본, 드리프트, roll-forward)]]
 - [x] [[MySQL-Charset-Migration|utf8mb4 마이그레이션 안전 절차 (인덱스 키 길이 767/3072, collation 충돌, latin1 복구)]]
 
@@ -105,6 +105,8 @@ aliases: ["RDBMS", "OLTP"]
 - [x] [[Race-Condition-Patterns|Race Condition 패턴 (3계층 해결, 도구 선택 플로차트, 경쟁 재현 실험, 카카오 사례)]]
 
 ## 확장 & 운영
+
+- [x] [[Distributed-SQLite|분산 SQLite]] — 합의, 변경 스트리밍과 CRDT 병합, 쓰기 소유권과 복구/손실 경계
 - [x] [[scaling-operations|확장과 운영 폴더 인덱스 (샤딩, 복제, 클러스터링, Read Replica 라우팅)]]
 - [x] [[PostgreSQL-Production-Operations|PostgreSQL 운영 (실행 계획, Online DDL, vacuum, partitioning, pgAudit 감사 로깅)]]
 - [x] [[PostgreSQL-Extensions|PostgreSQL 확장 생태계 (PostGIS, 검색, pg_cron, Citus)]]

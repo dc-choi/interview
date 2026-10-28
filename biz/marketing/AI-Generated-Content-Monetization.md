@@ -130,6 +130,20 @@ OpenAI는 2025-03-25 GPT-4o 이미지 생성 시스템 카드 부록에서, 프�
 
 발표의 2023년 4월 가족 요금제 재생 8,090만 회와 같은 조건의 공개 가수 전체 곡 930만 회 비교는 특정 플랫폼과 요금제 범위의 수치다. 플랫폼 전체 재생이나 정상 콘텐츠의 기대 수익으로 확대하지 않는다. 본 사례는 생성 음악 자체의 불법성을 뜻하지 않으며, 법적 결과를 다른 서비스의 모든 자동 재생에 일률적으로 적용하지 않는다.
 
+## AI 사용 공개와 탐색 필터는 다르다
+
+플랫폼이 AI 사용 공개를 요구해도 이용자가 그 정보로 상품을 걸러 볼 수 있는지는 별개다. 공급이 몰리면 공개 정보가 탐색 기능에 반영되는지가 판매자의 노출과 구매자의 탐색 피로를 함께 좌우한다.
+
+Steam은 2024년 1월 출시 심사용 Content Survey에 AI 공개 항목을 넣었다. 2026-10-27 확인한 Steamworks 문서 기준, 개발 중 AI 도구로 만들어 게임과 함께 배포하는 콘텐츠(Pre-Generated)와 게임 실행 중 AI로 만드는 콘텐츠(Live-Generated)를 나눠 구현을 자세히 적게 하고, Live-Generated에는 불법 콘텐츠를 막는 가드레일 설명을 더 요구한다. 개발 효율을 높이려고 도구를 쓴 것 자체는 이 항목의 초점이 아니라고 밝힌다. Valve는 2024년 발표에서 공개 내용의 상당 부분을 게임의 상점 페이지에 싣겠다고 했다.
+
+2026-10-19~26 Steam Next Fest에서는 SteamDB의 필터로 센 7,145개 출품작 중 2,593개(약 36%)에 AI 공개가 있었고 6월 행사의 약 20%보다 늘었다는 보도가 나왔다. 같은 보도는 공개가 개발자의 신고에 의존하고 Valve가 자동 판별 도구로 확인하지 않는다고 전했다. Steam 커뮤니티에서는 한 이용자가 Discovery Queue에서 AI 생성 콘텐츠가 든 게임과 원하지 않는 태그를 빼는 필터를 요청했고, 다른 이용자들도 탐색 피로를 호소했다(IGN 보도). 2026-10-27 검색에서는 Valve의 필터 도입 발표를 찾지 못했다.
+
+**사업 적용 제안:**
+
+- 판매자는 공개를 정확히 하되, 공개 표시가 탐색에서 불리하게 쓰일 가능성을 기획에 넣는다. 공개를 빼거나 축소하면 약관 위반과 신뢰 손실 위험이 커진다.
+- 마켓플레이스를 설계한다면 공개 속성을 신고로만 받을지, 검색과 추천의 필터로 쓸지, 신고의 정확성을 어떻게 확인할지 함께 정한다. 필터와 0건 처리 같은 화면 계약은 [[Search-UX|검색 UX 설계]]에서 본다.
+- 행사 집계는 제3자 도구의 필터 결과를 인용한 보도이므로 Steam 전체의 AI 사용 비율이나 품질 평가로 일반화하지 않는다.
+
 ## 출처
 
 - [Introducing Higgsfield Ads Studio: How It Works and What You Can Create — Higgsfield](https://higgsfield.ai/blog/higgsfield-ads-studio) — 2026-10-20 Static Ads의 4크레딧, 근사 달러 환산과 추가 생성 비용, 브랜드 검토 절차를 부분 대조했다. 다른 서비스의 기존 정책은 재검증하지 않아 문서의 verified_at은 유지한다.
@@ -158,9 +172,15 @@ OpenAI는 2025-03-25 GPT-4o 이미지 생성 시스템 카드 부록에서, 프�
 - [국가법령정보센터, 부정경쟁방지 및 영업비밀보호에 관한 법률 제2조](https://www.law.go.kr/%EB%B2%95%EB%A0%B9/%EB%B6%80%EC%A0%95%EA%B2%BD%EC%9F%81%EB%B0%A9%EC%A7%80%EB%B0%8F%EC%98%81%EC%97%85%EB%B9%84%EB%B0%80%EB%B3%B4%ED%98%B8%EC%97%90%EA%B4%80%ED%95%9C%EB%B2%95%EB%A5%A0/%EC%A0%9C2%EC%A1%B0) — 2026-05-28 시행
 - [나도 이런 콘텐츠 만들 수 있을까 | 무료 AI — YouTube, 피프](https://www.youtube.com/watch?v=vDodF0pDmRM) — 2026-10-11 공개 영상. 오디오 보관함 문단의 계기이며 사용 조건은 YouTube 도움말로 대조
 - [ChatGPT Is Impersonating Real Cartoonists — YouTube, Better Stack](https://www.youtube.com/watch?v=z1UajAY86uc) — 2026-10-09 공개 영상. 서명 점검 절의 계기이며 사실관계는 Nieman Lab 기사로 대조
+- [Steamworks Documentation, Content Survey](https://partner.steamgames.com/doc/gettingstarted/contentsurvey) — 2026-10-27 AI 공개의 두 범주, 가드레일과 효율 도구의 범위 확인. 다른 서비스의 기존 정책은 재검증하지 않아 문서의 verified_at은 유지한다.
+- [Valve announces new rules for games with AI content on Steam — GamingOnLinux](https://www.gamingonlinux.com/2024/01/valve-announces-new-rules-for-games-with-ai-content-on-steam/) — 2024-01-10 Valve 발표 인용, 상점 페이지 공개 계획
+- [Steam Next Fest has even more generative AI than last time — PC Guide, Jack Goodall](https://www.pcguide.com/news/steam-next-fest-has-even-more-generative-ai-than-last-time-gamers-say-the-event-is-absolutely-ruined/) — 2026-10-20 갱신, SteamDB 필터 기반 집계와 공개 검증 방식에 관한 보도
+- [Steam Fans Are Begging for a No-AI Filter as Steam Next Fest Is Filled With Slop — IGN, Jacqueline Thomas](https://www.ign.com/articles/steam-fans-are-begging-for-a-no-ai-filter-as-steam-next-fest-is-filled-with-slop) — 2026-10-19(미국 시간) 갱신, 2026-10-27 확인. Steam 커뮤니티 이용자의 필터 요청과 반응
+- [바이브 코더들이 몰려들자, Steam 이용자들 'AI 게임 제외' 필터 요구 — GeekNews](https://news.hada.io/topic?id=35732) — IGN 기사 요약
 
 ## 관련 문서
 
 - [[AI-Commoditization-Differentiation|AI 범용화와 사업 차별화]]
 - [[Content-Marketing|콘텐츠 마케팅]]
 - [[Trademark-and-Brand-Clearance|상표와 브랜드 권리 확인]]
+- [[Search-UX|검색 UX 설계]] — 공개 속성을 필터로 쓰는 탐색 설계

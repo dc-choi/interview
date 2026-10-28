@@ -79,6 +79,7 @@ Q. 남의 주문을 요청하면 403과 404 중 무엇으로 응답하나?
 
 - [[Application-Security|애플리케이션 보안 (OWASP Top 10, 4대 원칙)]]
 - [[Access-Control-Models|접근 제어 모델 (RBAC, ABAC, PBAC)]]
+- [[Capability-URL-Exposure|공유 링크(Capability URL)의 노출 경로]] — 소유만으로 접근하는 설계와 식별자가 새는 경로
 - [[SSRF|SSRF]]
 - [[Session|세션]]
 - [[JWT|JWT]]

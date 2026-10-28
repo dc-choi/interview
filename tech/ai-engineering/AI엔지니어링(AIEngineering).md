@@ -11,7 +11,7 @@ Software 3.0 패러다임, LLM과 에이전트, 하네스, 평가, 조직 전환
 
 ## 원문 확인 대기
 
-- [ ] [아카라이브 AI 홈랩 게시물 185810092](https://arca.live/b/aihomelab/185810092?p=1) — 2026-10-15 정리 요청. HTTP 403과 브라우저 접근 정책 차단으로 제목과 본문 미확보. 본문을 확보한 뒤 주제를 분류하고 지식 문서에 반영한다. 링크 기록만 완료했으며 본문 학습은 미완료다.
+- [ ] [아카라이브 AI 홈랩 게시물 185810092](https://arca.live/b/aihomelab/185810092?p=1) — 2026-10-15 정리 요청. 제목(동네 치과의 AX전환기)은 GeekNews와 영상 설명란 기준으로 확인했고, GeekNews와 해설 영상 기반 내용은 [[Citizen-Development-AI#사례: 치과 업무의 로컬 AI 자동화|AI 시민 개발의 치과 사례]]에 반영했다. 2026-10-27에도 HTTP 403으로 원문 본문은 미확보다.
 
 ## 하위 영역
 - [[Palantir-Foundry|Palantir Foundry와 운영 온톨로지]] — 데이터와 모델, 객체 백엔드, 행동과 함수, 보안, SDK와 에이전트 연결
@@ -21,6 +21,11 @@ Software 3.0 패러다임, LLM과 에이전트, 하네스, 평가, 조직 전환
 - [[eval|평가, 신뢰성, 캘리브레이션]] — LLM 평가 전략, Abstention(모른다고 말하는 능력), 환각 유형과 검증, 평가 주도 개발(EDD), 루브릭과 점수 게이트, LLM 판정기, 골든셋과 배포 관문, 서빙 모델 드리프트 감시
 
 ## 세부 학습
+
+- [x] [[LLM-API-Price-Competition|LLM API 가격 경쟁]] — 인하 형태, 캐시 읽기 비중과 공급사 벤치마크의 비교 조건
+- [x] [[Task-Specific-Small-Models|작은 특화 모델]] — Pinterest 여정 추론과 WorldTUI의 학습, 서빙 및 평가 범위
+- [x] [[LLM-Steganography|생성 이미지의 스테가노그래피]] — 은닉 메시지 복원 실험과 에이전트 사이의 통신 채널
+- [x] [[AI-Generated-Text-Readability|AI 생성 글의 처리 난도]] — 대리 지표, 왕복 번역 기준선과 정보 밀도 압력 가설
 - [x] [[Monte-Carlo-Tree-Search|몬테카를로 트리 탐색과 UCT]] — 선택, 확장, 시뮬레이션과 통계 갱신, 탐색 점수와 실행 기준의 구분
 - [x] [[Claude-Code-Projects|Claude Code Projects]] — 조율과 실행의 분리, 공유 메모리, 병합 충돌과 병렬 사용량
 - [x] [[Deep-Learning-Foundations-and-Practice|딥러닝 기초와 실습]] — 개념과 과업의 연결, Keras 학습과 평가, 교재 범위와 실행 검증의 구분
@@ -93,7 +98,7 @@ Software 3.0 패러다임, LLM과 에이전트, 하네스, 평가, 조직 전환
 - [x] [[MCP#RAG, 에이전트와 Function Calling의 경계|MCP, RAG와 에이전트의 책임 구분]] — 연결 프로토콜, 근거 검색과 동적 실행 흐름
 - [x] [[LLM-Inference-Bottlenecks#에이전트 서빙은 세션 단위로 측정한다|에이전트 서빙 벤치마크]] — 턴별 문맥 증가, 캐시 재사용, 동시성 포화점과 지연 목표
 - [x] [[LLM-Generation-Mechanics-Context-and-Agent#대화 요약과 별도 기록의 경계|LLM 대화 요약과 작업 기록]] — 압축의 손실, 외부 상태 저장과 컨텍스트 재주입
-- [x] [[Linear-Attention|선형 어텐션]] — 특징 맵, 정규화와 인과 누적 상태
+- [x] [[Linear-Attention|선형 어텐션]] — 특징 맵, 정규화와 인과 누적 상태, 공개 모델의 하이브리드 층 배치와 KV 캐시
 - [x] [[Audio-Token-Generation|음악과 소리 생성]] — 신경망 오디오 코덱과 RVQ, 코드북 펼치기 순서, 조건 방식과 상용 서비스의 공개 범위
 - [x] [[Claude-Code-Workflows#긴 작업의 완료와 중단 조건|에이전트의 완료와 중단 조건]] — 결과 증거, 작업 목록과 검증 한계
 - [x] [[LLM-Generation-Mechanics-Analogies|비개발자 설명용 LLM 비유와 한계]] — 학습 때 정해지는 것과 요청마다 고르는 것, 네 가지 수량, 비유가 맞는 부분과 깨지는 지점
@@ -104,8 +109,9 @@ Software 3.0 패러다임, LLM과 에이전트, 하네스, 평가, 조직 전환
 - [x] [[Context-Development-Lifecycle|컨텍스트 개발 수명주기]] — 생성, 평가, 배포와 관찰
 - [x] [[MCP-Gateway-Architecture|MCP 게이트웨이]] — Uber의 발견, 활성화와 실행 권한 분리
 - [x] [[LLM-Decision-Models-Calibration-Cases|결정 모델 보정과 버전 변경]] — Qwen, Microsoft-Decision-1, Jev 1.14와 표현 안정성
-- [x] [[Local-Inference-Deployment-Cases|로컬 추론 배포]] — Janas, Minions, Uzu, LFM2.5와 Muse Spark Open
-- [x] [[Agent-Model-Capability-Contracts|기억과 전문 영역 모델 평가]] — Muse Wonder, GLM-Legal
+- [x] [[Local-Inference-Deployment-Cases|로컬 추론 배포]] — Janas, Minions, MLX 분산 추론(JACCL, Muse Spark Open 2대와 4대 측정), Uzu, PS5LM, LFM2.5와 Muse Spark Open
+- [x] [[LLM-Inference-Serving-Engines|추론 서빙 엔진의 기능 경계]] — 엔진과 서비스 책임, DeepInfer 공개 범위, 배치 불변성과 결정적 샘플링, DSpark 가변 길이 검증, 구조화 출력 강제 경계
+- [x] [[Agent-Model-Capability-Contracts|기억과 전문 영역 모델 평가]] — Muse Wonder, GLM-Legal, Ultramarine 1 Flash, Claude Duet의 승인 경계
 - [x] [[AI-Research-Innovation-Evaluation|AI 연구 혁신 평가]] — InnovationEval의 과제와 개선 달성률
 - [x] [[Neural-Circuit-Interpretability|뉴런과 회로 해석]] — 재귀적 일반화 가설과 인과 검증
 - [x] [[Generative-Artifact-Contracts|시각 산출물 생성 계약]] — AesCode의 검증 가능한 코드와 Krea 3의 부분 편집
@@ -118,3 +124,22 @@ Software 3.0 패러다임, LLM과 에이전트, 하네스, 평가, 조직 전환
 - [x] [[Agent-Skills-Kiro#Kiro MCP: 설정 범위와 도구 승인|Kiro MCP 설정과 도구 승인]] — user와 workspace 설정 병합, Tool Search, autoApprove와 permission 규칙, workspace 신뢰와 접근 격리의 한계
 - [x] [[Bedrock-Knowledge-Base-Retrieval|Bedrock 지식 베이스 조회]] — 검색 유형과 저장소 조건, 재순위 결과 수와 권한, 질의 분해와 에이전틱 검색, 프롬프트 자리표시자와 가드레일 범위
 - [x] [[LLM-Prompt-Engineering|프롬프트 엔지니어링]] — 프리필 대체와 구조화 출력, 내장 사고와 수동 CoT, 예시 수와 형식, 체이닝의 쓰임, Bedrock 평가 기반 최적화와 홀드아웃
+- [x] [[AI-Code-Delegation-Review#AI 리뷰가 결함을 더 빨리 찾으면 수정 용량이 병목이 된다|AI 리뷰와 수정 용량]] — PostgreSQL 19 되돌림, Linux Fixes 태그 증가, 발견과 수정의 용량 계획, 위임 앞뒤의 사고 구간
+- [x] [[AI-Work-Output-and-Employment#산출이 늘면 병목은 다음 단계로 옮겨 간다|산출 증가 뒤의 병목 이동]] — 사람의 주의, 개발 인프라, 리뷰와 수정 용량의 사례와 읽을 때의 경계
+- [x] [[Agent-Reverse-Engineering#하드웨어 프로토콜은 기준 드라이버의 버스 기록과 비교한다|하드웨어 역공학]] — Windows VM 패스스루와 usbmon 기록 비교, 실제 장치 판정과 upstream 관계
+- [x] [[Agent-Runtime-Deployment#일회용 샌드박스의 파일 상태를 트랜잭션으로 남기는 Tines 3B|샌드박스 파일 상태의 트랜잭션]] — 불변 스냅샷과 포인터, 포크, 같은 파일 충돌과 복구 시점의 한계
+- [x] [[Diffusion-Language-Models|확산 언어 모델]] — 마스크 확산 학습과 perplexity 상한, 단계별 확정과 remasking, 블록 확산의 가변 길이와 KV 캐시, 샘플러별 단계 수와 품질, Mercury 계열의 공개 범위
+- [x] [[Time-Series-Foundation-Models|시계열 파운데이션 모델]] — zero-shot 예측, 21개 분위수와 pinball loss, fev-bench의 skill score와 누출 신고 규칙, 매출 기준 가중치 라이선스
+- [x] [[Model-Release-Claims|모델 발표 수치 읽기]] — 측정 주체와 비교 대상의 세대, LLM 채점자, 과업당 비용과 캐시 단가, 속도의 측정일, 파라미터 집계, 라이선스와 제공 상태
+- [x] [[Evaluator-Guided-Program-Search|평가기 주도 프로그램 탐색]] — 모델 밖 평가기, 대리 지표와 비교 기준, 표본 검사의 실패율 경계, AlphaEvolve와 Claude Mythos 5 양자 회로 사례
+- [x] [[Property-Based-Testing#탐색을 증명으로 바꾸는 퍼즈 하네스 형식 검증|퍼즈 하네스의 형식 검증]] — LLM이 쓴 Rocq 증명과 검사기, RISC-V와 Linux 모델의 전제, 퍼저가 놓친 버그, 보상 해킹과 공개 범위
+- [x] [[Harness-Gate-Placement#푸시 전에 변경 이해를 묻는 훅은 연습 장치다|푸시 전 이해 확인 훅]] — 별도 리뷰어 모델의 출제, 우회 가능성, 외부 전송과 호출 비용
+- [x] [[Production-Agent-Architecture-Delegation#무엇을 맡기고 얼마나 풀어 줄지 정하는 사고 도구|위임 결정의 사고 도구]] — 성공 작업당 원가, 오류 누적, 평가가 곧 명세, 자율성 다이얼과 문 유형, 굿하트의 법칙
+- [x] [[AI-Native-Org#업무별 전환 단계는 증거로 올린다|업무별 AI 전환 단계]] — 단계별 증거와 멈춤 신호, AI를 빼 보는 사고실험의 네 축
+- [x] [[AI-Leverage-Small-Teams#이전의 비용 모델로 후보를 거르지 않는다|이전 비용 모델의 갱신]] — 싸진 과제의 재평가, Amdahl의 법칙, 검증 수단과 반론
+- [x] [[Agent-Data-Analysis-Workflow#생성형 대시보드는 작성 코드를 신뢰하지 않는 실행 경계에 둔다|생성형 대시보드의 실행 경계]] — 조회자 신원의 질의, 샌드박스 iframe, 발행 뒤 검사, 분석 함정 점검표
+- [x] [[Agent-Browser-Task-Boundaries#화면 공유 협업의 원격 조작과 AI 조작 승인|컴퓨터 조작의 인계와 승인]] — 공유 컴퓨터의 봇 격리 경계, 불확실한 조작의 재실행 금지, 조작 동의와 효과 확인의 구분
+- [x] [[JetBrains-IDE-Agent-Integration#에이전트를 엔진으로 둔 IDE: ThinkRail|에이전트를 엔진으로 둔 IDE]] — pi 호스트, worktree 작업 공간, SPEC.md 그래프와 MCP 승인
+- [x] [[Codex-CLI#제품 형태의 변화 — 클라우드 비동기 에이전트에서 로컬 엔진과 데스크톱 앱으로|Codex 제품 형태의 변화]] — 클라우드 에이전트의 마찰, Rust 엔진 분리, 편집기 없는 데스크톱 앱
+- [x] [[Agent-Ready-API-Design#명령 발견과 실패 응답도 계약이다|OpenAI CLI의 출력과 입력 계약]] — 파이프에서도 텍스트인 기본 출력, 오류 형식, 신뢰하지 않는 stdin의 파일 참조 차단
+- [x] [[Agent-Always-On-Mac-Host#세션 유지는 끊김과 재부팅을 나눠 본다|에이전트 세션 복원의 범위]] — Corgi의 화면과 대화 복원, 에이전트 훅 추가와 복구 파일

@@ -20,6 +20,8 @@ aliases: ["Agentic Verification", "에이전트 기반 검증"]
 
 정렬 테스트라면 결과의 순서뿐 아니라 원소와 중복 개수 보존을 검사한다. 결제 같은 상태 변경은 한 요청의 반복 실행이 중복 차감하지 않는지도 검증한다. 테스트 개수를 늘리는 것보다 틀린 구현을 실제로 거절하는 판정식이 중요하다.
 
+기능이 다른 기능과 겹치는 문맥이 많아 사람이 시험 사례를 열거할 수 없는 시스템에서는 LLM 보조 퍼징이 조합 결함을 빨리 찾는다는 보고가 있다. 다만 발견이 늘면 고칠 사람의 시간이 먼저 바닥날 수 있으므로 발견과 수정 용량을 함께 계획한다([[AI-Code-Delegation-Review#AI 리뷰가 결함을 더 빨리 찾으면 수정 용량이 병목이 된다|PostgreSQL 19 사례]]).
+
 ## 반복을 끝내는 조건
 
 1. 요구사항과 변경 전 기준선을 정한다.
@@ -38,6 +40,7 @@ aliases: ["Agentic Verification", "에이전트 기반 검증"]
 
 - [Agentic Verification — WPS](https://www.worldprogramming.org/posts/agentic-verification-ievidc) (본문 일부만 확보)
 - GeekNews 제공 발췌, 2026-10-16 11:00, 에이전트 기반 검증.
+- [The reverts will continue until morale improves — Peter Eisentraut](https://peter.eisentraut.org/blog/2026/10/09/the-reverts-will-continue-until-morale-improves) — 2026-10-09 개인 회고, LLM 보조 퍼징과 조합 결함 서술을 2026-10-27 대조
 
 ## 관련 문서
 
@@ -45,3 +48,4 @@ aliases: ["Agentic Verification", "에이전트 기반 검증"]
 - [[Agent-Test-Verification-Behavior|에이전트 검증 행동]]
 - [[Test-Pyramid|테스트 계층]]
 - [[performance|성능 비교의 조건]]
+- [[AI-Code-Delegation-Review|AI 구현 위임과 코드 리뷰]] — AI 리뷰의 발견량과 수정 용량

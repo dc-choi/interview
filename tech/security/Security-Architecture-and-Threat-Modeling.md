@@ -80,6 +80,16 @@ NIST SP 800-207은 네트워크 위치나 자산 소유만으로 사용자와 �
 
 이 사례를 적용한 설계 제안은 회의실의 민감 정보 흐름, 장치 반입 및 연결 가능 지점, 허용된 출입과 실제 접근 기록을 함께 점검하는 것이다. 네트워크 인증만으로 물리 녹음 경로가 막힌다고 가정하지 않고, 이상 장치를 발견했을 때의 증거 보존과 대응은 [[Security-Incident-Response|보안 사고 대응]]에 연결한다.
 
+## 시연의 성공 범위와 전체 장악을 구분한다
+
+취약점 시연을 평가할 때 입력 경로, 얻은 프로세스 권한, 재부팅 뒤 유지 여부와 다른 기기/버전으로의 적용 범위를 각각 확인한다. 한 앱에서 코드가 실행됐다는 사실을 커널 장악이나 영구적인 기기 제어와 같은 뜻으로 쓰지 않는다.
+
+2026-10-28 확인한 ns2jb 개발자의 글은 Switch 2의 특정 펌웨어에서 일반 sysmodule과 내장 `fs` 권한의 실행을 설명하며, 재연결이 필요한 tethered 방식이라고 밝힌다. 개발자는 에이전트의 단일 목표 지시로 전체 탈옥이 성공했다는 해석도 정정했다. 자동 시도는 성공하지 않았고 전체 작업에는 약 2주간 상당한 사람의 노력이 들었다는 자기 보고다. 이 사례에서 재사용할 원칙은 서명 검증 결과와 실제로 읽어 실행하는 콘텐츠 사이의 무결성 연결을 끝까지 점검하는 것이다. 중간 파일 제공 프로세스를 신뢰하는 가정도 위협 모델에 넣는다.
+
+Calif의 2026-10-16 발표 페이지는 Signal, iMessage와 지속성 관련 시연을 제시한다. 페이지 본문만으로는 모든 기기와 OS 버전의 영향, 전체 취약점 체인과 수정 상태를 확인할 수 없다. 입력에서 제시된 iPhone 18 Pro, iOS 27.0.1과 PDF 경로는 영상 화면 및 Apple 보안 공지의 추가 대조 대상으로 남긴다. 시연 제목을 범용 도구 출시나 모든 최신 기기의 침해 가능성으로 확대하지 않는다.
+
+이 절은 공개 글의 주장과 확인 범위를 정리한 것이다. 하드웨어 재현은 하지 않았고 기존 `verified_at`은 유지한다.
+
 ## 검토를 마칠 때
 
 - 보호 목표는 [[CIA-Triad|기밀성, 무결성과 가용성]]으로 구분한다.
@@ -90,6 +100,8 @@ NIST SP 800-207은 네트워크 위치나 자산 소유만으로 사용자와 �
 
 ## 출처
 
+- [jailbreaking the switch 2 — pepsipu](https://pepsipu.com/blog/2026-10-switch2-jailbreak-ns2jb/) — 2026-10-28 권한 범위, tethered 조건과 AI 기여 정정 확인
+- [iPhone — Calif Newsletter](https://blog.calif.io/p/iphone) — 2026-10-16 시연 안내, 영상 전체 체인과 영향 버전은 미검증
 - [OWASP, Authorization Cheat Sheet](https://cheatsheetseries.owasp.org/cheatsheets/Authorization_Cheat_Sheet.html) — 기본 거부, 요청별 인가와 인가 실패의 안전한 처리
 - [OWASP, Input Validation Cheat Sheet](https://cheatsheetseries.owasp.org/cheatsheets/Input_Validation_Cheat_Sheet.html) — 구문과 의미 검증, 인가 및 쿼리 보호와의 책임 구분
 - [OWASP, Error Handling Cheat Sheet](https://cheatsheetseries.owasp.org/cheatsheets/Error_Handling_Cheat_Sheet.html) — 예상하지 못한 오류의 외부 응답과 서버 측 상세 기록

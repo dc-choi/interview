@@ -14,6 +14,7 @@ aliases: ["추천 시스템 운영 계약", "Recommendation System Contracts"]
 - [[Recommendation-System-Eligibility-Availability|자격 조건과 가용성]]
 - [[Recommendation-System-Feedback-Data|피드백 데이터]]
 - [[Recommendation-System-Serving-Operations|서빙과 운영]]
+- [[Recommendation-System-Model-Serving-Platform|모델 서빙 플랫폼]] — 모델별 배포, 레지스트리 alias 조정과 모델 단위 rollback
 
 ## 상위 문서
 

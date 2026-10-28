@@ -209,4 +209,6 @@ ZeRO-3는 순전파와 역전파 중 필요한 파라미터를 모으고 다시 
 - [[LLM-Generation-Mechanics-Decoding|추론과 디코딩]]
 - [[LLM-Generation-Mechanics-Context-and-Agent|Context, 환각과 에이전트]]
 - [[LLM-Generation-Mechanics-Analogies|비개발자 설명용 비유와 한계]]
+- [[AI-Generated-Text-Readability|AI 생성 글의 처리 난도]] — 검증 가능한 정답 보상으로 후학습하면 출력이 압축 쪽으로 밀린다는 가설과 GRPO 개념 증명
+- [[Task-Specific-Small-Models|작은 특화 모델]] — 교사 모델 증류와 환경 실행 기록, 자기 오류 교정(DAgger) 학습 사례
 - [[Recommendation-System-Modeling-Foundations|추천 시스템 모델링 기초]]

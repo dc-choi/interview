@@ -1,8 +1,8 @@
 ---
-tags: [ai, agent, reverse-engineering, testing]
+tags: [ai, agent, reverse-engineering, testing, hardware]
 status: done
 category: "AI엔지니어링(AIEngineering)"
-aliases: ["Agent Reverse Engineering", "REA Reverse", "게임 개발 AI 하네스"]
+aliases: ["Agent Reverse Engineering", "REA Reverse", "게임 개발 AI 하네스", "하드웨어 역공학", "hw-harness"]
 ---
 
 # 에이전트 역공학과 실행 가능한 시스템 하네스
@@ -28,6 +28,24 @@ README는 공식 배포 경로를 morluto/rea 저장소, rea.tools와 npm `rea-a
 제공된 2026-10-11 GeekNews 발췌는 Chrome 공룡 게임의 가속 규칙, Windows Calculator의 연산자별 `%` 처리 복원을 소개한다. 두 데모는 upstream README의 쇼케이스에는 없지만, README가 공식 배포 경로로 밝힌 rea.tools에 예시로 실려 있다(2026-10-20 확인). 공룡 게임 예시는 Chrome에 내장된 게임이 아니라 제3자가 Chromium 코드에서 파생해 만든 브라우저판을 대상으로, 장애물과 자동 스케줄링을 끈 통제된 브라우저 검사에서 원래 게임의 update 함수를 호출해 속도 규칙을 확인했다. Calculator 예시는 REA 4.1.0으로 Windows Calculator 11.2508.4.0(x64)을 살펴 `%` 버튼이 ×와 ÷에서는 소수로, +를 비롯한 그 밖의 연산자에서는 첫 수의 백분율로 바꾸는 두 규칙을 복원하고, Microsoft의 공개 소스와 교차 확인하게 한다. 해당 데모의 모든 분기와 재구현 결과는 이번에 실행하지 않았다. 사례의 핵심은 동작 규칙을 확인할 관찰점을 찾는 데 있다.
 
 정적 JavaScript 분석에는 네이티브 분석 엔진이 필요하지 않다(2026-10-22 upstream README 대조). Hopper, Ghidra와 IDA의 준비 조건을 모든 분석 대상에 일괄 적용하지 않고, 분석할 산출물과 실행 경로에 맞춰 의존성을 확인한다. 이 구분은 설치 준비에 관한 것이며 분석 정확도나 보안 직무의 대체 가능성을 입증하지 않는다.
+
+## 하드웨어 프로토콜은 기준 드라이버의 버스 기록과 비교한다
+
+벤더 드라이버만 있는 장치의 Linux 드라이버를 만들 때는 벤더 드라이버를 읽지 않고 실행만 하는 방법이 있다. Windows VM에 장치를 패스스루로 넘겨 벤더 드라이버로 작업을 수행하는 동안, 호스트 커널의 `usbmon`으로 VM 밖에서 버스 통신을 기록한다. 같은 도구로 새 Linux 드라이버의 같은 작업을 기록하면 두 기록을 바로 비교할 수 있고, 그 차이가 드라이버 버그를 찾을 후보 목록이 된다. 타이밍, 폴링 주기나 요청 순서처럼 장치 동작에 영향이 없는 차이도 섞이므로 차이마다 장치의 실제 출력으로 판정한다.
+
+2026-10-15 Christian Schaller의 글과 공개 저장소 hw-harness(MIT), OpticFilm8200i-sane(LGPL-2.1)을 2026-10-27 대조했다. 아래 성과는 저자의 보고다.
+
+- **대상:** 같은 모델명이 지원 칩(GL845)에서 미지원 칩(Genesys GL128, USB 07b3:1825)으로 바뀐 Plustek OpticFilm 8200i 필름 스캐너다. Claude Code로 SANE 백엔드를 만들려던 첫 시도는 몇 달 진전이 없다가, Windows 캡처 환경을 갖춘 뒤 몇 시간 만에 네거티브의 이미지를 알아볼 수 있는 첫 스캔을, 며칠 뒤 적외선 채널까지 지원하는 백엔드를 얻었다.
+- **판정:** 기준은 Windows에서 얻은 정상 스캔과 실제 장치이며, 저자는 실제 하드웨어가 유일한 심판이라고 적는다. 3600dpi 스캔 시간이 upstream genesys 백엔드 54.4초 대비 34.6초였다는 비교도 장치 하나, 프레임 하나의 결과로 한정한다.
+- **탭할 버스가 없는 장치:** 노트북 내장 MIPI 카메라(Intel IPU7 뒤의 Sony IMX471)는 Windows 쪽의 INF, 레지스트리, ACPI 테이블과 장치 속성을 수집하고, 함께 연결한 USB 웹캠 영상을 비교 기준으로 삼아 커널 드라이버와 libcamera 소프트웨어 ISP의 결함을 찾았다. 하루 만에 패치를 만들었고, 커널 패치는 다른 개발자에게 넘겼으며 libcamera 패치는 제출 전 검토를 받는 중이라고 밝혔다.
+- **도구:** hw-harness는 Windows VM 조작(SSH, 화면 밖 RDP, 합성 입력), 시간 제한 `usbmon` 캡처, 장치의 호스트와 게스트 이동, Linux 쪽 디버깅 보조를 묶는다. 장치와 드라이버 정보를 덤프하는 PowerShell 프로브는 벤더 `.sys` 코드를 일부러 건드리지 않으며, 새 드라이버의 상수는 모두 기록에서 나온 것으로 추적된다고 설명한다. 저자는 자기 프로젝트에 이 일반화된 형태를 그대로 쓰지는 않았다고 밝힌다.
+- **유지:** upstream SANE의 genesys 백엔드도 2026년 9월 이 스캐너를 지원하게 돼, 저자는 자기 백엔드를 개념 증명으로 두고 upstream이 기능을 갖추면 옮기겠다고 밝혔다.
+
+적용할 때는 다음을 구분한다(운영 제안).
+
+- 기록한 통신을 재현한 것과 장치의 프로토콜을 이해한 것은 다르다. 기록하지 않은 모드, 해상도와 오류 경로는 미검증으로 남긴다.
+- 화면에 그럴듯한 결과가 나와도 정상 스캔이나 다른 카메라의 영상 같은 기준 출력과 수치로 비교한다.
+- 벤더 코드를 읽거나 복제하지 않는 방식이어도 장치와 소프트웨어의 사용 권한, 결과물의 배포 범위는 따로 확인한다. 국내법이 적용되면 아래 저작권법 절을 함께 본다.
 
 ## 디컴파일과 정적 재컴파일이 확인하는 동등성을 구분한다
 
@@ -100,6 +118,7 @@ N64Recomp는 README 기준 N64 바이너리를 어느 플랫폼용으로든 컴�
 - 관찰한 동작과 추정한 내부 구조를 구분했는가.
 - 정상 경로 외 오류, 저장 호환성, 부하와 입력 경계를 비교했는가.
 - 재현용 상태와 입력, 코드 revision과 측정 환경을 남겼는가.
+- 하드웨어라면 기준 드라이버와 새 드라이버의 같은 작업을 같은 도구로 기록해 비교하고, 실제 장치의 출력으로 판정했는가.
 - 국내 저작권법이 적용되는 역분석이라면 그 작업이 호환을 위한 프로그램코드역분석의 요건에 해당하는지와 얻은 정보의 이용 제한을 앞의 저작권법 절로 확인했는가.
 
 ## 출처
@@ -119,6 +138,10 @@ N64Recomp는 README 기준 N64 바이너리를 어느 플랫폼용으로든 컴�
 - [odiff — dmtrKovalenko](https://github.com/dmtrKovalenko/odiff) — 2026-10-20 main 브랜치의 README, Node.js 타입 정의와 CLI 소스로 차이 결과 필드 확인.
 - [Living in the Weimar era of Ruby — Julik Tarkhanov](https://blog.julik.nl/2026/10/the-weimar-of-ruby)
 - 사용자 제공 GeekNews 발췌: 2026-10-11 REA Reverse, 2026-10-12 브라우저 게임 이식, 2026-10-13 Ruby 생태계, 2026-10-15 게임 하네스. 게임 이식의 원문 식별과 데모 재현은 후속 작업이다.
+- [Using Artificial Intelligence to reverse engineer hardware — Christian F.K. Schaller](https://blogs.gnome.org/uraeus/2026/10/15/aiandreverseengineerhardware/) — 2026-10-15, 캡처 방법, 판정 기준, 소요 시간과 upstream 상태를 2026-10-27 대조. 드라이버와 패치는 실행하지 않음.
+- [hw-harness — cschalle](https://github.com/cschalle/hw-harness) — 2026-10-27 README(main 093afc5c57)로 도구 구성, `usbmon` 비교 방법과 벤더 코드 비접촉 원칙 확인.
+- [OpticFilm8200i-sane — cschalle](https://github.com/cschalle/OpticFilm8200i-sane) — 대상 칩과 USB ID, 라이선스 확인.
+- 사용자 제공 GeekNews 알림 요약(2026-10-16~27): AI로 하드웨어 리버스 엔지니어링. 게시물 URL은 확인하지 못했고 위 원문으로 대조했다.
 
 ## 관련 문서
 

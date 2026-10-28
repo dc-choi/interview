@@ -36,6 +36,22 @@ DCF의 기본 구조는 [[Valuation|밸류에이션]], 사업 구조는 [[Paid-W
 
 2026-10-27 확인한 공식 IR 일정에서 3분기 실적발표 컨퍼런스콜은 10월 29일 오전 10시로 예정돼 있었다. 그 전에 나온 분석자의 HBM 평균판매가격(ASP) 예상은 회사가 발표한 실적이나 확정 계약조건으로 옮기지 않는다. 후속 발표에서도 가격과 물량이 공개되지 않으면 미확인으로 두고, 추정이 필요하면 가정과 민감도 범위를 별도로 적는다.
 
+### 매출 비중과 이익 기여도는 따로 계산한다
+
+새 사업이 최대 매출 부문이 됐어도 최대 영업이익 부문이 됐다는 뜻은 아니다. 매출, 영업이익과 조정 EBITDA를 같은 기간과 부문으로 맞추고 조정 항목까지 확인한다.
+
+사례: SpaceX의 2026년 3분기 실적 발표에서 확인한 분기 단독 수치다. 단위는 백만 달러이며, 2026-10-28에 SEC 제출 자료를 대조했다.
+
+| 부문 | 매출 | 영업이익 | 조정 EBITDA |
+|---|---:|---:|---:|
+| SI | 7,560 | 431 | 4,953 |
+| Connectivity | 5,248 | 2,367 | 3,499 |
+| 전사 합계(Space 포함) | 14,575 | 2,791 | 8,809 |
+
+SI는 전사 매출의 약 51.9%지만 영업이익 기여는 약 15.4%다. 영업이익이 가장 큰 부문은 Connectivity이고, 조정 EBITDA가 가장 큰 부문은 SI다. SI의 조정표는 영업이익에 감가상각과 상각 2,473, 주식보상 821, 인수 관련 주식보상 1,217, 인수 비용 8, 구조조정 비용 3을 더한다. 이 조정값을 현금 유입이나 이미 회수한 투자금으로 읽지 않는다.
+
+같은 자료의 SI 매출에는 광고 매출 538과 솔루션 및 인프라 매출 7,022가 함께 들어 있다. SI 합계 전체를 GPU 임대나 모델 API 매출 하나로 분류하지 않는다. 여기서 확인한 범위는 실적의 분류와 계산이며, 향후 컴퓨팅 투자 회수기간이나 합병 성사는 검증하지 않았다.
+
 ## 3. 원인을 해석한다
 
 ### 광고비 증가액 대비 매출 증가액은 광고 효과가 아니다
@@ -154,6 +170,7 @@ IAS 32(국내 K-IFRS 1032) 문단 23은 문단 16A~16D가 정한 예외를 빼�
 
 ## 출처
 
+- [SpaceX Reports Third Quarter 2026 Results — SpaceX](https://www.sec.gov/Archives/edgar/data/1181412/000162828026066482/spaceexplorationtechnologi.htm) — 2026-10-28 분기 부문별 매출과 영업이익, 조정 EBITDA와 SI 조정표 및 매출 구성 대조. 2절의 사례만 부분 검증했으며 기존 항목의 검증일은 유지한다.
 - [Samsung Electronics Announces Earnings Guidance for Third Quarter 2026 — Samsung Newsroom](https://news.samsung.com/global/samsung-electronics-announces-earnings-guidance-for-third-quarter-2026) — 2026-10-08 발표한 연결 매출과 영업이익 추정치, 2026-10-27 대조. 본문 2절의 사례만 검증했다.
 - [IR 행사 — 삼성전자](https://www.samsung.com/sec/ir/ir-events-presentations/events/) — 3분기 가이던스 공시일과 실적발표 컨퍼런스콜 예정일, 2026-10-27 대조.
 - [키다리 아저씨는 네카오가 비워둔 여성향 19금 웹툰 사업가? — YouTube, Long-term Optimization](https://www.youtube.com/watch?v=Nbvuza_7Tvw) — 주제 선정의 계기이며 분석자의 시나리오 확률, 가치와 임계값은 옮기지 않음

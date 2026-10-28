@@ -114,6 +114,26 @@ Factorization Machine(FM)은 선형 항에 특징 쌍의 상호작용을 더하�
 
 2026-10-14 SageMaker AI 공식 문서 기준으로 내장 FM은 2차 특징 상호작용을 다루며 이진 분류와 회귀를 지원한다. 학습 입력은 `Float32` tensor의 `recordIO-protobuf` 형식이다. 이는 해당 서비스 구현의 입력 계약이며 FM이라는 모델 전체의 파일 형식 요구가 아니다.
 
+### Field 단위 상호작용과 CTR 모델 경량화
+
+CTR 예측 입력은 대개 사용자, 콘텐츠, 맥락처럼 field로 묶인 범주형 특징이 중심이고, 조회수 같은 수치나 이미지, 텍스트 벡터 같은 dense 특징이 더해지기도 한다. FM은 모든 특징 쌍을 같은 방식으로 다루고, Field-aware FM(FFM)은 상대 field마다 별도 잠재 벡터를 둬 표현력이 크지만 파라미터가 특징 수와 field 수의 곱으로 늘어난다. Field-weighted FM(FwFM)은 특징마다 잠재 벡터 하나를 두고 field 쌍의 상호작용 강도만 가중치로 학습한다.
+
+```text
+FwFM: φ(x) = w0 + Σ xᵢ wᵢ + Σ_{i<j} xᵢ xⱼ ⟨vᵢ, vⱼ⟩ r_{F(i),F(j)}
+```
+
+FwFM 논문은 적게는 FFM 파라미터의 4%로 비슷한 예측 성능을 보고하며, 이 비율은 field 수가 적을수록 커진다(논문 표 2의 파라미터 수 식 기준). LR, FM 계열, DNN처럼 사용자 속성, 콘텐츠 토픽과 조회수 같은 임의의 side feature를 입력으로 받는 모델은 side feature 없이 ID 상호작용만 학습하는 MF나 그래프 모델보다 신규 아이템에 대응하기 쉽지만, 신규 아이템의 콘텐츠 특징을 서빙 시점에 계산해 둘 수 있을 때만 그렇다.
+
+실시간 서빙의 지연 예산과 메모리 안에 두려면 다음 경량화를 함께 검토한다. 임베딩 축소는 요청당 연산을, 테이블 공유와 해시 범위는 모델 크기와 메모리를 줄인다.
+
+- **사전학습 임베딩 축소:** 이미지와 텍스트 임베딩을 그대로 이으면 수백에서 천 차원이 된다. pooling은 정보 손실이 크고 UMAP 같은 비선형 투영은 빠르게 변하는 데이터에서 하이퍼파라미터를 다시 맞추는 부담이 있어, autoencoder로 수십 차원까지 줄이는 선택지를 오프라인 성능과 함께 비교한다. Autoencoder도 데이터가 바뀌면 다시 학습해야 하고 그때 랭커가 읽는 특징 공간이 바뀌므로 encoder와 랭커를 bundle의 feature 참조로 함께 version 관리한다([[Recommendation-System-Serving-Operations#Serving Bundle 계약|Serving Bundle]]).
+- **임베딩 테이블 공유:** 최근 본 콘텐츠, 클릭한 콘텐츠처럼 여러 field가 같은 ID 공간을 쓰면 embedding table을 공유해 파라미터를 줄이고, field별 offset으로 같은 ID를 field마다 구분한다. 완전히 같은 field가 아니어서 공유하면 충돌과 정보 손실이 늘 수 있으므로 오프라인 지표가 크게 떨어지지 않는 범위에서만 공유한다.
+- **해시 범위:** 고유값이 수천만인 ID 특징은 해시 bucket 수가 충돌과 파라미터 수를 맞바꾼다. bucket 수도 오프라인 지표로 정하는 하이퍼파라미터다.
+
+모델 선택의 offline 지표가 hit ratio 같은 Top K 지표여도 온라인 효과는 기존 랭킹과의 A/B로 확인한다. 학습용 이력 특징의 기준 시점은 클릭이 아니라 추천 요청(가장 최근 피드 조회) 시점이다. 클릭은 반드시 최근 노출에서 일어나므로, 클릭 전이라도 label을 만든 같은 조회의 노출을 특징에 넣으면 최근 노출 콘텐츠를 실제 선호와 무관하게 positive에 가깝게 학습한다.([[Recommendation-System-Feedback-Data|피드백 데이터]]의 point-in-time join)
+
+사례: 오늘의집 추천팀은 pCTR 랭커로 LR 기반 모델 중 DNN, FwFM, DeepFwFM을 hit ratio로 비교해 FwFM을 골랐고, 1024차원 이미지와 텍스트 임베딩을 autoencoder로 64차원까지 줄였다. 가장 최근 피드 조회를 기준점으로 그 이전 사건만 이력 특징으로 썼고, 신규 콘텐츠의 낮은 예측 성능과 속성 특징의 실시간 추출을 남은 과제로 꼽았다(2024-07 게시 기준).
+
 ## Accuracy보다 Top K를 보는 이유
 
 Pointwise classification의 accuracy, log loss와 calibration은 모델 진단에 쓸 수 있지만, 최종 제품이 상위 K개를 순서대로 보여준다면 그것만으로 목록 품질을 보장하지 않는다.
@@ -148,6 +168,8 @@ MovieLens는 rating과 timestamp가 있는 교육용 데이터다. 실제 impres
 - [Build a movie recommender with factorization machines on Amazon SageMaker — AWS](https://aws.amazon.com/blogs/machine-learning/build-a-movie-recommender-with-factorization-machines-on-amazon-sagemaker/)
 - [Collaborative Filtering for Implicit Feedback Datasets — Hu, Koren, Volinsky](https://yifanhu.net/PUB/cf.pdf)
 - [BPR: Bayesian Personalized Ranking from Implicit Feedback — Rendle et al.](https://arxiv.org/abs/1205.2618)
+- [Field-weighted Factorization Machines for Click-Through Rate Prediction in Display Advertising — Pan et al.](https://arxiv.org/abs/1806.03514)
+- [개인화 추천 시스템 2, Personalized Content Ranking — 오늘의집](https://www.bucketplace.com/post/2024-07-10-%EA%B0%9C%EC%9D%B8%ED%99%94-%EC%B6%94%EC%B2%9C-%EC%8B%9C%EC%8A%A4%ED%85%9C-2-personalized-content-ranking/)
 - [Matrix Factorization Techniques for Recommender Systems — Koren, Bell, Volinsky](https://doi.org/10.1109/MC.2009.263)
 - [Deep Neural Networks for YouTube Recommendations — Covington et al.](https://research.google/pubs/deep-neural-networks-for-youtube-recommendations/)
 - [Google Machine Learning Crash Course — Logistic Regression](https://developers.google.com/machine-learning/crash-course/logistic-regression)

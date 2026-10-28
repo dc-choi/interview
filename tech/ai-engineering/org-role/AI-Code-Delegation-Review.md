@@ -18,7 +18,31 @@ aliases: ["AI Code Delegation and Review", "AI 구현 위임과 코드 리뷰"]
 - **이해:** 운영과 후속 변경을 판단할 만큼 시스템을 이해한다.
 - **영향:** 인증, 공유 라이브러리처럼 파급 범위가 큰 변경을 집중 검토한다.
 
-리뷰는 결함 탐지와 지식 전달을 함께 수행한다. 에이전트가 작성했다는 사실은 배포 책임을 이전하지 않는다.
+리뷰는 결함 탐지와 지식 전달을 함께 수행한다. 에이전트가 작성했다는 사실은 배포 책임을 이전하지 않는다. 에이전트가 대부분의 코드를 쓰는 팀이 리뷰를 PR 전 검증, AI 리뷰, 병합 차단 검사와 위험 등급별 사람 승인으로 나눈 사례는 [[Code-Review-AI-Agent-Operations|에이전트 시대 코드 리뷰 운영]]에 있다.
+
+## 위임 앞뒤에 사람이 생각하는 구간을 둔다
+
+구현을 맡겨도 위임 전의 이해와 위임 뒤의 검토는 사람이 맡는다. 앞뒤에 사람의 사고를 두고 가운데 구현을 AI에 맡기는 구성을 Brain Sandwich라고 부르는 실무 글이 있다(2026-10-02 공개, 경험 기반 권고이며 효과를 측정한 결과는 아니다).
+
+- **위임 전:** 문제와 주변 맥락을 먼저 읽는다. 구현 계획이 완벽할 필요는 없지만 대략의 방향을 알아야 결과가 맞는지, 과한지, 애초에 풀 필요가 없는 문제를 풀었는지 판단할 수 있다.
+- **위임:** 맥락을 확보했다면 구현은 맡긴다.
+- **위임 뒤:** diff를 읽고 이 상황에서 그 복잡도를 감수할 만한지 따지며 PR 설명을 고친다. 무엇이 왜 바뀌는지 설명하지 못하면 아직 다른 사람에게 리뷰를 요청할 단계가 아니다. 이해를 건너뛴 리뷰 요청은 [[AI-Slop-Quality-Gate|AI 슬롭]]이 말하는 비용 전가다.
+
+구현을 계속 넘기면 앞뒤 구간에 필요한 판단력도 무뎌질 수 있다는 반론은 [[Expertise-Formation-AI|AI 시대 전문성 형성]]의 침식 위험과 같은 축이다. 배우는 중인 영역이면 가운데 구간의 일부도 직접 한다.
+
+### 생성 속도가 이해 속도를 앞지를 때
+
+생성 속도가 검토 속도를 앞지르면 PR 검토가 병목이 된다. 모든 줄을 같은 깊이로 읽는 대신 사람이 정할 곳과 깊게 읽을 곳을 나눈다. 아래는 실무 경험에서 반복해 나온 패턴이며 효과를 측정하거나 비교한 결과는 아니다.
+
+- **설계 층은 사람이 정한다:** 추상화의 책임과 상호작용, 함수 시그니처, 불변식과 도메인 모델을 정하고 그 사이의 구현을 맡긴다. 구현을 해 봐야 설계 문제가 드러나므로 설계와 구현을 오간다.
+- **계획을 확인 지점이자 QA 범위로 쓴다:** 에이전트가 먼저 질문하게 하고 계획 문서를 고쳐 승인한 뒤 코드를 바꾼다. 계획은 작업 순서표보다 어떤 QA를 할지와, 방향을 바꾸는 비용이 커지기 전에 어디까지 진행할지를 정하는 자리이며 다음 작업의 맥락으로 다시 쓰인다.
+- **구현 단계 대신 결과의 제약을 준다:** 성능 목표 같은 결과의 제약 조건을 주고, 표준 라이브러리, 기존 컴포넌트와 정해진 패턴을 쓰게 해 잘못돼도 피해가 제한되고 고치기 쉬운 범위에 머물게 한다.
+- **검토 깊이는 되돌리기 어려운 정도로 나눈다:** 인증, 암호화, 영구 저장 상태, DB 변경과 데이터 마이그레이션, 사람이 확인해야 하는 고객 데이터와 회사 고유의 비즈니스 로직은 직접 읽고 이해한다. 피해가 작고 되돌리기 쉬운 부분은 빠르게 훑고 결과 확인에 비중을 둔다([[AI-Slop-Quality-Gate#위험도에 따른 검토 강도|위험도에 따른 검토 강도]]). 줄 단위 검토를 줄이는 것은 검토를 없애는 일이 아니라 읽을 곳을 이런 부분과 변경 의도의 판단으로 옮기는 일이다(해석).
+- **검사를 구현과 떼어 놓는다:** 테스트도 검토 대상이다. 모델이 실패하던 기존 테스트를 새 구현에 맞춰 고쳐 경계 조건 회귀가 생긴 사례가 있다. 구현과 검사의 작성 주체를 나누고, 일부러 결함을 넣어 테스트가 잡는지 확인한다([[Agent-Test-Verification-Behavior#검증 근거를 리뷰하되 코드 검토 범위도 남긴다|검증 근거와 검토 범위]]).
+- **이해 비용을 도구로 낮춘다:** 호출 경로와 구현 목록을 바로 보여 주는 읽기 전용 PR 뷰어, 다이어그램, 스크린샷과 동작 영상을 변경과 함께 내게 하고, 에이전트의 계획, 진행과 이력을 남기는 활동 피드를 사람과 모델이 함께 본다.
+- **속도는 팀 단위로 맞춘다:** 생성 속도가 검토 속도를 앞지르는 것은 개인 습관이 아니라 팀의 문제다. 이해하지 못한 시스템의 유지보수까지 AI에 의존하게 되는 위험과, 주니어가 AI의 잘못된 선택을 알아보는 직관을 어떻게 기를지는 열린 질문으로 남는다.
+
+사례: 한 개발자의 회고(2026-10-15)에서는 생산성이 오르자 PR 검토가 병목이 되면서 계획과 깊게 읽을 곳이 위처럼 옮겨 갔다. Anthropic의 Scion 글(2026-10-13)에서는 엔지니어가 모든 줄 대신 변경의 의도를 검토했고, 그 역할은 Claude의 접근을 거절하는 일인 경우가 많았다(2026-10-27 원문 대조). 나머지 패턴은 2026년 10월 Hacker News 질문 글(이해하지 못한 AI 작성 코드를 배포하는 문제)에 모인 개인 경험이며 개별 사례는 검증하지 않았다.
 
 ## 관례와 피드백
 
@@ -52,7 +76,35 @@ AI 버그 수정 지침은 사소하지 않은 결함의 재현 시도, 수정 �
 - 실제 수행한 검사, 결과와 수행하지 못한 검사
 - 작성자가 설명할 수 있는 수정 이유와 영향 범위
 
-2026-10-24에 확인한 공식 AI 지침에는 `Assisted-by` 절이 남아 있었다. 태그 폐지 제안이나 도구 금지에 대한 발언을 현재 문서의 변경 완료로 해석하지 않는다. 실제 제출 시점에는 대상 트리와 유지관리자의 최신 지침을 다시 확인한다. 이 확인은 관련 패치의 병합 여부나 영상에서 언급한 개별 버그 수를 검증한 기록이 아니다.
+2026-10-24에 확인한 공식 AI 지침에는 `Assisted-by` 절이 남아 있었다. 태그 폐지 제안이나 도구 금지에 대한 발언을 현재 문서의 변경 완료로 해석하지 않는다. 실제 제출 시점에는 대상 트리와 유지관리자의 최신 지침을 다시 확인한다. 이 확인은 관련 패치의 병합 여부나 영상에서 언급한 개별 버그 수를 검증한 기록이 아니다. 2026-10-27에도 Attribution 절과, 사람 제출자가 기여 전체를 책임지고 AI 생성 코드를 모두 검토하며 자기 Signed-off-by로 DCO를 인증한다는 규정을 다시 확인했다.
+
+태그 수는 사용량의 하한으로 읽는다. LWN의 7.2 개발 통계(2026-08-17)는 `Assisted-by` 태그가 붙은 변경이 7.1의 301건에서 7.2의 1,111건(전체의 7% 미만)으로 늘었다고 집계하면서도, 태그를 생략하는 개발자와 패치를 적용할 때 태그를 지우는 유지관리자가 있어 실제 LLM 보조 패치는 훨씬 많을 것이고 정확한 추적은 불가능할 수 있다고 적는다. 태그 비율을 AI 사용률이나 품질 지표로 쓰지 않는다.
+
+2026년 10월 LKML 스레드에서 Torvalds는 특정 작업에 AI를 쓰지 말라는 규칙을 만들지 않겠다며, 기여자에게 기대하는 것은 최선을 다하고 자기가 하는 일을 이해하는 것이고 어떤 도구를 쓰는지는 그와 거의 무관하다는 취지로 답했다(GeekNews 번역 요약 기준, lore.kernel.org 원문은 접근 차단으로 대조하지 못했다). 그 자신의 페이지 캐시 패치도 같은 경계를 보여 준다. Phoronix가 인용한 첫 개발 브랜치(`noref-filemap-read-with-llm`)의 커밋 메시지는 코드, 테스트 프로그램, 검토 항목과 소개문 초안을 자신의 지휘 아래 Claude Code로 만들었고 측정은 자기 장비에서 했다고 밝힌다. GitHub 미러의 후속 브랜치(`rcu-free-v3`)에 있는 2026-10-12 커밋 `65401f4102b9`는 `Assisted-by: LLM` 태그와 함께 측정 장비, 기준 커널, 반복 조건, 읽기당 사이클과 명령어 수, 사용자 페이지가 메모리에 없을 때 `read()`마다 예외가 한 번 더 생기는 비용까지 커밋 메시지에 적는다(2026-10-27 확인, 메인라인 병합 여부는 확인하지 않음). 리뷰 요청에 옮기면 도구 표기보다 재현 조건, 측정 결과와 알려진 비용을 남기는 쪽이 검토에 쓸모 있다(운영 제안). 패치의 기술 내용은 [[Linux-Page-Cache-Contention|페이지 캐시 참조 카운팅 경합]]을 본다. 그 문서는 이 커밋을 확인하기 전인 2026-10-16 기준이라 패치와 측정을 아직 미대조로 둔다.
+
+## AI 리뷰가 결함을 더 빨리 찾으면 수정 용량이 병목이 된다
+
+LLM 보조 리뷰와 퍼징은 결함을 더 일찍 찾게 하지만 고칠 사람의 시간은 그만큼 늘지 않는다. 수정이 작아도 재현, 수정, 재검토와 병합에 결함마다 고정 비용이 붙으므로, 발견이 늘면 정해진 일정 안에 고칠 수 있는 양이 먼저 바닥난다.
+
+**PostgreSQL 19 (2026-10-09 커미터 회고와 Beta, RC 공지를 2026-10-27 대조):** 베타가 시작된 뒤 주요 기능 약 8~10개가 되돌려졌고 일부는 베타 후반이었다. 되돌림 몇 건은 드물지 않고 주기당 하나 정도는 예상할 수 있다는 점에 비하면 이례적인 규모다. 일부 기능의 개발자나 커미터였던 Peter Eisentraut는 기능마다 다른 요인의 조합으로 보며, 개인 의견임을 밝히고 다음을 든다.
+
+- 코드가 충분히 좋지 않았거나 시간 안에 끝내기 어려운 기능을 여럿 시도했을 수 있다. 일부는 베타 중에 빨리 고치기 어려운 구조적 결함이 있었다.
+- 예전이면 이후 5년 동안 조금씩 고쳤을 경계 조건 결함이 LLM 보조 코드 리뷰로 빨리 드러나 40건 남짓한 결함 보고가 쌓였다. 평균 세 줄짜리 수정이어도 건마다 고정 비용이 있어 시간이 모자랐다.
+- 되돌린 기능은 대부분 LLM 보조 리뷰가 지금만큼 쓸모 있기 전에 작성되고 커밋됐다. 작성 뒤에 실질적인 품질 기준이 올라간 것이며 바이브 코딩에서 나온 문제는 아니라고 본다.
+- 보안 취약점 수정 물량에 시니어 개발자가 몰린 4월부터 8월까지 베타 기간의 추가 검토와 테스트가 줄었다가 8월에 재개돼, 문제가 베타 후반에 몰려 드러났다.
+- 도메인, 복합 타입 위의 도메인, 삭제 뒤 다시 추가한 열, 열 순서를 바꿔 다시 붙인 파티션, 트리거에서 부른 SECURITY DEFINER 함수 안의 뷰가 겹치는 조합은 사람이 열거해 시험할 수 없지만 LLM 보조 퍼징은 빨리 찾는다. 이를 기능 개발에 포함하고, 문맥 조합마다 상호작용이 늘지 않도록 내부 인터페이스를 견고하게 만들자고 제안한다. 기능을 실험 상태로 커밋해 본 트리에서 성숙시키는 방식은 풀지 못한 과제로 남긴다.
+- 두 달쯤 더 있었다면 이런 결함도 고칠 수 있었겠지만, 커뮤니티는 수정을 더 넣으려고 출시를 미루기보다 일정을 지키려 했다고 본다.
+
+출시일은 그래도 예고보다 늦어졌다. 2026-06-04 Beta 1 공지는 정식 출시를 9~10월 무렵으로, 2026-09-24 Beta 4 공지는 RC를 10월 초로 잡고 GA도 10월일 수 있다고 예고했다. RC 1은 2026-10-15에 나왔고, 그 공지는 11월 12일 정기 업데이트에 들어갈 많은 수정을 19에도 넣으려고 같은 날 RC 2를 내며 문제가 없으면 11월 19일 정식 출시한다고 밝혔다. 기능을 되돌린 선택은 수정 시간을 벌려는 더 긴 연기를 피한 것이지 처음 일정을 그대로 지켰다는 뜻은 아니다(해석).
+
+**Linux 7.2 (LWN 2026-08-17 개발 통계):** 이전 커밋의 버그를 고친다고 표시하는 `Fixes` 태그가 붙은 커밋이 4,830건이다. 여러 릴리스 동안 거의 평탄하던 Fixes 커밋이 최근 릴리스에서 크게 늘었고, LWN은 기존 소프트웨어의 버그 찾기에 LLM을 쓰는 사람이 많아진 영향으로 해석한다. 리뷰 시스템 Sashiko를 Reported-by로 밝힌 패치는 252건, 변경 설명에서 Sashiko를 언급한 커밋은 568건이다. 모두 반영된 커밋을 센 수치라 발견과 수정량이 늘었다는 신호이며, 고치지 못한 보고나 대기열의 크기는 이 통계에 없다. 발견이 수정 용량을 넘었는지는 미처리 보고 같은 별도 지표로 확인한다.
+
+적용할 때는 다음을 나눈다(운영 제안).
+
+- AI 리뷰를 들이기 전에 발견을 처리할 용량, 곧 분류, 재현, 수정과 재검토를 함께 잡는다. 발견 수만 늘면 대기열이 길어진다.
+- 이번 변경이 만든 결함과 원래 있던 결함을 나눠 센다. AI 리뷰 지적에 Pre-existing 같은 분류를 붙여 변경이 만들지 않은 결함을 작성자 책임과 구분하고, 기존 코드의 오래된 결함은 리뷰 에이전트의 야간 검토처럼 별도 흐름에서 찾는다([[Code-Review-AI-Agent-Operations#지적 처리와 도입 점검|지적 처리와 도입 점검]]).
+- 품질이 나빠진 것인지 판정 기준이 올라간 것인지 구분한다. 새 검사 도구가 쓰이기 전에 작성된 코드에서 드러난 결함은 새 변경의 회귀와 다른 선택지(되돌림, 다음 주기로 이월, 실험 기능 표시)를 가진다.
+- 조합이 폭발하는 기능은 퍼징과 [[Property-Based-Testing|속성 기반 테스트]]를 개발 단계에 넣는다.
 
 ## 형식 검증도 명세의 적합성까지 대신하지 않는다
 
@@ -78,14 +130,35 @@ Dafny 4 튜토리얼의 절댓값 예제에서 후조건이 `0 <= y`뿐이면 �
 
 - [Dafny, Getting Started with Dafny: A Guide](https://dafny.org/dafny/OnlineTutorial/guide) — Dafny 4 예제의 전후조건과 불충분한 명세, 2026-10-26 부분 대조
 - [Linux Kernel, Kernel Guidelines for Tool-Generated Content](https://docs.kernel.org/process/generated-content.html) — 2026-10-24 제출물 이해, 도구 사용 설명과 검토 재량 대조
-- [Linux Kernel, AI Coding Assistants](https://docs.kernel.org/process/coding-assistants.html) — 2026-10-24 재현, 수정 검증, 미수행 검사 공개와 Attribution 절 확인
+- [Linux Kernel, AI Coding Assistants](https://docs.kernel.org/process/coding-assistants.html) — 2026-10-24 재현, 수정 검증, 미수행 검사 공개와 Attribution 절 확인, 2026-10-27 Attribution 절과 사람 제출자의 책임 재확인
 - [Google, What to look for in a code review](https://google.github.io/eng-practices/review/reviewer/looking-for.html) — 설계, 동시성, 테스트의 유효성, 검토 역량과 범위
 - [Will We Write Code Again? — Trilon Consulting, Kamil Mysliwiec](https://trilon.io/blog/will-we-write-code-again) — 경험과 전망, 2026-10-15 본문 확인
 - [우리는 다시 코드를 작성하게 될까? — RosettaLens](https://rosettalens.com/s/ko/will-we-write-code-again) — 번역문, 영문 원문과 대조
+- [The Brain Sandwich — Terrible Software](https://terriblesoftware.org/2026/10/02/the-brain-sandwich/) — 2026-10-02, 세 구간과 리뷰 요청 기준을 2026-10-27 원문 대조
+- [Ask HN: How to deal with shipping AI-written code you don't understand? — Hacker News](https://news.ycombinator.com/item?id=50151036) — 2026-10, 실무 경험 모음. 패턴은 GeekNews 요약과 원 스레드 일부로 확인했고 개별 경험과 사례는 검증하지 않음
+- [My old job feels very distant now — Pinecoder](https://www.pinecoder.dev/blog/2026-10-15/my-old-job-is-distant/) — 2026-10-15 개인 경험, 2026-10-27 원문 확인
+- [Redesigning source control at Anthropic — Anthropic Engineering](https://www.anthropic.com/engineering/redesigning-source-control) — 2026-10-13 게시, 10-15 갱신. 엔지니어의 검토 방식 문장을 2026-10-27 대조
+- [Development statistics for the 7.2 kernel — LWN.net, Jonathan Corbet](https://lwn.net/Articles/1088776/) — 2026-08-17, Assisted-by, Fixes와 Sashiko 수치를 2026-10-27 대조
+- [Linus Torvalds Working On A Hefty Linux Kernel Improvement With Claude Code — Phoronix](https://www.phoronix.com/news/Linus-Torvalds-Claude-Code) — 2026-10-11, 첫 개발 브랜치 커밋 메시지 인용
+- [mm/filemap: read from the page cache without folio references — GitHub torvalds/linux 미러, Linus Torvalds](https://github.com/torvalds/linux/commit/65401f4102b974df3907267e9cac2e991a0a6680) — `rcu-free-v3` 브랜치 2026-10-12 커밋, 2026-10-27 커밋 메시지 확인
+- [Linus Torvalds "AI 사용을 금지하지 않겠다. 자신이 하는 일을 이해해야 한다" — GeekNews](https://news.hada.io/topic?id=35504) — LKML 메시지의 번역 요약. lore.kernel.org 원문은 2026-10-27 접근 차단으로 미대조
+- [The reverts will continue until morale improves — Peter Eisentraut](https://peter.eisentraut.org/blog/2026/10/09/the-reverts-will-continue-until-morale-improves) — 2026-10-09 개인 회고, 2026-10-27 원문 대조
+- [PostgreSQL 19 RC 1 Released! — PostgreSQL](https://www.postgresql.org/about/news/postgresql-19-rc-1-released-3409/) — 2026-10-15, RC 2와 정식 출시 예정일 대조
+- [PostgreSQL 19 Beta 1 Released! — PostgreSQL](https://www.postgresql.org/about/news/postgresql-19-beta-1-released-3313/) — 2026-06-04, 정식 출시 예고(9~10월 무렵)를 2026-10-27 대조
+- [PostgreSQL 19 Beta 4 Released! — PostgreSQL](https://www.postgresql.org/about/news/postgresql-19-beta-4-released-3386/) — 2026-09-24, RC와 GA 예고(10월)와 되돌린 기능 목록을 2026-10-27 대조
+- [Postgres 19 delayed after AI reviewers find more bugs than humans can fix — The Register, Lindsay Clark](https://www.theregister.com/databases/2026/10/16/postgres-19-delayed-after-ai-reviewers-find-more-bugs-than-humans-can-fix/5303471) — 2026-10-16 보도, 아래 GeekNews 연기 요약의 원문. 일정은 위 공식 공지로 대조
+- 사용자 제공 GeekNews 알림 요약(2026-10-16~27): Claude Code 팀의 코드 리뷰 방식, [Brain Sandwich](https://news.hada.io/topic?id=35604), [예전의 내 일은 이제 멀게 느껴진다](https://news.hada.io/topic?id=35541), [Ask HN](https://news.hada.io/topic?id=35662), [Postgres 19 출시 지연](https://news.hada.io/topic?id=35488), Linux 7.2 통계, Torvalds 발언. 위 원문으로 대조했다
 
 ## 관련 문서
+
+- [[Property-Based-Testing#탐색을 증명으로 바꾸는 퍼즈 하네스 형식 검증|퍼즈 하네스의 형식 검증]] — 증명한 속성과 종료 보장의 구분
+
+- [[Harness-Gate-Placement#푸시 전에 변경 이해를 묻는 훅은 연습 장치다|푸시 전 이해 확인 훅]]
 
 - [[Developer-Role-AI-Era|AI 시대 개발자 역할]]
 - [[Agent-Spec-Writing|에이전트 스펙 작성법]]
 - [[Expertise-Formation-AI|AI 시대 전문성 형성]]
 - [[Agent-Repository-Instructions|저장소 작업 지침]]
+- [[Code-Review-AI-Agent-Operations|에이전트 시대 코드 리뷰 운영]]
+- [[AI-Slop-Quality-Gate|AI 슬롭과 판단 관문]]
+- [[AI-Work-Output-and-Employment|AI 코드 생산과 제품 성과]] — 산출 증가 뒤 병목이 옮겨 가는 단계

@@ -1,9 +1,9 @@
 ---
-tags: [data-pipeline, streaming, batch, flink, spark, mysql]
+tags: [data-pipeline, streaming, batch, flink, spark, mysql, dynamic-allocation]
 status: done
-verified_at: 2026-09-30
+verified_at: 2026-10-27
 category: "메시징&파이프라인(Messaging&Pipeline)"
-aliases: ["Stream and Batch Processing", "스트림과 배치 처리", "Spark JDBC 병렬 추출"]
+aliases: ["Stream and Batch Processing", "스트림과 배치 처리", "Spark JDBC 병렬 추출", "Spark executor 자원 산정"]
 ---
 
 # 스트림과 배치 처리
@@ -105,6 +105,34 @@ Spark 4.2 `JDBCRelation` 기준으로 Spark는 partition마다 `partitionColumn`
 
 shuffle은 같은 key의 데이터를 partition 사이로 다시 모으는 과정이다. `GROUP BY`나 join처럼 key별로 모아야 하는 연산에서 executor와 machine 사이 복사가 일어나 disk I/O, 직렬화와 network I/O가 드는 비싼 연산이다. 그룹핑 전에 WHERE 조건과 필요한 column만 남겨 입력을 줄이는 것이 shuffle 양을 줄이는 첫 수단이다.
 
+### Executor 할당과 실제 사용량을 나눠 본다
+
+실행이 성공했다는 사실만으로는 할당한 자원이 필요했는지 알 수 없다. 자원을 줄이기 전에 요청한 용량과 실제로 한 일을 같은 조건의 완료된 실행끼리 비교한다.
+
+- **두 종류의 유휴**: task를 하나도 받지 못한 executor는 과다 할당을, task를 받았지만 CPU 유휴 시간이 긴 executor는 할당한 CPU를 쓰지 못하는 실행 특성을 가리킨다. 처방이 다르므로 지표를 따로 모은다. executor 단위 유휴 시간에는 dynamic allocation이 cache된 block이나 실행 중인 job의 shuffle 데이터 때문에 일부러 남겨 둔 executor의 시간도 섞일 수 있다(아래 제거 예외). 이 시간은 과다 할당의 증거가 아니라 보존 정책의 결과이므로 분리해서 본다.
+- **spill**: 메모리 spill과 디스크 spill은 같은 메모리 압박을 다른 형태로 기록한 값이다. 둘을 더해 독립적인 바이트처럼 해석하지 않는다.
+- **재시도와 shuffle 실패**: 재시도한 stage는 비용이 드는 추가 작업이지만 시도마다 별개의 논리 작업으로 세면 성공 실행의 분석이 왜곡된다. shuffle fetch 실패가 잦은 작업은 자원 축소 후보가 아니라 안정성 조사로 분리한다.
+- **수집 경로**: 애플리케이션 코드를 고치지 않으려면 제출이 모이는 공통 경로에서 Spark listener 기반 plugin을 주입한다. 수집이 driver를 늦추거나 초기화 실패가 제출을 막지 않도록 전용 listener queue와 실패를 허용하는 초기화를 둔다.
+
+Spark 4.2.0 문서 기준 dynamic allocation(`spark.dynamicAllocation.enabled`, 기본 false)은 다음처럼 동작한다.
+
+- **요청**: 대기 task가 `schedulerBacklogTimeout`(기본 1s)보다 오래 쌓이면 executor를 요청하고, 대기가 이어지면 `sustainedSchedulerBacklogTimeout`(기본값은 앞 설정과 같음)마다 회차를 반복하며 요청 수를 1, 2, 4, 8개처럼 지수적으로 늘린다.
+- **제거와 예외**: `executorIdleTimeout`(기본 60s)보다 오래 유휴인 executor를 제거하되 두 예외가 있다. cache된 data block을 가진 executor는 `cachedExecutorIdleTimeout`(기본 infinity)을 따르므로 기본값에서는 제거되지 않는다. shuffle tracking(`shuffleTracking.enabled`, 4.2 기본값 true)은 실행 중인 job의 shuffle 데이터를 가진 executor를 살려 두며, `shuffleTracking.timeout`(기본 infinity)이면 그 shuffle이 GC로 정리될 때까지 남긴다.
+- **시작과 상한**: `initialExecutors`의 기본값은 `minExecutors`(기본 0)이고 `spark.executor.instances`가 더 크면 그 값이 시작 수가 된다. `maxExecutors`의 기본값은 infinity다.
+- **켜기 위한 조건**: executor를 제거해도 shuffle 파일을 다시 계산하지 않게 하는 수단이 하나 필요하다. external shuffle service, shuffle tracking, shuffle block decommission(`spark.decommission.enabled`와 `spark.storage.decommission.shuffleBlocks.enabled`), 신뢰할 수 있는 저장소를 지원하는 `ShuffleDataIO` plugin(`spark.shuffle.sort.io.plugin.class`, 실험적) 가운데서 고른다. Kubernetes 모드는 external shuffle service를 지원하지 않는다.
+
+#### 사례: 하루 약 800만 건 실행의 자원 조정
+
+Salesforce Data 360 팀이 2026-10-08 공개한 사례이며, 수치는 회사가 스스로 보고한 값이다.
+
+- 제출 gateway에서 오픈소스 Spark plugin(DataFlint)을 확장해 주입하고, driver별 telemetry를 Kafka를 거쳐 중앙 저장소로 모았다.
+- 비용, CPU 유휴 시간, task 0건 executor를 기준으로 상위 10개 워크로드를 골랐다.
+- 시작 시 executor 40개를 요청하던 워크로드는 초기에 대부분 할 일이 없어 `initialExecutors`를 4로 낮추고 dynamic allocation을 유지했다. executor 유휴 시간이 90%를 넘던 다른 묶음은 최대 executor 수를 약 20% 줄였다.
+- 단계 배포마다 p95 실행 시간, 재시도, OOM, spill, pod와 node churn을 확인했다.
+- 대상 워크로드의 주간 compute 비용 run rate가 변경 전후 4주 비교에서 31% 줄었다고 보고했다. 같은 기간 작업 시작 수는 7% 넘게 늘었다. 통제 실험이 아닌 전후 비교라 같은 기간 다른 변경의 영향은 분리되지 않았다.
+
+이 값은 해당 워크로드에서 확인한 결과이지 모든 Spark 작업의 권장 설정이 아니다. 발표는 executor 유휴 시간에 cache나 shuffle 보존으로 남은 executor가 섞였는지 밝히지 않았다. 자원 추정은 실행 근거로 검증할 가설로 다루고, 비용은 실행 시간, spill, 재시도와 실패를 함께 놓고 평가한다.
+
 ## 운영 체크리스트
 
 1. freshness와 completeness SLO를 분리한다.
@@ -128,6 +156,10 @@ shuffle은 같은 key의 데이터를 partition 사이로 다시 모으는 과�
 - [Apache Flink Documentation, Windows](https://nightlies.apache.org/flink/flink-docs-stable/docs/dev/datastream/operators/windows/)
 - [Apache Spark Documentation, JDBC Data Source](https://spark.apache.org/docs/latest/sql-data-sources-jdbc.html)
 - [Apache Spark Documentation, RDD Programming Guide (Shuffle operations)](https://spark.apache.org/docs/latest/rdd-programming-guide.html#shuffle-operations)
+- [Apache Spark 4.2.0 Documentation, Job Scheduling (Dynamic Resource Allocation)](https://spark.apache.org/docs/4.2.0/job-scheduling.html#dynamic-resource-allocation) — 2026-10-27 요청과 제거 정책, cache 보존 예외, 켜기 위한 네 가지 수단과 Kubernetes 제약 대조
+- [Apache Spark 4.2.0 Documentation, Configuration (Dynamic Allocation)](https://spark.apache.org/docs/4.2.0/configuration.html#dynamic-allocation) — 2026-10-27 기본값과 shuffle tracking의 executor 보존 대조
+- [Apache Spark Resource Optimization: Lessons From Eight Million Jobs a Day — Salesforce Engineering](https://engineering.salesforce.com/apache-spark-resource-optimization-lessons-from-eight-million-jobs-a-day/)
+- [Apache Spark 리소스 최적화: 하루 800만 건의 작업 실행에서 얻은 교훈 — GeekNews](https://news.hada.io/topic?id=35502)
 - [JDBCRelation.scala v4.2.0 — Apache Spark GitHub](https://github.com/apache/spark/blob/v4.2.0/sql/core/src/main/scala/org/apache/spark/sql/execution/datasources/jdbc/JDBCRelation.scala)
 - [JDBCRDD.scala v4.2.0 — Apache Spark GitHub](https://github.com/apache/spark/blob/v4.2.0/sql/core/src/main/scala/org/apache/spark/sql/execution/datasources/jdbc/JDBCRDD.scala)
 - [MySQL 8.4 Reference Manual, Range Optimization](https://dev.mysql.com/doc/refman/8.4/en/range-optimization.html)

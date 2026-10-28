@@ -67,10 +67,21 @@ QR코드가 오래 외면받은 이유는 동기와 장벽 둘 다였다 — 기
 
 표는 제품팀의 검수 질문이다. 소비자 출시 전 체험이나 제조사 발표만으로 장기 내구성, 사용자 채택과 전환율 개선을 확정하지 않는다.
 
+### 출시 뒤 리뷰에서 드러난 두 상태의 비용
+
+두 상태를 오가는 기기는 상태마다 따로 완성돼야 한다. 2026-10-21 공개된 John Gruber의 일주일 사용 리뷰는 펼친 iPhone Duo를 써 본 어떤 iPad보다 좋은 태블릿으로, 접은 상태를 불편한 휴대전화로 평가했다. 리뷰어 한 명의 관찰이며 사용자 조사 결과는 아니지만, 쟁점을 설계 질문으로 옮기면 다음과 같다.
+
+- **자주 쓰는 상태가 기본값을 정한다:** 접은 화면은 키보드를 띄우면 대화 기록을 볼 공간이 거의 없었고, 오른쪽으로 옮긴 Dock과 뒤로 가기 버튼은 오래 굳은 공간 기억과 부딪혔다. 하루에 여러 번 짧게 꺼내 쓰는 상태의 마찰이 크면 펼친 상태의 장점이 그 비용을 메우지 못할 수 있다.
+- **반복 동작의 인증 마찰:** Face ID 없이 측면 Touch ID만 두자 잦은 잠금 해제가 매번 의식적인 동작이 됐고, 리뷰어는 이를 사지 않을 가장 큰 이유로 들었다.
+- **화면 분할의 조작 모델:** 가로 50:50 분할에서 양쪽이 각자 독립된 iPhone처럼 동작하고 왼쪽, 오른쪽과 전체를 위한 홈 표시줄이 따로 생기는 방식은 직관적이라는 평가를 받았다.
+- **생태계 준비도:** iOS 27 SDK로 갱신하지 않은 앱은 큰 화면 가운데에 작은 iPhone 화면처럼 떠 있었다. 27 SDK로 빌드했지만 27.1 SDK의 Duo 전용 API를 아직 쓰지 않은 앱은 화면은 채워도 일반 iPhone 배치를 키운 정도였고, 일부는 배치가 깨졌다. 리뷰 기간 동안 대응한 앱이 늘수록 체감이 크게 나아졌다고 하므로, 1세대 기기의 체감은 서드파티 앱의 대응 속도에 크게 좌우된다.
+
 ## 출처
 - [QR코드를 통한 심리스한 UX 만들기 — 쪼렙 서비스기획자 (Brunch)](https://brunch.co.kr/@b30afb04c9f54dc/13)
 - [Apple unveils iPhone Duo — Apple (Newsroom)](https://www.apple.com/newsroom/2026/09/apple-unveils-iphone-duo/)
 - [Prepare and submit your apps for iPhone Duo — Apple (Developer)](https://developer.apple.com/news/?id=kkphp5qo)
+- [The iPhone Duo — John Gruber (Daring Fireball)](https://daringfireball.net/2026/10/the_iphone_duo) — 2026-10-21 리뷰, 2026-10-27 본문 확인. 리뷰어 개인의 일주일 사용 관찰
+- [존 그루버의 iPhone Duo 리뷰 - 훌륭한 태블릿, 불편한 아이폰 — GN⁺ (GeekNews)](https://news.hada.io/topic?id=35797)
 
 ## 관련 문서
 - [[UX-Laws|UX 심리학 10가지 법칙]] — 행동, 인지 심리 계열

@@ -8,18 +8,20 @@ verified_at: 2026-09-03
 
 # Claude Fable 5, Mythos 5
 
-Claude Fable 5는 가장 널리 출시된 라인 중 최상위 성능 모델로, 까다로운 추론과 장기 에이전트 작업을 겨냥한다. Claude Mythos 5는 같은 기능을 공유하되 안전 분류기가 없고 Project Glasswing 승인 고객에게만 제한 제공된다. 두 모델은 사양과 가격이 같고, 기존 Claude 모델과 다른 몇 가지 새 API 동작을 도입했다.
+Claude Fable 5는 가장 널리 출시된 라인 중 최상위 성능 모델로, 까다로운 추론과 장기 에이전트 작업을 겨냥한다. Claude Mythos 5는 같은 기능을 공유하되 안전 분류기가 없고, 출시 때는 Project Glasswing 승인 고객에게만 제한 제공됐다(2026-10 기준 제공 조건은 아래에 적는다). 두 모델은 사양과 가격이 같고, 기존 Claude 모델과 다른 몇 가지 새 API 동작을 도입했다.
 
 2026-07-21 공식 문서 기준 Fable 5 접근은 복구돼 일반 제공 중이고, Mythos 5는 제한된 고객에게 제공된다. 아래 접근 중단 사례는 현재 상태가 아니라 2026-06의 일시적 사건 기록이다.
 
 2026-09-30 공식 모델 개요 기준 현재 최상위 모델은 후속인 Fable 5.1(2026-09-01 출시, 같은 입출력 가격, 캐시 읽기 단가 4분의 1)과 Project Glasswing 한정 Mythos 5.1이고, Fable 5는 legacy로 계속 제공된다. 이 문서는 Fable 5 기준 기록이며 5.1로 옮길 때의 변경점은 공식 마이그레이션 가이드를 따른다.
+
+2026-10-06 Anthropic은 Cyber Verification Program을 세 가지 접근 등급으로 넓혀 각 등급에 Mythos 5.1을 포함하고, 기존 Project Glasswing 참여 조직을 Specialized Access 등급으로 옮긴다고 밝혔다. 2026-10-27 공식 모델 페이지는 Mythos 5와 Mythos 5.1을 이런 Anthropic 검증 프로그램을 통과한 조직에만 제공한다고 적고, 두 모델의 상태를 Active로 표시한다.
 
 ## 모델 라인업
 
 | 모델 | API ID | 위치 |
 |---|---|---|
 | Claude Fable 5 | `claude-fable-5` | 일반 출시 플래그십, 최고 성능, 안전 분류기 포함 |
-| Claude Mythos 5 | `claude-mythos-5` | Fable 5와 같은 기능, 안전 분류기 없음, Project Glasswing 한정, Mythos Preview 후속 |
+| Claude Mythos 5 | `claude-mythos-5` | Fable 5와 같은 기능, 안전 분류기 없음, 출시 때 Project Glasswing 한정(2026-10 기준 Anthropic 검증 프로그램 통과 조직), Mythos Preview 후속 |
 
 ## 사양과 가격 (두 모델 공통)
 
@@ -118,6 +120,7 @@ Effort, 작업 예산(task budgets, 베타 헤더 `task-budgets-2026-03-13`), �
 - [[Context-Engineering|컨텍스트 엔지니어링 (압축, 컨텍스트 편집)]]
 - [[LLM-Eval-Strategy|LLM 평가 전략 (red-team, 안전 게이트 평가)]]
 - [[연령신원검증(AgeIdentityVerification)|연령/신원 검증 (사용자 신원 게이팅 — 접근 제어의 또 다른 외생 리스크)]]
+- [[Evaluator-Guided-Program-Search|평가기 주도 프로그램 탐색 (Mythos 5의 양자 회로 설계 연구 사례)]]
 
 ## 출처
 
@@ -127,3 +130,6 @@ Effort, 작업 예산(task budgets, 베타 헤더 `task-budgets-2026-03-13`), �
 - [Anthropic Is Still at Odds With the White House Over Claude Fable 5 — WIRED](https://www.wired.com/story/anthropic-is-still-at-odds-with-the-white-house-over-claude-fable-5/)
 - [Claude Fable 5.1 — Anthropic](https://platform.claude.com/docs/en/models/fable-5-1/overview)
 - [Models overview — Anthropic](https://platform.claude.com/docs/en/about-claude/models/overview)
+- [Claude Mythos 5 — Anthropic](https://platform.claude.com/docs/en/models/mythos-5/overview) — 2026-10-27 제공 조건과 상태
+- [Claude Mythos 5.1 — Anthropic](https://platform.claude.com/docs/en/models/mythos-5-1/overview) — 2026-10-27 제공 조건과 상태
+- [Project Glasswing — Anthropic](https://www.anthropic.com/glasswing) — 2026-10-06 Cyber Verification Program 개편과 Glasswing 참여 조직의 등급 이전

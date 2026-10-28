@@ -1,7 +1,7 @@
 ---
 tags: [business, market-research, trends, ai]
 status: done
-verified_at: 2026-10-06
+verified_at: 2026-10-27
 category: "비즈니스&제품(Business&Product)"
 aliases: ["트렌드 조사 검증", "Trend Research Validation", "키워드 리서치와 수요 검증"]
 ---
@@ -61,6 +61,8 @@ Google Trends와 나란히 볼 때는 정의의 차이를 먼저 맞춘다. Goog
 
 아이디어 자체를 대화형 AI에 평가하게 할 때도 호평을 수요 증거로 쓰지 않는다. 언어 모델의 아첨 편향을 다룬 연구에서 평가한 당시 AI assistant들은 같은 논증, 수학 풀이와 시라도 사용자가 그 글을 좋아한다거나 직접 썼다고 밝히면 더 긍정적인 피드백을 자주 줬다(원문 v4를 2026-10-20 대조). 아이디어 평가를 직접 측정한 실험은 아니지만, 내 아이디어라고 밝히고 받은 평가도 같은 방향으로 기울 수 있다고 보고 반론과 확인할 가정의 후보로만 쓴다. 수요는 고객의 행동으로 확인한다([[LLM-Sycophancy-Evaluation|LLM 아첨 편향 평가]]).
 
+AI가 대량으로 만든 아이디어 목록도 같은 기준으로 다룬다. Idealab.ai는 Idealab에서 175개 이상의 회사를 시작한 Bill Gross의 방법을 뉴스, 연구, 특허, 공시와 고객 불만에 적용해 만든 120만여 개의 창업 아이디어를 무료로 공개하고, 아이디어마다 초기 자본, 첫 고객까지의 기간, 예상 연매출, 지금 할 이유와 90일 계획을 붙인다고 밝힌다(2026-10-27 공식 사이트 확인). 사이트는 모든 주장에 출처를 단다고 설명하고 공개 아이디어를 누구나 탐색하고 쓸 수 있다고 안내한다. 당시 확인한 홈, How it works와 Why it's free 세 페이지에는 비용, 기간과 매출 추정의 정확도에 대한 단서가 없었다. 따라서 아이디어 자체를 우위로 보지 않고, 붙은 추정치는 출처를 열어 확인할 가설로 둔 채 위 절차 4번의 작은 시험으로 넘긴다. 기회를 내 경험과 만날 수 있는 고객에 묶는 방법은 [[Solo-Product-Opportunity-Discovery|1인 제품 기회 발견]]에서 다룬다.
+
 ## 신기술의 가능성과 사업 성과를 나누어 검증한다
 
 기술 시연, 실제 도입과 사업 성과는 별도 근거로 확인한다. 2026-10-24 대조한 Oslo Manual 2018의 3.9~3.18절은 기업 혁신을 기존 제품이나 업무 과정과 상당히 다르고 시장에 제공되거나 실제 업무에 도입된 변화로 정의한다. 상업적 성공은 그 정의의 필수 조건이 아니며, 사용자에게 유용한 혁신도 매출이나 순이익 증가로 이어지지 않을 수 있다.
@@ -108,6 +110,8 @@ Google Trends와 나란히 볼 때는 정의의 차이를 먼저 맞춘다. Goog
 - [Google Ads Help, About Keyword Planner forecasts](https://support.google.com/google-ads/answer/3022575?hl=en)
 - [Semrush Knowledge Base, What is Search Volume in Semrush?](https://www.semrush.com/kb/683-what-is-search-volume-in-semrush)
 - [Towards Understanding Sycophancy in Language Models — arXiv](https://arxiv.org/html/2310.13548v4)
+- [Idealab.ai](https://idealab.ai/) — 2026-10-27 확인, 아이디어 수, 자료원과 무료 공개 범위. [How it works](https://idealab.ai/how-it-works)와 [Why it's free](https://idealab.ai/why-its-free)의 브리프 구성과 이용 안내를 함께 대조했고, 추정치의 정확도는 검증하지 않음
+- [Idealab.ai - 120만 개 이상의 창업 아이디어를 무료로 제공하는 서비스 — GeekNews](https://news.hada.io/topic?id=35847)
 - [MZ세대 주류 트렌드 리포트 2026 — 오픈서베이 블로그](https://blog.opensurvey.co.kr/trendreport/mz-alcoholic-beverage-2026/)
 - [How Pew Research Center will report on generations moving forward — Pew Research Center, Kim Parker](https://www.pewresearch.org/short-reads/2023/05/22/how-pew-research-center-will-report-on-generations-moving-forward/)
 

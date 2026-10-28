@@ -74,6 +74,17 @@ aliases: ["Harness Component Evaluation", "하네스 구성요소 평가", "코�
 
 이는 재현 완료된 방어 체계가 아니라 평가 설계 기준이다. 아카이브나 테스트 통과만으로 평가 조작이 불가능하다고 판단하지 않는다.
 
+## 학습 분포 밖 언어로 기억 의존을 줄이려는 시도와 교란 요인
+
+익숙한 언어의 과제에서 나온 점수는 모델이 코드를 이해한 결과인지 학습한 패턴을 떠올린 결과인지 가르기 어렵다. KillSwitch는 LLM과 코딩 에이전트가 생성하고 수정하기 어렵게 설계한 난해 언어다(GitHub dom96/KillSwitch, AGPL-3.0, Rust 참조 구현). 2026-10-19 The Register 보도와 저장소 README(2026-10-27 확인) 기준 설계와 결과는 다음과 같다.
+
+- 모든 식별자가 부사이고 호출할 때는 그 부사의 철자를 바꾼 이름(anagram)을 쓴다. 괄호나 형식 규칙 없이 산문 사이에 코드가 섞이고, 프롬프트 주입 문구와 닮은 구절이 함수 호출로 쓰인다.
+- 명세에는 네트워크를 스캔하고 서비스를 장악할 수 있다는 거짓 주장이 일부러 들어 있다. 사실과 허구를 가려 읽는지 보고 안전 가드레일을 건드리려는 장치다.
+- 2026-10-19 보도 기준 최고 종합 점수는 66.8%(기사는 모델명을 밝히지 않음)였고 대부분의 모델은 50% 아래였다. 일부 모델은 스크립트가 해킹을 할 수 있다고 보고 작업을 거부했고, 다른 모델은 코드의 의미를 파악하지 못했다. 제작자도 과제가 단순해 이 점수가 실제 이해를 보여 준다고 보지 않는다. 2026-10-27 공식 사이트는 Claude Opus 5가 선두라고 표시하지만 점수와 측정일은 보이지 않는다(제작자의 자체 벤치마크).
+- 제작자는 공개된 지 오래지 않아 평가 대상 모델이 이 언어로 학습됐을 가능성이 낮다고 보지만, 공개 저장소는 결국 학습 데이터에 흡수될 수 있다.
+
+평가 설계에 옮기면 실패를 이해 부족, 가드레일 거부와 명세 오독으로 나눠 기록하고, 공개 뒤 시간이 지난 벤치마크에는 오염 가능성을 함께 표시한다(운영 제안). 이 절은 하네스 구성요소가 아니라 평가 과제 설계의 사례이며, 공개 벤치마크의 오염과 과제 비공개 운영은 [[Eval-Model-Drift-Monitoring|서빙 모델 드리프트 감시]]와 함께 본다. 언어와 벤치마크는 직접 실행하지 않았다.
+
 ## 출처
 
 - [The Darwin Gödel Machine: AI that improves itself by rewriting its own code — Sakana AI](https://sakana.ai/dgm/) — 2025-05-30 연구 소개의 탐색 구조, 허위 실행 로그와 탐지 표식 제거 사례, 감독 조건을 2026-10-24 대조. 실험은 재현하지 않았다.
@@ -84,6 +95,10 @@ aliases: ["Harness Component Evaluation", "하네스 구성요소 평가", "코�
 - [agent-cost-bench — AWS Samples](https://github.com/aws-samples/sample-agent-cost-bench)
 - [An Empirical Study of Harness Design for Coding Agents — arXiv](https://arxiv.org/abs/2609.20804)
 - [코딩 에이전트 하네스 설계에 관한 실증 연구 — GeekNews](https://news.hada.io/topic?id=33905)
+- [Write bot-resistant code with KillSwitch, a programming language designed to confuse LLMs — The Register, Brandon Vigliarolo](https://www.theregister.com/a/5303919) — 2026-10-19, 설계, 벤치마크 결과와 제작자의 한계 언급을 2026-10-27 대조
+- [KillSwitch — GitHub, dom96](https://github.com/dom96/KillSwitch) — README의 목적, 라이선스와 벤치마크 위치, GitHub 언어 통계로 Rust 구현을 2026-10-27 확인. 명세와 코드는 열람하지 않음
+- [KillSwitch — killswitch-lang.org](https://killswitch-lang.org) — 공식 사이트의 선두 모델 표기 확인. 벤치마크 페이지 본문은 확보하지 못함
+- 사용자 제공 GeekNews 알림 요약(2026-10-16~27): LLM을 혼란시키도록 설계한 언어 KillSwitch. 게시물 URL은 확인하지 못했다
 
 ## 관련 문서
 
@@ -92,3 +107,5 @@ aliases: ["Harness Component Evaluation", "하네스 구성요소 평가", "코�
 - [[Context-Engineering|컨텍스트 엔지니어링]]
 - [[Tool-Output-Filtering|도구 출력 필터링]]
 - [[Evaluation-Driven-Development|평가 주도 개발]]
+- [[LLM-Eval-Strategy|LLM 평가 전략]] — 평가 조건과 운영 환경의 차이
+- [[Eval-Model-Drift-Monitoring|서빙 모델 드리프트 감시]] — 공개 벤치마크 오염과 과제 비공개

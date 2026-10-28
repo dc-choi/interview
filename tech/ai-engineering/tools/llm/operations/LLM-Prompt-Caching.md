@@ -3,7 +3,7 @@ tags: [ai, llm, prompt-caching, cost, bedrock, claude-code]
 status: done
 category: "AI엔지니어링(AIEngineering)"
 aliases: ["LLM Prompt Caching", "프롬프트 캐싱", "Prompt Caching", "세션 분기 캐시 재사용"]
-verified_at: 2026-10-06
+verified_at: 2026-10-27
 ---
 
 # LLM 프롬프트 캐싱 (Prompt Caching)
@@ -14,16 +14,16 @@ verified_at: 2026-10-06
 
 - 요청 앞부분부터 해시를 계산해 **일치하는 구간까지만** 재사용한다. 캐시 포인트(마커) 위치까지의 KV(attention Key/Value) 상태가 저장 단위다. 내부 구현은 Paged Attention 계열의 GPU 메모리 블록 해싱 방식으로 설명된다(프로바이더가 내부를 공식 문서화하지는 않는다).
 - 앞부분이 조금이라도 바뀌면 그 뒤 전체가 무효화된다. 배치 원칙은 하나 — **변경 빈도가 낮은 것을 앞에, 높은 것을 뒤에**.
-- Anthropic과 OpenAI GPT-5.6 이후 기준 과금은 세 종류 토큰으로 나뉜다: 일반 input, cache_write(최초 적재, 기본 입력보다 프리미엄), cache_read(히트, 대폭 할인). Anthropic 기준 5분 TTL 쓰기 1.25배, 1시간 TTL 쓰기 2배다. 읽기는 일반적으로 0.1배지만 Opus 5.5는 0.05배, Fable 5.1과 Mythos 5.1은 0.025배다. Bedrock도 읽기는 모델별 캐시 읽기 단가로 할인하고 쓰기는 모델에 따라 기본 입력보다 비싸게 과금하는 같은 구조다. 손익은 write 프리미엄을 상회하는 재사용 빈도가 전제다.
-- **벤더별 차이(2026-10-06 공식 문서 기준)**: 켜는 방식과 과금 항목이 다르다.
+- Anthropic과 OpenAI GPT-5.6 이후 기준 과금은 세 종류 토큰으로 나뉜다: 일반 input, cache_write(최초 적재, 기본 입력보다 프리미엄), cache_read(히트, 대폭 할인). Anthropic 기준 5분 TTL 쓰기 1.25배, 1시간 TTL 쓰기 2배다. 읽기는 일반적으로 0.1배지만 Opus 5.5와 Sonnet 5.5는 0.05배, Fable 5.1과 Mythos 5.1은 0.025배다. Bedrock도 읽기는 모델별 캐시 읽기 단가로 할인하고 쓰기는 모델에 따라 기본 입력보다 비싸게 과금하는 같은 구조다. 손익은 write 프리미엄을 상회하는 재사용 빈도가 전제다.
+- **벤더별 차이(2026-10-06 공식 문서 기준, 단가 배율과 OpenAI 수명은 2026-10-27 재확인)**: 켜는 방식과 과금 항목이 다르다.
 
 | 항목 | Anthropic | OpenAI | Gemini |
 |---|---|---|---|
 | 활성화 | `cache_control` 명시 지점 또는 요청 최상위 자동 캐싱 | 지원 모델에서 기본 활성(`prompt_cache_options.mode` 기본 `implicit`). GPT-5.6 이후는 개발자가 지정한 명시 지점을 더하거나 `explicit` 모드로 명시 지점만 쓸 수 있다 | 2.5 이후 모델은 암묵 캐싱 기본 활성(할인 보장 없음), 명시 캐싱은 직접 만든다(할인 보장) |
 | 최소 길이 | 모델별 512~4,096토큰 | GPT-5.6 이후 1,024토큰 | 3.5~3.8 Flash와 3.1 Pro Preview 4,096토큰, 2.5 Flash와 2.5 Pro 2,048토큰 |
-| 쓰기 비용 | 5분 1.25배, 1시간 2배 | GPT-5.6 이후 1.25배, 이전 모델은 추가 요금 없음 | 명시 캐싱은 캐시한 토큰 수와 유지 시간에 따른 저장 요금(3.1 Pro Preview 100만 토큰당 시간당 $4.50) |
-| 읽기 단가 | 기본 입력의 0.1배(Opus 5.5 0.05배, Fable 5.1과 Mythos 5.1 0.025배) | GPT-5.6 이후 0.1배(GPT-6.1 Sol 0.05배), 이전 모델은 모델별 단가(텍스트 0.1~0.5배) | 가격표의 컨텍스트 캐싱 단가는 대부분 입력의 10%(3.1 Pro Preview $0.20 대 $2.00) |
-| 유지 시간 | 5분 또는 1시간, 읽을 때마다 갱신 | GPT-5.6 이후 최소 30분(`prompt_cache_options.ttl`의 유일한 값), 쓰거나 재사용할 때마다 다시 센다 | 명시 캐싱 기본 TTL 1시간 |
+| 쓰기 비용 | 5분 1.25배, 1시간 2배 | GPT-5.6 이후 30분 수명 1.25배, 12시간 수명 2.5배(Responses API), 이전 모델은 추가 요금 없음 | 명시 캐싱은 캐시한 토큰 수와 유지 시간에 따른 저장 요금(3.1 Pro Preview 100만 토큰당 시간당 $4.50) |
+| 읽기 단가 | 기본 입력의 0.1배(Opus 5.5와 Sonnet 5.5 0.05배, Fable 5.1과 Mythos 5.1 0.025배) | GPT-5.6 이후 0.1배(GPT-6.1 Sol과 GPT-6.1 Terra 0.05배, 수명과 무관), 이전 모델은 모델별 단가(텍스트 0.1~0.5배) | 가격표의 컨텍스트 캐싱 단가는 대부분 입력의 10%(3.1 Pro Preview $0.20 대 $2.00) |
+| 유지 시간 | 5분 또는 1시간, 읽을 때마다 갱신 | GPT-5.6 이후 기본 최소 30분이고 30분 수명은 읽을 때마다 그 시점부터 다시 최소 30분이 된다. Responses API에서는 `prompt_cache_options.ttl`을 `"12h"`로 지정해 12시간 최소 수명을 고를 수 있다(2026-10-20 추가) | 명시 캐싱 기본 TTL 1시간 |
 | 사용량 필드 | `cache_creation_input_tokens`, `cache_read_input_tokens` | `input_tokens_details`의 `cached_tokens`, `cache_write_tokens` | 응답의 `usage_metadata` |
 
 읽기 할인은 Anthropic 현재 모델, OpenAI GPT-5.6 이후 모델과 Gemini 가격표 모델에서 90%가 기본이고 최신 일부 모델은 95~97.5%까지 깊어진다. OpenAI 이전 모델은 모델별 단가라 텍스트 토큰 가격표 기준 50~90%다. 하지만 손익은 쓰기 프리미엄이나 저장 요금과 재사용 빈도가 정한다. OpenAI API는 캐시된 토큰도 TPM 한도에 센다(Bedrock의 OpenAI 모델은 캐시 읽기를 입력 TPM에서 뺀다). 고정 내용을 앞에 두고 같은 접두사의 요청을 짧은 간격으로 보내라는 권고는 Gemini 문서에도 있다.
@@ -49,7 +49,7 @@ verified_at: 2026-10-06
 
 - TTL은 **히트마다 재갱신**된다. 1시간 TTL이면 1시간 안에 같은 prefix 호출이 이어지는 한 캐시가 유지되고, 1시간 동안 히트가 없을 때만 만료된다 (AWS Bedrock 문서 기준, Anthropic도 같은 갱신 방식).
 - Anthropic과 Bedrock의 Claude 모델은 기본 TTL이 짧고(5분), 긴 TTL(1시간)은 쓰기 단가가 높다. 배치가 연속 실행되는 워크로드라면 긴 TTL이 워밍 상태를 유지시켜 유리하다.
-- 모델별 최소 캐시 가능 토큰이 있다(Claude API 기준 512~4,096 토큰으로 모델별 상이 — Opus 5.5, Sonnet 5.5, Opus 5, Fable 5와 Fable 5.1은 512, Opus 4.8과 Sonnet 5, 4.6, 4.5는 1,024, Opus 4.7은 2,048, Opus 4.5, 4.6과 Haiku 4.5는 4,096). 같은 모델도 제공 경로에 따라 다를 수 있어 Bedrock 표는 Opus 4.7을 4,096으로 적는다. 미달하면 에러 없이 조용히 캐시되지 않는다.
+- 모델별 최소 캐시 가능 토큰이 있다(Claude API 기준 512~4,096 토큰으로 모델별 상이 — Fable 5.1, Mythos 5.1, Opus 5.5, Sonnet 5.5, Haiku 5.5, Opus 5, Fable 5와 Mythos 5는 512, Opus 4.8과 Sonnet 5, 4.6, 4.5는 1,024, Opus 4.7은 2,048, Opus 4.5, 4.6과 Haiku 4.5는 4,096). 같은 모델도 제공 경로에 따라 다를 수 있어 Bedrock 표는 Opus 4.7을 4,096으로 적는다. 미달하면 에러 없이 조용히 캐시되지 않는다.
 
 ## 활용 패턴 6가지
 
@@ -62,7 +62,7 @@ verified_at: 2026-10-06
 | Cache Warming | 병렬 발사 전 워밍 콜 1회로 캐시 선적재 |
 | Relocation Trick | 시스템 프롬프트에 섞인 동적 값을 유저 메시지로 이동 |
 
-- **Cache Warming** — 재사용할 prefix의 요청을 먼저 보내 캐시를 만든 뒤 후속 요청을 보낸다. Bedrock은 명시 캐싱도 적중을 보장하지 않으므로 워밍 호출 뒤의 읽기 토큰과 쓰기 비용을 함께 측정한다. 워밍 비용보다 후속 재사용의 절감액이 클 때 적용한다.
+- **Cache Warming** — 재사용할 prefix의 요청을 먼저 보내 캐시를 만든 뒤 후속 요청을 보낸다. Bedrock은 명시 캐싱도 적중을 보장하지 않으므로 워밍 호출 뒤의 읽기 토큰과 쓰기 비용을 함께 측정한다. 워밍 비용보다 후속 재사용의 절감액이 클 때 적용한다. OpenAI Responses API는 `prompt_cache_options.prewarm`을 `true`로 보내 출력을 만들지 않고 캐시만 준비하게 할 수 있고, 이때 쓴 토큰은 선택한 수명의 쓰기 단가로 과금된다. 본 요청은 같은 prefix에 `prewarm`을 빼거나 `false`로 보낸다(2026-10-27 공식 문서 기준).
 - **Relocation Trick** — 타임스탬프, 요청 ID, 사용자 ID 같은 동적 값을 시스템 프롬프트에서 유저 메시지로 옮기는 한 줄 변경. 히트율이 한 자릿수로 낮게 나올 때 거의 항상 첫 번째로 의심할 원인이다.
 
 ## 캐시를 깨뜨리는 안티패턴
@@ -112,6 +112,25 @@ API의 토큰 단가와 구독형 앱의 사용량 차감은 구분한다. 2026-
 - 이 패턴에서는 배치 시작 시점의 첫 호출(또는 만료 후 첫 호출)만 cache_write가 되고, TTL이 히트마다 갱신되는 동안 이어지는 호출은 전부 cache_read다.
 - 외부 보고 사례: 프롬프트 캐싱으로 약 60% 비용 절감을 보고한 Cache Warming 대표 사례(Thomson Reuters Labs, 워밍 전 초기 히트율 4.2%), 히트율을 7%에서 84%까지 올린 사례(ProjectDiscovery — 최대 지렛대는 Relocation Trick으로 한 번의 배포에서 74%까지, 나머지는 후속 최적화).
 
+## 단가 변경은 워크로드의 토큰 구성으로 환산한다
+
+2026년 하반기 OpenAI와 Anthropic의 가격 변경에는 캐시 읽기 단가만 내린 경우가 섞여 있다. 같은 변경도 요청의 토큰 구성에 따라 효과가 없을 수도, 청구액 대부분을 줄일 수도 있으므로 발표된 인하율을 자기 청구액 변화로 옮기지 않는다. 인하의 형태와 원인은 [[LLM-API-Price-Competition|LLM API 가격 경쟁]]이 다룬다.
+
+- **캐시 읽기만 내린 변경**: 2026-10-27 가격표 기준 Fable 5.1은 입출력 단가가 Fable 5와 같고 캐시 읽기만 100만 토큰당 $1에서 $0.25다. GPT-6.1 Sol도 입출력은 GPT-6 Sol과 같은 $2, $10이고 캐시 입력만 $0.20에서 $0.10이다.
+- **에이전트 세션은 캐시 읽기가 입력의 대부분이다**: 멀티턴 에이전트는 매 턴 앞선 대화 전체를 다시 보내므로 새 입력보다 캐시에서 읽는 토큰이 훨씬 많다. Max Woolf(2026-10-25)는 에이전트 코딩에서 캐시 읽기가 토큰 지출의 96~99%이고 적중률이 90~100%라고 적었지만 근거 자료와 계산 방법은 밝히지 않았다. 자기 비중은 사용량 필드로 잰다.
+
+계산 예(2026-10-27 가격표 단가로 한 이 문서의 계산이며 토큰 구성은 가정이다): 에이전트 한 턴은 캐시 읽기 15만, 새로 캐시에 쓰는 입력 2천(5분 수명), 출력 500토큰으로, 단발 채팅은 캐시 없는 입력 2천, 출력 500토큰으로 둔다.
+
+| 변경 | 에이전트 한 턴 | 단발 채팅 |
+|---|---|---|
+| Fable 5 → Fable 5.1 | $0.200 → $0.0875 (약 56% 감소) | $0.045 → $0.045 (변화 없음) |
+| Opus 5 → Opus 5.5 | $0.100 → $0.050 (50% 감소) | $0.0225 → $0.018 (20% 감소) |
+| Opus 5.5 → Kimi K3.1 Pro | $0.050 → $0.039 (약 22% 감소) | $0.018 → $0.009 (50% 감소) |
+
+- **입출력 단가 절반이 비용 절반은 아니다**: Kimi K3.1 Pro의 입출력 단가는 Opus 5.5의 절반이지만 캐시 입력은 둘 다 $0.20이다. 위 구성에서는 캐시 읽기가 비용의 대부분이라 절감이 22%에 그친다.
+- **같은 토큰 수 가정의 한계**: 공급사가 다르면 같은 텍스트의 토큰 수가 다르고(Anthropic 가격표는 Claude 4.7 이후 토크나이저가 같은 텍스트에 약 30% 많은 토큰을 낸다고 적는다), 과제당 출력 토큰과 제공자별 캐시 적중률도 다르다. 위 표는 단가 구조의 차이만 보여 주며, 모델 교체의 실제 효과는 같은 작업의 과업당 비용으로 비교한다([[AI-Capability-and-Cost-Trends#모델 비교에서 속도와 비용의 측정 단위를 분리한다|단가와 과업당 비용]]).
+- **측정 방법(적용 제안)**: 응답의 캐시 읽기 토큰(Anthropic `cache_read_input_tokens`, OpenAI `cached_tokens`), 캐시 쓰기, 일반 입력과 출력 토큰을 각 단가로 환산해 항목별 비용 비중을 구하고, 가격 변경 전후를 같은 작업 묶음으로 비교한다. 적중률은 토큰 수의 비율이라 비용 비중과 다르다.
+
 ## 면접 체크포인트
 
 - prefix matching 원리 — 앞이 바뀌면 뒤 전체가 무효, 그래서 변경 빈도 낮은 것을 앞에 배치
@@ -122,6 +141,7 @@ API의 토큰 단가와 구독형 앱의 사용량 차감은 구분한다. 2026-
 - 병렬 발사 워크로드에서 워밍 콜이 필요한 이유
 - 세션 분기가 부모 캐시를 읽는 조건(같은 모델과 도구, 캐시 수명)과 높은 적중률만으로 분기 효과를 판단하면 안 되는 이유
 - 벤더마다 캐시 활성화 방식(명시 지점, 자동 또는 암묵 캐싱과 그 조합)과 쓰기, 저장 과금이 달라 읽기 할인율만으로 비교할 수 없는 이유
+- 캐시 읽기 단가만 내린 가격 변경이 에이전트 세션과 단발 요청에 주는 효과가 왜 다른지 토큰 구성으로 계산할 수 있는가
 
 ## 출처
 
@@ -131,8 +151,13 @@ API의 토큰 단가와 구독형 앱의 사용량 차감은 구분한다. 2026-
 - [Anthropic Docs, Prompt caching](https://platform.claude.com/docs/en/build-with-claude/prompt-caching) (가격 배율, 최소 토큰, TTL 갱신, 조직과 workspace 격리, 무효화 조건, 사용량 필드, 자동 캐싱)
 - [Anthropic Docs, Mid-conversation system messages](https://platform.claude.com/docs/en/build-with-claude/mid-conversation-system-messages) (대화 중 도구 변경 지원 모델과 베타 헤더)
 - [AWS Bedrock User Guide, Prompt caching](https://docs.aws.amazon.com/bedrock/latest/userguide/prompt-caching.html) (TTL 리셋, 모델별 최소 토큰, 읽기/쓰기 과금, OpenAI 모델의 `implicit` 기본 모드, 캐시 읽기의 입력 TPM 제외. 2026-10-09 부분 확인: 누적 prefix 최소 길이, 적중 비보장, Cross-region inference의 쓰기 증가와 batch inference 제외)
-- [OpenAI API Docs, Prompt caching](https://developers.openai.com/api/docs/guides/prompt-caching) (기본 활성, 최소 토큰, 30분 TTL, 쓰기와 읽기 배율, 사용량 필드, TPM 산입)
-- [OpenAI API Docs, Pricing](https://developers.openai.com/api/docs/pricing) (GPT-6 계열 캐시 읽기와 쓰기 단가)
+- [OpenAI API Docs, Prompt caching](https://developers.openai.com/api/docs/guides/prompt-caching) (기본 활성, 최소 토큰, 30분 TTL, 쓰기와 읽기 배율, 사용량 필드, TPM 산입. 2026-10-27 12시간 수명과 2.5배 쓰기, GPT-6.1 Terra 0.05배 읽기, prewarm 요청 확인)
+- [OpenAI API Docs, Pricing](https://developers.openai.com/api/docs/pricing) (GPT-6 계열 캐시 읽기와 쓰기 단가, 2026-10-27 GPT-6.1 Sol과 Terra, 30분과 12시간 쓰기 단가 대조)
+- [OpenAI API Docs, Changelog](https://developers.openai.com/api/docs/changelog) (2026-10-20 Responses API 12시간 프롬프트 캐싱 추가)
+- [Anthropic Docs, Pricing](https://platform.claude.com/docs/en/about-claude/pricing) (2026-10-27 모델별 캐시 쓰기, 읽기 단가와 0.05배, 0.025배 적용 모델, 토크나이저의 토큰 수 차이)
+- [Kimi API Docs, Model Pricing](https://platform.kimi.ai/docs/pricing/chat) (2026-10-27 K3.1 Pro의 캐시 입력과 수명별 쓰기 단가)
+- [OpenAI and Anthropic cut their LLM prices by up to 80% within a few months. Why? — Max Woolf's Blog](https://minimaxir.com/2026/10/cheap-llms/) — 2026-10-25, 캐시 읽기 비중 96~99%와 적중률 90~100%는 근거를 밝히지 않은 저자 추정
+- [OpenAI와 Anthropic은 몇 달 만에 LLM 가격을 최대 80% 내렸다. 왜일까? — GeekNews](https://news.hada.io/topic?id=36009) — 단가 환산 절의 학습 계기이며 수치는 위 가격표와 변경 이력으로 대조
 - [Gemini API Docs, Context caching](https://ai.google.dev/gemini-api/docs/caching) (암묵 캐싱 기본 활성)
 - [Gemini API Docs, Context caching (generateContent)](https://ai.google.dev/gemini-api/docs/generate-content/caching) (모델별 최소 토큰, 기본 TTL, 암묵 캐시 적중 권고)
 - [Gemini API Docs, Pricing](https://ai.google.dev/gemini-api/docs/pricing) (컨텍스트 캐싱 단가와 저장 요금)
@@ -148,6 +173,7 @@ API의 토큰 단가와 구독형 앱의 사용량 차감은 구분한다. 2026-
 
 - [[LLM-Cost-Optimization|LLM 비용 최적화 (가시성, 시뮬레이션, 레버 스택)]]
 - [[LLM-Model-Tiers|LLM 모델 티어 선택, 라우팅 (다음 레버 — 모델 다운사이즈)]]
+- [[LLM-API-Price-Competition|LLM API 가격 경쟁 (인하의 형태, 원인과 오픈 웨이트 압력)]]
 - [[Agent-Context-Budget|에이전트 컨텍스트 예산 (동적 정보를 시스템 프롬프트 밖으로)]]
 - [[Context-Engineering|컨텍스트 엔지니어링 (Write/Select/Compress/Isolate, Context Rot)]]
 - [[Claude-Code-Internals|Claude Code 내부 구조 (도구 순서 고정 = 캐시 친화 코드 제약)]]

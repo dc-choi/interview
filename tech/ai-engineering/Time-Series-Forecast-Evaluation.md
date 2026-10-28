@@ -184,3 +184,4 @@ Forecast의 현재 평가 문서는 WAPE와 RMSE에 평균 예측을 사용한�
 
 - [[Eval-Model-Drift-Monitoring|서빙 모델의 변화 감시]]
 - [[Agent-Data-Analysis-Workflow|계산 결과와 에이전트 설명의 분리]]
+- [[Time-Series-Foundation-Models|시계열 파운데이션 모델의 분위수 출력과 벤치마크 누출 규칙]]

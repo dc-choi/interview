@@ -16,6 +16,16 @@ LLM 게이트웨이는 애플리케이션과 모델 제공자 사이에서 호�
 
 API 형식을 통합해도 모델의 답변 품질과 도구 호출 의미까지 같아지는 것은 아니다. 모델을 바꾸는 경로는 [[LLM-Failure-Handling-Recovery#폴백과 기능 저하|실패 처리]]와 같은 평가 조건으로 확인한다.
 
+## 내 사용을 관측하려고 직접 운영하는 프록시
+
+게이트웨이는 조직의 통제 수단이면서 개인이나 작은 팀이 자기 사용을 관측하는 수단이기도 하다. 제공자 대시보드가 엔지니어링 결정에 쓸 시계열 토큰 데이터를 주지 않으면 직접 운영하는 프록시가 그 기록을 만든다. 여러 제공자와 모델을 내가 통제하는 한 엔드포인트로 받아 빠르게 바꾸고, 어느 키가 어느 클라이언트로 언제 어떤 모델을 불렀고 결과가 어땠는지 남기며, 작업, 에이전트와 하네스마다 다른 virtual key를 발급해 주 키를 퍼뜨리지 않는다. 코딩 세션의 캐시 미스 원인도 이 요청 기록에서 찾는다(한 개발자는 손으로 20초 안에 찾았다고 적는다). 이 이점은 2026-10-18 개인 의견 글의 경험에 근거하며 특정 제품을 권하거나 효과를 측정한 결과는 아니다.
+
+직접 운영하면 다음 비용도 함께 진다(운영 제안).
+
+- 프록시는 모든 프롬프트와 응답, 제공자 키가 지나는 지점이다. 기록의 보존 기간, 열람 권한과 삭제 절차를 먼저 정한다.
+- 프록시 소프트웨어 자체가 공급망 위험이다. LiteLLM은 2026년 3월과 10월에 악성 릴리스 사고를 겪었다([[Supply-Chain-Security|공급망 보안]]). 버전 고정과 사고 공지 확인을 운영 절차에 넣는다.
+- 캐시 미스를 진단하려면 아래 캐시 절의 적중 상태와 캐시 읽기, 쓰기 토큰이 요청 기록에 남는지부터 확인한다. 제공자의 사용량 내보내기로 충분한 지표는 프록시 없이 얻는 쪽과 비교한다.
+
 ## 예산 설정의 저장소 의존성을 확인한다
 
 2026-10-07 LiteLLM 문서 기준, 예산 검사는 DB에서 읽은 누적 사용액에 의존한다. DB 없이 구동하면 `litellm_settings.max_budget`은 요청을 차단하지 않으며, virtual key 기반 사용자와 팀 예산도 사용할 수 없다. 설정 파일에 금액을 적었다는 사실만으로 지출 차단을 보장하지 않는다.
@@ -162,6 +172,8 @@ SimHash는 고차원 특징 벡터를 짧은 지문으로 줄이는 기법이다
 - [Detecting Near-Duplicates for Web Crawling — WWW 2007, Gurmeet Singh Manku, Arvind Jain, Anish Das Sarma](https://archives.iw3c2.org/www2007/papers/paper215.pdf)
 - [No.1 A.I Gateway Ziq Cache 구조 — 데브아트 DevArt](https://www.youtube.com/watch?v=sEDu9sSV0Ww) — 계층 구분과 설계 점검의 계기이며 제품 고유 동작은 근거로 쓰지 않음
 - [Open weight takes 71.5% of tokens and 23% of spend — Vercel](https://vercel.com/blog/ai-gateway-production-index-october-2026) — 2026-10-15 게시, 2026년 9월까지의 게이트웨이 집계와 방법론 대조
+- [If you don't run your own LLM proxy, how the f*** do you even know whats going on? — jrdsgl.com](https://jrdsgl.com/if-you-dont-run-your-own-llm-proxy-how-the-fuck-do-you-even-know-whats-going-on) — 2026-10-18 개인 의견 글, 2026-10-27 본문 확인. 제목의 비속어는 가렸다
+- 사용자 제공 GeekNews 알림 요약(2026-10-16~27): 관측을 위한 LLM 프록시 자체 운영. 게시물 URL은 확인하지 못했고 위 원문으로 대조했다
 
 ## 관련 문서
 
@@ -170,3 +182,5 @@ SimHash는 고차원 특징 벡터를 짧은 지문으로 줄이는 기법이다
 - [[Generative-AI-Multi-Tenancy|생성형 AI의 테넌트 격리]]
 - [[LLM-Prompt-Caching|LLM 프롬프트 캐싱]]
 - [[ElastiCache-Use-Cases|ElastiCache 사용 사례 (시맨틱 캐시와 챗봇 캐시)]]
+- [[Supply-Chain-Security|공급망 보안]] — 프록시 소프트웨어의 릴리스 사고
+- [[AI-Coding-Agent-Usage-Telemetry|AI 코딩 에이전트 사용량 텔레메트리]] — 클라이언트 기록 기반 사용량 집계

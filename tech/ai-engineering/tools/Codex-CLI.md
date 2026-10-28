@@ -1,9 +1,9 @@
 ---
-tags: [ai, codex, cli, skills, agents-md, mcp]
+tags: [ai, codex, cli, skills, agents-md, mcp, product-form]
 status: done
-verified_at: 2026-09-29
+verified_at: 2026-10-28
 category: "AI엔지니어링(AIEngineering)"
-aliases: ["Codex CLI", "코덱스 CLI", "Codex 슬래시 명령", "AGENTS.md"]
+aliases: ["Codex CLI", "코덱스 CLI", "Codex 슬래시 명령", "AGENTS.md", "Codex 제품 형태의 변화"]
 ---
 
 # Codex CLI — 슬래시 명령, 스킬, AGENTS.md
@@ -118,9 +118,17 @@ Claude Code의 CLAUDE.md에 대응하며, 성격은 강제가 아닌 **권장(ad
 
 ## App vs CLI
 
-- **Codex App**: 병렬 작업 관리와 시각적 Git 워크플로우 조율에 강함
+- **ChatGPT 데스크톱 앱의 Codex**(2026-07-09 이전 Codex 앱): 병렬 작업 관리와 시각적 Git 워크플로우 조율에 강함
 - **Codex CLI**: 명령 수준 정밀 제어와 스킬 기반 작업에 강함
 - **휴대폰 원격 연결**: 2026-10-12 공식 문서 기준, ChatGPT 데스크톱 앱(macOS, Windows)의 Settings > Connections > Control this Mac or PC에서 QR 코드로 휴대폰을 짝지으면 휴대폰의 ChatGPT 앱에서 그 호스트의 Codex 채팅을 시작하거나 이어 가고, 명령 승인과 diff 검토를 할 수 있다. 파일, 셸 명령, MCP 서버와 스킬은 호스트의 것을 쓰므로 호스트가 잠들거나 네트워크가 끊기거나 앱을 닫으면 원격 접근도 멈춘다. 설정은 데스크톱 앱에서 시작하며 CLI나 IDE 확장에서는 할 수 없고, 워크스페이스에서는 관리자가 Remote Control 접근을 켜야 할 수 있다. Claude Code의 대응 방식은 [[Claude-Code-Customization#원격 제어 — 실행 위치 분리|원격 제어]]를 본다
+
+## 제품 형태의 변화 — 클라우드 비동기 에이전트에서 로컬 엔진과 데스크톱 앱으로
+
+모델이 한 번에 감당하는 작업 길이가 늘 때마다 맞는 인터페이스가 달라진다. 한 줄 완성에는 자동 완성, 수십 초의 추론에는 편집기 옆 대화가 맞고, 한 시간짜리 작업은 여러 에이전트에 일을 맡기고 결과를 검토하는 형태를 요구한다(개발 팀 인터뷰 기반 보도의 해석).
+
+- **클라우드 비동기 에이전트의 마찰:** 2025-05-16 출시한 클라우드 에이전트는 코드베이스를 격리된 클라우드 환경에 복사해 수정, 테스트와 린트를 실행한 뒤 요약, 변경 내역과 PR 생성 버튼을 돌려줬다. 외부 사용자는 인증 정보, 권한, 설정과 패키지를 클라우드에 다시 꾸려야 했고, 작업 중 방향을 바꿀 수 없었으며 후속 요청도 새 클라우드 컴퓨터에서 시작했다. 표준화된 사내 개발 환경이 이 마찰을 가려 내부 성공이 외부 제품 적합성으로 이어지지 않았다(보도 기준). 사내에서 잘 쓰인다는 신호와 외부 사용자의 환경 준비 비용은 따로 측정한다(운영 제안).
+- **엔진과 인터페이스의 분리:** 2025-05-30 공식 GitHub 공지는 TypeScript CLI를 Rust로 다시 쓰는 이유로 Node 없이 설치, 리눅스 샌드박스 같은 네이티브 보안 바인딩, 가비지 컬렉션 없는 메모리 사용과 다른 언어에서 에이전트를 확장할 wire protocol을 들었다. 파일 읽기와 명령 실행을 맡는 에이전트 핵심을 터미널 UI와 떼어 놓으면 같은 엔진을 편집기 확장, 데스크톱과 클라우드에 다시 쓸 수 있다.
+- **코드 편집기 없는 데스크톱 앱:** Codex 앱은 2026-02-02 macOS로 출시돼 병렬 프로젝트 채팅, Git 검토, worktree, 스킬과 예약 작업을 묶었고, 2026-07-09 ChatGPT 데스크톱 앱(macOS, Windows)에 합쳐졌다(공식 What's new 기준). 첫 설계는 내장 코드 편집기를 일부러 빼고 수정을 에이전트에게 요청하거나 인라인 코멘트로 남기게 했다(보도 기준). 합쳐진 뒤의 공식 안내는 diff 안의 인라인 편집을 기능으로 든다.
 
 ## 실전 패턴
 
@@ -139,10 +147,15 @@ Claude Code의 CLAUDE.md에 대응하며, 성격은 강제가 아닌 **권장(ad
 - 비대화형 `codex exec`로 CI 자동화가 가능한 점
 - Codex SDK를 서비스 백엔드에 붙일 때 ChatGPT 구독 인증 대신 API 키를 기본으로 두는 이유
 - App vs CLI 선택 기준 (병렬, 시각 vs 명령 정밀, 스킬)
+- 클라우드 비동기 에이전트가 외부 사용자에게 마찰이 컸던 이유와 에이전트 엔진을 UI에서 분리하는 이점
 
 ## 출처
 
 - [Codex Pricing — OpenAI](https://learn.chatgpt.com/docs/pricing)
+- [What's new — OpenAI](https://learn.chatgpt.com/docs/whats-new) — 2026-02-02 Codex 앱 macOS 출시와 2026-07-09 ChatGPT 데스크톱 앱 통합, 통합 뒤의 diff 인라인 편집을 2026-10-27 대조. 2026-10-28 통합 안내와 App vs CLI 명칭을 부분 재대조
+- [Codex CLI is Going Native — GitHub Discussions, openai/codex](https://github.com/openai/codex/discussions/1174) — 2025-05-30, Rust 재작성의 이유를 2026-10-27 대조
+- [How Codex Happened — Every, Dan Shipper](https://every.to/p/how-codex-happened) — 2026-10, 개발 팀 6명 인터뷰 기반 보도. 클라우드 에이전트의 마찰, 편집기 없는 앱 설계와 제품 형태의 해석을 2026-10-27 원문 대조. 사용자 수는 공식 자료로 확인하지 못해 쓰지 않음
+- [Codex는 어떻게 탄생했나 — GeekNews](https://news.hada.io/topic?id=36004) — 학습 계기
 - [Codex Speed — OpenAI](https://learn.chatgpt.com/docs/agent-configuration/speed)
 - [Remote connections — OpenAI](https://learn.chatgpt.com/docs/remote-connections) — 2026-10-12 휴대폰 연결 설정, 호스트가 제공하는 실행 환경과 연결이 끊기는 조건을 대조했다.
 - [Codex 환경 변수와 스탠드얼론 설치 스크립트 — OpenAI](https://learn.chatgpt.com/docs/config-file/environment-variables.md)

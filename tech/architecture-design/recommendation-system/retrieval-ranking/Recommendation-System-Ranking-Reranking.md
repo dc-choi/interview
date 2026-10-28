@@ -127,6 +127,10 @@ SASRec 같은 모델은 과거 interaction 중 다음 행동과 관련 있는 �
 
 Soft objective는 정확도와 tradeoff가 있으므로 weight와 영향 범위를 실험한다. 다양성 지표 하나로 공정성을 대신할 수 없으며, 어떤 사용자와 공급자 집단의 exposure를 보는지 별도 정의가 필요하다.
 
+### 결정적 비즈니스 규칙
+
+Quota, 인접 노출 금지, 기간 한정 승격과 하향 같은 결정적 후처리는 soft objective와 분리한 규칙 계층에서 처리할 수 있다. 위 soft objective 항목도 요구에 따라 weight 대신 규칙으로 만들 수 있으며, 고르는 기준과 규칙의 로깅, 학습 데이터 처리와 실험 설계는 [[Recommendation-System-Ranking-Reranking-Business-Rules|비즈니스 규칙 후처리]]에서 다룬다.
+
 ## Exploration과 Exploitation
 
 현재 점수가 높은 것만 반복 노출하면 새 아이템과 취향을 학습할 기회가 줄어든다. 반대로 무작위 탐색이 많으면 단기 품질이 떨어진다.

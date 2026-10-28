@@ -49,6 +49,17 @@ aliases: ["Live Ops Service Model", "라이브옵스와 서비스형 제품", "�
 - 패키지형은 운영 부담이 작고 완성도로 승부할 수 있지만, 출시 뒤 매출 곡선이 빠르게 꺾여 다음 작품이 필요하다.
 - 재미를 우선 목표로 둔다면 패키지형이 맞을 수 있다. 서비스형을 고른다면 재미와 함께 운영 구조와 운영 인력을 처음부터 사업 계획에 넣는다.
 
+## 사례: 소유 구조가 바뀐 뒤의 포트폴리오 재편 (EA, 2026)
+
+패키지형 대작과 서비스형 게임을 함께 운영하는 회사는 소유 구조나 재무 조건이 바뀌면 두 유형의 우선순위를 다시 정할 수 있다. 확인 수준별로 나누면 다음과 같다.
+
+- **차입 인수와 비상장 전환(회사 공시):** EA는 2025-09-29 PIF, Silver Lake와 Affinity Partners 컨소시엄이 주당 210달러 현금, 기업가치 약 550억 달러로 회사를 인수하는 계약을 발표했다. 자금은 약 360억 달러의 지분 투자와 JPMorgan Chase가 약정한 200억 달러 부채 금융(종결 시 180억 달러 집행 예정)으로 구성됐다. 거래는 2026-08-04 종결됐고 EA 주식은 NASDAQ에서 거래를 멈췄다.
+- **스튜디오 폐쇄(스튜디오 발표):** 2026-10-21 BioWare는 30여 년의 운영을 마치고 문을 닫으며 초기 개발 중이던 차기 Mass Effect 프로젝트도 끝낸다고 밝혔다.
+- **감원과 재배치(보도):** Bloomberg는 EA 전체 약 400명 감원 중 BioWare 인력이 약 50명이라고 보도했다. 보도된 내부 메모는 수개월간 사업을 점검해 장기 성장 기회가 큰 곳에 인력과 투자를 모은다는 취지이며, skate.의 자원 축소와 Sims 신작 Project Lotus의 개발 중단도 함께 전해졌다. Project Lotus는 보도마다 일시 중단과 취소로 표현이 갈린다.
+- **skate. 조정의 이유(보도에 인용된 EA 공지):** EA는 같은 날 공지에서 skate.가 이용자를 게임으로 데려오는 데는 크게 성공했지만 장기적으로 참여를 유지할 경험이 필요하다며, 더 작고 집중된 팀이 명확한 로드맵을 수행하도록 스튜디오를 바꾼다고 밝혔다. 공지 원문은 열지 못했고 VGC가 인용한 문장으로 확인했다.
+
+적용 해석: skate.에 대해 EA가 밝힌 이유는 유입이 아니라 계속 플레이할 이유의 부족이다. 서비스형 프로젝트의 계속 투자 여부는 유입 성과만이 아니라 위 세 가지 이유 중 계속 플레이할 이유를 만들었는지로도 판단될 수 있다. 이 해석은 skate.에 한정한다. 패키지형 RPG를 만들던 BioWare의 폐쇄와 Mass Effect 중단에는 EA가 참여 관련 이유를 밝히지 않았다. 차입 부담이 생긴 소유 구조에서는 이런 판단이 빠르게 조직 개편으로 이어질 수 있지만, 이번 결정의 원인을 부채 하나로 확정할 근거는 공개 자료에 없다. 발표된 사실과 보도된 메모의 내용은 나눠 인용한다.
+
 ## 적용 점검
 
 - 이 제품의 매출은 구매 시점에 생기는가, 이용 기간에 생기는가.
@@ -59,6 +70,12 @@ aliases: ["Live Ops Service Model", "라이브옵스와 서비스형 제품", "�
 ## 출처
 
 - [모바일 게임과 라이브옵스에 대한 게임 기획 실무자 게시물과 댓글 — Threads, sparronix](https://www.threads.com/@sparronix/post/Dd2tjyTGWxr)
+- [EA Announces Agreement to be Acquired by PIF, Silver Lake and Affinity Partners for $55 Billion — Electronic Arts (SEC Form 8-K Exhibit 99.1)](https://www.sec.gov/Archives/edgar/data/712515/000114036125036415/ef20056167_ex99-1.htm) — 2025-09-29 발표, 2026-10-27 인수 가격, 지분과 부채 조달 구조 대조
+- [EA Announces Completion of Acquisition by PIF, Silver Lake, and Affinity Partners — Electronic Arts](https://www.ea.com/en-us/news/ea-announces-completion-of-acquisition) — 2026-08-04 거래 종결과 상장 폐지, 2026-10-27 확인
+- [EA closes Mass Effect, Dragon Age creator BioWare after 30 years of game development — Game Developer, Bryant Francis](https://www.gamedeveloper.com/business/ea-closes-mass-effect-dragon-age-creator-bioware-after-30-years-of-game-development) — 2026-10-21 보도, BioWare 발표와 Bloomberg 감원 보도, 내부 메모 인용
+- [‘Many’ staff gone from Skate studio Full Circle as part of EA layoffs — VGC, Jordan Middler](https://www.videogameschronicle.com/news/many-staff-gone-from-skate-studio-full-circle-as-part-of-ea-layoffs/) — 2026-10-21 보도, 2026-10-27 확인. EA 공지의 skate. 관련 문장 인용
+- [EA is shutting down BioWare — The Verge, Jay Peters](https://www.theverge.com/games/1015647/ea-is-shutting-down-bioware) — 2026-10-21(미국 시간) 보도. 2026-10-27 BioWare 성명까지 확인했고 이후 본문은 구독이 필요해 열지 못했다
+- [EA, BioWare 폐쇄하고 차기 Mass Effect 개발 중단 — GeekNews](https://news.hada.io/topic?id=35770) — The Verge 기사 요약
 
 ## 관련 문서
 
@@ -68,3 +85,4 @@ aliases: ["Live Ops Service Model", "라이브옵스와 서비스형 제품", "�
 - [[Gamification|게이미피케이션]]
 - [[Community-Dark-Patterns|커뮤니티, 프로덕트 다크 패턴]]
 - [[In-App-Purchase|인앱결제]]
+- [[Platform-Power|플랫폼 파워]] — 구조조정이 전략이 되는 조건

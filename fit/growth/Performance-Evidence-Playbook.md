@@ -127,6 +127,12 @@ GitLab의 공개 승진 지침은 다음 단계의 지속적인 수행과 사업
 
 옷차림, 바쁜 인상이나 사교성에 관한 조언을 검증된 업무 성과로 기록하지 않는다. 협업도 인상 평가에 머물지 않고 관찰한 행동과 결과로 설명한다. 추가 업무 수락이 승진이나 보상 인상을 보장한다고 약속하지 않으며, 실제 인사 결정과 개인 처우 수치는 이 문서에 옮기지 않는다.
 
+## 실무 성과와 관리 역량을 따로 확인한다
+
+현재 맡은 일을 잘한다는 근거와 다른 사람의 일을 조율하고 성과를 높일 수 있다는 근거는 구분한다. 2019년 영업직 연구는 131개 기업의 자료에서 기업들이 승진 후 관리 성과를 더 잘 예측하는 다른 관찰 특성보다 현재 영업 성과를 우선하는 경향을 확인했다. 현재 직무 성과가 높다는 이유만으로 다음 관리 역할에 가장 적합하다고 단정할 수 없다는 근거다. 영업직 표본의 결과를 개발 조직 전체나 특정 상사의 능력 판정으로 확대하지 않는다.
+
+개인 성장 점검에 적용할 때는 본인이 직접 해결한 문제와 팀원의 수행을 도운 행동을 별도로 기록한다. 상사보다 실무를 잘한다는 느낌이 들면 비교할 업무와 책임 범위, 관찰한 행동 및 확인하지 못한 부분부터 나눈다. 직급이 높다는 사실만으로 능력을 증명하거나, 직급이 낮다는 사실만으로 관리 역량이 부족하다고 결론 내리지 않는다. 이는 역할별 증거를 모으기 위한 적용 원칙이며 승진을 보장하는 기준은 아니다.
+
 ## 되짚기 질문
 
 - 이번 작업에서 무엇을 증거로 확인했고 무엇은 아직 가설인가?
@@ -136,6 +142,7 @@ GitLab의 공개 승진 지침은 다음 단계의 지속적인 수행과 사업
 
 ## 출처
 
+- [Promotions and the Peter Principle — Alan Benson, Danielle Li, Kelly Shue](https://dspace.mit.edu/entities/publication/c6ac10f0-e6a2-4e4c-b571-c98349c121b0) — 2019년 QJE 출판본의 MIT 공개 초록을 2026-10-27 대조. 131개 기업의 영업직 표본과 현재 성과/관리 적합성의 구분만 참조했으며, 본문의 추정 방법과 효과 크기를 재검증하지 않았다.
 - [GitLab Handbook, Promotions and Transfers](https://handbook.gitlab.com/handbook/people-group/promotions-transfers/) — 2026-10-14 대조. 다음 단계의 지속적인 수행, 성과 근거와 사업상 역할 필요를 구분하는 조직 사례만 참조했다.
 - [Do People Have Insight Into Their Abilities? A Metasynthesis — Ethan Zell, Zlatan Krizan](https://www.psychologicalscience.org/journals/perspectives/1745691613518075/) — 2014년 연구의 공개 초록, 2026-10-07 대조. 자기평가와 수행 결과의 관계 및 영역별 차이만 참조했다.
 - [OPM, Accomplishment Records](https://www.opm.gov/policy-data-oversight/assessment-and-selection/other-assessment-methods/accomplishment-records/) — 2026-10-07 대조. 직무 역량별 행동 기준, 성과 서술과 사실 확인을 참조했다.

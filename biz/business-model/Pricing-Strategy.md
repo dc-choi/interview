@@ -131,15 +131,7 @@ Wadhwa와 Zhang(2015)은 라운드가격이 감정 중심 판단과, 비라운�
 
 ## AI 기능의 크레딧 가격과 작업 원가
 
-LLM API만 호출하는 기능은 호출량과 토큰 단가로 원가를 추정할 수 있지만, 영상 분석처럼 자체 모델을 GPU에서 돌리는 기능은 처리 시간, 저장과 전송이 작업량을 따라 늘어난다. 이런 서비스는 배포 구조를 정한 뒤 가격을 붙이지 않고 인프라 원가와 크레딧 가격을 함께 설계한다. 구독에 기본 사용량을 넣고 초과분을 크레딧으로 파는 혼합 구조는 [[App-Monetization-Models|앱 수익 모델]]의 AI 앱 사례와 같다. 다음은 단위 비용과 공헌이익 원칙을 크레딧에 적용한 설계 순서다.
-
-1. **크레딧을 원가 동인에 묶는다.** 원본 영상 1분처럼 고객이 이해하는 단위를 고르고, 그 단위가 실제로 쓰는 GPU 시간, 저장량과 전송량을 측정한다.
-2. **작업당 원가에 실패와 대기를 넣는다.** 재시도, 다시 렌더링한 결과와 요청이 없는 동안 켜 둔 GPU처럼 결과 한 건에 바로 보이지 않는 비용도 배분한다. 평균 비용과 한계 비용의 구분은 [[Cloud-Unit-Cost|클라우드 단위 비용]], 유휴 축소와 대기 시간의 교환은 [[Generative-Product-Image-Workflow#GPU와 유휴 축소는 배포 방식별로 확인한다|GPU 유휴 축소]]를 따른다.
-3. **원가는 가격의 하한으로만 쓴다.** 결제 수수료, 지원과 획득 비용을 뺀 공헌이익이 남는지 확인한 뒤, 고객이 비교하는 대안과 가치로 가격을 정한다.
-4. **포함 크레딧은 모두 쓰는 경우로 계산한다.** 요금제의 포함 크레딧을 다 쓴 고객에게서도 공헌이익이 남는지 본다. 평균 사용량만 보면 많이 쓰는 고객에서 손실이 날 수 있다.
-5. **원가 상한을 제품 규칙으로 둔다.** 작업당 최대 입력 길이와 해상도, 계정별 동시 작업 수와 작업 시작 전 잔액 확인으로 한 요청이 예상 원가를 넘지 못하게 한다.
-
-결제 대행사의 크레딧 기능과 서비스 안의 사용량 차단은 구분한다. 2026-10-12 공식 문서 기준, Stripe billing credits는 Meters로 사용량을 보고하는 metered 가격의 구독 항목에만 적용되고 청구서가 확정될 때 차감된다. 기간 중 크레딧 잔액이 사용과 함께 바로 줄지 않으므로, 작업 전에 잔액을 확인해 막으려면 기간 중 사용량을 따로 집계해 남은 크레딧과 비교하는 장치가 필요하다. 같은 문서는 크레딧을 상품권으로 발행하거나 자사 상품 결제 외의 충전금, 다른 사업자 결제나 디지털 지갑에 쓰게 하는 것을 금지한다. 만료, 이월과 환불 조건도 약관과 적용 법규로 따로 확인한다. 에이전트가 계산한 분당 원가와 추천 인프라는 단가 출처, 처리 속도 측정과 가동률 가정을 확인하기 전까지 추정치로 둔다.
+AI 기능은 같은 요청이라도 처리 경로에 따라 원가가 달라 좌석이나 저장 용량 같은 단위를 그대로 쓰기 어렵다. 크레딧을 원가 동인에 묶는 설계 순서, 결제 대행사 크레딧과 서비스 안 사용량 차단의 구분, 사용량을 작업으로 환산해 보여 주는 요금제 포장과 좌석, 요청, 거래와 성과 과금의 조건은 [[Pricing-Strategy-AI-Usage|AI 기능의 과금 단위와 크레딧 설계]]에서 다룬다(2026-10-27 이 문서에서 분리). 구독에 기본 사용량을 넣고 초과분을 크레딧으로 파는 혼합 구조는 [[App-Monetization-Models|앱 수익 모델]]의 AI 앱 사례와 같다.
 
 ## 적용 예시: 무료 소프트웨어와 유료 운영지원
 
@@ -165,7 +157,7 @@ Q. 가격 정책은 어떻게 설계했는가?
 
 2026-10-10에는 구매 관여도와 위험의 구분을 OpenStax, 업셀과 크로스셀의 정의를 Shopify, 허위 마감과 비용 은폐의 사례를 FTC 보고서와 부분 대조했다. 구매 불안 표, 서비스 패키지와 성과 점검은 이를 적용한 실험 제안이며 효과가 확인된 결과가 아니다.
 
-2026-10-12에는 Stripe billing credits 문서로 크레딧의 적용 대상, 차감 시점과 금지 용도를 부분 대조했다. AI 크레딧 설계 순서는 단위 비용과 공헌이익 원칙을 적용한 제안이며 특정 서비스의 검증된 가격 공식이 아니다. 강의 시연 화면의 분당 원가는 단가 근거를 확인하지 못해 사용하지 않았다.
+2026-10-12의 Stripe billing credits 부분 대조 기록은 AI 크레딧 절과 함께 [[Pricing-Strategy-AI-Usage|AI 기능의 과금 단위와 크레딧 설계]]로 옮겼다.
 
 2026-10-18에는 단독/공동 평가 절을 Hsee(1998)의 출판사 초록과 2023년 재현 연구의 Study 2 본문으로 대조했다. 원 연구의 지불 의향 금액은 전체 원문으로 확인하지 않아 옮기지 않았다. 다른 가격 정책 절의 검증 날짜는 갱신하지 않았다.
 
@@ -186,10 +178,9 @@ Q. 가격 정책은 어떻게 설계했는가?
 - [This Number Just Feels Right: The Impact of Roundedness of Price Numbers on Product Evaluations — Wadhwa, Zhang](https://academic.oup.com/jcr/article-abstract/41/5/1172/2962090), [저자 소속기관의 공식 초록](https://www.insead.edu/faculty-research/publications/journal-articles/number-just-feels-right-impact-roundedness-price)
 - [Less is better: when low-value options are valued more highly than high-value options — Hsee (Journal of Behavioral Decision Making, 1998)](https://doi.org/10.1002/%28SICI%291099-0771%28199806%2911%3A2%3C107%3A%3AAID-BDM292%3E3.0.CO%3B2-Y)
 - [Less Is Better in Separate Evaluations Versus More Is Better in Joint Evaluations: Mostly Successful Close Replication and Extension of Hsee (1998) — Collabra: Psychology](https://online.ucpress.edu/collabra/article/9/1/77859/196807/Less-Is-Better-in-Separate-Evaluations-Versus-More)
-- [Stripe, Billing credits](https://docs.stripe.com/billing/subscriptions/usage-based/billing-credits) — metered 가격 적용 범위, 청구서 확정 시 차감과 금지 용도
-- [YouTube, 양실장의 바이브코딩대학, 1시간 압축) AI 기술 1도 모르는 초심자가 전문 AI SaaS 구축하는 모든 과정](https://www.youtube.com/watch?v=JK1S6FvAdZQ) — 2026-08-24, 42:39~49:00의 GPU 추론 서비스 과금과 배포 설계 시연. 화면의 원가 계산과 인프라 구성은 확인하지 않아 사용하지 않음
 
 ## 관련 문서
+- [[Pricing-Strategy-AI-Usage|AI 기능의 과금 단위와 크레딧 설계]] — 크레딧 원가, 요금제 포장과 과금 단위
 - [[Business-Model|비즈니스 모델]]
 - [[Metrics-Framework|지표 설계]]
 - [[Commerce-Pricing|커머스 가격 도메인]]

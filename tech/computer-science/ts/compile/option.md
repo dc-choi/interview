@@ -97,6 +97,8 @@ TypeScript 7.0은 Go로 포팅한 네이티브 컴파일러이며 2026-07-08 공
 
 7.0은 안정된 compiler API 없이 출시됐고(`typescript/unstable/*`에 실험 API만 있다), 새롭고 다른 API는 7.1에서 예고됐다. 7.0 `typescript` 패키지의 기본 진입점은 버전 정보만 내보내므로 ts-loader, typescript-eslint처럼 `typescript`를 import해 compiler API를 쓰는 도구는 `typescript`가 7.0으로 설치되면 동작하지 않는다(ts-loader 9.6.2는 `Cannot read properties of undefined` 오류로 실패). 2026-09 기준 7.1 nightly의 기본 진입점도 같다. 공식 안내대로 `"typescript": "npm:@typescript/typescript6@^6.0.2"` alias로 6.0 API를 제공하고, 7.0의 `tsc`는 `"@typescript/native": "npm:typescript@^7.0.2"` 같은 별도 alias로 함께 설치한다. language server, linter, transformer 호환성은 도구별로 점검한다.
 
+7.1 beta의 성능 수치와 Rust 포트 tsrs 같은 대체 구현을 고를 때의 확인 항목은 [[TS-Native-Compilers|TypeScript 네이티브 컴파일러 구현 선택]]에서 다룬다.
+
 ## webpack과 ts-loader
 
 ts-loader는 `tsconfig.json`에 따라 각 파일을 검사하고 변환한 JavaScript를 webpack에 넘긴다. 번들 위치는 webpack `output.path`가 정하므로 `outDir`를 바꿔도 번들 위치는 그대로다. ts-loader는 compiler API를 쓰므로 7.0에서는 위의 6.0 alias 구성이 필요하다. 6.0 이상에서 소스가 `src` 아래에만 있는 config에 `outDir`만 두면 위의 TS5011이 ts-loader 빌드 오류가 되어 production 모드는 번들을 쓰지 않으므로(`tsc --noEmit`은 통과한다), ts-loader용 config에서는 `outDir`를 지우거나 `rootDir`를 명시한다.

@@ -88,10 +88,27 @@ Micro-battles는 중요한 사업 문제를 제한된 범위에서 풀고, 확�
 
 AWS 공개 대담에서는 Micro-battles의 시간 범위를 최대 3~4개월로 제안하고 4주로 운영한 사례도 소개한다. 이는 해당 방법론의 범위 설정 제안이며, 모든 제품의 납기나 성과 보장 기간으로 옮기지 않는다.
 
+## 무엇을 더하지 않을지도 로드맵 결정이다
+
+기능 하나하나가 제대로 작동해도 제품 전체는 나빠질 수 있다. 기존 기능을 다시 설계하기보다 새 기능을 붙이는 편이 쉬워서, 공유된 관점 없이 변경이 쌓이면 제품이 기능 모음으로 흩어지기 쉽다. 여러 사람이 에이전트로 각자 변경을 만들면 변경마다 타당해도 합친 결과는 누더기가 될 수 있다. 제품의 성격은 무엇에 집중하고, 무엇을 만들지 않으며, 작동한 뒤에도 무엇을 다듬는지에서 생긴다는 관점이다. 기능 추가가 품질을 떨어뜨린다는 실증 결과는 아니다.
+
+직관에 기댄 판단도 근거 없는 취향과 구분한다. 직접 일하고 고객과 대화하며 쌓은 이해에서 나온 직관은 그 근거가 된 경험을 설명할 수 있다. 사례로, Linear 공동창업자는 2026-10-15 에세이에서 회사가 프로세스와 데이터보다 이런 직관을 중시해 왔고 출시 전 여러 회사와 직무의 사람에게 일하는 방식을 물었다고 설명했다. 회사의 자기 서술이다.
+
+로드맵에 적용할 질문 예시는 다음과 같다.
+
+- 이 기능이 핵심 문제를 더 잘 풀게 하는가, 기술적으로 가능해서 붙이는가
+- 새 기능 대신 기존 기능을 고쳐 같은 문제를 풀 수 있는가
+- 넣지 않기로 한 기능과 그 이유를 남겼는가. 같은 요청이 다시 왔을 때 판단 근거가 된다
+- 작동한 뒤에도 다듬을 항목(일관성, 기본값, 문구)을 완료 기준에 넣었는가
+- 직관에 기댄 판단이라면 어떤 고객 대화와 직접 사용 경험에서 나왔는지 설명할 수 있는가. 설명하지 못하면 [[User-Feedback|사용자 피드백 관리]]의 근거 수집으로 돌아간다
+
+직관 중심과 데이터 중심은 배타적 선택이 아니다. 앞 절처럼 가설과 관측을 남기되, 지표가 보여 주지 않는 일관성과 형태의 판단을 누가 책임지는지 정한다.
+
 ## 면접 체크포인트
 
 - 로드맵 수립 질문에는 Vision → Goal → Theme → 우선순위의 도출 순서로 답한다 — 과제 나열이 아니라 비전에서 내려오는 구조를 보여주는 것이 핵심.
 - Theme을 고객 가치 문장으로 말하는 습관 — 기술 과제도 그 결과 고객이 얻는 것으로 번역.
+- 넣지 않기로 한 기능과 그 이유를 말할 수 있는가 — 거절 기록도 우선순위 판단의 근거다.
 - 엔지니어로서는 의존성 기반 순서, 성립을 좌우하는 가정의 조기 검증, 단계별 독립 가치([[Tech-Roadmap|기술 로드맵]])를 보완 축으로 함께 답할 수 있다.
 
 ## 출처
@@ -103,6 +120,8 @@ AWS 공개 대담에서는 Micro-battles의 시간 범위를 최대 3~4개월로
 - [서비스 기획자의 로드맵 수립 — 쪼렙 서비스기획자 (Brunch)](https://brunch.co.kr/@b30afb04c9f54dc/54)
 - [The Parlor Room, Season 1 Bonus Content (Part 2) — Linda Hill 외 (Harvard Business School Online)](https://online.hbs.edu/podcast/season-1-bonus-content-part-2-linda-hill-mihir-desai-forest-reinhardt-and-joshua-margolis) — 계획의 가정, 행동의 영향과 방향 수정에 관한 공개 대담
 - [How Bain’s Micro-Battles Drive Agile Digital Transformation — Frank Ford, Tom Soderstrom (AWS)](https://aws.amazon.com/executive-insights/podcast/driving-digital-transformation-with-bain-micro-battles/) — 2026-10-16 공식 전사문의 문제 선택, 제한된 실험과 확장 조건을 대조. 대담의 조직 전환 성공률과 AI 효과 예측은 일반 사실로 사용하지 않음
+- [Someone behind the software — Karri Saarinen (karrisaarinen.com)](https://karrisaarinen.com/posts/someone-behind-the-software/) — 2026-10-15 게시, 2026-10-27 본문 확인. 제품 판단에 관한 에세이이며 Linear에 관한 설명은 공동창업자의 자기 서술
+- [소프트웨어 뒤에 있는 사람 — GN⁺ (GeekNews)](https://news.hada.io/topic?id=35592)
 
 ## 관련 문서
 - [[Tech-Roadmap|기술 로드맵 수립]]

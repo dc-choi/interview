@@ -28,8 +28,9 @@ aliases: ["Supply Chain Security", "공급망 공격", "공급망 보안", "의�
 코드를 import하지 않아도 **설치만으로 실행**되는 후크를 악용한다.
 
 - **npm `postinstall` 스크립트**: 패키지 설치 직후 임의 코드 실행
-- **Python `.pth` 파일**: site-packages에 놓이면 Python 프로세스가 시작될 때마다 자동 실행
-- 둘 다 의존성으로 설치되는 경로에서 실행될 수 있으므로, 직접 사용 여부와 무관하다
+- **Python `.pth` 파일**: site-packages의 `.pth`에서 `import`로 시작하는 줄은 모듈을 실제로 쓰는지와 관계없이 Python이 시작될 때마다 실행된다(`-S`로 site 모듈을 끄지 않는 한). 2026-10-27 확인한 Python 3.15 문서는 이 줄을 deprecated로 표시하고 3.18부터 무시할 예정이라고 적는다. 같은 문서는 3.15에 추가된 `name.start` 파일의 진입점도 같은 디렉터리에서 시작마다 호출된다고 적으므로, 시작 시 실행 경로 자체가 없어지는 것은 아니다
+- **Python `sitecustomize.py`**: site 모듈은 경로 처리 뒤 `sitecustomize`라는 모듈의 import를 시도한다. import는 sys.path에서 처음 찾은 모듈 하나만 실행하므로, site-packages에 놓인 파일은 그보다 앞선 경로에 같은 이름의 모듈이 없을 때 시작마다 실행된다(예: Debian의 `libpython3.X-minimal` 패키지는 표준 라이브러리 경로에 `/usr/lib/python3.X/sitecustomize.py`를 둔다). `.pth`는 디렉터리마다 모든 파일을 처리하므로 이런 가림이 없다. LiteLLM `1.107.0`은 `import cook` 한 줄짜리 `cook.pth`와 `sitecustomize.py`를 함께 넣었다(파일 이름은 공식 공지와 대조). SafeDep은 두 파일이 litellm을 import하지 않는 pip, IDE 언어 서버와 CI 작업까지 호스트의 모든 Python 프로세스 시작에서 실행되는 구조라고 분석했지만, `sitecustomize.py`는 위 조건에 따라 실행되지 않을 수 있다
+- 모두 의존성으로 설치되는 경로에서 실행될 수 있으므로, 직접 사용 여부와 무관하다
 
 ### 가짜 의존성 주입
 
@@ -52,7 +53,7 @@ aliases: ["Supply Chain Security", "공급망 공격", "공급망 보안", "의�
 
 ### 정상 서비스처럼 보이는 유출 도메인
 
-2026-10-14 LiteLLM 공식 사고 공지 부분 대조 기준, 2026년 3월 사고(`1.82.7`, `1.82.8`)에서 악성 패키지의 유출 목적지는 `models.litellm[.]cloud`였다. 2026-10-26 확인 기준, 2026-10-21 `1.107.0` 사고와는 별개이며 10월 공지에는 이 도메인이 없다. 제품명이 들어 있지만 공식 BerriAI/LiteLLM 도메인이 아니며, 3월 공지는 이 주소로 향하는 요청을 침해 지표로 제시한다. `[.]`는 실수로 접속하지 않도록 점을 가린 표기다.
+2026-10-14 LiteLLM 공식 사고 공지 부분 대조 기준, 2026년 3월 사고(`1.82.7`, `1.82.8`)에서 악성 패키지의 유출 목적지는 `models.litellm[.]cloud`였다. 2026-10-26 확인 기준, 2026-10-21 `1.107.0` 사고와는 별개이며 10월 공지에는 이 도메인이 없다. 제품명이 들어 있지만 공식 BerriAI/LiteLLM 도메인이 아니며, 3월 공지는 이 주소로 향하는 요청을 침해 지표로 제시한다. `[.]`는 실수로 접속하지 않도록 점을 가린 표기다. 10월 사고를 분석한 SafeDep은 암호화한 수집물이 공격자가 통제하는 `www.litellm[.]dev/healthcheck`로 전송됐다고 보고해, 두 사고 모두 제품명을 넣은 도메인을 썼다.
 
 여기서 도출할 운영 점검은 이름의 친숙함과 승인된 통신 목적지를 구분하는 것이다. 로그의 제품명 문자열만 보고 허용하지 않고 공급자 공식 문서에 적힌 호스트와 실제 목적지를 대조한다. 의심 요청이 있으면 발생 시점의 패키지 버전과 실행 환경도 함께 확인한다. 도메인의 생김새만으로 정상이나 침해를 확정하는 규칙은 아니다.
 
@@ -173,7 +174,7 @@ Sonatype의 Hugging Face 분석은 모델 파일 디렉터리를 IQ CLI로 검�
 ## 사례
 
 - **litellm (PyPI, 2026-03-24)** — 공급자 공지 기준, 공격자가 공식 CI/CD 워크플로를 우회해 `1.82.7`, `1.82.8`을 PyPI에 직접 업로드(GitHub 저장소 자체는 미침해). `1.82.8`에는 `litellm_init.pth`가 들어 있어 파이썬 프로세스 시작마다 자동 실행되며 환경변수, SSH 키, 클라우드 크레덴셜(AWS, GCP, Azure), K8s 토큰, DB 비밀번호를 수집해 외부 도메인으로 유출. 10:39 UTC부터 약 40분간 노출됐고, 공지는 AI 에이전트 프레임워크, MCP 서버, LLM 오케스트레이션 도구를 통해 핀 없이 전이 의존성으로 딸려 들어온 경우도 영향 대상으로 명시.
-- **litellm (PyPI, Docker, 2026-10-21)** — 3월 사고와 별개이며, LiteLLM 공지와 공격 경로 기록을 2026-10-26 대조했다. 2026-05 공개 저장소에 커밋된 뒤 폐기되지 않은 내부 서비스 master key로 조직 소유자의 GitHub CLI OAuth 토큰을 얻은 공격자가 워크플로를 돌려 메인테이너 두 명의 토큰이 든 CI 비밀을 빼냈고(첫 공지의 토큰 출처 추정은 10-23 기록에서 정정), 릴리스 저장소의 브랜치 보호를 우회해 릴리스 소스를 `Berri-AI/litellm`(공식은 `BerriAI/litellm`)으로 바꿨다. 운영 배포 승인은 두 번째 메인테이너의 토큰으로 통과했는데, 사무실 장비에 묶인 전용 계정이 하던 승인이 그 주에 엔지니어 두 명이면 시작과 승인이 가능하도록 완화돼 있었다. 자격 증명을 훔치고 원격 코드 실행 도구를 불러오는 `1.107.0` wheel 7개가 PyPI에 11:39:51 UTC부터 13:23 UTC까지 공개됐고, Docker Hub와 GHCR의 `v1.107.0`, `latest`, `main-latest`, `main-stable` 태그는 11:46:56 UTC부터 오염 이미지를 가리켰다(GHCR 13:51, Docker Hub 14:20 UTC까지, GHCR은 `litellm`, `litellm-database`, `litellm-non_root` 이미지). 공식 GitHub의 `v1.107.0` 소스 태그에는 악성 파일이 없었다. 3월 사고 뒤 Trusted Publisher 기반 워크플로, 변경 불가 Docker 릴리스 태그와 이미지 서명을 도입했다고 밝혔지만 이번 공격은 소스만 바꾼 공식 릴리스 워크플로와 운영 승인 단계를 거쳤다. 공지는 이전 버전이 모두 안전하고 영향받은 릴리스는 내렸다고 적고 `1.106.2` 또는 그 이전에 게시된 명시 버전으로 고정하라고 했고(공지가 3월 사고 버전을 따로 짚지 않으므로 위 3월 사례의 `1.82.7`, `1.82.8`은 예외로 본다), 외부 통신이 가능한 호스트에 설치됐다면 유출을 전제로 그 인스턴스나 작업(task)의 IAM 역할, 프록시 DB의 제공자 키, master와 virtual key, `DATABASE_URL` 비밀번호와 환경 변수의 비밀을 교체하라고 안내했다.
+- **litellm (PyPI, Docker, 2026-10-21)** — 3월 사고와 별개이며, LiteLLM 공지와 공격 경로 기록을 2026-10-26 대조했다. 2026-05 공개 저장소에 커밋된 뒤 폐기되지 않은 내부 서비스 master key로 조직 소유자의 GitHub CLI OAuth 토큰을 얻은 공격자가 워크플로를 돌려 메인테이너 두 명의 토큰이 든 CI 비밀을 빼냈고(첫 공지의 토큰 출처 추정은 10-23 기록에서 정정), 릴리스 저장소의 브랜치 보호를 우회해 릴리스 소스를 `Berri-AI/litellm`(공식은 `BerriAI/litellm`)으로 바꿨다. 운영 배포 승인은 두 번째 메인테이너의 토큰으로 통과했는데, 사무실 장비에 묶인 전용 계정이 하던 승인이 그 주에 엔지니어 두 명이면 시작과 승인이 가능하도록 완화돼 있었다. 자격 증명을 훔치고 원격 코드 실행 도구를 불러오는 `1.107.0` wheel 7개가 PyPI에 11:39:51 UTC부터 13:23 UTC까지 공개됐고, Docker Hub와 GHCR의 `v1.107.0`, `latest`, `main-latest`, `main-stable` 태그는 11:46:56 UTC부터 오염 이미지를 가리켰다(GHCR 13:51, Docker Hub 14:20 UTC까지, GHCR은 `litellm`, `litellm-database`, `litellm-non_root` 이미지). 공식 GitHub의 `v1.107.0` 소스 태그에는 악성 파일이 없었다. 3월 사고 뒤 Trusted Publisher 기반 워크플로, 변경 불가 Docker 릴리스 태그와 이미지 서명을 도입했다고 밝혔지만 이번 공격은 소스만 바꾼 공식 릴리스 워크플로와 운영 승인 단계를 거쳤다. 공지는 이전 버전이 모두 안전하고 영향받은 릴리스는 내렸다고 적고 `1.106.2` 또는 그 이전에 게시된 명시 버전으로 고정하라고 했고(공지가 3월 사고 버전을 따로 짚지 않으므로 위 3월 사례의 `1.82.7`, `1.82.8`은 예외로 본다), 외부 통신이 가능한 호스트에 설치됐다면 유출을 전제로 그 인스턴스나 작업(task)의 IAM 역할, 프록시 DB의 제공자 키, master와 virtual key, `DATABASE_URL` 비밀번호와 환경 변수의 비밀을 교체하라고 안내했다. 공지는 site-packages의 `cook.pth`, `cook.py`, `sitecustomize.py`와 상주 데몬이 잡는 `/tmp/remote_code_loader.lock`을 지표로 들고, 설치 시점 전후 인스턴스 역할의 `GetCallerIdentity` 호출과 자격 증명의 외부 사용을 CloudTrail에서 확인하라고 안내했다(2026-10-27 대조).
 - **axios (npm, 2026-03-31)** — 리드 메인테이너 npm 계정이 탈취돼 `1.14.1`과 `0.30.4`가 배포. 소스에서 import하지 않는 `plain-crypto-js` 의존성이 설치 시점에 크로스플랫폼 RAT를 내려받아 실행했고, 약 3시간 뒤 npm에서 제거. `@datadog/datadog-ci`가 `axios: ^1.13.5`를 의존성으로 선언해 lockfile 없이 설치하면 악성 버전으로 해석되는 경로가 보고됨.
 - **Chrome 제로데이 (2026-02-13)** — CSS use-after-free 취약점(CVE-2026-2441)을 수정한 스테이블 업데이트가 배포됐고, 릴리스 노트에 악용 사례가 실제로 존재한다고 명시. AI 도구와 무관한 기본 보안 운영 부담의 예.
 
@@ -190,6 +191,9 @@ Sonatype의 Hugging Face 분석은 모델 파일 디렉터리를 IQ CLI로 검�
 - [CRITICAL: Malicious litellm_init.pth in litellm 1.82.8 — BerriAI/litellm Issue #24512](https://github.com/BerriAI/litellm/issues/24512)
 - [Contained: Oct 21, 2026 LiteLLM release v1.107.0 Compromised — LiteLLM](https://docs.litellm.ai/blog/security-incident-oct-21-2026) — 2026-10-26 영향 산출물과 공개 시간, 소스 태그 상태, 정리 순서와 자격 증명 교체 안내 대조
 - [The attack chain behind the v1.107.0 LiteLLM release — LiteLLM](https://docs.litellm.ai/blog/security-incident-oct-21-2026-attack-chain) — 2026-10-23 게시. 2026-10-26 초기 침입, 소스 교체, 승인 조건 완화와 첫 공지 정정 대조
+- [Compromised LiteLLM 1.107.0 on PyPI Installs a Credential Stealer and Backdoor — SafeDep](https://safedep.io/litellm-pypi-compromise-credential-stealer-backdoor/) — 2026-10-21. 2026-10-27 시작 시 실행 파일, 수집 범위와 유출 목적지 대조
+- [Python 3.15 Documentation, site — Site-specific configuration hook](https://docs.python.org/3.15/library/site.html) — 2026-10-27 3.15.2 문서 기준. `.pth`의 `import` 줄 실행과 deprecation, `.start` 진입점, `sitecustomize` 자동 import
+- [Debian Packages, libpython3.13-minimal 파일 목록 (trixie)](https://packages.debian.org/trixie/amd64/libpython3.13-minimal/filelist) — 2026-10-27 `/usr/lib/python3.13/sitecustomize.py` 포함 확인(bookworm의 3.11 패키지도 같음)
 - [PyPI Docs, Introduction to Attestations](https://docs.pypi.org/attestations/)
 - [PyPI Docs, Consuming attestations](https://docs.pypi.org/attestations/consuming-attestations/)
 - [PyPI Docs, Security model and considerations](https://docs.pypi.org/trusted-publishers/security-model/)

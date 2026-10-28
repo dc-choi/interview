@@ -1,7 +1,7 @@
 ---
 tags: [business, marketing, lead-generation, sales, funnel]
 status: done
-verified_at: 2026-10-19
+verified_at: 2026-10-27
 category: "비즈니스&제품(Business&Product)"
 aliases: ["Lead Magnet", "리드 마그넷", "Entry Offer", "진입 제안"]
 ---
@@ -45,6 +45,19 @@ aliases: ["Lead Magnet", "리드 마그넷", "Entry Offer", "진입 제안"]
 - 무료로 얻은 결과와 유료로 얻을 결과의 차이를 설명할 수 있는지 본다. 무료 결과만으로 문제가 끝나면 유료 제안의 이유가 약해진다.
 - 외부 AI 플랫폼에 올린 도구는 그 플랫폼의 계정, 요금제, 사용 한도와 정책에 따라 고객의 접근 조건이 바뀔 수 있다. 배포 전에 공식 안내를 확인하고, 고객이 입력할 정보의 범위를 알린다.
 - 결과를 보장하는 문구나 근거 없는 성과 표시는 쓰지 않는다. 경계는 [[Persuasion-Principles-and-Boundaries|설득 원리와 정직한 사용의 경계]]를 따른다.
+
+## 긴 영상과 전용 자료를 묶는 B2B 리드 경로
+
+B2B에서는 조회 한 번이 고객 한 명으로 이어질 수 있어, 영상의 목표를 구독자 수보다 적합한 잠재 고객의 연락처와 상담으로 두는 운영 방식이 있다. 아래는 한 운영자가 2026-10-09 공개한 자기 채널의 실행 방식이다. 여러 채널의 효과를 비교한 결과가 아니므로 가설로 시험한다.
+
+- **영상마다 역할 하나:** 유입 경로 만들기, 전문성 보여 주기, 직접 판매 중 하나를 영상의 목표로 정하고 채널 전체에서 섞는다.
+- **주제는 짧은 글에서 먼저 검증한다:** LinkedIn 게시물에서 반응을 확인한 주제를 긴 글과 영상으로 넓힌다. 검색량이 있어도 목표 고객이 아닌 질문형 주제는 빼고, 선호하는 용어보다 시장이 검색하는 표현을 고른다(운영자의 예는 inbound 대신 B2B lead generation). LinkedIn의 공식 노출 신호는 [[LinkedIn-Content-Distribution|LinkedIn 콘텐츠 도달]]에 있다. 제목과 썸네일은 촬영 전에 정하고 [[YouTube-Thumbnail-Testing|제목과 썸네일 실험]]으로 비교한다.
+- **영상 주제에 맞춘 전용 자료:** 큰 영상마다 그 주제의 다음 단계를 담은 가이드를 따로 만든다. 영상이 모든 단계를 주면 신청할 이유가 사라지므로 영상은 첫 단계를 보여 주고 가이드가 나머지를 맡는다. 주제가 어긋난 자료(예: 추천 도서 목록)는 전환을 떨어뜨린다고 본다. 영상 전사문을 정리해 가이드 초안을 만들 수 있지만 사실과 사례는 직접 검토한다.
+- **CTA 위치:** 핵심 CTA를 도입부가 아니라 영상의 20~30% 지점에 두고 화면 안내와 설명란 링크를 함께 쓴다. 이 비율은 운영자의 경험칙이다. 자기 영상에서는 YouTube Studio의 시청 지속률 보고서로 첫 30초 뒤 남은 비율과 시청자가 떠나거나 건너뛰는 구간(dip)을 보고 위치를 정한다(2026-10-27 YouTube 도움말 확인).
+- **신청 양식과 후속 메일:** 이름과 이메일 외에 역할 질문 하나(예: 창업자, 마케터, 1인 사업자, 기타)를 두고 유입 채널을 태그로 남긴다. 신청 뒤에는 교육, 사례, 제안 순으로 메일을 보내며 광고성 정보의 요건은 아래 후속 연락 절을 따른다.
+- **1:1 연락과 배포:** 영상을 보내기 전에 받을 의사를 먼저 묻고, 뉴스레터 열람이나 댓글처럼 참여 이력이 있는 사람부터 연락한다. LinkedIn에서 즉시 클릭만 유도해 10초 만에 나가는 시청이 쌓이면 YouTube 알고리즘에 잘못된 신호를 준다는 주장도 있지만 근거 자료가 없고 플랫폼의 공식 기준으로 확인되지 않았다.
+
+운영자는 검증한 주제 하나가 조회 61,000회의 영상, 수천 명의 이메일 구독자와 10만 달러 규모의 상품으로 이어졌고, 3월에 올린 영상이 그해 12월에도 하루 100~200회 조회되며 설명란 링크로 연락처와 매출을 만들었다고 보고했다. 한 채널의 자기 보고이므로 영상의 수명이나 전환을 일반화하지 않는다. 측정은 영상별 조회와 함께 설명란 링크 클릭, 가이드 신청, 상담 예약과 구매를 같은 기간으로 나눠 기록한다.
 
 ## 소비를 돕는 후속 연락
 
@@ -99,6 +112,7 @@ aliases: ["Lead Magnet", "리드 마그넷", "Entry Offer", "진입 제안"]
 
 - 진입 제안이 해결하는 문제 하나와 유료로 더해지는 결과를 한 문장씩 말할 수 있는가
 - 신청, 소비, 상담 신청과 구매를 따로 기록하는가
+- 영상으로 연락처를 받는다면 영상마다 주제에 맞춘 전용 자료가 있고, CTA 위치를 자기 시청 지속률로 정했는가
 - 후속 연락이 광고성 정보라면 수신 동의, 야간 별도 동의(전자우편 제외), 표시 사항, 수신 거부 처리와 결과 통지, 2년마다의 수신동의 확인을 갖췄는가
 - 무료와 유료 진입을 같은 고객군과 관찰 기간에서 비교했고, 결제자의 높은 참여를 지불의 효과로 단정하지 않았는가
 - 상담 반론 기록이 있고, 반론마다 답하는 콘텐츠와 맞지 않는 고객을 위한 안내가 있는가
@@ -108,6 +122,9 @@ aliases: ["Lead Magnet", "리드 마그넷", "Entry Offer", "진입 제안"]
 
 - [마케팅의 시작점이 진짜, 완전히 변했어요. I 9년간 잘 먹히던 ‘무료 상품’이 최근 쓰레기가 된 진짜 이유 — YouTube, 김서한 : 비상식적 사업 이야기](https://www.youtube.com/watch?v=H3w0evSeSoA) — 2026-10-12, 00:00~04:24 무료 자료와 즉시 결과, 실물 책과 후속 연락, 04:24~05:27 유료 강의 공개, 07:18~09:30 영업 반론의 콘텐츠화, 09:30~10:38 소액 워크숍과 수업 참관을 운영 경험으로 참고했다. 등록과 전환 확률이 높아진다는 주장, 영상별 조회수와 등록자 수, 7시간의 법칙, 돈을 내는 사람만 진실해진다는 주장은 검증하지 않아 쓰지 않았다.
 - [GetResponse Help Center, Lead magnet](https://www.getresponse.com/help/lead-magnet.html)
+- [How to get leads from YouTube in B2B — Pierre's Content Guides, Pierre Herubel](https://pierreherubel.substack.com/p/how-to-get-leads-from-youtube-in) — 2026-10-09 게시, 2026-10-27 본문 확인. 운영자 자기 채널의 실행 방식이며 조회, 구독자와 매출 수치는 검증하지 않은 자기 보고
+- [B2B에서 YouTube로 잠재 고객을 확보하는 방법 — GeekNews](https://news.hada.io/topic?id=35503)
+- [YouTube Help, Measure key moments for audience retention](https://support.google.com/youtube/answer/9314415) — 2026-10-27 첫 30초 유지 비율, 상승과 이탈 구간의 정의 확인
 - [What is The Big 5™? (The 5 Content Topics That Grow Your Business) — IMPACT, Marcus Sheridan](https://www.impactplus.com/blog/big-5-blog-article-topics) — 2026-03-16 갱신본
 - [The Psychology of Sunk Cost — Organizational Behavior and Human Decision Processes, Arkes, Blumer](https://doi.org/10.1016/0749-5978%2885%2990049-4) — 1985, 35권 124~140쪽. 2026-10-19 초록과 Experiment 2(127~128쪽) 대조
 - [Can Higher Prices Stimulate Product Use? Evidence from a Field Experiment in Zambia — American Economic Review, Ashraf, Berry, Shapiro](https://www.aeaweb.org/articles?id=10.1257/aer.100.5.2383) — 2010, 100권 5호 2383~2413쪽. 초록 대조
@@ -121,6 +138,8 @@ aliases: ["Lead Magnet", "리드 마그넷", "Entry Offer", "진입 제안"]
 
 - [[Content-Marketing|콘텐츠 마케팅]] — 퍼널 단계와 무료/유료 제공 범위
 - [[Social-Content-Scaling|소셜 콘텐츠 성장 단계]] — 사업 결과로 고른 소재의 재생산
+- [[LinkedIn-Content-Distribution|LinkedIn 콘텐츠 도달]] — 짧은 글로 주제를 먼저 시험할 때의 공식 노출 신호
+- [[YouTube-Thumbnail-Testing|유튜브 제목과 썸네일 실험]] — 클릭과 시청 시간의 구분
 - [[Persuasion-Principles-and-Boundaries|설득 원리와 정직한 사용의 경계]] — 상호성과 일관성의 정직한 사용, 후기와 추천 공개
 - [[Pricing-Strategy|가격 정책 설계]] — 구매 불안의 유형
 - [[Meta-Paid-Ads|Meta 유료 광고 실행 구조]] — 망설임에서 메시지 가설 만들기, 리드 선별과 고객당 비용

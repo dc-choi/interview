@@ -1,9 +1,9 @@
 ---
-tags: [web, network, application-layer, dhcp, dns, ssh, ftp, smtp, pop3, imap]
+tags: [web, network, application-layer, dhcp, dns, ssh, ftp, smtp, pop3, imap, post-quantum, remote-desktop]
 status: done
 category: "웹&네트워크(Web&Network)"
-aliases: ["Application Layer Protocols", "응용 계층 프로토콜", "DHCP DORA", "메일 프로토콜"]
-verified_at: 2026-09-30
+aliases: ["Application Layer Protocols", "응용 계층 프로토콜", "DHCP DORA", "메일 프로토콜", "SSH 양자 내성 알고리즘"]
+verified_at: 2026-10-27
 ---
 
 # DHCP, 원격 접속, 파일과 메일 프로토콜
@@ -53,6 +53,22 @@ SSH는 암호화된 transport, server authentication과 선택 가능한 user au
 
 사용자 인증과 별개로 client는 server의 host key로 서버를 인증한다. host 이름과 공개 host key의 대응을 로컬 DB(OpenSSH의 `~/.ssh/known_hosts`)에 두고, 키가 바뀌면 경고하며 password 인증을 막는다. 자동화에서 이 검증을 끄는 위험은 [[Single-Host-SPA-API-Deployment-SSH-Workflow#runner가 들어오는 경로와 host key|SSH 배포의 host key 검증]]. 터미널은 입출력을 맡는 프로그램이고, 그 안에서 실행한 SSH client가 원격 서버의 셸과 연결된다. 명령을 해석하는 주체는 원격 셸이다.
 
+### 양자 내성 알고리즘은 키 교환부터 들어왔다
+
+OpenSSH 10.0은 하이브리드 양자 내성 키 교환 `mlkem768x25519-sha256`을 기본으로 쓰기 시작했다. 10.1은 양자 내성이 아닌 키 교환을 협상하면 client가 경고하는 `WarnWeakCrypto`(ssh_config, 기본 켜짐)를 넣었고, 10.6(2026-10-06)은 같은 옵션을 sshd_config에도 추가해 그런 client를 기본으로 로그에 남긴다.
+
+서명은 그 뒤를 따른다. 10.6은 ML-DSA-44와 Ed25519를 묶은 하이브리드 서명 `ssh-mldsa44-ed25519`를 활성화하면서 이전 실험 구현의 `@openssh.com` 접미사를 떼었으므로, 실험 구현으로 만든 키는 다시 만들어야 한다. OpenBSD 8.0(2026-10-20, OpenSSH 10.6 포함) 릴리스 기록은 ssh(1)의 이 지원을 실험적이라고 표시하고, 2026-10-09 OpenBSD-current의 `ssh_config(5)`는 이 알고리즘을 `HostKeyAlgorithms`와 `PubkeyAcceptedAlgorithms` 기본 목록의 맨 끝에, 인증서 형식(`ssh-mldsa44-ed25519-cert`)은 인증서 묶음의 끝에 둔다. 배포판마다 OpenSSH 버전과 기본 목록이 다르므로 나눠서 확인한다. `ssh -V`는 버전을, `ssh -Q key`(또는 `ssh -Q HostKeyAlgorithms`)는 바이너리가 지원하는 알고리즘을 보여 줄 뿐 기본 목록과 순서는 보여 주지 않는다. client가 실제로 쓸 목록과 순서는 Host와 Match 블록을 적용한 설정을 출력하는 `ssh -G <host>`로, server 쪽은 유효 설정을 출력하는 `sshd -T`로 본다.
+
+### 화면 원격과 기기 페어링
+
+문자 셸 대신 화면을 원격으로 쓰는 도구도 같은 질문을 받는다. 상대를 어떻게 확인하고, 경로에 중계 서버가 끼는가다. Mac의 개별 창이나 화면을 iPhone과 iPad로 보내는 오픈소스 앱 Sill(Apache-2.0)의 공개 설계를 예로 들면 다음과 같다.
+
+- **발견과 경로**: 같은 네트워크에서는 Bonjour로 Mac을 찾고, USB 연결과 기기 간 직접 Wi-Fi(기본 꺼짐)도 쓴다. 원격 접속(기본 꺼짐)은 별도 중계 서버 없이 사용자의 VPN(Tailscale 등)이나 포트 포워딩으로 연결한다.
+- **암호화와 페어링**: 연결은 TLS 1.3이다. 기기마다 한 번 Mac에 표시된 코드를 스캔하거나 12자리 숫자를 입력해 페어링하고(USB는 자동), 이후 연결은 페어링한 키에 고정된다. 페어링 뒤 키를 고정하는 점은 SSH의 `known_hosts`와 같지만 첫 키를 믿는 방법이 다르다. Sill은 Mac에 표시된 코드나 USB 연결로 페어링해 첫 상대를 정한다. OpenSSH client는 기본값(`StrictHostKeyChecking ask`)에서 처음 보는 host key를 사용자가 받아들이면 기록하는 TOFU(trust on first use) 방식이라, fingerprint를 다른 경로로 대조하거나 SSHFP(`VerifyHostKeyDNS`, 기본 `no`)나 host CA를 쓰지 않으면 첫 연결 자체는 인증되지 않는다. Sill의 Require pairing 설정을 끄면 같은 네트워크의 어떤 기기든 암호화된 채로 연결할 수 있어 페어링이 주던 상대 확인이 빠진다.
+- **캡처, 권한과 한계**: Mac은 ScreenCaptureKit으로 창이나 화면을 잡아 하드웨어 HEVC로 인코딩한다. 화면 기록과 손쉬운 사용 권한이 필요하고 macOS 15 이상은 로컬 네트워크 권한도 요구한다. Apple silicon과 macOS 14 이상, iOS/iPadOS 17 이상에서 동작하며 소리는 보내지 않고 클립보드는 텍스트 256KB까지다.
+
+원격 화면 도구를 고를 때는 중계 서버의 존재, 페어링과 키 고정 방식, 원격 접속이 기본으로 열려 있는지, OS에 요구하는 권한부터 본다(설계 점검).
+
 ## FTP, FTPS와 SFTP
 
 FTP는 보통 하나의 control connection과 별도의 data connection을 사용한다. active/passive mode에 따라 data connection을 여는 쪽이 달라 NAT와 firewall rule을 복잡하게 할 수 있다.
@@ -91,7 +107,7 @@ VPN의 원격 접속과 사이트 간 연결, 터널의 보호 범위, MTU와 sp
 
 ## 출처
 
-2026-10-06 부분 대조: SMTP 수락과 배달 책임은 RFC 5321 3.3, 4.2.5, 6.1절, 계정 부재 오류는 Google 공식 목록으로 확인했다. 나머지 프로토콜의 재검증 날짜는 갱신하지 않았다.
+2026-10-06 부분 대조: SMTP 수락과 배달 책임은 RFC 5321 3.3, 4.2.5, 6.1절, 계정 부재 오류는 Google 공식 목록으로 확인했다. 나머지 프로토콜의 재검증 날짜는 갱신하지 않았다. 2026-10-27에는 SSH 양자 내성 알고리즘 절을 OpenSSH 릴리스 노트와 OpenBSD 문서로, 화면 원격 절을 Sill 저장소 README로 대조했다.
 
 - [Gmail SMTP errors and codes — Google Workspace](https://knowledge.workspace.google.com/admin/support/troubleshooting/gmail-smtp-errors-and-codes)
 - 김영한 강사, [DNS](https://www.inflearn.com/courses/lecture?courseId=326277&unitId=61356)
@@ -100,7 +116,13 @@ VPN의 원격 접속과 사이트 간 연결, 터널의 보호 범위, MTU와 sp
 - [RFC 4252 — Secure Shell Authentication Protocol](https://www.rfc-editor.org/rfc/rfc4252.html)
 - [RFC 4253 — Secure Shell Transport Layer Protocol](https://www.rfc-editor.org/rfc/rfc4253.html)
 - [SSH (Secure Shell) Remote Login Protocol, draft-ylonen-ssh-protocol-00 — IETF](https://www.ietf.org/archive/id/draft-ylonen-ssh-protocol-00.txt)
-- [ssh(1) — OpenBSD manual pages](https://man.openbsd.org/ssh)
+- [ssh(1) — OpenBSD manual pages](https://man.openbsd.org/ssh) — 2026-10-27 `-Q`, `-G` 대조
+- [sshd(8) — OpenBSD manual pages](https://man.openbsd.org/sshd) — `-T` 확장 시험 모드
+- [OpenSSH Release Notes — OpenSSH](https://www.openssh.org/releasenotes.html) — 2026-10-27 10.0, 10.1, 10.6의 양자 내성 키 교환, WarnWeakCrypto와 하이브리드 서명 항목 대조
+- [ssh_config(5) — OpenBSD manual pages](https://man.openbsd.org/ssh_config) — 2026-10-09판 기본 알고리즘 목록, `StrictHostKeyChecking`과 `VerifyHostKeyDNS` 기본값
+- [OpenBSD 8.0 — OpenBSD](https://www.openbsd.org/80.html)
+- [Sill README — GitHub, Saffsanity/sill](https://github.com/Saffsanity/sill)
+- [Sill - iPhone과 iPad에서 Mac의 개별 창을 원격 조작하는 무료 앱 — GeekNews](https://news.hada.io/topic?id=35476)
 - [RFC 959 — File Transfer Protocol](https://www.rfc-editor.org/rfc/rfc959.html)
 - [RFC 5321 — Simple Mail Transfer Protocol](https://www.rfc-editor.org/rfc/rfc5321.html)
 - [RFC 6409 — Message Submission for Mail](https://www.rfc-editor.org/rfc/rfc6409.html)

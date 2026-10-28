@@ -2,7 +2,7 @@
 tags: [ai, decision-model, calibration, robustness]
 status: done
 category: "AI엔지니어링(AIEngineering)"
-aliases: ["Decision Model Calibration Cases", "Microsoft-Decision-1", "Qwen 의사결정 모델", "Jev 1.14"]
+aliases: ["Decision Model Calibration Cases", "Microsoft-Decision-1", "Qwen 의사결정 모델", "Jev 1.14", "Verbalized Confidence", "LLM 자기 보고 신뢰도", "Calibration and Sharpness"]
 ---
 
 # 결정 모델의 보정, 표현 안정성과 버전 변경
@@ -67,6 +67,24 @@ Microsoft는 학습에서 가린 36개 평가에서 비교 모델 중 가장 높
 
 **버전 경계**: 공식 변경 기록은 0.3.0(2026-10-06)에서 라벨 학습 단계 L1/L2를 제거했다고 명시한다. 해당 기능을 쓰는 코드는 `anyjev==0.2.0`에 고정하도록 안내한다. 과거 소개의 상위 보정 단계를 현재 기본 기능으로 안내하지 않는다. 이 대조는 문서 수준이며 모델 실행, 영상의 500개 헤드라인 실험과 성능 순위는 재현하지 않았다.
 
+## 생성형 LLM이 말한 신뢰도는 보정된 확률이 아니다
+
+결정 모델의 선택지 확률처럼, 생성형 LLM에게 "얼마나 확신하나요?"라고 물어 받은 숫자도 자기 과제의 정답 기록으로 확인하기 전에는 확률로 쓰지 않는다.
+
+- **보정과 날카로움은 다른 성질이다**: 보정은 70%라고 한 예측들 가운데 실제로 약 70%가 맞는 상태이며, 결과 하나가 아니라 같은 점수를 준 여러 사례로 판정한다. 날카로움(sharpness)은 예측이 0이나 1 쪽으로 얼마나 모이는지이며 예측만으로 정해진다. Gneiting 등(2007)은 확률 예측을 보정을 지키는 범위에서 날카로움을 최대화하는 문제로 평가하자고 제안했다. 계절 평균 강수 비율 30%를 매일 내는 예보는 보정은 되지만 그날의 정보를 쓰지 않는다.
+- **말로 낸 숫자는 생성된 텍스트다**: 사전학습은 다음 토큰 예측으로 채점될 뿐, 출력한 신뢰도가 실제 정답률과 맞는지로 채점되지 않는다. 같은 질문을 다시 묻거나 "정말 확실한가요?"처럼 표현만 바꿔도 새 증거 없이 값이 달라질 수 있고, 먼저 생성한 확신하는 문장이 뒤의 숫자를 끌어올릴 수 있다. 이 셋은 2026-10-20 실무 블로그의 관찰이며 정량 실험은 아니다.
+- **연구 결과는 한쪽으로만 가지 않는다**: Xiong 등(ICLR 2024)은 LLM이 말로 신뢰도를 낼 때 과신하는 경향이 있고 여러 응답의 일관성과 집계 방식이 이를 줄이지만, 어느 방법도 일관되게 앞서지 못하고 전문 지식이 필요한 과제에서는 모두 고전한다고 보고했다. Tian 등(EMNLP 2023)은 RLHF로 조정한 ChatGPT, GPT-4, Claude에서 말로 낸 신뢰도가 조건부 확률보다 대체로 잘 보정됐고 TriviaQA, SciQ, TruthfulQA에서 ECE를 상대적으로 약 50% 줄이는 경우가 많았다고 보고했다. 어느 결과든 모델 세대와 과제가 바뀌면 다시 잰다.
+
+관측 정보와 결과 기록으로 신뢰도를 매기는 절차는 다음과 같다. 위 블로그의 제안을 정리한 적용 예이며 다른 방법과 비교한 실험 결과는 아니다.
+
+1. 답변마다 관측할 수 있는 정보를 정한다. 일치하는 도움말 문서를 찾았는지, 몇 개 찾았는지, 전에 처리한 유형인지, 같은 질문에 두 번 답하게 했을 때 답이 일치하는지가 예다.
+2. 다른 정보가 없으면 과거 정답률에서 시작한다. 사람이 검토한 과거 답변 200개 가운데 150개가 맞았다면 출발점은 75%다.
+3. 관측 정보, 규칙이 매긴 신뢰도와 실제 정답 여부를 함께 기록한다. 검토자 승인이나 고객의 재문의 없음 같은 정답 기준은 대리 지표이므로 그 정의도 남긴다.
+4. 관측 정보가 같은 답변끼리 묶어 묶음별 정답률을 다음 신뢰도로 쓴다. 일치 문서가 있고 두 답이 같았던 묶음이 95% 맞았다면 95%, 일치 문서가 없던 묶음이 40%였다면 40%를 준다. 처음에는 묶음이 작아 값이 거칠다.
+5. 주기적으로 신뢰도 구간별 실제 정답률을 확인한다. 90%를 준 답변이 70%만 맞았다면 과신이므로 규칙을 고친다.
+
+이 규칙은 같은 정보에 같은 값을 주고 질문의 표현이 아니라 관측 정보에 따라 움직이지만, 정답 기록의 질을 넘지 못한다. 결과를 확인하지 않으면 아무도 검증하지 않은 숫자로 돌아간다. 결정 모델의 확률에도 같은 구간별 정답률 확인을 적용하고, 낮은 신뢰도의 답을 사람 검토로 넘기는 설계는 [[LLM-Abstention|보류와 사람 검토]]를 따른다.
+
 ## 출처
 
 - [Build your own decision model — Nish Tahir](https://nishtahir.com/build-your-own-decision-model/)
@@ -81,6 +99,11 @@ Microsoft는 학습에서 가린 36개 평가에서 비교 모델 중 가장 높
 - [AnyJev Changelog — Nokia Applied Research](https://github.com/nokia-applied-research/AnyJev/blob/main/CHANGELOG.md)
 - [AnyJev Question 소스 — Nokia Applied Research](https://github.com/nokia-applied-research/AnyJev/blob/main/anyjev/question.py)
 - [AnyJev Decider 소스 — Nokia Applied Research](https://github.com/nokia-applied-research/AnyJev/blob/main/anyjev/decider.py)
+- [Asking LLM for confidence — Amrut Joshi](https://rumple.github.io/blog/2026/10/20/asking-llm-for-confidence.html) — 2026-10-20 게시(10-22 수정), 말로 낸 신뢰도의 불안정성 관찰과 관측 정보 기반 신뢰도 절차, 학술 출처 없이 쓴 실무 글
+- [Probabilistic forecasts, calibration and sharpness — Journal of the Royal Statistical Society Series B, Tilmann Gneiting 외](https://doi.org/10.1111/j.1467-9868.2007.00587.x) — 2007, 69(2), 보정을 지키며 날카로움을 최대화하는 평가 관점, 2026-10-27 RePEc 색인의 초록으로 대조
+- [Can LLMs Express Their Uncertainty? An Empirical Evaluation of Confidence Elicitation in LLMs — arXiv, Miao Xiong 외](https://arxiv.org/abs/2306.13063) — ICLR 2024, 2026-10-27 초록 대조
+- [Just Ask for Calibration: Strategies for Eliciting Calibrated Confidence Scores from Language Models Fine-Tuned with Human Feedback — arXiv, Katherine Tian 외](https://arxiv.org/abs/2305.14975) — EMNLP 2023, 2026-10-27 초록 대조
+- [LLM이 매긴 자기 답변의 신뢰도 점수를 믿기 어려운 이유 — GeekNews](https://news.hada.io/topic?id=35827) — 생성형 LLM 신뢰도 절의 학습 계기
 
 ## 관련 문서
 

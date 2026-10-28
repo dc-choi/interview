@@ -46,6 +46,17 @@ aliases: ["시장 실패와 외부효과", "Market Failure and Externalities"]
 
 **코즈 정리**의 출발점은 거래비용이 0이고 거래 가능한 권리가 정해진 이상적 조건이다. 이 조건에서는 당사자 간 협상으로 외부효과를 내부화하는 효율적 배분에 도달할 수 있다. 이를 정부나 법적 권리의 설정, 집행이 필요 없다는 뜻으로 읽지 않는다. 현실의 협상, 측정과 집행에는 비용이 들며, 권리 배분과 제도 선택이 결과에 영향을 준다. 협상이 어렵다는 이유만으로 특정 정부 개입이 더 낫다고 확정하지 않고 실제 대안의 비용과 효과를 비교한다.
 
+### 규제 포획 주장은 구조로 검토한다
+
+**규제 포획**은 규제가 공익보다 규제받는 산업의 이익에 맞춰 만들어지고 운영되는 현상이다. Stigler(1971)는 산업과 직업 같은 경제 집단이 공공 자원과 권한으로 자기 경제적 지위를 높이려는 규제 수요, 그리고 정치 과정이 비교적 작은 집단에게 규제를 얻게 하는 공급 구조로 이를 분석했다. 이를 산업이 늘 이긴다는 법칙으로 읽지 않는다.
+
+AI 규제 논쟁에서는 이 개념이 두 층위로 쓰인다.
+
+- **입장 글:** 대형 AI 기업의 규제 요구를 포획 시도로 보는 입장이 있다. 기업이 필요한 자본, 토지, 물과 에너지는 정부만 제공할 수 있으므로 규제를 요청해 산업을 국가에 붙이고, 실제로는 자율 규제의 허가를 받아 통제권을 넘기지 않은 채 정당성을 얻으며, 작은 경쟁자의 진입도 막는다는 주장이다(Arundhati Roy의 2026-10-15 에세이). 논증이자 입장이며 실증 결과가 아니다.
+- **제도 설계:** 업계가 제안하거나 초안을 쓴 규칙은 개입 문턱, 개입 기관, 평가자의 독립성과 다른 규제 주체의 배제 여부를 조문 수준에서 확인할 수 있다. 비교 사례는 [[AI-Basic-Act-Scope-and-Obligations#미국 프런티어 AI 제안과 기준을 비교한다|미국 프런티어 AI 제안과 기준 비교]]에 있다.
+
+검토할 때는 제안자의 동기보다 구조를 본다. 비용과 진입장벽이 누구에게 붙는지, 누가 면제를 받는지, 더 엄격한 다른 규칙을 막는지, 피해를 볼 제3자가 결정 과정에 들어오는지 확인한다. 판별 질문 목록은 [[AI-Frontier-Regulation-Debate#규제 포획 판별 질문|프론티어 AI 규제 논쟁]]에 있다. 포획 주장도 반증 가능한 가설로 다루고, 규제가 없을 때 남는 외부효과의 비용과 함께 비교한다.
+
 ### 주거지원은 대상, 비교 집단과 결과 지표를 나눠 평가한다
 
 지원 대상의 소득이 낮다는 관찰만으로 지원이 빈곤의 원인이라고 결론 내리지 않는다. 정책 효과를 보려면 지원이 없었을 경우와 비교할 근거가 필요하며, 주거환경, 건강, 고용과 소득을 각각 측정해야 한다.
@@ -60,6 +71,7 @@ aliases: ["시장 실패와 외부효과", "Market Failure and Externalities"]
 - **피구세와 보조금**: 외부효과를 가격에 되돌리는 교정 도구
 - **공공재와 무임승차**: 시장에서 과소공급되기 쉬운 재화
 - **역선택과 도덕적 해이**: 정보 격차가 만드는 두 실패
+- **규제 포획**: 규제가 규제받는 산업의 이익에 맞춰지는 정부 실패의 한 형태
 
 ## 7. 흔한 오해
 
@@ -78,10 +90,15 @@ aliases: ["시장 실패와 외부효과", "Market Failure and Externalities"]
 - [OpenStax, Principles of Economics 3e, Insurance and Imperfect Information](https://openstax.org/books/principles-economics-3e/pages/16-2-insurance-and-imperfect-information)
 - [The Institutional Structure of Production — NobelPrize.org, Ronald H. Coase](https://www.nobelprize.org/prizes/economic-sciences/1991/coase/lecture/)
 - [HUD, Moving to Opportunity for Fair Housing Demonstration Program: Final Impacts Evaluation, Executive Summary (2011)](https://www.huduser.gov/publications/pdf/HUD_MTOExecSummary_v4.pdf) — 실험 설계와 성인 결과
+- [The Theory of Economic Regulation — Bell Journal of Economics, George J. Stigler](https://ideas.repec.org/a/rje/bellje/v2y1971ispringp3-21.html) — 1971, 2권 1호 3~21쪽. 2026-10-27 서지와 초록 대조
+- [Apocalypse Now and Then — EQUATOR, Arundhati Roy](https://www.equator.org/articles/arundhati-roy-artificial-intelligence) — 2026-10-15 에세이, 2026-10-27 본문 확인. 논증과 입장으로만 사용
+- [인공지능은 자본주의의 최종 목적지다 — GeekNews](https://news.hada.io/topic?id=35544)
 
 ## 관련 문서
 
 - [[Market-Structures|시장구조]] — 시장지배력 행사로 발생할 수 있는 배분 비효율
 - [[Supply-and-Demand|수요와 공급]] — 외부효과는 사적 비용과 사회적 비용의 괴리
 - [[Signaling-Screening|신호와 선별]] — 정보비대칭을 줄이는 신호의 비용 조건과 선별
+- [[AI-Frontier-Regulation-Debate|프론티어 AI 규제 논쟁]] — 안전 규제의 경쟁 효과를 구조로 판별하는 질문
+- [[AI-Basic-Act-Scope-and-Obligations|AI 기본법의 적용 범위와 사업자 의무]] — 적용 대상 문턱과 개입 문턱의 비교
 - [[미시경제(Microeconomics)]] — 지도

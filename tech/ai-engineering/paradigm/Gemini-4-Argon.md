@@ -1,7 +1,7 @@
 ---
 tags: [ai, llm, gemini, model, evaluation, availability]
 status: done
-verified_at: 2026-10-01
+verified_at: 2026-10-27
 category: "AI엔지니어링(AIEngineering)"
 aliases: ["Gemini 4 Argon", "제미나이 4 아르곤"]
 ---
@@ -37,7 +37,7 @@ aliases: ["Gemini 4 Argon", "제미나이 4 아르곤"]
 | 도입 기간 종료 후 | 100만 토큰당 입력 $4, 출력 $20 |
 | 캐시 입력 | 입력 가격 대비 95% 할인으로 발표 |
 
-9월 30일 발표에는 일반 공개일과 도입 가격 종료일이 명시되어 있지 않다. 위 가격을 모든 제품과 계정의 현재 적용 요금으로 간주하지 않는다.
+9월 30일 발표에는 일반 공개일과 도입 가격 종료일이 명시되어 있지 않다. 위 가격을 모든 제품과 계정의 현재 적용 요금으로 간주하지 않는다. 정식 제공 뒤 가격표가 밝힌 기한은 [[#정식 제공 뒤 확인한 모델 ID와 가격 기한]]에 정리했다.
 
 ### 구독자 가용성과 API 접근을 구분한다
 
@@ -45,7 +45,7 @@ aliases: ["Gemini 4 Argon", "제미나이 4 아르곤"]
 
 같은 페이지에는 Gemini, Google AI Studio와 Antigravity 진입 링크가 있다. 이 안내만으로 무료 계정 전체의 접근, 특정 리전의 API 지원이나 계정별 quota까지 확인한 것은 아니다. 실제 도입 전 사용할 제품, 모델 ID, 접근 권한과 과금 조건을 확인한다(도입 점검 제안).
 
-이번에는 가용성 안내와 발표 당시 조건을 대조했다. 개별 계정의 호출 시험과 평가 방법론 전체 재검증은 수행하지 않아 기존 `verified_at`을 유지한다.
+2026-10-14에는 가용성 안내와 발표 당시 조건을 대조했다. 개별 계정의 호출 시험과 평가 방법론 전체 재검증은 수행하지 않아 당시에는 기존 `verified_at`을 유지했다. 2026-10-27 갱신의 근거는 아래 정식 제공 절에 적었다.
 
 ## 성능 수치와 비교 조건
 
@@ -81,6 +81,14 @@ aliases: ["Gemini 4 Argon", "제미나이 4 아르곤"]
 
 로봇 활용은 영상 관찰, 물리적 공간 이해, 시뮬레이션 코드와 실제 제어를 연결하는 흐름이다. Google 공식 10월 발표는 ERQA에서 도구 없이 87%와 영상에서 시뮬레이션을 만들고 로봇으로 옮긴 내부 시연을 보고한다. 발췌의 ERQA 400문항, Opus 5.5 82.3%, GPT-6 Astra 81%의 비교 조건과 로봇 전체 행동 로그는 직접 대조하지 않았다. 질문 평가 점수를 실제 로봇의 안전한 작업 성공률로 환산하지 않는다.
 
+## 정식 제공 뒤 확인한 모델 ID와 가격 기한
+
+2026-10-27에 Gemini API 변경 이력, 모델 페이지, 가격표와 Google Cloud의 Gemini Enterprise Agent Platform 릴리스 노트를 대조했다. 이 대조로 `verified_at`을 갱신했으며, 위 성능표와 평가 방법론은 다시 대조하지 않았다.
+
+- **모델 ID와 상태**: 2026-10-13 변경 이력은 `gemini-4-argon`을 GA로 적고, 모델 페이지(2026-10-14 갱신)도 Stable(GA)로 표시한다. 같은 페이지에서 computer use는 Preview다. 모델이 GA여도 기능마다 상태가 다를 수 있다.
+- **할인 기한**: Standard 단가는 100만 토큰당 입력 $2, 출력 $10(사고 토큰 포함)이 2026-11-30까지이고, 2026-12-01부터 입력 $4, 출력 $20이다. 캐시 입력은 같은 날 $0.10에서 $0.20으로 바뀌며 암시적 캐싱만 지원하고 명시적 캐싱은 지원하지 않는다. Batch와 Flex는 입력 $1, 출력 $5에서 $2, $10으로 바뀐다. 무료 등급에서는 쓸 수 없다. 9월 발표의 도입 가격과 종료 후 가격이 이 기한과 함께 가격표에 올라간 것이므로, 12월 이후 예산은 바뀐 단가로 계산한다.
+- **Google Cloud 경로**: 2026-10-13 릴리스 노트는 `gemini-4-argon`과 방어적 사이버 보안용 `gemini-4-argon-cyber-permissive`를 GA로 적고, 후자는 Fairwind Program 허용 목록 뒤에 둔다. 알려진 문제로 `continuation_token`을 쓰는 long decode는 `v1beta1` API에서만 지원하고 `v1`에서는 지원하지 않는다고 적는다. long decode를 쓰는 경로는 호출하는 API 버전까지 확인한다([[LLM-API-Version-Migration|LLM API 버전과 SDK 마이그레이션]]).
+
 ## 출처
 
 - [Gemini 4 Argon: our next era of frontier intelligence — Google](https://blog.google/innovation-and-ai/models-and-research/gemini-models/gemini-4-argon/)
@@ -90,7 +98,11 @@ aliases: ["Gemini 4 Argon", "제미나이 4 아르곤"]
 - [Google Cloud, Developer's guide to Gemini 4 Argon](https://docs.cloud.google.com/gemini-enterprise-agent-platform/models/guides/gemini-4-argon?hl=en)
 - [Gemini 4 Argon is now available for developers — Google](https://blog.google/innovation-and-ai/technology/developers-tools/build-with-gemini-4-argon/)
 - [Gemini 4 Argon: Built to solve your hardest problems — Google](https://blog.google/intl/en-in/products/introducing-gemini-4-argon/)
-- 사용자 제공 GeekNews 발췌: 2026-10-14 정식 출시, 2026-10-15 로봇 제어와 시뮬레이션 활용. 기존 가격과 전체 성능표를 다시 검증하지 않아 문서 전체 검증일은 유지한다.
+- 사용자 제공 GeekNews 발췌: 2026-10-14 정식 출시, 2026-10-15 로봇 제어와 시뮬레이션 활용. 기존 가격과 전체 성능표를 다시 검증하지 않아 그때는 문서 전체 검증일을 유지했다.
+- [Gemini API Changelog — Google AI for Developers](https://ai.google.dev/gemini-api/docs/changelog) — 2026-10-13 GA 항목, 2026-10-27 확인
+- [Google AI for Developers, Gemini Developer API pricing](https://ai.google.dev/gemini-api/docs/pricing) — 2026-10-27 할인 기한, 캐시, Batch와 Flex 단가 확인
+- [Gemini Enterprise Agent Platform release notes — Google Cloud](https://docs.cloud.google.com/gemini-enterprise-agent-platform/release-notes) — 2026-10-13 GA, Cyber Permissive 허용 목록, long decode의 API 버전 제한
+- 사용자 제공 알림: 긱뉴스 GeekCast의 오늘의 긱뉴스(2026.10.13~10.17) 영상. 학습 계기이며 영상은 열람하지 않았고, 정식 제공 사실은 위 공식 문서로 대조했다.
 
 ## 관련 문서
 

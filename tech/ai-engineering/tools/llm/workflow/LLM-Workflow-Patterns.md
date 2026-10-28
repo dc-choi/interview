@@ -16,6 +16,7 @@ LLM 서비스의 중심축은 "질문하면 답하는 챗봇"에서 **업무 흐
 - [[LLM-Workflow-Patterns-Text-to-SQL|Text-to-SQL과 데이터 디스커버리]]: 스키마, 업무 정의와 예시 SQL의 맥락 구성, 메타데이터 정본과 검색용 사본, 생성, 검증과 실행의 경계, 결과 집합 비교, 오류별 복구 지점
 - [[LLM-Workflow-Patterns-Data-and-Operations|데이터와 모델, 환각 통제와 운영]]: 도메인 특화 서비스의 데이터 우선, 수집 단계의 표, 문서 속성과 연결 경로 설계, 근거 기반 답변과 영역 선택, 빠른 피드백 루프, 시작 전략, 내부 지식 봇의 효과 검증, 사내 지원 어시스턴트의 지식 준비, 이관, 피드백, 평가와 비용 추적, 사람 검토 분기
 - [[LLM-Workflow-Expressions|워크플로 표현식과 실행 경계]]: JSONata의 표현력, 계산 제한, 호스트 함수와 도구 권한
+- [[Evaluator-Guided-Program-Search|평가기 주도 프로그램 탐색]]: 제안기와 모델 밖 평가기, 대리 지표로서의 점수, 표본 검사의 실패율 경계, AlphaEvolve와 Claude Mythos 5 양자 회로 사례
 
 ## 함께 볼 문서
 

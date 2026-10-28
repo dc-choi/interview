@@ -2,7 +2,7 @@
 tags: [econ, investing]
 status: done
 category: "Economics"
-aliases: ["행동 편향과 리스크 관리", "Behavioral Biases and Risk Management", "투자자 수익률 격차", "Investor Return Gap"]
+aliases: ["행동 편향과 리스크 관리", "Behavioral Biases and Risk Management", "투자자 수익률 격차", "Investor Return Gap", "근시안적 손실 회피", "Myopic Loss Aversion"]
 ---
 
 # 행동 편향과 리스크 관리
@@ -62,6 +62,22 @@ aliases: ["행동 편향과 리스크 관리", "Behavioral Biases and Risk Manag
 
 좋은 전략을 알아도 지키지 못하면 소용이 없다. 다만 급락장에서 무조건 보유하거나 상승장에서 무조건 덜 사는 규칙도 보편 정답은 아니다. 자산의 건전성, 목표 시점, 목표 비중과 현금 수요가 바뀌면 매도나 리밸런싱이 합리적일 수 있다. 통제 가능한 비용, 분산, 포지션 크기와 사전 규칙에 집중한다.
 
+### 근시안적 손실 회피: 가격 확인 빈도와 근거 점검 일정을 나눈다
+
+근시안적 손실 회피(myopic loss aversion)는 손실을 같은 크기의 이익보다 크게 느끼는 손실 회피와, 오래 들고 갈 자산도 짧은 주기로 손익을 평가하는 습관이 겹친 상태다. 평가 주기가 짧을수록 직전 확인보다 떨어진 결과를 더 자주 보게 되어 같은 자산을 더 위험하게 느끼고 위험자산을 덜 보유하기 쉽다. 선호가 같아도 결과를 확인하는 빈도에 따라 위험 선택이 달라질 수 있다는 점이 핵심이다.
+
+- **주식 프리미엄 퍼즐과 1년 평가 주기**: 1889~2000년 미국 주식의 연평균(산술) 실질 수익률은 약 8.1%로, 비교적 무위험인 단기 증권의 약 1.1%를 크게 웃돌았다. 표준 모형으로 이 차이를 설명하려면 상대 위험회피 계수가 30을 넘어야 한다는 추정이 나와 주식 프리미엄 퍼즐로 불린다. 손실 회피 계수(같은 크기의 손실이 이익보다 몇 배로 느껴지는지)는 대개 2 안팎으로 추정되며, 전망 이론의 추정치 2.25와 약 1년의 평가 주기를 넣은 시뮬레이션이 관측된 프리미엄과 맞았다(Benartzi와 Thaler 1995). 여러 설명 가운데 하나이며 유일한 해법으로 입증된 것은 아니다.
+- **실험**: 같은 위험 선택을 아홉 번 하게 한 실험에서 매번 결정하고 결과를 본 집단보다 세 번씩 묶어 결정하고 결과도 묶어 본 집단이 더 많이 걸었다(Gneezy와 Potters 1997). 같은 설계로 시카고상품거래소(CBOT) 트레이더와 학생을 비교하자 트레이더 쪽이 이 경향을 더 강하게 보였다(Haigh와 List 2005). 투자 배분 실험에서도 피드백을 가장 자주 받은 집단이 위험을 가장 적게 지고 가장 적게 벌었다(Thaler 외 1997).
+- **현장 실험**: 실험인 줄 모르는 전문 외환 트레이더 약 150명이 2주 동안 같은 펀드를 거래했다. 가격이 4시간마다 갱신되는 화면을 본 집단(평균 약 14개 가격)은 1초마다 갱신되는 집단(약 1,555개)보다 마지막 20% 구간의 위험자산 비중이 36.4% 대 27.4%로 약 33% 높았고 이익은 약 53% 많았다. 앞선 묶음 실험은 결정 횟수도 함께 줄였다는 비판이 있어, 두 집단 모두 언제든 거래할 수 있게 두고 가격 표시 빈도만 바꿨다. 평균 보상은 주급의 약 35%였다(Larson, List, Metcalfe 2016).
+- **한계와 반론**: 현장 실험의 펀드는 기대수익이 양수가 되도록 설계됐고(과거 자료 기준 2주 평균 17%), 실험 기간에는 한 주의 급등 때문에 평균 236% 올라 저자도 해석에 주의가 필요하다고 적었다. 동료 심사 전 워킹페이퍼이며, 기대수익이 음수이거나 투자 근거가 무너진 자산에서도 덜 보는 편이 낫다는 근거는 아니다. 선택지의 위험 구조에 따라서는 결과를 하나씩 평가할 때 투자 기회가 오히려 더 매력적으로 보인다는 예측과 실험도 있어(Langer와 Weber 2005) 효과의 방향은 조건에 달려 있다. 손실 회피 자체의 일반성에 대한 반론은 [[Persuasion-Principles-and-Boundaries#근거의 강도와 조건|설득 원리와 경계]]에서 다룬다.
+
+적용 판단으로, 덜 봐도 되는 정보와 정해진 때 챙겨 볼 정보를 나눈다. 몇 년씩 보유하는 투자를 전제로 한 점검 기준이며 매매 신호가 아니다.
+
+- **가격**: 가격은 보유 근거가 그대로여도 매일 움직인다. 수시 확인과 시세 알림은 줄이되, 평소 범위를 크게 벗어난 변동은 아직 모르는 소식이 먼저 반영됐을 수 있으므로 알림을 두고 공시와 소식을 확인한다. 적립은 4절의 적립식 자동화로 미리 정해 매번 금액과 시점을 다시 결정하지 않는다.
+- **기업 정보**: 실적, 가이던스, 부채와 현금, 업계와 규제 변화, 공시는 가격보다 드물게 나오지만 보유 근거를 바꿀 수 있다. 비용은 지금 들고 보상은 나중에 오는 일은 현재 편향 때문에 미루기 쉽고, 자기 통제 문제를 과소평가할수록 더 그렇다(O'Donoghue와 Rabin 1999). 실적 발표 주의 주말처럼 점검 날짜를 미리 정해 두고, ETF는 그 시장이나 업종을 산 이유를 같은 방식으로 점검한다.
+- **근거와 반증 조건 기록**: 매수 이유와 그 판단이 틀렸다고 볼 조건을 함께 적는다. 이유만 적으면 그 이유를 지지하는 정보만 고르기 쉽다(위 표의 확증 편향). 조건이 나오면 자동 매도가 아니라 원점 재검토 신호로 쓰며, 숫자 임계값의 한계는 [[Growth-Quality-and-Scenario-Valuation#10. 트레이드오프와 한계|시나리오 가치평가의 트레이드오프]]에서 본다.
+- **급락일**: 가격을 덜 보기로 해도 시장 급락 소식은 피하기 어렵고, 기록이 없으면 그날의 손실 화면만 보고 기준 없이 팔거나 반대로 계좌를 외면하게 될 수 있다. 그날은 적어 둔 근거와 반증 조건, 목표 비중, 차입 여부와 현금이 필요한 시점을 대조하는 날로 쓴다. 회사가 건전해도 자금 사정이 버티지 못하면 원하지 않는 날 팔게 되므로, 이 조건은 4절의 포지션 사이징, 비상금과 레버리지 기준으로 미리 점검한다.
+
 ### 투자자 수익률 격차를 행동 비용으로 단정하지 않는다
 
 펀드가 공시하는 총수익률은 대개 기간 첫날 한 번에 넣고 끝까지 보유했다고 가정한 시간가중수익률이다. 투자자 수익률은 월별 순유출입까지 반영해 내부수익률처럼 계산한 금액가중수익률이라 같은 펀드라도 두 값이 달라진다([[Risk-and-Return#수익률 비교의 분모와 기간|시간가중과 금액가중의 구분]]). Morningstar는 미국 뮤추얼펀드와 ETF를 묶어 이 차이를 투자자 수익률 격차로 매년 추정한다.
@@ -76,6 +92,7 @@ aliases: ["행동 편향과 리스크 관리", "Behavioral Biases and Risk Manag
 ## 6. 핵심 개념
 
 - **손실 회피와 처분 효과**: 매입가와 본전 여부가 보유, 매도 판단을 왜곡할 수 있는 편향
+- **근시안적 손실 회피**: 손실 회피와 잦은 평가가 겹쳐 위험자산을 덜 보유하게 되는 경향. 가격 확인 빈도는 줄이고 투자 근거 점검은 일정으로 고정한다
 - **군중 심리**: 거품과 폭락의 연료
 - **규칙 기반 관리**: 감정을 구조로 누르기
 - **자기 통제**: 비용, 분산, 포지션 크기와 함께 통제 가능한 변수
@@ -88,6 +105,18 @@ aliases: ["행동 편향과 리스크 관리", "Behavioral Biases and Risk Manag
 - **손실은 본전이 올 때까지 버티면 된다** → 회복을 못 하는 자산도 있다. 매입가보다 현재 투자 근거, 목표 비중과 현금 수요에 따라 보유나 매도를 판단한다.
 
 ## 출처
+
+2026-10-27 부분 검증: 근시안적 손실 회피의 정의, 1년 평가 주기와 손실 회피 계수 인용은 Benartzi와 Thaler의 1993년 NBER 워킹페이퍼판으로, 1889~2000년 실질 수익률은 Mehra와 Prescott의 2003년 회고 논문 표 1로 대조했다. Mehra와 Prescott의 1985년 원논문과 Tversky와 Kahneman(1992)의 원문은 열람하지 못했다. 현장 실험의 설계, 결과와 한계는 NBER 워킹페이퍼 본문으로, 앞선 실험, 위험 구조에 따른 반론과 현재 편향은 학술지, 서지 데이터베이스와 저자 소속 대학 페이지의 초록으로 대조했다. 가격 확인 빈도를 줄였을 때 개인 투자자의 성과가 나아지는지와 적용 판단의 효과는 검증하지 않았다.
+
+- [Myopic Loss Aversion and the Equity Premium Puzzle — NBER, Shlomo Benartzi, Richard H. Thaler](https://www.nber.org/papers/w4369) — 1993 워킹페이퍼, Quarterly Journal of Economics 110(1)에 1995 게재. 워킹페이퍼판으로 대조
+- [The Equity Premium in Retrospect — NBER, Rajnish Mehra, Edward C. Prescott](https://www.nber.org/papers/w9525) — 2003 워킹페이퍼, 표 1의 1889~2000년 산술평균 실질 수익률
+- [An Experiment on Risk Taking and Evaluation Periods — Quarterly Journal of Economics, Uri Gneezy, Jan Potters](https://doi.org/10.1162/003355397555217) — 1997, Vol. 112 No. 2, pp. 631-645, 초록만 대조. 아홉 번과 세 번 묶음 설계는 현장 실험 논문의 설명으로 확인
+- [Do Professional Traders Exhibit Myopic Loss Aversion? An Experimental Analysis — Journal of Finance, Michael S. Haigh, John A. List](https://doi.org/10.1111/j.1540-6261.2005.00737.x) — 2005, Vol. 60 No. 1, pp. 523-534, RePEc 서지 페이지의 초록만 대조
+- [The Effect of Myopia and Loss Aversion on Risk Taking: An Experimental Test — Quarterly Journal of Economics, Richard H. Thaler, Amos Tversky, Daniel Kahneman, Alan Schwartz](https://doi.org/10.1162/003355397555226) — 1997, Vol. 112 No. 2, pp. 647-661, 초록만 대조
+- [Can Myopic Loss Aversion Explain the Equity Premium Puzzle? Evidence from a Natural Field Experiment with Professional Traders — NBER, Francis Larson, John A. List, Robert D. Metcalfe](https://www.nber.org/papers/w22605) — 2016 워킹페이퍼, 동료 심사 전. 설계, 결과와 한계를 본문으로 대조했고 학술지 게재본은 찾지 못함
+- [Myopic prospect theory vs. myopic loss aversion: how general is the phenomenon? — Journal of Economic Behavior & Organization, Thomas Langer, Martin Weber](https://www.wiwi.uni-muenster.de/fcm/en/publication/47537) — 2005, Vol. 56 No. 1, pp. 25-38, 저자 소속 대학 페이지의 초록만 대조
+- [Doing It Now or Later — American Economic Review, Ted O'Donoghue, Matthew Rabin](https://doi.org/10.1257/aer.89.1.103) — 1999, Vol. 89 No. 1, pp. 103-124, 초록만 대조
+- [계좌를 자주 볼수록 수익이 줄어든다? 현직 트레이더 실험 — YouTube, 월가아재의 과학적 투자](https://www.youtube.com/watch?v=ZnHT6K8k5Sc) — 2026-10-20 공개 영상. 근시안적 손실 회피 절의 계기이며 사실은 이 목록의 1차 출처로 대조하고 확인하지 못한 수치는 쓰지 않음
 
 2026-10-13 부분 검증: 일일 레버리지 ETF의 누적 수익률 예시는 SEC 안내와 대조하고 직접 계산했다. 증거금 계좌 위험은 미국 FINRA Rule 2264의 공시 내용만 확인했다. 현재 시장 방향, 특정 지수의 회복 보장이나 한국 반대매매 규정은 검증하지 않았다.
 
@@ -121,4 +150,6 @@ aliases: ["행동 편향과 리스크 관리", "Behavioral Biases and Risk Manag
 - [[Backtesting-Pitfalls|백테스트의 함정]] — 좋은 과거 성과 숫자를 초과수익으로 착각하는 이유
 - [[Asset-Allocation-Diversification|자산배분과 분산투자]] — 리스크 관리의 토대
 - [[Risk-and-Return|위험과 수익]] — 반복과 생존, Kelly 비중, 손실 회복의 비대칭
+- [[Growth-Quality-and-Scenario-Valuation|공시로 읽는 성장의 질과 시나리오 가치평가]] — 투자 가설의 반증 조건과 임계값의 한계
+- [[Persuasion-Principles-and-Boundaries|설득 원리와 정직한 사용의 경계]] — 손실 회피의 원 연구와 일반성에 대한 반론
 - [[투자(Investing)]] — 지도

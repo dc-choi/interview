@@ -3,7 +3,7 @@ tags: [infrastructure, iac, terraform, ansible, gitops, devops]
 status: done
 category: "인프라&클라우드(Infrastructure&Cloud)"
 aliases: ["IaC", "Infrastructure as Code", "테라폼", "코드형 인프라"]
-verified_at: 2026-09-03
+verified_at: 2026-10-27
 ---
 
 # IaC (Infrastructure as Code)
@@ -114,6 +114,16 @@ IaC 실습에서는 실행 성공 외에 어떤 자원을 만들었고 어디까
 - **가변(Mutable) 인프라**: 기존 서버를 in-place로 수정. 누적될수록 드리프트, 비재현성 위험.
 - **불변(Immutable) 인프라**: 변경 시 기존을 고치지 않고 **새 이미지/인스턴스로 통째 교체**(골든 이미지, 블루-그린). 서버 내부에 변경이 누적되는 드리프트를 줄이고 롤백을 단순하게 한다. 다만 콘솔의 수동 변경이나 외부 리소스 변화까지 막지는 않으므로 IaC의 탐지와 재수렴은 여전히 필요하다.
 
+### 컨테이너의 실행 중 불변성
+
+2026-10-27 Kubernetes 문서(v1.37)와 Linux Foundation CKS 안내 대조 기준이며, 이 절만 대조했다.
+
+- **변경 경로:** 컨테이너는 상태가 없고 불변인 것을 전제로 설계된다. 실행 중인 컨테이너의 코드를 고치지 않고, 변경을 담은 새 이미지를 빌드한 뒤 그 이미지로 컨테이너를 다시 만든다. Deployment에서는 Pod template의 이미지를 바꾸는 롤아웃이 이 교체 절차다([[K8s-Core-Workloads-and-Service#Deployment와 rollout|Deployment와 rollout]]).
+- **실행 중 수정의 결과:** 컨테이너 안에서 직접 고친 파일은 이미지에 반영되지 않는다(이미지와 컨테이너 쓰기 레이어의 관계는 [[Docker-Core#핵심 개념|Docker 핵심 개념]]). Kubernetes에서는 볼륨 밖의 파일이 컨테이너가 크래시하거나 멈출 때 보존되지 않고, kubelet은 깨끗한 상태로 컨테이너를 다시 시작한다. 그래서 직접 고친 컨테이너는 같은 이미지의 다른 replica와 달라지는 드리프트를 만들고, 볼륨 밖에서 고친 내용은 재시작 때 사라진다.
+- **쓰기 제한:** Kubernetes 애플리케이션 보안 체크리스트는 컨테이너 `securityContext`에 `readOnlyRootFilesystem: true`를 두라고 권한다. 이 설정은 컨테이너의 루트 파일시스템을 읽기 전용으로 마운트하며, 기본값은 false이고 `spec.os.name`이 windows인 Pod에서는 설정할 수 없다. 애플리케이션이 써야 하는 경로에는 `emptyDir` 같은 볼륨을 따로 마운트하며, 시작할 때 컨테이너 파일시스템을 고치는 애플리케이션(예: WAR나 JAR 압축 해제)은 이 설정에서 문제가 생길 수 있다.
+- **남는 쓰기 경로:** `volumeMounts`의 `readOnly` 기본값은 false라서 `emptyDir`, `hostPath`처럼 쓰기를 허용하는 볼륨은 `readOnly: true`를 주지 않으면 읽기와 쓰기가 모두 된다(`configMap`, `secret` 볼륨은 항상 읽기 전용으로 마운트된다). 따라서 루트 파일시스템을 읽기 전용으로 해도 쓰기 가능한 볼륨 경로의 쓰기는 이 설정으로 막히지 않는다. `emptyDir` 데이터는 컨테이너 크래시 뒤에도 남고 Pod가 노드에서 제거될 때 지워지므로, 그 경로의 변경은 크래시 뒤 재시작으로 초기화되지 않는다([[K8s-Configuration-Storage-and-Probes#Pod volume에서 persistent storage까지|Pod volume 수명]]). `medium: Memory`로 만든 tmpfs에 쓴 파일은 그 파일을 쓴 컨테이너의 메모리 한도에 포함된다.
+- **CKS 범위:** Linux Foundation 안내의 Monitoring, Logging and Runtime Security 영역에 Ensure immutability of containers at runtime 항목이 있다. 쓰기 제한은 바꿀 수 있는 경로를 줄이는 예방 장치이고, 실행 중 이상 행동 탐지는 [[K8s-Falco-Runtime-Security|Falco 런타임 보안]]이, 시험 버전과 영역 비중은 그 문서의 [[K8s-Falco-Runtime-Security#CKS와의 연결|CKS 절]]이 다룬다.
+
 ## CI/CD, DevOps, GitOps 연결
 
 - 인프라 변경을 앱 코드처럼 **PR → 리뷰 → 자동 테스트 → 머지 → 배포** 파이프라인에 태운다. 개발팀과 운영팀이 같은 환경 정의를 공유해 경계가 흐려지는 게 DevOps의 핵심.
@@ -147,6 +157,7 @@ IaC 실습에서는 실행 성공 외에 어떤 자원을 만들었고 어디까
 - 상태, 멱등성, 구성 드리프트, 불변 인프라가 왜 IaC의 핵심 가치인지
 - IaC가 CI/CD, GitOps와 어떻게 맞물려 DevOps를 떠받치는지
 - Terraform 구성을 나누는 기준(폭발 반경, 변경 빈도, 팀 권한, 규모)과 CLI workspace를 환경 격리 수단으로 쓰지 않는 이유
+- 컨테이너를 고치지 않고 새 이미지로 교체하는 이유와, `readOnlyRootFilesystem`을 켜도 마운트한 볼륨에 남는 쓰기 경로
 
 ## 출처
 - [Terraform, destroy command](https://developer.hashicorp.com/terraform/cli/commands/destroy)
@@ -174,6 +185,15 @@ IaC 실습에서는 실행 성공 외에 어떤 자원을 만들었고 어디까
 - [AWS, Benefits of using multiple AWS accounts](https://docs.aws.amazon.com/whitepapers/latest/organizing-your-aws-environment/benefits-of-using-multiple-aws-accounts.html)
 - [AWS, IAM and AWS STS quotas](https://docs.aws.amazon.com/IAM/latest/UserGuide/reference_iam-quotas.html)
 - [Terraform을 기반한 AWS 기반 대규모 마이크로서비스 인프라 운영 노하우 — Amazon Web Services Korea](https://www.youtube.com/watch?v=9PTdO7DM6XQ)
+- [Kubernetes, Containers](https://kubernetes.io/docs/concepts/containers/)
+- [Kubernetes, Volumes](https://kubernetes.io/docs/concepts/storage/volumes/)
+- [Kubernetes, Configure a Security Context for a Pod or Container](https://kubernetes.io/docs/tasks/configure-pod-container/security-context/)
+- [Kubernetes, Pod API reference](https://kubernetes.io/docs/reference/kubernetes-api/workload-resources/pod-v1/)
+- [Kubernetes, Application Security Checklist](https://kubernetes.io/docs/concepts/security/application-security-checklist/)
+- [A Closer Look at NSA/CISA Kubernetes Hardening Guidance — Kubernetes Blog](https://kubernetes.io/blog/2021/10/05/nsa-cisa-kubernetes-hardening-guidance/)
+- [Docker, Storage drivers](https://docs.docker.com/engine/storage/drivers/)
+- [Linux Foundation, Certified Kubernetes Security Specialist (CKS)](https://training.linuxfoundation.org/certification/certified-kubernetes-security-specialist/)
+- [YouTube, NeoKloud, CKS 31 Monitoring Logging Runtime Security 08 Mutable Immutable Infrastructure Final](https://www.youtube.com/watch?v=Yh2YtOiEdA0)
 
 ## 관련 문서
 - [[CDK-vs-Terraform|CDK vs Terraform (IaC 도구 선택)]]
@@ -184,3 +204,7 @@ IaC 실습에서는 실행 성공 외에 어떤 자원을 만들었고 어디까
 - [[Blue-Green|Blue-Green 배포 (불변 인프라)]]
 - [[DevOps-vs-DevSecOps|DevOps vs DevSecOps]]
 - [[Monolith-vs-Microservice|아임웹 MSA — 테라폼 모듈로 인프라 자동화]]
+- [[Docker-Core|Docker 기본 (이미지와 컨테이너 쓰기 레이어)]]
+- [[K8s-Core-Workloads-and-Service|Kubernetes core workload와 Service (Deployment rollout)]]
+- [[K8s-Configuration-Storage-and-Probes|Kubernetes configuration, storage와 probe (emptyDir 수명)]]
+- [[K8s-Falco-Runtime-Security|Falco 런타임 보안 (CKS 런타임 탐지)]]

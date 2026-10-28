@@ -1,9 +1,9 @@
 ---
-tags: [web, network, ipv4, nat, napt, pat, stun, turn, ice]
+tags: [web, network, ipv4, nat, napt, pat, stun, turn, ice, quic, iroh]
 status: done
 category: "웹&네트워크(Web&Network)"
-aliases: ["IPv4 NAT and Traversal", "NAT PAT", "NAT Traversal", "홀 펀칭", "STUN TURN ICE"]
-verified_at: 2026-09-30
+aliases: ["IPv4 NAT and Traversal", "NAT PAT", "NAT Traversal", "홀 펀칭", "STUN TURN ICE", "iroh"]
+verified_at: 2026-10-27
 ---
 
 # IPv4 NAT, NAPT와 NAT 통과
@@ -94,6 +94,20 @@ hole punching은 매핑이 목적지와 무관한 EIM NAT에 기대며 목적지
 
 ICE는 가능한 직접 경로를 먼저 찾고 필요할 때 relay로 후퇴하는 orchestration이다. hole punching만 구현하고 TURN fallback을 생략하면 회사망, carrier-grade NAT와 엄격한 firewall 환경에서 연결 성공률을 보장하기 어렵다. WebRTC 적용은 [[Realtime-Communication-Comparison]].
 
+### 공개 키로 상대를 지정하는 QUIC 연결: iroh
+
+ICE가 IP 주소와 port 후보를 고르는 절차라면, 상대를 공개 키로 지정하고 경로는 라이브러리가 찾게 하는 방식도 있다. iroh는 이 방식의 Rust 라이브러리로 2026-06-15 1.0을 냈고 2026-10-27 기준 최신은 1.4.1이다. 각 endpoint를 Ed25519 공개 키(endpoint ID)로 식별하고 그 키를 TLS 신원으로 쓴다.
+
+- **경로 선택**: 가능하면 hole punching으로 직접 연결하고, 실패하면 relay 서버를 거친다. relay는 endpoint ID로 주소가 지정된 암호화 패킷만 전달하고 내용은 읽지 못한다. hole punching 방식은 Tailscale을 본떴다고 개발사가 밝혔다.
+- **인증과 암호화**: QUIC 위에서 동작해 모든 연결이 종단 간 암호화되고, 공개 키로 dial하므로 양쪽이 서로를 인증한다. 자체 서명 인증서로 시작했다가 rustls가 지원한 뒤 TLS raw public key(RFC 7250)로 바꿨다.
+- **주소 조회**: endpoint ID만으로 상대를 찾으려면 현재 주소를 알려 주는 조회가 필요하다. 서명된 DNS 레코드 형식(pkarr)의 중앙 조회 서비스를 두고, BitTorrent mainline DHT를 직접 쓰는 길도 남겼다.
+- **경로 전환과 NAT 통과**: QUIC multipath 초안과 QUIC NAT traversal 초안을 구현해 한 연결 안에서 여러 경로를 관리하고 상황에 따라 바꾼다. upstream 반영이 어려워 QUIC 구현(quinn)을 noq로 포크했다.
+- **프로토콜 구분**: 스트림마다 협상하지 않고 TLS ALPN으로 응용 프로토콜을 고른다. 추가 비용은 없지만 ClientHello의 ALPN은 경로상 관찰자에게 보이고, 이를 가릴 Encrypted ClientHello는 1.0에 넣지 않았다. 양자 내성 서명은 키가 커서 endpoint ID를 키에서 따로 유도해야 하므로 넣지 않았고, 선택적 양자 내성 키 교환은 들어갔다.
+- **호환 약속**: 1.x endpoint끼리는 minor 버전과 언어에 관계없이 통신하고, wire 호환을 깨는 변경은 major 릴리스에만 넣는다고 밝혔다. 공개 relay는 1.0 계열에 계속 제공하고 0.35 계열은 2026-12-31까지 제공한다. 공개 relay의 중계 트래픽에는 바뀔 수 있는 rate limit이 있다.
+- **사용 지표**: 연결 데이터의 95%가 기기 사이를 직접 오가는 경우가 흔하고 최근 30일 공개 relay에서 2억 개가 넘는 endpoint가 만들어졌다고 개발사가 밝혔다. 측정 방법을 공개하지 않은 자체 보고다.
+
+BLAKE3 content addressing으로 큰 blob을 검증하며 스트리밍하는 iroh-blobs, publish-subscribe 확산을 맡는 iroh-gossip은 별도 crate다. 연결 계층과 응용 프로토콜을 나눈 구조라, 운영에 쓰려면 공개 relay의 정책과 rate limit에 기댈지 자체 relay를 둘지를 함께 정한다(설계 제안).
+
 ## 운영 체크리스트
 
 - mapping timeout보다 긴 idle 구간이 있다면 keepalive와 재연결 비용을 계산했는가
@@ -118,6 +132,12 @@ ICE는 가능한 직접 경로를 먼저 찾고 필요할 때 relay로 후퇴하
 - [RFC 8445 — Interactive Connectivity Establishment](https://www.rfc-editor.org/rfc/rfc8445.html)
 - [RFC 8489 — Session Traversal Utilities for NAT](https://www.rfc-editor.org/rfc/rfc8489.html)
 - [RFC 8656 — Traversal Using Relays around NAT](https://www.rfc-editor.org/rfc/rfc8656.html)
+- [Iroh 1.0 - Dial Keys, not IPs — iroh blog, n0](https://iroh.computer/blog/v1)
+- [The road to iroh 1.0 — iroh blog, Rüdiger Klaehn](https://iroh.computer/blog/the-road-to-iroh-1-0)
+- [iroh 1.4.1 README — docs.rs](https://docs.rs/crate/iroh/1.4.1) — 2026-10-27 dial 방식, relay 역할과 구성 crate 대조. 1.4.1은 2026-10-21 배포
+- [Managing multiple paths for a QUIC connection (draft-ietf-quic-multipath) — IETF Datatracker](https://datatracker.ietf.org/doc/draft-ietf-quic-multipath/), [Using QUIC to traverse NATs (draft-seemann-quic-nat-traversal) — IETF Datatracker](https://datatracker.ietf.org/doc/draft-seemann-quic-nat-traversal/)
+- [RFC 7250 — Using Raw Public Keys in Transport Layer Security (TLS) and Datagram Transport Layer Security (DTLS)](https://www.rfc-editor.org/rfc/rfc7250.html)
+- [iroh 1.0까지의 여정 - IPFS 구현에서 공개 키 기반 연결 라이브러리로 — GeekNews](https://news.hada.io/topic?id=35506)
 - [그림으로 쉽게 배우는 네트워크 — NAT과 PAT, 감자 강사](https://www.inflearn.com/courses/lecture?courseId=331036&unitId=160819)
 - [그림으로 쉽게 배우는 네트워크 — NAT traversal, 감자 강사](https://www.inflearn.com/courses/lecture?courseId=331036&unitId=160820)
 

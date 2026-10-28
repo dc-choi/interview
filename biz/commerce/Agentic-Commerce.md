@@ -62,6 +62,25 @@ Buy for Me에서는 고객이 Amazon 화면에서 배송지, 세금과 배송비
 
 **사업 분석 제안:** 고객 접점, 광고, 결제와 판매자 운영 중 어디에서 가치를 회수하는지 나눠 본다. 외부 AI가 구매를 도와도 해당 플랫폼의 결제와 운영 서비스를 계속 쓴다면 수익이 남을 가능성이 있다. 반대로 탐색 화면의 광고 노출이 줄어들 가능성은 따로 검증한다. 이 유인 분석만으로 특정 기업이 광고 수익 때문에 에이전트를 차단했다고 확정하지 않는다.
 
+## 사이트의 접근 통제가 에이전트의 작업 범위를 정한다
+
+에이전트가 예약과 구매를 실제로 끝낼 수 있는지는 모델 성능보다 방문하는 사이트의 참여 정책과 봇 방지 장치에 좌우될 수 있다. 2026년 9~10월 보도와 당사자 입장에서 확인한 접근 통제의 유형은 다음과 같다.
+
+| 유형 | 사례 | 확인 수준 |
+|---|---|---|
+| 특정 에이전트 차단 | Amazon은 2026-09-20부터 Meta Muse의 쇼핑을 막았다. Amazon은 Meta가 Muse의 접근을 미리 알리지 않았고 Muse가 탐색 중 자신을 밝히지 않았다고 설명했으며, 사용자에게는 승인되지 않은 AI 에이전트의 계속된 접근이 이용 조건 위반이라는 안내가 표시됐다. Meta는 Muse가 비밀번호와 결제 정보를 볼 수 없다고 반박했다 | 보도된 당사자 입장 |
+| 유료 데이터 계약 참여자만 허용 | Yelp는 데이터 라이선스 프로그램으로 이용료를 낸 에이전트가 아니면 사람이 아닌 트래픽을 허용하지 않는다고 밝혔다 | TechCrunch에 밝힌 당사자 입장(2026-10-06) |
+| 제휴 없음과 계좌 접근 거부 | Delta는 외부 AI 에이전트가 고객 대신 항공권을 사거나 예약하게 하는 제휴나 연동이 없고, 승인되지 않은 자동화 활동에서 고객을 보호하는 조치를 하고 있다고 했다. 차단 여부는 직접 답하지 않았다. JPMorgan Chase와 Charles Schwab은 보안 우려로 외부 에이전트의 고객 계좌 접근을 막는다고 확인했고, Schwab은 고객의 로그인 정보나 브라우저 자동화를 쓰는 접근을 막는다고 설명했다 | 보도된 당사자 입장(TechCrunch, American Banker). Delta가 대리 예약을 막고 있다는 표현은 The Verge의 서술 |
+| 공지 없는 기존 봇 방지 장치 | Muse, xAI Grok, OpenAI Dots와 Instinct 이용자가 여러 사이트에서 막혔다고 보고했고, Cars.com과 Amtrak처럼 차단을 발표하지 않은 사이트에서도 작동이 멈췄다는 보고가 있다 | The Verge가 전한 사용자 보고, 원인 미확인 |
+
+법원 판단은 이 통제의 법적 근거가 어디까지인지 보여 준다. 미국 제9순회항소법원은 2026-08-04 Amazon.com Services v. Perplexity AI(No. 26-1444)에서 Perplexity의 에이전트 브라우저 Comet의 Amazon 사용을 막은 지방법원의 가처분(2026년 3월 심리 뒤 발령)을 취소하고 환송했다. 가처분 단계의 판단으로, 컴퓨터 사기 및 남용법(CFAA)과 캘리포니아 CDAFA의 접근(access) 요건에 대해 현재 기록에서는 Perplexity가 아니라 사용자가 AI 도구를 이용해 Amazon 컴퓨터에 접근했다고 보아 Amazon이 본안에서 이길 가능성이 낮다(unlikely to succeed)고 판단했다. 본안의 최종 판단은 아니다. 판결은 에이전트형 AI를 규율하는 새 법체계를 세우지 않고, 불법행위 청구 같은 다른 맥락의 책임은 다루지 않으며, 이 기록과 이 기술 상태에 한정된다고 밝혔다. 각주에는 이 결과가 Amazon이 이용약관으로 사이트 접근을 규율하는 능력을 해치지 않는다고 적었다. 이 판결을 사이트가 에이전트를 막을 수 없다는 뜻이나 모든 에이전트가 허용된다는 뜻으로 읽지 않는다.
+
+**사업 적용 제안:**
+
+- **에이전트가 우리 서비스에 들어올 때:** 허용, 유료 계약, 차단 중 무엇을 택할지 정하고 이용약관과 봇 정책에 적는다. 계좌와 결제처럼 사고 비용이 큰 기능은 화면 자동 조작보다 승인 단계를 둔 API나 위임 수단을 먼저 검토한다.
+- **우리 제품이 에이전트로 외부 사이트를 쓸 때:** 대상 사이트의 약관, 차단 여부와 대체 경로를 출시 전에 확인한다. 막히면 사용자에게 실패를 알리고, 차단을 자동으로 우회하는 기능은 넣지 않는다.
+- **해석의 경계:** 차단 사례가 늘었다는 보도만으로 에이전트 시장 전체의 실패나 특정 기업의 차단 동기를 확정하지 않는다. 봇 방지 장치가 강해지면 사람 이용자도 확인 절차를 더 거치게 될 수 있다는 전망은 AI 안전성 평가 기업 EquiStamp 대표가 The Verge에 밝힌 의견이다.
+
 ## 사업 적용 시 측정할 것
 
 다음은 고객 여정과 책임 구분을 바탕으로 한 측정 제안이다.
@@ -77,6 +96,12 @@ Buy for Me에서는 고객이 Amazon 화면에서 배송지, 세금과 배송비
 
 - [Statement about Perplexity — Amazon](https://www.aboutamazon.com/news/company-news/amazon-perplexity-comet-statement) — 2025년 Comet 관련 당사자 입장, 2026-10-24 대조. Muse에 대한 별도 입장으로 대체하지 않음
 - [2025 Form 10-K — Shopify](https://www.sec.gov/Archives/edgar/data/1594805/000159480526000007/shop-20251231.htm) — 매출 구성과 GMV 연관성, Shopify Payments의 비중 및 비용 구조, 2026-10-24 대조
+- [Amazon.com Services, LLC v. Perplexity AI, Inc., No. 26-1444 — 미국 제9순회항소법원 판결문(Courthouse News 게시본)](https://www.courthousenews.com/wp-content/uploads/2026/08/amazon-v-perplexity-ninth-circuit-opinion.pdf) — 2026-08-04 판결, 2026-10-27 8쪽 절차 경과, 15~18쪽, 21쪽 결론과 각주 5를 대조
+- [Amazon blocks Meta’s new AI shopping agent from its website — Retail Gazette, Kieran Howells](https://www.retailgazette.co.uk/blog/2026/09/amazon-blocks-metas-new-ai-shopping-agent-from-its-website/) — 2026-09-22 보도, 2026-10-27 확인. 차단 시작일, Amazon의 설명과 Meta의 반박
+- [Websites are closing their doors to AI agents — The Verge, Emma Roth](https://www.theverge.com/ai-artificial-intelligence/1013195/ai-agents-blocked-web) — 2026-10-17 보도, 2026-10-27 원문 확인. 사용자 보고, Delta와 은행의 차단 서술, EquiStamp 대표의 의견
+- [The next hurdle for AI agents: getting websites to let them in — TechCrunch, Sarah Perez](https://techcrunch.com/2026/10/06/the-next-hurdle-for-ai-agents-getting-websites-to-let-them-in/) — 2026-10-06 보도, 2026-10-27 확인. Yelp와 Delta가 매체에 밝힌 입장
+- [Schwab blocks unauthorized AI agents, points clients to Charley — American Banker, Dan Shaw](https://www.americanbanker.com/news/schwab-blocks-unauthorized-ai-agents-points-clients-to-charley) — 2026-10-15 보도, 2026-10-27 확인. Schwab의 차단 범위와 JPMorgan Chase CEO의 발언
+- [웹사이트들이 AI 에이전트에 문을 닫고 있음 — GeekNews](https://news.hada.io/topic?id=35590) — 2026-10-17 The Verge 기사 요약
 
 - [Shopify Help Center, Shopify Catalog and product discovery for agentic storefronts](https://help.shopify.com/en/manual/online-sales-channels/agentic-storefronts/products) — Catalog 참여와 공개 검색 노출의 차이를 2026-10-10 대조
 - [How We Built Safety Into Muse — Meta AI Research](https://research.meta.ai/blog/security-and-safety-for-ai-agents-our-approach-with-muse) — 출시 시점의 Purchases 절, 2026-10-09 대조. Stripe Link 제휴 문장은 2026-10-20 재대조

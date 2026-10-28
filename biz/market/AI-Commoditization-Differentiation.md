@@ -84,6 +84,22 @@ AI가 검색, 비교, 요약, 제작, 매칭처럼 규칙이 분명한 작업의
 
 같은 업종 안에서도 반응은 갈린다. 보안처럼 모델의 취약점 탐지 능력과 겹치는 분야에서는 단일 점검 기능 제품은 대체 압력을, 데이터와 설치 기반을 가진 플랫폼은 모델을 흡수할 기회를 받는다고 볼 수 있다. 이는 해석이며, 특정 기업의 주가 등락이나 섹터 시가총액 감소 폭 같은 수치는 1차 자료로 확인하지 못해 넣지 않는다. 출시 전 루머에 기댄 시장 해석도 확정 사실로 쓰지 않고, 모델 사양은 [[Claude-Fable-5-Mythos-5|Claude Fable 5, Mythos 5]]에서 본다.
 
+### 실적 발표에서 회사들이 내세운 방어 논리
+
+SaaS에 투자하는 VC Blossom Street Ventures는 2026년 2분기 실적 시즌의 상장 SaaS 67곳 실적 발표를 검토한 글(2026-10-12)에서, 대부분이 전망 초과나 상향, 성장 가속, 이익률 개선 중 하나 이상을 기록했고 핵심 제품을 AI의 구조적 위협으로 지목한 회사는 없었다고 정리했다. 예상치를 밑돌거나 발표 뒤 주가가 크게 내린 세 곳의 원인도 서비스 실행, 특정 유기 검색 유입의 혼란, 이전 작업과 재무 정리로 분류했다. 경영진 발언을 모은 2차 집계이므로 아래는 회사들이 내세운 방어 논리의 목록이며 실적의 인과를 확정한 결과가 아니다. 상장 SaaS와 해당 업종 투자자의 집계라는 표본 한계가 있고, 경영진에게는 공개 실적 발표에서 위협을 인정하지 않을 유인도 있으므로 위협을 언급하지 않았다는 사실을 위협이 없다는 증거로 쓰지 않는다.
+
+| 방어 논리 | 실적 발표에서 제시된 주장 |
+|---|---|
+| 맥락, 데이터와 통합 | 모델은 범용화되고 고객 고유의 맥락, 업무 흐름, 데이터와 통합이 차이를 만든다. 업무 그래프에 기반한 에이전트가 더 정확한 답을 더 적은 토큰으로 낸다는 회사 측 수치가 예로 나왔다 |
+| 데이터의 최신성 | 에이전트에 필요한 것은 데이터 창고의 오래된 사본이 아니라 실시간 운영 데이터다. 보유보다 계속 쌓고 갱신하는 쪽이 해자가 된다 |
+| 데이터와 모델의 경계 | 고객 데이터를 외부 대규모 언어 모델에 노출하지 않고 자체 모델로 판단한다. 의료처럼 민감정보가 프롬프트에 섞이는 업종에서는 보안과 기밀성이 구매 조건이 된다 |
+| 에이전트라는 새 사용자 | 에이전트의 도구 호출이 늘수록 관측, 거버넌스와 보안 수요가 생긴다 |
+| 기능보다 플랫폼 | 기업 고객은 AI 기능을 덧붙이는 새 공급자보다 통제와 운영 이력을 갖춘 플랫폼으로 표준화하려 한다 |
+
+부진 사례 가운데 하나는 AI가 제품이 아니라 고객 확보 경로인 검색 유입에 영향을 준 경우로 분류됐다. AI 답변 안의 노출을 재는 방법은 [[AI-Search-Visibility|AI 검색 가시성 측정]]에서 본다.
+
+회사가 공개하는 AI 매출 지표는 정의가 바뀔 수 있다. Salesforce는 2027 회계연도 2분기 발표(2026-08-26)에서 Agentforce ARR이 15억 달러를 넘었다고 밝히면서, 같은 분기부터 이 지표에 Slackbot과 Headless 360을 포함한다고 적었다(2026-10-27 대조). 위 집계는 이 수치를 직전 분기 대비 증가로 소개했지만, 정의가 넓어진 분기의 수치를 같은 기준의 성장으로 읽지 않는다. 과금 단위가 좌석에서 요청, 거래와 성과로 옮겨 가는 사례는 [[Pricing-Strategy-AI-Usage|AI 기능의 과금 단위와 크레딧 설계]]에서 다룬다.
+
 ### 모델 선택권과 업무 자산의 통제권
 
 모델을 바꾸어도 고객의 업무 맥락과 운영 자산을 유지할 수 있는지는 별도의 사업 판단이다. 2026-03-04 Microsoft 공개 대담에서는 하네스와 컨텍스트 계층을 모델과 분리하고, 제품별 평가를 개선하면서 제공 원가를 낮추는 방향을 제시했다(2026-10-22 대담록 확인). 공급사의 전략적 견해이며 클라우드 기업의 수익 우위나 특정 종목의 투자 수익을 입증한 자료는 아니다.
@@ -135,6 +151,7 @@ AI가 검색, 비교, 요약, 제작, 매칭처럼 규칙이 분명한 작업의
 - 결과물 단가가 절반이 됐을 때도 남는 매출과 이익이 있는지 계산해 본다.
 - 새 서비스를 찾는다면 인건비가 매출에 선형인가, 산출물을 검증할 수 있는가, 책임이 사람에게 묶였는가를 표로 채워 본다.
 - SaaS를 판다면 고객이 AI 코딩 도구로 비슷한 내부 도구를 만들었을 때도 남는 것(기록 데이터, 결제, 감사 추적, 설치 위치)이 무엇인지, 좌석 수가 줄어도 매출이 유지되는 과금 기준인지 확인한다.
+- AI 기능의 성과를 설명할 때 고객 데이터가 계속 갱신되는 경로, 외부 모델과의 데이터 경계, 에이전트가 제품을 호출할 수 있는 접점을 말할 수 있는지, 비교하는 AI 매출 지표의 정의가 이전 기간과 같은지 확인한다.
 
 ## 출처
 
@@ -157,6 +174,9 @@ AI가 검색, 비교, 요약, 제작, 매칭처럼 규칙이 분명한 작업의
 - [Winners and losers of generative AI: Early Evidence of Shifts in Freelancer Demand — Oxford Internet Institute, Ole Teutloff 외](https://sosi.oii.ox.ac.uk/publications/winners-and-losers-of-generative-ai-early-evidence-of-shifts-in-freelancer-demand/)
 - [The Winners and Losers of Generative AI in the Freelance Job Market — Oxford Internet Institute](https://www.oii.ox.ac.uk/the-winners-and-losers-of-generative-ai-in-the-freelance-job-market/)
 - [AI doesn't end scarcity. It relocates it — Fortune, François Candelon 외](https://fortune.com/2026/07/24/ai-doesnt-end-scarcity-it-relocates-it/)
+- [The 15 Themes on AI from SaaS Earnings Calls — Blossom Street Ventures, Sammy Abdullah](https://blossomstreetventures.medium.com/the-15-themes-on-ai-from-saas-earnings-calls-f9607b073dc5) — 2026-10-12 게시, 2026-10-27 RSS 전문 대조. SaaS에 투자하는 VC가 경영진 발언을 모은 2차 집계이며 기업별 원 발표는 Salesforce만 대조
+- [Salesforce Delivers Record Second Quarter Fiscal 2027 Results — Salesforce](https://investor.salesforce.com/news/news-details/2026/Salesforce-Delivers-Record-Second-Quarter-Fiscal-2027-Results/default.aspx) — 2026-08-26 발표, 2026-10-28 Agentforce ARR과 지표 정의 변경 재대조
+- [AI가 SaaS를 무너뜨린다고? 67개 기업의 실적 발표는 달랐다 — GeekNews](https://news.hada.io/topic?id=35888)
 
 ## 관련 문서
 
