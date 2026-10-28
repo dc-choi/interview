@@ -104,6 +104,8 @@ Getting started는 Ontology binding을 SDK를 통한 코드 사용과 연결해 
 
 Agent Manager는 발행된 agent의 버전과 메타데이터를 확인하고 세션을 시작하거나 관측하는 화면이다. Agent Builder, Palantir Agent SDK와 third-party SDK integration으로 만든 agent를 지원한다. 편집은 연결된 작성 도구로 이동해 수행한다.
 
+발행된 agent는 Compass resource이며 포함된 project에서 상속한 role grants와 organization, marking 같은 mandatory controls가 접근을 결정한다. Agent를 찾을 수 있는지와 특정 세션을 열 수 있는지를 따로 확인한다. 상위 project 권한만 보고 세션 접근을 허용할 수 있다고 판단하지 않는다.
+
 세션을 시작할 때 발행 버전과 필수 입력을 지정한다. 이후 메시지나 지원되는 event를 보내고, 필요 없어진 활성 세션은 취소할 수 있다. 여러 앱에서 시작한 세션을 버전과 originating resource로 좁혀 조사한다. Agent 접근권이 모든 세션의 열람권을 뜻하지는 않으며, 세션별 mandatory와 discretionary 접근 조건을 모두 충족해야 한다.
 
 ### 대화 화면과 과거 상태를 나눠 본다

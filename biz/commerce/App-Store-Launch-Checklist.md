@@ -43,6 +43,7 @@ aliases: ["App Store Launch Checklist", "앱 스토어 첫 출시 준비", "1인
 
 - **공개 정보와 Google 연락용 정보를 구분한다.** 개인 계정은 법적 이름, 국가와 개발자 이메일을 공개하며 수익화하면 전체 주소를 공개한다. 지역별 추가 공개 요건도 확인한다. 조직 계정은 법적 이름, 주소, 개발자 이메일과 개발자 전화번호를 공개한다. Google이 계정 운영 연락에 사용하는 이메일과 전화번호는 별도 항목으로, 그 연락용 정보 자체는 사용자에게 공개하지 않는다.
 - **신원 확인용 프로필을 찾는다.** 개발자 신원의 이름과 주소는 연결된 Google 결제 프로필에서 가져온다. 수익을 받는 판매자 계정의 결제 프로필과 같을 수도, 다를 수도 있으므로 정산 프로필만 고쳐 해결됐다고 판단하지 않는다.
+- **프로필 분리를 일률적인 정산 조건으로 보지 않는다.** 2026-10-28 공식 도움말은 신원 확인과 판매자 계정에 같은 결제 프로필을 쓰는 경우와 다른 프로필을 쓰는 경우를 모두 설명한다. 따라서 조직 개발자 계정이면 반드시 별도 개인 정산 프로필을 만들어야 한다는 규칙으로 일반화할 수 없다. 국내 개인사업자의 개별 정산 오류 원인은 이 안내만으로 확정하지 않고, 어느 프로필의 법적 이름, 계정 유형과 인증 상태가 문제인지 해당 계정의 안내로 확인한다. 이 대조는 프로필 역할에 한정하며 기존 `verified_at`은 유지한다.
 - **같은 국가 안의 이름과 주소 변경:** 계정 소유자가 Play Console의 `Developer account > About you`에서 정보 변경을 시작하고 연결된 Google Payments Center에서 수정한다. 신분 증빙 업로드가 추가로 필요할 수 있다.
 - **국가나 D-U-N-S 번호 변경:** 기존 결제 프로필에서 직접 바꾸지 않고 새 프로필을 구성하고 필요한 검증을 마친 뒤 개발자 계정에 연결하는 절차를 따른다. 새 결제 프로필과 새 개발자 계정은 다른 대상이다.
 - **등록 때 연결할 결제 프로필을 고른다.** 등록 과정에서 기존 결제 프로필을 고르거나 새 프로필을 만들 수 있고, 프로필 유형은 만들 개발자 계정 유형(개인 또는 조직)을 따른다. 앱 판매를 관리하는 결제 프로필의 생성 안내는 공식 서류에 나온 법적 사업장 주소를 넣게 하며, 유효한 실제 주소가 있어야 하고 사서함 주소는 쓸 수 없다. Play Console 요구사항 인증을 마친 계정은 Google Play에 공개될 수 있는 정보 전체를 개발자 프로필 페이지에서 확인한다.
@@ -110,7 +111,7 @@ aliases: ["App Store Launch Checklist", "앱 스토어 첫 출시 준비", "1인
 - [Play Console Help, Get started with Play Console](https://support.google.com/googleplay/android-developer/answer/6112435?hl=en)
 - [Play Console Help, Choose a developer account type](https://support.google.com/googleplay/android-developer/answer/13634885?hl=en)
 - [Play Console Help, Required information to create a Play Console developer account](https://support.google.com/googleplay/android-developer/answer/13628312?hl=en)
-- [Play Console Help, Update developer identity details managed by a Google payments profile](https://support.google.com/googleplay/android-developer/answer/16260648?hl=en) — 2026-10-18, 신원 확인과 판매자 프로필 구분, 동일 국가 내 이름/주소 변경과 새 결제 프로필 연결
+- [Play Console Help, Update developer identity details managed by a Google payments profile](https://support.google.com/googleplay/android-developer/answer/16260648?hl=en) — 2026-10-18, 신원 확인과 판매자 프로필 구분, 동일 국가 내 이름/주소 변경과 새 결제 프로필 연결. 2026-10-28 두 용도로 같은 프로필 또는 다른 프로필을 사용할 수 있다는 설명을 추가 대조
 - [Play Console Help, Verify your developer identity information](https://support.google.com/googleplay/android-developer/answer/10841920?hl=en) — 2026-10-25, 등록 때 결제 프로필 선택과 생성, 미인증 시 삭제와 재게시 제한
 - [Play Console Help, Google Play Developer Verification: Required documents by country and region - South Korea](https://support.google.com/googleplay/android-developer/answer/15633622?hl=en&co=GENIE.CountryCode%3DKR) — 2026-10-25, 개인의 이동통신사 본인 인증과 주소지 증빙 서류, 일치와 발급일 조건, 조직 등록 서류, 지원되지 않는 서류와 위조 서류
 - [Play Console Help, Keeping your developer account information up to date](https://support.google.com/googleplay/android-developer/answer/13634888?hl=en) — 2026-10-25, 2023-08-31 이후 만든 새 계정에만 적용. 주소지 증빙 FAQ, 추가 시간 이의신청, 삭제의 의미와 재인증 복구

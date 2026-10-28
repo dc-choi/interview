@@ -29,6 +29,19 @@ NIST SP 800-207은 네트워크 위치나 자산 소유만으로 사용자와 �
 
 이는 모든 요청에서 사용자가 비밀번호를 다시 입력해야 한다는 뜻이 아니다. 로그인 성공, 내부 주소와 실제 자원 접근 권한을 같은 사실로 취급하지 않는 것이 설계의 출발점이다.
 
+## 클라우드 서비스마다 책임 경계를 다시 그린다
+
+공유 책임 모델에서 클라우드 제공자가 맡는 인프라 보호와 고객이 맡는 설정, 데이터 및 접근 관리를 구분한다. 고객 책임은 사용하는 서비스와 연결 방식에 따라 달라진다.
+
+| AWS 예시 | 고객이 확인할 책임 |
+| --- | --- |
+| EC2 | 게스트 OS의 업데이트와 보안 패치, 설치한 애플리케이션, security group 설정 |
+| S3와 DynamoDB | 데이터 관리와 분류, 암호화 옵션, IAM을 통한 접근 권한. 인프라, OS와 플랫폼 운영은 AWS가 담당 |
+
+운영 적용 예시로 서비스별 책임자와 패치, 접근 거부 및 데이터 보호의 확인 근거를 연결한다. 관리형 서비스를 쓴다는 사실만으로 데이터 공개 설정이나 과도한 권한이 해결됐다고 보지 않는다.
+
+2026-10-28 AWS 공유 책임 모델만 대조했다. 특정 구성의 안전성이나 보안 사고의 원인 비율을 검증한 결과가 아니며 기존 `verified_at`은 유지한다.
+
 ## 작은 서비스에 적용한 설계 점검
 
 다음은 위 원칙을 적용한 가상 예시다. 특정 제품의 보장이나 금융 규제 준수 판정이 아니다.
@@ -100,6 +113,7 @@ Calif의 2026-10-16 발표 페이지는 Signal, iMessage와 지속성 관련 시
 
 ## 출처
 
+- [AWS, Shared Responsibility Model](https://aws.amazon.com/compliance/shared-responsibility-model/) — 2026-10-28, EC2와 S3/DynamoDB의 고객 책임 경계
 - [jailbreaking the switch 2 — pepsipu](https://pepsipu.com/blog/2026-10-switch2-jailbreak-ns2jb/) — 2026-10-28 권한 범위, tethered 조건과 AI 기여 정정 확인
 - [iPhone — Calif Newsletter](https://blog.calif.io/p/iphone) — 2026-10-16 시연 안내, 영상 전체 체인과 영향 버전은 미검증
 - [OWASP, Authorization Cheat Sheet](https://cheatsheetseries.owasp.org/cheatsheets/Authorization_Cheat_Sheet.html) — 기본 거부, 요청별 인가와 인가 실패의 안전한 처리

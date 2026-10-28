@@ -36,6 +36,22 @@ verified_at: 2026-10-11
 - **압축/배치 전송**: 외부로 나가는 데이터는 압축, 잦은 소량보다 묶어서.
 - **리전 통합**: cross-region 복제가 정말 필요한지 재검토(DR 요구와 균형). [[DR-Strategy]]
 
+## 오브젝트 서빙은 전송료와 요청료를 함께 비교한다
+
+2026-10-28 Cloudflare R2 공식 요금표 대조 기준이다. 아래는 R2 부분 검증이며 기존 AWS 단가와 Kubernetes 지원 버전 전체를 재검증하지 않아 기존 `verified_at`은 유지한다.
+
+| R2 항목 | Standard | Infrequent Access |
+| --- | --- | --- |
+| 저장 | GB-month당 $0.015 | GB-month당 $0.01 |
+| Class A 요청 | 100만 회당 $4.50 | 100만 회당 $9.00 |
+| Class B 요청 | 100만 회당 $0.36 | 100만 회당 $0.90 |
+| 데이터 검색 처리 | 별도 검색료 없음 | GB당 $0.01 |
+| R2에서 직접 나가는 전송 | 전송료 없음 | 전송료 없음 |
+
+Standard의 월 무료 구간은 저장 10 GB-month, Class A 100만 회와 Class B 1,000만 회다. Infrequent Access에는 이 무료 구간이 없고 최소 보관 기간은 30일이다. 사용량은 청구 단위로 올림하므로 요청료를 무조건 연속 비례식으로 계산하지 않는다. 다른 유료 서비스를 연결하면 그 서비스 요금은 별도로 붙을 수 있다.
+
+운영 비교에서는 저장량, 읽기와 쓰기 횟수, 캐시 적중률, 전송량과 원본 저장소에서 옮겨 오는 비용을 각각 계산한다. 이미지와 영상의 총 전송량만으로 요청료를 추정하거나 특정 서비스의 절감률을 다른 서비스에 그대로 적용하지 않는다. 저장소 교체와 파일 크기 축소를 함께 했다면 두 변경의 효과도 나눠 측정한다.
+
 ## NAT Gateway가 특히 위험
 
 프라이빗 서브넷의 외부 통신이 전부 NAT를 거치면 **처리량 요금이 누적**된다. S3와 DynamoDB는 시간 요금과 데이터 처리 요금이 없는 Gateway Endpoint로 빼면 그만큼 NAT 처리 요금이 그대로 줄어든다.
@@ -76,6 +92,7 @@ verified_at: 2026-10-11
 
 ## 출처
 
+- [Cloudflare — R2 Pricing](https://developers.cloudflare.com/r2/pricing/) — 2026-10-28, 저장 클래스별 과금, 무료 구간, 청구 단위 올림과 연동 서비스의 별도 요금
 - [AWS — Overview of Data Transfer Costs](https://aws.amazon.com/blogs/architecture/overview-of-data-transfer-costs-for-common-architectures/)
 - [AWS — VPC Endpoints (Gateway vs Interface)](https://docs.aws.amazon.com/vpc/latest/privatelink/concepts.html)
 - [Amazon VPC pricing — NAT Gateway, Gateway Endpoint 요금](https://aws.amazon.com/vpc/pricing/)
