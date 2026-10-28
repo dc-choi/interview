@@ -41,6 +41,18 @@ EDB가 2026-10-16 공개한 사례에서는 커뮤니티 PostgreSQL 18에 Hammer
 
 2026-10-26 PostgreSQL 18 문서, 9.6, 16과 19(RC1 시점) 릴리스 노트, EDB 글로 이 절을 대조했다. 벤치마크는 재현하지 않았다.
 
+## I/O 횟수, 대기 시간과 물리 읽기를 구분한다
+
+PostgreSQL 18의 `pg_stat_io`는 `backend_type`, `object`, `context` 조합별 클러스터 통계다. 운영에서는 같은 구간의 증가량과 `stats_reset`을 함께 비교한다. `extends`는 relation 확장 연산 횟수이고 지연 시간은 `extend_time`이다. Relation I/O 시간은 `track_io_timing`이 꺼져 있으면 0이므로, 0을 대기 없음으로 해석하지 않는다. 확장 횟수 증가만으로 스토리지 병목을 확정하지 말고 앞 절의 확장 잠금과 I/O 대기를 구분한다.
+
+PostgreSQL의 I/O 통계는 운영체제 페이지 캐시에서 받은 데이터와 실제 장치에서 읽은 데이터를 구분하지 못한다. `EXPLAIN (ANALYZE, BUFFERS)`의 `shared read`도 물리 디스크 읽기 횟수로 곧바로 환산하지 않는다. `ANALYZE`는 쿼리를 실제 실행하므로 쓰기 쿼리는 격리된 시험 환경에서 확인한다.
+
+체크포인트 통계는 PostgreSQL 17에서 `pg_stat_bgwriter`의 관련 열이 새 `pg_stat_checkpointer`로 옮겨졌다. 18에서는 `num_timed`, `num_requested`와 `num_done`을 구분한다. 앞의 두 값은 건너뛴 체크포인트도 세지만 `num_done`은 수행한 것만 센다. 다른 버전의 진단 SQL을 그대로 쓰지 않는다.
+
+진단 순서는 설계 제안이다. 같은 시간 구간의 wait event, I/O 통계 증가량, 실행 계획과 장치 지표를 대조한다. 읽기 요구량을 줄일 여지가 있는지 확인한 뒤 장치 성능 변경을 비교한다. I/O 대기 비율 하나로 쿼리 개선이 불필요하다고 판단하지 않는다.
+
+2026-10-28 PostgreSQL 18 통계와 EXPLAIN 문서, 17 릴리스 노트로 이 절을 대조했다. 실제 DB 부하와 스토리지 성능은 측정하지 않았다.
+
 ## 비교 사례의 조건
 
 2026-10-13 GeekNews 입력의 9.24배는 2026-10-16 확인한 ClickHouse 벤치마크 수치와 연결된다.
@@ -72,6 +84,8 @@ EDB가 2026-10-16 공개한 사례에서는 커뮤니티 PostgreSQL 18에 Hammer
 - [Postgres on NVMe: performance and the convergence of transactions and analytics — ClickHouse](https://clickhouse.com/blog/postgres-on-nvme)
 - [Finding (and Fixing) a Silent Throughput Ceiling in PostgreSQL — EDB, Vishal Sawale](https://www.enterprisedb.com/blog/finding-and-fixing-silent-throughput-ceiling-postgresql)
 - [PostgreSQL 18 Documentation, The Cumulative Statistics System](https://www.postgresql.org/docs/18/monitoring-stats.html)
+- [PostgreSQL 18 Documentation, Using EXPLAIN](https://www.postgresql.org/docs/18/using-explain.html)
+- [Release 17 — PostgreSQL](https://www.postgresql.org/docs/17/release-17.html)
 - [PostgreSQL 18 Documentation, pg_locks](https://www.postgresql.org/docs/18/view-pg-locks.html)
 - [PostgreSQL 18 Documentation, Error Reporting and Logging](https://www.postgresql.org/docs/18/runtime-config-logging.html)
 - [PostgreSQL 18 Documentation, Lock Management](https://www.postgresql.org/docs/18/runtime-config-locks.html)

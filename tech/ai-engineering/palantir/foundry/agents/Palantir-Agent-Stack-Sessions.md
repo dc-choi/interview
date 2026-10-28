@@ -100,6 +100,26 @@ Getting started는 Ontology binding을 SDK를 통한 코드 사용과 연결해 
 2026-10-28 공식 개요와 시작 가이드를 대조했다. 저장소 생성, 발행과 세션 실행을 실제 환경에서 시험한 기록은 아니다.
 같은 날 customization과 advanced customization 문서에서 도구 결과, Ontology 접근, pending context item과 event/effect 계약을 추가 대조했다. SDK 실행과 장애 복구는 시험하지 않았다.
 
+## Agent Manager에서 실행 이력을 조사한다
+
+Agent Manager는 발행된 agent의 버전과 메타데이터를 확인하고 세션을 시작하거나 관측하는 화면이다. Agent Builder, Palantir Agent SDK와 third-party SDK integration으로 만든 agent를 지원한다. 편집은 연결된 작성 도구로 이동해 수행한다.
+
+세션을 시작할 때 발행 버전과 필수 입력을 지정한다. 이후 메시지나 지원되는 event를 보내고, 필요 없어진 활성 세션은 취소할 수 있다. 여러 앱에서 시작한 세션을 버전과 originating resource로 좁혀 조사한다. Agent 접근권이 모든 세션의 열람권을 뜻하지는 않으며, 세션별 mandatory와 discretionary 접근 조건을 모두 충족해야 한다.
+
+### 대화 화면과 과거 상태를 나눠 본다
+
+| 보기 | 조사 대상 |
+|---|---|
+| Timeline | 세션 event, event 유형과 시간 범위 필터, 유형과 payload 검색 |
+| Preview | Context item을 대화로 렌더링한 사용자 메시지, 응답과 도구 호출 |
+| Raw | 서식 없이 표시한 context items |
+| Session info | 세션 초기 입력과 agent state |
+| Trace / Logs | 데이터가 있을 때 telemetry spans와 이를 만든 자원의 service logs |
+
+시간 범위를 선택하거나 특정 event에 timeline을 고정하면 과거 시점의 세션과 agent state를 조사할 수 있다. 실패 응답 직전의 도구 결과와 상태를 비교해 기대와 달라진 지점을 찾는다. 운영 제안으로, 과거 상태를 보는 기능을 그 시점부터 실행을 재개하거나 외부 변경을 되돌리는 기능과 구분한다.
+
+2026-10-28 Agent Manager 개요와 세션 조사 문서를 대조했다. 실제 환경의 세션 접근, 취소와 telemetry 수집은 시험하지 않았다.
+
 ## 출처
 
 - [Palantir, The Agent Stack](https://www.palantir.com/docs/foundry/aip/agent-stack)
@@ -110,6 +130,8 @@ Getting started는 Ontology binding을 SDK를 통한 코드 사용과 연결해 
 - [Palantir, Get started with the Agent SDK](https://www.palantir.com/docs/foundry/agent-sdk/getting-started)
 - [Palantir, Customize agents with Agent SDK](https://www.palantir.com/docs/foundry/agent-sdk/customize-agent)
 - [Palantir, Advanced customization of agents in Agent SDK](https://www.palantir.com/docs/foundry/agent-sdk/advanced-customization)
+- [Palantir, Agent Manager overview](https://www.palantir.com/docs/foundry/agent-manager/overview)
+- [Palantir, Investigate a session](https://www.palantir.com/docs/foundry/agent-manager/session-debugging)
 
 ## 관련 문서
 

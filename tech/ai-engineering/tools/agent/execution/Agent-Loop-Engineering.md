@@ -62,6 +62,16 @@ aliases: ["Loop Engineering", "루프 엔지니어링", "Agent Loops", "에이�
 - loop engineering은 [[Harness-Engineering|하네스 엔지니어링]]의 한 층 위다 — 타이머로 돌고, 작은 헬퍼들을 낳고, 스스로를 먹여 살리는 하네스. 한 줄 정리: **루프 = 시간 축과 일감 발견 축으로 확장된 하네스, ralph는 그 원형**.
 - 진화 경로: chat, tools, goals, automations 순. 문제가 생기면 아래(안쪽) 루프로 내려가 신뢰성을 회복하고 모델이 좋아지면 위(바깥) 루프로 올라가 레버리지를 키운다.
 
+## 행동의 완료와 과제의 완료를 구분한다
+
+ReAct는 추론과 행동을 번갈아 수행하며 환경에서 얻은 정보를 다음 판단에 쓰는 접근이다. 도구 응답은 그 단계의 관찰 결과다. 도구 호출이 끝났다는 사실과 사용자의 과제가 충족됐다는 판정은 구분한다.
+
+Evaluator-optimizer는 생성 호출과 평가 및 피드백 호출을 반복해 결과를 개선하는 패턴이다. 명확한 평가 기준이 있고 반복 개선의 가치가 측정될 때 적합하다. 실행 중에는 도구 결과나 코드 실행처럼 환경에서 얻은 근거로 진행을 확인하고, 완료 조건 외에도 최대 반복 횟수 같은 정지 조건을 둔다.
+
+설계 제안으로 각 루프에 **반복 대상, 피드백, 종료 조건, 변경 권한**을 적는다. 예를 들어 주문 조회 도구의 성공, 주문 보고서의 검수 통과, 다음 보고서 작업의 발견, 보고서 생성 절차의 개선은 서로 다른 판단이다. 안쪽 작업이 성공했다고 바깥 절차의 변경 권한까지 부여하지 않는다. 실행, 작업, 제품 개발과 시스템 개선이라는 이름을 쓰더라도 이를 보편 표준이나 직무별 고정 책임으로 취급하지 않는다.
+
+이 절은 2026-10-28 ReAct 논문과 Anthropic의 2024년 설계 글에서 원리를 대조했다. 특정 SDK나 제품의 현재 기능을 검증한 내용은 아니다.
+
 ## 면접 체크포인트
 
 - 루프의 본질을 트리거 종류가 아니라 정지 조건으로 정의할 수 있는가
@@ -76,6 +86,8 @@ aliases: ["Loop Engineering", "루프 엔지니어링", "Agent Loops", "에이�
 
 - [Loop engineering이란 도대체 무엇인가 — Toby's Codex](https://codex.epril.com/loop-engineering-structural-comparison/)
 - [Getting started with loops — Claude Code (@ClaudeDevs, X 아티클)](https://x.com/ClaudeDevs/article/2074208949205881033)
+- [ReAct: Synergizing Reasoning and Acting in Language Models — Shunyu Yao 외](https://arxiv.org/abs/2210.03629)
+- [Building effective agents — Anthropic](https://www.anthropic.com/research/building-effective-agents)
 
 ## 관련 문서
 
