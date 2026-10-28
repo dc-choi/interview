@@ -18,6 +18,12 @@ aliases: []
 
 Substitution은 `{{...}}`로 conf, secret, SSL 재료, volume mount와 discovered 값을 참조한다. secret은 값, bcrypt hash 또는 키 쌍의 public/private 부분을 고를 수 있다. bcrypt cost는 문서상 10이다. 산술, 비교, 논리, 배열 결합, 길이, 중복 제거, 1단계 flatten, cross_join, min/max/sum, contains, merge, 인코딩/디코딩과 hash 함수가 있다. merge는 같은 key에서 먼저 나온 map이 우선한다. cross_join은 첫 배열이 비지 않으면 빈 두 번째 배열을 단위원처럼 취급하는 비대칭 사례가 있어 일반 Cartesian product 가정과 다르다.
 
+### 설정 값, 파일 매핑과 템플릿 입력
+
+2026-10-29 Full Spec의 설정 파일 계약을 부분 대조했다. `conf`에 값을 선언하는 것과 애플리케이션이 읽을 파일로 렌더링하는 것은 구분한다. `managed_files`의 키는 출력 파일명이고 `content`는 출력할 `conf` 하위 영역을 선택한다. 축약형 `some-conf.yml: some-config`는 확장자로 형식을 정하고 `conf.some-config`를 내용으로 쓰며, `reload-type`은 기본 `install`이다.
+
+`tmpl`은 `deployment/templates` 아래의 Go template을 사용하며, 설정 치환 결과를 `{{ .conf }}`로 받는다. 설정의 참조를 해석하는 단계와 최종 파일 형식을 만드는 단계를 구분해 확인한다. 운영 점검에서는 입력 값뿐 아니라 렌더링한 파일, 애플리케이션의 읽기 경로와 재시작 필요 여부를 함께 대조한다.
+
 ## 자원, 복제와 저장소
 
 - resources requests/limits는 복제본마다 적용한다. CPU와 memory를 모두 생략하면 각각 0.25와 1G가 기본값이다. limit만 정한 자원은 request도 그 값으로 설정된다.

@@ -1,7 +1,7 @@
 ---
 tags: [ai, mcp, gateway, authorization]
 status: done
-verified_at: 2026-10-16
+verified_at: 2026-10-29
 category: "AI엔지니어링(AIEngineering)"
 aliases: ["MCP Gateway Architecture", "Uber MCP Gateway"]
 ---
@@ -27,6 +27,18 @@ MCP 게이트웨이는 도구를 발견하고 관리하는 제어 계층과 실�
 
 도구 수준의 접근 제어와 응답의 개인정보 및 민감 정보 제거를 중앙에서 적용한다. 사람, 서비스와 에이전트의 호출 권한을 구분한다. 이는 Uber의 구현 사례이며 MCP 프로토콜 자체가 제공하는 보안 보장은 아니다.
 
+## 도구 발견과 응답 크기를 따로 줄인다
+
+도구 정의를 모두 미리 넣으면 호출 전부터 컨텍스트가 커진다. 도구 실행 뒤의 큰 응답은 별도로 줄여야 한다. Uber의 같은 설계 글을 2026-10-29에 다시 대조한 구현 예는 다음과 같다.
+
+| 방식 | 줄이는 입력 | 동작 |
+|---|---|---|
+| Omni MCP | 미리 적재하는 도구 정의 | `discover_server`, `discover_tools`, `get_tool_schema`, `invoke_tool`으로 서버 탐색, 도구 선택, 스키마 조회와 호출을 나눈다 |
+| Response Projection | 모델에 돌려주는 응답 필드 | 요청 스키마에 추가한 필드로 필요한 중첩 경로를 받고, 게이트웨이가 응답에서 해당 필드만 남긴다 |
+| Code Mode | 모델이 직접 읽는 도구 출력 | `aifx mcp list`, `search`, `call`로 발견과 호출을 수행하고, 결과를 파일에 써 필요한 부분만 읽는다 |
+
+세 방식은 Uber 게이트웨이의 확장이며 모든 MCP 서버의 공통 기능으로 가정하지 않는다. 응답 필드 선택은 권한 검사나 민감 정보 제거를 대신하지 않는다. 적용 시에는 선택한 필드가 업무 판단에 충분한지, 생략한 오류나 상태 정보 때문에 성공으로 오판하지 않는지 확인한다.
+
 ## 적용 시 검증할 조건
 
 - 호출자의 권한과 백엔드 자격 증명을 연결하고 권한을 넓히지 않는가.
@@ -40,7 +52,6 @@ MCP 게이트웨이는 도구를 발견하고 관리하는 제어 계층과 실�
 ## 출처
 
 - [Designing MCP Gateway: Uber's MCP Management Platform — Uber Engineering](https://www.uber.com/us/en/blog/designing-mcp-gateway/)
-- 사용자 제공 GeekNews 발췌: 2026-10-12 「MCP Gateway - 기존 API를 MCP 도구로 통합하는 Uber의 플랫폼 설계」.
 
 ## 관련 문서
 
