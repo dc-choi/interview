@@ -134,6 +134,14 @@ IES 지침은 완성 풀이 읽기와 독립 문제 풀이의 교대, 시간 간
 
 시험과 면접 모두 설계에 따라 기억, 설명과 적용을 평가할 수 있으며 한 번의 결과가 역량 전체를 정확히 나타내지는 않는다. 면접 준비에서는 내가 언제 써봤는지, 아직 쓰지 않았다면 어떤 조건에서 쓸 수 있는지, 없으면 어떤 문제가 생길지를 구분해 설명한다. 가상 적용을 실제 수행 경험으로 바꾸어 말하지 않는다.
 
+### 한 번 맞힌 내용도 다시 회상한다
+
+한 번 정답을 냈다는 이유만으로 이후 연습에서 빼지는 않는다. Karpicke와 Roediger(2008)의 대학생 외국어 단어쌍 실험에서는 처음 맞힌 항목도 계속 회상한 조건이 일주일 뒤 기억 유지에 유리했다. 처음 맞힌 뒤 읽기만 반복한 조건에서는 같은 이득을 관찰하지 못했다. 이미 회상한 단어쌍에 대한 결과이므로 처음 배우는 개념의 읽기나 설명까지 불필요하다는 뜻은 아니다.
+
+복습 간격에도 모든 목표에 맞는 고정 정답은 없다. Cepeda 등(2008)의 사실 학습 실험에서는 평가까지 남은 시간이 길수록 가장 효과적인 학습 간격도 길어졌지만, 같은 평가 시점에서 간격을 계속 늘리면 성과가 다시 낮아졌다. 매일 같은 자료를 반복하거나 간격을 길게 벌리는 것 자체를 숙련의 기준으로 삼지 않는다.
+
+CS 학습에 적용할 때는 한 번 통과한 설명이나 작은 문제도 후속 학습에서 간격을 두고 1~2회 다시 확인하고, 틀린 부분만 원문과 대조해 보강할 수 있다. 이 횟수는 운영 제안이며 두 실험이 검증한 최적 횟수가 아니다. 단어와 사실의 기억 유지 결과를 설계, 디버깅이나 면접 성과 전체의 보장으로 확대하지 않는다.
+
 ## 흔한 함정
 
 - 책을 다 읽어야 **준비가 끝난다**는 강박
@@ -156,6 +164,8 @@ IES 지침은 완성 풀이 읽기와 독립 문제 풀이의 교대, 시간 간
 
 - [Test-enhanced learning: taking memory tests improves long-term retention — Roediger, Karpicke, 2006](https://pubmed.ncbi.nlm.nih.gov/16507066/) — 글 회상 실험의 평가 시점과 결과, 공개 초록.
 - [Organizing Instruction and Study to Improve Student Learning — IES, 2007](https://ies.ed.gov/ncee/wwc/practiceguide/1) — 시간 간격, 완성 예제와 문제 풀이 교대, 회상 퀴즈 권고.
+- [The Critical Importance of Retrieval for Learning — Karpicke, Roediger, 2008](https://learninglab.psych.purdue.edu/downloads/2008/2008_Karpicke_Roediger_Science.pdf) — 2026-10-28 저자 공개 논문의 단어쌍 실험, 최초 정답 뒤의 반복 회상과 일주일 뒤 평가를 대조.
+- [Spacing Effects in Learning: A Temporal Ridgeline of Optimal Retention — Cepeda et al., 2008](https://doi.org/10.1111/j.1467-9280.2008.02209.x) — 2026-10-28 학술지 공개 초록에서 학습 간격과 평가 지연의 상호작용 확인. 본문 전체 검증은 아님.
 - [매일 공부하는데 실력이 늘지 않는 개발자에게 — Team Grit](https://teamgrit.co/article/392)
 - [지금 하는 공부가 면접에 나오지 않는 이유 — Team Grit](https://teamgrit.co/article/394)
 - [How To Understand Hard Software Engineering Concepts — CodeHead](https://www.youtube.com/watch?v=geEYmhz-N_4)

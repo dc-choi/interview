@@ -1,7 +1,7 @@
 ---
 tags: [marketing, youtube, thumbnail, experimentation]
 status: done
-verified_at: 2026-10-24
+verified_at: 2026-10-28
 category: "비즈니스&제품(Business&Product)"
 aliases: ["YouTube Thumbnail Testing", "유튜브 제목과 썸네일 실험"]
 ---
@@ -12,9 +12,17 @@ aliases: ["YouTube Thumbnail Testing", "유튜브 제목과 썸네일 실험"]
 
 ## 클릭과 시청 시간을 구분한다
 
-2026-10-24 YouTube 공식 도움말 기준, A/B testing은 제목, 썸네일 또는 두 요소의 조합을 최대 세 가지까지 동시에 비교한다. 판정에는 클릭률만이 아니라 시청 시간 비중을 사용한다. 이미지를 시간순으로 바꾸는 비교는 시청자 구성이 달라질 수 있어 같은 실험으로 취급하지 않는다.
+2026-10-28 YouTube 공식 도움말 기준, A/B testing은 제목, 썸네일 또는 두 요소의 조합을 최대 세 가지까지 동시에 비교한다. 판정에는 클릭률만이 아니라 시청 시간 비중을 사용한다. 이미지를 시간순으로 바꾸는 비교는 시청자 구성이 달라질 수 있어 같은 실험으로 취급하지 않는다.
 
 결과는 `Winner`, `Performed Same`, `Inconclusive`로 구분된다. 명확한 승자가 없거나 노출이 부족한 결과를 모든 안의 효과가 같다는 증거로 바꾸지 않는다. 동일 영상의 재시험도 우연 변동과 시청자 구성 변화로 결과가 달라질 수 있다.
+
+## 클릭률의 분모와 비교 조건
+
+노출 클릭률은 YouTube가 집계한 썸네일 노출에서 발생한 조회를 기준으로 한다. 외부 웹사이트나 최종 화면처럼 이 노출 집계에 포함되지 않는 경로가 있으므로, 전체 조회수를 노출수로 나눈 값과 같지 않을 수 있다.
+
+클릭률은 콘텐츠 유형, 시청자와 노출 위치에 따라 달라진다. 홈 화면에서 넓게 노출될 때와 채널 페이지 중심으로 노출될 때를 같은 조건으로 비교하지 않는다. 충성 시청자에게 적게 노출된 영상의 높은 클릭률과 평균 시청 지속 시간만으로 더 넓은 추천을 보장할 수도 없다.
+
+운영할 때는 업로드 직후의 작은 표본으로 결론 내리기보다 충분한 노출이 쌓인 뒤 유입 경로와 관찰 기간을 함께 기록한다. 특정 채널의 첫 한 시간 클릭률을 다른 채널의 성공 기준으로 복사하지 않는다. 이는 공식 도움말의 비교 조건을 적용한 점검 방법이다. 문의와 구매가 목적이면 클릭률, 시청 시간과 후속 전환을 따로 확인한다.
 
 ## 작은 제작 실험의 운영 예시
 
@@ -34,7 +42,8 @@ aliases: ["YouTube Thumbnail Testing", "유튜브 제목과 썸네일 실험"]
 
 ## 출처
 
-- [YouTube Help, A/B test titles & thumbnails](https://support.google.com/youtube/answer/16391400?hl=en) — 2026-10-24 비교 방식, 판정 지표와 이용 조건 확인
+- [YouTube Help, A/B test titles & thumbnails](https://support.google.com/youtube/answer/16391400?hl=en) — 2026-10-28 비교 방식, 판정 지표와 이용 조건 재확인
+- [YouTube Help, Impressions & click-through-rate FAQs](https://support.google.com/youtube/answer/7628154?hl=en) — 2026-10-28 집계 분모, 시청자와 유입 경로, 업로드 직후 판단의 한계 확인
 
 ## 관련 문서
 
