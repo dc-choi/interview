@@ -10,6 +10,7 @@ aliases: ["LLM 평가, 신뢰성", "LLM Eval & Reliability"]
 LLM 출력의 평가와 모른다고 말하는 능력, 비전 모델의 합성 데이터와 관측 피드백을 다룬다. 평가 철학에서 시작해 개발 프로세스(EDD), 채점 장치(루브릭과 게이트, LLM 판정기), 데이터셋과 배포 관문, 배포 뒤 서빙 모델 감시로 내려간다. 상위: [[AI엔지니어링(AIEngineering)|AI 시대 엔지니어링]].
 
 ## 목차
+- [x] [[AI-Consciousness-Evidence|AI 의식의 증거]] — 자기보고와 행동, 내부 구조 지표와 기능 검증의 구분
 - [x] [[Benchmark-Coverage-and-Workplace-Performance|벤치마크 평가 범위와 업무 성과]] — 과업 매핑, 모델 점수와 사람의 완료 결과, 표본 선택과 위임 측정의 구분
 - [x] [[Synthetic-Vision-Data-Evaluation|합성 비전 데이터 평가]] — 생성과 인식 모델의 분리, 라벨 검수와 실제 데이터 평가
 - [x] [[Model-Feedback-Loop-and-Validation|모델 피드백 루프와 검증]] — 실험 결과 환류, shadow 비교와 실제 행동의 구분

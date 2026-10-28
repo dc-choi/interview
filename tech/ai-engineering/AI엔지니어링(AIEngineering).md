@@ -113,6 +113,7 @@ Software 3.0 패러다임, LLM과 에이전트, 하네스, 평가, 조직 전환
 - [x] [[LLM-Inference-Serving-Engines|추론 서빙 엔진의 기능 경계]] — 엔진과 서비스 책임, DeepInfer 공개 범위, 배치 불변성과 결정적 샘플링, DSpark 가변 길이 검증, 구조화 출력 강제 경계
 - [x] [[Agent-Model-Capability-Contracts|기억과 전문 영역 모델 평가]] — Muse Wonder, GLM-Legal, Ultramarine 1 Flash, Claude Duet의 승인 경계
 - [x] [[AI-Research-Innovation-Evaluation|AI 연구 혁신 평가]] — InnovationEval의 과제와 개선 달성률
+- [x] [[AI-Consciousness-Evidence|AI 의식의 증거]] — 자기보고와 행동, 내부 구조 지표와 기능 검증의 구분
 - [x] [[Neural-Circuit-Interpretability|뉴런과 회로 해석]] — 재귀적 일반화 가설과 인과 검증
 - [x] [[Generative-Artifact-Contracts|시각 산출물 생성 계약]] — AesCode의 검증 가능한 코드와 Krea 3의 부분 편집
 - [x] [[Bedrock-AgentCore-Runtime|Bedrock AgentCore Runtime 실행 계약]] — 컴퓨트 타입, 세션 수명과 새 버전 반영, 엔드포인트 고정과 롤백, 프로토콜 계약, 사용자 ID 헤더의 신뢰 경계, 스냅샷 기반 V2

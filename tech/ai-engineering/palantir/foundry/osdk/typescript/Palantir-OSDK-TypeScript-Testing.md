@@ -35,6 +35,12 @@ Seed 변경은 `await` 뒤 조회한다. `seed.ref()`는 동기 참조 조회이
 
 Function query는 로컬 서버가 실행하지 않으므로 `whenQuery`로 stub한다. 테스트마다 `seed.set()`으로 데이터를 초기화하고 `client.clearStubs()`로 query stub을 별도로 지운다. 서버를 공유하면 순차 실행하고, 병렬 테스트는 서버를 분리한다. 실패 경로에서도 cleanup hook이나 `finally`로 `server.stop()`을 호출한다.
 
+### Fixture 생성과 서버 반영을 구분한다
+
+`createSeedWithMetadata`는 서버에 요청하지 않고 재사용할 fixture를 만든다. 반환값의 `output`은 seed 데이터이고 `context`는 동기 builder callback의 반환값이다. 테스트 시작마다 `await seed.set(fixture.output)`으로 서버 데이터를 교체하고, assertion에 필요한 참조는 `fixture.context`에서 가져올 수 있다.
+
+`seed.addAll(output)`과 `seed(output)`은 교체가 아니라 추가다. 기존 객체와 primary key가 겹치면 오류가 나므로 반복 테스트의 초기화에 그대로 쓰지 않는다. `seed.create()`도 같은 타입의 중복 primary key를 거부한다. `seed.delete()`는 객체가 없으면 아무 작업도 하지 않는다. Fixture 데이터 교체와 Function query stub 초기화는 별도이므로 `client.clearStubs()`도 함께 유지한다.
+
 이 검사는 Foundry 권한, 배포된 function과 외부 서비스 검증을 대체하지 않는다. 공식 문서와 대조한 범위이며 로컬 서버나 실제 Foundry에서 실행한 결과는 아니다.
 
 ## Platform은 MSW

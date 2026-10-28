@@ -88,6 +88,16 @@ DevDay 2026 페이지는 dots를 지속적인 책임(ongoing responsibility)을 
 
 판단 기준은 그 일이 내 파일, 로컬 Codex 작업, 로컬 스킬, 클라우드 브라우저를 막는 사이트 가운데 하나에 묶여 있는지다. 묶여 있지 않다면 사용자 기기가 꺼져도 이어 갈 수 있는 클라우드 컴퓨터가 상시 실행에 맞다. 연결한 컴퓨터에 맡긴 일은 그 컴퓨터의 전원, 잠자기와 재시작이 곧 작업의 가용성이 되므로 [[Agent-Always-On-Mac-Host|상시 실행 Mac 에이전트 호스트]]의 점검을 함께 적용한다. 위임 지시에는 어느 컴퓨터에서 할지를 적는다(영상의 팁). 그 밖의 기준은 문서의 조건에서 도출했다.
 
+### 로컬 앱 조작은 OS 권한과 앱 승인을 함께 확인한다
+
+2026-10-28 OpenAI의 Computer Use 문서를 부분 대조했다. dot의 연결 컴퓨터와 ChatGPT의 기존 앱 권한을 함께 사용할 때 다음 차이를 확인한다. 기존 요금제와 전체 기능의 검증일은 유지한다.
+
+- macOS의 Screen Recording은 화면 확인, Accessibility는 클릭과 입력에 필요하다. 이 OS 권한과 ChatGPT 안에서 특정 앱 사용을 허용하는 승인은 별개다.
+- macOS에서는 범위를 정한 작업을 백그라운드로 맡길 수 있다. Windows에서는 활성 데스크톱의 전경 입력을 사용하므로 같은 세션에서 사용자가 계속 작업하는 백그라운드 실행으로 보지 않는다.
+- 대상 앱에 전용 plugin이나 MCP가 있다면 데이터 접근과 반복 작업에는 그 구조화된 연결을 우선 검토한다. 시각적 확인이나 조작이 필요한 경우 Computer Use를 사용한다.
+
+메신저 업무에 적용할 때는 대화 조회, 요약, 다른 방에 전달, 답장 발송을 별도 행동으로 정하는 방식을 권한다. 앱 접근 허용을 모든 대화의 재공유 승인으로 확대하지 않고, 발송 대상과 본문을 검토할 지점을 둔다. 이 절은 일반 조작 계약이며 특정 메신저의 공식 지원, 전송 성공률이나 생산성 배수를 검증한 결과가 아니다. 실제 앱 조작과 메시지 발송은 수행하지 않았다.
+
 ## 위임 계약 — 소유, 완료, 호출 조건과 금지 행동
 
 공식 시작 안내는 중요한 것과 관련 출처를 알려 주고, 어떤 결정에 사용자 입력이 필요한지와 업데이트를 보낼 곳, 사용자에게 끼어들 시점을 정하라고 권한다. 이를 네 항목으로 묶은 것이 아래 표다(이 문서의 정리). 완료 기준을 위임 전에 정하는 원리는 [[AI-Code-Delegation-Review|AI 구현 위임과 코드 리뷰]]의 구현 계약과 같다.
@@ -129,6 +139,7 @@ DevDay 2026 페이지는 dots를 지속적인 책임(ongoing responsibility)을 
 
 ## 출처
 
+- [OpenAI, Computer Use](https://learn.chatgpt.com/docs/computer-use) — 2026-10-28 OS 권한과 앱 승인, macOS와 Windows 실행 방식 부분 대조.
 - [OpenAI, Meet dots](https://learn.chatgpt.com/docs/dots)
 - [OpenAI, Get started with your dot](https://learn.chatgpt.com/docs/dots/getting-started)
 - [OpenAI, Message your dot](https://learn.chatgpt.com/docs/dots/channels)

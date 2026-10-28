@@ -33,6 +33,12 @@ aliases: ["LLM Workflow Patterns Text-to-SQL", "Text-to-SQL", "데이터 디스�
 
 다음은 이를 적용한 운영 설계 예시다. 컬럼이나 업무 정의를 바꾸는 변경에서 설명과 예시 SQL도 함께 검토하고, 검색용 메타데이터에는 원본 위치와 반영한 버전을 남긴다. 정본을 고친 시점과 검색에 반영된 시점을 구분해야 오래된 설명으로 만든 SQL의 원인을 추적할 수 있다. 설명이 존재한다는 사실은 업무 정의의 정확성을 보장하지 않으며, 변경 뒤에는 영향을 받는 질문과 기대 결과를 다시 대조한다.
 
+### 데이터 인텔리전스는 저장 통합 위에 의미 맥락을 더한다
+
+Databricks가 설명하는 data intelligence는 레이크하우스의 데이터와 메타데이터에 쿼리, 보고서와 lineage 같은 사용 맥락을 결합해 조직의 용어와 지표를 다루는 방향이다. 자연어 질의와 의미 기반 탐색은 그 적용 예다. 이는 2023-11-15 공개한 플랫폼 설계 관점이며, 모든 데이터의 의미를 자동으로 정확히 알아낸다는 보장은 아니다(2026-10-28 공식 글 부분 대조).
+
+가상 예시로 활성 고객이 최근 30일 로그인 고객인지 최근 90일 구매 고객인지에 따라 필요한 테이블과 조건이 달라진다. 두 SQL이 모두 실행되더라도 같은 질문의 정답은 아니다. 적용할 때는 지표 정의와 기간, 제외 조건을 정본으로 남기고 생성된 SQL의 결과를 그 정의와 비교한다. 사용 이력에서 추론한 의미를 검토한 업무 정의와 구분하는 운영 방식을 권한다. 기존 제품 기능 전체를 재검증한 것은 아니므로 frontmatter의 검증일은 유지한다.
+
 ### 생성, 검증과 실행의 경계
 
 컬럼 이름을 맞혀도 그 안의 업무 값을 틀리면 실행에 성공한 잘못된 집계가 나온다. 예를 들어 취소 상태가 `C`로 저장되는 가상 스키마에서 모델이 `status = 'CANCELLED'`를 만들면, SQL 문법이 맞아도 취소 건수를 놓칠 수 있다. 상태값의 대응표와 지표 산식을 설명에 담고, 검토한 질문과 SQL 쌍으로 보완한 뒤 기대 집계와 대조한다.
@@ -96,6 +102,7 @@ Databricks Genie Agent는 SQL과 파일 분석에 MCP connector의 외부 자료
 적용 제안: 반복되는 매출이나 리텐션 정의는 검토한 SQL로 고정하고, 기간 경계, 취소분과 중복 조인의 예외를 평가 질문으로 둔다. 같은 의미의 다른 표현과 실제 후속 질문 대화도 따로 시험한다. 평가 통과를 전체 데이터와 모든 질문의 정확성 보장으로 확대하지 않는다.
 
 ## 출처
+- [Data + AI Platforms — Databricks](https://www.databricks.com/blog/what-is-a-data-intelligence-platform) — 2023-11-15 게시, 데이터와 사용 맥락을 결합하는 data intelligence 개념을 2026-10-28 대조.
 - [Databricks, Tune Genie Agent quality](https://docs.databricks.com/aws/en/genie-agents/tune-quality)
 - [Databricks, Genie Agents concepts](https://docs.databricks.com/aws/en/genie-agents/concepts)
 - [Databricks, Test and monitor a Genie Agent](https://docs.databricks.com/aws/en/genie-agents/monitor)
