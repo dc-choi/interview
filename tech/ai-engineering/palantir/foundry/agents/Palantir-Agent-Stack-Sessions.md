@@ -40,6 +40,29 @@ Preview는 대화를, Debug는 사전 계산 변수, messages와 tool calls를 �
 
 시험 뒤 Compass resource로 발행하고 Agent Manager에서 세션을 조사하거나 Workshop에 삽입하고 Automate에서 실행할 수 있다. 이 절은 개요 문서의 기능 대조이며 실제 enrollment의 제공 여부, 권한과 실행 결과는 시험하지 않았다.
 
+### 사전 계산은 읽기 전용이라는 뜻이 아니다
+
+입력은 필수 또는 선택으로 지정하며, 프롬프트에서 `/`로 참조해야 해당 값이 프롬프트에 들어간다. 사전 계산 변수와 도구에도 입력을 사용할 수 있다. 사전 계산 변수는 객체 집합 조회, 함수 계산뿐 아니라 Action 적용도 포함한다. 변수 안의 연산 체인은 앞 연산의 결과를 다음 연산에 넘기고, **Output**으로 표시한 체인이 최종 변수 값을 정한다.
+
+**사전 계산 변수에 들어 있는 Action은 그 변수를 어디에서도 참조하지 않아도 세션 시작 때 자동 실행된다.** 모델이 실행 중 선택하는 도구 호출과 다르므로, 사용하지 않는 변수라고 해서 부수 효과가 없다고 판단하지 않는다.
+
+Preview에서도 Action은 실행되지만 실제 Ontology 편집은 반영하지 않는다. 이 제한은 사전 계산 변수의 Action과 도구의 Ontology 편집에 모두 적용된다. 발행된 agent가 Preview 밖에서 실행되면 변경이 반영될 수 있다. 이를 임의의 외부 함수나 외부 서비스 부수 효과까지 차단한다는 보장으로 확대하지 않는다.
+
+### 종료 조건은 출력 형식으로 지정한다
+
+| 설정 | 세션 동작 |
+|---|---|
+| **Stays open** | 사용자 메시지를 계속 받을 수 있도록 세션을 열어 둔다 |
+| **Ends after first valid output** | 설정한 **Agent output** 타입에 맞는 첫 출력을 반환하면 종료한다. Initial user message가 필요하다 |
+
+System prompt는 행동과 문맥을, Initial user message는 세션 시작 때 수행할 과제를 지정한다. 운영 판단으로, 출력 타입 일치를 업무 내용의 정확성이나 외부 변경 완료의 증거와 구분한다.
+
+### 설정 변경을 시험하고 발행한다
+
+Preview에 입력값을 주고 **Start session**을 실행한 뒤 Debug에서 변수와 도구 호출을 대조한다. 설정을 바꿨다면 새 세션으로 시험한다. 편집기의 **Save**로 변경을 저장한 뒤 **Publish** 대화상자에서 파일 이름과 위치를 지정해 Compass resource로 발행한다. Agent Manager에서는 세션 입력, context items, event history와 state updates를 조사한다.
+
+2026-10-28 core concepts와 getting started를 대조한 범위다. 실제 세션, Ontology 변경과 외부 부수 효과는 시험하지 않았다.
+
 ## Agent SDK로 실행 계약을 코드에 둔다
 
 Palantir Agent SDK는 TypeScript로 Agent Stack의 agent를 정의하고 Foundry resource로 발행하는 경로다. System prompt와 tools에서 시작해 custom context item, event와 effect로 동작을 확장할 수 있다. 사람의 검토, 별도 관측 화면과 결정론적 로직을 결합하는 용도이며, 모델 비종속 설계로 open-source와 sovereign model 호출도 지원한다. 개별 모델의 도구 호출 호환성과 접근 조건까지 동일하다는 보장은 아니다.
@@ -81,6 +104,8 @@ Getting started는 Ontology binding을 SDK를 통한 코드 사용과 연결해 
 
 - [Palantir, The Agent Stack](https://www.palantir.com/docs/foundry/aip/agent-stack)
 - [Palantir, Agent Builder overview](https://www.palantir.com/docs/foundry/agent-builder/overview)
+- [Palantir, Agent Builder core concepts](https://www.palantir.com/docs/foundry/agent-builder/core-concepts)
+- [Palantir, Get started with Agent Builder](https://www.palantir.com/docs/foundry/agent-builder/getting-started)
 - [Palantir, Agent SDK overview](https://www.palantir.com/docs/foundry/agent-sdk/overview)
 - [Palantir, Get started with the Agent SDK](https://www.palantir.com/docs/foundry/agent-sdk/getting-started)
 - [Palantir, Customize agents with Agent SDK](https://www.palantir.com/docs/foundry/agent-sdk/customize-agent)
