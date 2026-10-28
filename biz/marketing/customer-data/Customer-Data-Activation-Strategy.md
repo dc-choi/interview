@@ -26,6 +26,14 @@ AWS의 CDP 참조 구조는 여러 접점의 데이터 수집, 고객 식별, �
 
 예를 들어 첫 구매를 하지 않은 가입 고객에게 안내한다면, 구매 취소를 포함할지, 대상 추출 뒤 구매한 고객은 제외할지, 발송 시점에 어떤 상태를 재확인할지 먼저 정한다. CDP 도입 여부와 관계없이 필요한 운영 계약이다.
 
+## 자연어로 고른 고객군도 실행 전에 확인한다
+
+2026-10-29 Amazon Connect Customer Profiles의 segment AI assistant 문서를 대조했다. 자연어 요청으로 고객군의 조건을 만들 수 있지만, 초기 데이터 처리 중에는 실제 속성값보다 요청 문구를 따라 조건을 제안할 수 있다. 예를 들어 VIP 고객이라는 표현을 기존 Gold 등급과 다르게 해석할 수 있다. 데이터의 완전성과 최신성, 처리 완료 여부를 확인하고 생성된 조건을 검토한다.
+
+다음은 이를 캠페인 운영에 적용하는 제안이다. 자연어 요청, 생성된 조건, 실제 대상 표본을 함께 확인한다. 우수 고객이라는 표현만 승인하지 말고 구매 기간, 금액 기준과 제외 조건을 확정한다. 고객군 초안 생성, 발송 준비와 구매 효과 검증을 각각 다른 완료 상태로 둔다. 생성형 AI가 조건을 만들었다는 사실만으로 실시간 데이터 처리나 매출 개선을 입증하지 않는다.
+
+이 절의 기능과 제약만 추가 대조했으므로 기존 문서의 검증일은 유지한다. 실제 계정에서 고객군 생성이나 캠페인을 실행한 결과는 아니다.
+
 ## 작은 실행 단위로 도입 가설을 검증한다
 
 다음은 데이터 통합 구조에서 도출한 도입 점검 제안이다.
@@ -41,6 +49,7 @@ AWS의 CDP 참조 구조는 여러 접점의 데이터 수집, 고객 식별, �
 
 ## 출처
 
+- [Amazon Connect Customer, Use the segment AI assistant in Connect Customer](https://docs.aws.amazon.com/connect/latest/adminguide/customer-segments-ai-assistant.html) — 자연어 조건 생성, 데이터 처리 단계와 검토 필요성을 2026-10-29 대조했다.
 - [AWS Solutions, Guidance for Customer Data Platform on AWS](https://docs.aws.amazon.com/solutions/customer-data-platform-on-aws/) — 수집, 고객 식별, 세그먼트와 실행 단계의 연결. 판단표와 도입 점검은 이를 바탕으로 한 적용 제안.
 
 ## 관련 문서

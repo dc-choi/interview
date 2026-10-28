@@ -185,6 +185,16 @@ Agentless는 개별 소스 VM에 에이전트를 설치하지 않는다는 뜻�
 
 앞의 두 항목은 IDC 이전 사례와 공식 가이드를 적용한 점검 질문이다. 과거 발표의 네트워크 제한과 이전 소요 시간을 현재 AWS의 보편적 제약이나 보장값으로 옮기지 않는다. 기존 서비스별 지원 정책을 전부 재검증한 것은 아니므로 문서의 `verified_at`은 유지한다.
 
+### 데이터 적재 완료와 대사 완료를 구분한다
+
+부분 검증(2026-10-29): AWS DMS의 데이터 검증을 활성화하면 테이블 전체 적재 뒤 원본과 대상의 대응 행을 비교하고, CDC 작업에서는 이후 변경도 비교한다. 검증은 추가 쿼리, 네트워크 자원과 시간을 사용하므로 적재 시간만으로 전환 창을 계산하지 않는다.
+
+- `ValidationPending`은 적재됐지만 아직 검증되지 않은 행 수다. `ValidationFailed`가 0이어도 검증 완료를 뜻하지 않는다.
+- `ValidationSuspended`는 비교할 수 없는 행 수다. 원본 행이 계속 갱신되는 경우도 포함되므로 불일치와 검증 불가를 나눈다.
+- 테이블에 primary key 또는 unique index가 있어야 하며 엔진과 키 자료형 등 추가 제약도 확인한다. `Validated` 상태도 테이블이 갱신되면 바뀔 수 있다.
+
+전환 점검 제안: 적재, 변경분 반영, 검증 대기와 검증 불가를 나눠 보고, 자동 검증이 제외한 범위는 별도 대사 대상으로 남긴다. 스키마를 변환했다면 원천과 대상 사이의 대응 규칙 및 업무 합계를 별도로 검증한다. 행 비교 통과만으로 주문, 과금 등 업무 흐름까지 동일하다고 판정하지 않는다. 이 절만 대조했으므로 기존 `verified_at`은 유지한다.
+
 ## 사례의 예상 절감과 실현 성과를 구분한다
 
 AWS가 2026-03-25 공개한 IDEMIA Civil Identity 고객 인터뷰는 .NET 3.5에서 .NET 8로의 현대화, 컨테이너화와 GovCloud 이전을 설명한다. 인터뷰의 40% 이상 비용 절감은 앞으로 기대하는 수치이며, 완료된 절감 실적으로 제시하지 않는다. 기존 방식이라면 3년 이상 걸렸을 것이라는 발언도 비교 추정이지 실제로 측정한 두 프로젝트의 기간 비교가 아니다.
@@ -213,6 +223,7 @@ AWS가 2026-03-25 공개한 IDEMIA Civil Identity 고객 인터뷰는 .NET 3.5�
 
 ## 출처
 
+- [AWS DMS User Guide, AWS DMS data validation](https://docs.aws.amazon.com/dms/latest/userguide/CHAP_Validating.html) — 적재 후 검증, CDC 검증, 대기와 검증 불가 통계 및 키 제약을 2026-10-29 대조했다. 실제 데이터 이관이나 성능 측정은 수행하지 않았다.
 - [How the NBA future-proofed its digital infrastructure in 6 months — AWS](https://aws.amazon.com/blogs/media/how-the-nba-future-proofed-its-digital-infrastructure-in-6-months/) — 2026-10-25 공개. 실제 이벤트 검증과 서비스별 성능 지표의 범위를 대조했다.
 - [The NBA's move to AWS: How the NBA migrated to AWS in time for tip-off — Amazon Web Services](https://www.youtube.com/watch?v=S8G-S5vxJeg) — 전사문에서 얻은 이전과 검증 주제를 위 공식 글로 확인했다.
 - [AWS Prescriptive Guidance, Prioritization and migration strategy](https://docs.aws.amazon.com/prescriptive-guidance/latest/application-portfolio-assessment-guide/prioritization-and-migration-strategy.html)

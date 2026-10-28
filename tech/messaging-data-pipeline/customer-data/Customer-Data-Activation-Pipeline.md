@@ -26,6 +26,14 @@ DocumentDB의 유연한 스키마는 고객마다 다른 속성을 저장하는 
 
 이 표는 설계 제안이며 특정 제품의 필수 필드 목록이 아니다. 원본, 통합 프로필과 실행 결과를 연결할 수 있게 하되 각 단계의 완료 상태를 따로 둔다.
 
+## 생성형 AI의 필드 매핑과 고객 식별을 검토한다
+
+부분 검증(2026-10-29): Amazon Connect Customer Profiles의 생성형 AI 매핑은 원천 속성과 사용 가능한 표본을 읽고, 사용자 정의 속성을 표준 프로필 속성에 연결하며 식별 키 후보를 고른다. 생성 결과는 수집 전에 검토하고 확정할 초안이다. 특히 unique key와 profile key가 원천 데이터의 의미에 맞는지 확인하며, 유효한 매핑을 만들지 못하면 수동 매핑으로 전환한다.
+
+S3 소스는 선택한 버킷과 prefix에서 처음 찾은 CSV를 표본으로 사용한다. 따라서 그 파일만으로 다른 파일의 형식과 키 의미까지 확인됐다고 가정하지 않는다(설계 제안). 필드 연결의 성공과 서로 다른 기록을 같은 고객으로 합쳐도 되는지는 별도로 점검한다.
+
+운영 제안: 대표 원천별로 같은 고객의 복수 기록, 다른 고객이 같은 연락처를 공유한 기록과 식별자가 누락된 기록을 준비한다. 매핑과 식별 규칙을 바꿨을 때 잘못 합쳐진 고객과 분리된 고객을 각각 확인한다. 자동 매핑의 완료를 고객 정체성의 검증이나 캠페인 발송 승인으로 해석하지 않는다. 이번 대조는 이 절에 한정하며 기존 `verified_at`은 유지한다.
+
 ## 속성 변경과 시간 경과를 구분한다
 
 2026-10-22 Amazon Connect Customer Profiles 문서 기준으로 세그먼트 변경 알림은 고객이 세그먼트에 진입하거나 이탈할 때 발생하며 두 평가 경로를 갖는다.
@@ -54,6 +62,7 @@ Amazon SQS standard queue는 at-least-once 전달을 제공하므로 같은 메�
 
 ## 출처
 
+- [Amazon Connect Customer, Generate a mapping with generative AI in Customer Profiles](https://docs.aws.amazon.com/connect/latest/adminguide/genai-powered-data-mapping.html) — 매핑 생성 단계, S3 표본 선택과 수집 전 키 검토를 2026-10-29 대조했다.
 - [AWS Solutions, Guidance for Customer Data Platform on AWS](https://docs.aws.amazon.com/solutions/customer-data-platform-on-aws/)
 - [Amazon DocumentDB, Document database use cases](https://docs.aws.amazon.com/documentdb/latest/devguide/document-database-use-cases.html)
 - [Amazon Connect Customer, Track segment membership changes](https://docs.aws.amazon.com/connect/latest/adminguide/customer-segments-membership-events.html)

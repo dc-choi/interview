@@ -132,6 +132,17 @@ Amazon A2I의 Textract 통합은 다음 조건을 구분한다(2026-10-16 공식
 
 2026-10-16 기준 A2I는 신규 고객에게 제공되지 않고 기존 고객은 계속 사용할 수 있다. 여기서는 검토 분기 설계의 사례로 다루며 신규 도입을 전제로 하지 않는다. 승인 위치와 실행 권한의 분리는 [[LLM-Workflow-Patterns-Chain-vs-Agent#콘텐츠 초안과 승인 대기열|승인 대기열]]을 함께 본다.
 
+### 일일 뉴스 요약과 장기 추세 분석을 나눈다
+
+뉴스 브리핑의 근거는 수집한 기사이고, 장기 추세 분석의 근거는 기간과 집계 기준을 정한 관찰 데이터다. 아래는 뉴스 수집, 요약과 후속 분석을 나눈 공개 발표를 바탕으로 한 **설계 제안**이다. 특정 서비스의 분석 정확도나 장기 운영 성과를 검증한 결과는 아니다.
+
+1. 발행 시각과 수집 시각, 원문 위치, 분류 및 개정 상태를 요약과 연결한다. 늦게 수집한 과거 기사를 새 사건으로 처리하지 않는다.
+2. 일일 요약은 원문의 사실, 수치와 조건이 보존됐는지 확인한다. 모델이 덧붙인 산업 관점의 해석은 기사에 명시된 사실과 구분한다.
+3. 장기 분석은 요약문만 반복 요약하기 전에 기간별 원천 수, 중복 기사와 분류 기준 변경을 확인한다. 수집 출처가 늘어 기사 수가 증가한 것을 바로 시장 관심의 증가로 해석하지 않는다.
+4. 보고서의 수치와 추세 설명을 집계 입력과 원문으로 되돌아가 확인한다. RAG의 근거 검색 평가와 생성 답변 평가를 분리하고, 시계열 집계와 해석의 타당성은 별도로 검토한다.
+
+2026-10-29 Bedrock 평가 문서에서 `Retrieve only`와 `Retrieve and generate`의 구분을 재확인했다. 위 뉴스 운영 절차는 추가 설계안이며 해당 평가 기능이 추세 분석을 자동 검증한다는 뜻은 아니다. 기존 제품별 정책 전체를 재검증하지 않아 `verified_at`은 유지한다.
+
 ## 면접 체크포인트
 
 - 데이터 vs 모델 — 도메인 특화면 데이터, 실무자가 당장 손댈 수 있는 쪽도 데이터
@@ -156,7 +167,8 @@ AWS의 2024-08-02 식신 구축 사례는 리뷰와 메뉴 등에서 LLM으로 �
 
 - [AWS, Connect to Confluence for your knowledge base](https://docs.aws.amazon.com/bedrock/latest/userguide/confluence-data-source-connector.html) — 2026-10-22 고객 관리형 커넥터의 검색 권한 경고, 수집 필터와 동기화 범위를 대조했다.
 - [AWS 기술 파트너와 함께 구축한 푸드테크 기업 식신의 Amazon Bedrock 기반 AI 대시보드 구축기 — AWS 기술 블로그](https://aws.amazon.com/ko/blogs/tech/sikshin-built-ai-dashboard-with-aws-technology-partners-based-on-amazon-bedrock/) — 2026-10-22 생성 키워드, 입력 프롬프트와 결과 보존의 사례 범위 대조
-- [AWS, Evaluate the performance of RAG sources using Amazon Bedrock evaluations](https://docs.aws.amazon.com/bedrock/latest/userguide/evaluation-kb.html) — 2026-10-22 검색 전용과 검색 및 생성 평가의 구분을 대조했다. 업무별 평가표는 설계 제안이다.
+- [AWS, Evaluate the performance of RAG sources using Amazon Bedrock evaluations](https://docs.aws.amazon.com/bedrock/latest/userguide/evaluation-kb.html) — 2026-10-22 검색 전용과 검색 및 생성 평가의 구분을 대조하고 2026-10-29 재확인했다. 업무별 평가표와 뉴스 운영 절차는 설계 제안이다.
+- [디지털 혁신 가속화를 위한 kt ds의 AWS 생성형 AI 서비스 활용 사례 — Amazon Web Services Korea](https://www.youtube.com/watch?v=vVryXc5xzTU) — 2024-09-09 공개 발표의 04:24~09:36 전사에서 뉴스 수집, 일일 요약과 장기 분석의 구분을 확인했다. 오인식 가능성이 있는 모델명, 실제 분석 성능과 현재 제품 제공 범위는 채택하지 않았다.
 - [AWS, Prompt engineering concepts](https://docs.aws.amazon.com/bedrock/latest/userguide/prompt-engineering-guidelines.html) — 2026-10-22 작업 지시, 맥락, 예시와 입력의 구성을 대조했다. 현장 표현의 보존과 분류 계약은 설계 제안이다.
 - [GC녹십자의 실사 대응 혁신 이야기 — AWS Industry Week 2024 (YouTube)](https://www.youtube.com/watch?v=Tu24l6wugSA) — 2025-01-16 공개. 검색, 기준 연결과 문서 초안이라는 과업 구분을 음성 전사에서 확인했다. 화면의 평가표와 성과 수치는 반영하지 않았다.
 - [HL만도, 생성형 AI가 바꿔 나가는 제조 업무 혁신 — AWS Industry Week 2024 (YouTube)](https://www.youtube.com/watch?v=UM64HUoSDMo) — 2025-01-15 공개. 요구사항 분석과 클레임 키워드 분류의 구분을 음성 전사에서 확인했다. 모델별 성능 수치와 향후 절감 목표는 반영하지 않았다.

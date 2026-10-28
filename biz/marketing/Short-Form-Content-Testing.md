@@ -110,13 +110,15 @@ Instagram의 Trial Reels는 새 장르, 이야기 형식이나 주제를 비팔�
 
 제작 절차를 개선하는 경험칙은 요구사항 점검, 불필요한 단계 삭제, 남은 단계 단순화, 주기 단축, 자동화 순서다. 제조 현장의 엔지니어링 인터뷰에서 제시된 순서이며, 콘텐츠의 조회나 매출 증가를 입증한 연구는 아니다. 다음은 이를 작은 콘텐츠 제작 작업에 적용하는 **운영 제안**이다.
 
-1. 촬영, 자막, 효과와 검토 단계마다 필요한 이유와 확인할 품질 기준을 적는다. 관행이나 다른 계정의 모방만으로 필수 단계로 두지 않는다.
+1. 촬영, 자막, 효과와 검토 단계마다 필요한 이유와 확인할 품질 기준을 적는다. 요구를 확인하고 변경을 판단할 담당 역할도 연결한다. 부서 관행이나 다른 계정의 모방만으로 필수 단계로 두지 않는다.
 2. 의미 전달과 접근성에 필요한 요소를 보존하면서 불필요한 장식이나 중복 작업을 제거하는 안을 시험한다. 인트로나 배경음이 쓸모없다는 결론을 모든 콘텐츠에 적용하지 않는다.
 3. 남긴 작업의 템플릿과 편집 규칙을 단순화한다. 자막 스타일과 위치를 고정해도 발화 대조와 오류 수정은 별도 품질 기준으로 남긴다.
 4. 제작 시간과 재작업을 재고 병목을 줄인다. 처리 속도를 높인 뒤 이해도나 문의 품질이 나빠지지 않았는지도 확인한다.
 5. 반복할 입력, 결과와 예외 처리가 분명해진 작업부터 자동화한다. 발행량 증가를 매출 개선으로 간주하지 않고 앞 절의 반응 비교를 이어 간다.
 
 특정 길이 이상의 정적 구간을 일괄 삭제하거나 편집을 일정 시간 안에 끝낸다는 규칙은 별도 실측이 필요하다. 이 순서 자체로 제작 시간 절감률이나 매출을 예측하지 않는다.
+
+2026-10-29 인터뷰의 15:30~17:33 구간과 인터뷰 매체의 공개 글을 추가 대조했다. 요구사항의 이유를 물을 수 있는 책임자를 연결하고, 삭제한 것을 다시 넣는 일이 전혀 없다면 삭제 검토가 소극적이지 않았는지 돌아보라는 경험칙이다. 인터뷰의 10%라는 수치는 검증된 목표 복원율이 아니다. 콘텐츠 제작에 적용할 때는 삭제한 단계와 품질 변화를 기록하고 문제가 생기면 복원하는 점검 방법으로 사용한다(운영 제안). 접근성이나 사실 확인에 필요한 검토까지 일괄 삭제하는 근거로 쓰지 않는다.
 
 ### 긴 원본을 나눌 때 생성과 편집 판단을 분리한다
 
@@ -151,7 +153,7 @@ Meta의 2023년 공개 설명은 Facebook과 Instagram의 추천에 행동과 �
 - [YouTube Help, YouTube channel monetization policies](https://support.google.com/youtube/answer/1311392?hl=en) — 반복 제작과 실질적 내용 차이, 재사용 콘텐츠와 저작권 심사의 구분을 2026-10-24 대조. 위 제작 절차는 적용 제안이다.
 
 - [Crafting Contagious Workbook — Jonah Berger](https://jonahberger.com/wp-content/uploads/2013/03/Crafting-Contagious-Workbook.pdf) — STEPPS의 여섯 관점과 목표, 메시지 회상, 파일럿 질문. 표의 기획 질문은 적용 예시이며 성과 보장이나 추천 알고리즘 규칙으로 해석하지 않는다.
-- [Starbase Tour and Interview with Elon Musk — Everyday Astronaut](https://everydayastronaut.com/starbase-tour-and-interview-with-elon-musk/) — 2021년 인터뷰의 5단계 순서를 인터뷰 매체의 공개 글과 2026-10-22 대조. 콘텐츠 제작 적용은 운영 제안이며 성과 수치는 채택하지 않았다.
+- [Starbase Tour and Interview with Elon Musk — Everyday Astronaut](https://everydayastronaut.com/starbase-tour-and-interview-with-elon-musk/) — 2021년 인터뷰의 5단계 순서를 2026-10-22 대조하고, 2026-10-29 요구사항 책임과 삭제 후 복원의 경험칙을 추가 대조했다. 콘텐츠 제작 적용은 운영 제안이며 10%를 성과 기준으로 채택하지 않았다.
 - [How AI Influences What You See on Facebook and Instagram — Meta](https://about.fb.com/news/2023/06/how-ai-ranks-content-on-facebook-and-instagram/) — 2023년 공개 설명의 복수 예측 결합과 공유 예측의 범위를 2026-10-26 재대조. 게시 시간과 도입부 비교 절차는 운영 제안이며 특정 시각이나 문구의 성과를 검증한 결과가 아니다.
 
 - [What Makes Online Content Viral? — Jonah Berger, Katherine L. Milkman](https://jonahberger.com/wp-content/uploads/2013/02/ViralityB.pdf) — 저자 공개 논문, DOI 10.1509/jmr.10.0353. 기사 공유의 관찰과 감정 관련 실험을 2026-10-21 대조. 릴스 추천과 저장 전환에 대한 검증으로 확대하지 않았다.
