@@ -13,6 +13,7 @@ aliases: ["CS Computer Architecture", "컴퓨터 구조", "논리회로와 CPU"]
 
 - [x] [[CPU-and-Arithmetic|CPU와 산술논리연산 (불 대수, 조합회로, ALU)]]
 - [x] [[Sequential-Logic-and-Memory|순차 논리회로와 메모리 (래치, 플립플롭, 레지스터, RAM)]]
+- [x] [[HBM-Stack-and-Base-Die|HBM 적층과 베이스 다이]] — 저장층과 로직층, 용량과 대역폭, 맞춤형 컨트롤러와 PHY
 - [x] [[CPU-Datapath-Control-and-Instruction-Cycle|CPU 데이터패스와 명령어 사이클 (제어장치, ISA, 어셈블리)]]
 - [x] [[CPU-Datapath-Control-and-Instruction-Cycle-Programs|교육용 CPU 제어 신호와 반복 산술 프로그램]]
 

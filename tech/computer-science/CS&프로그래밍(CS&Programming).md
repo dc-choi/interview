@@ -9,6 +9,7 @@ aliases: ["CS&프로그래밍(CS&Programming)", "CS & Programming Language"]
 
 ## 목차
 
+- [[HBM-Stack-and-Base-Die|HBM 적층과 베이스 다이]] — 저장층과 로직층의 역할, 용량과 대역폭, NVHBM 구조와 발표 수치의 한계
 - [[tech/computer-science/fundamentals/기초(Fundamentals)|컴퓨터 기초 (Fundamentals)]] — 데이터 표현(진법, 문자와 Base64 인코딩, 체크섬과 해시), 컴퓨터 구조(논리회로, 메모리, CPU), 컴파일/런타임, 언어 지형과 선택 기준, 데이터 측정과 기술통계, 이산 확률분포, 논리와 작은 모델의 탐색
 - [[tech/computer-science/oop/SOLID-In-Practice|OOP / SOLID]] — OCP, DIP 실전 적용
 - [[tech/computer-science/code-quality/코드품질(CodeQuality)|코드 품질 (Code Quality)]] — 하드코딩 제거, 응집, 가독성 인지과학, 용어 엄밀성

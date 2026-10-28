@@ -41,6 +41,12 @@ aliases: ["People Leadership", "사람 리더십", "팀원 성장 리더십", "1
 | 역량 | 전공과 강점을 고려한 도전 과제 | 손 비는 사람에게 무작위 배분 |
 | 책임 | 예측 가능한 실수는 함께 책임 | 문제가 생기면 전가 |
 
+### 결정 대기를 자율성으로 해석하지 않는다
+
+권한을 맡겼는지 확인하려면 팀원이 실제로 무엇을 결정할 수 있는지 본다. Google의 Project Oxygen은 권한 위임과 마이크로매니징 억제, 명확한 비전과 전략, 의사결정을 각각 관리자의 행동으로 구분한다. 2026-10-28 확인한 공개 설명은 Google 내부 연구에 근거하며 특정 성격의 리더나 독단적 결정의 우월성을 입증하지 않는다.
+
+이를 적용한 점검안은 결정할 사안, 최종 결정권자, 필요한 정보와 결정 시점을 함께 적는 것이다. 논의가 더 필요하면 무엇을 확인한 뒤 누가 결정할지 남긴다. 결정권자 없이 회의만 반복하는 상황과, 팀원이 합의한 경계 안에서 스스로 판단하는 상황을 구분한다. 일이 주어지지 않는 경우에는 개인의 의욕을 평가하기 전에 역할의 목적, 맡을 과제와 피드백 경로를 확인한다. 이 점검만으로 이직이나 상사 교체의 필요성을 결론 내리지는 않는다.
+
 ### 실험의 공로와 승인 책임
 
 실험을 위임할 때는 팀원의 아이디어와 실행 성과를 인정하는 일, 리더가 승인한 위험에 책임지는 일을 함께 설계한다. 다음은 이를 적용하는 점검안이다. 보편적인 성과 향상 공식으로 보지 않는다.
@@ -195,6 +201,7 @@ Blumberg와 Pringle(1982)은 성과를 수행 역량(capacity), 의지(willingne
 
 ## 출처
 
+- [Following the data: The research behind great managers — Google re:Work](https://rework.withgoogle.com/intl/en/guides/following-the-data-the-research-behind-great-managers) — 2025-08, 권한 위임, 방향 제시와 의사결정, 명확한 기대와 피드백
 - [Theory — Center for Self-Determination Theory](https://selfdeterminationtheory.org/theory/)
 - [Intrinsic and Extrinsic Motivations: Classic Definitions and New Directions — Ryan and Deci, 2000](https://selfdeterminationtheory.org/SDT/documents/2000_RyanDeci_IntExtDefs.pdf)
 - [Promotions and the Peter Principle — NBER, Benson, Li, Shue (2018 작업논문)](https://www.nber.org/papers/w24343)
