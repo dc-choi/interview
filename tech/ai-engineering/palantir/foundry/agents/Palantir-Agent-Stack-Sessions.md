@@ -36,6 +36,24 @@ Palantir Agent SDK는 TypeScript로 Agent Stack의 agent를 정의하고 Foundry
 
 생성 예제의 `defineAgent`에서는 모델과 도구뿐 아니라 `agentStateSchema`, `createSessionArgsSchema`, `createSession`, `contextItemDefinitions`를 정의한다. 세션 생성 인자, 초기 상태와 공유 정보의 타입을 구분해 읽는다. 예제에 나온 모델이나 토큰 설정을 SDK 전체의 고정값으로 해석하지 않는다.
 
+### 도구 결과와 Ontology 접근
+
+도구의 `execute`는 context item을 반환하고, 그 item을 렌더링한 내용이 다음 모델 요청의 도구 결과가 된다. `zodContextItem`의 `create`는 저장 데이터를 만들고 `render`는 모델이 읽을 메시지로 변환한다. 정의는 `contextItemDefinitions`에 등록한다. 도구 실행 중 예외가 발생하면 다음 턴에 실패 정보가 모델에 전달된다. 이것을 자동 재시도나 외부 변경의 롤백 보장으로 해석하지 않는다.
+
+TypeScript OSDK로 객체 조회, action 적용과 function 호출을 연결할 수 있다. Ontology 자원은 코드의 import뿐 아니라 **Resource imports**에도 등록해야 하며, 빠뜨리면 권한 오류가 발생한다. Action 호출에는 **Scope settings > Enable scoped mode**가 필요하다. Agent 내부에서 OSDK로 Ontology를 쓰는 것과 외부 OSDK 앱에서 agent를 호출하는 것은 별도 통합이다.
+
+### 상태에 따른 모델 입력과 대기
+
+`systemPrompt`와 `tools` 함수는 모델 요청마다 현재 agent state를 받는다. `model`에도 상태를 받는 함수를 지정할 수 있다. 상태 변경은 후속 요청의 지시, 도구 목록과 모델 선택에 반영된다. 제공자별 `modelSettings`의 지원 범위는 모델마다 다르다.
+
+`RenderResult.pending()`인 context item은 데이터가 준비될 때까지 생성을 기다리게 한다. 긴 도구 작업은 item을 먼저 반환하고 event/effect로 데이터를 채운 뒤 ready로 전환할 수 있다. 도구도 item이 ready로 렌더링되기 전에는 완료로 표시되지 않는다. 사람의 응답을 기다리는 도구는 앱이 답변 event를 전달해 같은 대기를 해제한다.
+
+최상위 item의 ID를 `contextItemOrder`에서 빼면 후속 모델 입력에서 제외되지만 session state에는 남는다. ID를 다시 넣어 복원할 수 있으므로, 모델 문맥에서 숨기는 동작을 저장 데이터 삭제로 취급하지 않는다.
+
+### Event와 effect의 책임
+
+Event는 큐 순서대로 처리되며 handler는 결정론적으로 상태와 context item을 갱신한다. 비동기 외부 작업은 effect가 수행하고 결과 event를 보낸다. 예를 들어 승인 event가 발송 effect를 시작하고, 발송 완료 event가 session 상태를 갱신한다. 이는 상태 전이의 설명이며 외부 서비스의 중복 실행 방지 보장을 뜻하지 않는다.
+
 ## 생성, 버전 발행과 세션 실행을 구분한다
 
 1. Project에서 `+ New > Agent > Build in code`를 선택하고 repository 이름과 agent 이름을 각각 지정한다.
@@ -47,12 +65,15 @@ Palantir Agent SDK는 TypeScript로 Agent Stack의 agent를 정의하고 Foundry
 Getting started는 Ontology binding을 SDK를 통한 코드 사용과 연결해 설명하지만, Agent Stack 개요는 agents in OSDK를 여전히 coming soon으로 표시한다. 따라서 binding 설정 가능과 OSDK 통합의 실제 제공 여부를 구분하고, 대상 환경에서 확인하기 전에는 OSDK 호출을 전제로 설계하지 않는다.
 
 2026-10-28 공식 개요와 시작 가이드를 대조했다. 저장소 생성, 발행과 세션 실행을 실제 환경에서 시험한 기록은 아니다.
+같은 날 customization과 advanced customization 문서에서 도구 결과, Ontology 접근, pending context item과 event/effect 계약을 추가 대조했다. SDK 실행과 장애 복구는 시험하지 않았다.
 
 ## 출처
 
 - [Palantir, The Agent Stack](https://www.palantir.com/docs/foundry/aip/agent-stack)
 - [Palantir, Agent SDK overview](https://www.palantir.com/docs/foundry/agent-sdk/overview)
 - [Palantir, Get started with the Agent SDK](https://www.palantir.com/docs/foundry/agent-sdk/getting-started)
+- [Palantir, Customize agents with Agent SDK](https://www.palantir.com/docs/foundry/agent-sdk/customize-agent)
+- [Palantir, Advanced customization of agents in Agent SDK](https://www.palantir.com/docs/foundry/agent-sdk/advanced-customization)
 
 ## 관련 문서
 
