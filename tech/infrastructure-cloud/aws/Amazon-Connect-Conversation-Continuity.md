@@ -110,6 +110,19 @@ Post-contact summary는 상담의 주요 문제와 결과를 정리해 ACW(After
 - 새 시스템에서 누락되는 기록이 있는지 확인해 분모 변경을 개선으로 오인하지 않는다.
 - 전사문과 업무 시스템의 완료 기록으로 실제 해결 여부를 별도 확인한다. 애플리케이션 수를 줄였다는 사실만으로 고객 경험 개선을 입증하지 않는다.
 
+### 응답 속도, 첫 상담 해결과 AI 관여를 나눈다
+
+부분 검증(2026-10-28): 공식 지표 정의에서 다음 값은 집계 대상과 성공 조건이 다르다. 도입 사례의 설명란과 발화가 다른 용어를 쓰면 같은 지표로 합치지 않는다.
+
+| 지표 | 실제로 세는 것 | 해석의 경계 |
+|---|---|---|
+| `SERVICE_LEVEL` | 큐에 들어온 contact 중 X초 안에 큐에서 제거된 contact의 백분율 | 상담원 응답뿐 아니라 고객 이탈과 콜백 요청도 큐 제거에 포함된다. X초 내 응답률로 바꿔 읽지 않는다 |
+| `PERCENT_CASES_FIRST_CONTACT_RESOLVED` | 음성, 채팅, 이메일 contact가 연결된 종료 case 중 contact가 하나인 case의 비율 | 큐 대기 시간이 아니라 case 해결을 측정한다. 재개된 case는 조회 구간 안에서 다시 종료됐는지에 따라 포함 여부가 달라진다 |
+| `AI_INVOLVED_CONTACTS` | 셀프서비스 또는 사람 상담원 지원에 AI가 관여한 상담의 지표 | 사람 상담원 지원도 포함하므로 AI 단독 해결 건수로 해석하지 않는다 |
+| `EVALUATED_SELF_SERVICE_SUCCESS_RATE` | 업무 결과 질문이 있는 평가 양식으로 산출한 셀프서비스 해결 점수의 평균 | 평가된 상담이 모집단이다. 전체 유입 중 자동 처리 비율이나 외부 업무 완료율과 구분한다 |
+
+운영 적용 제안: 자동화 비율에는 분모, 채널, 측정 기간과 사람 인계 포함 여부를 함께 기록한다. 사례의 설명란과 자막에서 수치가 다르면 시간 경과에 따른 개선으로 추정하지 않고 비교 조건이 확인될 때까지 수치 채택을 보류한다. 평가 점수와 실제 업무 완료는 별도로 대조한다. 이 절만 추가 확인했으므로 기존 절의 검증일은 유지한다.
+
 ## 상담 화면 접속과 음성 연결을 따로 확인한다
 
 2026-10-14 CCP 네트워크 공식 가이드 부분 대조 기준이다. 브라우저 상담 화면을 열 수 있어도 음성 경로가 준비됐다는 뜻은 아니다. CCP 관련 HTTPS와 WebSocket 경로의 TCP 443뿐 아니라, 해당 리전의 TURN/NLB endpoint로 나가는 UDP 3478과 DNS 해석을 확인한다. IP와 포트를 허용했어도 TURN 도메인을 해석하지 못하면 소프트폰 연결이 실패할 수 있다.
@@ -152,6 +165,8 @@ Direct Connect는 사내 edge router와 AWS 사이의 연결 개선에 쓸 수 �
 
 ## 출처
 
+- [NatWest: One Call. One Conversation. No Transfers — Amazon Web Services](https://www.youtube.com/watch?v=W1cZAJQW6Z0) — 설명란과 02:09 이후 발화의 지표 표현 차이를 검토 계기로 사용. 비율의 정의는 확정하지 않았다.
+- [Neovance: A missed dose can mean a missed life — Amazon Web Services](https://www.youtube.com/watch?v=-X9CV9z2ty4) — 설명란과 02:04 이후 발화의 자동화 비율이 달라 수치는 채택하지 않았다.
 - [AWS, Update settings for your Connect Customer instance](https://docs.aws.amazon.com/connect/latest/adminguide/update-instance-settings.html)
 - [AWS, Download and review Connect Customer Contact Control Panel (CCP) logs](https://docs.aws.amazon.com/connect/latest/adminguide/download-ccp-logs.html)
 - [AWS, Contact Control Panel (CCP) Issues](https://docs.aws.amazon.com/connect/latest/adminguide/common-ccp-issues.html)

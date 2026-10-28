@@ -167,6 +167,14 @@ Agentless는 개별 소스 VM에 에이전트를 설치하지 않는다는 뜻�
 
 과거 발표의 지원 플랜 포함 여부나 고객 사례의 처리량을 현재 계약 조건과 자체 시스템의 보장값으로 옮기지 않는다.
 
+### 첫 실서비스 검증과 최대 수요 검증을 나눈다
+
+전환 뒤 첫 운영 이벤트는 실제 사용자, 트래픽과 외부 연동을 확인할 기회다. 다만 그 이벤트의 성공을 이후 모든 지역과 최대 수요에서의 성공으로 확대하지 않는다. 검증 창의 부하 범위와 다음 단계에 남은 조건을 기록한다(운영 설계 제안).
+
+2026-10-28 대조한 AWS의 NBA 이전 사례는 서비스와 데이터 흐름을 미리 정리하고, 기존 컨테이너 구성을 EKS에서의 수요 변화에 맞춰 조정한 뒤 Summer League의 실제 트래픽으로 정규 시즌 전 운영을 확인한 사례다. 이전 기간이나 성능 개선율은 해당 사례의 보고값이며 다른 시스템의 보장값이 아니다.
+
+적용 시에는 경기나 행사 수, 지역과 배포 파트너별 수요를 구분해 필요한 서비스의 확장과 축소를 확인한다. 피크 시간 지연, API 오류율, 비디오 전사 처리 시간과 실시간 통계 계산 시간도 각각 비교한다. 통계 계산이 빨라졌다는 결과를 영상 전송 지연의 감소로 바꾸지 않는다. 실제 측정 로그나 배포를 재현한 것은 아니며 기존 제품 정책의 검증일은 유지한다.
+
 ## 전환 창과 새 쓰기 이후의 복구를 따로 검증한다
 
 부분 검증(2026-10-16): AWS cutover 가이드는 입력 동결, 최종 백업과 동기화, 라우팅 변경, 동작 검증을 구분한다. 서버 주소를 바꾼 시간만을 전체 중단 시간으로 계산하지 않는다. 사전 계획에는 기능, 성능과 의존 시스템 연결 시험뿐 아니라 실패 시 복구에 필요한 시간도 포함한다.
@@ -205,6 +213,8 @@ AWS가 2026-03-25 공개한 IDEMIA Civil Identity 고객 인터뷰는 .NET 3.5�
 
 ## 출처
 
+- [How the NBA future-proofed its digital infrastructure in 6 months — AWS](https://aws.amazon.com/blogs/media/how-the-nba-future-proofed-its-digital-infrastructure-in-6-months/) — 2026-10-25 공개. 실제 이벤트 검증과 서비스별 성능 지표의 범위를 대조했다.
+- [The NBA's move to AWS: How the NBA migrated to AWS in time for tip-off — Amazon Web Services](https://www.youtube.com/watch?v=S8G-S5vxJeg) — 전사문에서 얻은 이전과 검증 주제를 위 공식 글로 확인했다.
 - [AWS Prescriptive Guidance, Prioritization and migration strategy](https://docs.aws.amazon.com/prescriptive-guidance/latest/application-portfolio-assessment-guide/prioritization-and-migration-strategy.html)
 - [AWS Prescriptive Guidance, Wave planning](https://docs.aws.amazon.com/prescriptive-guidance/latest/application-portfolio-assessment-guide/wave-planning.html)
 - [Migration의 비밀 레시피: AMOREPACIFIC의 All Cloud Journey — Amazon Web Services Korea](https://www.youtube.com/watch?v=vyAi0oKjJLg) — 2024년 발표 20:52~26:55의 파일럿, 핵심 시스템 우선과 과도기 연동 사례를 검토 질문의 계기로 사용. 제품 동작과 보편적 순서는 위 공식 문서로 대조
