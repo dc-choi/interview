@@ -61,6 +61,14 @@ AX 진단은 다음 다섯 축을 함께 본다. 한 축만 움직이면 국소 
 - **AX**: 업무 재설계, 변화 관리, 교육, 평가 개편이 진짜 투자 대상
 - 사례: Atlassian은 2026년 3월 약 10% 감원을 발표하며 AI와 엔터프라이즈 영업 투자 재원을 마련하고, System of Work를 중심으로 재조직하겠다고 밝혔다.
 
+### 실행 책임과 함께 예산, 결정권을 정한다
+
+AI 도입 담당자를 지정했다면 어떤 업무와 기준을 바꿀 수 있는지도 정한다. 2026-10-29 Microsoft의 AI Center of Excellence(CoE) 지침에서 경영진 후원이 예산, 권한과 조직 내 신뢰를 제공하고, 전담 리더가 전략 실행의 책임과 연락 창구를 맡는 구성을 확인했다. 이는 기업의 도입 조직을 설계하는 권고이며 권한 위임만으로 성과가 보장된다는 실증 결과는 아니다.
+
+운영에 적용할 때는 사용할 예산과 인력, 바꿀 수 있는 업무 절차, 별도 승인이 필요한 데이터와 보안 경계를 함께 적는다. 실행 담당자의 책임만 늘리고 기존 승인 대기를 그대로 두지 않도록, 막힌 결정을 경영진에게 올릴 경로도 정한다. 이 항목들은 지침을 작은 팀의 업무에 적용한 점검 제안이며 모든 권한을 한 사람에게 넘기라는 뜻은 아니다.
+
+별도 AI 조직 신설을 전제로 삼지도 않는다. 같은 지침은 기존 팀과 역량을 활용하고, 기존 팀이 도입을 지원할 수 없거나 중대한 위험이 있을 때만 독립 팀을 만들도록 권고한다. 작은 조직에서는 별도 직함보다 누가 우선순위와 자원을 승인하고 누가 실행 결과를 책임지는지부터 명확히 할 수 있다.
+
 ### 교육을 실제 업무 실험과 연결한다
 
 기존 구성원의 업무 지식을 활용하려면 필요한 AI 역량과 실험할 업무를 함께 정한다. 교육 이수와 실제 업무 수행 가능성을 같은 결과로 기록하지 않는다. 2026-10-13 AWS의 워크로드 평가 지침에서 필요한 기술과 지식, 교육과 워크숍, 측정 가능한 업무 목표와 실행 계획을 함께 점검하는 기준을 확인했다.
@@ -206,6 +214,7 @@ METR은 2026년 후속 글에서 최신 도구의 속도 향상이 더 클 가�
 - 조직 AX 성숙도 자가 진단 질문
 
 ## 출처
+- [Microsoft Learn, Establish an AI Center of Excellence](https://learn.microsoft.com/en-us/azure/cloud-adoption-framework/ai/center-of-excellence) — 2026-10-29 경영진 후원, 실행 리더와 기존 조직 활용 조건 부분 대조
 - [As AI agents take on more work, trust should become operational — PwC](https://www.pwc.com/us/en/about-us/newsroom/operationalizing-trust-in-agentic-ai.html) — 2026-10-14 감독, 권한, 책임과 실행 증거 부분 대조
 - [스타트업 AX 프로그램의 업무 병목과 검수 설계 — 아웃스탠딩TV](https://www.youtube.com/watch?v=A5xt0-tVV60) — 프로그램 담당자의 공개 인터뷰, 04:04~12:19와 38:36~41:43의 경험과 제안만 반영. 전체 스타트업이나 고용 변화로 일반화하지 않음
 - [AWS Prescriptive Guidance, Targeted business outcomes](https://docs.aws.amazon.com/prescriptive-guidance/latest/gen-ai-workload-assessment/outcomes.html) — 2026-10-13 교육 필요, 업무 목표와 실행 계획 부분 대조

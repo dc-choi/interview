@@ -18,6 +18,15 @@ Apollo MCP는 CLI 기능을 AI tool로 노출한다. endpoint는 `https://<hub>/
 
 Standard Support는 별도 표시가 없는 기능의 기본 정책으로, Deprecated는 공지 후 최소6개월을 두고 제거할 수 있다. Experimental은 교체 수단 없이 바뀌거나 없어질 수 있으며 오래 experimental이었다는 이유로 안정성을 추정하지 않는다. 정책 자체의 breaking change는 문서상 최소6개월 공지 대상이다.
 
+2026-10-29 지원 정책 v1.0을 다시 대조한 범위는 다음과 같다. 아래 조건은 Apollo의 정책이며 다른 제품의 API에 그대로 적용하지 않는다.
+
+- Standard Support 상태의 변경은 기능 추가나 수정처럼 기존 사용을 깨뜨리지 않는 방식으로 제공한다. 다만 기능은 Deprecated로 전환될 수 있고, 이후에는 해당 제한 지원 정책을 따른다.
+- 지원 범주 변경은 What's New에 공지한다. Deprecated의 최소 6개월은 사용자가 발견한 날이나 마지막 CLI 설치일이 아니라 폐기 예고일을 기준으로 계산한다.
+- Deprecated API는 API 표면과 관련 문서에서 삭제될 때까지 지원한다. 삭제 시점에도 별도 공지를 내며, 예고 후 정확히 6개월째에 반드시 삭제한다는 일정 약속은 아니다.
+- 다운로드하거나 캐시한 구형 CLI가 있어도 폐기 기간 이후 삭제된 API의 동작을 보장하지 않는다. 잠시 호출에 성공해도 계속 의존할 근거가 되지 않는다.
+
+연동 운영에서는 사용 중인 명령과 API의 지원 범주, 공지일과 대체 경로를 함께 기록하고 폐기 기간 안에 전환을 검증하는 편이 안전하다. 이는 정책을 적용한 점검 방법이며 구형 바이너리를 보관하는 것만으로 서버 API 변경을 피할 수 있다는 뜻이 아니다.
+
 What's New 전체(2022-05~2026-10)를 현재 guide와 대조하면 기능의 출시, 개명, 폐기와 보안 동작 변화가 따로 나타난다. 과거 화면 개선/bug fix를 현재 API 계약이나 실행 검증으로 쓰지 않는다. 다음 차이는 실행 전 확인할 가치가 있다.
 
 | 변경 기록의 시점 | 현재 가이드와 대조할 계약 |
@@ -52,7 +61,7 @@ What's New 전체(2022-05~2026-10)를 현재 guide와 대조하면 기능의 출
 - [Palantir, apollo-references](https://www.palantir.com/docs/apollo/apollo-references) — 기술 reference 부모 경로의 네 계열.
 - [Palantir, apollo-api-documentation](https://www.palantir.com/docs/apollo/apollo-references/apollo-api-documentation) — Hub GraphQL Explorer와 조회 예시.
 - [Palantir, apollo-references](https://www.palantir.com/docs/apollo/apollo-references/apollo-references) — 제품 spec/API/CLI/CEL reference의 역할.
-- [Palantir, developer-api-limited-support-policies](https://www.palantir.com/docs/apollo/apollo-references/developer-api-limited-support-policies) — Standard, Deprecated6개월과 Experimental 지원 정책.
+- [Palantir, developer-api-limited-support-policies](https://www.palantir.com/docs/apollo/apollo-references/developer-api-limited-support-policies) — 2026-10-29 v1.0 지원 범주, 폐기 예고 기준일, 삭제 전 지원과 구형 CLI의 한계를 부분 대조.
 - [Palantir, whats-new](https://www.palantir.com/docs/apollo/core/whats-new) — 2022-05~2026-10 전체 이력, 명령/권한/배포 호환성 변화.
 
 ## 관련 문서
