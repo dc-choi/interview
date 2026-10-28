@@ -30,6 +30,16 @@ Workshop은 session을 embed하고, Automate는 trigger에 따라 session 생성
 
 이는 [[Palantir-Pro-Code-Agents]]의 async Void function 호출과 구별할 개념이다. 같은 agent라는 이름만으로 반환값, tool 지원과 session API를 서로 대체하지 않는다. 실제 SDK/API endpoint와 permissions는 대상 integration 문서를 추가 확인한다.
 
+## Agent Builder의 입력, 사전 계산과 실행을 나눈다
+
+2026-10-28 공식 개요 기준, Agent Builder는 beta이며 enrollment에 따라 제공되지 않을 수 있다. 시각적 편집기에서 instructions, inputs, pre-computed variables와 tools를 구성하고 응답을 미리 확인한다.
+
+입력은 세션 시작 때 받는 값이고, 사전 계산 변수는 agent 실행 전에 계산해 프롬프트에 넣을 정보다. 실행 중 모델이 선택하는 도구 호출과 구분한다. 예를 들어 공항 코드를 입력받아 결항편과 연결된 예약의 object set을 미리 구한 뒤, custom tool로 숙박 재고를 확인하고 Ontology SQL 도구로 데이터를 조회하는 구성을 만들 수 있다.
+
+Preview는 대화를, Debug는 사전 계산 변수, messages와 tool calls를 보여 준다. 대화가 자연스럽게 끝났는지뿐 아니라 예상한 입력과 도구가 사용됐는지 대조하는 데 쓴다. Action을 통한 변경 제안과 실제 업무 상태의 변경 완료는 별도 확인 대상으로 둔다(운영 제안).
+
+시험 뒤 Compass resource로 발행하고 Agent Manager에서 세션을 조사하거나 Workshop에 삽입하고 Automate에서 실행할 수 있다. 이 절은 개요 문서의 기능 대조이며 실제 enrollment의 제공 여부, 권한과 실행 결과는 시험하지 않았다.
+
 ## Agent SDK로 실행 계약을 코드에 둔다
 
 Palantir Agent SDK는 TypeScript로 Agent Stack의 agent를 정의하고 Foundry resource로 발행하는 경로다. System prompt와 tools에서 시작해 custom context item, event와 effect로 동작을 확장할 수 있다. 사람의 검토, 별도 관측 화면과 결정론적 로직을 결합하는 용도이며, 모델 비종속 설계로 open-source와 sovereign model 호출도 지원한다. 개별 모델의 도구 호출 호환성과 접근 조건까지 동일하다는 보장은 아니다.
@@ -70,6 +80,7 @@ Getting started는 Ontology binding을 SDK를 통한 코드 사용과 연결해 
 ## 출처
 
 - [Palantir, The Agent Stack](https://www.palantir.com/docs/foundry/aip/agent-stack)
+- [Palantir, Agent Builder overview](https://www.palantir.com/docs/foundry/agent-builder/overview)
 - [Palantir, Agent SDK overview](https://www.palantir.com/docs/foundry/agent-sdk/overview)
 - [Palantir, Get started with the Agent SDK](https://www.palantir.com/docs/foundry/agent-sdk/getting-started)
 - [Palantir, Customize agents with Agent SDK](https://www.palantir.com/docs/foundry/agent-sdk/customize-agent)
