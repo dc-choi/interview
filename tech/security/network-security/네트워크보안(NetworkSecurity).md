@@ -11,6 +11,7 @@ aliases: ["Network Security", "네트워크 보안"]
 
 ## 목차
 
+- [[Public-WiFi-Trust-Boundaries|공공 Wi-Fi의 신뢰 경계]] — HTTPS, 서비스 신뢰와 기기 제어 권한, 미러링 시연의 사전 인증 조건
 - [[SSH-Authentication|SSH 인증]] — 서버 호스트 키, 사용자 인증 키와 세션 키, 첫 접속의 신뢰와 호스트 키 변경
 - [[Network-Perimeter-Security|네트워크 경계 보안]] — 공인 IP 배치 원칙, DNS 응답 IP와 실제 서버, UTM, 보안 장비가 로드밸런서보다 앞에 서는 순서, 프록시 방식 WAF와 SSL 종료, 클라우드의 퍼블릭/프라이빗 구분
 - [[Inline-vs-Out-of-Path|인라인과 아웃오브패스 배치]] — 경로 위 제어 장비와 사본 관찰 센서, fail-open과 fail-closed, 소프트웨어와 하드웨어 bypass, 포트 미러링(SPAN)과 TAP, 미러 포트 대역폭 병목과 사본 유실, IDS와 IPS, 클라우드의 GWLB와 Traffic Mirroring, AI 검사 API의 판정과 실제 차단

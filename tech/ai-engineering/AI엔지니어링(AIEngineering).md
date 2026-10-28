@@ -22,6 +22,7 @@ Software 3.0 패러다임, LLM과 에이전트, 하네스, 평가, 조직 전환
 
 ## 세부 학습
 
+- [x] [[Agent-Diagram-Evidence|에이전트 다이어그램의 근거와 검증]] — 구조화된 입력과 HTML, 커밋 고정, 자동 검사와 의미 검증의 구분
 - [x] [[LLM-API-Price-Competition|LLM API 가격 경쟁]] — 인하 형태, 캐시 읽기 비중과 공급사 벤치마크의 비교 조건
 - [x] [[Task-Specific-Small-Models|작은 특화 모델]] — Pinterest 여정 추론과 WorldTUI의 학습, 서빙 및 평가 범위
 - [x] [[LLM-Steganography|생성 이미지의 스테가노그래피]] — 은닉 메시지 복원 실험과 에이전트 사이의 통신 채널

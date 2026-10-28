@@ -11,6 +11,7 @@ aliases: ["Agent Coding Tools", "코딩 에이전트 작업 도구"]
 
 ## 목차
 
+- [[Agent-Diagram-Evidence|에이전트 다이어그램의 근거와 검증]]: Archify의 독립 HTML, 커밋 근거, 자동 검사와 의미 검증, 버전별 라이선스
 - [[Agent-Code-Search|에이전트 코드 인텔리전스]]: rg 전수 검색, Semble 후보 발견, Serena 심볼 검증/수정, Graphify 구조 경로, index freshness
 - [[Agent-Skills|에이전트 스킬]]: 재사용 작업 단위 = 온디맨드 플레이북, SKILL.md 폴더+description 자동 로드, 점진적 공개, Claude vs Codex 같은 포맷 다른 관례, 스킬 vs 훅, 수명주기 감사, 표면별 설치와 외부 스킬 신뢰
 - [[Agent-Skills-Kiro|Kiro Steering, 훅, 스킬, MCP와 Powers]]: Steering 포함 모드와 AGENTS.md, Hooks 형식과 차단 경계, 스킬 범위와 이식 점검, MCP 설정 병합과 도구 승인, workspace 신뢰, Powers 키워드 활성화, plugin.json과 스킬, API 명세 조회와 생성 코드 검증, SageMaker Unified Studio 원격 작업 경계

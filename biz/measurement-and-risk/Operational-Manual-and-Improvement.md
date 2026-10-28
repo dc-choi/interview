@@ -17,6 +17,14 @@ aliases: ["Operational Manual and Improvement", "업무 매뉴얼과 운영 개�
 
 ## 반복 업무 하나를 기준으로 작성한다
 
+### 여러 업무를 맡을 때는 수행과 확인 책임을 나눈다
+
+작은 사업에도 재무, 인력, 마케팅과 영업, 설비, 보안과 비상 대응처럼 서로 다른 운영 업무가 있다. 미국 SBA의 사업 관리 안내는 이 영역을 구분하고, 회계 업무에는 전문가나 온라인 서비스의 도움을 받는 선택지도 제시한다. 사업에 필요한 기능이 많다는 사실이 대표 한 사람이 모든 분야의 전문가가 되어야 한다는 뜻은 아니다. 이 구분은 운영 범위를 정하는 참고이며 미국의 세무와 고용 규정을 다른 나라에 적용하는 근거가 아니다.
+
+다음은 소규모 사업에 적용하는 제안이다. 각 반복 업무에 **실행 담당, 결과 확인자, 완료 증거, 예외 판단자**를 붙인다. 한 사람이 여러 역할을 겸하더라도 수행 완료와 검수 완료를 따로 표시한다. 예를 들어 사진 제작을 외주로 맡겼다면 대표는 직접 촬영하는 기술보다 사용 목적, 납기와 결과물의 확인 기준을 정할 수 있다. 문의 대응은 답변 속도와 해결 여부를, 정산은 매출과 실제 입금의 대조를 확인한다. 위임이나 문서화만으로 성과가 좋아졌다고 보지 않고 재작업과 누락을 함께 관찰한다.
+
+### 문서화할 단위를 고른다
+
 다음은 작은 사업에 적용하기 위한 제안이다. 처음부터 회사 전체 업무를 문서화하기보다 반복 오류나 인계 공백이 있는 업무 하나를 고른다.
 
 | 항목 | 기록할 내용 |
@@ -57,6 +65,7 @@ aliases: ["Operational Manual and Improvement", "업무 매뉴얼과 운영 개�
 
 - [MUJI×JICA PROJECT Kyrgyz #06 — MUJI Laboratory for Living](https://www.muji.net/lab/found/kyrgyz/en/06.html) — 2013년 연수의 업무 매뉴얼과 점검표 활용 사례.
 - [MUJI REPORT 2025 — Ryohin Keikaku](https://www.ryohin-keikaku.jp/pdf/sustainability/muji-sustainability/report/MUJI_REPORT_2025_E.pdf) — Independent Store Management의 현장 개선과 MUJIGRAM을 통한 절차 전파.
+- [SBA, Manage your business](https://www.sba.gov/counseling/manage-your-business/) — 2026-10-28 운영 영역과 회계 지원 선택지를 확인. 수행과 확인 책임의 배치는 이를 적용한 제안이다.
 
 ## 관련 문서
 
