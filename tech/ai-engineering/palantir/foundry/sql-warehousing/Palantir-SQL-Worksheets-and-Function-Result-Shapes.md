@@ -1,7 +1,7 @@
 ---
 tags: [palantir, foundry, operations]
 status: done
-verified_at: 2026-10-16
+verified_at: 2026-10-28
 category: "AI엔지니어링(AIEngineering)"
 aliases: ["SQL worksheet과 함수 결과 형태"]
 ---
@@ -20,6 +20,14 @@ Literal parameter는 문자열/숫자/Boolean 같은 literal 위치에만 쓸 �
 
 여러 column을 SELECT하면 행별 struct의 list를, 하나의 column만 SELECT하면 그 column 타입의 list를 반환한다. 두 형태가 같은 List<Struct>라고 가정하면 호출부가 깨질 수 있다. Result column 이름 변경도 함수 소비 계약에 영향을 준다. ObjectSet을 input으로 쓸 수 있어도 SQL 결과를 ObjectSet으로 직접 반환하는 것은 지원하지 않는다.
 
+## Marketplace 배포와 입력 매핑
+
+Dataset이나 object type을 읽는 project worksheet은 Marketplace product에 넣을 수 있다. Product의 output 추가 단계에서 **Add files**로 worksheet을 선택하면 참조 dataset, object type과 사용한 property가 product input이 된다. Worksheet에 의존하는 Ontology SQL function도 함께 패키징할 수 있다.
+
+설치자는 각 input을 대상 환경의 dataset, object type과 property에 매핑한다. 설치 project에 worksheet이 만들어지고 SQL의 resource 참조가 이 선택에 맞게 바뀐다. 새 product version으로 upgrade하면 설치된 worksheet을 갱신하면서 기존 input mapping을 유지한다.
+
+Table 생성이나 insert처럼 output에 쓰는 worksheet, procedure를 호출하는 worksheet, private worksheet은 패키징 대상이 아니다. Private worksheet은 먼저 project에 저장해야 한다. 따라서 SQL 저장이나 Function 발행 성공만으로 Marketplace 배포 가능성을 판단하지 않고, 참조 입력과 쓰기 동작을 따로 확인한다.
+
 ## 결과를 판단하는 범위
 
 SQL Studio와 embedded console은 같은 엔진 계약 위의 서로 다른 진입점이다. Ontology Manager에서는 data/object mode를 고를 수 있지만 다른 embedded app은 data mode만 제공할 수 있다. Chart도 preview 제한을 적용받으므로 전체 100,000행 중 첫1,000행의 그래프를 전체 분포로 읽지 않는다.
@@ -28,6 +36,7 @@ Selected SQL만 실행할 수 있으므로 editor 전체와 실제 실행 statem
 
 ## 출처
 
+- [Palantir sql-warehousing, marketplace-sql-worksheets](https://www.palantir.com/docs/foundry/sql-warehousing/marketplace-sql-worksheets)
 - [Palantir sql-warehousing, sql-warehousing](https://www.palantir.com/docs/foundry/sql-warehousing)
 - [Palantir sql-warehousing, arrow-flight-sql](https://www.palantir.com/docs/foundry/sql-warehousing/arrow-flight-sql)
 - [Palantir sql-warehousing, compute-usage](https://www.palantir.com/docs/foundry/sql-warehousing/compute-usage)
