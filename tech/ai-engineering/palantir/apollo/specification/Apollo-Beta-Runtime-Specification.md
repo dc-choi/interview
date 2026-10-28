@@ -33,6 +33,20 @@ Substitution은 `{{...}}`로 conf, secret, SSL 재료, volume mount와 discovere
 - quorum은 all, all-but-one, any, simple-majority를 받는다. 기본 all-but-one은 복제본 하나일 때도 하나가 필요하다. simple-majority는 floor(n/2)+1이다.
 - rolling은 quorum을 유지하며 순차 변경한다. shutdown은 모두 중지한 뒤 변경하고 서로 다른 버전의 복제본 공존을 허용하지 않는다.
 
+### 볼륨 선언과 설정의 대응
+
+2026-10-29 Volumes Beta의 저장소 계약을 부분 대조했다. 같은 볼륨 이름을 쓰되 manifest와 기본 설정의 타입 키는 서로 다르다.
+
+| 위치 | 역할과 키 |
+|---|---|
+| `manifest.yml`의 `extensions.volumes-v2.<이름>.volume-type` | 저장소 종류를 `durable-volume: {}`로 선언 |
+| `configuration.yml`의 `volumes.<이름>.durable-storage-configuration` | 필수 `desired-size`로 요청 용량 설정 |
+| 설정 치환의 `volumes.<이름>.PathOnDisk` | 배포 인프라가 제공한 실제 마운트 경로 참조 |
+
+각 volume type과 configuration은 union이므로 그 안에 타입 필드를 하나만 지정한다. 현재 문서가 지원한다고 명시한 종류는 durable volume이며, 서비스 재시작, 업그레이드와 장비 재시작 뒤에도 보존되는 저장소다. 이 보존 계약을 백업이나 모든 저장 장치 장애에서의 복구 보장으로 확대하지 않는다.
+
+운영 점검에서는 선언과 기본 설정의 이름, 대응하는 타입, 용량과 최종 경로를 따로 확인한다. manifest 선언만으로 애플리케이션의 데이터 디렉터리가 그 경로를 사용한다고 가정하지 않는다. Hub의 Beta 지원 여부와 실제 저장소 동작은 별도 검증 대상이다.
+
 ## endpoint와 discovery
 
 endpoints.definitions는 하나 이상이며 desired-port는 1024~19999이다. 여러 endpoint가 있으면 sls-status-endpoint를 지정한다. path는 /로 시작하고 기본값은 /다. 공개 HTTPS proxy와 공개 TCP/UDP endpoint를 별도로 선언한다. proxy endpoint는 external-port를 쓰지 않고, TCP/UDP는 external-port를 쓰고 path를 쓰지 않는다. 같은 endpoint를 proxy와 TCP/UDP 양쪽에 등록하지 않는다. TCP와 UDP는 같은 외부 포트용 endpoint를 공유할 수 있다.

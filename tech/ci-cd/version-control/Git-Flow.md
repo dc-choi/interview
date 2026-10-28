@@ -16,6 +16,14 @@ verified_at: 2026-08-31
 - 지원 버전이 하나면 영속 브랜치 하나로 충분하고, 동시에 유지할 버전이 둘 이상이면 release branch가 필요해진다.
 - 브랜치가 길수록 머지가 커지고 위험해진다. 브랜치 수명이 곧 비용 축이다.
 
+## 전략에 앞서는 버전 식별과 복구
+
+2026-10-29 Git의 `git-tag`, `git-revert`와 GitHub 릴리스 문서를 부분 대조했다. 브랜치 구조와 별개로 배포한 버전이 어떤 커밋과 산출물인지 식별할 수 있어야 한다. GitHub 릴리스는 저장소 이력의 특정 지점을 가리키는 태그를 기반으로 배포 파일과 릴리스 노트를 묶는다.
+
+Git 태그는 강제로 바꿀 수 있으므로 태그를 만들었다는 사실만으로 불변성이 확보되지는 않는다. 이미 공유한 태그를 다른 커밋으로 옮기면 같은 버전 이름이 사람마다 다른 내용을 가리킬 수 있다. 공개한 릴리스를 고칠 때는 새 태그 이름을 쓰고, 이전 이름의 의미를 유지한다.
+
+`git revert`는 과거 변경의 효과를 되돌리는 새 커밋을 기록한다. 이는 소스 이력에서의 취소이며 운영 복구 완료와는 다르다. 실무 적용 기준으로는 되돌릴 커밋뿐 아니라 재배포할 산출물과 현재 DB 스키마의 호환성을 함께 확인한다. 구체적인 배포 복구는 [[Rollback|롤백 전략]]과 [[Blue-Green|Blue-Green 배포]]에서 다룬다.
+
 ## 세 전략의 브랜치 해부
 
 | 축 | GitHub Flow | Git Flow | Trunk-Based |
@@ -117,6 +125,9 @@ Trunk-Based 문서가 강조하는 규칙은 cherry-pick 방향이 trunk에서 �
 
 ## 출처
 
+- [Git, git-tag — On Re-tagging](https://git-scm.com/docs/git-tag#_on_re_tagging)
+- [Git, git-revert](https://git-scm.com/docs/git-revert)
+- [GitHub Docs, About releases](https://docs.github.com/en/repositories/releasing-projects-on-github/about-releases)
 - [A successful Git branching model — nvie, Vincent Driessen](https://nvie.com/posts/a-successful-git-branching-model/)
 - [GitHub Docs, GitHub flow](https://docs.github.com/en/get-started/using-github/github-flow)
 - [Trunk Based Development](https://trunkbaseddevelopment.com/), [Short-Lived Feature Branches](https://trunkbaseddevelopment.com/short-lived-feature-branches/), [Branch for Release](https://trunkbaseddevelopment.com/branch-for-release/)
