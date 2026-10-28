@@ -28,7 +28,11 @@ Apollo CLI는 Linux, macOS, Windows에서 Hub의 제품, 환경, 릴리스와 �
 
 ## 지원 단계와 문서 차이
 
-Experimental 표시 명령은 configure에서 V2 experimental commands를 켜야 한다. Deprecated 명령은 문서가 남아 있다는 이유로 현재 바이너리에서도 실행 가능하다고 판단하지 않는다. 빠른 시작의 인증 소개는 토큰과 service account 두 방법을 먼저 설명하지만 같은 문서의 설정 예와 root CLI는 SSO도 명시한다. 실제 명령 계약은 현재 help와 해당 명령 문서를 우선 대조한다.
+`configure`는 연결 프로필 설정 뒤 모든 프로필이 공유하는 global options를 묻는다. V1과 V2의 experimental/deprecated 명령 설정은 각각 분리되어 있다. Experimental 표시만 보고 모두 V2 설정으로 제어된다고 판단하지 않는다. 2026-10-29 빠른 시작의 설정 예에서는 V1 experimental/deprecated와 V2 deprecated가 enabled, V2 experimental이 disabled로 표시된다. 이는 문서 예시이며 설치된 바이너리의 설정 상태는 별도로 확인해야 한다.
+
+프로필로 Hub와 인증값을 나눠도 이 global options까지 격리되는 것은 아니다. Deprecated 명령은 문서가 남아 있다는 이유로 현재 바이너리에서도 실행 가능하다고 판단하지 않는다. 빠른 시작의 인증 소개는 토큰과 service account 두 방법을 먼저 설명하지만 같은 문서의 설정 예와 root CLI는 SSO도 명시한다. 실제 명령 계약은 현재 help와 해당 명령 문서를 우선 대조한다.
+
+이 절의 global options 구분만 2026-10-29에 공식 빠른 시작과 대조했다. 다른 인증과 프로필 명령의 검증일은 유지한다.
 
 ## 최소 연결 확인
 
