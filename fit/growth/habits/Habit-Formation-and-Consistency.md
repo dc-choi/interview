@@ -44,11 +44,26 @@ Lally 등의 연구는 96명이 식사, 음료 또는 활동 행동을 같은 �
 
 학습에 적용한다면 정해 둔 집중 시간 동안 방해 사이트 접근을 제한하는 방법을 시험할 수 있다. 이는 연구에서 검증한 학습 처방이 아니라 적용 제안이다. 제한할 대상과 종료 시각, 필요한 업무 연락의 예외를 먼저 정하고, 실제로 시작이 쉬워졌는지와 학습 결과가 남았는지를 따로 확인한다. 제약을 강하게 만드는 것 자체를 성과로 삼지 않는다.
 
+## 학습 습관은 투입과 결과를 따로 확인한다
+
+책을 산 금액, 읽은 권수와 강연 참석 시간은 투입 기록이다. 익숙하게 느껴지는 정도와 자료 없이 설명할 수 있는 정도도 구분한다.
+
+Karpicke와 Roediger(2008)의 외국어 단어 학습 실험에서는 한 번 정답을 낸 항목을 계속 시험한 조건이 이후 회상에 도움이 됐다. 정답을 낸 뒤 읽기만 반복한 조건에서는 같은 효과를 얻지 못했고, 참여자의 예상 성과도 실제 성과와 상관이 없었다. 이는 단어 회상 실험의 결과이며 독서 지출, 현장 강연과 영상의 효과 차이, 소득 증가를 검증한 연구가 아니다(2026-10-29 초록 대조).
+
+학습 습관에 적용할 때는 다음 세 기록을 나눌 수 있다. 이는 실행 점검 제안이며 연구가 정한 최적 학습량은 아니다.
+
+- **시작:** 예정된 상황에서 책이나 강의를 열었는가?
+- **회상:** 자료를 덮고 핵심 개념과 조건을 설명할 수 있는가?
+- **적용:** 현재 문제에 적용한 결과와 틀린 판단을 확인했는가?
+
+권수나 참석 횟수를 늘리기 전에 회상과 적용에서 막힌 부분을 찾아 보완한다. 반복 회상과 간격 조정의 구체적인 방법은 [[CS-Learning-Method|CS 지식 학습법]]을 따른다. 특정 지출액이나 만남 빈도를 성공의 필수조건으로 정하지 않는다.
+
 ## 이해 확인
 
 - 90일 동안 책을 읽었다면 무엇이 확인됐고, 무엇은 별도로 확인해야 하는가?
 - 이틀을 놓친 계획에서 다음 실행 조건 하나를 어떻게 바꿀 것인가?
 - 방해 사이트를 보지 않겠다는 결심과 일정 시간 접근을 막는 사전 약속은 무엇이 다른가?
+- 독서비와 읽은 권수가 늘었을 때, 이해가 나아졌는지 확인할 행동 하나는 무엇인가?
 
 ## 출처
 
@@ -57,9 +72,11 @@ Lally 등의 연구는 96명이 식사, 음료 또는 활동 행동을 같은 �
 - [How are habits formed: Modelling habit formation in the real world — European Journal of Social Psychology, Lally 외](https://onlinelibrary.wiley.com/doi/10.1002/ejsp.674) — 2010년 권호, 2009년 온라인 공개. 표본, 관찰 기간, 모형 적합과 실행 누락의 범위
 - [Does it really take 66 days to form a habit? — University of Surrey, Phillippa Lally 인터뷰](https://www.surrey.ac.uk/news/does-it-really-take-66-days-form-habit-we-asked-expert-dr-pippa-lally) — 2026-01-21, 개인차와 구체적인 실행 계획
 - [Restricting Temptations: Neural Mechanisms of Precommitment — Neuron, Crockett 외](https://pubmed.ncbi.nlm.nih.gov/23889938/) — 2013년 연구. 2026-10-22 초록과 Figure 1, 2 설명에서 선택 제한과 실험 결과를 대조했으며 장기 학습 효과는 확인하지 않음
+- [The critical importance of retrieval for learning — Science, Karpicke와 Roediger](https://pubmed.ncbi.nlm.nih.gov/18276894/) — 2008년 연구, 2026-10-29 초록 대조. 정답 후 반복 학습과 반복 회상, 예상 성과와 실제 성과의 구분
 
 ## 관련 문서
 
 - [[Personal-Task-Management|개인 할 일 관리]] — 행동 구체화와 진행 중 작업 제한
 - [[Great-Developer-Habits|개발자의 행동 패턴]] — 반복 행동과 원인 이해, 학습 깊이
 - [[Retrospective-Methods|회고 방법]] — 실행 뒤 점검과 조정
+- [[CS-Learning-Method|CS 지식 학습법]] — 반복 회상과 복습 간격의 근거

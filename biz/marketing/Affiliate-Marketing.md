@@ -59,6 +59,24 @@ TikTok Shop 같은 커머스 플랫폼 안의 제휴에서 크리에이터는 �
 
 글별로 조회, 제휴 링크 클릭, 적격 전환과 취소 후 인정 수익을 나눠 기록하면 노출용 글과 구매 판단용 글의 역할을 비교할 수 있다. 마지막 단계의 수익을 보기 전에는 클릭 증가만으로 제작 우선순위를 확정하지 않는다.
 
+### 상품군 추천을 비교 가능한 질문으로 바꾼다
+
+고객군과 상품군 이름만으로 반복 구매나 높은 전환을 확정하지 않는다. 2026-10-29 다시 확인한 Google 리뷰 지침은 직접 경험의 근거와 함께 성능의 정량 측정, 비교 대안, 사용 조건별 적합성과 중요한 구매 판단 요인을 제시하도록 안내한다. 특정 카테고리의 판매 우위나 수수료 수익을 보장하는 지침은 아니다.
+
+다음은 그 기준을 상품군 탐색에 적용한 질문 예시다. 효과가 검증된 추천 순위가 아니며, 상품의 효능과 구매 빈도는 별도 근거가 필요하다.
+
+| 탐색할 사용 상황 | 비교할 질문과 근거 |
+|---|---|
+| 혼자 사는 사람의 생활용품 | 보관 공간, 단위당 비용과 교체 주기를 실제 사용 조건에서 비교할 수 있는가? |
+| 수험생이나 구직자의 공부 용품 | 크기, 소음과 조작 편의를 확인했는가? 집중력 향상을 제품 기능만으로 단정하지 않는가? |
+| 직장인의 책상과 자세 관련 용품 | 높이와 조절 범위, 사용 환경을 비교했는가? 사용 후기를 통증 치료 효과로 확대하지 않는가? |
+| 식단 관리용 식품 | 표시된 성분, 1회 제공량과 비용을 비교했는가? 성별이나 상품군만으로 구매 반응을 예상하지 않는가? |
+| 새 가구의 생활용품 | 설치 공간, 기존 제품과의 호환, 청소와 유지 비용을 설명할 수 있는가? |
+| 재택근무 용품 | 실제 작업 흐름에서 필요한 기능과 이미 가진 장비의 대안을 비교했는가? |
+| 육아 관련 생활용품 | 대상 연령과 사용 조건, 세척과 준비 과정을 확인했는가? 시간 절감은 어떤 조건에서 측정했는가? |
+
+작은 실험에서는 같은 관찰 기간의 적격 클릭, 구매, 취소 후 인정 수익과 제작 시간을 나눠 기록한다. 독자와 유입 경로가 다르면 결과를 상품군 자체의 우열로 해석하지 않는다. 이는 비교 설계 제안이며 특정 플랫폼의 귀속 조건이나 실측 전환율을 뜻하지 않는다.
+
 ## 제휴 프로그램 목록을 실행 조건으로 바꾼다
 
 프로그램 이름을 많이 아는 것과 실제로 참여해 수익을 정산받을 수 있는 것은 다르다. 여러 프로그램을 비교할 때는 참여 국가와 계정 조건, 허용 채널, 전용 링크 발급, 적격 구매와 반품, 정산 기준을 각각 확인한다. 상품 사진과 링크를 게시한다는 공통점만으로 같은 수익 구조라고 판단하지 않는다.
@@ -99,7 +117,7 @@ TikTok Shop 같은 커머스 플랫폼 안의 제휴에서 크리에이터는 �
 - [YouTube Help, YouTube Shopping affiliate program overview & eligibility](https://support.google.com/youtube/answer/13376398?hl=en) — 2026-10-22 상품별 귀속 기간, 구매 후 지급과 반품 처리 대조.
 - [YouTube Help, Understand commission rates & earnings in the YouTube Shopping affiliate program](https://support.google.com/youtube/answer/17263096?hl=en) — 2026-10-22 구매일 요율과 태그하지 않은 적격 상품의 수수료 대조.
 - [YouTube Help, Tag products in your content](https://support.google.com/youtube/answer/10191533?hl=en) — 2026-10-22 콘텐츠 관련성, 허용 예외와 반복 위반의 결과 대조.
-- [Google Search Central, Write high quality reviews](https://developers.google.com/search/docs/specialty/ecommerce/write-high-quality-reviews) — 2026-10-21 확인, 직접 경험과 비교 근거를 갖춘 리뷰 작성 기준. 제휴 수익 효과는 검증하지 않았다.
+- [Google Search Central, Write high quality reviews](https://developers.google.com/search/docs/specialty/ecommerce/write-high-quality-reviews) — 2026-10-21 확인, 2026-10-29 정량 측정과 사용 조건별 비교 기준 재대조. 상품군별 질문은 적용 예시이며 제휴 수익 효과는 검증하지 않았다. 다른 플랫폼 정책은 재검증하지 않아 기존 `verified_at`을 유지한다.
 - [Google Ads, Cost per click (CPC): Definition](https://support.google.com/google-ads/answer/116495?hl=en-GB)
 - [Google Ads, Average CPA: Definition](https://support.google.com/google-ads/answer/6396841?hl=en)
 - [Google Ads, Choose your Smart Bidding strategy for Display campaigns](https://support.google.com/google-ads/answer/10276703?hl=en) — 목표 CPA와 실제 과금 방식의 구분
