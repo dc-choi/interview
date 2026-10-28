@@ -32,6 +32,12 @@ Gigabyte-month는 시간에 따른 allocated volume을 hourly measurement로 적
 
 전체 app 접근에는 enrollment Resource Management Viewer/Admin role과 workspace app access가 모두 필요하다. Project usage는 `usage-aggregator:view-project-usage` operation이며 기본 Owner에 부여되지만 custom role로 바꿀 수 있다. 이 제한된 화면에는 cost/billing insight가 없다.
 
+2026-10-28 Configure access 문서 대조에서 역할과 화면 접근을 다음처럼 구분했다. 이 절의 부분 검증이므로 기존 `verified_at`은 유지하며 실제 권한 부여나 거부 응답은 시험하지 않았다.
+
+- `Resource management viewer`는 사용량과 resource allocation을 조회한다. `Resource management administrator`는 여기에 Resource Queue 생성과 Project의 usage account 배정 등 할당 변경 권한을 더한다. 비용을 조회할 사람에게 할당 변경 역할까지 필요한지 별도로 판단한다.
+- Control Panel의 Application access에서 **Support** workspace 안의 **Resource management** 앱 접근도 허용해야 한다. Enrollment role 하나를 부여한 사실만으로 앱 접근 설정이 완료됐다고 보지 않는다.
+- `limitsservice:read-usage-metrics` operation이 없으면 Foundry usage & limits 페이지가 숨겨진다. 화면이 보이지 않는 현상과 측정할 사용량이 없는 상태를 구분하고, 아래의 기본 역할 부여와 앱 접근 조건을 함께 확인한다.
+
 Budget와 anomaly detection은 active usage-based contract가 필요하다. Budget은 all-usage/account 범위의 월/분기/연/일회 금액과 threshold 알림이다. Anomaly는 현재 enrollment 전체 usage의 moving-average deviation 또는 near-zero를 감시한다. Measurement latency는 드물게 26시간까지라 알림 전에 비용이 초과할 수 있고 workload를 자동 중단하는 cap이 아니다.
 
 Monitors는 anomaly detection으로 대체된 deprecated 경로다. Detector/budget 삭제는 과거 anomaly/notification과 subscription도 제거할 수 있어 보고 이력의 보존과 구분한다.

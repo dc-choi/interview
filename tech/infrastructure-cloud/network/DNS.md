@@ -165,6 +165,14 @@ DNSSEC 검증은 리졸버가 미리 신뢰하는 공개키 또는 그 해시인
 
 `dig +trace example.com`은 루트부터 권한 서버까지 위임 경로 전체를 추적해 어느 단계가 끊겼는지 짚어 준다.
 
+### 변경한 설정과 캐시를 나눠 진단한다
+
+2026-10-28에 RFC 1034, 2308과 2132의 해당 절을 대조했다. 아래는 진단 기준이며 실제 서버 이전이나 단말 설정을 시험한 기록은 아니다. 기존 본문 전체의 검증 날짜는 유지한다.
+
+- A/AAAA 변경과 권한 네임서버 이전을 구분한다. 전자는 주소 레코드, 후자는 상위 존의 NS 위임과 필요한 glue까지 확인한다. 서로 다른 레코드의 TTL을 하나의 전파 시간으로 묶어 모든 변경이 48시간 안에 끝난다고 약속하지 않는다.
+- 새 이름이나 레코드를 만들었어도 이전의 NXDOMAIN/NODATA 응답이 캐시에 남을 수 있다. RFC 2308의 부정 캐시 TTL은 응답에 실린 SOA의 TTL과 SOA.MINIMUM 중 작은 값으로 정한다. 새 A 레코드의 TTL만 낮추는 것으로 기존 부정 캐시를 없앨 수는 없다.
+- 단말이 질의할 DNS 서버 주소와 도메인의 권한 레코드는 다른 설정이다. DHCPv4의 option 6은 단말이 사용할 DNS 서버 목록을 전달하며, 그 설정 자체가 도메인의 A/AAAA나 NS 레코드를 바꾸지는 않는다. 특정 네트워크의 단말에서만 실패하면 실제 사용 중인 DNS 서버와 그 응답을 먼저 비교한다(진단 제안).
+
 Windows CMD/PowerShell에서 현재 설정된 DNS 서버의 응답은 다음과 같이 확인한다.
 
 ```text
@@ -185,6 +193,8 @@ nslookup -type=AAAA naver.com
 
 ## 출처
 
+- [RFC 2308, Negative Caching of DNS Queries](https://www.rfc-editor.org/rfc/rfc2308) — 3절과 5절의 부정 응답과 캐시 TTL
+- [RFC 2132, DHCP Options and BOOTP Vendor Extensions](https://www.rfc-editor.org/rfc/rfc2132) — 3.8절의 DNS 서버 옵션
 - [Oracle Java SE 8, InetAddress](https://docs.oracle.com/javase/8/docs/api/java/net/InetAddress.html)
 - [Oracle Java SE 21, InetAddress](https://docs.oracle.com/en/java/javase/21/docs/api/java.base/java/net/InetAddress.html)
 - [Oracle Java SE 21, Networking Properties](https://docs.oracle.com/en/java/javase/21/docs/api/java.base/java/net/doc-files/net-properties.html)
