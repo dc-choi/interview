@@ -33,6 +33,18 @@ aliases: ["Test Pyramid Blind Spots", "초록불이 못 잡는 것"]
 
 기존 동작을 보존하는 [[Legacy-Code-Testing|특성화 테스트]]는 현재 출력의 기록 자체가 목적일 수 있다. 요구사항 충족 검사와 구분하고, 알려진 오류를 고칠 때는 승인된 새 기대값을 기준으로 삼는다. 에이전트에게 검증을 지시하는 구체적인 실패 패턴은 [[Agent-Test-Verification-Behavior|에이전트 검증 행동]]에서 다룬다.
 
+## 가상 하드웨어에서 통과한 범위를 구분한다
+
+디지털 트윈은 물리 장비가 준비되기 전에 소프트웨어를 실행하고 상호작용을 시험하는 환경으로 사용할 수 있다. AUMOVIO의 vSDV composer는 가상 ECU, 운영체제, 주변장치와 통신을 결합하고 가상 ECU와 물리 ECU를 한 개발 환경에 연결하는 구성을 제공한다(2026-10-29 공식 제품 설명 대조).
+
+검토 기준은 실행 속도보다 모델이 무엇을 재현하는지다. 다음은 제품 설명에서 도출한 검증 제안이며 특정 가상화 제품의 결함을 뜻하지 않는다.
+
+- 테스트 결과에 소프트웨어와 가상 장치 모델의 버전, 입력 시나리오와 기대 결과를 연결한다.
+- 가상 환경에서 확인한 기능과 실제 장비에서 확인할 드라이버, 주변장치 및 타이밍 조건을 나눈다. 모델에 포함되지 않은 조건까지 통과했다고 보고하지 않는다.
+- 에이전트가 결과를 받아 구현을 수정하더라도 요구사항과 판정 기준을 고정한다. 실패한 검사를 없애거나 기대값을 구현에 맞추는 변경은 별도로 검토한다.
+
+하드웨어 대기 시간을 줄이는 효과와 최종 장비의 동작 검증은 별개다. 홍보 영상의 개발 기간 단축을 다른 프로젝트의 보장값으로 사용하지 않는다. 실제 장비나 vSDV composer에서 테스트하지 않았으며, 기존 문서 전체를 다시 검증한 것은 아니다.
+
 ## 정상 명령도 잘못된 상태에서 실행될 수 있다
 
 입력 형식이 맞는지와 현재 상태에서 실행해도 되는지는 다른 검증이다. 숙련된 사용자는 실수하지 않는다는 가정으로 상태별 금지 동작을 테스트에서 빼면, 정상 흐름이 통과해도 데이터 손상 경로가 남을 수 있다.
@@ -42,6 +54,7 @@ aliases: ["Test Pyramid Blind Spots", "초록불이 못 잡는 것"]
 역사적 사례: Apollo 8의 비행 중 발사 전 프로그램 `P01` 선택과 데이터 손상은 개발 참여자의 구술 기록에 남아 있다. 사전 시뮬레이션에서 위험을 발견해 경고를 문서에 넣었지만 실제 비행에서 같은 입력이 발생했다. 복구는 컴퓨터 재시작이 아니라 손상된 데이터의 재입력이었으며, 차단 수정은 다음 임무에 반영됐다는 회고다(Computer History Museum 구술 기록, 28~29쪽). 이를 방어적 프로그래밍의 최초 사례나 한 사람만의 성과로 일반화하지 않는다.
 
 ## 출처
+- [Virtualization: vSDV composer — AUMOVIO](https://www.aumovio.com/en/solutions/services/virtualization.html)
 - [Oral History of Margaret Hamilton — Computer History Museum](https://archive.computerhistory.org/resources/access/text/2022/03/102738243-05-01-acc.pdf) — 28~29쪽, 상태에 맞지 않는 명령과 경고, 차단, 복구의 구분
 - [Can we find bugs using LLM-generated oracles? — Michael Konstantinou 외, arXiv v2](https://arxiv.org/html/2410.21136v2)
 - [유닛 테스트 209개를 통과한 PR인데, 실제로 돌려보니 저장이 한 건도 안 됐다 — velog](https://velog.io/@donghoong2/OCR-WORKER-%EC%9C%A0%EB%8B%9B-%ED%85%8C%EC%8A%A4%ED%8A%B8-209%EA%B0%9C%EB%A5%BC-%ED%86%B5%EA%B3%BC%ED%95%9C-PR%EC%9D%B8%EB%8D%B0-%EC%8B%A4%EC%A0%9C%EB%A1%9C-%EB%8F%8C%EB%A0%A4%EB%B3%B4%EB%8B%88-%EC%A0%80%EC%9E%A5%EC%9D%B4-%ED%95%9C-%EA%B1%B4%EB%8F%84-%EC%95%88-%EB%90%90%EB%8B%A4)

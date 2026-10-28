@@ -26,6 +26,16 @@ Health는 Beta이며 일반 제공 기능이 아니다. expected-state-k8s와 Po
 - 전체 JSON은 10,000바이트보다 작아야 한다. 초과하면 message/params가 제거될 수 있고 HEALTH_CHECK_MAX_LEN의 WARNING이 추가된다.
 - v2.0 health JSON은 버전을 나타내는 별도 필드가 없다.
 
+### 수집 경로와 응답 계약 점검
+
+부분 검증(2026-10-29): Health v2.0 공식 명세의 endpoint 발견과 JSON 계약을 대조했다. 기존 liveness/readiness와 메타데이터 절의 검증일은 유지한다.
+
+- annotation은 Deployment나 StatefulSet의 `spec.template.metadata.annotations`에 둔다. `/telemetry/status/health`를 제공하면 `path`에는 `/telemetry`를 넣으며, `/status/health`를 직접 제공하면 `/`를 쓴다.
+- `checks`는 배열이 아니라 check type을 키로 쓰는 map이다. 각 키는 해당 객체의 `type`과 일치해야 한다. 독립 검사가 여러 개여도 하나의 endpoint로 보고한다.
+- 이 endpoint도 5초마다 호출해도 성능에 영향이 없도록 설계한다. 무거운 검사는 결과를 캐시한다. 이 요구사항을 실제 수집 주기가 정확히 5초라는 보장으로 해석하지 않는다.
+
+운영 점검 제안: HTTP 200만 보는 감시와 `checks`의 상태를 읽는 감시를 구분한다. `ERROR`도 HTTP 200으로 반환하므로 전송 성공만으로 복제본이 정상이라고 판단할 수 없다. Hub에 결과가 없으면 `expected-state-k8s` 설치, Pod에 반영된 annotation, TLS와 네트워크 경로를 확인한다. 실제 클러스터에서 이 절차를 실행한 것은 아니다.
+
 ## Kubernetes 식별 메타데이터
 
 관리 agent는 status.liveness_and_readiness label과 environment ID, entity ID, product group/name/version annotation을 추가한다. AEID는 `aeid:<environment>:<entity-type>:<entity-name>`이고 255자 미만이다. 이 메타데이터는 관측과 대상 매핑을 위한 것이며 응용의 건강 상태 자체를 증명하지 않는다. Pod Running, probe 성공, Plan 성공과 custom health의 의미를 각각 확인한다.

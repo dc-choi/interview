@@ -53,6 +53,21 @@ AWS의 NFL Next Gen Stats 영상 공개 기준(2026-02-02), 현장 서버에서 
 
 적용 점검 제안: 실시간 수집이 있다는 이유로 모든 결과가 즉시 확정된다고 표시하지 않는다. 화면과 API가 수신 중인 측정값, 경기 후 처리 결과, 결합된 분석 데이터 중 무엇을 읽는지 구분하고, 마지막 반영 시각과 누락 구간을 함께 확인한다. 처리 단계가 다른 두 수치를 비교할 때는 같은 경기 범위와 집계 완료 조건인지 먼저 맞춘다.
 
+## 공개 추적 데이터로 통계를 검증한다
+
+부분 검증(2026-10-29): NFL 공식 Big Data Bowl 안내와 2019 대회 데이터 스키마를 대조했다. 대회 안내의 최신 연도와 과거 공개 샘플의 스키마를 구분하고, 기존 파이프라인 전체의 검증일은 유지한다.
+
+위치 기록에서 새로운 통계를 만들 때는 결합 키와 측정 단위를 먼저 고정한다. 2019 스키마의 `playId`는 경기 사이에서 고유하지 않으므로 플레이 정보는 `gameId`와 함께 연결한다. 선수 정보는 `nflId`로 연결하고, 한 플레이 안의 연속 측정은 `frame.id`와 `time`으로 구분한다. `x`, `y`는 yard 단위 위치이고 `s`는 yard/second 단위 속도다. 다른 연도의 `frameId` 같은 필드명을 그대로 적용하지 않고 해당 데이터의 스키마를 확인한다.
+
+검증 제안:
+
+1. 경기, 플레이, 대상과 프레임을 고정한 작은 표본에서 이동 경로를 재생한다. 결합 후 행 수가 불어난 원인을 먼저 확인한다.
+2. 좌표와 속도의 단위, 공격 방향과 이벤트 시각을 확인한 뒤 거리나 공간 점유 통계를 계산한다.
+3. 빠진 측정값과 제외된 플레이를 확인한다. 2019 공개 스키마는 데이터가 부족한 일부 플레이가 제외됐다고 명시하므로, 공개 샘플을 모든 플레이의 완전한 기록으로 취급하지 않는다.
+4. 관측된 위치 재생과 미래 위치 예측을 구분한다. 예측에는 입력 시점 뒤의 결과가 섞이지 않도록 평가 구간을 나눈다.
+
+NFL의 2026 대회는 공을 던지기 전 데이터로 공중에 떠 있는 동안의 선수 위치를 예측하고 실제 위치와 비교했다. 이는 시간 경계를 둔 평가 사례이며 특정 모델의 정확도나 현재 대회 참가 일정을 보장하지 않는다. 실제 데이터 다운로드와 통계 계산은 수행하지 않았다.
+
 ## 운영에서는 속도와 데이터 품질을 함께 본다
 
 엔지니어링의 처리 상태, QA의 측정값과 이벤트 품질 확인, 분석가의 결과 해석은 서로 다른 책임이다. 작은 팀에서는 한 사람이 맡더라도 점검 항목을 분리할 수 있다. 처리 지연이 짧다는 이유만으로 통계의 의미가 올바르다고 판정하지 않는다.
@@ -68,6 +83,8 @@ API Gateway 같은 관리형 진입점의 도입만으로 인증과 접근 제�
 
 ## 출처
 
+- [Big Data Bowl — NFL Football Operations](https://operations.nfl.com/programs-initiatives/innovation/big-data-bowl)
+- [NFL Football Operations, Big Data Bowl 2019 Data Schema](https://github.com/nfl-football-ops/Big-Data-Bowl/blob/master/schema.md)
 - [How World Surf League Brought Data Analytics to the Ocean with AWS and Generative AI — AWS](https://aws.amazon.com/solutions/case-studies/world-surf-league-case-study/)
 - [Going Deep: AWS + NFL Next Gen Stats — AWS](https://aws.amazon.com/sports/nfl/going-deep/)
 - [How AWS Captures Every Play — Amazon Web Services](https://www.youtube.com/watch?v=tG_GlFFoc-M)

@@ -57,6 +57,7 @@ aliases: ["관측가능성(Observability)", "Observability"]
 - [x] [[Network-Traffic-Monitoring|네트워크 트래픽 모니터링 (게이트웨이 수집, 에이전트 push, 대시보드 폴링 폴백, SQLite 기본 + ClickHouse 이중 쓰기)]]
 
 ## Tracing
+- [x] [[OpenSearch-Trace-Investigation|OpenSearch 개별 trace 조사]] — Observability Stack 배포 경계, span 필터와 trace 내부 백분위, 로그 연결
 - [x] [[OpenTelemetry|OpenTelemetry + 분산 트레이싱 + Trace context propagation (Trace/Span, W3C traceparent, 큐 전파, 샘플링)]]
 - [x] [[AWS-X-Ray|AWS X-Ray (trace map, segment/subsegment, annotation, SDK와 daemon, Lambda 활성 추적, filter expression과 group, OTel 이전)]]
 
