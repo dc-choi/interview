@@ -1,7 +1,7 @@
 ---
 tags: [palantir, agent, session, state-machine, event]
 status: done
-verified_at: 2026-10-16
+verified_at: 2026-10-28
 category: "AI엔지니어링(AIEngineering)"
 aliases: ["Palantir Agent Stack"]
 ---
@@ -30,9 +30,29 @@ Workshop은 session을 embed하고, Automate는 trigger에 따라 session 생성
 
 이는 [[Palantir-Pro-Code-Agents]]의 async Void function 호출과 구별할 개념이다. 같은 agent라는 이름만으로 반환값, tool 지원과 session API를 서로 대체하지 않는다. 실제 SDK/API endpoint와 permissions는 대상 integration 문서를 추가 확인한다.
 
+## Agent SDK로 실행 계약을 코드에 둔다
+
+Palantir Agent SDK는 TypeScript로 Agent Stack의 agent를 정의하고 Foundry resource로 발행하는 경로다. System prompt와 tools에서 시작해 custom context item, event와 effect로 동작을 확장할 수 있다. 사람의 검토, 별도 관측 화면과 결정론적 로직을 결합하는 용도이며, 모델 비종속 설계로 open-source와 sovereign model 호출도 지원한다. 개별 모델의 도구 호출 호환성과 접근 조건까지 동일하다는 보장은 아니다.
+
+생성 예제의 `defineAgent`에서는 모델과 도구뿐 아니라 `agentStateSchema`, `createSessionArgsSchema`, `createSession`, `contextItemDefinitions`를 정의한다. 세션 생성 인자, 초기 상태와 공유 정보의 타입을 구분해 읽는다. 예제에 나온 모델이나 토큰 설정을 SDK 전체의 고정값으로 해석하지 않는다.
+
+## 생성, 버전 발행과 세션 실행을 구분한다
+
+1. Project에서 `+ New > Agent > Build in code`를 선택하고 repository 이름과 agent 이름을 각각 지정한다.
+2. Ontology binding은 선택 사항이며, 연결하면 agent API name은 해당 Ontology 안에서 고유해야 한다.
+3. 생성된 repository의 agent 정의를 수정한다. Compass에 Agent resource가 생겨도 아직 발행된 버전은 없다.
+4. 변경을 commit한 뒤 Checks를 확인하고 Tags에서 semantic version을 선택해 발행한다.
+5. 발행 성공 후 Agent Manager에서 session을 시작하고 응답, messages, events와 context items를 확인한다.
+
+Getting started는 Ontology binding을 SDK를 통한 코드 사용과 연결해 설명하지만, Agent Stack 개요는 agents in OSDK를 여전히 coming soon으로 표시한다. 따라서 binding 설정 가능과 OSDK 통합의 실제 제공 여부를 구분하고, 대상 환경에서 확인하기 전에는 OSDK 호출을 전제로 설계하지 않는다.
+
+2026-10-28 공식 개요와 시작 가이드를 대조했다. 저장소 생성, 발행과 세션 실행을 실제 환경에서 시험한 기록은 아니다.
+
 ## 출처
 
 - [Palantir, The Agent Stack](https://www.palantir.com/docs/foundry/aip/agent-stack)
+- [Palantir, Agent SDK overview](https://www.palantir.com/docs/foundry/agent-sdk/overview)
+- [Palantir, Get started with the Agent SDK](https://www.palantir.com/docs/foundry/agent-sdk/getting-started)
 
 ## 관련 문서
 
