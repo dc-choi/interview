@@ -31,6 +31,16 @@ AWS에서 Hadoop, Spark 같은 빅데이터 프레임워크를 실행하는 관�
 - 빅데이터 ETL — Hadoop/Spark 기반
 - 로그 분석
 
+### Hail 분석의 데이터 구조와 실행 환경
+
+부분 검증(2026-10-30): Hail 0.2의 데이터 구조와 AWS 배포 안내, EMR Serverless custom image 문서를 대조했다. 다른 절과 frontmatter의 검증일은 유지한다.
+
+Hail의 `MatrixTable`은 분산된 2차원 자료형이다. 행별 필드, 열별 필드, 행과 열의 조합에 속한 entry 필드, 전체에 공통인 global 필드를 나눈다. 유전체 분석에서 변이와 샘플을 두 축으로 다룰 때 이런 구조를 사용할 수 있다. `entries()`로 각 entry를 한 행으로 펼친 테이블은 계산 비용과 메모리 사용량이 커질 수 있으므로, 분석에 필요한 축의 필터와 집계를 먼저 검토한다.
+
+Hail 공식 AWS 안내는 Hail 자체에 EMR 연동용 내장 도구가 없다고 명시하고 별도 공개 배포 도구를 안내한다. 따라서 EMR에서 Spark를 실행할 수 있다는 사실을 Hail의 설치와 호환성 검증까지 끝났다는 뜻으로 읽지 않는다. EMR Serverless는 custom image로 의존성과 실행 환경을 묶을 수 있지만, application의 Spark/Hive 유형과 release label에 맞는 base image를 사용해야 한다. 이 기능 자체가 특정 Hail 버전의 실행을 보장하지는 않는다.
+
+적용 점검안은 Hail과 EMR 릴리스, 입력 데이터와 분석 코드를 고정한 작은 작업으로 읽기, 필터, 집계와 결과 저장을 확인하는 것이다. 같은 결과를 얻는지 확인한 뒤 시작 대기, 실행 시간과 전체 비용을 비교한다. 다른 연구의 비용 절감률을 일반 보장값으로 쓰지 않으며, 여기서는 실제 클러스터 실행이나 분석 결과의 과학적 타당성을 검증하지 않았다.
+
 ## EMR vs 다른 분석 서비스
 
 | 서비스 | 성격 |
@@ -167,6 +177,9 @@ EMR on EKS는 기존 EKS 클러스터에서 분석 워크로드를 컨테이너�
 
 ## 출처
 
+- [Hail 0.2, MatrixTable Overview](https://hail.is/docs/0.2/overview/matrix_table.html)
+- [Hail 0.2, Amazon Web Services](https://hail.is/docs/0.2/cloud/amazon_web_services.html)
+- [AWS, Customizing an EMR Serverless image](https://docs.aws.amazon.com/emr/latest/EMR-Serverless-UserGuide/application-custom-image.html)
 - [AWS, Streaming ETL jobs in AWS Glue](https://docs.aws.amazon.com/glue/latest/dg/add-job-streaming.html)
 - [AWS, Use AWS Glue Data Catalog with Spark on Amazon EMR](https://docs.aws.amazon.com/emr/latest/ReleaseGuide/emr-spark-glue.html)
 - [Apache Spark 3.5.7, Performance Tuning](https://spark.apache.org/docs/3.5.7/sql-performance-tuning.html)
