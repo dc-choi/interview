@@ -36,6 +36,10 @@ Composite Module은 이미 있는 하위 Module의 정확한 name/version을 고
 
 variableOverrides는 직접 하위가 정의한 변수만 하드코딩하거나 부모 변수로 매핑한다. stringPreset은 override할 수 없고 options는 option 값 또는 부모 options로만 바꾸며 부모 선택지는 하위의 부분집합이어야 한다. entityOverrides는 같은 type/productId와 선택 entityName으로 대상을 고른다. config key는 병합하고 secret requirements는 이름별로 바꾸거나 추가한다. 하위 restrictions.submoduleUsage.allowEntityOverrides:false면 entity override를 거부하지만 variable override는 가능하다.
 
+`variableOverrides`와 `entityOverrides`의 도달 범위는 다르다. 변수는 직접 하위 Module이 정의한 것만 바꿀 수 있지만, Entity override는 그 하위에 직접 정의되지 않은 Entity에도 적용할 수 있다. 합성 계층이 깊을 때 변수의 제한을 Entity에도 그대로 적용하지 않는다.
+
+합성 예시에서 같은 config key는 `entityOverrides` 값이 우선하고, 지정하지 않은 기존 key는 남는다. 반면 같은 이름의 `secretRequirements`를 재정의한 예시는 기존 `api-key`를 `a-different-key`로 교체한다. secret 이름별 병합을 내부 key 목록의 합집합으로 해석하지 않는다. 이는 요구사항 정의의 합성이며 실제 secret 값의 수정과는 구분한다.
+
 Git 관리의 이점은 review와 버전 추적이다. Module 직접 생성 권한을 광범위하게 열어두면 Git review를 우회할 수 있다. lock file은 합성 결과와 필요한 전체 variable을 보여주고 CI에서 lock --verify로 최신 여부를 확인한다. version:local은 전체 정의 디렉터리를 제공해 로컬 하위를 실제 릴리스 좌표로 해결하며 변경한 하위와 부모를 함께 새 버전으로 게시한다. 설치 순서는 YAML 나열 순서가 아니라 Product Release dependencies로 정한다.
 
 ## 호환되는 진화와 삭제
@@ -55,7 +59,7 @@ Git 관리의 이점은 review와 버전 추적이다. Module 직접 생성 권�
 - [Palantir, modules](https://www.palantir.com/docs/apollo/core/modules) — Module 채널 추적과 recall의 자동 roll-off 미지원.
 - [Palantir, best-practices](https://www.palantir.com/docs/apollo/managing-environments/best-practices) — fleet 공통 구성을 Git/Module로 관리.
 - [Palantir, managing-modules](https://www.palantir.com/docs/apollo/managing-modules) — Module 부모 경로의 catalog/installation/contents.
-- [Palantir, composite-modules](https://www.palantir.com/docs/apollo/managing-modules/composite-modules) — 정확한 submodule version, preset override와 entity merge 제한.
+- [Palantir, composite-modules](https://www.palantir.com/docs/apollo/managing-modules/composite-modules) — 2026-10-30 변수와 Entity override의 도달 범위, config 우선순위와 secret 요구사항 교체 예시를 부분 대조. 다른 절의 검증 날짜는 유지했다.
 - [Palantir, create-module](https://www.palantir.com/docs/apollo/managing-modules/create-module) — 2026-10-30 설정 key 제거의 mode별 차이와 제거 후 관리 상태, 대상 부재와 최소 버전 조건을 부분 대조. 다른 절의 검증 날짜는 유지했다.
 - [Palantir, git-module](https://www.palantir.com/docs/apollo/managing-modules/git-module) — Git review 우회 방지, lock과 local submodule resolution.
 - [Palantir, install-module](https://www.palantir.com/docs/apollo/managing-modules/install-module) — 기존 AEID 인수, preview와 unlink시 설치 보존.

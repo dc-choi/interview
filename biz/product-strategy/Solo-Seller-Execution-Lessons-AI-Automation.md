@@ -51,6 +51,16 @@ aliases: ["Solo Seller AI and Automation Boundaries", "1인 판매자의 AI 활�
 
 소규모 운영에 적용할 때는 시간이 많이 드는 작업 하나에서 수작업 기준값, 도구 사용 뒤 검수 시간과 재작업을 비교한다. 도구가 여러 작업을 지원해도 계정 연동 실패나 품절, 옵션 변경, 반품을 모두 처리한다고 가정하지 않는다. 결제와 발주, 외부 답변의 승인 범위를 먼저 정한다(적용 제안). 각 후보의 가격과 실제 운영 성능은 이번 확인 범위에 포함하지 않았다.
 
+## 자동화 비율보다 예외 처리 비용을 측정한다
+
+업무 단계 수, 처리 건수와 작업 시간 중 무엇을 분모로 삼는지에 따라 자동화 비율은 달라진다. 상품 등록이 자동이어도 품절 대응과 반품 판단에 시간이 몰리면 전체 운영 시간은 크게 줄지 않을 수 있다. 아래는 자동화 성과를 비교하기 위한 운영 제안이다.
+
+- 같은 기간과 업무 범위에서 전체 대상 건수, 사람 개입 없이 완료한 건수, 실패와 재처리 건수를 나눈다.
+- 절감한 입력 시간에서 검수, 예외 처리와 유지보수 시간을 빼고 도구 비용을 따로 비교한다.
+- 발주와 환불처럼 외부 상태가 바뀌는 작업은 재시도 전에 실제 처리 여부를 확인한다. 오류가 없다는 표시만으로 최종 업무 완료를 판정하지 않는다.
+
+2026-10-30 확인한 Shopify Flow 안내는 일시적 오류의 자동 재시도와 재시도할 수 없는 영구 오류를 구분한다. `Workflow error occurred` 트리거는 같은 workflow 버전에 대해 30일 내 한 번만 실행되도록 설계돼 있다. workflow를 편집한 뒤 다시 실패하거나 30일이 지난 뒤 오류가 발생하면 다시 실행될 수 있으므로, 이 트리거로 보낸 알림 개수를 실패 건수로 사용할 수 없다. 이 동작을 다른 판매 도구의 공통 계약으로 확대하지 않고, 사용하는 도구의 실행 이력과 복구 절차를 확인한다.
+
 ## 채용 대신 자동화
 
 | 선택 | 얻는 것 | 치르는 것 |
@@ -113,6 +123,9 @@ aliases: ["Solo Seller AI and Automation Boundaries", "1인 판매자의 AI 활�
 - [ ] 만든 도구에 처음부터 끝까지 따라 할 수 있는 사용법을 붙였는가
 
 ## 출처
+
+- [Shopify Help Center, Troubleshooting errors in Shopify Flow](https://help.shopify.com/en/manual/shopify-flow/create/troubleshoot) — 2026-10-30 일시적/영구 오류와 재시도 구분 확인. 자동화 비율의 측정 항목은 운영 제안.
+- [Shopify Help Center, Workflow error occurred](https://help.shopify.com/en/manual/shopify-flow/reference/triggers/workflow-error-occurred) — 2026-10-30 같은 workflow 버전에서 30일 내 한 번 실행, 편집 후 재실패와 30일 경과 뒤 오류의 재알림 조건 확인.
 
 - [초보부터 전문가까지, 해외구매대행 필수 기능을 모두 담은 퍼센티 — 쿠팡 Marketplace](https://marketplace.coupang.com/information-center/peosenti-intro) — 2026-10-30 소싱, 등록, 주문과 배송의 지원 범위 확인. 제휴 소개의 성과 주장은 채택하지 않음
 - [리펀디 AI 주문처리 이용가이드, 11. 문의관리](https://docs.channel.io/oms_refundy/ko/articles/11-%EB%AC%B8%EC%9D%98%EA%B4%80%EB%A6%AC-7f9c0bc7) — 2026-10-30 답변 초안과 자동답변, 마켓 API에 따른 문의 수집 제한 확인
