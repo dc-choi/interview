@@ -36,6 +36,12 @@ CR 승인과 실제 설치 가능 조건은 다르다. 2026-10-30 공식 설치 
 
 uninstall은 실제 Kubernetes 자원을 제거하고, unmanage는 Apollo 선언에서 지워 Plan을 중단한다. unmanage only는 실제 자원을 남긴다. 기본은 uninstall 다음 자동 unmanage다. 필수 의존 대상은 그에 의존하는 엔티티가 설치된 동안 제거하지 못하지만 optional 의존자는 먼저 제거할 필요가 없다. 요청 제출과 실행은 분리되어 승인 뒤에도 제약 때문에 기다릴 수 있고 그 사이 다른 Plan이 실행될 수 있다. unmanage 전에는 uninstall을 취소할 수 있다.
 
+### 제거 요청과 Undo의 확인 경계
+
+필수 의존성을 해결하지 않고 제거 요청을 제출할 수는 있지만, 의존성이 남으면 제거 Plan은 실행되지 않는다. 요청 승인 여부와 자원 제거 완료 여부를 별도로 확인한다.
+
+`Undo`는 아직 unmanaged가 아닌 `Uninstall pending` 또는 `Uninstalled` 상태에서 선택할 수 있다. 제거가 실행되기 전이라면 제거 시도를 중단한다. 이미 제거된 경우에도 Undo 대상이 될 수 있다는 설명을 데이터 복원 보장으로 해석하지 않는다. 공식 안내는 삭제된 데이터나 Kubernetes 자원의 복구 범위를 보장하지 않으므로 별도의 복구 절차를 확인한다.
+
 제품과 릴리스 삭제는 영구적이다. 설치 중인 엔티티가 없는지 확인한다. 제품 삭제 화면을 떠나면 중간에 멈출 수 있고 이미 삭제한 부분은 남는다. display name, description과 Markdown README는 사용자 표시를 바꿀 뿐 불변 Product ID를 바꾸지 않는다.
 
 ## 출처
@@ -47,7 +53,7 @@ uninstall은 실제 Kubernetes 자원을 제거하고, unmanage는 Apollo 선언
 - [Palantir, overview](https://www.palantir.com/docs/apollo/managing-entities/overview) — 환경 Config에서 관리 선언 편집.
 - [Palantir, set-config-overrides](https://www.palantir.com/docs/apollo/managing-entities/set-config-overrides) — 버전 범위별 override와 Helm values 주입.
 - [Palantir, stopping-and-starting-entities](https://www.palantir.com/docs/apollo/managing-entities/stopping-and-starting-entities) — replica0 정지와 default 복구 예제의 타입별 검증 필요.
-- [Palantir, uninstalling-and-unmanaging-entities](https://www.palantir.com/docs/apollo/managing-entities/uninstalling-and-unmanaging-entities) — 실제 uninstall과 unmanage 구분, 의존성과 undo.
+- [Palantir, uninstalling-and-unmanaging-entities](https://www.palantir.com/docs/apollo/managing-entities/uninstalling-and-unmanaging-entities) — 2026-10-30 제거 요청의 의존성 대기와 Undo 대상 상태를 부분 대조. 다른 절의 검증 날짜는 유지했다.
 - [Palantir, environment-config](https://www.palantir.com/docs/apollo/managing-environments/environment-config) — Environment Config 용도, key 규칙과 참조.
 - [Palantir, environment-settings](https://www.palantir.com/docs/apollo/managing-environments/environment-settings) — dependency group, override와 default 의미.
 - [Palantir, create-a-new-product](https://www.palantir.com/docs/apollo/managing-products/create-a-new-product) — 불변 Product ID와 초기 권한5분 설정.

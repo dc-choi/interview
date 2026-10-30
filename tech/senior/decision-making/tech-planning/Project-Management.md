@@ -24,6 +24,18 @@ aliases: ["Project Management", "프로젝트 관리", "WBS", "KPT"]
 | 운영 방식 | 스크럼 주기, 협업 툴, 의사결정자 |
 | 프로젝트 팀 | 과업별 담당자와 역할 |
 
+### SMART는 목표 문장을 점검하는 기준이다
+
+SMART를 이 문서에서는 Specific, Measurable, Achievable, Relevant, Time-bound로 사용한다. CDC의 목표와 실행계획 안내도 이 구분을 사용한다. 특히 Relevant는 결과물이 있다는 뜻만이 아니라 수행할 일이 상위 목적에 기여하는지를 묻는 기준이다.
+
+- 구체성: 누가 무엇을 어떻게 수행할지 적는다.
+- 측정: 진행과 달성을 판단할 자료를 정한다.
+- 달성 가능성: 가용 시간, 자원과 참여자의 다른 책임을 확인한다.
+- 관련성: 작은 행동이 해결하려는 문제와 상위 목적에 어떻게 연결되는지 적는다.
+- 기한: 현실적인 완료 시점과 세부 과업의 기한을 정한다.
+
+이는 청소년 자문기구용 실행계획 안내를 프로젝트 목표 점검에 적용한 방법이며, SMART를 지키면 실패 확률이 사라진다는 근거가 아니다. 목표 문장을 잘 썼더라도 실행 중 자원과 전제가 달라지면 계획을 조정한다. 할 일 수를 늘리는 것보다 목표에 필요한 행동과 확인 자료를 연결하는 데 쓴다.
+
 ## WBS와 마일스톤
 
 **WBS (Work Breakdown Structure)** — 목표를 산출물 단위까지 계층 분해하는 구조:
@@ -116,6 +128,7 @@ aliases: ["Project Management", "프로젝트 관리", "WBS", "KPT"]
 - [[RFC-Writing|RFC 작성]]
 
 ## 출처
+- [CDC, SMART Framework](https://www.cdc.gov/youth-advisory-councils/action-plans/smart-framework.html) — 2026-10-30 목표 점검 요소와 시간, 자원, 상위 목적의 연결을 확인. 프로젝트 적용은 본문의 해석이다.
 - [Set Boundaries — Basecamp, Shape Up](https://basecamp.com/shapeup/1.2-chapter-03)
 - [Decide When to Stop — Basecamp, Shape Up](https://basecamp.com/shapeup/3.5-chapter-14)
 - [PM의 프로젝트 관리 — 쪼렙 서비스기획자 (Brunch)](https://brunch.co.kr/@b30afb04c9f54dc/58)

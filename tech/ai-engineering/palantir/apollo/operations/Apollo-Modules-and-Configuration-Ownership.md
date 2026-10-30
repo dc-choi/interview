@@ -26,6 +26,8 @@ string variable은 defaultValue, anchored regex 또는 oneOf 제약을 가질 �
 
 새 엔티티는 어느 mode에서도 Module config를 처음 적용한다. MERGE에서 Module 소유 key는 사용자가 바꿀 수 없고 `{{ unset }}`으로 값을 제거하면서 사용자 설정도 막을 수 있다. Module 정의에서 key를 그냥 삭제하면 기존 Entity 값은 남고 사용자 소유가 된다.
 
+마지막 key 제거 동작은 `MERGE`의 규칙이다. `ENABLED`는 Module 정의로 전체 교체하므로 정의에서 빠진 key도 제거한다. `DISABLED`는 기존 Entity 설정을 유지한다. 따라서 설정 삭제를 검토할 때는 YAML diff와 함께 `syncConfigOverrides`를 확인한다.
+
 installConfigOverrides는 MERGE에서 최초 설치에만 적용하는 기본값이다. 이후에는 Entity 소유이며 후속 Module 릴리스에 추가한 install-only key도 미래 최초 설치에만 적용된다. pause는 열린 update CR을 취소하고 새 CR 생성을 막으며 Module 소유 key의 긴급 수정을 허용한다. resume은 최신 릴리스와 차이를 맞추는 CR을 만들고 merge까지 Resuming Updates다.
 
 ## 합성과 Git 관리
@@ -40,6 +42,8 @@ Git 관리의 이점은 review와 버전 추적이다. Module 직접 생성 권�
 
 새 variable에 기본값이 없으면 기존 설치 update가 막힌다. variable 개명은 이전 설치값 보존을 보장하지 않는다. 삭제는 모든 참조를 먼저 없애야 한다. 제품 제거를 원하면 markedForUninstallation을 명시하고 필요하면 minVersion으로 마이그레이션 완료 후 제거한다. 정의에서 항목만 빼면 실제 설치는 남고 Module 관리만 끝난다.
 
+`markedForUninstallation.unmanageAfterUninstall`의 기본값은 `AUTOMATIC`이며 제거 뒤 Apollo 관리도 해제한다. `MANUAL`은 제거 뒤에도 managed 상태를 남긴다. 이는 자원을 남기는 `Unmanage only`와 다르다. 대상 Entity가 환경에 없으면 해당 제거 선언은 Module 설치에서 무시된다. `minVersion`은 제거 자격의 최소 버전이며 의존성 제약까지 없애는 옵션은 아니다.
+
 관리 이전은 구 Module에서 항목을 제거해 업데이트한 뒤 신 Module에 같은 AEID를 넣어 인수한다. 구성 차이가 없다는 조건에서 실제 재설치 Plan 없이 이전할 수 있다. Module unlink도 엔티티를 남긴다. Module 삭제는 설치가 없어야 하며 하위로 참조하는 다른 Module이나 shared 제약도 확인한다.
 
 자동 update 승인 mode는 최종 승인이 아니라 CEL의 적격 조건이다. Apollo가 생성한 자동 update이고 사용자 config를 덮어쓰지 않아야 하며 custom CEL은 추가 승인 요구를 둘 수 있다. install과 수동 update는 자동 승인 적격이 아니다. Module recall은 해당 버전으로의 제안/열린 CR을 막지만 이미 설치된 버전을 자동 downgrade하지 않는다.
@@ -52,7 +56,7 @@ Git 관리의 이점은 review와 버전 추적이다. Module 직접 생성 권�
 - [Palantir, best-practices](https://www.palantir.com/docs/apollo/managing-environments/best-practices) — fleet 공통 구성을 Git/Module로 관리.
 - [Palantir, managing-modules](https://www.palantir.com/docs/apollo/managing-modules) — Module 부모 경로의 catalog/installation/contents.
 - [Palantir, composite-modules](https://www.palantir.com/docs/apollo/managing-modules/composite-modules) — 정확한 submodule version, preset override와 entity merge 제한.
-- [Palantir, create-module](https://www.palantir.com/docs/apollo/managing-modules/create-module) — variable, config ownership, install-only, pause와 진화/삭제.
+- [Palantir, create-module](https://www.palantir.com/docs/apollo/managing-modules/create-module) — 2026-10-30 설정 key 제거의 mode별 차이와 제거 후 관리 상태, 대상 부재와 최소 버전 조건을 부분 대조. 다른 절의 검증 날짜는 유지했다.
 - [Palantir, git-module](https://www.palantir.com/docs/apollo/managing-modules/git-module) — Git review 우회 방지, lock과 local submodule resolution.
 - [Palantir, install-module](https://www.palantir.com/docs/apollo/managing-modules/install-module) — 기존 AEID 인수, preview와 unlink시 설치 보존.
 - [Palantir, overview](https://www.palantir.com/docs/apollo/managing-modules/overview) — Module 릴리스/설치/contents 탐색.
