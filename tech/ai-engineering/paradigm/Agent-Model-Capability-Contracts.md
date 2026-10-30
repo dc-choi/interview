@@ -60,7 +60,30 @@ aliases: ["Agent Model Capability Contracts", "Muse Wonder", "GLM-Legal", "Ultra
 
 평가에서는 승인 화면의 내용과 실제 실행이 같은지, 금지 작업을 다른 경로로 우회하지 않는지, 연결을 끊은 앱의 정보가 기억에 남는 범위가 사용자 안내와 같은지를 시험한다(평가 제안). 승인 화면과 결정적 집행의 일반 원칙은 [[LLM-Application-Security|LLM 애플리케이션 보안]]의 LLM01 완화 절과 같다.
 
+## 개인화 에이전트의 인터페이스와 실행 계층
+
+자연어로 요청하는 화면과 실제 일을 수행하는 시스템은 구분해서 평가한다. 다음은 개인 에이전트에 적용할 설계 점검표이며 특정 제품의 구현 보장이 아니다.
+
+| 계층 | 확인할 계약 |
+|---|---|
+| 진입점 | 현재 화면의 어떤 맥락을 전달하고, 모호한 요청을 어떻게 확인하는가 |
+| 기억 | 필요한 정보만 선택하며 사용자의 허용 범위를 지키는가 |
+| 에이전트와 도구 | 역할을 나누어도 위임 범위와 실행 책임을 추적할 수 있는가 |
+| 모델 선택 | 온디바이스와 서버 모델 사이에서 품질, 지연, 비용 및 데이터 전송을 어떻게 판단하는가 |
+| 완료 확인 | 자연스러운 응답과 실제 작업 성공을 구분하고 결과를 확인하는가 |
+
+### 카카오의 개인화 에이전트 구상
+
+2026-10-13 공식 발표와 10월 27일 공개 요약 영상의 사례다(2026-10-30 대조). 카나나 스페이스는 카카오톡 안의 요청 진입점, Agentic AI Interface는 여러 에이전트를 연결하는 방향, Kanvas는 PC에서 도구와 스킬을 조합해 에이전트 팀을 만드는 서비스다. 기억 공급은 [[Agent-Memory-Retain-Recall-Reflect#기억 접근과 실행 권한을 분리한다|Project Mosaic]]으로 구분한다.
+
+카나나 모델 전략은 간단한 요청의 온디바이스 처리와 복잡한 작업의 대형 모델 연결을 포함한다. Conductor는 모델, 도구와 실행 순서를 조율하고, Kanana-o는 텍스트, 이미지, 음성을 다루는 모델로 소개됐다. 이 역할 구분만으로 정확도나 비용 절감 폭이 검증된 것은 아니다.
+
+발표 당시 카나나 스페이스는 2026년 12월 일부 신청자 대상 CBT, Kanvas는 이르면 연내 소규모 CBT 계획이었다. 주문과 송금 확장, 외부 프레임워크 에이전트 연결과 Kanana-o 오픈소스 공개도 향후 계획이다. 현재 일반 제공이나 실제 계정의 실행을 확인한 기록으로 읽지 않는다. 기존 모델의 `verified_at`은 유지한다.
+
 ## 출처
+
+- [키노트편: 바쁜 분들을 위한 if(kakao)26 1분 요약 — 카카오, YouTube](https://www.youtube.com/watch?v=VGhDfKkbymg) — 2026-10-27 공개, 음성 전사와 설명란 대조, 제품명은 공식 발표로 교정
+- [카카오, if(kakao)26에서 개인화 기반 완결형 에이전트 서비스 및 기술 선보여 — 카카오](https://www.kakaocorp.com/page/detail/12160) — 2026-10-13 발표 시점의 역할과 제공 계획
 
 - [Muse Wonder: A Frontier Model For Personal & Professional AI Agents — Meta AI Research](https://research.meta.ai/blog/muse-wonder)
 - [GLM-Legal: Advancing Agentic Legal Intelligence — Z.ai](https://z.ai/blog/glm-legal)

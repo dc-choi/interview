@@ -112,6 +112,12 @@ Online store가 entity별 최신 값 하나를 보관해도 그 값이 오래됐
 
 Index 구조와 HNSW, IVF 튜닝은 [[Vector-Similarity-Search|벡터 유사도 검색]]과 [[OpenSearch-Vector-Search|OpenSearch 벡터 검색]]에서 다룬다.
 
+### 벡터 조회 부하도 따로 검증한다
+
+아이템 벡터 일괄 조회는 ANN 검색과 부하가 다르다. 처리량과 GC도 측정한다. 토스증권의 JVM 메모리 압력 사례를 다른 저장소에 일반화하지 않는다.
+
+2026-10-30 Elasticsearch 공식 명세 기준, `_mget`은 ID로 여러 문서를 조회하며 일부 shard가 실패하면 부분 결과를 반환할 수 있다. 개별 문서 오류는 응답의 해당 항목에 담긴다. 따라서 전체 HTTP 성공만으로 특징 수집 완료를 판단하지 않고 항목별 오류와 `found`를 검사한다(적용 제안). 누락을 실제 값 0으로 바꾸지 말고 위의 missing policy를 적용한다. 이 API 계약만 추가 대조했으므로 기존 `verified_at`은 유지한다.
+
 ## End-to-end Deadline
 
 `request deadline = feature assembly + candidate fan-out + merge/filter + ranking/reranking/hard rules + serialization reserve`로 분해해 각 단계의 예산과 남은 시간을 전달한다.
@@ -186,6 +192,8 @@ Lineage는 이 순서의 산출물이 아니라 dataset, training run, model과 
 
 ## 출처
 
+- [토스증권 추천과 검색은 어떻게 진화하고 있을까? — 토스 기술 블로그](https://toss.tech/article/tech_talk_talk_3) — 추천 벡터 조회의 운영 사례
+- [Elasticsearch API documentation, Get multiple documents](https://www.elastic.co/docs/api/doc/elasticsearch/operation/operation-mget)
 - [Amazon Personalize, How new data influences real-time recommendations](https://docs.aws.amazon.com/personalize/latest/dg/how-new-data-influences-recommendations.html)
 - [Amazon Personalize, Use case and recipe features](https://docs.aws.amazon.com/personalize/latest/dg/use-case-recipe-features.html)
 - [Implement two-tower retrieval for large-scale candidate generation — Google Cloud](https://docs.cloud.google.com/architecture/implement-two-tower-retrieval-large-scale-candidate-generation)

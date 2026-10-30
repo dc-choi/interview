@@ -14,7 +14,7 @@ aliases: ["컨텍스트", "Context Engineering Hub", "컨텍스트 허브"]
 - [x] [[LLMs-Txt|llms.txt 웹 문서 안내]] — v2 형식, 경로와 발견, 생성 도구, 검색 노출과 운영 검증
 - [x] [[Strands-Conversation-State|Strands 대화와 세션 상태]] — 메시지 축약, 영속 저장과 동시 쓰기 제어의 구분
 - [x] [[Long-Context-Evaluation|긴 문맥 평가]] — 길이와 위치 민감도, RULER의 한계, RAG와 전체 투입 비교
-- [x] [[Agent-Memory-Retain-Recall-Reflect|에이전트 기억의 저장, 검색과 추론]] — 사실과 믿음의 분리, 검색과 종합의 비용 및 평가
+- [x] [[Agent-Memory-Retain-Recall-Reflect|에이전트 기억의 저장, 검색과 추론]] — 사실과 믿음의 분리, 검색과 종합 평가, 기억 공유와 실행 권한
 - [x] [[Ontology-Knowledge-Graph|온톨로지와 지식 그래프]] — 일반 개념, 허용 관계와 식별자, 반영 전 검사, Palantir Foundry Ontology
 - [x] [[Tacit-Knowledge-Judgment-Agent|암묵지와 판단 에이전트]] — 기억, 판단 사례와 원칙의 층, 피드백 흡수와 시점 보존, 목적별 분할과 개인 적합성의 한계
 - [x] [[Development-Ontology|개인 지식을 개발 판단에 연결하는 온톨로지 (파일 기반 지도, 적용 조건과 첫 파일럿)]]

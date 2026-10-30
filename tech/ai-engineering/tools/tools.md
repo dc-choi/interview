@@ -13,7 +13,7 @@ aliases: ["AI 엔지니어링 실천 도구", "AI Engineering Tools"]
 - [x] [[Multimodal-Video-Retrieval|멀티모달 영상 검색]] — 영상 ID와 시간 구간, 비동기 색인과 모델 버전 호환성
 - [x] [[Java-AI-Integration-Boundaries|Java AI 통합의 실행 경계]] — HTTP 호출, ONNX 로컬 추론, FFM과 Babylon/HAT의 역할 및 실행 전제
 - [x] [[AI-Work-Tool-Selection|업무 병목에 맞는 AI와 협업 도구 선택]] — 검색, 생성과 관리의 역할 구분, 제품과 공개 저장소의 기능 및 검수 기준, 모델과 데이터 API를 포함한 전체 비용 측정
-- [x] [[GraphRAG-Retrieval|GraphRAG 검색]] — 벡터 후보의 관계 확장, 그래프 추출 오류와 갱신, 관리형 구성의 제한
+- [x] [[GraphRAG-Retrieval|GraphRAG 검색]] — 관계 확장, 홉별 후보 제한, Cypher 실행 비용과 관리형 구성의 경계
 - [x] [[A2A-Kafka-Transport|A2A와 Kafka 전송]] — 사용자 정의 바인딩, 작업 상태, 재전달과 권한 경계
 - [x] [[A2A-CLI|A2A CLI]] — 카드 조회, 메시지와 작업 명령, 종료 코드와 작업 결과의 분리, `--exec` 테스트 서버, 코딩 에이전트 스킬
 - [x] [[Generative-Product-Image-Workflow|생성형 상품 이미지 워크플로우]] — 마스크와 상품 정합성, GPU 배치 실행과 비동기 추론

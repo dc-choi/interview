@@ -78,6 +78,14 @@ Hindsight의 ACL 2026 공개 논문은 world, experience, observation, opinion�
 
 적용 시에는 기억을 잘 찾는지 외에 잘못 추론한 선호를 고칠 수 있는지, 에이전트 사이에 무엇이 공유되는지, 삭제가 어디까지 전파되는지를 점검한다. 한 번 교정하면 다시 틀리지 않는다거나 정직성 지침만으로 환각이 사라진다는 보장으로 해석하지 않는다. 위 내용은 제품 문서 대조이며 실제 계정의 격리나 삭제 동작을 시험한 결과는 아니다.
 
+## 기억 접근과 실행 권한을 분리한다
+
+기억을 읽을 수 있다는 사실이 그 기억에 근거한 외부 행동까지 허용한다는 뜻은 아니다. 필요한 기억의 선택, 에이전트 사이의 전달과 도구 실행 권한을 따로 검사한다(설계 제안).
+
+카카오의 Project Mosaic은 요청 목적에 맞는 정보를 허용된 범위에서 에이전트에 전달하고 공통 맥락으로 협업하게 하는 구상이다(2026-10-13 발표, 2026-10-30 대조). 모든 기억을 모든 에이전트에 복제하거나 개인화 자체가 실행 동의를 대신하는 구조로 해석하지 않는다.
+
+검증 제안: 사용자가 선호를 정정하거나 접근을 철회했을 때, 이후 조회와 다른 에이전트로의 전달에도 반영되는지 확인한다. 기억 삭제, 파생 맥락 삭제와 이미 실행된 외부 행동의 취소는 별도로 확인한다. 발표만으로 저장 위치, 보존 기간이나 삭제 전파의 구현을 확정하지 않는다. 기존 제품별 검증일은 유지한다.
+
 ## 비용과 품질을 확인하는 방법
 
 `recall`은 임베딩과 재순위화 기반 검색이고 `reflect`는 LLM을 포함한 추론 루프다. 따라서 같은 `budget`도 전자는 검색 깊이, 후자는 탐색 반복을 뜻한다. `max_tokens` 역시 전자는 반환 기억의 크기, 후자는 최종 답변 길이를 제한한다. 최종 답변 제한을 전체 검색 비용 상한으로 해석하면 안 된다.
@@ -115,6 +123,8 @@ Hindsight의 ACL 2026 공개 논문은 world, experience, observation, opinion�
 
 ## 출처
 
+- [키노트편: 바쁜 분들을 위한 if(kakao)26 1분 요약 — 카카오, YouTube](https://www.youtube.com/watch?v=VGhDfKkbymg) — 허용된 기억과 필요한 맥락 전달에 관한 음성 전사
+- [카카오, if(kakao)26에서 개인화 기반 완결형 에이전트 서비스 및 기술 선보여 — 카카오](https://www.kakaocorp.com/page/detail/12160) — Project Mosaic의 발표 범위
 - [Generative Agents: Interactive Simulacra of Human Behavior — Joon Sung Park et al., UIST 2023](https://arxiv.org/html/2304.03442v2) — 4.1절의 기억 기록과 검색 점수, 2026-10-24 대조
 
 - [Anthropic, Context windows](https://platform.claude.com/docs/en/build-with-claude/context-windows) — 2026-10-24 컨텍스트 범위와 학습 데이터의 구분, 긴 컨텍스트의 회수 한계 확인
@@ -129,6 +139,7 @@ Hindsight의 ACL 2026 공개 논문은 world, experience, observation, opinion�
 
 ## 관련 문서
 
+- [[Agent-Model-Capability-Contracts#개인화 에이전트의 인터페이스와 실행 계층|개인 에이전트의 계층과 제공 계획]]
 - [[Context-Engineering|컨텍스트 엔지니어링]]
 - [[Agentic-Context-Platform|에이전트 컨텍스트 플랫폼]]
 - [[AI-Workflow-Knowledge-Loop|AI 업무와 지식 환류]]

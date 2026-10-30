@@ -44,7 +44,8 @@ Software 3.0 패러다임, LLM과 에이전트, 하네스, 평가, 조직 전환
 - [x] [[LLMs-Txt|llms.txt]] — 웹 문서 색인, v2 발견 규칙, 생성 도구와 운영 검증
 - [x] [[Agent-Repository-Instructions|AGENTS.md]] — 저장소 지침의 작성과 호스트별 적용, 권한 통제와 검증 경계
 - [x] [[MCP#Bedrock Converse와 MCP를 잇는 클라이언트 루프|Bedrock Converse와 MCP 연동]] — 스키마 변환, 도구 실행과 toolUseId 결과 연결
-- [x] [[GraphRAG-Retrieval|GraphRAG 검색]] — 관계 확장, 원문 검증, Bedrock 동기화와 자원 정리 경계
+- [x] [[GraphRAG-Retrieval|GraphRAG 검색]] — 관계 확장, 경로 선별, Cypher 실행계획과 Bedrock 운영 경계
+- [x] [[RAG-Retrieval-Engineering#검색을 공통 API로 제공한다|공통 RAG 검색 API]] — 제품별 생성과 검색의 분리, 분류 필터와 순위 가점
 - [x] [[Review-Moderation-Pipeline|리뷰 검수 자동화]] — 정책과 판정 수단, 정밀도와 재현율, 재검토 물량과 오래된 결과 방지
 - [x] [[LLM-Generation-Mechanics-Training#사전학습 데이터와 재현 가능한 공개 범위|사전학습의 데이터와 재현성]] — 가중치와 학습 과정 공개의 차이, 데이터 필터링과 과업 평가
 - [x] [[Harness-Component-Evaluation#코딩 도구의 비용 비교|코딩 도구 비용 비교]] — 모델과 하네스 효과 분리, 실패와 재시도 포함, 환산 사용량과 청구액 구분
@@ -90,7 +91,7 @@ Software 3.0 패러다임, LLM과 에이전트, 하네스, 평가, 조직 전환
 - [x] [[Claude-Code-Extension-Reference#화면 변경과 데이터 보호의 경계|Mods 화면 변경]] — 이벤트 전달, 공유 표시 영역과 화면 가림의 데이터 보호 한계
 - [x] [[Agent-Ready-API-Design#API 스키마와 생성 결과를 함께 관리한다|API 스키마 기반 도구 생성]] — CLI, SDK와 문서의 공통 계약, 수작업 명령과 생성 결과 검토
 - [x] [[LLM-Generation-Mechanics-Context-and-Agent#숫자 생성과 계산 도구 실행은 다르다|LLM 산술과 계산 도구]] — 식과 입력, 실행 증거, 결과 전달의 검증 경계
-- [x] [[Agent-Memory-Retain-Recall-Reflect|에이전트 기억의 저장, 검색과 추론]] — CoALA와 Hindsight, 개인화 기억의 출처, 클라우드 저장과 삭제 범위
+- [x] [[Agent-Memory-Retain-Recall-Reflect|에이전트 기억의 저장, 검색과 추론]] — CoALA와 Hindsight, 개인화 기억의 출처, 저장과 삭제, 에이전트 간 공유 범위
 - [x] [[MCP#변경 알림 구독과 재연결|MCP 변경 알림 구독]] — subscriptions/listen, 재조회와 연결 단절의 의미
 - [x] [[Production-Agent-Architecture-Cases-and-Interview#사례|에이전트 격리와 행동 승인 사례]] — 사용자별 VM과 별도 통제 계층
 
@@ -112,7 +113,7 @@ Software 3.0 패러다임, LLM과 에이전트, 하네스, 평가, 조직 전환
 - [x] [[LLM-Decision-Models-Calibration-Cases|결정 모델 보정과 버전 변경]] — Qwen, Microsoft-Decision-1, Jev 1.14와 표현 안정성
 - [x] [[Local-Inference-Deployment-Cases|로컬 추론 배포]] — Janas, Minions, MLX 분산 추론(JACCL, Muse Spark Open 2대와 4대 측정), Uzu, PS5LM, LFM2.5와 Muse Spark Open
 - [x] [[LLM-Inference-Serving-Engines|추론 서빙 엔진의 기능 경계]] — 엔진과 서비스 책임, DeepInfer 공개 범위, 배치 불변성과 결정적 샘플링, DSpark 가변 길이 검증, 구조화 출력 강제 경계
-- [x] [[Agent-Model-Capability-Contracts|기억과 전문 영역 모델 평가]] — Muse Wonder, GLM-Legal, Ultramarine 1 Flash, Claude Duet의 승인 경계
+- [x] [[Agent-Model-Capability-Contracts|기억과 전문 영역 모델 평가]] — 전문 모델과 승인 경계, 카나나의 개인화 인터페이스와 발표 계획
 - [x] [[AI-Research-Innovation-Evaluation|AI 연구 혁신 평가]] — InnovationEval의 과제와 개선 달성률
 - [x] [[AI-Consciousness-Evidence|AI 의식의 증거]] — 자기보고와 행동, 내부 구조 지표와 기능 검증의 구분
 - [x] [[Neural-Circuit-Interpretability|뉴런과 회로 해석]] — 재귀적 일반화 가설과 인과 검증

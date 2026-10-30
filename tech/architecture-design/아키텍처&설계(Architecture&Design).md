@@ -37,7 +37,7 @@ aliases: ["아키텍처&설계(Architecture&Design)", "Architecture & Design"]
 - [x] [[Blockchain-Replication-and-Consensus-Cost|블록체인 복제와 합의 비용]] — Ethereum의 실행, 확정성, 저장 유형, 오라클과 가스 한도
 - [x] [[Recommendation-System-Architecture|추천 시스템 정본 묶음 (후보, 랭킹, 피드백, 평가와 서빙)]]
 - [x] [[Low-Code-Platform-Exit-Boundaries|로우코드 플랫폼 이탈 조건]] — 코드 반출과 독립 운영, 전체 앱 이전 범위
-- [x] [[Recommendation-System-Serving-Operations|추천 서빙과 운영]] — 관리형 추천의 실시간 입력, 일괄 입력, 신규 항목 갱신과 재학습 경계
+- [x] [[Recommendation-System-Serving-Operations|추천 서빙과 운영]] — 입력과 재학습 경계, 임베딩 버전과 벡터 일괄 조회 검증
 - [x] [[Recommendation-System-Modeling-Foundations|추천 시스템 모델링 최소 기반 (통계, ML과 implicit feedback)]]
 - [x] [[Recommendation-System-OTT-Discovery-Architecture|OTT 통합 디스커버리 (검색, 추천과 browse)]]
 - [x] [[Recommendation-System-Taxonomy-Content-Based|추천 시스템 택소노미 (작품 concept, LLM 보조 태깅과 사용자 affinity)]]

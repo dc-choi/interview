@@ -8,7 +8,7 @@ aliases: ["GraphRAG 검색", "Graph RAG Retrieval"]
 
 # GraphRAG 검색
 
-GraphRAG는 문서에서 찾은 개체와 관계를 검색에 활용해 생성 모델에 제공할 근거를 확장하는 방식이다. 여기서는 벡터 검색 결과를 그래프 탐색의 출발점으로 쓰는 Amazon Bedrock Knowledge Bases 구성을 다룬다. 모든 GraphRAG 구현이 같은 검색 절차를 쓰는 것은 아니다.
+GraphRAG는 개체와 관계를 검색에 활용해 생성 모델에 제공할 근거를 확장하는 방식이다. 문서에서 추출한 그래프뿐 아니라 이미 구축된 도메인 그래프도 사용할 수 있다. 여기서는 Amazon Bedrock Knowledge Bases의 관리형 구성과 기존 그래프 위의 검색 설계를 구분한다. 모든 GraphRAG 구현이 같은 검색 절차를 쓰는 것은 아니다.
 
 ## 벡터 검색 뒤 관계를 따라간다
 
@@ -40,6 +40,24 @@ Bedrock의 GraphRAG는 초기 벡터 검색으로 찾은 청크와 연결된 노
 
 지식 베이스 삭제는 기반 그래프를 자동 삭제하지 않는다. 정리 시 지식 베이스와 그래프를 별도 자원으로 확인하고, 남은 그래프의 비용을 점검한다.
 
+## 기존 그래프에서는 시작점과 경로를 따로 고른다
+
+기존 온톨로지에서는 관련 시작점을 찾은 뒤 경로를 확장한다. 검색 개선과 그래프 구축 품질은 별개다.
+
+- **후보 제한:** Beam Search에서 착안해 홉마다 상위 경로만 확장하면 탐색 폭은 줄지만, 버린 경로의 근거를 놓칠 수 있다.
+- **경로 점수:** 질문 관련도를 중심으로 최신성, 도메인 중요도와 선호하는 노드 유형 순서를 보조 신호로 둔다. `path_preference`는 토스증권 사례의 사용자 정의 파라미터이며 Neo4j 표준 옵션이 아니다.
+- **결과 계약:** 엔티티와 함께 발견 경로를 반환해 연결을 추적한다. 경로 존재와 원문 근거의 신뢰성은 별도로 검증한다.
+
+### Cypher 실행계획으로 확장 비용을 확인한다
+
+2026-10-30 Neo4j 공식 문서 기준, 조기에 필터를 적용하고 필요한 속성만 반환하며 가변 길이 패턴에 상한을 두는 것이 기본 최적화 방향이다. 홉별 후보 제한과 별개로 확장 자체의 비용도 확인한다.
+
+- `EXPLAIN`은 실행하지 않고 예상 계획을 보여준다. `PROFILE`은 쿼리를 실제 실행하므로 쓰기 쿼리는 데이터를 바꿀 수 있고 측정 부하도 발생한다.
+- 인덱스 사용 여부, `Estimated Rows`와 실제 `Rows`, `DB Hits`, 메모리를 비교한다. `DB Hits`는 저장 계층 접근 횟수라 결과 행 수와 다르다.
+- 연산자별 peak 메모리를 합산해 전체 peak로 간주하지 않는다. 실행계획 하단의 query-wide peak와 구분한다.
+
+적용 제안: 연결이 많은 시작점과 드문 관계가 정답인 질문을 함께 평가한다. 탐색 폭을 바꿀 때 지연과 메모리뿐 아니라 필요한 경로의 누락도 센다. 이 절만 추가 대조했으므로 기존 Bedrock 절의 검증일은 유지한다.
+
 ## 도입 판단과 평가
 
 다음은 제품 성능 보장이 아닌 비교 절차다.
@@ -54,6 +72,9 @@ Bedrock의 GraphRAG는 초기 벡터 검색으로 찾은 청크와 연결된 노
 
 ## 출처
 
+- [토스증권 추천과 검색은 어떻게 진화하고 있을까? — 토스 기술 블로그](https://toss.tech/article/tech_talk_talk_3) — 기존 그래프의 검색 설계 사례
+- [Neo4j Cypher Manual, Query tuning](https://neo4j.com/docs/cypher-manual/current/planning-and-tuning/query-tuning/)
+- [Neo4j Cypher Manual, Understanding query plans](https://neo4j.com/docs/cypher-manual/current/planning-and-tuning/execution-plans/)
 - [Amazon Bedrock, Build a knowledge base with Amazon Neptune Analytics graphs](https://docs.aws.amazon.com/bedrock/latest/userguide/knowledge-base-build-graphs.html)
 - [Amazon Bedrock, Create an Amazon Bedrock knowledge base with Amazon Neptune Analytics graphs](https://docs.aws.amazon.com/bedrock/latest/userguide/knowledge-base-build-graphs-build.html)
 

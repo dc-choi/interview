@@ -129,6 +129,10 @@ BM25를 병행해 정확 token match를 보완하고 RRF나 score normalization�
 
 두 결과를 점수 융합(예: RRF)해 단일 랭킹으로 합친다. 검색 엔진 레벨의 BM25, kNN 메커니즘은 [[OpenSearch]] 참고.
 
+### 검색을 공통 API로 제공한다
+
+질문 해석, 범위 설정, 하이브리드 검색과 리랭킹을 제품들이 공유하고 생성은 분리할 수 있다. 분류는 필터나 순위 가점으로 활용한다. 적용 제안: 분류 오류의 후보 누락을 비교하고, 권한은 가점과 분리해 강제한다. 관계 검색은 [[GraphRAG-Retrieval]]을 참고한다.
+
 ## 쿼리 재구성과 재탐색
 
 1차 검색이 부족하면 query를 분해하거나 표현을 바꿔 재탐색할 수 있다. 단 무제한 재시도는 latency와 비용을 키우고 처음 의도를 변형한다. 최대 횟수, 종료 조건, query rewrite 전후 결과와 선택 근거를 기록하고 대표 query set에서 단발 검색보다 실제로 나은지 검증한다. 검색 전에 생성 호출을 더하는 아래 기법은 그 호출이 늘리는 지연과 비용도 함께 비교한다(적용 제안).
@@ -263,6 +267,7 @@ Q. 검색은 됐는데 폐기된 정책으로 답했다면?
 
 ## 출처
 
+- [토스증권 추천과 검색은 어떻게 진화하고 있을까? — 토스 기술 블로그](https://toss.tech/article/tech_talk_talk_3) — 공통 검색 API와 분류 신호의 적용 사례
 - [스타벅스 인공지능 챗봇 더사이렌포탈: 디지털 혁신 여정의 새로운 시작 — Amazon Web Services Korea](https://www.youtube.com/watch?v=JgGfkZsyz7E) — 2024-09-09 공개 발표 전사, 36:08~38:09의 병합 셀 처리와 긴 표의 제목, 행 연결. 화면 코드와 성과 수치는 검증하지 않아 반영하지 않음
 - [Microsoft Learn, Document layout analysis](https://learn.microsoft.com/en-us/azure/ai-services/document-intelligence/prebuilt/layout?view=doc-intel-4.0.0) — 2026-10-29 v4.0 `2024-11-30` GA의 HTML 표 출력과 병합 셀, 여러 행 헤더 표현 대조. 후속 청킹과 검수 절차는 설계 제안
 - [AWS, Amazon SQS at-least-once delivery](https://docs.aws.amazon.com/AWSSimpleQueueService/latest/SQSDeveloperGuide/standard-queues-at-least-once-delivery.html) — 2026-10-22 Standard 큐의 재전달과 멱등 처리 권고 확인. 문서 버전별 수집 상태 관리는 설계 제안

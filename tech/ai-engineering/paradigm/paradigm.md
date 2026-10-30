@@ -17,5 +17,5 @@ AI 시대 엔지니어링의 토대 — 패러다임 전환과 모델, API 거�
 - [x] [[Claude-Fable-5-Mythos-5|Claude Fable 5, Mythos 5 (1M 컨텍스트, 거부=stop_reason refusal HTTP 200, 폴백 3종, 폴백 크레딧, 적응형 사고 상시 적용(비활성화 미지원), effort, thinking.display, 모델 가용성 외생 리스크, defense in depth, 2026-09 기준 legacy이며 후속은 Fable 5.1)]]
 - [x] [[Claude-Opus-5|Claude Opus 5 (Fable 5 절반 가격에 근접 성능, 사고 기본 켜짐, effort 게이팅, 자동 폴백 라우팅, 대화 중 도구 변경, 검증 스캐폴딩 제거, 2026-09 기준 legacy이며 후속은 Opus 5.5)]]
 - [x] [[AI-Capability-and-Cost-Trends|AI 능력과 비용 추세 읽기 (벤치마크 점수의 셋, 하네스, 추론 강도 조건, 같은 성능의 가격과 토큰 처리 비용의 구분, 오픈웨이트의 토큰과 지출 점유율, 시간 지평)]]
-- [x] [[Agent-Model-Capability-Contracts|에이전트 모델의 능력 계약]] — Muse Wonder의 기억과 장기 작업, GLM-Legal과 Ultramarine 1 Flash의 전문 영역 평가, Claude Duet의 승인 경계
+- [x] [[Agent-Model-Capability-Contracts|에이전트 모델의 능력 계약]] — 기억과 장기 작업, 전문 영역 평가, 승인 경계, 개인화 인터페이스와 카나나의 제공 계획
 - [x] [[Time-Series-Foundation-Models|시계열 파운데이션 모델과 분위수 예측]] — zero-shot 예측, 21개 분위수와 pinball loss, CRPS와 scaled 지표, 벤치마크 집계와 누출 처리, 매출 기준 라이선스
