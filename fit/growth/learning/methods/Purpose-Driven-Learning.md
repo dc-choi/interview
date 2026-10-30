@@ -100,6 +100,7 @@ AI 도구가 대표 사례다.
 | 바쁘기만 하고 중요한 일을 미룬다 | 원씽 (가장 먼저 끝낼 일 하나 정하기) | 위의 우선순위는 목표에서 나온다, [[Core-Self-Management-Capabilities\|자기 관리 핵심 역량]] |
 | 내가 없으면 회사가 멈춘다 | 사업의 철학 (일 잘하는 사람과 사업을 운영하는 사람의 차이) | [[Scaling-and-Hiring\|1인 제품 확장과 첫 채용]] |
 | 제품은 좋은데 누가 살지 모르겠다 | 마케팅이다 (누구의 어떤 문제를 풀지 먼저 좁히기) | [[Marketing-Fundamentals\|마케팅, 브랜딩, 광고 기초]] |
+| 제품을 설명해도 고객이 가치를 이해하지 못한다 | 무기가 되는 스토리 (StoryBrand 계열, 메시지를 명확히 만드는 관점) | [[Content-Marketing\|콘텐츠 마케팅]], [[B2B-Sales-Pipeline-and-Pilot\|고객 문제와 구매 증거]] |
 | 돈부터 쓰고 고객 반응은 나중에 본다 | 린 스타트업 (작게 시험하고 실제 반응으로 다음 결정) | [[Solo-Product-Market-Validation\|1인 제품 시장 검증]] |
 | 경쟁사가 할인하면 나도 할인한다 | 제로 투 원 (따라잡는 경쟁 대신 대체되기 어려운 사업) | [[Competitive-Analysis\|경쟁사 분석]], [[AI-Commoditization-Differentiation\|AI 범용화와 사업 차별화]] |
 | 목표는 큰데 오늘 할 일이 불분명하다 | 좋은 전략 나쁜 전략 (목표와 전략을 구분하고 핵심 문제에 집중) | [[Product-Roadmap\|프로덕트 로드맵]] |
@@ -110,6 +111,8 @@ AI 도구가 대표 사례다.
 - **한 권, 한 가지 변경:** 한 권을 읽고 내 일에서 바꿀 것 하나를 정해 실제로 바꾼다. 읽은 권수가 아니라 읽고 나서 달라진 행동이 남는다.
 - **자기계발서의 증거 수준:** 이런 책은 저자의 경험과 사례로 관점을 바꿔 주지만 통계적 근거는 약한 경우가 많다. 관점은 책에서 얻고, 판단에 쓸 사실(금리, 세금, 비용 구조)은 공식 자료와 이 저장소의 원문으로 확인한다.
 - **생존자 사례 주의:** 성공 창업자의 기록은 버틴 사람의 이야기라 같은 선택이 같은 결과로 이어진다는 근거는 아니다.
+
+추천 목록에 있는 책과 본문을 학습한 책을 구분한다. StoryBrand 항목은 2026-10-30 공식 영문 개정판 소개에서 메시지 명료화라는 주제와 개정판 존재를 확인해 후보로 추가했다. 한국어판의 판본과 전체 본문은 대조하지 않았다. 마케팅이다, 린 스타트업, 사업의 철학과 원씽도 이 표에 있다는 이유만으로 독서 완료가 되지 않는다. 다음 독서에서는 현재 질문에 맞는 판본과 절을 확인하고, 소개 문장 하나처럼 적용할 산출물을 정한 뒤 자료 없이 선택 이유를 설명해 본다(학습 제안).
 
 ## 지식의 가치는 분량에 비례하지 않는다
 
@@ -159,6 +162,7 @@ AI 도구가 대표 사례다.
 실사용자가 있는 작은 실험은 학습에 유용하지만 현업의 규모, 협업과 운영 경험 전체를 대신하지 않는다. 재미를 느끼지 못한 한 번의 결과로 적성을 확정하거나 독학 성공을 보장하지 않는다. 목표와 지원 방법을 조정하며 실제로 설명하고 해결할 수 있는 범위가 늘었는지 확인한다.
 
 ## 출처
+- [Building a StoryBrand 2.0 — StoryBrand](https://storybrand.com/building-a-storybrand-book-new/) — 2026-10-30 공식 개정판 소개의 메시지 명료화 목적과 판본 차이 확인. 책 전체의 본문 학습이나 매출 개선 효과 검증은 아니다.
 - [Contextual Prerequisites for Understanding: Some Investigations of Comprehension and Recall — Bransford and Johnson, 1972](https://labs.la.utexas.edu/gilden/files/2016/04/Bransford_Johnson_1972.pdf) — 2026-10-26 맥락의 제시 시점, 관계 이해와 회상의 구분 확인. 719~720쪽에서 첫 실험의 부분 맥락 그림이 같은 사물 전부를 재배치한 조건임을 대조
 - [Expecting to teach enhances learning and organization of knowledge in free recall of text passages — Nestojko et al., 2014](https://doi.org/10.3758/s13421-014-0416-z), [저자 공개 원고](https://sites.williams.edu/nk2/files/2011/08/TeachingExpectancy.pdf) — 2026-10-02 원고로 가르칠 기대, 실제 교수 활동의 구분과 실험 범위를 확인했다. 아래 경험적 조언 전체의 효과를 검증한 것은 아니다.
 - [코딩독학 3형, 공부의 호흡 — YouTube, 코딩맨](https://www.youtube.com/watch?v=aSNO8cD2sqk) — 2025-09-18, 수집, 따라 하기와 문제 중심 학습을 대비한 경험적 조언

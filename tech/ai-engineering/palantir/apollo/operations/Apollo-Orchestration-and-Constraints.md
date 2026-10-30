@@ -34,6 +34,14 @@ recall roll-off는 기본적으로 유지보수 시간 밖에서도 가능하지
 
 artifact availability는 Available, Unavailable, Unchecked로 구분한다. registry 요청 실패도 Unavailable이 될 수 있다. Hub 접근을 기대하지 않거나 URI에 맞는 registry가 없는 Unchecked는 그 검사로 Plan을 막지 않는다. Unchecked를 실제 pull 가능의 증거로 해석하지 않는다.
 
+### 임시 변경 창의 권한과 제거 범위
+
+2026-10-30 공식 maintenance window overrides 안내를 대조했다. 환경 수준 override는 Environment editor가 만든다. 엔티티 수준은 환경에 접근할 수 있는 사용자가 change request를 제출하고, Environment operator는 `No downtime required` 유형의 요청을 승인할 수 있다. 요청 가능과 승인 권한을 구분한다.
+
+생성할 때 시간 범위를 절대 시각 또는 상대 시간으로 정하고 다른 운영자에게도 보일 사유를 적는다. Helm chart는 두 유형의 override 모두에서 변경될 수 있으므로 `No downtime required` 선택을 무중단 보장으로 해석하지 않는다.
+
+환경의 `Settings > Maintenance and Suppressions` 또는 엔티티의 `Activity > Overrides and Suppressions`에서 범위를 확인한다. 엔티티 화면에서 환경 수준 override를 제거해도 그 엔티티만 닫히는 것이 아니라 환경의 모든 엔티티에서 제거된다. 제거 전 표시된 범위를 확인하는 것은 이 동작에 따른 운영 점검 제안이다.
+
 ## 의존성 그룹으로 같은 제품의 설치를 구분한다
 
 2026-10-30 공식 Environment settings의 dependency groups 절을 대조했다. 다른 Plan 동작의 검증 날짜는 갱신하지 않는다.
@@ -54,6 +62,14 @@ command 후에는 정상 Plan 평가를 재개하므로 수동 downgrade가 다�
 
 active Plan 취소는 agent의 응답이 필요하다. agent가 죽거나 끊기면 즉시 취소를 보장하지 못한다. 취소만 하면 같은 Plan을 다시 발행할 수 있어 짧은 suppression을 함께 둔다. command abort 이후 엔티티가 healthy라는 보장도 없으므로 결과를 직접 확인한다.
 
+### suppression 범위와 취소 대상을 함께 확인한다
+
+2026-10-30 공식 suppression 안내를 대조했다. 환경 수준 수동 suppression은 Environment editor가 만들며 환경 전체에 적용한다. 엔티티 수준은 Environment 또는 Entity의 editor와 operator가 만들 수 있고 해당 엔티티만 막는다. `Suppressions` 표에서는 범위, 수동/자동 유형과 활성/예약/종료 상태를 나눠 확인한다.
+
+Plan 취소 화면은 같은 Plan의 즉시 재발행을 막기 위해 30분 suppression 생성을 권한다. 또는 짧은 suppression을 만들면서 `Cancel Active Plans`를 선택해 그 범위의 활성 Plan 전체를 취소할 수 있다. suppression 생성 자체와 활성 Plan 취소 옵션을 구분하고, agent와 통신할 수 없으면 취소가 오래 걸리거나 끝나지 않을 수 있음을 고려한다.
+
+환경 수준 suppression도 엔티티 화면에서 제거하면 환경의 모든 엔티티에 적용되던 창이 사라진다. 자동 suppression 임계치는 `suppress-deployment-after-num-autosuppressions`로 조정한다. 안내의 `30`은 설정 예시이며 기본값으로 단정하지 않는다.
+
 ## 출처
 
 - [Palantir, How Apollo works](https://www.palantir.com/docs/apollo/core/how-apollo-works) — 2026-10-30 Executing change의 agent 결과 보고와 상태 변경을 동반한 실패의 rollback Plan 발행 조건 대조. 복구 완료 점검은 적용 제안
@@ -61,9 +77,9 @@ active Plan 취소는 agent의 응답이 필요하다. agent가 죽거나 끊기
 - [Palantir, plans-and-constraints](https://www.palantir.com/docs/apollo/core/plans-and-constraints) — Plan 생명주기, 재계산, rollback, window와 artifact 제약.
 - [Palantir, prevent-product-release-upgrades-for-an-entity](https://www.palantir.com/docs/apollo/managing-entities/prevent-product-release-upgrades-for-an-entity) — 자동 승격 밖 custom 채널로 버전 동결.
 - [Palantir, user-issued-commands](https://www.palantir.com/docs/apollo/managing-entities/user-issued-commands) — command 제약 우회, active 충돌과 취소의 한계.
-- [Palantir, create-maintenance-window-overrides](https://www.palantir.com/docs/apollo/managing-environments/create-maintenance-window-overrides) — 환경/엔티티 maintenance override 권한과 제거 범위.
+- [Palantir, create-maintenance-window-overrides](https://www.palantir.com/docs/apollo/managing-environments/create-maintenance-window-overrides) — 2026-10-30 환경/엔티티 override의 생성, 요청과 승인 권한, 시간/사유 입력, Helm 유형과 제거 범위 대조.
 - [Palantir, environment-settings](https://www.palantir.com/docs/apollo/managing-environments/environment-settings) — 환경 settings, window override와 dependency group의 기본값.
-- [Palantir, suppression-windows-and-cancelling-plans](https://www.palantir.com/docs/apollo/managing-environments/suppression-windows-and-cancelling-plans) — 수동/자동 suppression과 cancel 뒤 재발행 예방.
+- [Palantir, suppression-windows-and-cancelling-plans](https://www.palantir.com/docs/apollo/managing-environments/suppression-windows-and-cancelling-plans) — 2026-10-30 범위별 권한, 상태 필터, 제거 범위, 임계치 설정과 취소 뒤 30분 suppression 안내 대조. 이번 추가 대조는 두 절에 한정하며 문서 전체의 검증 날짜는 유지했다.
 - [Palantir, product-maintenance-window](https://www.palantir.com/docs/apollo/managing-products/product-maintenance-window) — 제품 window는 자동 승격에도 적용, 수동 승격은 예외.
 
 ## 관련 문서
