@@ -1,7 +1,7 @@
 ---
 tags: [palantir, apollo, continuous-delivery]
 status: done
-verified_at: 2026-10-16
+verified_at: 2026-10-30
 category: AI Engineering
 aliases: []
 ---
@@ -24,7 +24,11 @@ contact team은 소유 자원의 연락과 알림 설정을 연결한다. Email,
 
 변경 요청 대기/일일 요약, open-ended recall, RBAC, promotion/Plan 실패가 예시다. 유형별 지원과 실제 구독 범위를 확인한다. Slack 연결은 Palantir 설정이 필요하고 Email은 Control Panel의 domain allowlist에 등록되어야 발송된다. custom webhook은 문서 확인일 기준 미지원이다.
 
-외부 notification은 권한과 데이터 경계를 지키려고 기본적으로 내용이 제한될 수 있다. 링크만 온다고 장애로 단정하지 않는다. 알림 설정 문서 작성은 실제 contact/구독 변경이나 메시지 발송을 수행한 결과가 아니다.
+승인 대기 중인 change request 알림을 받으려면 자신이 속한 팀의 알림을 Hub Settings에서 활성화한다. 제품의 contact team 자동 구독과 승인 요청을 받기 위한 팀 알림 설정을 구분한다.
+
+알림은 기초 자원을 볼 권한이 있는 사용자에게만 전달된다. 외부 notification은 데이터 경계 밖으로 정보가 나가는 위험을 줄이려고 기본적으로 제한된 내용만 제공한다. Email이나 Slack에 Apollo 링크만 왔다면 전송 실패로 단정하지 않는다. 상세 정보를 더 포함해야 하면 Palantir 담당자와 설정을 확인한다.
+
+알림 누락을 점검할 때는 수신자의 자원 조회 권한, 팀 또는 개인 구독, contact의 유형별 필터를 나누어 확인한다. Email은 domain allowlist, Slack은 연결 설정도 확인한다. 알림 설정 문서 작성은 실제 contact/구독 변경이나 메시지 발송을 수행한 결과가 아니다.
 
 ## 출처
 
