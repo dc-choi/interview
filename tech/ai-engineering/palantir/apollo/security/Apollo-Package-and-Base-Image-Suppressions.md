@@ -34,6 +34,16 @@ image repository는 registry와 tag/digest를 제거한 repository 경로를 정
 
 구형 CVE suppression 안내는 세 category만 나열하지만 package 문서와 2026-04-02 변경 이력은 Planned fix를 추가한다. category 집합을 예전 페이지 하나로 고정하지 않는다. Suppress by Distribution은 non-container SLS 대상으로 container image에는 효과가 없다는 경계도 확인한다.
 
+## 단일 CVE 예외의 범위와 제거
+
+단일 취약점의 suppression은 Risk Management의 Vulnerabilities에서 해당 항목을 골라 요청한다. 권장 범위인 **Suppress by Image**는 아직 발행하지 않은 Product Release의 검사에도 적용된다. Image Prefix는 관련 이미지 여러 개를 묶고, Distribution은 비컨테이너 SLS 배포물에만 적용된다. Global은 스캐너나 상위 취약점 DB 문제처럼 예외적인 상황에 쓴다. 적용 범위가 넓어질수록 검토하지 않은 이미지까지 포함되는지 확인한다.
+
+예외를 적용해도 이후 scan에서 finding은 계속 발견된다. 생성 시 사유와 만료일을 지정하며, Settings & Configuration의 Permissions에서 Vulnerability suppressions의 Approver 역할을 부여해 승인자를 정한다. CR 승인 후 다음 scan에서 적용되므로 승인과 검사 결과 반영을 따로 확인한다.
+
+기존 예외를 제거할 때도 Suppressions 탭에서 대상을 선택하고 Remove suppressions로 **변경 요청을 생성**한다. 제거 버튼을 누른 사실만으로 반영 완료를 판단하지 않는다. 만료일이 지나면 취약점은 다시 active 상태가 되므로 수정 여부와 예외의 유효기간을 함께 확인한다.
+
+이 절은 2026-10-30 단일 CVE suppression 공식 문서를 대조했다. Package와 Base image 규칙 전체의 재검증이나 실제 CR 실행 결과를 뜻하지 않으므로 frontmatter의 검증일은 유지한다.
+
 ## Base image의 공통 위험
 
 base image는 OS 이름 문자열이 아니라 registry 경로로 선언한 실제 image다. scanner가 pull할 수 있는지 검증하고 완료/실패/진행/미검사를 추적한다. finding은 (package,CVE) 쌍이며 영향을 받는 여러 image와 Product Release를 연결한다. 여러 쌍을 함께 요청하려면 같은 rationale이 모두에 적용되어야 한다.
@@ -44,6 +54,7 @@ Base image 선언, 제거와 suppression은 제품 Authorizing Official의 승�
 
 ## 출처
 
+- [Palantir, vulnerability-suppressions](https://www.palantir.com/docs/apollo/managing-vulnerabilities/vulnerability-suppressions) — 단일 CVE의 이미지 범위, 승인자 설정, 다음 scan 반영과 제거 CR. 2026-10-30 확인.
 - [Palantir, base-image-vulnerability-management](https://www.palantir.com/docs/apollo/managing-vulnerabilities/base-image-vulnerability-management) — base image 선언, package/CVE 단위와 AO 승인.
 - [Palantir, package-based-suppressions](https://www.palantir.com/docs/apollo/managing-vulnerabilities/package-based-suppressions) — PURL matcher, 미래 finding, 검증/placement와 suppression별 CR.
 

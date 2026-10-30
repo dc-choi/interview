@@ -90,6 +90,14 @@ MCP 서버는 streamable HTTP가 필수이고, AWS는 기본으로 stateless 모
 - **런타임 단위 선택:** 한 런타임은 SigV4와 JWT 가운데 하나만 쓸 수 있다. 둘 다 필요하면 다른 버전을 각각 구성한다. `DEFAULT`는 최신 버전만 가리키므로 두 방식을 함께 열어 두려면 버전별 엔드포인트가 필요하다는 것은 이 구조에서 도출한 추론이다.
 - **SDK 호출 제약:** OAuth로 구성한 런타임은 AWS SDK의 `InvokeAgentRuntime`으로 부를 수 없어 HTTPS로 직접 요청한다. 인증이 빠지면 OAuth 런타임은 401과 `WWW-Authenticate` 헤더를, SigV4 런타임은 403을 돌려준다.
 
+### Scope 목록과 서로 다른 claim 조건의 결합
+
+2026-10-30 inbound JWT authorizer 공식 문서 기준, `allowedAudience`, `allowedClients`, `allowedScopes`, 필수 custom claim 가운데 하나 이상을 설정한다. 여러 종류를 설정하면 **설정한 종류를 모두 검증**한다. 반면 `allowedScopes` 목록 안에서는 토큰의 scope가 허용값 하나 이상과 일치하면 된다. 따라서 `[read, write]`를 넣었다고 두 권한을 모두 요구하는 것은 아니다.
+
+Custom claim은 이름, 값의 타입과 비교 조건을 지정한다. `STRING`에는 `EQUALS`를, `STRING_ARRAY`에는 `CONTAINS` 또는 `CONTAINS_ANY`를 사용한다. 부서나 역할 조건을 넣을 때는 IdP가 발급하는 실제 claim 타입과 맞춘다.
+
+설계 점검 예시로, write scope가 필요한 런타임에는 read만 있는 토큰을 거절하는지 확인한다. Audience와 부서 조건을 함께 요구한다면 각각 하나만 어긋난 요청도 따로 시험한다. 이 조건은 런타임 호출 허용 여부를 정하므로, 컨테이너 내부 도구별 읽기와 쓰기 권한을 자동 분리한다고 해석하지 않는다. 이는 authorizer의 적용 경계에서 도출한 점검 제안이며 실제 호출 시험 결과가 아니다.
+
 ### 사용자 ID 헤더는 인증된 신원이 아니다
 
 `X-Amzn-Bedrock-AgentCore-Runtime-User-Id` 헤더는 에이전트가 최종 사용자를 대신해 OAuth 토큰을 받을 때 사용자 식별자를 넘긴다. 이 헤더를 쓰려면 `bedrock-agentcore:InvokeAgentRuntime`에 더해 `bedrock-agentcore:InvokeAgentRuntimeForUser` 권한이 필요하다. AgentCore는 값을 불투명한 식별자로 다루고 인증된 신원과 대조하지 않는다.
@@ -97,7 +105,9 @@ MCP 서버는 streamable HTTP가 필수이고, AWS는 기본으로 stateless 모
 - 공식 문서의 대응은 네 가지다. 권한을 신뢰하는 주체와 특정 런타임으로 좁히고, 값은 클라이언트 입력이 아니라 인증된 주체의 정보에서 만들며, SigV4 주체와 사용자 ID의 관계를 기록하고, 위임이 필요 없는 런타임에서는 `InvokeAgentRuntimeForUser`를 명시적으로 거부한다.
 - IdP가 있는 운영 환경에서는 issuer, 서명과 만료를 검증하는 JWT 경로를 쓰라고 권한다. AWS는 사용자 ID를 인증된 주체에서 만들면 인증된 사용자가 다른 사용자를 사칭하는 것을 막는다고 설명한다. 클라이언트가 보낸 식별자를 믿지 않는다는 점에서 [[Bedrock-AgentCore-Operations#세션 격리는 사용자 인증을 대신하지 않는다|세션 소유 관계 점검]]과 같은 원칙으로 읽을 수 있다(해석).
 
-Gateway를 단일 진입점으로 두려면 직접 호출 경로도 막는다. SigV4 런타임은 Gateway 실행 역할만 허용하고 나머지 주체를 명시적으로 거부하는 리소스 기반 정책을 쓴다. 이 통제는 그 역할을 누가 assume할 수 있는지에 달려 있으므로, AWS는 Gateway 실행 역할의 trust policy에 `aws:SourceArn`과 `aws:SourceAccount` 조건을 넣어 해당 Gateway만 역할을 맡게 하라고 안내한다. JWT 런타임은 `allowedWorkloadConfiguration`으로 허용할 Gateway를 지정하며, AgentCore CLI는 이 필드를 설정하지 않으므로 control plane API로 설정한다.
+Gateway를 단일 진입점으로 두려면 직접 호출 경로도 막는다. SigV4 런타임은 Gateway 실행 역할만 허용하고 나머지 주체를 명시적으로 거부하는 리소스 기반 정책을 쓴다. 이 통제는 그 역할을 누가 assume할 수 있는지에 달려 있으므로, AWS는 Gateway 실행 역할의 trust policy에 `aws:SourceArn`과 `aws:SourceAccount` 조건을 넣어 해당 Gateway만 역할을 맡게 하라고 안내한다. JWT 런타임은 `allowedWorkloadConfiguration`으로 허용할 Gateway를 지정한다. 2026-10-30 공식 안내는 AgentCore CLI 프로젝트의 `agentcore/cdk/lib/cdk-stack.ts`에 CloudFormation 속성 override를 넣고 배포하는 방법과 control plane API로 설정하는 방법을 제공한다.
+
+2026-10-30에는 scope와 custom claim의 결합, Gateway 제한 설정 경로를 추가 대조했다. 컴퓨트, 리전, quota와 가격 전체를 다시 검증하지 않았으므로 frontmatter의 검증일은 유지한다.
 
 ## 나가는 호출의 자격 증명
 
@@ -146,6 +156,8 @@ V2는 환경을 한 번 준비해 스냅샷을 찍고 새 인스턴스마다 이
 - [AWS, Troubleshoot AgentCore Runtime](https://docs.aws.amazon.com/bedrock-agentcore/latest/devguide/runtime-troubleshooting.html)
 - [AWS, Quotas for Amazon Bedrock AgentCore](https://docs.aws.amazon.com/bedrock-agentcore/latest/devguide/bedrock-agentcore-limits.html)
 - [AWS, Authenticate and authorize with Inbound Auth and Outbound Auth](https://docs.aws.amazon.com/bedrock-agentcore/latest/devguide/runtime-oauth.html)
+- [AWS, Configure inbound JWT authorizer](https://docs.aws.amazon.com/bedrock-agentcore/latest/devguide/inbound-jwt-authorizer.html) — scope 목록의 일치 조건과 custom claim 타입, 여러 조건의 결합. 2026-10-30 확인.
+- [Secure Agent Authorization with OAuth 2.0 — Amazon Web Services](https://www.youtube.com/watch?v=ECFfIMJECac) — 2026-02-16 공개 영상의 06:24~10:23 scope와 custom claim 설명. 전사 용어를 공식 문서와 대조했으며 화면 코드는 확인하지 않았다.
 - [AWS, InvokeAgentRuntime](https://docs.aws.amazon.com/bedrock-agentcore/latest/APIReference/API_InvokeAgentRuntime.html)
 - [AWS, Obtain OAuth 2.0 access token](https://docs.aws.amazon.com/bedrock-agentcore/latest/devguide/identity-authentication.html)
 - [AWS, Features of AgentCore Identity](https://docs.aws.amazon.com/bedrock-agentcore/latest/devguide/key-features-and-benefits.html)
