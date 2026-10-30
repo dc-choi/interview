@@ -115,6 +115,16 @@ AgentCore Identity는 OAuth와 API key를 관리하며 두 모드를 둔다. use
 
 token vault는 OAuth 토큰, client credentials와 API key를 KMS로 암호화해 보관한다. 3LO로 받은 사용자 토큰은 에이전트의 workload identity와 들어온 JWT의 사용자 ID를 묶은 키로 저장되고, 꺼낼 수 있는 자격 증명도 workload access token에 담긴 사용자 신원으로 범위가 정해진다. 반면 credential provider 접근은 에이전트에 붙인 IAM 역할이 정하며, AWS는 같은 계정 안의 workload identity와 credential provider 사이에 추가 바인딩을 강제하지 않는다고 밝힌다. AWS는 IAM 정책의 `Resource`를 `*` 대신 특정 workload identity와 credential provider ARN으로 좁히라고 권한다. 사용자 신원으로 범위가 정해지지 않는 API key와 client credentials에서는 이 IAM 범위가 주된 통제라는 것은 해석이다. 사용자 ID가 사용자 토큰의 범위를 정하므로 위 사용자 ID 헤더의 통제와도 연결된다.
 
+### 토큰 주입, 외부 서비스의 수락과 재인증을 구분한다
+
+2026-10-30 OAuth 토큰 취득 공식 문서 대조 기준이다. `@requires_access_token`에 credential provider 이름, scope와 `auth_flow='M2M'`을 지정하면 함수의 `access_token` 인자로 토큰을 받아 외부 API 호출에 사용한다. 사용자 동의를 거치는 `USER_FEDERATION`과 서비스 자격 증명을 쓰는 M2M 흐름을 구분한다.
+
+토큰 취득과 외부 서비스의 수락은 별도로 확인한다. 사용자 동의와 refresh token을 설명하는 개발자 가이드는 공급자 측 토큰 폐기를 AgentCore가 감지하지 못할 수 있다고 경고한다. 이때 안내하는 `forceAuthentication: true`는 `GetResourceOauth2Token` API에서 기존 세션과 관계없이 새 **3LO 흐름**을 시작하는 옵션으로 정의한다. Python의 `USER_FEDERATION` 데코레이터 예제에서는 `force_authentication`으로 표기한다. 이 설명만으로 M2M의 캐시를 무시하고 토큰을 강제로 재발급한다고 보장할 수는 없다. M2M에서 해당 옵션의 동작은 여기서 확인하지 않았다.
+
+사용자 동의의 authorization code 흐름에서 공급자가 refresh token을 제공하면 AgentCore가 이를 저장해 access token 만료 시 갱신에 사용한다. 이 동작을 M2M의 refresh token 발급이나 폐기 복구 절차로 일반화하지 않는다.
+
+운영 제안: 외부 API의 인증 실패와 권한 부족을 구분하고, 토큰 재취득 뒤에도 요청 scope와 리소스 권한을 확인한다. 토큰을 프롬프트나 일반 로그에 넣지 않는다. 이 절은 문서 대조이며 실제 토큰 폐기와 재취득을 시험한 결과는 아니다. 다른 실행 한도와 가격의 검증일은 유지한다.
+
 ## Platform version V2는 스냅샷에서 시작한다
 
 platform version은 런타임을 시작하는 방식이며 `platformVersion` 필드의 `V1`(기본) 또는 `V2`로 정한다. 구성 이력을 남기는 runtime version과 별개다. 개요 문서가 첫 runtime version도 V1로 표기하므로 두 버전을 혼동하지 않는다. V2는 microVM 컴퓨트의 시작 방식이며 2026-09-18 출시가 공지됐다. 2026-10-20 기준 us-east-1, us-east-2, us-west-2, eu-west-1, ap-northeast-1에서만 쓸 수 있어 서울은 지원하지 않는다. 기존 런타임도 update로 platform version을 옮길 수 있다.
@@ -140,6 +150,8 @@ V2는 환경을 한 번 준비해 스냅샷을 찍고 새 인스턴스마다 이
 - 서울 리전 배포라면 2026-10-20 기준 Instances와 V2를 쓸 수 없고, VPC 서브넷의 AZ와 NAT 경로를 확인했는가
 
 ## 출처
+
+- [AWS, GetResourceOauth2Token](https://docs.aws.amazon.com/bedrock-agentcore/latest/APIReference/API_GetResourceOauth2Token.html) — `forceAuthentication`의 새 3LO 흐름 정의, 2026-10-30 대조
 
 - [AWS, microVMs](https://docs.aws.amazon.com/bedrock-agentcore/latest/devguide/runtime-how-it-works.html)
 - [AWS, Instances](https://docs.aws.amazon.com/bedrock-agentcore/latest/devguide/runtime-instances-how-it-works.html)

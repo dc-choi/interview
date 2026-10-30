@@ -36,6 +36,12 @@ Local Zone 서브넷에도 route table, security group과 network ACL을 적용�
 
 이 점검은 서비스 경계에서 도출한 설계 제안이며 장애 시 동작을 실측한 결과는 아니다.
 
+### 지역 배치 사례의 지연 수치를 읽는 법
+
+DraftKings의 공개 사례는 주 안에 워크로드를 배치하면서 기존 클라우드 인프라와 연결하는 구성을 보여 준다. AWS 고객 사례 페이지는 신규 주 인프라 준비가 수 주에서 수 일로 줄었고 P95 지연이 25% 개선됐다고 소개한다(2026-10-30 페이지와 공개 영상 대조). 영상의 표현은 약 25%다.
+
+이는 해당 고객이 보고한 결과다. 공개 소개만으로 측정 구간, 부하와 변경 전후의 모든 구성 조건을 재현할 수 없으므로, Local Zone 자체의 보장 수치나 다른 서비스의 예상 개선율로 쓰지 않는다. 지역 안에서 실행된다는 사실도 로그, 백업과 리전 연동 데이터까지 같은 경계에 남는다는 뜻은 아니다. 위의 데이터 위치 점검과 실제 요청 경로 측정을 따로 수행한다(적용 제안).
+
 ## 추론 워크로드의 배치 판단
 
 다음은 지연을 평가하기 위한 설계 제안이다.
@@ -49,6 +55,8 @@ Local Zone 서브넷에도 route table, security group과 network ACL을 적용�
 
 ## 출처
 
+- [AWS Local Zones customers — AWS](https://aws.amazon.com/about-aws/global-infrastructure/localzones/customers/) — DraftKings 사례의 준비 기간과 P95 개선 수치, 2026-10-30 대조
+- [Achieving data residency compliance with AWS Local Zones — Amazon Web Services](https://www.youtube.com/watch?v=vNO7Fkk9toE) — 2026-02-09 공개 영상의 지역 내 실행과 고객 보고 수치. 전사문과 AWS 고객 사례를 대조했으며 규제 준수 자체를 감사한 것은 아니다.
 - [AWS, AWS Local Zones FAQs](https://aws.amazon.com/about-aws/global-infrastructure/localzones/faqs/)
 - [AWS, How AWS Local Zones work](https://docs.aws.amazon.com/local-zones/latest/ug/how-local-zones-work.html)
 - [AWS, AWS Local Zones features](https://aws.amazon.com/about-aws/global-infrastructure/localzones/features/)

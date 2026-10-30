@@ -120,6 +120,15 @@ Dafny 4 튜토리얼의 절댓값 예제에서 후조건이 `0 <= y`뿐이면 �
 
 2026-10-26 공식 튜토리얼의 명세와 전후조건 설명을 대조했다. 일반 LLM이 임의의 프로그램에 올바른 증명을 자동 생성한다는 성능 주장이나 향후 인증 제도를 확인한 것은 아니다. 예제는 문서로 확인했으며 Dafny를 직접 실행하지 않았다.
 
+## 에이전트용 언어와 사람의 검토 책임을 구분한다
+
+에이전트가 다루기 쉬운 언어의 존재는 사람이 코드를 이해할 필요가 사라졌다는 증거가 아니다. 생성과 수정 인터페이스, 실행 권한, 결과 검토를 나눠 본다. 2026-10-30 공식 저장소 README를 대조한 사례는 다음과 같다.
+
+- **Zerolang:** 현재 설명은 의미 그래프를 프로그램 데이터베이스로 두는 실험적 언어다. 에이전트는 `zero query`와 `zero patch`를 사용하며, `.0` 파일은 사람이 읽고 검토하거나 일부 편집할 수 있는 `zero.graph`의 텍스트 투영이다. 프로젝트는 호환성 변경과 보안 문제 가능성을 명시하고 운영 시스템이나 민감한 데이터 대신 격리된 작업공간에서 실행하라고 안내한다. 과거의 JSON 진단 설명만으로 현재 설계 전체를 대표하지 않는다.
+- **Mog:** 정적 타입의 임베디드 언어이며, 호스트가 파일 접근과 API 호출 같은 부수 효과를 capability로 제공한다. 스크립트가 필요한 capability를 선언하면 호스트가 허용하거나 실행을 거부하는 구조다. 범용 언어 대체나 독립 시스템 개발은 명시적으로 목적에서 제외한다.
+
+검토에 적용하면 생성된 프로그램뿐 아니라 호스트가 부여한 권한과 실행 결과를 확인한다(점검 제안). 언어의 설계 목표를 샌드박스 안전성의 독립 검증이나 코드 리뷰 폐지의 근거로 바꾸지 않는다. 여기서는 컴파일러 실행, 보안 감사와 생산성 비교를 수행하지 않았다.
+
 ## 학습과 전망의 경계
 
 직접 구현하고 실패를 고치는 연습은 판단력을 기르는 수단이다. 문법의 폭뿐 아니라 메모리, 동시성, 네트워크와 트랜잭션의 작동 모델을 익힌다. 멘토링에서는 정답 전달과 사고 과정의 전수를 구분한다.
@@ -128,6 +137,8 @@ Dafny 4 튜토리얼의 절댓값 예제에서 후조건이 `0 <= y`뿐이면 �
 
 ## 출처
 
+- [Zerolang — Vercel Labs](https://github.com/vercel-labs/zerolang) — 2026-10-30 README의 그래프 편집, 텍스트 투영과 실험 단계 안내 대조
+- [Mog — Voltropy](https://github.com/voltropy/mog) — 2026-10-30 README의 호스트 capability와 적용 범위 대조
 - [Dafny, Getting Started with Dafny: A Guide](https://dafny.org/dafny/OnlineTutorial/guide) — Dafny 4 예제의 전후조건과 불충분한 명세, 2026-10-26 부분 대조
 - [Linux Kernel, Kernel Guidelines for Tool-Generated Content](https://docs.kernel.org/process/generated-content.html) — 2026-10-24 제출물 이해, 도구 사용 설명과 검토 재량 대조
 - [Linux Kernel, AI Coding Assistants](https://docs.kernel.org/process/coding-assistants.html) — 2026-10-24 재현, 수정 검증, 미수행 검사 공개와 Attribution 절 확인, 2026-10-27 Attribution 절과 사람 제출자의 책임 재확인
