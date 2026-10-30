@@ -92,6 +92,16 @@ aliases: ["Dev Outsourcing Engagement", "개발 외주 계약과 수주", "외�
 
 포지셔닝 문구와 기본, 표준, 고급 같은 가격 패키지 구성은 [[Pricing-Strategy#외주와 전문 서비스의 견적|외주와 전문 서비스의 견적]]과 같은 문서의 가격 심리학 절을 따른다. 세 단계 패키지의 앵커링 효과는 맥락에 따라 달라지므로 패키지 간 범위 차이가 실제로 설명 가능해야 한다.
 
+### 포트폴리오에서 구매할 결과까지 연결한다
+
+작업 사례와 구매 안내의 역할을 나눈다. 사례는 맡은 역할과 산출물의 근거를 보여 주고, 구매 안내는 누구의 어떤 문제를 해결하며 어떤 범위를 맡길 수 있는지 설명한다. 다음은 SBA의 고객군, 가치 제안, 서비스와 고객 경험 구분을 외주 소개 자료에 적용한 구성 제안이다.
+
+- 첫 설명에는 대상 고객, 해결할 문제와 제공할 결과를 연결한다. 제작자가 통제할 수 없는 매출 증가를 납품 보장처럼 약속하지 않는다.
+- 사례 뒤에는 상담, 범위 확인, 중간 검토와 인계 과정에서 고객이 제공하거나 확인할 일을 붙인다.
+- 서비스 선택지에는 산출물, 포함/제외 범위, 가격의 전제와 다음 상담 단계를 함께 적는다. 이름만 다른 가격 등급 대신 실제 작업 차이를 설명한다.
+
+이 구성의 수주 효과는 확인된 사실이 아니다. 문의 단계에서 무엇을 살 수 있는지 이해했는지 확인하고, 견적 요청과 계약으로 이어졌는지는 별도로 기록한다. 2026-10-30의 대조는 이 구성의 개념적 근거에 한정하며 기존 계약과 법률 절을 재검증한 것은 아니다.
+
 ## 첫 고객 확보 순서
 
 ### 신규 수주 전에 수행 기준을 확인한다
@@ -199,6 +209,7 @@ aliases: ["Dev Outsourcing Engagement", "개발 외주 계약과 수주", "외�
 
 ## 출처
 
+- [SBA, Plan your business](https://www.sba.gov/counseling/plan-your-business/) — Service or product line, Value proposition, Customer relationships와 Customer segments를 대조. 포트폴리오 구성과 문의 점검은 외주에 적용한 제안
 - [business.gov.au, Set goals for your business](https://business.gov.au/planning/business-plans/set-goals-for-your-business) — 목표의 방향, 가용 자원, 기한과 재검토
 - [business.gov.au, Workforce planning](https://business.gov.au/people/employees/workforce-planning) — 현재 역할, 역량과 수행 용량을 필요한 업무와 대조하는 방법
 - [국가법령정보센터, 민사소송법 제462조](https://www.law.go.kr/LSW//lsSideInfoP.do?docCls=jo&joBrNo=00&joNo=0462&lsiSeq=290113&urlMode=lsScJoRltInfoR), [제470조](https://www.law.go.kr/LSW//lsSideInfoP.do?docCls=jo&joBrNo=00&joNo=0470&lsiSeq=290113&urlMode=lsScJoRltInfoR), [제472조](https://www.law.go.kr/LSW//lsSideInfoP.do?docCls=jo&joBrNo=00&joNo=0472&lsiSeq=290113&urlMode=lsScJoRltInfoR) — 2026-10-02 시행 조문.
