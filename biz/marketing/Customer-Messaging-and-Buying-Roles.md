@@ -51,8 +51,28 @@ aliases: ["고객 상황과 구매 역할별 메시지", "Customer Messaging and
 
 직장인은 시간, 학생은 가격, 재구매자는 새로움을 원한다는 식의 분류는 인터뷰로 확인할 가설로만 둔다. 표현을 바꿔도 제품 부적합, 예산과 시기의 문제는 남을 수 있다. 메시지 비교에서는 이해 여부와 다음 검토로의 진전, 실제 구매를 따로 관찰한다.
 
+### 인구통계 대신 선택 상황을 확인한다
+
+JTBD는 선택을 기능적, 감정적, 사회적 차원과 그때의 상황으로 살핀다. 성별이나 소득 구간만으로 인정, 자신감, 취향과 실용성 중 하나를 배정하지 않는다. 같은 사람도 상황이 달라지면 다른 진전을 원할 수 있다.
+
+상담에는 구매를 생각한 계기, 기존 대안, 주저한 이유와 선택 직전의 사건을 묻는 방식을 적용할 수 있다. 홈페이지 제작이라면 문의 누락을 줄이려는지, 새 거래처에 신뢰를 보여주려는지부터 확인하고 사례를 고른다. 이는 Christensen Institute의 JTBD를 서비스 상담에 옮긴 제안이며 특정 고객 유형별 문구의 전환 효과를 검증한 결과는 아니다. 2026-10-30 이론의 정의와 상황 변화 설명을 대조했다.
+
+### 자극적인 문구와 이해하기 쉬운 설명을 구분한다
+
+간결하고 훑기 쉬우며 과장 없는 문장은 정보 탐색을 돕는 설계 기준이다. NN/g의 1997년 웹 글쓰기 연구는 같은 정보를 다르게 표현한 페이지의 사용성과 만족도를 비교했다. 이 결과를 광고 문구 하나의 구매 전환 상승률로 바꾸지 않는다.
+
+다음은 이 원칙을 제안서와 소개 페이지에 적용한 점검이다.
+
+- 쉽다는 평가만 쓰기보다 고객이 할 단계, 준비물과 제공할 지원을 설명한다.
+- 선택 고객 수나 개선율을 쓰려면 실제 집계와 대상, 기간을 확인한다. 예시 숫자를 실적으로 옮기지 않는다.
+- 구매하지 않을 때의 불이익이나 행동을 금지하는 문장은 실제 조건과 근거가 있을 때만 쓴다. 강한 표현 자체를 설득 효과의 증거로 삼지 않는다.
+
+2026-10-30 원 연구의 비교 조건과 측정 대상을 확인했다. 위 점검은 적용 제안이며 손실 강조, 질문형 제목과 구체적 숫자가 언제나 더 잘 팔린다는 규칙은 확인하지 않았다.
+
 ## 출처
 
+- [Jobs to Be Done Theory — Christensen Institute](https://www.christenseninstitute.org/theory/jobs-to-be-done/) — 2026-10-30 기능적, 감정적, 사회적 차원과 상황에 따른 선택 대조.
+- [Concise, SCANNABLE, and Objective: How to Write for the Web — NN/g, John Morkes, Jakob Nielsen](https://www.nngroup.com/articles/concise-scannable-and-objective-how-to-write-for-the-web/) — 2026-10-30 웹 글쓰기 연구의 조건과 사용성 측정 확인. 광고 구매 전환 효과로 일반화하지 않았다.
 - [AI Brand Protection Against Counterfeits — MarqVision](https://www.marqvision.com/brand-protection) — 2026-10-26 탐지와 제거의 기능 설명, 제거 건수와 Saturation Rate의 구분 대조. 제품 성과 수치는 사용하지 않았다.
 - [Positioning for B2B Tech Companies — April Dunford](https://www.aprildunford.com/) — 고객과 대안에 따른 차별화된 가치.
 - [Why Positioning Fails to Make the Jump from Marketing to Sales (and what to do about it) — April Dunford](https://aprildunford.substack.com/p/why-positioning-fails-to-make-the) — 첫 상담과 두 번째 미팅의 맞춤 설명, 내부 추진자, 예산 결정자와 다른 구매 참여자. 2026-10-21 확인. 실무자의 방법론이며 보편적 인과 법칙으로 사용하지 않았다.

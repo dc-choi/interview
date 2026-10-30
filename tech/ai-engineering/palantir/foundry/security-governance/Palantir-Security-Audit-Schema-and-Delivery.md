@@ -85,7 +85,28 @@ User, Resources 등 별도 제안 방식을 쓰는 필드 외의 값 제안은 �
 
 위 두 절은 수집 본문과 공식 페이지의 검색 색인 본문을 대조했다. 공식 URL 직접 열기는 실패했으며 화면, 실제 권한과 삭제 동작은 시험하지 않았다. 기존 schema와 전달 조건 전체를 재검증하지 않아 frontmatter 날짜는 유지한다.
 
+### 결과 건수와 차트의 분모
+
+`All time`에서는 Log frequency가 로그가 있어도 `No log activity in this range`를 표시한다. 시작 시각을 지정해 다시 확인한다. 이 차트가 아직 로드되지 않았거나 실패한 경우와 `All time`의 결과 건수는 **지금까지 로드한 행 수**다. `100+ results`는 전체가 100건이라는 뜻이 아니다.
+
+Event types의 비율은 표시된 상위 10개 event name 안의 비율이며 전체 일치 로그의 비율이 아니다. Log frequency는 빈 구간을 생략하므로 이웃한 막대가 연속된 시간 구간이라고 가정하지 않는다.
+
+기본 Time 내림차순 이외의 정렬은 결과 페이지마다 기간 내 모든 일치 행을 읽는다. 먼저 기간을 좁힌다. `No logs found`, 사용자가 취소한 `Search stopped`, 오류인 `Query failed`는 서로 다른 상태다. 5분을 넘긴 검색은 실패하므로 기간을 줄여 다시 검색한다.
+
+### 표시 요약과 원본 값의 증거 경계
+
+Request와 Result 카드는 각각 `requestFields`, `resultFields`를 읽기 쉽게 보여주며 요약이 일부 세부 값을 생략할 수 있다. **Show raw JSON**으로 기록된 필드를 확인한다. 이름 해석은 조회자 권한을 따르므로 같은 로그도 표시 이름이 다를 수 있다. 잠금 표시만으로 리소스 삭제를 확정하지 않는다.
+
+Categories, Entities, Users, Origins, Environment, Product, Sequence ID와 `productId`, `date`는 상세 패널에 나타나지 않는다. 필요한 열을 Logs table에 추가한다. Action log 카드도 action type이나 action log object를 볼 수 없거나 기록된 값이 없으면 나타나지 않는다. 카드 부재만으로 action 미실행을 확정하지 않는다.
+
+함수 실행의 요청 버전과 실제 해석된 버전이 다르면 두 버전을 함께 확인한다. 감사 검색 자체가 너무 길면 일부 필터나 값이 기록되지 않을 수 있으므로 누락 안내를 확인한다.
+
+2026-10-30 위 결과/상세 절은 수집 본문과 공식 페이지의 검색 색인 본문을 대조했다. 공식 URL 직접 열기는 실패했으며 화면과 실제 조회 동작은 시험하지 않았다. 기존 schema와 전달 조건의 검증일은 유지한다.
+
 ## 출처
+
+- [Palantir Security, Review audit log results](https://www.palantir.com/docs/foundry/security/audit-explorer-review-results) — 2026-10-30 로드된 건수, 차트 분모, 정렬 비용과 검색 상태 대조.
+- [Palantir Security, View audit log details](https://www.palantir.com/docs/foundry/security/audit-explorer-log-details) — 2026-10-30 요약/원본 값, 권한별 이름 해석, 패널 누락과 이벤트 요약 조건 대조.
 
 - [Palantir Security, Set up Audit Explorer](https://www.palantir.com/docs/foundry/security/audit-explorer-set-up) — 2026-10-30 생성 권한, Iceberg 보존 기준, export 상태와 실패 복구 대조.
 - [Palantir Security, Search and filter audit logs](https://www.palantir.com/docs/foundry/security/audit-explorer-search) — 2026-10-30 필터 결합, 검색 대상, 제안 범위와 오류 조건 대조.
