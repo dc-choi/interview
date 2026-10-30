@@ -12,11 +12,23 @@ aliases: ["Palantir 자원과 조직 관계 모델링"]
 
 ## 분류와 개별 자산
 
-`Materiel Type`은 분류를, `Materiel (Item)`은 개별 물자를 표현한다. 분류에는 명칭이 필수이고 의미 있는 식별자는 선택 사항이다. 개별 물자의 일련번호도 선택 사항이므로 이 필드가 항상 존재하거나 고유하다고 가정하지 않는다.
+`Materiel Type`은 분류를, `Materiel (Item)`은 개별 물자를 표현한다. 분류의 명칭 속성은 인터페이스 구현 시 필수 매핑 대상이고 의미 있는 식별자는 선택 사항이다. 개별 물자의 일련번호도 선택 사항이므로 이 필드가 항상 존재하거나 고유하다고 가정하지 않는다.
 
 물자 분류는 여러 부모와 여러 자식을 갖는 분류 관계를 정의한다. 따라서 단일 부모 트리로 제한한다고 해석하면 안 된다. 개별 물자는 분류, 배정 조직과 배정 위치에 각각 선택적인 단일 관계를 갖는다.
 
 `Equipment Type`과 `Munition Type`은 물자 분류를 확장하고, `Equipment (Item)`은 개별 물자를 확장한다. 같은 이름 계열이어도 분류를 상속하는 타입과 개별 자산을 상속하는 타입을 구분한다. 이는 일반 자산 관리에서 모델명과 개별 장비를 분리하는 설계와 연결된다.
+
+### 분류에서 나가는 링크와 들어오는 링크
+
+2026-10-30 Materiel Type 상세에서 `Nomenclature`는 string이며 인터페이스 구현 시 속성 매핑이 필수다. `Materiel Type Identifier`는 string, `Reference Image`는 media reference이며 두 속성의 매핑은 선택 사항이다. 속성 매핑 의무와 개별 객체의 값 검증 규칙은 구분한다.
+
+분류에서 부모 분류, 자식 분류, 개별 물자, 변화 이벤트, 상태 이벤트와 요구사항으로 나가는 여섯 링크 제약은 모두 다중 관계이며 매핑은 선택 사항이다. 반대 방향의 개별 물자에서 분류로 향하는 링크는 단일 관계이며 매핑은 선택 사항이다. 변화 이벤트, 상태 이벤트와 요구사항에서 분류로 향하는 링크는 단일 관계이며 매핑이 필수다. 방향별 다중성과 구현 시 매핑 의무를 각각 읽어야 한다.
+
+인터페이스 링크의 `required`는 구현 객체 타입에 해당 제약을 만족하는 구체 링크 타입을 매핑해야 한다는 뜻이다. 모든 이벤트 객체에 연결된 분류가 존재한다는 보장은 아니다. OSDK의 단일 링크 조회도 연결 객체가 없는 경우를 다루므로, 분류 미지정 이벤트의 허용 여부는 실제 구현의 데이터 검증 규칙에서 확인한다.
+
+분류 계층과 인터페이스 상속도 별개다. 부모 분류 링크는 분류 객체 사이의 관계이고, Fuel Type, Munition Type, Equipment Type의 확장은 인터페이스 사이의 관계다.
+
+이 절은 2026-10-30 Materiel Type 상세, 인터페이스 구현과 링크 제약 문서, TypeScript OSDK의 Links 절을 대조했다. 아래 상태, 변화와 요구사항 절의 링크 필수 여부도 매핑 의무로 명확히 했다. 실제 데이터의 링크 완전성이나 SDK 예제의 실행은 검증하지 않았으며, 나머지 내용의 검증 날짜는 유지한다.
 
 ## 상태, 변화와 요구사항
 
@@ -26,7 +38,7 @@ aliases: ["Palantir 자원과 조직 관계 모델링"]
 | Materiel Change Event | 물자 수량을 바꾸는 사건 | 분류, 상태, 수량, 출처 메타데이터와 보고 시각 |
 | Materiel Requirement | 필요한 물자의 수량 | 분류, 수량, 출처 메타데이터와 보고 시각 |
 
-세 모델 모두 물자 분류 링크는 필수이고 조직과 위치 링크는 선택 사항이다. FK 문자열도 있지만 설명은 해당 링크 사용을 권한다. FK가 채워졌다는 사실만으로 링크의 대상이 존재하거나 접근 가능하다고 가정하지 않는다.
+세 모델을 구현하는 객체 타입은 물자 분류 링크 제약을 만족하는 구체 링크 타입을 필수로 매핑해야 한다. 조직과 위치 링크의 매핑은 선택 사항이다. 이 타입 수준의 계약만으로 개별 이벤트나 요구사항의 분류 연결 존재를 보장하지 않는다. FK 문자열도 있지만 설명은 해당 링크 사용을 권한다. FK가 채워졌다는 사실만으로 링크의 대상이 존재하거나 접근 가능하다고 가정하지 않는다.
 
 상태와 변화 이벤트는 `Report Observation`을 확장하지만 요구사항은 이 인터페이스를 확장하지 않는다. 같은 수량 필드를 쓴다고 같은 사건으로 합치지 않는다. 변경 이벤트의 수량이 항상 부호 있는 증감량인지, 절대 수량인지도 이름만으로 결정하지 않고 원천 시스템의 계약을 확인한다.
 
@@ -70,6 +82,9 @@ aliases: ["Palantir 자원과 조직 관계 모델링"]
 
 ## 출처
 
+- [Palantir Documentation, Interface link types](https://www.palantir.com/docs/foundry/interfaces/interface-link-types-overview/#link-type-constraints)
+- [Palantir Documentation, Implement an interface](https://www.palantir.com/docs/foundry/interfaces/implement-interface/#3-map-link-type-constraints)
+- [Palantir Documentation, TypeScript OSDK](https://www.palantir.com/docs/foundry/ontology-sdk/typescript-osdk/#links)
 - [Palantir Documentation, Materiel Type](https://www.palantir.com/docs/defense-osdk/api/orderOfBattle/interfaceTypes/com-palantir-ontology-defense-types-materielType/)
 - [Palantir Documentation, Materiel Item](https://www.palantir.com/docs/defense-osdk/api/orderOfBattle/interfaceTypes/com-palantir-ontology-defense-types-materiel/)
 - [Palantir Documentation, Equipment Type](https://www.palantir.com/docs/defense-osdk/api/orderOfBattle/interfaceTypes/com-palantir-ontology-defense-types-equipmentType/)

@@ -16,6 +16,16 @@ Release Channel은 릴리스 집합이며 그 자체로 고정 계층이 없다.
 
 Timed stage는 source에 머문 기간과 label을 평가하고 Canary stage는 label/명시 환경 선택/제외로 모은 엔티티에서 건강, 최소 수와 soak 조건을 평가한다. Product window와 target label 조건도 필요하다. Product 기본 pipeline은 timed/canary, Module 기본은 timed만 지원한다. Hub default 변경은 기존 설정에 소급하지 않는다.
 
+### 채널 진입 경로와 설정 권한
+
+채널에 릴리스가 들어가는 경로는 세 가지다. 게시할 때 버전 유형으로 기본 채널에 자동 배정되거나, 해당 채널의 contributor가 label 요구사항을 만족하는 릴리스를 수동으로 추가하거나, Product 또는 Module의 editor가 설정한 pipeline으로 승격된다. 채널 수동 승격 권한과 제품의 pipeline 설정 권한을 같은 역할로 간주하지 않는다.
+
+Hub 관리자가 정한 기본 pipeline은 새 Product 또는 Module의 **첫 릴리스 게시 시점**에 채워진다. 이후 기본값 변경은 이미 pipeline이 설정된 대상에 소급되지 않는다. Hub 관리자는 pipeline이 설정되지 않은 기존 Product 또는 Module에 기본값을 별도로 적용할 수 있다.
+
+채널 소속과 실제 업그레이드도 구분한다. Entity는 자신이 구독하는 채널에서 모든 제약을 통과하는 최신 릴리스를 resolved maintenance window에 적용하므로, 채널에 추가됐다는 사실만으로 배포 완료를 판단하지 않는다.
+
+이 절은 2026-10-30 Release Channels와 Configure a Release promotion pipeline 공식 문서의 역할, 기본값 초기화와 적용 대상, 업그레이드 조건을 대조했다. 다른 절 전체를 재검증하지 않아 frontmatter의 검증일은 유지한다.
+
 ### 환경 기본 채널과 Entity별 채널
 
 환경의 default release channel은 설치된 제품인 Entity가 새 릴리스를 받을 기본 경로다. 특정 제품이 그 채널에 없거나 설치별 허용 위험이 다르면 Entity에 별도 채널을 지정할 수 있다. 따라서 환경 기본값만 보고 모든 Entity의 실제 추적 채널을 판단하지 않고, Entities 목록의 CHANNEL 값도 확인한다.
