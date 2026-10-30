@@ -24,6 +24,16 @@ Kubernetes privileged namespace의 경계는 문서 간 차이가 있다. export
 
 일반적인 trusted import는 기본 자동 승인일 수 있지만 network security/privileged namespace처럼 보안에 영향을 주는 변경은 권한 있는 검토가 필요하다. custom CEL이 최종 정책이다. import 완료 표시와 승인 대기를 구분한다.
 
+### 승인 대기는 환경과 import 이력을 함께 본다
+
+2026-10-30 환경 import CR 문서 대조 기준, 환경 페이지의 승인 대기 배너에서 CR을 열거나 **Import > History**에서 해당 Bundle을 선택해 승인 상태를 확인한다. 거절하거나 취소한 CR도 Import 페이지에 표시하며, 여러 환경이 담긴 Bundle은 환경별 CR을 모두 보여 준다.
+
+승인 전에는 CR의 config, Entity와 Module 변경을 다시 읽는다. 대기 중 새 Bundle이 들어오면 기존 CR이 갱신되고 import 이력에서 여러 Bundle이 같은 CR에 연결된다. 따라서 처음 검토한 Bundle의 변경만 승인한다고 가정하지 않는다. **Approve Change Request**는 그 시점에 CR에 묶인 변경을 함께 적용하는 승인이다. 운영 점검에서는 환경별 승인 상태와 최신 변경 내용을 함께 기록한다.
+
+위 경로와 승인 동작은 공식 문서로 확인했으며 실제 Hub에서 import를 실행하지 않았다. 다른 절의 기능 전체를 재검증하지 않아 frontmatter의 검증일은 유지한다.
+
+### config 편집 위치의 전환
+
 source에서 No Connection Expected 환경을 정의해 다른 Hub로 보낼 수 있다. 실제 health와 Plan은 연결된 Hub에서 본다. 환경 config와 개별 Entity config의 editability를 downstream으로 옮기면 source 편집을 즉시 잠그고 변경 metadata Bundle이 target에 도착해야 target 편집을 연다. 그 사이 양쪽에서 수정할 수 없는 구간이 있다.
 
 2026-10-30 exporting-environments 문서 대조 기준, 가져온 환경의 config와 Entity config overrides는 기본적으로 Target Hub에서 읽기 전용이다. Target의 팀 권한 부여와 config의 편집 위치 전환은 별개다. 편집 위치는 Source Hub가 제어하며, 해당 환경 또는 Entity의 **Config > Change config editability > Edit on downstream Hub**에서 바꾼다. 환경 config와 Entity별 overrides 중 어느 대상을 옮기는지 구분한다. Target 내부에만 둘 민감한 설정은 전환 metadata가 import되어 편집이 열린 뒤 Target에서 관리한다.
@@ -43,7 +53,7 @@ incremental Pipeline에서 보안 문제로 이전 Bundle을 보내지 않았다
 ## 출처
 
 - [Palantir, bundle-security](https://www.palantir.com/docs/apollo/export-import/bundle-security) — 2026-10-30 Bundle별 보고서 포함 확인, 정적 scan report와 재build, incremental 누락분 대조.
-- [Palantir, change-requests-on-environment-import](https://www.palantir.com/docs/apollo/export-import/change-requests-on-environment-import) — 환경별 원자적 CR, pending CR 최신화와 민감 변경 승인.
+- [Palantir, change-requests-on-environment-import](https://www.palantir.com/docs/apollo/export-import/change-requests-on-environment-import) — 2026-10-30 환경별 원자적 CR, pending CR 최신화, 승인 대기 배너와 Import History의 Bundle 연결 대조.
 - [Palantir, exporting-environments](https://www.palantir.com/docs/apollo/export-import/exporting-environments) — 2026-10-30 기본 읽기 전용, config별 편집 위치 전환과 downstream 변경 보존 대조. 다른 절의 검증일은 별도 표기 또는 frontmatter 기준.
 - [Palantir, guidelines-for-export-and-import](https://www.palantir.com/docs/apollo/export-import/guidelines-for-export-and-import) — 2026-10-30 권한 미전송, 채널 selector와 exportable 조건, 채널 생성과 소속 metadata 대조. 다른 절의 검증일은 frontmatter 기준.
 

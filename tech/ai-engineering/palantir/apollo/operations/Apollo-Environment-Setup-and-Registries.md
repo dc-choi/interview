@@ -16,6 +16,26 @@ Hub allowlist에는 클러스터 egress IP와 필요 시 사내 CI egress IP를 
 
 환경 생성은 이름/불변 ID, 연결 방식, control-plane Module 또는 blank 환경, contact team, 초기 roles와 registry를 정한다. blank는 agent를 별도로 설치해야 관리할 수 있다. 초기 manifest로 helm-chart-operator를 설치한 뒤 control-plane 보고와 Hub 연결을 확인한다. contact team은 선택값이며 운영 책임을 켜면 제품 contact team으로, 끄면 환경 contact team으로 알림을 보낸다.
 
+### 로컬 kind 클러스터의 준비와 확인
+
+2026-10-30 공식 로컬 설치 가이드의 예시는 control-plane 3개와 worker 3개로 구성한다. Docker와 kind를 준비하고 Apollo 등록 파일을 둘 작업 디렉터리에 `cluster.yml`을 만든다. 이 구성은 개발용 예시이며 운영 환경의 가용성이나 용량 검증을 대신하지 않는다.
+
+```yaml
+kind: Cluster
+apiVersion: kind.x-k8s.io/v1alpha4
+nodes:
+  - role: control-plane
+  - role: control-plane
+  - role: control-plane
+  - role: worker
+  - role: worker
+  - role: worker
+```
+
+같은 디렉터리에서 `kind create cluster --config cluster.yml`로 생성한 뒤 `kubectl get nodes`로 노드 상태를 확인한다. 가이드의 기대 출력은 여섯 노드의 `Ready` 상태다. 출력 예시의 `v1.24.0`과 `AGE`는 실제 값과 다를 수 있으므로 현재 설치 버전이나 권장 버전으로 복사하지 않는다.
+
+클러스터 준비 뒤에는 Apollo의 **Create Environment** 흐름으로 Spoke 연결을 계속한다. 노드가 Ready인 것과 Apollo 등록 및 연결을 마친 것은 별도 확인 단계다. 이번 대조는 설정과 절차를 읽은 것이며 클러스터 생성이나 Hub 연결을 실행하지 않았다. 다른 환경 구성의 검증일은 유지한다.
+
 ## registry 등록과 환경 할당
 
 Artifact Registry는 Apollo catalog와 별개의 실제 OCI artifact 저장소다. URL은 registry.domain:port 형식이며 기본443, Hub 안에서 유일해야 한다. 무인증 공개 OCI, basic auth OCI와 ECR 인증을 지원한다. ECR은 IAM access key/secret과 선택 FIPS 설정을 받는다. 저장한 credential은 다시 볼 수 없고 수정 대신 교체한다. 초기 역할은 생성 후 5분 안에 지정한다.
@@ -45,7 +65,7 @@ namespace 관리 UI는 k8s-namespace-agent가 보고한 뒤 보이며 먼저 ope
 
 - [Palantir, set-up-your-apollo-hub](https://www.palantir.com/docs/apollo/apollo-getting-started/set-up-your-apollo-hub) — Hub URL, egress allowlist와 SAML provider 설정.
 - [Palantir, connect-spoke](https://www.palantir.com/docs/apollo/core/connect-spoke) — 기존 클라우드 클러스터와 테스트용 로컬 선택.
-- [Palantir, set-up-local-kubernetes-cluster](https://www.palantir.com/docs/apollo/core/set-up-local-kubernetes-cluster) — local kind multi-node는 개발용.
+- [Palantir, set-up-local-kubernetes-cluster](https://www.palantir.com/docs/apollo/core/set-up-local-kubernetes-cluster) — 2026-10-30 개발용 kind의 3+3 노드 구성, 생성 명령, Ready 확인과 Spoke 연결 후속 단계 대조.
 - [Palantir, spoke-control-plane](https://www.palantir.com/docs/apollo/core/spoke-control-plane) — control-plane 역할과 선택 Pod mutation webhook.
 - [Palantir, assign-artifact-registry](https://www.palantir.com/docs/apollo/managing-artifact-registries/assign-artifact-registry) — registry assign 승인, 일괄 제출과 Activity의 Plan/Connected 확인. 2026-10-30 추가 대조.
 - [Palantir, create-artifact-registry](https://www.palantir.com/docs/apollo/managing-artifact-registries/create-artifact-registry) — URL 유일성, credential 교체와 revision.
