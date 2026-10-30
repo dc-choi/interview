@@ -26,6 +26,12 @@ Hub 관리자가 정한 기본 pipeline은 새 Product 또는 Module의 **첫 �
 
 이 절은 2026-10-30 Release Channels와 Configure a Release promotion pipeline 공식 문서의 역할, 기본값 초기화와 적용 대상, 업그레이드 조건을 대조했다. 다른 절 전체를 재검증하지 않아 frontmatter의 검증일은 유지한다.
 
+### 사용자 정의 채널 생성과 label 조건
+
+사용자 정의 채널은 Settings & Configuration의 Release channels에서 Create release channel을 선택해 이름과 설명을 입력한다. Requirements의 Add label requirement에서 label ID를 고르고, 특정 값까지 요구하려면 Require value를 켜고 값을 지정한다. 예를 들어 검증 label이 있다는 조건과 그 값이 `passed`라는 조건은 다르다. 채널 접근 권한은 RBAC로 관리한다.
+
+label 조건은 수동 승격과 자동 승격 모두에 적용되지만 채널 진입 때만 평가한다. 이후 label 변경을 채널 퇴출이나 배포 중단 장치로 사용하지 않는다. 이 절의 생성 절차와 조건은 2026-10-30 공식 문서를 대조했으며 실제 Hub 조작은 수행하지 않았다.
+
 ### 환경 기본 채널과 Entity별 채널
 
 환경의 default release channel은 설치된 제품인 Entity가 새 릴리스를 받을 기본 경로다. 특정 제품이 그 채널에 없거나 설치별 허용 위험이 다르면 Entity에 별도 채널을 지정할 수 있다. 따라서 환경 기본값만 보고 모든 Entity의 실제 추적 채널을 판단하지 않고, Entities 목록의 CHANNEL 값도 확인한다.
@@ -57,6 +63,14 @@ open-ended는 시작 버전 이상인 미래 릴리스까지 포함한다. 수�
 기본 roll-forward는 추적 채널의 non-recalled 후보 중 최소 버전 이상을 기다린다. 후보가 없으면 문제가 있는 현재 버전에 남을 수 있다. downgrade 허용은 전진 불가 시 최소선 이상의 이전 버전도 허용하되 가능한 최신 후보를 우선한다. freeze는 만료까지 버전 변경을 막고, test environments 전략은 지정 환경에만 먼저 roll-off한다.
 
 Recall 발행은 즉시 정책을 바꾸지만 실제 복구는 다른 제약을 통과해야 한다. 긴급 command는 별도다. maintenance window는 기본 무시하지만 환경 opt-in으로 지키게 할 수 있다. recall revert는 기존 문제가 있는 버전을 다시 적격으로 만들며 모든 엔티티를 예전 버전으로 되돌리지 않는다. Module recall은 자동으로 설치를 다른 버전으로 옮기지 않는 별도 계약이다. CVE-only recall 후보로 보안 위험을 유지/낮추는 예외 upgrade는 별도 Hub 기능이다.
+
+### Recall 발행 전 확인과 해제 조건
+
+Product, Module 또는 개별 Release의 Actions에서 Recall releases를 열고 시작 버전과 범위를 정한다. 발행 전에 View affected releases로 실제 대상 목록을 확인하고, 사유와 roll-off 전략을 적는다. 관련 장애나 수정 내용을 설명할 링크도 추가할 수 있다. RC와 Snapshot 검색 필터를 좁혔다고 실제 recall 범위까지 좁아지는 것은 아니다.
+
+기존 recall은 Product 또는 Module의 Recalls에서 선택해 Edit recall로 수정한다. 수정 버전이 나왔을 때는 문제가 남은 구버전을 다시 허용하지 않도록 범위를 조정한다. Revert recall은 잘못 발행했거나 영향을 받는 모든 릴리스의 문제가 해결됐는지 확인한 뒤 판단한다. 해제해도 다른 활성 recall에 걸린 릴리스는 승격 대상으로 돌아오지 않는다. 다시 적격이 된 릴리스도 채널에서 최선의 후보일 때 업그레이드 Plan이 제안되며, 과거 버전으로 일괄 복귀하는 동작은 아니다.
+
+이 절의 발행, 편집과 해제 조건은 2026-10-30 공식 문서를 대조했다. 실제 복구 실행과 다른 절 전체는 재검증하지 않아 frontmatter의 검증일은 유지한다.
 
 ## 출처
 
