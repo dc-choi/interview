@@ -58,6 +58,16 @@ Design Council의 Double Diamond는 문제를 넓게 탐색하고 좁혀 정의�
 
 웹사이트가 큰 접점이라면 사이트맵으로 주요 고객 여정을 확인하고 대표 화면 소수에서 서체, 색상, 버튼과 이미지의 관계를 먼저 검증할 수 있다. 그 뒤 같은 원칙을 나머지 화면으로 확장한다.
 
+### 채널 배너는 생성 뒤 실제 표시 조건을 확인한다
+
+생성 도구로 시안을 만들었더라도 업로드 규격과 기기별 잘림을 따로 확인한다. 2026-10-30 YouTube 공식 도움말 기준, 일반 크리에이터 채널 배너는 같은 이미지를 컴퓨터, 모바일과 TV에서 다르게 표시한다.
+
+- 최소 업로드 크기는 2048 × 1152px, 화면비는 16:9다. 이 최소 크기에서 글자와 로고의 안전 영역은 1235 × 338px다.
+- 권장 크기는 2560 × 1440px이며 파일은 6MB 이하여야 한다. 큰 이미지 전체가 모든 기기에서 보인다고 가정하지 않는다.
+- 시안 선택 뒤 미리보기에서 잘림을 확인하고 핵심 글자와 로고의 위치를 조정한다.
+
+이는 플랫폼 규격을 납품 점검에 적용한 기준이다. 생성 속도나 개별 외주 견적만으로 브랜드 적합성, 수정 비용과 고객 성과를 판단하지 않는다. 특정 생성 도구의 품질과 비용 절감 효과는 검증하지 않았다.
+
 ## 타이포그래피 시안의 선택 이유를 설명한다
 
 글자 형태를 직접 설계하는 작업에서도 기획서와 브랜드의 기존 표현을 먼저 읽는다. 다음은 원더키 디자이너의 공개 인터뷰에서 다룬 기획서 조사와 제안서 설명을 외주 작업에 적용하는 제안이다. 시안 채택률이나 매출을 높인다고 검증된 공식은 아니다.
@@ -127,6 +137,7 @@ GS리테일의 2026-09-03 발표는 디저트 브랜드 한정선, 제조사 로
 
 ## 출처
 
+- [YouTube Help, Manage your channel branding](https://support.google.com/youtube/answer/10456525?hl=en) — 2026-10-30 배너 최소 크기, 안전 영역, 권장 크기, 파일 용량과 기기별 잘림 대조.
 - [GS25, 로로멜로와 ‘한정선 요거트 찹쌀떡’ 출시 — GS리테일](https://www.newswire.co.kr/newsRead.php?no=1041771) — 발행사가 뉴스와이어로 배포한 2026-09-03 보도자료, 협업 참여자와 냉동 제품 기획. 2026-10-26 확인.
 - [Status Trackers and Progress Updates: 16 Design Guidelines — NN/g, Maria Rosala](https://www.nngroup.com/articles/status-tracker-progress-update/) — 상태 화면과 알림의 역할, 이력과 채널 간 일관성, 중복 알림 방지. 2026-10-23 확인.
 - [New WIPO Study Gives First-Ever Figures on Value of Intangible Capital in Manufactured Goods — WIPO](https://www.wipo.int/pressroom/en/articles/2017/article_0012.html) — 2017년 연구의 기술, 디자인, 브랜드 구분과 커피 시장 사례.

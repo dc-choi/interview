@@ -57,8 +57,19 @@ Export retention 최대 730일은 event time이 아닌 transaction이 추가된 
 
 Audit infrastructure는 append-only로 설계되지만 법적 remediation을 위한 Support redaction 경로가 있다. Log 부재, Org attribution/coverage, 지연과 migration gap을 검토한 뒤 증거의 범위를 판단한다. 실제 SIEM ingest, 탐지와 retention 삭제를 실행하지 않았다.
 
+## Audit Explorer의 조회와 감사 증거
+
+2026-10-30 공식 문서 기준, Audit Explorer는 beta이며 enrollment별 가용성이 다를 수 있다. `audit.3` export가 기록하는 Iceberg table을 사용하고 조회자의 table 읽기 권한과 Marking을 따른다. 앱 접근 허용은 table 접근 권한을 추가하지 않는다. 조회 결과에는 table에 도착한 로그만 포함되므로 최근 구간의 빈 결과만으로 활동 부재를 확정하지 않는다.
+
+검색 감사 이벤트 `AUDIT_EXPLORER.QUERY_SUBMIT`은 `dataSearch` category로 table, 필터, 검색어와 시간 범위를 기록한다. **이 이벤트의 `SUCCESS`는 검색이 기록됐다는 뜻**이며 검색 완료나 결과 존재를 보증하지 않는다. SQL, 결과, 열어 본 로그와 완료 여부도 기록하지 않는다. `dataSearch`만 필터링하면 다른 앱의 검색도 포함되므로 이벤트 이름과 table RID로 범위를 좁힌다.
+
+결과 수, 차트와 session의 Events에는 중복 행이 포함된다. 정확한 집계에는 `logEntryId` 중복 제거가 필요하다. 화면의 시간과 입력은 브라우저 현지 시간이고, raw 값과 **Copy timestamp**는 UTC다. Log frequency 구간도 UTC 경계를 사용하므로 현지 날짜와 구간 경계를 혼동하지 않는다.
+
+조회 기간과 감사 목적을 좁혀 필요한 정보만 확인한다. 열린 검색 탭은 60초마다, 브라우저 창으로 돌아올 때도 최신 로그를 확인하므로 작업 뒤 닫는다. 이 절만 추가 대조했으며 기존 schema, 전달 지연과 보존 조건의 검증일은 유지한다. 실제 조회 비용과 배포 환경은 시험하지 않았다.
+
 ## 출처
 
+- [Palantir Security, Audit Explorer](https://www.palantir.com/docs/foundry/security/audit-explorer-overview) — 2026-10-30 table 접근, 검색 감사 의미, 중복 집계와 시간대 대조.
 - [Palantir Security, audit-log-categories](https://www.palantir.com/docs/foundry/security/audit-log-categories)
 - [Palantir Security, audit-logs-overview](https://www.palantir.com/docs/foundry/security/audit-logs-overview)
 - [Palantir Security, monitor-audit-logs](https://www.palantir.com/docs/foundry/security/monitor-audit-logs)
