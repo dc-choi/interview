@@ -46,6 +46,8 @@ Overview의 마지막 보고 시각, agent 연결, registry 연결, 채널과 Pl
 - Environment의 마지막 보고 시각과 각 agent의 마지막 보고 시각은 별도 정보다. Plan의 시작 시각과 상태, 설치된 Module 버전, 할당된 registry의 연결 상태도 함께 본다.
 - Overview의 Release Channel은 환경 기본값이다. 일부 엔티티는 다른 채널을 구독할 수 있으므로 화면의 채널 하나로 모든 설치의 구독을 단정하지 않는다.
 - 표시된 환경 maintenance window도 모든 엔티티의 최종 일정은 아니다. Product 설정에 따라 엔티티의 유지보수 시간이 달라질 수 있으며, 계산 기준은 [[Apollo-Orchestration-and-Constraints#시간과 가용성 제약|resolved window]]에서 확인한다.
+- 환경을 식별할 때는 Environment properties의 RID를 확인한다. README에는 목적과 위치 같은 설명을 둘 수 있지만, 설명과 식별자는 구분한다.
+- Roles는 이 환경에서 팀에 부여된 역할을, Contact는 담당 팀과 추가 연락 팀을 표시한다. 운영 인계에서는 담당 팀 정보와 역할 할당을 각각 확인한다. Labels는 환경에 적용된 분류 정보를 확인하는 별도 항목이다.
 
 운영 적용 제안: 배포가 멈췄다면 환경 집계에서 대상 엔티티를 좁히고, 그 엔티티의 채널과 최종 유지보수 시간, 최근 Plan 및 보고 시각을 대조한다.
 
