@@ -56,6 +56,14 @@ WCAG 2.2의 사전 녹화 자막 해설은 자막이 화면의 관련 정보를 
 
 2026-10-21 확인한 Meta의 Edits 소개에는 클립 단위 편집, 전환 효과와 skip rate 같은 배포 관련 피드백이 안내돼 있다. 이 안내는 기능과 피드백의 존재를 뒷받침하며, 특정 편집 효과가 품질이나 매출을 일정 배수 높인다는 근거는 아니다. 같은 페이지의 출시 당시 향후 기능 목록을 현재 제공 기능으로 단정하지 않는다.
 
+### 효과음은 검색 조건과 사용 조건을 나누어 고른다
+
+효과음 이름은 원하는 소리를 찾기 위한 검색 단서다. Adobe Express의 공식 안내는 `whoosh`처럼 효과 이름으로 찾거나 지나가는 대상까지 구체화하고, 영상에 배치한 뒤 볼륨과 길이를 조절하는 흐름을 제시한다. YouTube Audio Library의 Sound effects 탭은 제목과 키워드 검색, 카테고리와 길이 필터를 제공한다(2026-10-30 대조).
+
+운영 제안: 화면 전환이나 움직임처럼 소리가 필요한 장면을 먼저 정하고, 검색 결과를 들어 본 뒤 대사를 가리지 않도록 배치한다. 검색어에 맞는 파일을 찾은 상태와 사용할 권리를 확인한 상태를 구분한다. 효과를 추가했다는 사실만으로 시청 지속이나 구매 증가를 판단하지 않는다.
+
+YouTube 안내는 Creative Commons 라이선스 음원을 쓰면 영상 설명에 저작자를 표시하도록 한다. 다른 채널이나 라이브러리의 royalty-free 표기까지 YouTube가 보증하는 것은 아니며, 이 도움말만으로 플랫폼 밖의 사용 조건을 확정하지 않는다. 실제 음원의 라이선스와 배포할 플랫폼의 조건을 확인한다. 이번 확인에서는 개별 음원을 내려받거나 청음하지 않았다.
+
 ## 초반 이탈과 시청 지속을 함께 본다
 
 Meta의 Edits 소개는 skip rate를 배포에 영향을 줄 수 있는 피드백의 예로 든다. Meta의 2023년 추천 설명도 여러 예측을 결합한다고 밝힌다. 두 자료는 건너뛰기 비율이나 평균 시청 시간이 조회 수를 가장 크게 좌우한다는 결론을 뒷받침하지 않는다(2026-10-26 대조). 지표가 제공된다는 사실, 그 지표와 노출의 관계, 편집을 바꿨을 때의 인과 효과는 구분한다.
@@ -145,6 +153,9 @@ Meta의 2023년 공개 설명은 Facebook과 Instagram의 추천에 행동과 �
 4. 여러 게시물에서 반복되는 경향을 확인한다. 자연 유입에서는 노출 대상이 무작위로 같아지지 않으므로 시간만의 효과라고 확정하지 않는다.
 
 ## 출처
+
+- [Adobe Express, Add whoosh sound effects](https://www.adobe.com/express/feature/audio/sound-effects/whoosh) — 2026-10-30 효과 이름과 구체적인 장면 검색, 볼륨과 길이 조절 안내 대조. 마케팅 성과 주장은 채택하지 않았다.
+- [YouTube Help, Use music and sound effects from the Audio Library](https://support.google.com/youtube/answer/3376882?hl=en) — 2026-10-30 효과음 검색과 필터, Creative Commons 음원의 출처 표시와 도움말의 적용 범위 대조.
 
 - [Test Content With Non-Followers Using Trial Reels — Meta](https://about.fb.com/news/2024/12/trial-reels-try-content-non-followers-first-see-what-perfoms-best/) — 2026-10-27 비팔로워 우선 노출, 형식과 주제 시험, 팔로워 노출 예외와 공유 설정을 대조. 현재 계정별 이용 자격은 확인하지 않았으며 포맷 분류와 비교 절차는 운영 제안이다.
 

@@ -72,6 +72,16 @@ Product, Module 또는 개별 Release의 Actions에서 Recall releases를 열고
 
 이 절의 발행, 편집과 해제 조건은 2026-10-30 공식 문서를 대조했다. 실제 복구 실행과 다른 절 전체는 재검증하지 않아 frontmatter의 검증일은 유지한다.
 
+### Freeze 해제와 제한된 환경의 복구 시험
+
+Freeze는 안전한 대체 버전을 아직 정하지 못했을 때 해당 recall 대상 Entity를 현재 버전에 머물게 하는 전략이다. 만료일을 반드시 정하며, 만료 전에 복구를 시작하려면 recall을 편집해 Freeze all version changes를 끈다. 만료는 roll-off를 재개하는 조건이며, 실제 이동은 적격 릴리스와 다른 제약 충족 여부를 함께 확인한다.
+
+Test roll-off on specific Environments를 쓰면 지정한 환경에서만 먼저 복구를 시험한다. 나머지 환경의 Entity는 현재 버전에 머물고 업그레이드 Plan이 제안되지 않는다. 시험이 끝나면 recall을 편집해 전체 대상에 적용할 전략을 정한다. 시험 성공만으로 전체 환경이 자동 복구됐다고 판단하지 않는다.
+
+Downgrade를 허용해도 지정한 최소 버전으로 반드시 돌아가는 것은 아니다. 조건을 만족하는 최신 후보를 우선하며, 되돌린 뒤에도 새 non-recalled 릴리스에 대한 업그레이드를 계속 제안한다. 복구 속도와 사용자가 의존하는 새 기능의 상실을 함께 판단한다.
+
+이 절은 2026-10-30 Roll-off strategies 공식 문서를 대조했다. 실제 Hub의 복구와 다른 절 전체는 재검증하지 않아 frontmatter의 검증일은 유지한다.
+
 ## 출처
 
 - [Palantir, introduction-promotion](https://www.palantir.com/docs/apollo/apollo-getting-started/introduction-promotion) — 채널 구독과 승격의 hands-on 흐름.
