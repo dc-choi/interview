@@ -12,7 +12,9 @@ aliases: []
 
 Hub settings/configuration, resource role grants, ownership 변경과 Team/Group membership은 다른 Hub에서 가져오지 않는다. Team을 보내도 식별자만 전송하며 target 관리자가 membership과 permissions를 정한다. imported Environment는 처음에는 어느 Team에도 권한이 주어지지 않는다.
 
-release channel은 exportable로 지정해야 resource와 membership metadata를 전송한다. non-exportable 채널을 릴리스 선택 필터로 쓰는 것은 가능하지만 그 채널 자체가 따라가지는 않는다. target에 채널이 없으면 생성하며 기존 채널 입장은 target label 조건을 지킨다.
+2026-10-30 공식 export/import guidelines 대조 기준, Release Channel 자원과 Product Release에 기록된 채널 소속 metadata는 구분한다. Environment selector는 선택한 환경이 사용하는 채널을, Module과 Product selector는 inclusion filter가 참조하는 채널을 선택한다.
+
+선택된 채널도 **Hub Settings > Release Channels**에서 exportable로 설정해야 Bundle에 포함된다. non-exportable 채널을 릴리스 선택 필터로 쓰는 것은 가능하지만 채널 자원과 해당 채널의 소속 정보는 내보낸 Product Release metadata에 포함되지 않는다. Bundle에 담긴 채널이 Target Hub에 없으면 자동 생성하므로 custom 채널을 미리 만들 필요는 없다. 이미 존재하는 채널에 가져온 Product Release를 넣을 때는 그 채널의 label requirements를 충족해야 한다. 채널 전송과 별개로 resource role grants와 Team/Group membership은 Target Hub에서 설정한다.
 
 Kubernetes privileged namespace의 경계는 문서 간 차이가 있다. export/import guidelines는 일반 namespace로 내린 뒤 target에서 다시 privileged CR을 요구한다고 적고, 환경 import CR 문서는 privileged security context 변경을 승인 대상으로 열거한다. 어느 경우든 source의 특권 승인을 target에서 그대로 신뢰하지 않으며 실제 import CR과 target 정책을 확인한다.
 
@@ -39,7 +41,7 @@ incremental Pipeline에서 보안 문제로 이전 Bundle을 보내지 않았다
 - [Palantir, bundle-security](https://www.palantir.com/docs/apollo/export-import/bundle-security) — 정적 Bundle scan report와 재build, incremental 누락분.
 - [Palantir, change-requests-on-environment-import](https://www.palantir.com/docs/apollo/export-import/change-requests-on-environment-import) — 환경별 원자적 CR, pending CR 최신화와 민감 변경 승인.
 - [Palantir, exporting-environments](https://www.palantir.com/docs/apollo/export-import/exporting-environments) — config 편집 소유권 이동과 downstream 변경 보존.
-- [Palantir, guidelines-for-export-and-import](https://www.palantir.com/docs/apollo/export-import/guidelines-for-export-and-import) — 권한/membership 미전송, exportable 채널과 target 승인.
+- [Palantir, guidelines-for-export-and-import](https://www.palantir.com/docs/apollo/export-import/guidelines-for-export-and-import) — 2026-10-30 권한 미전송, 채널 selector와 exportable 조건, 채널 생성과 소속 metadata 대조. 다른 절의 검증일은 frontmatter 기준.
 
 ## 관련 문서
 

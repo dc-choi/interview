@@ -71,6 +71,16 @@ aliases: ["Product Roadmap", "프로덕트 로드맵", "Story Mapping", "스토�
 
 예를 들어 자동 견적 기능의 출시 여부만 세지 않고, 견적을 기다리는 시간이 줄었는지와 사람이 다시 고치는 일이 늘었는지를 함께 확인한다. 결과가 기대와 다르면 기능 수를 늘리기 전에 가정이나 제공 방식을 바꾼다. 이는 적용 예시이며, 실험 실패를 무조건 허용하거나 계약상 납기를 가설로 바꾼다는 뜻은 아니다.
 
+### 장기 비전과 현재 제공 능력을 구분한다
+
+장기 비전을 로드맵으로 옮길 때는 목표로 제시한 능력, 아직 해결할 과제와 고객에게 제공했다고 확인한 범위를 나누어 적는다. 다음은 공개 제품 소개를 읽을 때 적용할 질문이며, 특정 기업의 개발 단계 분류를 그대로 가져온 양식은 아니다.
+
+- **목표:** 어떤 일을 할 수 있게 만들겠다는 것인가. 목표를 현재 가능한 기능으로 바꾸어 쓰지 않는다.
+- **남은 과제:** 목표에 필요한 인식, 제어, 통합이나 운영 조건 중 무엇을 더 해결해야 하는가.
+- **제공 근거:** 고객이 사용할 수 있는 범위, 지원 조건과 실제 사용 결과를 어떤 자료로 확인했는가. 발표의 기대만 있으면 이 칸을 확정하지 않는다.
+
+2026-10-30 확인한 Tesla의 Optimus 공식 소개는 위험하거나 반복적이거나 지루한 작업을 수행하는 범용 자율 이족 보행 로봇을 개발 목표로 제시한다. 그 목표에는 균형, 탐색, 인식과 물리 세계 상호작용을 위한 소프트웨어 구축이 필요하다고 설명한다. 이는 회사가 공개한 개발 목표와 과제이며, 모든 인간 수요를 충족했다는 실적이나 고객에게 보장한 제공 범위의 증거가 아니다. 로드맵에서는 이런 장기 기대와 다음 단계에서 검증할 능력을 분리한다.
+
 ### 작은 실험은 중요한 문제와 확장 조건을 함께 고른다
 
 Micro-battles는 중요한 사업 문제를 제한된 범위에서 풀고, 확인한 해법을 다른 범위로 넓히는 변화 방식이다. 작은 범위라는 말은 중요하지 않은 일을 고른다는 뜻이 아니다. 사업에 중요한 문제인지, 짧은 기간에 진전을 확인할 수 있는지, 해법을 다른 조직이나 시장으로 확장할 수 있는지를 함께 본다.
@@ -117,6 +127,7 @@ AWS 공개 대담에서는 Micro-battles의 시간 범위를 최대 3~4개월로
 
 - [GOV.UK, How the alpha phase works](https://www.gov.uk/service-manual/agile-delivery/how-the-alpha-phase-works)
 - [GOV.UK, Developing a roadmap](https://www.gov.uk/service-manual/agile-delivery/developing-a-roadmap)
+- [Tesla, SI & Robotics](https://www.tesla.com/SI) — 2026-10-30 Optimus의 개발 목표와 필요한 소프트웨어 과제 대조. 제품 납품과 범용 작업 성능을 검증한 자료로 사용하지 않음
 - [서비스 기획자의 로드맵 수립 — 쪼렙 서비스기획자 (Brunch)](https://brunch.co.kr/@b30afb04c9f54dc/54)
 - [The Parlor Room, Season 1 Bonus Content (Part 2) — Linda Hill 외 (Harvard Business School Online)](https://online.hbs.edu/podcast/season-1-bonus-content-part-2-linda-hill-mihir-desai-forest-reinhardt-and-joshua-margolis) — 계획의 가정, 행동의 영향과 방향 수정에 관한 공개 대담
 - [How Bain’s Micro-Battles Drive Agile Digital Transformation — Frank Ford, Tom Soderstrom (AWS)](https://aws.amazon.com/executive-insights/podcast/driving-digital-transformation-with-bain-micro-battles/) — 2026-10-16 공식 전사문의 문제 선택, 제한된 실험과 확장 조건을 대조. 대담의 조직 전환 성공률과 AI 효과 예측은 일반 사실로 사용하지 않음

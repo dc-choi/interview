@@ -30,7 +30,9 @@ snapshot은 매번 선택 조건의 현재 전체 결과, incremental은 앞 Bun
 
 ## 큰 파일과 전송 확인
 
-chunking은 생성 시 최대4~16GB로 나누며 설정 변경은 새 Bundle부터 적용한다. chunk 자체는 순서와 관계없이 upload할 수 있지만 전체가 있어야 처리한다. incremental Bundle 간 의존 순서와 chunk 순서는 별개다.
+2026-10-30 공식 chunking 문서 대조 기준, Export Pipeline의 **Build settings > Max transfer size**를 4~16 GB 범위로 설정한다. 전체 Bundle 크기가 이 한도를 초과할 때 여러 파일로 나뉜다. 한도를 바꿔도 이미 만든 Bundle에는 소급 적용되지 않고 이후 생성한 Bundle부터 적용된다.
+
+Bundle의 **Downloads > Bundle chunks**에서 각 청크의 크기를 확인하고 개별 또는 일괄 다운로드한다. Target Hub의 Import 애플리케이션에는 청크를 순서와 관계없이 올릴 수 있다. Import inbox의 Bundle 상태에서 아직 받지 못한 청크를 확인하며, 모든 청크를 받은 뒤 Bundle import를 처리한다. 청크 업로드 완료와 Bundle 처리 완료를 구분한다. incremental Bundle 간 의존 순서와 한 Bundle 안의 청크 업로드 순서는 별개다.
 
 CLI 문서 기준 최소0.425.0에서 bundle download/upload/assemble을 제공한다. 기본 download는 chunk를 stream해 합치지만 하나가 실패하면 전체 명령이 실패한다. 신뢰성이 필요하면 chunks-only, index-only를 각각 받아 로컬에서 assemble한다. 실패 chunk ID를 골라 재시도한다. 문서의 오류 목록과 뒤의 재시도 예시 ID가 맞지 않으므로 예시 숫자를 그대로 복사하지 않는다. gzip은 합치는 시간을 크게 늘릴 수 있다.
 
@@ -42,7 +44,7 @@ preview는 build 전 선택 내용을 확인하는 도구다. build 후 다음 p
 
 - [Palantir, export-import](https://www.palantir.com/docs/apollo/export-import) — 부모 경로에서 source/target와 Bundle 흐름.
 - [Palantir, apollo-cli-for-bundle](https://www.palantir.com/docs/apollo/export-import/apollo-cli-for-bundle) — download/upload/assemble, chunk 실패와 최소CLI.
-- [Palantir, bundle-chunking](https://www.palantir.com/docs/apollo/export-import/bundle-chunking) — chunk 크기, 임의 upload 순서와 전체 수신 후 처리.
+- [Palantir, bundle-chunking](https://www.palantir.com/docs/apollo/export-import/bundle-chunking) — 2026-10-30 분할 한도, 새 Bundle 적용, 다운로드와 누락 청크 확인 절차 대조. 다른 절의 검증일은 frontmatter 기준.
 - [Palantir, bundle-layer-deduplication](https://www.palantir.com/docs/apollo/export-import/bundle-layer-deduplication) — target별 layer dedup과 confirmation의 정확성.
 - [Palantir, bundle-preview](https://www.palantir.com/docs/apollo/export-import/bundle-preview) — preview 자동/수동 갱신.
 - [Palantir, checkpoint-bundle](https://www.palantir.com/docs/apollo/export-import/checkpoint-bundle) — checkpoint는 incremental chain 기준을 바꾸지 않음.
