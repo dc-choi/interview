@@ -54,6 +54,19 @@ Gateway는 OpenAPI, Smithy, Lambda 같은 입력을 도구로 연결하고, 의�
 
 Identity와 Gateway의 인증 구성에서는 들어오는 사용자 또는 에이전트 요청과 외부 서비스로 나가는 호출을 나눠 본다. 외부 호출의 OAuth 2.0, API key나 AWS 권한 설정이 필요하며, 도구를 연결했다는 사실만으로 원래 서비스의 인가 규칙이 충족되지는 않는다. 변경 작업의 승인, 중복 실행 방지와 실패 복구도 따로 점검한다.
 
+### OAuth 동의와 앱 사용자 세션을 연결한다
+
+2026-10-30 AgentCore Identity 공식 문서 기준, 사용자 동의가 필요한 authorization code flow에는 두 callback을 구분한다. 외부 OAuth 제공자에는 AgentCore가 발급한 callback URL을 등록하고, workload identity의 `allowedResourceOauth2ReturnUrls`에는 사용자 세션을 확인할 앱의 HTTPS callback을 등록한다.
+
+1. `GetResourceOauth2Token`이 반환한 authorization URL로 사용자가 동의한다. AgentCore는 앱 callback으로 브라우저를 돌려보낸다.
+2. 앱은 현재 브라우저의 유효한 로그인 세션을 검증하고, 동의를 시작한 사용자와 연결되는지 확인한다. URL을 전달받은 다른 사용자의 동의를 원래 사용자에게 연결해서는 안 된다.
+3. 앱은 `CompleteResourceTokenAuth`에 `sessionUri`와 `userIdentifier`를 전달한다. 사용자 식별자는 흐름을 시작할 workload access token 생성에 쓴 inbound OAuth token 또는 user ID이며, 현재 브라우저의 활성 앱 세션에서 가져온다. 원격 session cache의 값만으로 동의한 사용자를 판단하지 않는다.
+4. API의 성공 응답은 본문 없는 HTTP 200이다. 이후 에이전트는 `GetResourceOauth2Token`으로 access token을 가져온다. 확인 API 응답 자체가 외부 서비스의 access token은 아니다.
+
+authorization URL과 대응하는 세션 식별자는 10분 동안 유효하다. 앱 callback의 CSRF 방어에는 요청에 opaque state를 넣고 돌아온 값을 검증한다. 현재 공식 안내의 `agentcore dev`도 callback 호스팅이나 `CompleteResourceTokenAuth` 호출을 대신하지 않으므로 로컬과 배포 환경 모두 앱이 구현해야 한다.
+
+다른 사용자로 동의하기, 로그인 세션 만료와 state 불일치에서 토큰 획득을 중단하는지 시험하는 것은 위 경계에서 도출한 검증 제안이다. 실제 OAuth 연동 시험은 수행하지 않았으며, 이 절의 대조 날짜는 기존 서비스 설명 전체의 재검증일이 아니다.
+
 ### Policy는 Gateway를 지나는 호출에 적용한다
 
 AgentCore Policy는 policy engine을 Gateway에 연결하고 도구 접근 전에 정책을 평가한다. Cedar로 사용자와 도구 입력 조건을 표현할 수 있으며, 자연어로 생성한 정책은 검토할 후보로 취급한다. Gateway 구성의 `ENFORCE` 모드 예제는 정책을 실행 경로에서 강제하는 설정을 보여준다.
@@ -137,6 +150,9 @@ BMA에 메시지를 제출한 뒤 빈 응답이 와도 요청 수락만 뜻할 �
 
 ## 출처
 
+- [AWS, OAuth 2.0 authorization URL session binding](https://docs.aws.amazon.com/bedrock-agentcore/latest/devguide/oauth2-authorization-url-session-binding.html) — 2026-10-30 callback 등록, 앱 세션 검증, 유효기간과 로컬 실행 책임 대조.
+- [AWS, CompleteResourceTokenAuth](https://docs.aws.amazon.com/bedrock-agentcore/latest/APIReference/API_CompleteResourceTokenAuth.html) — 요청의 세션/사용자 식별자와 본문 없는 HTTP 200 응답.
+- [YouTube, Amazon Web Services, Secure User Data Access for AI Agents](https://www.youtube.com/watch?v=xHh7jgXOegA) — 2026-02-16 공개 설명 영상. OAuth 흐름의 학습 계기이며 현재 동작은 위 공식 문서로 대조.
 - [AWS, Security and IAM roles](https://docs.aws.amazon.com/bedrock/latest/userguide/bedrock-managed-agents-openai-security.html)
 - [AWS, Work with sessions, events, and results](https://docs.aws.amazon.com/bedrock/latest/userguide/bedrock-managed-agents-openai-sessions.html)
 - [AWS, Amazon Bedrock Managed Agents, powered by OpenAI (preview)](https://docs.aws.amazon.com/bedrock/latest/userguide/bedrock-managed-agents-openai.html)
