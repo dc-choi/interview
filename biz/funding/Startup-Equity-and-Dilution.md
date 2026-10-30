@@ -75,6 +75,14 @@ Cap table은 주주와 증권 종류, 보유 수량 등을 정리한 자본 구�
 
 매각이나 청산 때 지분율에 총금액만 곱하기 전에 부채, 비용과 증권별 배분 조건을 확인한다. 낮은 매각가, 높은 매각가, 후속 투자 실패의 경우를 나누어 검토한다. 이는 계약 검토를 위한 분석 제안이며 특정 한국 계약의 배분 결과를 확정하는 설명이 아니다.
 
+## 공동창업 지분과 의사결정 구조를 따로 설계한다
+
+50:50이라는 비율만으로 갈등이나 실패를 예측하지 않는다. YC의 2015년 공개 조언은 오히려 공동창업자 간 균등 배분을 권하며, 초기 아이디어나 몇 달의 선행 작업보다 앞으로의 실행과 동기를 중시한다. 이는 특정 투자자의 운영 조언이지 모든 팀의 최적 비율을 입증한 연구나 한국 회사의 법적 기준은 아니다(2026-10-30 본문 확인).
+
+그 조언은 지분 배분과 함께 vesting도 다룬다. 예시인 4년 vesting과 1년 cliff는 첫 1년 전 퇴사 시 확정 몫이 없고, 1년을 채우면 배정 몫의 25%, 이후에는 남은 몫을 매월 나누어 확정하는 구조다. 이를 한국 계약에 자동 적용하지 않고 실제 권리, 퇴사 시 처리와 집행 가능성을 별도로 검토한다.
+
+적용 제안: 초기 비율을 정할 때 앞으로의 역할과 투입, 기여 변화와 이탈 시 처리, 일상 의사결정과 이사회 권한을 각각 합의한다. 51:49로 숫자만 바꾸면 모든 교착이 해결된다고 가정하지 않는다. 지분율과 별도로 정관, 종류주식과 계약상 동의권을 확인하는 앞 절의 검토를 유지한다.
+
 ## SAFE: 미래 지분 권리와 현재 주식을 구분
 
 SAFE는 특정 사건이 생기면 미래 지분을 받도록 약정하는 계약이다. 계약 체결 자체를 현재 주식 보유와 동일하게 취급하지 않는다. SEC는 전환 사건이 발생하기 전 SAFE 보유자가 회사의 소유 지분을 갖지 않는다고 설명한다. [SEC Common Startup Securities](https://www.sec.gov/resources-small-businesses/capital-raising-building-blocks/common-startup-securities)
@@ -131,6 +139,7 @@ YC는 미국 회사용 양식과 일부 비미국 관할 양식을 구분한다.
 
 ## 출처
 
+- [How to Split Equity Among Co-Founders — Y Combinator, Michael Seibel](https://www.ycombinator.com/blog/splitting-equity-among-founders/) — 2015-12-02 게시, 2026-10-30 균등 배분 권고와 vesting 예시 대조. 운영 조언이며 한국 계약 효력은 검증하지 않음
 - [한국벤처투자, 한국모태펀드 사업개요](https://www.kvic.or.kr/about-business/capital-business/korea-mother-fund/overview) — 2026-10-24 간접 출자 구조 확인, 페이지의 과거 규모 수치는 사용하지 않음
 - [한국벤처투자, 한국모태펀드 운용체계](https://www.kvic.or.kr/about-business/capital-business/korea-mother-fund/management-system) — 기업 투자와 회수 경로
 - [Glossary — U.S. Securities and Exchange Commission](https://www.sec.gov/resources-small-businesses/glossary)

@@ -121,6 +121,7 @@ aliases: ["인프라&클라우드(Infrastructure&Cloud)", "Infrastructure & Clou
 - [x] [[VPC-Subnet-CIDR#서브넷 유형 — 라우팅이 성격을 결정|Public, Private, Isolated Subnet]] / [[VPC-NAT-Security#NAT Gateway vs NAT Instance|NAT Gateway와 NAT Instance]]
 
 ## Kubernetes
+- [x] [[K8s-OpenKruise-SidecarSet|OpenKruise SidecarSet]] — 사이드카 주입과 이미지 업데이트, native sidecar 지원 경계와 가용성 확인
 - [x] [[Container-Memory-Metrics|컨테이너 메모리 지표 해석 (cgroup 계정 범위, RSS와 page cache, working set, 고원 vs 우상향, 실측)]]
 - [x] [[K8s-AI-Workloads|AI 워크로드]] — [[K8s-GPU-Sharing-and-Quota|GPU 공유와 팀별 할당]](큐, 회수와 큐 안 선점, 분할 모드별 메모리 강제), [[K8s-Agent-Substrate|Agent Substrate]](스냅샷 재개, sandbox 격리와 배포 경로별 제약)
 

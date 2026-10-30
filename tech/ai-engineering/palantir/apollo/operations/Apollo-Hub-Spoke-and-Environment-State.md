@@ -38,6 +38,17 @@ Unknown은 운영 전 결정해야 하며 다시 돌아갈 수 없는 초기 상
 
 Overview의 마지막 보고 시각, agent 연결, registry 연결, 채널과 Plan 상태를 함께 읽는다. 녹색 Pod나 오래된 imported health만으로 현재 제어 가능 상태라고 판단하지 않는다. 환경 삭제는 Apollo settings/Entity 기록을 없애지만 실제 설치를 지우지 않아 인프라 정리는 별도다.
 
+## Overview의 기본값과 엔티티별 예외
+
+2026-10-30 공식 Overview 본문을 대조한 화면 해석 기준이다. 다른 연결 설정의 검증 날짜는 갱신하지 않는다.
+
+- Entities 집계는 최신 상태, grace period와 blocked를 구분한다. 집계를 선택해 해당 엔티티 목록으로 이동하고 개별 상태를 확인한다.
+- Environment의 마지막 보고 시각과 각 agent의 마지막 보고 시각은 별도 정보다. Plan의 시작 시각과 상태, 설치된 Module 버전, 할당된 registry의 연결 상태도 함께 본다.
+- Overview의 Release Channel은 환경 기본값이다. 일부 엔티티는 다른 채널을 구독할 수 있으므로 화면의 채널 하나로 모든 설치의 구독을 단정하지 않는다.
+- 표시된 환경 maintenance window도 모든 엔티티의 최종 일정은 아니다. Product 설정에 따라 엔티티의 유지보수 시간이 달라질 수 있으며, 계산 기준은 [[Apollo-Orchestration-and-Constraints#시간과 가용성 제약|resolved window]]에서 확인한다.
+
+운영 적용 제안: 배포가 멈췄다면 환경 집계에서 대상 엔티티를 좁히고, 그 엔티티의 채널과 최종 유지보수 시간, 최근 Plan 및 보고 시각을 대조한다.
+
 ## 출처
 
 - [Palantir, getting-started-with-apollo](https://www.palantir.com/docs/apollo/apollo-getting-started/getting-started-with-apollo) — 연결→제품→설치→운영 제약→recall→보안의 기본 순서.

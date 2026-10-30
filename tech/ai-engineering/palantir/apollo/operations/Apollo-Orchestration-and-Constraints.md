@@ -34,6 +34,18 @@ recall roll-off는 기본적으로 유지보수 시간 밖에서도 가능하지
 
 artifact availability는 Available, Unavailable, Unchecked로 구분한다. registry 요청 실패도 Unavailable이 될 수 있다. Hub 접근을 기대하지 않거나 URI에 맞는 registry가 없는 Unchecked는 그 검사로 Plan을 막지 않는다. Unchecked를 실제 pull 가능의 증거로 해석하지 않는다.
 
+## 의존성 그룹으로 같은 제품의 설치를 구분한다
+
+2026-10-30 공식 Environment settings의 dependency groups 절을 대조했다. 다른 Plan 동작의 검증 날짜는 갱신하지 않는다.
+
+`dependency-groups`는 엔티티를 논리적으로 묶는다. 기본 해석에서는 그룹을 하나 이상 공유하는 대상만 Product Release dependency를 충족하거나 incompatibility를 활성화한다. 그룹을 생략하거나 빈 목록을 주면 `default`로 취급한다.
+
+예를 들어 A가 B에 의존하고 같은 환경에 A1/B1과 A2/B2를 설치한다면, 두 쌍에 각각 `production`과 `staging`을 지정한다. 그러면 A2의 의존성을 기존 B1이 충족하지 못하며 같은 그룹의 B2가 필요하다. 이는 Apollo의 의존성 해석 범위이며 네트워크나 접근 권한의 격리를 보장하는 설정으로 해석하지 않는다.
+
+공유 서비스처럼 특정 제품만 다른 그룹에서 찾아야 하면 `dependency-group-overrides`에 제품별 탐색 그룹을 지정한다. `"*"`는 어느 그룹에서든 해당 의존성을 충족할 수 있게 한다. `ignored-dependencies`로 제약을 무시하는 것과 구분한다.
+
+운영 적용 제안: 그룹을 나눌 때 의존성과 incompatibility 양쪽에 미치는 영향을 확인하고, 공유 서비스만 명시적으로 예외를 둔다. 설정 편집은 change request를 만들며 Environment editor가 승인하거나 거절한다.
+
 ## 긴급 command와 취소
 
 command는 Plan의 일반 제약과 우선순위를 우회한다. maintenance/suppression, unhealthy, recalled 버전 조건에서도 실행할 수 있지만 같은 엔티티의 active 작업과 충돌하면 기다린다. 엔티티당 pending/executing command는 하나다. Install, Uninstall, Enforce config, Enforce config and version과 Helm resource restart 등의 동작을 목적에 맞춰 고른다. 대기 중 secret 작업이 command에 함께 포함될 수 있다.

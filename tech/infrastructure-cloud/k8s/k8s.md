@@ -10,6 +10,7 @@ aliases: ["Kubernetes", "K8s"]
 workload와 Service, 설정과 storage, traffic 진입과 배포, 리소스 적정화 — Kubernetes 운영의 기본 축.
 
 ## 목차
+- [x] [[K8s-OpenKruise-SidecarSet|OpenKruise SidecarSet (생성 시 주입, 이미지 업데이트, native sidecar 제약과 단계적 배포)]]
 - [x] [[K8s-CKA-Operations-Practice|CKA 운영 실습 (공식 범위, 약점 lab과 모의 과제, host/context 확인, 결과 검증과 허용 자료)]]
 - [x] [[K8s-Core-Workloads-and-Service-Architecture|Control plane과 node component (API server, etcd, scheduler, kubelet, kube-proxy, apply에서 Running까지, cluster DNS와 ndots, VPC DNS 한도, 버전 skew와 in-place, blue/green 업그레이드)]]
 - [x] [[K8s-Core-Workloads-and-Service|Core workload와 Service (Pod, Deployment, RollingUpdate와 Recreate, selector 불일치, EndpointSlice, Namespace)]]
