@@ -18,6 +18,12 @@ Plan은 설치, 설정 변경, 버전과 설정의 동시 변경, 제거와 secr
 
 실패 조사에서는 raw Plan output을 읽고, 일반 실행 실패 화면에서는 Plan 발행, agent 수신과 실행 실패를 나눈 timeline을, Helm chart rollout 실패에서는 ready가 되지 못한 Kubernetes resource 목록을, Product validation 실패에서는 validation error 세부를 함께 확인한다. 공식 Product validation 실패 화면은 변경 미적용을 명시하지만 일반 실행 실패 화면은 같은 보장을 하지 않는다. 실패 표시만으로 무변경이나 rollback 완료를 가정하지 않는다. (2026-10-18 [공식 실패 화면과 본문](https://www.palantir.com/docs/apollo/core/plans-and-constraints) 대조)
 
+### rollback Plan 발행 조건과 복구 완료를 구분한다
+
+Spoke agent는 Plan을 실행한 뒤 성공 여부를 Hub에 보고한다. Plan이 실패했고 Environment 상태가 실행 전과 달라졌으면 Orchestration Engine이 실행 전 상태로 복구하기 위한 rollback Plan을 발행한다. 실패 보고만으로 곧바로 복구가 끝났다는 뜻은 아니다(2026-10-30 공식 How Apollo works 대조).
+
+운영 점검에서는 원래 Plan의 실패, rollback Plan의 발행과 실행 결과, 이후 보고된 상태를 따로 확인한다(적용 제안). 무변경 실패와 일부 변경 뒤 실패를 구분하고, 복구 Plan의 발행을 서비스 정상화의 증거로 대신하지 않는다. 이번 대조는 이 실행 흐름에 한정하며 다른 제약과 설정의 검증 날짜를 갱신하지 않는다.
+
 ## 시간과 가용성 제약
 
 Maintenance window는 변경 가능한 시간, suppression window는 발행을 막는 시간이다. suppression이 우선한다. maintenance override는 시간 제약만 잠시 열며 다른 제품 의존성이나 active Plan 충돌을 없애지 않는다. Helm chart는 downtime/no-downtime 어느 window에서도 바꿀 수 있어 둘을 같은 일정으로 제한해야 의도한 시간 통제가 된다.
@@ -38,6 +44,7 @@ active Plan 취소는 agent의 응답이 필요하다. agent가 죽거나 끊기
 
 ## 출처
 
+- [Palantir, How Apollo works](https://www.palantir.com/docs/apollo/core/how-apollo-works) — 2026-10-30 Executing change의 agent 결과 보고와 상태 변경을 동반한 실패의 rollback Plan 발행 조건 대조. 복구 완료 점검은 적용 제안
 - [Palantir, introduction-maintenance](https://www.palantir.com/docs/apollo/apollo-getting-started/introduction-maintenance) — 환경/제품 유지보수 일정 실습과 downtime 양쪽 설정.
 - [Palantir, plans-and-constraints](https://www.palantir.com/docs/apollo/core/plans-and-constraints) — Plan 생명주기, 재계산, rollback, window와 artifact 제약.
 - [Palantir, prevent-product-release-upgrades-for-an-entity](https://www.palantir.com/docs/apollo/managing-entities/prevent-product-release-upgrades-for-an-entity) — 자동 승격 밖 custom 채널로 버전 동결.

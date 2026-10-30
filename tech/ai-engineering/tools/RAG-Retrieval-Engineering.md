@@ -74,6 +74,14 @@ PDF, 스캔본 같은 비정형 문서는 청킹 전에 OCR과 layout parsing으
 
 다음은 파서 선택에 적용할 검증 방법이다. 대표 문서에서 읽기 순서, 표의 행과 열 대응, 단위와 각주가 추출 결과에 남는지 원본과 대조한다. 같은 질문으로 기본 파서와 고급 파서의 검색 성공률, 답변 근거와 수집 비용을 비교한다. 텍스트를 추출했다는 사실만으로 문맥 보존이나 답변 정확도가 보장되지는 않는다.
 
+### 긴 표는 행과 헤더의 관계를 보존한다
+
+표를 행 단위로 나눌 때는 각 값이 어떤 열과 상위 분류에 속하는지 함께 남긴다. 병합 셀을 풀더라도 빈칸을 무조건 앞의 값으로 채우지 않고, 원래 셀이 차지한 행과 열 범위를 확인한다. 긴 표의 각 청크에 표 제목, 필요한 헤더, 단위와 원문 위치를 연결하고, 추출 결과를 원본과 대조한다(설계 제안).
+
+스타벅스의 2024년 AWS 공개 발표는 병합 셀을 풀고 긴 표의 제목과 각 행을 연결해 검색 가능한 구조로 만든 사례를 설명한다(36:08~38:09). 별개의 제품 예로 Azure Document Intelligence v4.0의 `2024-11-30` GA 문서는 Markdown 출력 안의 표를 HTML로 표현해 병합 셀과 여러 행의 헤더를 지원한다고 명시한다(2026-10-29 대조). 이 표현을 후속 청킹에서 평문으로 바꾸면 구조 정보가 사라지지 않는지 다시 확인한다. 스타벅스가 Azure 제품을 썼다는 뜻은 아니다.
+
+검수 제안: 같은 숫자가 다른 열이나 상위 분류에도 있는 질문을 만들어 행과 헤더가 함께 검색되는지 확인한다. 파서가 표를 반환했다는 사실과 답변에 필요한 관계가 보존됐다는 사실을 구분한다. 이 절의 제품 출력 형식만 추가 대조했으므로 기존 `verified_at`은 유지한다.
+
 ### 멀티모달 검색용 표현과 원본 근거를 구분한다
 
 이미지를 설명한 텍스트를 임베딩해 검색하더라도, 답변 단계까지 그 설명만 전달할 필요는 없다. Amazon Nova 공식 RAG 지침은 이미지의 설명을 텍스트 임베딩에 사용하는 방식과 멀티모달 임베딩을 사용하는 방식을 구분하며, 어느 방식이든 검색 결과를 원래 모달리티의 문서 부분과 연결하도록 권고한다. 원본이 이미지라면 검색 뒤 원본 이미지를 모델에 전달하는 흐름이다(2026-10-09 확인).
@@ -255,6 +263,8 @@ Q. 검색은 됐는데 폐기된 정책으로 답했다면?
 
 ## 출처
 
+- [스타벅스 인공지능 챗봇 더사이렌포탈: 디지털 혁신 여정의 새로운 시작 — Amazon Web Services Korea](https://www.youtube.com/watch?v=JgGfkZsyz7E) — 2024-09-09 공개 발표 전사, 36:08~38:09의 병합 셀 처리와 긴 표의 제목, 행 연결. 화면 코드와 성과 수치는 검증하지 않아 반영하지 않음
+- [Microsoft Learn, Document layout analysis](https://learn.microsoft.com/en-us/azure/ai-services/document-intelligence/prebuilt/layout?view=doc-intel-4.0.0) — 2026-10-29 v4.0 `2024-11-30` GA의 HTML 표 출력과 병합 셀, 여러 행 헤더 표현 대조. 후속 청킹과 검수 절차는 설계 제안
 - [AWS, Amazon SQS at-least-once delivery](https://docs.aws.amazon.com/AWSSimpleQueueService/latest/SQSDeveloperGuide/standard-queues-at-least-once-delivery.html) — 2026-10-22 Standard 큐의 재전달과 멱등 처리 권고 확인. 문서 버전별 수집 상태 관리는 설계 제안
 - [Google AI for Developers, EmbeddingGemma 2 model card](https://ai.google.dev/gemma/docs/embeddinggemma/model_card_2)
 - [Google AI for Developers, Multimodal Embeddings with EmbeddingGemma 2](https://ai.google.dev/gemma/docs/embeddinggemma/multimodal-embeddinggemma-with-sentence-transformers)
