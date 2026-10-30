@@ -36,6 +36,16 @@ Prefetch는 광고 구간 전에 ADS에 질의하고 소재를 준비해 시작 
 
 시각이 정해진 광고에는 single schedule, 불규칙한 이벤트에는 recurring schedule을 검토한다. recurring은 매 광고 구간 뒤 다음 구간용 광고를 준비하지만 single보다 시각을 세밀하게 통제하기 어렵다.
 
+## 광고 삽입과 시청 추적의 실행 주체를 나눈다
+
+2026-10-30 광고 보고 문서 부분 대조 기준이다. SSAI로 광고를 넣더라도 보고 신호를 누가 보내는지는 세션 초기화 요청에 따라 달라진다.
+
+- **서버 측 보고:** 플레이어가 MediaTailor의 `/v1/segment` 광고 URL을 요청하면 MediaTailor가 광고 서버에 beacon을 보내고 실제 광고 segment로 redirect한다. 광고 시작, 25%, 50%, 75%와 완료 시점의 보고를 지원한다.
+- **클라이언트 측 보고:** 플레이어가 세션의 추적 메타데이터를 받아 재생 이벤트에 맞춰 광고 서버 등에 beacon을 보낸다. SSAI 세션 초기화 API의 `reportingMode`는 `client`와 `server`를 구분하며 생략 시 `client`다. 이를 다른 초기화 경로의 기본값에 적용하지 않는다.
+- **검증 경계:** 서버가 관찰한 segment 요청, 플레이어의 실제 재생과 광고 서버가 인정한 집계를 나눠 점검한다. 서버 측 광고 삽입이라는 이름만으로 모든 보고가 서버에서 처리되거나 클라이언트 연동이 필요 없다고 판단하지 않는다.
+
+SSAI의 세션 추적 API를 SGAI에 그대로 옮기지도 않는다. SGAI의 클라이언트 추적은 `GetTracking` 대신 asset list의 `TRACKING` 정보를 사용한다. 광고 슬롯의 배분과 매출 정산은 [[Advertising-Inventory-and-Revenue-Sharing|광고 인벤토리와 수익 배분]]에서 별도로 다룬다.
+
 ## 운영 점검 제안
 
 1. ADS 요청 성공, 소재 준비, manifest 반영과 실제 재생을 각각 측정한다.
@@ -43,10 +53,13 @@ Prefetch는 광고 구간 전에 ADS에 질의하고 소재를 준비해 시작 
 3. 서로 다른 시청 세션의 개인화 manifest가 섞이지 않는지 확인한다. segment 캐시는 [[CloudFront|CloudFront]]의 개인화 광고 캐시 기준과 함께 본다.
 4. 광고가 잘 나오는지와 시청 추적이 제대로 기록되는지를 별도 확인한다. SSAI 도입만으로 추적 정확도나 모든 기기의 무중단 재생을 보장하지 않는다.
 
-검증 범위는 2026-10-22 공식 문서 대조다. 실제 광고 서버, 플레이어와 라이브 스트림을 구성해 시험하지 않았다.
+광고 종료와 prefetch의 검증 범위는 2026-10-22 공식 문서 대조이며, 2026-10-30에는 광고 보고 경로만 추가 확인했다. 기존 `verified_at`은 유지한다. 실제 광고 서버, 플레이어와 라이브 스트림을 구성해 시험하지 않았다.
 
 ## 출처
 
+- [AWS, Reporting ad tracking data](https://docs.aws.amazon.com/mediatailor/latest/ug/ad-reporting.html)
+- [AWS, MediaTailor server-side ad tracking and reporting](https://docs.aws.amazon.com/mediatailor/latest/ug/ad-reporting-server-side.html)
+- [AWS, Client-side ad tracking](https://docs.aws.amazon.com/mediatailor/latest/ug/ad-reporting-client-side.html)
 - [AWS, What is AWS Elemental MediaTailor?](https://docs.aws.amazon.com/mediatailor/latest/ug/what-is.html)
 - [AWS, Understanding AWS Elemental MediaTailor ad insertion behavior](https://docs.aws.amazon.com/mediatailor/latest/ug/ad-behavior.html)
 - [AWS, Prefetching ads](https://docs.aws.amazon.com/mediatailor/latest/ug/prefetching-ads.html)

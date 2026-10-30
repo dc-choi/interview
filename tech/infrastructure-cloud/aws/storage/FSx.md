@@ -91,6 +91,17 @@ verified_at: 2026-09-03
 
 파일 복제 부담을 줄이는 선택지이며, S3 버킷 이전이나 별도 백업을 수행한 것으로 해석하지 않는다. 이 절만 추가 대조했으며 다른 FSx 엔진의 기능과 한도는 다시 검증하지 않았다.
 
+### OpenShift VM의 공유 스토리지와 이동 조건
+
+부분 검증(2026-10-30): AWS의 EBS, ONTAP 배포 문서와 NetApp의 ROSA 구성, Red Hat OpenShift 4.20의 live migration 요건을 대조했다.
+
+- **AZ 제약:** EBS 볼륨은 같은 AZ의 EC2에 연결한다. 다른 AZ로 워크로드를 옮길 때 기존 볼륨을 그대로 붙일 수 있다고 가정하지 않는다.
+- **공유와 장애 대응:** FSx for ONTAP을 여러 노드에서 접근하는 구성과 Multi-AZ 배포를 구분한다. Multi-AZ는 다른 AZ의 standby로 쓰기를 동기 복제한다. 공유 스토리지를 쓴다는 사실만으로 AZ 장애 대비까지 완료된 것은 아니다.
+- **Trident 연결:** NetApp의 ROSA 예시는 Trident CSI provisioner(`csi.trident.netapp.io`)를 쓰는 StorageClass와 VM 디스크의 PVC를 연결한다. 예시의 `ontap-san` backend와 `ReadWriteMany`(RWX) PVC처럼 드라이버, 프로토콜과 접근 모드를 함께 확인한다.
+- **VM 이동:** OpenShift 4.20의 live migration에는 RWX 공유 스토리지 외에도 RAM, 네트워크 대역폭과 노드 간 CPU 호환성이 필요하다. FSx 생성이나 PVC 바인딩만으로 이동 가능성을 판정하지 않는다.
+
+운영 점검 제안: VM에 시험 데이터를 쓴 뒤 노드 이동과 저장소 failover를 별도로 시험하고, 데이터 보존과 애플리케이션 응답을 확인한다. 관리형 전환의 비용은 서비스 요금과 운영 부담을 합쳐 비교하며, 고객 계정에서 저장소용 EC2가 보이지 않는다는 이유만으로 비용 절감을 확정하지 않는다. 실제 클러스터와 비용은 시험하지 않았고 다른 FSx 엔진의 기존 검증일은 유지한다.
+
 ## FSx for OpenZFS
 
 - **ZFS 파일 시스템**을 관리형으로 제공
@@ -134,6 +145,10 @@ verified_at: 2026-09-03
 
 ## 출처
 
+- [AWS, Amazon EBS volumes](https://docs.aws.amazon.com/ebs/latest/userguide/ebs-volumes.html)
+- [AWS, Availability, durability, and deployment options](https://docs.aws.amazon.com/fsx/latest/ONTAPGuide/high-availability-AZ.html)
+- [NetApp, Deploy Red Hat OpenShift Virtualization with FSx for ONTAP on a ROSA cluster](https://docs.netapp.com/us-en/netapp-solutions-virtualization/openshift/osv-rosa-overview.html)
+- [Red Hat OpenShift Container Platform 4.20, Live migration](https://docs.redhat.com/en/documentation/openshift_container_platform/4.20/html/virtualization/live-migration)
 - [AWS, Releasing files](https://docs.aws.amazon.com/fsx/latest/LustreGuide/file-release.html)
 - [AWS, Managing metadata performance](https://docs.aws.amazon.com/fsx/latest/LustreGuide/managing-metadata-performance.html)
 - [AWS, Importing changes from your data repository](https://docs.aws.amazon.com/fsx/latest/LustreGuide/importing-files-dra.html)
