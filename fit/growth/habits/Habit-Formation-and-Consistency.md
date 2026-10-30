@@ -17,6 +17,14 @@ aliases: ["Habit Formation and Consistency", "습관 형성과 꾸준함"]
 
 작게 시작하는 것과 부실하게 완료하는 것도 구분한다. 독서 시작 분량은 줄일 수 있어도 배포 검수나 고객에게 약속한 완료 기준을 습관 형성 명목으로 낮추지 않는다.
 
+## 미래의 상상과 실행 가능성 판단을 구분한다
+
+원하는 미래를 생생하게 상상하는 것과 그 미래가 실현될 가능성을 판단하는 것은 다르다. 목표의 이미지가 선명하다는 사실만으로 필요한 행동이나 성과가 확보됐다고 보지 않는다.
+
+Oettingen과 Mayer(2002)는 네 연구에서 미래에 대한 기대와 긍정적 상상을 측정한 뒤, 수주에서 최대 2년 후의 노력과 성과를 확인했다. 실현 가능성을 높게 보는 기대는 더 높은 노력과 성과를 예측했지만, 원하는 미래를 긍정적으로 경험하는 상상은 반대 방향의 관계를 보였다. 이는 예측 관계를 다룬 연구이며 모든 상상이 해롭다거나 상상만으로 실패를 일으킨다는 인과 결론이 아니다.
+
+**적용 제안:** 원하는 결과, 가능성을 판단할 현재 근거, 다음에 시작할 행동을 따로 적는다. 예를 들어 기술을 능숙하게 설명하는 모습을 그렸다면, 지금 설명할 수 없는 개념 하나와 다음 학습의 시작 조건을 함께 정한다. 이미지가 더 선명해질 때까지 기다리는 것을 실행의 필수조건으로 두지 않는다. 이 절차 자체의 효과를 위 연구가 직접 검증한 것은 아니다.
+
 ## 90일을 보편적인 완성 기한으로 쓰지 않는다
 
 Lally 등의 연구는 96명이 식사, 음료 또는 활동 행동을 같은 맥락에서 12주 동안 반복하도록 하고 수행 여부와 자기보고 자동성을 기록했다. 분석 가능한 자료는 82명에게서 확보됐으며, 모형이 적합된 62명 중 39명은 적합도가 양호했다.
@@ -60,6 +68,7 @@ Karpicke와 Roediger(2008)의 외국어 단어 학습 실험에서는 한 번 �
 
 ## 이해 확인
 
+- 미래를 생생하게 상상하는 것과 실현 가능성을 판단하는 데 필요한 근거는 어떻게 다른가?
 - 90일 동안 책을 읽었다면 무엇이 확인됐고, 무엇은 별도로 확인해야 하는가?
 - 이틀을 놓친 계획에서 다음 실행 조건 하나를 어떻게 바꿀 것인가?
 - 방해 사이트를 보지 않겠다는 결심과 일정 시간 접근을 막는 사전 약속은 무엇이 다른가?
@@ -73,6 +82,7 @@ Karpicke와 Roediger(2008)의 외국어 단어 학습 실험에서는 한 번 �
 - [Does it really take 66 days to form a habit? — University of Surrey, Phillippa Lally 인터뷰](https://www.surrey.ac.uk/news/does-it-really-take-66-days-form-habit-we-asked-expert-dr-pippa-lally) — 2026-01-21, 개인차와 구체적인 실행 계획
 - [Restricting Temptations: Neural Mechanisms of Precommitment — Neuron, Crockett 외](https://pubmed.ncbi.nlm.nih.gov/23889938/) — 2013년 연구. 2026-10-22 초록과 Figure 1, 2 설명에서 선택 제한과 실험 결과를 대조했으며 장기 학습 효과는 확인하지 않음
 - [The critical importance of retrieval for learning — Science, Karpicke와 Roediger](https://pubmed.ncbi.nlm.nih.gov/18276894/) — 2008년 연구, 2026-10-29 초록 대조. 정답 후 반복 학습과 반복 회상, 예상 성과와 실제 성과의 구분
+- [The Motivating Function of Thinking About the Future: Expectations Versus Fantasies — Journal of Personality and Social Psychology, Oettingen와 Mayer](https://www.prospectivepsych.org/sites/default/files/pictures/Oettingen-Mayer_Expectations-versus-fantasies-2002.pdf) — 2002년 연구, 2026-10-30 원 논문의 초록과 기대/상상 정의, 후속 측정 설계를 대조. 개인 경험담이나 장기 사업 성과를 검증한 자료가 아니다.
 
 ## 관련 문서
 
