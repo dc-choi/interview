@@ -68,6 +68,10 @@ YouTube 안내는 Creative Commons 라이선스 음원을 쓰면 영상 설명�
 
 Meta의 Edits 소개는 skip rate를 배포에 영향을 줄 수 있는 피드백의 예로 든다. Meta의 2023년 추천 설명도 여러 예측을 결합한다고 밝힌다. 두 자료는 건너뛰기 비율이나 평균 시청 시간이 조회 수를 가장 크게 좌우한다는 결론을 뒷받침하지 않는다(2026-10-26 대조). 지표가 제공된다는 사실, 그 지표와 노출의 관계, 편집을 바꿨을 때의 인과 효과는 구분한다.
 
+Meta의 2023-04-14 Reels 발표에서 total watch time은 반복 재생을 포함한 총 재생 시간이고, average watch time은 이를 총 재생 횟수로 나눈 값이다(2026-10-30 원문 대조). 고유 시청자당 시간이나 첫 3초 통과율과 같은 지표가 아니다. 평균만으로 어느 순간에 이탈했는지도 알 수 없다. 현재 화면의 지표 정의와 분모는 별도로 확인한다.
+
+첫 3초, 강한 비주얼, 질문과 빠른 편집은 비교할 가설로 둔다. 이 발표는 도입부 개선에 시청 지표를 활용하도록 안내하지만 3초라는 보편적 임계점이나 특정 편집의 노출 증가를 입증하지 않는다. 도입의 자극을 높이는 것과 목표 고객의 이해, 문의와 구매 개선을 구분한다.
+
 다음은 도입부를 비교하는 운영 제안이다. 도입 문구 유형별 효과는 공식 근거로 확인되지 않았다.
 
 1. 주제, 길이와 본문을 고정하고 첫 장면이나 첫 문장만 바꾼다. 질문으로 궁금증을 만드는 문구, 피할 실수를 경고하는 문구, 대상 범위를 넓힌 문구는 계정별로 시험할 가설로 둔다. 대상 범위를 넓히면 대상과 장면을 특정하라는 첫 절의 질문과 상충할 수 있다.
@@ -153,6 +157,8 @@ Meta의 2023년 공개 설명은 Facebook과 Instagram의 추천에 행동과 �
 4. 여러 게시물에서 반복되는 경향을 확인한다. 자연 유입에서는 노출 대상이 무작위로 같아지지 않으므로 시간만의 효과라고 확정하지 않는다.
 
 ## 출처
+
+- [New Features on Instagram Reels: Trends, Editing and Gifts — Meta](https://about.fb.com/news/2023/04/instagram-reels-trending-audio-and-gifts-updates/) — 2023-04-14 발표의 총/평균 시청 시간 정의를 2026-10-30 대조. 현재 계정 화면과 도입부의 인과 효과는 확인하지 않았다.
 
 - [Adobe Express, Add whoosh sound effects](https://www.adobe.com/express/feature/audio/sound-effects/whoosh) — 2026-10-30 효과 이름과 구체적인 장면 검색, 볼륨과 길이 조절 안내 대조. 마케팅 성과 주장은 채택하지 않았다.
 - [YouTube Help, Use music and sound effects from the Audio Library](https://support.google.com/youtube/answer/3376882?hl=en) — 2026-10-30 효과음 검색과 필터, Creative Commons 음원의 출처 표시와 도움말의 적용 범위 대조.

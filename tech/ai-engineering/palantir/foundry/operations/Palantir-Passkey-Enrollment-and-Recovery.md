@@ -29,7 +29,27 @@ Passkey를 삭제할 때는 platform 등록과 원래 credential store 양쪽에
 
 예전에는 되던 로그인이 실패하면 이메일 도메인 제한과 authenticator 정책 변경도 확인한다. 정책이 hardware key만 허용하면 device passkey는 등록 후에도 부적합해질 수 있다. 오류가 일반 로그인 실패로만 보일 수도 있다. 전화번호는 enrollment당 한 번만 사용할 수 있다.
 
+## Passkey profile 변경과 관리자 잠금 방지
+
+2026-10-30 기준, self-service directory의 commercial enrollment 중 활성화된 곳에서 profile을 관리한다. 변경에는 Enrollment administrator 또는 Authentication administrator 역할과 인증 설정 편집 권한이 필요하다. 정책은 신규/기존 credential에 적용하며, 이전 전까지는 기존 allowlist가 유효하다.
+
+| Profile | 허용 범위 |
+|---|---|
+| Permissive | FIDO MDS 인증기와 별도로 유지하는 소프트웨어 인증기/비밀번호 관리자 집합 |
+| Standard | MDS 인증기와 더 좁은 Google, Apple, Microsoft 소프트웨어 인증기 집합 |
+| Recommended | MDS의 FIDO 인증 하드웨어 기반 인증기, 소프트웨어/동기화 인증기 제외 |
+| Government | Recommended보다 제한적인 하드웨어 인증기 집합 |
+| Custom | 기본 profile에 AAGUID를 추가/제외. 기본 집합의 변경도 반영 |
+
+**Check impact는 저장이나 결과 예약이 아니다.** 일부/전체 passkey를 잃는 사용자를 구분하고, 관리자 자신의 대체 passkey를 등록/시험한 뒤 다시 확인한다. 저장 때 재평가하며 변경 사유가 감사에 남는다. `Enforce anyway`도 실행 관리자의 마지막 허용 passkey를 없애는 변경을 허용하지 않는다. 미리보기는 passkey 등록 사용자를 집계하며 조회 권한에 따라 표시 표본은 더 작을 수 있다.
+
+AAGUID만으로 하드웨어 진위를 증명하지 못한다. Custom 추가로 보안 차단이나 필요한 attestation 부재를 우회할 수 없으며, 신뢰할 metadata를 불러오지 못하면 평가는 실패한다.
+
+이 절은 수집 본문과 공식 페이지의 검색 색인 본문으로 확인했다. 직접 URL 열기는 실패했으며 실제 정책 변경은 시험하지 않았다. 기존 기기 지원 조건 전체를 재검증하지 않아 frontmatter 날짜는 유지한다.
+
 ## 출처
+
+- [Palantir Foundry, Configure passkey profiles](https://www.palantir.com/docs/foundry/authentication/user-directory-passkey-profiles) — 2026-10-30 profile 범위, 영향 미리보기, 관리자 잠금 방지와 attestation 조건 대조.
 
 - [Palantir Foundry, authentication](https://www.palantir.com/docs/foundry/getting-started/authentication/)
 - [Palantir Foundry, login](https://www.palantir.com/docs/foundry/getting-started/login/)

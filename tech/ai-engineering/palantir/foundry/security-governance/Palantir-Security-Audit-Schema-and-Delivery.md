@@ -103,7 +103,23 @@ Categories, Entities, Users, Origins, Environment, Product, Sequence ID와 `prod
 
 2026-10-30 위 결과/상세 절은 수집 본문과 공식 페이지의 검색 색인 본문을 대조했다. 공식 URL 직접 열기는 실패했으며 화면과 실제 조회 동작은 시험하지 않았다. 기존 schema와 전달 조건의 검증일은 유지한다.
 
+### 세션 요약과 실제 활동 범위를 구분한다
+
+Session explorer는 `audit.3`의 같은 `sid`를 가진 로그를 묶는다. **Started/Ended는 필터에 맞는 첫 로그와 마지막 로그의 시각**이며 로그인/로그아웃 시각을 보장하지 않는다. Duration은 두 시각의 차이를 가장 가까운 분으로 반올림한 값이다. 기간 경계나 사용자 필터가 로그 일부를 제외하면 Events는 줄지만 Duration은 줄어들 수도, 그대로일 수도 있다. 예를 들어 같은 세션에 사용자 A의 10:00/10:10 로그와 사용자 B의 10:05 로그가 있으면 A만 선택해도 Duration은 10분이고 Events만 3에서 2로 줄어든다. Events에는 중복 행이 포함될 수 있다.
+
+목록은 최신 1,000개 세션까지 표시한다. `sid`가 없는 로그는 빠지므로 `No sessions found`를 활동 부재로 해석하지 않는다. `sid`는 string형이어야 하며 `time` 열도 필요하다. 한 행은 사용자와 checkpoint interaction을 각각 하나만 보여 주므로 전체 관계는 개별 로그로 확인한다.
+
+**View this session's logs**는 해당 Started/Ended 범위의 검색 탭을 연다. 사용자 필터로 좁혔던 목록과 달리 같은 세션의 다른 사용자 로그가 포함될 수 있어 Events와 건수가 다를 수 있다. 전체 세션을 조사하려면 시간 범위도 넓힌다.
+
+Checkpoint 연결에는 표준 `audit.3`에 없는 `checkpoint_interaction_rid`를 custom transform으로 추가해야 한다. 세션 목록의 checkpoint 필터, 열과 정당화 표시에는 string형이 필요하다. 접근 설정인 scoped session과 감사 로그의 session은 별개다. 정당화 조회 실패도 연결 부재, 앱 미제공과 권한 문제로 나눠 확인한다.
+
+시간/사용자 필터 변경과 Refresh sessions는 검색 감사에 남지만, checkpoint만 보는 필터의 변경은 남지 않는다. 검색 기록에는 session explorer에서 실행했다는 구분도 없다.
+
+2026-10-30 이 절은 수집 본문과 공식 페이지의 검색 색인 본문을 대조했다. 직접 URL 열기와 실제 UI 검증은 하지 못했으며 기존 범위의 frontmatter 검증일은 유지한다.
+
 ## 출처
+
+- [Palantir Security, Explore user sessions](https://www.palantir.com/docs/foundry/security/audit-explorer-sessions) — 2026-10-30 세션 집계 범위, 상세 검색 전환과 checkpoint 연결 조건 대조.
 
 - [Palantir Security, Review audit log results](https://www.palantir.com/docs/foundry/security/audit-explorer-review-results) — 2026-10-30 로드된 건수, 차트 분모, 정렬 비용과 검색 상태 대조.
 - [Palantir Security, View audit log details](https://www.palantir.com/docs/foundry/security/audit-explorer-log-details) — 2026-10-30 요약/원본 값, 권한별 이름 해석, 패널 누락과 이벤트 요약 조건 대조.
