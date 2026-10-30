@@ -41,6 +41,16 @@ SDT는 동기의 유무뿐 아니라 자율적인지 통제적인지도 구분�
 
 ## 지속 가능성 자가 점검
 
+### 결핍의 절실함과 인지 부담을 구분한다
+
+원하는 결과가 없다는 절실함과, 생활에 필요한 자원이 부족해 생기는 부담은 같은 조건이 아니다. 한 사람의 성공 경험만으로 결핍을 성장의 필수조건으로 삼거나 안정적인 환경에 있는 사람의 의지를 낮게 평가할 수 없다.
+
+Mani 등의 2013년 연구에서는 큰 지출이 필요한 재정 문제를 생각하는 조건에서 소득이 낮은 참여자의 인지 과제 성과가 작은 지출 조건보다 낮았다. 별도의 현장 연구에서는 같은 인도 사탕수수 농민의 인지 과제 성과가 수확 전보다 수확 후에 높았다. 두 설계는 재정적 걱정이 다른 과제에 쓸 인지 자원을 차지할 수 있다는 설명을 뒷받침한다. 농민에게 빈곤을 무작위로 배정한 실험은 아니며, 모든 결핍이나 개인의 장기 성과를 설명하는 법칙도 아니다.
+
+이 연구는 투자 수익, 주택 취득이나 직업적 성공을 측정하지 않았다. 어려움을 더 만들어야 성공한다는 처방으로 바꾸지 않는다. 적용 제안으로는 목표의 이유와 함께 시간, 자원, 회복의 제약을 적고, 반복할 수 있는 작은 행동과 결과를 다시 볼 시점을 정한다. 동기의 강도와 실행 가능한 조건을 따로 점검한다.
+
+### 현재 동력을 확인하는 질문
+
 외부 동기를 제거하라는 게 아니라 **지금 내 동력의 비중**을 점검하라는 것이다.
 
 - 이 활동을 하는 진짜 이유가 외부 조건(취업, 평가) 하나뿐인가
@@ -83,6 +93,7 @@ AI를 쓸지 직접 만들지도 활동의 목적에 따라 선택한다. 빨리
 
 2026-10-02 SDT의 동기 정의와 내면화 구분을 원문과 대조했다. 2026-10-12 동기 유형별 결과는 두 메타분석의 초록과 대조했다. 면접과 업무 사례는 적용 예시이며, 합격이나 개인 행동의 예측 법칙이 아니다.
 
+- [Poverty Impedes Cognitive Function — Mani et al., 2013](https://shafir.scholar.princeton.edu/sites/g/files/toruqf4226/files/povertyimpedescognitivefunction.pdf) — 2026-10-30 저자 공개 원문의 초록과 두 연구 설계를 대조했다. 재정적 걱정과 인지 과제의 관계이며 일반적 성공이나 투자 성과를 검증한 연구가 아니다.
 - [Intrinsic and Extrinsic Motivations: Classic Definitions and New Directions — Ryan and Deci, 2000](https://www.selfdeterminationtheory.org/SDT/documents/2000_RyanDeci_IntExtDefs.pdf)
 - [Student Motivation and Associated Outcomes: A Meta-Analysis From Self-Determination Theory — Howard et al., 2021](https://doi.org/10.1177/1745691620966789)
 - [Beyond Intrinsic and Extrinsic Motivation: A Meta-Analysis on Self-Determination Theory's Multidimensional Conceptualization of Work Motivation — Van den Broeck et al., 2021](https://doi.org/10.1177/20413866211006173)
