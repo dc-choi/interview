@@ -92,6 +92,16 @@ CPUUtilization > 80% for 5 consecutive minutes → SNS 알림
 
 `INSUFFICIENT_DATA`를 장애나 정상으로 자동 해석하지 않는다. 지표 특성에 맞춰 missing data를 `missing`, `ignore`, `breaching`, `notBreaching` 중 하나로 취급한다. 지속적으로 들어와야 하는 heartbeat는 missing을 장애 신호로 볼 수 있지만, 오류가 있을 때만 생기는 sparse metric은 missing을 정상으로 보는 편이 맞다.
 
+### 자원 부하, 인스턴스 상태와 사용자 경로를 구분한다
+
+부분 검증(2026-10-30): AWS의 EC2 status checks와 CloudWatch Synthetics 문서로 아래 범위를 대조했다. CPU 임계 알람 하나를 서비스 가용성 전체의 판정으로 쓰지 않고, 무엇을 검사한 결과인지 구분한다.
+
+- **인프라와 인스턴스:** EC2의 system check는 기반 AWS 시스템을, instance check는 개별 인스턴스의 소프트웨어와 네트워크 연결을 점검한다. 상태 검사는 매분 수행되며 결과로 CloudWatch 알람을 구성할 수 있다. 네트워크 준비가 먼저 끝나면 다른 부팅 작업이 끝나기 전에 instance check가 정상일 수 있다.
+- **애플리케이션 응답:** EC2 application status check는 사용자가 생성하고 인스턴스에 연결하는 선택 기능이다. 지정한 HTTP/HTTPS 경로와 정상으로 인정할 응답 코드를 검사하므로, 기본 인프라 검사만으로 이 경로까지 확인했다고 판단하지 않는다.
+- **사용자 경로:** CloudWatch Synthetics canary는 정해진 일정으로 endpoint와 API를 요청해 실제 고객 트래픽이 없어도 가용성과 지연을 관측한다. 검사한 경로의 성공과 서비스 전체의 정상 여부는 구분한다.
+
+운영 제안: 핵심 사용자 경로의 실패 신호, 알림 수신과 대응 담당자를 연결하고, 아래의 알림 전용 테스트로 전달 경로도 따로 확인한다. 이 절은 설정 선택의 기준이며 실제 계정에서 장애나 알림 전달을 시험하지 않았다. 기존 절 전체의 검증일은 유지한다.
+
 ### Alarm Action — 자동 대응
 
 알람 상태 변화에 따라 **자동화 작업**을 트리거:
@@ -152,6 +162,9 @@ ML 기반 정상 범위 자동 학습 — 정적 임계값 대신 동적 밴드.
 운영 점검에서는 알람 상태 전환, SNS 발행, 최종 구독 수신을 분리한다. 사용자 자격으로 SNS에 직접 보낸 테스트가 성공해도 CloudWatch 서비스 주체의 KMS 권한은 별도 확인이 필요하다. 위의 알림 전용 테스트 알람으로 실제 경로를 확인하며, 이 절은 설정 기준이지 실제 계정의 전달 성공 기록은 아니다.
 
 ## 출처
+
+- [Amazon EC2 — Status checks for Amazon EC2 instances](https://docs.aws.amazon.com/AWSEC2/latest/UserGuide/monitoring-system-instance-status-check.html)
+- [Amazon CloudWatch — Synthetic monitoring (canaries)](https://docs.aws.amazon.com/AmazonCloudWatch/latest/monitoring/CloudWatch_Synthetics_Canaries.html)
 
 - [Amazon CloudWatch Logs — Supported logs and discovered fields](https://docs.aws.amazon.com/AmazonCloudWatch/latest/logs/CWL_AnalyzeLogData-discoverable-fields.html)
 - [Amazon CloudWatch Logs — Sample queries](https://docs.aws.amazon.com/AmazonCloudWatch/latest/logs/CWL_QuerySyntax-examples.html)
