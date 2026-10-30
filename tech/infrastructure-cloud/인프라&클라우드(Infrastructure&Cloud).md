@@ -24,6 +24,7 @@ aliases: ["인프라&클라우드(Infrastructure&Cloud)", "Infrastructure & Clou
 
 ## 장비와 자체 운영
 
+- [[Semiconductor-Advanced-Packaging|반도체 첨단 패키징]] — EMIB와 Foveros의 연결 구조, 제조 거점과 고객 제품 양산의 구분
 - [[Storage-Access-Models|저장장치 연결과 데이터 접근]] — DAS, NAS와 SAN, 블록/파일/객체, 공유 연결과 동시 쓰기 조정
 - [[Server-Quotation-Checklist|서버 견적 검토]] — 메모리 배치, 옵션과 지원 조건, 물리 코어 라이선스의 적용 범위
 - [[GPU-Inference-Hardware|추론용 GPU 선택]] — Intel D270, 가중치와 KV 캐시, 실측 조건, GeForce 텐서 연산 제한과 외부 커널 모듈의 도입 경계

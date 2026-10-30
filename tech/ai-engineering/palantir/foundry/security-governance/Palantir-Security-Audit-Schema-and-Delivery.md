@@ -53,7 +53,7 @@ Developer Console audit-read 설정과 `api:audit-read` OAuth scope 외에 해�
 
 Foundry export는 Org별로 구성하며 audit.3 append 한 번에 최대 100GiB/10k file, audit.2는 10GiB를 설명한다. Audit.2 초기 empty append가 backlog 처리일 수 있다. Audit.3 `date`는 Hive partition이라 Spark에서는 date filter를 먼저 활용하고 정확한 time 범위를 함께 제한한다.
 
-Export retention 최대 730일은 event time이 아닌 transaction이 추가된 시각 기준이다. 삭제 표시 후 transaction 제거는 최대 7일이 걸릴 수 있다. 역사 자료를 새로 export한 경우 retention이 언제부터 세는지 확인한다.
+Export dataset의 retention 최대 730일은 event time이 아닌 transaction이 추가된 시각 기준이다. 삭제 표시 후 transaction 제거는 최대 7일이 걸릴 수 있다. 역사 자료를 새로 export한 경우 retention이 언제부터 세는지 확인한다. 아래 Audit Explorer의 Iceberg table retention은 별도 기준이므로 이 설명을 그대로 적용하지 않는다.
 
 Audit infrastructure는 append-only로 설계되지만 법적 remediation을 위한 Support redaction 경로가 있다. Log 부재, Org attribution/coverage, 지연과 migration gap을 검토한 뒤 증거의 범위를 판단한다. 실제 SIEM ingest, 탐지와 retention 삭제를 실행하지 않았다.
 
@@ -67,8 +67,28 @@ Audit infrastructure는 append-only로 설계되지만 법적 remediation을 위
 
 조회 기간과 감사 목적을 좁혀 필요한 정보만 확인한다. 열린 검색 탭은 60초마다, 브라우저 창으로 돌아올 때도 최신 로그를 확인하므로 작업 뒤 닫는다. 이 절만 추가 대조했으며 기존 schema, 전달 지연과 보존 조건의 검증일은 유지한다. 실제 조회 비용과 배포 환경은 시험하지 않았다.
 
+### Iceberg export의 준비와 보존 경계
+
+2026-10-30 설정 문서 기준, enrollment에서 Iceberg를 켜고 대상 Project가 Foundry-managed Iceberg storage를 사용해야 한다. 조직의 `audit-export:orchestrate-v3`, 대상 폴더의 리소스 생성 권한, table의 `table:read`와 Marking 충족은 서로 다른 조건이다.
+
+생성 시 시작일은 UTC이며 기본 90일 전이다. 남아 있는 로그만 가져올 수 있다. Iceberg retention은 1~730일(기본 90일)이며 **table의 `date`가 보존 기간보다 오래된 로그를 일일 maintenance에서 삭제**한다. 시작일을 보존 기간보다 이전으로 잡으면 첫 maintenance에서 그 구간이 지워질 수 있다. 기간을 줄여도 다음 maintenance에서 오래된 로그가 영구 삭제된다.
+
+`Pause export`는 현재 build 뒤 새 build를 멈추지만 retention은 계속된다. `Stopped` export는 재개할 수 없어 새 export가 필요하다. 설정 창 접근에는 해당 조직의 관리자 자격이 필요하며, 일시정지/재개, cooldown과 retention 변경 권한은 각각 별도다. 생성 실패 때는 대상 폴더에 table이 이미 생겼는지 먼저 확인한다. `Table created, but setup is incomplete`의 재시도는 새 table을 만들지 않고 cooldown 설정을 마친다.
+
+### 검색의 논리와 누락 해석
+
+2026-10-30 검색 문서 기준, 시간 범위와 서로 다른 필터 카드는 모두 AND로 결합한다. 같은 필드의 대안은 한 카드의 `any of`로 넣고, 목록에 모든 값이 필요한 경우 `includes all of`를 쓴다. 서로 다른 필드의 OR는 지원하지 않으므로 별도 검색 탭으로 나눈다.
+
+**Free text는 저장된 event name만 검색**하며 대소문자를 구분한다. `ACTIONS_SERVICE_APPLY_ACTION_V2`에는 `APPLY_ACTION`이 맞고 `apply action`은 맞지 않는다. 텍스트 `contains`도 대소문자를 구분하며 `%`와 `_`는 와일드카드가 아닌 문자다.
+
+User, Resources 등 별도 제안 방식을 쓰는 필드 외의 값 제안은 선택 기간의 빈도 상위 최대 1,000개이며 다른 필터로 좁혀지지 않는다. 제안에 없다는 사실을 로그 부재로 읽지 않는다. 잘못된 필터가 남으면 검색은 결과를 반환하지 않으므로 빨간 오류를 먼저 해결한다. `Entities` 열이 있어야 Ontology resource 필터를 쓸 수 있고, Functions 필터는 선택한 함수의 모든 버전에 일치한다.
+
+위 두 절은 수집 본문과 공식 페이지의 검색 색인 본문을 대조했다. 공식 URL 직접 열기는 실패했으며 화면, 실제 권한과 삭제 동작은 시험하지 않았다. 기존 schema와 전달 조건 전체를 재검증하지 않아 frontmatter 날짜는 유지한다.
+
 ## 출처
 
+- [Palantir Security, Set up Audit Explorer](https://www.palantir.com/docs/foundry/security/audit-explorer-set-up) — 2026-10-30 생성 권한, Iceberg 보존 기준, export 상태와 실패 복구 대조.
+- [Palantir Security, Search and filter audit logs](https://www.palantir.com/docs/foundry/security/audit-explorer-search) — 2026-10-30 필터 결합, 검색 대상, 제안 범위와 오류 조건 대조.
 - [Palantir Security, Audit Explorer](https://www.palantir.com/docs/foundry/security/audit-explorer-overview) — 2026-10-30 table 접근, 검색 감사 의미, 중복 집계와 시간대 대조.
 - [Palantir Security, audit-log-categories](https://www.palantir.com/docs/foundry/security/audit-log-categories)
 - [Palantir Security, audit-logs-overview](https://www.palantir.com/docs/foundry/security/audit-logs-overview)

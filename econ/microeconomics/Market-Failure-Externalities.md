@@ -57,6 +57,14 @@ AI 규제 논쟁에서는 이 개념이 두 층위로 쓰인다.
 
 검토할 때는 제안자의 동기보다 구조를 본다. 비용과 진입장벽이 누구에게 붙는지, 누가 면제를 받는지, 더 엄격한 다른 규칙을 막는지, 피해를 볼 제3자가 결정 과정에 들어오는지 확인한다. 판별 질문 목록은 [[AI-Frontier-Regulation-Debate#규제 포획 판별 질문|프론티어 AI 규제 논쟁]]에 있다. 포획 주장도 반증 가능한 가설로 다루고, 규제가 없을 때 남는 외부효과의 비용과 함께 비교한다.
 
+### 혁신의 사적 보상과 사회적 편익은 다르다
+
+창조적 파괴는 새 제품과 공정이 기존 제품을 대체하는 성장 과정이다. Aghion과 Howitt의 모형에서는 기업의 연구개발 선택과 사회적으로 바람직한 투자가 어긋날 수 있다. 새 지식이 후속 혁신에 주는 편익을 기업이 전부 회수하지 못하는 **지식 파급효과**는 투자 부족의 요인이다. 반대로 경쟁자의 이익을 가져오는 **사업 탈취 효과(business stealing)**는 기업의 이득 전부가 사회의 순편익은 아니라는 점을 보여 준다. 모형에서 과소투자와 과잉투자가 모두 가능하다는 설명을 현실의 특정 산업이 과잉투자한다는 실증 결과로 바꾸지 않는다.
+
+경쟁을 늘릴수록 혁신이 계속 늘어난다는 단순한 관계도 보장되지 않는다. 경쟁이 지나쳐 연구개발비를 미래 이익으로 회수하기 어려워져도, 독점기업이 경쟁 압력을 받지 않아도 혁신 유인이 약해질 수 있다. 정책을 비교할 때는 기존 기업의 진입 방해, 혁신 보상, 지식 확산과 대체 과정의 손실을 함께 본다. 성장의 총량 증가가 모든 기업과 노동자의 이득을 보장하지는 않는다.
+
+2026-10-30 노벨 경제학상 2025 공식 Scientific Background의 31쪽과 36쪽에 대응하는 검색 색인 본문을 대조했다. 공식 사이트 직접 열기는 403으로 실패했다. 위 내용은 모형과 정책 검토 원리이며 특정 국가의 성장률, 재분배 효과나 개인의 공정성 행동을 검증한 결과가 아니다.
+
 ### 주거지원은 대상, 비교 집단과 결과 지표를 나눠 평가한다
 
 지원 대상의 소득이 낮다는 관찰만으로 지원이 빈곤의 원인이라고 결론 내리지 않는다. 정책 효과를 보려면 지원이 없었을 경우와 비교할 근거가 필요하며, 주거환경, 건강, 고용과 소득을 각각 측정해야 한다.
@@ -89,6 +97,8 @@ AI 규제 논쟁에서는 이 개념이 두 층위로 쓰인다.
 - [OpenStax, Principles of Economics 3e, The Problem of Imperfect Information and Asymmetric Information](https://openstax.org/books/principles-economics-3e/pages/16-1-the-problem-of-imperfect-information-and-asymmetric-information)
 - [OpenStax, Principles of Economics 3e, Insurance and Imperfect Information](https://openstax.org/books/principles-economics-3e/pages/16-2-insurance-and-imperfect-information)
 - [The Institutional Structure of Production — NobelPrize.org, Ronald H. Coase](https://www.nobelprize.org/prizes/economic-sciences/1991/coase/lecture/)
+- [The Prize in Economic Sciences 2025, Scientific Background — The Royal Swedish Academy of Sciences](https://www.nobelprize.org/uploads/2025/10/advanced-economicsciencesprize2025-1.pdf) — 2026-10-30 검색 색인 본문의 지식 파급효과와 사업 탈취 효과 대조.
+- [The Prize in Economic Sciences 2025, Scientific Background — The Royal Swedish Academy of Sciences](https://www.nobelprize.org/uploads/2025/10/advanced-economicsciencesprize2025.pdf) — 2026-10-30 검색 색인 본문의 경쟁과 혁신 정책 절 대조.
 - [HUD, Moving to Opportunity for Fair Housing Demonstration Program: Final Impacts Evaluation, Executive Summary (2011)](https://www.huduser.gov/publications/pdf/HUD_MTOExecSummary_v4.pdf) — 실험 설계와 성인 결과
 - [The Theory of Economic Regulation — Bell Journal of Economics, George J. Stigler](https://ideas.repec.org/a/rje/bellje/v2y1971ispringp3-21.html) — 1971, 2권 1호 3~21쪽. 2026-10-27 서지와 초록 대조
 - [Apocalypse Now and Then — EQUATOR, Arundhati Roy](https://www.equator.org/articles/arundhati-roy-artificial-intelligence) — 2026-10-15 에세이, 2026-10-27 본문 확인. 논증과 입장으로만 사용

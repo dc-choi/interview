@@ -97,7 +97,18 @@ ETF는 거래소에서 매매하는 상품 형태이며 패시브 운용과 동�
 
 2026-10-22 SEC의 ETF 수익 구성, 지급 변동과 손실 위험을 대조한 부분 보강이다. 특정 신상품의 상장, 구성 종목, 예상 초과수익이나 세제 혜택은 확인 범위에 포함하지 않았다.
 
+### 배당 직전 매수는 배당만큼의 순이익을 보장하지 않는다
+
+배당을 받을 자격과 투자 수익은 따로 계산한다. 미국 주식에서는 배당락일 이후 매수자가 다음 배당을 받지 못하며, 큰 배당이면 배당락일에 주가가 그 금액만큼 떨어질 수 있다. 실제 가격은 다른 정보와 매매에도 반응하므로 모든 종목의 하락폭이 배당금과 같다고 단정하지 않는다. 배당락일, 기준일과 지급일은 서로 다르며 거래소 규칙과 개별 공시를 확인한다.
+
+펀드는 배당, 이자나 자본이득을 분배하면 NAV가 줄어든다. ETF의 시장가격도 대체로 하락하지만 NAV와 시장가격은 같은 지표가 아니다. 다른 변동, 세금과 비용이 없다는 가정에서 주당 NAV 100인 펀드가 현금 3을 분배하면 NAV 97과 받은 현금 3의 합은 여전히 100이다. 지급 자체가 3의 순이익을 만든 것은 아니다.
+
+따라서 배당 직전 매수와 직후 매도를 비교할 때는 받은 현금, 매매가격 차이, 거래비용과 적용 세금을 합산한다. 2026-10-30 SEC 투자자 안내로 배당락과 분배의 가치 이전 원리를 대조했다. 미국의 날짜 규칙을 한국에 그대로 적용하지 않으며, 한국 대주주 과세 기준, 연말 매도 규모나 특정 전략의 손익은 검증하지 않았다. 기존 전략 전체를 다시 검증한 것은 아니므로 frontmatter 날짜는 유지한다.
+
 ## 출처
+
+- [Ex-Dividend Dates: When Are You Entitled to Stock and Cash Dividends — Investor.gov](https://www.investor.gov/introduction-investing/investing-basics/glossary/ex-dividend-dates-when-are-you-entitled-stock-and) — 2026-10-30 배당 자격, 날짜 구분과 배당락의 가격 영향 대조.
+- [Fund Distributions – Investor Bulletin — Investor.gov](https://www.investor.gov/introduction-investing/general-resources/news-alerts/alerts-bulletins/investor-bulletins/fund-distributions-investor-bulletin) — 2026-08-19 안내, 2026-10-30 분배 시 NAV와 시장가격, 가치 이전과 총수익 구분 대조.
 
 - [Asset Allocation and Diversification — Investor.gov](https://www.investor.gov/introduction-investing/getting-started/asset-allocation) — 좁은 업종 펀드의 분산 한계와 여러 펀드의 상위 보유 종목 중복 확인.
 - [Exchange-Traded Funds (ETFs) — Investor.gov](https://www.investor.gov/introduction-investing/investing-basics/investment-products/mutual-funds-and-exchange-traded-2) — 분배금과 가격 변화, 지급 변동과 원금 손실 위험.
