@@ -1,7 +1,7 @@
 ---
 tags: [palantir, foundry, api, aip, chatbot, rag, trace]
 status: done
-verified_at: 2026-10-16
+verified_at: 2026-11-02
 category: "AI엔지니어링(AIEngineering)"
 ---
 
@@ -17,11 +17,13 @@ object context는 objectRids와 propertyTypeRids로 prompt에 포함할 객체�
 
 응답 context는 objectContexts/functionRetrievedContexts로 묶인다. getContent의 context에는 client가 보낸 것과 Agent가 자동 검색한 것이 들어갈 수 있으므로 그 결과만으로 출처 경로를 단정하지 않는다. 공식 명세에 없는 임의 free-text context 타입을 더하지 않는다.
 
+2026-11-02 확인한 Get RAG Context For Session 문서(하위 필드의 필수 여부와 형식은 2026-10-31 수집한 같은 문서의 schema 기준)에서 응답의 objectContexts와 functionRetrievedContexts는 둘 다 optional이고, ObjectContext의 objectRids와 propertyTypeRids도 optional이다. ragContext 응답에서 필드가 없으면 빈 목록으로 처리하되, 진단을 위해 각 목록이 실제로 왔는지는 따로 남긴다(적용 제안). FunctionRetrievedContext는 functionRid, functionVersion과 retrievedPrompt가 모두 필수인데, 이 문서와 Get Session Trace 문서의 응답 예시는 둘 다 retrievedPrompt를 빼고 있다. 예시를 테스트 fixture로 그대로 쓰면 필수 필드가 없는 응답을 정상으로 받아들이게 되므로 RAG와 trace fixture 모두 schema 정의를 기준으로 만든다(적용 제안). functionVersion은 `<major>.<minor>.<patch>-<tag>` 형식이고 `-<tag>`는 생략할 수 있다(예: 1.2.3, 1.2.3-rc1).
+
 ## 진행 중 Trace와 완료 Context를 구별한다
 
 Preview `GET /api/v2/aipAgents/agents/{agentRid}/sessions/{sessionRid}/sessionTraces/{sessionTraceId}`는 `api:aip-agents-read`로 trace를 조회한다. status가 IN_PROGRESS이면 계속 polling하고 COMPLETE가 될 때까지 확인한다. trace는 retrieval과 tool call 등 응답 생성 단계의 관찰 자료다.
 
-trace.contexts는 응답 생성이 끝난 뒤에만 채워진다. 따라서 생성 중 필드 부재를 retrieval 미실행의 증거로 삼지 않는다. 완료 후 context 객체가 있고 두 목록이 비어 있으면 retrieval을 시도했지만 찾지 못한 상태다. context 객체 자체가 비어 있거나 없는 경우와 구별한다.
+trace.contexts는 응답 생성이 끝난 뒤에만 채워진다. 따라서 생성 중 필드 부재를 retrieval 미실행의 증거로 삼지 않는다. 완료 후 context 객체가 있고 두 목록이 비어 있으면 retrieval을 시도했지만 찾지 못한 상태다. context 객체 자체가 비어 있거나 없는 경우와 구별한다. 다만 trace 응답의 두 목록도 optional이고, 빈 목록을 []로 보내는지 필드를 생략하는지는 확인한 명세에 정의가 없어 이 구분이 실제 응답에서 드러나는지는 확인하지 못했다.
 
 toolCallGroups는 같은 시점에 시작한 tool call들을 묶으며 group은 시작 순서다. 각 tool은 name/type, input과 optional output을 갖는다. 유형은 FUNCTION, ACTION, ONTOLOGY_SEMANTIC_SEARCH, OBJECT_QUERY, UPDATE_APPLICATION_VARIABLE, REQUEST_CLARIFICATION, OBJECT_QUERY_WITH_SQL, CODE_EXECUTION이다.
 
@@ -32,6 +34,8 @@ tool output 부재는 진행 중이다. success는 output을, failure는 Agent�
 ## 오류와 관측 한계
 
 SessionTraceNotFound는 trace/session/Agent 식별 관계와 존재를 확인하고, 세션/Agent 부재 및 endpoint 권한 오류도 처리한다. RAG 검색은 object type 또는 function/version이 없거나 token에서 접근할 수 없어 실패할 수 있다. NOT_FOUND만으로 설정 원본이 삭제되었다고 단정하지 않는다.
+
+2026-11-02 확인한 ragContext 문서는 오류 일곱 개를 정의한다. GetRagContextForSessionPermissionDenied(PERMISSION_DENIED, 403)를 빼면 모두 NOT_FOUND(404)다. SessionNotFound와 AgentNotFound 말고 ObjectTypeIdsNotFound, ObjectTypeRidsNotFound, FunctionLocatorNotFound, OntologyEntitiesNotFound가 위의 RAG 검색 실패에 해당하며, 문제 대상을 parameter로 돌려준다(차례로 objectTypeIds, objectTypeRids, functionRid와 functionVersion, objectTypeRids와 linkTypeRids). 같은 Agent 설정과 token으로 세션만 새로 만들어서는 해결되기 어려우므로 SessionNotFound와 같은 404 처리기로 묶지 않고 오류 이름으로 분기해 parameter가 가리킨 대상과 token의 접근 범위를 확인한다(적용 제안). 두 continue 문서에 있는 InvalidParameter 같은 INVALID_ARGUMENT 오류와 blocking continue 문서에만 있는 rate limit 오류는 이 문서에 정의되어 있지 않다. 잘못된 parameterInputs가 어떤 오류로 돌아오는지는 문서로 확인할 수 없으므로 공통 오류 처리([[Palantir-API-Client-Contract]])에 맡긴다(적용 제안).
 
 이 문서는 공개 API와 schema를 대조한 결과다. 실제 retrieval 품질, tool 실행 순서, trace 보존 기간과 runtime 성능을 시험하지 않았다. 사용자 입력, retrievedPrompt와 tool 출력은 민감한 자료가 들어갈 수 있으므로 이 지식 문서에는 실제 대화 본문이나 token을 복제하지 않는다.
 

@@ -41,7 +41,11 @@ blocking 결과는 agentMarkdownResponse, interruptedOutput, sessionTraceId와 o
 
 취소 body에서 response를 생략하면 exchange가 세션에 추가되지 않는다. response를 넣으면 client가 준 텍스트로 exchange가 추가된다. 이때 interruptedOutput=true이며 Agent가 생성한 최종 응답이 아니다. 같은 result 형태라고 생성 주체를 지우지 않는다.
 
+2026-11-02 확인한 Cancel Session 문서(result 하위 필드의 정의는 2026-10-31 수집한 같은 문서의 schema 기준)에서 응답의 result는 optional이다. response를 보낸 경우에만 세션에 추가된 exchange의 결과가 오고, 생략하면 추가된 exchange가 없어 빈 응답이 온다. 그래서 취소 성공은 result의 유무가 아니라 오류가 아닌 성공 응답을 받았는지로 판정하고, 응답 자체를 받지 못했으면 아래 재시도 절차처럼 상태 미상으로 다룬다(적용 제안). 같은 문서의 응답 예시는 요청 예시의 response 문자열을 agentMarkdownResponse로 돌려주면서 interruptedOutput을 false로 보여 주지만, 필드 정의는 취소된 exchange에서 true라고 설명한다. 그래서 client가 넣은 응답인지는 응답의 interruptedOutput 값만으로 판단하지 않는다. response를 실은 cancel이 result가 있는 성공 응답을 받은 경우에만 client 응답으로 기록하고, 그 cancel이 실패했거나 결과를 모르면 생성 주체를 미상으로 둔다(적용 제안).
+
 이미 완료/취소되었거나 시작하지 않은 messageId는 CancelSessionFailedMessageNotInProgress다. streamingContinue 직후 너무 빨리 취소해서 아직 시작하지 않은 경우에도 발생할 수 있다. 오류를 처리하고 getContent로 최신 대화 상태를 다시 확인하도록 명세가 설명한다.
+
+같은 날 확인한 Cancel Session 문서가 정의한 오류는 네 가지다. CancelSessionFailedMessageNotInProgress(INVALID_ARGUMENT, 400), CancelSessionPermissionDenied(PERMISSION_DENIED, 403), SessionNotFound와 AgentNotFound(NOT_FOUND, 404)다. 성공 상태 코드는 적혀 있지 않다. 이미 취소된 exchange를 다시 취소하면 위 400이 오지만, 이 400만으로는 앞선 cancel이 적용됐는지, exchange가 먼저 끝났는지, 아직 시작하지 않았는지 구분할 수 없다. 응답을 받지 못한 cancel을 다시 보내 이 400을 받으면 실패로 확정하지 않고 아래 재시도와 실패 조건의 절차(직접 만든 sessionTraceId가 COMPLETE인지 대기 상한 안에서 확인한 뒤 getContent로 판단, 상한을 넘기면 상태 미상)를 따른다. response를 실었던 cancel이면 getContent의 agentMarkdownResponse를 보낸 텍스트와 비교한다. getContent와 trace 조회에는 aip-agents-read scope가 필요하다(적용 제안). 권한 오류 이름은 continue의 권한 오류 이름과 다르므로 오류 처리기를 공유하면 CancelSessionPermissionDenied도 등록한다(적용 제안).
 
 ## 내용 조회와 메타데이터 변경
 
