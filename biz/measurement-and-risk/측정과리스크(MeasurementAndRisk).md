@@ -27,4 +27,5 @@ aliases: ["Measurement and Risk", "측정과 리스크", "Analytics", "분석", 
 - [x] [[Privacy-Breach-Civil-Liability|개인정보 유출의 민사 책임과 손해배상]] — 과징금, 분쟁조정과 소송의 구분, 법정손해배상과 배수 배상, 정신적 손해 판단, 손해배상책임 보장 의무
 - [x] [[GDPR-Scope-and-Data-Subject-Rights|GDPR 적용 범위와 정보주체 권리]] — EU 대상 처리, 적법 근거, 삭제와 이동권, 사고 신고와 통지, DPO 요건
 - [x] [[AI-Basic-Act-Scope-and-Obligations|AI 기본법의 적용 범위와 사업자 의무]] — 사업자 정의, 생성형 AI 고지와 표시, 고영향 확인과 책무, 국내대리인 기준, 계도기간, 외주 역할 구분
+- [x] [[AI-Hiring-Discrimination-Liability|채용 AI의 차별 책임]] — 도구 공급자의 대리인 책임, 차별적 영향과 고의적 차별 청구의 구분, ADEA opt-in 집단의 예비 인증과 진행 상황
 - [x] [[Employment-Obligations-Before-Founding|퇴사 창업과 겸업 전 근로계약 의무]] — 경업금지 약정의 효력, 영업비밀, 직무발명과 업무상저작물, 재직 중 겸업, 사직 통보와 위약 예정 금지

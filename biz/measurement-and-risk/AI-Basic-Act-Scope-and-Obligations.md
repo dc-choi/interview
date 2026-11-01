@@ -154,6 +154,7 @@ Framework는 재앙 위험의 정의를 캘리포니아 SB 53과 맞추도록 �
 - [[Dev-Outsourcing-Engagement|개발 외주의 계약과 수주]] — 고지와 표시 구현 책임을 계약에 반영
 - [[Public-Procurement-Small-Contracts|소액 수의계약과 나라장터 견적]] — 공공조달 진입 절차
 - [[Regulatory-Market-Entry|규제와 시장 진입]] — 규제 준수와 서비스 확대 가정의 분리
+- [[AI-Hiring-Discrimination-Liability|채용 AI의 차별 책임]] — 채용 AI 공급자가 고용주의 대리인으로 다퉈진 미국 소송
 - [[AI-Frontier-Regulation-Debate|프론티어 AI 규제 논쟁]] — 안전 명분, 규제 포획과 독립 감독의 판별 질문
 - [[Market-Failure-Externalities|시장 실패와 외부효과]] — 정부 실패와 규제 포획
 - [[LLM-Application-Security|LLM 애플리케이션 보안]] — 생성 결과의 오정보 대응과 AI 생성물 안내
