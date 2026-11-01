@@ -3,7 +3,7 @@ tags: [infrastructure, load-balancer, dns, proxy, spof, gslb, health-check]
 status: done
 category: "인프라&클라우드(Infrastructure&Cloud)"
 aliases: ["Load Balancer", "로드밸런서", "GSLB", "Global Server Load Balancing"]
-verified_at: 2026-08-31
+verified_at: 2026-11-01
 ---
 
 # Load Balancer
@@ -77,11 +77,24 @@ L4와 L7은 대상 선택에 어떤 정보를 쓰는지 설명하는 분류다. 
 
 헬스 체크가 실패한 대상을 어떻게 다루는지는 제품과 설정에 따라 다르다. 예를 들어 모든 대상이 unhealthy일 때 fail-open 하는 구현도 있으므로, 장애 시 실제 라우팅을 운영 환경에서 확인한다.
 
+### 대상 제거와 드레이닝
+
+점검, 배포나 축소로 대상을 뺄 때 새 요청 배정을 멈추거나 줄이고 처리 중인 요청이 끝나기를 제한 시간이나 운영자가 정한 시점까지 기다린 뒤 제거하는 방식을 드레이닝(connection draining)이라 한다. 제한 시간을 넘긴 요청은 실패할 수 있다. 고정 세션의 처리는 제품마다 다르다. ALB는 드레이닝 중인 대상에 고정된 세션의 새 요청도 정상 대상으로 보내고, NGINX upstream 모듈의 drain 매개변수는 반대로 그 서버에 묶인(예: sticky 세션) 요청만 계속 보낸다. 오픈소스 nginx는 1.29.6부터 이 매개변수를 쓸 수 있고 그 전에는 상용 구독 전용이었다(2026-11-01 각 공식 문서 기준). 그래서 대기 시간과 애플리케이션 종료 순서, 세션 저장 위치를 함께 맞춘다(AWS 설정은 [[ELB#Connection Draining (Deregistration Delay)|ELB의 Connection Draining]], 기본값과 배포 중 502는 [[ELB-5XX-Troubleshooting|ALB 5XX 진단]], 종료 순서는 [[Graceful-Shutdown|Graceful Shutdown]]).
+
 ### 세션 분산 문제
 - **로컬 세션 상태**: 웹 서버 메모리에만 로그인 세션을 두면 다른 서버로 간 요청이 세션을 찾지 못할 수 있음 → 공유 세션 저장소 또는 sticky session을 검토
 - **IP 기반 고정 분산**: 모바일 IP 변경, NAT 공유, 프록시 환경에서 안정적 식별자가 아닐 수 있음. 같은 원인으로 한 NAT나 프록시 뒤의 많은 사용자가 한 서버에 몰려 부하가 편중될 수 있으므로 대상별 요청 수와 지연 편차로 쏠림을 관찰
 - **쿠키나 키 기반 고정 분산**: 같은 대상을 고를 수 있지만 대상 장애와 재배치에서는 세션 복구 경로가 필요
 - **키 해시와 세션 고정의 차이**: 쿠키 값을 해시 키로 쓰면 같은 값은 같은 대상으로 가지만, 그 세션을 처음 만든 대상과 해시가 고른 대상이 다를 수 있다. 세션이 대상 메모리에 있으면 첫 응답을 처리한 대상을 로드밸런서가 발급한 쿠키에 기록하거나, 애플리케이션이 설정한 세션 쿠키를 로드밸런서가 학습하는 방식을 쓴다 (nginx 설정은 [[Reverse-Proxy|Reverse Proxy]]의 upstream 절)
+
+### 로드밸런서 자체의 이중화
+
+로드밸런서도 모든 요청이 지나는 경로 위 장비라 한 대만 두면 SPOF가 된다(경로 위 장비의 장애 동작은 [[Inline-vs-Out-of-Path|인라인과 아웃오브패스]]).
+
+- **가상 IP 넘겨받기**: 온프레미스에서는 두 대 이상을 두고 클라이언트가 접속하는 가상 IP를 그중 한 대가 맡는다. VRRP는 같은 LAN의 VRRP 장비 중 하나를 Active Router로 선출해 가상 주소로 오는 패킷을 전달하게 하고, Active가 멈추면 Backup이 전달 책임을 넘겨받으므로 클라이언트는 같은 주소를 계속 쓴다. 현행 명세 RFC 9568(VRRPv3)은 RFC 5798을 대체하며 Master를 Active Router로 바꿔 불렀다. 기본 광고 주기는 1초이고 마지막 광고를 받은 뒤 광고 주기의 3배에 우선순위별 skew를 더한 시간이 지나야 Backup이 장애로 판단하므로, 기본값에서는 우선순위에 따라 장애 판단에만 3초를 조금 넘고 4초에 못 미치는 시간이 걸린다. 구현 예로 keepalived는 IPVS 기반 부하 분산과 VRRP 기반 전환을 함께 제공한다.
+- **관리형 로드밸런서**: AWS ELB는 활성화한 가용 영역마다 로드밸런서 노드를 만들고, DNS 이름은 이 노드들의 IP로 해석된다. ELB는 트래픽에 따라 확장하며 이 DNS 레코드를 갱신한다(TTL 60초). ALB는 가용 영역 서브넷을 두 개 이상 선택해야 하며(Local Zone과 Outpost 서브넷 구성은 조건이 따로 있다), 한 영역을 쓸 수 없거나 정상 대상이 없으면 다른 영역의 정상 대상으로 보낼 수 있다(2026-11-01 AWS 문서 기준, 세부는 [[ELB|ELB]]).
+
+전환에 걸리는 시간과 전환 뒤 기존 연결이 이어지는지는 제품과 구성에 따라 다르므로 장애 시험으로 확인한다.
 
 ## DNS
 
@@ -120,11 +133,19 @@ L4와 L7은 대상 선택에 어떤 정보를 쓰는지 설명하는 분류다. 
 - [AWS Elastic Load Balancing, How Elastic Load Balancing works](https://docs.aws.amazon.com/elasticloadbalancing/latest/userguide/how-elastic-load-balancing-works.html)
 - [AWS Elastic Load Balancing, Health checks for Application Load Balancer target groups](https://docs.aws.amazon.com/elasticloadbalancing/latest/application/target-group-health-checks.html)
 - [AWS Elastic Load Balancing, Target group health and DNS failover](https://docs.aws.amazon.com/elasticloadbalancing/latest/application/load-balancer-target-groups.html)
+- [AWS Elastic Load Balancing, Edit target group attributes for your Application Load Balancer](https://docs.aws.amazon.com/elasticloadbalancing/latest/application/edit-target-group-attributes.html)
+- [AWS Elastic Load Balancing, Troubleshoot your Application Load Balancers](https://docs.aws.amazon.com/elasticloadbalancing/latest/application/load-balancer-troubleshooting.html)
 - [AWS Route 53, Choosing TTL values for DNS records](https://docs.aws.amazon.com/Route53/latest/DeveloperGuide/best-practices-dns.html#best-practices-dns-choosing-ttl-values)
 - [HAProxy, Backend load balancing algorithms](https://www.haproxy.com/documentation/haproxy-configuration-tutorials/proxying-essentials/configuration-basics/backends/)
 - [Finagle, Clients: Load Balancing](https://twitter.github.io/finagle/guide/Clients.html#load-balancing)
 - [nginx, ngx_http_upstream_module](https://nginx.org/en/docs/http/ngx_http_upstream_module.html#hash)
+- [AWS Elastic Load Balancing, Application Load Balancers](https://docs.aws.amazon.com/elasticloadbalancing/latest/application/application-load-balancers.html)
+- [nginx, ngx_http_upstream_module server 지시어](https://nginx.org/en/docs/http/ngx_http_upstream_module.html#server)
+- [RFC Editor, RFC 9568: Virtual Router Redundancy Protocol (VRRP) Version 3 for IPv4 and IPv6](https://www.rfc-editor.org/rfc/rfc9568)
+- [RFC Editor, RFC 5798: Virtual Router Redundancy Protocol (VRRP) Version 3 for IPv4 and IPv6](https://www.rfc-editor.org/rfc/rfc5798)
+- [Keepalived, Introduction](https://keepalived.readthedocs.io/en/latest/introduction.html)
 - [인프런, 성장랜턴, API 게이트웨이 & 로드밸런서 & 서비스 디스커버리](https://www.inflearn.com/courses/lecture?courseId=335130&unitId=278148)
+- [YouTube, 동국시스템즈 IT 채널, 로드밸런서와 CDN, 사람이 몰려도 사이트가 버티는 법](https://www.youtube.com/watch?v=oS-qdeQ2kww)
 - [Fundamentals of Backend Architecture - How to Design Scalable Software — YouTube, Tiago](https://www.youtube.com/watch?v=Qa-7iWxDz1A)
 
 ## 관련 문서
@@ -135,3 +156,7 @@ L4와 L7은 대상 선택에 어떤 정보를 쓰는지 설명하는 분류다. 
 - [[Route53|Route 53 (라우팅 정책, 헬스 체크)]]
 - [[Browser-URL-Flow|브라우저 URL 입력 프로세스]]
 - [[Network-Perimeter-Security|네트워크 경계 보안 (공인 IP 배치, UTM, WAF)]]
+- [[ELB|AWS ELB (가용 영역별 노드, Connection Draining)]]
+- [[ELB-5XX-Troubleshooting|ALB 5XX 진단 (deregistration delay와 502)]]
+- [[Graceful-Shutdown|Graceful Shutdown (드레이닝과 종료 순서)]]
+- [[Inline-vs-Out-of-Path|인라인과 아웃오브패스 (경로 위 장비의 장애 동작)]]

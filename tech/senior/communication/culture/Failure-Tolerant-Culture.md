@@ -2,7 +2,7 @@
 tags: [senior, communication, culture, psychological-safety, failure, experimentation]
 status: done
 category: "Senior - 커뮤니케이션"
-aliases: ["Failure Tolerant Culture", "실패에 관대한 문화", "심리적 안전", "Loon Shots", "빠른 실패"]
+aliases: ["Failure Tolerant Culture", "실패에 관대한 문화", "심리적 안전", "Loon Shots", "빠른 실패", "학습 불안", "생존 불안"]
 ---
 
 # 실패에 관대한 문화와 심리적 안전
@@ -21,6 +21,16 @@ aliases: ["Failure Tolerant Culture", "실패에 관대한 문화", "심리적 �
 - **반복된 메시지**: 리더와 문화 담당이 실패해도 괜찮다를 꾸준히 말로 새긴다.
 - **배움의 추출**: 실패에서 배운 것을 기록, 공유해 재발을 막는다 — 비난 없는 회고(blameless postmortem)와 같은 축 ([[Engineering-Influence|엔지니어링 영향력]]).
 
+## 자기 실패에서 덜 배우는 경향
+
+실패 공유 의식의 근거로 쓸 수 있는 연구가 있다. 아래 두 연구는 사람이 자기 실패에서 덜 배우지만 다른 사람의 실패에서는 그런 불리함이 나타나지 않는다고 보고했다. 연구 조건이 좁으므로 그대로 일반화하지 않는다.
+
+- **실험 연구**: Eskreis-Winkler와 Fishbach(2019)의 다섯 연구(총 1,674명)에서는 선택지가 둘뿐이라 성공과 실패 피드백이 모두 정답을 알려 줬는데도, 실패 피드백을 받은 쪽이 후속 시험 성적이 낮았고 자기가 고른 답도 덜 기억했다. 업무, 언어와 사회 영역에서 반복됐고 학습에 보상을 걸어도 나타났다. 저자들은 이를 실패에서 덜 배운 결과로 보고, 실패가 자아를 위협해 주의를 거두게 만든다고 해석했다. 자아 위협이 적은 다른 사람의 실패에서는 그 사람의 성공에서만큼 배웠다. 참가자에는 고객 응대 퀴즈를 푼 텔레마케터와 Amazon Mechanical Turk 참가자가 포함됐다.
+- **현장 연구**: KC, Staats와 Gino(2013)는 미국 매사추세츠주에서 1999~2009년 최소 침습 심장 수술 6,500여 건을 집도한 흉부외과 의사 71명을 분석했다. 실패를 수술 후 원내 사망으로 정의했을 때 의사들은 자기 실패보다 자기 성공에서, 같은 병원 동료의 성공보다 동료의 실패에서 더 배웠다. 자기 실패는 상황 탓으로, 남의 실패는 그 사람의 노력과 행동 탓으로 돌리는 귀인 경향으로 설명한다. 자기 성공 경험과 같은 조직 동료의 실패 경험이 많을수록 자기 실패에서 배우는 정도도 커졌다.
+- **한계**: 실험은 두 선택지 문제의 정오 피드백과 후속 시험으로 학습을 측정했다. 사전등록 재현 연구(Gok과 Fyfe 2024)는 피드백 문구를 자기 초점(your answer)이나 과제 초점(the answer)으로 바꿔도 실패 피드백의 불리함을 재현했다. 다만 규칙 기반 과제에서 피드백 뒤 짧은 규칙 설명을 준 조건에서는 불리함이 나타나지 않았고, 일부 조건의 새 내용 학습에서는 실패 피드백 쪽이 더 배웠다. 이후 나온 논평(Spiller 2025)은 핵심 과제(Script Task)에서 피드백에서 배우지 못한 사람이 앞의 답과 일관되게 답하면 성공 조건에서는 정답, 실패 조건에서는 오답으로 채점된다고 지적했다. 그래서 일관성을 배제하지 않으면 이 과제로는 실패에서 덜 배웠다고 진단할 수 없다고 보고, 피드백을 주지 않은 사후 조작으로도 같은 효과가 재현되는 실험을 직접 보였다. 원저자들은 답변(2025)에서 일관성 응답이 일부 패러다임에서는 실패 학습의 어려움을 설명하지만 원래 패러다임의 결과는 설명하지 못한다고 반박했다. 일부 일관성 기제는 사람들이 새 정보로 갱신하기보다 첫 직관과 일관돼야 한다고 여긴다고 가정하는데, 이 가정이 원래 패러다임에는 적용되지 않는다는 것이다. 현장 연구는 한 지역과 한 시술의 관찰 데이터라 의사들이 서로의 결과를 실제로 얼마나 봤는지, 수술팀의 기여와 문화권에 따른 차이를 확인하지 못했다.
+
+적용 제안: 실패 공유 의식은 동료가 배우는 통로로 쓰고, 당사자가 자기 실패에서 배우는 과정은 따로 설계한다. 같은 현장 연구도 사고 조사 위원회와 법적 책임 부담이 실수에서 배우기보다 해명하려는 동기를 키울 수 있다고 보고, 다른 사람이 배우게 돕는 체계와 별개로 개인이 자기 실패에서 배우게 하는 체계가 필요하다고 본다. Edmondson(2011)을 인용해, 구성원이 실패 책임을 인정하고 배워도 안전하다고 느끼게 하는 데는 리더의 역할이 핵심이라고 덧붙인다.
+
 ## 실패를 허용한다는 말의 경계
 
 실패를 허용한다는 말은 예방할 수 있었던 위험을 무시하거나 같은 사고를 반복해도 된다는 뜻이 아니다. 운영 사고와 가역적 실험을 구분하고 각각의 안전장치를 둔다.
@@ -31,6 +41,16 @@ aliases: ["Failure Tolerant Culture", "실패에 관대한 문화", "심리적 �
 - 후속 행동에는 담당 범위와 확인 방법을 붙이고 실제 완료 여부까지 추적한다.
 
 첫째, 셋째, 넷째 항목은 Google SRE의 비난 없는 포스트모템 원칙, 특히 기여 원인과 action item 및 시스템 개선을 참고했다. 둘째 항목은 작은 범위 노출, 평가와 롤백을 함께 두는 canary 배포 원칙을 일반 실험의 점검 항목으로 옮긴 것이다.
+
+## 실패 단가를 낮추는 운영
+
+실패에서 배우라는 구호보다 실패 한 번의 비용이 시도 빈도를 정한다는 관점이 있다. 한 번의 실패가 주는 피해가 크면 실패할 수 있는 시도 자체를 피하게 된다는 것이다. 다음은 이 관점을 팀 운영에 옮긴 적용 제안이며 효과를 검증한 처방은 아니다.
+
+- **작게 나눈다**: 큰 시도 한 번보다 작은 시도 여러 번으로 한 번의 실패가 치명적이지 않게 한다.
+- **일찍 판정한다**: 늦게 알수록 돈과 노력이 쌓여 실패가 비싸진다. 위 실험의 성공과 중단 기준을 초기에 판정할 수 있는 지점에 둔다.
+- **사람이 아니라 방법과 가설을 논의한다**: 피드백이 사람 평가로 번지면 평판 손상이 실패 비용에 더해져 실패를 숨기기 쉬워진다는 관점이다. 결과가 가설과 맞았는지 비교하는 방법은 [[Constructive-Skepticism|근거 기반 검증]]을 따른다. 앞의 재현 연구에서 피드백 문구를 과제 초점으로 바꾼 것만으로는 불리함이 사라지지 않았고 규칙 기반 과제에서 피드백 뒤 짧은 규칙 설명을 준 조건에서는 불리함이 나타나지 않았으므로, 실패 피드백 뒤에 규칙이나 원리를 설명하는 후속 학습 기회를 함께 둔다.
+- **목표는 리더가, 방법은 구성원이 가설로 정한다**: 리더가 답을 바로 주면 오늘 문제는 빨리 풀리지만 구성원이 다음 문제를 스스로 풀 기회가 줄어든다는 관점이다. 오래 유지할 것과 자주 바꿀 것의 구분은 [[Radical-Focus#큰 방향과 작은 가설의 시간축을 분리한다|큰 방향과 작은 가설의 분리]]를 따른다. 합류 초기나 성숙도가 낮은 과업에는 구체적 지시가 먼저일 수 있다([[DRI-Delegation-Culture#절차 문서와 과업 성숙도에 맞춘 위임|과업 성숙도에 맞춘 위임]]).
+- **결과보다 가설을 묻는다**: 리더가 어떤 목적과 가설로 시도했는지, 무엇이 검증되고 버려졌는지 묻는다. 일을 시작할 때 가설과 판정 지점을 정해 두지 않으면 지난주에 무엇을 시도했고 무엇이 실패였으며 무엇을 배웠는지 답하기 어려워지기 쉽다.
 
 ## 문화의 관성 — 설립부터, 그리고 비싸다
 
@@ -43,6 +63,23 @@ aliases: ["Failure Tolerant Culture", "실패에 관대한 문화", "심리적 �
 - 개인의 자신감은 챌린지와 피드백 참여에 영향을 줄 수 있지만, 질문과 우려 제기는 숙련도나 현재 성과와 무관하게 안전해야 한다. 심리적 안전을 개인이 1인분을 증명한 뒤 얻는 자격으로 만들지 않는다.
 - 하드스킬 편차로 생긴 위계, 네임밸류에 대한 오해(유명함과 실력은 별개)는 안전감을 깎는다. 이를 낮추는 적극적 장치가 필요하다 — 실패를 캐주얼하게 공유하는 자리, 위계를 평평하게 만드는 활동.
 - 문제 제기 자체를 기여로 인정하는 문화와 같은 뿌리다 ([[Team-Contribution-Culture|팀 기여 문화]], [[Toxic-Org-Detection|독성 조직 판별]]). 안전한 1:1 경청도 그 토대다 ([[Trusted-Advisor-Listening|신뢰받는 조언자의 경청]]).
+
+## 학습 불안과 생존 불안 — 위기감만으로는 바뀌지 않는다
+
+Edgar Schein은 학습과 변화에 작용하는 두 불안을 구분했다. 1995년 working paper의 각주는 예전 글(1993)에서 이 둘을 Anxiety 1과 Anxiety 2라고 불렀다고 밝힌다.
+
+- **학습 불안(learning anxiety)**: 학습이나 변화 과정에 들어가 무언가 잘못됐다고 인정하면 효과성, 자존감, 어쩌면 정체성까지 잃을 것 같은 느낌이다.
+- **생존 불안(survival anxiety)**: 바뀌지 않으면 필요를 채우지 못하거나 스스로 정한 목표와 이상에 이르지 못한다는 느낌이다.
+
+Schein은 모든 학습과 변화가 기대를 깨는 반증 정보에서 시작한다고 봤다. 그 정보를 타당하고 자신과 관련 있다고 받아들여야 생존 불안이 생기는데, 이를 막는 것이 학습 불안이다. 학습 불안은 반증 정보의 양에 비례해 커질 수 있고, 그러면 사람은 그 정보를 부정하거나 피한다. 그래서 충분한 심리적 안전이 없으면 생존 불안도 변화도 생기지 않는다고 보고, 반증 정보가 주는 위협과 심리적 안전의 균형을 변화 관리의 핵심으로 봤다.
+
+같은 글이 학습 불안을 낮추는 전술로 든 항목에는 다음이 있다.
+
+- **연습 공간과 코칭**: 오류를 저질러 볼 수 있는 연습 공간과 코칭
+- **집단과 병행 체계**: 집단으로 함께 하는 작업과 일상 업무 압박을 어느 정도 덜어 주는 병행 체계
+- **비전과 단계**: 학습자를 북돋는 긍정적 비전과 학습 과정을 감당할 수 있는 단계로 나누기
+
+적용 제안: 위기 신호와 불편한 데이터는 구성원이 믿을 수 있게 드러내되, 압박 메시지를 키우는 것으로 학습 불안을 낮추는 일을 대신하지 않는다. 앞의 작은 보호 공간, 실패 공유 의식과 작게 나누는 실험 운영은 이 장치를 팀에 둔 형태로 볼 수 있다.
 
 ## 침묵을 해석하고 발언을 요청하는 방법
 
@@ -65,6 +102,8 @@ aliases: ["Failure Tolerant Culture", "실패에 관대한 문화", "심리적 �
 - 시도의 빈도를 막는 절차, 분위기가 없는가
 - 침묵을 동의로 간주하지 않고 미확인 가정과 우려를 구체적으로 요청하는가
 - 운영 사고와 가역적 실험을 구분하고 각각 재발 방지와 중단 기준을 두는가
+- 위기감과 압박 메시지만 늘리는가, 연습 기회와 코칭으로 학습 불안을 함께 낮추는가
+- 실패 공유가 동료의 학습에 그치지 않고 당사자의 원인 분석과 후속 학습으로 이어지는가
 
 ## 관련 문서
 
@@ -76,6 +115,9 @@ aliases: ["Failure Tolerant Culture", "실패에 관대한 문화", "심리적 �
 - [[Burnout-Sustainable-Pace|번아웃과 지속 가능한 페이스]] — 닫힌 입을 여는 안전
 - [[DRI-Delegation-Culture|DRI와 권한 위임 문화]] — 실험과 짝을 이루는 위임
 - [[Org-Scaling-Culture-Dilution|조직 급성장과 문화 희석]] — 규모가 키우는 안전감 하락
+- [[Failure-Driven-Growth|실패를 성장으로 바꾸기]] — 당사자가 자기 실패에서 배우는 개인 루틴
+- [[Radical-Focus|우선순위 집중과 WIP 제한]] — 큰 방향과 작은 가설의 분리
+- [[Constructive-Skepticism|근거 기반 검증과 반증 가능한 판단]] — 사람보다 가설과 예측을 비교
 
 ## 출처
 
@@ -86,3 +128,11 @@ aliases: ["Failure Tolerant Culture", "실패에 관대한 문화", "심리적 �
 - [Google SRE Book, Postmortem Culture: Learning from Failure](https://sre.google/sre-book/postmortem-culture/)
 - [Google SRE Workbook, Postmortem Culture: Learning from Failure](https://sre.google/workbook/postmortem-culture/)
 - [Google SRE Workbook, Canarying Releases](https://sre.google/workbook/canarying-releases/)
+- [Kurt Lewin's Change Theory in the Field and in the Classroom: Notes Toward a Model of Managed Learning — MIT Sloan School of Management Working Paper 3821](https://edbatista.com/wp-content/uploads/2014/12/Edgar-Schein-Kurt-Lewins-Change-Theory.pdf) — 1995년 7월 개정본의 공개 스캔으로 각주 3과 3~5쪽(두 불안의 정의, 반증 정보와 학습 불안, 위협과 심리적 안전의 균형, 학습 불안을 낮추는 전술)을 대조. MIT DSpace 기록(https://dspace.mit.edu/handle/1721.1/2576, 5월판)은 2026-11-01 PDF 접근 실패로 본문을 대조하지 못함
+- [Not Learning From Failure—the Greatest Failure of All — Psychological Science](https://pubmed.ncbi.nlm.nih.gov/31702452/)
+- [Learn by Failing? Not So Easy — Chicago Booth Review](https://www.chicagobooth.edu/review/2019/december/learn-failing-not-so-easy)
+- [Commentary on Eskreis-Winkler and Fishbach (2019): A Tendency to Answer Consistently Can Generate Apparent Failures to Learn From Failure — Psychological Science](https://pubmed.ncbi.nlm.nih.gov/40257817/)
+- [Reply to “A Tendency to Answer Consistently Can Generate Apparent Failures to Learn From Failure” — Psychological Science](https://www.psychologicalscience.org/journals/psychological-science/09567976251391180/) — 2025년 36권 11호, 원저자 답변의 초록
+- [Learning from failure: The roles of self-focused feedback, task expectations, and subsequent instruction — Journal of Experimental Psychology: General](https://pubmed.ncbi.nlm.nih.gov/39235891/)
+- [Learning from My Success and from Others' Failure: Evidence from Minimally Invasive Cardiac Surgery — Management Science](https://nrs.harvard.edu/urn-3:HUL.InstRepos:10996794)
+- [인재를 구별하는 신호 체계가 바뀌고 있다 — 티타임즈TV](https://www.youtube.com/watch?v=9ElhZBfJKPY) — 2026-10-22 공개 인터뷰의 12:52~13:34와 17:09~29:42에 제시된 실패 단가, 사람보다 가설과 방법을 다루는 피드백, 목표와 방법의 역할 구분 관점. 인터뷰가 든 실패 학습 연구와 두 불안의 설명은 원 연구와 Schein 원문으로 대신했다. 인재 신호 체계와 교육 프로그램, 창업자 사례, 학습 민첩성 정의와 자기 명료성 주장은 채택하지 않았다.

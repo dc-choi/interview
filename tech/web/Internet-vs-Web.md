@@ -35,7 +35,7 @@ verified_at: 2026-10-05
 
 ### 캐시 서버의 경제성
 
-큰 콘텐츠를 매번 해외 원본에서 가져오면 느리고, 국제 구간의 트랜짓 비용이 사업자에게 쌓인다. 그래서 콘텐츠 사업자는 ISP 망 안이나 IX에 캐시를 둔다. 캐시에 있으면 바로 응답하고, 없으면 원본에서 가져와 저장한 뒤 전달한다. Google Global Cache는 ISP가 자기 망 안에서 구글 콘텐츠 일부를 직접 제공하게 해 피어링과 트랜짓 링크의 트래픽을 줄이고, Netflix Open Connect도 같은 접근이다([[Video-Streaming-System-Design|영상 스트리밍 설계]], [[CDN]]).
+큰 콘텐츠를 매번 해외 원본에서 가져오면 느리고, 국제 구간의 트랜짓 비용이 사업자에게 쌓인다. 그래서 콘텐츠 사업자는 ISP 망 안이나 IX에 캐시를 둔다. 캐시에 있으면 그 자리에서 응답한다. Google Global Cache는 ISP가 자기 망 안에서 구글 콘텐츠 일부를 직접 제공하게 해 피어링과 트랜짓 링크의 트래픽을 줄인다. GGC에 없는 요청은 구글 핵심 데이터 위치에서 응답하거나 GGC를 거쳐 전달되고, 무엇을 캐시에 채울지는 지역 수요와 저장 용량에 따라 정해진다(2026-11-01 Google 문서 기준). Netflix Open Connect도 ISP 망 안과 IX에 캐시를 두지만, 요청이 올 때 채우는 대신 시청을 예측해 콘텐츠 갱신 대부분을 한가한 시간대에 미리 채우는 방식이라 채우는 방법이 다르다(2026-11-01 Netflix 문서 기준, [[Video-Streaming-System-Design|영상 스트리밍 설계]], [[CDN]]).
 
 망 비용을 누가 낼지는 나라마다 다르고 분쟁이 이어지는 쟁점이다. 한국은 2016년부터 ISP 사이에서 트래픽을 보내는 쪽이 비용을 내는 상호접속 기준을 시행했고, 2020년 법 개정으로 일정 규모 이상의 콘텐츠 사업자에게 서비스 안정성 조치 의무를 지웠다. Internet Society의 2022년 분석은 이 규칙이 비싼 트랜짓 의존을 키웠다고 보고, 서울의 트랜짓 비용을 프랑크푸르트, 런던 같은 유럽 거점의 약 10배로 제시하며, 콘텐츠를 해외에 두는 편이 유리해져 국내 사용자의 지연이 늘 수 있다고 평가한다. 이는 한 기관의 정책 분석이며 사업자별 계약과 비용은 공개 자료로 확인되지 않는다.
 
@@ -147,6 +147,9 @@ verified_at: 2026-10-05
 - [Policy Brief: Internet Exchange Points (IXPs) — Internet Society](https://www.internetsociety.org/policybriefs/ixps/)
 - [Internet Impact Brief: South Korea's Interconnection Rules — Internet Society](https://www.internetsociety.org/resources/doc/2022/internet-impact-brief-south-koreas-interconnection-rules/)
 - [Google Global Cache (GGC) — Google Peering Help](https://support.google.com/interconnect/answer/9058809)
+- [Google Global Cache 제공 콘텐츠 — Google Peering Help](https://support.google.com/interconnect/answer/7658599)
+- [Google Global Cache cache-fill — Google Peering Help](https://support.google.com/interconnect/answer/7658593)
+- [Open Connect Overview — Netflix](https://openconnect.netflix.com/Open-Connect-Overview.pdf)
 - [인프런, 감자, 구글을 검색하면 어떤 일이 일어날까요?](https://www.inflearn.com/courses/lecture?courseId=331036&unitId=160781)
 - [인프런, 감자, 라우터](https://www.inflearn.com/courses/lecture?courseId=331036&unitId=160808)
 - [인프런, 감자, Proxy 서버](https://www.inflearn.com/courses/lecture?courseId=331036&unitId=160834)

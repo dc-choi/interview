@@ -104,9 +104,9 @@ Blue-Green은 트래픽을 0%에서 100%로 한 번에 넘기는 전환인 반�
 
 ## 트래픽 전환 시 주의
 
-- **연결 끊김은 신규 요청 한정** — LB 전환으로 무중단이 되는 것은 새로 맺는 짧은 HTTP 요청 얘기다. WebSocket, SSE, gRPC 스트림 같은 **long-lived 연결은 전환 시점에 끊기고 클라이언트가 재연결**해야 한다. 재연결 로직과 상태 복구를 클라이언트가 감당할 수 있어야 진짜 무중단에 가까워진다.
-- **WebSocket, SSE 장기 연결** — 전환 즉시 끊기면 UX 저하. graceful drain(기존 연결이 끝날 때까지 Blue를 유지)으로 연결 종료를 늦추되, 결국 재연결은 필요하다
-- **세션 sticky** — Blue에 로그인한 사용자가 Green으로 넘어가면 세션 소실. Redis 등 외부 저장소로 세션을 빼는 게 근본책이다. sticky session을 쓰는 구성이라면 스위치를 한 번에 넘기지 말고 **기존 세션이 자연 만료될 때까지 Blue로 계속 붙여주는 별도 드레이닝 전략**(connection draining, deregistration delay)이 필요하다
+- **가중치 전환은 새 요청의 경로를 바꾼다** — LB 전환으로 곧바로 옮겨 가는 것은 새로 들어오는 요청이다(ALB 규칙에 대상 그룹 고정을 켜면 고정 쿠키가 있는 요청은 예외, 아래 세션 sticky). ALB는 WebSocket으로 업그레이드된 연결에는 리스너 라우팅 규칙을 더 적용하지 않고 101로 업그레이드를 수락한 대상을 그 연결에 계속 쓰므로(2026-11-01 AWS 문서 기준), 가중치를 바꿔도 이미 열린 WebSocket 연결은 Blue에 남는다. 이런 **long-lived 연결은 Blue의 deregistration delay가 끝나거나 Blue를 내릴 때 끊길 수 있으므로 클라이언트 재연결**을 전제로 둔다. SSE와 gRPC 스트림도 Blue를 내리면 끊기므로 같은 전제가 필요하다. 재연결 로직과 상태 복구를 클라이언트가 감당할 수 있어야 진짜 무중단에 가까워진다.
+- **WebSocket, SSE 장기 연결** — Blue를 일찍 내리면 연결이 끊겨 UX가 나빠진다. graceful drain(기존 연결이 끝날 때까지 Blue를 유지)으로 연결 종료를 늦추되, 결국 재연결은 필요하다
+- **세션 sticky** — Blue에 로그인한 사용자가 Green으로 넘어가면 세션 소실. Redis 등 외부 저장소로 세션을 빼는 게 근본책이다. sticky session을 쓰는 구성이라면 스위치를 한 번에 넘기지 말고 **기존 세션이 자연 만료될 때까지 Blue로 계속 붙여주는 별도 전략**이 필요하다. ALB의 deregistration delay는 처리 중인 요청과 활성 연결이 끝나기를 정해진 시간까지 기다리는 기능이고, 드레이닝 중인 대상으로 오는 새 요청은 고정 세션이어도 정상 대상으로 보내므로(2026-11-01 AWS 문서 기준) 이것만으로 세션을 Blue에 남겨 둘 수 없다. 세션을 붙여 두는 수단은 제품별로 확인한다. ALB의 가중치 규칙에 대상 그룹 고정을 켜면 고정 쿠키가 있는 요청은 쿠키가 가리키는 대상 그룹으로 계속 가고 쿠키가 없는 요청만 가중치를 따르며, 애플리케이션 기반 고정은 가중치 대상 그룹에서 동작하지 않는다(2026-11-01 AWS 문서 기준). 다른 예로 NGINX upstream 모듈의 drain 매개변수는 그 서버에 묶인(예: sticky 세션) 요청만 계속 보내며, 오픈소스 nginx는 1.29.6부터 쓸 수 있고 그 전에는 상용 구독 전용이었다(2026-11-01 nginx 문서 기준, [[Load-Balancer#대상 제거와 드레이닝|대상 제거와 드레이닝]])
 - **연결 풀 워밍업** — Green이 막 뜬 순간엔 커넥션 풀이 비어 있어 P99가 튐. 트래픽 분 단위로 warm-up
 - **캐시 재생성 비용** — Green의 로컬 캐시, JIT 프로파일이 비어 있어 cold start
 - **외부 서비스 rate limit** — 두 버전이 동시 호출할 수 있으므로 한도 산정 주의
@@ -145,6 +145,10 @@ Blue-Green은 트래픽을 0%에서 100%로 한 번에 넘기는 전환인 반�
 - [AWS CDK — EcsBlueGreenDeploymentConfig](https://docs.aws.amazon.com/cdk/api/v2/docs/aws-cdk-lib.aws_codedeploy.EcsBlueGreenDeploymentConfig.html)
 - [AWS Containers Blog — Migrating from AWS CodeDeploy to Amazon ECS for blue/green deployments](https://aws.amazon.com/blogs/containers/migrating-from-aws-codedeploy-to-amazon-ecs-for-blue-green-deployments/)
 - [AWS DevOps Blog — Choosing between Amazon ECS Blue/Green Native or AWS CodeDeploy in AWS CDK](https://aws.amazon.com/blogs/devops/choosing-between-amazon-ecs-blue-green-native-or-aws-codedeploy-in-aws-cdk/)
+- [Elastic Load Balancing — Edit target group attributes for your Application Load Balancer](https://docs.aws.amazon.com/elasticloadbalancing/latest/application/edit-target-group-attributes.html) — 2026-11-01 드레이닝 중인 대상으로 오는 새 요청의 정상 대상 전달, 처리 중인 요청과 활성 연결 대기, 101로 업그레이드를 수락한 대상의 WebSocket 연결 사용, 애플리케이션 기반 고정의 가중치 대상 그룹 미지원 대조
+- [Elastic Load Balancing — Action types for listener rules](https://docs.aws.amazon.com/elasticloadbalancing/latest/application/rule-action-types.html) — 2026-11-01 가중치 대상 그룹의 대상 그룹 고정과 쿠키 없는 요청의 가중치 분배 대조
+- [Elastic Load Balancing — How Elastic Load Balancing works](https://docs.aws.amazon.com/elasticloadbalancing/latest/userguide/how-elastic-load-balancing-works.html) — 2026-11-01 연결 업그레이드 뒤 리스너 라우팅 규칙을 더 적용하지 않는다는 설명 대조
+- [nginx — ngx_http_upstream_module server 지시어](https://nginx.org/en/docs/http/ngx_http_upstream_module.html#server) — 2026-11-01 drain 모드에서 서버에 묶인 요청만 전달 대조
 - [Sungmin Kim 강사 — CodeDeploy](https://www.inflearn.com/courses/lecture?courseId=325381&unitId=66574)
 
 ## 관련 문서

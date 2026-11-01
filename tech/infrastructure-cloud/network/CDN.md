@@ -3,7 +3,7 @@ tags: [infrastructure, network, cdn, cloudfront, performance, cache]
 status: done
 category: "Infrastructure - Network"
 aliases: ["CDN", "Content Delivery Network"]
-verified_at: 2026-07-21
+verified_at: 2026-11-01
 ---
 
 # CDN (Content Delivery Network)
@@ -32,6 +32,7 @@ Edge Location
 - **Edge Location (PoP, Point of Presence)**: 사용자에게 가까운 캐시 서버
 - **Regional Edge Cache**: Edge와 Origin 사이의 중간 캐시 계층. 동적 요청, 일부 HTTP 메서드와 같은 경우에는 이 계층을 건너뜀
 - **Origin**: 원본 콘텐츠 서버 (S3, 로드밸런서, 외부 HTTP 서버 등)
+- **ISP 안의 캐시**: Google Global Cache(GGC)는 ISP 망 안에, Netflix Open Connect는 ISP 망 안과 IX에 캐시 서버를 둔다(망 비용 측면은 [[Internet-vs-Web#캐시 서버의 경제성|캐시 서버의 경제성]]). GGC 트래픽은 Gbps로 잰 기준 대부분이 캐시 가능한 YouTube 콘텐츠다. GGC는 캐시를 미리 채우지 않고 지역 수요와 저장 용량에 따라 채우므로 새 노드는 처음에 사용자 수요만큼 cache-fill 트래픽이 필요하다. Open Connect는 무엇을 언제 볼지 예측해 콘텐츠 갱신 대부분을 한가한 시간대의 fill window에 미리 내려받는다([[Video-Streaming-System-Design|영상 스트리밍 설계]])
 
 ## 주요 구성 요소
 
@@ -150,7 +151,7 @@ React, Vue, Next.js(정적 export) 같은 SPA는 `/users/123` 같은 경로가 S
 
 SPA 배포 시 `index.html`은 새 배포를 빠르게 발견하도록 재검증하고, 내용 해시가 파일명에 포함된 자산(`assets/*.js`, `*.css`)은 긴 TTL과 `immutable`을 적용할 수 있다.
 
-- `index.html`: `Cache-Control: no-cache` (매 요청마다 재검증)
+- `index.html`: `Cache-Control: no-cache` (매 요청마다 재검증. CloudFront에서는 behavior의 Minimum TTL이 0일 때 그렇고, 관리형 `CachingOptimized`의 Minimum TTL은 1초다)
 - `assets/*.{js,css,png}` (해시 포함 파일명): `Cache-Control: public, max-age=31536000, immutable`
 - 배포 시 Invalidation은 `/index.html`만 (자산은 파일명이 바뀌므로 자동 분리)
 
@@ -163,9 +164,9 @@ SPA 배포 시 `index.html`은 새 배포를 빠르게 발견하도록 재검증
 ## 흔한 실수
 
 - **응답에 영향을 주지 않는 쿠키를 Cache Key에 포함** — 값의 종류가 많으면 불필요한 캐시 조각화로 hit율 저하
-- **쿠리스트링 무시 설정** — 일부 파라미터가 응답에 영향을 주는데 캐시가 겹침
+- **쿼리스트링 무시 설정** — 일부 파라미터가 응답에 영향을 주는데 캐시가 겹침
 - **해시 자산 전체를 매번 broad invalidation** — 비용과 반영 대기 증가. 해시 파일명은 새 key로 배포하고 entry HTML처럼 필요한 path만 무효화
-- **오리진에 `Cache-Control` 설정 누락** — CDN이 기본 TTL만 적용해 의도와 다름
+- **오리진에 `Cache-Control` 설정 누락** — CDN이 기본 TTL만 적용해 의도와 다름. CloudFront는 `max-age`, `s-maxage`, `Expires`가 없으면 Default TTL로 캐시하며(`no-cache`, `no-store`, `private`가 있으면 Default TTL 대신 Minimum TTL이 0일 때는 그 지시를 따르고 0보다 클 때는 Minimum TTL만큼 캐시한다), 2026-11-01 AWS 문서 기준 cache policy 없이 쓰는 legacy 설정의 기본값과 관리형 `CachingOptimized`는 24시간(86,400초), `UseOriginCacheControlHeaders` 계열은 0초다. Minimum TTL이 더 크면 Minimum TTL을 쓰고, 브라우저 캐시는 이 값과 별개로 브라우저마다 다르다
 - **민감 응답의 캐시 정책 누락** — `private` 또는 `no-store`뿐 아니라 해당 behavior의 **Minimum TTL을 0**으로 두고 cache policy를 함께 검증. Minimum TTL이 0보다 크면 CloudFront가 해당 지시자를 무시하고 최소 시간 동안 캐시할 수 있음
 
 ## 면접 체크포인트
@@ -185,8 +186,13 @@ SPA 배포 시 `index.html`은 새 배포를 빠르게 발견하도록 재검증
 - [AWS CloudFront OAC로 S3 접근 제한](https://docs.aws.amazon.com/AmazonCloudFront/latest/DeveloperGuide/private-content-restricting-access-to-s3.html)
 - [AWS CloudFront cache policy와 cache key](https://docs.aws.amazon.com/AmazonCloudFront/latest/DeveloperGuide/cache-key-understand-cache-policy.html)
 - [AWS CloudFront cache expiration과 Minimum TTL](https://docs.aws.amazon.com/AmazonCloudFront/latest/DeveloperGuide/Expiration.html)
+- [AWS CloudFront 관리형 cache policy 설정값](https://docs.aws.amazon.com/AmazonCloudFront/latest/DeveloperGuide/using-managed-cache-policies.html)
 - [AWS 공식 문서, CloudFront flat-rate pricing plans](https://docs.aws.amazon.com/AmazonCloudFront/latest/DeveloperGuide/flat-rate-pricing-plan.html)
+- [Google Global Cache 제공 콘텐츠](https://support.google.com/interconnect/answer/7658599)
+- [Google Global Cache cache-fill](https://support.google.com/interconnect/answer/7658593)
+- [Netflix Open Connect Overview](https://openconnect.netflix.com/Open-Connect-Overview.pdf)
 - [CloudFront + S3로 정적 웹사이트 배포하기 — 요즘IT](https://yozm.wishket.com/magazine/detail/1360/)
+- [YouTube, 동국시스템즈 IT 채널, 로드밸런서와 CDN, 사람이 몰려도 사이트가 버티는 법](https://www.youtube.com/watch?v=oS-qdeQ2kww)
 
 ## 관련 문서
 - [[Image-Delivery-Optimization|이미지 전송 최적화 (Lambda@Edge 리사이즈, AVIF, GIF→MP4)]]
@@ -195,3 +201,5 @@ SPA 배포 시 `index.html`은 새 배포를 빠르게 발견하도록 재검증
 - [[Reverse-Proxy|Reverse Proxy]]
 - [[Cache-Strategies|캐시 전략 (TTL, Invalidation)]]
 - [[EC2|AWS EC2/ASG/ALB]]
+- [[Video-Streaming-System-Design|주문형 비디오 스트리밍 설계 (Open Connect)]]
+- [[Internet-vs-Web|인터넷과 웹 (ISP 안의 캐시와 망 비용)]]

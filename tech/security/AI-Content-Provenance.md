@@ -1,9 +1,9 @@
 ---
-tags: [security, ai, provenance, watermark, c2pa]
+tags: [security, ai, provenance, watermark, c2pa, biosecurity]
 status: done
-verified_at: 2026-10-21
+verified_at: 2026-11-01
 category: "보안(Security)"
-aliases: ["AI 콘텐츠 출처 증명", "AI Content Provenance", "텍스트 워터마크"]
+aliases: ["AI 콘텐츠 출처 증명", "AI Content Provenance", "텍스트 워터마크", "SynthID Bio", "단백질 설계 워터마크"]
 ---
 
 # AI 콘텐츠의 워터마크와 출처 증명
@@ -19,6 +19,7 @@ AI 처리 흔적을 판단할 때는 텍스트의 통계적 신호, 파일의 �
 | 일반 AI 텍스트 탐지 | 문체 등 텍스트의 특징 | 특정 제공자의 워터마크 키로 검증하는 검사와 다르다 |
 | 숨은 문자 검사 | Unicode 문자와 제어 문자 | 문자 존재만으로 특정 모델의 통계적 워터마크를 입증하지 못한다 |
 | 이미지와 오디오 워터마크 | 이미지나 오디오 신호 자체에 넣은 패턴 | 해당 제공자의 검출 수단으로 확인하며 일부 변환을 견딜 수 있지만 모든 AI 생성물을 식별하지 않는다 |
+| 생물 서열과 구조 워터마크 | AI가 설계한 단백질 서열의 아미노산 선택과 예측 구조의 원자 좌표 | 워터마크의 유무만 표시해 설계자를 구분하지 않으며, 서열 재설계나 구조 완화 같은 가공에 지워질 수 있다 |
 
 ### 텍스트 워터마크는 숨은 글자와 다르다
 
@@ -44,6 +45,20 @@ Claude의 파일 표시는 지원되는 파일 형식과 제품 기능에 따라
 - 텍스트 검증은 AI 연구와 학술 기관을 포함한 승인된 조직에만 사례별 심사로 열려 있다. 이 API로 임의 텍스트의 OpenAI 생성 여부를 누구나 판정할 수 있다고 가정하지 않는다.
 - 업로드는 요청당 파일 하나, 50 MiB 이하이며 오디오는 디코딩 후 60초 이하다.
 
+## 생물학적 설계의 워터마크는 서열과 구조에 들어간다
+
+2026-09-30 Google DeepMind가 공개한 SynthID Bio는 AI가 설계한 단백질 서열과 예측 구조에 출처 신호를 넣는 방법 모음이다. 검사 대상이 파일의 메타데이터가 아니라 서열과 좌표 자체다. 두 방식의 확인 지점은 다르다. 공식 블로그는 서열 워터마크를 디지털 모델뿐 아니라 합성된 실제 단백질에서도 확인할 수 있게 하는 것을 목표로 들고, 구조 워터마크는 예측 구조의 원자 좌표라는 디지털 산출물에 적용된다.
+
+- 서열 워터마크는 텍스트 워터마크와 같은 원리를 쓴다. SynthID-Text의 tournament sampling을 단백질 설계 모델 ProteinMPNN의 샘플링 분포에 적용해, 비밀 키와 앞선 H-gram 문맥에서 끌어낸 난수 씨드로 아미노산 선택을 치우치게 한다. 차이는 생물학적 기능을 유지해야 한다는 제약과, 검출 대상이 파일이 아니라 서열이라는 점이다.
+- 구조 워터마크는 AlphaFold 3의 diffusion 모듈과 confidence 모듈을 미세 조정해 예측 좌표에 신호를 남기고, 잔기 내 원자 간 거리와 torsion 각을 계산하는 탐지기를 함께 학습한다. 논문은 워터마킹 수단을 모델 가중치에 직접 넣는 방식이라 가중치가 공개된 뒤에는 그 가중치에서 워터마킹을 떼어낼 수 없다고 적는다. 따라서 워터마크를 넣은 가중치를 그대로 실행하는 한 누가 돌리든 예측 좌표에 신호가 남는다. 공식 블로그는 의도적 조작에 대한 강건성을 더 높이는 일을 남은 핵심 과제로 든다.
+- 기능 보존은 세 표적(SARS-CoV-2 spike RBD, VEGF-A, PD-L1)의 결합 단백질 설계로 확인했다. 블로그는 적중률, 결합 친화도와 서열 다양성이 워터마크 없는 설계와 대등했다고 적는다. 논문은 Carterra LSA XT 장비의 SPR로 결합 동역학을 측정했고 KD 10⁻⁷ M 이하 기준 적중률에 유의한 차이가 없었다고 보고한다. 다만 KD 10⁻⁶ M 이하 기준에서는 샘플링 온도 0.5의 non-distortionary 설정과 온도 0.1로 만든 워터마크 없는 설계 사이에 유의한 차이가 있었고 워터마크 없는 쪽의 적중률이 더 높았다. 논문은 두 워터마크 설정(non-distortionary 0.5와 distortionary 0.1)을 높은 샘플링 온도와 강한 워터마크가 결합 친화도에 주는 영향을 평가하려고 골랐다고 적는다. 유의한 차이가 난 쌍은 샘플링 온도도 달라 이 차이를 워터마크만의 효과로 읽지 않는다.
+- 구조 워터마크의 검출률은 표적별 수치가 아니라 미세 조정 설정별 수치다. 학습 시 좌표 노이즈 진폭 s를 0.001, 0.01, 0.1 Å로 달리한 세 모델 모두 거짓 양성률 0.1%에서 참 양성률 99.8%를 넘었고, 거짓 양성률 0.01%에서는 s = 0.001 모델이 98.99%였다.
+- 의도한 용도는 DNA 합성 주문 선별의 자동 확인 신호와 PDB, UniProt, GenBank 같은 공개 데이터베이스의 출처 표시다. 논문은 같은 용도를 핵산 합성 선별이라는 표현으로 적는다.
+
+논문이 밝힌 한계도 함께 읽는다. 두 방식 모두 워터마크의 유무만 담는 zero-bit 방식이라 그 이상의 정보를 실어 보내지 못한다. 서열 워터마크는 ProteinMPNN으로 서열을 다시 설계하면 대부분 지워지고 샘플링 시점에 적용되므로 사용자가 끌 수 있으며, 구조 워터마크는 강건성 평가에서 구조 완화(OpenMM과 Amber99sb force field)를 견디지 못했다. 논문은 워터마크와 무관하게 기존 유사도 기반 선별을 함께 수행하는 층상 접근을 전제로, 절대적인 보안을 보장하기보다 진입 장벽을 높이는 것이 목적이라고 적고, 운영에는 산업 전반의 조정과 표준화가 더 필요하다고 덧붙인다. 공식 블로그도 생물보안에 만능 해법인 단일 개입은 없다고 적고 이 방식을 여러 층을 겹치는 방어의 한 층으로 설명한다.
+
+2026-11-01 공식 블로그와 Nature가 open access로 공개한 논문 본문을 대조했다. 논문에서는 구조 정확도와 검출성 결과 절, 결합 실험 절, 한계 서술, Methods의 워터마킹 목표와 탐지기 설명, 그림 1 캡션을 확인했다. 보충 자료의 치환 공격 결과는 확인하지 않았고, 워터마크 삽입과 검출을 직접 실행하거나 재현하지 않았다. 발표 이후 바뀐 배포 범위와 접근 조건도 확인하지 않았다.
+
 ## 제거 도구의 성공과 탐지 결과를 분리한다
 
 `watermarks-remover`의 README는 Unicode 제거 수와 메타데이터 처리 결과를 검증 가능한 작업으로 구분하고, 통계적 텍스트 재작성은 최선 노력 방식으로 설명한다. 제공자 탐지기가 실패한다고 보증하지 않는다. 도구 소개의 탐지 회피 주장을 검증된 성능으로 옮기지 않는다.
@@ -58,6 +73,8 @@ Claude의 파일 표시는 지원되는 파일 형식과 제품 기능에 따라
 - [Anthropic, How Claude marks AI-generated content](https://support.claude.com/en/articles/16266773-how-claude-marks-ai-generated-content)
 - [C2PA, Content Credentials Explainer 2.2](https://spec.c2pa.org/specifications/specifications/2.2/explainer/Explainer.html)
 - [OpenAI API, Content provenance](https://developers.openai.com/api/docs/guides/content-provenance) — 2026-10-21 이미지와 오디오 검사 범위, 결과 해석, 텍스트 검증 접근과 업로드 제한
+- [Introducing SynthID Bio — Google DeepMind](https://deepmind.google/blog/introducing-synthid-bio/)
+- [Function-preserving watermarking of AI-generated proteins — Nature](https://www.nature.com/articles/s41586-026-10965-y)
 - [watermarks-remover — GitHub, guillaumemeyer](https://github.com/guillaumemeyer/watermarks-remover)
 
 ## 관련 문서
@@ -66,5 +83,6 @@ Claude의 파일 표시는 지원되는 파일 형식과 제품 기능에 따라
 
 - [[LLM-Application-Security|LLM 애플리케이션 보안]]
 - [[Web-Content-Manipulation-for-AI|AI가 읽는 웹 콘텐츠의 조작]] — 생성한 통계의 인용 세탁과 출처 확인
+- [[Forensic-Watermarking|포렌식 워터마킹과 콘텐츠 유출 추적]] — 식별값을 실어 배포 경로를 추적하는 방식과 유무만 담는 zero-bit 방식의 대비
 - [[Generative-Video-Editing|생성형 영상 편집과 결과 검증]]
 - [[Resume-Experience-Narrative-and-Evidence|이력서 경험 서술과 증거 설계]]

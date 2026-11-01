@@ -1,7 +1,7 @@
 ---
 tags: [econ, macro]
 status: done
-verified_at: 2026-07-21
+verified_at: 2026-11-01
 category: "Economics"
 aliases: ["금리와 통화정책", "Interest Rates and Monetary Policy"]
 ---
@@ -76,7 +76,7 @@ COFIX의 공시 주기와 개별 대출의 금리 변경 주기도 구분한다.
 
 동결은 이번 회의에서 정책금리를 바꾸지 않았다는 뜻이다. 이후의 인상이나 인하 가능성까지 닫았다는 뜻으로 읽지 않는다. 2026-10-22 한국은행 결정문은 기준금리 3.00% 유지와 함께 앞선 두 차례 인상의 파급영향을 점검할 필요를 설명했다. 동시에 물가, 경기와 금융안정 상황을 확인하며 추가 인상의 시기와 속도를 결정하겠다고 밝혔다.
 
-이 사례에서 확정된 것은 해당 회의의 동결이며, 다음 회의의 날짜별 금리 수준은 확정되지 않았다. 동결, 향후 정책 방향, 대출상품의 금리 재산정은 서로 다른 판단 단위다. 이 절과 COFIX 절만 2026-10-23 공식 자료와 대조했으며 기존 `verified_at`과 다른 절의 검증 범위는 유지한다.
+이 사례에서 확정된 것은 해당 회의의 동결이며, 다음 회의의 날짜별 금리 수준은 확정되지 않았다. 동결, 향후 정책 방향, 대출상품의 금리 재산정은 서로 다른 판단 단위다. 이 절과 COFIX 절만 2026-10-23 공식 자료와 대조했으며, 당시 frontmatter의 `verified_at`은 바꾸지 않았고 다른 절의 검증 범위도 유지했다.
 
 ## 5. 통화량과 신용창조
 
@@ -141,6 +141,11 @@ COFIX의 공시 주기와 개별 대출의 금리 변경 주기도 구분한다.
 - **금리를 내리면 무조건 경기가 산다** → 유동성 함정에선 안 통한다. 심리가 죽으면 공짜 돈도 안 빌린다.
 - **중앙은행이 모든 금리를 정한다** → 중앙은행은 운영 체계에 따라 하나의 목표 금리나 목표 범위, 여러 예금과 대출 제도 금리를 정할 수 있다. ECB는 세 가지 key interest rates를 공표하고, 연준은 연방기금금리 목표 범위와 IORB 등을 함께 운용한다. 장기금리와 민간 대출금리는 기대, 만기와 신용위험까지 반영해 시장에서 형성된다.
 - **본원통화를 늘리면 곧장 같은 비율의 인플레이션이 난다** → 은행 준비금과 민간의 결제용 예금은 같지 않다. 물가 영향은 총수요, 공급 여건, 기대, 신용과 통화 유통속도를 포함한 전달 경로에 달려 있어 기계적인 일대일 관계가 아니다.
+- **연준은 은행들이 소유한 민간 주식회사다** → 연준 이사회(Board of Governors)는 연방 정부 기관이다. 12개 지역 연방준비은행은 각각 별도 법인으로 민간 기업과 비슷하게 조직돼 있지만 영리를 목적으로 운영되지 않으며, 회원 은행은 가입 조건으로 관할 연방준비은행 주식을 법에 따라 보유한다. 이 주식은 양도하거나 담보로 제공할 수 없고 일반 회사 주식에 보통 따르는 지배권도 주지 않는다. 다만 지역 연방준비은행 이사 가운데 A급과 B급은 회원 은행이 선출하고 C급은 연준 이사회가 임명하므로, 지배권이 없다는 말을 이사 선출에도 관여하지 않는다는 뜻으로 넓히지 않는다. 배당률도 법으로 정해진다. 2016-01-01부터 총연결자산이 기준액(GDP 물가지수로 매년 조정, 2026년 적용분 131억 8,200만 달러)을 넘는 은행은 연 6%와 배당 지급 전 마지막 10년물 국채 입찰의 최고 낙찰수익률 중 낮은 쪽을 받고, 기준액 이하 은행은 6%를 받는다. 연방준비은행은 비용, 법정 배당과 한도가 정해진 잉여금을 충당하고 남은 순이익을 법에 따라 재무부로 넘긴다. 수입이 운영비, 배당과 잉여금 유지를 충당하지 못하는 기간에는 그 부족분이 이연자산(deferred asset)으로 쌓이고, 그만큼의 순이익을 먼저 실현해야 재무부 송금이 재개된다(2026-10-29 공표 H.4.1 기준).
+- **미국 재무부는 연준에서 신용대출을 받거나 새 국채를 연준에 팔아 적자를 메운다** → 재무부는 분기마다 공표하는 일정에 따라 국채를 입찰로 팔아 일반에서 차입한다. 연방준비법(Federal Reserve Act) 14조는 연준이 미국 국채를 공개시장에서만 사고팔 수 있도록 정한다. 연준은 재무부에서 새 국채를 직접 사지 않고 입찰에서 경쟁 응찰도 하지 않으며, 일반이 보유한 국채를 사들이는 것은 재정적자의 조달 수단이 아니라고 설명한다. 현재 지시처럼 원금을 전액 재투자하는 동안에는 보유 국채의 만기가 돌아오면 같은 액면만큼 입찰에서 비경쟁 응찰로 새 국채와 교환하는 방식으로 재투자하고, 이 금액은 공표된 발행액에 더해 배정된다(2026-10-28 연준 Implementation Note와 2026-10-22 재무부 입찰 공고 기준, 2026-09-16 Note와 같은 지시). 연준이 공개시장에서 사들인 국채를 보유한다는 사실은 이와 별개이며 보유 규모는 주간 H.4.1로 공표된다.
+- **한국은행은 정부 조직이라 정부와 같은 주머니다** → 한국은행법상 한국은행은 무자본 특수법인이고(제2조), 통화신용정책은 중립적으로 수립되고 자율적으로 집행되어야 하며 한국은행의 자주성은 존중되어야 한다(제3조). 정부와의 연결 장치도 같은 법에 있다. 통화신용정책은 물가안정을 해치지 않는 범위에서 정부의 경제정책과 조화를 이룰 수 있도록 해야 하고(제4조), 재정경제부차관 또는 금융위원회 부위원장(금융위원회 소관 사항에 한정)은 금융통화위원회 회의에 열석해 발언할 수 있다(제91조). 재정경제부장관은 금통위 의결이 정부 경제정책과 상충한다고 판단하면 재의를 요구할 수 있고, 금통위가 위원 5명 이상의 찬성으로 같은 의결을 하면 대통령이 최종 결정한다(제92조). 정부에 대한 여신과 국채 직접 인수도 가능하지만 그 총액은 금융기관과 일반에 대해 정부가 부담하는 모든 채무와 합쳐 국회가 의결한 기채 한도를 넘을 수 없고, 그 여신의 이율과 그 밖의 조건은 금통위가 정한다(제75조). 법적 지위와 대외 금융여건이 통화정책에 주는 제약은 나눠서 본다(→ [[Exchange-Rates-Balance-of-Payments|환율과 국제수지]] 5절과 6절).
+
+확인 범위: 연준 소유, 재무부 차입, 한국은행 지위 세 항목은 2026-11-01 연준 FAQ, 연방준비법 5조, 7조, 14조, Regulation I 개정 자료, 2006년 Kohn 부의장 연설, 연준의 지역 연방준비은행 이사 안내, 2026-10-29 공표 H.4.1, 뉴욕 연준의 국채 재투자 FAQ, 2026-09-16과 2026-10-28 Implementation Note, 재무부 입찰 공고와 한국은행법(2026-01-02 시행) 조문으로 대조했다. 두 Implementation Note의 목표 범위와 IORB가 이 문서의 다른 연준 서술과 상충하지 않음도 확인했다. 다른 절과 이 절의 앞선 세 항목은 기존 확인 날짜를 유지하며, 확인 날짜가 적히지 않은 절은 이전 기준일 2026-07-21을 따른다.
 
 ## 11. 사례: 일본은행의 마이너스 금리 해제 이후
 
@@ -173,6 +178,21 @@ COFIX의 공시 주기와 개별 대출의 금리 변경 주기도 구분한다.
 - [Bank of England — Money creation in the modern economy](https://www.bankofengland.co.uk/quarterly-bulletin/2014/q1/money-creation-in-the-modern-economy)
 - [ECB — Key ECB interest rates](https://www.ecb.europa.eu/stats/policy_and_exchange_rates/key_ecb_interest_rates/html/index.en.html)
 - [Federal Reserve, Implementing Monetary Policy in an Ample-Reserves Regime](https://www.federalreserve.gov/econres/notes/feds-notes/implementing-monetary-policy-in-an-ample-reserves-regime-the-basics-note-1-of-3-20200701.html)
+- [Federal Reserve — Who owns the Federal Reserve?](https://www.federalreserve.gov/faqs/about_14986.htm) — 2026-11-01 이사회의 연방 정부 기관 지위, 지역 연방준비은행의 별도 법인과 비영리 운영, 회원 자격 조건인 주식 보유와 순이익의 재무부 이전 대조
+- [Federal Reserve — Section 5. Stock Issues; Increase and Decrease of Capital](https://www.federalreserve.gov/aboutthefed/section5.htm) — 2026-11-01 회원 은행 보유 주식의 양도와 담보 제공 금지 대조
+- [Federal Reserve — The Evolving Role of the Federal Reserve Banks (Vice Chairman Donald L. Kohn, November 3, 2006)](https://www.federalreserve.gov/newsevents/speech/kohn20061103a.htm) — 2026-11-01 연방준비은행 주식이 일반 회사 주식의 지배권을 주지 않는다는 설명 대조
+- [Federal Reserve — Overview: Federal Reserve System Boards of Directors](https://www.federalreserve.gov/aboutthefed/directors/about.htm) — 2026-11-01 A급과 B급 이사의 회원 은행 선출, C급 이사의 이사회 임명 대조
+- [Federal Reserve — Factors Affecting Reserve Balances, H.4.1 (2026-10-29 공표)](https://www.federalreserve.gov/releases/h41/20261029/) — 2026-11-01 재무부 송금 재개 전에 실현해야 하는 이연자산의 정의와 보유 국채 공표 대조
+- [Federal Reserve — Section 7. Division of Earnings](https://www.federalreserve.gov/aboutthefed/section7.htm) — 2026-11-01 자산 규모별 배당률과 기준액의 GDP 물가지수 조정 대조
+- [Federal Reserve — Federal Reserve Bank Capital Stock, Final Rule (November 23, 2016)](https://www.federalreserve.gov/newsevents/pressreleases/files/bcreg20161123a1.pdf) — 2026-11-01 FAST Act에 따른 2016-01-01 배당률 변경 대조
+- [Federal Register — Federal Reserve Bank Capital Stock (November 20, 2025)](https://www.govinfo.gov/content/pkg/FR-2025-11-20/html/2025-20472.htm) — 2026-11-01 2026-01-01~12-31 적용 기준액 131억 8,200만 달러 대조
+- [Federal Reserve — How does the Federal Reserve's buying and selling of securities relate to the borrowing decisions of the federal government?](https://www.federalreserve.gov/faqs/how-does-the-federal-reserve-buying-and-selling-of-securities-relate-to-the-borrowing-decisions-of-the-federal-government.htm) — 2026-11-01 입찰을 통한 정부 차입, 일반 보유 국채 매입, 직접 매입과 경쟁 응찰 불참, 적자 조달 수단이 아니라는 설명 대조
+- [Federal Reserve — Section 14. Open-Market Operations](https://www.federalreserve.gov/aboutthefed/section14.htm) — 2026-11-01 14(b)(1)의 미국 국채 공개시장 매매 조건 대조
+- [Federal Reserve Bank of New York — FAQs: Treasury Rollovers](https://www.newyorkfed.org/markets/treasury-rollover-faq) — 2026-11-01 만기 보유분과 같은 액면의 비경쟁 응찰과 발행액 추가 배정 대조(2025-10-29 시행 기준)
+- [Federal Reserve — Implementation Note issued September 16, 2026](https://www.federalreserve.gov/newsevents/pressreleases/monetary20260916a1.htm) — 2026-11-01 보유 국채 원금의 입찰 재투자 지시 대조. 목표 범위 3.75~4.00%와 IORB 3.90%가 다른 절의 연준 서술과 상충하지 않음을 확인
+- [Federal Reserve — Implementation Note issued October 28, 2026](https://www.federalreserve.gov/newsevents/pressreleases/monetary20261028a1.htm) — 2026-11-01 보유 국채 원금의 입찰 재투자 지시와 목표 범위 3.75~4.00%, IORB 3.90% 유지 대조
+- [TreasuryDirect — Treasury Offering Announcement: 7-Year Note (October 22, 2026)](https://www.treasurydirect.gov/instit/annceresult/press/preanre/2026/A_20261022_8.pdf) — 2026-11-01 SOMA 응찰 수용과 발행액 외 처리 표기 대조
+- [국가법령정보센터 — 한국은행법](https://www.law.go.kr/LSW/lsInfoP.do?lsiSeq=276153) — 2026-11-01 제2조, 제3조, 제4조, 제75조, 제91조, 제92조 대조(2026-01-02 시행, 법률 제21065호)
 - [Bank of Japan — Changes in the Monetary Policy Framework (March 19, 2024)](https://www.boj.or.jp/en/mopo/mpmdeci/state_2024/k240319a.htm) — 2026-10-11 마이너스 금리 해제와 0~0.1% 유도 목표 대조
 - [Bank of Japan — Change in the Guideline for Money Market Operations and Decision on the Plan for the Reduction of the Purchase Amount of Japanese Government Bonds (July 31, 2024)](https://www.boj.or.jp/en/mopo/mpmdeci/state_2024/k240731a.htm) — 2026-10-11 0.25% 인상과 월 약 5.7조 엔에서 시작한 매입 축소 계획 대조
 - [Bank of Japan — Change in the Guideline for Money Market Operations (January 24, 2025)](https://www.boj.or.jp/en/mopo/mpmdeci/state_2025/k250124a.htm) — 2026-10-11 0.5% 인상 대조
