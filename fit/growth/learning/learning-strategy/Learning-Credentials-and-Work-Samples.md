@@ -86,6 +86,18 @@ AWS Microcredentials는 제공된 AWS 환경에서 구성, 문제 해결과 최�
 - **Microsoft Certified: Azure AI Fundamentals:** 확인한 자격 페이지는 필수 시험을 `AI-901`로 연결하고 Azure AI 개념, Python 문법과 프로그래밍 기법, Azure 리소스 지식을 요구한다. 자격 이름만 보고 비개발자용 강좌와 같은 선수 조건이라고 판단하지 않는다. 오래된 시험 코드가 붙은 자료를 사용할 때는 현재 시험 페이지와 학습 가이드부터 대조한다.
 - **이름이 불완전한 추천 목록:** 공급자 로고만으로 자격을 특정하지 않는다. 정식 명칭, 시험 코드, 학습 목표와 현재 운영 여부를 확인한 뒤 비교한다. 추천자의 S/A/B 등급을 채용 시장의 검증된 가치 순위로 바꾸지 않는다.
 
+아래는 2026-11-02 각 공식 페이지의 표기이며, 금액을 한국 결제 조건으로 옮겨 쓰지 않는다.
+
+| 이름 | 형식 | 완료 조건과 응시 방식 | 표시 비용 | 유효기간 |
+|---|---|---|---|---|
+| Anthropic Academy, AI Fluency: Framework & Foundations | 강좌 수료증 | 과정을 마치면 최종 평가를 치르고 수료증을 받을 수 있다. 합격 기준, 감독 여부와 소요 시간은 적혀 있지 않다 | 무료 등록 | 적혀 있지 않음 |
+| Hugging Face AI Agents Course | 강좌 수료증 두 종류 | 기초 수료증은 Unit 1 완료, 이수 수료증은 Unit 1과 사용 사례 과제 하나, 최종 과제 완료가 조건이다. Python과 LLM의 기초 지식이 필요하고 장마다 주 3~4시간씩 1주를 기준으로 하며 마감은 없다 | 무료 | 적혀 있지 않음 |
+| Google Cloud Generative AI Leader | 감독 시험 | 객관식 50~60문항, 90분, 영어, 일본어, 스페인어, 포르투갈어. 온라인 또는 시험장 감독. 선수 조건이 없고 기술 실무 경험이 없어도 대상이다 | $99(세금 별도) | 3년 |
+| NVIDIA-Certified Associate: Generative AI LLMs(NCA-GENL) | 시험 | 객관식 50~60문항, 1시간, 영어. 생성 AI와 LLM의 기초 이해를 전제로 한다. 응시 방식은 이 페이지에 적혀 있지 않다 | $125 | 2년(재응시로 재인증) |
+| AWS Certified Machine Learning Engineer - Associate | 감독 시험 | MLA-C02 베타는 85문항 170분 영어, 기존 MLA-C01은 65문항 130분이다. MLA-C01의 영어 응시는 2026-09-28에 끝났고 한국어, 일본어, 중국어 간체 응시는 MLA-C02 정식 출시 전까지 남는다. Pearson VUE 시험장이나 온라인 감독으로 치른다. 대상 후보는 MLA-C02가 SageMaker AI, Bedrock 등, MLA-C01이 SageMaker 등 ML 엔지니어링 서비스 경험 1년 이상이다 | MLA-C02 베타 US$75, MLA-C01 US$150 | 3년 |
+
+Anthropic 강좌는 무료로 등록해 최종 평가를 거쳐 수료증을 받을 수 있다. Hugging Face 강좌는 무료로 Unit 1을 마치면 기초 수료증을, 여기에 사용 사례 과제 하나와 최종 과제를 더하면 이수 수료증을 받는다. 시험형 셋은 유료이며 시험 시간만 60~170분이다. 세 시험 페이지는 준비 기간을, Anthropic 강좌는 준비 기간과 강좌 소요 시간을 적지 않고 Hugging Face도 장마다 주 3~4시간씩 1주라는 설계 기준만 밝히므로, 짧은 기간에 딸 수 있다는 추천 목록의 표현을 준비 기간의 근거로 쓰지 않는다. AWS 시험은 버전 전환 중이고 같은 페이지 안에서도 C02 코드가 MLA-C02와 ME1-C02로 다르게 적혀 있어, 응시 직전에 언어와 시험 코드를 다시 확인한다.
+
 이는 과정 선택 기준이며 사용자의 자격증 준비나 새 학습 트랙을 시작한다는 결정이 아니다. 다른 절의 가격과 유지 정책을 다시 대조하지 않아 기존 `verified_at`은 유지한다.
 
 ### 선택과 이해 확인 절차
@@ -149,6 +161,11 @@ AWS Microcredentials는 제공된 AWS 환경에서 구성, 문제 해결과 최�
 - [AWS, Training and Certification FAQs](https://aws.amazon.com/certification/faqs/) — 2026-10-22 Microcredential 절의 유효기간, 갱신과 재응시 조건 대조.
 - [Can I join the DeepLearning.AI Pro membership if I’m new to programming? — DeepLearning.AI](https://info.deeplearning.ai/knowledge-base/can-i-join-the-deeplearning.ai-pro-membership-if-im-new-to-programming) — 2026-10-21 두 입문 강좌의 코딩 선수 조건 대조.
 - [Microsoft Learn, Microsoft Certified: Azure AI Fundamentals](https://learn.microsoft.com/en-us/credentials/certifications/azure-ai-fundamentals/) — 2026-10-21 필수 시험과 선수 지식 대조.
+- [Anthropic Academy, AI Fluency: Framework & Foundations](https://anthropic.skilljar.com/ai-fluency-framework-foundations) — 2026-11-02 수료 조건과 등록 비용 대조.
+- [Hugging Face, AI Agents Course, Welcome to the AI Agents Course](https://huggingface.co/learn/agents-course/unit0/introduction) — 2026-11-02 두 수료증의 조건, 선수 지식과 학습량 대조.
+- [Google Cloud, Generative AI Leader](https://cloud.google.com/learn/certification/generative-ai-leader) — 2026-11-02 시험 형식, 비용, 대상과 유효기간 대조.
+- [NVIDIA, NVIDIA-Certified Associate: Generative AI LLMs](https://www.nvidia.com/en-us/learn/certification/generative-ai-llm-associate/) — 2026-11-02 시험 형식, 비용과 유효기간 대조.
+- [AWS, AWS Certified Machine Learning Engineer - Associate](https://aws.amazon.com/certification/certified-machine-learning-engineer-associate/) — 2026-11-02 MLA-C01과 MLA-C02 베타의 형식, 비용과 유효기간 대조.
 - [AWS Recertification — AWS](https://aws.amazon.com/certification/recertification/) — 2026-10-07 유지와 갱신의 기간, 자격 조건 및 Cloud Quest 경로를 대조했다.
 - [A new way to keep your AWS Certification current — AWS Training and Certification Blog](https://aws.amazon.com/blogs/training-and-certification/a-new-way-to-keep-your-aws-certification-current/) — 2026-06-23 공개 베타의 교육과 실습 요건.
 - [AWS, AWS Cloud Adoption Framework: People Perspective, Workforce transformation](https://docs.aws.amazon.com/whitepapers/latest/aws-caf-people-perspective/workforce-transformation.html) — 2026-10-07 업무 수요와 학습 경로 연결 원칙을 대조했다.
