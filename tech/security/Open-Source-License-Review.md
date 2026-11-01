@@ -82,6 +82,23 @@ aliases: ["오픈소스 라이선스 검토", "OSS License Review", "상용 소�
 - 아이콘, 폰트, 사진, 데이터셋과 모델 가중치는 코드와 함께 전달되더라도 각각의 이용 조건을 확인한다. 저장소 루트의 코드 라이선스가 모든 외부 자산을 허가한다고 추정하지 않는다.
 - 외주 납품에서는 제3자 구성요소 목록, 라이선스/고지문, 수정 내역과 필요한 소스 제공 책임을 함께 인계하도록 협의한다. 타인의 오픈소스 권리까지 고객에게 독점 양도할 수 있다고 약속하지 않는다.
 
+### 사례: 공개 데이터 피드를 묶은 지도 앱
+
+2026-11-02 main 브랜치의 God's Eye View README와 DATA_SOURCES 기준이다. 당시 최신 릴리스는 v0.3.0(2026-10-28)이며 태그 시점의 파일은 대조하지 않았다. 항공기, 선박, 위성과 공개 카메라를 브라우저의 3D 지구본에 합친 오픈소스 클라이언트로, 두 문서는 코드를 MIT라고 적는다(LICENSE 파일은 대조하지 않았다). DATA_SOURCES는 MIT 허가가 소스 코드에만 미치고 제3자 데이터와 시각 자산에는 이어지지 않으며, 출처마다 자체 라이선스와 약관이 남는다고 적는다.
+
+| 자산 | 저장소 문서(README, DATA_SOURCES)에 적힌 조건 |
+|---|---|
+| OpenSky 항공 데이터 | 비상업 연구, 교육 라이선스 |
+| adsb.lol ADS-B 데이터 | ODbL 1.0 |
+| AISStream 선박(AIS) 데이터 | 무료 베타이며 공식 약관이 없다고 적는다 |
+| CelesTrak 위성 궤도(TLE) | 미국 정부 출처 데이터로 라이선스가 없고 인용을 요청한다 |
+| USGS 데이터 | 미국 퍼블릭 도메인 |
+| TeleGeography 데이터 | 비상업이며 상업 사용자는 삭제하거나 TeleGeography에서 라이선스를 받아야 한다 |
+| 교통 카메라 | 운영 기관마다 다르다. CC BY 4.0(NSW)과 TfL 자체 약관(London)은 출처 표시를 요구한다. 개인 용도로만 허용하고 그 밖의 용도에 운영 기관의 서면 동의를 요구하는 피드(Florida)와 데이터 공유 계약이 필요한 피드(NYC)는 기본으로 꺼져 있다 |
+| 3D 지형과 타일(README) | 무료 Cesium ion 토큰은 자격이 되는 개인, 비상업 용도이며 현재 약관과 쿼터를 따른다. 상업 배포에는 Google 키를 직접 쓰는 경로를 쓰고 현재 제공자 약관을 확인하라고 안내한다. 이 경로는 사용량 과금이므로 과금을 켠 뒤 키 제한과 쿼터 또는 예산 알림을 두라고 한다 |
+
+이 표는 저장소 문서가 요약한 조건이며 각 제공자의 약관 원문은 이번에 대조하지 않았다. 라이선스가 없다는 표기도 이용 허가로 단정하지 않고 제공자의 안내로 확인한다. README는 OpenSky 크레딧 관리, TomTom 일일 타일 예산과 TLE 디스크 캐시가 반복 요청을 줄일 뿐 제공자의 쿼터와 과금 통제를 대신하지 않는다고 밝힌다. 이런 앱을 고객 납품이나 상업 서비스로 옮길 때는 코드 라이선스 검토와 별도로 데이터 출처별 상업 이용, 출처 표시, 재배포 조건과 과금 주체를 목록으로 만들고 각 제공자의 현재 약관 원문으로 확인한다. 계정 기반 API(Google, Cesium ion, OpenSky OAuth, AISStream 등)는 보통 키를 발급받은 계정 명의로 약관 동의와 과금이 묶이므로(제공자별 약관 미대조) 고객과 키 발급 계정, 과금 계정, 키를 보관하는 서버의 운영 주체를 정한다. ODbL, CC BY와 개별 동의나 계약이 필요한 피드의 의무는 계정 명의와 별도로 데이터를 표시하거나 배포하는 쪽에서 확인한다(적용 제안).
+
 ## 저장소, 배포 빌드와 호스팅 의존성
 
 같은 저장소라도 배포 채널과 포함 모듈에 따라 라이선스가 다를 수 있다. 설치한 바이너리, 대응 소스와 라이선스를 연결하고, 현재 기능의 동일성과 미래 기능의 제공 약속을 구분한다.
@@ -113,6 +130,9 @@ aliases: ["오픈소스 라이선스 검토", "OSS License Review", "상용 소�
 - [OSI, The Open Source AI Definition 1.0](https://opensource.org/ai/open-source-ai-definition)
 - [Open Source AI Definition on the road: Looking back and forward — OSI](https://opensource.org/blog/open-source-ai-definition-on-the-road-looking-back-and-forward) (1.0 공개일)
 - [Meta, Llama 3.1 Community License Agreement](https://github.com/meta-llama/llama-models/blob/main/models/llama3_1/LICENSE)
+- [God's Eye View — GitHub, bilawalsidhu/gods-eye-view](https://github.com/bilawalsidhu/gods-eye-view) (2026-11-02 main 브랜치의 README 확인)
+- [God's Eye View DATA_SOURCES — GitHub, bilawalsidhu/gods-eye-view](https://github.com/bilawalsidhu/gods-eye-view/blob/main/DATA_SOURCES.md)
+- [God's Eye View: The Open-Source Spy Satellite Simulator — YouTube, Better Stack](https://www.youtube.com/watch?v=PQN76wcEt10) (2026-10-22 업로드, 저장소 조건의 단서로만 쓰고 내용은 저장소 문서로 대조)
 
 ## 관련 문서
 
@@ -120,4 +140,5 @@ aliases: ["오픈소스 라이선스 검토", "OSS License Review", "상용 소�
 - [[Dependency-Vulnerability-Scanning|의존성 취약점 스캐닝]] — 스캔 결과와 SBOM의 범위
 - [[Side-Project-Asset-Sale|사이드 프로젝트와 디지털 자산 매각]] — 제3자 권리와 인계 조건
 - [[LLM-Application-Security|LLM 애플리케이션 보안]] — 사전학습 모델, 어댑터와 병합 모델의 공급망 위험
+- [[Font-Licensing-for-Client-Work|외주 납품의 폰트 라이선스]] — 코드 밖 자산의 이용 조건
 - [[보안(Security)|보안 인덱스]]
