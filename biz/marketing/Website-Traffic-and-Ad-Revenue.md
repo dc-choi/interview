@@ -1,7 +1,7 @@
 ---
 tags: [business, marketing, web-analytics, advertising]
 status: done
-verified_at: 2026-10-24
+verified_at: 2026-11-01
 category: "비즈니스&제품(Business&Product)"
 aliases: ["웹사이트 트래픽과 광고 수익", "Website Traffic and Ad Revenue"]
 ---
@@ -49,16 +49,24 @@ Google의 AdSense 준비 안내는 방문자에게 관련 있는 독자적 콘�
 
 2026-10-24 Google 공식 안내 대조: 검색에서 AI 콘텐츠를 다루는 기준과 AdSense 광고 게재 정책은 적용 대상이 다르다. Google Search는 순위 조작이 목적이 아닌 적절한 AI 활용을 허용하지만, 그 설명을 광고 승인 보장으로 옮기지 않는다. 게시자 정책은 콘텐츠가 없거나 가치가 낮은 화면, 공사 중인 화면의 광고를 금지하고, 사람의 검토나 선별을 거치지 않은 자동 생성 콘텐츠에도 광고를 두지 않도록 안내한다.
 
-신청 전에는 방문자에게 필요한 독자적인 내용과 사용하기 쉬운 탐색 구조를 점검한다. 외부 자료를 이용할 때는 전문 지식, 개선 아이디어나 실제 후기처럼 자체 내용을 보탠다. 메뉴의 정렬, 글자 가독성과 기능도 확인한다. 확인한 준비 안내에는 글 개수나 글자 수로 승인 여부를 정하는 합격선이 없다.
+신청 전에는 방문자에게 필요한 독자적인 내용과 사용하기 쉬운 탐색 구조를 점검한다. 다른 사이트의 글이나 삽입한 동영상 같은 외부 자료를 이용할 때는 전문 지식, 개선 제안, 리뷰나 개인적인 의견처럼 자체 내용을 보탠다. 메뉴의 정렬, 글자 가독성과 기능도 확인한다. 확인한 준비 안내에는 글 개수나 글자 수로 승인 여부를 정하는 합격선이 없다.
+
+사례로, 한 운영자가 AI로 만든 자신의 두 사이트 결과를 비교했다(2026-10-22 공개 영상). 승인되지 않은 반려견 여행 사이트는 장소 정보 대부분이 공공 데이터였고, 여행 코스에는 직접 방문한 후기가 아니라고 적혀 있었다. 승인된 시계 도구 사이트는 도구 아래에 사용법 안내와 자주 묻는 질문을 두고, 혼자 운영하며 쓰다가 불편한 점을 고쳐 왔다는 제작 방식과 도구가 하지 못하는 일을 적었다. 운영자는 여행 사이트에 자신만 줄 수 있는 내용이 빠져 있었다고 보면서도, 이 차이가 승인 결과의 원인 전부라고 단정하지 않았다.
+
+게시자 정책은 다른 곳의 콘텐츠를 논평이나 선별 없이, 또는 다른 방식으로 가치를 더하지 않고 옮겨 온 화면에 광고를 허용하지 않는다. 확인한 게시자 정책과 AdSense 도움말은 공공 데이터가 이 복제 콘텐츠에 해당하는지 따로 정하지 않으므로, 공공 데이터를 다시 정리하기만 한 페이지가 위험하다는 판단은 조건부다. 방문하지 않았다는 표기는 정직하지만 그 표기만으로 자체 내용이 생기지는 않는다. 표기를 지우거나 경험을 지어내기보다 실제로 확인한 내용과 해석을 더하는 편이 정책의 방향에 맞다(적용 제안). 사용법과 한계를 직접 적은 도구 페이지는 그 도구에서만 얻을 수 있는 설명을 갖춘 쪽에 가깝지만, 이 비교는 승인 기준을 입증하지 않는다.
 
 사이트의 승인 상태와 `ads.txt` 상태도 별개다. `Needs attention`은 해결할 문제가 있다는 뜻이고, `Getting ready`는 확인 중인 상태다. `Ready`는 광고를 게재할 준비가 됐다는 뜻이며 계속 정책을 준수해야 한다. `ads.txt`의 `Authorized`는 게시자 ID를 찾았다는 뜻이므로 콘텐츠 심사 통과와 같다고 보지 않는다.
 
 적용 제안: 도구 사이트에는 실제 동작, 사용법과 한계를 검토하고 빈 페이지와 작동하지 않는 메뉴를 먼저 고친다. 경험을 지어내거나 페이지 수만 늘리는 방식으로 빈틈을 채우지 않는다. 심사 통과, 실제 유입, 광고 수입과 비용을 뺀 이익을 서로 다른 단계로 기록한다.
 
+검색 쪽 기준은 따로 본다. Google Search Central의 콘텐츠 자기 점검 안내는 제품을 실제로 써 보거나 장소를 방문한 것 같은 직접 경험의 전문성이 드러나는지 묻는다. 누가 만들었는지가 방문자에게 분명한지 묻고, 자동화로 콘텐츠를 상당 부분 만들었다면 그 사용 사실이 드러나는지, 어떻게 썼고 왜 유용했는지 배경을 설명하는지도 묻는다. AI 사용 공개는 어떻게 만들었는지 궁금해할 만한 콘텐츠에 권하는 사항이고, 지어낸 작성자 프로필은 기만으로 본다. 이는 검색 품질의 자기 점검 질문이므로 AdSense 승인 요건으로 옮기지 않는다.
+
 ## 출처
 
 - [Google Search's guidance about AI-generated content — Google Search Central](https://developers.google.com/search/blog/2023/02/google-search-and-ai-content)
 - [Google Publisher Policies, Google-served ads on screens without publisher-content](https://support.google.com/publisherpolicies/answer/11112688?hl=en)
+- [Google Publisher Policies, Replicated content](https://support.google.com/publisherpolicies/answer/11190248?hl=en)
+- [Google Search Central, Creating helpful, reliable, people-first content](https://developers.google.com/search/docs/fundamentals/creating-helpful-content)
 - [Google AdSense Help, Make sure your site's pages are ready for AdSense](https://support.google.com/adsense/answer/7299563?hl=en)
 - [Google AdSense Help, Check the status of your AdSense sites](https://support.google.com/adsense/answer/12170222?hl=en)
 
@@ -66,6 +74,7 @@ Google의 AdSense 준비 안내는 방문자에게 관련 있는 독자적 콘�
 - [Google AdSense Help, Page RPM](https://support.google.com/adsense/answer/112030?hl=en) — 2026-10-24 산식 확인.
 - [무료 바코드 사이트 하나에 한 달 몇 명이 들어올까 — YouTube, AI, AX 업무 자동화 타니](https://www.youtube.com/watch?v=TLK7OLNUieI) — 2026-10-18 공개 영상. 조사 계기로만 사용하며 트래픽과 수익을 입증하는 자료로 사용하지 않았다.
 - [애드센스 사이트를 만들게 된 의외의 계기 — YouTube, AI, AX 업무 자동화 타니](https://www.youtube.com/watch?v=bVT2hcJ_PeY) — 2026-10-20 공개된 제작자의 경험 설명. 반복 입력을 줄이는 기능 가설의 계기이며 수요와 수익의 검증 자료는 아니다.
+- [같은 AI로 만든 사이트인데 승인이 갈린 이유 — YouTube, AI, AX 업무 자동화 타니](https://www.youtube.com/watch?v=XtPZEGOLKeA) — 2026-10-22 공개된 1분 영상. 운영자 본인의 두 사이트를 비교한 경험이며 승인 기준을 입증하는 자료로 사용하지 않았다.
 
 ## 관련 문서
 

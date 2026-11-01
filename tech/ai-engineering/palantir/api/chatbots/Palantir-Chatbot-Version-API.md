@@ -9,17 +9,17 @@ category: "AI엔지니어링(AIEngineering)"
 
 이 API의 Agent는 AIP Chatbot Studio에서 만든 AIP Chatbot을 뜻한다. 이전 AIP Agent/Agent Studio 명칭과의 하위 호환 때문에 경로와 type 이름에 Agent가 남아 있다. 임의의 외부 Agent runtime을 등록하는 범용 API로 해석하지 않는다.
 
-2026-11-01 확인한 endpoint 문서는 제목과 필드 설명에서 Agent 대신 Chatbot Studio Agent라는 이름을 쓴다(예: Get Chatbot Studio Agent). 경로, scope, 응답 type 이름 `Agent`와 오류 이름은 그대로다. 문서 표기가 바뀐 것만으로 호출 경로나 오류 처리를 바꾸지 않는다.
+2026-11-01 확인한 endpoint 문서는 제목과 필드 설명에서 Agent 대신 Chatbot Studio Agent라는 이름을 쓴다(예: Get Chatbot Studio Agent). resource 개요 제목도 Chatbot Studio Agent basics와 Chatbot Studio Agent Version basics로 바뀌었다. 버전 필드 정의는 Get/List endpoint의 응답 스키마에 있다. 경로, scope, 응답 type 이름 `Agent`, `AgentVersion`과 오류 이름은 그대로다. Get과 List의 AgentNotFound, Get의 AgentVersionNotFound 설명은 아직 Agent, AgentVersion 표기를 쓴다. 문서 표기가 바뀐 것만으로 호출 경로나 오류 처리를 바꾸지 않는다.
 
 이 그룹의 endpoint는 Preview이며 `preview=true`가 필요하다. 버전/설정 조회는 `api:aip-agents-read`, 대화 생성/진행은 `api:aip-agents-write` operation scope를 사용한다. 실제 Agent와 데이터 접근 권한도 함께 확인한다.
 
 ## Published와 Saved의 버전 증가가 다르다
 
-버전 문자열은 `major.minor`다. major는 publish마다, minor는 save마다 증가한다고 명시한다. 일반 library의 major.minor.patch 의미를 그대로 적용하지 않는다.
+버전 응답 `AgentVersion`은 `string`과 `version` 두 필드로 이뤄진다. `string`은 `majorVersion.minorVersion` 형식의 semantic version이고 `version`은 그 세부 정보다. Get/List 응답 스키마와 공식 Python SDK의 `AgentVersionDetails`는 major가 publish마다, minor가 save마다 증가한다고 설명한다. 확인한 API reference와 SDK 문서에는 publish 뒤 minor가 0으로 돌아가는지 나와 있지 않다. 일반 library의 major.minor.patch 의미를 그대로 적용하지 않는다.
 
 `GET /api/v2/aipAgents/agents/{agentRid}`는 optional version을 받으며 생략하면 최신 published 버전을 반환한다. 최신 save를 자동 선택하는 의미가 아니다. Agent에는 RID/version, displayName, optional description/inputPlaceholder/suggestedPrompts와 optional application parameters가 있다.
 
-`GET /agents/{agentRid}/agentVersions/{agentVersionString}`은 특정 버전 상세를, `GET /agents/{agentRid}/agentVersions`는 최신순 버전 목록을 제공한다. 목록은 pageToken/pageSize와 nextPageToken으로 계속 조회한다. 잘못된 문자열 InvalidAgentVersion, 없는 AgentVersion/Agent, published 버전이 없는 NoPublishedAgentVersion을 구별한다. 마지막 경우 publish하거나 사용할 버전을 명시하라는 설명이다.
+`GET /agents/{agentRid}/agentVersions/{agentVersionString}`은 특정 버전 상세를, `GET /agents/{agentRid}/agentVersions`는 최신순 버전 목록을 제공한다. 목록 응답의 `data`와 `nextPageToken`은 모두 optional이며 pageToken/pageSize와 nextPageToken으로 계속 조회한다. 목록 endpoint가 문서화한 오류는 AgentNotFound(404) 하나다. 특정 버전 조회는 잘못된 문자열 InvalidAgentVersion, 없는 AgentVersion/Agent, published 버전이 없는 NoPublishedAgentVersion을 구별한다. 마지막 경우 publish하거나 사용할 버전을 명시하라는 설명이다.
 
 2026-11-01 확인한 getAgent 문서는 InvalidAgentVersion과 NoPublishedAgentVersion을 INVALID_ARGUMENT(HTTP 400), AgentNotFound와 AgentVersionNotFound를 NOT_FOUND(HTTP 404)로 표시한다. published 버전이 없는 Agent는 404로 오지 않으므로 HTTP 상태만으로 Agent의 존재 여부를 판정하지 않고 오류 이름으로 분기한다. AgentNotFound를 받으면 Agent의 부재와 함께 token의 접근 권한도 확인한다([[Palantir-API-Client-Contract]]의 NotFound 처리).
 
@@ -45,9 +45,11 @@ Agent가 참조한 object/link/action type, function/version과 language model�
 
 ## 출처
 
-- [Palantir, Agent basics](https://www.palantir.com/docs/foundry/api/aip-agents-v2-resources/agents/agent-basics)
+- [Palantir, Chatbot Studio Agent basics](https://www.palantir.com/docs/foundry/api/aip-agents-v2-resources/agents/agent-basics)
+- [Palantir, Chatbot Studio Agent Version basics](https://www.palantir.com/docs/foundry/api/aip-agents-v2-resources/agent-versions/agent-version-basics)
 - [Palantir, Get Chatbot Studio Agent](https://www.palantir.com/docs/foundry/api/aip-agents-v2-resources/agents/get-agent)
 - [Palantir, Get Chatbot Studio Agent Version](https://www.palantir.com/docs/foundry/api/aip-agents-v2-resources/agent-versions/get-agent-version)
 - [Palantir, List Chatbot Studio Agent Versions](https://www.palantir.com/docs/foundry/api/aip-agents-v2-resources/agent-versions/list-agent-versions)
 - [Palantir, Create Session](https://www.palantir.com/docs/foundry/api/aip-agents-v2-resources/sessions/create-session)
 - [Palantir, Blocking Continue Session](https://www.palantir.com/docs/foundry/api/aip-agents-v2-resources/sessions/blocking-continue-session)
+- [Palantir foundry-platform-python, AgentVersionDetails](https://github.com/palantir/foundry-platform-python/blob/develop/docs/v2/AipAgents/models/AgentVersionDetails.md)

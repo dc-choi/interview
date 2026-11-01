@@ -99,4 +99,5 @@ NAIC가 설명하는 재산보험 기반 영업중단 담보는 보장되는 물
 - [[Risk-Management|리스크 관리]]
 - [[Business-Continuity-for-Small-Business|소규모 사업의 연속성 계획]]
 - [[Privacy-Operations-for-Small-Business|대표의 개인정보 운영]]
+- [[Privacy-Breach-Civil-Liability|개인정보 유출의 민사 책임과 손해배상]] — 개인정보 손해배상책임 보장 의무와 노출 규모
 - [[Business-Borrowing-and-Guarantees|사업자 차입과 보증]] — 기관 보증의 채무 관계는 보험 보장 여부와 나누어 읽는다.

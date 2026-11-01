@@ -195,6 +195,7 @@ aliases: ["대표의 개인정보 운영", "소규모 사업자 개인정보 보
 ## 관련 문서
 
 - [[Risk-Management]] — 개인정보 위험을 사업 의사결정과 대응 책임으로 연결
+- [[Privacy-Breach-Civil-Liability]] — 유출 뒤의 분쟁조정과 손해배상, 손해배상책임 보장 의무
 - [[Commerce-Member]] — 계정과 회원 통합에서 처리 근거와 역할 구분
 - [[Identity-Verification-Processor-Risk]] — 신원 확인 업체와 신분증 처리 위험
 - [[Dev-Outsourcing-Engagement]] — 외주 범위와 책임을 계약에 반영
