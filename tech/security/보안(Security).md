@@ -22,7 +22,7 @@ aliases: ["보안(Security)", "Security Index"]
 - [[Adversarial-Examples-Decision-Based-Attacks|적대적 예제와 결정 기반 공격]] — 위협 모델과 쿼리 예산, Boundary Attack과 HopSkipJumpAttack, 잠재 공간 변형, 상태 기반 탐지와 강건성 평가 도구
 - [[Agent-Execution-Isolation|에이전트 실행 격리]] — MXC 백엔드별 강제 범위, 내부자 위험과 공개 모델의 조건부 백도어
 - [[Enterprise-Browser-Control|기업용 브라우저 통제]] — Firefox Enterprise의 관리 위치와 early access
-- [[Bot-Traffic-Operations|봇 트래픽 운영]] — 요청 로그와 사용자 분석, 차단과 부하 측정
+- [[Bot-Traffic-Operations|봇 트래픽 운영]] — 요청 로그와 사용자 분석, 차단과 부하 측정, AI 수집기 이름과 실제 요청자, robots.txt 응답 코드와 그룹 규칙, 관찰부터 캐시, 요청 제한, WAF까지 쌓는 순서
 - [[Signed-Payload-Deserialization|서명된 페이로드 역직렬화]] — 키 유출과 객체 복원 위험
 - [[FIDO-WebAuthn#보안성과 사용자 통제권을 따로 평가한다|패스키 논쟁의 구분]] — 피싱 저항, 인증기 증명과 이전/복구
 

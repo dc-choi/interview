@@ -48,6 +48,7 @@ static field는 그 클래스와 class loader가 살아 있는 동안 계속 도
 - `Java heap space`가 곧 누수라는 뜻은 아니다. 지정했거나 기본으로 정해진 heap 크기가 애플리케이션에 부족한 설정 문제일 수 있다. 오래 실행되는 애플리케이션에서 사용량이 계속 늘 때 누수를 의심한다. finalizer 대기열을 처리하는 thread가 따라가지 못해 같은 오류가 날 수도 있다. finalization은 JDK 18에서 제거 예정으로 deprecated됐다(JEP 421).
 - heap dump는 `jcmd <pid> GC.heap_dump filename=heap.hprof`, `jmap -dump:format=b,file=heap.hprof <pid>`, 또는 `-XX:+HeapDumpOnOutOfMemoryError`로 얻는다. 시간 간격을 두고 두 번 이상 떠서 늘어난 객체를 비교하고, 분석 도구에서 retained size가 큰 객체와 GC root까지의 경로(dominator tree, path to GC roots)를 확인한다.
 - 장애 중에는 dump를 남기고 재시작으로 시간을 번 뒤 분석한다. dump는 heap만큼 크고 요청 데이터와 secret 같은 민감 정보를 담으므로 저장 위치와 접근을 제한한다.
+- 장애 전에 켜 둘 진단, G1 로그와 MAT 보고서 읽기, hs_err 첫 검토 순서는 [[JVM-First-Failure-Diagnosis|JVM 첫 장애 진단]]에 있다.
 
 ## 대응 원칙
 
@@ -78,6 +79,7 @@ static field는 그 클래스와 class loader가 살아 있는 동안 계속 도
 
 - [[JVM-GC|JVM GC (heap 구조, 수집기, OOM 패턴)]]
 - [[JVM-Container-Memory|JVM 컨테이너 메모리 (used, committed, RSS)]]
+- [[JVM-First-Failure-Diagnosis|JVM 첫 장애 진단 (상시 진단 설정, G1 로그, MAT, hs_err)]]
 - [[GC-Algorithm|GC 알고리즘 이론 (Tri-color Marking)]]
 - [[Closure#lifetime과 memory|JS closure의 lifetime과 memory]]
 - [[Monitoring-Graph-Reading|모니터링 그래프 읽기]]

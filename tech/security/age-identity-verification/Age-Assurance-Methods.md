@@ -33,7 +33,7 @@ aliases: ["Age Assurance Methods", "연령 검증 방법론", "Facial Age Estima
 
 ## 프라이버시 보존 검증 (PET)
 
-강한 검증과 데이터 최소화를 동시에 만족시키는 열쇠는 발급과 사용의 분리다. 신뢰 앵커가 연령 크리덴셜을 발급하고, 검증 시점에는 over-18 신호만 제시한다. 발급기관은 어느 사이트에 쓰였는지 모르고 사이트는 신원을 모르는 double-blind 구조이며, zk-SNARK나 zk-STARK 같은 영지식증명으로 unlinkable한 1회용 증명을 만든다. IEEE 2089.1-2024는 이를 asserted부터 strict까지 4단계 보증 수준으로 표준화했다. 다만 앵커 의존, 폐기(revocation), 상호운용성은 미해결 과제로 남는다.
+강한 검증과 데이터 최소화를 동시에 만족시키는 열쇠는 발급과 사용의 분리다. 신뢰 앵커가 연령 크리덴셜을 발급하고, 검증 시점에는 over-18 신호만 제시한다. 발급기관은 어느 사이트에 쓰였는지 모르고 사이트는 신원을 모르는 double-blind 구조이며, zk-SNARK나 zk-STARK 같은 영지식증명으로 unlinkable한 1회용 증명을 만든다. IEEE 2089.1-2024는 이를 asserted부터 strict까지 4단계 보증 수준으로 표준화했다. 다만 앵커 의존, 폐기(revocation), 상호운용성은 미해결 과제로 남는다. 이 구조를 DID와 VC 데이터 모델, SD-JWT VC, ISO/IEC 18013-5 같은 표준 식별자와 자격증명 형식으로 구현할 때 형식별 선택적 공개와 연결 가능성의 차이는 [[Decentralized-Identity-Credentials|탈중앙 신원과 검증 가능한 자격증명]]에서 다룬다.
 
 ## 면접 체크포인트
 

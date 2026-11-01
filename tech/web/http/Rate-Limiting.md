@@ -1,7 +1,7 @@
 ---
 tags: [web, network, security]
 status: done
-verified_at: 2026-10-12
+verified_at: 2026-11-01
 category: "웹&네트워크(Web&Network)"
 aliases: ["Rate Limiting", "Rate Limit", "레이트 리밋"]
 ---
@@ -96,6 +96,24 @@ aliases: ["Rate Limiting", "Rate Limit", "레이트 리밋"]
 
 캐시는 평균 부하를 낮추지만 최대 부하를 묶지 못한다. 캐시 miss와 인기 key 만료는 그대로 origin으로 가므로 rate limit의 대체물로 쓰지 않는다. 스트림 안에서 소비자가 못 따라올 때 멈추거나 버리는 제어는 [[Backpressure]]에서 다룬다.
 
+## nginx limit_req로 적용할 때
+
+`ngx_http_limit_req_module`은 키별 요청 처리 속도를 leaky bucket 방식으로 제한한다(2026-11-01 nginx.org 문서 기준). 아래 값은 예시이며, 로그에서 정상 사용자의 최대 요청 속도를 확인해 그보다 넉넉하게 시작하고 조금씩 줄인다(운영 제안).
+
+```nginx
+# http 블록
+limit_req_zone $binary_remote_addr zone=perip:10m rate=5r/s;
+limit_req_status 429;
+# server 또는 location 블록
+limit_req zone=perip burst=20 nodelay;
+```
+
+- **zone과 키:** `$binary_remote_addr`는 IPv4 4바이트, IPv6 16바이트 키다. 상태 하나는 64비트 플랫폼에서 128바이트라 1MB zone에 약 8천 개가 들어간다. zone이 차면 가장 오래 쓰지 않은 상태를 지우고, 그래도 새 상태를 만들 수 없으면 요청을 오류로 끝낸다. 키가 빈 요청은 세지 않으므로 헬스 체크처럼 뺄 요청은 `map`으로 키를 빈 값으로 만든다.
+- **rate와 burst:** `rate`는 평균 처리 속도이고 초당 1개 미만은 `r/m`으로 쓴다. 초과 요청은 `burst` 수까지 지연되고 그 수를 넘으면 오류로 끝난다. `burst` 기본값은 0이라 `rate`만 걸면 페이지 하나가 이미지, CSS, 스크립트를 한꺼번에 요청할 때 정상 사용자도 거절될 수 있다(이 문서의 해석). `nodelay`는 burst 안의 초과 요청을 지연 없이 처리하고, `delay`(1.15.7)는 지정한 수를 넘는 초과 요청부터 지연한다.
+- **응답 코드:** 거절 기본값은 503이다. `limit_req_status 429`(1.3.15)로 [[#응답 설계|한도 초과]]임을 드러낸다.
+- **거절 없는 시험:** `limit_req_dry_run on`(1.17.1)은 처리 속도를 제한하지 않고 공유 메모리의 초과 요청 수만 센다. `$limit_req_status`(1.17.6)를 access log에 남기면 `REJECTED_DRY_RUN`, `DELAYED_DRY_RUN`으로 거절되거나 지연될 요청을 미리 본다.
+- **IP 키의 한계:** 회사, 학교, 모바일망처럼 여러 사용자가 공인 IP 하나를 쓰면 함께 제한된다. CDN이나 로드밸런서 뒤에서는 클라이언트 주소가 앞단 프록시 주소가 되므로, 소스 빌드 기본값에 없는 `ngx_http_realip_module`(`--with-http_realip_module`)의 `set_real_ip_from`으로 신뢰할 프록시를 정하고 `real_ip_header`의 주소로 바꾼 뒤 키로 쓴다([[Reverse-Proxy#proxy_set_header|클라이언트 IP 헤더]]). `real_ip_recursive`가 기본값인 off이면 헤더의 마지막 주소로 바꾸므로, CDN과 로드밸런서처럼 프록시를 여러 단계 거치며 `X-Forwarded-For`를 쓰면 그 주소가 앞단 프록시일 수 있어 여러 사용자가 한 키로 묶인다. 이때는 거치는 신뢰 프록시 대역을 모두 `set_real_ip_from`에 넣고 `real_ip_recursive on`으로 신뢰 대역이 아닌 마지막 주소를 쓰게 한다. zone은 인스턴스의 공유 메모리라 여러 대면 아래 분산 환경의 문제가 그대로 생긴다(zone 동기화 `sync`는 상용 구독 기능).
+
 ## 분산 환경에서의 Rate Limiting
 
 서버가 여러 대일 때 각 서버가 독립적으로 카운팅하면 정확하지 않다. 요청마다 식별자별 버킷에서 토큰을 하나 소비하고 없으면 429를 돌려주는 구현을 인스턴스 메모리에 두면, 인스턴스가 N대일 때 실제 허용량이 최대 N배가 된다.
@@ -122,6 +140,8 @@ Q. 429와 503은 어떻게 구분하는가?
 
 2026-10-12 부분 검증: 로그인 실패 횟수의 계정 기준 집계와 프록시 분산에 따른 IP 기준 한도 우회를 OWASP Authentication, Credential Stuffing Prevention Cheat Sheet에 대조했다. 나머지 제품별 동작은 이번에 다시 대조하지 않았다.
 
+2026-11-01 부분 검증: nginx limit_req 절을 nginx.org의 ngx_http_limit_req_module, ngx_http_realip_module, ngx_http_map_module 문서에 대조했다. 나머지 제품별 동작은 이번에 다시 대조하지 않았다.
+
 - [RFC 6585, 429 Too Many Requests](https://www.rfc-editor.org/rfc/rfc6585.html#section-4)
 - [RFC 9110, 503 Service Unavailable](https://www.rfc-editor.org/rfc/rfc9110.html#name-503-service-unavailable)
 - [Azure Architecture Center, Throttling pattern](https://learn.microsoft.com/en-us/azure/architecture/patterns/throttling)
@@ -132,9 +152,13 @@ Q. 429와 503은 어떻게 구분하는가?
 - [OWASP API Security Top 10 2023, Release Notes](https://owasp.org/API-Security/editions/2023/en/0x04-release-notes/)
 - [OWASP Cheat Sheet Series, Authentication Cheat Sheet](https://cheatsheetseries.owasp.org/cheatsheets/Authentication_Cheat_Sheet.html)
 - [OWASP Cheat Sheet Series, Credential Stuffing Prevention Cheat Sheet](https://cheatsheetseries.owasp.org/cheatsheets/Credential_Stuffing_Prevention_Cheat_Sheet.html)
+- [nginx, ngx_http_limit_req_module](https://nginx.org/en/docs/http/ngx_http_limit_req_module.html)
+- [nginx, ngx_http_realip_module](https://nginx.org/en/docs/http/ngx_http_realip_module.html)
+- [nginx, ngx_http_map_module](https://nginx.org/en/docs/http/ngx_http_map_module.html)
 - [Dowon Lee 강사, Rate Limiting Strategies](https://www.inflearn.com/courses/lecture?courseId=332731&unitId=289786)
 - [Dowon Lee 강사, API Rate Limiting 실습](https://www.inflearn.com/courses/lecture?courseId=332731&unitId=290752)
 - [EVERY junior dev makes these security mistakes... — CodeHead](https://www.youtube.com/watch?v=AjUeQJxen1k)
+- [왜 robots.txt만 믿으면 작은 사이트가 더 위험한가 — 길리랩](https://www.youtube.com/watch?v=Hlwwrplcejw)
 
 ## 관련 문서
 - [[CSRF|CSRF Protection]]
@@ -143,3 +167,4 @@ Q. 429와 503은 어떻게 구분하는가?
 - [[External-Service-Resilience|외부 서비스 장애 대응]]
 - [[Cache-vs-Queue|캐시와 큐의 역할 (Queue-Based Load Leveling)]]
 - [[Password-Hashing|패스워드 해싱 (온라인 공격 방어)]]
+- [[Bot-Traffic-Operations|봇 트래픽의 관측과 제한]]
