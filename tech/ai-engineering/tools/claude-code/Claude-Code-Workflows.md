@@ -93,7 +93,7 @@ DB, 외부 API로 접근 범위 확장. 스코프 3종(user 전역, project는 .
 
 ### 플러그인
 
-Skills + Hook + MCP + LSP + 출력 스타일을 묶어 배포하는 단위. 검증(validate) → 로컬 테스트(--plugin-dir) → 마켓플레이스 배포. 커뮤니티 플러그인은 **공식 보안 감사가 없으므로** 설치 전 스크립트 직접 확인. LSP 플러그인은 편집 직후 타입 에러를 자동 감지하지만 대형 프로젝트에서 메모리 주의.
+Skills + Hook + MCP + LSP + 출력 스타일을 묶어 배포하는 단위. 검증(validate) → 로컬 테스트(--plugin-dir) → 마켓플레이스 배포. 플러그인은 어느 마켓플레이스에서 받았든 설치 전에 스크립트를 직접 확인한다([[Claude-Code-Extension-Reference#플러그인 — 배포 단위|플러그인 보안 경고]]). LSP 플러그인은 편집 직후 타입 에러를 자동 감지하지만 대형 프로젝트에서 메모리 주의.
 
 ## 개인에서 조직으로 확장하는 4단계
 
@@ -124,6 +124,16 @@ Model provider는 이 중 기반과 조직 운영의 일부다. 예를 들어 Am
 - 온보딩: 클론 → 에이전트에게 구조 질문 → 연습 이슈로 PR까지, 첫날부터 팀 규칙대로
 - 문서 자동화: 코드 분석 기반 README, API 명세, .env.example 생성 + **"설치 명령이 실제 동작하는지 실행해서 확인"** 검증까지. 생성 문서는 사람 검토 필수
 
+### 팀 하네스의 배포, 강제와 머지 근거
+
+2026-11-02 Claude Code 공식 문서와 GitHub 문서를 대조한 범위다. 팀 하네스는 플러그인으로 묶어 사내 마켓플레이스로 배포할 수 있고, 배포 경로와 정책 키는 [[Claude-Code-Extension-Reference#사내 마켓플레이스와 조직 정책|사내 마켓플레이스와 조직 정책]]을 따른다.
+
+- **층 구분:** 커스텀 커맨드는 스킬에 통합돼 `.claude/commands/` 파일과 스킬이 같은 방식으로 동작하고, 사람만 부르게 할지는 `disable-model-invocation` 플래그로 정한다. 스킬, 커맨드와 에이전트는 지시로 컨텍스트에 들어가므로 어느 쪽이든 요청 층이다. 스킬 프론트매터의 훅은 그 스킬이 호출된 뒤에야 등록되고 서브에이전트 프론트매터의 훅은 그 서브에이전트가 실행되는 동안만 돌므로, 매번 실행돼야 할 검사는 설정이나 플러그인의 훅과 권한 규칙에 둔다([[Harness-Gate-Placement#요청 층과 강제 층|요청 층과 강제 층]]).
+- **머지 근거:** 커밋 트레일러처럼 스킬을 썼다고 남기는 흔적은 빠뜨리거나 꾸며 넣을 수 있으므로 감사 기록으로만 쓴다(운영 제안). 관리형 훅과 관리형 `enabledPlugins`로 강제한 플러그인의 훅은 다른 설정 파일의 `disableAllHooks`로 꺼지지 않지만, 저장소 설정으로 켠 플러그인의 훅과 저장소나 개인 설정에 둔 훅은 `disableAllHooks`나 한 번의 실행에 준 `--settings '{"disableAllHooks": true}'`로 꺼진다. 또 훅은 그 설정을 받은 환경의 Claude Code 세션 안에서만 실행된다(이 문서의 해석). 그래서 머지는 그 스킬이 보장해야 할 검사를 CI가 다시 실행해 통과했을 때 허용한다(운영 제안).
+- **상태 검사의 출처:** 저장소 쓰기 권한이 있는 사람이나 통합은 어떤 상태 검사의 상태든 설정할 수 있다. ruleset의 필수 상태 검사에 상태를 보고할 GitHub App을 지정하면 다른 사람이나 통합이 설정한 상태로는 머지할 수 없으며, 그 앱은 `statuses:write` 권한으로 저장소에 설치돼 있고, 최근 check run을 제출한 적이 있으며, ruleset에 이미 있는 필수 상태 검사와 연결돼 있어야 한다. CI를 실행하는 앱으로 고정하되(운영 제안), 앱 고정은 상태를 보고한 주체만 고정하고 실행된 워크플로 정의는 고정하지 않는다(이 문서의 해석). 쓰기 권한자가 PR 안에서 워크플로를 고치는 경우까지 막으려면 조직이나 엔터프라이즈 수준 ruleset의 필수 워크플로 규칙(GitHub Enterprise Cloud 문서)이나 `.github/workflows/`에 대한 code owner 리뷰를 함께 검토한다(운영 제안).
+- **메시지 규칙의 한계:** 커밋 메시지, 작성자와 커미터 이메일 같은 메타데이터가 문자열이나 정규식 패턴을 따르게 하는 ruleset 규칙은 GitHub Enterprise 플랜 조직에서 쓸 수 있다. 형식을 검사하는 규칙이라 트레일러를 강제해도 그 스킬이 실제로 실행됐다는 증거는 되지 않는다.
+- **채택 측정:** 팀 스킬의 활성화는 OpenTelemetry의 `claude_code.skill_activated`, 플러그인 설치와 세션 시작 때의 로드는 `claude_code.plugin_installed`, `claude_code.plugin_loaded`로 본다. 사내 마켓플레이스 플러그인의 이름과 그 스킬 이름은 기본으로 가려지거나 빠진다. 내보내는 기기에 `OTEL_LOG_TOOL_DETAILS=1`을 두면 이름이 남지만 Bash 명령, MCP 서버와 도구 이름, 도구 입력까지 함께 기록되므로, 이름 없이 셀 때는 `plugin_loaded`의 `plugin_id_hash`와 관리형 설정이 켠 플러그인을 표시하는 `plugin.scope`의 `org`를 먼저 쓴다. 저장소 설정으로 배포한 플러그인은 `org`가 아니라 `user-local`로 잡히므로 배포 경로는 `plugin_loaded`의 `enabled_via`로 구분한다(운영 제안). Enterprise 플랜의 Analytics API는 공식과 커뮤니티 등급 밖의 플러그인을 `third-party` 한 행으로 합치므로 사내 플러그인별 채택은 이 이벤트로 보고, 흔적의 개수를 채택률로 쓰지 않는다(운영 제안).
+
 ## 사례 — 창시자의 워크플로우
 
 Claude Code를 만든 엔지니어의 실사용 패턴. 위 원칙들의 극단적 적용례다.
@@ -150,6 +160,14 @@ Claude Code를 만든 엔지니어의 실사용 패턴. 위 원칙들의 극단�
 - [클로드 코드 가이드 (개발 파트 17챕터, 별첨 1 창시자의 워크플로우) — WikiDocs](https://wikidocs.net/book/19104)
 - [개인 생산성에서 조직 생산성으로, Claude Code on Amazon Bedrock 학습 플랜 — AWS 기술 블로그](https://aws.amazon.com/ko/blogs/tech/claude-code-on-amazon-bedrock-training/)
 - [Claude Code on Amazon Bedrock 온라인 교육 프로그램 — AWS](https://dtlpyb0rtvxql.cloudfront.net/)
+- [Claude Code — Plugin security and trust](https://code.claude.com/docs/en/plugins/security)
+- [Claude Code — Hooks reference](https://code.claude.com/docs/en/hooks)
+- [Claude Code — Measure plugin cost and usage](https://code.claude.com/docs/en/plugins/measure)
+- [Claude Code — Monitoring](https://code.claude.com/docs/en/monitoring-usage)
+- [Claude Code — All settings](https://code.claude.com/docs/en/settings-reference)
+- [GitHub Docs — Available rules for rulesets](https://docs.github.com/en/repositories/configuring-branches-and-merges-in-your-repository/managing-rulesets/available-rules-for-rulesets)
+- [GitHub Enterprise Cloud Docs — Available rules for rulesets](https://docs.github.com/en/enterprise-cloud@latest/repositories/configuring-branches-and-merges-in-your-repository/managing-rulesets/available-rules-for-rulesets)
+- [바이브코딩 프로덕션 #4(끝) — YouTube, 뉴런데브](https://www.youtube.com/watch?v=dg1Pe7H4Tis) — 2026-10-22 공개, 책의 마지막 4부(개인 개발자를 넘어서)를 해설하는 영상. 팀 하네스의 단계적 강제, 사용 흔적에 기반한 머지 판단, 사내 마켓플레이스 배포라는 운영 착상만 쓰고 층 구분과 머지 근거는 공식 문서 기준으로 고침. 조직 평가와 협력 구조의 해석, 사례와 수치는 검증하지 않아 쓰지 않음
 
 ## 관련 문서
 

@@ -71,7 +71,21 @@ Advisor는 별도 작업을 맡기는 서브에이전트와 다르다. 전체 �
 - 스킬 + 에이전트 + 훅 + mod + MCP/LSP 서버 + `bin/` + 설정을 하나로 묶은 설치 단위. `.claude/`에서 실험하고 검증되면 플러그인으로 변환하는 것이 권장 경로. 스킬은 플러그인명으로 자동 네임스페이싱되어 충돌이 없다
 - 경로는 `${CLAUDE_PLUGIN_ROOT}`(업데이트 시 변경됨), 영구 데이터는 `${CLAUDE_PLUGIN_DATA}`(업데이트 후 유지)
 - LSP 플러그인(12개 언어): 편집 직후 자동 진단으로 같은 턴에서 수정하고, 정의/참조 네비게이션으로 grep 기반 파일 읽기를 절감
-- 팀 배포는 extraKnownMarketplaces + enabledPlugins를 프로젝트 설정에 커밋. 마켓플레이스 등급과 무관하게 훅, mod, MCP와 LSP 서버, `bin/`을 설치 전에 검토한다. Anthropic은 플러그인에 어떤 MCP 서버, 파일과 그 밖의 소프트웨어가 들어가는지 통제하지 않고, 의도대로 동작하거나 바뀌지 않는다고 검증할 수 없다고 경고한다. 마켓플레이스 자동 업데이트가 켜져 있으면 검토한 파일이 나중에 바뀔 수 있다
+- 팀 배포는 extraKnownMarketplaces + enabledPlugins를 프로젝트 설정에 커밋(폴더 신뢰와 외부 소스 플러그인의 설치 조건은 아래 사내 마켓플레이스와 조직 정책 절). 마켓플레이스 등급과 무관하게 훅, monitor, mod, MCP와 LSP 서버, `bin/`을 설치 전에 검토한다. Anthropic은 플러그인에 어떤 MCP 서버, 파일과 그 밖의 소프트웨어가 들어가는지 통제하지 않고, 의도대로 동작하거나 바뀌지 않는다고 검증할 수 없다고 경고한다. 마켓플레이스 자동 업데이트가 켜져 있으면 검토한 파일이 나중에 바뀔 수 있다
+
+### 사내 마켓플레이스와 조직 정책
+
+2026-11-02 Create a marketplace, Host and maintain a marketplace, Manage Claude Code plugins for your organization, Measure plugin cost and usage, Monitoring, Plugin security and trust와 Hooks 문서로 이 절만 대조했다. 나머지 확장 기능의 재검증을 뜻하지 않으므로 frontmatter 검증일은 유지한다.
+
+- 마켓플레이스와 플랜: 마켓플레이스는 `.claude-plugin/marketplace.json`이 있는 디렉터리나 저장소이고 비공개 저장소여도 된다. 접근 권한이 있는 사람이 GitHub 저장소는 `claude plugin marketplace add <owner>/<repo>`로, GitLab, Bitbucket, GitHub Enterprise Server 같은 다른 git 호스트는 저장소 전체 URL로 등록한다(`owner/repo` 약식은 항상 github.com을 뜻한다). 이렇게 직접 호스팅해 각자 등록하게 하는 배포에는 문서가 플랜 조건을 두지 않고, Team이나 Enterprise 플랜에서는 claude.ai의 Organization settings > Plugins & skills로 배포하는 경로를 더 쓸 수 있다. 동료나 조직이 만든 마켓플레이스는 공식, 커뮤니티 등급이 아닌 서드파티 등급이다
+- 관리형 배포: 모든 기기에 요구하려면 관리형 설정에 `extraKnownMarketplaces`(마켓플레이스 등록)와 `enabledPlugins`(설치와 활성화)를 함께 둔다. 서버 관리 설정은 Owner 역할로 claude.ai 관리 콘솔의 Organization settings > Claude Code > Managed settings에 넣으며, Team이나 Enterprise 조직이고 기기가 모두 MDM 아래 있지 않을 때 권장된다. 그 밖에는 MDM 정책이나 `managed-settings.json` 파일을 쓴다. 기본값에서는 정책 키를 보내는 첫 소스 하나만 적용돼, 서버 관리 설정이 무관한 키를 하나라도 보내면 모든 소스에서 읽는 일부 키를 빼고 MDM이나 파일의 플러그인 키는 무시된다([[Claude-Code-Config-Permissions|관리 소스의 우선순위]])
+- 저장소 단위 요구: 저장소 `.claude/settings.json`의 `extraKnownMarketplaces`는 구성원이 그 폴더를 신뢰한 뒤에만 적용되고 신뢰하지 않은 폴더에서는 메시지 없이 무시된다. `-p` 실행에서는 이미 대화형으로 신뢰했거나 `~/.claude.json`에 `hasTrustDialogAccepted`를 설정한 폴더에서만 적용된다. 마켓플레이스가 상대 경로로 나열한 플러그인은 이 항목이 적용되면 마켓플레이스 사본에서 로드되지만, 자기 GitHub 저장소처럼 외부 소스를 가리키는 플러그인은 저장소 설정만으로 설치되지 않아 구성원마다 `claude plugin install <name>@<marketplace> --scope project`를 실행해야 한다
+- 비공개 저장소와 CI: 비공개 git 저장소의 마켓플레이스는 사용자마다 읽기 권한이 필요하고, 복제는 사용자 기기의 git이 저장된 자격 증명으로 묻지 않고 실행한다. CI에서는 비공개 저장소의 플러그인을 설치하기 전에 git 자격 증명 도우미를 설정하며, GitHub Actions에서는 마켓플레이스 저장소 읽기 권한이 있는 토큰을 `GH_TOKEN`으로 내보낸 뒤 `gh auth setup-git`을 실행한다. 기본 워크플로 토큰은 그 워크플로의 저장소에만 접근하므로 다른 저장소의 비공개 마켓플레이스에는 개인 액세스 토큰이나 앱 토큰이 필요하다. `-p`와 CI에서는 플러그인이 백그라운드로 설치돼 첫 턴에 빠질 수 있으므로 `CLAUDE_CODE_SYNC_PLUGIN_INSTALL=1`로 첫 질의 전에 설치를 기다리게 한다
+- 시드: 런타임에 복제할 수 없는 컨테이너 이미지와 CI 러너, git 호스트 계정이 없는 사용자는 시드를 쓴다. 빌드 때 `CLAUDE_CODE_PLUGIN_CACHE_DIR`을 시드 경로로 두고 마켓플레이스와 플러그인을 설치한 뒤 런타임에 `CLAUDE_CODE_PLUGIN_SEED_DIR`로 그 경로를 가리키면 복제 없이 시드의 캐시를 로드한다. 시드는 읽기 전용이라 `autoUpdate`가 꺼지고, 시드의 플러그인은 `enabledPlugins`로 켜야 로드된다
+- 허용과 차단 목록: 관리형 `strictKnownMarketplaces`는 마켓플레이스 소스의 허용 목록이고 `[]`는 공식 마켓플레이스를 포함한 모든 소스를 막는다. 다만 claude.ai 계정에서 동기화되는 플러그인은 이 잠금에 들지 않아 `syncClaudeAiPlugins: false`(v2.1.273 이상)로 따로 막는다. 허용 목록은 마켓플레이스를 등록하지 않으며 허용된 마켓플레이스 안의 개별 플러그인과 `--plugin-dir`은 막지 못한다(후자는 `disableSideloadFlags`). `github` 항목의 `your-org/*`는 그 소유자의 모든 저장소와 일치하고(v2.1.223 이상), 허용 목록에 `{ "source": "skills-dir" }`가 없으면 `~/.claude/skills/`나 프로젝트의 `.claude/skills/` 아래 `.claude-plugin/plugin.json`을 가진 스킬 디렉터리 플러그인이 로드되지 않는다(일반 SKILL.md는 해당 없음). `blockedMarketplaces`는 같은 형식의 차단 목록이며 허용 목록보다 먼저 검사한다
+- 강제와 잠금: 관리형 `enabledPlugins`의 `true`는 사용자가 자기 범위에서 꺼도 로드되게 하고, `false`는 모든 범위에서 막고 마켓플레이스 목록에서 숨긴다. `strictPluginOnlyCustomization`은 플러그인, 관리형 설정, 내장 기능에서 오지 않은 스킬, 에이전트, 훅, MCP 서버를 막고 스킬 디렉터리 플러그인도 멈춘다(`true`면 네 유형 전부, 배열이면 일부). `allowManagedHooksOnly`는 사용자, 프로젝트, 로컬과 플러그인 훅을 막되 관리형 `enabledPlugins`로 강제한 플러그인의 훅은 예외로 둔다
+- 릴리스 채널: 안정판과 조기 접근 채널은 같은 플러그인의 서로 다른 ref를 가리키는 마켓플레이스 둘로 만들고, 그룹별 엔드포인트 관리 설정(관리 설정 파일이나 MDM 프로필)이나 Claude apps gateway 정책으로 배정한다. 관리 콘솔의 서버 관리 설정은 조직의 모든 사용자에게 적용돼 그룹마다 다른 설정을 줄 수 없다
+- 사용량 측정: OpenTelemetry 내보내기를 설정한 기기에서 `claude_code.plugin_installed`는 설치마다, `claude_code.plugin_loaded`는 세션 시작 때 켜진 플러그인마다, `claude_code.skill_activated`는 활성화된 스킬과 그 소유 플러그인을 기록한다. 공식 마켓플레이스 밖의 플러그인은 사내 마켓플레이스 것도 기본으로 이름이 가려지거나 빠지고(`plugin_loaded`의 이름은 `third-party`, `skill_activated`의 스킬 이름은 `custom_skill`), 내보내는 기기에 `OTEL_LOG_TOOL_DETAILS=1`을 두면 실제 이름이 남는다. 이 값은 Bash 명령, MCP 서버와 도구 이름, 사용자 작성 워크플로 이름과 도구 입력까지 함께 기록하므로 켜기 전에 수집 범위를 정한다(운영 제안). 이름이 가려져도 `plugin_loaded`의 `plugin_id_hash`로 서로 다른 플러그인을 셀 수 있고, `plugin.scope`는 관리형 설정이 켠 플러그인을 `org`로 표시한다. Enterprise 플랜의 Analytics API(`GET /v1/organizations/analytics/plugins`, Primary Owner가 만든 `read:analytics` 범위 API 키 필요)는 Claude Code와 Cowork의 플러그인별 일일 설치와 호출 수를 사용자, RBAC 그룹이나 제품별로 돌려주지만 공식과 커뮤니티 등급 밖의 플러그인은 `third-party` 한 행으로 합친다. 사내 플러그인별 채택은 OpenTelemetry 쪽에서 본다(운영 제안)
 
 ## Mod — Claude Code 안에서 도는 함수 훅
 
@@ -143,6 +157,11 @@ Advisor는 별도 작업을 맡기는 서브에이전트와 다르다. 전체 �
 - [Claude Code CHANGELOG — GitHub, anthropics/claude-code](https://github.com/anthropics/claude-code/blob/main/CHANGELOG.md) — 2.1.287의 You should know 추가와 활성화 조건
 - [Claude Code 2026 — YouTube, 토비의 스프링](https://www.youtube.com/watch?v=Y2mEVnN-FKY) — 2026-10-11, 2026년 변경을 소개하는 TTS 내레이션 영상. 내장 mod 항목의 단서로만 쓰고 이름과 동작은 Mods overview로 대조
 - [Claude Code Docs, Plugin security and trust](https://code.claude.com/docs/en/plugins/security)
+- [Claude Code Docs, Create a marketplace](https://code.claude.com/docs/en/plugins/create-marketplace)
+- [Claude Code Docs, Manage Claude Code plugins for your organization](https://code.claude.com/docs/en/plugins/org)
+- [Claude Code Docs, Measure plugin cost and usage](https://code.claude.com/docs/en/plugins/measure)
+- [Claude Code Docs, Host and maintain a marketplace](https://code.claude.com/docs/en/plugins/host-marketplace)
+- [Claude Code Docs, Monitoring](https://code.claude.com/docs/en/monitoring-usage)
 - [Claude Code Docs, Configure permissions (Extend permissions with hooks)](https://code.claude.com/docs/en/permissions)
 - [Agent Skills, Specification](https://agentskills.io/specification)
 

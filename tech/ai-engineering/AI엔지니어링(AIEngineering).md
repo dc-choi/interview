@@ -133,6 +133,7 @@ Software 3.0 패러다임, LLM과 에이전트, 하네스, 평가, 조직 전환
 - [x] [[Agent-Reverse-Engineering#하드웨어 프로토콜은 기준 드라이버의 버스 기록과 비교한다|하드웨어 역공학]] — Windows VM 패스스루와 usbmon 기록 비교, 실제 장치 판정과 upstream 관계
 - [x] [[Agent-Runtime-Deployment#일회용 샌드박스의 파일 상태를 트랜잭션으로 남기는 Tines 3B|샌드박스 파일 상태의 트랜잭션]] — 불변 스냅샷과 포인터, 포크, 같은 파일 충돌과 복구 시점의 한계
 - [x] [[Diffusion-Language-Models|확산 언어 모델]] — 마스크 확산 학습과 perplexity 상한, 단계별 확정과 remasking, 블록 확산의 가변 길이와 KV 캐시, 샘플러별 단계 수와 품질, Mercury 계열의 공개 범위
+- [x] [[Latent-Reasoning|잠재 추론]] — 은닉 상태를 다음 입력으로 되먹이는 연속 사고, 도구 호출과 가독성의 한계, HybridLink와 모드 전환, 잠재 벡터 교체 실험, 비용 추정의 조건과 공개 코드의 차이
 - [x] [[Time-Series-Foundation-Models|시계열 파운데이션 모델]] — zero-shot 예측, 21개 분위수와 pinball loss, fev-bench의 skill score와 누출 신고 규칙, 매출 기준 가중치 라이선스
 - [x] [[Model-Release-Claims|모델 발표 수치 읽기]] — 측정 주체와 비교 대상의 세대, LLM 채점자, 과업당 비용과 캐시 단가, 속도의 측정일, 파라미터 집계, 라이선스와 제공 상태
 - [x] [[Evaluator-Guided-Program-Search|평가기 주도 프로그램 탐색]] — 모델 밖 평가기, 대리 지표와 비교 기준, 표본 검사의 실패율 경계, AlphaEvolve와 Claude Mythos 5 양자 회로 사례
