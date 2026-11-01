@@ -12,6 +12,7 @@ aliases: ["Decision Frameworks", "의사결정 프레임워크"]
 ## 목차
 
 - [[One-Way-vs-Two-Way-Door|One-Way vs Two-Way Door]] — 아마존 의사결정 프레임, 가역성 판별과 속도 분리
+- [[Maximizing-vs-Satisficing|극대화와 만족화]] — 기준을 넘는 대안에서 탐색 멈추기, 극대화 성향과 만족의 관계, 결정 미루기 연구의 재현성, 되돌릴 수 있는 선택의 만족도
 - [[Architecture-Decision-Making|아키텍처 의사결정과 경제적 관점]] — 지식 공유, 결정의 비가역성, 내부 품질과 Design Stamina 가설
 - [[Build-vs-Buy|Build vs Buy]] — 만드는 비용과 가진 비용, 영향 반경, 소유 비용, 차별화와 출구의 네 질문, 다년 소유 비용 비교와 분기별 패치 책임자 점검
 - [[Data-Driven-Decision|데이터 기반 의사결정]] — 측정 정의 선행, 전환 퍼널과 코호트, 사용자 세그먼트 분석, 이해 충돌의 중재 도구

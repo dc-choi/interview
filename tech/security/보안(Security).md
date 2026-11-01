@@ -9,6 +9,7 @@ aliases: ["보안(Security)", "Security Index"]
 
 ## 목차
 
+- [[AI-Accelerated-Threat-Defense|악용 시간 단축과 AI 공격에 대비하는 방어]] — 악용까지의 시간 관측값과 읽는 법, 자산과 소프트웨어 목록, 패치 시나리오와 단계적 배포, 오염된 업데이트와 관찰 기간의 한계, 독립된 다층 통제, AI 방어 자동화의 권한 경계
 - [[Hardware-Wallet-Physical-Trust|하드웨어 지갑의 물리적 신뢰 경계]] — 정품 칩 인증과 추가 부품 탐지의 차이, 화면 경로의 비밀 노출
 - [[Public-WiFi-Trust-Boundaries|공공 Wi-Fi의 신뢰 경계]] — 통신 암호화와 피싱, 기기 제어의 인증 조건
 - [[Elliptic-Curve-Parameter-Provenance|타원곡선 파라미터의 출처]] — 공개 seed 재현과 개인키 복구의 구분, 미해결 선택 과정

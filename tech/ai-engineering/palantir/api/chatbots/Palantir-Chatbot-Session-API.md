@@ -53,9 +53,22 @@ blocking 결과는 agentMarkdownResponse, interruptedOutput, sessionTraceId와 o
 
 ## 재시도와 실패 조건
 
-ContextSizeExceededLimit이면 짧은 메시지 또는 새 세션을 검토한다. AgentIterationsExceededLimit은 loop/복잡도나 설정을 검토한다. SessionExecutionFailed는 내부 실행 실패이며, RateLimitExceeded/RetryAttemptsExceeded/RetryDeadlineExceeded는 기다린 뒤 retry하라는 설명이다.
+2026-11-02 확인한 두 continue 문서는 정의한 오류 목록이 다르다. Blocking Continue Session은 18개, Streaming Continue Session은 12개를 정의하며, 아래 생성 단계 오류 6개는 blocking 문서에만 있다.
 
-새 continue 재시도가 같은 exchange의 자동 재개라는 보장은 없다. 실패 후 getContent와 trace 상태를 확인해 중복 추가 여부를 다루는 것은 client 설계다. parameter/type/모델/function/ontology 의존성 오류는 [[Palantir-Chatbot-Version-API]]와 함께 확인한다. 실제 세션 생성, stream이나 취소를 수행하지 않았다.
+| 오류 | 코드 / HTTP | 명세의 설명 |
+|---|---|---|
+| ContextSizeExceededLimit | INVALID_ARGUMENT / 400 | 더 짧은 메시지로 재시도하거나 새 세션을 만들어 다시 보낸다 |
+| AgentIterationsExceededLimit | INVALID_ARGUMENT / 400 | 다른 질의를 쓰거나 Chatbot Studio의 Agent 설정을 검토한다 |
+| SessionExecutionFailed | INTERNAL / 500 | 예상하지 못한 오류로 응답 생성에 실패했다 |
+| RateLimitExceeded, RetryAttemptsExceeded, RetryDeadlineExceeded | CUSTOM_CLIENT / 400 | 모델 rate limit 초과, 설정된 재시도 횟수나 기한까지 재시도한 뒤의 실패이며 셋 다 기다린 뒤 재시도한다 |
+
+모델 rate limit 초과를 뜻하는 RateLimitExceeded도 429가 아니라 400으로 표시된다. 상태 코드 기준 재시도([[Palantir-API-Client-Contract]]의 429와 503 backoff, 500 일시 실패 재시도)만 두면 이 세 오류는 재시도되지 않는다. 400을 받으면 오류 이름으로 재시도 대상을 고르고, 같은 400인 ContextSizeExceededLimit과 AgentIterationsExceededLimit은 같은 요청을 그대로 반복하지 않는다(적용 제안).
+
+두 endpoint가 함께 정의하는 오류는 코드와 상태도 같다. InvalidParameter, InvalidParameterType, SessionTraceIdAlreadyExists, UnsupportedLanguageModelRid, ActionTypeNotFound는 INVALID_ARGUMENT(400)이고, ObjectTypeIdsNotFound, ObjectTypeRidsNotFound, FunctionLocatorNotFound, OntologyEntitiesNotFound, SessionNotFound, AgentNotFound는 NOT_FOUND(404)다. continue의 404는 세션이나 Agent가 아니라 Agent가 참조하는 object type, function이나 ontology type을 찾지 못했거나 token이 접근하지 못하는 경우일 수 있다. 반대로 ActionTypeNotFound는 이름과 달리 400이고, 이 오류와 UnsupportedLanguageModelRid의 설명도 대상의 삭제나 deprecated와 함께 호출 token의 접근 불가를 원인으로 든다. 그래서 HTTP 상태만으로 판정하지 않고 오류 이름으로 분기하며, 본문 없는 응답은 상태를 보존해 따로 처리한다([[Palantir-API-Client-Contract]]). 권한 오류는 BlockingContinueSessionPermissionDenied와 StreamingContinueSessionPermissionDenied(둘 다 PERMISSION_DENIED, 403)로 endpoint마다 이름이 다르므로, 두 경로가 오류 처리기를 공유하면 두 이름을 모두 등록한다.
+
+streaming 문서는 stream이 시작된 뒤 생성 중 실패가 어떻게 전달되는지 적지 않는다. 생성 단계 오류 6개가 없다는 것은 streaming 문서가 그 실패를 오류 응답으로 정의하지 않았다는 뜻이지 그런 실패가 일어나지 않는다는 뜻이 아니다. 연결이 끊겨도 생성이 멈춘다는 보장은 없고(cancel도 stream을 닫지 않는다), getContent가 생성 중이거나 실패한 exchange를 어떻게 보여 주는지와 실패하거나 취소된 exchange의 trace가 어떻게 남는지도 문서에 없다. trace 조회 문서는 IN_PROGRESS와 COMPLETE만 설명한다. 다음은 끊긴 뒤의 적용 제안이다. 끊긴 직후 getContent에 exchange가 없다는 사실만으로 다시 보내지 않는다. messageId를 보냈다면 response 없이 cancel한다. cancel이 성공하면 명세상 그 exchange는 세션에 추가되지 않는다. CancelSessionFailedMessageNotInProgress는 이미 끝났거나 취소됐거나 아직 시작하지 않은 경우를 함께 뜻하므로, 직접 만든 sessionTraceId가 있으면 대기 상한 안에서 trace가 COMPLETE인지 확인한 뒤 getContent로 판단한다. 상한을 넘기거나 trace를 찾지 못하면 상태 미상으로 다룬다([[Palantir-Chatbot-Context-Trace-API]]).
+
+새 continue 재시도가 같은 exchange의 자동 재개라는 보장은 없고, blocking 요청에는 messageId 필드가 없어 진행 중 exchange를 cancel로 끝낼 수 없다. getContent와 trace 조회에는 aip-agents-read scope가 필요하다. 다음은 재시도의 적용 제안이다. continue는 exchange를 추가하는 POST이므로 상태 코드 기준 재시도를 그대로 적용하지 않는다. SessionExecutionFailed를 포함한 5xx나 blocking 호출의 timeout 뒤에는 진행 중이 아님을 확인한 다음 getContent로 중복 추가 여부를 판단하고, 확인하지 못하면 상태 미상으로 둔다. write scope만 요청한 client는 이 확인을 할 수 없다. 재시도에는 새 sessionTraceId와 새 messageId를 만든다. 실패한 시도가 그 trace ID를 등록했는지 명세에 없어 같은 ID를 다시 보내면 SessionTraceIdAlreadyExists(400)를 받을 수 있다. parameter/type/모델/function/ontology 의존성 오류의 원인과 확인 방법은 [[Palantir-Chatbot-Version-API]]와 함께 본다. 실제 세션 생성, stream이나 취소를 수행하지 않았다.
 
 ## 출처
 
@@ -66,6 +79,7 @@ ContextSizeExceededLimit이면 짧은 메시지 또는 새 세션을 검토한�
 - [Palantir, Blocking Continue Session](https://www.palantir.com/docs/foundry/api/aip-agents-v2-resources/sessions/blocking-continue-session)
 - [Palantir, Streaming Continue Session](https://www.palantir.com/docs/foundry/api/aip-agents-v2-resources/sessions/streaming-continue-session)
 - [Palantir, Cancel Session](https://www.palantir.com/docs/foundry/api/aip-agents-v2-resources/sessions/cancel-session)
+- [Palantir, Get Session Trace](https://www.palantir.com/docs/foundry/api/aip-agents-v2-resources/session-traces/get-session-trace)
 - [Palantir, Get Content](https://www.palantir.com/docs/foundry/api/aip-agents-v2-resources/contents/get-content)
 - [Palantir, Update Session Title](https://www.palantir.com/docs/foundry/api/aip-agents-v2-resources/sessions/update-session-title)
 - [Palantir, Delete Session](https://www.palantir.com/docs/foundry/api/aip-agents-v2-resources/sessions/delete-session)
