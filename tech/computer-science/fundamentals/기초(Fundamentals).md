@@ -19,6 +19,7 @@ aliases: ["CS Fundamentals"]
 - [x] [[CS-Computer-Architecture|컴퓨터 구조 (불 대수와 ALU, 순차 논리회로와 메모리, CPU 데이터패스와 명령어 사이클, 교육용 CPU 프로그램)]]
 - [x] [[Compile-and-Runtime|컴파일과 런타임 (의사코드와 알고리즘, 네이티브, 매니지드, 인터프리터)]]
 - [x] [[Native-Compilation-Compatibility|네이티브 컴파일과 호환성 (런타임 포함 실행 파일, 바이트코드 사전 생성, 네이티브 AOT, Bun AOT 실험과 TurboPython 소유권)]]
+- [x] [[Emulation-and-Compatibility-Layers|다른 플랫폼용 프로그램 실행 (에뮬레이터, Wine과 Proton 호환 계층, Rosetta 명령어 변환, 셰이더 변환, TBDR 최적화와 이식 판단)]]
 - [x] [[Programming-Language-Landscape|프로그래밍 언어 지형과 구분 기준 (설계 목적과 계보, 대표 구현의 실행 경로, 메모리 관리 방식, 타입 검사 시점, 플랫폼과 생태계, 메모리 안전성 권고)]] — 언어 교체의 지연 상한과 CPU 비용, 작은 구현을 읽는 학습
 - [x] [[Math-Logic-For-Programming|프로그래밍에 필요한 수학과 논리 (명제, 집합, 드 모르간, 귀납법, 작은 모델의 탐색과 증명 구분)]]
 - [x] [[Data-Measurement-and-Tidy-Data|데이터 측정 척도, 정돈된 데이터와 결측, 이상치 (명목, 순서, 등간, 비율, 변수와 관측 단위, 결측 메커니즘, 삭제와 대체, 학습 데이터 누수, IQR 이상치 후보)]]

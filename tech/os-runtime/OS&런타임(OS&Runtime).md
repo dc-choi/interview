@@ -30,6 +30,7 @@ aliases: ["OS&런타임(OS&Runtime)", "OS & Runtime"]
 - [[OpenBSD-Platform|OpenBSD]] — 8.0의 가상화와 arm64 변화, pledge와 unveil, Wine 이식 초안의 보안 제약
 - [[Linux-Page-Cache-Contention|Linux 페이지 캐시 경합]] — folio 참조와 공유 카운터, 개발 패치의 확인 경계
 - [[Native-Compilation-Compatibility|네이티브 컴파일과 호환성]] — Bun 패키징과 AOT 실험, TurboPython의 소유권
+- [[Emulation-and-Compatibility-Layers|에뮬레이션과 호환 계층]] — Wine과 Proton, Rosetta, 셰이더 변환, TBDR과 이식 판단
 
 ## Linux 체크리스트
 - [x] [[Container-Memory-Metrics|Page cache와 컨테이너 메모리 지표 (RSS, file cache, working set, reclaim, cgroup 진단)]]
