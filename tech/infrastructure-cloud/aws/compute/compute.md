@@ -11,6 +11,7 @@ EC2, Lambda, ECS 외의 컴퓨팅 서비스 모음. EC2는 [[EC2|EC2 인덱스]]
 
 - [[EKS|EKS — 관리형 Kubernetes, Node Group, Fargate Profile, IRSA]]
 - [[SageMaker-HyperPod-Inference|HyperPod 추론 — Pod 확장, 팀별 자원 대여, 선점과 노드 증설]]
+- [[SageMaker-Studio-VPC-Networking|SageMaker Studio — VpcOnly, 브라우저 경로와 컨테이너 network isolation의 구분]]
 - [[EKS-Capabilities|EKS Capabilities — 관리형 Argo CD, ACK와 kro, 권한과 운영 검증]]
 - [[EKS-Hybrid-Nodes|EKS Hybrid Nodes — 네트워크와 CNI, 등록 진단, 연결 단절과 복구]]
 - [[ROSA|ROSA — HCP와 Classic 배치, 플랫폼 운영과 고객의 애플리케이션 책임]]

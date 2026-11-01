@@ -16,11 +16,13 @@ aliases: ["Rubric", "루브릭", "점수 게이트", "Score Gate"]
 |---|---|---|---|
 | 코드형 | 정규식, 테스트, 정적 분석 | 빠르고 싸고 재현 가능 | 표현이 조금만 달라져도 놓친다 |
 | 모델형 (LLM-as-Judge) | 별도 모델이 루브릭으로 점수를 매긴다 | 뉘앙스를 잡는다 | 결과가 흔들리고 비싸며 사람과 맞춰봐야 한다 |
-| 사람형 | 전문가 검토와 표본 확인 | 가장 정확하고 정답지 품질을 만든다 | 비싸고 느려 소량만 가능 |
+| 사람형 | 전문가 검토와 표본 확인 | 도메인 판단을 제공하고 정답지 품질을 보완한다 | 느리고 소량만 가능하며, 평가자 편향과 부주의가 생길 수 있어 모집, 교정과 검수 비용이 든다 |
 
 조합 원칙은 하나다. 가능하면 코드로, 필요하면 모델로, 검증에는 사람을 쓴다. 셋은 대체재가 아니라 조합이다.
 
 모델형 채점기의 판정 입력, 판정 방식, 편향과 사람 라벨 교정, 판정기 교체는 [[Eval-LLM-Judge]]가 맡는다.
+
+사람 평가도 자동으로 정답이 되지는 않는다. 높은 과거 승인율과 플랫폼 자격을 갖춘 참가자에게도 주의력 검사 실패가 관측됐다. 과업별 자격과 실제 응답 검수를 분리하는 근거 및 적용 조건은 [[Crowdsourced-Human-Evaluation]]에서 다룬다.
 
 ## 게이트는 3층
 
@@ -162,6 +164,7 @@ G1에서 G3은 거부권을 가진다. 하나라도 0점이면 나머지가 만�
 
 ## 출처
 
+- [The Hidden Cost of Using Amazon Mechanical Turk for Research — arXiv, Antonios Saravanos 외 (2021-01)](https://arxiv.org/abs/2101.04459) — 사람형 채점기의 품질 한계
 - [Level 9 하네스 엔지니어링과 Evaluator 제어 — 클로드 코드 마스터 활용편 발표 자료(한빛미디어), 빌런 (2026-09)](https://run-ai.kr/learn/carve-harness)
 - [Anthropic, Hooks](https://code.claude.com/docs/en/hooks)
 - [JUnit, Assumptions](https://docs.junit.org/current/writing-tests/assumptions.html)

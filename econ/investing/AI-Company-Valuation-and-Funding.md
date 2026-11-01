@@ -46,6 +46,18 @@ Capex는 같은 분기의 영업비용과 같지 않다. 위 표의 영업이익
 
 신규 주식 발행이 회사의 성장 자금인지, 기존 주주의 지분 매각인지 확인한다. 두 거래가 섞일 수도 있다. 상장이 기존 투자자의 유동성을 제공한다는 사실만으로 모든 자금이 기존 주주에게 간다고 판단하지 않는다.
 
+### 무성장 매출 계산은 기업가치의 절대 상한이 아니다
+
+매년 말 동일한 매출 `R` 전부를 주주에게 지급하고 비용, 세금과 재투자가 없다고 가정하면, 할인율 `r > 0`에서 영구연금의 현재가치는 `R / r`이다. 이 계산은 미래 성장을 제거한 가상 시나리오다. 비용을 0으로 놓았더라도 성장까지 배제했으므로 성장 기업의 가치 상한을 증명하지는 않는다.
+
+가령 매년 말 100을 영구히 지급하고 할인율을 5%로 두면 현재가치는 2,000이다. 이는 계산 예시이며 특정 기업의 매출이나 적정 가격이 아니다. 실제 주주가치 평가에서는 매출 대신 배당, 또는 비용과 재투자, 차입 영향을 반영한 FCFE를 자기자본비용으로 할인한다. 기업 전체의 FCFF에는 자본비용을 대응시킨다. 사업 위험이 있는 현금흐름에 국채금리를 그대로 적용하는 것도 별도의 강한 가정이다. 현금흐름과 할인율의 대응은 [[Valuation|기업가치 평가]], 영구 성장식의 조건은 [[Financial-System-Overview|금융시스템 개관]]의 자본환원 절에서 자세히 다룬다.
+
+고성장기와 안정기를 나누는 모형에서는 고성장기 마지막 시점의 잔존가치를 `다음 기간 현금흐름 / (r - g)`로 구한 뒤 현재로 할인한다. `r > g`가 필요하며, 안정기의 성장률, 그 성장을 유지할 재투자와 안정기 위험에 맞춘 할인율 가정도 서로 맞아야 한다. 단순 계산보다 높은 가격이라면 그 차이를 설명할 성장 기간, 마진과 자금 필요량을 역산한다. 반대로 무성장 계산 하나만으로 고평가를 확정하지 않는다.
+
+주가매출배수(P/S)도 순이익률, 성장, 위험과 배당성향(이익 중 배당으로 지급하는 비율)을 함께 비교한다. 같은 P/S라도 이 조건이 다르면 똑같이 싸거나 비싸다고 볼 수 없다. 기업가치를 매출로 나눈 배수라면 순이익률 대신 영업이익률과 기업 전체 가치를 대응시킨다.
+
+이 절은 NYU Stern의 Damodaran DCF, FCFE와 Price-Sales 강의 자료에서 정의와 공식을 대조한 범위다(2026-10-30 대조, 2026-11-01 재확인). 특정 AI 기업의 최신 공모 조건이나 비공개 재무를 검증한 결과는 아니다.
+
 ## 사례: Anthropic IPO 비판의 확인 범위
 
 2026-10-06 New Constructs 보고서는 상장 목표 평가액 2조 달러에 반대하며, DCF 시나리오로 성장이 둔화하면 약 1조 1,000억 달러(목표 대비 43% 하락), Meta 수준의 이익을 가정하면 약 1,440억 달러(93% 하락)를 제시한다. 이는 해당 조사기관의 평가와 가정이며 확정 공모가나 시장의 합의가 아니다(2026-10-16 원문 확인, 시나리오 수치는 2026-10-18 재확인). CNBC 보도와 이를 옮긴 GeekNews 발췌의 1,500억 달러는 보고서 본문에 없는 수치다.
@@ -81,6 +93,9 @@ AMD의 2026-09-28 Form 8-K는 9월 26일 World Labs의 전체 지분을 인수�
 
 ## 출처
 
+- [NYU Stern, Aswath Damodaran, Discounted Cashflow Models: What They Are and How to Choose the Right One](https://pages.stern.nyu.edu/~adamodar/New_Home_Page/lectures/basics.html) — 현금흐름과 할인율의 대응
+- [NYU Stern, Aswath Damodaran, The FCFE Discount Model](https://pages.stern.nyu.edu/~adamodar/New_Home_Page/lectures/fcfe.html) — 성장 단계, 잔존가치, 재투자와 안정기 할인율 조건
+- [NYU Stern, Aswath Damodaran, Price-Sales Multiples](https://pages.stern.nyu.edu/~adamodar/New_Home_Page/lectures/ps.html) — 매출 배수의 순이익률, 배당성향, 성장과 위험 조건
 - [SpaceX Reports Third Quarter 2026 Results — SpaceX](https://d18rn0p25nwr6d.cloudfront.net/CIK-0001181412/31b2b4f8-a7d7-44f3-a94b-9c2cba49b021.html) — 2026-10-20 Form 8-K 첨부 실적 발표, Third Quarter Financial Highlights 표, 2026-10-29 대조
 - [September 28, 2026, Form 8-K — AMD](https://ir.amd.com/financial-information/sec-filings/content/0000002488-26-000182/amd-20260926.htm) — Item 3.02, 주식 지급과 발행 주식 수 산정 기준
 - [AMD to Acquire World Labs to Advance the Future of AI Compute — AMD](https://ir.amd.com/news-events/press-releases/detail/1299/amd-to-acquire-world-labs-to-advance-the-future-of-ai-compute) — 2026-09-28 계약 발표, 종결 조건과 기대 효과
