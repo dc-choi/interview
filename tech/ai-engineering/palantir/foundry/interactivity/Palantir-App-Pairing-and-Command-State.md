@@ -26,7 +26,7 @@ Graph에 열린 10개 object가 pairing 시점에 모두 Open data로 들어오�
 
 Scope Id는 서로 pair할 앱을 수동으로 조정하는 설정이다. Workshop이 자동 생성한 Scope Id variable로 Workshop widget을, URL에 붙인 `&appPairingScopeId=[scope-id]`로 Workshop이 아닌 앱을 같은 scope에 넣어 pairing할 수 있게 한다. 수동으로 pair하거나 unpair하면 scope가 바뀐다. 이 ID를 data authorization을 대체하는 보안 경계로 취급하지 않는다.
 
-대부분의 workflow에는 data enrichment가 필요하지 않다. 예외로 Graph는 `Object Synonym RIDs set` variable type을 Workshop과 동기화할 때 enrichment가 필요하고, 앱이 synced artifact와 그 object 표현 사이를 변환한다면 enrichment 유지를 고려한다. Advanced의 Disable data enrichment는 paired app과 Workshop이 호환되는 state payload를 주고받는다고 확신할 때만 쓴다.
+대부분의 workflow에는 data enrichment가 필요하지 않다. 예외로 Graph는 `Object Synonym RIDs set` variable type을 Workshop과 동기화할 때 enrichment가 필요하고, 앱이 synced artifact와 그 object 표현 사이를 변환한다면 enrichment 유지를 고려한다. 2026-11-01 확인한 App Pairing 문서는 Advanced의 Disable data enrichment를 paired app과 Workshop이 호환되는 state payload를 주고받는다고 확신할 때의 선택으로 설명하고 기본값은 적지 않는다. 2026-10-21 release note 기준으로 새로 추가하는 app-pairing widget은 Data enrichment가 기본으로 꺼지고 기존 widget은 현재 설정을 유지하므로, 위 예외처럼 enrichment가 필요한 workflow라면 새 widget의 구성에서 직접 켠다.
 
 Appearance의 Display name은 pairing할 때 다른 앱에서 발견되는 이름이며 기본으로 Workshop application 이름이 표시된다. Auto open mode의 기본값은 Disabled라 App Pairing menu는 선택할 때만 열린다. 자동으로 열어 pair할 앱을 고르게 하려면 Enabled(초기 load와 pairing 변경 시), Only initially(앱 load 시), Only on pairing change(paired app이 바뀔 때마다) 중에서 고른다. 다른 앱이 pair할 때 알리는 toast는 기본으로 꺼져 있지만 오류 식별과 해결 안내 toast는 Enable toasts를 꺼도 표시된다. Enable toggle to pause updates도 기본으로 꺼져 있으며, 켜면 state update 송수신을 멈췄다가 재개할 수 있고 재개하면 latest state로 동기화한다. 중간 상태의 모든 event를 재생하는 queue로 취급하지 않는다.
 
@@ -48,6 +48,7 @@ Prompt 모드는 always, missing any input, missing required, never/invalid skip
 - [Palantir, App Pairing](https://www.palantir.com/docs/foundry/cross-app-interactivity/app-pairing)
 - [Palantir, Commands](https://www.palantir.com/docs/foundry/cross-app-interactivity/commands-overview)
 - [Palantir, Iframe](https://www.palantir.com/docs/foundry/workshop/widgets-iframe)
+- [October 21, 2026, Data enrichment disabled by default for new app-pairing widgets — Palantir release notes](https://www.palantir.com/docs/foundry/announcements/release-notes/2026/#aa5f11db930690cb30132ad5bb53e84914ce5df463de3b7405509f19000dfc2b)
 
 ## 관련 문서
 

@@ -1,7 +1,7 @@
 ---
 tags: [palantir, release-history]
 status: done
-verified_at: 2026-10-16
+verified_at: 2026-11-01
 category: "AI엔지니어링(AIEngineering)"
 ---
 
@@ -17,6 +17,8 @@ category: "AI엔지니어링(AIEngineering)"
 
 OAuth restrictions는 branch 전체에서 공유돼 main에도 영향을 준다. Branch에서는 release tag와 production website publish가 불가하며 publish check 후 PR preview로 공유한다. Branch object indexing을 기다린 뒤 실제 branch data로 검증한다.
 
+10월21일 Workshop은 구성된 Developer Console application embed에 branch 인식이 embed 구성에 달려 있다는 경고와 설정 안내 링크를 표시한다. Workshop module을 branch에서 시험해도 embed한 앱이 같은 branch를 따른다고 가정하지 않는다. 10월19일에는 AI FDE의 Global Branching 도구가 빈 child template을 가진 pip 기반 Python transforms repository를 잘못 거부하던 문제가 수정됐다. Model training repository 감지와 Java가 있는 repository의 처리는 바뀌지 않았다.
+
 ## 탐색과 검토 상태
 
 Workflow Lineage URL은 선택 branch를 포함해 공유하며 merge된 branch의 지원 resource는 main에서 연다. Merge error의 view/copy 동작이 section 접힘을 바꾸던 문제도 수정됐다. 오류를 열었다는 사실과 merge 자체 성공은 별개다.
@@ -26,6 +28,10 @@ Workflow Lineage URL은 선택 branch를 포함해 공유하며 merge된 branch�
 Installation job의 모든 product는 같은 build setting을 사용해야 한다. 10월에는 draft Settings에서 공통 값을 골라 packaged setting 충돌을 해결하거나 기존 값을 override할 수 있게 됐다. Product가 동의하는 default도 job 수준에서 바꿀 수 있으므로 draft 검토에 포함한다.
 
 Packaged interface의 schema migration banner는 편집 권한자에게만 보이고 migration 활성화 후 사라진다. 단일 product이면 해당 product link도 제공한다. DevOps의 새 draft 이름은 생성 전 지정할 수 있다. 이 편의 기능은 schema 호환성과 release 승인 검증을 대신하지 않는다.
+
+10월19일 발표는 direct model deployment와 model function을 Marketplace로 배포할 수 있게 됐다고 안내했다([[Palantir-Model-Marketplace-Packaging]]은 2026-10-16 대조 기준으로 같은 구성을 이미 설명한다). Model을 packaging할 때 deployment 구성과 publish된 function을 포함할 수 있고 Include with content와 Include with producer 모드를 모두 지원한다. 10월21일에는 오래된 model version을 live deployment와 함께 packaging할 때 다른 model version을 요구하는 function이 draft에서 빠지던 문제가 DevOps와 Marketplace에서 수정됐다. Package live deployment를 켜면 function이 model 구성에 남아 호환 version을 고를 수 있고, 저장 전에 끄면 자동으로 추가된 function은 제거되며 이미 명시적으로 packaging한 function은 선택 상태를 유지한다. 호환 function version을 고른 뒤에도 model input version 경고가 남을 수 있으나 packaging을 막지 않으므로 경고 해소와 packaging 가능 여부를 구분한다.
+
+10월26일 SQL Studio의 SQL worksheet를 DevOps에서 Marketplace product에 넣을 수 있게 됐다([[Palantir-SQL-Worksheets-and-Function-Result-Shapes]]). 10월27일 발표는 호환되는 upstream product의 output을 downstream product의 input에 DevOps에서 수동으로 mapping할 수 있게 됐다고 안내했다. 발표는 이전에는 downstream이 요구하는 resource를 내보내는 upstream을 DevOps가 감지할 때만 자동으로 link했다고 설명한다. 수동 mapping도 자동 link와 같은 방식으로 설치되므로 어느 output을 어느 input에 연결했는지 draft 검토에 포함한다. 기능별 계약은 [[Palantir-DevOps-Linked-Products]]와 [[Palantir-Model-Marketplace-Packaging]]에서 다룬다. 두 문서는 2026-10-16 대조 기준이고 그때 linked products 문서도 수동 link를 설명했으므로, 문서 반영 시점과 발표 시점이 다를 수 있다.
 
 ## 9월 review, fork와 고정된 구성
 

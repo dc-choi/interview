@@ -8,7 +8,7 @@ aliases: ["Pilot 생성 앱과 seed data의 경계"]
 
 # 생성 앱과 seed data의 경계
 
-Pilot은 요구에서 Ontology, design specification과 React OSDK 앱을 만드는 개발 workflow다. 2026년 3월 beta 도입 계약이며 생성된 앱의 업무 정확성, 인가와 배포 성공을 직접 시험한 기록은 아니다.
+Pilot은 요구에서 Ontology, design specification과 React OSDK 앱을 만드는 개발 workflow다. 2026년 3월 beta 도입 계약이며 생성된 앱의 업무 정확성, 인가와 배포 성공을 직접 시험한 기록은 아니다. Pilot은 2026-10-29 GA로 발표됐으며 현재 문서 기준의 발행 절차는 [[Palantir-Pilot-Application-and-Widget-Release|Pilot 앱과 위젯의 발행 계약]]에서 다룬다.
 
 ## 생성 단계마다 다른 계약을 검토한다
 
@@ -25,6 +25,7 @@ Builder의 수동 table LLM 생성도 notional data를 만드는 별도 경로�
 ## 출처
 
 - [Palantir, March 2026 announcements](https://www.palantir.com/docs/foundry/announcements/2026-03)
+- [October 29, 2026, Pilot, Foundry's AI-powered tool for building React OSDK applications, is now generally available — Palantir release notes](https://www.palantir.com/docs/foundry/announcements/release-notes/2026/#f89f32a5-6105-4c8f-92aa-340acddf7d6a)
 
 ## 관련 문서
 

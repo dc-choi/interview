@@ -1,7 +1,7 @@
 ---
 tags: [palantir, release-history]
 status: done
-verified_at: 2026-10-16
+verified_at: 2026-11-01
 category: "AI엔지니어링(AIEngineering)"
 ---
 
@@ -25,11 +25,17 @@ Primary key는 수정 불가이므로 property create/modify policy target에서
 
 Peer Manager object type mapping은 export object-set filter를 지원한다. Action type의 Apply scenario rule filter와 Compute Module deployment log 공간 개선은 실제 policy/실행 결과와 구분한다.
 
+10월26일 수정으로 customer-managed enrollment에서는 Palantir user action을 허용하지 않은 상태라도 Palantir 사용자가 Control Panel의 email domain restriction, account inactivity와 passkey policy 설정을 바꿀 수 있게 됐다. 이전에는 읽기 전용이었다. 기존 권한과 policy 제한은 계속 적용되고 user management action은 이전처럼 제한된다. 이 설정 변경 가능성을 사용자 관리 권한의 확대로 읽지 않는다. 반대로 Palantir user action을 허용하지 않아도 이 세 보안 설정의 변경까지 막지는 않으므로, customer-managed enrollment는 이 설정을 누가 바꿀 수 있는지와 변경을 확인할 감사 기록이 있는지 따로 점검한다. Self-service directory의 passkey profile 변경에 필요한 역할과 감사 기록은 [[Palantir-Passkey-Enrollment-and-Recovery]]에 있지만, customer-managed enrollment의 이 설정에 같은 조건이 적용되는지와 email domain restriction, account inactivity 변경의 기록 여부는 확인하지 못했다. 같은 날 Reset passkeys dialog와 Authentication settings 화면은 항상 4개로 표시하던 passkey 한도 대신 user directory에 구성한 한도를 보여 주도록 수정됐고, Authentication settings 화면의 passkey 추가 옵션은 구성한 한도에 도달했을 때만 비활성화되도록 바뀌었다. 기본 한도를 쓰는 directory는 변화가 없다고 안내됐지만 기본 한도 값은 밝히지 않았다. 2026-11-01 확인한 login 문서는 계정당, user-directory 문서는 사용자당 최대 4개로만 적고 directory별 한도 구성은 설명하지 않으므로, 실제 한도는 Reset passkeys dialog나 Authentication settings 화면에 표시되는 구성 한도로 확인한다.
+
 ## 사용량과 재시도
 
 Object edits history 비용은 10월14일 이후 Object type/project의 별도 source로 귀속한다. 과거 usage는 소급 변경하지 않으므로 시점 전후 비용선을 비교할 때 attribution 차이를 고려한다.
 
 Automate manual retry의 Include canceled는 기본 선택이며 canceled batch를 실제 포함하도록 수정됐다. 재시도 대상에 들어가는 것과 중복 effect 안전성은 별도 계약이다. Approvals 검색은 최소3글자 안내를 표시하므로 짧은 검색의 안내를 요청 부재로 오해하지 않는다.
+
+## 평가 성공률 표시
+
+10월21일 Workflow Lineage는 AIP Logic과 function node에 연결된 AIP Evals 성공률을 표시한다. 성공률은 그 resource에 연결된 모든 evaluation suite의 가장 최근 실행에서 통과한 test case의 비율이다. 최근 실행만 반영하므로 suite가 다루는 범위, 실행 시점과 실패한 test case를 함께 확인한다.
 
 ## 9월 접근 검증과 관측 범위
 
@@ -80,6 +86,8 @@ Folder lineage는 trashed resource를 제외하지만 기존 graph의 trashed no
 ## 출처
 
 - [Palantir Foundry, Release notes 2026](https://www.palantir.com/docs/foundry/announcements/release-notes/2026/)
+- [Palantir Foundry, login](https://www.palantir.com/docs/foundry/getting-started/login/) — 2026-11-01 계정당 passkey 최대 4개 표기 확인
+- [Palantir Foundry, Manage users within your enrollment](https://www.palantir.com/docs/foundry/authentication/user-directory) — 2026-11-01 사용자당 passkey 최대 4개 표기 확인
 
 ## 관련 문서
 

@@ -1,12 +1,14 @@
 ---
 tags: [palantir, foundry, operations]
 status: done
-verified_at: 2026-10-16
+verified_at: 2026-11-01
 category: "AI엔지니어링(AIEngineering)"
 aliases: ["Pilot 앱과 위젯의 발행 계약"]
 ---
 
 # Pilot 앱과 위젯의 발행 계약
+
+Pilot은 2026-10-29 GA로 발표됐다. 자연어 요청으로 Ontology 기반 standalone application이나 Workshop custom widget을 만들고 live preview로 다듬은 뒤 guided deployment로 발행한다. Standalone app은 Developer Console로, custom widget은 Widget Registry로 발행한다. GA는 제품 가용성의 변경이며 아래 권한, 승인과 release 확인 절차를 생략해도 된다는 뜻이 아니다. GA 뒤에도 overview 문서는 Pilot이 활성화된 Foundry enrollment를 사용 전제로 적는다.
 
 ## Standalone app
 
@@ -45,6 +47,7 @@ Widget은 app-specific subdomain/Developer Console app을 쓰지 않고 versione
 - [Palantir pilot, tutorial-todo-application](https://www.palantir.com/docs/foundry/pilot/tutorial-todo-application)
 - [Palantir pilot, work-with-data](https://www.palantir.com/docs/foundry/pilot/work-with-data)
 - [Palantir pilot, workspace-overview](https://www.palantir.com/docs/foundry/pilot/workspace-overview)
+- [October 29, 2026, Pilot, Foundry's AI-powered tool for building React OSDK applications, is now generally available — Palantir release notes](https://www.palantir.com/docs/foundry/announcements/release-notes/2026/#f89f32a5-6105-4c8f-92aa-340acddf7d6a)
 
 ## 관련 문서
 

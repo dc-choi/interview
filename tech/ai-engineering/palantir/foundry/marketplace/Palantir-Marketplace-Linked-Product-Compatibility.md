@@ -9,7 +9,7 @@ category: "AI엔지니어링(AIEngineering)"
 
 ## 연결 생성
 
-Product를 작은 workflow 모듈로 나누면 출력과 다른 제품 입력을 연결해 중복 자원을 줄일 수 있다. 연결은 이름 유사도가 아니라 같은 source entity를 가리키는 관계에 기반한다. Upstream 출력이 downstream input의 원래 entity를 충족해야 한다.
+Product를 작은 workflow 모듈로 나누면 출력과 다른 제품 입력을 연결해 중복 자원을 줄일 수 있다. 자동 연결은 이름 유사도가 아니라 같은 source entity를 가리키는 관계에 기반하며, 자동 연결에서는 upstream 출력이 downstream input의 원래 entity를 충족해야 한다. 2026-10-27 release note는 DevOps에서 호환되는 upstream output을 downstream input에 수동으로 mapping할 수 있고, 수동 mapping한 product도 자동 연결과 같은 방식으로 설치된다고 안내했다. 2026-10-16 대조한 [[Palantir-DevOps-Linked-Products]]에도 수동 link 설명이 있으므로 문서 반영 시점과 발표 시점은 다를 수 있다. 수동 link는 같은 upstream의 자동 link를 대체하고 mapping이 자동으로 바뀌지 않으므로, 어느 output을 어느 input에 연결했는지 draft 검토에 포함하고 output이 바뀌면 직접 고친다.
 
 이전 중국어 기계 번역 경로는 동일 store의 downstream packaging 시점에 link를 생성하는 동작을 설명한다. 번역 정확성은 미검증이며 현재 설치 안내는 cross-store external reference도 지원하므로 같은 store 제약을 모든 참조 방식에 확대하지 않는다.
 
@@ -32,6 +32,7 @@ Product를 작은 workflow 모듈로 나누면 출력과 다른 제품 입력을
 - [Palantir Foundry, linked-products](https://www.palantir.com/docs/foundry/foundry-devops/linked-products)
 - [Palantir Foundry, install-product](https://www.palantir.com/docs/foundry/marketplace/install-product/)
 - [Palantir Foundry, linked-products (기계 번역)](https://palantir.com/docs/zh/foundry/marketplace/linked-products/)
+- [October 27, 2026, Manually map linked product inputs in DevOps — Palantir release notes](https://www.palantir.com/docs/foundry/announcements/release-notes/2026/#71c8700f-75c6-49cc-8098-7910c4ad018f)
 
 ## 관련 문서
 

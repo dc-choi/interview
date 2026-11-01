@@ -1,7 +1,7 @@
 ---
 tags: [palantir, foundry, pipeline-builder, data-engineering]
 status: done
-verified_at: 2026-10-16
+verified_at: 2026-11-01
 category: "AI엔지니어링(AIEngineering)"
 aliases: ["Pipeline Builder 협업과 재사용 계약"]
 ---
@@ -12,7 +12,7 @@ Pipeline branch는 pipeline에, global branch는 여러 application에 걸친 �
 
 ## 저장과 변경 검토
 
-일반 pipeline 편집은 명시 Save가 필요하다. Text node는 입력 중 autosave라고 별도로 설명하므로 전체 graph의 저장 계약과 구분한다. History의 read-only detail/diff는 과거 상태 검토이며 되돌리기와 다르다. Archive한 branch는 복구 전 편집/사용할 수 없다.
+일반 pipeline 편집은 명시 Save가 필요하다. Text node는 입력 중 autosave라고 별도로 설명하므로 전체 graph의 저장 계약과 구분한다. 같은 pipeline이나 library를 두 탭에서 열었다면 2026-10-21 수정 뒤에는 오래된 탭에서 autosave 충돌 뒤 변경을 버려도 다른 탭의 autosave 편집을 지우지 않고 마지막 저장 작업을 다시 불러온다. Version mismatch 뒤 변경을 버리면 이전처럼 오래된 작업이 지워진다. 이 autosave가 편집 상태를 어디에 보존하는지는 확인하지 못했으므로 autosave된 편집을 branch에 Save한 변경으로 보지 않는다. History의 read-only detail/diff는 과거 상태 검토이며 되돌리기와 다르다. Archive한 branch는 복구 전 편집/사용할 수 없다.
 
 Proposal은 ADD/MOD/DEL 변경과 column stats, unit test, comment를 검토한다. Reviewed 표시는 사용자별이고 대상이 바뀌면 해제된다. Comment resolve는 변경의 정확성이나 승인과 같은 사건이 아니다. 삭제한 node의 comment도 proposal sidebar에 남을 수 있다.
 
@@ -30,7 +30,9 @@ Global parameter는 constant/regex/struct locator/column/expression을 참조한
 
 Custom expression은 단일 expression, custom transform path는 여러 board를 재사용한다. Argument type은 구체적인 column 이름과 분리한다. Cast를 nested expression에 넣으면 다른 사용처의 원본 type을 바꾸지 않고 원하는 입력을 맞출 수 있다. Duplicate 제거를 대표 row 선택으로 쓸 때는 deterministic ordering을 별도 보장한다.
 
-Beta subgraph는 하나 이상의 transform과 schema를 가진 reusable block이다. Required input column을 다 충족해야 하며 multi-input은 각각 mapping한다. 한 subgraph 수정은 모든 instance에 영향을 줄 수 있어 실제 instance/output schema를 검토한다. 지원 여부와 cross-pipeline 배포 방식은 해당 enrollment에서 확인한다.
+Subgraph는 transform, split, join 같은 logic을 정의된 input과 output을 가진 reusable block으로 묶는다. 2026-10-26 발표로 10월27일부터 모든 enrollment에서 GA가 됐고, 현재 subgraph 문서에는 Beta 표기가 없다. 같은 pipeline의 여러 위치나 branch에 적용할 수 있으며, reusable subgraph에 parameter input을 정의하면 instance마다 다른 설정 값을 줄 수 있다. 선택한 node가 모두 transform이면 Replace with subgraph로 기존 subgraph로 바꾼다.
+
+Subgraph input은 필요한 column을 정의하고, 빈 input은 필요한 column이 없다는 뜻이다. 필요한 column은 적용할 때 각각 main graph의 호환 column에 mapping하며 multi-input도 input마다 mapping한다. 한 번의 수정이 모든 instance에 영향을 주므로 실제 instance와 output schema를 검토한다. 다른 pipeline에서의 재사용과 공유 방식은 현재 subgraph 문서가 설명하지 않으므로 별도로 확인한다.
 
 ## 화면 구조와 실행 구조
 
@@ -56,6 +58,8 @@ Color-group 안내는 Cmd/Ctrl+D를 duplicate로, tips 안내는 child selection
 - [Palantir Pipeline Builder, management-text-nodes](https://www.palantir.com/docs/foundry/pipeline-builder/management-text-nodes)
 - [Palantir Pipeline Builder, navigation](https://www.palantir.com/docs/foundry/pipeline-builder/navigation)
 - [Palantir Pipeline Builder, subgraphs](https://www.palantir.com/docs/foundry/pipeline-builder/subgraphs)
+- [October 21, 2026, Abandoning an autosave conflict no longer discards edits from other tabs — Palantir release notes](https://www.palantir.com/docs/foundry/announcements/release-notes/2026/#7bf38969d1cf68c9435180d88bc895c9a5e3db35704260ec4f8607a705e62722)
+- [October 26, 2026, Package and reuse pipeline logic with subgraphs in Pipeline Builder — Palantir release notes](https://www.palantir.com/docs/foundry/announcements/release-notes/2026/#32ec54b9-ac2b-4948-91f5-070c3d3e702b)
 
 ## 관련 문서
 

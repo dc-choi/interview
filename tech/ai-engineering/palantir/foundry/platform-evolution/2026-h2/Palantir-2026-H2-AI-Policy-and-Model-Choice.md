@@ -1,7 +1,7 @@
 ---
 tags: [palantir, release-history]
 status: done
-verified_at: 2026-10-16
+verified_at: 2026-11-01
 category: "AI엔지니어링(AIEngineering)"
 ---
 
@@ -17,6 +17,10 @@ Palantir 제공 model family와 registered model에 적용하고, registered mod
 
 ## 모델의 경로와 지역
 
+10월29일 GPT-6.1 Terra는 eligible commercial enrollment에서 experimental model로 추가됐다. Non-georestricted는 Azure OpenAI와 Direct OpenAI, US-georestricted는 Direct OpenAI 경로이며 model family 활성화와 함께 Enable experimental models toggle이 필요하다. 같은 날 US Government enrollment에는 Bedrock의 Gemma 4 26B A4B/31B, Nemotron 3 Nano 30B/Super 120B와 Claude Haiku 5.5가 IL2 enrollment와 FedRAMP High 아래의 IL4 DIB enrollment에 추가됐다. 이 Bedrock 발표에서 DoD IL4/IL5까지 안내된 것은 Nemotron 두 모델이다(Haiku 5.5의 Vertex IL2/IL4 경로는 아래 10월15일 발표).
+
+10월27일 Direct OpenAI의 GPT-6 Luna로 OpenAI Decisions API를 쓸 수 있게 됐다. Enrollment 관리자가 Direct OpenAI model family를 활성화해야 한다. 텍스트와 이미지를 평가해 확률, 미리 정한 선택지 중 선택, 점수를 반환하며 분류, 요청 라우팅과 작업 우선순위에 쓰는 경로다. Responses API로 GPT-6 Luna를 쓸 때보다 최대 10배 빠르다는 설명은 발표의 상한 표현이므로 실제 workload의 지연과 판정 품질로 확인한다.
+
 10월15일 발표에서 GLM-5.3은 Bedrock의 non-georestricted/US commercial에서 experimental, Gemini 4 Argon은 Vertex의 non/US/EU commercial 및 US government IL2/4/5에서 experimental로 안내됐다. Haiku5.5는 여러 commercial provider와 Vertex government IL2/4 경로를 구분했다. GPT-6.1 Sol은 Direct/Bedrock의 non/US, Azure의 non-georestricted commercial 경로로 안내됐다.
 
 10월6일 Opus5.5/Sonnet5의 UK-georestricted Bedrock, 10월1일 Fireworks의 US-georestricted KimiK3/GLM5.3/GLM5.3Flash/DeepSeekV4.1Flash가 추가됐다. 이는 발표 당시의 가용성 기록이다. 현재 모델 목록, model family 활성화, experimental 허용과 token 정책을 배포 전에 다시 확인한다. Model Catalog 설명/정렬도 모델 실행 가능성 자체를 보장하지 않는다.
@@ -27,7 +31,7 @@ AIP Analyst는 새 analysis의 미설정 값에 primary Organization의 search s
 
 Fast/Balanced/Smart category의 기본 모델은 제품이 갱신한다. 개별 모델 override를 두면 그 자동 갱신을 받지 않는다. Compact view와 thinking detail 숨김은 표시 선택이며 도구 결과를 확장해 조사할 수 있다.
 
-AI FDE는 Workflow Lineage URL의 graph context, clustered layout과 promoted skill tag를 지원한다. Workshop scenario enable/version 변경은 실제 enrollment 지원과 기존 scenario variable에 대해 검증한다. Python repository branch switch의 lockfile-only 자동 정리는 source/dependency 수정이 없을 때만 적용되고 실제 편집이 있으면 차단을 유지한다. Autopilot session usage는 LLM call/token을 표시하지만 전체 workflow 비용과 구분한다.
+AI FDE는 Workflow Lineage URL의 graph context, clustered layout과 promoted skill tag를 지원한다. Workshop scenario enable/version 변경은 실제 enrollment 지원과 기존 scenario variable에 대해 검증한다. Python repository branch switch의 lockfile-only 자동 정리는 source/dependency 수정이 없을 때만 적용되고 실제 편집이 있으면 차단을 유지한다. Autopilot session usage는 LLM call/token을 표시하지만 전체 workflow 비용과 구분한다. 10월28일 AI FDE는 AIP Agent Studio agent의 structured output을 구성할 때 root type으로 struct를 권장하도록 바뀌었다. 일부 모델이 struct가 아닌 root의 structured output을 지원하지 않아 struct root가 더 많은 모델에서 동작하기 때문이다.
 
 ## 9월 agent 권한과 검증 전략
 

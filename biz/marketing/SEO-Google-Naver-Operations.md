@@ -125,13 +125,35 @@ www가 없는 주소의 초기화 결과로 www 주소의 캐시까지 초기화
 
 2026-10-18과 2026-10-20의 부분 대조는 검색어 후보, Keyword Planner와 외부 도구 지표에 한정하며, 기존 네이버 설정과 공유 캐시 절의 재검증 날짜는 갱신하지 않는다.
 
+## 랜딩 페이지 SEO에서 섞이기 쉬운 주장
+
+앱이나 서비스의 랜딩 페이지를 검색 유입의 입구로 둘 때 듣는 다음 주장을 2026-11-01 Google 공식 문서와 대조했다.
+
+| 주장 | 공식 문서가 설명하는 것 | 판단 |
+|---|---|---|
+| Search Console에 등록해야 검색에 나오고 등록하면 순위가 오른다 | Search Console 도움말은 가입하지 않아도 Google 검색 결과에 포함될 수 있고 이 도구는 Google이 사이트를 보는 방식을 이해하고 개선하도록 돕는다고 설명한다. SEO Starter Guide도 보통은 사이트를 웹에 게시하는 것 외에 할 일이 없다고 적는다 | Search Console은 색인 상태와 검색어를 확인하고 사이트맵 제출과 색인 생성 요청을 하는 관리 도구다. 도움말은 SEO 담당자가 이 도구로 순위를 최적화하는 데 도움을 받는다고 소개하지만, 등록 자체를 순위 요인으로 설명한 공식 문서는 확인하지 못했다 |
+| 개인정보처리방침과 이용약관 페이지를 만들면 백링크가 생긴다 | Google은 다른 주요 웹사이트가 콘텐츠를 링크하거나 언급하는지를 품질 판단 요소의 예로 들고, 순위 조작을 주목적으로 링크를 사고팔거나 과도하게 교환하거나 자동으로 만드는 것은 링크 스팸으로 본다 | 같은 사이트 안의 페이지끼리 건 링크는 다른 사이트가 거는 링크가 아니다. 정책 페이지는 링크 확보 목적으로 만들지 않고 법령상 공개 의무, 앱 마켓 심사와 이용자 신뢰를 위해 만든다. 앱 마켓 등록 정보가 그 URL로 거는 링크가 순위에 주는 효과는 공식 문서로 확인하지 못했다 |
+| GA에 잡힌 방문과 긴 체류 시간이 도메인 신뢰도를 올린다 | Google은 검색 결과가 질의와 관련 있는지 평가하는 데 집계되고 익명화된 상호작용 데이터를 쓴다고 설명하지만 How Search Works의 순위 설명 페이지는 그 데이터의 종류를 밝히지 않는다. Search Central의 GA 활용 문서는 GA를 사이트 안 행동의 기준 자료로 설명하고 순위와 연결하지 않는다 | GA 설치나 GA 지표를 순위 요인으로 설명한 공식 문서는 확인하지 못했다. GA는 유입과 전환 측정에 쓴다 |
+| 링크를 많이 받을수록 순위가 오른다 | SEO Starter Guide는 PageRank가 링크를 쓰는 Google의 기본 알고리즘 중 하나지만 여러 순위 신호 가운데 하나라고 설명한다 | 링크 수보다 검색 의도에 답하는 페이지와 자연스러운 언급을 먼저 본다 |
+
+검색 결과에서 랜딩 페이지를 거쳐 앱 설치로 이어지는 흐름은 하나의 유입 설계다. 그 흐름이 순위를 올린다는 근거로 쓰지 않고, 엔진별 노출과 클릭, 랜딩 페이지 방문, 설치와 문의를 단계별로 나눠 측정한다.
+
+문의 폼, 회원가입이나 주문으로 개인정보를 처리하는 사이트와 앱의 운영자는 국내 법령상 처리방침을 정해 공개해야 한다([[Website-Sales-Legal-Checklist#개인정보 처리방침|자사 사이트의 처리방침 공개 의무]]). 앱을 함께 운영하면 App Store와 Google Play도 개인정보를 수집하지 않는 앱까지 처리방침 링크를 요구하고 Google은 공개 URL 조건을 두므로, 랜딩 페이지는 그 URL을 두기 쉬운 위치다. 다만 Google은 방침이 해당 앱에 구체적으로 적용되도록 요구하므로 문의 폼 기준의 사이트 방침을 그대로 쓰지 않고 앱의 처리 내용을 함께 적는다. 앱 마켓별 링크 위치, 기재 항목과 URL 조건은 [[App-Store-Launch-Checklist|앱 스토어 첫 출시 준비]]의 정책 문서 단계에서, 처리방침과 동의서의 차이는 [[Privacy-Operations-for-Small-Business#처리방침과 동의서는 어떻게 다른가|대표의 개인정보 운영]]에서 다룬다. 2026-11-01 대조는 이 절에 한정하며 기존 절의 재검증 날짜는 갱신하지 않는다.
+
 ## 출처
 
-- [Google Search Central, SEO Starter Guide](https://developers.google.com/search/docs/fundamentals/seo-starter-guide)
+- [Google Search Central, SEO Starter Guide](https://developers.google.com/search/docs/fundamentals/seo-starter-guide) — 2026-11-01 게시만으로 검색에 포함될 수 있다는 설명과 PageRank 설명 추가 대조
 - [Google Ads Help, About Keyword Planner forecasts](https://support.google.com/google-ads/answer/3022575?hl=en)
 - [Semrush Knowledge Base, What is Search Volume in Semrush?](https://www.semrush.com/kb/683-what-is-search-volume-in-semrush)
 - [Semrush Knowledge Base, Keyword Difficulty score](https://www.semrush.com/kb/1158-what-is-kd)
 - [Google Search Console 도움말, 사이트 소유권 확인](https://support.google.com/webmasters/answer/9008080?hl=ko)
+- [Google Search Console Help, About Search Console](https://support.google.com/webmasters/answer/9128668?hl=en) — 2026-11-01 가입 없이도 검색 결과에 포함될 수 있다는 설명 확인
+- [Google Search, How Search Works: Ranking results](https://www.google.com/search/howsearchworks/how-search-works/ranking-results/) — 2026-11-01 상호작용 데이터와 다른 사이트의 링크, 언급에 관한 설명 확인
+- [Google Search Central, Spam policies for Google web search](https://developers.google.com/search/docs/essentials/spam-policies) — 2026-11-01 링크 스팸의 정의와 예시 확인
+- [Google Search Central, Using Search Console and Google Analytics data for SEO](https://developers.google.com/search/docs/monitor-debug/google-analytics-search-console) — 2026-11-01 GA와 Search Console 자료의 역할 구분 확인
+- [Apple Developer, App Review Guidelines](https://developer.apple.com/app-store/review/guidelines/) — 2026-11-01 5.1.1(i)의 모든 앱 개인정보처리방침 링크 요건 확인(2026-10-16 갱신본)
+- [Play Console Help, User Data](https://support.google.com/googleplay/android-developer/answer/10144311?hl=en) — 2026-11-01 개인정보에 접근하지 않는 앱을 포함한 개인정보처리방침 제출 요건 확인
+- [Play Console Help, Prepare your app for review](https://support.google.com/googleplay/android-developer/answer/9859455?hl=en) — 2026-11-01 방침이 해당 앱에 구체적으로 적용돼야 한다는 조건 확인
 - [Google Search Central, How to specify a canonical URL](https://developers.google.com/search/docs/crawling-indexing/consolidate-duplicate-urls)
 - [Google Search Central, Build and submit a sitemap](https://developers.google.com/search/docs/crawling-indexing/sitemaps/build-sitemap)
 - [Google Search Console Help, Sitemaps report](https://support.google.com/webmasters/answer/7451001?hl=en)
@@ -147,6 +169,8 @@ www가 없는 주소의 초기화 결과로 www 주소의 캐시까지 초기화
 
 - [[Content-Marketing|콘텐츠 마케팅]] — 검색 의도, 주제 구성과 콘텐츠 성과
 - [[AI-Search-Visibility|AI 검색 가시성 측정]] — 생성 AI 답변에서의 노출과 인용
+- [[Website-Sales-Legal-Checklist|자사 사이트 판매 페이지 법정 표시 점검]] — 처리방침 공개 의무
+- [[App-Store-Launch-Checklist|앱 스토어 첫 출시 준비]] — 앱 마켓의 처리방침 링크와 URL 조건
 - [[NextJS-App-Crawler-Files|manifest, robots와 sitemap]] — Next.js 환경의 구현
 - [[Metrics-Framework|지표 설계]] — 노출, 유입과 실제 전환의 구분
 - [[Trend-Research-Validation|트렌드 조사와 수요 검증]] — 검색 데이터를 제품 수요 가설로 쓸 때의 한계
