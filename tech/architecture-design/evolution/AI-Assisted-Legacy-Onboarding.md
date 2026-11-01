@@ -221,3 +221,4 @@ REA의 Evidence는 대상 산출물 식별, 원본 위치, 관찰, 추론과 미
 - [[Agent-Coding-Guardrails|AI coding agent guardrail]]
 - [[Agent-Spec-Writing|agent 작업 명세 작성]]
 - [[Test-Pyramid|테스트 피라미드]]
+- [[Codebase-Knowledge-Map|대규모 코드베이스 지식 지도]]

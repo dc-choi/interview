@@ -142,3 +142,4 @@ Graphify는 tree-sitter AST에서 함수, class, import와 call 관계를 추출
 - [[MCP|MCP와 도구 신뢰 경계]]
 - [[AI-Native-System|AI 네이티브 시스템의 검증 계층]]
 - [[Agent-Reverse-Engineering|소스가 없을 때의 분석과 재구현]]
+- [[Codebase-Knowledge-Map|대규모 코드베이스 지식 지도]]
