@@ -131,13 +131,17 @@ API는 URL의 major version을 사용한다. endpoint/field 제거, 필수 reque
 
 클라이언트는 알 수 없는 response field를 무시하고 신규 enum value를 처리할 경로를 둔다. 문서화되지 않은 내부 동작에 의존하지 않는다. API의 버전 번호와 SDK package 버전을 같은 값으로 취급하지 않는다.
 
+2026-11-01 확인한 Versioning 문서는 v3 endpoint가 점진적으로 도입되는 중이며 GA 전에 바뀔 수 있다고 적는다. v3 채택을 따로 안내받지 않았다면 v2 endpoint를 계속 쓰라고 권한다. 같은 날 API reference의 버전 선택지도 v3를 Beta로 표시했다. 따라서 v3 경로가 문서에 보인다는 이유로 v2 클라이언트를 일괄 이전하지 않는다. 기능이 v3에만 있으면 해당 endpoint의 Preview 표시와 OAuth scope를 먼저 확인한다. 예를 들어 2026-11-01 확인한 [[Palantir-Marketplace-Input-Mapping-and-Jobs|Marketplace 설치 v3 API]] 문서들은 preview 경고를 표시하고 `preview=true`를 요구한다. 이 경우 아래 Preview 계약이 적용된다.
+
+적용 제안: Preview 표시가 없는 v3 endpoint도 GA 전에는 바뀔 수 있다. 그러므로 stable endpoint의 12개월 예고나 같은 major 안의 호환성을 전제하지 않고, endpoint 문서에서 GA 여부를 확인한 뒤 운영 경로에 넣는다.
+
 확인일의 stable endpoint 교체/제거 정책은 최소 12개월 전 안내와 그 기간의 지원/SLA 유지를 명시한다. 다만 심각한 보안 취약점이나 안정성 문제는 더 짧은 예고의 emergency change 예외가 있다. 공지, Upgrade Assistant와 endpoint banner를 함께 확인한다.
 
 Public Preview는 비운영 실험/개발 단계이며 `preview=true`로 opt-in한다. 사전 안내 없이 변경/삭제될 수 있다. stable의 호환성/폐기 예고 정책을 Preview에 그대로 적용하지 않는다.
 
 폐기 예정 endpoint의 이전 지원에는 구버전과 신버전 구조 비교, 코드 변경 예제와 일반적인 이전 패턴이 포함된다. 운영 점검에서는 공지에 적힌 종료일과 함께 실제 호출 중인 endpoint, 교체 경로와 응답 계약을 대조한다. 새 버전 번호가 등장했다는 사실만으로 기존 endpoint가 즉시 폐기됐다고 판단하지 않는다.
 
-2026-10-22에는 이 절의 변경 분류, 폐기 예고와 Preview 정책을 공식 Versioning 본문에 다시 대조했다. 다른 절의 호출률, 인증과 오류 계약을 재검증한 날짜는 아니므로 frontmatter의 기존 확인일을 유지한다.
+2026-10-22에는 이 절의 변경 분류, 폐기 예고와 Preview 정책을 공식 Versioning 본문에 다시 대조했다. 2026-11-01에는 개정된 본문에 새로 들어간 v3 도입 안내를 확인했다. 나머지 Versioning 내용은 2026-10-18 수집본과 같았다. 다른 절의 호출률, 인증과 오류 계약을 재검증한 날짜는 아니므로 frontmatter의 기존 확인일을 유지한다.
 
 ## 출처
 
@@ -152,10 +156,11 @@ Public Preview는 비운영 실험/개발 단계이며 `preview=true`로 opt-in�
 - [Palantir, API paging](https://www.palantir.com/docs/foundry/api/general/overview/paging)
 - [Palantir, API limits](https://www.palantir.com/docs/foundry/api/general/overview/limits)
 - [Palantir, API errors](https://www.palantir.com/docs/foundry/api/general/overview/errors)
-- [Palantir, API versioning](https://www.palantir.com/docs/foundry/api/general/overview/versioning)
+- [Palantir, API versioning](https://www.palantir.com/docs/foundry/api/general/overview/versioning) — 2026-11-01 v3 점진 도입과 v2 유지 권고 확인
 
 ## 관련 문서
 
 - [[Palantir-API]]
 - [[Palantir-SDK-and-Agent-Tools]]
 - [[Palantir-Actions-and-Functions]]
+- [[Palantir-Marketplace-Input-Mapping-and-Jobs]]
