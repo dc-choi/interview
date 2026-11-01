@@ -42,6 +42,7 @@ aliases: ["Claude Code Operations", "클로드 코드 운영", "클로드 코드
 - 인증 대표 함정: 셸 프로필에 남은 낡은 ANTHROPIC_API_KEY가 구독 OAuth를 조용히 오버라이드 — `/status`로 활성 자격 증명 확인
 - 설정 디버깅은 "실제로 뭐가 로드됐나"부터: /status, /context, /permissions, /hooks. 흔한 실수 — 훅 matcher를 배열로 작성(단일 문자열이어야 함), permissions를 엉뚱한 파일에 배치, 서브에이전트가 CLAUDE.md를 상속한다고 가정
 - 에러: 일시 오류는 지수 백오프로 자동 재시도되므로 기다리는 게 먼저. 용량 초과(529)는 모델 전환(용량은 모델별), 컨텍스트 초과는 /compact
+- 요청 압축: 2026-11-02 확인한 변경 기록 기준으로 2.1.300부터는 텔레메트리를 꺼도 api.anthropic.com으로 가는 큰 요청을 gzip으로 압축하며, `CLAUDE_CODE_GZIP_REQUEST_BODIES=0`으로 끌 수 있다. 이 항목은 압축을 적용하는 크기 기준, 가리키는 텔레메트리 설정, 텔레메트리를 켠 세션에서 압축이 시작된 버전과 LLM 게이트웨이나 제3자 플랫폼 경로의 적용 여부를 적지 않는다. 작은 요청은 되는데 요청이 커질 때만 실패하고 TLS를 풀어 본문을 검사하는 프록시나 보안 장비를 거친다면 이 변수로 압축을 끈 실행과 비교한다(적용 제안). 응답 쪽은 별개로, 2.1.316에서 압축된 응답이 잘리거나 손상될 때 일부 네트워크 요청이 멈추던 문제를 고쳤으므로 요청이 멈추면 버전부터 확인한다
 - **품질이 나빠졌다면 컨텍스트와 하네스부터 확인한다** — 전체 모델 ID로 고정했다면 가중치는 바뀌지 않지만 별칭이 가리키는 모델, Claude Code 버전과 기본값(effort, 시스템 프롬프트)은 바뀔 수 있다([[Eval-Model-Drift-Monitoring|서빙 모델 드리프트 감시]]). 컨텍스트 압박, 낡은 CLAUDE.md를 확인하고, 잘못된 답변에 수정을 이어가기보다 되감고(rewind) 더 구체적으로 재프롬프트하는 편이 낫다
 - **adaptive thinking 끄기 팁은 모델을 확인한다**: 품질 저하를 느낄 때 settings.json의 `env`에 `CLAUDE_CODE_DISABLE_ADAPTIVE_THINKING=1`과 `MAX_THINKING_TOKENS`를 넣었더니 같은 작업의 재프롬프트 횟수가 줄었다는 커뮤니티 보고가 있다(2026-04, 개인 비교). 공식 환경 변수 문서(2026-09-29 확인) 기준 이 변수는 Opus 4.6과 Sonnet 4.6에서만 adaptive reasoning을 끄고 `MAX_THINKING_TOKENS` 고정 예산으로 돌리며, Opus 4.7 이후, Sonnet 5 이후와 Fable 모델에는 효과가 없다. adaptive 모델에서는 `MAX_THINKING_TOKENS`의 0이 아닌 값도 무시된다. 현재 모델에서는 effort 수준(`/effort`, `CLAUDE_CODE_EFFORT_LEVEL`)으로 조절하고, 효과는 같은 과업의 재프롬프트 횟수처럼 비교 가능한 지표로 판정한다
 
@@ -74,6 +75,8 @@ aliases: ["Claude Code Operations", "클로드 코드 운영", "클로드 코드
 - [클로드 코드 가이드 (레퍼런스 03 기본 사용법, 13 CI/CD, 14 CLI, 16 베스트 프랙티스, 17 트러블슈팅) — WikiDocs](https://wikidocs.net/book/19104)
 - [Claude Code 품질 저하 때 adaptive thinking 끄기 — Threads, withfox](https://www.threads.com/@withfox/post/DXDx0mhCX4z)
 - [Claude Code 2026 — YouTube, 토비의 스프링](https://www.youtube.com/watch?v=Y2mEVnN-FKY) — 2026-10-11, 2026년 변경을 소개하는 TTS 내레이션 영상. 로컬 리뷰와 ultra 리뷰 항목의 단서로만 쓰고 내용은 공식 문서로 대조
+- [Claude Code CHANGELOG — GitHub, anthropics/claude-code](https://github.com/anthropics/claude-code/blob/main/CHANGELOG.md) — 2026-11-02, 2.1.300의 요청 압축과 2.1.316의 압축 응답 수정 항목 확인
+- [Claude now 3x FASTER — YouTube, The PrimeTime](https://www.youtube.com/watch?v=AL89pwVdI9g) — 2026-10-22 Shorts. 요청 압축 항목의 단서로만 쓰고, 영상의 속도 배수는 변경 기록에서 확인되지 않아 옮기지 않음
 
 ## 관련 문서
 
