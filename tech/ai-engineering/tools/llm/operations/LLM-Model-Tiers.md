@@ -1,7 +1,7 @@
 ---
 tags: [ai, llm, cost, model-selection]
 status: done
-verified_at: 2026-10-27
+verified_at: 2026-11-01
 category: "AI엔지니어링(AIEngineering)"
 aliases: ["LLM Model Tiers", "모델 티어 선택", "모델 라우팅", "Model Routing"]
 ---
@@ -45,7 +45,7 @@ Haiku 5.5 사례를 2026-10-12 공식 발표, 가격표와 모델 문서에 대�
 DeepSeek 사례를 2026-10-26 공식 가격표, 변경 이력과 모델 카드에 대조한 내용이다. 저비용 모델은 단가표의 숫자와 함께 호출 시각에 따른 단가와 모델 이름이 가리키는 판을 확인한다.
 
 - **두 이름과 한도**: API 모델 이름은 `deepseek-flash`(DeepSeek-V4.1-Flash-1017)와 `deepseek-v4-pro`(DeepSeek-V4-Pro-0813) 둘이다. 둘 다 컨텍스트 1M, 최대 출력 384K이고, 가격표의 동시성 한도는 Flash 2,500, Pro 500이며 이미지 입력은 Flash만 지원한다.
-- **호출 시각에 따라 단가가 두 배 차이 난다**: `deepseek-flash`의 100만 토큰당 단가는 할인 시간에 입력 캐시 적중 $0.003, 캐시 미적중 $0.15, 출력 $0.60이고 피크 시간에는 그 두 배다. 피크는 월~금(중국 공휴일 제외) UTC 01:00~04:00와 06:00~10:00으로, 한국 시간 10~13시와 15~19시다. 실행 시각을 옮길 수 있는 배치는 피크를 피해 예약하고, 비용 추정에는 실제 호출 시각 분포를 넣는다(적용 제안). Search와 Fetch API는 각각 성공 요청 1,000건당 $0.75다. DeepSeek Harness, Claude Code, Codex로 DeepSeek API를 쓸 때 서버 측 도구가 부르는 Search와 Fetch는 2026-10-26 확인 기준 무료이며, 2026-11-01 00:00(베이징 시간, 한국 시간 01:00)부터 요청 단위로 과금한다고 안내한다. 가격표는 가격이 조정될 수 있다고 적는다.
+- **호출 시각에 따라 단가가 두 배 차이 난다**: `deepseek-flash`의 100만 토큰당 단가는 할인 시간에 입력 캐시 적중 $0.003, 캐시 미적중 $0.15, 출력 $0.60이고 피크 시간에는 그 두 배다. 피크는 월~금(중국 공휴일 제외) UTC 01:00~04:00와 06:00~10:00으로, 한국 시간 10~13시와 15~19시다. 실행 시각을 옮길 수 있는 배치는 피크를 피해 예약하고, 비용 추정에는 실제 호출 시각 분포를 넣는다(적용 제안). Search와 Fetch API는 각각 성공 요청 1,000건당 $0.75다. 가격표는 2026-10-26 확인 당시 DeepSeek Harness, Claude Code, Codex로 DeepSeek API를 쓸 때 서버 측 도구가 부르는 Search와 Fetch를 무료로 표시했고, 2026-11-01 00:00(베이징 시간, 한국 시간 01:00)부터 요청 단위로 과금한다고 안내했다(시행 뒤의 가격표는 다시 확인하지 않았다). 가격표는 가격이 조정될 수 있다고 적는다.
 - **이름이 가리키는 판이 바뀐다**: 2026-10-17 변경 이력은 V4.1-Flash를 V4.1-Flash-1017로 올리면서 호출 방식과 가격은 그대로이고 같은 `deepseek-flash`로 최신 모델을 쓰라고 안내한다. 2026-09-10에는 V4.1-Flash를 내면서 호출 이름을 `deepseek-flash`로 바꾸고 V4 Flash와 V4 Flash Vision Exp를 은퇴시켰다. 이전 이름 `deepseek-v4-flash`와 `deepseek-v4-flash-vision-exp`는 호환을 위해 임시로 받아 주며, 지금은 1017 판으로 처리돼 Flash 가격으로 과금된다. 확인한 가격표와 변경 이력에는 이전 Flash 판을 고르는 날짜 붙은 ID가 없다. 코드를 바꾸지 않아도 품질과 출력 길이가 바뀔 수 있으므로 판 교체는 [[Eval-Model-Drift-Monitoring|서빙 모델 드리프트 감시]]의 카나리 세트로 잡는다. 판 고정이 필요한 경로는 MIT 라이선스로 공개된 가중치를 직접 서빙하는 방안과 비용을 비교한다(적용 제안). 모델 카드 본문은 총 파라미터 수를 밝히지 않고 Hugging Face 저장소의 safetensors 표시는 약 763B이며, V4.1-Flash 기술 보고서는 백본 552B, 토큰당 활성 파라미터를 디코드 16B, 프리필 8B로 적는다. 서빙 메모리는 활성 수가 아니라 실제 가중치 파일과 KV 캐시로 계산한다([[Model-Release-Claims#파라미터 수는 무엇을 셌는지 확인한다|파라미터 집계 범위]]).
 - **자체 보고 점수의 조건**: 모델 카드는 1017 판을 소규모 갱신으로 설명하고, DeepSWE v1.1(Mini-SWE-V2 하네스) 77.0을 직전 판 74.2, Claude Opus 5 74.0, GPT-5.6 Sol 73.0과 함께 보고한다. 같은 표의 Terminal-Bench 4.0(Claude Code 하네스)은 42.3으로 Opus 5의 51.8보다 낮다. 벤치마크와 하네스에 따라 순위가 갈리므로 한 점수로 코딩 에이전트의 우열을 정하지 않는다. 변경 이력은 직전 판보다 작업 시간과 출력 길이가 줄었다고 적고 DeepSeek Harness를 0.2.1-rc.1 이상으로 올리라고 권한다. 단가가 같아도 과업당 비용과 하네스 조건이 달라지므로 자기 과업으로 다시 잰다. 제3자 지수의 속도와 단가가 측정일과 시간대에 따라 달라지는 사례는 [[Model-Release-Claims#속도와 지연은 측정 위치와 날짜를 붙인다|모델 발표 수치 읽기]]에 있다.
 
@@ -60,6 +60,15 @@ DeepSeek 사례를 2026-10-26 공식 가격표, 변경 이력과 모델 카드�
 - **결정 모델 라우터**: 라우터와 의도 분류 단계는 텍스트를 생성하지 않고 미리 정한 선택지마다 확률을 돌려주는 결정 모델에 맡길 수 있다. confidence가 낮은 요청만 상위 티어나 사람에게 넘기면 위의 에스컬레이션과 바로 이어진다([[LLM-Decision-Models-Use-Cases#예시: 어디에 쓰는가|결정 모델]]).
 
 라우팅의 전제는 측정이다. "플래그십이 항상 낫다"를 가정하지 말고, 우리 과업의 [[LLM-Eval-Strategy|eval]]로 하위 티어가 합격선을 넘는지 확인한 뒤 가장 싼 합격 티어로 내린다. 능력이 남는 티어를 쓰는 것은 [[Productivity-Business-Ceiling|영양과다 비타민]]과 같은 낭비다.
+
+### 제품 사례: GitHub Copilot Fusion
+
+2026-10-28 게시된 GitHub Changelog, GitHub Docs와 Artificial Analysis 글을 2026-11-01에 확인한 기준이다. Copilot Fusion은 GA이며 프롬프트마다 실행 패턴을 고른다. Single은 한 모델이 작업을 끝낸다. Cascade는 효율적인 모델이 초안을 쓰고 judge가 그 초안을 받아들일지, 더 강한 모델로 넘길지 정한다. Critique는 한 모델의 초안을 여러 모델이 독립적으로 병렬 비평하고, 모은 의견으로 원래 모델이 고친다. Cascade는 위의 에스컬레이션에, Critique는 아래의 교차 검토에 대응한다고 볼 수 있다. 다만 문서는 Critique가 승인할 때까지 반복하는지 밝히지 않는다. Cascade의 평균 비용을 셈할 때는 초안과 상위 모델뿐 아니라 judge 단계에 쓰인 모델 비용도 넣는다(적용 제안).
+
+- **사용자가 고르는 것**: 사용자는 패턴이 아니라 Fusion의 effort 단계(Standard, High, Max)를 고른다. 문서는 이 단계와 모델 API의 effort 매개변수의 관계를 설명하지 않으므로 같은 손잡이로 보지 않는다. Standard 단계는 모든 Copilot 요금제에서, High와 Max 단계는 Copilot Pro+, Max, Business, Enterprise 요금제에서만 쓸 수 있다. 지원 클라이언트는 VS Code, GitHub Copilot 앱, Copilot CLI와 JetBrains IDE다.
+- **과금과 정책**: Fusion이 쓴 모델마다 그 모델의 표준 단가로 과금하고 Fusion 자체의 별도 요금은 없다. High와 Max 단계는 Standard보다 AI credit을 더 쓸 수 있다. 2026-11-30까지는 유료 요금제 사용자가 Fusion을 쓸 때 모델 비용을 30% 할인한다. 후보는 엔터프라이즈와 조직의 모델 정책에서 켠 모델이고, 요금제에 없는 모델과 데이터 상주나 FedRAMP 준수 모델로 제한한 환경에서 허용되지 않는 모델은 빠진다.
+- **한계**: 서브에이전트와 별개로 동작하며 서브에이전트를 시작하지 않는다. 버린 초안이 만든 파일 편집은 자동으로 되돌리지 않는다. 패턴과 모델 후보는 바뀔 수 있다고 문서가 밝힌다.
+- **성능 주장**: GitHub은 Fusion Max 단계가 Artificial Analysis Coding Agent Index에서 Claude Code의 Opus 5.5 Max와 2점 이내이면서 과업당 평균 API 비용은 약 절반이라고 발표했다. Artificial Analysis의 같은 날 글은 Coding Agent Index v2.0에서 Copilot CLI의 Fusion max 설정 결과만 싣는다. 그 결과는 Claude Code의 Opus 5.5(max)보다 2점 낮고, 과업당 비용은 Fusion Max $5.59, Claude Code의 Opus 5.5(max) $11.42다. 하네스와 모델을 묶은 비교이고, 다른 단계의 결과는 없으며 패턴별 효과를 나눈 측정도 아니다. 지수와 하네스가 다르므로 위 과업당 비용 항목의 Opus 5.5 수치(Intelligence Index 기준 $5.98)와 직접 비교하지 않는다. 과업당 시간 약 40% 단축은 GitHub 발표에 있고 Artificial Analysis 글에는 시간 수치가 없다.
 
 ## 프런티어 모델의 단계적 출시
 
@@ -148,6 +157,9 @@ DeepSeek 사례를 2026-10-26 공식 가격표, 변경 이력과 모델 카드�
 - [Introducing Claude Opus 5.5 — Anthropic](https://www.anthropic.com/claude-opus-5-5)
 - [Claude Sonnet 5.5 (Max, Default Fallback) Intelligence, Performance & Price Analysis — Artificial Analysis](https://artificialanalysis.ai/models/claude-sonnet-5-5) (2026-10-18 과업당 비용과 생성 토큰 확인)
 - [Claude Opus 5.5 (Max, Default Fallback) Intelligence, Performance & Price Analysis — Artificial Analysis](https://artificialanalysis.ai/models/claude-opus-5-5) (2026-10-18 과업당 비용과 생성 토큰 확인)
+- [Route and orchestrate models with GitHub Copilot Fusion — GitHub Changelog](https://github.blog/changelog/2026-10-28-route-and-orchestrate-models-with-github-copilot-fusion/) (2026-11-01 GA, 실행 패턴, 지원 클라이언트, 과금과 성능 주장 확인)
+- [GitHub Docs, About GitHub Copilot Fusion](https://docs.github.com/en/copilot/concepts/models/copilot-fusion) (2026-11-01 Critique 동작, 요금제별 effort 단계, 모델 정책과 한계 확인)
+- [GitHub Copilot Fusion orchestrates Anthropic and OpenAI models to balance performance and cost — Artificial Analysis](https://artificialanalysis.ai/articles/github-copilot-fusion-orchestrates-anthropic-and-openai-models-to-balance-performance-and-cost) (2026-10-28 게시, 2026-11-01 Fusion max 설정의 Coding Agent Index 결과 확인)
 - [Claude Code Docs, Model configuration](https://code.claude.com/docs/en/model-config) (opusplan 확인)
 - [Claude Code Docs, How Claude Code uses prompt caching](https://code.claude.com/docs/en/prompt-caching) (모델별 캐시, opusplan 전환의 캐시 재생성)
 - [Claude Help Center, Models, usage, and limits in Claude Code](https://support.claude.com/en/articles/14552983-models-usage-and-limits-in-claude-code)

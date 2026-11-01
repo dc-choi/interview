@@ -12,7 +12,7 @@ GitHub Agentic Workflows(gh-aw)는 저장소 자동화를 자연어 Markdown으�
 
 설계의 중심은 판단과 쓰기의 분리다. 에이전트는 읽기 전용 권한으로 판단만 하고, 이슈, 코멘트, 라벨과 PR 같은 쓰기는 frontmatter에 선언한 종류와 개수 안에서 별도 job이 검증한 뒤 적용한다. 이 쓰기 경로를 safe outputs라고 부른다.
 
-GitHub Changelog 기준 2026-02-13에 technical preview, 2026-06-11에 public preview로 공개됐고, 2026-10-06에 확인한 gh-aw FAQ와 GitHub Docs도 public preview이며 바뀔 수 있다고 밝힌다. `gh extension install github/gh-aw`로 설치하는 MIT 라이선스 오픈소스이며, 저장소 README는 보안 고려와 사람의 세심한 감독이 필요하고 그래도 일이 잘못될 수 있으니 주의해서 쓰라고 경고한다. 아래 기본값과 설정 이름은 따로 표시하지 않으면 2026-10-06에 확인한 gh-aw 문서 기준이다.
+GitHub Changelog 기준 2026-02-13에 technical preview, 2026-06-11에 public preview로 공개됐고, 2026-10-28에 github.com의 GitHub Free, Team과 Enterprise에서 GA가 됐다. 기본 엔진인 Copilot CLI로 workflow를 돌리려면 Copilot 라이선스가 필요하다. GA 발표는 GHES와 GHE.com을 언급하지 않고, 2026-11-01 확인한 gh-aw FAQ는 제품 상태를 적지 않는다. 제품 상태는 changelog의 날짜로 판단하고 대상 플랜과 배포 형태를 함께 확인한다. 2026-11-01에는 GA 상태, 엔진 라이선스 조건과 `max-daily-ai-credits`의 문서 간 차이만 다시 대조했다. `gh extension install github/gh-aw`로 설치하는 MIT 라이선스 오픈소스이며, 2026-10-06 확인한 저장소 README는 보안 고려와 사람의 세심한 감독이 필요하고 그래도 일이 잘못될 수 있으니 주의해서 쓰라고 경고한다. 아래 기본값과 설정 이름은 따로 표시하지 않으면 2026-10-06에 확인한 gh-aw 문서 기준이다.
 
 ## 어떤 작업에 맞는가
 
@@ -109,7 +109,7 @@ AI Credits(AIC)는 1 AIC가 0.01 USD인 비용 단위이고, models.dev 가격 �
 - **Rule of Two로 본 구성**: 공개 저장소의 이슈 triage는 비신뢰 입력[A]과 상태 변경[C]을 함께 가진 구성이고, safe outputs는 [C]를 선언한 유형과 개수로 좁힌다. 비공개 코드나 데이터 접근[B]까지 더해지면 세 조건이 모두 열리므로 Environment 승인 gate 같은 사람 감독을 둔다.
 - **비결정성**: 같은 입력에도 판단이 달라질 수 있다. 결과는 사람이 검토하는 산출물로 끝내고, 매번 같아야 하는 판정은 일반 workflow나 테스트로 고정한다.
 - **경계를 여는 설정**: 직접 write 권한, custom job, `strict: false`, `roles: all`과 `threat-detection: false`는 각각 위 경계 하나를 열거나 없앤다. 쓰는 이유를 PR에 남기고 리뷰한다.
-- **preview의 변동성**: 설정 이름, 기본값과 문서가 아직 움직인다. 2026-10-06에도 `max-daily-ai-credits`의 기본 동작이 문서마다 달랐으므로, 도입 시점의 reference를 다시 확인하고 비용과 권한에 관한 값은 명시한다.
+- **문서 사이의 기본값 차이**: 2026-10-06에 확인한 `max-daily-ai-credits` 생략 시 동작의 차이(Cost Management는 기본 5000 상속, Frontmatter reference는 비활성)가 GA 뒤인 2026-11-01에도 남아 있다. 설정 이름과 기본값은 도입 시점의 reference로 다시 확인하고 비용과 권한에 관한 값은 명시한다.
 
 ## 운영과 면접 체크포인트
 
@@ -143,6 +143,7 @@ AI Credits(AIC)는 1 AIC가 0.01 USD인 비용 단위이고, models.dev 가격 �
 - [github/gh-aw — GitHub](https://github.com/github/gh-aw)
 - [GitHub Agentic Workflows are now in technical preview — GitHub Changelog](https://github.blog/changelog/2026-02-13-github-agentic-workflows-are-now-in-technical-preview/)
 - [GitHub Agentic Workflows is now in public preview — GitHub Changelog](https://github.blog/changelog/2026-06-11-github-agentic-workflows-is-now-in-public-preview/)
+- [GitHub Agentic Workflows generally available — GitHub Changelog](https://github.blog/changelog/2026-10-28-github-agentic-workflows-generally-available/) — 2026-11-01 GA 대상 플랜과 Copilot 라이선스 조건 확인
 
 ## 관련 문서
 

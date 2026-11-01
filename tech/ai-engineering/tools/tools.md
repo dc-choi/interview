@@ -18,6 +18,7 @@ aliases: ["AI 엔지니어링 실천 도구", "AI Engineering Tools"]
 - [x] [[A2A-CLI|A2A CLI]] — 카드 조회, 메시지와 작업 명령, 종료 코드와 작업 결과의 분리, `--exec` 테스트 서버, 코딩 에이전트 스킬
 - [x] [[Generative-Product-Image-Workflow|생성형 상품 이미지 워크플로우]] — 마스크와 상품 정합성, GPU 배치 실행과 비동기 추론
 - [x] [[Generative-Video-Editing|생성형 영상 편집과 결과 검증]] — 변경 범위, 원본 보존, 장면 연장과 생성 기능의 한계, 세로 숏폼 자동 리프레이밍의 검출과 평활화
+- [x] [[Talking-Head-Video-Auto-Editing|녹화 영상의 자동 컷 편집과 자막]] — 무음 탐지와 다시 말한 구간 판별, 단어 단위 전사, 한국어 자막 규칙, 렌더러와 소재 라이선스
 - [x] [[Agent-Client-Protocol|ACP]] — 에디터와 코딩 에이전트의 메시지, capability와 승인 경계
 - [x] [[LLM-Wiki-Knowledge-Compilation|LLM 위키와 지식 합성의 영속화]] — 원문, 위키와 규칙 분리, 자동 갱신의 검증과 보류
 - [x] [[Agent-Memory-Retain-Recall-Reflect|에이전트 기억의 저장, 검색과 추론]] — 사실과 믿음의 분리, 검색과 종합 비용
