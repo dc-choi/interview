@@ -1,8 +1,9 @@
 ---
-tags: [security, secrets, api-key, least-privilege, payment]
+tags: [security, secrets, api-key, least-privilege, payment, byok, llm]
 status: done
+verified_at: 2026-11-02
 category: "보안(Security)"
-aliases: ["API Key Exposure", "연동키 노출", "API 키 노출", "Integration Credential Exposure"]
+aliases: ["API Key Exposure", "연동키 노출", "API 키 노출", "Integration Credential Exposure", "BYOK 키 노출"]
 ---
 
 # API 연동 키 노출과 최소 권한 스코프
@@ -23,6 +24,7 @@ aliases: ["API Key Exposure", "연동키 노출", "API 키 노출", "Integration
 - 클라이언트 노출: 서버 전용 시크릿 키를 프런트엔드 번들, 모바일 앱, HTML에 넣으면 사용자가 곧 열람자가 된다. 결제 연동은 보통 클라이언트에 노출해도 되는 키(결제창 호출용)와 서버에만 두는 키(승인, 조회용)를 나눈다. 이 구분을 어기고 서버 키를 클라이언트에 두면 노출된다.
 - 버전 관리, 로그, URL: Git 히스토리 평문, 접근 로그의 쿼리스트링, 리퍼러 헤더로 새어 나간다. 저장과 주입 계층의 방어는 [[Secret-Management|시크릿 관리]]에서 다룬다.
 - 서드파티 경계: 연동을 맡긴 외부 플랫폼이나 가맹점 쪽에서 키가 새면, 키 발급자 시스템은 멀쩡해도 그 키가 가리키는 데이터가 열린다.
+- 사용자 키를 맡는 서비스(BYOK): 사용자가 공급자에게서 발급받은 키를 저장해 대신 쓰는 서비스가 뚫리면, 공격자는 그 키의 권한과 과금 노출을 그대로 얻고 비용은 키가 연결된 사용자 계정에 청구될 수 있다. 통제와 사고 후 조치는 아래 BYOK 절에서 다룬다.
 
 ## 최소 권한 스코프
 
@@ -40,9 +42,44 @@ aliases: ["API Key Exposure", "연동키 노출", "API 키 노출", "Integration
 
 노출이 확인되면 침입 흔적 유무와 무관하게 키를 즉시 폐기하고 회전하며, 접속 기록 전수를 분석해 영향 범위와 정보주체를 특정한다.
 
+## 사용자 키를 맡는 서비스(BYOK)의 통제와 사고 후 조치
+
+키를 맡은 서비스가 거는 예산과 rate limit은 그 서비스를 거친 호출에만 적용된다. 새어 나간 키로 공급자에 직접 호출하면 이 통제가 닿지 않으므로, 한도와 탐지는 키를 발급한 공급자 쪽에도 둔다(적용 제안).
+
+Anthropic의 API 키 관리 도움말(2026-11-02 확인)은 공급자 쪽 안전장치로 다음을 안내한다.
+
+- 개발, 테스트, 운영 환경마다 다른 키를 쓰면 키가 노출됐을 때 그 용도만 빠르게 끄고 피해를 줄일 수 있다.
+- custom rate limit 조직은 Billing 페이지의 지출 한도와 Rate limits 페이지의 워크스페이스 rate limit을 유출된 키나 잘못 동작하는 스크립트로 인한 예상 밖 사용량의 안전장치로 쓴다. standard rate limit 조직은 auto-reload 한도를 신중히 정하며, 이 한도도 유출된 키로 인한 과다 사용의 안전장치가 된다.
+- Claude Console의 Logs와 Usage 페이지를 정기적으로 확인한다.
+- 노출이 의심되면 키를 즉시 폐기한다. 공개 GitHub 저장소에서 Claude API 키가 감지되면 GitHub secret scanning 파트너 프로그램을 거쳐 Anthropic이 키를 자동으로 비활성화하고 사용자에게 메일로 알린다.
+
+키를 맡는 서비스와 맡기는 사용자에게 옮기면 다음과 같다(적용 제안).
+
+- 외부 서비스에 맡기는 키는 그 서비스 전용으로 발급해, 사고 때 그 키만 폐기하면 되게 한다.
+- 지출 한도를 걸 때는 그 한도가 알림만 보내는지 호출을 막는지 공급자 문서에서 확인한다. 한도 초과가 호출 오류로 오는 방식은 [[LLM-Failure-Handling-Classification|LLM 실패 분류]]에서 다룬다.
+- 키별 사용량과 비용에 기준선을 두고 급증, 평소 쓰지 않던 고가 모델 호출, 낯선 시간대 사용을 알린다(운영 제안).
+- 위의 자동 비활성화는 공개 GitHub 저장소에 올라간 키를 대상으로 한다. 서비스의 키 보관 DB(저장 계층)에서 유출된 키는 이 경로 밖이다. 공급자가 노출된 것으로 본 키를 차단하기도 하지만(아래 사례, 보도 기준) 대상과 시점은 공급자가 정하므로, 공지를 받으면 사용자가 직접 폐기한다. 키를 맡은 서비스는 유출 범위의 키 목록을 공급자에 알려 차단을 요청한다.
+- 공급자가 범위를 줄인 키, 위임이나 단기 자격증명을 지원하면 원본 장수 키 대신 그것을 맡긴다. 임시 자격증명은 [[Hardcoded-Credentials|하드코딩된 자격증명]]에서 다룬다.
+- 레거시 시스템을 폐기할 때는 저장된 키 사본부터 지우고, 폐기가 끝날 때까지 운영 시스템 수준의 접근 통제와 감시를 유지한다(운영 제안).
+
+사고 공지를 받은 사용자는 다음 순서로 조치한다(적용 제안).
+
+1. 키를 발급한 공급자 콘솔에서 해당 키를 폐기하고 새로 발급한다. 맡긴 서비스에서 키를 지우거나 바꾼 것으로 공급자가 발급한 이전 키가 무효화됐다고 가정하지 않는다.
+2. 같은 키를 쓰던 다른 연동도 새 키로 옮긴다.
+3. 노출 추정 시점부터 공급자의 사용량, 로그와 청구 내역을 확인하고, 본인이 만들지 않은 사용은 공급자에 문의한다.
+4. 서비스가 조치 완료를 알리기 전에는 새 키를 다시 맡기지 않고, 다시 맡길 때는 그 서비스 전용 키로 발급한다.
+
 ## 사례 — 결제 연동키 노출로 결제내역 조회
 
 한 결제대행사(토스페이먼츠)에서 특정 가맹점이 쓰던 결제연동 플랫폼의 연동키가 노출돼, 제3자가 그 키로 해당 가맹점의 결제내역 4131건(정보주체 2671명, 구매자 성명과 마스킹된 카드번호, 승인번호 등 영수증 수준 항목)을 조회했다. 결제대행사 시스템 자체에 대한 침입은 확인되지 않았고, 노출된 정보로 추가 결제나 취소는 불가능했다. 핵심은 자격증명 노출과 그 키로 조회까지 가능했던 권한 범위이며, 침입이 없었다는 점이 조회 유출을 막지는 못했다.
+
+## 사례 — 코딩 에이전트 서비스에 저장된 AI 공급자 키 노출
+
+코딩 에이전트 OpenCode는 2026-10-17 18:08 UTC(한국 시각 10-18 03:08) 공식 X 계정에서, 시간대를 밝히지 않은 전날 밤(last night)에 보안 침해가 있었고 OpenCode Console 사용자의 1.4%가 영향을 받았으며, 영향받은 사용자는 외부 공급자를 연결한 사용자 중 일부라고 공지했다. 해당 사용자에게는 메일로 알렸고 메일을 받지 않았다면 영향이 없다고 했으며, Anthropic, OpenAI, Google과 함께 대응 중이라고 밝혔다. 2026-11-02 문서 기준 Console은 OpenCode 팀이 검증한 모델을 크레딧과 API 키로 쓰게 하는 서비스로, 팀 워크스페이스의 소유자와 관리자는 예산을 정하고 자체 공급자를 연결할 수 있다. 이는 현재 문서가 설명하는 구성이며 침해된 시스템의 구조를 뜻하지 않는다. OpenCode는 이 침해를 대규모 증류 공격과 관련된 것으로 설명했다. 증류는 한 모델의 출력으로 다른 모델을 학습시키는 방법이다([[Task-Specific-Small-Models|작은 특화 모델]]). 공지는 사고가 진행 중이라 세부 내용을 공유할 수 없다고 했고, 2026-11-02까지 확인한 OpenCode의 공개 공지에는 침입 경로, 키 저장 방식, 증류 공격과 키 노출의 관계에 대한 설명이 없다. 아래 보도된 안내 메일도 침입 경로와 증류 공격과의 관계는 밝히지 않았다.
+
+보도 기준으로는 사용자에게 간 안내 메일이 폐기 절차 중인 레거시 시스템에 대한 무단 접근과 워크스페이스에 저장된 외부 공급자 키(OpenAI, Anthropic 등)의 노출 가능성을 알렸다(Infosecurity Magazine). 같은 메일은 가장 이른 노출 가능 시점을 2026-10-17 00:30 UTC로 적었다(BleepingComputer). 공동창업자는 문제가 OpenCode 자체가 아니라 OpenCode Console이라고 했고(Infosecurity Magazine, TechCrunch), TechCrunch는 노출된 키가 일부 사용자가 워크스페이스에 둔 Console 키로 한정됐다고 보도했다. 공급자 세 곳의 지출 알림이 한꺼번에 울렸다는 개발자의 글과 수백 달러, 일부는 1,000달러를 넘는 청구 사례가 나왔고, Anthropic과 Google은 노출된 것으로 본 키를 차단했으며, OpenAI는 OpenCode와 협력해 접근을 복구하고 공격에 쓰인 크레딧을 API 고객에게 환불했다고 밝혔다(TechCrunch). 침해 지점이 키 발급자가 아니라 키를 맡은 서비스였고, 보도된 청구와 키 차단으로 보면 앞의 결제 연동키 사례처럼 서드파티 경계에서 키가 샌 것으로 보이는 경우다(보도에 근거한 이 문서의 해석).
+
+2026-11-02에는 Anthropic 도움말, OpenCode 문서와 OpenCode의 X 공지(미러로 본문 확인)를 대조했고, 결제 연동키 사례와 보도 내용은 다시 대조하지 않았다.
 
 ## 면접 체크포인트
 
@@ -50,11 +87,21 @@ aliases: ["API Key Exposure", "연동키 노출", "API 키 노출", "Integration
 - 결제 연동에서 클라이언트에 노출해도 되는 키와 서버 전용 키를 왜 나누는가.
 - 노출 확률을 0으로 못 만들 때 권한 최소화가 피해를 왜 줄이는가.
 - 탈취 키로 위장한 정상 요청을 어떻게 탐지하는가 (행위 기반 이상 탐지, 키별 rate limit, 감사 로그).
+- 사용자 키를 맡은 서비스(BYOK)가 뚫리면 비용이 누구에게 청구되며, 그 서비스의 예산과 rate limit이 왜 피해를 막지 못하는가.
+- 외부 서비스에서 키 노출 공지를 받았을 때 어디서 키를 폐기하고 무엇을 확인하는가 (공급자 콘솔에서 폐기와 재발급, 연동 전환, 사용량과 청구 확인).
+- 공개 GitHub 저장소에 올라간 키와 서비스의 키 보관 DB에서 유출된 키에서 secret scanning 기반 자동 폐기가 닿는 범위는 어떻게 다른가.
 
 ## 출처
 
 - [Google Cloud, Best practices for managing API keys](https://docs.cloud.google.com/docs/authentication/api-keys-best-practices) — 2026-10-13 비용 피해, 사용 제한, 모니터링과 정기 교체 절차 대조
 - [토스페이먼츠, 가맹점 결제내역 4131건 조회돼…“시스템 침입은 없어” — 바이라인네트워크](https://byline.network/2026/09/0909-6/)
+- [Anthropic, API key best practices: keep your keys safe and secure](https://support.claude.com/en/articles/9767949-api-key-best-practices-keeping-your-keys-safe-and-secure) — 2026-11-02 즉시 폐기, 환경별 키 분리, 지출 한도와 auto-reload 한도, Logs와 Usage 확인, GitHub secret scanning 자동 비활성화 대조
+- [OpenCode, Models](https://opencode.ai/docs/zen/) — 2026-11-02 Console 정의, 팀 워크스페이스의 예산과 자체 공급자 연결 대조
+- [OpenCode Console 보안 침해 공지 — X, OpenCode](https://x.com/opencode/status/2111519637049319818) — 2026-10-17 게시, 2026-11-02 fxtwitter 미러로 본문 대조
+- [Hackers hit AI coding tool OpenCode, running up charges on users' AI accounts — TechCrunch](https://techcrunch.com/2026/10/19/hackers-hit-ai-coding-tool-opencode-running-up-charges-on-users-ai-accounts/) — 보도 기준: 사용자 청구 사례, 공급자의 키 차단과 크레딧 환불, 공동창업자의 영향 범위 설명
+- [OpenCode Breach Could Affect OpenAI, Anthropic and Google — Infosecurity Magazine](https://www.infosecurity-magazine.com/news/opencode-breach-openai-anthropic/) — 보도 기준: 사용자 안내 메일의 레거시 시스템과 저장 키 문구, 공동창업자의 영향 범위 설명
+- [OpenCode hack exposes API keys amid AI distillation attacks — BleepingComputer](https://www.bleepingcomputer.com/news/security/opencode-hack-exposes-api-keys-amid-ai-distillation-attacks/) — 보도 기준: 사용자 메일이 적은 가장 이른 노출 가능 시점
+- [AI뉴스 - 딥시크 미쳤다, Gemini 4, Muse Wonder, Spark Open, 오픈AI 스파이, GPT-Live-1.1, Fish Audio Drama 3, 테슬라 등 — YouTube, 조코딩 JoCoding](https://www.youtube.com/watch?v=ZATGYwehDm0) — 계기 자료. OpenCode 증류 공격 소식만 사용했고, 사실은 이 목록의 공식 자료로 대조했으며 보도에만 있는 내용은 본문에 보도 기준으로 표시
 
 ## 관련 문서
 
@@ -64,3 +111,7 @@ aliases: ["API Key Exposure", "연동키 노출", "API 키 노출", "Integration
 - [[IDOR|IDOR와 자원 단위 인가]] — 자격증명 이후의 객체 단위 인가
 - [[Rate-Limiting|Rate limit]] — 키별 호출 제한과 이상 조회 탐지
 - [[Audit-Log|감사 로그]] — 접속 기록 분석과 영향 범위 특정
+- [[SaaS-Application-Trust-Compromise|SaaS 앱 신뢰와 자격증명 침해]] — 외부 앱에 맡긴 자격증명이 탈취됐을 때의 조사와 차단
+- [[LLM-Application-Security|LLM 애플리케이션 보안]] — 무제한 소비(지갑 거부 공격)와 모델 추출
+- [[LLM-Gateway|LLM 게이트웨이]] — 공급자 자격증명 보관과 가상 키별 예산
+- [[LLM-Failure-Handling-Classification|LLM 실패 분류]] — 지출 한도 초과와 rate limit 오류의 구분
