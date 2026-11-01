@@ -17,11 +17,13 @@ Session은 호출 사용자와 Agent 사이의 대화다. 아래 endpoint는 모
 
 `GET /agents/{agentRid}/sessions`는 호출 사용자와 해당 Agent 사이에서 **같은 client가 만든 세션만** 최신 업데이트순으로 나열한다. 다른 client나 Chatbot Studio가 만든 대화는 나오지 않는다. `GET /agents/allSessions`도 같은 client/사용자와 접근 가능한 Agent 범위다. 모든 사용자의 대화를 보는 관리 API가 아니다.
 
-일반 list는 pageToken/pageSize와 nextPageToken으로 이어서 읽는다. allSessions의 pageSize는 기본/최대 100이다. allSessions에 필요한 aip-agents-write를 GET이라는 이유로 read로 바꾸지 않는다.
+일반 list는 pageToken/pageSize와 nextPageToken으로 이어서 읽는다. allSessions의 pageSize는 기본/최대 100이다. 2026-11-02 확인한 일반 List Sessions 문서에는 pageSize의 기본값과 최대값이 없으므로 이 100을 일반 list에 옮겨 쓰지 않는다. 일반 list 응답의 data와 nextPageToken도 optional이라 필드가 없으면 빈 목록과 마지막 페이지로 처리한다(적용 제안). allSessions에 필요한 aip-agents-write를 GET이라는 이유로 read로 바꾸지 않는다.
 
 allSessions 응답 AgentsSessionsPage의 Session마다 agentRid와 agentVersion이 있어 여러 Agent의 세션을 한 목록에서 Agent와 버전별로 나눌 수 있다. nextPageToken은 optional 필드이며 더 가져올 결과가 없으면 비어 있다. 필드가 없을 때도 마지막 페이지로 처리한다.
 
 명세는 PERMISSION_DENIED 오류로 GetAllSessionsAgentsPermissionDenied(write scope 요구를 설명)와 ListSessionsForAgentsPermissionDenied 두 가지를 정의하고, 2026-11-01 확인한 문서는 둘 다 HTTP 403으로 표시한다. 403은 오류 이름으로 구분하고, 모든 Foundry API에 공통인 ApiUsageDenied 처리는 [[Palantir-API-Client-Contract]]를 따른다. 같은 날 확인 기준 이 endpoint 문서의 제목은 List Sessions For Chatbot Studio Agents로 바뀌었지만 경로, scope, 응답 type 이름 AgentsSessionsPage와 오류 이름은 그대로다.
+
+2026-11-02 확인한 Get Session과 List Sessions 문서는 오류 코드가 NOT_FOUND(404)인 오류만 정의한다. Get Session은 SessionNotFound와 AgentNotFound를, List Sessions는 AgentNotFound 하나를 둔다. 두 문서에는 allSessions와 달리 PERMISSION_DENIED 오류 정의가 없다. SessionNotFound와 AgentNotFound는 코드가 같으므로 오류 이름으로 구분하고, 이름 있는 NotFound는 대상 부재뿐 아니라 token의 접근 불가일 수도 있어 접근 범위도 함께 확인한다. endpoint 문서에 없는 권한 오류(공통 Errors의 ApiUsageDenied 등)와 그 밖의 공통 오류는 [[Palantir-API-Client-Contract]]를 따른다.
 
 ## Blocking과 Streaming 모두 세션별로 직렬화한다
 

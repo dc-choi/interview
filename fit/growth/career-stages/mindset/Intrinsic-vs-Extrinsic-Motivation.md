@@ -30,6 +30,14 @@ SDT는 동기의 유무뿐 아니라 자율적인지 통제적인지도 구분�
 
 흥미가 있는 일도 과도한 부담과 지원 부족에서 소진될 수 있다. 번아웃의 원인을 의미 상실 하나로 설명하지 않고, 업무 요구와 회복, 통제권을 함께 확인한다([[Burnout-Sustainable-Pace|번아웃과 지속 가능한 페이스]]).
 
+## 좋아하는 일은 찾기만 하는 대상이 아니다
+
+Hidi와 Renninger의 흥미 발달 4단계 모형(2006)은 학습자의 흥미가 발달하고 깊어지는 과정을 촉발된 상황적 흥미, 유지된 상황적 흥미, 생겨나는(덜 발달한, emerging) 개인적 흥미, 잘 발달한 개인적 흥미의 네 단계로 설명하고 감정과 인지 요인을 함께 고려한다. 학습 맥락의 이 모형을 일과 진로의 흥미로 넓혀 읽으면, 지금 좋아하는 일이 뚜렷하지 않다는 사실만으로 앞으로도 흥미가 생기지 않는다고 단정할 수 없다(해석).
+
+O'Keefe, Dweck과 Walton(2018)은 사람들이 흥미를 비교적 고정된 것으로 믿는지(고정 이론), 발달하는 것으로 믿는지(성장 이론), 즉 흥미의 암묵적 이론이 미치는 영향을 다섯 연구로 살폈다. 흥미가 실제로 고정돼 있는지를 판정한 연구는 아니다. 초록 기준으로 고정 이론은 측정했을 때와 실험으로 유도했을 때 모두 기존 관심 밖 영역의 흥미를 더 떨어뜨리는 쪽과 관련됐고(연구 1~3), 열정을 찾으면 동기가 끝없이 생길 것으로 기대하며 생길 수 있는 어려움을 예상하지 않는 경향과 더 관련됐다(연구 4). 새 관심사가 어려워지자 고정 이론을 유도한 조건의 흥미가 성장 이론 조건보다 유의하게 더 떨어졌다(연구 5). 저자들은 열정을 찾으라는 권유가 모든 달걀을 한 바구니에 담게 했다가 들고 가기 어려워지면 그 바구니를 내려놓게 할 수 있다고 맺는다. 본문을 열지 못해 표본과 효과 크기는 확인하지 못했으므로 연구가 보고한 경향으로만 읽고, 한 사람의 진로 성과를 예측하는 법칙으로 쓰지 않는다.
+
+적용 제안으로, 좋아하는 일을 생각만으로 정하기 어려우면 이미 반복한 행동도 기록에서 찾아본다. 돈이 되지 않아도 다시 만들어 본 것, 남의 결과물을 뜯어보게 되는 분야, 다른 사람이 지나치는 작은 차이가 눈에 들어오는 영역, 대가 없이도 돕게 되는 부탁을 묻는 질문으로 후보를 모을 수 있다. 이 질문 목록은 검증된 진단 도구가 아니고 4단계 모형의 판정 기준도 아니므로 그 답으로 적성이나 진로를 확정하지 않는다. 기존 행동에서 나온 후보로만 범위를 좁히지 않고 관심 밖 영역도 작은 과제로 시도해 보며, 어려워지는 지점에서 흥미가 어떻게 달라지는지 기록한다.
+
 ## 압박으로 이어 가는 학습과 동기 유형별 결과
 
 시험, 면접과 자격 대비처럼 하지 않으면 탈락하거나 뒤처진다는 압박으로 이어 가는 학습은 외적 조절이나 내사된 조절에 머물기 쉽다. SDT 메타분석은 같은 외재적 동기라도 유형에 따라 결과와의 관련이 다르다고 보고한다.
@@ -97,6 +105,8 @@ AI를 쓸지 직접 만들지도 활동의 목적에 따라 선택한다. 빨리
 - [Intrinsic and Extrinsic Motivations: Classic Definitions and New Directions — Ryan and Deci, 2000](https://www.selfdeterminationtheory.org/SDT/documents/2000_RyanDeci_IntExtDefs.pdf)
 - [Student Motivation and Associated Outcomes: A Meta-Analysis From Self-Determination Theory — Howard et al., 2021](https://doi.org/10.1177/1745691620966789)
 - [Beyond Intrinsic and Extrinsic Motivation: A Meta-Analysis on Self-Determination Theory's Multidimensional Conceptualization of Work Motivation — Van den Broeck et al., 2021](https://doi.org/10.1177/20413866211006173)
+- [The Four-Phase Model of Interest Development — Hidi and Renninger, 2006](https://works.swarthmore.edu/fac-education/12) — Educational Psychologist 41(2), DOI 10.1207/s15326985ep4102_4. 2026-11-02 Swarthmore College 저장소 기록의 초록으로 네 단계의 이름과 감정, 인지 요인의 고려를 확인했다. 본문은 열지 못해 단계별 정의와 지원 조건은 쓰지 않았다.
+- [Implicit Theories of Interest: Finding Your Passion or Developing It? — O'Keefe, Dweck and Walton, 2018](https://www.psychologicalscience.org/journals/psychological-science/0956797618780643/) — Psychological Science 29(10), DOI 10.1177/0956797618780643. 2026-11-02 APS 논문 페이지의 초록으로 두 이론의 정의, 연구 1~5의 결과 방향과 맺음 문장을 확인했다. 본문을 열지 못해 표본과 효과 크기는 확인하지 못했다.
 - [면접 가기 10일 전에 보면 좋은 영상 — YouTube, 코딩맨](https://www.youtube.com/watch?v=9NpJSoSSsbU) — 2026-02-06, RAMP는 영상에서 소개한 성찰 틀로 한정, 인과 법칙으로 검증하지 않음
 - [Software Engineer: I'm Tired of Pretending — YouTube, Anime Engineering Senpai](https://www.youtube.com/watch?v=H0HwFqBG9KE) — 2026-09-11, 압박으로 하는 학습의 피로와 좋아하는 매체로 배우는 대처는 화자의 경험담으로만 사용
 - 성장의 방향성과 내재적 동기 — 개인 블로그 에세이
