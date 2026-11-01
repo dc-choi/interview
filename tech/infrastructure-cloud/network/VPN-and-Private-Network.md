@@ -27,6 +27,23 @@ VPN(Virtual Private Network)은 공유된 기반 네트워크 위에 논리적�
 | 원격 접속 VPN | 사용자 단말과 조직의 VPN 게이트웨이 | 사용자/단말 인증, 허용 자원, 접속 종료와 계정 회수 |
 | 사이트 간 VPN | 본사와 지사 또는 클라우드의 게이트웨이 | 대역 중복, 양방향 경로, 피어 인증과 이중화 |
 
+## 저궤도 위성 회선의 사설 연결
+
+부분 검증(2026-11-01): 아래 Amazon Leo 내용은 Amazon의 공식 발표 3건과 대조했다. 다른 절은 다시 검증하지 않아 기존 `verified_at`을 유지한다.
+
+광회선이 없거나 회선 이중화가 필요한 거점에서는 저궤도(LEO) 위성 인터넷이 접속 회선의 후보가 된다. 이때 인터넷 접속 속도와 함께 회사 네트워크나 클라우드로 들어가는 경로를 따로 본다. 2026-11-01 확인한 Amazon 발표 기준 Amazon Leo(2025-11-13 Project Kuiper에서 이름을 바꿈)는 다음과 같다.
+
+- **단말:** Leo Nano(7x7인치, 다운로드 최대 100 Mbps), Leo Pro(11x11인치, 다운로드 최대 400 Mbps)와 기업용 Leo Ultra(다운로드 최대 1 Gbps, 업로드 최대 400 Mbps)를 둔다.
+- **사설 연결:** 원격 자산의 데이터를 공용 인터넷을 거치지 않고 사설 네트워크로 옮기는 두 가지 주요 방식을 제공하겠다고 밝혔다. Direct to AWS(D2A)는 Amazon Leo 웹 콘솔에서 AWS Transit Gateway나 AWS Direct Connect Gateway를 통해 클라우드 워크로드에 직접 연결하는 방식이다. Private Network Interconnect(PNI)는 주요 코로케이션 시설에서 원격지를 고객의 데이터센터나 코어 네트워크에 연결하는 방식이다.
+- **제공 상태:** 게시일이 없는 소개 페이지는 2025년 11월 일부 기업 고객이 상용 장비와 소프트웨어로 망을 시험하는 enterprise preview를 시작했고, 2026년에 서비스를 더 넓게 내놓겠다고 밝힌다. 2026-10-28 갱신된 발사 현황은 지금까지 14번의 임무로 400기 가까이 발사했다고 적는다. 2026-11-01 기준 일반 서비스의 국가별 개시 여부, 사설 연결 기능의 정식 출시 여부와 제공 지역, 단말 종류별 사설 연결 지원 범위는 확인하지 못했다.
+
+검토할 때는 다음을 나눠 본다. 이 목록은 VPN과 전용 회선 검토에서 도출한 질문이며 Amazon Leo의 서비스 수준이나 지원 범위를 확인한 결과가 아니다.
+
+- **경로와 보호:** 공용 인터넷을 거치지 않는다는 설명은 경로의 분리다. 구간별 암호화와 접근 정책은 이 문서의 [[#암호화 터널의 동작|VPN 원칙]]대로 따로 확인한다.
+- **클라우드 접점:** AWS 쪽 접점이 Transit Gateway인지 Direct Connect Gateway인지에 따라 라우팅 테이블, 대역 중복과 연결할 VPC 범위를 정한다([[Transit-Gateway]], [[VPC-Connectivity#온프레미스 연결 — VPN vs Direct Connect|VGW와 TGW의 연결 범위]]).
+- **제공 상태와 계약:** 정식 출시 여부를 확인하지 못한 기능은 제공 지역, 서비스 수준과 장애 대응 범위를 계약 전에 확인한다.
+- **이중화 역할:** 기존 광회선의 백업으로 쓸지 주 회선으로 쓸지에 따라 전환 조건과 시험 방법을 정한다.
+
 ## 암호화 터널의 동작
 
 IPsec 터널 모드를 예로 들면 다음과 같다.
@@ -144,6 +161,10 @@ AWS Client VPN 절은 2026-10-13 아래 AWS 공식 문서와 대조했다. 다�
 - [AWS Client VPN, Split-tunnel on AWS Client VPN endpoints](https://docs.aws.amazon.com/vpn/latest/clientvpn-admin/split-tunnel-vpn.html)
 - [AWS Site-to-Site VPN, AWS Site-to-Site VPN tunnel initiation options](https://docs.aws.amazon.com/vpn/latest/s2svpn/initiate-vpn-tunnels.html) — 2026-10-14 IKE 시작 주체, IKEv2와 NAT 조건 대조
 - [AWS Site-to-Site VPN, Configure tunnel options for AWS Site-to-Site VPN](https://docs.aws.amazon.com/vpn/latest/s2svpn/tunnel-configure.html) — 2026-10-14 Startup action과 DPD timeout action 대조
+- [Amazon Leo introduces Ultra antenna with 1 Gbps speeds, begins enterprise preview — About Amazon](https://www.aboutamazon.com/news/amazon-leo/amazon-leo-satellite-internet-ultra-pro) — 2026-11-01 Ultra 속도, D2A와 PNI 대조
+- [Everything you need to know about Amazon Leo, Amazon's satellite broadband network — About Amazon](https://www.aboutamazon.com/news/innovation-at-amazon/what-is-amazon-project-kuiper) — 2026-11-01 단말 구성, enterprise preview와 이름 변경 대조
+- [Amazon Leo mission updates: Launch dates set for next missions on Vulcan and Ariane 6 — About Amazon](https://www.aboutamazon.com/news/innovation-at-amazon/project-kuiper-satellite-rocket-launch-progress-updates) — 2026-10-28 갱신본, 2026-11-01 발사 수 대조
+- [Connectivity from Space: The Next Generation of Global Internet — YouTube, Amazon Web Services](https://www.youtube.com/watch?v=-HrPqA3nl7U) — 2025년 12월 녹화, 2026-04-14 업로드, 위성 회선 절의 계기. 본문의 사실 관계는 위 Amazon 발표와 대조했다.
 
 ## 관련 문서
 
@@ -153,5 +174,8 @@ AWS Client VPN 절은 2026-10-13 아래 AWS 공식 문서와 대조했다. 다�
 - [[Routing-Table-and-Interface-Selection|목적지별 경로 선택]]
 - [[DNS|이름 해석과 DNS 보안]]
 - [[Network-Separation|망분리와 망연계 (물리적, 논리적 분리)]]
+- [[Transit-Gateway|Transit Gateway]]
+- [[VPC-Connectivity|VPC 간 연결과 온프레미스 연결]]
+- [[Satellite-Direct-to-Device|위성 직접 연결]] — 휴대 단말이 위성과 직접 통신하는 방식
 - [[Codex-CLI|Codex CLI]]
 - [[인프라네트워크(InfraNetwork)|인프라 네트워크 인덱스]]
