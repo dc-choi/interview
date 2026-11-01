@@ -1,7 +1,7 @@
 ---
 tags: [palantir, foundry, api, aip, chatbot, streaming]
 status: done
-verified_at: 2026-11-01
+verified_at: 2026-11-02
 category: "AI엔지니어링(AIEngineering)"
 ---
 
@@ -46,6 +46,8 @@ blocking 결과는 agentMarkdownResponse, interruptedOutput, sessionTraceId와 o
 `GET /sessions/{sessionRid}/content`는 첫 exchange부터 시간순으로 대화 내용을 반환한다. userInput, optional context와 result를 보존한다. context에는 client 제공분과 자동 retrieval이 함께 들어갈 수 있다. 대화 전체가 별도 paging으로 분할된다는 계약은 이 endpoint에 없다.
 
 `PUT /sessions/{sessionRid}/updateTitle`의 title은 필수이고 200자를 넘으면 잘린다. `DELETE /sessions/{sessionRid}` 이후 세션은 접근할 수 없고 목록에도 나타나지 않는다. 단순히 UI 목록을 숨기는 기능으로 해석하지 않는다.
+
+2026-11-02 확인한 Delete Session 문서에는 request body와 response 절이 없고 성공 시 상태 코드도 적혀 있지 않다. 이 endpoint 문서가 정의한 오류는 DeleteSessionPermissionDenied(PERMISSION_DENIED, 403), SessionNotFound(NOT_FOUND, 404), AgentNotFound(NOT_FOUND, 404) 세 가지이며, 공통 오류와 본문 없는 404는 [[Palantir-API-Client-Contract]]를 따른다. SessionNotFound와 AgentNotFound는 오류 코드가 같으므로 세션과 Agent 중 무엇을 찾지 못했는지는 오류 이름으로 구분한다. 문서의 설명은 호출 사용자와 Agent 사이의 세션 삭제뿐이며, 다른 사용자나 다른 client가 만든 세션을 지울 수 있는지와 이미 삭제한 세션을 다시 지울 때의 응답은 적혀 있지 않다. 그래서 재시도에서 받은 SessionNotFound를 삭제 성공으로 볼지는 client가 정한다. 목록은 같은 client가 만든 세션만 보여 주고 aip-agents-read scope가 필요하므로, 목록 재조회는 그 client가 만든 세션이 남았는지 확인할 때만 쓴다. 목록에 없거나 SessionNotFound를 받았다는 사실만으로 삭제와 접근 불가를 구분하지 않는다(적용 제안).
 
 ## 재시도와 실패 조건
 
