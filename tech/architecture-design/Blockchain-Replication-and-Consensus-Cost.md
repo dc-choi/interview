@@ -1,14 +1,82 @@
 ---
-tags: [architecture, blockchain, ethereum, replication, consensus]
+tags: [architecture, blockchain, bitcoin, ethereum, replication, consensus, byzantine-fault-tolerance]
 status: done
-verified_at: 2026-10-26
+verified_at: 2026-11-01
 category: "아키텍처&설계(Architecture&Design)"
-aliases: ["블록체인 복제와 합의 비용", "Blockchain Replication and Consensus Cost"]
+aliases: ["블록체인 복제와 합의 비용", "Blockchain Replication and Consensus Cost", "이중지불", "Double Spending", "비잔틴 장군 문제", "Byzantine Generals Problem"]
 ---
 
 # 블록체인의 복제와 합의 비용
 
-블록체인을 검토할 때는 노드 수보다 무엇을 나누고 무엇을 반복 검증하는지 먼저 본다. 아래의 구체적인 실행, 저장과 확정성 설명은 Ethereum의 공식 문서를 기준으로 한다. 다른 체인의 처리량이나 합의 조건까지 같은 것으로 일반화하지 않는다.
+블록체인을 검토할 때는 노드 수보다 무엇을 나누고 무엇을 반복 검증하는지 먼저 본다. 합의가 필요한 이유, 비잔틴 장애에서 합의가 가능한 조건, 작업 증명의 다수결 표현, 갈래 처리와 확률적 확정은 Bitcoin 백서와 Lamport 등의 논문을, MEV, 작업 증명과 지분 증명을 Sybil 저항 수단으로 보는 관점, 구체적인 실행, 저장과 Ethereum PoS 확정성은 Ethereum의 공식 문서를 기준으로 한다. 다른 체인의 처리량이나 합의 조건까지 같은 것으로 일반화하지 않는다.
+
+## 합의가 푸는 문제: 이중지불과 거래 순서
+
+디지털 데이터를 보내는 일은 보통 사본을 만드는 일이라 보낸 쪽에 원본이 남는다. 돈을 데이터로 옮기려면 보낸 쪽 잔액이 확실히 줄어야 하며, 같은 돈을 두 번 쓰는 문제를 이중지불(double spending)이라 한다. 전자 서명으로 이어진 소유권의 연쇄는 받는 쪽이 검증할 수 있지만, 이전 소유자 가운데 누군가 같은 코인을 다른 곳에 먼저 쓰지 않았는지는 서명만으로 확인할 수 없다.
+
+### 중앙 장부가 대신하던 일
+
+| 역할 | 중앙 장부 | 신뢰하는 단일 운영자 없이 여러 노드가 장부 사본을 각자 가질 때 |
+|---|---|---|
+| 기준 장부 | 운영자 한 곳의 기록이 기준이다 | 어느 이력을 따를지 노드들이 정해야 한다 |
+| 순서 | 운영자가 경쟁하는 요청의 선후를 정한다 | 전파 지연 때문에 노드마다 받은 순서가 다를 수 있다 |
+| 확정 | 운영자가 완료로 처리한 거래가 기준이며 분쟁 조정으로 되돌릴 수도 있다 | Ethereum PoS에서는 확정된 체크포인트를 기준으로 한다. Bitcoin 백서의 가장 긴 체인 규칙에서는 받는 쪽이 정한 블록 수만큼 기다려 되돌려질 확률을 허용 범위로 낮춘 뒤 확정으로 취급한다(확률적) |
+
+한 운영자가 정한 leader의 기록을 follower가 그대로 적용하는 일반 DB 복제는 사본이 여러 개여도 중앙 장부 쪽이다([[Replication|복제]]). 블록 생산자도 순서를 정하지만, 생산자가 바뀌고 다른 노드가 블록을 다시 실행해 거부할 수 있다는 점이 다르다.
+
+단일 DB에서는 잔액 확인과 차감을 한 트랜잭션으로 묶고 행 잠금이나 조건부 갱신을 쓰면 잔액을 넘는 차감을 막을 수 있다. 판단 기준인 잔액의 원본이 한 곳에 있고, 같은 잔액 행을 두고 경쟁하는 갱신을 그 DB가 하나씩 처리하기 때문이다([[Race-Condition-Patterns-DB-Distributed|DB 락과 분산 락의 경쟁 조건]]). 같은 결제 요청이 재시도로 두 번 처리되는 중복은 별개의 문제이며 [[Idempotency-Key|멱등성 키]]로 다룬다.
+
+Bitcoin 백서는 모든 거래의 이중지불을 검사하는 신뢰받는 중앙 기관(mint)을 두면 화폐 시스템 전체의 운명이 그 기관을 운영하는 회사에 달린다는 점을 문제로 든다. 거래가 없었음을 확인하는 유일한 방법은 모든 거래를 아는 것이므로, 신뢰받는 제3자 없이 하려면 거래를 공개하고 참여자가 거래를 받은 순서의 단일 이력에 합의해야 한다.
+
+### 노드마다 받은 순서가 다르면 장부가 갈라진다
+
+잔액이 10인 Alice가 거의 동시에 Bob과 Carol에게 10씩 보내고, 각 노드가 순서 합의 없이 받은 순서대로 바로 장부에 반영한다고 하자. 계정 잔액 모델로 단순화한 예다. Bob 건을 먼저 받은 노드는 Bob 건을 승인하고 Carol 건을 잔액 부족으로 거절한다. Carol 건을 먼저 받은 노드는 반대로 처리한다. 두 노드 모두 잔액 검사를 올바르게 했지만 장부는 서로 다르다. 장부를 가르는 것은 검증 규칙이 아니라 입력 순서의 차이다.
+
+```js
+// 잔액 검사만 남긴 최소 예시다. 자기 송금, 0 이하 금액 같은 다른 검증은 생략했다.
+const apply = (state, { from, to, amount }) => {
+  if (state[from] < amount) return state; // 잔액이 부족하면 거절하고 상태를 그대로 둔다
+  return { ...state, [from]: state[from] - amount, [to]: state[to] + amount };
+};
+
+const replay = (txs) => txs.reduce(apply, { alice: 10, bob: 0, carol: 0 });
+
+const toBob = { from: 'alice', to: 'bob', amount: 10 };
+const toCarol = { from: 'alice', to: 'carol', amount: 10 };
+
+console.log(replay([toBob, toCarol])); // { alice: 0, bob: 10, carol: 0 }
+console.log(replay([toCarol, toBob])); // { alice: 0, bob: 0, carol: 10 }
+```
+
+상태 전이 규칙이 결정적이고 모든 노드가 같은 규칙을 구현하면, 같은 초기 상태에 같은 순서의 거래를 적용한 결과는 어느 노드에서나 같다. 그래서 합의의 핵심은 거래의 순서이고, 결과는 각 노드가 같은 순서를 다시 실행해 확인한다. Lamport의 1978년 논문은 이 구조를 상태 기계로 설명한다. 모든 프로세스가 논리 시계의 타임스탬프로 명령을 정렬하고 타임스탬프가 같으면 프로세스 사이에 임의로 정한 전체 순서(예: 프로세스 번호)로 동률을 깨므로, 각 프로세스가 같은 명령 순서를 실행한다. 같은 논문은 이 방식이 모든 프로세스의 적극적인 참여를 요구해, 프로세스 하나가 멈추면 다른 프로세스도 상태 기계 명령을 실행할 수 없어 시스템이 멈춘다고 지적한다. 장애를 자세히 다루는 것은 논문의 범위 밖으로 둔다. 외부 입력이 결정성을 깨는 경우는 [[#결정성과 외부 데이터|결정성과 외부 데이터]]에서 다룬다.
+
+### 송신자 시각으로 거래 순서를 정할 수 없는 이유
+
+거래에 보낸 사람의 시각을 찍으면 시계 오차와 의도적인 조작을 막을 수 없고, 모두가 믿는 시각 서버를 두면 다시 중앙 기관이 생긴다. Lamport의 1978년 논문은 모든 참여자가 규칙을 따르고 시계 오차가 메시지의 최소 전달 시간보다 작게 유지되는 조건에서 물리 시계의 순서가 인과 관계와 어긋나지 않게 하는 방법을 제시한다. 신뢰하지 않는 참여자로 이뤄진 네트워크에는 그 전제가 없다.
+
+Lamport의 happened-before 관계는 같은 프로세스 안의 순서와 메시지 송수신으로 이어진 사건 사이에만 선후를 정하는 부분 순서다. 어느 쪽도 다른 쪽에 인과적으로 영향을 줄 수 없는 두 사건은 동시(concurrent)이며 둘 사이의 선후는 정해지지 않는다. 서로 다른 노드의 두 송신 사건 사이에, 한 사건 뒤에 출발해 다른 사건 전에 닿는 메시지 경로(직접이든 다른 노드를 거치든)가 어느 방향으로도 없으면 둘은 동시다. 상대가 송신한 뒤 출발한 어떤 메시지도 받기 전에 두 사람이 각자 보낸 거래가 그런 예다.
+
+Alice 한 사람이 보낸 두 거래에는 Alice의 기기 안에서 선후가 있다. 그러나 노드는 공격자일 수도 있는 송신자가 주장하는 순서를 검증할 수 없고, 서로 다른 노드가 두 거래를 받은 사건 사이에는 메시지로 이어진 선후가 없을 수 있다. 그래서 네트워크는 합의 규칙으로 하나의 순서를 정한다. 백서가 말하는 분산 타임스탬프 서버도 벽시계 값이 아니라 작업 증명으로 이어진 해시 체인으로 순서를 증명한다([[Checksum-and-Hash#해시 체인과 블록체인|해시 체인과 블록체인]]). 서버 시각을 믿을 수 있는 범위는 [[System-Time-and-Clock-Sync#분산 시스템에서 시각을 믿는 범위|분산 시스템에서 시각을 믿는 범위]]에서 다룬다.
+
+### 비잔틴 장군 문제가 정한 조건
+
+Lamport, Shostak과 Pease의 1982년 논문은 고장 난 구성 요소가 시스템의 부분마다 서로 다른 정보를 주는 상황을 비잔틴 장군 문제로 정리했다. 구두 메시지는 내용을 보낸 쪽이 마음대로 정할 수 있는 메시지다. 구두 메시지만 쓰면 장군이 셋 이상일 때 3분의 2를 넘게 충성하면 풀 수 있고 그렇지 않으면 풀 수 없다. 배신자 m명을 견디려면 장군이 3m+1명 이상이어야 하므로, 구두 메시지에서는 장군 셋 가운데 배신자가 하나만 있어도 충성스러운 두 장군을 혼란에 빠뜨릴 수 있다. 위조할 수 없는 서명 메시지를 쓰면 장군과 배신자의 수와 관계없이 풀 수 있다.
+
+두 결과 모두 보낸 메시지가 정확히 전달되고, 받는 쪽이 보낸 사람을 알며, 메시지가 오지 않았음을 감지할 수 있다는 가정 위에 있다. 서명 결과는 충성스러운 장군의 서명을 위조할 수 없고 서명한 메시지의 내용을 바꾸면 드러나며, 누구나 서명을 검증할 수 있다는 가정을 더한다. 메시지가 오지 않았음을 시간 제한으로 감지하려면 메시지 생성과 전달 시간의 상한과 일정 오차 안에서 맞춘 시계가 필요하다. 논문은 앞의 가정은 받는 쪽이 얼마나 기다릴지 알아야 하므로 필요하고, 시계 동기화나 그에 상응하는 가정도 문제를 푸는 데 필요하다고 증명은 생략한 채 제시한다. 해법은 모든 장군이 서로 직접 메시지를 보낼 수 있다는 전제도 두며, 논문은 이 전제를 완화한 연결 조건을 따로 다룬다.
+
+따라서 3분의 2는 이 가정 아래에서 증명된 조건이다. 가정을 더하거나 바꾸면 기준도 달라진다. Bitcoin 백서는 정직한 노드가 협력하는 공격자 집단보다 많은 CPU 연산 능력을 가진다는 가정과 확률적인 보장을 쓴다. Ethereum PoS의 확정은 아래 [[#비용과 확인 경계|비용과 확인 경계]]의 스테이크 투표 기준을 따르며 장군 수 조건과는 성격이 다르다.
+
+### 순서를 정할 권리와 Sybil 저항
+
+순서를 정하는 쪽은 자신에게 유리한 순서를 고를 수 있다. Ethereum 문서는 블록을 생산하면서 거래를 넣거나 빼거나 순서를 바꿔 표준 블록 보상과 가스 수수료를 넘어 얻을 수 있는 최대 가치를 MEV(maximal extractable value)로 정의한다. 큰 매수 거래를 보고 그 직전에 사고, 그 거래로 오른 가격에 직후 파는 샌드위치 거래가 그 예다.
+
+순서를 정할 권리를 한 주체에 고정하면 그 주체가 다시 중앙 기관이 된다. 신원을 만드는 비용이 거의 없으면 돌아가며 맡기거나 투표로 정해도 가짜 신원을 많이 만든 쪽이 결정을 좌우할 수 있다(Sybil 공격). Bitcoin 백서는 IP 주소 하나에 한 표를 주면 많은 IP를 할당할 수 있는 사람이 다수결을 뒤집을 수 있다고 보고, 작업 증명을 연산 능력에 비례해 투표하는 방식(백서 표현으로 CPU 하나에 한 표)으로 설명한다. Ethereum 문서는 작업 증명과 지분 증명을 그 자체로는 합의 프로토콜이 아닌 Sybil 저항과 블록 작성자 선택 메커니즘으로 설명하며, 많은 에너지를 쓰거나 담보를 맡기게 하는 경제적 억지 수단으로 본다.
+
+### 갈래와 확률적 확정
+
+Bitcoin 백서에서 두 노드가 서로 다른 다음 블록을 동시에 전파하면 노드마다 먼저 받은 블록이 다를 수 있다. 노드는 먼저 받은 블록으로 작업하되 다른 갈래를 보관하고, 다음 작업 증명이 나와 한 갈래가 더 길어지면 그쪽으로 옮긴다. 백서의 가장 긴 체인은 작업 증명이 가장 많이 쌓인 체인이다.
+
+그래서 백서의 작업 증명 체인에서 확정은 확률적이다. 정직한 노드가 다음 블록을 찾을 확률이 공격자보다 크다는 가정 아래, 뒤에 블록이 쌓일수록 공격자가 따라잡을 확률은 지수적으로 줄지만 0이 되지는 않는다. 받는 쪽은 거래가 블록에 들어간 뒤 기다릴 블록 수를 공격자의 연산 비율과 허용할 위험에 맞춰 정한다. 누적 작업량과 따라잡기 확률이 해시 체인에서 나오는 구조는 [[Checksum-and-Hash#해시 체인과 블록체인|해시 체인과 블록체인]]에 있다. Ethereum PoS의 확정 기준은 아래 [[#비용과 확인 경계|비용과 확인 경계]]에서 본다.
 
 ## 노드 추가와 작업 분할은 다르다
 
@@ -65,6 +133,12 @@ Ethereum의 업그레이드 패턴은 배포된 코드를 직접 고치는 대�
 - [Ethereum.org, Proof-of-stake](https://ethereum.org/en/developers/docs/consensus-mechanisms/pos/)
 - [Ethereum.org, Oracles](https://ethereum.org/en/developers/docs/oracles/)
 - [Ethereum.org, Gas and fees](https://ethereum.org/en/developers/docs/gas/)
+- [Ethereum.org, Maximal extractable value (MEV)](https://ethereum.org/en/developers/docs/mev/)
+- [Ethereum.org, Consensus mechanisms](https://ethereum.org/en/developers/docs/consensus-mechanisms/)
+- [Bitcoin: A Peer-to-Peer Electronic Cash System — Satoshi Nakamoto](https://bitcoin.org/bitcoin.pdf)
+- [The Byzantine Generals Problem — ACM Transactions on Programming Languages and Systems, Leslie Lamport, Robert Shostak, Marshall Pease](https://lamport.azurewebsites.net/pubs/byz.pdf)
+- [Time, Clocks, and the Ordering of Events in a Distributed System — Communications of the ACM, Leslie Lamport](https://lamport.azurewebsites.net/pubs/time-clocks.pdf)
+- [YouTube, 한상훈, 이중지불과 비잔틴 장군 (블록체인 마스터 클래스 1강)](https://www.youtube.com/watch?v=q5QVzaw01f8)
 
 ## 관련 문서
 
@@ -72,3 +146,6 @@ Ethereum의 업그레이드 패턴은 배포된 코드를 직접 고치는 대�
 - [[Replication|복제]]
 - [[Public-Key-Cryptography|공개키 암호]]
 - [[Idempotency-Key|멱등성 키]]
+- [[Race-Condition-Patterns-DB-Distributed|DB 락과 분산 락의 경쟁 조건]]
+- [[System-Time-and-Clock-Sync|시스템 시간과 시계 동기화]]
+- [[Checksum-and-Hash|체크섬과 해시]]
