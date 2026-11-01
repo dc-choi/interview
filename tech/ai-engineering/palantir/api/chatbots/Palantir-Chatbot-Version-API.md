@@ -1,7 +1,7 @@
 ---
 tags: [palantir, foundry, api, aip, chatbot, versioning]
 status: done
-verified_at: 2026-10-16
+verified_at: 2026-11-01
 category: "AI엔지니어링(AIEngineering)"
 ---
 
@@ -9,17 +9,21 @@ category: "AI엔지니어링(AIEngineering)"
 
 이 API의 Agent는 AIP Chatbot Studio에서 만든 AIP Chatbot을 뜻한다. 이전 AIP Agent/Agent Studio 명칭과의 하위 호환 때문에 경로와 type 이름에 Agent가 남아 있다. 임의의 외부 Agent runtime을 등록하는 범용 API로 해석하지 않는다.
 
+2026-11-01 확인한 endpoint 문서는 제목과 필드 설명에서 Agent 대신 Chatbot Studio Agent라는 이름을 쓴다(예: Get Chatbot Studio Agent). 경로, scope, 응답 type 이름 `Agent`와 오류 이름은 그대로다. 문서 표기가 바뀐 것만으로 호출 경로나 오류 처리를 바꾸지 않는다.
+
 이 그룹의 endpoint는 Preview이며 `preview=true`가 필요하다. 버전/설정 조회는 `api:aip-agents-read`, 대화 생성/진행은 `api:aip-agents-write` operation scope를 사용한다. 실제 Agent와 데이터 접근 권한도 함께 확인한다.
 
 ## Published와 Saved의 버전 증가가 다르다
 
 버전 문자열은 `major.minor`다. major는 publish마다, minor는 save마다 증가한다고 명시한다. 일반 library의 major.minor.patch 의미를 그대로 적용하지 않는다.
 
-`GET /api/v2/aipAgents/agents/{agentRid}`는 optional version을 받으며 생략하면 최신 published 버전을 반환한다. 최신 save를 자동 선택하는 의미가 아니다. Agent에는 RID/version, displayName, optional description/inputPlaceholder/suggestedPrompts, application parameters가 있다.
+`GET /api/v2/aipAgents/agents/{agentRid}`는 optional version을 받으며 생략하면 최신 published 버전을 반환한다. 최신 save를 자동 선택하는 의미가 아니다. Agent에는 RID/version, displayName, optional description/inputPlaceholder/suggestedPrompts와 optional application parameters가 있다.
 
 `GET /agents/{agentRid}/agentVersions/{agentVersionString}`은 특정 버전 상세를, `GET /agents/{agentRid}/agentVersions`는 최신순 버전 목록을 제공한다. 목록은 pageToken/pageSize와 nextPageToken으로 계속 조회한다. 잘못된 문자열 InvalidAgentVersion, 없는 AgentVersion/Agent, published 버전이 없는 NoPublishedAgentVersion을 구별한다. 마지막 경우 publish하거나 사용할 버전을 명시하라는 설명이다.
 
-버전 응답 예제의 string 1.0과 내부 major/minor 1/2는 서로 맞지 않는다. 파서가 두 값의 일치를 전제하거나 예제로 버전 변환식을 만들지 않는다. 실제 응답과 사용 SDK 계약을 대조한다.
+2026-11-01 확인한 getAgent 문서는 InvalidAgentVersion과 NoPublishedAgentVersion을 INVALID_ARGUMENT(HTTP 400), AgentNotFound와 AgentVersionNotFound를 NOT_FOUND(HTTP 404)로 표시한다. published 버전이 없는 Agent는 404로 오지 않으므로 HTTP 상태만으로 Agent의 존재 여부를 판정하지 않고 오류 이름으로 분기한다. AgentNotFound를 받으면 Agent의 부재와 함께 token의 접근 권한도 확인한다([[Palantir-API-Client-Contract]]의 NotFound 처리).
+
+버전 응답 예제의 string 1.0과 내부 major/minor 1/2는 서로 맞지 않는다. 파서가 두 값의 일치를 전제하거나 예제로 버전 변환식을 만들지 않는다. getAgent 응답 예제의 parameters.customerName에도 필수 필드인 parameterType이 빠져 있다. 예제를 응답 스키마의 완전한 표본으로 쓰지 않고 실제 응답과 사용 SDK 계약을 대조한다.
 
 ## Application variable은 이름과 type을 먼저 확인한다
 
@@ -42,8 +46,8 @@ Agent가 참조한 object/link/action type, function/version과 language model�
 ## 출처
 
 - [Palantir, Agent basics](https://www.palantir.com/docs/foundry/api/aip-agents-v2-resources/agents/agent-basics)
-- [Palantir, Get Agent](https://www.palantir.com/docs/foundry/api/aip-agents-v2-resources/agents/get-agent)
-- [Palantir, Get Agent Version](https://www.palantir.com/docs/foundry/api/aip-agents-v2-resources/agent-versions/get-agent-version)
-- [Palantir, List Agent Versions](https://www.palantir.com/docs/foundry/api/aip-agents-v2-resources/agent-versions/list-agent-versions)
+- [Palantir, Get Chatbot Studio Agent](https://www.palantir.com/docs/foundry/api/aip-agents-v2-resources/agents/get-agent)
+- [Palantir, Get Chatbot Studio Agent Version](https://www.palantir.com/docs/foundry/api/aip-agents-v2-resources/agent-versions/get-agent-version)
+- [Palantir, List Chatbot Studio Agent Versions](https://www.palantir.com/docs/foundry/api/aip-agents-v2-resources/agent-versions/list-agent-versions)
 - [Palantir, Create Session](https://www.palantir.com/docs/foundry/api/aip-agents-v2-resources/sessions/create-session)
 - [Palantir, Blocking Continue Session](https://www.palantir.com/docs/foundry/api/aip-agents-v2-resources/sessions/blocking-continue-session)

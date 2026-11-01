@@ -1,7 +1,7 @@
 ---
 tags: [palantir, foundry, api, aip, chatbot, streaming]
 status: done
-verified_at: 2026-10-16
+verified_at: 2026-11-01
 category: "AI엔지니어링(AIEngineering)"
 ---
 
@@ -18,6 +18,10 @@ Session은 호출 사용자와 Agent 사이의 대화다. 아래 endpoint는 모
 `GET /agents/{agentRid}/sessions`는 호출 사용자와 해당 Agent 사이에서 **같은 client가 만든 세션만** 최신 업데이트순으로 나열한다. 다른 client나 Chatbot Studio가 만든 대화는 나오지 않는다. `GET /agents/allSessions`도 같은 client/사용자와 접근 가능한 Agent 범위다. 모든 사용자의 대화를 보는 관리 API가 아니다.
 
 일반 list는 pageToken/pageSize와 nextPageToken으로 이어서 읽는다. allSessions의 pageSize는 기본/최대 100이다. allSessions에 필요한 aip-agents-write를 GET이라는 이유로 read로 바꾸지 않는다.
+
+allSessions 응답 AgentsSessionsPage의 Session마다 agentRid와 agentVersion이 있어 여러 Agent의 세션을 한 목록에서 Agent와 버전별로 나눌 수 있다. nextPageToken은 optional 필드이며 더 가져올 결과가 없으면 비어 있다. 필드가 없을 때도 마지막 페이지로 처리한다.
+
+명세는 PERMISSION_DENIED 오류로 GetAllSessionsAgentsPermissionDenied(write scope 요구를 설명)와 ListSessionsForAgentsPermissionDenied 두 가지를 정의하고, 2026-11-01 확인한 문서는 둘 다 HTTP 403으로 표시한다. 403은 오류 이름으로 구분하고, 모든 Foundry API에 공통인 ApiUsageDenied 처리는 [[Palantir-API-Client-Contract]]를 따른다. 같은 날 확인 기준 이 endpoint 문서의 제목은 List Sessions For Chatbot Studio Agents로 바뀌었지만 경로, scope, 응답 type 이름 AgentsSessionsPage와 오류 이름은 그대로다.
 
 ## Blocking과 Streaming 모두 세션별로 직렬화한다
 
@@ -54,7 +58,7 @@ ContextSizeExceededLimit이면 짧은 메시지 또는 새 세션을 검토한�
 - [Palantir, Create Session](https://www.palantir.com/docs/foundry/api/aip-agents-v2-resources/sessions/create-session)
 - [Palantir, Get Session](https://www.palantir.com/docs/foundry/api/aip-agents-v2-resources/sessions/get-session)
 - [Palantir, List Sessions](https://www.palantir.com/docs/foundry/api/aip-agents-v2-resources/sessions/list-sessions)
-- [Palantir, List Sessions For Agents](https://www.palantir.com/docs/foundry/api/aip-agents-v2-resources/agents/list-sessions-for-agents)
+- [Palantir, List Sessions For Chatbot Studio Agents](https://www.palantir.com/docs/foundry/api/aip-agents-v2-resources/agents/list-sessions-for-agents)
 - [Palantir, Blocking Continue Session](https://www.palantir.com/docs/foundry/api/aip-agents-v2-resources/sessions/blocking-continue-session)
 - [Palantir, Streaming Continue Session](https://www.palantir.com/docs/foundry/api/aip-agents-v2-resources/sessions/streaming-continue-session)
 - [Palantir, Cancel Session](https://www.palantir.com/docs/foundry/api/aip-agents-v2-resources/sessions/cancel-session)
