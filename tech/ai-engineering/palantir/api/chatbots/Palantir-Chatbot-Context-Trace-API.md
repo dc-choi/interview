@@ -21,9 +21,13 @@ object context는 objectRids와 propertyTypeRids로 prompt에 포함할 객체�
 
 ## 진행 중 Trace와 완료 Context를 구별한다
 
-Preview `GET /api/v2/aipAgents/agents/{agentRid}/sessions/{sessionRid}/sessionTraces/{sessionTraceId}`는 `api:aip-agents-read`로 trace를 조회한다. status가 IN_PROGRESS이면 계속 polling하고 COMPLETE가 될 때까지 확인한다. trace는 retrieval과 tool call 등 응답 생성 단계의 관찰 자료다.
+Preview `GET /api/v2/aipAgents/agents/{agentRid}/sessions/{sessionRid}/sessionTraces/{sessionTraceId}`는 `preview=true`와 `api:aip-agents-read`로 trace를 조회한다. status가 IN_PROGRESS이면 계속 polling하고 COMPLETE가 될 때까지 확인한다. trace는 retrieval과 tool call 등 응답 생성 단계의 관찰 자료다.
+
+2026-11-02 확인한 Get Session Trace 문서에서 응답의 id와 status는 필수이고 contexts와 toolCallGroups는 optional이다. status가 나타내는 것은 최종 응답 생성의 완료 여부다. 따라서 COMPLETE를 모든 도구의 성공이나 답변 정확성으로 해석하지 않는다. polling 간격, 최대 대기 시간과 실패 또는 취소 전용 status는 이 문서에 정의되어 있지 않다. client는 대기 상한을 별도로 정하고, 이를 넘으면 생성 실패로 단정하지 않고 상태 미상으로 남긴다(적용 제안).
 
 trace.contexts는 응답 생성이 끝난 뒤에만 채워진다. 따라서 생성 중 필드 부재를 retrieval 미실행의 증거로 삼지 않는다. 완료 후 context 객체가 있고 두 목록이 비어 있으면 retrieval을 시도했지만 찾지 못한 상태다. context 객체 자체가 비어 있거나 없는 경우와 구별한다. 다만 trace 응답의 두 목록도 optional이고, 빈 목록을 []로 보내는지 필드를 생략하는지는 확인한 명세에 정의가 없어 이 구분이 실제 응답에서 드러나는지는 확인하지 못했다.
+
+같은 문서의 응답 예시는 IN_PROGRESS인데 contexts도 담고 있어 위의 필드 설명과 어긋난다. 예시를 생성 중 context 제공의 보장으로 사용하지 않고, 테스트에서는 필드 설명을 기준으로 진행 중과 완료 응답을 나눈다(적용 제안).
 
 toolCallGroups는 같은 시점에 시작한 tool call들을 묶으며 group은 시작 순서다. 각 tool은 name/type, input과 optional output을 갖는다. 유형은 FUNCTION, ACTION, ONTOLOGY_SEMANTIC_SEARCH, OBJECT_QUERY, UPDATE_APPLICATION_VARIABLE, REQUEST_CLARIFICATION, OBJECT_QUERY_WITH_SQL, CODE_EXECUTION이다.
 
@@ -33,7 +37,7 @@ tool output 부재는 진행 중이다. success는 output을, failure는 Agent�
 
 ## 오류와 관측 한계
 
-SessionTraceNotFound는 trace/session/Agent 식별 관계와 존재를 확인하고, 세션/Agent 부재 및 endpoint 권한 오류도 처리한다. RAG 검색은 object type 또는 function/version이 없거나 token에서 접근할 수 없어 실패할 수 있다. NOT_FOUND만으로 설정 원본이 삭제되었다고 단정하지 않는다.
+Get Session Trace가 정의한 오류는 SessionTraceNotFound, SessionNotFound와 AgentNotFound 세 가지이며 모두 NOT_FOUND(404)다. 오류 parameter는 각각 sessionTraceId/agentRid/sessionRid, agentRid/sessionRid, agentRid다. HTTP 상태만 보지 않고 오류 이름과 parameter로 확인할 식별자를 구분한다(적용 제안). 이 endpoint 문서에는 전용 PermissionDenied 오류가 없으므로 다른 endpoint의 오류 이름을 복사하지 않고, 공통 인증과 권한 오류는 [[Palantir-API-Client-Contract]]를 따른다. RAG 검색은 object type 또는 function/version이 없거나 token에서 접근할 수 없어 실패할 수 있다. NOT_FOUND만으로 설정 원본이 삭제되었다고 단정하지 않는다.
 
 2026-11-02 확인한 ragContext 문서는 오류 일곱 개를 정의한다. GetRagContextForSessionPermissionDenied(PERMISSION_DENIED, 403)를 빼면 모두 NOT_FOUND(404)다. SessionNotFound와 AgentNotFound 말고 ObjectTypeIdsNotFound, ObjectTypeRidsNotFound, FunctionLocatorNotFound, OntologyEntitiesNotFound가 위의 RAG 검색 실패에 해당하며, 문제 대상을 parameter로 돌려준다(차례로 objectTypeIds, objectTypeRids, functionRid와 functionVersion, objectTypeRids와 linkTypeRids). 같은 Agent 설정과 token으로 세션만 새로 만들어서는 해결되기 어려우므로 SessionNotFound와 같은 404 처리기로 묶지 않고 오류 이름으로 분기해 parameter가 가리킨 대상과 token의 접근 범위를 확인한다(적용 제안). 두 continue 문서에 있는 InvalidParameter 같은 INVALID_ARGUMENT 오류와 blocking continue 문서에만 있는 rate limit 오류는 이 문서에 정의되어 있지 않다. 잘못된 parameterInputs가 어떤 오류로 돌아오는지는 문서로 확인할 수 없으므로 공통 오류 처리([[Palantir-API-Client-Contract]])에 맡긴다(적용 제안).
 
