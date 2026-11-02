@@ -17,6 +17,17 @@ Bulk 상한은 100개다. 없는 type이나 권한 없는 type은 응답에서 �
 
 Object type 목록은 요청 pageSize보다 작거나 클 수 있다. Action/object metadata 기본 pageSize는 500, query type은 100이다. Token 기반으로 끝까지 읽으며 metadata 목록에 data source가 항상 들어온다고 가정하지 않는다.
 
+### Action type 목록의 종료 조건과 branch
+
+2026-11-02 List Action Types 명세 부분 대조 기준, `GET /api/v2/ontologies/{ontology}/actionTypes`는 Action type metadata를 읽으며 OAuth2 scope는 `api:ontologies-read`다. Action을 실행하거나 실행 성공을 확인하는 응답이 아니다.
+
+- `pageSize` 기본값은 500이지만 한 페이지의 항목 수는 요청보다 작을 수 있다. 결과가 더 있으면 최소 한 항목이 반환된다는 보장과, 요청한 개수만큼 채워진다는 보장은 다르다.
+- 첫 요청에서는 `pageToken`을 생략한다. 이후 응답의 `nextPageToken`을 다음 요청에 전달하고 후속 토큰이 없으면 끝낸다. 항목 수가 500보다 작다는 이유로 종료하지 않는다.
+- 응답 schema에서 `data`와 `nextPageToken`은 모두 선택 필드다. 클라이언트는 `data`가 존재한다고 가정하지 않고 후속 토큰을 별도로 확인한다(설계 제안).
+- `branch`를 생략하면 기본 branch를 사용한다. Branch는 experimental 기능이며 모든 workflow 지원을 보장하지 않는다. 페이지 순회 중 같은 Ontology와 branch 조건을 유지하는 것은 클라이언트 설계 제안이다.
+
+실제 페이지 순회와 branch별 권한은 시험하지 않았다. 다른 metadata endpoint 전체를 재검증하지 않았으므로 frontmatter의 검증일은 유지한다.
+
 ## Property type과 표시 정보
 
 Property metadata는 재귀 dataType, RID, status, visibility, value type과 typeClasses를 구분한다. typeClasses의 kind/name은 애플리케이션이 해석할 추가 metadata다. deprecated status는 message/deadline/replacedBy를 제공하며 example은 가상 데이터로 실제 workflow에 쓰지 않는다.
@@ -82,6 +93,7 @@ Query metadata는 재귀 dataType과 typeReferences를 제공한다. execute의 
 
 ## 출처
 
+- [List Action Types](https://www.palantir.com/docs/foundry/api/ontologies-v2-resources/action-types/list-action-types)
 - [Get Object Type](https://www.palantir.com/docs/foundry/api/ontologies-v2-resources/object-types/get-object-type)
 - [Get Object Type Full Metadata](https://www.palantir.com/docs/foundry/api/ontologies-v2-resources/object-types/get-object-type-full-metadata)
 - [Get Object Type By RID Batch](https://www.palantir.com/docs/foundry/api/ontologies-v2-resources/object-types/get-object-type-by-rid-batch)

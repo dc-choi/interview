@@ -27,6 +27,22 @@ JDK 22의 `HttpClient`는 동기 `send`와 비동기 `sendAsync`를 제공하며
 
 운영 제안은 기존 백엔드의 인증, 시간 제한과 장애 관측 경계를 유지하면서 모델 호출을 붙이는 것이다. 모델이 제안한 도구 인자는 실제 실행 전에 권한과 입력을 검증한다. Java 언어 선택만으로 이 검증이 해결되지는 않는다.
 
+### Hugging Face의 모델 호출과 앱 배포를 구분한다
+
+2026-11-02 공식 문서 부분 대조 기준이다. Hub에서 모델을 찾는 일, 그 모델을 추론 서비스로 배포하는 일과 Java 애플리케이션을 실행하는 일은 서로 다른 선택이다.
+
+| 선택지 | 맡는 역할 | Java 애플리케이션에서 확인할 경계 |
+|---|---|---|
+| Inference Providers | 여러 공급자의 모델을 API로 호출하는 serverless 추론 접근 | 공급자별 지원 task와 모델을 확인한다. Hub에 있다는 사실만으로 호출 가능하다고 가정하지 않는다 |
+| Inference Endpoints | 모델과 추론 엔진을 선택해 전용 관리형 인프라에 배포 | 모델 파일, 추론 엔진과 서비스 인프라를 나누어 검토한다. 앱의 HTTP 호출 코드는 별도다 |
+| Docker Spaces | Dockerfile로 정의한 애플리케이션 실행 환경 | 앱 컨테이너의 실행과 모델 호출 성공을 각각 검증한다. 앱 배포만으로 모델도 같은 컨테이너에서 실행되는 것은 아니다 |
+
+Docker Space는 README의 YAML에서 `sdk: docker`를 지정하고 `app_port`로 외부에 노출할 앱 포트를 정한다. 기본 포트는 7860이다. Java 웹 앱을 올릴 때는 실제 서버가 듣는 포트와 이 값을 맞춘다(적용 제안). 내부에서 여러 포트를 쓰는 것과 외부에 여러 포트를 노출하는 것은 다르며, 여러 내부 서비스를 공개할 때 공식 문서는 단일 외부 포트에서 요청을 나누는 reverse proxy 구성을 제시한다.
+
+적용 순서는 작은 입력으로 모델 API를 검증한 뒤 앱 실행 환경을 선택하는 것이다. 원격 모델 호출을 선택했다면 앱과 모델 서버를 따로 배포할 수 있으므로, Java 통합을 위해 학습 코드나 모델 런타임을 JVM 안에 옮길 필요가 있는지부터 확인한다(설계 제안).
+
+이 절은 서비스 역할과 Docker Spaces 설정의 문서 대조다. Java 앱 배포, 모델 호출, 성능과 비용은 시험하지 않았고 기존 ONNX와 HAT 절 전체의 검증일은 갱신하지 않았다.
+
 ## 로컬 추론은 모델 계약과 자원 수명을 함께 다룬다
 
 ONNX Runtime의 Java binding은 JVM에서 ONNX 모델의 추론을 호출한다. 공식 시작 절차는 `OrtEnvironment`와 `OrtSession`을 만들고 `OrtSession.run`에 모델 입력 이름과 텐서를 전달하는 흐름이다. 입력 이름은 `getInputNames()`나 `getInputInfo()`로 확인한다.
@@ -74,6 +90,9 @@ HAT 예제의 kernel은 제한된 Java 부분집합을 사용하고 코드 모�
 
 ## 출처
 
+- [Hugging Face, Inference Providers](https://huggingface.co/docs/inference-providers/index) — 공급자별 추론 접근과 지원 task.
+- [Hugging Face, About Inference Endpoints](https://huggingface.co/docs/inference-endpoints/about) — 모델 파일, 추론 엔진과 관리형 인프라의 구분.
+- [Hugging Face, Docker Spaces](https://huggingface.co/docs/hub/spaces-sdks-docker) — Docker 앱 실행, 포트 설정과 reverse proxy.
 - [Oracle Java SE 22, HttpClient](https://docs.oracle.com/en/java/javase/22/docs/api/java.net.http/java/net/http/HttpClient.html) — 동기 및 비동기 HTTP 호출 계약.
 - [ONNX Runtime, Get Started with ORT for Java](https://onnxruntime.ai/docs/get-started/with-java.html) — 모델 실행, 입력 이름, 결과 수명과 배포물 구분.
 - [ONNX Runtime Java API, OrtSession.Result](https://onnxruntime.ai/docs/api/java/ai/onnxruntime/OrtSession.Result.html) — 소유한 출력만 해제하는 `close()`, pinned output 예외와 `isResultOwner(int)`.
