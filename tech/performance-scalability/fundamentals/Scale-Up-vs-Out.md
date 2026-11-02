@@ -18,6 +18,12 @@ verified_at: 2026-10-14
 - 예: AWS EC2 `t3.medium` → `t3.xlarge` → `m5.2xlarge`
 - 혹은 물리 서버 RAM 32GB → 128GB 교체
 
+반대로 한 대의 자원 용량을 줄이는 것은 **Scale Down**이다. 서버 수를 줄이는 Scale In과 구분한다. EC2에서는 워크로드에 비해 크거나 작은 인스턴스의 타입을 바꿀 수 있지만, 이름의 크기만 보고 모든 타입을 서로 교체할 수 있다고 판단하지 않는다.
+
+2026-11-02 EC2 공식 문서 대조: EBS 루트 인스턴스는 현재 구성과 호환되는 타입으로 변경할 때 먼저 중지해야 한다. 프로세서 아키텍처, 드라이버와 연결된 EBS 볼륨 수 등의 호환 조건을 확인한다. 호환되지 않거나 루트가 instance store이면 새 인스턴스로 이전하는 경로를 쓴다. Spot 인스턴스는 기존 인스턴스의 타입을 직접 바꿀 수 없다.
+
+중지와 재시작에는 중단 시간이 생기며 Elastic IP가 아닌 공인 IPv4 주소는 바뀐다. Auto Scaling 그룹 소속이면 중지된 인스턴스가 비정상으로 판정돼 교체될 수 있다. 축소 전에는 피크 부하와 메모리 여유, 중단 허용 여부와 복구 절차를 함께 확인한다(운영 제안). 인스턴스 변경은 실제로 실행하지 않았다.
+
 ### Scale Out (수평 확장)
 **비슷한 스펙의 서버 수를 늘리고 로드 밸런싱으로 분산**.
 
@@ -30,32 +36,31 @@ verified_at: 2026-10-14
 |---|---|---|
 | 방법 | 단일 서버 스펙 업 | 서버 수 증가 + LB |
 | 구현 복잡도 | 낮음 (단순 스펙 변경) | 높음 (LB, 세션 분리, 분산 고려) |
-| 상한선 | **있음** (하드웨어 한계) | **사실상 없음** (더 붙이면 됨) |
-| 비용 곡선 | 고사양일수록 **비선형 급증** (최상위 CPU가 두 배인데 가격은 5배) | 거의 선형 |
-| 가용성 | **없음** — 1대 죽으면 전체 다운 | 있음 — N-1대 생존해도 서비스 지속 |
-| 재시작 | 전체 다운타임 | 롤링 재시작 가능 |
-| 애플리케이션 변경 | 불필요 | **Stateless 설계 + 세션 외부화** 필요 |
+| 상한선 | 선택 가능한 단일 서버의 자원 한계 | 공유 계층 병목, 서비스 할당량과 그룹 최대 용량 확인 |
+| 비용 비교 | 후보 사양의 가격과 실제 처리량을 함께 측정 | 복제본, 분산 처리와 공유 계층 비용을 함께 측정 |
+| 가용성 | 단일 인스턴스만 쓰면 장애 시 서비스 중단 | 장애 분산, 정상 복제본의 여유 용량과 공유 계층 복구가 필요 |
+| 재시작 | 단일 인스턴스만 쓰면 중단 영향 | 여유 용량과 요청 배출을 갖추면 롤링 재시작 가능 |
+| 애플리케이션 변경 | 타입과 실행 환경의 호환성 확인 | 요청 분산과 상태 접근 방식을 설계 |
 | 데이터베이스 적합성 | 높음 (DB는 일반적으로 Up 선호) | 낮음 (복제, 샤딩 필요) |
 
 ## 언제 Scale Up을 선택
 
 - **상태 공유가 본질적인 시스템** — RDB 마스터, 인메모리 DB, 단일 노드 큐
 - **애플리케이션이 아직 Stateless가 아님** — 세션을 서버 로컬에 저장
-- **빠른 임시 대응 필요** — 인스턴스 타입만 바꾸면 끝
+- **빠른 임시 대응 필요** — 호환되는 타입이 있고 변경에 필요한 중단을 허용할 수 있는 경우
 - **트래픽이 예측 가능하고 경계가 있음** — 중소 규모 내부 시스템
 - **비용보다 운영 단순성 우선** — 1대면 모니터링, 배포, 디버깅 모두 쉬움
 
 ### 한계
 - 하드웨어 물리 한계 (세계 최고 사양도 결국 한계)
-- 최고 사양은 **가격 대비 성능이 매우 나쁨**
-- 장애 격리 0 — 1대 다운 = 100% 영향
-- 재시작 = 다운타임
+- 사양 증가만큼 처리량이 늘어나는지는 병목과 워크로드에 따라 측정
+- 단일 인스턴스만 쓰면 장애와 재시작이 서비스 중단으로 이어짐
 
 ## 언제 Scale Out을 선택
 
 - **트래픽이 예측 불가 / 급격한 스파이크** — Auto Scaling으로 탄력 대응
-- **고가용성 요구** — 한 대 죽어도 서비스 지속
-- **장기 성장 계획** — 트래픽 증가를 선형적으로 따라감
+- **고가용성 요구** — 장애를 나누고 남은 복제본이 부하를 감당하도록 구성
+- **장기 성장 계획** — 부하 증가에 맞춰 복제본과 공유 계층을 함께 조정
 - **MSA, 컨테이너 기반** — 수평 확장이 자연스러운 구조
 - **전 세계 사용자** — 멀티 리전, 엣지 배포
 
@@ -156,7 +161,7 @@ AWS에서는 단계마다 병목이 된 일을 별도 계층으로 떼어 내고
 클라우드도 인스턴스 타입 자체를 키우는 Up을 지원. 무작정 Out보다 **비용, 복잡도 균형** 고려.
 
 ### "Auto Scaling = Scale Out"
-Auto Scaling은 **자동화된 Scale Out**. 수동으로 Out 할 수도 있고, Auto Scaling이 없어도 Out 가능.
+Amazon EC2 Auto Scaling은 정책과 최소/최대 용량 안에서 인스턴스를 시작하거나 종료해 Scale Out과 Scale In을 수행한다. 원하는 용량 유지와 비정상 인스턴스 교체도 맡는다. 한 인스턴스의 타입을 바꾸는 Scale Up/Down과 구분하며, 서버 수는 수동으로도 조정할 수 있다(2026-11-02 공식 개요 대조).
 
 ## 면접 체크포인트
 
@@ -164,14 +169,20 @@ Auto Scaling은 **자동화된 Scale Out**. 수동으로 Out 할 수도 있고, 
 - Scale Out 도입 시 애플리케이션이 충족해야 할 전제 (Stateless, 세션 외부화)
 - DB를 Scale Out 하기 어려운 이유 (상태, 일관성, 샤딩 복잡도)
 - 웹 서버는 Out, DB는 Up이 일반적인 이유
-- Scale Up의 "비선형 비용 급증" 구체 예시
+- Scale Up/Down과 Scale Out/In의 차이, 비용과 처리량을 비교할 측정 조건
 - Scale Cube의 X, Y, Z축이 각각 무엇을 해결하고 무엇을 대가로 치르는지, 어떻게 조합하는지
 - 단계적 확장 경로에서 다음 단계로 넘어갈 신호를 무엇으로 확인하는지
 - AWS에서 단계마다 병목이 된 일을 어떤 계층과 관리형 서비스로 떼어 내는지, Multi-AZ 대기 인스턴스와 읽기 복제본의 역할이 어떻게 다른지
 
 ## 출처
+2026-11-02 부분 대조: EC2 타입 변경과 호환 조건, 중단과 주소 변경, Auto Scaling의 확장/축소를 확인했다. 비교표의 비용과 가용성은 보장값 대신 설계와 측정 조건으로 정리했다. 기존 AWS 구성과 Scale Cube 전체를 재검증하지 않아 frontmatter의 검증일은 유지한다.
+
 2026-10-14 부분 대조: AWS 단계별 구성 절의 RDS 관리 범위, Multi-AZ 대기 인스턴스와 장애 조치, EC2 기본 지표와 Auto Scaling 사용자 지정 지표, S3 트리거 Lambda의 재귀 호출, 기능 분할과 샤딩의 대가를 공식 문서로 확인했다. 기존 절 전체를 다시 대조한 것은 아니다.
 
+- [Amazon EC2 User Guide, Amazon EC2 instance type changes](https://docs.aws.amazon.com/AWSEC2/latest/UserGuide/ec2-instance-resize.html)
+- [Amazon EC2 User Guide, Change the instance type for your Amazon EC2 instance](https://docs.aws.amazon.com/AWSEC2/latest/UserGuide/change-instance-type-of-ebs-backed-instance.html)
+- [Amazon EC2 User Guide, Compatibility for changing the instance type](https://docs.aws.amazon.com/AWSEC2/latest/UserGuide/resize-limitations.html)
+- [Amazon EC2 Auto Scaling User Guide, What is Amazon EC2 Auto Scaling?](https://docs.aws.amazon.com/autoscaling/ec2/userguide/what-is-amazon-ec2-auto-scaling.html)
 - [The Twelve-Factor App, VI. Processes](https://12factor.net/processes)
 - [매일메일 — 스케일 업과 스케일 아웃](https://www.maeil-mail.kr/question/128)
 - [microservices.io — The Scale Cube](https://microservices.io/articles/scalecube.html)
