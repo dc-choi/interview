@@ -82,6 +82,14 @@ QueryDataType은 scalar 외에 struct, set/array, union, null, void, attachment,
 
 실행 parameters는 parameter ID에서 DataValue로 매핑한다. 일반 JSON이라고 해서 모든 수치가 number는 아니다. Decimal과 Long은 문자열이며 timestamp는 UTC offset date-time 문자열, date는 local date 문자열이다. Array/Set은 배열, Struct는 객체, attachment는 RID 문자열로 표현한다. 집계는 groups/key/value 구조의 객체이며 nested 값도 허용한다.
 
+### Entry-set의 실행 조건은 metadata 조회와 별개다
+
+2026-11-02 Get Query와 Get By Rid의 `output` 설명을 대조하면 entry-set 값은 비동기 실행을 요구한다. Query metadata를 조회할 수 있다는 사실만으로 그 출력 타입을 일반 동기 실행으로 받을 수 있다고 판단하지 않는다. 이 조건을 모든 Query가 비동기로만 실행된다는 뜻으로 확대하지 않는다.
+
+두 조회 응답 모두 `parameters`와 `typeReferences`는 선택 필드이고 `output`은 필수다. 클라이언트 구현에서는 예제에 map이 있다고 해서 모든 응답에 존재한다고 가정하지 않고, 실제 `output`과 참조 타입을 확인한 뒤 실행 경로를 선택한다(설계 제안). 이 조회 명세의 비동기 요구만으로 SSE 호출이 entry-set을 처리한다고 단정하지 않으며, 구체적인 실행 endpoint와 결과 회수 계약을 별도로 확인한다.
+
+이번 대조는 두 조회 endpoint의 응답 필드와 entry-set 요구에 한정했다. 실제 비동기 실행은 시험하지 않았고 기존 실행 endpoint 전체의 호환성도 재검증하지 않았으므로 frontmatter의 검증일은 유지한다.
+
 ## SSE는 HTTP 성공 이후에도 실패할 수 있다
 
 일반 execute는 단일 JSON 객체의 `value`를 반환한다. streamingExecute는 `text/event-stream`이며 각 event의 data는 JSON으로 encoding한 `StreamingExecuteQueryResponse`다. event는 빈 줄로 구분한다.

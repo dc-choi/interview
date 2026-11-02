@@ -141,6 +141,19 @@ OIDC 기반 로그인에서는 access token만으로 로그인을 판단하지 �
 
 ## 자주 하는 실수
 
+### 소셜 로그인 설정과 서비스 가입 조건을 분리한다
+
+2026-11-02 Google 웹 서버 OAuth와 카카오 로그인 REST API 문서 기준이다. 코드에 콜백 라우트를 만드는 작업, 제공자 콘솔에 주소를 등록하는 작업, 서비스 회원 가입 조건을 충족하는 작업은 각각 확인해야 한다.
+
+- **콜백 주소:** Google의 `redirect_uri`는 해당 `client_id`에 등록한 주소와 정확히 같아야 하며, 다르면 `redirect_uri_mismatch`가 발생한다. 카카오도 등록한 리다이렉트 URI와의 일치를 요구하고, 토큰 요청에는 인가 코드 요청 때 사용한 `redirect_uri`를 다시 보낸다.
+- **콜백 결과:** 카카오는 동의 취소 시 콜백에 `code` 대신 `error=access_denied`를 보낸다. 콜백에 도착했다는 사실만으로 토큰 교환이나 가입을 성공 처리하지 않는다.
+- **이메일 동의와 상태:** 카카오 사용자 정보의 `email`은 선택 필드다. `email_needs_agreement`, `is_email_valid`, `is_email_verified`는 각각 동의 필요 여부, 유효 여부와 인증 여부를 구분한다. 이 필드들도 선택 항목이므로 누락을 곧바로 `false`로 단정하지 않는다.
+- **가입 조건:** 카카오 토큰 발급 뒤 서비스가 회원 확인과 가입, 로그인을 자체 처리한다. 이메일을 필수로 쓰는 서비스라면 이메일이 없는 응답의 처리 정책도 정해야 한다. 추가 동의가 가능한 경우와 별도 입력이 필요한 경우를 나누는 것은 서비스 설계 제안이다.
+
+개발, 검증, 운영 환경별로 등록 주소와 실제 요청값을 대조하고, 동의 취소와 이메일 누락을 별도 테스트로 확인하는 절차를 제안한다. 이 절에서는 제공자 명세만 대조했으며 실제 콘솔 설정과 로그인은 시험하지 않았다.
+
+### 프로토콜과 토큰 처리
+
 - Implicit Grant로 SPA 구현 → **Authorization Code + PKCE**로 전환
 - Access Token을 `localStorage`에 저장 → XSS 탈취. 가능하면 **HttpOnly 쿠키** + SameSite + CSRF 토큰
 - Refresh Token을 평문 보관, replay 대책 없이 장기간 재사용 → Rotation 또는 sender-constrained token을 적용하고 탈취 대응 정책 정의
@@ -165,6 +178,10 @@ OIDC 기반 로그인에서는 access token만으로 로그인을 판단하지 �
 
 2026-10-06에는 RFC 9449의 DPoP proof 구성, 토큰 바인딩, nonce와 보안 한계, Spring Security 6.5와 Spring Authorization Server 1.5의 DPoP 지원을 대조했다. 문서에 남은 버전 민감 주장(OAuth 2.1 초안 상태, 제공자별 위임 정책)과의 상충 여부는 이번에 확인하지 않았으므로 frontmatter 검증일은 유지한다.
 
+2026-11-02에는 소셜 로그인 설정 절의 리다이렉트 URI, 동의 취소와 이메일 응답 조건만 대조했다. 기존 초안 상태, DPoP 구현과 위임 정책 전체를 재검증하지 않아 frontmatter 검증일은 유지한다.
+
+- [Google for Developers, Using OAuth 2.0 for Web Server Applications](https://developers.google.com/identity/protocols/oauth2/web-server)
+- [카카오디벨로퍼스, 카카오 로그인 REST API](https://developers.kakao.com/docs/ko/kakaologin/rest-api)
 - [RFC 6749 — The OAuth 2.0 Authorization Framework (§2.3.1 클라이언트 인증)](https://www.rfc-editor.org/rfc/rfc6749)
 - [IETF Internet-Draft — The OAuth 2.1 Authorization Framework](https://datatracker.ietf.org/doc/draft-ietf-oauth-v2-1/)
 - [RFC 9700 — Best Current Practice for OAuth 2.0 Security](https://www.rfc-editor.org/rfc/rfc9700.html)
