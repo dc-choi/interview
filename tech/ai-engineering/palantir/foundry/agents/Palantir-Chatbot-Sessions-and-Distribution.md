@@ -28,6 +28,14 @@ Chatbot에 새 type/media dependency를 추가해도 Developer Console resource 
 
 Session create 뒤 blocking/streaming continue로 메시지를 보낸다. `parameterInputs`가 application state 입력이며 blocking의 `parameterUpdates`, streaming 후 Get Content가 output을 읽는 경로다. Get Session metadata와 exchange history는 별도다. 새 exchange에 UUIDv4 `sessionTraceId`를 주거나 blocking/Get Content 결과의 ID로 trace를 조회할 수 있다.
 
+## Session Trace는 응답에 이르는 실행 순서를 보여 준다
+
+Session Trace는 Chatbot Studio Agent가 답변을 만들기까지 수행한 단계의 순서다. Context retrieval과 tool call 등이 포함될 수 있다. 대화 전체의 식별자인 `sessionRid`와 개별 trace의 식별자인 `sessionTraceId`를 구분한다.
+
+API v2의 조회 경로는 `GET /api/v2/aipAgents/agents/{agentRid}/sessions/{sessionRid}/sessionTraces/{sessionTraceId}`다. 2026-11-02 공식 API 문서 기준 preview endpoint이므로 `preview=true`가 필요하며 변경되거나 제거될 수 있다. OAuth2로 호출하는 외부 application에는 `api:aip-agents-read` operation scope가 필요하다.
+
+진행 중 응답의 상태는 trace가 완료될 때까지 이 endpoint를 polling해 확인한다. 운영 설계에서는 조회 성공, trace 완료와 업무 결과의 정확성을 별도 조건으로 둔다. Trace는 실행 단계의 관측 근거이며 외부 시스템의 최종 상태까지 보증하는 계약으로 확대하지 않는다. 이 절은 문서 대조 결과이며 실제 API 호출은 시험하지 않았다.
+
 ## Session 로그는 별도의 민감 데이터다
 
 각 user message는 하나의 execution이며 `traceId`로 function/model/tool의 관련 로그를 잇는다. `session_rid`는 conversation, `owning_rid`는 최상위 source executor를 나타낸다. Chatbot A→Function→B 호출에서도 owning은 A일 수 있어 즉시 실행한 chatbot RID와 혼동하지 않는다.
@@ -42,6 +50,8 @@ Add files로 chatbot을 넣거나 chatbot widget을 포함한 Workshop을 넣으
 
 ## 출처
 
+- [Palantir, Session Trace basics](https://www.palantir.com/docs/foundry/api/v2/aip-agents-v2-resources/session-traces/session-trace-basics)
+- [Palantir, Get Session Trace](https://www.palantir.com/docs/foundry/api/v2/aip-agents-v2-resources/session-traces/get-session-trace)
 - [Palantir, Chatbots as Functions](https://www.palantir.com/docs/foundry/chatbot-studio/chatbots-as-functions)
 - [Palantir, Foundry APIs for Chatbots](https://www.palantir.com/docs/foundry/chatbot-studio/foundry-apis)
 - [Palantir, Session logging](https://www.palantir.com/docs/foundry/chatbot-studio/session-logging)

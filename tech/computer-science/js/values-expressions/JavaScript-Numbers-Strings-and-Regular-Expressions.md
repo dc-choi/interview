@@ -75,6 +75,18 @@ text.length; // 2 code units
 - `normalize("NFC")`는 canonically equivalent한 표현을 통일한다. NFKC/NFKD는 compatibility character를 바꿀 수 있으므로 일반 기본값으로 단정하지 않는다.
 - normalization만으로 confusable, spoofing이나 identifier security가 해결되지는 않는다.
 
+한글 `한`(U+D55C)은 NFD에서 결합용 자모 U+1112, U+1161, U+11AB로 분해된다. 화면상 같은 글자여도 code unit 열은 달라 `===` 비교에서 다를 수 있다. 파일명이나 검색 키를 비교할 때 canonical equivalence를 같은 값으로 취급하기로 했다면 양쪽을 같은 정규형으로 맞춘다. `ㅎㅏㄴ`처럼 호환 자모로 직접 입력한 문자열은 이 NFD 열과 다르며 NFC만으로 `한`이 되지 않는다.
+
+```js
+const composed = "한.txt";
+const decomposed = composed.normalize("NFD");
+composed === decomposed; // false
+composed.normalize("NFC") === decomposed.normalize("NFC"); // true
+"ㅎㅏㄴ".normalize("NFC") === "한"; // false
+```
+
+2026-11-02 Unicode 정규화 명세와 ECMAScript의 `normalize` 계약을 대조한 예다. 파일명 표시 문제만으로 운영체제 전체의 저장 형식을 단정하지 않는다. 정규화한 비교 키와 원래 경로는 구분하고, 실제 파일명 변경 전에는 여러 이름이 같은 키로 합쳐지는지 확인한다.
+
 `startsWith`, `endsWith`, `includes`, `repeat`, `padStart`/`padEnd`, `trimStart`/`trimEnd`는 편리하지만 index/length는 여전히 code unit 기준이다. padding은 화면 폭 정렬을 보장하지 않고 trim은 명세의 whitespace 집합만 제거한다. `startsWith(search, position)`의 두 번째 인자는 검색 문자열이 시작할 index이고 `endsWith(search, endPosition)`의 두 번째 인자는 검색 문자열이 끝나는 위치(마지막 문자 index + 1)라 `"Hello".endsWith("l", 4)`는 `"Hell"`을 기준으로 true다. `startsWith`, `endsWith`, `includes`는 RegExp 인자를 받으면 `TypeError`를 던지므로 pattern 검색에는 `RegExp.prototype.test`나 `search`를 쓴다.
 
 ## 문자열 API 선택
@@ -150,6 +162,8 @@ match는 일반 mode에서 첫 일치와 capture, g mode에서 일치 문자열 
 
 ## 출처
 
+- [Unicode, UAX #15: Unicode Normalization Forms](https://www.unicode.org/reports/tr15/)
+- [ECMAScript Language Specification, String.prototype.normalize](https://tc39.es/ecma262/multipage/text-processing.html#sec-string.prototype.normalize)
 - [Numeric separators — V8](https://v8.dev/features/numeric-separators)
 - [String.prototype.replaceAll — V8](https://v8.dev/features/string-replaceall)
 - [String.prototype.trimStart and trimEnd — V8](https://v8.dev/features/string-trimming)
