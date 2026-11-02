@@ -34,6 +34,18 @@ aliases: ["시장구조", "Market Structures"]
 - **필수 자원의 장악**: 핵심 원료나 유통망을 쥐고 있다.
 - **높은 초기 투자**: 반도체 공장처럼 진입에 막대한 자본이 든다.
 
+### 사례: 1980년대 D램 가격 붕괴와 선두 교체
+
+진입에 큰 투자가 드는 D램 시장에서 1980년대 중반 가격이 무너지자 여러 미국 업체가 물러나고 무역 분쟁이 이어졌으며, 이후 선두 기업이 바뀌었다. 2026-11-02 기업 공식 자료와 한미 정부 기록을 대조한 사례다.
+
+- **진입:** 삼성 반도체 뉴스룸은 1974년 12월 파산 직전의 한국반도체를 인수하며 반도체 사업에 진출했다고 적는다. 인수 주체는 같은 뉴스룸 안에서도 이건희 회장이 사재로 지분을 인수했다는 기사(2015년)와 삼성전자가 인수했다는 기사(40년사 기사와 2019년 기사)로 갈리고, 지분율과 금액은 적혀 있지 않다. 반도체 투자에 내부 반대가 많았다고만 적는다.
+- **추격:** 삼성은 1983년 12월 64K D램을 미국과 일본에 이어 세계 세 번째로 개발했고, 생산은 1984년에 시작했다고 서술한다.
+- **가격 붕괴와 퇴출:** Intel은 1985년 연차보고서에서 업계 전반의 과잉 생산능력으로 가격 압박이 커졌고 일본 업체의 메모리 덤핑이 이를 키웠다고 적었다. 미국 밖 업체들이 겨냥한 시장이라 필요한 투자에서 수익을 내기 어렵다며 그해 D램 사업 철수도 발표했다. 미국 상무부는 1986년 4월 일본산 64K D램에 12~35%의 덤핑 마진을 판정했고, 국제무역위원회(ITC)는 1986년 6월 일본산 64K D램 사건에서 4대 2로 미국 D램 산업이 일본산 수입으로 실질적 피해를 입었다고 판정했다. 상무부의 덤핑 산정을 다툰 소송에 FTC가 낸 1987년 법정 조언자 의견서는, 1985년 초 일본 내 D램 판매가격이 평균총비용 아래로 내려간 데 64K에서 256K로의 세대 교체와 예상하지 못한 업황 둔화가 작용했을 수 있다고 봤다. GAO는 1985년 이후 수요 부진과 공급 과잉이 이어졌고 많은 미국 업체가 256K D램 생산을 중단했다고 적었다.
+- **정부 개입:** 미국과 일본은 1986년 9월 반도체 협정에 서명했다. 1987년 미국 대통령은 3월 성명과 4월 포고 5631호에서 일본이 제3국 덤핑 방지와 시장 접근 약속을 지키지 않았다고 밝혔다. 포고의 관세 조항 문언은 이번에 대조하지 않았다.
+- **선두 교체:** 삼성은 1992년 D램 시장 점유율 1위, 1993년 메모리 반도체 전체 1위에 올랐다고 서술하고, 불황으로 업계가 투자를 주저하던 1990년에 200mm 웨이퍼 선행 투자를 결정했다고 적는다. 국가기록원은 한국이 1993년부터 D램을 포함한 메모리 반도체 세계 시장 점유율 1위를 지켜 왔다고 밝혔다.
+
+진입에 큰 투자가 들고 세대 교체가 빠른 산업에서는 가격이 크게 떨어진 불황기에 투자를 이어 가는 기업과 철수하는 기업이 갈려 선두가 바뀔 수 있다(분석 기준). 이 사례에는 불황 직전의 신규 진입도 있었고 덤핑 판정, 수요 둔화, 세대 교체와 정부 개입이 겹쳤으므로, 한 기업의 결단만으로 시장 구조가 정해졌다고 보거나 다음 불황의 결과를 예측하는 근거로 쓰지 않는다. 판매자 수와 집중도 자료는 이 사례에서 확인하지 않았고, 점유율 1위와 선행 투자는 회사의 자체 서술이므로 독립 통계와 구분한다. 손실을 내면서 생산을 이어 갈지는 [[Production-and-Cost#7. 매몰비용과 조업중단|매몰비용과 조업중단]] 기준으로, 지금의 메모리 수급과 가격은 [[Supply-and-Demand#9. 산업 발표를 읽을 때: 전망, 약정과 실제 공급|수요와 공급의 산업 발표 읽기]]로 본다.
+
 ## 4. 독점은 왜 문제인가
 
 같은 수요와 비용 조건에서 단일 가격을 선택하는 표준 독점 모형은 경쟁적 기준보다 가격이 높고 생산량이 적어지는 결과를 설명한다. 거래되지 못한 부분에서 자중손실이 발생한다. 가격 규제, 가격차별이나 서로 다른 비용구조까지 모두 같은 결과라고 일반화하지 않는다. 이윤을 최대화할 생산량과 조업 여부는 [[Production-and-Cost|수입과 비용]]을 함께 비교한다.
@@ -75,6 +87,20 @@ aliases: ["시장구조", "Market Structures"]
 - [DOJ/FTC, Antitrust Guidelines for the Licensing of Intellectual Property (2017)](https://www.justice.gov/atr/IPguidelines/download) — 2.2의 특허와 시장지배력
 - [DOJ/FTC, 2023 Merger Guidelines, Guideline 9](https://www.justice.gov/atr/merger-guidelines/applying-merger-guidelines/guideline-9) — 플랫폼 경쟁과 참여자별 네트워크 효과
 - [DOJ/FTC, 2023 Merger Guidelines, Market Definition](https://www.justice.gov/atr/merger-guidelines/tools/market-definition) — 관련 상품/지역 시장과 가격 외 거래조건
+
+아래는 2026-11-02 D램 사례를 대조한 자료다. 삼성의 인수 금액과 지분율, 사장단 반대 비율은 1차 자료로 확인하지 못해 쓰지 않았다.
+
+- [삼성 반도체사업 40년, 도전과 창조의 역사 — 삼성전자 반도체 뉴스룸](https://news.samsungsemiconductor.com/kr/?p=12017) — 페이지 표시일 2012-04-06(제목의 40년과 맞지 않아 게시일은 미확인). 한국반도체의 설립과 1974년 12월 인수, 내부 반대, 1983년 12월 64K D램 개발
+- [반도체 사료실 오픈, 삼성전자 반도체사업 40년 역사를 돌아본다 — 삼성전자 반도체 뉴스룸](https://news.samsungsemiconductor.com/kr/?p=16742) — 2015-02-02. 이건희 회장의 사재 지분 인수 서술, 1984년 64K D램 생산
+- [반도체 역사시리즈 6탄, 삼성반도체 45년 사업장의 성장 기록 — 삼성전자 반도체 뉴스룸](https://news.samsungsemiconductor.com/kr/%eb%b0%98%eb%8f%84%ec%b2%b4-%ec%97%ad%ec%82%ac%ec%8b%9c%eb%a6%ac%ec%a6%88-6%ed%83%84-%ec%82%bc%ec%84%b1%eb%b0%98%eb%8f%84%ec%b2%b4-45%eb%85%84-%ec%82%ac%ec%97%85%ec%9e%a5%ec%9d%98-%ec%84%b1/) — 2019-12-06. 삼성전자의 인수 서술, 1992년 D램과 1993년 메모리 1위, 1990년 200mm 선행 투자
+- [반도체 역사에 획을 그은 64M D램, 국가중요과학기술자료로 지정 — 삼성전자 반도체 뉴스룸](https://news.samsungsemiconductor.com/kr/?p=3407) — 2020-01-31. 64K D램의 세계 세 번째 개발과 1992년 D램 점유율 1위
+- [Intel Corporation 1985 Annual Report — Intel, Internet Archive](https://archive.org/details/intel-history-1985-annual-report-pdf) — 스캔본. 과잉 생산능력과 덤핑에 따른 가격 압박, D램 사업 철수 발표
+- [Brief as Amicus Curiae, Oki Electric Industry Co. v. United States — FTC](https://www.ftc.gov/system/files/documents/amicus_briefs/ftc-amicus-brief-oki-electric-indus-co-ltd-v-us-concerning-defendants-constructed-value-64k-drams/p874672_oki_electric.pdf) — 1987-04-24 서명. 상무부의 덤핑 마진과 ITC 피해 판정 인용, 1985년 초 일본 내 가격이 평균총비용 아래로 내려갔을 수 있는 요인
+- [International Trade: Observations on the U.S.-Japan Semiconductor Arrangement — GAO](https://www.gao.gov/products/NSIAD-87-134BR) — 1987-04-15. 협정 서명일, 1985년 이후 수요 부진과 공급 과잉, 미국 업체의 256K D램 생산 중단
+- [Statement on the Japan-United States Semiconductor Trade Agreement — Ronald Reagan Presidential Library](https://www.reaganlibrary.gov/research/speeches/032787e) — 1987-03-27
+- [Proclamation 5631 — Ronald Reagan Presidential Library](https://www.reaganlibrary.gov/research/speeches/041787b) — 1987-04-17. 일본의 약속 미이행 판단만 대조했고 관세 조항은 대조하지 않음
+- [반도체 신화의 첫 도면 되살렸다, 최초 4메가 디램(DRAM) 설계도면 복원 — 행정안전부 국가기록원](https://www.archives.go.kr/next/newnews/pressDetail.do?board_seq=103312) — 2026-10-28. 1993년부터의 메모리 반도체 세계 점유율 1위
+- [32살 이건희가 산 망해 가던 회사 — YouTube, 묘수의 관점](https://www.youtube.com/watch?v=vS-4Z3FwfQE) — 2026-10-23 게시. 사례의 계기 자료이며 사실은 위 자료로 대조했다
 
 ## 관련 문서
 

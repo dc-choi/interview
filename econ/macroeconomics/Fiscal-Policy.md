@@ -26,6 +26,15 @@ aliases: ["재정정책", "Fiscal Policy"]
 
 현금이나 쿠폰을 나눠 주는 이전지출을 대상과 자격, 금액과 기간, 지급 수단, 재원과 분담, 평가로 나눠 읽는 틀은 [[Fiscal-Policy-Transfer-Design|이전지출의 설계와 재원]]에서 다룬다. 한국의 민생회복 소비쿠폰과 농어촌 기본소득 시범사업 사례, 고대 사료로 본 로마의 곡물 배급도 그 문서에 있다.
 
+### 감가상각과 연구개발비의 공제 시점도 세금 손잡이다
+
+세율을 바꾸지 않아도 설비투자와 연구개발비를 언제 비용으로 빼 주는지 정하는 규정이 기업의 세후 현금흐름을 바꾸고 투자 시점에도 영향을 줄 수 있다. 설비는 사용을 시작한 연도에, 연구개발비는 지출한 과세연도에 비용을 한꺼번에 빼면 당기 과세소득과 납부세액이 줄지만 뒤 연도에 상각할 몫이 그만큼 없어지므로, 세금 총액을 없애기보다 납부를 뒤로 미루는 효과가 크다. 미룬 기간의 시간가치만큼은 실제 혜택이고, 투자가 계속 늘면 미룬 세금이 쌓인다(이 문서의 해석). 회계 장부는 이 시점 차이를 이연법인세로 기록하므로, 시점 차이만 생기면 당기세가 줄어든 만큼 이연세가 늘어 총 법인세 비용보다 당기세와 이연세의 구성, 현금 납부세액이 바뀐다. 다른 공제나 최저한세와 맞물리면 손익계산서 비용도 달라질 수 있다(아래 Amazon과 Meta). 다음은 2026-11-02 법령, IRS 안내와 기업 공시를 대조한 미국 사례다.
+
+- **법 내용:** 2025-07-04 제정된 공법 119-21 제70301조는 2025-01-19 후(2025-01-20부터) 취득한 자산의 보너스 감가상각을 100%로 바꾸고 영구화했다((a)항 제목 Made Permanent). 취득 시점은 서면 구속 계약을 맺은 날로 보므로 2025-01-19까지(당일 포함) 계약한 자산은 늦게 받아도 대상이 아니고, 2025-01-19까지 취득한 자산에는 개정 전 일정(2025년 사용 개시분 40%)이 남는다. 대상은 회수기간 20년 이하의 MACRS 유형자산과 일부 소프트웨어 등이다. 같은 법 제70302조가 신설한 174A조는 2024-12-31 후(2025-01-01부터) 시작하는 과세연도의 국내 연구개발비를 즉시 공제하게 했고 해외 연구비는 제외했다. 법인세 기본세율은 과세소득의 21%(IRC 11(b))다.
+- **장부에 나타난 모습:** 세 회사의 2025 회계연도 10-K는 이 변화를 현금 세금 쪽에서 설명한다. 당기 연방세는 Meta가 95억 6,900만 달러에서 28억 2,000만 달러로, Amazon이 90억 3,900만 달러에서 12억 2,000만 달러로 줄었고, Alphabet의 당기 연방세와 주세는 211억 100만 달러에서 133억 7,800만 달러로 줄었다. 2025년 이연 연방세는 Amazon 111억 3,400만 달러, Alphabet(연방과 주) 82억 4,300만 달러였고, Meta의 183억 7,900만 달러에는 아래 평가충당금의 영향이 섞여 있을 수 있다. Amazon은 이 법이 주로 해외소득 공제 감소 때문에 2025년 법인세 비용을 늘렸지만 현금 납부세액은 크게 줄였다고 밝혔다. Alphabet은 국내 연구개발비 즉시 비용화와 가속 감가상각의 효과가 2025년 영업현금흐름에 반영됐다고 밝혔다. Meta는 미국 연방 현금 납세가 줄었지만 15% 법인 최저한세(CAMT)가 그 혜택을 제한한다고 적었고, 2025년 3분기에 미국 연방 이연법인세자산 평가충당금 140억 3,000만 달러를 포함한 159억 3,000만 달러의 일회성 비현금 세금 비용을 인식했다. 세 회사 모두 감가상각이나 유형자산 관련 이연법인세부채가 전년보다 늘었고, 이 증가에는 설비투자 증가 효과도 섞여 있다.
+- **유효세율과 현금 납부율을 나눈다:** 같은 회사도 분자와 분모를 무엇으로 두느냐에 따라 세율이 크게 달라진다. 2025년 GAAP 유효세율은 Meta 29.6%(3분기 일회성 비용 포함), Amazon 19.6%, Alphabet 16.8%였다. 반면 10-K 수치로 국내외 합산 세전이익 973억 1,100만 달러를 분모로 계산하면 Amazon의 당기 연방세는 약 1.3%, 연방 현금 납부액은 약 2.8%였다. 빅테크의 실효세율이 한 자릿수 초반이라는 주장을 보면 GAAP 유효세율인지, 연방 당기세나 현금 납부액인지, 분모가 전체 세전이익인지 국내분인지부터 확인한다.
+- **투자 판단에서의 크기:** 10-K 수치로 계산하면 Amazon의 국내외 합산 현금 납부 법인세(환급 차감)는 123억 달러에서 83억 달러로 약 40억 달러 줄었고, 연방 당기세는 약 78억 달러 줄었다. 어느 지표로 재도 순 설비투자 증가 약 507억 달러보다 작고, 잉여현금흐름은 382억 달러에서 112억 달러로 줄었다. 세제 혜택은 투자의 세후 비용을 낮추는 한 요인이지만 투자 확대의 유일한 동기로 단정하지 않는다. 다음 정부가 혜택을 없애기 전에 투자를 서두른다는 해석도 공시로 확인되지 않으며, 보너스 감가상각은 기한 없이 영구화돼 없애려면 새 입법이 필요하다. 투자 성과는 [[Valuation#투자 붐의 이익은 현금흐름과 자본수익률로 다시 본다|현금흐름과 자본수익률]]로 따로 판단한다.
+
 ## 3. 승수효과
 
 재정승수는 정부 지출이나 세금 변화 1단위가 산출을 얼마나 바꾸는지를 나타내며 **반드시 1보다 큰 것은 아니다**. IMF가 정리한 경험적 범위에서는 평상시 1차 연도 승수가 대체로 0~1 안에 있지만, 경기 침체가 심하고 통화정책의 상쇄가 제한되면 1을 넘을 수 있다. 반대로 수입 누수, 통화 긴축, 금융 제약, 정책 시차와 구성에 따라 작아질 수 있다. 한계소비성향 하나가 아니라 경기 상태와 정책 조합을 함께 본다.
@@ -133,6 +142,17 @@ aliases: ["재정정책", "Fiscal Policy"]
 - [IMF, Fiscal Policy: Taking and Giving Away](https://www.imf.org/external/pubs/ft/fandd/basics/36-fiscal-policy.htm) — 재정 효과, 여유 자원과 자금 조달 제약
 - [국가법령정보센터, 한국은행법 제1조(목적)](https://www.law.go.kr/%EB%B2%95%EB%A0%B9/%ED%95%9C%EA%B5%AD%EC%9D%80%ED%96%89%EB%B2%95/%EC%A0%9C1%EC%A1%B0) — 2026-10-05 물가안정 목적과 금융안정 유의 조항 대조(2026-01-02 시행 조문)
 - [Federal Reserve, How We Conduct Monetary Policy](https://www.federalreserve.gov/aboutthefed/fedexplained/monetary-policy.htm) — 2026-10-05 최대 고용과 물가 안정의 이중 책무 대조
+- [GovInfo, Public Law 119-21](https://www.govinfo.gov/content/pkg/PLAW-119publ21/html/PLAW-119publ21.htm) — 2025-07-04 제정. 2026-11-02 제70301조(보너스 감가상각의 영구화, 100%, 2025-01-19 후 취득과 서면 구속 계약 조건)와 제70302조(174A조 국내 연구개발비 즉시 공제, 적용 과세연도) 대조
+- [IRS, Notice 2026-11](https://www.irs.gov/pub/irs-drop/n-26-11.pdf) — 2026-11-02 개정 전 2025년 사용 개시 자산의 40% 공제율과 개정 후 100% 공제 설명 대조
+- [IRS — Treasury, IRS issue guidance on the additional first year depreciation deduction amended as part of the One, Big, Beautiful Bill](https://www.irs.gov/newsroom/treasury-irs-issue-guidance-on-the-additional-first-year-depreciation-deduction-amended-as-part-of-the-one-big-beautiful-bill) — 2026-01-14 IR-2026-06
+- [IRS, One, Big, Beautiful Bill provisions](https://www.irs.gov/newsroom/one-big-beautiful-bill-provisions) — 2026-11-02 국내와 해외 연구개발비 처리 대조. 2026-10-22 검토판은 이 법을 Working Families Tax Cuts로 부른다
+- [IRS, Publication 946 (2025), How To Depreciate Property](https://www.irs.gov/publications/p946) — 보너스 감가상각 대상 자산 범위
+- [GovInfo, 26 U.S.C. 11, Tax imposed](https://www.govinfo.gov/content/pkg/USCODE-2023-title26/html/USCODE-2023-title26-subtitleA-chap1-subchapA-partII-sec11.htm) — 법인세율 21%
+- [Amazon — Form 10-K for fiscal year 2025, Income Taxes](https://www.sec.gov/Archives/edgar/data/1018724/000101872426000004/R18.htm) — 2026-02-06 제출. 법인세 비용 증가와 현금 납부세액 감소 설명, 현금 납부 법인세, 당기와 이연 연방세, 이연법인세부채와 세전이익 대조. 순 설비투자와 잉여현금흐름은 같은 10-K의 MD&A
+- [Alphabet — Form 10-K for fiscal year 2025, Income Taxes](https://www.sec.gov/Archives/edgar/data/1652044/000165204426000018/R24.htm) — 2026-02-05 제출. 2025-07-04 세법 변경의 효과, 유효세율, 당기와 이연 세금, 이연법인세부채 대조. 영업현금흐름 반영 문구는 같은 10-K의 MD&A
+- [Meta — Form 10-K for fiscal year 2025, Income Taxes](https://www.sec.gov/Archives/edgar/data/1326801/000162828026003942/R23.htm) — 2026-01-29 제출. 연방 현금 납세 감소와 CAMT의 혜택 제한, 159억 3,000만 달러 비용의 구성, 유효세율과 이연법인세부채 대조
+- [Meta — Meta Reports Third Quarter 2025 Results](https://investor.atmeta.com/investor-news/press-release-details/2025/Meta-Reports-Third-Quarter-2025-Results/default.aspx) — 2025-10-29 일회성 비현금 세금 비용 공시
+- [YouTube, 와이스트릿 — 8년 전과 무섭게 똑같다. 과감한 투자 절대 안 됩니다 / 유신익 박사 (1부)](https://www.youtube.com/watch?v=hmMhyZTP7KY) — 2026-10-23 게시. 감가상각 세제 사례의 계기 자료이며 사실은 위 법령과 공시로 대조했다. 분자와 분모를 밝히지 않은 실효세율 수치는 검증하지 못해 쓰지 않았다
 
 - [IMF — Fiscal Multipliers: Size, Determinants, and Use in Macroeconomic Projections](https://www.imf.org/en/publications/tnm/issues/2016/12/31/fiscal-multipliers-size-determinants-and-use-in-macroeconomic-projections-41784)
 - [일본 재무성, 재정에 관한 자료](https://www.mof.go.jp/tax_policy/summary/condition/a02.htm) — 2026-10-11 2026 회계연도 말 보통국채 잔액 전망과 사전 발행 한도 제외 금액 대조

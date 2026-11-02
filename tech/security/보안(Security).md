@@ -22,6 +22,7 @@ aliases: ["보안(Security)", "Security Index"]
 - [[Coordinated-Vulnerability-Disclosure|조율된 취약점 공개 (CVD)]] — 단계와 역할, 수정 지연의 구조, 사전 통지와 정보 공유 범위, 엠바고 유출과 조기 공개 대응
 - [[Adversarial-Examples-Decision-Based-Attacks|적대적 예제와 결정 기반 공격]] — 위협 모델과 쿼리 예산, Boundary Attack과 HopSkipJumpAttack, 잠재 공간 변형, 상태 기반 탐지와 강건성 평가 도구
 - [[Agent-Execution-Isolation|에이전트 실행 격리]] — MXC 백엔드별 강제 범위, 내부자 위험과 공개 모델의 조건부 백도어
+- [[Memory-Safety-Vulnerabilities|메모리 안전성 취약점]] — 범위 밖 읽기와 해제 후 사용의 결과 차이, Heartbleed의 길이 필드 신뢰와 키 재생성, PHP2Shell의 워커 재사용과 요청 격리, 웹 워커 계정 권한, 설정 완화와 업데이트의 구분
 - [[VM-Guest-to-Host-Escape|VM 게스트에서 호스트로의 탈출]] — 하이퍼바이저 밖 호스트 커널 경로까지 포함한 격리 경계, 검사 후 사용 결함, 게스트가 아닌 호스트 패치와 롤링 재부팅, 에이전트 샌드박스 다층 방어, PwnEscape 사례
 - [[Enterprise-Browser-Control|기업용 브라우저 통제]] — Firefox Enterprise의 관리 위치와 early access
 - [[Bot-Traffic-Operations|봇 트래픽 운영]] — 요청 로그와 사용자 분석, 차단과 부하 측정, AI 수집기 이름과 실제 요청자, robots.txt 응답 코드와 그룹 규칙, 관찰부터 캐시, 요청 제한, WAF까지 쌓는 순서
