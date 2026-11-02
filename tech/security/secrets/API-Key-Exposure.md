@@ -26,6 +26,14 @@ aliases: ["API Key Exposure", "연동키 노출", "API 키 노출", "Integration
 - 서드파티 경계: 연동을 맡긴 외부 플랫폼이나 가맹점 쪽에서 키가 새면, 키 발급자 시스템은 멀쩡해도 그 키가 가리키는 데이터가 열린다.
 - 사용자 키를 맡는 서비스(BYOK): 사용자가 공급자에게서 발급받은 키를 저장해 대신 쓰는 서비스가 뚫리면, 공격자는 그 키의 권한과 과금 노출을 그대로 얻고 비용은 키가 연결된 사용자 계정에 청구될 수 있다. 통제와 사고 후 조치는 아래 BYOK 절에서 다룬다.
 
+## 로컬 에이전트의 파일 접근과 런타임 주입
+
+2026-11-02 Git과 1Password 공식 문서 대조 기준이다. 도구에 저장해 둔 키와 도구가 실행 권한으로 읽을 수 있는 키를 나누어 점검한다(적용 제안).
+
+- `.gitignore`는 Git이 추적하지 않는 파일을 무시하도록 정하는 규칙이다. 이미 추적 중인 파일에는 적용되지 않는다. 따라서 `.env`를 여기에 적었다는 사실을 에이전트의 파일 읽기 차단 근거로 쓰지 않고, 실제 실행 계정과 파일 접근 권한을 따로 확인한다(적용 제안).
+- `op run`은 시크릿을 런타임 환경 변수로 자식 프로세스에 전달해 평문 하드코딩을 피하게 한다. 그러나 1Password는 같은 사용자로 실행한 다른 프로세스가 환경 변수에 접근할 수 있다고 가정하라고 안내한다. 환경 변수 주입만으로 에이전트와 시크릿을 격리했다고 판단하지 않는다.
+- 시크릿이 필요한 애플리케이션에만 값을 주입하고 에이전트 실행 환경에는 운영 키를 넣지 않는 구성을 검토한다(적용 제안). 같은 사용자 권한으로 실행하는 프로세스 사이의 접근 가능성과 출력, 로그 노출까지 별도로 확인해야 한다. 저장과 주입 방식의 선택은 [[Secret-Management|시크릿 관리]]에서 다룬다.
+
 ## 최소 권한 스코프
 
 - 용도별로 키를 분리하고 각 키에 필요한 스코프만 부여한다. 조회, 승인, 환불 권한을 한 키에 몰지 않는다. 권한 모델의 일반 원리는 [[Access-Control-Models|접근 제어 모델]]을 따른다.
@@ -93,6 +101,8 @@ Anthropic의 API 키 관리 도움말(2026-11-02 확인)은 공급자 쪽 안전
 
 ## 출처
 
+- [Git, gitignore](https://git-scm.com/docs/gitignore) — 2026-11-02 미추적 파일 대상과 이미 추적된 파일의 예외 대조
+- [1Password, Load secrets into the environment](https://www.1password.dev/cli/secrets-environment-variables) — 2026-11-02 런타임 주입과 같은 사용자 프로세스의 환경 변수 접근 주의사항 대조
 - [Google Cloud, Best practices for managing API keys](https://docs.cloud.google.com/docs/authentication/api-keys-best-practices) — 2026-10-13 비용 피해, 사용 제한, 모니터링과 정기 교체 절차 대조
 - [토스페이먼츠, 가맹점 결제내역 4131건 조회돼…“시스템 침입은 없어” — 바이라인네트워크](https://byline.network/2026/09/0909-6/)
 - [Anthropic, API key best practices: keep your keys safe and secure](https://support.claude.com/en/articles/9767949-api-key-best-practices-keeping-your-keys-safe-and-secure) — 2026-11-02 즉시 폐기, 환경별 키 분리, 지출 한도와 auto-reload 한도, Logs와 Usage 확인, GitHub secret scanning 자동 비활성화 대조

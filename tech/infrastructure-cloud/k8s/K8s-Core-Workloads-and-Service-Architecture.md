@@ -40,6 +40,15 @@ kubectl apply (Deployment)
 - Kubernetes 1.24에서 dockershim이 제거되어 kubelet은 Docker Engine을 직접 쓰지 않는다. Docker Engine을 runtime으로 쓰려면 cri-dockerd adapter가 필요하고, `docker build`로 만든 image는 모든 CRI 구현에서 그대로 실행된다.
 - etcd를 잃으면 cluster 상태가 사라지므로 etcd backup 계획이 필요하다. EKS는 Region 안 3개 AZ에 API server 2개 이상과 etcd 3개를 두고 AWS가 운영하므로, 관리형 control plane에서는 사용자 책임 범위를 provider 문서로 확인한다([[EKS]], [[Backup-Restore]]).
 
+## 노드 장애 감지와 Pod 교체 사이에는 대기가 있다
+
+2026-11-02 Kubernetes Nodes, Taints and Tolerations와 ReplicaSet 문서 대조 기준이다. 기존 DNS와 업그레이드 절은 이번에 다시 검증하지 않았다.
+
+- node heartbeat에는 Node status 갱신과 `kube-node-lease`의 Lease 갱신이 있다. node에 닿지 못하면 node controller가 `Ready`를 `Unknown`으로 바꾸며, 전원 장애와 네트워크 단절을 이 상태만으로 구분할 수는 없다.
+- `not-ready`와 `unreachable`의 `NoExecute` taint에 대한 toleration을 사용자나 controller가 따로 정하지 않으면 Kubernetes는 `tolerationSeconds: 300`을 추가한다. 이 기본 대기와 장애 감지, 새 Pod의 배치 및 시작 시간을 합쳐 봐야 하므로, 장애 발생부터 5분 안에 복구된다는 보장이 아니다.
+- ReplicaSet이 관리하는 Pod는 eviction 뒤 부족한 replica를 새 Pod로 채운다. 기존 container를 다른 node로 옮기는 과정이 아니며, 배치 가능한 용량과 조건이 맞지 않으면 새 Pod는 Pending에 남는다. 복구 시간 점검에서는 감지, eviction, scheduling, readiness를 나누어 기록한다(운영 제안).
+- DaemonSet Pod는 두 taint를 시간 제한 없이 tolerate하므로 같은 교체 시간표를 적용하지 않는다. 네트워크 단절에서는 삭제 대상으로 잡힌 Pod도 기존 node에서 계속 실행될 수 있으므로, API의 삭제 결정만으로 기존 프로세스가 멈췄다고 판단하지 않는다.
+
 ## 멈춘 단계로 담당 component를 좁힌다
 
 | 증상 | 먼저 볼 곳 |
@@ -120,6 +129,9 @@ consul.local:53 {
 
 ## 출처
 
+- [Kubernetes Docs, Nodes](https://kubernetes.io/docs/concepts/architecture/nodes/)
+- [Kubernetes Docs, Taints and Tolerations](https://kubernetes.io/docs/concepts/scheduling-eviction/taint-and-toleration/)
+- [Kubernetes Docs, ReplicaSet](https://kubernetes.io/docs/concepts/workloads/controllers/replicaset/)
 - [Kubernetes Docs, cluster architecture](https://kubernetes.io/docs/concepts/architecture/)
 - [Kubernetes Docs, Kubernetes components](https://kubernetes.io/docs/concepts/overview/components/)
 - [Kubernetes Docs, Kubernetes scheduler](https://kubernetes.io/docs/concepts/scheduling-eviction/kube-scheduler/)
