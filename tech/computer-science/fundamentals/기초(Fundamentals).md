@@ -22,6 +22,7 @@ aliases: ["CS Fundamentals"]
 - [x] [[Emulation-and-Compatibility-Layers|다른 플랫폼용 프로그램 실행 (에뮬레이터, Wine과 Proton 호환 계층, Rosetta 명령어 변환, 셰이더 변환, TBDR 최적화와 이식 판단)]]
 - [x] [[Programming-Language-Landscape|프로그래밍 언어 지형과 구분 기준 (설계 목적과 계보, 대표 구현의 실행 경로, 메모리 관리 방식, 타입 검사 시점, 플랫폼과 생태계, 메모리 안전성 권고)]] — 언어 교체의 지연 상한과 CPU 비용, 작은 구현을 읽는 학습
 - [x] [[Math-Logic-For-Programming|프로그래밍에 필요한 수학과 논리 (명제, 집합, 드 모르간, 귀납법, 작은 모델의 탐색과 증명 구분)]]
+- [x] [[Computability-and-Turing-Machine|계산 가능성과 튜링 기계 (효과적 방법, 범용 기계, 대각선 논증과 결정 문제, 정지 문제, 괴델과 처치, 명제와 타입, 라이스 정리)]]
 - [x] [[Data-Measurement-and-Tidy-Data|데이터 측정 척도, 정돈된 데이터와 결측, 이상치 (명목, 순서, 등간, 비율, 변수와 관측 단위, 결측 메커니즘, 삭제와 대체, 학습 데이터 누수, IQR 이상치 후보)]]
 - [x] [[Descriptive-Statistics-and-Distribution|기술통계와 분포 (평균, 중앙값과 최빈값, 분산의 분모, 표준편차와 IQR, 상자그림 수염, 관측 순서와 기하평균)]]
 - [x] [[Discrete-Probability-Distributions|이산 확률분포 (이항, 기하와 포아송, PMF와 CDF, 기댓값, 큰 수의 법칙과 정규분포의 구분)]]

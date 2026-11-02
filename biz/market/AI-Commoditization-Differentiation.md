@@ -209,3 +209,4 @@ AI가 결과물을 만든 뒤에도 고객에게 남는 편집, 배포, 응답 �
 - [[Signaling-Screening|신호와 선별]] — 결과물이 흔해질 때 구매자가 수행자를 가려내는 근거
 - [[AI-Software-Replication-and-Due-Diligence|AI 소프트웨어 복제와 기술 실사]] — 고객 전환 비용, 책임과 기술 실사
 - [[AI-Native-Services|결과를 파는 AI 네이티브 서비스]] — 결과 판매의 지표, 가격, 인수 순서와 브랜드 보호 사례
+- [[AI-Commoditization-Model-Absorption|기반 모델의 기능 흡수와 방어력]] — 모델 개선에 흡수되는 보완 기능, 두 가지 계획 가정과 방어력이 옮겨 가는 곳

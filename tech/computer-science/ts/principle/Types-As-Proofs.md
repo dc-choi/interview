@@ -36,7 +36,7 @@ verified_at: 2026-08-04
 function makeBread(flour: Flour): Bread { ... }
 ```
 
-이 함수가 컴파일되면 "Flour가 주어지면 Bread를 만들 수 있다"는 명제의 **증명을 제출한 것**과 같다. 본문 안에서 진짜로 `Bread`를 반환할 수 없으면 컴파일 거부 → 거짓 증명 차단.
+이 함수가 컴파일되면 "Flour가 주어지면 Bread를 만들 수 있다"는 명제의 **증명을 제출한 것**과 같다. 반환식의 타입이 `Bread`가 아니면 컴파일러가 거부한다. 다만 `never`는 모든 타입에 할당되므로 `throw`나 무한 루프처럼 반환하지 않는 본문은 어떤 반환 타입으로도 통과한다. 종료와 정상 반환을 따로 확인하지 않으면 컴파일 통과를 그 명제의 증명으로 읽지 않는다([[Computability-and-Turing-Machine#프로그램과 증명|계산 가능성과 튜링 기계]]).
 
 ### 2. 유니온과 Exhaustiveness — `A ∨ B`
 
@@ -155,6 +155,7 @@ Java/C#의 명목 클래스와 일부 타입 메타데이터는 런타임 reflec
 - [evan-moon — 타입 시스템은 왜 증명처럼 동작하는가](https://evan-moon.github.io/2026/01/25/types-as-proofs-typescript-hidden-math/)
 - [velog @miinhho — OOP와 TypeScript](https://velog.io/@miinhho/oop-and-typescript)
 - [TypeScript Handbook, More on Functions](https://www.typescriptlang.org/docs/handbook/2/functions.html)
+- [TypeScript Handbook, Narrowing](https://www.typescriptlang.org/docs/handbook/2/narrowing.html)
 - [TypeScript Declaration Files, Do's and Don'ts](https://www.typescriptlang.org/docs/handbook/declaration-files/do-s-and-don-ts.html)
 - [TypeScript TSConfig, strictFunctionTypes](https://www.typescriptlang.org/tsconfig/strictFunctionTypes.html)
 - [TypeScript TSConfig, exactOptionalPropertyTypes](https://www.typescriptlang.org/tsconfig/exactOptionalPropertyTypes.html)

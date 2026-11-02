@@ -16,4 +16,5 @@ aliases: ["Market"]
 - [x] [[Competitive-Analysis|경쟁사 분석]] — Five Forces, 간접 경쟁, 경쟁 해자, SWOT, 벤치마킹, 광고 투명성 도구의 공개 범위, 브라우저 확장의 추정치와 권한 점검, 공개 자료와 후기의 증거 범위, 벤치마킹의 표현 복제 경계, KSF
 - [x] [[Strategy-Analysis-Frameworks|전략 분석 프레임워크]] — Ansoff 제품-시장 성장 대안, BCG 성장-점유율 매트릭스와 2014년 재검토, 자원 기반 관점의 네 지표
 - [x] [[AI-Commoditization-Differentiation|AI 범용화와 사업 차별화]] — 정보 전달, 제작 대행, 중개, 사무 대행, 복제 쉬운 사업의 가치 이동과 선택받을 이유
+- [x] [[AI-Commoditization-Model-Absorption|기반 모델의 기능 흡수와 방어력]] — 모델 공백을 메우는 기능의 흡수 노출, 두 가지 계획 가정, 미세조정 경험 감소 조사와 업무 흐름, 데이터, 책임으로 옮겨 가는 방어력
 - [x] [[AI-Software-Replication-and-Due-Diligence|AI 소프트웨어 복제와 기술 실사]] — 기능 동등성, 전문 업무 호환성, 모델 의존과 인수 가치

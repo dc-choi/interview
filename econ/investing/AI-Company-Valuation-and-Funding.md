@@ -40,6 +40,18 @@ SpaceX의 2026-10-20 실적 발표에 실린 3분기 표를 2026-10-29 대조했
 
 Capex는 같은 분기의 영업비용과 같지 않다. 위 표의 영업이익에서 Capex만 빼 잉여현금흐름을 계산하지 않는다. 매출 비중과 회계상 흑자만으로 개별 설비의 투자 회수기간도 확정할 수 없다. 이 대조는 실적 표와 계산에 한정하며, 향후 컴퓨팅 용량, 회수기간 전망과 다른 회사와의 합병 가능성을 확인한 결과가 아니다.
 
+### 비상장 투자 집계와 라운드 금액의 기준을 맞춘다
+
+월간이나 연간 투자 집계에서 건수가 줄었는데 금액이 늘었다면 거래당 평균 금액이 커진 것이다. 이를 시장 전반의 회복으로 읽기 전에 상위 몇 건이 합계에서 차지하는 몫을 확인하고, 업종별 비중은 최대 거래를 뺀 값으로도 다시 계산한다. 한 건을 뺐을 때 비중이 크게 달라지면 업종 전반의 강세로 일반화하지 않는다.
+
+집계 기준도 숫자의 일부다. 어떤 투자 유형과 지역을 포함하는지, 금액을 공개하지 않은 거래를 건수와 금액에서 어떻게 처리하는지, 발표일, 납입일 등 어느 날짜로 거래를 월에 배정하는지 확인한다. 집계 기관마다 이 기준이 다르면 같은 달의 숫자도 서로 다르게 나올 수 있다. 시드나 시리즈 같은 라운드 명칭만으로 단계와 규모를 비교하지 않는다.
+
+라운드 총액과 한 달 집계에 잡힌 금액도 다를 수 있다. 2026-10-28(미국 기준, 한국 시간 10-29) FuriosaAI는 Series D 6억 2,000만 달러(배포 보도자료에는 원화 8,200억원 병기)를 마치고 투자 후(post-money) 기업가치가 약 29억 달러라고 발표했다. 같은 회사 홈페이지에 팝업으로 게시된 제6종 상환전환우선주식 신주발행 공고 두 건은 2026년 7월 8일부터 10월 30일까지 여러 납입기일을 적지만 라운드 이름을 밝히지 않으므로, Series D와의 대응과 금액은 확인하지 않았다. 납입이 여러 달에 걸치면 집계 기준에 따라 같은 라운드가 여러 달에 나뉘어 잡히거나 완료를 발표한 달에 한꺼번에 잡힐 수 있다.
+
+회사 발표는 투자 전(pre-money) 가치를 적지 않는다. 전액 신주 투자라는 단순 가정으로 투자 후 가치에서 조달액을 빼면 약 23억 달러 안팎이지만, 이는 반올림된 투자 후 가치로 낸 계산값이며 회사가 밝힌 수치가 아니다. 계산 조건은 [[Startup-Equity-and-Dilution|스타트업 지분과 희석]]에서 다룬다. 다른 회사의 평가액과 비교할 때는 투자 전후 기준과 평가 시점을 맞춘다. 영문 블로그와 배포 보도자료는 기업가치를 달러로만 적으므로, 원화로 적힌 평가액과 나란히 놓으려면 적용 환율과 그 기준일을 함께 밝힌다. 국내 보도가 전한 원화 기업가치는 회사의 국문 원문을 확인하지 않았다.
+
+2026-11-02 회사 블로그, Business Wire 배포 보도자료의 재게재본과 홈페이지 공고를 대조했다. 특정 집계 서비스가 이 라운드를 어느 달에 얼마로 반영했는지, 원화 기준 기업가치와 다른 회사와의 비교 순위는 확인하지 않았다.
+
 ## 기대를 역산한다
 
 기업가치에서 출발해 정당화에 필요한 매출, 마진, 재투자와 성장 지속 기간을 역산한다. 그 뒤 고객의 지급 의사, 가격 경쟁과 자본 필요량을 대조한다. 높은 성장만으로 적정 가격을 확정하지 않으며, 저가 경쟁자가 있다는 사실만으로 기업가치를 0으로 두지도 않는다.
@@ -104,6 +116,8 @@ AMD의 2026-09-28 Form 8-K는 9월 26일 World Labs의 전체 지분을 인수�
 - [Anthropic will be 'most ridiculous IPO' of year, analyst says — CNBC](https://www.cnbc.com/2026/10/07/anthropic-will-be-most-ridiculous-ipo-of-year-analyst-says.html) — 2026-10-07 보도, 1,500억 달러 평가 표현의 출처
 - [리서치 업체, Anthropic IPO 경고 — GeekNews](https://news.hada.io/topic?id=35243) — 제공된 2026-10-13 발췌 연결
 - [TypeSafe A raises Series AI — TypeSafe AI](https://typesafe.ai/blog/series-ai) — 당사자 발표
+- [FuriosaAI closes $620 million Series D to scale efficient, production-ready AI inference — FuriosaAI](https://furiosa.ai/blog/furiosaai-620-million-series-d) — 2026-10-28 당사자 발표의 투자 후 기업가치와 사이트 공통 팝업으로 게시된 제6종 상환전환우선주식 신주발행 공고, 2026-11-02 대조
+- [FuriosaAI Secures $620 Million Series D to Meet Surging Enterprise AI Inference Demand and Accelerate Next-Gen Silicon — Business Wire, FuriosaAI](https://via.tt.se/pressmeddelande/4620607/furiosaai-secures-dollar620-million-series-d-to-meet-surging-enterprise-ai-inference-demand-and-accelerate-next-gen-silicon?lang=en) — 2026-10-28 배포 보도자료의 Via TT 재게재본(businesswire.com 원문은 자동 조회 차단), 조달액 원화 병기와 투자 후 기업가치
 
 ## 관련 문서
 
