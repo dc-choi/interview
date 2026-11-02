@@ -98,6 +98,13 @@ AWS Microcredentials는 제공된 AWS 환경에서 구성, 문제 해결과 최�
 
 Anthropic 강좌는 무료로 등록해 최종 평가를 거쳐 수료증을 받을 수 있다. Hugging Face 강좌는 무료로 Unit 1을 마치면 기초 수료증을, 여기에 사용 사례 과제 하나와 최종 과제를 더하면 이수 수료증을 받는다. 시험형 셋은 유료이며 시험 시간만 60~170분이다. 세 시험 페이지는 준비 기간을, Anthropic 강좌는 준비 기간과 강좌 소요 시간을 적지 않고 Hugging Face도 장마다 주 3~4시간씩 1주라는 설계 기준만 밝히므로, 짧은 기간에 딸 수 있다는 추천 목록의 표현을 준비 기간의 근거로 쓰지 않는다. AWS 시험은 버전 전환 중이고 같은 페이지 안에서도 C02 코드가 MLA-C02와 ME1-C02로 다르게 적혀 있어, 응시 직전에 언어와 시험 코드를 다시 확인한다.
 
+PMI의 PMI-CPMAI(PMI Certified Professional in Managing AI)는 위 시험형과 달리 지정 과정의 수료가 응시 조건이다. 2026-11-02 대조한 PMI의 시험 내용 개요(2025년 9월판), 인증 핸드북(2026년 6월 개정)과 자격 유지 핸드북(2026년 4월 갱신) 기준이다. 공식 인증 웹페이지는 이번 대조에서 열지 못해 금액과 과정 분량은 확인하지 못했다.
+
+- **범위:** PMI가 2024년 9월 인수한 Cognilytica의 CPMAI 인증을 바탕으로 만든 자격이다. 일반 프로젝트 관리 지식이 아니라 CPMAI 방법론으로 AI 구현을 이끄는 역량을 책임 있고 신뢰할 수 있는 AI(15%), 비즈니스 요구와 솔루션(26%), 데이터 요구(26%), 모델 개발과 평가(16%), 운영화(17%)의 다섯 도메인으로 평가한다.
+- **응시 조건:** 프로젝트 관리, 기술이나 AI 경력과 자격은 요구하지 않지만, PMI의 PMI-CPMAI Exam Prep Course를 마쳐야 시험을 예약할 수 있다. 과정과 인증을 함께 사고 첫 과정비와 시험비를 먼저 낸다. 경력 없이 시작할 수 있다는 홍보 문구를 과정 수료 요건까지 없다는 뜻으로 읽지 않으며, 다른 회사의 강의가 이 과정을 대신한다는 PMI 공식 안내는 확인하지 못했다.
+- **시험:** 120문항(채점 100, 비채점 사전시험 20), 160분이며 정해진 휴식은 없다. Pearson VUE 시험장(권장)이나 온라인 감독으로 치른다. 구매 뒤 1년 안에 취득해야 하고 그 기간에 최대 3회 응시하며, 재응시마다 시험비를 낸다. 비용은 지역과 회원 여부에 따라 다르고 회원 가입은 필수가 아니다.
+- **유지와 언어:** 3년마다 30 PDU(교육 18 이상, 기여 12 이하)를 채워 갱신한다. 2025년 9월판 개요는 2026년 1월 한국어를 포함한 9개 언어 추가를 예고했지만, 2026년 6월 개정 핸드북의 번역 표에서는 이 시험의 한국어 표시를 확인하지 못했으므로 응시 직전에 언어를 다시 확인한다.
+
 이는 과정 선택 기준이며 사용자의 자격증 준비나 새 학습 트랙을 시작한다는 결정이 아니다. 다른 절의 가격과 유지 정책을 다시 대조하지 않아 기존 `verified_at`은 유지한다.
 
 ### 선택과 이해 확인 절차
@@ -166,6 +173,9 @@ Anthropic 강좌는 무료로 등록해 최종 평가를 거쳐 수료증을 받
 - [Google Cloud, Generative AI Leader](https://cloud.google.com/learn/certification/generative-ai-leader) — 2026-11-02 시험 형식, 비용, 대상과 유효기간 대조.
 - [NVIDIA, NVIDIA-Certified Associate: Generative AI LLMs](https://www.nvidia.com/en-us/learn/certification/generative-ai-llm-associate/) — 2026-11-02 시험 형식, 비용과 유효기간 대조.
 - [AWS, AWS Certified Machine Learning Engineer - Associate](https://aws.amazon.com/certification/certified-machine-learning-engineer-associate/) — 2026-11-02 MLA-C01과 MLA-C02 베타의 형식, 비용과 유효기간 대조.
+- [PMI, PMI-CPMAI Exam Content Outline](https://www.pmi.org/-/media/pmi/documents/public/pdf/certifications/pmicpmai-exam-content-outline2025-updated.pdf) — 2025년 9월판. 2026-11-02 자격의 유래와 범위, 도메인 비중, 필수 과정과 경력 요건, 시험 형식, 응시 기간과 재응시, 비용 규칙, 언어 추가 예고 대조.
+- [PMI, Certification Handbook](https://www.pmi.org/-/media/pmi/documents/public/pdf/certifications/generic-certification-handbook.pdf) — 2026년 6월 개정판. 2026-11-02 시험별 번역 언어 표와 가격 규칙 대조.
+- [PMI, Continuing Certification Requirements Handbook](https://www.pmi.org/-/media/pmi/documents/public/pdf/certifications/ccr-certification-requirements-handbook.pdf) — 2026년 4월 갱신판. 2026-11-02 PMI-CPMAI의 3년 주기와 PDU 요건 대조.
 - [AWS Recertification — AWS](https://aws.amazon.com/certification/recertification/) — 2026-10-07 유지와 갱신의 기간, 자격 조건 및 Cloud Quest 경로를 대조했다.
 - [A new way to keep your AWS Certification current — AWS Training and Certification Blog](https://aws.amazon.com/blogs/training-and-certification/a-new-way-to-keep-your-aws-certification-current/) — 2026-06-23 공개 베타의 교육과 실습 요건.
 - [AWS, AWS Cloud Adoption Framework: People Perspective, Workforce transformation](https://docs.aws.amazon.com/whitepapers/latest/aws-caf-people-perspective/workforce-transformation.html) — 2026-10-07 업무 수요와 학습 경로 연결 원칙을 대조했다.
