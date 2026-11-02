@@ -10,6 +10,7 @@ aliases: ["Realtime"]
 Polling, SSE, WebSocket, STOMP, 실시간 통신 아키텍처.
 
 ## 목차
+- [x] [[Game-State-Authority-and-Prediction|게임 상태 판정과 예측]] — 서버 권위, 예측 보정, 명령 공유와 결정적 시뮬레이션
 - [x] [[Realtime-Communication-Comparison|실시간 통신 기술 비교 (Polling/Long Polling/SSE/WebSocket/WebRTC/WebTransport)]]
 - [x] [[Server-Sent-Events|Server-Sent Events (SSE, 유한 스트림, BFF 점진 조립)]]
 - [x] [[WebSocket|WebSocket]]

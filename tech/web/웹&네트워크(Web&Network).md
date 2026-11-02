@@ -21,6 +21,7 @@ aliases: ["웹&네트워크(Web&Network)", "Web & Network"]
 
 ## 추가 주제
 
+- [x] [[Game-State-Authority-and-Prediction|게임 상태 판정과 예측]] — 서버 권위, 재시뮬레이션, 명령 공유와 결정성의 조건
 - [[Satellite-Direct-to-Device|위성 직접 연결]] — LTE와 NTN 방식, 도플러와 서비스 지원 조건
 - [[WebGPU-Cross-Runtime|WebGPU 코드 공유]]
 - [[Cross-Platform-Keyboard|플랫폼별 키보드 입력]]

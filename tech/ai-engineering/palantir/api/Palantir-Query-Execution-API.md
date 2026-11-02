@@ -109,6 +109,12 @@ QueryDataType은 scalar 외에 struct, set/array, union, null, void, attachment,
 
 error event에는 필수 errorCode, errorName, errorInstanceId와 선택적 errorDescription/parameters가 있다. 따라서 처음 HTTP 응답을 받았거나 일부 data batch를 읽은 상태를 전체 실행 성공으로 기록하지 않는다. 정상 종료와 stream 안의 error를 함께 처리한다. 재개 cursor나 수신 batch의 exactly-once 보장은 이 명세에 없으므로 별도 보장으로 전제하지 않는다.
 
+### SSE 봉투와 JSON 판별자를 따로 읽는다
+
+2026-11-02 Streaming Execute Query 명세와 예제 부분 대조 기준, SSE의 `data:` 줄 안에 JSON payload가 들어가고 그 객체의 `type`으로 결과와 오류를 구분한다. 결과는 `{"type":"data","value":...}` 형태다. 명세 화면의 union variant 이름인 `data`를 별도 중첩 필드로 오해해 `payload.data.value`를 읽지 않는다. non-streaming 함수도 같은 SSE 봉투에 전체 결과를 한 번 보내므로, 이 경로를 호출할 때 일반 JSON 응답 파서로 바꾸지 않는다.
+
+전용 HTTP 권한 오류는 403의 `StreamingExecuteQueryPermissionDenied`이며, `PERMISSION_DENIED` 코드와 `queryApiName` parameter를 갖는다. 이 응답과 스트림 내부의 `type: error`는 다른 실패 경로다. 클라이언트 점검에서는 HTTP 오류, data 뒤 error, 결과가 배열이 아닌 data, 전송 중 단절을 나눠 시험한다(설계 제안). 실제 호출과 파서는 시험하지 않았으며 기존 metadata 절 전체를 재검증하지 않아 frontmatter의 검증일은 유지한다.
+
 이 문서는 다섯 endpoint의 전체 schema, 반복 타입 정의와 예제의 동일성을 대조한 결과다. 실제 Query 실행, branch/version 선택과 SSE 단절/오류 처리는 시험하지 않았다.
 
 ## 출처
