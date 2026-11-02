@@ -30,6 +30,18 @@ Windows Server라는 제품명만으로 GUI가 없거나 필요한 역할이 모
 
 ## 추상화 계층
 
+### VM, SaaS와 MSA는 서로 다른 선택이다
+
+- **실행 환경:** VM은 OS와 애플리케이션을 실행할 가상 자원을 제공한다.
+- **서비스 제공 방식:** SaaS는 제공자가 애플리케이션을 운영하고 고객이 소프트웨어를 이용하는 모델이다.
+- **애플리케이션 구조:** MSA는 애플리케이션을 여러 서비스로 나누는 구조다. SaaS를 제공하기 위한 필수 조건은 아니다.
+
+VM 위에서 모놀리식 애플리케이션을 운영하며 SaaS로 제공할 수 있다. 고객이 SaaS를 사용한다는 설명과 제공자가 IaaS를 사용한다는 설명은 서로 다른 관점에서 동시에 성립한다. 2026-11-02 AWS SaaS 설명과 SaaS Lens의 bridge 모델을 부분 대조했다. bridge 모델은 모놀리식 SaaS에서도 웹 계층 공유와 테넌트별 애플리케이션/저장소 분리를 조합하는 예를 제공한다.
+
+설계할 때는 실행 환경, 고객에게 제공할 기능과 운영 책임, 서비스 분리, 테넌트 격리를 각각 결정한다. VM이나 컨테이너를 선택했다는 사실만으로 SaaS 제공 여부와 고객 간 데이터 격리가 결정되지는 않는다. 격리 모델은 [[SaaS-Regional-Data-Isolation]]에서 이어서 다룬다.
+
+### 모델별 운영 책임
+
 | 계층 | 사업자가 관리 | 사용자가 관리 | 대표 |
 |---|---|---|---|
 | **On-Premise** | — | 전부(하드웨어~앱) | 자체 데이터센터 |
@@ -180,6 +192,8 @@ Windows Server라는 제품명만으로 GUI가 없거나 필요한 역할이 모
 - [Microsoft Learn, Server Core vs Server with Desktop Experience install options](https://learn.microsoft.com/en-us/windows-server/get-started/install-options-server-core-desktop-experience)
 - [What is a Cloud Server? — AWS](https://aws.amazon.com/what-is/cloud-server/)
 - [AWS, Shared Responsibility Model](https://aws.amazon.com/compliance/shared-responsibility-model/)
+- [What is SaaS? — AWS](https://aws.amazon.com/what-is/saas/)
+- [AWS SaaS Lens, The bridge model](https://docs.aws.amazon.com/wellarchitected/latest/saas-lens/bridge-model.html)
 - [Vercel, Pro Plan](https://vercel.com/docs/plans/pro-plan)
 - [Nginx, How nginx processes a request](https://nginx.org/en/docs/http/request_processing.html)
 - [AWS, Disaster recovery options in the cloud](https://docs.aws.amazon.com/whitepapers/latest/disaster-recovery-workloads-on-aws/disaster-recovery-options-in-the-cloud.html)

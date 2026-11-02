@@ -38,6 +38,10 @@ Get Query의 query parameter는 `version`, `latestVersionResolution`, `includePr
 
 응답의 `version`은 실제 조회된 버전이다. 운영 제안으로, metadata를 이용해 입력 폼이나 검증기를 만들 때는 응답의 `rid`와 `version`을 함께 보관하고 후속 실행의 버전 선택과 대조한다. 두 호출에서 각각 latest를 다시 해석하면 그 사이 발행된 버전 때문에 입력 명세가 달라질 수 있다. 2026-10-20 Get Query 명세로 이 절을 대조했으며 실제 호출은 시험하지 않았다.
 
+2026-11-02 Get Query 명세 부분 대조 기준, 이 endpoint의 전용 오류 표에는 `QueryNotFound` 하나가 있고 HTTP 404, 오류 코드 `NOT_FOUND`, parameter `queryApiName`을 반환한다. `GetByRidPermissionDenied`를 API name 조회의 전용 오류로 복사하지 않는다. 전용 권한 오류가 표에 없다는 사실이 인증이나 인가 검사가 없다는 뜻은 아니며, 공통 오류 처리는 [[Palantir-API-Client-Contract]]를 따른다.
+
+운영 제안으로, 404가 오면 요청한 API name과 버전 선택 조건을 함께 보존해 진단한다. 이 오류의 parameter에는 요청 버전이나 실패 원인이 따로 정의돼 있지 않으므로 404만으로 특정 버전 삭제를 확정하지 않는다. 실제 오류 응답과 권한별 동작은 시험하지 않았다.
+
 ### RID는 경로 조각이 아니라 query parameter다
 
 Get By Rid는 `GET /api/v2/functions/queries/getByRid`에 필수 query parameter `rid`를 전달한다. RID를 `{queryApiName}` 자리에 넣는 요청과 구분한다. 선택 인자는 `version`, `includePrerelease`, `preview`이며 `branch`와 `latestVersionResolution`은 이 endpoint의 인자로 정의돼 있지 않다.
