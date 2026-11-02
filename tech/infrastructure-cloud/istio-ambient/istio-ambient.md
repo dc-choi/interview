@@ -22,6 +22,7 @@ sidecar 없는 service mesh — ztunnel과 waypoint의 트래픽 구조, HBONE, 
 - [[Istio-Ambient-Upgrade|업그레이드 전략]]
 - [[Envoy-XDS-Disconnected-Detection|Envoy xDS 단절 탐지]]
 - [[Envoy-Retry-Buffer-507|Envoy Retry Buffer와 507]]
+- [[Envoy-Upgrade-Behavior-Changes|Envoy 업그레이드와 동작 변경 점검]]
 
 ## 관련 문서
 - [[tech/infrastructure-cloud/인프라&클라우드(Infrastructure&Cloud)|인프라&클라우드]] — 상위 카테고리 인덱스

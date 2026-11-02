@@ -3,7 +3,7 @@ tags: [security, crypto, tls, certificate, nginx]
 status: done
 category: "Security - 암호"
 aliases: ["TLS Config", "TLS 설정", "cipher suite 설정", "ssl_protocols"]
-verified_at: 2026-10-03
+verified_at: 2026-11-02
 ---
 
 # TLS Config — TLS 설정 실무
@@ -19,6 +19,7 @@ verified_at: 2026-10-03
 - **하한은 TLS 1.2, 우선은 TLS 1.3**이 현재 기본선이다. RFC 8996은 TLS 1.0과 TLS 1.1에 대해 MUST NOT을 규정하고, 어떤 버전에서든 이 둘로의 협상을 허용하지 말라고 못박았다. SSL 2.0은 RFC 6176, SSL 3.0은 RFC 7568에서 이미 폐기됐다.
 - 근거는 SHA-1 의존, AEAD 스위트 부재, 다운그레이드 공격 내성 부족이다. 취향 문제가 아니라 규격이 금지한 범위다.
 - Mozilla SSL Configuration 가이드라인 6.0 기준으로 Modern은 TLS 1.3만, Intermediate는 TLS 1.2와 1.3을 허용한다. Intermediate의 TLS 1.2 목록은 ECDHE AEAD 스위트만 남았다. 키 교환 그룹은 두 프로필 모두 X25519MLKEM768, X25519, prime256v1, secp384r1 순이고 X25519MLKEM768은 TLS 1.3에서만 협상된다. 5.8에서 Intermediate와 Old의 DHE 스위트가 빠지고 X25519MLKEM768이 그룹 맨 앞에 들어갔으며, 6.0에서 TLS 1.0과 3DES(DES-CBC3-SHA)까지 허용하던 Old 프로필이 빠졌다. 5.7의 Intermediate나 Old 설정을 그대로 쓰면 RFC 10015가 금지한 DHE 스위트가 남는다.
+- Envoy는 v1.40.0(2026-10-13 릴리스 노트, 2026-11-02 대조)에서 upstream과 downstream TLS의 기본 ECDH 곡선에 하이브리드 양자 내성 키 교환 X25519MLKEM768을 추가했다(FIPS 빌드 포함). `ecdh_curves`를 지정하지 않은 설정은 업그레이드만으로 기본 곡선 목록이 바뀌며, runtime 플래그 `envoy.reloadable_features.pqc_default_ecdh_curves`를 false로 두면 이 추가를 끌 수 있다. 다만 `compliance_policies`는 설정의 마지막에 적용돼 다른 TLS 파라미터를 덮어쓸 수 있으므로, 정책을 쓴 설정에서는 이 기본 목록 변경이 그대로 나타나지 않을 수 있다. 기본 목록 순서와 확인 방법은 [[Envoy-Upgrade-Behavior-Changes|Envoy 업그레이드와 동작 변경 점검]]에 둔다.
 - 레거시 호환을 이유로 TLS 1.0을 켜 두는 판단의 실제 비용은 감사와 컴플라이언스 지적, 다운그레이드 표면 확대, 그리고 그 설정을 아무도 걷어내지 못하는 상태의 고착이다.
 - 하한을 올릴 때 먼저 관측할 것은 두 가지다. 액세스 로그나 커넥션 로그의 **협상 TLS 버전 분포**로 실제 구버전 클라이언트 비중을 재고, 변경 후 **핸드셰이크 실패율과 5xx가 아닌 연결 종료**를 본다. 실패는 애플리케이션 로그에 안 남고 LB 레벨에서만 보이는 경우가 많다.
 
@@ -155,6 +156,8 @@ CloudFront: TLSv1.2_2021 또는 TLSv1.3_2025 (정책별 스위트 목록 고정)
 - [OWASP, Authorization Cheat Sheet](https://cheatsheetseries.owasp.org/cheatsheets/Authorization_Cheat_Sheet.html)
 - [AWS, Security policies for your Application Load Balancer](https://docs.aws.amazon.com/elasticloadbalancing/latest/application/describe-ssl-policies.html)
 - [AWS, Supported protocols and ciphers between viewers and CloudFront](https://docs.aws.amazon.com/AmazonCloudFront/latest/DeveloperGuide/secure-connections-supported-viewer-protocols-ciphers.html)
+- [1.40.0 (October 13, 2026) — Envoy](https://www.envoyproxy.io/docs/envoy/v1.40.0/version_history/v1.40/v1.40.0)
+- [Envoy, Common TLS configuration (proto)](https://www.envoyproxy.io/docs/envoy/v1.40.0/api-v3/extensions/transport_sockets/tls/v3/common.proto)
 
 ## 관련 문서
 - [[HTTPS-TLS|HTTPS와 TLS 핸드셰이크 (원리, cipher suite 해부)]]
@@ -165,3 +168,4 @@ CloudFront: TLSv1.2_2021 또는 TLSv1.3_2025 (정책별 스위트 목록 고정)
 - [[Network-Perimeter-Security|네트워크 경계 보안 (TLS 종료 위치)]]
 - [[Reverse-Proxy|리버스 프록시]]
 - [[Istio-Ambient-Mode|Istio Ambient Mode (메시 mTLS)]]
+- [[Envoy-Upgrade-Behavior-Changes|Envoy 업그레이드와 동작 변경 점검 (기본 키 교환 곡선 변경)]]
