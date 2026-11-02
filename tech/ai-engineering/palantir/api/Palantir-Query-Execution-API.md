@@ -68,6 +68,14 @@ Get By Rid Queries Batch의 JSON body는 `{data: [...]}` 같은 wrapper가 아�
 
 두 실행 endpoint의 query parameter `transactionId`는 읽을 transaction을 지정하는 실험적 기능이며 모든 workflow 지원을 보장하지 않는다. transaction ID를 받는다는 이유만으로 읽기/쓰기 원자성이나 임의의 transaction 조합을 보장한다고 해석하지 않는다.
 
+## 단일 실행은 요청 선택 조건과 권한 오류를 구분한다
+
+2026-11-02 Execute Query 명세 부분 대조 기준, `latestVersionResolution`은 `version`을 생략했을 때만 최신 버전을 고르는 규칙이다. 예제에 두 필드가 함께 있어도 명시한 버전과 최신 발행 버전을 동시에 실행한다는 뜻은 아니다. `includePrerelease`는 `version`과 함께 사용할 수 없다.
+
+요청의 `parameters`는 선택 필드지만, 이것만으로 모든 함수가 인자 없이 실행 가능하다고 판단하지 않는다. 실제 함수의 입력 요건은 Query metadata와 대조한다(클라이언트 설계 제안). 응답의 `value`는 필수 필드이며 DataValue는 `null`도 표현하므로, 필드 부재와 값이 `null`인 응답을 구분한다.
+
+이 endpoint의 전용 오류는 HTTP 403의 `ExecuteQueryPermissionDenied`, 오류 코드 `PERMISSION_DENIED`이며 parameter는 `queryApiName`이다. 이 오류만으로 특정 인자나 branch가 잘못됐다고 확정하지 않는다. 입력 검증과 권한 진단을 나누고, 공통 HTTP 오류도 처리한다(운영 제안). 실제 호출과 나머지 endpoint 전체는 다시 시험하지 않았으므로 기존 검증일을 유지한다.
+
 ## Metadata의 schema와 값의 encoding
 
 Query 응답은 필수 apiName, RID, version과 output type, 선택적 description/displayName, parameters와 typeReferences를 담는다. parameter는 description, dataType과 required 여부를 가진다. 예제의 데이터값과 schema의 타입 정의는 다른 층이다.

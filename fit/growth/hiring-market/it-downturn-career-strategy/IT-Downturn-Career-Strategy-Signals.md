@@ -9,7 +9,7 @@ aliases: ["IT Downturn Signals", "긴축 시그널", "긴축 국면 진입"]
 
 상위 문서: [[IT-Downturn-Career-Strategy|긴축기 IT 커리어 전략]]
 
-> 검토 기준일: 2026-10-28(채용 선호 설문 절 부분 검증, 나머지는 2026-07-28 기준). 주가, 투자 뉴스, 사내 발언 하나만으로 긴축을 판정하지 않는다. 서로 독립적인 지표와 회사의 실제 현금흐름을 함께 본다.
+> 검토 기준일: 2026-11-02(미국 직업별 실업률 절 부분 검증, 채용 선호 설문은 2026-10-28, 나머지는 2026-07-28 기준). 주가, 투자 뉴스, 사내 발언 하나만으로 긴축을 판정하지 않는다. 서로 독립적인 지표와 회사의 실제 현금흐름을 함께 본다.
 
 ## 시장 신호를 읽는 순서
 
@@ -20,6 +20,16 @@ aliases: ["IT Downturn Signals", "긴축 시그널", "긴축 국면 진입"]
 - 해외 전망은 방향을 참고하는 자료로만 쓰고 한국의 개별 직무에 그대로 대입하지 않는다.
 
 미국 BLS는 소프트웨어 개발자를 포함한 직군의 고용 증가를 전망하고 있어 IT 전체가 일괄 축소된다는 해석과 맞지 않는다. 반대로 장기 고용 전망만으로 현재의 경력 초기 채용 난도를 설명할 수도 없다.
+
+#### 미국 직업별 실업률은 마지막 직업을 기준으로 읽는다
+
+BLS의 CPS는 실업자의 직업을 마지막으로 일한 직업으로 분류한다. 지금 지원하는 직무와 일치하지 않을 수 있으며, 과거 취업 경험이 없는 구직자는 직업별 통계에서 별도로 표시한다. 직업별 실업률은 `해당 직업의 취업 경험이 있는 실업자 / (해당 직업의 취업자 + 취업 경험이 있는 실업자)`로 계산한다. 여기서 취업 경험은 업계에서 말하는 시니어 경력 기준이 아니다. [BLS 분류와 계산 정의](https://www.bls.gov/cps/definitions.htm#occupation)
+
+- `Computer and mathematical occupations`는 컴퓨터와 수학 관련 직업군이다. 이 집계치를 소프트웨어 개발자만의 실업률이나 신입 개발자의 취업 실패율로 바꾸지 않는다.
+- BLS 연평균 표에서 이 직업군의 2025년 실업률은 3.3%다. 같은 숫자를 보았다는 이유만으로 영상의 월별 지표와 출처가 같다고 판단하지 않는다. 이 연평균 값은 2026년 현재 실업률도 아니다.
+- 해당 표의 2025년 값은 연방정부 셧다운으로 조사하지 못한 10월을 제외한 11개월 평균이다. BLS는 다른 해의 연평균과 엄밀하게 비교할 수 없다고 명시한다. [BLS 연평균 표와 주석](https://www.bls.gov/cps/cpsaat25.htm)
+
+이 정의만으로 전 세계 개발자 채용 악화나 AI가 실업 증가의 원인이라는 결론을 낼 수 없다. 지역, 직업군, 경력 구간과 측정 기간을 맞춰 확인한다. 이 절은 2026-11-02 공식 정의와 연평균 표를 대조했으며 특정 월의 3.3% 주장이나 공개되지 않은 채용공고 비교는 검증하지 않았다.
 
 #### 채용 선호 설문과 실제 채용을 구분한다
 
@@ -91,6 +101,8 @@ Plan B의 시작 시점은 신호가 정확히 몇 개인지가 아니라, 확�
 
 ## 출처
 
+- [U.S. Bureau of Labor Statistics, Concepts and Definitions (CPS)](https://www.bls.gov/cps/definitions.htm#occupation) — 2026-11-02 직업 분류, 취업 경험이 없는 구직자와 직업별 실업률 계산 대조
+- [U.S. Bureau of Labor Statistics, Unemployed people by occupation and sex](https://www.bls.gov/cps/cpsaat25.htm) — 2026-11-02 Table 25의 2025년 직업군별 연평균과 10월 제외 주석 대조
 - [2025년 하반기 기업 채용 트렌드 조사 — 대한상공회의소](https://ghcci.korcham.net/front/boardlink/boardlinkContentsView.do?boardId=13&contId=20120942894&menuId=5103) — 2025-09-16 발표, 2026-10-28 공개 보도자료 본문 확인
 - [OECD Employment Outlook 2026 — OECD](https://www.oecd.org/en/publications/oecd-employment-outlook-2026_7e710f54-en.html)
 - [Software Developers Occupational Outlook — U.S. Bureau of Labor Statistics](https://www.bls.gov/ooh/computer-and-information-technology/software-developers.htm)
