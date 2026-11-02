@@ -37,6 +37,14 @@ Composer module에 선언한 Prisma Postgres DB는 preview에 새로 만들어�
 
 같은 장비의 사용자 CLI 로그인, 사용자 계정으로 연결한 Prisma MCP, 에이전트가 읽을 수 있는 운영 DB 연결 문자열도 별도 접근 경로다. 등록된 credential만 제한해 놓고 모든 경로가 통제됐다고 판단하지 않는다.
 
+### MCP 연결은 배포 대상 확인을 대신하지 않는다
+
+Prisma의 원격 MCP는 `https://mcp.prisma.io/mcp`에 Streamable HTTP로 연결한다. Prisma 계정으로 로그인한 뒤 접근할 workspace를 선택하고 승인한다. 관리 대상에는 Prisma Postgres, Prisma Compute와 Object Storage가 포함되므로 ORM 사용을 돕는 읽기 전용 도구로 가정하지 않는다.
+
+연결 확인에는 먼저 DB 목록 같은 조회를 사용한다. 리소스를 바꾸거나 삭제하는 도구를 승인하기 전에는 workspace와 대상 리소스를 확인한다. 이는 MCP 공식 안내의 점검이며, MCP에 연결했다는 사실만으로 에이전트 전용 credential과 preview 정책이 설정됐다고 판단하지 않는다. 별도 enrollment와 사용자 계정 연결의 권한 경계를 구분한다.
+
+운영 제안으로, 앱 배포 요청에는 대상 프로젝트와 preview/production, DB 연결 범위와 완료 확인 방법을 함께 적는다. 공개 URL을 받는 것과 의도한 환경에 배포되고 데이터가 격리된 것은 별개의 확인이다. 2026-11-02 MCP 연결과 관리 범위를 공식 문서 및 enrollment 안내와 대조했다. 실제 계정 연결과 배포는 시험하지 않았으며 기존 배포 계약 전체의 검증일은 유지한다.
+
 ## 승급과 롤백의 확인 범위
 
 서비스 version의 production 승급은 production 환경 변수로 다시 빌드한다. rollback은 기존 build를 재사용하며 rebuild하지 않는다. 이는 서비스 version에 대한 동작이므로 DB 변경까지 복원됐다고 해석하지 않는다. 스키마와 데이터의 호환성은 [[DB-Migration|DB migration 전략]]으로 별도 확인한다.
@@ -45,6 +53,7 @@ Composer module에 선언한 Prisma Postgres DB는 preview에 새로 만들어�
 
 ## 출처
 
+- [Prisma, MCP server](https://www.prisma.io/docs/ai/tools/mcp-server)
 - [Prisma, Preview and staging environments per Git branch](https://www.prisma.io/docs/compute/deploy-on-push)
 - [Prisma, Environments: production, staging and preview branches](https://www.prisma.io/docs/compute/branching)
 - [Prisma, Enroll your coding agent](https://www.prisma.io/docs/prisma-compute/agent-enrollment)
