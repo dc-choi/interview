@@ -66,6 +66,18 @@ Software 3.0에서 **잘 쓴 스펙 = 잘 설계된 프로그램**. LLM이 구�
 
 2026-10-24 Anthropic의 프롬프트 가이드와 Claude Code 서브에이전트 문서로 이 절을 대조했다. 기존 원칙 전체의 검증일은 유지한다.
 
+### 작업 범위와 실행 권한을 함께 제한한다
+
+작은 업무부터 맡긴다는 지시에는 입력 데이터, 허용 도구, 승인할 행동과 중단 조건을 함께 적는다. 프롬프트의 금지 문구만으로 접근을 막았다고 보지 않는다. OWASP LLM06:2025는 도구의 기능과 권한을 필요한 최소로 줄이고, 하위 시스템에서 각 요청을 인가하며, 영향이 큰 행동에는 사람의 승인을 두도록 권고한다. 로그와 호출 빈도 제한은 피해를 줄이는 보조 수단이며 권한 제한을 대신하지 않는다.
+
+다음은 이 원칙을 위임 스펙에 적용한 예다.
+
+- **입력과 도구:** 문의 분류 작업에는 필요한 문의 데이터와 읽기 기능만 연결한다. 답장 발송이나 고객 정보 변경은 별도 작업과 권한으로 다룬다.
+- **인가와 추적:** 누구의 권한으로 어떤 자료에 접근했는지 확인하고, 실행 식별자로 도구 호출, 승인 결과와 산출물을 연결한다. 식별자를 붙이는 것 자체가 인가를 구현하지는 않는다.
+- **평가와 중단:** 실제 도구 결과로 진행을 확인하고, 반복 횟수나 비용 예산을 넘으면 멈추게 한다. 사람이 쓸 수 있는 결과인지 평가한 뒤 필요한 범위만 확장한다. 성공 이력이 있다는 이유로 불필요한 쓰기 권한까지 늘리지 않는다.
+
+2026-11-02 OWASP의 Excessive Agency와 Anthropic의 Building effective agents로 최소 권한, 사람 검토, 실행 피드백과 반복 중단 조건을 부분 대조했다. 실행 식별자와 비용 예산을 묶은 위 항목은 운영 제안이며 특정 제품의 기능 보장이 아니다. 기존 원칙 전체의 검증일은 유지한다.
+
 ## 숨은 결정 드러내기 — 결정 축 인터뷰
 
 AI가 코드의 상당 부분을 작성하면 개발자의 통제 지점은 코드 작성에서 **의도 전달과 검증**으로 옮겨간다. 이때 인지 부하의 구조적 원인은 자연어 요구사항 뒤에 숨은 기술 결정이 드러나지 않은 채 AI의 해석에 맡겨지는 것이다 — 주문이 완료되면 알림을 보낸다는 한 문장 뒤에도 여러 결정이 숨어 있다.
@@ -174,6 +186,8 @@ Kiro의 공식 Best practices를 2026-10-10에 대조한 변경 절차는 다음
 - LLM-as-a-Judge 패턴이 필요한 상황
 
 ## 출처
+- [OWASP, LLM06:2025 Excessive Agency](https://genai.owasp.org/llmrisk/llm062025-excessive-agency/)
+- [Building effective agents — Anthropic](https://www.anthropic.com/research/building-effective-agents)
 - [Claude Code Docs, Create custom subagents](https://code.claude.com/docs/en/sub-agents)
 - [Kiro Docs, Best practices](https://kiro.dev/docs/specs/best-practices/)
 - [Kiro Docs, Quick Spec](https://kiro.dev/docs/specs/quick-spec/)
