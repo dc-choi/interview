@@ -56,6 +56,8 @@ flowchart LR
 
 ## 인접 정본
 
+- [[Data-Infrastructure-Workloads|데이터 인프라와 추천시스템의 연결]] — 수집과 가공, 모델 학습, 서빙과 피드백의 전체 흐름
+
 - [[Recommendation-System-Industry-Case-Studies|추천 시스템 산업 사례 지도]]
 - [[Content-Availability-Data-Contract|콘텐츠 가용성 snapshot과 offer 계약]]
 - [[Personalization-Recommendation|개인화와 추천의 비즈니스 관점]]
