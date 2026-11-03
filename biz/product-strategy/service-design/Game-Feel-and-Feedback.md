@@ -74,6 +74,14 @@ Lin 외는 두 방식의 구현이나 정보 차이를 따로 분석하지 않�
 
 검수 제안: 착지 직전과 직후, 발판 이탈 직전과 직후, 모서리 접촉에서 같은 입력을 재생한다. 의도한 점프를 살리는지와 원치 않는 추가 점프가 생기는지를 함께 확인한다. 판정 보정과 히트스톱을 각각 끄고 비교해 규칙 변화와 결과 전달 효과를 분리한다.
 
+## 손맛과 다시 선택할 이유를 구분한다
+
+행동의 결과를 또렷하게 전달하는 것과 다음 판에서 다른 선택을 해 보고 싶게 만드는 것은 다른 설계 질문이다. MDA는 게임을 데이터와 알고리즘 수준의 구성인 Mechanics, 입력과 구성 요소의 상호작용으로 나타나는 실행 중 행동인 Dynamics, 플레이어에게 일으키려는 정서적 반응인 Aesthetics로 나눈다. 여기서 Aesthetics는 그래픽 미감만을 뜻하지 않는다. 도전, 발견과 자기표현도 포함한다.
+
+이 구분을 적용한 검수 예시는 선수 조합을 고르고 시즌 결과를 보는 게임이다. 선수 선택과 점수 규칙은 Mechanics, 조합에 따라 생기는 전략과 플레이 양상은 Dynamics, 다음에는 다른 조합을 시험하고 싶은 도전감은 의도한 경험으로 둔다. 결과 화면의 소리와 애니메이션만 바꾼 실험과 선택 규칙을 바꾼 실험을 나눠 본다. 이는 이 문서의 설계 예시이며 특정 게임의 성공 원인을 입증한 분석은 아니다.
+
+플레이 테스트에서는 결과를 이해했는지, 다음 선택을 바꾸려는 이유가 있는지, 실제로 다시 플레이했는지를 따로 관찰한다. 결과 가짓수나 업적 수를 늘리는 것만으로 재사용이 높아진다고 단정하지 않는다. MDA도 재미를 보장하는 요소 조합 공식을 제시하지 않는다. 다운로드 수, 제작 시간과 AI 사용 여부는 이 경험의 검증을 대신하지 않으며, 재사용과 사업 성과의 관계는 [[Solo-Product-Market-Validation|1인 제품 시장 검증]]으로 연결한다.
+
 ## 접근성을 함께 설계한다
 
 Xbox XAG 117은 카메라 흔들림, 카메라 bobbing, motion blur 같은 효과를 쓰지 않거나, 쓴다면 끌 수 있는 설정을 제공하도록 안내한다. 텍스트가 있는 UI 화면에서 움직이거나 깜박이거나 자동 갱신되는 요소는 멈추거나 숨기거나 끌 수 있게 하고, 자동 갱신은 빈도도 조절할 수 있게 한다. 게임 진행의 핵심인 움직임과 부가 연출은 구분한다.
@@ -88,6 +96,7 @@ Xbox XAG 117은 카메라 흔들림, 카메라 bobbing, motion blur 같은 효�
 
 ## 출처
 
+- [MDA: A Formal Approach to Game Design and Game Research — Robin Hunicke, Marc LeBlanc, Robert Zubek](https://www.cs.northwestern.edu/~hunicke/MDA.pdf) — 2026-11-04 MDA 정의와 설계자/플레이어 관점, 경험 유형과 재미 공식의 한계를 대조. 선수 조합 예시와 검수 질문은 적용 제안이다.
 - [Juice it or lose it — YouTube, Martin Jonasson, Petri Purho](https://www.youtube.com/watch?v=Fy0aCDmgnxg) — 07:38~11:45의 효과음 분리와 블록 제거 연출 설명. 화면과 음향 자체는 미검증.
 - [Juicy Breakout — GitHub, grapefrukt](https://github.com/grapefrukt/juicy-breakout) — README의 발표 영상과 예제 연결 확인, 코드 실행은 하지 않음.
 - [Celeste & Forgiveness — Maddy Makes Games](https://maddymakesgames.com/articles/celeste_and_forgiveness/index.html) — 2026-10-26 코요테 타임, 점프 버퍼링, 모서리 보정, 발판 운동량 보존과 벽 점프 허용 범위를 대조. 공개 설계 설명이며 구현 재현이나 플레이어 효과 실험은 하지 않음

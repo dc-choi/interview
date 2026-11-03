@@ -71,6 +71,16 @@ vault 다른 문서에서 전후방 호환이라고 부르는 상태는 full com
 
 **규칙은 하나다. 의미가 바뀌면 필드를 재사용하지 않고 새 필드를 만든다.** 기계가 분기하는 필드와 사람이 읽는 문구를 분리하고 코드 집합을 append-only로 유지하는 구체형은 [[Agent-Ready-API-Design|에이전트 친화 API 설계]]가 소유한다.
 
+## 문서 밖의 관측 동작도 의존성이 된다
+
+Hyrum의 법칙은 API 사용자가 충분히 많아지면 문서에 약속하지 않은 관측 가능한 동작에도 누군가는 의존하게 된다는 소프트웨어 공학의 관찰이다. 명세에 적힌 인터페이스와 실제 사용으로 생긴 암묵적 인터페이스를 구분한다. 응답 성능처럼 명시적으로 보장하지 않은 특성도 소비자의 기대에 들어갈 수 있다. 수학적 보장이나 모든 버그를 영구 보존하라는 규칙은 아니다.
+
+예를 들어 정렬 순서를 약속하지 않은 목록의 첫 항목을 기본 선택으로 쓰는 소비자가 있다면, 서버의 정렬 최적화는 스키마를 바꾸지 않고도 사용자 동작을 바꿀 수 있다. 이 예시는 적용 가설이며 실제 의존성은 호출 코드와 테스트로 확인한다. 변경 전에는 문서뿐 아니라 지원 중인 소비자의 파싱, 순서 의존과 시간 제약을 확인하고, 발견한 의존성을 유지할지 명시적 계약으로 바꿀지 또는 이관할지 정한다. 테스트 통과는 그 테스트가 관측한 범위의 근거이며 알려지지 않은 소비자의 부재를 증명하지 않는다.
+
+언어 동작을 바꾸는 사례도 같은 관점으로 볼 수 있다. Go 1.22는 `for` 루프가 선언하는 변수를 반복마다 새로 만들도록 바꿨다. Go 1.21에는 미리 시험하는 기능이 있었으며 변경 자체를 1.21의 기본 동작으로 설명하면 안 된다. 공식 전환 설명은 `go.mod`가 `go 1.22` 이상을 선언한 모듈의 패키지에 새 의미를 적용해 점진 전환하게 하고, 빌드 조건으로 파일별 제어도 가능하다고 설명한다. 기존 변수를 대입하는 모든 반복문이 같은 방식으로 바뀐다는 뜻은 아니다.
+
+2026-11-04 부분 대조 범위는 Hyrum의 원문과 Go의 위 전환 설명이다. 기존 직렬화와 라이브러리별 호환성 주장을 전부 재검증하지 않았으므로 기존 검증일은 유지한다.
+
 ## Tolerant Reader
 
 소비자가 관용적으로 읽으면 생산자의 추가 변경이 배포 조율 없이 흐른다. Fowler의 Tolerant Reader가 정리한 규율이다.
@@ -168,6 +178,9 @@ API 호환성 검사는 [[Architecture-Fitness-Functions|아키텍처 fitness fu
 
 ## 출처
 
+- [Hyrum's Law — Hyrum Wright](https://www.hyrumslaw.com/) — 2026-11-04 명시적 계약과 암묵적 인터페이스, 성능 기대와 테스트의 한계 대조.
+- [Go 1.22 Release Notes — The Go Programming Language](https://go.dev/doc/go1.22) — 2026-11-04 루프가 선언하는 변수의 반복별 생성 확인.
+- [Fixing For Loops in Go 1.22 — The Go Blog, David Chase, Russ Cox](https://go.dev/blog/loopvar-preview) — 2026-11-04 Go 1.21 미리보기와 모듈별 전환 조건, 파일별 제어 설명 대조. 실행 테스트는 하지 않음.
 - [Tolerant Reader — martinfowler.com, Martin Fowler](https://martinfowler.com/bliki/TolerantReader.html)
 - [Parallel Change — martinfowler.com, Danilo Sato](https://martinfowler.com/bliki/ParallelChange.html)
 - [Protocol Buffers, Language Guide (proto3)](https://protobuf.dev/programming-guides/proto3/)

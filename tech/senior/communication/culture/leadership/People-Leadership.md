@@ -105,6 +105,12 @@ Blumberg와 Pringle(1982)은 성과를 수행 역량(capacity), 의지(willingne
 
 근거 범위는 Google re:Work의 팀 효과성 연구다. Google 내부 180개 팀에서 심리적 안전과 구조, 명료성 등을 구별해 조사했으며, 모든 조직에 같은 인과와 해결책이 성립함을 보인 것은 아니다([[Trust-Respect-Teamwork|신뢰와 존중의 팀워크]]).
 
+### 약속 불이행과 실제 퇴사를 구분한다
+
+약속한 역할, 지원이나 이동 조건이 지켜지지 않았다는 문제는 업무량과 별도로 확인한다. 심리적 계약 위반 연구가 다루는 인식과 실제 퇴사 행동도 같은 결과가 아니다. Zhao 외(2007)의 메타분석 초록은 심리적 계약 위반이 조사한 여덟 업무 결과 중 실제 퇴사를 제외한 결과와 관련됐다고 보고한다. 여기에는 불신, 직무 만족과 이직 의도 등이 포함된다. 이 결과로 특정 직원이 퇴사할지 예측하거나 약속 위반이 반드시 퇴사를 일으킨다고 단정하지 않는다.
+
+적용 제안: 무엇을 누가 약속했는지, 어떤 조건이 달라졌는지, 당사자가 어떻게 이해했는지와 확인된 사실을 나눠 적는다. 변경 사유를 설명할 책임자, 가능한 조정과 답변 시점을 정하고 실제 후속 조치까지 확인한다. 약속을 기록했다는 사실만으로 신뢰가 회복됐다고 보지 않는다. 위 메타분석의 초록은 이 절차의 효과를 검증한 근거가 아니다.
+
 ## 리더는 팀원 업무를 어디까지 알아야 하나
 
 팀에 조언할 핵심 기술 역량과 팀원의 자율성을 함께 갖춘다. Google의 Project Oxygen 관리자 교육 자료는 기술적 조언 역량과 마이크로매니징하지 않는 권한 위임을 각각 제시한다. 이를 리더가 모든 팀원의 일을 직접 수행할 수 있어야 한다는 요건으로 확대하지 않는다.
@@ -202,6 +208,7 @@ Blumberg와 Pringle(1982)은 성과를 수행 역량(capacity), 의지(willingne
 
 ## 출처
 
+- [The Impact of Psychological Contract Breach on Work-Related Outcomes: A Meta-Analysis — Personnel Psychology, Zhao 외](https://doi.org/10.1111/j.1744-6570.2007.00087.x) — 2026-11-04 출판사 공개 초록 대조. 실제 퇴사와 다른 결과의 구분만 사용했으며 본문, 효과 크기와 개별 직원의 퇴사 원인은 검증하지 않음.
 - [Following the data: The research behind great managers — Google re:Work](https://rework.withgoogle.com/intl/en/guides/following-the-data-the-research-behind-great-managers) — 2025-08, 권한 위임, 방향 제시와 의사결정, 명확한 기대와 피드백
 - [Theory — Center for Self-Determination Theory](https://selfdeterminationtheory.org/theory/)
 - [Intrinsic and Extrinsic Motivations: Classic Definitions and New Directions — Ryan and Deci, 2000](https://selfdeterminationtheory.org/SDT/documents/2000_RyanDeci_IntExtDefs.pdf)
