@@ -1,7 +1,7 @@
 ---
 tags: [security, ai, vulnerability-management, patch-management, asset-management, supply-chain, defense-in-depth]
 status: done
-verified_at: 2026-11-02
+verified_at: 2026-11-03
 category: "보안(Security)"
 aliases: ["AI-Accelerated Threat Defense", "AI 공격 대비 방어", "Time-to-Exploit", "TTE", "악용까지의 시간", "패치 관찰 기간", "단계적 패치 배포"]
 ---
@@ -59,6 +59,15 @@ BOD 26-04의 대응 기한은 KEV 등재와 BOD 23-01 열거로 자산에서 취
 패치 생성 시간이 줄어도 자산 식별, 실제 악용 조건 평가, 서비스 영향 시험, 공급자 배포와 재시작이 남는다. 대응 시간을 한 숫자로 합치지 않고 발견, 판단, 완화, 수정본 적용과 실제 적용 확인에 나눠 기록한다. Brotli처럼 내장 사본이 많은 구성요소는 패키지 하나의 업데이트만으로 배포 전체의 수정이 끝났다고 보지 않는다([[Compressed-Input-Decoder-Security|압축 입력 디코더 보안]]).
 
 수집한 후속 학습 단서: GeekNews의 2026-10-29 11:50 발췌와 2026-11-02 Weekly #382는 취약점 공개 속도보다 방어 조직의 조사/적용 여력이 병목이라는 문제를 제기한다. 연결된 Jan Schaumann의 `This is not sustainable`은 원문 주소를 식별했으나 도구의 접근 제한으로 전체를 대조하지 못했다. KVM/TLS/PHP/Brotli 사례의 세부 평가와 10-29~30 KISA 공지 20여 건이라는 발췌 수치는 확인 후보다. 위 운영 원리는 이미 대조한 NIST SP 800-40의 자산/패치 절차와 연결하며, 발췌의 수치나 AI 원인 주장을 검증된 사실로 추가하지 않는다.
+
+#### 사례: 번들 런타임의 수정 경로
+
+제품이 런타임을 번들하면 같은 결함이라도 수정이 들어오는 경로가 배포 형태마다 갈린다. 배포판 패키지와 번들 스택의 일반 원리는 [[Dependency-Vulnerability-Scanning#무엇을 스캔하는가 — 스캔 표면 계층|스캔 표면 계층]]에 있다. GitLab은 2026-10-21 critical patch release(19.5.1, 19.4.3, 19.3.6, 19.2.9, 19.1.9, 19.0.10, 18.11.13)로 CVE-2026-110264(CVSS 3.1 기준 10.0)를 고쳤다. 특수하게 만든 정규식이 컴파일될 때 생기는 integer overflow로, 특정 조건에서 인증 없는 사용자가 GitLab 서버에서 임의 코드를 실행할 수 있던 결함이며 7.0부터 각 수정 버전 이전까지가 영향 범위다.
+
+- **수정은 번들된 Ruby에 들어 있다:** 공지는 이 수정이 GitLab 코드가 아니라 Ruby 패치이고 공식 Linux 패키지와 container image에만 들어 있다고 밝힌다. 공식 패키지의 Ruby 대신 자체 Ruby 런타임을 쓰는 설치(직접 컴파일한 설치나 사용자 정의 container image 등)는 GitLab 업그레이드만으로 부족하고 Ruby도 3.3.13, 3.4.12, 4.0.9 이상으로 올려야 한다.
+- **운영 주체에 따라 할 일이 다르다:** GitLab.com은 이미 수정 버전으로 운영됐고, Dedicated는 공지에 적힌 내부 버전(19.3.5-internal0, 19.4.2-internal0) 이상이면 조치가 필요 없었다. self-managed에는 즉시 업그레이드하라는 권고와, 공식 패키지의 Ruby를 쓰지 않는 설치는 Ruby도 올려야 한다는 지침이 있었고 설정으로 피하는 방법은 제시되지 않았다. self-managed용 탐지 규칙 2개(Onigmo native worker crash, Org mode render error burst)도 함께 공개됐다.
+- **backport 범위는 CVE마다 다르다:** GitLab 유지보수 정책의 보안 수정 기본 대상은 현재 안정 릴리스와 직전 두 월간 릴리스이고, 드물게 더 이전 버전으로 backport하는 예외 조항이 있다. 이 CVE는 18.11, 19.0, 19.1, 19.2 계열에도 추가로 backport됐지만, 같은 릴리스의 다른 보안 수정 11건은 19.3.6, 19.4.3, 19.5.1에만 들어갔다. 따라서 18.11.13, 19.0.10, 19.1.9, 19.2.9를 같은 공지의 모든 CVE를 고친 버전으로 보지 않는다(운영 제안).
+- **수정 버전 목록은 공지 시점의 값이다:** 2026-10-29(GitLab Docs 패치 릴리스 피드 게시일)에는 19.5.3, 19.4.5, 19.3.7, 19.2.10, 19.1.10, 19.0.11, 18.11.14가 나왔고, 이 릴리스의 보안 수정은 유출된 eMudhra 중간 CA 인증서의 신뢰 제거(CVE-2026-111943)다. 19.5.2와 19.4.4는 건너뛰었다. 적용할 때는 이후 공지까지 확인해 그 시점의 최신 패치를 고르고, 자체 Ruby를 쓰는 설치는 Ruby 버전도 따로 기록한다(운영 제안).
 
 ## 먼저 갖출 것 2: 대응 경로를 미리 정해 둔다
 
@@ -143,6 +152,10 @@ OpenAI의 기술 보고서는 최소 권한, 격리와 분할, 강한 인증 같
 - [CISA, BOD 23-01: Improving Asset Visibility and Vulnerability Detection on Federal Networks](https://www.cisa.gov/news-events/directives/bod-23-01-improving-asset-visibility-and-vulnerability-detection-federal-networks) — 2022-10-03 발행. 2026-11-02 폐지 표시가 없음을 확인
 - [CISA, BOD 26-04: Prioritizing Security Updates Based on Risk](https://www.cisa.gov/news-events/directives/bod-26-04-prioritizing-security-updates-based-risk) — 2026-06-10. 위험 요소, 기한 시작 조건, forensic triage, 외부 노출 자산 태그와 배경 대조. 기한 표는 이미지라 구간 전체는 옮기지 않음
 - [무엇을 지키고 있는지 알고 있나요? — 토스, Ground Truth](https://www.youtube.com/watch?v=3p5uFEHhVwo) — 2026-10-22 공개. 사례 절의 조직 관행 출처
+- [GitLab Critical Patch Release: 19.5.1, 19.4.3, 19.3.6, 19.2.9, 19.1.9, 19.0.10, 18.11.13 — GitLab](https://docs.gitlab.com/releases/patches/patch-release-gitlab-19-5-1-released/) — 2026-10-21 게시. 2026-11-03 CVE-2026-110264의 설명과 영향 범위, Ruby 패치와 자체 Ruby 설치 안내, 운영 주체별 조치, 추가 backport와 탐지 규칙 대조
+- [GitLab Patch Release and Security Update: 19.5.3, 19.4.5, 19.3.7, 19.2.10, 19.1.10, 19.0.11, 18.11.14 — GitLab](https://docs.gitlab.com/releases/patches/patch-release-gitlab-19-5-3-released/) — 2026-11-03 후속 릴리스의 버전, 보안 수정과 건너뛴 버전 대조. 게시일은 [GitLab Docs 패치 릴리스 피드](https://docs.gitlab.com/releases/patch-releases.xml) 기준
+- [GitLab Docs, GitLab release and maintenance policy](https://docs.gitlab.com/policy/maintenance/) — 2026-11-03 보안 수정 backport의 기본 대상과 예외 규정 대조
+- [GitLab Is Having a Rough Month — YouTube, Better Stack](https://www.youtube.com/watch?v=ihNCXbHS4xI) — 2026-10-24 공개 영상, 계기 자료. 사실은 GitLab 공지로 대조했고 공지에서 확인하지 못한 공격 전제 조건, 인터넷 노출 서버 수와 이전 취약점의 악용 시점은 옮기지 않았다
 
 ## 관련 문서
 

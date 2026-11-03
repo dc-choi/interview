@@ -10,20 +10,21 @@ aliases: ["보안(Security)", "Security Index"]
 ## 목차
 
 - [[IoT-Device-and-Firmware-Security|IoT 기기 인증과 펌웨어 보안]] — 식별과 개인키 보유 증명, 인증서 교체, secure boot와 OTA 검증, 업데이트 복구와 지원 기간
-- [[AI-Accelerated-Threat-Defense|악용 시간 단축과 AI 공격에 대비하는 방어]] — 악용까지의 시간 관측값과 읽는 법, 자산과 소프트웨어 목록, 패치 작성과 적용의 병목, 패치 시나리오와 단계적 배포, 오염된 업데이트와 관찰 기간의 한계, 독립된 다층 통제, AI 방어 자동화의 권한 경계
+- [[AI-Accelerated-Threat-Defense|악용 시간 단축과 AI 공격에 대비하는 방어]] — 악용까지의 시간 관측값과 읽는 법, 자산과 소프트웨어 목록, 패치 작성과 적용의 병목, 번들 런타임과 배포 형태별 수정 경로, 패치 시나리오와 단계적 배포, 오염된 업데이트와 관찰 기간의 한계, 독립된 다층 통제, AI 방어 자동화의 권한 경계
 - [[Hardware-Wallet-Physical-Trust|하드웨어 지갑의 물리적 신뢰 경계]] — 정품 칩 인증과 추가 부품 탐지의 차이, 화면 경로의 비밀 노출
 - [[Public-WiFi-Trust-Boundaries|공공 Wi-Fi의 신뢰 경계]] — 통신 암호화와 피싱, 기기 제어의 인증 조건
 - [[Elliptic-Curve-Parameter-Provenance|타원곡선 파라미터의 출처]] — 공개 seed 재현과 개인키 복구의 구분, 미해결 선택 과정
 - [[Security-Architecture-and-Threat-Modeling|보안 아키텍처와 위협 모델링]] — 데이터 흐름, 신뢰 경계, 자원별 접근과 통제 검증
 - [[Forensic-Watermarking|포렌식 워터마킹]] — 배포본 식별, 변형 내성, 검출과 행위 판단의 구분
 - [[Coding-Agent-Package-Hallucination|코딩 에이전트의 패키지 환각 공격]] — 규칙 파일 인젝션과 의존성 대체, 알아채고도 따른 사례, 탐지기의 미탐과 오탐, 리뷰 시점별 점검
+- [[Malicious-Agent-Skills|악성 에이전트 스킬]] — 자연어 페이로드의 비중, scanner 비교의 기준, 빈 줄과 HTML 주석과 보이지 않는 Unicode로 숨긴 지시, 메모리 파일 지속성, 설치 전후 점검
 - [[Smart-Contract-Reentrancy|스마트 컨트랙트 재진입과 상태 일관성]] — 외부 호출, 상태 변경 순서, 가드의 범위와 산술 버전 경계
 - [[AI-Content-Provenance|AI 콘텐츠의 워터마크와 출처 증명]] — 통계적 텍스트 신호, C2PA, 숨은 문자와 탐지 결과의 한계
 - [[Web-Content-Manipulation-for-AI|AI가 읽는 웹 콘텐츠의 조작]] — 숨은 지시와 분석 방해, 조작 시도와 실제 영향의 구분, 수집기별 본문 차이, 인용 세탁과 출처 확인 순서
 - [[Coordinated-Vulnerability-Disclosure|조율된 취약점 공개 (CVD)]] — 단계와 역할, 수정 지연의 구조, 사전 통지와 정보 공유 범위, 엠바고 유출과 조기 공개 대응
 - [[Adversarial-Examples-Decision-Based-Attacks|적대적 예제와 결정 기반 공격]] — 위협 모델과 쿼리 예산, Boundary Attack과 HopSkipJumpAttack, 잠재 공간 변형, 상태 기반 탐지와 강건성 평가 도구
 - [[Agent-Execution-Isolation|에이전트 실행 격리]] — MXC 백엔드별 강제 범위, 내부자 위험과 조건부 백도어, 자기 호스팅과 egress 통제의 구분
-- [[Memory-Safety-Vulnerabilities|메모리 안전성 취약점]] — 읽기/수명 결함, PHP2Shell의 시도와 성공 및 권한 상승, EDK II의 PXE 부팅 노출, 설정 완화와 업데이트의 구분
+- [[Memory-Safety-Vulnerabilities|메모리 안전성 취약점]] — 읽기/수명 결함, PHP2Shell의 시도와 성공 및 권한 상승, EDK II의 PXE 부팅 노출, 설정 완화와 앞단 WAF 규칙의 범위, 업데이트와의 구분, 조사 시작일
 - [[VM-Guest-to-Host-Escape|VM 게스트에서 호스트로의 탈출]] — 하이퍼바이저 밖 호스트 커널 경로까지 포함한 격리 경계, 검사 후 사용 결함, 게스트가 아닌 호스트 패치와 롤링 재부팅, 에이전트 샌드박스 다층 방어, PwnEscape 사례
 - [[Enterprise-Browser-Control|기업용 브라우저 통제]] — Firefox Enterprise의 관리 위치와 early access
 - [[Bot-Traffic-Operations|봇 트래픽 운영]] — 요청 로그와 사용자 분석, 차단과 부하 측정, AI 수집기 이름과 실제 요청자, robots.txt 응답 코드와 그룹 규칙, 관찰부터 캐시, 요청 제한, WAF까지 쌓는 순서

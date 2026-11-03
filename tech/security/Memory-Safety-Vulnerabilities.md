@@ -1,7 +1,7 @@
 ---
 tags: [security, memory-safety, vulnerability, cwe, openssl, php]
 status: done
-verified_at: 2026-11-02
+verified_at: 2026-11-03
 category: "보안(Security)"
 aliases: ["Memory Safety Vulnerabilities", "메모리 안전성 취약점", "Out-of-bounds Read", "범위 밖 읽기", "Use After Free", "해제 후 사용", "Heartbleed", "PHP2Shell"]
 ---
@@ -54,6 +54,7 @@ PHP-FPM과 Apache mod_php에서는 한 워커 프로세스가 여러 요청을 �
 - Wiz의 10-27 직접 관측에서는 공개 PoC 계열이 메모리 고갈을 일으켜도 다음 주소 유출 단계에 실패했고 최종 실행 단계에 도달하지 못했다. 같은 보고는 다른 연구자의 허니팟 성공을 인정하며, 범용 공개 공격 도구를 확인하지 못한 상태와 특정 대상용 공격의 존재를 구분했다. 공개 PoC의 실패를 패치 불필요의 근거로 사용하지 않는다.
 - CISA의 공식 KEV 저장소는 CVE-2026-109618과 CVE-2026-109619를 10-26 추가한 것으로 기록한다. KEV 등재는 모든 구성에서 같은 공격이 성공한다는 뜻은 아니다.
 - Dream의 10-29 갱신 조사에는 특정 PAN-OS 방화벽/관리 서버 25대의 침해 아티팩트와 PHP2Shell 뒤 커널 권한 상승(CVE-2026-46300)을 연결한 분석이 있다. Unit 42도 같은 공격 도구와 결과를 독립 확인했다고 공지했다. 인터넷에 노출된 관리 인터페이스 접근을 제거하고 공급자의 수정본을 적용하라는 권고다. 25대라는 관측을 전체 PHP 배포의 성공률로 일반화하지 않는다.
+- **조사 시작일(2026-11-03 대조):** 같은 10-21 AWS 보고는 보안 책임자에게 조사를 공개일이 아니라 가장 이른 알려진 악용부터 시작하라며, PHP2Shell은 적어도 10-17부터 보라고 권했다. 즉시 할 조치로는 웹 서버 로그 검토, form 업로드에 `PHP_SESSION_UPLOAD_PROGRESS` 문자열이 든 POST 요청 찾기, 웹 애플리케이션 서버의 예상 밖 프로세스 실행과 파일 변경 확인을 들었다. 이 문자열 검색은 upload progress 필드 이름을 기본값으로 둔 경우를 전제하므로 이름을 바꾼 사이트는 설정한 이름으로 찾는다(해석). 공개한 IP 지표는 공유 익명화 인프라를 포함하므로 차단 대신 조사 대상으로 쓰라고 적었다. Wiz가 든 탐지 신호와 공개 전후 로그 확인은 [[Dependency-Vulnerability-Scanning#언어 런타임은 버전 관리와 호스팅 책임으로 대응한다|언어 런타임 절]], 공개일 이전으로 조사 범위를 여는 원리는 [[Coordinated-Vulnerability-Disclosure#공개일과 악용 시작일은 다르다|공개일과 악용 시작일]]에 있다.
 
 ## 펌웨어에서는 부팅 단계의 도달 가능성도 본다
 
@@ -71,6 +72,10 @@ EDK II의 CVE-2026-97631은 운영체제 안의 PHP와 다른 공격 표면이�
 
 - php.net은 업데이트만이 완전한 해결이고 설정 완화는 특정 공격 경로의 노출만 줄일 뿐 설치를 안전하게 만들지 않는다고 적는다. 관리자 수준에서 `memory_limit=-1`을 설정하고 강제하는 것이 CVE-2026-109618의 주된 설정 완화지만, 그 아래의 할당 실패가 여전히 취약 경로에 닿을 수 있어 완전하지 않다.
 - CVE-2026-109619 권고는 성능이 중요하지 않으면 PHP-FPM의 `pm.max_requests=1`로 워커가 실행할 요청 수를 제한하는 방안을 고려하라고 권한다. 같은 권고는 여러 워커와 재활용이 요청당 성공률을 낮출 뿐 조건을 없애지 못하며, 완전한 상태 초기화 패치를 담은 릴리스로 올리는 것만이 신뢰할 수 있는 완화라고 적는다. 워커 재생성은 오래 남는 상태를 줄이는 운영 수단이지 정리 절차의 결함을 고친 것이 아니다(이 문서의 해석).
+- **앞단 WAF 규칙도 완화다:** Cloudflare는 2026-10-21 03:02 UTC부터 Free와 유료 WAF 고객이 두 CVE에 기본으로 보호됐다고 밝혔다. 요청 쪽 규칙은 Free용 Cloudflare Managed Free Ruleset과 유료용 Cloudflare Managed Ruleset에 각각 7개(규칙 ID는 서로 다름)로 공개됐고, 응답 쪽 Cloudflare Managed Response Firewall Default도 모든 요금제에 자동 배포됐다. 유료 요금제의 기본 보호는 Managed Ruleset을 쓰는 고객 기준이며, Pro, Business, Enterprise 고객에게는 Managed Ruleset이 block으로 배포됐는지 확인하라고 안내했다. 요청 데이터만으로는 공격과 정상 트래픽을 가를 근거가 늘 충분하지 않아, 같은 HTTP 트랜잭션의 요청과 origin 응답 신호를 결합해 일치하는 응답을 요청자에게 닿기 전에 막는 기능(full transaction detection)을 만들었고, 이 보호가 그 기능으로 낸 첫 managed detection이라고 밝힌다. 응답 단계 차단은 origin이 요청을 처리한 뒤에 작동하므로, 요청 단계 규칙이 놓친 공격이 origin에서 일으킨 영향은 되돌리지 않는다(해석). Cloudflare도 결함이 PHP 런타임에 있어 사이트 코드나 플러그인 업데이트만으로는 고쳐지지 않는다며 WAF를 켠 채 PHP를 업데이트하라고 권한다.
+- **수정 릴리스로 끝나지 않는 관련 취약점:** 10-23 PHP가 informational advisory로 알린 CVE-2026-115560은 설정과 애플리케이션 코드가 드물게 조합될 때만 생기고 10-21 수정 릴리스(8.5.12 포함)로 고쳐지지 않으며 다음 정기 릴리스에서 고칠 예정이다. PHP는 그때까지 `session.upload_progress.enabled=0`을 권했다([[Dependency-Vulnerability-Scanning#언어 런타임은 버전 관리와 호스팅 책임으로 대응한다|언어 런타임 절]]). Cloudflare는 기존 #6 규칙이 기본 upload progress 필드 이름을 쓰는 사이트에서 알려진 공격 시도를 막지만, `session.upload_progress.name`을 바꾼 사이트는 이 규칙의 보호를 받지 못한다고 적었다.
+- **WAF를 거치지 않는 경로:** 이 규칙은 Cloudflare를 거친 요청에만 적용되므로 origin에 직접 닿는 경로가 남아 있으면 그 경로는 완화 밖에 있다(해석). Cloudflare의 origin 보호 문서는 origin 연결을 잠그는 방법으로 Cloudflare Tunnel, Authenticated Origin Pulls와 Cloudflare IP 허용 목록 등을 든다. IP 허용 목록은 보안 등급이 중간이고 IP spoofing에 취약하다고 적었고, Cloudflare가 주는 기본 Authenticated Origin Pulls 인증서는 요청이 Cloudflare 네트워크에서 왔다는 것만 보장하므로 더 엄격하게 하려면 자체 인증서를 올리라고 권한다.
+- **업로드 차단은 영향부터 본다:** AWS는 설정만으로 두 문제를 완전히 해결하는 우회책은 없다고 적으면서, 즉시 패치할 수 없는 배포에서는 PHP의 multipart 파일 업로드 차단을 고려하되 적용 전에 애플리케이션에 주는 영향을 확인하라고 권했다.
 - 수정 릴리스(8.5.12, 8.4.27, 8.3.36, 8.2.35)부터 `memory_limit`은 한도를 넘는 할당도 대개 완료한 뒤 치명적 오류를 내는 soft limit이다. 업그레이드 뒤에는 메모리 경보와 한도 설정을 이 동작에 맞춰 다시 확인한다(운영 제안).
 - 개발 단계에서는 AddressSanitizer가 범위 밖 접근과 해제 후 사용을 잡는다([[C-Pointers-and-Dynamic-Memory#메모리 오류와 도구|C 메모리 오류와 도구]]). 결함 유형 자체를 줄이는 언어 선택은 [[Programming-Language-Landscape#메모리 안전성 권고|메모리 안전성 권고]]를 따른다.
 
@@ -93,7 +98,10 @@ Node.js는 적은 수의 스레드가 많은 클라이언트를 처리하고, �
 - [PHP2Shell exploitation observed: packet-to-process RCE evidence — GitHub, 0x4D31](https://github.com/0x4D31/honeypot-data/blob/main/reports/php2shell/2026-10-24-confirmed-rce.md) — 허니팟의 요청/메모리/프로세스 연결과 단일 워커 구성 한계
 - [Threat Brief: Critical Vulnerabilities in PHP — Palo Alto Networks Unit 42](https://unit42.paloaltonetworks.com/cve-2026-109618-cve-2026-109619/) — 10-29 갱신의 공격 도구/결과 확인과 관리 인터페이스 권고
 - [CISA, KEV catalog official GitHub data](https://github.com/cisagov/kev-data/blob/develop/known_exploited_vulnerabilities.json) — catalogVersion 2026.10.30의 두 PHP CVE 등재일 대조
-- [Amazon Threat Intelligence identifies PHP2Shell exploitation prior to public disclosure in MadPot — AWS Security Blog](https://aws.amazon.com/blogs/security/amazon-threat-intelligence-identifies-php2shell-exploitation-prior-to-public-disclosure-in-madpot/) — 초기 보고의 시도와 성공 여부 한계
+- [Amazon Threat Intelligence identifies PHP2Shell exploitation prior to public disclosure in MadPot — AWS Security Blog](https://aws.amazon.com/blogs/security/amazon-threat-intelligence-identifies-php2shell-exploitation-prior-to-public-disclosure-in-madpot/) — 2026-10-21 게시. 초기 보고의 시도와 성공 여부 한계, 2026-11-03 조사 시작일, 로그 점검 항목, IP 지표의 사용법과 업로드 차단 권고 대조
+- [Cloudflare deploys protections against php2shell vulnerability — Cloudflare Blog](https://blog.cloudflare.com/php-vulnerabilities-waf-protection/) — 2026-10-21 게시, 10-23 갱신. 2026-11-03 기본 적용 시각과 요금제, 유료 요금제의 확인 사항, full transaction detection, 패치 권고와 CVE-2026-115560의 미보호 조건 대조
+- [Cloudflare, Protect your origin server](https://developers.cloudflare.com/fundamentals/security/protect-your-origin-server/) — 2026-11-03 origin 연결을 잠그는 방법과 각 방법의 한계 대조
+- [Informational advisory: Session upload progress — PHP](https://www.php.net/archive/2026.php) — 2026-10-23 항목. 2026-11-03 CVE-2026-115560의 발생 조건과 임시 설정 대조
 - [Pre-boot RCE in EDK II PXE driver — TianoCore](https://github.com/tianocore/edk2/security/advisories/GHSA-99cj-7hg9-mp4m) — 2026-11-02 부팅 단계와 네트워크 도달 조건 대조
 - [Red Hat, CVE-2026-97631](https://access.redhat.com/security/cve/cve-2026-97631) — 로컬 저장소 부팅과 정상 post-boot 런타임의 노출 제외 설명
 - GeekNews, 2026-10-29 09:33/10:10과 10-30 10:40 사용자 제공 발췌 — PHP2Shell 후속 공격과 EDK II 보안 공지의 계기 자료
@@ -118,6 +126,7 @@ Node.js는 적은 수의 스레드가 많은 클라이언트를 처리하고, �
 - [The Case for Memory Safe Roadmaps — CISA](https://www.cisa.gov/sites/default/files/2023-12/The-Case-for-Memory-Safe-Roadmaps-508c.pdf) — 2023년 12월. 임의 코드 실행과 소프트웨어 실행 계정의 장악
 - [Node.js, Don't Block the Event Loop (or the Worker Pool)](https://nodejs.org/en/learn/asynchronous-work/dont-block-the-event-loop) — 적은 수의 스레드가 많은 클라이언트를 처리하는 구조
 - [PHP보안 세계비상? 놀라지마. 심장출혈 시즌2니까! — YouTube, 널널한 개발자 TV](https://www.youtube.com/watch?v=uZ2G4e81biA) — 2026-10-23 게시. 두 결함의 비교를 다룬 계기 자료이며 제작자는 자료를 AI로 만들었다고 밝혔다. 사실은 위 1차 출처로 대조했고, 웹 서버가 관리자 권한으로 실행됐을 것이라는 추정, 패치 전에는 대책이 없다는 설명과 유출 대 코드 실행의 대비는 1차 출처 기준으로 고쳐 썼다
+- [AI에 뚫린 보안, 전세계 69% 웹사이트 해킹 비상, 해킹이 되는 원리와 바이브코딩으로 방어책까지 모두 공개, php2shell — YouTube, 투더제이 TTJ](https://www.youtube.com/watch?v=RnJMBDnAsBM) — 2026-10-24 공개 영상, 앞단 WAF 규칙과 조사 시작일의 계기 자료. 사실은 Cloudflare, AWS와 PHP 원문으로 대조했다. 업로드 폴더의 새 PHP 파일 점검은 AWS의 파일 변경 확인에 포함되는 좁은 예시이고, 낯선 관리자 계정, PHP 비정상 종료와 낯선 외부 접속 점검은 AWS 원문에서 확인하지 못해 옮기지 않았다. 의심 IP를 먼저 차단하라는 제안은 공개 IP 지표를 차단 대신 조사에 쓰라는 AWS 지침에 맞춰 옮기지 않았다
 
 ## 관련 문서
 
