@@ -94,6 +94,17 @@ API 키 없이 공개 데이터를 모으는 스캔과 백테스트 스크립트
 - **최악 구간과 순서 위험**: 평균 대신 최대 낙폭과 가장 나빴던 시작 시점의 경로를 넣는다. 적립 후반에 큰 하락이 오면 쌓인 금액 전체가 맞는다.
 - **배당 성장 가정**: 배당 ETF의 미래 월배당 추정은 과거 배당 성장률이 수십 년 이어진다는 가정이다. 배당 삭감과 성장 둔화 경로를 함께 계산한다.
 
+### 테마 종목 묶음은 투자 가능 조건과 비교 기준을 맞춘다
+
+특정 콘텐츠에 등장한 기업을 묶은 성과는 종목 선정뿐 아니라 매수 가능 시점, 비중과 재조정 규칙의 결과다. 다음을 별도로 기록한다.
+
+- **투자 가능성:** 비상장 기업의 마지막 투자 라운드 가격을 일반 투자자가 그날 체결할 수 있는 가격으로 취급하지 않는다. 상장 뒤에만 편입하는 규칙과 비상장 지분을 가정하는 규칙은 투자 대상과 납입일이 다른 실험이다.
+- **납입 일정:** 새 종목마다 돈을 추가하는 전략은 비교 지수에도 같은 날짜에 같은 금액을 넣는다. 처음 한 번 넣은 자금을 재배분하는 전략과 최종 자산 배수만으로 비교하지 않는다.
+- **배분과 재조정:** 종목마다 최초 투자액을 같게 주는 것과 계속 동일 비중을 유지하는 것은 다르다. 시가총액 비중, 신규 편입, 상장폐지와 인수 후 현금 처리도 규칙에 포함한다.
+- **비교 대상:** 기술주 중심 묶음이면 광범위한 시장 지수와 기술주 비중이 높은 지수를 함께 본다. 위험 노출과 비용이 다른 비교에서 우위를 보였다고 종목 선정 능력을 확정하지 않는다.
+
+공개 실험의 방법론에서 비상장 투자 가정, 상장 후 편입, 동일 비중과 시가총액 비중을 나눈 설계 및 같은 현금흐름의 비교를 2026-11-04 확인했다. 위 목록은 이를 일반화한 점검 기준이며 원 시세, 코드 실행과 수익률을 재현한 결과는 아니다. SEC의 성과 표시 안내도 투자 대상에 맞는 비교 지수와 비용을 확인하도록 설명한다. 기존 API와 법령 절은 재검증하지 않아 `verified_at`은 유지한다.
+
 ## 6. 백테스트 다음: 자동 주문의 가드레일
 
 증권사와 거래소 API로 잔고, 시세와 주문을 코드로 다루는 일은 어렵지 않다. 예를 들어 토스증권 Open API 문서는 국내와 미국 주식의 시세, 계좌와 보유 종목, 주문 REST API와 실시간 웹소켓을 제공한다. 병목은 연결이 아니라 무엇을 언제 사고팔지 정한 규칙이고, 그 규칙은 앞 절의 검증을 거친 것이어야 한다. 검증 안 된 규칙을 자동화하면 손실만 빨라진다.
@@ -129,7 +140,7 @@ API 키 없이 공개 데이터를 모으는 스캔과 백테스트 스크립트
 ## 출처
 
 - [Alpaca, Paper Trading](https://docs.alpaca.markets/us/docs/paper-trading) — 2026-10-26 Paper vs Live와 Comparing Other Simulators 대조, 이 문서의 기존 API 및 법령 설명 전체를 재검증한 것은 아님
-- [AI 투자 데이터 자동화와 백테스트 예시 — Threads, omar._.odj](https://www.threads.com/@omar._.odj/post/DdmBvW5kZTe)
+- [The Silicon Valley Intro Index, Methodology — GitHub, jolbol1](https://github.com/jolbol1/silicon-valley-intro-index/blob/main/METHODOLOGY.md) — 2026-11-04 투자 가능 조건과 배분 규칙, 비교 현금흐름만 대조. 수익률과 원 데이터는 재현하지 않음
 - [Investor.gov, Investor Bulletin: Performance Claims (2022-09-15)](https://www.investor.gov/introduction-investing/general-resources/news-alerts/alerts-bulletins/investor-bulletins-47) — 2026-10-02 가상 성과와 실제 기록의 구분 대조. 적립 예시는 위 산식으로 재계산
 - [SEC, Investment Adviser Marketing](https://www.sec.gov/investment/investment-adviser-marketing)
 - [Cornell LII, 17 CFR 275.206(4)-1 Investment adviser marketing](https://www.law.cornell.edu/cfr/text/17/275.206(4)-1)
@@ -144,9 +155,7 @@ API 키 없이 공개 데이터를 모으는 스캔과 백테스트 스크립트
 - [업비트 개발자 센터, Open API 키 발급 변경 사항 안내: 주문하기, 출금하기 사용 시 IP주소 등록 필수](https://docs.upbit.com/kr/v1.5.9/changelog/%EC%95%88%EB%82%B4-open-api-%ED%82%A4-%EB%B0%9C%EA%B8%89-%EB%B3%80%EA%B2%BD-%EC%82%AC%ED%95%AD-%EC%95%88%EB%82%B4-%EC%A3%BC%EB%AC%B8%ED%95%98%EA%B8%B0-%EC%B6%9C%EA%B8%88%ED%95%98%EA%B8%B0-%EC%82%AC%EC%9A%A9-%EC%8B%9C-ip%EC%A3%BC%EC%86%8C-%EB%93%B1%EB%A1%9D-%ED%95%84%EC%88%98)
 - [업비트 고객센터, Open API를 사용하고 싶어요](https://support.upbit.com/hc/ko/articles/4403180359705-Open-API%EB%A5%BC-%EC%82%AC%EC%9A%A9%ED%95%98%EA%B3%A0-%EC%8B%B6%EC%96%B4%EC%9A%94)
 - [Binance Developers, Spot API Limits](https://developers.binance.com/docs/binance-spot-api-docs/rest-api/limits)
-- [증권사 API 투자 자동화 구축 사례 — Threads, junyoung.ai](https://www.threads.com/@junyoung.ai/post/DbYA0I2EWdQ)
 - [ProShares, Ultra QQQ (QLD)](https://www.proshares.com/our-etfs/leveraged-and-inverse/qld)
-- [최저임금으로 QLD와 SCHD 40년 적립 시뮬레이션 — Threads, meta_93ch](https://www.threads.com/@meta_93ch/post/DMXpP9Wzc2B)
 - [SEC, Accessing EDGAR Data](https://www.sec.gov/search-filings/edgar-search-assistance/accessing-edgar-data) — 2026-10-25 최대 요청 속도, User-Agent 선언과 요청 조절 안내 대조
 - [SEC, Webmaster Frequently Asked Questions](https://www.sec.gov/about/webmaster-frequently-asked-questions) — 2026-10-25 스크립트 접근 허용과 data.sec.gov API 대조
 - [House Committee on Ethics, 2026 Instruction Guide: Financial Disclosure Reports for Calendar Year 2025 and Periodic Transaction Reports](https://ethics.house.gov/wp-content/uploads/2026/07/7-8-2026-2025-Published-Instruction-Guide.pdf) — 2026-10-25 PTR 대상과 제출 기한, 금액 구간, 공개 기한과 불법 용도 대조
