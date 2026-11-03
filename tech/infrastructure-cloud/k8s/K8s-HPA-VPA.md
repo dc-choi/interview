@@ -147,6 +147,14 @@ HPA를 15초 주기로 돌려도 트래픽이 실제 처리되기까지는 여�
 
 각 구간을 지연 예산으로 적어 두면 어디를 줄여야 할지가 드러난다. 이미지 크기와 warm-up이 지배적인데 HPA 주기만 줄이는 식의 오조준을 막아 준다. probe 계약은 [[K8s-Configuration-Storage-and-Probes|Kubernetes configuration, storage와 probe]]를 따른다.
 
+### replica 증가와 노드 증설은 별도 조건이다
+
+HPA가 replica 수를 늘려도 노드가 자동으로 생기는 것은 아니다. Node autoscaler가 클라우드 제공자와 연동되어 있어야 하며, 기존 노드에 배치할 수 없는 Pod의 resource request와 affinity 같은 스케줄링 제약을 보고 용량을 확보한다. 실제 CPU 사용률을 직접 보고 노드를 늘리는 동작과 구분한다.
+
+2026-11-04 Kubernetes Node Autoscaling 문서 대조 기준, 설정된 증설 한도, Pod와 맞지 않는 노드 구성이나 클라우드 용량 부족 때문에 새 노드를 확보하지 못할 수 있다. 운영 점검에서는 `desired replica`, 생성된 Pod, 스케줄 가능 여부와 ready Pod 수를 각각 확인한다. replica 목표 달성을 처리 용량 확보로 세지 않는다.
+
+경기처럼 부하 시점을 예상할 수 있으면 앞 절의 지연 예산을 기준으로 준비 시각을 역산하고, 시작 전에 ready 상태와 실제 처리량을 확인한다(운영 점검 제안). NFL Next Gen Stats의 공개 운영 사례는 경기 전 용량 확인과 Pod 및 노드 확장을 함께 설명하지만, 특정 서비스의 즉시 확장이나 비용 절감률을 보장하지 않는다. 이 절은 노드 증설 경계만 대조했으며 기존 VPA 버전별 동작의 검증일은 유지한다.
+
 ## 진단 순서
 
 1. `kubectl describe hpa`로 현재 지표 값과 타깃을 본다. `<unknown>`이면 지표 경로 문제다.
@@ -167,6 +175,8 @@ HPA를 15초 주기로 돌려도 트래픽이 실제 처리되기까지는 여�
 
 ## 출처
 
+- [Kubernetes Docs, Node Autoscaling](https://kubernetes.io/docs/concepts/cluster-administration/node-autoscaling/) — 2026-11-04 Pod 스케줄링 제약, resource request와 증설 실패 조건 대조
+- [Going Deep: AWS + NFL Next Gen Stats, Ep.5: The Stack Behind the Stats — Amazon Web Services](https://www.youtube.com/watch?v=jASX3ZlSm64) — 공식 영상의 사람이 작성한 자막으로 경기 전 용량 확인과 Pod 및 노드 확장 사례 확인
 - [KEDA 2.18, Cron](https://keda.sh/docs/2.18/scalers/cron/)
 - [KEDA 2.18, CPU](https://keda.sh/docs/2.18/scalers/cpu/)
 - [KEDA 2.18, Scaling Deployments, StatefulSets & Custom Resources](https://keda.sh/docs/2.18/concepts/scaling-deployments/)

@@ -66,6 +66,21 @@ SageMaker AI의 관리형 shadow test는 같은 endpoint에서 추론 요청을 
 
 구현 사례로 SageMaker AI의 MLflow Tracking Server는 실험 메타데이터를 관리형 backend에 저장하고, 모델 가중치와 파일 같은 아티팩트는 고객 계정의 S3 버킷에 저장한다. 아티팩트에 접근하도록 명시적으로 권한을 부여해야 한다. 2026-10-29 공식 문서에서 이 저장 책임의 분리를 대조했으며, 모든 하이브리드 환경의 연결이나 망 분리 충족을 확인한 것은 아니다. 기존 모델 평가와 제품별 검증일은 유지한다.
 
+## 데이터 사용 승인과 라벨 품질을 나눈다
+
+학습 데이터에 접근할 수 있다는 사실, 그 목적에 사용하도록 승인받았다는 사실과 라벨이 정확하다는 사실은 서로 다르다. 전주기 플랫폼에서도 데이터 준비를 하나의 완료 상태로 합치지 않는다. 다음은 데이터 추출, 가공, 사용 승인, 라벨링과 학습을 연결할 때의 설계 점검이다.
+
+| 단계 | 확인할 근거 |
+|---|---|
+| 데이터셋 구성 | 원천과 추출 시점, 조인 및 필터 조건, 변환 코드와 결과 버전 |
+| 사용 승인 | 승인한 데이터 버전, 사용 목적, 접근 주체와 실행 환경 |
+| 라벨 생성과 검수 | 라벨 정의, 작성 방식, 검수 결과와 실제 수정 결과 |
+| 모델 평가 | 학습에 쓴 데이터와 구분한 평가 데이터, 비교 모델과 지표 |
+
+검수와 수정도 구분한다. 예를 들어 SageMaker Ground Truth의 이미지 bounding box 작업에서 label verification은 기존 라벨의 정확성이나 품질을 평가하고, label adjustment는 기존 주석을 수정한다. API로 검수나 수정 작업을 만들 때는 원래 작업과 다른 `LabelAttributeName`을 사용한다. 검수 완료만으로 수정된 라벨을 학습에 썼다고 판단하지 않고, 후속 학습이 실제 읽은 결과를 확인한다(운영 점검 제안).
+
+2026-11-04 공식 문서 대조 기준 Ground Truth는 신규 고객에게 열려 있지 않다. 위 설명은 단계 구분을 위한 제품 사례이며 특정 플랫폼이 이 서비스를 사용한다는 뜻은 아니다. 사용 승인 절차와 데이터 가림만으로 모든 사용 조건을 충족했다고 간주하지 않는다. 이 절만 추가 대조했으므로 기존 본문의 검증일은 유지한다.
+
 ## 검증 경계
 
 ### 초안 생성과 최종 사용을 따로 평가한다
@@ -88,6 +103,8 @@ SageMaker AI의 관리형 shadow test는 같은 endpoint에서 추론 요청을 
 
 ## 출처
 
+- [AWS, Label verification and adjustment](https://docs.aws.amazon.com/sagemaker/latest/dg/sms-verification-data.html) — 2026-11-04 검수와 수정의 구분, API 라벨 속성명과 신규 고객 제한 대조
+- [클라우드 기반 AI 전주기 지원 플랫폼을 통한 산업 혁신 — Amazon Web Services Korea](https://www.youtube.com/watch?v=wkWdpDyjFQc) — 2024년 공개 발표의 데이터 추출, 사용 승인과 학습 흐름을 검토 계기로 사용. 기업별 성과와 제품 도입 효과는 일반화하지 않음
 - [AWS, Accelerate generative AI development using managed MLflow on Amazon SageMaker AI](https://docs.aws.amazon.com/sagemaker/latest/dg/mlflow.html) — 2026-10-29 Tracking Server의 메타데이터와 S3 아티팩트 저장 경계, 접근 권한 대조
 - [엔터프라이즈 AI 경쟁력을 위한 하이브리드 MLOps 운영 전략 — Amazon Web Services Korea](https://www.youtube.com/watch?v=Qdb8Ult2H8k) — 2024년 공개 발표의 반복 개발과 하이브리드 실행을 검토 계기로 사용. 제품 절감률과 고객 성과는 일반화하지 않음
 - [AWS Prescriptive Guidance, Evaluating your ML project with the MLOps checklist](https://docs.aws.amazon.com/pdfs/prescriptive-guidance/latest/mlops-checklist/mlops-checklist.pdf) — 8절의 재학습 정의와 데이터, 모델, 코드 변경 트리거를 2026-10-27 대조
