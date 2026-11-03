@@ -56,6 +56,19 @@ SageMaker AI의 관리형 shadow test는 같은 endpoint에서 추론 요청을 
 
 **배송 모델에 적용하는 예:** 도로 이동 시간과 건물 도착 후 문 앞까지 걸린 시간을 구분해 관측하고, 새 모델이 무엇을 예측하는지 먼저 고정한다. 지역, 물량과 수집 조건이 다른 데이터를 함께 쓸 때는 평가 구간을 나누어 비교한다. 학습과 배포 리드타임이 줄어든 결과와 실제 배송 지연이 줄어든 결과도 별도로 측정한다. 이는 평가 설계 제안이며 특정 업체의 성과나 자동화 도구의 효과를 보장하는 설명이 아니다.
 
+## 생성형 모델은 프롬프트와 평가 자료도 운영 대상으로 둔다
+
+MLOps의 데이터, 코드와 모델 추적은 생성형 모델에서도 필요하다. 여기에 프롬프트 관리, 모델 선택과 비결정적 출력의 평가가 더해진다. 모델을 직접 학습하는 제공자, 기존 모델을 조정하는 미세조정자, API나 인터페이스로 사용하는 소비자는 관리할 범위가 다르다. API 소비자는 자체 학습 파이프라인이 없어도 입력 구성과 출력 평가를 운영해야 한다.
+
+다음은 이 구분을 적용한 설계 점검이다. 역할은 책임을 나누는 기준이며, 역할마다 별도 팀을 만들라는 요구가 아니다.
+
+- 재사용 프롬프트 목록과 평가용 목록을 구분한다. 평가용 목록에는 실제 과업의 입력, 기대 결과 또는 채점 기준을 함께 둔다.
+- 모델 식별자, 프롬프트 버전, 평가 데이터와 점수를 연결한다. 프롬프트나 모델을 바꿨으면 같은 평가 입력으로 다시 비교한다.
+- 정답 라벨이 있는 분류와 여러 답이 가능한 생성 과업을 같은 정확도 하나로 평가하지 않는다. 후자는 과업별 기준으로 사람 검토나 LLM 심사를 적용하고 심사 결과의 한계도 기록한다.
+- 품질, 응답 시간과 비용의 우선순위를 정해 후보를 선택한다. 사용자 피드백은 평가 사례를 보완하는 재료이며 그대로 정답 라벨이나 재학습 승인으로 바꾸지 않는다.
+
+2026-11-04 AWS의 생성형 AI 운영 글에서 역할 구분과 프롬프트 카탈로그, 평가 흐름을 대조했다. 기존 제품별 검증일은 유지한다.
+
 ## 개별 예측과 집계 결과를 함께 검수한다
 
 개별 표본의 정밀도와 재현율을 통과해도, 결과를 실제 업무 단위로 모았을 때 이상한 분포가 생길 수 있다. 분류 오류 검사와 집계 검사를 나누고, 전체 점수만으로 사용 준비가 끝났다고 판단하지 않는다.
@@ -117,6 +130,8 @@ SageMaker AI의 관리형 shadow test는 같은 endpoint에서 추론 요청을 
 
 ## 출처
 
+- [Operationalizing Generative AI: How It Differs from MLOps — AWS](https://aws.amazon.com/blogs/machine-learning/operationalizing-generative-ai-how-it-differs-from-mlops/) — 2025년 12월 개정 글의 역할별 운영 범위와 프롬프트, 평가 흐름을 2026-11-04 대조
+- [MLOps부터 LLMOps까지 생성형 AI 운영 마스터하기 — Amazon Web Services Korea](https://www.youtube.com/watch?v=XBiOXJ2aJsA) — 2024년 발표의 운영 범위 구분을 검토 계기로 사용
 - [Going Deep: AWS + NFL Next Gen Stats, Ep. 3: From Snap to Stat — Amazon Web Services](https://www.youtube.com/watch?v=4U3H5xVDXsQ) — 사람이 작성한 자막의 05:17~06:18 개별 지표와 선수별, 시즌별 집계 검토. 모델 성능을 독립 재현한 결과는 아님
 - [Going Deep: AWS + NFL Next Gen Stats — AWS](https://aws.amazon.com/sports/nfl/going-deep/) — 2026-11-04 Episode 3의 공식 소개와 모델 개발, 배포 판단 범위 대조
 - [AWS, Label verification and adjustment](https://docs.aws.amazon.com/sagemaker/latest/dg/sms-verification-data.html) — 2026-11-04 검수와 수정의 구분, API 라벨 속성명과 신규 고객 제한 대조

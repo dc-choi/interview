@@ -124,6 +124,20 @@ Docker 지원 플랫폼에 `Dockerfile` 또는 플랫폼이 요구하는 구성�
 
 위 자동 확장 진단만 추가 대조했으며 배포 정책과 플랫폼 지원 상태 전체를 재검증한 것은 아니다.
 
+## CloudFormation 실패 상태에서의 복구 경계
+
+환경 작업이 실패하면 연결된 CloudFormation 스택의 이벤트와 상태부터 확인한다. `awseb-<환경 ID>-stack`의 실패 원인을 해결하는 것과 애플리케이션 health가 정상으로 돌아오는 것은 별도 확인이다. 다음은 2026-11-04 AWS Knowledge Center와 사용자 가이드 대조 기준이다.
+
+| 스택 상태 | 복구 순서 |
+|---|---|
+| `CREATE_FAILED` | 생성 실패 원인을 해결한 뒤 환경 재구축 또는 종료 후 새 환경 생성을 검토한다. 이후 스택이 `UPDATE_COMPLETE`로 바뀌어도 기존 생성 실패 환경이 복구됐다고 보지 않는다 |
+| `UPDATE_ROLLBACK_FAILED` | rollback을 막은 리소스를 확인하고 원인을 해결한다. `Continue update rollback`으로 `UPDATE_ROLLBACK_COMPLETE`가 된 뒤 실패했던 Beanstalk 작업을 재시도한다 |
+| `DELETE_FAILED` | 삭제 실패 리소스와 의존성을 확인하고 해소한다. 스택을 `DELETE_COMPLETE`로 만든 뒤 환경 종료나 재구축 작업을 재시도한다 |
+
+Rollback에서 리소스 건너뛰기는 원인을 고칠 수 없을 때 검토하는 복구 수단이다. 건너뛴 리소스와 템플릿은 불일치할 수 있으므로 다음 스택 업데이트 전에 일치시킨다. 상태만 완료로 바꾼 것을 구성 복구 완료로 계산하지 않는다.
+
+환경 재구축은 기존 자원을 종료하고 같은 구성의 새 자원으로 교체한다. 환경에 결합된 DB도 삭제 대상이며 새 DB에 기존 데이터가 자동으로 돌아오지 않는다. 재구축 전에 DB 삭제 정책과 보존 또는 스냅샷 설정을 확인한다. 이 절은 문서 대조이며 실제 자원 삭제나 복구 시험을 한 기록이 아니다. 다른 제품 동작의 검증일은 유지한다.
+
 ## 선택 기준
 
 - 전통적인 웹 애플리케이션을 AWS 인프라 제어권을 유지하며 빠르게 배포하면 Beanstalk가 맞을 수 있다.
@@ -132,6 +146,9 @@ Docker 지원 플랫폼에 `Dockerfile` 또는 플랫폼이 요구하는 구성�
 
 ## 출처
 
+- [Why is my Elastic Beanstalk environment in a non-operational state? — AWS re:Post](https://repost.aws/knowledge-center/elastic-beanstalk-invalid-state) — 2026-11-04 공식 검색 색인의 본문으로 상태별 조치를 확인. 직접 열기는 403을 반환함
+- [AWS Elastic Beanstalk — Rebuilding Elastic Beanstalk environments](https://docs.aws.amazon.com/elasticbeanstalk/latest/dg/environment-management-rebuild.html)
+- [AWS CloudFormation — Continue rolling back an update](https://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/using-cfn-updating-stacks-continueupdaterollback.html)
 - [AWS Elastic Beanstalk — Beanstalk Cluster architecture](https://docs.aws.amazon.com/elasticbeanstalk/latest/dg/beanstalk-cluster-concepts.html) — 2026-10-27 모드별 구성, 공유 조건과 변경 제한 대조
 - [AWS Elastic Beanstalk — Managed platform updates](https://docs.aws.amazon.com/elasticbeanstalk/latest/dg/environment-platform-update-managed.html) — 2026-10-27 브랜치 이동 제외 범위 대조
 - [How do I troubleshoot Auto Scaling issues in Elastic Beanstalk? — AWS re:Post](https://repost.aws/knowledge-center/elastic-beanstalk-troubleshoot-autoscaling)
