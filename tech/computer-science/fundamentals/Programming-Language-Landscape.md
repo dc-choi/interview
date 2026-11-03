@@ -81,6 +81,8 @@ aliases: ["Programming Language Landscape", "프로그래밍 언어 지형", "�
 - 내장 스크립트: Lua는 C 라이브러리로 구현돼 필요한 프로그램에 내장할 수 있는 스크립트 언어다. 확장 언어로서는 main 프로그램 개념 없이 호스트 안에서 실행되고(독립 실행용 `lua` 프로그램도 그런 호스트다), 호스트는 Lua 코드를 실행하고 변수를 읽고 쓰며 C 함수를 등록해 스크립트가 부르게 한다. 핵심 기능은 호스트가 제공하고 설정과 동작은 스크립트로 정하는 구조에 맞는다. Redis도 서버에 내장한 Lua 5.1 인터프리터로 애플리케이션 로직 일부를 서버 안에서 실행한다([[Redis-Atomic-Operations-Lua|Redis Lua 스크립트와 Functions]]).
 - 인프라 도구: Kubernetes 저장소와 Docker가 만든 Moby 저장소의 코드는 대부분 Go다(2026-10-12 GitHub 언어 통계 기준). 내부 동작을 읽거나 기여하려면 Go를 읽을 수 있어야 한다.
 - 데이터와 AI: NumPy는 배열 연산의 반복을 미리 컴파일한 C 코드에서 실행한다. Python이 작성과 연결을 맡고 무거운 계산은 네이티브 라이브러리가 맡는 구조라서, 순수 Python 반복이 병목이면 판단이 달라진다([[CPU-Bound-Vs-IO-Bound|CPU-Bound vs I/O-Bound]]).
+- Python API와 Rust 구현: Hugging Face Tokenizers는 Rust 토큰화 구현을 Python 바인딩으로 제공한다. Pydantic은 Python 쪽에서 모델을 정의하고, Rust로 구현한 `pydantic-core`가 검증과 직렬화의 핵심을 맡는다. Python으로 호출한다는 사실과 내부 계산을 구현한 언어는 구분한다(2026-11-03 공식 문서 및 저장소 대조).
+- 개발 도구와 실행 코드: Rust로 작성한 `uv`는 Python 패키지와 프로젝트를 관리한다. 도구가 Rust라는 사실이 사용자 Python 코드를 Rust로 변환한다는 뜻은 아니다. 라이브러리의 네이티브 구현, 환경 관리 도구와 애플리케이션 언어 교체를 서로 다른 선택으로 본다(2026-11-03 uv 공식 문서 대조).
 - 데이터 질의: 관계형 DB를 쓰면 애플리케이션 언어와 함께 SQL을 쓴다. SQL은 얻을 결과의 조건을 선언하고, 같은 결과를 내는 여러 실행 방법 가운데 무엇을 쓸지는 DBMS가 정한다. PostgreSQL planner는 가장 빠를 것으로 예상되는 계획을 고르므로 성능은 문장 모양보다 실행 계획으로 확인한다([[Execution-Plan-Basics|실행 계획 기본]], [[Declarative-Programming|선언형 프로그래밍]]).
 - 권장 언어의 이동: Android는 2019년 Google I/O에서 Kotlin 우선 개발을 밝혔다. Java로 API를 쓰는 지원은 유지하지만 Jetpack Compose는 Java를 지원하지 않는다. 플랫폼 소유자의 권장 언어가 새 도구와 문서의 지원 범위를 정한다. 이동을 받쳐 주는 것은 기존 언어와의 상호운용이다. Kotlin은 Java 코드를 호출하고 Java에서도 호출되도록 설계돼 프로젝트에 원하는 만큼만 넣을 수 있고, Apple도 Objective-C 앱을 한 번에 다시 쓰지 않고 클래스 단위로 Swift로 옮기는 방법을 안내한다.
 
@@ -168,6 +170,9 @@ aliases: ["Programming Language Landscape", "프로그래밍 언어 지형", "�
 - [Unreal Engine 5.8 Documentation, Programming with C++](https://dev.epicgames.com/documentation/en-us/unreal-engine/programming-with-cplusplus-in-unreal-engine)
 - [WordPress Developer Resources, Plugin Handbook Introduction](https://developer.wordpress.org/plugins/intro/)
 - [NumPy, What is NumPy?](https://numpy.org/doc/stable/user/whatisnumpy.html)
+- [Hugging Face, Tokenizers](https://huggingface.co/docs/tokenizers/index) — Rust 토큰화 구현. Python 바인딩은 [공식 저장소](https://github.com/huggingface/tokenizers/blob/main/bindings/python/python/tokenizers/__init__.py)와 함께 대조
+- [Pydantic, Architecture](https://github.com/pydantic/pydantic/blob/main/docs/internals/architecture.md) — Python 모델 정의와 pydantic-core 검증 및 직렬화 경계
+- [Astral, uv](https://docs.astral.sh/uv/) — Rust로 작성한 Python 패키지 및 프로젝트 관리 도구
 - [Android Developers, Android's Kotlin-first approach](https://developer.android.com/kotlin/first)
 - [Kotlin Documentation, FAQ](https://kotlinlang.org/docs/faq.html)
 - [Kotlin Documentation, Null safety](https://kotlinlang.org/docs/null-safety.html)

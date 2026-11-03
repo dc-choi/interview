@@ -9,6 +9,7 @@ aliases: ["CS&프로그래밍(CS&Programming)", "CS & Programming Language"]
 
 ## 목차
 
+- [[Conditional-Probability-and-Bayes|조건부확률과 베이즈 정리]] — 경보 사례, 전체확률과 기저율, 탐지율과 사후확률의 구분
 - [[Kotlin-Lazy-Assertion-Messages|Kotlin 지연 assertion 메시지]] — 실패할 때만 진단 문자열 생성, 실험 API와 평가 시점
 - [[Kotlin-Collection-Equality|Kotlin 컬렉션 동등성과 중복 검사]] — allEqual과 allDistinct, 선택값 비교, 빈 입력과 실험 API 조건
 - [[HBM-Stack-and-Base-Die|HBM 적층과 베이스 다이]] — 저장층과 로직층의 역할, 용량과 대역폭, NVHBM 구조와 발표 수치의 한계
