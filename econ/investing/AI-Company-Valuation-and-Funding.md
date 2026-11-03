@@ -80,6 +80,24 @@ Capex는 같은 분기의 영업비용과 같지 않다. 위 표의 영업이익
 
 해당 보고서는 실제 S-1을 제공받지 못했고 보도된 유출 정보를 이용했다고 명시한다. 따라서 투자설명서의 감사 재무, 위험 요인, 공모 구조와 장기 약정을 직접 확인하기 전에는 보고서의 강한 결론을 검증 완료로 취급하지 않는다. 420억 달러의 손실 구성을 확인한 것도 유출 재무 자체를 감사한 것은 아니다.
 
+### 공개 신고서의 실적과 컴퓨팅 비용을 읽는 예
+
+2026-11-04에 대조한 Anthropic의 2026-10-26 최초 S-1에서 2026년 상반기 수치는 다음과 같다. 단위는 백만 달러이며, 3분기나 연환산 매출과 섞지 않는다.
+
+| 항목 | 2026년 상반기 |
+| --- | ---: |
+| 매출 | 16,286 |
+| 컴퓨팅 및 인프라 비용 | 8,945 |
+| 영업손실 | 693 |
+| 전환사채, 파생부채와 SAFE의 공정가치 변동 손실 | 72,388 |
+| 순손실 | 80,748 |
+
+컴퓨팅 및 인프라 비용은 연구, 모델 개발, 고객 서비스와 내부 사용을 함께 지원한다. 이를 추론 원가만으로 읽지 않는다. 표로 계산한 매출/컴퓨팅 및 인프라 비용은 약 1.82배다. 매출에서 이 비용을 빼도 인건비, 판매와 마케팅 등 다른 영업비용이 남으므로 영업이익이나 잉여현금흐름이 아니다. 상반기 합산 비율로 특정 분기의 비율을 대신하지 않는다.
+
+공정가치 변동 손실은 기업가치 상승에 따른 전환상품 평가 변화가 주요 요인이었다. 순손실 전부를 현금소진으로 읽지 않되, 이 항목만 빼서 영업손실을 구할 수도 없다. 이자수익과 기타 손익, 세금이 더 있으므로 현금소진은 현금흐름표로 따로 확인한다.
+
+위의 10월 초 보고서는 공개 신고서 이전 자료를 이용한 역사적 평가로 남긴다. 회사의 10월 26일 발표 당시 공모 주식 수와 가격 범위는 미정이었고 신고서는 아직 효력이 발생하지 않았다. 이번 대조는 최초 신고서의 해당 실적과 비용 정의에 한정한다. 후속 정정 신고서, 최종 공모 조건, 연말 전망과 향후 투자 수익은 검증하지 않았다.
+
 ## 사례: TypeSafe AI의 투자 발표
 
 2026-10-09 공식 발표는 a16z 주도 Series A 8억 7,000만 달러, 기업가치 75억 달러를 적고 엔터프라이즈 기능과 머신 네이티브 모델의 확대를 계획한다. 조달과 계획의 발표를 확인한 범위다. 고객 절감액, 실제 계약과 현금흐름은 독립 검증하지 않았다.
@@ -105,6 +123,8 @@ AMD의 2026-09-28 Form 8-K는 9월 26일 World Labs의 전체 지분을 인수�
 
 ## 출처
 
+- [Form S-1, October 26, 2026 — Anthropic, SEC](https://www.sec.gov/Archives/edgar/data/2130357/000162828026067168/anthropicpbc-sx1.htm) — MD&A의 Compute and Infrastructure, Results of Operations와 공정가치 변동 설명, 2026-11-04 부분 대조
+- [Anthropic files S-1 with the SEC for proposed initial public offering — Anthropic](https://www.anthropic.com/news/s1-sec) — 2026-10-26 최초 신고서 제출과 당시 공모 조건의 미확정 상태
 - [NYU Stern, Aswath Damodaran, Discounted Cashflow Models: What They Are and How to Choose the Right One](https://pages.stern.nyu.edu/~adamodar/New_Home_Page/lectures/basics.html) — 현금흐름과 할인율의 대응
 - [NYU Stern, Aswath Damodaran, The FCFE Discount Model](https://pages.stern.nyu.edu/~adamodar/New_Home_Page/lectures/fcfe.html) — 성장 단계, 잔존가치, 재투자와 안정기 할인율 조건
 - [NYU Stern, Aswath Damodaran, Price-Sales Multiples](https://pages.stern.nyu.edu/~adamodar/New_Home_Page/lectures/ps.html) — 매출 배수의 순이익률, 배당성향, 성장과 위험 조건

@@ -77,6 +77,14 @@ flowchart TD
 
 제품 사례로 Amazon DataZone의 business glossary는 업무 용어와 정의를 데이터 자산 및 컬럼에 연결한다. 이는 의미를 공유하는 메타데이터 기능이며 해당 데이터의 정확성이나 사용 권한을 자체적으로 증명하지 않는다. 분석 파일, 코드와 결과 보고서의 공유를 검토한 계기는 BizLens 공개 발표지만, 그 플랫폼이 DataZone을 사용한다고 추정하지 않는다.
 
+### 검색용 지식과 모델 학습 데이터를 구분한다
+
+문서를 수집해 검색 인덱스를 갱신하는 일과 모델의 매개변수를 학습하는 일은 다르다. RAG는 질의에 관련된 자료를 찾아 생성 시점의 입력에 제공한다. 지도 미세조정(supervised fine-tuning)은 입력과 정답 예제로 모델 매개변수를 조정한다. 따라서 지식 베이스 동기화를 모델 재학습 완료로 기록하지 않는다.
+
+Amazon Bedrock Knowledge Bases의 `Retrieve`는 관련 원문 조각이나 이미지를 반환하고, `RetrieveAndGenerate`는 검색과 모델 호출을 결합해 답변과 출처를 반환한다. 검색 결과가 필요한 소비자와 생성 답변이 필요한 소비자를 분리할 수 있다. 출처 표시는 답변 검증의 단서이며 내용이 정확하다는 보장으로 취급하지 않는다(설계 점검).
+
+추천시스템과 생성형 답변이 원본 데이터를 공유하더라도 특징 계산, 학습 데이터와 검색 인덱스의 갱신을 각각 추적한다. 어떤 자료를 언제까지 반영했는지, 어떤 모델과 평가 조건을 사용했는지를 나누어 남기는 것이 적용 제안이다. 모든 소비자가 같은 데이터 갱신 주기를 가져야 한다는 뜻은 아니다.
+
 ## 개발, 처리와 추론의 자원을 나눈다
 
 모델 훈련에 필요한 최대 사양을 노트북 개발과 데이터 탐색 시간 내내 유지할 필요가 있는지 먼저 확인한다. 처리와 학습의 실행 단위를 분리하면 단계별 자원을 선택할 수 있지만 데이터 전달, 권한과 실행 이력을 연결하는 책임이 생긴다. 다음은 단계별 자원 분리를 위한 설계 점검이다.
@@ -108,6 +116,7 @@ Parquet는 데이터 파일의 표현, Iceberg와 Delta Lake는 파일 묶음의
 
 ## 확인 범위
 
+- 2026-11-04에 Bedrock 공식 문서로 검색 API와 지도 미세조정의 차이를 부분 대조했다. 2024년 발표의 모델 목록, 출시 예정 기능, 가격과 성능 수치는 현재 사양으로 옮기지 않았고 API 실행은 하지 않았다.
 - 2026-11-04에 특징 생성, 단계별 자원, 업무 용어와 추론 호출 분산을 공식 공개 자료와 대조했다. 고객 발표의 성과 수치, 현재 배포 상태와 모델 정확도는 검증하지 않았고, 예제 실행도 하지 않았다. 기존 본문 전체의 검증일은 유지한다.
 - a16z 페이지는 게시일을 2020-10-15로 표시하면서 본문을 2020년 최초 글의 개정본이라고 안내한다. 정확한 개정일은 확인하지 못했다. 시장과 제품 지도는 당시 관찰로 취급하며 2026년 채택률이나 우열의 근거로 사용하지 않는다.
 - 2026-11-02에 공개 본문을 읽고 개념을 정리했다. 이미지 도표의 제품 배치와 연결선은 별도 시각 검증하지 않았다. 위 도식은 추천시스템 설명을 위해 구성한 예시다.
@@ -115,6 +124,8 @@ Parquet는 데이터 파일의 표현, Iceberg와 Delta Lake는 파일 묶음의
 
 ## 출처
 
+- [Amazon Bedrock, Retrieving information from data sources using Amazon Bedrock Knowledge Bases](https://docs.aws.amazon.com/bedrock/latest/userguide/kb-how-retrieval.html)
+- [Amazon Bedrock, Customize your model to improve its performance for your use case](https://docs.aws.amazon.com/bedrock/latest/userguide/custom-models.html)
 - [Going Deep: AWS + NFL Next Gen Stats, Episode 4: Completion Probability — AWS](https://aws.amazon.com/sports/nfl/going-deep/) — 특징 설계와 모델 선택 사례
 - [Going Deep: AWS + NFL Next Gen Stats, Completion Probability — Amazon Web Services](https://www.youtube.com/watch?v=6y_0NGtQXz0) — 좌표의 상대 거리 변환과 도메인 협업
 - [BizLens로 본 교보생명의 데이터 전략 성공 스토리 — Amazon Web Services Korea](https://www.youtube.com/watch?v=LIdzrwrOSpI) — 업무 용어, 데이터 탐색과 분석 산출물 재사용의 검토 계기

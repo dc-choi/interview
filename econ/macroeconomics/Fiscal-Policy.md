@@ -130,6 +130,14 @@ aliases: ["재정정책", "Fiscal Policy"]
 
 평상시엔 통화정책이 1차 도구이고 재정은 보조로 쓰이는 경우가 많다. 금리가 실효 하한에 가깝고 통화 전달 경로가 약해지면 재정승수가 커질 수 있어 재정의 역할이 중요해진다. 그렇다고 통화정책이 완전히 사라지는 것은 아니다. 양적완화, forward guidance, 일부 국가의 마이너스 금리 같은 비전통 수단이 남는다. 2020년 코로나 대응은 금리 인하와 양적완화, 대규모 재정지원을 함께 동원한 사례다.
 
+### 중앙은행의 국채 매입은 채무 탕감과 구분한다
+
+정부나 정치인이 중앙은행의 지원을 요구했다는 사실과 실제 지원 수단의 발동은 다르다. ECB의 2022년 TPI(Transmission Protection Instrument) 설계는 국가의 기초 여건으로 정당화되지 않는 무질서한 금융여건 악화가 통화정책 전달을 위협할 때 유통시장에서 증권을 매입하는 수단이다. 국채 원금을 없애는 절차로 설명하지 않는다.
+
+ECB 이사회는 EU 재정 체계 준수, 심각한 거시 불균형 부재, 재정 지속가능성과 건전한 거시정책을 함께 평가한다. 과도한 적자 절차(EDP)에 있다는 사실만으로 자동 배제되는 것은 아니다. 발표문은 EDP 대상이 아니거나, 관련 EU 이사회 권고에 효과적으로 대응하지 못했다는 평가를 받지 않았는지를 조건으로 적는다. 발동에는 시장과 정책 전달 지표, 적격성 및 비례성의 종합 판단이 필요하다.
+
+따라서 국가 규모가 크거나 국채 금리가 올랐다는 이유만으로 매입, 특정 금리 수준의 보장이나 탕감을 확정하지 않는다. 2026-11-04에 2022년 도입 발표의 설계만 대조했으며, 프랑스의 현재 적격성, 실제 TPI 발동과 정치권의 개별 요구는 검증하지 않았다.
+
 ## 9. 핵심 지표와 숫자
 
 - **통합재정수지(GDP 대비)**: 흑자인지 적자인지
@@ -144,6 +152,7 @@ aliases: ["재정정책", "Fiscal Policy"]
 
 ## 출처
 
+- [ECB — The Transmission Protection Instrument](https://www.ecb.europa.eu/press/pr/date/2022/html/ecb.pr220721~973e6e7273.en.html) — 2022-07-21 도입 발표의 매입 목적, 적격성 평가와 발동 조건을 2026-11-04 대조
 - [TreasuryDirect, FAQs About the Public Debt](https://www.treasurydirect.gov/help-center/public-debt-faqs/) — 2026-11-03 총부채, 대중 보유와 정부 내부 보유의 구분, 연방준비은행 포함 여부 대조
 - [Congressional Budget Office — The Budget and Economic Outlook: 2026 to 2036](https://www.cbo.gov/publication/62105) — 2026년 2월 보고서. 2026-11-03 제1장 Figure 1-1의 전체 적자, 기초재정적자와 순이자 정의만 대조
 - [IMF — IMF Executive Board Concludes 2026 Article IV Consultation with France](https://www.imf.org/en/news/articles/2026/07/22/pr26255-france-imf-executive-board-concludes-2026-article-iv-consultation) — 2026-07-22 자료의 일반정부 수지, 기초수지와 총부채비율 전망, 2026-10-28 부분 대조
