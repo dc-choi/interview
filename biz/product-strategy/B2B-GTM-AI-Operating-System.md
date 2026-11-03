@@ -26,6 +26,14 @@ ICP, 포지셔닝, 제품이 할 수 있는 일, 금지할 약속과 검증된 �
 
 구매 신호는 제품 사용 같은 자사 데이터, 파트너 접점, 투자와 인사 변화 같은 외부 정보로 나눠 본다. 신호는 접촉할 이유의 후보이며 동의나 구매 의사의 증거는 아니다. 이미 거절한 고객과 민감 정보의 처리 범위를 함께 관리한다.
 
+## 문의 정보 보강과 사람에게 넘길 기준을 나눈다
+
+인바운드 문의가 늘면 정보를 채우는 작업, 적합도를 분류하는 작업과 영업 담당자에게 배정하는 작업을 구분한다. 정보가 풍부해졌다는 사실만으로 구매 의사가 확인되거나 모든 문의에 직접 대응할 여력이 생기지는 않는다.
+
+공개 사례: Clay가 소개한 Anthropic의 운영에서는 문의 정보를 보강하고 점수를 매긴 뒤 Salesforce에 연결했다. Claude는 자체 산업 분류에 맞춰 잠재 고객을 분류하는 데 쓰였고, 영업 담당자는 관심을 보인 고객과의 대화에 시간을 집중했다(2026-11-04 사례 본문 확인). 공급사가 공개한 당시 고객 사례이며, 현재 영업 조직 전체가 같은 방식이라는 확인이나 모든 고객 상담이 자동 처리된다는 근거는 아니다.
+
+소규모 운영에 적용한다면 적합도, 정보 부족과 담당자 배정을 별도 상태로 두는 방법을 제안한다. 정보가 없다는 이유만으로 부적합으로 확정하지 않고 검토할 항목을 남긴다. 사람이 맡을 기준을 정한 뒤 잘못 분류한 문의와 놓친 기회를 점검한다. 이는 사례에서 도출한 운영 제안이며 해당 회사의 실제 배정 규칙을 재현한 것은 아니다.
+
 ## 영업 준비 시간과 계약 성과를 나눠 측정한다
 
 제품 조사와 고객 접촉 준비를 줄이는 AI의 효과는 해당 업무의 소요 시간으로 먼저 확인한다. 준비 시간이 줄었다는 사실만으로 계약 성사율이나 매출이 늘었다고 계산하지 않는다.
@@ -56,6 +64,7 @@ AI 답변에 이름이 등장한 횟수, 웹사이트 유입과 실제 계약 �
 
 ## 출처
 
+- [How Anthropic uses Clay to 3x their enrichment coverage—with no manual work — Clay](https://www.clay.com/customers/anthropic) — 2026-11-04 정보 보강, 점수화, 자체 산업 분류와 Salesforce 연결 확인. 성과 수치의 인과 효과와 현재 운영은 미검증
 - [AI for Software Companies — AWS](https://aws.amazon.com/isv/ai-for-software-companies/) — 2026-10-27 Workday Sales Companion의 데이터 통합과 시간 절감 보고 대조. 독립적인 인과 검증 자료는 아니다.
 - [How Workday is Using AI on AWS to Transform Sales Productivity — Amazon Web Services](https://www.youtube.com/watch?v=hHoju99hOOk) — 공개 고객 사례, 00:01~01:02의 정보 조사와 시간 절감. 사람 자막과 AWS 공개 소개문을 대조했다.
 - [How the GTM playbook has changed in 2026 — Growth Unhinged, Kyle Poyar](https://www.growthunhinged.com/p/b2b-gtm-playbook-for-2026) — 2026-10-16 본문 확인, 조사 수치는 표본 한정

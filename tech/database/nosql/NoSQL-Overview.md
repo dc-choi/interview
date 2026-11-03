@@ -29,6 +29,14 @@ SQL을 지원하는지와 데이터를 어떤 모델로 저장하는지는 다�
 
 Document 모델링의 Embed vs Reference 트레이드오프는 [[MongoDB-Schema-Design|MongoDB 스키마 설계]] 참고.
 
+### 그래프 조회도 탐색 범위를 제한한다
+
+그래프 저장소를 선택해도 관계를 여러 단계 따라가는 조회가 자동으로 저렴해지지는 않는다. Neo4j의 가변 길이 경로 조회는 최대 길이가 크거나 패턴이 포괄적이면 매우 많은 경로와 일치해 느려질 수 있다. 경로를 확장하는 동안 노드 라벨, 관계 유형과 속성 조건으로 불필요한 후보를 제외할 수 있다(2026-11-04 Cypher 공식 문서 부분 대조).
+
+설계 예로, 특정 계정에서 시작해 연결된 계정을 찾는다면 필요한 관계 방향과 유형, 최대 홉 수를 먼저 정한다. 업무가 요구하는 답이 그 범위에 있는지 확인하지 않고 홉 수를 줄이면 필요한 경로도 빠진다. 마지막에 결과 수를 제한하는 것과 탐색 도중 후보를 줄이는 것도 구분한다. 모든 경로의 거리를 계산해 정렬한 뒤 하나를 고르는 쿼리는 결과가 한 건이어도 앞선 탐색이 작아지는 것은 아니다.
+
+이 절은 관계 탐색의 비용 경계만 보강했다. 그래프 제품 전체의 저장 방식이나 분산 확장 성능을 검증한 것은 아니며 기존 `verified_at`은 유지한다.
+
 ## BASE 모델
 
 BASE는 일시적 불일치를 허용하면서 가용성을 우선하는 설계 관점이다. NoSQL 전체의 필수 계약은 아니며 제품과 연산별 일관성, 트랜잭션 옵션을 확인한다.
@@ -145,6 +153,7 @@ ACID는 트랜잭션의 성질이고 CAP는 네트워크 분할 중 선형화 �
 2026-10-02에는 가용성/최종 일관성의 한계, ACID와 CAP의 구분 및 DynamoDB 읽기/트랜잭션 반례를 대조했다. MongoDB 버전 이력, Cassandra 설정과 강의 사례 전체를 다시 검증한 기록은 아니다. 2026-10-05에는 MySQL 8.4의 INSTANT 컬럼 추가 한도와 COPY 전용 컬럼 타입 변경, Group Replication 구성원이 데이터 전체 사본을 갖는 구조, PostgreSQL 18의 컬럼 추가 재작성 조건을 대조했다.
 
 - [Amazon DynamoDB, Read consistency](https://docs.aws.amazon.com/amazondynamodb/latest/developerguide/HowItWorks.ReadConsistency.html)
+- [Neo4j Cypher Manual, Variable-length paths](https://neo4j.com/docs/cypher-manual/current/patterns/variable-length-paths/) — 2026-11-04 경로 수 증가, 최대 길이와 탐색 중 조건 적용의 범위 대조
 - [DuckDB, SQL Introduction](https://duckdb.org/docs/stable/sql/introduction)
 - [Amazon DynamoDB, PartiQL - a SQL-compatible query language for Amazon DynamoDB](https://docs.aws.amazon.com/amazondynamodb/latest/developerguide/ql-reference.html)
 - [Amazon DynamoDB, Transactions: How it works](https://docs.aws.amazon.com/amazondynamodb/latest/developerguide/transaction-apis.html)

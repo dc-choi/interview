@@ -37,6 +37,14 @@ OSI 하위 2계층은 같은 로컬 네트워크(LAN) 안에서 비트와 프레
 
 신호는 멀리 갈수록 약해지고(감쇠) 잡음이 섞여 왜곡되므로 매체마다 오류 없이 쓸 수 있는 길이가 있다. 10BASE-T, 100BASE-TX와 1000BASE-T의 트위스티드 페어 링크는 100m까지다. 리피터는 약해지고 일그러진 신호를 원래 모양으로 재생해 거리를 늘리는 L1 장비이고, 허브는 받은 신호를 나머지 모든 포트로 재생해 내보내는 멀티포트 리피터다. 오늘날에는 독립 리피터 대신 스위치가 프레임을 받아 새로 송신하고, 100m를 넘는 구간은 광 링크로 잇는다.
 
+### 무선의 다중경로 페이딩과 안테나 다이버시티
+
+전파는 직접 경로뿐 아니라 벽이나 금속에 반사된 경로로도 수신기에 도착한다. 도착 시간과 위상이 달라 신호가 합쳐질 때 진폭이 커지거나 작아질 수 있고, 지연된 신호가 심벌 해석을 방해할 수도 있다. 따라서 수신 신호가 강하다는 사실만으로 품질이 좋다고 판단하지 않는다.
+
+안테나 다이버시티는 서로 다른 위치에서 받은 신호를 활용해 다중경로로 생기는 약한 수신 지점의 영향을 줄인다. Cisco의 기존 Aironet 설명은 두 안테나를 비교해 하나를 선택하는 방식이다. 여러 신호를 늘 동시에 합치는 기술로 한정하거나 이 구현을 모든 무선 장비의 동작으로 일반화하지 않는다. 해당 선택 방식의 안테나는 같은 영역을 약간 다른 위치에서 덮도록 배치하며, 서로 다른 두 영역을 각각 서비스하는 용도로 쓰지 않는다.
+
+2026-11-04 Cisco의 Multipath and Diversity 문서로 이 절만 대조했다. 다이버시티는 왜곡 완화 수단이지 끊김 없는 통신의 보장이 아니며, 기존 유선 계층 설명의 검증일은 유지한다.
+
 ### 허브와 충돌 도메인
 
 허브는 한 포트로 받은 신호를 나머지 모든 포트로 그대로 복제해 내보낸다(확성기처럼 방 전체에 외침). 특정 대상만 지정할 수 없고 MAC 주소를 이해하지 못한다. 공유기의 랜 포트를 늘리려고 사는 장비를 스위칭 허브나 그냥 허브라고 부르는 경우가 많지만, 동작으로는 프레임의 목적지 MAC으로 포트를 고르는 스위치다. 이름보다 신호를 모든 포트로 복제하는지, MAC 주소로 골라 보내는지로 구분한다.
@@ -143,6 +151,7 @@ L2는 같은 로컬 네트워크 안에서만 동작한다. 서로 다른 네트
 
 ## 출처
 
+- [Cisco, Multipath and Diversity](https://www.cisco.com/c/en/us/support/docs/wireless-mobility/wireless-lan-wlan/27147-multipath.html) — 2026-11-04 다중경로 왜곡과 Aironet 안테나 선택 방식의 적용 범위 대조
 - [OSI 7 Layer 기초: Physical Layer와 Data Link Layer — YouTube](https://www.youtube.com/watch?v=DufRXdDF9zI&list=PLfth0bK2MgIYuFahPhXTpTomkwVx5Fl-v)
 - [IEEE 802.1w — Rapid Reconfiguration of Spanning Tree](https://www.ieee802.org/1/pages/802.1w.html)
 - [IEEE P802.3as Draft 0.1, IEEE Std 802.3-2005 Clause 4 CSMA/CD MAC 개정안 — IEEE 802.3 Working Group](https://www.ieee802.org/3/as/public/0503/4d0_1_CMP.pdf)

@@ -65,6 +65,12 @@ API 호출 수를 줄이는 최적화에서는 호출당 비용만 보면 개선
 
 AWS CUR는 월중 비용을 추정치로 제공하고 적어도 하루 한 번 갱신하며, 서비스마다 사용량 정보가 도착하는 시점이 다를 수 있다(2026-10-10 공식 문서 확인). 따라서 지연된 비용을 실시간 요청 수로 나눈 값을 확정 효율로 제시하지 않는다. 비용과 제공량의 집계 범위, 마지막 갱신 시각과 잠정 여부를 표시하고, 청구 확정 및 환불이나 크레딧 반영 뒤 다시 계산할 수 있게 한다.
 
+### 비용의 용도와 자원 종료 조건을 연결한다
+
+비용을 설명하려면 청구 항목이 어떤 워크로드와 기능에 쓰이는지 자원의 수명 동안 추적해야 한다. AWS는 용도와 종료 예정 시점을 태그로 표시하고, 테스트가 끝나 더 필요하지 않은 자원을 정리하는 방식을 안내한다. 요청 수나 완료 건수가 0이 되는지 관측하되, 주기적으로 쉬는 워크로드는 시간 조건을 함께 고려한다(2026-11-04 COST04-BP01 부분 대조).
+
+운영 예로 테스트 환경을 만들 때 용도, 담당자와 종료 예정일을 함께 기록하고, 기한이 되면 실제 사용 여부와 유지 사유를 확인한다. `TTL` 같은 태그는 종료 판단의 입력이며 태그를 붙이는 것만으로 삭제가 실행된다고 가정하지 않는다. 종료 조건을 정하는 일, 자원을 정리한 사실과 이후 비용 감소를 각각 확인한다. 실제 계정의 자원이나 절감액을 측정한 것은 아니며 기존 절의 검증일은 유지한다.
+
 ### 사례: 조직별 비용 청구서와 성숙도 진단
 
 배달 플랫폼 운영사 우아한형제들이 AWS Industry Week 2024에서 발표한 자체 운영 방식이다. 회사가 설명한 사례이며, 발표 당시 파일럿이던 조직별 청구서 메일과 준비 중인 계획을 포함한다. 효과와 수치는 독립 검증하지 않았다. 회사는 이 청구서 메일을 쇼백 관점의 보고라고 설명했다. 실제 청구 없이 조직별 비용을 보여주는 이 방식은 [[AWS-Cost-Optimization#Showback을 엔지니어의 작업 흐름에 연결한다|Showback 보고]]의 한 형태다.
@@ -119,6 +125,7 @@ FinOps Foundation의 성숙도 모델은 Crawl, Walk, Run 단계를 쓰고 역�
 
 ## 출처
 
+- [AWS Well-Architected, COST04-BP01 Track resources over their lifetime](https://docs.aws.amazon.com/wellarchitected/latest/framework/cost_decomissioning_resources_track.html) — 2026-11-04 자원 용도, 종료 시점 태그와 주기적 미사용 판단 대조
 - [AWS Cost Management, Viewing your savings opportunities](https://docs.aws.amazon.com/cost-management/latest/userguide/coh-savings-opportunities.html)
 - [PointFive Cloud Optimization and AI Efficiency for AWS Customers — Amazon Web Services](https://www.youtube.com/watch?v=T_fdr4_IMko) — 추천의 근거, 담당자와 실현 성과를 연결하는 문제만 참조. 투자 회수 기간은 일반화하지 않았다.
 - [Techniques to improve the state-of-the-art in Cloud FinOps using Amazon Neptune — AWS Database Blog](https://aws.amazon.com/blogs/database/techniques-to-improve-the-state-of-the-art-in-cloud-finops-using-amazon-neptune/)
