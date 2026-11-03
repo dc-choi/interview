@@ -40,6 +40,20 @@ us-east-1의 S3 Standard 기준이며 단가는 2026-10-12 게시 AWS Price List
 
 이 예에는 조회가 없다. 사진을 내려받게 하면 GET 요청(1,000건당 0.0004달러)과 인터넷으로 나가는 전송이 더해지며, 두 항목은 저장량이 아니라 접근량에 비례한다. 조회가 있는 서비스에서 접근 가정을 빼면 그만큼 과소 추정된다.
 
+## 서버 증설은 대수와 지속 시간을 함께 계산한다
+
+EC2 Auto Scaling 자체에는 추가 서비스 요금이 없지만 생성한 EC2, EBS와 CloudWatch alarm 같은 자원은 과금된다. 원하는 용량을 늘리는 설정 변경과 비용 승인은 별개의 문제다. 용량 조정 동작은 [[Auto-Scaling|EC2 Auto Scaling]]에서 확인한다.
+
+같은 유형의 On-Demand 인스턴스에 일정한 시간당 단가 `p`가 적용된다는 가정에서는 컴퓨팅 비용을 `Σ(구간별 가동 대수 × 구간 시간 × p)`로 추정할 수 있다. 실제 청구는 운영체제별 과금 단위와 최소 사용 시간, 할인 및 별도 자원 비용도 확인한다.
+
+- **가상 기준선:** 1대를 24시간 사용하면 `24p`다.
+- **가상 증설:** 20시간은 1대, 4시간은 총 50대를 사용하면 `(20 × 1 + 4 × 50)p = 220p`다. 추가 컴퓨팅 비용은 `196p`이며 하루 전체 비용을 곧바로 50배로 계산하지 않는다.
+- **합계의 경계:** 위 산술은 컴퓨팅만 다룬다. EBS, 데이터 전송과 관측 비용이 대수에 똑같이 비례한다고 가정하지 않고 각각 계산한다.
+
+운영 점검 제안: 변경 전에는 단가뿐 아니라 증설 유지 시간과 원래 용량으로 돌아갈 조건을 적고, 변경 뒤에는 실제 가동 대수와 시간을 확인한다. [[Budget-Alert|예산 알림]]은 청구 데이터 갱신을 따르므로 즉시 지출을 차단하는 장치로 보지 않는다. ASG 안의 인스턴스를 Budget Action으로 중지해도 Auto Scaling이 다시 시작하거나 대체할 수 있어, 인스턴스 중지 성공만으로 비용 통제가 끝났다고 판정하지 않는다.
+
+2026-11-03 EC2 On-Demand 가격 안내, Auto Scaling 요금과 AWS Budgets 모범 사례를 대조했다. 단가를 넣지 않은 가상 계산이며 계정 변경이나 실제 청구 검증은 수행하지 않았다. 기존 S3 단가와 계산기 정책의 검증일은 유지한다.
+
 ## 추정을 청구와 맞추는 점검
 
 - **비용 성격을 나눠 적는다:** 견적 행을 반복 비용(저장 GB-월, 가동 시간), 사용량 비례 비용(요청 수, 전송량)과 일회성 비용(초기 적재 요청, 약정 선결제)으로 나눠 둔다. 가정이 바뀔 때 고칠 행이 보이고, 청구가 시작된 뒤 [[Cost-Anomaly|비용 이상 탐지]]에서 선결제와 사용량 증가를 구분하기 쉬워진다(운영 제안).
@@ -67,6 +81,9 @@ us-east-1의 S3 Standard 기준이며 단가는 2026-10-12 게시 AWS Price List
 
 ## 출처
 
+- [EC2 On-Demand Instance Pricing — AWS](https://aws.amazon.com/ec2/pricing/on-demand/) — 시간 또는 초 단위 컴퓨팅 과금과 최소 사용 시간
+- [Amazon EC2 Auto Scaling User Guide, What is Amazon EC2 Auto Scaling?](https://docs.aws.amazon.com/autoscaling/ec2/userguide/what-is-amazon-ec2-auto-scaling.html) — 서비스 추가 요금과 생성 자원 요금의 구분
+- [AWS Cost Management, Best practices for AWS Budgets](https://docs.aws.amazon.com/cost-management/latest/userguide/budgets-best-practices.html) — 청구 데이터 갱신에 따른 알림, ASG 인스턴스 중지 액션의 한계
 - [AWS WAF Pricing — AWS](https://aws.amazon.com/waf/pricing/) — WAF 과금 차원과 CloudWatch 로그 비용
 - [AWS WAF, AWS WAF metrics and dimensions](https://docs.aws.amazon.com/waf/latest/developerguide/waf-metrics.html) — 지표 주기와 집계 차원
 - [AWS WAF, Using rule actions in AWS WAF](https://docs.aws.amazon.com/waf/latest/developerguide/waf-rule-action.html) — Count의 비종료 평가와 Block의 종료 평가

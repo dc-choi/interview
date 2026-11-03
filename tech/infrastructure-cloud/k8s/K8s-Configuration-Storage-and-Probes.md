@@ -56,6 +56,19 @@ PV는 cluster storage resource이고 PVC는 namespaced storage 요청이다. Sto
 - PV가 있다고 backup이 생기는 것은 아니다. application-consistent snapshot, restore drill과 retention을 별도로 설계한다.
 - 여러 Pod가 같은 filesystem을 mount할 수 있다는 것과 application data가 동시 쓰기에 안전하다는 것은 별개다.
 
+### emptyDir: 컨테이너 재시작과 Pod 교체를 구분한다
+
+`emptyDir`는 Pod가 node에 배정될 때 만들어진다. `spec.volumes`에 볼륨을 선언하고 각 container의 `volumeMounts`에서 같은 `name`을 참조한다. 같은 Pod의 container들은 서로 다른 `mountPath`로 같은 파일을 공유할 수 있다.
+
+- **container만 재시작:** 같은 Pod가 node에 남아 있으면 `emptyDir`의 파일은 보존된다. container 쓰기 레이어에만 둔 파일의 보존과 구분한다.
+- **Pod 제거와 교체:** Pod가 node에서 제거되면 해당 데이터는 삭제된다. 같은 이름으로 새 Pod를 만들어도 이전 데이터가 복구되는 영구 저장소가 아니다.
+- **저장 매체:** 기본값은 node를 뒷받침하는 저장 매체다. `medium: Memory`는 tmpfs를 사용하며, 쓴 파일이 쓰기를 수행한 container의 memory limit에 포함된다.
+- **용량:** 기본 매체의 `sizeLimit`을 지정해도 그만큼의 여유 공간을 예약하는 것은 아니다. node의 다른 로그나 쓰기 레이어가 공간을 쓰면 한도보다 먼저 공간이 부족해질 수 있다.
+
+검증 실습에서는 먼저 Pod UID가 유지된 container 재시작 전후의 파일을 비교하고, 다음으로 Pod를 삭제하고 재생성해 UID와 파일을 비교한다. 재시작 횟수만 보고 Pod 교체까지 견디는 저장소라고 판정하지 않는다. 이는 실습 설계이며 이 문서에서 클러스터 실행을 검증한 결과는 아니다.
+
+2026-11-03 Kubernetes Volumes의 `emptyDir` 설명과 구성 예시를 대조한 부분 보강이다. 다른 절의 버전별 동작은 이번에 다시 대조하지 않아 frontmatter 날짜를 유지한다.
+
 ## 세 probe의 계약
 
 | probe | 질문 | 실패 효과 |
@@ -129,6 +142,7 @@ HTTP, TCP, exec와 gRPC probe를 사용할 수 있다. 성공 응답만 만드�
 
 ## 출처
 
+- [Kubernetes Docs, Volumes](https://kubernetes.io/docs/concepts/storage/volumes/#emptydir) — 2026-11-03 emptyDir의 수명, mount 연결, 저장 매체와 용량 경계 대조
 - [Kubernetes Docs, ConfigMap](https://kubernetes.io/docs/concepts/configuration/configmap/)
 - [Kubernetes Docs, Secrets](https://kubernetes.io/docs/concepts/configuration/secret/)
 - [Kubernetes Docs, Persistent Volumes](https://kubernetes.io/docs/concepts/storage/persistent-volumes/)

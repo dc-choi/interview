@@ -25,6 +25,22 @@ ETF는 거래소에서 매매하는 상품 형태이며 패시브 운용과 동�
 
 과거에 ETF 수익률이 좋았다는 사례만으로 향후 수익이나 개별주 대비 우월성을 보장하지 않는다. 2026-10-24 Investor.gov의 ETF 운용 방식과 분산 안내를 대조한 부분 보강이며, 특정 국내 상품의 성과나 세제는 확인 범위에 포함하지 않았다.
 
+### 같은 지수를 추종하는 ETF도 총비용을 비교한다
+
+같은 지수를 추종한다는 사실만으로 투자자의 실현 수익이 같아지는 것은 아니다. 운용 비용, 추적 차이와 투자자 자신의 매매 비용을 나눠 확인한다.
+
+| 비교 항목 | 확인할 내용 |
+|---|---|
+| 펀드 내부 비용 | 투자설명서의 연간 운영 비용과 구성 항목. `expense ratio`에 포함되지 않는 기초자산 거래비용도 있을 수 있다 |
+| 한시적 비용 인하 | `fee waiver` 또는 비용 보전의 조건과 적용 기간. 현재 인하된 비율이 계속 유지된다고 가정하지 않는다 |
+| 매매 비용 | 증권사 수수료, 매수와 매도 호가의 차이인 bid-ask spread. 매매 빈도와 금액을 함께 본다 |
+| 가격과 자산가치 | 시장가격과 주당 NAV의 차이, 과거 premium/discount와 스프레드. 거래량만으로 실제 체결 비용을 확정하지 않는다 |
+| 지수 추적 | 전체 종목 보유와 표본 추종 등 구현 방식, 비용과 추적 오차에 따른 지수 대비 성과 차이 |
+
+비용 절감을 위해 기존 상품을 팔고 다른 상품을 사는 경우에는 앞으로 줄어들 비용과 이번 교체의 매매 비용을 함께 비교한다. 이는 위 비용 구조를 적용한 판단 절차이며 특정 상품으로 갈아타라는 권고가 아니다. 분배율이 더 높다는 사실도 그 자체로 총수익 우위를 뜻하지 않는다([[Investment-Strategies#9. 배당 ETF는 분배금과 총수익을 나눠 평가한다|분배금과 총수익]]).
+
+2026-11-03 SEC 투자자 안내로 비용 항목, 스프레드, NAV 괴리와 지수 추적의 경계를 대조했다. 개별 나스닥100 ETF의 현재 보수, 신규 출시, 성과 순위와 한국 계좌별 세제는 이 비교에서 검증하지 않았다. 기존 전략 전체의 검증일은 유지한다.
+
 ## 2. 효율적 시장 가설
 
 **효율적 시장 가설**은 자산 가격이 이미 알려진 정보를 빠르게 반영하므로, 공개된 정보로 시장을 꾸준히 이기기 어렵다는 주장이다. 강도에 따라 세 형태로 나뉜다.
@@ -107,6 +123,8 @@ ETF는 거래소에서 매매하는 상품 형태이며 패시브 운용과 동�
 
 ## 출처
 
+- [Updated Investor Bulletin: Exchange-Traded Funds (ETFs) — Investor.gov](https://www.investor.gov/introduction-investing/general-resources/news-alerts/alerts-bulletins/investor-bulletins-24) — 스프레드, NAV 대비 premium/discount와 투자설명서 비교
+- [Mutual Fund and ETF Fees and Expenses — Investor.gov](https://www.investor.gov/introduction-investing/general-resources/news-alerts/alerts-bulletins/investor-bulletins/mutual-fund-and-etf-fees-and-expenses-investor-bulletin) — 운영 비용, 비용비율 밖 거래비용과 한시적 비용 인하
 - [Ex-Dividend Dates: When Are You Entitled to Stock and Cash Dividends — Investor.gov](https://www.investor.gov/introduction-investing/investing-basics/glossary/ex-dividend-dates-when-are-you-entitled-stock-and) — 2026-10-30 배당 자격, 날짜 구분과 배당락의 가격 영향 대조.
 - [Fund Distributions – Investor Bulletin — Investor.gov](https://www.investor.gov/introduction-investing/general-resources/news-alerts/alerts-bulletins/investor-bulletins/fund-distributions-investor-bulletin) — 2026-08-19 안내, 2026-10-30 분배 시 NAV와 시장가격, 가치 이전과 총수익 구분 대조.
 
