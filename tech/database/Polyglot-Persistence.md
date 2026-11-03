@@ -21,6 +21,8 @@ Polyglot persistence는 한 애플리케이션이나 조직에서 데이터 모�
 | 짧은 지연의 key lookup, counter, TTL | Redis | eviction, persistence 정책, cache invalidation |
 | 전문 검색, relevance와 facet | OpenSearch | 비동기 indexing lag, 재색인과 cluster 운영 |
 | 분석 scan과 column aggregate | data warehouse/lakehouse | ingestion 지연, 중복 저장과 governance |
+| 임베딩 거리 기반 유사도 검색 | 기존 PostgreSQL의 pgvector 또는 별도 벡터 저장소 | exact 대비 ANN recall, 필터 후 결과 수, 색인 갱신과 재임베딩 |
+| 시간별 요청 수, 오류와 지연 관측 | Prometheus 같은 모니터링 시스템 | 수집 누락, 보존 범위, 업무 원장과 다른 정확성 기준 |
 
 상품 옵션이 많다는 이유만으로 document DB가 필수는 아니다. 안정적인 핵심 속성은 relational column, 드문 확장 속성은 JSON, 사용자 정의 희소 속성은 EAV 같은 선택지를 access pattern과 무결성 요구로 비교한다.
 
@@ -59,6 +61,14 @@ Redis가 임시 projection인지 장바구니 원본인지 먼저 정한다. Red
 
 ## 도입 판단
 
+### 저장소마다 정확성의 기준을 정한다
+
+부분 검증(2026-11-04): pgvector 공식 README와 Prometheus Overview를 대조했다. pgvector는 기본적으로 exact nearest-neighbor search를 제공하고, 근사 인덱스는 일부 recall을 속도와 교환한다. 근사 인덱스 경로에서 필터를 적용하면 요청한 수보다 적은 결과가 나올 수 있다. 따라서 별도 벡터 저장소를 도입하기 전에 기존 PostgreSQL에서 같은 질의의 exact 결과와 ANN 결과, 필터 후 결과 수와 지연을 비교한다(설계 제안). 세부 조정은 [[pgvector-Query-Optimization|pgvector 쿼리 최적화]]에서 다룬다.
+
+이 비교의 recall은 같은 벡터 공간에서 가까운 이웃을 얼마나 찾았는지다. 사용자가 원하는 상품을 찾았는지는 별도의 평가 문제이므로, 저장소 교체로 의미 적합성까지 해결됐다고 판단하지 않는다(설계 해석). 거래용 DB와 검색을 함께 쓸 때는 검색 지연뿐 아니라 색인 갱신이 거래 쓰기에 주는 영향도 측정한다.
+
+Prometheus는 수치 시계열의 모니터링에 적합하지만, 수집 데이터가 충분히 상세하고 완전하지 않을 수 있어 요청별 청구처럼 100% 정확성이 필요한 용도에는 적합하지 않다. 설계 예로 요청 수 그래프는 장애 탐지에 쓰고, 고객 청구 금액은 별도의 업무 기록으로 계산한다. 이는 모든 시계열 저장소의 한계가 아니라 Prometheus의 용도 경계다. 실제 부하 시험과 청구 대사는 수행하지 않았으며 기존 문서 전체의 검증일은 유지한다.
+
 ### 예제: 전체 순위와 조건별 순위
 
 부분 검증(2026-10-14): Redis `ZRANGE`와 AWS 캐시 유효성 문서를 대조했다. `ZRANGE`는 sorted set의 순위, 점수 또는 사전식 범위로 멤버를 조회하며 `REV`로 역순 조회할 수 있다. 이 명령 자체가 회원의 지역, 등급 같은 임의 속성을 SQL 조건처럼 평가하는 것은 아니다.
@@ -80,6 +90,8 @@ Redis가 임시 projection인지 장바구니 원본인지 먼저 정한다. Red
 
 ## 출처
 
+- [pgvector — GitHub, pgvector](https://github.com/pgvector/pgvector) — 2026-11-04 exact와 ANN, Filtering과 Monitoring 부분 대조
+- [Prometheus, Overview](https://prometheus.io/docs/introduction/overview/) — 2026-11-04 모니터링과 요청별 청구의 용도 경계 대조
 - [Redis Documentation, ZRANGE](https://redis.io/docs/latest/commands/zrange/)
 - [AWS, Database Caching Strategies Using Redis — Cache Validity](https://docs.aws.amazon.com/whitepapers/latest/database-caching-strategies-using-redis/cache-validity.html)
 - [Polyglot Persistence — Martin Fowler](https://martinfowler.com/bliki/PolyglotPersistence.html)
