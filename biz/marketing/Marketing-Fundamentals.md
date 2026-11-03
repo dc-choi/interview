@@ -18,6 +18,10 @@ aliases: ["Marketing Fundamentals", "마케팅 기초", "Branding vs Marketing v
 
 ## 네 개념의 역할
 
+역할 비교표를 서로 배타적인 업무 분장표나 성과 보장으로 읽지 않는다. 마케팅을 단기 구매 유도만으로 좁히면 제품, 가격과 유통 설계가 빠진다. 브랜드도 판매자의 상품과 서비스를 다른 판매자와 구별하는 요소이므로 감정이나 장기 기억만으로 한정하지 않는다. 2026-11-03 AMA의 마케팅, 브랜드와 4P 정의를 부분 대조했다.
+
+적용 제안: 마케팅은 리드, 브랜딩은 회상, 광고는 클릭, 영업은 계약, PR은 보도, 성장은 유지율처럼 지표를 하나씩 독점 배정하지 않는다. 같은 활동도 인지, 사용과 구매에 걸쳐 관찰할 수 있으므로 담당 업무와 측정 목적을 따로 정한다. 일, 주, 월이나 연 단위의 효과 발생 기간도 개념의 정의가 아니며 고객의 구매 주기와 실제 관찰 자료로 판단한다.
+
 | 구분 | 핵심 질문 | 목적 | 성격 |
 |---|---|---|---|
 | 브랜딩 | "우리는 누구인가?" | 신뢰, 가치 구축, 팬덤 형성 | 장기, 정체성 중심 |
@@ -182,7 +186,7 @@ CAC와 LTV의 정의와 비율 해석은 [[Business-Model|비즈니스 모델]]�
 - 단계별 최적 채널이 다르므로 단일 지표로 마케팅 전체 성과를 판단하지 않는다.
 
 ## 출처
-- [American Marketing Association, What is Marketing?](https://www.ama.org/the-definition-of-marketing-what-is-marketing/)
+- [American Marketing Association, What is Marketing?](https://www.ama.org/the-definition-of-marketing-what-is-marketing/) — 2026-11-03 마케팅, 브랜드와 4P 정의를 부분 대조. 업무별 지표와 기간을 고정하지 않는 점검은 적용 제안이며 문서 전체 재검증은 아니다.
 - [Les Binet and Peter Field, advertising effectiveness](https://www.thinkbox.tv/news-and-opinion/opinion/advertising-effectiveness-for-dot-coms-by-les-binet-and-peter-field)
 - [서비스 전략 기획 사례 분석 — 쪼렙 서비스기획자 (Brunch)](https://brunch.co.kr/@b30afb04c9f54dc/57)
 - [하이브의 뉴진스 단독 앱 포닝 출시 전략 — 쪼렙 서비스기획자 (Brunch)](https://brunch.co.kr/@b30afb04c9f54dc/41)

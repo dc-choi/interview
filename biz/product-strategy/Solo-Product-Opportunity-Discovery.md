@@ -157,6 +157,18 @@ Good American은 공식 소개에서 00~32 Plus 사이즈 제공과 세 가지 �
 
 적용 제안: 고객이 원하는 선택지가 아예 없는지, 선택지는 있지만 자신에게 맞는지 판단할 정보가 없는지를 나누어 관찰한다. 전자는 제품 범위, 후자는 비교 정보와 사용 예시의 문제 가설이 된다. 개선 전후의 선택, 구매와 반품 등 실제 행동으로 확인하며, 특정 브랜드의 사례를 모든 시장의 성공 공식으로 확대하지 않는다.
 
+### 아이디어 목록을 조사 질문으로 바꾼다
+
+다음은 조사할 수 있는 주제 후보이며 시장 순위, 성장 전망이나 수익성이 검증된 목록이 아니다. 분야 이름만으로 선택하지 않고 접근 가능한 고객과 현재 대안으로 좁힌다.
+
+| 후보 묶음 | 조사할 주제 | 첫 확인 질문 |
+|---|---|---|
+| 기업 업무 | 건설, 물류와 제조의 수작업 디지털화, 시니어 서비스, 인사와 회계 및 영업과 CS 지원, 의무 업무 자동화 | 누가 비용을 부담하고 지금 어떤 대안을 쓰는가 |
+| 생활 업무 | 회복과 생활 지원, 1인 가구 서비스, 예약과 자료 정리 AI 도우미, 청소와 세탁 및 정리와 수리 및 이사 대행 | 어떤 상황에서 반복되며 직접 해결하거나 맡기는 데 무엇이 드는가 |
+| 선택과 운영 | 여행과 보험 및 병원과 교육 및 부동산 선택 지원, 키즈 서비스, 구독과 렌탈, 소상공인 예약과 주문 및 정산과 재고 및 리뷰 관리 | 선택에 빠진 정보와 운영 병목은 무엇이고 기존 대안은 얼마인가 |
+
+SBA의 시장 조사 안내는 수요, 시장 규모, 고객 위치와 도달 범위, 경쟁 포화와 대안 가격을 확인하도록 제시한다. 이를 위 후보에 적용해 질문과 조사 대상을 정하되, 안내 자체가 개별 후보의 사업성을 입증하지는 않는다. 건강, 보험과 개인정보 등을 다루는 후보는 제공 범위를 정한 뒤 해당 규제와 자격을 별도로 확인한다. 2026-11-03 시장 조사 항목만 대조했으며 개별 시장과 규제의 검증은 남아 있다.
+
 ## 3. 과거 행동을 조사한다
 
 첫 비교 단위로 같은 역할의 사용자 3~4명에게 구체적인 사건을 들을 수 있다. 이 숫자 자체가 검증을 보장하지는 않으며, 서로 다른 사건에서 같은 기회가 반복되는지 확인하기 위한 시작점이다.
@@ -198,7 +210,7 @@ Good American은 공식 소개에서 00~32 Plus 사이즈 제공과 세 가지 �
 
 - [Beyond a Technology Lens: Characterizing the Problems Entrepreneurs Solve — Harvard Business School](https://www.hbs.edu/faculty/topics/Pages/entrepreneurship.aspx) — Working Paper 27-016의 공개 초록, 2026-10-24 표본과 문제 분류 및 창업자 전문성 관련 결과 대조. 논문 본문과 효과 크기는 미검증
 - [How to Get Startup Ideas — Paul Graham](https://www.paulgraham.com/startupideas.html) — 2012-11 에세이. 2026-10-24 자기 문제에서 출발하기, 당장 필요한 사용자와 제작자 애착을 구분하는 질문을 대조.
-- [SBA, Plan your business: Market research and competitive analysis](https://www.sba.gov/counseling/plan-your-business/#market-research-and-competitive-analysis) — 2026-10-23 시장 조사와 고객 검증 범위 확인.
+- [SBA, Plan your business: Market research and competitive analysis](https://www.sba.gov/counseling/plan-your-business/#market-research-and-competitive-analysis) — 2026-11-03 수요, 규모, 도달 범위, 경쟁과 대안 가격의 조사 항목 확인. 개별 아이디어의 수요나 수익성은 검증하지 않았다.
 - [Jobs to Be Done Theory — Christensen Institute](https://www.christenseninstitute.org/theory/jobs-to-be-done/)
 - [Opportunity Solution Trees — Product Talk](https://www.producttalk.org/opportunity-solution-trees/)
 - [Story-Based Customer Interviews Uncover Much-Needed Context — Product Talk](https://www.producttalk.org/story-based-customer-interviews/)
