@@ -94,8 +94,22 @@ JTBD는 선택을 기능적, 감정적, 사회적 차원과 그때의 상황으�
 
 2026-11-03 교육 본문의 단계 구분을 확인했다. 문서가 제시하는 판매 후 3일, 3주, 3개월은 해당 교육의 일정 예시다. 모든 업종의 최적 간격이나 응답률 보장으로 사용하지 않는다. 실제 연락일과 보류 시 재검토 조건은 [[B2B-Sales-Pipeline-and-Pilot|B2B 영업 파이프라인]]처럼 고객과 합의한 다음 행동에 연결한다. 특정 문구나 발송 시점의 판매 효과는 검증하지 않았다.
 
+## 공개 리뷰 응답은 고객과 잠재 고객이 함께 읽는다
+
+공개 답글에는 문제를 겪은 고객에게 필요한 다음 행동과, 다른 독자가 서비스의 대응 방식을 이해할 정보를 담는다. Google Business Profile의 지침은 답글의 공개성을 설명하고, 명확하고 정중한 응답과 실제로 할 수 있는 조치의 설명을 권한다. 불만 답글이 칭찬 후기보다 언제나 더 잘 팔린다는 비교 효과를 입증한 자료는 아니다.
+
+소규모 서비스에 적용할 때는 다음처럼 작성할 수 있다.
+
+1. 확인한 문제와 아직 확인 중인 부분을 구분하고, 잘못이 확인됐다면 인정한다.
+2. 가능한 해결 조치와 한계를 설명한다. 공개 답글에서 주문 정보나 고객의 사적 정보를 드러내지 않는다.
+3. 상세 확인이 필요하면 비공개 문의 경로를 안내한다. 고객을 공격하거나 공개 논쟁을 이어가지 않는다.
+4. 문의 대응과 실제 해결 여부를 따로 기록한다. 답글 게시만으로 해결이나 재구매가 완료됐다고 판단하지 않는다.
+
+2026-11-03 Google 공식 지침의 공개 응답, 개인정보 보호와 부정적 리뷰 대응을 확인했다. Google은 리뷰 작성, 변경이나 부정적 리뷰 삭제의 대가로 무료 상품 또는 할인 같은 혜택을 제공하는 행위를 금지한다. 위 작성 순서는 적용 제안이며, 플랫폼 지침을 판매 효과의 보장으로 옮기지 않는다.
+
 ## 출처
 
+- [Google Business Profile Help, Tips to get more reviews](https://support.google.com/business/answer/3474122) — 2026-11-03 공개 답글, 부정적 리뷰 대응과 리뷰 대가 제공 금지 확인.
 - [Salesforce Trailhead, Build a Sales Process, Learn About the Sales Process](https://trailhead.salesforce.com/content/learn/modules/build-a-sales-process/learn-about-the-sales-process) — 2026-11-03 상담 후 요약과 판매 후 관계 관리 단계 대조. 연락 문구 구성은 적용 제안이다.
 - [Shopify, Writing engaging product descriptions](https://help.shopify.com/en/manual/products/details/product-descriptions/write)
 - [Shopify, Automatically generating product descriptions](https://help.shopify.com/en/manual/products/details/product-descriptions/generate)
