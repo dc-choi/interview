@@ -23,6 +23,21 @@ aliases: ["Solo Game Scope and Asset Budget", "1인 게임의 범위와 에셋 �
 
 위 질문은 제작 실험을 위한 제안이다. 샘플 이미지의 완성과 플레이 가능한 시제품의 완성은 다르다. 특정 장르를 1인 개발에 일괄 금지하거나, 제작한 게임 수를 수요와 수익의 증거로 사용하지 않는다. 플레이 반응은 [[Game-Feel-and-Feedback|게임 손맛과 피드백]], 고객 행동은 [[Solo-Product-Market-Validation|시장 검증]]으로 나눠 확인한다.
 
+## 배포 대상도 제작 범위에 포함한다
+
+엔진 선택에서는 장면을 만드는 시간과 목표 기기에서 실행 가능한 결과를 전달하는 시간을 함께 비교한다. 2026-11-03 공식 안내 기준, LÖVE는 Lua로 2D 게임을 만드는 프레임워크이며 데스크톱뿐 아니라 Android와 iOS도 지원한다. 모바일 제작 경험 하나를 근거로 모바일 지원 자체가 없다고 판단하지 않는다. Godot도 내보내기 템플릿이 필요하고 여러 플랫폼에서는 추가 SDK를 요구하므로, 엔진의 내보내기 기능이 배포 준비를 모두 대신하는 것은 아니다.
+
+웹 배포에서는 게임 자산 외에 엔진을 전달하고 초기화하는 비용도 본다. Godot의 웹 내보내기 안내는 사용하지 않는 기능을 뺀 템플릿으로 WebAssembly 용량과 다운로드 및 초기화 시간을 줄일 수 있다고 설명한다. 이 근거만으로 두 엔진의 실제 배포 크기나 성능 우열을 확정하지 않는다.
+
+다음은 작은 시제품으로 비교할 제작 범위 점검 제안이다.
+
+- 같은 핵심 장면을 목표 휴대전화, 데스크톱 또는 브라우저에서 실행한다.
+- 화면 비율과 입력 방식, 소리와 저장 동작을 확인하고 수정 시간을 남긴다.
+- 웹에서는 배포 파일 크기와 실제 전송량, 첫 조작까지의 시간을 구분해 측정한다.
+- 추가 도구 준비와 플랫폼별 검수 비용까지 포함해 엔진 유지 또는 전환을 결정한다.
+
+이는 비교 절차이며 실제 벤치마크 결과나 특정 엔진으로의 전환 권고가 아니다. 작은 게임과 큰 게임의 경계를 파일 수나 장르만으로 고정하지 않는다.
+
 ## 묶음 개수보다 이번 게임에서 쓸 수 있는 범위를 본다
 
 에셋 번들의 항목 수, 모델 수와 파일 형식은 서로 다른 정보다. 2026-10-24 확인한 Creator Bundle: Volume 1 판매 페이지는 85개 팩과 18,000개 이상의 3D 모델을 안내하며, FBX, Godot 프로젝트, GLB/glTF, Blender와 Unity 패키지의 제공 여부는 개별 팩에 따라 다르다고 명시한다. 이는 판매자가 공개한 구성 설명이며 파일을 모두 내려받아 검수한 결과는 아니다.
@@ -49,6 +64,9 @@ aliases: ["Solo Game Scope and Asset Budget", "1인 게임의 범위와 에셋 �
 
 ## 출처
 
+- [LÖVE](https://love2d.org/) — 2026-11-03 Lua 기반 2D 프레임워크와 지원 플랫폼 확인.
+- [Godot Engine, Exporting projects](https://docs.godotengine.org/en/stable/tutorials/export/exporting_projects.html) — 2026-11-03 내보내기 템플릿과 플랫폼별 추가 도구 요건 확인.
+- [Godot Engine, Exporting for the Web](https://docs.godotengine.org/en/stable/tutorials/export/exporting_for_web.html) — 2026-11-03 Mobile considerations의 템플릿 최적화와 다운로드 및 초기화 비용 확인. 엔진 간 성능 비교는 하지 않았다.
 - [게임 개발 1도 몰라도 AI로 게임 12개 만들었습니다 — YouTube, 딩코딩코](https://www.youtube.com/watch?v=BVCXYTONLNY) — 2026-10-18 공개 영상의 01:06~04:51 전사에서 자산 재사용, 대표 이미지와 제작 범위에 관한 창작자 경험을 참고했다. 게임 수, 제작 기간, 비용 배수와 매출 효과는 검증된 성과로 사용하지 않았다.
 - [Godot Engine, Your first 2D game](https://docs.godotengine.org/en/stable/getting_started/first_2d_game/index.html) — 2026-10-24 확인, 초보자의 2D 시작 권고와 예제 범위. 엔진 구현 절차를 검증한 문서는 아니다.
 - [Creator Bundle: Volume 1 — itch.io, RG Poly와 EmaceArt](https://itch.io/b/3905/creator-bundle-volume-1) — 2026-10-24 공개 판매 페이지의 구성, 가격 표시와 팩별 형식 안내. 다운로드와 실행은 하지 않았다.
