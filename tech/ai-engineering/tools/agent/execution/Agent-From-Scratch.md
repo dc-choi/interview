@@ -105,6 +105,20 @@ const runAgent = async (userInput: string): Promise<string> => {
 
 직접 만든 구현은 원리를 익히기에 좋지만, 복잡한 흐름 제어, 재시도, 관측, 상태 저장까지 갖추려면 비용이 크다. LangGraph 같은 오케스트레이션 프레임워크나 공급자 SDK의 도구 실행 루프(Anthropic SDK의 Tool Runner 등)를 쓰면 루프와 도구 결과 처리를 맡길 수 있다. 어느 쪽이든 모델 출력은 비결정적이므로 검증, 한도, 승인, 평가는 직접 설계해야 한다. [[LLM-Eval-Strategy]]
 
+### 훅 기반 정의에서도 저장과 공개 범위를 따로 정한다
+
+Flue는 에이전트 함수와 훅으로 모델, 도구와 상태를 조합하는 사례다. 2026-11-03 공식 가이드로 아래 계약만 부분 대조했으며, 설치와 장애 복구 실험은 하지 않았다. 다른 런타임의 계약과 문서 전체의 검증일은 유지한다.
+
+| 경계 | Flue의 계약과 적용 시 확인할 점 |
+| --- | --- |
+| 함수와 호출 루프 | 에이전트 함수는 시스템 지시를 반환하며 모델 호출 직전에 다시 실행된다. `useModel`, `useTool`, `useMcpConnection`, `useSubagent`, `useSandbox`로 기능을 연결한다. 짧은 함수가 루프와 운영 설정 전체를 대체하는 것은 아니다 |
+| 조건부 도구와 상태 | 리소스 훅은 조건부로 호출할 수 있다. `usePersistentState`는 이름으로 구분한 JSON 직렬화 가능 값을 대화 저장소에 기록한다. 기존 값에 의존하는 갱신은 렌더 시점의 스냅샷 대신 updater 함수를 사용할 수 있다 |
+| 저장소 | Node.js 배포 서버는 `db.ts`가 없으면 메모리 SQLite를 사용해 재시작 시 상태를 잃는다. `flue run`의 개발 캐시와 혼동하지 않는다. 파일 SQLite와 외부 DB를 선택할 수 있지만 외부 DB 공유만으로 같은 대화의 동시 실행 소유자가 여럿 생기는 것은 아니다 |
+| 복구와 부수효과 | `durable: true` 도구는 `step.do`로 완료 단계를 기록하고 복구 때 기록된 결과를 재사용한다. 외부 효과가 발생한 뒤 기록 전에 중단되면 같은 단계가 재실행될 수 있으므로 개별 효과의 멱등성이 필요하다. 도구가 예외를 던지는 경우와 실행 중단에 따른 복구도 구분한다 |
+| HTTP 공개와 인가 | 등록한 에이전트가 자동으로 HTTP에 노출되지는 않는다. `app.ts`에서 `createAgentRouter`를 명시적으로 연결한다. 연결된 라우터에 인증이 내장된 것은 아니므로 호출자 인증과 대화 ID별 접근 권한을 애플리케이션에서 검사한다 |
+
+적용 제안: 도구의 스키마 검증과 권한 검증을 나눈다. 고객이나 저장소 같은 접근 범위는 신뢰한 애플리케이션 코드에서 정하고, 모델이 만든 인자만으로 소유자를 선택하지 않는다. 대화 기록의 영속성, 샌드박스 파일 보존과 외부 API의 실행 결과도 서로 다른 검증 대상으로 둔다.
+
 ### 실행 이벤트와 대화 기록의 순서를 분리한다
 
 도구를 병렬 실행하면 완료 순서가 호출 순서와 달라진다. 화면의 진행 표시와 모델에 돌려줄 대화 기록을 같은 배열 순서로 취급하지 않는다.
@@ -141,6 +155,11 @@ const runAgent = async (userInput: string): Promise<string> => {
 
 ## 출처
 
+- [Flue, Agents](https://flueframework.com/docs/guide/building-agents/) — 2026-11-03 함수 정의와 모델 호출 전 재실행 확인
+- [Flue, Agent Hooks](https://flueframework.com/docs/guide/agent-hooks/) — 조건부 리소스 훅, 영속 상태와 updater 함수 확인
+- [Flue, Database](https://flueframework.com/docs/guide/database/) — Node.js 배포의 메모리 기본값, 개발 캐시, 저장 대상과 대화별 실행 소유권 확인
+- [Flue, Tools](https://flueframework.com/docs/guide/tools/) — durable 도구의 단계 기록과 재실행, 멱등성, 모델 인자와 인가 경계 확인
+- [Flue, Routing](https://flueframework.com/docs/guide/routing/) — 명시적 HTTP 연결, 인증과 대화별 인가 책임 확인
 - [pi agent core README — pi-mono](https://github.com/badlogic/pi-mono/blob/main/packages/agent/README.md)
 - [Agent loop source — pi-mono](https://github.com/badlogic/pi-mono/blob/main/packages/agent/src/agent-loop.ts)
 - [Amazon Bedrock, Configure Lambda functions to send information that an Amazon Bedrock agent elicits from the user](https://docs.aws.amazon.com/bedrock/latest/userguide/agents-lambda.html)
