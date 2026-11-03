@@ -44,6 +44,14 @@ Scoped session은 토큰 marking을 줄이는 경로다. Registered model overri
 
 먼저 해결해야 할 문제와 허용할 자동화 범위를 정하고, 기술적으로 가능한 최적화라도 사람/업무/법적 맥락에서 적합한지 검토한다. 좋은 aggregate metric으로 집단별 오류를 가리지 않고, 제한과 적용 조건을 domain 전문가와 함께 정한다. 이는 공식 responsible-AI 원칙을 적용하기 위한 설계 해석이며 플랫폼만 도입하면 충족되는 인증이 아니다.
 
+### 감사 검색도 목적과 기록 범위를 구분한다
+
+Audit Explorer는 감사 기록을 검색하고 검토하는 도구다. 2026-11-03 확인 기준 Beta이며 enrollment에서 제공되지 않을 수 있다. `audit.3` 스키마의 감사 테이블을 사용자 자신의 권한으로 조회하므로 테이블 읽기 권한과 marking 조건을 충족해야 한다. 감사 도구를 열 수 있다는 사실이 데이터 접근 권한을 추가하지는 않는다.
+
+검색을 실행하면 `dataSearch` 범주의 감사 로그에 대상 테이블, 필터, 자유 텍스트 검색어와 시간 범위를 남긴다. SQL, 검색 결과, 열어 본 개별 로그와 검색 완료 여부는 기록하지 않는다. 이 로그의 `SUCCESS`는 검색을 기록했다는 뜻이며 결과 반환이나 검색 완료의 증거가 아니다.
+
+감사 데이터에도 개인정보가 들어갈 수 있으므로 조사 목적에 필요한 범위로 검색한다. 최근 활동이 감사 테이블에 아직 도착하지 않았을 수 있어 빈 결과만으로 활동이 없었다고 결론 내리지 않는다. 운영 점검에서는 검색 기록의 존재, 원본 로그의 도착 여부와 실제 확인한 결과를 각각 구분한다.
+
 ## Prompt는 사례와 실행으로 평가한다
 
 Task/context/output/constraint를 명시하고 필요한 예시를 제공한다. 복잡한 작업을 단계로 나누고 대표 입력에서 prompt/model을 반복 비교한다. 더 긴 context나 강한 role 문구만으로 결과 품질이 개선된다고 전제하지 않는다. 실행 인가와 데이터 제약은 prompt가 아닌 서버 통제로 남긴다.
@@ -57,7 +65,8 @@ Task/context/output/constraint를 명시하고 필요한 예시를 제공한다.
 - [Palantir, Enable AIP features](https://www.palantir.com/docs/foundry/aip/enable-aip-features)
 - [Palantir, Control LLM data access with Markings](https://www.palantir.com/docs/foundry/aip/control-llm-data-access-with-markings)
 - [Palantir, AIP security and privacy](https://www.palantir.com/docs/foundry/aip/aip-security)
-- [Palantir, AI ethics and governance](https://www.palantir.com/docs/foundry/aip/ethics-governance)
+- [Palantir, AI ethics and governance](https://www.palantir.com/docs/foundry/aip/ethics-governance) — 2026-11-03 책임성 원칙과 감사 검색의 추적 가능성을 추가 대조했다. 활성화와 marking 정책 전체를 다시 검증하지 않아 frontmatter 날짜는 유지했다.
+- [Palantir, Audit Explorer overview](https://www.palantir.com/docs/foundry/security/audit-explorer-overview) — 2026-11-03 Beta 상태, 권한, 데이터 도착 지연과 검색 감사 로그의 기록 범위를 대조했다. 실제 enrollment에서 실행한 검증은 아니다.
 - [Palantir, Best practices for LLM prompt engineering](https://www.palantir.com/docs/foundry/aip/best-practices-prompt-engineering)
 - [Palantir, Get started with AIP](https://www.palantir.com/docs/foundry/aip/getting-started-with-aip)
 

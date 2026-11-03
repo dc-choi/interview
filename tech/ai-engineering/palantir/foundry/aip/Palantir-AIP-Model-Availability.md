@@ -20,6 +20,12 @@ Supported model 목록에 있다고 모든 enrollment/product에 쓸 수 있는 
 
 Model Selector의 cost/speed/class는 비교 지표이고 availability는 enrollment TPM/RPM capacity의 상대적 크기를 뜻한다. 지역별 제공 여부와 같은 단어로 해석하지 않는다. Similar model은 비슷한 속성을 가진 후보이며 현재 업무의 동일 품질을 보장하지 않는다. 과거 announcement의 model별 context/가격 표는 당시 비교이고 현재 비용은 최신 rate table로 확인한다. ([March 2025 announcements](https://www.palantir.com/docs/foundry/announcements/2025-03))
 
+### 같은 impact level에서도 환경 유형을 확인한다
+
+2026-11-03 확인 기준, Amazon Bedrock을 통한 Gemma 4 26B A4B와 Gemma 4 31B의 IL4 지원은 FedRAMP High 아래의 Defense Industrial Base(DIB) enrollment로 제한된다. 이 제공 경로는 Department of Defense(DoD) IL4와 IL5 enrollment에서는 사용할 수 없다. 따라서 IL4 열의 체크만 보지 않고 DIB 같은 한정 표기와 표 앞의 설명을 함께 읽는다. 다른 provider 경로에도 같은 제한이 있다고 확대하지 않는다.
+
+Experimental 표기도 모델 이름만이 아니라 provider별 제공 행에서 확인한다. 실험 모델은 변경되거나 수동 이전이 필요할 수 있고, 접근에 별도 확인이 요구될 수 있다. 운영 도입 전에는 실제 앱의 통합 상태와 이전 절차를 확인한다. 이는 가용성 문서를 적용하는 점검 제안이며 실제 enrollment에서 호출한 결과는 아니다.
+
 ## Text, embedding과 audio는 다른 기능이다
 
 Text LLM은 generation/tool/reasoning 등 capability를, embedding model은 문서/query에 같은 model을 쓰는 계약과 dimension/input limit을 확인한다. 전체 model 명단과 version별 숫자를 vault에 복제하기보다 official availability/rate 표를 대상 시점에 함께 대조한다.
@@ -42,7 +48,7 @@ Audio는 realtime speech-to-speech와 transcription으로 나뉜다. Realtime은
 
 ## 출처
 
-- [Palantir, Supported LLMs](https://www.palantir.com/docs/foundry/aip/supported-llms)
+- [Palantir, Supported LLMs](https://www.palantir.com/docs/foundry/aip/supported-llms) — 2026-11-03 모델 가용성 전제, provider별 Experimental 표기와 Gemma 4의 DIB/DoD 제한을 추가 대조했다. 기존 전체 모델 및 Model Selector 설명의 재검증일로 확대하지 않아 frontmatter 날짜는 유지했다.
 - [Palantir, March 2025 announcements](https://www.palantir.com/docs/foundry/announcements/2025-03)
 
 ## 관련 문서
