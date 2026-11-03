@@ -11,6 +11,7 @@ aliases: ["Agent Coding Tools", "코딩 에이전트 작업 도구"]
 
 ## 목차
 
+- [[Agent-Oriented-Programming-Languages|에이전트용 프로그래밍 언어]]: Zerolang의 그래프 편집과 텍스트 검토, Mog의 호스트 capability와 보안 검증 경계
 - [[Agent-Diagram-Evidence|에이전트 다이어그램의 근거와 검증]]: Archify의 독립 HTML, 커밋 근거, 자동 검사와 의미 검증, 버전별 라이선스
 - [[Agent-Code-Search|에이전트 코드 인텔리전스]]: rg 전수 검색, Semble 후보 발견, Serena 심볼 검증/수정, Graphify 구조 경로, index freshness
 - [[Codebase-Knowledge-Map|대규모 코드베이스 지식 지도]]: 규모 측정과 공통 식별자, 결정론적 파서와 호출 관계 보강, 확인, 추론과 미해결의 구분, 템플릿과 재구축 동일성 검사, 그래프 순회 상한, 상시 벡터 DB 없는 exact 비교

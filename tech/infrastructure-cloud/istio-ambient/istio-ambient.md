@@ -20,6 +20,7 @@ sidecar 없는 service mesh — ztunnel과 waypoint의 트래픽 구조, HBONE, 
 - [[Istio-Ambient-Partially-Enrolled-Pod|Partially Enrolled Pod]]
 - [[Istio-Ambient-Stale-Connection|Stale Connection과 503]]
 - [[Istio-Ambient-Upgrade|업그레이드 전략]]
+- [[Istio-Authorization-Method-Normalization|HTTP 메서드 인가와 대소문자 검증]] — HTTP/2 우회 조건, 수정 버전과 백엔드 도달 확인
 - [[Envoy-XDS-Disconnected-Detection|Envoy xDS 단절 탐지]]
 - [[Envoy-Retry-Buffer-507|Envoy Retry Buffer와 507]]
 - [[Envoy-Upgrade-Behavior-Changes|Envoy 업그레이드와 동작 변경 점검]]

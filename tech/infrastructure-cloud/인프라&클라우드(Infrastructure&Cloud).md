@@ -20,7 +20,7 @@ aliases: ["인프라&클라우드(Infrastructure&Cloud)", "Infrastructure & Clou
 - [[tech/infrastructure-cloud/aws/AWS서비스(AWSServices)|AWS 서비스 (AWS)]] — EC2/ASG/ALB, Lambda, ALB 5XX와 NLB TCP 연결 진단, Amplify Gen 2 환경과 파일 권한
 - [[tech/infrastructure-cloud/network/인프라네트워크(InfraNetwork)|인프라 네트워크 (Network)]] — DNS, Load Balancer, Reverse Proxy
 - [[tech/infrastructure-cloud/k8s/k8s|Kubernetes]] — workload와 Service, 설정과 storage, traffic 진입과 배포, 리소스 적정화, CKA 운영 실습, GPU 공유와 에이전트 sandbox 런타임
-- [[tech/infrastructure-cloud/istio-ambient/istio-ambient|Istio Ambient (Service Mesh)]] — ztunnel, waypoint, HBONE, 업그레이드와 장애 대응
+- [[tech/infrastructure-cloud/istio-ambient/istio-ambient|Istio Ambient (Service Mesh)]] — ztunnel, waypoint, HBONE, 업그레이드와 장애 대응, [[Istio-Authorization-Method-Normalization|HTTP/2 메서드 인가 검증]]
 
 ## 장비와 자체 운영
 

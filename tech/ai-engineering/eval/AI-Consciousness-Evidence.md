@@ -44,6 +44,14 @@ AI는 사람과 다른 방식으로 동작하면서도 사람의 표현을 모�
 
 튜링 테스트 계열의 대화 평가는 정해진 조건에서 사람과 기계를 구별하는 행동 평가다. 어떤 AI가 통과했다는 주장에는 평가 절차, 대화 시간, 참가자와 판정 기준을 붙인다. 이를 주관적 경험의 검출이나 전 분야 인간 수준 능력의 인증으로 바꾸지 않는다. 도킨스의 25회에서 튜링 테스트를 통과한다고 평가한 부분도 특정 시험 결과를 확인한 것으로 기록하지 않는다.
 
+### ELIZA: 이해처럼 보이는 응답의 생성 규칙
+
+ELIZA의 1966년 논문은 입력의 키워드로 분해 규칙을 고르고, 분해된 문장 조각을 재조립해 답을 만드는 구조를 설명한다. 키워드 우선순위, 대명사 치환, 키워드가 없을 때의 일반 응답과 이전 발언을 활용하는 MEMORY 규칙이 대화의 연속성을 만든다. 대화 주제의 규칙을 담은 스크립트와 이를 실행하는 프로그램은 별개이며, DOCTOR는 그 스크립트의 한 예다.
+
+이 사례의 평가 교훈은 되묻기와 과거 발언 재사용을 관찰했다는 사실만으로 의미 이해나 주관적 경험을 입증할 수 없다는 것이다. 같은 행동을 만드는 더 단순한 규칙이 있는지 확인한다. 반대로 ELIZA의 한계를 현대 LLM의 능력이나 의식 부재에 대한 증명으로 확대하지 않는다.
+
+복원된 구현과 논문의 알고리즘도 구분한다. 2025년 복원 연구는 원래 MAD-SLIP 구현을 CTSS와 IBM 7094 에뮬레이션 환경에서 되살렸지만, 발견된 초기 코드는 1966년 논문의 일부 규칙을 지원하지 않았다. 연구진은 공개 대화의 두 지점에서 차이를 보고했고 숫자 입력으로 생기는 오류도 확인했다. 대화 일부의 재현은 모든 입력에서의 동등성 증명이 아니다. 여기서는 논문을 대조했으며 에뮬레이터를 직접 실행하지 않았다.
+
 ## 동작의 등가성과 경험의 연속성
 
 뇌의 일부를 같은 기능을 수행하는 인공 장치로 차례로 바꾸는 사고실험은 기능이 유지되면 주관적 경험도 유지되는지 묻는다. 계산적 기능주의를 지지할 논증으로 검토할 수 있지만, 실제 전뇌 교체나 의식 이전의 실증 결과는 아니다.
@@ -58,6 +66,8 @@ AI는 사람과 다른 방식으로 동작하면서도 사람의 표현을 모�
 
 ## 출처
 
+- [ELIZA—A Computer Program For the Study of Natural Language Communication Between Man And Machine — Joseph Weizenbaum, Communications of the ACM](https://courses.cs.umbc.edu/undergraduate/CMSC331/resources/papers/eliza.january1966.html) — 1966년 논문의 공개 전재본. 2026-11-04 분해와 재조립, 키워드 우선순위와 MEMORY 규칙을 대조.
+- [ELIZA Reanimated: The world's first chatbot restored on the world's first time sharing system — Rupert Lane 외](https://arxiv.org/html/2501.06707v1) — 2025년 복원 연구의 4, 7, 8절을 2026-11-04 대조. 초기 구현의 미지원 규칙과 대화 재현 한계 확인.
 - [Consciousness in Artificial Intelligence: Insights from the Science of Consciousness — Patrick Butlin 외](https://arxiv.org/html/2308.08708v3) — 2023-08-22 v3, Executive Summary와 1.2.3, 2.5절을 2026-10-28 대조. 연구의 가설과 평가 접근을 정리했다.
 - [EBS, 넥스트 비전, 03. 유발 하라리 <AI와 권력의 이동> - 예측 불가능한 미래](https://www.ebssw.kr/edc/cultursens/cultursensMvpView.do?alctcrSn=59337&cntntsSn=33459&stepSn=58322&lctreSn=1879149&pageIndex=1)
 - [EBS, 넥스트 비전, 04. 유발 하라리 <AI와 권력의 이동> - 무엇을 선택할 것인가](https://www.ebssw.kr/edc/cultursens/cultursensMvpView.do?alctcrSn=59337&cntntsSn=33460&stepSn=58322&lctreSn=1879150&pageIndex=1)
