@@ -53,6 +53,7 @@ Software 3.0 패러다임, LLM과 에이전트, 하네스, 평가, 조직 전환
 - [x] [[LLMs-Txt|llms.txt]] — 웹 문서 색인, v2 발견 규칙, 생성 도구와 운영 검증
 - [x] [[Agent-Repository-Instructions|AGENTS.md]] — 저장소 지침의 작성과 호스트별 적용, 권한 통제와 검증 경계
 - [x] [[MCP#Bedrock Converse와 MCP를 잇는 클라이언트 루프|Bedrock Converse와 MCP 연동]] — 스키마 변환, 도구 실행과 toolUseId 결과 연결
+- [x] [[MCP-Tasks|MCP 비동기 작업]] — 현재 확장과 이전 명세, 결과 조회, 서버 수명과 취소 확인
 - [x] [[GraphRAG-Retrieval|GraphRAG 검색]] — 관계 확장, 경로 선별, Cypher 실행계획과 Bedrock 운영 경계
 - [x] [[RAG-Retrieval-Engineering#검색을 공통 API로 제공한다|공통 RAG 검색 API]] — 제품별 생성과 검색의 분리, 분류 필터와 순위 가점
 - [x] [[Review-Moderation-Pipeline|리뷰 검수 자동화]] — 정책과 판정 수단, 정밀도와 재현율, 재검토 물량과 오래된 결과 방지

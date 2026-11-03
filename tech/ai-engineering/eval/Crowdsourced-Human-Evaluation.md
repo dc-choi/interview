@@ -30,6 +30,16 @@ aliases: ["Crowdsourced Human Evaluation", "크라우드소싱 사람 평가"]
 4. **판단과 집계를 추적한다.** 모집 수, 제외 수와 이유, 최종 평가자 수, 평가한 샘플 수를 구분해 남긴다. 평균값만으로 모집과 제외 과정의 품질을 설명하지 않는다.
 5. **운영 비용을 포함한다.** 모집 보수뿐 아니라 예비 평가, 응답 검수와 재모집에 필요한 시간도 계산한다.
 
+## 블라인드 쌍 비교의 결론 범위를 정한다
+
+모델 이름을 가리고 두 응답 중 선호하는 쪽을 고르는 평가는 모델의 정체를 맞히는 퀴즈와 다르다. Chatbot Arena의 2024년 논문은 익명 모델 쌍의 응답을 비교하고 투표 뒤에 이름을 공개하는 방식을 설명한다. 여러 비교를 통계적으로 집계하며 순위 추정의 불확실성도 다룬다. 한 번의 선호를 모델 전체의 우열로 바꾸지 않는다.
+
+작은 화면 생성 비교에 적용한다면 같은 입력과 생성 조건을 기록하고, 모델 이름을 공개하기 전에 평가 기준에 따라 선택하게 한다. 시각적 선호, 요구 기능의 동작과 접근성을 나눠 보고, 여러 과업과 반복 생성에서 결과가 유지되는지 확인한다. 이는 논문의 선호 평가와 정답 기반 평가 구분을 적용한 점검안이며, 해당 논문이 웹사이트 생성 성능을 검증했다는 뜻은 아니다.
+
+응답 위치도 점검 대상이다. 같은 논문의 Arena Bench 자동 평가에서는 기준 응답의 A/B 위치를 바꿔 두 번 판정했다. 이를 사람 평가에 응용해 배치를 바꾸는 것은 설계 제안이며 모든 편향을 제거하는 보장은 아니다. 평가자 수, 문항 수, 반복 수와 동률을 남기고, 영상의 발화만 확보했다면 화면 품질이나 코드 실행 성공을 확인했다고 기록하지 않는다.
+
+2026-11-04에는 위 평가 설계만 논문과 대조했다. 아래 서비스 지원 현황을 다시 확인하지 않았으므로 기존 `verified_at`은 유지한다.
+
 ## 과거 플랫폼 사례를 현재 도입안으로 읽지 않는다
 
 2026-10-30 확인한 공식 FAQ에 따르면 **Amazon Mechanical Turk는 2026-09-30 종료됐다.** SageMaker Ground Truth와 Amazon Augmented AI에서도 Mechanical Turk worker type으로 새 라벨링 작업이나 사람 검토 워크플로를 만들 수 없게 됐다. 이 worker type의 종료를 두 서비스 전체가 종료됐다는 뜻으로 확대하지 않는다. 다만 2026-11-01 확인한 AWS 문서 기준 두 서비스 모두 신규 고객을 받지 않으며 기존 고객만 계속 쓸 수 있다. 두 서비스 모두 새 기능을 추가할 계획이 없다고 밝힌다.
@@ -38,6 +48,7 @@ aliases: ["Crowdsourced Human Evaluation", "크라우드소싱 사람 평가"]
 
 ## 출처
 
+- [Chatbot Arena: An Open Platform for Evaluating LLMs by Human Preference — arXiv, Wei-Lin Chiang 외](https://arxiv.org/html/2403.04132v1) — 3.1절의 익명 쌍 비교, 5절의 순위 불확실성, D.3절의 자동 평가 위치 교환
 - [Amazon Mechanical Turk, Closure FAQs](https://www.mturk.com/help) — 서비스 종료와 Ground Truth/Augmented AI의 worker type 영향
 - [AWS, Amazon SageMaker Ground Truth](https://docs.aws.amazon.com/sagemaker/latest/dg/sms.html) — 신규 고객 중단, 기존 고객의 계속 사용과 새 기능 계획 없음
 - [AWS, Using Amazon Augmented AI for Human Review](https://docs.aws.amazon.com/sagemaker/latest/dg/a2i-use-augmented-ai-a2i-human-review-loops.html) — 신규 고객 중단, 기존 고객의 계속 사용과 새 기능 계획 없음

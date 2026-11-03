@@ -86,6 +86,10 @@ AWS Artifact는 AWS의 보안과 규정 준수 보고서 및 인증 문서를 �
 
 교육 이수율만으로 위험 감소를 입증할 수 없다. 실습 결과, 신고와 업무 행동의 변화를 함께 보고 교육 내용을 조정한다. 교육 기록도 개인 평가와 연결될 수 있으므로 접근과 취급 범위를 정한다. 이 지침은 미국 연방기관을 주 대상으로 하며, 국내 조직의 법정 교육 주기나 일률적인 사고 감소율을 증명하지 않는다.
 
+교육에 쓰는 공격 빈도도 관측 범위를 붙인다. 2007-02-06 메릴랜드대 공식 발표의 평균 39초는 인터넷에 연결하고 보안을 약하게 설정한 Linux 컴퓨터 4대의 실험에서 나온 수치다. 주된 공격은 사용자 이름과 비밀번호 후보를 대입하는 자동 사전 공격이었다. 이를 현재 전 세계의 침해 성공 간격이나 개별 조직의 사고 확률로 옮기지 않는다. 공격 시도, 접근 성공과 실제 피해를 구분하고 관측 시점, 자산과 노출 조건을 함께 제시하는 것이 적용 원칙이다.
+
+2026-11-04에는 이 통계의 실험 조건만 공식 발표와 대조했다. 다른 제품과 인증 절차의 검증일은 갱신하지 않는다.
+
 ## 점검의 범위와 증거
 
 보안 감사 전체를 취약점 스캐너 실행으로 대신할 수 없다. 기술 점검은 문서와 설정 검토, 테스트를 조합하며, 목적과 허용 위험에 맞게 방법을 고른다. [[Application-Security|취약점 진단과 모의해킹]]도 서로 다른 범위를 확인한다.
@@ -234,6 +238,7 @@ ISMS-P 인증기준은 관리체계 수립과 운영, 보호대책 요구사항,
 
 ## 출처
 
+- [UM Study: Hackers Attack Computers Every 39 Seconds — University of Maryland, A. James Clark School of Engineering](https://eng.umd.edu/html/media/pressreleases/pr020607_hacker.html) — 2007-02-06 발표, 약한 보안의 Linux 4대와 공격 빈도 관측 범위
 - [Security Health Improvement Program — AWS](https://aws.amazon.com/security/security-health-improvement-program/) — 2026-10-13 참여 대상, 진행 방식과 SIP 차이 대조
 - [SecurityScorecard, How SecurityScorecard calculates your scores](https://support.securityscorecard.com/hc/en-us/articles/8366223642651-How-SecurityScorecard-calculates-your-scores)
 - [How to Resolve Findings on Your SecurityScorecard Rating — SecurityScorecard](https://securityscorecard.com/blog/how-to-resolve-findings-on-your-securityscorecard-rating/)
