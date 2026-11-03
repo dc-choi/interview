@@ -61,6 +61,23 @@ Redis가 임시 projection인지 장바구니 원본인지 먼저 정한다. Red
 
 ## 도입 판단
 
+### Wide-column과 columnar는 다른 조회를 위한 구조다
+
+Cassandra의 wide-column 모델과 ClickHouse의 columnar 저장을 같은 분류로 읽지 않는다. Cassandra는 필요한 조회에서 출발해 테이블을 설계하고, partition key와 clustering column으로 조회할 데이터의 묶음과 정렬을 정한다. ClickHouse는 같은 열의 값을 모아 저장해 분석 질의에 필요한 열을 읽고 필터링하거나 집계한다(2026-11-04 각 제품 공식 문서 부분 대조).
+
+| 비교할 질문 | 설계에서 확인할 점 |
+|---|---|
+| 특정 사용자의 최근 행동을 읽는가 | Cassandra를 후보로 삼는다면 partition key, 파티션 크기와 clustering 순서를 조회 조건에 맞춘다 |
+| 전체 사용자의 기간별 행동을 집계하는가 | ClickHouse를 후보로 삼는다면 필요한 열과 분석 범위, 거래 데이터가 도착하는 지연을 확인한다 |
+
+이 표는 워크로드 비교 예시이며 추천시스템에 두 제품을 반드시 도입하라는 뜻은 아니다. 기존 DB에서 요구를 충족하면 유지한다. 사용자별 조회를 위한 데이터와 전체 분석용 데이터를 따로 저장한다면 같은 행동의 식별자, 중복 제거와 변경 전파를 앞의 정본 및 projection 계약에 포함한다(설계 제안). [[NoSQL-Overview|NoSQL 개요]]와 [[ClickHouse]]에서 세부 선택 조건을 확인한다.
+
+### 자동 분할과 쓰기 분산을 구분한다
+
+Spanner는 키 범위로 데이터를 나누므로 쓰기 빈도가 높은 테이블의 첫 키가 단조 증가하는 시각이면 새 쓰기가 같은 범위에 몰릴 수 있다. 자동으로 split을 만들어도 다음 쓰기가 새 끝 범위에 집중할 수 있어 자동 분할 자체가 hotspot 해소를 보장하지 않는다. 이는 Spanner의 공식 스키마 설계 지침이며 모든 RDB의 기본 키 규칙으로 확대하지 않는다(2026-11-04 부분 대조).
+
+대안은 UUIDv4, 키 순서 변경, 해시 기반 분산 등을 조회 요구와 함께 비교하는 것이다. 사용자 식별자를 시각 앞에 두는 예시는 여러 사용자의 쓰기가 분산된다는 전제가 있다. 특정 사용자에게 요청이 몰리는지도 확인한다. 쓰기 분산을 위해 해시를 앞에 두면 읽을 범위가 여러 shard로 늘어날 수 있으므로 쓰기 처리량과 조회 비용을 함께 측정한다. 이 절은 키 배치 조건만 확인했으며 실제 부하 시험이나 제품별 장애 복구 검증은 수행하지 않았다. 기존 문서 전체의 검증일은 유지한다.
+
 ### 저장소마다 정확성의 기준을 정한다
 
 부분 검증(2026-11-04): pgvector 공식 README와 Prometheus Overview를 대조했다. pgvector는 기본적으로 exact nearest-neighbor search를 제공하고, 근사 인덱스는 일부 recall을 속도와 교환한다. 근사 인덱스 경로에서 필터를 적용하면 요청한 수보다 적은 결과가 나올 수 있다. 따라서 별도 벡터 저장소를 도입하기 전에 기존 PostgreSQL에서 같은 질의의 exact 결과와 ANN 결과, 필터 후 결과 수와 지연을 비교한다(설계 제안). 세부 조정은 [[pgvector-Query-Optimization|pgvector 쿼리 최적화]]에서 다룬다.
@@ -90,6 +107,9 @@ Prometheus는 수치 시계열의 모니터링에 적합하지만, 수집 데이
 
 ## 출처
 
+- [Apache Cassandra Documentation, Logical data modeling](https://cassandra.apache.org/doc/latest/cassandra/developing/data-modeling/data-modeling_logical.html) — 2026-11-04 조회별 테이블, partition key와 clustering column의 역할 부분 대조
+- [ClickHouse Documentation, What is ClickHouse?](https://clickhouse.com/docs/get-started/about/intro) — 2026-11-04 OLAP과 열 단위 읽기 구조 부분 대조
+- [Google Cloud, Spanner Schema design best practices](https://docs.cloud.google.com/spanner/docs/schema-design) — 2026-11-04 단조 증가 키의 hotspot, 키 순서와 해시 분산의 조회 비용 부분 대조
 - [pgvector — GitHub, pgvector](https://github.com/pgvector/pgvector) — 2026-11-04 exact와 ANN, Filtering과 Monitoring 부분 대조
 - [Prometheus, Overview](https://prometheus.io/docs/introduction/overview/) — 2026-11-04 모니터링과 요청별 청구의 용도 경계 대조
 - [Redis Documentation, ZRANGE](https://redis.io/docs/latest/commands/zrange/)
