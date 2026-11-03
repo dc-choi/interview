@@ -19,6 +19,18 @@ returnEdits 기본값은 NONE이며 ALL 또는 ALL_V2_WITH_DELETIONS를 선택�
 
 Branch와 transaction은 experimental이며 모든 workflow 지원을 보장하지 않는다. scenarioRid는 지정 scenario에 적용하는 문맥이다. 설정하지 않은 값의 기본 문맥과 권한을 명확히 한 뒤 사용한다.
 
+### 단건 적용의 요청 식별자와 응답 구조
+
+2026-11-03 Apply Action 명세 부분 대조 기준이다. `{ontology}`는 Ontology API name 또는 RID를 받지만 `{action}`은 Action API name을 받는다. Action type RID 조회 경로와 혼동하지 않는다. 선택 query parameter인 `sdkPackageRid`와 `sdkVersion`은 생성된 SDK의 패키지와 버전이며 Action 정의의 버전을 고르는 인자가 아니다.
+
+요청 schema의 `parameters`는 `ParameterId`에서 `DataValue`로의 map이다. 이 필드가 선택 항목이라는 사실을 각 Action의 필수 parameter가 없다는 뜻으로 해석하지 않는다. Parameter 기본값도 이 endpoint에서 지원하지 않으므로 metadata와 validation으로 필요한 입력을 확인한다.
+
+응답 schema의 최상위 `operationId`, `validation`, `edits`는 모두 선택 항목이다. `validation`이 있으면 그 안의 `result`가 필수이며 `VALID` 또는 `INVALID`다. 다만 공식 응답 예시는 parameter별 결과인 `parameters`를 최상위에 두고, schema는 `validation.parameters`로 정의한다. 인증 호출은 시험하지 않았으므로 실제 반환 형식을 확정하지 않는다.
+
+클라이언트 설계 제안: validation이 없는 응답을 임의로 성공 처리하지 않고 미확인으로 남긴다. 연동 시 실제 응답과 사용하는 SDK 타입을 대조하고, `VALIDATE_ONLY`의 `VALID`를 변경 완료로 보고하지 않는다.
+
+검증 범위는 단건 적용의 요청과 응답 명세다. Batch, 편집 이력과 다른 metadata 전체를 재검증하지 않았으므로 frontmatter의 검증일은 유지한다.
+
 ## Batch와 제한
 
 applyBatch는 같은 action type을 최대 20개 적용하며 OSv2만 수정하고 Function을 호출하지 않는 경우 더 높은 한도를 받을 수 있다. Notification은 지원하지 않는다. Batch options.returnEdits는 ALL/NONE이고 단일 호출의 ALL_V2_WITH_DELETIONS와 같지 않다.
