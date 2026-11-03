@@ -118,6 +118,21 @@ GEPA(Genetic-Pareto)는 실행 경로와 피드백을 자연어로 분석해 프
 
 이 절은 비교 절차에 대한 제안이다. 특정 모델의 우열이나 실제 영상의 시각적 품질을 재현 검증한 결과는 아니다.
 
+## 모델과 추론 설정을 한 쌍으로 비교한다
+
+모델별로 같은 이름의 추론 설정을 골라도 사용 토큰과 실행 비용이 같아지지는 않는다. 비교 후보는 모델 이름과 설정의 조합으로 정의하고, 같은 업무의 품질, 완료 시간과 총비용을 함께 기록한다. 단가와 재작업 비용의 구분은 [[LLM-Model-Tiers|모델 티어 선택]]을 따른다.
+
+2026-11-04 공식 API 모델 문서에서 확인한 사례다. 가격은 Standard의 입력 272K 이하 구간, 100만 토큰당 달러이며 캐시 읽기와 쓰기, 도구 요금은 별도다.
+
+| 모델 | 입력 / 출력 단가 | 지원하는 `reasoning.effort` |
+| --- | --- | --- |
+| GPT-6.1 Terra | $1 / $5 | `none`, `low`, `medium`(기본), `high`, `xhigh`, `max` |
+| GPT-6.1 Sol | $2 / $10 | `low`, `medium`(기본), `high`, `xhigh`, `max` |
+
+**평가 설계 제안:** 같은 effort끼리의 비교와 같은 비용 한도에서의 비교를 분리한다. 예를 들어 Terra의 `max`와 Sol의 `medium`도 후보로 놓되, 지불한 금액이 같다고 가정하지 않고 실제 사용량을 집계한다. 필수 품질 기준을 통과한 조합에서 비용과 지연을 비교하며, 출력 단가가 절반이라는 사실을 과업당 비용이나 구독 사용량의 절반으로 바꾸지 않는다.
+
+이 사례는 지원 설정과 API 가격을 확인한 것이다. 특정 벤치마크의 점수, 모델 간 승패와 업무별 절감률을 재현한 평가 결과는 아니다.
+
 ## 적용 범위
 
 평가의 규모는 오류 비용과 반복 변경 빈도에 맞춘다. 프로토타입도 작은 성공 기준부터 둘 수 있으며, 정답이 하나가 아닌 작업은 근거와 제약 준수 같은 차원을 평가한다. 모든 변경에 큰 점수 체계를 도입할 필요는 없다.
@@ -132,6 +147,8 @@ GEPA(Genetic-Pareto)는 실행 경로와 피드백을 자연어로 분석해 프
 
 ## 출처
 
+- [OpenAI API, GPT-6.1 Terra](https://developers.openai.com/api/docs/models/gpt-6.1-terra) — 2026-11-04 effort와 Standard 가격 구간 확인
+- [OpenAI API, GPT-6.1 Sol](https://developers.openai.com/api/docs/models/gpt-6.1-sol) — 2026-11-04 effort와 Standard 가격 구간 확인
 - [Luna vs Haiku 영상 광고 만들기 대결 — 코드팩토리](https://www.youtube.com/watch?v=3i1u4yDCRRA) — 제작 비교의 조건과 중간 자산 추적을 점검 질문으로 반영. 모델 우열과 비용 수치는 채택하지 않았다.
 - [Level 9 하네스 엔지니어링과 Evaluator 제어 — 클로드 코드 마스터 활용편 발표 자료(한빛미디어), 빌런 (2026-09)](https://run-ai.kr/learn/carve-harness)
 - [Demystifying evals for AI agents — Anthropic](https://www.anthropic.com/engineering/demystifying-evals-for-ai-agents)

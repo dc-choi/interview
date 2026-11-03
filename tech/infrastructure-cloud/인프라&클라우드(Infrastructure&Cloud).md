@@ -36,6 +36,7 @@ aliases: ["인프라&클라우드(Infrastructure&Cloud)", "Infrastructure & Clou
 
 ## AWS 체크리스트
 
+- [x] [[Redshift-Access-and-Data-Transfer|Redshift 권한과 데이터 전송]] — 사용자 삭제의 검사 범위, IAM 역할 체인, COPY/UNLOAD의 리전 조건
 - [x] [[SageMaker-Studio-VPC-Networking|SageMaker Studio 사설 네트워크]] — VpcOnly와 인터넷 차단, 브라우저 및 컨테이너 통신 경계
 - [x] [[SageMaker-HyperPod-Inference|HyperPod 추론 운영]] — Pod 확장, 팀별 자원 대여와 회수, 관리형 Karpenter와 checkpoint 복구
 - [x] [[EKS-Capabilities|EKS Capabilities]] — Argo CD, ACK와 kro의 역할, IAM과 Kubernetes 권한, 동기화와 서비스 검증

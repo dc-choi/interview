@@ -10,6 +10,7 @@ aliases: ["AWS Analytics Services", "AWS 분석 서비스"]
 S3 데이터레이크에서 ETL, 쿼리, 데이터 웨어하우스, BI로 이어지는 AWS 분석 서비스 모음. 검색과 로그 분석은 [[OpenSearch-Service]], 상위 개관은 [[data|AWS 데이터 인덱스]] 참조.
 
 - [[Redshift|Redshift]]: 컬럼 기반 데이터 웨어하우스, OLAP — MPP와 노드 타입, 분산 키와 정렬 키, Spectrum, Concurrency Scaling
+- [[Redshift-Access-and-Data-Transfer|Redshift 권한과 전송]]: 사용자 삭제의 데이터베이스별 의존성, 역할 체인과 파일 형식별 리전 조건
 - [[Athena|Athena]]: S3 데이터에 대한 서버리스 SQL — Presto/Trino 엔진, Glue Data Catalog 연계, Workgroup, 요금 절감
 - [[Glue|Glue]]: 서버리스 ETL, Data Catalog, Crawler, 수집 재시도와 분석 테이블의 변환 경계, Glue 6.0과 Iceberg v3의 호환성
 - [[SageMaker-Catalog-Discovery|SageMaker Catalog]]: 업무 메타데이터, 구독 권한, 계보 보기와 품질 평가, Data Agent의 코드 생성

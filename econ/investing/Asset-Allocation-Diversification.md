@@ -43,6 +43,12 @@ aliases: ["자산배분과 분산투자", "Asset Allocation and Diversification"
 - 5월 28일에는 2026년 국내주식 목표 비중을 14.9%에서 20.8%로 올려 유예가 끝나는 6월 말부터 적용하기로 했다. 사유로는 상법 개정 등에 따른 시장의 구조적 변화 가능성과 실제 비중 확대를 고려해 장기 수익성과 안정성을 높이고 리밸런싱의 시장 영향을 완화한다는 점을 들었다. 국내주식의 허용 범위는 한시 확대하고 허용 범위는 공개하지 않기로 했으며, 일일 최대 리밸런싱 규모를 줄였다.
 - 7월 말 국내주식은 418.6조 원으로 기금적립금의 24.9%였고 2026년 목표 비중 20.8%보다 높았다. 같은 공시는 당해연도나 직전연도 수치를 운용성과가 확정될 때까지 잠정치로 제공한다고 밝힌다. 목표 비중이 어떤 분모 기준인지는 확인하지 않았다. 허용 범위가 비공개라 범위 이탈 여부는 공시로 확인할 수 없고, 비중 변화에는 가격 변동, 자금 유출입과 매매가 함께 작용한다.
 
+### 목표 복원과 목표 변경을 구분한다
+
+자산을 팔고 다른 자산을 샀다는 행동만으로는 기존 목표 비중을 복원했는지, 시장 전망에 따라 목표 자체를 바꿨는지 알 수 없다. Investor.gov가 설명하는 리밸런싱은 원래의 자산배분으로 돌아가는 절차다. 시간지평과 위험 감당 능력이 달라져 적합한 배분이 바뀌는 판단과도 구분한다.
+
+**점검 절차 제안:** 거래 전 실제 비중, 기존 목표, 거래 후 목표를 나란히 기록한다. 목표까지 바꿨다면 변경 이유가 투자 목적과 자금 사정인지, 특정 시장의 저평가나 금리 전망인지 적는다. 전망에 따른 변경은 판단을 재검토할 관측 조건도 미리 정한다. 한 번의 매수 뒤 가격이 올랐다는 결과만으로 규칙의 반복 성과를 입증하지 않는다. 2026-11-04 리밸런싱의 정의를 대조했으며, 특정 국가 주식과 채권의 현재 저평가나 금리 방향을 확인한 것은 아니다.
+
 ### 일정 비중 리밸런싱의 계산 예와 반례
 
 다음은 시장 예측이나 무손실 전략이 아니라 **가정한 가격 경로의 산술 예시**다. 초기 자산 100을 주식 50과 현금 50으로 나누고, 매 구간 말에 다시 절반씩 맞춘다. 현금 수익률, 거래비용, 세금과 외부 입출금은 0으로 둔다.
@@ -116,7 +122,7 @@ aliases: ["자산배분과 분산투자", "Asset Allocation and Diversification"
 - [An essential guide to building an emergency fund — CFPB](https://www.consumerfinance.gov/an-essential-guide-to-building-an-emergency-fund/) — 예기치 못한 지출과 소득 상실, 자금의 안전성과 접근성, 입출금 시점 관리
 - [iShares Semiconductor ETF — iShares](https://www.ishares.com/us/products/239705/ishares-phlx-semiconductor-etf) — SOXX의 상품 식별, NYSE Semiconductor Index 추종과 가격/NAV/총수익 표기, 2026-10-23 대조
 - [Overview for SOX — Nasdaq](https://indexes.nasdaqomx.com/Index/Overview/SOX) — PHLX Semiconductor Sector Index의 식별과 수정 시가총액 가중 방식, 2026-10-23 대조
-- [Asset Allocation, Diversification, and Rebalancing — Investor.gov](https://www.investor.gov/introduction-investing/getting-started/asset-allocation) — 2026-10-02 시간지평, 위험 감당 능력과 리밸런싱 목적 대조. 2026-10-24 리밸런싱의 위험 노출 복원 목적을 재확인하고 별도의 가상 경로 계산 예를 추가했다. 기존 국민연금과 ETF 부분의 검증일은 유지한다.
+- [Asset Allocation, Diversification, and Rebalancing — Investor.gov](https://www.investor.gov/introduction-investing/getting-started/asset-allocation) — 2026-10-02 시간지평, 위험 감당 능력과 리밸런싱 목적 대조. 2026-10-24 리밸런싱의 위험 노출 복원 목적을 재확인하고 별도의 가상 경로 계산 예를 추가했다. 2026-11-04 목표 비중 복원과 배분 변경의 구분을 추가 대조했다. 기존 국민연금과 ETF 부분의 검증일은 유지한다.
 - [Determinants of Portfolio Performance — Financial Analysts Journal](https://doi.org/10.2469/faj.v51.n1.1869)
 - [Updated Investor Bulletin: Leveraged and Inverse ETFs — Investor.gov](https://www.investor.gov/introduction-investing/general-resources/news-alerts/alerts-bulletins/investor-alerts/sec) — 일일 재설정과 장기 수익 배수의 차이, 2026-10-10 대조
 - [2026년 제1차 국민연금기금운용위원회 개최 — 보건복지부](https://www.mohw.go.kr/board.es?mid=a10503010100&bid=0027&act=view&list_no=1488848) — 2026-10-20 리밸런싱과 허용 범위 정의, 한시 유예와 사유, 목표 비중 조정과 기금 규모 대조

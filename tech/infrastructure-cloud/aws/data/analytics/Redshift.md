@@ -188,6 +188,7 @@ Data Sharing으로 소비자별 물리 복제를 줄이면 그 복제본의 동�
 
 ## 관련 문서
 
+- [[Redshift-Access-and-Data-Transfer|사용자 정리와 계정 간 데이터 전송]] — 객체 의존성, 역할 체인과 파일 형식별 리전 조건
 - [[Athena]]
 - [[RDS-Aurora]]
 - [[S3]]
