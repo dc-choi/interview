@@ -43,6 +43,19 @@ Docker Space는 README의 YAML에서 `sdk: docker`를 지정하고 `app_port`로
 
 이 절은 서비스 역할과 Docker Spaces 설정의 문서 대조다. Java 앱 배포, 모델 호출, 성능과 비용은 시험하지 않았고 기존 ONNX와 HAT 절 전체의 검증일은 갱신하지 않았다.
 
+### Spring AI로 로컬 모델 서버에 연결한다
+
+2026-11-04 Spring AI 2.0.2 Reference의 Ollama Chat 문서를 부분 대조했다. 이 경로는 Java 앱이 별도 Ollama 서버를 호출하는 방식이다. 아래의 ONNX Runtime Java binding과 실행 경계를 구분한다.
+
+- `spring-ai-starter-model-ollama`는 Spring Boot의 Ollama 통합 자동 설정을 제공한다. 먼저 접근 가능한 Ollama 인스턴스와 사용할 모델이 필요하다.
+- `spring.ai.ollama.base-url`은 서버 주소이며 기본값은 `http://localhost:11434`다. 주소를 바꾸는 일과 모델 가중치를 준비하는 일은 별도다.
+- 시작 시 모델 다운로드 전략인 `spring.ai.ollama.init.pull-model-strategy`의 기본값은 `never`다. 자동 다운로드를 켜면 모델 준비까지 앱 초기화가 기다리므로, 운영 환경에서는 필요한 모델을 미리 확보하는 방식을 검토한다.
+- `OllamaChatModel`은 도구 호출을 지원하지만 모델이 직접 도구를 실행하지는 않는다. 실행은 Spring AI가 맡는다. 문서의 최소 Ollama 버전은 도구 호출 0.2.8, 스트리밍 도구 호출 0.4.6이다.
+
+적용 제안: 모델과 서버를 바꿀 때 일반 텍스트 응답, 도구 인자와 실행 권한, 스트리밍 종료를 각각 확인한다. 공통 호출 추상화가 있어도 임의의 모델과 서버에서 같은 기능이나 정확도를 보장하는 것으로 확대하지 않는다. 로컬 서버 호출 성공을 JVM 내부 추론이나 학습 지원으로 해석하지 않는다.
+
+이 절은 문서상의 연결과 초기화 조건만 확인했다. 실제 서버 연결, 모델 실행과 성능은 시험하지 않았으며 기존 절의 검증일은 유지한다.
+
 ## 로컬 추론은 모델 계약과 자원 수명을 함께 다룬다
 
 ONNX Runtime의 Java binding은 JVM에서 ONNX 모델의 추론을 호출한다. 공식 시작 절차는 `OrtEnvironment`와 `OrtSession`을 만들고 `OrtSession.run`에 모델 입력 이름과 텐서를 전달하는 흐름이다. 입력 이름은 `getInputNames()`나 `getInputInfo()`로 확인한다.
@@ -90,6 +103,7 @@ HAT 예제의 kernel은 제한된 Java 부분집합을 사용하고 코드 모�
 
 ## 출처
 
+- [Spring AI 2.0.2 Reference, Ollama Chat](https://docs.spring.io/spring-ai/reference/api/chat/ollama-chat.html) — 서버 연결, 모델 준비와 도구 실행 경계(2026-11-04 부분 대조).
 - [Hugging Face, Inference Providers](https://huggingface.co/docs/inference-providers/index) — 공급자별 추론 접근과 지원 task.
 - [Hugging Face, About Inference Endpoints](https://huggingface.co/docs/inference-endpoints/about) — 모델 파일, 추론 엔진과 관리형 인프라의 구분.
 - [Hugging Face, Docker Spaces](https://huggingface.co/docs/hub/spaces-sdks-docker) — Docker 앱 실행, 포트 설정과 reverse proxy.
