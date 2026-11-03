@@ -21,6 +21,21 @@ aliases: ["AIP LLM 용량과 비용"]
 
 Model capacity는 모델별 독립이다. Default medium 외 large/XL 등 tier가 있으며 enabled backend의 enrollment limit을 더한다. Geo-restricted나 USG impact level별 수치가 다를 수 있다. 전용 rate table의 per-user default와 actual Resource Management 값을 확인하고 표 수치를 고객 환경의 보장으로 옮기지 않는다.
 
+### 기본 한도표는 모델, backend와 환경을 함께 맞춘다
+
+2026-11-03 공식 enrollment rate limits 표에서 확인한 예다. Claude Haiku 4.5의 commercial Medium 기본값은 다음과 같다.
+
+| Backend | Enrollment TPM | Enrollment RPM | Per-user TPM / RPM |
+| --- | --- | --- | --- |
+| Anthropic | 1,500,000 | 750 | 1,000,000 / 100 |
+| Amazon Bedrock | 1,100,000 | 300 | 1,000,000 / 100 |
+
+이 두 backend만 활성화하고 표의 기본값을 그대로 적용하는 가정이라면 enrollment 합계는 2,600,000 TPM과 1,050 RPM이다. 이 합계를 사용자 한 명의 한도로 옮기지 않는다. 실제 한도는 Resource Management의 enrollment 설정과 user/project 제한을 함께 확인한다.
+
+USG 행은 해당 모델과 backend가 지원하는 impact level에만 적용한다. **Experimental** 표시는 그 backend의 실험적 제공 상태이며, 표에 행이 있어도 해당 환경과 접근 요건을 충족해야 한다. Gemma 4 26B A4B, Gemma 4 31B, NVIDIA Nemotron 3 Nano 30B와 Nemotron 3 Super 120B의 Bedrock 기본 한도는 provider capacity 예약을 뜻하지 않는다.
+
+이 절은 기본 한도표만 추가 대조한 범위다. 기존 비용, 예약 용량과 override 설명의 확인일은 유지하며 실제 enrollment 설정이나 부하 처리량은 시험하지 않았다.
+
 ## Project percentage는 예약량이 아니다
 
 Default project limit은 조정 가능하며 같은 category에 여러 project를 넣어도 category 전체가 한 share를 공동 소비하는 방식이 아니라 **각 project에 그 percentage를 적용**한다. Model override로 base 0%와 허용 model percentage를 조합할 수 있다. Project 100%는 shared capacity를 모두 예약했다는 뜻이 아니며 다른 자원과 경쟁한다.

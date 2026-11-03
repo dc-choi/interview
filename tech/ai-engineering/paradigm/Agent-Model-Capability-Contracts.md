@@ -30,6 +30,18 @@ aliases: ["Agent Model Capability Contracts", "Muse Wonder", "GLM-Legal", "Ultra
 
 실무 평가에서는 대화 간 잘못 저장한 사실을 정정하는지, 오래된 선호를 현재 지시보다 우선하지 않는지, 실패한 도구 호출을 성공으로 보고하지 않는지 확인한다. 계정별 가용성과 실제 호출은 시험하지 않았다.
 
+### 기억 평가와 장기 실행 평가는 시험 조건이 다르다
+
+2026-11-03 공식 모델 카드의 평가 방법을 추가 대조했다.
+
+| 평가 | 시험하는 능력과 조건 | 해석 경계 |
+| --- | --- | --- |
+| MemoryBench | 64K~100K 토큰의 긴 대화에 무관한 대화, 기존 사실과 충돌하거나 이를 갱신하는 발화를 섞는다. LLM 판정기가 질문별 가중 기준으로 답을 채점한다 | 주어진 대화에서 필요한 사실을 회수하는 평가다. API 호출 사이의 저장 위치, 보존 기간이나 삭제 계약을 입증하지 않는다 |
+| FocusBench | 주거, 여행, IT, 금융 등 개인 에이전트 과제에서 여러 상호작용 중 생기는 장애와 환경 변화에 대응하는 내부 평가다 | 같은 행동의 반복보다 조건 변화에 맞게 다음 행동을 바꾸는지를 본다. 실제 계정의 모든 작업 성공률로 일반화하지 않는다 |
+| SWE-Marathon | 긴 소프트웨어 프로젝트를 실행 가능한 테스트로 채점하며 주 지표는 pass@1이다 | Abundant AI가 결과 출처다. 비교 모델이 서로 다른 코딩 제품을 쓰고 Wonder Full은 xhigh 설정으로 보고돼 동일 하네스의 모델 단독 비교가 아니다 |
+
+자체 평가를 재현할 때도 최신 사실의 회수, 실패 뒤 계획 변경, 테스트를 통과한 산출물을 나누어 기록한다(평가 설계 제안). 발표 점수를 실제 서비스의 기억 보존이나 재시작 복구 보장으로 바꾸지 않는다. 다른 모델 절의 확인일은 유지하며 API와 런타임은 직접 시험하지 않았다.
+
 ## GLM-Legal의 전문 후학습과 산출물 평가
 
 2026-10-16 Z.ai 공식 발표 대조 기준, GLM-Legal은 GLM-5.3-Flash를 기반으로 법률 자료의 중간 학습과 업무 환경 후학습을 결합한 모델이다. 계약 조항 수정, 증거 간 모순 분석과 법률 산출물 작성을 대상으로 한다.
@@ -92,6 +104,7 @@ aliases: ["Agent Model Capability Contracts", "Muse Wonder", "GLM-Legal", "Ultra
 - [카카오, if(kakao)26에서 개인화 기반 완결형 에이전트 서비스 및 기술 선보여 — 카카오](https://www.kakaocorp.com/page/detail/12160) — 2026-10-13 발표 시점의 역할과 제공 계획
 
 - [Muse Wonder: A Frontier Model For Personal & Professional AI Agents — Meta AI Research](https://research.meta.ai/blog/muse-wonder)
+- [Muse Wonder Model Card — Meta AI Research](https://research.meta.ai/static/muse-wonder-model-card) — 2026-11-03 5~6쪽의 MemoryBench, FocusBench와 SWE-Marathon 평가 방법 및 비교 조건 대조.
 - [GLM-Legal: Advancing Agentic Legal Intelligence — Z.ai](https://z.ai/blog/glm-legal)
 - 사용자 제공 GeekNews 발췌: 2026-10-13 Muse Wonder와 GLM-Legal. 미대조 세부 점수와 시연의 한계를 본문에 남겼다.
 - [Ultramarine — Paper Instruments](https://www.paperinstruments.com/ultramarine) — 2026-10-27 열람, 차트, 가격과 가중치 공개 표시
