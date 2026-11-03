@@ -41,6 +41,14 @@ HSM도 허용된 요청의 업무 정당성은 판단하지 못한다. 침해된
 
 서명 정책 계층은 호출자 인증, 허용된 토큰 종류와 claim, audience, 만료 시간, rate limit과 감사 정보를 검사한다. HSM은 개인키 연산만 수행하고 서명을 반환한다. 검증자는 공개키만 필요하며 서명은 무결성과 발급자 진위를 확인할 뿐 payload를 암호화하지 않는다.
 
+## 유효한 서명과 허가된 거래를 구분한다
+
+서명 검증은 해당 키가 승인한 바이트인지를 확인한다. 호출자, 목적지, 자산과 권한 위임까지 조직의 업무 정책을 만족한다는 증명은 아니다. 거래 서명기는 체인별 메시지 형식과 장기 권한 위임을 해석하고, 허용하지 않은 종류의 서명을 키 연산 전에 거부하도록 설계한다.
+
+TRM Labs의 2026-10-29 Binance 조사(수치 기준 10-30 00:30 UTC)를 2026-11-02 대조했다. 조사는 10개 체인에서 약 63억 6천만 달러의 이동과 대부분이 약 20분에 이뤄진 관측을 보고했다. Ethereum에서는 EIP-7702 위임, 다른 체인에서는 정상 서명 거래가 사용됐으며, 이를 hot-wallet 서명 인프라 침해 가능성으로 평가했다. TraderTraitor 귀속도 TRM의 높은 확신 평가이며 독립 확정으로 바꾸지 않는다. 온체인 서명만으로 키 탈취와 서명 서비스 악용 중 내부 원인을 구분할 수는 없다.
+
+이 사례에서 도출한 점검은 지갑/체인별 서명 권한 분리, 예상하지 않은 위임의 탐지와 철회 준비다. 특정 HSM 사용이나 HSM 자체의 결함이 이 사고 원인이었다는 근거는 확인하지 않았다. 실제 거래와 내부 서명 환경은 시험하지 않았고 기존 HSM 구현 설명의 검증일은 유지한다.
+
 ## 키 수명 주기
 
 1. **용도를 분리한다.** 서명, 암호화와 키 래핑처럼 목적이 다른 연산은 키도 분리한다.
@@ -168,6 +176,9 @@ CloudHSM 비용 = HSM 수 × 실행 시간 × 시간 단가 + 클라이언트와
 - [[CloudTrail-Config|AWS 감사 로그]]
 
 ## 출처
+
+- [North Korea Steals USD 6.36 Billion From Binance in the Largest Hack in History — TRM Labs](https://www.trmlabs.com/resources/blog/north-korea-steals-usd-6-36-billion-from-binance-in-the-largest-hack-in-history) — 2026-10-29 조사, 관측과 귀속/인프라 평가의 구분
+- GeekNews, 2026-10-31 11:00 사용자 제공 발췌 — 사건 수치는 위 조사와 대조했으며 Chainalysis의 별도 귀속 원문은 확인 후보다.
 
 - [당근이 AWS CloudHSM으로 대규모 서명키 관리 시스템을 구축한 방법, 1부 — AWS 기술 블로그](https://aws.amazon.com/ko/blogs/tech/how-karrot-built-a-large-scale-signing-key-management-system-with-aws-cloudhsm-part1/)
 - [당근이 AWS CloudHSM으로 대규모 서명키 관리 시스템을 구축한 방법, 2부 — AWS 기술 블로그](https://aws.amazon.com/ko/blogs/tech/how-karrot-built-a-large-scale-signing-key-management-system-with-aws-cloudhsm-part2/)

@@ -18,6 +18,8 @@ aliases: ["Product Strategy", "제품 전략"]
 
 ## 역할과 관련 주제
 
+- [[Founder-Background-and-Capability-Gaps|창업자 배경과 역량 공백]] — 고객 접점, 구현 도구, 유통과 운영의 남은 과제
+
 - [[Solo-Game-Scope-and-Asset-Budget|1인 게임의 범위와 에셋 예산]] — 대표 장면, 자산 재사용과 적용 비용, 번들 구성과 라이선스 표기 충돌
 - [[B2B-Sales-Pipeline-and-Pilot|B2B 영업 파이프라인과 파일럿]] — 구매 역할, 공통 지인의 소개와 구매 증거 구분, 단계별 증거, 인바운드 첫 연락 기한, 고객 도입과 전략적 투자 구분, 플랫폼 발표와 구매 조건의 구분, 예상 계약금액의 한계, 청구 일정과 금액 구분
 - [[Solo-Seller-Execution-Lessons|1인 판매자의 실행 원칙과 AI 활용]] — 시작 구조, 하루 단위 목표, 판매 숫자로 고치기, 실패에서 배운 순서, [[Solo-Seller-Execution-Lessons-AI-Automation|AI 활용과 자동화 경계]]

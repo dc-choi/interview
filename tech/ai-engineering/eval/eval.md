@@ -13,7 +13,7 @@ LLM 출력의 평가와 모른다고 말하는 능력, 비전 모델의 합성 �
 
 - [x] [[Crowdsourced-Human-Evaluation|크라우드소싱 사람 평가]] — 평가자 자격과 응답 검수, 주의력 검사와 Mechanical Turk 종료
 - [x] [[AI-Consciousness-Evidence|AI 의식의 증거]] — 자기보고와 행동, 내부 구조 지표와 기능 검증의 구분
-- [x] [[Benchmark-Coverage-and-Workplace-Performance|벤치마크 평가 범위와 업무 성과]] — 과업 매핑, 모델 점수와 사람의 완료 결과, 표본 선택과 위임 측정의 구분
+- [x] [[Benchmark-Coverage-and-Workplace-Performance|벤치마크 평가 범위와 업무 성과]] — 업무 과업 매핑, AAII v5 구성 변경과 비공개 평가, 날짜와 제공 상태의 비교
 - [x] [[Synthetic-Vision-Data-Evaluation|합성 비전 데이터 평가]] — 생성과 인식 모델의 분리, 라벨 검수와 실제 데이터 평가
 - [x] [[Model-Feedback-Loop-and-Validation|모델 피드백 루프와 검증]] — 실험 결과 환류, shadow 비교와 실제 행동의 구분
 - [x] [[LLM-Sycophancy-Evaluation|LLM 아첨 편향 평가]] — 정답 훼손, 정정 수용과 선호만 바꾼 쌍 비교
@@ -21,6 +21,7 @@ LLM 출력의 평가와 모른다고 말하는 능력, 비전 모델의 합성 �
 - [x] [[LLM-Eval-Strategy|LLM 평가 전략 (Pass@k, 성능 비고정성, Multi-gate 데이터 품질, CSAT vs 사실정확도)]]
 - [x] [[LLM-Abstention|LLM Abstention (모른다고 말하는 능력, 정확도와 독립, AbstentionBench의 세 결과, 이진 채점이 추측을 보상, 확신 목표와 behavioral calibration, 과잉 거부, needs_review, alignment 재설계)]]
 - [x] [[LLM-Hallucination-Verification|LLM 환각 유형과 검증 (사실성과 충실성 두 축, 사전학습과 채점의 원인, Chain-of-Verification 변형과 한계, 설명은 증거가 아니다, 행동 주장과 실행 기록, 규칙은 코드로, 인용의 존재와 적용과 지지 검사, 평가 사례)]]
+- [x] [[LLM-Statistical-Citation-Verification|AI 인용과 통계의 원출처 검증]] — 숫자와 분모, 재인용 경로, 위키백과 정리와 탐지 한계
 - [x] [[Evaluation-Driven-Development|평가 주도 개발 EDD (Generator와 Evaluator 두 축, Eval과 테스트의 차이, 성숙도 Lv.0에서 Lv.5, 하네스 부품의 승격, 회귀와 이행과 품질 순서, 실행 기록과 최종 결과 대조, GEPA 개선 후보 평가)]]
 - [x] [[Eval-Rubric-and-Score-Gate|루브릭과 점수 게이트 (채점기 3종, 결정론과 LLM-as-Judge와 사람의 3층, 규칙의 결정론 번역, 거부권 배점, 미달 항목 루프와 3중 안전장치, 실행 불가 판정과 중단 출구, 완료 선언 차단과 fail-closed, 점수 의심 순서)]]
 - [x] [[Eval-LLM-Judge|LLM 판정기 LLM-as-a-Judge (참조 기반 지표의 한계, 판정 입력과 출력, 판정 방식 넷, 위치와 장황함과 자기 선호 편향, 사람 라벨 교정과 kappa, 판정기 교체와 grader hacking)]]

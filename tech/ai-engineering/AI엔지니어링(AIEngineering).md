@@ -21,16 +21,22 @@ Software 3.0 패러다임, LLM과 에이전트, 하네스, 평가, 조직 전환
 - [[eval|평가, 신뢰성, 캘리브레이션]] — LLM 평가 전략, Abstention(모른다고 말하는 능력), 환각 유형과 검증, 평가 주도 개발(EDD), 루브릭과 점수 게이트, LLM 판정기, 골든셋과 배포 관문, 서빙 모델 드리프트 감시
 
 ## 세부 학습
+- [x] [[LLM-Statistical-Citation-Verification|AI 인용과 통계의 원출처 검증]] — 숫자와 분모, 재인용 경로, 위키백과 정리와 탐지 한계
+
+- [x] [[Expertise-Formation-AI|AI 시대 전문성 형성]] — 기본기와 지식의 폭, 필요할 때의 깊이, SRE 탈숙련 논의의 유추 한계
+- [x] [[AI-Tools-Automation-and-Learning|AI 도구, 자동화와 학습]] — 조직 병목과 생산성 자기 보고, 구현 속도와 완료 결과의 구분
 
 - [x] [[Crowdsourced-Human-Evaluation|크라우드소싱 사람 평가]] — 자격과 응답 품질의 분리, 검사 조건과 플랫폼 종료 확인
+- [x] [[Independent-Agent-Code-Review|독립 에이전트 코드 리뷰]] — 스캐너, finder/verifier 분리와 근거 및 전달 범위 검사
 - [x] [[Agent-Diagram-Evidence|에이전트 다이어그램의 근거와 검증]] — 구조화된 입력과 HTML, 커밋 고정, 자동 검사와 의미 검증의 구분
 - [x] [[LLM-API-Price-Competition|LLM API 가격 경쟁]] — 인하 형태, 캐시 읽기 비중과 공급사 벤치마크의 비교 조건
-- [x] [[Task-Specific-Small-Models|작은 특화 모델]] — Pinterest 여정 추론과 WorldTUI의 학습, 서빙 및 평가 범위
+- [x] [[Task-Specific-Small-Models|작은 특화 모델]] — Pinterest와 WorldTUI, LFM3의 로컬 실행 예산과 little-lm의 사전학습 평가 조건
 - [x] [[LLM-Steganography|생성 이미지의 스테가노그래피]] — 은닉 메시지 복원 실험과 에이전트 사이의 통신 채널
 - [x] [[AI-Generated-Text-Readability|AI 생성 글의 처리 난도]] — 대리 지표, 왕복 번역 기준선과 정보 밀도 압력 가설
 - [x] [[Monte-Carlo-Tree-Search|몬테카를로 트리 탐색과 UCT]] — 선택, 확장, 시뮬레이션과 통계 갱신, 탐색 점수와 실행 기준의 구분
 - [x] [[Claude-Code-Projects|Claude Code Projects]] — 조율과 실행의 분리, 공유 메모리, 병합 충돌과 병렬 사용량
 - [x] [[Deep-Learning-Foundations-and-Practice|딥러닝 기초와 실습]] — 개념과 과업의 연결, Keras 학습과 평가, 교재 범위와 실행 검증의 구분
+- [x] [[Document-Parsing-Context|페이지 간 문서 파싱]] — SR-SWA 참조 예산과 전역 구조 손실, 표와 문단의 연결 검수
 - [x] [[Multimodal-Video-Retrieval|멀티모달 영상 검색]] — 시간 구간 근거, 색인과 생성 분리, 모델과 API 지원 경계
 - [x] [[Synthetic-Vision-Data-Evaluation|합성 비전 데이터 평가]] — 희소 조건 보충, 생성 결과 검수와 실제 인식 성능의 분리
 - [x] [[Model-Feedback-Loop-and-Validation|모델 피드백 루프와 검증]] — 실험 결과 환류, 재학습과 배포, shadow 비교의 한계
@@ -73,7 +79,7 @@ Software 3.0 패러다임, LLM과 에이전트, 하네스, 평가, 조직 전환
 - [x] [[Agent-Test-Verification-Behavior#마이그레이션에서는 기존 구현을 비교 기준으로 쓴다|생성 코드의 마이그레이션 검증]] — 같은 초기 상태, 반환값과 DB 변경, 의도된 차이와 회귀, 이식한 테스트의 충실도와 알려진 차이
 - [x] [[LLM-Generation-Mechanics-Context-and-Agent#계산 계획을 검토 가능한 데이터로 둔다|LLM 계산 계획과 실행]] — 상위 계획, 계산 그래프와 실행 결과의 대조
 - [x] [[AI-Workflow-Knowledge-Loop#운영 표준, 작업 경험과 현재 환경을 분리한다|운영 지식의 재사용]] — 표준과 경험의 권위, 실행 시점 환경 조회와 권한 차단의 구분
-- [x] [[Agent-Terminal-Workspaces|에이전트 터미널과 작업 공간]] — 화면 배치, 상태 관찰, worktree 분리와 완료 검증
+- [x] [[Agent-Terminal-Workspaces|에이전트 터미널과 작업 공간]] — 화면과 상태, worktree 분리, Herdr app/core와 TUI 구분, Prospero 원격 호스트
 
 - [x] [[Generative-Video-Editing|생성형 영상 편집]] — 자연어 수정, Google Vids 기능 범위, 원본 보존과 프레임 검수, 세로 숏폼 자동 리프레이밍
 - [x] [[LLM-Workflow-Patterns-Text-to-SQL#Text-to-SQL과 데이터 디스커버리|Text-to-SQL]] — 스키마, 업무 정의와 예시 SQL, 생성과 실행의 분리, 오류별 복구 지점과 조회 권한
@@ -135,7 +141,7 @@ Software 3.0 패러다임, LLM과 에이전트, 하네스, 평가, 조직 전환
 - [x] [[Diffusion-Language-Models|확산 언어 모델]] — 마스크 확산 학습과 perplexity 상한, 단계별 확정과 remasking, 블록 확산의 가변 길이와 KV 캐시, 샘플러별 단계 수와 품질, Mercury 계열의 공개 범위
 - [x] [[Latent-Reasoning|잠재 추론]] — 은닉 상태를 다음 입력으로 되먹이는 연속 사고, 도구 호출과 가독성의 한계, HybridLink와 모드 전환, 잠재 벡터 교체 실험, 비용 추정의 조건과 공개 코드의 차이
 - [x] [[Time-Series-Foundation-Models|시계열 파운데이션 모델]] — zero-shot 예측, 21개 분위수와 pinball loss, fev-bench의 skill score와 누출 신고 규칙, 매출 기준 가중치 라이선스
-- [x] [[Model-Release-Claims|모델 발표 수치 읽기]] — 측정 주체와 비교 대상의 세대, LLM 채점자, 과업당 비용과 캐시 단가, 속도의 측정일, 파라미터 집계, 라이선스와 제공 상태
+- [x] [[Model-Release-Claims|모델 발표 수치 읽기]] — 측정 주체, 비용과 캐시, 메모리와 라이선스, Carbon과 Mistral Large 4의 평가 및 제공 상태
 - [x] [[Evaluator-Guided-Program-Search|평가기 주도 프로그램 탐색]] — 모델 밖 평가기, 대리 지표와 비교 기준, 표본 검사의 실패율 경계, AlphaEvolve와 Claude Mythos 5 양자 회로 사례
 - [x] [[Property-Based-Testing#탐색을 증명으로 바꾸는 퍼즈 하네스 형식 검증|퍼즈 하네스의 형식 검증]] — LLM이 쓴 Rocq 증명과 검사기, RISC-V와 Linux 모델의 전제, 퍼저가 놓친 버그, 보상 해킹과 공개 범위
 - [x] [[Harness-Gate-Placement#푸시 전에 변경 이해를 묻는 훅은 연습 장치다|푸시 전 이해 확인 훅]] — 별도 리뷰어 모델의 출제, 우회 가능성, 외부 전송과 호출 비용
@@ -149,6 +155,7 @@ Software 3.0 패러다임, LLM과 에이전트, 하네스, 평가, 조직 전환
 - [x] [[Agent-Ready-API-Design#명령 발견과 실패 응답도 계약이다|OpenAI CLI의 출력과 입력 계약]] — 파이프에서도 텍스트인 기본 출력, 오류 형식, 신뢰하지 않는 stdin의 파일 참조 차단
 - [x] [[Agent-Always-On-Mac-Host#세션 유지는 끊김과 재부팅을 나눠 본다|에이전트 세션 복원의 범위]] — Corgi의 화면과 대화 복원, 에이전트 훅 추가와 복구 파일
 - [x] [[Codebase-Knowledge-Map|대규모 코드베이스 지식 지도]] — 결정론적 추출과 AI 연결, 확인, 추론과 미해결의 구분, 재구축 동일성 검사, 그래프 순회 상한과 상시 벡터 DB 없는 exact 비교 사례
+
 - [x] [[AI-Information-Power|AI와 정보 선택의 권력]] — 생성과 추천시스템, 제도적 권한과 정정 경로
 - [x] [[AI-Assisted-Mathematical-Research|AI 보조 수학 연구]] — 증명의 검증, 선행 연구와 신규성, 이해를 보존하는 학습
 - [x] [[AI-Alignment-and-Control|AI 목표 정렬과 행동 통제]] — 목표와 권한, 감시와 중단, 자기 개선과 거버넌스

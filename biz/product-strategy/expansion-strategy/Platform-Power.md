@@ -92,6 +92,10 @@ Meta는 2025-04-29 독립형 Meta AI 앱을 발표하면서 기존 WhatsApp, Ins
 
 뒤의 두 항목은 검토 질문이다. 위 공고만으로 구체적인 운영 통합 계획, 매각 동기나 성과를 확인한 것은 아니다.
 
+2026-10-29 DoorDash의 Instacart 인수 발표는 주당 65달러, 총 지분가치 약 170억 달러와 최소 75% 현금 대가의 확정 계약이다. 공식 발표는 2027년 말 또는 2028년 상반기 종결을 예상하며 주주와 규제 승인을 조건으로 둔다. 2026-11-02 기준 이 발표만으로 인수 완료로 쓰지 않는다.
+
+배송망과 식료품 주문 기술의 결합, 추가 매장 5만 곳 이상과 멤버십 통합은 회사가 기대하는 종결 후 효과다. 브랜드, 앱과 기업용 기술 제품 유지도 계획이며 고객 유지율이나 비용 절감의 실적으로 계산하지 않는다.
+
 ### 투자 참여와 콘텐츠 활용 조건을 구분한다
 
 콘텐츠 사업에 투자했다는 발표, 구체적인 작품을 사용할 계약 조건, 실제 서비스 출시와 수익은 별도의 근거로 확인한다. 투자금액을 사업 활용권의 범위나 시너지 실적으로 대신 쓰지 않는다.
@@ -124,6 +128,8 @@ Meta는 2025-04-29 독립형 Meta AI 앱을 발표하면서 기존 WhatsApp, Ins
 - 자기 서비스에 적용: 우리 트래픽은 입구인가, 거래로 이어지는가
 
 ## 출처
+
+- [DoorDash to Acquire Instacart to Help Local Stores Win — DoorDash](https://ir.doordash.com/news/news-details/2026/DoorDash-to-Acquire-Instacart-to-Help-Local-Stores-Win/default.aspx) — 2026-10-29 발표, 2026-11-02 대가, 종결 조건과 시너지 계획 확인
 
 - [신세계그룹, 美 워너브라더스 인수에 전격 투자 — 신세계그룹 뉴스룸](https://www.shinsegaegroupnewsroom.com/shinsegae-warner-bros-acquisition-investment/) — 2026-10-06 발표, 2026-10-22 투자 발표와 콘텐츠 활용 계획의 범위 대조
 - [Platforms are (still) the best businesses — Andrei Hagiu, Julian Wright (Platform Chronicles)](https://platformchronicles.substack.com/p/platforms-are-still-the-best-businesses) — 2026-10-06 논설, 2026-10-16 본문 확인. 사업 모델 비교 관점이며 개별 기업의 재무 수치는 별도 검증하지 않아 옮기지 않았다.

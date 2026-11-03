@@ -22,7 +22,7 @@ aliases: ["LLM 선택, 서빙과 운영", "LLM Selection Serving and Operations"
 - [[LLM-API-Version-Migration|LLM API 버전과 SDK 마이그레이션]]: 날짜 기반 버전 고정의 보장 범위, 모델 단위와 버전 단위 제약, Claude API 2026-10-21의 요청과 응답 계약 변경, SDK 메이저와 기본 버전 헤더, 제거된 파라미터 검색, 요청 단위 분리와 재시도하지 않는 400
 
 - [[Local-Inference-Deployment-Cases|로컬 추론의 배포 사례]]: Janas의 SSD 전문가 캐시, Minions의 작업 분산, MLX 분산 추론(JACCL, 파이프라인과 텐서 병렬, Muse Spark Open 2대와 4대 측정), Uzu의 Apple 기기 추론과 속도 비교 조건, PS5LM 콘솔 모델 서버, LFM2.5와 Muse Spark Open의 용량과 평가 경계
-- [[Model-Release-Claims|모델 발표 수치 읽기]]: 측정 주체 구분, 비교 대상의 세대와 LLM 채점자, 비용 절감률의 기준선, 속도 측정일과 측정 위치, 파라미터 집계 범위, 메모리 조건, 매출 기준 라이선스와 제공 상태
+- [[Model-Release-Claims|모델 발표 수치 읽기]] — 측정 주체와 과업당 비용, 메모리와 라이선스, Carbon과 Mistral Large 4의 점수 및 제공 상태
 
 ## 함께 볼 문서
 

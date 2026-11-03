@@ -190,6 +190,7 @@ Blumberg와 Pringle(1982)은 성과를 수행 역량(capacity), 의지(willingne
 
 ## 관련 문서
 
+- [[Leadership-Beyond-Authority|권한에 덜 의존하는 리더십]] — 신뢰와 정서, 겸손, 권한과 책임, 공유 리더십의 연구와 적용 범위
 - [[DRI-Delegation-Culture|DRI와 권한 위임 문화]] — 조직 차원의 의사결정권 분산
 - [[Failure-Tolerant-Culture|실패에 관대한 문화]] — 심리적 안전감
 - [[Team-Contribution-Culture|엔지니어링 팀 기여 문화]] — 기여 난이도, 도우미형 리드

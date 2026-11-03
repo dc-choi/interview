@@ -14,6 +14,11 @@ aliases: ["CS Fundamentals"]
 표현 방식에서 회로와 CPU로 내려간 뒤 운영체제, 실행 도구, 자료구조와 알고리즘으로 올라오면 각 층의 책임을 연결하기 쉽다. 이 순서는 방향을 잡기 위한 안내이지 엄격한 선수 과목은 아니다. 제품 사양표는 하드웨어 용어를 익히는 예시로 활용하되 제조사의 상품명과 마케팅 등급을 공학적 정의로 일반화하지 않는다.
 
 ## 목차
+
+- [x] [[Display-Specifications-and-Repair-Evidence|디스플레이 사양과 수리 근거]] — peak 밝기, 터치 지원, 폴더블 결함 보고와 교체 조건
+
+
+
 - [x] [[Rust-Soundness-and-Lifetime-Boundaries|Rust 건전성과 수명 계약]] — 공변 필드 대입과 Drop, unsafe 계약, Miri 검사와 건전성 증명의 차이
 - [x] [[CS-Data-Representation|데이터 표현 (비트, 진법, 정수 표현, 엔디언, 문자와 미디어의 비트 표현, Base64, 체크섬과 해시)]]
 - [x] [[CS-Computer-Architecture|컴퓨터 구조 (불 대수와 ALU, 순차 논리회로와 메모리, CPU 데이터패스와 명령어 사이클, 교육용 CPU 프로그램)]]

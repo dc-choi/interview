@@ -89,6 +89,14 @@ CSP는 XSS 대응에서 **1차 방어가 아니라 심층 방어(defense in dept
 
 CSP 디렉티브, nonce와 hash, Report-Only 운영은 [[Security-Headers|Security Headers]]에 정리.
 
+## 프레임 격리와 메시지 수신기의 경계
+
+격리된 프레임이 상위 문서를 직접 읽지 못해도 `postMessage` 수신기가 신뢰하지 않는 발신자의 설정을 받아 상위 DOM에 쓰면 경계가 이어질 수 있다. `event.origin`과 허용한 정확한 창인 `event.source`를 함께 검사하고, 메시지를 스키마가 정한 데이터로 처리한다. 설정 문자열을 `innerHTML`에 넣는 경로와 새로 만드는 `srcdoc` 문서의 sandbox도 점검한다.
+
+2026-10-28 Parameter의 직접 공개를 2026-11-02 대조했다. ChatGPT 공유 대화의 그래프가 불러온 MathLive 수신기가 HTML 미리보기 프레임의 메시지를 받아 원래 페이지에 HTML을 넣었고, sandbox 없는 `srcdoc`과 CSP가 허용한 YouTube 응답을 연쇄해 인증된 세션의 JavaScript 실행으로 이어졌다. 연구자는 별도 테스트 계정의 비공개 대화 읽기와 외부 전송을 확인했으며, OpenAI가 10-26 두 웹 프런트엔드의 해당 메시지 경로를 수정했다고 기록했다. 실제 공격 피해나 모든 MathLive 통합의 수정 상태를 확인한 것은 아니다.
+
+원래 sandbox의 직접 접근 제한이 동작했다는 사실과 애플리케이션 전체의 격리가 안전하다는 결론은 다르다. 특정 JSONP 주소 하나를 막는 것보다 신뢰 경계에서 메시지를 검증하고 HTML 전달을 제거하는 것이 우선이다. 이 문서는 공격 링크나 코드를 실행하지 않았으며 기존 XSS 일반 설명 전체를 다시 대조하지 않아 `verified_at`은 유지한다.
+
 ## HttpOnly 쿠키의 한계
 
 `HttpOnly` 쿠키는 JS가 `document.cookie`로 접근할 수 없고 서버에 도달할 때만 사용된다. MDN도 세션 쿠키에는 설정하라고 권고하며(should have), 그 효과를 XSS **완화(mitigate)**라고 표현한다. 차단이 아니다.
@@ -116,6 +124,9 @@ Q. HttpOnly 쿠키를 쓰면 XSS로부터 안전한가?
 - 쿠키 값 탈취만 막힌다. 스크립트가 그 출처에서 실행 중이므로 `credentials: 'include'`로 요청만 보내면 쿠키는 브라우저가 붙여준다. DOM의 개인정보와 CSRF 토큰도 읽힌다. MDN도 완화라고 쓴다.
 
 ## 출처
+
+- [Do the Math: How We Took Over ChatGPT Accounts — Parameter](https://www.parameter.ai/labs/we-found-a-gap-at-openai) — 2026-10-28 직접 연구 공개. 2026-11-02 프레임 메시지, HTML sink와 수정 경과 대조
+- GeekNews, 2026-11-01 10:20 사용자 제공 발췌 — 공유 링크 취약점의 계기 자료
 
 - [OWASP Cheat Sheet Series — Cross Site Scripting Prevention](https://cheatsheetseries.owasp.org/cheatsheets/Cross_Site_Scripting_Prevention_Cheat_Sheet.html)
 - [OWASP Cheat Sheet Series — DOM based XSS Prevention](https://cheatsheetseries.owasp.org/cheatsheets/DOM_based_XSS_Prevention_Cheat_Sheet.html)

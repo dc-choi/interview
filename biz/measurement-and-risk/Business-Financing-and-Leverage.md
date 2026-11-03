@@ -51,7 +51,24 @@ aliases: ["사업 자금조달과 재무 레버리지", "Business Financing and 
 
 지분율이 같아도 의결권, 우선권과 계약 조건은 다를 수 있다. 단순 모델을 상환전환우선주나 전환사채에 그대로 적용하지 않는다.
 
+## 차환 위험과 신용등급의 역할
+
+만기가 몰린 부채는 현재 이자를 지급할 수 있어도 차환 시점에 더 높은 금리, 추가 담보나 대출 축소를 요구받을 수 있다. 만기 연장은 원금 감소와 다르다. 현금흐름, 만기별 원금, 약정과 차환 불가 시 대안을 같은 계획 기간으로 비교한다.
+
+기업의 신용등급, 특정 채무나 구조화 상품의 등급과 투자자의 전망도 별개다. 공급업체의 지급 보증이나 담보로 특정 채무의 위험이 낮아져도 최종 사용자의 기업 신용등급이 같아지는 것은 아니다. 상장은 지분 거래 경로이며 투자적격 신용등급을 자동으로 부여하지 않는다.
+
+### 수치와 후속 확인이 남은 공개 단서 (2026-11-02)
+
+- **PE 차환:** 2026-10-29 제공 발췌는 2028~2029년 PE 투자 기업 부채 약 3,000억 달러 만기를 말한다. 2021년 저금리의 7년 대출, 2022년 이후 차입 비용 상승과 매각 및 차환의 어려움을 연결하며, 약 3분의 1이 소프트웨어에 집중되고 AI 경쟁도 위험이라는 설명이다. 원 대출 자료와 모집단은 미확인이다. 전체 PE 부채, 전 세계 만기 총액이나 확정 부도로 확대하지 않는다. 후속 확인은 원 집계의 지역, 대출 종류, 만기 기준일과 연장 반영 여부다.
+- **Anthropic 등급 전망:** 2026-10-31 제공 발췌는 FT가 Blackstone의 상장 후 투기등급 가능성 전망을 보도했다고 전한다. 2045년까지 8,000억 달러 이상 지출과 630억 달러 금융 계약도 발췌에 있으나 원자료 미대조다. 이는 신용평가사가 확정한 등급이나 확정 지출 실적이 아니다. FT 원문은 구독 장벽으로 본문을 확보하지 못했다. 후속 확인은 평가기관의 등급, 보증 주체와 채무별 조건이다.
+
+Apollo와 Broadcom의 2026-06-09 공식 발표는 Anthropic 컴퓨팅 확장을 위한 초기 350억 달러 플랫폼 금융을 확인한다. 10월에 보도된 계약 총액과 동일한 범위인지 확인되지 않았으므로 두 금액을 같은 거래의 단순 증감으로 계산하지 않는다.
+
 ## 출처
+
+- [Apollo Leads $35 Billion Capital Solution for Broadcom AI XPV Platform — Apollo](https://ir.apollo.com/_assets/_535f61bce70f73b4206de429ff2a9bc1/apollo/news/2026-06-09_Apollo_Leads_35_Billion_Capital_Solution_for_629.pdf) — 2026-06-09 공식 발표, 초기 금융 구조의 공개 범위
+- [Blackstone의 Anthropic 신용등급 전망 보도 — Financial Times](https://www.ft.com/content/59383c7f-8d82-493f-bf01-d2e862a1018f) — 원문 식별, 구독 장벽으로 본문 미확인
+- 사모펀드 투자 기업에 다가오는 3,000억 달러 규모의 부채 만기 — GeekNews, 2026-10-29 제공 발췌. 원 대출 집계와 표본 미확인
 
 - [Fund your business — U.S. Small Business Administration](https://legacy.sba.gov/business-guide/plan-your-business/fund-your-business) — 자기자금, 대출과 벤처투자의 구분. 미국 제도 안내는 한국 법률의 근거로 사용하지 않는다.
 - [NYU Stern, The Fundamental Determinants of Growth](https://pages.stern.nyu.edu/~adamodar/New_Home_Page/invfables/growthdeterminants.htm) — 자기자본 수익률과 레버리지, 사업수익률과 차입금리의 관계. 위 표는 세금을 제외해 직접 계산한 예시다.

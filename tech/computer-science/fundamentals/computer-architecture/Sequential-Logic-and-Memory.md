@@ -125,7 +125,15 @@ Random access는 원하는 주소에 직접 접근한다는 모델이지 실제 
 
 ROM은 읽기 중심 비휘발성 저장이라는 이름이며 mask ROM, EEPROM, flash의 갱신 가능성이 다르다. firmware가 ROM 영역에 있다는 표현을 업데이트 불가능이라는 뜻으로 확대하지 않는다. memory 계층은 용량/지연/비용을, 기술 분류는 셀과 회수/유지 방식을 비교한다.
 
+## DRAM 셀 면적과 제조 비용
+
+4F²와 6F²는 기준 치수 F로 정규화한 셀 면적 표기다. 공정 노드의 상품명이나 완성 칩 용량과 같지 않다. 명목 셀 면적이 작아져도 커패시터 간격, 주변 회로, 수율과 제조 공정이 전체 밀도와 비트당 비용을 제한할 수 있다. 셀의 기하학적 축소와 경제적인 대량 생산을 별도로 평가한다.
+
+2026-10-29 제공 발췌는 Micron이 20년 이상 연구한 4F²의 제품화를 포기하고 6F² 미세화와 첨단 웨이퍼 본딩에 집중한다는 내용이다. 커패시터 간격 때문에 밀도 이득은 제한되고 비용과 복잡성이 늘어난다는 판단, Samsung/SK hynix/CXMT가 4F²를 계속 추진한다는 비교를 포함한다. 회사의 공식 발표와 기술 자료를 확보하지 못해 이 로드맵과 경쟁사 현황은 미확인 학습 후보로 남긴다. 실제 비트 밀도, 수율과 비용 자료가 후속 대조 대상이다.
+
 ## 출처
+
+- GeekNews 제공 발췌, 2026-10-29 경쟁사들은 4F² DRAM에 집중하는데 Micron은 왜 포기했나 — 기업별 로드맵 미검증
 
 - 인프런 보충 강의: [프로그램 카운터](https://www.inflearn.com/courses/lecture?courseId=336749&unitId=280866), [스텝 카운터](https://www.inflearn.com/courses/lecture?courseId=336749&unitId=280946), [명령어 인출](https://www.inflearn.com/courses/lecture?courseId=336749&unitId=281027), [JK Latch](https://www.inflearn.com/courses/lecture?courseId=336749&unitId=279636), [메모리](https://www.inflearn.com/courses/lecture?courseId=336749&unitId=276828), [주변 장치](https://www.inflearn.com/courses/lecture?courseId=336749&unitId=276829), [상용 컴퓨터](https://www.inflearn.com/courses/lecture?courseId=336749&unitId=281081)
 

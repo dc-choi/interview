@@ -41,6 +41,14 @@ AI가 작성한 변경도 요구사항, 호출부와 실패 조건에 대조해�
 
 Quick, Standard, Deep은 검토 강도이며 Standard가 기본값이다. 조직의 데이터 보존과 암호화 설정 등에 따른 이용 제한은 도입 시 공식 문서에서 확인한다. 설정 상세는 [[Claude-Code-Operations|Claude Code 운영]]을 따른다.
 
+## 승인 자동화의 자격은 검사로 판정한다
+
+빠른 승인 경로는 작성자가 붙이는 라벨만으로 열지 않는다. 변경 범위, 작성자의 해당 서비스 경험, 자동 검사와 민감 경로의 제외 조건을 기계가 확인하고, 승인 대상 커밋이 바뀌면 다시 검사한다. 수치 임계값은 조직의 위험과 검증 능력에 맞춰 정한다.
+
+Imprint의 2026-10-17 `small-change` 사례는 1,000줄 미만, AI 리뷰의 p1/p2 지적 없음, 영향받는 각 서비스에서 작성자의 과거 병합 10건 이상, 영향 서비스 수 제한과 공유 라이브러리 제외를 결합했다. 결제와 보안 같은 경로도 빠른 승인에서 제외한다. 승인 스킬은 승인하거나 건너뛰며 댓글을 중계하지 않고, PR 묶음을 따로 검토해 지식 공유와 반복 결함을 찾는다.
+
+이전 2년의 엔지니어당 병합 4배와 리뷰 중앙값 33분에서 77분 증가는 이 방식을 도입한 배경이다. 이 정책의 효과가 아니다. 공개 당시 약 10%가 자격을 얻었고 장기 성과 판단은 이르다고 밝혔다. 사고 감소 수치도 이 정책의 인과 효과로 연결하지 않는다.
+
 ## 작은 팀의 적용 예
 
 아래는 운영 설계 제안이다. 특정 제품의 기본 동작이나 검증된 성과를 뜻하지 않는다.
@@ -82,6 +90,8 @@ Quick, Standard, Deep은 검토 강도이며 Standard가 기본값이다. 조직
 - 변경을 설명하는 AI 문서는 코드와 대조한다. 문서 생성 자체를 담당자의 이해로 계산하지 않는다.
 
 ## 출처
+
+- [Speeding up code review with small-change — Will Larson](https://lethain.com/small-changes/) — 2026-10-17, 2026-11-02 자격 검사, 제외 경로와 초기 관찰 범위 확인. 다른 서비스의 기본 승인 규칙이 아님
 
 - [How the Claude Code team does code review — claude.dev, Addy Osmani, Morgan Westlee Lunt, Qing Wang](https://claude.dev/blog/solving-code-review-at-anthropic/)
 - [Bringing Code Review to Claude Code — claude.com](https://claude.com/resources/articles/code-review) — 2026-03-09 research preview 출시 글, 사내 도입 전후 16%와 54% 대조

@@ -26,6 +26,12 @@ AI가 원 저작자의 기여를 드러내지 않고 답만 전달하면 독자�
 
 증명을 이해의 대리 지표가 아니라 이론을 세우는 원자료로 다시 보자는 제안도 있다. 증명이 대리 지표로서 가치를 잃으면 연구 평가는 이론 구축과 전달에 더 무게를 두게 되고, 기계가 연구 일부를 더 잘할수록 구두 발표처럼 사람의 이해를 직접 드러내는 방식의 비중이 커질 수 있다. 두 관점 모두 전망이며 검증된 예측은 아니다.
 
+### 최초 산출 외에 이해와 후속 탐구도 평가한다
+
+연구 결과가 빨리 늘면 최초 증명뿐 아니라 검증, 설명, 다른 분야와의 연결과 다음 질문을 만드는 기여도 보상할 필요가 있다는 제안이 나온다. 난제 하나의 해결을 분야 전체의 종료로 해석하지 않는다. 채용과 출판의 평가 기준이 실제로 이런 활동을 인정하는지 따로 확인해야 한다.
+
+Mathematics has changed. Let’s act like it는 2026-11-01 Frank Calegari가 Terence Tao 블로그에 기고한 의견이다. Tao 본인의 글이나 학계의 합의로 귀속하지 않는다. AI 사용 여부보다 아이디어, 수학적 중요성과 이해를 평가하자는 규범적 제안이며, 글이 언급한 AI 논문들의 개별 정확성과 발견의 우선권을 검증한 것은 아니다.
+
 ## 참여를 유지하는 실천 후보
 
 1. AI 답에서 출처를 확인한 뒤 원 작업에 인용이나 사용 후기를 남긴다.
@@ -49,6 +55,8 @@ AI가 원 저작자의 기여를 드러내지 않고 답만 전달하면 독자�
 후속 확인은 OSM 원 프로젝트의 집계 시점과 응답 편향, AI 수학 성과의 공개 검토와 인간이 이해할 수 있는 증명 여부, 오픈소스 관리자의 이탈이 개인 사례를 넘어서는지다. 사례의 의미 상실을 개인의 나약함으로 평가하지 않으며, 실제 생계 위험과 활동의 의미 변화도 구분한다.
 
 ## 출처
+
+- [Mathematics has changed. Let’s act like it — Frank Calegari, Terence Tao 블로그 기고](https://terrytao.wordpress.com/2026/11/01/mathematics-has-changed-lets-act-like-it/) — 2026-11-01, 2026-11-02 본문과 기고 귀속 확인, 연구 평가에 관한 의견
 
 - [No Man Is an Island — Fernando Borretti](https://borretti.me/article/no-man-is-an-island)
 - [Cartographers of North Korea — Wonyoung So](https://cartographers-nk.wonyoung.so/) — 공개 프로젝트, JavaScript 본문 추출 불가

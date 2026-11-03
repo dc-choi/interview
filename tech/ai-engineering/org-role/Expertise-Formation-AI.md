@@ -61,6 +61,18 @@ CHI 2025 연구는 지식 노동자 319명이 제시한 생성형 AI 업무 활�
 
 이 위험의 선행 논의는 Lisanne Bainbridge의 자동화의 역설(Ironies of Automation, 1983)이다. 산업 공정과 항공 자동화를 다룬 원문은 일상 수행과 연습이 줄어든 운영자에게 비정상 상황의 개입을 요구하는 문제를 지적하고, 직접 제어와 시뮬레이터 훈련 등을 제안한다. 이를 AI SRE에 적용하는 것은 유추이며 현대 SRE의 성과를 입증한 결과는 아니다. 시스템 실제와 운영자 이해 사이의 간극을 이해 부채(comprehension debt)로 보는 은유도 위험을 설명하는 관점이다. 일상 대응의 검토와 직접 진단, 모의 장애 훈련으로 반복 기회를 보존하는 방안을 검토한다.
 
+### 기본기, 넓이와 필요할 때의 깊이
+
+시스템 소유자는 구성요소와 데이터 흐름의 지도를 유지하고, 지연 증가나 간헐적 실패 같은 이상을 알아차리며, 낯선 모듈의 원인을 확인할 수 있어야 한다. 모든 줄을 미리 암기하는 방식과 구현을 전혀 확인하지 않는 방식 사이에서 위험과 증상에 따라 읽을 깊이를 정한다.
+
+- 기본기는 동시성, 복잡도와 네트워크 실패의 가능한 원인을 떠올리는 데 쓴다.
+- 지식의 넓이는 조사할 계층과 찾아볼 개념을 고르는 데 쓴다.
+- 필요한 깊이는 호출부, 상태와 실패 경로를 직접 따라가 원인을 검증하는 능력이다. 혼자 감당하지 못할 때 도움을 구하는 판단도 포함한다.
+
+이는 Adrian Quiroga의 2026-10-29 실무 에세이를 적용한 역량 구분이다. 모든 주니어 교육에 통하는 검증된 교육과정이나 직접 구현 연습을 없애도 된다는 근거는 아니다.
+
+SigNoz의 SRE 탈숙련 에세이는 2026-02-28 게시물이다. 10월에 다시 공유됐으며 최신 현장 효과를 측정한 연구로 보지 않는다. 기존 자동화의 역설을 AI 장애 대응에 연결해, 경력자의 연습 상실과 주니어가 기초를 처음 익히지 못할 위험을 구분한다. 운영 제안은 안전한 모의 장애에서 가설 수립, 로그 해석과 복구 이유를 사람이 먼저 설명하게 하는 것이다. 에세이에 인용된 의료, 항공 수치를 SRE의 효과 크기로 옮기지 않는다.
+
 ## 전문성 공급망 문제
 
 개인의 습관을 넘어 세대 차원의 위험으로 볼 수도 있다 — [[Developer-Role-AI-Era|AI 시대 개발자 역할]]의 견습 사다리 붕괴 우려와 같은 축이고, 그 순환 구조(검토가 주니어의 일이 되는데 검토 능력을 기를 직접 경험은 줄어드는 위험)는 그 문서가 다룬다. 이는 이미 공급망이 무너졌다는 실증 결론이 아니다. AI 사용에서 산출과 함께 학습 기회를 설계하느냐가 향후 경로를 바꿀 조건 중 하나다.
@@ -88,6 +100,9 @@ AI가 증명을 생성하는 능력과 수학을 이해하고 설명하는 사�
 여기서 볼록껍질 가설은 AI가 기존 아이디어 사이를 연결한다는 단순화된 모형이다. 새로운 개념을 만들 수 없다는 입증된 한계가 아니다. 수학적 직관을 바탕으로 탐색을 지휘하고 생성된 증명을 독립적으로 확인하는 관점과 연결하되, 학위의 고용 가치나 사용자 본인의 진학 결정을 확정하지 않는다. 관련 인간 공동체와 상실감의 사례는 [[AI-Intellectual-Community|AI와 지적 공동체]]를 참고한다.
 
 ## 출처
+
+- [Here Be Monsters: What Do You Still Need to Know When Agents Do the Work? — Adrian Quiroga](https://blog.adrq.dev/here-be-monsters-what-do-you-still-need-to-know-when-agents-do-the-work) — 2026-11-02 원문 확인, 역량에 관한 실무자 견해
+- [AI Isn’t Replacing SREs. It’s Deskilling Them. — SigNoz, Elizabeth](https://newsletter.signoz.io/p/ai-isnt-replacing-sres-its-deskilling) — 2026-02-28 게시, 2026-11-02 자동화의 역설에 대한 유추와 제안 확인
 
 - [The Impact of Generative AI on Critical Thinking: Self-Reported Reductions in Cognitive Effort and Confidence Effects From a Survey of Knowledge Workers — Microsoft Research, Lee et al.](https://www.microsoft.com/en-us/research/publication/the-impact-of-generative-ai-on-critical-thinking-self-reported-reductions-in-cognitive-effort-and-confidence-effects-from-a-survey-of-knowledge-workers/) — CHI 2025, 2026-10-22 초록의 표본, 연관성과 질적 분석 대조. 장기 능력 변화나 인과 효과의 근거로 사용하지 않음.
 - [What should we tell our students? — Álvaro Lozano-Robledo, Terence Tao 블로그 기고](https://terrytao.wordpress.com/2026/10/08/what-should-we-tell-our-students/) — 2026-10-08, 진로 의견과 볼록껍질 가설, 고용 예측 미검증

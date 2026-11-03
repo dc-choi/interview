@@ -10,7 +10,7 @@ aliases: ["LLM 원리와 운영", "LLM 운영", "LLM Fundamentals and Operations
 모델의 학습과 생성 원리부터 추론 병목, 선택, 호출 계층과 운영, 제공자 이용 정책의 준수 설계까지 연결한다. 상위: [[tools|AI 엔지니어링 실천 도구]].
 
 ## 목차
-- [x] [[Task-Specific-Small-Models|작은 특화 모델]] — 교사 모델 증류와 환경 실행 기록, 출력 범위 축소와 자기 오류 교정
+- [x] [[Task-Specific-Small-Models|작은 특화 모델]] — 증류, 특화와 서빙, LFM3 로컬 실행 예산과 little-lm 사전학습의 평가 조건
 - [x] [[LLM-Steganography|생성 이미지의 스테가노그래피]] — 은닉 메시지 복원 실험과 모델 사이의 통신 채널 점검
 - [x] [[Bedrock-Model-Inference|Bedrock 모델 호출]] — Invoke와 Converse 계약, 모델별 스키마, 대화 상태와 코드 검증
 - [x] [[Bedrock-Knowledge-Base-Retrieval|Bedrock 지식 베이스 조회]] — Retrieve와 RetrieveAndGenerate 계약, 검색 유형과 저장소 조건, 결과 수와 재순위, 질의 분해와 에이전틱 검색, 프롬프트 템플릿과 가드레일 범위

@@ -44,6 +44,12 @@ aliases: ["Peer-Driven Growth", "함께 성장", "스터디 운영", "멘토링"
 - 다루는 주제도 특정 기술보다 현업 고민에 가깝다: 개발 로드맵, 협업 방식, 다른 직군과의 커뮤니케이션, 까다로운 동료와 일하는 법.
 - 멘토의 역할은 답을 내려주는 게 아니라 질문으로 사고를 여는 것이다.
 
+## 실행을 점검하는 동료 소그룹
+
+같은 내용을 공부하지 않아도 소수의 동료와 약속한 행동, 실제 결과와 막힌 점을 나누는 방식으로 실행을 점검할 수 있다. 다음 만남에서 무엇을 확인할지만 간단히 정한다. 서로 결과를 확인하는 책임 동료(accountability buddies)는 교육 모임이나 일방적인 성과 감시와 구분한다.
+
+이는 창업자 모임에서 도움이 됐다는 경험적 조언을 적용한 선택지다. 모임 자체의 생산성 효과가 검증됐다는 뜻은 아니다. 공개할 범위와 빈도, 피드백 방식을 합의하고, 비교나 감시 부담이 커지면 형식을 조정한다. 공개 자료에는 실제 참여자나 개인 약속을 기록하지 않는다.
+
 ## 공유의 학습 효과와 실력 판정을 구분한다
 
 가르칠 준비가 학습에 도움이 될 수 있다는 근거와, 노하우를 공개하는 사람이 더 뛰어나다는 주장은 다르다. Nestojko 등의 2014년 두 실험은 글을 읽기 전 가르칠 것으로 기대한 집단과 시험을 볼 것으로 기대한 집단을 비교했다. 실제 교수 활동은 없었으며 회상과 일부 문항에서 차이가 나타났다. 실험 범위는 [[Purpose-Driven-Learning#가르치기 위해 배우기 (protégé effect)|가르칠 준비의 효과]]에 정리돼 있다.
@@ -94,6 +100,8 @@ Q. 스터디나 멘토링 운영 경험은?
 
 ## 출처
 
+- [열심히 사는데 인생이 제자리인 이유(샘 알트먼, 오픈AI) — 인간지능](https://www.youtube.com/watch?v=Fjnwlosd0LY) — 전체 음성 전사 중 16:36~17:28의 책임 동료 소그룹 언급 확인
+- [Sam Altman on Choosing Projects, Creating Value, and Finding Purpose — Y Combinator](https://www.ycombinator.com/blog/sam-altman-on-choosing-projects-creating-value-and-finding-purpose) — 2018-11-08, 2026-11-01 공식 전사 21:45~22:14 대조. 실행 점검 소그룹에 관한 화자의 관찰
 - [Expecting to teach enhances learning and organization of knowledge in free recall of text passages — Nestojko et al., 2014](https://doi.org/10.3758/s13421-014-0416-z) — 2026-10-30 공개 초록으로 두 실험의 기대 조건, 실제 교수 활동 부재와 결과 범위를 대조했다. 공유 태도와 사업 성과는 검증 대상이 아니다.
 - [우아한형제들 개발자가 말하는 공부, 성장, 스터디, 글쓰기 노하우 (YouTube)](https://www.youtube.com/watch?v=QutIXPbKWpw&list=PLgXGHBqgT2TtGi82mCZWuhMu-nQy301ew&index=22)
 - [인프런, 코드빌런, 스터디와 팀 프로젝트 - 나의 성장 커리어 만들기](https://www.inflearn.com/courses/lecture?courseId=334892&unitId=242711)

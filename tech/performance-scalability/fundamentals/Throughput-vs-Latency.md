@@ -103,7 +103,16 @@ L = λW
 - [[CPU-Bound-Vs-IO-Bound|CPU Bound와 I/O Bound]]
 - [[Thread-Pool-Sizing|스레드 풀 사이징]]
 
+## 전파 지연은 처리량으로 없앨 수 없다
+
+통신의 최소 전파 시간은 거리와 신호 속도로 제한된다. 진공에서 빛이 하루 동안 이동하는 1광일은 `299,792.458 km/s × 86,400 s`, 약 259억 km다. 송신지와 수신지의 거리가 1광일이면 편도 전파는 약 24시간이며 즉시 응답해도 왕복에는 약 48시간이 필요하다. 대역폭을 늘리면 보낼 수 있는 데이터량은 늘지만 이 거리 지연은 사라지지 않는다.
+
+2026-11-02 확인한 NASA Night Sky Network의 Voyager 1 안내는 2026-11-18의 1광일 도달을 태양 기준으로 표현한다. 제공 GeekNews 발췌는 지구 기준이라고 적었다. 두 기준점을 합쳐 날짜를 확정하지 않는다. 지구 기준 도달일과 Voyager 2의 2035년 11월 예상은 궤도 및 관측 시각 자료로 추가 확인할 항목이다. 날짜 예측과 거리 단위의 정의를 분리한다.
+
 ## 출처
+
+- [NASA, November Night Sky Notes: A Light-Day Away](https://science.nasa.gov/solar-system/skywatching/night-sky-network/novembers-night-sky-notes-light-day-away/) — 2026-11-02 태양 기준 표현 확인
+- GeekNews 제공 발췌, 2026-11-02 보이저 1호의 1광일 도달 예정 — 지구 기준 날짜와 Voyager 2 예측 미검증
 
 - [처리량 vs 지연시간 — YouTube, 코딩하는기술사](https://www.youtube.com/watch?v=63_ApTsEHhU)
 - [Service Level Objectives — Site Reliability Engineering, Google](https://sre.google/sre-book/service-level-objectives/)

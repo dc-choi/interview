@@ -75,6 +75,14 @@ NVIDIA Cosmos 논문은 world foundation model(WFM)을 과거 관측 `x(0:t)`와
 
 2026-11-02에 확인한 범위다. 이후의 제공 지역, 가격과 라이선스는 다시 확인한다. Cosmos 3 개별 모델의 입력 형식, 라이선스와 하드웨어 요건은 이 문서에서 확인하지 않았다.
 
+### 마이크로컨트롤러에서는 모델과 게임 엔진의 역할을 나눈다
+
+2026-11-02 tinyworldformer의 공식 저장소 설명 기준, 월드 모델은 현재 프레임과 행동에서 다음 프레임과 보상을 예측하고 별도의 작은 actor가 행동을 고른다. Pico 2 W에서는 원래 게임 엔진 대신 이 예측 루프가 진행을 만든다. 사람이 버튼으로 actor의 행동을 대신할 수도 있다.
+
+게임별 월드 모델은 26k~131k 파라미터의 looped transformer로 같은 블록 가중치를 반복 사용하고 int8 양자화한다. actor는 9k~16k의 float32 MLP다. 반복 횟수는 가중치 수를 늘리지 않고 연산량과 정확도를 바꾸는 선택이다. Breakout, Doom-lite, Flappy Bird, Pong과 Pac-Man lite의 작은 상태 표현에 맞춘 사례이며 임의 게임 생성 능력의 증거는 아니다.
+
+저장소의 exact-frame 평가는 예측 불가능한 무작위 사건 직후를 제외한 held-out 전이의 전체 셀 일치율이다. 장시간 플레이 안정성이나 다른 게임으로의 전이 성능과 같지 않다. 여기서는 코드를 실행하거나 보드에서 재현하지 않았다.
+
 ## 한계와 트레이드오프
 
 - **긴 시간의 일관성**: Genie 3는 몇 시간이 아니라 몇 분의 연속 상호작용을 지원하고, Project Genie는 발표 시점(2026-01-29)에 생성을 60초로 제한했다(제한 이유는 밝히지 않았다). Genie 4 발표도 짧은 세션에서는 환경을 일관되게 유지할 수 있지만, 시간이 지나면서 특히 시뮬레이션이 길어지거나 복잡한 프롬프트 편집이 여러 번 쌓이거나 장면 곳곳을 이동하면 시각 세부와 물체 영속성이 흐트러질 수 있다고 밝힌다.
@@ -118,6 +126,8 @@ NVIDIA Cosmos 논문은 world foundation model(WFM)을 과거 관측 `x(0:t)`와
 - [Genie 4: A new generation of world simulation — Google DeepMind](https://deepmind.google/blog/genie-4-a-new-generation-of-world-simulation/) — 2026-10-27, 오디오 생성, Gemini 안내 에이전트, 한계, 제공 계획과 SynthID
 - [NVIDIA Cosmos, Introduction](https://docs.nvidia.com/cosmos/latest/introduction.html) — 2026-10-30 갱신, Cosmos 3 소개
 - [Top 5 AI Building Blocks Every Engineer Should Know — YouTube, ByteByteGo](https://www.youtube.com/watch?v=Dddv7P_k60o) — 계기 자료. 다섯 구성 요소의 분류만 사용했고 사실은 이 목록의 1차 출처로 대조
+
+- [tinyworldformer — SheepSeb](https://github.com/SheepSeb/tinyworldformer) — 2026-11-02 README의 두 모델, 파라미터, 양자화와 평가 범위 부분 대조.
 
 ## 관련 문서
 

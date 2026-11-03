@@ -10,6 +10,9 @@ aliases: ["Crypto", "Cryptography"]
 패스워드 해싱, 공개키 암호, RSA — 암호화 기초와 실전.
 
 ## 목차
+- [x] [[Cryptographic-Randomness|암호학적 난수와 실제 키의 불확실성]] — PDF 파일 키, 작은 상태 공간과 기존 산출물 재암호화
+- [x] [[Encrypted-Storage-Authentication|암호화 저장장치의 인증 경계]] — 원시 매체, 지문/비밀번호 검증과 고정 콘텐츠 키
+- [x] [[Email-Encryption-Boundaries|이메일 암호화의 보호 범위]] — TLS, MTA-STS/DANE, 제로 액세스와 종단 간 암호화
 - [x] [[Elliptic-Curve-Parameter-Provenance|타원곡선 파라미터의 출처]] — 공개 seed 재현, 개인키와의 구분, 선택 과정과 보안 증명의 한계
 - [x] [[Password-Hashing|패스워드 해싱 (저장/검증 흐름, argon2, Salt, TLS)]]
 - [x] [[Public-Key-Cryptography|공개키 암호, 비대칭키 (기초 용어, 단방향/양방향 분류, 키 분배 문제, 대칭/비대칭 하이브리드, PKI, MITM, 암호화폐 개인키)]]

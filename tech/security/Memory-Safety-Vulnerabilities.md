@@ -44,6 +44,23 @@ PHP-FPM과 Apache mod_php에서는 한 워커 프로세스가 여러 요청을 �
 - **CVE-2026-109618의 SAPI별 차이:** Apache mod_php는 요청 시작이 실패해도 종료 절차를 항상 호출하므로 그 절차가 무효 상태에 닿을 수 있고, PHP-FPM은 시작이 실패하면 자식 프로세스를 끝내 그 상태를 쓰지 않는다. 완전한 원격 코드 실행은 mod_php에서 검증됐고, FPM은 소스 분석상 영향 대상이지만 완전한 익스플로잇은 시연되지 않았다.
 - **코드 실행 없는 노출:** 발견에 참여한 Wiz는 원격 코드 실행 없이도 PHP 프로세스 메모리에서 비밀번호, 토큰과 API 키를 읽을 수 있음을 따로 시연했다. 해제 후 사용도 Heartbleed식 노출을 만들 수 있으므로, 공개 전후에 노출됐던 서버는 패치와 별도로 비밀 교체를 판단한다(운영 제안, [[Secret-Management|시크릿 관리]]).
 
+### 공격 시도, 성공과 권한 상승의 증거를 나눈다
+
+같은 취약점의 관측도 시점과 구성에 따라 달라진다. 공개 PoC가 한 환경에서 실패한 사실과, 별도의 공격자가 다른 환경에서 성공한 사실은 양립할 수 있다. PHP 빌드, SAPI, 메모리 한도와 워커 재사용 조건을 붙여 기록한다.
+
+2026-11-02 대조한 근거의 범위는 다음과 같다.
+
+- AWS의 10-21 MadPot 보고는 10-17 이후 **악용 시도**를 관측했지만 당시 보고는 실제 시스템에서의 성공을 확정하지 않았다. 10-24의 별도 공개 허니팟 보고는 PHP 8.4.26, 단일 워커 Apache mod_php에서 공격 요청, 메모리 노출과 후속 셸 실행을 연결했다. 이 구성의 성공을 다른 배포에서의 신뢰성으로 확대하지 않는다.
+- Wiz의 10-27 직접 관측에서는 공개 PoC 계열이 메모리 고갈을 일으켜도 다음 주소 유출 단계에 실패했고 최종 실행 단계에 도달하지 못했다. 같은 보고는 다른 연구자의 허니팟 성공을 인정하며, 범용 공개 공격 도구를 확인하지 못한 상태와 특정 대상용 공격의 존재를 구분했다. 공개 PoC의 실패를 패치 불필요의 근거로 사용하지 않는다.
+- CISA의 공식 KEV 저장소는 CVE-2026-109618과 CVE-2026-109619를 10-26 추가한 것으로 기록한다. KEV 등재는 모든 구성에서 같은 공격이 성공한다는 뜻은 아니다.
+- Dream의 10-29 갱신 조사에는 특정 PAN-OS 방화벽/관리 서버 25대의 침해 아티팩트와 PHP2Shell 뒤 커널 권한 상승(CVE-2026-46300)을 연결한 분석이 있다. Unit 42도 같은 공격 도구와 결과를 독립 확인했다고 공지했다. 인터넷에 노출된 관리 인터페이스 접근을 제거하고 공급자의 수정본을 적용하라는 권고다. 25대라는 관측을 전체 PHP 배포의 성공률로 일반화하지 않는다.
+
+## 펌웨어에서는 부팅 단계의 도달 가능성도 본다
+
+EDK II의 CVE-2026-97631은 운영체제 안의 PHP와 다른 공격 표면이다. TianoCore의 2026-10-22 GHSA는 IPv4/IPv6 PXE 부팅 중 ICMP 오류 메시지를 전달할 수 있는 비인증 네트워크 공격자가 DXE 단계의 고정 버퍼 밖에 쓸 수 있다고 설명한다. 운영체제 구성요소의 Secure Boot 검증 전에 실행되는 경로이며, 로컬 디스크로만 부팅하는 정상 런타임까지 같은 노출 창으로 보지 않는다.
+
+상류 코드 수정, 안정 릴리스, 하드웨어 공급자의 펌웨어 빌드와 실제 장비 적용은 별도 상태다. 공식 GHSA의 수정 버전 필드와 연결된 코드 패치가 함께 있어도 모든 장비에 업데이트가 배포됐다는 뜻은 아니다. 자산별 PXE 사용 여부, 패킷 도달 경로, 펌웨어 공급자와 적용 버전을 확인한다. 전 세계 서버 대부분이 실제로 악용 가능한 상태라는 규모는 이번에 검증하지 않았다.
+
 ## 원격 코드 실행의 권한은 워커 계정에서 시작한다
 
 두 GHSA는 확인된 영향을 웹 워커 계정의 권한으로 적는다. 아래 설정 근거는 PHP-FPM 기준이다. mod_php는 Apache 자식 프로세스 안에서 요청을 처리하므로(Calif) 그 프로세스의 계정을 따로 확인하며, Apache의 사용자 지정 방식은 이 문서에서 대조하지 않았다. PHP-FPM 풀의 `user` 지시어는 FPM 프로세스의 Unix 사용자이며 필수 항목이다. 기본 풀 설정 템플릿은 자식 프로세스의 사용자 지정이 마스터가 root로 실행될 때만 가능하고 자식이 만들어진 뒤 적용된다고 적으며, 풀을 root로 돌리려면 기본으로 꺼진 `--allow-to-run-as-root` 옵션이 필요하다. CISA도 임의 코드를 실행한 공격자는 그 소프트웨어를 실행하는 계정을 장악할 수 있다고 설명한다.
@@ -70,6 +87,16 @@ Node.js는 적은 수의 스레드가 많은 클라이언트를 처리하고, �
 - `memory_limit`이나 `pm.max_requests` 조정이 수정이 아니라 완화인 이유는 무엇인가?
 
 ## 출처
+
+- [Chained PHP2Shell Exploit Roots 25 Servers — Dream Research](https://dreamgroup.com/blog/chained-php2shell-exploit-roots-25-servers) — 2026-10-29 갱신, 2026-11-02 특정 PAN-OS와 커널 권한 상승, 침해 아티팩트의 범위 대조
+- [PHP2Shell: Exploitation Attempts and Remediation Trends — Wiz](https://www.wiz.io/blog/php2shell-exploitation-so-far) — 2026-10-27 직접 관측, OOM 성공과 주소 유출 실패, 배포 구성의 차이 대조
+- [PHP2Shell exploitation observed: packet-to-process RCE evidence — GitHub, 0x4D31](https://github.com/0x4D31/honeypot-data/blob/main/reports/php2shell/2026-10-24-confirmed-rce.md) — 허니팟의 요청/메모리/프로세스 연결과 단일 워커 구성 한계
+- [Threat Brief: Critical Vulnerabilities in PHP — Palo Alto Networks Unit 42](https://unit42.paloaltonetworks.com/cve-2026-109618-cve-2026-109619/) — 10-29 갱신의 공격 도구/결과 확인과 관리 인터페이스 권고
+- [CISA, KEV catalog official GitHub data](https://github.com/cisagov/kev-data/blob/develop/known_exploited_vulnerabilities.json) — catalogVersion 2026.10.30의 두 PHP CVE 등재일 대조
+- [Amazon Threat Intelligence identifies PHP2Shell exploitation prior to public disclosure in MadPot — AWS Security Blog](https://aws.amazon.com/blogs/security/amazon-threat-intelligence-identifies-php2shell-exploitation-prior-to-public-disclosure-in-madpot/) — 초기 보고의 시도와 성공 여부 한계
+- [Pre-boot RCE in EDK II PXE driver — TianoCore](https://github.com/tianocore/edk2/security/advisories/GHSA-99cj-7hg9-mp4m) — 2026-11-02 부팅 단계와 네트워크 도달 조건 대조
+- [Red Hat, CVE-2026-97631](https://access.redhat.com/security/cve/cve-2026-97631) — 로컬 저장소 부팅과 정상 post-boot 런타임의 노출 제외 설명
+- GeekNews, 2026-10-29 09:33/10:10과 10-30 10:40 사용자 제공 발췌 — PHP2Shell 후속 공격과 EDK II 보안 공지의 계기 자료
 
 - [IETF, RFC 6520: Transport Layer Security (TLS) and Datagram Transport Layer Security (DTLS) Heartbeat Extension](https://www.rfc-editor.org/rfc/rfc6520) — 2026-11-02 `payload_length`, 응답 사본과 길이 초과 메시지 폐기 규칙 대조
 - [OpenSSL Security Advisory 07 Apr 2014, TLS heartbeat read overrun (CVE-2014-0160) — OpenSSL](https://openssl-library.org/news/secadv/20140407.txt) — 영향 버전, 64k 노출, 1.0.1g와 재컴파일 대안

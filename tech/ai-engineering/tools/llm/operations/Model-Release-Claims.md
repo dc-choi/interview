@@ -68,6 +68,19 @@ FLUX 3 Image Klein 발표는 생성기 가중치를 BF16 11.2GB, FP8 5.6GB로 �
 - 가중치를 받을 수 있다는 사실만으로 상업적 사용, 파생물 배포와 출력 활용 범위를 판단하지 않는다([[Open-Source-License-Review#오픈 웨이트 모델과 Open Source AI는 다르다|오픈 웨이트와 Open Source AI]]). 매출 기준 조항은 누구의 매출(이용자, 고용주, 계열사)을 어떤 기간으로 세는지 원문으로 확인한다(적용 제안).
 - 제공 상태는 연구 프리뷰, 비공개 프리뷰, 공개 프리뷰, GA로 나뉘고 같은 모델도 판매 경로마다 다르다([[LLM-Market-Landscape#모델 공급사와 판매 채널의 분리|판매 채널의 분리]]).
 
+## 최신 순위와 공개 범위를 같은 날짜로 맞춘다
+
+2026-11-02에 대조한 두 발표는 평가와 제공 상태를 따로 기록해야 하는 사례다.
+
+| 사례 | 확인한 발표 내용 | 해석의 경계 |
+|---|---|---|
+| Gemini 4 Carbon, 2026-10-28 Google 발표 | AAII v5 59, WebDev Arena 1,768(+89), 보안 탐지 SEC-bench Pro 88.2%, 악용 검증 ExploitGym 54.8%, 패치 CWE-bench 71.0% | 보안 수치는 가드레일을 제거한 평가 조건이다. 실제 제품의 허용 범위나 무오류를 뜻하지 않음 |
+| Mistral Large 4 가중치 공개 발표 | Coding Agent Index 48%, GLM-5.3 대비 과업당 토큰 47% 감소. Terminal-Bench 4.0 41%, 프리뷰 대비 13%p 상승과 출력 토큰 30% 감소 | **Coding Agent Index**를 Intelligence Index와 혼동하지 않음. 추론 모드와 하네스가 같은지 확인 |
+
+Google은 Carbon을 일부 사이버 방어자와 신뢰 파트너에 단계적으로 제공한다고 밝혔으므로 발표를 일반 공개 API의 즉시 사용 가능 상태로 바꾸지 않는다. 내부 며칠짜리 작업 사례와 fabrication 감소도 공급자 관측이며 외부 업무의 성공 보장이 아니다. 제공된 10월 30일 알림의 코딩 에이전트 59점, 지식 54점, 정답률 58%와 환각률 11%는 해당 날짜의 평가 원표를 추가 대조할 후보로 보존한다.
+
+Mistral은 Low, Medium, High 추론 모드를 안내한다. 공개 라이선스는 Mistral Ecosystem Open-Weight이며 Model-as-a-Service 사업자의 상업 이용에는 별도 라이선스 조건이 있다. 단순 MIT나 무제한 상업 이용으로 줄여 적지 않는다.
+
 ## 채택 전에 기록할 것
 
 1. 수치마다 측정 주체, 측정일, 설정(추론 강도, 하네스, 실행 횟수)과 비교 대상의 세대를 적는다.
@@ -96,6 +109,9 @@ FLUX 3 Image Klein 발표는 생성기 가중치를 BF16 11.2GB, FP8 5.6GB로 �
 - [Voxtral 3 — Mistral AI](https://mistral.ai/news/voxtral-3) — 모델별 가격, 지연 주장, 내부 평가와 판정 모델
 - [Changelog — Mistral Docs](https://docs.mistral.ai/getting-started/changelog) — 2026-10-20 Voxtral 3 Public Preview
 - 사용자 제공 GeekNews 알림(2026-10-16~10-27): FLUX 3 Image Klein, Ultramarine 1 Flash, DeepSeek-V4.1-Flash-1017과 Artificial Analysis 측정, MiniMax M3.1 Flash, Voxtral 3, Raon-1 mini. 학습 계기이며 수치는 위 공식 자료와 제3자 지수 페이지로 대조했다. 출시 직후 속도 인용값(224.7 tok/s)만 [DeepSeek V4.1 Flash 1017 - AAII 45점, 초당 약 225토큰 출력 — GeekNews](https://news.hada.io/topic?id=35633)의 요약에서 가져왔고, 측정 시각이 없어 Artificial Analysis 자료로 대조하지 못했다.
+
+- [Gemini 4 Carbon: our next frontier model — Google](https://blog.google/innovation-and-ai/models-and-research/gemini-models/introducing-gemini-4-carbon/) — 2026-11-02 발표의 점수, 평가 조건과 단계적 제공 범위 부분 대조.
+- [Mistral Large 4 (Le Chonk) is now open weight — Mistral](https://mistral.ai/news/mistral-large-4-oss/) — 2026-11-02 코딩 지수와 효율, 추론 모드와 라이선스 조건 부분 대조.
 
 ## 관련 문서
 

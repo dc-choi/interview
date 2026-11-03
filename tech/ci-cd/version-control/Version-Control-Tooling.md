@@ -96,7 +96,20 @@ GitHub Flow, Git Flow와 trunk-based development는 팀 규모만으로 자동 �
 
 선택한 전략에는 branch 수명, base 동기화, merge 방식, release cut, hotfix 전파와 삭제 기준을 함께 적는다. 구현은 [[Development-Workflow|개발 워크플로]]와 [[Git-Merge-Strategies|Git 통합 방식]]에서 구체화한다.
 
+## Jujutsu의 작업 사본과 변경 식별자
+
+Jujutsu(jj)는 Git 호스팅과 연결할 수 있지만 작업 모델이 Git CLI와 같지는 않다. 작업 사본 자체를 commit으로 다루며 대부분의 명령이 파일 상태를 스냅샷한다. 파일이 바뀌는 매 순간 백그라운드에서 저장하는 기능으로 해석하지 않는다. Git의 index와 stash를 같은 방식으로 조작하지 않고, 이름이 필요한 commit에는 bookmark를 붙인다.
+
+change ID는 수정되는 논리적 변경을 추적하고 commit ID는 특정 내용과 부모 등을 가진 버전을 식별한다. 수정 뒤 후손을 자동 rebase하고 충돌을 commit 상태로 보존할 수 있다. operation log를 통한 복구는 도구 상태 변경을 되돌리는 수단이며 이미 외부에 실행한 배포까지 취소하지 않는다. Git과 함께 쓸 때 동기화와 충돌 상태를 확인한다.
+
+제공된 Git 사용자를 위한 Jujutsu 워크숍 발췌는 2026-10-31 vim.kr, 튜링의사과, Tangled 개발자 boltless의 약 3시간 반 실습을 가리킨다. Git 객체, jj 모델과 고급 작업, Tangled 연결을 학습 후보로 보존한다. 이번에는 공식 문서의 핵심 모델을 대조했으며 전체 워크숍 영상, 데모와 실습 결과는 확보하지 않았다.
+
 ## 출처
+
+- [Jujutsu, Git comparison](https://docs.jj-vcs.dev/latest/git-comparison/)
+- [Jujutsu, Working copy](https://docs.jj-vcs.dev/latest/working-copy/)
+- [Jujutsu, Glossary](https://docs.jj-vcs.dev/latest/glossary/) — 2026-11-02 모델 대조
+- GeekNews 제공 발췌, 2026-11-02 Git 사용자를 위한 Jujutsu 워크숍 — 원영상 URL 미제공
 
 - Git 공식 자료: [About Version Control](https://git-scm.com/book/en/v2/Getting-Started-About-Version-Control), [What is Git](https://git-scm.com/book/en/v2/Getting-Started-What-is-Git%3F)
 - Git 공식 자료: [git config (core.autocrlf, core.editor, alias, init.defaultBranch)](https://git-scm.com/docs/git-config), [git init](https://git-scm.com/docs/git-init), [git var, GIT_EDITOR와 GIT_SEQUENCE_EDITOR](https://git-scm.com/docs/git-var), [gitattributes, End-of-line conversion](https://git-scm.com/docs/gitattributes), [git add --renormalize](https://git-scm.com/docs/git-add), [Git 2.28 release notes](https://github.com/git/git/blob/master/Documentation/RelNotes/2.28.0.adoc), [git-scm.com 최신 릴리스](https://git-scm.com/)

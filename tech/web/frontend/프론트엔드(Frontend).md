@@ -9,6 +9,11 @@ aliases: ["Frontend", "프론트엔드"]
 
 ## 목차
 
+- [[Frontend-Framework-Evaluation|프론트엔드 도구 평가]] — AI 개발 비용의 실험 조건, Pico CSS 종료와 유지보수 책임
+
+
+
+
 - [[WebGPU-Cross-Runtime|WebGPU 코드 공유]] — vgpu, WGSL 모듈과 환경별 초기화
 - [[Cross-Platform-Keyboard|플랫폼별 키보드 입력]] — 문자 입력, 단축키와 기본 편집 보존
 - [[URL-Embedded-Documents|URL에 담긴 문서]] — 사본 공유, fragment와 저장 경계

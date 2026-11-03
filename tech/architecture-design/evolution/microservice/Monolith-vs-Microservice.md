@@ -44,6 +44,21 @@ MSA는 컨테이너 사용 여부로 판정하지 않는다. AWS는 컨테이너
 
 부분 검증(2026-10-16): 이 절과 위 인프라 자동화 항목을 AWS의 구현 문서, Microservices와 Microservice Prerequisites로 대조했다. 기존 사례 수치와 나머지 본문 전체의 검증일은 갱신하지 않는다.
 
+### 서비스 경계와 장애 경계를 따로 확인한다
+
+프로세스를 나눠도 호출자의 공유 자원이 고갈되면 정상 서비스까지 영향을 받는다. 예를 들어 주문 화면이 재고와 추천 서비스를 함께 호출할 때, 응답하지 않는 추천 호출이 공유 연결 풀을 점유하면 재고 조회도 연결을 얻지 못할 수 있다. 이는 Azure의 Bulkhead 설명을 주문 화면에 적용한 예시다.
+
+Bulkhead는 의존성이나 소비자별로 자원 풀과 서비스 인스턴스를 분리해 이런 전파 경로를 줄인다. Timeout과 Circuit Breaker를 함께 고려하되, 격리 단위를 세분화할수록 비용과 자원 활용률의 절충이 생긴다. 서비스 개수만으로 장애 격리 수준을 판단하지 않는다.
+
+다음은 장애 범위를 확인하기 위한 시험 제안이다.
+
+1. 한 하위 서비스를 느리게 하거나 응답하지 않게 만든다.
+2. 그 서비스와 무관한 요청의 성공률, 지연과 자원 풀 사용량을 함께 관찰한다.
+3. 같은 요청에서 일부 기능을 포기하고 계속 처리할 수 있는지, 전체 실패가 필요한지 업무 규칙으로 정한다.
+4. 하위 서비스가 복구된 뒤 자원이 반환되고 정상 처리로 돌아오는지 확인한다.
+
+부분 검증(2026-11-02): 이 절의 장애 전파와 자원 분리는 Azure Bulkhead 문서와 Microservices의 Design for failure 절을 대조했다. 위 시험은 적용 제안이며 실제 서비스에서 수행한 결과가 아니다. 구체적인 외부 호출 정책은 [[External-Service-Resilience|외부 서비스 복원력]], 고객 집합별 격리는 [[Cell-Based-Failure-Isolation|셀 기반 장애 격리]]를 참고한다.
+
 ## 재사용과 독립 변경의 충돌
 
 오케스트레이션 중심 SOA에서는 전사 재사용을 위해 서비스와 통합 버스에 공통 판단을 모을 수 있다. 공통 구성 요소의 변경이 여러 팀의 동시 배포를 요구하거나 중앙 병목을 만들면 재사용의 절약보다 결합 비용이 커진다. 이는 SOA 전체의 실패를 뜻하는 역사 법칙이 아니라 중앙화 방식의 위험이다.
@@ -123,6 +138,7 @@ MSA는 컨테이너 사용 여부로 판정하지 않는다. AWS는 컨테이너
 - 설계의 문제는 객체지향(OOP), 로직의 문제는 함수형(FP)으로 접근
 
 ## 출처
+- [Microsoft Learn, Bulkhead pattern](https://learn.microsoft.com/en-us/azure/architecture/patterns/bulkhead)
 - [AWS, Implementing Microservices on AWS — Microservices on serverless technologies](https://docs.aws.amazon.com/whitepapers/latest/microservices-on-aws/microservices-on-serverless-technologies.html)
 - [Martin Fowler — Microservices](https://martinfowler.com/articles/microservices.html)
 - [Martin Fowler — Microservice Trade-Offs](https://martinfowler.com/articles/microservice-trade-offs.html)

@@ -50,7 +50,15 @@ DNS 필터링은 이름 단위로 막으므로 광고가 콘텐츠와 같은 도
 
 공급망 공격 일반은 [[Supply-Chain-Security|공급망 보안]]을 따른다.
 
+## 변경 전 상태를 보존하는 TV 정리 도구
+
+CleanYourTV는 Android TV/Google TV에 ADB로 연결해 불필요한 패키지를 비활성화하고 별도 런처를 설치하는 사례다. 펌웨어 교체나 root 획득과 다르다. 프로젝트는 기기와 패키지 조사, 사용자 확인, 변경 전 기록과 복구 스크립트를 제공한다(2026-11-02 README 대조). 코딩 에이전트용 프롬프트가 있어도 조사 결과와 변경 목록을 사람이 확인하는 경계는 유지한다.
+
+복구 스크립트 존재와 모든 기기에서 복구된다는 보장은 다르다. 기본 홈, HDMI 입력, 리모컨과 설정 접근을 확인하고, 네트워크 연결이 끊겼을 때 되돌릴 경로도 확보한다. 제공 발췌의 Java 런처 약 572KB는 해당 빌드의 설명이며 설치 파일을 내려받아 크기와 서명을 검사하지 않았다. 이번에는 TV에 연결하거나 설정을 바꾸지 않았다.
+
 ## 출처
+
+- [CleanYourTV, README](https://github.com/Gathin23/cleanyourtv/) — 2026-11-02 변경 및 복구 흐름 대조
 
 - [Android Developers, Android Debug Bridge (adb)](https://developer.android.com/tools/adb) — 2026-10-27 무선 페어링과 `pm` 명령 대조
 - [DNS over TLS support in Android P Developer Preview — Android Developers Blog](https://android-developers.googleblog.com/2018/04/dns-over-tls-support-in-android-p.html)

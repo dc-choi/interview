@@ -59,6 +59,14 @@ Programming Isn’t Special 에세이는 프로그래밍을 예술과 분리해 
 
 Thinking Will Become a Hobby 에세이는 성능, 비용과 가용성의 우위 때문에 인지 노동이 여가로 옮겨갈 수 있다고 전망한다. 사냥과 서예 등의 역사적 유추는 미래의 경로를 설명하는 비유이며 인지 노동 전체의 대체를 실증한 결과가 아니다. 인간 정보 처리 능력의 하락 주장과 전환 속도는 추가 근거 확인이 필요하다. 남는 책임, 업무 조건과 전환 비용을 실제 과제로 확인한다.
 
+## 코드 생성 뒤에 남는 조직의 병목
+
+구현 시간이 줄어도 요구 선택, 테스트, 리뷰, 배포와 고객 결과 확인이 같은 속도로 줄지는 않는다. 단계마다 대기와 재작업을 관찰하고, 반복되는 판단 중 기계적으로 검사할 수 있는 규칙을 CI에 옮긴다. 병합 수와 코드량 외에 고객에게 전달한 변화, 장애와 되돌림, 사람의 검토 시간을 함께 본다.
+
+2026-11-01 제공된 FurtherAI 발췌는 엔지니어당 하루 병합 약 5배, 되돌림 비율 0.5% 미만과 최대 3분의 1의 자동 병합을 보고했다. 테스트와 도구에 여름의 역량을 투자한 뒤 고객 대면 변경이 월 17~30건에서 9월 45건으로 늘었다는 내용도 있다. 이 숫자는 원 스레드와 원자료를 직접 대조하지 못한 자기 보고 단서다. 코딩 에이전트 하나를 도입한 효과나 다른 조직의 생산성 기준으로 쓰지 않는다. 후속 확인은 작성자의 원 스레드, 지표 분모, 비교 기간과 누락된 실패다.
+
+같은 날 제공된 Cisco 사례의 2인 팀, 24개월 내 레거시 98% 리팩터링은 **추진 목표**로 기록한다. 무제한 토큰 제공이 목표 달성을 입증하지 않는다. 해당 코드 범위, 동작 보존 검사, 배포와 복구, 완료율의 정의를 확인해야 한다. 경력 초기의 관점이 유용할 수 있다는 리더의 의견과 경력이 필요 없다는 일반 명제도 구분한다.
+
 ## 공급사 선택과 통제권
 
 모델의 가중치 공개, 모델을 실행하는 사업자와 데이터를 보관하는 주체는 다른 선택이다. 오픈 웨이트를 외부 호스팅으로 쓰면 그 제공자의 데이터 처리와 운영을 확인해야 한다. 학습 사용 거부는 보관, 운영 접근과 재위탁까지 모두 금지한다는 뜻으로 확대하지 않는다.
@@ -68,6 +76,9 @@ Thinking Will Become a Hobby 에세이는 성능, 비용과 가용성의 우위 
 후속 확인은 목표 과제의 동일 조건 평가, 실제 데이터 처리 약정과 로그, 실행 환경의 검증 범위다. 코드 생성에서 절약한 시간과 검토, 이해 회복에 필요한 시간을 함께 센다.
 
 ## 출처
+
+- AI 네이티브 엔지니어링 조직 만들기 — GeekNews, 2026-11-01 제공 발췌. 원 스레드 게시자 `sgondala2`, FurtherAI. 원 스레드와 지표 원자료는 미대조
+- [Cisco is letting a 27-year-old refactor 98% of its legacy code with unlimited AI tokens — Fortune](https://fortune.com/2026/10/30/cisco-president-jeetu-patel-gen-z-27-year-old-unlimited-ai-tokens-rewrite-legacy-code-entry-level-jobs/) — 2026-10-30 기사 식별, 내용은 제공 발췌 범위. 회사의 원 발표와 달성 결과 미확인
 
 - [The AI Fluency Framework — Rick Dakan, Joseph Feller, Anthropic](https://www-cdn.anthropic.com/334975cdec18f744b4fa511dc8518bd8d119d29d.pdf) — 2026-10-23 4D 역량과 세 가지 상호작용 방식 확인.
 - [Funny but serious, Chieng issues an AI warning to grads — Harvard Gazette](https://news.harvard.edu/gazette/story/2026/05/funny-but-serious-chieng-issues-an-ai-warning-to-grads/) — 2026-05-27 Class Day 현장 보도, 2026-10-22 확인. 창작의 즐거움과 연구 활용을 구분한 공개 발언의 맥락만 반영했다.

@@ -54,6 +54,12 @@ BOD 26-04의 대응 기한은 KEV 등재와 BOD 23-01 열거로 자산에서 취
 - 특정 제품과 버전을 쓰는 외부 노출 자산, 관리 주체와 패치 경로를 몇 분 안에 뽑을 수 있는지 시험한다. 데이터 흐름과 공급자 서비스 목록은 [[Security-Policy-and-Assessment#경계 장비보다 자원과 접근 경로를 기준으로 점검한다|ID.AM-03, 04 적용]], API host와 구버전은 [[Application-Security#API 자산 목록은 경로 수보다 배포와 데이터 흐름을 관리한다|API 자산 목록]], 과거 릴리스의 구성요소는 [[Dependency-Vulnerability-Scanning#운영|SBOM 보관]]을 따른다.
 - 노출된 자격 증명도 공격 표면 목록에 넣는다. 위 OpenAI 사례의 에이전트는 인터넷에 공개된 자격 증명을 찾아 침입에 썼다. 키의 권한 범위와 폐기는 [[API-Key-Exposure|API 연동 키 노출]], [[Hardcoded-Credentials|하드코딩된 자격증명]]을 따른다.
 
+### 패치 작성과 적용 완료 사이의 병목을 측정한다
+
+패치 생성 시간이 줄어도 자산 식별, 실제 악용 조건 평가, 서비스 영향 시험, 공급자 배포와 재시작이 남는다. 대응 시간을 한 숫자로 합치지 않고 발견, 판단, 완화, 수정본 적용과 실제 적용 확인에 나눠 기록한다. Brotli처럼 내장 사본이 많은 구성요소는 패키지 하나의 업데이트만으로 배포 전체의 수정이 끝났다고 보지 않는다([[Compressed-Input-Decoder-Security|압축 입력 디코더 보안]]).
+
+수집한 후속 학습 단서: GeekNews의 2026-10-29 11:50 발췌와 2026-11-02 Weekly #382는 취약점 공개 속도보다 방어 조직의 조사/적용 여력이 병목이라는 문제를 제기한다. 연결된 Jan Schaumann의 `This is not sustainable`은 원문 주소를 식별했으나 도구의 접근 제한으로 전체를 대조하지 못했다. KVM/TLS/PHP/Brotli 사례의 세부 평가와 10-29~30 KISA 공지 20여 건이라는 발췌 수치는 확인 후보다. 위 운영 원리는 이미 대조한 NIST SP 800-40의 자산/패치 절차와 연결하며, 발췌의 수치나 AI 원인 주장을 검증된 사실로 추가하지 않는다.
+
 ## 먼저 갖출 것 2: 대응 경로를 미리 정해 둔다
 
 NIST SP 800-40 Rev. 4는 새 취약점마다 위험 평가로 최적의 대응을 고르는 방식은 현실적이지 않으므로 미리 계획해 두고 빠르게 결정하라고 한다. 자산과 패치의 수를 감당하려면 긴급 상황까지 자동화에 기대야 하고, 패치가 문제를 일으킬 수 있다는 두려움으로 대응을 미루지 말고 문제가 생겼을 때 대처할 준비를 하라는 원칙도 둔다.
@@ -116,6 +122,9 @@ OpenAI의 기술 보고서는 최소 권한, 격리와 분할, 강한 인증 같
 - AI 대응 자동화의 조치마다 자동 실행, 승인 뒤 실행, 수동 실행이 정해져 있고, 권한이 모델 밖에서 강제되는가.
 
 ## 출처
+
+- [This is not sustainable — Jan Schaumann](https://www.netmeister.org/blog/this-is-not-sustainable.html) — 확인 후보. 2026-11-02 원문 접근 제한으로 전체 본문과 개별 주장을 대조하지 못했다.
+- GeekNews, 2026-10-29 11:50과 2026-11-02 09:13 Weekly #382 사용자 제공 발췌 — 패치 적용 병목과 보안 운영 여력의 후속 학습 단서
 
 - [How Low Can You Go? An Analysis of 2023 Time-to-Exploit Trends — Google Cloud Blog, Mandiant](https://cloud.google.com/blog/topics/threat-intelligence/time-to-exploit-trends-2023) — 2024-10-16. 2026-11-02 TTE 정의, 연도별 평균, 이상치 처리, 제로데이와 n-day 구분과 비율, 보수적 추정이라는 한계 대조
 - [M-Trends 2026: Data, Insights, and Strategies From the Frontlines — Google Cloud Blog, Mandiant](https://cloud.google.com/blog/topics/threat-intelligence/m-trends-2026) — 2026-03-24. 평균 TTE 추정값, 22초 인계, AI 직접 원인에 대한 판단, 일상 경보 권고 대조

@@ -116,6 +116,14 @@ Claude Code의 CLAUDE.md에 대응하며, 성격은 강제가 아닌 **권장(ad
 
 계정별 남은 한도와 초기화 시각은 사용량 대시보드나 CLI의 `/status`로 확인한다. 월 가격이나 토큰 단가만으로 실행 가능한 작업 수를 환산하지 않는다.
 
+### 한도 변경 공지는 적용일과 계정 상태를 따로 확인한다
+
+2026-11-02 공식 Pricing 문서는 모델, 문맥, 추론, 도구, 검색과 캐시가 사용량에 영향을 준다고 설명한다. 로컬 메시지와 클라우드 채팅은 플랜 사용량을 공유하며 주간 한도도 적용될 수 있다. 실제 잔량과 초기화는 사용량 대시보드에서 확인한다. 메시지 수를 고정 토큰 예산이나 API 크레딧으로 환산하지 않는다.
+
+확인 후보로 남기는 제공 자료는 두 가지다. 2026-10-30 GeekNews 알림은 Pro 100/200/500과 Business Premium의 한도 2배 확대, Pro 200 축소 철회와 dot 한도 분리 유지를 전한다. 2026-11-02 알림은 12월부터 Plus/Pro/Business의 ChatGPT와 Codex 통합, Instant 제외와 Settings > Usage 확인을 전한다. 이번 공식 문서 조회만으로 두 공지의 정확한 발표 원문, 적용일과 모든 예외를 확인하지 못했다. 확정 정책이나 이 계정의 증액 완료로 사용하지 않는다.
+
+후속 확인은 날짜가 있는 공식 공지와 플랜별 범위를 확보하고, 현재 Pricing의 공유 범위와 12월 변경 대상을 비교하는 것이다. 기존 Work/Codex 공유와 새로 예고된 ChatGPT 전체 통합을 같은 사건으로 합치지 않는다.
+
 ## App vs CLI
 
 - **ChatGPT 데스크톱 앱의 Codex**(2026-07-09 이전 Codex 앱): 병렬 작업 관리와 시각적 Git 워크플로우 조율에 강함
@@ -170,6 +178,9 @@ Claude Code의 CLAUDE.md에 대응하며, 성격은 강제가 아닌 **권장(ad
 - [Codex Authentication — OpenAI](https://learn.chatgpt.com/docs/auth)
 - [Codex Non-interactive mode, Use API key auth — OpenAI](https://learn.chatgpt.com/docs/non-interactive-mode#use-api-key-auth)
 - [Codex SDK로 구독 인증 연결 사례 — Threads, ssssssssoka](https://www.threads.com/@ssssssssoka/post/DYFceHHmF91)
+
+- [OpenAI, Pricing: What are the usage limits for my plan?](https://learn.chatgpt.com/docs/pricing#what-are-the-usage-limits-for-my-plan) — 2026-11-02 사용량 영향 요인과 현재 공유 범위 부분 대조.
+- 사용자 제공 GeekNews 알림(2026-10-30 12:09, 2026-11-02 09:50) — 한도 확대와 12월 통합의 발표 원문 및 계정 적용 상태 미확인.
 
 ## 관련 문서
 

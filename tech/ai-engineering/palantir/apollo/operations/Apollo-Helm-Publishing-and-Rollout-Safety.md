@@ -22,9 +22,22 @@ CLI0.814.0 이상은 `.config.tgz` 안의 values.yaml과 선택 schema를 함께
 
 manageRollout은 Kubernetes 변경을 적용하고 모든 자원이 ready가 되기를 기다린다. apply 실패나 readiness timeout이면 변경을 rollback하고 Plan을 실패로 보고한다. applyChangesNoWait는 apply 성공 직후 Plan을 성공으로 처리하므로 나중에 Pod가 ready가 되지 않아도 그 사유로 Plan을 실패시키지 않는다. apply 자체 실패는 이 전략에서도 rollback한다.
 
-Helm install/upgrade와 hook에는 별도5분 timeout이 있다. resource-readiness-timeout은 apply 후 ready 대기만 조정하며 hook 시간을 늘리지 않는다. operator의 install/upgrade별 기본 timeout을 제품 manifest가 재지정할 수 있다. applyChangesNoWait에는 이 ready timeout을 같이 쓰지 않는다.
+Helm install/upgrade에는 hook 실행을 포함한 별도의 5분 timeout이 있다. `resource-readiness-timeout`은 managed rollout에서 apply 후 ready 대기만 조정하며 Helm 작업이나 hook 시간을 늘리지 않는다. `applyChangesNoWait`는 이 readiness 대기 단계를 생략하지만 Helm 작업의 timeout은 남는다.
 
-image pre-pull은 Pod 시작 때 느린 pull로 가용성이 떨어지는 것을 줄인다. 기본 활성화와15분 timeout이며 operator 전체 또는 제품별1~90분 timeout으로 조정한다. preload 성공, Helm apply 성공, resource readiness와 서비스 custom health는 서로 다른 신호다.
+image pre-pull은 Pod 시작 때 느린 pull로 가용성이 떨어지는 것을 줄인다. 기본 활성화와 15분 timeout이며 operator 설정 또는 제품 manifest에서 조정한다. 1~90분 제한은 문서가 명시한 제품별 timeout의 범위다. preload 성공, Helm apply 성공, resource readiness와 서비스 custom health는 서로 다른 신호다.
+
+### 설정 위치와 우선순위
+
+2026-10-30 공식 rollout 문서로 아래 설정을 부분 대조했다. 게시 CLI와 registry 조건의 검증 날짜는 갱신하지 않았다.
+
+| 대상 | operator 설정 | 제품별 설정과 적용 범위 |
+|---|---|---|
+| rollout 전략 | `capabilities.defaultRolloutStrategy` | manifest extension의 `rollout-strategy`, 초기화 CLI의 `--rollout-strategy` |
+| install readiness | `capabilities.scopedResourceReadinessTimeouts.install` | manifest extension의 `resource-readiness-timeout`이 operator 기본값보다 우선 |
+| version/config 변경 readiness | `capabilities.scopedResourceReadinessTimeouts.upgrade` | 같은 제품별 readiness 값으로 재지정, 초기화 CLI는 `--resource-readiness-timeout` |
+| image pre-pull | `capabilities.imagePrePullEnsurer.enabled`, `capabilities.imagePrePullEnsurer.timeout` | manifest extension의 `image-pre-pull-config.timeout`, 제품별 1~90분 |
+
+`manageRollout`이 기본 전략이며 운영 환경에 권장된다. 초기 디버깅에서 `applyChangesNoWait`를 쓰면 apply 뒤 준비되지 않은 자원도 남겨 원인을 볼 수 있지만, Plan 성공을 서비스 정상화로 해석하면 안 된다. timeout을 늘리기 전에 pre-pull, Helm apply와 hook, readiness 중 실패한 단계를 확인한다.
 
 ## 운영 확인 순서
 

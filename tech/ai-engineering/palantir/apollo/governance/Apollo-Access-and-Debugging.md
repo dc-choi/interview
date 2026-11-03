@@ -30,10 +30,32 @@ Plan details/raw agent output으로 실패 단계를 찾고 Pod의 Pending/Image
 
 local kind에는 cloud LoadBalancer가 기본 제공되지 않아 chart가 가정한 인프라를 별도로 제공해야 한다. 재연결 문제는 manifest 재적용과 agent/Hub 통신을 확인한다. 클러스터 재시작 후 새 환경을 만드는 가이드 예시는 모든 장애의 기본 해결책으로 쓰지 않는다.
 
+### 자원과 릴리스의 관찰 범위를 맞춘다
+
+2026-10-30 클러스터 진단 문서와 kubectl, Helm 명령 참조를 부분 대조했다. 아래는 실행 예시이며 실제 클러스터에서 실행한 기록은 아니다. `NAMESPACE`, `POD`, `RELEASE`는 대상 환경 값으로 바꾼다.
+
+```bash
+kubectl get pods --all-namespaces
+kubectl describe pod POD --namespace NAMESPACE
+kubectl logs POD --namespace NAMESPACE --since 1m
+kubectl get svc --namespace NAMESPACE
+helm list --namespace NAMESPACE --failed --pending
+helm history RELEASE --namespace NAMESPACE
+helm get values RELEASE --namespace NAMESPACE
+```
+
+- 전체 namespace에서 Pod 위치를 찾은 뒤 대상 namespace의 Events, 로그와 Service를 확인한다. 한 namespace의 빈 결과만으로 자원이 없다고 판단하지 않는다.
+- Helm 목록은 여기서 실패 또는 대기 상태로 필터링했다. 정상 릴리스까지 포함한 전체 목록과 구분하고, history의 실패와 rollback 이력을 Apollo Plan 시각과 대조한다.
+- `helm get values`로 확인한 입력과 실제 자원 상태는 별도다. Pod 로그는 Apollo 화면에서 대신 제공되지 않으므로 클러스터 로그 접근 경로를 준비한다.
+
+명령 옵션에는 ASCII 하이픈을 사용한다. 복사한 문서의 긴 대시를 옵션 구분자로 쓰지 않는다. 이 절의 대조는 인증, JIT와 브라우저 지원 정책의 재검증을 뜻하지 않는다.
+
 2026-10-16 브라우저 정책은 최근1년 Chrome/Edge의 full 지원,2년까지 부분 지원, 그보다 오래되면 미지원이다. Firefox는 최근6개월 버전의 critical fix를 제공한다. 이는 문서 확인일의 정책이며 현재 설치 브라우저를 검사한 결과는 아니다.
 
 ## 출처
 
+- [Kubernetes, kubectl get](https://kubernetes.io/docs/reference/kubectl/generated/kubectl_get/) — 전체 namespace 조회 옵션, 2026-10-30 확인.
+- [Helm, helm list](https://helm.sh/docs/helm/helm_list/) — namespace 지정과 실패/대기 상태 필터, 2026-10-30 확인.
 - [Palantir, authentication](https://www.palantir.com/docs/apollo/core/authentication) — SAML 또는 Palantir Auth 인증.
 - [Palantir, authorization](https://www.palantir.com/docs/apollo/core/authorization) — resource/global RBAC와 inherited 권한의 가산성.
 - [Palantir, supported-browsers](https://www.palantir.com/docs/apollo/core/supported-browsers) — Chrome/Edge/Firefox 버전별 지원 기간.

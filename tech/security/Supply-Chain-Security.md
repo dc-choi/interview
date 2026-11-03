@@ -40,6 +40,18 @@ aliases: ["Supply Chain Security", "공급망 공격", "공급망 보안", "의�
 
 공유 규칙 파일의 지시로 코딩 에이전트가 정상 패키지 대신 공격자가 지정한 패키지를 import하고 설치하게 만드는 경로는 [[Coding-Agent-Package-Hallucination|코딩 에이전트의 패키지 환각 공격]]에서 측정 조건, 결과와 리뷰 시점별 점검을 다룬다.
 
+### 검사기와 설치기의 아카이브 해석 차이
+
+서명이나 해시로 같은 배포 파일임을 확인해도 검사기와 추출기가 다른 내용을 볼 수 있다. tar 확장 상태와 파일 크기의 우선순위가 만드는 차이, uv 0.13의 tar-codec 사례와 검사/설치 계약은 [[Archive-Parser-Differentials|아카이브 파서 해석 차이]]에서 다룬다.
+
+### IDE 확장은 로드 시점의 실행 경로다
+
+확장은 대화를 시작하거나 특정 명령을 실행하기 전에도 IDE가 로드하면서 코드를 실행할 수 있다. 설치 버전과 **배포 채널**, 산출물 해시, 실행 시각을 함께 기록한다. 확장 삭제와 별도 파일로 설치된 영속성 제거는 다른 작업이다.
+
+2026-11-02 대조한 Cursor의 10-30 갱신 공지는 Cursor 마켓플레이스의 macOS/Windows용 `Anthropic.claude-code` 2.1.312/2.1.313 변조본을 특정한다. 호스트 정보 전송, 비인가 SSH 키와 자동 실행 흔적 설치, reverse SSH 터널을 시도했다. 일반 사용자 권한에서는 SSH 서비스 활성화가 실패할 수 있어도 다른 흔적이 남았으며, 이미 SSH가 켜진 호스트의 위험은 따로 본다. Anthropic의 공식 배포나 다른 마켓플레이스 전체로 영향 범위를 확대하지 않는다.
+
+공급자는 실행 흔적이 있는 호스트의 격리, 키/영속성과 터널 프로세스 제거, 재구축 필요 평가와 신뢰하는 환경에서의 자격 증명 교체를 안내한다. 이는 사고 대응 지침의 기록이며 이 문서 작성 중 사용자 장비의 확장이나 SSH 설정을 검사하거나 수정하지 않았다. 기존 공급망 사례 전체를 재검증하지 않아 `verified_at`은 유지한다.
+
 ## 페이로드가 하는 일
 
 설치된 악성코드의 전형적 행동 단계:
@@ -98,7 +110,7 @@ aliases: ["Supply Chain Security", "공급망 공격", "공급망 보안", "의�
 ### 예방 (설치 전, 빌드 단계)
 
 - **lockfile 고정 + 무결성 검증**: `npm ci`(lockfile 그대로 설치), 해시 핀(`pip install --require-hashes`), 버전 범위 대신 정확한 버전 핀
-- **설치 스크립트 차단**: `npm install --ignore-scripts`는 모든 설치 스크립트를 막는 전체 차단이다. 패키지 관리자별 의존성 스크립트 기본 동작과 허용 목록은 [[Security|Node.js 보안 모범 사례]]의 install script 기본 차단 절을 따른다
+- **설치 스크립트 차단**: `npm install --ignore-scripts`는 모든 설치 스크립트를 막는 전체 차단이다. 패키지 관리자별 의존성 스크립트 기본 동작과 허용 목록은 [[tech/os-runtime/nodejs/Security|Node.js 보안 모범 사례]]의 install script 기본 차단 절을 따른다
 - **사설 레지스트리, 프록시**: 외부 레지스트리를 그대로 바라보지 않고 검증된 미러(Artifactory, Verdaccio)만 사용
 - **업데이트 지연 정책**: Renovate, Dependabot에 cooldown을 둬 갓 배포된 버전을 즉시 받지 않음 (악성 버전은 보통 빠르게 내려감)
 - **SCA, SBOM**: [[Dependency-Vulnerability-Scanning|의존성 취약점 스캐닝]]과 SBOM으로 무엇이 깔렸는지 항상 파악
@@ -179,6 +191,8 @@ Sonatype의 Hugging Face 분석은 모델 파일 디렉터리를 IQ CLI로 검�
 - **Chrome 제로데이 (2026-02-13)** — CSS use-after-free 취약점(CVE-2026-2441)을 수정한 스테이블 업데이트가 배포됐고, 릴리스 노트에 악용 사례가 실제로 존재한다고 명시. AI 도구와 무관한 기본 보안 운영 부담의 예.
 
 ## 출처
+- [Security notice: malicious Anthropic.claude-code 2.1.312 and 2.1.313 — Cursor](https://cursor.com/blog/claude-code-extension-security-notice) — 2026-10-30 갱신, 2026-11-02 배포 채널과 플랫폼, 권한 제약과 별도 영속성 대응 대조
+- GeekNews, 2026-10-31 09:33 사용자 제공 발췌 — Cursor 확장 사건의 계기 자료
 - [Microsoft Learn, Microsoft recommended driver block rules](https://learn.microsoft.com/en-us/windows/security/application-security/application-control/app-control-for-business/design/microsoft-recommended-driver-block-rules) — 2026-10-21 서명 드라이버의 취약점, 반입과 로드 차단, audit mode와 재부팅 조건 대조.
 - [Sonatype, Repository Types](https://help.sonatype.com/en/repository-types.html)
 - [Sonatype, Sonatype MCP Server](https://help.sonatype.com/en/automate-with-sonatype-guide.html)

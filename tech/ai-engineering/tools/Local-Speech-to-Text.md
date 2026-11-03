@@ -162,6 +162,14 @@ M2 24GB 팬리스 MacBook Air에서 2026-09-23과 24일에 측정했다. 문자 
 
 자막의 개인정보 가림과 원음 보호도 별개다. Transcribe의 자막 redaction과 vocabulary filter는 텍스트 출력에 반영되지만 오디오는 바꾸지 않는다. 기능별 지원 언어를 확인하고, 공개 영상은 자막뿐 아니라 원음도 별도로 검수한다.
 
+## 지시형 음성 모델의 지원 범위와 평가를 나눈다
+
+부분 검증(2026-11-02): Nemotron 3.5 Transcribe의 공식 발표와 모델 카드를 대조했다. 40개 언어, 최대 1시간 녹음에서 자연어 지시로 전사 형식, 번역과 화자 귀속을 고른다. 한국어는 전사, 영어와의 양방향 번역과 다화자 전사를 지원 목록에 둔다. 오디오 질의응답과 추론의 평가는 영어에 한정하므로 40개 언어 전체의 같은 기능 보장으로 읽지 않는다.
+
+현재 공식 발표의 영어 9개 공개 테스트 평균 WER은 4.71%, 다국어 리더보드는 4.62%다. 제공된 2026-10-29 알림의 5.33%와 다르므로 그대로 최신값으로 옮기지 않는다. 모델 카드의 한국어 FLEURS 2.78%는 CER이며 영어 WER, 다른 한국어 기술 강의의 실측과 직접 비교하지 않는다. 모델은 비실시간 전사이며 내부 30초 인코더 청크를 스트리밍 지원으로 읽지 않는다.
+
+제공 자료의 최대 8명 화자, David AI/VoiceArena 최저 오류율과 Granary v2 48개 언어에 관한 나머지 문장은 별도 원표/데이터 카드 확인 후보로 남긴다. 기존 전사 엔진을 바꾸거나 모델을 실행하지 않았다. 기존 요금과 로컬 실측의 검증일은 유지한다.
+
 ## 운영 체크포인트
 
 - 전사문에는 화면의 슬라이드와 코드가 없다. 발표가 화면 위주면 핵심 내용이 빠진다.
@@ -210,6 +218,9 @@ M2 24GB 팬리스 MacBook Air에서 2026-09-23과 24일에 측정했다. 문자 
 - [NAVER Cloud, CLOVA Speech 장문 인식 API](https://api.ncloud-docs.com/docs/ai-application-service-clovaspeech-longsentence)
 - [RTZR, 요금 안내](https://developers.rtzr.ai/docs/pricing/)
 - [Handy — GitHub, cjpais](https://github.com/cjpais/Handy)
+
+- [NVIDIA Nemotron 3.5 Transcribe: Intelligent Transcription with a Speech LLM — NVIDIA](https://research.nvidia.com/labs/nemotron/NVIDIA-Nemotron-3.5-Transcribe/) — 2026-11-02 현재 발표 수치 부분 대조.
+- [NVIDIA-Nemotron-3.5-Transcribe-30B-A4B — Hugging Face, NVIDIA](https://huggingface.co/nvidia/NVIDIA-Nemotron-3.5-Transcribe-30B-A4B) — 지원 언어, 영어 한정 이해 평가와 CER/WER 구분 대조.
 
 ## 관련 문서
 

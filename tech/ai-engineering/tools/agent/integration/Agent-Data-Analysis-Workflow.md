@@ -69,6 +69,14 @@ AWS의 공개 구현은 Planner, Coder, Supervisor와 Reporter 역할을 나누�
 
 이를 적용한 설계 점검에서는 누가 운영 지침을 바꿀 수 있는지, 어떤 계정과 질문에 적용되는지, 숫자가 저장된 참고 자료와 이번 조회 중 어디에서 왔는지를 확인한다. 지속되는 기억이나 다른 에이전트의 재검토만으로 데이터 최신성과 계산 정확성이 입증되지는 않는다.
 
+## 데이터 에이전트 평가는 SQL 작성 밖의 실패를 포함한다
+
+여러 DB의 데이터를 연결하고, 불일치하는 키를 정리하고, 업무 지식을 적용하거나 자유 텍스트를 변환해야 실제 분석의 실패를 시험할 수 있다. 데이터 전체를 문맥이나 pandas로 옮기기 전에 DB에 내려 보낼 계산, 필요한 최소 반환과 권한 범위를 정한다.
+
+Data Agent Bench 공동저자의 2026-10-23 인터뷰는 당시 최상위 에이전트의 pass@1을 약 61%로 설명한다. 리더보드의 80%대 결과 중 질문마다 풀이를 프롬프트에 넣는 조건과는 다르다고 지적했다. 이는 해당 시점의 발언이며 모든 현재 에이전트의 최고 성능으로 고정하지 않는다.
+
+같은 인터뷰는 시맨틱 레이어를 제공한 변형에서 정확도가 높아졌다고 설명하지만 보편적인 개선률을 제시하지 않는다. 업무 지표, 조인 의미와 데이터 제약을 사람이 이해하고 관리해야 한다. 규칙을 넣은 조건과 넣지 않은 조건을 같은 데이터, 하네스와 예산으로 비교한다([[Agent-Ready-Data|에이전트용 데이터 준비]]). 이 절은 공개 인터뷰 본문과 저장소 설명 대조이며 팟캐스트 전체 청취나 평가 재실행은 아니다.
+
 ## 검증할 최소 계약
 
 ### 채널 분석에서는 수집 범위와 지표의 분모를 고정한다
@@ -133,6 +141,9 @@ AWS의 공개 구현은 Planner, Coder, Supervisor와 Reporter 역할을 나누�
 - [datapitfalls - 차트뿐 아니라 데이터 분석 전 과정의 함정을 찾는 도구 — GeekNews](https://news.hada.io/topic?id=35842) — 학습 계기
 - [Can we replace a $150k Looker with a bucket of HTML files? — David Lequin](https://david.lequin.dev/blog/bi-software-is-dead/) — 2026-10-14 개인 블로그 회고. 권한과 격리 설계, 초기 보안 상태, 비용 수치와 제외한 비용을 2026-10-27 원문 대조. 수치는 작성자 자체 측정
 - [연 15만 달러짜리 Looker를 AI가 만든 HTML 대시보드로 대체할 수 있을까? — GeekNews](https://news.hada.io/topic?id=35975) — 학습 계기
+
+- [Can data agents do real analysis? — The Analytics Engineering Podcast](https://roundup.getdbt.com/p/can-data-agents-do-real-analysis) — 2026-10-23 공동저자 인터뷰, 2026-11-02 공개 편집 전사 대조.
+- [DataAgentBench — UC Berkeley EPIC](https://github.com/ucbepic/DataAgentBench) — 2026-11-02 공식 저장소의 문제/채점 구조 확인.
 
 ## 관련 문서
 

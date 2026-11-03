@@ -89,6 +89,14 @@ TokenPhage는 Claude Code, Codex와 opencode의 로컬 기록을 공급자별로
 
 이 사례의 재사용 포인트는 배지 자체보다 **공급자별 원본 의미 보존, replay-safe 집계, 최소 전송과 검증 가능한 삭제 경계**다.
 
+## 대화 기록에 없는 보조 호출도 센다
+
+로컬 세션 로그만 집계하면 UI 상태 요약, 비동기 보조 요청이나 기록하지 않는 호출을 놓칠 수 있다. 활동 기록의 완전성과 청구 또는 구독 한도 소모의 완전성은 별도로 검증한다. 호출 목적, 입력, 캐시 읽기, 출력과 추정 비용을 API 이벤트와 비교한다.
+
+2026-11-02 대조한 Flamerix AI의 직접 측정 보고는 Claude Code의 `agent_summary`가 백그라운드 에이전트별로 약 30초마다 전체 전사를 해당 모델에 보내 짧은 상태 문구를 만든다고 설명한다. 한 주의 OpenTelemetry 자료에서 요청 19.7%, 추정 지출 16.4%였고, `cost_usd`는 실제 청구서가 아닌 추정값이라고 명시한다. 모든 사용자에게 고정된 15~20% 토큰 손실이 있다는 뜻은 아니다.
+
+보고된 Bun preload는 요약 타이머를 가로채는 비공식 변경이다. 앱의 지원 설정이나 검증된 표준 절감책으로 채택하지 않는다. 업데이트, 운영체제와 실행 경로에 따라 효과가 달라질 수 있으며 이번에는 설치하지 않았다. 자기 환경의 같은 작업을 비교하고, 실제 작업 요청과 보조 요청의 변화부터 확인한다.
+
 ## 도입 체크리스트
 
 - [ ] 지표를 활동량, 비용, 속도와 품질로 분리했는가
@@ -106,6 +114,8 @@ TokenPhage는 Claude Code, Codex와 opencode의 로컬 기록을 공급자별로
 - [TokenPhage 동기화 payload](https://github.com/TOKENPHAGE/tokenphage-cli/blob/main/src/sync.js)
 - [TokenPhage API 저장소](https://github.com/TOKENPHAGE/tokenphage-api)
 - [Claude Code가 로컬에 저장하는 데이터](https://code.claude.com/docs/en/claude-directory)
+
+- [Claude Code burns ~15-20% of your tokens on a 3-word status line — Flamerix AI](https://gist.github.com/flamerix-ai/c3905705cc4205e5de3011fa2e74efce) — 2026-11-02 직접 측정의 분모, 추정 지출과 비공식 타이머 변경 설명 대조.
 
 ## 관련 문서
 

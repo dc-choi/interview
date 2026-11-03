@@ -51,6 +51,8 @@ Nano X 임플란트 분석 사례에서는 Secure Element 자체를 깨는 대�
 
 ## 관련 문서
 
+- [[Encrypted-Storage-Authentication|암호화 저장장치의 인증 경계]] — 지문으로 연결을 여는 것, 저장 데이터 암호화와 비밀번호 검증의 차이
+
 - [[Security-Architecture-and-Threat-Modeling|보안 아키텍처와 위협 모델링]]
 - [[Supply-Chain-Security|공급망 보안]]
 - [[Public-Key-Cryptography|공개키 암호]]

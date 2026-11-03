@@ -62,7 +62,17 @@ aliases: ["규제와 시장 진입"]
 - 확정된 허용 조건과 제도 변경을 전제로 한 확대 시나리오를 나눈다.
 - 일정과 비용 추정에서 추가 시험, 시정과 출시 지연의 가정을 드러낸다.
 
+## 법안 단계와 시행 비용을 구분한다
+
+수정안 제출, 한 의회의 채택, 법률 공포와 실제 시행은 다른 사건이다. 비용 모델에는 시행이 확정된 의무와 시나리오를 나누어 넣고, 과세 대상, 과세표준, 측정 주체, 상한과 시행일을 원문으로 확인한다.
+
+2026-11-02 확인한 프랑스 2027년 예산법안 수정안 I-1358은 2026-10-30 하원 1독회에서 채택됐다. 내용은 이용자에게 보낸 데이터의 콘텐츠 공급자에게 GB당 0.055유로를 과세하고, ISP가 익명화된 전송량을 집계해 분기 보고하는 구조다. CDN 사용 때는 CDN에서 나가는 흐름을 합산한다. 문구는 프랑스 매출 15% 또는 전체 매출 2%의 상한을 둔다.
+
+이는 채택된 수정안의 내용이며 시행 중인 세법이나 확정 청구액으로 쓰지 않는다. 발의 측의 세수 100억 유로와 개인정보 및 생태 효과는 제안의 전망과 논거다. 측정의 정확성, 법적 최종 상태, 상한 해석과 사업자별 부담은 후속 확인이 필요하다. 이용자에 대한 직접 과세와 사업자의 가격 전가도 구분한다.
+
 ## 출처
+
+- [Projet de loi de finances pour 2027, Amendement I-1358 — Assemblée nationale](https://www.assemblee-nationale.fr/dyn/17/amendements/3210A/AN/1358) — 2026-11-02 하원 1독회 채택 상태와 제안 조문 확인, 최종 법률 및 시행 미확인
 
 - [Evaluate the Payback and Accounting Rate of Return in Capital Investment Decisions — OpenStax](https://openstax.org/books/principles-managerial-accounting/pages/11-2-evaluate-the-payback-and-accounting-rate-of-return-in-capital-investment-decisions) — 2026-10-14 단순 회수기간, 일정하거나 변동하는 순현금흐름과 시간가치 미반영 대조
 - [NHTSA Opens Investigation into Tesla Cybercab Self-Certification Following Austin Deployment — NHTSA](https://www.nhtsa.gov/press-releases/investigation-tesla-cybercab-self-certification)

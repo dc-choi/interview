@@ -127,6 +127,8 @@ Iceberg와 DuckDB의 세부 호환성이나 실제 구현은 이 개요의 확�
 
 2026-10-28에는 EP02 소개 원문과 DuckDB 2.0 릴리스, CSV와 Parquet 문서의 접근 및 위 설명의 근거를 확인했다. GA4의 한도 초과 시 일일 내보내기 중지와 이전 일자 재처리 불가 조건을 공식 설정 도움말로 보완했다. 나머지 절과 실제 내보내기 실행은 재검증하지 않았다.
 
+파일 형식, 테이블 버전과 카탈로그의 구체적 구분은 [[Data-Lake-Table-Formats|데이터 레이크의 파일, 테이블과 카탈로그]]에서 다룬다.
+
 ## 출처
 
 - [AWS, Discovering your data with S3 Metadata tables](https://docs.aws.amazon.com/AmazonS3/latest/userguide/metadata-tables-overview.html)

@@ -43,6 +43,12 @@ Apple silicon의 GPU는 TBDR(tile-based deferred rendering)을 쓴다. 렌더링
 
 다른 GPU 구조를 전제로 중간 결과를 매번 장치 메모리에 썼다가 다시 읽는 렌더링을 그대로 옮기면 이 이점을 살리지 못하고 메모리 대역폭과 전력을 더 쓸 수 있다. 그래서 이식 최적화는 그래픽 API 교체에 그치지 않고 중간 데이터를 어디에 두는지를 대상 GPU 구조에 맞추는 일을 포함한다. 이 두 문장은 Apple의 타일 메모리 설명에서 도출한 해석이다.
 
+## 16비트 Windows 프로그램의 호환 경계
+
+2026-11-02 winevdm 저장소 기준, 64비트 Windows용 이식판은 CPU 에뮬레이터와 Wine 기반 Win16→Win32 호출 변환, 16비트 핸들과 네이티브 핸들의 대응을 함께 사용한다. 같은 Windows 계열에서도 명령 실행 환경과 API, 핸들 표현의 차이를 각각 메워야 한다는 사례다. `%WINDIR%`에 설정을 쓰던 프로그램은 현대 Windows의 쓰기 제한 때문에 다른 위치로 리디렉션한다.
+
+Win16 실행 파일을 `otvdm.exe`에 넘기거나 `otvdmw.exe`로 실행하는 경로와 설치 후 파일 연결을 제공한다. DOS 에뮬레이션은 불완전하다고 명시하므로, Win16 지원을 모든 DOS 프로그램의 호환 보장으로 확대하지 않는다. 설치, 레지스트리 변경과 실행 시험은 하지 않았다. 기존 게임 이식 절 전체를 다시 검증한 것은 아니므로 문서의 기존 검증일은 유지한다.
+
 ## 판단 기준
 
 - 비공식 실행 시연은 시연에서 보인 범위가 실행됐다는 뜻이다. 정식 지원, 안정적인 성능, 쉬운 설치나 업데이트 뒤의 호환을 뜻하지 않는다.
@@ -50,6 +56,8 @@ Apple silicon의 GPU는 TBDR(tile-based deferred rendering)을 쓴다. 렌더링
 - 이식 여부는 기대 판매와 개발, 품질 검증, 업데이트마다 드는 유지보수 비용을 비교해 판단한다(검토 기준). Apple은 평가 환경을 이식 전에 성능과 그래픽 이식 가능성을 확인하는 용도로, Metal shader converter를 셰이더 변환 시간을 줄이는 도구로 안내한다.
 
 ## 출처
+
+- [winevdm on 64-bit Windows — GitHub, otya128/winevdm](https://github.com/otya128/winevdm) — 2026-11-02 README의 구성, 실행과 DOS 지원 한계를 확인.
 
 - [Apple Developer, Game Porting Toolkit](https://developer.apple.com/games/game-porting-toolkit/)
 - [Apple Developer, Metal shader converter](https://developer.apple.com/metal/shader-converter/)

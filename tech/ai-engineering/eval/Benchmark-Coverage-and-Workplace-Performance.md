@@ -28,6 +28,14 @@ Mercor의 Benchmark Map은 선택한 29개 벤치마크를 O*NET의 923개 직�
 
 자동으로 과제를 끝내는 능력과 사람의 생산성을 높이는 능력도 구분한다. 이 둘의 일반화는 해당 연구가 남은 문제로 명시한 부분이다. 2026-10-26 공개 방법론과 한계를 대조했으며 개별 모델 점수와 개발자 직무별 문항 수는 여기서 검증하지 않았다.
 
+## 종합 지수의 개편은 측정 도구의 변경이다
+
+Artificial Analysis의 2026-10-27 Intelligence Index v5 발표는 9개 평가를 지식 업무, 코딩, 과학과 일반 능력에 각각 25%씩 배분한다. 비공개 테스트 세트나 비공개 정답을 쓰는 평가의 비중은 60%다. 공개 노출을 줄이는 목적과 외부에서 문항을 직접 점검하기 어려운 한계를 함께 본다.
+
+FrontierCode 2.0과 Terminal-Bench-Science를 추가하고 HLE-Diamond, AA-Omniscience v1.1과 CritPt v2를 개편했다. 평가 구성이 바뀐 v4와 v5 점수의 차이를 능력 향상량으로 그대로 빼지 않는다. 장기 추세용 Progress Index v1도 별도 척도다.
+
+발표일의 max 설정 점수는 Opus 5.5 58, GPT-6 Astra 57, GPT-6.1 Sol 55였다. 공개 가중치 부문 46점의 Kimi K3.1 Pro는 당시 가중치가 미공개였고 실제 공개 모델 최고점은 32였다. 이후 Carbon 발표의 59점과 충돌하는 순위가 아니라 날짜가 다른 결과다. 같은 날짜, 지수 버전, 추론 강도와 실제 가중치 제공 여부를 붙인다. 9개 평가 전부를 이긴 단일 모델이 있다는 근거로 쓰지 않는다.
+
 ## 실제 위임에서는 완료 조건을 맞춘다
 
 다음은 위 구분을 개발 업무에 적용한 측정 제안이다. 연구가 입증한 생산성 효과나 표준 지표는 아니다.
@@ -46,6 +54,8 @@ Mercor의 Benchmark Map은 선택한 29개 벤치마크를 O*NET의 923개 직�
 ## 출처
 
 - [A benchmark map of the US economy — Mercor](https://www.mercor.com/research/labor-index/benchmark-map/) — 2026-10-26 공개 방법론, 범위 기준, 표본 한계와 automation/augmentation 구분 확인.
+
+- [Announcing Artificial Analysis Intelligence Index v5 — Artificial Analysis](https://artificialanalysis.ai/articles/artificial-analysis-intelligence-index-v5) — 2026-11-02 지수 구성과 발표일 점수 대조. 평가 재실행은 하지 않음.
 
 ## 관련 문서
 

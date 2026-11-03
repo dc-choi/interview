@@ -13,6 +13,9 @@ aliases: ["메시징&파이프라인(Messaging&Pipeline)", "Messaging & Data Pip
 
 - [[Data-Lake-Table-Formats|데이터 레이크의 파일, 테이블과 카탈로그]] — Parquet, ORC와 Avro, Iceberg와 Delta Lake, 카탈로그와 DuckLake, 타임 트래블, 스키마와 파티션 진화, 컴팩션과 레이크하우스
 
+
+
+
 - [[Event-Driven-Architecture|Event-Driven Architecture (EDA) — 결정 프레임워크]] (아키텍처 카테고리) — 신뢰성, 결합도, 일관성 3축 트레이드오프 + **8개 결정 층** + 패턴 매핑 그림
 
 - [[Data-Infrastructure-Layers|데이터 인프라의 계층과 계약]] — 저장과 계산, 웨어하우스와 레이크, 객체 저장소의 경계, Snowflake, BigQuery와 Redshift 비교, 파일과 테이블, 카탈로그, BI 지표와 AI 데이터 권한

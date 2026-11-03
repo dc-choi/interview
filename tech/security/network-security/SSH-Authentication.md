@@ -75,6 +75,16 @@ puttygen input.ppk -O private-openssh -o converted.pem
 
 변환 전후 공개키 지문을 같은 알고리즘으로 비교하고 출력 파일의 접근 권한과 암호화 여부를 확인한다. 패스프레이즈를 새로 설정하거나 바꾸려면 `-P`를 사용한다. 개인키를 온라인 변환 사이트에 올리지 않고, 신뢰하는 로컬 도구에서 처리한다. 이는 운영 점검 제안이며 실제 키 파일을 읽거나 변환한 기록은 아니다.
 
+## 포워딩 권한도 로그인 계정의 경계 안에 둔다
+
+SSH 로그인 허용과 포워딩 허용은 따로 점검한다. 서버 프로세스가 높은 권한으로 실행되더라도 포워딩 대상 파일과 Unix 소켓의 접근은 인증된 사용자 권한으로 제한해야 한다. 경로 문자열 검사만으로 심볼릭 링크 교체나 검사 후 사용의 경합까지 막았다고 판단하지 않는다.
+
+2026-11-02 Tailscale 공식 TS-2026-014를 대조했다. Tailscale SSH의 Unix 소켓 포워딩은 인증되고 포워딩이 허용된 peer가 root 전용 소켓에 닿을 수 있던 문제이며, 1.104.4 이상에서 인증된 사용자 권한으로 처리하도록 수정됐다. SSH 인증 없는 인터넷 공격과 같은 조건으로 설명하지 않는다.
+
+공식 완화책은 `tailscaled` **서비스 환경**에 `TS_SSH_DISABLE_FORWARDING=1`을 설정하고 서비스를 재시작하는 것이다. 셸 한 곳에 환경 변수를 설정하는 것과 서비스에 적용하는 것은 다르다. 포워딩이 필요 없다면 Tailscale SSH 전체를 끄지 않고 이 경로를 줄일 수 있지만, 같은 릴리스에서 수정한 SSH 세션 메모리 고갈(TS-2026-015) 등 다른 문제까지 고치는 설정은 아니다. 현재 버전과 사용 기능에 맞는 공식 공지를 확인하고 업데이트한다. 실제 설정이나 재시작은 수행하지 않았다.
+
+2026-10-28 사용자 제공 GeekNews 발췌는 조사 중의 권고를 담고 있다. 그 당시의 모든 사용자 비활성화 불필요 평가를 영구적인 안전 보증으로 사용하지 않는다. 기존 SSH 일반 설명 전체는 다시 대조하지 않아 위 `verified_at`은 유지한다.
+
 ## 확인 질문
 
 - 호스트 키 검증은 성공했는데 사용자 인증이 실패했다면 어느 신원과 권한을 확인해야 하는가?
@@ -93,6 +103,7 @@ puttygen input.ppk -O private-openssh -o converted.pem
 - [OpenBSD, ssh-keyscan(1)](https://man.openbsd.org/ssh-keyscan.1)
 - [PuTTY, Using public keys for SSH authentication](https://the.earth.li/~sgtatham/putty/0.85/htmldoc/Chapter8.html)
 - [PuTTY, puttygen(1), Debian 매뉴얼 배포본](https://manpages.debian.org/testing/putty-tools/puttygen.1.en.html)
+- [Tailscale, Security Bulletins: TS-2026-014, TS-2026-015](https://tailscale.com/security-bulletins) — 2026-11-02 인증/포워딩 조건, 수정 버전과 서비스 환경 완화 대조
 
 ## 관련 문서
 

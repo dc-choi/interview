@@ -94,6 +94,12 @@ aliases: ["Tech Writing", "개발자 글쓰기", "기술 글쓰기", "Tech Writi
 
 블로그 글 한 편을 제대로 완성하려면 며칠보다 **2~3주의 수정 시간**을 두는 게 현실적이다. 빠르게 쓰는 것보다 충분히 고치는 시간이 품질을 만든다.
 
+### 초안, 편집과 피드백의 목적을 나눈다
+
+초안에서는 생각과 필요한 근거를 확보하고, 편집에서는 독자가 이해하는 순서와 불필요한 표현을 고친다. 피드백 요청은 무엇이 모호한지, 빠진 근거가 무엇인지처럼 좁혀 묻는다. 중요한 문서와 널리 읽힐 문서에 더 많은 편집 시간을 배분하되 모든 메시지에 같은 절차를 강제하지 않는다.
+
+좋은 업무 문서의 예시를 모아 구조와 설명 순서를 분석하고, 다음 글에 적용한 뒤 독자의 반응을 본다. 이는 실무자의 연습 제안이며 글쓰기만으로 승진이나 영향력이 보장된다는 근거는 아니다. Becoming a Better Writer는 2022-01-18 글이 2026년 10월 공개로 전환된 자료이므로 2026년에 새로 측정한 연구처럼 읽지 않는다.
+
 ## 마감이 글을 끝낸다
 
 글은 계속 고치고 싶어지는 작업이라, 마감이 없으면 완성이 아니라 수정만 반복하게 된다. 언제까지 쓰겠다고 정하고 동료나 팀에 공유하면 실행력이 올라간다. 마감은 압박이지만 결과물을 세상에 내보내게 하는 장치다.
@@ -159,6 +165,8 @@ aliases: ["Tech Writing", "개발자 글쓰기", "기술 글쓰기", "Tech Writi
 - [[Self-Development-While-Working|일하면서 자기계발]]
 
 ## 출처
+
+- [Becoming a Better Writer — Gergely Orosz, The Pragmatic Engineer](https://newsletter.pragmaticengineer.com/p/becoming-a-better-writer) — 2022-01-18 게시, 2026-11-02 초안, 편집, 피드백과 의도적 연습 부분 확인
 
 - [우아한 개발자의 글쓰기 문화와 기술 블로그 집필법 — YouTube](https://www.youtube.com/watch?v=BQ5rRLwa1fg&list=PLgXGHBqgT2TtGi82mCZWuhMu-nQy301ew&index=8)
 - [개발자를 위한 기술 글쓰기 — 주제 찾기, 초안, 퇴고, 피드백 (YouTube)](https://www.youtube.com/watch?v=xu3XGEomRWI&list=PLgXGHBqgT2TtGi82mCZWuhMu-nQy301ew&index=20)

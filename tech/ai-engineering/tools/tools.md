@@ -10,6 +10,7 @@ aliases: ["AI 엔지니어링 실천 도구", "AI Engineering Tools"]
 하네스 시스템, 컨텍스트, 에이전트, 사용량 관측, RAG, MCP, 음성 인식 — AI를 프로덕션에서 쓰고 제어하는 도구. 상위: [[AI엔지니어링(AIEngineering)|AI 시대 엔지니어링]].
 
 ## 목차
+- [x] [[Document-Parsing-Context|페이지 간 문서 파싱]] — SR-SWA 참조 예산과 전역 구조 손실, 표와 문단의 연결 검수
 - [x] [[Multimodal-Video-Retrieval|멀티모달 영상 검색]] — 영상 ID와 시간 구간, 비동기 색인과 모델 버전 호환성
 - [x] [[Java-AI-Integration-Boundaries|Java AI 통합의 실행 경계]] — HTTP 호출, ONNX 로컬 추론, FFM과 Babylon/HAT의 역할 및 실행 전제
 - [x] [[AI-Work-Tool-Selection|업무 병목에 맞는 AI와 협업 도구 선택]] — 검색, 생성과 관리의 역할 구분, 제품과 공개 저장소의 기능 및 검수 기준, 모델과 데이터 API를 포함한 전체 비용 측정
@@ -26,7 +27,7 @@ aliases: ["AI 엔지니어링 실천 도구", "AI Engineering Tools"]
 - [x] [[claude-code|Claude Code 가이드 (claude-code/ 서브폴더) — 학습 트랙(기초, 개발, 비즈니스/도메인, 커스터마이즈) + 레퍼런스(설정/권한, CLAUDE.md와 AGENTS.md 지침 호환, 확장, 운영, 클라우드/보안, 내부 구조)]]
 - [x] [[agent|에이전트 심화 (agent/ 서브폴더) — 실행 구조(execution/: 도구 호출 루프, 컨텍스트 예산, 루프 엔지니어링, 그래프 엔지니어링, 선언형 런타임), 업무 시스템 연결(integration/: 친화 API 설계, 데이터 준비, 이메일 인터페이스, 데이터 분석), 코딩 에이전트 도구(coding-tools/: 코드 검색, 스킬, 터미널 작업 공간), 지시 설계(instruction-design/: 스펙 작성, 과잉설계 방지, 코딩 가드레일, 검증 행동, 출력 문체 제약)]]
 - [x] [[Context-Hub|컨텍스트 (context/ 서브폴더) — 수요 측 컨텍스트 엔지니어링, 도구 출력 필터링, 공급 측 Context Provider 플랫폼]]
-- [x] [[AI-Coding-Agent-Usage-Telemetry|AI 코딩 에이전트 사용량 텔레메트리 (공급자별 transcript 정규화, replay-safe 집계, 활동량과 비용/품질 분리, 개인정보와 보존 경계)]]
+- [x] [[AI-Coding-Agent-Usage-Telemetry|AI 코딩 에이전트 사용량 텔레메트리 (공급자별 transcript 정규화, replay-safe 집계, 활동량과 비용/품질 분리, 개인정보와 보존 경계)]] — 공급자별 기록 정규화, 보조 호출 누락과 agent_summary 추정 비용의 분모
 - [x] [[RAG-Retrieval-Engineering|RAG 검색 엔지니어링 (전체 투입과 검색 선택, 청킹과 청크별 맥락 보강, 하이브리드 검색, 계층적 RAG, 검색 권한, 데이터 수명과 교차 유출 검증)]]
 - [x] [[Codex-CLI|Codex CLI (슬래시 명령 카탈로그 — 작업평가 /plan, /review, /diff, 스킬 시스템/시스템 스킬/추천 스킬, AGENTS.md 계층, codex exec 비대화형, 구독 요금과 속도 모드별 사용량, App vs CLI와 휴대폰 원격 연결)]] — 클라우드 비동기 작업의 마찰, Rust 엔진 분리와 데스크톱 제품 형태의 변화
 - [x] [[Codex-Agent-Execution-Model|Codex 동작 원리 (Context → Tokenizer → Model → Tool → Verification, ChatGPT 채팅과 문서 수정 비교)]]

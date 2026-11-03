@@ -16,6 +16,20 @@ aliases: ["Professional Networking", "외부 네트워킹", "멘토 확보", "�
 - **정보보다 관점을 얻는다.** 공개된 정보는 누구나 찾을 수 있다. 사람을 만나서 얻을 수 있는 것은 그 사람이 무엇을 기준으로 판단하는지, 자기 일의 본질을 어떻게 보는지다.
 - **관계는 일회성 행사가 아니라 일상이다.** 1:1 대화, 가벼운 식사와 온라인 댓글처럼 일상의 접점이 쌓여야 이름이 기억된다.
 
+## 집중과 열린 접점을 함께 유지한다
+
+외부 만남을 모두 없애면 현재 네트워크 밖의 문제, 관점과 아직 알려지지 않은 사람을 접하기 어렵다. 반대로 우연한 만남을 계속 늘리면 본업과 회복에 쓸 시간이 줄어든다. 집중 시간은 보호하면서 감당할 수 있는 탐색 여유를 남기는 절충이 필요하다.
+
+만남의 시간, 배운 관점과 후속 행동을 돌아보며 범위를 조정할 수 있다. 일정을 비워 두고 즉흥적으로 만나는 방식은 시간과 자원이 허용할 때의 선택이다. 만남의 대부분이 낭비이거나 주 10~15시간을 써야 한다는 비율과 시간은 한 화자의 경험이며 보편적인 기준이 아니다.
+
+현재 성취와 직함 외에 질문의 질, 실제 실행과 이후 변화도 살펴본다. 이는 유망한 동료를 알아가기 위한 관찰 제안이며 인재를 정확히 예측하는 공식은 아니다. 다른 분야의 사람과 대화하거나 작은 협업을 해 보면 기존 판단의 사각지대를 발견할 수 있다.
+
+## 관계의 깊이와 경계를 구분한다
+
+가까운 관계는 정보나 기회를 얻는 수단으로만 평가하지 않는다. 오래된 친구와 가족, 신뢰하는 동료와의 시간은 관계 자체의 가치가 있다. 성과를 높이려는 시간 관리가 이 시간을 계속 밀어내고 있지 않은지 따로 살핀다.
+
+호기심과 도전을 지지하는 사람도 현실적인 반대 의견을 낼 수 있다. 근거 있는 비판을 야망을 꺾는 태도로 단정하지 않고, 반복적인 비하와 구분한다. 주변 몇 사람의 평균이 곧 자신의 수준이라는 말을 측정된 법칙으로 쓰거나 도움이 되지 않는다는 이유만으로 관계를 끊는 기준으로 삼지 않는다.
+
 ## 오프라인 행사에서의 원칙
 
 - 첫 만남에서 승부를 보지 않는다. 호감 정도의 인상을 남기면 충분하고, 실질적인 대화는 이후 1:1이나 소규모 모임에서 이어진다.
@@ -80,6 +94,9 @@ aliases: ["Professional Networking", "외부 네트워킹", "멘토 확보", "�
 
 ## 출처
 
+- [열심히 사는데 인생이 제자리인 이유(샘 알트먼, 오픈AI) — 인간지능](https://www.youtube.com/watch?v=Fjnwlosd0LY) — 전체 음성 전사를 읽고 관계와 열린 접점에 관한 부분을 공식 인터뷰와 대조
+- [Sam Altman on Choosing Projects, Creating Value, and Finding Purpose — Y Combinator](https://www.ycombinator.com/blog/sam-altman-on-choosing-projects-creating-value-and-finding-purpose) — 2018-11-08, 2026-11-01 공식 전사 06:58~08:06, 18:35~19:15, 24:45~26:18 대조. 만남의 양과 관점 전환은 경험적 조언
+- [The days are long but the decades are short — Sam Altman](https://blog.samaltman.com/the-days-are-long-but-the-decades-are-short) — 2026-11-01 본문 1, 11, 19, 21항 대조. 관계와 친절의 가치를 설명하는 개인 조언이며 주변 사람의 영향에 관한 인과 연구는 아님
 - [오프라인 네트워킹 원칙 — Threads, careernomad_](https://www.threads.com/@careernomad_/post/DWniR-riMB0)
 - [멘토 확보 15단계 — Threads, careernomad_](https://www.threads.com/@careernomad_/post/DRej9msgU2w)
 - [멘토의 정의와 멘토링 태도 — Threads, monk_on_weekdays](https://www.threads.com/@monk_on_weekdays/post/DL4iPRzok-t)

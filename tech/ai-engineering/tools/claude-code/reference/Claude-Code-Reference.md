@@ -15,7 +15,7 @@ aliases: ["Claude Code Reference", "클로드 코드 레퍼런스"]
 - [x] [[Claude-Code-Config-Permissions|설정과 권한 (캐스케이드 병합, 프로젝트 지침의 CLAUDE.md/AGENTS.md 모드, first-match-wins, 보호 경로, 샌드박스)]]
 - [x] [[Claude-Code-Extension-Reference|확장 메커니즘 (신호→메커니즘 매핑, 훅 exit 2, 서브에이전트 문법, 스킬 예산, 플러그인, MCP Tool Search)]]
 - [x] [[Claude-Code-Dynamic-Workflows|동적 워크플로우 (스크립트 오케스트레이션, ultracode, acceptEdits 함정, resume 규칙, 비용 가드)]]
-- [x] [[Claude-Code-Operations|운영 (헤드리스 --bare, CI 안전장치 4종, 비용 정량, 트러블슈팅 진단 순서, 안티패턴 5종)]]
+- [x] [[Claude-Code-Operations|운영 (헤드리스 --bare, CI 안전장치 4종, 비용 정량, 트러블슈팅 진단 순서, 안티패턴 5종)]] — 운영과 CI, 비용, 진단과 서비스 정책 변화의 확인, 게임 재구현 제한의 원문 확인 후보
 - [x] [[Claude-Code-Bedrock|Amazon Bedrock 배포 (AWS 인증, model pin, inference profile, IAM, 리전과 데이터, 감사와 비용)]]
 - [x] [[Claude-Code-Cloud-Security|클라우드 실행과 보안 (격리 VM, 자격 증명 프록시, 다층 방어 5겹, 데이터 보존, ZDR)]]
 - [x] [[Claude-Code-Internals|내부 구조 (쿼리 루프 턴당 5단계, 컴팩션 3종, 도구 파이프라인 10단계, 동시성 파티셔닝, 8대 설계 패턴)]]

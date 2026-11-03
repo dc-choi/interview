@@ -11,6 +11,8 @@ CORS, CSRF, XSS, SQL Injection, Command Injection, 파일 업로드, IDOR, SSRF 
 
 ## 목차
 
+- [x] [[Archive-Parser-Differentials|아카이브 파서 해석 차이]] — 검사/설치 결과 불일치, tar 상태와 형식 계열 고정
+
 - [x] [[Compressed-Input-Decoder-Security|압축 입력 디코더 보안]] — Brotli의 내장 사본, 도달 가능성, 상류 수정과 실제 재배포의 구분
 - [[Signed-Payload-Deserialization|서명된 페이로드 역직렬화]] — 세션 서명과 pickle의 신뢰 경계
 - [x] [[CORS|CORS]]

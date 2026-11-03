@@ -33,6 +33,14 @@ aliases: ["Small Server Self Hosting", "소형 서버 셀프호스팅"]
 
 자체 호스팅 가능이나 소스 공개만으로 전체 기능, 공급사 지원 또는 모든 이용 방식이 허용된다고 판단하지 않는다. 라이선스 확인 절차는 [[Open-Source-License-Review|오픈소스 라이선스 검토]]로 연결한다. 위 사례의 설치, 데이터 이전과 복원은 직접 실행하지 않았다.
 
+## 전자 도서관의 파일과 동기화 상태
+
+셀프호스팅 독서 서비스는 책 파일뿐 아니라 사용자별 읽은 위치, 하이라이트, 평점과 접근 권한을 관리한다. 파일을 복사하는 것과 여러 기기의 상태를 일치시키는 것은 별개다. 오프라인 기기가 돌아왔을 때 충돌과 삭제가 어떻게 반영되는지, 서버와 기기의 버전 조합을 확인한다.
+
+2026-11-02 BookOrbit 공식 README는 전자책, PDF, 만화와 오디오북의 웹 열람, Kobo와 KOReader 간 양방향 진행/주석 동기화, KOReader에서 검색과 내려받기를 설명한다. iPhone은 오프라인 열람과 오디오 재생을, Apple Watch는 내려받은 오디오 재생과 이후 진행 상태 조정을 지원한다. 해당 README의 요구 조건은 서버 v3.0.0 이상, iOS 26 이상이며 Watch 기능은 watchOS 26 이상이다. 본문과 낭독을 결합한 EPUB3 사용 예도 제공한다.
+
+BookOrbit는 도서, import 폴더, 앱 데이터와 PostgreSQL을 포함한 모든 쓰기 경로에 신뢰할 수 있는 로컬 파일시스템을 요구한다. README는 SMB/NFS, FUSE, 클라우드 마운트와 NAS 구성을 지원하지 않으며, 잠금과 rename 등의 차이로 손상이나 유실이 생길 수 있다고 명시한다. 운영에서는 원본 도서, PostgreSQL 데이터, 애플리케이션 데이터와 비밀 설정을 함께 복구 대상으로 검토한다. 자체 서버라고 외부 통신이 없어지는 것은 아니다. 메타데이터 제공자와 외부 독서 서비스 동기화의 활성화 여부를 확인한다. 실제 설치, 기기 동기화, 백업 복원과 EPUB 문장 강조는 시험하지 않았다.
+
 ## 운영 체크포인트
 
 1. 외부 노출이 필요한 서비스와 VPN 안에 둘 서비스를 정한다.
@@ -44,6 +52,9 @@ aliases: ["Small Server Self Hosting", "소형 서버 셀프호스팅"]
 이 절차는 사례에서 도출한 운영 제안이다. 28개 배포나 성능 재현은 수행하지 않았다.
 
 ## 출처
+
+- [BookOrbit — GitHub, bookorbit/bookorbit](https://github.com/bookorbit/bookorbit) — 2026-11-02 기능과 버전 조건, 데이터 경로를 확인.
+- [BookOrbit, What is BookOrbit?](https://bookorbit.app/what-is-bookorbit) — 자체 호스팅과 외부 연동의 경계.
 
 - [Immich, Backup and Restore](https://docs.immich.app/administration/backup-and-restore/)
 - [Vaultwarden README — Vaultwarden](https://github.com/dani-garcia/vaultwarden)

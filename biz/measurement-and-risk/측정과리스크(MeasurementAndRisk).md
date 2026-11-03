@@ -10,6 +10,7 @@ aliases: ["Measurement and Risk", "측정과 리스크", "Analytics", "분석", 
 지표로 사업을 측정하고 리스크를 관리하는 프레임워크.
 
 ## 목차
+- [x] [[AI-Regulated-Workflow-Evaluation|규제 업무의 AI 평가]] — 후보 생성, 실험, 문서 검토와 최종 판단, 초기 신약 개발 사례의 검증 범위
 - [x] [[Survivorship-Bias-and-Selection|생존자 편향과 관측 대상의 선택]] — 성공 사례의 분모, 누락된 결과와 사업 적용의 한계
 - [x] [[Operational-Manual-and-Improvement|업무 매뉴얼과 운영 개선]] — 수행 기준, 현장 개선, 개정과 효과 확인의 구분
 - [x] [[Delegated-Spending-and-Performance-Feedback|지출 재량과 성과 피드백]] — 재량과 책임, 성과 등급 폐지와 성과 관리의 구분, 판단 책임자와 반대 의견 수렴, 제도 적용 전 점검

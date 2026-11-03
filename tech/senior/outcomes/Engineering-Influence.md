@@ -105,7 +105,22 @@ aliases: ["엔지니어링 영향력 (가시화)", "Engineering Influence", "영
 - **AI 시대엔 판단이 곧 영향력** — 코딩이 위임될수록 무엇을 왜의 판단 값이 오른다. 그 판단을 글로 박는 것이 영향력의 매체다. CS를 설계 의사결정의 언어로 익히는 이유와 같은 축. [[Developer-Role-AI-Era]]
 - **면접 시그널과 같은 축** — 기술 의사결정 책임, 평가 기준의 의사결정과 운영과 커뮤니케이션 항목이 전부 이 영향력을 본다. 따로 준비하는 게 아니라 같은 근육이다. [[Toss-Evaluation-Criteria]]
 
+## 지식이 필요한 사람에게 도달하게 한다
+
+기여는 공개 글을 발행한 시점만으로 평가하지 않는다. 누가 그 정보로 결정을 바꾸거나 조치해야 하는지 찾고, 담당자가 재현할 근거, 영향 범위와 다음 행동을 전달한다. 보안과 안전 문제에서는 조치 준비와 공개 시점을 함께 조율한다. 응답이 없을 때의 확대 공유도 피해와 공개 범위를 검토한다.
+
+The Duty of a Scholar는 2004~2005년 Hyper-Threading 정보 유출 발견 뒤 약 6개월 동안 보안팀과 조율한 경험에서 출발한 윤리적 주장이다. 법률상 의무와 더 넓은 도덕적 책임을 구분한다. 모든 문제를 같은 기간 비공개로 두라는 규칙이나 사용자의 공개 권한으로 확대하지 않는다.
+
+### 연구 자율성과 피드백의 조건
+
+긴 탐색 시간을 주는 것과 기여를 확인하지 않는 것은 다르다. 안정된 재원, 기술을 이해하는 동료의 비평과 결과를 설명하는 주기가 함께 있어야 실험의 방향을 점검할 수 있다.
+
+2026-10-26 공개된 Kernighan 인터뷰의 게시자 제공 전사에서 Bell Labs의 안정적 수입과 장기 평가, Ken Thompson의 초기 Unix 3주 일화, C와 Unix의 상호 확산, 연구자 자신의 필요에서 나온 awk와 make의 제작 경험을 확인했다. 회고 사례이며 같은 조건의 재현이나 특정 연구 문화의 우월성을 검증한 연구는 아니다. 전사 일부를 대조했으며 영상 전체를 시청하거나 음성 재전사하지 않았다.
+
 ## 출처
+
+- [The Duty of a Scholar — Colin Percival](https://www.daemonology.net/blog/2026-10-31-The-Duty-of-a-Scholar.html) — 2026-10-31, 2026-11-02 조율 공개 경험과 지식 전달의 윤리적 주장 확인
+- [Brian Kernighan: Inside Bell Labs, The Best Programmer, Why C Won — The Peterman Pod](https://www.developing.dev/p/e072-brian-kernighan) — 2026-10-26, 게시자 제공 전사의 연구 환경, 도구 제작과 Unix 회고 구간 부분 확인
 - [성과를 드러내지 못하는 개발자에게 — Team Grit](https://teamgrit.co/article/319)
 - [시키는 것만 하는 개발자로 남고 싶지 않다면 — Team Grit](https://teamgrit.co/article/390)
 - [일 잘한다는 말을 들어본 적 없는 개발자에게 — Team Grit](https://teamgrit.co/article/393)
