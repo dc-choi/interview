@@ -49,6 +49,14 @@ s = 그 부분만 떼어 본 속도 향상 배수
 - p를 어떤 시간 기준으로 잴지 먼저 정한다. 한 API의 응답 시간이면 그 요청 안에서의 비중이고, 서버나 DB 전체 부하면 모든 요청의 시간 합에서 그 경로가 차지하는 비중이다. 노출이 적은 화면은 요청 안의 비중이 커도 전체 부하 기준의 p가 작다 ([[Cache-Decision|캐시 도입과 제거의 노출률]])
 - 같은 식이 병렬화 이득의 상한에도 쓰인다. 병렬로 나눌 수 없는 구간의 비율이 전체 향상의 천장을 정한다
 
+### 병렬화 계산은 작업량과 추가 비용을 고정해 해석한다
+
+고정된 작업을 한 프로세서로 수행한 시간 중 직렬 구간이 5%라면 `p = 0.95`다. 나머지를 같은 성능의 프로세서 N개에 균등하게 나누고 추가 비용이 없다고 가정하면 전체 향상은 `1 / (0.05 + 0.95 / N)`이다. N이 20이면 약 10.26배이며, N을 계속 늘릴 때 20배에 접근한다. 코드 줄 수의 5%나 프로세서 20개를 곧바로 20배 향상으로 바꾸지 않는다.
+
+통신과 작업 분배 비용이 생기면 위 계산과 실제 결과가 달라진다. 데이터 크기를 늘리면서 프로세서도 늘린 실험은 같은 작업을 더 빨리 끝내는 실험과 비교 조건이 다르므로, 바뀐 입력 크기에서 직렬 구간의 시간 비중을 다시 측정한다. 병목 구간 개선과 병렬 자원 추가의 효과도 같은 입력과 완료 조건으로 비교한다(측정 제안).
+
+2026-11-04 LLNL 병렬 컴퓨팅 튜토리얼과 Oracle C 가이드의 고정 작업량, 균등 분배와 추가 비용 설명을 대조했다. 5% 예시는 식으로 계산했으며 실제 하드웨어 성능을 측정한 결과가 아니다.
+
 ## 적용 사례 — 계층별 동일 원리
 
 | 계층 | Temporal 활용 | Spatial 활용 |
@@ -129,6 +137,8 @@ Working set은 특정 시간 윈도우 안에 접근되는 **고유 키의 집�
 - DB의 B+Tree leaf 인접 페이지 적재가 spatial 활용 사례
 
 ## 출처
+- [LLNL, Introduction to Parallel Computing Tutorial](https://hpc.llnl.gov/documentation/tutorials/introduction-parallel-computing-tutorial) — 암달의 법칙과 strong scaling의 고정 작업량 전제
+- [Oracle, Sun Studio 12 Update 1 C User's Guide: Amdahl's Law](https://docs.oracle.com/cd/E19205-01/820-7598/bjaem/index.html) — 직렬 실행 시간 비율, 균등 분배와 통신 및 작업 분배 비용
 - [Redis Documentation, Key eviction](https://redis.io/docs/latest/develop/reference/eviction/)
 - [Intel Advisor, Optimize Memory Access Patterns using Loop Interchange and Cache Blocking Techniques](https://www.intel.com/content/www/us/en/docs/advisor/cookbook/2023-1/optimize-memory-access-patterns.html)
 - [Java Language Specification, Chapter 10. Arrays, Java SE 26](https://docs.oracle.com/javase/specs/jls/se26/html/jls-10.html)

@@ -132,6 +132,14 @@ App2Container는 애플리케이션 소스 코드 없이 실행 중인 지원 �
 
 적용 시에는 금액, 날짜 경계와 배치 순서처럼 중요한 조건을 비교 항목으로 정하고, 의도된 동작 변경은 보존할 동작과 나눠 승인한다(설계 제안). 자동 변환율이나 고객 사례의 이전 기간을 자체 시스템의 검증 통과 기준으로 쓰지 않는다.
 
+### .NET 런타임 갱신과 Linux 실행 가능성을 따로 확인한다
+
+부분 검증(2026-11-04): .NET Framework 코드를 현대 .NET으로 옮겼다는 사실만으로 Linux에서 실행할 수 있는 것은 아니다. Microsoft의 Windows Compatibility Pack은 Windows 전용 API도 제공한다. Linux 이전에서는 Platform compatibility analyzer로 사용 위치를 찾고, 해당 호출을 제거하거나 대체하거나 운영체제 검사로 실행 경로를 나눈다. Registry와 WMI 같은 의존성은 런타임 버전만 바꿔 해결하지 않는다.
+
+AWS Transform의 .NET agent도 변환 범위를 .NET 간 코드 변환으로 한정하며, 호환 라이브러리가 없는 Win32 DLL은 변환 대상에서 제외한다. 변환 뒤 로컬 빌드와 단위 테스트를 실행하는 기능이 있어도, 누락된 패키지 제공과 변환 코드의 검토 및 수락에는 사람이 관여한다. 과거 발표의 지원 버전과 프로젝트 유형 목록을 현재 도구의 고정 한계로 쓰지 않는다.
+
+이전 점검 제안: 런타임 변경, 운영체제 변경과 배포 방식 변경을 나눠 적는다. 대상 Linux 환경에서 핵심 업무와 외부 라이브러리 호출을 실행해 확인하고, 플랫폼 검사로 건너뛴 Windows 기능에 필요한 대체 동작이 있는지 검증한다. 컴파일 통과나 예외 회피만으로 기능 동등성을 완료 처리하지 않는다. 이 절만 추가 대조했으므로 기존 `verified_at`은 유지한다.
+
 ## 가상화 플랫폼 유지와 재해복구 설계
 
 2026-10-07 Nutanix NC2와 AWS 재해복구 공식 자료 대조 기준. 애플리케이션 재작성 범위를 줄이는 선택과 복구 목표를 충족하는 선택은 따로 검증한다.
@@ -180,6 +188,12 @@ Agentless는 개별 소스 VM에 에이전트를 설치하지 않는다는 뜻�
 - 개시 중에는 기술 지표와 업무 성공 지표를 함께 보고, 종료 후 예상과 실제 차이를 다음 절차에 반영한다.
 
 과거 발표의 지원 플랜 포함 여부나 고객 사례의 처리량을 현재 계약 조건과 자체 시스템의 보장값으로 옮기지 않는다.
+
+### 사고 대응 권한은 전환 전에 실제 접근까지 시험한다
+
+부분 검증(2026-11-04): AWS 보안 지침은 사고 대응자의 접근 권한을 미리 준비하도록 권한다. 일반적인 대응에는 임시 자격 증명과 승인 기반 권한 상승을 사용하고, IdP 장애나 연동 오류로 평소 인증이 막히는 상황에는 별도의 비상 접근 경로를 준비한다. 사전 준비를 모든 대응자에게 상시 관리자 권한을 주는 것으로 해석하지 않는다.
+
+전환 리허설에 적용할 점검 제안: 대응자가 대상 계정의 로그를 조회하고 필요한 격리와 복구 작업을 실행할 수 있는지 시험한다. 평소 인증 경로가 끊긴 경우도 포함하고, 비상 경로의 최소 권한, MFA, 사용 감사와 대응 종료 후 추가 권한 회수를 확인한다. 역할을 생성했다는 사실이나 보안 도구를 설치했다는 사실만으로 대응 준비를 완료 처리하지 않는다. 이 절의 접근 준비 지침만 대조했으므로 기존 `verified_at`은 유지한다.
 
 ### 첫 실서비스 검증과 최대 수요 검증을 나눈다
 
@@ -237,6 +251,9 @@ AWS가 2026-03-25 공개한 IDEMIA Civil Identity 고객 인터뷰는 .NET 3.5�
 
 ## 출처
 
+- [Microsoft Learn, Use the Windows Compatibility Pack to port code to .NET](https://learn.microsoft.com/en-us/dotnet/core/porting/windows-compat-pack) — 2026-11-04 Windows 전용 API와 플랫폼 검사 경계를 대조
+- [AWS Transform User Guide, Modernizing .NET with AWS Transform](https://docs.aws.amazon.com/transform/latest/userguide/dotnet.html) — 2026-11-04 변환 범위, Win32 DLL 제약, 빌드와 단위 테스트 및 사람의 검토 범위를 대조
+- [AWS Well-Architected Security Pillar, SEC10-BP05 Pre-provision access](https://docs.aws.amazon.com/wellarchitected/latest/security-pillar/sec_incident_response_pre_provision_access.html) — 2026-11-04 임시 권한 상승과 인증 장애 시 비상 접근의 구분을 대조
 - [Rethinking the 7 Rs for speed and simplicity — Amazon Web Services](https://www.youtube.com/watch?v=r4wn1T0URZs) — 05:12~06:13의 계층별 변경과 23:26~24:27의 프로세스 대조를 점검 질문으로 반영. 자동화 성과 수치와 미래 계획은 일반화하지 않았다.
 - [AWS Prescriptive Guidance, Understanding complete assessment data requirements](https://docs.aws.amazon.com/prescriptive-guidance/latest/application-portfolio-assessment-guide/understanding-complete-assessment-data-requirements.html) — 인벤토리와 상세 검토의 데이터 요구를 2026-11-04 대조
 - [From why to how: accelerating your cloud journey — Amazon Web Services](https://www.youtube.com/watch?v=UKkDDYeHPaU) — 11:54~23:53의 단계별 조사와 파일 기반 의존성을 기술 점검 질문으로 반영
