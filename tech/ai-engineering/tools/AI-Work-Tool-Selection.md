@@ -98,6 +98,8 @@ Bee의 공식 설명은 음성을 실시간 처리 후 삭제하고 전사문은
 
 ### 앱 간 문서 작업은 연결 조건과 내용 검수를 나눈다
 
+2026-11-04 공식 PowerPoint 안내 대조 기준, 개인 설치는 Microsoft AppSource의 `Claude for Microsoft 365`에서 `Get it now`를 선택한 뒤 PowerPoint에서 추가 기능을 활성화하고 Claude 계정으로 로그인하는 흐름이다. 활성화 메뉴는 Windows의 `Home > Add-ins`, Mac의 `Tools > Add-ins`다. 지원 범위는 웹 PowerPoint, Microsoft 365 구독이 있는 Windows 빌드 `16.0.13127.20296` 이상, Mac `16.46` 이상이며 iPad, Android와 PowerPoint 2016/2019 영구 또는 볼륨 라이선스는 제외된다. Office 실행 조건과 Claude 플랜을 따로 확인하고, 조직 배포는 Microsoft 365 관리자의 앱 배포 정책을 확인한다. 설치 메뉴가 보이는 것과 로그인 및 슬라이드 편집이 되는 것은 별도 확인 단계다. 실제 설치는 시험하지 않았으며 기존 제품 비교의 `verified_at`은 유지한다.
+
 2026-10-24 Claude for M365 공식 문서는 Excel, PowerPoint, Word와 Outlook 추가 기능 사이에서 열린 파일과 메일 스레드의 맥락을 이어 읽고 수정하는 기능을 안내한다. Excel의 수치를 Word 메모로 옮기거나 Word 문서를 PowerPoint로 요약하는 작업이 예다. 이 기능은 Claude 계정으로 직접 로그인할 때 지원되며 Bedrock, Vertex AI, Azure AI Foundry와 LLM gateway 연결에서는 지원되지 않는다.
 
 공식 안내의 준비 조건은 유료 Claude 플랜, 각 추가 기능의 설치와 최초 활성화, 추가 기능별 `Let Claude work across files` 설정이다. 조직의 관리자 설정도 접근을 제한할 수 있다. 파일을 생성하는 기능과 열린 앱 사이에서 읽기와 쓰기를 이어가는 기능을 구분하고 실제 사용 환경의 연결 여부를 확인한다.
@@ -164,6 +166,7 @@ Bee의 공식 설명은 음성을 실시간 처리 후 삭제하고 전사문은
 
 ## 출처
 
+- [Claude, Use Claude for PowerPoint](https://claude.com/docs/office-agents/powerpoint) — 2026-11-04, 개인 설치, 활성화 메뉴와 지원 버전
 - [Anthropic, Prompting best practices](https://platform.claude.com/docs/en/build-with-claude/prompt-engineering/claude-prompting-best-practices) — 2026-10-28, 출력 형식 지정 범위
 - [Anatomy — GitHub, wheresryan22](https://github.com/wheresryan22/anatomy) — 2026-10-28, 산출물 형태, 모델 기반 수치와 동작, 기하 검사와 베타 한계
 - [Claude, Work across M365 apps](https://claude.com/docs/office-agents/work-across-apps)
