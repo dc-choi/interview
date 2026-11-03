@@ -9,6 +9,7 @@ aliases: ["AWS 관리 인덱스"]
 
 멀티 계정, IaC, 감사, 운영 자동화 서비스 모음.
 
+- [[AWS-Support-Case-Evidence|AWS 기술 지원 — 업무 영향, 시간대와 리소스 ID, 재현 증거와 진행 기록]]
 - [[AWS-Organizations|Organizations — 멀티 계정, SCP와 RCP의 권한 상한, 초기 예방 통제와 root 중앙 관리, S3와 선언적 정책, OU와 통합 결제]]
 - [[AWS-Control-Tower|Control Tower — 랜딩 존, 계정 생성과 통제의 적용 경계]]
 - [[CloudFormation|CloudFormation — IaC 템플릿, 스택, 롤백 실패 복구와 건너뛴 리소스 정합성]]

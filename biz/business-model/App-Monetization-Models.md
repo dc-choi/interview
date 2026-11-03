@@ -109,6 +109,16 @@ ARPU는 사용자당 매출이며 이익이 아니다. GA4의 ARPU는 활성 사
 
 2026-10-07에 GA4의 ARPU 정의와 Google Ads 프로모션 조건을 공식 도움말로 대조했다. 위 계산과 확대 판단은 그 정의를 적용한 예시와 운영 제안이며, 특정 예산이나 설치 수를 보편적인 성공 기준으로 제시하지 않는다.
 
+### 광고 빈도 실험의 승자와 사업상 채택을 구분한다
+
+2026-11-04 Firebase의 광고 빈도 최적화 공식 가이드 중 실험 목표 설정과 결과 해석을 대조했다. Firebase A/B Testing은 선택한 주지표로 승자를 판단하며, 추가한 보조 지표도 함께 제공한다. 광고 매출을 주지표로 삼더라도 추정 총매출과 유지율을 보조 지표로 추가해 영향을 확인할 수 있다.
+
+- **측정 목표:** 광고 매출 증가가 인앱결제 감소나 재방문 감소와 함께 일어나는지 확인한다. 광고 수익만 개선됐다고 혼합 수익 모델 전체가 좋아졌다고 판단하지 않는다.
+- **채택 기준:** 실험 전에 허용할 유지율 하락과 필요한 공헌이익 개선 기준을 정한다. 도구가 고른 승자가 이 기준도 만족하는지 별도로 판단한다.
+- **비용 확인:** AI 기능이 있는 앱은 각 실험군의 API 사용 비용도 같은 관찰 기간에 대조한다. 광고 매출 수집만으로 API 비용과 순이익까지 계산됐다고 가정하지 않는다.
+
+위 세 항목은 가이드의 주지표와 보조 지표 구분을 적용한 사업 운영 제안이다. 특정 국가의 결제율, 보편적인 최적 광고 횟수나 실제 수익 개선을 확인한 결과는 아니다. 기존 스토어 조건의 검증일은 유지한다.
+
 ## 스토어 조건 (2026-10-02 확인)
 
 - **Apple App Store Small Business Program:** 전년도 모든 앱의 proceeds가 100만 달러 이하인 기존 개발자와 신규 개발자가 신청할 수 있고, 유료 앱과 인앱결제에 15% 수수료가 적용된다. proceeds는 Apple 수수료와 일부 세금, 조정액을 제외한 금액으로 매출 총액과 다르다. 연관 개발자 계정의 proceeds를 합산하며, 당해 100만 달러를 넘으면 이후 판매에는 표준 수수료가 적용된다. 신청과 승인 뒤 정해진 효력 발생일에 적용된다.
@@ -143,6 +153,8 @@ ARPU는 사용자당 매출이며 이익이 아니다. GA4의 ARPU는 활성 사
 
 스토어 조건과 공헌이익 개념의 대조 기준은 2026-10-02다. 2026-10-07에는 ARPU와 최초 실행 코호트의 분모, 광고 크레딧 조건만 다시 확인했다. 2026-11-03에는 게임형 반복 결제 절의 스토어 상품 유형, 심사 지침 3.1.1, EU 원칙과 CPC 공동성명, 게임산업법 제33조와 시행령 별표 3의2만 대조했다.
 
+- [Set up an A/B test in the Firebase console — Firebase Documentation](https://firebase.google.com/docs/tutorials/optimize-ad-frequency/step-2) — 2026-11-04 주지표와 보조 지표 설정 대조
+- [Start the A/B test and review the test results in the Firebase console — Firebase Documentation](https://firebase.google.com/docs/tutorials/optimize-ad-frequency/step-4) — 2026-11-04 승자 판단과 보조 지표 검토의 구분 대조
 - [App Store Small Business Program — Apple Developer](https://developer.apple.com/app-store/small-business-program/)
 - [App Review Guidelines — Apple Developer](https://developer.apple.com/app-store/review/guidelines/) — 3.1.3(e)는 2026-10-02, 3.1.1의 게임 내 화폐 인앱결제, 만료 금지와 확률 공개는 2026-11-03 대조
 - [Business Models and Monetization — Apple Developer](https://developer.apple.com/app-store/business-models/) — 소모성 상품의 목숨과 보석 예시, 비갱신 구독의 스트리밍 시즌 패스 예시

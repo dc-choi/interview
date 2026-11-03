@@ -84,6 +84,18 @@ Temporal Event History는 Activity 입력과 결과, Signal과 실행 상태 같
 
 종료한 실행의 이력은 Namespace 보존 기간 이후 삭제된다. Temporal Cloud는 종료한 이력을 S3나 GCS로 내보내는 Workflow History Export를 제공하지만, 내보내기 성공이 감사 저장소의 삭제 권한 분리나 불변 보존까지 보장하지는 않는다. 운영 제안은 필요한 사건이 실제 기록되는지, 원문에 민감정보가 포함되는지, 내보낸 이력을 다시 조회할 수 있는지를 함께 확인하는 것이다.
 
+## 작은 불일치를 조사 가능한 사건으로 바꾼다
+
+2026-11-04 Berkeley Lab의 공식 전산 역사 기록에서 1986년 사건을 확인했다. 컴퓨터 사용료의 75센트 차이를 추적하면서 9초의 사용료를 내지 않은 무단 사용자를 발견했고, 침입자는 GNU Emacs의 `movemail` 취약점으로 관리자 권한을 얻었다. 금액의 크기와 침해 권한의 범위가 같지 않을 수 있음을 보여 주는 역사적 사례다. 작은 회계 차이가 곧 침입을 뜻한다는 탐지 규칙은 아니다.
+
+이 사례를 적용한 조사 설계 제안은 다음과 같다.
+
+- 차이가 난 거래나 사용 구간을 보존하고 반올림, 지연 반영, 집계 누락과 권한 없는 변경을 구분할 가설을 세운다.
+- 같은 시간대의 업무 기록, 인증 이력과 권한 변경을 계정 및 요청 식별자로 연결한다. 한 로그에 없다는 이유만으로 행위가 없었다고 결론 내리지 않는다.
+- 관측한 차이, 추정한 원인과 확인한 접근 범위를 따로 적는다. 추적을 위해 운영 취약점을 계속 열어 두는 절차로 일반화하지 않는다.
+
+이번 대조는 역사적 사례와 위 적용 판단에 한정하며 기존 제품 동작과 보존 정책의 검증일은 유지한다.
+
 ## 어떻게 보호하나
 
 방어는 한 겹이 아니라 계층이다. 아래로 갈수록 강하고 비싸다.
@@ -143,6 +155,7 @@ Temporal Event History는 Activity 입력과 결과, Signal과 실행 상태 같
 
 ## 출처
 
+- [History: The Cuckoo’s Egg — Berkeley Lab Computing Sciences](https://cs.lbl.gov/about/history/) — 2026-11-04 1986년 항목의 75센트 차이, 9초 사용과 권한 상승 대조
 - [Temporal Documentation, Agent memory and state](https://docs.temporal.io/ai/featured/memory-state-stripe)
 - [Temporal Documentation, Workflow History Export](https://docs.temporal.io/cloud/export)
 - [OWASP Cheat Sheet Series, Logging Cheat Sheet](https://cheatsheetseries.owasp.org/cheatsheets/Logging_Cheat_Sheet.html)

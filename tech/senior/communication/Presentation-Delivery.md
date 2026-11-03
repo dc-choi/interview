@@ -74,6 +74,16 @@ PowerPoint의 공식 도움말에서 확인한 기능은 다음과 같다(2026-1
 
 PNG나 비트맵으로 붙인 결과는 이미지이므로 원래 텍스트 상자, 차트 데이터와 도형을 각각 수정하는 용도로 쓰지 않는다. 그림의 크기 조절이나 자르기와 원래 개체의 편집 가능성은 별개다. 실무 적용 제안으로, 화면 예시를 고정해 보여 줄 때 그림 사본을 쓰고 이후 수정할 원본 슬라이드는 따로 보존한다. 붙여넣은 뒤 확대해 작은 글자와 선이 읽히는지 확인한다.
 
+### 보고서로 옮길 때 발표자 노트와 슬라이드 본문을 따로 확인한다
+
+2026-11-04 Microsoft Support의 Word 유인물 내보내기와 접근성 안내를 대조했다. PowerPoint의 `File > Export > Create Handouts` 경로에서는 슬라이드와 노트를 Word로 옮길 수 있다. `Notes below slides` 레이아웃은 슬라이드 아래에 발표자 노트를 배치한다. 이 경로는 Windows 데스크톱 기준으로 사용하며 Mac과 웹에 같은 메뉴가 있다고 가정하지 않는다.
+
+- **복사와 연결:** `Paste`는 원본 변경을 반영하지 않는 사본을 만들고, `Paste link`는 원본 변경을 Word 문서에 반영하려는 선택이다. 제출본을 고정할지 원본과 연결할지 먼저 정한다.
+- **그림과 텍스트:** 내보낸 슬라이드는 이미지로 들어간다. 문서 형식이 Word라고 해서 슬라이드의 모든 글자가 편집 가능한 본문이 되지는 않는다. 접근성을 위해 제목을 heading으로 넣고 슬라이드 이미지에 대체 텍스트를 추가한다.
+- **AI 변환 검토 제안:** 변환 결과를 원본의 슬라이드 수, 수치와 단위, 발표자 노트의 조건과 대조한다. 노트를 읽지 못한 경우 원본 노트가 비어 있었던 경우와 구분해 미확인으로 남기고, 필요한 내용을 별도로 제공한 뒤 다시 검토한다.
+
+유인물 내보내기는 보고서의 논리와 사실을 검증하는 기능이 아니다. 위 AI 검토 항목은 편집 절차 제안이며 특정 AI 제품의 노트 읽기 지원이나 실제 변환 성공을 확인한 기록이 아니다.
+
 ## 3. 준비와 리허설
 
 - **준비와 성과의 관계**: 공개 연설 수업 연구에서 총 준비 시간, 소리 내어 한 리허설, 청중 앞 리허설 횟수가 발표 평가와 양의 상관을 보였다(누적 GPA와 소리 내지 않은 리허설 시간도 발표 평가와 양의 상관이었다). 학기 중 준비 일지 연구에서도 총 준비 시간이 높은 성적과 상관됐고, 청중 앞에서 연습한 학생, 청중이 많았던 학생의 평가 점수가 더 높았다는 연구도 있다. 모두 자기선택이 섞인 상관연구라 인과로 읽지 않는다.
@@ -99,6 +109,8 @@ PNG나 비트맵으로 붙인 결과는 이미지이므로 원래 텍스트 상�
 
 ## 출처
 
+- [Microsoft Support, Edit or print PowerPoint handouts in Word](https://support.microsoft.com/en-us/powerpoint/edit-or-print-powerpoint-handouts-in-word) — 2026-11-04 Word 내보내기와 Paste/Paste link 구분 대조
+- [Microsoft Support, Video: Save a presentation in a different format](https://support.microsoft.com/en-gb/powerpoint/accessibility/video-save-a-presentation-in-a-different-format) — 2026-11-04 노트 포함 레이아웃, 슬라이드 이미지와 접근성 보완 대조
 - [Microsoft Support, Paste Special](https://support.microsoft.com/en-au/word/paste-special) — 2026-10-22 그림 형식과 플랫폼별 지원 차이 확인
 - [Microsoft Support, PowerPoint Options (Advanced)](https://support.microsoft.com/en-us/powerpoint/powerpoint-options-advanced) — 2026-10-15 텍스트 붙여넣기 옵션과 버튼 표시 설정 확인
 - [Microsoft Support, Copy and paste in PowerPoint for the web](https://support.microsoft.com/en-us/powerpoint/copy-and-paste-in-powerpoint-for-the-web) — 2026-10-15 웹용 서식 없는 텍스트 붙여넣기와 브라우저 제약 확인
