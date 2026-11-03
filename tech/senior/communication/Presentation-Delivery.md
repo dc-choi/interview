@@ -36,6 +36,16 @@ aliases: ["Presentation Delivery", "발표 구성과 전달", "발표 슬라이�
 - W3C WAI의 접근성 있는 행사와 발표 체크리스트는 각 슬라이드의 글과 그래픽 정보를 모두 말로 전달하되 그대로 읽을 필요는 없다고 하고, 슬라이드에 글을 많이 넣지 말라고 한다. 추가 정보는 유인물이나 발표와 분리한 노트 포함 슬라이드로 줄 수 있다고 덧붙인다. 이를 적용하면 말로 다루지 않을 내용은 슬라이드에 남기기보다 부록이나 배포 자료로 옮기는 편이 낫다(부록은 이 문서의 적용 판단이다).
 - 좋은 설계는 강의처럼 청중이 속도를 조절할 수 없는 환경과 복잡한 자료에서 더 중요하다는 리뷰 종합 결과가 있다. 실제 의대 강의의 글머리표 슬라이드를 이 원리로 다시 만든 비교에서는 4주 뒤 재생과 전이까지 높았다(무작위 배정이 아닌 코호트 비교).
 
+### 강조를 줄여도 필요한 정보는 읽을 수 있어야 한다
+
+강조할 요소를 키우는 것과 주변 요소의 강조를 줄이는 것은 함께 사용할 수 있다. 일반적인 시각적 위계와 강조 총량은 [[Visual-Hierarchy#작은 요소의 강조 절제|시각적 위계]]에서 다룬다. 발표 자료에서는 이 조정을 가독성과 함께 점검한다.
+
+2026-11-03 W3C WAI 발표 체크리스트 대조 기준, 글과 중요한 시각 자료는 방 맨 뒤에서도 읽을 수 있는 크기여야 하며 글자와 배경, 그래프의 색 사이에는 충분한 명도 대비가 필요하다. 같은 체크리스트는 글자 굵기가 충분해야 하고 획 일부가 가는 글꼴은 더 읽기 어렵다고 한다.
+
+이 문서의 적용 판단: 덜 중요한 내용을 흐리게 만들더라도 읽어야 하는 조건, 단위와 범례까지 배경에 묻히게 하지 않는다. 주변 정보의 강조를 줄이라는 조언은 필요한 정보를 읽을 수 없게 만들라는 뜻이 아니다.
+
+편집 점검 제안: 핵심 결론을 먼저 고르고 나머지 장식을 줄인 뒤, 실제 발표 거리에서 본문과 범례를 확인한다. 흐리게 처리할 때 글자 굵기까지 함께 낮추지 않는다. 밝은 글자가 언제나 더 잘 보인다고 일반화하지 않는다. W3C 체크리스트도 밝은 방에서는 밝은 배경에 어두운 글자, 어두운 방에서는 어두운 배경에 밝은 글자를 쓰자는 제안이 있다고 소개하는 수준이므로 배경과 조명 조건을 함께 본다. 이 순서는 편집 점검 제안이며 발표 화면에서 시험하거나 이해도 효과를 연구로 확인한 결과가 아니다.
+
 ### 정렬, 요소 간격과 바깥 여백을 따로 점검한다
 
 같은 행과 열의 정렬, 반복 요소 사이 간격, 콘텐츠 묶음과 슬라이드 가장자리 사이 여백을 각각 확인한다. 세 항목을 구분하는 것은 편집용 점검 방법이며, 모든 간격과 여백을 같은 값으로 맞춰야 한다는 규칙은 아니다. 의미가 다른 묶음은 간격으로 구분하고, 의도한 비대칭까지 기계적으로 없애지 않는다. 이 점검 방법은 실무 관행이며 연구로 확인한 규칙이 아니다.
@@ -114,7 +124,7 @@ PNG나 비트맵으로 붙인 결과는 이미지이므로 원래 텍스트 상�
 - [The lure of seductive details during lecture learning — Journal of Educational Psychology, Laura Fries, Marci S. DeCaro, Gerardo Ramirez](https://doi.org/10.1037/edu0000301) — 2019
 - [Multimedia Design for Learning: An Overview of Reviews With Meta-Meta-Analysis — Review of Educational Research, Michael Noetel 외](https://doi.org/10.3102/00346543211052329) — 2022
 - [Teaching for understanding in medical classrooms using multimedia design principles — Medical Education, Nabil Issa 외](https://doi.org/10.1111/medu.12127) — 2013
-- [W3C WAI, Making Events Accessible: Checklist for meetings, conferences, training, and presentations](https://www.w3.org/WAI/teach-advocate/accessible-presentations/) — 2022-08-31 갱신
+- [W3C WAI, Making Events Accessible: Checklist for meetings, conferences, training, and presentations](https://www.w3.org/WAI/teach-advocate/accessible-presentations/) — 2022-08-31 갱신, 2026-11-03 글자 크기, 명도 대비, 글자 굵기와 조명별 배경 제안 확인
 - [The relationship between preparation and performance in public speaking — Communication Education, Kent E. Menzel, Lori J. Carrell](https://doi.org/10.1080/03634529409378958) — 1994
 - [Preparation Meeting Opportunity: How Do College Students Prepare for Public Speeches? — Communication Quarterly, Judy C. Pearson, Jeffrey T. Child, David H. Kahl](https://doi.org/10.1080/01463370600878321) — 2006
 - [Get Real: Does Practicing Speeches Before an Audience Improve Performance? — Communication Quarterly, Tony E. Smith, Ann Bainbridge Frymier](https://doi.org/10.1080/01463370500270538) — 2006
@@ -128,5 +138,5 @@ PNG나 비트맵으로 붙인 결과는 이미지이므로 원래 텍스트 상�
 
 - [[Developer-Communication|개발자 커뮤니케이션]] — 두괄식과 독자별로 나눠 쓰기
 - [[Tech-Writing-Craft|개발자 글쓰기]] — 독자와 목적 좁히기, 전문용어 풀어 쓰기 같은 글쓰기 원칙
-- [[Visual-Hierarchy|시각적 위계]] — 그룹 안 간격과 그룹 사이 간격 구분
+- [[Visual-Hierarchy|시각적 위계]] — 그룹 안 간격과 그룹 사이 간격 구분, 강조 총량
 - [[커뮤니케이션(Communication)|커뮤니케이션]]

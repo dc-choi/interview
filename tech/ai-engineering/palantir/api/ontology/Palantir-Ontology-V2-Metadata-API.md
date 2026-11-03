@@ -110,7 +110,9 @@ Query metadata는 재귀 dataType과 typeReferences를 제공한다. execute의 
 
 - `transactionId`는 읽을 Ontology transaction을 지정한다. Experimental 기능이며 모든 workflow 지원을 보장하지 않는다. `scenarioRid`는 Query를 실행할 Ontology scenario의 RID다. 두 인자를 받는다는 사실만으로 임의 조합이나 쓰기 원자성을 보장한다고 해석하지 않는다.
 - `sdkPackageRid`, `sdkVersion`은 생성된 SDK의 식별자와 버전이다. 실행 함수의 semantic version range인 `version`과 구분한다.
+- `version`, `branch`, `sdkPackageRid`, `sdkVersion`, `transactionId`, `scenarioRid`는 URL의 query parameter다. JSON body에는 함수 입력을 담는 `parameters` map을 둔다. Global Query 실행의 body에 버전 선택값을 넣는 형식([[Palantir-Query-Execution-API|Global Query API]])을 이 경로로 그대로 복사하지 않는다. Global body의 `latestVersionResolution`과 `includePrerelease`는 이 경로의 query parameter로도 정의돼 있지 않다.
 - 요청의 `parameters`는 선택 map이지만 함수 정의의 필수 입력까지 생략 가능하다는 뜻은 아니다. 응답의 `value`는 필수이며 DataValue에 `null`도 포함된다. 값이 `null`인 결과와 `value` 필드가 없는 응답을 구분한다.
+- 요청 `parameters`와 응답 `value`의 DataValue 인코딩 표에는 Geoshape가 있다. GeoJSON geometry를 객체 또는 문자열로 표현하며, 표의 예시는 `{"type": "Point", "coordinates": [102.0, 0.5]}`다.
 
 클라이언트 설계 제안: 실행 대상과 branch, version, scenario, transaction 문맥을 명시적으로 관리하고 함수 metadata의 입력 요건을 대조한다. 실제 인증 호출과 문맥 조합은 시험하지 않았고, 다른 metadata 항목의 검증일은 유지한다.
 

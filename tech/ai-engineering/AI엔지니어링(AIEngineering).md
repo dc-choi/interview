@@ -21,6 +21,7 @@ Software 3.0 패러다임, LLM과 에이전트, 하네스, 평가, 조직 전환
 - [[eval|평가, 신뢰성, 캘리브레이션]] — LLM 평가 전략, Abstention(모른다고 말하는 능력), 환각 유형과 검증, 평가 주도 개발(EDD), 루브릭과 점수 게이트, LLM 판정기, 골든셋과 배포 관문, 서빙 모델 드리프트 감시
 
 ## 세부 학습
+- [x] [[ML-Proxy-Discrimination|대리변수와 모델 공정성]] — 간접 정보, 집단별 오류와 공정성 기준의 차이
 - [x] [[Mechanistic-Interpretability|신경망의 기계적 해석가능성]] — 뉴런과 특성, 중첩의 실험 범위, 회로 조사와 작업 가설의 구분
 - [x] [[LLM-Statistical-Citation-Verification|AI 인용과 통계의 원출처 검증]] — 숫자와 분모, 재인용 경로, 위키백과 정리와 탐지 한계
 

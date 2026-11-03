@@ -11,6 +11,7 @@ LLM 출력의 평가와 모른다고 말하는 능력, 비전 모델의 합성 �
 
 ## 목차
 
+- [x] [[ML-Proxy-Discrimination|대리변수와 모델 공정성]] — 민감 속성 제외의 한계, 집단별 평가 기준과 적용 순서
 - [x] [[Crowdsourced-Human-Evaluation|크라우드소싱 사람 평가]] — 평가자 자격과 응답 검수, 주의력 검사와 Mechanical Turk 종료
 - [x] [[AI-Consciousness-Evidence|AI 의식의 증거]] — 자기보고와 행동, 내부 구조 지표와 기능 검증의 구분
 - [x] [[Benchmark-Coverage-and-Workplace-Performance|벤치마크 평가 범위와 업무 성과]] — 업무 과업 매핑, AAII v5 구성 변경과 비공개 평가, 날짜와 제공 상태의 비교
