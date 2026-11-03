@@ -25,6 +25,14 @@ Amazon Bedrock으로 텍스트와 이미지 생성 기능을 만들 때는 프�
 
 Converse는 메시지를 지원하는 모델을 위한 공통 인터페이스다. 이미지 입력을 이해하는 것과 이미지 출력을 생성하는 것은 다른 기능이다. 이미지 생성 요청은 대상 모델의 지원 API와 응답 형식을 확인한다. 모델, 리전과 기능의 지원 여부를 별도로 확인하며, 표의 공통 구조를 모든 기능의 호환성으로 확대하지 않는다.
 
+## 스트리밍 시작과 응답 완료를 구분한다
+
+2026-11-04 `InvokeModelWithResponseStream` API 문서 부분 대조 기준이다. 기반 모델의 스트리밍 지원은 `GetFoundationModel` 응답의 `responseStreamingSupported`로 확인한다. 이 호출에는 `bedrock:InvokeModelWithResponseStream` 권한이 필요하다. AWS CLI는 Bedrock의 스트리밍 작업을 지원하지 않으므로 실제 소비 동작은 지원 SDK 등으로 확인한다.
+
+응답에는 `chunk.bytes`뿐 아니라 `modelStreamErrorException`, `modelTimeoutException`, `throttlingException` 같은 오류 이벤트도 올 수 있다. 첫 청크를 받았거나 HTTP 200으로 시작했다는 사실만으로 전체 추론 성공을 기록하지 않는다. 청크의 내용은 선택한 모델의 응답 형식에 맞춰 해석한다.
+
+**구현 점검 제안:** 첫 출력까지의 시간과 전체 응답 완료 시간을 나누고, 중간 실패는 완성본과 구분해 표시한다. 재시도할 때 이전 부분 출력과 새 응답을 무조건 이어 붙이지 않는다. 정상 종료, 중간 오류와 클라이언트 연결 단절을 각각 확인한다. 이 절은 API 계약을 대조했으며 실제 SDK 호출이나 장애 주입은 수행하지 않았다. 기존 절 전체의 검증일은 유지한다.
+
 ## 대화와 권한
 
 Converse에서 대화를 이어가려면 애플리케이션이 이전 메시지를 후속 요청에 포함한다. `modelId`가 서버에 저장된 대화의 식별자인 것은 아니다. 기본적인 `messages`와 `inferenceConfig` 구성, 모델 전용 필드의 차이를 구분한다.
@@ -72,6 +80,7 @@ Bedrock 콘솔 playground로 기반 모델을 실험할 수 있다. 공식 안�
 
 ## 출처
 
+- [Amazon Bedrock, InvokeModelWithResponseStream](https://docs.aws.amazon.com/bedrock/latest/APIReference/API_runtime_InvokeModelWithResponseStream.html) — 2026-11-04 기반 모델의 스트리밍 지원 확인, IAM 작업, CLI 제한과 응답 오류 이벤트를 부분 대조.
 - [Amazon Bedrock, Monitor Amazon Bedrock API calls using CloudTrail](https://docs.aws.amazon.com/bedrock/latest/userguide/logging-using-cloudtrail.html) — 2026-11-04 호출 주체와 시각, 관리 이벤트와 데이터 이벤트의 구분을 부분 대조.
 - [Amazon Bedrock, Monitor model invocation using CloudWatch Logs and Amazon S3](https://docs.aws.amazon.com/bedrock/latest/userguide/model-invocation-logging.html) — 2026-11-04 기본 비활성화, endpoint 범위와 같은 계정 및 리전의 로그 목적지 조건을 부분 대조. 기존 절의 검증일은 유지한다.
 - [Amazon Bedrock, Client-side tool use](https://docs.aws.amazon.com/bedrock/latest/userguide/tool-use-client-side.html) — 2026-11-04 Converse의 도구 요청과 결과 연결, 모델별 선택과 스트리밍 지원의 구분을 부분 대조. 기존 절의 검증일은 유지한다.

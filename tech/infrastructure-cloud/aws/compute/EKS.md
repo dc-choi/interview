@@ -133,6 +133,22 @@ StatefulSet은 **EBS + PersistentVolumeClaim**이 표준.
 - **Bottlerocket**: AWS 컨테이너 전용 OS — 최소화, 자동 업데이트
 - **Container Insights / Managed Prometheus / Grafana**: 관측
 
+## 제어 평면 로그는 종류와 수집 상태부터 확인한다
+
+2026-11-04 공식 문서 부분 대조 기준이다. 제어 평면 로그는 기본적으로 CloudWatch Logs에 전송되지 않으며 클러스터마다 필요한 종류를 켠다. AWS가 제어 평면을 관리한다는 사실과 사용자의 계정에 진단 기록이 수집된다는 사실은 다르다.
+
+| 로그 종류 | 확인할 대상 |
+|---|---|
+| `api` | Kubernetes API 서버의 동작과 시작 플래그 |
+| `audit` | 클러스터에 영향을 준 사용자, 관리자와 시스템 구성 요소의 활동 |
+| `authenticator` | IAM 자격 증명을 사용하는 Kubernetes 인증 |
+| `controllerManager` | Kubernetes의 핵심 제어 루프 |
+| `scheduler` | Pod를 언제 어느 노드에 배치할지 결정하는 과정 |
+
+로그 설정 변경에는 각 서브넷에 최대 5개의 가용 IP가 필요하다. 변경 요청 접수 뒤 `describe-update`의 `Successful`을 확인하고, CloudWatch의 `/aws/eks/<클러스터 이름>/cluster` 로그 그룹에서 해당 스트림을 조회한다. 스트림은 회전하므로 가장 최근 기록을 볼 때는 `Last event time`을 확인한다.
+
+전달은 보통 수 분 안에 이루어지지만 best effort다. API 로깅 활성화 전에 회전한 API 서버 로그 파일은 나중에 내보낼 수 없다. 수집, 보관과 조회 비용도 별도로 발생한다. 운영 시에는 조회 시간 범위, 활성화한 종류, 최신 이벤트와 보관기간을 함께 확인하고 빈 결과를 사건 부재의 증거로 단정하지 않는다(점검 제안). 실제 계정의 로그 활성화와 조회는 실행하지 않았으며 기존 기능과 가격 전체의 검증일은 유지한다.
+
 ## 클러스터 교체와 ALB의 수명주기를 분리한다
 
 클러스터마다 Ingress로 ALB를 새로 만들면 교체 시 DNS와 CloudFront origin 등 외부 연결도 바뀔 수 있다. ALB와 대상 그룹을 Kubernetes 밖에서 관리하고, 각 클러스터의 `TargetGroupBinding`으로 Service와 기존 대상 그룹을 연결하면 로드밸런서의 수명주기를 클러스터와 분리할 수 있다. Pod IP를 직접 등록하는 구성은 `ip` 대상 유형과 실제 네트워크 도달성을 확인한다.
@@ -188,6 +204,7 @@ StatefulSet은 **EBS + PersistentVolumeClaim**이 표준.
 
 ## 출처
 
+- [Amazon EKS, Send control plane logs to CloudWatch Logs](https://docs.aws.amazon.com/eks/latest/userguide/control-plane-logs.html) — 2026-11-04 로그 종류, 기본 비활성화, 서브넷 IP, 설정 완료, 로그 그룹과 회전, best effort 전달 및 과거 파일의 내보내기 제한을 부분 대조.
 - [Amazon EKS, Simplify node lifecycle with managed node groups](https://docs.aws.amazon.com/eks/latest/userguide/managed-node-groups.html) — 2026-11-04 최적화 AMI와 사용자 정의 AMI의 패치 배포 책임 대조
 - [Amazon EKS, Update a managed node group for your cluster](https://docs.aws.amazon.com/eks/latest/userguide/update-managed-node-group.html) — 2026-11-04 사용자가 시작하는 노드 업데이트 절차 대조
 - [Amazon EKS, Create nodes with pre-built optimized images](https://docs.aws.amazon.com/eks/latest/userguide/eks-optimized-amis.html) — 2026-11-04 Auto Mode의 AMI 선택과 업데이트 관리 범위 대조
