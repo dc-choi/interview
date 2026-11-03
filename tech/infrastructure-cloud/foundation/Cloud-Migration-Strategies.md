@@ -86,6 +86,14 @@ Rehost한 앱을 여러 instance로 늘리면 로컬 상태가 바로 장애가 
 
 설계 점검 제안: 핵심 시스템을 뒤로 미룰 때 임시 연동과 재작업이 얼마나 필요한지, 먼저 옮길 때 장애 영향과 복구 준비가 충분한지를 비교한다. 핵심 시스템 우선도, 낮은 복잡도 우선도 모든 wave에 적용하는 절대 순서로 두지 않는다. 기존 환경과 클라우드가 공존하는 동안 각 연동의 목적지, 전환 조건과 임시 연결 제거 조건을 기록한다. 이 절은 순서 결정의 검토 기준이며 특정 ERP 구조나 이전 기간을 재현한 결과가 아니다. 기존 제품별 정책 전체를 재검증하지 않아 `verified_at`은 유지한다.
 
+### 의존성 목록은 연결 관측과 업무 흐름을 대조한다
+
+부분 검증(2026-11-04): AWS 평가 자료는 인벤토리와 우선순위 결정, 상세 검토에 필요한 데이터 항목과 정밀도를 구분한다. Wave 계획은 통신 도구만으로 모든 의존성을 알 수 없으며, 드문 배치와 허용 지연을 애플리케이션 담당자와 확인하도록 안내한다. 초기 후보를 고를 정보와 실제 cutover를 승인할 정보를 같은 수준으로 취급하지 않는다.
+
+적용 질문: 두 애플리케이션이 직접 연결되지 않아도 같은 파일 저장소를 생산자와 소비자로 사용할 수 있다. 파일을 쓰는 작업, 읽는 작업과 실행 주기를 함께 기록하고, 이전 중 두 작업이 서로 다른 저장소를 가리키지 않는지 시험한다. 공유 서비스를 wave 묶음 계산에서 따로 다루더라도 인증, 이름 해석과 파일 접근의 검증 대상에서 지우지는 않는다.
+
+VM 이전 시험에서는 새 IP로 기동되는지만 보지 않고 애플리케이션 설정의 고정 주소, 이름 해석 경로와 로컬 hosts 설정, 공유 파일의 경로와 권한을 확인한다(실행 점검 제안). 인벤토리에 빠진 의존성을 발견하면 범위 정본과 관련 wave를 함께 고친다. 다른 시스템의 성공 사례에서 복구 없이 진행했다는 경험을 자체 rollback 생략 근거로 사용하지 않는다. 기존 제품 정책 전체를 재검증한 것은 아니므로 `verified_at`은 유지한다.
+
 ## 컨테이너화와 기능 분리는 별도 작업이다
 
 2026-10-09 AWS 공식 문서 대조 기준. 컨테이너 이미지 생성은 실행 환경을 옮기는 단계이며, 도메인 경계와 데이터 소유권까지 분리했다는 증거는 아니다.
@@ -223,6 +231,9 @@ AWS가 2026-03-25 공개한 IDEMIA Civil Identity 고객 인터뷰는 .NET 3.5�
 
 ## 출처
 
+- [AWS Prescriptive Guidance, Understanding complete assessment data requirements](https://docs.aws.amazon.com/prescriptive-guidance/latest/application-portfolio-assessment-guide/understanding-complete-assessment-data-requirements.html) — 인벤토리와 상세 검토의 데이터 요구를 2026-11-04 대조
+- [From why to how: accelerating your cloud journey — Amazon Web Services](https://www.youtube.com/watch?v=UKkDDYeHPaU) — 11:54~23:53의 단계별 조사와 파일 기반 의존성을 기술 점검 질문으로 반영
+- [Breaking the migration deadlock: What to do with your VMware workloads — Amazon Web Services](https://www.youtube.com/watch?v=X3Hohq8DJdU) — 누락된 파일 서버, 고정 주소와 이름 해석의 이전 시험을 기술 점검 질문으로 반영
 - [AWS DMS User Guide, AWS DMS data validation](https://docs.aws.amazon.com/dms/latest/userguide/CHAP_Validating.html) — 적재 후 검증, CDC 검증, 대기와 검증 불가 통계 및 키 제약을 2026-10-29 대조했다. 실제 데이터 이관이나 성능 측정은 수행하지 않았다.
 - [How the NBA future-proofed its digital infrastructure in 6 months — AWS](https://aws.amazon.com/blogs/media/how-the-nba-future-proofed-its-digital-infrastructure-in-6-months/) — 2026-10-25 공개. 실제 이벤트 검증과 서비스별 성능 지표의 범위를 대조했다.
 - [The NBA's move to AWS: How the NBA migrated to AWS in time for tip-off — Amazon Web Services](https://www.youtube.com/watch?v=S8G-S5vxJeg) — 전사문에서 얻은 이전과 검증 주제를 위 공식 글로 확인했다.

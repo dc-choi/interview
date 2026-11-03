@@ -68,7 +68,7 @@ Linux는 **최상위 루트(`/`)에서 뻗어나가는 단일 트리**로 구성
 각 파일은 `rwxrwxrwx` 9비트 권한을 가지며 소유자(user), 그룹(group), 기타(others) 3그룹.
 
 - **`r`(4)** read, **`w`(2)** write, **`x`(1)** execute
-- 디렉토리에서 `x`는 "들어갈 수 있음", `r`은 "목록 조회", `w`는 "파일 생성, 삭제"
+- 디렉토리에서 `x`는 경로 탐색, `r`은 목록 조회, `w`는 항목 생성과 삭제 권한이다. 항목 생성과 삭제에는 해당 디렉토리의 `x` 권한도 필요하다.
 - 특수 비트: **setuid**(실행 시 파일 소유자 권한), **setgid**, **sticky**(`/tmp`에서 다른 사용자 파일 삭제 금지)
 
 ## 실행 여부와 파일 형식은 확장자가 정하지 않는다
@@ -116,6 +116,10 @@ exec form과 PID 1 동작은 [[Container-Entrypoint-Signals]], 계층별 장애 
 - **사용자, 그룹**: `/etc/passwd`, `/etc/shadow`, `/etc/group`
 
 ## 운영 진단 명령: 로그, 디스크, 마운트
+
+부분 검증(2026-11-04): `free -h`의 `free`는 사용하지 않는 메모리이고, `available`은 swap 없이 새 애플리케이션에 제공할 수 있는 메모리의 추정치다. 캐시 중 회수 가능한 부분을 고려하므로 `free`가 작다는 이유만으로 메모리 부족을 확정하지 않는다. 반대로 캐시 전부를 즉시 회수할 수 있다고 가정하지도 않는다. 컨테이너의 제한과 지표는 [[Container-Memory-Metrics]]에서 별도로 확인한다.
+
+프롬프트의 사용자, 호스트와 경로 표시는 작업 대상을 확인하는 단서지만 꾸밀 수 있는 문자열이다. Bash의 `\$` 프롬프트 escape는 effective UID가 0이면 `#`, 아니면 `$`를 표시한다. 따라서 어떤 프롬프트든 끝 기호만으로 실제 권한을 확정하지 않는다. 메모리, 프롬프트와 위 디렉토리 권한 설명만 부분 대조했으므로 문서 전체의 `verified_at`은 유지한다.
 
 GUI가 없는 서버와 컨테이너에서는 CLI로 원인을 좁힌다. 옵션을 모두 외우기보다 목적별 명령을 알고 세부는 `man`으로 확인한다.
 
@@ -176,7 +180,7 @@ GUI가 없는 서버와 컨테이너에서는 CLI로 원인을 좁힌다. 옵션
 ## 면접 체크포인트
 
 - `/etc`, `/var`, `/usr` 분리가 의미하는 관리 전략
-- `/proc`, `/sys`가 "가상 파일 시스템"인 이유
+- `/proc`, `/sys`가 가상 파일 시스템인 이유
 - "Everything is a file"이 실무 API 설계에 주는 영향
 - 권한 `rwx`가 디렉토리에서는 다르게 해석되는 지점
 - 백엔드 장애 시 가장 먼저 살펴볼 경로 3곳(`/var/log`, `/etc/<app>/`, `/proc/<pid>`)
@@ -184,6 +188,9 @@ GUI가 없는 서버와 컨테이너에서는 CLI로 원인을 좁힌다. 옵션
 - `df`와 `du` 값이 다를 때 먼저 의심할 원인(지웠지만 열린 파일, 마운트에 가려진 데이터)
 
 ## 출처
+- [Linux man-pages, path_resolution(7)](https://man7.org/linux/man-pages/man7/path_resolution.7.html) — 디렉토리 탐색 권한(2026-11-04 부분 검증)
+- [procps-ng, free(1)](https://man7.org/linux/man-pages/man1/free.1.html) — `free`와 `available`의 차이(2026-11-04 부분 검증)
+- [GNU Bash, Controlling the Prompt](https://www.gnu.org/software/bash/manual/html_node/Controlling-the-Prompt.html) — 프롬프트 escape와 effective UID 표시(2026-11-04 부분 검증)
 - [GNU Bash, Bourne Shell Builtins](https://www.gnu.org/software/bash/manual/html_node/Bourne-Shell-Builtins.html), [GNU Bash, Tilde Expansion](https://www.gnu.org/s/bash/manual/html_node/Tilde-Expansion.html) — `cd`, `pwd`, 홈 경로와 심볼릭 링크 해석(2026-10-15 부분 검증)
 - [GNU coreutils, ls invocation](https://www.gnu.org/s/coreutils/manual/html_node/ls-invocation.html), [GNU coreutils, Which files are listed](https://www.gnu.org/software/coreutils/manual/html_node/Which-files-are-listed.html) — 목록 조회와 숨김 항목(2026-10-15 부분 검증)
 - [Filesystem Hierarchy Standard 3.0, /tmp: Temporary files](https://refspecs.linuxfoundation.org/FHS_3.0/fhs/ch03s18.html) — 보존 가정과 재부팅 정리 권고의 구분(2026-10-15 부분 검증)

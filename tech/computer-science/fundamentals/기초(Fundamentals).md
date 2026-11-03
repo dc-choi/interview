@@ -34,6 +34,7 @@ aliases: ["CS Fundamentals"]
 - [x] [[Descriptive-Statistics-and-Distribution|기술통계와 분포 (평균, 중앙값과 최빈값, 분산의 분모, 표준편차와 IQR, 상자그림 수염, 관측 순서와 기하평균)]]
 - [x] [[Discrete-Probability-Distributions|이산 확률분포 (이항, 기하와 포아송, PMF와 CDF, 기댓값, 큰 수의 법칙과 정규분포의 구분)]]
 - [x] [[Conditional-Probability-and-Bayes|조건부확률과 베이즈 정리]] — 결합확률과 주변확률, 조건의 방향, 전체확률과 기저율
+- [x] [[Confidence-Intervals-and-Standard-Error|신뢰구간과 표준오차]] — 원자료와 표집분포, SD와 SE, 반복 표집의 95%, 부트스트랩의 한계
 
 ## 출처
 
