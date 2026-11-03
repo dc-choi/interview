@@ -132,6 +132,7 @@ Software 3.0 패러다임, LLM과 에이전트, 하네스, 평가, 조직 전환
 - [x] [[Agent-Always-On-Mac-Host|상시 실행 Mac 에이전트 호스트]] — 전원 설정, FileVault와 무인 재시작의 절충, 원격 접속, 세션 유지와 재부팅, 플러그인 신뢰
 - [x] [[JetBrains-IDE-Agent-Integration|JetBrains IDE의 코딩 에이전트 통합]] — Air in IDEs의 실행 화면과 세션 diff, 구독 인증 경로, 내장 MCP 서버와 로그포인트 디버깅
 - [x] [[Bedrock-Model-Inference|Bedrock 모델 호출]] — 모델 ID와 요청 스키마, Converse의 대화 상태, 콘솔 실험과 코드 검증
+- [x] [[Bedrock-Agents-Action-Execution|Bedrock Agents 작업 실행]] — Agents Classic의 제공 범위, 작업 정의, Lambda와 RETURN_CONTROL, 사용자 확인과 멱등성
 - [x] [[LLM-API-Version-Migration|LLM API 버전과 SDK 마이그레이션]] — 날짜 기반 버전 고정, SDK 메이저와 기본 버전 헤더, 제거된 파라미터 검색, 요청 단위 분리와 재시도하지 않는 400
 - [x] [[Agent-Skills-Kiro#Kiro Steering: 포함 모드와 적용 범위|Kiro Steering 포함 모드]] — always, fileMatch, manual, auto의 로드 시점, workspace 우선과 AGENTS.md, custom agent의 기본 상속과 해제 설정
 - [x] [[Agent-Skills-Kiro#Kiro MCP: 설정 범위와 도구 승인|Kiro MCP 설정과 도구 승인]] — user와 workspace 설정 병합, Tool Search, autoApprove와 permission 규칙, workspace 신뢰와 접근 격리의 한계

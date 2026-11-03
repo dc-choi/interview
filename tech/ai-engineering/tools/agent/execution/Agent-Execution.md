@@ -11,6 +11,7 @@ aliases: ["Agent Execution", "에이전트 실행 구조"]
 
 ## 목차
 
+- [[Bedrock-Agents-Action-Execution|Bedrock Agents 작업 실행]]: Agents Classic의 제공 범위, 작업 정의, Lambda와 RETURN_CONTROL, 사용자 확인과 멱등성
 - [[Agent-From-Scratch|에이전트 직접 만들기]]: 모델, 오케스트레이션, 도구 계층, 도구 호출 루프와 병렬 호출, 도구 정의, 계획 검증과 saveAs/inputFrom 데이터 흐름, 메모리 세 종류, 실패별 패치로 키우는 학습 경로(Harness Engineering 101)
 - [[Agent-Context-Budget|에이전트 컨텍스트 예산]]: 경계 밖 설계 — 파일 Lazy Loading, 목록 Hybrid, 스킬 Catalog-First, Compaction 대신 사전 통제, hard cap
 - [[Agent-Loop-Engineering|루프 엔지니어링]]: 정지 조건이 본질, ralph 흡수 계보, 4중 루프 아키텍처 축과 공식 4분류 위임 축, 3종 가드, 하네스의 한 층 위

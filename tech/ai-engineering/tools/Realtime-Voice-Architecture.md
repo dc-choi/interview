@@ -107,6 +107,14 @@ Partial-result stabilization을 켜면 바뀔 수 있는 범위가 마지막 몇
 
 ## 대화 진행과 작업 완료를 나눈다
 
+### 복잡한 입력에는 다른 입력 경로를 함께 둔다
+
+음성으로 대화하는 것과 모든 입력을 음성으로만 받는 것은 다르다. 설계 제안으로, 짧은 문답은 음성으로 받고 여러 항목을 비교하거나 정정해야 하는 입력에는 화면을 제공한다. 채널을 바꿀 때는 같은 업무 요청의 입력 상태를 이어받고, 화면에서 고친 값과 백엔드 실행값을 대조한다. 이는 2024년 공개 AI 컨택센터 발표의 음성과 화면 병행 사례에서 얻은 적용 후보이며, 모든 상담에서 완료율이 높아진다는 일반 성능 주장은 아니다.
+
+입력 방식의 전환은 서비스 계약도 확인한다. 2026-11-04 Amazon Lex V2 streaming 문서 기준, 오디오로 시작한 스트림은 음성과 DTMF를 받을 수 있지만 텍스트 입력은 받을 수 없다. 텍스트로 구성한 스트림은 텍스트 입력을 받는다. 따라서 화면 입력과 음성의 결합을 같은 스트림에 임의로 메시지를 섞는 구현으로 가정하지 않는다. 실제 채널 전환과 업무 상태 동기화는 시험하지 않았으며 다른 제품의 기존 검증일은 유지한다.
+
+### 진행 안내와 실행 결과
+
 GPT-Live 구성에서 음성 모델은 말하기 방식과 위임 시점을 담당하고, 백엔드는 추론, 업무 규칙과 도구 흐름을 담당한다. 애플리케이션은 권한, 필요한 확인, 실제 함수 실행과 작업 기록을 관리한다.
 
 사용자가 답변 중간에 끼어들어도 백엔드 작업은 계속될 수 있다. 음성 재생 중단과 작업 취소를 같은 사건으로 처리하지 않고, 계속할지 취소할지 애플리케이션이 결정한다. 백엔드 응답이 완료됐어도 사용자가 결과를 들었는지는 별도 확인 대상이다.
@@ -159,6 +167,8 @@ Client delegation의 위임 이벤트에는 작업 본문 대신 메타데이터
 
 ## 출처
 
+- [AWS, Streaming conversations to an Amazon Lex V2 bot](https://docs.aws.amazon.com/lexv2/latest/dg/streaming.html) — 2026-11-04 오디오, DTMF와 텍스트 입력 모드의 경계를 부분 대조
+- [클라우드 전환을 통한 뱅킹 플랫폼 혁신: 신한의 AI 뱅커 — Amazon Web Services Korea](https://www.youtube.com/watch?v=rn-iUSQhWj8) — 2024년 공개 발표 20:57의 음성과 화면 입력 병행 사례. 원본 전사로 확인했으며 정량적 효과와 화면 구성은 검증하지 않음
 - [AWS, Transcribing multi-channel audio](https://docs.aws.amazon.com/transcribe/latest/dg/channel-id.html) — 2026-11-04 두 채널의 별도 전사, 채널 라벨과 겹치는 발화 시각 대조
 - [AWS, Partitioning speakers (diarization)](https://docs.aws.amazon.com/transcribe/latest/dg/diarization.html) — 2026-11-04 화자 구분과 라벨의 의미 대조
 - [KT 엔터프라이즈와 AWS의 AI 커뮤니케이션 혁신 — Amazon Web Services Korea](https://www.youtube.com/watch?v=LF_2-FpyzqE) — 2024년 공개 발표의 13:55, 29:46~30:47 채널 분리를 검토 계기로 사용. 자체 정확도 개선과 사업 성과는 일반화하지 않음

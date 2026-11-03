@@ -31,6 +31,16 @@ Converse에서 대화를 이어가려면 애플리케이션이 이전 메시지�
 
 `Converse` 호출에는 `bedrock:InvokeModel`, `ConverseStream`에는 `bedrock:InvokeModelWithResponseStream` 권한이 필요하다. 이는 호출 권한의 설명이며 모든 모델의 이용 조건을 충족했다는 뜻은 아니다. [Converse API](https://docs.aws.amazon.com/bedrock/latest/userguide/conversation-inference.html)
 
+## 클라이언트 도구 호출은 애플리케이션이 실행한다
+
+2026-11-04 공식 client-side tool use 문서 부분 대조 기준이다. Converse의 도구 지원 모델에는 `toolConfig.tools`로 이름, 설명과 입력 스키마를 전달한다. 모델의 `stopReason`이 `tool_use`이면 `output.message.content`의 `toolUse` 요청을 읽는다. 이 응답은 도구 실행 결과가 아니다.
+
+애플리케이션이 도구를 실행한 뒤 같은 `toolUseId`를 넣은 `toolResult`를 `user` 메시지로 돌려준다. 앞서 받은 assistant 메시지도 대화 기록에 포함한다. 도구 오류를 반환할 때는 `toolResult.status`를 `error`로 표시할 수 있다.
+
+`toolChoice.auto`와 강제 선택인 `any`, `tool`의 지원 범위는 개별 모델에 따라 다르다. 지원하지 않는 강제 선택이 자동 선택으로 바뀔 것이라고 가정하지 않는다. 도구 사용 지원과 스트리밍 지원도 별도이므로 두 기능을 함께 쓰는 구성을 확인한다.
+
+**설계 제안:** 이름 허용 목록, 입력 검증과 실행 권한은 애플리케이션에서 검사한다. 다른 모델을 도구로 연결할 때도 호출 코드와 결과 수집이 필요하다. 병렬 호출 수, 비용과 실패 처리를 프롬프트만으로 보장하지 않는다. 관리형 작업 그룹의 실행 흐름은 [[Bedrock-Agents-Action-Execution|Bedrock Agents 작업 실행]]과 구분한다. 이 절은 호출 계약을 확인했으며 SDK 실행 시험은 수행하지 않았다.
+
 ## 임베딩 호출과 RAG 검색을 분리한다
 
 임베딩 모델은 입력 텍스트를 벡터로 변환한다. 벡터 간 유사도 계산과 문서 검색은 벡터 데이터베이스가 수행한다. 따라서 임베딩 호출에 성공했다는 사실만으로 문서 저장, 검색과 답변 생성까지 준비됐다고 판단하지 않는다. 관리형 지식 베이스의 조회 계약은 [[Bedrock-Knowledge-Base-Retrieval|Bedrock 지식 베이스 조회]]에서 별도로 다룬다.
@@ -54,6 +64,7 @@ Bedrock 콘솔 playground로 기반 모델을 실험할 수 있다. 공식 안�
 
 ## 출처
 
+- [Amazon Bedrock, Client-side tool use](https://docs.aws.amazon.com/bedrock/latest/userguide/tool-use-client-side.html) — 2026-11-04 Converse의 도구 요청과 결과 연결, 모델별 선택과 스트리밍 지원의 구분을 부분 대조. 기존 절의 검증일은 유지한다.
 - [Amazon Bedrock, Inference using Invoke API](https://docs.aws.amazon.com/bedrock/latest/userguide/inference-api.html)
 - [Amazon Bedrock, Inference using Converse API](https://docs.aws.amazon.com/bedrock/latest/userguide/conversation-inference.html)
 - [Amazon Bedrock, Inference request parameters and response fields for foundation models](https://docs.aws.amazon.com/bedrock/latest/userguide/model-parameters.html)
