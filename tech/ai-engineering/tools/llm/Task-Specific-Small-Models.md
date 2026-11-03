@@ -64,6 +64,18 @@ WorldTUI는 화면의 각 행을 배치의 별도 원소로 동시에 디코딩�
 - **온라인**: 미국과 캐나다 실험에서 클러스터링 대조군보다 이메일 클릭률 1.1%, 푸시 열람률 1.3%가 올랐다.
 - **자체 벤치마크**: WorldTUI의 ShellBench(명령 106개, 출력 완전 일치)에서 미세조정 모델은 80개를 맞혀 프롬프트만 쓴 Qwen2.5-Coder-0.5B의 52개, Qwen3-0.6B의 60개보다 높았고, 파일 다시 읽기는 13개 중 9개(대조군 2개, 3개)였다. 작성자가 만든 시험이며, 작성자도 중첩 디렉터리 이동과 Python 처리가 약해 아직 약한 월드 모델이라고 적는다. 가중치는 확인일 기준 공개 예정이다.
 
+### 특화 성능과 유지할 범용 능력을 따로 평가한다
+
+미세조정의 평가 범위는 맡길 과제와 배포 경계로 정한다. 특정 분류기의 정확도와 자유로운 대화, 도구 사용의 성공은 같은 지표가 아니다. 과제 점수만 오르면 충분한지, 기존의 지시 이행이나 다른 능력도 유지해야 하는지 먼저 나눈다.
+
+2026-11-03 Amazon Nova SFT 공식 문서를 부분 대조한 실험 기준은 다음과 같다.
+
+- 특정 과제의 성능만 필요하면 해당 과제의 train/dev/test 자료를 구분하고 검증 지표와 중간 checkpoint를 확인한다.
+- 범용 능력도 필요하면 과제 점수와 관련 범용 benchmark를 함께 평가한다. Nova data mixing은 고객 자료와 Nova 학습 자료를 섞는 기능이며, 혼합 비율과 자료 범주를 바꾼 짧은 실행으로 두 성능의 균형을 비교한다.
+- 학습량만 늘리지 않고 실제 운영 입력을 대표하는 평가 자료로 과적합과 성능 저하를 확인한다. Data mixing을 켰다는 사실만으로 능력 보존을 판정하지 않는다.
+
+적용 제안: 프롬프트만 사용한 기준선과 미세조정 모델을 같은 홀드아웃에서 비교하고, 배포에 필요한 정확도와 지연을 함께 만족하는지 확인한다. 정해진 출력 공간 밖의 요청까지 검증했다고 확대하지 않는다. 실제 학습과 배포는 재현하지 않았다.
+
 ## 안전 경계
 
 Pinterest는 프롬프트에 넣는 키워드와 생성된 여정 이름을 알림 콘텐츠 필터와 생성 콘텐츠 안전 필터에 통과시키고, 건강 상태, 정치, 성적 지향 같은 민감 주제를 추론하거나 겨냥하지 말라고 지시한다. 유럽경제지역, 스위스와 영국의 18세 미만은 현지 법 때문에 아직 대상이 아니다. 개인 활동에서 의도를 추론하는 모델은 출력이 맞더라도 민감 정보 추론이 될 수 있으므로 입력, 지시와 출력 세 곳에 경계를 둔다(적용 제안).
@@ -96,6 +108,8 @@ Muon, FP8과 사다리꼴 학습률을 사용했다는 사실만으로 각 요�
 
 ## 출처
 
+- [AWS, Amazon Nova: Supervised Fine-Tuning](https://docs.aws.amazon.com/nova/latest/userguide/nova-forge-sft.html) — 2026-11-03 과제/범용 평가, data mixing과 중간 checkpoint 검증 부분 대조.
+- [EP12: Forge & Parcel.ai Model Customization at Scale — Amazon Web Services](https://www.youtube.com/watch?v=58ENTbfZD64) — 2026-10-20 공개, 19:56과 47:20~49:53의 평가 범위 논의. 음성 인식 전사에서 확인한 논점을 공식 SFT 문서와 대조했으며 사례 성능 수치는 옮기지 않았다.
 - [From Activity to Intent: Generating User Journeys with LLMs — Pinterest Engineering](https://medium.com/pinterest-engineering/from-activity-to-intent-generating-user-journeys-with-llms-9652b9417626) — 2026-10-09 게시, 2026-10-27에 같은 블로그의 공개 RSS 본문으로 대조
 - [WorldTUI: I trained a 360M model to pretend to be a terminal — SimEdw's Blog, Simon Edwardsson](https://simedw.com/2026/10/21/world-model-terminal/) — 2026-10-21 게시, 2026-10-27 대조
 - [Pinterest, 사용자 활동에서 장기 목표를 추론하는 LLM 구축 — GeekNews](https://news.hada.io/topic?id=36011) — 학습 계기

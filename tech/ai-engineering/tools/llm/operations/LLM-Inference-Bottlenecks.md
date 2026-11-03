@@ -40,6 +40,14 @@ Prefill-decode disaggregation은 두 단계를 별도 자원에 배치해 간섭
 - speculative decoding: 작은 모델이 여러 토큰을 제안하고 큰 모델이 묶어서 검증한다. 제안의 수락률과 검증 비용에 따라 속도 이득이 달라진다. 대상 모델은 계속 필요하므로 가중치 용량 부족의 해법은 아니다.
 - 양자화: 가중치나 KV 캐시의 저장 정밀도를 낮춰 용량과 읽을 바이트 수를 줄인다. 저장 정밀도와 연산 정밀도는 다를 수 있으며, 커널과 하드웨어, 변환 비용에 따라 속도 이득이 달라진다. 비트 수 감소 비율을 그대로 가속 배율로 쓰지 않는다.
 
+### 하이브리드 모델의 활성 파라미터와 상태 메모리
+
+2026-11-03 NVIDIA 모델 카드 부분 대조 기준, Nemotron 3.5 Lightning 30B-A3B는 Mamba-2, MoE와 Attention을 섞고 MTP를 포함한다. 총 30B와 토큰당 활성 3B는 다른 수치다. 일부 전문가만 계산해도 나머지 가중치의 저장과 접근이 필요하므로 활성 파라미터 수만으로 적재 메모리를 계산하지 않는다.
+
+메모리 예산에서는 가중치, Mamba 상태와 Attention KV 캐시를 나눈다. 모델 카드의 BF16 단일 H100 80GB 예시는 256K 문맥을 검증한 설정이며, 모델의 최대 1M 문맥을 같은 장비에서 보장한다는 뜻이 아니다. 문맥과 동시성을 함께 고정해야 비교할 수 있다.
+
+MTP가 포함됐다는 사실도 모든 부하에서 추측 디코딩이 빠르다는 보장은 아니다. 같은 카드의 단일 H100 최대 처리량 구성은 추측 디코딩을 사용하지 않는다. 적용 제안: 기본 디코딩과 초안 검증을 같은 입력, 동시성과 품질 조건에서 비교한다. 이 절은 공개 구성만 대조했고 실행 성능과 기존 본문 전체는 재검증하지 않아 frontmatter의 검증일은 유지한다.
+
 ## 로컬 추론의 용량과 지연을 따로 계산한다
 
 2026-10-06에 아래 용량 구분과 오프로딩 설명을 Hugging Face 공식 문서에 대조했다. API 예시는 생략하고 메모리 예산의 원칙을 다룬다.
@@ -161,6 +169,7 @@ CPU 사례에는 병렬화, 단계 간 데이터 전달, CPU 활용률과 하드
 
 ## 출처
 
+- [NVIDIA-Nemotron-3.5-Lightning-30B-A3B-BF16 — Hugging Face, NVIDIA](https://huggingface.co/nvidia/NVIDIA-Nemotron-3.5-Lightning-30B-A3B-BF16) — 2026-11-03 구조, 총/활성 파라미터와 BF16 H100 배포 설정 부분 대조.
 - [NVIDIA Dynamo v1.5.1, KV-Aware Routing](https://docs.dynamo.nvidia.com/dynamo/v1.5.1/knowledge-base/concepts/system-architecture/kv-aware-routing)
 - [NVIDIA Dynamo v1.5.1, Request Rejection Architecture](https://docs.dynamo.nvidia.com/dynamo/v1.5.1/knowledge-base/concepts/fault-tolerance/request-rejection-architecture)
 - [NVIDIA Dynamo v1.5.1, Planner Guide](https://docs.dynamo.nvidia.com/dynamo/v1.5.1/knowledge-base/modular-components/planner/planner-guide) — 위 세 문서의 라우팅, 부하 거절과 확장 역할만 2026-10-24 대조

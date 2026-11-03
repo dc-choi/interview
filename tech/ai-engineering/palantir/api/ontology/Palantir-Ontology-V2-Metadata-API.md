@@ -104,6 +104,16 @@ Value type GET/list는 Preview이며 list는 최신 버전을 반환한다. fiel
 
 Query metadata는 재귀 dataType과 typeReferences를 제공한다. execute의 version은 semantic version range다. 생략하면 **가장 최근에 publish한 버전이며 prerelease일 수도 있다**. branch만 지정하면 그 branch의 최신, branch와 version을 함께 지정하면 그 버전이 branch에 있어야 한다. metadata get의 version과 실행의 range 의미를 구별한다. Optional parameter는 생략 가능하며 응답은 value다.
 
+### Query 실행의 문맥과 응답 계약
+
+2026-11-03 Execute Query 명세 부분 대조 기준, `POST /api/v2/ontologies/{ontology}/queries/{queryApiName}/execute`는 Ontology API name 또는 RID와 Query API name을 받는다. OAuth2 operation scope는 `api:ontologies-read`다. Global Query의 `api:functions-execute`를 이 경로의 계약으로 복사하지 않는다.
+
+- `transactionId`는 읽을 Ontology transaction을 지정한다. Experimental 기능이며 모든 workflow 지원을 보장하지 않는다. `scenarioRid`는 Query를 실행할 Ontology scenario의 RID다. 두 인자를 받는다는 사실만으로 임의 조합이나 쓰기 원자성을 보장한다고 해석하지 않는다.
+- `sdkPackageRid`, `sdkVersion`은 생성된 SDK의 식별자와 버전이다. 실행 함수의 semantic version range인 `version`과 구분한다.
+- 요청의 `parameters`는 선택 map이지만 함수 정의의 필수 입력까지 생략 가능하다는 뜻은 아니다. 응답의 `value`는 필수이며 DataValue에 `null`도 포함된다. 값이 `null`인 결과와 `value` 필드가 없는 응답을 구분한다.
+
+클라이언트 설계 제안: 실행 대상과 branch, version, scenario, transaction 문맥을 명시적으로 관리하고 함수 metadata의 입력 요건을 대조한다. 실제 인증 호출과 문맥 조합은 시험하지 않았고, 다른 metadata 항목의 검증일은 유지한다.
+
 ### Query type 목록의 버전과 페이지 순회
 
 2026-10-20 List Query Types 공식 문서 대조 기준이다. `GET /api/v2/ontologies/{ontology}/queryTypes`는 Query type마다 가장 최근에 publish한 버전의 metadata를 반환한다. 전체 버전 이력을 반환하는 목록이 아니며, 최신 항목이 prerelease일 수도 있어 안정 버전 목록으로 해석하지 않는다.
