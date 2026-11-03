@@ -21,6 +21,19 @@ aliases: ["MCP Incident Investigation", "MCP 기반 장애 조사"]
 
 Grafana의 Tempo data source는 trace에서 로그나 메트릭으로 이동하는 연결을 제공한다. 반대 방향의 로그에서 trace로 이동은 Loki derived fields, 메트릭에서 trace로 이동은 exemplar 설정을 확인한다. MCP를 붙이는 것만으로 누락된 계측이나 trace ID가 생기지는 않는다.
 
+## 반복되는 조회 연결은 작업 단위 도구로 묶는다
+
+서비스 이름으로 내부 ID를 찾고 그 ID로 메트릭을 조회하는 순서가 정해져 있다면, 매 단계의 연결을 모델이 다시 추론하게 하는 대신 하나의 조사 도구 안에서 수행할 수 있다. Anthropic의 도구 설계 안내는 API마다 도구를 만드는 방식보다 자주 연결되는 작업을 합치고, 전체 로그 대신 관련 로그와 주변 문맥을 반환하는 방식을 제안한다(2026-11-04 대조).
+
+다음은 이를 인프라 조사에 적용한 설계 예시다.
+
+- 서비스, 환경, 시간 범위를 입력으로 받고, 서버가 허용된 대상의 ID를 조회한 뒤 같은 범위의 메트릭을 가져온다.
+- 반환값에는 관측값, 단위, 조회 시각과 근거 위치를 남긴다. 대상 매핑 실패, 권한 거부와 데이터 부재를 정상값 0으로 바꾸지 않는다.
+- 요약만으로 다음 검사를 할 수 없으면 원시 근거를 추가 조회할 수 있게 한다. 내부 API 호출을 숨기는 것과 조사 근거를 없애는 것은 다르다.
+- 동일한 장애 질문에서 기존 도구 조합과 작업 단위 도구의 답변 정확도, 호출 수, 전체 지연과 토큰 사용량을 비교한다. 모델 호출 감소만으로 복구 효과를 확정하지 않는다.
+
+순서가 자주 달라지거나 중간 결과에 따라 사람이 판단해야 하면 세부 조회 도구를 유지할 수 있다. 조회를 합쳐도 대상별 인가와 오류 구분은 유지하며, 변경 작업을 조회 도구 안에 끼워 넣지 않는다. 과거 발표의 모델별 속도와 비용 절감률은 현재 성능으로 옮기지 않았고, 기존 제품 옵션의 검증일도 유지한다.
+
 ## 현재 도구 범위
 
 2026-10-07 공식 문서 기준이다. Grafana MCP는 Tempo 도구 범주를 지원한다. 별도 Tempo 서버가 항상 필요하다는 과거 데모의 구성을 현재 제약으로 사용하지 않는다.
@@ -71,6 +84,8 @@ Grafana의 읽기 모드는 원시 SQL을 넘기는 `query_sql`, `query_influxdb
 
 ## 출처
 
+- [Writing effective tools for agents — with agents — Anthropic](https://www.anthropic.com/research/writing-tools-for-agents) — 2026-11-04 작업 단위 도구, 관련 문맥 반환과 호출 수, 지연, 토큰 평가 대조. 장애 조사 적용은 설계 제안
+- [넥슨의 LLM 에이전트 길들이기: 인프라 모니터링 서비스 적용 사례 — Amazon Web Services Korea](https://www.youtube.com/watch?v=elJh3rekGj8) — 2024년 공개 발표의 20:37, 24:42~30:49 서비스 ID 연결과 작업 단위 도구를 검토 계기로 사용. 화면 코드와 성능 수치는 반영하지 않음
 - [Monitoring Distributed Systems — Google SRE](https://sre.google/sre-book/monitoring-distributed-systems/)
 
 - [Grafana, Enable and disable tools](https://grafana.com/docs/grafana-cloud/ai-tools/mcp-servers/oss-mcp/configure/enable-and-disable-tools/)

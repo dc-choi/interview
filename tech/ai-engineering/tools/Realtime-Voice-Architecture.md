@@ -79,6 +79,18 @@ VAD(Voice Activity Detection)는 말소리가 있는 구간을 찾는다. Turn d
 - 배포 전에는 어느 오류가 더 불편한지 예상만 할 수 있어 두 클래스의 지표를 같은 무게로 평균해 모델을 골랐다. 오프라인 테스트셋 점수는 첫 학습 약 75%에서 약 90%로 올랐고, 실제 음성 주문 환경의 정확도는 약 80%였다. 판정 뒤에도 사용자가 계속 말한 경우 같은 오판은 DB에 저장하게 해 두고 이후 재학습에 쓰기로 했다. 라벨링부터 실제 환경 적용까지의 한 주기는 7월과 8월에 진행했다.
 - 추론: 규칙의 약 90% 일치도는 규칙 조정에 쓴 같은 사람 라벨로 잰 값으로 보이고, 테스트셋도 규칙 라벨 데이터에서 나눈 것으로 보여 오프라인 점수는 규칙 라벨과의 일치도일 수 있다. 발표 표현은 예측 클래스별 정밀도의 평균에 가깝게 들리지만, 음성 인식 전사이고 슬라이드가 없어 재현율과 정밀도 중 무엇을 평균했는지 확정하지 않는다.
 
+## 통화 채널과 화자 추정을 구분한다
+
+송신과 수신을 별도 채널로 녹음한 통화는 채널별 전사를 사용할 수 있다. Amazon Transcribe의 channel identification은 두 채널을 각각 전사하고 `ch_0`, `ch_1`과 시각 정보를 반환한다. 두 사람이 동시에 말하면 두 채널의 타임스탬프도 겹친다. 반면 speaker diarization은 음성에서 화자를 구분해 `spk_0` 같은 라벨을 붙이는 기능이다(2026-11-04 공식 문서 대조).
+
+다음은 통화 요약 파이프라인에 적용할 설계 점검이다.
+
+- 녹음 단계에서 채널과 참여자 역할의 대응을 보존한다. 채널 번호나 화자 라벨만으로 고객과 상담원, 실제 신원을 확정하지 않는다.
+- 채널이 분리된 원음을 모노로 합치기 전에 후속 전사 요구를 확인한다. 채널 분리와 화자 추정은 서로 다른 입력 조건을 이용한다.
+- 요약의 약속, 요청과 거절을 원래 발화자 및 시간 구간에 연결한다. 단어 인식 오류, 발화자 귀속 오류와 요약 오류를 따로 검수한다.
+
+채널 분리는 누가 말했는지 확인할 단서를 보존하는 방법이며 전사 정확도 향상을 보장하는 수치는 아니다. 이 절만 대조했으므로 다른 음성 제품의 기존 검증일은 유지한다.
+
 ## 부분 전사와 실행 가능한 요청을 구분한다
 
 연쇄 파이프라인의 STT는 발화가 끝나기 전에도 텍스트를 내보낸다. 2026-10-09 Amazon Transcribe 공식 문서 기준으로 부분 전사는 추가 문맥에 따라 앞서 인식한 단어가 바뀔 수 있다. `IsPartial: false`는 해당 음성 구간의 전사가 완료됐다는 뜻이다. 이것만으로 사용자의 전체 발화 차례나 업무 요청이 끝났다고 판단하지 않는다.
@@ -147,6 +159,9 @@ Client delegation의 위임 이벤트에는 작업 본문 대신 메타데이터
 
 ## 출처
 
+- [AWS, Transcribing multi-channel audio](https://docs.aws.amazon.com/transcribe/latest/dg/channel-id.html) — 2026-11-04 두 채널의 별도 전사, 채널 라벨과 겹치는 발화 시각 대조
+- [AWS, Partitioning speakers (diarization)](https://docs.aws.amazon.com/transcribe/latest/dg/diarization.html) — 2026-11-04 화자 구분과 라벨의 의미 대조
+- [KT 엔터프라이즈와 AWS의 AI 커뮤니케이션 혁신 — Amazon Web Services Korea](https://www.youtube.com/watch?v=LF_2-FpyzqE) — 2024년 공개 발표의 13:55, 29:46~30:47 채널 분리를 검토 계기로 사용. 자체 정확도 개선과 사업 성과는 일반화하지 않음
 - [AWS, Streaming and partial results](https://docs.aws.amazon.com/transcribe/latest/dg/streaming-partial-results.html)
 - [AWS, Result](https://docs.aws.amazon.com/transcribe/latest/APIReference/API_streaming_Result.html)
 - [Griffin: The First Human Interaction Model — Tavus](https://www.tavus.io/griffin) — Face-to-face study와 Methodology, 1분 대화의 자체 평가 조건.
