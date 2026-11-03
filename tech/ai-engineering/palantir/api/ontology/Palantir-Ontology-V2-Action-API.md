@@ -37,6 +37,14 @@ applyBatch는 같은 action type을 최대 20개 적용하며 OSv2만 수정하�
 
 Batch의 상세 edit union은 modifyObject/addObject/addLink이고 별도 삭제 count가 있다. 단일 Action의 deleteObject/deleteLink variant가 그대로 batch 목록에 나온다고 가정하지 않는다. 공개 명세에서 전체 batch 원자성, timeout 뒤 적용 여부나 자동 retry 안전성을 보장하지 않으므로 그런 계약을 덧붙이지 않는다.
 
+### Batch 요청 목록과 빈 응답의 해석
+
+2026-11-03 Apply Action Batch 공개 명세와 수집된 schema를 부분 대조했다. `POST /api/v2/ontologies/{ontology}/actions/{action}/applyBatch`는 본문의 `requests`에 목록을 받고 각 항목이 `parameters` map을 갖는다. 서로 다른 Action API name을 항목마다 넣는 형태가 아니라 경로에서 정한 같은 Action에 입력 묶음을 전달한다.
+
+Batch의 `options`에는 `returnEdits`만 정의돼 있고 기본값은 `NONE`이다. 단건의 `mode: VALIDATE_ONLY`를 그대로 복사하지 않는다. 응답 schema는 선택 필드 `edits`만 정의하며 공식 성공 예시도 `{}`다. 따라서 단건처럼 `validation.result`를 필수로 읽는 응답 처리기를 공유하거나, 빈 객체를 편집 없음의 증거로 해석하지 않는다.
+
+schema에서 `requests`와 항목의 `parameters`는 선택 필드지만 빈 요청의 유효성이나 업무상 성공을 보장한다는 뜻은 아니다. 필요한 입력은 Action 정의와 대조한다. 인증 호출, 오류 응답과 timeout 후 상태는 시험하지 않았으며, 이 부분 검증으로 문서 전체의 `verified_at`을 갱신하지 않는다.
+
 ## Parameter metadata와 동적 validation
 
 Action type metadata의 validation.defaultValidation은 allowedValues와 arraySize다. allowedValues에는 labelled oneOf, datetime, attachment size, valueType, markdown length, numeric range, mustBeEmpty와 text length/regex가 있다. text regex는 Elasticsearch regex semantics다.
