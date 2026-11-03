@@ -21,6 +21,7 @@ aliases: ["웹&네트워크(Web&Network)", "Web & Network"]
 
 ## 추가 주제
 
+- [x] [[Mobile-Network-Continuity|이동 환경의 통신 연속성]] — 주소 공간, 이동성, 오류 정정과 중계 자원의 구분
 - [x] [[Wireless-Multiple-Access|무선 다중접속과 공간 다중화]] — OFDMA, MIMO와 링크 적응의 역할 구분
 - [x] [[Game-State-Authority-and-Prediction|게임 상태 판정과 예측]] — 서버 권위, 재시뮬레이션, 명령 공유와 결정성의 조건
 - [[Satellite-Direct-to-Device|위성 직접 연결]] — LTE와 NTN 방식, 도플러와 서비스 지원 조건

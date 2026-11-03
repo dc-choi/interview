@@ -36,6 +36,12 @@ DCF의 기본 구조는 [[Valuation|밸류에이션]], 사업 구조는 [[Paid-W
 
 2026-10-27 확인한 공식 IR 일정에서 3분기 실적발표 컨퍼런스콜은 10월 29일 오전 10시로 예정돼 있었다. 그 전에 나온 분석자의 HBM 평균판매가격(ASP) 예상은 회사가 발표한 실적이나 확정 계약조건으로 옮기지 않는다. 후속 발표에서도 가격과 물량이 공개되지 않으면 미확인으로 두고, 추정이 필요하면 가정과 민감도 범위를 별도로 적는다.
 
+### 보고 이익률의 일회성 효과를 분리한다
+
+성장률과 이익률을 다음 분기로 연장하기 전에 환급 등 해당 기간의 조정 요인을 확인한다. Apple의 2026-11-02 공식 발표는 9월 26일 종료 분기 매출 1,145억 달러, 매출총이익률 47.9%와 희석 EPS 2.10달러를 제시한다. 회사는 관세 환급이 이익률에 약 1%포인트, EPS에 0.05달러의 유리한 영향을 줬다고 명시한다.
+
+그 효과만 단순 차감하면 약 46.9%와 2.05달러지만, 이는 공시 수치에 대한 산술 예시이며 회사가 발표한 정상 이익이나 다음 분기 전망은 아니다. 발표 시점의 이익률 상승을 전부 반복 가능한 원가 개선으로 해석하지 않는다. 2026-11-04 이 발표의 실적과 환급 효과만 대조했으며, 컨센서스 대비 차이와 주가 하락 원인은 확인하지 않았다.
+
 ### 매출 비중과 이익 기여도는 따로 계산한다
 
 새 사업이 최대 매출 부문이 됐어도 최대 영업이익 부문이 됐다는 뜻은 아니다. 매출, 영업이익과 조정 EBITDA를 같은 기간과 부문으로 맞추고 조정 항목까지 확인한다.
@@ -187,6 +193,7 @@ IAS 32(국내 K-IFRS 1032) 문단 23은 문단 16A~16D가 정한 예외를 빼�
 
 ## 출처
 
+- [Apple reports fourth quarter results — Apple](https://www.apple.com/newsroom/2026/11/apple-reports-fourth-quarter-results/) — 2026-11-04 매출총이익률과 희석 EPS에 포함된 관세 환급 효과 부분 대조. 기존 절의 검증일은 유지한다.
 - [SpaceX Reports Third Quarter 2026 Results — SpaceX](https://www.sec.gov/Archives/edgar/data/1181412/000162828026066482/spaceexplorationtechnologi.htm) — 2026-10-28 분기 부문별 매출과 영업이익, 조정 EBITDA와 SI 조정표 및 매출 구성 대조. 2절의 사례만 부분 검증했으며 기존 항목의 검증일은 유지한다.
 - [Samsung Electronics Announces Earnings Guidance for Third Quarter 2026 — Samsung Newsroom](https://news.samsung.com/global/samsung-electronics-announces-earnings-guidance-for-third-quarter-2026) — 2026-10-08 발표한 연결 매출과 영업이익 추정치, 2026-10-27 대조. 본문 2절의 사례만 검증했다.
 - [IR 행사 — 삼성전자](https://www.samsung.com/sec/ir/ir-events-presentations/events/) — 3분기 가이던스 공시일과 실적발표 컨퍼런스콜 예정일, 2026-10-27 대조.
