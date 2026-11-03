@@ -14,6 +14,7 @@ aliases: ["성능&확장성(Performance&Scalability)", "Performance & Scalabilit
 - [x] [[Transaction-Lock-Contention|트랜잭션 경합과 Lock 문제]]
 
 ## Checklist
+- [x] [[Agent-Assisted-Performance-Analysis|에이전트 성능 분석과 검증]] — 프로파일 근거, 변경 계약, 카나리 대조군과 공개 사례의 확인 범위
 - [x] [[Performance-Fundamentals|성능 기초 개념 폴더 인덱스 (CPU vs I/O, 처리량과 지연시간, 확장 방향, 캐시와 큐)]]
 - [x] [[Performance-Optimization|성능 최적화 전략 폴더 인덱스 (레이턴시, 읽기와 쓰기, 커넥션 풀, 락 경합, 이미지 전송, 증설 없는 스케일링)]]
 - [x] [[Traffic-Workload-Patterns|대규모 트래픽 워크로드 패턴 폴더 인덱스 (선착순, 대기열, 알림 팬아웃, 위치 매칭)]]

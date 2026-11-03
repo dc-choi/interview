@@ -12,6 +12,7 @@ aliases: ["비용&운영(FinOps)", "Cost & Operations", "FinOps"]
 - [[Large-Scale-Traffic-Experience#사례 (참고)|Redshift → ElasticSearch 전환]] — 월 3천만 원 Redshift 로그 검색을 ES로 이전, 연 3억 절감 + 검색 시간 90%+ 단축
 
 ## Checklist
+- [x] [[VPS-Hosting-Cost-and-Service-Boundaries|VPS 호스팅 비용과 운영 조건]] — 공유 자원, 트래픽 정책, 백업과 복원, 동일 조건의 비용 비교
 - [x] [[AWS-Sustainability-Measurement|AWS 환경 영향 측정]] — 탄소와 취수량의 단위, 갱신 주기, 계산 방법 버전과 내보내기 범위
 - [x] [[SaaS-Usage-Metering|SaaS 사용량 미터링]] — API 로그 집계, 청구 단위와 고객 귀속, 지연과 누락, 업무 완료 기록의 대사
 - [x] [[Cloud-Unit-Cost|클라우드 단위 비용 (총비용과 처리 효율, 분모와 비용 범위, 완료 결과와 품질의 동시 측정)]]
