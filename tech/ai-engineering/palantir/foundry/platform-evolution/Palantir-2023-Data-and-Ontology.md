@@ -41,6 +41,16 @@ Code Repositories는 Python external transform, model adapter와 training 통합
 
 3월 JDBC Java 11+, 5월 ODBC 64-bit-only, 12월 Spark 3.4와 모듈 버전 기준은 당시 migration 조건이다. 이를 2026년의 최소/최대 지원 버전으로 재사용하지 않는다. 11월 input dataset job-spec restriction 강화는 잘못 참조한 transform을 실패시키는 보안 변경이다. 실패 메시지를 제거할 문제가 아니라 project reference와 권한을 바로잡을 문제로 본다.
 
+### 미리보기 입력과 재현 조건
+
+2023-05-30에는 Code Repositories의 transform preview에서 복합 필터와 sample 크기를 설정하는 기능을 확대했고, 9월 25일에는 입력 전략에 null과 non-null 필터를 추가했다. 10월 29일에는 로컬 개발의 dataset preview에서 여러 입력 파일과 출력 파일을 지원한다고 발표했다. 이는 당시 미리보기 기능의 확장 기록이며 전체 데이터의 품질 검사를 완료했다는 뜻은 아니다.
+
+10월 21일의 Functions 입력 저장은 transform sample 설정과 별개다. 실행 전에 `Save inputs after execution`을 선택하면 live preview와 published function의 입력을 나중에 재사용할 수 있고, 저장 설정은 현재 작업 branch와 사용자에 종속된다고 설명했다. 따라서 같은 branch에서 작업한다는 사실만으로 동료가 같은 입력을 재사용한다고 가정하지 않는다. 재현할 때 입력값, 사용자와 branch, 실행한 함수 버전을 함께 확인한다(검증 제안).
+
+2026-11-03 확인한 현행 Preview transforms 문서는 preview가 sample output을 만들되 commit, checks와 dataset materialization을 수행하지 않는다고 설명한다. 파일 sample 설정을 저장하면 다음 preview에서 재사용할 수 있다. 이 현행 문서에서 과거의 null 필터 UI나 Functions 입력 저장의 현재 지원 범위까지 확인한 것은 아니다. 현행 preview 경계는 [[Palantir-Repository-Preview-and-Runtime]]에서 이어 본다.
+
+이 절의 출시 날짜와 당시 동작은 수집된 공식 2023 release notes 본문을 대조했다. 같은 날 웹 조회의 release 목록은 loading 상태여서 목록 본문을 새로 확인하지 못했다. 기존 본문의 다른 시점 민감 주장은 이번에 재검증하지 않아 `verified_at`은 유지한다.
+
 ## 출처
 
 - [Palantir, 2023 release notes](https://www.palantir.com/docs/foundry/release-notes/2023)
@@ -51,6 +61,7 @@ Code Repositories는 Python external transform, model adapter와 training 통합
 - [Palantir, Edit object types](https://www.palantir.com/docs/foundry/object-link-types/edit-object-type)
 - [Palantir, Manage schema changes](https://www.palantir.com/docs/foundry/object-edits/schema-migrations)
 - [Palantir, Migrating between ontologies](https://www.palantir.com/docs/foundry/ontologies/ontology-migration)
+- [Palantir, Preview transforms](https://www.palantir.com/docs/foundry/code-repositories/preview-transforms) — 2026-11-03 preview의 실행 범위와 파일 sample 재사용만 대조했다.
 
 ## 관련 문서
 
@@ -61,3 +72,4 @@ Code Repositories는 Python external transform, model adapter와 training 통합
 - [[Palantir-Ontology-Manager-Operations]]
 - [[Palantir-Object-Edit-Migrations]]
 - [[Palantir-Ontology-Resource-Permissions]]
+- [[Palantir-Repository-Preview-and-Runtime]]

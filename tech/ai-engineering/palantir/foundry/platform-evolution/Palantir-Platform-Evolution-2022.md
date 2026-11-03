@@ -21,7 +21,11 @@ Notepad PDF 생성과 document 저장은 다른 동작이다. Template PDF를 �
 
 ## 분석의 값과 화면 상태
 
-Contour의 partition/projection 표시, branch별 parameter source 선택과 path dependency 삭제 방지는 계산 입력을 명확히 한다. Downstream path가 있으면 삭제를 막고 materialized output만 있으면 업데이트 중단을 경고한다. Non-deterministic window function 경고는 UI 개선이어도 결과 재현성의 문제다. 당시 문구 NTIL은 함수 이름 오기로 보이며 현재 NTILE 문법과 대조해야 한다.
+Contour의 partition/projection 표시, branch별 parameter source 선택과 path dependency 삭제 방지는 계산 입력을 명확히 한다. Downstream path가 있으면 삭제를 막고 materialized output만 있으면 업데이트 중단을 경고한다.
+
+2022-12-08 변경은 expression board에서 `LAG`, `LEAD`, `NTIL` 사용 시 비결정성 경고를 추가한 기록이다. 마지막 표기는 당시 description 그대로이며, 2026-11-03 대조한 현행 Non-determinism in Contour 문서는 `NTILE`을 사용한다. 같은 partition 안에서 `ORDER BY` 값이 겹치면 같은 입력과 로직으로도 일부 window function의 결과가 달라질 수 있다. 경고 표시를 결과가 결정적이라는 보장으로 읽지 않고, 동률을 해소하는 정렬 기준을 확인한다. 실제 조건과 다른 비결정성 원인은 [[Palantir-Contour-Correctness-and-Time]]에서 다룬다.
+
+이 날짜와 당시 경고 대상은 수집된 공식 2022 release notes 본문으로 확인했다. 2026-11-03 웹 조회의 release 목록은 loading 상태여서 새 목록 본문은 확인하지 못했고, 현행 문서는 window 정렬 조건만 대조했다. 기존 본문의 다른 시점 민감 주장은 재검증하지 않아 `verified_at`은 유지한다.
 
 Map/heatmap/embedded row count, null coloring과 property-card link filter 수정은 같은 화면이 올바른 subset을 표시하는지 다시 확인하게 한다. Default open view, dashboard tab, text/table 편집, scroll/resize와 preview 오류 수정은 계산 권한을 바꾸는 기능으로 보지 않는다.
 
@@ -51,6 +55,7 @@ Workshop variable transform/list/filter promotion, chart와 object-table progres
 - [Palantir, Configure checkpoints](https://www.palantir.com/docs/foundry/checkpoints/configure-checkpoints)
 - [Palantir, Render hints](https://www.palantir.com/docs/foundry/object-link-types/metadata-render-hints)
 - [Palantir, Quiver: Export an object set](https://www.palantir.com/docs/foundry/quiver/objects-import-export)
+- [Palantir, Non-determinism in Contour](https://www.palantir.com/docs/foundry/contour/correctness-non-determinism) — 2026-11-03 window function 이름과 정렬 동률 조건만 대조했다.
 
 ## 관련 문서
 
@@ -59,3 +64,4 @@ Workshop variable transform/list/filter promotion, chart와 object-table progres
 - [[Palantir-Slate]]
 - [[Palantir-Notepad]]
 - [[Palantir-Contour]]
+- [[Palantir-Contour-Correctness-and-Time]]
