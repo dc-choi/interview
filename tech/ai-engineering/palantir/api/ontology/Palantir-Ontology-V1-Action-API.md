@@ -27,6 +27,12 @@ OSv1 object/link 변경은 eventual consistency, OSv2 변경은 Action 완료 �
 
 `applyBatch`는 같은 action type을 여러 번 적용한다. 일반 상한은 한 요청 20개다. OSv2 객체만 수정하고 Function을 호출하지 않는 Action은 더 높은 한도를 받을 수 있으므로 이를 모든 Action의 보장치로 쓰지 않는다. Batch는 default parameter와 notification을 지원하지 않는다. 공개 본문에 없는 전체 batch 원자성이나 안전한 자동 재시도는 추정하지 않는다.
 
+`POST /api/v1/ontologies/{ontologyRid}/actions/{actionType}/applyBatch`의 본문은 `requests` 배열로 적용별 `parameters` map을 묶는다. Action type은 경로에서 하나를 정하므로 서로 다른 Action type을 배열 원소마다 지정하는 계약이 아니다. OAuth2 호출에는 `api:ontologies-read`와 `api:ontologies-write`가 모두 필요하다.
+
+성공 응답은 `{}`이며 항목별 결과 배열이나 변경 객체 목록이 아니다. 호출한 입력과 변경 확인에 필요한 식별자를 클라이언트에서 별도로 보관하는 것을 운영 기준으로 삼는다. 응답이 비었다는 이유로 실패한 요청이라고 판단해 재전송하지 않는다. 타임아웃처럼 적용 여부가 불명확한 경우의 재시도 안전성은 이 응답 형태만으로 보장되지 않는다.
+
+2026-11-03 버전 없는 문서 주소와 `/api/v1/` 문서 주소가 설명하는 위 V1 endpoint, 요청 예제, 빈 응답과 제한을 대조했다. OSv1/OSv2 변경 가시성은 위 저장소 구분을 따른다. 실제 API 호출이나 장애 시 부분 적용 여부를 재현한 검증은 아니다.
+
 ## 검증은 적용 성공의 보증이 아니다
 
 `POST .../validate`는 `api:ontologies-read`로 parameter와 submission criteria를 평가해 VALID/INVALID를 반환한다. 성능 때문에 기존 객체나 Foundry 데이터를 검사하지 않으므로 primary key 유일성, user ID 존재 여부는 검증하지 않는다. 생략 parameter는 null이며 Action의 configured default value를 적용하지 않는다.
@@ -66,6 +72,7 @@ Attachment metadata GET과 `/content` binary GET은 `api:ontologies-read`다. me
 - [Apply Action](https://www.palantir.com/docs/foundry/api/ontology-resources/actions/apply-action)
 - [Apply Action (v1)](https://www.palantir.com/docs/foundry/api/v1/ontology-resources/actions/apply-action) — 2026-11-03 경로 식별자와 요청 스키마를 대조한 버전 명시 주소
 - [Apply Action Batch](https://www.palantir.com/docs/foundry/api/ontology-resources/actions/apply-action-batch)
+- [Apply Action Batch (v1)](https://www.palantir.com/docs/foundry/api/v1/ontology-resources/actions/apply-action-batch) — 2026-11-03 요청 배열, OAuth2 scope, 빈 성공 응답과 적용 제한 대조
 - [Validate Action](https://www.palantir.com/docs/foundry/api/ontology-resources/actions/validate-action)
 - [Get Action Type](https://www.palantir.com/docs/foundry/api/ontology-resources/action-types/get-action-type)
 - [Upload Attachment](https://www.palantir.com/docs/foundry/api/ontology-resources/attachments/upload-attachment)
