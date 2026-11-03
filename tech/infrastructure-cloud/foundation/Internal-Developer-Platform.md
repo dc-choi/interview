@@ -57,8 +57,26 @@ aliases: ["Internal Developer Platform", "내부 개발자 플랫폼", "플랫�
 
 2024년 AWS 공개 발표의 셀프서비스 사례를 출발점으로 CNCF의 플랫폼 원칙과 현재 ElastiCache API를 대조했다. 발표의 성과 수치를 일반 목표로 옮기지 않았고, 실제 플랫폼 배포나 클라우드 생성 작업은 수행하지 않았다.
 
+## 애플리케이션 선언과 환경별 운영 설정을 나눈다
+
+Infrastructure from Code는 애플리케이션의 자원 선언과 의존 관계에서 인프라 모델을 도출하는 접근이다. 내부 개발자 플랫폼을 구성할 때 개발자가 필요한 자원을 표현하는 인터페이스로 활용할 수 있다. 임의의 업무 코드만 읽으면 모든 운영 설정을 알아낸다는 뜻은 아니다.
+
+Encore의 경우 TypeScript나 Go의 SDK primitive로 API, 데이터베이스와 Pub/Sub 같은 자원을 선언하고, 코드를 실행하지 않는 정적 분석으로 Application Model을 만든다. 자원 크기, 확장과 리전 같은 환경별 설정은 플랫폼 담당자가 정한다(2026-11-03 공식 문서 대조).
+
+| 경로 | 자동화 범위 | 남는 설정과 책임 |
+|---|---|---|
+| 관리형 플랫폼 | Application Model과 플랫폼 설정을 결합해 사용자 AWS 또는 GCP 계정에 인프라를 프로비저닝 | 환경별 용량, 네트워크와 백업 설정, 변경 결과 확인 |
+| 셀프호스팅 | `encore build docker`로 애플리케이션 이미지를 생성 | 인프라를 별도로 준비하고 infra config로 자원 연결, 서비스 주소, 관측 설정과 시크릿을 전달 |
+
+셀프호스팅 이미지는 서비스를 실행하지만 데이터베이스 migration이나 cron 호출은 수행하지 않는다. 이미지 빌드 성공을 스키마 적용과 예약 작업 준비 완료로 간주하지 않고 별도 실행 절차를 둔다. 로컬에서는 선언한 SQL 자원을 Postgres 컨테이너로, 관리형 클라우드에서는 RDS 또는 Cloud SQL로 구성하므로 같은 선언을 쓴다는 사실과 실행 환경의 완전한 동일성도 구분한다.
+
+설계 점검 제안: 기본 경로가 처리하는 자원, 외부에서 관리할 자원, 실패 복구와 데이터 이전 담당을 정한다. 플랫폼의 자동 생성 기능만으로 AI가 만든 코드의 업무 정확성이나 운영 안전성이 보장되지는 않는다. 위 설명은 문서 대조이며 실제 Encore 빌드, 배포와 이전은 시험하지 않았다. 기존 AWS와 Kubernetes 설명의 검증일은 유지한다.
+
 ## 출처
 
+- [Encore, Understanding Encore](https://encore.dev/docs/understanding-encore)
+- [Encore, Build Docker Images](https://encore.dev/docs/self-host/build)
+- [Encore, Configure Infrastructure](https://encore.dev/docs/self-host/configure-infra)
 - [Kubernetes Documentation, Multi-tenancy](https://kubernetes.io/docs/concepts/security/multi-tenancy/)
 - [CNCF Platforms White Paper — CNCF TAG App Delivery](https://tag-app-delivery.cncf.io/whitepapers/platforms/)
 - [Amazon ElastiCache, CreateReplicationGroup](https://docs.aws.amazon.com/AmazonElastiCache/latest/APIReference/API_CreateReplicationGroup.html)

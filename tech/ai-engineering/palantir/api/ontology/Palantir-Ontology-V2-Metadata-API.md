@@ -41,6 +41,17 @@ Object type 목록은 요청 pageSize보다 작거나 클 수 있다. Action/obj
 
 검증 범위는 이 단건 조회의 요청, 응답 schema와 예시다. 다른 metadata 항목의 검증일은 갱신하지 않았다.
 
+### RID로 Action type을 읽을 때의 차이
+
+2026-11-03 Get Action Type By Rid 명세 부분 대조 기준, `GET /api/v2/ontologies/{ontology}/actionTypes/byRid/{actionTypeRid}`는 RID로 Action 정의를 읽는다. `{ontology}`에는 Ontology API name 또는 RID를, `{actionTypeRid}`에는 Action type RID를 넣는다. API name을 받는 위 단건 조회와 경로를 구분한다.
+
+- OAuth2 operation scope는 `api:ontologies-read`다. 정의 조회 권한을 Action 실행 권한으로 해석하지 않는다.
+- 이 endpoint의 선택 query parameter는 `branch`다. 생략하면 기본 branch를 사용하며, branch는 experimental이고 모든 workflow를 지원하지 않는다.
+- API name 조회에 있는 `sdkPackageRid`, `sdkVersion`과 bulk 조회의 `preview`는 이 단건 RID 조회의 query parameter로 정의되어 있지 않다. 다른 endpoint의 인자를 공통 필수값으로 복사하지 않는다.
+- 응답 schema는 `ActionTypeV2`이며 `apiName`, `status`, `rid`가 필수다. 이 페이지의 예시에도 `data` wrapper와 `status` 누락이 있어 위 단건 조회와 같은 schema/예시 불일치가 나타난다.
+
+실제 인증 요청과 반환 형식은 시험하지 않았다. 검증 범위는 RID 단건 조회의 요청과 응답 명세이며, 다른 metadata 항목의 검증일은 유지한다.
+
 ## Property type과 표시 정보
 
 Property metadata는 재귀 dataType, RID, status, visibility, value type과 typeClasses를 구분한다. typeClasses의 kind/name은 애플리케이션이 해석할 추가 metadata다. deprecated status는 message/deadline/replacedBy를 제공하며 example은 가상 데이터로 실제 workflow에 쓰지 않는다.
@@ -108,6 +119,7 @@ Query metadata는 재귀 dataType과 typeReferences를 제공한다. execute의 
 
 - [List Action Types](https://www.palantir.com/docs/foundry/api/ontologies-v2-resources/action-types/list-action-types)
 - [Get Action Type](https://www.palantir.com/docs/foundry/api/ontologies-v2-resources/action-types/get-action-type)
+- [Get Action Type By Rid](https://www.palantir.com/docs/foundry/api/ontologies-v2-resources/action-types/get-action-type-by-rid)
 - [Get Object Type](https://www.palantir.com/docs/foundry/api/ontologies-v2-resources/object-types/get-object-type)
 - [Get Object Type Full Metadata](https://www.palantir.com/docs/foundry/api/ontologies-v2-resources/object-types/get-object-type-full-metadata)
 - [Get Object Type By RID Batch](https://www.palantir.com/docs/foundry/api/ontologies-v2-resources/object-types/get-object-type-by-rid-batch)
