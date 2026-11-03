@@ -51,6 +51,12 @@ Kaufman은 이 중 하나라도 빠지면 사업이 아니라고 본다. 진단�
 
 조회수 증가만으로 고객에게 약속을 지켰다고 판단하지 않는다. 수요를 시험하는 홍보와 실제로 제공할 수 있는 범위를 함께 확인하고, 관찰한 병목이 달라지면 개선 순서도 바꾼다.
 
+### 다섯 기능과 여섯 운영 영역은 분류 목적이 다르다
+
+사업의 다섯 기능 외에 리더십, 마케팅, 영업, 제품, 경비 운영과 현금 흐름으로 나누는 운영 틀도 있다. 도널드 밀러의 Business Made Simple은 이를 조종석, 오른쪽 엔진, 왼쪽 엔진, 날개, 동체와 연료 탱크에 각각 대응시킨다. 2026-11-04 저자 측 공개 안내와 한국어판 『무기가 되는 시스템』의 출판사 소개를 대조했다. 책 전체의 본문이나 적용 성과를 검증한 것은 아니다.
+
+두 틀의 항목을 일대일 대응시키기보다, 앞의 다섯 기능으로 거래의 흐름을 보고 여섯 영역으로 목표, 운영 부담과 현금의 관리 누락을 점검하는 방법을 제안한다. 비행기 비유는 구성 요소의 연결을 설명하는 도구이며, 이 분류를 채택하면 대표 없이 운영되거나 매출이 늘어난다는 증거는 아니다.
+
 ## 첫 결제 뒤에는 반복 가능한 수행 범위를 확인한다
 
 첫 결제는 판매가 한 번 성립한 증거다. 고객 확보, 약속 이행과 수익 확보를 반복할 수 있는지는 별도로 확인한다. 가치 전달에는 납품뿐 아니라 주문 처리, 문제 해결과 고객 지원도 포함되므로 대표가 혼자 수행하는 사업에서는 이 작업을 빠뜨리지 않는다.
@@ -170,6 +176,8 @@ Kaufman은 이 중 하나라도 빠지면 사업이 아니라고 본다. 진단�
 
 ## 출처
 
+- [How to Grow a Business — Business Made Simple](https://businessmadesimple.com/howtogrowabusiness-bonus/) — 2026-11-04 여섯 운영 영역과 비행기 대응 확인
+- [무기가 되는 시스템 — 윌북](https://willbookspub.com/willbook/detail.php?idx=308) — 2026-11-04 저자와 한국어판 소개의 여섯 영역 확인. 본문 완독이나 효과 검증이 아닌 소개 대조
 - [Standard Operating Procedure (SOP) — The Personal MBA, Josh Kaufman](https://personalmba.com/standard-operating-procedure/) — 2026-10-28 반복 작업 절차, 신규 구성원 인계와 정기 갱신의 용도 대조. 축적 상태 점검은 이를 적용한 제안이며 생산성 개선 수치는 검증하지 않았다.
 - [SpaceX, Falcon Payload User's Guide](https://www.spacex.com/assets/media/falcon-users-guide-2025-05-09.pdf) — 2025-05-09판 1.3절, 2026-10-23 부스터와 페어링 재비행, 정비와 검사 대조
 - [Casting a light on dependent contractors: a new statistical and increasingly important category — ILOSTAT](https://ilostat.ilo.org/blog/casting-a-light-on-dependent-contractors-a-new-statistical-and-increasingly-important-category/) — ICSE-18의 권한, 경제적 위험과 종속 계약자 구분
