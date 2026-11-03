@@ -82,8 +82,21 @@ JTBD는 선택을 기능적, 감정적, 사회적 차원과 그때의 상황으�
 
 2026-10-30 원 연구의 비교 조건과 측정 대상을 확인했다. 위 점검은 적용 제안이며 손실 강조, 질문형 제목과 구체적 숫자가 언제나 더 잘 팔린다는 규칙은 확인하지 않았다.
 
+## 후속 연락의 목적을 구매 단계에 맞춘다
+
+상담 직후의 요약, 구매 검토 중의 질문, 구매 이후의 사용 확인은 서로 다른 연락 목적이다. Salesforce의 영업 교육도 상담 직후 논의와 다음 행동을 요약하는 단계, 판매 후 제품 질문과 만족도를 확인하는 단계를 나눈다.
+
+다음은 이 구분을 소규모 사업에 적용한 작성 제안이다.
+
+- 상담 직후에는 확인한 문제, 요청받은 자료와 합의할 다음 행동을 정리한다.
+- 검토 중에는 아직 답하지 못한 질문과 고객이 합의한 검토 시점을 확인한다. 무응답만으로 관심 부족이나 문구의 문제를 확정하지 않는다.
+- 구매 후에는 실제 사용 여부와 막힌 점을 확인한다. 구매 전의 설득 문구를 반복하기보다 고객이 기대한 결과를 얻는 데 필요한 도움을 묻는다.
+
+2026-11-03 교육 본문의 단계 구분을 확인했다. 문서가 제시하는 판매 후 3일, 3주, 3개월은 해당 교육의 일정 예시다. 모든 업종의 최적 간격이나 응답률 보장으로 사용하지 않는다. 실제 연락일과 보류 시 재검토 조건은 [[B2B-Sales-Pipeline-and-Pilot|B2B 영업 파이프라인]]처럼 고객과 합의한 다음 행동에 연결한다. 특정 문구나 발송 시점의 판매 효과는 검증하지 않았다.
+
 ## 출처
 
+- [Salesforce Trailhead, Build a Sales Process, Learn About the Sales Process](https://trailhead.salesforce.com/content/learn/modules/build-a-sales-process/learn-about-the-sales-process) — 2026-11-03 상담 후 요약과 판매 후 관계 관리 단계 대조. 연락 문구 구성은 적용 제안이다.
 - [Shopify, Writing engaging product descriptions](https://help.shopify.com/en/manual/products/details/product-descriptions/write)
 - [Shopify, Automatically generating product descriptions](https://help.shopify.com/en/manual/products/details/product-descriptions/generate)
 - [Jobs to Be Done Theory — Christensen Institute](https://www.christenseninstitute.org/theory/jobs-to-be-done/) — 2026-10-30 기능적, 감정적, 사회적 차원과 상황에 따른 선택 대조.

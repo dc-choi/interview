@@ -15,6 +15,16 @@ Action은 action type을 한 번 적용한 것이다. Action type metadata는 pa
 
 OSv1 object/link 변경은 eventual consistency, OSv2 변경은 Action 완료 직후 보인다. 동일한 API 응답 뒤 즉시 읽기 결과가 다른 이유를 저장소 backend와 함께 판단한다. 이 endpoint는 parameter default value를 지원하지 않는다.
 
+### 경로 식별자와 입력 생략을 구분한다
+
+`ontologyRid`에는 Ontology의 RID를, `actionType`에는 Action의 API name을 넣는다. 각각 List Ontologies와 List Action Types 또는 Ontology Manager에서 확인한다. 화면의 표시명을 API name 대신 보내지 않도록 호출 전에 식별자를 구분한다.
+
+요청 본문은 필수지만 그 안의 `parameters` map은 API 스키마에서 선택 필드다. map의 키는 parameter ID다. 이 구조적 생략 가능성을 개별 Action의 필수 입력 면제나 기본값 자동 적용으로 해석하지 않는다. 필요한 입력은 Action 정의와 검증 결과에 맞춰 준비한다.
+
+2026-11-03 Apply Action의 경로, 입력 스키마, 기본값 미지원과 빈 성공 응답을 공식 문서와 대조했다. 이 부분 확인은 아래 Batch, Validate와 Attachment 계약 전체의 재검증을 뜻하지 않는다.
+
+### 여러 번 적용하는 Batch의 경계
+
 `applyBatch`는 같은 action type을 여러 번 적용한다. 일반 상한은 한 요청 20개다. OSv2 객체만 수정하고 Function을 호출하지 않는 Action은 더 높은 한도를 받을 수 있으므로 이를 모든 Action의 보장치로 쓰지 않는다. Batch는 default parameter와 notification을 지원하지 않는다. 공개 본문에 없는 전체 batch 원자성이나 안전한 자동 재시도는 추정하지 않는다.
 
 ## 검증은 적용 성공의 보증이 아니다
@@ -54,6 +64,7 @@ Attachment metadata GET과 `/content` binary GET은 `api:ontologies-read`다. me
 ## 출처
 
 - [Apply Action](https://www.palantir.com/docs/foundry/api/ontology-resources/actions/apply-action)
+- [Apply Action (v1)](https://www.palantir.com/docs/foundry/api/v1/ontology-resources/actions/apply-action) — 2026-11-03 경로 식별자와 요청 스키마를 대조한 버전 명시 주소
 - [Apply Action Batch](https://www.palantir.com/docs/foundry/api/ontology-resources/actions/apply-action-batch)
 - [Validate Action](https://www.palantir.com/docs/foundry/api/ontology-resources/actions/validate-action)
 - [Get Action Type](https://www.palantir.com/docs/foundry/api/ontology-resources/action-types/get-action-type)
