@@ -103,6 +103,14 @@ aliases: ["Programming Language Landscape", "프로그래밍 언어 지형", "�
 - 같은 CPU 작업에서도 자료구조가 언어보다 큰 차이를 낼 수 있다. 2018년 statemap 렌더러를 Rust로 단순하게 다시 쓴 구현이 신중하게 짠 C 구현보다 약 32% 빨랐는데, 측정에서 차이의 큰 몫은 C의 AVL 트리와 Rust 표준 라이브러리 `BTreeSet`(B-tree)의 캐시 동작 차이였다. 같은 분석은 C에서는 침투형(intrusive) AVL 트리가 쉽고 B-tree는 어렵다는 점을 들어 언어가 손쉬운 설계를 바꾼다고도 짚는다. 한 프로그램의 측정이므로 C와 Rust의 일반적 성능 비교로 쓰지 않는다.
 - 실무 경험에서 나온 권고는 프로파일로 핫스팟을 찾고 일을 줄이는 재설계를 먼저 보는 것이다. 느린 외부 호출 캐시, 요청 경로 밖의 백그라운드 처리, 독립 작업의 병렬화, N+1 쿼리를 하나로 합치기, 느린 쿼리 교체, 현재 페이지에 필요 없는 데이터 조회 생략은 언어와 무관하다. 재설계로도 줄지 않는 CPU 핫스팟만 빠른 언어로 옮기고, 이식성이나 유지보수처럼 속도 외의 이유로 언어를 바꾸는 판단은 따로 한다.
 
+### Worker 분리와 언어 교체는 다른 최적화다
+
+2026-11-03 Node.js 공식 문서 대조 기준, `worker_threads`는 CPU 집약적인 JavaScript를 병렬 실행하는 수단이다. I/O 위주의 작업에는 내장 비동기 I/O가 더 효율적이며, 반복 작업마다 Worker를 새로 만들면 생성 비용이 이득을 넘을 수 있어 pool을 사용한다.
+
+대용량 이미지나 영상 데이터를 넘길 때는 계산량 외에 복사와 소유권도 확인한다. 전송 가능한 `ArrayBuffer`를 transfer list로 넘기면 보내는 쪽에서 그 버퍼를 공유하던 view도 사용할 수 없게 된다. `SharedArrayBuffer` 공유는 이 소유권 이전과 다른 방식이다.
+
+적용 제안으로, Worker 분리는 주 실행 흐름의 응답성과 병렬화를, Rust 등으로의 교체는 계산 구현과 메모리 관리의 변화를 각각 측정한다. 같은 입력과 결과 품질에서 전체 처리 시간, 최고 메모리 사용량과 데이터 전송 비용을 비교한다. Worker 사용 자체를 나쁜 설계로 보거나 Rust 이식의 보편적 우위를 가정하지 않는다. 여기서는 성능 비교를 실행하지 않았다.
+
 ## 흔한 오해
 
 - 언어 자체를 인터프리터 언어나 컴파일 언어로 고정한다. 실행 방식은 구현체와 배포 설정이 정한다.
@@ -124,6 +132,7 @@ aliases: ["Programming Language Landscape", "프로그래밍 언어 지형", "�
 
 ## 출처
 
+- [Node.js, Worker threads](https://nodejs.org/api/worker_threads.html) — 2026-11-03 CPU 작업, pool과 ArrayBuffer 전송 경계 부분 대조.
 - [Node.js, About Node.js](https://nodejs.org/en/about)
 - [React](https://react.dev/)
 - [Next.js, Introduction](https://nextjs.org/docs)

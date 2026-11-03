@@ -64,6 +64,12 @@ Orca는 새 worktree에 없는 의존성, 캐시와 무시된 로컬 파일을 �
 
 원격으로 쓰기 전에 새 스레드의 기본 권한을 낮추고, 페어링한 기기와 연결 경로를 점검한다. 휴대폰에서 승인할 수 있다는 편의와 별개로, 승인 없이 실행되는 범위는 위의 권한 모드와 각 에이전트의 자체 설정이 정한다(운영 제안). Claude Code 자체의 원격 제어는 [[Claude-Code-Customization#원격 제어 — 실행 위치 분리|원격 제어]], 상시 실행 호스트는 [[Agent-Always-On-Mac-Host|상시 실행 Mac 에이전트 호스트]]를 본다. 설치, 연결 품질과 권한 강제는 시험하지 않았다.
 
+### 모바일 동반 앱과 원격 실행은 별도 기능이다
+
+2026-11-03 Orca 공식 README는 모바일 동반 앱의 상태 관찰, 완료 알림과 후속 지시를 설명한다. 별도 SSH worktree 기능은 원격 호스트에서 에이전트를 실행하고 파일, Git과 터미널을 다룬다. 휴대폰에서 조작한다는 사실만으로 휴대폰에서 추론하거나 빌드한다는 뜻은 아니다.
+
+운영 제안으로, 연결된 작업이 로컬인지 SSH 호스트인지 확인하고 그 호스트의 작업 디렉터리와 에이전트 권한을 검토한다. 완료 알림 뒤에도 diff와 검사 결과로 작업을 판정한다. 모바일 연결과 SSH 복구를 직접 시험하지 않았으며, 화면 통합만으로 하위 작업의 상태 판별 정확도가 보장된다고 보지 않는다.
+
 ## 앱 창과 실행 호스트를 분리하는 두 사례
 
 2026-11-02 공식 문서 대조 기준이다. Herdr app은 `herdr-core`가 터미널을 실행해 창 종료나 앱 업데이트 뒤에도 작업이 남는 구조다. SSH 머신도 같은 사이드바에 모으며, OSC 7501 상태 프로토콜을 지원하는 에이전트는 실행, 완료와 입력 대기를 보고한다. 레이아웃과 JavaScript mod로 화면을 바꿀 수 있다.
@@ -90,6 +96,7 @@ Prospero는 C++와 Dear ImGui 기반 네이티브 하네스로 Windows, macOS와
 - [Herdr Documentation, Agents](https://herdr.dev/docs/agents/)
 - [Herdr Documentation, Agent automation](https://herdr.dev/docs/agent-automation/)
 - [Orca Documentation, Worktrees](https://github.com/stablyai/orca/blob/main/docs/site/content/docs/model/worktrees.mdx)
+- [Orca — stablyai](https://github.com/stablyai/orca) — 2026-11-03 Mobile Companion과 SSH Worktrees의 역할 부분 대조.
 - [Git Documentation, git-worktree](https://git-scm.com/docs/git-worktree)
 - [T3 Code — pingdotgg](https://github.com/pingdotgg/t3code) — README와 `docs/user/remote-access.md`, `docs/user/permission-modes.md`, 2026-10-27 main 210b2e7c6a 기준
 - 사용자 제공 GeekNews 알림 요약(2026-10-16~27): T3 Code. 게시물 URL은 확인하지 못했고 위 저장소로 대조했다.

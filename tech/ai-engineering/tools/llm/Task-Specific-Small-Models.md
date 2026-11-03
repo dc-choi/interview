@@ -27,6 +27,18 @@ LFM3-1.7B 모델 카드(2026-11-02 확인)는 1.73B 텍스트 모델, 입력과 
 
 도구 호출과 형식화된 출력은 특화 후보지만, 모델 카드는 지식 중심 과제에는 검색을 권하고 에이전트 코딩과 복잡한 다단계 추론에는 권하지 않는다. 작은 모델의 일부 평가 우위를 전반적인 지능이나 자기 업무의 우위로 옮기지 않는다. LFM Open License v1.0을 표시하므로 오픈 웨이트를 무조건적인 사용 허가로 해석하지 않는다.
 
+## 비생성형 소형 모델은 출력 계약으로 조합한다
+
+작은 특화 모델이 모두 언어 모델인 것은 아니다. 화자 구간과 사진 태그처럼 좁은 출력을 내는 모델은 전사, 검색과 정리 흐름의 한 단계를 맡길 수 있다. 다음은 2026-11-03 Desert Ant Labs의 Who, Eye 공식 문서와 모델 페이지를 대조한 사례다.
+
+- **Who의 화자 분리:** 화자 번호와 시작/종료 시각을 반환하며 겹친 발화 구간도 표현한다. 번호는 같은 녹음 안의 구분이지 사람의 실명이 아니다. 전사문에 화자 이름을 붙이려면 별도 전사와 대응 절차가 필요하다.
+- **Eye의 사진 분석:** 태그별 confidence, 미적 점수와 얼굴 속성, 유사 사진 묶음을 반환한다. 브라우저는 WebGPU를 사용하고 지원하지 않으면 WebAssembly에서 실행한다. 이미지 분류 결과를 문서 본문을 읽은 결과로 취급하지 않는다.
+- **정확도와 행동의 분리:** Eye는 일반 태그 판정에 0.5, 엄격한 판정에 0.9를 안내하지만, 보관/삭제 사유 태그는 신뢰도가 낮아 제안용으로 쓰도록 명시한다. 적용 제안으로, 분류 점수만으로 원본을 삭제하지 않고 검토 가능한 후보 목록을 만든다.
+
+**Who의 네 화자 제한은 공식 설명이 상충한다.** SDK 문서의 Usage는 녹음에 네 명보다 많은 화자가 있으면 가장 많이 등장하는 네 명을 표시한다고 설명한다. 모델 페이지의 What the model does와 Specs는 **5분 구간당 최대 네 명**이며 구간 사이의 목소리를 연결해 전체 녹음에서는 더 많은 화자를 구분한다고 명시한다. SDK 문서의 Long recordings도 5분 분할과 구간 간 화자 연결을 설명하지만 Usage의 녹음 전체 제한과 일치하는지는 명확하지 않다. 따라서 전체 녹음의 화자 수를 네 명으로 단정하거나, 다섯 명 이상을 구분한다고 실행 보장으로 옮기지 않는다. 실제 적용 전 사용할 SDK와 가중치 버전을 고정하고, 한 구간의 화자 수와 전체 녹음의 화자 수를 나눠 시험한다(검증 제안). 여기서는 SDK를 실행하지 않아 실제 제한은 미확인이다.
+
+Who의 AMI 화자 분리 오류율 12.6%와 pyannote community-1의 13.1%는 공급자의 자체 비교다. 같은 표의 Earnings-21에서는 각각 27.7%, 7.3%로 순서가 바뀐다. 한 자료의 우위를 모든 녹음 환경으로 확대하지 않는다. 기기, 실행기와 자료별로 측정하고 모델 다운로드, 미디어 디코딩과 후처리를 포함한 전체 지연도 별도로 잰다(평가 제안). 이 사례의 설치, 추론과 성능 측정은 재현하지 않았다.
+
 ## 학습 자료를 어디서 얻는가
 
 - **교사 모델의 답으로 학습한다(증류)**: 프런티어 모델은 수억 명의 기록을 정기적으로 돌리기에는 비싸서 직접 서빙하지 않고 학생의 학습 자료를 만드는 데 썼다. 교사에게 최종 답 전에 추론 토큰을 더 쓰게 하자 학습용 답의 품질이 좋아졌다. 학생 품질은 처음 수천 개 예시에서 빠르게 오른 뒤 거의 멈췄고, 비슷한 예시를 늘리기보다 어려운 통합 사례와 다국어 사례처럼 다양하고 질 높은 예시를 고르는 편이 더 도움이 됐다.
@@ -108,6 +120,10 @@ Muon, FP8과 사다리꼴 학습률을 사용했다는 사실만으로 각 요�
 
 ## 출처
 
+- [Desert Ant Labs, Who SDK docs](https://desertant.com/docs/who/) — 2026-11-03 화자 번호와 구간, Usage의 네 화자 제한과 Long recordings의 구간 연결 설명 부분 대조.
+- [Who: On-device Speaker Labeling — Desert Ant Labs](https://desertant.com/models/who/) — 2026-11-03 5분 구간별 네 화자와 전체 녹음의 추가 화자 구분 설명, 자료별 오류율과 자체 측정 조건 대조. SDK Usage와 제한의 적용 단위가 상충한다.
+- [Desert Ant Labs, Eye SDK docs](https://desertant.com/docs/eye/) — 2026-11-03 사진 분석 출력과 유사 사진 묶음 대조.
+- [Eye: On-device Photo Tagging and Scoring — Desert Ant Labs](https://desertant.com/models/eye/) — 2026-11-03 실행기, 임계값과 보관/삭제 태그의 한계 대조.
 - [AWS, Amazon Nova: Supervised Fine-Tuning](https://docs.aws.amazon.com/nova/latest/userguide/nova-forge-sft.html) — 2026-11-03 과제/범용 평가, data mixing과 중간 checkpoint 검증 부분 대조.
 - [EP12: Forge & Parcel.ai Model Customization at Scale — Amazon Web Services](https://www.youtube.com/watch?v=58ENTbfZD64) — 2026-10-20 공개, 19:56과 47:20~49:53의 평가 범위 논의. 음성 인식 전사에서 확인한 논점을 공식 SFT 문서와 대조했으며 사례 성능 수치는 옮기지 않았다.
 - [From Activity to Intent: Generating User Journeys with LLMs — Pinterest Engineering](https://medium.com/pinterest-engineering/from-activity-to-intent-generating-user-journeys-with-llms-9652b9417626) — 2026-10-09 게시, 2026-10-27에 같은 블로그의 공개 RSS 본문으로 대조

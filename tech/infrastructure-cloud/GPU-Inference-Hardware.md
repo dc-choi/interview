@@ -52,6 +52,12 @@ vLLM의 `GPU KV cache size` 로그는 보관 가능한 토큰 수를, `Maximum c
 
 큰 모델과 긴 컨텍스트를 적은 카드에 유지하려는 선택지다. 기존 공랭 서버 활용과 vLLM/PyTorch 생태계 지원은 벤더 소개이며, 모든 서버나 모델의 호환성과 동일 성능을 보장하지 않는다.
 
+### 카드 메모리와 CXL 메모리 확장을 혼동하지 않는다
+
+2026-11-03 Intel D270 제품 페이지는 카드의 최대 480GB LPDDR5X와 PCIe 5.0 연결을 명시한다. CXL Consortium은 CXL을 CPU 메모리 공간과 연결 장치 메모리의 일관성을 유지하는 프로세서, 메모리 확장 및 가속기용 연결 규격으로 설명한다. 두 설명은 같은 기능의 다른 이름이 아니다.
+
+확인한 D270 제품 페이지에는 카드의 LPDDR5X를 CXL 공유 메모리로 제공한다는 명시가 없다. 이는 CXL 미지원을 확정한 결론이 아니라 지원 근거를 확보하지 못했다는 뜻이다. PCIe 카드라는 표기만으로 CXL 메모리 공유를 가정하지 않는다. 적용 제안으로, 카드 내 메모리 접근, 호스트 메모리 전송과 별도 메모리 확장 경로의 용량 및 실효 대역폭을 나누고, 실제 장치와 CPU의 지원 조합을 확인한다. CXL 구성이나 추론 성능은 실측하지 않았다.
+
 ## 같은 칩도 제품 등급에 따라 텐서 연산 속도가 다르다
 
 2026-10-27 NVIDIA GA102 아키텍처 백서(V2.0)와 대조했다. 두 카드 모두 GA102 칩이다. 값은 GPU Boost Clock 기준 피크이고, 슬래시 뒤는 sparsity를 쓴 유효 수치다.
@@ -93,6 +99,7 @@ GeForce는 FP32 누산 경로를 FP16 누산의 절반으로 표기하고, 전�
 - [JAX Scaling Book, All About Transformer Inference](https://jax-ml.github.io/scaling-book/inference/) — 2026-10-22, KV 캐시 식과 head 구성 대조
 - [vLLM, Parallelism and Scaling](https://docs.vllm.ai/en/stable/serving/parallelism_scaling/) — 2026-10-22, 캐시 용량 로그와 병렬화 안내 대조. Intel 제품 사양은 이번에 재검증하지 않아 frontmatter 날짜를 유지한다.
 - [Intel, GPU D270 Inference-Optimized Data Center GPU](https://www.intel.com/content/www/us/en/products/details/discrete-gpus/data-center-gpu/d-series.html)
+- [CXL Consortium, About CXL](https://computeexpresslink.org/about-cxl/) — 2026-11-03 CPU와 장치 메모리의 일관성 및 연결 규격 범위 대조. 같은 날 위 Intel 제품 페이지의 카드 메모리와 PCIe 표기를 다시 확인했으며 CXL 공유 기능은 확인하지 못했다.
 - [NVIDIA, Ampere GA102 GPU Architecture Whitepaper V2.0](https://www.nvidia.com/content/PDF/nvidia-ampere-ga-102-gpu-architecture-whitepaper-v2.pdf) — 2026-10-27, RTX 3090과 RTX A6000의 텐서 피크 대조
 - [PyTorch 2.14, CUDA semantics](https://docs.pytorch.org/docs/2.14/notes/cuda.html) — 2026-10-27, FP16 누산 설정 대조
 - [NVIDIA, NVIDIA Driver License Agreement](https://www.nvidia.com/en-us/drivers/nvidia-license/) — 2026-10-27, 2025-02-25판 2.2, 2.6, 2.8조 대조. 새 절만 대조했으므로 frontmatter 날짜를 유지한다.

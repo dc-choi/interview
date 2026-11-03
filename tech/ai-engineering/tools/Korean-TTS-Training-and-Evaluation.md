@@ -22,6 +22,16 @@ VALL-E의 공개 논문은 영어 음성 6만 시간 학습을 명시한다. 이
 
 진단 절차로는 같은 한국어 녹음을 코덱에 넣어 복원한 소리와, 텍스트에서 새로 생성한 소리를 비교할 수 있다. 복원 단계부터 발음이나 음색이 무너지면 생성 모델만 조정하는 실험으로 원인을 분리하기 어렵다. 이는 병목을 찾기 위한 실험 제안이며 특정 모델에서 코덱 문제가 확인됐다는 뜻은 아니다.
 
+## 화자 선택, 음성 설계와 복제를 구분한다
+
+2026-11-03 Gemini TTS 공식 문서와 Qwen3-TTS 공식 저장소를 부분 대조한 구분이다. 같은 TTS 제품도 사용하는 모델과 입력 계약에 따라 화자를 정하는 방식이 다르다.
+
+- **선택과 표현 제어:** Gemini TTS는 단일 또는 여러 화자의 대본을 음성으로 만들며, 화자별 목소리와 스타일, 속도 등을 설정한다. 현재 문서는 기본 목소리 외에도 Voice design과 Voice replication ID를 안내하므로, 미리 정한 목소리만 사용할 수 있다고 일반화하지 않는다.
+- **설명으로 설계:** Qwen3-TTS의 `VoiceDesign` 모델은 자연어 지시로 원하는 목소리를 설명한다. 실제 화자의 참조 녹음을 주는 복제와 입력이 다르다.
+- **참조 음성으로 복제:** `Qwen3-TTS-12Hz-1.7B/0.6B-Base`는 기본 복제 모드에서 `ref_audio`와 그 녹음의 전사인 `ref_text`를 사용한다. `x_vector_only_mode=True`는 화자 임베딩만 사용해 전사를 생략할 수 있지만 복제 품질이 낮아질 수 있다. 같은 참조를 반복 사용하면 `create_voice_clone_prompt`로 만든 특징을 재사용할 수 있다.
+
+참조 음성으로 추론하는 것과 가중치를 갱신하는 미세조정은 별개다. 짧은 참조가 특정 시연에서 더 자연스럽게 들렸다는 결과만으로 긴 학습 자료나 미세조정이 불필요하다고 판정하지 않는다. 적용 제안으로, 동일한 한국어 문장과 화자에서 발음, 숫자 누락, 음색과 긴 발화의 일관성을 비교한다. 여기서는 음성 생성, 청취 비교와 미세조정을 실행하지 않았고 체험 서비스의 무료 한도도 확인하지 않았다.
+
 ## LoRA와 전체 미세조정은 비교 실험으로 선택한다
 
 LoRA는 기반 가중치를 고정하고 저랭크 변화량을 학습한다. 전체 미세조정은 기반 모델의 가중치도 갱신한다. LoRA 논문은 자신이 평가한 언어 모델 과제에서 전체 미세조정과 비슷하거나 더 나은 결과를 보고한다. 따라서 LoRA가 한국어를 충분히 학습할 수 없다는 일반 법칙으로 설명하지 않는다.
@@ -68,6 +78,8 @@ F5-TTS의 평가는 영어와 중국어 자료를 사용하므로 논문 점수�
 
 ## 출처
 
+- [Google AI, Text-to-speech generation (TTS)](https://aistudio.google.com/docs/speech-generation) — 2026-11-03 화자별 생성, 스타일 제어와 목소리 ID 선택 범위 부분 대조.
+- [Qwen3-TTS — QwenLM](https://github.com/QwenLM/Qwen3-TTS) — 2026-11-03 VoiceDesign과 Base 모델, 참조 음성/전사, 임베딩 전용 모드와 특징 재사용 대조.
 - [Fish Audio Drama 3: The Most Emotive Text-to-Speech Model We've Built — Fish Audio](https://beta.fish.audio/blog/fish-audio-drama-3/) — 2026-10-26 감정 지시 방식과 공개 가중치 배포 대조. 벤더 간 우열 주장은 사용하지 않았다.
 - [Fish Audio Drama 3 — Fish Audio, Hugging Face](https://huggingface.co/fishaudio/drama-3) — 2026-10-26 모델 용도와 서빙 측정의 영어, H200 조건 대조.
 - [Fish Audio Community License v1.0 — Fish Audio](https://huggingface.co/fishaudio/drama-3/blob/main/LICENSE) — 2026-10-26 III(a)~(c)의 매출 조건과 Hosted Service 구분, IV(a)~(b)의 표시와 이용 제한 대조.
