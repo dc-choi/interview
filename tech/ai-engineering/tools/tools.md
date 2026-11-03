@@ -10,6 +10,7 @@ aliases: ["AI 엔지니어링 실천 도구", "AI Engineering Tools"]
 하네스 시스템, 컨텍스트, 에이전트, 사용량 관측, RAG, MCP, 음성 인식 — AI를 프로덕션에서 쓰고 제어하는 도구. 상위: [[AI엔지니어링(AIEngineering)|AI 시대 엔지니어링]].
 
 ## 목차
+- [x] [[Generative-3D-Asset-Workflow|생성형 3D 자산 제작]] — 노드 연결, 메시와 재질의 분리, 리깅 변형과 애니메이션 호환성 검수
 - [x] [[MCP-Tasks|MCP 비동기 작업]] — 현재 확장과 이전 명세, 결과 조회, 서버 수명과 취소 확인
 - [x] [[Document-Parsing-Context|페이지 간 문서 파싱]] — SR-SWA 참조 예산과 전역 구조 손실, 표와 문단의 연결 검수
 - [x] [[Multimodal-Video-Retrieval|멀티모달 영상 검색]] — 영상 ID와 시간 구간, 비동기 색인과 모델 버전 호환성

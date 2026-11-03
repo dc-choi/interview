@@ -15,6 +15,8 @@ aliases: ["CS Fundamentals"]
 
 ## 목차
 
+- [x] [[Markdown-Document-Structure|Markdown 문서 구조]] — 일반 텍스트와 렌더링, CommonMark와 GFM, 미리보기와 AI 이해도 검증의 구분
+
 - [x] [[Display-Specifications-and-Repair-Evidence|디스플레이 사양과 수리 근거]] — peak 밝기, 터치 지원, 폴더블 결함 보고와 교체 조건
 
 

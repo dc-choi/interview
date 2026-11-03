@@ -8,7 +8,7 @@ verified_at: 2026-08-05
 
 # Amazon EKS (Elastic Kubernetes Service)
 
-AWS 매니지드 Kubernetes 서비스. **Control Plane(컨트롤 플레인)**을 AWS가 운영하고, 사용자는 **Worker Node**와 **Pod**에 집중한다. ECS와 달리 **Kubernetes API 표준**을 그대로 따르므로 멀티 클라우드, 온프레미스 이식성이 높다.
+AWS 매니지드 Kubernetes 서비스. **Control Plane(컨트롤 플레인)**을 AWS가 운영하고, 사용자는 선택한 컴퓨팅 방식의 관리 범위에 맞춰 **Worker Node**와 **Pod**를 운영한다. ECS와 달리 **Kubernetes API 표준**을 그대로 따르므로 멀티 클라우드, 온프레미스 이식성이 높다.
 
 ## 구성 요소 — Kubernetes 모델 그대로
 
@@ -23,17 +23,23 @@ AWS 매니지드 Kubernetes 서비스. **Control Plane(컨트롤 플레인)**을
 | **Ingress** | L7 라우팅 (AWS Load Balancer Controller가 ALB로 매핑) |
 | **Deployment / StatefulSet / DaemonSet** | Pod 관리 워크로드 컨트롤러 |
 
-Control Plane은 AWS가 패치, 업그레이드, HA를 책임. 사용자는 **Worker Node**부터 관리.
+Control Plane의 인프라는 AWS가 관리한다. 노드 운영 책임은 Managed Node Group, Self-managed, Fargate와 Auto Mode 등의 컴퓨팅 방식에 따라 달라진다.
 
-## Node 유형 — 3가지 선택지
+## Node 유형 — 대표적인 선택지
 
 | 유형 | 설명 | 적합 |
 |------|------|------|
-| **Managed Node Group** | EKS가 EC2 ASG를 관리. AMI 업그레이드, 드레인 자동 | 표준 운영 — 가장 권장 |
+| **Managed Node Group** | EKS가 EC2 ASG를 관리. 사용자가 업데이트를 시작하면 노드 교체와 드레인 수행 | EC2 노드 수명주기 관리 자동화 |
 | **Self-managed Node** | 직접 EC2 + AMI 운영. 커스텀 커널, GPU, 특수 AMI | 고급 커스터마이징 필요 |
 | **Fargate Profile** | **Serverless** — Pod 단위 실행, 노드 관리 불필요 | 가변 워크로드, 소규모, 관리 부담 최소화 |
 
 Fargate Profile은 **selector**(namespace + label)에 매치되는 Pod를 자동으로 Fargate에서 실행.
+
+### 관리형 노드의 패치 생성과 배포 책임
+
+2026-11-04 공식 문서 대조: EKS 최적화 AMI를 쓰는 Managed Node Group에서는 AWS가 패치한 AMI를 만들지만, 그 AMI 버전을 노드 그룹에 배포할 책임은 사용자에게 있다. 관리형이라는 이름만으로 새 AMI가 기존 노드에 자동 반영됐다고 판단하지 않는다. 사용자 정의 AMI는 패치 이미지의 생성과 배포 모두 사용자의 책임이다.
+
+사용자가 관리형 노드 그룹 업데이트를 시작하면 EKS가 노드 갱신 절차를 수행한다. 실제 노드의 AMI와 Kubernetes 버전, 애플리케이션 준비 상태를 확인한다(운영 점검 제안). 이 책임 구분을 Auto Mode에 그대로 적용하지 않는다. Auto Mode는 AMI 선택과 업데이트를 포함한 EC2 인스턴스 관리를 EKS가 맡는다. 온프레미스 데이터 플레인은 [[EKS-Hybrid-Nodes|Hybrid Nodes]]에서 따로 다룬다. 이 절의 부분 검증이며 다른 가격과 지원 정책 전체의 검증일은 유지한다.
 
 ## 네트워킹
 
@@ -170,8 +176,8 @@ StatefulSet은 **EBS + PersistentVolumeClaim**이 표준.
 
 ## 시험 체크포인트
 
-- Control Plane은 **AWS 관리** — 사용자는 노드부터 책임
-- Node 3종: **Managed Node Group / Self-managed / Fargate Profile**
+- Control Plane 인프라는 **AWS 관리** — 노드 책임은 선택한 컴퓨팅 방식에 따라 구분
+- **Managed Node Group / Self-managed / Fargate Profile**의 차이와 **Auto Mode / Hybrid Nodes**의 별도 관리 범위
 - **Pod = 최소 배포 단위**, 1개+ 컨테이너가 IP, 스토리지 공유
 - **VPC CNI**가 Pod에 VPC IP 직접 부여 — Pod에 SG 적용 가능
 - **IRSA / Pod Identity** = Pod 단위 IAM 권한 (ECS Task Role 대응)
@@ -181,6 +187,10 @@ StatefulSet은 **EBS + PersistentVolumeClaim**이 표준.
 - ECS vs EKS 선택 — 이식성, 생태계 필요하면 EKS, 단순, AWS 통합이면 ECS
 
 ## 출처
+
+- [Amazon EKS, Simplify node lifecycle with managed node groups](https://docs.aws.amazon.com/eks/latest/userguide/managed-node-groups.html) — 2026-11-04 최적화 AMI와 사용자 정의 AMI의 패치 배포 책임 대조
+- [Amazon EKS, Update a managed node group for your cluster](https://docs.aws.amazon.com/eks/latest/userguide/update-managed-node-group.html) — 2026-11-04 사용자가 시작하는 노드 업데이트 절차 대조
+- [Amazon EKS, Create nodes with pre-built optimized images](https://docs.aws.amazon.com/eks/latest/userguide/eks-optimized-amis.html) — 2026-11-04 Auto Mode의 AMI 선택과 업데이트 관리 범위 대조
 
 - [AWS Load Balancer Controller, TargetGroupBinding](https://kubernetes-sigs.github.io/aws-load-balancer-controller/latest/guide/targetgroupbinding/targetgroupbinding/) — 2026-10-27 외부 관리 대상 그룹 연결, 대상 유형과 권한 경계 대조
 - [Elastic Load Balancing, Action types for listener rules](https://docs.aws.amazon.com/elasticloadbalancing/latest/application/rule-action-types.html) — 2026-10-27 가중 분배, 그룹 간 자동 장애 전환 부재와 고정 세션 대조

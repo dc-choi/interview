@@ -65,6 +65,12 @@ Google의 AdSense 준비 안내는 방문자에게 관련 있는 독자적 콘�
 
 검색 쪽 기준은 따로 본다. Google Search Central의 콘텐츠 자기 점검 안내는 제품을 실제로 써 보거나 장소를 방문한 것 같은 직접 경험의 전문성이 드러나는지 묻는다. 누가 만들었는지가 방문자에게 분명한지 묻고, 자동화로 콘텐츠를 상당 부분 만들었다면 그 사용 사실이 드러나는지, 어떻게 썼고 왜 유용했는지 배경을 설명하는지도 묻는다. AI 사용 공개는 어떻게 만들었는지 궁금해할 만한 콘텐츠에 권하는 사항이고, 지어낸 작성자 프로필은 기만으로 본다. 이는 검색 품질의 자기 점검 질문이므로 AdSense 승인 요건으로 옮기지 않는다.
 
+### 검토 대기와 계정 준비를 구분한다
+
+2026-11-04 한국어 공식 도움말 대조: `준비 중`의 검토는 일반적으로 며칠이며 경우에 따라 2~4주가 걸릴 수 있다. 이 기간은 승인 보장이나 고정 기한이 아니다. 계정의 필수 설정 작업을 끝내지 않으면 검토가 시작되지 않은 채 준비 중으로 남을 수 있으므로 홈페이지의 미완료 작업도 확인한다. 사이트를 삭제했다가 다시 제출하면 처리가 지연될 수 있다.
+
+문제를 고쳐야 하는 상태는 확인한 한국어 도움말에서 `확인 필요`로 표시한다. 영상이나 다른 언어 화면의 상태명만 대조하기보다 해당 사이트의 상세 안내를 확인한다. 한국어 자격 요건은 만 19세 이상과 제출할 사이트의 HTML 소스 접근, 독창적 콘텐츠와 정책 준수를 안내한다. AI로 만들었다는 사실만으로 코드 접근이나 콘텐츠 요건 충족을 보장하지 않는다. 이 절만 부분 대조했으며 기존 수익 지표와 사례 전체의 검증일은 유지한다.
+
 ## 출처
 
 - [Google AdSense Help, Your AdSense account wasn't approved](https://support.google.com/adsense/answer/81904?hl=en) — 2026-11-03 콘텐츠 부족과 품질 문제의 구분, 문장과 문단, 실제 공개 페이지와 사이트 전체 심사 범위 대조
@@ -74,6 +80,8 @@ Google의 AdSense 준비 안내는 방문자에게 관련 있는 독자적 콘�
 - [Google Search Central, Creating helpful, reliable, people-first content](https://developers.google.com/search/docs/fundamentals/creating-helpful-content)
 - [Google AdSense Help, Make sure your site's pages are ready for AdSense](https://support.google.com/adsense/answer/7299563?hl=en)
 - [Google AdSense Help, Check the status of your AdSense sites](https://support.google.com/adsense/answer/12170222?hl=en)
+- [Google 애드센스 고객센터, 애드센스 사이트 상태 확인](https://support.google.com/adsense/answer/12170222?hl=ko) — 2026-11-04 상태명, 검토 기간과 미완료 계정 설정 조건 대조
+- [Google 애드센스 고객센터, 애드센스 자격 요건](https://support.google.com/adsense/answer/9724?hl=ko) — 2026-11-04 한국어 안내의 연령과 HTML 접근 조건 대조
 
 - [Similarweb, Total Visits](https://support.similarweb.com/hc/en-us/articles/212999769-Total-Visits) — 2026-10-24 방문과 페이지뷰의 구분 확인.
 - [Google AdSense Help, Page RPM](https://support.google.com/adsense/answer/112030?hl=en) — 2026-10-24 산식 확인.

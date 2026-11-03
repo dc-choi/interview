@@ -9,6 +9,8 @@ aliases: ["CS&프로그래밍(CS&Programming)", "CS & Programming Language"]
 
 ## 목차
 
+- [[Markdown-Document-Structure|Markdown 문서 구조]] — 제목과 목록, 문법 확장, 미리보기와 AI 활용의 경계
+
 - [[Solidity-Types-Inheritance-and-Libraries|Solidity 타입과 코드 재사용]] — ABI 계약, 생성과 상속, internal 라이브러리와 DELEGATECALL
 - [[Yul-Language-Basics|Yul 문법과 산술 검사 경계]] — 변수와 제어 흐름, 부호 해석, overflow와 0으로 나누기
 - [[Conditional-Probability-and-Bayes|조건부확률과 베이즈 정리]] — 경보 사례, 전체확률과 기저율, 탐지율과 사후확률의 구분

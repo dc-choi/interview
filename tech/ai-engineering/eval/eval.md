@@ -11,6 +11,8 @@ LLM 출력의 평가와 모른다고 말하는 능력, 비전 모델의 합성 �
 
 ## 목차
 
+- [x] [[Route-Travel-Time-Prediction|경로 선택과 통행시간 예측 평가]] — 계산 지연, ETA 오차와 실제 주행, 추천 채택 뒤 경로 집중의 구분
+
 - [x] [[ML-Proxy-Discrimination|대리변수와 모델 공정성]] — 민감 속성 제외의 한계, 집단별 평가 기준과 적용 순서
 - [x] [[Crowdsourced-Human-Evaluation|크라우드소싱 사람 평가]] — 평가자 자격과 응답 검수, 주의력 검사와 Mechanical Turk 종료
 - [x] [[AI-Consciousness-Evidence|AI 의식의 증거]] — 자기보고와 행동, 내부 구조 지표와 기능 검증의 구분
