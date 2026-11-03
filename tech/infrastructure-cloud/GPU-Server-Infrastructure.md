@@ -313,6 +313,7 @@ Slurm 관리 문서 기준, `/var/log/provision/provisioning.log`에 기록한 �
 ## 관련 문서
 
 - [[LLM-Inference-Bottlenecks|LLM 추론 병목과 메모리 예산]]
+- [[Data-Center-Cooling|데이터센터 냉각과 PUE]]
 - [[Storage-and-FileSystem-Performance|디스크 I/O와 RAID]]
 - [[Distributed-Batch-Execution|분산 배치의 체크포인트와 재시작]]
 - [[EC2-Compute#HPC의 통신 경로와 EFA 적용 조건|HPC 통신 경로와 EFA]]

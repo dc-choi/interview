@@ -57,6 +57,8 @@ aliases: ["실업과 고용", "Unemployment and Employment"]
 
 실업률이 낮아도 참가율이 같이 떨어졌다면 좋은 신호가 아니다. 그래서 실업률, 고용률, 참가율을 함께 본다.
 
+**청년 실업률과 청년 실업자 비율**: 실업률의 분모는 경제활동인구라서, 재학 중인 사람이 많은 청년층에서는 같은 실업자 수를 전체 인구로 나눈 비율보다 크게 나온다. Eurostat은 15~24세 실업자를 같은 연령의 전체 인구로 나눈 청년 실업자 비율(youth unemployment ratio)도 따로 공표한다. 2025년 프랑스 15~24세는 실업률 19.8%, 실업자 비율 8.5%였다(2026-11-03 Eurostat 조회, 정의 차이 표시가 붙은 값). 같은 해 독일 15~24세 실업률은 7.1%다. 청년 실업률 20%를 청년 다섯 명 중 한 명이 실업자라는 뜻으로 읽지 않는다. 나라 사이 비교에도 같은 연령 구간과 같은 지표를 쓴다.
+
 **쉬었음 인구**: 경제활동인구조사는 비경제활동인구를 육아, 가사, 재학과 수강, 연로, 심신장애, 기타의 활동상태로 나누고 쉬었음은 기타 안에서 따로 집계하며, 취업준비와도 다른 항목이다. 구직활동 없이 쉰 사람은 실업자 요건(지난 4주간 적극적 구직활동, 일자리가 주어지면 즉시 취업 가능)을 갖추지 못해 비경제활동인구로 분류되므로 1절의 구직단념자처럼 실업률에 직접 잡히지 않는다. 매월 15일이 포함된 1주간의 활동상태를 센 값이라 여러 달을 더해 누계처럼 읽지 않는다.
 
 **청년의 연령 기준**: 경제활동인구조사의 청년층 통계는 15~29세 기준이고, 2026년 9월 기준 자료부터 청년고용촉진특별법상 청년인 15~34세 통계도 함께 공표된다. 2026년 9월 쉬었음 인구는 15~29세 36만 4천 명, 15~34세 54만 8천 명이므로 비교 전에 연령 기준을 맞춘다.
@@ -163,6 +165,9 @@ GDP 수준 차이 +32.4%는 연간 성장률이 아니다. 자본 몫 +14.8%p도
 - [International Labour Organization, How might generative AI impact different occupations?](https://www.ilo.org/resource/article/how-might-generative-ai-impact-different-occupations)
 
 - [Journal of Economic Perspectives, Automation and New Tasks: How Technology Displaces and Reinstates Labor](https://economics.mit.edu/sites/default/files/inline-files/Automation%20and%20New%20Tasks%20-%20How%20Technology%20Displaces%20and%20Reinstates%20Labor.pdf) — Daron Acemoglu, Pascual Restrepo, 2019. 과업 배분, 대체, 생산성과 복원 효과.
+- [Eurostat, Unemployment by sex and age, annual data (une_rt_a)](https://ec.europa.eu/eurostat/api/dissemination/statistics/1.0/data/une_rt_a?geo=FR&age=Y15-24&age=Y15-74&sex=T&unit=PC_ACT&sinceTimePeriod=2023) — 2026-11-03 프랑스와 독일의 15~24세 실업률 조회
+- [Eurostat, Glossary: Youth unemployment](https://ec.europa.eu/eurostat/statistics-explained/index.php?title=Glossary:Youth_unemployment_ratio) — 청년 실업자 비율의 정의
+- [Eurostat, Youth unemployment ratio by NUTS 2 region (yth_empl_140)](https://ec.europa.eu/eurostat/api/dissemination/statistics/1.0/data/yth_empl_140?geo=FR&age=Y15-24&sex=T&sinceTimePeriod=2023) — 2026-11-03 프랑스 15~24세 실업자 비율 조회
 - [U.S. Bureau of Labor Statistics, Concepts and Definitions (CPS)](https://www.bls.gov/cps/definitions.htm) — 2026-10-22 고용률, 참가율의 분모와 미국 조사대상 범위 부분 대조. 가상 인구 예시는 정의에서 도출한 계산이다.
 - [U.S. Bureau of Labor Statistics, Comparing employment from the BLS household and payroll surveys](https://www.bls.gov/web/empsit/ces_cps_trends.htm)
 - [Federal Reserve, Speech by Governor Kugler on navigating inflation waves while riding on the Phillips curve](https://www.federalreserve.gov/newsevents/speech/kugler20250220a.htm)

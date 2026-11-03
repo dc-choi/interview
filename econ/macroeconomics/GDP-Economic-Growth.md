@@ -125,6 +125,22 @@ GDP는 강력하지만 모든 것을 담지는 못한다.
 
 읽는 기준: 장기 저성장을 디지털 전환 지연 같은 단일 원인으로 단정하지 않는다. 4절의 노동, 자본, TFP 가운데 어디가 약한지 잠재성장률 분해로 먼저 나누고, 인구 구조와 [[Inflation|디플레이션]] 기간을 함께 본다.
 
+## 12. 사례: 구매력 기준 1인당 GDP와 가계 소비
+
+나라별 생활수준을 비교할 때 명목 달러 환산은 환율을 그대로 탄다. 구매력평가(PPP)나 EU의 구매력기준(PPS)으로 환산하면 물가 수준 차이는 걷어내지만, 여전히 생산을 인구로 나눈 값이다. Eurostat은 가계의 물질적 후생을 설명하는 데는 1인당 실제개인소비(AIC)가 더 알맞다고 본다. AIC는 가계가 직접 산 재화와 서비스에 정부와 비영리단체가 개인에게 제공한 교육, 보건 같은 서비스를 더한 소비다.
+
+| EU27=100, PPS 기준 | 1인당 GDP 2024 / 2025 | 1인당 AIC 2024 / 2025 |
+|---|---|---|
+| 프랑스 | 98 / 98 | 105 / 103 |
+| 키프로스 | 99 / 98 | 98 / 98 |
+| 독일 | 116 / 115 | 119 / 120 |
+
+2026-11-03 Eurostat 데이터 조회 기준이며 2024~2025년 PPP 결과는 잠정치다. 2024년 키프로스의 1인당 GDP 지수는 프랑스보다 1 높지만, AIC로는 프랑스가 EU 평균보다 5 높고 키프로스는 2 낮다. Eurostat은 이 지수가 나라를 엄격히 줄 세우려는 것이 아니며 가까운 지수 차이를 과대 해석하지 말라고 한다. 1인당 GDP 지수의 순위만으로 가계의 소비 수준이나 소비 여력을 단정하지 않는다(해석).
+
+이 지수는 해마다 EU 평균을 100으로 둔 상대값이고, Eurostat은 시점 간보다 나라 간 비교용으로 본다. 같은 자료에서 2014년 프랑스의 1인당 GDP 지수는 108이었다. 같은 기간 프랑스의 실질 1인당 GDP는 늘었으므로 108에서 98로의 하락은 EU 평균보다 느린 성장으로 읽는다(해석). 빈티지마다 값이 조금씩 바뀌므로 최신판 하나로 비교한다.
+
+IMF DataMapper의 PPP 기준 1인당 GDP(국제달러, 2026-11-03 조회, 2026년 값은 전망치)는 2026년 한국 70,251, 프랑스 68,852, 영국 68,476, 캐나다 70,374다. 같은 조회에서 한국은 2024년과 2025년에 영국보다 낮고, 2026년에도 캐나다보다 낮다. 한국과 프랑스의 차이는 약 2%여서 WEO 개정이나 PPP 기준 변경으로 순서가 바뀔 수 있으므로 역전 연도를 확정된 사실로 쓰지 않고 조회 시점의 전망으로 적는다(해석). PPP 기준 1인당 GDP도 소비 여력이 아니라 생산을 인구로 나눈 지표다.
+
 ## 출처
 
 - [OpenStax — Principles of Economics 3e, Measuring the Size of the Economy: Gross Domestic Product](https://openstax.org/books/principles-economics-3e/pages/19-1-measuring-the-size-of-the-economy-gross-domestic-product) — 금융자산 매입과 GDP 투자, 정부 이전지급의 구분.
@@ -137,6 +153,12 @@ GDP는 강력하지만 모든 것을 담지는 못한다.
 - [IMF — World Economic Outlook DataMapper API, GDP current prices](https://www.imf.org/external/datamapper/api/v1/NGDPD/JPN/DEU/GBR/IND) — 2026-11-03 조회. 일본, 독일, 영국, 인도의 2022~2028년 값으로 순위 계산
 - [총무성 통계국 — 統計トピックスNo.149 統計からみた我が国の高齢者](https://www.stat.go.jp/data/topics/topi1490.html) — 2026-09-20 공표. 2026-11-03 65세 이상 인구와 비율, 고령 취업자 수와 비율, 산업과 비정규 비율 대조
 - [YouTube, 슈카월드 — 추락하는 일본 GDP, 원인은 무엇인가](https://www.youtube.com/watch?v=t-IIGGFe80U) — 2026-10-24 공개 영상, 계기 자료. 본문에 쓴 통계는 위 통계국과 IMF 원문으로 대조했고, 영상의 65세 이상 비중 29.4% 대신 2026년 공표값 29.6%를 썼다. 전 일본은행 총재의 발언, 세대별 손주 비율, 기업 연령 구성 조사, 재고용 임금 판결과 그 밖의 영상 수치와 주장은 옮기지 않았다
+- [Eurostat — GDP per capita in PPS (tec00114)](https://ec.europa.eu/eurostat/api/dissemination/statistics/1.0/data/tec00114?geo=FR) — 2026-11-03 프랑스, 키프로스, 독일의 2014년, 2024년과 2025년 지수 조회
+- [Eurostat — Purchasing power parities, price level indices, nominal and real expenditures by analytical categories - based on COICOP 2018 (prc_ppp_ind_1)](https://ec.europa.eu/eurostat/api/dissemination/statistics/1.0/data/prc_ppp_ind_1?geo=FR&sinceTimePeriod=2023) — 2026-11-03 1인당 AIC 지수 조회
+- [Eurostat — Household material welfare varies widely in the EU](https://ec.europa.eu/eurostat/web/products-eurostat-news/w/ddn-20251217-3) — 2025-12-17 뉴스. AIC가 가계의 물질적 후생을 설명하는 데 더 알맞다는 설명
+- [Eurostat — GDP per capita, consumption per capita and price level indices (Statistics Explained)](https://ec.europa.eu/eurostat/statistics-explained/index.php?title=GDP_per_capita,_consumption_per_capita_and_price_level_indices) — 지수의 엄격한 순위화와 가까운 차이의 과대 해석에 대한 주의
+- [IMF — World Economic Outlook DataMapper API, GDP per capita, current prices, PPP](https://www.imf.org/external/datamapper/api/v1/PPPPC/KOR/FRA/JPN/ITA/GBR/CAN/DEU/USA) — 2026-11-03 조회, 빈티지 표기 없음
+- [YouTube, 와이스트릿 — 사실 프랑스는 가난하다 월300도 못 버는데 선진국? 퍼주다 거지꼴 났습니다 / 손진석 기자 (풀버전)](https://www.youtube.com/watch?v=Y6lclPdfYPA) — 2026-10-24 공개, 12절의 계기 자료. 1인당 GDP를 소비 여력으로 읽은 해석과 역전 연도 일부는 위 원자료로 바로잡았고(순임금 해석은 [[Reading-Economic-Indicators|경제지표 읽는 법]]의 임금 지표 항목), 확인하지 못한 수치와 투자 의견은 옮기지 않았다
 - [Bank of Japan — Output Gap, Potential Growth Rate, and Labor Market Indicators](https://www.boj.or.jp/en/research/research_data/gap/index.htm) — 2026-10-05 갱신분의 잠재성장률 추이와 기여도 분해 도표를 2026-10-11 대조
 - [IMF — Japan: Staff Concluding Statement of the 2026 Article IV Mission](https://www.imf.org/en/news/articles/2026/02/13/imf-cs-02172026-japan-staff-concluding-statement-of-the-2026-article-iv-mission) — 2026-02-17 발표. 2026-10-11 실질임금과 생산성 격차 평가 대조
 - [AI 폐해와 신자본주의 세미나 정리 — Threads, do_signer](https://www.threads.com/@do_signer/post/DXtxfSqk4LI) — 2026-10-05 주장 1(한일 경제 통합, 전력망 연결 우선)과 주장 2(사회적 가치 측정과 보상) 대조

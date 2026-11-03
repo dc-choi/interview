@@ -44,6 +44,30 @@ aliases: ["App Monetization Models", "앱 수익 모델", "앱 수익화"]
 
 혼합은 수익원을 늘리지만 각 모델이 요구하는 행동이 충돌할 수 있다. 광고 노출을 늘리면 구독 전환의 근거(광고 없는 경험)는 강해지지만 무료 사용자의 이탈도 늘어난다.
 
+## 게임형 반복 결제의 상품 유형과 가격 표시
+
+2026-11-03 Apple과 Google 공식 문서, EU CPC Network 원칙과 공동성명, 게임산업법 제33조와 시행령 별표 3의2 대조 기준이다. 무료 게임의 반복 결제에는 대표적인 예로 쓰면 없어져 다시 사는 아이템, 현금으로 충전해 아이템과 바꾸는 게임 내 가상화폐, 정해진 기간에 추가 보상을 여는 시즌 패스가 있다. 자동 갱신 구독, 한 번 사면 계속 쓰는 비소모성 상품과 무작위 아이템도 함께 쓰인다. 게임 설계상 다른 구조여도 스토어 상품 유형이 같을 수 있으므로 따로 확인한다.
+
+| 게임 안 구조 | 스토어 상품 유형 | 확인할 점 |
+|---|---|---|
+| 목숨, 부스트처럼 쓰면 없어지는 아이템 | 소모성(consumable). Apple은 게임의 목숨과 보석을, Google은 게임 화폐, 추가 목숨과 부스트를 예로 든다 | Google Play에서는 소모 처리(consume)를 해야 같은 상품을 다시 살 수 있다. 소모 처리는 구매 확인도 겸하며, 구매를 3일 안에 확인하지 않으면 자동 환불되고 구매가 취소된다 |
+| 코인, 보석 같은 가상화폐 묶음 | 소모성. Apple 심사 지침 3.1.1은 앱 안에서 파는 게임 내 화폐에 인앱결제를 쓰게 하고(지역별 예외는 [[In-App-Purchase|인앱결제]]), 인앱결제로 산 크레딧과 게임 내 화폐는 만료될 수 없다고 적는다 | 화폐로 무엇을 살 수 있고 실제 돈으로 얼마인지 |
+| 기간 한정 시즌 패스 | Apple은 HIG에서 비갱신 구독의 예로 게임 배틀패스 이용권을, Business Models 페이지에서 스트리밍 콘텐츠의 시즌 패스를 든다. 확인한 Google 문서는 게임 시즌 패스에 맞는 유형을 따로 정하지 않으며, 자동 갱신되지 않는 구독의 선불 기본 요금제와 일회성 상품을 정한 기간만 쓰게 하는 대여 구매 옵션이 있다 | 기간, 자동 갱신 여부와 시즌이 끝난 뒤 남는 보상 |
+
+무작위 아이템을 팔면 Apple 3.1.1도 구매 전에 아이템 종류별 확률을 공개하게 한다. 국내 표시 의무는 [[App-Store-Launch-Checklist#게임을 낼 때 추가로 확인할 것|게임 출시 확인 항목]]을 따른다.
+
+EU CPC Network가 2025-03-21 낸 게임 내 가상화폐 원칙은 실제 돈으로 살 수 있는 화폐가 대상이며, 게임 플레이로만 얻는 화폐와 암호화폐 같은 가상통화는 제외한다. 새 법이 아니라 기존 EU 소비자법(UCPD, CRD, UCTD)을 어떻게 적용할지 정리한 문서이고, 국가 당국과 집행위원회를 구속하지 않으며 권고를 따랐다고 법 준수가 보장되지도, 따르지 않았다고 자동으로 위법이 되지도 않는다고 스스로 밝힌다. 원칙이 판매자에게 권고하는 내용은 다음과 같다.
+
+- **실제 돈 가격:** 가상화폐로 매긴 디지털 콘텐츠와 서비스의 가격도 실제 돈으로 명확하고 눈에 띄게 표시하고, 수량 할인이나 프로모션을 적용하지 않은 기준으로 환산한다. 실제 돈으로 사는 다른 화폐와 바꿔 주는 화폐에도 실제 돈 가격을 함께 표시한다.
+- **비용을 가리지 않기:** 한 게임에 여러 화폐를 섞거나 구매 전에 여러 번 환전하게 해 실제 비용을 알기 어렵게 만들지 않는다.
+- **남는 화폐:** 살 수 있는 콘텐츠의 가격과 맞지 않는 묶음으로만 팔아 쓰지 않을 화폐를 사게 하지 않고, 필요한 만큼 구체적인 양을 골라 살 수 있게 한다.
+- **계약 전 정보와 약관:** 구매 전에 콘텐츠나 화폐의 주요 특성과 실제 화폐 기준 가격을 알린다. 가상화폐는 디지털 콘텐츠가 아니므로 화폐 구매를 철회권에서 빼거나 쓰지 않은 화폐의 14일 안 철회를 거부하지 말라고 하고, 사업자가 화폐의 가치를 일방적으로 바꿀 수 있게 하는 약관도 피할 약관으로 든다.
+- **미성년 이용자:** 성인 전용이 아닌 게임은 이용자의 상당 부분이 18세 미만이라고 예상해야 한다. 연령에 맞는 기본값을 갖춘 보호자 통제를 제공하고(예: 실제 돈 지출을 기본으로 막기), 아이에게 직접 사라고 하거나 어른에게 사 달라고 조르게 하지 않는다.
+
+2026-09-30 CPC Network 공동성명은 이 원칙과 업계 단체와의 대화 뒤에도 많은 게임사가 실질적으로 바꾸지 않았다는 정황을 확인했다고 밝히고, 같은 날 10개 사업자를 상대로 가상화폐 관행을 EU 소비자법에 맞추라고 요구하는 조정 조치 11건을 시작했다. 한국은 확률형 아이템 표시 의무가 있지만(게임산업법 제33조, 시행령 별표 3의2) 그 기준에는 가상화폐 가격을 원화로 함께 표시하라는 요구가 없다. 전자상거래법의 일반 가격 표시 의무가 화폐로 값을 매긴 아이템에 어떻게 적용되는지는 확인하지 않았다.
+
+적용 제안: 화폐 묶음 가격, 아이템의 화폐 가격과 그 실제 돈 환산액을 같은 화면에 두고, 묶음 크기를 주요 아이템 가격에 맞춰 남는 화폐를 줄인다. EU와 EEA 이용자에게 판매할 때는 위 원칙을 출시 점검에 넣는다. 원칙의 적용 여부와 국가별 집행은 판매 국가의 규정과 함께 확인한다.
+
 ## 플랫폼별 분기 가설
 
 플랫폼마다 광고와 구독의 적합성이 다를 수 있지만, 운영체제만으로 우세한 수익 모델을 정하지 않는다. 같은 앱의 플랫폼별 결제 전환율, 광고 노출당 수익, 유지율을 직접 측정해 분기 여부를 정한다. 지표 정의는 [[Metrics-Framework|지표 설계]]를 따른다.
@@ -112,14 +136,26 @@ ARPU는 사용자당 매출이며 이익이 아니다. GA4의 ARPU는 활성 사
 - 광고라면 충족률, 실제 노출과 정산 수익, 변동비와 유지율을 함께 보는가
 - 플랫폼별 분기를 경험칙이 아닌 자기 지표로 결정했는가
 - 수수료 프로그램의 가입과 효력 발생일, Google Play 테스트 뒤 프로덕션 접근 심사를 출시 일정에 넣었는가
+- 게임 내 화폐를 판다면 아이템의 실제 돈 가격을 구매 화면에 표시하고, 필요한 양만 사거나 아이템 가격에 맞는 묶음을 골라 쓰지 않을 화폐를 사지 않아도 되는가
 - 매출, 비용, 트래픽 증빙과 계정 이전 경로를 남기고 있는가
 
 ## 출처
 
-스토어 조건과 공헌이익 개념의 대조 기준은 2026-10-02다. 2026-10-07에는 ARPU와 최초 실행 코호트의 분모, 광고 크레딧 조건만 다시 확인했다.
+스토어 조건과 공헌이익 개념의 대조 기준은 2026-10-02다. 2026-10-07에는 ARPU와 최초 실행 코호트의 분모, 광고 크레딧 조건만 다시 확인했다. 2026-11-03에는 게임형 반복 결제 절의 스토어 상품 유형, 심사 지침 3.1.1, EU 원칙과 CPC 공동성명, 게임산업법 제33조와 시행령 별표 3의2만 대조했다.
 
 - [App Store Small Business Program — Apple Developer](https://developer.apple.com/app-store/small-business-program/)
-- [App Review Guidelines — Apple Developer](https://developer.apple.com/app-store/review/guidelines/)
+- [App Review Guidelines — Apple Developer](https://developer.apple.com/app-store/review/guidelines/) — 3.1.3(e)는 2026-10-02, 3.1.1의 게임 내 화폐 인앱결제, 만료 금지와 확률 공개는 2026-11-03 대조
+- [Business Models and Monetization — Apple Developer](https://developer.apple.com/app-store/business-models/) — 소모성 상품의 목숨과 보석 예시, 비갱신 구독의 스트리밍 시즌 패스 예시
+- [Apple In-App Purchase — Apple Human Interface Guidelines](https://developer.apple.com/design/human-interface-guidelines/apple-in-app-purchase) — 비갱신 구독의 게임 배틀패스 예시
+- [One-time products — Android Developers](https://developer.android.com/google/play/billing/one-time-products)
+- [One-time product purchase lifecycle — Android Developers](https://developer.android.com/google/play/billing/lifecycle/one-time) — 소모 처리, 구매 확인과 3일 기한
+- [Understanding subscriptions — Google Play Console Help](https://support.google.com/googleplay/android-developer/answer/12154973?hl=en) — 자동 갱신되지 않는 선불 기본 요금제
+- [Multiple purchase options and offers for one-time products — Android Developers](https://developer.android.com/google/play/billing/one-time-product-multi-purchase-options-offers) — 대여 구매 옵션
+- [게임산업진흥에 관한 법률 제33조 — 국가법령정보센터](https://www.law.go.kr/법령/게임산업진흥에관한법률/제33조) — 확률형 아이템 정보 표시
+- [게임산업진흥에 관한 법률 시행령 별표 3의2 — 국가법령정보센터](https://www.law.go.kr/LSW/flDownload.do?flSeq=136417275&bylClsCd=110201) — 2024-01-09 신설. 표시 내용과 방법에 가격 표시 항목이 없음을 대조
+- [The Consumer Protection Cooperation Network's Key Principles on In-game Virtual Currencies — European Commission](https://commission.europa.eu/document/download/8af13e88-6540-436c-b137-9853e7fe866a_en?filename=Key+principles+on+in-game+virtual+currencies.pdf) — 2025-03-21 발행. 적용 범위와 비구속 각주, 원칙 1~7 대조
+- [Joint Statement of the Consumer Protection Cooperation Network on Stronger Consumer Protection in Video Games across the EU Single Market — European Commission](https://commission.europa.eu/document/download/75ff33d4-77a6-4f14-916a-766a8c6c281c_en?filename=CPC+Network+Joint+Statement+of+the+Consumer+Protection+Cooperation+Network+on+online+games.pdf) — 2026-09-30, 정황 확인과 조정 조치 11건
+- [바이브코딩 앱 수익화 — 모바일게임 결제 구조 3가지 — YouTube, 투더제이 TTJ](https://www.youtube.com/watch?v=i1mcEl6gKms) — 2026-10-24 공개, 게임형 반복 결제 절의 세 갈래 구분에만 계기 자료로 사용
 - [App testing requirements for new personal developer accounts — Google Play Console Help](https://support.google.com/googleplay/android-developer/answer/14151465?hl=en)
 - [Service fees — Google Play Console Help](https://support.google.com/googleplay/android-developer/answer/112622?hl=en)
 - [Changes to Google Play's service fee in 2021 — Google Play Console Help](https://support.google.com/googleplay/android-developer/answer/10632485?hl=en)

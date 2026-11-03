@@ -90,6 +90,19 @@ NIST SP 800-40 Rev. 4는 새 취약점마다 위험 평가로 최적의 대응�
 - Hugging Face는 고심각도 신호가 요일과 관계없이 몇 분 안에 대응자를 호출하도록 탐지와 경보를 고쳤다고 밝혔다. 위 침입은 주말 사이에 번졌다.
 - Anthropic은 방어자에게 SOC 자동화, 위협 탐지, 취약점 평가와 사고 대응에 AI를 시험해 보라고 권했고, Hugging Face는 AI 보조 분석으로 보통 며칠 걸릴 일을 몇 시간에 했다고 밝혔다. 자동 대응을 어디까지 열지는 아래 권한 경계 절을 따른다.
 
+### 패치 물결에는 업데이트를 기본값으로 둔다
+
+영국 NCSC는 2026-05-01 블로그에서 AI가 충분한 기술과 지식을 갖춘 사람의 손에서 쌓인 기술 부채를 대규모로 빠르게 악용할 능력을 보이고 있다고 보고, 오픈소스, 상용, 독점 소프트웨어와 SaaS 전반에 강제적인 정정이 올 것으로 전망했다. 그 결과 긴급 업데이트가 몰려오는 취약점 패치 물결(vulnerability patch wave)에 대비하라는 것이다. 주요 권고는 다음과 같다.
+
+- 가능한 한 빨리, 이상적으로는 자동으로 업데이트를 적용하는 update by default 정책을 둔다. NCSC는 안전이 중요한 시스템과 운영 기술(OT)을 예외가 필요할 수 있는 영역으로 든다.
+- 경계에 있는 기술부터 우선하고 안쪽으로 들어온다.
+- 임베디드 장치를 포함해 자동 업데이트를 쓸 수 있으면 켠다.
+- 지원이 끝난 기술은 교체하거나 다시 지원 범위로 돌려놓는다. 특히 외부 공격 표면이 되는 경우에 그렇다.
+
+Chrome에서는 수정 빈도도 늘었다. Chrome 보안팀은 2026-07-30 Chrome 149와 150 두 마일스톤에서 고친 보안 버그가 1,072개로 그 앞 23개 마일스톤의 합보다 많았다고 밝혔고, 주요 마일스톤을 2주 주기로 바꾸는 중이며 보안 업데이트를 매주 내고 주 2회 보안 릴리스를 시범 운영한다고 했다. 같은 기간 Stable 채널 첫 공지의 보안 수정 수는 149가 429건, 150이 433건이다. 두 출처 모두 이 합계와 1,072개의 차이를 설명하지 않으므로 집계 기준이 다르다고 보고 맞춰 읽지 않는다(해석).
+
+update by default를 기본으로 두고, 아래 절의 관찰 기간이나 수동 승인이 필요한 자산과 그 이유를 예외 목록으로 관리하면 두 요구를 함께 다룰 수 있다(해석).
+
 ## 업데이트 경로가 오염될 때: 관찰 기간의 효과와 한계
 
 빨리 패치하라는 압력과 그 패치 자체가 악성일 위험은 충돌한다. 신뢰하는 공급자의 정상 업데이트 경로를 탄 공격은 서명 확인을 통과할 수 있다.
@@ -133,6 +146,10 @@ OpenAI의 기술 보고서는 최소 권한, 격리와 분할, 강한 인증 같
 ## 출처
 
 - [This is not sustainable — Jan Schaumann](https://www.netmeister.org/blog/this-is-not-sustainable.html) — 확인 후보. 2026-11-02 원문 접근 제한으로 전체 본문과 개별 주장을 대조하지 못했다.
+- [Preparing for a 'vulnerability patch wave' — NCSC, Ollie Whitehouse](https://www.ncsc.gov.uk/blogs/prepare-for-vulnerability-patch-wave) — 2026-05-01 게시. 2026-11-03 원인 진단과 update by default, 경계 우선, 자동 업데이트, 교체 권고 대조
+- [Stronger with every update: How we're making Chrome and the web safer in the AI Era — Google, Chrome Security Team](https://blog.google/security/chrome-stronger-with-every-update/) — 2026-07-30. Chrome 149와 150의 보안 버그 수, 릴리스 주기와 주 2회 보안 릴리스 시범
+- [Stable Channel Update for Desktop — Chrome Releases](https://chromereleases.googleblog.com/2026/06/stable-channel-update-for-desktop.html) — 2026-06-02 Chrome 149, 보안 수정 429건
+- [Stable Channel Update for Desktop — Chrome Releases](https://chromereleases.googleblog.com/2026/06/stable-channel-update-for-desktop_0175352312.html) — 2026-06-30 Chrome 150, 보안 수정 433건
 - GeekNews, 2026-10-29 11:50과 2026-11-02 09:13 Weekly #382 사용자 제공 발췌 — 패치 적용 병목과 보안 운영 여력의 후속 학습 단서
 
 - [How Low Can You Go? An Analysis of 2023 Time-to-Exploit Trends — Google Cloud Blog, Mandiant](https://cloud.google.com/blog/topics/threat-intelligence/time-to-exploit-trends-2023) — 2024-10-16. 2026-11-02 TTE 정의, 연도별 평균, 이상치 처리, 제로데이와 n-day 구분과 비율, 보수적 추정이라는 한계 대조

@@ -24,6 +24,7 @@ aliases: ["인프라&클라우드(Infrastructure&Cloud)", "Infrastructure & Clou
 
 ## 장비와 자체 운영
 
+- [[Data-Center-Cooling|데이터센터 냉각과 PUE]] — PUE의 정의와 측정, 수전 용량 계산의 경계, 공기와 액체의 열 운반, 후면 도어, 직접 액체 냉각과 침지, GPU 랙 전력 밀도, 클럭 저하 사유
 - [[Semiconductor-Advanced-Packaging|반도체 첨단 패키징]] — EMIB와 Foveros의 연결 구조, EMIB와 CoWoS-L의 bridge 배치, 제조 거점과 고객 제품 양산의 구분
 - [[Storage-Access-Models|저장장치 연결과 데이터 접근]] — DAS, NAS와 SAN, 블록/파일/객체, 공유 연결과 동시 쓰기 조정
 - [[Server-Quotation-Checklist|서버 견적 검토]] — 메모리 배치, 옵션과 지원 조건, 물리 코어 라이선스의 적용 범위, 케이블과 트랜시버, DAC와 AOC, 전원 코드와 랙 PDU

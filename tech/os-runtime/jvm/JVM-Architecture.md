@@ -98,7 +98,7 @@ JVM이 실행 중 사용하는 메모리 영역. GC 대상/비대상, 스레드 
 - **C1 (Client Compiler)** — 빠른 컴파일, 가벼운 최적화. 시작 시간 우선
 - **C2 (Server Compiler)** — 느리지만 깊은 최적화. 장기 실행 처리량 우선
 - **Tiered Compilation** (JDK 7+) — C1로 빠르게 시작 → 핫한 메서드만 C2로 재컴파일
-- 주요 최적화: **inlining**, **loop unrolling**, **escape analysis**, **dead code elimination**, **lock coarsening**
+- 주요 최적화: **inlining**, **loop unrolling**, **escape analysis**, **dead code elimination**, **lock coarsening**. 프로파일에 기댄 추측과 역최적화, 범위 검사 제거와 자동 벡터화는 [[JVM-JIT-and-AOT-Cache#C2는 프로파일에 기대 추측하고, 틀리면 되돌린다|C2의 추측 최적화]]에 있다
 
 ### 3. GC (Garbage Collector)
 
@@ -106,7 +106,7 @@ Heap 관리. 자세한 내용은 [[JVM-GC|JVM GC]].
 
 ### AOT, GraalVM Native Image
 
-- **AOT(Ahead-of-Time)** — 실행 전 미리 네이티브로 컴파일. JDK 9에서 실험적 `jaotc`가 도입됐으나 유지 비용 대비 채택이 낮아 **JEP 410으로 JDK 17에서 실험적 Graal JIT와 함께 제거**됐다. 현재 JVM 진영의 AOT 대안은 **GraalVM Native Image 계열**이다
+- **AOT(Ahead-of-Time)** — 실행 전 미리 네이티브로 컴파일. JDK 9에서 실험적 `jaotc`가 도입됐으나 유지 비용 대비 채택이 낮아 **JEP 410으로 JDK 17에서 실험적 Graal JIT와 함께 제거**됐다. 그 뒤 JDK 24부터 HotSpot은 학습 실행에서 얻은 클래스 로딩과 링크(JEP 483), 메서드 프로파일(JDK 25, JEP 515) 같은 결과를 **AOT 캐시**에 담아 재사용한다. 최적화된 기계어까지 담는 JEP 544는 JDK 28 대상으로 Integrated 상태다(2026-11-03 부분 대조). 같은 JVM에서 동작하는 이 캐시와 별도 실행 파일을 만드는 Native Image는 다른 방식이다. 자세한 내용은 [[JVM-JIT-and-AOT-Cache|HotSpot JIT 최적화와 AOT 캐시]]
 - **GraalVM Native Image** — 바이트코드 + 종속성을 **단일 네이티브 바이너리**로. 기동 수십 ms, 메모리 낮음 → 서버리스, CLI 선호. 반면 동적 리플렉션, 동적 클래스 로딩 제약
 
 ## 기동 순서, Lazy Loading
@@ -129,12 +129,13 @@ Heap 관리. 자세한 내용은 [[JVM-GC|JVM GC]].
 
 - **Tiered Compilation** 기본 유지(끄면 warm-up 급증)
 - **CDS(Class Data Sharing)** / **AppCDS** — 로드된 클래스 메타데이터를 아카이브 → 여러 JVM 인스턴스가 공유
+- **AOT 캐시** (JDK 24+) — 학습 실행으로 만든 캐시를 운영 실행에서 쓴다. 조건과 효과는 [[JVM-JIT-and-AOT-Cache#기동과 워밍업을 앞당기는 AOT 캐시|AOT 캐시]]
 - **GraalVM Native Image** — 서버리스, CLI에서 기동 극단 축소
 
 ### JIT 프로파일 유지
 
 - **Warmup 요청** — 배포 직후 일정 요청을 흘려 C2 컴파일 유도
-- **Blue-Green 전환 시** 새 인스턴스는 JIT 프로파일이 비어 있음 → 초반 P99 튐
+- **Blue-Green 전환 시** 새 인스턴스는 JIT 프로파일이 비어 있음 → 초반 P99 튐 (JDK 25+에서 메서드 프로파일을 담은 AOT 캐시를 쓰면 학습 실행의 프로파일로 시작한다, JEP 515)
 
 ### Metaspace 관리
 
@@ -184,6 +185,9 @@ Heap 관리. 자세한 내용은 [[JVM-GC|JVM GC]].
 - [Oracle, Java SE 25 java Command](https://docs.oracle.com/en/java/javase/25/docs/specs/man/java.html) — `-Xcomp`의 테스트 모드와 운영 사용 제한
 - [JMH samples: DeadCode, ConstantFold, Forking, Annotations — OpenJDK](https://github.com/openjdk/jmh/tree/master/jmh-samples/src/main/java/org/openjdk/jmh/samples) — 샘플 08, 10, 12, 20의 측정 함정과 실행 조건
 - [JEP 410 — Remove the Experimental AOT and JIT Compiler (OpenJDK)](https://openjdk.org/jeps/410)
+- [JEP 483 — Ahead-of-Time Class Loading & Linking (OpenJDK)](https://openjdk.org/jeps/483) — 2026-11-03 AOT 캐시의 도입 릴리스 대조
+- [JEP 515 — Ahead-of-Time Method Profiling (OpenJDK)](https://openjdk.org/jeps/515)
+- [JEP 544 — Ahead-of-Time Code Compilation (OpenJDK)](https://openjdk.org/jeps/544) — 2026-11-03 JDK 28 대상 Integrated 상태 확인
 - [JEP 454 — Foreign Function & Memory API (OpenJDK)](https://openjdk.org/jeps/454)
 - [JEP 122 — Remove the Permanent Generation (OpenJDK)](https://openjdk.org/jeps/122)
 - [JEP 220 — Modular Run-Time Images (OpenJDK)](https://openjdk.org/jeps/220)
@@ -198,6 +202,7 @@ Heap 관리. 자세한 내용은 [[JVM-GC|JVM GC]].
 - [인프런, 김영한, 수업 자료](https://www.inflearn.com/courses/lecture?courseId=332506&unitId=194629)
 
 ## 관련 문서
+- [[JVM-JIT-and-AOT-Cache|HotSpot JIT 최적화와 AOT 캐시 (추측 최적화, 역최적화, AOT 캐시, JDK 기본값 변화)]]
 - [[JVM-GC|JVM GC (Young/Old/Metaspace, Minor vs Full GC, G1, ZGC)]]
 - [[GC-Algorithm|GC 알고리즘 이론]]
 - [[Java-Backend-Fundamentals|Java 백엔드 면접 기초]]

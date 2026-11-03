@@ -41,6 +41,8 @@ verified_at: 2026-09-30
 - **비교 기간과 연율화**: 전월비, 전분기비, 전년동월비는 다른 값이다. 미국 GDP 발표의 전분기비 연율은 같은 분기 증가율이 네 번 이어진다고 환산한 값으로 `(1 + 전분기 증가율)^4 − 1`이며 실제 전년동기비가 아니다.
 - **계절조정과 명목/실질**: 같은 지표명이어도 기준이 다르면 비교하지 않는다. 단기 물가 추세에는 계절조정 전월비가 유용하고, 계약상 물가 조정에 쓸 지표는 계약이 정한 원지수인지 확인한다.
 - **잠정치와 개정치**: GDP와 고용 등은 추가 자료에 따라 수정된다. 미국 계절조정 CPI도 계절요인 재산정으로 수정될 수 있다. 당시 판단을 평가할 때는 지금의 개정치와 그때 이용할 수 있었던 발표치를 구분한다.
+- **조세부담률과 국민부담률**: 조세부담률은 국세와 지방세를 GDP로 나눈 값으로 사회보장기여금을 넣지 않고, 국민부담률은 여기에 사회보장기여금을 더한다. e-나라지표 기준 2024년 한국은 조세부담률 17.6%, 국민부담률 25.3%다. 같은 기관 안에서도 귀속 사회기여금을 넣는지에 따라 값이 다르다. 프랑스의 2023년 값은 OECD와 Eurostat의 제외 기준 모두 43.8%, Eurostat의 포함 기준 45.5%다. 나라 사이 비교에는 같은 기관, 같은 정의와 같은 연도의 값을 쓴다.
+- **임금 지표**: 평균과 중위, 세전과 세후, 개인과 가구를 나눈다. INSEE의 2024년 민간부문 상근환산 월급은 세전 평균 3,602유로, 순 평균 2,733유로, 순 중위 2,190유로다. 프랑스의 순임금은 사회보장 기여금과 CSG, CRDS를 뺀 뒤이지만 소득세를 떼기 전 값이라 가처분소득으로 옮기지 않는다. 개인 임금은 가구 단위 소득이나 이전소득을 포함한 생활수준과도 다른 지표다.
 
 ## 4. 지표를 체인으로 연결하기
 
@@ -103,6 +105,10 @@ verified_at: 2026-09-30
 - [한국은행 — 금융안정보고서(2026년 6월)](https://www.bok.or.kr/portal/bbs/P0000593/view.do?nttId=11062197&menuNo=200068) — 2026-10-21 용어해설의 취약차주와 고정이하여신비율 정의, 132쪽 각주 17의 자영업자 다중채무 산정 기준 대조
 - [e-나라지표 — 가계신용 동향](https://www.index.go.kr/unify/idx-info.do?idxCd=1076) — 2026-10-21 가계신용 구성과 자금순환 개인부문과의 포괄범위 차이 대조
 - [국가데이터처 — 2026년 1/4분기 가계동향조사 결과](https://www.mods.go.kr/boardDownload.es?bid=214&list_no=445277&seq=1) — 2026-10-21 처분가능소득과 평균소비성향 산식, 비소비지출 항목 대조
+- [e-나라지표 — 조세부담률](https://www.index.go.kr/unify/idx-info.do?idxCd=1122) — 2026-11-03 조세부담률과 국민부담률의 정의, 2024년 값 대조
+- [OECD — Revenue Statistics 2024: Korea](https://www.oecd.org/tax/revenue-statistics-korea.pdf) — 2023년 프랑스의 tax-to-GDP 비율 대조
+- [Eurostat — Main national accounts tax aggregates (gov_10a_taxag)](https://ec.europa.eu/eurostat/api/dissemination/statistics/1.0/data/gov_10a_taxag?geo=FR&unit=PC_GDP&sector=S13_S212&na_item=D2_D5_D91_D61_M_D995&sinceTimePeriod=2022) — 2026-11-03 귀속 사회기여금을 포함한 프랑스 값 조회
+- [INSEE — Les salaires dans le secteur privé en 2024](https://www.insee.fr/fr/statistiques/8657156) — Insee Première n°2079 — 2025-10-23 공표. 2024년 민간부문 상근환산 세전과 순임금, 순임금의 소득세 전 기준 대조
 - [국가법령정보센터 — 은행업감독규정 별표 3 자산건전성 분류기준](https://www.law.go.kr/LSW//flDownload.do?flSeq=137260595&flNm=%5B%EB%B3%84%ED%91%9C+3%5D+%EC%9E%90%EC%82%B0%EA%B1%B4%EC%A0%84%EC%84%B1+%EB%B6%84%EB%A5%98%EA%B8%B0%EC%A4%80&bylClsCd=200201) — 2026-10-21 개정 이력 2019.6.4까지 표기된 별표의 연체기간별 분류 대조
 
 ## 관련 문서

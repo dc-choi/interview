@@ -69,7 +69,7 @@ GC 수행 중 **모든 애플리케이션 스레드를 일시 정지**시키는 
 | **Serial** | 전통 | 단일 스레드, Mark-Sweep-Compact | 소형 앱, 싱글 코어 |
 | **Parallel (Throughput)** | JDK 5 | 멀티 스레드 Young+Old | 배치, 처리량 중심 |
 | **CMS** (Concurrent Mark Sweep) | JDK 1.4.1~13, JDK 14에서 제거 | Old를 **동시 마킹**으로 STW 축소 | 과거 응답 지연 민감 앱 |
-| **G1** (Garbage-First) | JDK 7~, 기본(JDK 9+) | **Region 기반**, pause 목표, Old도 동시 처리 | 일반 서버 워크로드의 기본 선택 |
+| **G1** (Garbage-First) | JDK 7~, 기본(JDK 9~26은 CPU 2개 이상이고 물리 메모리 1792MB 이상인 환경, JDK 27부터 모든 환경, JEP 523) | **Region 기반**, pause 목표, Old도 동시 처리 | 일반 서버 워크로드의 기본 선택 |
 | **ZGC** | 실험 JDK 11(JEP 333), Production JDK 15(JEP 377) | 짧은 pause 목표, TB급 힙 지원, Colored Pointer | 초저지연, 초대형 힙 |
 | **Shenandoah** | Production JDK 15(JEP 379) | Concurrent Compaction, ZGC와 유사한 저지연. **Oracle JDK 빌드에는 미포함(OpenJDK 계열만)** | 초저지연 대안 |
 | **Epsilon** | JDK 11~ | **아무것도 회수 안 함** | 단기 벤치마크, 메모리 분석 |
@@ -82,7 +82,7 @@ GC 수행 중 **모든 애플리케이션 스레드를 일시 정지**시키는 
 - **MaxGCPauseMillis**: 목표 STW를 설정하면 G1이 Region 수를 그에 맞춰 조절(soft target)
 - 큰 객체는 연속된 여러 Region에 걸친 **Humongous Object**로 별도 처리
 - Old 수집도 **Concurrent Marking**으로 길게 멈추지 않음
-- JDK 9+의 기본 수집기
+- JDK 9+의 기본 수집기. JDK 26까지는 CPU 1개 또는 물리 메모리 1792MB 미만 환경에서 Serial을 골랐고, JDK 27부터 모든 환경의 기본이다(JEP 523, 2026-11-03 부분 대조). 기본값 변화는 [[JVM-JIT-and-AOT-Cache#JDK 업그레이드는 기본값도 바꾼다|JDK 기본값 변화]]
 
 ## ZGC, Shenandoah (초저지연)
 
@@ -171,6 +171,7 @@ GC 수행 중 **모든 애플리케이션 스레드를 일시 정지**시키는 
 - [JEP 439 — Generational ZGC (OpenJDK)](https://openjdk.org/jeps/439)
 - [JEP 474 — Generational ZGC by Default (OpenJDK)](https://openjdk.org/jeps/474)
 - [JEP 490 — Remove Non-Generational ZGC (OpenJDK)](https://openjdk.org/jeps/490)
+- [JEP 523 — Make G1 the Default Garbage Collector in All Environments (OpenJDK)](https://openjdk.org/jeps/523) — 2026-11-03 JDK 27 대상과 이전 Serial 선택 조건 대조
 - [daddyprogrammer — JVM GC](https://daddyprogrammer.org/post/2058/tech-terms-concept/)
 
 ## 관련 문서
