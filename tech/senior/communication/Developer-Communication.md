@@ -67,6 +67,12 @@ Microsoft의 메일 작성 지침을 업무 접수에 적용한 운영 제안이
 - 거창한 인사이트가 없어도 된다 — 가장 쉬운 진입은 질문이다. "이 부분에서 왜 이렇게 됐나요?" 수준이면 충분하다. 동의 표현도 말하기다 — "그렇게 하면 이 문제가 해결되겠네요" 한 마디도 참여다. 질문의 질을 올리는 축은 [[First-90-Days|첫 90일 원칙]] 참조.
 - 말이 안 나오는 이유 중 하나는 준비가 없어서다. 회의 전날이나 당일 아침 10분이면 된다 — 오늘 어떤 결정이 이루어지는지, 나는 어떤 부분을 담당하는지, 궁금한 것이 하나라도 있는지 정리한다. 발언이 구조적으로 막히는 팀이라면 준비의 문제가 아니다 — 심리적 안정감 축은 [[Trust-Respect-Teamwork|신뢰와 존중의 팀워크]] 참조.
 
+### 차이가 있는 자료에는 원인과 확인 상태를 붙인다
+
+회의 자료의 숫자가 다르면 색으로 위치를 표시하는 것에서 멈추지 않고, 비교한 기준과 차이의 원인을 함께 남기는 방법을 권한다. 예를 들어 계약서와 견적서의 단가를 비교한다면 같은 품목, 단위와 적용 시점인지 먼저 확인한다. 원인을 확인하지 못했다면 추측으로 채우지 않고 확인 담당 역할과 다음 확인 시점을 적는다. 이는 회의 준비를 위한 실천 제안이며 평판이나 회의 시간 개선을 측정한 결과는 아니다.
+
+2026-11-04 Microsoft 공식 도움말 기준, Excel for Microsoft 365의 메모(Notes)는 셀에 설명과 참고 사항을 붙이는 용도이고 댓글(Comments)은 답글을 주고받는 대화용이다. 확정된 차이의 설명은 메모에, 확인이 필요한 논의는 댓글에 남기는 방식으로 구분할 수 있다. 메모나 댓글이 있다는 사실이 숫자의 정확성을 보장하지는 않으므로 근거 문서와 대조한다. 단축키와 화면 조작은 사용 중인 플랫폼에서 따로 확인한다.
+
 ## 보고와 기록 습관
 
 보고, 기록, 확인 세 가지는 연차와 직군에 상관없이 신뢰를 만드는 기본이다. 실수보다 은폐가 더 위험하다는 점도 같은 축이다.
@@ -156,6 +162,7 @@ Erin Meyer의 The Culture Map은 문화 간 차이를 여덟 척도로 설명하
 제안하는 것과 일정을 약속할 권한은 다르다. 변경된 범위와 위험을 책임자가 승인하도록 확인하고, 불법이거나 안전하지 않은 요구에는 거절이 필요할 수 있다. 항상 대안을 만들어 상대를 붙잡아야 전문가라는 의무로 확대하지 않는다. 작은 일에서 판단의 근거와 한계를 설명하는 연습으로 사용한다.
 
 ## 출처
+- [Microsoft Support, The difference between threaded comments and notes](https://support.microsoft.com/en-us/excel/the-difference-between-threaded-comments-and-notes) — 2026-11-04 Excel for Microsoft 365의 메모와 댓글 용도 부분 대조. 다른 제품 및 기존 본문 전체의 재검증은 아니다.
 - [The Art of Simple Sabotage — CIA](https://www.cia.gov/stories/story/the-art-of-simple-sabotage/) — 2019-04-01, OSS 훈련 자료의 역사적 맥락
 - [2017 Letter to Shareholders — Amazon](https://www.aboutamazon.com/news/company-news/2017-letter-to-shareholders) — Six-Page Narratives, 메모 작성과 검토 방식
 - [2016 Letter to Shareholders — Amazon](https://www.aboutamazon.com/news/company-news/2016-letter-to-shareholders) — High-Velocity Decision Making, 가역적 결정과 빠른 수정

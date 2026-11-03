@@ -32,6 +32,21 @@ VALL-E의 공개 논문은 영어 음성 6만 시간 학습을 명시한다. 이
 
 참조 음성으로 추론하는 것과 가중치를 갱신하는 미세조정은 별개다. 짧은 참조가 특정 시연에서 더 자연스럽게 들렸다는 결과만으로 긴 학습 자료나 미세조정이 불필요하다고 판정하지 않는다. 적용 제안으로, 동일한 한국어 문장과 화자에서 발음, 숫자 누락, 음색과 긴 발화의 일관성을 비교한다. 여기서는 음성 생성, 청취 비교와 미세조정을 실행하지 않았고 체험 서비스의 무료 한도도 확인하지 않았다.
 
+## 즉석 복제와 전문 복제는 입력 조건부터 비교한다
+
+2026-11-04 ElevenLabs 공식 문서 대조 기준이다. Instant Voice Cloning(IVC)은 짧은 참조에서 목소리를 추정하며 화자별 모델을 새로 학습하지 않는다. Professional Voice Cloning(PVC)은 더 많은 음성으로 전용 모델을 미세조정한다. 아래 길이는 공급자의 준비 권고이며 한국어 품질을 보장하는 임계값은 아니다.
+
+| 방식 | 녹음 준비 기준 | 확인할 경계 |
+|---|---|---|
+| IVC | 개요 문서의 권장 길이는 양질의 음성 1~2분 | 수십 초 시연이 가능하다는 사실과 원하는 품질을 반복해서 얻는 것은 다르다 |
+| PVC | 최소 권장량은 30분, 더 나은 결과를 위해 2~3시간에 가까운 자료 권장 | 녹음량뿐 아니라 화자, 말투, 잡음과 목표 언어를 함께 통제한다 |
+
+PVC용 자료는 한 화자의 깨끗한 음성으로 구성하고 목표 산출물과 말투를 맞춘다. 배경음, 잔향, 다른 화자와 들쑥날쑥한 표현이 결과에 섞일 수 있다. 주로 사용할 언어로 녹음하며, 다른 언어로 만든 복제 음성에는 원래 언어의 억양이나 발음 문제가 남을 수 있다. PVC는 본인 목소리만 만들 수 있고 제출 전 음성 확인 절차가 필요하다.
+
+**복제 품질과 감정 제어는 별도로 평가한다.** Eleven v4와 v3는 `[whispers]`, `[laughs]` 같은 오디오 태그와 문장 부호를 이용해 표현을 조절한다. v4에서도 목소리의 학습 자료에 없는 표현은 덜 안정적일 수 있고, 태그가 의도와 다르게 효과음으로 해석될 수 있다. 태그 지원을 모든 목소리의 동일한 연기 능력으로 해석하지 않는다.
+
+적용 제안으로 같은 대본에서 화자와 모델, 복제 방식, 태그 유무를 기록하고 한 조건씩 바꾼다. 숫자, 질문 억양과 한국어/영어 전환을 포함해 내용 정확도와 표현 적합성을 나누어 듣는다. 특정 시연의 유사도 비율, 가격과 계정별 복제 개수는 일반화하지 않는다. 이번 대조에서는 실제 음성 생성과 청취 비교를 수행하지 않았다.
+
 ## LoRA와 전체 미세조정은 비교 실험으로 선택한다
 
 LoRA는 기반 가중치를 고정하고 저랭크 변화량을 학습한다. 전체 미세조정은 기반 모델의 가중치도 갱신한다. LoRA 논문은 자신이 평가한 언어 모델 과제에서 전체 미세조정과 비슷하거나 더 나은 결과를 보고한다. 따라서 LoRA가 한국어를 충분히 학습할 수 없다는 일반 법칙으로 설명하지 않는다.
@@ -78,6 +93,9 @@ F5-TTS의 평가는 영어와 중국어 자료를 사용하므로 논문 점수�
 
 ## 출처
 
+- [ElevenLabs, Voice Cloning](https://elevenlabs.io/docs/eleven-creative/voices/voice-cloning) — 2026-11-04 IVC와 PVC의 학습 방식, 권장 녹음 길이 대조.
+- [ElevenLabs, Professional Voice Cloning](https://elevenlabs.io/docs/eleven-creative/voices/voice-cloning/professional-voice-cloning) — 2026-11-04 녹음량, 단일 화자와 일관된 스타일, 목표 언어 및 본인 음성 확인 조건 대조.
+- [ElevenLabs, Best practices](https://elevenlabs.io/docs/overview/capabilities/text-to-speech/best-practices) — 2026-11-04 Prompting Eleven v4/v3의 태그, 목소리 선택과 표현 제어 한계 대조. 공급사 간 성능 우열은 검증하지 않았다.
 - [Google AI, Text-to-speech generation (TTS)](https://aistudio.google.com/docs/speech-generation) — 2026-11-03 화자별 생성, 스타일 제어와 목소리 ID 선택 범위 부분 대조.
 - [Qwen3-TTS — QwenLM](https://github.com/QwenLM/Qwen3-TTS) — 2026-11-03 VoiceDesign과 Base 모델, 참조 음성/전사, 임베딩 전용 모드와 특징 재사용 대조.
 - [Fish Audio Drama 3: The Most Emotive Text-to-Speech Model We've Built — Fish Audio](https://beta.fish.audio/blog/fish-audio-drama-3/) — 2026-10-26 감정 지시 방식과 공개 가중치 배포 대조. 벤더 간 우열 주장은 사용하지 않았다.
