@@ -53,6 +53,16 @@ aliases: ["재정정책", "Fiscal Policy"]
 
 적자 자체가 악은 아니다. 침체기엔 적자를 내서라도 수요를 떠받치는 게 정석이다. 문제는 부채가 너무 커져 이자 부담이 눈덩이가 되고, 시장이 그 나라의 상환 능력을 의심하기 시작할 때다. 그러면 국채 금리가 치솟아 재정위기로 번진다.
 
+### 미국 부채 통계는 보유자 범위와 적자의 정의를 맞춘다
+
+2026-11-03 TreasuryDirect FAQ와 CBO의 2026년 2월 전망 문서에서 정의를 대조했다.
+
+- **총부채와 대중 보유 부채:** `Total Public Debt Outstanding`은 `Debt Held by the Public`과 정부 내부 보유분을 합한 값이다. 이름에 public이 있다고 둘을 같은 통계로 읽지 않는다. 대중 보유 부채에는 개인과 기업, 주/지방정부, 외국 정부뿐 아니라 연방준비은행 보유분도 포함되므로 민간 보유분만을 뜻하지 않는다.
+- **기초재정적자:** 전체 재정적자에서 순이자 지출을 제외한 값이다. 순이자를 뺀 지출 총액이 아니라 수입과 비교한 부족분이다. 적자를 양수로 표시하면 `전체 적자 = 기초재정적자 + 순이자 지출`이다.
+- **보유 비중과 보유액:** 분모인 부채가 더 빨리 늘면 보유액이 유지되거나 늘어도 특정 주체의 비중은 낮아질 수 있다. 비중 하락만으로 순매도나 신규 매입 중단을 단정하지 않는다. 이는 비중 계산에서 도출한 해석 원칙이다.
+
+부채/GDP 전망도 부채의 범위, 기준 시점과 법률 가정을 함께 적는다. 여기서는 통계 정의만 확인했으며, 영상에 등장한 현재 잔액과 장기 전망 수치, 국가별 보유 비중을 새 실적으로 채택하지 않았다.
+
 ### 국채 바이백과 TGA는 무엇을 바꾸나
 
 미국 재무부의 국채 바이백은 만기 전에 기존 국채를 사서 상환하는 **부채 관리 수단**이다. 2026-10-07 확인한 TreasuryDirect 설명은 목적을 두 가지로 나눈다.
@@ -134,6 +144,8 @@ aliases: ["재정정책", "Fiscal Policy"]
 
 ## 출처
 
+- [TreasuryDirect, FAQs About the Public Debt](https://www.treasurydirect.gov/help-center/public-debt-faqs/) — 2026-11-03 총부채, 대중 보유와 정부 내부 보유의 구분, 연방준비은행 포함 여부 대조
+- [Congressional Budget Office — The Budget and Economic Outlook: 2026 to 2036](https://www.cbo.gov/publication/62105) — 2026년 2월 보고서. 2026-11-03 제1장 Figure 1-1의 전체 적자, 기초재정적자와 순이자 정의만 대조
 - [IMF — IMF Executive Board Concludes 2026 Article IV Consultation with France](https://www.imf.org/en/news/articles/2026/07/22/pr26255-france-imf-executive-board-concludes-2026-article-iv-consultation) — 2026-07-22 자료의 일반정부 수지, 기초수지와 총부채비율 전망, 2026-10-28 부분 대조
 - [Banque de France — Macroeconomic projections, June 2026](https://www.banque-france.fr/en/publications-and-statistics/publications/macroeconomic-projections-june-2026) — 기초구조조정 가정, 미반영 절감 조치와 2028년 부채비율 전망, 2026-10-28 부분 대조
 - [INSEE — En 2025, le déficit public s'élève à 5,1 % du PIB, la dette publique à 115,6 % du PIB](https://www.insee.fr/fr/statistiques/8956575) — Informations rapides n°78, 2026-03-27 첫 발표. 2026-11-03 2025년 일반정부 적자와 이자 대조

@@ -44,6 +44,14 @@ USDC의 공개 준비자산 항목에는 은행 예금, 단기 미국 국채와 
 
 상환 신뢰가 흔들리면 먼저 현금화하려는 요청이 몰릴 수 있다. 준비자산을 보유했다는 사실과 스트레스 상황의 유동성은 별도 조건이다. 이러한 위험은 토큰 거래와 은행 및 국채 시장을 연결하지만, 상환 증가가 곧 금융시장 전체의 붕괴를 뜻하지는 않는다.
 
+## 외화 스테이블코인과 통화 대체의 조건
+
+통화 대체는 국내 통화 대신 또는 국내 통화와 함께 외화를 쓰는 현상이다. 달러 스테이블코인을 보유하는 것, 국내 거래의 결제 수단으로 쓰는 것과 경제활동의 상당 부분이 달러 표시로 옮겨가는 것은 구분한다.
+
+2026-11-03 대조한 IMF 직원 연구진의 2025년 보고서는 고물가, 제도 취약성과 국내 통화에 대한 낮은 신뢰, 불편한 지급결제와 금융 접근성 부족을 통화 대체의 배경으로 설명한다. 스마트폰과 인터넷을 통한 접근, 이용자가 늘수록 결제 수단의 효용이 커지는 네트워크 효과는 외화 스테이블코인의 확산을 빠르게 할 수 있다. 경제활동의 상당 부분이 외화 표시로 이동하면 중앙은행의 국내 유동성과 금리에 대한 통제 및 통화정책 전달이 약해질 수 있다는 조건부 위험이다.
+
+IMF의 2026-08-07 공개 설명도 거시정책의 신뢰, 통화 대체의 정도와 형태, 금융시장 구조에 따라 영향이 달라진다고 정리한다. 두 자료를 적용하면 국내 결제에서의 사용 범위, 예금에서 옮겨간 자금과 자국 통화 수요의 변화를 확인해야 한다. 거래량 증가 하나로 금리정책이 무력화됐다거나 특정 국가의 통화 주권이 이미 사라졌다고 결론 내리지 않는다. 이는 위험 경로를 읽는 점검 기준이며 한국에 대한 영향 추정은 수행하지 않았다.
+
 ## 원화 손익과 추가 수익 상품
 
 단순 환산식은 다음과 같다. 실제 매매에서는 거래소 가격, 환전 스프레드와 수수료도 반영한다.
@@ -64,6 +72,8 @@ USDC 약관은 준비자산에서 발생한 이자에 대한 보유자의 권리
 
 ## 출처
 
+- [Understanding Stablecoins — IMF Departmental Papers](https://www.imf.org/-/media/files/publications/dp/2025/english/usea.pdf) — 2025년 12월 직원 연구진 보고서, 본문 26쪽 Currency Substitution. 2026-11-03 통화 대체의 배경과 조건부 전달 경로만 대조했으며 기존 상환 약관의 검증일은 유지한다.
+- [Stablecoins: Promise, Risks, and Policy Choices for Emerging Markets — IMF](https://www.imf.org/en/news/articles/2026/08/07/sp080726-stablecoins-emerging-markets-dan-katz) — 2026-08-07 공개 설명의 국가별 영향 조건, 2026-11-03 대조
 - [Circle, Tokenizing and redeeming USDC](https://help.circle.com/support/en/tokenizing-and-redeeming-usdc?id=kb_article_view&sysparm_article=KB0010781)
 - [Circle, Transparency & stability](https://www.circle.com/transparency)
 - [Circle, USDC Terms](https://www.circle.com/legal/usdc-terms) — 2026-10-15 개정, EEA 밖 보유자용 약관의 상환 자격과 이자 귀속

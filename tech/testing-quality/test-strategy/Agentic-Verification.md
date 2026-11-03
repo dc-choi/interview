@@ -32,12 +32,23 @@ aliases: ["Agentic Verification", "에이전트 기반 검증"]
 
 별도 검토자도 같은 잘못된 전제를 물려받을 수 있다. 검토자 수나 테스트 통과를 전체 정확성의 증명으로 삼지 않는다. 빠른 로컬 검사와 실제 CI/배포 환경의 검사를 연결한다.
 
+## TDD 절차, 검증력과 비용을 따로 잰다
+
+테스트를 먼저 썼는지와 틀린 구현을 거절하는지는 다른 질문이다. Red가 나와도 요구한 동작의 실패인지, import나 환경 오류인지 확인해야 한다. 기대값을 구현 함수로 다시 계산하면 같은 오류를 정답에도 복제할 수 있다.
+
+2026-11-03 대조한 Birgitta Böckeler의 탐색 실험은 Sonnet 4.6으로 작은 신규 비즈니스 로직 과제를 구현하고, 생성 방식을 가린 Opus 4.8로 결과를 비교했다. 다섯 비교 묶음은 TDD와 비TDD 결과를 각각 두 개씩 포함하지만, 중간 과제의 후속 두 묶음은 최초 비TDD 코드베이스를 재사용했다. 따라서 중간 과제의 독립 실행 수는 비TDD 2회, TDD 6회다. 한 묶음에는 단순 테스트 선작성 두 번을 추가했다. TDD의 설계나 변이 점수 우위를 확인하지 못했지만, 표본이 작고 품질 판단을 대부분 LLM에 맡겼으며 어느 실행도 TDD를 완벽히 따르지 않았다. 이를 모든 에이전트에서 TDD가 해롭다는 결론으로 확대하지 않는다.
+
+부록의 TDD/비TDD 평균 토큰 배수는 작은 과제 8.50배, 중간 과제 2.96배, 큰 과제 4.89배다. 여기서 합계는 `input + output + cacheRead + cacheWrite`이며 매 턴 누적 문맥을 다시 읽은 양도 센다. 저렴한 캐시 읽기와 새 토큰을 같은 무게로 합쳤으므로 실제 청구액 배수가 아니다. 세 단계로 나뉜 절차라는 이유만으로 비용이 최소 세 배라고 계산할 수도 없다.
+
+적용할 때는 절차 준수 로그, 회귀를 잡는 테스트, 책임 경계와 변경 용이성, 토큰 종류별 사용량을 각각 비교한다. 이 실험은 장기 유지보수 효과나 다른 모델의 성능을 검증하지 않았고, 여기서 재현하지 않았다.
+
 ## 입력과 확인 수준
 
-2026-10-16 11:00 GeekNews 발췌의 E2E와 속성 기반 검증을 기존 테스트 지식에 연결했다. WPS의 `Agentic Verification` URL과 검색 본문 일부는 확인했지만 직접 열람은 실패했다. 위 내용은 확보한 발췌와 기존 개념을 정리한 것이며 원문 전체 학습 완료를 뜻하지 않는다. 후속으로 전체 본문과 추가 검증 기법을 대조한다.
+2026-10-16 11:00 GeekNews 발췌의 E2E와 속성 기반 검증을 기존 테스트 지식에 연결했다. WPS의 `Agentic Verification` URL과 검색 본문 일부는 확인했지만 직접 열람은 실패했다. 기존 E2E와 속성 기반 검증 설명은 확보한 발췌와 기존 개념을 정리한 것이며 WPS 원문 전체 학습 완료를 뜻하지 않는다. 후속으로 전체 본문과 추가 검증 기법을 대조한다. TDD 실험은 별도로 위 절에 적은 원 실험 보고서와 대조했다.
 
 ## 출처
 
+- [TDD inside the agent loop - theater or actual value? — martinfowler.com, Birgitta Böckeler](https://martinfowler.com/articles/exploring-gen-ai/tdd-in-the-agent-loop.html) — 2026-11-03 실험 조건, 품질 판단의 한계와 부록 토큰 집계 방식 대조
 - [Agentic Verification — WPS](https://www.worldprogramming.org/posts/agentic-verification-ievidc) (본문 일부만 확보)
 - GeekNews 제공 발췌, 2026-10-16 11:00, 에이전트 기반 검증.
 - [The reverts will continue until morale improves — Peter Eisentraut](https://peter.eisentraut.org/blog/2026/10/09/the-reverts-will-continue-until-morale-improves) — 2026-10-09 개인 회고, LLM 보조 퍼징과 조합 결함 서술을 2026-10-27 대조

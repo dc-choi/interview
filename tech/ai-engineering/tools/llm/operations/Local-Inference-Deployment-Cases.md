@@ -95,6 +95,7 @@ Mirai가 공개한 벤치마크(2026-10-18 측정, Apple M5 Max 128GB, Uzu 0.6.9
 
 - **같은 평가로 직접 비교한 부분:** 제작자의 Underdog Bench는 평가 전에 고정한 BFCL v4 120개 과제다. Saluki는 88개, 전체 크기 모델은 84개를 통과했다고 보고한다. 제작자가 직접 실행한 전체 크기 모델에는 같은 하네스와 설정을 썼다고 명시한다.
 - **다른 공개 평가에서 가져온 부분:** AIME 2025 `avg@4`는 Saluki 79.2, 전체 크기 모델 96.7이지만 후자는 다른 하네스의 공개 점수다. 이 차이를 같은 조건에서 양자화만 바꾼 손실로 확정하지 않는다.
+- **코딩 과제의 별도 결과:** 같은 모델 카드의 SWE-bench Verified 50개 이슈 평가 항목은 Saluki 30, 전체 크기 모델 33으로 보고된다. 표의 값을 전체 벤치마크 점수나 모든 코딩 작업의 성공률로 확대하지 않는다. 도구 호출의 작은 우위가 다른 능력의 우위까지 뜻하지 않음을 보여 주는 제작자 측정이며, 원시 평가 로그는 대조하지 않았다.
 - **남은 한계:** 제작자는 120개 과제가 작은 표본이며 몇 개 과제의 차이는 실행 간 변동일 수 있다고 설명한다. 병렬 호출 응답 약 5분의 1에 작은 형식 오류가 있다는 제한도 적는다. 도구 호출 점수의 우위를 일반 추론 능력이나 오류 없는 실행으로 확대하지 않는다.
 
 위 수치는 제작자 보고이며 이 문서에서 재현하지 않았다. 장비 선택에는 가중치 적재뿐 아니라 실제 문맥 길이의 메모리, 프리필 지연과 도구 호출 성공률을 함께 측정한다(적용 제안). 12GB GPU에서의 실행 속도와 긴 문맥 지원에 관한 영상의 커뮤니티 사례는 이번 검증 범위에 포함하지 않았다.
@@ -119,7 +120,7 @@ Mirai가 공개한 벤치마크(2026-10-18 측정, Apple M5 Max 128GB, Uzu 0.6.9
 
 ## 출처
 
-- [Underdog Saluki 27B 1.0 — ConwayResearch](https://huggingface.co/ConwayResearch/Underdog-Saluki-27B-1.0) — 2026-11-03 파일 형식과 크기, 실행 설정, 자체 평가와 외부 공개 점수의 구분, 제한 사항 대조
+- [Underdog Saluki 27B 1.0 — ConwayResearch](https://huggingface.co/ConwayResearch/Underdog-Saluki-27B-1.0) — 2026-11-03 파일 형식과 크기, 실행 설정, 자체 평가와 외부 공개 점수의 구분, SWE-bench Verified 부분집합과 제한 사항 대조
 - [Janas — prabanta-dev](https://github.com/prabanta-dev/janas)
 - [Minions: A Dynamic and Distributed Virtual GPU Cloud Built on Idle Apple Silicon Devices — Apple Machine Learning Research](https://machinelearning.apple.com/research/distributed-gpu-cloud)
 - [uzu — trymirai](https://github.com/trymirai/uzu)
