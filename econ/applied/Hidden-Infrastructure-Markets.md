@@ -92,6 +92,16 @@ B2B 인프라 시장은 다른 기업의 생산, 거래, 위험 관리를 가능
 
 이 구분에서 도출한 점검 질문은 주문의 매출 전환 시점, 납품 지연 가능성과 회수 조건이다. 비율이 1을 넘었다는 사실만으로 향후 이익이나 주가 상승을 확정하지 않는다. 2026-10-09에는 위 과거 수치와 지표 구분을 ABB의 2025년 4분기 실적 발표로 확인했다. 현재 분기 실적과 전망을 검증한 기록은 아니다.
 
+### 장기 공급 계약은 기간보다 지급 의무를 읽는다
+
+다년 계약이라는 이름만으로 수량, 가격과 현금 회수가 모두 확정되는 것은 아니다. 계약별로 최소 구매 의무, 가격 조정 범위, 선납금의 반환 조건과 불이행 시 회수 수단을 나눠 확인한다.
+
+**메모리 공급 사례:** Micron의 2026 회계연도 Form 10-K는 전략 고객 계약을 다년간 특정 물량에 구속력 있는 약정을 둔 take-or-pay 구조로 설명한다. 계약 가격은 고정하거나 주기적으로 협상하며 전략 고객 계약 다수에는 가격 상한과 하한이 있다. 고객의 현금 예치금과 신용장은 재무적 보강 수단이지만 인식 매출과 같은 항목은 아니다.
+
+같은 공시에서 예치금은 주로 계약부채로 분류한다. 고객이 최소 구매 약정을 충족하면 반환하고, 충족하지 못하면 전부 또는 일부를 보유해 매출로 인식할 수 있다. 신용장에 접근할 권리도 명시된 채무불이행이나 계약 위반 조건에 달려 있다. 이 조건을 확인하지 않고 예치금을 확정 매출로 더하거나, 고객이 위약금만 내면 자유롭게 계약을 끝낼 수 있다고 단정하지 않는다.
+
+**적용 기준:** 메모리 계약과 조선 수주는 미래 납품을 약정한다는 공통점이 있지만 해지권, 손해배상, 보증과 지급 조건까지 같지는 않다. 산업 간 비유는 점검 질문을 만드는 데 쓰고 실제 위험은 각 계약과 공시로 판단한다. 2026-11-03 Micron의 Marketing and Customers와 주석 1, 16을 부분 대조했으며, 다른 메모리 업체나 조선사의 비공개 계약은 검증하지 않았다.
+
 ### 장비 검증과 파트너 자격을 매출로 바꾸어 읽지 않는다
 
 장비가 특정 요구사항을 충족했다는 검증, 기업의 파트너 자격, 고객의 발주와 회계상 매출 인식은 서로 다른 근거를 요구한다. 기술 적합성 발표만으로 주문 금액, 독점 공급이나 이익률을 추정하지 않는다.
@@ -112,6 +122,7 @@ B2B 인프라 시장은 다른 기업의 생산, 거래, 위험 관리를 가능
 
 ## 출처
 
+- [Micron, Form 10-K for the fiscal year ended September 3, 2026](https://www.sec.gov/Archives/edgar/data/723125/000072312526000023/mu-20260903.htm) — 2026-11-03 전략 고객 계약의 물량과 가격 조건, 예치금의 계약부채 분류와 반환, 신용장 접근 조건을 부분 대조
 - [LG Electronics — LG Electronics Becomes an NVIDIA Preferred Partner for Power and Cooling Solutions](https://www.lg.com/global/newsroom/news/eco-solution/lg-electronics-becomes-an-nvidia-preferred-partner-for-power-and-cooling-solutions/)
 - [ABB — Q4 2025 results](https://resources.news.e.abb.com/attachments/published/132985/bg-BG/30D6366E65E1/ABB-Q4-2025-press-release-English.pdf)
 - [NAIC, Reinsurance](https://content.naic.org/insurance-topics/reinsurance)
