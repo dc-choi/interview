@@ -34,6 +34,14 @@ EIA는 spare capacity를 **30일 이내 가동해 최소 90일 유지할 수 있
 
 이 항로 설명은 2026-03-03 갱신된 EIA 자료를 2026-10-07 확인한 기준이다. 현재 통항 여부, 피해 규모, 복구 일정과 운임을 뜻하지 않는다.
 
+## 비교하는 유가의 기준부터 맞춘다
+
+유가라는 말이 같은 가격을 뜻하지는 않는다. Brent, WTI와 Dubai/Oman은 서로 다른 원유의 가격 기준이다. 개별 원유와 기준 가격의 차이에는 품질, 운송비와 지역별 수급 등이 반영된다. 따라서 두 기준의 가격 차이를 특정 해협의 위험 프리미엄 하나로 설명하지 않는다. [EIA의 가격 기준 설명](https://www.eia.gov/Todayinenergy/detail.php?id=18571)
+
+뉴스를 비교할 때는 기준 유종, 관측일과 현물 또는 선물 여부를 먼저 맞춘다. 선물이면 계약 월물도 기록한다. 한 기준의 상승과 다른 기준의 하락을 같은 상품의 상반된 움직임으로 읽지 않기 위한 점검 절차다.
+
+부분 확인(2026-11-04): EIA의 2014년 교육 자료에서 가격 기준과 차등 요인만 확인했다. 당시 생산량과 Brent 구성 유종을 현재 사실로 옮기지 않았으며, 현재 시세와 군사 충돌, 주가 전망은 검증하지 않았다.
+
 ## 뉴스를 판단하는 순서
 
 다음은 위 개념을 적용하는 점검 절차다.
@@ -54,6 +62,7 @@ EIA는 spare capacity를 **30일 이내 가동해 최소 90일 유지할 수 있
 
 ## 출처
 
+- [Benchmarks play an important role in pricing crude oil — U.S. Energy Information Administration](https://www.eia.gov/Todayinenergy/detail.php?id=18571) — 가격 기준과 차등 요인 설명, 2014-10-28
 - [Oil prices and outlook — U.S. Energy Information Administration](https://www.eia.gov/energyexplained/oil-and-petroleum-products/prices-and-outlook.php)
 - [What drives crude oil prices: Spot Prices — U.S. Energy Information Administration](https://www.eia.gov/finance/markets/crudeoil/spot_prices.php)
 - [World Oil Transit Chokepoints — U.S. Energy Information Administration](https://www.eia.gov/international/content/analysis/special_topics/World_Oil_Transit_Chokepoints/) — 2026-03-03 갱신 자료의 항로와 우회 제약

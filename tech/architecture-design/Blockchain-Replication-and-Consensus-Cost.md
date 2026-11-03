@@ -84,6 +84,14 @@ Bitcoin 백서에서 두 노드가 서로 다른 다음 블록을 동시에 전�
 
 같은 블록을 검증하는 노드가 늘어나는 것을 서로 다른 트랜잭션의 병렬 처리 능력이 늘어나는 것으로 계산하면 안 된다. 다만 노드 증가가 처리량을 전혀 바꾸지 않는다거나 모든 블록체인이 단일 노드의 성능에 묶인다는 주장도 별도 설계 근거 없이 적용하지 않는다.
 
+### 확장성과 검증 참여 비용
+
+확장성은 처리량뿐 아니라 확정까지의 시간, 보안과 노드 운영의 진입 비용을 함께 본다. 한 노드에서 큰 블록을 처리했다는 실험만으로 다른 참여자의 검증과 전파 부담까지 해결했다고 판단하지 않는다. 이는 복제 실행 구조와 Ethereum 확장 문서의 낮은 노드 진입 비용 원칙에서 도출한 점검 기준이다.
+
+Rollup은 실행을 L1 밖에서 하고 데이터를 L1에 게시한다. 데이터 게시와 결과 검증은 구분한다. Optimistic rollup은 잘못된 상태 전이에 대한 이의 제기와 fraud proof에, ZK-rollup은 L1에서 검증하는 validity proof에 의존한다. 따라서 데이터를 올렸다는 사실만으로 잘못된 결과가 자동 거절된다고 설명하지 않는다. 처리량을 비교할 때 실행 주체, 데이터 가용성과 증명 또는 이의 제기 조건도 함께 확인한다.
+
+부분 검증(2026-11-04): Ethereum의 scaling과 두 rollup 문서에서 구조와 검증 방식만 대조했다. 특정 네트워크의 처리량, 현재 가스 한도와 탈중앙화 수준은 확인하지 않았다.
+
 ## 비용과 확인 경계
 
 | 항목 | 발생하는 일 | 설계할 때의 질문 |
@@ -115,6 +123,14 @@ Ethereum의 실행은 같은 초기 상태와 입력에서 같은 결과를 내�
 
 외부 입력이 틀렸는데 모든 노드가 같은 결과를 계산했다면 실행의 일치만 확인한 것이다. 현실의 사실까지 검증한 것으로 해석하지 않는다. 이는 오라클의 정확성과 결정성을 구분한 설계상의 귀결이다.
 
+### 재현 조건과 데이터 공개 범위
+
+결정적 실행을 재현하려면 초기 상태와 거래 순서뿐 아니라 적용하는 EVM 규칙과 블록 문맥도 맞춰야 한다. `block.timestamp`는 현재 블록의 Unix epoch 이후 초 단위 시각이다. 이 값을 상태에 기록하는 계약은 같은 거래라도 블록 시각이 다르면 결과가 달라질 수 있다. 오프체인 실행의 `block.*`, `tx.*` 값은 실행 환경이 제공하므로 특정 블록의 값이라고 자동 가정하지 않는다. 따라서 사전 시뮬레이션의 성공을 실제 포함 시점의 성공 보장으로 읽지 않는다(입력 조건에서 도출한 경계).
+
+공개 Ethereum에서 Solidity의 `private` 상태 변수는 비밀 저장소가 아니다. 다른 계약에서의 접근 제한과 체인 데이터의 기밀성은 별개다. 비밀번호나 비밀키를 평문 상태에 넣지 않으며, 소스를 공개하지 않았다는 이유로 배포된 코드와 저장값도 숨겨졌다고 가정하지 않는다.
+
+부분 검증(2026-11-04): Ethereum EVM 문서와 Solidity의 전역 변수, 보안 문서로 재현 조건과 공개 범위를 대조했다. 개별 계약의 재실행 실험은 하지 않았다.
+
 ## 가스는 실행량의 한도이기도 하다
 
 Gas는 Ethereum 연산에 필요한 계산 작업의 단위다. 트랜잭션별 gas limit은 무한 루프와 과도한 계산이 실행 자원을 끝없이 점유하지 못하도록 제한한다. 실행 도중 가스를 소진하면 해당 실행의 상태 변경은 되돌아가지만 사용한 가스 비용은 남는다. 실행 전 검증에서 거절되는 경우와 구분해야 한다.
@@ -140,6 +156,12 @@ Ethereum의 업그레이드 패턴은 배포된 코드를 직접 고치는 대�
 
 ## 출처
 
+- [Ethereum.org, Scaling](https://ethereum.org/en/developers/docs/scaling/)
+- [Ethereum.org, Optimistic rollups](https://ethereum.org/en/developers/docs/scaling/optimistic-rollups/)
+- [Ethereum.org, Zero-knowledge rollups](https://ethereum.org/en/developers/docs/scaling/zk-rollups/)
+- [Ethereum.org, Ethereum Virtual Machine](https://ethereum.org/en/developers/docs/evm/)
+- [Solidity, Units and Globally Available Variables](https://docs.soliditylang.org/en/latest/units-and-global-variables.html)
+- [Solidity, Security Considerations](https://docs.soliditylang.org/en/latest/security-considerations.html)
 - [Ethereum.org, Upgrading smart contracts](https://ethereum.org/en/developers/docs/smart-contracts/upgrading/)
 - [Ethereum.org, Nodes and clients](https://ethereum.org/en/developers/docs/nodes-and-clients/)
 - [Ethereum.org, Node architecture](https://ethereum.org/en/developers/docs/nodes-and-clients/node-architecture/)
