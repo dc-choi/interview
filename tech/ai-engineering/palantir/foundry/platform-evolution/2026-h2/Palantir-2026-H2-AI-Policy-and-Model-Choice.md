@@ -47,6 +47,14 @@ AIP Evolve는 목표/validation/허용 divergence/변경 종류/iteration 제한
 
 SDS LLM match condition은 content/column name을 AND 또는 OR로 결합하고 예/반례로 경계를 설명한다. Vision model의 이미지 판정과 text model의 문서 추출 텍스트 판정은 다르다. 불확실한 분류를 민감정보 부재 보장으로 해석하지 않는다.
 
+## 평가 결과와 실행한 소스의 연결
+
+9월23일 릴리스는 Code Repositories에서 게시한 지원 대상 agent의 소스를 AIP Evals의 target/evaluator debug view 안에서 탐색하는 기능을 추가했다. 두 run을 비교할 때 파일을 각각 선택하고, 평가된 버전의 저장소 파일을 열 수 있다. 과거 소스를 제공할 수 없으면 설명과 저장소로 가는 링크를 표시한다. 저장소 링크가 열린다는 사실만으로 과거 평가 시점의 소스를 확보했다고 보지 않는다.
+
+2026-11-03 실행 가이드 대조 기준, AIP Logic 함수는 마지막 저장본이나 게시 버전을, 그 밖의 함수는 게시 버전을 평가 대상으로 고른다. Run metadata의 branch, version, model과 실제 평가 대상 버전을 함께 확인한다. 결과 화면의 pass/fail은 설정한 Boolean 또는 수치 목표, 방향과 문턱에 따른 판정이며, 두 run을 나란히 보고 출력 차이를 표시할 수 있다. 따라서 비교 전에 입력, 평가기와 목표 조건도 맞추는 것이 운영상 점검 기준이다.
+
+이 절은 9월23일 출시 기록과 현재 실행 가이드를 부분 대조한 내용이다. 실제 enrollment에서 실행하거나 나머지 모델 가용성 기록 전체를 다시 검증하지 않았으므로 문서의 기존 `verified_at`은 유지한다.
+
 ## 8월 agent 도구와 media의 생명주기
 
 AI FDE Automate 도구는 시간/object-set condition,user/project scope,Action/Logic/notification effect,branch/pause/expiry/retry/fallback과 downstream 대기를 지원했다. 당시 time-series/stream/dataset/metric 조건,standalone dependency,legacy event,Function/Agent effect,기존 automation에 effect 추가,run-history/manual-trigger/telemetry는 미지원이었다. 도구 가용성을 Automate 제품 전체 능력과 동일시하지 않는다.
@@ -78,6 +86,7 @@ AI FDE cat/sed 자동 실행 분류는 해당 제품의 approval policy다. sed�
 ## 출처
 
 - [Palantir Foundry, Release notes 2026](https://www.palantir.com/docs/foundry/announcements/release-notes/2026/)
+- [Palantir Foundry, Run an evaluation suite](https://www.palantir.com/docs/foundry/aip-evals/run-suite/) — 2026-11-03, 함수 버전 선택, run metadata와 결과 비교 대조.
 
 ## 관련 문서
 
