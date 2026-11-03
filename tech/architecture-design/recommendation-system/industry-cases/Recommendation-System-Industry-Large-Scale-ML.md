@@ -18,6 +18,7 @@ Meta와 ByteDance 사례의 공통점은 모델 수식보다 **sparse embedding,
 | Instagram Explore | 수십억 media에서 실시간 추천 | 4단계 funnel, Two-Tower, cache와 precompute | 2023년 Explore 표면 |
 | Meta Ads sequence learning | 집계 feature가 잃는 event 순서 | event-based feature와 sequence model | 2024년 Ads 표면 |
 | ByteDance Monolith | concept drift와 동적 sparse ID | collisionless table, online training, 증분 sync | 2022년 BytePlus Recommend 배포 |
+| Toss TASTE | 서비스마다 반복되는 사용자 표현 학습 | 공통 encoder, downstream embedding 재사용, proxy 평가 | 2026-10-14 공개 발표의 초기 개발 사례 |
 
 ## Meta DLRM
 
@@ -144,6 +145,19 @@ Fault tolerance는 snapshot frequency와 freshness의 교환 관계다. 논문 �
 
 Monolith 논문이 직접 확인하는 제품 배포는 BytePlus Recommend다. 현재 TikTok이나 Douyin의 전체 candidate, ranking, policy stack을 공개한 문서로 사용하면 안 된다.
 
+## 공통 사용자 표현과 downstream 재사용
+
+여러 추천시스템과 예측 모델이 같은 사용자를 각각 표현하면 데이터 준비와 학습이 반복된다. 공통 encoder로 사용자 표현을 만들고 과제별 head가 이를 사용하거나, 생성한 embedding을 별도 downstream 모델의 특징으로 제공하는 두 경로를 구분한다. MMoE는 expert를 과제 사이에 공유하면서 과제별 gate를 학습하는 구조다. 여러 과제를 함께 학습할 때의 성능은 과제 관계에 민감하므로 모델 통합 자체를 개선의 증거로 보지 않는다.
+
+TASTE의 초기 개발 사례(2026-10-14 발표 기준)는 다음 경계를 보여 준다.
+
+- **공유할 범위:** 앱 이벤트와 소비 예측을 한 모델에 합쳤을 때 앱 이벤트 성능이 낮아져 모델을 분리했다. Label 입수 지연과 성격뿐 아니라 특정 업무에서만 사용할 수 있는 데이터의 조건도 분리 기준이었다. 같은 사용자라는 이유만으로 모든 입력을 모든 과제에 사용할 수 있다고 보지 않는다.
+- **새 과제의 추가:** 새 이벤트마다 공통 모델의 head를 늘리면 기존 head의 성능도 다시 평가해야 한다. 주요 upstream 과제를 고정하고, 새 downstream 모델에는 기존 과제별 특징과 함께 사용자 embedding을 제공하는 방식을 채택했다. 공통 표현이 과제별 입력을 전부 대체하는 구조는 아니다.
+- **빠른 비교와 실제 효과:** TASTE Bench는 실제 downstream을 모방한 proxy 모델로 embedding 후보를 비교하는 개발 도구다. Proxy 결과는 실제 모델의 재학습과 온라인 검증을 대체하지 않는다(적용 시 지킬 평가 경계).
+- **표현의 배포:** 새 checkpoint의 embedding을 얼마나 생성하고 어떻게 전달할지는 발표 당시 분석 중인 과제였다. 적용 제안은 encoder 버전, 생성 시점과 downstream이 학습한 특징 버전을 함께 기록하는 것이다. 구체적인 갱신 주기와 무중단 전환 계약은 확인되지 않았다.
+
+이 사례는 완성된 범용 모델이나 모든 과제의 성능 향상을 보장하지 않는다. 발표의 수치, 화면에만 있는 구조와 음성 인식으로 확정하기 어려운 모델명은 옮기지 않았다. 2026-11-03에 공개 발표 전사와 Google Research의 MMoE 설명을 대조했으며, 기존 Meta와 ByteDance 절의 검증일은 갱신하지 않았다.
+
 ## 함께 읽을 때의 설계 질문
 
 | 질문 | DLRM과 Meta 사례 | Monolith 사례 |
@@ -170,3 +184,5 @@ Monolith 논문이 직접 확인하는 제품 배포는 BytePlus Recommend다. �
 - [Sequence Learning for Personalized Ads Recommendations — Meta Engineering](https://engineering.fb.com/2024/11/19/data-infrastructure/sequence-learning-personalized-ads-recommendations/)
 - [Monolith: Real Time Recommendation System With Collisionless Embedding Table — ACM RecSys workshop](https://ceur-ws.org/Vol-3303/paper8.pdf)
 - [Monolith Source Code — ByteDance GitHub](https://github.com/bytedance/monolith)
+- [토스 추천 파운데이션 모델 TASTE 개발기, SlashLive — Toss Challengers](https://www.youtube.com/watch?v=b-6ZgPmz4x8) — 2026-10-14 발표, 2026-10-21 업로드. 03:06~08:17의 공동 학습과 모델 분리, 11:29~16:42의 embedding 재사용과 proxy 평가를 공개 발표 전사로 확인. 영상 화면과 성과 수치는 대조하지 않음
+- [Modeling Task Relationships in Multi-task Learning with Multi-gate Mixture-of-Experts — Google Research](https://research.google/pubs/modeling-task-relationships-in-multi-task-learning-with-multi-gate-mixture-of-experts/) — KDD 2018, 2026-11-03 공식 초록의 expert 공유와 과제별 gate 확인

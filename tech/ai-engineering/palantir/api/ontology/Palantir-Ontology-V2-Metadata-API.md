@@ -52,6 +52,18 @@ Object type 목록은 요청 pageSize보다 작거나 클 수 있다. Action/obj
 
 실제 인증 요청과 반환 형식은 시험하지 않았다. 검증 범위는 RID 단건 조회의 요청과 응답 명세이며, 다른 metadata 항목의 검증일은 유지한다.
 
+### Action type RID 일괄 조회의 누락 해석
+
+2026-11-03 Get Action Type By Rid Batch 명세 부분 대조 기준, `POST /api/v2/ontologies/{ontology}/actionTypes/getByRidBatch`는 Action 정의를 최대 100개 조회한다. Action을 적용하는 batch와 구분한다. OAuth2 scope는 `api:ontologies-read`이며 Preview endpoint라 `preview=true`가 필요하다.
+
+- 요청 본문은 `GetActionTypeByRidBatchRequest` 객체다. `requests` 목록의 각 원소는 필수 `actionTypeRid`를 가진 객체이며 RID 문자열 배열 자체가 아니다. Schema에서 `requests`는 선택 필드지만, 생략이나 빈 목록의 실행 결과는 확인하지 않았다.
+- 응답의 `data`는 선택적인 `ActionTypeV2` 목록이다. 존재하지 않거나 토큰에 필요한 권한이 없는 Action type은 응답에서 빠진다. 누락만으로 삭제와 권한 부족을 구분할 수 없다.
+- `branch`를 생략하면 기본 branch를 사용한다. Branch는 experimental이며 모든 workflow를 지원하지 않는다.
+
+클라이언트 설계 제안: 요청을 100개 이하로 나누고 응답을 `rid`로 대응시킨다. 반환되지 않은 RID는 미확인으로 남기고 삭제를 확정하지 않는다. 요청과 응답 개수가 같다는 가정이나 위치별 대응을 사용하지 않는다. 공식 예시의 빈 요청 본문을 정상 요청 양식으로 복사하지 않고 schema를 따른다.
+
+검증 범위는 이 endpoint의 요청, 응답 schema와 누락 조건이다. 실제 인증 호출, 빈 요청의 처리와 반환 순서는 시험하지 않았고 다른 metadata 항목의 검증일은 유지한다.
+
 ## Property type과 표시 정보
 
 Property metadata는 재귀 dataType, RID, status, visibility, value type과 typeClasses를 구분한다. typeClasses의 kind/name은 애플리케이션이 해석할 추가 metadata다. deprecated status는 message/deadline/replacedBy를 제공하며 example은 가상 데이터로 실제 workflow에 쓰지 않는다.
@@ -120,6 +132,7 @@ Query metadata는 재귀 dataType과 typeReferences를 제공한다. execute의 
 - [List Action Types](https://www.palantir.com/docs/foundry/api/ontologies-v2-resources/action-types/list-action-types)
 - [Get Action Type](https://www.palantir.com/docs/foundry/api/ontologies-v2-resources/action-types/get-action-type)
 - [Get Action Type By Rid](https://www.palantir.com/docs/foundry/api/ontologies-v2-resources/action-types/get-action-type-by-rid)
+- [Get Action Type By Rid Batch](https://www.palantir.com/docs/foundry/api/ontologies-v2-resources/action-types/get-action-type-by-rid-batch)
 - [Get Object Type](https://www.palantir.com/docs/foundry/api/ontologies-v2-resources/object-types/get-object-type)
 - [Get Object Type Full Metadata](https://www.palantir.com/docs/foundry/api/ontologies-v2-resources/object-types/get-object-type-full-metadata)
 - [Get Object Type By RID Batch](https://www.palantir.com/docs/foundry/api/ontologies-v2-resources/object-types/get-object-type-by-rid-batch)

@@ -14,7 +14,7 @@ aliases: ["Recommendation System Industry Case Studies", "추천 시스템 산�
 | 미디어 | [[Recommendation-System-Industry-Media\|미디어 추천]] | Netflix, YouTube, Spotify | 화면 편성, 대규모 funnel, session context |
 | 커머스와 마켓플레이스 | [[Recommendation-System-Industry-Commerce-Marketplace\|커머스와 마켓플레이스]] | Amazon, Alibaba, Airbnb | Item relation, candidate-aware ranking, availability |
 | 소셜과 그래프 | [[Recommendation-System-Industry-Social-Graph\|소셜과 그래프]] | LinkedIn, Pinterest | Graph candidate, mutual value, fairness |
-| 대규모 ML | [[Recommendation-System-Industry-Large-Scale-ML\|대규모 ML과 실시간 학습]] | Meta, ByteDance | Sparse embedding, sequence, online update |
+| 대규모 ML | [[Recommendation-System-Industry-Large-Scale-ML\|대규모 ML과 실시간 학습]] | Meta, ByteDance, Toss TASTE | Sparse embedding, sequence, online update, 공통 사용자 표현과 downstream 재사용 |
 | 연구와 벤치마크 | [[Recommendation-System-Industry-Research-Benchmarks\|연구 기준점]] | GroupLens, MovieLens, ACM RecSys | 재현 가능한 offline evaluation의 범위 |
 
 학습 순서는 미디어에서 candidate와 ranking의 공통 구조를 잡고, 커머스와 소셜에서 도메인 제약을 본 뒤 대규모 ML의 운영 문제로 확장한다. 연구 문서는 어느 단계에서든 평가 protocol을 점검할 때 함께 사용한다.
