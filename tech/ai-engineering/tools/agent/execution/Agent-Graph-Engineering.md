@@ -76,6 +76,12 @@ LangGraph의 Graph API는 같은 구성을 State, Node, Edge와 조건부 엣지
 
 두 문서는 앞 호출의 출력을 다음 호출이 이어받는 prompt chaining과 중앙 모델이 하위 작업을 동적으로 나눠 작업자 모델에 맡기고 결과를 합치는 orchestrator-workers도 함께 든다. 생성자와 평가자 패턴은 평가 기준이 분명할 때 효과가 크다. 패턴은 섞어 쓴다. 모델이 계획을 데이터로 내놓고 코드가 집행하는 절충은 [[LLM-Workflow-Patterns-Chain-vs-Agent#Plan-and-Execute: 절충 패턴|Plan-and-Execute]]에 있다.
 
+## 예시: 분석 보고서와 찬반 토론을 분리한다
+
+TradingAgents의 설계는 재무, 시장 심리, 뉴스와 기술 지표 분석을 역할별 보고서로 남기고, 낙관과 비관 관점의 연구자가 그 보고서를 토대로 토론하는 사례다. 거래 판단 뒤에는 별도의 위험 검토와 최종 판단 단계가 있다. 2025-01-10 논문 v3의 통신 설계는 보고서를 공유 상태에 두고 역할마다 필요한 정보를 조회하게 하며, 자연어 토론 이력도 상태의 별도 항목으로 보존한다. 모든 중간 결과를 긴 대화 하나에 섞는 대신 보고서와 토론 기록의 용도를 나누는 예로 읽는다.
+
+2026-11-03 공식 저장소 안내는 연구 목적의 프레임워크이며 성과가 모델, 온도, 거래 기간과 데이터 품질 등에 따라 달라진다고 명시한다. 역할 수, 토론이나 GitHub 인기는 판단 정확도와 수익의 증거가 아니다. 적용 점검 제안: 보고서의 입력 시점과 출처, 반대 근거가 최종 판단에 반영됐는지, 토론 한도와 실행 권한을 각각 확인한다. 논문과 공식 안내의 구조만 대조했으며 코드 실행과 투자 성과는 검증하지 않았다. 다른 실행 계약의 `verified_at`은 유지한다.
+
 ## 예시: 실패 항목을 해당 노드로 되돌리는 조사 그래프
 
 신규 SaaS의 시장 규모, 경쟁사와 고객 문제를 조사해 만들 제품을 제안하는 작업을 그래프로 나눈 설계 예시다. 숫자 기준은 설명을 위한 값이다.
@@ -170,6 +176,8 @@ const routeAfterVerify = (state: ResearchState): NextNode => {
 
 ## 출처
 
+- [TradingAgents: Multi-Agents LLM Financial Trading Framework — arXiv, Yijia Xiao 외](https://arxiv.org/html/2412.20138v3) — 2025-01-10 v3의 역할과 통신 설계
+- [TradingAgents — TauricResearch](https://github.com/TauricResearch/TradingAgents) — 2026-11-03 공식 README의 역할 구분과 연구 목적 확인
 - [또다른 트렌드 Graph Engineering 알려드림 — YouTube, 코드팩토리](https://www.youtube.com/watch?v=SBLDc4R1d_E)
 - [Building effective agents — Anthropic](https://www.anthropic.com/engineering/building-effective-agents)
 - [LangGraph, Graph API overview](https://docs.langchain.com/oss/python/langgraph/graph-api)

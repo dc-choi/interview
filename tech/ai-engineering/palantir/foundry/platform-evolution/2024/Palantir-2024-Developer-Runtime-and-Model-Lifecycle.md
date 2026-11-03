@@ -18,6 +18,14 @@ Python3.8 note title은2025-01-31, 상세 제목은04-01을 지칭한다. 본문
 
 4월 dataset alias branch pin,6월/11월 repo wizard와 Code Workspace 환경은 code branch와 input data branch를 분리할 필요를 보여 준다.9월말 이후 새 Workspace의 단일 repo 중심 permission UX라도 filesystem에 두 resource가 존재한다는 설명을 유지한다.
 
+### Spark 업그레이드의 임시 고정과 만료
+
+2024년 Spark 3.5.1 전환 공지는 위험도가 높은 작업에서 임시 버전 고정으로 적용 시점을 조절하도록 안내했다. 고정은 업그레이드 검증 시간을 확보하는 수단이며, 영구적인 호환성 보장은 아니다.
+
+2026-11-03 Code Repositories 공식 문서 대조 기준, `Settings > Runtime overrides`에서 전체 브랜치 또는 특정 브랜치에 Spark 모듈 버전과 만료일을 설정한다. 만료일은 현재부터 최대 90일 이내이며, 지정한 만료일과 90일 중 먼저 도달한 때에 고정이 만료된다. 만료 뒤에는 빌드가 실패할 수 있다. `Build Preview > view details`에서 고정한 버전을 확인한다.
+
+운영 점검 제안: 고정할 때 영향받는 브랜치, 비교할 결과와 성능, 만료 전 전환 담당자를 함께 정한다. 이 절의 설정 계약만 새로 대조했고 실제 빌드는 실행하지 않았다. 다른 2024년 변경 기록의 `verified_at`은 유지한다.
+
 ## OSDK 계약의 변화
 
 5월 TypeScript1.1은 page→fetchPage/fetchPageWithErrors, __identity→$identity, all→asyncIter, bulkActions→batchActions, searchAround→pivotTo를 예고했다. FetchPage의 throw/Result 설명과 일부 example code가 맞지 않으므로 원문 코드를 검증 없이 복사하지 않는다. Version1.2는 syntax bridge,2.0은10월 GA와 신규 generator default, legacy 최소1년 support라는 당시 계획이다.
@@ -38,6 +46,7 @@ Java는7월 beta/10월 GA로 진행했고 Maven group ID와 confidential client 
 
 - [Palantir, 2024 release notes](https://www.palantir.com/docs/foundry/announcements/release-notes/2024)
 - [Palantir, 2024 release notes](https://www.palantir.com/docs/foundry/release-notes/2024)
+- [Palantir, Pin Spark modules in-platform](https://www.palantir.com/docs/foundry/code-repositories/module-pinning/)
 
 ## 관련 문서
 
