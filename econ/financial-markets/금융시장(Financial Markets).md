@@ -16,6 +16,7 @@ aliases: ["금융시장(Financial Markets)", "Financial Markets Map"]
 ## 토픽 지도
 
 ### 1. 시스템
+- [[Constant-Product-AMM-Pricing|상수곱 AMM 가격 결정]] — 준비금 비율과 평균 체결가격, 수수료와 가격 영향, 최소 수령량과 TWAP의 경계 ✅
 - [[Financial-System-Overview|금융시스템 개관]] — 직접금융과 간접금융, 금융중개, 발행시장과 유통시장, 한국의 예금자보호 범위 ✅
 - [[Market-Stabilization-Mechanisms|시장 안정화 장치]] — 사이드카와 서킷브레이커의 기준, 정지 범위와 해제 조건, 종목별 VI와의 구분 ✅
 - [[Investor-Flows-and-Market-Funds|투자자별 매매동향과 증시 자금]] — 순매수 합계 0의 항등식, 집계 범위와 잠정치, 두 시장의 주문 배분과 최선집행, 외국인 순매도와 한국은행 증권투자자금의 차이, 투자자예탁금과 은행 수신 ✅

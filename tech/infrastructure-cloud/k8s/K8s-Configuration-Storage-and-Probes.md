@@ -69,6 +69,23 @@ PV는 cluster storage resource이고 PVC는 namespaced storage 요청이다. Sto
 
 2026-11-03 Kubernetes Volumes의 `emptyDir` 설명과 구성 예시를 대조한 부분 보강이다. 다른 절의 버전별 동작은 이번에 다시 대조하지 않아 frontmatter 날짜를 유지한다.
 
+### hostPath: 경로가 같아도 node가 다르면 데이터가 다르다
+
+`hostPath.path`는 node의 경로이고 `volumeMounts[].mountPath`는 container 안의 경로다. 두 이름이 달라도 같은 파일을 가리킬 수 있다. Pod 삭제가 node 파일 삭제를 뜻하지는 않지만, 다른 node에 배치된 새 Pod가 그 파일을 받는 것은 아니다. **같은 node에서 재생성한 시험만으로 장애 시 데이터 복구를 입증할 수 없다.**
+
+| `hostPath.type` | 요구 조건 |
+|---|---|
+| `Directory`, `File` | 해당 종류의 경로가 이미 존재해야 함 |
+| `DirectoryOrCreate` | 없으면 kubelet 소유와 그룹, 0755 권한의 디렉터리 생성 |
+| `FileOrCreate` | 없으면 kubelet 소유와 그룹, 0644 권한의 빈 파일 생성. 부모 디렉터리는 만들지 않음 |
+| 빈 문자열 | mount 전 종류 검사를 하지 않음 |
+
+`FileOrCreate`에서 부모 경로가 없으면 Pod 시작이 실패한다. 파일 존재, 종류, 소유권과 container 프로세스의 접근 권한을 각각 확인한다. 권한 오류를 해결하려고 곧바로 privileged 실행을 허용하지 않는다(운영 제안).
+
+호스트 로그 수집처럼 필요한 경우에도 경로와 쓰기 권한을 최소화한다. `readOnly`여도 노출한 자격 증명이나 runtime socket의 위험이 사라지는 것은 아니다. `hostPath` 사용량은 ephemeral storage 사용량으로 집계되지 않으므로 node 디스크 사용량을 따로 감시한다.
+
+2026-11-04 공식 Volumes의 hostPath 절을 대조했다. 실제 클러스터 실행과 다른 절의 버전별 동작은 이번에 확인하지 않아 frontmatter 날짜를 유지한다.
+
 ## 세 probe의 계약
 
 | probe | 질문 | 실패 효과 |
@@ -142,6 +159,7 @@ HTTP, TCP, exec와 gRPC probe를 사용할 수 있다. 성공 응답만 만드�
 
 ## 출처
 
+- [Kubernetes Docs, Volumes: hostPath](https://kubernetes.io/docs/concepts/storage/volumes/#hostpath) — 2026-11-04 node 경로, type과 보안, 디스크 사용량 경계 대조
 - [Kubernetes Docs, Volumes](https://kubernetes.io/docs/concepts/storage/volumes/#emptydir) — 2026-11-03 emptyDir의 수명, mount 연결, 저장 매체와 용량 경계 대조
 - [Kubernetes Docs, ConfigMap](https://kubernetes.io/docs/concepts/configuration/configmap/)
 - [Kubernetes Docs, Secrets](https://kubernetes.io/docs/concepts/configuration/secret/)

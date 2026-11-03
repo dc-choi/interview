@@ -26,6 +26,30 @@ Solidity는 정적 타입 언어다. `uint256`과 `int256`은 부호 해석이 �
 
 가상의 소수 자릿수 6인 토큰에서 100개는 최소 단위로 `100 * 10^6`이다. 여기에 `100 ether`를 넣으면 `100 * 10^18`이 되어 의도보다 `10^12`배 크다. 이는 접미사의 배율에서 도출한 예이며, 특정 토큰의 자릿수나 금액 처리 구현을 검증한 결과는 아니다.
 
+### 교환량 계산의 정수 경계
+
+양의 토큰 수량을 정수로 계산하면 나눗셈의 나머지가 결과에서 빠진다. Uniswap v2 공식 `UniswapV2Library`의 `getAmountOut`은 수수료를 반영한 분자를 분모로 나눈 정수 몫을 출력량으로 쓴다. 반대 방향인 `getAmountIn`은 필요한 입력을 정수 몫에 1을 더해 계산한다. 후자는 정확히 나누어떨어질 때도 1을 더하므로 일반적인 수학적 올림과 완전히 같다고 설명하지 않는다.
+
+가격 표시에서는 토큰별 자릿수도 맞춘다. A와 B의 최소 단위 준비금이 x, y이고 소수 자릿수가 dA, dB라면, A 한 개당 B 가격은 `(y / x) × 10^(dA-dB)`다(단위 환산식). 실제 정수 구현에서는 먼저 나누어 유효 자릿수를 잃지 않는지, 곱셈의 범위를 넘지 않는지 함께 확인한다. 경제적 가격 영향은 [[Constant-Product-AMM-Pricing|상수곱 AMM 가격 결정]]을 본다.
+
+## 컴파일러 버전과 빌드 재현
+
+`pragma solidity`는 실행 중인 컴파일러가 허용 범위에 맞는지 검사한다. 컴파일러를 설치하거나 버전을 바꾸지 않으며, pragma는 파일마다 적용된다. `^0.8.30` 같은 범위를 적는 것과 빌드 도구에서 정확한 버전을 선택하는 일은 다르다.
+
+네이티브 `solc`와 npm의 `solc` 패키지가 제공하는 `solcjs`는 같은 컴파일러 소스에서 나오지만 CLI 옵션이 호환되지 않는다. 네이티브 명령 예시를 그대로 복사하기 전에 사용 중인 실행 파일과 옵션을 확인한다.
+
+빌드 재현을 위해 다음 입력을 함께 보존한다(공식 컴파일러와 metadata 문서에서 도출한 점검 항목).
+
+- 정확한 컴파일러 버전과 전체 소스, 파일 경로, import 해석에 필요한 설정.
+- optimizer 활성화와 `runs`, `viaIR`, 대상 `evmVersion`, 연결할 라이브러리 주소.
+- metadata 설정과 Standard JSON 입력, 생성된 ABI와 bytecode.
+
+기본 설정에서는 metadata 해시가 runtime bytecode에 포함된다. 소스의 공백이나 경로가 달라져도 metadata와 bytecode가 달라질 수 있으므로, **컴파일러 버전만 같다는 이유로 배포물 재현을 보장하지 않는다.** metadata 해시를 넣지 않는 옵션도 있어 모든 배포물이 같은 형식을 가진다고 가정하지 않는다.
+
+대상 EVM 버전은 배포할 체인의 지원 범위와 맞춘다. 컴파일 성공은 그 체인에서의 실행 가능성 검증을 대신하지 않는다. 컴파일러 교체 전에는 알려진 버그 목록의 영향 버전과 optimizer, EVM 등 발생 조건을 함께 대조한다. 버전 고정은 재현을 위한 것이며 취약한 버전을 계속 쓰라는 뜻이 아니다.
+
+2026-11-04 공식 설치, pragma, 컴파일러 입력, metadata와 알려진 버그 문서를 대조했다. 특정 버전 설치, bytecode 비교와 배포 실행은 하지 않았다.
+
 ## 생성과 상속
 
 컨트랙트 생성자는 생성 시 한 번 실행되고 배포된 런타임 코드에는 포함되지 않는다. 컨트랙트 생성과 기존 주소를 컨트랙트 타입으로 변환하는 일은 구분한다.
@@ -64,6 +88,12 @@ Solidity는 정적 타입 언어다. `uint256`과 `int256`은 부호 해석이 �
 
 ## 출처
 
+- [UniswapV2Library.sol — Uniswap](https://github.com/Uniswap/v2-periphery/blob/master/contracts/libraries/UniswapV2Library.sol) — 2026-11-04 출력량과 입력량의 정수 계산 대조
+- [Solidity, Installing the Solidity Compiler](https://docs.soliditylang.org/en/latest/installing-solidity.html)
+- [Solidity, Layout of a Solidity Source File](https://docs.soliditylang.org/en/latest/layout-of-source-files.html)
+- [Solidity, Using the Compiler](https://docs.soliditylang.org/en/latest/using-the-compiler.html)
+- [Solidity, Contract Metadata](https://docs.soliditylang.org/en/latest/metadata.html)
+- [Solidity, List of Known Bugs](https://docs.soliditylang.org/en/latest/bugs.html)
 - [Solidity, Units and Globally Available Variables](https://docs.soliditylang.org/en/latest/units-and-global-variables.html)
 - [Solidity, Layout of State Variables in Storage and Transient Storage](https://docs.soliditylang.org/en/latest/internals/layout_in_storage.html)
 - [Ethereum Improvement Proposals, EIP-2929: Gas cost increases for state access opcodes](https://eips.ethereum.org/EIPS/eip-2929)
