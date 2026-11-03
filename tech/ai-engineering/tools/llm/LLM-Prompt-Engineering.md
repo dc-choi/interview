@@ -41,6 +41,14 @@ Anthropic의 프롬프트 엔지니어링 개요는 시작 조건으로 사용 �
 - 웹페이지, 메일 본문, OCR 결과 같은 외부 콘텐츠는 `tool_result` 블록에만 넣고, 가능하면 JSON 객체의 문자열로 감싸 지시와의 경계를 분명히 한다. 앱의 지시는 `tool_result` 안에 넣지 않고 뒤따르는 user 턴에 둔다. 도구 결과도 같은 경량 모델 검사를 거친 뒤 돌려줄 수 있다.
 - 작은 가드 모델은 본 모델과의 해석 능력 차이로 우회될 수 있으므로 검사 하나에 기대지 않고 출력과 도구 실행 단계의 권한 검사를 함께 둔다([[LLM-Application-Security#가드 모델 우회 — 능력 격차가 곧 취약점|가드 모델 우회]]).
 
+## 템플릿은 입력 조립과 모델 호출을 분리한다
+
+고정 지시와 매번 바뀌는 입력을 템플릿과 변수로 나누면 같은 지시를 여러 입력에 재사용할 수 있다. LangChain Python의 `PromptTemplate.from_template`은 문자열 템플릿을 만들며 기본 형식은 `f-string`이다. `ChatPromptTemplate.from_messages`는 역할과 내용으로 된 메시지 템플릿을 구성한다. 후자의 `invoke` 결과는 변수가 채워진 `ChatPromptValue`이며 모델이 생성한 답변이 아니다. 모델 호출은 별도로 연결한다. 이 절은 2026-11-04 LangChain 공식 API 참조로 확인했으며 실행 시험은 하지 않았다.
+
+**적용 제안:** 고객 리뷰를 처리한다면 검토 기준과 출력 필드는 고정하고, 리뷰 원문과 조회한 상품 정보만 변수로 전달한다. 변수 치환이 성공했는지와 답변이 업무 기준에 맞는지는 별도로 검사한다. 템플릿으로 분리했다는 이유만으로 입력 속 지시문이 무력화되거나 출력이 안전해졌다고 판단하지 않는다.
+
+템플릿 본문을 누가 작성하는지도 신뢰 경계다. LangChain API 참조는 신뢰할 수 없는 출처의 Jinja2 템플릿이 임의 Python 코드 실행으로 이어질 수 있다고 경고한다. 기본 샌드박스도 보안 보장이 아니므로 외부에서 받은 Jinja2 템플릿을 실행하지 않도록 권한다. 신뢰한 템플릿에 외부 텍스트를 값으로 넣는 것과 외부 텍스트 자체를 템플릿으로 실행하는 것을 구분한다.
+
 ## 프리필로 하던 일을 옮긴다
 
 프리필은 마지막 assistant 메시지의 앞부분을 미리 채워 모델이 그 뒤를 잇게 하는 기법으로, `{`나 `[`로 시작하게 해 JSON이나 정해진 괄호 형식을 강제하거나 서론을 건너뛰게 하는 데 쓰였다. Anthropic 문서 기준으로 Claude 4.6 이후 모델과 Claude Mythos Preview는 마지막 assistant 턴의 프리필을 400 오류로 거부한다. 이전 모델은 계속 지원하고, 대화 중간에 assistant 메시지를 두는 것은 영향을 받지 않는다([[LLM-API-Version-Migration|모델 단위 제약과 버전 단위 제약]]).
@@ -97,6 +105,8 @@ Bedrock의 프롬프트 개념 문서는 모델별 가이드를 따르라고 하
 
 ## 출처
 
+- [LangChain Reference, PromptTemplate.from_template](https://reference.langchain.com/python/langchain-core/prompts/prompt/PromptTemplate/from_template)
+- [LangChain Reference, ChatPromptTemplate](https://reference.langchain.com/python/langchain-core/prompts/chat/ChatPromptTemplate)
 - [Claude Platform Docs, Prompt engineering overview](https://platform.claude.com/docs/en/build-with-claude/prompt-engineering/overview)
 - [Claude Platform Docs, Prompting best practices](https://platform.claude.com/docs/en/build-with-claude/prompt-engineering/claude-prompting-best-practices)
 - [Claude Platform Docs, Define success criteria and build evaluations](https://platform.claude.com/docs/en/test-and-evaluate/develop-tests)

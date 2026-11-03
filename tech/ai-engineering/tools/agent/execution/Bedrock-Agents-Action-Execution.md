@@ -42,6 +42,14 @@ Lambda 방식은 에이전트의 호출을 허용하는 함수 resource-based po
 
 Powertools for AWS Lambda의 멱등성 유틸리티는 정한 시간 창 안에서 같은 키의 성공 결과를 재사용한다. 키를 만들 입력 필드와 영속 저장소가 필요하며, 데코레이터 추가만으로 외부 결제 시스템까지 하나의 트랜잭션이 되지는 않는다. 외부 요청 성공 뒤 결과 기록 전에 중단되는 경우는 [[Idempotency-Key|멱등성 키]]의 업무 계약과 함께 점검한다(설계 제안).
 
+## 실행 추적과 배포 대상
+
+`InvokeAgent`의 trace는 기본으로 꺼져 있으며 `enableTrace: true`로 요청한다. 응답 스트림의 trace에는 작업 그룹과 지식 베이스에 전달한 입력, 반환 결과와 실패 단계가 담길 수 있다. `TracePart`의 `agentAliasId`, `agentVersion`, `sessionId`로 어느 구성과 대화를 관찰했는지 연결한다(2026-11-04 AWS 문서 기준).
+
+**검증 제안:** 모델이 작업을 선택한 이유와 실제 업무 성공을 구분한다. 주문 API 호출 입력이 올바르더라도 주문 저장에 실패할 수 있으므로, trace의 호출 결과와 백엔드의 주문 상태를 대조한다. 모델의 `rationale`만으로 성공을 판정하지 않는다. 프롬프트와 작업 입력이 trace에 포함될 수 있으므로 공유할 로그의 데이터 범위도 검토한다.
+
+초안 시험과 운영 배포는 별도다. `DRAFT`와 이를 가리키는 `TSTALIASID`에서 시험한 변경은 운영 별칭의 버전 전환까지 확인한다. 버전은 불변 스냅샷이며 별칭을 이전 버전으로 돌릴 수 있지만, 이미 실행한 업무의 취소까지 뜻하지는 않는다. 자세한 배포 절차와 복구 경계는 [[Agent-Ready-API-Design#도구 계약의 테스트 대상과 배포 대상을 구분한다|도구 계약의 테스트와 배포]]를 따른다.
+
 ## 적용 확인
 
 - 입력 누락, 잘못된 값과 권한 거부가 실제 작업 실행 전에 처리되는지 확인한다.
@@ -53,6 +61,9 @@ Powertools for AWS Lambda의 멱등성 유틸리티는 정한 시간 창 안에�
 
 ## 출처
 
+- [Amazon Bedrock, View the trace](https://docs.aws.amazon.com/bedrock/latest/userguide/trace-view.html)
+- [Amazon Bedrock, Track agent's step-by-step reasoning process using trace](https://docs.aws.amazon.com/bedrock/latest/userguide/trace-events.html)
+- [Amazon Bedrock, Deploy an agent](https://docs.aws.amazon.com/bedrock/latest/userguide/deploy-agent.html)
 - [Amazon Bedrock, Amazon Bedrock Agents Classic maintenance mode](https://docs.aws.amazon.com/bedrock/latest/userguide/agents-classic-maintenance-mode.html)
 - [Amazon Bedrock, Define actions in the action group](https://docs.aws.amazon.com/bedrock/latest/userguide/action-define.html)
 - [Amazon Bedrock, Handle fulfillment of the action](https://docs.aws.amazon.com/bedrock/latest/userguide/action-handle.html)
