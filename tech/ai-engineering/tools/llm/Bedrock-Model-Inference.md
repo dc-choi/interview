@@ -49,6 +49,14 @@ Converse에서 대화를 이어가려면 애플리케이션이 이전 메시지�
 
 **적용 점검 제안:** 문서와 질의에 쓸 임베딩 모델, 출력 차원, 정규화 설정을 기록하고 벡터 저장소 스키마와 맞춘다. 차원이나 모델을 바꿀 때는 기존 색인을 그대로 재사용할 수 있다고 가정하지 말고 재임베딩과 색인 교체 필요성을 확인한다. 생성 모델만 교체하는 실험과 검색 표현까지 바꾸는 실험을 나누면 답변 변화의 원인을 비교하기 쉽다. 차원을 줄였을 때의 한국어 검색 품질과 실제 저장 비용은 별도 측정 대상이다.
 
+## API 감사 기록과 입력 및 출력 로그를 구분한다
+
+2026-11-04 공식 문서 부분 대조 기준이다. CloudTrail의 API 활동 기록과 model invocation logging은 목적과 설정이 다르다. CloudTrail에서는 요청 주체, 시각과 호출 작업을 확인한다. `InvokeModel`, `InvokeModelWithResponseStream`, `Converse`, `ConverseStream`은 관리 이벤트로 기록되지만, `InvokeAgent`와 `RetrieveAndGenerate` 같은 데이터 이벤트는 해당 리소스 유형의 기록 설정을 따로 확인해야 한다. 모든 Bedrock 작업이 같은 기본 설정으로 남는다고 가정하지 않는다.
+
+Model invocation logging은 지원 호출의 요청, 응답과 메타데이터를 수집하며 기본 비활성화다. 대상은 `bedrock-runtime` endpoint이고, 로그 목적지는 같은 계정과 리전의 CloudWatch Logs 또는 S3여야 한다. CloudTrail에서 호출 이력을 찾았다는 사실만으로 프롬프트와 생성 결과까지 보관했다고 판단하지 않는다.
+
+**운영 점검 제안:** 감사할 작업의 이벤트 유형과 본문 로그 필요성을 먼저 정한다. 본문 기록을 켜기 전에는 입력과 출력에 포함될 민감 정보, 저장소 접근 권한과 보관기간을 확인한다. 오류 재현에 필요한 기록과 비공개 데이터의 추가 보관 부담을 함께 검토한다. 서비스와 애플리케이션의 다른 보존 경계는 [[Bedrock-Private-Access#비공개 연결과 데이터 보존은 별도 설정이다|비공개 연결과 데이터 보존]]을 따른다. 이 절은 문서상의 기록 계약을 대조했으며 실제 계정에서 로그 수집을 시험하지 않았다.
+
 ## 실험을 코드로 옮기는 순서
 
 Bedrock 콘솔 playground로 기반 모델을 실험할 수 있다. 공식 안내는 custom model이 콘솔 playground에서 지원되지 않는다고 구분한다. 예전 시연의 화면과 모델 목록을 현재의 지원 목록으로 쓰지 않는다. [Playgrounds 안내](https://docs.aws.amazon.com/bedrock/latest/userguide/playgrounds.html)
@@ -64,6 +72,8 @@ Bedrock 콘솔 playground로 기반 모델을 실험할 수 있다. 공식 안�
 
 ## 출처
 
+- [Amazon Bedrock, Monitor Amazon Bedrock API calls using CloudTrail](https://docs.aws.amazon.com/bedrock/latest/userguide/logging-using-cloudtrail.html) — 2026-11-04 호출 주체와 시각, 관리 이벤트와 데이터 이벤트의 구분을 부분 대조.
+- [Amazon Bedrock, Monitor model invocation using CloudWatch Logs and Amazon S3](https://docs.aws.amazon.com/bedrock/latest/userguide/model-invocation-logging.html) — 2026-11-04 기본 비활성화, endpoint 범위와 같은 계정 및 리전의 로그 목적지 조건을 부분 대조. 기존 절의 검증일은 유지한다.
 - [Amazon Bedrock, Client-side tool use](https://docs.aws.amazon.com/bedrock/latest/userguide/tool-use-client-side.html) — 2026-11-04 Converse의 도구 요청과 결과 연결, 모델별 선택과 스트리밍 지원의 구분을 부분 대조. 기존 절의 검증일은 유지한다.
 - [Amazon Bedrock, Inference using Invoke API](https://docs.aws.amazon.com/bedrock/latest/userguide/inference-api.html)
 - [Amazon Bedrock, Inference using Converse API](https://docs.aws.amazon.com/bedrock/latest/userguide/conversation-inference.html)
