@@ -82,6 +82,15 @@ aliases: ["오픈소스 라이선스 검토", "OSS License Review", "상용 소�
 - 아이콘, 폰트, 사진, 데이터셋과 모델 가중치는 코드와 함께 전달되더라도 각각의 이용 조건을 확인한다. 저장소 루트의 코드 라이선스가 모든 외부 자산을 허가한다고 추정하지 않는다.
 - 외주 납품에서는 제3자 구성요소 목록, 라이선스/고지문, 수정 내역과 필요한 소스 제공 책임을 함께 인계하도록 협의한다. 타인의 오픈소스 권리까지 고객에게 독점 양도할 수 있다고 약속하지 않는다.
 
+### Solidity의 SPDX 주석과 컴파일 성공
+
+부분 검증(2026-11-04): Solidity의 소스 파일 배치 안내, SPDX 표현식과 Unlicense 항목을 대조했다. 기존 라이선스와 개별 제품 사례 전체의 재검증은 아니므로 frontmatter 날짜는 유지한다.
+
+- `// SPDX-License-Identifier: MIT`는 기계가 읽을 라이선스 표기다. Solidity 컴파일러는 지정 문자열을 bytecode metadata에 포함하지만 SPDX 목록에 있는 유효한 라이선스인지 검사하지 않는다. 컴파일 성공을 이용 조건 검증으로 처리하지 않는다.
+- `MIT OR Apache-2.0`은 둘 중 하나를 선택하는 표현이고, `MIT AND Apache-2.0`은 둘 다 준수해야 한다는 표현이다. 원래 권리자가 부여하지 않은 선택권을 가져온 쪽에서 `OR`로 만들어서는 안 된다(검토 기준).
+- Solidity의 특별값 `UNLICENSED`는 공개 이용 허가를 부여하는 표기가 아니다. SPDX 목록의 `Unlicense`는 퍼블릭 도메인 헌납과 광범위한 이용 허가를 담은 별도 항목이므로 혼동하지 않는다.
+- 파일별 SPDX 주석을 썼어도 원 저작권자 고지와 라이선스별 의무는 남는다. 여러 파일을 합치거나 소스를 탐색기에 공개할 때도 원래 파일별 조건을 추적한다. 공개 열람과 재사용 허가는 별개의 판단이다.
+
 ### 사례: 공개 데이터 피드를 묶은 지도 앱
 
 2026-11-02 main 브랜치의 God's Eye View README와 DATA_SOURCES 기준이다. 당시 최신 릴리스는 v0.3.0(2026-10-28)이며 태그 시점의 파일은 대조하지 않았다. 항공기, 선박, 위성과 공개 카메라를 브라우저의 3D 지구본에 합친 오픈소스 클라이언트로, 두 문서는 코드를 MIT라고 적는다(LICENSE 파일은 대조하지 않았다). DATA_SOURCES는 MIT 허가가 소스 코드에만 미치고 제3자 데이터와 시각 자산에는 이어지지 않으며, 출처마다 자체 라이선스와 약관이 남는다고 적는다.
@@ -127,6 +136,9 @@ aliases: ["오픈소스 라이선스 검토", "OSS License Review", "상용 소�
 - [OSI, GNU Affero General Public License Version 3](https://opensource.org/license/agpl-3.0)
 - [GNU, Frequently Asked Questions about the GNU Licenses](https://www.gnu.org/licenses/gpl-faq.en.html)
 - [SPDX, License List](https://spdx.org/licenses/)
+- [Solidity, Layout of a Solidity Source File](https://docs.soliditylang.org/en/latest/layout-of-source-files.html)
+- [SPDX, Annex D SPDX license expressions](https://spdx.github.io/spdx-spec/v2.3.1/SPDX-license-expressions/)
+- [SPDX, The Unlicense](https://spdx.org/licenses/Unlicense.html)
 - [OSI, The Open Source AI Definition 1.0](https://opensource.org/ai/open-source-ai-definition)
 - [Open Source AI Definition on the road: Looking back and forward — OSI](https://opensource.org/blog/open-source-ai-definition-on-the-road-looking-back-and-forward) (1.0 공개일)
 - [Meta, Llama 3.1 Community License Agreement](https://github.com/meta-llama/llama-models/blob/main/models/llama3_1/LICENSE)

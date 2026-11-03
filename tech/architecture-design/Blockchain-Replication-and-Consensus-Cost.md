@@ -97,6 +97,18 @@ Ethereum PoS의 확정성은 체크포인트에 대한 **총 스테이크의 3�
 
 저장 비용도 노드 유형에 따라 다르다. Full node는 과거 상태를 정리할 수 있고 archive node는 역사적 상태 조회를 위해 더 많은 자료를 유지한다. 따라서 모든 노드가 모든 과거 상태를 영구 보관한다는 전제로 디스크 사용량을 계산하지 않는다.
 
+### 노드 운영, 동기화와 과거 조회
+
+부분 검증(2026-11-04): Ethereum의 노드 구조와 Geth의 sync modes, archive mode를 대조했다. 합의 이론과 기존 절 전체의 재검증은 아니므로 frontmatter 날짜는 유지한다.
+
+Ethereum PoS 노드는 실행 클라이언트와 합의 클라이언트를 함께 사용한다. 실행 쪽은 트랜잭션 실행과 상태 변경 검증을, 합의 쪽은 fork choice와 체인 머리 및 확정 상태 추적을 담당한다. 둘은 Engine API로 연결된다. 블록 제안과 attestation을 수행하는 validator는 별도 역할이며, 노드 동기화만을 위해 필수인 것은 아니다.
+
+Geth의 full sync는 genesis부터 블록을 재실행한다. Snap sync는 최근 블록을 기준으로 상태와 range proof를 받아 상태 트리를 재구성하고, 새로 생긴 변경을 반영하는 healing을 거친다. 따라서 동기화를 단순 다운로드로 설명하거나 모든 방식이 genesis부터 재실행한다고 설명하면 부정확하다.
+
+과거 블록의 헤더를 읽을 수 있다는 사실만으로 그 시점의 계정 상태도 즉시 조회할 수 있는 것은 아니다. Geth의 path-based archive는 상태 이력 보존과 인덱싱을 구분하며, historical state indexing이 끝나야 과거 상태에 접근할 수 있다. 보존 기간을 제한해 제거한 상태 이력을 나중에 설정만 바꾸어 복구할 수 있다고 가정하지 않는다.
+
+운영 점검에서는 필요한 과거 블록 범위, 상태 조회 종류, 클라이언트와 저장 방식, 동기화 및 인덱싱 완료를 함께 확인한다. 이는 설계 점검이며 실제 노드 구축과 RPC 부하 시험 결과는 아니다.
+
 ## 결정성과 외부 데이터
 
 Ethereum의 실행은 같은 초기 상태와 입력에서 같은 결과를 내야 한다. 노드마다 외부 환율 API를 직접 조회하면 응답 시점이나 장애에 따라 값이 달라질 수 있다. 오라클은 외부 데이터를 체인에서 사용할 수 있게 전달하지만, 입력의 정확성과 가용성에 관한 신뢰 문제까지 없애지는 않는다.
@@ -130,6 +142,9 @@ Ethereum의 업그레이드 패턴은 배포된 코드를 직접 고치는 대�
 
 - [Ethereum.org, Upgrading smart contracts](https://ethereum.org/en/developers/docs/smart-contracts/upgrading/)
 - [Ethereum.org, Nodes and clients](https://ethereum.org/en/developers/docs/nodes-and-clients/)
+- [Ethereum.org, Node architecture](https://ethereum.org/en/developers/docs/nodes-and-clients/node-architecture/)
+- [Geth, Sync modes](https://geth.ethereum.org/docs/fundamentals/sync-modes)
+- [Geth, Archive mode](https://geth.ethereum.org/docs/fundamentals/archive)
 - [Ethereum.org, Proof-of-stake](https://ethereum.org/en/developers/docs/consensus-mechanisms/pos/)
 - [Ethereum.org, Oracles](https://ethereum.org/en/developers/docs/oracles/)
 - [Ethereum.org, Gas and fees](https://ethereum.org/en/developers/docs/gas/)

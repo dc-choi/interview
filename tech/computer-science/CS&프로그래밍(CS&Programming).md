@@ -9,6 +9,8 @@ aliases: ["CS&프로그래밍(CS&Programming)", "CS & Programming Language"]
 
 ## 목차
 
+- [[Solidity-Types-Inheritance-and-Libraries|Solidity 타입과 코드 재사용]] — ABI 계약, 생성과 상속, internal 라이브러리와 DELEGATECALL
+- [[Yul-Language-Basics|Yul 문법과 산술 검사 경계]] — 변수와 제어 흐름, 부호 해석, overflow와 0으로 나누기
 - [[Conditional-Probability-and-Bayes|조건부확률과 베이즈 정리]] — 경보 사례, 전체확률과 기저율, 탐지율과 사후확률의 구분
 - [[Kotlin-Lazy-Assertion-Messages|Kotlin 지연 assertion 메시지]] — 실패할 때만 진단 문자열 생성, 실험 API와 평가 시점
 - [[Kotlin-Collection-Equality|Kotlin 컬렉션 동등성과 중복 검사]] — allEqual과 allDistinct, 선택값 비교, 빈 입력과 실험 API 조건

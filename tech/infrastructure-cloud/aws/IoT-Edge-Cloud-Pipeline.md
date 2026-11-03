@@ -130,6 +130,14 @@ AWS IoT Greengrass V2는 장비에서 애플리케이션과 ML 추론을 실행�
 | 클라우드 데이터 통합 | 여러 장비의 이력 분석 | 재전송, 중복 처리와 저장 누락을 다루는가 |
 | 모델 개발과 배포 | 수집 데이터로 모델 개선 | 배포 버전, 실패 복구와 현장 호환성을 확인했는가 |
 
+### 엣지와 기존 설비망의 연결 조건을 확인한다
+
+부분 검증(2026-11-04): Zadara zCompute Networking User Guide의 Direct Subnet을 대조했다. Direct Subnet은 호스팅 데이터센터의 VLAN과 zCompute VPC subnet 사이에 L2 연결을 제공한다. AWS의 subnet 설정으로 간주하지 않고 해당 플랫폼의 연결 기능으로 구분한다.
+
+Direct Subnet은 MSP 또는 Zadara 운영팀이 관리한다. VPC CIDR과 겹치지 않아야 하며 해당 VLAN/subnet에서 DHCP를 사용하면 안 된다. zCompute가 관리하는 allocation pool 주소를 외부 장비에 중복 할당하지 않는다. VM의 기본 게이트웨이도 외부 설비망 게이트웨이가 아니라 VPC 내부 vRouter다.
+
+현장 적용에서는 연결 기능의 존재와 주소, DHCP, 라우팅의 실제 구성을 나눠 확인한다. L2 연결만으로 데이터 복제, 무중단 전환과 애플리케이션의 허용 지연이 충족되지는 않는다(설계 점검). 실제 망 구성, 처리 성능과 이전 성공은 시험하지 않았으며 기존 IoT 기능의 검증일은 유지한다.
+
 ### 로컬 도구 실행과 모델 호출 위치를 구분한다
 
 2026-10-10 Strands Agents의 agent loop와 Bedrock provider 문서를 대조했다. 기본 흐름은 모델 호출, 모델이 선택한 도구 실행, 도구 결과를 포함한 모델 재호출이다. 에이전트 프로세스와 센서 읽기 함수가 장비에서 실행돼도 Bedrock provider를 사용한 판단과 응답 생성에는 원격 API가 필요하다.
@@ -267,6 +275,7 @@ Shadow 메시지의 도착 순서는 보장되지 않는다. 장비는 추적 �
 
 ## 출처
 
+- [Zadara, zCompute Networking User Guide: Subnets](https://guides.zadara.com/cs-networking-guide/latest/subnets.html) — 2026-11-04 Direct Subnet의 L2 연결, 주소와 게이트웨이 조건 대조
 - [AWS Well-Architected IoT Lens, Failure management](https://docs.aws.amazon.com/wellarchitected/latest/iot-lens/failure-management.html) — 2026-10-16 재시도 분산, 오프라인 보존과 상태 동기화 기준 대조
 - [AWS IoT Core, Reducing messaging costs with Basic Ingest](https://docs.aws.amazon.com/iot/latest/developerguide/iot-basic-ingest.html) — 2026-10-16 브로커 우회, 예약 topic과 PUBACK의 완료 범위 대조
 - [AWS IoT Core, Error handling (error action)](https://docs.aws.amazon.com/iot/latest/developerguide/rule-error-handling.html) — 오류 메시지 집계 단위, 원본 payload와 SQL 오류의 조사 경계 대조
