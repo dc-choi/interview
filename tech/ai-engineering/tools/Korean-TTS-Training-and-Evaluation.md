@@ -47,6 +47,18 @@ PVC용 자료는 한 화자의 깨끗한 음성으로 구성하고 목표 산출
 
 적용 제안으로 같은 대본에서 화자와 모델, 복제 방식, 태그 유무를 기록하고 한 조건씩 바꾼다. 숫자, 질문 억양과 한국어/영어 전환을 포함해 내용 정확도와 표현 적합성을 나누어 듣는다. 특정 시연의 유사도 비율, 가격과 계정별 복제 개수는 일반화하지 않는다. 이번 대조에서는 실제 음성 생성과 청취 비교를 수행하지 않았다.
 
+## 참조 음성 전달과 저장한 목소리 재사용을 구분한다
+
+2026-11-04 Fish Audio의 Voice Cloning과 Emotion Control 문서를 대조했다. 같은 화자의 음성을 생성하더라도 요청마다 참조를 보내는 방식과 저장한 목소리 ID를 쓰는 방식은 입력과 관리 범위가 다르다.
+
+- **요청별 참조:** TTS의 `references`에 참조 음성과 그 녹음의 전사를 함께 넣는다. 전사는 새로 읽힐 대본이 아니라 참조 파일에서 실제로 말한 내용이다.
+- **반복 사용:** 목소리를 생성해 받은 ID를 TTS의 `reference_id`에 넣어 재사용한다. 생성 객체가 있다는 사실만으로 준비 완료로 보지 않고 `state`를 확인한다. 공식 안내는 `created`, `trained`, `failed` 상태를 구분한다.
+- **샘플 품질:** 한 화자의 깨끗한 녹음을 준비하고 배경음, 잔향과 겹치는 목소리를 피한다. 공급자는 짧은 샘플로도 복제가 가능하며 1~2분의 선명한 음성이 충실도를 높인다고 안내한다. 한국어 품질을 보장하는 최소 길이로 해석하지 않는다.
+
+표현 제어는 별도 입력이다. Fish Audio S2는 `[excited]` 같은 대괄호 지시와 자연어 설명을 받으며, 문장 전체의 감정 지시는 문장 시작에 두는 방식을 권한다. 기존 S1의 소괄호 문법을 S2에 그대로 쓰지 않는다. 문장마다 감정을 과도하게 겹치기보다 같은 대본에서 지시 유무를 비교해 숫자 발음, 내용 누락과 화자 유지도 함께 듣는다(평가 제안).
+
+이 대조는 입력 계약과 평가 방법에 한정한다. 실제 API 호출과 청취 비교, 무료 행사와 가격은 확인하지 않았다. 서비스의 복제 객체와 공개 가중치 모델의 미세조정, 배포 라이선스를 같은 계약으로 취급하지 않는다.
+
 ## LoRA와 전체 미세조정은 비교 실험으로 선택한다
 
 LoRA는 기반 가중치를 고정하고 저랭크 변화량을 학습한다. 전체 미세조정은 기반 모델의 가중치도 갱신한다. LoRA 논문은 자신이 평가한 언어 모델 과제에서 전체 미세조정과 비슷하거나 더 나은 결과를 보고한다. 따라서 LoRA가 한국어를 충분히 학습할 수 없다는 일반 법칙으로 설명하지 않는다.
@@ -93,6 +105,8 @@ F5-TTS의 평가는 영어와 중국어 자료를 사용하므로 논문 점수�
 
 ## 출처
 
+- [Fish Audio, Voice Cloning](https://docs.fish.audio/features/voice-cloning) — 2026-11-04 요청별 참조, 목소리 ID 재사용, 상태와 샘플 준비 조건 대조.
+- [Fish Audio, Emotion Control](https://docs.fish.audio/developer-guide/core-features/emotions) — 2026-11-04 S2 대괄호 지시, S1 문법과 문장별 배치 권고 대조.
 - [ElevenLabs, Voice Cloning](https://elevenlabs.io/docs/eleven-creative/voices/voice-cloning) — 2026-11-04 IVC와 PVC의 학습 방식, 권장 녹음 길이 대조.
 - [ElevenLabs, Professional Voice Cloning](https://elevenlabs.io/docs/eleven-creative/voices/voice-cloning/professional-voice-cloning) — 2026-11-04 녹음량, 단일 화자와 일관된 스타일, 목표 언어 및 본인 음성 확인 조건 대조.
 - [ElevenLabs, Best practices](https://elevenlabs.io/docs/overview/capabilities/text-to-speech/best-practices) — 2026-11-04 Prompting Eleven v4/v3의 태그, 목소리 선택과 표현 제어 한계 대조. 공급사 간 성능 우열은 검증하지 않았다.

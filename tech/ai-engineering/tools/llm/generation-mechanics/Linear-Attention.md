@@ -35,6 +35,20 @@ S와 z를 재사용하므로 **정규화 분모도 N×N 행렬 없이 계산**�
 
 `elu+1` 구성은 softmax와 같은 출력을 보장하는 재배치가 아니라 유사도 함수를 바꾸는 설계다. 지수 커널의 정확한 특징 표현은 무한 차원이므로 유한 차원에서 같은 계산이라고 볼 수 없다. 효율성과 태스크 품질은 따로 평가한다.
 
+### 고정 크기 기억에서 간섭이 생기는 이유
+
+어텐션의 분모 정규화와 특징 맵을 잠시 뺀 교육용 외적 기억을 생각하면, 저장 공간과 회상 정확도의 차이를 볼 수 있다. 열벡터 키 `kᵢ`의 차원을 d, 값 `vᵢ`의 차원을 m으로 두면 기억 행렬은 `W=Σᵢ vᵢkᵢᵀ`이며 크기는 m×d다. 위의 S와 전치 방향이 다르다. 단위 길이 키 `kⱼ`로 읽으면 다음처럼 분리된다.
+
+$$
+Wk_j=v_j+\sum_{i\ne j}v_i(k_i^T k_j)
+$$
+
+첫 항은 목표 값이고 나머지는 다른 키와의 내적으로 섞이는 간섭이다. 키들이 서로 직교하면 간섭은 0이다. d차원에서 서로 직교하는 비영벡터는 최대 d개지만, 이를 실제 모델이 d개 토큰까지만 기억한다는 한도로 읽지 않는다. 회상 오류는 키 분포, 값의 관계와 갱신 규칙에도 달려 있다.
+
+softmax 읽기는 질의와 각 키의 유사도 점수를 비선형 가중치로 바꾼다. 유일한 최대 점수가 정답 키에 있을 때 역온도를 높이면 그 항목에 집중하지만, 잘못된 키의 점수가 가장 크면 오답에도 더 집중한다. 고정 행렬에 합쳐 저장하는 비용과 각 키/값을 유지하는 비용을 함께 비교해야 한다.
+
+학습 실험 제안: 직교 키와 서로 비슷한 키에서 위 식의 회상 오차를 비교하고, N과 d, 값 차원, 난수 시드와 역온도를 기록한다. 이 식은 간섭 설명용이며 게이트형 선형 어텐션의 품질이나 Transformer 전체의 성능 상한을 증명하지 않는다. 여기서는 영상의 수치 실험을 재현하지 않았다.
+
 ## 공개 모델의 하이브리드 층 배치
 
 최근 공개 모델은 모든 층을 선형 어텐션으로 채우지 않고 일부 층에 전체 어텐션을 남기는 하이브리드 구성을 쓴다. 다음은 2026-10-27 모델 카드 대조 기준의 사례다.
@@ -54,6 +68,7 @@ S와 z를 재사용하므로 **정규화 분모도 N×N 행렬 없이 계산**�
 
 ## 출처
 
+- [You could have invented transformers from memory — Alex Wang](https://alexwang.ai/posts/associative-memory/) — 2026-11-04 외적 기억의 회상 분해와 선택적 읽기 대조. 용량 수치를 실제 모델의 한도로 옮기지 않았다.
 - [Transformers are RNNs: Fast Autoregressive Transformers with Linear Attention — PMLR, Katharopoulos et al.](https://proceedings.mlr.press/v119/katharopoulos20a/katharopoulos20a.pdf) — 3.2~3.4절
 - [KRAFTON/Raon-1-mini-preview — Hugging Face, KRAFTON](https://huggingface.co/KRAFTON/Raon-1-mini-preview) — 2026-10-27 층 구성, RDA 설명, KV 캐시 크기와 문맥 길이 확인
 - [zai-org/GLM-5.3-Flash — Hugging Face, Z.ai](https://huggingface.co/zai-org/GLM-5.3-Flash) — 2026-10-27 하이브리드 어텐션 설명 확인

@@ -59,6 +59,16 @@ aliases: ["Cost Anomaly", "Cost Anomaly Detection", "비용 이상 탐지"]
 
 Cost Explorer는 비용 데이터를 적어도 24시간마다 갱신하지만 일부 청구 데이터는 더 늦게 도착할 수 있다. 전날 사용분이 모두 확정됐다고 가정하지 않고 조회 시각과 조건을 남긴다(운영 제안). 진행 중인 달의 추정 비용과 월말 예상액도 확정 청구서와 구분한다.
 
+### 사용량 합계는 단위를 맞춘 뒤 읽는다
+
+2026-11-04 `GetCostAndUsage` API와 Cost Explorer 필터 문서를 부분 대조했다. `UsageQuantity`는 단위를 고려하지 않고 사용량 숫자를 합산한다. EC2의 실행 시간과 데이터 전송량을 함께 더한 값은 시간도 GB도 아니므로 전체 자원 사용량이나 효율의 지표로 쓰지 않는다.
+
+1. 비용 합계로 조사 대상을 고른 뒤 사용량은 `UsageType` 또는 `UsageTypeGroups` 필터로 좁힌다. 같은 단위인지 확인하고 계정, 기간과 서비스 범위를 비용 조회와 맞춘다.
+2. 콘솔에서 같은 필터의 여러 값은 OR, 서로 다른 필터는 AND로 결합된다. 서비스 두 개와 특정 계정을 고르면 그 계정의 두 서비스 비용이 대상이다. API의 `Expression`은 논리를 명시할 수 있으므로 콘솔 선택 규칙이 모든 API 요청에 자동 적용된다고 가정하지 않는다.
+3. API의 `TimePeriod.Start`는 포함하고 `End`는 제외한다. 예를 들어 10월 전체는 `Start=2026-10-01`, `End=2026-11-01`로 조회한다. 결과가 나뉘면 `NextPageToken`을 따라 같은 조회 조건으로 나머지를 모은다.
+
+운영 적용 제안: 비교 보고서에 비용 지표, 사용 유형과 단위, 필터 및 기간을 함께 남긴다. 서로 다른 사용량의 합을 분모로 삼아 단위 비용을 계산하지 않는다. 실제 계정 조회나 청구 대사는 수행하지 않았으며, 이 절 밖의 기존 검증일은 유지한다.
+
 ### EC2-Other는 사용 유형으로 나눠 읽는다
 
 2026-10-14 AWS Cost Explorer와 CUR 문서, AWS Price List와 AWS Cloud Financial Management 블로그 대조 기준이다. `EC2-Other`는 AWS 제품 이름이 아니라 Cost Explorer가 EC2 비용을 나눈 서비스 범주다. 2019-09 AWS 블로그 기준, 인스턴스 가동 시간 비용을 EC2가 다른 서비스와 맞물려 생기는 비용과 따로 보도록 나뉘어 있으며, EBS 볼륨과 스냅샷, NAT Gateway, 데이터 전송 등이 여기에 모인다. 범주 이름만으로는 원인을 알 수 없으므로 다음 순서로 나눈다.
@@ -120,6 +130,8 @@ Savings Plans의 `SavingsPlanCoveredUsage`에 표시된 unblended cost는 할인
 
 ## 출처
 
+- [AWS Billing and Cost Management, GetCostAndUsage](https://docs.aws.amazon.com/aws-cost-management/latest/APIReference/API_GetCostAndUsage.html) — 2026-11-04 사용량 단위의 혼합, 기간 경계와 페이지 조회 대조.
+
 2026-10-26에는 서비스별 그룹화, 필터, 표와 CSV의 범위 및 비용 데이터의 지연 예외를 대조했다. 예측 기간의 공식 문서 간 차이는 위에 남겼으며, 실제 계정 화면과 청구 내역을 확인한 것은 아니다. 다른 항목의 기존 검증일은 유지한다.
 
 - [AWS Cost Management, Analyzing your costs and usage with AWS Cost Explorer](https://docs.aws.amazon.com/cost-management/latest/userguide/ce-what-is.html)
@@ -135,7 +147,7 @@ Savings Plans의 `SavingsPlanCoveredUsage`에 표시된 unblended cost는 할인
 - [AWS Cost Management, Using AWS User Notifications with Cost Anomaly Detection](https://docs.aws.amazon.com/cost-management/latest/userguide/cad-user-notifications.html)
 - [AWS Cost Management, Choosing advanced options](https://docs.aws.amazon.com/cost-management/latest/userguide/ce-advanced.html)
 - [AWS Data Exports, Understanding Savings Plans](https://docs.aws.amazon.com/cur/latest/userguide/cur-sp.html)
-- [AWS Cost Management, Filtering the data that you want to view](https://docs.aws.amazon.com/cost-management/latest/userguide/ce-filtering.html) — charge type의 선결제 항목과 EC2 사용 유형 그룹
+- [AWS Cost Management, Filtering the data that you want to view](https://docs.aws.amazon.com/cost-management/latest/userguide/ce-filtering.html) — charge type의 선결제 항목과 EC2 사용 유형 그룹. 2026-11-04 콘솔 필터의 AND/OR 규칙 추가 대조.
 - [AWS Cost Management, Reading the Cost Explorer data table](https://docs.aws.amazon.com/cost-management/latest/userguide/ce-table.html) — 그룹별 표와 전체 데이터 CSV
 - [AWS, AWS Cost Explorer features](https://aws.amazon.com/aws-cost-management/aws-cost-explorer/features/) — 서비스로 묶은 차트의 상위 9개
 - [AWS Data Exports, Understanding data transfer charges](https://docs.aws.amazon.com/cur/latest/userguide/cur-data-transfers-charges.html)
