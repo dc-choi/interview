@@ -115,11 +115,13 @@ GDP는 강력하지만 모든 것을 담지는 못한다.
 
 ## 11. 사례: 일본의 장기 저성장
 
-흔히 잃어버린 30년이라 부르는 일본의 저성장은 성장률, 잠재성장률과 그 기여도 분해로 나눠 읽는다. 아래 수치는 2026-10-11 조회 기준이다.
+흔히 잃어버린 30년이라 부르는 일본의 저성장은 성장률, 잠재성장률과 그 기여도 분해로 나눠 읽는다. 아래 수치는 2026-10-11 조회 기준이며, 인구 구조와 최근 전망 항목은 2026-11-03 조회 기준이다.
 
 - **성장률**: IMF WEO DataMapper의 연도별 값(2026-10-11 조회, WEO 빈티지가 바뀌면 달라질 수 있다)으로 계산한 일본 실질 GDP 성장률의 단순 평균은 1980~1991년 약 4.3%, 1992~2024년 약 0.75%다. 6절의 70의 법칙으로 어림하면 경제가 두 배가 되는 기간이 약 16년에서 약 93년으로 늘어난 차이다.
 - **잠재성장률**: 일본은행 조사통계국 추정 잠재성장률은 1980년대 후반 4%를 넘었지만 1990년대에 빠르게 낮아져 2000년 이후로는 대체로 0~1% 수준에 머물렀고, 2026년 2분기 값도 1%를 밑돈다. 같은 추정의 기여도 분해에서 노동시간 기여는 1990년대 이후 줄곧 마이너스였고, 최근 플러스 기여의 가장 큰 몫은 TFP다.
 - **분배와 체감**: IMF 2026 Article IV 협의 미션은 노동력 부족에도 실질임금 상승이 부진했고 1996년 이후 생산성과 임금의 격차가 크게 벌어졌다고 평가했다. 7절처럼 총량 지표와 가계의 체감을 구분해야 하는 사례다.
+- **인구 구조와 노동 투입**: 총무성 통계국이 2026-09-20 공표한 통계 토픽 No.149에 따르면 65세 이상 인구는 3,624만 명(전년보다 2만 명 증가)이고, 총인구에서 차지하는 비율은 29.6%로 사상 최고다. 같은 토픽의 노동력조사 집계로 65세 이상 취업자는 943만 명으로 22년 연속 늘어 취업자 전체의 13.8%를 차지하고, 도매와 소매업, 의료와 복지에 많으며, 임원을 뺀 65세 이상 고용자의 76.1%가 비정규직이다. 노동 투입은 취업자 수와 1인당 노동시간을 함께 반영한 총노동시간이므로, 취업자 수가 늘어도 1인당 노동시간이 줄면 노동 투입은 덜 늘거나 줄 수 있다(해석). 위 분해에서 노동시간 기여의 마이너스는 고령 취업이 22년 연속 늘기 전인 1990년대부터 이어졌으므로 고령화 효과만으로 읽지 않는다(해석).
+- **최근 전망과 명목 순위**: IMF DataMapper(2026-11-03 조회)의 일본 실질 GDP 성장률은 2025년 1.2%, 2026년과 2027년 각 0.7%다. 같은 조회의 명목 달러 GDP(2026년 이후는 전망치)로 계산하면 일본은 2023년부터 독일보다 작고, 2027년에는 인도와 영국보다도 작아지는 값이다. 일본, 독일, 영국, 인도 4개국만 비교한 계산이며, 2027년 일본과의 차이는 영국 약 210억 달러(일본 GDP의 약 0.5%), 인도 약 540억 달러로 환율 전망이 조금만 달라져도 순서가 바뀔 수 있는 폭이다(해석). 조회 시점의 WEO 값이라 10절의 2026년 4월 빈티지 값과 다를 수 있다. 명목 달러 순위는 환율에 크게 좌우되므로 실질 성장률과 따로 읽는다.
 
 읽는 기준: 장기 저성장을 디지털 전환 지연 같은 단일 원인으로 단정하지 않는다. 4절의 노동, 자본, TFP 가운데 어디가 약한지 잠재성장률 분해로 먼저 나누고, 인구 구조와 [[Inflation|디플레이션]] 기간을 함께 본다.
 
@@ -131,7 +133,10 @@ GDP는 강력하지만 모든 것을 담지는 못한다.
 - [한국은행 — 2024년도 연차보고서, 국민계정 2020년 기준년 개편 결과](https://www.bok.or.kr/portal/bbs/P0000596/view.do?menuNo=200071&nttId=10090587)
 - [한국은행 — 경제성장률과 GDP갭의 관계](https://www.bok.or.kr/portal/bbs/B0000218/view.do?menuNo=200&nttId=10017531)
 - [IMF — World Economic Outlook DataMapper, GDP current prices](https://www.imf.org/external/datamapper/NGDPD@WEO/KOR/JPN/CHN/USA)
-- [IMF — World Economic Outlook DataMapper, Real GDP growth](https://www.imf.org/external/datamapper/NGDP_RPCH@WEO/JPN) — 2026-10-11 일본의 1980~2024년 연도별 값으로 단순 평균 계산
+- [IMF — World Economic Outlook DataMapper, Real GDP growth](https://www.imf.org/external/datamapper/NGDP_RPCH@WEO/JPN) — 2026-10-11 일본의 1980~2024년 연도별 값으로 단순 평균 계산, 2026-11-03 2025~2027년 값 조회
+- [IMF — World Economic Outlook DataMapper API, GDP current prices](https://www.imf.org/external/datamapper/api/v1/NGDPD/JPN/DEU/GBR/IND) — 2026-11-03 조회. 일본, 독일, 영국, 인도의 2022~2028년 값으로 순위 계산
+- [총무성 통계국 — 統計トピックスNo.149 統計からみた我が国の高齢者](https://www.stat.go.jp/data/topics/topi1490.html) — 2026-09-20 공표. 2026-11-03 65세 이상 인구와 비율, 고령 취업자 수와 비율, 산업과 비정규 비율 대조
+- [YouTube, 슈카월드 — 추락하는 일본 GDP, 원인은 무엇인가](https://www.youtube.com/watch?v=t-IIGGFe80U) — 2026-10-24 공개 영상, 계기 자료. 본문에 쓴 통계는 위 통계국과 IMF 원문으로 대조했고, 영상의 65세 이상 비중 29.4% 대신 2026년 공표값 29.6%를 썼다. 전 일본은행 총재의 발언, 세대별 손주 비율, 기업 연령 구성 조사, 재고용 임금 판결과 그 밖의 영상 수치와 주장은 옮기지 않았다
 - [Bank of Japan — Output Gap, Potential Growth Rate, and Labor Market Indicators](https://www.boj.or.jp/en/research/research_data/gap/index.htm) — 2026-10-05 갱신분의 잠재성장률 추이와 기여도 분해 도표를 2026-10-11 대조
 - [IMF — Japan: Staff Concluding Statement of the 2026 Article IV Mission](https://www.imf.org/en/news/articles/2026/02/13/imf-cs-02172026-japan-staff-concluding-statement-of-the-2026-article-iv-mission) — 2026-02-17 발표. 2026-10-11 실질임금과 생산성 격차 평가 대조
 - [AI 폐해와 신자본주의 세미나 정리 — Threads, do_signer](https://www.threads.com/@do_signer/post/DXtxfSqk4LI) — 2026-10-05 주장 1(한일 경제 통합, 전력망 연결 우선)과 주장 2(사회적 가치 측정과 보상) 대조
