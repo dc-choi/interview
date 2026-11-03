@@ -16,6 +16,21 @@ aliases: ["AWS Fundamentals", "AWS 기본 용어", "Region", "Availability Zone"
 - Savings Plans, Reserved Instances처럼 사용량을 약정해 단가를 낮추는 선택도 있다. 사용량 기반이라는 말이 항상 최저 비용이라는 뜻은 아니다.
 - Free Tier는 모든 사용이 무료라는 뜻이 아니다. 가입 시점, 계정 플랜, 서비스, 지역별 혜택과 한도를 넘으면 표준 요금이 적용될 수 있으므로 Billing, Budgets, Cost Explorer와 알람을 처음부터 설정한다.
 
+## EC2를 다른 서비스와 연결하는 경계
+
+EC2는 애플리케이션을 실행할 컴퓨팅 자원이다. 한 서비스의 저장, 트래픽 분산, 확장과 관측 요구를 모두 EC2 자체의 기능으로 해석하지 않는다. 2026-11-03 EC2 공식 개요와 IAM 역할 문서를 대조한 연결 예시는 다음과 같다.
+
+| 요구 | 함께 사용하는 서비스의 역할 |
+|---|---|
+| 영속 블록 저장 | EBS 볼륨을 인스턴스에 연결한다 |
+| 유입 트래픽 분산 | Elastic Load Balancing이 여러 인스턴스로 요청을 나눈다 |
+| 인스턴스 수 조절 | EC2 Auto Scaling이 애플리케이션 부하에 필요한 인스턴스 수를 관리한다 |
+| 상태 관측 | CloudWatch로 인스턴스와 EBS 지표를 관찰한다 |
+
+EC2의 애플리케이션이 S3 같은 AWS API를 호출할 때는 IAM 역할로 임시 자격 증명을 얻고 필요한 동작과 리소스만 허용한다. 같은 AWS 계정에 있다는 사실만으로 접근 권한이 생기지는 않는다. IAM 권한과 네트워크 연결은 별도로 점검한다.
+
+설계 제안: 서비스 개수를 늘리기보다 요구별 책임과 실패 지점을 먼저 그린다. 위 표는 조합의 역할을 설명하며 실제 계정에서 연결, 장애 복구나 비용을 검증한 결과가 아니다. 기존 절 전체를 재검증하지 않아 frontmatter의 검증일은 유지한다.
+
 ## Region
 
 AWS가 여러 AZ를 운영하는 **물리적 지리 영역**이다. Region과 AZ는 같은 단위가 아니며, AZ 하나도 데이터센터 건물 하나와 반드시 일치하지 않는다.
@@ -100,7 +115,7 @@ Outposts racks는 지속적인 연결을 전제로 한다. 연결이 끊겨도 �
 | 방향 | 수요에 따라 Scale out, in 또는 up, down하고 불필요한 자원을 반납 | Scale out, in과 Scale up, down 모두 가능 |
 | 트리거 | 갑작스러운 수요 변동 | 예측 가능한 성장 |
 | 대표 서비스 | Auto Scaling, Lambda 동시성 | 인스턴스 패밀리 변경, DB Read Replica 추가 |
-| 비유 | "필요할 때 늘렸다가 줄임" | "감당할 수 있는 그릇을 키움" |
+| 비유 | 필요할 때 늘렸다가 줄임 | 감당할 수 있는 그릇을 키움 |
 
 실무에서는 둘을 결합 — 베이스라인은 Scalability(예: r6i 패밀리 선택)로 잡고, 변동은 Elasticity(ASG, Spot Fleet)로 흡수.
 
@@ -134,6 +149,8 @@ Out/In은 **stateless 워크로드**에 적합 (웹, API). Up/Down은 **DB, 캐�
 
 ## 출처
 
+- [Amazon EC2 User Guide, What is Amazon EC2?](https://docs.aws.amazon.com/AWSEC2/latest/UserGuide/concepts.html) — 2026-11-03 EC2와 EBS, ELB, Auto Scaling, CloudWatch의 역할 대조.
+- [Amazon EC2 User Guide, IAM roles for Amazon EC2](https://docs.aws.amazon.com/AWSEC2/latest/UserGuide/iam-roles-for-amazon-ec2.html) — 2026-11-03 애플리케이션의 임시 자격 증명과 최소 권한 대조.
 - [Amazon EC2 User Guide, Troubleshoot Amazon EC2 instance launch issues](https://docs.aws.amazon.com/AWSEC2/latest/UserGuide/troubleshooting-launch.html)
 - [AWS Outposts, What is AWS Outposts?](https://docs.aws.amazon.com/outposts/latest/userguide/what-is-outposts.html)
 - [AWS Outposts, Connectivity through service link](https://docs.aws.amazon.com/outposts/latest/userguide/service-links.html)
