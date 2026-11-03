@@ -9,6 +9,7 @@ aliases: ["CS&프로그래밍(CS&Programming)", "CS & Programming Language"]
 
 ## 목차
 
+- [[NPC-Attack-Scheduling|NPC 공격 스케줄링]] — 접근할 적과 실행할 공격의 예산 분리
 - [[Markdown-Document-Structure|Markdown 문서 구조]] — 제목과 목록, 문법 확장, 미리보기와 AI 활용의 경계
 
 - [[Solidity-Types-Inheritance-and-Libraries|Solidity 타입과 코드 재사용]] — ABI 계약, 생성과 상속, internal 라이브러리와 DELEGATECALL

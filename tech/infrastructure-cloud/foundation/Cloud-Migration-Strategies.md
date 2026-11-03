@@ -64,7 +64,13 @@ Rehost한 앱을 여러 instance로 늘리면 로컬 상태가 바로 장애가 
 1. **목록화와 Assessment**: workload마다 비즈니스 영향도, 기술 난이도와 조직 역량을 보고 전략 후보를 제안한다. Microsoft CAF는 workload별 business driver를 먼저 정하고 compliance, 보안, 운영 제약과 충돌하는 선택지를 지운 뒤 business와 기술 이해관계자가 함께 확정하라고 한다.
 2. **결정**: 최종 선택은 회사가 한다. 서비스 분해(Rearchitect, Rebuild)로 정한 대상만 DDD와 서비스 경계 설계 같은 추가 학습이 필요하고, 나머지는 container, CI/CD와 관측 같은 platform 수준 패턴으로 충분한 경우가 많다.
 3. **레퍼런스 아키텍처**: 클라우드 벤더가 전략별로 제공하는 레퍼런스 아키텍처(모놀리스 구성, Kubernetes 활용, 모니터링 연동)를 출발점으로 쓰되 비용과 보안 경계는 자체 조건으로 다시 검증한다.
-4. **단계 이동**: 이전과 현대화를 한꺼번에 하지 않는다. 옮긴 뒤 재평가해 다음 단계로 간다. 기능 단위 교체 전술은 [[Legacy-Modernization-Strategies]], 반복 가능한 환경 구성은 [[IaC]]가 받친다.
+4. **단계 이동**: 대규모 이전에서는 서비스 재설계까지 한 번에 묶기보다 이전 뒤 재평가하는 방식을 우선 검토한다. 이전 중 제한적인 플랫폼 최적화는 Replatform에 포함될 수 있으므로 바꾸는 범위를 따로 적는다. 기능 단위 교체 전술은 [[Legacy-Modernization-Strategies]], 반복 가능한 환경 구성은 [[IaC]]가 받친다.
+
+### 전략 이름을 구성요소별 변경과 완료 조건으로 풀어 쓴다
+
+애플리케이션에 붙인 전략 이름만으로 DB, 웹 서버와 네트워크가 모두 같은 폭으로 바뀐다고 판단하지 않는다. 예를 들어 웹 계층의 코드는 유지하고 DB만 관리형 서비스로 옮기려면 계층별 변경, 연결 호환성, 검증과 복구 조건을 명시한다. AWS의 7 Rs 가이드도 Replatform의 예로 DB의 RDS 이전을 들며, 대규모 이전 중 복잡한 재설계는 별도로 미루도록 권한다(2026-11-04 부분 대조).
+
+실행 점검 제안: 원본과 대상의 프로세스 목록 비교는 기동 누락을 찾는 보조 검사로 사용하고, 업무 인수 테스트를 대신하지 않는다. 자동 runbook 생성도 입력 정보의 정확성, 실행 권한과 예외 처리 검증을 따로 요구한다. 인터뷰에서 보고한 생성 시간이나 높은 자동화율을 전체 이전 시간과 업무 성공률로 바꾸지 않는다. 기존 제품 정책 전체를 다시 대조하지 않아 `verified_at`은 유지한다.
 
 ### 도입 준비도와 실행 책임을 연결한다
 
@@ -231,6 +237,7 @@ AWS가 2026-03-25 공개한 IDEMIA Civil Identity 고객 인터뷰는 .NET 3.5�
 
 ## 출처
 
+- [Rethinking the 7 Rs for speed and simplicity — Amazon Web Services](https://www.youtube.com/watch?v=r4wn1T0URZs) — 05:12~06:13의 계층별 변경과 23:26~24:27의 프로세스 대조를 점검 질문으로 반영. 자동화 성과 수치와 미래 계획은 일반화하지 않았다.
 - [AWS Prescriptive Guidance, Understanding complete assessment data requirements](https://docs.aws.amazon.com/prescriptive-guidance/latest/application-portfolio-assessment-guide/understanding-complete-assessment-data-requirements.html) — 인벤토리와 상세 검토의 데이터 요구를 2026-11-04 대조
 - [From why to how: accelerating your cloud journey — Amazon Web Services](https://www.youtube.com/watch?v=UKkDDYeHPaU) — 11:54~23:53의 단계별 조사와 파일 기반 의존성을 기술 점검 질문으로 반영
 - [Breaking the migration deadlock: What to do with your VMware workloads — Amazon Web Services](https://www.youtube.com/watch?v=X3Hohq8DJdU) — 누락된 파일 서버, 고정 주소와 이름 해석의 이전 시험을 기술 점검 질문으로 반영

@@ -130,6 +130,14 @@ Hook은 자연어 지시보다 실행 시점이 결정적이지만 성공률을 
 6. 긴 대화에서는 `/context`로 사용량을 확인하고 `/compact`에 보존할 결정과 미완료 작업을 명시한다.
 7. 이전 대화의 잡음이 큰 경우에는 새 세션에 작업 상태, 결정, 검증 결과만 넘기는 방안도 고려한다.
 
+## 단계 사이에 넘길 맥락도 검증한다
+
+작업을 분리해도 앞 단계의 누락과 오해가 다음 단계로 전달될 수 있다. Anthropic의 컨텍스트 설계 글은 필요한 자료를 식별자로 보존해 실행 중 읽는 방식과 핵심 결정, 미해결 사항을 남기는 압축을 설명한다. Building effective agents는 순차 체인의 중간 검사와 독립 하위 작업의 병렬화를 구분한다(2026-11-04 부분 대조).
+
+적용 제안: 전달 묶음에는 현재 목표, 바꾸면 안 되는 조건, 확인한 결정과 미확인 가정, 근거 위치, 다음 산출물과 완료 기준을 넣는다. 전체 대화를 복사하거나 결론만 전달하는 대신 다음 작업이 자체적으로 판단하는 데 필요한 최소 근거를 남긴다. 근거를 읽지 못했으면 확인 완료로 바꾸지 않는다.
+
+예를 들어 주문 처리와 알림을 나눌 때는 주문 확정 시점과 중복 알림 처리 조건을 먼저 맞춘다. 각 작업이 통과했어도 결합한 흐름에서 그 조건을 다시 검사한다. 이 목록은 인계 설계 예시이며, 문서 분할이나 별도 컨텍스트가 의존성까지 없애 준다는 보장은 아니다. 기존 제품별 로딩 동작 전체를 재검증하지 않아 `verified_at`은 유지한다.
+
 ## 트레이드오프
 
 - 짧음과 충분함: 지나치게 줄이면 필수 제약과 예외가 빠진다.
@@ -164,6 +172,8 @@ Q. 반드시 지켜야 할 규칙은 Hook에만 두면 되나?
 
 ## 출처
 
+- [07 — 뉴런데브](https://www.youtube.com/watch?v=bp1nqxYQ6vc) — 02:06~16:30의 맥락 분할, 단계 간 전달과 의존성 주제를 인계 점검 질문으로 반영
+- [Building effective agents — Anthropic](https://www.anthropic.com/research/building-effective-agents)
 - [Claude Code memory and instruction loading — Anthropic](https://code.claude.com/docs/en/memory)
 - [Claude Code best practices — Anthropic](https://code.claude.com/docs/en/best-practices)
 - [Extend Claude with skills — Anthropic](https://code.claude.com/docs/en/slash-commands)
