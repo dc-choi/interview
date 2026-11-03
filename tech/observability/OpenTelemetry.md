@@ -27,6 +27,23 @@ OpenTelemetry가 표준화하는 계측과 전송을 저장, 질의와 시각화
 
 이 절은 Collector 선택과 백엔드 경계만 대조했다. 기존 SDK 예제와 AWS 설정의 재실행 검증은 하지 않았으며 기존 문서 검증일은 유지한다.
 
+## Collector 업그레이드에서 구분할 회귀 조건
+
+부분 검증(2026-11-04): Collector v0.163.0 공식 릴리스 노트와 연결된 이슈, v0.162.0과 v0.163.0의 `xhash` 소스를 대조했다. 다음은 해당 버전의 변경 범위이며, 다른 버전이나 배포판의 동작까지 보장하지 않는다.
+
+| 대상 | v0.163.0의 변경 | 적용 시 확인할 것(검증 제안) |
+|---|---|---|
+| `xpdata/xhash` | 키, 문자열과 바이트에 길이 접두를 넣어 서로 다른 map이 같은 입력 바이트열로 인코딩되던 문제를 수정했다. 인코딩이 바뀌었으므로 버전 간 해시값 호환성을 가정할 수 없다 | 고정 해시 기대값의 실패와 데이터 의미의 회귀를 구분한다. 영속 키나 버전 간 동일성이 필요한 식별자로 쓰는 호출부가 있으면 용도를 재검토한다 |
+| `exporterhelper` sending queue | `block_on_overflow`가 켜진 상태에서 큐 삽입을 기다리는 offer가 취소될 때 생기던 deadlock을 수정했다 | 정상 전송 외에 큐 포화, 대기 취소와 이후 큐 처리의 진행 여부를 확인한다 |
+| traces와 profiles 배치 분할 | 크기를 초과한 span 또는 profile만 버리고 뒤따르는 항목까지 버리던 문제를 수정했다 | 초과 항목 뒤의 정상 항목이 남는지 확인한다. 초과 항목 자체의 보존을 기대하지 않는다 |
+| `mdatagen` 기본값 생성 | `metadata.yaml`의 `sending_queue` 선언에 opt-in한 exporter에 queue/batch sender 기본값을 생성한다 | 이 선언을 생략한 exporter까지 기본 동작이 바뀌었다고 가정하지 않는다. 전체 저장소 감사용 opt-out 환경변수 경로는 별도로 구분한다 |
+
+`Hash()`를 인자 없이 호출하거나 빈 map을 `MapHash`에 전달하면 v0.162.0과 v0.163.0 모두 16바이트 영값을 반환한다. 따라서 모든 입력의 결과가 바뀌었다고 일반화하지 않는다. v0.163.0의 패키지 설명은 `xhash`를 메모리 내 식별 키 용도로 한정하고, 결과의 영속 저장이나 업그레이드와 서로 다른 버전 사이의 동일성에 의존하지 않도록 안내한다.
+
+해시 기대값만 새 값으로 교체하면 충돌 재현 조건이 사라졌는지 확인하지 못한다. 해당 이슈의 서로 다른 map 쌍을 회귀 입력으로 두고 해시값 갱신과 구분해 검사한다(검증 제안). 이는 해시 충돌 가능성 전체가 없어졌다는 뜻이 아니다.
+
+큐 이슈에는 health endpoint가 응답하는 동안 큐와 전송 카운터가 멈춘 사례가 있다. 생존 확인과 전송 진행 확인을 나누는 근거로 사용하며, 여기서 실제 Collector를 실행하거나 재현 테스트를 수행한 것은 아니다. 기존 SDK와 AWS 설정은 이번 대조 범위에 포함하지 않아 문서 전체의 `verified_at`은 유지한다.
+
 ## 트레이싱 모델 — Trace와 Span
 
 - **Trace**: 요청 하나의 전체 여정.
@@ -124,6 +141,11 @@ AMP로 보내는 `prometheusremotewrite` exporter는 `auth.authenticator`에 `si
 
 ## 출처
 
+- [Collector v1.69.0/v0.163.0 릴리스 노트 — OpenTelemetry](https://github.com/open-telemetry/opentelemetry-collector/releases/tag/v0.163.0) — 2026-11-04, 해시 변경, 큐 취소, 배치 분할과 기본값 생성 범위 확인
+- [Collector v0.162.0 xhash 구현 — OpenTelemetry](https://raw.githubusercontent.com/open-telemetry/opentelemetry-collector/v0.162.0/pdata/xpdata/xhash/hash.go) — 인자 없는 Hash와 빈 MapHash의 반환값
+- [Collector v0.163.0 xhash 구현과 사용 제약 — OpenTelemetry](https://raw.githubusercontent.com/open-telemetry/opentelemetry-collector/v0.163.0/pdata/xpdata/xhash/hash.go) — 길이 접두 인코딩, 빈 입력 예외와 버전 간 해시값 안정성의 경계
+- [xhash.MapHash returns the same hash for different maps — OpenTelemetry](https://github.com/open-telemetry/opentelemetry-collector/issues/16048) — map 인코딩 경계와 충돌 재현 입력
+- [Sending queue can deadlock when blocked offers are canceled — OpenTelemetry](https://github.com/open-telemetry/opentelemetry-collector/issues/15700) — 취소 경로와 health 응답 중 전송 정지 사례
 - [OpenTelemetry 공식 문서 — Collector](https://opentelemetry.io/docs/collector/)
 - [AWS Distro for OpenTelemetry 공식 문서 — Prometheus Remote Write Exporter Advanced Configurations for AMP](https://aws-otel.github.io/docs/getting-started/advanced-prometheus-remote-write-configurations/)
 - [OpenTelemetry 공식 문서 — Configuration](https://opentelemetry.io/docs/collector/configuration/)
