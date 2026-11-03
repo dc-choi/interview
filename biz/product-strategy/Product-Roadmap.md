@@ -81,6 +81,14 @@ aliases: ["Product Roadmap", "프로덕트 로드맵", "Story Mapping", "스토�
 
 2026-10-30 확인한 Tesla의 Optimus 공식 소개는 위험하거나 반복적이거나 지루한 작업을 수행하는 범용 자율 이족 보행 로봇을 개발 목표로 제시한다. 그 목표에는 균형, 탐색, 인식과 물리 세계 상호작용을 위한 소프트웨어 구축이 필요하다고 설명한다. 이는 회사가 공개한 개발 목표와 과제이며, 모든 인간 수요를 충족했다는 실적이나 고객에게 보장한 제공 범위의 증거가 아니다. 로드맵에서는 이런 장기 기대와 다음 단계에서 검증할 능력을 분리한다.
 
+### 기존 기능과 사용자가 새로 요청한 능력을 구분한다
+
+AI 제품의 확장 아이디어를 로드맵으로 옮길 때는 이미 제공한다고 발표한 기능, 명령으로 호출할 수 있는 범위와 새로 구현해야 하는 능력을 나눈다. 카메라와 음성 명령이 있다는 사실만으로 사용자가 말한 임의의 자동화가 완성된다고 보지 않는다(제품 범위 검토 제안).
+
+예를 들어 Samsung의 2021-06-25 Jet Bot AI+ 발표는 전면 카메라의 영상을 SmartThings 앱으로 전송하는 Patrol Mode와 예약 모니터링을 설명한다. 앱 사용에는 Wi-Fi와 Samsung 계정이 필요하다고 명시한다. 이 발표를 2026-11-04 대조했으며, 당시 제조사의 기능 설명을 확인한 것이다. 현재 모든 모델과 지역의 제공 상태를 시험한 것은 아니다.
+
+이 근거만으로 로봇청소기가 자연어 요청을 받아 스스로 소프트웨어를 개발하고, 낯선 사람을 판별해 외부 메신저로 보내는 전체 기능을 제공한다고 결론 내릴 수는 없다. 이런 확장은 대상 모델, 판별 기능과 외부 서비스 연동 범위를 확인할 가설로 남긴다. 로드맵의 완료 조건도 기존 영상 보기 기능의 존재와 새 자동화의 실제 동작을 따로 둔다(적용 제안).
+
 ### 작은 실험은 중요한 문제와 확장 조건을 함께 고른다
 
 Micro-battles는 중요한 사업 문제를 제한된 범위에서 풀고, 확인한 해법을 다른 범위로 넓히는 변화 방식이다. 작은 범위라는 말은 중요하지 않은 일을 고른다는 뜻이 아니다. 사업에 중요한 문제인지, 짧은 기간에 진전을 확인할 수 있는지, 해법을 다른 조직이나 시장으로 확장할 수 있는지를 함께 본다.
@@ -127,6 +135,7 @@ AWS 공개 대담에서는 Micro-battles의 시간 범위를 최대 3~4개월로
 
 - [GOV.UK, How the alpha phase works](https://www.gov.uk/service-manual/agile-delivery/how-the-alpha-phase-works)
 - [GOV.UK, Developing a roadmap](https://www.gov.uk/service-manual/agile-delivery/developing-a-roadmap)
+- [Samsung Raises the Bar for Smart Robot Vacuums With the Jet Bot AI+ — Samsung Global Newsroom](https://news.samsung.com/global/samsung-raises-the-bar-for-smart-robot-vacuums-with-the-jet-bot-aiplus) — 2021-06-25 제조사 발표의 Patrol Mode, 예약 모니터링과 앱 사용 조건을 2026-11-04 대조. 자율 개발과 외부 메신저 전송의 근거로 사용하지 않음
 - [Tesla, SI & Robotics](https://www.tesla.com/SI) — 2026-10-30 Optimus의 개발 목표와 필요한 소프트웨어 과제 대조. 제품 납품과 범용 작업 성능을 검증한 자료로 사용하지 않음
 - [서비스 기획자의 로드맵 수립 — 쪼렙 서비스기획자 (Brunch)](https://brunch.co.kr/@b30afb04c9f54dc/54)
 - [The Parlor Room, Season 1 Bonus Content (Part 2) — Linda Hill 외 (Harvard Business School Online)](https://online.hbs.edu/podcast/season-1-bonus-content-part-2-linda-hill-mihir-desai-forest-reinhardt-and-joshua-margolis) — 계획의 가정, 행동의 영향과 방향 수정에 관한 공개 대담

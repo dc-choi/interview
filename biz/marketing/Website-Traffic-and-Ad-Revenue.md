@@ -71,7 +71,21 @@ Google의 AdSense 준비 안내는 방문자에게 관련 있는 독자적 콘�
 
 문제를 고쳐야 하는 상태는 확인한 한국어 도움말에서 `확인 필요`로 표시한다. 영상이나 다른 언어 화면의 상태명만 대조하기보다 해당 사이트의 상세 안내를 확인한다. 한국어 자격 요건은 만 19세 이상과 제출할 사이트의 HTML 소스 접근, 독창적 콘텐츠와 정책 준수를 안내한다. AI로 만들었다는 사실만으로 코드 접근이나 콘텐츠 요건 충족을 보장하지 않는다. 이 절만 부분 대조했으며 기존 수익 지표와 사례 전체의 검증일은 유지한다.
 
+### 신청 전 접근성과 유입 경로를 확인한다
+
+2026-11-04 Google의 사이트 추가, 미승인 대응과 프로그램 정책을 부분 대조했다. 사이트 연결, 콘텐츠 심사와 트래픽 적격성은 따로 확인한다.
+
+- **연결:** 사이트 추가 안내에는 AdSense 코드, `ads.txt`, 메타 태그 방식이 있다. 연결을 확인한 뒤 검토를 요청하며, 연결 성공을 콘텐츠 승인으로 해석하지 않는다. 플랫폼 연동 사이트는 해당 플랫폼 설정 절차를 따른다.
+- **접근:** 제출 URL이 실제 공개되어 있고 AdSense가 비밀번호 없이 접근할 수 있는지 확인한다. `robots.txt`에서는 검색용 Googlebot만 확인하지 않고 광고 크롤러의 접근도 점검한다. 사이트 추가 안내가 명시한 크롤러는 `Mediapartners-Google`과 `Google-Display-Ads-Bot`이다. 계정 활성화 뒤 로그인 보호 페이지에 광고를 표시하기 위한 크롤러 로그인 설정은 별도 절차다.
+- **유입:** 자신의 광고 클릭, 반복 수동 클릭과 노출, 봇이나 자동 도구로 광고 클릭과 노출을 부풀리는 행위는 금지된다. paid-to-click, paid-to-surf, autosurf와 클릭 교환 서비스도 금지 대상이다. 유료 유입 전체를 같은 것으로 보지는 않는다. 온라인 광고로 유입시키는 경우에는 방문 페이지가 광고의 약속을 충족하는 등 Google의 방문 페이지 품질 기준을 따라야 한다.
+
+이는 신청과 운영의 점검 항목이며, 방문자 수나 연결 방식만으로 승인 가능성을 계산하는 기준은 아니다. 기존 수익 추정과 운영자 사례 전체를 다시 검증한 것은 아니므로 문서의 기존 검증일은 유지한다.
+
 ## 출처
+
+- [Google AdSense Help, Add a new site to your AdSense sites list](https://support.google.com/adsense/answer/12169212?hl=en) — 2026-11-04 연결 방식, 광고 크롤러와 검토 요청 단계 대조
+- [Google AdSense Help, What to do when your site is not ready to show ads](https://support.google.com/adsense/answer/12176698?hl=en) — 2026-11-04 공개 접근, 비밀번호와 robots.txt, 계정 활성화 후 크롤러 로그인 예외 대조
+- [Google AdSense Help, AdSense Program policies](https://support.google.com/adsense/answer/48182?hl=en) — 2026-11-04 무효 클릭과 노출, 금지 유입과 온라인 광고의 조건 대조
 
 - [Google AdSense Help, Your AdSense account wasn't approved](https://support.google.com/adsense/answer/81904?hl=en) — 2026-11-03 콘텐츠 부족과 품질 문제의 구분, 문장과 문단, 실제 공개 페이지와 사이트 전체 심사 범위 대조
 - [Google Search's guidance about AI-generated content — Google Search Central](https://developers.google.com/search/blog/2023/02/google-search-and-ai-content)
