@@ -44,7 +44,22 @@ Baidu의 공개 논문 표에서 MPDocBench Overall은 84.59, MarathonDocBench�
 
 2026-11-02 모델 카드와 논문 본문을 대조했다. 모델 실행, 한국어 문서 평가와 설치 호환성은 확인하지 않았다.
 
+## 기술 도면은 문자와 연결 관계를 따로 복원한다
+
+P&ID 같은 배관 및 계장 도면을 처리할 때는 글자 추출만으로 설비 사이의 연결을 복원했다고 판단하지 않는다. 2026-11-04 AWS의 P&ID 디지털화 가이드를 대조한 범위다. 앞의 SR-SWA 모델과 평가 수치를 다시 검증한 것은 아니므로 기존 `verified_at`은 유지한다.
+
+AWS의 예시 구성은 Bedrock Data Automation으로 문자를 추출하고, SageMaker의 별도 모델로 기호를 탐지하고 분류한다. 연결선 처리 결과까지 합쳐 기호 좌표와 관계를 담은 JSON 또는 DEXPI 파일, 검수용 시각화를 만든다. 이 구성은 구현 예시이며 일반 OCR이나 LLM 하나가 도면의 모든 의미를 복원한다는 보장은 아니다.
+
+다음은 제조 도면을 검색과 업무 자동화에 연결할 때의 검수 제안이다.
+
+- 문자와 태그의 인식, 기호 종류, 연결선의 양 끝을 각각 평가한다. 문자 정확도만으로 연결 관계의 정확도를 대신하지 않는다.
+- 추출한 객체와 관계에 도면 개정본, 페이지와 좌표를 연결한다. ERP의 설비 식별자와 연결할 때는 같은 태그의 중복과 개정 차이를 확인한다.
+- 원본 위에 탐지 결과를 겹쳐 누락과 잘못 연결된 선을 검수한다. 기호가 보인다는 사실과 실제로 연결됐다는 판단을 구분한다.
+- 견적이나 유지보수 입력으로 쓰기 전에 수량, 관계와 적용 범위를 확인한다. JSON 생성 성공을 업무 결과의 정확성으로 계산하지 않는다.
+
 ## 출처
+
+- [AWS, Guidance for Piping and Instrumentation Diagrams Digitization on AWS](https://docs.aws.amazon.com/solutions/piping-and-instrumentation-diagram-digitization-on-aws/) — 2026-11-04 문자, 기호, 연결선 처리와 구조화 출력 범위를 대조. 실제 도면 평가와 배포는 수행하지 않았다.
 
 - [Unlimited-OCR-2 — Hugging Face, Baidu](https://huggingface.co/baidu/Unlimited-OCR-2)
 - [Unlimited OCR Works 2: Pioneering the OCR-3.0 Era — Baidu ERNIE Team](https://arxiv.org/html/2610.39308v1) — SR-SWA, 표 1/2, 지연 조건과 한계.

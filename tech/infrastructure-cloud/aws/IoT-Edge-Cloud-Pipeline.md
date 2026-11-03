@@ -130,6 +130,14 @@ AWS IoT Greengrass V2는 장비에서 애플리케이션과 ML 추론을 실행�
 | 클라우드 데이터 통합 | 여러 장비의 이력 분석 | 재전송, 중복 처리와 저장 누락을 다루는가 |
 | 모델 개발과 배포 | 수집 데이터로 모델 개선 | 배포 버전, 실패 복구와 현장 호환성을 확인했는가 |
 
+### 장비, 게이트웨이와 클라우드에 추론을 나눠 배치한다
+
+2026-11-04 NIST SP 500-325의 개념 설명과 Greengrass V2 추론 문서를 부분 대조했다. Fog computing은 애플리케이션, 관리와 분석을 네트워크 쪽으로 분산하는 모델이다. 각 장비에서 전부 계산하거나 모든 입력을 클라우드로 보내는 두 선택만 있는 것은 아니다.
+
+배치 예시로 카메라에서 이벤트 후보를 탐지하고, 게이트웨이에서 여러 장비의 입력을 처리하며, 필요한 장면만 클라우드 분석으로 넘길 수 있다. 이는 적용 제안이며 특정 제품의 구현이나 성능 보장이 아니다. 장비 전력과 연산량, 게이트웨이 장애 영향, 외부 전송 데이터와 종단 지연을 함께 측정하고 인터넷 단절 시 유지할 기능을 정한다. 로컬 탐지가 동작해도 원격 분석과 응답까지 동작하는지는 별도다.
+
+Greengrass의 ML 구성은 모델 아티팩트, 프레임워크와 의존성을 설치하는 런타임, 추론 코드를 담당하는 컴포넌트로 역할을 나눈다. 제공된 추론 컴포넌트는 모델과 런타임을 의존성으로 배포한다. 모델을 바꿀 때는 배포 성공뿐 아니라 입력 전처리, 출력 해석과 장비 호환성을 다시 확인한다(설계 점검). 실제 장비 시험과 기존 IoT 기능 전체의 재검증은 수행하지 않아 기존 `verified_at`은 유지한다.
+
 ### 엣지와 기존 설비망의 연결 조건을 확인한다
 
 부분 검증(2026-11-04): Zadara zCompute Networking User Guide의 Direct Subnet을 대조했다. Direct Subnet은 호스팅 데이터센터의 VLAN과 zCompute VPC subnet 사이에 L2 연결을 제공한다. AWS의 subnet 설정으로 간주하지 않고 해당 플랫폼의 연결 기능으로 구분한다.
@@ -275,6 +283,8 @@ Shadow 메시지의 도착 순서는 보장되지 않는다. 장비는 추적 �
 
 ## 출처
 
+- [NIST, SP 500-325: Fog Computing Conceptual Model](https://csrc.nist.gov/pubs/sp/500/325/final) — 2026-11-04 공개 개념 설명의 분산 처리 범위를 대조.
+- [AWS IoT Greengrass, Perform machine learning inference](https://docs.aws.amazon.com/greengrass/v2/developerguide/perform-machine-learning-inference.html) — 2026-11-04 모델, 런타임과 추론 컴포넌트의 역할을 대조.
 - [Zadara, zCompute Networking User Guide: Subnets](https://guides.zadara.com/cs-networking-guide/latest/subnets.html) — 2026-11-04 Direct Subnet의 L2 연결, 주소와 게이트웨이 조건 대조
 - [AWS Well-Architected IoT Lens, Failure management](https://docs.aws.amazon.com/wellarchitected/latest/iot-lens/failure-management.html) — 2026-10-16 재시도 분산, 오프라인 보존과 상태 동기화 기준 대조
 - [AWS IoT Core, Reducing messaging costs with Basic Ingest](https://docs.aws.amazon.com/iot/latest/developerguide/iot-basic-ingest.html) — 2026-10-16 브로커 우회, 예약 topic과 PUBACK의 완료 범위 대조

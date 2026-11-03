@@ -189,6 +189,12 @@ Agentless는 개별 소스 VM에 에이전트를 설치하지 않는다는 뜻�
 
 과거 발표의 지원 플랜 포함 여부나 고객 사례의 처리량을 현재 계약 조건과 자체 시스템의 보장값으로 옮기지 않는다.
 
+### 운영 인수 조건을 전환 완료 조건에 포함한다
+
+부분 검증(2026-11-04): AWS 대규모 이전 지침은 정책, runbook과 지식 전달 절차를 프로젝트 초기에 준비하도록 권한다. Cutover 뒤에는 이전 팀이 hypercare 동안 애플리케이션을 관리하고 관찰하며, 종료 시 운영 팀과 인수 체크리스트를 검토하고 지원 책임을 넘긴다. 서버 기동이나 cutover 완료만으로 운영 인수까지 끝났다고 처리하지 않는다.
+
+적용 점검 제안: 이전 팀과 운영 팀이 다르면 실제 운영 담당자가 알림 수신, 로그 조사와 복구 절차를 실행해 볼 기회를 전환 전에 마련한다. 인수 시점에는 구성 정보, runbook, 해결한 문제와 남은 제약, 지원 연락 경로를 함께 확인한다. 외주 여부보다 누가 변경 결과를 운영하고 어떤 증거로 인수하는지가 중요하다. 교육 수강과 문서 전달만으로 실행 역량을 확인했다고 보지 않는다. 이 절차만 대조했으므로 기존 `verified_at`은 유지한다.
+
 ### 사고 대응 권한은 전환 전에 실제 접근까지 시험한다
 
 부분 검증(2026-11-04): AWS 보안 지침은 사고 대응자의 접근 권한을 미리 준비하도록 권한다. 일반적인 대응에는 임시 자격 증명과 승인 기반 권한 상승을 사용하고, IdP 장애나 연동 오류로 평소 인증이 막히는 상황에는 별도의 비상 접근 경로를 준비한다. 사전 준비를 모든 대응자에게 상시 관리자 권한을 주는 것으로 해석하지 않는다.
@@ -251,6 +257,7 @@ AWS가 2026-03-25 공개한 IDEMIA Civil Identity 고객 인터뷰는 .NET 3.5�
 
 ## 출처
 
+- [AWS Prescriptive Guidance, Preparing the organization for a large migration](https://docs.aws.amazon.com/prescriptive-guidance/latest/large-migration-intro-governance/preparing-organization.html) — 2026-11-04 초기 지식 전달 준비, hypercare와 운영 인수 체크리스트 범위를 대조.
 - [Microsoft Learn, Use the Windows Compatibility Pack to port code to .NET](https://learn.microsoft.com/en-us/dotnet/core/porting/windows-compat-pack) — 2026-11-04 Windows 전용 API와 플랫폼 검사 경계를 대조
 - [AWS Transform User Guide, Modernizing .NET with AWS Transform](https://docs.aws.amazon.com/transform/latest/userguide/dotnet.html) — 2026-11-04 변환 범위, Win32 DLL 제약, 빌드와 단위 테스트 및 사람의 검토 범위를 대조
 - [AWS Well-Architected Security Pillar, SEC10-BP05 Pre-provision access](https://docs.aws.amazon.com/wellarchitected/latest/security-pillar/sec_incident_response_pre_provision_access.html) — 2026-11-04 임시 권한 상승과 인증 장애 시 비상 접근의 구분을 대조
