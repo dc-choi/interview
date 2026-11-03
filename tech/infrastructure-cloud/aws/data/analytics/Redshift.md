@@ -102,10 +102,23 @@ Iceberg 데이터를 Redshift 내부 테이블로 가져올 때는 `INSERT INTO 
 - **Concurrency Scaling**: 동시 쿼리 증가 시 추가 용량을 자동 사용해 부하를 흡수한다. 메인 클러스터가 실행 중인 24시간마다 1시간의 무료 크레딧이 누적되고 활성 클러스터당 최대 30시간까지 쌓이며 크레딧을 초과한 사용분은 과금되므로 현재 요금 정책을 확인한다.
 - **Materialized View (MV)**: 자주 쓰이는 집계 결과를 사전 계산해 저장. `REFRESH MATERIALIZED VIEW`로 갱신. 대시보드성 반복 쿼리에서 응답 시간 대폭 단축.
 
+### 큐 대기, 실행 시간과 추가 용량을 나누어 진단한다
+
+2026-11-04 공식 문서 부분 대조. 다음은 provisioned 클러스터의 WLM과 Concurrency Scaling 기준이며 Serverless의 큐 설정에 그대로 적용하지 않는다.
+
+- **작업 분리:** 대화형 분석과 정기 배치를 큐로 나누고 대기 시간과 실행 시간을 각각 본다. AWS는 대부분의 경우 동시성과 메모리를 관리하는 automatic WLM을 권장한다. 과거 고객의 manual WLM 선택을 모든 환경의 기본값으로 삼지 않는다.
+- **규칙과 동작:** QMR의 `log`는 기록만 남기고 쿼리를 계속 실행한다. `abort`는 쿼리를 취소하지만 COPY와 ALTER, ANALYZE, VACUUM 같은 유지보수 작업은 중단하지 않는다. `hop`은 manual WLM에서, 우선순위 변경 동작은 automatic WLM에서 사용할 수 있다.
+- **확장 대상:** Concurrency Scaling을 켠 큐에서도 지원 조건을 만족하는 쿼리만 추가 클러스터로 전달된다. 임시 테이블이나 interleaved sort key를 사용하는 쿼리 등은 제외되므로 큐 적체가 남으면 쿼리의 지원 여부도 확인한다.
+- **비용 판단:** 추가 클러스터의 실행 사용량과 전체 처리 시간을 함께 측정한다. 확장이 상시 발생하면 기본 용량 증설과 부하 분리도 비교한다. 특정 사례에서 노드를 늘려 비용이 줄었다는 결과만으로 같은 절감률을 예상하지 않는다(운영 점검 제안).
+
 ## Cross-Region, Cross-Account 데이터 공유
 
 - **Data Sharing**: 지원되는 RA3 프로비저닝 클러스터와 Serverless 작업 그룹 사이에서 계정, 리전 경계를 넘어 데이터를 복사하지 않고 공유할 수 있다. 지원 조합과 리전은 현재 문서를 확인한다.
 - ETL, 복제 없이 분석 환경 분리(예: 프로덕션 DW → 사내 분석팀 클러스터).
+
+### 공유로 줄어드는 것은 복제 경로다
+
+Data Sharing으로 소비자별 물리 복제를 줄이면 그 복제본의 동기화와 재적재 작업을 줄일 수 있다. 그러나 원천의 중복, 잘못된 변환과 업무 정의의 불일치까지 해결되지는 않는다. 원천 품질 검사와 공유 권한 검증은 유지한다. Spectrum을 이용한 외부 테이블 조회도 반복 스캔 부하와 신선도 요구를 비교한 뒤 내부 적재와 선택한다(설계 제안). 2026-11-04 데이터 공유 개요를 부분 대조했으며 기존 노드와 요금 정책의 검증일은 유지한다.
 
 ## 스냅샷과 백업
 
@@ -154,6 +167,11 @@ Iceberg 데이터를 Redshift 내부 테이블로 가져올 때는 `INSERT INTO 
 
 ## 출처
 
+- [쿠팡의 Amazon Redshift 최적화 전략 — Amazon Web Services Korea](https://www.youtube.com/watch?v=mcSvvOhhASs) — WLM, 복제 경로와 확장 비용의 검토 계기. 발표의 절감률과 과거 한도를 현재 보장으로 사용하지 않음
+- [Workload management](https://docs.aws.amazon.com/redshift/latest/dg/cm-c-implementing-workload-management.html) — 2026-11-04 automatic/manual WLM의 선택과 책임 부분 대조
+- [WLM query monitoring rules](https://docs.aws.amazon.com/redshift/latest/dg/cm-c-wlm-query-monitoring-rules.html) — 동작별 효과와 COPY 및 유지보수 예외
+- [Concurrency scaling](https://docs.aws.amazon.com/redshift/latest/dg/concurrency-scaling.html) — 큐별 활성화와 쿼리 지원 조건
+- [Data sharing in Amazon Redshift](https://docs.aws.amazon.com/redshift/latest/dg/datashare-overview.html) — 복사 없는 공유와 워크로드 분리
 - [Table constraints](https://docs.aws.amazon.com/redshift/latest/dg/t_Defining_constraints.html) — 이전 검증 절의 부분 검증
 - [Choose the best distribution style](https://docs.aws.amazon.com/redshift/latest/dg/c_best-practices-best-dist-key.html) — 조인과 분산 키 선택
 - [CREATE TABLE과 DISTSTYLE](https://docs.aws.amazon.com/redshift/latest/dg/r_CREATE_TABLE_NEW.html)

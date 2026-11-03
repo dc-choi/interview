@@ -65,6 +65,39 @@ flowchart TD
 
 월요일의 행동을 예측할 때 수요일까지의 시청 횟수를 입력하면 미래 정보가 섞인다. 학습 당시 알 수 있었던 값과 현재 서빙에 필요한 최신 값을 구분한다. 학습에서는 7일, 서빙에서는 30일을 집계하면 이름이 같아도 입력의 의미가 달라진다. 관련 계약은 [[Recommendation-System-Serving-Operations#Freshness와 Point-in-time correctness]]를 따른다.
 
+### 도메인의 설명을 계산 가능한 특징으로 바꾼다
+
+원본 컬럼을 많이 모으는 것과 예측에 필요한 입력을 만드는 것은 다르다. 좌표로 상대 거리와 각도를 계산하듯, 도메인에서 중요하게 보는 조건을 데이터 변환으로 표현한다. 공개 사례로 NFL Completion Probability는 패스 거리와 수비수의 근접 정도 같은 특징으로 패스 성공 가능성을 추정한다. AWS의 해당 영상 시리즈는 분석가와의 특징 설계 협업과 XGBoost 선택을 설명한다. 이 사례를 모든 표 데이터에서 XGBoost가 더 낫다는 근거로 확대하지 않는다.
+
+추천시스템에 적용하는 예로, 재생 이벤트의 단순 개수와 최근 7일 동안 특정 장르를 시청한 횟수를 구분한다. 후자를 만들려면 사용자와 콘텐츠의 연결 키, 장르 정의, 집계 구간과 예측 기준 시각이 필요하다. 작은 표본에서 원본 이벤트와 계산 결과를 대조한 뒤 모델 입력으로 사용한다(학습용 설계 제안).
+
+### 데이터셋과 계산 정의를 함께 재사용한다
+
+분석 결과 파일만 공유하면 다음 사용자가 같은 이름의 컬럼을 다른 의미로 해석할 수 있다. 재사용할 데이터에는 기술 컬럼명과 업무 용어의 대응, 행의 단위, 생성 코드, 추출 시점과 사용 범위를 함께 연결한다(설계 제안). 고객 단위 집계와 계약 단위 집계를 같은 키로 결합할 때는 행 수와 중복을 먼저 확인한다.
+
+제품 사례로 Amazon DataZone의 business glossary는 업무 용어와 정의를 데이터 자산 및 컬럼에 연결한다. 이는 의미를 공유하는 메타데이터 기능이며 해당 데이터의 정확성이나 사용 권한을 자체적으로 증명하지 않는다. 분석 파일, 코드와 결과 보고서의 공유를 검토한 계기는 BizLens 공개 발표지만, 그 플랫폼이 DataZone을 사용한다고 추정하지 않는다.
+
+## 개발, 처리와 추론의 자원을 나눈다
+
+모델 훈련에 필요한 최대 사양을 노트북 개발과 데이터 탐색 시간 내내 유지할 필요가 있는지 먼저 확인한다. 처리와 학습의 실행 단위를 분리하면 단계별 자원을 선택할 수 있지만 데이터 전달, 권한과 실행 이력을 연결하는 책임이 생긴다. 다음은 단계별 자원 분리를 위한 설계 점검이다.
+
+| 단계 | 자원 선택 전에 확인할 것 |
+| --- | --- |
+| 탐색과 개발 | 작은 표본으로 반복할 수 있는지, 대기 중인 자원을 계속 유지하는지 |
+| 전처리와 평가 | 입력 규모, 메모리와 I/O, 출력 데이터 및 평가 결과의 저장 위치 |
+| 학습 | 알고리즘에 필요한 CPU/GPU, 학습 시간과 재시작 조건 |
+| 추론 | 요청 시점의 지연 요구와 미리 계산할 수 있는 결과, 호출량의 시간대별 편차 |
+
+SageMaker Processing은 전처리, 후처리, 특징 생성과 모델 평가를 job으로 실행하고, 완료 뒤 실행 자원을 해제하며 지정한 S3 위치에 출력을 저장한다. 학습 job은 `CreateTrainingJob`의 `ResourceConfig`로 학습 자원을 구성한다. 개발 환경의 사양을 모든 job에 그대로 적용해야 하는 계약은 아니다. 특정 고객 발표의 비용 절감률을 다른 데이터 규모나 부하에 그대로 적용하지 않는다.
+
+## 추론 주기와 결과의 소비 시점을 연결한다
+
+이벤트마다 즉시 계산할 결과와 일정 주기로 갱신해도 되는 결과를 구분한다. 개인화된 추론에서는 대상별 사용 가능한 입력과 모델 조건을 확인하고, 주기적 호출이 같은 시각에 몰리는지도 살핀다. 주기적으로 endpoint를 호출하는 구성과 SageMaker Batch Transform 같은 배치 추론 제품을 사용하는 구성은 별개다.
+
+EventBridge Scheduler의 flexible time window는 설정한 시간 구간 안으로 대상 호출을 분산한다. 예를 들어 매시간 실행에 15분 구간을 설정하면 예정 시각 뒤 15분 안에 호출한다. 이 구간은 모델 계산의 완료 기한이 아니다. 적용 시에는 결과가 필요한 시각에서 호출 지연과 처리 시간을 함께 고려하고, 입력 시점과 결과 생성 시각을 남긴다(설계 제안).
+
+SmartThings 공개 발표는 개인별 추론 주기와 호출 분산을 위한 Scheduler 활용을 설명한다. 발표의 자체 분산 알고리즘이 flexible time window를 사용했다는 근거는 확인하지 않았다. 추론 결과를 이벤트로 다시 공급할 때는 관측 이벤트와 모델 예측을 구분해 후속 학습의 정답으로 무심코 섞지 않는다(설계 제안).
+
 ## 저장 기술과 모델 운영의 경계
 
 Parquet는 데이터 파일의 표현, Iceberg와 Delta Lake는 파일 묶음의 테이블 상태, 카탈로그는 메타데이터 조회를 맡는다. 어떤 영상이 적합한지 계산하는 알고리즘과는 별도다. 상세 내용은 [[Data-Lake-Table-Formats]]를 따른다.
@@ -75,12 +108,22 @@ Parquet는 데이터 파일의 표현, Iceberg와 Delta Lake는 파일 묶음의
 
 ## 확인 범위
 
+- 2026-11-04에 특징 생성, 단계별 자원, 업무 용어와 추론 호출 분산을 공식 공개 자료와 대조했다. 고객 발표의 성과 수치, 현재 배포 상태와 모델 정확도는 검증하지 않았고, 예제 실행도 하지 않았다. 기존 본문 전체의 검증일은 유지한다.
 - a16z 페이지는 게시일을 2020-10-15로 표시하면서 본문을 2020년 최초 글의 개정본이라고 안내한다. 정확한 개정일은 확인하지 못했다. 시장과 제품 지도는 당시 관찰로 취급하며 2026년 채택률이나 우열의 근거로 사용하지 않는다.
 - 2026-11-02에 공개 본문을 읽고 개념을 정리했다. 이미지 도표의 제품 배치와 연결선은 별도 시각 검증하지 않았다. 위 도식은 추천시스템 설명을 위해 구성한 예시다.
 - Google Cloud와 Feast 공식 문서로 모델 검증, 선택적 특징 저장소와 특징 조회 경로를 대조했다. 실제 파이프라인과 제품 API를 실행한 기록은 아니다.
 
 ## 출처
 
+- [Going Deep: AWS + NFL Next Gen Stats, Episode 4: Completion Probability — AWS](https://aws.amazon.com/sports/nfl/going-deep/) — 특징 설계와 모델 선택 사례
+- [Going Deep: AWS + NFL Next Gen Stats, Completion Probability — Amazon Web Services](https://www.youtube.com/watch?v=6y_0NGtQXz0) — 좌표의 상대 거리 변환과 도메인 협업
+- [BizLens로 본 교보생명의 데이터 전략 성공 스토리 — Amazon Web Services Korea](https://www.youtube.com/watch?v=LIdzrwrOSpI) — 업무 용어, 데이터 탐색과 분석 산출물 재사용의 검토 계기
+- [Amazon DataZone, Create a business glossary](https://docs.aws.amazon.com/datazone/latest/userguide/create-maintain-business-glossary.html)
+- [데이터로 미래를 설계하다: 현대카드의 빅데이터 플랫폼 구축 사례 — Amazon Web Services Korea](https://www.youtube.com/watch?v=QZeoxpq17EQ) — 단계별 분석 자원과 학습 및 서빙 분리의 검토 계기
+- [Amazon SageMaker AI, Data transformation workloads with SageMaker Processing](https://docs.aws.amazon.com/sagemaker/latest/dg/processing-job.html)
+- [Amazon SageMaker, CreateTrainingJob](https://docs.aws.amazon.com/sagemaker/latest/APIReference/API_CreateTrainingJob.html)
+- [삼성전자의 AI 기반 SmartThings 인텔리전스 플랫폼 — Amazon Web Services Korea](https://www.youtube.com/watch?v=FCxXgHeCZXY) — 주기적 추론 호출과 결과 이벤트의 검토 계기
+- [EventBridge Scheduler, Configuring flexible time windows](https://docs.aws.amazon.com/scheduler/latest/UserGuide/managing-schedule-flexible-time-windows.html)
 - [Emerging Architectures for Modern Data Infrastructure — a16z](https://a16z.com/emerging-architectures-for-modern-data-infrastructure/)
 - [Google Cloud, MLOps: Continuous delivery and automation pipelines in machine learning](https://docs.cloud.google.com/architecture/mlops-continuous-delivery-and-automation-pipelines-in-machine-learning)
 - [Feast, Feature retrieval](https://docs.feast.dev/getting-started/concepts/feature-retrieval)
