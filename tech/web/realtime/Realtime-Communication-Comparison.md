@@ -118,6 +118,12 @@ data: {"user":"lee","msg":"world"}
 
 **사용**: 1:1 또는 소규모 화상 통화, 저지연 P2P 스트리밍, 원격 데스크톱.
 
+### 종료 요청과 미디어 해제를 구분한다
+
+통화 종료 UI나 종료 이벤트 전송만으로 연결과 오디오 송신이 해제됐다고 판단하지 않는다. 2026-11-03 확인한 RingRTC 패치 `4b1b6fa`는 종료 요청 플래그를 이벤트 큐와 별도로 두고, FSM 종료 대기에 시간 제한을 둔다. 종료 이벤트 주입이나 대기 실패를 기록한 뒤에도 연결 정리 단계로 진행하도록 바꿨다. 이는 해당 구현의 보강이며 WebRTC 규격 전체의 결함이라는 뜻은 아니다.
+
+같은 패치의 회귀 테스트는 연결 FSM 큐를 채운 상태에서 종료한 뒤 peer connection의 닫힘, 오디오 송신 중단과 RTP sink 등록 해제를 각각 검사한다. 적용 제안: 종료 버튼 처리와 실제 미디어 자원 해제를 별도 완료 조건으로 두고 큐 포화도 시험한다. 패치와 테스트 소스를 대조했으며 테스트 실행, 설치된 앱 버전과 실제 악용 여부는 확인하지 않았다.
+
 ## WebTransport
 
 HTTP/3(QUIC) 기반 양방향 통신 API다. 신뢰성과 순서가 필요한 스트림, 전달을 보장하지 않는 datagram을 한 세션에서 함께 제공한다.
@@ -178,6 +184,8 @@ HTTP/3(QUIC) 기반 양방향 통신 API다. 신뢰성과 순서가 필요한 �
 - LLM 응답 스트리밍에 SSE를 쓰는 이유
 
 ## 출처
+- [Ensure calls terminate completely in corner cases — Signal, RingRTC](https://github.com/signalapp/ringrtc/commit/4b1b6fa53c9f30c87c8ea78e44675d4a13e1e4d3)
+- [RingRTC outgoing call tests — Signal](https://github.com/signalapp/ringrtc/blob/4b1b6fa53c9f30c87c8ea78e44675d4a13e1e4d3/src/rust/tests/outgoing.rs) — `hangup_with_saturated_connection_fsm_queue`의 검사 조건
 - [RFC 6202 — HTTP Long Polling and Streaming](https://www.rfc-editor.org/rfc/rfc6202)
 - [RFC 6455 — The WebSocket Protocol](https://www.rfc-editor.org/rfc/rfc6455)
 - [Server-sent events — WHATWG HTML Standard](https://html.spec.whatwg.org/multipage/server-sent-events.html)

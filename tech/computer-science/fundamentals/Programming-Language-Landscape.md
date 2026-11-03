@@ -75,6 +75,7 @@ aliases: ["Programming Language Landscape", "프로그래밍 언어 지형", "�
 
 ## 플랫폼과 생태계가 좁히는 선택
 
+- 언어, 실행 환경과 도구는 서로 다른 층이다. Node.js는 JavaScript 실행 환경, React는 UI 라이브러리, Next.js는 React 기반 풀스택 웹 프레임워크다. 이 셋을 새 프로그래밍 언어로 세지 않고, 사용할 언어와 실행 위치 및 애플리케이션 구조를 따로 정한다(2026-11-03 각 공식 소개 문서 대조).
 - 브라우저: HTML은 웹의 핵심 마크업 언어로 문서 구조를 표시하고, CSS는 글꼴과 간격 같은 스타일을 문서에 붙이는 스타일 시트 언어로 표현을 내용에서 분리하며, 상호작용은 스크립트가 더한다([[Declarative-Programming|선언형 프로그래밍]]). JavaScript는 웹 브라우저에 내장된 언어로 가장 잘 알려져 있다. TypeScript는 JavaScript로 바꿔 브라우저에서 실행하고, C/C++와 Rust 같은 언어는 WebAssembly로 컴파일하는 경로를 쓴다([[WebAssembly]]).
 - 게임 엔진: Unity는 C# 스크립팅을, Unreal Engine은 C++ 프로그래밍 프레임워크를 제공한다. 엔진을 고르면 주 언어가 따라온다.
 - 확장할 제품: WordPress 플러그인은 PHP 파일 하나로 시작할 수 있다. 기존 제품을 확장할 때는 그 제품의 언어 생태계 안에서 고른다.
@@ -123,6 +124,9 @@ aliases: ["Programming Language Landscape", "프로그래밍 언어 지형", "�
 
 ## 출처
 
+- [Node.js, About Node.js](https://nodejs.org/en/about)
+- [React](https://react.dev/)
+- [Next.js, Introduction](https://nextjs.org/docs)
 - [Every Programming Language Explained in 16 Minutes — Just Explained](https://www.youtube.com/watch?v=uerEG_yigco) — 2026-08-08 업로드, 언어 개관의 출발점이며 연도, 실행 방식, 메모리 관리와 사용처는 아래 1차 출처로 다시 확인함
 - [Every Programming Language Explained in 20 Minutes (Part 2) — Just Explained](https://www.youtube.com/watch?v=rQdgPLHE_cg) — 2026-09-13 업로드, 2부 언어 개관의 출발점이며 연도, 설계 목적, 메모리 관리와 상호운용은 아래 1차 출처로 다시 확인함
 - [The Development of the C Language — Dennis M. Ritchie](https://www.nokia.com/bell-labs/about/dennis-m-ritchie/chist.html)

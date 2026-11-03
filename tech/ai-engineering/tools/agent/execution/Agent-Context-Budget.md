@@ -24,6 +24,12 @@ aliases: ["Agent Context Budget", "컨텍스트 예산", "Context Budget", "에�
 
 적용 제안: 같은 작업 묶음에서 변경 전후의 입력, 캐시 쓰기와 읽기, 출력, 재시도 횟수와 성공률을 비교한다. 문맥을 줄여 재시도가 늘면 한 요청의 절감이 전체 작업의 절감으로 이어지지 않을 수 있다. 캐시의 조건과 단가는 [[LLM-Prompt-Caching|프롬프트 캐싱]]에서 구분한다. 이 절의 API 계측만 공식 자료로 대조했으며 아래 설계 패턴은 기존 경험 자료의 범위를 유지한다.
 
+### 입력을 줄여도 사고 토큰 비용은 남는다
+
+2026-11-03 Claude API의 manual extended thinking 문서 대조 기준이다. 이 모드의 사고 토큰은 과금되는 출력 토큰에 포함되며, `max_tokens`는 사고와 최종 응답을 합친 출력 상한이다. 사용 가능 모델과 설정은 별도 계약이므로 이 설명을 모든 모델에 같은 `budget_tokens` 설정을 적용하라는 뜻으로 읽지 않는다.
+
+입력 프롬프트를 줄인 뒤 사고량이나 재시도가 늘면 작업 전체 비용이 줄지 않을 수 있다. 적용 제안: 모델 ID, 프롬프트 리비전과 사고 설정을 함께 기록하고 같은 평가 과제의 성공률, 총출력과 재시도를 비교한다. 특정 실험의 프롬프트 삭제 비율을 일반 절감률로 쓰지 않는다. 정확한 식별자와 미해결 요구사항이 보존되는지도 확인한다.
+
 ### 파일 분할의 효과는 실제로 읽은 범위로 확인한다
 
 역할별 파일 분리는 에이전트가 필요한 코드만 찾고 읽을 때 입력량을 줄일 수 있다. 파일 개수를 늘리거나 같은 파일을 여러 첨부로 나누는 것만으로는 절감을 보장하지 않는다. 분리한 파일을 매번 모두 읽으면 입력 범위가 줄지 않는다.
@@ -104,6 +110,8 @@ Q. 모델이 알아서 조금만 읽게 프롬프트로 지시하면?
 
 ## 출처
 
+- [Anthropic, Extended thinking](https://platform.claude.com/docs/en/build-with-claude/extended-thinking) — 2026-11-03 manual mode의 출력 상한과 과금 범위만 추가 대조
+- [Effective context engineering for AI agents — Anthropic](https://www.anthropic.com/research/effective-context-engineering-for-ai-agents) — 과도한 압축의 정보 손실과 복잡한 작업 이력 기반 평가
 - [The Economic Benefit of Refactoring — Giles Edwards-Alexander (Martin Fowler)](https://martinfowler.com/articles/exploring-gen-ai/refactoring-economic-benefit.html) — 2026-11-03 실험 절차, 결과 표와 문자 수 기반 추정, 리팩토링 비용 미측정 한계 대조. 실험을 재현하지 않았다.
 - [사내 AI 에이전트 개선기: AI Agent의 Context 비용을 줄인 3가지 설계 패턴 — 채널톡 기술 블로그](https://tech.channel.io/kr/articles/b085ab62)
 - [Anthropic, Token counting](https://platform.claude.com/docs/en/build-with-claude/token-counting)
