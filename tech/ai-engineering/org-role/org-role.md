@@ -21,6 +21,8 @@ aliases: ["AI 시대 조직, 역할", "AI Org & Role"]
 - [x] [[AI-Capability-Transfer|AI 역량 이전 (확산 병목은 도구가 아니라 함께 배울 사람, 코치 양성은 곱셈, 실습 극단 배분과 세 질문 코칭, 자기효능감 측정과 한계, FDE의 자립 역량 기준과 축적 루프)]]
 - [x] [[AI-Leverage-Small-Teams|AI 시대 작은 팀의 구조적 레버리지 (What과 How 교차 운영, 생산성 여유의 재투자, 판단 밀도, 공유 맥락, 효과의 조건)]] — 이전 비용 모델의 갱신과 검증 수단, 실무 에세이와 반론
 - [x] [[DS-MLE-Collaboration-Contract|ML 협업 계약 — 노트북과 서빙 사이 (경계의 3단계 진화: 사람→파일→인터페이스, 추상화 클래스 계약, 모노레포, AI 스타일 통일)]]
-- [x] [[AI-Work-Output-and-Employment|AI 코드 생산과 제품 성과 및 고용]] — 연구의 지표와 기간, 산출 증가 뒤의 병목 이동, 제품 역할, 직무 폐지와 체감 격차
+- [x] [[AI-Work-Output-and-Employment|AI 코드 생산과 제품 성과 및 고용]] — 연구의 지표와 기간, 산출 증가 뒤의 병목 이동, 청년 채용의 상대 격차, 사람과 AI의 협업 평가와 숙련 형성
 - [x] [[AI-Tools-Automation-and-Learning|AI 도구, 자동화와 학습]] — 정의 논쟁, 창작 연습과 공급사 통제권
 - [x] [[AI-Job-Market-Shifts|AI 시대 직무 변화 읽기]] — 새 직무가 기록되는 방식, 직무 수요 신호의 방법론 차이, 직함과 역할의 구분, 경력 판단 체크포인트
+
+- [x] [[AI-Information-Power|AI와 정보 선택의 권력]] — 생성, 선택과 실행 권한, 참여 지표와 정보 증폭, AI 친밀감과 제도적 통제

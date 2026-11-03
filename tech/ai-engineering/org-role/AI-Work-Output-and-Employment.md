@@ -52,6 +52,26 @@ Dell'Acqua 등의 사전 등록 실험(Organization Science 2026, 37권 2호)은
 
 두 연구는 각각 한 회사의 특정 직무에서 GPT-3와 GPT-4 시기 도구로 얻은 결과다. 고객 지원 연구의 상담원은 80%가 필리핀에서 일했다. 하위 숙련자의 큰 개선은 주로 도구를 쓰는 동안의 성과다. 저자들은 도구가 상담원의 학습을 돕고 영어 유창성을 높인다는 근거도 함께 제시했지만, 도구 없이 독립적으로 수행하는 능력의 변화는 이 성과 수치만으로 판단하지 않는다. 그 구분은 [[Expertise-Formation-AI|AI 시대 전문성 형성]]이 다룬다. 능력 밖 과업에서 정답률이 떨어진 결과는 작성 속도와 별개로 결과를 검증할 단계가 필요하다는 근거로 읽는다(추론).
 
+## 연구 사례: 청년 고용의 상대 격차와 채용 경로
+
+Canaries in the Coal Mine의 2026-08-12 개정판은 2026년 6월까지 미국 ADP 급여 자료의 수백만 근로자를 분석했다. AI 노출 직업의 22~25세 고용은 노출이 적은 동년배의 추세를 따랐을 경우보다 19% 낮았다. 19%는 청년 전체의 실업률도, 해당 집단 고용의 절대 감소율도 아니다. 전체 경제의 광범위한 일자리 대체 증거는 확인하지 못했다(2026-11-03 공식 연구 소개 대조).
+
+조정은 주로 청년의 이직이나 해고 증가보다 채용 감소에서, 기본급보다 고용에서 나타났다. 대체 용도로 AI를 쓰는 직업에 감소가 집중됐고, 보완 용도가 중심인 직업은 특히 경력자에서 고용이 유지되거나 늘었다. 이는 직업별 사용 유형과 고용 추세의 관계이며 개별 회사가 특정 용도를 선택했을 때의 인과 효과를 직접 추정한 결과는 아니다.
+
+기술기업과 컴퓨터 직업 제외, 금리와 원격근무 노출 통제에서도 패턴이 남았다. 그러나 교육을 통제하면 약해지고 생성형 AI 이전의 추세 차이도 일부 존재하며, ADP 분석 표본에서 전국 조사보다 패턴이 더 강했다. 연구진은 이를 초기 기술통계 신호로 규정한다. 다른 설명 일부를 배제한 것을 AI의 인과 효과가 확정됐다는 뜻으로 확대하지 않는다.
+
+EBS 11강은 이전 16%와 갱신된 19%를 비교하고, 청년의 명시적 지식이 문서에 덜 남은 경력자의 암묵지보다 대체되기 쉽다는 가설을 제시했다. 이 설명은 연구 기제의 후보이지 연령 그 자체가 역량이나 AI 저항성을 정한다는 증명이 아니다. 같은 강의의 신입 상담원 생산성 30~40% 표현도 위 QJE 게재판의 30%와 이전 작업논문판의 34%를 분리해 읽는다.
+
+## 대체, 보완과 숙련 형성을 함께 평가한다
+
+반복 과업을 자동화해 현재의 비용을 줄이는 선택과 사람이 이전에 못 하던 일을 가능하게 하는 선택은 인력, 품질과 분배에 다른 영향을 줄 수 있다. Turing trap은 사람을 그대로 모방하는 목표에만 집중하면 노동자의 경제적 교섭력과 정치적 영향력이 약해질 수 있다는 경제적 경고다. 모든 자동화가 해롭다거나 보완 도구가 모든 노동자의 임금을 올린다는 보장은 아니다.
+
+진입 업무가 사라질 때는 향후 숙련자를 만드는 경로도 따로 설계한다. 채용을 줄이는 단기 효율과 5~10년 뒤 경력 인력의 공급은 다른 문제다. AI를 교육에 쓰더라도 도구를 사용하는 동안의 성과와 도구 없이 할 수 있는 업무를 구분한다. Sal Khan의 EBS 6강이 제시한 운전과 콜센터 자동화 일화도 전환기의 재교육과 사회적 불안정에 관한 문제 제기이며 일반 고용 손실률의 실증 근거로 쓰지 않는다.
+
+평가를 AI 단독 성능에서 사람과 AI의 협업 성과로 넓힐 수 있다. Centaur evaluation은 참여자의 숙련도, 상호작용 인터페이스, 채점과 자원 예산을 명시하고 사람이 AI와 함께 문제를 풀게 한다. 사람 단독, AI 단독, 협업 조건을 같은 과업에서 비교해야 협업의 추가 가치를 알 수 있다. 정답률 외에 사람 시간, 비용, 오류와 이해 가능성도 함께 측정한다. 협업이 우월하다는 결론은 비교 결과로 확인할 대상이다(2026-11-03 Haupt와 Brynjolfsson의 논문 정의 대조).
+
+EBS 12강의 문제 정의 → 실행 → 평가 틀은 위임 범위를 나누는 데 쓸 수 있다. 실행을 맡기기 전에 질문, 성공 조건과 제약을 정하고, 결과를 평가해 필요하면 질문까지 고친다. 사람의 질문과 평가에 비교우위가 커질 것이라는 설명은 역할 설계의 제안이며, 그 두 활동이 영구히 자동화되지 않는다는 예측이나 특정 직군의 고용 보장은 아니다.
+
 ## 직무 폐지와 기술적 대체를 구분한다
 
 기업이 더 싼 수단으로 버틸 수 있다고 믿어 인력을 줄이는 결정과, 그 수단이 모든 업무를 같은 품질로 수행하는 것은 다르다. 해고의 원인을 분석할 때 예산, 사업 전망, 위험 감수와 실제 업무 성능을 각각 확인한다.
@@ -93,6 +113,13 @@ Where is all the new, good software? 에세이는 공개 제품의 부족에 대
 
 ## 출처
 
+- [EBS, 에릭 브린욜프슨, 탄광 속의 카나리아](https://www.ebssw.kr/edc/cultursens/cultursensMvpView.do?alctcrSn=59337&cntntsSn=33478&stepSn=58322&lctreSn=1879176&pageIndex=1) — 넥스트 비전 11강, 2026-11-03 전체 음성 전사 확인
+- [EBS, 에릭 브린욜프슨, AGI 시대, 어떻게 살아남을 것인가](https://www.ebssw.kr/edc/cultursens/cultursensMvpView.do?alctcrSn=59337&cntntsSn=33479&stepSn=58322&lctreSn=1879177&pageIndex=1) — 넥스트 비전 12강, 2026-11-03 전체 음성 전사 확인
+- [EBS, 살만 칸, 새로운 시대의 역량](https://www.ebssw.kr/edc/cultursens/cultursensMvpView.do?alctcrSn=59337&cntntsSn=33466&stepSn=58322&lctreSn=1879154&pageIndex=1) — 넥스트 비전 6강, 전환기 고용과 재교육 문제 제기
+- [Canaries in the Coal Mine? Six Facts about the Recent Employment Effects of Artificial Intelligence — Stanford Digital Economy Lab](https://digitaleconomy.stanford.edu/publication/canaries-in-the-coal-mine-six-facts-about-the-recent-employment-effects-of-artificial-intelligence/) — 2026-08-12 개정판, 2026-11-03 연구 소개의 수치, 채용 경로와 비인과 해석 대조. 원자료 재분석은 하지 않음
+- [The Turing Trap: The Promise & Peril of Human-Like Artificial Intelligence — Stanford Digital Economy Lab, Erik Brynjolfsson](https://digitaleconomy.stanford.edu/publication/the-turing-trap-the-promise-peril-of-human-like-artificial-intelligence/) — 2026-11-03 논지와 적용 범위 대조
+- [AI Should Not Be An Imitation Game: Centaur Evaluations — Stanford Digital Economy Lab, Andreas Haupt와 Erik Brynjolfsson](https://digitaleconomy.stanford.edu/publication/ai-should-not-be-an-imitation-game-centaur-evaluations/) — 2025 논문, 2026-11-03 참여자, 인터페이스와 채점의 정의 대조
+
 - [Artificial Intelligence in the Firm: Bottlenecks in Software Production — Fiona Chen and James Stratton](https://fion.ac/jellyfish.pdf) — 2026-08-04 작업 논문, 2026-10-16 부분 대조
 - [Fable took my jorb — Cendyne](https://cendyne.dev/posts/2026-10-11-fable-took-my-jorb.html)
 - [We are all Product Engineers now — Laurie Voss](https://seldo.com/posts/we-are-all-product-engineers-now/)
@@ -120,6 +147,8 @@ Where is all the new, good software? 에세이는 공개 제품의 부족에 대
 
 ## 관련 문서
 
+- [[General-Purpose-Technology-Productivity|범용 기술의 생산성 지연과 J커브]]
+- [[AI-Tutoring-and-Mastery-Learning|AI 튜터링과 완전학습]]
 - [[Developer-Role-AI-Era|AI 시대 개발자 역할]]
 - [[Software-Productivity-Measurement|소프트웨어 생산성 측정]]
 - [[AI-Code-Delegation-Review|AI 구현 위임과 코드 리뷰]]

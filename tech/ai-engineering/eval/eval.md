@@ -29,3 +29,5 @@ LLM 출력의 평가와 모른다고 말하는 능력, 비전 모델의 합성 �
 - [x] [[Agent-Recovery-Evaluation|에이전트 복구 평가]] — 같은 상태에서 가른 복구와 무복구 갈래, 구제와 훼손 4분류, 순효과, 훼손 가중 개입 규칙
 - [x] [[AI-Research-Innovation-Evaluation|AI 연구와 알고리듬 혁신 평가]] — InnovationEval의 기준선, 계산 예산과 연구 신규성, 연구 에이전트 산출물의 주장 원장, 단계별 재검증과 적대적 검토
 - [x] [[Neural-Circuit-Interpretability|뉴런과 회로 해석]] — 원래 좌표 해석 가설, 관찰과 인과 개입의 구분
+- [x] [[AI-Assisted-Mathematical-Research|AI 보조 수학 연구]] — 과업 분해, 형식 증명과 명제의 의미, 독립 사고와 공동체의 이해
+- [x] [[AI-Alignment-and-Control|AI 목표 정렬과 행동 통제]] — 능력과 목표, 평가와 배포, 차등적 기술 발전과 조건부 위험

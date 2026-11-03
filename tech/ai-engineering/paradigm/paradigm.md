@@ -21,3 +21,5 @@ AI 시대 엔지니어링의 토대 — 패러다임 전환과 모델, API 거�
 - [x] [[Agent-Model-Capability-Contracts|에이전트 모델의 능력 계약]] — 기억과 장기 작업, 전문 영역 평가, 승인 경계, 개인화 인터페이스와 카나나의 제공 계획
 - [x] [[Time-Series-Foundation-Models|시계열 파운데이션 모델과 분위수 예측]] — zero-shot 예측, 21개 분위수와 pinball loss, CRPS와 scaled 지표, 벤치마크 집계와 누출 처리, 매출 기준 라이선스
 - [x] [[World-Models|월드 모델]] — 행동 조건 상태 전이 예측, 관측 인코더와 잠재 전이, Genie와 Cosmos의 기준일, 긴 상호작용의 일관성과 물리 위반, 도입 판단 체크포인트
+- [x] [[AI-Forecasts-and-Human-Augmentation|AI 전망과 인간 능력 확장]] — AGI와 특이점의 기준, 신경 보조와 장수 전망, 진화와 풍요 이후의 가치
+- [x] [[Reinforcement-Learning-from-Experience|경험 기반 강화학습]] — 행동과 보상, 지연 신용 할당, TD와 환경 피드백

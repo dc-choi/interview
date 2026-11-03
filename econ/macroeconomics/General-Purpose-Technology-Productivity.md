@@ -50,12 +50,40 @@ Ramp AI Index를 출처로 한 도표에서 AI 지출 상위 1% 기업의 80.4%�
 
 이 글을 다룬 Hacker News 토론(2026-10-24)에서는 소프트웨어 개발처럼 컴파일러, 테스트와 정적 분석으로 결과를 싸게 검증할 수 있는 업무에서 효과가 먼저 나타난다는 가설이 나왔다. 검증 수단이 약한 업무일수록 사람의 확인 비용이 남아 효과가 늦게 보일 수 있다는 해석이다. 같은 토론에서 테스트로는 신뢰성을 보장하기에 범위가 부족하고 컴파일 통과가 좋은 소프트웨어의 기준도 아니라는 반론이 함께 나왔으므로, 실증 결과가 아니라 다음에 확인할 후보로 둔다.
 
-## 5. 읽는 기준
+## 5. 생산성, 소비자 편익과 투자 수익은 다른 값이다
+
+디지털 서비스의 가격이 낮아져도 이용자의 편익은 커질 수 있다. GDP는 생산의 가치를 측정하는 계정이므로 이용자가 얻는 소비자잉여 전체를 재는 지표가 아니다. 무료 서비스의 사용자 편익이 직접 가격으로 잡히지 않는다는 것과 그 서비스의 광고 매출, 유료 투입과 비시장 생산까지 GDP에서 모두 빠진다는 말은 구분한다.
+
+GDP-B의 B는 benefits를 뜻한다. 신상품과 무료 디지털 재화의 후생 기여를 선택 실험 등으로 추정해 GDP를 보완하려는 연구다. 일정 기간 서비스를 포기하는 대가로 얼마를 받아야 하는지 묻는 실험은 보상수용의사(WTA)를 관측한다. 사용하려고 얼마를 낼 것인지인 지불의사(WTP)와 질문 방향을 구분한다. 서비스, 포기 기간, 대체재와 응답 집단이 바뀌면 추정값도 달라지므로 특정 서비스의 달러 가치를 영구적인 가격표로 쓰지 않는다(2026-11-03 GDP-B 연구 소개, NBER 초록과 생성형 AI 편익 연구의 WTA 정의 대조).
+
+| 판단 | 필요한 관측 | 자동으로 따라오지 않는 결론 |
+|---|---|---|
+| 기술이 가치를 만드는가 | 생산성, 품질, 새 서비스와 소비자 편익 | 공급자나 주주의 높은 수익 |
+| 기업이 가치를 회수하는가 | 매출, 마진, 가격 결정력과 투자 회수 | 경제 전체의 생산성 급증 |
+| 가치가 널리 분배되는가 | 임금, 고용, 접근성, 소비자잉여와 재교육 기회 | GDP나 시가총액 상승만으로 확인되는 보편적 이익 |
+
+따라서 장기 기술 가치가 크다는 판단과 현재 설비 투자나 주식 가격이 적정하다는 판단은 분리한다. 철도나 인터넷의 역사도 사회적 편익, 개별 투자자의 수익과 투자 시점이 다를 수 있다는 비교 틀이며, 현재 AI 투자가 버블인지의 판정 자체는 아니다. 같은 모델을 공급받는 기업도 데이터, 업무 설계, 보완 인력과 실험 역량에 따라 다른 성과를 낼 수 있다. 기업 사이의 차이와 한 기업 안에서 하위 숙련자의 격차가 줄어드는 현상도 서로 다른 집계 수준이므로 양립할 수 있다.
+
+## 6. 경제 변화를 관측할 때 지표를 나눈다
+
+Stanford Digital Economy Lab의 AI Economic Indicators는 도입, 노동시장과 거시 변화를 나눠 관측하는 구조다. 2026-08-10 개정된 첫 연구 노트에서 세 구성 요소를 대조했다. 최신 월별 수치를 확인한 기록은 아니다.
+
+| 구성 | 관측 대상 | 해석의 경계 |
+|---|---|---|
+| Canaries Dashboard | ADP 표본의 직업별 AI 노출과 연령별 고용 추세 | 노출도는 기업의 실제 AI 도입 여부와 같지 않음. 인과 추정과 기술통계 구분 |
+| Adoption Monitor | 개인과 기업의 AI 도입 설문 | 조사마다 모집단, 사용 정의와 기간이 달라 한 비율로 합치지 않음 |
+| Transformation Tracker | 경제의 구조 변화와 관련된 거시 계열 | 여러 계열의 일관된 증거가 필요하며 개별 지표의 변화만으로 경제적 특이점을 선언하지 않음 |
+
+첫 연구 노트의 2026년 5월 기준 12개 변환 지표는 강한 증거 2개, 약한 증거 3개, 증거 없음 7개였다. 저자들은 전체로는 결정적 변환 증거가 없다고 평가했다. 강의의 12개 중 2개에서 변화가 시작됐다는 설명은 이 시점의 강한 증거 수와 연결되며, 현재 상태로 일반화하지 않는다.
+
+EBS 10강에서 제시한 약 5년의 AI 보완 투자 기간과 2030년 생산성 증가 전망은 발표자의 전망이다. J커브의 저점을 실시간으로 정확히 알기 어렵고 기술별 곡선이 겹칠 수 있다는 설명까지 함께 읽는다. 12강의 산업혁명에 비견되는 변화와 제도 개편도 조건부 시나리오와 정책 제안이다. 기존 디지털 인프라가 확산을 빠르게 할 수 있어도 조직 재설계, 전력과 설비, 인력 재교육이 같은 속도로 끝난다는 뜻은 아니다.
+
+## 7. 읽는 기준
 
 - 새 기술이 넓게 쓰이는데 생산성 통계가 오르지 않는다고 해서 기술의 효과가 없다고 결론 내리지 않는다. 확산 단계, 기존 설비의 교체 시점, 공정과 조직의 재설계 여부, 무형 투자의 측정 범위를 먼저 나눈다.
 - 반대로 지연이 있었다는 역사가 이번 기술의 생산성 급증을 보장하지도 않는다. David도 기술사를 알면 지나친 낙관과 비현실적인 조급함을 함께 피할 수 있다고 적었다.
 
-## 6. 체크포인트
+## 8. 체크포인트
 
 - 생산성 역설과 생산성 J커브가 각각 무엇을 설명하는지 구분할 수 있는가
 - group drive와 unit drive의 차이가 왜 생산성 차이로 이어졌는지 공장 배치로 설명할 수 있는가
@@ -63,6 +91,13 @@ Ramp AI Index를 출처로 한 도표에서 AI 지출 상위 1% 기업의 80.4%�
 - AI 공급자의 매출, 기술 기업의 직원당 매출과 경제 전체의 생산성이 각각 무엇을 말하는지, 지출 집중도가 왜 함께 필요한지 설명할 수 있는가
 
 ## 출처
+
+- [EBS, 에릭 브린욜프슨, AI는 어떻게 경제를 바꾸는가](https://www.ebssw.kr/edc/cultursens/cultursensMvpView.do?alctcrSn=59337&cntntsSn=33477&stepSn=58322&lctreSn=1879175&pageIndex=1) — 넥스트 비전 10강, 2026-11-03 전체 음성 전사 확인. 생산성 전망은 발표자 견해
+- [EBS, 에릭 브린욜프슨, AGI 시대, 어떻게 살아남을 것인가](https://www.ebssw.kr/edc/cultursens/cultursensMvpView.do?alctcrSn=59337&cntntsSn=33479&stepSn=58322&lctreSn=1879177&pageIndex=1) — 넥스트 비전 12강, 2026-11-03 전체 음성 전사 확인. 가치 회수, 조직과 제도 설계의 논점
+- [GDP-B: Accounting for the Value of New and Free Goods in the Digital Economy — NBER](https://www.nber.org/papers/w25695) — 2019 작업논문 초록, 2026-11-03 편익 측정의 목적과 선택 실험 대조
+- [What is Generative AI Worth? — Stanford Digital Economy Lab](https://digitaleconomy.stanford.edu/publication/what-is-generative-ai-worth/) — 2026-04-13 연구 소개, 2026-11-03 한 달간 접근 포기의 보상수용의사 정의 대조
+- [GDP-B: Measuring Well-Being — Stanford Digital Economy Lab](https://digitaleconomy.stanford.edu/project/gdp-b-a-new-well-being-metric-in-the-era-of-the-digital-economy/) — 2026-11-03 소비자잉여와 GDP 보완 지표의 범위 대조
+- [AI Economic Indicators: June 2026 Update — Stanford Digital Economy Lab](https://digitaleconomy.stanford.edu/publication/ai-economic-indicators-june-2026-update/) — 2026-08-10 개정 연구 노트, 2026-11-03 세 구성과 2026년 5월 변환 지표 대조
 
 - [The Dynamo and the Computer: An Historical Perspective on the Modern Productivity Paradox — American Economic Review, Paul A. David](https://ideas.repec.org/a/aea/aecrev/v80y1990i2p355-61.html) — 1990-05, 80권 2호 355~361쪽. 2026-10-19 원문 스캔본 대조
 - [The Productivity J-Curve: How Intangibles Complement General Purpose Technologies — American Economic Journal: Macroeconomics, Erik Brynjolfsson, Daniel Rock, Chad Syverson](https://www.aeaweb.org/articles?id=10.1257/mac.20180386) — 2021-01, 13권 1호 333~372쪽. 2026-10-19 초록 대조
@@ -75,6 +110,7 @@ Ramp AI Index를 출처로 한 도표에서 AI 지출 상위 1% 기업의 80.4%�
 
 ## 관련 문서
 
+- [[AI-Work-Output-and-Employment|AI 산출, 생산성과 고용]] — 직무별 변화와 보완 관계
 - [[GDP-Economic-Growth|GDP와 경제성장]] — 성장의 원천과 TFP
 - [[AI-Capability-and-Cost-Trends|AI 능력과 비용 추세 읽기]]
 - [[AI-Infrastructure-Capital-Cycle|AI 인프라 투자와 자본 순환]] — 공급 측 투자와 현금 회수

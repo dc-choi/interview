@@ -149,3 +149,10 @@ Software 3.0 패러다임, LLM과 에이전트, 하네스, 평가, 조직 전환
 - [x] [[Agent-Ready-API-Design#명령 발견과 실패 응답도 계약이다|OpenAI CLI의 출력과 입력 계약]] — 파이프에서도 텍스트인 기본 출력, 오류 형식, 신뢰하지 않는 stdin의 파일 참조 차단
 - [x] [[Agent-Always-On-Mac-Host#세션 유지는 끊김과 재부팅을 나눠 본다|에이전트 세션 복원의 범위]] — Corgi의 화면과 대화 복원, 에이전트 훅 추가와 복구 파일
 - [x] [[Codebase-Knowledge-Map|대규모 코드베이스 지식 지도]] — 결정론적 추출과 AI 연결, 확인, 추론과 미해결의 구분, 재구축 동일성 검사, 그래프 순회 상한과 상시 벡터 DB 없는 exact 비교 사례
+- [x] [[AI-Information-Power|AI와 정보 선택의 권력]] — 생성과 추천시스템, 제도적 권한과 정정 경로
+- [x] [[AI-Assisted-Mathematical-Research|AI 보조 수학 연구]] — 증명의 검증, 선행 연구와 신규성, 이해를 보존하는 학습
+- [x] [[AI-Alignment-and-Control|AI 목표 정렬과 행동 통제]] — 목표와 권한, 감시와 중단, 자기 개선과 거버넌스
+- [x] [[AI-Forecasts-and-Human-Augmentation|AI 전망과 인간 능력 확장]] — 예측의 가정, 기능 보조와 전면적 증강, 생물학적 진화와 문화적 변화
+- [x] [[AI-Scientific-Discovery-Loops|AI 과학 발견 루프]] — 문제 정의와 실험, 반도체 적용, 교육과 고용 및 접근성 전망
+- [x] [[Reinforcement-Learning-from-Experience|경험 기반 강화학습]] — 보상과 가치, TD와 시뮬레이션, 계산 확장과 연구 비전
+- [x] [[Generative-Video-Production-Workflow|생성형 영상 제작 워크플로]] — 창작 협업, 자산 트리, 장편 사례와 출처 표시

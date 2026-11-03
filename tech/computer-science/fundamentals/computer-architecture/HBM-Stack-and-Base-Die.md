@@ -42,6 +42,26 @@ NVIDIA는 표준 HBM4e 대비 스택당 대역폭 최대 30% 증가와 HBM 전�
 
 특정 고객의 3nm 제조 요구, 8단 발주와 공급 부족 전망은 이 문서의 확인 범위에 포함하지 않는다. 공식 구조 설명만으로 개별 계약 조건과 생산량을 확정할 수 없다.
 
+## 추론에서는 메모리 계층과 연산 특화를 함께 본다
+
+학습은 가중치를 갱신하고 추론은 학습한 가중치로 출력을 계산한다. 긴 문맥과 여러 에이전트의 반복 호출은 가중치 외의 실행 상태와 데이터 이동 비용도 늘릴 수 있다. 평생 대화 기록을 보관하는 영속 저장소와 현재 연산에 쓰는 HBM은 같은 계층이 아니다. 전체 이력을 HBM에 상주시켜야 한다는 뜻은 아니며 검색, 캐시와 저장 계층을 나누어 본다. 같은 모델이라도 배치, 문맥 길이, 정밀도와 재사용률에 따라 연산 병목과 대역폭 병목이 달라진다([[LLM-Inference-Bottlenecks|LLM 추론 병목]]).
+
+특정 모델에 맞춘 하드웨어는 지원하는 연산, 수치 정밀도와 메모리 경로를 좁혀 효율을 높일 여지가 있다. 대신 모델 구조가 바뀔 때의 유연성과 개발 비용을 지불한다. 제프 딘의 추론 전용 하드웨어 20~30배 효율 향상 전망과 대규모 토큰 수요 계산은 강연의 미래 시나리오이며, 현재 제품의 실측 성능과 소비전력 예측치가 아니다. 토큰당 에너지가 줄어도 총 사용량이 늘면 전체 전력이 줄지 않을 수 있다.
+
+| 메모리 방향 | 중심 소재와 목적 | 확인 수준과 경계 |
+|---|---|---|
+| HBM | DRAM 적층, 넓은 인터페이스로 연산 칩에 데이터 공급 | 용량, 대역폭, 지연과 패키징을 각각 확인한다 |
+| HBF(High Bandwidth Flash) | NAND의 큰 용량을 연산 가까운 계층으로 연결 | 2026-08-04 SK hynix/Sandisk 발표는 HBM과 SSD 사이의 계층과 첫 규격을 제시했다. 모든 HBM을 같은 성능으로 교체한다는 뜻은 아니다 |
+| HBS | 강연에서 소개한 SRAM 기반 고대역폭 적층 방향 | 이 기록에서는 공통 표준, 상용 제품과 성능을 확인하지 않았다. HBM의 확정 후속 세대로 나열하지 않는다 |
+
+2026-11-03 공식 발표 대조 범위에서 HBF는 표준화와 생태계 구축의 대상이다. 규격 공개와 해당 규격을 만족하는 제품의 양산, 실제 워크로드에서의 이익은 별개다. 읽기/쓰기 패턴, 내구성, 지연과 가격을 보지 않고 대역폭 숫자만으로 메모리를 선택하지 않는다.
+
+## 병목은 메모리 밖으로도 이동한다
+
+데이터 확보, 메모리, 전력, 자본과 사람의 검토 능력은 서로 다른 제약이다. 메모리만 개선해도 전력 공급, 발열과 냉각, 데이터 품질, 검토 속도가 다음 병목으로 남을 수 있다. 열, 전기, 기계 설계가 결합된 반도체 개발에는 [[AI-Scientific-Discovery-Loops#반도체 설계와 제조에 적용하는 조건|실험과 설계를 반복하는 AI 에이전트]]를 고려할 수 있지만, 시뮬레이션의 개선과 실제 제조 수율 향상을 구분한다.
+
+김정호의 강연에서 제시한 매년 두 배 이상의 메모리 수요, 메모리 중심의 산업 주도권과 전력 반도체 국산화 필요성은 발표자의 성장 전망과 산업 전략 견해다. 일정한 성장 법칙이나 모든 국가의 현황으로 확정하지 않는다. 강연 속 HBM 차기 세대의 출시 연도와 업체별 개발 상태는 확인되지 않아 현행 로드맵으로 사용하지 않는다.
+
 ## 확인 질문
 
 - 코어 DRAM과 베이스 다이를 서로 다른 공정으로 만드는 이유를 역할로 설명할 수 있는가?
@@ -54,6 +74,10 @@ NVIDIA는 표준 HBM4e 대비 스택당 대역폭 최대 30% 증가와 HBM 전�
 - [Samsung Semiconductor, HBM](https://semiconductor.samsung.com/dram/hbm/) — 저장층과 로직층의 공정, 용량과 I/O 사양을 2026-10-28 확인
 - [Micron, HBM4](https://www.micron.com/products/memory/hbm/hbm4) — TSV 적층 구조, 2,048-bit 인터페이스와 용량/대역폭의 구분
 - [NVIDIA NVLink Fusion Brings NVHBM to Next-Generation AI Infrastructure — NVIDIA Technical Blog](https://developer.nvidia.com/blog/nvidia-nvlink-fusion-brings-nvhbm-to-next-generation-ai-infrastructure/) — 2026-08-26, 컨트롤러 이동과 PHY, 공급사가 제시한 비교 수치
+
+- [EBS, 넥스트 비전, 16. 제프 딘 <AI 혁명의 과거와 미래> - 혁명의 핵심 기술](https://www.ebssw.kr/edc/cultursens/cultursensMvpView.do?alctcrSn=59337&cntntsSn=33498&stepSn=58322&lctreSn=1879204&pageIndex=1) — 2026-11-03 전체 음성 전사 대조. 추론 수요의 가정 계산, 모델별 하드웨어 특화와 효율 향상 전망.
+- [EBS, 넥스트 비전, 20. 김정호 <AI시대를 이끄는 메모리의 진화> - HBM 진화는 계속된다](https://www.ebssw.kr/edc/cultursens/cultursensMvpView.do?alctcrSn=59337&cntntsSn=33542&stepSn=58322&lctreSn=1879337&pageIndex=1) — 2026-11-03 전체 음성 전사 대조. DRAM 적층, TSV와 넓은 인터페이스, HBF/HBS, 데이터/메모리/전력/자본/사람 병목.
+- [SK hynix Unveils First HBF Standard Specifications with Sandisk, Presenting AI Memory Solutions at FMS 2026 — SK hynix](https://news.skhynix.com/en/hbf-at-fms-2026/) — 2026-08-04 발표, 2026-11-03 HBF의 NAND 기반 계층과 규격 공개 상태 대조. 출시/실측 검증은 하지 않았다.
 
 ## 관련 문서
 

@@ -18,3 +18,4 @@ aliases: ["Learning Methods", "학습 방법론"]
 - [x] [[Thin-Start-Project-Approach|얇게 시작하기, 프로젝트 MVP 접근 (문제 쪼개기가 시작, 배포까지가 완성, 마무리는 결정)]]
 - [x] [[Zettelkasten|제텔카스텐 (하나의 메모에 하나의 생각, 완성된 문장, 연결을 함께 적기, 인용+해석+연결)]]
 - [x] [[Aesthetic-Experience-and-Learning|감상 경험과 안목의 학습 (지각과 문화, 공동 감상, 창발의 해석, 청중의 경험과 확인 범위)]]
+- [x] [[AI-Tutoring-and-Mastery-Learning|AI 튜터링과 완전학습]] — 선수 지식, 최소 힌트, 독립 수행과 학습 효과의 구분
