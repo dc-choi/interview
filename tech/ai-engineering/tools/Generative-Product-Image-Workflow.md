@@ -57,6 +57,20 @@ SageMaker Pipelines는 EventBridge 규칙의 대상으로 실행할 수 있고, 
 
 2026-10-13 Diffusers의 LoRA와 DreamBooth 가이드, AWS의 Pipeline 실행 가이드를 대조했다. 실제 학습이나 배포를 실행한 결과는 아니며 기존 절의 서비스 지원 범위를 다시 검증한 것은 아니다.
 
+## 입력 이미지의 특징과 생성 제어값을 나누어 검수한다
+
+배경과 어울리는 아이콘이나 상품 시안을 만들 때는 객체 분류, 색상 추출과 이미지 생성을 분리할 수 있다. 2026-11-04 Amazon Rekognition `DetectLabels` 공식 API 대조 기준, `GENERAL_LABELS`는 탐지 라벨을, `IMAGE_PROPERTIES`는 색상과 이미지 품질 정보를 반환한다. 라벨의 `MinConfidence`와 반환할 주요 색상 수는 별도 설정이다. 탐지 결과가 곧 사용자가 원하는 디자인 분류라는 뜻은 아니다.
+
+적용 제안: 입력의 카테고리와 색상, 형태를 유도할 가이드 이미지, 원하는 스타일을 별도 조건으로 둔다. 분류가 틀린 실패와 생성된 형태가 틀린 실패를 나누어 기록하고, 입력 범위, 형태의 충실도와 결과의 다양성을 각각 평가한다. 분류 조건이나 프롬프트를 늘렸다는 사실만으로 모든 이미지에 대응한다고 판단하지 않는다.
+
+### strength는 원본 픽셀의 보존 비율이 아니다
+
+Diffusers의 Stable Diffusion image-to-image는 초기 이미지를 latent로 인코딩하고 노이즈를 더한 뒤, 프롬프트와 함께 denoising해 새 이미지를 만든다. 2026-11-04 공식 가이드와 Context7 대조 기준, `strength`가 커지면 초기 이미지에서 더 많이 벗어날 수 있고 denoising 단계 수도 달라진다. 가이드의 `num_inference_steps=50`, `strength=0.8` 예시는 40단계 denoising을 설명한다.
+
+따라서 `strength=0.9`를 원본의 10%를 보존한다는 보장으로 읽지 않는다. 값이 1이면 초기 이미지의 영향이 사실상 사라질 수 있다. 원본의 로고, 윤곽과 색상 보존은 별도 대조 대상이며, 이 해석을 다른 생성 모델의 동명 옵션에 자동 적용하지 않는다.
+
+`negative_prompt`도 피할 요소를 조건으로 전달하는 수단이다. 금지한 요소가 실제로 제거됐는지는 결과에서 확인한다. 비교 시에는 기반 모델, 초기 이미지, seed와 추론 설정을 기록하고 한 조건씩 바꾸는 방식을 검토한다. 이 절은 입력과 추론 제어의 문서 대조이며 실제 학습, 이미지 생성과 품질 측정은 하지 않았다. 기존 AWS 배포 지원 범위의 검증일은 유지한다.
+
 ## 작업 그래프와 실행 환경을 분리한다
 
 ComfyUI는 노드를 연결해 생성 단계를 구성하고 워크플로우를 JSON으로 내보낼 수 있다. AWS의 SageMaker AI Processing 예시는 이 워크플로우를 컨테이너에서 실행하고, GPU 인스턴스로 배치 생성한 결과를 S3에 저장한다.
@@ -125,6 +139,8 @@ Avery Artwork Guidelines는 실제 인쇄 크기에서의 최소 300 dpi, 글꼴
 
 ## 출처
 
+- [Amazon Rekognition, DetectLabels](https://docs.aws.amazon.com/rekognition/latest/APIReference/API_DetectLabels.html) — 2026-11-04 라벨과 색상 정보의 구분, 신뢰도와 주요 색상 수 설정 대조.
+- [Hugging Face Diffusers, Image-to-image](https://huggingface.co/docs/diffusers/en/using-diffusers/img2img) — 2026-11-04 원문과 Context7으로 초기 이미지, strength, 추론 단계와 negative prompt의 역할 대조. 픽셀 보존율과 품질 보장이 아님.
 - [Amazon Nova, Image generation and editing](https://docs.aws.amazon.com/nova/latest/userguide/image-gen-access.html)
 - [Amazon Nova, Request and response structure for image generation](https://docs.aws.amazon.com/nova/latest/userguide/image-gen-req-resp-structure.html)
 - [Avery, What are the Bleed and the Safe Areas?](https://www.avery.com/help/article/what-are-the-bleed-and-the-safe-areas)
