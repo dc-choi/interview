@@ -44,6 +44,8 @@ Automation events는 batch 아래 object별 trace를 연결하고 success/failur
 
 Kanban에서 특정 object retry 또는 필터한 state의 전체 object에 automation을 실행할 수 있다. 이는 화면 refresh가 아닌 실제 effect 실행이다. 재시도 대상, 외부 효과의 중복 가능성과 Action 조건을 확인한다.
 
+Autopilot 안에서 automation의 condition을 직접 수정할 수도 있다(2026-11-04 Overview 대조). 관측 화면을 여는 작업과 자동화 조건을 바꾸는 작업을 구분한다. 운영 적용 제안: 수정할 automation과 조건의 변경 전후를 확인하고, 변경 뒤에는 실제 event와 객체 상태로 의도한 동작을 점검한다. 조건을 수정했다는 사실만으로 이전 실패 실행이 복구됐다고 판단하지 않는다.
+
 ## 자연어 trace 탐색과 운영 판단을 나눈다
 
 부분 검증(2026-10-22): Telemetry Navigation Agent의 분석 범위와 전제 조건을 공식 문서와 대조했다. 기존 기능 전체의 검증일은 유지한다.

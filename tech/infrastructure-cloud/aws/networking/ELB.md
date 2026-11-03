@@ -71,6 +71,14 @@ ELB가 트래픽을 보낼 **대상의 집합**.
 - `ReservedLCUs`는 분 단위 과금 지표다. 6,000 LCU를 한 시간 예약하면 1분 합계는 100, 한 시간 합계는 6,000이다. `PeakLCUs` 1분 합계는 설정한 예약량 또는 `ReservedLCUs` 한 시간 합계와 비교한다.
 - 사용하지 않은 예약 용량도 취소 전까지 비용이 발생한다. 이벤트 뒤 축소나 취소를 점검하며 예약량 감소는 하루 두 번 제한을 고려한다.
 
+### 관리형 자동 확장에도 서브넷 여유가 필요하다
+
+2026-11-04 부분 검증: AWS의 ALB 서브넷, ELB 요청 라우팅과 용량 예약 문서를 대조했다. ALB 자체의 용량 증감은 AWS가 트래픽에 맞춰 관리한다. 최소 LCU 예약을 설정했다면 트래픽이 줄어도 그 예약량 아래로 축소하지 않는다. 자동 확장과 사용자가 정하는 최소 용량은 함께 존재한다.
+
+일반 Availability Zone 서브넷에 배치할 때는 서로 다른 AZ의 서브넷을 최소 두 개 선택한다. 각 서브넷은 `/27` 또는 그보다 큰 주소 공간과 최소 8개의 여유 IP 주소를 확보해야 확장에 필요한 주소를 제공할 수 있다. Local Zone과 Outposts의 배치 조건으로 일반화하지 않는다.
+
+확장 중 서브넷의 사용 가능한 IP가 부족하면 기존 노드는 계속 트래픽을 처리하더라도 용량 확장이 정체되고 연결 과정에서 5xx나 timeout이 발생할 수 있다. 운영 점검에서는 ALB 자체의 확장 조건과 백엔드 대상의 처리 여력을 따로 확인한다. 요청을 분산하는 기능만으로 대상 서버의 수나 애플리케이션 처리량이 함께 늘어나는 것은 아니다.
+
 ### 용량 산정에서 요청 수와 연결 수를 구분한다
 
 2026-10-10 부분 검증: ALB 요금의 LCU 차원과 용량 예약 문서를 대조했다. 초당 요청 수(RPS)는 초당 새 연결 수가 아니다. 한 연결에서 여러 요청을 처리할 수 있으므로 RPS를 새 연결 차원에 그대로 대입하지 않는다.
@@ -206,6 +214,7 @@ ALB의 504는 대상이 연결 timeout이나 idle timeout(기본 60초) 안에 �
 - **CLB는 이전 세대** — 기존 구성은 지원되지만 신규 설계는 ALB, NLB, GWLB의 기능을 우선 검토
 
 ## 출처
+- [Application Load Balancer 서브넷과 상태](https://docs.aws.amazon.com/elasticloadbalancing/latest/application/application-load-balancers.html)
 - [Gateway Load Balancer 대상 그룹 health check](https://docs.aws.amazon.com/elasticloadbalancing/latest/gateway/health-checks.html)
 - [Gateway Load Balancer 대상 그룹 속성](https://docs.aws.amazon.com/elasticloadbalancing/latest/gateway/edit-target-group-attributes.html)
 - [AWS, Elastic Load Balancing pricing](https://aws.amazon.com/elasticloadbalancing/pricing/)
