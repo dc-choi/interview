@@ -1,6 +1,7 @@
 ---
 tags: [ai, image-generation, html, design, verification]
 status: done
+verified_at: 2026-11-03
 category: "AI엔지니어링(AIEngineering)"
 aliases: ["Generative Artifact Contracts", "AesCode", "Krea 3", "Open Intelligent UI", "생성형 UI"]
 ---
@@ -45,6 +46,18 @@ AesCode는 참고 이미지에서 미적 단서를 얻어 편집 가능한 HTML/
 
 검수할 때는 화면이 렌더링되는지와 별개로 계산 결과와 표의 값을 원본 데이터와 대조하고, 샌드박스 밖으로 나가는 값이 브리지 검증을 거치는지 확인한다(운영 제안). 설치와 실행은 하지 않았다.
 
+## 슬라이드는 원본 편집과 내보낸 파일을 따로 확인한다
+
+2026-11-03 OpenAI 공식 Space 안내 대조 기준, ChatGPT Slides는 웹과 데스크톱의 Space에서 텍스트, 이미지, 도형, 표와 차트를 직접 편집하거나 선택한 요소의 수정을 요청할 수 있다. 웹에서는 PowerPoint(`.pptx`), PDF와 Google Slides로 내보낼 수 있다. Space가 활성화된 계정이 전제이며, 이 안내만으로 개별 계정의 사용 가능 여부를 확정하지 않는다.
+
+Space 안에서 요소를 편집할 수 있다는 사실을 내보낸 모든 요소가 같은 방식으로 편집된다는 보장으로 옮기지 않는다. 공식 안내도 내보낸 덱의 내용과 서식을 다시 검토하도록 요구한다. 다음은 이를 적용한 검수 제안이다.
+
+- 입력에 발표 대상, 목적과 분량을 쓰고, 승인된 수치와 참고 디자인을 구분한다. 누락된 예산이나 실적은 생성으로 채우지 않는다.
+- 수정 요청 뒤에는 실제 슬라이드의 표와 차트 값을 확인한다. 완료 응답만으로 저장과 반영을 판단하지 않는다.
+- 내보낸 파일을 대상 편집기에서 열어 필요한 표 셀, 차트 데이터와 텍스트를 실제로 수정해 보고, 원본과 수치 및 레이아웃을 대조한다.
+
+영상 한 번의 생성 시간과 장수는 일반 성능 기준이 아니다. 여기서는 기능 안내만 대조했으며 파일 생성, 내보내기와 편집 보존은 실행하지 않았다.
+
 ## 산출물별 검수 기준
 
 | 산출물 | 검수 |
@@ -59,6 +72,7 @@ AesCode는 참고 이미지에서 미적 단서를 얻어 편집 가능한 HTML/
 
 ## 출처
 
+- [OpenAI, Get started with ChatGPT Space](https://learn.chatgpt.com/docs/space/getting-started) — 2026-11-03 Slides의 요소 편집, 웹 내보내기와 결과 검토 범위만 대조. 다른 제품 절의 기존 확인일은 유지한다.
 - [AesCode: Aesthetic Code Generation with Decoupled Cross-Modal Rewards — Microsoft](https://github.com/microsoft/AesCode)
 - [Introducing Krea 3 — Krea](https://www.krea.ai/blog/introducing-krea-3)
 - [Anatomy — GitHub, wheresryan22](https://github.com/wheresryan22/anatomy) — 2026-10-22 출력 형식, 검수 도구와 3D beta 범위 대조

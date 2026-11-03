@@ -1,6 +1,7 @@
 ---
 tags: [ai, agent, context, platform, ontology, knowledge-graph, provenance]
 status: done
+verified_at: 2026-11-03
 category: "AI엔지니어링(AIEngineering)"
 aliases: ["Agentic Context Platform", "Context Provider", "컨텍스트 프로바이더", "에이전트 컨텍스트 플랫폼"]
 ---
@@ -115,6 +116,16 @@ source discovery
 
 ## 에이전트에 공급하는 계약
 
+### 제품 사례: 색인 조회와 실제 자산을 구분한다
+
+2026-11-03 OutSystems ODC 공식 문서 대조 기준, Enterprise Context Graph는 앱의 엔티티, 액션, 화면, 구조, 역할과 테마, AI 모델 연결 및 에이전트를 색인한다. Mentor가 내부에서 읽는 그래프를 외부 MCP 호스트의 에이전트도 객체 유형별 컨텍스트 조회로 읽는다. 앱 모델을 내려받는 방식은 아니다.
+
+앱 범위 조회는 자체 객체가 기본이며 참조 라이브러리에서 상속한 객체를 포함할 수 있다. 테넌트 범위 조회는 사용자가 볼 수 있는 앱들을 대상으로 한다. 조회는 색인 캐시를 사용하므로 게시 직후 이전 상태를 반환할 수 있고, 즉시 최신 상태가 필요하면 실제 앱과 대조해야 한다. 이름은 변경되거나 중복될 수 있어 작업 대상은 정본 식별자인 `asset key`로 확인한다.
+
+컨텍스트 제공을 변경 결과의 정확성이나 안전성 보장으로 해석하지 않는다. 이 사례는 색인으로 후보를 찾고 실제 자산을 확인하는 계약의 예이며, MCP 연결과 앱 변경을 실행해 검증한 결과는 아니다.
+
+### 조회 응답의 공통 계약
+
 검색 API는 텍스트 묶음만 반환하지 않고 다음을 함께 제공한다.
 
 - 질문과 직접 관련된 claim, 또는 claim 계층 이전 MVP의 원문 EvidenceUnit
@@ -176,6 +187,7 @@ source discovery
 
 ## 출처
 
+- [Enterprise Context Graph — OutSystems ODC Documentation](https://success.outsystems.com/documentation/outsystems_developer_cloud/agentic_development/mentor/enterprise_context_graph/) — 2026-11-03 색인 대상, 조회 범위, 게시 뒤 갱신 지연과 자산 식별자 대조. 이 제품 사례의 부분 검증이다.
 - [LLM은 똑똑한데, 왜 우리 회사 일은 모를까 — 토스테크](https://toss.tech/article/llm_context_topic)
 - [사람과 AI Agent를 위한 통합 Context Provider 구축 — NAVER D2](https://d2.naver.com/helloworld/7056385)
 - [PROV-O: The PROV Ontology — W3C](https://www.w3.org/TR/prov-o/)
