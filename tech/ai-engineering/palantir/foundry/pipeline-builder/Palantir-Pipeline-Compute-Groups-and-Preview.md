@@ -38,8 +38,11 @@ Row count/statistics는 선택한 input sample 범위의 계산이다. Chart의 
 
 Preview는 기본 자동 실행이며 user preference가 enrollment default보다 우선한다. LLM/model preview는 실제 compute를 발생시킬 수 있다. 이 문서의 수치와 성능은 공식 본문 설명이며 profile 실행이나 비용 측정을 수행하지 않았다.
 
+Enrollment 관리자는 **Control Panel > Pipeline Builder > Enable preview confirmation by default**를 켜서 수동 확인을 기본값으로 둘 수 있다. 사용자는 **Settings > User preferences > Automatic preview behavior**에서 이를 덮어쓸 수 있으며, 사용자 선택은 그 enrollment에서 보는 모든 pipeline에 적용된다. 따라서 관리자의 기본값을 사용자가 바꿀 수 없는 실행 차단 정책으로 취급하지 않는다. 이 설정 범위는 2026-11-03 Preview pipeline 문서와 2026-03-19 공지를 부분 대조했다.
+
 ## 출처
 
+- [March 2026 Announcements — Palantir](https://www.palantir.com/docs/foundry/announcements/2026-03) — Enforce default preview behavior in Pipeline Builder, 2026-03-19. Enrollment 기본값과 사용자 override 범위 대조
 - [Palantir Pipeline Builder, compute-profile-permissions](https://www.palantir.com/docs/foundry/pipeline-builder/compute-profile-permissions)
 - [Palantir Pipeline Builder, management-build-settings](https://www.palantir.com/docs/foundry/pipeline-builder/management-build-settings)
 - [Palantir Pipeline Builder, management-charts](https://www.palantir.com/docs/foundry/pipeline-builder/management-charts)

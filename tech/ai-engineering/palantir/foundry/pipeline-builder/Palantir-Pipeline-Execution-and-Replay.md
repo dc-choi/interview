@@ -32,7 +32,9 @@ Streaming replay는 input 시작 또는 과거 시간부터 가능하다. 시간
 
 Redeploy는 저장 checkpoint/bookmark에서 이어 가고 기존 stream output을 보존한다. Replay는 state와 output view를 다시 만들며 downstream replay와 며칠의 중단을 초래할 수 있다. 원문은 한편 이전 view 접근이 가능하다면서 다른 곳에서는 모든 stream history/data가 잃어진다고 표현한다. 이를 물리적 과거 데이터 삭제와 동일하다고 단정하지 않고 current view 교체와 retention을 구분한다. Reset Outputs를 끄는 selective re-ingestion은 기존 output을 보존하는 별도 옵션이다.
 
-Require incremental execution은 증분 불가능한 job을 fail시킨다. 최소 한 incremental input/output이 필요하고 모든 incremental output에 적용한다. 다만 명시적으로 acknowledge한 state break는 snapshot 예외가 될 수 있으므로 무조건 snapshot 금지로 해석하지 않는다. Commit empty transactions는 0-row output에서도 progress를 commit해 같은 input의 반복 처리를 막는다.
+Require incremental execution은 증분으로 실행하도록 구성한 job이 증분 실행을 할 수 없으면 실패시킨다. 최소 한 incremental input 또는 output이 필요하며, 둘 다 없는데 활성화하면 deployment 오류가 난다. Job group을 나눠도 모든 incremental output에 적용한다. 다만 명시적으로 acknowledge한 state break는 snapshot 예외가 될 수 있으므로 무조건 snapshot 금지로 해석하지 않는다. Commit empty transactions는 0-row output에서도 progress를 commit해 같은 input의 반복 처리를 막는다.
+
+2026-03-17 공지의 설정 경로는 **Build settings > Advanced configuration > Require incremental execution**이며, 기본값은 `No value`다. 명시적으로 `True`로 설정해야 의도하지 않은 snapshot 전환을 실패로 처리한다. 이 설정과 예외 조건은 2026-11-03 공식 공지로 부분 대조했으며, 실제 pipeline 배포는 검증하지 않았다.
 
 ## Streaming join의 시간 경계
 
@@ -42,6 +44,7 @@ Stream→stream outer caching join은 양쪽 만료가 있는 key별 cache에서
 
 ## 출처
 
+- [March 2026 Announcements — Palantir](https://www.palantir.com/docs/foundry/announcements/2026-03) — Enforce incremental execution in Pipeline Builder, 2026-03-17. 설정 기본값, 배포 조건, job group 범위와 state break 예외를 2026-11-03 대조
 - [Palantir Pipeline Builder, pipeline-builder](https://www.palantir.com/docs/foundry/pipeline-builder)
 - [Palantir Pipeline Builder, breaking-changes](https://www.palantir.com/docs/foundry/pipeline-builder/breaking-changes)
 - [Palantir Pipeline Builder, core-concepts](https://www.palantir.com/docs/foundry/pipeline-builder/core-concepts)
