@@ -37,6 +37,19 @@ LLM, 에이전트 시스템은 같은 입력에도 출력이 흔들린다. 결�
 
 이 절차는 평가 설계 제안이며 특정 라우터의 성능을 재현한 결과가 아니다. [[LLM-Model-Tiers|모델 티어와 라우팅]]의 선택은 이 비교 결과에 따라 조정한다.
 
+## 웹 생성 비교는 외형, 동작과 저장 결과를 나눈다
+
+한 프롬프트로 만든 화면의 선호도는 해당 결과물의 평가다. 이를 모델의 전반적인 코딩 능력이나 반복 성공률로 확대하지 않는다. 같은 프롬프트여도 실행 도구와 수정 예산이 다르면 모델과 실행 환경의 효과가 섞인다.
+
+반복 trial, 최종 상태 확인과 환경 격리 원칙을 웹 생성에 적용한 평가 설계 제안은 다음과 같다.
+
+- **외형**: 레이아웃, 글자 가독성과 요청한 분위기를 별도 기준으로 평가한다.
+- **동작**: 링크 이동, 입력 처리, 드래그와 확대처럼 요구한 상호작용을 실제로 실행해 확인한다.
+- **저장 결과**: 방명록 항목이 화면에 나타나는 것과 새로고침 뒤에도 남는 것을 구분한다. 서버 저장이 요구사항이면 서버의 최종 상태까지 확인한다. 저장을 요구하지 않은 시연에 임의로 영속성 조건을 추가하지 않는다.
+- **반복 조건**: 같은 초기 파일과 데이터에서 여러 번 실행하고 모델, 도구, 추가 지시, 수정 횟수와 비용을 남긴다. 첫 결과의 품질과 수정 후 완성도를 따로 집계한다.
+
+2026-11-03 Anthropic의 에이전트 평가 문서로 근거 원칙을 대조했다. 특정 모델의 순위나 영상 속 웹앱의 실제 동작을 재현한 결과는 아니다.
+
 ## 기억 기능의 효과는 같은 조건에서 비교한다
 
 모델 교체와 기억 데이터 축적이 동시에 일어났다면 체감 개선만으로 기억 기능의 효과를 분리할 수 없다. 에이전트 평가는 모델과 하네스를 함께 측정하므로, 반복 trial의 시작 환경을 맞추고 실행 기록과 최종 상태를 구분해야 한다.
@@ -140,7 +153,7 @@ Q. 데이터 품질은 어떻게 지키나?
 - [Abacus.AI, RouteLLM API Reference](https://api.abacus.ai/help/route-llm/) — 2026-10-22 자동 모델 선택과 크레딧 회계, 가격 조회 안내 확인. 절감률과 운영 품질은 별도 평가 대상이다.
 - [Abacus.AI, OpenAI Chat Completions API](https://api.abacus.ai/help/route-llm/chat-completions/) — 2026-10-22 모델 ID 지정과 `route-llm` 선택 확인.
 - [YouTube, 코드팩토리, 매번 가장 효율적인 LLM을 선택하는법](https://www.youtube.com/watch?v=6vabSapGFqE) — 상담의 고정 모델, 수동 분기와 자동 선택 비교를 학습 계기로 사용했다. 시연의 모델별 결과와 절감 수치는 일반 성능으로 반영하지 않았다.
-- [Demystifying evals for AI agents — Anthropic](https://www.anthropic.com/engineering/demystifying-evals-for-ai-agents) — 반복 trial, 모델과 하네스의 공동 평가, 양방향 과제와 초기 환경 격리. 기억과 라우팅 비교 절차는 이를 적용한 설계 제안이다. 2026-10-09 확인, 2026-10-22 라우팅 평가에 사용한 원칙 재대조.
+- [Demystifying evals for AI agents — Anthropic](https://www.anthropic.com/engineering/demystifying-evals-for-ai-agents) — 반복 trial, 모델과 하네스의 공동 평가, 양방향 과제와 초기 환경 격리. 기억과 라우팅 비교 절차는 이를 적용한 설계 제안이다. 2026-10-09 확인, 2026-10-22 라우팅 평가에 사용한 원칙 재대조. 2026-11-03 반복 trial, 최종 상태와 환경 격리 원칙을 부분 대조해 웹 생성 비교에 적용했다.
 - [How Amazon uses Amazon Nova models to automate operational readiness testing for new fulfillment centers — AWS](https://aws.amazon.com/blogs/machine-learning/how-amazon-uses-amazon-nova-models-to-automate-operational-readiness-testing-for-new-fulfillment-centers/) — 2026-02-10 공개 사례의 ORT 절차와 평가 결과. 2026-10-09 확인.
 - [Anthropic’s Transparency Hub — Anthropic](https://www.anthropic.com/transparency) — Claude Sonnet 4.5의 Model Alignment and Evaluation Awareness 절
 - [OpenAI, Evaluating Large Language Models Trained on Code](https://arxiv.org/abs/2107.03374)

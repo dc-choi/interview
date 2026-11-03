@@ -46,6 +46,16 @@ Query type은 Query Function으로 만든 로직이다. metadata는 API name, di
 
 날짜와 UTC timestamp는 형식 문자열, long/decimal도 문자열이다. object reference는 primary key JSON 값, interface reference는 objectTypeApiName과 primaryKeyValue 조합, object type reference는 API name이다. object set은 RID 또는 definition으로 표현한다. EntrySet은 key/value 배열이며 struct는 JSON object다. 이 직렬화 계약을 일반 JavaScript number나 RID 문자열 하나로 통일하지 않는다.
 
+### V1 실행 계약을 Global Query와 구분한다
+
+2026-11-03 Execute Query 명세 부분 대조 기준, 전체 경로는 `POST /api/v1/ontologies/{ontologyRid}/queries/{queryApiName}/execute`다. 실행 요청이어도 OAuth2 operation scope는 `api:ontologies-read`이며, Global Query의 `api:functions-execute`와 혼용하지 않는다.
+
+요청 body는 객체이고 `parameters`는 선택적인 `ParameterId`에서 `DataValue`로의 map이다. map의 선택 표시가 함수에 필요한 입력까지 없애지는 않는다. 클라이언트는 Query type metadata의 required 조건과 입력을 대조한다(설계 제안).
+
+이 V1 명세에는 query parameter가 없고 body에는 `parameters`만 정의돼 있다. Global Query의 `branch`, `version`, `latestVersionResolution`을 이 경로에서도 지원한다고 가정하지 않는다. 응답의 필수 `value`와 DataValue의 `null` 값도 구분한다.
+
+이번 확인은 V1 실행의 경로, scope와 요청/응답 계약에 한정했다. 실제 호출과 다른 조회 endpoint는 재검증하지 않아 기존 `verified_at`을 유지한다.
+
 ## 출처
 
 - [Ontology basics](https://www.palantir.com/docs/foundry/api/ontology-resources/ontologies/ontology-basics)
@@ -53,9 +63,12 @@ Query type은 Query Function으로 만든 로직이다. metadata는 API name, di
 - [Filtering objects](https://www.palantir.com/docs/foundry/api/ontology-resources/objects/ontology-object-basics)
 - [Get outgoing link type](https://www.palantir.com/docs/foundry/api/ontology-resources/object-types/get-outgoing-link-type)
 - [Execute query](https://www.palantir.com/docs/foundry/api/ontology-resources/queries/execute-query)
+- [Execute Query (v1)](https://www.palantir.com/docs/foundry/api/v1/ontology-resources/queries/execute-query) — 2026-11-03 V1 실행 계약 부분 대조
+- [Execute Query (v2, Global)](https://www.palantir.com/docs/foundry/api/v2/functions-v2-resources/queries/execute-query) — 2026-11-03 Global Query의 scope와 버전 선택 인자 비교
 
 ## 관련 문서
 
 - [[Palantir-Ontology-V1-Search-API]]
 - [[Palantir-Ontology-V1-Action-API]]
 - [[Palantir-API-Client-Contract]]
+- [[Palantir-Query-Execution-API|Global Query의 버전 선택과 SSE 실행]]
