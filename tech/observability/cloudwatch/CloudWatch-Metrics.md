@@ -81,6 +81,19 @@ Namespace: MyApp/Performance
 
 메트릭 값에 음수가 있으면 백분위 통계를 사용할 수 없다. 요청별 지연의 p99가 필요하다면 평균값만 게시한 뒤 원래 요청 분포를 복원할 수 있다고 가정하지 않는다.
 
+## 서비스 quota 대비 사용률
+
+부분 검증(2026-11-04): 아래 내용은 CloudWatch와 Service Quotas 공식 문서로 대조했다. 사용량 지표와 quota를 연동하는 일부 서비스에 적용하며, 모든 서비스의 모든 quota가 이 방식을 지원하는 것은 아니다.
+
+1. CloudWatch의 Metrics에서 `Usage`와 `By AWS Resource`를 선택하고 대상 사용량 지표를 고른다.
+2. 선택한 지표 ID가 `m1`이면 metric math의 `SERVICE_QUOTA(m1)`으로 연결된 quota 값을 표시한다.
+3. `m1/SERVICE_QUOTA(m1)*100`으로 quota 대비 사용률을 계산한다. 원시 사용량과 백분율을 혼동하지 않는다.
+4. 사용률 식에 정적 임계 알람을 만들고 SNS topic을 연결한다. `Greater`와 `80`을 설정한 예시는 사용률이 80%를 **초과**할 때 ALARM 상태로 바뀐다. 80%는 예시이며 모든 워크로드의 필수 기준은 아니다.
+
+Service Quotas 콘솔에서도 CloudWatch 알람을 지원하는 quota를 선택해 알람을 만들 수 있다. 이 경로의 알람 생성과 알림 설정은 구분하며, 알림 동작은 별도로 확인한다. 알람 생성 자체를 quota 증액 완료로 해석하지 않는다.
+
+운영 점검 제안: 사용량 증가 속도와 증액 요청에 필요한 여유를 고려해 임계값을 정하고, [[CloudWatch-Logs-Alarms|알림 전달 경로]]를 확인한다. 이 절은 문서 대조이며 실제 AWS 계정에서 알람을 생성하거나 수신을 시험한 결과는 아니다. 기존 절 전체를 재검증하지 않았으므로 frontmatter 검증일은 유지한다.
+
 ## Embedded Metric Format (EMF) — 로그+메트릭 동시
 
 JSON 로그 안에 메트릭을 임베드하면 CloudWatch가 자동 파싱:
@@ -108,9 +121,16 @@ JSON 로그 안에 메트릭을 임베드하면 CloudWatch가 자동 파싱:
 
 ## 출처
 
+- [Visualizing your service quotas and setting alarms — AWS](https://docs.aws.amazon.com/AmazonCloudWatch/latest/monitoring/CloudWatch-Quotas-Visualize-Alarms.html)
+- [Service Quotas and Amazon CloudWatch alarms — AWS](https://docs.aws.amazon.com/servicequotas/latest/userguide/configure-cloudwatch.html)
 - [CloudWatch statistics definitions — AWS](https://docs.aws.amazon.com/AmazonCloudWatch/latest/monitoring/Statistics-definitions.html)
 - [Metrics concepts — AWS](https://docs.aws.amazon.com/AmazonCloudWatch/latest/monitoring/cloudwatch_concepts.html)
 - [Analyzing, optimizing, and reducing CloudWatch costs — AWS](https://docs.aws.amazon.com/AmazonCloudWatch/latest/monitoring/cloudwatch_billing.html)
 - [CloudWatch metrics for your Application Load Balancer — AWS](https://docs.aws.amazon.com/elasticloadbalancing/latest/application/load-balancer-cloudwatch-metrics.html)
 - [Monitoring Amazon RDS metrics with Amazon CloudWatch — AWS](https://docs.aws.amazon.com/AmazonRDS/latest/UserGuide/monitoring-cloudwatch.html)
 - [Amazon CloudWatch Pricing — AWS](https://aws.amazon.com/cloudwatch/pricing/)
+
+## 관련 문서
+
+- [[CloudWatch|CloudWatch 문서 인덱스]]
+- [[CloudWatch-Logs-Alarms|CloudWatch Logs와 Alarms]]
