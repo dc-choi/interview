@@ -39,6 +39,16 @@ GET /mypage?memberId=111
 
 권한 없는 사용자, 다른 tenant, 존재하지 않는 객체와 허용된 공유 객체를 나눠 검사한다. UI에서 버튼을 숨겼다는 사실이나 단건 조회 하나가 통과했다는 사실은 다른 접근 경로의 인가를 검증한 근거가 아니다.
 
+### RLS는 행 접근 정책이며 로그인 기능과 다르다
+
+Row-Level Security(RLS)는 데이터베이스에서 조회하거나 변경할 수 있는 행을 제한하는 수단이다. 인증 성공을 대신하지 않으며, 애플리케이션의 객체별 권한 규칙을 올바르게 정책에 반영해야 한다. OWASP API1:2023도 세션의 사용자 ID와 요청 ID를 비교하는 것만으로는 일부 사례만 막을 수 있고, 요청한 객체에 대한 해당 동작의 권한을 검증해야 한다고 설명한다.
+
+PostgreSQL 18에서는 테이블의 RLS를 활성화한 뒤 적용할 정책이 없으면 기본 거부한다. 다만 superuser와 `BYPASSRLS` 역할은 우회하고, 테이블 소유자도 보통 우회한다. 소유자에게 정책을 적용하려면 `FORCE ROW LEVEL SECURITY`를 사용할 수 있다. `TRUNCATE`와 `REFERENCES`처럼 테이블 전체에 적용되는 작업은 RLS 대상이 아니다.
+
+검증 제안: 관리자 계정으로 정책만 살피지 말고 실제 앱의 DB 역할로 다른 사용자와 tenant의 조회, 수정, 삭제를 시험한다. 정책의 존재와 실제 연결 역할에 대한 적용은 별도 확인 사항이다. RLS를 모든 API 기능 권한의 대체물로 취급하지 않는다.
+
+부분 검증(2026-11-04): 이 절의 RLS 범위와 우회 조건은 PostgreSQL 18 공식 문서, 객체별 동작 인가는 OWASP API1:2023과 대조했다. 실제 DB와 사고 사례는 검사하지 않았으며 기존 검증일은 유지한다.
+
 ## 실제 사례 — 대규모 API 인가 유출
 
 미용의료 플랫폼 강남언니(운영사 힐링페이퍼)는 2026년 상담 내역 조회 API의 비정상 접근으로 약 21만 9천 명의 개인정보가 유출됐다. 이름과 연락처를 넘어 병원과 의사명, 시술 내역, 결제 정보까지 응답에 담겼다.
@@ -68,6 +78,8 @@ Q. 남의 주문을 요청하면 403과 404 중 무엇으로 응답하나?
 2026-10-12에는 403 대신 404로 대상의 존재를 숨기는 응답을 RFC 9110에, IDOR의 OWASP 분류(Top 10:2025 A01 Broken Access Control, API Security Top 10 2023 API1 BOLA)를 OWASP 공식 페이지에 대조했다. 사고 사례는 이번에도 검증 범위에서 제외했다.
 
 - [OWASP Cheat Sheet Series, Authorization Cheat Sheet](https://cheatsheetseries.owasp.org/cheatsheets/Authorization_Cheat_Sheet.html)
+- [OWASP API Security Top 10, API1:2023 Broken Object Level Authorization](https://api-security.owasp.org/editions/2023/en/0xa1-broken-object-level-authorization/)
+- [PostgreSQL 18, Row Security Policies](https://www.postgresql.org/docs/18/ddl-rowsecurity.html)
 - [OWASP Top 10:2025, A01 Broken Access Control](https://top10.owasp.org/2025/A01_2025-Broken_Access_Control/)
 - [OWASP API Security Top 10, Top 10 API Security Risks – 2023](https://api-security.owasp.org/editions/2023/en/0x11-t10/)
 - [RFC 9110, 403 Forbidden](https://www.rfc-editor.org/rfc/rfc9110.html#name-403-forbidden)

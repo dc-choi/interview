@@ -10,6 +10,16 @@ aliases: ["Autopilot의 관측 범위와 재실행"]
 
 Autopilot은 automation, Action/Logic/function과 사람의 Workshop 작업을 graph/Kanban으로 연결한다. Workbench의 모델, 관측 가능한 이력과 실제 execution을 나눠 확인한다. 많은 automation은 browser memory와 렌더링에 부담을 줄 수 있다.
 
+부분 검증(2026-11-04): Overview와 Dependency graph view의 객체 탐색, 과거 경로와 resource activity 설명을 대조했다. 아래의 새 탐색 절에 해당하며 다른 기능 전체의 검증일은 유지한다.
+
+## 문제 객체에서 실행 이력으로 좁힌다
+
+Workbench는 객체 상태와 워크플로 구조를 살피는 화면이고, Automation events는 개별 실행 로그와 trace를 조사하는 화면이다. Workbench에서 객체 제목이나 RID로 검색할 수 있으며 검색 단축키는 macOS의 `Cmd+F`, Windows의 `Ctrl+F`다. 선택한 객체에 연결된 객체들로 workbench를 필터링할 수도 있다.
+
+Graph에서 객체를 선택하면 거쳐 온 state, 단계마다 처리한 automation, 상태 전이의 순서와 시각을 과거 경로로 볼 수 있다. 현재 실행 중임을 나타내는 점선과 node 강조는 이 과거 경로와 구분한다. Resource activity panel에서는 특정 자원이 만든 객체 생성, 삭제와 변경을 따라가 속성 변경, 귀속 사용자와 trace를 확인한다. 해당 object type의 edit history 활성화가 전제다.
+
+운영 적용 제안: 문제 객체를 찾은 뒤 과거 경로로 지연 구간을 좁히고, 해당 실행의 event와 trace를 대조한다. 화면에 표시된 관계나 현재 실행 표시만으로 전체 처리 완료를 판정하지 않는다.
+
 ## 발견 가능한 관계가 전체 관계와 같지는 않다
 
 Object type/automation에서 시작해 제안된 관련 automation을 추가한다. State는 condition/effect에서 추론하거나 수동 정의하고 type/filter와 display를 나눠 구성한다. Graph의 Remove from workbench는 자원을 workflow 화면에서 빼는 동작이며 실제 automation 삭제가 아니다.
