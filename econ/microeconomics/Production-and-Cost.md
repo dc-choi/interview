@@ -57,6 +57,16 @@ MC가 ATC보다 낮으면 평균을 끌어내려 ATC가 하락하고, 높으면 
 
 이는 2026-10-14 OpenStax의 생산기술 선택과 비용곡선 이동 설명을 적용한 계산 예다. 실제 공정의 생산속도, 품질이나 비용 절감률을 검증한 수치는 아니다. 설비 용량, 가동 중단과 재작업 비용이 다르면 그 조건을 넣어 다시 비교한다.
 
+### 메모리 생산은 웨이퍼 수와 정상 제품의 용량을 나눠 본다
+
+생산량의 단위를 먼저 정한다. 같은 수의 웨이퍼를 투입해도 한 장에서 얻는 정상 제품의 저장 용량이 달라지면 비트 기준 생산량은 달라질 수 있다. 공정 전환을 분석할 때 투입량 감소와 산출량 감소를 같은 사건으로 취급하지 않는다.
+
+가상의 동일 기간 모형에서 웨이퍼 100장이 100TB를 만들다가 장당 정상 제품 용량이 20% 증가했다고 하자. 투입을 90장으로 줄여도 `90 × 1.2 = 108TB`다. 투입은 10% 감소하고 산출 용량은 8% 증가한다. 이 계산은 수율을 포함한 장당 정상 산출이 실제로 개선되고 같은 기간 안에 생산을 마쳤다는 가정이다. 처리 시간이나 공정 중 대기 물량까지 검증한 생산 예측은 아니다.
+
+실제 기술 변화의 사례로 삼성전자는 2024-04-23 9세대 V-NAND 발표에서 8세대보다 비트 밀도를 약 50% 높였다고 설명했다. 이는 해당 제품의 밀도에 관한 제조사 발표다. 특정 공장의 분기 생산량, 판매 출하량이나 이익이 50% 늘었다는 자료가 아니며, 2026-11-03 공식 발표를 대조한 범위도 여기에 한정한다.
+
+수급 판단에는 웨이퍼 투입량, 정상 제품의 비트 생산량과 고객에게 출하한 물량을 각각 확인한다(분석 제안). 밀도 개선을 생산 증가율로 바로 대입하지 않고 공정 전환 시점, 수율, 처리 시간과 제품 구성을 함께 본다. 설비 변화의 경제적 효과는 이 산출 변화와 비용을 연결해 판단하며, 특정 목표 주가의 타당성은 별도 평가가 필요하다.
+
 ## 7. 매몰비용과 조업중단
 
 - **매몰비용 무시 원칙**: 이미 써서 회수 못 하는 돈은 앞으로의 결정에서 빼야 한다. 과거 투자가 아까워 손해 나는 사업을 계속 끌고 가는 대표적 함정이 매몰비용 오류(콩코드 오류라고도 한다)다.
@@ -132,6 +142,7 @@ MC가 ATC보다 낮으면 평균을 끌어내려 ATC가 하락하고, 높으면 
 
 ## 출처
 
+- [Samsung Electronics Begins Industry’s First Mass Production of 9th-Gen V-NAND — Samsung Newsroom](https://news.samsung.com/global/samsung-electronics-begins-industrys-first-mass-production-of-9th-gen-v-nand) — 2024-04-23 발표, 2026-11-03 세대 간 비트 밀도 비교 대조. 웨이퍼 투입과 산출의 계산은 가정 예시다.
 - [OpenStax, Evaluate and Determine Whether to Make or Buy a Component](https://openstax.org/books/principles-managerial-accounting/pages/10-3-evaluate-and-determine-whether-to-make-or-buy-a-component) — 2026-10-15 관련 비용, 생산 용량과 공급 의존 조건 대조
 - [OpenStax, Identify Relevant Information for Decision-Making](https://openstax.org/books/principles-managerial-accounting/pages/10-1-identify-relevant-information-for-decision-making) — 선택 간 차이와 회피 가능한 비용
 - [OpenStax, Evaluate and Determine Whether to Accept or Reject a Special Order](https://openstax.org/books/principles-managerial-accounting/pages/10-2-evaluate-and-determine-whether-to-accept-or-reject-a-special-order) — 여유 용량과 추가 비용, 기존 고객에 미치는 영향

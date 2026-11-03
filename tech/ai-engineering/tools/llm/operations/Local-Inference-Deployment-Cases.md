@@ -1,7 +1,7 @@
 ---
 tags: [ai, local-llm, moe, inference, distributed, mlx, rdma]
 status: done
-verified_at: 2026-10-27
+verified_at: 2026-11-03
 category: "AI엔지니어링(AIEngineering)"
 aliases: ["Local Inference Deployment Cases", "Janas", "Apple Minions", "Uzu", "LFM2.5-24B-A2B", "Muse Spark Open", "MLX Distributed Inference", "JACCL", "PS5LM"]
 ---
@@ -89,6 +89,16 @@ Mirai가 공개한 벤치마크(2026-10-18 측정, Apple M5 Max 128GB, Uzu 0.6.9
 
 ## 로컬 에이전트 모델 사례
 
+### Saluki: 양자화 크기와 도구 호출 평가를 나누어 읽는다
+
+2026-11-03 공개 모델 카드 대조 기준, Underdog Saluki 27B 1.0은 Qwen3.8-27B 기반의 7.89GB `IQ2-mix` GGUF다. 모델 카드는 별도 포크가 아닌 기본 llama.cpp 실행을 안내하며, 빠른 도구 호출에는 thinking을 끄고 temperature를 0으로 설정하도록 권한다. 파일 크기는 실행 중 필요한 전체 메모리와 다르므로 KV 캐시, 중간값과 이미지 입력용 추가 파일을 별도로 계산한다.
+
+- **같은 평가로 직접 비교한 부분:** 제작자의 Underdog Bench는 평가 전에 고정한 BFCL v4 120개 과제다. Saluki는 88개, 전체 크기 모델은 84개를 통과했다고 보고한다. 제작자가 직접 실행한 전체 크기 모델에는 같은 하네스와 설정을 썼다고 명시한다.
+- **다른 공개 평가에서 가져온 부분:** AIME 2025 `avg@4`는 Saluki 79.2, 전체 크기 모델 96.7이지만 후자는 다른 하네스의 공개 점수다. 이 차이를 같은 조건에서 양자화만 바꾼 손실로 확정하지 않는다.
+- **남은 한계:** 제작자는 120개 과제가 작은 표본이며 몇 개 과제의 차이는 실행 간 변동일 수 있다고 설명한다. 병렬 호출 응답 약 5분의 1에 작은 형식 오류가 있다는 제한도 적는다. 도구 호출 점수의 우위를 일반 추론 능력이나 오류 없는 실행으로 확대하지 않는다.
+
+위 수치는 제작자 보고이며 이 문서에서 재현하지 않았다. 장비 선택에는 가중치 적재뿐 아니라 실제 문맥 길이의 메모리, 프리필 지연과 도구 호출 성공률을 함께 측정한다(적용 제안). 12GB GPU에서의 실행 속도와 긴 문맥 지원에 관한 영상의 커뮤니티 사례는 이번 검증 범위에 포함하지 않았다.
+
 ### LFM2.5-24B-A2B
 
 2026-10-16 Liquid AI 공식 발표 확인 기준이다. 전체 24B 중 토큰당 2B를 활성화하는 공개 가중치 MoE이며 기기 내 도구 호출과 에이전트 작업을 겨냥한다. 제공 발췌는 사고 토큰 생성과 131,072토큰 문맥을 소개한다. 이 세부 한도는 모델 카드 본문 접근이 실패해 직접 대조하지 못했다.
@@ -109,6 +119,7 @@ Mirai가 공개한 벤치마크(2026-10-18 측정, Apple M5 Max 128GB, Uzu 0.6.9
 
 ## 출처
 
+- [Underdog Saluki 27B 1.0 — ConwayResearch](https://huggingface.co/ConwayResearch/Underdog-Saluki-27B-1.0) — 2026-11-03 파일 형식과 크기, 실행 설정, 자체 평가와 외부 공개 점수의 구분, 제한 사항 대조
 - [Janas — prabanta-dev](https://github.com/prabanta-dev/janas)
 - [Minions: A Dynamic and Distributed Virtual GPU Cloud Built on Idle Apple Silicon Devices — Apple Machine Learning Research](https://machinelearning.apple.com/research/distributed-gpu-cloud)
 - [uzu — trymirai](https://github.com/trymirai/uzu)
