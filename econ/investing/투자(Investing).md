@@ -19,6 +19,8 @@ aliases: ["투자(Investing)", "Investing Map"]
 - [[Investing-Principles|투자의 기본 원칙]] — 복리, 인플레이션과 자금의 목적, 위험과 수익, 시간지평, 비용 관리 ✅
 
 ### 2. 설계
+- [[Memory-Semiconductor-Cycle|메모리와 반도체 장비의 업황 구분]] — 가격 수준과 상승률, 제조사와 장비사의 지표, 공시와 주가 예측의 경계
+- [[ISA-Renewal-and-Reopening|ISA 유지와 재가입 비교]] — 세후 잔액과 재납입 한도, 일부 인출, 자격과 만기 확인
 - [[Asset-Allocation-Diversification|자산배분과 분산투자]] — 자산군, 상관관계, 리밸런싱, 생애주기 배분 ✅
 - [[Valuation|밸류에이션]] — 가격과 가치, DCF의 현금흐름과 할인율 대응, 재투자와 ROIC, PER과 PBR, PEG의 성장률과 위험, 경기민감 기업의 정상 이익과 회복 시점, 안전마진 ✅
 - [[Growth-Quality-and-Scenario-Valuation|공시로 읽는 성장의 질과 시나리오 가치평가]] — 비교 범위와 표 사이 검산, 광고비와 매출의 인과 해석, 미공시 지표와 선수수익 같은 대리 지표, 사전 반증 조건, 시나리오 확률 가중 가치와 잔존가치 민감도, 현금 전환과 비지배지분 풋옵션 ✅

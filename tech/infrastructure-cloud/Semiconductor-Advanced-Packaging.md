@@ -36,6 +36,14 @@ EMIB는 bridge에 연결되는 영역에는 촘촘한 microbump pitch를, 나머
 
 비교할 때는 실리콘 면적의 크기뿐 아니라 bridge가 들어가는 층, die의 접점 배치와 기판으로 이어지는 경로를 확인한다. 이는 구조를 읽는 점검 기준이다. 높이 정렬 허용오차, 열 변형과 조립 수율의 정량 비교는 이 자료만으로 확인하지 않았다.
 
+## HBM의 base die와 패키지 기판을 구분한다
+
+HBM은 DRAM die를 적층하고 TSV로 수직 연결하며, 아래쪽 base die는 GPU와 연결되는 역할을 한다. Base die는 기능을 가진 반도체 die이므로 패키지 기판이나 die 사이를 연결하는 interposer와 같은 부품으로 부르지 않는다.
+
+2026-11-04 대조한 SK hynix의 2024-04-19 발표는 HBM3E까지 자체 기술로 base die를 만들었고, HBM4에는 TSMC의 첨단 로직 공정을 도입할 계획이라고 설명한다. 목적은 제한된 면적에 기능을 더 넣고 고객의 성능과 전력효율 요구에 맞춘 HBM을 만드는 것이었다. 이 과거 발표의 계획을 현재 제품의 양산 완료나 고객별 채택 증거로 바꾸지 않는다.
+
+두 회사의 협력에는 HBM과 CoWoS 통합 최적화도 포함됐다. 따라서 검토할 때 메모리 적층, base die의 설계와 제조, GPU와 HBM을 묶는 패키징을 나눠 본다. 파운드리 공정 채택 사실만으로 설계 소유권, 구체적 GPU 기능의 이전이나 후공정 외주 물량을 확정할 수는 없다. 고객별 마진과 공급사 주가의 변화도 이 기술 발표가 입증하지 않는다.
+
 ## 생산시설과 제품 준비 완료를 구분한다
 
 Intel은 2024-01-24 뉴멕시코 Rio Rancho의 Fab 9 개장을 발표했고, Fab 9와 Fab 11x를 자사의 3D 첨단 패키징 양산 거점으로 설명했다. 이는 해당 시설과 기술 역량의 근거다. 개별 외부 고객 제품의 양산 승인, 생산 물량과 납기를 입증하는 자료는 아니다.
@@ -51,6 +59,7 @@ Intel은 2024-01-24 뉴멕시코 Rio Rancho의 Fab 9 개장을 발표했고, Fab
 
 ## 출처
 
+- [SK하이닉스, TSMC와 손잡고 HBM 기술 리더십 강화 — SK hynix](https://news.skhynix.co.kr/skhynix-tsmc-hbm4-mou/) — 2024-04-19 발표. 2026-11-04 영문 공식 본문과 한국어 검색 발췌로 base die의 역할, HBM3E까지의 자체 기술과 HBM4 공정 협력 계획 확인. 한국어 페이지 직접 열람은 403 응답이었다. 기존 패키징 절의 확인일은 유지.
 - [Intel, EMIB Technology Brief](https://www.intel.com/content/dam/www/central-libraries/us/en/documents/2025-07/emib-product-brief.pdf) — 2026-11-03 1쪽 본문의 bridge 매립 절차와 영역별 bump pitch 설명 대조. 기존 기술과 시설 절의 확인일은 유지.
 - [TSMC, CoWoS](https://3dfabric.tsmc.com/english/dedicatedFoundry/technology/cowos.htm) — 2026-11-03 CoWoS-L의 RDL 기반 interposer, LSI와 신호 및 전력 배선 구조 대조.
 - [Intel, Advanced Packaging Innovations](https://www.intel.com/content/www/us/en/foundry/packaging.html) — 2026-10-30 EMIB, Foveros-S/R, Foveros Direct와 EMIB 3.5D 연결 구조 대조.
