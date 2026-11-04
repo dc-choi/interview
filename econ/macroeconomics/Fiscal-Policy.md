@@ -193,4 +193,6 @@ ECB 이사회는 EU 재정 체계 준수, 심각한 거시 불균형 부재, 재
 - [[Business-Cycle|경기순환]] — 재정정책이 대응하는 리듬
 - [[GDP-Economic-Growth|GDP와 경제성장]] — 정부지출 G는 GDP의 한 축
 - [[Fiscal-Policy-Transfer-Design|이전지출의 설계와 재원]] — 이전지출의 대상, 지급 수단, 재원과 평가, 한국 사례와 로마 사료
+- [[Wealth-Tax-Design|부유세의 설계와 쟁점]] — 순자산 과세의 유형, 기준일, 평가, 유동성과 이주 대응
+- [[Pension-Financing-Generational-Burden|공적연금 재정과 세대 간 부담]] — 프랑스 연금 지출과 재원 구성, 2023년 개혁의 유예, 연금 조정 수단의 거시 효과
 - [[거시경제(Macroeconomics)]] — 지도

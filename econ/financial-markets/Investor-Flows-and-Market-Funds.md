@@ -75,6 +75,7 @@ verified_at: 2026-10-26
 5. **잠정치와 확정치:** 장중 집계와 장 마감 직후 집계는 나중 집계와 달라질 수 있다. 한국은행 월간 자료도 추정치나 속보치로 표시된다. 날짜와 집계 시각을 함께 적는다.
 6. **같은 돈인지:** 자사주 매입과 특정 구분의 순매수를 연결하려면 종목, 기간, 금액과 취득 방법(장내 직접 매수, 신탁계약)을 공시와 맞춘다.
 7. **다음 단계의 흐름:** 해외 유출은 한국은행 증권투자자금, 국제수지 금융계정(증권투자와 기타투자)과 환율로, 개인 자금의 이동은 투자자예탁금과 은행 수신으로 따로 좁혀 본다. 어느 통계도 개별 자금의 경로를 단정하지는 못한다.
+8. **산업 노출과 금융여건:** 순매도가 몰린 종목들이 같은 해외 수요와 자금 조건에 묶여 있는지 본다. IMF의 2026년 10월 세계경제전망은 HS 코드로 정한 AI 하드웨어 품목군의 2025년 무역수지 절댓값을 GDP 대비로 잰 노출 지표를 구간으로 그렸고(대만은 10% 초과 구간, 한국은 2.5% 이상이며 그림상 2.5~5.0% 구간으로 보이나 정확한 구간은 확인하지 못함), AI 관련 이익과 생산성 기대가 재평가되면 투자 위축, 주가 조정과 금융여건 긴축이 기술 공급망 통합이나 기술주 보유를 통해 다른 경제로 번질 수 있다고 봤다. 같은 보고서는 여러 나라 국채 금리를 올린 요인으로 물가 재상승, 예상 정책금리 경로와 재정 우려를 들고, AI 투자 자금을 조달하려는 기술기업과의 자금 경쟁 등이 압력을 더했을 수 있으며 선진국 지표금리가 수십 년 만의 고점에 올랐다고 적었다. 10월 외국인 순매도가 삼성전자와 SK하이닉스 두 종목에 몰린 것(5절)은 이 노출 구조와 맞지만, 순매수 집계만으로 급락 원인을 이 경로로 단정하지 않는다(해석). AI 인프라 사업자의 조달과 만기 구조는 [[AI-Infrastructure-Capital-Cycle#고객 계약 기간과 차입 만기를 나란히 놓는다|AI 인프라 투자와 자본 순환]]에서 따로 확인한다.
 
 수급 숫자를 매매 규칙으로 바꿀 때의 점검은 [[Backtesting-Pitfalls#5. 예시: 승률과 평균 수익률만 있는 결과|수급 조건 백테스트]]를, 실적이 좋은데 주가가 내린 날의 해석은 [[Stocks#좋은 실적과 기대를 넘는 실적은 다르다|기대와 실적의 차이]]와 [[Valuation#이익 성장과 평가배수 변화를 나눠 계산한다|이익과 평가배수의 분해]]를 따른다.
 
@@ -103,6 +104,8 @@ verified_at: 2026-10-26
 
 - [2026년 9월 이후 국제금융, 외환시장 동향 — 한국은행](https://www.bok.or.kr/portal/bbs/B0000502/view.do?menuNo=201265&nttId=11065634) — 2026-10-16 보도자료. 외국인 증권투자자금의 결제일 기준, 상장주식 장내외 거래와 IPO 포함, ETF 등 제외, 한국은행 추정 주석과 2026년 1~9월, 9월 주식자금, 원/달러 기말 환율과 하락 요인 대조
 - [2026년 9월 금융시장 동향 — 한국은행](https://www.bok.or.kr/portal/bbs/P0002017/view.do?menuNo=200365&nttId=11065587) — 2026-10-15 보도자료. 은행 수신의 수시입출식예금과 정기예금 증감, 비거주자예금 제외 주석, 속보치 단서 대조
+- [World Economic Outlook, October 2026: Resilience Under Strain, Urgent Choices, Chapter 1 — IMF](https://www.imf.org/-/media/files/publications/weo/2026/october/english/ch1.pdf) — 2026-10-13 발표. 2026-11-04 1~2쪽의 기술 가치사슬 참여와 경기 차별화, AI 기대 재평가에 따른 투자 위축과 금융여건 긴축 경로, 국채 금리 상승 요인과 선진국 지표금리, 그림 1.1의 AI 기술 사이클 무역 노출 정의(HS 코드 품목군의 2025년 무역수지 절댓값, GDP 대비)와 한국, 대만 구간 판독
+- [World Economic Outlook, October 2026, Executive Summary — IMF](https://www.imf.org/-/media/files/publications/weo/2026/october/english/execsum.pdf) — 2026-10-13 발표. 2026-11-04 AI 기대 재평가가 주가 조정과 금융여건 긴축을 거쳐 기술 공급망 통합이나 기술주 보유를 통해 다른 경제로 번질 수 있다는 위험 서술 대조
 - [2023년 ETF, ETN시장 결산 및 주요 특징 분석 — 한국거래소](https://www.smallake.kr/wp-content/uploads/2024/01/%EB%B3%B4%EB%8F%84%EC%9E%90%EB%A3%8C2023%EB%85%84ETF%C2%B7ETN%EC%8B%9C%EC%9E%A5%EA%B2%B0%EC%82%B0%EB%B0%8F%EC%A3%BC%EC%9A%94%ED%8A%B9%EC%A7%95%EB%B6%84%EC%84%9D.pdf) — 2024-01-04 보도자료의 외부 게시 사본. ETF 투자자별 거래대금 표의 기관(LP포함) 표기 대조
 - [Korea Exchange, General Procedures of Trading](https://global.krx.co.kr/contents/GLB/06/0602/0602010201/GLB0602010201T1.jsp) — T+2 결제 대조
 - [금융투자협회, 증시자금추이](https://freesis.kofia.or.kr/stat/FreeSIS.do?parentDivId=MSIS10000000000000&serviceId=STATSCU0100000060) — 투자자예탁금(장내파생상품 거래예수금 제외)과 장내파생상품 거래예수금의 별도 항목. 동적 화면이라 검색 색인의 항목명과 2026-10-13 잔액을 보도 수치와 대조
@@ -130,6 +133,7 @@ verified_at: 2026-10-26
 - ["국장에 질렸다"…예탁금 90조 붕괴, 신용융자 감소 — 데일리안](https://www.dailian.co.kr/news/view/1704937/%EA%B5%AD%EC%9E%A5-%EC%A7%88%EB%A0%B8%EB%8B%A4%EC%98%88%ED%83%81%EA%B8%88-90%EC%A1%B0-%EB%B6%95%EA%B4%B4%EC%8B%A0%EC%9A%A9%EC%9C%B5%EC%9E%90-2026) — 2026-10-22. 10-21 투자자예탁금 대조
 - [외국인 208조 매도세, 올해만 특별한걸까…최근 3년 외인 투자 방향은? — 이투데이](https://www.etoday.co.kr/news/view/2639052) — 2026-10-23. 연초 이후 외국인, 개인, 기관, 기타법인 순매수 대조
 - [외국인 순매도 200조, 털린건 개미인가 — YouTube, 슈카월드](https://www.youtube.com/watch?v=GMC_8EaaD4Q) — 2026-10-19 공개. 연초 이후 외국인 순매도와 기타법인, 자사주 매입, 투자자예탁금과 정기예금 논점의 계기이며 수치는 이 목록의 자료로 대조
+- [코스피 6000 붕괴, 우리는 어디로 가는가 — YouTube, 슈카월드](https://www.youtube.com/watch?v=n1Kr-uSnvv4) — 2026-10-18 공개 라이브(제목의 나머지 주제는 생략). 6절 8번의 고금리와 AI 자금 조달 논점의 계기이며 사실은 이 목록의 IMF 자료로 대조
 - [삼성전자, SK하이닉스 급락, 좋은 실적보다 시장이 더 걱정한 3가지 — YouTube, 경제학 똑똑](https://www.youtube.com/watch?v=SYH-jlRy0Ck) — 2026-10-19 공개. 순매수와 체결 가격의 구분, 10-15와 10-16 수치 논점의 계기
 - [내년엔 2가지만 따져라 의외로 여기서 지갑 불어납니다 (풀버전) — YouTube, 와이스트릿](https://www.youtube.com/watch?v=RUrLLR9QnLE) — 2026-10-15 공개 대담. ETF 투자자 구분과 LP 문답의 계기(제목의 출연자 이름은 생략)
 
@@ -138,6 +142,7 @@ verified_at: 2026-10-26
 - [[Market-Stabilization-Mechanisms|시장 안정화 장치]]
 - [[Stocks|주식]]
 - [[Valuation|밸류에이션]]
+- [[AI-Infrastructure-Capital-Cycle|AI 인프라 투자와 자본 순환]]
 - [[Exchange-Rates-Balance-of-Payments|환율과 국제수지]]
 - [[Backtesting-Pitfalls|백테스트의 함정]]
 - [[금융시장(Financial Markets)|금융시장 지도]]

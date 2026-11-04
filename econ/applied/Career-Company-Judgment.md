@@ -66,6 +66,7 @@ aliases: ["이직, 회사 판단 체크리스트", "Career and Company Judgment"
 6절의 흑자 여부와 런웨이 항목은 공개 자료로 상당 부분 채울 수 있고, 같은 자료로 회사가 풀어야 할 문제를 가설로 세울 수도 있다. 채용 과제나 해커톤에서 회사 분석을 요구받을 때 쓰는 순서다.
 
 1. **공시 확보**: DART에서 사업보고서(상장사 등)와 감사보고서를 받는다. 외부감사 대상 회사의 감사보고서는 법에 따라 일반에 열람되므로 비상장 스타트업도 찾을 수 있는 경우가 많다. 최소 3개년의 매출, 매출원가, 판매비와관리비, 영업이익, 영업현금흐름, 재고자산을 표로 옮긴다.
+   - **해외 법인**: 공개 범위는 설립 국가의 등기 기관 규칙을 따른다. 싱가포르 회사의 상태와 등록 주소 같은 기본 정보는 Bizfile 무료 검색으로 확인하고, 더 자세한 정보는 ACRA의 유료 정보 상품으로 조회한다(2026-11-04 확인한 안내 기준 Business Profile은 S$5.50이며 등록번호, 등록일과 직위 보유자 같은 정보를 담는다). 2026-11-04 ACRA 안내 기준 주주(member)가 20명 미만(경계값은 회사법 정의로 확인)이고 어떤 법인도 주식에 직간접으로 실질적 이익을 갖지 않는 비공개 회사(EPC)는 지급능력이 있으면 재무제표 제출 의무가 없고(자발적 제출은 가능), 연차 신고 때 온라인 지급능력 선언을 한다. 지급능력이 있는 EPC의 신고에 재무제표가 없다는 것은 제출 의무가 면제됐다는 뜻이지 재무제표를 작성하지 않았다는 뜻이 아니다. 휴면 회사 면제는 회계연도 중 어느 때에도 총자산 S$50만 이하(모회사는 연결 기준), 설립 이후나 직전 회계연도 말 이후 계속 휴면, 상장사나 상장사의 자회사가 아님 같은 회사법 제201A조의 요건을 모두 갖춘 회사(dormant relevant company)에 적용되며 작성 의무까지 면제한다. 지급능력이 없는 EPC나 EPC가 아닌 회사는 휴면 회사 면제 같은 다른 예외에 해당하지 않으면 재무제표를 낸다.
 2. **투자 이력**: 혁신의숲, THE VC 같은 스타트업 투자 정보 서비스로 라운드 시점과 투자사를 본다. 민간 집계라 공시로 확인되지 않는 금액은 추정치로 표시한다.
 3. **인풋 대비 아웃풋**: 매출 증가분과 판관비 증가분을 나란히 놓는다. 비용이 매출보다 빨리 늘었다면 어느 항목(광고선전비, 인건비, 지급수수료)이 늘었는지 주석에서 찾는다. 재고가 매출보다 빨리 늘면 판매 채널이나 수요 예측을 의심한다.
 4. **외부 요인 분리**: 같은 업종 공시 기업들의 같은 해 실적과 비교한다. 업계 평균은 나아졌는데 이 회사만 나빠졌다면 개별 요인 가설이 힘을 얻는다.
@@ -84,6 +85,8 @@ aliases: ["이직, 회사 판단 체크리스트", "Career and Company Judgment"
 - [금융감독원 DART, 공시서류검색](https://dart.fss.or.kr/dsab001/main.do)
 - [금융감독원 DART, 기업공시 길라잡이 정기보고서](https://dart.fss.or.kr/info/main.do?menu=210)
 - [국가법령정보센터, 주식회사 등의 외부감사에 관한 법률 제23조(감사보고서의 제출 등)](https://www.law.go.kr/%EB%B2%95%EB%A0%B9/%EC%A3%BC%EC%8B%9D%ED%9A%8C%EC%82%AC%EB%93%B1%EC%9D%98%EC%99%B8%EB%B6%80%EA%B0%90%EC%82%AC%EC%97%90%EA%B4%80%ED%95%9C%EB%B2%95%EB%A5%A0/%EC%A0%9C23%EC%A1%B0)
+- [ACRA, Financial statements: Filing requirements & exemptions](https://www.acra.gov.sg/manage/companies/legal-requirements-common-offences/filing-financial-statements-in-xbrl-format/requirements-exemptions/)
+- [ACRA, Understanding types of ACRA information products](https://www.acra.gov.sg/resources/buying-business-information/types-of-acra-information-products/)
 - [기업 분석 문제 정의 9단계 — Threads, gptaku_ai](https://www.threads.com/@gptaku_ai/post/DaB8awXE4y9)
 - [채용 해커톤 과제 공개자료 분석 사례 — Threads, gptaku_ai](https://www.threads.com/@gptaku_ai/post/DaAJAq8E5iW)
 

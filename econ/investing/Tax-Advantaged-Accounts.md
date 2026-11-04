@@ -196,5 +196,6 @@ ISA가 줄이는 세금은 그 자산을 계좌 밖에 뒀다면 냈을 세금�
 - [[Investing-Principles|투자의 기본 원칙]] — 비용과 세금이 복리로 새는 구조
 - [[Asset-Allocation-Diversification|자산배분과 분산투자]] — 계좌와 별개로 정하는 자산 비중
 - [[Investment-Strategies|투자 전략]] — 적립식 투자와 패시브 상품
+- [[Tax-Advantaged-Accounts-Income-Types|투자소득의 구분과 건강보험료]] — 계좌 밖 보유 방식별 소득 구분과 건강보험료 반영
 - [[Solo-Business-Tax-Checklist|1인 사업자와 프리랜서가 놓치기 쉬운 세금 제도]] — 종합소득세 신고와 공제
 - [[투자(Investing)]] — 지도

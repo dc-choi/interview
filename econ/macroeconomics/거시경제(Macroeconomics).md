@@ -16,7 +16,7 @@ aliases: ["거시경제(Macroeconomics)", "Macroeconomics Map"]
 ## 토픽 지도
 
 ### 1. 생산과 성장
-- [[GDP-Economic-Growth|GDP와 경제성장]] — 국내총생산, 명목 vs 실질, 성장률, 잠재성장률, 복리의 힘 ✅
+- [[GDP-Economic-Growth|GDP와 경제성장]] — 국내총생산, 명목 vs 실질, 실질 GDI와 교역조건, 성장률, 잠재성장률, 복리의 힘, 분모별 성장률과 일본 저성장의 인구 구조와 생산성 경로 ✅
 - [[General-Purpose-Technology-Productivity|범용 기술의 생산성 지연과 J커브]] — 생산성 역설, 전기화의 group drive와 unit drive, 무형 보완 투자와 측정 오차, 기술 기업과 나머지 기업의 AI 투자 성과, GDP-B와 WTA, 가치 창출과 회수 및 분배 ✅
 
 ### 2. 물가
@@ -27,7 +27,9 @@ aliases: ["거시경제(Macroeconomics)", "Macroeconomics Map"]
 - [[Interest-Rates-Monetary-Policy|금리와 통화정책]] — 중앙은행, 기준금리, 통화량, 양적완화, 전달 시차, 점도표와 정책 결정의 구분 ✅
 - [[Fiscal-Policy|재정정책]] — 정부 지출과 세금, 승수효과, 재정적자와 국가부채, 국채 바이백과 TGA, 구축효과 ✅
 - [[Fiscal-Policy-Transfer-Design|이전지출의 설계와 재원]] — 대상과 자격, 금액과 기간, 지급 수단, 재원과 분담, 평가로 나눠 읽는 틀, 한국 사례인 민생회복 소비쿠폰과 농어촌 기본소득 시범사업, 고대 사료로 본 로마의 곡물 배급 ✅
+- [[Wealth-Tax-Design|부유세의 설계와 쟁점]] — 정기와 일회성 부유세의 구분, 거주와 평가 기준일, 비상장 지분 평가와 부채 공제, 분할 납부와 유예, 이주와 배분, 미국 연방 직접세 쟁점, 2026 캘리포니아 Prop 40과 연방 S.4246 ✅
 - [[National-Transfer-Accounts|국민이전계정과 생애주기 적자]] — 소비와 노동소득의 차이인 생애주기 적자, 이를 메우는 공공이전, 민간이전과 자산재배분, 2024년 한국의 1인당 흑자와 적자 연령, 횡단면 자료의 해석 주의 ✅
+- [[Pension-Financing-Generational-Burden|공적연금 재정과 세대 간 부담]] — 부과방식의 균형식과 보험료, 급여, 개시 연령 손잡이, 손잡이별 거시 효과, 프랑스의 연금 지출과 2023년 개혁의 유예, 연령별 빈곤율의 프랑스와 한국 비교, 국민연금 2025년 개정과 기금 전망의 가정 ✅
 
 ### 4. 고용
 - [[Unemployment-Employment|실업과 고용]] — 실업률과 보완 지표, 자연실업률의 추정, 필립스 곡선의 조건과 오쿤의 법칙 ✅

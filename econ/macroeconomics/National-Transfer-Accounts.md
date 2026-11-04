@@ -131,6 +131,7 @@ UN의 NTA 매뉴얼은 생애 초반과 후반에는 노동으로 생산하는 �
 ## 관련 문서
 
 - [[Fiscal-Policy-Transfer-Design|이전지출의 설계와 재원]] — 공공이전의 대상, 수단과 재원
+- [[Pension-Financing-Generational-Burden|공적연금 재정과 세대 간 부담]] — 연금이라는 공공이전의 균형식, 조정 수단과 세대별 부담, 프랑스와 한국 비교
 - [[Personal-Cash-Flow-Planning|개인 현금흐름과 목적별 자금 관리]] — 개인의 수입, 지출과 순자산 계산
 - [[Asset-Allocation-Diversification|자산배분과 분산투자]] — 생애주기와 위험 감당 능력
 - [[거시경제(Macroeconomics)]] — 지도
