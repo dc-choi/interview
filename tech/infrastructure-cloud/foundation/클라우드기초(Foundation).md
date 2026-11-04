@@ -10,6 +10,7 @@ aliases: ["Cloud Foundation"]
 IaaS/PaaS/FaaS 구분, IaC, 클라우드 전환 전략 — 클라우드 추상화 계층, 선언적 인프라와 workload 이전 범위.
 
 ## 목차
+- [x] [[Virtual-Machines-and-Hypervisors|가상 머신과 하이퍼바이저]] — 자원 공유, Type 1/2, 라이브 마이그레이션과 장애 조치, VMware 스냅샷의 백업 경계
 - [x] [[Databricks-Compute-Planes|Databricks 제어와 연산 영역]] — classic과 serverless의 계정 경계, 저장 위치와 접근 권한, serverless 선택 전 제약과 네트워크 연결, 비용
 - [x] [[Cloudflare-Durable-Objects|Durable Objects]] — 객체별 상태와 실행, hibernation과 영속 저장, 트랜잭션과 셀프호스팅의 경계
 - [x] [[Internal-Developer-Platform|내부 개발자 플랫폼]] — 셀프서비스 범위, API 접수와 준비 완료, 부분 실패와 운영 책임

@@ -9,6 +9,7 @@ aliases: ["인프라&클라우드(Infrastructure&Cloud)", "Infrastructure & Clou
 
 ## 목차
 
+- [[Virtual-Machines-and-Hypervisors|가상 머신과 하이퍼바이저]] — 자원 공유, 실행 계층과 장애 범위, VMware 스냅샷과 백업
 - [[Databricks-Compute-Planes|Databricks 제어와 연산 영역]] — control plane, classic과 serverless compute의 배치와 책임
 - [[Cloudflare-Durable-Objects|Durable Objects]] — 객체별 상태와 실행, 메모리 수명, SQLite 트랜잭션과 셀프호스팅
 - [[Internal-Developer-Platform|내부 개발자 플랫폼]] — 반복 요청의 셀프서비스, 비동기 생성과 운영 책임
