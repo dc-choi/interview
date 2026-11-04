@@ -45,9 +45,14 @@ HSM도 허용된 요청의 업무 정당성은 판단하지 못한다. 침해된
 
 서명 검증은 해당 키가 승인한 바이트인지를 확인한다. 호출자, 목적지, 자산과 권한 위임까지 조직의 업무 정책을 만족한다는 증명은 아니다. 거래 서명기는 체인별 메시지 형식과 장기 권한 위임을 해석하고, 허용하지 않은 종류의 서명을 키 연산 전에 거부하도록 설계한다.
 
-TRM Labs의 2026-10-29 Binance 조사(수치 기준 10-30 00:30 UTC)를 2026-11-02 대조했다. 조사는 10개 체인에서 약 63억 6천만 달러의 이동과 대부분이 약 20분에 이뤄진 관측을 보고했다. Ethereum에서는 EIP-7702 위임, 다른 체인에서는 정상 서명 거래가 사용됐으며, 이를 hot-wallet 서명 인프라 침해 가능성으로 평가했다. TraderTraitor 귀속도 TRM의 높은 확신 평가이며 독립 확정으로 바꾸지 않는다. 온체인 서명만으로 키 탈취와 서명 서비스 악용 중 내부 원인을 구분할 수는 없다.
+TRM Labs의 2026-10-29 Binance 조사(수치 기준 10-30 00:30 UTC)를 2026-11-02 대조했다. 조사는 10개 체인에서 약 63억 6천만 달러의 이동과 대부분이 약 20분에 이뤄진 관측을 보고했다. Ethereum에서는 한 hot wallet에 EIP-7702 위임이 쓰였고, 다른 Ethereum hot wallet과 다른 체인에서는 위임 없는 정상 서명 거래가 쓰였으며, 이를 hot-wallet 서명 인프라 침해 가능성으로 평가했다. TraderTraitor 귀속은 TRM의 높은 확신 평가다. Tether의 2026-11-02 공지는 FBI가 북한을 공격 주체로 지목했다고 전하지만, FBI 경보 원문은 열람하지 못해 귀속 문구를 확인하지 않았다. 온체인 서명만으로 키 탈취와 서명 서비스 악용 중 내부 원인을 구분할 수는 없다.
 
-이 사례에서 도출한 점검은 지갑/체인별 서명 권한 분리, 예상하지 않은 위임의 탐지와 철회 준비다. 특정 HSM 사용이나 HSM 자체의 결함이 이 사고 원인이었다는 근거는 확인하지 않았다. 실제 거래와 내부 서명 환경은 시험하지 않았고 기존 HSM 구현 설명의 검증일은 유지한다.
+Binance의 사고 공지(2026-10-30~11-01)를 2026-11-04 대조했다. Binance는 10-29 20:05 UTC경 hot wallet이 침해돼 약 63억 달러 상당의 토큰 자산을 잃었다고 밝혔다. 초기 조사는 DevOps 엔지니어의 노트북이 침해돼 공격자가 서비스 컨테이너에 접근하고 무단 출금 거래를 제출했을 가능성을 제시했고, 후속 조사에서 추가 침해 지점을 발견했다고 밝혔다. 현 단계에서 지갑 개인키가 유출된 증거는 찾지 못했다고 했고, 사후 보고서는 조사가 끝난 뒤 낼 예정이다. 이 설명이 맞다면 공격자는 키를 빼내지 않고 서명을 요청하는 경로로 서명을 얻었을 수 있다. Ethereum의 EIP-7702 위임도 같은 경로로 서명됐다면 서명기가 출금 거래가 아닌 위임 메시지까지 서명한 것이다. 비추출 키만으로 막을 수 없는 서명 오라클 악용의 형태이지만 확정된 원인은 아니다(해석).
+
+- **동결은 속도 경쟁이다.** Binance는 입금을 유지한 채 출금만 중단했고, 법 집행기관, 블록체인 분석 업체, 자산 발행사와 업계 파트너와 함께 약 30억 달러를 온체인에서 동결했으며, 11-01부터 출금을 단계적으로 재개하는 일정을 공지했다. Tether는 해킹 30분 안에 15억 달러 이상의 USD₮를 동결했다고 밝혔다. 이는 Tether의 자체 설명이며, TRM이 관측한 첫 Tether 동결은 21:01 UTC라 시점이 맞지 않는다. TRM은 Tether가 주 수신 지갑의 USDT 9억 7,110만 개를 주 유출 37분 뒤인 21:01 UTC에, Circle이 같은 지갑의 USDC 8억 2,300만 개를 21:04 UTC에 동결했고, 10-30 00:30 UTC까지 Tether의 동결이 약 17억 7천만 USDT, 온체인 동결 전체가 약 27억 달러였다고 집계했다. 같은 조사에서 공격자는 USDT를 market maker에 팔고 Aave에서 USDT를 담보로 ETH를 빌리며 동결과 경쟁했다. Arbitrum Security Council은 00:08 UTC에 공격자의 Arbitrum 지갑에서 8,426 ETH와 7,460만 ARB를 강제로 이전했고(TRM은 동결 집계에 포함), Aave는 관련 시장을 동결했다.
+- **동결 수단은 자산과 체인마다 다르다.** 발행사가 동결 기능을 둔 토큰, 거버넌스가 동결하거나 강제 이전할 수 있는 체인과 프로토콜, 그런 수단이 없는 자산은 대응 경로가 다르다. 사고 대응 계획은 보유 자산별로 동결 요청 경로와 연락 순서를 미리 나눠 둔다(운영 제안). 손실 보전 재원과 국내 법정 기준은 [[Virtual-Asset-Exchange-Registration#이용자 가상자산의 보관과 사고 대비 재원|가상자산 보관과 사고 대비 재원]]에 있다.
+
+이 사례에서 도출한 점검은 지갑/체인별 서명 권한 분리, 예상하지 않은 위임의 탐지와 철회 준비, 그리고 출금 거래를 제출하는 운영 경로(서비스 컨테이너와 운영자 단말)의 접근 통제와 서명 전 정책 검증이다. 마지막 항목은 Binance의 예비 조사 설명에서 도출한 제안이며 확정 원인에 근거한 것은 아니다. 특정 HSM 사용이나 HSM 자체의 결함이 이 사고 원인이었다는 근거는 확인하지 않았다. 실제 거래와 내부 서명 환경은 시험하지 않았고 기존 HSM 구현 설명의 검증일은 유지한다.
 
 ## 키 수명 주기
 
@@ -177,7 +182,11 @@ CloudHSM 비용 = HSM 수 × 실행 시간 × 시간 단가 + 클라이언트와
 
 ## 출처
 
-- [North Korea Steals USD 6.36 Billion From Binance in the Largest Hack in History — TRM Labs](https://www.trmlabs.com/resources/blog/north-korea-steals-usd-6-36-billion-from-binance-in-the-largest-hack-in-history) — 2026-10-29 조사, 관측과 귀속/인프라 평가의 구분
+- [North Korea Steals USD 6.36 Billion From Binance in the Largest Hack in History — TRM Labs](https://www.trmlabs.com/resources/blog/north-korea-steals-usd-6-36-billion-from-binance-in-the-largest-hack-in-history) — 2026-10-29 조사, 관측과 귀속/인프라 평가의 구분. Tether, Circle과 Arbitrum의 동결 또는 강제 이전 시점과 규모, Aave의 시장 동결, 온체인 동결 집계와 공격자의 동결 회피는 2026-11-04 대조
+- [Security Incident Update (2026-10-30) — Binance](https://www.binance.com/en/support/announcement/detail/c5a8729a97ac486d963784d96c5642d7) — 2026-11-04 대조, 초기 조사의 노트북과 서비스 컨테이너 가설, 개인키 유출 증거 없음, 출금 중단과 입금 유지, 약 30억 달러 동결
+- [Security Incident Update #2 (2026-10-30) — Binance](https://www.binance.com/en/support/announcement/detail/d3306d9dca5243548c813b605e1d1751) — 2026-11-04 대조, 10-29 20:05 UTC hot wallet 침해와 약 63억 달러 손실, 추가 침해 지점 발견, 추적과 동결 협력 주체
+- [Security Incident | Recovery Update #4: Withdrawals Resume in Phases (2026-11-01) — Binance](https://www.binance.com/en/support/announcement/detail/73911fb819b240f88b88256bdd318eda) — 2026-11-04 대조, 출금 단계 재개 일정, 사후 보고서 예정
+- [Tether Freezes Over $1.5 Billion From Binance Hack, Keeping Funds Out of North Korea's Reach — Tether](https://tether.io/news/tether-freezes-over-1-5-billion-from-binance-hack-keeping-funds-out-of-north-koreas-reach/) — 2026-11-02 공지, 30분 안의 USD₮ 동결과 FBI 귀속의 전언. FBI 경보 원문은 열람하지 못함
 - GeekNews, 2026-10-31 11:00 사용자 제공 발췌 — 사건 수치는 위 조사와 대조했으며 Chainalysis의 별도 귀속 원문은 확인 후보다.
 
 - [당근이 AWS CloudHSM으로 대규모 서명키 관리 시스템을 구축한 방법, 1부 — AWS 기술 블로그](https://aws.amazon.com/ko/blogs/tech/how-karrot-built-a-large-scale-signing-key-management-system-with-aws-cloudhsm-part1/)

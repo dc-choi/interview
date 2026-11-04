@@ -114,12 +114,12 @@ behavior history
 ### 학습과 공개 결과
 
 - Objective는 interacted target item의 sampled-softmax probability를 높이는 것이다.
-- Offline task는 과거 behavior로 target item을 맞히는 next-item prediction이며 HitRate@K를 사용한다.
+- Offline task는 과거 behavior로 target item을 맞히는 next-item prediction이며 HitRate@N을 사용한다(논문에서 K는 관심 수다).
 - 공개 offline split은 user-item interaction data를 random 19:1로 나누고 사용자별 target item을 무작위 선택하므로 strict temporal holdout이 아니다.
 - Online 비교는 matching만 바꾸고 downstream ranker를 동일하게 유지해 retrieval 효과를 격리했다.
 - 논문은 billion-scale pool에서 수천 후보를 15ms 미만에 찾고 daily model update를 수행한 사례를 보고한다.
 
-MIND는 CIKM 2019 Tmall homepage matching 사례다. DIN과 같은 ranking model이 아니며, explicit time interval을 직접 모델링한 sequence model도 아니다.
+MIND는 CIKM 2019 Tmall homepage matching 사례다. DIN과 같은 ranking model이 아니며, explicit time interval을 직접 모델링한 sequence model도 아니다. 여러 관심 벡터를 주어진 후보의 점수 계산에 쓰는 다른 계열과의 비교는 [[Recommendation-System-Multi-Interest-Modeling|다중 관심 사용자 표현]]에 있다.
 
 ## Airbnb: availability가 있는 양면 marketplace
 
@@ -176,6 +176,7 @@ Booking은 click보다 희소해 raw user와 listing ID만으로 long-term embed
 
 - [[Recommendation-System-Industry-Case-Studies|추천 시스템 산업 사례 지도]]
 - [[Recommendation-System-Candidate-Generation|후보 생성]]
+- [[Recommendation-System-Multi-Interest-Modeling|다중 관심 사용자 표현]]
 - [[Recommendation-System-Ranking-Reranking|랭킹과 재랭킹]]
 - [[Recommendation-System-Evaluation-Experimentation|평가와 실험]]
 
