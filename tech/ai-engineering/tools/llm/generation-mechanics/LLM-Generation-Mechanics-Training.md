@@ -155,7 +155,13 @@ $$h = W_0x + (\alpha/r)BAx$$
 
 계산 예로 입력과 출력 차원이 각각 1,024이고 rank가 16이면, 전체 행렬의 파라미터는 1,048,576개이고 두 학습 행렬은 합계 32,768개다. 이 행렬에 대한 학습 파라미터 수가 1/32이 된 것이며 전체 GPU 메모리나 실행 시간이 1/32이라는 뜻은 아니다. 2026-10-27 LoRA 논문 4.1절과 대조하고 산술로 계산한 예이며 실제 학습 측정값은 아니다. 기존 절의 검증 날짜는 유지한다.
 
-**QLoRA**는 고정된 기반 가중치를 주로 4비트로 저장하고 LoRA 파라미터를 학습한다. 원 논문은 연산 시 BFloat16으로 역양자화하며, NF4, 양자화 상수를 다시 양자화하는 double quantization, 메모리 급증을 다루는 paged optimizer를 결합한다. 저장 비트 수와 연산 정밀도는 다르다.
+병합 여부는 서빙 방식과 함께 정한다. 원 논문은 추가 추론 지연을 없애려고 $A$와 $B$를 가중치에 흡수하면 서로 다른 $A$, $B$가 필요한 과업의 입력을 한 번의 순전파로 묶어 처리하기가 간단하지 않다는 점을 한계로 들고, 지연이 핵심 요건이 아니면 병합하지 않은 채 배치 안 샘플마다 쓸 LoRA 모듈을 동적으로 고를 수 있다고 적는다(4.2절).
+
+vLLM과 SGLang은 기반 모델 위에 어댑터를 따로 두고 요청마다 고르는 서빙을 제공한다(vLLM은 LoRA를 지원하는 모델에 한한다). vLLM의 OpenAI 호환 서버는 `--enable-lora`와 `--lora-modules {name}={path}`로 등록한 어댑터를 요청의 `model` 값으로 고르고, 한 배치에 들어가는 LoRA의 최대 수인 `--max-loras`(기본값 1)가 충분히 크면 다른 어댑터 요청과도 함께 처리한다. SGLang은 S-LoRA와 Punica의 기법으로 한 배치 안의 시퀀스마다 다른 어댑터를 쓰게 하며, 기반 모델 요청까지 포함하는 어댑터 슬롯 수 `--max-loras-per-batch`가 클수록 GPU 메모리를 더 예약한다. vLLM에서 실행 중 어댑터를 적재하고 해제하는 권한은 [[VLLM-Serving-Security|vLLM 서빙 보안]]에서 다룬다.
+
+vLLM 문서는 요청 단위 어댑터 서빙의 오버헤드가 작다고 설명하면서도 `--max-lora-rank`를 필요보다 훨씬 크게 잡으면 메모리 낭비와 성능 문제가 생길 수 있다고 적는다. 이 설명을 비병합 서빙의 지연이 병합 배포와 같다는 근거로 쓰지 않는다. 어댑터 하나를 지연 우선으로 서빙하면 병합을, 여러 어댑터를 기반 모델 하나로 함께 서빙하면 비병합을 먼저 검토하고 같은 부하에서 지연, 처리량과 메모리를 비교한다(적용 제안). 2026-11-04 LoRA 논문 4.2절, vLLM의 LoRA 문서와 엔진 인자 문서, SGLang의 LoRA 문서를 대조했으며 서빙 성능은 측정하지 않았다. 기존 절의 검증 날짜는 유지한다.
+
+**QLoRA**는 고정된 기반 가중치를 주로 4비트로 저장하고 LoRA 파라미터를 학습한다. 원 논문은 연산 시 BFloat16으로 역양자화하며, NF4, 양자화 상수를 다시 양자화하는 double quantization, 메모리 급증을 다루는 paged optimizer를 결합한다. 저장 비트 수와 연산 정밀도는 다르다. 원 논문 초록은 이 조합으로 65B 파라미터 모델을 48GB GPU 한 장에서 미세조정할 만큼 메모리를 줄이면서 16비트 전체 미세조정의 과업 성능을 유지했다고 보고한다(2026-11-04 초록 대조). 다만 본문에서 65B 모델은 16비트 전체 미세조정이 아니라 16비트 LoRA와 비교했다(4절, Table 4).
 
 메모리 절감이 같은 비율의 학습 속도 향상을 뜻하지 않는다. 기반 가중치를 고정해도 어댑터 학습을 위한 순전파와 역전파가 필요하다. 논문에서 비교한 과업의 성능 회복을 모든 모델과 데이터의 무손실 보장으로 확대하지 않는다.
 
@@ -196,6 +202,10 @@ ZeRO-3는 순전파와 역전파 중 필요한 파라미터를 모으고 다시 
 - [LoRA: Low-Rank Adaptation of Large Language Models — Hu et al.](https://arxiv.org/abs/2106.09685)
 - [qlabs-eng/dust — GitHub](https://github.com/qlabs-eng/dust)
 - [QLoRA: Efficient Finetuning of Quantized LLMs — Dettmers et al.](https://arxiv.org/abs/2305.14314)
+- [vLLM, LoRA Adapters](https://docs.vllm.ai/en/stable/features/lora/)
+- [vLLM, Engine Arguments](https://docs.vllm.ai/en/stable/configuration/engine_args/)
+- [SGLang, LoRA Serving](https://docs.sglang.io/advanced_features/lora.html)
+- [LoRA 실무 잡기술 — ImcommIT](https://www.youtube.com/watch?v=vGyLTu8g35w) — 2026-10-27, LoRA 병합과 QLoRA 소개 영상. vLLM과 SGLang이 일반 LLM 구성에 맞춰져 있어 병합하지 않은 어댑터가 비효율적으로 보인다는 설명은 두 엔진 문서의 배치 내 다중 어댑터 서빙 설명과 맞지 않아 그 이유로는 채택하지 않음. 병합이 추가 지연을 없앤다는 점은 LoRA 논문 4.1절, 4.2절로 대조했고, 비병합 서빙의 지연은 본문처럼 같은 부하에서 측정해 판단
 
 - [Introduction to Large Language Models — Google Machine Learning Crash Course](https://developers.google.com/machine-learning/crash-course/llm)
 - [Neural Networks: Training Using Backpropagation — Google Machine Learning Crash Course](https://developers.google.com/machine-learning/crash-course/neural-networks/backpropagation)

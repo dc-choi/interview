@@ -119,6 +119,8 @@ DeepSeek 사례를 2026-10-26 공식 가격표, 변경 이력과 모델 카드�
 - **캐싱 요금 구조 변화**: 명시적 캐시 중단 지점 + 최소 30분 유지, **캐시 쓰기가 기본 입력의 1.25배 과금**(읽기는 90% 할인 유지) — 캐시를 쓸수록 무조건 이득이 아니라 재사용률이 손익분기를 정하는 구조로
 - **서드파티 고속 서빙**: 전용 하드웨어 사업자(Cerebras)를 통한 초당 750토큰 제공 — 서빙 속도가 별도 경쟁 축으로 분리
 
+2026-11-04 확인한 OpenAI API 변경 이력과 모델 페이지는 2026-10-26 나온 GPT-6.1 Terra를 시각 추론, 정밀한 컴퓨터 사용, 명확하고 자연스러운 글쓰기를 위한 빠르고 효율적인 모델로 소개하고, 모델 페이지는 제품 사진과 카탈로그 항목 대조, 기술 도면 해석, 애플리케이션 화면 조작, 글 초안 작성과 수정을 쓰임으로 들며 도구 목록에 `computer_use`를 둔다. 모델 선택 가이드는 제공한 자료에 근거한 간결한 글쓰기, 목표 결과가 분명한 컴퓨터 사용 작업과 범위를 한정한 코드 수정에 써 보라고 권하면서, 같은 입력과 reasoning effort로 GPT-6.1 Sol과 비교하고 컴퓨터 사용 작업은 저장된 결과와 완료 보고의 정확성을 확인하라고 안내한다. 같은 날 가격표의 단가는 100만 토큰당 입력 $1, 출력 $5(입력 272K 이하)로 GPT-6.1 Sol의 절반이다. Terra라는 이름은 이어지지만 GPT-6 가이드의 라인업은 균형(Balanced speed, cost, and intelligence)을 GPT-6.1 Sol에 붙이고 GPT-6.1 Terra는 빠르고 효율적인(Fast and efficient) 모델로 두며, GPT-5.6 Terra에서 옮길 때는 대표 이미지와 워크플로에서 같은 reasoning effort로 두 모델을 비교하라고 안내한다. 그래서 GPT-5.6 세대의 균형형 설명을 그대로 옮기지 않고, 공식 문서가 내세운 쓰임에 맞는 자기 과업의 [[LLM-Eval-Strategy|eval]]로 다시 잰다(적용 제안).
+
 ## 관련 문서
 
 - [[LLM-Eval-Strategy|LLM Eval 전략]] — 어느 티어가 합격선을 넘는지 측정
@@ -137,9 +139,12 @@ DeepSeek 사례를 2026-10-26 공식 가격표, 변경 이력과 모델 카드�
 - [차세대 모델 GPT-5.6 Sol 미리 살펴보기 (한국어판) — OpenAI](https://openai.com/ko-KR/index/previewing-gpt-5-6-sol/)
 - [OpenAI API, Compare models](https://developers.openai.com/api/docs/models/compare) (2026-09-04 가격 확인)
 - [OpenAI API, Models](https://developers.openai.com/api/docs/models) (2026-09-04 플래그십 확인)
-- [OpenAI API, GPT-5.6 모델 가이드](https://developers.openai.com/api/docs/guides/latest-model)
+- [OpenAI API, GPT-5.6 모델 가이드](https://developers.openai.com/api/docs/guides/latest-model) (같은 주소가 2026-11-04에는 Using GPT-6 페이지를 연다. 이날 GPT-6 라인업의 모델별 설명과 GPT-5.6 Terra에서 옮길 때의 비교 안내 확인)
 - [OpenAI API, GPT-5.6 Luna](https://developers.openai.com/api/docs/models/gpt-5.6-luna)
-- [OpenAI API, Pricing](https://developers.openai.com/api/docs/pricing) (2026-10-06 GPT-6 계열과 GPT-5.6 가격 확인)
+- [OpenAI API, Pricing](https://developers.openai.com/api/docs/pricing) (2026-10-06 GPT-6 계열과 GPT-5.6 가격 확인, 2026-11-04 GPT-6.1 Terra 단가 확인)
+- [OpenAI API, GPT-6.1 Terra](https://developers.openai.com/api/docs/models/gpt-6.1-terra) (2026-11-04 소개 문구, 쓰임 예시와 `computer_use` 도구 지원 확인)
+- [OpenAI API, Model selection](https://developers.openai.com/api/docs/guides/model-selection) (2026-11-04 GPT-6.1 Terra 권장 쓰임, GPT-6.1 Sol 비교와 컴퓨터 사용 결과 확인 안내 확인)
+- [OpenAI API, Changelog](https://developers.openai.com/api/docs/changelog) (2026-11-04 확인, 2026-10-26 GPT-6.1 Terra 출시 항목)
 - [Gemini API, Pricing](https://ai.google.dev/gemini-api/docs/pricing) (2026-10-06 Gemini 3.1 Pro Preview 가격 확인)
 - [DeepSeek API Docs, Models & Pricing](https://api-docs.deepseek.com/quick_start/pricing/) (2026-10-26 모델 판, 한도, 시간대별 단가, Search와 Fetch 과금, 이전 이름의 처리 확인)
 - [DeepSeek API Docs, Change Log](https://api-docs.deepseek.com/updates/) (2026-09-10 이름 변경, 2026-10-17 판 교체와 하네스 권고 항목)
@@ -171,3 +176,4 @@ DeepSeek 사례를 2026-10-26 공식 가격표, 변경 이력과 모델 카드�
 - [인프런, 널널한 개발자, 앤트로픽 AI 모델별 특징](https://www.inflearn.com/courses/lecture?courseId=344484&unitId=498589)
 - [이제 AI 괴롭히면 차단, 하이쿠5.5, 클로드 스타트업 지원 프로그램 소식 — YouTube, ZeroCho TV](https://www.youtube.com/watch?v=C3AmewdOnk0)
 - [IT뉴스 - 딥시크 미쳤다, Gemini 4, Muse Wonder, Spark Open, 오픈AI 스파이, GPT-Live-1.1, Fish Audio Drama 3, 테슬라 등 — YouTube, 조코딩 JoCoding](https://www.youtube.com/watch?v=xUrRNBz4j1I) — 2026-10-18, DeepSeek 사례의 학습 계기이며 단가, 판과 점수는 공식 문서와 모델 카드로 대조
+- [6.1 Terra. Computer Use를 찢어버린 GPT — YouTube, 코드팩토리](https://www.youtube.com/watch?v=UBY1C7n3FZA) — 2026-10-27, GPT-6.1 Terra 포지셔닝의 학습 계기이며 공식 설명은 OpenAI 변경 이력, 모델 페이지와 모델 선택 가이드로 대조. 영상 속 벤치마크 차트의 수치와 비용 비교는 출시 글을 직접 열람하지 못해 채택하지 않았다

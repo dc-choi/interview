@@ -47,6 +47,8 @@ GTM은 마케팅의 하위 개념이 아니라 제품, 가격, 유통, 마케팅
 제품 자체가 고객 획득, 활성화, 리텐션을 주도한다. 사용자가 직접 제품을 경험하고 가치를 느낀 뒤 유료 전환한다.
 - **기대 효과:** 셀프서브가 실제로 가능하면 낮은 획득비, 빠른 Time-to-Value, 추천 성장을 기대할 수 있다.
 - **적합 조건:** 셀프서브 가능성, 가격과 도입 복잡도, 시장 접근성을 함께 본다 (Slack, Notion, Figma).
+- **사용자 공유를 통한 배포:** 사용자가 결과물을 다른 서비스에 삽입하거나 공유하면 그 자리마다 제품이 새 사용자에게 노출될 수 있다. Google의 2006년 인수 발표문은 YouTube를 웹사이트, 블로그와 이메일로도 영상을 공유할 수 있는 서비스로 소개했다. 공동창업자 Steve Chen은 외부 삽입을 처음부터 넣어 eBay, Craigslist처럼 HTML 삽입을 허용한 곳이면 어디든 영상을 넣을 수 있었고, 그중 2005년 확산의 실제 기반은 MySpace였으며 당시 제대로 된 마케팅과 광고 팀은 없었다고 회고했다. 이 사례는 유료 전환이 아니라 사용자 획득 단계의 예로 읽는다.
+- **배포 비용과 일반화 경계:** Chen은 사용자가 대신 해 준 이 마케팅의 값을 대역폭으로 치렀다고 표현했다. 광고비로 잡히지 않는 전송과 처리 비용, 공유 단계별 측정과 한 서비스의 회고를 일반화하지 않는 기준은 [[Solo-Product-Market-Validation#사용자가 공유하는 경로와 배포 비용을 함께 검증한다|공유 경로와 배포 비용 검증]]에서 다룬다.
 
 ### Sales-Led Growth (SLG)
 영업팀이 데모, 협상, 계약을 통해 고객을 획득한다.
@@ -195,6 +197,9 @@ Q. GTM 전략을 어떻게 수립/실행했는가?
 - [인핸스 시리즈C와 고객사 계열 투자 — Threads, pioaxis](https://www.threads.com/@pioaxis/post/DdjIofnE7om)
 - [Reddit Help, Spam](https://support.reddithelp.com/hc/en-us/articles/360043504051-What-constitutes-spam-Am-I-a-spammer-) — 2026-10-05 본인 사업 링크의 게시 빈도와 커뮤니티별 규칙 안내 확인
 - [1인 개발자의 레딧 마케팅과 서브레딧 10곳 — Threads, andytechcan](https://www.threads.com/@andytechcan/post/DR-xm3SgS7x)
+- [마케팅팀 없이 바이럴한 비결 — BZCF 비즈까페, Steve Chen](https://www.youtube.com/watch?v=RBCrQBVPWGI) — 2026-11-04 외부 삽입, 마케팅 팀 부재와 대역폭 발언 확인. 원 대담은 [유튜브 구글에 매각한 썰 푼다 — BZCF 비즈까페, Steve Chen](https://www.youtube.com/watch?v=B1SxJD502hE)의 13:47~14:32 구간
+- [YouTube ft. Steve Chen - 18 Months That Changed the Internet — Sequoia Capital](https://sequoiacap.com/podcast/crucible-moments-youtube) — 2026-11-04 외부 삽입의 초기 설계, MySpace를 통한 확산과 HTML 삽입 조건에 관한 당사자 회고 대조
+- [Google To Acquire YouTube for $1.65 Billion in Stock — Google](https://www.sec.gov/Archives/edgar/data/1288776/000119312506206884/dex991.htm) — 2026-11-04 SEC 제출본에서 2006-10-09 발표문의 YouTube 소개 문단 확인
 
 ## 관련 문서
 - [[Marketing-Fundamentals|마케팅, 브랜딩, 광고 기초 (층위, STP, 4P, Customer Journey)]]

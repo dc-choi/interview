@@ -38,6 +38,7 @@ aliases: ["보안(Security)", "Security Index"]
 - [[SSH-Authentication|SSH 인증]] — 서버 인증과 사용자 인증의 분리, 키 교환, 호스트 키 검증, Tailscale 포워딩 권한
 - [[OpenSSF-Scorecard|OpenSSF Scorecard]] — 저장소 보안 관행 평가, 검사별 근거와 총점의 한계
 - [[Application-Security|애플리케이션 보안 / 시큐어코딩]] — 4대 원칙, 진단 vs 모의해킹, OWASP Top 10, OWASP API Security Top 10:2023, 트렌드 리스크, 클라이언트 불신, 비밀번호 확인 UI와 서버 검증 계약, 학습 경로
+- [[Java-Secure-Coding-Guidelines|Java SE 시큐어코딩 가이드라인]] — 명백히 결함 없는 설계와 검사 지점, 서드파티 코드 추적, 자원 한도와 기밀정보, 데이터를 코드로 해석하는 인젝션, XXE와 DTD 제한, API 동작 검증, 역직렬화 필터 계층, Security Manager 비활성화 이후의 격리
 - [[CIA-Triad|CIA Triad (기밀성, 무결성, 가용성)]] — 세 보안 목표, 위협과 통제, 트레이드오프와 가장 약한 고리
 - [[Security-Policy-and-Assessment|보안 정책과 점검]] — 자산과 위험, 역할별 교육, 점검 범위와 증거, Prowler와 Service Screener, 예외 처리와 재점검
 - [[Security-Incident-Response|보안 사고 대응]] — NIST CSF 2.0 수명주기, 로그 상관분석, IOC 검사의 미탐/검사 범위, 자동 차단과 AI 리포트의 실행 경계, 증거 보존과 복구 조건
