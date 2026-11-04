@@ -112,7 +112,7 @@ aliases: ["Supply Chain Security", "공급망 공격", "공급망 보안", "의�
 - **lockfile 고정 + 무결성 검증**: `npm ci`(lockfile 그대로 설치), 해시 핀(`pip install --require-hashes`), 버전 범위 대신 정확한 버전 핀
 - **설치 스크립트 차단**: `npm install --ignore-scripts`는 모든 설치 스크립트를 막는 전체 차단이다. 패키지 관리자별 의존성 스크립트 기본 동작과 허용 목록은 [[tech/os-runtime/nodejs/Security|Node.js 보안 모범 사례]]의 install script 기본 차단 절을 따른다
 - **사설 레지스트리, 프록시**: 외부 레지스트리를 그대로 바라보지 않고 검증된 미러(Artifactory, Verdaccio)만 사용
-- **업데이트 지연 정책**: Renovate, Dependabot에 cooldown을 둬 갓 배포된 버전을 즉시 받지 않음 (악성 버전은 보통 빠르게 내려감)
+- **업데이트 지연 정책**: Renovate, Dependabot에 cooldown을 둬 갓 배포된 버전을 즉시 받지 않음 (악성 버전은 보통 빠르게 내려감). 해시 고정이 막지 못하는 고정 시점(처음 lock과 갱신)을 겨냥한 설치 도구 자체의 게시 시점 필터(uv `exclude-newer`, pip `--uploaded-prior-to`, pnpm `minimumReleaseAge`, npm `min-release-age`)는 [[Dependency-Release-Cooldown|의존성 릴리스 쿨다운]]을 따른다
 - **SCA, SBOM**: [[Dependency-Vulnerability-Scanning|의존성 취약점 스캐닝]]과 SBOM으로 무엇이 깔렸는지 항상 파악
 - **provenance 검증**: Sigstore, npm provenance로 "이 아티팩트가 그 소스에서 그 CI로 빌드됐는가" 확인. 게시 주체 검증의 확인 범위는 아래 산출물 검증 절을 따른다
 - **런타임 격리, 최소 권한**: 개발 환경의 egress 제한(C2 통신 탐지), 단기 토큰, 최소 권한 IAM, EDR
@@ -224,4 +224,5 @@ Sonatype의 Hugging Face 분석은 모델 파일 디렉터리를 IQ CLI로 검�
 - [[Coding-Agent-Package-Hallucination|코딩 에이전트의 패키지 환각 공격]] — 규칙 파일 지시로 바뀌는 의존성 선택과 점검
 - [[Open-Source-License-Review|오픈소스 라이선스 검토]] — 포함 구성요소의 재배포 허가와 고지/소스 제공 조건
 - [[Dependency-Management|의존성 관리]] — lock 파일 3계층, semver 범위, 언어별 패키지 매니저
+- [[Dependency-Release-Cooldown|의존성 릴리스 쿨다운]] — 설치 도구의 게시 시점 필터, 업로드 시각이 없을 때의 차이와 예외 경로
 - [[보안(Security)|보안 인덱스]]

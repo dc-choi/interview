@@ -10,7 +10,7 @@ aliases: ["SAP SLT 큐와 OData 구독 계약"]
 
 ## 복제와 소비 상태
 
-SLT는 원본 ERP의 데이터베이스 트리거로 변경을 Operational Delta Queue에 복제하고 Foundry가 이를 소비하는 경로다. 최초 전체 적재, 이후 변경 polling, SLT 자체의 큐 보존을 구분한다. source의 RFC remote context는 SLT와 원본 ERP 사이 연결의 식별자다.
+SLT는 원본 ERP의 데이터베이스 트리거로 변경을 Operational Delta Queue에 복제하고 Foundry가 이를 소비하는 경로다. 최초 전체 적재, 이후 변경 polling, SLT 자체의 큐 보존을 구분한다. source의 RFC remote context는 SLT와 원본 ERP 사이 연결의 식별자다. 소스 설정 값의 `SLT~<Alias_Name>` 형식과, 아래 표의 OData 미적용이 이 소스 설정 값에도 해당하는지 문서에 명시되지 않은 점은 [[Palantir-SAP-SLT-Connector#Remote context 값|SAP SLT 커넥터의 Remote context 절]]을 따른다.
 
 이전 ODP 경로에서는 remote context를 지정한 초기 적재가 SLT 큐를 우회해 RFC로 읽을 수 있으며 parallel paging도 적용된다. 이 두 옵션을 OData에 그대로 옮길 수 없다. 원본과 게이트웨이의 DIA/BG 작업 여유, ODQ와 커넥터 paging 양쪽의 임시 저장공간을 고려한다.
 
@@ -77,3 +77,4 @@ Reset queue registration은 기존 OData 구독을 해제하고 현재 sync에 �
 ## 관련 문서
 
 - [[Palantir-SAP-Integration]]
+- [[Palantir-SAP-SLT-Connector|SAP SLT 커넥터]]

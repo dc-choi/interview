@@ -69,6 +69,10 @@ AI 도입 담당자를 지정했다면 어떤 업무와 기준을 바꿀 수 있
 
 별도 AI 조직 신설을 전제로 삼지도 않는다. 같은 지침은 기존 팀과 역량을 활용하고, 기존 팀이 도입을 지원할 수 없거나 중대한 위험이 있을 때만 독립 팀을 만들도록 권고한다. 작은 조직에서는 별도 직함보다 누가 우선순위와 자원을 승인하고 누가 실행 결과를 책임지는지부터 명확히 할 수 있다.
 
+AI를 중심에 둔 조직을 기존 조직과 따로 둔 예로 Bridgewater의 AIA Labs가 있다. 2026-11-04 대조 기준, AIA Labs 페이지는 이를 사람을 능가하는 완전한 인공 투자자를 목표로 내건 전담 AI 연구, 투자 랩으로 소개하고, Greg Jensen 소개 페이지는 사내 벤처로 적으며 그가 Pure Alpha 전략을 맡는 Alpha Engine과 AIA Labs를 함께 이끈다고 밝힌다. AIA Labs 페이지는 주력 전략인 Pure Alpha와의 깊은 협력, 50년 체계적 투자 연구의 계승, AI 우선 접근에서 나온 통찰과 도구의 환류, 경험 많은 사람 투자자의 피드백이 AI 시스템을 다듬는다는 점도 강조한다. Jensen은 인터뷰 발췌 영상에서 따로 둔 이유를 설명했다(셋째 이유는 그가 직접 꼽았고 첫째와 둘째의 경계는 이 문서가 나눴다). 2022년 무렵의 기술 수준에서는 이 일에 온전히 전념하려는 사람들이 필요했고, 기존 조직은 기술이 자기 일을 돕기를 바라는 반면 새 조직은 AI를 중심에 두고 AI가 약한 부분을 메울 다른 유형의 사람으로 팀을 꾸리려 했으며, 기존 판단을 복제하지 않도록 Pure Alpha와 상관되지 않는 독립적인 아이디어를 원했다는 것이다. 그는 첫째 이유인 기술의 성격이 바뀌고 있고 기존 조직에서도 AI 사용이 늘고 있다고 덧붙였다. 영상 속 발언의 시점은 확인하지 못했다.
+
+이 문서의 해석으로, 공식 페이지의 협력과 연구 계승, 사람 피드백 강조는 영상의 무상관 지향과 긴장이 있다. 도입을 지원하는 CoE가 아니라 운영 방식이 다른 투자 조직을 따로 둔 경우라 위 지침의 독립 팀 조건을 그대로 대입하기도 어렵다. 따로 두면서도 AI의 결과를 본 조직으로 보내고 사람의 피드백을 AI로 돌려받는 경로를 함께 둔 예로 읽으며, 독립 조직이 더 낫다는 일반 근거로 쓰지 않는다.
+
 ### 교육을 실제 업무 실험과 연결한다
 
 기존 구성원의 업무 지식을 활용하려면 필요한 AI 역량과 실험할 업무를 함께 정한다. 교육 이수와 실제 업무 수행 가능성을 같은 결과로 기록하지 않는다. 2026-10-13 AWS의 워크로드 평가 지침에서 필요한 기술과 지식, 교육과 워크숍, 측정 가능한 업무 목표와 실행 계획을 함께 점검하는 기준을 확인했다.
@@ -215,6 +219,9 @@ METR은 2026년 후속 글에서 최신 도구의 속도 향상이 더 클 가�
 
 ## 출처
 - [Microsoft Learn, Establish an AI Center of Excellence](https://learn.microsoft.com/en-us/azure/cloud-adoption-framework/ai/center-of-excellence) — 2026-10-29 경영진 후원, 실행 리더와 기존 조직 활용 조건 부분 대조
+- [AIA Labs — Bridgewater Associates](https://www.bridgewater.com/aia-labs) — 2026-11-04 전담 AI 연구, 투자 랩의 목표, Pure Alpha와의 협력과 연구 계승, 통찰과 도구의 환류, 사람 투자자 피드백 대조
+- [Greg Jensen — Bridgewater Associates](https://www.bridgewater.com/people/greg-jensen) — 2026-11-04 AIA Labs를 사내 벤처로 소개한 설명과 Alpha Engine, AIA Labs를 함께 이끄는 역할 대조
+- [AI 투자자를 따로 만들었다 브리지워터 CIO — 묘수의 관점](https://www.youtube.com/watch?v=9YB_9yaj40g) — 2026-10-27 게시된 Greg Jensen 인터뷰 발췌 영상(제3자 채널). 화자 구분이 없는 로컬 음성 인식 전사로 발언을 확인했고, 제목의 따옴표는 표기에서 뺐다. 따로 둔 이유에 대한 답변만 반영했고 성과 주장과 끝부분의 화자를 알 수 없는 발언은 옮기지 않음. 원 인터뷰의 매체와 날짜는 확인하지 못함
 - [As AI agents take on more work, trust should become operational — PwC](https://www.pwc.com/us/en/about-us/newsroom/operationalizing-trust-in-agentic-ai.html) — 2026-10-14 감독, 권한, 책임과 실행 증거 부분 대조
 - [스타트업 AX 프로그램의 업무 병목과 검수 설계 — 아웃스탠딩TV](https://www.youtube.com/watch?v=A5xt0-tVV60) — 프로그램 담당자의 공개 인터뷰, 04:04~12:19와 38:36~41:43의 경험과 제안만 반영. 전체 스타트업이나 고용 변화로 일반화하지 않음
 - [AWS Prescriptive Guidance, Targeted business outcomes](https://docs.aws.amazon.com/prescriptive-guidance/latest/gen-ai-workload-assessment/outcomes.html) — 2026-10-13 교육 필요, 업무 목표와 실행 계획 부분 대조
