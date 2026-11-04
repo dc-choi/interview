@@ -54,3 +54,4 @@ LDPC(Low-Density Parity-Check)는 희소한 패리티 검사 행렬을 사용하
 - [[Wireless-Multiple-Access|무선 다중접속과 공간 다중화]]
 - [[Network-Layer|네트워크 계층]]
 - [[Satellite-Direct-to-Device|위성 직접 연결]]
+- [[Self-Organizing-Network|SON과 무선 자원 관리]]

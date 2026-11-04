@@ -12,6 +12,7 @@ OSI 7계층과 캡슐화, IP 헤더, 스위치와 라우팅, TLS, 패킷 캡처,
 ## 목차
 - [x] [[Mobile-Network-Continuity|이동 환경의 통신 연속성]] — IPv6 주소, Mobile IPv6, LDPC와 멀티홉 중계의 역할 및 한계
 - [x] [[Wireless-Multiple-Access|무선 다중접속과 공간 다중화]] — OFDMA 자원 배분, MIMO 기법과 링크 적응, 혼잡 시 성능 검증
+- [x] [[Self-Organizing-Network|SON과 무선 자원 관리]] — SON 범주와 기능(ANR, MRO, MLB, CCO, 에너지 절감), 중앙형과 분산형 구조, 수락 제어와 핸드오버, SDR 정의, 핸드오버와 IP 유지 구분
 - [x] [[Network-Lab-Practice|네트워크 실습]] — 두 서브넷 연결, 게이트웨이와 ARP, 상태/왕복/서비스 분리, 장애 진단과 열 단계 실습 후보
 - [x] [[Satellite-Direct-to-Device|위성 직접 연결]] — 기존 LTE와 NTN, 지연과 도플러, 단말과 서비스 조건
 - [x] [[HTTPS-TLS|HTTPS / TLS Handshake]]

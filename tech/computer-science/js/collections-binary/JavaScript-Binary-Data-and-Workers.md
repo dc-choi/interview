@@ -152,3 +152,4 @@ wait queue 순서가 application lock의 공정성을 보장하지는 않는다.
 - [[JavaScript-Async-Iterable-Pipelines|JavaScript 비동기 이터러블 파이프라인]]
 - [[NestJS-File-Upload|파일 업로드]]
 - [[Graceful-Shutdown|Graceful Shutdown]]
+- [[Low-Latency-Audio|저지연 오디오 출력]] — AudioWorklet과 SharedArrayBuffer 링 버퍼, 교차 출처 격리 조건

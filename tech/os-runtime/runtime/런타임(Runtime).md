@@ -19,5 +19,6 @@ Thread vs Event Loop, Java 동시성, Go 동시성, async/await, Backpressure �
 - [x] [[Sync-Async-Blocking|동기, 비동기, 블로킹, 논블로킹 (2×2 조합, 소켓 버퍼와 EAGAIN, 완료 확인 방식, 멀티플렉싱의 자리, 비동기의 세 층위)]]
 - [x] [[Async-vs-Threads|async/await vs 스레드 (컬러 함수, 백프레셔와 기본 스레드 풀의 상한 없는 큐, 가상 스레드, 구조적 동시성)]]
 - [x] [[Backpressure|Backpressure (스트림 배압, highWaterMark, pipe 수명주기)]]
+- [x] [[Low-Latency-Audio|저지연 오디오 출력 (지연 예산, push와 pull 버퍼 모델, 오디오 스레드 제약, 단일 생산자와 소비자의 링 버퍼, 웹 공유 메모리의 교차 출처 격리)]]
 
 - [x] [[Terminal-and-Editor-Interfaces|터미널과 편집기의 입력 및 렌더링 계층]]
