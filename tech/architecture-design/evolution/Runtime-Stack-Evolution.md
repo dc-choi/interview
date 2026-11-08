@@ -92,6 +92,8 @@ JVM은 자체 빌드 없이 **Azul Zulu(OpenJDK 빌드)** 사용.
 5. **점진 이주 경로가 있는가** — 빅뱅 전환은 리스크 급증 ([[Legacy-Modernization-Strategies]])
 6. **플랫폼 계약을 감당할 수 있는가** — 언어 도입의 실제 비용은 컴파일러가 아니라 보안 툴체인 빌드, 개발 도구, 품질 워크플로, 플랫폼 통합, 보안 개발 수명주기 준수까지 조직이 책임지는 지원 수준에 있다. Microsoft가 Rust를 C++, C#, TypeScript와 같은 Tier-1로 둔 것도 언어 선호가 아니라 이 지원 계약의 선언이었고, 기존 MSVC 백엔드에 붙는 코드 생성 백엔드로 디버깅, 프로파일링, 하드닝 도구를 공유하게 한 뒤 자기 호스팅과 100개 이상 저장소 사용으로 성숙도를 검증했다 (2026년 9월 기준)
 
+AI 코딩 에이전트가 코드를 쓰는 비용을 낮춰도 5번의 점진 경로와 검증 수단은 여전히 필요하다(적용 판단). GitHub은 Copilot 런타임을 TypeScript에서 Rust로 옮기며 main에 들어간 128개 PR로 나눠 점진 배포했고, 이전 PR은 기존 구현을 Rust를 호출하는 얇은 shim으로 바꿨다. CLI와 SDK의 기존 E2E 테스트를 매 단계 새 코드에 실행해 필수 테스트가 실패한 PR은 병합하지 않았고 main은 늘 배포 가능한 상태였다. 코드는 대부분 AI 에이전트가 썼고 주로 개발자 한 명이 진행했으며, 같은 기간 다른 개발자들의 변경도 계속 병합됐다(2026-09-23 갱신된 공식 글, 2026-11-08 대조). 언어 계층의 판단은 [[AI-Infrastructure-Language-Layers|AI 서비스 스택의 언어 계층]], 테스트 오라클은 [[Agent-Test-Verification-Behavior#포팅에서는 기존 E2E 테스트를 오라클로 지킨다|기존 E2E 테스트 오라클]]에 있다.
+
 ## 흔한 함정
 
 - **신기술 추종** — 해결할 문제 없이 도입 → 복잡성만 증가
@@ -118,6 +120,7 @@ JVM은 자체 빌드 없이 **Azul Zulu(OpenJDK 빌드)** 사용.
 - [OpenJDK, JEP 444: Virtual Threads](https://openjdk.org/jeps/444)
 - [Oracle, Java Language Changes in Java SE 21](https://docs.oracle.com/en/java/javase/21/language/java-language-changes-release.html)
 - [Guest Post: Rust Is Tier-1 Language at Microsoft — Rust Foundation](https://rustfoundation.org/media/guest-post-rust-is-tier-1-language-at-microsoft/)
+- [Migrating the GitHub Copilot runtime to Rust, using Copilot — GitHub](https://github.blog/ai-and-ml/generative-ai/migrating-the-github-copilot-runtime-to-rust-using-copilot/)
 
 ## 관련 문서
 - [[Legacy-Modernization-Strategies|레거시 현대화 전략]]
@@ -126,3 +129,4 @@ JVM은 자체 빌드 없이 **Azul Zulu(OpenJDK 빌드)** 사용.
 - [[Monolith-vs-Microservice|Monolith vs Microservice]]
 - [[Async-vs-Threads|async/await vs 스레드 (가상 스레드)]]
 - [[Tech-Decision|기술 의사결정]]
+- [[AI-Infrastructure-Language-Layers|AI 서비스 스택의 언어 계층]]

@@ -192,3 +192,4 @@ Android에서는 테스트의 실행 위치와 검증 범위가 서로 다른 �
 - [[Eval-Rubric-and-Score-Gate|루브릭과 점수 게이트]] — 채점자와 수정자를 끝까지 분리하는 설계
 - [[Harness-Anatomy|하네스 구성도]] — 피드백 기둥에서 자기 리뷰가 가장 약한 이유
 - [[AI-Software-Replication-and-Due-Diligence|AI 소프트웨어 복제와 기술 실사]] — 재구현의 기능 동등성과 업무 대체 가능성
+- [[AI-Infrastructure-Language-Layers|AI 서비스 스택의 언어 계층]] — Copilot 런타임 이전의 프로세스 구조와 메모리 측정

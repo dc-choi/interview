@@ -65,3 +65,4 @@ Gated model은 모델 파일에 접근하기 위한 요청을 받으며, 승인 
 - [[Palantir-Hugging-Face-Model-Import|Foundry의 모델 가져오기와 어댑터 경계]]
 - [[Java-AI-Integration-Boundaries|Java AI 통합의 실행 경계]]
 - [[LLM-Application-Security#LLM03 공급망|LLM 공급망 보안]]
+- [[AI-Infrastructure-Language-Layers|AI 서비스 스택의 언어 계층]] — 모델 파일 형식(pickle, safetensors)과 weights_only, trust_remote_code

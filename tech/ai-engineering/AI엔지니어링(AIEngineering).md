@@ -129,6 +129,7 @@ Software 3.0 패러다임, LLM과 에이전트, 하네스, 평가, 조직 전환
 - [x] [[LLM-Decision-Models-Calibration-Cases|결정 모델 보정과 버전 변경]] — Qwen, Microsoft-Decision-1, Jev 1.14와 표현 안정성
 - [x] [[Local-Inference-Deployment-Cases|로컬 추론 배포]] — Janas, Minions, MLX 분산 추론(JACCL, Muse Spark Open 2대와 4대 측정), Uzu, PS5LM, Saluki의 양자화와 도구 호출 평가, LFM2.5와 Muse Spark Open
 - [x] [[LLM-Inference-Serving-Engines|추론 서빙 엔진의 기능 경계]] — 엔진과 서비스 책임, DeepInfer 공개 범위, 배치 불변성과 결정적 샘플링, DSpark 가변 길이 검증, 구조화 출력 강제 경계
+- [x] [[AI-Infrastructure-Language-Layers|AI 서비스 스택의 언어 계층]] — 꼬리 지연과 GC, data race 검사, PyO3와 C ABI 통합, pickle과 safetensors, GPU 커널 계층
 - [x] [[Agent-Model-Capability-Contracts|기억과 전문 영역 모델 평가]] — 전문 모델과 승인 경계, 카나나의 개인화 인터페이스와 발표 계획
 - [x] [[AI-Research-Innovation-Evaluation|AI 연구 혁신 평가]] — InnovationEval의 과제와 개선 달성률
 - [x] [[AI-Consciousness-Evidence|AI 의식의 증거]] — 자기보고와 행동, 내부 구조 지표와 기능 검증의 구분

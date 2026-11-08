@@ -121,6 +121,8 @@ X는 2023년 `twitter/the-algorithm`에 이어 2026년 `xai-org/x-algorithm` 저
 
 점수가 `Σ weight × P(action)` 형태라 부정적 반응에 음수 가중치를 주는 방식으로 engagement 편향을 제어한다는 점이 LinkedIn의 다중 event 결합과 같은 구조다. 공개 범위는 README가 밝힌 코드에 한정되며, 조작 방지를 위해 일부 분류 프롬프트와 규칙은 제외됐다.
 
+README는 랭킹 모델 phoenix를 JAX로 작성한 학습 및 서빙 코드와 Rust 서빙 계층으로 나눠 설명한다(2026-11-08 README 기준). 모델 계층과 서빙 계층의 언어 분담은 [[AI-Infrastructure-Language-Layers|AI 서비스 스택의 언어 계층]]에서 다룬다.
+
 ## 전이 가능한 설계 질문
 
 1. 어떤 node와 edge가 실제 선호를 표현하는가?
@@ -145,6 +147,7 @@ X는 2023년 `twitter/the-algorithm`에 이어 2026년 `xai-org/x-algorithm` 저
 - [[Recommendation-System-Ranking-Reranking|랭킹과 재랭킹]]
 - [[Recommendation-System-Feedback-Data|피드백 데이터]]
 - [[Recommendation-System-Serving-Operations|서빙과 운영]]
+- [[AI-Infrastructure-Language-Layers|AI 서비스 스택의 언어 계층]] — 모델 학습과 서빙 계층의 언어 분리
 
 ## 출처
 

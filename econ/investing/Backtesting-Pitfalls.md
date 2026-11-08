@@ -168,4 +168,5 @@ API 키 없이 공개 데이터를 모으는 스캔과 백테스트 스크립트
 
 - [[Investment-Strategies|투자 전략]] — 효율적 시장 가설과 액티브 전략의 한계
 - [[Behavioral-Biases-Risk|행동 편향과 리스크 관리]] — 규칙 기반 관리와 과신
+- [[Quant-Investing-Machine-Learning|퀀트 투자의 머신러닝]] — 금융 데이터의 적은 독립 표본, 텍스트 신호와 신호 가중치 학습의 검증
 - [[투자(Investing)]] — 지도

@@ -35,18 +35,20 @@ AI로 만든 화면을 구현에 넘길 때는 이미지뿐 아니라 디자인 
 
 ## 생성 UI가 같은 기본값으로 모이는 문제
 
-이 절은 2026-10-11 Anthropic의 공식 글과 frontend-design 스킬, Impeccable 저장소와 문서, GitHub 제품 페이지를 대조한 부분 검증이다.
+이 절은 2026-10-11 Anthropic의 공식 글과 frontend-design 스킬, Impeccable 저장소와 문서, GitHub 제품 페이지를 대조한 부분 검증이다. 2026-11-08에는 frontend-design의 계획 단계와 개정 이력, Impeccable의 규칙 수, 명령, 훅과 외부 요청을 저장소, 커밋과 개인정보 안내로 다시 대조했다. 다른 절은 다시 대조하지 않아 문서의 `verified_at`은 유지한다.
 
 지침 없이 LLM에 랜딩 페이지를 맡기면 Inter 글꼴, 흰 배경 위 보라 그라데이션, 최소한의 애니메이션으로 거의 매번 수렴한다는 관찰이 있다(2025-11 Anthropic 글 기준). 이는 분포 수렴(distributional convergence)으로 설명된다. 어디에나 무난한 디자인 선택이 웹 학습 데이터의 다수를 차지하고, 방향을 주지 않으면 모델이 그 확률 높은 중심에서 고른다는 것이다. 당시 제시된 대응은 글꼴, 색과 테마, 움직임, 배경을 구체적으로 지시하는 약 400토큰 분량의 지침을 스킬로 두고 필요할 때만 불러오는 방식이며, 현재 스킬 본문은 이후 개정으로 이보다 길다.
 
 기본값은 시점에 따라 바뀐다. frontend-design 스킬의 2026-06 개정은 AI 생성 디자인이 몰리는 모습으로 따뜻한 크림 배경에 획 대비가 큰 세리프 제목과 테라코타 강조색을 쓴 조합, 거의 검은 배경에 밝은 애시드 그린이나 주홍색 강조색 하나를 둔 조합, 신문형 레이아웃을 들었고, 2026-09-03 개정은 같은 모양의 둥근 카드로 내용을 나누는 SaaS 카드 구성과 주제와 무관한 템플릿 장식을 더했다. 이런 특징은 브리프에 따라 정당한 선택일 수 있지만 이유 없이 나타나면 선택이 아니라 기본값이다.
 
+이 스킬은 만들기 전 계획도 지시한다. 2026-06 개정부터 브리프로 짧은 디자인 계획을 먼저 세우고 코드를 쓰기 전에 그 계획을 브리프와 대조하게 했다(2025-12 판은 코딩 전에 미적 방향을 정하라고만 했다). 계획은 간결한 토큰 체계이고 팔레트는 이름 붙인 hex 값 4~6개로 적는다. 2026-06 판의 토큰 체계는 색, 서체, 레이아웃과 signature였고, 2026-09-03 판은 signature를 원칙(principles)으로, 팔레트를 기본 팔레트(core base palette)로 바꿨다. 대조에서는 비슷한 페이지라면 늘 내놓을 법한 기본값처럼 읽히는 부분을 고치고 무엇을 왜 바꿨는지 밝힌다. 2026-11-08 확인 기준 SKILL.md의 마지막 개정은 2026-09-03이고, anthropics/skills의 스킬 폴더에는 SKILL.md와 LICENSE.txt(Apache 2.0)만 있어 스크립트와 훅이 없다. 계획 대조는 모델의 자기 검토라 강제되지 않으므로 결과 화면은 사람이 브리프와 대조해 확인한다.
+
 Impeccable은 지침과 결정적 검사를 묶은 사례다. Paul Bakaus가 Anthropic의 frontend-design 스킬에서 출발해 만든 도구로, 공개된 스킬, 명령, CLI와 탐지 엔진은 Apache-2.0 오픈소스다. 프로젝트 루트에서 `npx impeccable install`로 설치한다.
 
 - **지침:** 스킬은 방향을 정한 뒤 UI를 편집하기 직전에 `reference/craft-floor.md`를 읽도록 지시한다. 이 문서는 품질 하한, 절대 금지 항목과 탐지기가 잡지 못하는 습관을 담고, 계획만 하는 작업에서는 읽지 않는다. 모델이 따르는 지시라 강제는 아니며, 읽었는지 확인하는 장치는 없다. 기계적으로 검사할 수 있는 항목만 훅이 켜져 있을 때 검사된다([[Harness-Gate-Placement|게이트 배치]]).
-- **결정적 탐지:** CLI와 브라우저 확장은 LLM과 API 키 없이 규칙으로 파일이나 URL을 검사한다. URL 검사는 로컬에 설치된 Chrome, Chromium 또는 Edge를 쓰며, CORS를 허용하지 않는 교차 출처 CSS는 읽지 못한다. 규칙 수는 자주 바뀐다. README는 2026-09-07 판에서 61개였고, 2026-10-05와 2026-10-07에 규칙을 하나씩 은퇴시켜 2026-10-11 확인 기준 59개다.
-- **훅:** Claude Code, Codex, GitHub Copilot과 Grok Build에서는 프로젝트 훅이 편집 뒤 탐지 결과를 에이전트에 돌려준다. 이 훅들은 편집을 막지 않으며 Grok Build는 턴이 끝날 때 결과를 전달한다. Cursor는 편집 뒤 검사 대신 쓰기 전에 제안된 내용을 검사해, 문제를 찾으면 그 쓰기를 막고 에이전트가 고치게 한다. Codex는 `/hooks`에서 프로젝트 훅을 승인해야 하고, Grok Build는 `/hooks-trust`나 `--trust`로 프로젝트 훅을 신뢰해야 하며, GitHub Copilot CLI는 `.github/hooks/impeccable.json`이 기본 브랜치에 커밋된 뒤에 훅을 실행한다. 설치나 업데이트 때 `--no-hooks`를 주면 그 실행에서만 훅 설치를 건너뛰고, 이미 설치된 검사는 `/impeccable hooks off`로 끄며, 각 도구 설정의 훅 항목까지 지우려면 `/impeccable hooks reset`을 쓴다.
-- **명령:** 2026-10-11 README 기준 audit, bolder, quieter 등 24개 명령이 있다(예: `/impeccable audit`, 2026-10-01 `generate` 추가 전에는 23개). 웹 프로젝트에서 audit은 접근성, 성능, 테마, 반응형, 구현 무결성 5개 영역을 각각 0~4점(합계 20점)으로 매겨 심각도 순 보고서를 내고 코드는 고치지 않는다. 총점이 높아도 출시를 막을 수준의 문제가 남을 수 있다. 네이티브 앱은 플랫폼별 항목으로 검사한다.
+- **결정적 탐지:** CLI와 브라우저 확장은 LLM과 API 키 없이 규칙으로 파일이나 URL을 검사한다. URL 검사는 로컬에 설치된 Chrome, Chromium 또는 Edge를 쓰며, CORS를 허용하지 않는 교차 출처 CSS는 읽지 못한다. 규칙 수는 자주 바뀐다. README는 2026-09-07 판에서 61개였고, 2026-10-05와 2026-10-07에 규칙을 하나씩 은퇴시켜 2026-10-11 확인 기준 59개였다. 이후 2026-10-18에 줄바꿈 규칙 두 개(straggler, unbalanced-heading), 2026-10-22에 하드 오프셋 그림자 탐지를 더해 2026-11-08 README 기준 62개다. 새로 더한 세 규칙은 모두 권고(advisory) 등급이라 CLI의 실패 수와 종료 코드에 들지 않는다.
+- **훅:** 2026-11-08 README 기준 Claude Code, Cursor, Codex, GitHub Copilot, Grok Build와 Hermes Agent(2026-10-28 추가)에서 프로젝트 훅이 에이전트가 편집한 UI 파일을 검사해 작업을 마치기 전에 결과를 돌려주며, 스킬의 `reference/hooks.md`는 훅이 편집을 막지 않는다고 적는다. Grok Build는 턴이 끝날 때 결과를 전달하고, Hermes Agent는 `write_file`이나 `patch` 도구 결과 안에 담아 전달한다. Cursor는 쓰기 전에 제안된 내용을 검사해 막던 방식에서 2026-10-22에 편집 뒤 검사로 바뀌었고, 예전 쓰기 전 검사가 남은 프로젝트는 `npx impeccable update` 등으로 옮기기 전까지 쓰기를 막을 수 있다. 2026-11-08 확인한 사이트의 훅 문서는 아직 Cursor의 쓰기 전 차단을 설명해 저장소 문서와 다르다. Codex는 `/hooks`에서 프로젝트 훅을 승인해야 하고 훅을 바꾸는 업데이트 뒤에도 다시 승인한다. Grok Build는 `/hooks-trust`나 `--trust`로 프로젝트 훅을 신뢰해야 한다. Hermes Agent는 훅이 플러그인이라 `hermes plugins enable impeccable-design-hook`을 한 번 실행해 켜야 하고, 프로젝트에 설치했다면 `hermes skills trust`로 신뢰한 프로젝트에서만 훅 실행기가 돈다. VS Code의 GitHub Copilot에서는 Visual Studio Marketplace의 Impeccable 확장으로 설치하며, 이 경로는 훅 없이 스킬만 들어간다. GitHub Copilot CLI는 `.github/hooks/impeccable.json`이 기본 브랜치에 커밋된 뒤에 훅을 실행한다. 설치나 업데이트 때 `--no-hooks`를 주면 그 실행에서만 훅 설치를 건너뛰고, 이미 설치된 검사는 `/impeccable hooks off`로 끄며, 각 도구 설정의 훅 항목까지 지우려면 `/impeccable hooks reset`을 쓴다.
+- **명령:** 2026-10-11 README 기준 audit, bolder, quieter 등 24개 명령이 있다(예: `/impeccable audit`, 2026-10-01 `generate` 추가 전에는 23개). 2026-11-08 README도 제목에서 24개 명령을 내세우지만 표에는 23개만 싣고, 24번째인 `craft`는 일반 제작 요청의 폐지 예정 별칭이라고 표 아래에 적는다. 웹 프로젝트에서 audit은 접근성, 성능, 테마, 반응형, 구현 무결성 5개 영역을 각각 0~4점(합계 20점)으로 매겨 심각도 순 보고서를 내고 코드는 고치지 않는다. 총점이 높아도 출시를 막을 수준의 문제가 남을 수 있다. 네이티브 앱은 플랫폼별 항목으로 검사한다.
 - **제공 경로:** GitHub Copilot 앱에는 Impeccable 디자인 스킬이 실험 기능으로 들어 있어 Settings의 Experimental 탭에서 켠다. 소개 페이지는 탐지기와 훅을 언급하지 않는다.
 
 한 기본값을 피하도록 지시하면 다른 기본값으로 옮겨 갈 수 있다. Impeccable의 변경 기록은 2026-04-30에 SaaS 크림 룩에서 벗어날 때마다 잡지 표지풍으로 기우는 2차 반사를 막는 항목을 넣었고, 2026-05에 이탤릭 세리프 제목(05-04)과 크림 배경(05-28)을 잡는 탐지 규칙을 더했다. 2026-05-28에는 약 190개 표본 분석으로 스킬 자신의 문구가 결함을 만든다고 보고, 극단적 자간과 이탤릭 세리프 히어로를 유도하던 범주별 미감 레시피를 걷어냈다.
@@ -56,6 +58,8 @@ Impeccable은 지침과 결정적 검사를 묶은 사례다. Paul Bakaus가 Ant
 - 탐지 결과는 이미 알려진 흔적에 대한 회귀 검사로 쓰고 디자인 품질 판정으로 쓰지 않는다. 브리프가 의도한 선택이면 이유를 남기고 예외로 둔다. Impeccable은 `npx impeccable ignores`로 규칙, 파일, 값 단위 예외를 기록하고, 값 단위 예외에는 `--reason`으로 사유를 남긴다.
 - 이 탐지기는 프로젝트와 무관하게 미리 정한 규칙으로 패턴을 찾는다. 프로젝트가 정한 테마 토큰과 컴포넌트 계약을 코드가 지키는지는 [[Design-System-Lint|디자인 시스템 lint]]처럼 프로젝트 규칙을 검사하는 도구로 따로 확인한다.
 - 설치는 지원 도구에 프로젝트 훅을 함께 넣고, 엔진이 실행기 옆에 없으면 처음 실행 때 네이티브 엔진을 `~/.impeccable/bin/`에 내려받는다. Claude Code에서는 설치된 명령 훅이 모델 도구 승인과 별개로 돌아, 실행기 명령을 거부해도 첫 편집이나 Stop 이벤트에서 엔진을 내려받을 수 있다. 외부 스킬과 플러그인을 들일 때처럼 설치되는 파일, 훅이 실행하는 명령과 끄는 방법을 먼저 확인한다([[Agent-Skills#설치 경로와 신뢰 — 표면마다 따로, 출처는 먼저|스킬 설치의 신뢰 경계]], [[Claude-Code-Customization#플러그인 — 확장을 묶어 설치하는 단위|플러그인의 보안 경계]]).
+- 새 디자인을 시작하면 스킬은 impeccable.style 카탈로그에서 시각 방향 후보를 받아 오고, 버전 확인도 보통 하루 한 번 이하로 한다. 텔레메트리를 꺼도 후보와 미리보기 이미지 요청은 남고, 꺼지는 것은 어떤 방향이 제시되고 선택됐는지의 익명 기록이다. 로컬 카탈로그를 설정하면 후보 요청 없이 후보를 받을 수 있지만, 미리보기를 띄우면 그 이미지는 따로 Impeccable 서버에서 받을 수 있다. README와 개인정보 안내(2026-10-21 갱신)는 이 요청들이 프로젝트 이름, 파일 경로와 코드, 프롬프트와 브리프, `PRODUCT.md`와 탐지 결과를 Impeccable 서버로 보내지 않는다고 밝힌다. 이 범위 밖에서 `OPENAI_API_KEY`로 Impeccable의 이미지 생성기를 쓰면 이미지 프롬프트와 명령에 준 참고 이미지가 OpenAI로 올라가고, 아래 live 모드의 Apply는 최근 1분 안에 폴링한 채팅 에이전트가 없으면 편집 내용과 소스 경로 후보를 에이전트 CLI에 넘긴다. 기록은 `npx impeccable telemetry off`, `DO_NOT_TRACK=1`, `IMPECCABLE_NO_TELEMETRY=1`이나 프로젝트 `.impeccable/config.json`의 `"telemetry": false`로, 버전 확인은 `IMPECCABLE_NO_UPDATE_CHECK=1`로 끈다. 외부 요청을 줄여야 하는 고객 작업은 이 값을 작업 셸에 먼저 둔다.
+- live 모드의 Apply는 대기 중인 문구 수정을 채팅 에이전트에 넘기는데, 최근 1분 안에 폴링한 에이전트가 없으면 PATH의 `codex` CLI(없으면 `claude`)를 승인, 권한 검사와 샌드박스를 끈 채(`--dangerously-bypass-approvals-and-sandbox` 또는 `--permission-mode bypassPermissions`) 현재 환경을 물려받아 실행한다. 프롬프트에는 그 수정, 편집한 요소의 HTML과 주변 텍스트, 페이지 URL과 소스 경로 후보가 들어간다(2026-11-02 README에 명시). 무인 하위 프로세스 실행을 피하려면 live 모드를 시작하는 환경에 `IMPECCABLE_LIVE_COPY_AGENT=chat`(채팅 세션에서 적용)이나 `off`(Apply 끔)를 미리 둔다. 서버는 이 값을 시작할 때 한 번만 읽는다([[Claude-Code-Config-Permissions|권한 모드]]).
 - 이번에 확인한 개선 근거는 제작자 쪽 분석이고 GitHub 소개 문구에도 측정값이 없다. 독립 평가는 찾지 못했으므로 자기 화면에서 적용 전후를 비교하고 사람이 브리프와 대조해 판정한다.
 
 ## 생성 UI를 다듬는 외부 자원과 납품 전 출처 확인
@@ -119,17 +123,26 @@ HyperFrames는 장면, 시간과 움직임을 HTML 프로젝트로 관리하며 
 - [HyperFrames, How a HyperFrames project works](https://hyperframes.heygen.com/concepts)
 - [HyperFrames, Build on HyperFrames](https://hyperframes.heygen.com/developers)
 - [Improving frontend design through Skills — Anthropic](https://claude.com/blog/improving-frontend-design-through-skills)
-- [frontend-design SKILL.md, 2026-09-03 판 — GitHub, anthropics/skills](https://github.com/anthropics/skills/blob/41bbe19d/skills/frontend-design/SKILL.md)
-- [Update frontend-design skill (#1293) — GitHub, anthropics/skills](https://github.com/anthropics/skills/commit/2235be7c) — 2026-06 개정
-- [pbakaus/impeccable — GitHub](https://github.com/pbakaus/impeccable)
+- [frontend-design SKILL.md, 2026-09-03 판 — GitHub, anthropics/skills](https://github.com/anthropics/skills/blob/41bbe19d/skills/frontend-design/SKILL.md) — 계획의 토큰 체계, 4~6개 hex 팔레트와 브리프 대조 지시
+- [Update frontend-design skill (#1293) — GitHub, anthropics/skills](https://github.com/anthropics/skills/commit/2235be7c) — 2026-06 개정, 계획과 브리프 대조 단계 도입
+- [frontend-design SKILL.md, 2025-12-04 판 — GitHub, anthropics/skills](https://github.com/anthropics/skills/blob/0075614/skills/frontend-design/SKILL.md) — 계획 단계 도입 전
+- [History for skills/frontend-design/SKILL.md — GitHub, anthropics/skills](https://github.com/anthropics/skills/commits/main/skills/frontend-design/SKILL.md) — 2026-11-08 확인, 마지막 개정은 2026-09-03(#1713)
+- [frontend-design LICENSE.txt — GitHub, anthropics/skills](https://github.com/anthropics/skills/blob/main/skills/frontend-design/LICENSE.txt) — Apache 2.0, 스킬 폴더는 SKILL.md와 이 파일뿐
+- [pbakaus/impeccable — GitHub](https://github.com/pbakaus/impeccable) — 2026-11-08 README의 규칙 62개, 명령 표와 `craft` 별칭, 훅 지원 도구와 도구별 추가 단계(Hermes 플러그인 활성화, VS Code 확장의 훅 미설치), 텔레메트리와 live Apply 하위 프로세스
 - [pbakaus/impeccable README, 2026-09-07 판 — GitHub](https://github.com/pbakaus/impeccable/blob/ec0928d7/README.md) — 규칙 61개 시점
 - [Retire the layout-transition rule (#978) — GitHub, pbakaus/impeccable](https://github.com/pbakaus/impeccable/commit/d98b0be4e18321903b13e69c2f2b5df064cb7623)
+- [Add straggler and unbalanced-heading line-break rules (#1026) (#1029) — GitHub, pbakaus/impeccable](https://github.com/pbakaus/impeccable/commit/6c96b3c89c9dff3ca7639bc715954730961bec46) — 규칙 59개에서 61개로, 두 규칙 모두 권고 등급
+- [Add advisory detection for hard offset shadows (#998) — GitHub, pbakaus/impeccable](https://github.com/pbakaus/impeccable/commit/c4cfe525de176bd4c8b3291e91082a253e1bc0d7) — 62개, CLI 실패 수에 들지 않는 권고 등급
+- [Run Cursor's design hook after the edit on postToolUse (#1069) — GitHub, pbakaus/impeccable](https://github.com/pbakaus/impeccable/commit/beadc35467caf0a55858d425b435e9c07b1a7877) — Cursor 훅의 편집 뒤 전환과 예전 쓰기 전 검사의 이전
+- [History for README.md — GitHub, pbakaus/impeccable](https://github.com/pbakaus/impeccable/commits/main/README.md) — 2026-11-08 확인, 규칙 추가(2026-10-18, 2026-10-22), Cursor 훅 변경(2026-10-22), Hermes Agent 훅(2026-10-28)과 live Apply 명시(2026-11-02)의 날짜
 - [impeccable SKILL.md — GitHub, pbakaus/impeccable](https://github.com/pbakaus/impeccable/blob/main/.claude/skills/impeccable/SKILL.md)
 - [craft-floor.md — GitHub, pbakaus/impeccable](https://github.com/pbakaus/impeccable/blob/main/.claude/skills/impeccable/reference/craft-floor.md)
-- [hooks.md — GitHub, pbakaus/impeccable](https://github.com/pbakaus/impeccable/blob/main/.claude/skills/impeccable/reference/hooks.md)
+- [hooks.md — GitHub, pbakaus/impeccable](https://github.com/pbakaus/impeccable/blob/main/.claude/skills/impeccable/reference/hooks.md) — 2026-11-08 확인, 도구별 훅 시점, 편집을 막지 않는 동작, 예전 Cursor 쓰기 전 검사와 Hermes의 `hermes skills trust` 조건
+- [CLI-CONTRACT.md — GitHub, pbakaus/impeccable](https://github.com/pbakaus/impeccable/blob/main/docs/CLI-CONTRACT.md) — 2026-11-08 확인, 권고 등급 규칙을 실패 수와 종료 코드에서 빼는 계약
 - [Impeccable, FAQ](https://impeccable.style/faq)
 - [Changelog — Impeccable](https://impeccable.style/changelog)
-- [Impeccable, Automatic design checks](https://impeccable.style/docs/hooks)
+- [Impeccable, Automatic design checks](https://impeccable.style/docs/hooks) — 2026-11-08에도 Cursor의 쓰기 전 차단을 설명하고 Hermes Agent를 싣지 않음
+- [Impeccable, Privacy](https://impeccable.style/privacy) — 2026-10-21 갱신, 방향 후보와 미리보기 이미지 요청, 로컬 카탈로그, 선택 보고의 전송 항목, OpenAI 이미지 생성의 프롬프트와 참고 이미지 전송, 버전 확인과 끄는 방법
 - [Impeccable, Run a detector scan](https://impeccable.style/docs/detector)
 - [Impeccable, audit](https://impeccable.style/docs/audit)
 - [GitHub Copilot app — GitHub](https://github.com/features/ai/github-app)

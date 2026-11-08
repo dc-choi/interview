@@ -1,7 +1,7 @@
 ---
 tags: [palantir, compute-modules, autoscaling, observability]
 status: done
-verified_at: 2026-10-16
+verified_at: 2026-11-08
 category: "AI엔지니어링(AIEngineering)"
 aliases: ["Compute Modules 확장과 복구"]
 ---
@@ -12,9 +12,9 @@ Horizontal scaling은 replica 수를 바꾼다. Replica의 CPU/memory/GPU 구성
 
 ## 동시성과 자동 확장
 
-Replica concurrency는 동시 query 수이며 기본 1이다. SDK는 이를 처리하지만 custom client는 MAX_CONCURRENT_TASKS를 구현에 반영해야 한다. Minimum 0은 idle 시 0으로 줄일 수 있다는 뜻이다. 최초 배포, 새 query와 predicted load에서는 실제 요청이 없어도 다시 시작할 수 있다. Nonzero minimum은 idle에도 가용성과 비용을 유지한다.
+Replica concurrency는 동시 query 수이며 기본 1이다. SDK는 이를 처리하지만 custom client는 MAX_CONCURRENT_TASKS를 구현에 반영해야 한다. Minimum 0은 idle 시 0으로 줄일 수 있다는 뜻이다. 요청이 오면 즉시 0에서 scale up하고, 최초 배포와 predicted load에서는 요청이 없어도 scale up한다. Nonzero minimum은 idle에도 가용성과 비용을 유지한다.
 
-Load는 `running jobs / (replicas * concurrency)`로 계산한다. Scale-up은 threshold 이상, scale-down은 threshold 미만 상태가 delay만큼 유지될 때 replica 하나를 더하거나 뺀다. 기본 threshold는 각각 0.75, delay는 up 1분/down 30분이다. Up threshold는 down보다 낮을 수 없고 up delay는 down보다 길 수 없다. 둘 다 0~1 범위다.
+Load는 `running jobs / (replicas * concurrency)`로 계산한다. Scale-up은 threshold 이상, scale-down은 threshold 미만 상태가 delay만큼 유지될 때 replica 하나를 더하거나 뺀다. 기본 threshold는 각각 0.75, delay는 up 1분/down 30분이다. Up threshold는 down보다 낮을 수 없고 up delay는 down보다 길 수 없다. 두 threshold는 모두 0.0~1.0 범위여야 한다.
 
 Predictive scaling도 configured maximum을 따른다. 현재 schedule override는 하나이며 요일/시간대/timezone과 min/max를 바꾼다. 바깥 시간에는 기본값을 적용한다. Concurrency를 낮추면 같은 workload에서 replica 수가 늘 수 있으므로 latency, resource saturation과 함께 조정한다.
 
@@ -40,9 +40,9 @@ History는 configuration ID, image version 변경, 시작/중지 주체와 run�
 
 ## 비용은 실행 중 replica 시간에 따른다
 
-Query 성공 수가 아니라 starting/active replica 시간이 compute-seconds를 소비한다. CPU 계열 계산은 `max(vCPU, GiB RAM / 7.5) * replica 수 * CPU rate * 시간`, GPU는 GPU 수와 rate를 곱해 더한다. Replica가 시간에 따라 바뀌면 구간별로 합산한다.
+Query 성공 수가 아니라 starting/active replica 시간이 compute-seconds를 소비한다. CPU 계열 계산은 `max(vCPU, GiB RAM / 7.5) * replica 수 * CPU rate * 시간`, GPU는 `GPU/replica * replica 수 * GPU rate * 시간`으로 따로 계산한다. Usage and pricing 문서는 두 공식을 따로 제시할 뿐 GPU replica에서 vCPU 항과 GPU 항을 합산하는지 적지 않으므로 실제 usage attribution과 대조한다. Replica가 시간에 따라 바뀌면 구간별로 합산한다.
 
-2026-10-16 문서의 기본 rate는 vCPU 0.2, T4 1.2, V100 3, A100 1.3, A10G 1.5, L4 2.1, H100 4.7이다. 이는 통화 가격표가 아니며 enterprise 계약 조건과 실제 usage attribution을 확인한다. 기본 resource 안내는 1 vCPU/4GB/no GPU이며 request와 limit, 실제 소비를 같은 값으로 단정하지 않는다. 여러 container가 있는 replica 전체 구성을 확인한다.
+2026-11-08 대조한 기본 rate는 vCPU 0.2, T4 1.2, V100 3, A100 1.3, A10G 1.5, L4 2.1, H100 4.7, H200 4.7, B200 5.7, B300 7.1, RTX PRO 6000 3.5다. Rate는 compute-seconds를 계산할 때 곱하는 배율이며 통화 가격표가 아니다. Enterprise 계약은 이 배율이 기본값과 다를 수 있으므로 계산 전에 Palantir 담당자에게 계약 배율을 확인하고 실제 usage attribution과 대조한다. 기본 resource 안내는 1 vCPU/4GB/no GPU이며 request와 limit, 실제 소비를 같은 값으로 단정하지 않는다. 여러 container가 있는 replica 전체 구성을 확인한다.
 
 ## 출처
 
