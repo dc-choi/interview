@@ -1,7 +1,7 @@
 ---
 tags: [security, memory-safety, vulnerability, cwe, openssl, php]
 status: done
-verified_at: 2026-11-03
+verified_at: 2026-11-09
 category: "보안(Security)"
 aliases: ["Memory Safety Vulnerabilities", "메모리 안전성 취약점", "Out-of-bounds Read", "범위 밖 읽기", "Use After Free", "해제 후 사용", "Heartbleed", "PHP2Shell"]
 ---
@@ -68,6 +68,20 @@ EDK II의 CVE-2026-97631은 운영체제 안의 PHP와 다른 공격 표면이�
 
 따라서 GHSA가 밝힌 웹 워커 계정 기준과 위 FPM 설정에서는 원격 코드 실행을 곧바로 서버의 root 장악으로 읽지 않는다. 영향 범위는 워커 계정이 읽고 쓸 수 있는 것, 즉 애플리케이션 설정의 DB 접속 정보, 프로세스 환경 변수, 세션 파일과 소스에서 시작한다. 권한 상승 없이도 그 호스트에서 네트워크로 닿는 내부 서비스, 읽은 자격 증명으로 접속할 수 있는 DB와 클라우드 인스턴스의 역할 자격 증명이 범위에 들어간다. 호스트의 다른 계정과 root 권한은 별도의 권한 상승 단계로 본다(이 문서의 영향 산정 제안). 반대로 풀 사용자를 root로 두었거나 워커 계정에 넓은 쓰기 권한을 줬다면 같은 취약점의 피해가 커진다.
 
+### php.ini로 워커 안의 행동 범위를 좁힌다
+
+아래 지시어는 PHP 엔진의 결함을 고치지 않는다. 웹셸이나 코드 주입처럼 PHP 코드 수준에서 실행에 성공한 공격자가 쓸 수 있는 기능을 줄이거나 버전 정보를 덜 드러낼 뿐이다(이 문서의 해석). 표의 동작, 설정 위치, 기본값과 한계는 PHP Manual 기준이다(2026-11-09 대조).
+
+| 지시어 | 하는 일 | 설정 위치와 기본값 | 한계 |
+|---|---|---|---|
+| `disable_functions` | 쉼표로 나열한 내부 함수를 끈다. 사용자 정의 함수에는 영향이 없다. PHP 8.0.0부터는 함수 정의 자체를 지운다 | php.ini에서만 설정한다(httpd.conf 불가). PHP-FPM 풀 설정에서 정의하면 php.ini 값을 덮어쓰지 않고 뒤에 덧붙이므로, 풀별로 더 막을 수는 있어도 php.ini의 항목을 풀 수는 없다. 기본값은 빈 문자열 | 우회될 수 있으며 공유 호스팅 환경에서 충분한 보안 수단으로 보지 말라는 경고가 있다 |
+| `open_basedir` | PHP가 열 수 있는 파일을 지정한 디렉터리 트리로 제한한다 | INI_ALL. 런타임에 더 좁힐 수 있다. 기본값은 모든 파일 허용 | 완전하지 않은 추가 안전망이라 보안이 필요한 곳에서 의존할 수 없고, Unix domain socket 접근은 막지 않는다 |
+| `allow_url_include` | `include`, `require` 계열에서 URL 래퍼 사용을 허용한다. `allow_url_fopen`이 켜져 있어야 동작한다 | INI_SYSTEM. 기본값 `0`. PHP 7.4.0부터 deprecated | 꺼 두면 URL 래퍼를 통한 원격 포함을 막지만 로컬 파일 포함과 래퍼 밖의 경로는 별개다(해석) |
+| `expose_php` | HTTP 헤더(`X-Powered-By`)에 PHP 설치와 버전을 드러낸다 | php.ini에서만 설정한다. 기본값 `1` | 끄면 버전 노출만 줄고 취약한 버전은 그대로다 |
+
+- `disable_functions`에 `exec`, `system`, `passthru`, `shell_exec`, `proc_open`, `popen` 같은 프로그램 실행 함수를 넣으면 PHP 코드 수준에서 외부 프로세스를 띄우는 경로가 줄어든다. 이 이름들은 예시이며 전체 목록은 PHP Manual의 Program execution Functions와 확장(예: `pcntl_exec`)에서 확인한다. 애플리케이션이나 플러그인이 이 함수를 실제로 쓰는지 스테이징에서 먼저 확인한다(운영 제안).
+- PHP2Shell처럼 엔진 내부의 메모리 오류로 워커 안에서 네이티브 코드가 실행되면 이 설정은 PHP 프로세스 안의 검사라 그 코드를 묶지 못한다. 그때의 한계는 [[#원격 코드 실행의 권한은 워커 계정에서 시작한다|워커 계정과 운영체제 권한]]이다(이 문서의 해석). 위 표의 설정은 [[#설정은 노출을 줄일 뿐이고 수정은 업데이트다|업데이트를 대신하지 않는 완화]]와 같은 등급으로 두고, 워커 계정 권한 최소화와 함께 PHP 코드 수준 공격의 피해 범위를 줄이는 층으로 쓴다.
+
 ## 설정은 노출을 줄일 뿐이고 수정은 업데이트다
 
 - php.net은 업데이트만이 완전한 해결이고 설정 완화는 특정 공격 경로의 노출만 줄일 뿐 설치를 안전하게 만들지 않는다고 적는다. 관리자 수준에서 `memory_limit=-1`을 설정하고 강제하는 것이 CVE-2026-109618의 주된 설정 완화지만, 그 아래의 할당 실패가 여전히 취약 경로에 닿을 수 있어 완전하지 않다.
@@ -119,14 +133,17 @@ Node.js는 적은 수의 스레드가 많은 클라이언트를 처리하고, �
 - [Security advisory: Critical remote code execution vulnerabilities, update now — PHP](https://www.php.net/archive/2026.php#2026-10-21-5) — 위험 대상 SAPI, mod_php 위험 평가와 설정 완화의 한계
 - [PHP2Shell: A tale of two PHP remote vulnerabilities — Calif](https://calif.io/php2shell/) — mod_php와 PHP-FPM의 요청 시작 실패 처리 차이
 - [PHP2Shell: AI uncovers critical RCE vulnerabilities affecting 70% of the Internet — Wiz](https://www.wiz.io/blog/php2shell-php-rce) — 2026-10-21 게시. 코드 실행 없는 메모리 노출 시연
-- [PHP Manual, FPM Configuration](https://www.php.net/manual/en/install.fpm.configuration.php) — `user`와 `pm.max_requests` 정의
+- [PHP Manual, FPM Configuration](https://www.php.net/manual/en/install.fpm.configuration.php) — `user`와 `pm.max_requests` 정의. 풀 설정의 `disable_functions`가 php.ini 값에 덧붙는 규칙
+- [PHP Manual, Program execution Functions](https://www.php.net/manual/en/ref.exec.php) — `proc_open`, `popen`을 포함한 프로그램 실행 함수 목록
 - [sapi/fpm/www.conf.in — GitHub, php/php-src](https://github.com/php/php-src/blob/master/sapi/fpm/www.conf.in) — 2026-11-02 master 기준. 자식 프로세스 사용자 지정 조건과 root 실행 옵션 주석
 - [sapi/fpm/php-fpm.8.in — GitHub, php/php-src](https://github.com/php/php-src/blob/master/sapi/fpm/php-fpm.8.in) — 2026-11-02 master 기준. `--allow-to-run-as-root`의 기본 비활성 설명
-- [PHP Manual, Description of core php.ini directives](https://www.php.net/manual/en/ini.core.php) — 수정 릴리스 이후 `memory_limit`의 soft limit 동작
+- [PHP Manual, Description of core php.ini directives](https://www.php.net/manual/en/ini.core.php) — 수정 릴리스 이후 `memory_limit`의 soft limit 동작. 2026-11-09 `disable_functions`, `open_basedir`, `expose_php`의 설명, 기본값, 설정 위치와 경고 대조
+- [PHP Manual, Filesystem and Streams Configuration Options](https://www.php.net/manual/en/filesystem.configuration.php) — 2026-11-09 `allow_url_include`의 설명, 기본값, `allow_url_fopen` 요구와 7.4.0 deprecated 표기 대조
 - [The Case for Memory Safe Roadmaps — CISA](https://www.cisa.gov/sites/default/files/2023-12/The-Case-for-Memory-Safe-Roadmaps-508c.pdf) — 2023년 12월. 임의 코드 실행과 소프트웨어 실행 계정의 장악
 - [Node.js, Don't Block the Event Loop (or the Worker Pool)](https://nodejs.org/en/learn/asynchronous-work/dont-block-the-event-loop) — 적은 수의 스레드가 많은 클라이언트를 처리하는 구조
 - [PHP보안 세계비상? 놀라지마. 심장출혈 시즌2니까! — YouTube, 널널한 개발자 TV](https://www.youtube.com/watch?v=uZ2G4e81biA) — 2026-10-23 게시. 두 결함의 비교를 다룬 계기 자료이며 제작자는 자료를 AI로 만들었다고 밝혔다. 사실은 위 1차 출처로 대조했고, 웹 서버가 관리자 권한으로 실행됐을 것이라는 추정, 패치 전에는 대책이 없다는 설명과 유출 대 코드 실행의 대비는 1차 출처 기준으로 고쳐 썼다
 - [AI에 뚫린 보안, 전세계 69% 웹사이트 해킹 비상, 해킹이 되는 원리와 바이브코딩으로 방어책까지 모두 공개, php2shell — YouTube, 투더제이 TTJ](https://www.youtube.com/watch?v=RnJMBDnAsBM) — 2026-10-24 공개 영상, 앞단 WAF 규칙과 조사 시작일의 계기 자료. 사실은 Cloudflare, AWS와 PHP 원문으로 대조했다. 업로드 폴더의 새 PHP 파일 점검은 AWS의 파일 변경 확인에 포함되는 좁은 예시이고, 낯선 관리자 계정, PHP 비정상 종료와 낯선 외부 접속 점검은 AWS 원문에서 확인하지 못해 옮기지 않았다. 의심 IP를 먼저 차단하라는 제안은 공개 IP 지표를 차단 대신 조사에 쓰라는 AWS 지침에 맞춰 옮기지 않았다
+- [패치 공지 직후 공격이 시작된다, PHP 레거시 서버가 망하는 이유 — YouTube, 길리랩](https://www.youtube.com/watch?v=9k1JdelFRvs) — 2026-10-28 공개 영상, php.ini 하드닝 절의 계기 자료. 지시어의 동작과 한계는 PHP Manual로 대조했다. 영상의 노출 시간 예시 수치는 설명용 가정이라 옮기지 않았고, 인벤토리, 영향 판단과 재시작 확인 같은 패치 대응 절차는 기존 [[AI-Accelerated-Threat-Defense|악용 시간 단축 대비]]와 [[Dependency-Vulnerability-Scanning#언어 런타임은 버전 관리와 호스팅 책임으로 대응한다|언어 런타임 절]]이 1차 출처로 다룬다
 
 ## 관련 문서
 

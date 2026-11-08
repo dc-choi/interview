@@ -8,7 +8,23 @@ aliases: ["WMS Inbound Context Modeling", "WMS 입고 컨텍스트 모델링", "
 
 # WMS 입고(Inbound) 컨텍스트 모델링
 
-창고 관리 시스템(WMS)의 입고 컨텍스트는 입고 예정 등록, 검수, 적재가 순서대로 이어져 흐름 자체는 단순하다. 대신 예정 정보를 보내는 구매, 영업, 화주 시스템부터 공장과 자동화 설비까지 경계 밖 연결이 많다. 이 문서는 유스케이스에서 도메인 이벤트까지 차례로 좁혀 가는 분석 순서와, 입고, 출고, 재고를 별도 컨텍스트로 나눈 설계에서 입고에 그 순서를 적용한 예시를 정리한다. 예시의 상태 이름과 엔티티 구성은 하나의 설계안이며 업계 표준이 아니다.
+창고 관리 시스템(WMS)의 입고 컨텍스트는 입고 예정 등록, 검수, 적재가 순서대로 이어져 흐름 자체는 단순하다. 대신 예정 정보를 보내는 구매, 영업, 화주 시스템부터 공장과 자동화 설비까지 경계 밖 연결이 많다. 이 문서는 세 컨텍스트에 공통인 코어 컨텍스트 선정, 유스케이스에서 도메인 이벤트까지 차례로 좁혀 가는 분석 순서와, 입고, 출고, 재고를 별도 컨텍스트로 나눈 설계에서 입고에 그 순서를 적용한 예시를 정리한다. 예시의 상태 이름과 엔티티 구성은 하나의 설계안이며 업계 표준이 아니다.
+
+## 코어 컨텍스트를 먼저 고른다
+
+요구사항을 처음 모으면 로그인, 권한, 정산, 리포트처럼 창고 업무의 본질과 거리가 있는 항목과, 전사 시스템에서 관리될 수 있는 기준 정보도 섞여 들어온다. Evans의 DDD Reference는 Context Map에서 프로젝트에 작동하는 모델을 모두 찾아 각자의 Bounded Context를 정하고, 모델 사이의 접점과 번역, 공유와 격리를 적되 우선 현재 지형을 그리고 변환은 나중에 하라고 한다. Core Domain은 작게 정의해 나머지 지원 모델과 코드에서 쉽게 구분되게 하고, 프로젝트의 동기가 아닌 응집된 하위 영역은 Generic Subdomain으로 분리해 우선순위를 낮추고 기성 솔루션도 검토하라고 한다.
+
+WMS에 적용한 하나의 설계안은 다음과 같다(강의 예시이며 회사와 제품마다 경계가 다르다).
+
+| 구분 | 컨텍스트 | 다루는 방식 |
+|---|---|---|
+| 코어 | 입고, 출고, 재고 | WMS의 존재 이유이므로 깊은 모델과 담당 개발자를 둔다 |
+| 공통 기반 | 기준 정보(마스터 데이터), 사용자와 권한 | 전사 ERP나 SSO가 있으면 연동 컨텍스트로 받고, 다른 프로젝트에서도 재사용한다 |
+| 주변 업무 | 정산, 리포트, 운송과 배송(TMS) | 사내 전문 시스템이 있으면 연계로 처리하고, 연동 부담은 개발 범위와 견적에 반영한다. 고객사마다 맞춤 개발이 필요해지기 쉬운 영역이다 |
+
+- 요구사항 목록을 AI에 주고 Context Map부터 그리게 했더니 코어가 아닌 항목이 드러나 Bounded Context를 고르기 쉬웠다는 한 강의의 경험이 있다. 위 표의 코어 선정과 그 이유도 AI가 만든 초안을 검토한 결과다. Evans의 Reference는 Context Map 패턴 안에서 각 모델의 Bounded Context를 정의하라고 할 뿐 둘의 선후를 정하지 않는다.
+- 코어를 정한 뒤에는 처음 모은 요구사항을 사용자별로 코어 컨텍스트에 다시 배정하고, 유스케이스에 코드를 붙여 구현과 테스트까지 추적한다([[Requirements-Traceability|요구사항 추적성]]). 같은 강의는 경계를 먼저 나누면 컨텍스트 간 관계가 덜 정의돼 프로세스가 꼬이기 쉽다고 보고, 코어 컨텍스트 사이의 흐름(입고 적재가 재고에 닿는 지점 등)을 시퀀스 다이어그램으로 먼저 확인한다.
+- 사용자가 적어 준 요구사항에 잘 드러나지 않는 비기능 요구사항은 늦게 발견되기 쉽다. 감사 로그, 같은 재고에 대한 동시 할당과 초과 할당 허용 기준([[WMS-Inventory-Context-Modeling#정합성과 동시성 전략|재고의 정합성과 동시성]]), 권한, 대형 풀필먼트 센터 규모에서의 데이터 격리(예: 화주별), 분산 구성에서의 트랜잭션 복구, PDA와 설비 같은 하드웨어 연동이 그 예다. 하드웨어 연동은 프로젝트가 시작돼야 구체화되는 경우가 많다.
 
 ## 분석 순서
 
@@ -136,6 +152,7 @@ aliases: ["WMS Inbound Context Modeling", "WMS 입고 컨텍스트 모델링", "
 ## 출처
 
 - [YouTube, 코딩하는오후, 4강 Inbound 입고 관리 Context 심층 분석](https://www.youtube.com/watch?v=APBH-cQovdg)
+- [YouTube, 코딩하는오후, 도메인 모델링으로 푸는 WMS](https://www.youtube.com/watch?v=0cxH00t7ECU) — 2026-10-28 공개된 1~7강 묶음. 코어 컨텍스트 선정의 설계안, Context Map 우선 순서의 경험과 비기능 요구사항 목록을 옮겼고, 개념 정의는 아래 DDD Reference로 대조했다
 - [Microsoft Learn, Warehouse handling of inbound loads for purchase and inbound shipment orders](https://learn.microsoft.com/en-us/dynamics365/supply-chain/warehousing/inbound-load-handling)
 - [Microsoft Learn, Work with location directives](https://learn.microsoft.com/en-us/dynamics365/supply-chain/warehousing/create-location-directive)
 - [Microsoft Learn, Material handling equipment interface (MHAX)](https://learn.microsoft.com/en-us/dynamics365/supply-chain/warehousing/mhax)
@@ -147,7 +164,7 @@ aliases: ["WMS Inbound Context Modeling", "WMS 입고 컨텍스트 모델링", "
 - [GS1 Ireland, Electronic Data Interchange (EDI)](https://www.gs1ie.org/standards/data-exchange/edi/)
 - [GS1 Germany, EANCOM 2002 S3 RECADV Introduction](https://www.publikationen.gs1-germany.de/Complete/CFB_Version_2.1/english/messages/recadv/intro.htm)
 - [ISA, ISA-95 Standard: Enterprise-Control System Integration](https://www.isa.org/standards-and-publications/isa-standards/isa-95-standard)
-- [Domain-Driven Design Reference — Domain Language, Eric Evans](https://www.domainlanguage.com/ddd/reference/)
+- [Domain-Driven Design Reference — Domain Language, Eric Evans](https://www.domainlanguage.com/ddd/reference/) — 2026-11-09 2015-03판 PDF의 Context Map, Core Domain, Generic Subdomains 요약 대조
 
 ## 관련 문서
 
