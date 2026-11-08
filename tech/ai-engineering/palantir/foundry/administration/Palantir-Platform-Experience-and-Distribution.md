@@ -1,7 +1,7 @@
 ---
 tags: [palantir, administration, experience, marketplace, support]
 status: done
-verified_at: 2026-10-16
+verified_at: 2026-11-09
 category: "AI엔지니어링(AIEngineering)"
 aliases: ["Foundry 운영 경험과 제품 배포"]
 ---
@@ -40,6 +40,10 @@ Support type을 하나도 구성하지 않으면 Issues 앱 접근이 있어도 
 
 Platform administration 연락처는 최소 하나 필요하다. Security/service disruption/legal/privacy는 별도 수신함을 정할 수 있고 비어 있을 때만 administration으로 fallback한다. 개인 계정보다 지속되는 mailing list가 권장된다. 일반 제품 공지와 책임자의 수동 대응이 필요한 Upgrade Assistant 전환도 구분한다.
 
+Platform announcements는 조직 관리자가 작성해 조직 안 사용자에게 보내는 플랫폼 내 공지이며 Notifications 앱(`/workspace/notifications/`)에서 관리한다. 대상 조직마다 Control Panel의 Organization permissions 역할로 부여한 **Manage announcements** workflow가 필요하고, 생성, 발행과 회수는 선택한 모든 수신 조직에 그 workflow가 있어야 한다. 수신 자격은 primary organization 기준이다. Group 선택은 대상을 좁히기만 하며 primary organization이 수신 조직 밖인 사용자를 더하지 않는다.
+
+공지는 제목과 일부 Markdown(굵게, 기울임, 링크 등)을 지원하는 본문을 갖고, 처음 볼 때와 읽은 뒤의 표시를 따로 정한다. 표시 방식에는 indicator, banner, 확인 버튼을 눌러야 넘어가는 blocking dialog가 있다. Intent(info, warning, critical)는 메시지 성격에 맞는 시각 스타일을 정하고, 모든 공지에 만료일이 있다. 발행 전에는 보이지 않고 회수하면 수신자 화면에서 사라진다. 만료된 공지는 설정한 방식으로 표시되지 않지만 Notifications 앱에 계속 남으며, indicator는 발행됐고 만료되지 않은 공지의 수신자에게만 보인다. 적용 해석: 조직별 static banner는 상시 안내에, announcement는 수신 조직과 group, 확인 강제, 만료를 공지마다 정해야 하는 전달에 맞춘다.
+
 ## Marketplace와 Apollo의 공유 경계를 확인한다
 
 Remote store는 enrollment 외부에서 제공되며 organization별로 전체 허용/group 제한/비활성화한다. 새 remote store는 기본 enabled다. 여러 organization에 걸친 group을 골라도 설정 조직의 구성원만 store를 본다. Local store는 저장 위치 권한을 따르므로 remote 설정과 다르다.
@@ -75,6 +79,7 @@ Applications Portal promotion은 Workshop/Slate/Carbon/외부 link의 curated en
 - [Palantir, Configure support teams](https://www.palantir.com/docs/foundry/administration/configure-support-teams)
 - [Palantir, Configure support types](https://www.palantir.com/docs/foundry/administration/configure-support-types)
 - [Palantir, Configure contact information](https://www.palantir.com/docs/foundry/administration/platform-communications)
+- [Palantir, Platform announcements](https://www.palantir.com/docs/foundry/platform-announcements/overview)
 - [Palantir, Configure remote Marketplace stores](https://www.palantir.com/docs/foundry/administration/configure-remote-marketplace-stores)
 - [Palantir, Connected hubs](https://www.palantir.com/docs/foundry/administration/connected-hubs)
 - [Palantir, Retention policies](https://www.palantir.com/docs/foundry/administration/enrollments-and-organizations-retention)
