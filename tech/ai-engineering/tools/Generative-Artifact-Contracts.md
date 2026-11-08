@@ -1,9 +1,9 @@
 ---
 tags: [ai, image-generation, html, design, verification]
 status: done
-verified_at: 2026-11-03
+verified_at: 2026-11-09
 category: "AI엔지니어링(AIEngineering)"
-aliases: ["Generative Artifact Contracts", "AesCode", "Krea 3", "Open Intelligent UI", "생성형 UI"]
+aliases: ["Generative Artifact Contracts", "AesCode", "Krea 3", "Open Intelligent UI", "생성형 UI", "OpenUI", "A2UI", "json-render"]
 ---
 
 # 생성형 시각 산출물의 내용, 디자인과 편집 계약
@@ -46,6 +46,22 @@ AesCode는 참고 이미지에서 미적 단서를 얻어 편집 가능한 HTML/
 
 검수할 때는 화면이 렌더링되는지와 별개로 계산 결과와 표의 값을 원본 데이터와 대조하고, 샌드박스 밖으로 나가는 값이 브리지 검증을 거치는지 확인한다(운영 제안). 설치와 실행은 하지 않았다.
 
+### 선언형 UI 형식은 등록한 컴포넌트와 action 안에서 조합하게 한다
+
+위의 샌드박스 방식이 HTML, CSS와 JavaScript를 새로 생성한다면, 선언형 형식은 모델이 개발자가 등록한 컴포넌트, action과 데이터 바인딩 안에서 화면을 기술하게 한다. OpenUI Lang은 여기에 상태 변수, Query와 Mutation 문장, `@Run`, `@OpenUrl` 같은 action까지 담아 모델이 연결을 생성하고 런타임이 실행하므로, 화면 구조만 담는 형식으로 보지 않는다. 2026-11-09 공식 문서와 저장소 대조 기준 세 형식은 다음과 같다.
+
+| 형식 | 관리 주체 | 출력과 스트리밍 | 렌더러 |
+|---|---|---|---|
+| OpenUI Lang | Thesys(OpenUI, MIT) | `root = Stack([header, chart])`처럼 줄 단위 `identifier = Expression`. 도착한 줄부터 파싱해 구조를 먼저 그리고 데이터를 채운다 | React, Vue, Svelte, Angular 공식 런타임 |
+| json-render | Vercel Labs(Apache-2.0) | Zod로 타입을 정한 catalog의 컴포넌트와 action만 쓰는 JSON spec. 스트림 compiler가 chunk마다 patch를 낸다 | React, Vue, Svelte, Solid, React Native 등 |
+| A2UI | Google 제작(a2ui.org 기준, 저장소 a2ui-project/a2ui, Apache 2.0) | 평평한 스트리밍 JSON 구조의 선언형 데이터이며 실행 코드가 아니다 | v1.0 기준 React, Lit, Angular, Flutter(alpha), SwiftUI(alpha) |
+
+- **연결 방식:** OpenUI는 컴포넌트 라이브러리 정의에서 system prompt를 생성해 백엔드의 system prompt에 붙이고, 응답 스트림을 `@openuidev/react-lang` 같은 런타임이 파싱해 내 컴포넌트로 렌더링한다. 파서는 검증에 실패한 부분을 버리고 나머지를 보여 주므로, 화면이 떴다는 사실이 모델 출력 전체가 유효했다는 뜻은 아니다.
+- **토큰과 지연 수치:** Thesys가 자체 공개한 벤치마크(46개 화면, 6개 모델)는 화면당 평균 출력 토큰을 OpenUI 1,362, A2UI 2,823, json-render 3,258로 제시한다. 저장소 README의 7개 시나리오 tiktoken 합계는 json-render 대비 약 2.1배 차이인데, 같은 README의 비교표는 json-render와 A2UI를 토큰 3배, 60 tok/s 환산 지연 4.9초 대 14.2초로 적고 산출 시나리오를 밝히지 않는다. 4.9초는 가장 차이가 큰 단일 시나리오의 OpenUI 토큰 수와 맞아 전체 합계가 아닌 최선 사례 수치로 보인다(해석). 벤치마크 페이지의 시간도 50 tok/s 기준 환산값이다. 벤더가 설계한 측정이므로 형식 선택 전에는 내 컴포넌트와 모델로 출력 토큰, 첫 렌더 시점과 검증 실패율을 다시 잰다(운영 제안).
+- **경계:** 선언형 형식의 안전성은 등록한 컴포넌트와 action의 권한에서 나온다. OpenUI 명세는 custom function을 순수한 동기 함수로 제한하고 프로그램에 적힌 `@Name(...)` 호출만 custom action을 만든다고 정한다. toolProvider는 Renderer 옆 브라우저에서 돌며, architecture 문서는 데이터 접근을 서버에 두려면 도구 함수를 API route나 서버의 MCP로 연결하라고 하고 예시가 인증을 생략해 운영 코드에는 필요하다고 경고한다. 모델이 고를 수 있는 Mutation이나 action이 결제나 삭제를 부른다면 그 API에서 인증과 권한을 확인한다(운영 제안).
+
+OpenUI 문서는 채팅 안의 차트와 폼뿐 아니라 대시보드, CRUD와 모니터링 화면도 대상으로 제시하며, LLM이 화면을 한 번 생성한 뒤에는 Query 재조회도 LLM 호출 없이 도구로 실행하는 모델을 설명한다. 클릭마다 앱 화면 전체를 새로 생성하는 방식은 이와 다른 패턴이다. 그런 시연에서는 깨진 화면과 제공자 rate limit이 반복됐다는 사례가 있으므로, 백엔드와 권한은 고정한 채 화면만 생성하고 생성 실패를 정상 경로로 다루는 구성을 전제로 검토한다(운영 제안). 설치와 실행은 하지 않았다.
+
 ## 슬라이드는 원본 편집과 내보낸 파일을 따로 확인한다
 
 2026-11-03 OpenAI 공식 Space 안내 대조 기준, ChatGPT Slides는 웹과 데스크톱의 Space에서 텍스트, 이미지, 도형, 표와 차트를 직접 편집하거나 선택한 요소의 수정을 요청할 수 있다. 웹에서는 PowerPoint(`.pptx`), PDF와 Google Slides로 내보낼 수 있다. Space가 활성화된 계정이 전제이며, 이 안내만으로 개별 계정의 사용 가능 여부를 확정하지 않는다.
@@ -66,7 +82,7 @@ Space 안에서 요소를 편집할 수 있다는 사실을 내보낸 모든 요
 | 상품 이미지 | 형태, 색, 로고, 문구와 보이지 않는 면의 생성 |
 | 반복 캠페인 변형 | 기준 이미지와 시리즈의 피사체 일관성 |
 | 인쇄용 결과 | 실제 크기, 해상도, 재단과 색상 규격 |
-| 생성형 UI 응답 | 렌더러 선택, 계산과 표의 값, 샌드박스와 브리지 경계, 예시 데이터 표시 |
+| 생성형 UI 응답 | 렌더러 선택, 계산과 표의 값, 샌드박스와 브리지 경계, 예시 데이터 표시, 선언형 출력의 검증 실패로 버려진 부분 |
 
 이번 확인은 공식 자료 대조다. 이미지 생성과 성능 측정, HTML 렌더링 품질 시험은 수행하지 않았다.
 
@@ -78,6 +94,15 @@ Space 안에서 요소를 편집할 수 있다는 사실을 내보낸 모든 요
 - [Anatomy — GitHub, wheresryan22](https://github.com/wheresryan22/anatomy) — 2026-10-22 출력 형식, 검수 도구와 3D beta 범위 대조
 - 사용자 제공 GeekNews 발췌: 2026-10-14 AesCode, 2026-10-16 Krea 3. 참조 이미지 수의 차이와 미대조 내부 설명을 본문에 남겼다.
 - [Open Intelligent UI — GitHub, CopilotKit](https://github.com/CopilotKit/OpenIntelligentUI) — 2026-10-27 README(main 8391a94c1c)로 렌더러 라우팅, 샌드박스와 브리지, 키 처리와 출시 검증 대조
+- [OpenUI](https://www.openui.com/) — 2026-11-09 예시 문장과 Thesys 관계 대조
+- [OpenUI, OpenUI Lang](https://www.openui.com/docs/openui-lang) — 2026-11-09 줄 단위 파싱, 검증 실패 부분 처리와 prompt 생성 대조
+- [OpenUI, OpenUI Lang Specification](https://www.openui.com/docs/openui-lang/specification) — 2026-11-09 상태, Query와 Mutation, action과 custom function 제약 대조
+- [OpenUI, OpenUI Lang Architecture](https://www.openui.com/docs/openui-lang/architecture) — 2026-11-09 toolProvider 실행 위치, 인증 생략 경고와 대상 화면 대조
+- [OpenUI, Benchmarks](https://www.openui.com/benchmarks) — 2026-11-09 Thesys 자체 측정의 화면 수, 모델 수와 출력 토큰 대조
+- [The Weird Future Of User Interfaces — YouTube, Better Stack](https://www.youtube.com/watch?v=AhVHtwh5k3E) — 2026-10-23 공개 영상, 계기 자료와 화면 전체 생성 시연의 실패 사례. 사실은 위 OpenUI 문서, 저장소와 a2ui.org로 대조했고 영상의 토큰과 지연 배수는 옮기지 않았다
+- [openui — GitHub, thesysdev](https://github.com/thesysdev/openui) — 2026-11-09 패키지 구성, 지원 런타임, 라이선스와 README 비교표 대조
+- [json-render — GitHub, vercel-labs](https://github.com/vercel-labs/json-render) — 2026-11-09 catalog 제한, 스트림 compiler와 렌더러 대조
+- [A2UI](https://a2ui.org/) — 2026-11-09 선언형 데이터 형식, 제작 주체와 [렌더러 목록](https://a2ui.org/reference/renderers/)의 v1.0 상태 대조
 - 사용자 제공 GeekNews 알림 요약(2026-10-16~27): OpenIntelligentUI. 게시물 URL은 확인하지 못했고 위 저장소로 대조했다. [Anatomy](https://news.hada.io/topic?id=35670)도 같은 기간 알림에 다시 올라왔으며 내용은 위 2026-10-22 대조와 같다.
 
 ## 관련 문서
