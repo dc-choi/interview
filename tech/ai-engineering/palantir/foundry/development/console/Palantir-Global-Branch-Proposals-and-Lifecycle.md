@@ -1,7 +1,7 @@
 ---
 tags: [palantir, global-branching, approvals, lifecycle]
 status: done
-verified_at: 2026-11-08
+verified_at: 2026-11-09
 category: "AI엔지니어링(AIEngineering)"
 aliases: ["Global branch proposal과 수명"]
 ---
@@ -32,9 +32,11 @@ Resource move는 protection 상태를 유지하지만 새 Project policy가 적�
 
 ## Rebase와 부분 merge
 
-Main update는 branch별 rebase로 받아들이고 non-conflict는 자동 해소할 수 있지만 같은 property 양쪽 edit는 수동 선택한다. Proposal Changes에는 resource별 viewer가 있고 일부 Workshop/Pipeline Builder/AIP Logic은 별도 review experience를 사용한다. 체크 통과만으로 실제 end-to-end 성공을 증명하지 않는다.
+Main update는 branch별 rebase로 받아들이고 non-conflict는 자동 해소할 수 있지만 같은 property 양쪽 edit는 수동 선택한다. Proposal Changes 탭은 resource별 변경, check와 approval 상태를 보여 주고 권한이 있으면 그 자리에서 approve/reject한다. Change viewer는 Global Branching이 지원하는 resource type 중 Workshop, Pipeline Builder, AIP Logic을 뺀 전부에 있다. 이 셋은 Changes 탭에서 diff를 볼 수 없으므로 각 application의 review 화면을 쓰며, Overview의 resource별 항목에 있는 review experience 링크가 그곳으로 가는 경로 중 하나다. 체크 통과만으로 실제 end-to-end 성공을 증명하지 않는다.
 
-Merge의 build option은 수정 resource와 그 사이 transform까지 build, 수정 resource만 build, build 안 함 세 가지다. 수정 resource만 build하면 이 branch의 upstream 변경에 의존하는 resource는 수동 build가 필요할 수 있다. 수정 resource를 merge build에서 제외할 수도 있으며, 제외를 저장하면 선택한 수정 resource 쌍 사이의 transform으로 계산한 affected resource 미리보기가 갱신된다. 제외는 build만 빼고 변경은 그대로 merge한다. Logic merge와 data 갱신을 구분한다. 일부 resource merge가 실패하면 성공한 resource와 branch에 남은 resource가 나뉘며 현재 부분 실패한 merge는 revert할 수 없다. Error를 해결하고 다시 merge한다. Single-click UI가 전체 원자적 rollback을 보장하지 않는다.
+공식 문서의 Navigation이 다루는 공통 진입점은 Global Branching application과 branch taskbar이며, Insight의 header branch selector처럼 application별 진입점도 따로 있다. Global Branching application은 branch와 proposal의 목록, 생성, archive/close, approve/merge를 모은 hub이고, 지원 application 하단의 파란 branch taskbar는 branch 전환, 수정 resource panel(proposal 생성 뒤 resource별 approval policy와 check 상태 포함), proposal 생성과 merge를 제공한다. Taskbar의 Merge proposal은 모든 check가 통과해야 활성화된다. 미지원 application에서는 taskbar가 회색으로 표시되므로, bar가 보인다는 사실만으로 그 application이 branch를 지원한다고 판단하지 않는다.
+
+Merge의 build option은 수정 resource와 그 사이 transform까지 build, 수정 resource만 build, build 안 함 세 가지다. 수정 resource만 build하면 이 branch의 upstream 변경에 의존하는 resource는 수동 build가 필요할 수 있다. 수정 resource를 merge build에서 제외할 수도 있으며, 제외를 저장하면 선택한 수정 resource 쌍 사이의 transform으로 계산한 affected resource 미리보기가 갱신된다. 제외는 build만 빼고 변경은 그대로 merge한다. Logic merge와 data 갱신을 구분한다. 일부 resource merge가 실패하면 성공한 resource와 branch에 남은 resource가 나뉘며 현재 부분 실패한 merge는 revert할 수 없다. Proposal의 Merge history 탭은 첫 merge 시도 뒤에만 나타나며 merge 시도 기록과 resource별 merge error를 모아 보여 주므로, 여기서 실패한 resource를 확인하고 error를 해결한 뒤 다시 merge한다. Single-click UI가 전체 원자적 rollback을 보장하지 않는다.
 
 ## Branch retention과 복구
 
@@ -56,6 +58,7 @@ Local Git 작업은 inactive/archive 상태에서도 막히지 않아 새 logic/
 - [Palantir, Branch taskbar](https://www.palantir.com/docs/foundry/global-branching/branch-taskbar)
 - [Palantir, Integrations](https://www.palantir.com/docs/foundry/global-branching/integrations)
 - [Palantir, Resource protection and project approval policies](https://www.palantir.com/docs/foundry/global-branching/resource-protection-and-approval-policies)
+- [Palantir, Insight Global Branching](https://www.palantir.com/docs/foundry/insight/branching-insight)
 - [Palantir, Release management overview](https://www.palantir.com/docs/foundry/devops-release-management/overview/)
 
 ## 관련 문서
