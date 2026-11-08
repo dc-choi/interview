@@ -1,7 +1,7 @@
 ---
 tags: [ai, llm, inference, serving, determinism, speculative-decoding, structured-output]
 status: done
-verified_at: 2026-10-27
+verified_at: 2026-11-08
 category: "AI엔지니어링(AIEngineering)"
 aliases: ["LLM Inference Serving Engines", "추론 서빙 엔진", "DeepInfer", "DSpark", "Batch Invariance", "배치 불변 추론"]
 ---
@@ -71,12 +71,36 @@ API 계층이 스키마 요청을 받아들였다는 사실을 디코딩 단계�
 
 DeepInfer README의 성능 그래프는 프리필에 SM100 GPU 4개, 디코드에 64개를 쓰고 각각 하나의 scale-up domain 안에서 측정했다고 밝힌다. 본문에는 수치가 없고 그래프와 재현 스크립트 `examples/sweep/run_sweep.sh`만 있다. 장비 수와 연결 구조가 다른 환경에 결과를 옮기지 않는다.
 
+## 단계 분리에서는 KV 페이지 소유권이 요청 격리의 경계다
+
+KV 캐시는 원문이 아니라 입력에서 계산한 attention의 key와 value 텐서지만, 다른 요청의 답변에 섞이면 그 입력 내용이 드러날 수 있으므로 입력과 같은 수준으로 보호한다(운영 판단). SGLang처럼 디코드 노드가 프롬프트 길이만큼 KV 페이지를 예약하고 프리필 노드가 그 페이지에 KV를 써 넣은 뒤 전송 완료를 알리는 구성이 있고, vLLM의 NixlConnector처럼 디코드가 프리필에서 KV 블록을 읽어 오는 구성도 있다. 성능 때문에 페이지를 요청 사이에 0으로 지우지 않는 엔진에서 디코드가 이번 요청이 쓰지 않은 페이지까지 읽으면, 이전 요청의 프롬프트와 생성 중간 결과가 다른 사용자의 답변에 섞인다. 그래서 페이지의 소유권 추적은 추론 엔진이 맡아야 하는 책임이다.
+
+같은 결과로 이어지는 경로는 둘로 나눠 본다.
+
+| 경로 | 일어나는 일 | 대응 |
+|---|---|---|
+| 거절된 요청의 인계 | 처리할 수 없는 요청을 오류로 끝내지 않고 짧은 자리표시 입력으로 바꿔 진행하면, 프리필은 일부 페이지만 보내고 완료를 알린다. 디코드는 예약한 나머지 페이지의 이전 내용까지 읽는다 | 거절 사유가 있는 요청을 인계, 할당과 전송 전에 원래 오류로 끝낸다. 예약한 길이와 실제 전송한 길이의 대조도 방어 수단이 될 수 있지만, 사례에서 이를 넣은 SGLang 초안 PR은 병합 없이 닫혔다 |
+| 전송 중인 페이지의 조기 해제 | 생성, 오프로드, 전송 수신, 중단 처리 등 여러 작업이 한 페이지를 잡고 있는데 하나가 먼저 해제하거나, 중단된 요청의 페이지를 RDMA 쓰기가 끝나기 전에 다른 요청에 넘긴다 | 진행 중인 전송이 끝날 때까지 해제를 미루고 전송 묶음의 크기를 제한한다. 지원되는 경우 전송별 checksum이나 canary로 오염을 감지한다 |
+
+### 사례: 문맥 한도보다 작은 프리필 KV pool
+
+2026-10-26 Cloudflare 공개 사후 보고 기준이다. Workers AI의 GLM 5.3 배포는 문맥 창을 1,048,576토큰으로 열었지만 프리필 GPU의 KV pool은 681,280토큰만 담았다. 엔진이 넘치는 프롬프트를 오류로 돌려줄 것으로 예상했으나, SGLang 스케줄러는 이를 거절 표시한 뒤 한 토큰짜리 자리표시로 바꿔 일반 배치 경로로 흘려보냈고, 단일 노드에서는 오류로 끝났지만 단계 분리에서는 디코드로 넘어갔다. 인계 대기열은 요청이 끝났는지만 보고 거절됐는지는 보지 않았다. 클라이언트는 HTTP 400 대신 200을 받았고, 2026-08-27부터 09-09 사이 681,280토큰을 넘는 프롬프트에 대한 응답 155건에 다른 사용자의 데이터가 섞였다. 외부 연구자의 버그 바운티 제보로 발견됐고, 보고서는 의도적 악용의 증거는 찾지 못했으며 다른 Workers AI 모델은 영향이 없었다고 밝힌다.
+
+출시 전 장문 시험은 HTTP 상태 코드와 성능만 보고 출력의 정합성은 보지 않아 이를 놓쳤다. 조치는 KV pool을 약 204만 토큰(문맥 한도의 약 2배)으로 늘리고, 거절된 요청을 인계 대기열에서 할당과 전송 전에 원래 오류로 끝내는 것이다. 보고서는 SGLang 운영자에게 v0.5.22 이상으로 올리라고 권한다. 특정 수정의 포함 여부는 해당 릴리스 노트로 확인한다.
+
+이 사례에서 끌어낼 운영 점검은 다음과 같다.
+
+- 가중치, 양자화, 병렬화나 메모리 비율을 바꿀 때마다 실행 중인 엔진의 시작 로그에서 프리필과 디코드 노드의 KV pool 크기를 재고 문맥 한도와 비교한다. 앞단 프록시가 한도를 막아 줄 것이나 엔진이 담지 못하는 요청을 거절할 것이라고 가정하지 않는다.
+- 장문 시험은 상태 코드와 지연만이 아니라 출력이 입력과 맞는지까지 검증한다.
+- 클라이언트 연결이 끊겨도 전송 중인 요청을 중단하지 않도록 부하 분산기가 첫 토큰까지 요청을 유지하는지 확인한다. 중단은 위 두 번째 경로를 연다.
+
 ## 도입 전 확인
 
 다음은 위 범위에서 도출한 운영 점검안이다.
 
 - 공개판이 지원하는 모델과 하드웨어 조합이 실제 배포 대상과 맞는가?
 - KV 캐시 계층, 단계 분리, 복제본 라우팅, HTTP와 인증을 누가 맡는가?
+- 단계 분리를 쓴다면 KV pool 크기가 문맥 한도를 담고, 거절된 요청이 인계 전에 오류로 끝나는가? 중단된 요청의 페이지가 진행 중인 전송이 끝나기 전에 재할당되지 않는가?
 - 결정적 모드, 초안 기반 디코딩과 구조화 출력의 조합별로 지연과 처리량을 쟀는가?
 - 스키마 요청이 API 계층에서 엔진의 제약 디코딩까지 전달되는지 시험했는가?
 
@@ -89,6 +113,10 @@ README, 저장소의 배포 Q&A 문서와 소스의 환경 변수 정의, 공개
 - [deepseek-recipe — deepseek-ai](https://github.com/deepseek-ai/deepseek-recipe) — 2026-10-27 README의 요청 변환 범위와 구조화 출력 처리 대조
 - [Defeating Nondeterminism in LLM Inference — Thinking Machines Lab, Horace He](https://thinkingmachines.ai/blog/defeating-nondeterminism-in-llm-inference/) — 2025-09-10 게시
 - [DeepSeek, 실서비스 추론 엔진 DeepInfer를 오픈소스로 공개 — GeekNews](https://news.hada.io/topic?id=35703) — 2026-10-20 소개 글
+- [Cross-request KV cache exposure in the GLM-5.3 Workers AI model, and our remediation with SGLang — Cloudflare](https://blog.cloudflare.com/kv-cache-exposure-remediation/) — 2026-10-26 게시. 2026-11-08 대조: 사고 기간, 원인 경로, 조치와 운영자 권고
+- [PD: Do not admit intake-rejected requests to a PD handoff — sgl-project/sglang](https://github.com/sgl-project/sglang/pull/38935) — 2026-09-16 병합. 인계 전 거절의 수정 범위 대조
+- [Disaggregation: Honor admission aborts before KV handoff — sgl-project/sglang](https://github.com/sgl-project/sglang/pull/38704) — 2026-10-10 병합 없이 닫힘. 전송 길이 대조를 넣은 초안
+- [vLLM, NixlConnector Usage Guide](https://docs.vllm.ai/en/latest/features/nixl_connector_usage.html) — 2026-11-08 디코드가 프리필의 KV 블록을 RDMA로 읽어 오는 구조 대조
 
 ## 관련 문서
 

@@ -1,7 +1,7 @@
 ---
 tags: [palantir, foundry]
 status: done
-verified_at: 2026-10-16
+verified_at: 2026-11-08
 category: "AI엔지니어링(AIEngineering)"
 ---
 
@@ -15,19 +15,19 @@ Enrollment는 기존 identity provider의 SSO를 사용하거나 일부 Develope
 
 ## Credential store와 기기
 
-현재 기기의 Windows Hello/Chrome/iCloud 등, 별도 mobile 또는 hardware security key를 선택할 수 있다. QR 기반 다른 기기 인증에는 Bluetooth와 지원 OS/browser가 필요하다. 기본 제안 store를 반드시 선택할 필요는 없다.
+어떤 authenticator를 쓸 수 있는지는 directory의 보안 정책이 정한다. Recommended나 Government profile을 쓰는 directory는 자격을 갖춘 hardware passkey만 받으므로, 기기나 비밀번호 관리자를 고르기 전에 enrollment 관리자에게 허용 유형을 확인한다. 정책이 허용하는 범위 안에서 현재 기기의 Windows Hello/Chrome/iCloud 등, 별도 mobile 또는 hardware security key를 선택할 수 있다. QR 기반 다른 기기 인증에는 Bluetooth와 지원 OS/browser가 필요하다. 기본 제안 store를 반드시 선택할 필요는 없다.
 
-검증일 기준 계정당 최대 4개, credential store당 하나의 passkey를 등록할 수 있다. 최소 두 개의 독립 경로를 준비하고 관리자가 복구 과정에서 보는 이름에는 개인 정보를 넣지 않는다. 여러 기기에서 쓸 수 있는지는 device-specific 여부, sync와 autofill provider 설정에 달려 있다.
+검증일 기준 계정당 최대 4개, credential store당 하나의 passkey를 등록할 수 있다. 정책이 백업 credential을 허용하면 허용된 passkey를 최소 두 개 준비하고, hardware passkey만 받는 directory에서는 승인된 예비 hardware key를 백업으로 둔다. 관리자가 복구 과정에서 보는 이름에는 개인 정보를 넣지 않는다. 여러 기기에서 쓸 수 있는지는 device-specific 여부, sync와 autofill provider 설정에 달려 있다.
 
 Passkey를 삭제할 때는 platform 등록과 원래 credential store 양쪽에서 지운다. Store에 이전 항목을 남기면 같은 store의 새 등록이 실패할 수 있다. 서버의 등록 해제만으로 기기 항목이 사라지는 것은 아니다.
 
 ## 실패 분류와 복구
 
-전체 passkey를 잃었으면 enrollment 생성자는 self-service reset 또는 검토 요청을, 기존 enrollment 초대 사용자는 관리자 복구를 따른다. 복구를 위해 enrollment administrator를 둘 이상 두는 것이 권장된다. OTP가 만료된 경우도 생성자/초대 사용자에 따라 지원 요청 경로가 다르다.
+전체 passkey를 잃었으면 enrollment 생성자는 login 화면의 Reset passkey를 쓰며 enrollment에 따라 즉시 처리되거나 검토로 넘어간다. 기존 enrollment 초대 사용자는 관리자 복구를 따른다. 복구를 위해 enrollment administrator를 둘 이상 두는 것이 권장된다. OTP가 만료된 경우도 생성자/초대 사용자에 따라 지원 요청 경로가 다르다.
 
-등록 실패는 인증 timeout, Bluetooth, 기존 store 항목, 화면 잠금과 credential store 활성화 여부를 확인한다. 최신 iOS와 한 이전 버전, Android 13 이상이라는 문서 기준과 실제 사용하는 browser 지원을 함께 확인한다.
+등록 실패는 인증 timeout, Bluetooth, 기존 store 항목, 화면 잠금과 credential store 활성화 여부를 확인한다. 최신 iOS와 한 이전 버전, Android 13 이상이라는 문서 기준과 실제 사용하는 browser 지원을 함께 확인한다. 기기 문제인지 플랫폼 문제인지 가르려면 webauthn.io에서 등록과 로그인을 시험한다. 실패하면 기기나 browser 쪽 문제일 가능성이 크지만, 성공해도 directory가 그 authenticator를 허용한다는 뜻은 아니다.
 
-예전에는 되던 로그인이 실패하면 이메일 도메인 제한과 authenticator 정책 변경도 확인한다. 정책이 hardware key만 허용하면 device passkey는 등록 후에도 부적합해질 수 있다. 오류가 일반 로그인 실패로만 보일 수도 있다. 전화번호는 enrollment당 한 번만 사용할 수 있다.
+예전에는 되던 로그인이 실패하면 이메일 도메인 제한과 authenticator 정책 변경도 확인한다. 도메인 제한은 상세 설명 없는 일반 로그인 실패로만 보일 수 있다. 정책이 hardware key만 허용하면 device passkey는 등록 후에도 부적합해질 수 있으며, 이때는 passkey가 보안 요건을 충족하지 않는다는 오류가 나타난다. 등록, 기기 지원 조건과 백업 권장은 2026-11-08 login 문서 전체와 다시 대조했다. 전화번호는 enrollment당 한 번만 사용할 수 있다.
 
 ## Passkey profile 변경과 관리자 잠금 방지
 
@@ -45,7 +45,7 @@ Passkey를 삭제할 때는 platform 등록과 원래 credential store 양쪽에
 
 AAGUID만으로 하드웨어 진위를 증명하지 못한다. Custom 추가로 보안 차단이나 필요한 attestation 부재를 우회할 수 없으며, 신뢰할 metadata를 불러오지 못하면 평가는 실패한다.
 
-이 절은 수집 본문과 공식 페이지의 검색 색인 본문으로 확인했다. 직접 URL 열기는 실패했으며 실제 정책 변경은 시험하지 않았다. 기존 기기 지원 조건 전체를 재검증하지 않아 frontmatter 날짜는 유지한다.
+이 절은 2026-10-30에 수집 본문과 공식 페이지의 검색 색인 본문으로 확인했고(당시 직접 URL 열기는 실패), 2026-11-08 공식 페이지를 직접 열어 내용이 유지됨을 다시 확인했다. 실제 정책 변경은 시험하지 않았다.
 
 ## 출처
 
