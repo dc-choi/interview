@@ -37,6 +37,19 @@ OSI 하위 2계층은 같은 로컬 네트워크(LAN) 안에서 비트와 프레
 
 신호는 멀리 갈수록 약해지고(감쇠) 잡음이 섞여 왜곡되므로 매체마다 오류 없이 쓸 수 있는 길이가 있다. 10BASE-T, 100BASE-TX와 1000BASE-T의 트위스티드 페어 링크는 100m까지다. 리피터는 약해지고 일그러진 신호를 원래 모양으로 재생해 거리를 늘리는 L1 장비이고, 허브는 받은 신호를 나머지 모든 포트로 재생해 내보내는 멀티포트 리피터다. 오늘날에는 독립 리피터 대신 스위치가 프레임을 받아 새로 송신하고, 100m를 넘는 구간은 광 링크로 잇는다.
 
+### 다중화: 한 링크를 여러 채널이 나눠 쓴다
+
+다중화(multiplexing)는 여러 신호를 하나의 전송로에 함께 싣는 일이다. 송신 측 멀티플렉서가 합치고 수신 측 디멀티플렉서가 다시 나누며, 무엇으로 채널을 구분하느냐에 따라 방식이 갈린다. 같은 자원 분할을 여러 단말이 매체를 나눠 쓰는 데 적용하면 FDMA, TDMA, CDMA, OFDMA 같은 다중접속이 된다. OFDMA 자원 배분과 공간 다중화는 [[Wireless-Multiple-Access|무선 다중접속]]에서 다룬다. L4의 포트 기반 다중화와 역다중화는 신호가 아니라 데이터를 애플리케이션별로 나누는 다른 층위다([[Transport-Layer]]).
+
+| 방식 | 채널을 나누는 기준 | 표준의 예 |
+|---|---|---|
+| FDM(주파수 분할) | 주파수 대역 | OFDM(직교 주파수 분할 다중화)은 서로 직교하는 여러 부반송파에 데이터를 나눠 싣는다. 5G NR은 연속한 부반송파 12개를 PRB 하나로 묶는다(3GPP TS 38.300) |
+| TDM(시분할) | 시간 슬롯 | ITU-T G.704가 1544, 2048 kbit/s 등 디지털 계위의 동기 프레임 구조를 정한다 |
+| WDM(파장 분할) | 광섬유 안의 빛의 파장 | ITU-T G.694.1이 DWDM 주파수 격자, G.694.2가 CWDM 파장 격자를 정한다 |
+| CDM(코드 분할) | 확산 코드 | 3G UMTS의 무선 접속(UTRA)은 DS-CDMA이며 물리 채널을 코드로 정의하고, TDD 모드에서는 타임슬롯 순서를 더한다(3GPP TS 25.201) |
+
+이동통신 세대의 방식을 한 계보로 단정하지 않는다. 3G UTRA는 DS-CDMA를 쓰지만 5G NR의 하향 전송 파형은 CP를 쓰는 OFDM이고, 상향은 transform precoding(DFT 확산)을 켜거나 끌 수 있는 CP-OFDM이다. 이 DFT 확산은 표의 CDM 확산 코드와 다른 처리다. NR은 부반송파 12개를 묶은 PRB 단위로 자원을 나누고 하향 공유 채널에서 DMRS 기반 공간 다중화도 지원하므로, 5G의 다중화를 CDM의 발전형으로 요약하지 않는다. NR에 코드를 쓰는 요소가 전혀 없다는 뜻은 아니며, 세부 신호 설계는 이 절의 확인 범위 밖이다. 2026-11-08 이 절의 표준 예만 TS 38.300 V19.4.0, TS 25.201 V19.0.0과 ITU-T 권고 목록으로 대조했다.
+
 ### 무선의 다중경로 페이딩과 안테나 다이버시티
 
 전파는 직접 경로뿐 아니라 벽이나 금속에 반사된 경로로도 수신기에 도착한다. 도착 시간과 위상이 달라 신호가 합쳐질 때 진폭이 커지거나 작아질 수 있고, 지연된 신호가 심벌 해석을 방해할 수도 있다. 따라서 수신 신호가 강하다는 사실만으로 품질이 좋다고 판단하지 않는다.
@@ -152,6 +165,11 @@ L2는 같은 로컬 네트워크 안에서만 동작한다. 서로 다른 네트
 ## 출처
 
 - [Cisco, Multipath and Diversity](https://www.cisco.com/c/en/us/support/docs/wireless-mobility/wireless-lan-wlan/27147-multipath.html) — 2026-11-04 다중경로 왜곡과 Aironet 안테나 선택 방식의 적용 범위 대조
+- [NR and NG-RAN Overall description; Stage-2, 3GPP TS 38.300 V19.4.0 — ETSI](https://www.etsi.org/deliver/etsi_ts/138300_138399/138300/19.04.00_60/ts_138300v190400p.pdf) — 5.1절 NR 하향과 상향 파형, PRB 구성과 5.2.1절 DMRS 기반 공간 다중화
+- [UMTS Physical layer - general description, 3GPP TS 25.201 V19.0.0 — ETSI](https://www.etsi.org/deliver/etsi_ts/125200_125299/125201/19.00.00_60/ts_125201v190000p.pdf) — 4.2.1절 UTRA의 DS-CDMA 접속과 코드 기반 물리 채널
+- [G.704, Synchronous frame structures used at 1544, 6312, 2048, 8448 and 44 736 kbit/s hierarchical levels — ITU-T](https://www.itu.int/rec/T-REC-G.704) — 권고 제목과 현행판(10/98)만 대조
+- [G.694.1, Spectral grids for WDM applications: DWDM frequency grid — ITU-T](https://www.itu.int/rec/T-REC-G.694.1) — 권고 제목과 현행판(10/20)만 대조
+- [G.694.2, Spectral grids for WDM applications: CWDM wavelength grid — ITU-T](https://www.itu.int/rec/T-REC-G.694.2) — 권고 제목과 현행판(12/03)만 대조
 - [OSI 7 Layer 기초: Physical Layer와 Data Link Layer — YouTube](https://www.youtube.com/watch?v=DufRXdDF9zI&list=PLfth0bK2MgIYuFahPhXTpTomkwVx5Fl-v)
 - [IEEE 802.1w — Rapid Reconfiguration of Spanning Tree](https://www.ieee802.org/1/pages/802.1w.html)
 - [IEEE P802.3as Draft 0.1, IEEE Std 802.3-2005 Clause 4 CSMA/CD MAC 개정안 — IEEE 802.3 Working Group](https://www.ieee802.org/3/as/public/0503/4d0_1_CMP.pdf)

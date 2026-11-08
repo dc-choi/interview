@@ -49,7 +49,7 @@ Software 3.0 패러다임, LLM과 에이전트, 하네스, 평가, 조직 전환
 - [x] [[Synthetic-Vision-Data-Evaluation|합성 비전 데이터 평가]] — 희소 조건 보충, 생성 결과 검수와 실제 인식 성능의 분리
 - [x] [[Model-Feedback-Loop-and-Validation|모델 피드백 루프와 검증]] — 실험 결과 환류, 재학습과 배포, shadow 비교의 한계
 - [x] [[Java-AI-Integration-Boundaries|Java AI 통합의 실행 경계]] — 원격 및 로컬 추론, 외부 함수 호출과 GPU 코드 변환의 구분
-- [x] [[VLLM-Serving-Security|vLLM 서빙 보안]] — API 키의 경로 범위, 내부 통신 격리와 동적 LoRA 관리 권한
+- [x] [[VLLM-Serving-Security|vLLM 서빙 보안]] — API 키의 경로 범위, 내부 통신 격리, 동적 LoRA 관리 권한과 v0.32.0의 CORS 기본값 제한
 - [x] [[AI-Code-Delegation-Review|AI 구현 위임과 코드 리뷰]] — 구현 계약, 시스템 이해와 배포 책임, 경험 기반 전망의 한계
 - [x] [[Agent-Repository-Instructions#사용자 판단 기준의 보존과 재정렬|에이전트와 사용자 기준 맞추기]] — ALIGN.md, 선호와 절차의 분리, 재정렬과 벤치마크 해석
 - [x] [[Tacit-Knowledge-Judgment-Agent|암묵지와 판단 에이전트]] — 암묵지와 형식지, Nonaka의 네 변환 방식, 사례와 피드백 흡수, 반복 판단의 원칙 승격, 판단 에이전트의 배치와 홀드아웃 일치도

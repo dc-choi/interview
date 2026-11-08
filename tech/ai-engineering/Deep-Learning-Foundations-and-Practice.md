@@ -30,6 +30,22 @@ aliases: ["딥러닝 기초와 실습", "Deep Learning Foundations and Practice"
 
 2017년 Transformer 논문은 번역 과업에서 병렬성과 학습 시간 개선을 보였다. 강연의 학습 계산량 10~100배 감소라는 설명을 모든 모델, 과업과 하드웨어에 적용하는 보장으로 사용하지 않는다. 학습 비용은 데이터량, 품질 목표, 연산량과 실제 소요 시간을 함께 비교한다. 추론 하드웨어 수요와 에너지 문제는 [[HBM-Stack-and-Base-Die|HBM과 메모리 계층]], 과학 응용은 [[AI-Scientific-Discovery-Loops|AI 과학 발견 루프]]로 연결한다.
 
+## 순차 학습과 파괴적 망각
+
+한 신경망을 과업 A로 학습한 뒤 과업 B의 데이터만으로 이어서 학습하면 A의 성능이 크게 떨어질 수 있다. 이를 파괴적 망각(catastrophic forgetting)이라 한다. 여러 과업을 차례로 학습할 때 A에 중요한 가중치가 B의 목표에 맞춰 바뀌기 때문이며, 이 현상은 연결주의 모델에 피할 수 없는 성질로 널리 여겨졌다.
+
+| 대응 | 원리 | 확인할 비용 |
+|---|---|---|
+| 함께 학습 | 여러 과업의 데이터를 섞어 학습해 모든 과업에 맞게 가중치를 함께 최적화한다 | 모든 과업의 데이터를 학습 시점에 확보해야 한다 |
+| 리플레이 | 저장한 이전 데이터나 생성 모델이 만든 과거 표본, 내부 표현을 다시 학습에 넣는다 | 저장할 기억이 과업 수에 비례해 늘 수 있고, 생성 방식은 생성기 학습이 필요하다 |
+| 가중치 보호 | 이전 과업에 중요한 가중치의 학습을 그 중요도에 따라 늦춘다 | 어떤 가중치가 중요한지 추정해야 한다 |
+
+- Kirkpatrick 외(2017)는 가중치 보호 방식의 알고리즘으로 elastic weight consolidation(EWC)을 제안했다. 이전 과업의 해 근처에 중요한 가중치를 묶어 두는 이차 벌점을 쓰고, MNIST 기반 분류 과업들과 여러 Atari 2600 게임을 차례로 학습하는 실험으로 효과를 보였다.
+- 생성 리플레이는 작은 예제에서는 시험 때 과업 정보 없이 지금까지 본 모든 클래스 중에서 골라야 하는 class-incremental 설정에서도 망각을 막지만, 과업이 많거나 입력이 복잡하면 규모를 키우기 어렵다. van de Ven 외(2020)는 입력 대신 신경망 내부의 은닉 표현을 재생하고, 그 표현을 신경망 자신의 context-modulated feedback 연결로 생성하는 방식을 제안했다. 초록 기준으로 데이터를 저장하지 않고 CIFAR-100 class-incremental(마지막에는 100개 클래스 중 선택) 같은 벤치마크에서 당시 최고 수준 성능을 보고했으며, 비교 대상과 실험 조건은 본문에서 확인한다.
+- Tadros 외(2022)는 국소 비지도 Hebbian 가소성 규칙과 잡음 입력으로 오프라인 학습하는 수면 유사 단계를 넣었다. MNIST, Fashion MNIST, CUB-200, CIFAR10의 증분 학습으로 시험했고, 초록은 이 단계가 새 과업 학습 뒤 잊힌 이전 과업을 회복시켰다고 보고한다. 데이터셋별 결과, 계산 비용과 한계는 초록과 결과 절 도입부의 확인 범위 밖이다.
+
+새 데이터로 모델을 이어서 갱신하는 운영에서는 계속 맞춰야 하는 이전 과업이나 분포의 고정 평가 세트를 함께 남겨 망각 여부를 확인하는 방안을 검토한다(평가 제안). 관심이 바뀌는 concept drift에서는 낡은 구간의 성능 하락이 의도한 적응일 수 있으므로 망각과 구분해 해석한다. 회귀를 막는 평가 관문은 [[Eval-Golden-Set-and-Deploy-Gates|골든셋과 배포 관문]], 추천시스템의 online 학습과 concept drift는 [[Recommendation-System-Industry-Large-Scale-ML|대규모 추천 모델의 학습과 서빙]]에서 다룬다.
+
 ## 개념에서 과업으로 이어지는 학습 범위
 
 다음은 입문 교재의 구성과 공식 실습 문서를 연결한 학습 제안이다. 개인의 확정 진도나 전체 교재 학습 완료를 뜻하지 않는다.
@@ -66,7 +82,7 @@ Keras 3를 사용할 때는 TensorFlow, PyTorch 또는 JAX 같은 백엔드 프�
 
 이는 이해 확인 절차의 제안이다. 실행 성공만으로 데이터 품질이나 배포 적합성까지 검증됐다고 판단하지 않는다.
 
-2026-11-03 추가 대조 범위는 대규모 특징 학습 연구와 Transformer/BERT의 구조 차이다. 기존 교재와 Keras API는 앞서 기록한 확인 범위를 유지하며 이번에 예제를 실행하지 않았다.
+2026-11-03 추가 대조 범위는 대규모 특징 학습 연구와 Transformer/BERT의 구조 차이다. 기존 교재와 Keras API는 앞서 기록한 확인 범위를 유지하며 이번에 예제를 실행하지 않았다. 2026-11-08에는 파괴적 망각의 대응 연구 세 편을 초록과 아래 출처 줄에 적은 절의 범위에서만 대조했다.
 
 ## 출처
 
@@ -80,8 +96,12 @@ Keras 3를 사용할 때는 TensorFlow, PyTorch 또는 JAX 같은 백엔드 프�
 - [Building high-level features using large scale unsupervised learning — Google Research](https://research.google/pubs/building-high-level-features-using-large-scale-unsupervised-learning/) — 2026-11-03 논문 초록의 학습 규모와 특징/분류 단계 대조.
 - [Attention Is All You Need — Vaswani 외](https://arxiv.org/abs/1706.03762) — 2026-11-03 원 논문의 병렬성과 번역 과업 범위 대조.
 - [BERT: Pre-training of Deep Bidirectional Transformers for Language Understanding — Devlin 외](https://arxiv.org/abs/1810.04805) — 2026-11-03 양방향 문맥 학습 대조.
+- [Overcoming catastrophic forgetting in neural networks — Kirkpatrick 외](https://arxiv.org/abs/1612.00796) — 2026-11-08 arXiv v2의 초록, 1절 서론과 2절 EWC 정의 대조. 관련 DOI 10.1073/pnas.1611835114.
+- [Brain-inspired replay for continual learning with artificial neural networks — van de Ven 외](https://pmc.ncbi.nlm.nih.gov/articles/PMC7426273/) — 2026-11-08 Nature Communications 11, 4069의 PMC 초록과 학습 시나리오 정의 대조.
+- [Sleep-like unsupervised replay reduces catastrophic forgetting in artificial neural networks — Tadros 외](https://pmc.ncbi.nlm.nih.gov/articles/PMC9755223/) — 2026-11-08 Nature Communications 13, 7742의 PMC 초록과 결과 절의 데이터셋 대조.
 
 ## 관련 문서
 
 - [[AI엔지니어링(AIEngineering)|AI 엔지니어링 지도]]
 - [[Time-Series-Forecast-Evaluation|시계열 예측 평가]]
+- [[Recommendation-System-Industry-Large-Scale-ML|대규모 추천 모델의 학습과 서빙]]

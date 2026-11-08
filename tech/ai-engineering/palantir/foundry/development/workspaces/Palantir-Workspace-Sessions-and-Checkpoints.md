@@ -1,7 +1,7 @@
 ---
 tags: [palantir, workspace, checkpoint, git]
 status: done
-verified_at: 2026-10-16
+verified_at: 2026-11-08
 category: "AI엔지니어링(AIEngineering)"
 aliases: ["Code Workspace session과 checkpoint 수명"]
 ---
@@ -36,9 +36,13 @@ Lifecycle shutdown 뒤 다음 진입은 checkpoint를 복원할 수 있지만 ma
 
 기본 inactivity auto-shutdown은 30분, 설정 최대 6시간이며 session 최대 24시간이다. Jupyter `%%keep_alive`도 실행 cell을 최대 24시간 유지한다. 닫힌 browser의 cell output 표시/저장은 중단될 수 있어 capture와 durable output을 별도로 구성한다.
 
-Usage guide의 상세 상태 목록은 INITIALIZING/RUNNING에 compute가 발생한다고 명시한다. 포괄적인 starting 표현보다 실제 상태와 usage metric을 확인한다. CPU는 sidecar(0.25vCPU/3GiB) overhead를 포함한 `max(vCPU, GiB/7.5) * rate * duration`, GPU는 수/type rate/기간으로 계산한다.
+Usage guide의 상세 상태 목록은 INITIALIZING/RUNNING에 compute가 발생한다고 명시한다. 같은 페이지의 pricing 설명은 starting 또는 active 동안 측정한다고 적어 문구가 서로 다르므로, 포괄적인 starting 표현보다 실제 상태와 usage metric을 확인한다. CPU는 sidecar(0.25vCPU/3GiB) overhead를 포함한 `max(vCPU, GiB/7.5) * rate * duration`, GPU는 수/type rate/기간으로 계산한다.
 
-VS Code default 0.75CPU/6GB profile은 해당 가이드의 기본 UBP 0이며 증설 또는 GPU는 다른 rate다. 일반 CPU workspace rate 0.1, GPU는 종류별로 다르고 enterprise 계약을 확인한다. 무료 profile 설명을 transform/model 실행과 모든 저장 비용으로 확대하지 않는다. Project queue/managed profile이 실제 선택 가능 resource를 제한한다.
+VS Code 4CPU/32GiB를 1시간 쓰면 max(4.25, 35/7.5≈4.67)×0.1×3600=1680, JupyterLab 1CPU/8GiB는 max(1.25, 11/7.5≈1.47)×0.1×3600=528 compute-seconds다. 두 값 모두 sidecar를 더한 memory 항에서 나온다. Sidecar를 더한 memory를 7.5로 나눈 값((GiB+3)/7.5)이 sidecar를 더한 vCPU(vCPU+0.25)보다 크면 memory 항이 사용량을 정하므로, 같은 rate에서는 CPU만 줄여도 사용량이 줄지 않는다. T4 1개를 1시간 쓰면 GPU 항은 1×1.2×3600=4320이다. GPU 공식은 vCPU 공식과 따로 제시되고 합산 방식은 명시되지 않으므로 같은 session의 vCPU 항이 더해지는지는 Resource Management에서 확인한다.
+
+VS Code default 0.75CPU/6GB profile은 해당 가이드의 기본 UBP 0이며 증설 또는 GPU는 다른 rate다. 2026-11-08 대조한 기본 rate는 증설한 VS Code와 JupyterLab, RStudio, Dash, Streamlit, Shiny가 0.1이고, GPU는 T4 1.2, A100 1.3, A10G 1.5, L4 2.1, V100 3.0, RTX PRO 6000 3.5, H100과 H200 4.7, B200 5.7, B300 7.1이다. GPU 배율은 model live 표와 같지만 vCPU 배율은 live의 0.2와 다르다. Enterprise 계약은 배율이 다를 수 있어 계산 전에 확인한다. 무료 profile 설명을 transform/model 실행과 모든 저장 비용으로 확대하지 않는다.
+
+Session 크기는 Settings > Compute Resources에서 정한다. 선택 가능한 CPU와 memory는 project resource queue의 최대치까지이고, enrollment가 managed compute profile을 쓰면 project에 import한 profile이 선택지를 정한다. 쓸 수 있는 GPU도 queue가 정한다. 사용량은 active 시간에 비례하고 크기는 max(vCPU+0.25, (GiB+3)/7.5) 항과 GPU 수로 반영되므로 auto-shutdown 시간을 작업 방식에 맞추고 작업이 끝나면 직접 stop한다. 모든 session의 compute는 filesystem의 workspace resource에 귀속돼 Resource Management에서 보고, 실행 중 CPU, memory, disk 사용률은 Settings의 Workspace utilization에서 본다.
 
 ## 출처
 
@@ -47,8 +51,10 @@ VS Code default 0.75CPU/6GB profile은 해당 가이드의 기본 UBP 0이며 �
 - [Palantir, Code viewer](https://www.palantir.com/docs/foundry/code-workspaces/code-viewer)
 - [Palantir, Workspace FAQ](https://www.palantir.com/docs/foundry/code-workspaces/code-workspaces-faq)
 - [Palantir, Compute usage](https://www.palantir.com/docs/foundry/code-workspaces/compute-usage)
+- [Palantir, Live deployment compute usage](https://www.palantir.com/docs/foundry/manage-models/compute-usage)
 
 ## 관련 문서
 
 - [[Palantir-Workspace-Security-and-Egress|Credential와 data lineage]]
 - [[Palantir-Workspace-Applications-and-Environments|Publish와 managed 환경]]
+- [[Palantir-Model-Live-Usage|Model live의 compute 계산]]
