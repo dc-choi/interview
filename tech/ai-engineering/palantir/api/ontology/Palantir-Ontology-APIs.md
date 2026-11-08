@@ -15,3 +15,4 @@ category: "AI엔지니어링(AIEngineering)"
 - [[Palantir-Ontology-V2-Aggregation-API|V2 집계 정확도, 그룹과 null]]
 - [[Palantir-Ontology-V2-Action-API|V2 Action validation과 편집 이력]]
 - [[Palantir-Ontology-V2-Property-API|V2 Attachment, Media, Cipher와 시계열]]
+- [[Palantir-Ontology-V2-Scenario-API|V2 Scenario 생성, rebase와 충돌 조회]]
