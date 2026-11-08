@@ -16,7 +16,7 @@ LLM 단발 호출을 도구로 쓰는 단계를 넘어, **에이전트에게 일
 
 ## 목차
 
-- [[Production-Agent-Architecture-Orchestration|분업과 오케스트레이션]]: 컴포넌트 분업과 Parent의 재확인 책무, 라우팅과 대화 전달 계약, 환경을 넘는 위임의 호출자 권한 보존, 프레임워크 vs 자체 구현 엔진, Lazy Load 컨텍스트
+- [[Production-Agent-Architecture-Orchestration|분업과 오케스트레이션]]: 컴포넌트 분업과 Parent의 재확인 책무, 라우팅과 대화 전달 계약, 환경을 넘는 위임의 호출자 권한 보존, 프레임워크 vs 자체 구현 엔진과 프레임워크별 다음 단계 결정 주체, Lazy Load 컨텍스트
 - [[Production-Agent-Architecture-Guardrails|다층 안전망과 루프 가드레일]]: Defense in Depth 4겹(Role, Gate, Rule, Hook), 시스템 프롬프트 3계층, 백엔드의 프롬프트 합성, 루프의 코드 레벨 가드레일, 사후 반영 사용량 제한
 - [[Production-Agent-Architecture-Knowledge|지식 체계]]: Metric Registry, 조회 우선순위, Auto Memory 비활성화
 - [[Production-Agent-Architecture-Eval-and-Operations|Eval, 운영 루프와 고가용성]]: 배포 전 검증 4축, 피드백을 지식과 테스트로 환원하는 운영 루프, 처리 시간의 시작과 종료 상태, 워커 풀
