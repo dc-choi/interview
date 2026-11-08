@@ -79,6 +79,16 @@ source bundle 루트의 `.ebextensions/*.config`에 YAML 또는 JSON으로 optio
 
 Amazon Linux 플랫폼에서는 `.platform/hooks`로 application deployment 단계의 스크립트를, `.platform/confighooks`로 configuration deployment 단계의 스크립트를 실행할 수 있다. 스크립트는 실패 시 전체 배포를 실패시킬 수 있으므로 재실행해도 안전하게 만들고 명시적 timeout과 로그를 둔다.
 
+### 업로드의 413은 nginx 본문 한도부터 본다
+
+2026-11-09 공식 문서 대조 기준, Standard 환경의 Amazon Linux 2와 AL2023 플랫폼은 기본 reverse proxy로 nginx를 쓴다. Tomcat, Node.js, PHP, Python은 `ProxyServer: apache`로 Apache를 고를 수 있고, 일부 플랫폼은 `ProxyServer`를 `none`으로 두어 프록시를 끌 수 있다(플랫폼별 옵션 문서). 이 경우 413을 내는 곳은 nginx가 아니다. nginx의 `client_max_body_size` 기본값은 `1m`이고, 요청 본문 전체가 이를 넘으면 애플리케이션에 닿기 전에 413 (Request Entity Too Large)을 돌려준다. 큰 파일 하나뿐 아니라 여러 파일의 합계나 큰 JSON 본문도 대상이며, 애플리케이션 로그에는 요청이 남지 않을 수 있다(해석).
+
+- 기본 설정을 확장하려면 source bundle 루트의 `.platform/nginx/conf.d/`에 `.conf` 파일(예: `client_max_body_size 20M;` 한 줄)을 둔다. 이 폴더의 파일은 nginx 설정의 `http` 블록에 자동으로 포함된다.
+- 전체 교체는 `.platform/nginx/nginx.conf`로 하되, 그 안에 `include conf.d/elasticbeanstalk/*.conf;`를 넣어야 enhanced health 보고, 애플리케이션 매핑과 정적 파일 설정이 유지된다. 한도 하나만 바꿀 때는 확장 방식을 쓴다.
+- 콘솔 배포는 이 폴더를 포함해 압축한 source bundle을 올려야 한다. 배포 뒤 인스턴스에 SSH나 Session Manager로 접속해 실제 nginx 설정에 값이 반영됐는지 확인한다.
+- `0`은 크기 검사를 끈다. 한도는 실제로 받을 최대 업로드 크기에 맞추고, 앞단의 다른 프록시와 애플리케이션 프레임워크의 본문 한도도 따로 확인한다(운영 제안). 프레임워크 쪽 한도는 [[Express-Request-and-Body|Express 요청 본문]]과 [[NestJS-File-Upload|NestJS 파일 업로드]]를 본다.
+- Amazon Linux AMI(AL2 이전) 플랫폼은 프록시 설정 방식이 다를 수 있다. Cluster 환경에는 이 플랫폼 설정이 적용되지 않는다.
+
 ## 서비스 역할과 EC2 instance profile
 
 | 역할 | 누가 맡는가 | 용도와 기본 관리형 정책 |
@@ -166,6 +176,10 @@ Rollback에서 리소스 건너뛰기는 원인을 고칠 수 없을 때 검토�
 - [AWS Elastic Beanstalk — Docker platform branches](https://docs.aws.amazon.com/elasticbeanstalk/latest/dg/docker-platform.html)
 - [AWS Elastic Beanstalk — Configuration files](https://docs.aws.amazon.com/elasticbeanstalk/latest/dg/ebextensions.html)
 - [AWS Elastic Beanstalk — Platform hooks](https://docs.aws.amazon.com/elasticbeanstalk/latest/dg/platforms-linux-extend.hooks.html)
+- [AWS Elastic Beanstalk — Reverse proxy configuration](https://docs.aws.amazon.com/elasticbeanstalk/latest/dg/platforms-linux-extend.proxy.html) — 2026-11-09 `conf.d` 확장, 전체 교체의 include와 플랫폼 범위 대조
+- [AWS Elastic Beanstalk — Platform specific options](https://docs.aws.amazon.com/elasticbeanstalk/latest/dg/command-options-specific.html) — 2026-11-09 `ProxyServer`의 플랫폼별 유효값
+- [nginx — Module ngx_http_core_module](https://nginx.org/en/docs/http/ngx_http_core_module.html#client_max_body_size) — 2026-11-09 `client_max_body_size` 기본값, 413과 `0`의 의미 대조
+- [How do I resolve a "413" error when I upload files to my Elastic Beanstalk environment? — YouTube, Amazon Web Services](https://www.youtube.com/watch?v=Al_fsU1Iy38) — 2025-12-27 공개 영상, 폴더 구성과 배포 뒤 확인 절차의 계기 자료
 - [AWS Elastic Beanstalk — Pricing](https://aws.amazon.com/elasticbeanstalk/pricing/)
 - [AWS App Runner Developer Guide, Availability change](https://docs.aws.amazon.com/apprunner/latest/dg/apprunner-availability-change.html)
 - [Sungmin Kim 강사 — Elastic Beanstalk란?](https://www.inflearn.com/courses/lecture?courseId=326598&unitId=81291)
