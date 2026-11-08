@@ -18,6 +18,7 @@ aliases: ["Marketplace Selling", "오픈마켓 판매 운영"]
 - [x] [[Consignment-Sourcing-and-Fulfillment|위탁판매 소싱과 배송, 고객 응대]] — 소싱처 찾기와 검증, 시즌과 등록 시점, 발주와 출고, 연휴와 지연 처리 기준
   - [[Consignment-Sourcing-and-Fulfillment-Claims|위탁판매 고객 응대와 클레임 처리]] — 응대 문장, 공급사 클레임 양식, 표시와 다른 상품의 법적 기준
 - [x] [[Overseas-Purchase-Agency|해외구매대행 판매]] — 자가사용 통관과 재고 수입의 구분, 통관과 세금 책임, 안전관리 유형별 구매대행 조건, 가격과 배송 고지, 반품 불가 표시의 한계와 반품 비용
+- [x] [[China-B2B-Sourcing-Sites|중국 품목별 B2B 소싱 사이트]] — 이우, 난퉁 산지 도매 플랫폼과 산업용품몰, 구매대행 업체의 구분, 사이트별 첫 화면 확인 결과와 점검 항목
 - [x] [[Shopee-Cross-Border-Selling|쇼피 역직구 판매]] — 입점 조건과 8개 마켓, 비용 항목과 확인 경로, SLS와 현지 풀필먼트, 페이오니아 정산, 반품 기준, 한국 수출신고 방식과 부가세 영세율, 작은 검증 기준
 
 ## 관련 문서

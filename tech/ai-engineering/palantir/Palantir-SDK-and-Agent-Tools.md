@@ -119,7 +119,7 @@ OMCP를 켜면 Developer Console 애플리케이션이 MCP server가 되고 외�
 
 OMCP는 Developer Console 앱의 OAuth client와 authorization server, 자원 제한과 권한을 사용한다. 사용자 로그인은 authorization code, 비대화형 service-to-service 호출은 client credentials라는 주체 구분을 유지한다. MCP 연결만 별도의 권한 우회 경로로 취급하지 않는다. [OMCP authentication and authorization](https://www.palantir.com/docs/foundry/ontology-mcp/authentication-and-authorization)
 
-특정 client의 grant 지원은 별도 확인이 필요하다. 확인일에 인증 문서는 Microsoft Copilot Studio를 client credentials 예시로 들지만, [MCP tools and agent configuration](https://www.palantir.com/docs/foundry/ontology-mcp/mcp-tools-and-agent-configuration)은 Copilot Studio가 Confidential Client의 authorization code만 지원한다고 적는다. 이 상충은 해소하지 못했으므로 해당 제품의 연결 설정을 확정하지 않는다.
+특정 client의 grant 조건은 해당 client 안내에서 따로 확인한다. 이전 확인에서는 두 문서의 Microsoft Copilot Studio 설명이 서로 달랐으나, 2026-11-08 확인한 인증 문서와 [MCP tools and agent configuration](https://www.palantir.com/docs/foundry/ontology-mcp/mcp-tools-and-agent-configuration)은 모두 같은 confidential client에 authorization code와 client credentials grant를 함께 켜도록 안내한다. Copilot Studio는 authorization code 흐름으로 로그인한 사용자마다 token을 받으므로 요청은 그 사용자의 Foundry 권한으로 실행된다.
 
 ### 도구 설명은 행동 안내이며 무결성 제약은 아니다
 
@@ -131,7 +131,7 @@ Action의 Agent tool description에는 호출 목적, 필요한 식별자를 구
 
 2026년 5월 standalone OAuth migration은 location/최대 classification/user permission을 정해 full Console app으로 옮기되 기존 client workflow를 유지하도록 안내했다. MCP Hub의 서버 발견은 configured tool/resource를 검토하는 관리 경로이고 tool별 편집/pro-code standalone 지원은 당시 계획이었다. 서버가 검색된다는 사실과 외부 client에 데이터를 제공할 인가는 별도다.
 
-Copilot Studio OMCP integration의 2026년 3월 안내는 Backend service, User's permissions와 confidential client의 authorization-code grant를 요구했다. Client credential의 독립 service 권한 흐름으로 바꾸지 않는다. Adaptive Card의 `response_semantics`는 tool output을 표시하는 mapping이며 버튼/URL dialog의 실제 데이터 접근과 Action 인가는 별도다.
+Copilot Studio OMCP integration의 2026년 3월 안내는 Backend service, User's permissions와 confidential client의 authorization-code grant를 요구했고, 사용자 대신 token을 발급하는 service user가 필요하다고 설명했다. 2026-11-08 확인한 현행 문서는 같은 client에 client credentials grant도 함께 켜도록 안내하지만, 요청은 여전히 로그인한 사용자의 권한으로 실행된다고 적는다. Client credential을 켰다고 독립 service 권한 흐름으로 바꾸지 않는다. 현행 문서는 이 grant의 용도를 설명하지 않는다. Adaptive Card의 `response_semantics`는 tool output을 표시하는 mapping이며 버튼/URL dialog의 실제 데이터 접근과 Action 인가는 별도다.
 
 Palantir MCP의 `view-osdk-definition`은 생성 SDK의 resource/입출력 구조를 읽고 `generate-sdk-version`은 SDK 정의를 바꿔 새 버전을 만든다. 2025년 10월 추가된 repository connection과 Platform SDK endpoint/context discovery도 각각 읽기와 변경을 구분한다. 새 SDK 생성, repository package 설치, code 반영과 check 통과는 서로 다른 완료 조건이며 generated context가 실제 data permission을 부여하지 않는다.
 
