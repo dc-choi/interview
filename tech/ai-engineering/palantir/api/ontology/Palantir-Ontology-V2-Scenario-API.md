@@ -20,12 +20,19 @@ Scenario resource 아래 문서는 생성, rebase와 편집 및 충돌 조회로
 
 | Endpoint | 요청 | 확인한 계약 | Scope |
 | --- | --- | --- | --- |
-| Create Ontology Scenario | `POST /api/v2/ontologies/{ontology}/scenarios/create` | body `base`(선택, branch 등 기준), `expireAfter`(선택, 만료 일시 문자열, 생성 시각 이후이고 생성 후 31일 이내, 기본 생성 후 31일), 응답 `scenarioRid` | `api:ontologies-read`, `api:ontologies-write` |
+| Create Ontology Scenario | `POST /api/v2/ontologies/{ontology}/scenarios/create` | body `base`(선택, branch 기준), `expireAfter`(선택, 만료 일시 문자열, 생성 시각 이후이고 생성 후 31일 이내, 기본 생성 후 31일), 응답 `scenarioRid` | `api:ontologies-read`, `api:ontologies-write` |
 | Rebase Ontology Scenario | `POST /api/v2/ontologies/{ontology}/scenarios/{scenarioRid}/rebase` | scenario에서 편집한 object type 전체를 base의 최신 데이터 위로 옮긴다, scenario 편집 권한 필요 | `api:ontologies-read`, `api:ontologies-write` |
 | List Scenario Edited Objects | `GET /api/v2/ontologies/{ontology}/scenarios/{scenarioRid}/objects/{objectType}/edited` | object type별 편집 객체, `pageSize`, `pageToken`, 응답 `data`, `nextPageToken` | `api:ontologies-read` |
 | List Scenario Conflicting Objects | `GET /api/v2/ontologies/{ontology}/scenarios/{scenarioRid}/objects/{objectType}/conflicting` | scenario 생성 뒤 base에서 바뀐 편집과 충돌하는 객체, 응답은 `ObjectLocator` 목록 | `api:ontologies-read` |
 
 같은 resource에는 편집된 object type, link type, entity type과 link를 나열하는 endpoint도 있다. 이 문서에서는 이름만 확인했고 요청과 응답 필드는 대조하지 않았다.
+
+## Create 요청의 세부 계약
+
+- Path의 `{ontology}`는 Ontology의 API name 또는 RID를 받는다. 값은 List Ontologies endpoint나 Ontology Manager에서 찾는다.
+- `base`는 union이고 명세에 정의된 subtype은 `branch` 하나다. 명세 예시는 `{"base": {"type": "branch", "branch": "my-branch"}}`이며, `branch` 값은 global Foundry branch의 RID 또는 dataset branch identifier다. `base`를 생략했을 때 어떤 기준으로 초기화되는지는 명세에 적혀 있지 않다.
+- `expireAfter`는 date-time 형식 문자열이다. 이 시각이 지나면 scenario가 만료되어 자동 정리된다.
+- 응답의 `scenarioRid`는 `ri.actions..scenario.<UUID>` 형태 예시로 제시된다. 이후 scenario 문맥 호출에 이 값을 그대로 넘긴다.
 
 ## 사용할 때 주의할 점
 

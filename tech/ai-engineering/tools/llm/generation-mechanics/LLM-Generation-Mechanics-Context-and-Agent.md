@@ -60,6 +60,15 @@ Context Window는 모델이 한 번 응답할 때 참조하는 작업 기억이�
 
 설계 적용 예로 확정 결정, 미해결 문제와 다음 행동을 따로 기록할 수 있다. 요약이 원문을 대체하는 정본이 되지 않도록 근거 위치를 함께 남기고 중요한 판단에서는 다시 대조한다.
 
+### 거부한 대안도 기록한다
+
+A를 시도했다가 이유가 있어 B로 바꾼 작업에서 압축 요약이 B라는 결과만 남기면, 이후 컨텍스트에는 A를 버린 근거가 없다. 모델은 현재 코드와 요약만 보고 B를 설명하거나 A를 새 개선안으로 다시 제안할 수 있고, 사용자도 그 이력을 잊었다면 같은 시도가 반복된다. 무엇을 하지 않기로 했는지는 결과물에 드러나지 않으므로 별도로 남기지 않으면 복원하기 어렵다. 이 실패 양상은 강의와 사용 경험에서 나온 설명이며 특정 모델의 압축 동작을 측정한 결과는 아니다.
+
+- **기록 형식(설계 제안)**: 결정마다 채택안, 거부한 대안, 거부 이유와 그 판단을 다시 열 조건을 함께 적는다. ADR이나 RFC의 검토한 대안 절과 같은 구조다([[RFC-Writing|RFC 작성]]).
+- **다시 읽히는 위치**: 파일에 적어도 이후 호출에서 읽지 않으면 효과가 없다. 2026-11-09 Claude Code 공식 문서 기준으로 프로젝트 루트의 CLAUDE.md와 경로 조건이 없는 규칙은 압축 뒤 디스크에서 다시 주입되지만, 하위 폴더의 CLAUDE.md와 경로 조건이 있는 규칙은 해당 파일을 다룰 때 메시지 기록으로 들어오므로 압축 때 다른 대화와 함께 요약된다. 이들은 Claude가 그 조건의 파일을 다시 읽거나 고칠 때 다시 로드되며, 그 전까지는 컨텍스트에 없다. 공식 문서는 압축 뒤에도 유지해야 할 규칙을 루트 CLAUDE.md로 옮기거나 규칙의 `paths:` 조건을 빼라고 안내한다.
+- **결정 기록 파일을 가리키는 방식(설계 제안)**: 결정 기록이 길면 루트 CLAUDE.md에 그 파일의 경로와 읽을 시점만 적을 수 있다. 이 방식은 파일을 찾게 할 뿐이며, 읽은 내용은 메시지 기록에 들어가 다음 압축 때 다시 요약될 수 있다. 반드시 지켜야 할 금지는 루트 CLAUDE.md 본문에 짧게 둔다.
+- **압축 지시**: 수동 압축에서는 `/compact` 뒤에 보존할 초점을 적을 수 있다. 다만 무엇이 남는지는 요약 결과에 달려 있으므로 지속 규칙의 대체 수단으로 쓰지 않는다.
+
 ## 왜 환각하는가
 
 다음 Token loss는 학습 분포에 맞는 연속을 보상하지, 생성한 claim의 출처와 사실성을 직접 검증하지 않는다. 다음 조건이 함께 오류를 만든다.
@@ -135,6 +144,8 @@ Tool Call은 모델이 생성한 구조화 출력이다. Runtime이 권한을 �
 - [Model optimization — OpenAI API](https://developers.openai.com/api/docs/guides/model-optimization)
 - [Deprecations — OpenAI API](https://developers.openai.com/api/docs/deprecations) — Update to OpenAI's self-serve fine-tuning
 - [Context windows — Anthropic Platform Docs](https://platform.claude.com/docs/en/build-with-claude/context-windows)
+- [Explore the context window — Claude Code Docs](https://code.claude.com/docs/en/context-window) — 압축 뒤 다시 주입되는 지침과 요약되는 지침
+- [How Claude remembers your project — Claude Code Docs](https://code.claude.com/docs/en/memory)
 - [Models overview — Anthropic Platform Docs](https://platform.claude.com/docs/en/about-claude/models/overview)
 - [Pricing — Anthropic Platform Docs](https://platform.claude.com/docs/en/about-claude/pricing)
 - [Steering thinking — Anthropic Platform Docs](https://platform.claude.com/docs/en/build-with-claude/thinking-steering-and-cost)
@@ -143,6 +154,7 @@ Tool Call은 모델이 생성한 구조화 출력이다. Runtime이 권한을 �
 - [인프런, 널널한 개발자, LLM 서비스, 토큰, 컨텍스트](https://www.inflearn.com/courses/lecture?courseId=344484&unitId=498588)
 - [인프런, 널널한 개발자, AI도구 설치](https://www.inflearn.com/courses/lecture?courseId=344484&unitId=498586)
 - [YouTube, 양실장의 바이브코딩대학, LLM 신경망 학습부터 추론 원리 전체를 비개발자 15명에게 설명하는 강의](https://www.youtube.com/watch?v=geY4UO23QA8)
+- [YouTube, 널널한 개발자 TV, 바이브 코딩 할 때, AI가 당신 말을 까먹는 이유](https://www.youtube.com/watch?v=vQB3HAhPuKw) — 2026-10-28, 압축에서 거부한 대안이 사라지는 문제
 
 ## 관련 문서
 
