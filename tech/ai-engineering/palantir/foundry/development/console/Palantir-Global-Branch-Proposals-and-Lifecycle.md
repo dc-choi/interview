@@ -24,9 +24,9 @@ Owner/space Administrator는 branch 관리, proposal 생성/close, branch archiv
 
 모든 resource check/approval이 충족되고 Do not merge가 없으면 proposal을 볼 수 있는 사용자도 merge할 수 있다. Merger가 모든 resource를 직접 edit할 필요는 없으며 사전 작성/승인된 변경을 적용하는 모델이다. Project로 옮기지 않은 Ontology entity의 branch edit 제한 예외는 editor approval로 보완한다.
 
-Protected resource는 Main 직접 변경을 막고 branch review를 요구한다. Project Owner는 eligible reviewers/승인 수/contributor self-approval을 구성하며 새 file 자동 보호도 켤 수 있다. Default policy는 contributor의 permission으로 일부 또는 전부 자동 충족할 수 있어 protected가 항상 독립 reviewer 한 명을 보장하지 않는다.
+Protected resource는 Main 직접 변경을 막고 branch review를 요구한다. Project Owner는 eligible reviewers/승인 수/contributor self-approval을 구성하며 새 file 자동 보호도 켤 수 있다. Project가 default approval policy 옵션을 고르면 각 resource는 소유 application이 정한 default policy로만 보호되며(예: object type은 Ontology), 이 policy는 contributor의 permission으로 대개 자동 충족되므로 protected가 항상 독립 reviewer 한 명을 보장하지 않는다. Default policy가 자동 충족되지 않는 드문 경우(대개 policy가 요구하는 permission이 없을 때)에만 다른 사용자의 approval이 필요하다. Reviewer로 미리 지정되지 않아도 policy 요건을 충족하는 사용자는 누구나 approve할 수 있다. 적용되는 policy는 proposal page의 reviewers column이나 branch taskbar에서 resource approval status를 눌러 연 popover로 확인하며, policy별 eligible reviewers, 필요 approval 수와 contributor approval 허용 여부가 표시된다.
 
-Unprotected resource도 기본 edit-level approval을 요구할 수 있다. Code Repositories/Pipeline Builder는 자체 approval policy를 유지한다. 한 명의 reject는 resource와 전체 proposal merge를 막고 그 rejecting user가 다시 approve해야 한다. Review 요청 수신/일반 approval 수 충족만으로 reject가 해제되지 않는다.
+Unprotected resource도 기본 edit-level approval을 요구할 수 있다. Code Repositories/Pipeline Builder는 자체 local branch protection과 approval policy를 유지한다. 공식 문서는 이 둘에서 project approval policy를 선택할 수 있게 하겠다고 예고만 했으므로, 현재는 project policy가 이 resource에 그대로 적용된다고 가정하지 않는다. 한 명의 reject는 resource와 전체 proposal merge를 막고 그 rejecting user가 다시 approve해야 한다. Review 요청 수신/일반 approval 수 충족만으로 reject가 해제되지 않는다.
 
 Resource move는 protection 상태를 유지하지만 새 Project policy가 적용된다. Open proposal 표시 갱신은 최대 하루 지연될 수 있고 resource edit/merge 시도도 refresh한다. Policy 변경은 기존 관련 proposal을 재평가하므로 처음 만든 시점의 승인 규칙이 영구 고정되는 것은 아니다.
 

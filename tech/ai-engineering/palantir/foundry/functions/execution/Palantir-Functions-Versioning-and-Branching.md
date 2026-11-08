@@ -1,7 +1,7 @@
 ---
 tags: [palantir, functions, ontology]
 status: done
-verified_at: 2026-10-16
+verified_at: 2026-11-08
 category: "AI엔지니어링(AIEngineering)"
 ---
 
@@ -19,14 +19,15 @@ Query는 read-only 계약이다. 외부 시스템 변경도 금지되며 편집�
 
 ## Global branch
 
-v1 child template 0.903 이상, v2 parent 0.1299 이상, Python 0.724 이상과 local SDK 조건을 확인한다. branch 버전은 같은 branch context에서만 사용하며 목표 stable 버전과 연결된다. branch의 target을 바꾸면 dependent를 갱신해야 한다.
+v1 child template 0.903 이상, v2 parent 0.1299 이상, Python 0.724 이상과 local SDK 조건을 확인한다. TypeScript v2와 Python은 local Ontology SDK를 켠 repository에서만 branch 개발을 지원한다. Local SDK가 없는 TypeScript v2/Python repository도 branch에서 특정 함수 버전을 참조할 수는 있지만, branch의 바뀐 schema에 맞춰 함수 코드를 수정할 수는 없다. 따라서 branch에서 함수 버전을 참조할 수 있다는 사실을 branch schema 기준 개발이 가능하다는 뜻으로 읽지 않는다. branch 버전은 같은 branch context에서만 사용하며 목표 stable 버전과 연결된다. branch의 target을 바꾸면 dependent를 갱신해야 한다.
 
-rebase만으로 main의 함수 버전이 자동 갱신되는 것은 아니다. merge 때 target에 해당하는 버전과 다른 시험 버전을 구분한다. query 함수 branch dependency 지원 제한도 확인한다. 함수 호환성, Ontology revision과 Action provenance를 함께 검토한다.
+branch는 main에 새로 게시된 함수 버전을 자동으로 받지 않으며, 함수 버전을 rebase해야 main의 새 버전을 가져온다. merge 때 target에 해당하는 버전과 다른 시험 버전을 구분한다. TypeScript v1, v2와 Python repository 모두 현재 query 함수의 branch 버전에는 의존할 수 없다. 함수 호환성, Ontology revision과 Action provenance를 함께 검토한다.
 
 ## 출처
 
 - [Palantir, functions-versioning](https://www.palantir.com/docs/foundry/functions/functions-versioning)
 - [Palantir, branching-functions](https://www.palantir.com/docs/foundry/functions/branching-functions)
+- [Palantir, Global Branching integrations](https://www.palantir.com/docs/foundry/global-branching/integrations)
 - [Palantir, version-range-dependencies-for-functions](https://www.palantir.com/docs/foundry/functions/version-range-dependencies-for-functions)
 - [Palantir, query-functions](https://www.palantir.com/docs/foundry/functions/query-functions)
 - [Palantir, python-functions-advanced-usage](https://www.palantir.com/docs/foundry/functions/python-functions-advanced-usage)
