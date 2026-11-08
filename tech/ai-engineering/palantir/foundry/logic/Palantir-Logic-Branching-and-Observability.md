@@ -1,7 +1,7 @@
 ---
 tags: [palantir, aip, logic]
 status: done
-verified_at: 2026-10-16
+verified_at: 2026-11-08
 category: "AI엔지니어링(AIEngineering)"
 ---
 
@@ -23,9 +23,13 @@ Project-scoped run-history dataset은 최근 10,000회를 보존한다. 이 보�
 
 ## Compute의 분해
 
-검증일 usage 문서는 LLM block 실행 최소 4 compute-seconds와 LLM tool 실행 8 compute-seconds를 제시한다. 두 LLM block 중 하나가 tool을 한 번 부르는 예는 기본 2*4+8=16이며 두 번 실행하면 32다. 여기에 model token과 query/function/action의 별도 compute가 더해질 수 있다. Enterprise 계약은 별도 기준을 확인한다.
+검증일 usage 문서는 LLM token과 별도로 Use LLM block 실행마다 고정 4 compute-seconds, 그 block의 LLM이 tool을 부를 때마다 8 compute-seconds를 더한다고 제시한다. 두 charge는 합산되므로 tool을 부르는 block은 둘 다 낸다. 기본식은 `(LLM block 실행 수 * 4) + (tool 호출 수 * 8)`이다.
 
-Deterministic action/function/transform block 자체에는 이 LLM block charge가 없지만 호출된 시스템의 비용이 없다는 뜻은 아니다. 불필요한 block, 반복/재시도와 큰 tool response를 함께 줄인다. Block을 합쳐도 context와 품질이 나빠지면 전체 cost는 증가할 수 있다.
+Tool 호출 횟수는 실행 시점에 LLM이 정하므로 한 block 실행에 여러 번의 호출이 생길 수 있고 각각 과금된다. Loop 안의 Use LLM block은 반복마다 한 번의 block 실행으로 센다. 실제 호출 수는 함수를 테스트하고 Debugger에서 확인한다.
+
+두 LLM block 중 하나가 tool을 한 번 부르는 예는 2*4+8=16이며 두 번 실행하면 32다. 같은 구성에서 tool을 run마다 두 번 부르면 2*4+2*8=24, 두 번 실행하면 48이다. 여기에 model token과 query/function/action의 별도 compute가 더해질 수 있다. Enterprise 계약이면 계산 전에 Palantir 담당자에게 먼저 확인한다.
+
+Action, function과 data transformation block은 그 자체로 compute를 쓰지 않지만, 호출한 Ontology query, function, action은 별도 compute를 쓴다. 공식 문서는 prompt에 넣는 텍스트를 필요한 부분으로 줄이고, 적절한 경우 여러 block을 한 prompt로 합치며, 재시도와 tool 호출 수를 파악하라고 권한다. 운영 판단: block을 합쳐 context와 품질이 나빠지면 재시도가 늘어 전체 cost가 오히려 커질 수 있다.
 
 ## 출처
 
