@@ -40,7 +40,17 @@ SDK resource를 선택하는 것과 Ontology APIs enablement는 별도다. Infor
 
 ## Iframe capability는 여러 단계로 허용한다
 
-기본 iframe은 browser 기능을 제한한다. Developer가 permissions에 camera/microphone/autoplay 또는 allow-downloads/forms/popups를 요청하고 host builder가 별도로 opt-in한다. 일부는 checkpoint 확인도 요구한다. Camera/microphone은 그 뒤에도 최종 사용자 browser permission이 필요하다. Request 선언만으로 browser 접근이 허용되지 않으며 denied/unsupported 상태를 처리한다.
+기본 iframe은 browser 기능을 제한한다. Developer가 widget config의 `permissions` 배열에 `allow` 값(camera, microphone, autoplay)이나 `sandbox` 값(allow-downloads, allow-forms, allow-modals, allow-popups)을 요청하고, host builder가 Workshop widget 설정의 Permissions 절(Parameters와 Events 다음)에서 별도로 opt-in한다. Enrollment에 해당 checkpoint가 구성되어 있으면 일부 attribute(allow-downloads, camera, microphone 등)의 opt-in에서 builder의 checkpoint 확인이 요구될 수 있다. 대부분의 widget은 추가 attribute가 필요 없으므로 실제로 쓰는 browser 기능만 요청한다.
+
+| 필요한 동작 | 요청할 값 |
+| --- | --- |
+| `getUserMedia`로 camera/microphone 사용 | allow `camera`, `microphone` |
+| `<video>`/`<audio>` 자동 재생 | allow `autoplay` |
+| Blob URL이나 static asset download | sandbox `allow-downloads` |
+| `window.print()` 인쇄 dialog | sandbox `allow-modals` |
+| `target="_blank"` 링크로 새 tab 열기 | sandbox `allow-popups` |
+
+Camera/microphone은 host 허용 뒤에도 최종 사용자 browser permission이 필요하다. Permissions API `query()`가 돌려주는 PermissionStatus의 state는 iframe attribute와 사용자 prompt 상태에 따라 granted, prompt, denied가 될 수 있다. Browser가 지원하지 않는 permission name이면 `query()`가 TypeError로 reject될 수 있다. Request 선언만으로 browser 접근이 허용되지 않으며 denied/unsupported 상태를 처리한다. 개발 중에는 custom widgets playground나 VS Code workspace에서 host 허용 없이 요청한 attribute를 임시로 시험할 수 있다. 그 환경에서 동작한 것과 별개로 실제 Workshop host에서는 builder의 opt-in이 따로 필요하다.
 
 추가 iframe attribute로 고정 CSP를 임의 확장할 수 없다. External request는 차단되며 외부 service는 function/webhook 같은 Foundry resource로 감싼다. Browser persistent storage(localStorage/sessionStorage/IndexedDB)는 지원하지 않는다. Dedicated worker는 가능하지만 shared/service worker는 지원하지 않는다.
 
@@ -60,6 +70,8 @@ Workshop Open URL event를 widget event에 bind하면 popup 권한을 추가하�
 - [Palantir, Use OSDK](https://www.palantir.com/docs/foundry/custom-widgets/use-osdk)
 - [Palantir, Display map tiles](https://www.palantir.com/docs/foundry/custom-widgets/map-tiles)
 - [Palantir, Iframe attributes](https://www.palantir.com/docs/foundry/custom-widgets/iframe-attributes)
+- [Palantir, Checkpoint types](https://www.palantir.com/docs/foundry/checkpoints/checkpoint-types/)
+- [MDN, Permissions: query() method](https://developer.mozilla.org/en-US/docs/Web/API/Permissions/query)
 - [Palantir, Open a URL](https://www.palantir.com/docs/foundry/custom-widgets/open-url-in-workshop)
 - [Palantir, Develop and preview](https://www.palantir.com/docs/foundry/custom-widgets/development)
 - [Palantir, Embedding in Workshop](https://www.palantir.com/docs/foundry/custom-widgets/embedding-in-workshop)

@@ -1,7 +1,7 @@
 ---
 tags: [palantir, custom-widgets, deployment, marketplace]
 status: done
-verified_at: 2026-10-16
+verified_at: 2026-11-09
 category: "AI엔지니어링(AIEngineering)"
 aliases: ["Custom Widget 개발과 배포"]
 ---
@@ -38,11 +38,17 @@ Foundry repository는 tag build가 publish하고 checks로 성공을 확인한�
 
 Node는 root .nvmrc의 버전과 nvm install로 개발 환경을 맞추고 CI의 NODE_INSTALLATION_VERSION도 그 파일에서 읽도록 구성해야 한다. .nvmrc만 추가했다고 CI가 바뀌지 않는다. 미설정 시 문서의 개발 기본값은 18.20.8이고 CI는 .jemma/settings.sh를 따르므로 일치 여부를 확인한다. 예시 v24.13.0을 모든 환경의 필수/최신 버전으로 보지 않는다.
 
-## Marketplace 설치 후 작업
+## Marketplace 배포와 설치 후 작업
 
-Widget set 자체를 product output으로 추가하거나 embedding Workshop module을 추가해 함께 포함할 수 있다. widget.vite-plugin 3.1.0 이상이 필요하며 기존 낮은 버전의 release는 plugin upgrade 후 다시 publish한다.
+Widget set 자체를 product output으로 추가(Add files로 Compass에서 widget set 선택)하거나 embedding Workshop module을 추가해 함께 포함할 수 있다. `@osdk/widget.vite-plugin` 3.1.0 이상이 필요하며 기존 낮은 버전의 release는 source project의 plugin을 올린 뒤 새 version을 다시 publish하고 나서 DevOps에 넣는다.
 
-설치된 Foundry code repository source는 debugging용이며 그 자리에서 개발/새 release를 만드는 경로는 지원하지 않는다. Ontology entity API name은 원본과 같아야 하므로 prefix 없이 설치하거나 기존 entity로 input을 mapping한다. Versioned function은 latest만 지원한다.
+Marketplace product는 Custom Widgets 기능 대부분을 지원하지만 아래는 예외다. 설치 계획을 세울 때 이 목록을 설치 후 수동 작업과 함께 확인한다.
+
+- 설치된 Foundry code repository source에서 개발하고 새 version 발행(설치된 source는 debugging용이다)
+- 원본과 다른 API name의 ontology resource(prefix 없이 설치하거나 기존 entity로 input을 mapping해 API name을 원본과 맞춘다)
+- OSDK의 versioned function(latest version만 지원)
+- Map tile source 패키징(다른 enrollment에 설치해도 원본 tile source 참조를 유지한다. [[Palantir-Custom-Widget-State-and-Security|상태와 보안]]의 map tile 절 참고)
+- 설치 중 Ontology APIs 자동 enable(아래 수동 작업 참고)
 
 OSDK Ontology APIs는 설치 시 자동 enable되지 않는다. 설치 후 권한자가 한 번 수동 enable하며 이후 product upgrade에서도 설정은 유지된다. Product 설치 성공을 runtime API enablement 완료로 보고하지 않는다.
 

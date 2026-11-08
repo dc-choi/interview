@@ -18,6 +18,7 @@ aliases: ["Problem Solving Techniques", "코딩 테스트 문제 해결 기법"]
 - [x] [[Fenwick-Tree|Fenwick tree]]
 - [x] [[Simulation-Implementation|시뮬레이션과 구현 (진법 열거, 배열 회전과 전치, 동시 갱신, 방향과 상태 인코딩)]]
 - [x] [[String-Matching-KMP|문자열 매칭과 KMP (실패 함수)]]
+- [x] [[String-Search-Boyer-Moore|Boyer-Moore 문자열 검색 (끝 글자부터 비교, bad character 건너뛰기, Horspool)]]
 - [x] [[Number-Theory-Basics|정수론 기초 (소수, 체, 팩토리얼의 소인수, 최대공약수, 나머지 연산, 연립합동방정식, 이항계수)]]
 
 ## 선택 질문
@@ -35,6 +36,7 @@ aliases: ["Problem Solving Techniques", "코딩 테스트 문제 해결 기법"]
 | 같은 시각에 여러 칸이 바뀌거나 방향만 다른 같은 규칙이 반복됨 | simulation (temp 반영, 판 회전과 전치) |
 | 요청 순서 전체를 알고 교체 횟수를 줄임 | greedy (다음 사용이 가장 먼 항목 교체) |
 | 긴 텍스트에서 패턴 위치를 최악 보장으로 찾음 | KMP |
+| 긴 패턴을 큰 텍스트에서 찾고 평균 속도가 중요함 | Boyer-Moore 계열 |
 | 소수, 약수, 나머지, 경우의 수를 다룸 | 정수론 기초 (√n 경계, 체, 유클리드 호제법) |
 
 ## 관련 문서

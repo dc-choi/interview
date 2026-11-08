@@ -52,6 +52,7 @@ std::vector<int> kmpSearch(const std::string& s, const std::string& p) {
 
 - N, M이 작거나 한 번만 찾으면 단순 비교나 표준 라이브러리로 충분하다.
 - 한 패턴을 긴 텍스트에서 찾고 최악을 보장해야 하면 KMP.
+- 패턴이 길고 평균 속도가 중요하면 끝 글자부터 비교해 글자를 건너뛰는 [[String-Search-Boyer-Moore|Boyer-Moore]] 계열을 검토한다.
 - 여러 패턴을 한꺼번에 찾으면 [[Trie-and-Autocomplete|Trie]]를 확장한 Aho-Corasick, 여러 부분 문자열의 동일성을 빠르게 비교하면 rolling hash(충돌 가능성 감안)를 검토한다([[Hash-Table|Hash Table]]).
 - 실패 함수는 매칭 말고도 문자열의 최소 반복 단위(`M - f[M - 1]`이 M을 나누면 그 길이) 같은 문제에 쓰인다.
 
@@ -70,5 +71,6 @@ std::vector<int> kmpSearch(const std::string& s, const std::string& p) {
 
 - [[Problem-Solving-Techniques|코딩 테스트 문제 해결 기법]]
 - [[Trie-and-Autocomplete|Trie와 자동완성]]
+- [[String-Search-Boyer-Moore|Boyer-Moore 문자열 검색]]
 - [[Hash-Table|Hash Table (rolling hash)]]
 - [[Algorithm-Complexity|시간복잡도]]
