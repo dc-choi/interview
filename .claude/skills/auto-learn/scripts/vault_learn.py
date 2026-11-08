@@ -49,12 +49,15 @@ LABEL = "com.dcchoi.vault-learn."
 MODES = ("harvest", "instagram", "learn", "digest")
 # 과거 DM 기록의 가림용 이름(instagram_dm_name)과 뉴스레터 발신 주소는 config.json에만 둔다.
 # 2026-11-08 사용자 결정: 자동 학습은 Claude만 쓴다. 이전 설정에 남은 engine, primary, codex* 키는 읽지 않는다.
+# 같은 날 사용자 결정: YouTube 영상은 업로드일이 최근 video_max_age_days일 안인 것만 전사하고 학습한다. 사용자가 명시한
+# 채널(handle)과 영상(id나 URL)은 video_old_allow에 두며 기준과 관계없이 학습한다.
 DEFAULTS = {"k": 6, "jobs": 2, "whisper_threads": 4, "learn_timeout_min": 180, "harvest_timeout_min": 90,
             "instagram_timeout_min": 45, "digest_timeout_min": 30, "idle_interval_min": 180, "stale_days": 180,
             "claude": "claude",
             "threads_reposts_url": "", "adhoc_dir": "", "instagram_saved_url": "",
             "instagram_saved_collection": "", "instagram_dm_name": "", "instagram_dm_thread_url": "",
-            "email_since": "", "email_senders": []}
+            "email_since": "", "email_senders": [],
+            "video_max_age_days": 365, "video_old_allow": {"channels": [], "videos": []}}
 # 30초 간격 3회 재시도는 사용자 결정이다. 그 뒤 6시간 쉬고 다시 시도하며, 세 차례 모두 실패하면 제외한다.
 ATTEMPTS, RETRY_WAIT_S, COOLDOWN_S, MAX_ROUNDS, MAX_LIVE_ROUNDS = 3, 30, 6 * 3600, 3, 20
 PERMANENT = re.compile(
@@ -108,6 +111,7 @@ BROWSER_WAIT = ("chrome", "logged_out")  # 그 수집 작업만 쉰다. S/backof
 ORIGIN_MAIN = "refs/remotes/origin/main"
 PENDING = "guard-pending.json"  # 실행 뒤 검사가 끝나야 지우는 표시(S 아래)
 STOP = threading.Event()
+WARNED = set()  # 이미 남긴 설정 경고. 1분마다 도는 작업이 같은 경고로 로그를 채우지 않게 한다.
 
 
 # ---------------------------------------------------------------- 공통 도구
@@ -120,8 +124,8 @@ def stamp():
     return now().strftime("%Y%m%d-%H%M%S")
 
 
-def log(message):
-    print(f"{now():%Y-%m-%d %H:%M:%S} {message}", flush=True)
+def log(message, file=None):
+    print(f"{now():%Y-%m-%d %H:%M:%S} {message}", flush=True, file=file)
 
 
 def emit(obj):
@@ -332,6 +336,73 @@ def failure_state():
     return state
 
 
+def warn_once(message):
+    """설정 경고를 stderr에 남긴다(pick과 status의 JSON을 지킨다). 같은 경고는 프로세스마다 한 번만 남긴다."""
+    if message not in WARNED:
+        WARNED.add(message)
+        log(message, sys.stderr)
+
+
+def video_rule(conf):
+    """업로드 기준 (허용 영상 id, 허용 handle, 기준일). 기준일은 RSS와 yt-dlp 날짜처럼 UTC 날짜로 센다. 형식이 틀린
+    설정은 문자열 항목만 남기고, 날짜 수가 숫자가 아니거나 음수이거나 날짜 범위를 넘으면 경고 뒤 365일로 본다."""
+    allow = conf.get("video_old_allow")
+    if allow is not None and not isinstance(allow, dict):
+        warn_once(f"video_old_allow가 객체가 아니라 비어 있다고 본다: {allow!r}")
+    allow = allow if isinstance(allow, dict) else {}
+
+    def strings(key):
+        value = allow.get(key)
+        return [value] if isinstance(value, str) else [v for v in value if isinstance(v, str)] \
+            if isinstance(value, list) else []
+
+    today, days = dt.datetime.now(dt.timezone.utc).date(), conf.get("video_max_age_days")
+    try:
+        if int(days) < 0:
+            raise ValueError(days)
+        cutoff = today - dt.timedelta(days=int(days))
+    except (TypeError, ValueError, OverflowError):
+        warn_once(f"video_max_age_days를 읽지 못해 365일로 본다: {days!r}")
+        cutoff = today - dt.timedelta(days=365)
+    return {video_id(v) for v in strings("videos")} - {None}, {hkey(h) for h in strings("channels")} - {""}, cutoff
+
+
+def recent_video(vid, handle, day, rule):
+    """업로드일(YYYY-MM-DD로 시작)이 기준일 이후인가. 모르면 기준 밖이다. video_old_allow의 채널과 영상은 기준을
+    넘는다. 기준 밖 영상은 skipped로 남기지 않으므로 기준이나 허용 목록이 바뀌면 다시 대상이 된다."""
+    videos, channels, cutoff = rule
+    if vid in videos or (handle and hkey(handle) in channels):
+        return True
+    try:
+        return dt.date.fromisoformat(day[:10]) >= cutoff
+    except ValueError:
+        return False
+
+
+def checked_videos():
+    """전사 전에 메타데이터로 확인한 {id: [업로드일, handle]}. 확인하지 못한 값은 빈 문자열이다."""
+    return {r[0]: (r + ["", ""])[1:3] for r in rows(S / "video_dates.tsv")}
+
+
+def queued_recent(r, checked, rule):
+    """큐 행이 업로드 기준 안인가. RSS 행의 날짜, 없으면 전사 전 확인 기록으로 정하고 둘 다 없으면 None(확인 전)이다."""
+    vid, source, published = (r + ["", ""])[:3]
+    if published:
+        return recent_video(vid, source, published, rule)
+    if vid in checked:
+        day, handle = checked[vid]
+        return recent_video(vid, handle, day, rule)
+    return True if recent_video(vid, "", "", rule) else None
+
+
+def ytdlp(*args):
+    """전사 스크립트와 같은 yt-dlp 실행 방식(판, JS 런타임). 그 스크립트는 쓸 때만 불러와 다른 VL 명령이 기대지 않는다."""
+    if str(TRANSCRIBE.parent) not in sys.path:
+        sys.path.append(str(TRANSCRIBE.parent))
+    import yt_transcript
+    return yt_transcript.ytdlp(*args)
+
+
 def classify(rc, output):
     if rc == 3:
         return "tools"
@@ -367,17 +438,23 @@ class Transcriber:
         self.conf = conf
         self.mu = threading.Lock()
         self.claimed = set()
+        self.undated = {}  # 업로드일을 모른 채 가져간 id. process가 전사 전에 메타데이터로 확인한다.
         self.hold_until = 0.0
 
     def claim(self):
         with self.mu:
             done, skipped, fails, t = done_ids(), skipped_ids(), failure_state(), time.time()
+            checked, rule = checked_videos(), video_rule(cfg())  # 허용 목록을 고치면 작업자를 다시 띄우지 않아도 따른다.
             for prio in ("new", "backlog"):
                 for r in rows(S / "queue" / f"{prio}.tsv"):
                     vid, fail = r[0], fails.get(r[0])
                     if vid in done or vid in skipped or vid in self.claimed or (fail and t - fail["last"] < COOLDOWN_S):
                         continue
+                    recent = queued_recent(r, checked, rule)
+                    if recent is False:  # 업로드 기준 밖이거나 확인해도 모른 행은 받지 않고 큐에 남긴다.
+                        continue
                     self.claimed.add(vid)
+                    self.undated[vid] = recent is None
                     return prio, vid
         return None
 
@@ -389,6 +466,8 @@ class Transcriber:
         # JS 런타임이 없으면 yt-dlp가 형식을 못 받아 '오디오 형식이 없다'로 끝나고 영구 제외로 잘못 분류된다.
         if not (shutil.which("node") or shutil.which("deno")):
             return self.hold(15 * 60, "PATH에서 node나 deno를 찾지 못했다")
+        if self.undated.get(vid) and not self.upload_checked(vid):
+            return
         output, kind = "", "transient"
         for attempt in range(1, ATTEMPTS + 1):
             p = subprocess.Popen([sys.executable, str(TRANSCRIBE), f"https://www.youtube.com/watch?v={vid}",
@@ -405,6 +484,39 @@ class Transcriber:
             kind = classify(p.returncode, output)
             if kind != "transient" or attempt == ATTEMPTS or STOP.wait(RETRY_WAIT_S):
                 break
+        self.failed(vid, kind, output)
+
+    def upload_checked(self, vid):
+        """미디어를 받기 전에 업로드일과 채널 handle만 받아 S/video_dates.tsv에 남긴다. 기준 안이면 True다.
+        기준 밖이거나 업로드일을 확인하지 못한 항목은 큐에 남고, claim이 그 기록을 보고 다시 조회하지 않는다."""
+        output, kind = "", "transient"
+        for attempt in range(1, ATTEMPTS + 1):  # 조회 실패는 전사와 같이 30초 간격으로 다시 하고 그 뒤 failed가 맡는다.
+            try:
+                p = subprocess.run(ytdlp("--skip-download", "--ignore-no-formats-error", "--print",
+                                         "%(upload_date)s %(uploader_id)s", f"https://www.youtube.com/watch?v={vid}"),
+                                   capture_output=True, text=True, errors="replace", timeout=300)
+            except subprocess.TimeoutExpired:  # 멈춘 조회는 일시 실패 한 번으로 센다.
+                output, kind = "오류: yt-dlp 메타데이터 조회가 300초 안에 끝나지 않았다", "transient"
+            except (OSError, ImportError) as e:  # uvx나 전사 스크립트가 없다. 도구 없음처럼 15분 멈춘다.
+                output, kind = str(e), "tools"
+                break
+            else:
+                if p.returncode == 0:
+                    day, _, handle = (p.stdout.strip().splitlines() or [""])[-1].partition(" ")
+                    day = f"{day[:4]}-{day[4:6]}-{day[6:]}" if re.fullmatch(r"\d{8}", day) else ""
+                    handle = handle.strip() if handle.strip().startswith("@") else ""
+                    append(S / "video_dates.tsv", f"{vid}\t{day}\t{handle}\n")
+                    if recent_video(vid, handle, day, video_rule(cfg())):
+                        return True
+                    log(f"aged {vid}: {day or '업로드일 미확인'}")
+                    return False
+                output = (p.stdout + p.stderr).strip()
+                kind = classify(p.returncode, output)
+            if kind != "transient" or attempt == ATTEMPTS or STOP.wait(RETRY_WAIT_S):
+                break
+        return self.failed(vid, kind, output)
+
+    def failed(self, vid, kind, output):
         if STOP.is_set():
             return
         lines = output.splitlines()
@@ -427,18 +539,20 @@ class Transcriber:
             if (S / "paused").exists() or time.time() < self.hold_until:
                 STOP.wait(30)
                 continue
-            item = self.claim()
-            if not item:
-                STOP.wait(60)
-                continue
-            try:
+            item = None
+            try:  # 한 항목이나 큐 읽기의 예외로 작업자 전체가 멈추지 않게 한다.
+                item = self.claim()
+                if not item:
+                    STOP.wait(60)
+                    continue
                 self.process(*item)
-            except Exception as e:  # 한 항목의 예외로 작업자 전체가 멈추지 않게 한다.
-                log(f"error {item[1]}: {e!r}")
+            except Exception as e:
+                log(f"error {item[1] if item else 'claim'}: {e!r}")
                 STOP.wait(30)
             finally:
-                with self.mu:
-                    self.claimed.discard(item[1])
+                if item:
+                    with self.mu:
+                        self.claimed.discard(item[1])
 
 
 def cmd_transcribe(a):
@@ -463,9 +577,14 @@ def cmd_transcribe(a):
 
 
 def waiting_counts():
-    done, skipped = done_ids(), skipped_ids()
-    return {prio: sum(1 for r in rows(S / "queue" / f"{prio}.tsv") if r[0] not in done and r[0] not in skipped)
-            for prio in ("new", "backlog")}
+    """전사를 기다리는 행 수. 업로드 기준 밖이라 받지 않고 큐에 남긴 행은 aged로 따로 센다."""
+    done, skipped, checked, rule = done_ids(), skipped_ids(), checked_videos(), video_rule(cfg())
+    counts = {"new": 0, "backlog": 0, "aged": 0}
+    for prio in ("new", "backlog"):
+        for r in rows(S / "queue" / f"{prio}.tsv"):
+            if r[0] not in done and r[0] not in skipped:
+                counts[prio if queued_recent(r, checked, rule) is not False else "aged"] += 1
+    return counts
 
 
 def cmd_enqueue(a):
@@ -1192,7 +1311,8 @@ def repost_title(body):
 
 
 def transcript_meta(path):
-    head = Path(path).read_text(encoding="utf-8", errors="replace")[:2000].splitlines()
+    with open(path, encoding="utf-8", errors="replace") as f:  # 머리말만 읽는다(learn 후보마다 부른다).
+        head = f.read(2000).splitlines()
     meta = {"title": head[0][2:].strip() if head and head[0].startswith("# ") else ""}
     for line in head[1:12]:
         key, sep, value = line[2:].partition(": ")
@@ -1244,34 +1364,52 @@ def inbox_leads(done):
     return leads
 
 
+def learnable_videos(entries):
+    """전사문이 있는 큐 행을 업로드 기준으로 나눠 (기준 안의 [(행, 전사문 머리말, handle)], 기준 밖이거나 업로드일을
+    모르는 행 수)를 준다. 업로드일은 전사문의 `업로드`, 없으면 RSS 행의 날짜다."""
+    # 채널명은 비어 있지 않고 handle 하나에만 대응할 때만 쓴다(같은 이름의 다른 채널을 허용하거나 태그하지 않는다).
+    pairs = {(r[2], hkey(r[0])): r[0] for r in rows(S / "channels.tsv")[1:] if len(r) > 2 and r[2]}
+    titles = Counter(title for title, _ in pairs)
+    by_title = {title: handle for (title, _), handle in pairs.items() if titles[title] == 1}
+    checked, rule, keep = checked_videos(), video_rule(cfg()), []
+    for r in entries:
+        source, published = (r + ["", ""])[1:3]
+        meta = transcript_meta(S / "transcripts" / r[0] / "transcript.md")
+        # 큐 행에 handle이 없으면 전사 전 메타데이터 확인 기록, 그다음 채널명(이관한 백로그)으로 찾는다.
+        handle = source if source.startswith("@") else \
+            checked.get(r[0], ["", ""])[1] or by_title.get(meta.get("채널", ""), "")
+        if recent_video(r[0], handle, meta.get("업로드") or published, rule):
+            keep.append((r, meta, handle))
+    return keep, len(entries) - len(keep)
+
+
 def pick_data(k):
     done, ready = processed_keys(), done_ids()
     leads = inbox_leads(done)
-    # 영상의 tags는 학습 출처 목록에 적은 채널의 주 도메인이며 우선순위에만 쓴다. 이관한 백로그는 채널명으로 찾는다.
+    # 영상의 tags는 학습 출처 목록에 적은 채널의 주 도메인이며 우선순위에만 쓴다.
     tags = {hkey(h): t for h, (_, t) in learning_sources()[0].items()}
-    by_title = {r[2]: r[0] for r in rows(S / "channels.tsv")[1:] if len(r) > 2}
 
     def videos(prio):
-        """전사가 끝났고 처리하지 않은 영상의 (전체 수, 앞쪽 2k개의 메타데이터)."""
-        entries = [r for r in rows(S / "queue" / f"{prio}.tsv") if r[0] in ready and f"video:{r[0]}" not in done]
+        """전사가 끝났고 처리하지 않은 영상 중 업로드 기준 안의 (전체 수, 앞쪽 2k개의 메타데이터)와 기준 밖 수."""
+        entries, aged = learnable_videos([r for r in rows(S / "queue" / f"{prio}.tsv")
+                                          if r[0] in ready and f"video:{r[0]}" not in done])
         out = []
-        for r in entries[: 2 * k]:
+        for r, meta, handle in entries[: 2 * k]:
             path = S / "transcripts" / r[0] / "transcript.md"
-            meta = transcript_meta(path)
-            handle = r[1] if len(r) > 1 and r[1].startswith("@") else by_title.get(meta.get("채널", ""), "")
             out.append({"key": f"video:{r[0]}", "title": meta.get("title", ""), "who": meta.get("채널", ""),
                         "date": meta.get("업로드", ""), "duration": meta.get("길이", ""), "path": str(path),
                         "tags": tags.get(hkey(handle), [])})
-        return len(entries), out
+        return len(entries), out, aged
 
-    (new_count, new), (backlog_count, backlog) = videos("new"), videos("backlog")
+    (new_count, new, new_aged), (backlog_count, backlog, backlog_aged) = videos("new"), videos("backlog")
     documents = palantir_docs.candidates(S, done) if palantir_docs.listed(read_lines(REPO / SOURCES)) else []
     document_limit = max(1, (k + 2) // 3) if new or leads or backlog else k
     data = {"k": k, "tier1": new + leads[: 3 * k] + documents[:document_limit], "tier2": backlog,
             "palantir_limit": document_limit,
             "counts": {"new_videos": new_count, "leads": dict(Counter(x["source"] for x in leads)),
                        "palantir_documents": len(documents),
-                       "backlog_videos": backlog_count, "awaiting_transcription": waiting_counts()}}
+                       "backlog_videos": backlog_count, "aged_videos": new_aged + backlog_aged,
+                       "awaiting_transcription": waiting_counts()}}
     if not data["tier1"] and not data["tier2"]:
         data["tier3"] = idle_candidates(k, done)
     return data
@@ -1291,6 +1429,9 @@ def state_summary():
     unpushed = count_unpushed()
     return {"paused": (S / "paused").exists(), "transcribe_waiting": waiting_counts(), "transcripts": len(done),
             "videos_skipped": len(skipped), "videos_unlearned": sum(1 for v in done if f"video:{v}" not in keys),
+            # videos_unlearned 중 업로드 기준 밖이거나 업로드일을 몰라 learn 후보에서 뺀 수(전사문은 지우지 않는다).
+            "videos_aged": learnable_videos([r for prio in ("new", "backlog") for r in rows(S / "queue" / f"{prio}.tsv")
+                                             if r[0] in done and f"video:{r[0]}" not in keys])[1],
             "leads_unlearned": {src: sum(1 for p in (S / "inbox" / src).glob("*.md") if f"{prefix}:{p.stem}" not in keys)
                                 for src, prefix in INBOX.items()},
             "processed": dict(Counter(r.get("result") for r in log_rows)),
@@ -2636,7 +2777,7 @@ def selftest_engines():
 
 
 def cmd_selftest(a):
-    global S, ego_guide
+    global S, ego_guide, ytdlp, online, RETRY_WAIT_S
     assert sys.dont_write_bytecode  # 정상 실행은 실행 검사가 보는 __pycache__를 고치지 않는다.
     for mode in MODES:
         excerpt = workflow_sections(mode)
@@ -2704,6 +2845,64 @@ def cmd_selftest(a):
         write_json(S / "config.json", {"instagram_dm_name": "테스트친구",
                                        "email_senders": [{"from": "jane.doe@corp.example", "name": "x", "private": True}]})
         assert {"테스트친구", "jane.doe"} <= personal_terms()
+        # 업로드 기준(2026-11-08): 1년보다 오래됐거나 업로드일을 모르는 영상은 받지 않고 후보에서 빼며 허용 목록은 넘는다.
+        base, utc = read_json(S / "config.json"), dt.datetime.now(dt.timezone.utc).date()
+        old, today = "2020-01-01", str(utc)
+        allow = {"channels": ["@Allowed"], "videos": ["https://youtu.be/eeeeeeeeeee"]}
+        write_json(S / "config.json", base | {"video_old_allow": {"channels": "@One", "videos": [1, None, "mmmmmmmmmmm"]},
+                                              "video_max_age_days": "400"})
+        assert video_rule(cfg()) == ({"mmmmmmmmmmm"}, {"@one"}, utc - dt.timedelta(days=400))
+        warned = io.StringIO()
+        with contextlib.redirect_stderr(warned):  # 틀린 형식, 음수와 날짜 범위 밖 값은 경고 뒤 기본값이다.
+            for bad in (None, 1000000, -1, -1):
+                write_json(S / "config.json", base | {"video_old_allow": ["@x"], "video_max_age_days": bad})
+                assert video_rule(cfg()) == (set(), set(), utc - dt.timedelta(days=365))
+        assert warned.getvalue().count("365일로 본다") == 3 and warned.getvalue().count("객체가 아니라") == 1
+        write_json(S / "config.json", base | {"video_old_allow": allow})
+        assert [queued_recent(["iiiiiiiiiii", "@x", f"{utc - dt.timedelta(days=n)}T23:59:59+00:00"], {},
+                              video_rule(cfg())) for n in (365, 366)] == [True, False]  # 365일 전은 남는다.
+        enqueue([[v, h, f"{old}T00:00:00+00:00", ""] for v, h in
+                 (("ddddddddddd", "@x"), ("eeeeeeeeeee", "@x"), ("fffffffffff", "@allowed"))]
+                + [["ggggggggggg", "video:x", "", ""], ["hhhhhhhhhhh", "@x", f"{today}T00:00:00+00:00", ""]]
+                + [[v, "video:x", "", ""] for v in ("kkkkkkkkkkk", "lllllllllll")], "new")
+        assert [worker.claim() for _ in range(7)] == [("new", v * 11) for v in "efghkl"] + [None]  # d는 오래됐다.
+        assert worker.undated["ggggggggggg"] and not worker.undated["eeeeeeeeeee"]
+        calls = S / "tmp" / "ytdlp-calls"
+
+        def reply(text, rc=0):  # 네트워크 대신 고정 출력을 내고 호출 수를 센다.
+            return lambda *_: [sys.executable, "-c", f"open({str(calls)!r}, 'a').write('x'); print({text!r}); "
+                                                     f"raise SystemExit({rc})"]
+
+        stubs = ytdlp, online, shutil.which, RETRY_WAIT_S
+        try:  # 날짜 없는 행은 미디어 없이 메타데이터만 받는다.
+            online, shutil.which, RETRY_WAIT_S = (lambda: True), (lambda name: f"/usr/bin/{name}"), 0
+            ytdlp = reply("20200101 @y")
+            assert worker.upload_checked("ggggggggggg") is False
+            assert checked_videos()["ggggggggggg"] == [old, "@y"]
+            worker.claimed.discard("ggggggggggg")
+            assert worker.claim() is None  # 확인 기록을 보고 다시 조회하지 않는다.
+            ytdlp = reply(f"{utc:%Y%m%d} @z")  # 확인한 최근 영상은 다시 가져갈 수 있다.
+            assert worker.upload_checked("kkkkkkkkkkk") is True
+            worker.claimed.discard("kkkkkkkkkkk")
+            assert worker.claim() == ("new", "kkkkkkkkkkk") and not worker.undated["kkkkkkkkkkk"]
+            write_json(S / "config.json", base | {"video_old_allow": allow | {"channels": ["@Allowed", "@Y"]}})
+            assert worker.claim() == ("new", "ggggggggggg")  # 확인한 오래된 영상도 채널을 허용하면 다시 대상이다.
+            ytdlp = reply("ERROR: [youtube] lllllllllll: HTTP Error 503: Service Unavailable", 1)
+            calls.unlink(missing_ok=True)
+            worker.process("new", "lllllllllll")  # 일시 실패는 3회 시도한 뒤 failures에 한 round만 남긴다.
+            assert calls.read_text() == "xxx" and failure_state()["lllllllllll"]["rounds"] == 1
+            assert "lllllllllll" not in skipped_ids() | set(checked_videos())
+        finally:
+            ytdlp, online, shutil.which, RETRY_WAIT_S = stubs
+        assert waiting_counts() == {"new": 7, "backlog": 1, "aged": 1}
+        for v, day in (("ddddddddddd", old), ("eeeeeeeeeee", old), ("fffffffffff", old), ("hhhhhhhhhhh", today)):
+            (S / "transcripts" / v).mkdir(parents=True)
+            (S / "transcripts" / v / "transcript.md").write_text(f"# {v}\n\n- 업로드: {day}\n", encoding="utf-8")
+        picked = pick_data(6)
+        assert {x["key"] for x in picked["tier1"] + picked["tier2"]} == {f"video:{v}" for v in ("eeeeeeeeeee",
+                                                                                             "fffffffffff", "hhhhhhhhhhh")}
+        assert picked["counts"]["aged_videos"] == 2  # 오래된 d와 업로드일을 모르는 b. skipped로 남기지 않는다.
+        assert not skipped_ids()
         # VL이 ego-browser 안내를 저장했으면 그 파일을, 저장하지 못했으면 직접 실행을 알린다.
         real_guide = ego_guide
         try:
