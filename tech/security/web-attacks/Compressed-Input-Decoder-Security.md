@@ -1,9 +1,9 @@
 ---
 tags: [security, compression, brotli, dependency, input-validation]
 status: done
-verified_at: 2026-11-01
+verified_at: 2026-11-08
 category: "Security - 웹 공격"
-aliases: ["Compressed Input Decoder Security", "압축 입력 디코더 보안", "HTTP2Shell", "Node2Shell", "Broccoli2shell"]
+aliases: ["Compressed Input Decoder Security", "압축 입력 디코더 보안", "HTTP2Shell", "Node2Shell", "Broccoli2shell", "Zip Bomb", "압축 폭탄"]
 ---
 
 # 압축 입력 디코더의 공격면
@@ -13,6 +13,20 @@ aliases: ["Compressed Input Decoder Security", "압축 입력 디코더 보안",
 ## 압축 폭탄과 메모리 손상은 다른 문제다
 
 압축 해제 후 크기나 처리 시간을 제한하는 것은 자원 고갈을 줄이는 통제다. 디코더 구현이 버퍼 밖에 쓰는 결함을 그 제한만으로 고쳤다고 판단하지 않는다. 손상은 전체 압축 해제가 끝나기 전에 발생할 수도 있다. 패치 적용과 자원 제한을 별도로 확인한다.
+
+## 압축 폭탄의 원리와 통제
+
+압축 폭탄(zip bomb)은 디코더의 결함을 쓰지 않는다. 압축이 정상적으로 동작한 결과로 작은 입력이 해제 단계에서 저장 공간, 메모리와 처리 시간을 소진시킨다.
+
+- **단일 DEFLATE의 상한**: zip이 주로 쓰는 DEFLATE는 반복을 앞선 데이터의 복사 지시로 바꿔 줄이지만 한 스트림의 압축률이 1032배를 넘지 못한다. 0만 이어진 데이터도 이 상한에 걸린다.
+- **재귀형 폭탄**: 그래서 고전적인 폭탄은 zip 안에 zip을 넣어 층마다 배수를 곱한다. 대표 사례인 42.zip은 6층을 모두 재귀적으로 풀면 4.5 PB가 되지만 맨 위층만 풀면 0.6 MB다. 재귀적으로 푸는 구현에만 통하며 대부분의 압축 해제 구현은 재귀하지 않는다. 반면 백신은 중첩 압축 파일을 재귀적으로 풀어 검사하므로(아래 ClamAV 설정 참고) 표적이 될 수 있다. 업로드 처리기도 중첩 압축을 자동으로 풀도록 구현했다면 같은 위험을 진다(적용 판단).
+- **비재귀형 폭탄**: 여러 파일 항목이 같은 압축 데이터를 겹쳐 가리키게 만들면 한 번의 해제만으로 상한을 넘는다. 2019년 공개된 구성은 10 MB를 281 TB로 풀었고, 입력이 커질수록 출력이 입력 크기의 제곱에 비례해 늘었다. 재귀 깊이 제한만으로는 막지 못한다.
+
+통제는 해제를 시작하기 전의 추정이 아니라 해제 중의 실측에 건다.
+
+- **재귀 깊이와 개수, 총량**: 예를 들어 ClamAV는 중첩 압축의 검사 깊이(`MaxRecursion`, 기본 17), 한 컨테이너 안의 검사 파일 수(`MaxFiles`, 기본 10000), 입력 하나에서 검사할 데이터 총량(`MaxScanSize`, 기본 400M)과 개별 파일 크기(`MaxFileSize`, 기본 100M)를 제한하고, `MaxScanTime`(기본 120000 ms, 현재 ZIP 검사 시간에만 적용)으로 시간도 제한한다(2026-11-08 main 브랜치의 설정 예시 파일 기준). 한도를 넘은 파일에 `Heuristics.Limits.Exceeded`로 시작하는 탐지명을 붙이는 `AlertExceedsMax`는 기본값이 no이므로, 한도 초과를 탐지 결과로 받으려면 따로 켠다.
+- **메타데이터를 믿지 않는다**: zip 메타데이터에 적힌 크기는 실제 해제 크기와 다를 수 있어, 선언된 크기를 합산하는 사전 검사로는 일반적인 방어가 되지 않는다. 겹친 파일 항목 탐지는 비재귀형 폭탄의 한 종류만 막고, 파서 앞단의 필터가 아니라 파서 안에서 구현해야 한다. 같은 zip을 두 파서가 다르게 해석할 수 있기 때문이다.
+- **격리**: 신뢰하지 않는 압축 입력은 시간, 메모리와 디스크 사용량을 제한한 샌드박스 안에서 해제한다. 이미지처럼 형식이 복잡해 파서 결함이 잦은 입력을 다루는 방식과 같다. 업로드 경로의 적용은 [[File-Upload-Security|파일 업로드 보안]]을 따른다.
 
 ## 사례: Brotli 디코더의 경계 밖 쓰기
 
@@ -59,6 +73,9 @@ Wiz는 자사 데이터 기준으로 클라우드 환경의 91%가 이 CVE에 �
 - [GHSA-9v8h-qqgm-4m35 — GitHub Advisory Database](https://github.com/advisories/GHSA-9v8h-qqgm-4m35) — 2026-11-01 PyPI 패키지의 수정 버전 확인
 - [Known Exploited Vulnerabilities Catalog — CISA](https://www.cisa.gov/known-exploited-vulnerabilities-catalog?field_cve=CVE-2026-111497) — 2026-11-01 등재일과 조치 기한 확인
 - [Broccoli2shell: Everything You Need To Know About The Critical Brotli Decoder Vulnerability — Wiz](https://www.wiz.io/blog/cve-2026-111497-brotli-rce-node-js) — 2026-10-25 게시, 2026-11-01 자사 데이터 기준 취약 자원 보유 비율 확인
+- [A better zip bomb — USENIX WOOT '19, David Fifield](https://www.usenix.org/conference/woot19/presentation/fifield) — 2026-11-08 논문 본문으로 DEFLATE 상한 1032, 42.zip의 층과 크기, 비재귀형 구성의 결과와 탐지, 격리 논의 대조
+- [clamd.conf.sample — Cisco-Talos/clamav](https://github.com/Cisco-Talos/clamav/blob/main/etc/clamd.conf.sample) — 2026-11-08 main 브랜치의 압축 검사 한도와 기본값 대조. 설치한 버전의 기본값은 해당 버전의 설정 문서로 다시 확인
+- [압축파일 하나로 컴퓨터를 끝장내는 방법 — YouTube, 조코딩 JoCoding](https://www.youtube.com/watch?v=1ZI4kPtfZE4) — 2026-10-28 공개 영상. 압축 폭탄 절의 계기이며 사실은 위 1차 출처로 대조하고 확인하지 못한 수치는 쓰지 않음
 
 ## 관련 문서
 

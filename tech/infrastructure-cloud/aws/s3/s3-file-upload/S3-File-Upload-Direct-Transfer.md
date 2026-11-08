@@ -3,7 +3,7 @@ tags: [aws, s3, file-upload, multipart, presigned-url, spring]
 status: done
 category: "Infrastructure - AWS"
 aliases: ["S3 MultiPart Upload", "S3 Presigned URL"]
-verified_at: 2026-10-12
+verified_at: 2026-11-08
 ---
 
 # S3 파일 업로드 — 클라이언트 직접 전송 (Multipart Upload, Presigned URL)
@@ -77,6 +77,19 @@ URL은 서명한 조건 안에서만 쓰이고 만료 전에는 여러 번 쓸 �
 
 2026-10-09 AWS 공식 문서 대조 기준, URL의 유효 기간은 지정한 만료와 서명에 사용한 자격증명의 만료 중 먼저 오는 시점까지다. 예를 들어 남은 역할 세션이 20분이면 URL을 1시간으로 발급해도 20분 뒤에는 사용할 수 없다. 자격증명을 폐기하거나 비활성화해도 영향을 받는다.
 
+2026-11-08 AWS S3 사용자 가이드 대조 기준, 서명 주체와 발급 경로별 상한은 다음과 같다.
+
+| 서명 주체나 발급 경로 | URL이 유효할 수 있는 최대 기간 |
+|---|---|
+| IAM 사용자의 장기 액세스 키(SigV4) | 최대 7일 |
+| IAM 역할 세션(AssumeRole 등) | 역할 세션이 끝날 때까지. AssumeRole 세션의 기본 길이는 1시간 |
+| EC2 인스턴스 프로파일의 역할 자격증명 | 역할 자격증명의 수명까지. 메타데이터 자격증명은 주기적으로 교체되며 최대 약 6시간 |
+| 그 밖의 STS 임시 자격증명 | 그 임시 자격증명의 수명까지 |
+| S3 콘솔에서 발급 | 1분에서 12시간 사이로 지정 |
+| AWS CLI, SDK에서 발급 | 최대 7일까지 지정 |
+
+CLI나 SDK에서 7일을 지정해도 서명에 쓴 자격증명이 임시 자격증명이면 그 수명이 먼저 끝난다. 7일짜리 URL이 꼭 필요하면 권한을 그 버킷과 작업으로 좁힌 IAM 사용자 키가 있어야 하지만, 이 키는 유출 시 노출 기간이 길어 아래 운영 기준과 함께 판단한다.
+
 - `ExpiredToken`이면 서명에 사용한 임시 자격증명의 만료를 확인한다. 유효한 자격증명으로 새 URL을 발급해야 하며 기존 URL의 만료가 자동 연장되지는 않는다.
 - `AccessDenied`는 작업 권한과 버킷 정책의 거부 조건도 확인한다. `s3:signatureAge` 조건은 URL 만료 전에도 오래된 서명을 거부할 수 있다.
 - S3는 HTTP 요청 시점에 만료를 검사한다. 만료 전에 시작한 다운로드는 계속될 수 있지만, 연결이 끊겨 만료 뒤 재시작하면 실패한다.
@@ -104,6 +117,8 @@ URL을 오래 유지하려고 장기 키부터 추가하기보다, 필요한 전
 
 ## 출처
 
+2026-11-08 부분 검증: 서명 주체별 유효 기간 상한, AssumeRole 기본 세션 1시간, 인스턴스 프로파일 자격증명의 최대 약 6시간 유효 기간과 콘솔, CLI, SDK의 만료 지정 범위를 아래 presigned URL 사용자 가이드와 대조했다. 영상에서 언급한 STS 자격증명의 시간 상한과 7일을 넘는 접근의 대체 서비스는 이 문서로 확인하지 못해 쓰지 않았다.
+
 2026-10-12 부분 검증: presigned URL의 재사용과 같은 key 교체, Content-Type 서명 불일치, presigned POST의 `content-length-range` 조건, 멀티파트 한도와 단일 PUT 5 GB를 AWS 문서와 대조했다.
 
 - [Amazon S3 User Guide — Download and upload objects with presigned URLs](https://docs.aws.amazon.com/AmazonS3/latest/userguide/using-presigned-url.html)
@@ -115,6 +130,7 @@ URL을 오래 유지하려고 장기 키부터 추가하기보다, 필요한 전
 - [Amazon S3 User Guide — What's new](https://docs.aws.amazon.com/AmazonS3/latest/userguide/WhatsNew.html)
 - [develop-writing — S3 Multipart Upload](https://develop-writing.tistory.com/129)
 - [YouTube, Tiago — Fundamentals of Backend Architecture - How to Design Scalable Software](https://www.youtube.com/watch?v=Qa-7iWxDz1A)
+- [YouTube, Amazon Web Services — Why does the presigned URL for my Amazon S3 bucket expire before the time that I specified?](https://www.youtube.com/watch?v=ysWzvtJdV1M)
 
 ## 관련 문서
 

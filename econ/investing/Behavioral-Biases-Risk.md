@@ -36,6 +36,12 @@ aliases: ["행동 편향과 리스크 관리", "Behavioral Biases and Risk Manag
 1. 매입가와 손익 표시를 가려도 현재 투자 근거, 목표 비중이나 현금 필요 시점으로 같은 선택을 설명할 수 있는가?
 2. 비중 조정이 목적이라면 매도와 신규 자금 배분 중 어떤 방법이 현재 제약에 맞는가?
 
+### 손실이 깊어질수록 무뎌지는 감각
+
+전망 이론(Kahneman과 Tversky 1979)은 가치를 최종 자산이 아니라 기준점에서 본 이익과 손실에 매긴다. 가치 함수는 이익 구간에서 대개 오목하고 손실 구간에서 대개 볼록하며, 손실 쪽 기울기가 이익 쪽보다 가파르다. 가파른 기울기가 위 표의 손실 회피이고, 오목과 볼록은 이익이든 손실이든 금액이 커질수록 같은 1만큼의 추가 변화를 덜 크게 느낀다는 뜻이다(민감도 체감).
+
+적용 해석으로, 매입가를 기준점으로 삼으면 손실 초기의 하락은 크게 아프지만 손실이 깊어진 뒤의 추가 하락은 덜 아프게 느껴질 수 있다. 큰 평가손실이 난 종목을 방치하는 행동이나 이익 종목을 일찍 확정하는 처분 효과의 설명으로 흔히 쓰인다. 다만 가장 단순한 형태의 전망 이론 모형은 경우에 따라 처분 효과를 예측하지만 반대 결과를 예측하기도 한다는 분석이 있어(Barberis와 Xiong 2009) 확립된 인과 설명으로 보지 않는다. 개별 투자자의 행동을 검증한 결과가 아니며, 대응은 감각을 고치기보다 위의 두 질문처럼 매입가를 가린 상태의 근거와 목표 비중으로 판단을 다시 세우는 쪽에 둔다.
+
 ## 3. 거품과 패닉의 심리
 
 시장의 거품과 폭락에는 펀더멘털 변화와 함께 심리가 작용한다. 상승 뒤에는 군중 심리와 과신 때문에 추격 매수 충동이, 급락 뒤에는 손실 회피와 공포 때문에 계획 밖 매도 충동이 커질 수 있다. 당시 가격이 사후적으로 최고점인지 최저점인지는 알 수 없으므로 절대적인 타이밍 문장보다 사전에 정한 규칙으로 대응한다 → [[Business-Cycle|경기순환]]의 신용 사이클과 맞물린다.
@@ -116,6 +122,12 @@ aliases: ["행동 편향과 리스크 관리", "Behavioral Biases and Risk Manag
 - **손실은 본전이 올 때까지 버티면 된다** → 회복을 못 하는 자산도 있다. 매입가보다 현재 투자 근거, 목표 비중과 현금 수요에 따라 보유나 매도를 판단한다.
 
 ## 출처
+
+2026-11-08 부분 검증: 전망 이론의 가치 함수 모양(이익 구간 오목, 손실 구간 볼록, 손실 쪽이 더 가파름)과 이익과 손실에 가치를 매긴다는 정의는 Econometric Society 페이지의 초록으로 대조했다. 처분 효과와의 연결이 조건부라는 점은 Barberis와 Xiong의 NBER 초록으로 대조했다. 논문 본문과 매입가를 기준점으로 쓴다는 적용 해석은 검증하지 않았다.
+
+- [Prospect Theory: An Analysis of Decision under Risk — Econometrica, Daniel Kahneman, Amos Tversky](https://www.econometricsociety.org/publications/econometrica/browse/1979/03/01/prospect-theory-analysis-decision-under-risk) — 1979, Vol. 47 No. 2, 초록만 대조
+- [What Drives the Disposition Effect? An Analysis of a Long-Standing Preference-Based Explanation — NBER, Nicholas Barberis, Wei Xiong](https://www.nber.org/papers/w12397) — 2006 워킹페이퍼, Journal of Finance 64(2)에 2009 게재. 초록만 대조
+- [매도할 때 가장 중요한 것 노벨상이 말하는 기술 — YouTube, 이효석아카데미](https://www.youtube.com/watch?v=WQ_NrH3jfB4), [-30% 넘으면 포기한다? 뇌가 손실에 무뎌지는 이유 — YouTube, 이효석아카데미](https://www.youtube.com/watch?v=pattGpc-z2Q) — 2026-10-28 공개 영상. 민감도 체감 절의 계기이며 사실은 위 1차 출처로 대조
 
 2026-10-28 부분 검증: 처분 효과 연구의 10,000개 계좌 표본과 대안 설명의 한계는 저자 소속 대학에 공개된 초록으로, 매도 또는 추가 납입을 통한 리밸런싱은 Investor.gov 안내로 대조했다. 논문 본문의 추정 방법과 개인 매도 판단의 효과는 검증하지 않았다. 해당 1차 출처는 아래의 Odean 논문과 Asset Allocation and Diversification 항목이다.
 

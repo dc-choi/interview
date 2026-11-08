@@ -1,7 +1,7 @@
 ---
 tags: [palantir, foundry, iceberg]
 status: done
-verified_at: 2026-10-16
+verified_at: 2026-11-08
 category: "AI엔지니어링(AIEngineering)"
 ---
 
@@ -29,6 +29,8 @@ advanced localSpark는 matching Spark3.5/Scala2.12 runtime JAR/aws-bundle과 buc
 
 Snowflake는 catalogintegration(OAuth,vendedcredentials,namespace)후 VERIFY/LIST로 확인하고 연결table을 만들어 read한다. 연결table CREATE가 Foundrytable overwrite는 아니다. optional INSERT는 실제Foundrydata를 수정한다. ACCOUNTADMIN권한과 catalog/bucket양방향network가 필요하며 CSE table읽기는 현재미지원이다. AUTO_REFRESH가 정해진지연이나 모든client호환성을 보장하지 않는다.
 
+table을 하나씩 등록하는 대신 optional로 catalog integration에 연결한 database(`CREATE DATABASE ... LINKED_CATALOG = (CATALOG = ...)`)를 만들 수 있다. Snowflake catalog-linked database는 Iceberg REST catalog integration에서만 지원되며, remote catalog의 허용된 namespace를 schema로, Iceberg table을 그 아래로 자동 sync한다(`SYNC_INTERVAL_SECONDS`, 기본 30초). remote에서 drop된 table은 local에서도 drop되고 rename은 drop 후 create로 반영된다. 읽기 전용 mirror가 아니다. Snowflake에서 linked catalog에 namespace와 Iceberg table을 만들 수 있고 schema와 table의 create/drop도 지원하므로, write scope와 service user 권한을 함께 점검한다. remote catalog의 user/role access control은 sync하지 않으므로 Snowflake쪽 권한을 따로 설계한다. 연결 뒤 `SYSTEM$CATALOG_LINK_STATUS`로 link 상태와 sync에 실패한 table을 확인한다. 2026-11-08 Palantir와 Snowflake 문서 대조 기준이다.
+
 ## 출처
 
 - [Palantir, authentication](https://www.palantir.com/docs/foundry/iceberg/authentication)
@@ -36,6 +38,8 @@ Snowflake는 catalogintegration(OAuth,vendedcredentials,namespace)후 VERIFY/LIS
 - [Palantir, jupyter](https://www.palantir.com/docs/foundry/iceberg/jupyter)
 - [Palantir, local-jupyter](https://www.palantir.com/docs/foundry/iceberg/local-jupyter)
 - [Palantir, snowflake-iceberg-integration](https://www.palantir.com/docs/foundry/iceberg/snowflake-iceberg-integration)
+- [Snowflake, Use a catalog-linked database for Apache Iceberg tables](https://docs.snowflake.com/en/user-guide/tables-iceberg-catalog-linked-database)
+- [Snowflake, SYSTEM$CATALOG_LINK_STATUS](https://docs.snowflake.com/en/sql-reference/functions/system_catalog_link_status)
 
 ## 관련 문서
 
