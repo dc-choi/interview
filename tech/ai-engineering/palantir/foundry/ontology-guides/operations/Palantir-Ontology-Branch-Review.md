@@ -1,7 +1,7 @@
 ---
 tags: [palantir, ontology]
 status: done
-verified_at: 2026-10-16
+verified_at: 2026-11-08
 category: "AI엔지니어링(AIEngineering)"
 ---
 
@@ -18,6 +18,14 @@ Ontology 변경이 없는 global branch는 자동 rebase한다. Object type inde
 Rebase 중에는 main 변경을 branch로 가져오고 기존 branch 변경을 working state에 다시 올린다. 충돌 resource는 branch 내용을 기본 표시한다. Main 선택, branch 유지 또는 직접 수정을 거쳐 conflict와 error를 모두 해결한 후 Finish rebase and save를 수행한다.
 
 Main에서 datasource나 conditional formatting rule set을 제거/교체한 충돌은 branch 내용을 유지하면 merge가 실패하므로 main 변경을 선택해야 한다. Pipeline Builder에서 만든 object type은 branch의 Ontology Manager에서 수정할 수 없다.
+
+## Branch indexing과 media set
+
+Branch에서 object type을 index해야 그 branch의 data로 preview와 테스트를 할 수 있다. Ontology Manager에서는 object type 화면이나 그 object type을 편집하는 action type에서 index하고, 여러 object type은 Workflow Lineage의 bulk indexing으로 한 번에 처리한다. 진행 상황은 Ontology proposal의 Preview status 탭에서 본다.
+
+Global branch에서 object type을 처음 index하면 그 object type이 참조하는 media set도 자동으로 branch에 추가된다. 새 media set branch는 비어 있는 상태로 시작하며 main이나 다른 global branch의 media item을 복사하지 않는다. 대신 branched backing datasource에 있는 media reference는 object type을 통해 계속 읽을 수 있어 main의 media item도 보인다. 즉 기존 참조는 읽히고 branch에서 새로 넣은 media만 격리된다. Branch의 media set이 비어 있다는 사실을 참조 media가 사라졌다는 뜻으로 해석하지 않는다.
+
+Global branch가 media set을 지원하기 전에 이미 index한 object type은 media set이 branch에 없을 수 있다. 이때 Ontology Manager가 경고 배너를 띄우며, global branch에서 해당 object type이나 media set을 참조하는 action type을 열어 Add media set to branch를 선택해 추가한다.
 
 ## Reviewer 지정은 승인 권한이 아니다
 
@@ -40,7 +48,7 @@ Legacy 안내는 승인된 proposal을 branch 편집자가 merge한다고 쓰지
 ## 출처
 
 - [Palantir, branching-ontology](https://www.palantir.com/docs/foundry/ontologies/branching-ontology)
-- [Palantir, ](https://palantir.com/docs/kr/foundry/ontologies/ontologies-proposals/)
+- [Palantir, ontologies-proposals (한국어)](https://palantir.com/docs/kr/foundry/ontologies/ontologies-proposals/)
 - [Palantir, ontology-branches-legacy](https://www.palantir.com/docs/foundry/ontologies/ontology-branches-legacy)
 - [Palantir, review-ontology-proposals](https://www.palantir.com/docs/foundry/ontologies/review-ontology-proposals)
 
