@@ -16,6 +16,10 @@ Local은 user-generated token으로 npm run dev를 시작하고 현재 terminal�
 
 Dev mode는 개인 계정에만 적용하고 24시간 뒤 만료된다. Disabled/Paused는 published version, Enabled는 dev version, Enabled inactive는 해당 widget override가 없어 published version을 보여준다. 다른 widget set을 열었다면 inactive는 정상일 수 있다. 표시된 localhost/workspace source와 실제 server 실행 상태를 확인한다.
 
+Local 개발은 widget set의 code repository를 clone하고 user-generated token을 `FOUNDRY_TOKEN` 환경 변수로 둔 뒤 `npm install`과 `npm run dev`를 실행한다. 저장해도 화면이 바뀌지 않으면 dev server가 아직 실행 중인지, 가장 최근에 출력된 setup link를 열었는지부터 확인한다. 여러 custom widget 중 일부만 개발 중인 Workshop application을 보면 override가 없는 widget은 inactive로 표시되고 published version을 보여 주는 것이 정상이다.
+
+Preview 환경은 확인하려는 대상에 따라 고른다. Custom widgets playground는 한 widget을 여러 크기에서 시험하고 parameter control로 값을 바꾸며 emitted event와 parameter update를 확인한다. Event는 message log에 표시된다. Workshop은 실제 parameter binding, event, 주변 component와 layout 안에서의 동작을 본다. VS Code preview panel은 개발 workspace를 떠나지 않고 widget을 미리 본다.
+
 Code/style 저장은 자동 반영하지만 parameter/event config 변경은 dev mode 재적용이 필요하다. Local setup link를 다시 열거나 workspace preview를 refresh한다. 이 configuration preview는 widget.vite-plugin 3.34.0 이상을 요구한다. 신규 widget은 playground/workspace에서 미발행 preview가 가능하지만 Workshop selector에 처음 나타나려면 한 번 publish해야 한다.
 
 ## Layout과 browser 성능

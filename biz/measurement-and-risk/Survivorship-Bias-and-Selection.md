@@ -77,3 +77,4 @@ SCORE의 공개 멘토링 안내는 고객의 사업상 이익 우선과 기관 
 
 - [[Metrics-Framework|지표의 분모와 비교 기준]]
 - [[Risk-Management|리스크와 근거의 불확실성]]
+- [[Correlation-and-Simpsons-Paradox|상관관계와 심슨의 역설]]

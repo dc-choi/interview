@@ -34,6 +34,8 @@ Appearance의 Display name은 pairing할 때 다른 앱에서 발견되는 이�
 
 Commands는 앱이 노출하는 client-side operation이며 Button Group on click, Metric Card, App Pairing variable listener에서 실행할 수 있다. Chatbot tool과 Notepad inline command에도 연결된다. 기본 target은 paired app이며 여러 app이 paired라면 실행 시 선택을 요구한다. New/existing map처럼 target을 명시할 수도 있다.
 
+2026-11-09 확인한 Commands 문서는 command를 앱이 자기 자신, 다른 Palantir 앱, workspace component와 AIP Chatbot이 실행할 수 있는 client-side operation을 선언하는 pro-code language로 설명하고, 사용자와 LLM이 client-side interaction에 쓰는 공통 언어라고 소개한다. 이를 근거로 한 검토 제안으로, chatbot에 노출할 command도 Workshop 버튼과 같은 target 조건과 입력을 확인하되 chatbot 경로의 parameter 출처와 승인 설정은 [[Palantir-Chatbot-Tools-and-Commands|Chatbot command tool]]에서 따로 점검한다. Workshop의 command 선택 창은 선택한 command의 사용 문서를 오른쪽 panel에 보여 주고, command에 연결된 icon이 있으면 버튼의 Color와 icon 옵션을 기본으로 채운다. Draw polygon의 Fill color, Fill pattern처럼 command가 받는 parameter의 기본값은 Parameters defaults에서 정한다. Metric Card는 Interactive metric을 Command로 두면 사용자가 그 metric을 선택할 때 실행하며, command 선택과 chain, completion 구성은 Button Group과 같은 절차를 따른다.
+
 Input default, conditional trigger와 output-variable mapping을 구성한다. Button의 visibility/disabled 조건이 실제 command/data 권한을 대신하지 않는다. Derived value가 준비되기 전에 base variable 변화로 실행하면 stale input이 전송될 수 있으므로 derived variable 자체를 listener로 삼는다.
 
 ## Command chain은 transaction이 아니다
