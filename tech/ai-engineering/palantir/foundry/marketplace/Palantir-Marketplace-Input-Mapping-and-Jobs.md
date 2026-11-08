@@ -116,12 +116,14 @@ API의 `MarketplaceInstallationJob`은 하나 이상의 기존 제품 설치를 
 
 ### 조회 응답의 현재 위치와 오류를 읽는다
 
-2026-10-21 수집된 공식 Get Marketplace Installation 명세를 2026-10-22 대조한 범위다. 공개 URL의 실시간 재조회는 실패했으므로 아래는 수집본의 계약이며 이후 변경 여부와 실제 호출은 확인하지 못했다.
+2026-10-21 수집된 공식 Get Marketplace Installation 명세를 2026-10-22 대조했고, 2026-11-09 공식 페이지를 직접 열어 아래 필드를 다시 확인하고 오류의 HTTP 상태를 확인했다. 실제 호출은 확인하지 못했다.
 
 - 조회 경로는 `GET /api/v3/platform/marketplaceInstallations/{marketplaceInstallationRid}`다. 경로에는 설치 RID가 필요하며, `productId`를 대신 넣는 계약이 아니다.
 - `parentFolderRid`와 `namespaceRid`는 설치가 Compass에서 현재 속한 위치다. 응답을 최초 생성 위치의 변경 불가능한 이력으로 사용하지 않는다. `displayName`도 현재 표시 이름이며 `description`은 설명이 없으면 생략된다.
 - `latestTargetVersion`이 있으면 `versionId`와 `semanticVersion`을 함께 제공한다. 이 필드는 최근 제출 job의 목표를 나타내므로 현재 설치 버전의 성공 증거로 쓰지 않는다.
-- 명세의 오류 목록에는 `MarketplaceInstallationNotFound`가 `NOT_FOUND` 코드와 `marketplaceInstallationRid` 매개변수로 정의되어 있다. 이 목록만으로 인증이나 전송 계층의 모든 실패 유형을 열거했다고 해석하지 않는다.
+- 생성 입력이던 `marketplaceRid`, `productId`, `ontologyRid`도 응답에 들어 있다. `ontologyRid`는 선택 필드이며, 명세 설명은 생성 입력과 같이 제품이 Ontology와 상호작용하지 않으면 생략하라고 적는다. 필드 부재만으로 Ontology 비사용을 단정하지 않는다.
+- 운영상 적용으로, 명세가 선택으로 표시한 `description`, `latestTargetVersion`, `ontologyRid`의 부재를 정상 응답으로 처리한다(명세의 응답 예시도 앞의 두 필드를 담지 않는다).
+- 명세의 오류 목록에는 `MarketplaceInstallationNotFound`가 `NOT_FOUND` 코드(HTTP 404)와 `marketplaceInstallationRid` 매개변수로 정의되어 있다. 이 목록만으로 인증이나 전송 계층의 모든 실패 유형을 열거했다고 해석하지 않는다.
 
 ## 입력을 충족하는 방식
 
@@ -176,7 +178,7 @@ Ontology install prefix는 display name만 또는 display/API name 모두에 적
 - [Palantir Foundry, Create Marketplace Installation Job](https://www.palantir.com/docs/foundry/api/v3/marketplace-v3-resources/marketplace-installation-jobs/create-marketplace-installation-job) — 2026-10-22 검색 반환 본문과 수집 명세로 RID 공유, 제출 기본값, 입력 교체와 비멱등성 대조. 직접 열기와 실제 호출은 미확인.
 - [Palantir Foundry, Marketplace Installation Inputs basics](https://www.palantir.com/docs/foundry/api/v3/marketplace-v3-resources/marketplace-installation-inputs/marketplace-installation-inputs-basics) — 2026-10-21 수집본을 2026-10-22 공식 문서 검색 반환 본문과 대조.
 - [Palantir Foundry, Get Marketplace Installation Inputs](https://www.palantir.com/docs/foundry/api/v3/marketplace-v3-resources/marketplace-installation-inputs/get-marketplace-installation-inputs) — 2026-10-22 검색 반환 본문에서 선택 범위, 명시적 해제, 재사용 제약과 오류 계약 확인. 오류 이름, 코드와 매개변수는 수집본도 대조했으며 직접 열기와 실제 호출은 미확인.
-- [Palantir Foundry, Get Marketplace Installation](https://www.palantir.com/docs/foundry/api/v3/marketplace-v3-resources/marketplace-installations/get-marketplace-installation) — 2026-10-22 등록 자원과 목표 버전의 의미, preview와 조회 scope 확인. 현재 위치 필드와 오류 계약은 2026-10-21 수집본을 대조했으며 실시간 재조회와 실제 호출은 미확인.
+- [Palantir Foundry, Get Marketplace Installation](https://www.palantir.com/docs/foundry/api/v3/marketplace-v3-resources/marketplace-installations/get-marketplace-installation) — 2026-10-22 등록 자원과 목표 버전의 의미, preview와 조회 scope 확인. 현재 위치 필드와 오류 계약은 2026-10-21 수집본을 대조했고, 2026-11-09 공식 페이지를 직접 열어 응답 필드와 선택 표시를 재확인하고 `MarketplaceInstallationNotFound`의 HTTP 404를 확인했다. 실제 호출은 미확인.
 - [Palantir Foundry, Create Marketplace Installation](https://www.palantir.com/docs/foundry/api/v3/marketplace-v3-resources/marketplace-installations/create-marketplace-installation) — 2026-10-22 등록과 job 실행의 구분, 버전 힌트와 비멱등성 확인. 2026-11-09 공식 페이지를 직접 열어 생성 입력, `installationSuffix`와 오류 6종의 코드와 매개변수를 재확인했으며 실제 호출은 미확인.
 - [Palantir Foundry, marketplace](https://www.palantir.com/docs/foundry/marketplace/)
 - [Palantir Foundry, browse-products](https://www.palantir.com/docs/foundry/marketplace/browse-products/)
