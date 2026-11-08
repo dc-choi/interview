@@ -22,10 +22,13 @@ Scenario resource 아래 문서는 생성, rebase와 편집 및 충돌 조회로
 | --- | --- | --- | --- |
 | Create Ontology Scenario | `POST /api/v2/ontologies/{ontology}/scenarios/create` | body `base`(선택, branch 기준), `expireAfter`(선택, 만료 일시 문자열, 생성 시각 이후이고 생성 후 31일 이내, 기본 생성 후 31일), 응답 `scenarioRid` | `api:ontologies-read`, `api:ontologies-write` |
 | Rebase Ontology Scenario | `POST /api/v2/ontologies/{ontology}/scenarios/{scenarioRid}/rebase` | scenario에서 편집한 object type 전체를 base의 최신 데이터 위로 옮긴다, scenario 편집 권한 필요, 요청 body와 응답 body 정의 없음 | `api:ontologies-read`, `api:ontologies-write` |
+| List Scenario Edited Object Types | `GET /api/v2/ontologies/{ontology}/scenarios/{scenarioRid}/objectTypes/edited` | scenario 안에서 수정된 object type의 API name 목록, query는 `preview`뿐이고 paging parameter 없음, 응답 `data`(선택, camelCase `ObjectTypeApiName` 문자열 목록) | `api:ontologies-read` |
 | List Scenario Edited Objects | `GET /api/v2/ontologies/{ontology}/scenarios/{scenarioRid}/objects/{objectType}/edited` | object type별 편집 객체, `pageSize`, `pageToken`, 응답 `data`, `nextPageToken` | `api:ontologies-read` |
 | List Scenario Conflicting Objects | `GET /api/v2/ontologies/{ontology}/scenarios/{scenarioRid}/objects/{objectType}/conflicting` | scenario 생성 뒤 base에서 바뀐 편집과 충돌하는 객체, 응답은 `ObjectLocator` 목록 | `api:ontologies-read` |
 
-같은 resource에는 편집된 object type, link type, entity type과 link를 나열하는 endpoint도 있다. 이 문서에서는 이름만 확인했고 요청과 응답 필드는 대조하지 않았다.
+같은 resource에는 편집된 link type, entity type과 link를 나열하는 endpoint도 있다. 이 문서에서는 이름만 확인했고 요청과 응답 필드는 대조하지 않았다.
+
+설계 제안(공식 절차 아님): 편집 객체와 충돌 조회는 path에 `{objectType}`을 받으므로, scenario의 객체 편집을 훑을 때는 먼저 Edited Object Types로 수정된 object type을 얻고 type마다 Edited Objects와 Conflicting Objects를 호출하는 순서를 쓸 수 있다. 이 순서는 명세의 path 구조에서 추론한 것이며 link 편집은 위의 별도 endpoint가 맡는다. 응답의 `data`는 명세상 필수 필드가 아니지만 언제 빠지는지는 적혀 있지 않으므로, 필드가 없으면 빈 목록으로 다루는 방어적 처리가 필요하다. 다만 이 endpoint의 명세에는 Edited Objects와 달리 호출자가 볼 수 있는 범위만 반환한다는 설명이 없어, 보기 권한과 결과의 관계는 실제 환경에서 확인해야 한다.
 
 ## Create 요청의 세부 계약
 
@@ -48,6 +51,7 @@ Scenario resource 아래 문서는 생성, rebase와 편집 및 충돌 조회로
 - [Ontology Scenario basics](https://www.palantir.com/docs/foundry/api/ontologies-v2-resources/ontology-scenarios/ontology-scenario-basics)
 - [Create Ontology Scenario](https://www.palantir.com/docs/foundry/api/ontologies-v2-resources/ontology-scenarios/create-ontology-scenario)
 - [Rebase Ontology Scenario](https://www.palantir.com/docs/foundry/api/ontologies-v2-resources/ontology-scenarios/rebase-ontology-scenario)
+- [List Scenario Edited Object Types](https://www.palantir.com/docs/foundry/api/ontologies-v2-resources/ontology-scenarios/list-scenario-edited-object-types)
 - [List Scenario Edited Objects](https://www.palantir.com/docs/foundry/api/ontologies-v2-resources/ontology-scenarios/list-scenario-edited-objects)
 - [List Scenario Conflicting Objects](https://www.palantir.com/docs/foundry/api/ontologies-v2-resources/ontology-scenarios/list-scenario-conflicting-objects)
 - [Apply Action](https://www.palantir.com/docs/foundry/api/ontologies-v2-resources/actions/apply-action)
