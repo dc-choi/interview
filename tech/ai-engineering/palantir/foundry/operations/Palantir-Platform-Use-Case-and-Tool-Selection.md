@@ -1,7 +1,7 @@
 ---
 tags: [palantir, foundry]
 status: done
-verified_at: 2026-10-16
+verified_at: 2026-11-08
 category: "AI엔지니어링(AIEngineering)"
 ---
 
@@ -21,12 +21,15 @@ Data layer는 dataset과 transform, 생산 이력을 다루고 Ontology는 실�
 | 원천 연결과 정제 | Data Connection, Pipeline Builder, 복잡한 코드/협업은 Code Repositories |
 | 데이터셋 분석 | Contour, 탐색 코드 환경은 Code Workspaces; Code Workbook은 legacy 경계 확인 |
 | Ontology 분석 | Quiver/Insight, 미지의 object 탐색은 Object Explorer |
-| 업무 화면 | Workshop, 높은 UI 자유도는 OSDK React/Slate, 맞춤 widget과 유지 비용 비교 |
+| 업무 화면 | Workshop, 높은 UI 자유도는 OSDK React/Slate, 맞춤 widget과 유지 비용 비교. 자연어 요청으로 OSDK 앱이나 Workshop용 custom widget을 만드는 경로는 Pilot |
 | 공유 로직/LLM 작업 | Functions/AIP Logic, 조건 기반 실행은 Automate |
 | 모델 개발/운영 | Model Assets와 Modeling Objectives, 재현성과 평가/배포 계약 별도 확인 |
 | 문서/보고 | Notepad, spreadsheet 양방향 작업은 Fusion |
 | 배포와 재사용 | DevOps로 제품화하고 Marketplace로 설치 |
 | 운영/보호 | Data Health, Workflow Lineage, Resource Management와 보안 도구 |
+| 감사 로그 검토 | `audit.3` 로그를 사용자, 이벤트, 리소스와 시간으로 거르고 세션 흐름을 보는 Audit Explorer [Beta], 검색 자체도 감사 로그로 남음 |
+
+2026-11-08 application reference를 다시 대조했다. Application building에 Pilot이, Security and governance에 Audit Explorer [Beta]가 올라 있다. Pilot은 frontend 코드와 함께 Ontology 엔티티와 seed data까지 생성할 수 있으므로 생성 결과의 검증과 발행 절차는 [[Palantir-Pilot]]을 따른다. Audit Explorer는 조회자 자신의 권한으로 실행돼 추가 접근을 주지 않으며 table 읽기 권한과 Marking을 모두 충족해야 한다. Beta라 enrollment에 따라 쓸 수 없거나 기능이 바뀔 수 있다. 권한, 보존과 결과 해석은 [[Palantir-Security-Audit-Schema-and-Delivery|audit schema와 Audit Explorer]]를 따른다.
 
 Prototype에서 빠르게 피드백을 받은 뒤 production pipeline과 tailored application이 필요한지 판단한다. 모든 사례에 복잡한 Ontology 확장과 custom app이 필요한 것은 아니다. 역할은 고정된 제품 경계가 아니며 작은 팀은 data engineer/builder/analyst/admin 책임을 함께 수행할 수 있다.
 
@@ -43,6 +46,7 @@ Palantir MCP의 Ontology schema 제작 기능과 Ontology MCP의 제한된 데�
 - [Palantir Foundry, Solution Designer overview](https://www.palantir.com/docs/foundry/solution-designer/overview)
 - [Palantir Foundry, getting-started](https://www.palantir.com/docs/foundry/getting-started/)
 - [Palantir Foundry, application-reference](https://www.palantir.com/docs/foundry/getting-started/application-reference/)
+- [Palantir Foundry, audit-explorer-overview](https://www.palantir.com/docs/foundry/security/audit-explorer-overview/)
 - [Palantir Foundry, delivering-a-use-case](https://www.palantir.com/docs/foundry/getting-started/delivering-a-use-case/)
 - [Palantir Foundry, foundry-platform-summary-llm](https://www.palantir.com/docs/foundry/getting-started/foundry-platform-summary-llm/)
 - [Palantir Foundry, introductory-concepts](https://www.palantir.com/docs/foundry/getting-started/introductory-concepts/)
@@ -53,3 +57,5 @@ Palantir MCP의 Ontology schema 제작 기능과 Ontology MCP의 제한된 데�
 
 - [[Palantir-Foundry-Operations]]
 - [[Palantir-Solution-Design|솔루션 구조 설계와 검토]]
+- [[Palantir-Pilot|Pilot]]
+- [[Palantir-Security-Audit-Schema-and-Delivery|audit schema와 Audit Explorer]]

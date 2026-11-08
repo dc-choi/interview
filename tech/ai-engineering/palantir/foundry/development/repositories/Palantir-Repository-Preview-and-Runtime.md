@@ -1,7 +1,7 @@
 ---
 tags: [palantir, preview, runtime, spark, compute]
 status: done
-verified_at: 2026-10-16
+verified_at: 2026-11-08
 category: "AI엔지니어링(AIEngineering)"
 aliases: ["Code Repositories preview와 runtime 관리"]
 ---
@@ -32,9 +32,9 @@ Spark module pin은 branch/all-branch별 최대 90일의 임시 override다. Exp
 
 ## Compute는 wall time과 allocation을 함께 본다
 
-해당 compute guide는 code 작성 자체와 dataset build 사용량을 구분한다. Build는 read/실행/I/O wait/write 전체 allocation 시간으로 계산한다. Driver와 각 executor에 `max(vCPU, GiB/7.5) * duration`을 합하며 dynamic executor는 구간별 적분한다. GPU는 model별 rate와 수/기간을 사용한다.
+해당 compute guide는 code 작성 자체와 dataset build 사용량을 구분한다. Build는 read/실행/I/O wait/write 전체 allocation 시간으로 계산한다. Driver와 각 executor에 `max(vCPU, GiB/7.5) * duration`을 합하며 dynamic executor는 구간별 적분한다. GPU는 driver와 executor마다 GPU 수, model별 rate와 기간을 곱해 더한다.
 
-Default rate는 vCPU 1, T4 1.2, V100 3, A100 1.3, A10G 1.5, L4 2.1, H100/H200 4.7로 안내한다. Enterprise 계약은 다를 수 있고 rate는 금액이 아니다. Multi-output compute는 행 수와 무관하게 output 사이 균등 배분된다. 작은 결과 dataset에 큰 사용량이 표시되는 이유를 output size만으로 추정하지 않는다.
+2026-11-08 대조한 default rate는 vCPU 1, T4 1.2, V100 3, A100 1.3, A10G 1.5, L4 2.1, H100/H200 4.7, RTX PRO 6000 3.5, B200 5.7, B300 7.1이다. 배율은 GPU마다 따로 정해져 있으므로(V100 3, A100 1.3, B300 7.1) 이름이나 출시 순서로 짐작하지 않고 GPU 종류를 바꿀 때마다 표를 다시 확인한다. Enterprise 계약은 다를 수 있고 rate는 금액이 아니다. Multi-output compute는 행 수와 무관하게 output 사이 균등 배분된다. 작은 결과 dataset에 큰 사용량이 표시되는 이유를 output size만으로 추정하지 않는다.
 
 Spark profile은 먼저 Project에 import해야 checks가 통과한다. Restricted profile은 Resource Management administrator 등 권한자가 import한다. 한 repository에서 import한 profile은 Project reference로 다른 repository에도 enabled가 된다. Partition 128MB 같은 지침은 schema/content와 skew를 측정해 조정한다.
 
