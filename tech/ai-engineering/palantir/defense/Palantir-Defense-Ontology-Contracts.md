@@ -1,7 +1,7 @@
 ---
 tags: [palantir, ontology, interface, schema, osdk]
 status: done
-verified_at: 2026-10-16
+verified_at: 2026-11-09
 category: "AI엔지니어링(AIEngineering)"
 aliases: ["Defense OSDK 모델링 계약"]
 ---
@@ -30,6 +30,8 @@ OSDK는 선택한 Ontology 엔티티에 맞는 타입과 함수를 생성한다.
 | Targeting and Fires | 대상, 제약 영역, 평가와 상호 관계 | 도메인 객체의 정의와 실제 실행 절차 |
 
 공통 `Named Location`은 이름이 있는 지리적 위치를 표현한다. 여러 도메인의 객체가 이를 구현하면 소비자는 도메인별 위치 타입에 따로 의존하지 않아도 된다. 공개 스키마에서 점과 영역 속성은 모두 선택 사항이므로, 이 인터페이스를 구현했다는 사실만으로 표시 가능한 좌표가 존재한다고 가정하면 안 된다.
+
+공통 `Country`는 국가, 주권국가 또는 종속 영토를 표현하며 `Named Location`을 확장한다. 확인한 공개 상세에는 자체 속성과 링크 제약이 없으므로 위치 형상은 부모의 두 선택 속성에만 의존한다. 자체 링크 제약이 없다는 것이 관계가 없다는 뜻은 아니며, 확장 규칙에 따라 `Named Location`의 선택 링크 제약을 물려받는다. 국가 코드나 정식 명칭 같은 식별 속성이 인터페이스 계약에 있다고 가정하지 않고, 실제 구현 객체 타입의 속성을 확인한다. 반대로 `Named Location`의 상세에서 이를 확장하는 인터페이스로는 `Country`만 표시된다.
 
 ## 관계에 맥락이 있으면 별도 객체로 표현하기
 
@@ -67,6 +69,7 @@ Order of Battle 개요는 중간 관계가 부모, 자식, 계층과 관계 유�
 - [Palantir Documentation, Sustainment](https://www.palantir.com/docs/defense-osdk/api/sustainment/overview/about/)
 - [Palantir Documentation, Targeting and Fires](https://www.palantir.com/docs/defense-osdk/api/targetingFires/overview/about/)
 - [Palantir Documentation, Named Location](https://www.palantir.com/docs/defense-osdk/api/common/interfaceTypes/com-palantir-ontology-defense-types-namedLocation/)
+- [Palantir Documentation, Country](https://www.palantir.com/docs/defense-osdk/api/common/interfaceTypes/com-palantir-ontology-defense-types-country/)
 - [Palantir Documentation, Organization Hierarchy](https://www.palantir.com/docs/defense-osdk/api/orderOfBattle/interfaceTypes/com-palantir-ontology-defense-types-organizationHierarchy/)
 - [Palantir Documentation, Organization Hierarchy Node Relationship](https://www.palantir.com/docs/defense-osdk/api/orderOfBattle/interfaceTypes/com-palantir-ontology-defense-types-organizationHierarchyNodeRelationship/)
 - [Palantir Documentation, Organization Hierarchy Node Relationship Type](https://www.palantir.com/docs/defense-osdk/api/orderOfBattle/interfaceTypes/com-palantir-ontology-defense-types-organizationHierarchyNodeRelationshipType/)
