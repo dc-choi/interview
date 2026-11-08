@@ -1,7 +1,7 @@
 ---
 tags: [palantir, custom-widgets, workshop, osdk]
 status: done
-verified_at: 2026-10-16
+verified_at: 2026-11-09
 category: "AI엔지니어링(AIEngineering)"
 aliases: ["Custom Widget 상태와 보안"]
 ---
@@ -12,21 +12,31 @@ Custom widget은 Workshop에 custom frontend를 추가하는 iframe component다
 
 ## Parameter와 event가 host 상태 계약이다
 
-Configuration은 최대 parameter 50개/event 50개이며 ID는 camelCase다. Primitive Boolean/date/number/string/timestamp와 primitive array, objectSet, Ontology scenario RID를 전달한다. Date는 YYYY-MM-DD, timestamp는 timezone 포함 ISO8601이다. Struct와 object-set filter는 first-class parameter type이 아니지만 objectSet parameter가 filter를 포함한 set definition을 가리킬 수는 있다.
+Configuration은 최대 parameter 50개/event 50개이며 ID는 camelCase다. Primitive Boolean/date/number/string/timestamp와 primitive array, objectSet, Ontology scenario RID, mapTileLayer를 전달한다. Date는 YYYY-MM-DD, timestamp는 timezone 포함 ISO8601이다. Struct와 object-set filter는 first-class parameter type이 아니지만 objectSet parameter가 filter를 포함한 set definition을 가리킬 수는 있다. ObjectSet parameter는 OSDK의 object type 또는 interface를 allowedType으로 정의하며, 값은 고정 object 목록이거나 그 type에 filter를 적용한 set이고 비어 있을 수도 있다.
 
 Workshop variable을 parameter에 bind하고 event의 parameterUpdateIds로 수정 가능한 parameter를 정한다. emitEvent의 update와 host event side effect를 연결한다. Scenario parameter는 Ontology Scenario의 isolated sandbox에서 object read/action apply에 사용할 RID이며 다른 scenario 기능 전체와 같은 계약으로 보지 않는다.
 
 ObjectSet parameter는 RID와 instantiated OSDK ObjectSet을 함께 제공하며 host definition 변경/data invalidation 시 둘 다 바뀐다. FoundryWidget에 client를 주고 experimental useObjectSet hook을 쓰려면 OsdkProvider2도 감싼다. Null set일 때 hook을 조건부 호출하는 대신 set이 있을 때 별도 view component를 render한다.
 
-Widget이 ObjectSet으로 event를 내보내면 SDK가 temporary set을 만들고 RID를 보낸다. 짧은 시간의 연속 event는 마지막 호출만 전달하고 이전 호출은 버린다. Temporary set 생성 중 network error 등은 caller에 surfaced되지 않는다. 모든 event가 순서대로 처리되거나 emitEvent가 업무 결과 성공을 확인한다는 전제로 설계하지 않는다.
+Widget이 ObjectSet으로 event를 내보내면 SDK가 temporary set을 만들고 RID를 보낸다. 같은 event를 짧은 간격으로 여러 번 emit하면 마지막 호출만 전달하고 이전 호출은 버린다(원문은 ObjectSet parameter 갱신 절에서 설명한다). Temporary set 생성 중 network error 등은 caller에 surfaced되지 않는다. 모든 event가 순서대로 처리되거나 emitEvent가 업무 결과 성공을 확인한다는 전제로 설계하지 않는다.
 
 OSDK action으로 backing data를 바꾸면 host view가 stale할 수 있다. refreshHostDataOnAction은 widget에 전달된 objectSet parameter를 host가 refresh하게 한다. 신규 set은 plugin default로 켜지만 기존 set은 수동 설정이 필요하고 widget별 override가 우선한다. 모든 외부 mutation 또는 object-set subscription을 자동 감지하는 보장은 아니다.
 
+## Map tile layer는 읽기 전용 선택값이다
+
+mapTileLayer parameter는 Foundry에 구성된 raster/vector tile source 중 builder가 고른 layer를 넘긴다. Playground와 Workshop Widget setup panel 모두 해당 parameter의 displayName(예시는 Map tiles) 아래에서 layer를 고르며, Workshop은 variable binding이 아니라 layer selector를 쓴다. 값은 tileSourceId를 담은 객체이며 읽기 전용이라 widget event로 바꿀 수 없다. 원문은 이 parameter를 쓰기 전에 `@osdk/widget.client`, `@osdk/widget.client-react`, `@osdk/widget.vite-plugin`을 latest로 갱신하라고만 안내하고 최소 버전은 밝히지 않는다.
+
+Widget은 공식 예시의 `${window.location.origin}/api/v3/media/tileSources/${tileSourceId}/style?preview=true` URL로 Mapbox Style Specification JSON을 받아(`preview=true`가 필수인지는 원문이 밝히지 않는다) Mapbox GL JS나 MapLibre GL JS로 그린다. 이 tile 요청은 지원 endpoint에 포함된다. Strict CSP가 `blob:` worker URL을 막으므로 renderer worker를 widget asset에서 불러오도록 설정한다(Mapbox는 strict CSP bundle, MapLibre는 Vite worker 설정). Layer 선택이 바뀌거나 unmount될 때 map instance를 제거한다.
+
+Tile source는 Control Panel의 Tiles에서 권한 있는 관리자가 추가한다. Marketplace는 custom widget이 쓰는 tile source를 패키징하지 않는다. 다른 enrollment에 설치한 Workshop module은 원본 enrollment의 tile source 참조를 유지하고 대상 enrollment에 source를 만들지 않는다. 설치 성공을 지도 표시 준비 완료로 보지 않고 대상 enrollment의 tile source를 따로 확인한다.
+
 ## OSDK는 현재 사용자의 권한을 따른다
 
-SDK resource를 선택하는 것과 Ontology APIs enablement는 별도다. ISO 또는 Enable widget set unscoped API access workflow 권한이 있는 역할이 API를 켠다. Runtime client는 window.location.origin과 createFoundryWidgetTokenProvider를 사용하고 실제 접근은 현재 사용자 token/권한을 따른다. Service user로 모든 사용자의 권한을 통합하는 consumer client credentials 모델과 다르다.
+Widget set overview의 Configure SDK에서 ontology와 resource를 고르고 `@custom-widget/sdk` dependency를 설치한다. In Foundry로 만든 repository의 `.npmrc`는 OSDK package를 Foundry에서 받도록 이미 구성되어 있어 수정하지 않는다. Outside of Foundry로 만들고 생성 시 OSDK package를 만들지 않았다면 project root `.npmrc`에 `@custom-widget` scope registry(widget set RID 경로)와 `${FOUNDRY_TOKEN}` 인증을 직접 둔다.
 
-허용 endpoint에는 일부 Admin user/profile/search API가 있고 Ontology API enablement 후 Ontologies/Functions namespace와 Upload Media가 포함된다. Development 안내의 non-Ontology API 차단 설명에 이 명시된 예외가 있으므로 모든 Admin/Media API가 허용되거나 모두 불가하다고 단정하지 않는다. 목록 밖 API와 object set subscriptions는 지원하지 않는다.
+SDK resource를 선택하는 것과 Ontology APIs enablement는 별도다. Information Security Officer 기본 enrollment role 또는 Enable widget set unscoped API access workflow를 주는 custom enrollment role이 API를 켠다. Runtime client는 window.location.origin과 createFoundryWidgetTokenProvider를 사용하고 실제 접근은 현재 사용자 token/권한을 따른다. 모든 호출을 하나의 service user 권한으로 수행하는 client credentials 모델([[Palantir-Consumer-Identity-and-Application-Models|consumer 앱의 identity 모델]])과 다르다.
+
+허용 endpoint에는 일부 Admin user/profile/search API와 mapTileLayer parameter로 만든 map tile 요청이 있고 Ontology API enablement 후 Ontologies/Functions namespace와 Upload Media가 포함된다. Develop and preview 안내도 runtime이 external request를 막고 지원 Foundry API endpoint와 map tile에만 접근한다고 설명하므로, 모든 Admin/Media API가 허용되거나 모두 불가하다고 단정하지 않는다. 목록 밖 API와 object set subscriptions는 지원하지 않는다.
 
 ## Iframe capability는 여러 단계로 허용한다
 
@@ -48,6 +58,7 @@ Workshop Open URL event를 widget event에 bind하면 popup 권한을 추가하�
 - [Palantir, Core concepts](https://www.palantir.com/docs/foundry/custom-widgets/core-concepts)
 - [Palantir, Parameters and events](https://www.palantir.com/docs/foundry/custom-widgets/parameters-and-events)
 - [Palantir, Use OSDK](https://www.palantir.com/docs/foundry/custom-widgets/use-osdk)
+- [Palantir, Display map tiles](https://www.palantir.com/docs/foundry/custom-widgets/map-tiles)
 - [Palantir, Iframe attributes](https://www.palantir.com/docs/foundry/custom-widgets/iframe-attributes)
 - [Palantir, Open a URL](https://www.palantir.com/docs/foundry/custom-widgets/open-url-in-workshop)
 - [Palantir, Develop and preview](https://www.palantir.com/docs/foundry/custom-widgets/development)

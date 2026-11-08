@@ -121,9 +121,11 @@ GPU 수요와 대출 조달 성공만으로 원리금 상환을 확정하지 않
 
 **담보부 대출 시설 (Amazon 2026년 3분기 Form 10-Q 주석 5, 2026-11-02 대조):** 기술 인프라 자산 구매에 쓰는 공급자 금융 약정에는 최대 약 800억 달러의 담보부 대출 시설(Loan Facility)이 포함된다. 회사는 2027년 1분기부터 2028년 3분기까지 재량으로 빌릴 수 있고, 금액은 발주의 규모와 시점, 가격 조건에 따라 달라질 수 있다. 변동금리이며 각 차입일로부터 5년 뒤 만기이고, 회사는 구매한 일부 자산에 담보권을 설정할 예정이다. 미상환액은 장기부채로, 원금 지급은 장기부채 상환으로 표시할 예정이다. 차입 가능 기간이 2027년 1분기에 시작하므로 10-Q 기준일(2026-09-30)에는 이 시설의 차입이 없다.
 
+**사례 (CoreWeave 2026년 2분기 실적 보도자료, 2026-11-09 대조):** 6월 말 revenue backlog는 약 1,040억 달러였고, 3분기 초 추가된 250억 달러 이상의 순신규 약정은 포함하지 않는다(보도자료 주석). 같은 분기(3개월) 영업활동 순현금은 6억 7,900만 달러, 내부 사용 소프트웨어 자본화를 포함한 유형자산 매입은 64억 2,200만 달러로 약 9.5배였다. 이 유형자산 매입과 영업활동 순현금의 차이는 영업손익이 아니며, 2분기 GAAP 영업손실 4,900만 달러는 별도 항목이다. 수주잔고는 인도와 서비스 가용성 요건을 충족해야 매출이 되므로(위 수주와 실현 매출), 투자 지출이 영업활동 순현금을 넘는 부족분은 보유 현금과 외부 조달로 메운다(분석 기준). 같은 분기 재무활동 순현금은 100억 7,100만 달러였다. 손익계산서의 순이자비용(interest expense, net)은 6억 4,000만 달러로 전년 같은 분기 2억 6,700만 달러의 2배를 넘었으며, 이는 발생 기준 비용이지 같은 분기에 지급한 현금 이자 금액이 아니다. 상반기(6개월) 영업활동 순현금 36억 6,300만 달러에서 빼면 1분기는 29억 8,400만 달러라, 투자 지출과 영업 현금의 차이는 비교 기간에 따라 크게 달라진다.
+
 **분석 제안:** Alphabet의 두 분기 연속 음수는 분기 단독 수치이고 Amazon의 424억 달러 유출은 최근 12개월 수치다. 최근 12개월로 맞추면 Alphabet은 유입, Amazon은 유출이지만, Alphabet은 유형자산 매입액을, Amazon은 매각 대금과 인센티브를 차감한 매입액을 빼므로 정의 차이도 확인한 뒤 비교한다. 대출 시설의 한도는 실제 차입액이 아니며, 그 원금 상환은 Amazon 보도자료 정의의 잉여현금흐름 계산에 들어가지 않으므로 차입 상환 일정과 함께 본다. 10-Q는 이 시설로 산 자산이 구매 시점에 유형자산 매입액으로 표시되는지 밝히지 않았다. 비현금 거래로 처리되면 구매와 상환 모두 잉여현금흐름 밖에 있을 수 있으므로 2027년 이후 현금흐름표와 비현금 거래 공시로 확인한다. 음의 잉여현금흐름이 수요 부족을 뜻하는지는 고객 매출, 수주잔고의 매출 전환과 가동률로 따로 확인하고, 투자 성과는 [[Valuation#투자 붐의 이익은 현금흐름과 자본수익률로 다시 본다|투자 붐의 현금흐름과 자본수익률 기준]]으로 판단한다.
 
-두 회사의 3분기 보도자료(Form 8-K 첨부 99.1), Alphabet이 게시한 실적 발표 콜 녹취록과 Amazon 10-Q의 부채 주석만 대조했다. 대출 시설의 대주, 가산금리와 2027년 이후 실제 차입액, 두 회사 AI 투자의 수익성은 확인하지 않았다.
+CoreWeave 사례에는 정해진 잉여현금흐름 정의를 쓰지 않았고 두 현금흐름표 항목만 나란히 놓았다. 수주잔고의 매출 전환 일정, 공급사와의 연산 용량 계약 조건과 차입 상환 일정은 보도자료로 확인하지 않았다. Alphabet과 Amazon은 두 회사의 3분기 보도자료(Form 8-K 첨부 99.1), Alphabet이 게시한 실적 발표 콜 녹취록과 Amazon 10-Q의 부채 주석만 대조했다. 대출 시설의 대주, 가산금리와 2027년 이후 실제 차입액, 두 회사 AI 투자의 수익성은 확인하지 않았다.
 
 ### 시장이 암시한 부도확률과 기업의 지급 능력을 나눈다
 
@@ -197,7 +199,7 @@ State of AI의 인프라 절은 미국 4대 하이퍼스케일러의 2026년 설
 - [Intel Reports First-Quarter 2026 Financial Results — Intel](https://www.sec.gov/Archives/edgar/data/50863/000005086326000077/q126earningsrelease.htm) — 2026-04-23 Form 8-K 첨부 99.1의 Terafab 전략 파트너 합류 문장, 2026-10-26 대조
 - [Free Writing Prospectus, 2026-06-04 — SpaceX](https://www.sec.gov/Archives/edgar/data/1181412/000162828026040610/spacexfwp.htm) — 기업공개 관련 표지, Tesla와의 Terafab 협력 설명, 위험 요인의 초기 단계와 미확정 협력 조건을 2026-10-26 대조
 - [CoreWeave Continues to Contract New Compute Capacity at Higher Prices — CoreWeave](https://investors.coreweave.com/news/news-details/2026/CoreWeave-Continues-to-Contract-New-Compute-Capacity-at-Higher-Prices/default.aspx) — 단기 계약의 MW당 연환산 매출 정의, 2026-10-22 대조
-- [CoreWeave Reports Strong Second Quarter 2026 Results — CoreWeave](https://investors.coreweave.com/news/news-details/2026/CoreWeave-Reports-Strong-Second-Quarter-2026-Results/) — revenue backlog의 구성과 이행 조건, 2026-10-22 대조
+- [CoreWeave Reports Strong Second Quarter 2026 Results — CoreWeave](https://investors.coreweave.com/news/news-details/2026/CoreWeave-Reports-Strong-Second-Quarter-2026-Results/) — revenue backlog의 구성과 이행 조건, 2026-10-22 대조. 2026-08-11 보도자료의 6월 말 backlog 금액과 주석, 2분기와 상반기 영업활동 순현금, 유형자산 매입, 재무활동 순현금, 영업손실과 순이자비용은 2026-11-09 대조
 - [Use open weight models as your AI coding agent with Amazon Bedrock — AWS](https://aws.amazon.com/blogs/machine-learning/use-open-weight-models-as-your-ai-coding-agent-with-amazon-bedrock/) — 자체 GPU 조달 없는 관리형 이용 경로, 2026-10-22 대조
 - [The $1 Trillion AI Buildout, State of Markets — a16z](https://a16z.com/podcast/the-1-trillion-ai-buildout-state-of-markets/)
 - [State of AI Report 2026, Explore — Air Street Capital](https://www.stateof.ai/2026-explore/)
