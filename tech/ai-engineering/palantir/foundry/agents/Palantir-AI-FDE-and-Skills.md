@@ -1,7 +1,7 @@
 ---
 tags: [palantir, ai-fde, agent, skill, governance]
 status: done
-verified_at: 2026-10-16
+verified_at: 2026-11-09
 category: "AI엔지니어링(AIEngineering)"
 aliases: ["AI FDE와 AIP Skills"]
 ---
@@ -33,6 +33,10 @@ AIP skill은 name/적용 description/Markdown body로 구성하며 project/folde
 This session에 추가한 skill은 해당 session만 유지된다. Personal skill set에 저장하면 새 session에 기본 추가하며 enable 상태도 저장한다. Skill set 저장의 Apply to current session은 기본 선택돼 현재 목록을 교체하므로 session-only skill이 빠질 수 있다.
 
 **Skill을 disable해도 이미 conversation에 로드한 지침은 남는다.** 신규 자동 loading 차단과 기존 문맥 제거를 구별한다. Shared skill의 저장 권한과 지침 내용도 함께 검토한다.
+
+관리자는 Control Panel의 AI FDE extension에서 enrollment별로 skill을 promote해 새 session에 기본으로 켤 수 있다. 대상은 enrollment의 모든 AI FDE 사용자나 선택한 user group이며, group 대상은 선택한 group 중 하나에만 속해도 해당한다. 사용자는 자기 skill set이나 현재 session에서 promoted skill을 끌 수 있고 그 선택이 enrollment 기본값보다 우선한다. 따라서 promotion은 팀 관례를 새 session에 기본 활성화로 배포하는 수단이지 모든 session에 강제되는 정책이 아니다. 활성화된 skill도 실제 로드는 앞의 description 판단과 Load skills capability를 따른다.
+
+Promotion은 skill resource의 접근 권한을 바꾸지 않아 사용자에게 그 skill의 view 권한이 따로 있어야 한다. Skill은 지침만 제공하고 권한을 더하지 않으므로, promoted skill을 따를 때도 AI FDE는 사용자의 기존 data/operation 권한 안에서만 동작한다. 권한 부여가 필요한 작업을 skill 배포로 해결하려 하지 않는다.
 
 ## Pre-fill URL은 시작 문맥을 전달한다
 
@@ -70,6 +74,7 @@ AI FDE의 Automate tool은 2026년 8월 time/object condition, Action/Logic/noti
 - [Palantir, Modes and capabilities](https://www.palantir.com/docs/foundry/ai-fde/modes-and-capabilities)
 - [Palantir, Navigation](https://www.palantir.com/docs/foundry/ai-fde/navigation)
 - [Palantir, AIP skills](https://www.palantir.com/docs/foundry/ai-fde/aip-skills)
+- [Palantir, Admin configuration](https://www.palantir.com/docs/foundry/ai-fde/admin-configuration)
 - [Palantir, Pre-fill sessions](https://www.palantir.com/docs/foundry/ai-fde/prefill-sessions)
 - [Palantir, Security and governance](https://www.palantir.com/docs/foundry/ai-fde/security-and-governance)
 - [Palantir, Best practices for using AI FDE](https://www.palantir.com/docs/foundry/ai-fde/best-practices)

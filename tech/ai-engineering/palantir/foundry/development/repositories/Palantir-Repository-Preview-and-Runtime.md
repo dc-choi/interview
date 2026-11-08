@@ -1,7 +1,7 @@
 ---
 tags: [palantir, preview, runtime, spark, compute]
 status: done
-verified_at: 2026-11-08
+verified_at: 2026-11-09
 category: "AI엔지니어링(AIEngineering)"
 aliases: ["Code Repositories preview와 runtime 관리"]
 ---
@@ -30,6 +30,33 @@ Upgrade PR은 dedicated branch에서 default로 들어간다. 자동 merge는 re
 
 Spark module pin은 branch/all-branch별 최대 90일의 임시 override다. Expiry 뒤 build가 실패할 수 있어 외부 운영 일정도 관리한다. CI는 pin version이 template 최소보다 높을 때 그 library를 쓰며 in-platform pin은 cdconfig보다 우선한다. Pin restore나 신규 feature 안내를 무기한 유지 보장으로 읽지 않는다.
 
+## Custom CI job은 관리 영역 밖에서 덧붙인다
+
+Shell 명령을 checks에 더하려면 repository root의 `ci.additions.yml`에 custom CI job을 정의한다. 2026-11-09 대조 기준 beta이며, Foundry가 관리하는 `ci.yml`과 달리 repository upgrade가 이 파일을 덮어쓰지 않는다. 최상위 key는 `env`, `jobs`, `sources`만 허용하고 다른 key가 있으면 checks가 실패한다. `ci.yml`에 이미 있는 env/job 이름을 재정의하거나 job에 `order`를 지정해도 실패하므로 관리되는 설정을 바꾸는 통로가 아니라 추가 전용 통로다.
+
+다음 예시는 API name이 `MySource`이고 `password` secret을 가진 source를 미리 준비해 repository에 import했다고 가정한다.
+
+```yaml
+env:
+  GREETING: Hello from a custom CI job
+sources:
+  - MySource
+jobs:
+  print-greeting:
+    timeout: 5 minutes
+    steps:
+      - echo "$GREETING"
+      - test -n "$MySource_password"
+```
+
+Job의 각 step은 repository root에서 별도 bash process로 실행되어 앞 step에서 export한 변수가 다음 step에 남지 않는다. 0이 아닌 exit code에서 job이 실패하고 남은 step은 실행하지 않는다. `timeout`을 생략하면 job 단위 제한은 없지만 모든 job이 공유하는 CI run 전체 timeout(platform 설정, 기본 60분)은 여전히 적용된다. 최상위 `env`는 기본 job을 포함한 모든 job에, job의 `env`는 그 job에만 적용되며 이름이 겹치면 job 값이 우선한다. Custom job은 `ci.yml` job이 모두 끝난 뒤 파일에 적힌 순서로 실행되고, `order`가 있는 `ci.yml` job 하나가 실패하면 실행되지 않는다. Checks 탭에서는 job별 상태와 log를 따로 본다.
+
+`sources`에 선언한 Data Connection source는 그 egress policy를 custom job만이 아니라 기본 job 전체에 적용한다. Source secret은 `<source API name>_<secret name>` 환경 변수로 주어지며 같은 이름의 `env`보다 우선한다. 두 source가 같은 변수 이름을 만들면 한 값만 남으므로 조합이 겹치지 않게 이름을 정한다. Secret 존재는 `test -n`처럼 값을 출력하지 않는 방식으로 확인한다.
+
+Source를 쓰려면 code import 허용과 API name, repository import(source의 `Editor` 권한 필요), `ci.additions.yml` 선언이 모두 필요하다. Import만 하고 선언하지 않은 source는 job이 쓰지 못한다. 또한 source에 marking 검증 없는 export를 켜야 하는데 checks는 repository data의 marking을 검증하지 않으므로, job이 marking이 붙은 data를 외부로 보낼 수 있다. 이 설정은 CI 편의가 아니라 반출 권한 결정으로 검토한다.
+
+공식 문서가 나열한 실행 환경 도구는 bash와 grep/sed/find/tar 등 기본 유틸리티, git, python3 표준 라이브러리, `$JAVA_HOME`의 JDK다. curl과 ssh는 없으므로 HTTP 호출은 Python `urllib.request` 등으로 작성한다. Marketplace product에 포함한 repository의 custom job은 설치 뒤 실행이 보장되지 않고 checks를 실패시킬 수 있다.
+
 ## Compute는 wall time과 allocation을 함께 본다
 
 해당 compute guide는 code 작성 자체와 dataset build 사용량을 구분한다. Build는 read/실행/I/O wait/write 전체 allocation 시간으로 계산한다. Driver와 각 executor에 `max(vCPU, GiB/7.5) * duration`을 합하며 dynamic executor는 구간별 적분한다. GPU는 driver와 executor마다 GPU 수, model별 rate와 기간을 곱해 더한다.
@@ -51,7 +78,7 @@ Spark profile은 먼저 Project에 import해야 checks가 통과한다. Restrict
 - [Palantir, Create transforms](https://www.palantir.com/docs/foundry/code-repositories/create-transforms)
 - [Palantir, AIP features](https://www.palantir.com/docs/foundry/code-repositories/aip-features)
 - [Palantir, Control Panel repository settings](https://www.palantir.com/docs/foundry/code-repositories/configure-repositories-in-control-panel)
-- [Palantir, Custom checks](https://www.palantir.com/docs/foundry/code-repositories/create-custom-checks)
+- [Palantir, Custom CI](https://www.palantir.com/docs/foundry/code-repositories/custom-ci)
 - [Palantir, Unit tests](https://www.palantir.com/docs/foundry/code-repositories/unit-tests)
 - [Palantir, Repository upgrades](https://www.palantir.com/docs/foundry/code-repositories/repository-upgrades)
 - [Palantir, Module pinning](https://www.palantir.com/docs/foundry/code-repositories/module-pinning)
