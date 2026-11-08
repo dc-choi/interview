@@ -15,6 +15,10 @@ aliases: ["데이터&저장소(Data&Storage)", "Data & Storage"]
 - [[tech/database/vector/vector|벡터 검색 (Vector)]] — 임베딩 유사도와 점수 임계값, CLIP 멀티모달 이미지 검색, HNSW, pgvector, OpenSearch k-NN, hybrid와 embedding pipeline
 - [[tech/database/orm/ORM허브(ORMHub)|ORM, 도메인 모델링 (ORM)]] — TypeORM 실무, 임피던스 불일치, Aggregate 경계, Domain Model
 
+## 저장 엔진 구조
+
+- [[Storage-Engine-Amplification|저장 엔진의 읽기, 쓰기와 공간 증폭]] — RUM 교환, B-tree와 LSM-tree의 비용 위치, 페이지 내구성 장치, compaction, 필터와 압축
+
 ## 레이크하우스와 검색 엔진 선택
 
 - [[DuckLake|DuckLake]] — SQL 카탈로그와 Parquet 데이터, 형식과 확장 구분
