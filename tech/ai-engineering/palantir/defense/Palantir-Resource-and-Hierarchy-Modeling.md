@@ -50,6 +50,8 @@ aliases: ["Palantir 자원과 조직 관계 모델링"]
 
 두 종류의 계층 모두에 참여하는 구현은 필요한 인터페이스를 함께 구현한다. 객체의 하위 타입 관계가 그 객체를 담는 계층의 하위 타입 관계로 자동 확장되는 것은 아니다.
 
+2026-11-09 대조한 공개 상세에서 `Organization`을 직접 확장하는 인터페이스는 `Unit`과 `Combatant Command` 둘이다. `Combatant Command`는 다시 지역 책임을 맡는 `Geographic Combatant Command`와 기능 임무 중심의 `Functional Combatant Command`로 확장된다. 사령부 계열 세 인터페이스(`Combatant Command`, `Geographic Combatant Command`, `Functional Combatant Command`)는 모두 자체 속성과 링크 제약이 없다. `Organization`도 자체 속성 없이 계층 관계, 작전, 배정 물자, 물자 변화와 상태 이벤트(개별 물자 상태 이벤트 포함)와 요구사항으로 향하는 8개의 선택적 다중 링크 제약만 정의한다. 이 공개 상세 기준으로는 사령부 갈래가 새 데이터 필드를 더하지 않고 조직의 종류를 인터페이스 계층으로 구분하는 분류 층으로 읽힌다(모델링 해석). 사령부 인터페이스를 구현한 객체 타입이라도 관할 지역이나 임무 같은 값이 인터페이스 계약으로 보장되지 않으므로 실제 구현 객체 타입의 속성을 확인한다. 공개 상세만으로는 두 하위 인터페이스를 함께 구현하는 것이 금지되는지도 알 수 없다.
+
 `Unit Type`은 이름, 약칭과 정의를 필수로 갖는 별도 분류다. Unit의 의미 있는 식별자, 소속 구분과 규모 속성은 선택 사항이다. 일부 속성의 값 목록은 대소문자를 구분한다. 표시용 설명을 그대로 저장값으로 복사하기보다 실제 value type의 허용값을 사용한다.
 
 ## 계획 시각과 실제 시각
@@ -94,6 +96,9 @@ aliases: ["Palantir 자원과 조직 관계 모델링"]
 - [Palantir Documentation, Materiel Change Event](https://www.palantir.com/docs/defense-osdk/api/sustainment/interfaceTypes/com-palantir-ontology-defense-types-materielChangeEvent/)
 - [Palantir Documentation, Materiel Requirement](https://www.palantir.com/docs/defense-osdk/api/sustainment/interfaceTypes/com-palantir-ontology-defense-types-materielRequirement/)
 - [Palantir Documentation, Organization](https://www.palantir.com/docs/defense-osdk/api/orderOfBattle/interfaceTypes/com-palantir-ontology-defense-types-organization/)
+- [Palantir Documentation, Combatant Command](https://www.palantir.com/docs/defense-osdk/api/orderOfBattle/interfaceTypes/com-palantir-ontology-defense-types-combatantCommand/)
+- [Palantir Documentation, Geographic Combatant Command](https://www.palantir.com/docs/defense-osdk/api/orderOfBattle/interfaceTypes/com-palantir-ontology-defense-types-geographicCombatantCommand/)
+- [Palantir Documentation, Functional Combatant Command](https://www.palantir.com/docs/defense-osdk/api/orderOfBattle/interfaceTypes/com-palantir-ontology-defense-types-functionalCombatantCommand/)
 - [Palantir Documentation, Unit](https://www.palantir.com/docs/defense-osdk/api/orderOfBattle/interfaceTypes/com-palantir-ontology-defense-types-unit/)
 - [Palantir Documentation, Unit Hierarchy](https://www.palantir.com/docs/defense-osdk/api/orderOfBattle/interfaceTypes/com-palantir-ontology-defense-types-unitHierarchy/)
 - [Palantir Documentation, Unit Hierarchy Node Relationship](https://www.palantir.com/docs/defense-osdk/api/orderOfBattle/interfaceTypes/com-palantir-ontology-defense-types-unitHierarchyNodeRelationship/)
