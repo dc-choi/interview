@@ -68,7 +68,7 @@ aliases: ["Palantir 자원과 조직 관계 모델링"]
 
 ## 연료 분류와 이동 능력의 계약
 
-이 절은 2026-10-22 공개 Fuel Type과 Maritime Movement Capable 상세를 대조했다. 다른 절의 검증 날짜는 기존 frontmatter 기준을 유지한다.
+이 절은 2026-10-22 공개 Fuel Type과 Maritime Movement Capable 상세를 대조했다(아래 지상 이동 능력 소절은 별도 날짜). 다른 절의 검증 날짜는 기존 frontmatter 기준을 유지한다.
 
 `Fuel Type`은 `Materiel Type`을 확장하는 연료 분류다. 상세 페이지에 자체 속성이 없다는 사실을 상속 속성까지 없다는 뜻으로 읽지 않는다. 연료를 쓰는 개체로 향하는 `Maritime Movement Capable Entities` 링크는 선택적인 다중 관계이고, 반대쪽의 `Fuel Type` 링크는 선택적인 단일 관계다. 연료 종류와 그것을 사용하는 개체의 이동 능력을 따로 모델링한다.
 
@@ -81,6 +81,22 @@ aliases: ["Palantir 자원과 조직 관계 모델링"]
 | Speed Constraints | `defaultSpeedKnots`, `maxSpeedKnots`가 각각 double인 구조체 | 속성 설명은 miles per hour여서 필드명의 Knots와 불일치한다 |
 
 속도 제약의 실제 단위는 이 공개 설명만으로 확정할 수 없다. 필드명만 보고 노트로 처리하거나 설명만 보고 mph로 변환하지 말고, 데이터를 제공하는 구현과 단위 계약을 확인한다. 값이 없는 상태도 0으로 치환하지 않는다. 이는 누락과 단위 충돌을 계산 전에 검증하는 모델링 판단이다.
+
+### 지상 이동 능력
+
+2026-11-09 공개 `Land Movement Capable` 상세를 대조했다. 장비의 지상 이동 능력을 경사 한계, 평균 이동 속도와 도섭 깊이로 표현하는 인터페이스이며 다섯 속성이 모두 선택적인 double이다.
+
+| 속성 | 단위와 의미 | null과 0의 구분 |
+| --- | --- | --- |
+| Average Cross-Country Speed | km/h, 야지 평균 이동 속도 | 모르면 null, 0은 이동 불가 |
+| Average Road Speed | km/h, 도로 평균 이동 속도이며 도심 제한 속도가 아니다 | 모르면 null, 0은 이동 불가 |
+| Fording Depth | m, 건널 수 있는 최대 수심 | null은 모름 또는 해당 없음 |
+| Maximum Climb Gradient | 퍼센트 경사, 오를 수 있는 최대 오르막 | 모르면 null |
+| Maximum Side Slope | 퍼센트 경사, 통제를 유지하며 횡단할 수 있는 최대 측경사 | 모르면 null |
+
+해양 이동 능력의 속도 제약은 필드명(Knots)과 설명(mph)의 단위가 어긋나지만, 이 인터페이스는 표시 이름, OSDK 예제의 속성 이름(Kmh, Meters, Percent)과 설명이 같은 단위를 쓴다. 경사는 각도가 아니라 퍼센트 경사다. 속도 속성은 null과 0에 서로 다른 의미를 정의하므로, 결측을 0으로 채우면 정보 없음이 이동 불가로 바뀐다. 도섭 깊이의 null은 모름과 해당 없음을 구분하지 않아, 도섭 가능 여부를 판정하려면 구현이 둘을 어떻게 구분하는지 따로 확인해야 한다.
+
+공개 상세 기준으로 이 인터페이스는 확장 관계와 링크 제약이 없다. 해양 이동 능력처럼 `Fuel Type`으로 향하는 링크도 정의하지 않으므로 지상 장비의 연료 분류는 이 계약만으로 얻을 수 없다. 이동 가능 경로 계산에 이 값을 쓰려면 지형 경사와 수심 자료의 단위를 같은 기준으로 맞추고, 평균 속도를 구간별 실제 속도로 확대 해석하지 않는다(모델링 판단).
 
 ## 출처
 
@@ -111,6 +127,7 @@ aliases: ["Palantir 자원과 조직 관계 모델링"]
 - [Palantir Documentation, Facility](https://www.palantir.com/docs/defense-osdk/api/orderOfBattle/interfaceTypes/com-palantir-ontology-defense-types-facility/)
 - [Palantir Documentation, Fuel Type](https://www.palantir.com/docs/defense-osdk/api/orderOfBattle/interfaceTypes/com-palantir-ontology-defense-types-fuelType/)
 - [Palantir Documentation, Maritime Movement Capable](https://www.palantir.com/docs/defense-osdk/api/orderOfBattle/interfaceTypes/com-palantir-ontology-defense-types-maritimeMovementCapable/)
+- [Palantir Documentation, Land Movement Capable](https://www.palantir.com/docs/defense-osdk/api/orderOfBattle/interfaceTypes/com-palantir-ontology-defense-types-landMovementCapable/)
 
 ## 관련 문서
 
