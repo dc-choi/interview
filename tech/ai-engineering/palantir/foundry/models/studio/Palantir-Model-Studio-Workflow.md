@@ -17,6 +17,8 @@ optional test dataset을 생략하면 일반 설명은20% 분할을 안내한다
 
 선택한 branch의 latest configuration으로 build하며 입력이 바뀌면 같은 config라도 결과가 달라질 수 있다. configuration version은 수정마다 증가한다. run의 build, model version, Experiment와 당시 input/parameter/resource/changelog를 함께 확인한다. stale 표시가 training 실패나 모델 품질 저하의 증거는 아니다.
 
+configuration은 생성과 수정 모두 wizard의 Inputs(dataset과 column mapping), Parameters(trainer별 option), Compute resources(vCPU와 memory) 순서로 정하고, 마지막에 configuration version의 이름과 선택 changelog를 남긴다. 이름과 changelog는 그 configuration이 하는 일과 이전 version에서 바뀐 점을 설명하며, run sidebar의 Changelog로 보인다. version을 나중에 비교하려면 바꾼 이유도 함께 적는 편이 낫다(운영 제안). Global Branching을 쓸 수 있는 enrollment에서는(beta, 아래 절) header의 branch selector로 branch를 고른 뒤 Changes 탭에서 `main`과 configuration을 비교한다. retraining schedule은 home의 Explore data lineage로 lineage를 열어 build schedule로 설정한다. 2026-11-08 Navigation 문서 기준이다.
+
 ## 브랜치 실험과 병합 조건
 
 2026-10-30 공식 문서 기준, Global Branching 연동은 beta이며 enrollment별로 제공 여부가 다를 수 있다. 먼저 `main`에서 초기 training run을 실행해 configuration을 저장한다. configuration이 없는 branch에서 **Start training run**을 누르면 `main`의 최신 configuration을 복사하고, 기존 output model을 재사용해 해당 branch의 model version을 만든다.
@@ -46,8 +48,8 @@ No models trained는 exclusion 또는 hyperparameter에서 모든 model을 없�
 - [Palantir, Branching Model Studio](https://www.palantir.com/docs/foundry/model-studio/branching) — 2026-10-30 branch 초기화, version별 병합 조건, rebase와 main 학습의 구분 대조.
 - [Palantir, model-studio](https://www.palantir.com/docs/foundry/model-studio)
 - [Palantir, overview](https://www.palantir.com/docs/foundry/model-studio/overview)
-- [Palantir, core-concepts](https://www.palantir.com/docs/foundry/model-studio/core-concepts)
-- [Palantir, navigation](https://www.palantir.com/docs/foundry/model-studio/navigation)
+- [Palantir, core-concepts](https://www.palantir.com/docs/foundry/model-studio/core-concepts) — 2026-11-08 연속 run의 configuration 재사용과 lineage, Marking 전파 대조.
+- [Palantir, navigation](https://www.palantir.com/docs/foundry/model-studio/navigation) — 2026-11-08 wizard 단계, changelog, Changes 탭과 lineage의 schedule 설정 대조.
 - [Palantir, configuration-inputs](https://www.palantir.com/docs/foundry/model-studio/configuration-inputs)
 - [Palantir, configuration-compute-resources](https://www.palantir.com/docs/foundry/model-studio/configuration-compute-resources)
 - [Palantir, faq](https://www.palantir.com/docs/foundry/model-studio/faq)
