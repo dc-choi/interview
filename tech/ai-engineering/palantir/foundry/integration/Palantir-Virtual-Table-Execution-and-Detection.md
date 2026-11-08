@@ -1,7 +1,7 @@
 ---
 tags: [palantir, virtual-tables, pushdown, iceberg]
 status: done
-verified_at: 2026-10-16
+verified_at: 2026-11-08
 category: "AI엔지니어링(AIEngineering)"
 aliases: ["Virtual table 실행과 변경 감지"]
 ---
@@ -16,7 +16,7 @@ Managed Iceberg는 Foundry catalog가 관리하고 virtual Iceberg는 외부 cat
 
 BigQuery/Snowflake/Databricks와 S3/ADLS/GCS 등의 지원 source가 있지만 capability는 조합별로 다르다. 예를 들어 Databricks managed Delta/view는 read-only이고 external Delta/managed Iceberg는 write 경로가 있으며, Snowflake managed Iceberg는 다른 Snowflake table과 Foundry single-node 지원이 다르다.
 
-2026-10-16 matrix 기준 native pushdown은 BigQuery Python Ibis, Databricks PySpark/Pipeline Builder, Snowflake Snowpark/Pipeline Builder 경로로 나뉜다. Object-store Parquet/Avro/CSV/Delta의 표는 read/write capability와 Foundry Python/Pipeline Builder compute 지원 칸을 다르게 표시한다. 상단 format/지원 표와도 범위 차이가 있으므로 source 문서/actual table type 없이 일괄 사용 가능하다고 결론 내리지 않는다.
+2026-11-08 matrix 기준 native pushdown은 BigQuery Python Ibis, Databricks PySpark/Pipeline Builder, Snowflake Snowpark/Pipeline Builder 경로로 나뉜다. Object-store Parquet/Avro/CSV/Delta의 표는 read/write capability와 Foundry Python/Pipeline Builder compute 지원 칸을 다르게 표시한다. 상단 format/지원 표와도 범위 차이가 있으므로 source 문서/actual table type 없이 일괄 사용 가능하다고 결론 내리지 않는다.
 
 Iceberg catalog도 source별이다. S3는 Glue/Object Storage/Polaris, ADLS는 Object Storage/Polaris, GCS는 Lakehouse/Object Storage, Snowflake는 Horizon, Databricks는 Unity 경로를 확인한다. S3/ADLS에서 Unity는 legacy이며 Databricks source가 권장된다.
 
@@ -34,7 +34,13 @@ External에서 관리하는 input에 downstream resource가 생긴 뒤 polling u
 
 Detection은 언제 trigger할지만 정한다. Snapshot/incremental 실행은 별도 지원이며 virtual incremental은 append-only와 source의 Change Data Feed/Incremental Reads 조건을 따른다. Versioning 지원이 곧 arbitrary update/delete incremental 지원은 아니다. Non-versioned source는 snapshot을 사용한다.
 
-Object backing table이 외부에서 바뀌면 detection과 reindex 경로를 켜야 한다. Direct table query가 원본의 현재 data를 읽는 것과 이미 materialized된 object/dataset이 항상 최신이라는 것은 다르다. Source versioning 지원은 Foundry dataset의 branch/history 기능을 동일하게 제공한다는 뜻도 아니다.
+Object backing table이 외부에서 바뀌면 update detection을 켜야 object가 정기적으로 갱신된다. Detection이 source 변경을 감지하면 backing object는 자동으로 reindex된다. Direct table query가 원본의 현재 data를 읽는 것과 이미 materialized된 object/dataset이 항상 최신이라는 것은 다르다. Source versioning 지원은 Foundry dataset의 branch/history 기능을 동일하게 제공한다는 뜻도 아니다.
+
+## Branch 지원은 source와 workflow가 정한다
+
+Virtual table의 branch 지원은 source system과 table type의 기능, 사용하는 Foundry workflow에 따라 다르다. Foundry에 등록해도 source에 branch 기능이 생기지 않는다. Apache Iceberg spec은 snapshot reference로 branch와 tag를 추적하지만, virtual Iceberg table에서 쓸 수 있는지는 source catalog의 구현과 지원 operation에 달려 있으므로 source별 문서(예: Databricks, Snowflake의 Iceberg table 제약)에서 확인한다. Pipeline Builder External pipelines 문서의 known limitations는 2026-11-08 기준 Python Transforms와 Pipeline Builder에서 compute pushdown을 쓰면 branching을 지원하지 않는다고 적는다.
+
+Virtual table은 dataset versioning이나 branching 같은 Foundry dataset 기능의 이점을 받지 않는다. [[Palantir-Dataset-Transactions-and-Build-Branches|Dataset branch와 build fallback]]이 data를 격리하는 방식을 virtual input이나 output에도 그대로 기대하지 않는다.
 
 ## Network와 export 권한
 
@@ -48,8 +54,10 @@ Virtual table은 중복 storage를 줄이고 지원 query를 source로 pushdown�
 
 ## 출처
 
-- [Palantir, Virtual tables](https://www.palantir.com/docs/foundry/data-integration/virtual-tables)
+- [Palantir, Virtual tables](https://www.palantir.com/docs/foundry/data-integration/virtual-tables) — 2026-11-08 Branching support 안내 추가분과 나머지 본문 재대조
 - [Palantir, Iceberg tables](https://www.palantir.com/docs/foundry/data-integration/iceberg-tables)
+- [Palantir, External pipelines in Pipeline Builder](https://www.palantir.com/docs/foundry/building-pipelines/create-external-pipeline-pb/#known-limitations) — 2026-11-08 compute pushdown의 branching 제약 확인
+- [Apache Iceberg, Table Spec: Snapshot References](https://iceberg.apache.org/spec/#snapshot-references) — 2026-11-08 branch와 tag의 snapshot reference 설명 확인
 
 ## 관련 문서
 

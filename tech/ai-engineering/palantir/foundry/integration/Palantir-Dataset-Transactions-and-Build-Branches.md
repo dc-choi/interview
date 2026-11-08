@@ -1,7 +1,7 @@
 ---
 tags: [palantir, datasets, transactions, branching]
 status: done
-verified_at: 2026-10-16
+verified_at: 2026-11-08
 category: "AI엔지니어링(AIEngineering)"
 aliases: ["Dataset transaction과 build branch"]
 ---
@@ -35,9 +35,13 @@ Dataset branch merge는 지원하지 않는다. Branch 삭제는 pointer 삭제�
 
 JobSpec은 logic/input dependency를 정의하고 job은 하나 이상의 output을 만드는 실행 단위다. Multi-output job의 일부 output만 계산할 수는 없다. Build는 JobSpec graph의 cycle/input/schema를 검증하고 output transaction을 열어 lock하며 충돌하는 input-changing build를 기다릴 수 있다.
 
-Build branch에서 JobSpec을 찾고 없으면 fallback chain을 따라 찾는다. Data input도 build branch가 없으면 첫 existing fallback을 읽는다. Output은 build branch에만 쓰며 없으면 fallback에서 branch를 만들 수 있다. Input에는 새 branch를 만들지 않는다. Fallback은 관련 dataset ancestry와 호환되어야 한다.
+Build branch에서 JobSpec을 찾고 없으면 fallback chain을 따라 찾는다. Data input도 build branch가 없으면 첫 existing fallback을 읽는다. Output은 build branch에만 쓰며 없으면 fallback에서 branch를 만들 수 있다. Input에는 새 branch를 만들지 않는다. Fallback은 관련 dataset ancestry와 호환되어야 한다. Dataset icon이 회색이면 master branch에 JobSpec이 없고, 파란색이면 master에 JobSpec이 정의되어 있다.
 
-Feature branch에서 B/C logic을 바꾸고 A는 master만 있다면 A master를 읽어 B feature, 이어 C feature를 만든다. A와 B/C master data는 바꾸지 않는다. Repository의 personal branch를 여러 사람이 동시에 편집하면 작업이 덮어써질 수 있으므로 별도 branch를 사용한다.
+Feature branch에서 B/C logic을 바꾸고 A는 master만 있다면 A master를 읽어 B feature, 이어 C feature를 만든다. A와 B/C master data는 바꾸지 않는다.
+
+A, B, C가 모두 master branch만 가진 상태에서 Code Repository에 feature branch를 만들면 Git branch만 생긴다. 이 시점에는 어느 dataset에도 feature branch가 없다. Commit 뒤 repository의 CI check가 B/C JobSpec을 feature에 publish하고, Git branch가 master에서 갈라졌으므로 build의 fallback chain은 `feature --> master`가 된다. Build가 B/C의 feature branch에 output transaction을 열 때 dataset branch가 생긴다. B job은 A에 feature branch가 없어 master로 fallback하고, C job은 앞 job이 commit한 B feature를 fallback 없이 읽는다. Git branch 생성을 data branch 생성으로 보고하지 않는다.
+
+Repository의 personal branch를 여러 사람이 동시에 편집하면 작업이 덮어써질 수 있으므로 별도 branch를 사용한다.
 
 ## Build 전체가 하나의 rollback transaction은 아니다
 
@@ -54,7 +58,7 @@ Pipeline 운영에는 owner, 요구 freshness, quality 검증, 권한과 support
 - [Palantir, Data integration](https://www.palantir.com/docs/foundry/data-integration)
 - [Palantir, Application reference](https://www.palantir.com/docs/foundry/data-integration/application-reference)
 - [Palantir, Datasets](https://www.palantir.com/docs/foundry/data-integration/datasets)
-- [Palantir, Branching](https://www.palantir.com/docs/foundry/data-integration/branching)
+- [Palantir, Branching](https://www.palantir.com/docs/foundry/data-integration/branching) — 2026-11-08 build 예제와 dataset icon 색 재대조
 - [Palantir, Builds](https://www.palantir.com/docs/foundry/data-integration/builds)
 - [Palantir, What is a data pipeline?](https://www.palantir.com/docs/foundry/data-integration/data-pipeline)
 - [Palantir, Schedules](https://www.palantir.com/docs/foundry/data-integration/schedules)
