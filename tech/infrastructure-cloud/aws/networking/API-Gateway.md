@@ -3,7 +3,7 @@ tags: [aws, api-gateway, rest, websocket, serverless, http-api]
 status: done
 category: "Infrastructure - AWS"
 aliases: ["API Gateway", "AWS API Gateway", "Amazon API Gateway"]
-verified_at: 2026-07-15
+verified_at: 2026-11-09
 ---
 
 # Amazon API Gateway, 관리형 API 프론트도어
@@ -58,6 +58,18 @@ HTTP API는 더해 **JWT Authorizer**(Cognito 외 다른 OIDC IdP)를 네이티�
 - **AWS Service** — DynamoDB, SQS, SNS 등 AWS 서비스 직접 호출 (Lambda 없이도 간단한 PUT/Query 가능)
 - **Mock** — 백엔드 없이 정적 응답. CORS preflight 처리에 활용
 - **VPC Link** — 2026-09-03 AWS 문서 기준, REST API는 VPC link V2로 ALB에 직접 비공개 통합할 수 있다. NLB 전용 VPC link V1은 레거시이며, REST API의 비공개 통합은 Cloud Map을 지원하지 않는다. HTTP API는 ALB, NLB 또는 Cloud Map 서비스를 지원한다
+
+### HTTP API의 비공개 통합 구성
+
+2026-11-09 공식 문서 기준, 내부 ALB를 HTTP API 뒤에 두는 순서와 조건이다.
+
+1. **VPC link V2 생성** — subnet과 security group을 지정한다. 생성 뒤에는 subnet과 security group을 바꿀 수 없으므로 처음부터 대상 로드밸런서에 닿는 private subnet과 규칙을 고른다. subnet은 공식 가용 표에 나온 리전과 AZ ID 안에 있어야 한다. 상태가 `PENDING`에서 `AVAILABLE`로 바뀌기까지 몇 분 걸릴 수 있다. 하나의 VPC link를 여러 리소스와 API에서 재사용할 수 있다.
+2. **통합 생성** — ALB나 NLB는 HTTP proxy 통합에 VPC link와 로드밸런서 **listener ARN**을 지정한다. Cloud Map은 서비스 ARN을 지정하며, 등록한 리소스에 IP 주소와 port가 있어야 한다. 로드밸런서나 Cloud Map 서비스, VPC link, HTTP API는 모두 같은 AWS 계정 소유여야 한다.
+3. **배포** — 자동 배포를 켜지 않았으면 stage에 배포한 뒤 invoke URL로 확인한다.
+
+- 비공개 통합 트래픽은 기본적으로 HTTP다. 백엔드까지 HTTPS가 필요하면 통합에 `tlsConfig`를 지정한다. 콘솔에서는 고급 설정에서 보안 서버 이름을 입력한다.
+- API Gateway는 invoke URL의 stage 부분을 백엔드 요청 경로에 포함한다. `test` stage라면 백엔드는 `test/<route 경로>`를 받으므로, 백엔드가 이를 기대하지 않으면 parameter mapping으로 경로를 `$request.path`로 덮어쓴다.
+- 60일 동안 VPC link로 트래픽이 없으면 `INACTIVE`가 되고 API Gateway가 VPC link의 네트워크 인터페이스를 지운다. 그동안 VPC link에 의존하는 요청은 실패하고, 요청이 다시 들어오면 재프로비저닝에 몇 분이 걸린다. 그 몇 분 동안 요청이 계속 실패할 수 있으므로 사용량이 드문 내부 API는 이를 감안하고 VPC link 상태를 모니터링한다.
 
 ## 트래픽 제어
 
@@ -127,8 +139,11 @@ HTTP API는 더해 **JWT Authorizer**(Cognito 외 다른 OIDC IdP)를 네이티�
 - [AWS 공식 문서, Canary release deployments for REST APIs](https://docs.aws.amazon.com/apigateway/latest/developerguide/create-canary-deployment.html)
 - [AWS 공식 문서, Usage plans and API keys for REST APIs](https://docs.aws.amazon.com/apigateway/latest/developerguide/api-gateway-api-usage-plans.html)
 - [AWS 공식 문서, AWS WAF for REST APIs](https://docs.aws.amazon.com/apigateway/latest/developerguide/apigateway-control-access-aws-waf.html)
-- [AWS 공식 문서, API Gateway private integrations](https://docs.aws.amazon.com/apigateway/latest/developerguide/private-integration.html)
+- [AWS 공식 문서, Private integrations for REST APIs in API Gateway](https://docs.aws.amazon.com/apigateway/latest/developerguide/private-integration.html)
 - [AWS 공식 문서, WebSocket API routes](https://docs.aws.amazon.com/apigateway/latest/developerguide/websocket-api-develop-routes.html)
+- [AWS 공식 문서, Create private integrations for HTTP APIs in API Gateway](https://docs.aws.amazon.com/apigateway/latest/developerguide/http-api-develop-integrations-private.html)
+- [AWS 공식 문서, Set up VPC links V2 in API Gateway](https://docs.aws.amazon.com/apigateway/latest/developerguide/http-api-vpc-links.html)
+- [AWS 공식 문서, Stages for HTTP APIs in API Gateway](https://docs.aws.amazon.com/apigateway/latest/developerguide/http-api-stages.html)
 
 ## 관련 문서
 - [[AWS-Lambda|AWS Lambda]]
