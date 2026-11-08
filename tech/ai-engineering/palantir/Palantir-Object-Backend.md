@@ -1,7 +1,7 @@
 ---
 tags: [palantir, foundry, ontology, indexing, storage]
 status: done
-verified_at: 2026-10-16
+verified_at: 2026-11-08
 category: "AI엔지니어링(AIEngineering)"
 aliases: ["Palantir Ontology 백엔드", "Object Storage v2"]
 ---
@@ -10,7 +10,7 @@ aliases: ["Palantir Ontology 백엔드", "Object Storage v2"]
 
 Ontology 백엔드는 데이터 원천과 업무 의미를 연결하고 객체를 색인, 조회하며 변경하는 실행 계층이다. 단일 그래프 DB의 별칭으로 보면 의미 정의, 읽기, 쓰기와 영속화의 책임을 놓친다. 객체와 관계의 개념은 [[Ontology-Knowledge-Graph]]에서 다룬다.
 
-2026-10-16 공식 문서 대조 기준이다. 실제 데이터 규모, 지연, 장애 복구와 동시 수정은 실행 검증하지 않았다.
+2026-10-16 공식 문서 대조 기준이며, 색인 실패와 데이터 유실을 구분한다 절은 2026-11-08에 다시 대조했다. 실제 데이터 규모, 지연, 장애 복구와 동시 수정은 실행 검증하지 않았다.
 
 ## 의미 정의, 조회와 쓰기를 나눈다
 
@@ -39,9 +39,11 @@ Object set도 데이터 스냅샷과 같지 않다. Static set은 primary key �
 
 OSv2 데이터 제약은 색인 때 검사한다. Batch 위반은 색인 job 실패로, streaming 위반은 해당 record drop으로 처리한다. 작업이 계속 실행된다는 이유만으로 모든 record가 들어갔다고 판단하면 안 된다. ([Data restrictions](https://www.palantir.com/docs/foundry/object-indexing/data-restrictions))
 
-- 같은 transaction 안의 중복 primary key는 실패한다. 다른 transaction 간에는 나중 transaction의 값이 사용된다.
-- 원천 schema와 객체 property 타입의 호환성을 검사한다. 기존 값이 새 타입에 맞지 않으면 migration이 실패하며 자동 정제나 강제 변환을 기대하지 않는다.
+- Dataset datasource에서는 같은 transaction 안의 중복 primary key가 실패하고, 증분 dataset 색인에서 다른 transaction 간에 같은 key가 나오면 가장 최근 transaction의 행이 사용된다. Iceberg table datasource는 현재 table 내용 전체에서 primary key가 고유해야 하며, 증분 색인이 처음에 성공해도 중복 key는 잘못된 색인 데이터나 이후 full reindex 실패로 이어질 수 있다. 세부 동작은 [[Palantir-Object-Indexing-Batch]]에서 다룬다.
+- Geopoint, geoshape, array, time series 속성과 실수 타입(decimal, double, float)은 primary key로 쓸 수 없다.
+- 원천 schema와 객체 property 타입의 호환성을 검사한다. 기존 값이 새 타입에 맞지 않으면 migration이 `A property could not be cast to the new type` 같은 오류로 실패하며 자동 정제나 강제 변환을 기대하지 않는다.
 - `NaN`, 무한대, 빈 문자열, 중첩 배열과 null 원소를 가진 배열 등에는 제한이 있다.
+- 개별 속성 크기도 제한한다. String 12 MB, array 100,000 element를 넘으면 색인 job이 실패하며, 이 한도는 우선 batch datasource에 적용된다. 큰 내용은 media reference를 쓰고, 큰 관계는 array 대신 link type 사용을 검토한다.
 
 Primary key 충돌, 타입 불일치와 누락 record를 따로 관찰해야 한다. 구체적인 허용 타입과 추가 제한은 실제 적용 시 제약 문서에서 다시 확인한다.
 
@@ -89,3 +91,4 @@ Source timestamp property를 설정하면 기존 값보다 오래된 direct writ
 - [[Ontology-Knowledge-Graph|온톨로지와 지식 그래프]]
 - [[Palantir-Data-and-Model-Integration|데이터와 모델 통합]]
 - [[Palantir-Security-and-Governance|보안과 거버넌스]]
+- [[Palantir-Object-Indexing-Batch|Funnel batch 색인과 데이터 검증]]
