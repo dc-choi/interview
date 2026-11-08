@@ -1,7 +1,7 @@
 ---
 tags: [palantir, functions, ontology]
 status: done
-verified_at: 2026-10-16
+verified_at: 2026-11-08
 category: "AI엔지니어링(AIEngineering)"
 ---
 
@@ -17,7 +17,9 @@ Automate Function effect는 비동기 최대 4시간을 지원하지만 edit 배
 
 ## Pipeline Builder Python UDF
 
-Python UDF는 sidecar에서 행마다 실행한다. DataFrame 전체를 인자로 받거나 반환하지 않는다. scalar 또는 struct 반환이 새로운 컬럼이 되며 struct는 후속 field extraction으로 나눈다. Ontology 타입 입력/출력 함수는 import 목록에 나타나지 않을 수 있다.
+Pipeline Builder는 Java와 Python UDF를 모두 지원한다. Python UDF는 함수를 publish해야 하지만 deployed function 같은 별도 deployment 없이 pipeline의 sidecar container에서 행마다 실행되고 pipeline 크기에 맞춰 확장된다. DataFrame 전체를 인자로 받거나 반환하지 않는다. 입력 컬럼을 함수 매개변수에 mapping하고, scalar 또는 struct 반환이 새로운 컬럼이 되며 struct는 Get struct field transform으로 나눈다. Ontology 타입을 받거나 반환하는 함수는 import할 수 없고 사용 가능한 함수 목록에도 나타나지 않는다.
+
+LLM을 호출하는 UDF는 Pipeline Builder에서 지원하지 않는다. pipeline에서 LLM이 필요하면 Use LLM node를 쓴다. UDF는 graph의 Reusables에서 가져오거나 transform picker의 unimported UDF 검색으로 import한다.
 
 UDF에서 FoundryClient/OSDK로 Ontology를 직접 조회하면 EnvironmentNotConfigured가 발생한다. 빌드 사이 데이터 통제 누락을 막는 경계다. 필요 데이터는 dataset join으로 공급하거나 적절히 허용한 external source로 연결한다. source는 pipeline code import 설정이 필요하다. 일반 함수 preview 권한을 UDF로 옮겼다고 가정하지 않는다.
 
