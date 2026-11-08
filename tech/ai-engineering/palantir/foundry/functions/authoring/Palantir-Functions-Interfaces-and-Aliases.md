@@ -1,7 +1,7 @@
 ---
 tags: [palantir, functions, ontology]
 status: done
-verified_at: 2026-10-16
+verified_at: 2026-11-08
 category: "AI엔지니어링(AIEngineering)"
 ---
 
@@ -10,6 +10,10 @@ category: "AI엔지니어링(AIEngineering)"
 Function interface는 입력 이름, 위치, 필수 여부와 반환 타입의 계약이다. 단순히 비슷한 함수 이름을 가진 것으로 충족하지 않는다. custom struct의 호환성과 optional 필드의 공통 부분도 검사한다. 특정 제품의 향후 interface 사용 계획은 현재 지원으로 보지 않는다.
 
 Source alias는 Data Connection source의 환경별 RID를 코드에서 분리한다. `sources` 선언과 `getSource`/`get_source`에 같은 repository-unique alias key를 사용한다. Marketplace 설치자는 입력 source를 자기 환경에 매핑할 수 있다.
+
+Alias는 source를 repository로 import한 뒤에 붙인다. TypeScript v2나 Python code repository의 Resource imports 패널에서 Ontology SDK 탭의 Add > Sources로 source를 고르고, Sources 목록의 Add alias로 key를 더한다. 기존 alias는 같은 목록의 펜 아이콘으로 바로 고친다. VS Code Code Workspaces는 별도 import 절차를 따른다. 코드에서 alias가 가리키는 실제 source RID가 필요하면 TypeScript v2는 `@osdk/functions`의 `Aliases.source("key").rid`, Python은 `functions.aliases`의 `source("key").rid`로 읽는다.
+
+Alias를 쓰는 함수를 Marketplace 제품에 넣으면 alias가 붙은 source마다 Data connection sources 아래의 설정 가능한 입력이 생긴다. 제품 작성자는 Inputs에서 source를 골라 Details 패널의 General 탭에 설명을 적을 수 있고, 설치자는 그 설명을 보고 자기 환경의 source를 고른다. Marketplace가 고른 source를 alias에 자동으로 다시 연결하므로 함수 코드는 바뀌지 않는다.
 
 Custom alias는 설치 시 바꿀 수 있는 문자열 설정이다. 기능을 임의로 바꾸는 플러그인이나 권한 검사를 대체하지 않는다. v1의 `@Static` 함수 override와 v2의 custom string은 서로 다른 확장 방식이다.
 

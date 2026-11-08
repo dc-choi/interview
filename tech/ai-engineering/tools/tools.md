@@ -45,3 +45,4 @@ aliases: ["AI 엔지니어링 실천 도구", "AI Engineering Tools"]
 - [x] [[MCP-Gateway-Architecture|MCP 게이트웨이 설계]] — Registry와 Proxy, 자동 발견과 소유 팀 활성화, 호출자 권한과 응답 필터
 - [x] [[Generative-Artifact-Contracts|생성형 시각 산출물의 계약]] — AesCode의 내용과 스타일 분리, Krea 3의 부분 편집과 원본 검수, Anatomy 기계 설명도, 생성형 UI의 렌더러 선택과 샌드박스
 - [x] [[Generative-Video-Production-Workflow|생성형 영상 제작 워크플로]] — 창작 의도, 후보와 자산 이력, 개인화와 출처 표시
+- [x] [[Figma-Design-Agent|Figma 디자인 에이전트와 스킬]] — 파일 안 편집 범위, seat과 대화 공개 범위, 상태 확장, 리뷰와 핸드오프 스킬의 검수
