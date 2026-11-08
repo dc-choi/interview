@@ -1,7 +1,7 @@
 ---
 tags: [palantir, foundry]
 status: done
-verified_at: 2026-11-08
+verified_at: 2026-11-09
 category: "AI엔지니어링(AIEngineering)"
 ---
 
@@ -47,12 +47,53 @@ AAGUID만으로 하드웨어 진위를 증명하지 못한다. Custom 추가로 
 
 이 절은 2026-10-30에 수집 본문과 공식 페이지의 검색 색인 본문으로 확인했고(당시 직접 URL 열기는 실패), 2026-11-08 공식 페이지를 직접 열어 내용이 유지됨을 다시 확인했다. 실제 정책 변경은 시험하지 않았다.
 
+## Government profile과 FIPS, AAL3 요건
+
+Government는 FIPS나 AAL3 요건이 있는 directory에서 쓰는 authenticator 선택 정책이다. Government 구성 안내는 이 profile이 제공되는 commercial과 government enrollment에 적용된다고 적는다(위 profile 관리 안내는 commercial enrollment 기준으로 설명한다). 이 Government 절 전체는 2026-11-09 공식 페이지와 Yubico 문서를 대조해 썼고 실제 기기 등록과 정책 변경은 시험하지 않았다. FIDO MDS 인증과 hardware metadata를 평가할 뿐이며, 이 profile을 고른다고 기기 구성이나 배포가 인증되지는 않는다. 인증서의 적용 범위와 나머지 인증, session, 복구 통제는 보안 관리자가 따로 확인한다.
+
+2026-11-09 기준 Government 파생 조건은 Recommended의 요건에 더해, 같은 FIPS 개정판에 대한 MDS 근거로 FIPS overall level 1 이상과 physical-security level 3 이상을 요구한다. MDS 항목은 보조 근거일 뿐 인증서의 범위와 구성 요건 확인을 대신하지 않는다. MDS가 갱신되면 profile 소속도 바뀔 수 있으므로 기기 교체, firmware 갱신, 새 등록 실패 때 현재 적용 정책을 다시 본다.
+
+구매나 등록 전 확인 순서는 다음과 같다.
+
+1. 정확한 모델, hardware revision, firmware 버전과 운영 구성을 특정한다. 같은 제품군도 검증 범위가 다를 수 있다.
+2. NIST CMVP validated modules 목록에서 해당 항목을 찾아 인증서 상태와 module security policy를 검토한다.
+3. 인증서가 그 구성을 포함하는지, 요구되는 approved mode로 운용할 수 있는지 확인하고 vendor의 초기화와 구성 절차를 따른다.
+4. 개인키가 hardware에 묶여 export되지 않는지, 배포가 요구하는 user verification을 지원하는지 확인한다. 터치로 확인하는 user presence만으로는 user verification이 아니다.
+5. 현재 Government profile이 그 authenticator를 받는지 확인한다. CMVP 인증서만으로 profile 소속이 보장되지 않는다. Profile은 FIDO 인증, hardware 키 보호와 software, synced, compromised authenticator 제외도 함께 요구한다.
+
+부적합한 기기를 Custom에 추가해도 FIPS나 AAL3 충족의 근거가 되지 않는다. Software 또는 self-attested credential은 표시 이름을 바꾸거나 AAGUID를 Custom에 넣어도 검증된 hardware가 되지 않는다. MDS에 있는 등록은 신뢰할 수 있는 attestation을 성립시켜야 하며 AAGUID 일치나 기기 이름으로는 부족하다. 쓸 수 있는 metadata snapshot을 불러오지 못하면 서비스 복구 뒤 재시도하거나 Palantir Support에 문의하고, 검증 실패를 피하려고 profile을 낮추지 않는다.
+
+### 적용 순서와 복구 준비
+
+정책을 조이기 전에 영향받는 관리자와 사용자를 파악하고 허용되는 교체 hardware, 해당 보증 수준에 맞는 복구 방법, 정책이 허용하면 보호된 예비 credential을 준비한다. 복구 이메일이나 one-time code만으로는 AAL3의 근거가 되지 않는다. 실행 관리자는 profile을 바꾸기 전에 허용되는 hardware passkey를 먼저 등록한다.
+
+Control Panel의 Manage user directories에서 directory의 passkey policy 설정을 열고 Government 선택, Check impact로 영향 사용자 검토, Enforce로 확인 dialog 열기, 필수인 Reason for change 입력, Enforce 또는 Enforce anyway 순서로 진행한다. 변경은 profile-change audit event에 남는다.
+
+사용자별로 approved 구성으로 authenticator를 초기화하고 PIN 같은 user verification을 설정한 뒤, add-passkey workflow로 초대를 보내고 제조사 attestation을 허용해 등록한다. 등록이 Government에서 성공했는지, 로그아웃 뒤 새 credential과 user verification으로 다시 로그인되는지 확인한다. 조직 평가에 필요한 인증서, 기기 구성과 등록 증거를 보관하고, 대체 접근을 확인한 뒤 이전 credential을 지운다.
+
+Authenticator 선택은 보증 요건의 일부다. Verifier 구성, 보호된 통신, session 수명, 재인증, 계정 복구와 authenticator 교체 절차는 NIST SP 800-63B의 AAL 요건과 FedRAMP IA-05 같은 해당 인증 기준으로 따로 검토한다.
+
+### YubiKey 5 FIPS 예시
+
+Yubico 문서는 YubiKey 5 FIPS Series firmware 5.7.4를 FIPS 140-3 Level 2 인증 authenticator로, 5.4.2와 5.4.3을 FIPS 140-2 인증으로 구분한다. 두 계열은 검증과 초기화 절차가 달라 서로 바꿔 쓸 수 있는 범위로 보지 않는다. 5.7 계열은 FIPS approved mode가 꺼진 채 출고되고, FIDO2는 approved mode가 되기 전에는 credential을 만들지 않는다. 5.7.x FIPS 140-3 firmware는 FIDO2 PIN 8자 이상을 요구하고 user verification(alwaysUV)을 항상 강제한다. 2026-11-09 열람한 Yubico 문서는 5.4 계열의 FIPS 140-2 인증이 2026년 5월 Sunset List로 옮겨졌고 2026-09-22 Historical List로 옮겨질 예정이라고 적는다. NIST CMVP도 FIPS 140-2 인증서를 Historical List로 옮긴다고 안내하므로 실제 상태는 해당 CMVP 인증서 항목에서 확인하고, 기존 배포의 계속 사용은 보안 관리자와 검토한다.
+
+### FedRAMP 예외
+
+FedRAMP 관리자는 Recommended나 Government를 profile 예외 승인 없이 고를 수 있다. Standard, Permissive, Custom은 Palantir Support를 통한 FedRAMP change-review와 Security Compliance 승인이 필요하다. 승인은 MDS, Standard, Recommended를 합친 집합 안의 profile 예외와, 그 밖의 authenticator에 대한 별도 예외(첫 승인도 필요)로 나뉜다. 검사는 Custom 기본 profile에서 물려받은 것까지 유효 profile의 모든 authenticator에 적용되므로 넓은 기본 profile은 두 승인이 모두 필요할 수 있다.
+
+승인은 enrollment별이며 승인만으로 directory에 저장된 profile이 바뀌지 않는다. 어느 승인도 attestation, 보안 제외, 관리자 권한과 관리자 잠금 방지를 면제하지 않는다. Standard 소속만으로 AAL2가 성립하지도 않는다.
+
 ## 출처
 
 - [Palantir Foundry, Configure passkey profiles](https://www.palantir.com/docs/foundry/authentication/user-directory-passkey-profiles) — 2026-10-30 profile 범위, 영향 미리보기, 관리자 잠금 방지와 attestation 조건 대조.
 
 - [Palantir Foundry, authentication](https://www.palantir.com/docs/foundry/getting-started/authentication/)
 - [Palantir Foundry, login](https://www.palantir.com/docs/foundry/getting-started/login/)
+- [Palantir Foundry, Configure hardware passkeys for FIPS and AAL3 requirements](https://www.palantir.com/docs/foundry/authentication/user-directory-passkey-government)
+- [Yubico, YubiKey 5 FIPS Series Features](https://docs.yubico.com/hardware/yubikey/yk-tech-manual/yk5-fips-specifics.html)
+- [Yubico, YubiKey Firmware 5.7.x Changes for FIPS 140-3](https://docs.yubico.com/hardware/yubikey/yk-tech-manual/yk5-fips-140-3.html)
+- [NIST, SP 800-63B Authentication Assurance Levels](https://pages.nist.gov/800-63-4/sp800-63b/aal/)
+- [NIST, Cryptographic Module Validation Program](https://csrc.nist.gov/projects/cryptographic-module-validation-program)
 
 ## 관련 문서
 

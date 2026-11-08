@@ -26,9 +26,9 @@ OSDK action으로 backing data를 바꾸면 host view가 stale할 수 있다. re
 
 mapTileLayer parameter는 Foundry에 구성된 raster/vector tile source 중 builder가 고른 layer를 넘긴다. Playground와 Workshop Widget setup panel 모두 해당 parameter의 displayName(예시는 Map tiles) 아래에서 layer를 고르며, Workshop은 variable binding이 아니라 layer selector를 쓴다. 값은 tileSourceId를 담은 객체이며 읽기 전용이라 widget event로 바꿀 수 없다. 원문은 이 parameter를 쓰기 전에 `@osdk/widget.client`, `@osdk/widget.client-react`, `@osdk/widget.vite-plugin`을 latest로 갱신하라고만 안내하고 최소 버전은 밝히지 않는다.
 
-Widget은 공식 예시의 `${window.location.origin}/api/v3/media/tileSources/${tileSourceId}/style?preview=true` URL로 Mapbox Style Specification JSON을 받아(`preview=true`가 필수인지는 원문이 밝히지 않는다) Mapbox GL JS나 MapLibre GL JS로 그린다. 이 tile 요청은 지원 endpoint에 포함된다. Strict CSP가 `blob:` worker URL을 막으므로 renderer worker를 widget asset에서 불러오도록 설정한다(Mapbox는 strict CSP bundle, MapLibre는 Vite worker 설정). Layer 선택이 바뀌거나 unmount될 때 map instance를 제거한다.
+Widget은 공식 예시의 `${window.location.origin}/api/v3/media/tileSources/${tileSourceId}/style?preview=true` URL로 Mapbox Style Specification JSON을 받아(`preview=true`가 필수인지는 원문이 밝히지 않는다) Mapbox GL JS나 MapLibre GL JS로 그린다. 이 tile 요청은 지원 endpoint에 포함된다. Strict CSP가 `blob:` worker URL을 막으므로 renderer worker를 widget asset에서 불러오도록 설정한다(Mapbox는 strict CSP bundle, MapLibre는 Vite worker 설정). Layer 선택이 바뀌거나 unmount될 때 map instance를 제거한다. MapLibre 예시는 이 CSP용 worker 설정을 쓰려고 최신 `maplibre-gl` release를 설치하고, map을 만들기 전에 `setWorkerUrl`로 worker를 지정하며 MapLibre CSS도 함께 불러온다.
 
-Tile source는 Control Panel의 Tiles에서 권한 있는 관리자가 추가한다. Marketplace는 custom widget이 쓰는 tile source를 패키징하지 않는다. 다른 enrollment에 설치한 Workshop module은 원본 enrollment의 tile source 참조를 유지하고 대상 enrollment에 source를 만들지 않는다. 설치 성공을 지도 표시 준비 완료로 보지 않고 대상 enrollment의 tile source를 따로 확인한다.
+Tile source는 Control Panel의 해당 space에서 Tiles를 열어 권한 있는 관리자가 추가하거나 바꾼다. Tiles 메뉴가 없거나 source 구성에 도움이 필요하면 Palantir Support에 문의한다. Marketplace는 custom widget이 쓰는 tile source를 패키징하지 않는다. 다른 enrollment에 설치한 Workshop module은 원본 enrollment의 tile source 참조를 유지하고 대상 enrollment에 source를 만들지 않는다. 설치 성공을 지도 표시 준비 완료로 보지 않고 대상 enrollment의 tile source를 따로 확인한다.
 
 ## OSDK는 현재 사용자의 권한을 따른다
 
