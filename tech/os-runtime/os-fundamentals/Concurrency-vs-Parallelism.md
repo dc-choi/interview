@@ -3,7 +3,7 @@ tags: [os, concurrency, parallelism, thread, interview]
 status: done
 verified_at: 2026-10-05
 category: "OS&런타임(OS&Runtime)"
-aliases: ["Concurrency vs Parallelism", "동시성 vs 병렬성", "Amdahl's Law", "암달의 법칙"]
+aliases: ["Concurrency vs Parallelism", "동시성 vs 병렬성", "Amdahl's Law", "암달의 법칙", "Gustafson's Law", "구스타프슨의 법칙"]
 ---
 
 # 동시성, 병렬성
@@ -87,6 +87,7 @@ Rob Pike(Go 설계자)의 한 줄: **"Concurrency is about dealing with lots of 
 스레드 수와 성능의 관계는 아래 전제를 차례로 확인하면 정리된다.
 
 1. **작업을 나눌 수 있는가**: 스레드를 늘리면 빨라진다는 말은 작업을 독립적인 조각으로 나눠 동시에 실행할 수 있다는 전제를 깔고 있다. 순서대로 실행해야 하는 구간은 스레드를 늘려도 줄지 않는다. 직렬 구간 비율이 S일 때 코어 N개로 얻는 속도 향상은 최대 1 / (S + (1 - S) / N)이며 N이 아무리 커도 1 / S를 넘지 못한다(Amdahl의 법칙). 25%가 직렬이면 코어 2개에서 1.6배, 코어를 무한히 늘려도 4배가 상한이다.
+   이 상한은 전체 문제 크기를 고정하고 프로세서만 늘리는 strong scaling을 전제로 한다. 프로세서당 문제 크기를 고정하고 프로세서 수에 비례해 전체 문제를 키우는 weak scaling에서는 같은 시간에 더 큰 문제를 푸는지를 묻는다. 이상적인 경우 N개 프로세서로 N배 큰 문제를, 프로세서 1개가 원래 크기의 문제를 풀던 시간과 같은 시간에 푼다. 이때의 속도 향상을 Gustafson의 법칙(scaled speedup)으로 설명한다. N개 프로세서 실행 시간 중 직렬 비율이 s면 scaled speedup = s + (1 - s) × N이다. 이 s는 병렬 실행에서 잰 비율이라 직렬 실행에서 잰 Amdahl의 S와 다르므로 위의 25% 예시를 그대로 넣지 않는다. 이 이득은 벡터 연산 시작, 프로그램 적재, 직렬 병목과 I/O 같은 직렬 구간이 문제 크기와 함께 커지지 않아야 유지된다. 대규모 과학 시뮬레이션처럼 자원이 늘면 다루려는 문제도 커지는 작업에 맞는 관점이다. 요청 하나의 지연을 줄이려는 경우처럼 작업량이 정해져 있으면 strong scaling의 상한이 그대로 적용되므로, 어떤 scaling을 묻는지부터 정한다.
 2. **코어 수는 고정이다**: 실행 가능한 스레드가 코어보다 많아지면 코어마다 경합이 생기고, 전환 자체가 CPU 시간을 쓰는 오버헤드와 캐시 지역성 손실이 커진다 ([[Context-Switching|컨텍스트 스위칭]]).
 3. **작업의 성격**: CPU-bound 작업은 코어 수 근처를 넘기면 이득 없이 전환 비용만 는다. I/O-bound 작업은 대기 중인 스레드가 코어를 쓰지 않으므로 코어 수보다 많은 스레드로 처리량을 높일 수 있지만, 이때도 메모리, 전환 비용과 DB 같은 하위 자원의 한도에서 이득이 끝난다 ([[Thread-Pool-Sizing|스레드 풀 사이징]]).
 4. **공유 자원**: 스레드가 같은 lock이나 데이터를 두고 다투면 늘린 스레드는 대기열만 길게 만든다.
@@ -108,7 +109,7 @@ Rob Pike(Go 설계자)의 한 줄: **"Concurrency is about dealing with lots of 
 - event loop, GIL-enabled/free-threaded build와 worker가 병렬성에 미치는 영향
 - 공유 자원이 없으면 왜 안전한가(share nothing, 불변, 메시지)
 - Actor vs CSP 채널의 차이
-- 스레드를 늘리면 항상 빨라지는가에 답하는 순서(분할 가능성과 Amdahl의 법칙, 고정된 코어와 전환 비용, CPU-bound와 I/O-bound, 공유 자원)
+- 스레드를 늘리면 항상 빨라지는가에 답하는 순서(분할 가능성과 Amdahl의 법칙, strong scaling과 weak scaling의 구분, 고정된 코어와 전환 비용, CPU-bound와 I/O-bound, 공유 자원)
 
 ### 데이터 병렬성과 작업 병렬성
 
@@ -130,6 +131,8 @@ Rob Pike(Go 설계자)의 한 줄: **"Concurrency is about dealing with lots of 
 - [binux — 동시성, 액터, 칠판 패턴](https://binux.tistory.com/169)
 - [yeonyeon — Concurrency vs Parallelism](https://yeonyeon.tistory.com/270)
 - [Silberschatz, Galvin, Gagne — Operating System Concepts 10th 강의 슬라이드 4장 (Amdahl's Law)](https://www.os-book.com/OS10/slide-dir/index.html)
+- [John L. Gustafson — Reevaluating Amdahl's Law, Communications of the ACM 31(5), 1988](https://doi.org/10.1145/42411.42415)
+- [LLNL, Introduction to Parallel Computing Tutorial](https://hpc.llnl.gov/documentation/tutorials/introduction-parallel-computing-tutorial)
 
 ## 관련 문서
 - [[Concurrency-and-Process|동시성과 프로세스]]

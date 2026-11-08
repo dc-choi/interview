@@ -26,6 +26,8 @@ Code/style 저장은 자동 반영하지만 parameter/event config 변경은 dev
 
 Absolute/flex의 container 공간을 채우려면 html/body에 height/width 100%를 적용할 수 있다. Auto layout에서 content가 크기를 결정하게 하려면 이를 적용하지 않고 body가 child content에 맞춰 늘고 줄게 한다. Auto sizing은 widget.client-react 3.3.0 이상을 요구한다. Dark theme는 parent color-scheme의 prefers-color-scheme 또는 matchMedia change listener로 맞추고 listener를 정리한다.
 
+Custom widget은 Foundry 전역 hotkey(예: Foundry sidebar 열고 닫기)를 parent application으로 자동 전달한다. 개발 중에만 쓰는 기능이 아니라 widget의 runtime 동작이며 `@osdk/widget.client-react` 3.85.0 이상을 요구한다. 어떤 hotkey가 설정됐고 언제 전달됐는지는 playground 하단 message log에서 확인한다. `defaultPrevented`가 설정된 `keydown` event는 전달되지 않는다. 따라서 widget이 자체 단축키 handler에서 전달 처리보다 먼저 `preventDefault()`를 호출하면 그 키는 Foundry로 넘어가지 않는다고 볼 수 있다. 이 문장은 공식 문서의 규칙에서 끌어낸 추론이며, listener 등록 순서에 따른 실제 동작은 playground message log로 확인한다.
+
 Iframe도 과도한 memory와 main-thread 작업으로 browser를 멈출 수 있다. Effect가 자기 dependency를 갱신하는 loop, 해제하지 않는 timer/event listener, 값 범위가 불명확한 사실상 무한 loop를 점검한다. DevTools Performance에서 실제 실행을 확인한다.
 
 Object 전체 pagination을 한 번에 browser array로 모으지 않는다. 필요한 page만 읽고 filter/sort는 query에, count 등은 aggregation에 맡기며 $select로 property를 줄인다. 연관 값 계산은 derived property를 고려한다. 이 권장은 widget의 사용자 권한과 지원 endpoint 범위 안에서 적용한다.
@@ -58,6 +60,7 @@ OSDK Ontology APIs는 설치 시 자동 enable되지 않는다. 설치 후 권�
 - [Palantir, Add an additional widget](https://www.palantir.com/docs/foundry/custom-widgets/additional-widget)
 - [Palantir, Auto sizing](https://www.palantir.com/docs/foundry/custom-widgets/auto-sizing)
 - [Palantir, Dark theme support](https://www.palantir.com/docs/foundry/custom-widgets/dark-theme)
+- [Palantir, Hotkey forwarding](https://www.palantir.com/docs/foundry/custom-widgets/hotkey-forwarding)
 - [Palantir, Develop and preview](https://www.palantir.com/docs/foundry/custom-widgets/development)
 - [Palantir, Publish a widget set](https://www.palantir.com/docs/foundry/custom-widgets/publish)
 - [Palantir, Manage Node.js version](https://www.palantir.com/docs/foundry/custom-widgets/manage-node-version-in-foundry-code-repository)
