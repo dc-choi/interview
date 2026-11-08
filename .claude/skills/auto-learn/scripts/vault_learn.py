@@ -2041,11 +2041,16 @@ def guard_problems(base, files, token=None):
     return stop, scope, after
 
 
-def execute_claude(mode, conf):
+def claude_cmd(mode, conf):
+    # stream-json은 Agent 호출의 subagent_type까지 로그에 남긴다. last_result가 마지막 result 줄을 찾는다.
     allow, deny = agent_rules(mode)
-    cmd = [conf["claude"], "-p", "--model", "opus", "--effort", "high", "--permission-mode", "dontAsk",
-           "--add-dir", str(S), "--output-format", "json", "--no-session-persistence",
-           "--allowedTools", *allow, "--disallowedTools", *deny, "--no-chrome"]
+    return [conf["claude"], "-p", "--model", "opus", "--effort", "high", "--permission-mode", "dontAsk",
+            "--add-dir", str(S), "--output-format", "stream-json", "--verbose", "--no-session-persistence",
+            "--allowedTools", *allow, "--disallowedTools", *deny, "--no-chrome"]
+
+
+def execute_claude(mode, conf):
+    cmd = claude_cmd(mode, conf)
     prompt = agent_prompt(mode, conf)
     base = guard_baseline(mode) if mode in BROWSER else None
     token, stop, scope = os.environ.get("VAULT_LEARN_AGENT"), [], []
@@ -2105,11 +2110,7 @@ def cmd_agent(a):
             log(f"{mode}: Claude가 백오프 중이다")
             return 0
         if a.dry_run:
-            allow, deny = agent_rules(mode)
-            cmd = [conf["claude"], "-p", "--model", "opus", "--effort", "high", "--permission-mode", "dontAsk",
-                   "--add-dir", str(S), "--output-format", "json", "--no-session-persistence",
-                   "--allowedTools", *allow, "--disallowedTools", *deny, "--no-chrome"]
-            print(shlex.join(cmd))
+            print(shlex.join(claude_cmd(mode, conf)))
             print(agent_prompt(mode, conf))
             return 0
         if not agent_has_work(mode, conf):
