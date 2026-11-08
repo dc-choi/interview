@@ -1,7 +1,7 @@
 ---
 tags: [palantir, foundry, iceberg]
 status: done
-verified_at: 2026-10-16
+verified_at: 2026-11-08
 category: "AI엔지니어링(AIEngineering)"
 ---
 
@@ -24,6 +24,8 @@ v2의 time,v3의 geography/geometry/time/timestamp_ns/timestamptz_ns/unknown/var
 ## Snapshot 의미
 
 snapshot은 실제 data를 복사하지 않고 그 시점의 data/delete file 집합을 metadata로 가리킨다. 최초 빈 table write는 full replacement 의도여도 append로 기록된다. append는 추가,overwrite는 논리 row 변경,delete는 제거,replace는 compaction처럼 논리내용을 유지한 file재작성이다.
+
+같은 단어가 두 체계에서 다르게 쓰인다. Iceberg snapshot은 append와 증분 변경을 포함한 모든 data 변경마다 생기는 table 상태 기록으로 Foundry transaction에 가깝다. Foundry에서 snapshot은 dataset의 data 전체를 교체하는 transaction 종류를 뜻한다. table metadata도 Foundry는 모든 format에 대해 내부 서비스로 관리하지만, Iceberg table에는 native Iceberg metadata를 catalog를 통해 JSON file로 노출한다(2026-11-08 iceberg-vs-datasets 기준).
 
 Foundry dataset APPEND는 Iceberg append,UPDATE/SNAPSHOT은 overwrite,DELETE는 delete에 대응하며 replace의 직접 대응은 없다. metadata-only schema/partition/identifier 변경은 새 snapshot을 만들지 않아 다음 data snapshot전에는 Snapshots tab에 보이지 않는다.
 

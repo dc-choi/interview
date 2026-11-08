@@ -120,6 +120,14 @@ ETF는 거래소에서 매매하는 상품 형태이며 패시브 운용과 동�
 
 계획을 비교할 때는 연금 등 다른 소득을 뺀 부족액, 명목 금액과 현재 구매력, 인출 기간, 자산배분, 세후 현금과 지출 조정 가능성을 나눠 본다. 위 예시는 원리를 설명하는 계산이며 특정 인출률이나 상품을 권하는 결과가 아니다. 2026-10-10 인출 규칙과 수익률 순서 위험을 대조한 부분 보강이다.
 
+### 소득 중심 접근과 총수익 접근
+
+소득 중심 접근은 포트폴리오가 만드는 배당과 이자(자연 수익)만 생활비로 쓴다. 포트폴리오가 인출 금액과 시점을 정하므로 인출에 규율이 생기고 관리가 편해 은퇴 투자자에게 선호돼 왔다. 그러나 자연 수익이 목표 지출에 못 미칠 때 지출을 크게 줄이지 않으려면 고수익 자산 쪽으로 배분을 기울이게 되고, 이는 포트폴리오의 위험 성격과 분산을 의도와 다르게 바꿀 수 있다. Vanguard 연구는 그런 예로 고수익, 신흥국과 전략 채권 같은 비전통 채권, 상업용 부동산, 고배당 주식을 든다.
+
+총수익 접근은 자연 수익과 자본 이득을 함께 지출 재원으로 보고, 부족분은 신중한 인출 규칙에 따라 자산을 팔아 채운다. 소득 수준과 지출 수준의 연결을 끊으므로 수익률을 맞추려고 배분을 바꾸지 않아도 되며, 배분은 위험 성향에 맞춘 분산으로 정한다. 고정 금액을 꺼내는 계획이라면 어느 쪽이든 위의 인출률과 수익률 순서 위험이 남고, 자연 수익만 쓰는 계획에서는 같은 위험이 지출 변동으로 나타난다(이 문서의 해석). 커버드콜처럼 상승을 내주고 분배를 늘리는 상품의 적용은 [[Derivatives#적립 단계와 인출 단계에서 따질 점|파생상품의 커버드콜]]에서 다룬다.
+
+2026-11-08 Vanguard 연구(2021-09, 영국 전문투자자 대상, 자연 수익이 통상의 지출 목표 아래로 내려간 저수익 환경 전제)의 두 접근 설명을 대조했다. 세율 등 나라별 수치는 옮기지 않았다.
+
 ## 9. 배당 ETF는 분배금과 총수익을 나눠 평가한다
 
 분배 주기는 현금이 들어오는 일정이고, 분배율은 투자 성과 전체가 아니다. ETF의 수익에는 분배금과 가격 변화가 함께 작용하며, 보유 자산 가격이 떨어지거나 배당 지급이 줄 수도 있다. 미국 SEC의 ETF 안내도 배당, 자본이득 분배와 시장가격 변화를 구분한다. 이 안내의 미국 세금 설명을 한국 계좌에 그대로 적용하지 않는다.
@@ -152,6 +160,7 @@ ETF는 거래소에서 매매하는 상품 형태이며 패시브 운용과 동�
 
 - [The 4% Rule: How Much Can You Spend in Retirement? — Charles Schwab](https://www.schwab.com/learn/story/beyond-4-rule-how-much-can-you-spend-retirement)
 - [What Is Sequence-of-Returns Risk? — Charles Schwab](https://www.schwab.com/learn/story/timing-matters-understanding-sequence-returns-risk)
+- [Managing the low-yield environment: stay the course with a total-return investing approach — Vanguard, Ankul Daga, Joana Rocha](https://www.vanguard.co.uk/content/dam/intl/europe/documents/en/managing-the-low-yield-envivronment-gbp-en.pdf) — 2021-09 Vanguard Research, 2026-11-08 소득 중심 접근의 장점과 고수익 자산 쪽 배분 변경의 위험, 총수익 접근과 인출 규칙의 결합 대조
 
 - [SPIVA U.S. Year-End 2025](https://www.spglobal.com/spdji/en/documents/spiva/spiva-us-year-end-2025.pdf) — 2026-10-05 대형주 액티브 펀드의 2025년 S&P 500 미달 비율 79%와 20년 92.9%, 범주별 차이와 생존 편향 보정 대조
 - [U.S. Persistence Scorecard Year-End 2025](https://www.spglobal.com/spdji/en/documents/spiva/persistence-scorecard-year-end-2025.pdf) — 2026-10-05 상위 성과의 낮은 지속성 대조
