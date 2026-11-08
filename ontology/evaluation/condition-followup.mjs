@@ -274,7 +274,7 @@ async function main() {
   }
   const files = ['src/query.mjs', 'src/server.mjs', 'src/cli.mjs', 'src/core.mjs', 'src/outline.mjs',
     'src/read-evidence.mjs', 'src/snapshot.mjs', 'src/repository.mjs', 'evaluation/score.mjs', 'evaluation/condition-followup.mjs',
-    '../.agents/skills/development-context/SKILL.md', '../.claude/skills/development-context/SKILL.md'];
+    '../.claude/skills/development-context/SKILL.md'];
   const hashes = () => Object.fromEntries(files.map((file) => [file, sha256(readFileSync(new URL(`../${file}`, import.meta.url)))]));
   const codeHashes = hashes();
   const options = { repo, cacheDir: values.cache, allowlist: DEFAULT_SCOPES };
