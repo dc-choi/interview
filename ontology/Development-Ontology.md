@@ -33,6 +33,6 @@ aliases: ["개발 판단 온톨로지", "Development Knowledge Ontology"]
 
 ## 실행 경로
 
-반복 절차는 저장소의 `development-context` 스킬이 담당한다. Codex는 `.agents/skills/development-context/SKILL.md`, Claude는 `.claude/skills/development-context/SKILL.md`를 사용한다.
+반복 절차는 저장소의 `development-context` 스킬(`.claude/skills/development-context/SKILL.md`)이 담당한다.
 
 상위: [[Context-Hub]]. 구현 계약: [[Ontology-Context-Platform-Implementation]]. AI host 연결과 제한: [[Ontology-Context-Platform-AI-Runtime]].

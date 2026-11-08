@@ -10,7 +10,7 @@ aliases: ["Condition Retrieval", "조건별 근거 탐색"]
 > 유형: 여러 근거가 필요한 질문의 일반 조회 원칙과 상세 평가 절차
 > 현재 범위: 기존 `context_lookup`, `context_search`, `context_outline`, `context_read`의 호출 순서를 제한하고 첫 lookup의 선택적 lexical `conditions` 단서를 사용한다. 서버의 의미 판정은 추가하지 않는다.
 
-Codex와 Claude의 `development-context` 스킬은 일반 조회 원칙을 적용하고, 조회 평가나 실패 원인 분석 때만 이 문서의 상세 절차를 읽는다. 스킬은 다음 파일 로드부터 읽히며, 이미 연결된 서버의 설명이 자동으로 바뀌었다고 가정하지 않는다.
+`development-context` 스킬은 일반 조회 원칙을 적용하고, 조회 평가나 실패 원인 분석 때만 이 문서의 상세 절차를 읽는다. 스킬은 다음 파일 로드부터 읽히며, 이미 연결된 서버의 설명이 자동으로 바뀌었다고 가정하지 않는다.
 
 ## 일반 조회와 상세 평가의 구분
 

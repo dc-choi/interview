@@ -5,8 +5,8 @@
 - 이 파일에는 저장소 전체에 적용되는 규칙만 둔다. 특정 도메인에만 필요한 규칙과 사용자 컨텍스트는 대상 경로의 `AGENTS.md`에 둔다.
 - 작업 전 저장소 루트부터 대상 경로까지 존재하는 `AGENTS.md`를 모두 읽는다. 관련 없는 형제 도메인의 지침은 미리 읽지 않는다.
 - 현재 도메인 지침은 `fit/AGENTS.md`, `fit/interview/AGENTS.md`, `fit/job-search/AGENTS.md`, `fit/growth/learning/AGENTS.md`, `tech/AGENTS.md`, `biz/AGENTS.md`, `econ/AGENTS.md`에서 관리한다.
-- 반복 실행 절차는 `.claude/skills/`와 `.agents/skills/`에서 관리한다. 도메인 `AGENTS.md`에는 결과를 제약하는 불변 규칙만 둔다.
-- 루트 파일에서 도메인 지침을 import하지 않는다. Claude의 하위 경로 로딩과 Codex의 `AGENTS.md` 라우팅을 사용한다.
+- 반복 실행 절차는 `.claude/skills/`에서 관리한다. 도메인 `AGENTS.md`에는 결과를 제약하는 불변 규칙만 둔다.
+- 루트 파일에서 도메인 지침을 import하지 않는다. Claude는 대상 경로의 `AGENTS.md`를 하위 경로 로딩으로 직접 읽는다.
 - 파일 경로가 없는 대화형 요청도 주제로 대상 도메인을 정하고 다음 지침을 읽는다.
   - 커리어 판단, 회고, 피드백과 목표 설정은 `fit/AGENTS.md`
   - 면접 준비, 답변, 회사별 분석과 회고는 `fit/AGENTS.md`, `fit/interview/AGENTS.md`
@@ -16,7 +16,7 @@
   - 비즈니스와 제품 지식 문서는 `biz/AGENTS.md`
   - 경제와 투자 지식 문서는 `econ/AGENTS.md`
 - 여러 도메인이 걸리면 관련 도메인만 함께 읽고, 주제가 근거 확인 뒤에도 불명확하면 사용자에게 묻는다.
-- 적용 가능한 지침 체인이 불명확하면 `rg --files -g 'AGENTS.md' -g 'CLAUDE.md'`로 확인한다.
+- 적용 가능한 지침 체인이 불명확하면 `rg --files -g 'AGENTS.md'`로 확인한다.
 - 활성 system 지침과 developer 지침을 먼저 적용하고 최신 사용자 요청을 그다음 적용한다.
 - 규칙이 충돌하면 대상 경로에 더 가까운 지침이 우선한다.
 
@@ -44,7 +44,7 @@
 
 2026-09-22 사용자 요청으로 정한 기본 방식이다. 검증 에이전트를 사용할 때는 다음을 항상 적용한다.
 
-- 사용 가능한 최상위 검증 모델과 그 모델이 지원하는 최대 추론 노력을 명시한다. 현재 기준은 Codex에서 `gpt-6-astra`, `ultra`이고, Claude에서는 사용자 전역 `~/.claude/CLAUDE.md`(import한 파일 포함)에 기준이 있으면 그 모델과 최대 노력을 따른다. 모델과 지원 범위가 바뀌면 다시 확인한다. 일반 구현 작업의 추론 설정까지 일괄 변경하는 규칙은 아니다.
+- 사용 가능한 최상위 검증 모델과 그 모델이 지원하는 최대 추론 노력을 명시한다. 현재 기준은 사용자 전역 지침 정본 `~/.claude/AGENTS.md`의 모델과 최대 노력을 따른다. 모델과 지원 범위가 바뀌면 다시 확인한다. 일반 구현 작업의 추론 설정까지 일괄 변경하는 규칙은 아니다.
 - 메인 대화, 구현, 검증, 서브에이전트와 자동 작업을 포함한 모든 영역에서 Fast와 priority 처리를 기본으로 끈다. 사용자가 명시적으로 요청한 경우에만 켠다. 설정 요청과 실제 적용은 구분하고, 도구가 선택이나 확인 수단을 제공하지 않으면 적용됐다고 단정하지 않는다.
 - 넓은 검증은 독립적으로 확인할 수 있는 도메인별 에이전트로 나눈다. 지적 사항과 수정 결과는 작성자와 별개의 검증 에이전트가 반증 관점에서 다시 확인한다.
 - 검증 에이전트에는 결론을 그대로 넘겨 확증하게 하지 말고 대상 파일, 주장, 재현 조건과 원문 근거를 제공한다. 현재 코드, 호출부, 테스트, 설정과 공식 1차 출처를 대조한다.
@@ -91,7 +91,7 @@
   3. 세미나 원본 (`status: seminar`)
   4. 템플릿 파일
   5. 슬라이드 원본 (frontmatter `marp: true` — 분할하면 프레젠테이션이 깨짐)
-  6. 지침 로더 (`CLAUDE.md`, `AGENTS.md`) — 일반 Parent-as-TOC로 분할하지 않고 전역 규칙은 루트, 경로 규칙은 더 가까운 지침 로더, 반복 절차는 Skill로 이동
+  6. 지침 로더 (`AGENTS.md`) — 일반 Parent-as-TOC로 분할하지 않고 전역 규칙은 루트, 경로 규칙은 더 가까운 지침 로더, 반복 절차는 Skill로 이동
 - 새 문서를 작성할 때도 이 규칙을 염두에 두고, 200줄에 근접하면 미리 분할을 검토한다. 200줄 초과 전의 선제 분할은 부모를 TOC로 전환하지 않고 주제 절만 `<원본>-<주제>.md`로 떼어낼 수 있다 (부모에는 위임 문장을 남기고, 대상 카테고리 인덱스는 갱신한다).
 
 ## Folder Structure
@@ -115,33 +115,31 @@
 
 ## Workflow Skills
 
-- 개발 작업에서 Vault 지식을 연결해 기술 선택, 설계 변경과 신뢰성을 검토할 때는 Codex에서 `.agents/skills/development-context/SKILL.md`, Claude에서 `.claude/skills/development-context/SKILL.md`를 사용한다. 단순 편집이나 자료와 무관한 작업에는 적용하지 않는다.
-- 회사별 면접 준비에는 Codex에서 `.agents/skills/interview-prep/SKILL.md`, Claude에서 `.claude/skills/interview-prep/SKILL.md`를 대상 도메인 지침 다음에 읽고 사용한다.
-- 메모, 강의, 세미나, 블로그와 아티클 정리에는 Codex에서 `.agents/skills/memo/SKILL.md`, Claude에서 `.claude/skills/memo/SKILL.md`를 대상 도메인 지침 다음에 읽고 사용한다.
+- 개발 작업에서 Vault 지식을 연결해 기술 선택, 설계 변경과 신뢰성을 검토할 때는 `.claude/skills/development-context/SKILL.md`를 사용한다. 단순 편집이나 자료와 무관한 작업에는 적용하지 않는다.
+- 회사별 면접 준비에는 `.claude/skills/interview-prep/SKILL.md`를 대상 도메인 지침 다음에 읽고 사용한다.
+- 메모, 강의, 세미나, 블로그와 아티클 정리에는 `.claude/skills/memo/SKILL.md`를 대상 도메인 지침 다음에 읽고 사용한다.
 - 2026-10-10 사용자 결정: 저장 자료를 학습할 때 명시적으로 제외한 일상 대화와 연예/행사 소식 외에는 모두 기록한다. 본문 부족, 미검증 주장, 추천 목록과 연결 영상은 기록에서 버리는 사유가 아니다. 확보한 내용, 출처 식별자, 확인 수준과 후속 작업을 보존하고 확인 가능한 원문을 이어서 학습한다. 사실, 출처의 주장과 학습 후보를 구분하며 기록 완료를 본문 학습이나 검증 완료로 보고하지 않는다. 비공개 원본과 식별자는 보호된 기록에 두고 공개 가능한 주제와 연결만 vault에 남긴다.
-- 데일리 회고와 TIL, 주간, 월간, 행사 및 프로젝트 회고에는 Codex에서 `.agents/skills/retro/SKILL.md`, Claude에서 `.claude/skills/retro/SKILL.md`를 대상 도메인 지침 다음에 읽고 사용한다.
-- 구독 채널, 리포스트, Instagram 저장 글과 이메일 뉴스레터를 무인으로 모아 검증된 지식 문서로 반영하는 자동 학습과 그 운영에는 Codex에서 `.agents/skills/auto-learn/SKILL.md`, Claude에서 `.claude/skills/auto-learn/SKILL.md`를 사용한다.
+- 데일리 회고와 TIL, 주간, 월간, 행사 및 프로젝트 회고에는 `.claude/skills/retro/SKILL.md`를 대상 도메인 지침 다음에 읽고 사용한다.
+- 구독 채널, 리포스트, Instagram 저장 글과 이메일 뉴스레터를 무인으로 모아 검증된 지식 문서로 반영하는 자동 학습과 그 운영에는 `.claude/skills/auto-learn/SKILL.md`를 사용한다.
 - 2026-10-08 사용자 승인: 자동 학습은 등록된 뉴스레터의 본문을 읽음 여부와 관계없이 열어 수집하며, 열람에 수반되는 읽음 상태 변경을 상시 허용한다. 실행마다 별도 승인을 요청하거나 일회성 승인을 전달할 필요가 없다. 이 승인은 뉴스레터 열람에만 적용하며, 별도의 읽음/안 읽음 표시 조작, 메일 전송, 답장, 삭제, 보관과 라벨 변경은 허용하지 않는다.
 - 2026-10-10 사용자 결정: Instagram 수집 계정은 Threads 계정과 별도로 확인한다. 다른 Instagram 계정으로 로그인되어 있으면 로그아웃한 뒤 로그인 선택 화면에 저장된 지정 계정으로 들어간다. 이 재로그인 절차는 자동 수집에도 허용하며 실행마다 다시 승인받지 않는다. 대상 계정을 확인한 뒤에만 저장 글을 읽으며, 다른 계정의 자료는 수집하지 않는다.
 - 2026-10-10 사용자 변경: 자동 학습의 Instagram 수집 대상은 지정 계정의 저장된 게시글과 릴스뿐이다. DM 목록, 대화와 공유 카드는 자동 수집하지 않는다. 이미 확보한 자료와 학습 기록은 보존하며, 이 변경은 기존 자료의 삭제나 진행 중인 메모 정리 취소를 뜻하지 않는다.
-- 2026-10-25 사용자 결정: 자동 학습의 브라우저는 ego lite(ego-browser CLI)만 쓴다. Claude in Chrome, Codex Chrome 백엔드와 Playwright MCP는 쓰지 않는다.
-- 2026-11-02 사용자 변경: 자동 학습의 모든 AI 작업(harvest, instagram, learn, digest)은 Codex를 우선 사용한다. 운영 설정은 `alternate`, `primary: codex`로 두며, Codex 자체의 사용량 한도, 인증 문제나 실행 파일 없음으로 사용할 수 없을 때만 Claude가 대신 실행한다. 범위, 검증, 정책 거부와 브라우저 실패는 대체 실행 사유로 확대하지 않는다.
-- 대응하는 `.claude/skills/`와 `.agents/skills/` 워크플로우 본문은 한쪽이 바뀌면 동기화한다. 단, Claude용 스킬의 읽기 경로는 `CLAUDE.md`, Codex용 스킬의 읽기 경로는 `AGENTS.md`를 사용하며 규칙을 수정하는 대상은 모두 정본인 `AGENTS.md`로 둔다.
+- 2026-10-25 사용자 결정: 자동 학습의 브라우저는 ego lite(ego-browser CLI)만 쓴다. Claude in Chrome과 Playwright MCP는 쓰지 않는다.
+- 2026-11-08 사용자 변경: Codex 구독 해지로 자동 학습의 모든 AI 작업(harvest, instagram, learn, digest)은 Claude만 사용한다. 대체 엔진은 없으며 Claude 사용량 한도에 걸리면 2시간 뒤 재시도한다. 토큰 절감을 위해 Claude 실행은 Opus, 노력 `high`, 실행당 처리 항목 K=3으로 두고, 반증 검증의 `reviewer`만 최대 노력을 유지한다.
 
-## Claude/Codex 공존
+## Claude 지침 구조
 
-- 이 레포는 **Claude와 Codex를 함께** 쓴다. 저장소 규칙과 사용자 컨텍스트의 정본은 루트와 대상 경로의 `AGENTS.md`다. Codex는 `AGENTS.md`를 직접 읽고, Claude는 같은 경로의 `CLAUDE.md`에 있는 `@AGENTS.md` import를 통해 동일한 규칙을 읽는다.
-- **스킬은 두 곳에 중복 존재**: `.claude/skills/{memo,interview-prep,retro,development-context,auto-learn}/`와 `.agents/skills/{memo,interview-prep,retro,development-context,auto-learn}/`. 한쪽 스킬을 수정하면 frontmatter와 위의 도구별 읽기 경로 차이를 제외한 워크플로우를 다른 쪽에도 반영한다. 스킬의 `scripts/` 사본은 두 곳이 바이트 단위로 같아야 하고, `SKILL.md`에서는 스크립트 경로만 도구별로 다르다. 불변 규칙이 바뀌면 해당 도메인 `AGENTS.md`를 먼저 고친 뒤 양쪽 스킬을 동기화한다.
-- `CLAUDE.md`에는 같은 경로의 `@AGENTS.md` import만 두고 별도 규칙을 추가하지 않는다. `CLAUDE.md`, `.claude/`와 다른 Claude 파일은 사용자가 명시적으로 요청할 때만 삭제, 개명하거나 변환한다. `.agents/`는 호환 헬퍼일 뿐 Claude 설정을 대체하지 않는다.
-- MCP setup과 장비별 로컬 설정 규칙은 루트 `AGENTS.md`에서 관리한다. `.mcp.json`은 장비별 로컬 설정(gitignore)이라 커밋하지 않는다. Obsidian MCP는 저장소 안에서 아래 명령을 실행해 현재 장비의 저장소 루트를 계산해서 등록한다. Claude의 project scope는 로컬 `.mcp.json`을 만들고, Codex는 계산된 절대경로를 사용자 설정에 저장한다. `.mcp.json.example`은 수동 설정이 필요할 때만 사용한다.
+- 2026-11-08 사용자 결정: 이 레포는 Claude만 쓴다. Codex 지원(`.agents/`, Codex용 스킬 사본, Codex MCP 등록)은 제거했다.
+- 지침 파일의 표준은 `AGENTS.md`다. 저장소 규칙과 사용자 컨텍스트의 정본은 루트와 대상 경로의 `AGENTS.md`이고, 스킬과 문서에서 지침을 가리킬 때도 `AGENTS.md`로 쓴다. 2026-11-08 사용자 결정으로 import만 담던 저장소 안의 `CLAUDE.md`를 모두 지웠다. Claude Code(v2.1.277 이상)는 작업 폴더와 상위 폴더에 `CLAUDE.md`가 없을 때 `AGENTS.md`를 직접 읽으므로, 저장소 안에 `CLAUDE.md`나 `CLAUDE.local.md`를 새로 만들지 않는다. 하나라도 생기면 기본 설정에서 `AGENTS.md` 직접 로딩이 꺼진다. 불변 규칙이 바뀌면 해당 도메인 `AGENTS.md`를 고친 뒤 영향받는 스킬을 갱신한다.
+- `.claude/`와 다른 Claude 설정 파일은 사용자가 명시적으로 요청할 때만 삭제, 개명하거나 변환한다. 사용자 수준 `~/.claude/CLAUDE.md`는 `~/.claude/AGENTS.md`를 import하는 유일한 로드 경로라 유지한다.
+- MCP setup과 장비별 로컬 설정 규칙은 루트 `AGENTS.md`에서 관리한다. `.mcp.json`은 장비별 로컬 설정(gitignore)이라 커밋하지 않는다. Obsidian MCP는 저장소 안에서 아래 명령을 실행해 현재 장비의 저장소 루트를 계산해서 project scope의 로컬 `.mcp.json`으로 등록한다. `.mcp.json.example`은 수동 설정이 필요할 때만 사용한다.
 - 개발 지식 조회용 `development-context` MCP는 루트 `ontology/`의 서버를 각 장비의 사용자 설정에 등록한다. 다른 개발 프로젝트에서도 이 Vault를 조회하며, 실제 실행 경로와 등록 방법은 `ontology/Ontology-Operations.md`를 따른다. 도구가 현재 세션에 보이지 않으면 연결 완료를 가정하지 않고 CLI 또는 원문 조회로 보완한다.
 
 ```bash
 claude mcp add --scope project obsidian -- npx -y obsidian-mcp "$(git rev-parse --show-toplevel)"
-codex mcp add obsidian -- npx -y obsidian-mcp "$(git rev-parse --show-toplevel)"
 ```
 
-- **Why**: 규칙 본문을 `AGENTS.md`에 한 번만 두고 `CLAUDE.md`가 import하면 어느 도구로 작업하든 같은 정본을 읽어 드리프트를 막는다.
+- **Why**: 표준 파일명 `AGENTS.md` 하나에만 규칙을 두면 import 스텁 없이 경로별 지침이 한 정본에 모여 드리프트를 막는다.
 
 ---
 

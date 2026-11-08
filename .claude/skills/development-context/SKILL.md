@@ -10,7 +10,7 @@ description: Retrieve source-backed personal knowledge for technical, business, 
 ## 위치와 진입점
 
 - 지식 Vault는 이 `SKILL.md`가 있는 디렉터리의 `../../..`다. 다른 프로젝트에서 명시적으로 호출해도 현재 작업 디렉터리를 Vault로 오인하지 않는다.
-- Vault의 루트 `CLAUDE.md`와 읽을 원문의 도메인 `CLAUDE.md`를 따른다. 실제 개발 저장소가 별도로 있으면 그 저장소의 적용 지침도 읽는다.
+- Vault의 루트 `AGENTS.md`와 읽을 원문의 도메인 `AGENTS.md`를 따른다. 실제 개발 저장소가 별도로 있으면 그 저장소의 적용 지침도 읽는다.
 - [조회 범위와 개발 판단 지도](../../../ontology/Development-Ontology.md)에서 요청과 관련된 항목만 고른다. 개발 이외의 질문은 해당 도메인 원문으로 이동한다.
 - 자료 역할이나 적용 상태를 해석해야 할 때 [연결 계약](../../../ontology/Development-Ontology-Contract.md)을 읽는다. 평가 기록은 조회 실패 분석이나 평가 작업에서만 읽는다.
 

@@ -11,15 +11,15 @@ allowed-tools: [Read, Write, Edit, Glob, Grep, Bash]
 
 ## 시작 전 로드
 
-1. 루트 `CLAUDE.md`, `fit/CLAUDE.md`, `fit/growth/habits/Retrospective-Methods.md`와 `fit/growth/retrospectives/회고(Retrospectives).md`를 읽는다.
+1. 루트 `AGENTS.md`, `fit/AGENTS.md`, `fit/growth/habits/Retrospective-Methods.md`와 `fit/growth/retrospectives/회고(Retrospectives).md`를 읽는다.
 2. 회고 주제와 유형에 맞는 정본만 추가로 읽는다.
    - 성장 우선순위, WIP나 습관을 다루는 데일리, 주간 및 월간 회고: `fit/growth/Current-Goals-and-Roadmap.md`
    - 업무 및 커리어 월간 회고: 위 로드맵의 월간 회고를 읽고, 필요한 경우 `fit/growth/career-stages/`와 `fit/growth/`에서 현재 역할의 행동 실험, 기록 루프와 점검 시점에 맞는 문서를 찾아 읽는다.
-   - 행사나 프로젝트 종료: 사용자가 지정한 계획, 결과와 피드백 자료 및 대상 경로의 `CLAUDE.md`
-3. 학습 주제나 트랙 상태를 판단할 때만 `fit/growth/learning/CLAUDE.md`와 해당 로드맵을 읽는다.
+   - 행사나 프로젝트 종료: 사용자가 지정한 계획, 결과와 피드백 자료 및 대상 경로의 `AGENTS.md`
+3. 학습 주제나 트랙 상태를 판단할 때만 `fit/growth/learning/AGENTS.md`와 해당 로드맵을 읽는다.
 4. 같은 대상이나 기간의 기존 회고와 작업 트리 상태를 확인한다. 다른 변경은 수정하거나 함께 묶지 않는다.
 
-면접 회고는 `fit/interview/CLAUDE.md`에 따라 회사와 차수별 경로에 기록한다. 회사, 차수, 일시, 결과, 받은 질문, 본인의 답변과 당시 감정, 판단, 배움 및 후속 행동은 분량 단축이나 형식 통일을 이유로 요약하거나 삭제하지 않는다. 제3자는 역할로 익명화하고 연락처, 개인 처우 금액, 타인의 원문 발언과 비공개 회사 정보는 쓰지 않는다.
+면접 회고는 `fit/interview/AGENTS.md`에 따라 회사와 차수별 경로에 기록한다. 회사, 차수, 일시, 결과, 받은 질문, 본인의 답변과 당시 감정, 판단, 배움 및 후속 행동은 분량 단축이나 형식 통일을 이유로 요약하거나 삭제하지 않는다. 제3자는 역할로 익명화하고 연락처, 개인 처우 금액, 타인의 원문 발언과 비공개 회사 정보는 쓰지 않는다.
 당시 답변이 틀렸거나 불완전했다면 현재 정답으로 덮어쓰지 않고 당시 답변과 현재 교정을 함께 남긴다. 확인되지 않은 탈락 원인과 면접관 의도는 본인의 가설로 표시한다.
 
 ## 유형과 범위 확정
@@ -50,7 +50,7 @@ allowed-tools: [Read, Write, Edit, Glob, Grep, Bash]
 
 ## 기록 경계
 
-- 이 저장소의 일반 성장 회고는 `fit/CLAUDE.md`가 지정한 `fit/growth/retrospectives/`의 유형별 폴더에 기록한다.
+- 이 저장소의 일반 성장 회고는 `fit/AGENTS.md`가 지정한 `fit/growth/retrospectives/`의 유형별 폴더에 기록한다.
 - 관계, 신앙과 생활의 구체적인 내용은 공개 저장소에 기록하지 않는다. 별도 비공개 회고 여부와 운동, 독서처럼 공개 정본에서 이미 관리하는 습관의 상태 및 공개 가능한 결정은 남길 수 있다.
 - 별도 비공개 저장소나 문서를 자동으로 만들지 않는다. 사용자가 명시적으로 요청할 때만 다룬다.
 - 타인의 실명과 연락처, 본인의 처우 금액, 내부 링크, 사내 Task ID, 비공개 회사 정보와 민감한 운영 정보를 쓰지 않는다.

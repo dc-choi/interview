@@ -55,13 +55,9 @@ npm run serve
 vault_root="$(git rev-parse --show-toplevel)"
 node_bin="$(node -p process.execPath)"
 [ -x "$HOME/.local/bin/node" ] && node_bin="$HOME/.local/bin/node"
-codex mcp add development-context -- "$node_bin" \
-  "$vault_root/ontology/src/cli.mjs" serve \
-  --repo "$vault_root" --committed-only
 claude mcp add --scope user --transport stdio development-context -- "$node_bin" \
   "$vault_root/ontology/src/cli.mjs" serve \
   --repo "$vault_root" --committed-only
-codex mcp get development-context
 claude mcp get development-context
 ```
 
@@ -73,15 +69,15 @@ MCP host는 tool argument로 repository나 cache 경로를 바꿀 수 없다. `c
 
 이전 장비의 MCP 등록과 범위 확장 관측은 [[Ontology-Runtime-Verification#MCP 연결의 초기 검증]]에 보존한다. 현재 연결의 사용 가능 여부는 실제 도구 호출로 확인한다.
 
-Codex의 온톨로지 우선 조회 규칙은 사용자 전역 `~/.codex/AGENTS.md`에 둔다. 상세 절차는 이 Vault의 `.agents/skills/development-context/SKILL.md`를 따른다. Claude의 같은 규칙은 사용자 전역 `~/.claude/CLAUDE.md` 또는 그 파일이 import하는 파일에 두고, 상세 절차는 이 Vault의 `.claude/skills/development-context/SKILL.md`를 따른다. 두 전역 지침을 한 파일로 관리하려면 `~/.claude/CLAUDE.md`에 `@~/.codex/AGENTS.md` import만 두고, 도구 이름과 스킬 경로처럼 도구마다 다른 내용은 그 파일 안에서 도구별 표시로 구분한다. 이 구성은 장비마다 따로 적용하며, Claude 데스크톱 Cowork 세션은 작업 디렉터리 밖을 가리키는 사용자 범위 import를 건너뛰므로 그 세션에는 전역 지침이 로드되지 않는다.
+온톨로지 우선 조회 규칙은 사용자 전역 지침의 정본 `~/.claude/AGENTS.md`에 두고, 상세 절차는 이 Vault의 `.claude/skills/development-context/SKILL.md`를 따른다. Claude는 `~/.claude/CLAUDE.md`의 `@~/.claude/AGENTS.md` import로 이 정본을 읽는다. 2026-11-08 Codex 지원을 제거하면서 Codex 전용 내용을 지우고, Codex 폴더를 지워도 남도록 정본을 `~/.codex/AGENTS.md`에서 이 위치로 옮겼다. 정본은 이 한 파일이다. 이 구성은 장비마다 따로 적용하며, Claude 데스크톱 Cowork 세션은 작업 디렉터리 밖을 가리키는 사용자 범위 import를 건너뛰므로 그 세션에 필요한 규칙은 `~/.claude/CLAUDE.md`에 같은 문구로 복사해 둔다.
 
 2026-09-23에 확인한 공식 문서 기준으로 Claude Code는 기본 설정에서 MCP tool search를 사용해, 세션 시작 때 도구 이름과 서버가 초기화 응답에 담은 `instructions`만 불러오고 설명과 입력 스키마를 포함한 도구 정의는 필요할 때 불러온다. 환경 변수, 제공자와 모델에 따라 도구 정의를 처음부터 불러오는 예외가 있으며, 조건은 아래 출처의 Configure tool search 절을 따른다. 서버 설정에 `alwaysLoad: true`를 두면 `ENABLE_TOOL_SEARCH` 값과 관계없이 그 서버의 도구 정의를 처음부터 불러온다. [Anthropic, Connect Claude Code to tools via MCP](https://code.claude.com/docs/en/mcp#scale-with-mcp-tool-search)
 
-이 서버는 `instructions`를 보내지 않고 도구 설명만 등록한다. 따라서 다른 프로젝트에서 전역 규칙이 없으면 Claude가 이 도구를 찾을 단서는 도구 이름뿐이다. 이 Vault 안에서는 `CLAUDE.md`가 불러오는 루트 `AGENTS.md`의 `development-context` 안내도 단서가 된다.
+이 서버는 `instructions`를 보내지 않고 도구 설명만 등록한다. 따라서 다른 프로젝트에서 전역 규칙이 없으면 Claude가 이 도구를 찾을 단서는 도구 이름뿐이다. 이 Vault 안에서는 Claude가 직접 읽는 루트 `AGENTS.md`의 `development-context` 안내도 단서가 된다.
 
 이름만 보이고 정의를 아직 불러오지 않은 도구는 연결되지 않은 도구와 다르다. 이 서버는 연결 전에 snapshot을 확인하고 필요하면 다시 만들므로 세션 시작 직후에는 이름이 아직 보이지 않을 수도 있다. tool search를 쓰는 구성에서는 tool search가 연결 중인 서버를 기다리고 연결 실패 사유도 알려 주므로, 먼저 tool search로 정의를 불러와 호출해 보고 실패할 때 CLI나 원문 조회로 보완한다. tool search가 꺼진 구성에서는 연결 실패가 Claude에게 전달되지 않으므로 `/mcp`에서 서버 상태를 확인한다. stdio 서버는 세션 중 종료되면 자동으로 다시 연결되지 않으므로 `/mcp`에서 다시 연결한다.
 
-전역 지침은 장비별 파일이므로 다른 장비에도 별도로 반영해야 한다. Codex와 Claude 모두 전역 지침을 실행 시작 때 읽으므로, 지침을 편집한 세션을 포함해 이미 실행 중인 세션에는 갱신을 가정하지 않고 새 세션에서 적용한다. Claude의 하위 에이전트는 built-in Explore와 Plan, 정의에 `omitClaudeMd`를 둔 경우를 빼면 메인 대화에 로드된 `CLAUDE.md` 계층을 받으므로, 편집한 세션에서 띄운 검증 에이전트에도 새 지침이 적용됐다고 가정하지 않는다([[Claude-Code-Config-Permissions]]). [OpenAI, Custom instructions with AGENTS.md](https://learn.chatgpt.com/docs/agent-configuration/agents-md), [Anthropic, How Claude remembers your project](https://code.claude.com/docs/en/memory), [Anthropic, Create custom subagents](https://code.claude.com/docs/en/sub-agents#what-loads-at-startup)
+전역 지침은 장비별 파일이므로 다른 장비에도 별도로 반영해야 한다. Claude는 전역 지침을 실행 시작 때 읽으므로, 지침을 편집한 세션을 포함해 이미 실행 중인 세션에는 갱신을 가정하지 않고 새 세션에서 적용한다. Claude의 하위 에이전트는 built-in Explore와 Plan, 정의에 `omitClaudeMd`를 둔 경우를 빼면 메인 대화에 로드된 `CLAUDE.md` 계층을 받으므로, 편집한 세션에서 띄운 검증 에이전트에도 새 지침이 적용됐다고 가정하지 않는다([[Claude-Code-Config-Permissions]]). [Anthropic, How Claude remembers your project](https://code.claude.com/docs/en/memory), [Anthropic, Create custom subagents](https://code.claude.com/docs/en/sub-agents#what-loads-at-startup)
 
 ## runtime 검증
 

@@ -24,11 +24,11 @@ allowed-tools: [Read, Write, Edit, Glob, Grep, Bash, WebFetch, Agent]
 
 다음 중 작업에 적용되는 지침을 읽는다. 지침의 우선순위와 최신 요청으로도 해결되지 않는 중요한 충돌만 확인한다.
 
-1. 루트 `CLAUDE.md`
-2. `fit/CLAUDE.md`
-3. `fit/interview/CLAUDE.md`
-4. 이력서, 포트폴리오나 채용 트래커를 다룰 때 `fit/job-search/CLAUDE.md`
-5. 기술 답변과 vault 내용을 다룰 때 `tech/CLAUDE.md`
+1. 루트 `AGENTS.md`
+2. `fit/AGENTS.md`
+3. `fit/interview/AGENTS.md`
+4. 이력서, 포트폴리오나 채용 트래커를 다룰 때 `fit/job-search/AGENTS.md`
+5. 기술 답변과 vault 내용을 다룰 때 `tech/AGENTS.md`
 
 ## 전체 준비용 입력
 
@@ -108,4 +108,4 @@ aliases: ["{회사영문명} Interview Prep", "{회사한글명} 면접 준비"]
 ---
 ```
 
-루트와 도메인 `CLAUDE.md`의 PII, 표기, 답변 배치 및 이력서 복제 금지 규칙을 그대로 적용한다.
+루트와 도메인 `AGENTS.md`의 PII, 표기, 답변 배치 및 이력서 복제 금지 규칙을 그대로 적용한다.
