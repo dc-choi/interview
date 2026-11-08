@@ -64,6 +64,15 @@ GDP-B의 B는 benefits를 뜻한다. 신상품과 무료 디지털 재화의 후
 
 따라서 장기 기술 가치가 크다는 판단과 현재 설비 투자나 주식 가격이 적정하다는 판단은 분리한다. 철도나 인터넷의 역사도 사회적 편익, 개별 투자자의 수익과 투자 시점이 다를 수 있다는 비교 틀이며, 현재 AI 투자가 버블인지의 판정 자체는 아니다. 같은 모델을 공급받는 기업도 데이터, 업무 설계, 보완 인력과 실험 역량에 따라 다른 성과를 낼 수 있다. 기업 사이의 차이와 한 기업 안에서 하위 숙련자의 격차가 줄어드는 현상도 서로 다른 집계 수준이므로 양립할 수 있다.
 
+시장 참가자가 범용 기술의 역사로 주식시장의 남은 기간을 가늠하는 경우에도 근거의 종류를 나눠 읽는다. 매크로 트레이더 Paul Tudor Jones는 2026-05-07 CNBC 인터뷰에서 개별 종목이 아니라 바스켓으로 AI 주식을 더 샀다고 밝히고 두 가지 유비를 썼다.
+
+- **기간 유비:** PC와 1995년 인터넷 상업화가 각각 4~5.5년 이어진 productivity miracle의 시작이었다고 보고, 지금이 그 과정의 50~60%라서 한두 해가 더 남았다고 말했다. 2026년 1월의 Claude를 1981년 PC 보급의 시작에 견줬다(기사 표기는 Claude, 음성 전사는 Claude Code로 들림). 화자는 이를 Microsoft의 PC라고 했지만 1981-08-12 공개된 것은 Microsoft 운영체제를 쓴 IBM PC다. 인터뷰 발췌의 음성 전사에는 2022년 ChatGPT를 1977년 Apple의 PC에 견준 대목도 있으나 기사에는 없다. 진행률을 어느 시점부터 셌는지는 특정하지 않았다.
+- **가격 유비:** 배수와 이익으로는 1999년 10~11월, 과거 가격 유사 사례(price analogs)로는 1999년 4분기 같다고 했다(방송 음성 기준). 기사는 이를 닷컴 고점 약 1년 전인 1999년으로 요약했는데, 기사도 고점을 2000년 초로 두므로 10~11월은 고점 몇 달 전이라 두 표현이 함축하는 남은 기간이 다르다. 주가가 40% 더 오르면 GDP 대비 주식시장 규모가 300~350%가 될 것이라는 즉석 추산과 함께 그 뒤 숨 막히는 조정을 경고했다.
+
+같은 해 10월 13일 CNBC 인터뷰에서는 Anthropic과 OpenAI의 예정된 공모, 막 끝난 SpaceX 공모와 추가 공모로 늘어나는 주식 공급 등 2002년 이후 가장 나쁜 수급, 재정적자를 근거로 2027년이 주식시장에 매우 어려운 해가 될 것이라고 했고, 이와 별도로 1999년 비유도 반복했다.
+
+이 사례에서 기간 유비는 기술 확산의 역사에서, 가격 유비는 밸류에이션과 과거 가격 유사 사례에서, 10월 전망은 수급과 재정에서 나온 서로 다른 근거다. 1980년대 PC 시기는 1절의 생산성 역설 구간이므로 그 시기를 productivity miracle로 부른 것은 측정 통계가 아니라 화자의 역사 해석이다. 앞의 J커브 논의대로 생산성 효과가 아직 남았다는 판단은 주가가 그 효과를 이미 얼마나 반영했는지를 말해 주지 않는다. GDP 대비 시가총액 비율도 시가총액과 GDP의 집계 범위와 시점에 따라 값이 달라지므로 발화된 수치를 공식 통계로 옮기지 않는다. 인터뷰는 한 투자자의 견해이며 시장 정점의 시점을 예측하는 근거로 쓰지 않는다.
+
 ## 6. 경제 변화를 관측할 때 지표를 나눈다
 
 Stanford Digital Economy Lab의 AI Economic Indicators는 도입, 노동시장과 거시 변화를 나눠 관측하는 구조다. 2026-08-10 개정된 첫 연구 노트에서 세 구성 요소를 대조했다. 최신 월별 수치를 확인한 기록은 아니다.
@@ -107,6 +116,10 @@ EBS 10강에서 제시한 약 5년의 AI 보완 투자 기간과 2030년 생산�
 - [AI Index — Ramp](https://ramp.com/data/ai-index) — 2026-10-28 표본(Ramp의 법인카드와 지급 플랫폼을 쓰는 미국 기업 8만 5천여 곳)과 유료 거래 기준 확인. Apollo 도표 4의 원자료와 같은 집계인지는 확인하지 못함
 - [No signs of AI payoff outside the tech sector — Hacker News](https://news.ycombinator.com/item?id=50224463) — 2026-10-24 토론. 2026-10-28 검증 비용 가설과 반론 댓글 재대조
 - [기술업계 밖에서는 아직 AI 투자 성과가 보이지 않는다 — GeekNews](https://news.hada.io/topic?id=35937) — 수집 계기와 Hacker News 토론 요약
+- [Paul Tudor Jones says AI bull market has 'another year or two to run' — CNBC](https://www.cnbc.com/2026/05/07/paul-tudor-jones-says-ai-bull-market-has-another-year-or-two-to-run.html) — 2026-05-07 Squawk Box 인터뷰 기사. 2026-11-08 인용문과 바스켓 매수 대조. 1977년 Apple과 2022년 ChatGPT 유비, 1999년 10~11월 표현은 기사에 없고 인터뷰 발췌의 음성 전사로만 확인
+- [Paul Tudor Jones says 2027 could be a really challenging year for the stock market — CNBC](https://www.cnbc.com/2026/10/13/paul-tudor-jones-2027-really-challenging-year.html) — 2026-10-13 인터뷰 기사. 2026-11-08 수급, 재정적자 근거와 1999년 비유 대조
+- [The IBM PC — IBM](https://www.ibm.com/history/personal-computer) — 2026-11-08 1981-08-12 공개와 Microsoft 운영체제 확인
+- ["지금은 1999년 10월" 폴 튜더 존스 — YouTube, 묘수의 관점](https://www.youtube.com/watch?v=iuwM92tkfDs) — 2026-10-28 공개된 5월 인터뷰 발췌. 수집 계기
 
 ## 관련 문서
 

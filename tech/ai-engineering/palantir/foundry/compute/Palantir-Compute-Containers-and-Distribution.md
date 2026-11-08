@@ -1,7 +1,7 @@
 ---
 tags: [palantir, compute-modules, docker, deployment]
 status: done
-verified_at: 2026-10-16
+verified_at: 2026-11-08
 category: "AI엔지니어링(AIEngineering)"
 aliases: ["Compute Modules 이미지와 배포"]
 ---
@@ -18,7 +18,9 @@ Dockerfile은 base image, dependency install, code copy와 startup command를 �
 
 ## 로컬과 Code Repositories 경로
 
-로컬 Python/Java/Node.js SDK 경로는 이미지를 Artifacts Docker repository에 publish한 뒤 module에서 repository와 version을 선택한다. Getting started의 Python 3.9+, Java 21+, Node.js 18+ 및 의존성 버전은 해당 예제의 기준이며 계속 최신 지원 버전이라는 의미가 아니다. SDK 사용법과 runtime compatibility를 실제 선택 버전에서 대조한다.
+로컬 Python/Java/Node.js SDK 경로는 이미지를 Artifacts Docker repository에 publish한 뒤 module에서 repository와 version을 선택한다. 2026-11-05 수집본 Getting started의 전제는 Docker Desktop과 Python 3.9+, Java 21+ 또는 Node.js 22+ 중 하나다. Node.js 전제와 예제 base image는 2026-10-21 수집본의 18+와 `node:18-alpine`에서 2026-11-05 수집본의 22+와 `node:22-alpine`으로 바뀌었다. 예제 의존성은 Python `foundry-compute-modules`, Java `com.palantir.computemodules:lib:0.6.0`과 Shadow plugin `com.gradleup.shadow` 9.4.1(`shadowJar` 빌드 뒤 `eclipse-temurin:21-jre-alpine` 실행 stage), Node.js `@palantir/compute-module` `^0.2.12`와 `node:22-alpine`이다. 모두 예제의 기준이며 계속 최신 지원 버전이라는 의미가 아니다. SDK 사용법과 runtime compatibility를 실제 선택 버전에서 대조한다.
+
+Getting started의 세 Dockerfile은 모두 `--platform=linux/amd64`를 명시하고, Python과 Node.js 예제는 resource queue에 따라 바꾸라는 주석을 단다. TypeScript SDK 문서의 Dockerfile 예제는 `FROM node:22-alpine`에 platform을 적지 않는다. Docker는 platform을 지정하지 않으면 BuildKit daemon의 platform으로 빌드하므로(Apple Silicon host라면 보통 linux/arm64이고 `DOCKER_DEFAULT_PLATFORM`으로 바꿀 수 있다) 이 예제를 그대로 쓰면 queue와 다른 architecture image가 만들어질 수 있다. Resource queue가 요구하는 platform을 빌드 명령이나 Dockerfile에 명시한다. 세 언어 예제 모두 `USER 5000`처럼 numeric non-root user를 지정한다.
 
 Python Compute Module Code Repository는 src/app.py에 함수를 정의하고 Libraries/meta.yaml로 의존성을 관리하며 Tag version으로 image를 만든다. 선택한 tagged image로 configuration을 저장한 뒤 module을 실행하고 detected function을 import한다. Commit만으로 module의 실행 image가 바뀌지 않는다.
 
@@ -43,6 +45,8 @@ Build plan은 image name/tag/registry와 OAuth client 또는 token 인증을 담
 - [Palantir, Functions CLI](https://www.palantir.com/docs/foundry/compute-modules/functions)
 - [Palantir, OSDK integration](https://www.palantir.com/docs/foundry/compute-modules/osdk-integration)
 - [Palantir, Java SDK](https://www.palantir.com/docs/foundry/compute-modules/java-sdk)
+- [Palantir, TypeScript SDK](https://www.palantir.com/docs/foundry/compute-modules/typescript-sdk)
+- [Docker, docker buildx build](https://docs.docker.com/reference/cli/docker/buildx/build/)
 - [Palantir, 本地创作概述 (중국어 기계 번역, 과거 안내)](https://palantir.com/docs/zh/foundry/compute-modules/authoring-locally-overview/)
 - [Palantir, 本地 Python 创作 (중국어 기계 번역, 과거 안내)](https://palantir.com/docs/zh/foundry/compute-modules/authoring-locally-python/)
 - [Palantir, Foundry 中创作 (중국어 기계 번역, 과거 안내)](https://palantir.com/docs/zh/foundry/compute-modules/authoring-foundry/)

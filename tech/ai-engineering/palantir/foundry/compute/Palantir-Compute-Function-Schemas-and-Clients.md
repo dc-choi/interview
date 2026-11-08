@@ -1,7 +1,7 @@
 ---
 tags: [palantir, compute-modules, functions, sdk]
 status: done
-verified_at: 2026-10-16
+verified_at: 2026-11-08
 category: "AI엔지니어링(AIEngineering)"
 aliases: ["Compute Module 함수 스키마와 client"]
 ---
@@ -21,6 +21,12 @@ aliases: ["Compute Module 함수 스키마와 client"]
 | Python | `@function`, context와 event 순서. TypedDict/dataclass 또는 class와 constructor 양쪽 type hint |
 | Java | ComputeModule builder의 function reference, input class, output class, endpoint name. 첫 인자는 Context. Record 또는 Jackson @JsonProperty class와 기본 생성자 |
 | TypeScript | register와 TypeBox input/output definitions. SDK가 요구하는 callback signature에 맞춤 |
+
+Getting started는 함수가 context와 event 두 인자를 받는다고 설명한다. Context는 user token, source credentials처럼 함수가 필요로 하는 metadata와 자격 정보를 담고, OSDK로 Ontology object를 읽을 때 그 사용자의 token도 여기서 얻는다. Event는 호출 parameter이며 정적 type을 쓰지 않으면 Python은 `dict`, Java는 JSON node, Node.js는 plain object로 받는다. 정적 type을 선언하면 SDK가 payload와 결과를 그 type으로 변환한다. 반환값은 JSON blob으로 전달되므로 JSON으로 직렬화할 수 있어야 한다. Getting started의 untyped Python 예제는 문자열을 반환하지만 production에서는 typed 입력과 출력으로 schema 추론과 등록을 쓰도록 권한다.
+
+TypeScript는 이 설명과 다르다. `@palantir/compute-module` 0.2.14 코드는 `register` callback을 (event, context), `registerStreaming`을 (event, writable, context), `.default`를 (event, query name, context) 순서로 호출하고, context 타입에는 `jobId`만 있다. Source credential은 `getCredential`, 실행 환경 정보는 `getEnvironment`로 얻는다. Getting started의 Node.js 예제 `(context, event) =>`는 SDK의 호출 순서와 반대이므로 TypeScript SDK 문서의 `async ({ value }) =>`처럼 첫 인자를 event로 쓴다.
+
+TypeScript `ComputeModule`은 `register`를 체이닝하고 `.default(...)`로 등록되지 않은 query name에 대한 응답을 정할 수 있다. `ComputeModule.getEnvironment()`는 `type`이 `pipelines`이면 build token을, `functions`이면 third-party application credentials를 준다. 실행 모드를 확인하지 않고 한쪽 필드를 읽지 않는다.
 
 Python 자동 추론 입력은 complex type으로 감싼다. 단일 primitive, type hint 없는 class, constructor의 `*args`/`**kwargs`는 자동 추론 경계에 걸릴 수 있다. Java의 primitive hello 예제를 Python의 complex-input 규칙으로 일반화하거나 반대로 적용하지 않는다. Schema가 감지되어도 Foundry import 완료 여부를 따로 확인한다.
 
@@ -50,11 +56,13 @@ TypeScript function에서 호출하려면 resource generation, Query Functions i
 
 ## 출처
 
+- [Palantir, Getting started](https://www.palantir.com/docs/foundry/compute-modules/get-started)
 - [Palantir, Functions](https://www.palantir.com/docs/foundry/compute-modules/functions)
 - [Palantir, Custom client](https://www.palantir.com/docs/foundry/compute-modules/advanced-custom-client)
 - [Palantir, Python SDK](https://www.palantir.com/docs/foundry/compute-modules/python-sdk)
 - [Palantir, Java SDK](https://www.palantir.com/docs/foundry/compute-modules/java-sdk)
 - [Palantir, TypeScript SDK](https://www.palantir.com/docs/foundry/compute-modules/typescript-sdk)
+- [@palantir/compute-module 0.2.14 코드 — npm](https://www.npmjs.com/package/@palantir/compute-module/v/0.2.14?activeTab=code) — 2026-11-08 dist/QueryRunner.js, QueryRunner.d.ts와 ComputeModule.d.ts 대조
 
 ## 관련 문서
 
