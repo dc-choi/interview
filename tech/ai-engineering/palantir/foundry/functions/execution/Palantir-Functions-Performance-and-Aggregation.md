@@ -41,7 +41,7 @@ TSv1의 `.all()`과 `.allAsync()`는 object set의 모든 객체를 메모리로
 
 ## TSv1 전체 순회의 snapshot과 페이지 일관성
 
-TSv1의 `.all()`과 `.allAsync()`는 object set의 모든 객체를 가져오는 OSS endpoint로 페이지를 이어 읽고, 이 endpoint는 일관된 snapshot에서 다음 페이지를 읽는다. Streaming datasource에는 일관된 snapshot이 보장되지 않는다. 이 endpoint의 페이지 일관성 검사는 끌 수 없고, 페이지 사이 불일치를 감지하면 순회가 `PagingInconsistencyDetected`로 실패할 수 있다. 오래 걸리는 순회는 snapshot이 만료되어 실패할 수도 있다. TSv2는 `fetchPage()`나 `asyncIter()`로 읽으며([[Palantir-Functions-Migration-and-Queries|TypeScript v2 검색 계약]]), 공식 migration 문서의 객체 적재 절은 snapshot과 페이지 일관성을 다루지 않으므로 이 절의 동작을 TSv2에 그대로 옮기지 않는다.
+TSv1의 `.all()`과 `.allAsync()`는 object set의 모든 객체를 가져오는 OSS endpoint로 페이지를 이어 읽고, 이 endpoint는 일관된 snapshot에서 다음 페이지를 읽는다. Streaming datasource에는 일관된 snapshot이 보장되지 않는다. 이 endpoint의 페이지 일관성 검사는 끌 수 없고, 페이지 사이 불일치를 감지하면 순회가 `PagingInconsistencyDetected`로 실패할 수 있다. 오래 걸리는 순회는 snapshot이 만료되어 실패할 수도 있다. TSv2는 `fetchPage()`나 `asyncIter()`로 읽으며([[Palantir-Functions-Migration-and-Queries|TypeScript v2 검색 계약]]), 공식 migration 문서의 객체 적재 절은 snapshot과 페이지 일관성을 다루지 않으므로 이 절의 동작을 TSv2에 그대로 옮기지 않는다. TSv2의 method별 snapshot 요청 여부와 실패 대응은 TypeScript OSDK reference를 따로 정리한 [[Palantir-OSDK-TypeScript-Read|TypeScript OSDK2 조회]]의 page 일관성 절을 따른다.
 
 TSv1의 `.take(n)` 조회는 페이지 사이 일관성이 필요 없지만 n은 최대 10,000이다. 다만 snapshot isolation 모드로 실행되는 Action처럼 함수 실행 자체가 snapshot을 가지면 `.take(n)`을 포함한 그 실행의 모든 Ontology 읽기가 그 snapshot에 고정된다([[Palantir-Actions-and-Functions|Actions와 Functions]]).
 

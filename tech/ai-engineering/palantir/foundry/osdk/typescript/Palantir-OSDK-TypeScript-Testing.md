@@ -1,7 +1,7 @@
 ---
 tags: [palantir, foundry, ontology, osdk]
 status: done
-verified_at: 2026-10-28
+verified_at: 2026-11-08
 category: "AI엔지니어링(AIEngineering)"
 ---
 
@@ -9,9 +9,11 @@ category: "AI엔지니어링(AIEngineering)"
 
 @osdk/unit-testing은 experimental이며 `/experimental` subpath로 import한다. createMockClient는 Client를 인자로 받는 Ontology 로직을 Foundry 요청 없이 시험한다. 이 테스트가 실제 OAuth, permission, Action 서버 validation이나 운영 성능을 확인하는 것은 아니다.
 
+개발 의존성으로 설치하며 `@osdk/api`, `@osdk/client`와 `@osdk/functions`를 peer dependency로 요구한다. package 자체 예제는 vitest를 쓰지만 사용자 코드는 다른 test runner를 써도 된다.
+
 ## 객체와 link
 
-createMockOsdkObject에는 generated ObjectType과 primary-key property가 필요하다. `$title`을 읽는 테스트는 titlePropertyApiName과 실제 해당 property도 제공한다. 기본 mock RID와 실제 RID를 구별한다.
+createMockOsdkObject에는 generated ObjectType과 primary-key property가 필요하다. `$title`을 읽는 테스트는 titlePropertyApiName과 실제 해당 property도 제공한다. `$rid`를 지정하지 않으면 `ri.mock.main.object.<apiName>.<primaryKey>` 형태의 mock RID가 붙으므로 실제 RID와 구별한다.
 
 mock은 $primaryKey/$apiName/$objectType/$objectSpecifier/$link/$clone shape를 제공하지만 `$as`와 experimental accessor는 지원하지 않아 접근 시 throw한다. polymorphic React 예제를 이 mock으로 전부 검증했다고 보고하지 않는다.
 
