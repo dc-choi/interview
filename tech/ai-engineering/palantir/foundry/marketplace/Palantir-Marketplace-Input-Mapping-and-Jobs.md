@@ -1,7 +1,7 @@
 ---
 tags: [palantir, marketplace]
 status: done
-verified_at: 2026-10-16
+verified_at: 2026-11-09
 category: "AI엔지니어링(AIEngineering)"
 ---
 
@@ -89,12 +89,30 @@ API의 `MarketplaceInstallationJob`은 하나 이상의 기존 제품 설치를 
 
 ### 생성 입력과 버전 힌트의 제약
 
-2026-10-21 수집된 공식 Create Marketplace Installation 명세를 2026-10-22 대조한 범위다. 공개 페이지의 실시간 재조회는 실패했으므로 수집 이후 변경 여부와 실제 호출 동작은 확인하지 못했다.
+2026-10-21 수집된 공식 Create Marketplace Installation 명세를 2026-10-22 대조했고, 2026-11-09 공식 페이지를 직접 열어 아래 입력과 오류 목록을 다시 확인했다. 실제 호출 동작은 확인하지 못했다.
 
 - 필수 입력은 `marketplaceRid`, `productId`, `parentFolderRid`다. `parentFolderRid`는 등록 목적지이며 후속 job이 자원을 만드는 project/folder를 가리킨다. `ontologyRid`는 후속 job이 Ontology 자원을 만들거나 수정할 대상이고, 제품이 Ontology와 상호작용하지 않으면 생략한다.
 - `targetVersionHint`는 `versionId` 또는 `semanticVersion` 형태를 받는다. 후자는 선행 0이 없는 음이 아닌 정수 세 부분의 정확한 `major.minor.patch`만 받는다. 버전 범위, wildcard, prerelease와 build metadata는 지원하지 않는다. 예를 들어 `1.2.3`과 `^1.2.3`을 같은 입력으로 취급하지 않는다.
 - 힌트를 생략하면 최신 released version을 버전별 검증과 초기 제목 결정에 사용한다. 이 기본값도 설치 실행 버전의 확정과 구분한다.
+- 선택 입력 `installationSuffix`는 제품 제목 뒤에 붙어 초기 표시 이름을 만든다(예: `Product title - CI staging`). 생략하면 제품 제목만 쓴다. 명세 예시로 보아 같은 제품의 CI나 staging 설치를 이름으로 구분하는 데 쓸 수 있다(singleton 정책이 적용되는 제품은 같은 namespace에 다시 등록할 수 없다). 초기 이름이므로 이후 조회의 `displayName`은 현재 이름으로 읽는다.
 - 잘못된 버전 형식은 `InvalidInstallationTargetVersionHint`, 존재하지 않는 힌트 버전은 `MarketplaceProductVersionNotFound`, singleton 충돌은 `SingletonMarketplaceInstallationAlreadyExists`로 구분한다. 운영에서는 입력 오류와 충돌을 반복 요청으로 해결하려 하지 말고 해당 조건부터 확인한다.
+
+명세에 열거된 생성 오류는 여섯 가지이며, 원인이 입력, 대상 자원, 권한, 정책으로 갈린다.
+
+| 오류 | 코드(HTTP) | 원인과 매개변수 |
+|---|---|---|
+| `MarketplaceProductNotFound` | `NOT_FOUND`(404) | 지정 marketplace에 제품이 없거나 등록할 released version이 없다. `marketplaceRid`, `productId` |
+| `ParentFolderNotFound` | `NOT_FOUND`(404) | 목적지 project나 folder를 찾지 못했다. `parentFolderRid` |
+| `MarketplaceProductVersionNotFound` | `NOT_FOUND`(404) | 힌트한 버전이 해당 제품과 marketplace에 없다. `marketplaceRid`, `productId`, `targetVersionHint` |
+| `InvalidInstallationTargetVersionHint` | `INVALID_ARGUMENT`(400) | 힌트의 semantic version 형식이 위 제약을 어겼다. `targetVersionHint` |
+| `CreateMarketplaceInstallationPermissionDenied` | `PERMISSION_DENIED`(403) | marketplace, 제품 또는 목적지 project/folder 중 하나의 권한이 부족하다. `marketplaceRid`, `productId`, `parentFolderRid` |
+| `SingletonMarketplaceInstallationAlreadyExists` | `CONFLICT`(409) | 등록 기준 버전이 namespace당 설치 하나를 요구하는데 이미 설치가 있다. `productId`, `namespaceRid` |
+
+운영상 추론으로 다음을 적용한다.
+
+- `MarketplaceProductNotFound`는 제품이 존재해도 released version이 없으면 날 수 있으므로, `marketplaceRid`와 `productId`의 오타, 제품의 미출시 상태를 함께 확인한다. `productId`는 RID가 아니라 UUID 형태의 식별자다.
+- 권한 거부는 세 자원 중 어느 쪽이 부족한지 오류 이름만으로 좁혀지지 않는다. `marketplaceRid`, `productId`, `parentFolderRid`가 가리키는 marketplace, 제품, 목적지 project/folder 각각의 권한을 확인한다.
+- 이 표는 endpoint 명세의 업무 오류 목록이며 인증, 전송 계층의 실패까지 열거한 것은 아니다.
 
 ### 조회 응답의 현재 위치와 오류를 읽는다
 
@@ -159,7 +177,7 @@ Ontology install prefix는 display name만 또는 display/API name 모두에 적
 - [Palantir Foundry, Marketplace Installation Inputs basics](https://www.palantir.com/docs/foundry/api/v3/marketplace-v3-resources/marketplace-installation-inputs/marketplace-installation-inputs-basics) — 2026-10-21 수집본을 2026-10-22 공식 문서 검색 반환 본문과 대조.
 - [Palantir Foundry, Get Marketplace Installation Inputs](https://www.palantir.com/docs/foundry/api/v3/marketplace-v3-resources/marketplace-installation-inputs/get-marketplace-installation-inputs) — 2026-10-22 검색 반환 본문에서 선택 범위, 명시적 해제, 재사용 제약과 오류 계약 확인. 오류 이름, 코드와 매개변수는 수집본도 대조했으며 직접 열기와 실제 호출은 미확인.
 - [Palantir Foundry, Get Marketplace Installation](https://www.palantir.com/docs/foundry/api/v3/marketplace-v3-resources/marketplace-installations/get-marketplace-installation) — 2026-10-22 등록 자원과 목표 버전의 의미, preview와 조회 scope 확인. 현재 위치 필드와 오류 계약은 2026-10-21 수집본을 대조했으며 실시간 재조회와 실제 호출은 미확인.
-- [Palantir Foundry, Create Marketplace Installation](https://www.palantir.com/docs/foundry/api/v3/marketplace-v3-resources/marketplace-installations/create-marketplace-installation) — 2026-10-22 등록과 job 실행의 구분, 버전 힌트와 비멱등성 확인. 생성 입력과 버전 형식 제약은 2026-10-21 수집본 대조이며 실시간 재조회와 실제 호출은 미확인.
+- [Palantir Foundry, Create Marketplace Installation](https://www.palantir.com/docs/foundry/api/v3/marketplace-v3-resources/marketplace-installations/create-marketplace-installation) — 2026-10-22 등록과 job 실행의 구분, 버전 힌트와 비멱등성 확인. 2026-11-09 공식 페이지를 직접 열어 생성 입력, `installationSuffix`와 오류 6종의 코드와 매개변수를 재확인했으며 실제 호출은 미확인.
 - [Palantir Foundry, marketplace](https://www.palantir.com/docs/foundry/marketplace/)
 - [Palantir Foundry, browse-products](https://www.palantir.com/docs/foundry/marketplace/browse-products/)
 - [Palantir Foundry, getting-started](https://www.palantir.com/docs/foundry/marketplace/getting-started/)
