@@ -1,7 +1,7 @@
 ---
 tags: [palantir, apollo, continuous-delivery]
 status: done
-verified_at: 2026-10-16
+verified_at: 2026-11-09
 category: AI Engineering
 aliases: []
 ---
@@ -28,7 +28,7 @@ Terminal profile은 Hub 전체에 정의하지만 그 registry가 설치된 환�
 
 Plan details/raw agent output으로 실패 단계를 찾고 Pod의 Pending/ImagePullBackOff/CreateContainerConfigError는 describe Events, CrashLoop/Error는 logs, 외부 접근은 Service와 LoadBalancer를 확인한다. Helm history와 get values로 실제 install/rollback과 렌더링 입력을 대조한다. Apollo는 Pod 응용 로그 전체를 대체하는 수집 도구가 아니다. Pod Running이어도 agent가 보고하지 않으면 Plan을 발행하지 못할 수 있다.
 
-local kind에는 cloud LoadBalancer가 기본 제공되지 않아 chart가 가정한 인프라를 별도로 제공해야 한다. 재연결 문제는 manifest 재적용과 agent/Hub 통신을 확인한다. 클러스터 재시작 후 새 환경을 만드는 가이드 예시는 모든 장애의 기본 해결책으로 쓰지 않는다.
+local kind에는 cloud LoadBalancer가 기본 제공되지 않아, LoadBalancer를 추가하거나 Service 유형 같은 chart 설정을 바꿔야 한다. 이때 `kubectl get svc`의 LoadBalancer Service는 EXTERNAL-IP가 `<pending>`으로 남고, 진단 문서는 WordPress 같은 chart 설치가 `Service does not have load balancer ingress IP address: default/wordpress` 오류로 실패하는 예를 든다. 이 문구는 Helm이 LoadBalancer Service의 ingress 주소를 기다리는 readiness 검사의 메시지이며, 어느 화면에 어떤 형태로 보이는지는 Apollo가 Helm 출력을 노출하는 방식에 달려 있다. `<pending>`은 LoadBalancer controller가 설치됐지만 할당할 주소가 설정되지 않은 경우에도 남을 수 있다. GKE, AKS, EKS 같은 관리형 클라우드 클러스터는 IP를 할당하는 LoadBalancer를 제공한다. Apollo 진단 문서는 기본 local kind에 MetalLB 같은 LoadBalancer 배포를 권하지만, 그 문서가 연결한 kind 안내 페이지는 2026-11-09 확인 시 MetalLB가 아니라 호스트에서 별도 바이너리로 도는 Cloud Provider KIND만 다룬다. 해결 방식은 chart, 배포 환경과 설정의 문제로 보고 환경마다 정한다. 재연결 문제는 manifest 재적용과 agent/Hub 통신을 확인한다. 클러스터 재시작 후 새 환경을 만드는 가이드 예시는 모든 장애의 기본 해결책으로 쓰지 않는다.
 
 ### 자원과 릴리스의 관찰 범위를 맞춘다
 
@@ -60,7 +60,9 @@ helm get values RELEASE --namespace NAMESPACE
 - [Palantir, authorization](https://www.palantir.com/docs/apollo/core/authorization) — resource/global RBAC와 inherited 권한의 가산성.
 - [Palantir, supported-browsers](https://www.palantir.com/docs/apollo/core/supported-browsers) — Chrome/Edge/Firefox 버전별 지원 기간.
 - [Palantir, teams](https://www.palantir.com/docs/apollo/core/teams) — Team을 권한/알림/승인의 조직 단위로 정의.
-- [Palantir, troubleshooting-in-cluster](https://www.palantir.com/docs/apollo/core/troubleshooting-in-cluster) — Events/logs/Services/Helm과 agent 보고를 함께 진단.
+- [Palantir, troubleshooting-in-cluster](https://www.palantir.com/docs/apollo/core/troubleshooting-in-cluster) — Events/logs/Services/Helm과 agent 보고를 함께 진단, 2026-11-09 LoadBalancer 누락 오류와 kind 권고 대조.
+- [helm/helm pkg/kube/ready.go — GitHub](https://github.com/helm/helm/blob/dev-v3/pkg/kube/ready.go) — LoadBalancer ingress 대기 메시지의 출처, 2026-11-09 확인.
+- [kind, LoadBalancer](https://kind.sigs.k8s.io/docs/user/loadbalancer/) — Cloud Provider KIND로 LoadBalancer Service 제공, 2026-11-09 확인.
 - [Palantir, debugging](https://www.palantir.com/docs/apollo/debugging) — 부모 debugging 경로의 시간 제한 terminal.
 - [Palantir, jit-access](https://www.palantir.com/docs/apollo/debugging/jit-access) — JIT 요청/승인/회수와 자기 승인 금지.
 - [Palantir, terminal](https://www.palantir.com/docs/apollo/debugging/terminal) — 4시간 세션, scoped 읽기 권한과 Operator 설명.
