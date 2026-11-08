@@ -42,6 +42,10 @@ DCF의 기본 구조는 [[Valuation|밸류에이션]], 사업 구조는 [[Paid-W
 
 그 효과만 단순 차감하면 약 46.9%와 2.05달러지만, 이는 공시 수치에 대한 산술 예시이며 회사가 발표한 정상 이익이나 다음 분기 전망은 아니다. 발표 시점의 이익률 상승을 전부 반복 가능한 원가 개선으로 해석하지 않는다. 2026-11-04 이 발표의 실적과 환급 효과만 대조했으며, 컨센서스 대비 차이와 주가 하락 원인은 확인하지 않았다.
 
+반대 방향의 사례: 쿠팡Inc의 2026-11-03 3분기 실적 발표는 매출 99억 6,200만 달러(전년 대비 7%, 고정환율 기준 11%)와 영업손실 4억 5,000만 달러를 제시한다. 10-Q는 인천 물류센터 화재로 재고 손실 9,500만 달러를 매출원가에, 고정자산 손상 등 1억 5,300만 달러를 운영, 일반 및 관리비에 반영했고 보험 회수는 아직 인식하지 않았다고 적는다. 화재를 빼도 영업손실은 2억 200만 달러다. 2분기의 과징금 충당금 4억 1,000만 달러는 개인정보 사고 관련 약 2억 7,800만 달러와 사고와 무관한 제3자 광고 프로그램 관련 약 1억 3,200만 달러를 합친 것이라 한 사고의 비용으로 묶지 않는다(원화 내역은 [[Privacy-Breach-Civil-Liability|개인정보 유출의 민사 책임과 손해배상]]).
+
+이 사례에서는 일회성 항목을 빼도 이익률 하락이 남는다. 조정 EBITDA는 과징금(2분기)과 화재의 직접 손실(3분기)을 빼는데, Product Commerce 조정 EBITDA는 2026년 1~3분기 3억 5,800만, 3억 8,200만, 3억 8,500만 달러로 전년 같은 분기(5억 5,000만, 6억 6,300만, 7억 500만 달러, 2분기는 감소액으로 산출) 대비 35%, 42%, 45% 줄었고 3분기 마진은 4.6%로 424bp 낮아졌다. 전 분기 대비로는 평탄하거나 조금 늘었으므로 감소율이 커진 데는 전년 기저가 높아진 영향도 있다. 10-Q는 2026년 1월부터 4월 중순까지 이용권 약 12억 달러가 판매가와 매출 차감으로 반영됐다고 적는데, 이는 조정 대상이 아니다. 따라서 1분기와 2분기 초의 수치에는 사고 관련 차감이 남아 있고(부문 배분은 확인하지 못했다), 일회성 항목을 뺀 비교가 가장 깨끗한 분기는 3분기다. 경영진은 마진을 깎은 요인으로 공급망 차질, 사고 전 수요 곡선에 맞춘 고정비 부담과 늘어난 마케팅 투자를 들고 이들이 구조적이지 않다고 봤으며, 2027년 중반 마진이 사고 전에 가까운 수준으로 돌아오고 4분기 연결 조정 EBITDA 마진이 3분기 1.2%에서 50~150bp 오른다고 제시했다. 이 설명은 반증할 수 있는 전망으로 두고, 4분기 연결 마진이 1.7~2.7%(산출)에 드는지, 마케팅비를 줄인 뒤 고객 수가 유지되는지, 2027년 중반 Product Commerce 마진이 2025년 3분기 약 8.8%(산출)에 가까운지로 확인한다. 회복을 말한 마진이 어느 범위인지는 콜 원고 발췌로 확정하지 못했다. 제외 항목이 비현금이라는 뜻도 아니다. 과징금은 회사가 행정소송을 낸 상태에서 2년 6회 분할 납부가 승인됐다. 2026-11-08 발표문, 콜 원고와 2분기와 3분기 10-Q를 대조했으며 원화 환산은 확인하지 않았다.
+
 ### 매출 비중과 이익 기여도는 따로 계산한다
 
 새 사업이 최대 매출 부문이 됐어도 최대 영업이익 부문이 됐다는 뜻은 아니다. 매출, 영업이익과 조정 EBITDA를 같은 기간과 부문으로 맞추고 조정 항목까지 확인한다.
@@ -194,6 +198,12 @@ IAS 32(국내 K-IFRS 1032) 문단 23은 문단 16A~16D가 정한 예외를 빼�
 ## 출처
 
 - [Apple reports fourth quarter results — Apple](https://www.apple.com/newsroom/2026/11/apple-reports-fourth-quarter-results/) — 2026-11-04 매출총이익률과 희석 EPS에 포함된 관세 환급 효과 부분 대조. 기존 절의 검증일은 유지한다.
+- [Coupang Announces Results for Third Quarter 2026 — Coupang](https://s206.q4cdn.com/919117365/files/content_files/2026-Q3_Earnings-Release_.pdf) — 2026-11-03 발표, 2026-11-08 매출, 영업손실, 화재 제외 손실, 연결과 부문별 조정 EBITDA와 마진 대조. 2절의 사례만 부분 검증했다.
+- [Coupang, Inc. FQ3 2026 Earnings Call — Coupang](https://s206.q4cdn.com/919117365/files/content_files/Q3-26-Earnings-Call-Script.pdf) — 2026-11-03 콜 원고, 경영진의 마진 요인 설명과 4분기, 2027년 전망 2026-11-08 대조
+- [Form 10-Q for the quarterly period ended September 30, 2026 — Coupang](https://www.sec.gov/Archives/edgar/data/1834584/000183458426000086/cpng-20260930.htm) — 화재 손실의 계정 배분과 보험 미인식, 이용권의 매출 차감, 과징금 소송과 분할 납부 승인, 2026-11-08 대조
+- [Form 10-Q for the quarterly period ended June 30, 2026 — Coupang](https://www.sec.gov/Archives/edgar/data/1834584/000183458426000073/cpng-20260630.htm) — 2분기 과징금 충당금 4억 1,000만 달러의 구성, 2026-11-08 대조
+- [First quarter 2026 earnings release, Exhibit 99.1 — Coupang](https://www.sec.gov/Archives/edgar/data/1834584/000183458426000039/cpng-03312026ex991.htm) — 1분기 Product Commerce 조정 EBITDA와 감소율, 2026-11-08 대조
+- [Second quarter 2026 earnings release, Exhibit 99.1 — Coupang](https://www.sec.gov/Archives/edgar/data/1834584/000183458426000070/cpng-06302026ex991.htm) — 2분기 Product Commerce 조정 EBITDA와 감소액, 2026-11-08 대조
 - [SpaceX Reports Third Quarter 2026 Results — SpaceX](https://www.sec.gov/Archives/edgar/data/1181412/000162828026066482/spaceexplorationtechnologi.htm) — 2026-10-28 분기 부문별 매출과 영업이익, 조정 EBITDA와 SI 조정표 및 매출 구성 대조. 2절의 사례만 부분 검증했으며 기존 항목의 검증일은 유지한다.
 - [Samsung Electronics Announces Earnings Guidance for Third Quarter 2026 — Samsung Newsroom](https://news.samsung.com/global/samsung-electronics-announces-earnings-guidance-for-third-quarter-2026) — 2026-10-08 발표한 연결 매출과 영업이익 추정치, 2026-10-27 대조. 본문 2절의 사례만 검증했다.
 - [IR 행사 — 삼성전자](https://www.samsung.com/sec/ir/ir-events-presentations/events/) — 3분기 가이던스 공시일과 실적발표 컨퍼런스콜 예정일, 2026-10-27 대조.

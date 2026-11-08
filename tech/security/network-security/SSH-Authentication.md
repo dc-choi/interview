@@ -85,6 +85,19 @@ SSH 로그인 허용과 포워딩 허용은 따로 점검한다. 서버 프로�
 
 2026-10-28 사용자 제공 GeekNews 발췌는 조사 중의 권고를 담고 있다. 그 당시의 모든 사용자 비활성화 불필요 평가를 영구적인 안전 보증으로 사용하지 않는다. 기존 SSH 일반 설명 전체는 다시 대조하지 않아 위 `verified_at`은 유지한다.
 
+## 비밀번호 인증은 해시 문자열 비교에 기대고 있다
+
+PAM 없이 비밀번호를 확인하는 OpenSSH는 입력한 비밀번호를 `crypt()`로 해시한 결과와 shadow 파일의 저장값을 `strcmp`로 비교한다. 10.6p2와 배포판 백포트 이전에는 저장값이 해시가 아니라 비밀번호 미설정 표식 `*`여도 같은 비교를 거쳤다. 그래서 해시 함수가 실패를 NULL 대신 `*`로 돌려주면 그 계정이 열릴 수 있었다. `*`는 키로만 로그인하는 계정에 흔한 값이고, `!`로 잠근 계정은 Alpine이 영향 없음으로 분류했다. 오류 표시 값이 정상 데이터의 값과 겹치지 않는지는 라이브러리 경계에서 따로 확인한다.
+
+2026-11-08 Alpine 공지와 보안 추적기, OpenSSH 10.6p2 릴리스 노트와 수정 커밋, CVE 레코드, musl 메일링 리스트를 대조한 사례가 CVE-2026-123158이다.
+
+- **원인:** musl의 `crypt()`는 키가 256바이트를 넘으면 오류 표시로 `*`를 돌려준다. Alpine 기본 이미지의 `root`처럼 비밀번호 필드가 `*`인 계정에 257~1024바이트 비밀번호를 보내면 두 문자열이 같아 인증을 통과한다. 1024는 sshd의 비밀번호 길이 상한이다. 저장값이 짧으면 sshd가 다른 계정의 salt를 빌리므로 `$5$`나 `$6$` 해시를 가진 다른 계정이 하나 이상 있어야 한다.
+- **조건:** PAM을 쓰지 않는 `openssh-server`와 `UsePAM no`인 `openssh-server-pam`이 대상이고, `UsePAM yes`이면 해당하지 않는다. `PasswordAuthentication yes`(OpenSSH 기본값)여야 하며, 기본값 `PermitRootLogin prohibit-password`가 root를 막으므로 root 계정은 `PermitRootLogin yes`일 때만 열린다. Alpine은 3.21~3.24와 edge, 정기 갱신이 끝난 3.16~3.20에서 확인했다. musl 메인테이너는 Dropbear 등 OpenSSH가 아닌 서버는 영향이 없다고 밝혔다.
+- **수정 위치:** OpenSSH가 저장값이 최소 해시 길이보다 짧으면 비교하지 않도록 고쳤고 업스트림은 10.6p2(2026-11-05)에 넣었다. OpenSSH는 근본 원인이 자기 코드에 있다고 보지 않고, musl 메인테이너도 musl의 버그가 아니라 호출부의 잘못된 사용이라고 보면서 다음 릴리스 주기에 이 동작을 바꿀 가능성이 높다고 밝혔다. Alpine stable branch는 백포트한 패키지로 고쳤으므로(예: 3.24는 `openssh` `10.3_p1-r2`) 업스트림 버전 번호만으로 판단하지 않고 보안 추적기의 branch별 수정 버전을 본다.
+- **대응:** `apk upgrade -U -a` 뒤 `rc-service sshd restart`로 실행 중인 데몬까지 바꾼다. 당장 올릴 수 없으면 기존 세션을 연 채로 공개키 접속이 되는지 확인하고 `PasswordAuthentication no`로 바꾼 뒤 재시작하며, 재시작 뒤 새 로그인을 확인한 다음 기존 세션을 닫는다. 로그인을 배제할 수 없으면 침해된 장비로 다룬다. 컨테이너 안에서 sshd를 실행하지 않는 경우는 Alpine 공지의 영향 없음 범위다.
+
+실제 악용은 Previdian 페이지의 공격 시도 관측 기록만 확인했고, 그 페이지 안의 관측 시각도 서로 맞지 않는다. 2026-11-06 판 CISA KEV 피드에는 없다. 이 절은 공지와 소스 대조이며 실제 서버에서 재현하거나 설정을 바꾸지 않았다.
+
 ## 확인 질문
 
 - 호스트 키 검증은 성공했는데 사용자 인증이 실패했다면 어느 신원과 권한을 확인해야 하는가?
@@ -104,6 +117,15 @@ SSH 로그인 허용과 포워딩 허용은 따로 점검한다. 서버 프로�
 - [PuTTY, Using public keys for SSH authentication](https://the.earth.li/~sgtatham/putty/0.85/htmldoc/Chapter8.html)
 - [PuTTY, puttygen(1), Debian 매뉴얼 배포본](https://manpages.debian.org/testing/putty-tools/puttygen.1.en.html)
 - [Tailscale, Security Bulletins: TS-2026-014, TS-2026-015](https://tailscale.com/security-bulletins) — 2026-11-02 인증/포워딩 조건, 수정 버전과 서비스 환경 완화 대조
+- [Alpine Linux, Security advisory: openssh-server password authentication bypass](https://alpinelinux.org/posts/2026-11-05-openssh-password-authentication-bypass/) — 2026-11-08 원인, 조건, 확인한 릴리스, 대응과 영향 없음 범위 대조
+- [Alpine Security Tracker, CVE-2026-123158](https://security.alpinelinux.org/vuln/CVE-2026-123158) — 2026-11-08 branch별 수정 패키지 버전 확인
+- [OpenSSH 10.6p2 Release Notes — OpenSSH](https://www.openssh.org/releasenotes.html#10.6p2) — 2026-11-05 릴리스
+- [avoid password authn bypass — GitHub openssh/openssh-portable](https://github.com/openssh/openssh-portable/commit/4353fdc43ef646c43a8dda7025cc1a898caf1482) — 최소 해시 길이 검사와 근본 원인에 대한 커밋 메시지 확인
+- [auth-passwd.c — GitHub openssh/openssh-portable](https://github.com/openssh/openssh-portable/blob/master/auth-passwd.c) — `strcmp` 비교와 `MAX_PASSWORD_LEN` 1024 확인
+- [Advisory for OpenSSH+musl users — musl mailing list](https://www.openwall.com/lists/musl/2026/11/05/4) — 2026-11-05 메인테이너의 입장, 다음 릴리스의 변경 가능성과 Dropbear 등 영향 범위
+- [CVE Program, CVE-2026-123158](https://www.cve.org/CVERecord?id=CVE-2026-123158) — 2026-11-05 게시, CVE API 레코드로 설명 확인
+- [CISA, Known Exploited Vulnerabilities Catalog](https://www.cisa.gov/known-exploited-vulnerabilities-catalog) — 2026-11-06 판 피드에 미등재 확인
+- [CVE-2026-123158 — Previdian](https://previdian.com/CVE-2026-123158) — 보안 업체의 공격 시도 관측 기록, 단일 출처
 
 ## 관련 문서
 

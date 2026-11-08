@@ -97,6 +97,14 @@ LLM 보조 리뷰와 퍼징은 결함을 더 일찍 찾게 하지만 고칠 사�
 
 출시일은 그래도 예고보다 늦어졌다. 2026-06-04 Beta 1 공지는 정식 출시를 9~10월 무렵으로, 2026-09-24 Beta 4 공지는 RC를 10월 초로 잡고 GA도 10월일 수 있다고 예고했다. RC 1은 2026-10-15에 나왔고, 그 공지는 11월 12일 정기 업데이트에 들어갈 많은 수정을 19에도 넣으려고 같은 날 RC 2를 내며 문제가 없으면 11월 19일 정식 출시한다고 밝혔다. 기능을 되돌린 선택은 수정 시간을 벌려는 더 긴 연기를 피한 것이지 처음 일정을 그대로 지켰다는 뜻은 아니다(해석).
 
+**PostgreSQL 19 (Robert Haas 글, 2026-10-30 블로그 재게시본을 2026-11-08 대조):** 다른 커미터인 Robert Haas는 지연의 원인을 LLM으로 버그를 찾기가 훨씬 쉬워진 데서 찾는다. 고치기도 쉬워졌지만 같은 정도는 아니고, LLM이 수정 초안을 만들어도 늘 맞거나 프로젝트 기준에 맞지는 않으며 결국 사람이 검토하고 커밋해야 한다고 적는다. 그가 센 수치는 기능 동결일(4월 8일)부터 9월 25일까지다.
+
+- 릴리스 branch 커밋: 2025년 `REL_18_STABLE` 724건에서 2026년 `REL_19_STABLE` 1,169건으로 60% 넘게 늘었다.
+- master 커밋: 1,037건에서 1,443건으로 늘었지만 master에만 들어간 커밋은 조금 줄었다.
+- 이전 릴리스 하나 이상으로 백패치한 커밋: 248건(`REL_17_STABLE`)에서 433건(`REL_18_STABLE`)으로 74% 넘게 늘었다.
+
+그는 커미터의 실수가 늘었을 가능성을 배제하지 않지만 주된 원인으로 보지 않는다. 릴리스에 들어갈 기능을 검토할 시간이 보안 문제 대응으로 빠졌다는 설명은 Eisentraut의 네 번째 항목과 겹친다. 8월 27일부터 9월 15일 사이에 되돌린 기능으로 UPDATE/DELETE FOR PORTION OF, SQL/PGQ, ALTER TABLE의 MERGE PARTITION과 SPLIT PARTITION을 든다. 반영된 커밋을 센 수치라 고치지 못한 보고의 규모는 여기에 없고, 이 증가를 버그를 찾기 쉬워진 결과로 읽는 것은 그의 해석이다. 앞으로 PostgreSQL에서 쓰는 모든 기능이 AI의 검토를 받으므로 PostgreSQL 개발자 모두, 어느 정도는 모든 소프트웨어 개발자가 수준을 높여야 한다는 전망도 그의 의견이다.
+
 **Linux 7.2 (LWN 2026-08-17 개발 통계):** 이전 커밋의 버그를 고친다고 표시하는 `Fixes` 태그가 붙은 커밋이 4,830건이다. 여러 릴리스 동안 거의 평탄하던 Fixes 커밋이 최근 릴리스에서 크게 늘었고, LWN은 기존 소프트웨어의 버그 찾기에 LLM을 쓰는 사람이 많아진 영향으로 해석한다. 리뷰 시스템 Sashiko를 Reported-by로 밝힌 패치는 252건, 변경 설명에서 Sashiko를 언급한 커밋은 568건이다. 모두 반영된 커밋을 센 수치라 발견과 수정량이 늘었다는 신호이며, 고치지 못한 보고나 대기열의 크기는 이 통계에 없다. 발견이 수정 용량을 넘었는지는 미처리 보고 같은 별도 지표로 확인한다.
 
 적용할 때는 다음을 나눈다(운영 제안).
@@ -154,6 +162,7 @@ Dafny 4 튜토리얼의 절댓값 예제에서 후조건이 `0 <= y`뿐이면 �
 - [mm/filemap: read from the page cache without folio references — GitHub torvalds/linux 미러, Linus Torvalds](https://github.com/torvalds/linux/commit/65401f4102b974df3907267e9cac2e991a0a6680) — `rcu-free-v3` 브랜치 2026-10-12 커밋, 2026-10-27 커밋 메시지 확인
 - [Linus Torvalds "AI 사용을 금지하지 않겠다. 자신이 하는 일을 이해해야 한다" — GeekNews](https://news.hada.io/topic?id=35504) — LKML 메시지의 번역 요약. lore.kernel.org 원문은 2026-10-27 접근 차단으로 미대조
 - [The reverts will continue until morale improves — Peter Eisentraut](https://peter.eisentraut.org/blog/2026/10/09/the-reverts-will-continue-until-morale-improves) — 2026-10-09 개인 회고, 2026-10-27 원문 대조
+- [Postgres 19 is late, and it's AI's fault — Robert Haas](https://rhaas.blogspot.com/2026/10/postgres-19-is-late-and-its-ais-fault.html) — 2026-10-30 블로그 게시(neon.com 2026-10-21 원게시), 커밋 수치, 되돌린 기능과 원인 해석을 2026-11-08 원문 대조
 - [PostgreSQL 19 RC 1 Released! — PostgreSQL](https://www.postgresql.org/about/news/postgresql-19-rc-1-released-3409/) — 2026-10-15, RC 2와 정식 출시 예정일 대조
 - [PostgreSQL 19 Beta 1 Released! — PostgreSQL](https://www.postgresql.org/about/news/postgresql-19-beta-1-released-3313/) — 2026-06-04, 정식 출시 예고(9~10월 무렵)를 2026-10-27 대조
 - [PostgreSQL 19 Beta 4 Released! — PostgreSQL](https://www.postgresql.org/about/news/postgresql-19-beta-4-released-3386/) — 2026-09-24, RC와 GA 예고(10월)와 되돌린 기능 목록을 2026-10-27 대조
