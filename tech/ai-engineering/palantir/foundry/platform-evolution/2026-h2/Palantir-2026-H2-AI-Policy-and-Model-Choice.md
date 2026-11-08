@@ -15,7 +15,19 @@ category: "AI엔지니어링(AIEngineering)"
 
 Palantir 제공 model family와 registered model에 적용하고, registered model의 개별 정책은 enrollment 정책을 대체할 수 있다. 정책이 반드시 교집합으로 좁아진다고 가정하지 않는다. 목적 제한, 최소화, 사람 감독과 retention을 구체적 platform control에 매핑하는 privacy 문서도 10월 확장됐다.
 
-## 모델의 경로와 지역
+## 11월 모델의 경로와 지역
+
+11월3일 DeepSeek V4.1 Flash (1017)는 Fireworks 경로로 non-georestricted commercial enrollment에서 experimental로 추가됐고 inference는 미국에서 호스팅된다. 텍스트와 이미지 입력, tool calling, 1M token context window를 지원한다고 안내됐다. 9월24일 non-georestricted로 추가된 Fireworks의 DeepSeek V4.1 Flash와 지역 범위는 같지만 모델명에 (1017)이 붙었고 experimental로 안내됐다. 공지는 9월 모델과의 관계를 설명하지 않으므로 같은 모델로 간주하지 않는다. 10월1일의 US-georestricted 발표와도 구분한다. 필요한 release가 enrollment에 도달하고 관리자가 Fireworks의 DeepSeek model family와 experimental model을 함께 켜야 쓸 수 있다.
+
+## 11월 web search와 provider-compatible API
+
+11월3일 AIP는 지원되는 OpenAI model이 공개 웹에서 정보를 찾아 citation과 함께 답하는 web search를 추가했다. 경로는 eligible enrollment의 Direct OpenAI와 Amazon Bedrock이며, 개발자는 AIP의 OpenAI-compatible Responses API를 애플리케이션이나 스크립트에서 직접 호출하거나 OpenAI SDK로 쓴다. 발표는 지원 model 이름을 열거하지 않으므로 사용할 model의 지원 여부는 현재 model 목록에서 확인한다.
+
+Enrollment 관리자는 Control Panel > AIP settings > Advanced AIP Settings에서 provider별로 **Enable web search via Bedrock** 또는 **Enable web search via Direct OpenAI**를 켜고, Direct OpenAI에 필요한 agreement를 마친 뒤 저장한다. Model family 활성화와 token 비용 확인은 별도 전제다. Web search는 model 학습 데이터 밖의 공개 웹 정보를 답에 끌어오므로, 운영상 적용으로 답에 붙은 citation을 검토 대상으로 남긴다.
+
+이 두 절은 2026-11-09 November 2026 공지 페이지와 대조한 기록이며, 9월과 10월 DeepSeek 비교는 해당 월 공지를 따른다. 실제 enrollment에서 호출하지 않았고 나머지 가용성 기록 전체를 다시 검증하지 않았으므로 기존 `verified_at`은 유지한다.
+
+## 10월 모델 추가와 Decisions API
 
 10월29일 GPT-6.1 Terra는 eligible commercial enrollment에서 experimental model로 추가됐다. Non-georestricted는 Azure OpenAI와 Direct OpenAI, US-georestricted는 Direct OpenAI 경로이며 model family 활성화와 함께 Enable experimental models toggle이 필요하다. 같은 날 US Government enrollment에는 Bedrock의 Gemma 4 26B A4B/31B, Nemotron 3 Nano 30B/Super 120B와 Claude Haiku 5.5가 IL2 enrollment와 FedRAMP High 아래의 IL4 DIB enrollment에 추가됐다. 이 Bedrock 발표에서 DoD IL4/IL5까지 안내된 것은 Nemotron 두 모델이다(Haiku 5.5의 Vertex IL2/IL4 경로는 아래 10월15일 발표).
 
@@ -86,6 +98,9 @@ AI FDE cat/sed 자동 실행 분류는 해당 제품의 approval policy다. sed�
 ## 출처
 
 - [Palantir Foundry, Release notes 2026](https://www.palantir.com/docs/foundry/announcements/release-notes/2026/)
+- [Palantir Foundry, November 2026 announcements](https://www.palantir.com/docs/foundry/announcements/2026-11) — 2026-11-09, DeepSeek V4.1 Flash (1017) 경로와 web search 활성화 절차 대조.
+- [Palantir Foundry, September 2026 announcements](https://www.palantir.com/docs/foundry/announcements/2026-09) — 2026-11-09, 9월24일 Fireworks DeepSeek V4.1 Flash 경로 대조.
+- [Palantir Foundry, October 2026 announcements](https://www.palantir.com/docs/foundry/announcements/2026-10) — 2026-11-09, 10월1일 US-georestricted 경로 대조.
 - [Palantir Foundry, Run an evaluation suite](https://www.palantir.com/docs/foundry/aip-evals/run-suite/) — 2026-11-03, 함수 버전 선택, run metadata와 결과 비교 대조.
 
 ## 관련 문서

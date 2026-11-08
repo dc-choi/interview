@@ -1,7 +1,7 @@
 ---
 tags: [palantir, foundry, product-delivery]
 status: done
-verified_at: 2026-11-08
+verified_at: 2026-11-09
 category: "AI엔지니어링(AIEngineering)"
 ---
 
@@ -27,12 +27,31 @@ Folder structure는 lowest common ancestor까지 포장하고 installation proje
 
 동일 본문 canonical alias: [overview](https://www.palantir.com/docs/foundry/devops/overview).
 
+## 입력 API name과 호출자 계약
+
+2026-11-09 공식 Input API names 문서 대조 기준이다. 실제 publish와 Marketplace API 호출은 확인하지 않았다.
+
+Input API name은 공개 Marketplace API에서 product input을 식별하는 이름이다. 호출자는 이 이름으로 input을 탐색하고, 설치와 upgrade의 값을 넣고, 설치의 현재 input을 조회한다. 화면의 display title과 별개이며 product version이 바뀌어도 유지된다. Input이 있는 version을 Foundry API 설치용으로 publish하려면 먼저 draft의 Settings에서 Foundry API settings의 **Enable API names for inputs**를 켠다. 켜면 DevOps가 input 제목으로 이름을 자동 배정한다(예: `Source dataset`은 `sourceDataset`이 될 수 있다).
+
+배정된 이름은 Inputs 표에서 input을 골라 Details 패널의 API name 값으로 고친다. 여러 input을 고르면 **Set {N} API names**로 한 번에 바꾸고 Save한다. 직접 지을 때의 규칙은 다음과 같다.
+
+- 1~100자, 첫 글자는 문자나 밑줄이고 이후는 문자, 숫자, 밑줄이다. Unicode 식별자를 쓸 수 있으며 NFKC 정규화가 필요하다.
+- `y`, `n`, `yes`, `no`, `true`, `false`, `on`, `off`, `null`은 대소문자와 관계없이 예약어라 쓸 수 없다.
+- 최상위 input끼리, 같은 부모를 공유하는 nested input끼리 이름이 겹치면 안 된다.
+- Nested input은 API에서 부모 이름을 점으로 이은 이름으로 참조한다. `sourceDataset` 아래 column은 자기 이름을 `customerId`로만 두고, API가 `sourceDataset.customerId`로 만든다. 자기 이름에 부모 접두사를 직접 붙이지 않는다.
+
+Input API name은 product 안의 input을 가리키고, input preset이 쓰는 Ontology resource API name은 그 input에 공급되는 자원을 가리킨다. 두 이름을 같은 식별자로 취급하지 않는다.
+
+새 version은 이미 publish된 input API name을 유지하므로 호출자는 기존 input map의 이름을 계속 쓸 수 있다. 이름 유지가 새로 추가되거나 바뀐 input까지 기존 map으로 충족된다는 뜻은 아니므로, 그런 input은 따로 확인한다. 반대로 publish된 이름을 바꾸거나 생성 설정을 끄면 기존 workflow가 깨질 수 있고, 설정을 끄면 draft version에 배정된 이름이 모두 지워진다. 이 경우 publish 대화상자가 영향 확인을 요구하므로, 호출자를 깨지 않으려면 publish 전에 이전 이름을 복원하거나 설정을 다시 켠다. 설치된 product의 input에 API name이 없으면 입력 조회 같은 Marketplace API가 `InstallationInputApiNamesNotEnabled`(400)로 실패한다. 명세가 제시한 해결 조건은 해당 product의 이름 생성 설정을 켜는 것이며, 이미 설치된 installation에 새 version publish와 upgrade까지 필요한지는 확인하지 않았다([[Palantir-Marketplace-Input-Mapping-and-Jobs]]).
+
 ## 출처
 
 - [Palantir, foundry-devops](https://www.palantir.com/docs/foundry/foundry-devops)
 - [Palantir, create-products](https://www.palantir.com/docs/foundry/foundry-devops/create-products)
 - [Palantir, folder-tracking](https://www.palantir.com/docs/foundry/foundry-devops/folder-tracking)
 - [Palantir, input-presets](https://www.palantir.com/docs/foundry/foundry-devops/input-presets)
+- [Palantir, input-api-names](https://www.palantir.com/docs/foundry/foundry-devops/input-api-names)
+- [Palantir, get-marketplace-installation-inputs](https://www.palantir.com/docs/foundry/api/v3/marketplace-v3-resources/marketplace-installation-inputs/get-marketplace-installation-inputs)
 - [Palantir, supported-resources](https://www.palantir.com/docs/foundry/foundry-devops/supported-resources)
 - [Palantir, devops](https://www.palantir.com/docs/foundry/devops)
 - [Palantir, core-concepts](https://www.palantir.com/docs/foundry/devops/core-concepts)
@@ -41,3 +60,4 @@ Folder structure는 lowest common ancestor까지 포장하고 installation proje
 
 - [[Palantir-DevOps-Permissions-and-Transport]]
 - [[Palantir-DevOps-Linked-Products]]
+- [[Palantir-Marketplace-Input-Mapping-and-Jobs]]

@@ -154,6 +154,7 @@ Software 3.0 패러다임, LLM과 에이전트, 하네스, 평가, 조직 전환
 - [x] [[Time-Series-Foundation-Models|시계열 파운데이션 모델]] — zero-shot 예측, 21개 분위수와 pinball loss, fev-bench의 skill score와 누출 신고 규칙, 매출 기준 가중치 라이선스
 - [x] [[Model-Release-Claims|모델 발표 수치 읽기]] — 측정 주체, 비용과 캐시, 메모리와 라이선스, Carbon과 Mistral Large 4의 평가 및 제공 상태
 - [x] [[Evaluator-Guided-Program-Search|평가기 주도 프로그램 탐색]] — 모델 밖 평가기, 대리 지표와 비교 기준, 표본 검사의 실패율 경계, AlphaEvolve와 Claude Mythos 5 양자 회로 사례
+- [x] [[Self-Consistency-Voting|자기 일관성과 샘플 투표]] — 다수결, LLM 선택과 유사도 선택, 샘플 수의 포화와 비용, 작은 모델 반복 호출의 조건, 일치율과 불확실성
 - [x] [[Property-Based-Testing#탐색을 증명으로 바꾸는 퍼즈 하네스 형식 검증|퍼즈 하네스의 형식 검증]] — LLM이 쓴 Rocq 증명과 검사기, RISC-V와 Linux 모델의 전제, 퍼저가 놓친 버그, 보상 해킹과 공개 범위
 - [x] [[Harness-Gate-Placement#푸시 전에 변경 이해를 묻는 훅은 연습 장치다|푸시 전 이해 확인 훅]] — 별도 리뷰어 모델의 출제, 우회 가능성, 외부 전송과 호출 비용
 - [x] [[Production-Agent-Architecture-Delegation#무엇을 맡기고 얼마나 풀어 줄지 정하는 사고 도구|위임 결정의 사고 도구]] — 성공 작업당 원가, 오류 누적, 평가가 곧 명세, 자율성 다이얼과 문 유형, 굿하트의 법칙
