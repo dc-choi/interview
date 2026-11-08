@@ -1,7 +1,7 @@
 ---
 tags: [java, exception, finally, try-with-resources, autocloseable, resource-management]
 status: done
-verified_at: 2026-09-30
+verified_at: 2026-11-09
 category: "CS&프로그래밍(CS&Programming)"
 aliases: ["Java Resource Cleanup", "Java 자원 정리", "finally와 try-with-resources"]
 ---
@@ -69,11 +69,21 @@ try (InputStream input = Files.newInputStream(path);
 
 transaction rollback처럼 자원 close 외의 업무 보상은 try-with-resources만으로 해결되지 않는다. transaction manager의 경계와 예외 변환 정책을 함께 설계한다. 위 실행 순서와 컴파일 오류 메시지는 JDK 21.0.3에서 확인했다.
 
+### suppressed와 cause의 구분
+
+cause는 한 예외가 다른 예외를 일으킨 인과 관계다. 하위 예외를 잡아 상위 예외로 바꿔 던질 때 생성자나 `initCause()`로 연결한다. `initCause()`는 cause 생성자를 쓰지 않은 예외에 최대 한 번만 호출할 수 있고, 어기면 `IllegalStateException`이다. suppressed는 서로 독립적인 형제 코드 블록에서 함께 난 예외 중 하나만 전파할 수 있을 때, 전파되지 못한 나머지를 잃지 않으려고 붙여 두는 목록이다. try-with-resources는 body 예외에 close 예외를 이 목록으로 붙인다. 한 예외가 cause와 suppressed를 함께 가질 수 있고, suppressed 예외도 자기 cause를 가질 수 있다.
+
+- `Throwable.addSuppressed()`는 Java 7부터 있는 public 메서드라 try-with-resources 밖에서도 직접 호출할 수 있다. 여러 형제 예외 중 하나만 전파해야 할 때 전파할 예외에 나머지를 붙여 보존하는 데 쓸 수 있으며, 어느 예외를 전파할지는 호출 코드가 정한다. 자기 자신을 넣으면 `IllegalArgumentException`, null이면 `NullPointerException`이다.
+- `getSuppressed()`는 suppressed 예외가 없으면 빈 배열을 돌려준다. `printStackTrace()`는 이를 stack trace 아래에 출력한다. 형식은 구현에 따라 다르며 Javadoc 예시는 `Suppressed:` 구간으로 보여 준다.
+- protected 생성자 `Throwable(String, Throwable, boolean enableSuppression, boolean writableStackTrace)`를 하위 클래스의 `super(...)`로 호출해 suppression을 끈 예외는 `addSuppressed()`가 인자 검증 외에 아무 효과가 없고 `getSuppressed()`가 항상 빈 배열이다. Javadoc은 이를 특별한 요구가 있는 예외적인 상황에만 쓰라고 한다.
+- 설계 판단으로, 원인 관계가 있으면 cause로, 함께 발생해 하나만 전파해야 하는 무관한 예외는 suppressed로 둔다. 이미 처리했거나 다른 맥락에서 난 예외까지 붙이지 않는다. 무관한 예외를 cause로 연결하면 마지막 `Caused by`를 root cause로 읽는 진단이 잘못된 원인을 가리킨다.
+
 ## 면접 체크포인트
 
 - try-catch 뒤에 둔 정리 코드가 실행되지 않는 경우
 - finally가 원래 exception을 가릴 수 있는 경우와 그 업무 영향
 - try-with-resources의 close 순서와 suppressed exception
+- suppressed와 cause의 차이, `addSuppressed()`를 직접 쓰는 경우
 - try-with-resources에서 close, catch, finally의 실행 순서
 - `close()`의 throws를 좁히면 사용처가 달라지는 이유
 
@@ -87,6 +97,7 @@ transaction rollback처럼 자원 close 외의 업무 보상은 try-with-resourc
 - [AutoCloseable, Java SE 26 API](https://docs.oracle.com/en/java/javase/26/docs/api/java.base/java/lang/AutoCloseable.html)
 - [Closeable, Java SE 26 API](https://docs.oracle.com/en/java/javase/26/docs/api/java.base/java/io/Closeable.html)
 - [Oracle, The Java Tutorials: The try-with-resources Statement](https://docs.oracle.com/javase/tutorial/essential/exceptions/tryResourceClose.html)
+- [What are suppressed exceptions? - Cracking the Java Coding Interview — YouTube, Java](https://www.youtube.com/watch?v=mCS5EvRYE2s) — 2026-10-28 Shorts. suppressed와 cause 구분의 단서로만 쓰고 내용은 Throwable Javadoc으로 대조
 - 김영한 강사, [예외 처리 도입3 - 정상, 예외 흐름 분리](https://www.inflearn.com/courses/lecture?courseId=333308&unitId=212287)
 - 김영한 강사, [예외 처리 도입4 - 리소스 반환 문제](https://www.inflearn.com/courses/lecture?courseId=333308&unitId=212288)
 - 김영한 강사, [예외 처리 도입5 - finally](https://www.inflearn.com/courses/lecture?courseId=333308&unitId=212289)

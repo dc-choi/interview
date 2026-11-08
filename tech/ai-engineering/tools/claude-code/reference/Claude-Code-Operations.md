@@ -33,6 +33,8 @@ aliases: ["Claude Code Operations", "클로드 코드 운영", "클로드 코드
 - 활성 사용일 기준 개발자당 평균 약 $13/일, 90%가 $30 이하. 유휴 백그라운드 세션은 세션당 약 $0.04
 - 사고(thinking) 토큰은 화면에 안 보여도 출력 토큰으로 과금된다. adaptive reasoning 모델은 effort level로 조절하고, 고정 예산 모델은 `MAX_THINKING_TOKENS`로 상한을 낮출 수 있다. 공식 비용 가이드는 팀원이 plan 모드로 도는 에이전트 팀을 일반 세션 대비 약 7배 토큰으로 안내하며, 실제 사용량은 활성 팀원 수와 실행 시간에 따라 달라진다. Fast Mode는 최대 2.5배 빠른 대신 토큰당 요금이 더 높고, 대화 중 처음 켜면 기존 컨텍스트 전체에 비캐시 입력 요금이 한 번 적용되므로 비용이 중요하면 세션 시작 시 켠다
 - 절감 순서: /clear와 /compact 습관 → 기본 모델 한 단계 낮추고 서브에이전트는 저비용 모델 → 무거운 MCP 대신 gh, aws 같은 CLI → 훅으로 대용량 로그 전처리 → CLAUDE.md 슬림화 + 스킬 분리 ([[LLM-Model-Tiers|티어 라우팅]]과 같은 논리)
+- 유휴 압축(idle compaction): 자리를 비운 사이 prompt cache가 만료되면 다음 메시지가 전체 컨텍스트를 캐시 없이 다시 처리한다. 변경 기록은 2.1.299에 터미널 유휴 압축 추가를 알렸다(설정 키와 아래 환경 변수는 2.1.290 이상에서 인식하고, 그보다 오래된 버전은 키를 무시하므로 `autoCompactEnabled`로 끈다). 200K 토큰 이상인 대화를 약 54분 방치하면 1시간 캐시가 만료되기 전에 미리 압축해 이 재처리를 피한다. 대화가 1시간 TTL을 쓸 때만 동작한다. Claude 구독의 플랜 사용량 안에서는 1시간이 기본이고, API 키, 클라우드 제공자나 사용 크레딧으로 과금되는 대화는 기본 5분이라 `promptCacheTtl`이나 `CLAUDE_CODE_PROMPT_CACHE_TTL`로 1시간을 지정해야 한다. 최소 토큰 수는 `CLAUDE_CODE_IDLE_COMPACT_MIN_TOKENS`로 바꾸며 100000보다 작은 값은 100000으로 올린다. 기본값에서는 200K 컨텍스트 창 대화가 그 전에 자동 압축되므로, 자동 압축 경계가 임계값보다 큰 대화가 대상이다. 자동 압축 창을 200K 이하로 줄였다면 임계값도 그보다 낮춰야 대상이 된다. settings.json의 `"idleCompaction": false`나 2.1.302부터 생긴 `/config`의 `Idle compaction` 항목으로 끄고, `autoCompactEnabled`를 끄거나 `DISABLE_AUTO_COMPACT`를 설정해도 함께 꺼진다. 컴퓨터가 깨어 있어야 하며, 2.1.314부터 VS Code와 Claude Desktop의 Code 탭(로컬 또는 SSH 세션)에도 적용되고 텔레메트리를 끈 구독자와 1시간 캐시를 켠 Bedrock, Vertex, Foundry, LLM 게이트웨이에서도 돈다. 트레이드오프는 둘이다. 캐시가 만료된 뒤 이어서 보낸 메시지는 원래 대화가 아니라 요약에서 이어지므로 세부 맥락이 빠질 수 있고, 압축 자체가 유휴 중에 토큰을 쓴다. 2.1.318에서 요약이 아닌 응답으로 대화를 바꾸던 문제를 고쳤으므로 이상한 재개를 보면 버전부터 확인한다(2026-11-09 변경 기록, Settings reference, Prompt caching과 Manage costs 문서 확인)
+- `/usage`는 Pro, Max, Ultra, Team, Enterprise 플랜에서 이 기기의 로컬 세션 기록을 바탕으로 최근 사용량의 10% 이상을 차지한 행동마다 줄이는 방법을 행으로 보여 준다. 공식 예시는 max 대신 high effort로 낮추기(`/effort high`), 자리를 비우기 전 `/compact` 실행, CLAUDE.md 줄이기다. 행의 비율은 절감량이 아니라 그 행에 해당하는 사용량 비중이라 합계가 100%를 넘을 수 있다. 2.1.305부터 `f`를 누르면 `/effort`로 끝나는 행은 진행 중인 턴이 끝난 뒤 실행되고, 처리할 수 있는 나머지 행은 변경마다 먼저 보여 주라는 프롬프트 하나로 Claude에 보낸다. `run /compact`로 끝나는 행은 자동 실행하지 않는다. 공식 모델 설정 문서는 낮은 effort가 단순 작업에서 빠르고 저렴하며 높은 effort가 복잡한 문제에 깊은 추론을 준다고 설명하고, max는 효용이 체감하고 과잉 사고하기 쉬우니 넓게 쓰기 전에 시험하라고 경고한다. 적용 제안으로(단서 영상 제작자의 개인 운용과 같은 방향), effort를 늘 max에 두기보다 복잡한 작업에만 올리고 단순 작업은 낮춰 두는 방식을 같은 과업의 재프롬프트 횟수와 사용량으로 비교해 정한다
 - 팀 관측: OpenTelemetry 메트릭(비용, 토큰, 코드 라인 수)을 팀 속성으로 분해해 대시보드화
 
 ## 서비스 정책 변화와 재현 보고를 구분한다
@@ -76,14 +78,17 @@ aliases: ["Claude Code Operations", "클로드 코드 운영", "클로드 코드
 - [Run Claude Code programmatically — bare mode](https://code.claude.com/docs/en/headless#start-faster-with-bare-mode)
 - [Claude Code 공식 문서, Fast mode](https://code.claude.com/docs/en/fast-mode)
 - [Claude Code 공식 문서, Manage costs](https://code.claude.com/docs/en/costs)
-- [Claude Code 공식 문서, Model configuration](https://code.claude.com/docs/en/model-config)
+- [Claude Code 공식 문서, Settings reference](https://code.claude.com/docs/en/settings-reference)
+- [Claude Code 공식 문서, Prompt caching](https://code.claude.com/docs/en/prompt-caching)
+- [Claude Code 공식 문서, Model configuration](https://code.claude.com/docs/en/model-config) — 2026-11-09 effort 안내와 max 경고, 기본 자동 압축 경계 확인
 - [Claude Code 공식 문서, Code Review](https://code.claude.com/docs/en/code-review)
 - [Claude Code 공식 문서, Find bugs with ultrareview](https://code.claude.com/docs/en/ultrareview)
 - [Claude Code 공식 문서, Commands](https://code.claude.com/docs/en/commands)
 - [클로드 코드 가이드 (레퍼런스 03 기본 사용법, 13 CI/CD, 14 CLI, 16 베스트 프랙티스, 17 트러블슈팅) — WikiDocs](https://wikidocs.net/book/19104)
 - [Claude Code 품질 저하 때 adaptive thinking 끄기 — Threads, withfox](https://www.threads.com/@withfox/post/DXDx0mhCX4z)
 - [Claude Code 2026 — YouTube, 토비의 스프링](https://www.youtube.com/watch?v=Y2mEVnN-FKY) — 2026-10-11, 2026년 변경을 소개하는 TTS 내레이션 영상. 로컬 리뷰와 ultra 리뷰 항목의 단서로만 쓰고 내용은 공식 문서로 대조
-- [Claude Code CHANGELOG — GitHub, anthropics/claude-code](https://github.com/anthropics/claude-code/blob/main/CHANGELOG.md) — 2026-11-02, 2.1.300의 요청 압축과 2.1.316의 압축 응답 수정 항목 확인
+- [Claude Code CHANGELOG — GitHub, anthropics/claude-code](https://github.com/anthropics/claude-code/blob/main/CHANGELOG.md) — 2026-11-02, 2.1.300의 요청 압축과 2.1.316의 압축 응답 수정 항목 확인. 2026-11-09, 2.1.299, 2.1.302, 2.1.305, 2.1.314, 2.1.318의 유휴 압축과 `/usage` 항목 확인
+- [클로드 코드 숨은 신기능, 모르면 사용량 손해봅니다 딱 2개 — YouTube, 잔재미코딩(DaveLee)](https://www.youtube.com/watch?v=U-5FEwY8Rm0) — 2026-10-28 Shorts. 유휴 압축과 `/usage` 항목의 단서로만 쓰고 내용은 변경 기록과 공식 문서로 대조. 제작자의 1회 측정(약 53분 뒤 314K에서 62K 토큰으로 감소)은 재현하지 않은 개인 관찰이라 본문에 옮기지 않음
 - [Claude now 3x FASTER — YouTube, The PrimeTime](https://www.youtube.com/watch?v=AL89pwVdI9g) — 2026-10-22 Shorts. 요청 압축 항목의 단서로만 쓰고, 영상의 속도 배수는 변경 기록에서 확인되지 않아 옮기지 않음
 
 - 사용자 제공 GeekNews 알림(2026-11-02 09:33, 10:10) — Claude Code 게임 재구현 제한과 모딩 거부 사례. 발언 원문, 적용 범위와 실제 재현 미확인.
