@@ -91,7 +91,22 @@ EDK II의 CVE-2026-97631은 운영체제 안의 PHP와 다른 공격 표면이�
 - **WAF를 거치지 않는 경로:** 이 규칙은 Cloudflare를 거친 요청에만 적용되므로 origin에 직접 닿는 경로가 남아 있으면 그 경로는 완화 밖에 있다(해석). Cloudflare의 origin 보호 문서는 origin 연결을 잠그는 방법으로 Cloudflare Tunnel, Authenticated Origin Pulls와 Cloudflare IP 허용 목록 등을 든다. IP 허용 목록은 보안 등급이 중간이고 IP spoofing에 취약하다고 적었고, Cloudflare가 주는 기본 Authenticated Origin Pulls 인증서는 요청이 Cloudflare 네트워크에서 왔다는 것만 보장하므로 더 엄격하게 하려면 자체 인증서를 올리라고 권한다.
 - **업로드 차단은 영향부터 본다:** AWS는 설정만으로 두 문제를 완전히 해결하는 우회책은 없다고 적으면서, 즉시 패치할 수 없는 PHP 배포에서는 multipart 파일 업로드 차단을 고려하되 적용 전에 애플리케이션에 주는 영향을 확인하라고 권했다.
 - 수정 릴리스(8.5.12, 8.4.27, 8.3.36, 8.2.35)부터 `memory_limit`은 한도를 넘는 할당도 대개 완료한 뒤 치명적 오류를 내는 soft limit이다. 업그레이드 뒤에는 메모리 경보와 한도 설정을 이 동작에 맞춰 다시 확인한다(운영 제안).
-- 개발 단계에서는 AddressSanitizer가 범위 밖 접근과 해제 후 사용을 잡는다([[C-Pointers-and-Dynamic-Memory#메모리 오류와 도구|C 메모리 오류와 도구]]). 결함 유형 자체를 줄이는 언어 선택은 [[Programming-Language-Landscape#메모리 안전성 권고|메모리 안전성 권고]]를 따른다.
+
+## 결함을 줄이는 층: 언어, 퍼징, 코드 분석
+
+업데이트는 이미 배포된 결함을 고친다. 아래 세 층 가운데 언어는 결함이 코드에 들어가는 것 자체를 막고, 퍼징과 코드 분석은 개발 중인 코드뿐 아니라 이미 배포된 코드에서도 결함을 찾아 업데이트로 이어지게 한다. 서로를 대체하지 않고 다른 단계를 맡는다(이 문서의 정리).
+
+| 층 | 하는 일 | 한계 |
+|---|---|---|
+| 메모리 안전 언어 | Rust 컴파일러는 소유권 규칙으로 이미 버린 값을 다시 쓰는 코드를 컴파일 단계에서 거부한다. C의 `free()` 뒤 사용은 컴파일되고, 실행하면 정의되지 않은 동작이라 충돌, 데이터 변조로 드러나거나 조용히 지나간다 | `unsafe`와 C 라이브러리 경계에서는 보장이 제한된다([[Programming-Language-Landscape#메모리 안전성 권고|메모리 안전성 권고]]). 이미 있는 대형 C 엔진을 당장 다시 쓰지는 못한다 |
+| 퍼징과 sanitizer | 변형한 입력을 대량으로 실행하며 새 코드 경로를 찾고, sanitizer가 조용히 지나갈 메모리 오류를 그 자리에서 보고한다 | 실행해 본 입력에서만 찾으며 결함이 없다는 증명이 아니다([[Property-Based-Testing|속성 기반 테스트와 형식 검증]]) |
+| 코드 분석(사람, AI) | 코드를 읽고 추론해 위험 지점을 짚는다 | 지적이 틀릴 수 있어 재현과 사람의 판단이 필요하다([[Agentic-Verification|에이전트 검증]]) |
+
+- **규모:** Chromium의 메모리 안전 페이지(작성일 표기 없음)는 2015년 이후 Stable 채널에 영향을 준 high, critical 보안 버그 912건을 분석해 약 70%가 메모리 비안전 문제(C, C++ 포인터 실수)라고 적는다. CISA의 메모리 안전 로드맵 문서도 Microsoft의 2006~2018년 CVE 약 70%, Chromium 약 70%, Mozilla의 critical, high 버그 34건 중 32건 같은 비슷한 비율을 함께 든다. 그래서 PHP만의 문제가 아니라 C, C++로 만든 대형 소프트웨어에 널리 나타나는 결함 유형으로 본다(해석).
+- **새 코드부터 바꾼다:** Google은 2024-09-25 글에서 기존의 메모리 비안전 코드를 모두 버리거나 다시 쓸 필요는 없다며, 2019년 무렵부터 Android의 새 개발을 메모리 안전 언어로 옮기는 데 우선순위를 뒀다고 밝혔다. Android 팀은 2025-11-13 글에서 새 코드의 취약점 예방에 집중하는 이 전략의 결과로 2025년에 메모리 안전 취약점이 처음으로 전체 취약점의 20% 아래로 내려갔다고 적는다. 같은 글은 Android의 C, C++ 코드가 100만 줄당 1,000건에 가까운 메모리 안전 취약점 밀도를 보였고 Rust 코드는 그보다 1000배 낮다고 추정한다. Rust 쪽 수치는 근접 사례(near-miss) 한 건에 기댄 보수적 추정이라고 적었으므로 다른 코드베이스의 기대치로 옮기지 않는다.
+- **sanitizer:** Clang의 AddressSanitizer는 heap, stack, 전역 변수의 범위 밖 접근, 해제 후 사용, use-after-return, use-after-scope, 이중 해제와 잘못된 해제를 잡고 메모리 누수는 실험 기능으로 잡는다. 전형적인 속도 저하가 2배라 운영 빌드보다 테스트와 퍼징 빌드에 둔다(해석, [[C-Pointers-and-Dynamic-Memory#메모리 오류와 도구|C 메모리 오류와 도구]]).
+- **지속 퍼징:** OSS-Fuzz는 오픈소스를 쉬지 않고 퍼징하는 Google의 서비스이며 PHP도 등록 프로젝트다(`projects/php`). README는 2025년 5월 기준 1,000개 프로젝트에서 13,000건이 넘는 취약점과 50,000건의 버그를 찾아 고치는 데 기여했다고 적는다. 등록돼 있어도 PHP2Shell 같은 결함은 남았으므로 퍼징 등록을 결함 부재의 근거로 쓰지 않는다(해석).
+- **PHP 애플리케이션 운영자가 할 일:** 엔진 결함은 애플리케이션 코드를 아무리 검사해도 막지 못하므로 수정 버전으로 올리는 것이 먼저다. 쓰지 않는 확장 모듈을 끄면 공격 표면이 준다(운영 제안). `composer audit`은 설치된 패키지(`--locked`면 lock 파일)를 Packagist 보안 권고 같은 의존성 정책과 대조하는 의존 패키지 점검이라 엔진 업데이트를 대신하지 않는다(해석). AI 리뷰의 지적은 직접 재현해 확인한 뒤 반영한다.
 
 ## 다른 런타임에 적용할 질문
 
@@ -104,6 +119,7 @@ Node.js는 적은 수의 스레드가 많은 클라이언트를 처리하고, �
 - 한 워커가 여러 요청을 처리하는 런타임에서 요청 사이를 나누는 장치는 무엇이고, 그 장치가 빠지면 다음 요청에 무엇이 남는가?
 - 웹 워커 계정 권한의 원격 코드 실행과 root 장악을 어떻게 구분해 영향 범위를 정하는가?
 - `memory_limit`이나 `pm.max_requests` 조정이 수정이 아니라 완화인 이유는 무엇인가?
+- 메모리 안전 언어, 퍼징과 AI 코드 분석은 각각 결함의 어느 단계를 줄이고, 왜 서로를 대체하지 못하는가?
 
 ## 출처
 
@@ -139,7 +155,14 @@ Node.js는 적은 수의 스레드가 많은 클라이언트를 처리하고, �
 - [sapi/fpm/php-fpm.8.in — GitHub, php/php-src](https://github.com/php/php-src/blob/master/sapi/fpm/php-fpm.8.in) — 2026-11-02 master 기준. `--allow-to-run-as-root`의 기본 비활성 설명
 - [PHP Manual, Description of core php.ini directives](https://www.php.net/manual/en/ini.core.php) — 수정 릴리스 이후 `memory_limit`의 soft limit 동작. 2026-11-09 `disable_functions`, `open_basedir`, `expose_php`의 설명, 기본값, 설정 위치와 경고 대조
 - [PHP Manual, Filesystem and Streams Configuration Options](https://www.php.net/manual/en/filesystem.configuration.php) — 2026-11-09 `allow_url_include`의 설명, 기본값, `allow_url_fopen` 요구와 7.4.0 deprecated 표기 대조
-- [The Case for Memory Safe Roadmaps — CISA](https://www.cisa.gov/sites/default/files/2023-12/The-Case-for-Memory-Safe-Roadmaps-508c.pdf) — 2023년 12월. 임의 코드 실행과 소프트웨어 실행 계정의 장악
+- [The Case for Memory Safe Roadmaps — CISA](https://www.cisa.gov/sites/default/files/2023-12/The-Case-for-Memory-Safe-Roadmaps-508c.pdf) — 2023년 12월. 임의 코드 실행과 소프트웨어 실행 계정의 장악. 2026-11-09 4쪽의 Microsoft, Chromium, Mozilla 메모리 안전 결함 비율 대조
+- [Rust in Android: move fast and fix things — Google Security Blog](https://blog.google/security/rust-in-android-move-fast-fix-things/) — 2025-11-13 게시. 2026-11-09 새 코드 중심 전략, 20% 미만 비중, 100만 줄당 밀도와 1000배 추정의 근거 한계 대조
+- [Eliminating Memory Safety Vulnerabilities at the Source — Google Security Blog](https://security.googleblog.com/2024/09/eliminating-memory-safety-vulnerabilities-Android.html) — 2024-09-25 게시. 2026-11-09 기존 코드를 다시 쓰지 않고 새 개발부터 옮기는 전략 대조
+- [Chromium, Memory safety](https://www.chromium.org/Home/chromium-security/memory-safety/) — 2026-11-09 high, critical 보안 버그 912건 중 약 70% 대조
+- [google/oss-fuzz — GitHub](https://github.com/google/oss-fuzz) — 2026-11-09 README의 2025년 5월 기준 성과와 `projects/php` 등록 대조
+- [Clang, AddressSanitizer](https://clang.llvm.org/docs/AddressSanitizer.html) — 2026-11-09 탐지 오류 목록과 전형적 속도 저하 대조
+- [Composer, Command-line interface: audit](https://getcomposer.org/doc/03-cli.md#audit) — 2026-11-09 점검 대상과 `--locked` 대조
+- [PHP 보안 취약점, 어떻게 막을까? Rust, 퍼징, AI로 보는 보안의 미래 (2탄) — YouTube, 이창현코딩연구소](https://www.youtube.com/watch?v=Kc3Ptrx_Lw0) — 2026-10-29 공개 영상, 결함을 줄이는 세 층 절의 계기 자료. 수치는 위 1차 출처로 대조했다. 영상의 Microsoft 연간 CVE 약 70% 수치는 CISA 문서의 2006~2018년 CVE 기준으로 바꿔 썼다. Google이 올해 두 릴리스에서 보안 버그 1,072건을 고치며 탐지, 분석과 패치 작성에 AI를 활용했다는 설명은 원문을 확인하지 못해 옮기지 않았고, OSS-Fuzz 성과는 영상의 2023년 수치 대신 현재 README 수치로 썼다
 - [Node.js, Don't Block the Event Loop (or the Worker Pool)](https://nodejs.org/en/learn/asynchronous-work/dont-block-the-event-loop) — 적은 수의 스레드가 많은 클라이언트를 처리하는 구조
 - [PHP보안 세계비상? 놀라지마. 심장출혈 시즌2니까! — YouTube, 널널한 개발자 TV](https://www.youtube.com/watch?v=uZ2G4e81biA) — 2026-10-23 게시. 두 결함의 비교를 다룬 계기 자료이며 제작자는 자료를 AI로 만들었다고 밝혔다. 사실은 위 1차 출처로 대조했고, 웹 서버가 관리자 권한으로 실행됐을 것이라는 추정, 패치 전에는 대책이 없다는 설명과 유출 대 코드 실행의 대비는 1차 출처 기준으로 고쳐 썼다
 - [AI에 뚫린 보안, 전세계 69% 웹사이트 해킹 비상, 해킹이 되는 원리와 바이브코딩으로 방어책까지 모두 공개, php2shell — YouTube, 투더제이 TTJ](https://www.youtube.com/watch?v=RnJMBDnAsBM) — 2026-10-24 공개 영상, 앞단 WAF 규칙과 조사 시작일의 계기 자료. 사실은 Cloudflare, AWS와 PHP 원문으로 대조했다. 업로드 폴더의 새 PHP 파일 점검은 AWS의 파일 변경 확인에 포함되는 좁은 예시이고, 낯선 관리자 계정, PHP 비정상 종료와 낯선 외부 접속 점검은 AWS 원문에서 확인하지 못해 옮기지 않았다. 의심 IP를 먼저 차단하라는 제안은 공개 IP 지표를 차단 대신 조사에 쓰라는 AWS 지침에 맞춰 옮기지 않았다
