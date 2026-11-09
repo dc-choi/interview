@@ -108,6 +108,23 @@ HTTP API는 더해 **JWT Authorizer**(Cognito 외 다른 OIDC IdP)를 네이티�
 
 이 절의 요청 식별과 로깅 조건만 대조했으며 기존 기능과 quota 전체를 재검증한 것은 아니다.
 
+## 다른 AWS 계정에서 호출하기
+
+2026-11-09 공식 문서 기준, 엔드포인트 종류와 IAM 인증 사용 여부에 따라 경로가 갈린다.
+
+| 상황 | 필요한 구성 |
+|---|---|
+| Public 엔드포인트(Regional, Edge-Optimized), IAM 인증 없음 | 다른 계정에서도 invoke URL이나 custom domain name으로 호출한다. 호출 가능 여부는 계정이 아니라 resource policy, authorizer와 WAF 같은 접근 제어 설정이 정한다 |
+| Private REST API | 소비자 계정의 VPC에 `execute-api` interface VPC endpoint를 두고, API resource policy에서 그 endpoint를 `aws:SourceVpce`(또는 VPC를 `aws:SourceVpc`)로 허용한다. 다른 계정의 VPC endpoint에도 접근을 줄 수 있다 |
+| Private custom domain name | 제공자가 API Gateway나 AWS RAM으로 도메인을 공유하고 도메인 resource policy에 소비자의 VPC endpoint를 허용한다. 소비자가 자기 VPC endpoint와 도메인 사이의 domain name access association을 직접 만들고, Route 53 private hosted zone에 도메인을 VPC endpoint로 가리키는 alias 레코드를 만든다 |
+| REST API + IAM 인증 | API resource policy에 소비자 계정의 IAM role이나 user를 넣어 `execute-api:Invoke`를 허용하고, 호출자의 IAM 정책도 같은 권한을 허용한다. 요청은 SigV4로 서명한다 |
+| HTTP API + IAM 인증 | HTTP API는 resource policy를 지원하지 않는다. AWS Knowledge Center 글과 영상 기준, API 계정에 `execute-api` 권한을 가진 role을 두고 소비자가 STS `AssumeRole`로 받은 임시 자격 증명으로 서명해 호출한다. IAM의 교차 계정 role 일반 규칙대로 그 role의 trust policy `Principal`에 소비자 계정을 지정하고, 소비자 계정도 자기 사용자에게 그 role에 대한 `sts:AssumeRole` 권한을 명시적으로 주어야 한다 |
+
+- **교차 계정 IAM 평가** — 같은 계정 호출은 IAM 정책과 resource policy 중 하나만 명시적으로 허용해도 통과한다. 다른 계정 호출은 둘 다 명시적으로 허용해야 하며, 한쪽이라도 침묵하면 암묵적 거부, 한쪽이라도 Deny면 명시적 거부다. resource policy만 고치고 소비자 계정의 IAM 정책을 빠뜨리면 403이 난다. resource policy를 고친 뒤 재배포하지 않은 경우도 같은 증상이 난다.
+- **Private API 호출 방식** — 소비자 VPC endpoint에 private DNS를 켜면 `{rest-api-id}.execute-api.{region}.amazonaws.com`으로 바로 부른다. 대신 그 VPC에서 public API의 기본 엔드포인트에 닿지 못한다. public API는 custom domain name으로 부르거나, private DNS를 끄고 private API마다 private hosted zone을 만드는 방법이 있다. private DNS를 끈 상태에서는 VPC endpoint 전용 DNS에 `Host`나 `x-apigw-api-id` 헤더를 붙이거나, VPC endpoint를 API에 연결해 생기는 Route 53 alias(`{rest-api-id}-{vpce-id}.execute-api.{region}.amazonaws.com`)를 쓴다.
+- resource policy를 바꾸거나 VPC endpoint를 API에 연결 또는 해제한 뒤에는 API를 다시 배포해야 반영된다. 정책 저장만으로는 런타임 동작이 바뀌지 않는다.
+- private custom domain name은 도메인과 VPC endpoint가 같은 리전에 있어야 하고, 소비자는 RAM 공유를 12시간 안에 수락해야 한다. 제공자와 같은 AWS Organizations 조직이면 공유가 자동으로 수락된다. association이 동작하기까지 최대 15분이 걸릴 수 있다. 소비자의 요청은 도메인 resource policy, private API resource policy와 VPC endpoint policy를 모두 통과해야 한다.
+
 ## 실무 패턴
 
 - **서버리스 3종 세트** — API Gateway + Lambda + DynamoDB
@@ -144,6 +161,20 @@ HTTP API는 더해 **JWT Authorizer**(Cognito 외 다른 OIDC IdP)를 네이티�
 - [AWS 공식 문서, Create private integrations for HTTP APIs in API Gateway](https://docs.aws.amazon.com/apigateway/latest/developerguide/http-api-develop-integrations-private.html)
 - [AWS 공식 문서, Set up VPC links V2 in API Gateway](https://docs.aws.amazon.com/apigateway/latest/developerguide/http-api-vpc-links.html)
 - [AWS 공식 문서, Stages for HTTP APIs in API Gateway](https://docs.aws.amazon.com/apigateway/latest/developerguide/http-api-stages.html)
+- [AWS 공식 문서, How API Gateway resource policies affect authorization workflow](https://docs.aws.amazon.com/apigateway/latest/developerguide/apigateway-authorization-flow.html)
+- [AWS 공식 문서, Private REST APIs in API Gateway](https://docs.aws.amazon.com/apigateway/latest/developerguide/apigateway-private-apis.html)
+- [AWS 공식 문서, Create a private API](https://docs.aws.amazon.com/apigateway/latest/developerguide/apigateway-private-api-create.html)
+- [AWS 공식 문서, Invoke a private API](https://docs.aws.amazon.com/apigateway/latest/developerguide/apigateway-private-api-test-invoke-url.html)
+- [AWS 공식 문서, Custom domain names for private APIs in API Gateway](https://docs.aws.amazon.com/apigateway/latest/developerguide/apigateway-private-custom-domains.html)
+- [AWS 공식 문서, Create and attach an API Gateway resource policy to an API](https://docs.aws.amazon.com/apigateway/latest/developerguide/apigateway-resource-policies-create-attach.html)
+- [AWS 공식 문서, Domain name access associations for private custom domain names](https://docs.aws.amazon.com/apigateway/latest/developerguide/apigateway-private-custom-domains-associations.html)
+- [AWS 공식 문서, Consume a private custom domain name](https://docs.aws.amazon.com/apigateway/latest/developerguide/apigateway-private-custom-domains-consumer-create.html)
+- [AWS 공식 문서, Share a private custom domain name](https://docs.aws.amazon.com/apigateway/latest/developerguide/apigateway-private-custom-domains-provider-share.html)
+- [AWS 공식 문서, Control access to HTTP APIs with IAM authorization in API Gateway](https://docs.aws.amazon.com/apigateway/latest/developerguide/http-api-access-control-iam.html)
+- [AWS 공식 문서, Choose between REST APIs and HTTP APIs](https://docs.aws.amazon.com/apigateway/latest/developerguide/http-api-vs-rest.html)
+- [AWS 공식 문서, Access for an IAM user in another AWS account that you own](https://docs.aws.amazon.com/IAM/latest/UserGuide/id_roles_common-scenarios_aws-accounts.html)
+- [How do I provide cross-account IAM authorization for API Gateway HTTP APIs? — AWS re:Post](https://repost.aws/knowledge-center/api-gateway-iam-cross-account)
+- [How do I access an API Gateway API from another AWS account? — Amazon Web Services](https://www.youtube.com/watch?v=NV1RJa9YCYo)
 
 ## 관련 문서
 - [[AWS-Lambda|AWS Lambda]]
