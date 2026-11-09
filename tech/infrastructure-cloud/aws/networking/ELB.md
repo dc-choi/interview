@@ -3,7 +3,7 @@ tags: [aws, elb, alb, nlb, gwlb, load-balancer, infrastructure]
 status: done
 category: "Infrastructure - AWS"
 aliases: ["ELB", "AWS ELB", "Elastic Load Balancer", "ALB", "NLB", "GWLB"]
-verified_at: 2026-10-16
+verified_at: 2026-11-09
 ---
 
 # ELB, Elastic Load Balancer
@@ -78,6 +78,14 @@ ELB가 트래픽을 보낼 **대상의 집합**.
 일반 Availability Zone 서브넷에 배치할 때는 서로 다른 AZ의 서브넷을 최소 두 개 선택한다. 각 서브넷은 `/27` 또는 그보다 큰 주소 공간과 최소 8개의 여유 IP 주소를 확보해야 확장에 필요한 주소를 제공할 수 있다. Local Zone과 Outposts의 배치 조건으로 일반화하지 않는다.
 
 확장 중 서브넷의 사용 가능한 IP가 부족하면 기존 노드는 계속 트래픽을 처리하더라도 용량 확장이 정체되고 연결 과정에서 5xx나 timeout이 발생할 수 있다. 운영 점검에서는 ALB 자체의 확장 조건과 백엔드 대상의 처리 여력을 따로 확인한다. 요청을 분산하는 기능만으로 대상 서버의 수나 애플리케이션 처리량이 함께 늘어나는 것은 아니다.
+
+### 요금은 실행 시간과 용량 단위로 나뉜다
+
+2026-11-09 공식 요금 페이지 대조: ALB, NLB, GWLB는 모두 로드밸런서가 실행되는 시간(1시간 미만도 1시간으로 계산)에 대한 요금과, 분 단위로 집계하는 용량 단위(ALB는 LCU, NLB는 NLCU, GWLB는 GLCU) 요금을 함께 낸다. 요청이 하나도 없어도 로드밸런서가 존재하는 동안 시간 요금은 계속 생긴다. 쓰지 않는 개발, 검증 환경의 로드밸런서는 트래픽이 없다는 이유로 비용이 없다고 보지 않고 삭제나 통합을 점검한다.
+
+- 요금 페이지의 US East (N. Virginia) 계산 예시는 ALB 시간 요금 $0.0225, LCU당 $0.008을 쓴다. 이는 예시에 쓰인 값이므로 다른 리전이나 다른 날짜의 단가로 옮기지 않는다.
+- 요금 페이지는 Classic과 ALB가 공유하는 월 750시간과 ALB 15 LCU의 프리 티어 문구와 함께, 2025-07-15부터 신규 고객은 ELB에도 쓸 수 있는 최대 $200의 프리 티어 크레딧을 받는다고 적는다(2026-11-09 확인). 이전(legacy) 프리 티어 FAQ는 그 제도를 2025-07-15 이전에 만든 계정으로 한정하므로, 750시간 문구는 이전 계정의 조건으로 읽는다(이 문서의 해석). 그 뒤에 만든 계정의 로드밸런서 사용량은 크레딧에서 차감되는 구조이므로 크레딧 잔액과 사용 기한을 함께 확인한다.
+- 시간 요금은 로드밸런서 개수에 비례하므로 서비스마다 ALB를 하나씩 두는 구성과, 호스트나 경로 규칙으로 한 ALB에 묶는 구성은 비용이 다르다. 규칙 평가도 LCU 차원이지만 처리한 규칙 10개까지는 무료이고 설정 규칙이 10개 이하면 이 차원은 무시된다. LCU는 네 차원 가운데 사용량이 가장 큰 차원으로 과금되므로, 묶은 뒤 규칙 수와 요청률이 커져 규칙 평가가 최대 차원이 될 때 비용이 달라진다.
 
 ### 용량 산정에서 요청 수와 연결 수를 구분한다
 
@@ -218,7 +226,7 @@ ALB의 504는 대상이 연결 timeout이나 idle timeout(기본 60초) 안에 �
 - [Gateway Load Balancer 대상 그룹 health check](https://docs.aws.amazon.com/elasticloadbalancing/latest/gateway/health-checks.html)
 - [Gateway Load Balancer 대상 그룹 속성](https://docs.aws.amazon.com/elasticloadbalancing/latest/gateway/edit-target-group-attributes.html)
 - [AWS, Elastic Load Balancing pricing](https://aws.amazon.com/elasticloadbalancing/pricing/)
-- [Application Load Balancer 용량 예약](https://docs.aws.amazon.com/elasticloadbalancing/latest/application/capacity-unit-reservation.html)
+- [AWS, Free Tier FAQs (legacy)](https://aws.amazon.com/free/legacy/free-tier-faqs)- [Application Load Balancer 용량 예약](https://docs.aws.amazon.com/elasticloadbalancing/latest/application/capacity-unit-reservation.html)
 - [Application Load Balancer 용량 예약 요청](https://docs.aws.amazon.com/elasticloadbalancing/latest/application/request-capacity-unit-reservation.html)
 - [Application Load Balancer 용량 예약 모니터링](https://docs.aws.amazon.com/elasticloadbalancing/latest/application/monitor-capacity-unit-reservation.html)
 - [Application Load Balancer HTTP 헤더](https://docs.aws.amazon.com/elasticloadbalancing/latest/application/x-forwarded-headers.html)
@@ -238,6 +246,7 @@ ALB의 504는 대상이 연결 timeout이나 idle timeout(기본 60초) 안에 �
 - [Application Load Balancer 문제 해결](https://docs.aws.amazon.com/elasticloadbalancing/latest/application/load-balancer-troubleshooting.html)
 - [Application Load Balancer 속성 편집, connection idle timeout](https://docs.aws.amazon.com/elasticloadbalancing/latest/application/edit-load-balancer-attributes.html)
 - [인프런, Sungmin Kim, ELB](https://www.inflearn.com/courses/lecture?courseId=325381&unitId=43732)
+- [YouTube, 데브아트 DevArt, 로드 밸런서 비용 기본료와 사용량](https://www.youtube.com/watch?v=qD0Pgq5gnSU)
 
 ## 관련 문서
 - [[Load-Balancer|Load Balancer 일반 개념]]

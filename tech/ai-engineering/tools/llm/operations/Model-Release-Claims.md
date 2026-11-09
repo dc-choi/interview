@@ -1,7 +1,7 @@
 ---
 tags: [ai, llm, model-selection, benchmark, open-weights, license]
 status: done
-verified_at: 2026-10-27
+verified_at: 2026-11-09
 category: "AI엔지니어링(AIEngineering)"
 aliases: ["Model Release Claims", "모델 발표 수치 읽기", "벤더 벤치마크 읽기", "Vendor Benchmark Reading", "자체 보고 벤치마크"]
 ---
@@ -34,6 +34,7 @@ aliases: ["Model Release Claims", "모델 발표 수치 읽기", "벤더 벤치�
 - **단가와 출력 토큰만으로는 과업당 비용이 재현되지 않는다**: 위 사례에서 출력 단가 절반과 출력 토큰 1.5배를 곱하면 약 0.75배인데 과업당 비용은 약 0.43배다. Artificial Analysis는 Intelligence Index v4.1부터 비용 지표에 캐시 적중률과 캐시 단가를 반영하고, 평가의 토큰 수에 모델별로 실측한 평소 캐시 적중률을 결합한다. 캐시 할인율은 M3.1 Flash 90%, M3 80%여서 캐시 입력 단가가 4배 차이 나고($0.015 대 $0.06, M3 값은 할인율로 계산), 캐시 적중, 입력, 출력을 7:2:1로 섞은 혼합 단가도 $0.10 대 $0.22로 과업당 비용 비율에 가깝다(이 문서의 계산). 모델별 입력 토큰 수와 적중률은 확인하지 못해 차이를 정확히 분해하지 않았다. 과업당 비용을 비교할 때는 입력 토큰과 캐시 조건까지 같은 기준인지 본다.
 - **과업당 비용 배율**: Ultramarine 1 Flash의 Fable 대비 60배 저렴하다는 주장은 자체 벤치마크의 과업당 비용($0.13, Fable 5 $8.19)에서 나온다. API 단가(입력 $0.15, 캐시 입력 $0.03, 출력 $0.50)는 기반 모델 GLM-5.3 Flash와 같고, 6개 벤치마크에서 출력 토큰이 기반 모델보다 6.5% 적다고 보고한다.
 - **할인 기한**: Mercury 3는 정가의 50% 출시 할인가를 내걸었지만 종료일을 밝히지 않는다([[Diffusion-Language-Models#사례: Mercury 계열의 공개 범위|Mercury 3 호출 조건]]). Gemini 4 Argon은 가격표에 할인가의 적용 기한을 적는다([[Gemini-4-Argon#정식 제공 뒤 확인한 모델 ID와 가격 기한|Gemini 4 Argon]]). 예산에는 기한 뒤의 단가를 넣는다.
+- **출시 특별가와 제3자 지수의 단가 기준**: Gemini 4 Carbon 발표(2026-10-28)는 Argon과 같은 출시 특별가(100만 토큰당 입력 $2, 출력 $10, 캐시 입력은 입력 단가의 95% 할인)를 적고, 각주에서 특별가 기간이 끝나면 입력 $4, 출력 $20이 적용된다고 밝히지만 종료일은 적지 않는다. 같은 시점의 Argon은 Google 가격표에 특별가를 2026-11-30까지로 적는다. Artificial Analysis의 Carbon 페이지(2026-11-09 열람, Intelligence Index v5.0.1, High 설정)는 Google API 기준 단가를 $4, $20으로 표시하고 지수 과업당 비용 $7.76을 보인다. 이 단가는 Google 발표의 특별가 종료 뒤 단가와 같은 값이다(이 문서의 대조). 공급사 특별가와 제3자 지수의 과업당 비용은 서로 다른 단가로 계산된 값이므로, 비교할 때 어느 단가를 넣었는지 먼저 맞춘다. 같은 날 Carbon은 Gemini Developer API 가격표에 없었고 일반 개발자에게 열리지도 않았으므로(아래 절) 발표 단가가 곧 호출 가능한 단가라는 뜻도 아니다.
 
 ## 속도와 지연은 측정 위치와 날짜를 붙인다
 
@@ -77,7 +78,7 @@ FLUX 3 Image Klein 발표는 생성기 가중치를 BF16 11.2GB, FP8 5.6GB로 �
 | Gemini 4 Carbon, 2026-10-28 Google 발표 | AAII v5 59, WebDev Arena 1,768(+89), 보안 탐지 SEC-bench Pro 88.2%, 악용 검증 ExploitGym 54.8%, 패치 CWE-bench 71.0% | 보안 수치는 가드레일을 제거한 평가 조건이다. 실제 제품의 허용 범위나 무오류를 뜻하지 않음 |
 | Mistral Large 4 가중치 공개 발표 | Coding Agent Index 48%, GLM-5.3 대비 과업당 토큰 47% 감소. Terminal-Bench 4.0 41%, 프리뷰 대비 13%p 상승과 출력 토큰 30% 감소 | **Coding Agent Index**를 Intelligence Index와 혼동하지 않음. 추론 모드와 하네스가 같은지 확인 |
 
-Google은 Carbon을 일부 사이버 방어자와 신뢰 파트너에 단계적으로 제공한다고 밝혔으므로 발표를 일반 공개 API의 즉시 사용 가능 상태로 바꾸지 않는다. 내부 며칠짜리 작업 사례와 fabrication 감소도 공급자 관측이며 외부 업무의 성공 보장이 아니다. 제공된 10월 30일 알림의 코딩 에이전트 59점, 지식 54점, 정답률 58%와 환각률 11%는 해당 날짜의 평가 원표를 추가 대조할 후보로 보존한다.
+Google 발표는 Carbon의 지수를 v5.0 59점 1위로 적고 추론 설정을 밝히지 않지만, 2026-11-09 열람한 Artificial Analysis 페이지는 Intelligence Index v5.0.1에서 Gemini 4 Carbon (High) 60점을 보인다. 차이가 버전 변경, 설정이나 재측정 가운데 어디서 왔는지는 두 자료로 알 수 없다. 같은 이름의 지수도 세부 버전과 설정에 따라 값이 다를 수 있으므로 점수를 인용할 때 지수 버전, 추론 설정과 열람일을 함께 붙인다. Google은 Carbon을 일부 사이버 방어자에 먼저 열고 Fairwind Program으로 신뢰 파트너에 단계적으로 넓힌다고 밝혔고, 개발자, 기업과 일반 사용자 제공 날짜는 밝히지 않았으므로 발표를 일반 공개 API의 즉시 사용 가능 상태로 바꾸지 않는다. 내부 며칠짜리 작업 사례와 fabrication 감소도 공급자 관측이며 외부 업무의 성공 보장이 아니다. 제공된 10월 30일 알림의 코딩 에이전트 59점, 지식 54점, 정답률 58%와 환각률 11%는 해당 날짜의 평가 원표를 추가 대조할 후보로 보존한다.
 
 Mistral은 Low, Medium, High 추론 모드를 안내한다. 공개 라이선스는 Mistral Ecosystem Open-Weight이며 Model-as-a-Service 사업자의 상업 이용에는 별도 라이선스 조건이 있다. 단순 MIT나 무제한 상업 이용으로 줄여 적지 않는다.
 
@@ -110,7 +111,9 @@ Mistral은 Low, Medium, High 추론 모드를 안내한다. 공개 라이선스�
 - [Changelog — Mistral Docs](https://docs.mistral.ai/getting-started/changelog) — 2026-10-20 Voxtral 3 Public Preview
 - 사용자 제공 GeekNews 알림(2026-10-16~10-27): FLUX 3 Image Klein, Ultramarine 1 Flash, DeepSeek-V4.1-Flash-1017과 Artificial Analysis 측정, MiniMax M3.1 Flash, Voxtral 3, Raon-1 mini. 학습 계기이며 수치는 위 공식 자료와 제3자 지수 페이지로 대조했다. 출시 직후 속도 인용값(224.7 tok/s)만 [DeepSeek V4.1 Flash 1017 - AAII 45점, 초당 약 225토큰 출력 — GeekNews](https://news.hada.io/topic?id=35633)의 요약에서 가져왔고, 측정 시각이 없어 Artificial Analysis 자료로 대조하지 못했다.
 
-- [Gemini 4 Carbon: our next frontier model — Google](https://blog.google/innovation-and-ai/models-and-research/gemini-models/introducing-gemini-4-carbon/) — 2026-11-02 발표의 점수, 평가 조건과 단계적 제공 범위 부분 대조.
+- [Gemini 4 Carbon: our next frontier model — Google](https://blog.google/innovation-and-ai/models-and-research/gemini-models/introducing-gemini-4-carbon/) — 2026-11-02 발표의 점수, 평가 조건과 단계적 제공 범위 부분 대조. 2026-11-09 출시 특별가, 정가 각주와 Fairwind Program 대조.
+- [Gemini 4 Carbon Intelligence, Performance & Price Analysis — Artificial Analysis](https://artificialanalysis.ai/models/gemini-4-carbon) — 2026-11-09 열람, Intelligence Index v5.0.1 (High) 점수, Google API 기준 단가와 과업당 비용
+- [Google AI Studio, Gemini Developer API pricing](https://aistudio.google.com/docs/pricing) — 2026-11-09 열람, Gemini 4 Argon 특별가의 2026-11-30 기한
 - [Mistral Large 4 (Le Chonk) is now open weight — Mistral](https://mistral.ai/news/mistral-large-4-oss/) — 2026-11-02 코딩 지수와 효율, 추론 모드와 라이선스 조건 부분 대조.
 
 ## 관련 문서
