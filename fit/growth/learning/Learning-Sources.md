@@ -45,7 +45,6 @@ auto-learn 파이프라인이 새 자료를 모으는 YouTube 채널, 이메일 
 | DX LAB AI | [@DxLabTV](https://www.youtube.com/@DxLabTV) | tech |
 | EO Korea | [@eo_korea](https://www.youtube.com/@eo_korea) | biz |
 | F-Lab : 상위 1% 개발자들의 1:1 멘토링 | [@F_Lab](https://www.youtube.com/@F_Lab) | fit, tech |
-| FIDO Alliance | [@TheFIDOAlliance](https://www.youtube.com/@TheFIDOAlliance) | tech |
 | HOCO | [@hococlub](https://www.youtube.com/@hococlub) | biz, tech |
 | InfoGrab | [@infograb](https://www.youtube.com/@infograb) | tech |
 | IT 늦공 김부장 | [@IT_KimBujang](https://www.youtube.com/@IT_KimBujang) | tech |
@@ -137,7 +136,6 @@ auto-learn 파이프라인이 새 자료를 모으는 YouTube 채널, 이메일 
 | 우아한테크 | [@woowatech](https://www.youtube.com/@woowatech) | tech |
 | 원투코딩 OneTwoCoding | [@one2coding](https://www.youtube.com/@one2coding) | tech |
 | 월가아재의 과학적 투자 | [@wsaj](https://www.youtube.com/@wsaj) | econ |
-| 월급쟁이부자들TV | [@weolbu_official](https://www.youtube.com/@weolbu_official) | econ |
 | 웹핵 | [@웹핵](https://www.youtube.com/@웹핵) | biz, tech |
 | 윤석찬 (Channy Yun) | [@channy](https://www.youtube.com/@channy) | tech |
 | 이창현코딩연구소 | [@jamsuham75](https://www.youtube.com/@jamsuham75) | tech |
@@ -158,7 +156,6 @@ auto-learn 파이프라인이 새 자료를 모으는 YouTube 채널, 이메일 
 | 초보 인프라 노트 | [@opsnotekr](https://www.youtube.com/@opsnotekr) | tech |
 | 최범균 | [@madvirus](https://www.youtube.com/@madvirus) | tech |
 | 최희준교수 강의실 | [@1passedu](https://www.youtube.com/@1passedu) | tech |
-| 취업전략:통념을 파괴하는 합격자의 관점 | [@취업_전략](https://www.youtube.com/@취업_전략) | fit |
 | 컴공선배 | [@comgongbro](https://www.youtube.com/@comgongbro) | tech, fit |
 | 컴해되 | [@컴맹이해커가되기까지](https://www.youtube.com/@컴맹이해커가되기까지) | tech |
 | 코드팩토리 | [@codefactory_official](https://www.youtube.com/@codefactory_official) | tech |
