@@ -44,6 +44,20 @@ aliases: ["Palantir 자원과 조직 관계 모델링"]
 
 출처 메타데이터는 시스템 RID, 이름, 유형과 마지막 갱신 시각을 담는 구조체 배열이며 길이가 정확히 1로 제한된다. 여러 시스템의 자료를 합쳐 한 이벤트로 저장하려면 이 계약과 충돌하는지 검토해야 한다. 출처의 마지막 갱신 시각과 이벤트의 보고 시각도 별도 필드다.
 
+### 개별 물자의 상태 이벤트
+
+2026-11-09 공개 `Materiel (Item) Status Event` 상세를 대조했다. 분류 단위의 수량 상태를 담는 `Materiel Status Event`와 달리, 개별 물자 한 건의 상태, 위치나 소속 조직을 한 시점에 기록한 스냅샷이다. `Report Observation`을 확장하며 수량 속성이 없다.
+
+| 구성 | 계약 |
+| --- | --- |
+| Condition | string, 매핑 선택. value type과 허용값 목록이 없다 |
+| Source System Metadata | 길이 1로 제한된 출처 구조체 배열, 매핑 필수 |
+| Reported At | timestamp, 매핑 필수 |
+| Materiel (Item) 링크 | 단일 관계, 매핑 필수 |
+| Assigned Organization, Assigned Named Location 링크 | 단일 관계, 매핑 선택 |
+
+반대 방향에서는 개별 물자, 조직과 명명 위치가 각각 이 이벤트로 향하는 선택적 다중 링크를 갖는다. 그래서 한 물자의 상태 이력을 이벤트 목록으로 쌓을 수 있다. 다만 개별 물자 객체에도 Condition 속성과 배정 조직, 배정 위치 링크가 따로 있으므로, 물자의 현재 값과 시점별 보고 중 어느 쪽을 현재 상태의 기준으로 삼을지 구현에서 정한다(모델링 판단). Condition은 허용값이 정의되지 않은 문자열이라 원천 시스템마다 표기가 다를 수 있어, 정규화 없이는 집계 기준으로 쓰기 어렵다(모델링 판단). 이벤트에 조직이나 위치 링크가 없다고 해서 그 시점에 소속이나 위치가 없었다고 해석하지 않는다.
+
 ## 조직의 하위 타입과 계층의 하위 타입
 
 `Unit`은 `Organization`을 확장하므로 조직으로서의 관계에 참여할 수 있다. 그러나 `Unit Hierarchy`는 `Organization Hierarchy`를 확장하지 않는다. 전자는 Unit만 연결해야 하는데 후자의 링크까지 상속하면 다른 조직을 허용할 수 있기 때문이다.
@@ -109,6 +123,7 @@ aliases: ["Palantir 자원과 조직 관계 모델링"]
 - [Palantir Documentation, Equipment Item](https://www.palantir.com/docs/defense-osdk/api/orderOfBattle/interfaceTypes/com-palantir-ontology-defense-types-equipment/)
 - [Palantir Documentation, Munition Type](https://www.palantir.com/docs/defense-osdk/api/orderOfBattle/interfaceTypes/com-palantir-ontology-defense-types-ammunitionType/)
 - [Palantir Documentation, Materiel Status Event](https://www.palantir.com/docs/defense-osdk/api/sustainment/interfaceTypes/com-palantir-ontology-defense-types-materielStatusEvent/)
+- [Palantir Documentation, Materiel Item Status Event](https://www.palantir.com/docs/defense-osdk/api/sustainment/interfaceTypes/com-palantir-ontology-defense-types-materielItemStatusEvent/)
 - [Palantir Documentation, Materiel Change Event](https://www.palantir.com/docs/defense-osdk/api/sustainment/interfaceTypes/com-palantir-ontology-defense-types-materielChangeEvent/)
 - [Palantir Documentation, Materiel Requirement](https://www.palantir.com/docs/defense-osdk/api/sustainment/interfaceTypes/com-palantir-ontology-defense-types-materielRequirement/)
 - [Palantir Documentation, Organization](https://www.palantir.com/docs/defense-osdk/api/orderOfBattle/interfaceTypes/com-palantir-ontology-defense-types-organization/)
