@@ -23,6 +23,7 @@ aliases: ["Marketing", "마케팅"]
 - [x] [[Customer-Messaging-and-Buying-Roles|고객 상황과 구매 역할별 메시지]] — 목표 고객군 안의 공통 가치, 두 번째 미팅의 맞춤 설명, 구매 이유와 도입 우려, 구매 참여자별 확인 자료
 - [x] [[GTM-Strategy|Go-to-Market 전략과 유입, 체험 물량 역산]] *(→ product-strategy/)*
 - [x] [[Content-Marketing|콘텐츠 마케팅]] — 작은 유입의 전환 검증, 경험 콘텐츠와 무료/유료 제공 범위, 추천 채널
+- [x] [[Branded-Entertainment-Channel|브랜드를 앞세우지 않는 기업 콘텐츠 채널]] — 공식 채널과의 분리, 사람과 취향 중심 기획, 상품 배치, 노출과 인지와 매출 지표의 구분
 - [x] [[Short-Form-Content-Testing|짧은 콘텐츠의 편집과 공유 검증]] — 공유 가설, 자막 정확성, 편집 비용과 반응 비교
 - [x] [[Search-Trends-and-Content-Hypotheses|검색 트렌드와 콘텐츠 가설]] — 구체적인 검색어, 증가율과 설문 표본의 한계, 사용 장면별 콘텐츠 실험
 - [x] [[Lead-Magnet-and-Entry-Offer|리드 마그넷과 진입 제안]] — 진입 제안 유형과 소비 확인, 문의 뒤 첫 연락 시간과 응답 속도 연구의 한계, 광고성 정보의 수신 동의, 무료와 유료 진입의 물량과 선별, 상담 반론의 콘텐츠화

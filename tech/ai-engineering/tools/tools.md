@@ -37,6 +37,7 @@ aliases: ["AI 엔지니어링 실천 도구", "AI Engineering Tools"]
 - [x] [[Codex-Agent-Execution-Model|Codex 동작 원리 (Context → Tokenizer → Model → Tool → Verification, ChatGPT 채팅과 문서 수정 비교)]]
 - [x] [[MCP|MCP (Model Context Protocol — Host/Client/Server, Tools/Resources/Prompts, RAG와 에이전트 및 Function Calling의 경계, OAuth 권한, annotations와 토큰 및 로컬 실행 경계, A2A)]]
 - [x] [[MCP-Security-Boundaries|MCP 보안 경계 (서버 자격 증명과 네 경계, 2026년 MCP 서버 권고, 게이트웨이와 자격 증명 주입, URL 모드 elicitation)]]
+- [x] [[MCP-TypeScript-SDK-Upgrade|MCP TypeScript SDK 업그레이드 점검]] — 스키마 식별자 URI 검증, `x-mcp-header` number 인자, `$ref` 루트 출력 위치, Skills 확장
 - [x] [[Local-Speech-to-Text|로컬 음성 인식으로 영상 전사하기 (자막 종류와 한계, Whisper와 VAD와 어휘 힌트, Apple Silicon 엔진 비교, 한국어 실측 CER, 클라우드 요금)]]
 - [x] [[Realtime-Voice-Architecture|실시간 음성 에이전트 (VAD와 턴 종료 판단, 전이중 대화와 백엔드 위임, 중단과 작업 취소, 응답 지연과 업무 결과 검증)]]
 - [x] [[Korean-TTS-Training-and-Evaluation|한국어 TTS 학습과 평가]] — 음성 표현과 생성 모델의 병목, LoRA와 전체 미세조정 비교, 내용과 자연스러움 평가
