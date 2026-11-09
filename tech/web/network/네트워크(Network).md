@@ -16,6 +16,7 @@ OSI 7계층과 캡슐화, IP 헤더, 스위치와 라우팅, TLS, 패킷 캡처,
 - [x] [[Network-Lab-Practice|네트워크 실습]] — 두 서브넷 연결, 게이트웨이와 ARP, 상태/왕복/서비스 분리, 장애 진단과 열 단계 실습 후보
 - [x] [[Satellite-Direct-to-Device|위성 직접 연결]] — 기존 LTE와 NTN, 지연과 도플러, 단말과 서비스 조건
 - [x] [[Intelligent-Network|지능망과 SSP, SCP]] — 교환과 서비스 로직의 분리, 기능 엔티티와 물리 엔티티, 호 처리 흐름, Freephone 예시
+- [x] [[SS7-Signaling|SS7 공통선 신호방식]] — 회선별 신호(R2)와 공통선 신호, 신호점과 STP, 신호 전달 방식, MTP, SCCP, TC(TCAP) 기능 블록, 로밍과 문자 메시지의 MAP
 - [x] [[HTTPS-TLS|HTTPS / TLS Handshake]]
 - [x] [[OSI-7-Layer|OSI 7계층 (osi-layers/ 서브폴더) — 계층별 상세 (L1/L2 MAC과 프레임, L2 스위칭, L3 IP와 라우팅, ARP, ICMP, L4 TCP/UDP, 소켓 식별과 역다중화, 메시지 경계와 프레이밍, L5/6/7), TCP/IP 4계층 대응과 역사, Internet vs Ethernet]]
 - [x] [[Network-Encapsulation|캡슐화와 데이터 단위 (프로토콜과 계층, 라우터 홉의 재캡슐화, 소켓 스트림, 세그먼트, 패킷, 프레임, MTU/MSS, 단편화, DPI)]]

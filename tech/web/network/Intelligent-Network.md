@@ -58,6 +58,7 @@ CS-1의 대상 서비스 중 Freephone(FPH)은 가입자가 자기 비용으로 
 
 ## 관련 문서
 
+- [[SS7-Signaling|SS7 공통선 신호방식]]
 - [[Mobile-Network-Continuity|이동 환경의 통신 연속성]]
 - [[Routing-Protocols|정적 라우팅과 RIP, OSPF, BGP]]
 - [[네트워크(Network)|네트워크 인덱스]]
