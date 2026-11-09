@@ -33,7 +33,7 @@ aliases: ["CS Fundamentals"]
 - [x] [[Data-Measurement-and-Tidy-Data|데이터 측정 척도, 정돈된 데이터와 결측, 이상치 (명목, 순서, 등간, 비율, 변수와 관측 단위, 결측 메커니즘, 삭제와 대체, 학습 데이터 누수, IQR 이상치 후보)]]
 - [x] [[Descriptive-Statistics-and-Distribution|기술통계와 분포 (평균, 중앙값과 최빈값, 분산의 분모, 표준편차와 IQR, 상자그림 수염, 관측 순서와 기하평균)]]
 - [x] [[Discrete-Probability-Distributions|이산 확률분포 (이항, 기하와 포아송, PMF와 CDF, 기댓값, 큰 수의 법칙과 정규분포의 구분)]]
-- [x] [[Conditional-Probability-and-Bayes|조건부확률과 베이즈 정리]] — 결합확률과 주변확률, 조건의 방향, 전체확률과 기저율
+- [x] [[Conditional-Probability-and-Bayes|조건부확률과 베이즈 정리]] — 결합확률과 주변확률, 조건의 방향, 전체확률과 기저율, 독립과 조건부 독립의 세 연결 구조
 - [x] [[Confidence-Intervals-and-Standard-Error|신뢰구간과 표준오차]] — 원자료와 표집분포, SD와 SE, 반복 표집의 95%, 부트스트랩의 한계
 
 ## 출처

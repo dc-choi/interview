@@ -18,6 +18,18 @@ Radical Candor는 상대를 한 사람으로 아끼는 태도(Care Personally)�
 
 이 표는 사람의 성격을 분류하는 진단표가 아니다. 같은 사람도 상황마다 다른 사분면의 행동을 할 수 있으므로, 상대의 반응을 보고 표현과 맥락을 조정한다.
 
+## 같은 지적도 자리에 따라 사분면이 바뀐다
+
+공식 FAQ는 바지 지퍼가 열린 사람을 보고 난처하게 만들기 싫어 말하지 않는 바람에 더 많은 사람이 보게 되는 상황을 Ruinous Empathy의 예로 든다. 같은 장면에 세 가지 대응이 있다.
+
+| 대응 | 가까운 사분면 | 이유 |
+|---|---|---|
+| 말하지 않는다 | Ruinous Empathy 또는 Manipulative Insincerity | 배려 때문에 침묵하면 Ruinous Empathy다. 관계가 멀어 신경 쓰지 않아서라면 아끼는 마음과 문제 제기가 모두 빠진 쪽에 가깝다 |
+| 모두가 있는 자리에서 말한다 | Obnoxious Aggression | 정보는 전했지만 상대가 처한 상황을 고려하지 않았다. 공개적인 망신 주기는 공식 용어집이 꼽는 Obnoxious Aggression의 행동이다 |
+| 따로 불러 말한다 | Radical Candor | 문제를 직접 알리면서 상대가 바로 고칠 수 있는 자리를 고른다 |
+
+공식 용어집의 좋은 가이던스 원칙(HHIPP)에는 비판은 따로, 칭찬은 공개적으로 하라는 Private 항목이 있다. 이 사례처럼 전할 내용이 같으면 상대를 고려한 시점과 장소가 사분면을 가른다. 반대로 따로 말해도 깎아내리거나 성격을 공격하면 Obnoxious Aggression이다. HHIPP는 Private와 함께 행동과 영향을 말하고 성격이나 정체성을 겨냥하지 말라는 not Personalized 기준도 둔다. 다만 공개 칭찬도 불편해하는 사람이 있으므로 아래 칭찬 절의 예외를 함께 적용한다. 침묵의 이유를 둘로 나눈 것은 2x2의 정의를 적용한 해석이며 공식 예시의 문구는 아니다.
+
 ## 피드백 루프는 요청에서 시작한다
 
 공식 Radical Candor 자료는 피드백을 받기, 주기와 상대 반응 확인의 루프로 설명한다. 특히 리더는 먼저 비판을 요청하고, 실제로 듣고 바꾸는 모습을 보여야 안전한 피드백 환경을 만들 수 있다.
@@ -113,6 +125,7 @@ CORE는 어려운 대화를 자동으로 해결하는 문구가 아니다. 사�
 - [How to Make Work Less Like Junior High (A Tale of 2 Jasons) — Radical Candor](https://www.radicalcandor.com/podcast/s5-e10-how-to-make-work-less-like-junior-high)
 - [6 Ways to Encourage Feedback Between Others — Radical Candor](https://www.radicalcandor.com/wp-content/uploads/2021/08/6-ways-to-Encourage-Feedback-Between-Others.pdf)
 - [좋은 피드백만 골라서 상위 1% 개발자 되는 법 — YouTube, 코딩맨](https://www.youtube.com/watch?v=Hm_64T6q1rE) — 2025-09-26, 피드백의 질에 관한 견해, 제목과 본문의 비율은 일반 통계가 아님
+- [솔직함을 가장한 무례함 구별하는 법 — YouTube, JOB담](https://www.youtube.com/watch?v=bLhsLTfB-W8) — 2026-10-29, 지퍼 사례의 세 가지 대응. 2026-11-09 공식 FAQ의 Ruinous Empathy 예시와 Glossary의 HHIPP, Obnoxious Aggression 항목으로 대조
 
 - 킴 스콧 — 실리콘밸리의 팀장들(Radical Candor) (도서, 2x2 프레임 원전)
 - [Radical Candor, Frequently Asked Questions](https://www.radicalcandor.com/frequently-asked-questions)
