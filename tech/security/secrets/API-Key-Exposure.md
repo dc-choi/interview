@@ -1,9 +1,9 @@
 ---
 tags: [security, secrets, api-key, least-privilege, payment, byok, llm]
 status: done
-verified_at: 2026-11-08
+verified_at: 2026-11-10
 category: "보안(Security)"
-aliases: ["API Key Exposure", "연동키 노출", "API 키 노출", "Integration Credential Exposure", "BYOK 키 노출"]
+aliases: ["API Key Exposure", "연동키 노출", "API 키 노출", "Integration Credential Exposure", "BYOK 키 노출", "Distillation Attack", "증류 공격"]
 ---
 
 # API 연동 키 노출과 최소 권한 스코프
@@ -107,6 +107,25 @@ Railway는 고객에게 변수와 키 교체 외에 DB의 공개 네트워크 �
 
 2026-11-08에는 Railway의 공지, 예비 보고서와 변경 기록만 대조했다.
 
+## AI 공급자 키가 표적이 되는 이유 — 무단 증류
+
+증류(distillation)는 더 강한 모델의 출력으로 덜 강한 모델을 학습시키는 방법이다. 프런티어 연구소가 자사 모델을 작고 싼 버전으로 만드는 데 쓰는 정상적인 학습 방법이지만, 경쟁자가 다른 연구소의 능력을 허가 없이 짧은 시간에 가져오는 데도 쓸 수 있다(Anthropic, 2026-02-23). 대상 모델의 가중치를 훔치지 않아도 대량의 질의와 응답을 얻으면 되므로, 정상 고객으로 보이는 API 접근 자체가 자원이 된다(이 문서의 해석). 이 절은 키가 표적이 되는 측면만 다룬다. API를 통한 모델 추출 방어는 [[LLM-Application-Security|LLM 애플리케이션 보안]]에서, 공급자 약관의 증류 제한은 [[LLM-Provider-Usage-Policy|LLM 공급자 이용 정책]]에서 다룬다.
+
+Anthropic이 공개한 접근 방식은 다음과 같다.
+
+- **프록시와 계정 네트워크:** 프런티어 모델 접근을 대량으로 재판매하는 상업 프록시 서비스를 거치고, 사기 계정 네트워크로 트래픽을 Anthropic API와 서드파티 클라우드 플랫폼에 나눠 보낸다. 한 계정이 차단되면 다른 계정이 그 자리를 채우고, 증류 트래픽을 무관한 고객 요청과 섞어 탐지를 어렵게 한다. 2026-02 게시물은 세 연구소가 약 2만 4천 개의 사기 계정으로 1,600만 건이 넘는 교환을 만들었다고 적었다.
+- **도난 키의 사용:** 2026-09 위협 보고서는 이런 프록시를 transfer station이라고 부르며, 지역 제한과 관련 통제를 우회하려고 허위 신원, 위조나 도난 신용카드와 도난 API 키로 수천 개의 새 계정을 만들며, 정당한 회사나 개인의 도난 API 자격증명을 자주 쓴다고 적었다. 증류와 별개로 같은 보고서의 사이버 범죄 사례는 여러 표적 환경에서 훔친 AI API 키를 공격 작업의 추가 연산에 썼다.
+- **추론 과정 추출:** 증류에 쓸 사고 과정(chain-of-thought) 자료를 얻으려고 모델의 추론 내용을 출력시키는 요청을 보낸다. 2026-09 보고서는 한 무단 주체가 요청마다 다른 기법을 쓴 1만 2천 건이 넘는 시험 요청으로 어떤 방법이 통하는지 확인했고, 대부분은 거부됐지만 성공한 기법을 더 큰 증류 공격에 썼다고 적었다.
+
+Anthropic이 밝힌 자사 대응은 API 트래픽에서 증류 패턴을 찾는 분류기와 행동 지문(behavioral fingerprinting), 추론 추출 요청과 여러 계정에 걸친 조직적 활동의 탐지, 다른 연구소와 클라우드 사업자, 당국과의 기술 지표 공유, 교육용, 보안 연구와 스타트업 계정의 검증 강화, 불법 증류에 쓰일 출력의 효용을 낮추는 제품, API와 모델 수준의 안전장치다(2026-02 게시물 기준).
+
+키를 맡거나 쓰는 쪽에서 옮길 점은 다음과 같다(이 문서의 해석과 운영 제안).
+
+- 도난 키는 위 보고서가 든 지역 제한 우회 수단이 되고, 결제 수단이 붙은 신뢰된 고객 계정이라는 점에서도 증류 공격자에게 가치가 있다. Railway는 증류에 쓸 키 확보를 공격 목적으로 설명했고, OpenCode는 침해를 증류 공격과 관련지었지만 키 노출과의 관계는 밝히지 않았다. 사용자 키를 대신 보관하는 서비스는 많은 고객의 키를 한곳에 모은 표적이 된다.
+- 도난 키로 보낸 증류 트래픽은 공급자의 탐지에 걸려 차단될 수 있고, 그때 정상 서비스도 같은 키로 함께 멈춘다. 환경과 서비스별로 키를 나누고 지출 한도를 걸어 두면 차단과 청구의 범위가 줄어든다.
+
+2026-11-10에는 Anthropic의 2026-02 게시물 본문과 2026-09 위협 보고서의 일부 구간을 대조했다. 위협 보고서의 연구소별 수치와 추출 프롬프트 예시는 원문 전체를 확인하지 못해 옮기지 않았다.
+
 ## 면접 체크포인트
 
 - 시스템 침입이 없어도 자격증명 노출만으로 데이터가 유출되는 경로를 설명할 수 있는가.
@@ -116,6 +135,7 @@ Railway는 고객에게 변수와 키 교체 외에 DB의 공개 네트워크 �
 - 사용자 키를 맡은 서비스(BYOK)가 뚫리면 비용이 누구에게 청구되며, 그 서비스의 예산과 rate limit이 왜 피해를 막지 못하는가.
 - 외부 서비스에서 키 노출 공지를 받았을 때 어디서 키를 폐기하고 무엇을 확인하는가 (공급자 콘솔에서 폐기와 재발급, 연동 전환, 사용량과 청구 확인).
 - 공개 GitHub 저장소에 올라간 키와 서비스의 키 보관 DB에서 유출된 키에서 secret scanning 기반 자동 폐기가 닿는 범위는 어떻게 다른가.
+- AI 공급자 키가 증류 공격의 표적이 되는 이유와, 도난 키가 탐지돼 차단될 때 정상 서비스가 받는 영향을 설명할 수 있는가.
 - 비밀을 저장한 배포 플랫폼이 침해됐는데 어떤 키가 노출됐는지 특정할 수 없을 때 무엇을 교체 범위로 잡는가 (영향 상한과 무관하게 해당 시점 전에 저장한 비밀 전체 교체, 발급처에서의 폐기).
 
 ## 출처
@@ -135,6 +155,9 @@ Railway는 고객에게 변수와 키 교체 외에 DB의 공개 네트워크 �
 - [Preliminary Report: Oct 21st Security Incident — Railway](https://blog.railway.com/p/preliminary-report-october-security-incident) — 2026-10-22 게시, 10-26 갱신 포함. 2026-11-08 공격 기간, 복호화 경로, 최대 1.85% 상한과 봉투 암호화, 고객 권고와 자체 조치 대조
 - [October 21 security incident — Railway Changelog](https://railway.com/changelog/2026-10-23-october-21-security-incident.md) — 2026-10-23 게시. 2026-11-08 모든 고객 대상의 10-21 전 저장 자격증명 교체 권고와 추가 점검 권고 대조
 - [A PHP Bug Just Took Websites Offline Worldwide — YouTube, Better Stack](https://www.youtube.com/watch?v=Gxi_n-PtQBo) — 계기 자료. Railway 사고 소식만 사용했고, 사실은 Railway 공식 게시물로 대조
+- [Detecting and preventing distillation attacks — Anthropic](https://www.anthropic.com/news/detecting-and-preventing-distillation-attacks) — 2026-02-23 게시. 2026-11-10 증류의 정의, 프록시와 사기 계정 네트워크, 전체 규모, 탐지와 대응 대조
+- [Countering misuse of AI: September 2026 — Anthropic](https://www.anthropic.com/threat-intelligence-report-september-2026) — 2026-11-10 transfer station의 계정 생성 수단, 추론 추출 시험 요청, 고객 환경에서 훔친 API 키의 연산 사용 구간만 대조
+- [OpenCode got hacked — YouTube, The PrimeTime](https://www.youtube.com/watch?v=9OahTki4cPA) — 계기 자료. 증류 공격 설명의 방향만 사용했고, 사실은 Anthropic 게시물로 대조
 
 ## 관련 문서
 
