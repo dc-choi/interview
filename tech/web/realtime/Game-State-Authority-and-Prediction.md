@@ -1,7 +1,7 @@
 ---
 tags: [network, realtime, game, authority, prediction, simulation]
 status: done
-verified_at: 2026-11-02
+verified_at: 2026-11-09
 category: "Web - 실시간"
 aliases: ["게임 상태 권위와 예측", "Game State Authority and Prediction"]
 ---
@@ -22,6 +22,32 @@ aliases: ["게임 상태 권위와 예측", "Game State Authority and Prediction
 
 예를 들어 로컬에서는 전진했지만 같은 시점에 서버가 기절 효과를 적용했다면 예측이 틀릴 수 있다. 서버의 판정과 맞추는 보정은 정상적인 실행 과정이다. 이전 시점부터 여러 틱을 다시 계산하므로 재시뮬레이션의 CPU 비용도 고려한다. Unity Netcode for Entities 1.3.0-pre.4 문서는 불일치가 없어도 서버 스냅샷을 받을 때 재시뮬레이션한다고 설명한다. 따라서 보정 오류 횟수만으로 이 비용을 추정하지 않는다. [Unity의 예측 실행 설명](https://docs.unity.cn/Packages/com.unity.netcode%401.3/manual/prediction-high-level-explanation.html)
 
+## 지연 보상: 쏜 사람이 보던 시점으로 판정한다
+
+내 화면, 서버와 상대 화면은 같은 순간에 서로 다른 시점의 세계를 본다. 상대의 움직임이 네트워크를 건너 서버에 도착하고 다시 내 화면에 그려지기까지 전송과 버퍼링 시간이 걸리므로, 내 화면 속 상대는 조금 과거의 모습이다. 서버가 사격 명령이 도착한 현재 상태로만 명중을 판정하면 움직이는 상대를 화면에서 정확히 조준한 사격도 빗나갈 수 있다.
+
+그래서 사격 판정을 쏜 사람이 보던 시점에 맞춘다. VALORANT의 설명에서는 클라이언트가 사격할 때 자신이 보고 있던 시뮬레이션 시각을 함께 보내고, 서버가 그 시각의 세계 상태로 되감아 명중을 판정한다. 업계에서는 이런 방식을 흔히 지연 보상(lag compensation, 렉 보상)이라고 부르며, Riot의 두 자료는 이 용어 대신 되감기(rewind)로 설명한다.
+
+- **피격자의 체감:** 판정이 쏜 사람의 화면 기준이므로, 맞은 사람은 이미 벽 뒤로 숨은 뒤에 쓰러질 수 있다. 되감기 한도 안에서는 설계가 의도한 결과이며, 이런 일이 얼마나 자주 생기는지는 한도 설정이 좌우한다.
+- **되감기 한도:** 한도가 없으면 지연이 500ms인 플레이어가 상대가 엄폐물 뒤로 이동한 지 0.5초 뒤에도 맞힐 수 있다. 2020년 글은 악용을 막도록 한도를 조정한다고만 밝혔고, 2023-02-07 패치 노트 6.02는 출시 때 200ms였던 최대 서버 되감기 한도를 140ms로 낮췄다고 공개했다. 출시 뒤 플레이어 데이터로 보면 200ms가 대부분의 네트워크 조건에 비해 너무 높았다는 이유다. Riot은 이 변경으로 핑이 높은 상대에게 엄폐 뒤에서 맞는 느낌이 줄고, 대신 핑이 높은 플레이어는 명중 판정의 부정확함을 겪을 수 있다고 설명했다. 이후 값이 다시 바뀌었는지는 확인하지 않았다.
+
+### 피커 어드밴티지는 지연 예산 전체의 문제다
+
+피커 어드밴티지(peeker's advantage)는 모퉁이를 돌아 나오는 쪽이 기다리는 쪽보다 먼저 상대를 보는 이점이다. 기다리는 쪽 화면에는 나오는 쪽의 움직임이 지연만큼 늦게 나타나므로 네트워크 게임에서 구조적으로 생긴다.
+
+Riot이 2020-07-28에 공개한 VALORANT 분석의 기준 모델에서 나오는 쪽은 기다리는 쪽보다 약 141ms 더 반응할 시간을 얻었다. 모델의 항목은 기다리는 쪽의 서버 왕복 지연만이 아니라 서버와 클라이언트의 버퍼링 프레임, 서버 틱 레이트, 클라이언트 프레임 레이트를 포함한다. 같은 글이 밝힌 대응은 다음과 같다.
+
+| 수단 | 공개된 내용 |
+|---|---|
+| 서버 갱신 빈도 | 서버와 클라이언트가 초당 128회 갱신(128 tick) |
+| 네트워크 경로 | 자체 인터넷 백본(Riot Direct)으로 라우팅과 처리 지연 감소, 플레이어 70%에게 35ms 핑을 목표로 서버 배치 |
+| 버퍼링 | 클라이언트와 서버의 버퍼를 최소화 |
+| 결과 | 128 tick 서버, 35ms 왕복 지연, 60 FPS 클라이언트를 넣으면 기준 피커 어드밴티지에서 약 40ms(28%) 감소. 클라이언트가 144 FPS로 실행되면 전체 피커 어드밴티지가 약 71ms로 줄어 기준보다 49% 낮음 |
+
+같은 글의 블라인드 플레이 테스트는 실력이 비슷한 숙련자 짝이 서버 틱 레이트, 네트워크 지연, 클라이언트 프레임 레이트와 무기를 바꿔 가며 겨루는 방식이었다. 기다리는 쪽이 Operator, 나오는 쪽이 소총을 든 대결에서는 피커 어드밴티지 10ms 차이로 기다리는 쪽의 승률 90%가 나오는 쪽의 승률 90%로 뒤집혔다. 숙련자는 약 10ms의 변화를 알아챘다. 이 결과는 해당 무기와 조건의 내부 실험이며 모든 게임과 장르에 그대로 일반화하지 않는다.
+
+설계에서는 네트워크 핑만 줄이는 데서 멈추지 않는다. 위 모델에서 도출한 해석으로, 틱 간격, 버퍼링과 렌더링 프레임이 같은 지연 예산에 들어가므로 피커 어드밴티지는 이 예산을 줄일수록 작아진다. 반면 되감기 한도는 쏜 사람과 맞는 사람의 체감을 교환하는 조정 값이다. 지연과 지터 지표의 정의는 [[Network-Quality-Metrics]]에서 다룬다.
+
 ## 상태 대신 명령을 공유하는 결정적 시뮬레이션
 
 유닛이 많은 게임에서 모든 유닛의 위치와 상태를 계속 보내면 전송량이 커진다. 각 참여자가 같은 초기 상태에서 같은 명령을 같은 시뮬레이션 순서로 실행한다면 명령을 공유하는 방식으로 전송량을 줄일 수 있다. Age of Empires 개발 사례는 명령 실행을 뒤의 통신 턴으로 예약해 전달 시간을 확보했다. 이 통신 턴은 화면 렌더링 프레임과 구분했다.
@@ -36,6 +62,7 @@ aliases: ["게임 상태 권위와 예측", "Game State Authority and Prediction
 |---|---|
 | 누가 결과를 확정하는가 | 클라이언트 입력과 서버 판정, 보상이나 상태의 저장 권한 |
 | 지연을 어디서 감당하는가 | 서버 응답 대기, 로컬 예측, 보정 때의 화면 변화 |
+| 누구의 시점으로 판정하는가 | 지연 보상의 되감기 기준과 한도, 피커 어드밴티지를 만드는 지연 항목 |
 | 무엇을 전송하는가 | 상태 전송량과 명령 전송량, 필요한 동기화 주기 |
 | 같은 입력이 같은 결과를 만드는가 | 초기 상태, 명령 순서, 난수 소비와 실행 경로 |
 | 장애를 어떻게 관측하는가 | 예측 불일치, 재시뮬레이션 비용, 명령 지연과 상태 불일치 |
@@ -47,8 +74,12 @@ aliases: ["게임 상태 권위와 예측", "Game State Authority and Prediction
 - [Roblox, Server authority model](https://create.roblox.com/docs/projects/server-authority)
 - [Unity, Netcode for Entities 1.3.0-pre.4, Client prediction](https://docs.unity.cn/Packages/com.unity.netcode%401.3/manual/prediction-high-level-explanation.html)
 - [1500 Archers on a 28.8: Network Programming in Age of Empires and Beyond — Game Developer, Paul Bettner](https://www.gamedeveloper.com/programming/1500-archers-on-a-28-8-network-programming-in-age-of-empires-and-beyond)
+- [Peeking into VALORANT's Netcode — Riot Games, Matt deWet, David Straily](https://www.riotgames.com/en/news/peeking-valorants-netcode) — 2020-07-28 공개, 2026-11-09 확인
+- [VALORANT Patch Notes 6.02 — Riot Games, VALORANT](https://playvalorant.com/en-us/news/game-updates/valorant-patch-notes-6-02/) — 2023-02-07 공개, 2026-11-09 최대 서버 되감기 한도 변경 확인
+- [숨어도 숨어도 총에 맞는 이유 — 조코딩 JoCoding](https://www.youtube.com/watch?v=JpwuLJK0Lu4) — 2026-10-29 공개 쇼츠, 작성 계기이며 수치는 위 Riot 글로 대조
 
 ## 관련 문서
 
 - [[실시간(Realtime)|실시간 통신]]
 - [[Realtime-Sync-Recovery|실시간 동기화와 재연결 복구]]
+- [[Network-Quality-Metrics|네트워크 품질 지표]]
