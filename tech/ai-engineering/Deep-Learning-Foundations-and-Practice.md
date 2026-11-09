@@ -30,6 +30,28 @@ aliases: ["딥러닝 기초와 실습", "Deep Learning Foundations and Practice"
 
 2017년 Transformer 논문은 번역 과업에서 병렬성과 학습 시간 개선을 보였다. 강연의 학습 계산량 10~100배 감소라는 설명을 모든 모델, 과업과 하드웨어에 적용하는 보장으로 사용하지 않는다. 학습 비용은 데이터량, 품질 목표, 연산량과 실제 소요 시간을 함께 비교한다. 추론 하드웨어 수요와 에너지 문제는 [[HBM-Stack-and-Base-Die|HBM과 메모리 계층]], 과학 응용은 [[AI-Scientific-Discovery-Loops|AI 과학 발견 루프]]로 연결한다.
 
+### 번역 구조에서 범용 설계도까지
+
+Transformer는 기계 번역의 병목을 풀려던 구조가 언어 모델과 비텍스트 영역의 공통 골격으로 넓어진 경우다. 단계마다 무엇을 바꿨고 무엇은 그대로 뒀는지 구분하면 이후 모델을 읽기 쉽다.
+
+| 단계 | 바꾼 것 | 남은 제약 |
+|---|---|---|
+| RNN, LSTM(1997년 Hochreiter와 Schmidhuber) | 앞 단어의 은닉 상태를 다음 단어로 넘기고, LSTM은 게이트로 정보를 더 오래 유지한다 | 시퀀스 방향으로 차례대로 계산해야 한다 |
+| 어텐션을 붙인 seq2seq(2014) | 입력 문장 전체를 고정 길이 벡터 하나에 담는 대신 출력 단어마다 원문의 관련 위치를 다시 살핀다 | 순환 구조는 그대로라 순차 계산이 남는다 |
+| GNMT(2016) | LSTM과 어텐션으로 만든 운영용 신경망 번역이다. 영어와 프랑스어, 스페인어, 중국어 사이 6개 방향에서 방향마다 단문 500개를 사람이 나란히 비교한 평가로, 구문 기반 운영 시스템과 사람 번역 사이 점수 차의 평균 약 60%를 줄였다고 보고했다(방향별 58~87%). 구글 번역은 2016년 9월 중국어→영어부터 단계적으로 전환했다 | WMT 영어→프랑스어 기본 모델 학습에 K80 GPU 96장으로 약 6일, 강화학습 보정에 약 3일이 더 걸렸다 |
+| Transformer(2017) | 순환과 합성곱 없이 multi-head attention(인코더 self-attention, 디코더의 마스킹된 self-attention, 인코더-디코더 attention)과 위치별 feed-forward 층을 잔차 연결, 층 정규화와 함께 쌓고, 입력 임베딩에 위치 인코딩을 더한다 | 모든 위치 쌍을 비교하므로 길이에 대해 이차 비용이 든다 |
+| GPT-1(2018) | 디코더만 쌓아 다음 토큰 예측으로 사전학습한 뒤 과업별로 미세조정한다. 같은 사전학습, 미세조정 틀에서 12층 Transformer를 단층 2048유닛 LSTM으로 바꾸면 8개 과업 평균 점수가 5.6점 낮았다(MRPC만 LSTM이 높음) | 생성은 토큰을 하나씩 잇는 자기회귀 방식이다 |
+| BERT(2018) | 인코더만 써서 가려진 토큰을 양쪽 문맥으로 복원(MLM)하고, 두 문장이 이어지는지 맞히는 다음 문장 예측(NSP)을 함께 학습한다 | 문장 이해 과업용이며 같은 방식으로 글을 생성하지 않는다 |
+| GPT-2, GPT-3, InstructGPT(2019~2022) | GPT-2와 GPT-3는 다음 토큰 예측 목표를 유지한 채 규모를 키웠다. InstructGPT는 사람이 쓴 시연으로 지도 미세조정한 뒤, 출력 순위 데이터로 학습한 보상 모델을 써 강화학습(RLHF)으로 지시를 따르게 조정했다 | 규모 증가와 지시 조정의 효과는 과업별 평가로 확인한다 |
+
+Transformer 원 논문(5.2절)의 base 모델은 P100 GPU 8장으로 12시간(10만 스텝), big 모델은 같은 장비로 3.5일(30만 스텝) 학습했다. GNMT와 GPU 세대, 데이터와 품질 목표가 다르므로 학습 시간을 배수 하나로 비교하지 않으며, 논문도 GPU 시간을 추정 FLOPs로 환산해 비교한다(표 2).
+
+비텍스트 영역으로 넓힐 때는 입력을 Transformer가 받을 표현으로 바꾸는 방법이 핵심이다. ViT(2020)는 이미지를 고정 크기 패치(B/16, L/16은 16×16, H/14는 14×14)로 나눠 단어처럼 나열한다. RT-2는 로봇 동작을 텍스트 토큰으로 표현해 문장을 생성하듯 제어 명령을 낸다. Whisper는 약 68만 시간의 음성으로 학습한 인코더-디코더 Transformer이며, 입력은 로그 멜 스펙트로그램을 합성곱 층에 통과시킨 표현이다. AlphaFold2의 Evoformer는 다중 서열 정렬(MSA) 표현과 잔기 쌍 표현을 축별 attention과 삼각 곱셈 갱신 같은 비attention 연산으로 함께 갱신하는 몸통 블록이며, 3차원 구조는 뒤의 구조 모듈이 만든다. attention 기반 구조를 공유한다는 사실은 각 영역의 데이터 표현, 학습 목표와 평가가 같다는 뜻이 아니다.
+
+한계도 구조에서 나온다. self-attention은 길이 n의 모든 위치 쌍을 비교하므로 입력이 두 배 길어지면 attention 점수 계산은 약 네 배가 된다. FlashAttention은 점수 행렬 전체를 HBM에 쓰고 읽지 않아 메모리 사용을 길이에 선형으로 줄이고 실행도 빨라지지만, 계산량 O(N²d)의 차수는 그대로이며 역전파의 재계산으로 FLOPs는 오히려 늘 수 있다. 차수 자체를 바꾸려는 시도는 [[Linear-Attention|선형 어텐션]]에서 다룬다. Q, K, V 계산과 디코딩 절차는 [[LLM-Generation-Mechanics-Decoding|추론과 디코딩]]에 있다.
+
+이해 확인 질문: 어텐션이 처음 들어왔을 때 해결한 병목과 Transformer가 해결한 병목은 각각 무엇인가? GPT와 BERT가 원래 Transformer에서 각각 무엇을 떼어 냈고, 그 선택이 생성과 이해 과업에 어떤 차이를 만드는가?
+
 ## 순차 학습과 파괴적 망각
 
 한 신경망을 과업 A로 학습한 뒤 과업 B의 데이터만으로 이어서 학습하면 A의 성능이 크게 떨어질 수 있다. 이를 파괴적 망각(catastrophic forgetting)이라 한다. 여러 과업을 차례로 학습할 때 A에 중요한 가중치가 B의 목표에 맞춰 바뀌기 때문이며, 이 현상은 연결주의 모델에 피할 수 없는 성질로 널리 여겨졌다.
@@ -82,7 +104,7 @@ Keras 3를 사용할 때는 TensorFlow, PyTorch 또는 JAX 같은 백엔드 프�
 
 이는 이해 확인 절차의 제안이다. 실행 성공만으로 데이터 품질이나 배포 적합성까지 검증됐다고 판단하지 않는다.
 
-2026-11-03 추가 대조 범위는 대규모 특징 학습 연구와 Transformer/BERT의 구조 차이다. 기존 교재와 Keras API는 앞서 기록한 확인 범위를 유지하며 이번에 예제를 실행하지 않았다. 2026-11-08에는 파괴적 망각의 대응 연구 세 편을 초록과 아래 출처 줄에 적은 절의 범위에서만 대조했다.
+2026-11-03 추가 대조 범위는 대규모 특징 학습 연구와 Transformer/BERT의 구조 차이다. 기존 교재와 Keras API는 앞서 기록한 확인 범위를 유지하며 이번에 예제를 실행하지 않았다. 2026-11-08에는 파괴적 망각의 대응 연구 세 편을 초록과 아래 출처 줄에 적은 절의 범위에서만 대조했다. 2026-11-09에는 Transformer 계보 절의 수치와 구성을 출처 줄에 적은 원 논문 범위에서 대조했다.
 
 ## 출처
 
@@ -94,14 +116,30 @@ Keras 3를 사용할 때는 TensorFlow, PyTorch 또는 JAX 같은 백엔드 프�
 - [EBS, 넥스트 비전, 15. 제프 딘 <AI 혁명의 과거와 미래> - AI의 역사를 만들다](https://www.ebssw.kr/edc/cultursens/cultursensMvpView.do?alctcrSn=59337&cntntsSn=33496&stepSn=58322&lctreSn=1879197&pageIndex=1) — 2026-11-03 전체 음성 전사 대조. 분산 신경망 학습, 입력 영역의 통합, 대화 모델의 사실성과 제품화 판단.
 - [EBS, 넥스트 비전, 16. 제프 딘 <AI 혁명의 과거와 미래> - 혁명의 핵심 기술](https://www.ebssw.kr/edc/cultursens/cultursensMvpView.do?alctcrSn=59337&cntntsSn=33498&stepSn=58322&lctreSn=1879204&pageIndex=1) — 2026-11-03 전체 음성 전사 대조. 자기회귀 예측, Transformer와 BERT, 학습 병렬성과 추론 수요.
 - [Building high-level features using large scale unsupervised learning — Google Research](https://research.google/pubs/building-high-level-features-using-large-scale-unsupervised-learning/) — 2026-11-03 논문 초록의 학습 규모와 특징/분류 단계 대조.
-- [Attention Is All You Need — Vaswani 외](https://arxiv.org/abs/1706.03762) — 2026-11-03 원 논문의 병렬성과 번역 과업 범위 대조.
-- [BERT: Pre-training of Deep Bidirectional Transformers for Language Understanding — Devlin 외](https://arxiv.org/abs/1810.04805) — 2026-11-03 양방향 문맥 학습 대조.
+- [Attention Is All You Need — Vaswani 외](https://arxiv.org/abs/1706.03762) — 2026-11-03 원 논문의 병렬성과 번역 과업 범위 대조, 2026-11-09 3, 3.1절 구성과 5.2절 학습 시간 대조.
+- [BERT: Pre-training of Deep Bidirectional Transformers for Language Understanding — Devlin 외](https://arxiv.org/abs/1810.04805) — 2026-11-03 양방향 문맥 학습 대조, 2026-11-09 MLM과 NSP 두 사전학습 과업 대조.
 - [Overcoming catastrophic forgetting in neural networks — Kirkpatrick 외](https://arxiv.org/abs/1612.00796) — 2026-11-08 arXiv v2의 초록, 1절 서론과 2절 EWC 정의 대조. 관련 DOI 10.1073/pnas.1611835114.
 - [Brain-inspired replay for continual learning with artificial neural networks — van de Ven 외](https://pmc.ncbi.nlm.nih.gov/articles/PMC7426273/) — 2026-11-08 Nature Communications 11, 4069의 PMC 초록과 학습 시나리오 정의 대조.
 - [Sleep-like unsupervised replay reduces catastrophic forgetting in artificial neural networks — Tadros 외](https://pmc.ncbi.nlm.nih.gov/articles/PMC9755223/) — 2026-11-08 Nature Communications 13, 7742의 PMC 초록과 결과 절의 데이터셋 대조.
+- [챗GPT의 근본이 된 트랜스포머의 탄생과 발전 — 미주일기](https://www.youtube.com/watch?v=dqvqEsrFE7w) — 2026-11-05 공개. 2026-11-09 음성 전사를 계기로 계보 절을 정리했고, 수치는 아래 원 논문으로 대조했다.
+- [Long Short-Term Memory — Neural Computation, Hochreiter 외](https://doi.org/10.1162/neco.1997.9.8.1735) — 2026-11-09 게재 연도 대조.
+- [Neural Machine Translation by Jointly Learning to Align and Translate — Bahdanau 외](https://arxiv.org/abs/1409.0473) — 2026-11-09 초록의 고정 길이 벡터 병목과 정렬 어텐션 대조.
+- [Google's Neural Machine Translation System: Bridging the Gap between Human and Machine Translation — Wu 외](https://arxiv.org/abs/1609.08144) — 2026-11-09 초록, 학습 규모와 8.7절(표 10)의 사람 평가 조건 대조.
+- [A Neural Network for Machine Translation, at Production Scale — Google Research](https://research.google/blog/a-neural-network-for-machine-translation-at-production-scale/) — 2026-11-09 2016-09 중국어→영어 전환 대조.
+- [Improving Language Understanding by Generative Pre-Training — OpenAI, Radford 외](https://cdn.openai.com/research-covers/language-unsupervised/language_understanding_paper.pdf) — 2026-11-09 디코더 사전학습과 LSTM 대조 실험(표 5) 대조.
+- [Language Models are Unsupervised Multitask Learners — OpenAI, Radford 외](https://cdn.openai.com/better-language-models/language_models_are_unsupervised_multitask_learners.pdf) — GPT-2.
+- [Language Models are Few-Shot Learners — Brown 외](https://arxiv.org/abs/2005.14165) — GPT-3.
+- [Training language models to follow instructions with human feedback — OpenAI, Ouyang 외](https://arxiv.org/abs/2203.02155) — 2026-11-09 초록의 지도 미세조정과 RLHF 단계 대조.
+- [An Image is Worth 16x16 Words: Transformers for Image Recognition at Scale — Dosovitskiy 외](https://arxiv.org/abs/2010.11929) — 2026-11-09 4.1절 모델별 패치 크기 대조.
+- [Robust Speech Recognition via Large-Scale Weak Supervision — OpenAI, Radford 외](https://arxiv.org/abs/2212.04356) — 2026-11-09 학습 데이터 규모와 입력 구성 대조.
+- [RT-2: Vision-Language-Action Models Transfer Web Knowledge to Robotic Control — Brohan 외](https://arxiv.org/abs/2307.15818) — 2026-11-09 동작의 텍스트 토큰 표현 대조.
+- [Highly accurate protein structure prediction with AlphaFold — Jumper 외](https://www.nature.com/articles/s41586-021-03819-2) — 2026-11-09 Evoformer와 구조 모듈의 역할 대조.
+- [FlashAttention: Fast and Memory-Efficient Exact Attention with IO-Awareness — Dao 외](https://arxiv.org/abs/2205.14135) — 2026-11-09 메모리와 FLOPs 차수 대조.
 
 ## 관련 문서
 
 - [[AI엔지니어링(AIEngineering)|AI 엔지니어링 지도]]
 - [[Time-Series-Forecast-Evaluation|시계열 예측 평가]]
 - [[Recommendation-System-Industry-Large-Scale-ML|대규모 추천 모델의 학습과 서빙]]
+- [[LLM-Generation-Mechanics-Decoding|추론과 디코딩]]
+- [[Linear-Attention|선형 어텐션]]
