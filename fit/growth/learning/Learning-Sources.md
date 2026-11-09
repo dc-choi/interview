@@ -36,7 +36,6 @@ auto-learn 파이프라인이 새 자료를 모으는 YouTube 채널, 이메일 
 | Bit by Bit - 코딩으로 이뤄가는 아메리칸 드림 | [@bit-by-bit](https://www.youtube.com/@bit-by-bit) | fit |
 | ByteByteGo | [@ByteByteGo](https://www.youtube.com/@ByteByteGo) | tech |
 | ByteMonk | [@ByteMonk](https://www.youtube.com/@ByteMonk) | tech |
-| BZCF \| 비즈까페 | [@B_ZCF](https://www.youtube.com/@B_ZCF) | biz |
 | CODE GEAR - 코드기어 | [@codegear-21](https://www.youtube.com/@codegear-21) | tech |
 | CODER X DOX 코더엑스독스 | [@coderxdox](https://www.youtube.com/@coderxdox) | tech, fit |
 | Coffee + Software | [@coffeesoftware](https://www.youtube.com/@coffeesoftware) | tech |
@@ -97,7 +96,6 @@ auto-learn 파이프라인이 새 자료를 모으는 YouTube 채널, 이메일 
 | 데브아트 DevArt | [@DevOpsArt](https://www.youtube.com/@DevOpsArt) | tech |
 | 돈공-돈버는공식 | [@dongong_official](https://www.youtube.com/@dongong_official) | biz |
 | 동빈나 | [@dongbinna](https://www.youtube.com/@dongbinna) | tech |
-| 드로우앤드류 | [@drawandrew](https://www.youtube.com/@drawandrew) | biz |
 | 디케이앤유 / 동국시스템즈 IT 채널 | [@dknyou](https://www.youtube.com/@dknyou) | tech |
 | 딩코딩코 | [@딩코딩코](https://www.youtube.com/@딩코딩코) | fit |
 | 라인개발실록 | [@linedevlog](https://www.youtube.com/@linedevlog) | tech |
@@ -179,7 +177,6 @@ auto-learn 파이프라인이 새 자료를 모으는 YouTube 채널, 이메일 
 | 토크아이티(Talk IT) | [@TalkITonAir](https://www.youtube.com/@TalkITonAir) | tech |
 | 티오리티비 TheoriTV | [@TheoriTV](https://www.youtube.com/@TheoriTV) | tech |
 | 티타임즈TV | [@TTimesTV](https://www.youtube.com/@TTimesTV) | biz, tech |
-| 팀노바 | [@팀노바](https://www.youtube.com/@팀노바) | fit, tech |
 | 포프TV | [@포프티비](https://www.youtube.com/@포프티비) | tech, fit |
 | 프로그래머스 데브코스 | [@programmersdevcourse](https://www.youtube.com/@programmersdevcourse) | fit, tech |
 | 프롱트 | [@frongt](https://www.youtube.com/@frongt) | tech |
@@ -197,7 +194,6 @@ auto-learn 파이프라인이 새 자료를 모으는 YouTube 채널, 이메일 
 | CodeHead | [@codehead01](https://www.youtube.com/@codehead01) | tech, fit |
 | Tiago | [@TiagoTaquelim](https://www.youtube.com/@TiagoTaquelim) | tech |
 | 양실장의 바이브코딩대학 | [@VibecodingUniversity](https://www.youtube.com/@VibecodingUniversity) | tech, biz |
-| 김서한 : 비상식적 사업 이야기 | [@김서한_사업이야기](https://www.youtube.com/@김서한_사업이야기) | biz |
 | 구매대행 위탁판매 이야기 I 머니너드 | [@머니너드](https://www.youtube.com/@머니너드) | biz |
 | 머니그라피 Moneygraphy | [@Moneygraphy](https://www.youtube.com/@Moneygraphy) | econ, biz |
 | 긱뉴스 | [@GeekCast](https://www.youtube.com/@GeekCast) | tech, biz |

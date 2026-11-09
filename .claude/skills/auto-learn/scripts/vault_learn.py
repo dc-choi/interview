@@ -1449,6 +1449,25 @@ def state_summary():
             "last_attempts": {mode: read_json(S / "runs" / f"last-{mode}.json") for mode in MODES}}
 
 
+def channel_candidates(log_rows, listed=None, owner=None, min_decided=15, max_rate=0.30):
+    """2026-11-09 사용자 결정: 판정(반영과 건너뜀, 보류 제외)이 min_decided건 이상이고 반영률이 max_rate 미만인
+    학습 대상 채널을 다이제스트에 제외 후보로 띄운다. 제외 여부는 사용자가 정한다."""
+    listed = {hkey(h): h for h in (learning_sources()[0] if listed is None else listed)}
+    owner = owner if owner is not None else \
+        {r[0]: hkey(r[1]) for prio in ("new", "backlog") for r in rows(S / "queue" / f"{prio}.tsv") if len(r) > 1}
+    count = {}
+    for r in log_rows:
+        key, result = str(r.get("key", "")), r.get("result")
+        handle = owner.get(key[6:]) if key.startswith("video:") else None
+        if handle in listed and result in ("merged", "learned", "skipped"):
+            c = count.setdefault(handle, [0, 0])
+            c[0] += result != "skipped"
+            c[1] += 1
+    return sorted(({"handle": listed[h], "decided": n, "merged": good, "rate": round(good / n, 2)}
+                   for h, (good, n) in count.items() if n >= min_decided and good / n < max_rate),
+                  key=lambda c: c["rate"])
+
+
 def cmd_digest_data(a):
     day = dt.date.fromisoformat(a.date) if a.date else dt.date.today()
     selection = S / "digests" / f"{day}.json"
@@ -1463,7 +1482,8 @@ def cmd_digest_data(a):
     changes = [{"key": r["key"], "result": r["result"], "files": r.get("files", []), "topic": r.get("topic", ""),
                 "takeaway": r.get("takeaway", ""), "commit": resolve_commit(r.get("commit"), r.get("subject"))}
                for r in log_rows if r.get("ts", "") > since and r.get("commit")]
-    data = {"date": str(day), "generated_at": now().isoformat(timespec="seconds"), "since": since, "changes": changes}
+    data = {"date": str(day), "generated_at": now().isoformat(timespec="seconds"), "since": since, "changes": changes,
+            "channel_candidates": channel_candidates(log_rows)}
     write_json(selection, data)
     emit(data)
     return 0
@@ -2934,6 +2954,13 @@ def cmd_selftest(a):
         gap_seen = (S / "runs" / "last-learn.json").exists()
         write_json(S / "runs" / "last-learn.json", {"at": now().isoformat(timespec="seconds")})
         assert not agent_has_work("learn", DEFAULTS)  # learn_gap_min 안에서는 새 learn을 시작하지 않는다.
+        logs = [{"key": f"video:a{i}", "result": "merged" if i < 4 else "skipped"} for i in range(15)] + \
+               [{"key": f"video:b{i}", "result": "merged" if i < 5 else "deferred" if i > 13 else "skipped"}
+                for i in range(20)]
+        owners = {f"a{i}": "@low" for i in range(15)} | {f"b{i}": "@ok" for i in range(20)}
+        found = channel_candidates(logs, ["@Low", "@ok"], owners)
+        assert found == [{"handle": "@Low", "decided": 15, "merged": 4, "rate": 0.27}], found  # 보류는 판정에서 뺀다.
+        assert not channel_candidates(logs, ["@ok"], owners)  # 목록에서 지운 채널은 띄우지 않는다.
         if not gap_seen:
             (S / "runs" / "last-learn.json").unlink()
         box = S / "inbox"
