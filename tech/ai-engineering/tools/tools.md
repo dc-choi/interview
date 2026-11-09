@@ -40,6 +40,7 @@ aliases: ["AI 엔지니어링 실천 도구", "AI Engineering Tools"]
 - [x] [[MCP-TypeScript-SDK-Upgrade|MCP TypeScript SDK 업그레이드 점검]] — 스키마 식별자 URI 검증, `x-mcp-header` number 인자, `$ref` 루트 출력 위치, Skills 확장
 - [x] [[Local-Speech-to-Text|로컬 음성 인식으로 영상 전사하기 (자막 종류와 한계, Whisper와 VAD와 어휘 힌트, Apple Silicon 엔진 비교, 한국어 실측 CER, 클라우드 요금)]]
 - [x] [[Realtime-Voice-Architecture|실시간 음성 에이전트 (VAD와 턴 종료 판단, 전이중 대화와 백엔드 위임, 중단과 작업 취소, 응답 지연과 업무 결과 검증)]]
+- [x] [[Outbound-Voice-Agent-Scenario-Design|아웃바운드 음성 에이전트의 시나리오 설계]] — 분기 분류와 노드 그래프, 전역 분기, 엔진의 수집 완료 판정, 번복과 끼어들기 처리
 - [x] [[Korean-TTS-Training-and-Evaluation|한국어 TTS 학습과 평가]] — 음성 표현과 생성 모델의 병목, LoRA와 전체 미세조정 비교, 내용과 자연스러움 평가
 - [x] [[Video-Transcript-Pipeline|영상 전사 파이프라인 구현 (memo 스킬 yt_transcript.py, 자막 우선과 whisper.cpp 폴백, 캐시 키와 안전장치, 설계 결정과 검증 교훈)]]
 - [x] [[llm|LLM 원리와 운영 (llm/ 서브폴더) — 학습과 생성(generation-mechanics/: 학습과 조정, 추론과 디코딩, Context와 환각과 에이전트, 설명용 비유와 한계), 워크플로우 패턴(workflow/: 체인과 에이전트, Function Calling, Text-to-SQL, 데이터와 환각 통제, 워크플로 표현식), 선택과 서빙 운영(operations/: 모델 티어 선택/라우팅, 결정 모델, 추론 병목, 프롬프트 캐싱, 게이트웨이, 실패 처리)]]
