@@ -1,14 +1,14 @@
 ---
-tags: [runtime, jvm, java, jit, aot, performance, leyden]
+tags: [runtime, jvm, java, jit, aot, performance, leyden, crac]
 status: done
-verified_at: 2026-11-03
+verified_at: 2026-11-09
 category: "OS&런타임(OS&Runtime)"
-aliases: ["HotSpot JIT and AOT Cache", "HotSpot JIT 최적화", "AOT 캐시", "Project Leyden", "Compact Object Headers", "JDK 기본값 변화"]
+aliases: ["HotSpot JIT and AOT Cache", "HotSpot JIT 최적화", "AOT 캐시", "Project Leyden", "Compact Object Headers", "JDK 기본값 변화", "CRaC", "Coordinated Restore at Checkpoint"]
 ---
 
 # HotSpot JIT 최적화와 AOT 캐시
 
-HotSpot은 바이트코드를 해석하면서 실행 프로파일을 모으고, 자주 실행되는 코드를 그 프로파일에 기대 기계어로 컴파일한다. 그래서 같은 코드도 기동 직후와 충분히 실행한 뒤의 성능이 다르고, JDK를 올리기만 해도 컴파일러, GC와 기본값이 바뀌어 결과가 달라진다. 이 문서는 C2의 추측 최적화와 그 한계, 학습 실행의 결과를 재사용하는 AOT 캐시, JDK 업그레이드에서 함께 바뀌는 기본값을 다룬다. 실행 엔진의 전체 구성은 [[JVM-Architecture#Execution Engine|JVM 아키텍처]]를 따른다.
+HotSpot은 바이트코드를 해석하면서 실행 프로파일을 모으고, 자주 실행되는 코드를 그 프로파일에 기대 기계어로 컴파일한다. 그래서 같은 코드도 기동 직후와 충분히 실행한 뒤의 성능이 다르고, JDK를 올리기만 해도 컴파일러, GC와 기본값이 바뀌어 결과가 달라진다. 이 문서는 C2의 추측 최적화와 그 한계, 학습 실행의 결과를 재사용하는 AOT 캐시, 실행 중인 JVM을 저장했다가 되살리는 CRaC, JDK 업그레이드에서 함께 바뀌는 기본값을 다룬다. 실행 엔진의 전체 구성은 [[JVM-Architecture#Execution Engine|JVM 아키텍처]]를 따른다.
 
 아래 JDK 상태는 2026-11-03 기준이다. JDK 26은 2026-03-17, JDK 27은 2026-09-15에 GA가 됐고, JDK 28의 GA 예정일은 2027-03-09다.
 
@@ -65,6 +65,19 @@ java -XX:AOTCache=app.aot -cp app.jar com.example.App
 - **학습 실행이 운영을 대표해야 한다:** 캐시의 클래스와 프로파일은 학습 실행이 실제로 실행한 경로에서 나온다. 운영 트래픽과 다른 경로만 실행했다면 효과가 작을 수 있다(해석).
 - **기존 설명의 갱신:** JDK 9의 실험적 `jaotc`는 JDK 17에서 제거됐지만(JEP 410), 그 뒤 HotSpot의 AOT는 위 캐시 방식으로 다시 들어왔다. JVM 진영의 AOT를 Native Image 하나로만 설명하지 않는다.
 
+## 워밍업이 끝난 프로세스를 저장하는 CRaC
+
+AOT 캐시는 새 JVM이 학습 실행의 결과를 읽어 기동하는 방식이다. CRaC(Coordinated Restore at Checkpoint)는 이미 실행 중인 JVM의 상태를 이미지로 저장(checkpoint)하고 그 이미지에서 프로세스를 되살린다(restore). JIT 컴파일과 초기화를 마친 상태에서 이어가므로 첫 요청까지의 시간과 최고 성능까지의 워밍업을 함께 줄이는 것이 목표다. 아래는 2026-11-09에 확인한 OpenJDK CRaC 프로젝트, Azul과 Spring Framework 문서 기준이다.
+
+- **위치:** HotSpot Group이 후원하는 OpenJDK의 별도 프로젝트다. 위 표의 JEP처럼 메인라인 JDK 기능으로 가정하지 않고, 사용하는 JDK 배포판이 CRaC를 지원하는지 확인한다. Spring 문서 기준으로 checkpoint와 restore를 지원하는 JVM은 현재 Linux에서만 쓸 수 있다. Azul 문서는 첫 엔진이 CRIU 기반이었다고 적으면서, 범용 checkpoint/restore 방식인 CRIU와 달리 CRaC는 애플리케이션과 협조해 한 checkpoint를 여러 환경에서 여러 번 restore하는 것을 목표로 한다고 설명한다.
+- **실행 흐름:** `-XX:CRaCCheckpointTo=PATH`로 띄운 프로세스에 `jcmd <대상> JDK.checkpoint`를 보내 이미지를 만들고, `-XX:CRaCRestoreFrom=PATH`로 되살린다.
+- **열린 자원을 닫아야 한다:** 기본 설정에서는 checkpoint 시점에 열린 파일 핸들이나 소켓이 있으면 checkpoint가 실패한다. Azul 배포판은 수정할 수 없는 라이브러리 코드를 위해 파일 디스크립터 정책(`jdk.crac.resource-policies`, zulu17.46과 21.30부터의 실험 기능)으로 이 동작을 바꿀 수 있게 한다. `org.crac.Resource`를 구현해 등록하면 `beforeCheckpoint()`에서 연결, 파일과 스레드를 정리하고 `afterRestore()`에서 다시 열 수 있다. Spring Framework의 통합은 classpath에 `org.crac:crac` 1.4.0 이상이 필요하다. Spring 밖의 라이브러리가 checkpoint 전에 정리할 자원을 가지면 `org.crac.Resource`를 구현해 등록할 수 있다.
+- **Spring의 요청 시점 checkpoint:** 실행 중인 애플리케이션에 checkpoint를 요청하면 Spring은 실행 중인 bean을 `Lifecycle.stop`으로 멈추고 restore 뒤 `Lifecycle.start`로 다시 시작한다. 이때 고정 주기 작업(`@Scheduled(fixedRate = ...)`)은 checkpoint와 restore 사이에 놓친 실행을 restore 뒤 몰아서 실행한다. 매 실행 뒤 다음 시각을 계산하는 `fixedDelay`나 cron 표현식을 검토한다.
+- **Spring의 기동 시점 자동 checkpoint:** `-Dspring.context.checkpoint=onRefresh`는 `LifecycleProcessor.onRefresh` 단계에서 checkpoint를 만든다. 이 시점은 lifecycle이 시작되기 전이고 `ContextRefreshedEvent`도 발행되기 전이며, 충분히 워밍업한 JVM은 얻지 못한다. bean 초기화 중에 원격 서비스 연결을 여는지는 `-Dspring.context.exit=onRefresh`로 미리 확인한다.
+- **CPU 기능이 맞아야 restore한다:** CRaC는 실행 중인 JVM이 이미 쓰고 있는 CPU 기능을 restore 때 쓰지 않도록 다시 구성하지 못한다. Azul 문서 기준 기본값(`-XX:CPUFeatures=native`)은 현재 CPU의 기능을 기록하며, 기능이 부족한 CPU에서는 restore가 오류를 내고 JVM이 종료된다(Azul Zulu 17.46, 21.30부터). 노드마다 CPU 세대가 다른 클러스터라면 checkpoint할 때 `-XX:CPUFeatures`를 지정한다. `generic`은 Azul 문서가 x86-64 CPU 공통 기능으로 정의한 보수적 기준이라 호환 범위가 넓지만 성능이 낮아질 수 있고(ARM64의 동작은 미확인), 대상 머신마다 오류 메시지가 제안하는 값(쉼표로 구분한 16진수 bitmask 두 개)을 성분별 비트 AND로 합쳐 쓰면 모든 대상에 공통인 기능까지는 쓸 수 있다(generic보다 성능 손실이 작을 수 있다는 것은 해석). 기능 기록을 생략하는 `ignore`는 주로 문제 분석용이며 restore 호환 보장을 약하게 만든다. restore 쪽 검사를 끄는 `-XX:+UnlockExperimentalVMOptions -XX:CheckCPUFeatures=skip`은 실험 옵션이고 뒤늦게 `SIGILL`로 죽을 수 있다.
+- **이미지에 비밀이 남을 수 있다:** 이미지는 프로세스의 메모리를 담으므로 JVM이 읽은 환경 속성 같은 설정값과 비밀이 포함될 수 있다. 이미지 저장소의 접근 권한과 배포 경로를 비밀 정보 수준으로 다룬다.
+- **적용 판단(운영 제안):** 이미지를 만든 JDK 빌드, CPU 기능 설정과 대상 노드 풀을 이미지와 함께 기록하고, restore 실패 시 일반 기동으로 돌아가는 경로를 배포에 둔다. 자원 정리 코드를 작성할 수 없거나 노드의 CPU를 통제할 수 없다면 AOT 캐시처럼 새 JVM을 띄우는 방식이 운영 부담이 작다.
+
 ## JDK 업그레이드는 기본값도 바꾼다
 
 | 변경 | JDK | 내용 | 이전 동작으로 비교하려면 |
@@ -93,6 +106,7 @@ JEP 534는 SPECjbb2015에서 힙 22%, CPU 8%, GC 횟수 15%가 줄었다는 측�
 - 업그레이드 뒤 성능이 바뀌었다면 GC, 객체 헤더와 초기 힙의 기본값 변경을 분리해 확인했는가?
 - AOT 캐시의 학습 실행이 운영 경로를 대표하고, 캐시를 만든 JDK, 클래스 경로, 모듈 옵션과 에이전트, CPU 기능과 GC가 운영과 같은가?
 - preview API의 동작을 JDK 버전별 Javadoc으로 확인했는가?
+- CRaC 이미지를 쓴다면 checkpoint의 CPU 기능 설정이 모든 restore 노드를 포괄하고, 이미지의 비밀 노출과 restore 실패 시 일반 기동 경로를 정했는가?
 
 ## 출처
 
@@ -133,6 +147,12 @@ JEP 534는 SPECjbb2015에서 힙 22%, CPU 8%, GC 횟수 15%가 줄었다는 측�
 - [OpenJDK Wiki, HotSpot PerformanceTechniques](https://wiki.openjdk.org/display/HotSpot/PerformanceTechniques)
 - [OpenJDK, HotSpot Glossary of Terms](https://openjdk.org/groups/hotspot/docs/HotSpotGlossary.html) — uncommon trap
 - [OpenJDK Wiki, HotSpot RangeCheckElimination](https://wiki.openjdk.org/spaces/HotSpot/pages/11829253/RangeCheckElimination)
+- [OpenJDK, Project CRaC](https://openjdk.org/projects/crac/)
+- [Azul, What is CRaC?](https://docs.azul.com/core/crac/crac-introduction)
+- [Azul, CRaC Engines](https://docs.azul.com/core/crac/crac-engines)
+- [Azul, CRaC CPU Features](https://docs.azul.com/crac/usage/cpu-features)
+- [Azul, CRaC File Descriptor Policies](https://docs.azul.com/crac/usage/fd-policies)
+- [Spring Framework, JVM Checkpoint Restore](https://docs.spring.io/spring-framework/reference/integration/checkpoint-restore.html)
 - [Performance Improvements in JDK 25 — Inside.java](https://inside.java/2025/10/20/jdk-25-performance-improvements/)
 - [Performance Improvements in JDK 26 — Inside.java](https://inside.java/2026/06/09/jdk-26-performance-improvements/)
 - [Performance Improvements in JDK 27 — Inside.java](https://inside.java/2026/09/28/performance-update-jdk27/)

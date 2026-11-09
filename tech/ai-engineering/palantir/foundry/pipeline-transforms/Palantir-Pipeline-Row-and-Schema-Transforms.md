@@ -1,7 +1,7 @@
 ---
 tags: [palantir, foundry, pipeline-builder, schema, transform]
 status: done
-verified_at: 2026-10-16
+verified_at: 2026-11-09
 category: "AI엔지니어링(AIEngineering)"
 aliases: ["Pipeline Builder 행, 열과 스키마 변환"]
 ---
@@ -47,7 +47,7 @@ Union은 행을 이어 붙이는 것이며 중복 제거를 뜻하지 않는다.
 
 ## 정렬, 선택과 물리 분할
 
-Sort는 열별 오름차순/내림차순 목록을 사용한다. Top rows는 partition별 정렬 결과에서 기본 1행 또는 지정 개수를 고른다. 같은 정렬값의 tie-breaker를 지정하지 않으면 특정 대표 행의 재현성을 보장했다고 볼 수 없다.
+Sort는 expression과 오름차순/내림차순 방향의 쌍 목록을 사용한다. 2026-11-09에 다시 확인한 Sort 페이지 기준으로 expression은 열 이름에 한정되지 않고 비교 가능한 타입(ComparableType)을 반환하면 된다. `abs(b)` 내림차순 예시처럼 계산값으로 순서만 정하고 출력의 `b`는 원래 값을 유지하므로, 정렬용 값이 필요하면 별도 열로 만든다. 이 페이지는 null 값의 정렬 위치를 설명하지 않는다. Top rows는 partition별 정렬 결과에서 기본 1행 또는 지정 개수를 고른다. 같은 정렬값의 tie-breaker를 지정하지 않으면 특정 대표 행의 재현성을 보장했다고 볼 수 없다.
 
 Top rows 인자 설명은 최소 하나의 sort specification을 요구하지만 빈 목록의 예시도 있다. 빈 목록이 안정된 첫 행을 보장한다고 해석하지 않는다. Number of rows 0은 빈 결과 예시가 있다.
 
