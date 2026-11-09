@@ -1449,10 +1449,12 @@ def state_summary():
             "last_attempts": {mode: read_json(S / "runs" / f"last-{mode}.json") for mode in MODES}}
 
 
-def channel_candidates(log_rows, listed=None, owner=None, min_decided=15, max_rate=0.30):
+def channel_candidates(log_rows, listed=None, owner=None, keep=None, min_decided=15, max_rate=0.30):
     """2026-11-09 사용자 결정: 판정(반영과 건너뜀, 보류 제외)이 min_decided건 이상이고 반영률이 max_rate 미만인
-    학습 대상 채널을 다이제스트에 제외 후보로 띄운다. 제외 여부는 사용자가 정한다."""
-    listed = {hkey(h): h for h in (learning_sources()[0] if listed is None else listed)}
+    학습 대상 채널을 다이제스트에 제외 후보로 띄운다. 제외 여부는 사용자가 정하고, 남기기로 한 채널은
+    S/channel_keep(한 줄에 handle 하나)에 적어 다시 띄우지 않는다."""
+    keep = {hkey(h) for h in (read_lines(S / "channel_keep") if keep is None else keep) if h.strip()}
+    listed = {hkey(h): h for h in (learning_sources()[0] if listed is None else listed) if hkey(h) not in keep}
     owner = owner if owner is not None else \
         {r[0]: hkey(r[1]) for prio in ("new", "backlog") for r in rows(S / "queue" / f"{prio}.tsv") if len(r) > 1}
     count = {}
@@ -2961,6 +2963,7 @@ def cmd_selftest(a):
         found = channel_candidates(logs, ["@Low", "@ok"], owners)
         assert found == [{"handle": "@Low", "decided": 15, "merged": 4, "rate": 0.27}], found  # 보류는 판정에서 뺀다.
         assert not channel_candidates(logs, ["@ok"], owners)  # 목록에서 지운 채널은 띄우지 않는다.
+        assert not channel_candidates(logs, ["@Low", "@ok"], owners, ["@low"])  # 남기기로 한 채널도 띄우지 않는다.
         if not gap_seen:
             (S / "runs" / "last-learn.json").unlink()
         box = S / "inbox"
