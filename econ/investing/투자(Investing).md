@@ -25,6 +25,7 @@ aliases: ["투자(Investing)", "Investing Map"]
 - [[Valuation|밸류에이션]] — 가격과 가치, DCF의 현금흐름과 할인율 대응, 재투자와 ROIC, PER과 PBR, PEG의 성장률과 위험, 경기민감 기업의 정상 이익과 회복 시점, 안전마진 ✅
 - [[Growth-Quality-and-Scenario-Valuation|공시로 읽는 성장의 질과 시나리오 가치평가]] — 비교 범위와 표 사이 검산, 광고비와 매출의 인과 해석, 미공시 지표와 선수수익 같은 대리 지표, 사전 반증 조건, 시나리오 확률 가중 가치와 잔존가치 민감도, 현금 전환과 비지배지분 풋옵션 ✅
 - [[Tax-Advantaged-Accounts|절세 계좌]] — 세액공제와 환급의 차이, ISA 가입 제한, 연금수령한도와 과세, 퇴직연금의 위험자산 한도와 편입 제한 ✅
+- [[Coast-FIRE-Target-Math|Coast FIRE의 목표 금액 계산과 점검]] — 목표 자산의 할인 계산, 수익률 가정의 민감도, 인출률과 명목, 실질 기준 맞추기, 적립 중단 기간과 인출 기간의 위험 구분 ✅
 - [[Tax-Advantaged-Accounts-Income-Types|투자소득의 구분과 건강보험료]] — 보유 방식별 이자, 배당, 양도소득 구분, 건강보험료의 금융소득 1천만원 문턱, 커버드콜 분배금의 과세 재원 ✅
 
 - [[AI-Company-Valuation-and-Funding|AI 기업가치와 자금 조달]] — 인식 매출과 run-rate, 순손실과 현금소진, 유출 자료와 평가 의견
