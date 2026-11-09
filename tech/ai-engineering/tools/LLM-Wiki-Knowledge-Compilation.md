@@ -1,7 +1,7 @@
 ---
 tags: [llm, wiki, knowledge-management, rag, provenance]
 status: done
-verified_at: 2026-10-14
+verified_at: 2026-11-09
 category: "AI엔지니어링(AIEngineering)"
 aliases: ["LLM Wiki", "LLM 위키", "지식 합성의 영속화"]
 ---
@@ -21,7 +21,7 @@ LLM 위키는 여러 원문에서 조합한 지식을 주제별 Markdown으로 �
 | LLM 위키 | 원문에서 합성한 내용을 지속되는 문서와 연결로 저장한다 | 합성 결과를 재사용하며 위키를 읽을 때 검색을 함께 쓸 수 있다 |
 | 파인튜닝 | 특정 과제에 맞게 모델을 추가 학습한다 | 위키 파일 수정이나 요청 시점 검색과 별개의 학습 단계다 |
 
-LLM 위키가 검색을 지원하지 않는다는 구분은 맞지 않는다. 공개 아이디어 문서는 작은 규모에서 목차로 탐색하고, 규모가 커지면 검색 도구를 붙이는 방법을 설명한다. 약 100개 원문과 수백 페이지는 저자의 경험상 예시이며, 문서 10만 개를 보편적인 전환 기준으로 정한 규격이 아니다. 또한 외부 관리형 모델은 파인튜닝할 수 없다는 일반화도 맞지 않는다. Amazon Bedrock은 지원 모델과 리전을 정해 파인튜닝을 제공한다(2026-10-24 공식 안내 확인).
+LLM 위키가 검색을 지원하지 않는다는 구분은 맞지 않는다. 공개 아이디어 문서는 작은 규모에서 목차로 탐색하고, 규모가 커지면 검색 도구를 붙이는 방법을 설명한다. 약 100개 원문과 수백 페이지는 저자의 경험상 예시이며, 문서 10만 개를 보편적인 전환 기준으로 정한 규격이 아니다. 또한 외부 관리형 모델은 파인튜닝할 수 없다는 일반화도 맞지 않는다. Amazon Bedrock은 지원 모델과 리전을 정해 파인튜닝을 제공한다(2026-11-09 공식 안내 확인).
 
 적용 제안: 같은 질문 묶음으로 근거 누락, 갱신 지연, 응답 시간과 비용을 비교한 뒤 방식을 조합한다. 위키 파일의 존재나 에이전틱이라는 이름만으로 답변 품질과 접근 권한이 보장되지는 않는다.
 
@@ -47,7 +47,7 @@ LLM 위키가 검색을 지원하지 않는다는 구분은 맞지 않는다. �
 
 예를 들어 Slack Events API의 HTTP 전달은 실패한 요청을 재시도하며, 이벤트에는 고유한 `event_id`가 있다. Google Sheets의 `spreadsheets.values.append`는 지정 범위에서 표를 찾아 다음 행에 값을 추가한다. 따라서 이벤트를 받을 때마다 행을 추가하는 설계에는 재전달로 같은 자료가 여러 행에 들어갈 위험이 있다. 이 동작에서 도출한 설계 점검으로, 수집 식별자별 처리 상태와 저장 결과를 확인하고 중복 저장을 막는 절차를 둔다. 단순한 사전 조회만으로 동시 처리 경쟁까지 해결됐다고 보지 않는다.
 
-위 API 사실은 2026-10-14 공식 문서 기준이다. 이는 직접 구성하는 수집 파이프라인의 검토 기준이며, 특정 AI 제품의 채팅 연동이나 자동 요약 기능이 같은 방식으로 구현되었다는 뜻은 아니다. 비공개 채팅의 원문 위치와 식별자는 접근이 제한된 수집 기록에 두고, 공개 위키에는 공개 가능한 근거와 개념만 반영한다.
+위 API 사실은 2026-11-09 공식 문서 기준이다. 이는 직접 구성하는 수집 파이프라인의 검토 기준이며, 특정 AI 제품의 채팅 연동이나 자동 요약 기능이 같은 방식으로 구현되었다는 뜻은 아니다. 비공개 채팅의 원문 위치와 식별자는 접근이 제한된 수집 기록에 두고, 공개 위키에는 공개 가능한 근거와 개념만 반영한다.
 
 ## 자동 갱신의 검증 경계
 
@@ -98,10 +98,10 @@ LLM 위키가 검색을 지원하지 않는다는 구분은 맞지 않는다. �
 ## 출처
 
 - [LLM Wiki — Andrej Karpathy](https://gist.github.com/karpathy/442a6bf555914893e9891c11519de94f)
-- [AWS Well-Architected, Agentic AI Lens: Definitions](https://docs.aws.amazon.com/wellarchitected/latest/agentic-ai-lens/definitions.html) — 2026-10-24 RAG와 에이전틱 검색의 역할 대조
-- [Amazon Bedrock, Customize a model with fine-tuning](https://docs.aws.amazon.com/bedrock/latest/userguide/custom-model-fine-tuning.html) — 2026-10-24 관리형 파인튜닝과 모델, 리전별 지원 범위 확인. 비교 절만 부분 대조했으며 기존 API 검증 날짜는 유지
-- [Slack, The Events API](https://docs.slack.dev/apis/events-api/) — HTTP 재전달과 이벤트 식별자, 2026-10-14 부분 대조
-- [Google Sheets API, spreadsheets.values.append](https://developers.google.com/workspace/sheets/api/reference/rest/v4/spreadsheets.values/append) — 표의 다음 행에 값을 추가하는 동작, 2026-10-14 부분 대조
+- [AWS Well-Architected, Agentic AI Lens: Definitions](https://docs.aws.amazon.com/wellarchitected/latest/agentic-ai-lens/definitions.html) — 2026-11-09 RAG와 에이전틱 검색의 역할 대조
+- [Amazon Bedrock, Customize a model with fine-tuning](https://docs.aws.amazon.com/bedrock/latest/userguide/custom-model-fine-tuning.html) — 2026-11-09 관리형 파인튜닝과 모델, 리전별 지원 범위 확인
+- [Slack, The Events API](https://docs.slack.dev/apis/events-api/) — HTTP 재전달과 이벤트 식별자, 2026-11-09 대조
+- [Google Sheets API, spreadsheets.values.append](https://developers.google.com/workspace/sheets/api/reference/rest/v4/spreadsheets.values/append) — 표의 다음 행에 값을 추가하는 동작, 2026-11-09 대조
 - [YouTube, 메타코드M, 클로드 x 옵시디언으로 우리 회사 LLM Wiki 만들기](https://www.youtube.com/watch?v=yZKXJMMPrxc) — 2026-10-06 공개 강의, 33:56 이후 자동 갱신과 검증 사례
 - [[IT-Chosun-Monthly-AX-2026-11-03|IT조선 월간AX 세미나 기록]] — 2026-11-03 제네시스랩(유대훈) 발표. LLM Wiki의 목차와 링크 문제, DB 기반 구조와 사람 확정 학습 사례를 반영했다.
 - [The components of agent memory — Anthropic, Lance Martin](https://www.anthropic.com/research/components-of-agent-memory) — 2026-11-06 게시. 위키 생성 실험의 자료 규모, 조건과 결과를 2026-11-09 대조

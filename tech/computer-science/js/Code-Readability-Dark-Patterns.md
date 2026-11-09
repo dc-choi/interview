@@ -7,7 +7,7 @@ aliases: ["Code Readability", "코드 가독성", "JS 다크패턴", "Dark Patte
 
 # 코드 가독성 — 영리한 코드는 리뷰를 통과하지 못한다
 
-Artem Sapegin의 글 *Washing your code: don't make me think*를 요약한다. 이 글은 책 *Washing Your Code*의 한 장이다. **"짧은 코드 ≠ 명확한 코드"** 라는 원칙 아래, JS/CSS에서 자주 발견되는 "영리해 보이지만 읽기 어려운" 패턴을 대체 표현과 함께 정리한다.
+짧은 코드가 곧 명확한 코드는 아니다. JS와 CSS에서 자주 보이는, 영리해 보이지만 읽기 어려운 패턴을 대체 표현과 함께 모은다.
 
 > "영리한 코드는 구직 면접 문제나 언어 퀴즈에서는 가끔 볼 수 있지만, 코드 리뷰를 통과하지 못한다."
 
@@ -120,7 +120,7 @@ Platform.OS === "web" ? B : undefined
 
 ## 출처
 
-- [Washing your code: don't make me think — Artem Sapegin](https://sapegin.me/blog/dont-make-me-think/)
+- [Washing your code: don't make me think — Artem Sapegin](https://sapegin.me/blog/dont-make-me-think/) — 책 *Washing Your Code*의 한 장
 - [ECMAScript Language Specification, Binary Logical Operators](https://tc39.es/ecma262/multipage/ecmascript-language-expressions.html#sec-binary-logical-operators-runtime-semantics-evaluation)
 - [ECMAScript Language Specification, IsLooselyEqual](https://tc39.es/ecma262/multipage/abstract-operations.html#sec-islooselyequal)
 - [CSS Values and Units Level 4, Component value combinators](https://www.w3.org/TR/css-values-4/#component-combinators)

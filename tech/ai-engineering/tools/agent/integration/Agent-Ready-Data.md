@@ -42,7 +42,7 @@ aliases: ["Agent-Ready Data", "에이전트용 데이터 준비", "에이전트 
 
 ## 추적 — agentic lineage
 
-전통 lineage가 어떤 소스에 접근했는지를 추적한다면, agentic lineage는 왜 X에 접근했는지, 즉 소스 Z에서 Y를 찾았기 때문이라는 연결을 추적한다. 분산 추적의 trace와 span 모델을 그대로 쓴다. 예를 들어 신용장 승인 하나의 trace 안에 KYC 조회, 제재 목록 확인, 정책 엔진의 신용 조건 평가가 각각 span으로 놓이고, 마지막 span이 결정과 신뢰도, 전체 추론 체인을 담는다. 규제 관점에서 EU AI Act는 고위험 시스템에 생애 전반의 자동 로깅과 로그의 최소 6개월 보관을 요구하며, 이는 고립된 타임스탬프가 아니라 동작을 추적할 만큼의 로깅, 장기 보관, 사후에 어떤 소스를 봤고 어떤 로직을 적용했으며 어떤 대안을 기각했는지 재구성할 수 있을 것이라는 세 아키텍처 의무로 번역된다. 관측성은 나중에 붙이기가 훨씬 어려우므로 첫날부터 계측한다. → [[Audit-Log|감사 로그]]
+전통 lineage가 어떤 소스에 접근했는지를 추적한다면, agentic lineage는 왜 X에 접근했는지, 즉 소스 Z에서 Y를 찾았기 때문이라는 연결을 추적한다. 분산 추적의 trace와 span 모델을 그대로 쓴다. 예를 들어 신용장 승인 하나의 trace 안에 KYC 조회, 제재 목록 확인, 정책 엔진의 신용 조건 평가가 각각 span으로 놓이고, 마지막 span이 결정과 신뢰도, 전체 추론 체인을 담는다. 규제 관점에서 EU AI Act는 고위험 시스템에 생애 전반의 자동 로깅과 로그의 최소 6개월 보관을 요구하며(고위험 의무의 적용 시점은 Regulation (EU) 2026/1744로 독립형 고위험 시스템 2027-12-02, 제품 안전 법령이 적용되는 안전 부품 2028-08-02로 미뤄졌다. 2026-11-09 유럽의회 절차 기록으로 확인), 이는 고립된 타임스탬프가 아니라 동작을 추적할 만큼의 로깅, 장기 보관, 사후에 어떤 소스를 봤고 어떤 로직을 적용했으며 어떤 대안을 기각했는지 재구성할 수 있을 것이라는 세 아키텍처 의무로 번역된다. 관측성은 나중에 붙이기가 훨씬 어려우므로 첫날부터 계측한다. → [[Audit-Log|감사 로그]]
 
 ## 거버넌스 — 귀속을 파괴하지 않는 접근
 
@@ -113,6 +113,7 @@ aliases: ["Agent-Ready Data", "에이전트용 데이터 준비", "에이전트 
 
 ## 출처
 
+- [European Parliament, Legislative Observatory 2025/0359(COD)](https://oeil.europarl.europa.eu/oeil/en/procedure-file?reference=2025%2F0359%28COD%29) — Digital Omnibus on AI, Regulation (EU) 2026/1744 채택과 고위험 의무 적용일
 - [Celonis, Tools for MCP Server/Agent Tools assets](https://developer.celonis.com/mcp-server-asset/tools/tools_for_mcp_server) — 2026-10-10 knowledge model 참조와 도구 입력 구성을 대조했다.
 - [Snowplow, Event specification validation](https://docs.snowplow.io/docs/event-studio/tracking-plans/event-specification-validation/) — 2026-10-10 검증 실패의 기본 전달, specification 누락 예외와 버전 적용을 대조했다. 기존 본문의 법률 및 벤치마크 주장은 이번 검증 범위에 포함하지 않았다.
 - [Making Your Data Ready for Agentic AI — martinfowler.com, Pramod Sadalage와 Prem Chandrasekaran](https://martinfowler.com/articles/making-data-ready-for-agentic-ai.html)

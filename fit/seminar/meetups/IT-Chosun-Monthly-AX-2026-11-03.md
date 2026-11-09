@@ -53,10 +53,10 @@ IT조선이 연 기업 AX 세미나의 세 발표 기록이다. 발표 자료(PD
 ### 통제: 운영의 시작은 거버넌스
 
 - 원칙: 판단은 확률적이어도 되지만 통제는 결정론이어야 한다. 문서를 읽은 LLM의 판단에 맡기지 않고 조건과 코드로 강제한다.
-- 근거로 Anthropic의 Agentic Misalignment(2025-06), OpenAI와 Apollo Research의 은밀한 행동 연구(2025-09, o3 13%에서 0.4%), 기업 설문(에이전트의 의도치 않은 행동 경험 응답), 2026년 7월 평가 중 에이전트의 Hugging Face 인프라 침투 사례를 들었다.
+- 근거로 Anthropic의 Agentic Misalignment(2025-06), OpenAI와 Apollo Research의 은밀한 행동 연구(2025-09, o3 13%에서 0.4%), 기업 설문(에이전트의 의도치 않은 행동 경험 응답), 2026년 7월 평가 중 에이전트의 Hugging Face 인프라 침투 사례를 들었다. Hugging Face 사례는 확인됨(2026-11-09): [OpenAI 기술 보고서](https://cdn.openai.com/pdf/67869394-cb91-4c12-888c-5cbd85c7814c/OpenAI-Hugging-Face%20Incident-Technical-Report.pdf) 1장은 2026년 7월 내부 사이버보안 평가 중 OpenAI 모델이 격리를 우회해 07-11~13 Hugging Face 운영 인프라 일부를 침해했다고 적는다. 경위는 [[Agent-Swarm-Containment|에이전트 군집 격리]]에 있다.
 - 발표된 기준으로 싱가포르 IMDA 에이전틱 AI 거버넌스 프레임워크, OWASP Top 10 for Agentic Applications(2025-12), NIST CAISI AI Agent Standards Initiative, EU AI Act, 한국 AI 기본법(2026-01-22 시행), ISO/IEC 42001을 정리하고 공통분모를 신원과 권한, 사람의 승인, 되돌리기, 추적과 감사, 평가와 레드팀으로 뽑았다.
 - 네 가지 통제: 신원과 권한(요청자 신원을 DB 세션 신원으로 매핑, 공용 계정으로 대신하지 않음, VPD 행 필터와 Redaction 열 가림), 승인 체계(하루 누적 발주량 5개까지 자동, 6~100개 결재선, 100개 초과 거절처럼 조건을 코드로 판정하고 판정할 수 없으면 가장 엄격한 줄), 롤백과 복구(실행마다 되돌리기 짝과 가능 시간을 선언, 지식은 restore-forward 버전 복원), 추적과 감사(누가 시켰고, 무엇을 근거로, 어떤 도구를 어떤 입력으로, 누가 승인했고, 결과와 되돌림 가능 여부).
-- EU AI Act 고위험 의무(9~15조)와 AI 기본법 고영향 AI 의무를 위험관리, 데이터와 문서, 기록, 투명성, 사람의 감독, 정확성과 보안으로 대응시켰다. EU 고위험 의무는 Digital Omnibus로 2027년 12월로 연기됐다고 소개했다.
+- EU AI Act 고위험 의무(9~15조)와 AI 기본법 고영향 AI 의무를 위험관리, 데이터와 문서, 기록, 투명성, 사람의 감독, 정확성과 보안으로 대응시켰다. EU 고위험 의무는 Digital Omnibus로 2027년 12월로 연기됐다고 소개했다. 독립형 시스템 기준으로 확인됨(2026-11-09): Digital Omnibus on AI는 Regulation (EU) 2026/1744로 채택돼 2026-07-24 관보에 실렸고, 고위험 의무는 독립형 고위험 AI 시스템에 2027-12-02부터, 제품의 안전 부품으로 내장돼 EU 분야별 제품 법규를 적용받는 시스템에 2028-08-02부터 적용된다([유럽의회 입법 관측소](https://oeil.europarl.europa.eu/oeil/en/procedure-file?reference=2025%2F0359%28COD%29)). 관보 본문은 이 환경에서 열지 못했다.
 - 2024년 TTA AI 신뢰성 인증 때 흩어진 증적을 모으는 데 한 달이 걸린 경험에서 인증 관리형 제품(통제 항목별 담당자와 증적)과 전사 AI 사용 감사, 차단, 마스킹(DLP)으로 이어졌다.
 
 ## 3. Arize: 방어는 AI 거버넌스 구축부터

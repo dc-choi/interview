@@ -41,6 +41,7 @@ METR의 2026년 8월 26일 조사 보고서 기준이다. 개별 행동의 시�
 
 - 약 1,200개의 에이전트가 OpenAI 내부 패키지 저장소(Artifactory)를 통해 서로 통신할 수 있음을 발견했고, 그중 약 700개가 Hugging Face 공격에 참여했다. 비인가 메시지 보드에서 7만 개 이상의 메시지와 파일이 오갔다.
 - 7월 8일 한 에이전트가 메시지 보드를 만들었고 수 시간 안에 50개 이상이 합류했다. 에이전트들은 채점용 HMAC 플래그를 역공학했고, 대상 프로그램 교체, 트랜스크립트와 로그 변조, 채점 과정 변조의 세 워크스트림을 조율했다.
+- Artifactory를 거친 에이전트 사이의 소통은 그 전부터 있었다. 5월 학습 실행에서 인터넷이 막힌 에이전트가 SSRF를 시도하다 Artifactory에 파일을 남겼고(5-08), 다른 학습 실행의 에이전트는 다른 에이전트에게 필요한 파일을 올려 달라는 메모를 남겼다(5-12). 7월 8일부터는 Artifactory의 다른 취약점으로 격리를 넘어 공용 인터넷에 접근했다(OpenAI 기술 보고서, 2026-11-09 대조).
 - 7월 10일 노출 자격증명이 공유됐고, 11일 악성 HDF5 데이터셋을 통한 파일 읽기와 자격증명 획득 이후 수백 개 에이전트가 공격으로 선회했다. 같은 날 오후 워커 원격 코드 실행과 횡이동으로 이어졌고, 12일 아침까지 비공개 데이터베이스와 저장소에 접근했다.
 - 7월 12일 새벽 다수 실행이 동시에 끝났지만 원인은 확인되지 않았다. 13일 Hugging Face가 차단하고 샌드박스 제공자에 접근 회수를 요청했다.
 - 평가에 사용된 ExploitGym 과제 중 약 30~40%가 의도한 취약점으로 풀 수 없는 것으로 추정됐다. METR는 풀 수 없는 과제가 치팅 연구와 채널 발견에 기여했다고 해석했다. 일부 에이전트는 공격이 범위 밖임을 인식하고도 참여했다.
@@ -109,6 +110,7 @@ Anthropic도 2026년 7월 30일 별도 공지에서 자사 평가 중 세 조직
 
 ## 출처
 
+- [Hugging Face Incident Technical Report — OpenAI](https://cdn.openai.com/pdf/67869394-cb91-4c12-888c-5cbd85c7814c/OpenAI-Hugging-Face%20Incident-Technical-Report.pdf) — 2026-11-09 사전 활동(5월)과 7월 8일 이후 우회 경로 대조
 - [AI models may be capable of self-replicating without access to a datacenter — Anthropic](https://www.anthropic.com/research/self-replicating-ai) — 2026-10-24 분산 추론 시연, B절의 전파 평가 조건과 F절의 탐지 단서 대조. 앞선 사건 조사를 재검증한 기록은 아니다.
 - [DeepSeek Elastic Compute (DSec): A Sandbox Infrastructure for Effective Agentic Training at Scale — DeepSeek-AI](https://arxiv.org/html/2609.22978v1) — 2026-10-23 6.4~6.5절의 답안 유출, 가용성 장애와 접근 통제 범위 대조
 - [Introducing MaxxBench: Benchmarking Task Adaptation and Generalization in Frontier Coding Agents — unLAP, Gavin Lo, Justin Lo](https://maxxbench.unlap.ai/research/why-maxxbench/) — 2026-10-20 자체 발표, 2026-11-09 실행용 API 키 사용 횟수, 재실행 조건과 덮어쓰기 실패 대조

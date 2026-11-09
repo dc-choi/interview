@@ -25,7 +25,7 @@ aliases: ["Small Server Self Hosting", "소형 서버 셀프호스팅"]
 
 2026-11-07 개인 블로그는 약 10달러짜리 4G USB 동글(OpenStick, RAM 512MB 중 약 450MB 사용 가능, Cortex-A53 4코어 1GHz, eMMC 4GB)에 Debian, systemd와 Podman을 올려 DNS 차단(AdGuard Home 약 40MB), 경량 모니터링 두 종, RSS 리더와 AI 에이전트 harness를 운영한 사례를 소개한다. 외부 접속은 포트를 열지 않고 Cloudflare Tunnel을 쓰며, 그 대가로 NSA가 모든 활동을 들여다볼 수 있을지도 모른다는 단점은 홈랩에서 감수할 만하다고 봤다.
 
-같은 글이 밝힌 한계도 운영 기준이 된다. DNS 차단은 모든 요청을 막지 못하고, AI 에이전트 harness는 사실상 root shell이며, 기능이 겹치는 모니터링 도구는 정리 대상이다. 전력, eMMC 마모와 열 관리는 다루지 않았으므로 장기 운영 근거로 쓰지 않는다.
+같은 글이 밝힌 한계도 운영 기준이 된다. DNS 차단은 모든 요청을 막지 못하고, AI 에이전트 harness는 사실상 root shell이며, 모니터링 도구 두 종은 기능이 겹쳐 메모리를 10~20MB 더 아껴야 하면 하나를 뺄 후보다. 전력, eMMC 마모와 열 관리는 다루지 않았으므로 장기 운영 근거로 쓰지 않는다.
 
 ## SaaS 대체 후보의 운영 계약 확인
 

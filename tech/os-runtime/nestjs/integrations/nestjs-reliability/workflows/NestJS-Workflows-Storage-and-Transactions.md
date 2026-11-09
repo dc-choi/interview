@@ -1,7 +1,7 @@
 ---
 tags: [nestjs, workflow, postgres, mysql, transaction]
 status: done
-verified_at: 2026-10-02
+verified_at: 2026-11-09
 category: "OS & Runtime - NestJS"
 aliases: ["NestJS Workflow 저장소와 transaction"]
 ---
@@ -12,7 +12,7 @@ Workflow instance 생성 또는 signal 기록을 업무 DB transaction에 참여
 
 ## 저장소 등록과 데이터
 
-PostgresWorkflowStore/MySqlWorkflowStore를 root의 ordinary singleton provider로 만들고 `WorkflowStorage.registerSource()`에 등록한다. module init에 registry가 lock되므로 request-scoped, lazy module 또는 lifecycle hook의 늦은 등록은 맞지 않는다. store에는 instances, journal, waits, signals, schedules, rate_limits와 migrations가 있다.
+PostgresWorkflowStore/MySqlWorkflowStore를 root의 ordinary singleton provider로 만들고 `WorkflowStorage.registerSource()`에 등록한다. module init에 registry가 lock되므로 request-scoped, lazy module 또는 lifecycle hook의 늦은 등록은 맞지 않는다. store에는 instances, journal, waits, signals, schedules, rate_limits와 migrations가 있고, MySQL 저장소에는 잠금용 `<schema>_locks`가 더 있다.
 
 기본 in-memory는 restart/multi-process 공유를 지원하지 않고 transaction에도 참여하지 못한다. tx 옵션을 줘도 바로 기록되며 warning이 난다. production은 미등록을 거부하며 allowInMemoryStorage로 명시적으로 완화할 수 있다.
 
@@ -48,11 +48,11 @@ MySQL 8.4/9.x는 READ COMMITTED/REPEATABLE READ에서 locking read로 새 wait�
 | `@nestjs/store-kit/mysql` | 같은 구성의 MySQL 8.4 LTS, 9.x용. MariaDB는 저장소가 선택할 때만 허용 |
 | `@nestjs/store-kit/testing` | 다른 클라이언트용 executor가 계약을 지키는지 보는 `sqlExecutorContract()` |
 
-`SqlTransaction`은 클라이언트 고유의 transaction 객체(Drizzle의 `tx`, TypeORM의 `EntityManager`, Prisma transaction client 등)를 그대로 들고 있어, 업무 변경과 저장소 기록이 애플리케이션이 이미 연 transaction 하나에 들어간다. MariaDB에서 MySQL 저장소를 돌릴 때는 키 컬럼 정렬(`utf8mb4_0900_bin`)의 지원 버전, `innodb_snapshot_isolation` 기본값이 REPEATABLE READ의 잠금 읽기에 주는 영향, JSON 중첩 깊이 한도(MariaDB 32, MySQL 100)를 README가 따로 경고한다.
+`SqlTransaction`은 클라이언트 고유의 transaction 객체(Drizzle의 `tx`, TypeORM의 `EntityManager`, Prisma transaction client 등)를 그대로 들고 있어, 업무 변경과 저장소 기록이 애플리케이션이 이미 연 transaction 하나에 들어간다. workflows의 MySQL 저장소(0.0.5)는 MariaDB를 시작 시 거부한다. MariaDB를 허용하는 다른 저장소에 대해서는 키 컬럼 정렬(`utf8mb4_0900_bin`)의 지원 버전, `innodb_snapshot_isolation` 기본값이 REPEATABLE READ의 잠금 읽기에 주는 영향, JSON 중첩 깊이 한도(MariaDB 32, MySQL 100)를 README가 따로 경고한다.
 
 ## Migration과 배포
 
-PostgreSQL 기본 schema는 nest_workflows이며 MySQL은 database 안의 table prefix다. 개발/test startup migrate는 기본 true, production은 false다. deploy 전에 `nest-workflows migrate` 또는 version bookkeeping을 포함한 migrationSql을 적용한다. status는 schema가 뒤처지면 exit 1이다. down migration은 없고 additive migration으로 이전 app과 rolling deploy 호환을 유지한다.
+PostgreSQL 기본 schema는 nest_workflows이며 MySQL은 database 안의 table prefix다. 개발/test startup migrate는 기본 true, production은 false다. deploy 전에 `npx @nestjs/workflows migrate` 또는 version bookkeeping을 포함한 migrationSql을 적용한다. status는 schema가 뒤처지면 exit 1이다. down migration은 없고 additive migration으로 이전 app과 rolling deploy 호환을 유지한다.
 
 PostgreSQL은 advisory lock과 transaction, MySQL은 GET_LOCK 아래 statement별 DDL과 중단 지점 재개를 쓴다. MySQL migration 도구도 statement별 실행을 유지한다. MariaDB, non-strict sql_mode, database 미선택은 거부한다. NO_BACKSLASH_ESCAPES를 끄고 matched row 수를 위해 mysql2 FOUND_ROWS를 유지한다.
 
@@ -68,7 +68,7 @@ claim은 한 instance를 한 owner에만 lease하고 write는 유효한 lease ow
 
 - [nestjs/store-kit README — GitHub](https://github.com/nestjs/store-kit) — 2026-11-09 README와 npm 0.1.3 대조. MySQL 저장소는 npm `@nestjs/workflows` 0.0.5의 `dist/mysql`이 `@nestjs/store-kit/mysql`을 쓰는 것으로 확인. 저장소 생성 2026-10-01
 
-- [NestJS Documentation, Durable workflows](https://docs.nestjs.com/reliability/workflows)
+- [NestJS Documentation, Durable workflows](https://docs.nestjs.com/reliability/workflows) — 2026-11-09 저장소 등록, transaction과 isolation, migration, MySQL 제약과 store contract 절을 npm `@nestjs/workflows` 0.0.5 소스와 대조
 
 ## 관련 문서
 

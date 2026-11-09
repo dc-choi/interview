@@ -61,11 +61,11 @@ aliases: ["LLM Web Search Gateway", "검색 게이트웨이", "Search Grounding 
 
 ## 사례: DoorDash의 검색 게이트웨이
 
-2026-11-07 GeekNews 요약 기준이다. DoorDash 원문은 2026-11-09 HTTP 403으로 본문을 대조하지 못했으므로 아래 수치는 미대조 상태로 보존한다.
+DoorDash 엔지니어링 블로그 원문(2026-10-29 게시)을 2026-11-09 대조했고 수치는 자체 보고다.
 
 - **용도:** 마켓플레이스 검색 질의의 의도 분류에 카탈로그와 웹 근거를 쓴다. 같은 회사의 논문은 카탈로그 검색과 콜드 스타트 질의용 에이전틱 웹 검색 도구로 LLM 분류를 근거화하고, 이 시스템이 일일 검색 노출의 95% 이상에 쓰인다고 보고한다. 이 논문은 게이트웨이와 검색 비용을 다루지 않는다.
 - **구성:** Serper, BrightData, Firecrawl, Exa와 Tavily를 공급자로 두고, 내장 검색도 같은 인터페이스 뒤의 공급자로 등록할 수 있다. 새 HTTP 공급자는 YAML 어댑터로 추가한다.
-- **정확도와 비용:** Gemini Flash와 내장 Google Search 근거화를 기준선으로, 일반 소매 질의 7,988개에서 Serper 경로 93.90% 대 기준선 93.40%, 합성 롱테일 2,335개에서 87.79% 대 87.62%였다. 검색 요금은 두 세트 모두 98% 이상 줄었고 모델 추론 비용은 이 수치에 들어 있지 않다.
+- **정확도와 비용:** Gemini Flash와 내장 Google Search 근거화를 기준선으로, 일반 비식품 소매 질의 7,988개에서 Serper 경로 93.90% 대 기준선 93.40%, 합성 롱테일 2,335개에서 87.79% 대 87.62%였다. 검색 요금은 두 세트 모두 98% 이상 줄었고 모델 추론 비용은 이 수치에 들어 있지 않다.
 - **캐시:** 캐시 적중률이 처음 실행 6.2%에서 반복 실행 99.4%로 오르자 평균 지연이 68%, 1,000건당 검색 비용이 99% 이상 줄었다. 앞선 실행이 채운 캐시 조건의 값이다.
 - **결과 수:** SimpleQA에서 결과를 2개에서 6개로 늘리면 세 모델 평균 정확도가 78.7%에서 84.9%로, 10개에서는 85.5%였다.
 - **출력 계약:** HotpotQA에서 Claude Sonnet 4에 내장 검색을 켜면 답만 내라는 지시를 78.1% 어겼다.
@@ -83,8 +83,8 @@ aliases: ["LLM Web Search Gateway", "검색 게이트웨이", "Search Grounding 
 
 ## 출처
 
-- [DoorDash가 정확도를 유지하면서 LLM 검색 비용을 98% 줄인 방법 — GeekNews](https://news.hada.io/topic?id=36733) — 2026-11-07 게시 요약. 사례 절의 구성과 수치는 이 요약 기준
-- [DoorDash 엔지니어링 블로그 원문 — DoorDash](https://careersatdoordash.com/blog/how-doordash-reduced-llm-search-costs-by-98-without-losing-accuracy/) — 2026-11-09 HTTP 403으로 본문 미대조
+- [DoorDash가 정확도를 유지하면서 LLM 검색 비용을 98% 줄인 방법 — GeekNews](https://news.hada.io/topic?id=36733) — 2026-11-07 게시 요약, 계기 자료. 사례 절의 구성과 수치는 DoorDash 원문으로 대조
+- [How DoorDash Reduced LLM Search Costs by 98% Without Losing Accuracy — DoorDash](https://careersatdoordash.com/blog/how-doordash-reduced-llm-search-costs-by-98-without-losing-accuracy/) — 2026-10-29 게시, 2026-11-09 구성, 정확도와 비용, 캐시, 결과 수, 출력 계약과 한계 대조. 자체 보고
 - [Agentic Multi-Source Grounding for Enhanced Query Intent Understanding: A DoorDash Case Study — arXiv, Emmanuel Aboah Boateng 외](https://arxiv.org/abs/2603.01486) — v2 2026-05-03. 의도 분류의 근거화와 배포 범위를 초록으로 2026-11-09 대조
 
 ## 관련 문서

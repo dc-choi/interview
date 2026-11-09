@@ -96,7 +96,7 @@ tensors = load_file("model.safetensors")  # safetensors 0.8.0 기준 기본값 d
 
 - **규모와 분담:** 결과물은 Rust 운영 코드 80만 줄 이상이고, 이전을 거친 TypeScript 운영 코드는 약 43만 줄로 추정했다. 2026년 5월 초 계획 단계에서는 런타임을 TypeScript 약 13만 줄로 추정했다. 이전 기간은 약 14.5주였다. 주로 개발자 한 명이 진행하고 코드는 대부분 AI 에이전트가 썼다. 신구 구현의 대조는 에이전트가 하고, 사람은 목표 아키텍처 선택, 작업 분할, 고위험 영역의 수동 검토와 최종 병합 결정을 맡았다.
 - **점진 교체:** main에 들어간 128개 PR로 나눠 점진 배포했고, 이전 PR은 기존 TypeScript 구현을 Rust를 호출하는 얇은 shim으로 바꾸는 방식을 따랐다. shim은 호출자가 Rust로 옮겨 가면 지웠다. CLI와 SDK의 기존 E2E 테스트를 매 단계 새 코드에 실행해 필수 테스트가 실패하면 병합하지 않았고 main은 늘 배포 가능한 상태였다. 약 14.5주 동안 main은 사전 릴리스 100개와 안정 릴리스 35개를 합쳐 135번 출시됐다(하루 약 1.3회). 옮긴 컴포넌트를 조금씩 실제 사용자(주로 Microsoft와 GitHub 내부)에게 내보내 마지막 검증을 받았고, 릴리스마다 옮긴 컴포넌트가 작고 알려진 범위가 되게 했다. 회귀가 나면 원인 후보를 그 범위로 좁힐 수 있다(적용 판단). 같은 기간에도 에이전트의 도움을 받는 개발자 수십 명이 주당 수백 개 PR을 병합했다.
-- **비용(저자의 2026-11-02 공개 인터뷰, 자기 보고 추정):** 세션 기록으로 집계한 토큰은 신규 입력, 캐시 쓰기와 읽기, 출력을 합쳐 약 1,360억 개였고, 당시 공개 단가로 약 12만 달러였으며 할인은 반영하지 않았다. 저자 본인의 시간은 같은 기간 PR 비중으로 추정해 약 15주 중 20% 정도(약 3주)였다. 다른 이전 작업의 예산 기준으로 옮기지 않는다.
+- **비용(자기 보고 추정):** 토큰은 캐시 입력 읽기 약 1,306억, 캐시 입력 쓰기 약 42억, 신규 입력 약 9억, 출력 약 6억을 합쳐 약 1,363억 개였고 비용은 약 12만 달러였다. 세션 기록으로 집계했고 당시 공개 단가 기준이며 할인은 반영하지 않았다는 조건은 저자의 2026-11-02 공개 인터뷰 발언이다. 저자 본인의 시간은 이전 기간에 이 작업의 PR이 저자 PR의 약 20%였다는 비중을 시간 비중으로 보고 약 14.5주 중 약 3주로 추정했다. 다른 이전 작업의 예산 기준으로 옮기지 않는다.
 - **읽는 법(적용 판단):** 줄 수는 작업량이나 품질의 척도로 바로 쓰지 않는다. 낮아진 것은 코드를 쓰는 비용이고, 동작을 고정하는 기존 E2E 테스트와 컴포넌트 단위의 교체 경계는 여전히 전제다. 테스트 오라클과 면제 라벨 우회 시도는 [[Agent-Test-Verification-Behavior#포팅에서는 기존 E2E 테스트를 오라클로 지킨다|기존 E2E 테스트 오라클]], 점진 이주 일반은 [[Legacy-Modernization-Strategies#1. Strangler Fig Pattern|Strangler Fig]]와 [[Runtime-Stack-Evolution|런타임 스택 진화]]를 따른다.
 
 ## Rust가 주로 맡지 않는 계층
@@ -135,8 +135,8 @@ tensors = load_file("model.safetensors")  # safetensors 0.8.0 기준 기본값 d
 
 ## 출처
 
-- [Migrating the GitHub Copilot runtime to Rust, using Copilot — GitHub, Stephen Toub](https://github.blog/ai-and-ml/generative-ai/migrating-the-github-copilot-runtime-to-rust-using-copilot/) — 2026-09-16 게시, 2026-09-23 갱신. 이전 구조와 클라이언트당 메모리, `runtime.node`의 C ABI 진입점과 opt-in 상태, 메모리 측정 지표와 비교 범위, 규모와 PR 운영을 2026-11-08 대조. 선택 조건, 계획 단계 추정과 이전 기간의 릴리스 수를 2026-11-09 대조
-- [Microsoft Distinguished Eng: Why And How To Port Your Entire Codebase to Rust — Ryan Peterman, Stephen Toub](https://www.youtube.com/watch?v=PLMOVlZC4eU) — 2026-11-02 공개 인터뷰. 언어 후보 비교와 비용 추정을 2026-11-09 로컬 음성 인식 전사로 확인
+- [Migrating the GitHub Copilot runtime to Rust, using Copilot — GitHub, Stephen Toub](https://github.blog/ai-and-ml/generative-ai/migrating-the-github-copilot-runtime-to-rust-using-copilot/) — 2026-09-16 게시, 2026-09-23 갱신. 이전 구조와 클라이언트당 메모리, `runtime.node`의 C ABI 진입점과 opt-in 상태, 메모리 측정 지표와 비교 범위, 규모와 PR 운영을 2026-11-08 대조. 선택 조건, 계획 단계 추정, 이전 기간의 릴리스 수와 비용을 2026-11-09 대조
+- [Microsoft Distinguished Eng: Why And How To Port Your Entire Codebase to Rust — Ryan Peterman, Stephen Toub](https://www.youtube.com/watch?v=PLMOVlZC4eU) — 2026-11-02 공개 인터뷰. 언어 후보 비교와 비용 집계 조건을 2026-11-09 진행자가 공개한 [전사](https://www.developing.dev/p/e073-stephen-toub)와 대조
 - [The Tail at Scale — Communications of the ACM, Jeffrey Dean, Luiz André Barroso](https://doi.org/10.1145/2408776.2408794) — 2013년 2월호. 팬아웃 증폭, 변동 원인과 백그라운드 작업 완화
 - [The Rustonomicon, Data Races and Race Conditions](https://doc.rust-lang.org/nomicon/races.html)
 - [The Rust Programming Language, Extensible Concurrency with Send and Sync](https://doc.rust-lang.org/book/ch16-04-extensible-concurrency-sync-and-send.html)
