@@ -93,6 +93,26 @@ DWH 밖에서 SQL 변환을 수행하는 경로에서는 Athena `UNLOAD`로 `SEL
 
 운영 설계 제안: 실행별 출력 prefix를 분리하고, 성공 상태와 데이터 품질을 확인한 뒤 소비 경로에 공개한다. 재시도 전 공유 prefix를 통째로 지우면 이미 공개한 결과나 동시 실행의 파일을 지울 수 있으므로, 정리 범위는 해당 실행 소유의 파일로 제한한다. 이 공개와 정리 절차는 파이프라인이 구현할 책임이며 `UNLOAD`가 원자적 교체를 제공한다는 뜻은 아니다.
 
+## 실행 기록에 업무 맥락을 묶어 게시한다
+
+계보(lineage)는 데이터가 어디서 왔는지 알려 주지만 실패가 얼마나 중요한지는 알려 주지 않는다. 파이프라인마다 다음 맥락을 입력 정의 옆에 코드로 선언하고 DAG, 변환 로직과 함께 버전 관리한다. 그러면 계보를 따라가며 선언을 읽어 하류 영향을 찾을 수 있다.
+
+- **목적:** 결과에 기대는 결정이나 약속
+- **적용 범위:** 다루는 채널, 지역이나 공급자
+- **완결 시점:** 결과를 최종으로 보는 시점
+- **소유자**
+
+오케스트레이터는 실행 단계마다 관측, 메타데이터와 권한 시스템을 같은 실행 기준으로 맞춘다.
+
+1. **시작:** 공통 실행 식별자를 만들어 태스크 로그, 계산 클러스터, 품질 검사와 산출물에 넘긴다([[Correlation-ID#배치 파이프라인은 실행 단위로 잇는다|실행 단위 상관 키]]).
+2. **종료:** 계보, 코드 버전, 산출물, 품질 결과와 상태를 카탈로그에 게시한다. 나중에 크롤러가 긁지 않고 생산한 파이프라인이 직접 쓰므로 카탈로그가 마지막 실행보다 낡지 않는다.
+3. **재실행이나 수리 전:** 정책과 신원 시스템을 확인하고 최소 권한으로 실행하며, 위임 범위를 넘으면 승인을 요청한다.
+4. **조치 뒤:** 같은 실행 기록으로 실행 성공, 품질 검사 통과와 영향받은 하류 데이터의 완결을 확인한다.
+
+권한은 데이터(소유자), 코드(작성자)와 실행(승인된 작업을 운영 신원으로 돌리는 운영자)으로 나누고, 하나가 다른 권한을 주지 않게 한다. 재실행을 요청할 수 있다고 파이프라인 코드를 바꾸거나 모든 데이터셋에 쓸 수 있는 것은 아니다.
+
+이 구성은 에이전트가 자율로 운영하기 전에도 사람의 장애 진단과 영향 분석을 돕는다. Foursquare에서 Airflow와 DataHub로 플랫폼을 다시 만든 엔지니어의 설계 제안이다. Airflow가 실행 끝에 DataHub로 데이터셋 메타데이터를 게시한 부분은 구현 경험이고, 선언을 코드 버전과 함께 실행마다 게시하는 부분은 다음 단계로 제시됐다(2026-10-31 글, 2026-11-09 대조). 에이전트에게 데이터 플랫폼을 맡길 때의 신뢰, 추적과 거버넌스 기준은 [[Agent-Ready-Data|에이전트용 데이터 준비]]를 따른다.
+
 ## Build vs Buy (자체 구축 vs OSS/SaaS)
 
 Airbyte, Fivetran 같은 기성 커넥터 솔루션이 있는데 왜 자체 구축하나:
@@ -129,6 +149,7 @@ Airbyte, Fivetran 같은 기성 커넥터 솔루션이 있는데 왜 자체 구�
 - [AWS Documentation, UNLOAD](https://docs.aws.amazon.com/athena/latest/ug/unload.html)
 - [The Self-Organizing Data Stack — Data Engineering Weekly, Ananth Packkildurai](https://www.dataengineeringweekly.com/p/the-self-organizing-data-stack)
 - [자기 조직화 데이터 스택 - 요구에 맞춰 데이터 파이프라인을 재구성하는 설계 — GeekNews](https://news.hada.io/topic?id=35609)
+- [Building a Data Platform for Autonomous Agents — LinkedIn, Vikram K Gundeti](https://www.linkedin.com/pulse/building-data-platform-autonomous-agents-vikram-k-gundeti-obd8c/) — 2026-10-31 게시. 맥락 선언, 실행 단계별 동기화와 권한 분리를 2026-11-09 대조
 
 ## 관련 문서
 
@@ -136,3 +157,5 @@ Airbyte, Fivetran 같은 기성 커넥터 솔루션이 있는데 왜 자체 구�
 - [[Airflow-DAG-Parsing]] — 동적 DAG 생성의 파싱 비용
 - [[CDC&Outbox]] — 스냅샷 sync의 실시간 대안
 - [[Event-Driven-Architecture]] — 파이프라인을 둘러싼 아키텍처 결정
+- [[Correlation-ID|Correlation ID / Trace ID]] — 배치 실행 단위의 상관 키
+- [[Agent-Ready-Data|에이전트용 데이터 준비]] — 에이전트가 쓰는 데이터의 신뢰, 추적과 거버넌스

@@ -110,5 +110,6 @@ GeForce는 FP32 누산 경로를 FP16 누산의 절반으로 표기하고, 전�
 
 ## 관련 문서
 
+- [[Linux-Laptop-GPU-Power-Management|Linux 노트북의 GPU 전력 관리]]
 - [[GPU-Server-Infrastructure|GPU 서버 인프라]]
 - [[LLM-Inference-Bottlenecks|LLM 추론 병목과 메모리 예산]]

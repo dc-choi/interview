@@ -109,6 +109,18 @@ class MacroCommand implements UndoableCommand {
 - 중간 실패 정책을 먼저 정한다. 위 예시는 이미 실행한 Command를 역순으로 보상한 뒤 원래 오류를 다시 던진다. 실패 지점에서 멈추고 부분 완료를 보고하거나, 나머지를 계속 실행하고 실패를 모아 보고하는 정책도 있다. 보상 중 `undo()`가 실패하면 그 오류가 원래 오류를 대신하고 남은 보상도 실행되지 않으므로 보상 실패 처리도 따로 정한다. 결제처럼 메모리 안에서 되돌릴 수 없는 외부 작업은 [[Saga-Pattern|Saga]]의 보상 트랜잭션(환불 같은 반대 거래)으로 설계한다. 메일 발송처럼 반대 거래로도 취소할 수 없는 작업은 보상 대상으로 두지 않고, 더는 되돌리지 않기로 정하는 Pivot 뒤에 두어 중복 발송을 막은 채 재시도로 완료한다([[Saga-Pattern#보상 트랜잭션 원칙|보상 트랜잭션 원칙]]).
 - 일정 간격으로 재생할 때 `setTimeout` 콜백 안에서 다음 Command를 예약하면 `execute()`는 첫 예약 직후 반환해 호출자가 완료와 실패를 관찰할 수 없고, 콜백 안의 예외도 호출자의 `try/catch`에 잡히지 않는다. `for...of` 안에서 각 Command와 `node:timers/promises`의 `setTimeout`을 `await`하면 완료와 오류가 호출자의 Promise로 전달된다.
 
+## 사례: 편집기 SDK의 명령, 변경과 조작 분리
+
+웹앱에 스프레드시트와 문서 편집기를 넣는 Univer SDK는 모든 데이터 변경을 명령으로 실행하고, 명령을 세 종류로 나눈다(2026-11-09 `@univerjs/core` 소스 대조).
+
+| 종류 | 하는 일 | 저장과 협업 |
+|---|---|---|
+| COMMAND | 업무 로직에 따라 MUTATION과 OPERATION을 만들고 순서를 정해 실행한다 | 행 삭제 COMMAND는 행 삭제 MUTATION, 되돌리기용 행 삽입 MUTATION과 셀 내용 MUTATION을 만든다 |
+| MUTATION | 스냅샷에 저장되는 데이터 변경(행과 열 삽입, 셀 내용, 필터 범위) | 협업 편집을 붙일 때 충돌 해결의 최소 단위다 |
+| OPERATION | 스냅샷에 저장하지 않는 상태 변경(스크롤 위치, 사이드바 상태) | 충돌 해결 대상이 아니다 |
+
+위의 Undo 이력과 Queue 절을 편집기 규모로 적용한 형태로 읽을 수 있다(적용 판단). 되돌리기는 실행할 때 만든 역방향 MUTATION으로 하고, 다른 사용자와 합칠 대상은 저장되는 MUTATION으로 한정하며, 공유하지 않을 화면 상태는 OPERATION으로 빼 협업 경로에 섞지 않는다. README 기준 오픈소스 Web SDK 코어는 Apache-2.0이고, 실시간 협업, 편집 이력과 Office 파일 가져오기와 내보내기는 별도 라이선스의 Server SDK 기능이다.
+
 ## 적용 경계
 
 실행 지연, 재시도, 권한 검사나 이력이 실제로 필요할 때 유용하다. 단순한 동기 메서드 호출까지 모두 Command 클래스로 감싸면 탐색 비용과 보일러플레이트가 커진다.
@@ -128,6 +140,8 @@ JavaScript 함수는 일급 객체라 인자로 넘기고 배열이나 필드에
 - [MDN, setTimeout()](https://developer.mozilla.org/en-US/docs/Web/API/Window/setTimeout)
 - [MDN, Using promises](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Guide/Using_promises)
 - [Node.js 공식 문서, Timers](https://nodejs.org/api/timers.html)
+- [Univer — dream-num](https://github.com/dream-num/univer) — 2026-11-09 README의 라이선스와 오픈소스, 상용 기능 범위 대조
+- [Univer command.service.ts — dream-num](https://github.com/dream-num/univer/blob/b6dce6c6d9017e8ae3b2ca1e072ac35803134860/packages/core/src/services/command/command.service.ts) — 2026-11-09 dev 브랜치 b6dce6c6d9의 `CommandType` 주석 대조
 
 ## 관련 문서
 

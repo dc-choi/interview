@@ -1,9 +1,9 @@
 ---
 tags: [security, virtualization, kvm, linux-kernel, sandbox, vulnerability, patch-management]
 status: done
-verified_at: 2026-11-02
+verified_at: 2026-11-09
 category: "보안(Security)"
-aliases: ["VM Escape", "Guest-to-Host Escape", "가상 머신 탈출", "게스트 호스트 탈출", "PwnEscape", "CVE-2026-99999"]
+aliases: ["VM Escape", "Guest-to-Host Escape", "가상 머신 탈출", "게스트 호스트 탈출", "PwnEscape", "CVE-2026-99999", "microVM 샌드박스", "공유 커널 격리"]
 ---
 
 # VM 게스트에서 호스트로의 탈출 (Guest-to-Host Escape)
@@ -104,6 +104,17 @@ PwnEscape는 경쟁 조건이 없는 결정적 흐름이다. 이 문서는 검�
 
 에이전트의 파일, 네트워크와 도구 권한은 [[Agent-Execution-Isolation|에이전트 실행 격리]], microVM과 네트워크 경계를 겹친 구성은 [[AI-Training-Environment-Containment|AI 학습 환경의 격리]], Firecracker 기반 관리형 샌드박스는 [[AWS-Lambda-MicroVMs|Lambda MicroVMs]]에서 다룬다.
 
+### 공유 커널 컨테이너에서 microVM으로 옮기는 이유
+
+컨테이너는 호스트 커널을 함께 쓰므로 그 커널의 로컬 권한 상승 결함 하나가 컨테이너 탈출로 이어지면 같은 호스트의 다른 워크로드, 자격 증명과 네트워크까지 닿을 수 있다. OpenAI는 2026-11-04 Linux 커널 로컬 권한 상승 948건의 발견 결과를 공개하며, 단기와 중기에는 최신 패치가 없는 운영체제의 낮은 권한 계정을 자원이 많은 공격자에게 사실상 루트로 보고 샌드박스와 Firecracker, gVisor 같은 격리로 피해 범위를 줄이라고 권했다(발견 경과는 [[Coordinated-Vulnerability-Disclosure#대량 발견은 재현, 경로 검증과 패치를 붙여 보고한다|대량 발견의 보고]]).
+
+Replit의 2026-11-04 글은 자율 에이전트가 늘며 이런 경계가 충분하지 않다고 보고, 호스트 커널을 공유하던 Docker 컨테이너 실행 환경을 샌드박스마다 커널을 둔 microVM 기반으로 다시 만든 사례다. 2026-11-09 대조했고 수치와 성과는 자체 보고다.
+
+- **커널을 샌드박스마다 둔다:** 샌드박스마다 자체 Linux 커널을 가진 microVM을 Cloud Hypervisor(Firecracker와 rust-vmm 구성요소를 공유)와 KVM으로 띄운다. 게스트 커널이 뚫려도 공격자는 가상화 경계를 한 번 더 넘어야 하고, 사용자가 VM 안에서 Docker를 써도 공유 호스트의 권한을 내주지 않는다.
+- **VM 안에도 층을 둔다:** 지원 서비스마다 microVM을 주는 대신 최소한의 runc 컨테이너로 나누고(오버헤드 대비 이득이 작다는 판단), namespace, seccomp, 장치 접근과 capability를 역할별로 정해 사용자 프로세스가 감시 에이전트의 권한을 물려받지 않게 한다. VMM은 capability가 없는 비특권 계정으로 돌린다. eBPF로 프로세스 실행, 파일 접근과 네트워크 활동을 관찰하고 Linux 보안 모듈(LSM) 훅으로 금지 동작을 막는다. 어느 LSM인지는 밝히지 않았다.
+- **게스트 커널을 줄인다:** 배포판 설정 대신 tinyconfig에서 시작해 Bluetooth, 무선, USB와 디스플레이 드라이버를 빼고, 필요한 드라이버는 내장하며 모듈 적재를 끈다. 2026-06-01~11-04 공개된 Linux CNA CVE 6,211건 중 5,969건(96.1%)을 피했다고 집계했는데 내역은 공개 전 반영된 수정 4,375건과 설정으로 제외된 676건이고 나머지 근거는 글에 없다. Linux 커널 CNA는 수정이 stable 트리에 들어간 뒤 CVE를 자동 배정하므로, 앞의 수는 갱신 주기의 효과이고 표면 축소의 직접 효과는 설정 제외분으로 읽는다(해석).
+- **이전과 속도:** 수억 개 프로젝트를 데이터 손실과 중단 없이 옮겼다고 밝혔지만 이전 절차는 공개하지 않았다. 고객 볼륨 연결과 지원 서비스 설정을 포함한 샌드박스 확보는 warm pool로 약 500ms라고 적는다.
+
 ## 트레이드오프
 
 - **라이브 패치와 재부팅:** 라이브 패치는 중단 없이 노출 기간을 줄이지만 제공 범위와 기술 제약이 있다. AWS 권고처럼 수정 커널로 재부팅한 상태를 완료 기준으로 둔다(이 문서의 해석).
@@ -129,6 +140,7 @@ PwnEscape는 경쟁 조건이 없는 결정적 흐름이다. 이 문서는 검�
 1. 하이퍼바이저와 장치 모델이 견고해도 호스트 커널 네트워크 스택의 결함이 VM 탈출이 되는 이유는 무엇인가? PwnEscape에서 게스트가 정한 값은 호스트의 어떤 연산을 지시했는가?
 2. 이중 읽기와 메타데이터가 지시하는 지연 쓰기는 무엇이 다르고, 각각 어디에서 무엇을 검사해야 하는가?
 3. 자체 관리 KVM 호스트 수백 대에 같은 유형의 결함이 공개됐다. 노출 판정, 라이브 패치 사용 여부, 재부팅 순서와 고객 공지를 어떤 근거로 정하며, 게스트 커널 갱신만으로 끝나지 않는 이유는 무엇인가?
+4. 신뢰하지 않는 코드를 실행하는 서비스가 공유 커널 컨테이너에서 microVM으로 옮기면 커널 권한 상승 결함의 피해 범위는 어떻게 달라지고, VM 안에는 어떤 통제를 남겨야 하는가?
 
 ## 출처
 
@@ -143,6 +155,9 @@ PwnEscape는 경쟁 조건이 없는 결정적 흐름이다. 이 문서는 검�
 - [Firecracker, Production Host Setup Recommendations](https://github.com/firecracker-microvm/firecracker/blob/main/docs/prod-host-setup.md)
 - [The Linux Kernel documentation, Livepatch](https://docs.kernel.org/livepatch/livepatch.html)
 - [Hosting Companies Rebooted EVERYTHING Because of This Bug — YouTube, Better Stack](https://www.youtube.com/watch?v=0BNlnYN3ryE) — 2026-10-22 공개 영상, 계기 자료. 사실관계는 이 목록의 1차 출처로 대조했고 확인하지 못한 수치는 쓰지 않음
+- [Inside Replit's New Sandbox Engine, Part 1: The Path to MicroVMs — Replit Frontier](https://frontier.replit.com/sandbox-engine-microvms-part-1/) — 2026-11-04 게시, 2026-11-09 구조, VM 안의 계층, 커널 설정, CVE 집계 방식과 이전 범위 대조. 자체 보고
+- [A thousand fewer paths to root — OpenAI](https://openai.com/index/a-thousand-fewer-paths-to-root/) — 2026-11-04 게시, 2026-11-09 공식 한국어 페이지로 저권한 계정과 격리 권고 대조
+- [The Linux Kernel documentation, CVEs](https://docs.kernel.org/process/cve.html) — 2026-11-09 수정 반영 뒤 자동 배정 원칙 확인
 
 ## 관련 문서
 

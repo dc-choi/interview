@@ -104,6 +104,7 @@ verified_at: 2026-10-25
 - 개인 순위 대신 팀, 애플리케이션과 사용 사례별로 사용량을 묶어 개선할 작업을 찾는다. 많이 쓴 사람의 작업 방식은 조사할 후보이지 성과가 검증된 모범 사례가 아니다.
 - 같은 작업 범위와 품질 기준에서 채택된 변경당 비용, 검토와 재작업, 전달 시간과 실패율을 함께 본다. 생성량을 늘려 동료의 검토 부담으로 넘겼다면 팀 전체의 개선으로 계산하지 않는다.
 - 사용량 최소화도 단독 목표로 두지 않는다. 탐색과 학습에 필요한 실험을 허용하되, 예산과 완료 기준을 두고 결과를 평가한다.
+- Thoughtworks Technology Radar Vol.35(2026-11)도 AI가 생성한 코드 비율이나 소비 토큰 같은 활동 지표를 생산성 척도로 쓰는 일을 Caution에 올렸다. 도입 수준은 보여 주지만 실제 생산성의 대리 지표로는 약하고, 이를 목표로 삼으면 지표를 채우려고 AI로 바쁜 일을 만드는 개발자가 생긴다며 DORA 지표와 협업 품질, 사업 결과에 연결하라고 권한다.
 
 이는 측정 체계의 설계 원칙이다. 특정 회사의 비용 절감률이나 전체 업계의 채택 상태를 입증하는 통계로 읽지 않는다.
 
@@ -169,6 +170,7 @@ verified_at: 2026-10-25
 
 ## 출처
 - [Finding balance in the era of tokenmaxxing — DORA](https://dora.dev/insights/finding-balance-in-the-era-of-tokenmaxxing/)
+- [Coding throughput as a measure of productivity — Thoughtworks Technology Radar Vol. 35](https://www.thoughtworks.com/radar/techniques/summary/coding-throughput-as-a-measure-of-productivity) — 2026-11, 2026-11-09 Caution 링과 권고 대조
 - [2025 Developer Survey: AI — Stack Overflow](https://survey.stackoverflow.co/2025/ai)
 - [2025 Developer Survey: Methodology — Stack Overflow](https://survey.stackoverflow.co/2025/methodology)
 - [2025 Developer Survey: Work — Stack Overflow](https://survey.stackoverflow.co/2025/work)

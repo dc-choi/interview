@@ -25,6 +25,8 @@ AI가 작성한 변경도 요구사항, 호출부와 실패 조건에 대조해�
 - 반복 검토에는 상한을 둬 세 라운드가 지나면 리뷰어가 작성자에게 접근 방식을 다시 생각하라고 요청한다. 초기 검토 뒤에는 새 diff에 집중하며 같은 지적을 반복하지 않는다.
 - 공개 당시 장애 지표에 따라 승인을 자동 강화하는 장치는 아직 없었다.
 
+Thoughtworks Technology Radar Vol.35(2026-11)는 이런 방식을 risk-tiered human oversight로 Trial에 올렸다. 가장 위험하거나 되돌리기 어려운 변경은 사람이 직접 만들고, 중간 위험은 사람이 리뷰하며, 저위험은 CI를 거쳐 코딩 에이전트가 자동 병합하는 3단 분류다. 더 볼 변경은 상향 검토 구역(특정 파일과 디렉터리) 지정과 LLM 기반 변경 분류를 함께 써서 고르되, 후자는 틀릴 수 있다고 적는다. 반대로 사람이 실제로 판단할 수 없는 승인을 모든 변경에 반복하는 상태는 human-in-the-loop theater(Caution)로 경고한다. 그런 승인은 아무도 결정을 실제로 소유하지 않는 책임의 구멍(accountability sink)이 되므로, 사람이 판단할 수 없는 나머지 변경은 mutation testing, property-based testing, TLA+나 Quint 같은 형식 모델과 에이전트 보조 의미 검토로 다루라고 권한다.
+
 ## 사례의 공개 수치
 
 위 사례 글이 밝힌 사내 수치를 2026-10-26 원문과 대조했다. 팀의 자체 보고이며 원자료는 공개되지 않았다.
@@ -48,6 +50,16 @@ Quick, Standard, Deep은 검토 강도이며 Standard가 기본값이다. 조직
 Imprint의 2026-10-17 `small-change` 사례는 1,000줄 미만, AI 리뷰의 p1/p2 지적 없음, 영향받는 각 서비스에서 작성자의 과거 병합 10건 이상, 영향 서비스 수 제한과 공유 라이브러리 제외를 결합했다. 결제와 보안 같은 경로도 빠른 승인에서 제외한다. 승인 스킬은 승인하거나 건너뛰며 댓글을 중계하지 않고, PR 묶음을 따로 검토해 지식 공유와 반복 결함을 찾는다.
 
 이전 2년의 엔지니어당 병합 4배와 리뷰 중앙값 33분에서 77분 증가는 이 방식을 도입한 배경이다. 이 정책의 효과가 아니다. 공개 당시 약 10%가 자격을 얻었고 장기 성과 판단은 이르다고 밝혔다. 사고 감소 수치도 이 정책의 인과 효과로 연결하지 않는다.
+
+## 사람 리뷰 없이 병합하면 사고를 리뷰어의 검사 항목으로 되돌린다
+
+2026-11-03 The Pragmatic Engineer에 실린 한 엔지니어의 에세이는 작은 스타트업(Tano)의 운영을 이렇게 설명한다. 작성자 개인의 기록이며, 수치는 본문 서술, 표 이미지와 대화형 차트(집계값)로 제시됐고 PR 단위 원자료는 공개되지 않았다.
+
+- 모든 PR에 CI의 Claude Code GitHub Actions 리뷰가 돌고, 대부분은 그것이 유일한 리뷰다. 사람은 자기 코드와 새 팀원의 코드를 보고 숙련된 동료의 코드는 드물게 보며, 위험한 변경에는 더 강한 리뷰 에이전트를 따로 돌린다. 작성자는 입사 3주 뒤 자동 리뷰만으로 병합하는 데 익숙해졌고 경험에 따라 8주까지 걸린다고 적었다.
+- 새로 드러난 실패 방식은 리뷰 에이전트에 추가한다. 약 25GB, 600만 행 테이블에 쓰기를 막는 마이그레이션이 적재를 멈추고 배포 시간 초과를 낸 뒤, 리뷰 에이전트는 가장 큰 테이블 목록을 갖고 그 테이블의 블로킹 마이그레이션을 허용하지 않는다.
+- 같은 글에는 화폐의 보조 단위를 늘 100으로 가정해(바레인 디나르는 1,000필스) 보고 수치가 어긋나고 기존 통화 유틸리티도 무시한 사례, 두 번째 마이그레이션의 가드를 빠뜨려 일부 크리에이터에게 두 번 지급한 사례가 있다. 작성자는 중복 지급을 빠른 확장의 대가로 받아들였다고 적었다.
+
+적용 제안: 자동 리뷰만으로 병합하는 경로를 열면 사고 기록을 리뷰어의 검사 항목이나 결정론적 검사로 바꾸는 루프를 함께 둔다([[AI-Native-Org#엔지니어만 알던 규칙을 자동 검사로 바꾼다|규칙의 자동 검사화]]). 다만 돈과 데이터처럼 되돌리기 어려운 경로는 사후 수정에 기대지 않고 아래 작은 팀 적용 예처럼 중복 실행 검사와 사람 판단을 남긴다. 같은 사례의 PR 수 증가와 새 병목은 [[AI-Work-Output-and-Employment#산출이 늘면 병목은 다음 단계로 옮겨 간다|산출 증가 뒤의 병목 이동]]에 있다.
 
 ## 작은 팀의 적용 예
 
@@ -92,6 +104,9 @@ Imprint의 2026-10-17 `small-change` 사례는 1,000줄 미만, AI 리뷰의 p1/
 ## 출처
 
 - [Speeding up code review with small-change — Will Larson](https://lethain.com/small-changes/) — 2026-10-17, 2026-11-02 자격 검사, 제외 경로와 초기 관찰 범위 확인. 다른 서비스의 기본 승인 규칙이 아님
+- [Risk-tiered human oversight — Thoughtworks Technology Radar Vol. 35](https://www.thoughtworks.com/radar/techniques/summary/risk-tiered-human-oversight) — 2026-11, 2026-11-09 Trial 링, 3단 분류, 검토 구역과 변경 분류 대조
+- [Human-in-the-loop theater — Thoughtworks Technology Radar Vol. 35](https://www.thoughtworks.com/radar/techniques/summary/human-in-the-loop-theater) — 2026-11, 2026-11-09 Caution 링, 정의와 대안 기법 대조
+- [How software engineering is changing: a tale of two eras — The Pragmatic Engineer, Neil Kakkar](https://newsletter.pragmaticengineer.com/p/how-software-engineering-is-changing) — 2026-11-03, 2026-11-09 리뷰 방식, 실패 유형의 리뷰 에이전트 반영과 세 사고 대조
 
 - [How the Claude Code team does code review — claude.dev, Addy Osmani, Morgan Westlee Lunt, Qing Wang](https://claude.dev/blog/solving-code-review-at-anthropic/)
 - [Bringing Code Review to Claude Code — claude.com](https://claude.com/resources/articles/code-review) — 2026-03-09 research preview 출시 글, 사내 도입 전후 16%와 54% 대조

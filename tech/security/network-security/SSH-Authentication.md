@@ -91,7 +91,7 @@ PAM 없이 비밀번호를 확인하는 OpenSSH는 입력한 비밀번호를 `cr
 
 2026-11-08 Alpine 공지와 보안 추적기, OpenSSH 10.6p2 릴리스 노트와 수정 커밋, CVE 레코드, musl 메일링 리스트를 대조한 사례가 CVE-2026-123158이다.
 
-- **원인:** musl의 `crypt()`는 키가 256바이트를 넘으면 오류 표시로 `*`를 돌려준다. Alpine 기본 이미지의 `root`처럼 비밀번호 필드가 `*`인 계정에 257~1024바이트 비밀번호를 보내면 두 문자열이 같아 인증을 통과한다. 1024는 sshd의 비밀번호 길이 상한이다. 저장값이 짧으면 sshd가 다른 계정의 salt를 빌리므로 `$5$`나 `$6$` 해시를 가진 다른 계정이 하나 이상 있어야 한다.
+- **원인:** musl의 `crypt()`는 키가 256바이트를 넘으면 오류 표시로 `*`를 돌려준다. Alpine 기본 이미지의 `root`처럼 비밀번호 필드가 `*`인 계정에 257~1024바이트 비밀번호를 보내면 두 문자열이 같아 인증을 통과한다. 1024는 sshd의 비밀번호 길이 상한이다. 저장값이 짧으면 sshd가 다른 계정의 salt를 빌리므로 `$5$`나 `$6$` 해시를 가진 다른 계정이 하나 이상 있어야 한다. 이 salt 차용은 존재하지 않는 계정에서 응답 시간이 달라 계정 이름을 알아낼 수 있던 CVE-2016-6210 대응으로 2016년(OpenSSH 7.3) 들어간 처리다. 실제 해시가 없어도 다른 계정의 salt로 해시를 계산해 실패 시간을 맞추는데, 발견자 설명은 이 경로가 `*` 필드를 가진 실제 계정에도 쓰여 우회의 전제가 됐다고 적는다. 타이밍 방어가 넓힌 경로라도 그 경로의 비교 결과까지 검증 대상에 넣는다(해석).
 - **조건:** PAM을 쓰지 않는 `openssh-server`와 `UsePAM no`인 `openssh-server-pam`이 대상이고, `UsePAM yes`이면 해당하지 않는다. `PasswordAuthentication yes`(OpenSSH 기본값)여야 하며, 기본값 `PermitRootLogin prohibit-password`가 root를 막으므로 root 계정은 `PermitRootLogin yes`일 때만 열린다. Alpine은 3.21~3.24와 edge, 정기 갱신이 끝난 3.16~3.20에서 확인했다. musl 메인테이너는 Dropbear 등 OpenSSH가 아닌 서버는 영향이 없다고 밝혔다.
 - **수정 위치:** OpenSSH가 저장값이 최소 해시 길이보다 짧으면 비교하지 않도록 고쳤고 업스트림은 10.6p2(2026-11-05)에 넣었다. OpenSSH는 근본 원인이 자기 코드에 있다고 보지 않고, musl 메인테이너도 musl의 버그가 아니라 호출부의 잘못된 사용이라고 보면서 다음 릴리스 주기에 이 동작을 바꿀 가능성이 높다고 밝혔다. Alpine stable branch는 백포트한 패키지로 고쳤으므로(예: 3.24는 `openssh` `10.3_p1-r2`) 업스트림 버전 번호만으로 판단하지 않고 보안 추적기의 branch별 수정 버전을 본다.
 - **대응:** `apk upgrade -U -a` 뒤 `rc-service sshd restart`로 실행 중인 데몬까지 바꾼다. 당장 올릴 수 없으면 기존 세션을 연 채로 공개키 접속이 되는지 확인하고 `PasswordAuthentication no`로 바꾼 뒤 재시작하며, 재시작 뒤 새 로그인을 확인한 다음 기존 세션을 닫는다. 로그인을 배제할 수 없으면 침해된 장비로 다룬다. 컨테이너 안에서 sshd를 실행하지 않는 경우는 Alpine 공지의 영향 없음 범위다.
@@ -126,6 +126,9 @@ PAM 없이 비밀번호를 확인하는 OpenSSH는 입력한 비밀번호를 `cr
 - [CVE Program, CVE-2026-123158](https://www.cve.org/CVERecord?id=CVE-2026-123158) — 2026-11-05 게시, CVE API 레코드로 설명 확인
 - [CISA, Known Exploited Vulnerabilities Catalog](https://www.cisa.gov/known-exploited-vulnerabilities-catalog) — 2026-11-06 판 피드에 미등재 확인
 - [CVE-2026-123158 — Previdian](https://previdian.com/CVE-2026-123158) — 보안 업체의 공격 시도 관측 기록, 단일 출처
+- [NVD, CVE-2016-6210](https://nvd.nist.gov/vuln/detail/CVE-2016-6210) — 2026-11-09 NVD API 기록으로 응답 시간 차이를 이용한 계정 열거와 7.3 이전 영향 범위 대조
+- [Determine appropriate salt for invalid users — GitHub openssh/openssh-portable](https://github.com/openssh/openssh-portable/commit/9286875a73b2de7736b5e50692739d314cd8d9dc) — 2016-07-15 커밋
+- [sshole 설명 페이지 — Wakefield](https://sshhole.com) — 발견자 측 설명. salt 차용 경로와 musl `crypt()` 실패 반환값의 변경 이력 확인
 
 ## 관련 문서
 

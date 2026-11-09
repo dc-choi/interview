@@ -270,6 +270,7 @@ NODE_ENV는 Node.js 자체의 예약된 동작이 아니라 애플리케이션, 
 - [[Nodejs-Design-Patterns|Node.js 생성 패턴 (Singleton, Factory, Builder, Prototype)]]
 - [[Nodejs-Production-Readiness|Node.js 프로덕션 운영 체크리스트 (6대 운영 축, 단계별 전략)]]
 - [[tech/os-runtime/nodejs/Security|보안 모범 사례]]
+- [[Nodejs-Security-Release-Triage|보안 릴리스 대응 (라인별 수정 목록 읽기, 영향 대조, 적용과 기록)]]
 - [[TypeScript-Node|TypeScript]]
 - [[WebAssembly|WebAssembly]]
 - [[Nodejs-Native-Addons|Native Addons (Node-API, ABI, 수명과 비동기 처리)]]

@@ -171,6 +171,7 @@ verified_at: 2026-09-30
 - [MDN, Array](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Array)
 
 ## 관련 문서
+- [[Targeted-Social-Engineering#점검 체크리스트|면접 과제 실행 점검]] — 가짜 채용 과제 저장소로 개발 도구를 바꿔치기한 공격과 과제 코드를 격리해 실행하는 기준
 - [[CS&프로그래밍(CS&Programming)|CS & 프로그래밍]]
 - [[Resume-Portfolio-Guide|이력서 & 포트폴리오 가이드]]
 - [[Job-Search-Strategy|이직 전략]]

@@ -62,6 +62,7 @@ aliases: ["Flow vs Agent Orchestration", "멀티 에이전트 주의력", "딥�
 - 멀티 에이전트 병렬 작업과 몰입에 대한 회고 — 개인 블로그 에세이
 
 ## 관련 문서
+- [[Agent-Terminal-Workspaces#위임 계층 없이 한 사람이 여러 세션을 돌릴 때|한 사람이 돌리는 병렬 에이전트 세션]] — 병렬 작업의 피로, 저장소에 두는 작업 큐와 사람의 판단 대기열
 - [[Personal-Task-Management|개인 할 일 관리 (진행 중 작업 수 제한)]]
 - [[Developer-Role-AI-Era|AI 시대 개발자 역할]] — 산출자에서 오케스트레이터로의 전환
 - [[AI-Handicap-Learning|AI 접바둑 학습]] — 단일 에이전트를 몰입형으로 쓰기

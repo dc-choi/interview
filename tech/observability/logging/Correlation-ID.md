@@ -38,13 +38,25 @@ ID는 헤더로 도는 것만으로는 소용이 없고, 모든 로그 레코드
 
 설정 검증에서는 식별 가능한 요청 하나를 만들고 원본 로그, 수집 후 필드, 저장된 trace와 화면의 연결 결과를 차례로 대조하는 방식을 권한다. 로그와 trace가 각각 조회되는 것만으로 상관 연결까지 성공했다고 판단하지 않는다. 이는 문서 기반 점검안이며 실제 환경에서 재현한 결과는 아니다. 이 절만 대조했으므로 기존 `verified_at`은 유지한다.
 
+## 배치 파이프라인은 실행 단위로 잇는다
+
+요청이 아니라 배치 실행이 여러 시스템을 지날 때도 같은 문제가 생긴다. 오케스트레이터의 태스크 로그, 계산 클러스터와 작업 단계의 로그, 분산 처리 엔진의 driver와 executor 로그가 서로 다른 식별자를 쓰면 한 장애가 세 개의 실패처럼 보인다.
+
+- **실행 매핑을 남긴다:** Airflow DAG run과 task attempt, EMR 클러스터와 step, Spark application을 서로 찾아갈 수 있게 기록한다. 시스템 경계를 넘길 때 OpenTelemetry의 컨텍스트 전파를 쓸 수 있다.
+- **최초 실패와 후속 증상을 나눈다:** Spark 오류, 실패한 EMR step과 실패한 Airflow task가 같은 사건일 수 있다. 연결이 있어야 가장 먼저 난 실패를 원인 후보로 고를 수 있다.
+- **조치 뒤에도 같은 키를 쓴다:** 재실행 뒤의 성공, 품질 검사 통과와 하류 데이터의 완결을 같은 실행 기록으로 확인한다. 실행이 끝날 때 맥락을 게시하는 절차는 [[ELT-Platform#실행 기록에 업무 맥락을 묶어 게시한다|ELT 플랫폼]]에 있다.
+
+**사례:** Foursquare는 주요 파이프라인 몇 개에서 이 시스템 간 연결을 갖춘 뒤 AI 에이전트가 장애를 조사하게 했고, Spark 작업 문제의 진단과 해결 시간이 수 시간이나 수일에서 10분 미만으로 최대 90% 줄었다고 플랫폼 재구축에 참여한 엔지니어가 보고한다(2026-10-31 글, 2026-11-09 대조). 측정 방법, 표본과 기준선은 밝히지 않았다. 이 절도 해당 글만 대조했으므로 기존 `verified_at`은 유지한다.
+
 ## 관련 문서
 - [[Structured-Logging|Structured logging]]
 - [[Log-Pipeline|Log Pipeline]]
 - [[OpenTelemetry|OpenTelemetry (W3C trace context 전파)]]
+- [[ELT-Platform|ELT 플랫폼 (실행 기록과 맥락 게시)]]
 
 ## 출처
 
 - [Splunk, Related Content in Splunk Observability Cloud](https://help.splunk.com/en/splunk-observability-cloud/data-tools/related-content) — 2026-10-13 상관 필드 이름과 Kubernetes 클러스터 범위 조건 대조
 - [W3C, Trace Context](https://www.w3.org/TR/trace-context/)
 - [OpenTelemetry, Context propagation](https://opentelemetry.io/docs/concepts/context-propagation/)
+- [Building a Data Platform for Autonomous Agents — LinkedIn, Vikram K Gundeti](https://www.linkedin.com/pulse/building-data-platform-autonomous-agents-vikram-k-gundeti-obd8c/) — 2026-10-31 게시. 배치 실행의 시스템 간 매핑과 Foursquare 사례 수치를 2026-11-09 대조

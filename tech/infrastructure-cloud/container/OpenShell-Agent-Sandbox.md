@@ -110,6 +110,7 @@ MCP 계층에서 같은 원리를 쓰는 구성은 [[MCP-Security-Boundaries|MCP
 
 ## 관련 문서
 
+- [[VM-Guest-to-Host-Escape#공유 커널 컨테이너에서 microVM으로 옮기는 이유|공유 커널 컨테이너에서 microVM으로 옮기는 이유]]
 - [[Agent-Execution-Isolation|에이전트 실행 격리]]
 - [[AI-Training-Environment-Containment|AI 학습 환경의 격리]]
 - [[K8s-Agent-Substrate|Agent Substrate]]

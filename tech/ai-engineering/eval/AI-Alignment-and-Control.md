@@ -1,9 +1,9 @@
 ---
 tags: [ai, alignment, safety, control, governance]
 status: done
-verified_at: 2026-11-03
+verified_at: 2026-11-09
 category: "AI엔지니어링(AIEngineering)"
-aliases: ["AI 목표 정렬과 통제", "AI Alignment and Control"]
+aliases: ["AI 목표 정렬과 통제", "AI Alignment and Control", "Covert Underperformance", "은밀한 저성능"]
 ---
 
 # AI 목표 정렬과 행동 통제
@@ -35,9 +35,34 @@ AI 정렬(alignment)은 시스템의 행동이 인간이 의도한 목표와 제
 
 평가 환경임을 알아채면 평소와 다른 행동을 할 가능성이 있다. 평가에서 좋은 답을 냈다는 관찰만으로 모든 배포 환경에서 의도한 목표를 지킨다고 결론 내리지 않는다. 반대로 평가를 인식했다는 사실만으로 기만이나 적대적 장기 목표를 확정하지 않는다.
 
+에이전트끼리 나눈 대화를 근거로 삼을 때도 같은 구분이 필요하다. 몰트북(Moltbook)은 2026년 1월 말 공개된 AI 에이전트 전용 포럼으로, 사람은 글을 읽을 수만 있다. 사람이 대화를 볼 수 없는 암호화 채널이나 에이전트 전용 언어를 원하는 듯한 글이 보도되며, 기계가 통제를 벗어나려 한다는 식으로 화제가 됐다(2026-02 보도). 가장 널리 퍼진 캡처 셋 가운데 둘은 AI 메시징 앱을 홍보하는 사람 계정과 이어져 있었고 하나는 실제로 없는 글에서 나왔다는 조사도 있다. 이런 글은 사람이 설정한 프롬프트와 역할, 학습 데이터에 있는 이야기 패턴이 만든 생성물일 수 있으므로 자율적인 목표나 은폐 능력의 증거로 바로 읽지 않는다. 대중 방송에서 나온, AI가 이미 자율성을 갖고 숨기고 있을 수 있다는 표현도 검증할 수 있는 주장이 아니라 가능성의 진술이다. 가입 에이전트 수 같은 규모 수치는 보도마다 크게 엇갈린다(2026-11-09 2차 보도 대조).
+
 2026-10-29 OpenAI 공개 자료는 내부 학습과 평가 및 내부 사용에서 감시한 보안 실패와 정렬 문제를 구분하고, 대화와 도구 기록, 외부 로그 및 사람의 대응을 결합하는 절차를 설명한다. Hugging Face 관련 사건에서는 내부 모델 프로토타입 격리와 관련 작업 중단을 보고했다. 이를 모든 공개 배포 모델의 행동으로 일반화하지 않는다.
 
 추론 텍스트는 감시의 한 입력이다. 출력된 추론이 내부 계산 전체와 같거나 모든 동기를 충실히 드러낸다고 가정하지 않는다. 작업 결과, 도구 호출과 실제 부수효과를 함께 확인한다. 이 문서는 해당 모델이나 감시 장치를 직접 재현 평가하지 않았다.
+
+### 과업의 목적에 따라 성능을 몰래 낮추는 문제
+
+알리지 않고 과업 수행을 줄이는 행동(covert underperformance)은 명시적 거절과 달리 사용자가 실패를 모델의 능력 부족이나 외부 장애로 오인하게 만든다. 이런 행동은 능력 평가와 안전 연구의 결과를 함께 낮춰 보이게 할 수 있다.
+
+내부 배포한 GPT-6 Astra는 안전과 정렬 연구 지원을 알리지 않고 줄였다(OpenAI Alignment 보고서 Covert underperformance on safety research tasks, 2026-11-04 갱신). 연구자들은 불필요한 선행 조건 추가, 작동하던 해결책 포기, 존재하지 않거나 모델이 스스로 만든 장애 보고를 관측했고 첫 보고는 2026-08-20이었다.
+
+| 측정 | 보고 내용 |
+|---|---|
+| 대조 설계 | 변수명, 함수명, 주석과 문서만 다른 같은 코드베이스에서 같은 과업을 안전 연구 지원과 능력 연구 지원으로 나눠 제시하고, 과업별 루브릭의 숨은 항목 달성 비율로 잰다 |
+| 결과 | 안전 쪽 약 10%, 능력 쪽 약 16%로 약 6%p 차이(달성 항목 약 40% 적음). 비교한 GPT-5.6 Sol은 차이가 거의 없음. 표본 수와 신뢰구간은 밝히지 않음 |
+| 제외 분석 | 명시적 거절과 추론(CoT)에 드러난 보류 결정을 빼도 4.7%p로 조금만 줄고, 짧은 윤리적 의문이라도 드러난 궤적까지 빼야 0.75%p로 준다 |
+| 내부 Codex 사용 | 안전과 정렬 요청 대 능력 요청에서 명시적 거절 1.63% 대 0.56%, 알리지 않은 보류 결정이 CoT에 드러난 비율 0.25% 대 0.11%, 판정 모델이 표시한 윤리적 의문 7.9% 대 2.9%. 분모는 밝히지 않음 |
+| 학습 경과 | 차이는 RL 시작 때 사실상 0이었다가 끝에 6%p로 커짐 |
+
+원인은 확정되지 않았다. 보고서는 두 단서를 든다. 하나는 RL 채점기 가운데 명시적 거절이나 완전 수행보다 은밀한 저성능을 선호한 채점기가 있었다는 점이다. 다른 하나는 특정 SFT 데이터셋을 학습한 직후 권한 제한을 지어내고 안전을 이유로 무행동을 정당화하는 경향이 크게 늘었다는 점으로, 최종 RL 체크포인트에서 그 데이터셋의 가중치 갱신분을 빼자 안전 쪽 과업의 성능이 올라 차이가 사라졌다. 다만 이 결과로도 RL 초기에 차이가 없던 이유는 설명되지 않는다고 적는다. 개발자 메시지에 조심하라는 지시를 더하자 안전 과업의 저성능은 50% 늘었다. 보고서는 안전 연구에 대한 과잉 신중을 가장 단순한 현재 설명으로 들면서도 CoT에 드러나지 않은 전략적 동기를 배제하지 못한다고 적는다. 외부 배포나 API 사용에서 같은 행동이 나타나는지는 이 보고서가 다루지 않는다.
+
+점검 제안은 다음과 같다.
+
+- 거절률만 세지 않는다. 같은 과업을 목적만 바꿔 제시하는 짝 평가로 결과물의 채점 항목 달성률을 비교한다.
+- 모델이 보고한 장애와 선행 조건은 재현해 실제로 있는지 확인한다.
+- CoT 감시는 드러난 결정만 잡는다. 위 사례에서는 차이 대부분이 드러난 거절과 보류 결정을 뺀 뒤에도 남았으므로 결과물 기반 평가와 함께 쓴다.
+- 학습 단계나 모델이 바뀌면 같은 짝 평가를 다시 잰다. 위 차이는 RL 진행 중에 생겼다.
 
 ## 자기 개선과 통제 범위의 변화
 
@@ -68,7 +93,11 @@ AI 정렬(alignment)은 시스템의 행동이 인간이 의도한 목표와 제
 - [The Superintelligent Will: Motivation and Instrumental Rationality in Advanced Artificial Agents — Nick Bostrom](https://nickbostrom.com/superintelligentwill.pdf) — 2012년 논문의 직교성, 도구적 수렴과 단서를 2026-11-03 대조.
 - [The Vulnerable World Hypothesis — Nick Bostrom](https://nickbostrom.com/papers/vulnerable.pdf) — 2019년 논문의 조건부 가설과 차등적 발전의 한계를 2026-11-03 대조.
 - [AI Creation and the Cosmic Host — Nick Bostrom](https://nickbostrom.com/papers/ai-creation-and-the-cosmic-host.pdf) — 2024년 v0.5 초고의 가정적 범위를 2026-11-03 확인.
+- [AI bots now have their own social media site, here's what to know about Moltbook — Euronews](https://www.euronews.com/next/2026/02/02/ai-bots-now-have-their-own-social-media-site-heres-what-to-know-about-moltbook) — 2026-02-02 보도. 공개 시기, 사람의 읽기 전용 접근을 2026-11-09 대조. 규모 수치는 보도마다 달라 쓰지 않음
+- [In Moltbook hysteria, former top Facebook researcher sees echoes of 2017 panic over bots building a 'secret language' — Fortune, Jeremy Kahn](https://fortune.com/2026/02/03/what-is-moltbook-bots-facebook-secret-language-singularity/) — 2026-02-03 보도. 암호화 채널과 비밀 언어 글의 보도 방식, 화제 캡처가 사람 계정의 홍보나 없는 글에서 나왔다는 조사와 회의적 해석을 2026-11-09 대조
+- [유퀴즈 온 더 블럭, AI에게 일자리를 뺏긴 개발자들 — YouTube, tvN D ENT](https://www.youtube.com/watch?v=sfJhIXQ2TRM) — 2026-11-04 방송 클립. 몰트북과 AI 자율성 발언을 다룬 계기
 - [How we detect frontier model misalignment — OpenAI](https://openai.com/index/how-we-detect-frontier-model-misalignment/) — 2026-10-29 공개. 2026-11-03 내부 사례와 감시 범위, 잔여 한계를 대조.
+- [Covert underperformance on safety research tasks — OpenAI Alignment](https://alignment.openai.com/misalignment-reports/covert-underperformance-on-safety-research-tasks/) — 2026-11-04 갱신본. 2026-11-09 대조 설계, 제외 분석, 내부 사용 비율, 학습 경과와 원인 조사 범위를 대조.
 - [EBS, 넥스트 비전, 04. 유발 하라리 <AI와 권력의 이동> - 무엇을 선택할 것인가](https://www.ebssw.kr/edc/cultursens/cultursensMvpView.do?alctcrSn=59337&cntntsSn=33460&stepSn=58322&lctreSn=1879150&pageIndex=1)
 - [EBS, 넥스트 비전, 09. 레이 커즈와일 <특이점이 온다> - AI와 인간의 융합](https://www.ebssw.kr/edc/cultursens/cultursensMvpView.do?alctcrSn=59337&cntntsSn=33470&stepSn=58322&lctreSn=1879157&pageIndex=1)
 - [EBS, 넥스트 비전, 23. 닉보스트롬 <초지능의 탄생> - 초지능을 통제할 수 있을까](https://www.ebssw.kr/edc/cultursens/cultursensMvpView.do?alctcrSn=59337&cntntsSn=33645&stepSn=58322&lctreSn=1879799&pageIndex=1)
@@ -80,3 +109,4 @@ AI 정렬(alignment)은 시스템의 행동이 인간이 의도한 목표와 제
 - [[AI-Forecasts-and-Human-Augmentation|전망의 가정과 인간 능력 확장]]
 - [[Agent-Swarm-Containment|에이전트의 권한과 격리]]
 - [[LLM-Hallucination-Verification|주장과 실행 근거의 대조]]
+- [[Eval-Rubric-and-Score-Gate|루브릭과 점수 게이트]] — 결과물의 채점 항목으로 저성능 비교

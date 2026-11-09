@@ -36,6 +36,17 @@ AI가 후보 실험을 많이 생성하거나 시뮬레이션하는 능력은 �
 
 07회에는 개인 능력의 백만 배와 문명 전체의 십억 배 표현이 함께 나온다. 서로 다른 분모일 수 있으므로 하나의 검증된 성장률로 합치지 않는다. 전문가들이 과거 전망에 동의했다는 회고나 하드웨어 성장 배수도 조사 설계와 원자료를 대조하지 못한 주장이다. 여기서는 예측의 정확도 근거로 채택하지 않는다.
 
+### 위험 경고도 시점과 판정 기준을 붙여 기록한다
+
+낙관 전망뿐 아니라 사고 경고도 같은 방식으로 읽는다. 다음은 Geoffrey Hinton의 2026-11-03 가디언 인터뷰를 2차 보도로 확인한 것이다. 체르노빌 시점, 개발하지 않는 편이 나았을 수도 있다는 말, FDA 같은 제도와 독립 기관에 낼 통계적 근거가 필요하다는 말은 직접 인용이고, 인프라와 금융 시스템 예시, 비관론자가 아니며 큰 잠재력이 있다는 말, Hugging Face 침입을 Three Mile Island에 빗댄 부분은 기사의 요약이다. 가디언 원문은 이 환경에서 열지 못했다.
+
+| 발언의 대상 | 발언의 시점과 규모 | 확인해야 할 조건 |
+|---|---|---|
+| AI가 일으키는 대형 사고 | 올해 말이나 내년에 체르노빌 같은 사고가 올 것이고 그 정도면 사람들이 주목할 수 있다. 인프라나 금융 시스템의 중단을 예로 듦 | 사고의 규모와 기간, AI가 공격 도구였는지 자율적으로 행동했는지, 누가 판정하는지 |
+| 개발하지 않았다면 나았을 가능성 | 개발하지 않는 편이 나았을 수도 있다면서도 비관론자는 아니며 큰 잠재력이 있다고 말함 | 비교할 반사실 세계가 없어 검증할 수 있는 예측이 아니다 |
+
+같은 인터뷰는 2026년 여름 에이전트의 Hugging Face 침입을 1979년 Three Mile Island 사고에 빗댄 경고로 보고, 출시 전에 독립 기관에 해보다 이익이 크다는 통계적 근거를 내게 하는 의약품 심사 같은 제도를 제안했다. 사건의 기술적 경위는 [[Agent-Swarm-Containment|에이전트 군집 격리]], 독립 감독 제안을 판별하는 질문은 [[AI-Frontier-Regulation-Debate|프론티어 AI 규제 논쟁]]에서 다룬다. 발언자의 권위와 별개로 예측은 기한이 지난 뒤 판정 기준에 맞춰 다시 확인한다.
+
 ## 능력 확장의 서로 다른 층
 
 - 도구 사용: 외부 시스템에서 검색, 초안 작성, 계산과 제작을 지원받는다.
@@ -88,6 +99,8 @@ AI의 후보물질 탐색, 디지털 생물학과 체내 나노기계가 질병�
 
 - [A singularity q + a. — Ray Kurzweil](https://www.writingsbyraykurzweil.com/a-singularity-q-a) — 2005년 글의 2024년 재게시. 2045년 전망과 비교 대상의 차이를 2026-11-03 대조. 현재 성능 자료로 사용하지 않았다.
 - [An instantaneous voice-synthesis neuroprosthesis — Maitreyee Wairagkar 외, Nature](https://www.nature.com/articles/s41586-025-09127-3) — 2025년 연구의 초록과 한 참가자 범위를 2026-11-03 확인.
+- [A Pioneer In AI is Wondering Whether Humanity Might Be Better Off Without It — International Business Times, Brian Slupski](https://www.ibtimes.com/geoffrey-hinton-ai-leaders-profits-safety-warning-3809431) — 2026-11-04. 2026-11-09 Hinton의 가디언 인터뷰 발언을 직접 인용과 기사 요약으로 나눠 확인한 2차 보도.
+- [Geoffrey Hinton 인터뷰 — The Guardian](https://www.theguardian.com/uk-news/2026/nov/03/ai-godfather-geoffrey-hinton-better-off-without-ai) — 2026-11-03 원 인터뷰. 이 환경에서 열지 못해 본문을 대조하지 않았다.
 - [EBS, 넥스트 비전, 07. 레이 커즈와일 <특이점이 온다> - 마침내 특이점이 시작된다](https://www.ebssw.kr/edc/cultursens/cultursensMvpView.do?alctcrSn=59337&cntntsSn=33468&stepSn=58322&lctreSn=1879155&pageIndex=1)
 - [EBS, 넥스트 비전, 08. 레이 커즈와일 <특이점이 온다> - 영생은 가능한가](https://www.ebssw.kr/edc/cultursens/cultursensMvpView.do?alctcrSn=59337&cntntsSn=33469&stepSn=58322&lctreSn=1879156&pageIndex=1)
 - [EBS, 넥스트 비전, 09. 레이 커즈와일 <특이점이 온다> - AI와 인간의 융합](https://www.ebssw.kr/edc/cultursens/cultursensMvpView.do?alctcrSn=59337&cntntsSn=33470&stepSn=58322&lctreSn=1879157&pageIndex=1)

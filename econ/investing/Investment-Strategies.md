@@ -41,6 +41,22 @@ ETF는 거래소에서 매매하는 상품 형태이며 패시브 운용과 동�
 
 2026-11-03 SEC 투자자 안내로 비용 항목, 스프레드, NAV 괴리와 지수 추적의 경계를 대조했다. 개별 나스닥100 ETF의 현재 보수, 신규 출시, 성과 순위와 한국 계좌별 세제는 이 비교에서 검증하지 않았다. 기존 전략 전체의 검증일은 유지한다.
 
+**사례: 같은 운용사의 나스닥100 ETF 두 개.** Invesco의 QQQ와 QQQM은 모두 Nasdaq-100 지수를 추종한다. Invesco는 2025-12-19 QQQ를 단위투자신탁(UIT) 구조의 ETF에서 개방형 펀드 구조의 ETF로 바꾸는 안이 수익자 승인을 받았다고 발표했고(개방형 거래 시작 예정일 2025-12-22), 이 전환으로 총보수가 0.20%에서 0.18%로 내려갔다. QQQM의 총보수는 2026-09-30 기준 0.15%다. 같은 금액을 1년 보유할 때 보수 차이는 0.03%p이므로 1,000만원이면 연 약 3,000원이다(보수 외 비용과 가격 변동 제외). 이 사례는 2026-11-09 두 상품의 보수와 구조만 대조했으며 스프레드와 한국 계좌의 세제는 확인하지 않았다.
+
+주당 가격이 낮다는 것은 최소 매수 단위가 작다는 뜻일 뿐 더 싸게 산다는 뜻이 아니다. 같은 지수를 추종하면 주당 가격이 달라도 투자 금액당 노출은 같다. 소수점 매수를 쓰지 않는 소액 적립에서는 낮은 주당 가격이 원하는 금액에 맞추기 쉽다. 두 상품을 고를 때도 위 표대로 총보수, 스프레드와 매매 빈도를 함께 본다. 기존 보유분을 옮길 때는 매도에 따른 세금과 매매 비용이 줄어들 보수보다 클 수 있다.
+
+### 지수의 구성 종목 교체는 지수의 생존이지 투자자 수익의 보장이 아니다
+
+S&P 500은 유동 시가총액 가중 지수이며, 편입과 방법론은 S&P Dow Jones Indices의 Index Committee가 관리한다. 신규 편입 후보는 미국 기업 여부, 기업 규모, 유동주식 비율, 거래 유동성과 재무 건전성(최근 4개 분기 GAAP 이익 합계와 최근 분기 이익이 양수) 같은 기준을 갖춰야 하고, 편입이 지수의 업종 균형에 기여하는지도 본다. 종목은 합병, 인수나 큰 구조조정으로 편입 기준을 더 이상 충족하지 못하거나, 편입 기준을 현저히 위반하면 빠진다.
+
+이 교체 때문에 지수는 쇠퇴한 기업을 내보내고 그때의 대형주를 담으면서 이어진다. 그러나 지수가 계속 존재한다는 것과 투자자의 수익은 다른 문제다.
+
+- 편출된 종목의 하락은 빠지기 전까지 지수와 지수 펀드의 성과에 그대로 반영된다. 교체는 손실을 지우지 않고 이후 보유 대상을 바꿀 뿐이다.
+- 신규 편입은 이미 크게 성장한 뒤에 이뤄지므로 편입 이전의 성장은 지수 보유자가 누리지 못한다.
+- 교체 규칙은 미국 대형주라는 범위 안에서만 작동한다. 그 시장 전체가 장기간 부진하면 지수도 함께 부진하다. 과거에 회복했다는 사실은 미래의 회복 기간을 보장하지 않는다.
+
+그래서 시가총액 가중 인덱스를 장기 후보로 볼 때도 집중도, 비용과 자금 목적을 함께 따진다. 2026-11-09 SSGA의 SPY 안내(유동 시가총액 가중)와 S&P 500 연계 구조화 채권의 2021-07 가격 보충 설명서(Form 424B2)에 실린 방법론 요약을 대조했다. S&P의 방법론 원문은 접근이 막혀 직접 대조하지 못했으므로 시가총액 하한 같은 현재 수치는 적지 않았고, 기준 이름은 바뀌었을 수 있다.
+
 ## 2. 효율적 시장 가설
 
 **효율적 시장 가설**은 자산 가격이 이미 알려진 정보를 빠르게 반영하므로, 공개된 정보로 시장을 꾸준히 이기기 어렵다는 주장이다. 강도에 따라 세 형태로 나뉜다.
@@ -155,6 +171,11 @@ ETF는 거래소에서 매매하는 상품 형태이며 패시브 운용과 동�
 - [Ex-Dividend Dates: When Are You Entitled to Stock and Cash Dividends — Investor.gov](https://www.investor.gov/introduction-investing/investing-basics/glossary/ex-dividend-dates-when-are-you-entitled-stock-and) — 2026-10-30 배당 자격, 날짜 구분과 배당락의 가격 영향 대조.
 - [Fund Distributions – Investor Bulletin — Investor.gov](https://www.investor.gov/introduction-investing/general-resources/news-alerts/alerts-bulletins/investor-bulletins/fund-distributions-investor-bulletin) — 2026-08-19 안내, 2026-10-30 분배 시 NAV와 시장가격, 가치 이전과 총수익 구분 대조.
 
+- [Invesco QQQ Shareholders Vote to Approve Modernization — Invesco](https://www.invesco.com/hk/en/investment-ideas/press-and-media/2025/invesco-qqq-shareholders-vote-to-approve-modernization.html) — 2025-12-19 발표, 2026-11-09 UIT에서 개방형 펀드 구조로의 전환과 총보수 0.20%에서 0.18% 인하 대조
+- [Invesco QQQ ETF — Invesco](https://www.invesco.com/qqq-etf/en/home.html) — 2026-11-09 총보수 0.18%와 Nasdaq-100 추종 대조
+- [Invesco NASDAQ 100 ETF (QQQM) fact sheet — Invesco](https://www.invesco.com/us-rest/contentdetail?contentId=5b4d8e58e0737710VgnVCM1000006e36b50aRCRD) — 2026-09-30 기준 총보수 0.15%와 Nasdaq-100 추종
+- [SPDR S&P 500 ETF Trust (SPY) — State Street Global Advisors](https://www.ssga.com/us/en/intermediary/etfs/spdr-sp-500-etf-trust-spy) — 2026-11-09 S&P 500의 유동 시가총액 가중 대조
+- [Bank of Nova Scotia, Pricing Supplement (Form 424B2) — SEC EDGAR](https://www.sec.gov/Archives/edgar/data/9631/000091412121005083/bn56478476-424b2.htm) — 2021-07-20, 기초자산 S&P 500의 편입 기준, 업종 균형과 편출 사유 요약
 - [Asset Allocation and Diversification — Investor.gov](https://www.investor.gov/introduction-investing/getting-started/asset-allocation) — 좁은 업종 펀드의 분산 한계와 여러 펀드의 상위 보유 종목 중복 확인.
 - [Exchange-Traded Funds (ETFs) — Investor.gov](https://www.investor.gov/introduction-investing/investing-basics/investment-products/mutual-funds-and-exchange-traded-2) — 분배금과 가격 변화, 지급 변동과 원금 손실 위험.
 

@@ -74,6 +74,27 @@ aliases: ["Harness Component Evaluation", "하네스 구성요소 평가", "코�
 
 이는 재현 완료된 방어 체계가 아니라 평가 설계 기준이다. 아카이브나 테스트 통과만으로 평가 조작이 불가능하다고 판단하지 않는다.
 
+## 팀이 만든 하네스도 정기적으로 평가한다
+
+팀과 조직이 스킬, 플러그인, AGENTS.md와 결정론적 가드레일로 자기 하네스를 만들기 시작하면 그 하네스가 실제로 작동하는지가 평가 대상이 된다. Thoughtworks Technology Radar Vol.35(2026-11)는 조직 규모의 하네스 운영(Harness engineering at scale)을 네 테마 중 하나로 두고, 가드레일은 실제로 작동할 때만 코딩 에이전트에 도움이 된다는 이유로 harness quality evaluation을 Assess에 올렸다.
+
+- 결정론적 부분(훅, 린트, 권한 규칙 같은 가드레일)은 테스트를 먼저 쓰는 방식으로 만들고, 가드레일마다 동작을 확인하는 테스트 묶음을 둔다.
+- 비결정론적 부분(스킬, 플러그인)은 별도 평가 도구로 평가한다. 블립은 PluginEval을 예로 든다.
+- 두 평가 모두 야간 실행이나 CI와 함께 정기적으로 돌린다.
+
+같은 판은 여러 팀이 함께 쓸 스킬, 도구, 내부 맥락 연결, 승인된 기술, ADR, 배포 경로 안내, 훅과 보안 정책을 모은 조직 공용 계층을 enterprise harness(Assess)로 부르고 개발자 경험 플랫폼의 에이전트판에 비유한다. 잘하는 방법에 아직 합의가 없으므로 얇고 연합된(thin and federated) 형태로 시작해 실험의 여지를 남기고 효과가 확인된 것을 거둬들이라고 권한다. InfoQ의 2026 동향 보고서(2026-10-30)도 하네스 엔지니어링을 채택 곡선의 혁신가(innovators) 단계에 두었다. 두 자료 모두 편집진의 판단이며 채택률을 잰 결과가 아니다. 조직 공용 실행 계층의 구성은 [[AI-Native-Org|AI-Native 조직]], 어디에 게이트를 걸지는 [[Harness-Gate-Placement|게이트 배치]]를 본다.
+
+## 하네스를 바꿀 때는 고정 지시와 확장 경로를 비교한다
+
+같은 모델이라도 하네스가 요청마다 붙이는 시스템 프롬프트와 도구 설명, 편집기 연결과 확장 방식이 작업 경험을 바꾼다. 2026-09-21 공개(11-07 갱신)된 한 개발자의 이전 기록은 Claude Code에서 Pi로 옮긴 이유를 이렇게 든다. 개인의 경험과 집계이며 두 하네스를 같은 과제로 비교한 결과는 아니다.
+
+- CLAUDE.md와 AGENTS.md를 복사나 심볼릭 링크로 함께 관리하는 부담. 작성자가 이전을 결정한 다음 날 Anthropic이 AGENTS.md 지원을 발표했다고 적었다(현재 동작은 [[Agent-Repository-Instructions-Hosts#Claude Code|호스트별 발견과 적용]]).
+- VS Code에서 편집기 선택 영역을 한 세션만 받는 제약. Pi에서는 여러 탭에서 쓰는 확장을 약 20분 만에 직접 만들었다.
+- 작성자 집계로 그해 244개 릴리스 중 4분의 3 넘게 시스템 프롬프트나 도구 설명을 바꿨다. 이런 변경은 모델 이름이 같아도 행동을 바꿀 수 있다([[Eval-Model-Drift-Monitoring#같은 이름 아래에서 바뀌는 네 층|드리프트의 하네스 층]]).
+- 기본 Bash 도구 설명만 약 3,000토큰인 요청당 고정 비용([[Agent-Context-Budget|컨텍스트 예산]]).
+
+Pi 공식 사이트(2026-11-09 확인)는 Pi를 MIT 라이선스의 최소 에이전트 하네스로 소개하고, 확장을 도구, 명령, 단축키, 이벤트와 TUI 전체에 접근하는 TypeScript 모듈로 설명한다. 하위 에이전트와 권한 확인 팝업은 기본으로 두지 않고 컨테이너나 확장으로 대신하라고 안내하므로, 이런 하네스로 옮기면 권한 경계를 직접 설계해야 한다(추론). 바꾸기 전 비교 항목(운영 제안)은 버전 고정과 변경 이력 추적, 요청당 고정 토큰의 실측, 확장 API와 그 확장의 신뢰 경계, 지침 파일의 이식성, 권한과 격리의 기본값이다.
+
 ## 학습 분포 밖 언어로 기억 의존을 줄이려는 시도와 교란 요인
 
 익숙한 언어의 과제에서 나온 점수는 모델이 코드를 이해한 결과인지 학습한 패턴을 떠올린 결과인지 가르기 어렵다. KillSwitch는 LLM과 코딩 에이전트가 생성하고 수정하기 어렵게 설계한 난해 언어다(GitHub dom96/KillSwitch, AGPL-3.0, Rust 참조 구현). 2026-10-19 The Register 보도와 저장소 README(2026-10-27 확인) 기준 설계와 결과는 다음과 같다.
@@ -99,6 +120,12 @@ aliases: ["Harness Component Evaluation", "하네스 구성요소 평가", "코�
 - [KillSwitch — GitHub, dom96](https://github.com/dom96/KillSwitch) — README의 목적, 라이선스와 벤치마크 위치, GitHub 언어 통계로 Rust 구현을 2026-10-27 확인. 명세와 코드는 열람하지 않음
 - [KillSwitch — killswitch-lang.org](https://killswitch-lang.org) — 공식 사이트의 선두 모델 표기 확인. 벤치마크 페이지 본문은 확보하지 못함
 - 사용자 제공 GeekNews 알림 요약(2026-10-16~27): LLM을 혼란시키도록 설계한 언어 KillSwitch. 게시물 URL은 확인하지 못했다
+- [Technology Radar Vol. 35 — Thoughtworks](https://www.thoughtworks.com/content/dam/thoughtworks/documents/radar/2026/11/tr_technology_radar_vol_35_en.pdf) — 2026-11, 2026-11-09 Harness engineering at scale 테마 대조
+- [Harness quality evaluation — Thoughtworks Technology Radar Vol. 35](https://www.thoughtworks.com/radar/techniques/summary/harness-quality-evaluation) — 2026-11-09 Assess 링, 결정론과 비결정론 부분의 평가 방식과 정기 실행 대조
+- [Enterprise harness — Thoughtworks Technology Radar Vol. 35](https://www.thoughtworks.com/radar/techniques/summary/enterprise-harness) — 2026-11-09 Assess 링, 구성 요소와 thin and federated 권고 대조
+- [InfoQ AI, ML and Data Engineering Trends Report - 2026 — InfoQ, Srini Penchikala 외](https://www.infoq.com/articles/ai-ml-data-engineering-trends-2026/) — 2026-10-30, 2026-11-09 채택 곡선의 배치 대조
+- [Goodbye Claude, Hello Pi — caleb.software](https://caleb.software/posts/claude-to-pi.html) — 2026-09-21 게시, 11-07 갱신. 2026-11-09 이전 이유, 릴리스 집계와 토큰 수치 대조. 집계 방법은 공개하지 않음
+- [Pi — Earendil](https://pi.dev/) — 2026-11-09 라이선스, 확장 범위와 기본으로 두지 않는 기능 확인
 
 ## 관련 문서
 

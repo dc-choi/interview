@@ -25,7 +25,7 @@ AI 사용률은 위 표의 어느 층위의 결과도 아니다([[AX-Transformat
 
 ## 산출이 늘면 병목은 다음 단계로 옮겨 간다
 
-2026년 10월 공개된 사례들은 AI로 작성이나 결함 발견이 늘어난 뒤 어느 단계가 먼저 막혔는지 보여 준다. Anthropic의 세 사례는 해당 조직의 자체 보고이며 원자료는 공개되지 않았다. PostgreSQL 사례의 원인 분석은 커미터 한 명의 개인 회고이고, 되돌린 기능은 공개 릴리스 공지로 확인할 수 있다. 구현이 싸질 때 병목이 결정과 승인 대역폭으로 옮겨 가는 원리는 [[Developer-Role-AI-Era#구현이 싸질 때 옮겨 가는 병목 — 결정과 승인 대역폭|결정과 승인 대역폭]]에서 다룬다.
+2026년 10~11월 공개된 사례들은 AI로 작성이나 결함 발견이 늘어난 뒤 어느 단계가 먼저 막혔는지 보여 준다. Anthropic의 세 사례는 해당 조직의 자체 보고이며 원자료는 공개되지 않았다. PostgreSQL 사례의 원인 분석은 커미터 한 명의 개인 회고이고, 되돌린 기능은 공개 릴리스 공지로 확인할 수 있다. Tano 사례는 엔지니어 한 명의 개인 에세이다. 구현이 싸질 때 병목이 결정과 승인 대역폭으로 옮겨 가는 원리는 [[Developer-Role-AI-Era#구현이 싸질 때 옮겨 가는 병목 — 결정과 승인 대역폭|결정과 승인 대역폭]]에서 다룬다.
 
 | 옮겨 간 병목 | 사례 | 읽을 때의 경계 |
 |---|---|---|
@@ -33,6 +33,7 @@ AI 사용률은 위 표의 어느 층위의 결과도 아니다([[AX-Transformat
 | 개발 인프라 | Anthropic Scion(2026-10-13, 10-15 갱신): 사내 모노레포 병합이 5월 하루 약 2,500건에서 9월 30,000건 이상으로 늘고 CI 체크아웃이 하루 약 2,500만 회에 이르자, 병목이 사람 규모로 만든 source control, 빌드와 CI로 옮겨 갔다고 봤다. 7명이 Scion과 사내 코드 리뷰 도구를 만들고 5개월 만에 모노레포를 Git에서 옮겼다 | 일반 Git 대체가 아니라고 스스로 밝힌다. 세부는 [[Server-Centric-Version-Control\|서버 중심 버전 관리]] |
 | 리뷰 | Claude Code 팀(2026-10-15): 6~9월 병합 PR이 두 배 넘게 늘고 되돌린 PR 비율은 상대적으로 40% 넘게 줄었다. 사람 승인 수를 변경의 위험 등급으로 나눴다 | 되돌림 건수와 장애 지표는 공개하지 않았다. 세부는 [[Code-Review-AI-Agent-Operations\|에이전트 시대 코드 리뷰 운영]] |
 | 수정 용량 | PostgreSQL 19: 베타 중 LLM 보조 리뷰와 퍼징이 경계 조건 결함을 빨리 드러냈고, 구조적 결함과 보안 수정에 시니어 개발자가 몰린 기간 같은 다른 요인과 겹쳐, LLM 보조 리뷰가 성숙하기 전에 작성된 19의 주요 기능 약 8~10개가 되돌려졌다 | 원인의 조합이 기능마다 다르다고 본 커미터의 개인 회고다. 세부는 [[AI-Code-Delegation-Review#AI 리뷰가 결함을 더 빨리 찾으면 수정 용량이 병목이 된다\|AI 리뷰와 수정 용량]] |
+| 사람의 주의와 공유 맥락 | Tano(The Pragmatic Engineer에 실린 2026-11-03 에세이): 한 엔지니어의 월 병합 PR이 PostHog 시절의 약 11배, 월 200건 이상이 됐다. 코딩 에이전트와 함께 기능 전체를 혼자 맡는 소유 방식, 선택적 사람 리뷰, PM 없이 엔지니어가 정하는 제품 결정이 바뀌었다. 승인 대기는 줄었지만 피로, 반응형 수정으로 생긴 잦은 전환과 한 사람에게만 남는 맥락(bus factor)이 새 병목이 됐다 | 한 사람의 자기 비교이고 PostHog 시절 수치는 AI 도입 전이며 월별 값은 차트로만 제시됐다. 편집자는 반복 속도만으로는 의미가 없고 제품 시장 적합성, 매출과 단위 경제성을 함께 봐야 하며, 잘 돌아가는 조직은 도구와 절차를 더 신중히 바꾸라고 덧붙였다. 리뷰 운영은 [[Code-Review-AI-Agent-Operations#사람 리뷰 없이 병합하면 사고를 리뷰어의 검사 항목으로 되돌린다\|사람 리뷰 없는 병합]] |
 
 이 사례들은 작성 용량이나 발견 속도가 늘 때 주의, 인프라, 리뷰와 수정 중 어디가 먼저 막히는지 측정하라는 근거로 쓴다. PostgreSQL 사례에서 늘어난 것은 작성한 코드가 아니라 고쳐야 할 발견이다. 한 조직의 커밋 배수나 병합량을 다른 조직의 기대 생산성으로 옮기지 않는다. 같은 고용 보고서의 주니어 채용 비율 변화와 해석 경계는 [[Developer-Role-AI-Era#사례: AI를 깊이 쓰는 한 회사의 사내 데이터|견습 사다리 사례]]에 있다(2026-10-27 고용 보고서, Scion 글과 Claude Code 팀 글 원문 대조).
 
@@ -61,6 +62,8 @@ Canaries in the Coal Mine의 2026-08-12 개정판은 2026년 6월까지 미국 A
 기술기업과 컴퓨터 직업 제외, 금리와 원격근무 노출 통제에서도 패턴이 남았다. 그러나 교육을 통제하면 약해지고 생성형 AI 이전의 추세 차이도 일부 존재하며, ADP 분석 표본에서 전국 조사보다 패턴이 더 강했다. 연구진은 이를 초기 기술통계 신호로 규정한다. 다른 설명 일부를 배제한 것을 AI의 인과 효과가 확정됐다는 뜻으로 확대하지 않는다.
 
 EBS 11강은 이전 16%와 갱신된 19%를 비교하고, 청년의 명시적 지식이 문서에 덜 남은 경력자의 암묵지보다 대체되기 쉽다는 가설을 제시했다. 이 설명은 연구 기제의 후보이지 연령 그 자체가 역량이나 AI 저항성을 정한다는 증명이 아니다. 같은 강의의 신입 상담원 생산성 30~40% 표현도 위 QJE 게재판의 30%와 이전 작업논문판의 34%를 분리해 읽는다.
+
+대중 방송에서는 기업이 개발자 신규 채용을 거의 멈췄다거나, 업무 도메인을 아는 경력자가 AI로 직접 코딩하면 신입이 필요 없어진다는 전망이 나온다(2026-11 예능 방송의 뇌과학자, AI 연구자 발언). 이를 읽을 때는 연구가 보인 것과 구분한다. 위 연구가 보인 것은 노출 직업 청년층 고용의 상대 격차와 채용 감소 경로이지 신규 채용의 전면 중단이 아니다. 도메인 경력자가 신입 몫을 대신한다는 설명은 위 암묵지 가설과 같은 계열의 후보 기제이며, 개발 직군에서 검증된 인과는 아니다. 도구 사용법만으로는 차별화가 어렵다는 주장은 판단과 검증 역량이 남는다는 [[Developer-Role-AI-Era|AI 시대 개발자 역할]]의 논지와 겹친다. 초등학생 세대의 취업이 확실히 어렵다는 식의 단정은 근거가 제시되지 않은 예측이다.
 
 ## 대체, 보완과 숙련 형성을 함께 평가한다
 
@@ -138,11 +141,13 @@ Where is all the new, good software? 에세이는 공개 제품의 부족에 대
 - [2025 Developer Survey: Methodology — Stack Overflow](https://survey.stackoverflow.co/2025/methodology) — 조사 기간 대조
 - [Anthropic Economic Index report: Learning curves — Anthropic](https://www.anthropic.com/research/economic-index-march-2026-report) — 2026-03-24, 표본 기간과 Claude.ai 대화 35% 대조
 - [99.8%는 아직 진짜 AI를 써보지 못했습니다 — YouTube, 커리어해커 알렉스](https://www.youtube.com/watch?v=5AqT9njBbI0) — 2026-10-20, AI 이용 규모를 비교한 계기. 반영한 지표는 위 1차 출처로 대조
+- [유퀴즈 온 더 블럭, AI에게 일자리를 뺏긴 개발자들, 카이스트 교수가 말하는 AI 시대의 취업 현실 — YouTube, tvN D ENT](https://www.youtube.com/watch?v=sfJhIXQ2TRM) — 2026-11-04 방송 클립, 김대식 교수 출연. 신규 채용 중단과 도메인 경력자 대체 전망은 발언으로만 반영하고 위 연구와 구분했다
 - [How employment is changing at Anthropic — Anthropic](https://www.anthropic.com/research/employment-at-anthropic) — 2026-10-16, 2026-10-27 커밋 배수, 세션 대기 비율, 주의 병목 서술과 도입자 비교 방법 대조
 - [Redesigning source control at Anthropic — Anthropic Engineering](https://www.anthropic.com/engineering/redesigning-source-control) — 2026-10-13 게시, 10-15 갱신. 2026-10-27 병합량, CI 체크아웃, 팀 규모와 기간, 병목 서술 대조
 - [How the Claude Code team does code review — claude.dev, Addy Osmani, Morgan Westlee Lunt, Qing Wang](https://claude.dev/blog/solving-code-review-at-anthropic/) — 2026-10-15, 병합 PR과 되돌림 비율을 2026-10-27 대조
 - [The reverts will continue until morale improves — Peter Eisentraut](https://peter.eisentraut.org/blog/2026/10/09/the-reverts-will-continue-until-morale-improves) — 2026-10-09 개인 회고, 2026-10-27 되돌림 규모와 원인 서술 대조
 - [PostgreSQL 19 Beta 4 Released! — PostgreSQL](https://www.postgresql.org/about/news/postgresql-19-beta-4-released-3386/) — 2026-09-24, 되돌린 기능 목록을 2026-10-27 대조
+- [How software engineering is changing: a tale of two eras — The Pragmatic Engineer, Neil Kakkar](https://newsletter.pragmaticengineer.com/p/how-software-engineering-is-changing) — 2026-11-03 에세이, 2026-11-09 PR 배수, 바뀐 운영 방식, 새 병목과 편집자의 단서 대조
 - 사용자 제공 GeekNews 알림 요약(2026-10-16~27): Anthropic 신규 기술직 채용의 주니어 비율과 에이전트 작업 시간, [Scion으로 Git 교체](https://news.hada.io/topic?id=35309), [Claude Code 팀의 코드 리뷰 방식](https://news.hada.io/topic?id=35495), [Postgres 19 출시 지연](https://news.hada.io/topic?id=35488). 위 원문으로 대조했다
 
 ## 관련 문서

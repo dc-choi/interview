@@ -8,7 +8,7 @@ aliases: ["Community Models", "커뮤니티 모델"]
 # 커뮤니티 모델
 
 - [x] [[Worldview-Community|세계관 커뮤니티]] — 형성 사슬, 참여 조건, 미션과 기여 설계
-- [x] [[Community-Knowledge-and-Co-Creation|커뮤니티 지식 축적과 공동창작]] — 기록, 지식 조합과 IP 전환의 조건
+- [x] [[Community-Knowledge-and-Co-Creation|커뮤니티 지식 축적과 공동창작]] — 기록, 지식 조합과 IP 전환의 조건, 동료 생산과 기업이 통제하는 기여의 구분
 
 ## 관련 문서
 

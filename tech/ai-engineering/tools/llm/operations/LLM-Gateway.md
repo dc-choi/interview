@@ -193,3 +193,4 @@ SimHash는 고차원 특징 벡터를 짧은 지문으로 줄이는 기법이다
 - [[ElastiCache-Use-Cases|ElastiCache 사용 사례 (시맨틱 캐시와 챗봇 캐시)]]
 - [[Supply-Chain-Security|공급망 보안]] — 프록시 소프트웨어의 릴리스 사고
 - [[AI-Coding-Agent-Usage-Telemetry|AI 코딩 에이전트 사용량 텔레메트리]] — 클라이언트 기록 기반 사용량 집계
+- [[LLM-Web-Search-Gateway|LLM 웹 검색 게이트웨이]] — 모델 내장 검색을 분리한 근거 수집 계층과 검색 캐시

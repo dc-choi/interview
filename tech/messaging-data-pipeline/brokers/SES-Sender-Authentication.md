@@ -74,6 +74,7 @@ _dmarc.example.com  TXT  "v=DMARC1;p=none;rua=mailto:dmarc-reports@example.com"
 
 - `p=none`은 처리 지시 없이 보고만 받는 모니터링 모드, `p=quarantine`은 실패 메일을 스팸함으로, `p=reject`는 수신 거부를 요청한다. `rua`는 집계 보고서를 받을 주소이며 보고 주기는 사업자마다 다르고 보통 하루 단위다.
 - 하위 도메인부터 `none`으로 시작해 보고서에서 정렬되지 않은 정상 발신원(외부 발송 서비스 등)을 찾아 고친 뒤 `quarantine`, `reject` 순으로 올린다. 준비 없이 강한 정책을 걸면 정상 메일도 전달되지 않을 수 있다.
+- DMARC 레코드가 아예 없는 도메인도 위험해지고 있다. 2026-11-05부터 Outlook.com, Hotmail, Live와 MSN 소비자 메일함이 DMARC 레코드 없는 도메인의 메일 일부를 `550 5.7.1 Message rejected: Message lacks SPF/DKIM/DMARC Auth Records`로 거부한다는 관측이 나왔다. 하루 5,000건 같은 대량 발신자 기준과 관계없이 소량 발신자에게도 나타났고, 같은 도메인의 메일도 일부만 반송되며 재전송하면 성공하기도 해서 일부가 도착했다는 사실로 문제를 배제할 수 없다. 2026-11-06 기준 Microsoft 공지는 없고 발송 업체와 관리자의 관측만 있다. 보고된 대응은 `p=none` 레코드를 게시하는 것이지만, DMARC는 From 도메인에 정렬된 SPF나 DKIM이 통과해야 pass이므로 정렬도 함께 확인한다.
 
 ## 대형 메일함의 대량 발신자 요구사항
 
@@ -142,6 +143,7 @@ mailbox simulator는 실제 수신자 없이 결과를 재현한다. sandbox에�
 
 ## 출처
 
+- [Outlook.com Is Quietly Rejecting Email From Domains Without DMARC — MailRoute](https://mailroute.net/blog/outlook-rejecting-email-without-dmarc) — 2026-11-06, 발송 업체의 자체 관측. Microsoft 공식 공지 없음
 - [Amazon SES, Creating and verifying identities in Amazon SES](https://docs.aws.amazon.com/ses/latest/dg/creating-identities.html)
 - [Amazon SES, Authenticating Email with DKIM in Amazon SES](https://docs.aws.amazon.com/ses/latest/dg/send-email-authentication-dkim.html)
 - [Amazon SES, Easy DKIM in Amazon SES](https://docs.aws.amazon.com/ses/latest/dg/send-email-authentication-dkim-easy.html)

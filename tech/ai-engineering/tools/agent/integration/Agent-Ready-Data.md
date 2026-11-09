@@ -134,6 +134,7 @@ aliases: ["Agent-Ready Data", "에이전트용 데이터 준비", "에이전트 
 
 ## 관련 문서
 
+- [[ELT-Platform#실행 기록에 업무 맥락을 묶어 게시한다|실행 기록에 업무 맥락 묶기]], [[Correlation-ID#배치 파이프라인은 실행 단위로 잇는다|배치 파이프라인의 실행 단위 연결]] — 에이전트가 데이터의 최신성과 실행 상태를 확인하는 근거
 - [[Agent-Ready-API-Design|에이전트 친화 API 설계]] — 인터페이스 쪽의 설계 원칙
 - [[MCP|MCP]] — Resources, Prompts, Tools 프리미티브
 - [[LLM-Application-Security|LLM 애플리케이션 보안]] — 과도한 위임과 완전 중재

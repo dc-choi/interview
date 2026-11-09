@@ -109,6 +109,7 @@ Special Case는 특별한 경우도 공통 행동 계약으로 다루는 객체�
 
 - [[Object-Design-Principles|객체 설계 원칙과 리팩터링]]
 - [[Object-Design-Principles-Change-and-Contracts|변경 사례와 행동 계약]]
+- [[Cpp-Contracts-and-Standardization|C++ Contracts와 표준화 절차]] — 언어 차원의 전제조건, 사후조건과 평가 의미
 - [[Beautiful-Code|아름다운 코드의 조건과 유지]]
 - [[Coding-Preferences-TypeScript|TypeScript 코딩 선호]]
 - [[Clean-Architecture-NestJS-CQRS|읽기와 쓰기 모델 분리]]

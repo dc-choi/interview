@@ -127,6 +127,7 @@ Connectors든 수동 설정이든 **밑단은 모두 MCP**다. 차이는 설정 
 - **데스크톱 앱 제어**: 메신저나 설치형 프로그램처럼 브라우저 밖의 앱은 화면을 보고 클릭하고 입력하는 도구가 맡는다. OpenAI의 Computer Use는 지원 지역에서 ChatGPT 데스크톱 앱의 ChatGPT Work와 Codex로 macOS와 Windows 앱을 조작하며, macOS에서는 화면 기록과 손쉬운 사용 권한이 필요하다(2026-09-29 확인). 공식 문서도 명령줄 도구나 구조화된 연동으로 부족할 때 쓰라고 안내한다
 - **위임의 보안 경계**: 로그인 세션을 넘기는 순간 에이전트는 그 계정의 권한 전체를 쓴다. 전용 브라우저 프로필이나 권한이 좁은 계정으로 분리하고, 결제, 세금 신고, 제출과 삭제처럼 되돌리기 어려운 단계는 직전에 멈춰 사람이 확인한 뒤 실행하게 지시한다
 - **Vibe Coding**: 빈 폴더에서 `claude` → 기능/동작/디자인을 구체 서술 → "브라우저에서 열어줘" → 자연어 수정. 결과는 프로토타입 수준, 실서비스는 보안/성능 검토 필요
+- **조직의 허용 범위는 역할별로 다시 정해질 수 있다**: Bloomberg의 2026-11-02 보도를 옮긴 기사에 따르면 Goldman Sachs는 생산성과 위험 관리 검토 뒤 10월 갱신한 내부 지침으로 Claude Code와 GitHub의 AI 코딩 도구를 엔지니어 중심으로 좁혔다. 트레이딩, 퀀트 연구와 개발을 겸하는 strat 직군은 이 제한에서 빠져 계속 쓸 수 있다. 트레이더들은 고객 거래 흐름 감시와 시장, 포지션 변화 모델링에 써 왔고, 7월에는 CIO가 비기술 직원이 만든 시제품을 엔지니어가 이어받는 방식을 긍정적으로 평가했었다. 보도된 제한은 고급 코딩 도구에 대한 것이며 여러 공급자 모델을 묶은 사내 AI 비서는 따로 운영된다. Bloomberg 원문은 열람하지 못했다. 적용 제안은 코드를 쓰고 실행하는 에이전트와 대화형 비서를 따로 허가하고, 비개발자의 시제품이 운영에 들어가는 경로(엔지니어 검토, 권한 이전)를 미리 정하는 것이다(해석)
 
 ## 관통하는 원칙
 
@@ -167,6 +168,7 @@ Connectors든 수동 설정이든 **밑단은 모두 MCP**다. 차이는 설정 
 - [Claude Help Center — Claude Cowork architecture overview](https://support.claude.com/en/articles/14479288-claude-cowork-architecture-overview)
 - [인프런, 널널한 개발자, Claude for Desktop 주요기능 소개](https://www.inflearn.com/courses/lecture?courseId=344484&unitId=498592)
 - [인프런, 널널한 개발자, 대화를 넘어! 행동하는 Cowork](https://www.inflearn.com/courses/lecture?courseId=344484&unitId=498593)
+- [Goldman Sachs restricts AI coding tools for traders and bankers — FStech](https://fstech.co.uk/fst/Goldman_Sachs_Restricts_AI_Coding_Tools_For_Traders_And_Bankers.php) — 2026-11-09 대조. Bloomberg 보도(2026-11-02)와 회사 대변인 발언을 옮긴 2차 기사
 
 ## 관련 문서
 

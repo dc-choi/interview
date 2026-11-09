@@ -15,6 +15,7 @@ aliases: ["추천 시스템 운영 계약", "Recommendation System Contracts"]
 - [[Recommendation-System-Feedback-Data|피드백 데이터]]
 - [[Recommendation-System-Serving-Operations|서빙과 운영]]
 - [[Recommendation-System-Model-Serving-Platform|모델 서빙 플랫폼]] — 모델별 배포, 레지스트리 alias 조정과 모델 단위 rollback
+- [[Recommendation-System-Personalization-Failure-Modes|개인화 실패 유형과 사용자 맥락 계약]] — 완료된 목적과 지속 관심, 반복 부정 신호, 명시 설정의 우선순위와 소비 가능성
 
 ## 상위 문서
 

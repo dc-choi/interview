@@ -9,6 +9,8 @@ aliases: ["보안(Security)", "Security Index"]
 
 ## 목차
 
+- [[Targeted-Social-Engineering|표적형 사회공학: 채용 위장과 AI로 개인화한 사기]] — 공개 정보로 만든 신뢰, 사전 채용 과제와 개발 도구 교체를 통한 단말 침해, 내부 도구를 거친 확산과 서명 서비스 접근, 공개 문장을 되비춘 사기 메일, 조직과 구직자의 점검
+- [[Personal-Knowledge-Graph-Privacy|기기 안 개인 지식 그래프와 추론 데이터의 프라이버시]] — 메타데이터로 추정한 관계, macOS 지식 그래프의 저장과 보호 범위, 근거보다 오래 남는 결론, 추론 기능의 삭제와 정정 점검
 - [[Smart-Contract-Price-Feed-Validation|스마트 컨트랙트 가격 피드 검증]] — 부호, 자릿수와 최신성, 누적값과 TWAP, 장애 시 기능 경계
 - [[IoT-Device-and-Firmware-Security|IoT 기기 인증과 펌웨어 보안]] — 식별과 개인키 보유 증명, 인증서 교체, secure boot와 OTA 검증, 업데이트 복구와 지원 기간
 - [[AI-Accelerated-Threat-Defense|악용 시간 단축과 AI 공격에 대비하는 방어]] — 악용까지의 시간 관측값과 읽는 법, 자산과 소프트웨어 목록, 패치 작성과 적용의 병목, 번들 런타임과 배포 형태별 수정 경로, 패치 시나리오와 단계적 배포, 업데이트 기본값과 패치 물결, 오염된 업데이트와 관찰 기간의 한계, 독립된 다층 통제, AI 방어 자동화의 권한 경계
@@ -20,13 +22,13 @@ aliases: ["보안(Security)", "Security Index"]
 - [[Coding-Agent-Package-Hallucination|코딩 에이전트의 패키지 환각 공격]] — 규칙 파일 인젝션과 의존성 대체, 알아채고도 따른 사례, 탐지기의 미탐과 오탐, 리뷰 시점별 점검
 - [[Malicious-Agent-Skills|악성 에이전트 스킬]] — 자연어 페이로드의 비중, scanner 비교의 기준, 빈 줄과 HTML 주석과 보이지 않는 Unicode로 숨긴 지시, 메모리 파일 지속성, 설치 전후 점검
 - [[Smart-Contract-Reentrancy|스마트 컨트랙트 재진입과 상태 일관성]] — 외부 호출, 상태 변경 순서, 가드의 범위와 산술 버전 경계
-- [[AI-Content-Provenance|AI 콘텐츠의 워터마크와 출처 증명]] — 통계적 텍스트 신호, C2PA, 숨은 문자와 탐지 결과의 한계
+- [[AI-Content-Provenance|AI 콘텐츠의 워터마크와 출처 증명]] — 통계적 텍스트 신호, C2PA, 숨은 문자와 탐지 결과의 한계, 응답을 만든 모델의 검증 가능한 추론 증명, 이미지 탐지기의 영역 표시와 자체 평가 읽기
 - [[Web-Content-Manipulation-for-AI|AI가 읽는 웹 콘텐츠의 조작]] — 숨은 지시와 분석 방해, 조작 시도와 실제 영향의 구분, 수집기별 본문 차이, 인용 세탁과 출처 확인 순서
-- [[Coordinated-Vulnerability-Disclosure|조율된 취약점 공개 (CVD)]] — 단계와 역할, 수정 지연의 구조, 사전 통지와 정보 공유 범위, AI로 찾은 버그의 공개 보고와 보고량 증가, 엠바고 유출과 조기 공개 대응
+- [[Coordinated-Vulnerability-Disclosure|조율된 취약점 공개 (CVD)]] — 단계와 역할, 수정 지연의 구조, 사전 통지와 정보 공유 범위, AI로 찾은 버그의 공개 보고와 보고량 증가, 충돌로 분류된 결함, 대량 발견의 재현과 경로 검증과 패치 동봉, 엠바고 유출과 조기 공개 대응, 공개 뒤 정정된 CVE 레코드와 Store 앱 수정 경로
 - [[Adversarial-Examples-Decision-Based-Attacks|적대적 예제와 결정 기반 공격]] — 위협 모델과 쿼리 예산, Boundary Attack과 HopSkipJumpAttack, 잠재 공간 변형, 상태 기반 탐지와 강건성 평가 도구
 - [[Agent-Execution-Isolation|에이전트 실행 격리]] — MXC 백엔드별 강제 범위, 내부자 위험과 조건부 백도어, 자기 호스팅과 egress 통제의 구분
 - [[Memory-Safety-Vulnerabilities|메모리 안전성 취약점]] — 읽기/수명 결함, PHP2Shell의 시도와 성공 및 권한 상승, EDK II의 PXE 부팅 노출, 설정 완화와 앞단 WAF 규칙의 범위, 업데이트와의 구분, 조사 시작일
-- [[VM-Guest-to-Host-Escape|VM 게스트에서 호스트로의 탈출]] — 하이퍼바이저 밖 호스트 커널 경로까지 포함한 격리 경계, 검사 후 사용 결함, 게스트가 아닌 호스트 패치와 롤링 재부팅, 에이전트 샌드박스 다층 방어, PwnEscape 사례
+- [[VM-Guest-to-Host-Escape|VM 게스트에서 호스트로의 탈출]] — 하이퍼바이저 밖 호스트 커널 경로까지 포함한 격리 경계, 검사 후 사용 결함, 게스트가 아닌 호스트 패치와 롤링 재부팅, 에이전트 샌드박스 다층 방어, 공유 커널 컨테이너에서 microVM으로의 전환, PwnEscape 사례
 - [[Enterprise-Browser-Control|기업용 브라우저 통제]] — Firefox Enterprise의 관리 위치와 early access
 - [[Bot-Traffic-Operations|봇 트래픽 운영]] — 요청 로그와 사용자 분석, 차단과 부하 측정, AI 수집기 이름과 실제 요청자, robots.txt 응답 코드와 그룹 규칙, 관찰부터 캐시, 요청 제한, WAF까지 쌓는 순서
 - [[Signed-Payload-Deserialization|서명된 페이로드 역직렬화]] — 키 유출과 객체 복원 위험
@@ -35,7 +37,7 @@ aliases: ["보안(Security)", "Security Index"]
 - [[Inline-vs-Out-of-Path#AI 런타임 검사: API 판정과 실제 차단|AI 런타임 검사 위치]] — 네트워크 인라인과 애플리케이션 검사 API, TLS 가시성, 스트리밍 전달과 차단 시점
 - [[Grafana-Shared-Dashboard-Security|Grafana 공유 대시보드 보안]] — 일시정지와 토큰 폐기, 데이터 소스 설정 노출, 브랜치별 수정 기준
 - [[Synthetic-Data-Privacy|합성 데이터와 개인정보 보호]] — 합성과 익명성의 구분, DP 보장과 정확도 검증
-- [[SSH-Authentication|SSH 인증]] — 서버 인증과 사용자 인증의 분리, 키 교환, 호스트 키 검증, Tailscale 포워딩 권한
+- [[SSH-Authentication|SSH 인증]] — 서버 인증과 사용자 인증의 분리, 키 교환, 호스트 키 검증, Tailscale 포워딩 권한, musl 환경의 비밀번호 인증 우회
 - [[OpenSSF-Scorecard|OpenSSF Scorecard]] — 저장소 보안 관행 평가, 검사별 근거와 총점의 한계
 - [[Application-Security|애플리케이션 보안 / 시큐어코딩]] — 4대 원칙, 진단 vs 모의해킹, OWASP Top 10, OWASP API Security Top 10:2023, 트렌드 리스크, 클라이언트 불신, 비밀번호 확인 UI와 서버 검증 계약, 학습 경로
 - [[Java-Secure-Coding-Guidelines|Java SE 시큐어코딩 가이드라인]] — 명백히 결함 없는 설계와 검사 지점, 서드파티 코드 추적, 자원 한도와 기밀정보, 데이터를 코드로 해석하는 인젝션, XXE와 DTD 제한, API 동작 검증, 역직렬화 필터 계층, Security Manager 비활성화 이후의 격리

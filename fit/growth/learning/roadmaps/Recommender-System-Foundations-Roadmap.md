@@ -146,5 +146,6 @@ aliases: ["추천시스템 구현 기반 로드맵", "Recommender System Foundat
 
 - [[Recommendation-System-Modeling-Foundations|추천시스템 모델링 기초]]
 - [[Recommendation-System-Evaluation-Experimentation|추천시스템 평가와 실험]]
+- [[Recommendation-System-Personalization-Failure-Modes|추천시스템 개인화의 실패 유형]] — 이미 산 상품의 재추천, 일회성 행동의 과대 반영, 명시 설정 무시 같은 사용자 관찰 사례. 5단계에서 평가 기준을 정할 때의 참고 자료이며 학습 순서나 진도에 넣지 않는다
 - [[2027-AI-Masters-Plan|대학원 지원 계획]]
 - [[Archived-Learning-Roadmaps|이전 로드맵 아카이브]]

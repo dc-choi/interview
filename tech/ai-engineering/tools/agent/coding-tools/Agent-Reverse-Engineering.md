@@ -93,6 +93,8 @@ N64Recomp는 README 기준 N64 바이너리를 어느 플랫폼용으로든 컴�
 
 - **브라우저 게임 이식:** 2026-10-12 발췌는 Halo, The Simpsons: Hit and Run과 GTA 이식, 일부 온라인 플레이와 240fps 목표를 소개한다. Opus 5.5의 디컴파일 기여와 단기간 작업량도 발췌의 주장이다. 프로젝트, 원본 자산, 비교 장비와 실제 프레임 분포는 미확인이다. 목표 fps를 실측 평균으로 옮기지 않는다.
 - **Ruby 생태계 보강:** 2026-10-12 공개 경험 글은 AI로 PDF, GUI, Parquet와 gRPC 등 기존 빈틈을 메울 수 있다고 제안한다. 재작성만이 AI 활용법은 아니다. 좋은 API, 경계 조건, 패키지 유지와 실제 사용자의 피드백은 생성 이후에도 남는다. 개별 라이브러리의 완성도와 유지 상태는 따로 확인한다.
+- **비공식 하드웨어 이식:** 2026-11-05 개인 블로그는 해킨토시와 hackios 커뮤니티의 최근 진전을 코딩 에이전트와 Ghidra 같은 디컴파일러의 조합 덕으로 본다. 예로 RK3588 단일 보드 컴퓨터의 macOS 27.2 beta 부팅, Nintendo Switch OLED의 iOS 17 구동, Nvidia 50 시리즈 GPU 지원을 든다. 스크린샷 위주라 활동량 수치와 작업 방식은 확인할 수 없고, 소프트웨어 사용권 계약과 법적 쟁점은 다루지 않는다. 진전의 원인을 AI로 단정하지 않고, 이식 시도가 늘었다는 관찰로만 읽는다.
+- **화면 기준 재구현 도구:** Craft Anything은 원본과 원하는 결과를 받아 분석, 구현, 비교, 개선을 반복한다. 기본 clean room 모드는 대상 내부를 보는 도구를 쓰지 않고 화면과 배치로만 작업하며, Deep 모드는 코드와 파일을 읽고 디컴파일러도 쓴다. 웹사이트는 세 화면 너비에서 원본과 비교한다. clean room 모드도 OS 수준 sandbox가 아니며 에이전트는 사용자 권한으로 동작한다고 README가 밝힌다. 처음 보는 종류의 명령은 실행 전에 묻는다. README는 always allow를 의존성을 신뢰하는 프로젝트에만 주라고 하고, 설치 스크립트 없이 npm 패키지를 설치하려면 `npm install --ignore-scripts`를 쓰라고 안내한다. 패키지 설치 스크립트까지 포함해 격리 환경에서 돌린다(적용 제안). 초기 alpha다(2026-11-09 README 확인).
 
 ## Xbox Labs: 탐색 조직의 발표와 제품 지원은 다르다
 
@@ -123,6 +125,8 @@ N64Recomp는 README 기준 N64 바이너리를 어느 플랫폼용으로든 컴�
 
 ## 출처
 
+- [storytold/craft-anything — GitHub](https://github.com/storytold/craft-anything) — 2026-11-09 README 확인
+- [The Hackintosh Reborn... with AI — Yoon's Blog](https://www.naut.ca/blog/2026/11/05/the-hackintosh-reborn-with-ai/) — 2026-11-05 개인 블로그, 2026-11-09 원문 확인. 사례 화면 외 수치 없음
 - [Introducing XBOX LABS — Xbox Wire](https://news.xbox.com/en-us/2026/10/13/introducing-xbox-labs/) — 2026-10-13 발표, 2026-10-16 공식 본문 확인. 개별 게임 이식 재현은 미실시.
 - [REA: Reverse Engineer Anything — morluto](https://github.com/morluto/rea) — 2026-10-20 upstream README로 연결 도구, 공식 배포 경로, 용도와 쇼케이스를, `docs/installation.md`로 Hopper 자동 설치 지원 호스트를 대조했다. levelupsoft/rea-reverse는 이 저장소의 fork다.
 - [REA: Reverse Engineer Anything — rea.tools](https://rea.tools/) — 2026-10-20 Example 01(Chrome 공룡 게임)과 Example 02(Windows Calculator)의 대상과 확인 방법을 대조했다.

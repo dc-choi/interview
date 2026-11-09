@@ -1,7 +1,7 @@
 ---
 tags: [business, pricing]
 status: done
-verified_at: 2026-10-03
+verified_at: 2026-11-09
 category: "비즈니스&제품(Business&Product)"
 aliases: ["Pricing Strategy", "가격 정책"]
 ---
@@ -28,6 +28,10 @@ Freemium 전환율은 활성 사용자 정의, 관찰 기간, 고객 규모, tri
 - 무과금: 핵심 가치를 충분히 경험할 수 있을 만큼
 - 유료: 사용량/규모가 커질수록 자연스럽게 필요해지는 기능 (팀, 통합, 자동화, 보안)
 - 무과금이 지나치게 넓으면 유료 전환 동기가 약해질 수 있고, 지나치게 제한적이면 이탈 위험이 커질 수 있다
+
+### 사용량 한도 체험으로 가입 장벽을 나눈다
+
+유료 구독만 파는 서비스가 써 보기 전부터 계정과 결제를 요구하면, 입소문으로 찾아온 사람도 가치를 확인하기 전에 떠날 수 있다. 영구 무료 등급 대신 계정 없이 쓰는 사용량 한도와 가입 뒤의 추가 한도로 체험을 단계화할 수 있다. Kagi는 2026-11-05 변경 기록에서 계정 없이 첫 50회, 가입 뒤 100회의 검색을 제공하고, 광고 없이 입소문에 기대므로 주변에 알려 달라고 밝혔다. 같은 변경 기록의 이전 항목에는 검색 AI 기능 끄기, 유료 장벽 링크 제거와 Safe Search의 사기, 피싱 사이트 차단 같은 사용자 제어가 있다. 단계를 나눌 때는 단계별 전환율, 비회원 사용의 남용 통제, 체험 한 건의 원가와 유료 고객이 얻는 제어 기능의 가치를 함께 측정한다(적용 제안).
 
 ## 가격 심리학
 
@@ -162,12 +166,15 @@ Q. 가격 정책은 어떻게 설계했는가?
 
 2026-10-18에는 단독/공동 평가 절을 Hsee(1998)의 출판사 초록과 2023년 재현 연구의 Study 2 본문으로 대조했다. 원 연구의 지불 의향 금액은 전체 원문으로 확인하지 않아 옮기지 않았다. 다른 가격 정책 절의 검증 날짜는 갱신하지 않았다.
 
+2026-11-09에는 사용량 한도 체험 절의 Kagi 사례만 공식 변경 기록으로 대조했다. 다른 절은 다시 대조하지 않았다.
+
 ## 출처
 
 - [OpenStax, 가격 정책 수립의 5단계](https://openstax.org/books/principles-marketing/pages/12-3-the-five-step-procedure-for-establishing-pricing-policy)
 - [Top Five Causes of Scope Creep — PMI](https://www.pmi.org/learning/library/top-five-causes-scope-creep-6675)
 - [OpenStax, 신제품 가격 전략](https://openstax.org/books/principles-marketing/pages/12-4-pricing-strategies-for-new-products)
 - [Stripe, 가격 모델과 Freemium](https://stripe.com/resources/more/pricing-models-explained-types-of-pricing-models-and-when-to-use-them)
+- [Kagi, Changelog](https://kagi.com/changelog) — 2026-11-09 확인. 2026-11-05 무료 검색 한도, 2026-07-02 AI 기능 끄기, 2026-08-21 유료 장벽 링크 제거, 2026-10-16 사기와 피싱 사이트 차단 항목
 - [OpenStax, Understanding Consumer Markets and Buying Behavior](https://openstax.org/books/principles-marketing/pages/3-1-understanding-consumer-markets-and-buying-behavior)
 - [Cross Sell vs Upsell: Differences and Examples — Shopify](https://www.shopify.com/blog/upselling-and-cross-selling)
 - [Price Bundling: How Price Bundling Helps Increase Sales — Shopify](https://www.shopify.com/blog/price-bundling)

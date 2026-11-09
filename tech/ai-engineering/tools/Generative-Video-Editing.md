@@ -1,9 +1,9 @@
 ---
 tags: [ai, video, generative-video, editing, evaluation, reframing]
 status: done
-verified_at: 2026-10-26
+verified_at: 2026-11-09
 category: "AI엔지니어링(AIEngineering)"
-aliases: ["생성형 영상 편집", "Generative Video Editing", "자동 리프레이밍", "Auto Reframing"]
+aliases: ["생성형 영상 편집", "Generative Video Editing", "자동 리프레이밍", "Auto Reframing", "Gemini Omni 1.2 Flash"]
 ---
 
 # 생성형 영상 편집과 결과 검증
@@ -33,6 +33,17 @@ aliases: ["생성형 영상 편집", "Generative Video Editing", "자동 리프�
 - 생성 클립에는 비가시적 SynthID 워터마크를 넣는다. 이 표시는 AI 생성 여부를 확인하는 단서이지 사실성, 권리 확보나 납품 품질의 보증이 아니다.
 
 발표의 기능 설명은 특정 입력에서 인물과 원본 구도를 완벽하게 보존한다는 성능 보장이 아니다. 아직 출시 예정으로 표기된 기능은 현재 사용 가능한 기능에 포함하지 않는다.
+
+### Gemini API의 Omni 1.2 Flash
+
+2026-11-09 Google 발표(2026-11-05)와 Gemini Developer API 가격표 대조 기준이다. 위 Vids 기능의 확인 시점은 유지한다.
+
+- Gemini API와 기업용 Gemini for business에 정식 제공(GA)됐다. 생성과 편집 길이는 3초에서 15초까지 1초 단위로 정하며 Omni 1.1의 최대 10초에서 늘었다.
+- 15초 클립 전체를 처음부터 다시 생성하지 않고 대화 턴마다 상품, 배경, 조명, 날씨나 화면비를 바꾸는 다중 턴 편집을 설명한다. 참조 입력은 인물, 상품이나 스타일 이미지, 3초 이하의 동작 클립과 오디오 단서다.
+- 가격표는 출력 토큰으로 과금하며 초당 토큰과 요금을 360p 1,931토큰(약 $0.023), 720p 5,792토큰(약 $0.07), 업샘플링을 포함한 1080p 8,688토큰($0.104)과 4K 17,376토큰($0.209)으로 적는다. 720p 요금은 발표 기준 Omni 1.1보다 30% 낮고, 이 모델에는 무료 등급이 없다. 초안을 360p나 720p로 만든 뒤 고른 결과만 업샘플링하는 흐름을 안내한다.
+- 빠른 스포츠 동작, 급한 대본 전환과 복잡한 물리는 개선 중이라고 밝힌다. 생성 결과에는 SynthID 워터마크가 들어간다.
+
+예산은 초당 요금과 길이만이 아니라 편집 턴, 재생성 횟수와 업샘플링한 결과 수를 함께 세어 잡고, 턴마다 바꾸지 않을 요소가 유지됐는지 앞 절의 표로 검수한다(운영 제안). 편집 턴의 과금 방식과 실제 호출은 시험하지 않았다.
 
 ## 제품 기능 사례: Amazon Nova Reel의 비동기 생성
 
@@ -167,6 +178,8 @@ Katana는 Higgsfield MCP 커넥터를 통해 Claude 대화에서 참조 편집�
 - [HyperFrames, What is HyperFrames?](https://hyperframes.heygen.com/introduction) — HTML 프로젝트와 프레임별 렌더링의 역할.
 - [Google Vids gets powerful upgrades with Gemini Omni — Google](https://blog.google/products-and-platforms/products/workspace/gemini-omni-personal-avatars/) — 자연어, 참조 이미지와 기존 클립의 단계적 편집.
 - [Anyone can make stunning HD videos with Gemini Omni in Google Vids — Google](https://blog.google/products-and-platforms/products/workspace/gemini-omni-in-google-vids/) — 2026-09-23 발표의 생성 기능, 접근 조건과 SynthID.
+- [Gemini Omni 1.2 Flash: Fast and cost-effective with longer clips — Google](https://blog.google/innovation-and-ai/technology/developers-tools/introducing-gemini-omni-1-2-flash/) — 2026-11-05. 2026-11-09 정식 제공 범위, 길이, 참조 입력, 다중 턴 편집과 한계 대조.
+- [Google AI Studio, Gemini Developer API pricing](https://aistudio.google.com/docs/pricing) — 2026-11-09 Omni 1.2 Flash의 해상도별 초당 토큰과 요금, 무료 등급 부재 대조.
 - [Google AI Edge, Face detection guide](https://developers.google.com/edge/mediapipe/solutions/vision/face_detector) — VIDEO 모드, 얼굴 박스와 랜드마크, short-range와 full-range 모델의 대상.
 - [Hugging Face Transformers, RT-DETR](https://huggingface.co/docs/transformers/model_doc/rt_detr) — 후처리 박스 형식과 기본 점수 임계값.
 - [Hugging Face Transformers, Object detection](https://huggingface.co/docs/transformers/tasks/object_detection) — COCO와 Pascal VOC 박스 형식.

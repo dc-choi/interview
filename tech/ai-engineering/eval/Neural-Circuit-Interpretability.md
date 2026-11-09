@@ -55,3 +55,4 @@ aliases: ["Neural Circuit Interpretability", "신경망은 이미 깔끔하다",
 - [[LLM-Generation-Mechanics-Training|LLM 학습과 가중치]]
 - [[LLM-Hallucination-Verification|설명과 증거의 구분]]
 - [[AI-Research-Innovation-Evaluation|AI 연구 성과의 평가]]
+- [[Mechanistic-Interpretability|신경망의 기계적 해석가능성]] — 특성 분해와 다른 모델이 가중치를 읽고 고친 실험의 범위

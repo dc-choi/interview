@@ -158,4 +158,5 @@ Hotfix 출발점과 되돌려 합칠 branch는 실제 배포 branch 전략으로
 
 ## 관련 문서
 
+- [[AI-Slop-Quality-Gate#공유 자원의 관리자에게 넘어가는 검증 비용|외부 기여를 닫는 오픈소스 정책]] — AI 생성 패치와 신고가 늘 때의 검증 비용
 - [[GitHub-Repository-Operations|GitHub 저장소 운영]], [[Version-Control-Tooling|버전 관리 도구 선택]], [[Git-Merge-Strategies|Git 통합 방식]], [[Code-Review-Culture|코드 리뷰 문화]], [[Code-Review-Reviewability|리뷰 가능성과 PR 크기]], [[Server-Centric-Version-Control|서버 중심 버전 관리]]

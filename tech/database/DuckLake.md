@@ -64,3 +64,4 @@ Delta Lake도 지원하는 저장소에서 새 데이터 파일을 먼저 준비
 - [[Data-Infrastructure-Layers|데이터 인프라의 계층과 계약]]
 - [[OLTP-vs-OLAP|트랜잭션 처리와 분석 처리]]
 - [[SageMaker-Lakehouse|관리형 레이크하우스의 카탈로그와 권한]]
+- [[Query-Engine-Execution|쿼리 엔진의 실행 계획과 선택]]

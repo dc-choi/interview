@@ -13,7 +13,7 @@ aliases: ["Leadership Practice", "리더십 실천"]
 - [[Leadership-Beyond-Authority|권한에 덜 의존하는 리더십]]: 집단 전형성과 자기희생, 정서 전염, 공동 정체성과 겸손, 약점 공개의 조건, 통제감과 공유 리더십
 - [[Co-Leadership-Partnership|공동 리더십]]: 역할 분담과 상호 이해, 리더의 첫 번째 팀, 방치의 메커니즘, 책임 분산, CEO-CTO 양방향 언어 학습
 - [[Startup-Crisis-Leadership|스타트업 위기 리더십과 레이오프]]: 전시 CEO와 평시 CEO, 사람을 계획에 맞추기, 레이오프 원칙, 현금 보상 삭감과 인원 감축 트레이드오프, 포스트 레이오프
-- [[Leadership-Inversion|리더십 역발상]]: -10x 리더 피하기와 10x 리더 되기, Munger Inversion, -10x 특성과 10x 원칙 대응, 빼기 먼저 실천
+- [[Leadership-Inversion|리더십 역발상]]: -10x 리더 피하기와 10x 리더 되기, Munger Inversion, -10x 특성과 10x 원칙 대응, 빼기 먼저 실천, 피터의 법칙 이후 감당하기 어려운 자리에 오른 리더의 방어 행동
 
 ## 함께 볼 문서
 

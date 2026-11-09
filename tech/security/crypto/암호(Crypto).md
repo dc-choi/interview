@@ -18,7 +18,7 @@ aliases: ["Crypto", "Cryptography"]
 - [x] [[Public-Key-Cryptography|공개키 암호, 비대칭키 (기초 용어, 단방향/양방향 분류, 키 분배 문제, 대칭/비대칭 하이브리드, PKI, MITM, 암호화폐 개인키)]]
 - [x] [[RSA-Encryption|RSA 암호화 (소인수분해 난제, 키 생성, 암복호, 서명, OAEP/PSS 패딩)]]
 - [x] [[Quantum-Key-Distribution|양자키분배 QKD (BB84 동작, 인증 의존, 신뢰 노드와 거리, 구현 공격, 기관 입장과 PQC 비교)]]
-- [x] [[HSM-Key-Custody|HSM과 서명 키 관리 (비추출 키, 다계층 접근 제어, 고가용성, 키 수명 주기)]]
+- [x] [[HSM-Key-Custody|HSM과 서명 키 관리 (비추출 키, 다계층 접근 제어, 고가용성, 키 수명 주기)]] — 서명 서비스 악용과 위임 철회, 출금 중단과 온체인 권한의 구분
 - [x] [[HSM-Signing-Operations|HSM 서명 시스템 운영과 무중단 키 전환 (PKCS #11 세션, fallback, 관측, RS256에서 ES256, kid 전환)]]
 - [x] [[ACME-Protocol|ACME Protocol, Let's Encrypt (HTTP-01/DNS-01 챌린지, cert-manager, ACM 비교)]]
 - [x] [[Certificate-Lifecycle-Management|인증서 수명주기 관리 (인벤토리, 유효기간 단축, 갱신과 적용, 복구 경계)]]

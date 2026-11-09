@@ -33,6 +33,7 @@ aliases: ["Marketing", "마케팅"]
 - [x] [[Social-Business-Claims-Validation|소셜 자료의 사업과 마케팅 주장 검증]] — 공개 콘텐츠의 수익화/성장 수치, 90:8:2, 사업 후보와 미검증 주장 보존
 - [x] [[SEO-Google-Naver-Operations|Google과 네이버 SEO 운영]] — 공통 설정과 엔진별 인증, 대표 URL, 수집/색인 검증, 공유 미리보기 캐시
 - [x] [[LinkedIn-Content-Distribution|LinkedIn 콘텐츠 도달]] — 관계와 관심사 신호, 인맥 밖 추천, 반응 조작 제한과 전환 검증
+- [x] [[Social-Launch-Day-Execution|소셜 채널의 제품 출시 당일 운영 (X 기준)]] — 창업자 게시물과 시연 영상, 첫 한 시간의 답글 운영, 재공유 계정 섭외와 광고 표시, 가입과 결제 기준의 성과 판단
 - [x] [[Personal-Brand-Identity-and-Role|퍼스널 브랜드의 정체성과 배역]] — 정체성, 반복 기능과 세계관의 입구, 실적보다 관점, 고객을 주인공으로 두는 안내자와 관점 기반 고객 선별
 - [x] [[Trademark-and-Brand-Clearance|상표와 브랜드 권리 확인]] — 상호와 도메인, 선출원, 지정상품과 권리 유지, 외부 로고의 파일 라이선스와 상표 사용 조건
 - [x] [[Storytelling|스토리텔링]] — 욕망과 갈등, 구원과 대가, 캐릭터, 구조와 감정 표현

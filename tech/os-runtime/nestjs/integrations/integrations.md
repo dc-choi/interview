@@ -24,6 +24,7 @@ HTTP REST 바깥의 프로토콜, 외부 시스템과 NestJS를 연결하는 패
 - [[NestJS-Application-Services|애플리케이션 서비스 — 다국어 메일과 파일 저장]]
 - [[NestJS-Security|보안 — 인증, 계정 복구, 인가와 HTTP 방어]]
 - [[NestJS-Reliability|신뢰성 — outbox, inbox, lock, workflow와 health]]
+- [[NestJS-AI-and-MCP|AI와 MCP — @nestjs/ai의 모델 호출과 에이전트 함수, @nestjs/mcp의 도구 서버]]
 - [[NestJS-AdminJS|AdminJS — NestJS 관리자 UI 통합, Model 배선과 커스터마이징, 운영 경계]]
 
 - [[NestJS-Webhooks|Webhook — outgoing outbox, incoming signature/inbox, replay와 SSRF]]

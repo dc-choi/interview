@@ -21,6 +21,12 @@ aliases: ["Small Server Self Hosting", "소형 서버 셀프호스팅"]
 
 원문 제목과 URL은 식별했지만 2026-10-16 본문 접근이 실패했다. 수치와 구체적 운영 방식은 제공 발췌 수준으로 보존하며 재현 가능한 용량 기준으로 쓰지 않는다. 후속으로 원문 전체, 백업 방식과 피크 자원 사용을 확인한다.
 
+## 4G USB 동글 사례: 자원 한도가 정하는 운영 범위
+
+2026-11-07 개인 블로그는 약 10달러짜리 4G USB 동글(OpenStick, RAM 512MB 중 약 450MB 사용 가능, Cortex-A53 4코어 1GHz, eMMC 4GB)에 Debian, systemd와 Podman을 올려 DNS 차단(AdGuard Home 약 40MB), 경량 모니터링 두 종, RSS 리더와 AI 에이전트 harness를 운영한 사례를 소개한다. 외부 접속은 포트를 열지 않고 Cloudflare Tunnel을 쓰며, 그 대가로 NSA가 모든 활동을 들여다볼 수 있을지도 모른다는 단점은 홈랩에서 감수할 만하다고 봤다.
+
+같은 글이 밝힌 한계도 운영 기준이 된다. DNS 차단은 모든 요청을 막지 못하고, AI 에이전트 harness는 사실상 root shell이며, 기능이 겹치는 모니터링 도구는 정리 대상이다. 전력, eMMC 마모와 열 관리는 다루지 않았으므로 장기 운영 근거로 쓰지 않는다.
+
 ## SaaS 대체 후보의 운영 계약 확인
 
 같은 기능을 제공하는 후보라도 복구 방식, 지원 주체와 배포 에디션은 다를 수 있다. 다음은 2026-10-21 공식 문서와 프로젝트 저장소로 확인한 사례다. 기능 동등성이나 절약액을 검증한 비교표는 아니다.
@@ -53,6 +59,7 @@ BookOrbit는 도서, import 폴더, 앱 데이터와 PostgreSQL을 포함한 모
 
 ## 출처
 
+- [What I run on my $10 USD OpenStick homelab — Bosscher](https://blog.bosscher.ch/posts/openstick/) — 2026-11-07 개인 블로그. 수치는 작성자 측정
 - [BookOrbit — GitHub, bookorbit/bookorbit](https://github.com/bookorbit/bookorbit) — 2026-11-02 기능과 버전 조건, 데이터 경로를 확인.
 - [BookOrbit, What is BookOrbit?](https://bookorbit.app/what-is-bookorbit) — 자체 호스팅과 외부 연동의 경계.
 

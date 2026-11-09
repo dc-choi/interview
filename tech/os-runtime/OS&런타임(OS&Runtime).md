@@ -35,6 +35,7 @@ aliases: ["OS&런타임(OS&Runtime)", "OS & Runtime"]
 - [[Linux-Root-Directory-Isolation|루트 디렉터리 격리]] — chroot의 한계, Linux 7.3 fchroot와 failfs, OpenBSD unveil 비교
 - [[OpenBSD-Platform|OpenBSD]] — 8.0의 가상화와 arm64 변화, pledge와 unveil, Wine 이식 초안의 보안 제약
 - [[Linux-Page-Cache-Contention|Linux 페이지 캐시 경합]] — folio 참조와 공유 카운터, 개발 패치의 확인 경계
+- [[Linux-Laptop-GPU-Power-Management|Linux 노트북 GPU 전력 관리]] — CPU와 GPU 전력 배분의 OS별 구성요소, nvidia-powerd 조건, WSL의 호스트 드라이버, 전원 연결과 배터리 비교
 - [[Native-Compilation-Compatibility|네이티브 컴파일과 호환성]] — Bun 패키징과 AOT 실험, TurboPython의 소유권
 - [[Emulation-and-Compatibility-Layers|에뮬레이션과 호환 계층]] — Wine과 Proton, Rosetta, 셰이더 변환, TBDR과 이식 판단
 

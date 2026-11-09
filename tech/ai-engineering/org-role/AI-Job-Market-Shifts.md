@@ -66,6 +66,8 @@ WEF 2025 보고서의 Skills outlook은 기업이 현재 중요하게 보는 역
 
 직무 집단을 넓게 비교할 때는 축을 먼저 정하면 정리가 쉽다. 예를 들어 이 문서의 계기가 된 영상은 가치 창출 대 위험 관리, 기술과 시스템 대 비즈니스와 사회라는 두 축으로 도메인 응용, 운영과 인프라, 품질과 안전성, 규제와 거버넌스라는 네 묶음을 제시한다(묶음 이름은 전사문 기준이며 품질과 안전성은 전사문의 안정성을 AI 레드팀과 모델 검증이라는 예시 문맥으로 교정했다. 화면은 확인하지 못했다). 이는 자신의 강점과 선호를 점검하는 사고 도구이며 수요 통계나 표준 직업 분류가 아니다.
 
+반대로 가상의 직함으로 남는 역할을 그려 보는 글도 있다. 2026-11-05 공개된 풍자성 채용 공고(Software Line Specialist)는 2년째 설계부터 배포까지 대부분을 에이전트로 처리한다는 가상의 회사(ACME Inc.)가, 프롬프트가 통하지 않거나 에이전트가 같은 시도를 반복하거나 수정이 새 문제를 만드는 나머지 0.5%를 맡을 TypeScript 개발자를 찾는다는 설정이다. 낯선 코드베이스에서 로그와 DB 행을 직접 추적하고 테스트와 디버거를 손으로 돌리며 수정부터 배포까지 맡고, 에이전트의 추론 기록을 검토해 에이전트 학습용 사후 분석을 쓰는 일을 맡긴다. 자격으로는 2022년 이전의 TypeScript 경력 5년 이상, 전형으로는 종이 시험과 AI 없는 실시간 디버깅을 둔다. 실제 채용 수요의 근거가 아니라 위임이 늘어도 남는다고 보는 과업을 직함으로 묶어 본 사고 실험이며, 그 과업은 [[Developer-Role-AI-Era#시니어 엔지니어의 차별점|추상화가 깨질 때 한 층 아래로 내려가는 능력]]과 겹친다.
+
 ## 경력 판단 체크포인트
 
 - 수치가 과거 고용 추정, 플랫폼의 직함 증가율, 기업의 기대 중 무엇인지 구분했는가
@@ -84,6 +86,7 @@ WEF 2025 보고서의 Skills outlook은 기업이 현재 중요하게 보는 역
 - [LinkedIn Jobs on the Rise 2026: The 25 fastest-growing roles in the U.S. — LinkedIn News](https://www.linkedin.com/pulse/linkedin-jobs-rise-2026-25-fastest-growing-roles-us-linkedin-news-dlb1c) — 2026-01-07, 직무의 게시 순서, 직무 설명과 방법론 대조. 2026-10-21 대조
 - [Future of Jobs Report 2025 : 78 millions de nouvelles opportunités d'emploi d'ici à 2030, mais un besoin urgent d'acquisition de compétences pour préparer la main-d'œuvre — World Economic Forum](https://reports.weforum.org/docs/WEF_Future_of_Jobs_2025_Press_Release_FR.pdf) — 2025-01-08 보도자료 프랑스어판. 창출, 대체, 순증 수치와 22%, 근거 기업의 수와 범위, 증감 직무 표, 기업 계획 비율 대조. 2026-10-21 검증에서는 보고서 본문을 열람하지 못함. 이후 3장 대조 범위는 별도 출처에 표시
 - [AI 시대의 직무 변화 — YouTube, 면접왕 이형](https://www.youtube.com/watch?v=ITv6GwBp33o) — 2026-10-13 공개 영상. 정리의 계기이며 두 축 예시의 출처, 사실 근거로 쓰지 않음
+- [Software Line Specialist — Lovro Bikić](https://lovro-bikic.github.io/software-line-specialist/) — 2026-11-05 풍자성 채용 공고. 2026-11-09 설정, 업무와 채용 절차 대조. 채용 시장의 근거로 쓰지 않음
 
 ## 관련 문서
 

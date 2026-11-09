@@ -14,6 +14,7 @@ C++ 코딩 테스트에서는 문법 암기보다 값의 범위, 객체 수명, 
 - [x] [[Cpp-Language-Memory-and-STL|값과 메모리, 반환값 복사 생략, Pointer, Container와 Algorithm]]
 - [x] [[Cpp-Coding-Test-Workflow|구현 규칙, 정수와 실수 계산, 반례와 채점 환경]]
 - [x] [[Cpp-Coding-Test-Workflow-IO-and-Strings|입출력과 문자열 (입출력 속도, 입력 끝, split, 문자 빈도와 문자 코드)]]
+- [x] [[Cpp-Contracts-and-Standardization|Contracts와 표준화 절차 (pre, post, contract_assert, 평가 의미, C++26 DIS 부결과 선택지)]]
 - [x] [[알고리즘(Algorithm)|알고리즘 인덱스]]
 - [x] [[자료구조(DataStructure)|자료구조 인덱스]]
 

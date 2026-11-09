@@ -174,6 +174,7 @@ Iceberg와 DuckDB의 세부 호환성이나 실제 구현은 이 개요의 확�
 
 ## 관련 문서
 
+- [[Query-Engine-Execution|쿼리 엔진의 실행 계획과 엔진 선택]]
 - [[DuckLake|SQL 카탈로그와 Parquet]]
 - [[OLTP-vs-OLAP|OLTP와 OLAP]]
 - [[Redshift|Amazon Redshift]]

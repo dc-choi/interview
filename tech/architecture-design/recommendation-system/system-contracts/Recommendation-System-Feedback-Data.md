@@ -177,7 +177,7 @@ Off-policy estimator는 실험을 완전히 대체하지 않는다. 편향을 �
 
 ## 관련 문서
 
-- 파이프라인: [[Recommendation-System-Architecture|지식 지도]], [[Recommendation-System-Candidate-Generation|후보 생성]], [[Recommendation-System-Ranking-Reranking|랭킹]], [[Recommendation-System-Eligibility-Availability|가용성]]
+- 파이프라인: [[Recommendation-System-Architecture|지식 지도]], [[Recommendation-System-Candidate-Generation|후보 생성]], [[Recommendation-System-Ranking-Reranking|랭킹]], [[Recommendation-System-Eligibility-Availability|가용성]], [[Recommendation-System-Personalization-Failure-Modes|개인화 실패 유형]]
 - 평가: [[Recommendation-System-Evaluation-Experimentation|평가와 실험]], [[Recommendation-System-Off-Policy-Evaluation|OPE]], [[Recommendation-System-Online-Experimentation-Statistics|온라인 실험 통계]]
 - 데이터: [[SCD-Type2|시점 기준 속성 조회와 SCD Type 2]], [[PII-Masking|PII 마스킹과 최소 수집]]
 

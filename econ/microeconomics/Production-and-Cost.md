@@ -110,6 +110,12 @@ MC가 ATC보다 낮으면 평균을 끌어내려 ATC가 하락하고, 높으면 
 
 이 사례에도 앞의 기준을 적용해 겹친 마진을 자동 절감액으로 계산하지 않는다. 새 팹의 설비투자, 수율과 가동률, 협력 조건을 함께 비교해야 하는데, 2026-06-04 FWP의 위험 요인은 그 시점에 Terafab이 매우 초기 단계이며 SpaceX와 Tesla가 재무 조건, 지식재산권과 최종 협력 기간 등 여러 세부 사항을 확정하지 않았다고 적었다. 팹 계획의 주체와 단계를 읽는 기준은 [[AI-Infrastructure-Capital-Cycle#발표된 팹 계획의 주체와 단계를 나눈다|AI 인프라 투자와 자본 순환]]에서, 설비투자 집계를 읽는 기준은 같은 문서의 앞 소절에서 다룬다.
 
+### 공장 공간이 병목이면 제품 라인도 다시 고른다
+
+라인과 공장 공간이 한정되면 기존 제품을 계속 만드는 것도 그 공간을 다른 제품에 쓰지 않는 선택이다. 이미 들인 금형과 라인 투자는 매몰비용이므로 계속 생산할 근거가 되지 않는다. 남은 생산으로 앞으로 얻을 공헌이익과, 같은 공간을 다른 제품에 쓸 때의 기대 이익에서 전환 비용을 뺀 값을 비교한다. 대체 제품의 수요와 생산 준비가 아직 가설이면 그 불확실성도 함께 본다. 공정 자동화의 가치가 임금과 설계 변경 빈도에 따라 달라지는 사례는 [[Robot-Manufacturing-and-Serviceability#조립 자동화의 경제성|조립 자동화의 경제성]]에서 다룬다.
+
+2026-11-06 Elon Musk는 X에서 Tesla가 2027년 중반까지 텍사스 공장의 Cybertruck 생산을 끝내고 Cybercab 증산을 위한 공간을 만들겠다고 밝혔다(CBS 보도를 인용한 지역 방송 기사 기준). 보도 시점에 Cybertruck을 만드는 공장은 텍사스 공장뿐이다. Cox Automotive 추정으로 2025년 미국 판매는 약 2만 200대로, 2024년 약 3만 9천 대에서 거의 절반으로 줄었다. Tesla는 모델별 판매를 따로 공개하지 않는다. 회사의 원가와 Cybercab의 수요는 공개되지 않았으므로 이 사례를 공헌이익 계산의 결과로 읽지 않고, 병목 공간을 재배분한 결정의 예로만 둔다.
+
 ## 8. 회계의 원가 구성
 
 회계에서 제품 원가는 보통 다음처럼 쌓는다. 직접경비를 따로 떼는 분류도 있다.
@@ -153,10 +159,13 @@ MC가 ATC보다 낮으면 평균을 끌어내려 ATC가 하락하고, 높으면 
 - [SpaceX, Free Writing Prospectus](https://www.sec.gov/Archives/edgar/data/1181412/000162828026040610/spacexfwp.htm) — 2026-06-04 제출 자료의 기업공개 관련 표지와 위험 요인 중 Terafab 초기 단계와 미확정 협력 조건, 2026-10-26 대조
 - [KIFRS.com, 기업회계기준서 제1002호 재고자산의 취득원가](https://www.kifrs.com/s/1002/a36dbb) — 매입원가, 전환원가와 제외 원가
 - [IFRS Foundation, IAS 2 Inventories](https://www.ifrs.org/issued-standards/list-of-standards/ias-2-inventories/) — 문단 11, 12, 16
+- [Tesla to wind down production of Cybertruck, Elon Musk says — WJLA News Channel 3](https://wjla.com/news/nation-world/tesla-to-wind-down-production-of-cybertruck-elon-musk-says-electric-vehicle-truck-ev-texas) — 2026-11-06, Musk의 X 게시물과 CBS 보도 인용. X 원 게시물은 직접 열람하지 못함
+- [The Tesla Cybertruck Had The Biggest Sales Crash Of Any EV In 2025 — InsideEVs](https://insideevs.com/news/784715/tesla-cybertruck-ev-sales-drop-2025/) — 2026-01 게시, Cox Automotive 추정과 모델별 판매 미공개 확인
 
 ## 관련 문서
 
 - [[Business-Model|비즈니스 모델과 실제 제공 비용]]
+- [[Robot-Manufacturing-and-Serviceability|로봇 제작과 정비성]] — 조립 자동화의 원가 조건
 - [[Solo-Product-Market-Validation|수익성과 운영 용량의 동시 검증]]
 - [[Supply-and-Demand|수요와 공급]] — 한계비용이 공급곡선의 뿌리
 - [[Market-Structures|시장구조]] — MR의 모습이 구조마다 다름

@@ -30,6 +30,8 @@ ego(lite)는 Chromium 기반이며 엔진 안에서 semantic snapshot을 구성�
 
 여러 봇이 컴퓨터를 함께 쓰는 자체 호스팅 비서에서도 같은 구분이 필요하다. 2026-10-27 공식 저장소 문서(main e37a428f06, Apache-2.0, 베타) 기준 Rakazo는 역할별 봇이 대화, 기억, 일정 작업과 기록을 유지하며 브라우저, 터미널, 파일과 데스크톱을 조작하게 한다. 기본 Team Computer에서는 활성 봇마다 별도 X 디스플레이와 Chrome 프로세스, 봇 신원에 묶인 영구 Chrome 프로필을 두어 로그인, 쿠키와 방문 기록을 논리적으로 나눈다. 그러나 문서가 정한 보안 경계는 컴퓨터 컨테이너다. Team 봇들은 같은 OS 사용자, 작업 공간, 셸과 X11 접근을 쓰므로 다른 봇의 프로필 파일에도 접근할 수 있다. 봇별 폴더는 작업 정리용이라 모든 Team 봇이 전체 작업 공간에 접근할 수 있다. 화면 lease는 도구 호출의 순서를 조율할 뿐 서로 믿을 수 없는 프로세스를 격리하지 않으므로, 격리가 필요한 업무에는 봇 전용 Private Computer를 쓴다. 봇별 프로필 분리를 봇 사이의 권한 경계로 해석하지 않는다.
 
+OpenMausBot도 봇마다 쓸 컴퓨터를 따로 고르게 한다. 선택지는 유료 제3자 클라우드 데스크톱, 로컬 VM, macOS와 Ubuntu Xorg의 호스트 직접 제어(명시적 선택, Wayland에서는 꺼짐)다. 셸 명령과 파일 수정은 허용과 거부 카드로 승인받는다. harness는 로컬 루프백 주소에서 돌고 API 키를 0600 권한의 평문 설정 파일에 둔다. 호스트 직접 제어는 작업 공간 분리가 아니라 사용자 계정 그대로의 권한이므로 격리된 VM과 구분해 쓴다(2026-11-09 README 확인).
+
 ### 제어권 인계와 게시 승인을 나눈다
 
 ego(lite)의 공개 FAQ는 사용자가 Space에서 작업을 지켜보고 언제든 제어권을 넘겨받을 수 있다고 안내한다(2026-10-26 확인). 이 기능 설명만으로 모든 사이트의 게시 직전에 승인이 강제된다거나, 이미 실행한 변경이 취소된다고 판단하지 않는다.
@@ -80,6 +82,7 @@ ego(lite)도 비밀번호, 쿠키, 북마크와 방문 기록의 로컬 보관�
 
 ## 출처
 
+- [milind-soni/OpenMausBot — GitHub](https://github.com/milind-soni/OpenMausBot) — 2026-11-09 README 확인
 - [Aside Help Center, Run tasks](https://docs.aside.com/help/tasks)
 - [Aside Help Center, Set agent permissions](https://docs.aside.com/help/security)
 - [Aside Help Center, Configure password autofill](https://docs.aside.com/help/passwords)

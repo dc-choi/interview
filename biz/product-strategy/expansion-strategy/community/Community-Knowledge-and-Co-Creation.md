@@ -78,6 +78,24 @@ AI 초안에서도 주제와 독자, 사용할 관점과 표현 기준을 사람
 
 이 사례에서 구분할 것은 아이디어 제출, 지지 확보, 검토와 제품화다. 지지 기준 충족은 생산 확정이나 구매 계약이 아니다. 이를 다른 사업에 적용할 때도 제안 수와 채택 수, 참여자의 인정과 사업자의 최종 책임을 나눠 기록한다. 위 표의 다른 참여 방식의 매출 효과까지 LEGO 사례로 입증된 것은 아니다.
 
+## 동료 생산과 기업이 통제하는 기여를 구분한다
+
+Benkler, Shaw와 Hill(2015)은 동료 생산(peer production)을 온라인 집단이 수행하는 개방적 창작과 공유로 정의하고 세 조건을 든다.
+
+1. 목표를 정하고 실행하는 일이 분산되어 있다.
+2. 금전 외 동기를 포함한 다양한 참여 동기를 활용한다.
+3. 거버넌스와 관리가 배타적 소유권이나 고용 같은 계약 관계와 분리되어 있다. 결과물은 공유자원(commons)으로 운영되고, 운영은 참여, 실력과 신망을 조합한 방식으로 이뤄진다.
+
+GNU/Linux 같은 자유, 오픈소스 소프트웨어와 Wikipedia가 대표 예다. 같은 글은 온라인 집단 지성이 모두 동료 생산은 아니라고 구분한다.
+
+| 구분 | 예 | 빠진 조건 |
+|---|---|---|
+| 목표를 의뢰자가 정함 | 의뢰 기업이 문제를 정의하고 해결책을 받아 가는 InnoCentive | 분산된 목표 설정 |
+| 좁은 동기에 최적화 | 놀이 중심의 ESP Game, 금전 중심의 Mechanical Turk | 다양한 동기 |
+| 기업 안의 협업 | 계약 의무와 배타적 소유권 아래의 공동 작업 | 소유와 분리된 거버넌스 |
+
+이 기준을 적용하면, 이용자가 콘텐츠를 만들어도 결과물의 이용 조건과 운영 규칙을 플랫폼 기업이 정하는 서비스는 자발적 참여일 뿐 동료 생산의 세 번째 조건을 충족하지 않는다. 고객 공동창작을 설계할 때도 기여의 결과물을 누가 소유하고 이용 조건을 누가 바꿀 수 있는지, 규칙은 누가 정하는지, 참여자가 어떤 동기로 남는지를 따로 적는다. 공유자원을 표방하면서 결과물과 규칙을 사업자가 일방적으로 정하면 기여자의 기대와 실제 권리가 어긋난다(운영 제안).
+
 ## 관계와 활동을 중심으로 확장하기
 
 디지털 공동체의 미래를 설계할 때는 만날 사람, 함께 할 일, 기여가 인정되는 방식과 현실의 관계 및 기회를 먼저 정의한다. 공간의 시각적 완성도만으로 이 조건이 생기지는 않는다.
@@ -96,6 +114,8 @@ AI 초안에서도 주제와 독자, 사용할 관점과 표현 기준을 사람
 
 - [LEGO, What happens to my product idea after I reach 10,000 supporters?](https://www.lego.com/en-us/service/help-topics/article/what-happens-to-my-product-idea-after-i-reach-10-000-supporters) — 2026-10-28 지지 기준 뒤 검토, 추가 자료 요청과 제품화 가능성 대조
 - [LEGO Ideas — LEGO](https://www.lego.com/en-us/themes/ideas/about) — 2026-10-28 팬의 제품 아이디어와 제품화 검토 구조 확인. 고객 기여 방식의 비교표는 운영 제안이다.
+- [Peer Production: A Form of Collective Intelligence — Yochai Benkler, Aaron Shaw, Benjamin Mako Hill](https://mako.cc/academic/benkler_shaw_hill-peer_production_ci.pdf) — Handbook of Collective Intelligence(MIT Press, 2015) 수록 장의 저자 공개 사전 인쇄본, 2026-11-09 정의와 구분(1~4쪽) 확인
+- [From Linux to Wikipedia: How Volunteers Build the Internet — The MIT Press Reader](https://thereader.mitpress.mit.edu/from-linux-to-wikipedia-how-volunteers-build-the-internet/) — GeekNews 2026-11-06 소개로 접한 계기 글. 2026-11-09 접근이 거부돼 본문은 읽지 못했고 위 논문으로 개념을 대조했다
 - [Communities of practice: a brief introduction — Etienne and Beverly Wenger-Trayner](https://www.wenger-trayner.com/wp-content/uploads/2022/01/07-Brief-introduction-to-communities-of-practice.pdf) — 공동 영역, 관계와 실천의 구분, 활동 예시(2015, 1~3쪽)
 - [커뮤니티의 미래를 엿보다 — 만년필, 정회권](https://10000yearspen.com/post/%EC%BB%A4%EB%AE%A4%EB%8B%88%ED%8B%B0%EC%9D%98-%EB%AF%B8%EB%9E%98%EB%A5%BC-%EC%97%BF%EB%B3%B4%EB%8B%A4-7BMVyKkoQ7GqGIPbis7yxA)
 - [메타버스까지의 여정 — 만년필, 정회권](https://10000yearspen.com/post/%EB%A9%94%ED%83%80%EB%B2%84%EC%8A%A4%EA%B9%8C%EC%A7%80%EC%9D%98-%EC%97%AC%EC%A0%95-7WbxZ1wVQZ2ZPXL2d-MCyw)

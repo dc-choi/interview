@@ -254,6 +254,7 @@ RAG의 벡터/임베딩이 생성, 저장, 검색되는 방식의 취약점. RAG
 
 ## 관련 문서
 
+- [[Claude-Code-Cloud-Security#컨텍스트의 계정 정보가 외부 요청에 실릴 때|컨텍스트 개인정보의 외부 전송]] — 모델이 쓴 요청 헤더로 계정 이메일이 나간 사례(LLM02)
 - [[Eval-Golden-Set-and-Deploy-Gates|골든셋과 배포 관문]] — 가드레일을 회귀 테스트 대상으로 두고 탐지율, 차단율, 과잉 차단을 따로 재는 법
 - [[Application-Security|애플리케이션 보안 / 시큐어코딩]]
 - [[Supply-Chain-Security|공급망 보안]]
@@ -264,3 +265,4 @@ RAG의 벡터/임베딩이 생성, 저장, 검색되는 방식의 취약점. RAG
 - [[Claude-Code-Cloud-Security|Claude Code 클라우드 실행과 보안 (에이전트 인프라의 다층 방어 사례)]]
 - [[MCP-Security-Boundaries|MCP 보안 경계 (서버 자격 증명, 요청 검증과 게이트웨이)]]
 - [[Agent-Ready-Data|에이전트용 데이터 준비 (위임 접근, JIT 자격 증명과 lethal trifecta)]]
+- [[Agent-Governance-Controls|에이전트 거버넌스 통제 (신원, 승인, 복구, 감사와 탐지에서 차단까지)]]

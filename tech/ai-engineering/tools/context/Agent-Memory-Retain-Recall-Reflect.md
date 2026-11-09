@@ -47,6 +47,31 @@ CoALA의 작업 기억은 LLM 호출 사이에도 유지되는 상태 구조다.
 - 경험에서 만든 일반 규칙은 추론으로 구분하고, 반례와 환경 변경을 확인한 뒤 사용한다.
 - 문서 수정과 실행 절차의 변경 권한을 분리한다. 과거 경험이 현재 작업의 실행 허가를 대신하지 않는다.
 
+## 기억의 층과 세션 사이의 정리
+
+기억을 저장소 하나로 보지 않고 층으로 나누면 매 세션 넣을 내용과 필요할 때 찾을 내용을 따로 정할 수 있다. 아래 구분은 경험에서 얻어 세션 사이에 텍스트로 읽을 수 있게 남긴 지식만 기억으로 보고, 가중치 변경, 문맥 내 학습과 compaction은 뺀 정의를 따른다.
+
+| 층 | 담는 것 | 읽는 방식 |
+|---|---|---|
+| 원본 기록 | 세션의 사건 로그 | 검색해 필요한 부분만 읽는다. 아래 정리 과정의 대조 기준이다 |
+| 기억 노트 | 검증한 사실과 그 검증 방법, 이전 질문의 답, 함정 경고 | 저장소에서 찾아 읽는다 |
+| 표현 | 노트를 주제별 페이지로 묶고 서로 연결한 위키 | 탐색하거나 검색과 함께 쓴다 |
+| 주입 컨텍스트 | 짧은 색인과 핵심 규칙 | 매 세션 시작 때 들어간다 |
+
+- **주입 층은 작게 둔다:** 매 세션 토큰을 쓰고, 틀린 내용이 있으면 모든 세션으로 번진다. 자세한 내용은 아래 층으로 내리고 링크만 남긴다. Claude Code auto memory는 `MEMORY.md`의 처음 200줄과 25KB 중 먼저 닿는 지점까지만 세션 시작에 읽고, 주제 파일은 필요할 때 읽는다(2026-11-09 공식 문서 대조).
+- **쓰는 방법보다 목적을 준다:** 노트는 이 사실이 나중에 필요하리라는 예측이다. 무엇을 쓸지 고정 규칙으로 좁히면 오히려 이득이 줄 수 있다.
+- **세션 밖에서 정리한다:** 세션이 끝난 뒤 별도 과정이 노트를 원본 기록과 대조해 틀린 내용을 고치고, 중복을 합치고, 주제별 페이지와 링크를 만들고, 다듬은 핵심을 주입 층으로 올린다. Anthropic은 이 과정을 dreaming이라 부른다. 원본 기록을 지우면 이 교정의 기준도 사라진다. 기억 노트가 아니라 원문 문서 묶음으로 위키를 만든 측정은 [[LLM-Wiki-Knowledge-Compilation#위키를 검색에 더한 효과는 질문 유형에 따라 다르다|LLM 위키와 검색 비교]]에 있다.
+- **쓰는 주체를 나눈다:** 여러 에이전트가 같은 파일을 동시에 고치면 서로 덮어쓴다. 엔티티마다 쓰는 주체와 페이지를 하나로 두고, 정확해야 하는 값은 원문을 그대로 인용한다.
+
+**사례: Anthropic의 기억 실험.** 2026-11-06 공개 글을 2026-11-09 대조했다.
+
+- CL-Bench 1.0 데이터베이스 과제(Claude Managed Agents, 질문마다 새 세션, 영속 기억 디렉터리)에서 기억 저장소를 쓰자 상태 없는 기준선보다 평균 보상이 올랐다. Opus 5.5는 0.655에서 0.838로 올랐지만 Sonnet 4.6은 0.330에서 0.364에 그쳤다. Sonnet 5는 지시가 없어도 답하기 전에 10번 중 9번 기억을 읽었고, Sonnet 4.6은 그 비율이 절반에 못 미쳤다. 위의 선택 단계가 빠지면 저장한 기억도 쓰이지 않는다.
+- 실패만 기록하라는 고정 규칙은 기억의 이득을 Opus 5에서 0.234, Opus 4.7에서 0.150, Sonnet 4.6에서 0.020 줄였다.
+- Pokémon Red 단일 실행에서 포켓몬센터 위치를 잘못 적은 노트를 고치지 않은 실행은 이전 경로로 세 번 되돌아갔고 목적지(Cerulean City)에 끝내 닿지 못했다. 정리 과정이 노트를 고친 실행은 1,935번째 행동에서 도착했다. 단일 실행이라 통계적 근거는 아니다.
+- 여러 에이전트가 공유 표 하나에 계약 조건을 쓰자 서로의 작업을 덮어써, 위키로 만든 요약에 57개 사실 중 41개(72%)만 남았다. 계약마다 한 에이전트가 쓰는 페이지를 두고 조건을 요약하지 않고 그대로 인용하게 하자 57개가 모두 남았다.
+
+남은 문제도 있다. 작업 중에 바로 쓰면 과업에서 주의가 분산되고, 세션 뒤에 정리하면 반영이 늦다. 모든 기억을 계속 최신으로 확인하기 어렵고, 표현을 유지하는 데 연산이 들며 오류가 쌓일 수 있다. 실험은 발행사가 자기 모델로 잰 값이며 대부분의 과제에서 반복 횟수와 분산을 밝히지 않았다.
+
 ## 세 연산의 책임
 
 장기 기억은 대화 이력을 저장하는 것 외에도 필요한 근거를 찾고, 근거에서 만든 해석을 구분하는 책임이 있다. Hindsight의 공개 설계는 이를 `retain`, `recall`, `reflect`로 나눈다. 아래 API 의미는 2026-10-06 확인한 공개 자료 기준이며 모든 메모리 제품의 공통 규격은 아니다.
@@ -129,6 +154,8 @@ Hindsight의 ACL 2026 공개 논문은 world, experience, observation, opinion�
 
 - [Anthropic, Context windows](https://platform.claude.com/docs/en/build-with-claude/context-windows) — 2026-10-24 컨텍스트 범위와 학습 데이터의 구분, 긴 컨텍스트의 회수 한계 확인
 - [Anthropic, Memory tool](https://platform.claude.com/docs/en/agents-and-tools/tool-use/memory-tool) — 2026-10-24 애플리케이션 측 저장과 필요 시 읽기 구조 확인
+- [Claude Code Docs, How Claude remembers your project](https://code.claude.com/docs/en/memory) — 2026-11-09 auto memory의 `MEMORY.md` 로드 한도와 주제 파일 확인
+- [The components of agent memory — Anthropic, Lance Martin](https://www.anthropic.com/research/components-of-agent-memory) — 2026-11-06 게시. 기억 층, 정리 과정, CL-Bench와 Pokémon 실험 조건을 2026-11-09 대조
 - [LongMemEval: Benchmarking Chat Assistants on Long-Term Interactive Memory — ICLR 2025, Di Wu et al.](https://arxiv.org/html/2410.10813v2)
 
 - [AWS, Amazon Quick: Memories](https://docs.aws.amazon.com/quick/latest/userguide/memories-desktop.html)
@@ -144,3 +171,4 @@ Hindsight의 ACL 2026 공개 논문은 world, experience, observation, opinion�
 - [[Agentic-Context-Platform|에이전트 컨텍스트 플랫폼]]
 - [[AI-Workflow-Knowledge-Loop|AI 업무와 지식 환류]]
 - [[Tacit-Knowledge-Judgment-Agent|암묵지와 판단 에이전트 (기억, 판단 사례와 원칙의 층과 피드백 흡수)]]
+- [[LLM-Wiki-Knowledge-Compilation|LLM 위키와 지식 합성의 영속화]]

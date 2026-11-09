@@ -13,6 +13,7 @@ aliases: ["Compatibility Design", "호환성 설계"]
 - [[API-Versioning-Design|API 버저닝 설계]]: 버전 신설 판단, 공존과 폐기 수명주기
 - [[Schema-Evolution|스키마 진화]]: 메시지 호환 모드, 등록 게이트와 replay 조건
 - [[RPC-Interface-Evolution|RPC 인터페이스 진화]]: 메서드 식별과 방향별 판정, 번들 클라이언트 인벤토리와 삭제 뒤 복원 선택지
+- [[Library-ABI-Stability|라이브러리 ABI 안정성 설계]]: ABI를 깨는 변경, 불투명 핸들과 키 조회, 크기 필드, SONAME과 ELF 심볼 버전, CI의 ABI 비교, libghostty-vt 1.0 사례
 - [[Version-Upgrade-Difficulty|버전 업그레이드의 난이도 구조]]: DB 엔진, 런타임, 패키지 축의 되돌림 비용, 발견 비용과 누적 격차
 
 ## 함께 볼 문서

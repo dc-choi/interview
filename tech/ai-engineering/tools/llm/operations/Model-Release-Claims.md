@@ -118,6 +118,7 @@ Mistral은 Low, Medium, High 추론 모드를 안내한다. 공개 라이선스�
 
 ## 관련 문서
 
+- [[Agent-Model-Capability-Contracts|에이전트 모델 능력 계약]] — Kimi K3.1 Pro의 라이선스 조건, Inkling 2 Small의 공개 일정, Hy4의 API 선제공 사례
 - [[AI-Capability-and-Cost-Trends|AI 능력과 비용 추세 읽기]] — 벤치마크 점수의 조건과 비용 추세
 - [[LLM-Model-Tiers|LLM 모델 티어 선택]] — 티어, 라우팅과 시간대 단가
 - [[Eval-LLM-Judge|LLM 판정기]] — 판정기의 편향과 교정

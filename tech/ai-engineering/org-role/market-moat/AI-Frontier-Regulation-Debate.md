@@ -118,6 +118,7 @@ aliases: ["AI Frontier Regulation Debate", "프론티어 AI 규제 논쟁", "규
 
 ## 관련 문서
 
+- [[Agent-Model-Capability-Contracts#Kimi K3.1 Pro: 추론 내용을 돌려주는 호출 계약과 공개판의 사이버 능력 조정|공개 가중치 모델의 능력 조정과 공개 시점]] — 공개판의 사이버 능력을 낮춘 결정, 안전성 시험 뒤로 가중치 공개를 미룬 사례(같은 문서의 Inkling 2 Small 절)
 - [[AI-Infra-Geopolitics|AI 인프라 지정학]] — 선별 접근이 권력 지도가 되는 구조
 - [[LLM-Market-Landscape|생성형 AI 시장 경쟁 구도]]
 - [[LLM-API-Price-Competition|LLM API 가격 경쟁]] — 근접 성능 오픈 웨이트 모델의 가격 압력과 가중치 공개 일정

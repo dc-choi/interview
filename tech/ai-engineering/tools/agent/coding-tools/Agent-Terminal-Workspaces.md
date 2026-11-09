@@ -106,9 +106,35 @@ Anthropic은 중앙 LLM이 작업을 동적으로 나눠 worker에 위임하고 
 
 발표에 나온 도구 구성과 배포 자동화는 재현하지 않았다.
 
+### 위임 계층 없이 한 사람이 여러 세션을 돌릴 때
+
+위임 계층을 두지 않고 한 사람이 세션 여러 개를 직접 돌린 기록도 같은 병목을 보고한다. 아래 세 사례는 2026-10~11월 공개된 개인 글과 에세이를 원문과 대조한 것이며, 산출과 효과는 모두 작성자의 자기 보고다.
+
+- **연구 엔지니어 한 명(2026-10-31):** Claude Code, OpenCode, Codex나 Pi 에이전트 약 5~6개에 각자 Git worktree를 주고 구현, 버그 재현과 수정, 테스트와 PR 작성을 맡긴다. 코드의 90% 이상을 에이전트가 쓰고, 사람은 방향과 설계 판단, 지침 파일과 리뷰 규칙의 갱신, 에이전트가 자기 작업을 시험할 테스트 장치 제작과 수동 검증을 맡는다. 비용으로는 코딩에는 없던 과자극과 소진, 프롬프트를 하나만 더 보내고 싶은 충동, 에이전트의 질문에 동료에게 하듯 서둘러 답하던 습관을 들었다.
+- **스타트업 엔지니어 한 명(2026-11-03):** 한 번에 3~5개 일을 진행하고 에이전트가 기능 하나에 1~2시간씩 돈다. 하루가 끝나면 전보다 지치고, 반응형 수정이 계획한 일의 집중을 빼앗는 상태를 thrashing에 비유했다. 오후 6시에 일을 끝내는 규칙으로 버틴다고 적었다.
+- **개발자 한 명(2026-11-08):** 응답을 기다리며 다른 작업을 시작하다 스레드 20개 가까이를 오가게 됐고, 원인을 작업 순서(sequencing)와 맥락(context)의 문제로 진단했다.
+
+세 번째 사례는 사람의 판단 대기열을 대화창이 아니라 저장소에 둔다.
+
+- 티켓은 다루는 코드 옆의 Markdown 파일이고 보드 상태도 커밋한다. 세션이 죽어도 대기열이 남는다.
+- 에이전트는 주기마다 보드를 돌며 새 티켓을 조사하고, 사람이 안전하다고 표시한 티켓만 구현하며, 테스트와 브라우저 확인을 돌린다. 민감한 코드는 브랜치에서 만들고 먼저 묻고, 프로덕션 배포는 사람만 한다.
+- 스크립트가 보드 전체를 읽어 변경 리뷰, 질문 답변, 트레이드오프 판정처럼 사람만 할 수 있는 항목을 우선순위 목록(owner inbox)으로 만든다. 검토 화면은 주기마다 git에서 다시 만드는 보기 전용이고 판정은 티켓에 다시 적는다.
+- 사람은 한 번에 하나를 꺼내 맥락을 읽고 결정하거나 행동을 요청한 뒤 대기열로 돌려보낸다. 항목을 닫으면서 그 맥락도 머리에서 내려놓는 것이 핵심이라고 작성자는 설명한다.
+
+작성자는 여전히 지치지만 산만함과 길을 잃은 느낌은 줄었다고 적었고, 남은 문제로 티켓 맥락을 20분이 아니라 1분 안에 파악하게 만드는 일과 사람의 판정을 기다리는 티켓이 끝없이 도는 것을 막는 일을 들었다. 앞 사례의 7단계와 같은 방향이지만, 기록을 git에 두어 세션 종료와 도구 교체에도 대기열이 남는다는 점이 다르다.
+
+Thoughtworks Technology Radar Vol.35(2026-11)도 세션을 병렬로 돌리거나 밤새 맡기는 방식의 주된 병목을 사람의 주의와 리뷰 용량으로 본다. 리뷰가 따라가지 못하면 승인 단계가 실제 확인 없이 형식만 남는 human-in-the-loop theater(Caution)가 되므로, 세션을 늘리기 전에 리뷰와 배포 파이프라인이 감당할 용량부터 확인하고 일이 쌓이는 단계는 path-to-production mapping(Adopt)으로 찾으라고 권한다. 변경의 위험에 따라 검토 강도를 나누는 방식은 [[Code-Review-AI-Agent-Operations#위험에 따른 검증|위험에 따른 검증]], 주의 잔류와 전환 비용은 [[Flow-Vs-Agent-Orchestration|몰입과 멀티 에이전트 오케스트레이션]]을 본다.
+
+운영 제안은 다음과 같다.
+
+- 동시 세션 수는 장비나 요금제 한도가 아니라 그날 실제로 검토할 수 있는 양으로 정한다.
+- 판단 대기열은 세션 밖의 지속 기록(저장소의 티켓이나 이슈 트래커)에 두고, 각 항목에 원 세션, diff와 검사 결과를 붙인다.
+- 일을 끝내는 시각을 정하고, 그 뒤에 도착한 완료 알림은 다음 날 대기열로 넘긴다.
+
 ## 이해 확인
 
 - 세션 수가 늘 때 파일 충돌과 별개로 사람의 검토가 병목이 되는 이유와, 위임 계층을 넣어도 남는 검증 책임을 설명할 수 있는가.
+- 판단 대기열을 대화창 대신 저장소에 둘 때 얻는 것과 남는 문제를 설명할 수 있는가.
 - pane 두 개가 같은 디렉터리를 가리킬 때 파일 충돌 가능성을 설명할 수 있는가.
 - 에이전트의 `done` 표시와 테스트 성공을 구분할 수 있는가.
 - worktree를 나눠도 공유 캐시나 외부 DB의 쓰기 충돌이 남는 이유를 설명할 수 있는가.
@@ -134,6 +160,10 @@ Anthropic은 중앙 LLM이 작업을 동적으로 나눠 worker에 위임하고 
 - [Prospero, Remote and background hosts](https://github.com/skeeto/prospero/blob/master/docs/remote.md)
 - [AI로 나만의 작은 조직 만들기 — 채널데브톡](https://www.youtube.com/watch?v=OBsXG7aondY) — 2026-10-23 공개 발표, 로컬 음성 전사문으로 위임 계층과 E2E 자동화 사례 대조.
 - [Building effective agents — Anthropic](https://www.anthropic.com/engineering/building-effective-agents) — 2026-11-09 orchestrator-workers 정의와 사람 피드백 지점 대조.
+- [How I use AI (Oct 2026) — Ben Stolovitz](https://ben.stolovitz.com/posts/how-use-ai-oct-2026/) — 2026-10-31 게시. 2026-11-09 병렬 에이전트 수, worktree 분리, 사람의 역할과 피로 서술 대조.
+- [How software engineering is changing: a tale of two eras — The Pragmatic Engineer, Neil Kakkar](https://newsletter.pragmaticengineer.com/p/how-software-engineering-is-changing) — 2026-11-03. 2026-11-09 동시 작업 수, 피로와 작업 종료 규칙 대조.
+- [How I'm fighting the AI Brain Fry — Sergey Kuhne](https://sergeykuhne.com/blog/fighting-ai-brain-fry) — 2026-11-08. 2026-11-09 git 기반 티켓, owner inbox와 남은 문제 대조.
+- [Technology Radar Vol. 35 — Thoughtworks](https://www.thoughtworks.com/content/dam/thoughtworks/documents/radar/2026/11/tr_technology_radar_vol_35_en.pdf) — 2026-11. 2026-11-09 Putting more agents to work 테마와 human-in-the-loop theater, path-to-production mapping 블립 대조.
 
 ## 관련 문서
 

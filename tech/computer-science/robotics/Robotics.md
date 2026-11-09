@@ -11,7 +11,7 @@ aliases: ["로보틱스", "Robotics"]
 
 ## 목차
 
-- [x] [[Robot-Manufacturing-and-Serviceability|로봇 제작과 정비성]] — 제작과 조립의 피드백, 모듈 교체와 복귀, 제작 시간과 출하량의 구분
+- [x] [[Robot-Manufacturing-and-Serviceability|로봇 제작과 정비성]] — 제작과 조립의 피드백, 모듈 교체와 복귀, 제작 시간과 출하량의 구분, 조립 자동화의 원가 조건
 - [x] [[Tactile-Grasp-Control|촉각 기반 파지 제어]] — 접촉과 미끄러짐 감지, 센서 보정, 실험 범위와 실패 조건
 
 - [x] [[Physical-AI-and-Liquid-Control|피지컬 AI와 리퀴드 제어]] — 몸체와 제어의 공동 설계, 연속시간 동역학과 환경 전이

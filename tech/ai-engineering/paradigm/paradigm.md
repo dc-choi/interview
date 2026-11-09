@@ -18,8 +18,9 @@ AI 시대 엔지니어링의 토대 — 패러다임 전환과 모델, API 거�
 - [x] [[Claude-Opus-5|Claude Opus 5 (Fable 5 절반 가격에 근접 성능, 사고 기본 켜짐, effort 게이팅, 자동 폴백 라우팅, 대화 중 도구 변경, 검증 스캐폴딩 제거, 2026-09 기준 legacy이며 후속은 Opus 5.5)]]
 - [x] [[OpenAI-GPT-Generations|OpenAI GPT 세대별 변화 (학습 방식, 인터페이스, 컨텍스트와 제공 형태의 네 축, GPT-2부터 GPT-6 계열까지의 대조표, 비동기 도구 호출과 실행 중 지시, 흔한 오독)]]
 - [x] [[AI-Capability-and-Cost-Trends|AI 능력과 비용 추세 읽기 (벤치마크 점수의 셋, 하네스, 추론 강도 조건, 같은 성능의 가격과 토큰 처리 비용의 구분, 오픈웨이트의 토큰과 지출 점유율, 시간 지평)]]
-- [x] [[Agent-Model-Capability-Contracts|에이전트 모델의 능력 계약]] — 기억과 장기 작업, 전문 영역 평가, 승인 경계, 개인화 인터페이스와 카나나의 제공 계획
+- [x] [[Agent-Model-Capability-Contracts|에이전트 모델의 능력 계약]] — 기억과 장기 작업, 전문 영역 평가, 승인 경계, 개인화 인터페이스와 카나나의 제공 계획, 예산 안의 자율 실험과 요약 수치, 추론 내용을 돌려주는 호출 계약, 공개판의 사이버 능력 조정
 - [x] [[Time-Series-Foundation-Models|시계열 파운데이션 모델과 분위수 예측]] — zero-shot 예측, 21개 분위수와 pinball loss, CRPS와 scaled 지표, 벤치마크 집계와 누출 처리, 매출 기준 라이선스
 - [x] [[World-Models|월드 모델]] — 상태 전이와 행동 조건, 긴 상호작용의 일관성, tinyworldformer의 공유 가중치와 보드 실행 경계
-- [x] [[AI-Forecasts-and-Human-Augmentation|AI 전망과 인간 능력 확장]] — AGI와 특이점의 기준, 신경 보조와 장수 전망, 진화와 풍요 이후의 가치
+- [x] [[AI-Forecasts-and-Human-Augmentation|AI 전망과 인간 능력 확장]] — AGI와 특이점의 기준, 위험 경고의 시점과 판정 기준, 신경 보조와 장수 전망, 진화와 풍요 이후의 가치
+- [x] [[Image-Diffusion-Latent-and-Pixel-Space|이미지 생성 모델의 잠재 공간과 픽셀 공간]] — VAE 잠재 공간과 큰 패치 픽셀 공간, 해상도별 토큰 수, 저비용 학습 발표의 금액과 지표
 - [x] [[Reinforcement-Learning-from-Experience|경험 기반 강화학습]] — 행동과 보상, 지연 신용 할당, TD와 환경 피드백

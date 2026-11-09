@@ -206,6 +206,7 @@ Bee의 공식 설명은 음성을 실시간 처리 후 삭제하고 전사문은
 
 ## 관련 문서
 
+- [[Linux-Laptop-GPU-Power-Management|Linux 노트북의 GPU 전력 관리]]
 - [[LLM-Workflow-Patterns|LLM 워크플로우 패턴]]
 - [[LLM-Failure-Handling-Recovery|LLM 실패 처리와 멱등성]]
 - [[Local-Speech-to-Text|로컬 음성 인식]]

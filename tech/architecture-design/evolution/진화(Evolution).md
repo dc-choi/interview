@@ -15,7 +15,7 @@ aliases: ["Evolution"]
 - [x] [[microservice|마이크로서비스 전환 (모놀리스 vs MSA, 준비도, 분해, 경계 조합, 데이터 소유권, 모듈러 모노리스)]] — 서브폴더 인덱스
 - [x] [[Legacy-Modernization-Strategies|레거시 현대화 전략 (Strangler Fig/인프라 단절/Recode/사양 경량화, 롤아웃 4축, Event Interception과 과도기 아키텍처, 전환 순서, 사용량 기반 제거 조건)]]
 - [x] [[Runtime-Stack-Evolution|런타임 스택 진화 (BFF→RxJava→GraphQL Federation, Java 21, Spring Boot 표준화, Netflix 사례)]]
-- [x] [[Compatibility-Design|호환성 설계 (API 버저닝, 전후방 호환과 스키마 진화, 버전 업그레이드 난이도)]] — 서브폴더 인덱스
+- [x] [[Compatibility-Design|호환성 설계 (API 버저닝, 전후방 호환과 스키마 진화, 버전 업그레이드 난이도, 라이브러리 ABI 안정성)]] — 서브폴더 인덱스
 - [x] [[Fullstack-BaaS-Boundaries|풀스택 프레임워크와 BaaS 경계 (RSC 실행 위치 기본값, BaaS SDK 직접 호출의 비용 — RLS 디버깅 제어권, DB 강결합, DB 함수로 묶는 다중 쓰기와 함수 권한, 기능별 종속 강도와 이탈 기준, 무료 플랜 파일 한도와 백업 범위)]]
 - [x] [[Refactoring-In-Practice|실전 리팩토링 (레거시 변경의 안전망, 조건 모으기와 다형성, Split Phase, APM 분석과 최적화)]]
 - [x] [[Architecture-Fitness-Functions|아키텍처 fitness function (품질 속성을 측정 가능한 검증으로 변환, 지속적 거버넌스)]]

@@ -37,6 +37,19 @@ PostgreSQL은 DB default READ COMMITTED가 필요하다. signalInTransaction도 
 
 MySQL 8.4/9.x는 READ COMMITTED/REPEATABLE READ에서 locking read로 새 wait를 본다. SERIALIZABLE은 불필요한 locking으로 다른 signal을 오래 막을 수 있다. deadlock 1213으로 업무 tx가 rollback되면 caller가 업무 transaction 전체를 retry한다. store 내부 transaction retry가 업무 writes까지 되살리지 않는다.
 
+## 공통 기반: @nestjs/store-kit
+
+위 executor와 migration은 공식 패키지들이 함께 쓰는 `@nestjs/store-kit` 위에 있다. 이 패키지는 공식 SQL 저장소(2026-11-09 기준 `@nestjs/workflows/postgres`의 `PostgresWorkflowStore`와 `@nestjs/workflows/mysql`의 `MySqlWorkflowStore`. README는 저장소가 더 추가될 예정이라고 적는다)가 쓰는 기반이다. 애플리케이션이 직접 설치하거나 import하지 않고 저장소를 제공하는 패키지가 일반 의존성으로 가진다. 피어 의존성이 아니어서 kit의 패치 릴리스가 애플리케이션의 여러 패키지 사이에서 하나로 합쳐진다(2026-11-09 저장소 README 0.1.3 기준).
+
+| 진입점 | 담는 것 |
+|---|---|
+| `@nestjs/store-kit` | 방언 공통 executor 타입(`SqlExecutor`, `SqlTransaction`, 격리 수준 등)과 transaction이 아닌 객체를 거르는 판정 |
+| `@nestjs/store-kit/postgres` | node-postgres, Drizzle, TypeORM, Prisma, Kysely용 executor(`fromPg`, `fromDrizzle`, `fromTypeOrm`, `fromPrisma`, `fromKysely`), 버전 붙은 migration과 readiness를 담는 `StoreSchema` |
+| `@nestjs/store-kit/mysql` | 같은 구성의 MySQL 8.4 LTS, 9.x용. MariaDB는 저장소가 선택할 때만 허용 |
+| `@nestjs/store-kit/testing` | 다른 클라이언트용 executor가 계약을 지키는지 보는 `sqlExecutorContract()` |
+
+`SqlTransaction`은 클라이언트 고유의 transaction 객체(Drizzle의 `tx`, TypeORM의 `EntityManager`, Prisma transaction client 등)를 그대로 들고 있어, 업무 변경과 저장소 기록이 애플리케이션이 이미 연 transaction 하나에 들어간다. MariaDB에서 MySQL 저장소를 돌릴 때는 키 컬럼 정렬(`utf8mb4_0900_bin`)의 지원 버전, `innodb_snapshot_isolation` 기본값이 REPEATABLE READ의 잠금 읽기에 주는 영향, JSON 중첩 깊이 한도(MariaDB 32, MySQL 100)를 README가 따로 경고한다.
+
 ## Migration과 배포
 
 PostgreSQL 기본 schema는 nest_workflows이며 MySQL은 database 안의 table prefix다. 개발/test startup migrate는 기본 true, production은 false다. deploy 전에 `nest-workflows migrate` 또는 version bookkeeping을 포함한 migrationSql을 적용한다. status는 schema가 뒤처지면 exit 1이다. down migration은 없고 additive migration으로 이전 app과 rolling deploy 호환을 유지한다.
@@ -52,6 +65,8 @@ claim은 한 instance를 한 owner에만 lease하고 write는 유효한 lease ow
 `createInTransaction`/`signalInTransaction`은 선택적 contract지만 구현하면 받은 tx를 그대로 사용하고 root handle을 거부한다. `workflowStoreContract(factory, { concurrent: true, transaction })`는 claims, limits, signals/suspensions, child finish, cancel/terminate, retry, purge와 schedule 경쟁을 검증한다. 단일 connection의 PGlite 통과는 동시 DB transaction 경쟁의 증거가 아니며 실제 server/pool 검증을 추가한다.
 
 ## 출처
+
+- [nestjs/store-kit README — GitHub](https://github.com/nestjs/store-kit) — 2026-11-09 README와 npm 0.1.3 대조. MySQL 저장소는 npm `@nestjs/workflows` 0.0.5의 `dist/mysql`이 `@nestjs/store-kit/mysql`을 쓰는 것으로 확인. 저장소 생성 2026-10-01
 
 - [NestJS Documentation, Durable workflows](https://docs.nestjs.com/reliability/workflows)
 

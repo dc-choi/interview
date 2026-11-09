@@ -73,6 +73,17 @@ HTTP 위에서 **단일 TCP 연결을 유지하며 양방향 실시간 통신**�
 
 개발 터널링으로 확장한 사례가 하이브리드 앱의 웹뷰를 배포 없이 로컬 개발 서버로 잇는 구조다(우아한형제들 ITDA, 2026). 로컬 클라이언트가 프록시에 아웃바운드 WebSocket을 먼저 열어 유지하고, CDN 엣지 함수는 요청이 터널 대상인지 **판별만** 해서 프록시로 redirect한다 — 엣지에서 origin을 바꾸는 rewrite는 보안 요구와 결합하기 어려웠고, 앱 계층에서 라우팅하면 지원 대상이 늘 때마다 앱 변경이 필요하고 웹 라우팅 책임이 앱에 쌓인다. redirect는 도메인이 바뀌므로 쿠키, 세션과 브라우저 보안 정책 검토가 전제다. 한 WebSocket 위에 HTML, JS, CSS 등 여러 리소스 요청을 실으려면 **요청마다 고유 ID를 붙여 응답을 원래 요청과 매칭**한다(멀티플렉싱). 라우팅 규칙이 없거나 터널이 끊기면 원래 환경으로 폴백해 터널을 쓰지 않는 요청에 영향을 주지 않고, 오래 보관할 라우팅 규칙은 DB에, 살아 있는 연결은 프록시가 직접 관리한다.
 
+## 화면 스트리밍: WebSocket과 WebCodecs
+
+서버나 샌드박스의 데스크톱을 브라우저에서 보고 조작하려면 화면 캡처, 영상 부호화, 전송, 브라우저 복호화와 입력 역전송이 필요하다. 한 구성은 서버가 화면을 H.264로 부호화해 WebSocket 바이너리 메시지로 보내고, 브라우저가 WebCodecs의 `VideoDecoder`로 풀어 그리며, 키보드와 마우스 입력을 같은 연결로 돌려보내는 방식이다.
+
+- **전송 선택:** WebSocket은 HTTP로 시작하므로 프록시와 터널을 지나기 쉽고 TURN 서버나 UDP 포트가 필요 없다. 대신 TCP 위라 잃은 패킷 하나가 재전송될 때까지 뒤의 프레임도 함께 늦는다. 미디어 전용 경로인 WebRTC와의 비교는 [[Realtime-Communication-Comparison|실시간 통신 기술 비교]]를 따른다.
+- **보안 컨텍스트:** WebCodecs의 `VideoDecoder`는 WebIDL에 `SecureContext`로 선언돼 HTTPS 페이지나 localhost에서만 노출된다(2026-11-08 W3C Working Draft 대조). 원격에서 보려면 TLS가 필요하다.
+- **권한 경계:** 화면 조작 경로는 그 데스크톱에서 명령을 실행하는 권한과 같다. 비밀번호 같은 인증을 기본으로 두고, 평문 HTTP 서버는 TLS 프록시 뒤에 두며 localhost 밖으로 직접 노출하지 않는다. 허용한 Host 이름에만 응답해 DNS rebinding을 막고, 관찰만 필요한 사용자에게는 읽기 전용 모드를 준다. 다른 웹앱에 iframe으로 넣을 때는 접속을 허용할 origin을 지정한다.
+- **에이전트용 기능:** 컴퓨터를 조작하는 에이전트는 화면을 보는 것 외에 스크린샷, 녹화, 화면이 멈추거나 바뀔 때까지 기다리는 호출이 필요하다. 고정 시간 대기 대신 화면 변화를 기다리면 다음 행동의 시점을 맞추기 쉽다.
+
+**사례: voxl.** 2026-11-09 저장소 README 대조 기준이다. Rust로 만든 데스크톱 스트리밍 도구로 Linux X11(Xvfb 포함), macOS와 Windows 10 이상을 지원하고 Wayland는 아직 지원하지 않는다. x264로 CPU 부호화한 H.264를 WebSocket 하나로 보내고 브라우저가 WebCodecs로 푼다. README는 GPU 없는 16 vCPU VM과 2560x1600 Xvfb 데스크톱에서 평균 60 FPS, 지연 중앙값 12~99ms를, noVNC는 평균 8 FPS 미만을 보고한다. 네트워크 조건을 흉내 냈고 voxl 수치는 시험별 최고 실행이라 제작자 측정으로 읽는다. 코드는 MIT지만 GPL-2.0인 x264와 연결되므로 배포 바이너리는 GPL 조건을 따른다.
+
 ## 면접 체크포인트
 
 - 핸드셰이크에서 HTTP → WebSocket으로 전환되는 상태 코드(**101**)와 필수 헤더
@@ -88,8 +99,11 @@ HTTP 위에서 **단일 TCP 연결을 유지하며 양방향 실시간 통신**�
 - [Tecoble — WebSocket이란](https://tecoble.techcourse.co.kr/post/2021-08-14-web-socket/)
 - [GA가 AI와 함께 만든 오피스 좌석 배치도 — 아임웹 기술 블로그](https://tech.imweb.me/posts/ga-built-office-seatmap/)
 - [배포 없이 앱과 로컬 웹을 잇다 — 우아한형제들 기술블로그](https://techblog.woowahan.com/26729/)
+- [voxl — Tembo](https://github.com/tembo/voxl) — 2026-11-09 README의 전송 구조, 보안 옵션, 측정 조건과 라이선스 대조
+- [W3C, WebCodecs](https://www.w3.org/TR/webcodecs/) — 2026-11-08 Working Draft. `VideoDecoder`의 `SecureContext` 선언 확인
 
 ## 관련 문서
+- [[Realtime-Communication-Comparison|실시간 통신 기술 비교 (WebRTC 포함)]]
 - [[STOMP-Protocol|STOMP 서브 프로토콜]]
 - [[Realtime-Chat-Architecture|실시간 채팅 아키텍처]]
 - [[HTTP-Status-Code|HTTP 상태 응답 코드]]

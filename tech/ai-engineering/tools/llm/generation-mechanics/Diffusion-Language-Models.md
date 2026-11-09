@@ -78,6 +78,7 @@ aliases: ["Diffusion Language Models", "확산 언어 모델", "dLLM", "Masked D
 
 ## 관련 문서
 
+- [[Image-Diffusion-Latent-and-Pixel-Space|이미지 확산 모델의 잠재 공간과 픽셀 공간]]
 - [[LLM-Generation-Mechanics-Decoding|추론과 디코딩]] — 자기회귀 생성, 샘플링과 KV 캐시
 - [[Linear-Attention|선형 어텐션]] — 어텐션 비용을 줄이는 다른 방향
 - [[LLM-Inference-Bottlenecks|LLM 추론 병목]] — 프리필과 디코드, 배칭과 추측 디코딩

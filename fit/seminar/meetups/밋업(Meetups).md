@@ -11,6 +11,7 @@ aliases: ["Meetups"]
 
 ## 목차
 
+- [x] [[IT-Chosun-Monthly-AX-2026-11-03|IT조선 월간AX 세미나 (2026-11-03)]] — Actionable Ontology, 경량 온톨로지와 AI 거버넌스, 에이전트 방어와 추적 기록
 - [x] [[Primer-Demoday-28-2026-10-07|프라이머 28기 데모데이 (2026-10-07)]] — 9개 팀 발표와 사업 검증 관점
 - [x] [[ts-backend-meetup/TS-Backend-Meetup|TS 백엔드 밋업 (1회, 2회, 3회, 10회)]]
 - [ ] [[opensearch-seoul-2026-08-11/OpenSearch-Seoul-Meetup-2026-08-11|OpenSearch Project Seoul Meetup (2026-08-11, 질문 준비)]]

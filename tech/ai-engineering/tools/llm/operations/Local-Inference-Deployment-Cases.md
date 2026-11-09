@@ -144,6 +144,7 @@ Mirai가 공개한 벤치마크(2026-10-18 측정, Apple M5 Max 128GB, Uzu 0.6.9
 
 ## 관련 문서
 
+- [[Linux-Laptop-GPU-Power-Management|Linux 노트북의 GPU 전력 관리]] — 같은 노트북에서 OS에 따라 로컬 추론 속도가 달라진 사례
 - [[LLM-Inference-Bottlenecks|추론 병목과 메모리 예산]]
 - [[LLM-Model-Tiers|모델 선택과 라우팅]]
 - [[Agent-Runtime-Deployment|에이전트 런타임과 배포]]

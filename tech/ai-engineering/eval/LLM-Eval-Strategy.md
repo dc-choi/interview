@@ -125,8 +125,11 @@ Claude Sonnet 4.5의 2025년 안전성 평가에서는 특히 인위적이거나
 | 정확성 | 수치, 사실이 맞는가 | CSAT와 충돌 가능 |
 | 만족도(CSAT) | 사용자가 만족했는가 | 정확도와 충돌 가능 |
 | 데이터 품질 | 지식 베이스에 노이즈가 없는가 | Precision 우선, 인간 게이트 |
+| 에이전트 과업 완료 | 모델, 도구, 컨텍스트, 실행 루프와 환경을 합친 시스템이 과업을 끝냈는가 | 완료 여부와 비용, 소요 시간을 함께 기록. 모델 답변의 정확도로 대신하지 않음 |
 
 배포 전 자동 검증의 실행 축(정확성, 행동 경로, 안정성, 형식)은 [[Production-Agent-Architecture-Eval-and-Operations#Eval 시스템과 운영 루프]] 참고. 본 문서는 그보다 상위의 평가 철학(무엇을 성공으로 볼 것인가)을 다룬다.
+
+InfoQ의 2026 AI, ML, 데이터 엔지니어링 동향 보고서(2026-10-30)에서도 편집진의 한 사람은 에이전트 평가가 모델만이 아니라 도구, 컨텍스트, 에이전트 루프와 환경을 함께 봐야 하고 지표가 과업 완료, 비용과 소요 시간 쪽으로 옮겨 간다고 말했다. 보고서는 조직의 관심이 에이전트를 배우고 만드는 법에서 프로덕션에 배포하고 운영하며 확장하는 법으로 옮겨 갔다고도 진단한다. 업계 편집진의 관점이며 측정 결과는 아니다. 모델과 하네스를 함께 평가한다는 원칙은 아래 출처의 Anthropic 글과 같은 방향이다.
 
 ## 면접 포인트
 
@@ -156,6 +159,7 @@ Q. 데이터 품질은 어떻게 지키나?
 - [Demystifying evals for AI agents — Anthropic](https://www.anthropic.com/engineering/demystifying-evals-for-ai-agents) — 반복 trial, 모델과 하네스의 공동 평가, 양방향 과제와 초기 환경 격리. 기억과 라우팅 비교 절차는 이를 적용한 설계 제안이다. 2026-10-09 확인, 2026-10-22 라우팅 평가에 사용한 원칙 재대조. 2026-11-03 반복 trial, 최종 상태와 환경 격리 원칙을 부분 대조해 웹 생성 비교에 적용했다.
 - [How Amazon uses Amazon Nova models to automate operational readiness testing for new fulfillment centers — AWS](https://aws.amazon.com/blogs/machine-learning/how-amazon-uses-amazon-nova-models-to-automate-operational-readiness-testing-for-new-fulfillment-centers/) — 2026-02-10 공개 사례의 ORT 절차와 평가 결과. 2026-10-09 확인.
 - [Anthropic’s Transparency Hub — Anthropic](https://www.anthropic.com/transparency) — Claude Sonnet 4.5의 Model Alignment and Evaluation Awareness 절
+- [InfoQ AI, ML and Data Engineering Trends Report - 2026 — InfoQ, Srini Penchikala 외](https://www.infoq.com/articles/ai-ml-data-engineering-trends-2026/) — 2026-10-30, 2026-11-09 에이전트 평가 범위와 지표, 운영 단계로의 관심 이동 대조
 - [OpenAI, Evaluating Large Language Models Trained on Code](https://arxiv.org/abs/2107.03374)
 - [AI ENGINEER NIGHT Q&A 총정리 — 채널톡 Tech](https://tech.channel.io/ko/articles/4052f1f4)
 - [LLM 에이전트 실무 사례 (물어보세, 스마트 마이 노트, Skill Universe) — 개발 컨퍼런스 (YouTube)](https://www.youtube.com/watch?v=wEVPnYOuAf8&list=PLgXGHBqgT2TtGi82mCZWuhMu-nQy301ew)

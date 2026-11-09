@@ -3,7 +3,7 @@ tags: [ai, image-generation, html, design, verification]
 status: done
 verified_at: 2026-11-09
 category: "AI엔지니어링(AIEngineering)"
-aliases: ["Generative Artifact Contracts", "AesCode", "Krea 3", "Open Intelligent UI", "생성형 UI", "OpenUI", "A2UI", "json-render"]
+aliases: ["Generative Artifact Contracts", "AesCode", "Krea 3", "Open Intelligent UI", "생성형 UI", "OpenUI", "A2UI", "json-render", "GPT Image 2.6", "Images 2.6"]
 ---
 
 # 생성형 시각 산출물의 내용, 디자인과 편집 계약
@@ -25,6 +25,17 @@ AesCode는 참고 이미지에서 미적 단서를 얻어 편집 가능한 HTML/
 **참조 이미지 수는 공식 발표 기준 최대 6개**다. 제공된 2026-10-16 GeekNews 발췌의 최대 8개와 달라 공식 표기를 우선했다. 발췌의 변경 영역 탐지 후 렌더링, 별도 편집 학습과 색상 코드 지정 설명은 내부 구현 전체를 확인한 내용이 아니다. 이 세부는 기술 문서나 후속 발표로 대조할 항목이다.
 
 모델의 보존 주장을 실제 픽셀 보존과 구분한다. 배경만 바꾸는 작업도 로고, 작은 글씨, 부품과 피사체 경계를 원본과 비교한다. 반복 편집에서는 바로 앞 결과만 기준으로 삼지 않고 최초 승인본과 함께 대조한다.
+
+## 위치 표시 편집과 SVG, GIF 출력은 산출물 계약이 다르다
+
+2026-11-09 OpenAI API 변경 이력, 이미지 생성 가이드와 API 레퍼런스 대조 기준, 2026-11-04 나온 GPT-Image-2.6 Sunburst(세밀한 작업)와 Flare(빠른 반복)는 Image API에서 complexity 설정, 위치 표시(markup) 편집, SVG 출력과 GIF 출력을 지원한다. 같은 날 시스템 카드는 GIF 생성과 사진 위 표시 편집을 ChatGPT와 API에, SVG 출력은 API에 제공한다고 적는다. 이미지 출력 단가는 출력 토큰 100만 개당 30달러다.
+
+- **위치 표시 편집**: `POST /v1/images/edits`에 첫 입력 이미지와 같은 픽셀 크기의 투명 PNG 오버레이를 `markup`으로 보내고, 바꿀 내용은 프롬프트에 적는다. 지원하는 GPT Image 2.5와 2.6 모델에서 쓰고 추가 요금은 없으며, Responses API의 영역 편집은 마스크를 쓴다. 가이드 예시도 표시한 꽃병만 바꾸고 나머지는 유지하며 표시선은 지우라고 프롬프트에 직접 쓴다. 표시는 수정 위치의 안내일 뿐 표시 밖 픽셀의 보존 보장이 아니므로 앞 절처럼 원본과 비교한다.
+- **complexity**: 렌더링 전에 계획하는 양을 `low`, `medium`, `high`로 정하고 생략하면 `high`다. 배경이나 간판 하나를 바꾸는 편집은 낮은 값이, 글자가 많거나 객체 관계가 복잡한 구성은 높은 값이 맞을 수 있지만, 높이면 지연이 늘고 원치 않는 변경이 생길 수 있다고 가이드가 함께 적는다. 렌더링 품질은 별도의 `quality`가 정하고 complexity에는 따로 요금이 붙지 않는다.
+- **SVG 출력**: generations 엔드포인트에서 `output_format: "svg"`, `n=1`로만 요청하고 스트리밍, 부분 이미지와 압축 설정을 쓸 수 없다. API가 참조 래스터 이미지를 먼저 만들고 별도의 작성 모델이 이를 SVG로 옮기므로, `quality`와 complexity는 참조 이미지에 적용되고 비용도 두 모델의 토큰을 함께 낸다(응답의 `svg_usage`에 작성 모델 사용량이 따로 온다). 결과는 스크립트, 외부 자원과 내장 래스터 이미지가 없는 정적 벡터 문서이며, edits 엔드포인트는 SVG를 출력하지도 입력으로 받지도 않는다.
+- **GIF 출력**: generations와 edits에서 `output_format: "gif"`로 요청한다. `frame_count`는 2~16(기본 9), `frame_duration_ms`는 20ms 이상(기본 200)이고 스트리밍, 마스크와 압축 설정을 쓸 수 없다. API 레퍼런스는 선택한 모델의 GIF 프리뷰 접근이 필요하다고 적고, 시스템 카드는 움직임에 담긴 정책 위반을 탐지하기 어렵다고 밝힌다.
+
+SVG는 벡터 편집기에서 경로, 색과 글자를 실제로 고칠 수 있는지와 참조 이미지와의 형태 차이를 보고, GIF는 반복 연결, 프레임 사이 피사체 일관성과 파일 크기를 본다(검수 제안). 이미지 생성과 편집은 실행하지 않았다.
 
 ## 기계 설명도는 그림과 동작 모델을 함께 검수한다
 
@@ -83,12 +94,18 @@ Space 안에서 요소를 편집할 수 있다는 사실을 내보낸 모든 요
 | 반복 캠페인 변형 | 기준 이미지와 시리즈의 피사체 일관성 |
 | 인쇄용 결과 | 실제 크기, 해상도, 재단과 색상 규격 |
 | 생성형 UI 응답 | 렌더러 선택, 계산과 표의 값, 샌드박스와 브리지 경계, 예시 데이터 표시, 선언형 출력의 검증 실패로 버려진 부분 |
+| 벡터 로고와 아이콘(SVG) | 편집기에서의 경로, 색, 글자 수정 가능 여부와 참조 이미지와의 형태 차이 |
+| 애니메이션 GIF | 반복 연결, 프레임 사이 피사체 일관성, 프레임 수와 재생 시간, 파일 크기 |
 
 이번 확인은 공식 자료 대조다. 이미지 생성과 성능 측정, HTML 렌더링 품질 시험은 수행하지 않았다.
 
 ## 출처
 
 - [OpenAI, Get started with ChatGPT Space](https://learn.chatgpt.com/docs/space/getting-started) — 2026-11-03 Slides의 요소 편집, 웹 내보내기와 결과 검토 범위만 대조. 다른 제품 절의 기존 확인일은 유지한다.
+- [OpenAI API, Image generation](https://developers.openai.com/api/docs/guides/image-generation) — 2026-11-09 GPT Image 2.6의 complexity, markup 편집, SVG와 GIF 출력, 비용 대조
+- [OpenAI API, Create image](https://developers.openai.com/api/reference/resources/images/methods/generate) — 2026-11-09 GIF 프레임 범위와 프리뷰 접근, SVG 작성 모델과 `svg_usage` 대조
+- [OpenAI API, Changelog](https://developers.openai.com/api/docs/changelog) — 2026-11-04 GPT-Image-2.6 Sunburst와 Flare 출시, GPT Image 2.5와 2.6의 markup 편집 추가
+- [ChatGPT Images 2.6 System Card — OpenAI Deployment Safety Hub](https://deploymentsafety.openai.com/chatgpt-images-2-6) — 2026-11-04, 제공 범위(ChatGPT와 API), 출처 표시와 GIF 안전 평가의 한계
 - [AesCode: Aesthetic Code Generation with Decoupled Cross-Modal Rewards — Microsoft](https://github.com/microsoft/AesCode)
 - [Introducing Krea 3 — Krea](https://www.krea.ai/blog/introducing-krea-3)
 - [Anatomy — GitHub, wheresryan22](https://github.com/wheresryan22/anatomy) — 2026-10-22 출력 형식, 검수 도구와 3D beta 범위 대조

@@ -57,12 +57,15 @@ AI 연구 자동화 평가는 코드 작성 능력과 연구 기여를 구분한
 - 에이전트가 독립적으로 발견했다는 주장은 사람이 맡은 목표 설정, 탐색 지시와 공개 결정의 범위를 빼고 판단한다.
 - 적대적 검토의 등급과 공개된 정정을 주장의 상한으로 읽고, 그보다 강한 표현으로 결과를 옮기지 않는다.
 
+연구자 개인의 사용 기록도 같은 검토 비용을 보여 준다. 한 연구 엔지니어(2026-10-31 개인 글)는 문헌 검색에서는 LLM이 일반 학술 검색이 놓친 세부 자료까지 찾아 첫 선택이 됐지만, 모델이 어떤 전제든 선의로 뒷받침할 수 있다는 점 때문에 신뢰와 근거는 여전히 사람 전문가와 책에 기댄다고 적었다. 새로운 연구에서는 모델이 더 나쁜 설계 쪽으로 이끌다가 더 나은 구조를 직접 물은 뒤에야 대안을 보였고, 에이전트의 연구 산출물을 검토하는 데 스스로 답을 만드는 것보다 품이 더 드는 경우가 있었다고 적었다. 자기 보고이지만 위 점검 기준을 산출물 검토 비용과 함께 설계해야 하는 이유로 읽는다.
+
 ## 출처
 
 - [Can AI automate AI R&D yet? — Epoch AI](https://epoch.ai/publications/innovationeval)
 - 사용자 제공 GeekNews 발췌: 2026-10-12 「최신 AI 모델들, 인간의 알고리듬 혁신에 필적하는 성과를 내는 데 어려움 겪어」.
 - [Two Room-Temperature Antiferromagnetic Semiconductor Candidates — Vals AI](https://www.vals.ai/blogs/room-temperature-magnetic-semiconductors)
 - [Two magnets that add up to zero: a computational ledger — GitHub](https://github.com/spicylemonade/compensated-magnet-ledger)
+- [How I use AI (Oct 2026) — Ben Stolovitz](https://ben.stolovitz.com/posts/how-use-ai-oct-2026/) — 2026-10-31 개인 글, 2026-11-09 문헌 검색과 새로운 연구에서의 사용 경험 대조. 자기 보고
 
 ## 관련 문서
 

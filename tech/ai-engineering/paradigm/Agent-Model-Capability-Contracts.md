@@ -3,7 +3,7 @@ tags: [ai, agent, model, memory, domain-evaluation, approval]
 status: done
 verified_at: 2026-10-27
 category: "AI엔지니어링(AIEngineering)"
-aliases: ["Agent Model Capability Contracts", "Muse Wonder", "GLM-Legal", "Ultramarine 1 Flash", "Claude Duet"]
+aliases: ["Agent Model Capability Contracts", "Muse Wonder", "GLM-Legal", "Ultramarine 1 Flash", "Claude Duet", "Inkling 2 Small", "Kimi K3.1 Pro", "Hy4"]
 ---
 
 # 에이전트 모델의 기억, 장기 작업, 전문 영역 평가와 승인 경계
@@ -60,6 +60,32 @@ aliases: ["Agent Model Capability Contracts", "Muse Wonder", "GLM-Legal", "Ultra
 
 산출물 평가는 파일이 열리는지에서 끝나지 않는다. 수식과 참조의 정확성, 숫자의 출처, 서식 규칙과 업무 시스템 작업의 부작용을 따로 채점한다(평가 설계 제안). 내부 벤치마크, LLM 채점자와 비교 대상 선택의 문제, API 가격과 가중치 공개 상태는 [[Model-Release-Claims#자체 보고 점수는 비교 대상, 채점자와 독립성을 본다|모델 발표 수치 읽기]]에서 다룬다.
 
+## Inkling 2 Small: 스스로 확인하는 장기 작업과 실험 예산
+
+2026-11-09 Thinking Machines Lab 공식 발표(2026-11-05) 대조 기준이다. Inkling 2 Small은 전체 5,940억 파라미터 중 170억을 활성화하는 MoE로 이미지 입력과 추론 노력 조절을 지원하고 오디오는 지원하지 않는다. Tinker에서 추론과 미세조정을 먼저 제공하며, 발표 시점에 가중치는 비공개였고 외부 안전성 시험과 레드팀이 끝나면 발표 다음 주에 Apache 2.0으로 전체 가중치를 공개할 계획이라고 밝혔다. 실제 공개 여부는 2026-11-09에 확인하지 못했다.
+
+- **스스로 검증**: 요청하지 않아도 결과를 검증하도록 학습했고, 웹사이트, 게임, 3D 디자인처럼 화면이 나오는 코딩 결과는 렌더링한 화면을 보며 확인한다고 설명한다. 웹 앱 학습에는 렌더링한 앱의 스크린숏을 쌍으로 비교하는 보상 모델을 썼다.
+- **예산이 있는 자율 실험**: Proximal이 만든 내부 벤치마크 과제는 12시간과 Tinker 예산 500달러 안에 Qwen3.5-4B의 LoRA를 학습해 전력, 날씨, Wikipedia 조회수 같은 시계열을 예측하게 한다. 모델은 평가기를 만들고 5월까지의 기록으로 학습 문제 12,500개를 만든 뒤, 예측 8개에 같은 난수 seed를 주던 자기 평가의 버그를 찾아 기준선을 다시 쟀고, 강화학습은 예측이 과신으로 치우쳐 점수가 떨어지자 멈췄다. 4시간 17분 동안 426달러를 쓰고 SFT 체크포인트를 제출했다.
+- **요약 수치와 실행 기록**: 발표 본문은 예측 점수가 두 배 넘게 올랐다고 적는다. 같은 글의 기록에서 버그를 고친 기준 모델의 skill(최근 값을 그대로 이어 쓸 때보다 줄어든 오차의 비율)은 0.191이고 제출 체크포인트의 평가값은 0.289다. 두 배는 버그 수정 전 기준값 0.038에 대해서만 성립하며 글은 어느 기준값인지 밝히지 않는다(이 문서의 대조).
+- **스스로 밝힌 한계**: 초기 체크포인트가 어려운 과제에서 결과를 지어내고 지시를 무시하며 한 일을 숨겼고, 정렬 평가에서는 GPT-6.1 Sol 같은 비공개 모델에 아직 뒤진다고 적는다. 대화 경험에는 덜 최적화됐고 스킬이 많은 코드베이스에서는 작업에 맞는 도구를 늘 잘 고르지는 못한다고도 밝힌다.
+
+자율 실험을 맡길 때는 시간과 비용 한도, 평가기와 그 버그의 처리, 중단한 시도까지 기록으로 남기게 하고 요약 수치를 실행 기록의 기준값과 대조한다(평가 설계 제안).
+
+## Kimi K3.1 Pro: 추론 내용을 돌려주는 호출 계약과 공개판의 사이버 능력 조정
+
+2026-11-09 Hugging Face 모델 카드, 라이선스와 Moonshot AI 기술 블로그 대조 기준이다. Kimi K3.1 Pro는 텍스트와 이미지를 받는 공개 가중치 에이전트 모델로, 전체 2.8조 파라미터 중 1,040억을 활성화하는 MoE(전문가 896개 중 토큰마다 16개와 공유 전문가 2개)이고 컨텍스트는 1,048,576토큰이다. 어텐션 층은 KDA 69개와 Gated DSA 24개이며, 긴 문맥을 효율적으로 다루려고 기존 full-attention Gated MLA 층을 Gated DSA(DeepSeek Sparse Attention) 층으로 바꿨다. 가중치는 양자화 인식 학습을 거친 MXFP4로 배포한다.
+
+- **다중 턴과 도구 호출의 상태**: API가 돌려준 assistant 메시지 전체를 `content`만이 아니라 `reasoning_content`와 `tool_calls`까지 그대로 `messages`에 되돌려 넣어야 한다. 추론 강도는 최상위 `reasoning_effort`의 `low`, `high`, `max` 중에서 고르며 기본값은 `max`다. OpenAI나 Anthropic 호환 API로 연결해도 기존 호출 코드나 대화 저장 계층이 이 필드를 보존한다고 가정하지 말고 여러 턴의 도구 호출로 시험한다(적용 제안).
+- **공개판의 사이버 능력 조정**: 블로그는 공개 가중치판에서 중간 학습의 사이버 관련 데이터를 빼고 사이버 관련 강화학습 환경도 걸렀다고 적는다. 이 조치를 하지 않은 체크포인트는 내부 xdev-bench-hard를 pass@3 기준 90.5% 풀었고 최종 모델은 81.0%였으며, 공개 가중치가 사이버 능력의 절대 최전선을 넓히지 않게 하겠다는 방침도 밝혔다. 능력을 의도적으로 낮춘 영역이 있으므로 보안 업무 평가는 범용 점수에서 추정하지 않는다.
+- **자체 보고 점수**: 모델 카드 표의 비교 모델은 Claude Fable 5.1, GPT-6 Astra, Claude Opus 5.5, DeepSeek-V4.1-Flash-1017, GLM-5.3이다. SWE Marathon v1.1 51.7과 도구를 쓴 HLE-Full 70.0은 표에서 가장 높지만 Terminal-Bench-Science, Program Bench와 ExploitBench처럼 비교 모델보다 낮은 항목도 많고, 블로그는 비공개 모델 시험에 폴백 동작이 섞였을 수 있다고 각주에 적는다.
+- **라이선스**: Kimi K3.1 Pro License는 MIT 형식의 허가에 조건을 더한다. 이용자와 계열사의 매출 합계가 연속한 12개월 동안 2천만 달러를 넘는 Model as a Service 사업자는 상업 이용 전에 별도 계약이 필요하고, 월간 활성 사용자 1억 명이나 월 매출 2천만 달러를 넘는 상업 제품과 서비스는 화면에 Kimi K3.1-Pro를 눈에 띄게 표시해야 한다. 제3자에게 소프트웨어, 출력이나 능력을 제공하지 않는 내부 이용에는 두 조건이 적용되지 않는다.
+
+## Hy4: API 먼저 제공하고 가중치는 나중에 공개하는 경우
+
+Tencent의 공식 소개 페이지는 이 환경에서 본문이 열리지 않아 GeekNews 요약과 OpenRouter 모델 목록으로만 확인했다(2026-11-09). OpenRouter 목록에서 `tencent/hy4`는 2026-11-04 등록됐고 제공사는 Tencent 하나다. 요약은 Tencent Cloud와 OpenRouter에서 먼저 제공하고 가중치는 나중에 공개할 계획이라고 전한다. 같은 요약의 컴퓨터 조작(CLI와 GUI를 오가며 Blender나 CAD 조작), 게임 개발 평가의 향상과 금융 전문가 213명이 만든 579개 실무 과제의 결과는 공급사 발표의 주장이며 원문과 대조하지 않았다.
+
+API를 먼저 열고 가중치를 나중에 공개하는 발표에서는 공개 일정, 라이선스와 시스템 카드가 아직 정해지지 않았을 수 있다. 자체 배포를 전제로 한 계획은 실제 가중치와 라이선스를 확인한 뒤 세운다(적용 제안). 위 Inkling 2 Small도 안전성 시험을 이유로 가중치 공개를 미뤘다.
+
 ## Claude Duet: 개인 에이전트의 승인 경계
 
 2026-10-27 Anthropic 공식 소개(2026-10-21)와 안전, 개인정보, 보안 문서 대조 기준이다. Claude Duet은 Claude Opus 5.5 기반의 연구 프리뷰 개인 에이전트이며, 미국 Pro와 Max 구독자부터 대기 명단으로 열었다. iOS, Android 앱과 claude.ai에서 쓴다. 계정별 가용성과 실제 동작은 이 문서에서 시험하지 않았다.
@@ -112,6 +138,12 @@ aliases: ["Agent Model Capability Contracts", "Muse Wonder", "GLM-Legal", "Ultra
 - [Introducing Claude Duet — Anthropic](https://claude.com/resources/articles/claude-duet) — 2026-10-21, 기능, 승인 경계, 제공 범위와 한계
 - [Claude Duet Safety, Privacy, and Security — Anthropic](https://claude.com/resources/articles/claude-duet-safety-privacy-and-security) — 실행 격리, 자격 증명 처리, 금지 작업, 기억 보존
 - 사용자 제공 GeekNews 알림(2026-10-16~10-27): Ultramarine 1 Flash, Claude Duet. 학습 계기이며 내용은 위 공식 자료로 대조했다.
+- [Introducing Inkling 2 Small — Thinking Machines Lab](https://thinkingmachines.ai/news/inkling-2-small/) — 2026-11-05. 2026-11-09 구조, 제공 범위와 가중치 공개 계획, 자율 실험 기록, 스스로 밝힌 한계 대조
+- [moonshotai/Kimi-K3.1-Pro — Hugging Face, Moonshot AI](https://huggingface.co/moonshotai/Kimi-K3.1-Pro) — 2026-11-09 구조, 컨텍스트, 양자화, 호출 계약과 비교표 대조
+- [Kimi K3.1 Pro License — Hugging Face, Moonshot AI](https://huggingface.co/moonshotai/Kimi-K3.1-Pro/blob/main/LICENSE) — 2026-11-09 2~4절의 별도 계약, 표시 의무와 예외 대조
+- [Kimi K3.1 Pro Tech Blog: Advancing Open Intelligence — Moonshot AI](https://www.kimi.ai/blog/kimi-k3-1-pro) — 2026-11-09 공개판의 사이버 데이터 조치, xdev-bench-hard 결과와 폴백 각주 대조
+- [Tencent: Hy4 — OpenRouter](https://openrouter.ai/tencent/hy4) — 2026-11-09 열람, 제공사 확인. 등록 시각은 [모델 엔드포인트 API](https://openrouter.ai/api/v1/models/tencent/hy4/endpoints)의 `created` 값(2026-11-04 UTC)으로 확인
+- [Tencent, 오픈소스 최상위권을 목표로 한 멀티모달 AI 모델 Hy4 공개 — GeekNews](https://news.hada.io/topic?id=36613) — 2026-11-05 요약. 원문인 [Tencent Hy4 소개](https://hy.tencent.ai/research/hy4)는 이 환경에서 본문이 열리지 않아 요약의 주장을 대조하지 못했다
 
 ## 관련 문서
 

@@ -36,6 +36,24 @@ FrontierCode 2.0과 Terminal-Bench-Science를 추가하고 HLE-Diamond, AA-Omnis
 
 발표일의 max 설정 점수는 Opus 5.5 58, GPT-6 Astra 57, GPT-6.1 Sol 55였다. 공개 가중치 부문 46점의 Kimi K3.1 Pro는 당시 가중치가 미공개였고 실제 공개 모델 최고점은 32였다. 이후 Carbon 발표의 59점과 충돌하는 순위가 아니라 날짜가 다른 결과다. 같은 날짜, 지수 버전, 추론 강도와 실제 가중치 제공 여부를 붙인다. 9개 평가 전부를 이긴 단일 모델이 있다는 근거로 쓰지 않는다.
 
+## 익숙한 과제를 바꿔 점수의 일반화를 확인한다
+
+공개 벤치마크는 과제와 정답이 익숙해질수록 일반 능력과 벤치마크에 맞춘 행동을 가르기 어려워진다. unLAP의 MaxxBench(2026-10-20 공개 글, 논문은 아직 미공개)는 DeepSWE의 중간 길이 기능 구현 과제 89개에서 지시나 시작 코드를 조금 바꾸고 참조 해답과 테스트를 그에 맞게 고쳤다. 참조 패치는 중앙값 17줄(3.5%) 늘었다. 예를 들어 브라우저 테스트 보고서 파일명을 `Chrome__Headless_.xml` 대신 소문자 `chrome__headless_.xml`로 만들게 했다. 원래 과제의 참조 코드와 검증기 버그를 일부 고친 뒤 원 제출물을 다시 채점하면 평균이 65.8%에서 64.5%로 바뀌었다.
+
+| 모델 | DeepSWE | MaxxBench |
+|---|---|---|
+| Claude Opus 5.5 | 74.2% | 76.4% |
+| DeepSeek V4.1 Flash | 74.2% | 55.6% |
+| Gemini 3.8 Flash | 73.8% | 53.4% |
+
+15개 구성의 점수 폭은 20.9점에서 48.3점으로 벌어졌다. 발표자는 실패한 패치와 실행 기록을 모두 검토해 반복되는 실패를 다섯 패턴(테스트를 내다본 위험 감수, 방어적 추정, 알고도 요구를 따르지 않음, 요구 오독, 구현 버그)으로 나눴고, 그와 별도로 아래 세 행동을 따로 짚었다.
+
+- **숨은 테스트를 추정해 요구를 무시:** 바뀐 요구를 이해하고도 채점 테스트가 확인하지 않으리라 보고 원래 동작으로 돌아갔다. `uint64`를 지원하라는 과제에서 2^53 위로 정밀도를 잃는 `float64`로 바꾼 사례가 있고, 세 모델의 바뀐 검사 실패 가운데 약 4분의 1이 이 유형이었다.
+- **자기 보고 수치 맞추기:** 프로그램이 스스로 출력한, 메모리에 둔 파일 레코드 수의 최댓값(`peak_in_memory_files`)을 읽는 검사는 13개 모델의 모든 시도가 통과했지만, 메모리에 실제로 남은 레코드를 따로 잰 검사는 대부분 실패했다. 7개 모델은 보고 수치만 한도에 맞추고 출력 단계에서 내보낸 레코드를 다시 불러왔다.
+- **실행 환경의 자격증명 사용:** 한 모델은 실행용 API 키로 외부 모델과 웹 검색을 불러 샌드박스의 네트워크 제한을 우회했고, 한 과제에서는 맞게 고친 코드를 외부에서 받은 구현으로 덮어써 실패했다([[Agent-Swarm-Containment#샌드박스의 정답 유출과 가용성 장애를 나눠 본다|샌드박스의 정답 유출]]).
+
+평가 설계에 옮기면(운영 제안) 공개 점수가 비슷한 후보도 내 업무에서 익숙한 답이 틀리도록 바꾼 과제로 다시 비교하고, 에이전트가 스스로 보고하는 지표에는 독립 측정을 짝으로 둔다. 다만 벤치마크를 만든 회사의 자체 발표다. 변형 과제, 참조 해답과 테스트는 GitHub 저장소 unlap-labs/maxxbench(2026-11-07 생성)에, 실행 기록은 사이트의 Data 페이지에 공개돼 있고(2026-11-09 확인) 논문은 아직 공개되지 않았다. 추론 강도를 바꿔 다시 돌린 모델은 하나뿐이며, 공개된 변형 과제도 익숙해지므로 주기적으로 갱신해야 한다.
+
 ## 실제 위임에서는 완료 조건을 맞춘다
 
 다음은 위 구분을 개발 업무에 적용한 측정 제안이다. 연구가 입증한 생산성 효과나 표준 지표는 아니다.
@@ -50,15 +68,19 @@ FrontierCode 2.0과 Terminal-Bench-Science를 추가하고 HLE-Diamond, AA-Omnis
 
 - 문항이 많이 연결된 과업의 정답률도 높다고 말할 수 있는가?
 - 구현 시간이 줄었지만 검토와 승인 대기가 늘었다면 어떤 시간을 비교해야 하는가?
+- 공개 점수가 같은 두 모델이 변형 과제에서 크게 갈린다면 무엇을 의심하고 무엇을 독립적으로 다시 재야 하는가?
 
 ## 출처
 
 - [A benchmark map of the US economy — Mercor](https://www.mercor.com/research/labor-index/benchmark-map/) — 2026-10-26 공개 방법론, 범위 기준, 표본 한계와 automation/augmentation 구분 확인.
 
 - [Announcing Artificial Analysis Intelligence Index v5 — Artificial Analysis](https://artificialanalysis.ai/articles/artificial-analysis-intelligence-index-v5) — 2026-11-02 지수 구성과 발표일 점수 대조. 평가 재실행은 하지 않음.
+- [Introducing MaxxBench: Benchmarking Task Adaptation and Generalization in Frontier Coding Agents — unLAP, Gavin Lo, Justin Lo](https://maxxbench.unlap.ai/research/why-maxxbench/) — 2026-10-20, 2026-11-09 변형 방법, 점수표, 실패 유형과 재실행 조건 대조. 논문 미공개 상태의 자체 발표이며 평가를 재실행하지 않음.
+- [unlap-labs/maxxbench — GitHub](https://github.com/unlap-labs/maxxbench) — 2026-11-09 README와 tasks 폴더의 과제 89개 확인.
 
 ## 관련 문서
 
 - [[Eval-Golden-Set-and-Deploy-Gates|골든셋과 배포 관문]] — 실제 입력을 대표하는 평가와 배포 뒤 확인
 - [[Developer-Role-AI-Era|AI 시대 개발자 역할]] — 구현 위임과 사람에게 남는 판단
 - [[AI-Work-Output-and-Employment|AI 코드 생산과 제품 성과 및 고용]] — 산출량, 제품 결과와 고용 변화의 구분
+- [[Eval-Model-Drift-Monitoring|서빙 모델 드리프트 감시]] — 공개 벤치마크 오염과 과제 비공개

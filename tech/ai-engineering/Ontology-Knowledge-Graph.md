@@ -1,9 +1,9 @@
 ---
 tags: [ai, ontology, knowledge-graph, data-model, entity-resolution, palantir, graph-database]
 status: done
-verified_at: 2026-10-12
+verified_at: 2026-11-09
 category: "AI엔지니어링(AIEngineering)"
-aliases: ["Ontology and Knowledge Graph", "온톨로지와 지식 그래프", "Palantir Foundry Ontology", "팔란티어 온톨로지"]
+aliases: ["Ontology and Knowledge Graph", "온톨로지와 지식 그래프", "Palantir Foundry Ontology", "팔란티어 온톨로지", "Actionable Ontology"]
 ---
 
 # 온톨로지와 지식 그래프
@@ -94,6 +94,25 @@ RETURN peer.riderId
 
 관계 종류를 줄이는 일과 필요한 경로를 남기는 일은 서로 당긴다. 너무 줄이면 업무 질문에 필요한 경로가 사라지고, 풀어 두면 같은 뜻의 관계가 증식한다. 이 균형은 구현보다 용어와 규칙을 합의하는 설계에서 정해지므로 도메인 담당자와 함께 정의하고 검토한다.
 
+## 정의를 한곳에 두고 행동까지 잇는다
+
+업무 AI가 여럿이면 같은 기준을 각자 프롬프트, 용어집, 검색 문서와 SQL에 따로 들고 있기 쉽다. 신입 직원이 첫날부터 일할 수 있는지 물으면 인사 AI는 입사 안내서 기준(계정과 장비)으로 가능하다고, 현업 AI는 보안 정책 기준(계정, 장비와 업무 시스템 승인)으로 승인 대기라고 답한다. 같은 대상에 다른 답이 나오는 원인은 데이터가 아니라 흩어진 정의다. 첫날 업무 가능의 조건을 온톨로지에 한 번 정의하고 모든 AI가 그 정의를 참조하게 한다.
+
+답은 관계를 따라 다음 행동까지 이어진다. 직원에서 맡은 업무, 그 업무가 쓰는 시스템, 시스템의 필요 조건과 근거 문서, 조건별 현재 상태, 미충족 조건의 승인 요청과 승인 담당자 순으로 따라가면 "입사 전 그 시스템 관리자에게 승인 확인"이라는 조치가 나온다. 출발점만 바꾸면 같은 그래프가 보안팀의 승인 대기자 목록과 관리자의 처리할 요청 목록에도 답한다. 판단에 다음 행동을 붙인 모습을 실행 가능한 온톨로지(Actionable Ontology)라 부르기도 하며, 행동을 온톨로지 정의에 넣은 제품 구현은 아래 Palantir 절의 action type이 예다.
+
+- **연결은 그래프, 상태는 원천:** 그래프는 대상과 관계를 잇고, 계정 상태나 승인 상태처럼 자주 바뀌는 값은 질의 시점에 원천 시스템에서 읽는다. 복사본에 상태를 담으면 갱신 전 값으로 판단하고, 원천의 접근 권한도 복사본에 따라오지 않는다.
+- **RDF 그래프와 속성 그래프는 맡는 일이 다르다:** 둘은 대체 관계가 아니라 같은 시스템에서 함께 쓸 수 있다.
+
+| 구분 | RDF 그래프 | 속성 그래프 |
+|---|---|---|
+| 단위 | 주어, 술어, 목적어 트리플 | 속성을 가진 노드와 엣지 |
+| 강점 | 표준 어휘로 뜻 공유(RDFS, OWL, SKOS), 규칙 추론, SHACL 검증 | 속성 조건, 경로 탐색, 그래프 분석 |
+| 질의 | SPARQL | SQL/PGQ, Cypher, PGQL |
+
+SQL/PGQ는 ISO SQL 표준의 속성 그래프 질의 부분이며, Oracle AI Database 26ai는 SQL 안에서 속성 그래프를 만들고 질의하도록 지원한다(2026-11-09 Oracle 신기능 문서 기준). Oracle의 SQL 속성 그래프는 메타데이터만 저장하고 기반 테이블 데이터를 복사하지 않으므로 별도 그래프 저장소로 동기화하지 않고 현재 데이터를 질의한다. 다만 기반 테이블에 준 권한이 그래프 질의에 그대로 적용되지는 않는다. 질의에는 그래프 객체의 READ나 SELECT 권한만 있으면 되고 그래프 정의자 권한으로 실행되므로, 기반 테이블 권한이 없는 사용자도 그래프가 노출하는 데이터를 읽는다(키 컬럼을 속성으로 노출하지 않은 그래프의 VERTEX_ID, EDGE_ID 함수와 Flashback 질의는 기반 테이블 권한이 더 필요하다. 2026-11-09 SQL Language Reference와 Graph Developer's Guide 26.1 기준). 감사와 행 단위 보안(VPD)의 적용은 확인하지 못했으므로, 그래프 권한은 뷰처럼 기반 데이터를 읽을 자격과 같은 기준으로 부여한다. 그래프 질의 성능과 기능 범위는 전용 그래프 DB와 비교해 고른다.
+
+- **사람이 읽고 고칠 수 있어야 진화한다:** OWL과 SHACL은 기계가 잘 읽지만 업무 담당자가 직접 쓰기 어렵고, 엔티티가 수천 개면 시각화해도 읽기 어렵다. 읽지 못하는 사람은 어디가 틀렸는지 말할 수 없어 정의가 고쳐지지 않는다. 업무 담당자가 읽는 문서(용어, 관계, 규칙 문장)를 원본으로 두고 OWL, SKOS, SHACL은 내보내기 결과로 만드는 경량 방식도 있다. 이때 승인 요청 같은 규칙의 실행은 문장에서 추론하지 않고 별도 워크플로가 맡는다. 질의 정확도에 미치는 효과는 [[LLM-Workflow-Patterns-Text-to-SQL#오류 없는 오답의 원인을 나눠 센다|Text-to-SQL의 오류 없는 오답]]에서 다룬다.
+
 ## Palantir Foundry Ontology
 
 데이터와 모델 통합, 객체 백엔드, Actions와 Functions, 보안과 SDK의 세부 계약은 [[Palantir-Foundry]]에서 이어서 다룬다. 일반 온톨로지와 제품의 운영 계층을 구별하는 전체 구조는 [[Palantir-Operational-Ontology]]를 참조한다.
@@ -149,13 +168,21 @@ RETURN peer.riderId
 - [Neo4j, Cypher Manual: Constraints](https://neo4j.com/docs/cypher-manual/current/schema/constraints/)
 - [Neo4j, Cypher Manual: Additions, deprecations, removals, and compatibility](https://neo4j.com/docs/cypher-manual/current/deprecations-additions-removals-compatibility/)
 - [Zep, Graphiti: Custom entity and edge types](https://help.getzep.com/graphiti/core-concepts/custom-entity-and-edge-types)
+- [Oracle, Oracle AI Database 26ai New Features: Graph](https://docs.oracle.com/en/database/oracle/oracle-database/26/nfcoa/graph.html) — 2026-11-09 SQL/PGQ 지원 대조. RDF와 SPARQL 지원 범위는 이 페이지에서 확인하지 못했다.
+- [Oracle, SQL Language Reference 26: Graph Reference](https://docs.oracle.com/en/database/oracle/oracle-database/26/sqlrf/graph-reference.html) — 2026-11-09 그래프 질의 권한과 Flashback 예외 대조
+- [Oracle, Graph Developer's Guide 26.1: Privileges to Query a SQL Property Graph](https://docs.oracle.com/en/database/oracle/property-graph/26.1/spgdg/privileges-query-sql-property-graph.html) — 2026-11-09 정의자 권한 실행과 VERTEX_ID, EDGE_ID 예외 대조
+- [Oracle, Graph Developer's Guide 26.1: Creating a SQL Property Graph](https://docs.oracle.com/en/database/oracle/property-graph/26.1/spgdg/creating-sql-property-graph.html) — 2026-11-09 메타데이터만 저장하고 데이터를 복사하지 않음 대조
+- [[IT-Chosun-Monthly-AX-2026-11-03|IT조선 월간AX 세미나 기록]] — 2026-11-03 Oracle(김민지)과 제네시스랩(유대훈) 발표. 흩어진 정의, 관계를 따른 다음 조치와 경량 온톨로지 사례를 반영했다.
 
 ## 관련 문서
 
+- [[Personal-Knowledge-Graph-Privacy|기기 안 개인 지식 그래프]] — 사람 사이 관계를 추론해 쌓는 실제 개인 그래프와 추론 데이터의 삭제, 정정 한계
 - [[Development-Ontology|이 vault의 개발 판단 온톨로지]]
 - [[Ontology-Context-Platform-Implementation|Markdown Vault 기반 온톨로지 구축 방법]]
 - [[Agentic-Context-Platform|에이전트 컨텍스트 플랫폼]]
 - [[GraphRAG-Retrieval|GraphRAG 검색]]
+- [[LLM-Workflow-Patterns-Text-to-SQL|Text-to-SQL과 데이터 디스커버리]]
+- [[LLM-Wiki-Knowledge-Compilation|LLM 위키와 지식 합성의 영속화]]
 - [[Content-Entity-Resolution|콘텐츠 식별과 중복 병합]]
 - [[Recommendation-System-Taxonomy-Content-Based|추천 시스템 택소노미]]
 - [[DDD|DDD]]

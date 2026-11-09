@@ -52,7 +52,10 @@ Unleash 문서가 정리한 원칙 중 두 가지가 여기에 직결된다. **�
 
 - **해시 버킷팅**: 사용자 식별자와 flag별 group id를 이어 붙여 해시한 뒤 0~100 구간에 매핑한다. Unleash는 MurmurHash를 쓰고, 같은 입력이면 같은 숫자가 나오므로 비율을 5%에서 25%로 올려도 기존 5% 사용자는 계속 노출 상태를 유지한다.
 - **stickiness**: Unleash 기본 동작은 컨텍스트의 `userId`, 없으면 `sessionId` 순으로 고른다. 둘 다 없으면 난수를 쓰므로 **동일 사용자에게 같은 값이 나온다는 보장이 사라진다**. 로그인 전 트래픽에 flag를 걸 때 세션 식별자를 반드시 넘겨야 하는 이유가 여기 있다.
+- **group id**: Unleash의 기본 group id는 flag 이름이다. 여러 flag에 같은 group id를 주면 같은 사용자 집합이 함께 켜지고, group id를 바꾸면 사용자 배정이 다시 섞인다.
+- **제약과 전략의 결합**: Unleash에서 한 전략의 제약은 모두 만족해야 그 전략이 참이 되고(AND), 한 flag에 둔 여러 전략은 하나만 참이어도 flag를 켠다(OR). 컨텍스트에 제약 필드가 없으면 그 제약은 거짓이다. 세그먼트는 여러 전략에 다시 쓰는 제약 묶음이다.
 - **일관성이 깨지면 생기는 일**: 같은 화면의 두 API 호출이 서로 다른 variant를 받으면 UI와 데이터가 어긋나고, 실험이라면 한 사용자가 양쪽 그룹에 걸쳐 측정 자체가 무의미해진다.
+- **노출 기록**: 실험 분석에는 어떤 사용자가 어떤 variant를 실제로 받았는지가 필요하다. Unleash의 impression data는 flag별 opt-in이며, SDK가 `isEnabled`나 `getVariant`를 호출할 때 flag 이름, 켜짐 여부, variant와 컨텍스트 스냅샷을 담은 이벤트를 낸다. 이 이벤트를 분석 도구나 데이터 레이크로 보내 노출과 전환을 잇는다. 프런트엔드 SDK는 켜진 flag만 받는 경우가 많아 꺼진 flag의 이벤트가 기본으로 나오지 않을 수 있다.
 - **세그먼트 순서**: 내부 사용자 → 특정 tenant나 지역 → 비율 상승 순으로 좁은 곳부터 연다.
 - **다변량 variant**: 켬과 끔 두 값이 아니라 여러 값을 반환하는 형태. AWS AppConfig도 요청 컨텍스트를 규칙에 대조해 값을 고르는 multi-variant feature flag를 제공한다.
 
@@ -112,6 +115,8 @@ flag OFF는 **코드 경로만** 되돌린다. 되돌리지 못하는 것들이 
 | **전용 flag 플랫폼** | Unleash(OSS), LaunchDarkly 같은 상용 SaaS | 사용자 단위 타게팅, 비율 롤아웃, 감사 로그, 승인 워크플로가 필요할 때 |
 | **표준 계층** | OpenFeature | 벤더 종속을 낮추고 provider를 갈아끼울 여지를 남기고 싶을 때 |
 
+Unleash 오픈소스판은 AGPL-3.0이며 저장소 README 기준 환경 2개를 포함한다. 환경 추가, 프로젝트, 고급 세그먼트와 추가 전략 제약은 Pro와 Enterprise 요금제 기능으로 안내한다(2026-11-09 README 대조). 자체 호스팅을 고를 때는 필요한 타게팅 기능이 오픈소스판에 있는지 먼저 확인한다.
+
 전용 도구로 넘어가는 신호는 flag 개수가 아니라 **권한**이다. 개발자가 아닌 사람이 flag를 켜야 하거나, 누가 언제 무엇을 바꿨는지 감사 로그로 답해야 하거나, 프로덕션 flag 변경에 승인이 필요해지는 순간이 경계다. 도구별 가격과 기능 범위는 시점에 따라 바뀌므로 도입 전에 각 벤더 공식 문서에서 직접 확인한다.
 
 ## 흔한 실수
@@ -137,7 +142,10 @@ flag OFF는 **코드 경로만** 되돌린다. 되돌리지 못하는 것들이 
 - [Knightmare: A DevOps Cautionary Tale — dougseven.com](https://dougseven.com/2014/04/17/knightmare-a-devops-cautionary-tale/)
 - [SEC, In the Matter of Knight Capital Americas LLC](https://www.sec.gov/litigation/admin/2013/34-70694.pdf)
 - [Unleash Documentation, 11 principles for building and scaling feature flag systems](https://docs.getunleash.io/topics/feature-flags/feature-flag-best-practices)
-- [Unleash Documentation, Stickiness](https://docs.getunleash.io/reference/stickiness)
+- [Unleash Documentation, Stickiness](https://docs.getunleash.io/reference/stickiness) — 2026-11-09 group id의 기본값과 재배정 동작 대조
+- [Unleash Documentation, Activation strategies](https://docs.getunleash.io/reference/activation-strategies) — 2026-11-09 제약의 AND, 전략의 OR과 누락 필드 동작 대조
+- [Unleash Documentation, Impression data](https://docs.getunleash.io/reference/impression-data) — 2026-11-09 이벤트 종류, 필드와 flag별 opt-in 대조
+- [Unleash README — Unleash](https://github.com/Unleash/unleash) — 2026-11-09 라이선스와 오픈소스판 범위 대조
 - [OpenFeature Specification, Flag Evaluation API](https://openfeature.dev/specification/sections/flag-evaluation/)
 - [AWS AppConfig User Guide, Creating feature flags and free form configuration data in AWS AppConfig](https://docs.aws.amazon.com/appconfig/latest/userguide/appconfig-creating-configuration-and-profile.html)
 - [AWS AppConfig User Guide, Creating a feature flag configuration profile in AWS AppConfig](https://docs.aws.amazon.com/appconfig/latest/userguide/appconfig-creating-configuration-and-profile-feature-flags.html)

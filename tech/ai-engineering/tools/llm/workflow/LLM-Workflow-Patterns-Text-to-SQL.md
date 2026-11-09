@@ -64,6 +64,44 @@ AWS의 구조화 데이터 연결 지침은 임의 SQL 실행의 위험을 명�
 
 질문과 SQL 예시를 보강할 때도 실패 원인이 예시 부족인지, 업무 정의나 쿼리 오류인지 먼저 구분한다. 실패한 결과를 검토 없이 검색 예시에 추가하거나, 예시에 넣은 질문만으로 개선을 평가하지 않는다.
 
+### 오류 없는 오답의 원인을 나눠 센다
+
+가장 위험한 실패는 실행 오류가 아니라 정상 실행된 오답이다. 사용자는 틀렸다는 신호를 받지 못하므로 평가에서 오류 없는 오답을 따로 센다.
+
+| 원인 | 예시 | 결과 |
+|---|---|---|
+| 코드값의 뜻 | 상태값을 추정해 `'COMPLETE'`로 거르지만 실제 값은 `'40'` | 0건을 반환하고 해당 건이 없다고 답한다 |
+| 저장값의 표기 | "교육 상품"을 `LIKE '%교육%'`로 찾지만 실제 값은 `'Training'` | 있는 데이터를 없다고 답한다 |
+| 선언되지 않은 관계 | 외래키 제약이 없어 이름이 비슷한 컬럼끼리 조인한다 | 행이 중복되거나 다른 대상이 섞인다 |
+| 없는 데이터로 지표 계산 | 원가 데이터가 없는데 정가에서 판매가를 빼 마진이라 부른다 | 근거 없는 숫자를 그럴듯하게 낸다 |
+
+필요한 데이터가 없으면 근사치를 지어내지 않고 계산할 수 없다고 답하게 한다([[LLM-Abstention|답변 보류]]). 구조화된 의미 모델의 효과를 보인 연구로, 보험 도메인 기업 스키마에서 GPT-4 제로샷의 정확도가 SQL DB 직접 질의 16%에서 같은 DB의 지식 그래프 표현 위 질의 54%로 올랐다는 벤치마크가 있다(Sequeda, Allemang, Jacob, 2023, 초록 기준). 단일 도메인, 단일 스키마의 결과라 그대로 일반화하지 않는다. 의미 모델 설계는 [[Ontology-Knowledge-Graph|온톨로지와 지식 그래프]]에서 다룬다.
+
+### 맥락은 DB와 사용 이력에서 먼저 모은다
+
+설명을 처음부터 손으로 쓰면 수천 테이블에서 멈추고, 코드값의 뜻을 아는 사람은 DBA보다 업무 담당자인 경우가 많다. DB가 이미 가진 정보부터 읽어 지도를 만들고, 사람은 고른 테이블의 의미만 쓴다.
+
+| 원천 | 얻는 것 | 주의 |
+|---|---|---|
+| 카탈로그와 주석 | 테이블, 컬럼과 기존 설명 | 비었거나 낡았을 수 있다 |
+| 선언된 외래키 | 확실한 조인 경로 | 레거시 ERP에는 선언되지 않은 경우가 흔하다 |
+| 값 분포 표본 | 실제 코드값과 표기 | 개인정보가 섞이므로 판단에만 쓰고 저장하지 않는다 |
+| 쿼리 이력 | 실제 조인, 늘 붙는 조건과 반복 질의 | 이력이 남은 범위만 보인다 |
+
+2026-11-09 공식 문서 기준, PostgreSQL의 `pg_stat_statements` 확장은 서버에서 실행된 SQL의 계획과 실행 통계를 모으며 `shared_preload_libraries`로 미리 불러와야 한다. Oracle의 `V$SQLAREA`는 공유 SQL 영역의 통계를 SQL 문자열당 한 행으로 보여 주고 실행 횟수(`EXECUTIONS`)와 전체 문장(`SQL_FULLTEXT`)을 담는다. 메모리에 남은 문장만 보이므로 오래 안 쓴 질의는 빠질 수 있다. 스키마를 다시 읽을 때는 바뀐 테이블만 처리하고, 사람이 고친 설명을 덮어쓰지 않으며, 사라진 테이블은 지우지 않고 검토로 넘긴다.
+
+### 반복 질의는 검증된 도구로 승격한다
+
+자주 실행되는 다중 테이블 질의는 모델이 매번 새 SQL을 쓰게 두지 않는다.
+
+1. 쿼리 이력에서 실행 횟수가 많고 테이블 둘 이상을 잇거나 집계하는 질의를 후보로 뽑는다.
+2. 사람이 값 자리마다 입력으로 받을지 고정할지 정하고 미리 실행해 결과를 확인한다.
+3. 승인한 질의만 이름과 쓰임새를 붙여 도구나 스킬로 등록한다. 모델은 어떤 도구를 부를지만 고른다.
+
+금액 기준 승인 대상처럼 꼭 맞아야 하는 판정은 모델의 SQL 작성에 맡기지 않고 등록된 질의나 분기 코드가 맡는다([[Agent-Governance-Controls|에이전트 거버넌스 통제]]).
+
+코드값의 뜻이 아직 확정되지 않았으면 교차 검증 결과가 그럴듯해도 단정하지 않고 담당자에게 묻는다. 확정된 매핑은 버전과 편집자를 남겨 지식에 기록하고 다시 조회하며, 다음 질문부터는 묻지 않는다.
+
 ### 오류 종류에 따라 복구 지점을 나눈다
 
 같은 SQL을 반복 생성하는 대신 실패 원인이 있는 단계로 돌아간다. AWS의 공개 Text-to-SQL 구현도 실행 오류와 수정 힌트를 반환하고, 필요하면 테이블 목록과 스키마를 다시 조회한다(2026-10-07 확인).
@@ -78,6 +116,7 @@ AWS의 구조화 데이터 연결 지침은 임의 SQL 실행의 위험을 명�
 
 ## 사례
 - 데이터 분석 보조: Text-to-SQL + 데이터 디스커버리 + 지식 공유(위키, Slack 서포트 채널 자동 답변 + 근거 링크), 질문 분류 후 멀티 체인, 일부는 평가 노드를 둔 그래프 에이전트로 구성. Slack을 UI로, LLMOps로 배포/모니터링.
+- 업무 맥락 조회 결합(2026-11-03 세미나 발표): 같은 모델과 읽기 전용 계정에 업무 맥락 조회 도구와 "먼저 용어와 지표가 어느 테이블, 컬럼, 코드값인지 찾는다"는 지침 한 줄을 더해 업무 어휘 질문 정답률이 56%에서 100%(8문항 2회), 첫 시도 정답률이 25%에서 81%로 올랐다고 소개됐다. 단독 구성의 오답은 모두 오류 신호 없이 나왔고, 결합 구성은 질문당 약 9초가 더 걸렸다. 발표사 내부 데모 DB 표본이며 독립 검증된 수치가 아니다.
 
 ### SQL 분석에 외부 도구를 연결할 때
 
@@ -115,6 +154,10 @@ Databricks Genie Agent는 SQL과 파일 분석에 MCP connector의 외부 자료
 - [Amazon Bedrock User Guide, Generate a query for structured data](https://docs.aws.amazon.com/bedrock/latest/userguide/knowledge-base-generate-query.html)
 - [Amazon Bedrock User Guide, Set up your query engine and permissions for creating a knowledge base with structured data store](https://docs.aws.amazon.com/bedrock/latest/userguide/knowledge-base-prereq-structured.html)
 - [LLM 에이전트 실무 사례 (물어보세, 스마트 마이 노트, HyperCLOVA X Skill Universe) — 개발 컨퍼런스 (YouTube)](https://www.youtube.com/watch?v=wEVPnYOuAf8&list=PLgXGHBqgT2TtGi82mCZWuhMu-nQy301ew)
+- [arXiv, A Benchmark to Understand the Role of Knowledge Graphs on Large Language Model's Accuracy for Question Answering on Enterprise SQL Databases](https://arxiv.org/abs/2311.07509) — 2026-11-09 초록의 16%와 54%, 보험 도메인 스키마 대조
+- [PostgreSQL, F.32. pg_stat_statements](https://www.postgresql.org/docs/current/pgstatstatements.html)
+- [Oracle, Database Reference: V$SQLAREA](https://docs.oracle.com/en/database/oracle/oracle-database/26/refrn/V-SQLAREA.html)
+- [[IT-Chosun-Monthly-AX-2026-11-03|IT조선 월간AX 세미나 기록]] — 2026-11-03 제네시스랩(유대훈) 발표. 오류 없는 오답 유형, 맥락 원천, 쿼리 이력의 도구 승격과 실측 사례를 반영했고 수치는 발표 기준이다.
 
 ## 관련 문서
 - [[LLM-Workflow-Patterns|LLM 워크플로우 패턴 (묶음 인덱스)]]
@@ -123,3 +166,5 @@ Databricks Genie Agent는 SQL과 파일 분석에 MCP connector의 외부 자료
 - [[LLM-Workflow-Patterns-Data-and-Operations|데이터와 모델, 환각 통제와 운영]]
 - [[RAG-Retrieval-Engineering|RAG 검색 엔지니어링]] — 리트리벌, 구조화 조회, 근거 추적
 - [[Production-Agent-Architecture|프로덕션 에이전트 아키텍처]] — 에이전트 위임의 신뢰 설계, 운영 루프
+- [[Ontology-Knowledge-Graph|온톨로지와 지식 그래프]] — 흩어진 정의를 한곳에 두는 의미 모델
+- [[Agent-Ready-Data|에이전트용 데이터 준비]] — 지표 정의를 코드로 공유하는 시맨틱 뷰

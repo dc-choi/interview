@@ -114,6 +114,7 @@ Parquet 파일만 저장한다고 단정하면 작은 입력을 놓칠 수 있�
 
 ## 관련 문서
 
+- [[Query-Engine-Execution|쿼리 엔진의 실행 계획과 엔진 선택]]
 - [[Data-Infrastructure-Layers|데이터 인프라의 계층과 계약]]
 - [[DuckLake|SQL 카탈로그와 Parquet]]
 - [[Recommendation-System-Feedback-Data|추천시스템 피드백 데이터]]

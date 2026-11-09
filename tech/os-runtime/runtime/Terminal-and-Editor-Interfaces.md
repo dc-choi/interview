@@ -42,5 +42,6 @@ Kwi의 2026-11-01 KDE 발표는 libghostty-vt를 파싱과 상태 관리에, Qt 
 
 ## 관련 문서
 
+- [[Library-ABI-Stability|라이브러리 ABI 안정성]] — libghostty-vt 1.0의 안정 C ABI와 채택 사례
 - [[런타임(Runtime)|런타임 인덱스]]
 - [[OpenBSD-Platform|BSD 플랫폼]]
