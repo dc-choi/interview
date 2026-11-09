@@ -4,5 +4,39 @@
     "allow": [
       "Bash(git push:*)"
     ]
+  },
+  "hooks": {
+    "SessionStart": [
+      {
+        "hooks": [
+          {
+            "type": "command",
+            "command": "[ -n \"$VAULT_LEARN_ENGINE\" ] || [ \"$(git -C \"$CLAUDE_PROJECT_DIR\" config core.hooksPath)\" = .githooks ] || git -C \"$CLAUDE_PROJECT_DIR\" config core.hooksPath .githooks"
+          }
+        ]
+      }
+    ],
+    "PreToolUse": [
+      {
+        "matcher": "Write|Edit|MultiEdit|NotebookEdit",
+        "hooks": [
+          {
+            "type": "command",
+            "command": "f=\"$CLAUDE_PROJECT_DIR/.claude/hooks/vault_guard.py\"; [ -f \"$f\" ] || exit 0; python3 \"$f\" pre"
+          }
+        ]
+      }
+    ],
+    "PostToolUse": [
+      {
+        "matcher": "Write|Edit|MultiEdit",
+        "hooks": [
+          {
+            "type": "command",
+            "command": "f=\"$CLAUDE_PROJECT_DIR/.claude/hooks/vault_guard.py\"; [ -f \"$f\" ] || exit 0; python3 \"$f\" post"
+          }
+        ]
+      }
+    ]
   }
 }

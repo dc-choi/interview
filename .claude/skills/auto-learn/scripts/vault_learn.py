@@ -89,6 +89,7 @@ INDEX_COLS = ["order", "id", "status", "reason", "author", "posted_at", "chain",
 TITLE_SKIP = ("[[QUOTE]]", "## ", "Source:", "Media:", "- [")
 # 학습할 YouTube 채널과 뉴스레터의 정본(2026-10-05 사용자 결정). channels.tsv는 채널 id 캐시와 제외 기록이다.
 SOURCES = "fit/growth/learning/Learning-Sources.md"
+KNOWLEDGE_DIRS = ("biz/", "econ/", "fit/", "tech/", "ontology/")
 SOURCE_SECTIONS = ("YouTube 채널", "이메일 뉴스레터")
 DOMAINS = ("tech", "biz", "econ", "fit")
 YT_LINK = re.compile(r"\]\(https://www\.youtube\.com/(@[^)\s]+|channel/UC[\w-]{22})\)")
@@ -1151,8 +1152,10 @@ def added_lines(rel):
 def line_problems(line, personal):
     """공개 저장소에 들어가면 안 되는 줄(문서의 추가된 줄과 커밋 메시지)."""
     low, out = line.lower(), []
-    if re.search(r"threads\.(?:com|net)/|instagram\.com/(?:[\w.]+/)?(?:p|reels?|tv|stories|direct)/", low):
-        out.append("Threads나 Instagram 글 링크(단서는 출처로 쓰지 않는다)")
+    if re.search(r"threads\.(?:com|net)/", low):
+        out.append("Threads 글 링크(단서는 출처로 쓰지 않는다)")
+    if re.search(r"instagram\.com/(?:[\w.]+/)?(?:p|reels?|tv|stories|direct)/", low):
+        out.append("Instagram 글 링크(단서는 출처로 쓰지 않는다)")
     if "vault-auto-learn" in low:
         out.append("로컬 상태 경로")
     if any(term in low for term in personal):
@@ -1177,12 +1180,37 @@ def check_files(files):
             problems.append(f"{rel}: frontmatter 없음")
         if rel == SOURCES:
             problems += sources_problems(text)
-        for target in WIKILINK.findall(re.sub(r"```.*?```", "", text, flags=re.S)):
+        # 코드 블록과 인라인 코드 안의 [[...]]는 명세 표기나 예시라 링크로 보지 않는다(예: `[[Prototype]]`).
+        code_free = re.sub(r"`[^`\n]*`", "", re.sub(r"```.*?```", "", text, flags=re.S))
+        for target in WIKILINK.findall(code_free):
             name = target.strip().rstrip("\\").split("/")[-1].lower()  # 표 안의 [[파일\|별칭]]
             if name and name not in names:
                 problems.append(f"{rel}: 깨진 위키링크 [[{target}]]")
         problems += [f"{rel}:{n}: {p}" for n, line in added_lines(rel) for p in line_problems(line, personal)]
-    return problems
+    return problems + duplicate_names(files)
+
+
+def duplicate_names(files):
+    """새 지식 문서가 저장소의 다른 파일과 이름이 같으면 Obsidian의 [[파일명]] 해석이 모호해진다.
+    AGENTS.md, README.md처럼 원래 여러 곳에 두는 이름과 지식 폴더 밖 파일(스킬 등)은 보지 않는다."""
+    # 새 파일 판정은 HEAD 기준이다. staged 파일도 ls-files에는 나오므로 index 기준이면 커밋 검사에서 빠진다.
+    tracked = {p for p in git("-c", "core.quotePath=false", "ls-tree", "-r", "-z", "--name-only", "HEAD").stdout.split("\0") if p}
+    # 비교 대상은 디스크에 있는 HEAD, index와 추적 전 파일이다. 같은 커밋의 새 파일끼리도 충돌로 본다.
+    present = {p for p in git("-c", "core.quotePath=false", "ls-files", "-z", "--cached", "--others", "--exclude-standard")
+               .stdout.split("\0") if p} | tracked
+    names = {}
+    for p in present:
+        if (REPO / p).exists():
+            names.setdefault(Path(p).name.lower(), []).append(p)
+    out = []
+    for rel in files:
+        if rel in tracked or not rel.startswith(KNOWLEDGE_DIRS) or Path(rel).name in ("AGENTS.md", "README.md"):
+            continue
+        # 대소문자만 바꾼 개명(대소문자를 구분하지 않는 파일 시스템)은 자기 자신이라 제외한다
+        others = sorted({p for p in names.get(Path(rel).name.lower(), []) if p.lower() != rel.lower()})
+        if others:
+            out.append(f"{rel}: 동명 파일 {', '.join(others)}")
+    return out
 
 
 def cmd_check(a):
@@ -1251,7 +1279,12 @@ def cmd_publish(a):
         sha = None
         if changed:
             git("add", "--all", "--", *changed)
-            git("commit", "--only", "-m", message, "--", *changed)
+            try:
+                git("commit", "--only", "-m", message, "--", *changed)
+            except GitError:
+                # hook 거부나 동시 편집으로 커밋이 실패하면 이 run이 올린 stage만 되돌려 다른 작업의 커밋에 섞이지 않게 한다
+                git("reset", "-q", "--", *changed, check=False)
+                raise
             sha = git("rev-parse", "HEAD").stdout.strip()
             append(S / "own_commits", sha + "\n")
             m["files"] = [f for f in m["files"] if f not in changed]  # 다시 고치려면 다시 plan한다.

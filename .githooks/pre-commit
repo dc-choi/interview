@@ -1,0 +1,3 @@
+#!/bin/sh
+# vault 규칙 강제. launchd처럼 PATH가 짧은 환경에서도 Homebrew Python을 먼저 쓴다.
+PATH="/opt/homebrew/bin:/usr/local/bin:$PATH" exec python3 "$(git rev-parse --show-toplevel)/.claude/hooks/vault_guard.py" commit
