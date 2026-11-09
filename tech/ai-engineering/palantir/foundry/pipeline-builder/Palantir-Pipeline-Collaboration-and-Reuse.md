@@ -40,6 +40,8 @@ Color group, folder, hidden node와 text node는 탐색을 돕는다. Hidden edg
 
 Color-group 안내는 Cmd/Ctrl+D를 duplicate로, tips 안내는 child selection으로 설명해 shortcut이 상충한다. 실제 Hotkeys UI를 확인하며 이 문서는 어느 쪽도 공통 보장으로 고정하지 않는다. Pseudocode는 시각적 표현이며 특정 언어 문법이나 code editing 기능이 아니다.
 
+AI generate는 선택한 node 뒤에 prompt로 새 transform node를 만들고, AI explain은 선택한 node나 transform board의 논리를 글로 요약한다. AIP regex helper는 regex 함수의 pattern을 prompt로 생성하며 Apply 뒤 graph의 preview로 결과를 확인하라고 안내한다. AI FDE는 pipeline 링크를 resource로 받아 node 추가를 지시받는 별도 application이다. 이 도구 설명은 2026-11-09 수집한 tips 개정본 기준이며 실제 생성 결과는 시험하지 않았다. 원문은 regex helper 외의 검토 절차를 적지 않으므로, 생성된 node를 일반 편집과 같이 preview, unit test와 proposal로 검토하는 것은 운영 권고다.
+
 ## 출처
 
 - [Palantir Pipeline Builder, branches-approve-a-change](https://www.palantir.com/docs/foundry/pipeline-builder/branches-approve-a-change)
@@ -58,6 +60,7 @@ Color-group 안내는 Cmd/Ctrl+D를 duplicate로, tips 안내는 child selection
 - [Palantir Pipeline Builder, management-text-nodes](https://www.palantir.com/docs/foundry/pipeline-builder/management-text-nodes)
 - [Palantir Pipeline Builder, navigation](https://www.palantir.com/docs/foundry/pipeline-builder/navigation)
 - [Palantir Pipeline Builder, subgraphs](https://www.palantir.com/docs/foundry/pipeline-builder/subgraphs)
+- [Palantir Pipeline Builder, tips-and-tricks](https://www.palantir.com/docs/foundry/pipeline-builder/tips-and-tricks)
 - [October 21, 2026, Abandoning an autosave conflict no longer discards edits from other tabs — Palantir release notes](https://www.palantir.com/docs/foundry/announcements/release-notes/2026/#7bf38969d1cf68c9435180d88bc895c9a5e3db35704260ec4f8607a705e62722)
 - [October 26, 2026, Package and reuse pipeline logic with subgraphs in Pipeline Builder — Palantir release notes](https://www.palantir.com/docs/foundry/announcements/release-notes/2026/#32ec54b9-ac2b-4948-91f5-070c3d3e702b)
 

@@ -18,7 +18,7 @@ Spark standard total maximum core는 XS 1, S 3, M 33, L 65, XL 257로 설명한�
 
 Managed profile은 해당 deployment 최근 5 build를 보고 최초 할당보다 낮추는 방향으로만 조정하며 preset 사이 custom 수준도 가능하다. Warm pool은 continuously running VM에서 최대 3 job을 공유하고 Spark XS/S에 지원한다. UDF에는 사용할 수 없고 log가 축약되어 실패 조사 시 비활성화가 필요할 수 있다.
 
-Native acceleration은 Velox off-heap과 JVM on-heap의 균형을 요구한다. 큰 profile도 LLM/embedding의 JVM 작업과 shuffle OOM을 해결하지 못할 수 있다. Recovered 미검증 한국어 페이지의 HIGH부터 조절하라는 이전 안내보다 현재 영어 profile별 조건을 구분한다. Faster는 profile management Standard만 지원한다고 설명한다.
+Native acceleration은 Velox off-heap과 JVM on-heap의 균형을 요구한다. 큰 profile도 LLM/embedding의 JVM 작업과 shuffle OOM을 해결하지 못할 수 있다. Recovered 미검증 한국어 페이지의 HIGH부터 조절하라는 이전 안내보다 현재 영어 profile별 조건을 구분한다. Faster는 profile management Standard만 지원한다고 설명한다. 2026-11-09 수집한 tips 개정본은 새 batch pipeline을 만들 때 **Select batch compute**에서 Faster가 기본 선택된다고 적는다. 따라서 새 pipeline이 Spark라고 가정하지 않고, Faster 미지원 expression(일부 geospatial, array)이 필요하면 생성 시점에 compute를 확인한다. 기존 standard pipeline은 **Settings > Convert to faster pipeline**으로 바꾸며 호환되지 않는 기능이 있으면 변환 전 오류로 알려 준다.
 
 Streaming profile은 Job Manager와 task memory/parallelism을 지정하며 max job duration은 1분~7일이다. Non-main은 기본 1일 제한이다. Stream behavior에서 consistency를 별도로 선택하며 미설정 warning을 exactly-once 보장으로 해석하지 않는다.
 

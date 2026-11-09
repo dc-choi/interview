@@ -16,7 +16,7 @@ Distance join의 distance는 선택 CRS 단위다. EPSG:4326이면 degrees이며
 
 Geospatial guide의 규모 안내는 geometry 복잡도, output 증가와 skew를 전제한다. Intersection은 약 34-point/양쪽 100만/2배 output, 큰 geometry 1건(약 4만 point) 대 50만 row 같은 제한된 예시다. KNN의 modest k<5와 수십만 neighbors 안내는 함수 index의 3GB에 100만 point memory 예시와 다른 supported-scale 설명이므로 하나의 일반 상한으로 합치지 않는다.
 
-Guide는 intersection anti join을 batch/streaming 지원이라 하지만 종합 function index의 해당 항목은 streaming만 표시한다. Faster tips는 geospatial 미지원이라고 넓게 말하지만 개별 함수는 Faster를 지원하기도 한다. 실제 함수 version과 engine validation을 확인하며 이 충돌을 임의로 해소하지 않는다.
+Guide는 intersection anti join을 batch/streaming 지원이라 하지만 종합 function index의 해당 항목은 streaming만 표시한다. Faster tips의 이전 안내는 geospatial 미지원이라고 넓게 말했지만, 2026-11-09 수집한 개정본은 일부 geospatial과 array expression만 미지원이라고 좁히고 functions index에서 함수별 지원을 확인하라고 안내한다. 개별 함수는 Faster를 지원하기도 한다. 실제 함수 version과 engine validation을 확인하며 이 충돌을 임의로 해소하지 않는다.
 
 결합 전 불필요한 column을 줄이고 geometry를 normalize하며 null과 non-determinism을 확인한다. Checkpoint와 더 큰 memory가 도움이 될 수 있지만 cross-product 규모의 output은 본질적 비용을 남긴다. Normalize/prepare는 Ontology indexability를 위한 별도 단계이며 valid GeoJSON만으로 index 가능하다고 보장하지 않는다.
 
@@ -32,6 +32,7 @@ Multimodal media는 Has media schema로 filter하면 type을 좁혀 PDF extracti
 
 - [Palantir Pipeline Builder, transforms-geospatial](https://www.palantir.com/docs/foundry/pipeline-builder/transforms-geospatial)
 - [Palantir Pipeline Builder, transforms-transform-media](https://www.palantir.com/docs/foundry/pipeline-builder/transforms-transform-media)
+- [Palantir Pipeline Builder, tips-and-tricks](https://www.palantir.com/docs/foundry/pipeline-builder/tips-and-tricks)
 
 ## 관련 문서
 

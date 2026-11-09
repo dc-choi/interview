@@ -38,9 +38,13 @@ Require incremental execution은 증분으로 실행하도록 구성한 job이 �
 
 ## Streaming join의 시간 경계
 
-Stream→batch lookup은 snapshot을 cluster에 내려 index하며 같은 pipeline 안에서 right batch를 먼저 transform할 수 없다. Right는 append-only여야 하고 overwrite/delete가 있으면 empty output이 생길 수 있다고 설명한다. 새로운 append view 갱신은 최대 5분마다 이루어지고 8~10GB 이상은 성능 저하와 startup 비용을 고려한다.
+Stream→batch lookup은 snapshot을 cluster에 내려 index하며 같은 pipeline 안에서 right batch를 먼저 transform할 수 없다. Right는 append-only여야 하고 overwrite/delete가 있으면 empty output이 생길 수 있다고 설명한다. 새로운 append view 갱신은 최대 5분마다 이루어지고 8~10GB 이상은 성능 저하를 고려한다. Left는 stream이거나 read mode를 Stream으로 둔 batch dataset이어야 하고, join type은 Left Lookup Join이다.
 
-Stream→stream outer caching join은 양쪽 만료가 있는 key별 cache에서 최신 값만 보존하며 도착 시 상대가 없으면 null-filled 결과를 먼저 낸다. 전체 과거 event의 relational join이 아니다. Expiry와 key 분포가 state 크기를 정하며 이미 낸 unmatched 결과가 나중에 자동 철회되는지는 이 안내만으로 보장하지 않는다.
+Lookup용 batch dataset의 download와 index 시간은 전체 크기가 작아도 작은 file이 많으면 늘어날 수 있다. 그래서 그 dataset을 만드는 upstream pipeline이 적고 큰 file을 쓰도록 구성한다. Streaming task는 첫 lookup 때 이 초기화를 하고 끝날 때까지 record 처리를 멈춘다. 이 처리 중단으로 record가 지연되고 checkpoint duration(trigger부터 완료까지)이 늘어날 수 있으며, 이 초기화는 cluster 시작 뒤에도 일어날 수 있다. 새 transaction의 refresh는 background에서 진행되고 그동안 join은 이전 view를 쓰므로, refresh가 길수록 최신 batch 값이 늦게 반영된다.
+
+Stream→stream outer caching join은 양쪽 만료가 있는 key별 cache에서 최신 값만 보존하며 도착 시 상대가 없으면 null-filled 결과를 먼저 낸다. 전체 과거 event의 relational join이 아니다. Expiry와 key 분포가 state 크기를 정하며 이미 낸 unmatched 결과가 나중에 자동 철회되는지는 이 안내만으로 보장하지 않는다. Cache state는 key별로 task manager에 분산되므로 더 큰 stream join은 task manager당 memory나 task manager 수를 늘려 수용한다. Left나 right join이 필요하면 join 뒤에 null 값을 가진 record를 filter로 걸러 낸다. Left join은 left 값이 null인 record를, right join은 right 값이 null인 record를 버린다.
+
+이 절의 batch lookup 초기화, refresh와 stream join 확장 설명은 2026-11-09 수집한 transforms-streaming-joins 개정본과 대조했으며 실제 streaming pipeline은 실행하지 않았다.
 
 ## 출처
 
