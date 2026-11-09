@@ -53,7 +53,7 @@ aliases: ["보안(Security)", "Security Index"]
 - [[tech/security/secrets/Secret-Management|시크릿 관리 (Secret Management)]] — Vault, K8s Secret 제거, CSI/Injector/AVP/ESO 주입, Auto Unseal, 동적 시크릿
 - [[tech/security/secrets/API-Key-Exposure|API 연동 키 노출과 최소 권한 스코프]] — 자격증명 노출, 권한 범위가 곧 공격 표면, 클라이언트/서버 키 구분, 정상 요청 위장 탐지, 사용자 키를 맡는 서비스(BYOK)의 통제와 사고 후 조치
 - [[tech/security/secrets/Hardcoded-Credentials|하드코딩된 자격증명]] — 소스 접근이 운영 접근이 되는 경로, 증폭 요인(장기 키, 전체 접근, 메신저 공유, 짧은 로그), 시크릿 스캐닝 한계와 임시 자격증명
-- [[Supply-Chain-Security|공급망 보안 (Supply Chain)]] — PyPI/npm과 IDE 확장 배포, 아카이브 검사/설치 차이, postinstall/.pth, 전이 의존성, lockfile 핀과 별도 영속성 대응
+- [[Supply-Chain-Security|공급망 보안 (Supply Chain)]] — PyPI/npm과 IDE 확장 배포, 아카이브 검사/설치 차이, postinstall/.pth, 전이 의존성, lockfile 핀과 별도 영속성 대응, Homebrew 탭 신뢰와 cask quarantine
 - [[Dependency-Release-Cooldown|의존성 릴리스 쿨다운]] — 고정, 해시, 쿨다운이 막는 단계, uv, pip, pnpm, npm의 게시 시점 필터와 기본값, 업로드 시각이 없을 때의 차이, 예외 경로와 보안 수정 지연
 - [x] [[SaaS-Application-Trust-Compromise|SaaS 앱 신뢰와 자격증명 침해]] — 외부 앱의 기존 권한 악용, 인증과 유출의 구분, 차단과 증거 보존
 - [[Open-Source-License-Review|오픈소스 라이선스 검토]] — MIT/Apache 고지, GPL 전달 조건, AGPL 네트워크 조건, SaaS와 납품, SPDX/SBOM의 판단 범위

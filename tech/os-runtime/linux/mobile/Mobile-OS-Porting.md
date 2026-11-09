@@ -69,3 +69,4 @@ aliases: ["Mobile OS Porting", "모바일 OS 이식", "iOS on Android", "HackiOS
 
 - [[Linux-Mobile-Platform|Linux 모바일: 운영체제보다 기기 계약]]
 - [[Android-Device-Debloat|Android 기기의 광고 줄이기]]
+- [[Linux-on-Apple-Silicon|Apple Silicon Mac에서 Linux 실행]] — 역공학한 부트 단계와 드라이버로 다른 OS를 올리는 노트북 사례

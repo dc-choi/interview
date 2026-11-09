@@ -11,6 +11,7 @@ aliases: ["OS&런타임(OS&Runtime)", "OS & Runtime"]
 
 - [[BSD-System-Composition|OS 구성과 패키지 출처 정책]] — 커널과 사용자 공간, AlpineBSD 미확인 구성 후보
 - [[Terminal-and-Editor-Interfaces|터미널과 편집기]] — Emacs 확장과 공통 명령, atto의 modeless 입력, Kwi의 파서와 GPU 렌더링
+- [[Desktop-Window-Management|데스크톱 창 관리]] — 타일링, 스크롤링, 플로팅 배치와 작업 공간별 선택, macOS 창 테두리 도구의 비공개 API와 손쉬운 사용 권한, quarantine을 지우는 cask
 
 
 
@@ -34,6 +35,7 @@ aliases: ["OS&런타임(OS&Runtime)", "OS & Runtime"]
 - [[OpenBSD-Platform|OpenBSD]] — 8.0의 가상화와 arm64 변화, pledge와 unveil, Wine 이식 초안의 보안 제약
 - [[Linux-Page-Cache-Contention|Linux 페이지 캐시 경합]] — folio 참조와 공유 카운터, 개발 패치의 확인 경계
 - [[Linux-Laptop-GPU-Power-Management|Linux 노트북 GPU 전력 관리]] — CPU와 GPU 전력 배분의 OS별 구성요소, nvidia-powerd 조건, WSL의 호스트 드라이버, 전원 연결과 배터리 비교
+- [[Linux-on-Apple-Silicon|Apple Silicon Mac에서 Linux 실행]] — OS별 부트 정책과 recoveryOS 확인, 칩과 기능별 Asahi 지원 범위, Omarchy Mac 설치기의 단계와 문서별 지원 표시 차이, 암호화와 Touch ID 위험
 - [[Native-Compilation-Compatibility|네이티브 컴파일과 호환성]] — Bun 패키징과 AOT 실험, TurboPython의 소유권
 - [[Emulation-and-Compatibility-Layers|에뮬레이션과 호환 계층]] — Wine과 Proton, Rosetta, 셰이더 변환, TBDR과 이식 판단
 

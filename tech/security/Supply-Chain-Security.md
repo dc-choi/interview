@@ -125,6 +125,17 @@ aliases: ["Supply Chain Security", "공급망 공격", "공급망 보안", "의�
 - **게시 주체 검증:** PyPI attestation(PEP 740)은 배포 파일을 내용 digest와 그것을 증명한 신원에 묶는다. PyPI는 특정 Trusted Publisher로 게시됐음을 증명하는 PyPI Publish와 원래 소스 위치를 증명하는 SLSA Provenance 형식을 받는다. `pypi-attestations verify pypi --repository <저장소 URL> <파일 URL>`은 provenance의 Trusted Publisher가 지정한 저장소와 맞는지 확인하고 파일을 attestation과 암호학적으로 대조한다.
 - **검증 범위:** PyPI 문서는 Trusted Publishing이 코드의 안전이나 작성자의 신뢰성을 보증하지 않고, 신뢰한 워크플로의 약점은 자격 증명 탈취와 같을 수 있다고 적는다. 서명과 게시 주체 검증은 어느 신원이 올렸는지를 확인하므로, 탈취한 권한으로 공식 워크플로가 다른 소스를 빌드하게 만든 경우를 그것만으로 가려낸다고 보지 않는다(해석). LiteLLM 공격 경로 기록도 파이프라인이 포크 커밋으로 빌드한 `1.107.0`에 서명하고 게시했다고 적는다. 운영 제안은 릴리스 워크플로가 받는 소스 저장소와 커밋을 입력으로 고정하고 기록해 provenance와 대조하며, 승인 조건의 완화도 승인받는 변경으로 다루는 것이다. 같은 기록에 브랜치 보호 해제와 force-push로 이력을 지운 단계가 있으므로, 릴리스 저장소의 보호 규칙 변경과 force-push도 감사 로그 알림 대상으로 둔다(운영 제안).
 
+### 서드파티 탭과 macOS 실행 검사
+
+2026-11-09 Homebrew와 Apple 공식 문서 부분 대조 기준이다. 문서 전체를 재검증한 것은 아니므로 `verified_at`은 유지한다.
+
+- **정의 파일이 코드다:** Homebrew의 formula, cask와 외부 명령은 Ruby로 된 실행 가능한 패키지 정의라서, 비공식 탭을 불러오기만 해도 그 코드가 사용자 권한으로 실행될 수 있다. 공식 탭은 사람이 검토한 PR로만 바뀌고 서드파티 탭은 Homebrew의 지원 대상이 아니다. Homebrew 6.0.0(2026-06-11)부터 비공식 탭은 기본값으로 명시적 신뢰를 요구하며(이를 끄는 `HOMEBREW_NO_REQUIRE_TAP_TRUST`는 deprecated), 신뢰하지 않은 탭을 자동으로 tap하지 않는다.
+- **신뢰 범위를 항목으로 좁힌다:** `brew install --cask user/repo/cask`처럼 탭 이름을 붙여 설치하면 그 항목만 신뢰한다. `brew trust user/repo`는 그 탭의 현재와 앞으로 추가될 formula, cask와 외부 명령을 모두 신뢰하므로, Homebrew 문서는 일회성 설치, 자동화와 직접 통제하지 않는 공급자에는 항목 단위 신뢰를 권한다. 신뢰 항목은 `$XDG_CONFIG_HOME/homebrew/trust.json`(변수가 없으면 `~/.homebrew/trust.json`)에 남고 `brew untrust`로 거둔다. 설치 안내가 탭 전체 신뢰를 첫 명령으로 제시해도 그 범위가 필요한지 먼저 본다.
+- **sha256은 만든 사람을 증명하지 않는다:** cask의 sha256은 받은 바이트가 정의와 같다는 것만 증명한다. 그래서 macOS에서 Homebrew는 cask 다운로드에 quarantine 속성을 붙여, 처음 열 때 Gatekeeper가 개발자 서명과 공증(notarization)을 검사하게 한다. 공식 cask는 기본 macOS 설정에서 이 검사를 통과해야 하고, 통과하지 못하면 deprecate와 disable을 거쳐 제거된다. 공증은 알려진 악성코드의 자동 검사이지 소스 검토가 아니다.
+- **서드파티 cask는 그 검사를 지울 수 있다:** 공식 탭의 cask는 `postflight_steps` 같은 구조화된 설치 단계만 쓸 수 있지만, 서드파티 탭에는 임의 Ruby인 기존 `postflight` 블록도 호환을 위해 남아 있다. Homebrew 7.0.0(2026-09-13) 기준으로 이 블록은 deprecated이며, 서드파티 탭은 2027-12-11까지 경고를 받는다. 어느 형식으로든 설치 뒤 앱의 quarantine 속성을 지우는 명령을 정의할 수 있다. Developer ID 서명과 공증 없이 ad-hoc 서명만 한 앱을 설치하며 `xattr -dr com.apple.quarantine`을 실행하는 cask가 그 예다([[Desktop-Window-Management#권한, 서명과 설치 경로|Window Sweaters 사례]], 실제 성공 여부는 시험하지 않음). 이 단계가 성공하면 quarantine에 묶인 Gatekeeper 검사(개발자 신원, 공증 티켓과 서명 확인)와 첫 실행 승인이 빠진다. 앱을 처음 실행할 때의 XProtect 알려진 악성코드 검사는 남지만 출처를 확인하지는 않으므로, 산출물의 출처 근거는 탭 소유자와 릴리스를 올린 사람에게만 남는다(해석).
+
+운영 제안: 탭을 신뢰하기 전에 cask 파일에서 다운로드 URL과 sha256, `postflight`와 `postflight_steps`의 명령(`xattr`, 앱 실행 등), 권한 상승이나 헬퍼 설치, `uninstall`과 `zap`이 지우는 경로를 읽는다. 같은 `brew install`이라도 공증된 앱을 받는 cask와 quarantine 속성을 지우는 cask는 macOS가 거치는 검사가 다르다. 서명된 카탈로그를 검증하는 설치기 앱을 받는 cask의 예는 [[Linux-on-Apple-Silicon#설치기가 하는 일|Apple Silicon Linux 설치기]]에 있다.
+
 ### 아티팩트 저장소의 역할과 보안 통제
 
 2026-10-13 Sonatype Nexus Repository 공식 문서 부분 대조 기준이다. 저장소를 경유한다는 사실과 보안 정책으로 반입을 차단한다는 사실은 구분한다.
@@ -212,6 +223,15 @@ Sonatype의 Hugging Face 분석은 모델 파일 디렉터리를 IQ CLI로 검�
 - [PyPI Docs, Consuming attestations](https://docs.pypi.org/attestations/consuming-attestations/)
 - [PyPI Docs, Security model and considerations](https://docs.pypi.org/trusted-publishers/security-model/)
 - [Docker Docs, Building best practices](https://docs.docker.com/build/building/best-practices/) — 태그 변경 가능성, digest 고정과 갱신 도구 대조
+- [Homebrew Documentation, Tap Trust](https://docs.brew.sh/Tap-Trust) — 2026-11-09 6.0.0 이후 기본 신뢰 요구와 이를 끄는 변수의 deprecated 상태, 항목과 탭 전체 신뢰의 범위 대조
+- [Homebrew Documentation, brew(1) Manpage](https://docs.brew.sh/Manpage) — 2026-11-09 `brew trust`, `brew untrust`와 trust.json 위치 대조
+- [Homebrew Documentation, Homebrew Security and Supply Chain](https://docs.brew.sh/Homebrew-Security-and-Supply-Chain) — 2026-11-09 서드파티 탭, cask의 신뢰 모델과 Gatekeeper 요구 대조
+- [Homebrew Documentation, Cask Cookbook](https://docs.brew.sh/Cask-Cookbook) — 2026-11-09 구조화된 설치 단계와 기존 Ruby 블록의 허용 범위 대조
+- [Homebrew 6.0.0 — Homebrew](https://brew.sh/2026/06/11/homebrew-6.0.0/) — 2026-06-11. tap trust 도입과 신뢰하지 않은 탭의 자동 tap 중지
+- [Homebrew 7.0.0 — Homebrew](https://brew.sh/2026/09/13/homebrew-7.0.0/) — 2026-09-13. 기존 flight 블록의 deprecated 상태와 서드파티 탭 경고 기한
+- [Apple Support, Safely open apps on your Mac](https://support.apple.com/en-us/102445) — 2026-11-09 Developer ID 서명, 공증과 Open Anyway 예외 대조
+- [Apple Platform Security, Protecting against malware in macOS](https://support.apple.com/guide/security/protecting-against-malware-sec469d47bd8/web) — 2026-11-09 XProtect의 첫 실행 검사 조건 대조
+- [saragordic/homebrew-tap — GitHub](https://github.com/saragordic/homebrew-tap) — 2026-11-09 window-sweaters cask의 quarantine 제거 단계 확인
 - [Post Mortem: axios npm supply chain compromise — axios/axios Issue #10636](https://github.com/axios/axios/issues/10636)
 - [Supply chain risk: runtime `npx` install exposes users to transitive dependency attacks — DataDog/junit-upload-github-action Issue #49](https://github.com/DataDog/junit-upload-github-action/issues/49)
 - [Stable Channel Update for Desktop (2026-02-13) — Chrome Releases](https://chromereleases.googleblog.com/2026/02/stable-channel-update-for-desktop_13.html)
@@ -224,5 +244,7 @@ Sonatype의 Hugging Face 분석은 모델 파일 디렉터리를 IQ CLI로 검�
 - [[Coding-Agent-Package-Hallucination|코딩 에이전트의 패키지 환각 공격]] — 규칙 파일 지시로 바뀌는 의존성 선택과 점검
 - [[Open-Source-License-Review|오픈소스 라이선스 검토]] — 포함 구성요소의 재배포 허가와 고지/소스 제공 조건
 - [[Dependency-Management|의존성 관리]] — lock 파일 3계층, semver 범위, 언어별 패키지 매니저
+- [[Desktop-Window-Management|데스크톱 창 관리]] — 서드파티 cask가 quarantine 속성을 지우는 macOS 앱 사례
+- [[Linux-on-Apple-Silicon|Apple Silicon Mac에서 Linux 실행]] — 서명 카탈로그를 검증하는 설치기와 Homebrew cask
 - [[Dependency-Release-Cooldown|의존성 릴리스 쿨다운]] — 설치 도구의 게시 시점 필터, 업로드 시각이 없을 때의 차이와 예외 경로
 - [[보안(Security)|보안 인덱스]]

@@ -56,3 +56,4 @@ MindStudio가 2026-11-01 공개한 실사용 점검 기준이다. 공급사의 �
 - [[GPU-Inference-Hardware|GPU 추론 하드웨어]] — 전력 한도, 온도와 클럭의 기록
 - [[Local-Inference-Deployment-Cases|로컬 추론의 배포 사례]]
 - [[Battery-State-of-Charge|배터리 잔량 추정과 시스템 종료]] — 전원 관리
+- [[Linux-on-Apple-Silicon|Apple Silicon Mac에서 Linux 실행]] — Omarchy의 ARM 설치와 칩별 하드웨어 지원 범위

@@ -22,3 +22,4 @@ Thread vs Event Loop, Java 동시성, Go 동시성, async/await, Backpressure �
 - [x] [[Low-Latency-Audio|저지연 오디오 출력 (지연 예산, push와 pull 버퍼 모델, 오디오 스레드 제약, 단일 생산자와 소비자의 링 버퍼, 웹 공유 메모리의 교차 출처 격리)]]
 
 - [x] [[Terminal-and-Editor-Interfaces|터미널과 편집기의 입력 및 렌더링 계층]]
+- [x] [[Desktop-Window-Management|데스크톱 창 관리 (타일링, 스크롤링, 플로팅 배치, macOS 외부 창 장식 도구의 권한과 설치 경로)]]
