@@ -27,6 +27,7 @@ aliases: ["인프라&클라우드(Infrastructure&Cloud)", "Infrastructure & Clou
 
 - [[Hybrid-Meeting-Room-Design|하이브리드 회의실의 연결과 호환성]] — BYOD와 appliance, 라이선스, 충전과 플랫폼별 지원 조건
 - [[Data-Center-Cooling|데이터센터 냉각과 PUE]] — PUE의 정의와 측정, 수전 용량 계산의 경계, 공기와 액체의 열 운반, 후면 도어, 직접 액체 냉각과 침지, GPU 랙 전력 밀도, 클럭 저하 사유
+- [[Data-Center-Power-Distribution|데이터센터 전력 공급과 이중화]] — 수전에서 서버 전원 장치까지의 경로, UPS 방식별 전환 공백, 배터리 선택, A/B 경로와 단일 장애점, Uptime 티어와 인증 구분, 장애 원인
 - [[Semiconductor-Advanced-Packaging|반도체 첨단 패키징]] — EMIB와 Foveros의 연결 구조, EMIB와 CoWoS-L의 bridge 배치, HBM base die와 기판의 구분, 제조 거점과 고객 제품 양산의 구분
 - [[Storage-Access-Models|저장장치 연결과 데이터 접근]] — DAS, NAS와 SAN, 블록/파일/객체, 공유 연결과 동시 쓰기 조정
 - [[Server-Quotation-Checklist|서버 견적 검토]] — 메모리 배치, 옵션과 지원 조건, 물리 코어 라이선스의 적용 범위, 케이블과 트랜시버, DAC와 AOC, 전원 코드와 랙 PDU
