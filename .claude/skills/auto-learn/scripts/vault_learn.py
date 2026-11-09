@@ -53,7 +53,7 @@ MODES = ("harvest", "instagram", "learn", "digest")
 # 채널(handle)과 영상(id나 URL)은 video_old_allow에 두며 기준과 관계없이 학습한다.
 DEFAULTS = {"k": 6, "jobs": 2, "whisper_threads": 4, "learn_timeout_min": 180, "harvest_timeout_min": 90,
             "instagram_timeout_min": 45, "digest_timeout_min": 30, "idle_interval_min": 180, "stale_days": 180,
-            "claude": "claude",
+            "learn_gap_min": 90, "claude": "claude",
             "threads_reposts_url": "", "adhoc_dir": "", "instagram_saved_url": "",
             "instagram_saved_collection": "", "instagram_dm_name": "", "instagram_dm_thread_url": "",
             "email_since": "", "email_senders": [],
@@ -1824,6 +1824,13 @@ def agent_has_work(mode, conf):
             log(f"{mode}: ego lite가 실행 중이 아니다")
             return False
         return True
+    # 2026-11-09 사용자 목표: 주간 한도 사용률을 40% 안팎으로 줄인다. learn은 이전 실행이 끝난 뒤
+    # learn_gap_min분이 지나야 다시 돈다(90분이면 하루 약 16회). 끝내지 못한 실행의 이어 받기는 막지 않는다.
+    last = S / "runs" / "last-learn.json"
+    if (conf["learn_gap_min"] and last.exists() and not leftover_runs("learn")
+            and time.time() - last.stat().st_mtime < conf["learn_gap_min"] * 60):
+        log("learn: 이전 실행 뒤 learn_gap_min이 지나지 않았다")
+        return False
     data = pick_data(conf["k"])
     if data["tier1"] or data["tier2"] or leftover_runs("learn"):
         return True
@@ -2924,6 +2931,11 @@ def cmd_selftest(a):
         assert {"mcp__claude-in-chrome", "mcp__plugin_playwright_playwright", "Bash(ego-browser upgrade *)"} <= set(deny)
         assert not any("ego-browser" in rule for rule in agent_rules("learn")[0])
         assert not agent_has_work("instagram", DEFAULTS | {"instagram_dm_name": "테스트친구"})
+        gap_seen = (S / "runs" / "last-learn.json").exists()
+        write_json(S / "runs" / "last-learn.json", {"at": now().isoformat(timespec="seconds")})
+        assert not agent_has_work("learn", DEFAULTS)  # learn_gap_min 안에서는 새 learn을 시작하지 않는다.
+        if not gap_seen:
+            (S / "runs" / "last-learn.json").unlink()
         box = S / "inbox"
         (box / "email" / "m1.md").write_text("---\nid: m1\npublication: 레터\nsender: a@b.example\nsubject: 제목\n"
                                              "date: 2026-10-05T07:00:00+09:00\nharvested_at: 2026-10-05\n---\n\n"
