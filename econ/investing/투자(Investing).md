@@ -34,6 +34,7 @@ aliases: ["투자(Investing)", "Investing Map"]
 - [[Behavioral-Biases-Risk|행동 편향과 리스크 관리]] — 손실 회피, 군중 심리, 소셜 심리와 매매 신호의 구분, 규칙 기반 관리, 자기 통제 ✅
 - [[Backtesting-Pitfalls|백테스트의 함정]] — 미래 정보 누수, 과최적화, 비용, 표본 외 검증, 모의/실거래와 적립 계산의 구분 ✅
 - [[Quant-Investing-Machine-Learning|퀀트 투자의 머신러닝]] — 적은 독립 표본과 낮은 신호 대 잡음비, 시장 적응, 단어 사전과 언어 모델의 텍스트 신호, 신호 가중치 학습과 1/N 비교, 해석 가능성 ✅
+- [[LLM-Valuation-Agent|LLM 가치평가 에이전트의 쓰임과 한계]] — 문체 학습과 방법 적용의 차이, 가치 동인과 에이전트 역할 분리, 정량 평가 부재, 프레이밍 질문과 숫자와 이야기를 잇는 능력의 한계 ✅
 - [[Technical-Pattern-Validation|캔들과 차트 패턴의 검증]] — 봉 단위, 반전 확인 조건, 통계적 정보와 매매 수익의 구분, 후속 학습 범위
 - [[Social-Investment-Claims-Validation|소셜 자료의 투자 주장과 조사 후보]] — 미래 산업 10종목의 식별, 배분안, 금 가격 공식과 귀속 미검증 인용 ✅
 
