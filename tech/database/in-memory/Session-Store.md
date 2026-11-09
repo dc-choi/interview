@@ -1,7 +1,7 @@
 ---
 tags: [database, redis, cache]
 status: done
-verified_at: 2026-09-30
+verified_at: 2026-11-09
 category: "Data & Storage - Cache & KV"
 aliases: ["Session Store"]
 ---
@@ -41,6 +41,18 @@ JWT 같은 self-contained token의 blacklist가 꼭 필요하면 원문 token �
 - 스토어 접근은 사설 네트워크, TLS와 최소 권한으로 제한하고 저장 값의 민감도에 따라 암호화를 적용한다.
 - 활성 세션 수, 생성과 폐기율, 만료와 eviction, 조회 지연과 오류율, failover 및 복제 지연을 관측한다.
 
+## 서버 측 컴포넌트 UI의 세션 상태
+
+로그인 세션은 사용자 ID와 권한 같은 작은 값이지만, 서버 측 컴포넌트 UI 프레임워크 중에는 화면 상태 자체를 서버에 두는 것이 있다. 상태를 두는 위치는 프레임워크마다 다르므로 각 문서에서 확인한다. Vaadin Flow는 사용자의 UI들을 `VaadinSession`으로 모아 HTTP 세션에 저장하고, 각 노드나 파드는 현재 사용자 세션을 메모리에 둔 채 연결을 유지한다. 이런 세션은 위의 작은 키-값 계약으로 바로 옮기기 어렵다.
+
+- **sticky session이 기본 경로다.** Vaadin 문서는 평상시 같은 사용자를 같은 노드나 파드로 보내는 sticky session을 쓴다고 설명한다.
+- **복제는 장애와 축소에 대비한 보조 경로다.** Vaadin Kubernetes Kit은 세션을 Hazelcast나 Redis 같은 분산 캐시에 비동기로 복제하고, 축소나 장애로 노드가 빠지면 사용자를 정상 노드로 옮겨 캐시에서 세션을 가져오게 한다. HTTP 세션에 담는 값은 직렬화할 수 있어야 하고 그렇지 않은 필드는 `transient`로 둬야 하며, `transient` 필드는 역직렬화 뒤 `null`이 되므로 애플리케이션이 다시 채워야 한다(Kubernetes Kit은 일치하는 Spring bean을 다시 주입할 수 있다). 직렬화나 역직렬화 단계에서 복제가 실패할 수도 있다. 상용 Vaadin 구독이 필요하다(2026-11-09 문서 기준).
+- **새 버전 배포에서는 기존 세션을 이전 버전에 남긴다.** Vaadin 문서의 롤링 업데이트 절차는 Gateway API의 가중치 라우팅과 쿠키 기반 세션 고정(session persistence)으로 기존 세션을 이전 버전에 연결된 채 두고, Kubernetes Kit이 이전 버전 사용자에게 새 버전을 알려 작업을 저장한 뒤 전환 시점을 고르게 한다. Gateway API의 session persistence는 2026-11-09 기준 실험 단계 기능이므로 사용하는 게이트웨이 구현의 지원 여부를 확인한다.
+
+세션에 담는 상태의 모양은 운영 선택지에도 영향을 준다. 아래는 출처가 직접 말하는 내용이 아니라 설계 판단이다. 복제를 구성하지 않으면 상태가 한 인스턴스의 메모리에만 있으므로, 요청이 상태 없는 다른 인스턴스에 닿거나 그 인스턴스가 사라지면 사용자의 화면 상태를 잃는다. 상태가 인스턴스 메모리에 있으면 크기와 관계없이 sticky 라우팅이 필요하고, 크고 직렬화하기 어려운 객체 그래프일수록 외부 저장과 인스턴스 간 이동의 비용이 커진다. 화면 구조는 코드로 다시 만들 수 있고 세션에는 화면을 다시 그리는 데 필요한 값만 직렬화 가능한 단순 구조로 남는 설계라면 외부 저장소 보관, 인스턴스 간 이동과 0대까지 축소한 뒤의 복원을 검토하기 쉬워진다.
+
+검토할 때는 사용자 한 명의 세션 크기, 인스턴스가 예고 없이 사라질 수 있는 플랫폼인지, 무중단 배포 중 기존 사용자를 어떻게 옮길지를 함께 확인한다.
+
 ## 저장소 선택
 
 Redis는 낮은 지연, TTL과 수평 확장이 필요한 세션에 적합하지만 persistence와 복제가 강한 일관성을 자동 보장하지는 않는다. 강한 내구성과 복잡한 조회가 우선이면 RDB를 선택할 수 있다. 어떤 저장소든 세션 데이터만으로 사용자 정본과 감사 기록을 대체하지 않는다.
@@ -53,6 +65,10 @@ Redis는 낮은 지연, TTL과 수평 확장이 필요한 세션에 적합하지
 - [Redis Docs, Redis persistence](https://redis.io/docs/latest/operate/oss_and_stack/management/persistence/)
 - [Valkey Docs, GETEX](https://valkey.io/commands/getex/)
 - [Valkey Docs, EXPIRE](https://valkey.io/commands/expire/)
+- [Vaadin Docs, Kubernetes Kit](https://vaadin.com/docs/latest/tools/kubernetes)
+- [Vaadin Docs, Session Replication](https://vaadin.com/docs/latest/tools/kubernetes/session-replication)
+- [Vaadin Docs, Rolling Out a New Version](https://vaadin.com/docs/latest/tools/kubernetes/update-version)
+- [Gateway API, GEP-1619: Session Persistence](https://gateway-api.sigs.k8s.io/geps/gep-1619/)
 - [인프런, Hong, String vs Hash 비교하기 & 캐시의 또다른 사용번 세션 스토어](https://www.inflearn.com/courses/lecture?courseId=343676&unitId=481445)
 
 ## 관련 문서
@@ -61,3 +77,5 @@ Redis는 낮은 지연, TTL과 수평 확장이 필요한 세션에 적합하지
 - [[TTL|TTL 전략]]
 - [[Redis-Memory-Eviction|Redis 메모리와 eviction]]
 - [[Redis-Data-Structures|Redis 자료구조]]
+- [[Load-Balancer|로드 밸런서]]
+- [[Zero-Downtime-Deployment|무중단 배포]]
