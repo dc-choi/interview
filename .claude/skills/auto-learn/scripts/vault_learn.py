@@ -53,7 +53,7 @@ MODES = ("harvest", "instagram", "learn", "digest")
 # 채널(handle)과 영상(id나 URL)은 video_old_allow에 두며 기준과 관계없이 학습한다.
 DEFAULTS = {"k": 6, "jobs": 2, "whisper_threads": 4, "learn_timeout_min": 180, "harvest_timeout_min": 90,
             "instagram_timeout_min": 45, "digest_timeout_min": 30, "idle_interval_min": 180, "stale_days": 180,
-            "learn_gap_min": 90, "claude": "claude",
+            "learn_gap_min": 90, "channel_keep": [], "claude": "claude",
             "threads_reposts_url": "", "adhoc_dir": "", "instagram_saved_url": "",
             "instagram_saved_collection": "", "instagram_dm_name": "", "instagram_dm_thread_url": "",
             "email_since": "", "email_senders": [],
@@ -1452,8 +1452,8 @@ def state_summary():
 def channel_candidates(log_rows, listed=None, owner=None, keep=None, min_decided=15, max_rate=0.30):
     """2026-11-09 사용자 결정: 판정(반영과 건너뜀, 보류 제외)이 min_decided건 이상이고 반영률이 max_rate 미만인
     학습 대상 채널을 다이제스트에 제외 후보로 띄운다. 제외 여부는 사용자가 정하고, 남기기로 한 채널은
-    S/channel_keep(한 줄에 handle 하나)에 적어 다시 띄우지 않는다."""
-    keep = {hkey(h) for h in (read_lines(S / "channel_keep") if keep is None else keep) if h.strip()}
+    config.json의 channel_keep(handle 배열)에 적어 다시 띄우지 않는다."""
+    keep = {hkey(h) for h in (cfg()["channel_keep"] if keep is None else keep) if h.strip()}
     listed = {hkey(h): h for h in (learning_sources()[0] if listed is None else listed) if hkey(h) not in keep}
     owner = owner if owner is not None else \
         {r[0]: hkey(r[1]) for prio in ("new", "backlog") for r in rows(S / "queue" / f"{prio}.tsv") if len(r) > 1}
