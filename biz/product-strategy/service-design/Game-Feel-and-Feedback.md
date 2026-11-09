@@ -70,6 +70,8 @@ Lin 외는 두 방식의 구현이나 정보 차이를 따로 분석하지 않�
 | 발판 운동량 보존 | 움직이는 발판에서 얻는 점프 속도 보정을 발판이 멈춘 뒤에도 몇 프레임 유지 |
 | 벽 점프 허용 범위 | 벽에 정확히 닿기 전에도 가까운 범위에서 벽 점프 허용 |
 
+공개된 Celeste 플레이어 코드에서 코요테 타임은 `JumpGraceTime = 0.1f` 상수다. 땅 위에 있는 동안 타이머를 이 값으로 채우고, 공중에서는 프레임 경과 시간만큼 줄이며, 점프하면 0으로 만들어 한 번만 쓰게 한다. 0.1초는 60fps에서 약 6프레임에 해당한다. 경과 시간으로 줄이므로 프레임 수가 아니라 게임 시간 기준의 창이다.
+
 이 기법들은 시간과 위치 허용 범위를 플레이어에게 유리하게 넓히는 설계다. 난도가 높은 게임에도 적용된 사례라는 점과, 모든 플레이어가 더 공정하다고 느낀다는 실험 결론은 구분한다. 원문의 시간과 거리 값을 다른 해상도나 이동 속도의 게임에 그대로 옮기지 않는다.
 
 검수 제안: 착지 직전과 직후, 발판 이탈 직전과 직후, 모서리 접촉에서 같은 입력을 재생한다. 의도한 점프를 살리는지와 원치 않는 추가 점프가 생기는지를 함께 확인한다. 판정 보정과 히트스톱을 각각 끄고 비교해 규칙 변화와 결과 전달 효과를 분리한다.
@@ -100,6 +102,7 @@ Xbox XAG 117은 카메라 흔들림, 카메라 bobbing, motion blur 같은 효�
 - [Juice it or lose it — YouTube, Martin Jonasson, Petri Purho](https://www.youtube.com/watch?v=Fy0aCDmgnxg) — 07:38~11:45의 효과음 분리와 블록 제거 연출 설명. 화면과 음향 자체는 미검증.
 - [Juicy Breakout — GitHub, grapefrukt](https://github.com/grapefrukt/juicy-breakout) — README의 발표 영상과 예제 연결 확인, 코드 실행은 하지 않음.
 - [Celeste & Forgiveness — Maddy Makes Games](https://maddymakesgames.com/articles/celeste_and_forgiveness/index.html) — 2026-10-26 코요테 타임, 점프 버퍼링, 모서리 보정, 발판 운동량 보존과 벽 점프 허용 범위를 대조. 공개 설계 설명이며 구현 재현이나 플레이어 효과 실험은 하지 않음
+- [Celeste Player.cs — GitHub, NoelFB](https://github.com/NoelFB/Celeste/blob/master/Source/Player/Player.cs) — 2026-11-09 `JumpGraceTime` 선언, 땅 위 타이머 충전, 공중 감소와 점프 시 소진 코드만 대조. 저장소 README는 열지 못했고 코드를 실행하지 않음
 - [Juice It or Lose It — GDC, Martin Jonasson, Petri Purho](https://gdcvault.com/play/1016789/Juice-It-or-Lose) — 발표 개요의 게임 만족감과 연출 주제만 확인했으며 영상 전체 전사로 취급하지 않았다.
 - [Hit-Stop & Layered Juice — m2-md](https://github.com/m2-md/game-feel-hitstop-juice) — README와 `src/demo.ts`, `src/feel.ts`의 효과 구분, 화면 전체 번쩍임, 시뮬레이션 시간과 실제 시간의 구분. 코드를 읽어 확인했으며 실행하거나 체감 효과를 측정하지 않았다.
 - [What Features Influence Impact Feel? A Study of Impact Feedback in Action Games — arXiv, Zhonghao Lin 외](https://arxiv.org/abs/2208.06155) — 2026-10-21 확인, arXiv에 GEM 2022 채택으로 표기된 v3 PDF의 방법 절과 C4A.1(약한 공격과 강한 공격), C4B.1(체력 막대와 피해 숫자) 항목. 16개 게임 분석에서 정리한 특징이며 효과를 실험한 결과는 아니다.
