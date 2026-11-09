@@ -1,7 +1,7 @@
 ---
 tags: [palantir, foundry, pipeline-builder, data-engineering]
 status: done
-verified_at: 2026-11-01
+verified_at: 2026-11-09
 category: "AI엔지니어링(AIEngineering)"
 aliases: ["Pipeline Builder 협업과 재사용 계약"]
 ---
@@ -32,7 +32,9 @@ Custom expression은 단일 expression, custom transform path는 여러 board를
 
 Subgraph는 transform, split, join 같은 logic을 정의된 input과 output을 가진 reusable block으로 묶는다. 2026-10-26 발표로 10월27일부터 모든 enrollment에서 GA가 됐고, 현재 subgraph 문서에는 Beta 표기가 없다. 같은 pipeline의 여러 위치나 branch에 적용할 수 있으며, reusable subgraph에 parameter input을 정의하면 instance마다 다른 설정 값을 줄 수 있다. 선택한 node가 모두 transform이면 Replace with subgraph로 기존 subgraph로 바꾼다.
 
-Subgraph input은 필요한 column을 정의하고, 빈 input은 필요한 column이 없다는 뜻이다. 필요한 column은 적용할 때 각각 main graph의 호환 column에 mapping하며 multi-input도 input마다 mapping한다. 한 번의 수정이 모든 instance에 영향을 주므로 실제 instance와 output schema를 검토한다. 다른 pipeline에서의 재사용과 공유 방식은 현재 subgraph 문서가 설명하지 않으므로 별도로 확인한다.
+Subgraph input은 필요한 column을 정의하고, 빈 input은 필요한 column이 없다는 뜻이다. Node input은 Files나 Table 유형이며 schema는 기존 dataset에서 복사하거나 column을 직접 더한다. Parameter input은 List(element type Column, data type String 등)처럼 유형별 필드를 갖고 subgraph 안의 호환 transform 필드에서 참조한다. 필요한 column은 적용할 때 각각 main graph의 호환 column에 mapping하며 multi-input도 input마다 mapping한다. 한 번의 수정이 모든 instance에 영향을 주므로 실제 instance와 output schema를 검토한다. 다른 pipeline에서의 재사용과 공유 방식은 현재 subgraph 문서가 설명하지 않으므로 별도로 확인한다.
+
+기존 join, sort, aggregation 같은 node 묶음은 선택 뒤 Create subgraph로 옮길 수 있고, 이때 input schema는 자동으로 채워진다. 그 뒤 main graph에서 input을 mapping하고 Start, Apply를 거쳐야 instance가 된다. 필요한 input이 빠지면 Errors 탭과 graph에 schema error가 표시되고 output preview에는 `Missing 1 input` 같은 메시지가 나타나므로, subgraph 생성만으로 기존 흐름이 그대로 이어졌다고 보지 않고 mapping과 preview를 확인한다. 기존 subgraph는 toolbar의 Apply subgraph to table로 선택한 source node 뒤에 붙이거나 Replace with subgraph로 transform을 대체한다(2026-11-09 수집한 subgraph 문서 개정본 기준).
 
 ## 화면 구조와 실행 구조
 

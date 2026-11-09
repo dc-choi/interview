@@ -1,7 +1,7 @@
 ---
 tags: [palantir, foundry, security, policy, migration]
 status: done
-verified_at: 2026-10-16
+verified_at: 2026-11-09
 category: "AI엔지니어링(AIEngineering)"
 aliases: ["Foundry 보안 관리와 이전 계약"]
 ---
@@ -26,7 +26,9 @@ APPEND/UPDATE의 latest view는 예전 transaction 의존성을 포함할 수 �
 
 Policy column null은 모든 사용자에게 inaccessible이 될 수 있다. Policy 전용 non-null column, domain invariant와 갑작스러운 hierarchy 변화를 확인하는 data check는 읽기 정확성을 유지하는 수단이다. 이 검증이 read-time policy를 downstream에 전파시키지는 않는다.
 
-Equal/order 비교는 같은 타입의 single value가 필요하고 intersects/subset/superset은 해당 방향에 collection이 있어야 한다. Object security policy는 less/greater 비교를 지원하지 않는다. Policy는 최대 10 comparison, constant-field weight 1, collection-field 1,000, marking condition 3,000이며 합은 10,000 미만이어야 한다.
+Equal/order 비교는 같은 타입의 single value가 필요하고 intersects/subset/superset은 해당 방향에 collection이 있어야 한다. OSv2 object type의 색인 제약으로 restricted view datasource policy, object security policy와 property security policy는 operand가 `String`이나 `Boolean`(배열 원소 포함)이어야 하고 less/greater 계열 순서 비교를 지원하지 않는다. Policy가 참조하지 않는 timestamp, date와 numeric 속성은 여전히 색인할 수 있다([[Palantir-Object-Restricted-View-and-MDO]]).
+
+Policy 한도는 condition 개수가 아니라 comparison weight 합계 10,000이다(2026-11-09 확인한 개정본 기준, 이전 문서의 10 comparison 상한 표기는 현재 본문에 없다). Field 없이 user attribute와 constant만 비교하는 condition과 field를 참조하지 않는 marking condition은 0, field와 single value 비교는 1, field와 collection 비교는 1,000, field에 저장된 marking을 요구하는 condition은 3,000이다. 값이 하나뿐인 list나 사용자의 group 수와 관계없이 collection은 collection 가중치를 받는다. 중첩된 All(`AND`)과 Any(`OR`) group 모두 덧셈으로 합산하고 `NOT`은 감싼 condition의 가중치 외에 추가 가중치를 더하지 않는다. Weight 0은 무시된다는 뜻이 아니라 row나 object를 읽기 전에 사용자 기준으로 먼저 평가된다는 뜻이다. 같은 계산이 restricted view와 object security policy에도 적용되며 property security policy는 object policy와의 합산 한도를 따로 확인한다.
 
 Group/user/organization 참조는 UUID 기준을 우선 확인한다. Org marking UUID와 `ri.multipass..organization` Org RID는 다르다. 일부 group-name legacy 안내는 realm을 요구하지만 granular-policy/reference 안내는 이름 대신 UUID를 요구해 설명이 상충한다. 이름 기반 정책을 신규 동작으로 보장하지 않는다. Membership NOT 조건은 scoped token에서 부적절한 grant를 만들 수 있다.
 
@@ -56,6 +58,7 @@ Ignore inherited permissions와 Propagate view requirements는 planned deprecati
 
 ## 출처
 
+- [Palantir Object Permissioning, configuring-rv-access-controls](https://www.palantir.com/docs/foundry/object-permissioning/configuring-rv-access-controls/)
 - [Palantir Security Management, platform-security-management](https://www.palantir.com/docs/foundry/platform-security-management)
 - [Palantir Security Management, disabling-ignore-inherited-permissions](https://www.palantir.com/docs/foundry/platform-security-management/disabling-ignore-inherited-permissions)
 - [Palantir Security Management, disabling-propagate-view-requirements](https://www.palantir.com/docs/foundry/platform-security-management/disabling-propagate-view-requirements)
