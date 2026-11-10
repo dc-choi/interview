@@ -1,9 +1,9 @@
 ---
 tags: [infrastructure, data-center, cooling, pue, power, gpu, liquid-cooling]
 status: done
-verified_at: 2026-11-03
+verified_at: 2026-11-10
 category: "인프라&클라우드(Infrastructure&Cloud)"
-aliases: ["Data Center Cooling", "데이터센터 냉각", "PUE", "Power Usage Effectiveness", "전력 사용 효율", "액체 냉각", "Direct Liquid Cooling", "침지 냉각", "액침 냉각"]
+aliases: ["Data Center Cooling", "데이터센터 냉각", "PUE", "Power Usage Effectiveness", "전력 사용 효율", "액체 냉각", "Direct Liquid Cooling", "침지 냉각", "액침 냉각", "Hot Aisle Containment", "찬 통로와 더운 통로"]
 ---
 
 # 데이터센터 냉각과 PUE
@@ -50,6 +50,35 @@ OCP는 직접 액체 냉각을 공기를 중간 매체로 쓰지 않고 액체�
 
 ASHRAE 2021 백서는 액체 냉각으로 PUE를 1.1 미만까지 낮출 수 있다고 적지만 방식별 값을 정하지 않는다. Uptime도 기후 조건이 냉각 시스템의 선택을 제약한다고 적는다. PUE는 열 방출 설비와 기후의 영향을 크게 받으므로 냉각 방식 이름만으로 PUE를 정하지 않는다(해석).
 
+### 공랭 서버실은 찬 공기와 더운 공기를 섞지 않는 것이 먼저다
+
+- **찬 통로와 더운 통로:** 랙을 번갈아 배치해 흡기면(앞면)끼리 마주 보게 해 찬 통로(cold aisle)를, 배기면(뒷면)끼리 마주 보게 해 더운 통로(hot aisle)를 만든다. 모든 줄이 같은 방향을 보면 앞줄의 배기를 뒷줄이 그대로 빨아들인다(ENERGY STAR).
+- **컨테인먼트:** 통로 배치만으로는 배기가 랙 위로 넘어가 상단 서버의 흡기 온도를 올릴 수 있다. 커튼이나 패널 같은 물리적 차단으로 한쪽 통로를 가두면 공급 공기와 배기의 혼합이 줄고, CRAC은 팬 속도를 낮추고 CRAH는 더 높은 온도의 냉수를 쓰며 이코노마이저로 압축기 없이 식히는(free cooling) 시간을 늘릴 수 있다(ENERGY STAR). 랙의 빈 칸을 막는 블랭킹 패널도 같은 목적이다.
+- **온도 기준은 방이 아니라 장비 흡기다:** ASHRAE 2021 열 지침(5판)의 권장 범위는 A1~A4 등급 IT 장비의 흡기 건구 온도 18~27°C다. 시설은 권장 범위를 목표로 설계하고 운영하며, 등급별 허용 범위(A1은 15~32°C)는 제조사가 기능을 시험한 조건이지 신뢰성 보장이 아니다. 같은 지침은 고밀도 공랭 제품을 위한 H1 등급을 새로 두고 권장 18~22°C, 허용 15~25°C로 좁혔다. H1은 데이터센터 안에서 더 낮은 온도로 식히는 구역을 가정하며, 제품에 H1을 적용할지는 IT 제조사가 정한다.
+
+### 시설 냉각수 온도 등급
+
+액체 냉각 장비는 시설이 공급하는 냉각수 온도로 등급을 나눈다(ASHRAE 2021 열 지침). 등급의 숫자는 시설 냉각수 공급 온도의 상한이고 모든 등급의 최저 수온은 2°C이며, 장비는 해당 등급 범위 전체에서 완전히 동작해야 한다.
+
+| 등급 | 시설 냉각수 공급 온도 상한 | 대표 설비 구성 |
+|---|---|---|
+| W17, W27 | 17°C, 27°C | 칠러와 냉각탑이 기본이고 지역에 따라 냉각탑 기반 수측 이코노마이저를 더한다 |
+| W32, W40 | 32°C, 40°C | 대부분의 지역에서 칠러 없이 냉각탑으로 운영하고, 보조 설비로 칠러나 지역난방 시스템을 둔다. 일부 지역은 칠러가 필요하다 |
+| W45, W+ | 45°C, 45°C 초과 | 칠러 없이 운영해 에너지와 설비 투자를 줄이고 보조 설비로 지역난방 시스템을 둔다. 일부 지역은 드라이쿨러가 맞지 않는다 |
+
+장비가 높은 냉각수 온도를 받아들일수록 칠러 압축기를 돌리는 시간이 줄어든다(해석). 아래 GPU 랙 표의 Vera Rubin 45°C 공급 온도는 이번에 대조한 NVIDIA 자료에서 시설 냉각수인지 CDU 뒤 2차 루프의 온도인지 밝히지 않으므로, W 등급과 바로 대응하지 않는다. 2차 루프 온도라면 CDU 열교환 온도차만큼 시설 냉각수가 더 차가워야 한다(해석). 실제 도입은 장비 사양의 냉각수 조건, CDU 구성과 시설이 연중 만들 수 있는 냉각수 온도를 맞춰 본다(운영 제안).
+
+### 직접 액체 냉각의 도입 (Uptime 2024 조사 기준)
+
+Uptime Institute 2024 냉각 시스템 조사(2024-02-08~03-13, 전체 964명 응답)의 문항별 결과다.
+
+- **사용 여부(소유와 운영 조직 453곳):** 자체 데이터센터에 직접 액체 냉각을 조금이라도 쓰는 조직은 22%였고 61%는 쓰지 않지만 검토하겠다고 답했다.
+- **사용 범위와 방식(DLC 사용 조직 94곳):** 48%는 DLC를 쓰는 랙이 전체의 10% 미만이었다. 방식은 수냉 콜드플레이트(64%), 유전체 콜드플레이트(30%), 단상 완전 침지(26%) 순이었다.
+- **필요해지는 랙 전력(벤더 포함 820명의 의견):** 공랭이 너무 비싸지거나 불가능해 DLC가 필요해진다고 보는 랙 전력은 20~29kW(29%)가 가장 많았고 30~39kW(19%)가 뒤를 이었다.
+- **도입 장벽(86명):** 비용(41%)과 신뢰성 우려(38%)가 가장 많이 꼽혔다.
+
+Uptime은 2025년과 2026년 냉각 시스템 조사도 냈지만 이번에는 본문을 확인하지 못했다. 위 조사에서 사용 조직도 일부 랙에만 DLC를 썼으므로, 고밀도 랙과 기존 저밀도 랙이 한 시설에 섞이는 기간을 전제로 공랭과 액체 냉각을 함께 계획한다(운영 제안).
+
 ## GPU 랙의 전력 밀도
 
 2026-11-03 NVIDIA 공식 문서 기준이다. 같은 세대도 시스템 구성에 따라 전력 한도가 다르다.
@@ -71,6 +100,8 @@ NVML은 GPU 클럭이 요청값보다 낮아진 이유를 나눠 보고한다. �
 ## 적용 점검
 
 - 장비의 최대 전력과 실제 부하, 랙당 전력과 냉각 방식이 설치 시설의 수전, 배전과 냉각 용량에 맞는가?
+- 공랭 구역은 찬 통로와 더운 통로를 나누고 컨테인먼트와 블랭킹 패널로 혼합을 막았는가? 온도는 방 평균이 아니라 서버 흡기에서 재고, 고밀도 공랭 장비가 H1 등급을 요구하는지 확인했는가?
+- 액체 냉각 장비가 요구하는 냉각수 등급(W17~W+)을 시설이 연중 공급할 수 있는가?
 - PUE를 비교할 때 측정 기간(연평균인지), 측정 지점, 기후와 부하율이 같은가? 냉각 방식을 바꾼 뒤에는 PUE와 함께 총에너지를 봤는가?
 - 액체 냉각을 도입하면 공랭으로 남는 부품의 열, 시설 쪽 냉각수 조건, 재료 호환성과 보증 조건을 확인했는가?
 - GPU 클럭이 낮아졌다면 온도, 전력 한도와 외부 신호 중 어느 사유인지 확인했는가?
@@ -78,6 +109,12 @@ NVML은 GPU 클럭이 요청값보다 낮아진 이유를 나눠 보고한다. �
 ## 출처
 
 - [데이터센터 더 안 짓고도 GPU를 더 돌리는 방법 — 티타임즈TV (YouTube)](https://www.youtube.com/watch?v=unOa1sbDNRU) — 2026-10-24 계기 자료. 냉각 방식별 PUE 값, 시장 규모 전망, 업체 전략과 NVIDIA의 침지 냉각 인증에 대한 주장은 1차 출처로 확인하지 못해 옮기지 않았다
+- [데이터센터는 서버 열을 어떻게 식히나? 찬 통로부터 수랭, 액침까지 — 디케이앤유 (YouTube)](https://www.youtube.com/watch?v=uRA0QhXmorg) — 2026-11-10 계기 자료. 정전 시 온도 상승 속도, 칠러 재기동 시간, WUE와 사업자별 수치, 냉각 전력 비중, 침지 냉각 실증 결과는 이번에 1차 출처로 확인하지 못해 옮기지 않았다
+- [ASHRAE TC 9.9, 2021 Equipment Thermal Guidelines for Data Processing Environments Reference Card](https://www.ashrae.org/file%20library/technical%20resources/bookstore/supplemental%20files/therm-gdlns-5th-r-e-refcard.pdf) — 공랭 권장, 허용 범위와 H1 등급, 액체 냉각 W 등급
+- [Uptime Institute 2024 Cooling Systems Survey: Direct Liquid Cooling Results — Uptime Institute](https://datacenter.uptimeinstitute.com/rs/711-RIA-145/images/2024.Cooling.Survey.Report.pdf)
+- [Move to a Hot Aisle/Cold Aisle Layout — ENERGY STAR](https://www.energystar.gov/products/data_center_equipment/16-more-ways-cut-energy-waste-data-center/move-hot-aislecold-aisle-layout)
+- [Utilize Containment/Enclosures — ENERGY STAR](https://www.energystar.gov/products/data_center_equipment/16-more-ways-cut-energy-waste-data-center/containmentenclosures)
+- [Manage Airflow for Cooling Efficiency — ENERGY STAR](https://www.energystar.gov/products/data_center_equipment/16-more-ways-cut-energy-waste-data-center/manage-airflow-cooling-efficiency) — 블랭킹 패널
 - [PUE: A Comprehensive Examination of the Metric — The Green Grid](https://datacenters.lbl.gov/sites/default/files/WP49-PUE%20A%20Comprehensive%20Examination%20of%20the%20Metric_v6.pdf) — White Paper #49, LBNL 호스팅 사본. 정의, 포함 부하, 측정 기간과 비교 조건
 - [Uptime Institute Global Data Center Survey 2025 — Uptime Institute](https://datacenter.uptimeinstitute.com/rs/711-RIA-145/images/2025.Annual.Survey.Report.pdf) — 연간 PUE 가중평균, 랙 밀도와 기후 조건
 - [Water-Cooled Servers: Common Designs, Components, and Processes — ASHRAE TC 9.9](https://www.ashrae.org/File%20Library/Technical%20Resources/Bookstore/WhitePaper_TC099-WaterCooledServers.pdf)
