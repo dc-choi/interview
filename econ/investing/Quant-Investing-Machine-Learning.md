@@ -1,7 +1,7 @@
 ---
 tags: [econ, investing, quant, machine-learning, text-analysis]
 status: done
-verified_at: 2026-11-08
+verified_at: 2026-11-10
 category: "Economics"
 aliases: ["퀀트 투자의 머신러닝", "Quant Investing Machine Learning", "금융 머신러닝", "Financial Machine Learning", "어닝콜 텍스트 신호"]
 ---
@@ -107,7 +107,9 @@ BERT 계열 모델은 라벨 없는 텍스트에서 모든 층이 좌우 문맥�
 
 넘겨준 판단이 커질수록 [[Backtesting-Pitfalls#4. 표본 외 검증과 그 한계|표본 외 검증]], 시도 횟수 기록과 작은 초기 비중 같은 통제를 더 엄격히 둔다.
 
-## 6. 사례: AQR의 설명 (2026-10-27 업로드 클립 기준)
+## 6. 사례: 운용사의 설명
+
+### AQR (2026-10-27 업로드 클립 기준)
 
 AQR 공동창업자 Cliff Asness가 청중 앞에서 영어로 말한 2분 48초 클립의 내용이다. 원 행사와 발언 시점은 확인하지 못했다. 같은 표현(partially surrendering to the machines)이 2025-06 Global Alts New York 대담 영상 소개에 있으나 클립과 같은 장면인지 대조하지 못했다. 아래는 회사의 설명이며 검증된 성과가 아니다.
 
@@ -117,6 +119,17 @@ AQR 공동창업자 Cliff Asness가 청중 앞에서 영어로 말한 2분 48초
 - **부분적 항복:** 기계가 사람이 이미 생각한 뻔하고 직관적인 일만 한다면 쓸 이유가 없고 기계는 단순한 이론이나 맨눈으로 보지 못한 패턴을 찾아내므로 판단을 일부 맡겨야 한다며, 평소 이를 부분적 항복(partially surrender)이라 부르는데 부분적이라는 말이 때때로 빠진다고 덧붙였다.
 
 같은 흐름의 설명은 이전 보도에도 있다. 2024-05-23 Hedgeweek가 전한 Pensions & Investments 인터뷰에서는 머신러닝이 영향을 줄 세 영역으로 매매 신호 생성, 그 신호의 가중, 코드 작성 같은 효율과 생산성을 꼽았고, 매매 신호 생성에서는 자연어 처리가 현재 AQR에서 가장 많이 쓰는 머신러닝이라고 했다. 2024년 6월 Bloomberg Invest에서는 기계에 더 많은 결정을 맡기며 기계가 사람보다 적어도 조금은 낫다고 꽤 확신한다고 말했다. 2024-11-29 AI Street가 전한 Bloomberg TV 인터뷰에서는 데이터에서 우연히 나타난 것을 거래할 수 있다고 착각하지 않도록 오래 과최적화를 경계해 왔다며, AI가 그동안 말해 온 전통적인 원칙 일부에서 조금 멀어지게 하고 그 점이 불편했다고 말했다.
+
+### Man Group의 에이전트형 연구 workflow
+
+Man Group이 2025-11-13 공개한 글의 설명이며 회사가 스스로 밝힌 내용이다. 성과 수치나 표본 외 결과, 잘못된 발견의 비율은 공개하지 않았다.
+
+- **구조:** AlphaGPT는 가설을 내는 역할, 그 가설을 사내 연구 도구와 데이터베이스를 쓰는 Python 코드로 옮기는 역할, 통계적 유의성과 위험, 경제적 논리를 검사하는 평가 역할로 이루어진 디지털 3인 연구팀을 orchestrator가 조율한다. 지금까지 체계적(systematic) 주식 연구에서 가장 성공적이었다고 했고, 다른 자산군은 데이터 원천과 방법론을 바꿔 옮길 수 있도록 모듈형으로 설계했다고만 적었다(확장 실적이나 계획은 밝히지 않음).
+- **같은 문턱:** 평가 역할은 사람이 만든 연구와 같은 기준을 적용하며, 실거래에 들어가는 전략은 사람과 AI 어느 쪽에서 나왔든 같은 문턱을 통과해야 한다고 밝혔다.
+- **실패 유형:** 구상한 아이디어와 다른 것을 구현하거나 코드를 만들며 연구 개념을 잘못 해석할 수 있다. 시도 수가 늘수록 연구 구간에서만 운 좋게 좋아 보이는 결과가 생기는 다중 검정(p-hacking) 위험도 꼽았다. 대응으로 사람 연구와 같은 방법론, 프롬프트로 연구 목표와 제약을 명확히 전달하기, 여러 단계의 검증과 일관성 검사, 모든 결정과 가정의 기록, 투자위원회 검토와 코드 리뷰를 든다. 아직 사람 감독 없이 돌릴 수 없다고 적었다.
+- **조직 관점:** 회사 관계자가 출연한 2분 30초 클립(2026-10-30 업로드, 원 행사와 발언 시점은 확인하지 못함)에서는 연구원당 아이디어 수가 늘지 않더라도 디지털 연구원 수를 늘리는 방식으로 규모를 키울 수 있고, 기술에 맞춰 투자 철학을 바꾸지 말고 철학 안에서 기술이 일하게 해야 하며, 실제 사용자가 쓰면서 피드백이 돌아야 가치가 증명된다고 말했다. 현재는 알파와 베타 수준이며 사용자에게 퍼뜨려 가치를 보여 줘야 하는 단계라고 했다. 몇 주 전 백서를 냈다고 언급했으나 그 백서는 확인하지 못했다.
+
+시도를 싸게 만드는 도구는 [[Backtesting-Pitfalls|백테스트의 함정]]의 시도 횟수 문제를 키운다. 에이전트가 만든 후보도 시도한 조합 수를 함께 기록하고 사람 연구와 같은 표본 외 기준으로 거른다(적용 해석).
 
 ## 7. 확인 체크포인트
 
@@ -147,6 +160,8 @@ AQR 공동창업자 Cliff Asness가 청중 앞에서 영어로 말한 2분 48초
 - [AI is "still just statistics", says AQR's Cliff Asness — Hedgeweek](https://www.hedgeweek.com/ai-is-still-just-statistics-says-aqrs-cliff-asness/) — 2024-05-23, Pensions & Investments 인터뷰 요약
 - [Machines are making more decisions at giant hedge fund — Tech Xplore, Bloomberg News](https://techxplore.com/news/2024-06-machines-decisions-giant-hedge-fund.html) — 2024-06-27 전재, Bloomberg Invest 발언
 - [AQR's Asness: AI 'Annoyingly Better' — AI Street, Matt Robinson](https://www.ai-street.co/p/aqr-s-asness-ai-annoyingly-better) — 2024-11-29, Bloomberg TV 인터뷰 인용
+- [What AI Can (and Can't Yet) Do for Alpha — Man Group, Ziang Fang, Jason Moore](https://www.man.com/insights/what-ai-can-do-for-alpha) — 2025-11-13, 2026-11-10 세 역할 구조, 같은 평가 문턱, 성과가 좋았던 연구 영역, 사람 감독, 실패 유형과 다중 검정 대응 대조
+- [AI 연구원을 만들었다, 이름은 알파GPT 맨그룹 CIO — 묘수의 관점](https://www.youtube.com/watch?v=V4vBA_b7Keg) — 2026-10-30 업로드 2분 30초 클립. 원 행사와 발언 시점, 출연자 직함은 확인하지 못함
 
 ## 관련 문서
 

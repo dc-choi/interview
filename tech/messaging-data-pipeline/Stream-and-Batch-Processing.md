@@ -1,7 +1,7 @@
 ---
 tags: [data-pipeline, streaming, batch, flink, spark, mysql, dynamic-allocation]
 status: done
-verified_at: 2026-10-27
+verified_at: 2026-11-10
 category: "메시징&파이프라인(Messaging&Pipeline)"
 aliases: ["Stream and Batch Processing", "스트림과 배치 처리", "Spark JDBC 병렬 추출", "Spark executor 자원 산정"]
 ---
@@ -74,6 +74,18 @@ DB 변경과 함께 발행해야 할 이벤트라면 [[Transactional-Outbox|같�
 - 중간에 실패하면 어디부터 다시 돌릴지 정하기 어렵다.
 
 Spark 같은 분산 처리기에 계산을 넘기면 DB는 행을 나눠 읽어 주기만 하고 집계는 cluster가 병렬로 한다. 큰 작업을 쪼개 여러 machine에서 처리하고 합치는 MapReduce식 분할 정복에, 중간 결과를 메모리에 두고 재사용하는 방식을 더한 엔진이다. 운영과 학습 비용이 크므로 index, 요약 table, 증분 집계로 DB 안에서 해결되지 않을 때 도입한다 ([[Aggregate-Summary-Table-Patterns|집계 테이블과 재계산 가능한 통계]]).
+
+### Spark 실행 구조: driver, executor, partition
+
+Spark 4.3.0 문서 기준이다. Spark는 UC Berkeley AMPLab의 연구 프로젝트로 시작했다. 자동 장애 복구를 유지하면서 MapReduce보다 넓은 응용을 지원하는 것이 목표였고, 여러 병렬 연산 사이에 데이터를 다시 써야 하는 반복 알고리즘(머신러닝, PageRank 같은 그래프 알고리즘), 대화형 데이터 탐색, 시간에 걸쳐 집계 상태를 유지하는 스트리밍을 MapReduce가 비효율적인 응용으로 꼽았다.
+
+- **driver**: 애플리케이션의 `main()`을 실행하고 `SparkContext`를 만드는 프로세스다. 계산을 직접 다 하지 않고 작업을 나눠 executor에 보낸다. executor가 driver에 접속하므로 worker node에서 driver로 네트워크 접근이 가능해야 한다. driver가 cluster에 task를 스케줄하므로 worker 가까이, 가능하면 같은 LAN에 둔다.
+- **cluster manager**: 클러스터 자원을 확보해 주는 외부 서비스다. Standalone, YARN, Kubernetes를 지원한다.
+- **executor**: worker node에서 애플리케이션마다 띄우는 프로세스로, 기본 고정 할당에서는 애플리케이션이 끝날 때까지 살아 있으며(dynamic allocation을 켜면 유휴 executor가 중간에 제거될 수 있다, 아래 절) 여러 thread로 task를 실행하고 데이터를 메모리나 디스크에 둔다. 애플리케이션끼리 executor를 공유하지 않으므로 다른 애플리케이션과 데이터를 나누려면 외부 저장소에 써야 한다.
+- **job, stage, task**: action(`collect`, `save` 등)이 job을 만들고, job은 서로 의존하는 stage로, stage는 task로 나뉜다. task는 executor 하나에 보내는 작업 단위다.
+- **partition**: 데이터를 나눈 조각이며 Spark는 partition 하나마다 task 하나를 실행한다. 문서는 CPU당 partition 2~4개를 일반적인 출발점으로 든다. 주문 데이터를 월별로 나누는 식의 기준은 분포가 고르지 않으면 skew를 만들므로 key 분포를 먼저 본다(설계 제안).
+
+같은 코드를 단일 machine의 local 모드로 개발과 시험에 돌릴 수 있지만, cluster 구성(서버, 실행 환경, 네트워크, cluster manager, 자원 설정, 장애 관리)은 별도의 운영 부담이다. 관리형 서비스는 이 부담을 넘겨받는 선택지다 ([[Databricks-Compute-Planes|Databricks compute plane]], [[EMR|Amazon EMR]]).
 
 ## Spark JDBC 병렬 추출
 
@@ -155,6 +167,10 @@ Salesforce Data 360 팀이 2026-10-08 공개한 사례이며, 수치는 회사�
 - [Inside the Ropes: PGA TOUR X AWS: Powering TOURCAST — Amazon Web Services](https://www.youtube.com/watch?v=4doZZtycrqg)
 - [Apache Flink Documentation, Windows](https://nightlies.apache.org/flink/flink-docs-stable/docs/dev/datastream/operators/windows/)
 - [Apache Spark Documentation, JDBC Data Source](https://spark.apache.org/docs/latest/sql-data-sources-jdbc.html)
+- [Apache Spark 4.3.0 Documentation, Cluster Mode Overview](https://spark.apache.org/docs/4.3.0/cluster-overview.html) — 2026-11-10 driver, cluster manager, executor와 job, stage, task 용어 대조
+- [Apache Spark 4.3.0 Documentation, RDD Programming Guide (Parallelized Collections)](https://spark.apache.org/docs/4.3.0/rdd-programming-guide.html#parallelized-collections) — 2026-11-10 partition당 task 하나, CPU당 partition 2~4개 대조
+- [Apache Spark, Research](https://spark.apache.org/research.html)
+- [처음부터 이해하는 Databricks Ep6, Apache Spark와 분산 처리 — 현수IT](https://www.youtube.com/watch?v=k_-rsUdmoz4)
 - [Apache Spark Documentation, RDD Programming Guide (Shuffle operations)](https://spark.apache.org/docs/latest/rdd-programming-guide.html#shuffle-operations)
 - [Apache Spark 4.2.0 Documentation, Job Scheduling (Dynamic Resource Allocation)](https://spark.apache.org/docs/4.2.0/job-scheduling.html#dynamic-resource-allocation) — 2026-10-27 요청과 제거 정책, cache 보존 예외, 켜기 위한 네 가지 수단과 Kubernetes 제약 대조
 - [Apache Spark 4.2.0 Documentation, Configuration (Dynamic Allocation)](https://spark.apache.org/docs/4.2.0/configuration.html#dynamic-allocation) — 2026-10-27 기본값과 shuffle tracking의 executor 보존 대조
