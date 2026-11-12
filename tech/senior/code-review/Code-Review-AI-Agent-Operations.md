@@ -61,6 +61,21 @@ Imprint의 2026-10-17 `small-change` 사례는 1,000줄 미만, AI 리뷰의 p1/
 
 적용 제안: 자동 리뷰만으로 병합하는 경로를 열면 사고 기록을 리뷰어의 검사 항목이나 결정론적 검사로 바꾸는 루프를 함께 둔다([[AI-Native-Org#엔지니어만 알던 규칙을 자동 검사로 바꾼다|규칙의 자동 검사화]]). 다만 돈과 데이터처럼 되돌리기 어려운 경로는 사후 수정에 기대지 않고 아래 작은 팀 적용 예처럼 중복 실행 검사와 사람 판단을 남긴다. 같은 사례의 PR 수 증가와 새 병목은 [[AI-Work-Output-and-Employment#산출이 늘면 병목은 다음 단계로 옮겨 간다|산출 증가 뒤의 병목 이동]]에 있다.
 
+## 직접 만든 다중 에이전트 리뷰어
+
+LinkedIn 엔지니어링 블로그(2026-08-13)가 밝힌 사내 리뷰어 구성이다. 회사의 자체 보고이며 사용 모델과 필터 임계값은 공개하지 않았다.
+
+- **방식 선택:** 모델 벤더의 호스팅 리뷰 제품을 평가했으나 같은 학습 편향을 공유하는 단일 모델, 계층 정책을 표현하지 못하는 규칙 파일, 카나리 배포와 장애 전환과 전체 관측이 불가능한 소비 전용 제품이라는 구조적 한계를 이유로 직접 만들었다.
+- **독립 리뷰와 병합:** 오케스트레이터가 서로 다른 모델과 하네스 조합의 서브에이전트들에게 같은 diff를 나눠 주고, 각자는 다른 서브에이전트의 결과를 보지 않고 검토한다. 여러 서브에이전트가 겹쳐 낸 지적은 높은 신뢰로 올리고 중복을 합친다.
+- **단독 지적의 검증:** 한 서브에이전트만 낸 지적은 먼저 유효성을 검증한 뒤 중요도를 따로 매긴다. 원문 예시에서는 그 지적을 놓쳤던 모델에 되돌려 실제 결함임을 확인했다. 검증에 실패하거나 관련성 점수가 낮은 지적은 필터 후보가 되고, 외형만의 지적, 뒤 커밋에서 이미 고친 지적, 저장소의 확립된 패턴과 어긋나는 지적은 게시 전에 억제한다.
+- **계층 규칙:** 조직 전체 정책, 저장소 수준 규칙, 개별 상황 지침을 조합하는 3단 규칙을 쓴다(원문 예시에 전역 YAML 예외 처리 규칙이 있다). 규칙 파일 하나로는 계층 정책을 표현하지 못한다는 것이 직접 구축의 이유 중 하나다.
+- **출시 전 평가:** 후보와 운영 버전을 블라인드 pairwise 방식의 LLM 심판으로 세 라운드 맞비교하고 위치를 바꿔 편향을 줄인다. 판정은 가중치를 둔 여섯 개 예/아니오 기준의 합이며, 합계에서 이기거나 비겨야 배포한다.
+- **운영 지표:** 좋아요 반응 대신 LLM 평가기가 지적과 최종 병합 코드를 비교해 수용, 부분 수용, 미수용, 조치 불가로 분류한다. 7일 동안 1,727개 PR의 지적 5,230개 표본에서 합산 수용률은 63.9%였다. 부분 수용을 어떻게 셌는지는 밝히지 않았다. 범주별로는 동시성 버그 100%, 논리 오류 80%, 버그 수정 58.1%, 리팩터링 43.5%, 보안 40.6%였고 저장소별로는 0%에서 100%까지 흩어졌다. 이 범주별 수치의 측정 기간과 표본은 밝히지 않았다.
+- **규모:** 한 주에 7,500개 넘는 저장소의 PR 4만 건 이상에 리뷰 7만 9천 건 이상을 돌리고 대부분 10분 안에 끝나 첫 사람 리뷰어보다 먼저 올라간다고 보고했다.
+- **다음 계획:** diff 영역별 예측 위험을 보여 주는 위험 히트맵, 심각 장애(SEV0/SEV1)를 분석해 리뷰 규칙을 만드는 파이프라인, 수용률 하락을 특정 변경에 귀속하는 평가 루프를 밝혔다.
+
+적용 제안: 수용률은 LLM 평가기의 판정이므로 평가기 자체의 오판을 표본으로 사람이 확인한다. 범주별 수용률 차이는 어떤 규칙을 끄고 어떤 프롬프트를 고칠지 정하는 재료로 쓰되, 보안처럼 수용률이 낮은 범주를 곧바로 끄지 않고 오탐인지 미조치인지부터 나눈다.
+
 ## 작은 팀의 적용 예
 
 아래는 운영 설계 제안이다. 특정 제품의 기본 동작이나 검증된 성과를 뜻하지 않는다.
@@ -107,6 +122,8 @@ Imprint의 2026-10-17 `small-change` 사례는 1,000줄 미만, AI 리뷰의 p1/
 - [Risk-tiered human oversight — Thoughtworks Technology Radar Vol. 35](https://www.thoughtworks.com/radar/techniques/summary/risk-tiered-human-oversight) — 2026-11, 2026-11-09 Trial 링, 3단 분류, 검토 구역과 변경 분류 대조
 - [Human-in-the-loop theater — Thoughtworks Technology Radar Vol. 35](https://www.thoughtworks.com/radar/techniques/summary/human-in-the-loop-theater) — 2026-11, 2026-11-09 Caution 링, 정의와 대안 기법 대조
 - [How software engineering is changing: a tale of two eras — The Pragmatic Engineer, Neil Kakkar](https://newsletter.pragmaticengineer.com/p/how-software-engineering-is-changing) — 2026-11-03, 2026-11-09 리뷰 방식, 실패 유형의 리뷰 에이전트 반영과 세 사고 대조
+
+- [High-Signal AI Code Review That Adapts to Your Codebase at Scale — LinkedIn Engineering, Min Chen, Shailesh Jannu, Mishal Patel, Peter Phan, Vidit S](https://www.linkedin.com/blog/engineering/ai/high-signal-ai-code-review-that-adapts-to-your-codebase-at-scale) — 2026-08-13, 2026-11-12 구성, 평가와 수용률 대조
 
 - [How the Claude Code team does code review — claude.dev, Addy Osmani, Morgan Westlee Lunt, Qing Wang](https://claude.dev/blog/solving-code-review-at-anthropic/)
 - [Bringing Code Review to Claude Code — claude.com](https://claude.com/resources/articles/code-review) — 2026-03-09 research preview 출시 글, 사내 도입 전후 16%와 54% 대조
