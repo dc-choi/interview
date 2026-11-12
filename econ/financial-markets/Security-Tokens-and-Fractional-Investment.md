@@ -50,9 +50,14 @@ verified_at: 2026-10-26
 
 한편 DTCC는 2026-10-28 DTS 출시를 발표했다. DTC에 보관된 증권의 권리를 토큰 형태로 전환하는 서비스이며, 참여 자격을 갖춘 이용자와 DTC Participants를 통한 접근을 전제로 한다. 발표는 기존 형태의 소유권, 투자자 보호와 경제적 권리를 유지한다고 설명한다. 따라서 이 서비스의 권리 보존 설명을 다른 주식 토큰 상품에도 적용하지 않는다.
 
+거래 장소 쪽에서는 SEC가 2026-09-17 위원회 명령(Release No. 34-106402)으로 Innovation Exemption을 냈다. 조건을 갖춘 Tokenized Securities Venue(TSV)가 자동화 마켓메이커(AMM) 유동성 풀로 토큰화된 NMS 주식을 거래하게 하면서 증권거래법상 거래소 정의에서 일시적, 조건부로 면제하고, 자기 자본으로 그 풀에 유동성을 공급하는 자는 호가 제시와 확약 자본 제공 같은 관련 딜러 활동을 포함해 딜러 정의에서 조건부로 면제하는 내용이다. 명령은 면제의 효력을 2026-09-17부터 2031-09-17까지로 정하고 위원회가 기간을 바꿀 수 있다고 밝힌다.
+
+- **조건의 예**: 거래 종목 수와 거래량 한도, TSV가 토큰이 같은 종류의 기존 NMS 주식과 같은 권리와 혜택을 보유자에게 주는지 확인할 의무, 무관한 제3자가 토큰화한 주식은 발행사에 서면 통지와 이의 기회 제공, 공개 비허가형 분산원장에 배포된 감사 가능한 공개 스마트컨트랙트, 기초주식이 주 거래소에서 거래정지되면 동시 정지, TSV의 운영, 거래활동과 계열사 거래의 공개가 있다. 합성 구조는 대상이 아니다. 딜러 면제는 유동성 공급자의 증권 활동을 이 면제로 운영되는 AMM 풀의 토큰화된 NMS 주식 거래와 관련된 활동으로 한정하고 SEC에 서면 통지하게 한다. SEC 위원장 성명은 접근 자격이 허가된 참여자로 제한되고 사기와 시세조종 금지 규정은 그대로 적용된다고 설명한다.
+- **읽는 기준**: 이 면제를 모든 플랫폼이 5년간 거래소 등록 없이 주식 토큰을 거래할 수 있다는 뜻으로 읽지 않는다. 조건을 충족한 TSV와 토큰화된 NMS 주식에 한정된 임시 조치이며, 위원장은 지속 가능한 규칙 제정이 뒤따라야 하는 중간 조치라고 밝혔다. 보도자료의 게시 후 5년 표현은 Federal Register 게재일 기준으로 읽으면 명령이 정한 만료일과 어긋나므로 명령의 날짜를 따른다.
+
 적용 시에는 발행 주체, 기초자산에 대한 청구권, 배당 처리, 도산 시 권리, 참여 자격과 거래 시간을 따로 확인한다. 기관 인프라의 출시일을 모든 개인투자자의 이용 개시일로 바꾸거나, 온체인 이전 가능성을 무제한 거래 허용으로 해석하지 않는다.
 
-이 절만 2026-11-03에 아래 SEC 직원 성명, Kraken FAQ와 DTCC 출시 발표로 대조했다. 국내 제도 전체의 재검증은 아니므로 기존 `verified_at`은 유지한다. 실제 거래, 개별 상품의 법률 분류와 국내 과세 적용은 검증하지 않았다.
+이 절만 2026-11-03에 아래 SEC 직원 성명, Kraken FAQ와 DTCC 출시 발표로, Innovation Exemption 항목은 2026-11-13에 SEC 보도자료, 명령 본문(효력 기간), 팩트시트와 위원장 성명으로 대조했다. 국내 제도 전체의 재검증은 아니므로 기존 `verified_at`은 유지한다. 실제 거래, 개별 상품의 법률 분류와 국내 과세 적용은 검증하지 않았다.
 
 ## 4. 규제 흐름
 
@@ -114,6 +119,10 @@ AWS Industry Week 2024 세션에서 코스콤이 공개한 구성이다(2025-01-
 ## 출처
 
 - [Statement on Tokenized Securities — SEC, Division of Corporation Finance, Division of Investment Management, Division of Trading and Markets](https://www.sec.gov/newsroom/speeches-statements/corp-fin-statement-tokenized-securities-012826-statement-tokenized-securities) — 2026-01-28 직원 성명. 발행 주체와 보관형, 합성형 구조, 권리와 도산 위험의 구분
+- [SEC Issues "Innovation Exemption" to Facilitate the Trading of Tokenized NMS Stock and Request for Comment — SEC](https://www.sec.gov/newsroom/press-releases/2026-90-sec-issues-innovation-exemption-facilitate-trading-tokenized-nms-stock-request-comment) — 2026-09-17 보도자료 2026-90. 거래소와 딜러 정의 면제, 조건, 게시 후 5년 만료, 의견 요청
+- [Order Granting Temporary Conditional Exemptive Relief, Pursuant to Section 36(a)(1) of the Securities Exchange Act of 1934, from the Definition of "Exchange" in Section 3(a)(1) of the Exchange Act for the Use of Certain Distributed Ledger Trading Venues for Tokenized NMS Stocks and from the Definition of "Dealer" in Section 3(a)(5) of the Exchange Act for Certain Liquidity Providers for Tokenized NMS Stocks, and Request for Comment — SEC](https://www.sec.gov/files/rules/exorders/2026/34-106402.pdf) — Release No. 34-106402, File No. 4-927([명령 안내 페이지](https://www.sec.gov/rules-regulations/2026/09/4-927)). V절의 효력 기간(2026-09-17부터 2031-09-17까지)과 위원회의 기간 변경 권한
+- [Fact Sheet: Order Granting Temporary Conditional Exemptive Relief for Trading of Tokenized NMS Stock on Tokenized Securities Venues — SEC](https://www.sec.gov/files/34-106402-fact-sheet.pdf) — Release No. 34-106402. 권리 확인 의무, 공개 조건, 합성 구조 제외, 딜러 면제의 활동 범위와 서면 통지
+- [Statement on the Innovation Exemption: A Bridge Toward Durable Rulemaking — SEC, Chairman Paul S. Atkins](https://www.sec.gov/newsroom/speeches-statements/atkins-innovation-exemption-bridge-toward-durable-rulemaking-091726) — 2026-09-17. 허가형 접근, 합성 구조 제외, 사기와 시세조종 금지 규정 적용, 후속 규칙 제정
 - [Kraken, xStocks frequently asked questions](https://support.kraken.com/articles/xstocks-faq) — 2026-10-30 갱신, 2026-11-03 확인. 주주권, 배당 반영, 미국 이용 제한, 거래 시간과 multiplier
 - [DTCC Tokenization Service Goes Live, Marking Major Milestone in the Adoption of Digital Assets — DTCC](https://www.dtcc.com/press-releases/2026/dtcc-tokenization-service-goes-live) — 2026-10-28. DTC 보관 증권의 토큰화 서비스 출시와 참여 범위
 - [조각투자 등 신종증권 사업 관련 가이드라인 — 금융위원회](https://www.fsc.go.kr/no010101/77728) — 2022-04-28. 조각투자 정의, 증권성 판단 원칙과 예시, 발행과 유통 분리, 샌드박스 특례
