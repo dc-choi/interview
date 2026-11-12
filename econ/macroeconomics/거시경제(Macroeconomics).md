@@ -33,6 +33,7 @@ aliases: ["거시경제(Macroeconomics)", "Macroeconomics Map"]
 
 ### 4. 고용
 - [[Unemployment-Employment|실업과 고용]] — 실업률과 보완 지표, 자연실업률의 추정, 필립스 곡선의 조건과 오쿤의 법칙 ✅
+- [[Youth-Employment-Labor-Market-Duality|청년고용 부진과 노동시장 이중구조]] — 실업률, 고용률, 확장실업률이 엇갈리는 이유, 1차와 2차 노동시장의 채용 조정, 2023년 이후 부진의 질적 악화와 AI 노출 분석의 해석 한계 ✅
 
 ### 5. 순환과 대외
 - [[Business-Cycle|경기순환]] — 경기침체와 GDP 갭의 구분, PMI 해석, 버블과 금융위기 ✅

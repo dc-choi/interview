@@ -182,5 +182,6 @@ GDP 수준 차이 +32.4%는 연간 성장률이 아니다. 자본 몫 +14.8%p도
 
 - [[Inflation|인플레이션과 디플레이션]] — 필립스 곡선의 다른 축
 - [[Interest-Rates-Monetary-Policy|금리와 통화정책]] — 고용과 물가 사이의 균형을 잡는 도구
+- [[Youth-Employment-Labor-Market-Duality|청년고용 부진과 노동시장 이중구조]] — 확장실업률과 고용의 질, 1차 노동시장 진입 축소와 AI 노출 분석
 - [[Business-Cycle|경기순환]] — 경기적 실업이 오르내리는 무대
 - [[거시경제(Macroeconomics)]] — 지도
