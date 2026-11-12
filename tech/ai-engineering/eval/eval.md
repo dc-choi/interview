@@ -35,3 +35,4 @@ LLM 출력의 평가와 모른다고 말하는 능력, 비전 모델의 합성 �
 - [x] [[Neural-Circuit-Interpretability|뉴런과 회로 해석]] — 원래 좌표 해석 가설, 관찰과 인과 개입의 구분
 - [x] [[AI-Assisted-Mathematical-Research|AI 보조 수학 연구]] — 과업 분해, 형식 증명과 명제의 의미, 독립 사고와 공동체의 이해
 - [x] [[AI-Alignment-and-Control|AI 목표 정렬과 행동 통제]] — 능력과 목표, 평가와 배포, 차등적 기술 발전과 조건부 위험
+- [x] [[Adversarial-Policies|적대적 정책]] — 바둑 AI 순환 공격, 평균 성능과 최악 성능, 새 공격자를 견디지 못한 세 방어

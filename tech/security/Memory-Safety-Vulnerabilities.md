@@ -1,7 +1,7 @@
 ---
 tags: [security, memory-safety, vulnerability, cwe, openssl, php]
 status: done
-verified_at: 2026-11-09
+verified_at: 2026-11-13
 category: "보안(Security)"
 aliases: ["Memory Safety Vulnerabilities", "메모리 안전성 취약점", "Out-of-bounds Read", "범위 밖 읽기", "Use After Free", "해제 후 사용", "Heartbleed", "PHP2Shell"]
 ---
@@ -104,6 +104,7 @@ EDK II의 CVE-2026-97631은 운영체제 안의 PHP와 다른 공격 표면이�
 
 - **규모:** Chromium의 메모리 안전 페이지(작성일 표기 없음)는 2015년 이후 Stable 채널에 영향을 준 high, critical 보안 버그 912건을 분석해 약 70%가 메모리 비안전 문제(C, C++ 포인터 실수)라고 적는다. CISA의 메모리 안전 로드맵 문서도 Microsoft의 2006~2018년 CVE 약 70%, Chromium 약 70%, Mozilla의 critical, high 버그 34건 중 32건 같은 비슷한 비율을 함께 든다. 그래서 PHP만의 문제가 아니라 C, C++로 만든 대형 소프트웨어에 널리 나타나는 결함 유형으로 본다(해석).
 - **새 코드부터 바꾼다:** Google은 2024-09-25 글에서 기존의 메모리 비안전 코드를 모두 버리거나 다시 쓸 필요는 없다며, 2019년 무렵부터 Android의 새 개발을 메모리 안전 언어로 옮기는 데 우선순위를 뒀다고 밝혔다. Android 팀은 2025-11-13 글에서 새 코드의 취약점 예방에 집중하는 이 전략의 결과로 2025년에 메모리 안전 취약점이 처음으로 전체 취약점의 20% 아래로 내려갔다고 적는다. 같은 글은 Android의 C, C++ 코드가 100만 줄당 1,000건에 가까운 메모리 안전 취약점 밀도를 보였고 Rust 코드는 그보다 1000배 낮다고 추정한다. Rust 쪽 수치는 근접 사례(near-miss) 한 건에 기댄 보수적 추정이라고 적었으므로 다른 코드베이스의 기대치로 옮기지 않는다.
+- **기존 코드의 자동 번역과 기반 소프트웨어의 채택:** 다시 쓰는 비용을 낮추려는 시도도 있다. DARPA는 2024-07-31 기존 C 코드를 Rust로 상당 부분 자동 번역하는 TRACTOR 프로그램을 발표하며 정적, 동적 분석과 대형 언어 모델을 결합한 제안을 예상했고, 숙련된 Rust 개발자가 만들 품질과 스타일을 목표로 내세웠다. 목표 발표이므로 번역 품질의 근거로 쓰지 않는다. Linux 커널 개발자들은 2025년 12월 Maintainers Summit에서 커널의 Rust를 더는 실험 단계로 보지 않는다는 데 합의했다. 모든 커널 구성, 아키텍처와 툴체인에서 동작한다는 뜻은 아니다. 번역 결과를 믿는 근거는 `unsafe` 없이 번역된 부분에서 컴파일러가 막는 메모리 오류 범위에 그치므로(`unsafe`와 C 경계의 한계는 위 표), 출력이 원본과 같은지는 비교 테스트로, 동시 사용 성능은 별도 측정으로 확인한다(해석, [[AI-Infrastructure-Language-Layers#AI 에이전트와 기존 E2E 테스트로 낮아진 재작성 비용|에이전트 재작성의 검증 조건]]).
 - **sanitizer:** Clang의 AddressSanitizer는 heap, stack, 전역 변수의 범위 밖 접근, 해제 후 사용, use-after-return, use-after-scope, 이중 해제와 잘못된 해제를 잡고 메모리 누수는 실험 기능으로 잡는다. 전형적인 속도 저하가 2배라 운영 빌드보다 테스트와 퍼징 빌드에 둔다(해석, [[C-Pointers-and-Dynamic-Memory#메모리 오류와 도구|C 메모리 오류와 도구]]).
 - **지속 퍼징:** OSS-Fuzz는 오픈소스를 쉬지 않고 퍼징하는 Google의 서비스이며 PHP도 등록 프로젝트다(`projects/php`). README는 2025년 5월 기준 1,000개 프로젝트에서 13,000건이 넘는 취약점과 50,000건의 버그를 찾아 고치는 데 기여했다고 적는다. 등록돼 있어도 PHP2Shell 같은 결함은 남았으므로 퍼징 등록을 결함 부재의 근거로 쓰지 않는다(해석).
 - **PHP 애플리케이션 운영자가 할 일:** 엔진 결함은 애플리케이션 코드를 아무리 검사해도 막지 못하므로 수정 버전으로 올리는 것이 먼저다. 쓰지 않는 확장 모듈을 끄면 공격 표면이 준다(운영 제안). `composer audit`은 설치된 패키지(`--locked`면 lock 파일)를 Packagist 보안 권고 같은 의존성 정책과 대조하는 의존 패키지 점검이라 엔진 업데이트를 대신하지 않는다(해석). AI 리뷰의 지적은 직접 재현해 확인한 뒤 반영한다.
@@ -158,6 +159,10 @@ Node.js는 적은 수의 스레드가 많은 클라이언트를 처리하고, �
 - [The Case for Memory Safe Roadmaps — CISA](https://www.cisa.gov/sites/default/files/2023-12/The-Case-for-Memory-Safe-Roadmaps-508c.pdf) — 2023년 12월. 임의 코드 실행과 소프트웨어 실행 계정의 장악. 2026-11-09 4쪽의 Microsoft, Chromium, Mozilla 메모리 안전 결함 비율 대조
 - [Rust in Android: move fast and fix things — Google Security Blog](https://blog.google/security/rust-in-android-move-fast-fix-things/) — 2025-11-13 게시. 2026-11-09 새 코드 중심 전략, 20% 미만 비중, 100만 줄당 밀도와 1000배 추정의 근거 한계 대조
 - [Eliminating Memory Safety Vulnerabilities at the Source — Google Security Blog](https://security.googleblog.com/2024/09/eliminating-memory-safety-vulnerabilities-Android.html) — 2024-09-25 게시. 2026-11-09 기존 코드를 다시 쓰지 않고 새 개발부터 옮기는 전략 대조
+- [Eliminating Memory Safety Vulnerabilities Once and For All — DARPA](https://www.darpa.mil/news/2024/memory-safety-vulnerabilities) — 2024-07-31 게시. 2026-11-13 TRACTOR의 자동 번역 목표, LLM 결합 예상과 품질 목표 대조
+- [The (successful) end of the kernel Rust experiment — LWN.net, Jonathan Corbet](https://lwn.net/Articles/1049831/) — 2025-12-10 게시. 2026-11-13 실험 단계 종료 합의 대조
+- [Rust boosted by permanent adoption for Linux kernel code — DevClass, Tim Anderson](https://devclass.com/2025/12/15/rust-boosted-by-permanent-adoption-for-linux-kernel-code/) — 2025-12-15 게시. 2026-11-13 Rust for Linux 관리자가 LKML 패치 rust: conclude the Rust experiment에 적은 모든 커널 구성, 아키텍처, 툴체인에서 동작한다는 뜻이 아니라는 단서의 인용 대조
+- [AI가 코딩을 시작하자 인프라가 Rust로 갈아타는 이유 — YouTube, 커리어해커 알렉스](https://www.youtube.com/watch?v=RvWRPwbs5H0) — 2026-10-30 공개 영상, 자동 번역 문장의 계기 자료. 사실은 위 1차 출처로 대조했다. Microsoft 엔지니어의 2030년 목표는 보도와 정정만 확인해 옮기지 않았고, 제작자의 토크나이저 번역 실험 수치는 재현하지 않아 옮기지 않았다
 - [Chromium, Memory safety](https://www.chromium.org/Home/chromium-security/memory-safety/) — 2026-11-09 high, critical 보안 버그 912건 중 약 70% 대조
 - [google/oss-fuzz — GitHub](https://github.com/google/oss-fuzz) — 2026-11-09 README의 2025년 5월 기준 성과와 `projects/php` 등록 대조
 - [Clang, AddressSanitizer](https://clang.llvm.org/docs/AddressSanitizer.html) — 2026-11-09 탐지 오류 목록과 전형적 속도 저하 대조
