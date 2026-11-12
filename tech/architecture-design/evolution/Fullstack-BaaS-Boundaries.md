@@ -1,7 +1,7 @@
 ---
 tags: [architecture, fullstack, baas, nextjs, supabase, rsc]
 status: done
-verified_at: 2026-10-12
+verified_at: 2026-11-13
 category: "Architecture - 진화"
 aliases: ["Fullstack BaaS Boundaries", "풀스택 프레임워크와 BaaS 경계", "Next.js Supabase 아키텍처 오해", "BaaS 종속과 이탈 기준"]
 ---
@@ -45,8 +45,9 @@ BaaS의 종속은 기능마다 다르다. DB는 Postgres라 Supabase CLI나 `pg_
 
 ## 요금제 한도와 백업 범위
 
-아래 수치는 2026-10-12 Supabase 공식 문서 기준이며 바뀔 수 있다.
+아래 수치는 2026-10-12 Supabase 공식 문서 기준이며(무료 플랜 할당과 중지 조건은 2026-11-13 요금 페이지와 과금 문서 기준) 바뀔 수 있다.
 
+- **무료 플랜 할당과 중지 조건**: Free는 Auth 월간 활성 사용자 50,000명, 프로젝트당 DB 500MB, 파일 스토리지 1GB, egress 5GB(캐시 egress 별도 5GB)를 준다. DB 크기는 프로젝트마다 제한되고, MAU, 스토리지와 egress 같은 사용량 할당은 조직 안의 프로젝트를 합산해 적용된다. 활성 무료 프로젝트는 Owner나 Administrator인 조직 전체를 합쳐 2개까지다. 1주일 동안 활동이 없으면 프로젝트가 중지되며 유료 플랜은 중지되지 않는다. Pro는 월 25달러부터이고 Micro 컴퓨트 한 대분 크레딧이 포함되며 프로젝트를 더하면 컴퓨트 요금이 붙는다. 트래픽이 적은 초기 서비스는 비활성 중지에 걸릴 수 있고, Free에는 자동 백업과 PITR이 없으며 활성 프로젝트가 2개뿐이므로 넉넉한 할당만 보고 고객 서비스를 두기 전에 이 조건을 확인한다.
 - **파일 크기**: Free 프로젝트의 전역 파일 크기 상한은 50MB를 넘을 수 없고, Pro 이상은 500GB까지 올릴 수 있으며 그보다 크면 Supabase에 문의한다. 판매 파일의 최대 크기 같은 제품 결정이 그 단계에서 쓰는 플랜의 한도와 부딪히지 않는지 결정할 때 확인한다.
 - **큰 파일 업로드**: 6MB를 넘을 수 있는 파일이나 네트워크가 불안정한 업로드에는 재개 가능한 TUS 업로드가 권장된다. 업로드 URL은 최대 24시간 유효하며 그 안에 끝내지 못하면 처음부터 다시 올린다.
 - **백업 범위**: 자동 일일 백업은 Pro 이상 플랜에 있고(Pro는 최근 7일), Free 프로젝트에는 CLI `db dump`로 정기적으로 내보내 오프사이트에 보관하라고 권장한다. DB 백업에는 Storage API로 올린 객체가 들어가지 않고 메타데이터만 남으므로, 판매 파일 같은 객체는 따로 백업한다([[Backup-Restore|백업과 복구]]).
@@ -72,6 +73,8 @@ BaaS의 종속은 기능마다 다르다. DB는 Postgres라 Supabase CLI나 `pg_
 - [Supabase Docs — S3 Compatibility](https://supabase.com/docs/guides/storage/s3/compatibility)
 - [Supabase Docs — Database Backups](https://supabase.com/docs/guides/platform/backups)
 - [Supabase Docs — Self-Hosting](https://supabase.com/docs/guides/self-hosting)
+- [Supabase — Pricing](https://supabase.com/pricing)
+- [Supabase Docs — About billing on Supabase](https://supabase.com/docs/guides/platform/billing-on-supabase)
 - [PostgREST Docs — Transactions](https://docs.postgrest.org/en/stable/references/transactions.html)
 - [YouTube, 양실장의 바이브코딩대학, 3시간 순삭) 55개 기술 의사결정, 소스코드 해설까지! 현존 바이브코딩 기본 강의 중 가장 실전적인 강의](https://www.youtube.com/watch?v=K6Rsy-pHBi0) — 2026-08-18, 1:13:47~1:20:50의 Supabase 유지와 제거 기준은 강사의 경험적 판단이고 1:39:57의 파일 크기와 무료 플랜 한도 충돌은 시연 사례. 본문의 수치와 권한 기본값은 위 공식 문서로 확인했다.
 
