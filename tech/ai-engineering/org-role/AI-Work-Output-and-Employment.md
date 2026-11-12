@@ -37,6 +37,10 @@ AI 사용률은 위 표의 어느 층위의 결과도 아니다([[AX-Transformat
 
 이 사례들은 작성 용량이나 발견 속도가 늘 때 주의, 인프라, 리뷰와 수정 중 어디가 먼저 막히는지 측정하라는 근거로 쓴다. PostgreSQL 사례에서 늘어난 것은 작성한 코드가 아니라 고쳐야 할 발견이다. 한 조직의 커밋 배수나 병합량을 다른 조직의 기대 생산성으로 옮기지 않는다. 같은 고용 보고서의 주니어 채용 비율 변화와 해석 경계는 [[Developer-Role-AI-Era#사례: AI를 깊이 쓰는 한 회사의 사내 데이터|견습 사다리 사례]]에 있다(2026-10-27 고용 보고서, Scion 글과 Claude Code 팀 글 원문 대조).
 
+플랫폼 전체 수치도 작성 쪽 증가를 보여 준다. GitHub Octoverse 2026(2026-10-28 게시, 11-06 갱신, 집계 기간 2025-10-01~2026-09-30)에 따르면 2026년 9월 GitHub PR의 40% 이상이 에이전트의 첫 초안에서 시작했다(3월 17%). 에이전트 시작 PR은 9월 한 달만 약 1억 1,000만 건으로 3월의 약 6배다. 에이전트가 시작한 PR은 약 87%가 여러 파일을 바꿔, 감지된 에이전트 개입이 없는 PR(79%)보다 비율이 높았다. 2주 안에 병합된 비율은 에이전트가 관여한 PR(agent-involved, 용어집에 정의 없음)이 2월 83%에서 9월 90%로 올랐고, 감지된 에이전트 개입이 없는 비교군은 두 시기 모두 약 86%였다. GitHub 자체 플랫폼 집계이며 원자료는 공개되지 않았다. 에이전트 시작 PR은 GitHub이 감지할 수 있는 코딩 에이전트의 초안만 센다. 텔레메트리에서 관찰한 신호(예: 에이전트가 연 PR)로 센다고만 밝히고 구체적인 감지 기제와 대상 에이전트 목록은 밝히지 않았다. 용어집은 에이전트 신호가 모든 사용을 잡지 못하는 하한이라고 적는다. 별도 표기가 없으면 공개와 비공개 저장소를 포함한다는 일반 방법론은 있지만 이 수치에 대한 명시는 없다(2026-11-12 원문 대조).
+
+2주 내 병합률은 처리 속도의 지표일 뿐 결함률, 되돌림이나 리뷰의 충실도를 보여 주지 않는다. 그래서 병합률이 비교군보다 높다는 사실을 코드 품질 향상이나 리뷰가 충분하다는 근거로 쓰지 않는다. 플랫폼 PR 수의 증가도 어느 단계가 막히는지는 알려 주지 않으므로, 위 사례처럼 자기 조직의 리뷰 대기, CI 용량과 되돌림을 따로 잰다(이 문서의 해석).
+
 ## 연구 사례: 작성량과 제품 산출의 차이
 
 Chen과 Stratton의 2026-08-04 작업 논문은 Jellyfish의 718개 기업, 약 3억 건 업무 이벤트를 사용한다. 자료 기간은 2021년 1월부터 2026년 3월까지다. 도입 시점 차이를 활용한 차분의 차분 분석이며 무작위 실험은 아니다(2026-10-16 초록, 서론과 검토 시간 측정 정의 확인).
@@ -145,6 +149,7 @@ Where is all the new, good software? 에세이는 공개 제품의 부족에 대
 - [How employment is changing at Anthropic — Anthropic](https://www.anthropic.com/research/employment-at-anthropic) — 2026-10-16, 2026-10-27 커밋 배수, 세션 대기 비율, 주의 병목 서술과 도입자 비교 방법 대조
 - [Redesigning source control at Anthropic — Anthropic Engineering](https://www.anthropic.com/engineering/redesigning-source-control) — 2026-10-13 게시, 10-15 갱신. 2026-10-27 병합량, CI 체크아웃, 팀 규모와 기간, 병목 서술 대조
 - [How the Claude Code team does code review — claude.dev, Addy Osmani, Morgan Westlee Lunt, Qing Wang](https://claude.dev/blog/solving-code-review-at-anthropic/) — 2026-10-15, 병합 PR과 되돌림 비율을 2026-10-27 대조
+- [Octoverse: Commits, pushes, reach new highs in 2026 as developers build with agents — The GitHub Blog](https://github.blog/news-insights/octoverse/octoverse-commits-pushes-reach-new-highs-in-2026-as-developers-build-with-agents/) — 2026-10-28 게시, 11-06 갱신. 2026-11-12 에이전트 시작 PR의 비율과 건수, 다중 파일 비율, 2주 내 병합률, 감지 정의와 집계 범위 대조
 - [The reverts will continue until morale improves — Peter Eisentraut](https://peter.eisentraut.org/blog/2026/10/09/the-reverts-will-continue-until-morale-improves) — 2026-10-09 개인 회고, 2026-10-27 되돌림 규모와 원인 서술 대조
 - [PostgreSQL 19 Beta 4 Released! — PostgreSQL](https://www.postgresql.org/about/news/postgresql-19-beta-4-released-3386/) — 2026-09-24, 되돌린 기능 목록을 2026-10-27 대조
 - [How software engineering is changing: a tale of two eras — The Pragmatic Engineer, Neil Kakkar](https://newsletter.pragmaticengineer.com/p/how-software-engineering-is-changing) — 2026-11-03 에세이, 2026-11-09 PR 배수, 바뀐 운영 방식, 새 병목과 편집자의 단서 대조
