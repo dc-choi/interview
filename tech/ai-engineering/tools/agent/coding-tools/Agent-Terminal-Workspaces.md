@@ -1,7 +1,7 @@
 ---
 tags: [ai, agent, terminal, workspace, worktree, observability]
 status: done
-verified_at: 2026-10-07
+verified_at: 2026-11-12
 category: "AI엔지니어링(AIEngineering)"
 aliases: ["Agent Terminal Workspaces", "에이전트 터미널 작업 공간", "T3 Code"]
 ---
@@ -53,6 +53,12 @@ Orca는 새 worktree에 없는 의존성, 캐시와 무시된 로컬 파일을 �
 4. 결과를 합칠 때 어떤 diff와 검사가 완료를 판정하는가.
 
 세 번째와 네 번째 항목은 worktree 기능 외부에 남는 운영 책임이다. 보안 경계가 필요하면 [[Agent-Swarm-Containment|에이전트 군집 격리]]와 함께 검토한다.
+
+### worktree는 장비의 계산 자원을 나누지 않는다
+
+GitHub이 Copilot 런타임을 TypeScript에서 Rust로 옮긴 기록(2026-09-16 게시, 2026-09-23 갱신된 공식 글 기준)은 위임 단위를 둘로 나눈다. 서브에이전트는 부모 세션의 작업 공간 안에서 조사하고 답을 부모 맥락으로 돌려준다. 하위 세션(child session)은 자기 worktree, 브랜치와 에이전트 루프를 따로 가져 부모와 독립적으로 변경한다. 약 3만 줄인 파일 하나를 옮길 때 조정 세션은 한 시간 가까이 코드를 읽은 뒤 하위 세션 15개로 일을 나눴고, 끝난 커밋을 자기 브랜치로 가져오며 충돌을 풀었다.
+
+파일은 나뉘었지만 15개 세션이 한 노트북에서 동시에 빌드와 테스트를 돌리자 장비가 멈췄다. 작성자는 서브에이전트와 하위 세션에 큰 빌드와 테스트 실행을 피하게 하고 빌드를 부모에게만 맡겼다. 나중에는 독립 포팅 세션 8개를 대상으로 별도 대화 세션을 빌드 관문으로 두어, 세션들이 빌드 허가를 요청하고 한 번에 하나만 빌드하게 했다(작성자는 이를 에이전트로 만든 mutex라고 불렀다). 운영 제안: 위 점검 목록의 세 번째 항목에 CPU 같은 장비 자원도 넣고, 비싼 검증 단계는 실행 주체와 동시 실행 수를 먼저 정한다. 이 기록은 한 사람의 장비와 작업에서 나온 운영 사례이며 적정 세션 수의 기준은 아니다. 하위 세션 결과를 합칠 때의 리뷰는 [[Independent-Agent-Code-Review#동작을 보존하는 이관의 리뷰|이관 리뷰]]를 본다.
 
 ## 원격 제어면은 실행 위치와 권한 기본값을 함께 본다
 
@@ -163,6 +169,7 @@ Thoughtworks Technology Radar Vol.35(2026-11)도 세션을 병렬로 돌리거�
 - [How I use AI (Oct 2026) — Ben Stolovitz](https://ben.stolovitz.com/posts/how-use-ai-oct-2026/) — 2026-10-31 게시. 2026-11-09 병렬 에이전트 수, worktree 분리, 사람의 역할과 피로 서술 대조.
 - [How software engineering is changing: a tale of two eras — The Pragmatic Engineer, Neil Kakkar](https://newsletter.pragmaticengineer.com/p/how-software-engineering-is-changing) — 2026-11-03. 2026-11-09 동시 작업 수, 피로와 작업 종료 규칙 대조.
 - [How I'm fighting the AI Brain Fry — Sergey Kuhne](https://sergeykuhne.com/blog/fighting-ai-brain-fry) — 2026-11-08. 2026-11-09 git 기반 티켓, owner inbox와 남은 문제 대조.
+- [Migrating the GitHub Copilot runtime to Rust, using Copilot — GitHub](https://github.blog/ai-and-ml/generative-ai/migrating-the-github-copilot-runtime-to-rust-using-copilot/) — 2026-09-16 게시, 2026-09-23 갱신. 2026-11-12 서브에이전트와 하위 세션의 구분, 하위 세션 15개의 분할과 빌드 관문 부분 대조.
 - [Technology Radar Vol. 35 — Thoughtworks](https://www.thoughtworks.com/content/dam/thoughtworks/documents/radar/2026/11/tr_technology_radar_vol_35_en.pdf) — 2026-11. 2026-11-09 Putting more agents to work 테마와 human-in-the-loop theater, path-to-production mapping 블립 대조.
 
 ## 관련 문서

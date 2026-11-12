@@ -1,7 +1,7 @@
 ---
 tags: [ai, coding-agent, code-review, verification, static-analysis]
 status: done
-verified_at: 2026-11-02
+verified_at: 2026-11-12
 category: "AI엔지니어링(AIEngineering)"
 aliases: ["Independent Agent Code Review", "독립 에이전트 코드 리뷰", "OpenQodex"]
 ---
@@ -37,6 +37,16 @@ aliases: ["Independent Agent Code Review", "독립 에이전트 코드 리뷰", 
 
 작성 단계의 자체 검증에는 실제 실행 경로도 포함한다. 예를 들어 버튼 처리 함수의 테스트가 통과해도 화면의 다른 요소가 버튼을 가리면 사용자는 클릭할 수 없다. 테스트 결과와 실행 관찰을 함께 남겨 검토자가 확인할 수 있게 한다.
 
+## 동작을 보존하는 이관의 리뷰
+
+언어나 런타임을 옮기는 변경은 새 코드가 그럴듯한지보다 기존 동작을 그대로 옮겼는지가 리뷰 대상이다. GitHub의 Copilot 런타임 Rust 이관(2026-09-16 게시, 2026-09-23 갱신된 공식 글 기준)은 다른 개발자가 같은 저장소를 계속 바꾸는 중에 이 확인을 반복한 사례다.
+
+- **기준선 따라잡기:** 재사용 지침(`rust-rebase-review`)으로 변경을 최신 main 위에 rebase하고 충돌을 푼 뒤, 그사이 들어온 TypeScript 변경이 Rust 쪽에도 옮겨졌는지 확인하게 했다. 컴포넌트를 옮기는 PR에서 기존 TypeScript를 함께 지웠으므로, 다른 사람이 지워진 파일을 고치면 rebase가 충돌로 알려 준다. 옛 구현을 남겨 두면 이 신호가 사라진다(적용 판단).
+- **대조 리뷰:** 서로 다른 모델의 리뷰 에이전트가 옛 TypeScript와 새 Rust를 줄 단위로 비교해 동작과 호환성 변화를 찾고, 낡은 코드와 임시 연결 코드가 지워졌는지, 기존 E2E 테스트가 지워지거나 바뀌지 않았는지 확인했다. 지적이 없어질 때까지 고치고 다시 리뷰했다.
+- **사람의 몫:** 사람은 아키텍처, API 계약과 위험 요소에 집중했고 merge 결정은 작성자가 했다. 필수 테스트를 통과하지 못한 PR은 들어가지 않았다.
+
+그래도 정수가 소수로 바뀌는 직렬화 차이, 빈 문자열과 시간대 처리, 취소 전파 누락 같은 회귀가 나왔고, 원문은 E2E 테스트 부족과 잘못된 동작을 확인하던 테스트도 원인으로 든다. 기존 E2E 테스트를 정답 판정 기준(oracle)으로 쓰려면 에이전트가 감독이나 명시적 승인 없이 테스트를 약하게 고치거나 스냅숏을 갱신해 정답을 바꾸지 못하게 해야 한다. 세부는 [[Agent-Test-Verification-Behavior#포팅에서는 기존 E2E 테스트를 오라클로 지킨다|포팅의 테스트 오라클]]을 본다. 옮기는 단계에서 재설계를 섞지 않은 이유로 원문은 언어와 동작을 함께 바꾸면 무엇이 실패를 일으켰는지 알기 어렵다는 점을 든다. 이 사례는 한 팀의 기록이며 다중 모델 리뷰가 회귀를 모두 잡는다는 근거가 아니다.
+
 ## 구현 사례: OpenQodex
 
 2026-11-02 공식 저장소 README는 기본 변경 범위를 미푸시 커밋과 미커밋 변경 전체로 설명한다. 22개 내장 스캐너와 별도의 Claude Code 또는 Codex 프로세스를 사용하고, finder와 verifier 세션을 나눈다. 스크립트는 인용문의 실재, 스캐너 발견의 응답 누락과 변경 줄의 리뷰 전달을 검사한다.
@@ -55,6 +65,7 @@ aliases: ["Independent Agent Code Review", "독립 에이전트 코드 리뷰", 
 
 - [You and what army? — Builder's Day, Tyler Benfield](https://builders.day/stream?session=tyler-benfield) — 2026-11-04 공개 발표의 14:53~20:54를 로컬 음성 전사와 대조. 독립 리뷰의 입력과 반박 절차를 참고했으며 자체 성과 수치는 일반화하지 않음.
 - [OpenQodex — OpenQodex](https://github.com/openqodex/openqodex) — 2026-11-02 README의 기본 범위, 22개 스캐너와 finder/verifier, 개인정보 경계 대조.
+- [Migrating the GitHub Copilot runtime to Rust, using Copilot — GitHub](https://github.blog/ai-and-ml/generative-ai/migrating-the-github-copilot-runtime-to-rust-using-copilot/) — 2026-09-16 게시, 2026-09-23 갱신. 2026-11-12 rebase 리뷰 지침, 다중 모델 대조 리뷰, 사람 리뷰의 초점, 회귀 유형과 테스트 보호 부분 대조.
 
 ## 관련 문서
 
