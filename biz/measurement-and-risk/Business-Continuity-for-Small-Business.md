@@ -1,7 +1,7 @@
 ---
 tags: [business, risk, business-continuity, recovery, operations]
 status: done
-verified_at: 2026-10-03
+verified_at: 2026-11-13
 category: "비즈니스&제품(Business&Product)"
 aliases: ["Business Continuity for Small Business", "소규모 사업 연속성", "사업 연속성 계획", "BIA", "BCP"]
 ---
@@ -36,6 +36,8 @@ NIST는 책임자의 대체 역할과 수행 권한을 준비하고, 담당자�
 | 클라우드나 SaaS 중단 | 데이터 내보내기 가능 여부, 형식, 대체 환경과 복원 절차 | 파일을 내려받을 수 있어도 다른 제품에서 바로 쓸 수 있는 것은 아니다 |
 | 핵심 공급업체의 납품 중단 | 대체 거래처의 수용 능력, 전환 시간과 비용 | 같은 하위 공급업체에 의존하면 대안도 함께 멈출 수 있다 |
 | 결제나 주문 경로 중단 | 접수 중지 기준, 기존 거래 조회, 고객 안내와 대사 절차 | 다른 경로로 재결제시키기 전에 기존 승인 여부를 확인해야 한다 |
+
+대기업에서도 최고경영자가 갑자기 떠날 수 있다. 예를 들어 NVIDIA는 2026-11-12 CEO가 사장, CEO와 이사회 이사직에서 즉시 물러났다고 발표했다. 같은 발표에서 CFO가 CFO 직을 유지한 채 정식 후임자가 정해질 때까지 임시 CEO를 맡고, 이사회는 회사 최초의 이사회 의장을 선임했으며, 내부와 외부 후보를 모두 검토하는 정식 CEO 선임 절차를 시작했다. 회사는 사임 사유를 발표에 적지 않았다. 이 사례를 작은 사업에 옮기면 대표자 부재 시 당장 결정할 임시 책임자, 그 결정을 감독할 역할과 장기 대안을 정하는 시점을 나눠 적어 두는 것이다(적용 판단). 발표만으로 실제 업무 연속성이나 사업 영향을 판단하지 않는다.
 
 대안은 정상 기능을 모두 복제할 필요가 없다. 제한된 접수, 읽기 전용 운영이나 신규 거래 중지처럼 피해를 제한하는 수준부터 비교한다. 수동 처리에는 담당자, 처리량 한도와 기록 방법을 정하고 정상화 뒤 누락과 중복을 대사한다. 이는 특정 사업에 이미 도입됐다는 기록이 아니다.
 
@@ -95,6 +97,7 @@ NIST는 계획 연습과 실제 시스템 시험을 구분하고, 주기적 점�
 
 - [NIST, SP 800-34 Rev. 1: Contingency Planning Guide for Federal Information Systems](https://nvlpubs.nist.gov/nistpubs/legacy/sp/nistspecialpublication800-34r1.pdf) — 2.2.1, 3.2, 3.4.6, 3.5절.
 - [Seven Ways to Start Your Business Continuity Plan — U.S. Small Business Administration](https://www.sba.gov/blog/2019/2019-03/seven-ways-start-your-business-continuity-plan/) — 통신, 공급업체와 연습 원칙을 참고했다. 오래된 제품 예시는 사용하지 않았다.
+- [NVIDIA Announces CEO Transition — NVIDIA Newsroom](https://nvidianews.nvidia.com/news/nvidia-announces-ceo-transition) — 2026-11-12 게시, 2026-11-13 사임 범위, 임시 CEO, 이사회 의장 선임과 후임 선정 절차 대조
 - [What is Starshield and who limited Ukraine's access to it? — Al Jazeera](https://www.aljazeera.com/news/2026/10/15/what-is-starshield-and-who-limited-ukraines-access-to-it) — 2026-10-15 게시, 2026-10-27 제한 내용, 복구와 당사자별 주장 대조
 - [Elon Musk Just Gave Europe a Reason to Replace American Technology — Steve Blank](https://steveblank.com/2026/10/24/europe-gets-a-wake-up-call/) — 2026-10-24 게시, 2026-10-27 확인. 작성자의 의견이며, 인용한 The Wall Street Journal과 The New York Times 원문은 유료라 직접 확인하지 못함
 - [Elon Musk가 유럽에 미국 기술을 대체할 이유를 줬다 — GeekNews](https://news.hada.io/topic?id=35920)
