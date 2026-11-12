@@ -86,3 +86,5 @@ Meridian은 베이지안 모델이며 MCMC(NUTS)로 사후분포를 구한다. �
 - [[Marketing-Fundamentals|마케팅 기본 (4P 마케팅 믹스, ROAS)]]
 - [[Meta-Paid-Ads|Meta 유료 광고 (플랫폼 기여 전환)]]
 - [[AI-Marketing-Analysis|AI 마케팅 분석 (증분 효과)]]
+- [[CTV-Performance-Advertising|CTV 퍼포먼스 광고 (클릭 기여와 증분 실험의 차이)]]
+- [[Performance-Ad-Budget-and-Bidding|퍼포먼스 광고의 예산과 입찰 (한계 ROAS 곡선)]]

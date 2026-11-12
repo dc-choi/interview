@@ -15,6 +15,7 @@ aliases: ["Recommendation System Industry Case Studies", "추천 시스템 산�
 | 커머스와 마켓플레이스 | [[Recommendation-System-Industry-Commerce-Marketplace\|커머스와 마켓플레이스]] | Amazon, Alibaba, Airbnb | Item relation, candidate-aware ranking, availability |
 | 소셜과 그래프 | [[Recommendation-System-Industry-Social-Graph\|소셜과 그래프]] | LinkedIn, Pinterest | Graph candidate, mutual value, fairness |
 | 대규모 ML | [[Recommendation-System-Industry-Large-Scale-ML\|대규모 ML과 실시간 학습]] | Meta, ByteDance, Toss TASTE | Sparse embedding, sequence, online update, 공통 사용자 표현과 downstream 재사용 |
+| 입찰형 광고 | [[Recommendation-System-Industry-Ad-Bidding\|실시간 입찰 광고 추천]] | Moloco CARA | 가치 예측과 입찰가의 분리, 예산 pacing, 지연 피드백, 탐색 |
 | 연구와 벤치마크 | [[Recommendation-System-Industry-Research-Benchmarks\|연구 기준점]] | GroupLens, MovieLens, ACM RecSys | 재현 가능한 offline evaluation의 범위 |
 
 학습 순서는 미디어에서 candidate와 ranking의 공통 구조를 잡고, 커머스와 소셜에서 도메인 제약을 본 뒤 대규모 ML의 운영 문제로 확장한다. 연구 문서는 어느 단계에서든 평가 protocol을 점검할 때 함께 사용한다.

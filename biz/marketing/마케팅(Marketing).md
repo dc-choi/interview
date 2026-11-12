@@ -38,6 +38,8 @@ aliases: ["Marketing", "마케팅"]
 - [x] [[Trademark-and-Brand-Clearance|상표와 브랜드 권리 확인]] — 상호와 도메인, 선출원, 지정상품과 권리 유지, 외부 로고의 파일 라이선스와 상표 사용 조건
 - [x] [[Storytelling|스토리텔링]] — 욕망과 갈등, 구원과 대가, 캐릭터, 구조와 감정 표현
 - [x] [[Meta-Paid-Ads|Meta 유료 광고 실행 구조 (픽셀과 전환 API 중복 제거, 캠페인-세트-광고와 1-1-N, 소재 4축 조합, 문제와 자기 인식에 맞춘 메시징, 리드 선별과 고객당 비용, 지표 해석, 소재 피로)]]
+- [x] [[Performance-Ad-Budget-and-Bidding|퍼포먼스 광고의 예산과 입찰]] — 한계 ROAS 곡선과 최적 예산, 입찰의 다섯 문제, 캠페인 목표와 데이터와 탐색 여지, 소재 대량 실험
+- [x] [[CTV-Performance-Advertising|CTV 퍼포먼스 광고와 증분 측정]] — 브랜드 TV 광고와의 차이, 가구 단위 기기 연결, 클릭 기여와 증분 실험의 차이, 사례 수치의 해석
 - [x] [[AI-Search-Visibility|AI 검색 가시성 측정 (가시성 4층, Search Console 생성 AI 리포트의 범위, 노출과 인용이 성과가 아닌 이유, 엔진별 출처 차이)]]
 - [x] [[App-Store-Listing-Localization|앱스토어 등록 정보의 기본 언어와 현지화 (스토어와 기기 언어별 선택, 기본 언어 변경의 심사 조건, Google Play 자동 번역)]]
 - [x] [[AI-Generated-Content-Monetization|AI 대량 생성 콘텐츠 수익화 (차별화는 컨셉, 플랫폼 정책 위험, 합성 콘텐츠 표시, 생성 도구의 상업 이용 조건, 짧은 영상의 제작과 피드백)]]

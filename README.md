@@ -52,6 +52,8 @@
 - [[fit/interview/prep/면접준비(InterviewPrep)|면접 준비 가이드 (Prep)]] — 메타, 자기분석, 시그널, 치환표, 질문 풀, 면접 형식별
 - [[fit/job-search/구직(JobSearch)|구직(Job Search)]] — 회사 이해, 이력서, 프로세스, 트래커
 - [[fit/seminar/세미나(Seminar)|세미나 & 강의(Seminar)]] — 회사 세미나, 커리어 특강, 밋업
+- [[fit/seminar/companies/MOLOCON-2026-11-05|MOLOCON 26 (2026-11-05)]] — 한계 ROAS 곡선과 입찰 시스템, AI 네이티브 서비스의 해외 확장, 퍼포먼스 CTV, 커머스 미디어
+- [[fit/seminar/meetups/Same-AI-Different-Results-2026-11-06|같은 AI, 다른 결과 (2026-11-06)]] — 프롬프트에서 그래프까지 맡기는 범위의 확장, 종료 조건과 검증 신호
 - [[fit/seminar/meetups/IT-Chosun-Monthly-AX-2026-11-03|IT조선 월간AX 세미나 (2026-11-03)]] — 업무 맥락을 잇는 온톨로지, 에이전트 통제와 방어 기록
 - [[fit/seminar/meetups/Primer-Demoday-28-2026-10-07|프라이머 28기 데모데이 (2026-10-07)]] — 9개 팀의 고객 문제, 수익모델과 확장 계획
 - [[fit/salary-negotiation/Salary-Negotiation-Guide|연봉 협상(Salary Negotiation)]] — 원칙, 프로세스, 연봉 궤적
