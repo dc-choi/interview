@@ -1,7 +1,7 @@
 ---
 tags: [os, process, thread, pcb, fork]
 status: done
-verified_at: 2026-10-05
+verified_at: 2026-11-13
 category: "OS&런타임(OS&Runtime)"
 aliases: ["Process Lifecycle", "프로세스 생명주기", "프로세스 상태 전이"]
 ---
@@ -130,6 +130,19 @@ aliases: ["Process Lifecycle", "프로세스 생명주기", "프로세스 상태
 3. 인자와 환경을 포함한 초기 stack, 레지스터와 entry point를 구성
 4. 스케줄링 뒤 실행하며 매핑된 페이지는 필요할 때 물리 메모리로 fault-in
 
+### 프로그램 인자가 main에 도달하는 경로
+
+`main(argc, argv)`가 받는 인자는 커널 혼자 만들지 않는다. 명령줄을 나누는 주체, 인자를 새 주소 공간으로 옮기는 주체, `main`을 호출하는 주체가 각각 다르다.
+
+- **Unix 계열은 호출자가 나눈다**: 셸이 명령줄을 단어로 나눈 뒤 NULL로 끝나는 `argv` 배열과 `envp` 배열을 `execve()`에 넘긴다. `argv[0]`에 실행 파일 이름을 넣는 것은 관례다.
+- **커널은 새 stack에 복사한다**: `execve()`는 호출한 프로세스의 기존 주소 공간을 버리므로 인자 포인터가 가리키던 메모리도 함께 사라진다. 그래서 Linux는 인자와 환경 문자열을 새 이미지의 stack 위쪽에 복사하고, 그 아래 낮은 주소부터 `argc`, NULL로 끝나는 `argv` 포인터 배열, NULL로 끝나는 환경 포인터 배열, auxiliary vector를 둔다. Linux 2.6.23 이상 대부분의 아키텍처에서 인자와 환경 문자열의 총량은 `RLIMIT_STACK` soft limit의 1/4이면서 커널 상수 `_STK_LIM`(8 MiB)의 3/4 이하로 제한되고, 문자열 하나는 32 pages(`MAX_ARG_STRLEN`)를 넘을 수 없다. 총량을 넘으면 `execve()`가 `E2BIG`으로 실패한다.
+- **첫 사용자 코드는 main이 아니다**: 정적 링크 실행 파일이면 커널이 실행 파일의 entry point에서 시작한다. 동적 링크 실행 파일이면 `PT_INTERP`에 적힌 dynamic linker의 entry에서 시작하고, dynamic linker가 공유 라이브러리를 적재한 뒤 auxiliary vector의 `AT_ENTRY`에 기록된 실행 파일 entry로 넘긴다. 기본 링크 설정에서 `main`은 이 entry 자체가 아니라 그 뒤 C 런타임 시작 코드가 인자를 준비해 호출하는 함수다. MSVC의 `/ENTRY`처럼 entry를 직접 지정하면 CRT 시작 코드를 건너뛸 수 있다. glibc 등 플랫폼별 시작 코드의 내부 함수 이름은 여기서 대조하지 않았다.
+- **Windows는 런타임이 나눈다**: `CreateProcess`의 `lpCommandLine`은 하나의 문자열(최대 32,767자)이고, `lpApplicationName`이 NULL이면 첫 공백 구분 토큰이 모듈 이름이 된다. 이 문자열을 `argv`로 나누는 것은 Microsoft C 시작 코드이며 공백과 탭으로 구분하고, 큰따옴표로 묶은 부분은 하나의 인자로, `\"`는 리터럴 큰따옴표로 해석한다. 인자 경계가 커널 계약이 아니라 런타임의 해석 규칙이라는 점이 Unix 계열과 다르다.
+
+MSVC의 기본 CRT 시작 코드는 `main` 전에 CRT를 초기화하고 C++ 전역 객체의 동적 initializer 같은 전역 초기화 함수를 호출한다. MSVC의 `/GS` 버퍼 검사 쿠키도 CRT 초기화 때 `__security_init_cookie`로 설정되므로, `/ENTRY`로 CRT 초기화를 건너뛰면 보호 대상 함수에 들어가기 전에 직접 호출해야 한다.
+
+종료 쪽도 런타임이 맡는다. C에서 `main`의 첫 호출이 반환하면 그 반환값으로 `exit()`를 호출한 것과 같다. `exit()`는 `atexit()`와 `on_exit()`로 등록한 함수를 등록 역순으로 호출하고 열린 stdio 스트림을 flush한 뒤 닫는다. 등록 함수가 `_exit()` 호출이나 신호로 반환하지 않으면 남은 처리와 stdio flush가 생략되어 버퍼에 있던 출력이 사라질 수 있다. `execve()`는 기존 `atexit()` 등록을 지운다. C 수준의 `argv` 규칙은 [[C-Arrays-and-Strings#명령행 인자|C 명령행 인자]]에 있다.
+
 ### 컴파일 vs 인터프리터
 
 | 방식 | 특징 | 언어 |
@@ -164,6 +177,13 @@ OS가 검사하는 주체는 사람이 아니라 요청한 프로세스다. Linu
 - 인프런, 감자 강사, [프로세스 생성과 종료](https://www.inflearn.com/courses/lecture?courseId=328188&unitId=100764), [쓰레드](https://www.inflearn.com/courses/lecture?courseId=328188&unitId=100765), [컴파일과 프로세스](https://www.inflearn.com/courses/lecture?courseId=328188&unitId=100824)
 - YouTube, 쉬운코드, [OS 프로세스 상태와 자바 스레드 상태](https://www.youtube.com/watch?v=_dzRW48NB9M), [인터럽트와 시스템 콜, 유저 모드와 커널 모드](https://www.youtube.com/watch?v=v30ilCpITnY)
 - [Linux execve(2)](https://man7.org/linux/man-pages/man2/execve.2.html)
+- [How programs get run: ELF binaries — LWN.net, David Drysdale](https://lwn.net/Articles/631631/)
+- [Linux getauxval(3)](https://man7.org/linux/man-pages/man3/getauxval.3.html)
+- [cppreference, Main function](https://en.cppreference.com/w/c/language/main_function)
+- [Microsoft Learn, Parsing C command-line arguments](https://learn.microsoft.com/en-us/cpp/c-language/parsing-c-command-line-arguments)
+- [Microsoft Learn, CreateProcessW function](https://learn.microsoft.com/en-us/windows/win32/api/processthreadsapi/nf-processthreadsapi-createprocessw)
+- [Microsoft Learn, CRT initialization](https://learn.microsoft.com/en-us/cpp/c-runtime-library/crt-initialization)
+- [Microsoft Learn, __security_init_cookie](https://learn.microsoft.com/en-us/cpp/c-runtime-library/reference/security-init-cookie)
 - [Linux fork(2)](https://man7.org/linux/man-pages/man2/fork.2.html)
 - [Linux pipe(2)](https://man7.org/linux/man-pages/man2/pipe.2.html)
 - [Linux posix_spawn(3)](https://man7.org/linux/man-pages/man3/posix_spawn.3.html)

@@ -1,7 +1,7 @@
 ---
 tags: [palantir, foundry, governance, privacy]
 status: done
-verified_at: 2026-10-16
+verified_at: 2026-11-13
 category: "AI엔지니어링(AIEngineering)"
 aliases: ["민감정보 탐지와 자동 조치 계약"]
 ---
@@ -18,7 +18,7 @@ Column-name/content 조건은 각각 단독, AND, OR로 조합한다. Content re
 
 Random subset의 row 수는 근사치이며 작은 dataset은 전부 검사한다. 전체 row를 읽어도 선택한 조건의 오류와 모델 오분류는 남을 수 있다. 원문의 전체 스캔 정확성 보장 문구를 모든 민감정보의 탐지 보장으로 확대하지 않는다. LLM 사용량은 각 scanned resource에 귀속한다.
 
-Regex는 column 조건상 일치 가능성이 없으면 content build를 생략해 비용을 줄일 수 있다. 이미 보호된 marking이나 알려진 folder를 제외하면 재검사 범위도 줄지만 이 제외를 coverage로 착각하지 않는다.
+Regex는 column 조건상 일치 가능성이 없으면 content build를 생략해 비용을 줄일 수 있다. 이미 보호된 marking이나 알려진 folder를 제외하면 재검사 범위도 줄지만 이 제외를 coverage로 착각하지 않는다. LLM 조건은 prompt를 조정하는 동안이나 전수 탐지가 필요 없을 때 row subset으로 비용을 줄이고, match action을 적용하기 전에 빠짐없는 탐지가 필요하면 Scan all rows로 돌린다.
 
 ## 일정과 결과의 시간 범위
 
@@ -29,6 +29,8 @@ One-time은 현재 선택된 resource를 검사하며 나중에 추가/변경된
 ## Action과 권한
 
 처음에는 No Match Actions로 조건을 검증하면 false positive가 즉시 접근 차단이나 새 output으로 이어지는 일을 줄일 수 있다. Marking은 role과 무관하게 eligibility를 요구하므로 잘못 적용하면 업무를 막는다. 수동 제거된 marking을 다시 적용할지는 별도 옵션이다. Issue도 archived/closed 이전 issue를 다시 만들지 않는 옵션이 있다.
+
+Create issues action은 match된 column에 issue를 만든다. 담당자(assignee)를 지정할 수 있고, advanced configuration으로 issue 본문, space에서 쓸 수 있는 issue label과 severity를 정할 수 있다. Dataset 생성자에게 민감정보 발견을 알리는 옵션도 있다. Label과 severity를 scan 목적에 맞춰 두면 다수의 자동 issue를 분류하기 쉬워진다. SDS 문서가 접근 제한을 marking의 효과로 설명하는 점에 비춰 보면 issue는 분류와 후속 조치를 위한 기록이고 접근 제한은 marking이 맡는다(문서 간 대조에 따른 해석). Obfuscation은 원본을 둔 채 별도 output dataset을 만든다.
 
 Marking을 Match Action에 사용하려면 해당 marking을 적용하는 권한과 제거하는 권한이 모두 필요하다. 단순히 marking이 붙은 데이터를 읽을 자격과 구분한다. (2026-10-18 [공식 생성 화면](https://www.palantir.com/docs/resources/foundry/sensitive-data-scanner/apply-marking-match-action.png) 확인, 실제 권한 변경 없음)
 
