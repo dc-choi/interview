@@ -23,6 +23,7 @@ aliases: ["데이터&저장소(Data&Storage)", "Data & Storage"]
 
 - [[DuckLake|DuckLake]] — SQL 카탈로그와 Parquet 데이터, 형식과 확장 구분
 - [[Query-Engine-Execution|쿼리 엔진]] — 실행 계획의 읽기, 이동과 계산, Trino의 분산 실행과 pushdown, DuckDB와 Dremio, Drill, Impala의 선택 조건
+- [[Columnar-Storage-and-Vectorized-Execution|컬럼 저장과 벡터화 실행]] — row group과 경량 압축, 벡터 단위 실행, 임베디드 OLAP의 동시성과 자원 한계, DuckDB 2.0 LTS 도입 점검
 - [[pg-vectorsearch-PRISM|PRISM 벡터 검색]] — pgvector 타입 호환과 recall 기준 비교
 - [[PostgreSQL-Storage-Bottlenecks|PostgreSQL 스토리지 병목]] — NVMe 비교 조건과 내구성 설계
 

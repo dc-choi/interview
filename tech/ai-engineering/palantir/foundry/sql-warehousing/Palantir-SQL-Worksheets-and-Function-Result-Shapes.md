@@ -1,7 +1,7 @@
 ---
 tags: [palantir, foundry, operations]
 status: done
-verified_at: 2026-10-28
+verified_at: 2026-11-13
 category: "AI엔지니어링(AIEngineering)"
 aliases: ["SQL worksheet과 함수 결과 형태"]
 ---
@@ -12,7 +12,9 @@ aliases: ["SQL worksheet과 함수 결과 형태"]
 
 Scratchpad는 private 임시 editor이며 Foundry resource, 공유와 version history가 없다. Private worksheet은 개인 저장, project worksheet은 resource와 project 권한으로 공유한다. 수동 save가 version을 만들고 save 사이 자동 보존된 미저장 변경은 아직 version이 아니다.
 
-Ontology SQL function은 project worksheet으로 저장해야 publish할 수 있다. Private worksheet은 publish 대상이 아니다. Function은 read-only query이며 Action/Automate/Workshop/OSDK에서 소비하더라도 스스로 Ontology를 수정하는 함수로 바뀌지 않는다. Beta 단계의 고동시성 제한과 일반 Ontology SQL 자원 제약을 상속한다.
+Ontology SQL function은 project worksheet으로 저장해야 publish할 수 있다. Private worksheet은 publish 대상이 아니다. Function은 read-only query이며 Action/Automate/Workshop/OSDK에서 소비하더라도 스스로 Ontology를 수정하는 함수로 바뀌지 않는다. Ontology SQL 문서는 결과를 최대 10,000행에서 자른다고 적지만, sql-functions 문서는 함수에 같은 한도가 적용되는지 따로 적지 않는다. 같은 엔진이라 적용된다고 보는 것은 추론이므로 함수 결과 크기는 enrollment에서 확인한다.
+
+Ontology SQL과 SQL function은 2026-11-12 공지로 11월 9일 주부터 모든 enrollment에서 GA가 됐다. 2026-11-13 sql-functions 문서에는 단계 표기나 동시성 한도가 없다. 다만 같은 날 Object Explorer의 SQL 분석 문서는 여전히 Ontology SQL 지원을 Beta로 표기하므로, 문서별 표기가 GA 공지와 어긋날 수 있다. GA 공지도 Spark SQL 함수 지원 개선, 지연 단축과 planning/execution 관측성 개선을 향후 과제로 적고 있으므로, GA를 함수 지원 범위나 응답 시간의 보장으로 읽지 않는다. 실제 동시 호출 한도와 지연은 enrollment에서 측정한다.
 
 ## 매개변수와 반환형
 
@@ -51,6 +53,8 @@ Selected SQL만 실행할 수 있으므로 editor 전체와 실제 실행 statem
 - [Palantir sql-warehousing, sql-permissions](https://www.palantir.com/docs/foundry/sql-warehousing/sql-permissions)
 - [Palantir sql-warehousing, sql-studio](https://www.palantir.com/docs/foundry/sql-warehousing/sql-studio)
 - [Palantir sql-warehousing, worksheets](https://www.palantir.com/docs/foundry/sql-warehousing/worksheets)
+- [Palantir Foundry, November 2026 announcements](https://www.palantir.com/docs/foundry/announcements/2026-11) — 2026-11-13, Ontology SQL과 SQL function GA 대조
+- [Palantir Foundry, Analyze objects using SQL](https://www.palantir.com/docs/foundry/object-explorer/analyze-sql) — 2026-11-13 Beta 표기 확인
 
 ## 관련 문서
 
