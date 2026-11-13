@@ -60,11 +60,22 @@ softmax 읽기는 질의와 각 키의 유사도 점수를 비선형 가중치�
 
 하이브리드 구성의 품질과 속도는 모델 전체의 결과이며, 선형 어텐션 층 비율만으로 긴 문맥 정확도를 예측하지 않는다. 공급사 평가표를 읽는 조건은 [[Model-Release-Claims|모델 발표 수치 읽기]]를 따른다.
 
+## 어텐션 없이 고정 이웃만 섞는 시도: Grassmann flow
+
+선형 어텐션은 모든 위치의 정보를 고정 크기 상태로 모으는 쪽이다. 반대로 각 위치가 정해진 거리의 이웃 몇 개만 보게 해 길이에 선형인 비용을 얻는 시도도 있다. arXiv 2512.19428(Zhang Chong 단독 저자, 2025-12-22 v1, "Attention Is Not What You Need: Grassmann Flows as an Attention-Free Alternative for Sequence Modeling")이 그 예이며, 2026-11-13에 v1 본문을 대조했다.
+
+- **구성**: self-attention 블록을 Causal Grassmann mixing 블록으로 바꾸고 L×L 어텐션 행렬과 softmax 가중치를 만들지 않는다. 은닉 상태(실험값 d=256)를 r=32차원으로 줄인 뒤, 위치 t를 오프셋 Δ(예: 1, 2, 4, 8, 12, 16)만큼 떨어진 위치와 짝짓는다. 두 벡터가 펼치는 2차원 부분공간을 Grassmann 다양체 Gr(2, r)의 점으로 보고 Plücker 좌표 C(r, 2)개(r=32면 496개)로 표현해 다시 d차원으로 투영하고 오프셋별로 평균낸다. 시그모이드 게이트가 원래 표현과 이 기하 특징의 비율을 정한다.
+- **비용 주장**: r과 오프셋 수를 고정하면 층 비용이 O(Ld²)로 길이 L에 선형이라고 적는다. 다만 저자의 구현은 길이 256 이하에서 Transformer보다 느렸고 전용 커널이 없다고 밝힌다.
+- **결과 규모**: Wikitext-2에서 약 13M 파라미터 6층 모델의 검증 perplexity는 275.7로 같은 크기급 Transformer(12.59M)의 248.4보다 약 11% 높았고, 12층 약 18M 모델은 261.1 대 235.2였다. 고정한 DistilBERT 위에 분류 head만 바꾼 SNLI에서는 테스트 정확도 0.8538로 Transformer head 0.8511보다 근소하게 높았고 저자도 차이가 작다고 적는다. 본문은 격차를 10~15%로 서술하고 6층 Transformer 값을 241.0~253.6으로 적지만, 표 1에는 248.4와 253.6만 있고 241.0은 없다.
+- **인과성 의문**: 논문은 위치 t를 오른쪽(미래) 위치와만 짝짓는다고 쓰면서 이를 왼쪽에서 오른쪽으로의 언어 모델링과 일관된다고 설명한다. 식대로라면 위치 t의 표현이 t+1 이후 토큰 상태를 받으며, 출력 이동이나 마스킹 서술은 찾지 못했다. 다음 토큰 예측에서 정답 정보가 섞일 수 있는 구성으로 읽히므로(해석) 위 perplexity를 그대로 비교하기 어렵다. 논문은 코드 저장소를 링크하지 않아 구현으로 확인할 수 없다.
+- **읽는 법**: 1,300만~1,800만 파라미터의 소규모 실험이고 저자도 최신 언어 모델과 경쟁할 결과가 아니라고 밝힌다. 어텐션 대체 가능성의 증거가 아니라 계산을 분석 가능한 기하 대상에 올린다는 아이디어의 초기 시도로 둔다. 독립 재현 결과는 공개 코드와 함께 다시 확인한다(이번에 확인하지 않음).
+
 ## 이해 점검
 
 1. 분모의 정규화가 제곱 복잡도로 돌아가지 않는 이유는 무엇인가?
 2. 특징 차원을 늘리면 길이에 선형이어도 실제 비용이 커지는 이유는 무엇인가?
 3. 하이브리드 모델에서 긴 문맥의 KV 캐시 크기를 정하는 층은 어느 쪽인가?
+4. 고정 이웃만 섞는 층이 인과 언어 모델에서 미래 위치를 참조하면 학습 지표에 어떤 문제가 생기는가?
 
 ## 출처
 
@@ -72,6 +83,7 @@ softmax 읽기는 질의와 각 키의 유사도 점수를 비선형 가중치�
 - [Transformers are RNNs: Fast Autoregressive Transformers with Linear Attention — PMLR, Katharopoulos et al.](https://proceedings.mlr.press/v119/katharopoulos20a/katharopoulos20a.pdf) — 3.2~3.4절
 - [KRAFTON/Raon-1-mini-preview — Hugging Face, KRAFTON](https://huggingface.co/KRAFTON/Raon-1-mini-preview) — 2026-10-27 층 구성, RDA 설명, KV 캐시 크기와 문맥 길이 확인
 - [zai-org/GLM-5.3-Flash — Hugging Face, Z.ai](https://huggingface.co/zai-org/GLM-5.3-Flash) — 2026-10-27 하이브리드 어텐션 설명 확인
+- [Attention Is Not What You Need: Grassmann Flows as an Attention-Free Alternative for Sequence Modeling — arXiv, Zhang Chong](https://arxiv.org/abs/2512.19428) — 2026-11-13 v1 본문 대조, 3.2절 구성, 복잡도, Wikitext-2와 SNLI 결과, 한계
 - [크래프톤, 자체 개발 30B급 고효율 LLM 'Raon-1 mini' 프리뷰 공개 — GeekNews](https://news.hada.io/topic?id=35752) — 학습 계기, 구조는 모델 카드로 대조
 
 ## 관련 문서

@@ -77,6 +77,15 @@ Martin Fowler의 2026-10-29 LLM Voice는 인간 독자에게 생각을 전달하
 
 공개 도구 사례인 `im-not-ai`는 2026-10-14 확인한 README에서 의미 보존, 탐지 구간 중심 수정, 장르 유지와 과윤문 제한을 설계 원칙으로 제시한다. 이는 도구의 명시된 목표이며 모든 출력이 그 목표를 만족한다는 실증 결과가 아니다. 패턴 수나 호출 명령은 배포본별 문서를 확인하고, 링크만 붙이면 설치되거나 특정 명령이 모든 호스트에서 동작한다고 가정하지 않는다. 여기서는 설치와 실행 성공을 검증하지 않았다.
 
+또 다른 사례인 `stop-slop-ko`는 영어 `stop-slop`(MIT)에서 아이디어를 가져와 한국어 문서에 맞게 다시 만든 Claude Code 플러그인 묶음이다(MIT, 커밋 목록과 marketplace.json 기준 v1.2.2, 2026-10-21). 2026-11-13 확인한 README에서 눈여겨볼 설계는 다음과 같다.
+
+- **규칙 검사와 판단을 나눈다.** 표준 라이브러리만 쓰는 스캐너가 긴 줄표, 공백을 둔 가운뎃점 나열, 이모지, 조사 앞 공백과 번역투(을 통하여, 에 있어서, 되어지다 등)를 WARN이나 INFO로 표시하고 종료 코드로 PASS와 FAIL을 알린다. 상투구, 과한 명사화와 기계적인 3단 병렬은 스캐너가 못 잡는다고 밝히고 이 부분은 모델의 판단에 맡긴다.
+- **서술형 신호는 선택 검사로 둔다.** 단순한 무엇이 아닌 같은 과장, 중요성을 깨달았다로 끝나는 교훈형 마무리, 정말과 매우 같은 빈 강조어는 `--prose` 옵션의 INFO 항목이다. 반복 신호는 횟수와 함께 글 길이 대비 빈도 기준을 두어 긴 글의 정상 빈도를 걸러 낸다.
+- **보존 대상을 먼저 정한다.** 기존 문서를 고치는 모드는 숫자, 요구사항 번호, 기술 용어와 종결어미를 바꾸지 않고, 보고서의 함, 됨 개조식은 고칠 대상으로 보지 않는다. 영어판의 3항목 나열 금지 같은 규칙을 한국어 요구사항 열거에 그대로 적용하면 문체가 아니라 내용이 지워진다는 이유로 규칙을 다시 만들었다고 설명한다. 위 원문 대조 절차의 1, 2번과 같은 방향이다.
+- **문서 형식과 범위**: 스캐너는 docx, pptx, xlsx, Markdown, 텍스트와 HTML을 검사한다. README의 요구 사항은 pptx 정제 레시피(python-pptx)와 DOCX 출력(python-docx)만 적고, 기존 docx나 xlsx를 고치는 방법은 적지 않는다. 같은 묶음의 자소서 코치 플러그인은 AI 검사기를 피하는 도구가 아니라고 밝힌다.
+
+앞의 사례와 마찬가지로 도구가 밝힌 설계이며 출력 품질의 실증은 아니다. 설치와 실행은 검증하지 않았고, 내용이 맞는지는 작성자가 원문과 대조한다.
+
 ### 최종 판단
 
 모델의 지적은 빠른 점검을 위한 보조 신호다. 문법적으로 매끈한 제안도 글의 의도나 고유한 리듬을 약하게 만들 수 있다. 각 지적을 받아들일지, 비교 결과를 어떻게 해석할지는 작성자가 결정한다.
@@ -88,6 +97,7 @@ Martin Fowler의 2026-10-29 LLM Voice는 인간 독자에게 생각을 전달하
 - [LLM Voice — Martin Fowler](https://martinfowler.com/bliki/LLM-Voice.html) — 2026-10-29, 2026-11-02 본문과 접근성 및 번역의 예외 확인
 
 - [im-not-ai — GitHub, epoko77-ai](https://github.com/epoko77-ai/im-not-ai) — 2026-10-14 README의 윤문 원칙과 단일 패턴, 지표에 의한 AI 작성 판정 제한 확인
+- [stop-slop-ko — GitHub, leeandev](https://github.com/leeandev/stop-slop-ko) — 2026-11-13 README, LICENSE(MIT)와 커밋 목록(v1.2.2, 2026-10-21) 확인
 - [How To Write With An LLM — A Final Ward](https://sockpuppet.org/blog/2026/09/17/how-to-write-with-an-llm/)
 - [LLM과 함께 글 쓰는 법 — GeekNews](https://news.hada.io/topic?id=33887)
 - [긴 문서 분석, 톤 지정, 반론 요청 활용법 — Threads, research_institute_boxer](https://www.threads.com/@research_institute_boxer/post/DabewxAknHc)

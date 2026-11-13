@@ -15,6 +15,7 @@ OSI 7계층과 캡슐화, IP 헤더, 스위치와 라우팅, TLS, 패킷 캡처,
 - [x] [[Self-Organizing-Network|SON과 무선 자원 관리]] — SON 범주와 기능(ANR, MRO, MLB, CCO, 에너지 절감), 중앙형과 분산형 구조, 수락 제어와 핸드오버, SDR 정의, 핸드오버와 IP 유지 구분
 - [x] [[Network-Lab-Practice|네트워크 실습]] — 두 서브넷 연결, 게이트웨이와 ARP, 상태/왕복/서비스 분리, 장애 진단과 열 단계 실습 후보
 - [x] [[Satellite-Direct-to-Device|위성 직접 연결]] — 기존 LTE와 NTN, 지연과 도플러, 단말과 서비스 조건
+- [x] [[Network-Functions-Virtualization|네트워크 기능 가상화(NFV)]] — 전용 장비를 범용 서버의 소프트웨어로, 2012 백서의 이점과 과제, SDN과의 관계, VNF, NFVI, MANO 기능 블록과 참조점
 - [x] [[Intelligent-Network|지능망과 SSP, SCP]] — 교환과 서비스 로직의 분리, 기능 엔티티와 물리 엔티티, 호 처리 흐름, Freephone 예시
 - [x] [[SS7-Signaling|SS7 공통선 신호방식]] — 회선별 신호(R2)와 공통선 신호, 신호점과 STP, 신호 전달 방식, MTP, SCCP, TC(TCAP) 기능 블록, 로밍과 문자 메시지의 MAP
 - [x] [[HTTPS-TLS|HTTPS / TLS Handshake]]

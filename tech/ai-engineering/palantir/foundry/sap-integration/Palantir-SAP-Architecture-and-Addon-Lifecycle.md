@@ -1,7 +1,7 @@
 ---
 tags: [palantir, foundry, operations]
 status: done
-verified_at: 2026-10-16
+verified_at: 2026-11-13
 category: "AI엔지니어링(AIEngineering)"
 aliases: ["SAP 연결 경로와 애드온 수명주기"]
 ---
@@ -21,7 +21,22 @@ Foundry SAP Connector는 SAP 애플리케이션 계층의 HTTPS 서비스를 통
 
 신규 연결은 Foundry worker를 권장하며 agent worker는 legacy로 표시된다. 사용자 인증, egress 정책, SAP 서버 인증서 신뢰는 별도 조건이다. 인증서 기반 agent 인증에 쓰는 No authentication 선택지를 SAP 서비스의 무인증 공개로 해석하지 않는다.
 
-Data Accelerator는 beta 경로로 SAP Cloud Connector를 이용한다. 네트워크 경로를 바꾸며 SAP 객체의 권한과 동기화 의미를 대체하지 않는다. Foundry worker 대상이고 agent 경로용이 아니다. 가상 host/port와 선택적 Location ID, 클라이언트 인증서, 제어 및 동적 데이터 경로의 443 통신을 각각 확인한다.
+SAP Data Accelerator는 SAP가 관리하는 연결 서비스로, Foundry 트래픽을 고객의 SAP Cloud Connector를 거쳐 사내 SAP 시스템으로 전달한다. 2026-11-13 확인한 공식 문서에서는 이전의 beta 표시가 빠졌고, 이 경로를 SAP가 승인한(SAP-endorsed) Palantir 연동 아키텍처로 소개하며 권장 경로로 둔다. 신규 연결만이 아니라 기존 SAP ERP, SAP SLT, SAP (Custom source) 소스도 이 경로로 돌리도록 안내한다. Data Connection agent와 secure tunnel을 쓰는 연결은 참고용 legacy 모델로만 남아 있다. 공식 문서는 사용에 추가 요금이 붙을 수 있다며 Palantir Support 문의를 안내한다. 현재 문서에 GA 표기가 있는 것은 아니므로 enrollment별 사용 가능 여부는 따로 확인한다(해석).
+
+- 이 경로는 네트워크 경로만 바꾼다. 동기화한 데이터, SAP 애드온 인증과 동기화 설정은 그대로이므로 SAP 객체의 권한과 동기화 의미를 대체하지 않는다. 백엔드 SAP 시스템은 Cloud Connector 뒤의 사설망에 둘 수 있다.
+- SAP ERP, SAP SLT와 SAP (Custom source) 소스를 이 경로로 돌릴 수 있다. 사용자 권한으로 쓰는 writeback은 SAP ERP 소스에 토큰 발급과 갱신 webhook을 만들어 outbound application에 연결한다.
+- Foundry worker 소스에서만 지원하므로 agent worker 소스는 먼저 Foundry worker로 옮긴다.
+- 설정 책임이 나뉜다. Data Accelerator 프로비저닝, Palantir가 발급한 클라이언트 인증서로 Foundry를 파트너 시스템으로 등록하는 일, Cloud Connector의 가상 host/port 매핑은 SAP 관리자가 SAP 도구에서 한다. Foundry 쪽은 같은 인증서를 소스에 붙이고, 소스의 host/port를 가상 값으로 두고, 제어 평면 URL과 선택적 Location ID(같은 테넌트에 Cloud Connector가 여럿일 때만)를 넣는다. SAP (Custom source)는 이 값들을 소스의 YAML 구성으로 넣는다.
+- egress는 제어 평면 host와 연결마다 하위 도메인을 동적으로 할당하는 데이터 평면 wildcard 모두에 443을 열어야 한다. 엔드포인트 인증서가 공개 CA 서명이 아니면 서버 인증서도 소스에 추가한다.
+
+## 개요 문서의 지원 범위
+
+개요 문서는 연결을 ABAP 애드온 설치, Data Accelerator 설정, SAP 환경에 맞는 Foundry worker 소스 구성의 세 단계로 정리한다. 소스 커넥터는 ECC와 S/4HANA(온프레미스와 Cloud Private Edition)용 SAP ERP, 실시간 스트리밍 동기화를 포함한 SLT Replication Server 경유 연결용 SAP SLT로 나누고, BW와 기존 연동은 SAP (Custom source)로 안내한다.
+
+- 애드온 이름은 Palantir Foundry Connector 2.0 for SAP Applications이며 Diskover Limited와 함께 개발했다. SAINT로 설치하고 SICF 웹 서비스로 HTTPS 접근을 연다. 데이터베이스에 직접 접근하지 않고 SAP ABAP platform의 애플리케이션 계층과 SAP 사용자 권한으로 읽는다. 추출 전에 시스템 부하 기준을 확인하고 맞지 않으면 중단한다.
+- 기능 상태(문서 확인 기준 2026-11-13): bulk import, interactive exploration, webhooks는 일반 제공, streaming import는 beta, bulk export는 개발 중이다.
+- 추출 대상은 애플리케이션 테이블, BW InfoProvider, SLT, BEx query, ERP extractor, Function/BAPI, SAP 데이터 모델, CDS view, HANA information view다.
+- 최소 버전은 SAP_BASIS 7.4 SP5 이상 또는 7.5(SP 무관)이며 SAP_BASIS 8.x 기반 S/4HANA도 지원한다. 7.4 SP5 미만은 Remote Agent 설치를 쓴다.
 
 ## 상태를 가진 설치
 
