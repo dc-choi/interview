@@ -22,11 +22,21 @@ sync 매개변수와 고급 설정 중 몇 가지는 하류 설계와 묶인다(
 - 날짜를 문자열로 받는 옵션은 SAP 날짜 필드에 파싱되지 않지만 업무 의미가 있는 값이 들어 있을 때 쓴다. 이 값을 null로 바꾸는 unexpected value 옵션과 달리 원래 값을 하류에서 해석할 수 있다.
 - T-code 추출의 소계와 합계 행 숨김 옵션은 집계 행을 빼고 적재한다. 옵션 없이 받은 결과를 합산하면 소계가 중복 집계될 수 있다(해석).
 
+객체 유형별 추가 입력은 실패 조건이 다르다(2026-11-13 확인).
+
+- CDS View의 `WITH PARAMETERS` 값은 sync 시점에 이름과 값 쌍으로 넣는다. 이름은 CDS view에 선언한 이름과 맞아야 하며, 모르는 매개변수나 빠진 매개변수가 있으면 sync가 실패한다. 빈 행은 저장할 때 버려진다.
+- Transaction Code는 Program type(트랜잭션 코드인지 ABAP report인지)이 필수다. Selection variant는 실행 전에 적용할 선택 조건이고, Output variant는 결과 목록의 구조를 정하는 layout이다. SAP 화면에서 쓰던 variant 이름을 그대로 넘기므로 SAP 쪽에서 variant를 바꾸면 적재 결과도 바뀔 수 있다(해석).
+- Function Module은 Function input parameters를 IMPORTING 매개변수로 넘기며 대부분의 BAPI에 필요하다. Commit after function call은 호출 뒤 `COMMIT WORK`를 내며 기본은 꺼져 있다. commit에 기대어 변경을 저장하는 표준 BAPI는 이 옵션을 켜야 변경이 남는다.
+
+dynamic filter(add-on SP26 이상)는 filter 값 자리에 `[TODAY]`, `[CURRENTYEAR]`, `[FIRSTDAYOFMONTH]`, `[LASTDAYOFLASTMONTH]` 같은 고정 keyword와 `[ADDDAY]`, `[ADDMONTH]`, `[GETDAY]` 같은 날짜 계산 함수를 쓰고, `[ADDDAY([TODAY], 1)]`처럼 중첩할 수 있다. 고정 날짜를 매번 고치지 않고 지난달 말일까지 같은 기간 조건을 schedule에 둘 수 있다(해석). 문서는 keyword를 언제, 어느 시간대 기준으로 계산하는지 적지 않는다. 날짜 열의 filter 값은 `YYYYMMDD` 형식으로 쓴다. 다만 같은 문서의 `[ADDDAY(22102022,1)]` 예시는 일월년 순서로 적혀 있어, 함수에 날짜 리터럴을 직접 넣을 때의 형식은 설치된 add-on에서 확인한다.
+
 function 추출은 TABULAR output과 SERVICE_USER/CONTENT_FUNCTION_ALL 및 함수별 권한을 확인한다. transaction 결과가 2GB를 넘으면 spool 수집이 필요하다. legacy spool은 모든 값을 string으로 읽는 제약이 있다.
 
 ## incremental과 reset
 
 증분 열의 `>=`는 경계 중복이 생기므로 dedup가 필요하다. 여러 column의 OR와 date/time 이어 붙이기는 다른 조건이다. CDHDR/CDPOS join은 insert 누락 가능성과 twin-join 조건을 확인한다. BEx/function에 같은 incremental을 가정하지 않는다.
+
+twin table 증분은 ERP Table에서만 쓰며, 대상 table이 아니라 별도 twin table의 필드가 증분 조건을 만족할 때 대상 행을 가져온다. Incremental Twin Table에 twin table 이름을 두고, Incremental Twin Mapping은 `{PRIMARY_TABLE_NAME}-{FIELD_NAME}={TWIN_TABLE_NAME}-{FIELD_NAME}` 형식으로 join 조건을 적고, 여러 조건은 세미콜론으로 이어 AND로 묶는다(2026-11-13 확인). 대상 table에 변경시각 열이 없을 때 header table의 변경시각으로 item table을 끌어오는 식의 설계에 쓸 수 있다(해석). 이때 twin 필드에 반영되지 않은 item만의 변경은 증분에서 빠진다.
 
 BW request 기반은 non-compressed request 조건이며 compressed이면 full load가 다시 필요할 수 있다. legacy reset은 SNAPSHOT/reset=true 실행 뒤 flag 제거/APPEND 복귀, 신규 toggle은 한 번 실행 뒤 해제를 확인한다. reset을 남기면 반복 reload가 될 수 있다. 신규 toggle은 ERP Table, CDS View, HANA View, BW Content Extractor에서만 지원한다. T-code와 Function Module은 증분 자체가 없어 늘 snapshot으로 돈다.
 
@@ -55,7 +65,7 @@ Data Accelerator 경로는 Foundry worker에서만 쓰며 control/data plane egr
 
 DMS media sync Beta는 기존 항목 제외, path/default .pdf, document type/size 조건을 확인한다. 코드의 get_documents/get_document는 실제 MediaSet 저장과 별개로 결과를 연결해야 한다. metadata endpoint로 BAPI 구조를 확인한다.
 
-dynamic keyword는 SP26, BEx member limit은 SP22 조건과 기본 200/최소 2를 확인한다. 과부하 진단에는 SAP background job/resource/load 검사를 포함하되 debug 옵션으로 검사를 끄는 효과를 이해한다.
+BEx member limit은 SP22 조건과 기본 200/최소 2를 확인한다. 과부하 진단에는 SAP background job/resource/load 검사를 포함하되 debug 옵션으로 검사를 끄는 효과를 이해한다.
 
 ## 출처
 
@@ -66,3 +76,4 @@ dynamic keyword는 SP26, BEx member limit은 SP22 조건과 기본 200/최소 2�
 ## 관련 문서
 
 - [[Palantir-Connector-Contracts]]
+- [[Palantir-SAP-Extraction-and-Incremental-Identity]]
