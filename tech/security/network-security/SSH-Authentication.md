@@ -58,6 +58,19 @@ RFC 4252의 공개키 인증 서명에는 세션 식별자, 사용자 이름과 
 
 이미 알던 호스트 키가 바뀌었다면 정상적인 서버 교체나 키 회전일 수도 있고 다른 서버나 공격자에게 연결된 것일 수도 있다. 경고를 없애려고 기존 기록부터 지우지 말고, 변경 이유와 새 지문을 신뢰하는 경로로 확인한다. CI 배포에서 호스트 키 검증을 생략하는 위험과 실제 설정은 [[Single-Host-SPA-API-Deployment-SSH-Workflow|SSH 배포 workflow]]에서 다룬다.
 
+### 경로의 중계자가 공격자일 때
+
+익명화 네트워크, 공용 Wi-Fi와 프록시처럼 내가 통제하지 못하는 경로는 그 자체가 중간자가 될 수 있다. 2026-10-05 Tor Project의 tor-relays 공지는 일부 운영자의 relay가 SSH 연결을 가로챘다는 보고를 받았다고 알렸다. 운영자들의 보고와 공지의 추정에 따르면 공격자가 Linux host에 침입해 exit가 아니던 relay의 `torrc`를 고쳐 exit로 바꾼 것으로 보인다. Tor 측은 해당 relay를 표시해 디렉터리 권한 서버가 네트워크에서 거부하도록 했다. 전송 암호화는 경로로부터 내용을 숨길 뿐이며, 끝점이 진짜 서버인지는 일반적인 구성에서 호스트 키(또는 호스트 인증서) 검증이 확인한다.
+
+OpenSSH는 기본값 `StrictHostKeyChecking ask`에서 호스트 키가 바뀐 서버에 연결하지 않는다. `no`로 진행해도 비밀번호, keyboard-interactive와 agent, X11, port forwarding을 끈다. 따라서 아래 위험은 기존 `known_hosts` 기록을 지우고 새 키를 수락했거나, 첫 접속이거나, 바뀐 키를 대화형으로 수락하게 하는 클라이언트에서 그대로 성립한다. 이때 결과는 인증 방식에 따라 다르다.
+
+- **비밀번호 인증:** RFC 4252 8절의 요청은 비밀번호 자체를 담아 상대 서버에 보낸다. 가짜 서버는 받은 비밀번호를 진짜 서버에 다시 쓸 수 있다. RFC 4251 9.4.1도 서버를 인증하지 않은 클라이언트가 중간자 장치와 세션을 맺고 자격 증명을 넘길 수 있다고 적는다.
+- **공개키 인증:** 서명에 세션 식별자가 들어간다. 세션 식별자는 첫 키 교환의 교환 해시이며 양쪽의 무작위 cookie, 키 교환 값과 공유 비밀이 들어간다(RFC 4253 7.1, 7.2, 8절). 두 연결을 각각 종단하는 중간자는 서로 다른 식별자를 얻으므로 받은 서명을 진짜 서버 인증에 쓸 수 없다. 키 교환을 그대로 중계하면 식별자는 같아지지만 중간자는 세션 키를 모른다(RFC 4252 7절과 RFC 4253에서 해석). 다만 가짜 서버가 공개키를 거절하고 비밀번호나 keyboard-interactive를 요구할 때 입력하면 비밀번호 경로와 같아진다. Agent forwarding을 켠 연결에서는 상대가 agent로 인증 연산을 수행할 수 있어 진짜 서버 인증에 쓰일 수 있다(ssh_config의 `ForwardAgent` 경고). 가짜 서버에서 입력한 명령과 내용도 노출되므로 공개키 인증이 호스트 키 검증을 대신하지 않는다.
+
+침해가 의심되는 relay에 Tor 공지가 권고한 대응 순서는 서버 침해 일반에도 참고할 만하다. 서버를 내리고, 지우기 전에 디스크와 로그를 보존하고, 정리 대신 재설치하고, 기존 identity key를 도난된 것으로 보아 새로 만들고, host에 있던 모든 자격 증명을 회전한다. 점검 대상에는 Tor Metrics의 Exit flag, `torrc`와 include 경로의 exit 정책과 식별 정보 변경, 22번 port의 NAT 규칙, 낯선 listener와 외부 연결, 바이너리 무결성, 새 사용자, `authorized_keys`, cron과 systemd, 승인되지 않은 kernel module과 터널 인터페이스 등이 있다.
+
+보도에 나온 relay 수, 가로채기 서버 수와 malware 이름은 Tor 공지에서 확인하지 못해 적지 않는다. 침입 경로도 공지 시점에는 밝혀지지 않았다. 이 절은 2026-11-13 Tor 공지, RFC 4251, RFC 4252, RFC 4253과 ssh_config(5)를 대조했으며 실제 공격 재현은 하지 않았다. 기존 구현 설명의 `verified_at`은 유지한다.
+
 ## 개인키 저장 형식: PEM과 PPK
 
 키 알고리즘과 파일 저장 형식은 별개다. PuTTY의 PPK와 OpenSSH 개인키 형식 사이의 변환은 같은 키를 다른 클라이언트에서 읽게 만드는 작업이다. 확장자만 바꾸는 것으로 변환되지 않으며, 키를 새로 생성하거나 서버의 접근 권한을 바꾸는 작업도 아니다.
@@ -114,6 +127,7 @@ PAM 없이 비밀번호를 확인하는 OpenSSH는 입력한 비밀번호를 `cr
 - [IETF, RFC 4254: The Secure Shell (SSH) Connection Protocol](https://www.rfc-editor.org/rfc/rfc4254.html) — 세션, 선택적 터미널 할당과 셸 및 명령 요청
 - [OpenBSD, ssh(1)](https://man.openbsd.org/ssh.1)
 - [OpenBSD, ssh-keyscan(1)](https://man.openbsd.org/ssh-keyscan.1)
+- [OpenBSD, ssh_config(5)](https://man.openbsd.org/ssh_config.5) — 2026-11-13 `ForwardAgent`의 agent 인증 연산 노출 경고와 `StrictHostKeyChecking`의 호스트 키 변경 시 동작 대조
 - [PuTTY, Using public keys for SSH authentication](https://the.earth.li/~sgtatham/putty/0.85/htmldoc/Chapter8.html)
 - [PuTTY, puttygen(1), Debian 매뉴얼 배포본](https://manpages.debian.org/testing/putty-tools/puttygen.1.en.html)
 - [Tailscale, Security Bulletins: TS-2026-014, TS-2026-015](https://tailscale.com/security-bulletins) — 2026-11-02 인증/포워딩 조건, 수정 버전과 서비스 환경 완화 대조
@@ -129,6 +143,7 @@ PAM 없이 비밀번호를 확인하는 OpenSSH는 입력한 비밀번호를 `cr
 - [NVD, CVE-2016-6210](https://nvd.nist.gov/vuln/detail/CVE-2016-6210) — 2026-11-09 NVD API 기록으로 응답 시간 차이를 이용한 계정 열거와 7.3 이전 영향 범위 대조
 - [Determine appropriate salt for invalid users — GitHub openssh/openssh-portable](https://github.com/openssh/openssh-portable/commit/9286875a73b2de7736b5e50692739d314cd8d9dc) — 2016-07-15 커밋
 - [sshole 설명 페이지 — Wakefield](https://sshhole.com) — 발견자 측 설명. salt 차용 경로와 musl `crypt()` 실패 반환값의 변경 이력 확인
+- [tor-relays: Security incident affecting some relay operators — Tor Project Forum](https://forum.torproject.org/t/tor-relays-security-incident-affecting-some-relay-operators/22231) — 2026-10-05 relay의 SSH 가로채기, `torrc` 변조, 네트워크 배제와 운영자 대응 순서 확인
 
 ## 관련 문서
 

@@ -1,7 +1,7 @@
 ---
 tags: [palantir, foundry, security, governance]
 status: done
-verified_at: 2026-10-16
+verified_at: 2026-11-13
 category: "AI엔지니어링(AIEngineering)"
 aliases: ["Foundry audit schema, 전달과 증거 해석"]
 ---
@@ -56,6 +56,16 @@ Foundry export는 Org별로 구성하며 audit.3 append 한 번에 최대 100GiB
 Export dataset의 retention 최대 730일은 event time이 아닌 transaction이 추가된 시각 기준이다. 삭제 표시 후 transaction 제거는 최대 7일이 걸릴 수 있다. 역사 자료를 새로 export한 경우 retention이 언제부터 세는지 확인한다. 아래 Audit Explorer의 Iceberg table retention은 별도 기준이므로 이 설명을 그대로 적용하지 않는다.
 
 Audit infrastructure는 append-only로 설계되지만 법적 remediation을 위한 Support redaction 경로가 있다. Log 부재, Org attribution/coverage, 지연과 migration gap을 검토한 뒤 증거의 범위를 판단한다. 실제 SIEM ingest, 탐지와 retention 삭제를 실행하지 않았다.
+
+## 탐지와 조사 운영
+
+2026-11-13 공식 문서 기준, 기존 SIEM이 있으면 audit.3를 API로 직접 수집하고, 없으면 조직별 Foundry export dataset에서 분석한다. Export 뒤에는 규모에 맞춰 도구를 고른다. Pipeline Builder는 시제품과 간단한 분석, Code Repositories는 대규모 장기 분석에 맞고, Contour에서는 먼저 거르지 않으면 데이터가 너무 클 수 있다. Pipeline 없이 export한 audit.3를 검색하고 검토할 때는 아래 Audit Explorer를 쓴다. 이때는 일반 export dataset이 아니라 Iceberg table로 쓰는 audit.3 export가 필요하다. Audit.3의 최종 목적지가 SIEM이면 Foundry export를 Data Connection으로 다시 내보내기보다 API 직접 수집을 우선한다. Audit.2는 API가 없어 export 뒤 SIEM으로 보내야 한다.
+
+탐지 규칙은 가능한 곳에서 event name 목록 대신 category로 만들고, 특정 앱을 볼 때는 `product`로 좁힌다. 같은 category에 여러 앱의 행위가 겹쳐 범위를 더 좁혀야 할 때만 event name을 더한다(해석). 반출 감시는 `dataExport`, 계정 탈취 의심은 `authenticationCheck` 실패를 uid별로 묶은 임계치, 민감 리소스의 권한 변경은 `managementPermissions`와 리소스 목록을 조합한다. 공식 예시는 의사 코드이고 실패 값을 `FAILURE`로 적었지만 audit.3 schema 설명의 result 예시는 `ERROR`, `UNAUTHORIZED`다. 실제 데이터에서 최상위 `result`와 `resultFields`의 `authenticationCheckResult`를 함께 확인한다. `managementPermissions`의 대상 리소스는 `requestFields`의 `resourcesWithPermissionsChanges`에서 찾는다. 쿼리는 `time` 범위로 먼저 줄이고, 그다음 `categories`로 좁힌 뒤 세부 field를 본다.
+
+이상 접근 조사는 대상 user의 `dataLoad`를 시간 범위로 조회하고 `resultFields`에서 실제 읽은 dataset을 확인한다. 이어서 `dataExport`로 실제 반출 여부를, `users`와 `entities`로 활동 timeline을 확인한 뒤 사용자에게 업무 맥락을 묻는다. Load 기록만으로 반출을 단정하지 않는다. 규제 데이터 검증은 대상 dataset의 `dataExport`와 uid를 내부 자격 기록과 대조하고 지속 경보와 정기 보고로 잇는다.
+
+자동 경보 전에 baseline을 만든다. 사용자나 그룹별 평소 로그인 시간과 위치, dataset 접근 빈도와 양, export의 목적, 시점과 양, 표준 권한 변경 절차가 대상이다. 탐지는 실시간 경보(로그인 실패, 민감 데이터 export), 주기 분석(접근 증가, 권한 drift), 사고 대응 절차와 정기 coverage 점검을 겹쳐 둔다. Palantir CIRT가 hosted 플랫폼을 감시하고 의심 활동을 고객에게 확인하지만, 업무 문맥의 이상은 고객만 판단할 수 있어 고객 자체 감시를 대신하지 않는다. 이 절은 수집 본문, 공식 검색 색인과 audit log categories 페이지를 대조했고 실제 쿼리와 경보는 실행하지 않았다. Frontmatter 날짜는 이 절과 위 schema, 전달 조건의 재대조 기준이며, 아래 Audit Explorer 절들의 검증 기준일은 각 절에 적은 2026-10-30으로 유지한다.
 
 ## Audit Explorer의 조회와 감사 증거
 
@@ -127,9 +137,9 @@ Checkpoint 연결에는 표준 `audit.3`에 없는 `checkpoint_interaction_rid`�
 - [Palantir Security, Set up Audit Explorer](https://www.palantir.com/docs/foundry/security/audit-explorer-set-up) — 2026-10-30 생성 권한, Iceberg 보존 기준, export 상태와 실패 복구 대조.
 - [Palantir Security, Search and filter audit logs](https://www.palantir.com/docs/foundry/security/audit-explorer-search) — 2026-10-30 필터 결합, 검색 대상, 제안 범위와 오류 조건 대조.
 - [Palantir Security, Audit Explorer](https://www.palantir.com/docs/foundry/security/audit-explorer-overview) — 2026-10-30 table 접근, 검색 감사 의미, 중복 집계와 시간대 대조.
-- [Palantir Security, audit-log-categories](https://www.palantir.com/docs/foundry/security/audit-log-categories)
-- [Palantir Security, audit-logs-overview](https://www.palantir.com/docs/foundry/security/audit-logs-overview)
-- [Palantir Security, monitor-audit-logs](https://www.palantir.com/docs/foundry/security/monitor-audit-logs)
+- [Palantir Security, audit-log-categories](https://www.palantir.com/docs/foundry/security/audit-log-categories) — 2026-11-13 `authenticationCheckResult`(result field), `resourcesWithPermissionsChanges`(request field) 대조
+- [Palantir Security, audit-logs-overview](https://www.palantir.com/docs/foundry/security/audit-logs-overview) — 2026-11-13 전달 경로, export 분석 도구와 schema 조건 재대조.
+- [Palantir Security, monitor-audit-logs](https://www.palantir.com/docs/foundry/security/monitor-audit-logs) — 2026-11-13 category 쿼리, 조사 흐름, baseline과 CIRT 역할 대조.
 
 ## 관련 문서
 
