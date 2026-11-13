@@ -122,6 +122,18 @@ AWS 공개 대담에서는 Micro-battles의 시간 범위를 최대 3~4개월로
 
 직관 중심과 데이터 중심은 배타적 선택이 아니다. 앞 절처럼 가설과 관측을 남기되, 지표가 보여 주지 않는 일관성과 형태의 판단을 누가 책임지는지 정한다.
 
+## 제품 수명 주기와 이전 곡선의 흡수
+
+제품 수명 주기(Product Life Cycle)는 제품 매출이 도입, 성장, 성숙, 쇠퇴 단계를 거친다고 보는 모델이다. 실무에서는 성숙기가 길어도 기술 발전 등으로 쇠퇴가 오므로 새 제품을 계속 만들어야 한다는 관점이 있다. Levitt의 1965년 HBR 글은 이 개념이 익숙하지만 전략 도구로는 거의 쓰이지 않는다고 지적했다.
+
+새 제품 곡선을 쌓을 때는 매출 곡선만 보지 말고 앞 곡선이 남기는 운영 비용을 함께 본다. 이전 기능이 남아 있는 동안 레거시 코드, 그 코드를 맡는 인력과 코드, 아키텍처의 복잡도가 누적된다(실무 관점). 아래는 이 흡수 관점을 로드맵에 옮긴 적용 예시이며 고정된 양식은 아니다.
+
+- 새 기능이 이전 기능의 고객과 데이터를 어떻게 옮겨 받을지(마이그레이션 경로와 기간)
+- 이전 기능을 언제, 어떤 조건에서 줄이거나 종료할지
+- 두 버전을 함께 운영하는 동안의 인력과 장애 대응 비용
+
+새 기능 출시만 완료 조건으로 두면 운영 곡선이 계속 겹친다. 이전 곡선의 흡수까지 같은 테마의 결과로 계획한다. 고객 수용 단계마다 다른 도입 지원(초기 다수에는 가이드와 교육, 자원이 부족한 후기 다수에는 대신 설정해 주는 지원)이 필요하다는 관점은 [[GTM-Strategy#캐즘: 초기 시장과 주류 시장 사이|캐즘]]과 함께 본다.
+
 ## 면접 체크포인트
 
 - 로드맵 수립 질문에는 Vision → Goal → Theme → 우선순위의 도출 순서로 답한다 — 과제 나열이 아니라 비전에서 내려오는 구조를 보여주는 것이 핵심.
@@ -142,6 +154,8 @@ AWS 공개 대담에서는 Micro-battles의 시간 범위를 최대 3~4개월로
 - [How Bain’s Micro-Battles Drive Agile Digital Transformation — Frank Ford, Tom Soderstrom (AWS)](https://aws.amazon.com/executive-insights/podcast/driving-digital-transformation-with-bain-micro-battles/) — 2026-10-16 공식 전사문의 문제 선택, 제한된 실험과 확장 조건을 대조. 대담의 조직 전환 성공률과 AI 효과 예측은 일반 사실로 사용하지 않음
 - [Someone behind the software — Karri Saarinen (karrisaarinen.com)](https://karrisaarinen.com/posts/someone-behind-the-software/) — 2026-10-15 게시, 2026-10-27 본문 확인. 제품 판단에 관한 에세이이며 Linear에 관한 설명은 공동창업자의 자기 서술
 - [소프트웨어 뒤에 있는 사람 — GN⁺ (GeekNews)](https://news.hada.io/topic?id=35592)
+- [Exploit the Product Life Cycle — Theodore Levitt (Harvard Business Review)](https://hbr.org/1965/11/exploit-the-product-life-cycle) — 1965년 11월호. 2026-11-13 공개 첫 문단에서 개념의 전략적 활용이 드물다는 지적만 대조했고 단계 명칭과 본문은 유료라 확인하지 않음
+- [엔지니어를 위한 비즈니스의 이해 — 채널데브톡 (YouTube)](https://www.youtube.com/watch?v=QxQvFglNSq8) — 2026-10-30 업로드, 사내 세션을 공개한 영상. 새 기능 곡선의 운영 비용과 수용 단계별 도입 지원은 발표자의 실무 관점
 
 ## 관련 문서
 - [[Tech-Roadmap|기술 로드맵 수립]]
