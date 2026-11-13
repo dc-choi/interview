@@ -1,7 +1,7 @@
 ---
 tags: [palantir, foundry, data-connection, connectors]
 status: done
-verified_at: 2026-11-13
+verified_at: 2026-11-14
 category: "AI엔지니어링(AIEngineering)"
 ---
 
@@ -21,6 +21,8 @@ sync 매개변수와 고급 설정 중 몇 가지는 하류 설계와 묶인다(
 - Foundry streams가 쓰는 Avro 스키마 규칙에 맞게 필드명을 정리하는 옵션은 데이터셋을 streaming pipeline에서 쓸 때 필요하다. 배치에서만 쓰던 데이터셋을 나중에 스트리밍으로 옮기면 이 설정부터 확인한다.
 - 날짜를 문자열로 받는 옵션은 SAP 날짜 필드에 파싱되지 않지만 업무 의미가 있는 값이 들어 있을 때 쓴다. 이 값을 null로 바꾸는 unexpected value 옵션과 달리 원래 값을 하류에서 해석할 수 있다.
 - T-code 추출의 소계와 합계 행 숨김 옵션은 집계 행을 빼고 적재한다. 옵션 없이 받은 결과를 합산하면 소계가 중복 집계될 수 있다(해석).
+- Drop columns는 ERP Table, CDS View, HANA View, BW Content Extractor에서 고른 열을 추출 전에 뺀다(2026-11-14 확인). 문서는 성능 개선과 함께 민감하거나 불필요한 필드의 적재를 막는 용도로 적는다. 추출 뒤 transform에서 지우는 방식과 달리 옵션을 켠 뒤의 실행에서는 해당 값이 Foundry 데이터셋에 들어오지 않는다. 기존 sync에 나중에 켜도 이미 적재한 트랜잭션의 값은 지워지지 않는다(해석).
+- Allow schema changes(2026-11-14 확인)는 모든 객체 유형에서 sync 실행 사이에 출력 스키마가 바뀌어도 되는지를 정한다. 문서는 허용하지 않을 때 스키마가 바뀐 실행이 어떻게 처리되는지 적지 않는다.
 
 객체 유형별 추가 입력은 실패 조건이 다르다(2026-11-13 확인).
 
