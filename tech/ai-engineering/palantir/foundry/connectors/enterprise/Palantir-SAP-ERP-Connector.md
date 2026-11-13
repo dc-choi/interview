@@ -48,6 +48,8 @@ HTTP 성공과 SAP business 성공은 다르다. RETURN과 메시지별 TYPE S/E
 
 webhook v2의 bulk/multiple output은 add-on 2.29 이상 조건이다. api-version 생략은 v1의 단일 입출력 경로다. v2에서 retries-per-request>0 설정은 제거하는 안내를 따른다.
 
+SAP webhook은 Foundry가 관리하는 클라우드 compute의 Foundry worker 연결에서 실행할 수 있고, 문서는 data connection agent보다 이 런타임을 권장한다(2026-11-14 확인). 이미 Foundry worker로 구성한 SAP source는 별도 이전 없이 클라우드 실행을 쓰고, agent에서 도는 source는 Foundry worker로 전환해야 이 경로를 쓴다. BAPI 호출 webhook의 task type은 `sap-erp-run-function-webhook-task-v0`이고, task body는 Handlebars 문법의 JSON으로 `function-name`, `inputs`, `output`, `commit`, `parallel`, `api-version`을 적는다.
+
 input array가 두 개 이상이거나 parallel block을 주면(빈 블록 포함) SAP 쪽에서 자동으로 병렬 실행된다. 기본 3 jobs, job당 4 calls와 1-based ROWNO로 입력/결과를 연결한다. `max-jobs`를 레코드 수보다 크게 잡아도 남는 job은 쓰이지 않을 뿐 자원을 낭비하지 않는다. OAuth bulk parallel 제약도 확인한다.
 
 ## 코드 저장소에서 직접 호출
@@ -66,6 +68,8 @@ SAP ERP source를 Python external transform이나 function에 가져오면 코�
 Data Accelerator 경로는 Foundry worker에서만 쓰며 control/data plane egress, Palantir가 준 client certificate와 Cloud Connector의 virtual host/port를 구성한다. 2026-11-13 확인한 ERP 소스 문서는 이 경로에 beta 표시를 두지 않는다. 사용자 OAuth의 outbound task는 별도 흐름이다.
 
 DMS media sync Beta는 기존 항목 제외, path/default .pdf, document type/size 조건을 확인한다. 코드의 get_documents/get_document는 실제 MediaSet 저장과 별개로 결과를 연결해야 한다. metadata endpoint로 BAPI 구조를 확인한다.
+
+고급 설정의 두 스레드 값은 위치가 다르다(2026-11-14 확인). Parallel paging threads는 페이지 데이터를 만드는 SAP work process 수이고, Plugin worker threads는 그 페이지를 가져오는 Data Connection agent 쪽 스레드 수다. 문서는 이 값을 agent 기준으로만 설명하며, Foundry worker source에서의 의미는 미확인이다. 앞쪽을 올리면 SAP 서버의 work process를 더 점유하므로 SAP 쪽 여유를 함께 본다(해석). Debug logging은 SAP에 background process를 띄우므로 문서도 주의해서 쓰라고 적는다.
 
 BEx member limit은 SP22 조건과 기본 200/최소 2를 확인한다. 과부하 진단에는 SAP background job/resource/load 검사를 포함하되 debug 옵션으로 검사를 끄는 효과를 이해한다.
 

@@ -1,7 +1,7 @@
 ---
 tags: [palantir, foundry, operations]
 status: done
-verified_at: 2026-10-16
+verified_at: 2026-11-14
 category: "AI엔지니어링(AIEngineering)"
 aliases: ["SAP writeback과 OAuth 실행 경계"]
 ---
@@ -22,9 +22,22 @@ SAP Function writeback은 원격 부작용이다. Foundry 데이터셋 트랜잭
 
 OAuth writeback은 SAP가 인증 서버, Foundry가 클라이언트인 authorization code 흐름이다. 사용자에게 실제 SAP Function 실행 권한이 있어야 한다. 기술 사용자의 서비스 권한과 최종 사용자의 콘텐츠 권한을 구분한다.
 
-일반 연결에서는 토큰 요청의 서버 경로와 사용자가 여는 SAP 인증 페이지의 브라우저 경로가 다르다. Data Accelerator용 beta 구성은 동일 ERP source의 token/refresh webhook을 사용하며 해당 Function 설정과 outbound application 연결을 꺼 순환 의존을 피한다. 실제 source가 Foundry worker여도 outbound 설정 화면에서 Legacy라는 webhook 유형을 고르는 절차가 문서에 남아 있다.
+SAP 쪽 OAuth 2.0 서버의 전제(2026-11-14 확인)는 다음과 같다.
 
-토큰 webhook 입력은 client ID, redirect URI, authorization code와 조건부 PKCE code verifier다. Refresh에는 client ID와 refresh token이 쓰인다. 출력 access_token/scope와 선택적 token_type/expires_in/refresh_token은 이 webhook 계약에서 문자열로 선언된다. 일반 OAuth의 expires_in 타입을 보고 임의로 숫자로 바꾸지 않는다.
+- Connector 애드온 SP21 이상, SAP_BASIS 7.4 SP09 이상, 활성화된 SAP Gateway가 필요하다. Foundry 기술 사용자는 `SYSTEM` 유형이어야 한다.
+- `/sap/public/bc` 노드 아래 서비스, 특히 `/sap/bc/sec/oauth2*`와 `/default_host/sap/bc/webdynpro/sap/oauth2_authority`를 활성화한다.
+- `/PALANTIR/OAUTH_CLIENT` 역할은 기술 사용자와 writeback할 최종 사용자 모두에게, `/PALANTIR/CONTENT_FUNCTION_ALL`은 최종 사용자에게 준다.
+- `SOAUTH2`에서 만드는 OAuth 2.0 Client ID와 User ID는 Foundry 기술 사용자의 SAP 사용자명이고, Client User ID and Password와 SSL Client Certificate를 모두 체크한다. Redirect URI는 `https://<FOUNDRY_DOMAIN>/workspace/oauth2-clients/callback`, scope는 `/PALANTIR/SRV_0001`이다. OData 서비스 `palantir`를 활성화하고 `/IWFND/MAINT_SERVICE`에서 system alias `LOCAL`을 둔다.
+
+Foundry 쪽 outbound application은 SAP 연결 방식에 따라 둘로 나뉜다(2026-11-14 확인).
+
+- agent proxy egress 경로: OAuth 2.0 server connection에서 Foundry Worker를 고르고, authorization과 token endpoint URL에 SAP HTTPS 포트를 포함한 `/sap/bc/sec/oauth2/authorize`, `/sap/bc/sec/oauth2/token`을 적은 뒤, SAP에 닿는 agent proxy egress policy를 지정한다.
+- Data Accelerator 경로: 같은 ERP source에 `sap-erp-oauth2-token-webhook-task`와 `sap-erp-oauth2-refresh-webhook-task` webhook을 만들고, 두 webhook의 Function configuration을 꺼야 outbound application에서 고를 수 있다. 두 webhook의 Authorization은 outbound application을 고르지 않은 채 두어 순환 의존을 피한다. 실제 source가 Foundry worker여도 outbound 설정 화면에서는 Legacy 표시가 붙은 On-premise webhook 유형을 고른다. 확인한 문서는 이 경로에 beta 표시를 두지 않는다.
+- 토큰 요청의 서버 경로와 사용자가 브라우저로 여는 SAP 인증 페이지의 경로는 다르다(해석). 문서는 Data Accelerator 경로에서 토큰 교환과 갱신은 Data Accelerator를 거치지만, 인증 페이지 URL은 사용자 브라우저에서 닿는 SAP 주소여야 한다고 적는다.
+
+Data Accelerator 경로의 token webhook 입력은 client ID, redirect URI, authorization code와 조건부 PKCE code verifier다. Refresh에는 client ID와 refresh token이 쓰인다. 출력 access_token/scope와 선택적 token_type/expires_in/refresh_token은 이 webhook 계약에서 문자열로 선언된다. 일반 OAuth의 expires_in 타입을 보고 임의로 숫자로 바꾸지 않는다.
+
+REST API source에 token/refresh webhook을 직접 만드는 예전 방식은 legacy 단계라 추가 개발이 예정되어 있지 않고, 기존 구성은 계속 동작한다. 이 방식은 SAP source URL이 HTTPS가 아니면 OAuth 흐름의 webhook이 실패한다. legacy token webhook 입력은 code verifier 없는 문자열 세 개(redirect_uri, client_id, authorization_code)이고, 출력 다섯 개는 모두 문자열로 둔다.
 
 SAP 서비스별 CSRF 설정 지침은 해당 통합의 전제다. 전체 SAP 서비스의 보호를 일괄 해제하라는 일반 보안 권고로 확대하지 않는다. 문서 예제와 실제 인증/쓰기 실행은 별도로 검증해야 한다.
 
