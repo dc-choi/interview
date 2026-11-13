@@ -40,6 +40,8 @@ Terraform `v1.17.0-beta2`의 `-minimal-refresh`는 저장된 state와 구성으�
 
 예를 들어 state와 구성의 태그 값은 같지만 콘솔에서만 태그를 바꿨다면, 조회를 건너뛴 계획은 그 변경을 발견하지 못할 수 있다. 빠른 피드백에 이 옵션을 쓰더라도 드리프트 확인과 최종 승인에는 refresh를 생략하지 않는 별도 계획을 둔다. 실제 리소스 변경 없이 state 갱신안을 검토하려면 `terraform plan -refresh-only`를 사용할 수 있다. 그 계획을 apply하면 원격 구성을 복구하는 대신 state에 관측값을 반영하므로, 변경을 수용할지 되돌릴지 먼저 판단한다.
 
+부분 확인(2026-11-14, v1.17.0 릴리스 노트 대조): `-minimal-refresh`는 2026-10-21 정식 릴리스인 v1.17.0의 새 기능 목록에도 들어 있다. 위 동작 설명은 베타 기준 그대로이며 정식판에서 바뀌었는지는 대조하지 않았다. 같은 릴리스의 정책 검사 정식 제공은 [[IaC-Tooling-Evolution#Terraform 정책 검사의 정식 제공|IaC 도구 선택 사다리]]에 정리했다.
+
 ## 인프라 투명성
 
 - **CDK**: 고수준 construct가 IAM 정책 등 여러 리소스를 합성할 수 있으므로 `cdk synth`와 change set으로 산출물을 확인한다.
@@ -158,6 +160,7 @@ CDK는 익숙한 언어로 빠르게 시작하지만 코드 구조가 커질수�
 - [AWS CDK, cdk drift](https://docs.aws.amazon.com/cdk/v2/guide/ref-cli-cmd-drift.html)
 - [HashiCorp Terraform, plan command](https://developer.hashicorp.com/terraform/cli/commands/plan)
 - [Terraform v1.17.0-beta2 Release Notes — HashiCorp](https://github.com/hashicorp/terraform/releases/tag/v1.17.0-beta2)
+- [Terraform v1.17.0 Release Notes — HashiCorp](https://github.com/hashicorp/terraform/releases/tag/v1.17.0)
 - [Introduce minimal-refresh planning option, PR #38953 — HashiCorp](https://github.com/hashicorp/terraform/pull/38953)
 - [HashiCorp Terraform, Use refresh-only mode to sync Terraform state](https://developer.hashicorp.com/terraform/tutorials/state/refresh)
 - [AWS CDK에서 Terraform으로 마이그레이션한 이유 — 인프랩 기술블로그](https://tech.inflab.com/202202-aws-cdk-to-terraform/)

@@ -1,7 +1,7 @@
 ---
 tags: [palantir, foundry, operations]
 status: done
-verified_at: 2026-11-13
+verified_at: 2026-11-14
 category: "AI엔지니어링(AIEngineering)"
 aliases: ["SAP 연결 경로와 애드온 수명주기"]
 ---
@@ -39,6 +39,16 @@ SAP Data Accelerator는 SAP가 관리하는 연결 서비스로, Foundry 트래�
 - 설정 책임이 나뉜다. Data Accelerator 프로비저닝, Palantir가 발급한 클라이언트 인증서로 Foundry를 파트너 시스템으로 등록하는 일, Cloud Connector의 가상 host/port 매핑은 SAP 관리자가 SAP 도구에서 한다. Foundry 쪽은 같은 인증서를 소스에 붙이고, 소스의 host/port를 가상 값으로 두고, 제어 평면 URL과 선택적 Location ID(같은 테넌트에 Cloud Connector가 여럿일 때만)를 넣는다. SAP (Custom source)는 이 값들을 소스의 YAML 구성으로 넣는다.
 - egress는 제어 평면 host와 연결마다 하위 도메인을 동적으로 할당하는 데이터 평면 wildcard 모두에 443을 열어야 한다. 엔드포인트 인증서가 공개 CA 서명이 아니면 서버 인증서도 소스에 추가한다.
 
+### SAP 인증 기한과 전환 요구
+
+2026-11-14 확인한 FAQ는 애드온이 2023-04-18에 SAP integration certificate를 받았고 그 유효 기간이 2026-12-31까지라고 적는다. FAQ가 링크한 인증서는 RISE with SAP의 애드온 배포 시나리오로 S/4HANA Cloud, private edition 2022에 배포하는 것을 인증한다. 인증 기능 목록은 namespace 할당, 애드온 패키징, SAINT 배포와 기술적 제거 시험, Solution Manager Ready, S/4HANA와 RISE 호환성 등이며 데이터 추출이나 연동 기능은 들어 있지 않다. Foundry 데이터 연동 전체나 ECC, BW 사용을 인증한 것으로 넓혀 읽지 않는다.
+
+SAP Architecture Center의 Palantir 연동 레퍼런스 아키텍처(페이지 표시 갱신일 2026-10-30)는 Palantir 네이티브 SAP 커넥터의 기존 사용자가 2026-12-31까지 Data Accelerator 아키텍처로 전환해야 한다고 적는다. 이 기한 문장에는 시나리오 제한이 없다. 같은 문서의 개요는 SAP API Policy가 다루는 복제 시나리오에 Data Accelerator를 쓰도록 하고, Foundry의 writeback도 Data Accelerator를 거친다고 적는다.
+
+- 기존 Foundry Connector 설치는 재설치나 재구성 없이 유지할 수 있다. 다만 트래픽은 Data Accelerator를 거쳐야 하고, 커넥터가 Foundry에 직접 연결하거나 이 아키텍처를 우회하는 데 쓰이면 안 된다고 SAP 문서가 적는다. 위 표의 설치 패턴(직접 연결, SLT 경유, 게이트웨이 경유)은 그대로 두고 네트워크 경로만 바꾸는 요구로 본다(해석, Data Accelerator 문서가 네트워크 경로만 바뀐다고 설명하는 점에 근거). 게이트웨이 패턴이 Data Accelerator와 함께 동작하는지를 명시한 문서는 확인하지 못했다.
+- 따라서 Data Accelerator를 거치지 않고 Foundry에 연결되는 기존 소스(agent worker, 또는 Data Accelerator를 설정하지 않은 Foundry worker)는 이 기한 안의 일정으로 전환한다(운영 제안). 첫 단계로 enrollment의 Data Accelerator 사용 가능 여부와 추가 요금을 Palantir Support에 확인한 뒤, Foundry worker 이전과 Data Accelerator 설정을 진행한다.
+- 인증서 만료 뒤의 갱신 여부와, 기한 뒤 우회 연결이 기술적으로 막히는지는 FAQ, 인증서, SAP 레퍼런스 아키텍처와 Palantir Data Accelerator 문서에 없어 미확인이다. 계약과 라이선스 영향은 SAP API Policy를 기준으로 SAP 담당자와 Palantir Support에 확인한다.
+
 ## 개요 문서의 지원 범위
 
 개요 문서는 연결을 ABAP 애드온 설치, Data Accelerator 설정, SAP 환경에 맞는 Foundry worker 소스 구성의 세 단계로 정리한다. 소스 커넥터는 ECC와 S/4HANA(온프레미스와 Cloud Private Edition)용 SAP ERP, 실시간 스트리밍 동기화를 포함한 SLT Replication Server 경유 연결용 SAP SLT로 나누고, BW와 기존 연동은 SAP (Custom source)로 안내한다.
@@ -53,7 +63,7 @@ SAP Data Accelerator는 SAP가 관리하는 연결 서비스로, Foundry 트래�
 애드온 패키지와 release notes는 Foundry enrollment의 Data Connection에서 받는다. 기존 설치는 SAP 소스의 Connection settings 탭의 Download packages 단계, 신규 설치는 SAP ERP나 SAP SLT 타일로 소스를 만드는 마법사의 두 번째 단계에서 찾는다. 대상 시스템의 SAP_BASIS 버전에 맞는 묶음을 받아 설치와 업데이트를 맡는 팀(예: SAP Basis 팀)에 넘긴다.
 
 - SAP Solutions Extension(SolEx)으로 라이선스를 받았으면 Foundry 대신 SAP Software Download Center에서 ABAP 애드온 설치 패키지를 받는다.
-- 게이트웨이 패턴은 게이트웨이와 원본 양쪽에 설치하므로 패키지 두 개를 받는다. 다운로드 문서만 이 조건을 SAP_BASIS 7.4 미만으로 적고, 아키텍처, 개요와 설치 문서는 7.4 SP5 미만으로 적는다. 7.4 SP0~SP4 시스템도 게이트웨이 대상으로 보고, Download packages 화면의 버전별 구분과 release notes로 확인한다(해석).
+- 게이트웨이 패턴은 게이트웨이와 원본 양쪽에 설치하므로 패키지 두 개를 받는다. 다운로드 문서와 FAQ는 이 조건을 SAP_BASIS 7.4 미만으로 적고, 아키텍처, 개요와 설치 문서는 7.4 SP5 미만으로 적는다. 7.4 SP0~SP4 시스템도 게이트웨이 대상으로 보고, Download packages 화면의 버전별 구분과 release notes로 확인한다(해석). 게이트웨이 서버 자체의 요건도 FAQ는 SAP_BASIS 7.4 이상, 아키텍처 문서는 최소 요건(7.4 SP5 이상) 충족으로 적으므로 7.4 SP5 이상을 안전한 기준으로 둔다(해석).
 
 ## 상태를 가진 설치
 
@@ -112,6 +122,8 @@ SP13 이후 백업 ZIP에는 커넥터 테이블과 증분 포인터가 들어�
 - [Palantir sap, sap-streaming-sync-setup](https://www.palantir.com/docs/foundry/sap/sap-streaming-sync-setup)
 - [Palantir sap, sap-sync-setup](https://www.palantir.com/docs/foundry/sap/sap-sync-setup)
 - [Palantir sap, uninstall-sap](https://www.palantir.com/docs/foundry/sap/uninstall-sap)
+- [SAP Architecture Center, SAP Data Accelerator Integration with Palantir Foundry](https://architecture.learning.sap.com/docs/ref-arch/968090)
+- [SAP, Palantir Foundry Connector 2.0 for SAP Applications Certificate](https://sapblobs.blob.core.windows.net/csd-live/palantir-foundry-connector-20-for-sap-applications-certificate-a3d8f100-3749-11f1-9de2-05335378c217)
 
 ## 관련 문서
 

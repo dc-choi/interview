@@ -53,6 +53,16 @@ DRY는 얻지만 가독성, 표현력, 도구 경험은 HCL의 천장에 묶인�
 
 apply 기반 테스트를 통과해도 실제 사용처의 변수 조합, quota와 기존 리소스와의 충돌까지 검증한 것은 아니다.
 
+## Terraform 정책 검사의 정식 제공
+
+2026-11-14 Terraform v1.17.0(2026-10-21), v1.17.1(2026-10-28) 릴리스 노트와 연결된 PR 대조 기준이며, 이 절만 추가 대조했다. 정책 언어와 작성법은 대조하지 않았다. 위 셋째 수준인 정책 준수 검증을 Terraform CLI 안에서 돌리는 기능이다.
+
+- `plan`, `apply`, `query`의 `-policies` 플래그는 v1.17.0부터 실험 빌드나 `-allow-experimental-features` 없이 쓸 수 있다. 실험 기능은 alpha 릴리스에서만 켜진다. alpha 빌드를 쓰는 파이프라인에서 이 플래그를 지우기 전에는 그 빌드의 `-help`나 릴리스 노트에서 같은 플래그를 쓰는 다른 실험 기능이 있는지 확인한다(운영 제안).
+- `query` 정책은 list 블록이 찾은 리소스를 평가해 사람이 읽는 형식이나 JSON으로 결과를 낸다. v1.17.0의 버그 수정으로 평가 결과가 unknown인 리소스가 요약에서 빠지던 문제와 n/a 결과가 거부되거나 Unknown으로 표시되던 문제가 고쳐졌다. 이 수정 이전의 alpha 빌드에서 옮겨 오면 요약에 리소스가 늘거나 Unknown이 N/A로 바뀔 수 있으므로, query 정책 결과를 읽어 판단하는 스크립트는 두 값의 처리를 정한다(운영 제안).
+- `terraform query -policies`는 v1.17.0부터 디렉터리가 아닌 경로를 CLI 검증 단계에서 `Invalid policy path`로 거부한다. 이전에도 단일 파일 경로는 검증을 통과한 뒤 정책 엔진에서 불명확한 오류로 실패했으므로, 실패 시점과 메시지가 바뀐 것이다. `init`, `plan`, `apply`는 의도적으로 단일 정책 파일을 계속 받는다.
+- v1.17.1은 destroy plan에서도 module 정책을 항상 평가하도록 고쳤다. module 정책으로 destroy plan을 검사한다면 v1.17.1 이상을 쓴다(운영 제안).
+- `terraform version`의 JSON 출력에 `format_version` 필드가 추가됐다. 릴리스 노트는 기존 도구가 모르는 필드를 무시한다고 가정해 호환성 깨짐으로 보지 않지만, 허용한 키만 받거나 출력 전체를 고정값과 비교하는 검사는 이 필드 때문에 실패할 수 있다(해석). 릴리스 노트는 이후 버전에서 `format_version`을 확인하거나 최신 `terraform-json`, `terraform-exec`를 쓰도록 권한다.
+
 ## Atlantis — PR 기반 plan/apply 협업
 
 PR 변경을 기준으로 `terraform plan`을 실행하고, PR 명령으로 해당 plan의 `apply`를 수행할 수 있는 협업 도구다. 승인 후 apply를 강제할지는 `apply_requirements` 설정에 달려 있다. 인프라 변경을 코드 리뷰 흐름에 태워 [[IaC#CI/CD, DevOps, GitOps 연결|GitOps]]에 가깝게 만든다.
@@ -122,6 +132,11 @@ HashiCorp는 2023년 8월 이후 Terraform을 포함한 제품의 향후 릴리�
 - [Terraform, Tests](https://developer.hashicorp.com/terraform/language/tests)
 - [Terraform, Mocks](https://developer.hashicorp.com/terraform/language/tests/mocking)
 - [Terraform, test command](https://developer.hashicorp.com/terraform/cli/commands/test)
+- [HashiCorp, Terraform v1.17.0 Release Notes](https://github.com/hashicorp/terraform/releases/tag/v1.17.0)
+- [HashiCorp, Terraform v1.17.1 Release Notes](https://github.com/hashicorp/terraform/releases/tag/v1.17.1)
+- [HashiCorp, Terraform v1.17.0-alpha20260729 Release Notes](https://github.com/hashicorp/terraform/releases/tag/v1.17.0-alpha20260729)
+- [HashiCorp, Terraform PR #39058](https://github.com/hashicorp/terraform/pull/39058)
+- [HashiCorp, Terraform PR #39238](https://github.com/hashicorp/terraform/pull/39238)
 - [AWS, AWS Regions](https://docs.aws.amazon.com/global-infrastructure/latest/regions/aws-regions.html)
 - [AWS, Identify AWS resources with Amazon Resource Names (ARNs)](https://docs.aws.amazon.com/IAM/latest/UserGuide/reference-arns.html)
 - [terraform-linters, TFLint](https://github.com/terraform-linters/tflint)
