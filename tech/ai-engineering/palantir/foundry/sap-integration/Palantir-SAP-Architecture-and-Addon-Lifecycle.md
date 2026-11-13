@@ -23,7 +23,9 @@ Foundry SAP Connector는 SAP 애플리케이션 계층의 HTTPS 서비스를 통
 - PALANTIR는 기반 컴포넌트, PALCONN은 주 커넥터, PALAGENT는 원격 연결용이다. SLT의 OData 경로에는 PALODATA가 필요하다.
 - 컴포넌트의 support package 수준을 맞춘다. Support package는 SPAM, 해당 SP용 fix pack은 STMS 경로를 사용한다. 업데이트 중 동기화와 housekeeping이 잠금을 만들 수 있다.
 - 설치를 수행하는 대화형 관리자와 서비스 호출용 기술 사용자는 다르다. 기술 사용자는 비대화형 System(Type B)이며 OAuth writeback에도 이 사용자 유형이 요구된다.
-- 기본 지원 전제와 원격 시스템의 전제는 동일하지 않다. 원격 6.20 설치 안내를 현재 주 커넥터의 최소 버전으로 해석하지 않는다. SLT OData는 SAP_BASIS 7.50 SP09 이상이라는 별도 조건을 갖는다.
+- 기본 지원 전제와 원격 시스템의 전제는 동일하지 않다. 원격 6.20 설치 안내를 현재 주 커넥터의 최소 버전으로 해석하지 않는다. 설치 문서는 원본 ERP가 SAP_BASIS 7.0 SP32 미만일 때 ERP 4.6C/4.7(620/640)용 Remote Agent 안내를 따르게 한다. SLT OData는 SAP_BASIS 7.50 SP09 이상이라는 별도 조건을 갖는다.
+- 설치 시나리오마다 다룰 수 있는 객체가 다르다. 원본 시스템에 직접 설치(stand-alone)하면 테이블과 뷰, InfoProvider, BEx query, Business Content extractor, Function/BAPI, ABAP 기반 CDS view와 SAP Function writeback(선택적으로 OAuth 2.0 사용자 귀속)을 지원한다. SLT Replication Server에 설치하면 SLT 객체 유형만 지원한다(2026-11-13 설치 문서 기준). 이 목록은 설치 문서가 시나리오별로 든 유형이며, 아래 개요 문서의 추출 대상(SAP 데이터 모델, HANA information view 포함)과 범위가 다르다.
+- 설치 문서는 개발이나 sandbox 시스템에 먼저 설치해 충분히 시험한 뒤 운영에 설치하도록 권한다.
 
 ## 네트워크 경계
 

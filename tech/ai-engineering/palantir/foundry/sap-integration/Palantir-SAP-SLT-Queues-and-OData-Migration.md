@@ -36,6 +36,21 @@ Reset queue registration은 기존 OData 구독을 해제하고 현재 sync에 �
 
 기본 페이지는 50,000행, 최소 5,000행으로 제시된다. Max file size 항목도 이름과 달리 행 수를 설명하므로 바이트 한도로 단정하지 않는다. parse 실패를 무시하는 옵션은 잘못된 날짜/숫자를 null로 적재하고 요약 로그를 남긴다.
 
+## SLT 구성 체크포인트
+
+2026-11-13 확인한 SLT 구성 가이드 기준이다. 실제 SAP 시스템에서 설정을 실행해 보지는 않았다.
+
+- 전제: 이전 직접 ODP 경로(커넥터 2.33(SP33) 이하, SAP 보안 패치 적용 뒤 실패하는 경로)는 커넥터를 설치하는 시스템의 SAP_BASIS 7.4 SP14 이상, SLT와 원본 시스템의 DMIS 2011_1_730 SP15 이상, 모든 Mass Transfer ID에 1:N 복제를 허용하는 SLT 구성을 요구한다. OData 경로는 SLT 시스템의 SAP_BASIS 7.50 SP09 이상, SP34 이상의 PALANTIR와 PALCONN, SLT 시스템에 설치한 PALODATA를 요구하며, 최신 OData 기능에는 SP39 Fix Pack 4 이상을 권한다. OData 경로에서 읽거나 적용할 SAP Note로 2854759, 2878969, 3062232, 3023446, 2888122를 든다.
+- 소비자 수: 직접 ODP 경로의 전제 절에서, 이전 DMIS 버전은 테이블당 최대 4개 소비자(1:4 등록)로 제한되고 DMIS 2018 SP4부터 SAP의 새 CDC 기능으로 이 소비자 수 제한이 없어진다고 설명한다. 이 설명이 위 표의 OData 활성 구독 하나 제약을 풀어 주지는 않는다.
+- 구성 생성: 권장 경로는 Post-Installation Wizard(`/n/PALANTIR/POST_INST`)에서 7단계 Create SLT configuration만 켜는 것이고, 대안은 `LTRC`에서 직접 만드는 것이다. Allow Multiple Usage는 생성 뒤 바꿀 수 없어 나중에 켜려면 구성을 지우고 다시 만들어야 한다. 구독자가 하나면 영향이 없으므로 처음 구성할 때 켜기를 권한다.
+- 클라이언트: 운영 환경에서는 Read from Single Client를 켜 RFC 연결에 정의한 클라이언트의 데이터만 복제한다. 기존 SLT 환경에서는 모든 구성의 설정을 맞춘다(트리거 옵션이 다르면 복제가 안 되는 SAP Note 2372636).
+- Target System(`LTRC` 절차 기준): Scenario는 ODP(높은 SAP_BASIS SP에서는 RFC Connection 대신 Other 아래), RFC Destination은 `NONE`으로 두고, Queue Alias는 이후 Foundry sync의 context로 쓴다. 가이드의 마법사 입력 표에는 이 항목들이 없고 마법사가 이를 대신 설정하는지도 밝히지 않으므로, 마법사로 만든 구성은 LTRC에서 확인한다(운영 제안, [[Palantir-SAP-SLT-Connector#Remote context 값|SAP SLT 커넥터의 Remote context 절]] 참고).
+- 놓치기 쉬운 설정(`LTRC` 절차의 마지막 단계): ODP 시나리오에서는 LTRC 구성의 Expert Functions 탭에서 BAdI 구현이 활성인지 확인한다. 비활성이면 ODP가 제대로 동작하지 않는다. SAP Note 1660374에 따라 `SA38`에서 `SAP_RSADMIN_MAINTAIN`을 실행해 `RODPS_FETCH_TIMEOUT`(초)을 설정한다.
+- 원격 SLT: 커넥터와 SLT가 다른 인스턴스면 둘 사이의 RFC 연결을 만들고 `/n/PALANTIR/PARAM`에 Param ID `SLT`, Param Name `RFC_CONFIGURATION`, 값으로 그 RFC 구성 이름을 넣는다. 구성 테이블에 값이 없으면 timestamp OFF, fetchOption XML, pageSize 50000이 기본값이다.
+- 처리 여유: SLT 서버(커넥터가 다른 서버에 있으면 그 애플리케이션 서버도)에 빈 background와 dialog 프로세스가 없으면 Foundry 전송이 실패하므로 `SM50`으로 미리 확인한다.
+- 저장공간: ODP는 원본 데이터를 ODP 큐 테이블 `ODQDATA_F`에 올리고, 커넥터는 요청 데이터를 `/PALANTIR/PAG_01`, `/PALANTIR/PAG_02`로 paging한다. 모든 페이지 전송이 성공하면 Foundry의 close 요청이 `/PALANTIR/PAG*` 항목을 지운다. 공간이 부족하면 SLT 복제 작업과 Foundry 전송이 실패할 수 있으므로, 초기 대량 sync 전에 대상 테이블 기준으로 데이터베이스 공간을 산정한다.
+- 날짜와 시간 필드 길이: 이전 SAP_BASIS SP14에서 SAP가 DATS와 TIMS를 16자로 넘긴 문제는 SAP note로 고쳐졌다. 노트 적용 전에 길이 문제가 나면 Param ID `SLT`, Param Name `SLT_DATA_<XXX>`로 길이를 지정한다. 가이드는 XXX를 필드의 기술명으로 설명하면서 예시로 `SLT_DATA_DATS`=8, `SLT_DATA_TIMS`=6을 든다. 소수 자리가 3이 아닌 QUAN은 Param ID `SLT`, `SLT_DTYPE_QUAN`=`DEC`로 DEC로 바꿔 받는다. 값 의미의 대조는 [[Palantir-SAP-Authorization-Masking-and-Type-Fidelity|SAP 권한, 마스킹과 타입 충실도]]를 따른다.
+
 ## 출처
 
 - [Palantir sap, sap](https://www.palantir.com/docs/foundry/sap)
