@@ -10,7 +10,15 @@ aliases: ["SAP 연결 경로와 애드온 수명주기"]
 
 ## 연결과 실행 주체
 
-Foundry SAP Connector는 SAP 애플리케이션 계층의 HTTPS 서비스를 통해 읽고 쓴다. ABAP에 등록한 HANA 외부 뷰를 읽는 경로도 SAP 데이터베이스에 직접 접속하는 커넥터와 구분한다. ERP 직접 연결, SLT Replication Server를 통한 연결, 이전 Remote Agent 경유 연결은 설치 위치와 RFC 문맥이 다르다.
+Foundry SAP Connector는 SAP 애플리케이션 계층의 HTTPS 서비스를 통해 읽고 쓴다. ABAP에 등록한 HANA 외부 뷰를 읽는 경로도 SAP 데이터베이스에 직접 접속하는 커넥터와 구분한다. 아키텍처 문서의 세 패턴은 애드온을 어디에 설치하고 원본 SAP 시스템에 어떻게 닿는지를 나눈다. 네트워크 경로인 SAP Data Accelerator는 Cloud Connector를 거쳐 이렇게 설치한 애드온으로 트래픽을 보내므로, 이 설치 패턴 선택과는 별개의 축이다(해석, Data Accelerator 문서가 네트워크 경로만 바뀐다고 설명하는 점에 근거).
+
+| 패턴 | 애드온 위치 | 원본 접근 |
+| --- | --- | --- |
+| 직접 연결 | 읽을 데이터나 실행할 function/query가 있는 ERP 또는 BW 시스템 | 같은 시스템 안에서 읽는다 |
+| SLT 경유 | SAP SLT Replication Server | SLT와 원본 ERP 사이 RFC 연결. 원본 테이블마다 데이터베이스 트리거로 SLT의 ODQ에 복제한다 |
+| 게이트웨이 경유 | 최소 요건을 만족하는 게이트웨이 애플리케이션 서버에 주 컴포넌트 | 게이트웨이와 원본 ERP 사이 RFC 연결. 원본 ERP에 설치한 remote agent 컴포넌트가 읽기와 실행을 맡는다 |
+
+게이트웨이 패턴은 원본 ERP가 설치 최소 요건(아키텍처 문서 기준 SAP_BASIS 7.4 SP5 이상)을 만족하지 못할 때 쓴다. 2026-11-13 확인한 아키텍처 문서는 이 패턴을 legacy로 표시하지 않는다.
 
 - PALANTIR는 기반 컴포넌트, PALCONN은 주 커넥터, PALAGENT는 원격 연결용이다. SLT의 OData 경로에는 PALODATA가 필요하다.
 - 컴포넌트의 support package 수준을 맞춘다. Support package는 SPAM, 해당 SP용 fix pack은 STMS 경로를 사용한다. 업데이트 중 동기화와 housekeeping이 잠금을 만들 수 있다.
@@ -37,6 +45,13 @@ SAP Data Accelerator는 SAP가 관리하는 연결 서비스로, Foundry 트래�
 - 기능 상태(문서 확인 기준 2026-11-13): bulk import, interactive exploration, webhooks는 일반 제공, streaming import는 beta, bulk export는 개발 중이다.
 - 추출 대상은 애플리케이션 테이블, BW InfoProvider, SLT, BEx query, ERP extractor, Function/BAPI, SAP 데이터 모델, CDS view, HANA information view다.
 - 최소 버전은 SAP_BASIS 7.4 SP5 이상 또는 7.5(SP 무관)이며 SAP_BASIS 8.x 기반 S/4HANA도 지원한다. 7.4 SP5 미만은 Remote Agent 설치를 쓴다.
+
+## 패키지 배포 경로
+
+애드온 패키지와 release notes는 Foundry enrollment의 Data Connection에서 받는다. 기존 설치는 SAP 소스의 Connection settings 탭의 Download packages 단계, 신규 설치는 SAP ERP나 SAP SLT 타일로 소스를 만드는 마법사의 두 번째 단계에서 찾는다. 대상 시스템의 SAP_BASIS 버전에 맞는 묶음을 받아 설치와 업데이트를 맡는 팀(예: SAP Basis 팀)에 넘긴다.
+
+- SAP Solutions Extension(SolEx)으로 라이선스를 받았으면 Foundry 대신 SAP Software Download Center에서 ABAP 애드온 설치 패키지를 받는다.
+- 게이트웨이 패턴은 게이트웨이와 원본 양쪽에 설치하므로 패키지 두 개를 받는다. 다운로드 문서만 이 조건을 SAP_BASIS 7.4 미만으로 적고, 아키텍처, 개요와 설치 문서는 7.4 SP5 미만으로 적는다. 7.4 SP0~SP4 시스템도 게이트웨이 대상으로 보고, Download packages 화면의 버전별 구분과 release notes로 확인한다(해석).
 
 ## 상태를 가진 설치
 

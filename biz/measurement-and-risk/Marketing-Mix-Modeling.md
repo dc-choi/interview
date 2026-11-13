@@ -20,6 +20,15 @@ aliases: ["Marketing Mix Modeling", "MMM", "마케팅 믹스 모델링", "Meridi
 
 적용 해석: 세 도구는 서로를 대신하지 않는다. 플랫폼 기여는 운영 진단에, 리프트 실험은 특정 채널의 증분 확인에, MMM은 채널 사이의 예산 비교에 쓰고, 실험 결과로 MMM을 보정한다. 대조 집단의 원리는 [[Metrics-Framework#광고 노출, 브랜드 리프트와 전환을 구분한다|지표 설계의 리프트 실험]]을 따른다.
 
+### 검색 광고에서 관찰 추정과 실험이 갈리는 이유
+
+검색 광고는 이미 살 생각이 있는 사람이 검색하고 클릭하므로 클릭과 구매가 함께 움직인다. 이 상관을 효과로 읽으면 수익률이 부풀려진다. eBay에서 한 대규모 필드 실험은 유료 검색의 실험 기반 수익률이 관례적인 비실험 추정치의 일부에 그친다고 보고했다(2014년 NBER 워킹페이퍼로 공개, 2015년 Econometrica 게재).
+
+- 극단적인 경우로 브랜드 키워드 광고는 측정 가능한 단기 효과가 없었다. 자기 상호를 검색한 사람은 광고가 없어도 찾아오기 쉽기 때문이다(해석).
+- 일반 키워드에서는 신규 이용자와 드물게 이용하는 사람이 광고에 반응했다. 그러나 광고와 관계없이 구매하는 잦은 이용자가 광고비의 대부분을 차지해 평균 수익률은 음수였다.
+
+적용 해석: 이 결과는 한 대형 마켓플레이스의 실험이라 모든 사업에 그대로 옮기지 않는다. 경쟁사가 자기 상호에 입찰하는지, 고객 중 신규 비중이 얼마인지에 따라 결과가 달라질 수 있다. 브랜드 검색 광고와 일반 검색 광고는 나눠 보고, 플랫폼 보고 ROAS 대신 광고를 끈 집단이나 기간과 비교해 증분을 확인한다.
+
 ## 모델이 표현하는 광고의 성질
 
 Google의 오픈소스 MMM인 Meridian(Apache-2.0)을 기준으로 보면 다음 요소를 모델에 넣는다.
@@ -79,6 +88,8 @@ Meridian은 베이지안 모델이며 MCMC(NUTS)로 사후분포를 구한다. �
 - [Google for Developers, Generate optimization results output](https://developers.google.com/meridian/docs/user-guide/generate-optimization-results-output)
 - [Google for Developers, Introduction to Applied Modeling](https://developers.google.com/meridian/docs/advanced-modeling/intro)
 - [google/meridian — GitHub](https://github.com/google/meridian)
+- [Consumer Heterogeneity and Paid Search Effectiveness: A Large Scale Field Experiment — NBER Working Paper 20171, Tom Blake, Chris Nosko, Steven Tadelis](https://www.nber.org/papers/w20171)
+- [Consumer Heterogeneity and Paid Search Effectiveness: A Large-Scale Field Experiment — Econometrica, Thomas Blake, Chris Nosko, Steven Tadelis](https://doi.org/10.3982/ECTA12423)
 
 ## 관련 문서
 
