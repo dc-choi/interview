@@ -1,13 +1,13 @@
 ---
 tags: [palantir, foundry, data-connection, connectors]
 status: done
-verified_at: 2026-10-16
+verified_at: 2026-11-14
 category: "AI엔지니어링(AIEngineering)"
 ---
 
 # SAP SLT streaming과 OData 전환 조건
 
-SAP SLT는 SAP ERP의 일반 batch sync와 달리 변경 queue를 stream으로 가져온다. ODQ polling 약 1초와 50,000 이하 단일 poll/그 이상 paging 조건, dialog process 수와 stream 수를 맞춘다. primary key partition을 통한 ordering 범위를 확인한다.
+SAP SLT는 SAP ERP의 일반 batch sync와 달리 변경 queue를 stream으로 가져온다. ODQ polling 약 1초와 50,000 이하 단일 poll/그 이상 paging 조건, dialog process 수와 stream 수를 맞춘다. primary key partition을 통한 ordering 범위를 확인한다. 이 polling, paging과 ordering 수치는 이전 streaming 설정 페이지 기준이다. 2026-11-14에는 같은 주소가 SAP SLT 커넥터 페이지로 연결되며 현재 문서에서 이 수치를 다시 확인하지 못했다.
 
 ## Remote context 값
 
@@ -19,20 +19,25 @@ SAP SLT는 SAP ERP의 일반 batch sync와 달리 변경 queue를 stream으로 �
 
 ## OData와 legacy ODP
 
-확인일 Palantir 문서는 SAP Note 3255746 v11(2026-04) 및 2026-06 patch와 관련해 비 SAP ODP RFC 접근의 제한을 설명하며 OData 경로를 요구한다. 이는 Palantir 문서의 설명이지 독립적으로 확인한 SAP 라이선스/법률 해석이 아니다. 적용 시 현재 SAP 원문과 계약을 확인한다.
+2026-10-16 확인한 Palantir 문서는 SAP Note 3255746 v11(2026-04) 및 2026-06 patch와 관련해 비 SAP ODP RFC 접근의 제한을 설명하며 OData 경로를 요구했다. 2026-11-14 확인한 커넥터 문서는 버전과 날짜 없이 SAP가 ODP-RFC 접근을 제한하고 있으며, 승인되지 않은 ODP-RFC 호출을 거부하는 SAP 보안 패치가 적용되면 ODP API를 쓰는 SLT sync가 실패하므로 OData로 옮기라고 적는다. 이는 Palantir 문서의 설명이지 독립적으로 확인한 SAP 라이선스/법률 해석이 아니다. 적용 시 현재 SAP 원문과 계약을 확인한다.
 
-OData 경로는 Palantir add-on 2.34 이상, PALODATA와 SAP_BASIS 7.50 SP09 등 조건을 확인한다. table당 active subscription 하나 제약이 있다. legacy ODP가 복수 subscription을 지원했던 사실을 현재 허용 범위로 적용하지 않는다.
+OData 경로는 Palantir add-on 2.34 이상, PALODATA와 SAP_BASIS 7.50 SP09 등 조건을 확인한다. 2026-11-14 확인한 커넥터 문서는 add-on이 지원하면 새 sync의 API version 기본값을 OData로 둔다. active subscription은 table과 source가 인증하는 SAP 사용자 조합마다 하나다. 같은 table을 두 sync가 독립적으로 받아야 하면 SAP 사용자를 나눈다. legacy ODP가 복수 subscription을 지원했던 사실을 현재 허용 범위로 적용하지 않는다.
 
-remote context와 parallel paging의 legacy ODP 조건을 OData에 그대로 대입하지 않는다. worker restart trigger는 권장 약 1분 조건을 확인하고 streaming 중단/복구와 queue 보존을 함께 설계한다.
+remote context와 parallel paging의 legacy ODP 조건을 OData에 그대로 대입하지 않는다. worker restart trigger는 권장 약 1분 조건(이전 streaming 설정 페이지 기준, 현재 문서에서 미확인)을 확인하고 streaming 중단/복구와 queue 보존을 함께 설계한다.
+
+## 배치 sync 설정
+
+2026-11-14 확인한 커넥터 문서 기준으로 배치 sync를 만들 때 고르는 객체 유형은 둘이다. SLT Replication Server는 원본 ERP의 데이터베이스 트리거로 복제된 table을 읽고, Local table은 SLT 시스템 자신의 table을 직접 읽는다. 증분 배치 sync의 Max rows per sync는 실행당 반환 행 수의 대략적인 상한이며, 큰 table의 초기 sync를 네트워크 장애 같은 간헐 오류에 덜 취약한 여러 번의 작은 실행으로 나눌 때 쓴다.
 
 ## reset의 영향
 
-Reset queue registration을 켠 채 두면 새 등록/재배정으로 매 실행 전체 reload가 될 수 있다. 재등록 후 toggle을 끈다. Force Snapshot 역시 필요한 한 번 실행 후 해제한다. 성공 응답을 받았다는 사실과 의도한 incremental 흐름으로 복귀한 것은 별도로 확인한다.
+Reset queue registration은 현재 sync 자신의 구독만 초기화하며 다른 sync가 가진 구독을 넘겨받지 못한다. 켜 두면 배치는 실행마다 전체 reload가 되고, streaming은 polling 요청마다 전달돼 stream이 반복 초기화될 수 있으므로 꺼 둔다. 재적재는 배치에서 Reset incremental state, streaming에서 Force snapshot으로 한다. Force snapshot은 stream이 시작될 때마다 적용되므로 전체 전송 뒤 끄고 저장한다. 충돌 해소는 [[Palantir-SAP-SLT-Queues-and-OData-Migration#구독 충돌|SAP SLT 구독 충돌]]을, ODP에서 OData로 stream을 옮기는 절차는 [[Palantir-SAP-SLT-Queues-and-OData-Migration#기존 stream의 ODP에서 OData 전환|SAP SLT stream 전환]]을 따른다. 성공 응답을 받았다는 사실과 의도한 incremental 흐름으로 복귀한 것은 별도로 확인한다.
 
 ## 출처
 
 - [Palantir, sap-slt](https://www.palantir.com/docs/foundry/available-connectors/sap-slt)
 - [Palantir, configure-sap-slt](https://www.palantir.com/docs/foundry/sap/configure-sap-slt) — 2026-11-04 LTRC 구성의 Queue Alias와 context 사용, Source System의 RFC 연결, Post-Installation Wizard 권장과 입력 항목 대조
+- [Palantir, migrate-slt-to-odata](https://www.palantir.com/docs/foundry/sap/migrate-slt-to-odata) — 2026-11-14 테이블과 SAP 사용자별 구독, 충돌 해소와 stream 전환 절차 대조
 
 ## 관련 문서
 
