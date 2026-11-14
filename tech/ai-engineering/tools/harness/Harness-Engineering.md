@@ -120,6 +120,8 @@ AI 활용 역량은 단계로 깊어진다.
 
 작업이 커져 한 번에 몇 시간씩 걸리면 역할을 더 잘게 나누거나(서버와 클라이언트, DB) 같은 파이프라인 여러 개에 조정자가 일감을 나눠 주는 확장을 시도할 수 있다. 범위를 좁히면 에이전트별 맥락 혼동은 줄 수 있지만 나눈 단위 사이의 계약과 통합 검증 비용이 늘어나므로, 위 병렬 처리 조건처럼 서로 독립적으로 나뉘는 단위에서만 이득이 남는다. 큰 프로젝트에서의 효과는 확인되지 않은 가설로 둔다. 겹겹이 검증해도 결과는 완벽하지 않으므로 최종 확인은 사람이 한다.
 
+측정 결과도 과제 유형에 따라 갈린다. Anthropic의 리서치 시스템(2025-06 공개)에서는 Opus 4 리드와 Sonnet 4 하위 에이전트 구성이 내부 리서치 평가에서 단일 Opus 4보다 90.2% 높았지만, 멀티 에이전트는 채팅보다 약 15배의 토큰을 썼고 BrowseComp 성능 분산의 80%를 토큰 사용량 하나가 설명했다. 같은 글은 모든 에이전트가 같은 맥락을 공유해야 하거나 에이전트 사이 의존성이 많은 과제, 병렬로 나뉘는 부분이 적은 대부분의 코딩 작업은 아직 잘 맞지 않는다고 적는다. Google Research, Google DeepMind와 MIT 연구진의 확장 연구(arXiv 2512.08296 v3 프리프린트, 6개 벤치마크, 260개 구성)는 회귀 분석에서 단일 에이전트 정확도가 약 45%를 넘으면 에이전트를 더한 이득이 줄거나 손해로 바뀌는 경향을 보고했다. 예외도 있어 Workbench에서는 분산 조정 구성이 단일 에이전트보다 5.6% 높았다. 같은 연구에서 순차 제약을 맞춰야 하는 계획 과제에서는 모든 멀티 에이전트 변형이 -39%에서 -70%로 성능을 떨어뜨렸다. 반대로 분해 가능한 금융 추론에서는 중앙 조정 구성이 +80.8%였다. 그래서 역할을 나누기 전에 결과를 코드로 판정하는 검사기부터 붙여 단일 에이전트의 기준선을 재고, 나눌 이유가 병렬 분해나 독립 검증처럼 구조적일 때만 늘린다([[Agent-Graph-Engineering#쓰지 않을 때와 비용|그래프를 쓰지 않을 때]]).
+
 자동화 규모를 키우면 비용이 병목이 되기 쉽다. 에이전트와 검토 단계가 늘수록 같은 작업의 단일 에이전트 실행보다 토큰을 더 쓰므로([[LLM-Model-Tiers#티어별 역할 분리와 상호 검토|역할 분리의 한계]]) 완료 작업당 비용을 단일 에이전트 실행과 비교한다. API 키 인증은 사용한 토큰만큼 종량 과금되고 구독 계정으로 로그인한 CLI는 요금제 사용량 한도 안에서 쓰지만, Codex 공식 문서는 자동화와 CI의 기본 인증을 API 키로 안내한다([[Codex-CLI#Codex SDK와 구독 인증|Codex 구독 인증]], 2026-09-29 확인). 구독 계정 인증을 다른 도구나 상시 자동화에 연결하려면 제공사 약관과 사용량 정책이 그 사용을 허용하는지 먼저 확인한다. 단계마다 같은 명세와 코드를 다시 읽는 비용은 공통 맥락을 seed 세션에서 한 번 읽고 단계별로 분기해 캐시로 줄일 수 있지만, 같은 모델과 도구, 캐시 수명 안이라는 조건이 붙는다([[LLM-Prompt-Caching#세션 분기로 공통 맥락 재사용|세션 분기 재사용]]).
 
 ### 템플릿화 (반복 업무의 하네스)
@@ -176,6 +178,8 @@ Q. 멀티 에이전트로 나누면 뭐가 좋고, 검증은 왜 별도 에이�
 - [Claude Code Harness와 멀티 에이전트 오케스트레이션 강연 — YouTube](https://www.youtube.com/live/iqoPgoYBVaM)
 - [Level 9 하네스 엔지니어링과 Evaluator 제어 — 클로드 코드 마스터 활용편 발표 자료(한빛미디어), 빌런 (2026-09)](https://run-ai.kr/learn/carve-harness)
 - [Claude Code Docs, How Claude Code works](https://code.claude.com/docs/en/how-claude-code-works)
+- [How we built our multi-agent research system — Anthropic](https://www.anthropic.com/engineering/multi-agent-research-system)
+- [Towards a Science of Scaling Agent Systems — arXiv, Google Research, Google DeepMind, MIT](https://arxiv.org/abs/2512.08296)
 - [만약 당신이 클로드 블루 때문에 힘들다면 — kciter.so, kciter](https://kciter.so/posts/feeling-claude-blue/)
 - [인프런, 널널한 개발자, 하네스, 루프 엔지니어링](https://www.inflearn.com/courses/lecture?courseId=344484&unitId=498601)
 - [회사가 AI 잘쓰는 사람 뽑는다는건 언제적 이야기에요? — YouTube, Uzchowall](https://www.youtube.com/watch?v=G_5qw5tGiOI)

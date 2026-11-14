@@ -60,6 +60,23 @@ aliases: ["Tool Output Filtering", "도구 출력 필터링", "에이전트 토�
 - 응답에서 구현 판단 필드(layout, color, typography, spacing, variant)만 추출해 넘기면 같은 결과를 훨씬 적은 토큰으로 낸다.
 - 무엇을 버릴지는 도메인 지식이 정한다. 스토리북 변환에 편집 히스토리는 필요 없다는 판단이 곧 필터 규칙이 된다.
 
+## 필터를 두는 자리: 로컬 훅과 API 게이트웨이
+
+중간 계층은 에이전트 옆의 로컬 프로세스(훅, MCP 서버)에 둘 수도 있고, 모델 API 요청이 지나가는 게이트웨이에 둘 수도 있다. Context Mode는 두 형태를 모두 제공하는 사례다. 아래 동작과 수치는 2026-11-14 공식 문서와 README 기준이다.
+
+- **로컬 플러그인:** Claude Code 플러그인으로 MCP 서버, 훅과 스킬을 설치하고 모두 로컬 프로세스로 돈다. PreToolUse 훅이 16,384바이트를 넘는 파일 읽기, WebFetch와 curl 호출을 막고 플러그인의 실행, 색인, 검색 도구를 쓰게 유도하며, 원본 출력은 로컬 SQLite FTS5 색인에 둔다. 계정이 없고 모델 API 주소를 바꾸지 않는다.
+- **호스팅 게이트웨이:** 설정 명령이 `~/.claude/settings.json`의 `env`에 게이트웨이 주소인 `ANTHROPIC_BASE_URL`, 기기 키를 담은 `ANTHROPIC_CUSTOM_HEADERS`, `ENABLE_TOOL_SEARCH=true`를 쓴다. Context Mode 문서는 마지막 값을 Claude Code가 Anthropic이 아닌 base URL에서 tool search를 끄기 때문에 다시 켜는 설정이라고 설명한다. Claude Code 문서(2026-11-14 확인)는 이 동작이 v2.1.304 이전에만 해당하고 그 뒤로는 게이트웨이 뒤에서도 tool search가 기본으로 켜진다고 적으므로, 버전에 따라 필요 여부가 다르다. 모델 비용은 사용자 자신의 Claude 구독이나 API 키가 내고, 게이트웨이는 별도 계정과 구독을 둔다.
+- **접는 규칙은 모델 요약이 아니라 고정 필터다:** 셸과 검색 출력(`Bash`, `Grep`)에서 진행 표시는 마지막 프레임만 남기고, 통과한 테스트, 라이브러리 스택 프레임과 반복 줄은 개수를 붙인 한 줄로 접는다. 실패한 테스트, 오류와 요약 줄은 그대로 둔다. 1,024자 미만 결과는 건드리지 않는다. 이 접기는 셸과 검색 결과에만 적용되고 `Read`와 MCP 결과에는 적용되지 않는다.
+- **크기 상한은 위치로 자른다:** 접기와 별개로, 한 결과가 24,576자를 넘으면 전문을 보관하고 모델에는 앞 4,096자와 뒤 2,048자에 보관 id를 붙여 넘긴다. 오류 결과는 자르지 않는다. 문서는 Claude Code가 30,000자를 넘는 Bash 출력을 이미 파일로 빼기 때문에 실제로는 큰 파일 읽기와 MCP 응답에 걸린다고 설명한다. 필드를 보고 고르는 필터가 아니라 앞뒤만 남기는 절단이므로 MCP 응답의 필드 추출은 여전히 위 원칙 1의 몫이다.
+- **원본 보관과 재조회:** 줄이기 전의 전문은 계정별 보관소(전문 색인을 가진 SQLite)에 id로 저장되고, 에이전트는 게이트웨이가 추가한 검색 도구에 id와 offset을 넘겨 페이지 단위로 다시 읽는다. 과필터 위험을 재조회 경로로 받치는 구조다. 저장 전에 알려진 형식의 비밀 값과 이메일 주소는 가림 표시로 바뀌므로, 형식이 알려지지 않은 비밀은 그대로 남을 수 있다.
+- **처음 지날 때만 바꾼다:** 같은 결과는 처음 게이트웨이를 지날 때만 접는다. 문서는 이후 요청이 캐시에 유리하도록 하기 위해서라고 설명한다.
+
+게이트웨이 방식에서 따로 따질 점은 다음과 같다.
+
+- **데이터 경로:** 모든 프롬프트와 도구 출력이 제3자 서버를 지난다. 공식 문서는 게이트웨이가 Cloudflare에서 돈다고 적고, 저장된 프롬프트에는 아직 자동 만료가 없다고 적는다. 공개된 개인정보 요약 페이지는 열람, 정정과 삭제를 이메일 요청으로 받는다고 적지만 보관 기간과 처리 지역은 적지 않는다. 민감한 코드나 운영 로그에 쓰기 전에 보관 기간, 삭제 절차와 처리 지역을 확인한다.
+- **절감 수치를 읽는 법:** 업체가 공개한 긴 세션 65.5% 절감은 업체가 직접 Opus 5.5에서 4쌍을 비교한 결과이고, 절감이 없었던 작업 유형은 페이지에서 뺐다고 업체 스스로 밝힌다. 게이트웨이 실행에는 도구 출력 접기 외에도 도구 설명 축약, 메모리, 스킬과 짧은 답변 출력 스타일 블록 등이 함께 켜져 있었고, 문서도 어느 결과도 한 가지 기법만 떼어 재지 않았다고 적는다. 따라서 이 수치를 도구 출력 필터링만의 효과로 읽지 않는다. 비용은 반환된 토큰 수에 정가를 곱한 값이어서 구독 사용자에게는 정가 환산 가치이고, 게이트웨이 자체 구독료는 포함되지 않는다. 로컬 플러그인의 99% 수치는 컨텍스트에 들어간 바이트 감소이지 비용 감소가 아니다. 자기 작업에서 같은 모델과 프롬프트로 직접 실행과 경유 실행을 짝지어 비교하고 입력과 출력 토큰을 나눠 본다.
+- **명령 차단은 샌드박스가 아니다:** 게이트웨이의 Protect는 실행 전에 호출을 읽어 그 호출이 하는 일을 규칙과 대조하며, `sudo`나 `sh -c` 같은 감싸는 명령도 풀어 읽는다. 다만 읽는 대상은 호출이지 프로그램이 아니어서, 문서 스스로 스크립트 파일, 컴파일된 프로그램과 실행 중에 만든 경로는 통과한다고 밝히고 OS 샌드박스가 아니라고 적는다. 기본값은 꺼짐이며 Balanced 이상의 프리셋이 main 같은 보호 브랜치로의 `git push`와 `.env` 읽기를 막는다. 에이전트의 샌드박스와 권한 설정을 대신하지 않는다.
+
 ## 트레이드오프
 
 - 필터링 로직 유지비: 도구 응답 스키마가 바뀌면 필드 추출 코드도 따라가야 한다. 대신 매 호출의 토큰을 항구적으로 아낀다.
@@ -84,6 +101,15 @@ Q. 무엇을 버릴지 어떻게 정하나?
 ## 출처
 
 - [그 많던 토큰은 누가 다 먹었을까 — Nextree](https://www.nextree.io/geu-manhdeon-tokeuneun-nuga-da-meogeosseulgga/)
+- [context-mode — GitHub, mksglu](https://github.com/mksglu/context-mode)
+- [Context Mode, Docs](https://contextmode.ai/docs)
+- [Context Mode, Quick start](https://contextmode.ai/docs/quick-start)
+- [Context Mode, How saving works](https://contextmode.ai/docs/how-saving-works)
+- [Context Mode, Benchmarks](https://contextmode.ai/docs/benchmarks)
+- [Context Mode, Search](https://contextmode.ai/docs/search)
+- [Context Mode, Protect](https://contextmode.ai/docs/protect)
+- [Context Mode, Privacy](https://contextmode.ai/privacy)
+- [Claude Code Docs, MCP (Tool search through a gateway)](https://code.claude.com/docs/en/mcp)
 
 ## 관련 문서
 
@@ -91,6 +117,7 @@ Q. 무엇을 버릴지 어떻게 정하나?
 - [[Agent-Code-Search|에이전트 코드 검색 (grep+read를 시맨틱 검색으로 대체해 읽는 양 축소)]]
 - [[Context-Engineering|컨텍스트 엔지니어링 (수요 측 — Context Rot, Write/Select/Compress/Isolate, 줄 단위 자문)]]
 - [[MCP|MCP (도구 출력의 주요 발생원, 프록시 계층에서 필터링)]]
+- [[LLM-Gateway|LLM 게이트웨이 (모델 호출 경로에 두는 프록시의 권한과 비용 경계)]]
 - [[Agent-Spec-Writing|에이전트 스펙 작성법 (목표, 허용, 금지, 검증 경계 명세)]]
 - [[Agentic-Context-Platform|Context Provider (공급 측 컨텍스트 표준화)]]
 - [[Agent-Ready-API-Design|에이전트 친화 API 설계 (도구가 출력 밀도 옵션을 제공하는 공급 측 해법)]]

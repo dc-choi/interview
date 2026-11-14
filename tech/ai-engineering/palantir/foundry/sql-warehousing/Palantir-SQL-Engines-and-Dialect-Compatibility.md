@@ -30,6 +30,8 @@ Property는 display name이 아니라 API name이다. One-to-many/one-to-one은 
 
 Ontology는 map 생성/함수, JSON 함수, geospatial 함수, 다수 날짜/배열/수학 함수와 try_cast를 지원하지 않는 표가 있다. Struct 데이터 타입 지원과 struct 생성 함수 지원도 다르다. 단일 property count distinct와 window aggregate의 제한도 일반 aggregate 지원과 구분한다. 지원 함수는 SHOW FUNCTIONS의 name/kind/signature로 확인할 수 있다.
 
+함수 표는 개정 중에 늘어난다. 2026-11-14 확인한 sql-dialect 문서의 문자열 함수 표에는 2026-10 하순 수집본에 없던 `url_encode(str)`와 `url_decode(str)`가 있고, 두 함수 모두 Furnace와 Ontology 지원으로 표기된다(예: `url_decode('hello%20world')`). 이전에 확인한 표를 근거로 함수 미지원을 판단했다면 현재 표의 Ontology 열이나 object mode 실제 실행으로 다시 확인한다. SHOW FUNCTIONS는 Foundry SQL 지원 함수의 이름, 종류와 시그니처를 보여 줄 뿐 엔진별 열이 없어 Ontology 지원 여부를 대신하지 않는다. 같은 날 확인한 ontology-sql 문서 상단에도 2026-10 하순 수집본에 있던 Beta 안내가 없다. GA 공지와 문서별 단계 표기의 차이는 [[Palantir-SQL-Worksheets-and-Function-Result-Shapes|SQL worksheet과 function 결과 형태]]에서 다룬다.
+
 ## 원문의 상충과 실행 한계
 
 IF는 지원 표에는 Ontology 지원으로, 뒤의 경고에는 미지원으로 나온다. CASE WHEN 대안을 기록하되 실제 지원을 추정해 확정하지 않는다. 일반 지원 설명과 endpoint/app별 더 좁은 제약도 함께 확인한다.
