@@ -18,4 +18,5 @@ ORM, 임피던스 불일치, Aggregate 경계, Domain Model — 객체와 관계
 - [x] [[ORM-Upgrade-Verification|ORM 업그레이드 검증]]
 - [x] [[Prisma-Query-Performance|Prisma 쿼리 계측과 relation 로딩 전략]]
 - [x] [[JPA|JPA와 Jakarta Persistence]]
+- [x] [[SQLAlchemy-Declarative-Mapping|SQLAlchemy 선언적 매핑(Mapped와 mapped_column)]]
 - [x] [[Domain-Model|Domain Model]]
