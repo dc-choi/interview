@@ -1,7 +1,7 @@
 ---
 tags: [palantir, foundry, operations]
 status: done
-verified_at: 2026-10-16
+verified_at: 2026-11-14
 category: "AI엔지니어링(AIEngineering)"
 aliases: ["Vertex 그래프 생성과 함수 반환 계약"]
 ---
@@ -16,7 +16,7 @@ Graph template은 object/non-object parameter, 탐색과 style/layout을 저장�
 
 ## 관계 탐색 메뉴와 선택 연산
 
-2026-11-14 Explore object relationships 문서를 대조한 절이다. 다른 절의 검증 날짜는 frontmatter 기준을 유지한다.
+2026-11-14 Explore object relationships 문서를 대조한 절이다. 날짜를 따로 적지 않은 절은 2026-10-16 대조 기준이다.
 
 Graph의 node나 node 묶음을 우클릭하면 Search Around 목록이 관련 object type과 type별 객체 수를 보여 준다. 객체가 많으면 수 옆의 **Open**으로 Search Around 패널을 열어 filter와 여러 단계를 더한다. 메뉴의 기본 선택지는 세 가지다.
 
@@ -30,7 +30,7 @@ Search Around는 세 종류다. Ontology Search Around(relation)는 Ontology의 
 
 ## Saved Search Around V1과 V2
 
-2026-11-09 Saved Search Around V1, V2와 Marketplace 문서를 대조한 절이다. 다른 절의 검증 날짜는 frontmatter 기준을 유지한다.
+2026-11-09 Saved Search Around V1, V2와 Marketplace 문서를 대조한 절이다. 날짜를 따로 적지 않은 절은 2026-10-16 대조 기준이다.
 
 Search Around 패널은 여러 단계의 link 탐색과 filter를 묶어 새 graph를 만드는 도구다. V1에서는 같은 object type의 객체 하나 이상을 시작 집합으로 골라 link를 선택한다. 단계 연결과 filter의 역전파는 참조와 그래프의 의미 절과 같다. 패널은 단계마다 찾은 객체 수를 보여 주고, **Add to graph**를 눌러야 graph가 생성되며 복잡한 탐색은 생성이 더 오래 걸릴 수 있다.
 
@@ -75,9 +75,17 @@ Derived-property 함수는 object set 하나만 입력으로 받고 객체→pri
 
 ## 시각적 그룹과 원본
 
-Grouping, link merging, histogram filter와 edge arrow는 그래프의 표현이다. Link 기본 화살표와 primary/undirectional/bidirectional type class 또는 graph별 reverse/hide를 실제 데이터 흐름의 보장으로 해석하지 않는다. Cartesian layout은 viewport에 좌표를 정규화하므로 물리 거리 좌표가 아니다. Saved selection은 겹칠 수 있고 border 색은 첫3개만 보여 준다.
+Grouping, link merging, histogram filter와 edge arrow는 그래프의 표현이다. Link 기본 화살표와 primary/undirectional/bidirectional type class 또는 graph별 reverse/hide를 실제 데이터 흐름의 보장으로 해석하지 않는다. Cartesian layout은 자동 scaling mode에서 node가 viewport 안에 들어오도록 좌표를 정규화하므로 이때의 위치를 절대 척도로 읽지 않는다(해석). Scaling control이 있는 화면에서는 절대 좌표를 쓸 수 있다. Saved selection은 겹칠 수 있고 border 색은 첫3개만 보여 준다.
 
 Diagramming(2026-11-09 대조 기준 beta, enrollment에서 꺼져 있을 수 있고 관리자가 Control Panel의 Vertex 설정에서 켠다. 쓸 수 있는 도구는 enrollment 설정과 graph 편집 권한에 따라 다름)은 편집 가능한 graph에 도형, 텍스트, note, 자유 그리기와 수동 edge를 더한다. 자유 주석은 graph에 속하며 Ontology 객체가 필요 없다. 수동 edge는 graph 안의 연결일 뿐 Ontology link를 만들지 않으므로 객체를 바꾸지 않고 과정을 설명할 때 쓴다. 반면 action-backed edge 도구가 설정되어 있으면 action 권한이 있는 사용자가 연결된 action을 실행할 수 있고 이는 Ontology 데이터를 바꿀 수 있으니 입력을 확인한 뒤 제출한다. 그린 요소와 스타일은 graph를 저장해야 남고 저장에는 graph resource의 저장 또는 편집 권한이 필요하며, 다른 앱에 embed된 graph는 host 앱이 편집과 저장을 막을 수 있다.
+
+## Quick edit와 styled layer
+
+Quick edit menu는 편집 가능한 graph에서 object node, 도형, 텍스트 상자나 편집 가능한 edge를 고르면 그 위에 뜨는 toolbar다. Object node에서는 쓸 수 있는 경우에 한해 action 열기, Search Around로 linked object 추가, layer style 편집(고른 node가 같은 object type과 layer일 때), styled layer 생성(같은 object type이고 기능이 켜져 있을 때), node 제거를 고른다. Layer style 편집은 선택하지 않은 같은 layer의 node까지 바꾸고, 공유 node나 edge template을 쓰는 항목의 quick edit는 그 template과 다른 instance까지 바꾼다. 선택한 하나만 바뀐다고 가정하지 않는다.
+
+여러 도형과 텍스트 상자, 또는 여러 편집 가능 edge를 고르면 모두가 지원하는 control만 보이며 고른 값은 이전 값과 관계없이 일괄 적용된다. Edge control은 편집 가능한 edge만 골랐을 때 나오고 node가 섞이면 node 옵션이 나온다. Object property 같은 동적 값으로 정해지는 설정은 quick edit로 바꿀 수 없어 layer styling panel이나 full editor에서 고친다.
+
+Styled layer는 multiple layer가 켜진 enrollment에서 같은 object type의 node 일부로 만들고 parent layer의 style을 상속한다. Layer는 lock하거나 object type의 기본 layer로 지정할 수 있고, Merge into parent로 parent에 합친 결과는 graph 저장 전에 확인한다. 이 절은 2026-11-14 display options 문서 기준이다.
 
 ## 출처
 
