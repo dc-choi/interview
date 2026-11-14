@@ -74,4 +74,5 @@ NFV는 표준 IT 가상화 기술로 여러 장비 유형을 데이터센터, �
 - [[Virtual-Machines-and-Hypervisors|가상 머신과 하이퍼바이저]]
 - [[Intelligent-Network|지능망과 SSP, SCP]]
 - [[Self-Organizing-Network|SON과 무선 자원 관리]]
+- [[Software-Defined-Networking|소프트웨어 정의 네트워킹(SDN)]]
 - [[네트워크(Network)|네트워크 인덱스]]
