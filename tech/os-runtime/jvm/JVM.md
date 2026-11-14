@@ -17,4 +17,5 @@ JVM 아키텍처, GC 알고리즘, 컨테이너 메모리 — JVM 내부 동작.
 - [x] [[JVM-First-Failure-Diagnosis|JVM 첫 장애 진단 (상시 진단 설정, G1 로그, heap dump와 MAT, hs_err)]]
 - [x] [[GC-Algorithm|GC 알고리즘 (Orinoco, Tri-color Marking, Parallel/Incremental/Concurrent, Work Stealing)]]
 - [x] [[JVM-Container-Memory|JVM 컨테이너 메모리 (used vs committed, RAMPercentage 함정, G1 uncommit 타이밍, JEP 346, CPU 수 인식과 ActiveProcessorCount)]]
+- [x] [[JVM-Foreign-Language-Runtimes|JVM에서 외부 언어 런타임 쓰기 (Nashorn 제거 배경, Project Detroit의 V8과 CPython 연결, upcall 비용, 수명 관리와 가상 스레드 pinning)]]
 - [x] [[Java-Web|Java 웹 (Servlet 런타임, JSP/SSR, 상태와 JDBC 영속성)]]
