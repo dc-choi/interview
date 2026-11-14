@@ -34,6 +34,8 @@ Page selection String은 Page ID와, collapse Boolean true는 collapsed와 연�
 
 Primitive variable transforms는 browser에서 실행되어 backend round trip이 필요하지 않다. Object set 조회/aggregation은 별도 data operation과 구분한다. Timestamp↔Date cast에는 timezone이 관여하고 Date→Timestamp는 해당 timezone의 start-of-day다. String geopoint는 lat,long, GeoJSON shape는 longitude,latitude coordinate array라 순서를 혼동하지 않는다.
 
+Loading state의 Has failed transform은 입력 변수나 앞선 transform이 load에 실패했는지 Boolean으로 돌려준다. Function-backed 변수가 오류를 던진 경우가 대표적이다. 입력이 다시 load되는 동안과 load에 성공한 뒤에는 false다. 따라서 이 transform만으로는 reload 중과 성공을 구분하지 못한다. If/else와 묶으면 실패했을 때만 fallback 값을 내보낼 수 있다.
+
 Numeric input의 percent suffix는 entered value/100을 출력하고 min/max는 clamp한다. Decimal은 최대10자리다. Date-time picker는 millisecond/second/minute precision과 IANA timezone을 사용하며 GMT offset code와 다르다. String selector single은 string, multi는 array이며 default는 output variable에서 정한다. User-created option은 storage/action persistence와 별개다.
 
 Text input Enter event는 single-line에서만 지원한다. Markdown mode는 Markdown string을 저장하고 image syntax가 rich-text load error를 낼 수 있다. User Select는 display name이 아니라 Multipass ID를 출력하며 group filter에는 View group membership 권한이 필요하다.
