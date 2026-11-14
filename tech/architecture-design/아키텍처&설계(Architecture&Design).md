@@ -51,6 +51,7 @@ aliases: ["아키텍처&설계(Architecture&Design)", "Architecture & Design"]
 - [x] [[Lehman-Software-Evolution|소프트웨어 진화 법칙]] — E-type 시스템의 변경, 복잡성 관리와 피드백
 - [x] [[ADR|ADR (Architecture Decision Record)]] — 기존 보강: [[Tech-Spec-Writing-Review-Process#ADR(Architecture Decision Record)과의 차이|테크스펙과 ADR의 차이]]
 - [x] [[Clean-Architecture-NestJS-CQRS|CQRS (Command, Query, Event 분리, Read Model, NestJS 계약, 도입 임계점)]]
+- [x] [[Enterprise-Architecture|엔터프라이즈 아키텍처(EA)와 ISP]] — baseline, target과 전환 계획, TOGAF 네 도메인, Clinger-Cohen과 전자정부법의 ITA 근거, 형식화 조건
 
 ## 검색과 추천 숙련 게이트
 
