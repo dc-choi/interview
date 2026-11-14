@@ -18,5 +18,6 @@ Docker, Compose, 컨테이너 내부 구조, 이미지 빌드와 베이스 이�
 - [x] [[Container-Image-Build|컨테이너 이미지 빌드와 베이스 이미지 선택]]
 - [x] [[OpenShell-Agent-Sandbox|OpenShell 에이전트 sandbox (supervisor 중개 egress, Landlock과 seccomp, placeholder 자격 증명, 정책 제안과 형식 검증)]]
 - [x] [[AI-Training-Environment-Containment|AI 학습 환경의 격리 (오프라인 웹, 컨테이너와 microVM, DNS 사고, 모델 공격 시험과 은닉 채널)]]
+- [x] [[Kata-Containers-GPU-Isolation|Kata Containers GPU 격리 (VFIO passthrough, NVLink 파티션과 DRA, InfiniBand 토폴로지, SPDK vhost, huge page와 vCPU 고정)]]
 
 - [x] [[Rootless-Ephemeral-Execution|일회성 rootless 실행]] — kern, 작업 간 상태 격리와 시작 비용 벤치마크의 범위
