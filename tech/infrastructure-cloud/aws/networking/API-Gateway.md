@@ -3,7 +3,7 @@ tags: [aws, api-gateway, rest, websocket, serverless, http-api]
 status: done
 category: "Infrastructure - AWS"
 aliases: ["API Gateway", "AWS API Gateway", "Amazon API Gateway"]
-verified_at: 2026-11-09
+verified_at: 2026-11-14
 ---
 
 # Amazon API Gateway, 관리형 API 프론트도어
@@ -124,6 +124,11 @@ HTTP API는 더해 **JWT Authorizer**(Cognito 외 다른 OIDC IdP)를 네이티�
 - **Private API 호출 방식** — 소비자 VPC endpoint에 private DNS를 켜면 `{rest-api-id}.execute-api.{region}.amazonaws.com`으로 바로 부른다. 대신 그 VPC에서 public API의 기본 엔드포인트에 닿지 못한다. public API는 custom domain name으로 부르거나, private DNS를 끄고 private API마다 private hosted zone을 만드는 방법이 있다. private DNS를 끈 상태에서는 VPC endpoint 전용 DNS에 `Host`나 `x-apigw-api-id` 헤더를 붙이거나, VPC endpoint를 API에 연결해 생기는 Route 53 alias(`{rest-api-id}-{vpce-id}.execute-api.{region}.amazonaws.com`)를 쓴다.
 - resource policy를 바꾸거나 VPC endpoint를 API에 연결 또는 해제한 뒤에는 API를 다시 배포해야 반영된다. 정책 저장만으로는 런타임 동작이 바뀌지 않는다.
 - private custom domain name은 도메인과 VPC endpoint가 같은 리전에 있어야 하고, 소비자는 RAM 공유를 12시간 안에 수락해야 한다. 제공자와 같은 AWS Organizations 조직이면 공유가 자동으로 수락된다. association이 동작하기까지 최대 15분이 걸릴 수 있다. 소비자의 요청은 도메인 resource policy, private API resource policy와 VPC endpoint policy를 모두 통과해야 한다.
+- **Private API 연결 실패 진단** — VPC endpoint와 같은 VPC의 클라이언트에서 시험할 때 증상으로 확인할 곳을 좁힌다. 증상과 원인의 대응은 AWS Knowledge Center 영상 기준이고, 설정 조건은 2026-11-14 공식 문서로 대조했다. invoke URL 형식과 재배포는 위 두 항목을 본다.
+  - 연결 시간 초과: endpoint의 security group이 VPC 안의 IP 대역이나 다른 security group에서 오는 TCP 443을 허용하는지 본다. 영상은 클라이언트 쪽 outbound 443도 함께 확인하고, PrivateLink 문서는 network ACL이 endpoint와의 트래픽을 막지 않는지도 확인하라고 한다.
+  - `User: anonymous is not authorized to perform: execute-api:Invoke`: 영상은 VPC endpoint policy가 그 API 호출을 허용하지 않을 때 이 오류를 보여 주고, API resource policy가 요청이 나온 곳과 다른 VPC를 허용한 경우도 호출 오류의 원인으로 든다(오류 문구는 영상 음성에서 확인되지 않음). VPC endpoint policy가 먼저 평가되고, SigV4 서명이 없는 요청은 익명 호출자로 평가된다. 공식 문제 해결 안내는 resource policy의 Principal을 AWS principal로 지정하고 메서드에 `AWS_IAM` 인증을 쓰지 않은 경우를 같은 오류의 원인으로 든다.
+  - private custom domain name 호출만 같은 오류: 콘솔로 만든 도메인은 모든 호출을 거부하는 resource policy로 시작하므로 호출할 VPC endpoint를 `aws:SourceVpce`로 허용하도록 고친다.
+  - TLS 오류(인증서의 subject 이름이 대상 호스트와 맞지 않음): 영상 기준, 호출하는 VPC endpoint와 private custom domain name 사이의 domain name access association이 없는지 본다.
 
 ## 실무 패턴
 
@@ -175,6 +180,10 @@ HTTP API는 더해 **JWT Authorizer**(Cognito 외 다른 OIDC IdP)를 네이티�
 - [AWS 공식 문서, Access for an IAM user in another AWS account that you own](https://docs.aws.amazon.com/IAM/latest/UserGuide/id_roles_common-scenarios_aws-accounts.html)
 - [How do I provide cross-account IAM authorization for API Gateway HTTP APIs? — AWS re:Post](https://repost.aws/knowledge-center/api-gateway-iam-cross-account)
 - [How do I access an API Gateway API from another AWS account? — Amazon Web Services](https://www.youtube.com/watch?v=NV1RJa9YCYo)
+- [How do I troubleshoot issues when connecting to an API Gateway private API endpoint? — Amazon Web Services](https://www.youtube.com/watch?v=FUDpspPIwgk)
+- [AWS 공식 문서, Use VPC endpoint policies for private APIs in API Gateway](https://docs.aws.amazon.com/apigateway/latest/developerguide/apigateway-vpc-endpoint-policies.html)
+- [AWS 공식 문서, Tutorial: Create and invoke a custom domain name for private APIs](https://docs.aws.amazon.com/apigateway/latest/developerguide/apigateway-private-custom-domains-tutorial.html)
+- [AWS 공식 문서, Access an AWS service using an interface VPC endpoint](https://docs.aws.amazon.com/vpc/latest/privatelink/create-interface-endpoint.html)
 
 ## 관련 문서
 - [[AWS-Lambda|AWS Lambda]]
