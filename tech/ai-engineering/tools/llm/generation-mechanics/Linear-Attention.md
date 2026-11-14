@@ -49,6 +49,22 @@ softmax 읽기는 질의와 각 키의 유사도 점수를 비선형 가중치�
 
 학습 실험 제안: 직교 키와 서로 비슷한 키에서 위 식의 회상 오차를 비교하고, N과 d, 값 차원, 난수 시드와 역온도를 기록한다. 이 식은 간섭 설명용이며 게이트형 선형 어텐션의 품질이나 Transformer 전체의 성능 상한을 증명하지 않는다. 여기서는 영상의 수치 실험을 재현하지 않았다.
 
+## 더하기만 하는 상태를 고치는 갱신 규칙: Gated DeltaNet
+
+단순 누적 상태는 새 키/값 쌍을 계속 더하기만 한다. 오래된 정보를 줄이거나 같은 키에 묶인 값을 고쳐 쓰는 장치가 없다. Gated DeltaNet(Yang, Kautz, Hatamizadeh, arXiv 2412.06464, ICLR 2025 camera ready로 표기)은 이 갱신 규칙을 바꾼다. 논문은 상태를 `S_t = Σ v kᵀ` 방향(값 차원×키 차원)으로 적어 위의 S와 전치 관계이며, 특징 맵과 분모 정규화를 빼고 쓴다.
+
+| 규칙 | 상태 갱신 | 하는 일 |
+|---|---|---|
+| 선형 어텐션 | `S_t = S_{t-1} + v_t k_tᵀ` | 더하기만 한다 |
+| Mamba2식 감쇠 | `S_t = α_t S_{t-1} + v_t k_tᵀ` | 이전 상태 전체에 α_t를 곱해 그 비율만 남긴다 |
+| 델타 규칙 | `S_t = S_{t-1}(I − β_t k_t k_tᵀ) + β_t v_t k_tᵀ` | 현재 키 방향의 기존 값을 β_t만큼 지우고 새 값을 쓴다 |
+| 게이트형 델타 규칙 | `S_t = S_{t-1}(α_t(I − β_t k_t k_tᵀ)) + β_t v_t k_tᵀ` | 위 둘을 결합한다 |
+
+- **α_t(감쇠 게이트):** 0과 1 사이의 입력 의존 스칼라로 이전 상태를 얼마나 남길지 정한다. α_t가 0에 가까우면 기억을 빠르게 비우고, 1에 가까우면 다른 내용을 건드리지 않고 현재 키에 해당하는 내용만 고친다.
+- **β_t(쓰기 강도):** 0과 1 사이 값이다. 단위 길이 키라면 갱신 뒤 `S_t k_t = (1−β_t)S_{t-1}k_t + β_t v_t`(α_t=1일 때)이므로, 현재 키로 읽던 기존 값과 새 값을 섞는 비율로 볼 수 있다. 논문은 델타 규칙을 갱신 전 상태 `S_{t-1}`에서 `½‖S k_t − v_t‖²`를 줄이는 시험 시점 확률적 경사하강의 한 단계로 해석하고(논문은 첨자를 한 칸 밀어 `S_t`에서 `S_{t+1}`로 적는다), β_t를 그 학습률, α_t를 적응적 가중치 감쇠로 설명한다.
+- **RNN과의 유비:** 더하기만 하던 상태에 지우기와 쓰기 비율을 학습으로 붙인다는 점에서 Vanilla RNN에서 LSTM, GRU의 게이트로 넘어간 흐름과 비슷하게 이해할 수 있다(설명용 비유이며 식이 같다는 뜻은 아니다).
+- 논문은 Gated DeltaNet 층을 슬라이딩 윈도 어텐션이나 Mamba2 층과 섞은 하이브리드 구성도 함께 제시한다.
+
 ## 공개 모델의 하이브리드 층 배치
 
 최근 공개 모델은 모든 층을 선형 어텐션으로 채우지 않고 일부 층에 전체 어텐션을 남기는 하이브리드 구성을 쓴다. 다음은 2026-10-27 모델 카드 대조 기준의 사례다.
@@ -56,6 +72,7 @@ softmax 읽기는 질의와 각 키의 유사도 점수를 비선형 가중치�
 - **층 비율**: Raon-1 mini preview(크래프톤, 2026-10-21 공개)는 25개 층 가운데 18개를 선형 어텐션인 Raon Delta Attention(RDA), 7개를 전체 어텐션(Gated MLA)으로 둔다. 위치 인코딩을 쓰지 않는(NoPE) 구성이며 문맥은 262,144토큰까지 받는다.
 - **갱신 규칙은 계열마다 다르다**: 모델 카드는 RDA를 Kimi Delta Attention의 지우기(erase) 게이트와 쓰기(write) 게이트를 분리한 변형으로 설명한다. 상태를 지우고 다시 쓰는 게이트형 갱신은 위의 단순 누적(`Sᵢ=Sᵢ₋₁+φ(kᵢ)vᵢᵀ`)과 다른 규칙이므로, 선형 어텐션이라는 이름만으로 같은 식이라고 보지 않는다.
 - **KV 캐시는 전체 어텐션 층에만 남는다**: Raon-1 mini preview의 KV 캐시는 MLA 층 7개에만 있어 BF16에서 토큰당 약 8KiB다. 선형 어텐션 층은 길이와 무관한 크기의 상태를 갖는다. 긴 문맥의 메모리 예산은 전체 어텐션 층의 수와 그 층의 KV 형식으로 계산한다([[LLM-Inference-Bottlenecks|LLM 추론 병목]]).
+- **3:1 배치 사례**: Qwen3-Next-80B-A3B 모델 카드는 48개 층을 `12 * (3 * (Gated DeltaNet -> MoE) -> 1 * (Gated Attention -> MoE))`로 적는다. 선형 층 36개와 전체 어텐션 층 12개다. Kimi Linear(48B 전체, 3B 활성) 모델 카드는 Gated DeltaNet의 게이트를 더 세밀하게 나눈 Kimi Delta Attention(KDA)과 전체 어텐션(MLA)을 3:1로 섞는다고 적고, KV 캐시 필요량을 최대 75% 줄인다고 주장한다. 3:1은 여러 공개 모델에서 보이는 배치이지만 위 Raon처럼 다른 비율도 있으므로 정답 비율로 일반화하지 않는다(2026-11-15 모델 카드 대조).
 - **같은 방향의 다른 구성**: GLM-5.3-Flash 모델 카드는 sparse attention과 linear attention을 결합한 하이브리드 어텐션을 GLM 계열에서 처음 적용했다고 적는다. 층 배치 비율은 이 문서에서 확인하지 않았다.
 
 하이브리드 구성의 품질과 속도는 모델 전체의 결과이며, 선형 어텐션 층 비율만으로 긴 문맥 정확도를 예측하지 않는다. 공급사 평가표를 읽는 조건은 [[Model-Release-Claims|모델 발표 수치 읽기]]를 따른다.
@@ -75,12 +92,17 @@ softmax 읽기는 질의와 각 키의 유사도 점수를 비선형 가중치�
 1. 분모의 정규화가 제곱 복잡도로 돌아가지 않는 이유는 무엇인가?
 2. 특징 차원을 늘리면 길이에 선형이어도 실제 비용이 커지는 이유는 무엇인가?
 3. 하이브리드 모델에서 긴 문맥의 KV 캐시 크기를 정하는 층은 어느 쪽인가?
-4. 고정 이웃만 섞는 층이 인과 언어 모델에서 미래 위치를 참조하면 학습 지표에 어떤 문제가 생기는가?
+4. 게이트형 델타 규칙에서 α_t를 0에 가깝게 두는 것과 β_t를 1에 가깝게 두는 것은 상태에 각각 어떤 변화를 주는가?
+5. 고정 이웃만 섞는 층이 인과 언어 모델에서 미래 위치를 참조하면 학습 지표에 어떤 문제가 생기는가?
 
 ## 출처
 
 - [You could have invented transformers from memory — Alex Wang](https://alexwang.ai/posts/associative-memory/) — 2026-11-04 외적 기억의 회상 분해와 선택적 읽기 대조. 용량 수치를 실제 모델의 한도로 옮기지 않았다.
 - [Transformers are RNNs: Fast Autoregressive Transformers with Linear Attention — PMLR, Katharopoulos et al.](https://proceedings.mlr.press/v119/katharopoulos20a/katharopoulos20a.pdf) — 3.2~3.4절
+- [Gated Delta Networks: Improving Mamba2 with Delta Rule — arXiv, Yang, Kautz, Hatamizadeh](https://arxiv.org/abs/2412.06464) — 2026-11-15 v3 대조, 갱신 규칙 식, α와 β의 의미, 시험 시점 SGD 해석, 하이브리드 구성
+- [Qwen/Qwen3-Next-80B-A3B-Instruct — Hugging Face, Qwen](https://huggingface.co/Qwen/Qwen3-Next-80B-A3B-Instruct) — 2026-11-15 층 배치와 층 수 확인
+- [moonshotai/Kimi-Linear-48B-A3B-Instruct — Hugging Face, Moonshot AI](https://huggingface.co/moonshotai/Kimi-Linear-48B-A3B-Instruct) — 2026-11-15 KDA 설명, 3:1 비율과 KV 캐시 주장 확인
+- [딥러닝 초절정 고수들의 잡기술 — YouTube, ImcommIT](https://www.youtube.com/watch?v=WXUmWVT_Uog) — 학습 계기, 하이브리드 비율과 Gated DeltaNet 설명을 위 자료로 대조
 - [KRAFTON/Raon-1-mini-preview — Hugging Face, KRAFTON](https://huggingface.co/KRAFTON/Raon-1-mini-preview) — 2026-10-27 층 구성, RDA 설명, KV 캐시 크기와 문맥 길이 확인
 - [zai-org/GLM-5.3-Flash — Hugging Face, Z.ai](https://huggingface.co/zai-org/GLM-5.3-Flash) — 2026-10-27 하이브리드 어텐션 설명 확인
 - [Attention Is Not What You Need: Grassmann Flows as an Attention-Free Alternative for Sequence Modeling — arXiv, Zhang Chong](https://arxiv.org/abs/2512.19428) — 2026-11-13 v1 본문 대조, 3.2절 구성, 복잡도, Wikitext-2와 SNLI 결과, 한계
