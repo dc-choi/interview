@@ -13,7 +13,7 @@ aliases: ["AI 시대 조직, 역할", "AI Org & Role"]
 - [x] [[AI-Code-Delegation-Review|AI 구현 위임과 코드 리뷰]] — 의사소통 수단으로서의 코드, 리뷰와 지식 전달, 위임 앞뒤의 사고 구간, 도구 표기와 제출 품질, AI 리뷰의 발견량과 수정 용량, 미래 전망의 한계
 - [x] [[AX-Transformation|AX(AI Transformation) 조직 전환 (Usage/Enablement/Transformation, 5 변혁 축, Maker→Closer)]]
 - [x] [[Developer-Role-AI-Era|AI 시대 개발자 역할 (위임의 4분면, 재시도 중계와 판단의 차이, 개인용과 제품의 성공 기준, 추상화의 위험, 견습 사다리 붕괴)]]
-- [x] [[AI-Anxiety-and-FOMO|AI 불안과 FOMO를 다루는 법 (무지에서 오는 공포, 다음 토큰 예측과 API 호출, 용어를 구조에 배치, 속도 자랑을 거르는 질문)]]
+- [x] [[AI-Anxiety-and-FOMO|AI 불안과 FOMO를 다루는 법 (무지에서 오는 공포, 다음 토큰 예측과 API 호출, 용어를 구조에 배치, 속도 자랑을 거르는 질문, 직무 경계가 흐려질 때의 세 가지 대응, 초보 상태를 견디는 연습)]]
 - [x] [[Expertise-Formation-AI|AI 시대 전문성 형성 (마찰, 숙련자 역설, 판단 위임의 경계, 가드레일 RCT, 코딩 학습 RCT, 튜터형 활용, 운영 자동화와 시스템 직관)]]
 - [x] [[AI-Slop-Quality-Gate|AI 슬롭과 판단 관문 (비용 전가 정의, 원재료 우선, 단계 판단 관문, 절약분 재투자, 책임 구조, 소유의 세 조건, 위험도별 검토 강도, 탐색용 프로토타입과 납품 코드의 구분, 생성 뒤 검토 시간의 실측과 한계, 공유 자원 관리자에게 넘어가는 검증 비용, 코드 슬롭 측정의 지표와 한계)]]
 - [x] [[AI-Market-and-Moat|AI 시장 구도와 해자 (market-moat/ 서브폴더) — 생성형 AI 시장 경쟁 구도, AI 인프라 지정학, 규제 논쟁, 도달력이 새 해자, 데이터 플라이휠, LLM API 가격 경쟁]]
