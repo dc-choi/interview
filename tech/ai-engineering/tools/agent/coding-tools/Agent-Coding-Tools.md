@@ -25,6 +25,8 @@ aliases: ["Agent Coding Tools", "코딩 에이전트 작업 도구"]
 
 - [[Independent-Agent-Code-Review|독립 에이전트 코드 리뷰]]: 정적 검사, 발견과 검증 분리, 인용 실재와 리뷰 전달 범위, OpenQodex 사례
 
+- [[Agent-Language-Port|에이전트로 하는 대규모 언어 이전]]: Bun의 Zig에서 Rust로의 일괄 포팅, 언어 중립 테스트 오라클, 구현과 적대적 리뷰 분리, 같아 보이지만 다르게 동작하는 코드의 회귀, 병합과 출시 분리, 점진 교체와 비교
+
 ## 함께 볼 문서
 
 - [[agent|에이전트 심화]]

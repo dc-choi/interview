@@ -15,6 +15,7 @@ IaaS/PaaS/FaaS 구분, IaC, 클라우드 전환 전략 — 클라우드 추상�
 - [x] [[Cloudflare-Durable-Objects|Durable Objects]] — 객체별 상태와 실행, hibernation과 영속 저장, 트랜잭션과 셀프호스팅의 경계
 - [x] [[Internal-Developer-Platform|내부 개발자 플랫폼]] — 셀프서비스 범위, API 접수와 준비 완료, 부분 실패와 운영 책임
 - [x] [[SaaS-Regional-Data-Isolation|SaaS 리전별 데이터 격리 (control/application plane, pool/silo/bridge, 복제와 복구, 파티션과 운영 주권, 데이터 위치와 CLOUD Act 제출 명령)]]
+- [x] [[Cloud-Foundry|Cloud Foundry]] — `cf push` 스테이징과 droplet, buildpack, Service Broker와 `cf cups`, org와 space 역할, cf-deployment, Korifi 보관과 kind 로컬 설치
 - [x] [[Cloud-Service-Models|IaaS/PaaS/FaaS/SaaS (추상화 계층, 책임 공유 모델, 서버리스 범위)]]
 - [x] [[Cloud-Migration-Strategies|클라우드 전환 전략 (AWS 7 Rs와 Microsoft CAF 용어 차이, 12 Factor, AI 계획과 cutover 검증, 가상화 플랫폼 유지와 DR 복구 조건)]]
 - [x] [[IaC|IaC (선언형 vs 명령형, 프로비저닝과 구성 관리, 검증 단계와 생략 결과, 드리프트/불변 인프라, GitOps)]]
