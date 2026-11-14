@@ -26,7 +26,7 @@ Experimental terminal 명령은 policy, grant, session을 구분한다. policy l
 
 `grant request <policy-name>`은 인증된 사용자 자신의 접근 권한을 위한 CR을 만든다. duration을 생략하면 정책의 기본 기간을 쓴다. 요청 제출만으로 grant가 생겼다고 판단하지 않는다.
 
-`session create`는 kubectl이 구성된 debug Pod에서 터미널을 만들고 연결한다. terminal profile을 생략하면 기본 shell profile을 쓴다. attach는 기존 session ID로 연결한다. 서버의 정책, grant와 CR 승인 요건을 통과해야 하는 기능이며 이 문서 작성 중 실제 세션을 만들지 않았다.
+`session create`는 kubectl이 구성된 debug Pod에서 터미널을 만들고 연결한다. terminal profile을 생략하면 기본 shell profile을 쓴다. attach는 기존 session ID로 연결한다. `session create`의 `--node-name`으로 세션 대상 Kubernetes node를 지정할 수 있고, 쓸 수 있는 값은 `terminal node list --environment <환경 ID>`로 먼저 조회한다. 같은 명령에는 `--session-mode`(POD 또는 NODE, 생략 시 POD)도 있으며 두 flag의 조합 조건은 확인하지 않았다. pretty 출력에 node label이 함께 나와 `grep` 같은 셸 도구로 고를 수 있다(2026-11-14 확인, Experimental). 서버의 정책, grant와 CR 승인 요건을 통과해야 하는 기능이며 이 문서 작성 중 실제 세션을 만들지 않았다.
 
 ## 출처
 
@@ -39,6 +39,7 @@ Experimental terminal 명령은 policy, grant, session을 구분한다. policy l
 - [Palantir, apollo-cli terminal grant Experimental](https://www.palantir.com/docs/apollo/apollo-cli/apollo-cli_terminal_grant) — 접근 grant 조회와 요청 그룹.
 - [Palantir, apollo-cli terminal grant list Experimental](https://www.palantir.com/docs/apollo/apollo-cli/apollo-cli_terminal_grant_list) — 자신의 grant 종류와 만료 조회.
 - [Palantir, apollo-cli terminal grant request Experimental](https://www.palantir.com/docs/apollo/apollo-cli/apollo-cli_terminal_grant_request) — 자기 접근 CR과 정책 기본 duration.
+- [Palantir, apollo-cli terminal node list Experimental](https://www.palantir.com/docs/apollo/apollo-cli/apollo-cli_terminal_node_list) — 세션 대상 node와 label 조회.
 - [Palantir, apollo-cli terminal policy Experimental](https://www.palantir.com/docs/apollo/apollo-cli/apollo-cli_terminal_policy) — 터미널 접근 정책 그룹.
 - [Palantir, apollo-cli terminal policy list Experimental](https://www.palantir.com/docs/apollo/apollo-cli/apollo-cli_terminal_policy_list) — 요청 가능한 TAP 조회.
 - [Palantir, apollo-cli terminal session Experimental](https://www.palantir.com/docs/apollo/apollo-cli/apollo-cli_terminal_session) — 세션 생성, 재접속과 목록 그룹.

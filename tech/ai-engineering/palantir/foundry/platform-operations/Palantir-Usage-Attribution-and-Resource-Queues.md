@@ -48,7 +48,7 @@ Foundry usage & limits 화면은 enrollment 수준 한도에 가까워지거나 
 
 보고 대상은 Ontology Reads, Platform APIs, Function Compute 같은 서비스이고, 환경에 enrollment 수준 한도가 설정된 서비스만 목록에 나타난다. Enrollment utilization 차트는 선택한 서비스의 요청 사용량을 그 한도와 비교한다. 100%는 그 구간에 한도에 도달했다는 뜻이고 100% 초과는 보고된 사용량이 한도를 넘었다는 뜻이다. Organizations 표의 Max/Avg enrollment quota usage는 선택 기간에 그 organization의 요청 사용량이 공유 한도에서 차지한 최고/평균 비율이며 organization별 한도가 아니다. Organization을 고르면 같은 서비스와 기간으로 user별 분해를 본다.
 
-사용량은 시간 구간으로 집계돼 최근 요청은 늦게 나타날 수 있다. 이 화면은 표시된 한도에 포함되는 요청만 보여 주며 전체 compute, storage나 청구 사용량이 아니므로, 그 분석은 Overview와 Analysis 화면에서 한다. 그래서 이 비율을 budget 금액이나 queue utilization으로 바꿔 읽지 않는다. LLM의 minute별 token/request 한도를 보는 AIP usage & limits는 별개 화면이며 [[Palantir-LLM-Capacity-and-Cost|LLM 용량과 비용]]이 다룬다.
+선택 가능한 기간은 enrollment의 metric 보존 기간에 따라 달라진다. 2026-11-14 확인 기준 이 화면에 대한 monitoring은 출시 예정으로만 표시되어, 한도 접근을 알림으로 받는 경로로 전제하지 않는다. 사용량은 시간 구간으로 집계돼 최근 요청은 늦게 나타날 수 있다. 이 화면은 표시된 한도에 포함되는 요청만 보여 주며 전체 compute, storage나 청구 사용량이 아니므로, 그 분석은 Overview와 Analysis 화면에서 한다. 그래서 이 비율을 budget 금액이나 queue utilization으로 바꿔 읽지 않는다. LLM의 minute별 token/request 한도를 보는 AIP usage & limits는 별개 화면이며 [[Palantir-LLM-Capacity-and-Cost|LLM 용량과 비용]]이 다룬다.
 
 ## Queue와 전용 compute
 

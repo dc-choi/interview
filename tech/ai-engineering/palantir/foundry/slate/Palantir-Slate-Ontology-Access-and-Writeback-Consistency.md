@@ -16,6 +16,24 @@ OSDK는 선택 엔티티로 생성한 bundle이며 현재 Slate 문서는 OSDK v
 
 Foundry Function 패널은 접근 가능한 함수의 버전과 typed input/output을 선택한다. 이를 브라우저의 Slate JavaScript 함수와 구분한다. 재사용할 업무 로직과 복잡한 집계는 backend Function에 둘 수 있다.
 
+## Platform SDK(PSDK) 호출
+
+2026-11-14 Use the Platform SDK in Slate 문서 기준, PSDK는 Slate 함수에서 Foundry API를 직접 호출하는 경로다. OSDK와 달리 Ontology 엔티티를 고르거나 라이브러리를 생성하지 않는다. `@slate/psdk`의 구성된 `client`를 쓰고 operation은 `@osdk/foundry`에서 가져와 첫 인자로 client를 넘긴다. Client 생성과 토큰 전달은 하지 않으며, 요청은 앱을 실행하는 사용자의 권한으로 나간다. 그래서 작성자가 테스트에서 성공했다는 사실이 다른 사용자의 접근을 보장하지 않는다.
+
+```javascript
+import { client } from "@slate/psdk";
+import { Datasets } from "@osdk/foundry";
+
+const dataset = await Datasets.Datasets.get(client, {{v_dataset_rid}});
+return dataset.name;
+```
+
+- **활성화:** Functions 패널 Libraries의 Foundry SDK를 Enable하거나 두 패키지 중 하나라도 import하면 켜진다. 앱을 저장해야 설정이 남는다. 인증이 필요해 public application에서는 지원하지 않는다.
+- **버전:** 설정한 major 안에서 최소 minor 이상인 인스턴스의 최신 SDK를 자동 로드한다. Major는 자동으로 올리지 않고, 확인일 기준 수동 major 업그레이드도 아직 제공되지 않는다. 공개 API 예제의 operation이 현재 SDK 버전에 없을 수 있으므로 Foundry SDK 옆 버전을 먼저 본다.
+- **허용 경로:** `/api/v2/`(와 같은 자원의 `/api/v1/`) 아래 ontologies, datasets, attachments, models, operations만 허용한다. Admin API 같은 다른 endpoint는 자동 완성에 보여도 막히며, 이때 엔드포인트에 닿기 전 `Fetch is restricted for <URL>.`을 낸다.
+- **오류 형태:** 실패한 HTTP 요청은 throw하며 구조화 오류에는 `statusCode`와 서버가 준 경우 `errorName`, `errorCode`, `errorInstanceId`, `parameters`가 있다. 네트워크 실패와 로컬 차단에는 status와 구조화 필드가 없을 수 있다. `try`/`catch`로 다루지 않으면 함수 실패가 되고 health check dialog에 나타난다.
+- **예제 이식:** API reference의 TypeScript 예제는 operation import를 유지하고 client를 `@slate/psdk`로 바꾸며 타입 표기를 지운 JavaScript로 쓴다.
+
 ## Actions가 정하는 변경
 
 현재 권장 writeback은 Ontology Action이다. Action widget의 object locator는 대상만 식별하고 속성 변경 자체를 지정하지 않는다. typeId와 primaryKey의 property ID/값, 별도 Action parameter와 rule의 매핑이 필요하다. Widget 기본값은 Action type 기본값보다 우선한다. 다중 object 입력은 locator 목록이며 Date/Timestamp는 ISO 8601 형식이다.
@@ -58,6 +76,7 @@ Foundry Function 패널은 접근 가능한 함수의 버전과 typed input/outp
 - [Palantir slate, concepts-object-context](https://www.palantir.com/docs/foundry/slate/concepts-object-context)
 - [Palantir slate, concepts-object-sets](https://www.palantir.com/docs/foundry/slate/concepts-object-sets)
 - [Palantir slate, concepts-osdk](https://www.palantir.com/docs/foundry/slate/concepts-osdk)
+- [Palantir slate, concepts-psdk](https://www.palantir.com/docs/foundry/slate/concepts-psdk)
 - [Palantir slate, concepts-queries](https://www.palantir.com/docs/foundry/slate/concepts-queries)
 - [Palantir slate, concepts-styles](https://www.palantir.com/docs/foundry/slate/concepts-styles)
 - [Palantir slate, concepts-variables](https://www.palantir.com/docs/foundry/slate/concepts-variables)

@@ -52,6 +52,27 @@ Monitoring은 p95 duration과 시간창 내 실패 건수 임계값을 감시한
 
 공식 Observability 화면에서도 성공 실행 막대와 별개로 p95 duration 규칙은 실패 상태이며, 실패 건수 규칙은 통과 상태다. 실행 성공률과 지연 시간의 건강 상태를 따로 판단해야 하는 예다. 화면에 표시된 기간과 수치를 제품의 성능 보장으로 사용하지 않는다. [Action type Observability 화면](https://www.palantir.com/docs/resources/foundry/ontology-manager/oma-user-interface-action-type-observability-tab.png) (2026-10-18 화면 확인)
 
+## 충돌 오류는 원인별로 다르게 다룬다
+
+2026-11-14 Debug conflict errors 문서 기준, 충돌 오류의 흔한 원인은 셋이다. 앞의 두 원인은 snapshot isolation에서의 실패로 설명된다. 격리 수준과 write skew 같은 계약 자체는 [[Palantir-Actions-and-Functions|실행, 격리와 권한]]에 둔다.
+
+| 원인 | 대표 오류 | 특징 |
+|---|---|---|
+| 다른 Action이 같은 객체를 편집 | `Actions:ConcurrentModification`, `Actions:ObjectVersionChanged` | 서로 다른 속성을 바꿔도 먼저 commit한 쪽만 성공한다 |
+| Object type의 backing datasource 갱신 | `Actions:ObjectVersionChanged` | 충돌 검사가 object type 전체의 datasource 갱신을 추적해, 갱신된 행이 편집 대상과 무관해도 실패할 수 있다 |
+| Object database 유지보수 | `Actions:ConcurrentObjectTypeModification`, `Actions:ObjectVersionChanged` | 편집이 많은 type에서 더 자주 돌 수 있고 backing datasource 없는 type에도 영향을 준다. 유지보수가 끝난 뒤 재시도하면 성공할 것으로 안내되며 재시도 뒤에도 반복되면 Support 대상이다 |
+
+문서 예시에서 Actions API 응답은 `ObjectChanged`, 오류 코드 `CONFLICT`, HTTP 409였고 Automate trace의 로그는 `Actions:ObjectVersionChanged`와 409였다. 진입 경로마다 다른 이름으로 보일 수 있으므로 오류 이름 하나만으로 검색하지 않는다(작성자 판단). Workshop은 실패 toast의 Error Name과 Object details로 대상 객체를 찾는다.
+
+**재시도 설정:** Capabilities의 Retry mode on transient errors가 첫 대응이며 켜면 최대 5회 시도한다. 플랫폼은 읽기만 하는 OSDK 접근도 외부 호출로 분류한다. 그래서 OSDK를 쓰는 TypeScript v2와 Python function-backed Action은 기본값(외부 호출 없는 Action만)에서 재시도되지 않는다. All actions는 재실행해도 안전한 외부 호출에만 고른다. 다른 Action을 호출해 Ontology를 편집하는 webhook을 재시도하면 편집이 중복될 수 있다. Automate나 API 클라이언트에 재시도를 더 얹으면 원인은 남고 지연과 부하만 늘 수 있다.
+
+**원인 추적과 구조 변경:** Object type에 Track user edit history를 켜고 Edit History widget으로 실패 시각에 같은 객체를 바꾼 성공 실행을 찾는다. 다른 속성 편집도 충돌 원인이라 모든 속성을 표시한다. Edit history는 켠 뒤의 편집만 담고 backing datasource 갱신은 담지 않는다. 같은 객체를 바꾸는 실행은 다음처럼 직렬화하거나 합친다.
+
+- OSDK와 Actions API는 앞 Action이 끝난 뒤 다음을 제출한다.
+- Automate는 한 event의 여러 Action을 별도 effect로 나눠 순차 실행한다. 한 effect의 Configured Actions 여러 개는 순서를 보장하지 않는다. Event 사이에는 Queue effect executions를, 두 automation 사이에는 automation dependency를 쓴다.
+- 여러 Action이 공유 객체(예: 작업 완료와 프로젝트의 완료 건수)를 각각 바꾸면 Action 하나로 합친다. 합친 Action이 자기 편집을 다시 읽어 집계해야 하면 staged writes를 쓰는 function-backed Action으로 만든다. 같은 실행의 후속 조회가 자기 편집을 보지만, staged writes는 현재 legacy isolation만 지원해 고정 snapshot을 보장하지 않는다.
+- Datasource 갱신과 겹치면 갱신 완료를 기다리거나 갱신 빈도를 줄인다. 이런 변경이 불가능할 때만 read committed를 검토한다. 충돌 문서는 이를 대안으로 안내한다. [[Palantir-Actions-and-Functions|실행, 격리와 권한]]의 이전 대조 기록과 현재 문서의 가용성 표시가 다를 수 있으므로, 사용 전에 enrollment의 Capabilities에서 선택 가능 여부를 확인한다.
+
 ## Undo는 전체 업무 rollback이 아니다
 
 Action revert는 OSv2 객체 편집에 사용할 수 있으며 실행한 사용자만 할 수 있다. 성공 toast의 Undo가 기회이고, 이후 객체에 다른 편집이 한 번이라도 있으면 다른 속성 변경이어도 revert할 수 없다. 제출 뒤 revert 설정을 껐다 다시 켜도 원 제출은 되돌릴 수 없다.
@@ -66,6 +87,7 @@ Revert는 객체 편집만 취소하며 webhook과 알림을 취소하거나 보
 - [Palantir, Action metrics](https://www.palantir.com/docs/foundry/action-types/action-metrics)
 - [Palantir, Action monitoring](https://www.palantir.com/docs/foundry/action-types/monitoring)
 - [Palantir, Revert or undo actions](https://www.palantir.com/docs/foundry/action-types/action-reverts)
+- [Palantir, Debug conflict errors](https://www.palantir.com/docs/foundry/action-types/debug-conflict-errors)
 - [Palantir, October 2024 announcements](https://www.palantir.com/docs/foundry/announcements/2024-10)
 
 ## 관련 문서
