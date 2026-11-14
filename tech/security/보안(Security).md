@@ -24,6 +24,7 @@ aliases: ["보안(Security)", "Security Index"]
 - [[Smart-Contract-Reentrancy|스마트 컨트랙트 재진입과 상태 일관성]] — 외부 호출, 상태 변경 순서, 가드의 범위와 산술 버전 경계
 - [[AI-Content-Provenance|AI 콘텐츠의 워터마크와 출처 증명]] — 통계적 텍스트 신호, C2PA, 숨은 문자와 탐지 결과의 한계, 응답을 만든 모델의 검증 가능한 추론 증명, 이미지 탐지기의 영역 표시와 자체 평가 읽기
 - [[Web-Content-Manipulation-for-AI|AI가 읽는 웹 콘텐츠의 조작]] — 숨은 지시와 분석 방해, 조작 시도와 실제 영향의 구분, 수집기별 본문 차이, 인용 세탁과 출처 확인 순서
+- [[AI-Refusal-Triggers-and-Context-Bombs|AI 분석 회피와 안전 거부 유도]] — 안전 판정 유도와 안전 거부 유도의 구분, 악성 코드의 프롬프트 인젝션, 방어용 context bomb의 실험과 한계, 분석 파이프라인의 거부 처리
 - [[Coordinated-Vulnerability-Disclosure|조율된 취약점 공개 (CVD)]] — 단계와 역할, 수정 지연의 구조, 사전 통지와 정보 공유 범위, AI로 찾은 버그의 공개 보고와 보고량 증가, 충돌로 분류된 결함, 대량 발견의 재현과 경로 검증과 패치 동봉, 엠바고 유출과 조기 공개 대응, 공개 뒤 정정된 CVE 레코드와 Store 앱 수정 경로
 - [[Adversarial-Examples-Decision-Based-Attacks|적대적 예제와 결정 기반 공격]] — 위협 모델과 쿼리 예산, Boundary Attack과 HopSkipJumpAttack, 잠재 공간 변형, 상태 기반 탐지와 강건성 평가 도구
 - [[Agent-Execution-Isolation|에이전트 실행 격리]] — MXC 백엔드별 강제 범위, 내부자 위험과 조건부 백도어, 자기 호스팅과 egress 통제의 구분
