@@ -12,7 +12,7 @@ AIOps는 보통 IT 운영에 AI를 적용하는 일을 말한다. AWS의 Agentic
 
 ## 여섯 영역은 서로 약점을 옮긴다
 
-같은 시리즈가 제시한 운영 영역 구분이다. 이 문서는 그중 거버넌스와 운영 신뢰성을 자세히 다루고, 비용은 [[LLM-Cost-Optimization|LLM 비용 최적화]], 보안과 추적은 [[Agent-Governance-Controls|에이전트 거버넌스 통제]]에서 이어 본다.
+같은 시리즈가 제시한 운영 영역 구분이다. 이 문서는 그중 거버넌스와 운영 신뢰성을 자세히 다루고, 데이터 접근과 통합, 비용, 보안과 포렌식, 조직 준비는 [[Agent-Operations-Integration-Cost-Security|에이전트 운영의 통합, 비용과 보안]]에서 이어 본다. 비용 일반은 [[LLM-Cost-Optimization|LLM 비용 최적화]], 통제 일반은 [[Agent-Governance-Controls|에이전트 거버넌스 통제]]를 따른다.
 
 | 영역 | 확인할 질문 |
 |---|---|
@@ -133,6 +133,7 @@ AWS 발표 기준 Policy in AgentCore는 2026-03-03, AgentCore Evaluations는 20
 
 ## 관련 문서
 
+- [[Agent-Operations-Integration-Cost-Security|에이전트 운영의 통합, 비용과 보안]]
 - [[Bedrock-AgentCore-Operations|Bedrock AgentCore 운영 경계]]
 - [[Bedrock-AgentCore-Runtime|AgentCore Runtime 실행 계약]]
 - [[Agent-Governance-Controls|에이전트 거버넌스 통제]]

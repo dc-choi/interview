@@ -22,6 +22,7 @@ aliases: ["Agent Execution", "에이전트 실행 구조"]
 
 - [[Agent-Runtime-Deployment|에이전트 런타임과 배포]] — 정의, 영속 상태와 배포 경계, 팀이 기대는 업무 자동화의 workflow와 런타임 책임, Cursor Agent SDK의 코드 정의와 eval/replay
 - [[Bedrock-AgentCore-Runtime|Bedrock AgentCore Runtime 실행 계약]]: microVM과 Instances, 세션 수명 타이머, 버전과 엔드포인트, 프로토콜별 포트와 오류, /ping, 인바운드와 아웃바운드 인증, platform version V2
+- [[Bedrock-AgentCore-Harness|Bedrock AgentCore Harness]]: 설정으로 정의하는 관리형 에이전트, 코드 에이전트와의 루프 소유 차이, 모델 제공자와 API 형식, 상한, 생성 자원과 비용, 코드 내보내기, CLI 생성, 개발, 배포 흐름
 
 ## 함께 볼 문서
 
