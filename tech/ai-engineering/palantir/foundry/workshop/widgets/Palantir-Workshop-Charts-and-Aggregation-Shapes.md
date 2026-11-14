@@ -10,6 +10,10 @@ aliases: ["Workshop chart와 aggregation 반환 계약"]
 
 Chart 선택은 raw object, grouped aggregate, time series와 function-return shape를 구분한다. Null line의 gap/ignored/zero는 서로 다른 해석을 만들어 visual truth를 바꿀 수 있다. Display rounding은 underlying value를 바꾸지 않는다. Selection filter는 object-backed layer 등 지원되는 source에 한정한다.
 
+## Visualization widget 범주
+
+2026-11-14 개요 문서를 대조한 절이다. Visualization widgets 개요 본문은 chart(Pie, XY, Vega, Waterfall), Map, Free-form Analysis, Time Series Analysis, Gantt Chart, Timeline, Pivot Table, Metric Card, Markdown, Media Preview, PDF Viewer, Image Annotation, Resource List, Linked Compass Resources, Status Tracker, Action Log Timeline을 나열한다. 같은 이름의 사이드바 그룹은 Spreadsheet Display, Video Display, Audio and Transcription Display, Data Freshness, Edit History 등을 더 담고 Status Tracker와 Waterfall은 빠져 있어 두 목록이 일치하지 않는다. Stepper는 2026-10 하순 수집본의 개요 본문 목록에 있었으나 2026-11-14에는 빠졌고, Tabs, Button Group과 함께 Event-trigger & navigational widgets에 속한다. Widget 선택 근거는 범주 목록보다 각 widget 문서의 입력 shape와 event 계약으로 확인한다(설계 제안). 다만 Status Tracker와 Waterfall은 2026-11-14 기준 개요에서 연결된 문서가 없어 Workshop에서 직접 확인해야 한다.
+
 ## Function aggregation 언어 차이
 
 TSv1 2D는 {buckets:[{key,value}]},3D inner는 value array다. TSv2는 bare bucket array,3D inner는 groups다. Python은 SingleBucket/NestedBucket과 wrapper를 사용한다. Declared return type의 serialization은 호환돼도 TSv1 literal을 TSv2 함수에 남기면 type error다.
@@ -49,6 +53,7 @@ Metric Card는 Workshop variable 값을 카드 형태로 보여 주는 widget이
 
 - [Palantir Workshop, formatting](https://www.palantir.com/docs/foundry/workshop/formatting/)
 - [Palantir Workshop, widgets-chart](https://www.palantir.com/docs/foundry/workshop/widgets-chart)
+- [Palantir Workshop, widgets-event-navigational](https://www.palantir.com/docs/foundry/workshop/widgets-event-navigational)
 - [Palantir Workshop, widgets-gantt-chart](https://www.palantir.com/docs/foundry/workshop/widgets-gantt-chart)
 - [Palantir Workshop, widgets-metric-card](https://www.palantir.com/docs/foundry/workshop/widgets-metric-card)
 - [Palantir Workshop, widgets-pie-chart](https://www.palantir.com/docs/foundry/workshop/widgets-pie-chart)

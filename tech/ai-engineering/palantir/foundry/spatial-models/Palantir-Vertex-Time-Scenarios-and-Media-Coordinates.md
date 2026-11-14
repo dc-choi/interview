@@ -16,6 +16,12 @@ Vertex 공식 사용 사례는 네 가지 기능 조합으로 읽는다. What-if
 
 Event object는 시작/끝 timestamp가 있고 time series는 시각별 측정값이다. Event badge는 event가 진행 중인 시간에 표시되고 intent type class가 색을 정한다. Threshold, 데이터 최신성 경고와 실제 업무 심각도는 각각 설정된 의미다.
 
+2026-11-14 events 개요와 event 설정 문서를 대조한 내용이다. Event로 쓰려면 object type에 시작과 끝을 기록하는 timestamp property가 있어야 하고, Ontology Manager의 Capabilities 탭에서 Event toggle을 켜 Event start time과 Event end time을 지정한다(Description과 Linked object는 선택). 이 지정은 primary key를 event 식별자로 쓰는 event metadata로 저장되고, Vertex는 이를 legacy type class(`timeseries.event_start_time` 등)보다 우선한다. Event metadata가 없는 object type은 legacy type class를 계속 쓸 수 있으며 기존 설정을 지울 필요는 없다.
+
+- Event 시간 filter는 시작과 끝 property가 모두 지정되어야 동작한다. 개별 event의 끝 값이 비어 있으면 filter는 그 event를 open-ended로 다룬다.
+- 끝 값이 빈 event와 끝 property를 지정하지 않은 object type은 다르다. 진행 중 event를 표현하려면 끝 property를 지정해 두고 값만 비운다(설계 제안).
+- 색(intent)은 `vertex` kind의 `event_intent.warning`(주황), `danger`(빨강), `primary`(파랑), `success`(초록) type class로 정하며 보통 primary key property에 둔다. 공식 문서는 이 type class로 색과 심각도(severity)를 함께 정한다고 설명하며 별도 심각도 필드는 없다. 따라서 색을 업무 심각도 판정의 근거로 삼으려면 type class 부여 규칙을 따로 정해 둔다(설계 제안).
+
 Selected time은 readout의 시점, time window는 chart 범위, timeline filter는 해당하지 않는 node를 흐리게 표시하는 제어다. 이 표시를 underlying object 권한이나 dataset 삭제로 해석하지 않는다. Missing-data warning은 선택시각과 가장 가까운 관측 간 거리의 설정값이다. Poll interval은 갱신 확인 주기이며 관측시각이나 지연 SLA가 아니다.
 
 URL time은 UNIX milliseconds 또는 ISO 날짜/시각이다. Selected time만 주면 기본 window를 그 중심에 두고, start/end만 주면 selected time은 start가 된다. Object 추가/function 실행용 URL parameter는 create 경로에 한정되고 time parameter는 기존 graph에도 적용된다.
