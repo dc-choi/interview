@@ -56,6 +56,21 @@ aliases: ["Resource Right-Sizing", "리소스 적정화", "right-sizing", "다�
 
 호환성과 배포 확인은 [[EC2-Compute#Graviton 이전은 이미지, 의존성과 성능을 함께 검증한다|Graviton 이전 검증]]을 따른다. 위 절차는 측정 설계이며 실제 인스턴스에서 성능이나 절감률을 확인한 결과가 아니다.
 
+## 연결되지 않은 EBS 볼륨을 찾아 정리한다
+
+2026-11-14 AWS EC2와 EBS 공식 문서 기준이다. 인스턴스를 중지하면 인스턴스 사용료와 데이터 전송 요금은 청구되지 않지만 EBS 볼륨의 저장 요금은 계속 발생한다. EBS는 프로비저닝한 크기로 과금되므로([[EBS#비용 모델|EBS 비용 모델]]) 중지한 인스턴스에 붙은 볼륨과 어디에도 붙지 않은 볼륨이 모두 비용으로 남는다.
+
+1. **찾기:** EC2 콘솔의 Volumes에서 `Available` 상태로 거른다. `available`은 어떤 인스턴스에도 연결되지 않은 상태이고 연결된 볼륨은 `in-use`다. 여러 리전과 많은 볼륨은 CLI로 리전마다 조회한다.
+
+   ```bash
+   aws ec2 describe-volumes --filters Name=status,Values=available --region ap-northeast-2
+   ```
+
+2. **보존 판단:** 데이터가 필요하면 먼저 스냅샷을 만든다. 삭제한 볼륨의 데이터는 사라지며, 스냅샷으로 나중에 볼륨을 다시 만들 수 있다. 스냅샷도 저장 요금과 보존 정책이 필요하다([[Storage-Tiering#EBS / EFS 티어링|EBS 스냅샷과 아카이브]]).
+3. **삭제:** 연결된 볼륨은 삭제할 수 없으므로 `available` 상태에서 `aws ec2 delete-volume --volume-id <ID>`로 지운다. Recycle Bin 보존 규칙에 해당하면 즉시 삭제되지 않고 Recycle Bin에 남으며, 보존 기간이 끝날 때까지 일반 볼륨과 같은 요금이 청구된다. 이 경우 절감은 보존 기간이 끝난 뒤부터다.
+
+`available`은 연결 상태일 뿐 사용 여부의 판정이 아니다. 중지한 인스턴스에 붙은 볼륨은 `in-use`로 보이므로 이 필터에 걸리지 않는다. 장애 대비로 떼어 둔 볼륨이나 다른 팀의 볼륨일 수 있으므로 태그의 소유자와 생성 경위를 확인한 뒤 지운다(운영 제안).
+
 ## 절감 순서
 
 ```
@@ -91,6 +106,13 @@ right-sizing을 건너뛰고 약정부터 하면 **과대 용량을 1~3년 약�
 - [Graviton Performance Runbook, Defining your benchmark — AWS](https://github.com/aws/aws-graviton-getting-started/blob/main/perfrunbook/defining_your_benchmark.md)
 - [AWS — Compute Optimizer](https://docs.aws.amazon.com/compute-optimizer/latest/ug/what-is-compute-optimizer.html)
 - [AWS — Right Sizing guidance](https://docs.aws.amazon.com/whitepapers/latest/cost-optimization-right-sizing/cost-optimization-right-sizing.html)
+- [AWS — Delete an Amazon EBS volume](https://docs.aws.amazon.com/ebs/latest/userguide/ebs-deleting-volume.html)
+- [AWS — View information about an Amazon EBS volume](https://docs.aws.amazon.com/ebs/latest/userguide/ebs-describing-volumes.html)
+- [AWS — describe-volumes, AWS CLI Command Reference](https://docs.aws.amazon.com/cli/latest/reference/ec2/describe-volumes.html)
+- [AWS — Recover deleted EBS volumes, EBS snapshots, and EBS-backed AMIs with Recycle Bin](https://docs.aws.amazon.com/ebs/latest/userguide/recycle-bin.html)
+- [AWS — Amazon EBS pricing](https://aws.amazon.com/ebs/pricing/)
+- [AWS — Amazon EC2 instance state changes](https://docs.aws.amazon.com/AWSEC2/latest/UserGuide/ec2-instance-lifecycle.html)
+- [How to identify and clean up unused EBS volumes — Amazon Web Services](https://www.youtube.com/watch?v=G_OJTnNDFjE)
 
 ## 관련 문서
 

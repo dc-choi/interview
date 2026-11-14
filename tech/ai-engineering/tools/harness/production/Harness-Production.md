@@ -19,6 +19,7 @@ aliases: ["Harness Production", "프로덕션 에이전트 운영과 격리"]
   - [[Production-Agent-Architecture-Delegation|Closure-loop 위임 경계와 자율권]]: 승인과 실행 권한, 감사 기록, 자율권의 확대와 축소, 위임 결정의 사고 도구(성공 작업당 원가, 오류 누적, 자율성 다이얼과 문 유형)
   - [[Production-Agent-Architecture-Cases-and-Interview|사례와 면접 포인트]]: Meta Muse, 마이리얼트립 데이터 에이전트, LY SRELens, Salesforce 에이전트 스택(Agentforce, Data 360, Headless 360)
 - [[Bedrock-AgentCore-Operations|Bedrock AgentCore 운영 경계]]: 세션 격리와 사용자 매핑, 상태 영속화, 도구 인증과 인가, 관측과 업무 성공의 구분
+- [[Agent-Operations-Foundations|에이전트 운영 기반]]: AI for Operations와 Operations for AI, 여섯 운영 영역, 운영 로그 분류와 보존 상속, Guardrails와 Policy의 통제 범위, 문맥 편향 시험, 변경의 릴리스 관리와 장애 대비
 - [[Agent-Governance-Controls|에이전트 거버넌스 통제]]: 판단은 확률, 통제는 결정론. 신원과 권한, 조건부 승인, 보상 동작과 되돌리기, 추적과 감사, 탐지에서 차단까지의 루프
 - [[Agent-Swarm-Containment|에이전트 군집 격리]]: 공유 자원과 비인가 통신, 평가 환경의 권한 경계, 기록 무결성과 사고 조사 한계
 
