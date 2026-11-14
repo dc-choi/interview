@@ -1,8 +1,8 @@
 ---
 name: learn-reviewer
-description: "Fresh-context adversarial reviewer for auto-learn knowledge document changes (Opus 5.5, xhigh). Use only for the auto-learn learn verification step; other reviews use the global reviewer at max. Spawn one per review round; never reuse or resume it and never use it for implementation."
+description: "Fresh-context adversarial reviewer for auto-learn knowledge document changes (Fable 5.2, xhigh). Use only for the auto-learn learn verification step; other reviews use the global reviewer at max. Spawn one per review round; never reuse or resume it and never use it for implementation."
 tools: Read, Grep, Glob, Bash, WebFetch, WebSearch
-model: claude-opus-5-5
+model: claude-fable-5-2
 effort: xhigh
 hooks:
   PreToolUse:
