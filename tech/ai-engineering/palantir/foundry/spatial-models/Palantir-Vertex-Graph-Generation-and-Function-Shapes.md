@@ -14,11 +14,25 @@ Vertex는 Ontology object/link를 그래프와 도표로 탐색하고 modeled co
 
 Graph template은 object/non-object parameter, 탐색과 style/layout을 저장한다. 일반 graph는 현재 탐색 상태이며 embedded graph를 수정해도 원 template은 바뀌지 않는다. Marketplace 제품은 Vertex graph template의 기능을 지원하지만 V1으로 저장한 Search Around와 intersection object를 쓰는 Search Around는 패키징할 수 없다(2026-11-09 대조). V1 Search Around는 V2에서 다시 저장한 뒤 패키징한다.
 
+## 관계 탐색 메뉴와 선택 연산
+
+2026-11-14 Explore object relationships 문서를 대조한 절이다. 다른 절의 검증 날짜는 frontmatter 기준을 유지한다.
+
+Graph의 node나 node 묶음을 우클릭하면 Search Around 목록이 관련 object type과 type별 객체 수를 보여 준다. 객체가 많으면 수 옆의 **Open**으로 Search Around 패널을 열어 filter와 여러 단계를 더한다. 메뉴의 기본 선택지는 세 가지다.
+
+- **All linked objects**: 연결된 객체를 모두 즉시 graph에 더한다. 단축키는 `Cmd+Shift+S`(macOS), `Ctrl+Shift+S`(Windows)다. 연결이 많은 객체에서는 graph가 한 번에 커지므로 수를 보고 패널의 filter를 먼저 검토한다(운영 제안). 결과는 관리자가 정한 Search Around 최대 객체 수와 자동 grouping 한도의 영향도 받는다([[Palantir-Vertex-Embedding-Save-and-Access-Boundaries|Vertex embed와 접근 경계]]).
+- **Shortest path**: 정확히 두 객체를 골랐을 때만 나오며 첫 객체에서 둘째 객체까지의 최단 경로를 찾고 첫 결과에서 멈춘다. 같은 길이의 다른 경로를 보여 주는지는 문서가 밝히지 않으므로 경로가 유일하다는 근거로 쓰지 않는다(해석).
+- **Links to objects on graph**: 선택한 객체와 이미 graph에 있는 다른 객체 사이의 link를 찾는다. 단축키는 `Cmd+Option+S`(macOS), `Ctrl+Alt+S`(Windows)다.
+
+Search Around는 세 종류다. Ontology Search Around(relation)는 Ontology의 link type을 따라가며 정의된 relation이 메뉴에 자동으로 나타난다. Search Around function은 객체에서 시작해 graph를 반환하는 함수로, 직접 link가 없는 탐색에 쓴다(반환 구조는 Search Around function 절). Saved Search Around는 패널에서 만든 단계를 resource로 저장해 graph와 template에서 재사용한다.
+
+이미 graph에 있는 객체 사이를 오갈 때는 선택 연산을 쓴다. `L`은 연결된 객체를 선택하고 `Shift+L`은 현재 선택을 연결된 객체까지 넓히며, 선택 메뉴에서 type이나 특정 link로 고를 수도 있다. 이 연산은 선택만 바꾸고 Ontology에서 객체를 새로 불러오지 않으므로, graph 밖의 객체가 필요하면 Search Around를 쓴다. `?`는 단축키 목록을 열고, operation palette가 켜진 환경에서는 `Cmd+K`(macOS)나 `Ctrl+K`(Windows)로 연산을 찾는다. 객체를 클릭하면 selection panel이 속성을 보여 주며 **(+)**로 derived property 함수를 더하면 그 결과가 panel 위쪽에 나온다. Histogram은 선택한 객체의 속성별 값과 합계를 보여 주고, histogram에서 고른 값이 graph에 반영된다.
+
 ## Saved Search Around V1과 V2
 
 2026-11-09 Saved Search Around V1, V2와 Marketplace 문서를 대조한 절이다. 다른 절의 검증 날짜는 frontmatter 기준을 유지한다.
 
-Search Around 패널은 여러 단계의 link 탐색과 filter를 묶어 새 graph를 만드는 도구다. V1에서는 같은 object type의 객체 하나 이상을 시작 집합으로 골라 link를 선택한다. 단계 연결과 filter의 역전파는 위 절과 같다. 패널은 단계마다 찾은 객체 수를 보여 주고, **Add to graph**를 눌러야 graph가 생성되며 복잡한 탐색은 생성이 더 오래 걸릴 수 있다.
+Search Around 패널은 여러 단계의 link 탐색과 filter를 묶어 새 graph를 만드는 도구다. V1에서는 같은 object type의 객체 하나 이상을 시작 집합으로 골라 link를 선택한다. 단계 연결과 filter의 역전파는 참조와 그래프의 의미 절과 같다. 패널은 단계마다 찾은 객체 수를 보여 주고, **Add to graph**를 눌러야 graph가 생성되며 복잡한 탐색은 생성이 더 오래 걸릴 수 있다.
 
 재사용을 위해 parameter를 정의할 수 있다. Parameter는 이름, 설명과 기본값을 가지며 기본값은 Search Around를 불러올 때마다 적용된다. 같은 자료형의 filter 필드에만 연결할 수 있고 값을 바꾸면 그 parameter를 쓰는 모든 filter가 함께 바뀐다. V1의 저장 대화상자는 이름과 위치를 받고, 저장한 Search Around는 다른 graph나 graph template에서 쓰는 resource가 된다. 불러온 뒤에는 graph에서 시작 객체를 골라야 하며 알맞은 type의 객체만 고를 수 있다. 따라서 재사용 단위는 특정 시작 객체가 아니라 탐색 정의로 읽힌다(해석). 저장 대화상자에서 시작 object type을 지정하는 기능은 V2 문서에만 있다.
 
