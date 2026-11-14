@@ -1,9 +1,9 @@
 ---
-tags: [web, network, qos, latency, jitter, packet-loss, diffserv, intserv, aqm]
+tags: [web, network, qos, qoe, latency, jitter, packet-loss, diffserv, intserv, aqm]
 status: done
-verified_at: 2026-11-14
+verified_at: 2026-11-15
 category: "Web - 네트워크"
-aliases: ["Network Quality Metrics", "네트워크 품질 지표", "대역폭, 지연, 지터, 패킷 손실"]
+aliases: ["Network Quality Metrics", "네트워크 품질 지표", "대역폭, 지연, 지터, 패킷 손실", "QoE", "체감 품질", "망 성능과 QoS, QoE"]
 ---
 
 # 네트워크 품질 지표: 용량, 지연, 지연 변동, 패킷 손실
@@ -85,6 +85,23 @@ MPLS(RFC 3031)는 진입 라우터가 패킷의 FEC를 한 번 정하고 이후 
 - **Shaping과 policing:** shaping은 패킷을 지연시켜 profile에 맞추며 보통 유한 버퍼를 쓰므로 버퍼가 차면 폐기도 생긴다. Policing은 dropper가 profile을 넘는 패킷을 폐기하는 처리이고, 버퍼가 0(또는 몇 개)인 shaper로 볼 수 있다. Shaping은 손실을 줄이는 대신 지연과 지연 변동을 더하고 policing은 지연을 더하지 않는 대신 초과분을 잃는다는 차이는 정의에서 나온 해석이다. RFC 4594(정보성)는 신뢰할 수 없는 출처의 Telephony 흐름을 DiffServ 망 진입점에서 단일 속도 토큰 버킷 policer로 policing하라고 권한다.
 - **측정과 표시(metering, marking):** 토큰 버킷은 정해진 속도로 토큰을 채우고 버킷 깊이만큼의 버스트를 허용한다. srTCM(RFC 2697)은 같은 속도 CIR을 공유하는 두 버킷(깊이 CBS, EBS)으로 패킷을 CBS 안이면 green, EBS 안이면 yellow, 그 밖이면 red로 표시하며, AF PHB에서는 이 색을 폐기 우선순위로 쓸 수 있다.
 
+## 망 성능, QoS, QoE
+
+품질을 말할 때 망 성능, QoS, QoE 세 용어를 구분해 쓴다. E.800에서 망 성능은 QoS의 구성 요소이고, QoE는 P.10/G.100이 따로 정의한다. 위의 네 지표는 대부분 망 성능에 속한다.
+
+| 용어 | ITU-T 정의와 범위 | 측정 대상의 예 |
+| --- | --- | --- |
+| 망 성능(NP, network performance) | E.800 3.2절이 망 관련 용어로 묶은 성능이다. 종단 간 IP 망 성능은 단방향 종단 간 IP 서비스에 대해 측정한다(3.2.18, Y.1540 인용) | 비트 오류율, 지연, 연결 수립 실패 확률. VoIP의 전송 성능은 지연, 지터와 패킷 손실로 나타낸다(3.2.12) |
+| QoS(quality of service) | 통신 서비스가 사용자의 명시적, 암묵적 요구를 충족하는 능력에 관한 특성의 총체(E.800 2.2, P.10/G.100 6.212). 망 성능과 망 외 성능을 함께 포함한다(E.800 1.2) | 망 성능에 더해 개통 시간, 수리 시간, 요금 범위, 불만 처리 시간 |
+| QoE(quality of experience) | 애플리케이션이나 서비스 사용자가 느끼는 기쁨이나 짜증의 정도(P.10/G.100 6.209). 연구가 진행 중이라 바뀔 수 있는 작업 정의다 | 측정이나 추정 결과(스칼라 값, 다차원 표현이나 언어 서술)와 그때 포함한 영향 요인(6.211). E.800은 고객이 경험한 QoS(QoSE)를 의견 점수로 나타낼 수 있다고 본다(2.6) |
+
+- **QoS의 두 쓰임**: E.800의 QoS는 망 외 성능까지 담은 사용자 지향 개념이다. 네트워크 공학에서는 위 QoS 절의 DiffServ처럼 트래픽을 차등 처리하는 기술을 QoS라고 부르는 일이 많고, 지터와 손실 같은 기술 지표를 QoS 지표라고 부르기도 한다. E.800 기준으로 이 지표들은 망 성능에 속하므로 대화에서 어느 뜻인지 먼저 맞춘다.
+- **E.800의 네 관점**: 고객의 QoS 요구(QoSR), 제공자가 계획해 제시한 QoS(QoSO), 제공자가 실제로 달성한 QoS(QoSD), 고객이 경험했다고 믿는 QoS(QoSE)로 나눈다. QoSE는 전달된 QoS와 사용자 인식에 영향을 주는 심리 요인에 좌우되며, 종단 간 시스템이 영향을 주는 정량 요소와 기대, 주변 조건, 심리 요인, 애플리케이션 맥락이 영향을 주는 정성 요소가 있다(E.800 1.2, 2.6). E.800은 QoSE를 이해하는 것이 제공자의 수익과 자원 최적화에 가장 중요하다고 본다.
+- **QoE 영향 요인과 평가**: 애플리케이션이나 서비스의 유형과 특성, 사용 맥락, 사용자의 기대와 그 충족, 문화적 배경, 사회경제적 요인, 심리 특성과 감정 상태 등이 있고 연구에 따라 더 늘 수 있다(6.210). QoE 평가는 결과와 함께 어떤 영향 요인을 포함했는지 기술해야 한다(6.211).
+- **적용(설계 판단)**: 망 성능 지표가 좋다고 QoE도 좋다고 결론 내리지 않는다. 평균 손실률이 낮아도 사용자가 몰입한 순간의 재생 멈춤은 평균에 묻힐 수 있으므로 재생 시작 지연, 버퍼링, 화질 전환 같은 애플리케이션 이벤트를 따로 모은다. 스트리밍의 이벤트 수집은 [[Video-Streaming-System-Design|주문형 비디오 스트리밍 설계]]에서 다룬다.
+
+QoE 정의는 P.10/G.100 2017년판 기준이다. 2019, 2024 개정의 요약은 새 정의와 참고문헌 추가만 밝히며, 개정 본문이 이 정의를 바꿨는지는 확인하지 않았다.
+
 ## 진단 체크포인트
 
 - 증상을 지표로 옮긴다(경험적 출발점이며 RFC 정의는 아니다): 화질 저하는 가용 용량, 반응 지연은 지연, 음성 끊김은 지연 변동과 손실부터 의심한다. 다만 한 원인이 여러 지표로 나타난다. 혼잡한 큐는 지연, 지연 변동과 손실을 함께 올린다.
@@ -112,8 +129,11 @@ MPLS(RFC 3031)는 진입 라우터가 패킷의 FEC를 한 번 정하고 이후 
 - [RFC 5462, Multiprotocol Label Switching (MPLS) Label Stack Entry: "EXP" Field Renamed to "Traffic Class" Field](https://www.rfc-editor.org/rfc/rfc5462)
 - [RFC 7567, IETF Recommendations Regarding Active Queue Management](https://www.rfc-editor.org/rfc/rfc7567)
 - [RFC 2697, A Single Rate Three Color Marker](https://www.rfc-editor.org/rfc/rfc2697)
+- [ITU-T E.800, Definitions of terms related to quality of service](https://www.itu.int/rec/T-REC-E.800-200809-I/en) — 09/2008. 1.2절, 2.2절, 2.6절, 3.2절
+- [ITU-T P.10/G.100, Vocabulary for performance, quality of service and quality of experience](https://www.itu.int/rec/T-REC-P.10-201711-I/en) — 11/2017. 6.209~6.212
 - [Random Early Detection Gateways for Congestion Avoidance — IEEE/ACM Transactions on Networking, Sally Floyd, Van Jacobson](http://www.icir.org/floyd/abstracts.html)
 - [#NW 0022 - 영상통화가 끊기지 않는 비결? 90초 QoS 완전정리! — 길리랩 - 실전 구현 랩](https://www.youtube.com/watch?v=4B-yV6ZNCoo)
+- [#NW 0025 - 같은 인터넷인데 왜 끊길까? 90초 QoE 완전정리 (NP, QoS, QoE) — 길리랩 - 실전 구현 랩](https://www.youtube.com/watch?v=89j32Df7jAw)
 - [#NW 0010 - 영상통화가 끊기는 진짜 이유! 네트워크 품질 4대 지표 90초 완전정리 — 길리랩 - 실전 구현 랩](https://www.youtube.com/watch?v=PSICrXrp1OY)
 
 ## 관련 문서
@@ -122,3 +142,4 @@ MPLS(RFC 3031)는 진입 라우터가 패킷의 FEC를 한 번 정하고 이후 
 - [[Network-Synthetic-Monitoring|네트워크 합성 모니터링]]
 - [[Retry-Backoff-Jitter|재시도, 백오프와 지터]] — 재시도 간격의 무작위화를 뜻하는 다른 의미의 지터
 - [[Latency-Optimization|지연 최적화]]
+- [[Video-Streaming-System-Design|주문형 비디오 스트리밍 설계]] — 재생 이벤트로 체감 품질을 집계하는 경로
