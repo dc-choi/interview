@@ -108,6 +108,18 @@ Anthropic의 2026-11-02 S-1/A는 구매 약정, 리스, 단기 및 후속 약정
 
 2026-11-04 정정 신고서의 약정 범위와 시기, 조건을 부분 대조했다. 약정 총액은 이미 집행한 Capex나 같은 기간의 회계 비용이 아니다. 이 확인만으로 유동성 부족이나 투자 회수 성공을 판정하지 않는다.
 
+### 약정을 부채로 넣어 평가하는 방법
+
+장기 컴퓨팅 약정은 재무상태표의 차입금이 아니어도 미래 현금 유출을 고정한다는 점에서 부채처럼 다룰 수 있다. 이 관점을 적용하면 약정의 지급 일정을 할인한 현재가치를 부채로 보고, 지급 일정을 보유 현금과 영업현금흐름에 맞춰 본다(이 문서의 정리. 아래 글 본문에서는 현재가치를 지분가치 계산의 어느 단계에서 빼는지까지 확인하지 않았다).
+
+Damodaran은 2026-11-03 글에서 신고서가 구매 약정 표와 달리 전체 약정(계약상 약정과 총액)을 연도별 표로 정리하지 않고 본문 곳곳에 흩어 적어, 외부 추정이 4,000억~8,000억 달러로 갈리고 시기와 계약 조건도 불분명하다고 지적했다. 그는 자신의 집계로 합계 4,500억 달러 남짓, 현재가치 약 3,730억 달러를 잡는다. 직접 차입이든 계약상 약정이든 수천억 달러를 빌린 적자 기업이라 실패 위험이 너무 크다는 다른 이들의 우려에 대해, 그는 부채의 대부분이 시기별로 나뉜 계약상 약정이라고 답한다. 다음 해 약 700억 달러, 그다음 해 약 760억 달러가 도래하지만 보유 현금 1,140억 달러와 IPO 뒤 2,000억 달러가 넘을 현금을 근거로 1~2년, 5년 안의 채무불이행은 주요 걱정이 아니라고 판단했다.
+
+- **불이행 위험을 할인율과 분리한다.** 그는 약정을 지키지 못해 자산을 헐값에 처분하는 경우를 10% 실패 확률로 따로 반영하고 자본비용은 9.74%로 둔다. 실패 확률을 빼고 같은 가치를 얻으려면 자본비용이 약 11%가 돼야 한다고 설명한다. 생존 위험을 할인율에 섞으면 정상 경로의 현금흐름까지 일괄 깎이므로 두 입력을 나눠 점검한다(이 문서의 해석).
+- **같은 약정이라도 조달 구조를 본다.** 그는 데이터센터를 거의 무분별하게 부채로 짓는 방식을 차입자와 대주 모두에게 무의미하다고 비판하며 CoreWeave를 대표 사례로 들지만, Anthropic은 그 경우와 다르다고 본다.
+- **범위를 맞춘다.** 위 정정 신고서의 약 8,954억 달러는 리스와 개시 전 리스까지 포함한 공시 합계이고, Damodaran의 4,500억 달러는 그의 집계 기준이다. 포함 범위와 기준 신고서가 같은지 확인되지 않았으므로 두 수치를 같은 항목으로 비교하지 않는다.
+
+이 절은 2026-11-15 Damodaran의 해당 글을 대조했다. 그가 제시한 지분가치 1조 4,500억 달러는 10년 뒤 매출 1조 달러, 목표 영업이익률 32.5% 등의 가정을 둔 개인 평가이며 공모가나 시장 합의가 아니다. 약정을 부채로 보는 처리와 위험 분리 방식은 평가 방법의 예로 남기고, 개별 수치의 적정성은 검증하지 않았다. 같은 시기 그의 인터뷰 클립에는 유출 신고서 기준 약 7,500억 달러의 약정을 사실상 빌린 돈으로 보고, 실패하면 약정 상대방까지 손실을 떠안는다는 우려가 나온다. 이 수치는 위 글의 집계와 다르고 인터뷰 원본을 확인하지 못해 출처의 주장으로만 남긴다.
+
 ## 사례: TypeSafe AI의 투자 발표
 
 2026-10-09 공식 발표는 a16z 주도 Series A 8억 7,000만 달러, 기업가치 75억 달러를 적고 엔터프라이즈 기능과 머신 네이티브 모델의 확대를 계획한다. 조달과 계획의 발표를 확인한 범위다. 고객 절감액, 실제 계약과 현금흐름은 독립 검증하지 않았다.
@@ -135,6 +147,8 @@ AMD의 2026-09-28 Form 8-K는 9월 26일 World Labs의 전체 지분을 인수�
 
 - [Form S-1/A, November 2, 2026 — Anthropic, SEC](https://www.sec.gov/Archives/edgar/data/2130357/000162828026068676/anthropicpbc-sx1ax1.htm) — Contractual Obligations의 표 안팎 범위, 지급 시기와 해지 조건, 2026-11-04 부분 대조.
 - [Form S-1, October 26, 2026 — Anthropic, SEC](https://www.sec.gov/Archives/edgar/data/2130357/000162828026067168/anthropicpbc-sx1.htm) — MD&A의 Compute and Infrastructure, Results of Operations와 공정가치 변동 설명, 2026-11-04 부분 대조
+- [The Anthropic Feedback Loop: The Cost of Capital Delusion and Diversion! — Aswath Damodaran, Musings on Markets](https://aswathdamodaran.blogspot.com/2026/11/the-anthropic-feedback-loop-cost-of.html) — 2026-11-03 게시, 2026-11-15 약정의 부채 성격 규정, 현재가치, 도래 일정, 실패 확률과 자본비용, CoreWeave 비교 대조
+- [다모다란 교수, 앤트로픽 약정 발언 — 묘수의 관점 (YouTube)](https://www.youtube.com/watch?v=YoL_9f8GAFg) — 인터뷰 클립, 약 7,500억 달러 약정과 손실 전이 우려(원본 인터뷰 미확인)
 - [Anthropic files S-1 with the SEC for proposed initial public offering — Anthropic](https://www.anthropic.com/news/s1-sec) — 2026-10-26 최초 신고서 제출과 당시 공모 조건의 미확정 상태
 - [NYU Stern, Aswath Damodaran, Discounted Cashflow Models: What They Are and How to Choose the Right One](https://pages.stern.nyu.edu/~adamodar/New_Home_Page/lectures/basics.html) — 현금흐름과 할인율의 대응
 - [NYU Stern, Aswath Damodaran, The FCFE Discount Model](https://pages.stern.nyu.edu/~adamodar/New_Home_Page/lectures/fcfe.html) — 성장 단계, 잔존가치, 재투자와 안정기 할인율 조건
