@@ -25,6 +25,7 @@ aliases: ["Frontend", "프론트엔드"]
 - [[Swiper-Carousel|Swiper 이미지 슬라이드]] — 자산과 모듈 구성, 자동 재생 옵션, 포커스와 정지 제어
 - [[Agent-Friendly-Websites|에이전트 친화적 웹사이트]] — 화면, DOM과 접근성 트리의 의미 일치, 버튼의 키보드 동작과 레이아웃 안정성
 - [[Frontend-Rendering-Models|프런트엔드 렌더링과 상호작용 모델]] — hydration, islands, resumability와 서버 HTML 조각 교체
+- [[TTFB-and-Search-Crawling|TTFB와 검색 크롤링]] — 첫 바이트의 구성 단계와 거리 지연, LCP와의 관계, 크롤러가 읽는 HTML, 응답 시간에 따른 크롤링 한도, 정적 생성과 CDN
 - [[Foldable-Web-Layout|폴더블 웹 레이아웃]] — 자세와 뷰포트 구획의 구분, 경첩 공간, 점진적 적용과 접근성
 - [[React|React]] — UI/state, DOM, 서버 경계, Compiler와 lint
 - [[React-Native|React Native]] — Guides, [[RN-Components|컴포넌트]], [[RN-APIs|API와 전역 객체]], [[RN-Architecture|아키텍처]], 개발 환경과 플랫폼 확장

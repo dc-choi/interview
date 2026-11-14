@@ -12,6 +12,7 @@ aliases: ["CS Data Representation", "데이터 표현", "비트 표현과 무결
 ## 목차
 
 - [x] [[Digital-Fundamentals|디지털 기초 (비트, 진법, 정수 표현, 엔디언, 문자, 이미지, 소리, 영상의 비트 표현)]]
+- [x] [[Unicode-Combining-Marks|결합 문자와 무한히 쌓이는 텍스트 (결합 부호 개수 제한 없음, grapheme 크기, Zalgo 텍스트 방어)]]
 - [x] [[Base64-Encoding|Base64 (바이너리의 텍스트 표현, 패딩과 크기, Base64url, HTTP 파일 전송)]]
 - [x] [[Checksum-and-Hash|체크섬과 해시 (모듈러 합, 인터넷 체크섬, CRC, 일반 해시와 암호학적 해시, HMAC과 서명, 웹훅 서명 검증)]]
 
