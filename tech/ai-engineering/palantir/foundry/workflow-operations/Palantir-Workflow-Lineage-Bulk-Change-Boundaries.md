@@ -1,7 +1,7 @@
 ---
 tags: [palantir, foundry, operations]
 status: done
-verified_at: 2026-10-16
+verified_at: 2026-11-14
 category: "AI엔지니어링(AIEngineering)"
 aliases: ["Workflow Lineage 일괄 변경과 승인 경계"]
 ---
@@ -14,7 +14,9 @@ Function-backed Action upgrade는 새 branch, 선택한 branch, Main 직접 적�
 
 Function version을 지정하지 않으면 repository의 최신 version을 선택한다. 성공/기존 최신/breaking/error 상태와 개별 실패 결과를 확인해야 하며 일괄 요청 성공만으로 전부 적용됐다고 보고하지 않는다. Automation은 upgrade 중 ownership 인수 옵션이 있다. Workshop Function/custom widget upgrade와 publish는 별도 단계이며 최신 code와 최신 published version은 다를 수 있다.
 
-Action submission criteria 일괄 변경은 source Action의 기준을 복사하며 Main에 proposal 없이 바로 적용할 수 있다. Ontology role grant도 원문상 즉시 적용하고 되돌리기 불가능하다고 설명한다. 정책을 시각화하는 것과 변경하는 것을 구분한다.
+Action submission criteria 일괄 변경은 source Action의 기준을 선택한 Action에 복사한다. 적용 경로는 새 branch 생성, 상단 바에서 고른 기존 branch 적용, branch와 proposal 없이 Main 직접 적용 중에서 고른다. 반면 Ontology role grant는 branch 경로 없이 즉시 적용되고 되돌릴 수 없다고 원문이 설명한다. 정책을 시각화하는 것과 변경하는 것을 구분한다.
+
+Edit permissions 메뉴는 선택한 Ontology가 legacy Ontology roles 모델을 쓰고, branch에서 작업하지 않으며, 선택한 node가 모두 object type, action type 또는 interface일 때만 나온다. Project에 저장한 Ontology 자원은 project 권한으로 관리하므로 메뉴가 없다는 사실을 권한 부족으로 해석하지 않는다. Remove failed nodes는 load에 실패한 node를 graph 화면에서 빼는 정리 동작이며 load 실패의 원인을 해결하지 않는다. 원문은 실패 원인을 설명하지 않는다.
 
 AIP Logic bulk model replacement는 graph에 올라온 직접 consumer 중 편집 가능한 node만 대상으로 한다. Palantir-provided 모델만 지원하고 source/target 중 registered model이 있으면 비활성화된다. 변경은 proposal/review 없이 직접 적용하며 graph refresh는 지연될 수 있다. 이 bulk Logic 변경을 모든 branch 지원 기능과 동등하게 보지 않는다.
 

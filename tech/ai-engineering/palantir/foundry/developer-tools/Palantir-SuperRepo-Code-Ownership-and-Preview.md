@@ -27,7 +27,9 @@ Preview는 local server들이 실제 Foundry와의 상호작용 일부를 흉내
 
 `REMOTE_ONLY`는 `foundry login` credential로 읽으므로 사용자가 접근할 수 있는 객체만 보인다. 시작할 때 ONTOLOGY component에 정의하거나 import한 타입을 대상 Ontology의 같은 API 이름 타입과 비교한다. 타입이 없거나 접근할 수 없으면 시작하지 못하고, property가 다르면 `Foundry schema mismatch`로 실패한다. 먼저 Ontology 변경을 배포하거나 import 정의를 갱신하거나 `SEED_ONLY`를 쓴다. 앱과 함수는 여전히 local에서 돌고, function-backed Action이 반환한 편집을 포함한 모든 Ontology 편집이 거부되므로 생성, 수정, 삭제 흐름은 `SEED_ONLY`에서 확인한다.
 
-Seed는 local preview 전용이며 배포되지 않는다. 재시작이나 seed 수정은 preview에서 만든/수정한 객체를 버릴 수 있다.
+Seed는 local preview 전용이며 배포되지 않는다. `foundry start ontology`는 실행마다 빈 local database에서 seed를 다시 적용하므로 preview를 멈췄다 다시 켜면 local 편집이 사라진다. 실행 중에는 Ontology schema나 컴파일된 seed가 바뀌면 local 데이터를 초기화하고 seed를 다시 적용하며, 함수만 바뀌면 데이터를 유지한다. Seed 컴파일이 실패하면 이전 seed로 계속 돌고 파일을 고칠 때 재시도한다. 다시 컴파일한 seed를 적재하다 실패하면 다음 성공까지 일부만 적재된 상태가 남을 수 있으므로, 이상한 preview 데이터는 preview 출력부터 확인한다.
+
+`ontology.mts`가 바뀔 때마다 local OSDK package가 다시 생성되고 `pnpm run dev` 상태 화면에서 재생성 진행을 볼 수 있다. 앱은 이 local OSDK를 `@osdk/react`의 `useOsdkObjects`, `useOsdkAction`, `useLinks` 같은 hook으로 바로 쓰므로 Ontology, 함수와 앱 변경을 SDK 재게시 없이 한 루프에서 확인한다. 이 루프의 성공은 local preview에서의 동작이며 배포된 enrollment의 동작은 아니다.
 
 Seed는 정렬된 최상위 .mts 파일을 컴파일하며 타입별 primary key가 전체 디렉터리에서 고유해야 한다. 비nullable property와 primary key를 제공하고 seed.link 양 끝은 같은 createSeed 호출에 등록해야 한다. API 이름이 SDK export를 정하며 코드의 constant 이름과 같다고 가정하지 않는다.
 

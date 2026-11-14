@@ -1,7 +1,7 @@
 ---
 tags: [runtime, nodejs, wasm]
 status: done
-verified_at: 2026-11-08
+verified_at: 2026-11-14
 category: "OS & Runtime"
 aliases: ["WASM", "WebAssembly"]
 ---
@@ -111,7 +111,7 @@ JS Promise Integration(JSPI)은 Wasm이 Promise를 반환하는 JS import를 호
 
 이는 Wasm의 동기 형태 코드를 비동기 호스트 작업에 연결하는 장치다. CPU 연산을 자동으로 다른 스레드로 옮기지 않는다. worker 병렬화는 별도 설계다.
 
-Wasm tail call은 명시적인 `return_call` 계열 명령을 사용하는 도구체인과 런타임의 기능이다. 일반 JS 함수가 모두 tail-call 최적화된다는 뜻이 아니며, 제거된 호출 프레임은 예외 stack trace에도 남지 않을 수 있다.
+Wasm tail call은 명시적인 `return_call` 계열 명령을 사용하는 도구체인과 런타임의 기능이다. 일반 JS 함수가 모두 tail-call 최적화된다는 뜻이 아니며, 제거된 호출 프레임은 예외 stack trace에도 남지 않을 수 있다. 런타임의 컴파일러마다 지원도 다르다. Wasmtime 50.0.0에서 baseline 컴파일러 Winch는 x86_64와 AArch64의 tail call을 지원하게 됐지만, Winch의 GC 타입, exception, tail call 지원이 아직 Tier 1이 아니라서 Winch에서는 이 제안들이 기본으로 꺼진다.
 
 Wasm 3.0의 예외 처리는 함수 시그니처로 payload 타입을 정한 tag를 `throw`로 던지고 `try_table`의 `catch`, `catch_ref`, `catch_all`, `catch_all_ref` 절로 받는다. `_ref` 절은 잡은 예외를 `exnref`로 넘기고 `throw_ref`가 그 예외를 다시 던진다. JS API는 `WebAssembly.Tag`와 `WebAssembly.Exception`(`is`, `getArg`)을 제공한다. Wasm이 호출한 JS 함수가 `WebAssembly.Exception`이 아닌 값을 던지면 그 값을 externref payload로 갖는 JavaScript exception tag의 예외로 바꾸며, 이 tag는 `WebAssembly.JSTag`로 노출된다. features.json은 이전 형식인 legacy exception handling을 inactive로 표시하지만 제안 문서는 여러 브라우저가 아직 이전 형식을 지원한다고 적으므로, 도구체인이 내보내는 형식과 대상 엔진을 함께 확인한다.
 
@@ -122,6 +122,8 @@ Wasm 코드가 OS 파일이나 네트워크에 접근하려면 호스트가 기�
 2026-11-08 확인한 Node.js v26.13.0 문서의 WASI API는 experimental이고, 필수인 `version` 옵션은 `unstable`과 `preview1`만 받는다. `args`, `env`, `preopens`와 import object는 프로그램에 제공할 권한과 환경을 정한다. 다만 Node.js 문서는 WASI를 안전한 파일 시스템 sandbox나 신뢰할 수 없는 코드의 격리 수단으로 보장하지 않는다고 명시한다. 선형 메모리의 bounds 검사와 호스트 imports에 부여한 OS 권한은 다른 안전 경계다.
 
 WASI는 WebAssembly CG 산하 WASI Subgroup이 표준화를 목표로 개발하는 API다. 0.1(preview1)은 witx IDL로 정의한 API이고, 2024년 1월에 나온 0.2는 WIT IDL로 정의한 모듈형 API 묶음이다. wasi.dev 기준 0.3.0은 WASI Subgroup 투표를 거쳐 2026-06-11에 나왔고, Component Model의 native async(`async func`, `stream<T>`, `future<T>`)를 쓰도록 0.2 인터페이스를 고쳤으며 `wasi:io` 패키지를 없애고 그 기능을 Component Model의 Canonical ABI로 옮겼다. Wasmtime 46 이상은 0.3을 기본으로 켜고 jco도 이를 지원한다. `node:wasi`는 preview1까지만 받으므로 Node.js에서 0.2 이후의 component를 쓰려면 jco처럼 component를 ES module로 transpile하는 도구와 그 지원 범위를 확인한다.
+
+반대로 Wasmtime CLI는 가장 오래된 WASIp0(`wasi_unstable`)를 기본값에서 뺐다. 2026-10-20 나온 Wasmtime 50.0.0 릴리스 노트 기준 `wasmtime` CLI는 WASIp0을 더 이상 기본으로 켜지 않으며 `-Spreview0`으로 켠다. 릴리스 노트는 CLI만 언급하고 embedding API의 기본값은 적지 않는다. Node.js의 `version: 'unstable'`은 필수 옵션으로 고르는 같은 `wasi_unstable` import라 이 기본값 변화와 무관하다. 오래된 `wasi_unstable` 모듈을 CLI 스크립트로 돌리는 배포는 업그레이드 전에 실행 플래그를 점검한다.
 
 디버깅에서 `wasm2wat`은 명령의 텍스트 표현을 보여 주고, decompiler는 읽기 쉬운 고수준 형태를 추정한다. 최적화와 이름 정보 손실 때문에 원래 소스가 그대로 복구되는 것은 아니다.
 
@@ -177,6 +179,7 @@ W3C는 1.0을 2019-12-05 Recommendation으로, 2.0을 2024-12-17 Candidate Recom
 - [Stack Switching Explainer — GitHub WebAssembly/stack-switching](https://github.com/WebAssembly/stack-switching/blob/main/proposals/stack-switching/Explainer.md)
 - [WebAssembly/WASI — GitHub](https://github.com/WebAssembly/WASI)
 - [bytecodealliance/jco — GitHub](https://github.com/bytecodealliance/jco)
+- [Wasmtime v50.0.0 — GitHub bytecodealliance/wasmtime](https://github.com/bytecodealliance/wasmtime/releases/tag/v50.0.0)
 
 ## 관련 문서
 
