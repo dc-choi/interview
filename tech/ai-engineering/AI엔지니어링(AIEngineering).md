@@ -83,6 +83,7 @@ Software 3.0 패러다임, LLM과 에이전트, 하네스, 평가, 조직 전환
 - [x] [[Time-Series-Forecast-Evaluation|시계열 예측 평가]] — 예측 시점의 정보, rolling origin, 외부 변수와 MAPE의 해석
 - [x] [[Agent-Data-Analysis-Workflow|에이전트 데이터 분석과 보고서]] — 계획, 격리된 코드 실행, 계산 결과 인계와 검산, 정기 보고서의 데이터 확정과 최종 승인
 - [x] [[Agent-Browser-Task-Boundaries|브라우저 에이전트의 작업과 권한 경계]] — 파일과 계정 권한, 정기 실행과 기억, 로컬 보관과 모델 전송
+- [x] [[Agent-Desktop-Accessibility-CLI|접근성 트리 기반 데스크톱 조작]] — agent-desktop의 snapshot과 ref, 포인터를 쓰지 않는 기본 모드, 다중 에이전트의 입력 독점
 - [x] [[Agent-Ready-API-Design#선택 결과와 화면 데이터를 분리한다|에이전트 출력과 화면 조립]] — 상품 ID 검증, 원본 데이터 재사용과 전체 지연 측정
 - [x] [[LLM-Product-Attribute-Extraction|LLM 상품 속성 추출]] — 이미지 전처리, 치수와 모델 정보의 구분, 검증된 예시와 보류 평가
 - [x] [[RAG-Retrieval-Engineering#가설을 분해해 반대 근거를 찾는다|가설 검토용 RAG]] — 전제별 반대 근거 검색, 원문과 해석의 연결, 검색 실패와 가설 입증의 구분
