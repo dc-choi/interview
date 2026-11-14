@@ -81,7 +81,9 @@ MPLS(RFC 3031)는 진입 라우터가 패킷의 FEC를 한 번 정하고 이후 
 
 - **스케줄링:** FIFO, 우선순위 큐, WFQ, DRR 같은 스케줄러가 어느 큐에서 다음 패킷을 보낼지 정해 클래스별 지연과 대역폭 몫을 나눈다.
 - **능동 큐 관리(AQM):** 큐가 찬 뒤에야 버리는 tail drop은 큐를 오래 가득 찬 상태로 두고 소수 흐름이 큐를 독점하게 한다(RFC 7567). RED는 평균 큐 길이로 혼잡의 시작을 감지해 그 값에 따른 확률로 도착 패킷을 버리거나 표시한다. RFC 7567(RFC 2309 대체)은 AQM 배치를 강하게 권하고 ECN 표시 지원을 권하지만, RED를 포함한 특정 알고리즘을 기본으로 권하지 않는다. 같은 RFC는 RED가 매개변수 조정이 어려워 기본으로 켜지지 않았다고 설명한다.
-- **측정과 표시(metering, marking):** RFC 2475에서 policing은 이와 구분해 패킷을 폐기하는 처리를 뜻한다. 토큰 버킷은 정해진 속도로 토큰을 채우고 버킷 깊이만큼의 버스트를 허용한다. srTCM(RFC 2697)은 같은 속도 CIR을 공유하는 두 버킷(깊이 CBS, EBS)으로 패킷을 CBS 안이면 green, EBS 안이면 yellow, 그 밖이면 red로 표시하며, AF PHB에서는 이 색을 폐기 우선순위로 쓸 수 있다.
+- **트래픽 컨디셔닝(traffic conditioning):** RFC 2475에서 classifier가 헤더(DSCP만 보는 BA, 주소, 포트, 프로토콜 등 여러 필드를 보는 MF)로 패킷을 골라 traffic conditioner로 보내면, meter가 traffic profile에 비춰 in-profile과 out-of-profile을 판정하고, marker가 DSCP를 붙이거나 바꾸며(re-mark), shaper나 dropper가 흐름을 profile에 맞춘다. Conditioner의 네 요소(meter, marker, shaper, dropper)를 모두 둘 필요는 없고 보통 DS 경계 노드에 둔다. 컨디셔닝은 TCA에 정한 profile을 경계에서 집행하는 것이라, meter가 속도와 버스트로 판정하는 한 그 노드가 혼잡하지 않아도 적용된다(정의에서 나온 해석). Out-of-profile 패킷은 shaping, policing, 새 codepoint로 re-mark(전달 성능이 더 낮은 behavior aggregate로 보낼 수 있다), 그대로 전달하면서 accounting 절차를 일으키는 처리를 할 수 있다.
+- **Shaping과 policing:** shaping은 패킷을 지연시켜 profile에 맞추며 보통 유한 버퍼를 쓰므로 버퍼가 차면 폐기도 생긴다. Policing은 dropper가 profile을 넘는 패킷을 폐기하는 처리이고, 버퍼가 0(또는 몇 개)인 shaper로 볼 수 있다. Shaping은 손실을 줄이는 대신 지연과 지연 변동을 더하고 policing은 지연을 더하지 않는 대신 초과분을 잃는다는 차이는 정의에서 나온 해석이다. RFC 4594(정보성)는 신뢰할 수 없는 출처의 Telephony 흐름을 DiffServ 망 진입점에서 단일 속도 토큰 버킷 policer로 policing하라고 권한다.
+- **측정과 표시(metering, marking):** 토큰 버킷은 정해진 속도로 토큰을 채우고 버킷 깊이만큼의 버스트를 허용한다. srTCM(RFC 2697)은 같은 속도 CIR을 공유하는 두 버킷(깊이 CBS, EBS)으로 패킷을 CBS 안이면 green, EBS 안이면 yellow, 그 밖이면 red로 표시하며, AF PHB에서는 이 색을 폐기 우선순위로 쓸 수 있다.
 
 ## 진단 체크포인트
 
