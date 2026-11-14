@@ -15,6 +15,7 @@ aliases: ["로보틱스", "Robotics"]
 - [x] [[Tactile-Grasp-Control|촉각 기반 파지 제어]] — 접촉과 미끄러짐 감지, 센서 보정, 실험 범위와 실패 조건
 
 - [x] [[Physical-AI-and-Liquid-Control|피지컬 AI와 리퀴드 제어]] — 몸체와 제어의 공동 설계, 연속시간 동역학과 환경 전이
+- [x] [[Robot-Policy-Training-Pipeline|로봇 정책 학습과 평가 파이프라인]] — VLA 미세조정, 시연 데이터 증강, 시뮬레이터 폐루프 평가와 성공률 관문, 모델 레지스트리 승인
 
 ## 관련 문서
 
