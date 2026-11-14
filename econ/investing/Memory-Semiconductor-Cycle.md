@@ -65,4 +65,5 @@ HBM 같은 고부가 제품의 비중이 늘어도 패키징에서 얻는 이익
 - [[Valuation|밸류에이션]]
 - [[Growth-Quality-and-Scenario-Valuation|공시와 시나리오 가치평가]]
 - [[Semiconductor-Advanced-Packaging|반도체 첨단 패키징]]
+- [[Semiconductor-Equipment-Localization|반도체 장비 국산화와 공급사 경쟁]]
 - [[투자(Investing)|투자 지도]]

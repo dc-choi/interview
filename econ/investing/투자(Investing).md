@@ -20,6 +20,7 @@ aliases: ["투자(Investing)", "Investing Map"]
 
 ### 2. 설계
 - [[Memory-Semiconductor-Cycle|메모리와 반도체 장비의 업황 구분]] — 가격 수준과 상승률, 제조사와 장비사의 지표, 공시와 주가 예측의 경계
+- [[Semiconductor-Equipment-Localization|반도체 장비 국산화와 공급사 경쟁]] — 공정 단계별 장비 비교, 고객 검증과 교체 장벽, 국산화 요건 보도와 해외 장비사의 지역별 매출
 - [[ISA-Renewal-and-Reopening|ISA 유지와 재가입 비교]] — 세후 잔액과 재납입 한도, 일부 인출, 자격과 만기 확인
 - [[Asset-Allocation-Diversification|자산배분과 분산투자]] — 자산군, 상관관계, 리밸런싱, 생애주기 배분 ✅
 - [[Valuation|밸류에이션]] — 가격과 가치, DCF의 현금흐름과 할인율 대응, 재투자와 ROIC, PER과 PBR, PEG의 성장률과 위험, 경기민감 기업의 정상 이익과 회복 시점, 안전마진 ✅
