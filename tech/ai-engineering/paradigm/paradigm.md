@@ -20,4 +20,5 @@ AI 시대 엔지니어링의 토대 — 패러다임 전환과 모델, API 거�
 - [x] [[World-Models|월드 모델]] — 상태 전이와 행동 조건, 긴 상호작용의 일관성, tinyworldformer의 공유 가중치와 보드 실행 경계
 - [x] [[AI-Forecasts-and-Human-Augmentation|AI 전망과 인간 능력 확장]] — AGI와 특이점의 기준, 위험 경고의 시점과 판정 기준, 신경 보조와 장수 전망, 진화와 풍요 이후의 가치
 - [x] [[Image-Diffusion-Latent-and-Pixel-Space|이미지 생성 모델의 잠재 공간과 픽셀 공간]] — VAE 잠재 공간과 큰 패치 픽셀 공간, 해상도별 토큰 수, 저비용 학습 발표의 금액과 지표
+- [x] [[Helmholtz-Machine-Wake-Sleep|헬름홀츠 머신과 wake-sleep 학습]] — 인식 모델과 생성 모델, 관측 확률의 하한과 설명 길이, wake와 sleep 단계의 갱신, 공상 데이터와 곱 분포의 한계, VAE와의 차이
 - [x] [[Reinforcement-Learning-from-Experience|경험 기반 강화학습]] — 행동과 보상, 지연 신용 할당, TD와 환경 피드백

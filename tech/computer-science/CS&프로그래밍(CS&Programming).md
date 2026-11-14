@@ -18,6 +18,7 @@ aliases: ["CS&프로그래밍(CS&Programming)", "CS & Programming Language"]
 - [[Conditional-Probability-and-Bayes|조건부확률과 베이즈 정리]] — 경보 사례, 전체확률과 기저율, 탐지율과 사후확률의 구분
 - [[Kotlin-Lazy-Assertion-Messages|Kotlin 지연 assertion 메시지]] — 실패할 때만 진단 문자열 생성, 실험 API와 평가 시점
 - [[Kotlin-Collection-Equality|Kotlin 컬렉션 동등성과 중복 검사]] — allEqual과 allDistinct, 선택값 비교, 빈 입력과 실험 API 조건
+- [[Kotlin-JS-Suspend-Lambda-Export|Kotlin/JS suspending 람다 내보내기]] — @JsExport API의 suspend 함수 타입을 TypeScript async 함수로 받기, 컴파일러 플래그와 pre-stable 조건
 - [[HBM-Stack-and-Base-Die|HBM 적층과 베이스 다이]] — 저장층과 로직층의 역할, 용량과 대역폭, NVHBM 구조와 발표 수치의 한계
 - [[tech/computer-science/fundamentals/기초(Fundamentals)|컴퓨터 기초 (Fundamentals)]] — 데이터 표현(진법, 문자와 Base64 인코딩, 체크섬과 해시), 컴퓨터 구조(논리회로, 메모리, CPU), 컴파일/런타임, 언어 지형과 선택 기준, 데이터 측정과 기술통계, 이산 확률분포, 논리와 작은 모델의 탐색
 - [[tech/computer-science/oop/SOLID-In-Practice|OOP / SOLID]] — OCP, DIP 실전 적용

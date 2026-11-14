@@ -14,6 +14,7 @@ Polling, SSE, WebSocket, STOMP, 실시간 통신 아키텍처. 게임 클라이�
 - [x] [[Game-Loop-Frame-Timing|게임 루프의 프레임 시간]] — 프레임 의존 이동, 델타 타임, 고정 시간 간격과 보간, 소수 픽셀의 나머지 누적
 - [x] [[Unity-UI-Canvas-Batching|Unity UI 캔버스 배칭과 분할]] — 요소 하나의 변경이 캔버스 전체를 다시 묶는 이유, 갱신 주기별 분할과 드로우콜 증가의 균형, Raycaster와 레이아웃 그룹 비용
 - [x] [[Realtime-Communication-Comparison|실시간 통신 기술 비교 (Polling/Long Polling/SSE/WebSocket/WebRTC/WebTransport)]]
+- [x] [[RTP-and-RTCP|RTP와 RTCP (UDP 위 미디어 전송, 순서 번호와 타임스탬프, SSRC와 CSRC, 품질 보고와 lip sync, rtcp-mux)]]
 - [x] [[Server-Sent-Events|Server-Sent Events (SSE, 유한 스트림, BFF 점진 조립)]]
 - [x] [[WebSocket|WebSocket (핸드셰이크와 프레임, 아웃바운드 연결, WebCodecs 화면 스트리밍과 원격 조작 경계)]]
 - [x] [[Response-Correlation|채널 기반 응답 매칭 (상관키, SSE 이벤트 ID 구분, 직렬화와 대기 종료)]]
