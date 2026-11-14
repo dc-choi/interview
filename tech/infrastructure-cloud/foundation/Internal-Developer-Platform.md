@@ -53,7 +53,11 @@ aliases: ["Internal Developer Platform", "내부 개발자 플랫폼", "플랫�
 
 문서와 템플릿에는 지원하는 선택과 운영 기준을 담는다. 다만 플랫폼이 제공하는 기능만 쓰기 쉬우면 기술 선택도 그 기능에 쏠릴 수 있다. 기본 경로로 해결되지 않는 요구를 접수하고 검토할 통로를 둔다.
 
-기능의 수보다 반복 요청 감소, 요청부터 사용 가능까지의 시간, 실패와 복구, 사용자의 후속 수작업을 본다(적용 제안). 플랫폼 사용률이나 생성 자원 수만으로 생산성 개선을 확정하지 않는다. 보안과 비용 통제를 생략해 빨라진 경우도 구분한다.
+CNCF 플랫폼 백서(2026-11-14 대조)는 빌드, 검사, 시험, 배포와 관측을 잇는 재사용 가능한 워크플로에 초기 프로젝트 템플릿과 문서를 함께 제공한 묶음을 흔히 golden path라고 부른다고 설명한다. 같은 백서는 플랫폼을 사용자 요구에 맞춰 설계하고 발전시키는 제품으로 다루고(platform as a product), 애플리케이션 개발자 같은 내부 사용자를 고객으로 본다. 제품 팀이 제공 기능의 일부만 골라 쓸 수 있어야 하며(optional and composable), 위에서 내린 강제에 기대어 채택을 얻는 방식은 경계한다. 따라서 golden path는 기본값을 쉽게 만드는 장치로 읽는다(해석). 다만 백서는 기업 요구에 따라 플랫폼 위 활동을 제한하는 정책 기능도 따로 들기 때문에, 선택적 사용이 보안이나 규정 통제까지 선택 사항이라는 뜻은 아니다.
+
+역할 분담 예시(설계 제안): 장애 사후 분석에서 나온 개선을 한 팀의 수정으로 끝내지 않고 플랫폼 경로에 넣는다. 예를 들어 작은 사용자 비율에 먼저 내보내는 canary 배포와 자동 rollback을 공유 배포 워크플로처럼 중앙에서 갱신되는 경로에 넣으면 그 경로를 쓰는 서비스에 함께 적용된다. 생성 시점에 복사되는 프로젝트 템플릿에만 넣으면 이후에 만든 서비스에만 반영되므로, 기존 서비스에 반영할 방법을 따로 정한다. 이때 애플리케이션 코드는 개발 팀이, 배포 경로와 템플릿은 플랫폼 팀이 소유한다. SLO와 사후 분석 운영은 [[SRE]]를 따른다.
+
+CNCF 백서는 성공 지표를 사용자 만족도와 생산성, 조직 효율, 제품과 기능 전달의 세 묶음으로 나눈다. 활성 사용자와 유지율, 만족도 설문, 서비스나 기능의 요청부터 제공까지 걸린 시간, 장애 뒤 복구 시간 등이 여기에 든다. 이 문서의 판단으로는 기능의 수보다 반복 요청 감소, 요청부터 사용 가능까지의 시간, 실패와 복구, 사용자의 후속 수작업을 우선 본다(적용 제안). 플랫폼 사용률이나 생성 자원 수만으로 생산성 개선을 확정하지 않는다. 보안과 비용 통제를 생략해 빨라진 경우도 구분한다.
 
 2024년 AWS 공개 발표의 셀프서비스 사례를 출발점으로 CNCF의 플랫폼 원칙과 현재 ElastiCache API를 대조했다. 발표의 성과 수치를 일반 목표로 옮기지 않았고, 실제 플랫폼 배포나 클라우드 생성 작업은 수행하지 않았다.
 
@@ -81,6 +85,7 @@ Encore의 경우 TypeScript나 Go의 SDK primitive로 API, 데이터베이스와
 - [CNCF Platforms White Paper — CNCF TAG App Delivery](https://tag-app-delivery.cncf.io/whitepapers/platforms/)
 - [Amazon ElastiCache, CreateReplicationGroup](https://docs.aws.amazon.com/AmazonElastiCache/latest/APIReference/API_CreateReplicationGroup.html)
 - [플랫폼 엔지니어링 기반 개발자 생산성 극대화 — Amazon Web Services Korea](https://www.youtube.com/watch?v=zJQokt9DP5Y) — 셀프서비스 범위, 비동기 생성과 후속 운영 작업의 설계 사례
+- [DevOps vs SRE vs Platform Engineering: Who Does What? — Anton Putra](https://www.youtube.com/watch?v=fIUiy21IRM0) — 2026-10-31 업로드, 사후 분석의 개선을 플랫폼 경로에 넣는 역할 분담 예시의 계기 자료. golden path와 성공 지표는 CNCF 백서로 확인
 
 ## 관련 문서
 

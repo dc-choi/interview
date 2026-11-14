@@ -43,6 +43,8 @@ Scenario는 Action/override와 모델을 사용해 비교 결과를 계산한다
 
 직접 model 선택/configuration/run과 model chaining은 sunset로 표시된다. 현재 권장 경로는 model을 Function으로 감싸 function-backed Action으로 소비하는 방식이다. Sunset을 이미 미지원/즉시 제거라고 바꾸지 않는다. 개요의 chaining 소개와 수명주기 경고를 함께 읽는다.
 
+2026-11-14 scenarios 개요 문서를 다시 대조한 내용이다. Sunset 표시는 legacy model 워크플로(선택, 구성, 실행, chaining)에만 붙고 Ontology scenario와 function-backed Action에는 적용되지 않으며, legacy 경로도 전체 지원은 유지된다. 다만 sunset 단계 일반의 의미(기존 고객 대상, 폐기 예정이나 날짜 미정)는 [[Palantir-Platform-Capabilities-and-Lifecycle|플랫폼 기능과 수명주기]]를 따르므로 새 enrollment가 legacy 경로를 새로 도입할 수 있다는 뜻으로 읽지 않는다. 따라서 scenario 기능 자체가 수명주기 전환 대상이라고 읽지 않는다. 기존 통합의 이전은 세 단계다: model에 대한 Function을 구성하고, 그 Function을 function-backed Action으로 가져온 뒤, Action을 scenario에 더한다. 시간에 따른 변화를 비교하려면 측정값을 time series로 만들어 model 입력으로 연결해야 계산된 time series 출력을 비교할 수 있다. 개요 문서는 time series 구성 지원을 Palantir 담당자에게 문의하도록 안내한다.
+
 ## 이미지 참조와 annotation
 
 Media layer는 media reference가 있는 object와 linked annotation object를 구분한다. 기본 image reference는 Ontology capability로 고르거나 첫 reference를 사용한다. Annotation coordinate property는 image pixel-space bounding box이며 세계 좌표, CAD model 좌표와 다르다. 문서가 구체적 직렬화/원점/끝점 포함 여부까지 보장하지 않아 추정하지 않았다.
