@@ -1,7 +1,7 @@
 ---
 tags: [palantir, foundry, operations]
 status: done
-verified_at: 2026-10-16
+verified_at: 2026-11-14
 category: "AI엔지니어링(AIEngineering)"
 aliases: ["Slate 의존성 그래프와 이벤트 실행"]
 ---
@@ -26,6 +26,10 @@ Slate의 widget, query, function과 variable은 JSON을 내놓는 노드이며 H
 Slate JavaScript 함수와 이벤트 코드는 DOM, 외부 앱 상태를 직접 수정하지 않는 격리된 실행이다. 반환값을 하류가 소비하며 변수 변경은 variable.set action으로 수행한다. 함수는 async/await를 지원하지만 큐에서 하나씩 실행하므로 await하는 느린 함수가 뒤의 함수도 막는다.
 
 입력이 없는 함수는 Recalculate만으로 다시 실행되지 않을 수 있다. 타이머 계산에는 바뀌는 입력이 필요하다. 함수 라이브러리는 일반 JavaScript이며 Handlebars를 내부에 넣지 않고 호출 인자로 값을 전달한다. 함수와 이벤트 편집기는 Handlebars helper를 지원하지 않는다.
+
+Slate Function은 Slate 안에서만 쓰는 함수이고(라이브러리는 문서 단위로 정의한다), 플랫폼 전체에서 쓰는 Foundry Function과 다르다. Foundry Function은 Slate의 Platform Editor로 불러온다. Slate Function에서 Platform SDK(PSDK)로 Foundry API를 부를 수도 있다. Slate는 지원하는 SDK 버전에 한해 설정된 client와 코드 완성을 준다. 코드 완성에 보이는 endpoint를 모두 호출할 수 있다는 뜻은 아니므로 허용 범위는 PSDK 문서에서 따로 확인한다. 함수 라이브러리를 고친 뒤 **Rerun All Functions**로 그 라이브러리에 의존하는 함수를 다시 실행할 수 있다.
+
+기본 제공 외부 라이브러리는 Lodash, Math.js, Moment, Numeral과 es6-shim이다. 원문은 모든 사용자에게 ES6 지원 브라우저를 쓰게 하지 않는 한 ES6 문법을 쓰지 말라고 한다. 같은 문서가 async/await 지원과 화살표 함수 예제도 싣고 있으므로, 사용자 브라우저의 지원 범위를 확인한 뒤 문법을 정한다. 추가 라이브러리는 범위가 두 가지다. Functions 패널에서 올린 application library는 그 앱에서만 쓰고, Admin Panel에서 올린 platform-wide library는 Foundry 인스턴스의 모든 사용자와 앱이 쓸 수 있다. 원문에 적힌 규칙은 아니지만, platform-wide library를 바꾸면 그것을 쓰는 여러 앱이 함께 영향을 받을 수 있어 인스턴스 단위의 변경으로 다루는 편이 안전하다.
 
 HTML/Table의 동적 클릭 요소는 `slClickEvent`와 선택적 `slClickEventValue`를 쓰더라도 이벤트 이름 목록을 정적으로 등록해야 한다. 화면에서 해당 요소가 안 보인다는 이유로 이벤트가 등록되지 않아도 된다고 해석하지 않는다.
 

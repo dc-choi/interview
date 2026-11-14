@@ -1,7 +1,7 @@
 ---
 tags: [palantir, foundry, operations]
 status: done
-verified_at: 2026-10-16
+verified_at: 2026-11-14
 category: "AI엔지니어링(AIEngineering)"
 aliases: ["Slate 템플릿과 표 데이터 형태"]
 ---
@@ -25,6 +25,18 @@ aliases: ["Slate 템플릿과 표 데이터 형태"]
 `toNumber`는 JavaScript Number 변환이며 실패하면 NaN이 될 수 있다. `jsonParse`는 문자열만 받고 유효하지 않은 JSON은 오류다. 산술 helper는 숫자를, 비교 helper는 같은 타입의 숫자나 문자열을 요구한다. 문자열 true/false 예제를 엄격한 Boolean 타입 보장의 증거로 삼지 않는다.
 
 `encodeURI`와 `encodeURIComponent`는 예약문자 처리 범위가 다르며 JSON/SQL 보안 helper를 대체하지 않는다. `getSelectedDisplayValue(s)`는 raw/display 배열 대응과 선택값 존재를 확인한다. 단수 helper의 원문 예제도 배열 결과를 보이므로 반환 모양을 호출부에서 확인한다.
+
+Helper는 쓸 수 있는 위치로 나뉜다.
+
+| 범주 | 예 | 사용 위치 |
+|---|---|---|
+| Built-in | `if`, `unless`, `each` | Handlebars 라이브러리 제공, 사용 위치는 원문에 없음 |
+| Core | 변환, 산술, 비교, `lookup`, `and`/`or`/`not` | query와 widget |
+| Widget | `formatNumber`(Numeral.js), `formatDate`(Moment.js) | widget만 |
+| Foundry | `joinParams` | HttpJson Foundry query만 |
+| SQL | `alias`, `schema`, `table`, `column`, `param` | SQL query만 |
+
+HttpJson Foundry query는 Spark SQL 문법을 쓰지만 원문은 SQL helper를 그 query에 쓰지 말라고 한다. 그 경로의 값 목록은 `joinParams`로 만든다. 각 값을 작은따옴표로 감싸고(값 안의 작은따옴표는 escape) 쉼표로 이어 문자열로 치환하며, 배열이 아닌 값은 오류다. 실행 시 값을 바인딩하는 `param`과 달리 문자열 치환이라는 점을 구분한다. `and`와 `or`는 인자를 두 개 이상, `not`은 한 개만 받는다. Slate의 `lookup`은 `{{lookup a "b" "c"}}`처럼 여러 단계 속성을 한 번에 따라간다.
 
 ## 평행 배열의 무결성
 
