@@ -22,7 +22,7 @@ ORM 관련 학습 우선순위를 다룰 때는 `tech/AGENTS.md`도 읽는다.
 
 ## 학습 상태와 계획의 정본
 
-- AI 석사 진학의 사용자 결정과 검토 상태는 `2027-AI-Masters-Plan.md`에서 관리한다. 후보 제한, 지원 결정과 실제 진학을 구분하고, AI의 추천을 사용자 확정 우선순위로 바꾸지 않는다.
+- AI 석사 진학의 사용자 결정과 검토 상태는 `graduate-school/2027-AI-Masters-Plan.md`에서 관리한다. 후보 제한, 지원 결정과 실제 진학을 구분하고, AI의 추천을 사용자 확정 우선순위로 바꾸지 않는다.
 - 생활과 업무의 우선순위, 트랙 선택과 자격증 전환 조건은 `fit/growth/Current-Goals-and-Roadmap.md`를 참조한다. 과거 전환기의 조건을 현재 역할에 그대로 적용하지 않고 최신 사용자 설명과 대조한다.
 - 현재 학습의 정본은 `roadmaps/Recommender-System-Foundations-Roadmap.md`이며 `roadmaps/roadmaps.md`에서 연결한다. 이전 계획과 체크포인트는 `roadmaps/archive/Archived-Learning-Roadmaps.md`에서 찾는다. 문서 보존을 학습 완료로 기록하지 않는다.
 - 기존 수학 전체 과정은 `roadmaps/archive/2026-H2-Math-Roadmap.md`, DevOps 실습은 `roadmaps/archive/2027-DevOps-Practical-Roadmap.md`에 보존한다. `tech/database/nosql/opensearch/OpenSearch.md`를 포함한 기술 지식 원문은 참고 자료이며 현재 학습의 필수 선행 경로가 아니다.
