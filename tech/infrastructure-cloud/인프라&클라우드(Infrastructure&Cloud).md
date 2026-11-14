@@ -30,7 +30,7 @@ aliases: ["인프라&클라우드(Infrastructure&Cloud)", "Infrastructure & Clou
 - [[Data-Center-Power-Distribution|데이터센터 전력 공급과 이중화]] — 수전에서 서버 전원 장치까지의 경로, UPS 방식별 전환 공백, 배터리 선택, A/B 경로와 단일 장애점, Uptime 티어와 인증 구분, 장애 원인
 - [[Data-Center-Fiber-Cabling-and-Testing|데이터센터 광케이블 구성과 인증 시험]] — MPO와 OM5, MPO 극성 연결 방법, Tier 1 OLTS 기준 설정과 Tier 2 OTDR, 단면 검사, VSFF 다심 커넥터
 - [[Semiconductor-Advanced-Packaging|반도체 첨단 패키징]] — EMIB와 Foveros의 연결 구조, EMIB와 CoWoS-L의 bridge 배치, HBM base die와 기판의 구분, 제조 거점과 고객 제품 양산의 구분
-- [[Storage-Access-Models|저장장치 연결과 데이터 접근]] — DAS, NAS와 SAN, 블록/파일/객체, 공유 연결과 동시 쓰기 조정
+- [[Storage-Access-Models|저장장치 연결과 데이터 접근]] — DAS, NAS와 SAN, 블록/파일/객체, 공유 연결과 동시 쓰기 조정, 소프트웨어 정의 스토리지(Ceph, vSAN)
 - [[Server-Quotation-Checklist|서버 견적 검토]] — 메모리 배치, 옵션과 지원 조건, 물리 코어 라이선스의 적용 범위, 케이블과 트랜시버, DAC와 AOC, 전원 코드와 랙 PDU
 - [[GPU-Inference-Hardware|추론용 GPU 선택]] — Intel D270, 가중치와 KV 캐시, 실측 조건, GeForce 텐서 연산 제한과 외부 커널 모듈의 도입 경계
 - [[Rack-Scale-System-Emulation|랙 규모 시스템 에뮬레이션]] — Voxel, 실제 소프트웨어와 가상 하드웨어의 검증 경계

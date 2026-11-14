@@ -1,7 +1,7 @@
 ---
 tags: [business, pricing, ai, credits, usage-based]
 status: done
-verified_at: 2026-10-27
+verified_at: 2026-11-14
 category: "비즈니스&제품(Business&Product)"
 aliases: ["AI Usage Pricing", "AI Pricing and Packaging", "AI 요금제 설계", "AI 크레딧 가격"]
 ---
@@ -28,16 +28,16 @@ LLM API만 호출하는 기능은 호출량과 토큰 단가로 원가를 추정
 
 크레딧을 쓴다면 고객이 달성할 수 있는 작업량으로 환산해 설명한다. 원가가 다른 모델, 도구와 동작을 하나의 구독으로 묶는 장점, 3달러 대신 12크레딧을 쓰면 실제 비용을 덜 의식할 수 있다는 우려, 큰 토큰 수보다 작업 완료가 중요하다는 관점은 Lovable의 성장 책임자 Elena Verna가 2026-10-16 글에서 제시한 실무 의견이다. 같은 글은 이 우려를 심적 회계로 설명하지만, 특정 크레딧 표기가 실제 지출 인식이나 구매를 바꾼다는 실험 결과를 제시하지는 않는다. 크레딧을 달성 가능한 작업량에 연결하라는 제안과 행동 효과가 검증됐다는 판단을 구분한다.
 
-2026-10-27 공식 요금 페이지에서 확인한 두 가지 표현 방식이다.
+공식 요금 페이지와 도움말 문서에서 확인한 두 가지 표현 방식이다(Claude는 2026-11-14, Lovable은 2026-10-27 기준).
 
 | 서비스 | 사용량을 표현하는 방식 | 남는 질문 |
 |---|---|---|
-| Claude | Pro는 More usage로 표시하고 FAQ에서 Free보다 5시간 세션당 최소 5배라고 설명한다. Max는 Pro의 5배 또는 20배를 고르게 한다. 고정 메시지 수는 없고 대화 길이, 복잡도, 모델과 기능에 따라 달라지며 유료 요금제에는 주간 한도도 있다 | 상대 배수는 있지만 기준이 되는 절대량은 없다 |
+| Claude | 유료 요금제는 첫 메시지부터 5시간 뒤 초기화되는 세션 한도와 계정별 고정 시각에 초기화되는 주간 한도를 함께 둔다. 비교표에서 Max는 5시간 한도와 주간 한도 모두 Pro의 5배, Ultra는 주간 한도가 Pro의 10배이고, 계정과 결제 이력 등으로 자동 검증된 Ultra 계정에는 5시간 한도가 없다(미검증 계정은 임시 한도). 주간 한도는 모든 모델에 걸리고, Max와 Ultra에는 Fable 별도 주간 한도(요금 페이지 표기는 주간 한도의 50%)가 있으며 Pro는 Fable을 usage credits로 쓴다 | 상대 배수는 있지만 기준이 되는 절대량은 없다. 배수가 어느 기간의 한도인지도 따로 읽어야 한다 |
 | Lovable | 크레딧을 작업 공간 사용량을 재고 지불하는 단위로 정의하고, 기본 모드는 작업 복잡도에 따라, 계획 모드는 메시지당 1크레딧을 쓴다. 버튼 색 변경 0.50, 인증 추가 1.20처럼 작업별 소모 예시를 공개한다 | 예시 밖의 작업과 실패, 재시도가 얼마를 쓰는지는 써 봐야 안다 |
 
 요금제를 설계할 때는 다음을 점검한다(적용 제안).
 
-- 요금제마다 대표 작업을 몇 번 할 수 있는지로 환산해 보여 준다. 배수만 쓰지 않고 기준량, 한도의 기간(세션, 주, 월)과 초기화 시점을 함께 적는다.
+- 요금제마다 대표 작업을 몇 번 할 수 있는지로 환산해 보여 준다. 배수만 쓰지 않고 기준량, 한도의 기간(세션, 주, 월)과 초기화 시점을 함께 적는다. 세션 한도와 주간 한도를 함께 두는 요금제라면 배수를 기간별로 따로 표시한다. Claude 요금 페이지는 Max 20x의 새 이름인 Ultra에 5시간 한도 면제와 주간 Pro 10배를 나눠 적는다.
 - 작업 시작 전에 예상 소모량을 보여 주고, 한도에 닿았을 때 멈춤, 초과 과금, 저가 모델 전환 중 무엇이 일어나는지 고객이 고르게 한다.
 - 무료 요금제의 악용, 도난 계정과 봇은 AI에서는 전환 지표를 흐리는 데 그치지 않고 추론 비용을 실제로 발생시킨다. 무료 한도는 첫 절의 원가 상한과 함께 정한다.
 
@@ -69,13 +69,18 @@ OpenRouter의 인사이트 책임자가 2026-10-22 공개한 플랫폼 자기 �
 
 2026-10-27에는 [[Pricing-Strategy|가격 정책 설계]]에서 이 내용을 옮기면서 Stripe 문서를 다시 대조했고, Claude와 Lovable의 공식 요금 페이지를 확인했다. 요금제 점검과 과금 단위 표는 실무자의 글과 VC 집계를 적용한 제안이며 특정 요금제의 전환 효과나 수익성을 검증한 결과가 아니다. 글에서 함께 언급된 다른 서비스의 요금제 문구는 공식 페이지를 대조하지 못해 옮기지 않았다.
 
+2026-11-14에는 Claude 요금 페이지와 도움말 문서 두 개로 Claude 행만 다시 대조했다. 도움말 문서에는 변경 시행일이 적혀 있지 않아 날짜를 쓰지 않았다. 이전 Max 20x의 20배가 5시간 한도 기준이었다거나 사용자가 이를 주간 사용량으로 오해했다는 설명은 영상과 2차 보도에만 있어 옮기지 않았다.
+
 ## 출처
 
 - [The Current State of AI Tokenomics: What CFOs Should Know — OnlyCFO, Peter Walker](https://www.onlycfo.io/p/ai-tokenomics) — 2026-10-22, 2026-11-02 OpenRouter 자기 보고의 모집단과 성공 건당 비용 예시 확인. 원시 요청 데이터는 독립 검증하지 않음
 
 - [Stripe, Billing credits](https://docs.stripe.com/billing/subscriptions/usage-based/billing-credits) — metered 가격 적용 범위, 청구서 확정 시 차감과 금지 용도. 2026-10-27 만료, 청구서 무효화와 credit note의 처리를 추가 대조
 - [YouTube, 양실장의 바이브코딩대학, 1시간 압축) AI 기술 1도 모르는 초심자가 전문 AI SaaS 구축하는 모든 과정](https://www.youtube.com/watch?v=JK1S6FvAdZQ) — 2026-08-24, 42:39~49:00의 GPU 추론 서비스 과금과 배포 설계 시연. 화면의 원가 계산과 인프라 구성은 확인하지 않아 사용하지 않음
-- [Claude, Pricing](https://claude.com/pricing) — 2026-10-27 확인, 요금제별 사용량 표현과 사용 한도 안내
+- [Claude, Pricing](https://claude.com/pricing) — 2026-10-27 확인, 요금제별 사용량 표현과 사용 한도 안내. 2026-11-14 Max와 Ultra의 5시간, 주간 배수 비교표 재확인
+- [Claude Help Center, What is the Ultra plan?](https://support.claude.com/en/articles/17728952-what-is-the-ultra-plan) — 2026-11-14 확인, Max 20x의 이름 변경, 검증 계정의 5시간 한도 면제와 Fable 별도 주간 한도
+- [Claude Help Center, What is the Max plan?](https://support.claude.com/en/articles/11049741-what-is-the-max-plan) — Max의 Fable 별도 주간 한도 (2차 검증자가 2026-11-14 확인)
+- [Claude Help Center, How do usage and length limits work?](https://support.claude.com/en/articles/11647753-how-do-usage-and-length-limits-work) — 2026-11-14 확인, 세션 한도와 주간 한도의 초기화 방식
 - [Lovable, Pricing](https://lovable.dev/pricing) — 2026-10-27 확인, 크레딧 정의, 모드별 소모 기준과 작업별 예시
 - [What on earth is going on with AI pricing and packaging? — Elena's Growth Scoop, Elena Verna](https://www.elenaverna.com/p/what-on-earth-is-going-on-with-ai) — 2026-10-16 게시. Lovable의 성장 책임자인 작성자의 관찰과 의견
 - [The 15 Themes on AI from SaaS Earnings Calls — Blossom Street Ventures, Sammy Abdullah](https://blossomstreetventures.medium.com/the-15-themes-on-ai-from-saas-earnings-calls-f9607b073dc5) — 2026-10-12 게시, Theme 15의 과금 사례. 경영진 발언의 2차 집계

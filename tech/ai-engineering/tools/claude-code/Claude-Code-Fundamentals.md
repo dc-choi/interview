@@ -18,7 +18,7 @@ Desktop 앱의 작업 구분은 계정마다 다르다(2026-10-12 공식 도움�
 
 ### 요금제와 Windows 준비 (2026-09-30 공식 문서 확인)
 
-- **플랜**: Claude Code는 Pro, Max, Team, Enterprise나 Console(API) 계정이 필요하고 무료 플랜에는 들어 있지 않다(Amazon Bedrock, Google Cloud, Microsoft Foundry 경유도 가능). Cowork도 유료 플랜 전용이다. 개인 가격은 Pro 월 $20(연간 결제 시 월 $17), Max 월 $100부터(Pro 대비 5배 또는 20배 사용량)이며 표시 가격은 세금 별도다
+- **플랜**: Claude Code는 Pro, Max, Team, Enterprise나 Console(API) 계정이 필요하고 무료 플랜에는 들어 있지 않다(Amazon Bedrock, Google Cloud, Microsoft Foundry 경유도 가능). Cowork도 유료 플랜 전용이다. 개인 가격은 Pro 월 $20(연간 결제 시 월 $17), Max 월 $100부터(Pro 대비 5배 또는 20배 사용량)이며 표시 가격은 세금 별도다. 2026-11-14 요금 페이지 기준으로는 Max 20x가 Ultra(월 $200)로 이름이 바뀌었다. 한도 구조는 [[Pricing-Strategy-AI-Usage#고객은 토큰이 아니라 끝낸 작업을 산다|AI 요금제 사용량 표현]]을 본다
 - **Windows 설치**: PowerShell `irm https://claude.ai/install.ps1 | iex`, CMD용 `install.cmd` 스크립트, 또는 `winget install Anthropic.ClaudeCode`. 관리자 권한은 필요 없다. WinGet과 Homebrew 설치는 기본으로 자동 업데이트되지 않으므로 `winget upgrade Anthropic.ClaudeCode`를 주기적으로 돌리거나 `CLAUDE_CODE_PACKAGE_MANAGER_AUTO_UPDATE=1`로 맡긴다
 - **Git for Windows는 선택**: 설치하면 Git Bash로 Bash 도구를 쓰고, 없으면 PowerShell 도구로 셸 명령을 실행한다. 샌드박스가 필요하면 WSL 2에서 쓴다
 - **Node.js는 npm 설치 경로에서만**: 네이티브 설치는 Node.js가 필요 없다. npm 패키지는 v2.1.198부터 Node.js 22 이상을 요구하지만 설치되는 바이너리는 실행할 때 Node를 쓰지 않는다

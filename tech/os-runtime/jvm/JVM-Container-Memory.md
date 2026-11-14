@@ -3,7 +3,7 @@ tags: [runtime, jvm, memory, container, g1gc, tuning]
 status: done
 category: "OS&런타임(OS&Runtime)"
 aliases: ["JVM Container Memory", "JVM 컨테이너 메모리", "used vs committed", "RAMPercentage"]
-verified_at: 2026-09-30
+verified_at: 2026-11-14
 ---
 
 # JVM 컨테이너 메모리 — used vs committed와 RAMPercentage
@@ -63,6 +63,17 @@ verified_at: 2026-09-30
 - 실질 힙 허용량은 역산한다: limit − (metaspace + direct buffer + thread stack + native + page cache 여유분). 힙 백분율은 이 값 아래로 낮춘다.
 - 힙 밖 성분에도 상한을 검토한다. MaxMetaspaceSize와 MaxDirectMemorySize는 각각 metaspace와 NIO direct buffer 용량만 제한한다. 힙, metaspace와 direct buffer 상한을 모두 지정해도 thread stack, code cache, GC 구조와 그 밖의 native allocation은 남으므로 JVM native memory 총합이 고정되지는 않는다. Native Memory Tracking과 container 지표로 나머지 성분을 측정한다 ([[Container-Memory-Metrics]]).
 
+## CPU 수 인식도 힙 밖 메모리를 바꾼다
+
+JVM이 계산한 사용 가능 CPU 수(`Runtime.availableProcessors()`의 값)는 GC thread, `ForkJoinPool` 같은 thread pool 크기의 기본값에 쓰이고, 라이브러리도 이 값으로 event loop thread나 buffer 수를 정하는 경우가 많다. 그래서 CPU 수를 크게 인식하면 힙 설정은 그대로여도 thread stack과 native allocation이 늘어 컨테이너 총합이 limit을 넘을 수 있다.
+
+- OpenJDK 변경 8281181은 Linux cgroup의 CPU shares를 active processor count 계산에서 뺐다. 이전에는 CPU quota가 없으면 shares 값으로 CPU 수를 줄였는데, 이후에는 quota가 없으면 shares를 무시하고 프로세스에 허용된 CPU 수(cpuset 등으로 제한하지 않았으면 host 전체)를 쓴다. 메인라인은 이전 동작을 되돌리는 `-XX:+UseContainerCpuShares`(기본 false)를 deprecated로 추가했고, 특수 플래그 목록에 JDK 19 deprecated, 20 obsolete, 21 expired로 등록했다.
+- 업데이트 릴리스에도 들어갔다. jdk17u 태그를 비교하면 17.0.4.1에는 이 플래그가 없고 17.0.5부터 기본 false로 들어 있으며, jdk11u도 11.0.16.1에는 없고 11.0.17부터 있다. 그래서 같은 메이저 버전 안의 패치 업데이트만으로도 동작이 바뀐다.
+- 영향받는 구성은 CPU limit(quota) 없이 request만 준 Pod처럼, CPU request가 cgroup shares(가중치)로만 반영된 컨테이너다. 업그레이드 전에는 4로 보던 프로세스가 64코어 host에서 64로 볼 수 있다. CPU request만 두는 Kubernetes 설정은 [[K8s-Configuration-Storage-and-Probes|K8s 설정과 probe]]에서, 가용 코어 수로 thread pool을 정하는 방법은 [[Thread-Pool-Sizing|Thread Pool 크기 산정]]에서 다룬다.
+- 대응은 컨테이너 안에서 `availableProcessors()`와 GC thread 수를 업그레이드 전후로 비교하는 것부터다. 의도한 수가 있으면 `-XX:ActiveProcessorCount=N`으로 고정한다. 이 옵션은 GC와 `ForkJoinPool` 등의 thread pool 크기 계산에 쓸 CPU 수를 덮어쓰며, `UseContainerSupport`가 꺼져 있어도 적용된다. `UseContainerCpuShares`는 메인라인에서 제거된 임시 플래그라 장기 해법으로 쓰지 않는다. 이 변경 시점의 `arguments.cpp` 기준 obsolete 플래그는 경고 뒤 값이 무시되고 expired 플래그는 인식되지 않으므로, 17에서 넣은 이 플래그는 21 이상으로 옮기기 전에 `ActiveProcessorCount`로 바꾼다(실행 시험은 하지 않음). jdk-17.0.5-ga의 특수 플래그 목록에는 이 플래그가 없어 17에서는 미리 deprecated 경고를 받지 못할 수 있다.
+
+사례: JDK 8과 11에서 17로 수천 개 서비스를 옮긴 대규모 마이그레이션에서, CPU shares로 CPU를 배정하던 컨테이너가 17.0.5 뒤 host 코어 수를 인식했다. GC와 compiler thread, thread pool과 Netty 같은 라이브러리의 buffer가 커지면서 off-heap 사용이 늘어 컨테이너 OOM kill이 이어졌고, 이전 동작을 되돌리는 플래그로 복구했다.
+
 ## 컨테이너 튜닝 접근
 
 - 초기 힙과 최대 힙의 비율을 분리해, 커밋 풋프린트가 실사용을 따라가게 한다.
@@ -84,6 +95,7 @@ verified_at: 2026-09-30
 - 컨테이너에서 힙 상한을 정할 때 고려할 힙 밖 소비 (metaspace, thread, native, page cache)
 - exit code 137만으로 OOMKilled를 단정할 수 없는 이유와 JVM OutOfMemoryError의 구분
 - MaxRAMPercentage가 힙만 제한한다는 함정과 실질 힙 허용량 역산
+- JDK 업데이트 뒤 같은 컨테이너에서 OOMKilled가 늘었을 때 CPU 수 인식 변화를 의심하는 이유와 `ActiveProcessorCount`로 고정하는 방법
 
 ## 출처
 
@@ -99,9 +111,12 @@ verified_at: 2026-09-30
 - [인프런, 김영한, @Conditional](https://www.inflearn.com/courses/lecture?courseId=330459&unitId=148099)
 - [Kubernetes Docs, Resource Management for Pods and Containers](https://kubernetes.io/docs/concepts/configuration/manage-resources-containers/) (memory limit은 커널 OOM kill로 반응적 강제)
 - [Kubernetes Docs, Pod lifecycle](https://kubernetes.io/docs/concepts/workloads/pods/pod-lifecycle/)
-- [Oracle Java SE Docs, java Command Reference](https://docs.oracle.com/en/java/javase/17/docs/specs/man/java.html) (UseContainerSupport 컨테이너 감지, MaxDirectMemorySize는 NIO direct buffer 총량 상한이며 미설정 시 JVM 자동 결정)
+- [Oracle Java SE Docs, java Command Reference](https://docs.oracle.com/en/java/javase/17/docs/specs/man/java.html) (UseContainerSupport 컨테이너 감지, MaxDirectMemorySize는 NIO direct buffer 총량 상한이며 미설정 시 JVM 자동 결정, 2026-11-14 ActiveProcessorCount의 thread pool 크기 계산용 CPU 수 덮어쓰기 대조)
 - [Oracle Java SE Docs, Native Memory Tracking](https://docs.oracle.com/en/java/javase/24/vm/native-memory-tracking.html)
 - [Kubernetes 환경 OOMKilled 원인 분석 — Nextree](https://www.nextree.io/kubernetes-hwangyeong-oomkilled-weonin-bunseog/)
+- [8281181: Do not use CPU Shares to compute active processor count — OpenJDK GitHub](https://github.com/openjdk/jdk/commit/e07fd395bdc314867886a621ec76cf74a5f76b89) (2026-11-14 `active_processor_count`의 shares 제외, `UseContainerCpuShares` 기본값과 JDK 19, 20, 21 단계 대조. obsolete와 expired의 처리는 같은 revision의 [arguments.cpp](https://github.com/openjdk/jdk/blob/e07fd395bdc314867886a621ec76cf74a5f76b89/src/hotspot/share/runtime/arguments.cpp))
+- [globals_linux.hpp — OpenJDK jdk17u GitHub](https://github.com/openjdk/jdk17u/blob/jdk-17.0.5-ga/src/hotspot/os/linux/globals_linux.hpp) (2026-11-14 jdk-17.0.5-ga 태그의 `UseContainerCpuShares` 정의 확인, jdk11u는 jdk-11.0.17-ga 태그 기준)
+- [Java Modernization @ LinkedIn — JavaOne 2026, Vivek Deshpande, Yingbo Liu](https://www.youtube.com/watch?v=Sw5-c8-lmy0) (JDK 17 마이그레이션 중 CPU 수 인식 변화로 생긴 컨테이너 OOM 사례)
 
 ## 관련 문서
 
