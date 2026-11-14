@@ -26,6 +26,7 @@ aliases: ["웹&네트워크(Web&Network)", "Web & Network"]
 - [x] [[Self-Organizing-Network|SON과 무선 자원 관리]] — 망 자동 설정과 최적화, 수락 제어와 핸드오버, IP 유지 조건의 구분
 - [x] [[Game-State-Authority-and-Prediction|게임 상태 판정과 예측]] — 서버 권위, 재시뮬레이션, 명령 공유와 결정성의 조건
 - [x] [[Game-Loop-Frame-Timing|게임 루프의 프레임 시간]] — 델타 타임, 고정 시간 간격과 보간, lockstep의 고정 dt 조건
+- [x] [[Unity-UI-Canvas-Batching|Unity UI 캔버스 배칭과 분할]] — 캔버스 전체 재구성, 갱신 주기별 분할과 드로우콜 증가의 균형
 - [[Satellite-Direct-to-Device|위성 직접 연결]] — LTE와 NTN 방식, 도플러와 서비스 지원 조건
 - [[WebGPU-Cross-Runtime|WebGPU 코드 공유]]
 - [[Cross-Platform-Keyboard|플랫폼별 키보드 입력]]

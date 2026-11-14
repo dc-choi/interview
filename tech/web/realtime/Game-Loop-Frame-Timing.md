@@ -109,4 +109,5 @@ public void MoveX(float amount, Action onCollide) {
 ## 관련 문서
 
 - [[Game-State-Authority-and-Prediction|게임 상태의 판정 권한과 클라이언트 예측]]
+- [[Unity-UI-Canvas-Batching|Unity UI 캔버스 배칭과 분할]] — UI 재구성이 프레임 예산을 쓰는 경우
 - [[실시간(Realtime)|실시간 통신]]
