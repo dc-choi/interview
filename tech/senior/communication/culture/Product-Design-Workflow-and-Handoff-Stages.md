@@ -50,12 +50,25 @@ aliases: ["Design Process Stages", "디자인 프로세스 단계", "킥오프 �
 
 가이드는 전달의 How다. user flow와 기능 명세를 함께 두는 구성, interaction 분리, section별 flow map, 이번 범위만 담는 명세는 [[Product-Design-Workflow-and-Handoff#Ready for development 계약|Ready for development 계약]]에 정리했다. 프로젝트 상태는 index에서 `in progress`, `handoff` 순서로 옮기고, 배포 뒤에는 [[Product-Design-Workflow-and-Handoff#Review와 rollout|Review와 rollout]]에 맞춰 `released`, `iterate`, `rollback` 중 하나로 정한다. 강의는 실험 결과에 따라 Roll-out 또는 Roll-back으로 옮기는 예시를 들며, 여기서 Roll-out은 `released`에 해당한다.
 
+## AI 코딩 도구가 단계 구분을 흔드는 지점
+
+위 단계는 리서치와 발견, 발산과 수렴, 시안, 반복을 거친 뒤 구현으로 넘어가는 순서를 전제한다. 엔지니어가 코딩 에이전트로 동작하는 초안을 빠르게 만들게 되면 이 순서가 그대로 유지되기 어렵다. 아래는 AI 제품 회사 디자인 리드의 2026년 공개 인터뷰에서 나온 실무 관찰이며, 모든 조직에 적용되는 결론은 아니다. 같은 관찰을 발표했을 때 발견 단계를 뺄 수 없다는 반론도 컸다고 한다.
+
+- **디자인 작업이 두 갈래로 나뉜다.** 하나는 구현과 실행 지원이다. 시안을 먼저 그릴 시간이 없을 만큼 초안이 먼저 나오므로, 디자이너는 동작하는 초안을 써 보며 다듬고 마지막 마감(polish)을 직접 코드로 구현하거나 엔지니어와 붙어 마무리한다. 다른 하나는 방향 제시다. 여러 사람이 각자 기능을 만들어 내는 환경일수록 같은 방향을 가리킬 기준이 필요하다. 다만 기술 변화가 빨라 수년짜리 비전 대신 3~6개월 앞을 보는 방향을 그리고, 때로는 덱 대신 prototype으로 보여 준다.
+- **단계가 사라지기보다 시간 배분이 바뀐다.** 같은 인터뷰에서 사용자 리서치, 시안과 prototype은 계속하며, 시안과 prototype에 쓰던 시간이 예전 약 60~70%에서 30~40%로 줄고 엔지니어와 직접 맞춰 보는 일과 구현의 몫이 늘었다고 했다. 캔버스 도구에서 여러 방향을 넓게 펼쳐 보는 탐색은 여전히 중요하고, 코딩 도구는 한 방향을 따라가는 데 더 맞는다고 봤다.
+- **비결정적인 AI 기능은 시안으로 상태를 다 그릴 수 없다.** 모델 출력이 매번 달라 클릭 prototype으로도 경험을 재현하기 어렵다. 실제 모델 위에 만든 prototype을 사용자가 자기 용도로 써 보는 모습을 보면서 쓰임새를 발견한다.
+- **이른 공개는 개선을 보여 줄 때만 신뢰를 지킨다.** 이미 사용자에게 가치가 있는 기능이라면 완성도가 낮아도 research preview처럼 미리 표시하고 공개할 수 있다. 이때 사용자 피드백에 응답하고 개선을 계속 출시하겠다는 약속을 실제로 지켜야 한다. 이르게 공개하고 아무 변화가 없을 때 품질 신뢰와 브랜드가 깎인다.
+- **이해하기 어려운 아이디어를 읽어 내는 일도 디자인이다.** 내부에서 에너지가 몰리는데 왜인지 아직 설명되지 않는 prototype을 찾아, 그 안에서 사람들이 유용해한 정보(에이전트의 계획, 할 일, 참조한 파일과 맥락 등)를 제품의 형태로 옮긴다. 인터뷰에서는 창업자와 아이디어를 각각 이해되는(legible) 것과 이해되지 않는(illegible) 것으로 나눈 한 투자자의 2x2 틀을 빌려 설명했다. 둘 다 이해되는 아이디어는 이미 누군가 하고 있을 가능성이 높다는 관점이다.
+
+다음은 이 문서의 적용 제안이다. 모델 출력에 기대는 화면은 실제 모델 위의 prototype이 필요하므로, 아이디어 단계의 prototype을 결정 뒤로 미루는 위 원칙과 충돌한다. 결과가 결정적인 화면과 모델 출력에 기대는 화면을 나눠 판단한다. 또 단계를 없애기보다 어느 단계를 동작하는 초안으로 대체할 수 있는지 고른다. 킥오프의 Why 합의와 상세 디자인의 결정 기록은 초안이 빨리 나올수록 오히려 방향을 맞추는 기준이 된다.
+
 ## 적용 점검
 
 - 킥오프 문서만 읽고 문제, 성공 기준, 제외 범위와 다음 결정을 말할 수 있는가
 - 아이디에이션을 시작할 때 기능 목록이 이미 확정되어 있지 않은가
 - prototype 전에 후보를 좁힌 결정 기록이 있는가
 - 구현 중 보류한 아이디어가 다음 iteration 후보로 남아 있는가
+- 모델 출력에 기대는 기능을 정적 시안만으로 판단하고 있지 않은가
 
 ## 출처
 
@@ -64,6 +77,7 @@ aliases: ["Design Process Stages", "디자인 프로세스 단계", "킥오프 �
 - [What's it like to interview at Amazon? — About Amazon](https://www.aboutamazon.com/news/workplace/whats-it-like-to-interview-at-amazon)
 - [인프런, 디자인 프로세스 제로투원, 디자인 프로세스 구조화](https://www.inflearn.com/courses/lecture?courseId=338233&unitId=329387)
 - [인프런, 디자인 프로세스 제로투원, Q&A 무엇이든 물어보세요](https://www.inflearn.com/courses/lecture?courseId=338233&unitId=329390)
+- [The design process is dead. Here’s what’s replacing it. — Lenny's Podcast, Jenny Wen](https://www.youtube.com/watch?v=eh8bcBIAAFo) — 2026-03 공개 인터뷰, AI 제품 회사 디자이너의 실무 관찰
 
 ## 관련 문서
 

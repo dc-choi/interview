@@ -1,6 +1,7 @@
 ---
 tags: [architecture, evolution, adr, decision, documentation]
 status: done
+verified_at: 2026-11-14
 category: "Architecture - 진화"
 aliases: ["ADR", "Architecture Decision Record", "아키텍처 결정 기록"]
 ---
@@ -58,6 +59,23 @@ Nygard의 원형은 제목, 상태, 맥락, 결정, 결과 다섯 항목이다. 
 - **결정을 만든 PR과 함께 리뷰한다.** AWS는 코드 리뷰에서 ADR 위반을 발견하면 리뷰어가 해당 ADR 링크를 걸어 수정을 요청하는 흐름을 제시한다. ADR 소유자를 정해 유지와 전파 책임을 남기는 것도 같은 가이드의 권장 사항이다.
 - **굳은 결정은 실행 규칙으로 승격한다.** ADR을 근거 원본으로 두고, 반복 검증이 필요한 부분은 repository instruction, 테스트, [[Architecture-Fitness-Functions|fitness function]]으로 옮긴다. 사람이 매번 문서를 기억해서 지키는 구조는 오래 못 간다.
 
+## AI 코딩 에이전트가 읽는 ADR
+
+별도 연동이나 사용자 수준 지침, 메모리가 없으면 코딩 에이전트는 세션마다 저장소 파일과 프롬프트에서 시작한다. 인증이 필요한 위키, 메신저 스레드나 이슈 댓글에만 있는 결정은 보이지 않을 수 있다. 기각한 대안이 기록되지 않았으면 에이전트는 코드의 어색한 부분을 개선 대상으로 보고 이미 버린 선택지를 다시 들여올 수 있다. 사람 신입은 모르면 묻지만 에이전트는 그럴듯한 추측으로 빈칸을 채우기 쉽다. 그래서 에이전트를 쓰는 팀에서 ADR은 사람용 기록이면서 에이전트가 따를 근거 원본이 된다.
+
+아래에서 MADR, AGENTS.md와 Claude Code에 관한 사실은 각 공식 문서 기준이다. 상태별 행동, 대체 절차, 인덱스와 CI 검사 같은 운영 규칙은 2026-11 한 실무 강연의 권고를 정리한 것이며 표준 절차는 아니다.
+
+- **기각한 대안과 재검토 조건이 가장 중요한 칸이다.** `작업 큐는 Postgres를 쓴다`만 적으면 에이전트는 Redis 도입을 성능 개선으로 제안할 수 있다. Redis와 Kafka를 각각 왜 버렸는지, 어떤 신호가 오면 다시 볼지를 적어 두면 제안 전에 이미 검토한 대안인지와 지금이 재검토 시점인지를 근거로 판단할 수 있다.
+- **금지와 검증 가능한 문장으로 쓴다.** `캐시는 신중하게 쓴다`는 아무것도 막지 못한다. `libs/queue 밖에서 Redis 클라이언트를 import하지 않는다`처럼 grep, lint, CI로 확인할 수 있게 쓴다. MADR 템플릿도 결정 결과 아래에 준수 여부를 어떻게 확인할지 적는 Confirmation 항목(선택)을 둔다.
+- **메타데이터로 걸러 읽게 한다.** MADR 4.0.0 템플릿은 선택 항목인 YAML front matter에 `status`(proposed, rejected, accepted, deprecated, `superseded by ADR-0123` 등), `date`, `decision-makers`, `consulted`, `informed`를 둔다. 팀에 따라 `supersedes`, `superseded_by` 같은 대체 관계나 결정이 적용되는 경로(예: `services/billing/**`)를 확장 필드로 더해, 에이전트가 수정할 경로와 겹치는 accepted ADR만 골라 읽게 한다. 경로 필드는 MADR 항목이 아니라 팀 규칙이다.
+- **얇은 인덱스를 입구로 둔다.** ADR이 수십 개가 되면 전부 컨텍스트에 넣는 것은 낭비이고, 관련 없는 결정이 판단을 흐린다. 인덱스(`docs/adr/README.md` 등)에 번호, 제목, 상태와 적용 범위를 한 줄씩 두고 필요한 ADR만 열게 한다.
+- **지침 파일에 읽는 규칙을 건다.** AGENTS.md는 코딩 에이전트용 지침을 두는 개방형 형식이다. Claude Code는 CLAUDE.md를 읽고, 기본 설정에서 v2.1.277부터는 작업 폴더와 상위 폴더에 CLAUDE.md(`.claude/CLAUDE.md`, `CLAUDE.local.md` 포함)가 없을 때 AGENTS.md를 직접 읽는다. CLAUDE.md도 두는 저장소는 그 안의 `@AGENTS.md` import로 한 파일을 공유한다. 직접 읽지 않는 세션 조건은 [[Agent-Repository-Instructions-Hosts|에이전트 저장소 지침과 호스트]]에 있다. 지침에는 ADR 본문을 복사하지 않고 규칙만 적는다: 작업 전 ADR 인덱스를 읽는다, 작업 경로나 작업 지시에 걸린 accepted ADR을 읽는다, 구현이 accepted ADR과 충돌하면 우회하지 않고 멈춰 새 ADR을 제안하고 사람에게 확인한다. 이 규칙이 없으면 메타데이터를 갖춰도 읽히지 않는다.
+- **상태마다 에이전트의 행동을 정한다.** proposed는 참고만 하고 구현 근거로 쓰지 않는다. accepted는 따르고, 어겨야 하면 멈춘다. deprecated와 rejected는 따르지 않고 맥락으로만 읽는다. rejected ADR은 같은 제안을 다시 하기 전에 거부 사유를 확인하는 근거가 된다. superseded는 대체한 ADR을 따라간다. 에이전트가 초안을 쓸 수는 있지만 accepted로 바꾸는 것은 지정된 사람이 한다.
+- **대체는 한 PR에서 끝낸다.** 새 ADR, 옛 ADR의 상태 변경과 인덱스 갱신을 나눠 올리면 같은 주제의 accepted ADR이 둘인 구간이 생긴다. 대체 링크가 가리키는 파일이 없거나, superseded인데 대체 ADR이 비어 있으면 CI에서 실패시킨다.
+- **상태가 틀린 ADR은 없는 것보다 위험하다.** 가상의 예로, 세션 저장소를 서버 메모리에서 Redis로 옮기고 옛 ADR을 accepted로 둔 채 방치하면, 에이전트는 그 ADR을 따라 메모리 세션 코드를 다시 쓴다. 서버가 두 대가 되는 순간 로그인이 풀린다.
+
+작업 지시도 저장소 Markdown으로 두면 에이전트가 같은 경로로 읽는다. 목표, 건드릴 경로와 금지 경로, 검증 명령으로 쓴 완료 조건과 관련 ADR 링크를 적는다. 규칙은 지침 파일, 결정은 ADR, 작업 상태는 작업 파일, 만들 대상의 정의는 명세에 두고 서로 링크만 한다. 같은 사실을 두 곳에 복사하면 서로 다른 말을 하게 되고 에이전트는 어느 쪽이든 믿는다. 지침 파일의 구성 원칙은 [[Agent-Instruction-Design|에이전트 지침 설계]], 맥락을 넣는 방식은 [[Context-Engineering|컨텍스트 엔지니어링]]에 있다.
+
 ## 문서군에서의 자리
 
 | 문서 | 답하는 질문 | 시점 | 수명 |
@@ -86,6 +104,8 @@ Nygard의 원형은 제목, 상태, 맥락, 결정, 결과 다섯 항목이다. 
 - 위키에만 두어 코드와 갈라진 문서 무덤이 됨
 - ADR을 설계 토론 자리로 오용해 테크스펙을 대체하려 함
 - accepted된 ADR을 조용히 수정해 결정 시점의 판단이 사라짐
+- 과거 결정을 기억에 의존해 한꺼번에 소급 작성해, 추측이 에이전트가 따르는 규칙으로 굳음
+- proposed 상태로 몇 달씩 방치해 사람도 에이전트도 확정 여부를 판단할 수 없음
 
 ## 면접 체크포인트
 
@@ -103,6 +123,10 @@ Nygard의 원형은 제목, 상태, 맥락, 결정, 결과 다섯 항목이다. 
 - [Lightweight Architecture Decision Records — Thoughtworks Technology Radar](https://www.thoughtworks.com/radar/techniques/lightweight-architecture-decision-records)
 - [AWS Prescriptive Guidance, Architectural decision record process](https://docs.aws.amazon.com/prescriptive-guidance/latest/architectural-decision-records/adr-process.html)
 - [AWS Prescriptive Guidance, Best practices for using architectural decision records](https://docs.aws.amazon.com/prescriptive-guidance/latest/architectural-decision-records/best-practices.html)
+- [Markdown Architectural Decision Records (MADR) — ADR GitHub organization](https://adr.github.io/madr/)
+- [AGENTS.md](https://agents.md/)
+- [Claude Code Docs, How Claude remembers your project](https://code.claude.com/docs/en/memory)
+- [ADR 없이 AI 에이전트를 쓰면 팀의 결정이 매주 뒤집힌다 — 길리랩](https://www.youtube.com/watch?v=ISDNfxa44NM)
 
 ## 관련 문서
 
@@ -114,3 +138,5 @@ Nygard의 원형은 제목, 상태, 맥락, 결정, 결과 다섯 항목이다. 
 - [[RFC-Writing|RFC 작성법]]
 - [[AI-Assisted-Legacy-Onboarding|AI 레거시 온보딩]]
 - [[Cognitive-Biases-Programming|프로그래밍 인지 편향]]
+- [[Agent-Instruction-Design|에이전트 지침 설계]]
+- [[Context-Engineering|컨텍스트 엔지니어링]]
