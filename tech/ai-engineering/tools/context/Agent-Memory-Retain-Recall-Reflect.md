@@ -166,6 +166,7 @@ Hindsight의 ACL 2026 공개 논문은 world, experience, observation, opinion�
 
 ## 관련 문서
 
+- [[Agent-Memory-Write-and-Consolidation-Failures|에이전트 기억의 쓰기와 정리 실패 (추출과 갱신, 맥락 붕괴, 대체 기반 정정)]]
 - [[Agent-Model-Capability-Contracts#개인화 에이전트의 인터페이스와 실행 계층|개인 에이전트의 계층과 제공 계획]]
 - [[Context-Engineering|컨텍스트 엔지니어링]]
 - [[Agentic-Context-Platform|에이전트 컨텍스트 플랫폼]]

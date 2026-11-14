@@ -1,14 +1,22 @@
 ---
 tags: [palantir, foundry, workshop]
 status: done
-verified_at: 2026-10-16
+verified_at: 2026-11-14
 category: "AI엔지니어링(AIEngineering)"
 aliases: ["Workshop 변수와 이벤트의 실행 순서"]
 ---
 
 # Workshop 변수와 이벤트의 실행 순서
 
-Workshop 변수는 widget 입력/출력과 계산 의존성을 연결한다. 이름은 module 안에서 case-insensitive unique이며 folder 대신 page/tab prefix로 묶는다. 일부 tutorial의 variable folder 안내는 현재 Variables 설명과 다르다. Static 값, computed definition과 widget이 쓴 현재 값은 별개다.
+Workshop 변수는 widget 입력/출력과 계산 의존성을 연결한다. Static 값, computed definition과 widget이 쓴 현재 값은 별개다.
+
+## 변수 패널과 정의 유형
+
+이름은 module 안에서 case-insensitive unique다. 겹치는 이름을 입력하면 Workshop이 숫자 suffix를 붙이고, 이름을 비우면 이전 이름으로 되돌린다. 관련 변수는 Variables 패널 header의 folder 아이콘으로 만든 variable folder에 넣거나 `$page_Dashboard_filterState`처럼 page/tab prefix를 붙여 정렬로 묶는다. 패널 목록은 widget을 선택하면 그 widget이 쓰는 변수, 선택하지 않으면 현재 page가 쓰는 변수를 별도 partition으로 보여준다.
+
+정의 유형은 변수 타입에 따라 달라지며 Static, Function, Object set aggregation, Object property, Object set definition, Variable transformation, SQL query 등이 있다. Widget이나 downstream 변수가 쓰지 않는 변수는 삭제할 수 있다. Object set 변수의 New variable from current는 현재 object set을 입력으로 참조하는 새 변수를 만들어 source 변수와의 연결을 유지한 채 조건을 덧붙일 때 쓴다. 변수별 settings에서 external ID를 설정하고 module interface, routing, state saving 사용 여부를 켠다.
+
+View/edit mode의 lazy loading은 보이는 widget, layout이나 필요한 다른 변수가 값을 요구할 때까지 계산을 미룰 수 있으며 embedded module 안의 변수에도 적용된다. 숨긴 tab에만 쓰이는 변수는 그 tab이 열릴 때 계산될 수 있지만 layout visibility 제어처럼 숨긴 상태에서도 계산되는 용도가 있다. 의존 관계와 계산 시각은 variable lineage graph에서 추적한다.
 
 ## 이벤트와 recompute
 

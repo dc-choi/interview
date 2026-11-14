@@ -15,6 +15,7 @@ aliases: ["컨텍스트", "Context Engineering Hub", "컨텍스트 허브"]
 - [x] [[Strands-Conversation-State|Strands 대화와 세션 상태]] — 메시지 축약, 영속 저장과 동시 쓰기 제어의 구분
 - [x] [[Long-Context-Evaluation|긴 문맥 평가]] — 길이와 위치 민감도, RULER의 한계, RAG와 전체 투입 비교
 - [x] [[Agent-Memory-Retain-Recall-Reflect|에이전트 기억의 저장, 검색과 추론]] — 사실과 믿음의 분리, 검색과 종합 평가, 기억 공유와 실행 권한, 기억의 층과 세션 밖 정리
+- [x] [[Agent-Memory-Write-and-Consolidation-Failures|에이전트 기억의 쓰기와 정리 실패]] — 추출과 갱신 연산, 단계별 기억 환각, 반복 정리와 맥락 붕괴, 원본 보존과 대체 기반 정정
 - [x] [[Ontology-Knowledge-Graph|온톨로지와 지식 그래프]] — 일반 개념, 허용 관계와 식별자, 반영 전 검사, Palantir Foundry Ontology
 - [x] [[Tacit-Knowledge-Judgment-Agent|암묵지와 판단 에이전트]] — 기억, 판단 사례와 원칙의 층, 피드백 흡수와 시점 보존, 목적별 분할과 개인 적합성의 한계
 - [x] [[Development-Ontology|개인 지식을 개발 판단에 연결하는 온톨로지 (파일 기반 지도, 적용 조건과 첫 파일럿)]]

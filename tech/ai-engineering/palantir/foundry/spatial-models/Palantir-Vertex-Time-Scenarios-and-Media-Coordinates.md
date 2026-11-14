@@ -1,12 +1,16 @@
 ---
 tags: [palantir, foundry, operations]
 status: done
-verified_at: 2026-10-16
+verified_at: 2026-11-14
 category: "AI엔지니어링(AIEngineering)"
 aliases: ["Vertex 시간, scenario와 이미지 좌표"]
 ---
 
 # Vertex 시간, scenario와 이미지 좌표
+
+## 사용 사례별 기능 조합
+
+Vertex 공식 사용 사례는 네 가지 기능 조합으로 읽는다. What-if 분석은 Foundry에 게시한 모델, 예측이나 business logic으로 결정과 사건의 영향을 비교하는 scenario다. 예지 정비는 장비, 센서 값과 정비 이력을 Ontology로 연결한 뒤 온도나 진동 time series를 정비 event와 비교하고, 게시한 모델의 고장 위험 예측과 정비 scenario 비교를 더한다. 탐색형 조사는 관심 객체에서 link를 따라 graph를 넓히고 다단계 Search Around와 filter, Function 기반 graph 생성으로 경로를 좁힌 뒤 graph를 저장해 공유한다. 공정 흐름 diagramming(beta, enrollment에서 꺼져 있을 수 있고 관리자가 Control Panel의 Vertex 설정에서 켠다. 세부는 [[Palantir-Vertex-Graph-Generation-and-Function-Shapes#시각적 그룹과 원본|graph 생성과 diagram]])은 object-backed system graph나 production diagram에 미리 모델링한 관계로 물질 흐름과 event를 그리고 속성, metric이나 measure로 스타일을 입힌다. 문서의 예시 화면은 가상 데이터라 실제 성능이나 효과의 근거로 쓰지 않는다.
 
 ## 다른 시간 제어
 
