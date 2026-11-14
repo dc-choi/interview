@@ -81,6 +81,14 @@ Repeat interval은 group interval 이상이어야 하고 **group interval의 배
 
 Silence를 걸어두고 걷는 것을 잊으면 그 조건의 장애를 통째로 놓친다. 종료 시각을 반드시 유한하게 잡고, 활성 silence 목록을 주기적으로 점검한다.
 
+## 외부 Alertmanager 설정 이전
+
+Prometheus나 Mimir의 Alertmanager에서 Grafana Alerting으로 옮길 때는 알림 설정(컨택트 포인트, 정책, 템플릿 등)과 알림 규칙의 이전을 따로 다룬다. 아래는 2026-11-14에 Grafana v13.3.0 릴리스 노트(2026-10-27)와 가져오기 문서를 대조한 기준이며, 기능 토글과 미리보기 단계는 버전마다 바뀔 수 있다.
+
+- **두 단계 가져오기**: 알림 설정 가져오기는 Stage로 먼저 올린 뒤 검토하고 Promote로 확정하며, 확정 전에는 Revert로 되돌릴 수 있다. v13.3.0에서는 가져오기 마법사에서 방식을 고르는 첫 단계가 없어져 stage로 가져온 뒤 설정 화면에서 promote하는 흐름이 기본이 됐고, Mimir의 `alertmanager_config` 파일도 받는다. 가져오기 문서는 지원 범위를 Prometheus Alertmanager v0.27, Grafana Mimir 3.0.x까지로 적고, 이 기능을 기본 비활성인 `alertingImportAlertmanagerAPI`, `alertingMigrationWizardUI` 토글 뒤의 공개 미리보기로 설명한다.
+- **가져온 설정은 규칙이 가리키기 전까지 영향이 없다**: 가져온 정책 트리는 알림 규칙이 이름으로 그 트리로 라우팅해야 알림을 받는다. 그 전까지 기존 알림은 바뀌지 않고, 원본 Alertmanager의 설정은 그대로 남으며 Grafana가 원본에 다시 쓰지 않는다. 그래서 설정 가져오기와 규칙 가져오기, 규칙의 라우팅 전환은 별도 단계로 계획한다. 규칙을 가져온 트리로 돌린 뒤 Revert하면 그 트리가 지워져 알림이 기본 정책 루트로 가고, promote한 뒤에는 한 번에 되돌릴 수 없어 리소스를 하나씩 지워야 한다. API는 요청 헤더로 stage 없이 바로 promote할 수도 있어 두 단계가 강제되지는 않는다. 2026-11-14 기준 가져오기 문서의 UI 절차는 아직 방식 선택 단계를 적고 있어 릴리스 노트와 다르다.
+- **자동 동기화는 규칙을 옮기지 않는다**: 외부 Alertmanager 자동 동기화는 Mimir나 Cortex Alertmanager 데이터소스의 알림 설정만 다루고 알림 규칙은 가져오거나 동기화하지 않는다. v13.3.0에서 UI의 동기화 설정은 Config API(`spec.externalAlertmanagerSync.datasourceUid`)를 쓰도록 옮겨졌고, 릴리스 노트는 기존 `admin_config` 자동 동기화 경로를 정리했다고 적는다. `admin_config` API 자체의 제거 여부는 릴리스 노트에 없다. 이 동기화는 `alerting.syncExternalAlertmanager` 토글 뒤의 비공개 미리보기다.
+
 ## 운영 체크포인트
 
 - 탐지 지연 = 평가 간격 + pending period. SLO 대응 시간과 맞는지 역산한다. [[SLI-SLO]]
@@ -114,6 +122,9 @@ Silence를 걸어두고 걷는 것을 잊으면 그 조건의 장애를 통째�
 - [Grafana — Notification policies](https://grafana.com/docs/grafana/latest/alerting/fundamentals/notifications/notification-policies/)
 - [Grafana — Group alert notifications](https://grafana.com/docs/grafana/latest/alerting/fundamentals/notifications/group-alert-notifications/)
 - [Grafana — Create silences](https://grafana.com/docs/grafana/latest/alerting/configure-notifications/create-silence/)
+- [Grafana — Import Alertmanager configuration](https://grafana.com/docs/grafana/latest/alerting/configure-notifications/import-alertmanager-configuration/)
+- [Grafana v13.3.0 release notes — Grafana](https://github.com/grafana/grafana/releases/tag/v13.3.0)
+- [Grafana CHANGELOG — Grafana](https://github.com/grafana/grafana/blob/main/CHANGELOG.md)
 
 ## 관련 문서
 
