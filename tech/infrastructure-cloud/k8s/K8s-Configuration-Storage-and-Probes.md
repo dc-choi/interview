@@ -67,6 +67,21 @@ PV는 cluster storage resource이고 PVC는 namespaced storage 요청이다. Sto
 
 PVC가 Pending이면 위 순서대로 class, access mode, 용량, volumeMode와 selector를 비교하고, 원하는 PV가 이미 다른 PVC에 묶였는지 확인한다.
 
+### access mode 네 가지: 단위는 node인지 Pod인지
+
+| mode (CLI 약어) | mount 허용 범위 |
+|---|---|
+| `ReadWriteOnce` (RWO) | node 하나. 같은 node의 여러 Pod는 함께 읽고 쓸 수 있다 |
+| `ReadOnlyMany` (ROX) | 여러 node에서 read-only |
+| `ReadWriteMany` (RWX) | 여러 node에서 read-write |
+| `ReadWriteOncePod` (RWOP) | cluster 전체에서 Pod 하나. v1.29부터 stable이며 CSI volume만 지원 |
+
+- RWO를 Pod 하나 전용으로 오해하기 쉽다. 정의상 read-write mount의 단위는 node이며 같은 node에 배치된 Pod끼리는 함께 쓸 수 있다. 다른 node에서의 mount가 실제로 막히는지는 volume 종류와 driver에 따라 다르다(공식 문서는 mount 위치를 제약하는 경우가 있다고만 쓴다). 한 Pod만 쓰게 하려면 RWOP를 쓴다.
+- PV의 access mode는 그 volume이 지원하는 모드의 목록이고, 여러 모드를 지원해도 한 번에 하나의 모드로만 mount된다. 지원 모드는 storage plugin과 CSI driver마다 다르므로 driver 문서에서 확인한다.
+- access mode는 PVC와 PV의 짝 맞추기와 mount 위치 제약에 쓰일 뿐 mount 뒤의 쓰기를 막지 않는다. ROX로 만든 PV도 read-only를 보장하지 않으므로 읽기 전용이 필요하면 `volumeMounts[].readOnly` 같은 mount 설정을 따로 둔다(적용 제안).
+
+2026-11-14 Kubernetes v1.37 Persistent Volumes의 Access Modes 절을 대조했다.
+
 ### emptyDir: 컨테이너 재시작과 Pod 교체를 구분한다
 
 `emptyDir`는 Pod가 node에 배정될 때 만들어진다. `spec.volumes`에 볼륨을 선언하고 각 container의 `volumeMounts`에서 같은 `name`을 참조한다. 같은 Pod의 container들은 서로 다른 `mountPath`로 같은 파일을 공유할 수 있다.

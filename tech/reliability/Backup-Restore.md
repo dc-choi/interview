@@ -141,7 +141,7 @@ MPA는 원본 계정에 접근할 수 없을 때 별도 복구 계정에서 백�
 
 ## 흔한 함정
 
-- 복원을 한 번도 안 해봄 (가장 흔하고 가장 치명적)
+- 복원을 한 번도 안 해봄 (가장 흔하고 가장 치명적). 백업 작업의 실패 알림이 실제로 사람에게 닿는지와 백업 도구 버전도 함께 시험한다. 2017-01-31 GitLab.com 장애에서는 복제를 다시 맞추려던 작업자가 secondary로 착각하고 primary의 데이터를 지웠고(약 300GB), 일일 `pg_dump` 백업은 PostgreSQL 9.6 서버에 9.2 바이너리를 써서 실패하고 있었으며 실패 메일은 DMARC 미설정으로 수신 측에서 거부돼 아무도 몰랐다. DB 서버에는 디스크 스냅샷도 켜져 있지 않아 약 6시간 전 staging 갱신용으로 수동으로 만든 LVM 스냅샷으로 복구했고, 대역폭이 낮은 디스크 탓에 복사에만 약 18시간이 걸렸다. 스냅샷 이후 삭제 시점까지 약 6시간 동안 쓰인 DB 데이터(최소 프로젝트 5,000개, 댓글 5,000개, 사용자 약 700명)는 잃었고, 별도로 저장된 Git 저장소와 위키는 남았다. 사후 분석은 백업 절차에 소유자가 없어 아무도 시험하지 않았다는 점을 원인으로 들고 백업 모니터링, 복원 자동 시험, 데이터 내구성 소유자 지정과 PITR 검토를 개선 항목으로 올렸다. `pg_dump`는 지원 하한(PostgreSQL 18 문서 기준 9.2)까지의 오래된 서버는 덤프하지만 자기 메이저 버전보다 새로운 서버는 덤프를 거부하므로, 클라이언트의 메이저 버전을 서버와 같거나 더 새롭게 둔다
 - 백업을 운영과 같은 AZ/리전/계정에만 보관
 - 보존 기간이 컴플라이언스 요구보다 짧음
 - 대용량 논리 덤프가 RTO 안에 못 끝남(물리/스냅샷 고려)
@@ -187,6 +187,7 @@ MPA는 원본 계정에 접근할 수 없을 때 별도 복구 계정에서 백�
 - [Amazon RDS — Point-in-time recovery](https://docs.aws.amazon.com/AmazonRDS/latest/UserGuide/USER_PIT.html)
 - [PostgreSQL — pg_dump](https://www.postgresql.org/docs/current/app-pgdump.html)
 - [MySQL 8.4 — mysqldump](https://dev.mysql.com/doc/refman/8.4/en/mysqldump.html)
+- [Postmortem of database outage of January 31 — GitLab](https://about.gitlab.com/blog/2017/02/10/postmortem-of-database-outage-of-january-31/) — 2026-11-14 삭제 경위, `pg_dump` 버전 불일치, 실패 메일 거부, 스냅샷 복구 시간, 손실 범위와 개선 항목 대조. `pg_dump`의 새 서버 덤프 거부는 위 pg_dump 문서로 대조
 
 ## 관련 문서
 
