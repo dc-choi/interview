@@ -2,7 +2,7 @@
 tags: [palantir, foundry, ontology]
 status: done
 category: "AI엔지니어링(AIEngineering)"
-verified_at: 2026-11-08
+verified_at: 2026-11-14
 ---
 
 # Restricted View와 다중 datasource의 권한 계약
@@ -29,13 +29,38 @@ Column-wise MDO는 여러 dataset/RV의 컬럼을 같은 객체에 연결한다.
 
 MDO는 user edit와 materialization을 지원한다. 하나의 업무 객체로 이해하는 데이터는 MDO가 편리하며, 독립 객체 사이 관계를 표현하려면 link가 적절하다. link 탐색 비용과 속성 필터 비용의 차이도 함께 검토한다.
 
+## Branch에서 RV 정책 시험
+
+RV는 Global Branching과 연결되어 정책과 marking 변경을 main과 분리해 시험할 수 있다. Branch에 추가하지 않은 RV는 branch에서 열어도 main의 내용을 보여준다. Branch에 있는 상태에서 정책이나 marking을 고치면 RV가 그 변경과 함께 branch에 자동 추가된다. Backing dataset에 같은 branch가 먼저 있어야 하며 없으면 오류가 날 수 있다.
+
+기본 설정에서 역할별로 할 수 있는 일은 다음과 같다.
+
+| 역할 | Branch에서 할 수 있는 일 |
+|---|---|
+| Owner | RV를 branch에 추가하고 build하며 정책과 marking을 수정 |
+| Editor | RV를 branch에 추가하고 build만 가능 |
+
+Editor도 RV 소유권 없이 자기 branch 작업 흐름에 RV를 넣어 시험할 수 있다는 뜻이다. Branch에 추가하면 RV가 branch에서 자동 build되고, 그 RV를 backing으로 쓰는 객체 타입도 branch에서 자동 재색인된다. Branch에서 RV가 갱신되면 Ontology Manager 상단 배너의 **Index object type**으로 객체 타입을 branch에서 색인해야 Workshop과 Ontology Manager에 변경이 반영된다. 추가 때의 자동 재색인과 이 수동 색인의 경계는 문서가 밝히지 않는다. 위의 OSv2 자동 정책 전파와 달리 branch의 RV 변경 반영에 필요한 절차다.
+
+Branch RV의 조회 권한은 원래 RV와 같다. 원래 RV를 볼 수 있는 사용자는 branch 버전도 볼 수 있다. Branch의 backing dataset marking이 main과 다르면 main에서 제한하던 데이터를 viewer가 볼 수 있으므로, branch를 공유하기 전에 branch 수준 marking 변경이 적절한지 확인한다. Branch를 실험 공간으로만 보고 권한 노출 경로를 놓치지 않는다.
+
+Branch에서 RV를 제거하면 branch에만 있던 정책, marking과 build 결과가 버려지고 branch는 다시 main의 RV를 읽는다. Main의 RV는 영향을 받지 않지만 이 제거는 되돌릴 수 없다.
+
+Main으로 merge하려면 해당 RV에 필요한 approval을 모두 충족하고, branch 생성이나 마지막 rebase 뒤 main이 바뀌었으면 rebase를 먼저 끝내야 한다. Rebase와 approval이 모두 필요하면 rebase를 해결해야 reviewer가 검토할 수 있다. Rebase는 Compare 탭에서 변경마다 Base(main)나 Comparison(branch) 중 한 버전을 고르는 방식이며 더 세밀한 diff 단위 해결은 현재 지원하지 않는다.
+
+모든 RV 편집이 branch와 검토를 거치게 하려면 파일 시스템에서 **Branch protection > Protect with project policy**로 RV의 main을 보호한다. 보호된 RV는 main에서 정책이나 marking을 저장할 때 global branch를 거쳐야 한다.
+
+Edit-only 작업 흐름의 backing dataset, import로 만든 dataset, Fusion sheet에서 build한 dataset은 현재 branch에 추가할 수 없어 이런 dataset에 기대는 RV는 branch에서 build할 수 없다. 전체 목록은 Global Branching integration 문서에서 확인한다.
+
 ## 출처
 
 - [Palantir, configuring-rv-access-controls](https://www.palantir.com/docs/foundry/object-permissioning/configuring-rv-access-controls)
 - [Palantir, multi-datasource-objects](https://www.palantir.com/docs/foundry/object-permissioning/multi-datasource-objects)
+- [Palantir, Branching restricted views](https://www.palantir.com/docs/foundry/security/branching-restricted-views)
 
 ## 관련 문서
 
 - [[Palantir-Ontology-Object-Model]]
 - [[Palantir-Ontology-Guides]]
 - [[Palantir-Functions]]
+- [[Palantir-Branching-and-Packaging-Boundaries|Branch와 package의 격리 경계]]
