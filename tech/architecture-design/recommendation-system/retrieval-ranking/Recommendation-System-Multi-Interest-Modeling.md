@@ -96,6 +96,7 @@ weighted 집계  s = sum_i softmax_i( e_i^T gelu(W_e h_c) ) s_i
 - Offline 분할을 확인한다. Alibaba MIND의 offline 평가는 random 19:1 분할이고 Microsoft MIND는 시간 분할이다. 수명이 짧은 아이템일수록 시간 분할이 실제 serving에 가깝다.
 - 여러 지면에 같은 모델을 적용하면 지면마다 단계 위치, label과 [[Recommendation-System-Eligibility-Availability|eligibility]]가 다르므로 K와 집계 방식을 지면별로 다시 검증한다.
 - 관심 벡터를 사용자에게 보이는 설명으로 쓰려면 의미가 있는지 따로 검증한다.
+- 관심 벡터 사이를 벌리는 정규화만으로 결과가 다양해지지 않을 수 있다(커머스 발표 사례). max 집계에서는 가장 강한 관심 하나가 상위를 채울 수 있으므로, 상위 목록을 정한 관심의 점유율, 무작위 이력에 대한 관심별 입력 불변성과 노출 분포를 함께 본다. 진단과 보정은 [[Recommendation-System-Hubness-Popularity-Debiasing|허브니스와 사용자 무관 점수 성분]]에서 다룬다.
 
 ## 출처
 
@@ -107,6 +108,7 @@ weighted 집계  s = sum_i softmax_i( e_i^T gelu(W_e h_c) ) s_i
 
 - [[Recommendation-System-Candidate-Generation|후보 생성]]
 - [[Recommendation-System-Ranking-Reranking|랭킹과 재랭킹]]
+- [[Recommendation-System-Hubness-Popularity-Debiasing|허브니스와 사용자 무관 점수 성분]] — 다중 관심 모델의 과노출 진단과 보정
 - [[Recommendation-System-Industry-Commerce-Marketplace|커머스와 마켓플레이스 산업 사례]]
 - [[Recommendation-System-Evaluation-Experimentation|평가와 실험]]
 - [[Vector-Similarity-Search|벡터 유사도 검색과 ANN]]
