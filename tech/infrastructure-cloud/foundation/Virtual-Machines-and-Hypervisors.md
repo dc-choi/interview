@@ -1,9 +1,9 @@
 ---
 tags: [infrastructure, virtualization, vm, hypervisor]
 status: done
-verified_at: 2026-11-04
+verified_at: 2026-11-14
 category: "Infrastructure - 클라우드 기초"
-aliases: ["Virtual Machines and Hypervisors", "가상 머신과 하이퍼바이저", "서버 가상화 기초"]
+aliases: ["Virtual Machines and Hypervisors", "가상 머신과 하이퍼바이저", "서버 가상화 기초", "SDDC", "소프트웨어 정의 데이터센터"]
 ---
 
 # 가상 머신과 하이퍼바이저
@@ -47,13 +47,27 @@ Hyper-V 라이브 마이그레이션은 실행 중 VM의 호스트 이동 기능
 
 같은 안내는 단일 스냅샷을 72시간 넘게 유지하지 말라고 권고한다. 오래 남길수록 변경 파일이 커져 공간과 성능에 영향을 줄 수 있기 때문이다. 이 시간을 모든 클라우드 스냅샷의 공통 제한으로 일반화하지 않는다. 백업 도구가 만든 스냅샷도 백업 완료 후 정리 여부를 확인한다. 스냅샷 종류별로 백업으로 볼 수 있는지는 [[Backup-Restore|백업과 복원]]의 구분을 따른다.
 
+## SDDC는 세 가상화를 한 운영 계층으로 묶는다
+
+소프트웨어 정의 데이터센터(SDDC, Software-Defined Data Center)는 서버 가상화에 [[Storage-Access-Models#소프트웨어 정의 스토리지|소프트웨어 정의 스토리지]]와 [[Software-Defined-Networking|소프트웨어 정의 네트워킹]]을 더하고, 세 자원의 배포와 설정을 하나의 관리 계층에서 자동화하는 구성을 부르는 업계 용어다. 이 일반 정의는 입문 영상의 설명이며, 대조한 VCF 5.2와 9.0 문서에는 SDDC를 직접 정의한 문장이 없었다. VMware Cloud on AWS 문서처럼 SDDC를 자기 제품의 배포 단위로 정의하는 경우도 있으므로, 제품마다 무엇을 소프트웨어가 맡는지 구성 요소 단위로 확인한다.
+
+VMware Cloud Foundation(VCF)이 한 예다. Broadcom의 VCF 5.2 소개 문서는 VCF가 컴퓨트, 스토리지, 네트워크, 컨테이너와 클라우드 관리를 위한 소프트웨어 정의 서비스 묶음을 제공하고 SDDC의 배포와 수명주기 관리를 자동화한다고 설명한다. 같은 버전의 설계 문서는 SDDC Manager가 배포, 구성, 패치와 업그레이드 같은 전체 수명주기 작업을 맡는다고 설명한다. management domain에 배치한 SDDC Manager가 workload domain 생성, ESXi 호스트 추가와 제거, 가상 인프라 구성 요소의 수명주기 관리를 하며, 소프트웨어 번들로 새 domain을 배포하고 기존 domain을 패치한다. VCF 9.0 문서에서는 갱신 바이너리를 VCF Operations로 관리하고, 유지보수 릴리스에서 fleet 수준의 관리 구성 요소를 먼저 갱신한다(VCF Operations fleet management appliance, 이어서 VCF Operations 인스턴스, 나머지는 원하는 순서). 그 뒤 핵심 구성 요소를 SDDC Manager, NSX, vCenter, ESX 호스트, vSAN 순서로 갱신하라고 안내한다. 5.2의 설계 그림은 SDDC Manager가 NSX, vCenter Server, ESXi와 Aria Suite Lifecycle의 수명주기를 관리한다고 표시하므로, 갱신을 실행하는 도구가 버전에 따라 다르다. 운영 중인 버전의 문서로 다시 확인한다.
+
+**판단 기준:**
+
+- **자동화는 수작업을 없애지 않고 옮긴다.** 하나의 관리 콘솔이 배선과 장비별 설정을 대신하더라도 물리 서버, 케이블, 전원과 용량 계획은 남는다. 관리 계층 자체가 갱신 순서와 호환 버전 묶음을 지켜야 하는 운영 대상이 된다.
+- **공통 관리 계층은 공통 장애 지점이 될 수 있다.** 위 [[#실행 격리와 가용성을 나눈다|실행 격리와 가용성]]의 원칙처럼 관리 계층의 장애나 잘못된 갱신이 여러 domain에 영향을 줄 수 있는지 확인한다.
+- **퍼블릭 클라우드와 같다고 보지 않는다.** 클라우드도 자원을 소프트웨어로 제공하지만 사업자마다 가상화 기술과 책임 경계가 다르다. 특정 사업자가 VMware 제품 위에서 운영된다고 가정하지 않는다. 서비스 모델별 책임은 [[Cloud-Service-Models|클라우드 서비스 모델과 운영 책임]]에서 본다.
+- 배포 기간이 몇 주에서 몇 분으로 줄어든다는 식의 효과 수치는 환경과 자동화 범위에 달린 주장이므로 도입 근거로 쓰기 전에 자기 환경에서 측정한다.
+
 ## 이해 확인과 검증 범위
 
 - VM 네 대에 각각 vCPU를 늘려도 물리 호스트의 처리 능력이 그대로인 이유는 무엇인가?
 - 실행 중 이동, 장애 후 재시작과 백업 복원을 어떤 실패 상황에서 각각 사용하는가?
 - VMware의 변경 스냅샷만 남겼을 때 원본 디스크 손실을 복구할 수 없는 이유는 무엇인가?
+- SDDC의 관리 계층이 자동화한 뒤에도 사람이 계속 확인해야 하는 것은 무엇인가?
 
-공식 개념 설명과 제품 운영 문서를 대조했다. 실제 VM 생성, 장애 조치와 복원 시험은 수행하지 않았다.
+공식 개념 설명과 제품 운영 문서를 대조했다. 실제 VM 생성, 장애 조치와 복원 시험은 수행하지 않았다. SDDC 절은 2026-11-14 Broadcom의 VCF 5.2 소개와 설계 문서, 9.0 수명주기 문서만 대조했고 VCF를 직접 구축하지 않았다.
 
 ## 출처
 
@@ -67,6 +81,11 @@ Hyper-V 라이브 마이그레이션은 실행 중 VM의 호스트 이동 기능
 - [Microsoft Learn, Failover Clustering](https://learn.microsoft.com/en-us/windows-server/failover-clustering/failover-clustering-overview)
 - [Broadcom, Best practices for using VMware snapshots in the vSphere environment](https://knowledge.broadcom.com/external/article/318825/best-practices-for-using-vmware-snapshots.html)
 - [YouTube, 동국시스템즈 IT 채널, 가상화란? 서버 한 대가 여러 대가 되는 원리](https://www.youtube.com/watch?v=A6dsy9CTvII) — 2026-10-27 공개(전사 메타데이터 기준) 강의로 이 문서의 계기다. 서버 사용률, 서버 통합 비율과 이동 정지 시간 수치는 일반 기준값으로 채택하지 않았다.
+- [Broadcom TechDocs, VMware Cloud Foundation Overview (VCF 5.2)](https://techdocs.broadcom.com/us/en/vmware-cis/vcf/vcf-5-2-and-earlier/5-2/getting-started-with-vcf-5-2/natively-integrated-stack.html) — 2026-11-14 컴퓨트, 스토리지, 네트워크의 소프트웨어 정의 서비스와 SDDC 배포 자동화 설명 대조.
+- [Broadcom TechDocs, About Software-Defined Data Centers (VMware Cloud on AWS)](https://techdocs.broadcom.com/us/en/vmware-cis/cloud/vmware-cloud-on-aws/SaaS/operations-guide/about-software-defined-data-centers.html) — 제품 범위의 SDDC 정의가 있음을 확인한 검증 단계의 출처.
+- [Broadcom TechDocs, SDDC Manager Design for VMware Cloud Foundation (VCF 5.2)](https://techdocs.broadcom.com/us/en/vmware-cis/vcf/vcf-5-2-and-earlier/5-2/vcf-design-5-2/vcf-sddc-manager-design.html) — 2026-11-14 SDDC Manager의 배포와 수명주기 관리 범위 대조.
+- [Broadcom TechDocs, Lifecycle Management of VCF Core Components (VCF 9.0)](https://techdocs.broadcom.com/us/en/vmware-cis/vcf/vcf-9-0-and-later/9-0/lifecycle-management/lifecycle-management-of-vcf-core-components.html) — 2026-11-14 핵심 구성 요소의 갱신 순서 대조.
+- [YouTube, 길리랩, #NW 0021 - 데이터센터가 소프트웨어가 된다?! SDDC 90초 완벽 정리](https://www.youtube.com/watch?v=VBC27TIshIE) — 2026-11-01 공개 입문 영상으로 SDDC 절의 계기다. 퍼블릭 클라우드가 SDDC 기술 위에서 운영된다는 설명과 배포 기간 단축 수치는 공식 출처로 대조하지 못해 채택하지 않았다.
 
 ## 관련 문서
 

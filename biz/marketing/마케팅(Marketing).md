@@ -14,6 +14,7 @@ aliases: ["Marketing", "마케팅"]
 - [x] [[Creator-Brand-Collaboration|크리에이터와 브랜드의 협업 범위]] — 시청자 적합성, 표현과 수정 범위, 제작과 광고 활용 권한의 구분
 - [x] [[Website-Traffic-and-Ad-Revenue|웹사이트 트래픽과 광고 수익]] — 방문과 페이지뷰, 외부 추정치와 Page RPM 시나리오의 구분
 - [x] [[YouTube-Thumbnail-Testing|유튜브 제목과 썸네일 실험]] — 동시 비교, 시청 시간 기준과 제작 비용의 구분
+- [x] [[YouTube-Revenue-and-Production-Cost|유튜브 수익 단가와 제작 원가]] — RPM과 CPM, 예상과 확정 수익, 손익분기 조회수, 단계별 제작 원가
 - [x] [[Promotional-Products-Execution|판촉물 제작과 납기]] — 샘플, 배송 보상의 조건, 재고와 배포 성과의 구분
 - [x] [[Customer-Data-Activation-Strategy|고객 데이터 활성화의 도입 판단]] — 대상 조건, 실행 시점, 운영 개선과 구매 효과의 구분
 - [x] [[AI-Marketing-Analysis|AI 마케팅 분석]] — 조회와 판단, 마케팅 엔지니어의 고객 언어, 실험 실행과 승인 경계, 이탈 예측과 증분 효과
