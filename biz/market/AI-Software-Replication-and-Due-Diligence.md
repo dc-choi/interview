@@ -77,9 +77,10 @@ PhotoCraft의 공개 README는 UI, CLI, JSON 제어 채널과 MCP가 같은 명�
   2026-10-13 로드맵은 PhotoCraft 0.6.0을 2026-10-10 설치본에서 측정한 Photoshop 2026(27.11.0)과 비교해 기능 범위를 약 76%(일부 측정, 근거에 메뉴 628개 연결 포함), 실무 투입 준비를 약 45%(추정, 범위 40~50%)로 적었다. 같은 로드맵의 진행 기록은 2026-10-05 0.2.0 시점의 실무 투입 준비를 25~35%로 적으므로, 앞의 25~35%와 이 45%는 시점이 다른 같은 항목의 자체 추정이다. 영역별 표는 성능의 준비도를 25%로 매기고, 그 근거로 예산을 둔 성능 시나리오 25개 중 3개만 목표를 충족했다는 측정을 붙였다. 이 측정은 2026-10-05에 부하가 높은 장비에서 잰 첫 기준선이다. scorecard의 시나리오 58개는 예산 안 3개, 초과 또는 실패 22개, 추적만 하는 것 9개, 미실행 19개, 아직 측정할 수 없는 것 5개로 나뉜다. README는 아직 일상 전문 작업을 대신하지 못한다고 하고, PSD를 열고 다시 저장한 결과가 psd-tools 시험 파일 309개 중 307개에서 같게 렌더링된다고 보고한다. 이 비교는 다시 저장한 파일을 PhotoCraft가 다시 읽어 자체 렌더 결과와 맞춘 값이며, 같은 저장소의 scorecard와 파일 형식 parity 문서는 이 왕복 저장의 강제 하한을 308/309로 적어 README의 수치와 다르다. 다시 저장한 파일은 원본과 바이트 단위로 같지 않고, 로드맵은 PhotoCraft가 쓴 PSD를 Photoshop이 아직 안정적으로 받아들이지 못한다고 적었다.
 
   같은 저장소의 parity 문서는 측정을 위해 설치된 Photoshop 2026을 실행하지 않은 채 Info.plist, 파일 형식 플러그인 플래그, 언어 팩, 기본 단축키 파일, 프리셋과 주 실행 파일의 문자열을 살펴봤다고 적는다. 클린룸 표방과 별개로 원본 설치 파일을 어디까지 참고했는지는 기술 실사에서 따로 확인할 대상이다(적용 제안). 모두 프로젝트의 자체 보고이며 코드 독립성, 전체 기능과 적법성을 검증한 결과가 아니다(2026-10-20 저장소 대조, 확인 시점의 최신 릴리스는 0.10.0). 메뉴 연결 수와 실제 동작이 다르고 성능 예산 충족, PSD 왕복 저장과 전문 업무 이전 정도도 서로 다른 값을 보이므로, 위 표의 층위를 따로 재야 하는 사례로 본다.
+- **WordCraft의 자체 준비도:** 같은 storytold 조직의 WordCraft 저장소는 ArtCraft 팀이 만든 Rust 기반 오픈소스 클린룸 워드프로세서라고 소개하고, 공개 명세와 관찰로 만들었으며 모든 자산이 자체 제작이거나 공개 라이선스라고 밝힌다. README는 alpha 단계로 표시하고 .docx를 읽고 쓰며 macOS, Windows, Linux, BSD와 WebAssembly 브라우저에서 동작한다고 적는다. 기능 카탈로그의 리본과 메뉴 기능 97%에 명령이 있다고 하면서도 실무 투입 준비를 약 60%, 전문가의 주간 업무 기준 약 55%, 일상 필수 기능 기준 약 63%로 따로 적어, 명령 연결 비율과 실무 준비도가 다른 값이라는 점을 PhotoCraft와 같은 방식으로 보여 준다. 사람과 AI 에이전트가 모두 조작하도록 설계했다고 하며, 같은 명령 422개를 리본, 단축키, 명령 검색, CLI, JSON 제어 채널과 MCP 서버로 호출한다고 밝힌다. 모두 프로젝트의 자체 보고이며 제품을 실행하거나 parity 문서를 대조하지 않았다(2026-11-14 README 확인). 개발 기간, 코드 규모와 AI 공동 작성 커밋 비율은 README에서 확인하지 않아 쓰지 않았다.
 - **인수 실사 일화:** ARR 420만 달러, 성장률 40%, 약 600줄의 연결 코드로 된 기업의 인수를 철회했다는 소셜 게시물 발췌를 확보했다. 대상 회사, 계약과 코드에 접근하지 못해 독립 검증하지 않았다. 매출의 실재와 기술적 차별성이 다른 질문이라는 학습 후보로 보존한다.
 
-후속 확인은 앱 버전과 동일한 파일을 고정한 성능 비교, PSD 왕복 저장 검증, 인수 사례의 공개 근거 대조다. 이 기록은 해당 제품을 사거나 팔라는 투자 판단이 아니다.
+후속 확인은 앱 버전과 동일한 파일을 고정한 성능 비교, PSD 왕복 저장 검증, WordCraft의 parity 평가와 기능 체크리스트 대조 및 .docx 왕복 저장 검증, 인수 사례의 공개 근거 대조다. 이 기록은 해당 제품을 사거나 팔라는 투자 판단이 아니다.
 
 ## 출처
 
@@ -87,6 +88,7 @@ PhotoCraft의 공개 README는 UI, CLI, JSON 제어 채널과 MCP가 같은 명�
 - [바이브 코딩으로 만든 Photoshop 복제 앱들의 공세 — GeekNews](https://news.hada.io/topic?id=35237) — 비교 글 연결과 제공 발췌 대조, 제품 실행 미검증
 - [Your Moat Is Dead. Anyone Can Rebuild Your Product. — Tech Founder Stack, Mathias Klenk](https://www.techfounderstack.com/p/your-moat-is-dead-anyone-can-rebuild) — 전략 에세이, 재구현 방식과 기능 수준은 제품 독립 검증 아님
 - [PhotoCraft — storytold](https://github.com/storytold/photocraft) — 2026-10-20 main 브랜치의 README, ROADMAP.md(2026-10-13 갱신), docs/target-app-parity.md(2026-10-05 평가 보존), docs/scorecard.md, docs/file-format-parity.md의 자체 보고와 crates/io/tests/corpus.rs의 왕복 저장 시험 코드를 대조. 2026-10-22 README의 자동화 인터페이스, 일괄 처리 예제와 전문 작업 대체 제한을 추가 대조, 제품 실행 미검증
+- [WordCraft — storytold](https://github.com/storytold/wordcraft) — 2026-11-14 README의 자체 소개, 준비도와 플랫폼 표기를 대조, 제품 실행과 parity 문서 미검증
 - [AI 기업 인수에서는 ARR보다 코드부터 봐야 하는 이유 — GeekNews](https://news.hada.io/topic?id=35386) — 소셜 게시물 기반 사례, 원 거래와 코드 미확보
 - [Ask HN: If the models are so good, why doesn't OpenAI just start 100 companies? — Hacker News](https://news.ycombinator.com/item?id=50200997) — 2026-10-22 게시, 2026-10-27 질문 본문과 사례 댓글 대조. 참여자 의견과 익명 경험담이며 AI 기업의 전략을 확인한 자료가 아님
 - [Ask HN: 모델이 그렇게 뛰어나다면, OpenAI는 왜 직접 회사 100개를 세우지 않을까? — GeekNews](https://news.hada.io/topic?id=35862)

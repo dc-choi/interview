@@ -14,6 +14,22 @@ Vertex는 Ontology object/link를 그래프와 도표로 탐색하고 modeled co
 
 Graph template은 object/non-object parameter, 탐색과 style/layout을 저장한다. 일반 graph는 현재 탐색 상태이며 embedded graph를 수정해도 원 template은 바뀌지 않는다. Marketplace 제품은 Vertex graph template의 기능을 지원하지만 V1으로 저장한 Search Around와 intersection object를 쓰는 Search Around는 패키징할 수 없다(2026-11-09 대조). V1 Search Around는 V2에서 다시 저장한 뒤 패키징한다.
 
+## Graph template 만들기와 쓰기
+
+2026-11-14 Create a graph template 문서를 대조한 절이다.
+
+Graph template은 parameter를 받아 정해진 style의 graph를 생성하는 resource다. 한 객체나 object set으로 한 분석을 다른 대상에 다시 적용하거나, graph 생성 절차를 소비자에게 재사용 resource로 주거나, Object View나 Workshop 같은 다른 Foundry 앱에 embed할 때 쓴다. 어떤 Vertex analysis든 template으로 바꿀 수 있다.
+
+- 생성 순서: 오른쪽 위 저장 메뉴의 **Save as Template...**가 helper를 연다. Parameter 구성, Search Around 구성, layer 구성, layout과 유지할 graph 설정 선택, template summary 확인 뒤 저장한다.
+- Object parameter: template 사용자가 준 객체를 graph에 더하고, 그 객체에서 Search Around와 함수를 실행하게 한다. Interface parameter가 켜진 enrollment에서는 Ontology interface를 구현한 객체를 받는 parameter를 둘 수 있고 호환되는 Search Around를 지원한다.
+- Non-object parameter: 호환되는 입력에 값을 준다. 예로 custom Search Around function과 saved Search Around의 인자, 그리고 제공되는 환경에서 styling에 쓴 derived property 함수의 인자가 있다. 쓸 수 있는 type은 그 입력에 따라 다르며 입력에 **Add as graph parameter**가 보이면 그 값을 parameter로 노출한다.
+- Search Around 구성: object parameter마다 Ontology link Search Around, Search Around function이나 saved Search Around를 연결한다. 함수와 saved Search Around의 non-object 인자는 상수나 parameter에 매핑한다.
+- Layer 구성: styling을 고른 layer는 현재 graph의 style을 그대로 저장하고, 제외한 layer는 style을 template에 넣지 않는다.
+
+전용 template editor가 있는 환경에서는 parameter, Search Around, layer와 layout을 고치고 preview 입력값으로 생성 결과를 저장 전에 확인한다. Template에서 생성한 탐색 graph를 저장해도 원본 template은 바뀌지 않는다. 해당 control이 있는 Workshop Vertex widget 설정에서도 template을 만들거나 고치며 widget 입력으로 module 맥락의 preview를 본다. 이는 빌더가 widget 설정에서 template 자체를 고치는 경로이며, 사용자가 embedded graph에서 탐색을 바꾸는 것과 다르다([[Palantir-Vertex-Embedding-Save-and-Access-Boundaries|Vertex embed와 접근 경계]]).
+
+Template을 열면 parameter 값을 요구한다. URL query parameter `objectRid=<object RID>`나 `objectSetRid=<object set RID>`로 객체나 object set을 미리 채울 수 있다. 위 toolbar의 **Parameters**는 object parameter 값으로 쓰인 객체를 모두 선택하거나 값을 바꿔 graph를 다시 생성한다. 다시 생성하면 현재 graph가 비워질 수 있으므로 필요한 탐색은 먼저 저장한다([[Palantir-Vertex-Embedding-Save-and-Access-Boundaries|Vertex embed와 접근 경계]]).
+
 ## 관계 탐색 메뉴와 선택 연산
 
 2026-11-14 Explore object relationships 문서를 대조한 절이다. 날짜를 따로 적지 않은 절은 2026-10-16 대조 기준이다.
@@ -71,7 +87,7 @@ V2는 두 단계로 동작한다. 경로 계획은 Ontology의 object type과 li
 - Direction은 NONE/FORWARD/REVERSE, 생략 시 FORWARD다. 실제 linkTypeRid로 생성된 link에는 이 override가 적용되지 않는다.
 - Layout override는 앱에서 직접 실행할 때만 적용하고 template 생성에는 적용되지 않는다.
 
-Derived-property 함수는 object set 하나만 입력으로 받고 객체→primitive 또는 primitive-field custom type의 map을 반환한다. TSv1 FunctionsMap과 TSv2 Record<ObjectSpecifier,...>의 identity 형태를 구분한다. 단일 객체마다 호출하는 형태를 쓰지 않는 성능 전제가 있다. 예제의 0분모와 syntax 오류를 해결된 코드라고 복사하지 않았다.
+Derived-property 함수의 결과는 object view, 확장 node label과 layer styling의 node 색에 쓴다. 2026-11-14 대조 기준 batch derived property 함수는 export된 public 함수(TSv1 `@Function()`, TSv2 `export default`)로 release tag가 있어야 한다. Object set이나 object list를 받아 객체를 key로, primitive 또는 필드가 모두 primitive인 custom type을 값으로 하는 map을 반환한다. 반환형은 TSv1 `FunctionsMap<ObjectType, CustomType>`과 TSv2 `Record<ObjectSpecifier<ObjectType>, CustomType>`로 key의 identity 형태가 다르다(타입 서명에서 읽은 해석). 추가 인자를 지원하면 함수 입력 control에서 상수를 주거나, 제공되는 환경에서 호환되는 graph template parameter에 묶어, parameter만 바꿔 같은 styling을 다른 값으로 재사용한다. Batch 실행은 객체마다 따로 함수를 부르지 않아 큰 graph에서 느려지는 것을 피하므로, 큰 graph에는 batch 함수를 쓰고 대표 규모의 객체 수로 성능을 시험한다. 공식 예제의 취소율 계산은 항공편이 없는 route의 0 나누기를 처리하지 않아 빈 목록이면 NaN이 되므로 그대로 복사하지 않는다(운영 제안).
 
 ## 시각적 그룹과 원본
 
