@@ -35,6 +35,20 @@ git worktree prune
 
 제거 전 각 worktree에서 `git status`를 확인하고 변경을 커밋, stash 또는 별도 patch로 보존한다. 디렉터리를 파일 시스템에서 먼저 지웠다면 관리 메타데이터가 남을 수 있고 `prune`이 이를 정리한다. 이동식 디스크처럼 일시적으로 사라지는 worktree는 `git worktree lock`으로 prune 대상이 되지 않게 할 수 있다.
 
+## worktree 관리 CLI가 덜어 주는 것: Worktrunk
+
+순수 Git에서는 worktree 하나를 만들고 들어가고 합치고 지우는 데 브랜치 이름과 경로를 여러 번 다루는 명령이 필요하다. Worktrunk는 이 과정을 브랜치 이름 중심으로 묶은 worktree 관리 CLI이며, 여러 코딩 에이전트를 병렬로 돌리는 흐름을 겨냥한다. 아래는 2026-11-14 공식 문서(v0.81.0, MIT 또는 Apache-2.0)를 대조한 내용이며 1.0 이전이라 명령과 설정이 바뀔 수 있다.
+
+- **이동은 셸 함수가 한다**: 자식 프로세스는 부모 셸의 디렉터리를 바꿀 수 없어서 `wt config shell install`이 셸 초기화 파일에 wrapper 함수를 추가한다. 이 단계를 건너뛰거나 `git wt`처럼 Git의 하위 명령으로 실행하면 다른 동작은 되지만 디렉터리 이동만 일어나지 않는다.
+- **`wt merge`**: 현재 브랜치를 대상 브랜치로 합치는 방향이다(`git merge`와 반대). 기본값은 대상 이후 커밋을 하나로 squash하고, 필요하면 대상 위로 rebase한 뒤 pre-merge hook을 돌리고, fast-forward로 대상을 옮기고, worktree와 브랜치를 지운다. Fast-forward가 안 되는 병합은 거부하며, rebase 충돌이 나면 병합을 멈추고 rebase를 열린 채로 남겨 사람이 풀거나 중단하게 한다. 로컬 대상 브랜치로만 합치고 fetch하지 않는다. `--no-squash`, `--no-rebase`, `--no-remove`, `--no-ff` 등으로 단계를 끌 수 있다.
+- **`wt list`**: worktree마다 브랜치, 작업 트리 상태, 기본 브랜치 대비 ahead/behind와 diff 크기, 원격 상태를 한 표로 보여 준다. 에이전트 plugin을 설치하면 작업 중(🤖)과 대기(💬) 표시가 붙는다. 에이전트가 강제 종료되면 표시가 남을 수 있어 `wt config state marker clear`로 지운다.
+- **무시된 파일 복사**: 새 worktree에는 `.gitignore` 대상인 의존성과 빌드 캐시가 없어 매번 처음부터 설치하고 빌드한다. `wt step copy-ignored`는 이를 다른 worktree에서 복사하며, APFS, btrfs, XFS, ReFS에서는 파일 단위 reflink(copy-on-write)로 공간을 거의 쓰지 않는다. ext4와 NTFS에서는 전부 복사한다. `.worktreeinclude`로 복사 대상을 줄일 수 있다.
+- **포트 분리**: hook template의 `hash_port` filter는 브랜치 이름에서 10000~19999 사이의 고정 포트를 만들어 worktree마다 개발 서버 포트가 겹칠 가능성을 낮춘다. 해시라 충돌이 없다는 보장은 아니며, 같은 브랜치 이름을 여러 저장소에서 쓰면 `(repo ~ '-' ~ branch) | hash_port`처럼 저장소 이름을 함께 해시한다.
+- **Project hook 승인**: 저장소 설정의 hook 명령은 처음 실행할 때 승인을 묻고, 명령이 바뀌면 다시 묻는다. `--yes`는 이 확인을 건너뛰므로 자동화에서 쓰기 전에 실행될 명령을 먼저 검토한다.
+- **에이전트 연동**: Claude Code, Codex, OpenCode, Gemini CLI 등에 plugin을 제공한다. worktree 수명주기 hook을 제공하는 Claude Code와 OpenCode 2의 plugin은 에이전트가 스스로 만드는 worktree도 Worktrunk 경로로 생성하고 제거하게 한다(Claude Code는 `WorktreeCreate`와 `WorktreeRemove` hook 사용, 데스크톱 앱은 이 hook을 실행하지 않는다).
+
+Reflink 복사도 공유가 아니라 복사라서 이후 쓰기는 worktree마다 분리되지만, 절대 경로를 담은 산출물은 복사만으로 쓸 수 없다. 공식 문서는 Python 가상 환경이 절대 경로를 담아 복사할 수 없으므로 새 worktree에서 `uv sync` 등으로 다시 만들라고 안내한다. 두 에이전트가 같은 파일을 고치면 `wt merge`도 충돌을 사람에게 넘기므로, 작업 분할 단계에서 파일 소유를 나누는 일은 그대로 남는다. 성능 수치(14GB `target/` 복사 2분 대 20초)는 공식 문서의 자체 측정이며 직접 재현하지 않았다.
+
 ## hooks가 실행되는 위치
 
 Git hooks는 commit, rebase, push 수신 같은 이벤트에서 이름이 정해진 실행 파일을 호출한다. 기본 hook 디렉터리는 `$GIT_DIR/hooks`이며 `core.hooksPath`로 다른 경로를 지정할 수 있다.
@@ -81,6 +95,7 @@ hook은 개발자 권한으로 실행되므로 외부 기여 저장소의 설치
 
 - Git 공식 문서: [git worktree](https://git-scm.com/docs/git-worktree), [githooks](https://git-scm.com/docs/githooks), [core.hooksPath](https://git-scm.com/docs/git-config#Documentation/git-config.txt-corehooksPath), [gitrepository-layout, hooks](https://git-scm.com/docs/gitrepository-layout)
 - 도구 공식 문서: [husky, Get started](https://typicode.github.io/husky/get-started.html), [husky, How to](https://typicode.github.io/husky/how-to.html), [husky, Troubleshoot](https://typicode.github.io/husky/troubleshoot.html), [husky npm 9.1.7](https://www.npmjs.com/package/husky), [pre-commit](https://pre-commit.com/), [lint-staged](https://github.com/lint-staged/lint-staged), [commitlint, Local setup](https://commitlint.js.org/guides/local-setup.html)
+- Worktrunk 공식 문서(2026-11-14 v0.81.0 대조): [Worktrunk](https://worktrunk.dev/), [merge](https://worktrunk.dev/merge/), [list](https://worktrunk.dev/list/), [step](https://worktrunk.dev/step/), [Shell integration](https://worktrunk.dev/shell-integration/), [hook](https://worktrunk.dev/hook/), [Agent Integration](https://worktrunk.dev/claude-code/), [Tips and patterns](https://worktrunk.dev/tips-patterns/)
 - [pre-commit install_uninstall.py, core.hooksPath 설정 시 설치 거부 — GitHub](https://github.com/pre-commit/pre-commit/blob/main/pre_commit/commands/install_uninstall.py)
 - GitHub 공식 문서: [About rulesets](https://docs.github.com/en/repositories/configuring-branches-and-merges-in-your-repository/managing-rulesets/about-rulesets), [GitHub Actions](https://docs.github.com/en/actions)
 - 얄팍한 코딩사전, [Git Hook](https://www.inflearn.com/courses/lecture?courseId=328284&unitId=405146), [worktree, 여러 브랜치 동시에 작업하기](https://www.inflearn.com/courses/lecture?courseId=328284&unitId=405703)
@@ -88,3 +103,4 @@ hook은 개발자 권한으로 실행되므로 외부 기여 저장소의 설치
 ## 관련 문서
 
 - [[Git-Working-Tree-and-Commits|Git 작업 트리와 커밋 관리]], [[Development-Workflow|개발 워크플로]], [[GitHub-Actions|GitHub Actions]]
+- [[Agent-Terminal-Workspaces|에이전트 터미널과 작업 공간]] — 병렬 에이전트의 worktree 분리와 공유 자원

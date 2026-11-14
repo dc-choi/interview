@@ -40,7 +40,7 @@ Desktop 앱의 작업 구분은 계정마다 다르다(2026-10-12 공식 도움�
 
 - `/model`: 플래그십(장기 계획, 아키텍처) ~ 저비용 고속(단순 변환) 중 선택 ([[LLM-Model-Tiers|모델 티어]]). 2026-09-30 기준 Pro, Max, Team, Enterprise와 Anthropic API의 기본값은 Opus 5.5이고, Anthropic API에서는 1M 컨텍스트로 돌며 약 967K 토큰에서 자동 압축한다. 별칭 `opusplan`은 plan 모드에서 Opus, 실행에서 Sonnet을 써서 계획과 구현의 모델을 나눈다
 - `/effort [low~max|auto]`: 사고만이 아니라 응답 전체(텍스트, 도구 호출, 사고)에 쓸 토큰의 성향이다. 엄격한 예산이 아니라 행동 신호라 낮춰도 어려운 문제에서는 생각한다. Claude Code 기본값은 Opus 5.5와 Sonnet 5.5가 medium, 그 밖의 지원 모델은 대체로 high다. 오타 수정은 low, 아키텍처 분석은 high 이상. `/model` 선택기에서도 ←/→로 effort를 바꾸며, 슬라이더와 선택기 모두 `Enter`로 확정하면 이후 세션의 기본값이 되고 `s`로 확정하면 이번 세션에만 적용된다(v2.1.257+). max는 현재 세션만. 워크플로우 자동 오케스트레이션을 켜는 `ultracode`는 v2.1.284부터 `/effort`의 별도 토글(슬라이더에서 `Tab`, 또는 `/effort ultracode`와 `/effort ultracode off`)이라 xhigh를 강제하지 않고 어느 effort에서나 유지되며, xhigh를 지원하는 모델에서만 켤 수 있다 (버전 등 조건은 [[Claude-Code-Dynamic-Workflows|동적 워크플로우]]가 정본)
-- `ultrathink` 키워드를 메시지에 넣으면 그 턴만 더 깊이 추론 (in-context 지시, "think hard"류는 인식 안 됨)
+- `ultrathink` 키워드를 메시지에 넣으면 세션 effort 설정은 그대로 두고 그 턴만 더 깊이 추론하라는 in-context 지시가 붙는다("think hard"류는 키워드로 인식하지 않는다). 2026-11-14 공식 모델 설정 문서와 CHANGELOG 대조 기준, v2.1.68에서 다시 들어올 때는 다음 턴을 high effort로 켜는 키워드였고, v2.1.311부터 인터랙티브 터미널에서는 그 턴의 실제 effort를 xhigh로 올리며 Claude가 작업 중일 때 입력하면 그 턴의 남은 부분에 적용된다. 공식 문서 기준 대상 모델은 Opus 5.5, Sonnet 5.5, Haiku 5.5, Fable 5.2, Fable 5.1이다. 올릴 수 있는 위치에서만 단어가 무지개색으로 표시된다. 따옴표, 괄호, 경로나 명령 안에 있거나 `/`로 시작하는 입력, `CLAUDE_CODE_EFFORT_LEVEL`이나 `maxEffortLevel`, 조직 한도가 xhigh보다 낮은 경우, Amazon Bedrock처럼 올릴 수 없는 경로에서는 무지개색이 나오지 않으며, 이때는 in-context 지시만 붙는 것으로 읽힌다(문서 문구에서 추론). VS Code 확장은 v2.1.316부터 터미널처럼 xhigh로 올리며, 텔레메트리를 끈 경우는 v2.1.317에서 고쳐졌다. 같은 v2.1.316에 키워드 자체를 끄는 `CLAUDE_CODE_DISABLE_ULTRATHINK` 환경 변수가 추가됐다. 평소 effort를 낮게 두고 어려운 턴에만 붙이는 용도이며, 일시적으로 더 강한 모델의 조언을 받는 [[Claude-Code-Extension-Reference|advisor]]와는 별개 기능이다
 
 높을수록 좋지만 토큰 = 비용이므로 업무별로 조절하는 것이 요점. 비용은 호출 단가에 재작업까지 더해 본다. 정답 조건이 복잡한 코드를 낮은 모델이나 effort로 시작하면 초기 오류를 고치는 디버깅 루프에서 토큰을 더 쓴다는 실무 경험이 있다(측정 수치는 없다). 스펙이 확정된 반복 구현은 낮은 설정으로 충분한지 같은 과업으로 비교해 정한다.
 
@@ -94,7 +94,7 @@ Desktop 앱의 작업 구분은 계정마다 다르다(2026-10-12 공식 도움�
 - [Claude Code CHANGELOG — Anthropic](https://github.com/anthropics/claude-code/blob/main/CHANGELOG.md)
 - [클로드 코드 가이드 (클래스 101 기초 트랙) — WikiDocs](https://wikidocs.net/book/19104)
 - [Claude Code — Advanced setup](https://code.claude.com/docs/en/setup)
-- [Claude Code — Model configuration](https://code.claude.com/docs/en/model-config)
+- [Claude Code — Model configuration](https://code.claude.com/docs/en/model-config) — 2026-11-14 ultrathink의 xhigh 적용 조건과 대상 모델 대조(CHANGELOG의 2.1.68, 2.1.311, 2.1.316 항목과 함께)
 - [Claude Code — Interactive mode](https://code.claude.com/docs/en/interactive-mode)
 - [Claude Code — Tools reference](https://code.claude.com/docs/en/tools-reference)
 - [Claude Code — Checkpointing](https://code.claude.com/docs/en/checkpointing)

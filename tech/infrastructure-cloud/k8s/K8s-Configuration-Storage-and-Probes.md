@@ -56,6 +56,17 @@ PV는 cluster storage resource이고 PVC는 namespaced storage 요청이다. Sto
 - PV가 있다고 backup이 생기는 것은 아니다. application-consistent snapshot, restore drill과 retention을 별도로 설계한다.
 - 여러 Pod가 같은 filesystem을 mount할 수 있다는 것과 application data가 동시 쓰기에 안전하다는 것은 별개다.
 
+### 미리 만든 PV에 PVC가 붙는 조건
+
+관리자가 PV를 미리 만들어 두는 정적 provisioning에서는 control plane의 control loop가 새 PVC에 맞는 PV를 찾아 묶는다. 아래는 2026-11-14 Kubernetes v1.37 공식 문서를 대조한 내용이다.
+
+- **class 일치**: PV와 PVC의 `storageClassName`이 같아야 한다. 동적 provisioning을 쓰지 않아도 이 필드가 짝을 맞추는 기준이 된다. PVC의 `storageClassName: ""`은 class 없는 PV만 요청하며 동적 provisioning도 끈다. 필드를 아예 생략하면 다르게 처리된다. `DefaultStorageClass` admission plugin이 켜져 있고 기본 StorageClass가 있으면 기본 class의 PV에만 묶이고, 나중에 기본 class가 생기면 필드가 없던 PVC에 그 class가 소급해 채워진다. 그래서 class 없는 정적 PV에 묶으려면 `""`을 명시한다.
+- **access mode와 용량**: PVC가 요청한 access mode를 PV가 지원해야 하고, 용량은 요청 이상이어야 한다. 요청보다 큰 PV에 묶일 수 있지만 반대는 안 된다. 50Gi PV만 있는 cluster에서 100Gi PVC는 맞는 PV가 생길 때까지 계속 Pending이다. `selector`를 함께 쓰면 class와 label 조건을 모두 만족해야 한다. `volumeMode`도 맞아야 해서 Filesystem PV와 Block PVC(또는 그 반대)는 묶이지 않는다.
+- **1:1 독점**: 한 번 묶이면 PV와 PVC는 ClaimRef로 서로를 가리키는 1:1 관계이며 다른 PVC가 그 PV를 쓰지 못한다. PVC가 namespace 객체라서 `ReadOnlyMany`, `ReadWriteMany` PV도 한 namespace 안에서만 여러 Pod가 공유한다.
+- **Pod 연결**: Pod는 같은 namespace의 PVC를 `volumes[].persistentVolumeClaim.claimName`으로 참조하고, container는 그 volume 이름을 `volumeMounts`에 적어 mount 경로를 정한다. Access mode는 짝 맞추기와 mount 위치 제약에 쓰이며, mount 뒤의 쓰기 보호를 강제하지 않는다.
+
+PVC가 Pending이면 위 순서대로 class, access mode, 용량, volumeMode와 selector를 비교하고, 원하는 PV가 이미 다른 PVC에 묶였는지 확인한다.
+
 ### emptyDir: 컨테이너 재시작과 Pod 교체를 구분한다
 
 `emptyDir`는 Pod가 node에 배정될 때 만들어진다. `spec.volumes`에 볼륨을 선언하고 각 container의 `volumeMounts`에서 같은 `name`을 참조한다. 같은 Pod의 container들은 서로 다른 `mountPath`로 같은 파일을 공유할 수 있다.
@@ -163,7 +174,7 @@ HTTP, TCP, exec와 gRPC probe를 사용할 수 있다. 성공 응답만 만드�
 - [Kubernetes Docs, Volumes](https://kubernetes.io/docs/concepts/storage/volumes/#emptydir) — 2026-11-03 emptyDir의 수명, mount 연결, 저장 매체와 용량 경계 대조
 - [Kubernetes Docs, ConfigMap](https://kubernetes.io/docs/concepts/configuration/configmap/)
 - [Kubernetes Docs, Secrets](https://kubernetes.io/docs/concepts/configuration/secret/)
-- [Kubernetes Docs, Persistent Volumes](https://kubernetes.io/docs/concepts/storage/persistent-volumes/)
+- [Kubernetes Docs, Persistent Volumes](https://kubernetes.io/docs/concepts/storage/persistent-volumes/) — 2026-11-14 v1.37 정적 바인딩의 class, access mode, 용량, 1:1 독점과 Claims As Volumes 대조
 - [Kubernetes Docs, probes](https://kubernetes.io/docs/concepts/workloads/pods/probes/)
 - [Kubernetes Docs, resource management](https://kubernetes.io/docs/concepts/configuration/manage-resources-containers/)
 - [Kubernetes Docs, configure liveness, readiness and startup probes](https://kubernetes.io/docs/tasks/configure-pod-container/configure-liveness-readiness-startup-probes/)

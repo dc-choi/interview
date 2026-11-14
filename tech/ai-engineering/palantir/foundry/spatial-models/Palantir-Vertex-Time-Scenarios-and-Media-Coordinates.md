@@ -21,8 +21,19 @@ Event object는 시작/끝 timestamp가 있고 time series는 시각별 측정�
 - Event 시간 filter는 시작과 끝 property가 모두 지정되어야 동작한다. 개별 event의 끝 값이 비어 있으면 filter는 그 event를 open-ended로 다룬다.
 - 끝 값이 빈 event와 끝 property를 지정하지 않은 object type은 다르다. 진행 중 event를 표현하려면 끝 property를 지정해 두고 값만 비운다(설계 제안).
 - 색(intent)은 `vertex` kind의 `event_intent.warning`(주황), `danger`(빨강), `primary`(파랑), `success`(초록) type class로 정하며 보통 primary key property에 둔다. 공식 문서는 이 type class로 색과 심각도(severity)를 함께 정한다고 설명하며 별도 심각도 필드는 없다. 따라서 색을 업무 심각도 판정의 근거로 삼으려면 type class 부여 규칙을 따로 정해 둔다(설계 제안).
+- Legacy type class는 `timeseries` kind의 `event_id`(보통 primary key), `event_start_time`, `event_end_time`(property 지정은 필수, 개별 값은 비어도 된다), `event_description`(선택) 네 가지다. Intent type class는 event object의 Capabilities 탭이나 property의 type class 설정 어느 쪽에서도 붙일 수 있다.
 
 Selected time은 readout의 시점, time window는 chart 범위, timeline filter는 해당하지 않는 node를 흐리게 표시하는 제어다. 이 표시를 underlying object 권한이나 dataset 삭제로 해석하지 않는다. Missing-data warning은 선택시각과 가장 가까운 관측 간 거리의 설정값이다. Poll interval은 갱신 확인 주기이며 관측시각이나 지연 SLA가 아니다.
+
+## Graph에서 event와 time series 탐색
+
+2026-11-14 related events, related time series와 timeline 문서를 대조한 내용이다.
+
+- Event 표시: 선택한 객체에 link된 event는 selection panel과 그 객체의 badge로 event 기간 동안 보인다. Badge는 layer styling에서 object type을 고르고 linked events 옵션을 켜야 node나 edge에 붙는다. Event의 전체 속성을 보려면 관련 객체에서 Search Around로 event object 자체를 graph에 더한다. Open linked events는 event를 series panel에 올려 time selection으로 여러 event 사이를 이동하게 한다.
+- Time series 표시: 선택한 객체의 Series 탭에 관련 time series가 나오고, series view에 더하면 graph 아래 timeline에서 시점을 고른다. Quiver나 Object Explorer로 열어 자세히 보거나, 객체 label(extended label)이나 위치를 자유롭게 둘 수 있는 readout에 값을 붙인다. 모든 설치 환경에 time series 기능이 포함되지는 않는다.
+- Series 관리: legend가 있는 경우 숨김은 group 단위나 개별 series 단위로 하고, 색 변경은 개별 series 항목에서 한다. Group 메뉴는 series 제거와 관련 객체로 graph 중심 이동(탐색이 켜진 경우)을 제공한다. 숨긴 series는 view 설정에 남고, view에서 제거해도 원천 데이터는 지워지지 않는다. Selection panel의 series preview와 time series view의 축 표시 설정은 서로 따로 움직인다.
+- Timeline: 시각 property 하나는 선, 시작과 끝 property 쌍은 막대로 그린다. Layers panel의 Timeline shape에서 shape(막대처럼 두 property를 쓰는 것과 Diamond처럼 하나를 쓰는 것)와 property를 고르면 그 object type의 모든 instance에 같은 shape가 적용되고, 색은 고정색이나 property와 measure 기반 Color by로 정한다. Shift와 좌클릭 drag 또는 Time filter 버튼으로 시간 filter 구간을 만들고, expand로 object type마다 행을 나눈다. 아무것도 안 보이면 Zoom to fit으로 현재 time range에 맞춘다.
+- Playback: 재생 버튼은 cursor를 속도 preset(1x, 2x, 5x, 10x, 100x 등)으로 자동 이동시키고, time filter가 있으면 그 구간, 없으면 timeline의 time window 안에서 반복한다.
 
 URL time은 UNIX milliseconds 또는 ISO 날짜/시각이다. Selected time만 주면 기본 window를 그 중심에 두고, start/end만 주면 selected time은 start가 된다. Object 추가/function 실행용 URL parameter는 create 경로에 한정되고 time parameter는 기존 graph에도 적용된다.
 
