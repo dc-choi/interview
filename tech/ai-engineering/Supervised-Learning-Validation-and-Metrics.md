@@ -1,7 +1,7 @@
 ---
 tags: [ai, machine-learning, evaluation, scikit-learn, learning]
 status: done
-verified_at: 2026-11-09
+verified_at: 2026-11-14
 category: "AI엔지니어링(AIEngineering)"
 aliases: ["지도학습 검증과 평가 지표", "Supervised Learning Validation and Metrics", "교차 검증", "Cross-Validation"]
 ---
@@ -57,6 +57,28 @@ scores = cross_val_score(model, X_train, y_train, cv=5, scoring="f1_macro")
 
 드문 클래스를 놓치는 비용이 큰 과업이면 macro 평균이 그 실패를 드러낸다. 모든 클래스가 똑같이 중요하다는 가정이 맞지 않으면 macro 점수 하나로 판단하지 말고 클래스별 정밀도와 재현율을 함께 본다.
 
+## 임계값, ROC와 유병률
+
+이진 분류기의 점수(`predict_proba`의 양성 확률이나 `decision_function` 값)는 임계값을 정해야 클래스가 된다. scikit-learn의 `predict`는 확률이 0.5보다 크거나 decision score가 0보다 크면 양성으로 보는 고정 규칙이며, 공식 문서는 이 규칙이 대부분의 용도에 이상적이지 않다고 설명한다.
+
+| 지표 | 계산 | 다른 이름 |
+|---|---|---|
+| 민감도(sensitivity) | `TP / (TP + FN)` | 재현율, TPR |
+| 특이도(specificity) | `TN / (TN + FP)` | TNR. `1 - 특이도`가 FPR이다 |
+| 정밀도(precision) | `TP / (TP + FP)` | 양성예측도(PPV) |
+
+- 임계값을 낮추면 FN이 줄어 민감도가 오르고 FP가 늘어 특이도가 떨어진다. 올리면 반대다. ROC 곡선은 임계값을 바꾸며 FPR(가로)과 TPR(세로)을 그린 것이고 `roc_auc_score`는 그 아래 면적을 한 수로 요약한다. AUC는 임계값을 하나로 정하지 않은 요약이므로 운영에서는 곡선 위의 한 점(운영점)을 따로 고른다.
+- 운영점은 오류 비용으로 정한다. 의료 검사를 예로 들면 놓침(FN)의 비용이 큰 선별 단계는 목표 민감도를 먼저 정하고 그 점의 특이도를 확인한다. 오탐(FP)이 침습적 처치나 큰 비용으로 이어지는 확정 단계는 특이도와 정밀도를 우선한다. 오탐이 너무 많으면 사람의 검토 대기열이 넘치고 경고를 무시하게 되므로 FN만 보고 임계값을 낮추지 않는다.
+- `TunedThresholdClassifierCV`는 내부 교차 검증(기본 5-fold stratified)으로 지정한 지표(기본 balanced accuracy)를 최대화하는 임계값을 고른다. 분류기를 학습한 데이터로 임계값까지 고르면 과적합 위험이 있으므로, 이미 학습한 모델에 `cv="prefit"`을 쓸 때는 새 검증 세트를 쓴다. 테스트 세트로 임계값을 고르면 그 세트는 검증 데이터가 된다.
+- 두 모델을 각자의 기본 임계값 하나에서만 비교하면 운영점이 서로 달라 우열이 바뀔 수 있다. 같은 민감도에서 특이도를 비교하거나 ROC 곡선 전체를 함께 본다.
+- 점수를 확률로 그대로 읽으려면 보정(calibration)을 따로 확인한다. 잘 보정된 분류기는 0.8 근처의 확률을 낸 표본 중 약 80%가 실제 양성이다.
+
+유병률(전체 중 실제 양성의 비율)이 낮으면 민감도와 특이도가 높아도 정밀도가 낮을 수 있다. FPR(`1 - 특이도`)이 유병률보다 충분히 작지 않으면 예측 양성의 다수가 FP가 된다. 민감도와 특이도는 실제 양성 안과 실제 음성 안에서 계산하지만 정밀도는 예측 양성 안의 비율이라 두 집단의 크기에 따라 달라진다. 유병률을 `p`라 하면 정밀도는 `민감도 × p / (민감도 × p + (1 - 특이도) × (1 - p))`다.
+
+예를 들어 1만 명 중 유병률 1%(양성 100명)에서 민감도 95%면 TP는 95다. 특이도 90%면 FP가 990이라 정밀도는 95/1085로 약 8.8%이고, 특이도 99%면 FP가 99라 95/194로 약 49%다. 이 집단에서 모두 음성으로 답하는 모델의 정확도는 99%다. 양성과 음성을 절반씩 넣은 평가 세트의 정밀도는 유병률이 낮은 실제 환경보다 높게 나오므로, 정밀도와 정확도를 볼 때는 평가 데이터의 클래스 비율과 대상 집단을 함께 확인한다. scikit-learn의 class likelihood ratio(LR+, LR-)는 유병률에 따라 변하지 않아, 균형에 가까운 연구 데이터의 결과를 유병률이 낮은 대상 집단으로 옮길 때 쓴다. 이때 사후 odds는 LR과 사전 odds(유병률로 계산)의 곱이다.
+
+생성형 모델을 분류기로 쓰면 점수 대신 자유 서술 답변이 나올 수 있다. 이 경우 답변을 양성과 음성으로 바꾸는 파싱 규칙을 평가 전에 고정한다. 규칙이 바뀌면 혼동 행렬이 바뀐다. 프롬프트 문구(예: 의심되면 양성으로 답하라)도 임계값처럼 운영점을 옮길 수 있다는 설명이 있으므로(공식 문서로 확인하지 않은 평가 설계 제안), 프롬프트도 검증 세트에서만 고치고, 모델 버전과 샘플링 설정을 기록하며 같은 입력의 반복 실행 결과가 흔들리는지 확인한다.
+
 ## 회귀 지표와 로그 오차
 
 | 지표 | 계산 | 확인할 점 |
@@ -86,18 +108,22 @@ scores = cross_val_score(model, X_train, y_train, cv=5, scoring="f1_macro")
 1. 표준화를 전체 데이터에 먼저 적용한 실험과 `Pipeline` 안에서 적용한 실험이 다른 이유를 설명한다.
 2. 세 클래스의 작은 혼동 행렬로 macro, micro, weighted F1을 손으로 계산하고 `f1_score` 결과와 대조한다.
 3. 음수 예측이 섞인 회귀 결과에서 RMSE와 RMSLE를 각각 계산해 보고 오류가 나는 조건을 확인한다.
+4. 민감도 95%, 특이도 99%인 분류기의 정밀도를 유병률 50%와 1%에서 각각 계산하고 차이가 나는 이유를 설명한다.
 
 ## 출처
 
 - [scikit-learn, Cross-validation: evaluating estimator performance](https://scikit-learn.org/stable/modules/cross_validation.html) — 1.9.1 문서. 테스트 세트 보존, K-fold 점수 평균, 전처리와 `Pipeline`.
 - [scikit-learn, Common pitfalls and recommended practices](https://scikit-learn.org/stable/common_pitfalls.html) — 1.9.1 문서. 데이터 누수와 테스트 데이터에 `fit`하지 않는 규칙.
-- [scikit-learn, Metrics and scoring: quantifying the quality of predictions](https://scikit-learn.org/stable/modules/model_evaluation.html) — 1.9.1 문서. 다중 클래스 평균 방식과 F-measure, MSLE 정의.
+- [scikit-learn, Metrics and scoring: quantifying the quality of predictions](https://scikit-learn.org/stable/modules/model_evaluation.html) — 1.9.1 문서. 다중 클래스 평균 방식과 F-measure, MSLE 정의, 민감도와 특이도, ROC와 AUC, 유병률에 변하지 않는 class likelihood ratio.
 - [scikit-learn, sklearn/metrics/_regression.py 1.9.1](https://github.com/scikit-learn/scikit-learn/blob/1.9.1/sklearn/metrics/_regression.py) — 로그 오차 함수의 -1 이하 입력 검사와 `root_mean_squared_log_error`의 추가 버전. 1.5.2와 1.6.1 태그의 같은 파일로 검사 조건 변화를 대조했다.
 - [scikit-learn, cross_val_score](https://scikit-learn.org/stable/modules/generated/sklearn.model_selection.cross_val_score.html) — 분류기와 정수 `cv`의 기본 분할.
 - [scikit-learn, classification_report](https://scikit-learn.org/stable/modules/generated/sklearn.metrics.classification_report.html) — micro 평균과 accuracy의 관계.
 - [scikit-learn, Statistical comparison of models using grid search](https://scikit-learn.org/stable/auto_examples/model_selection/plot_grid_search_stats.html) — 같은 분할 점수의 비독립성과 보정 t-검정.
 - [scikit-learn, HistGradientBoostingRegressor](https://scikit-learn.org/stable/modules/generated/sklearn.ensemble.HistGradientBoostingRegressor.html) — poisson 손실의 로그 링크와 목표 조건.
+- [scikit-learn, Tuning the decision threshold for class prediction](https://scikit-learn.org/stable/modules/classification_threshold.html) — 1.9.1 문서. `predict`의 고정 임계값, `TunedThresholdClassifierCV`의 내부 교차 검증과 기본 지표, `cv="prefit"`의 새 검증 세트.
+- [scikit-learn, Probability calibration](https://scikit-learn.org/stable/modules/calibration.html) — 1.9.1 문서. 잘 보정된 분류기의 정의.
 - [YouTube, 메타코드M, 빅데이터분석기사 실기 총 정리편](https://www.youtube.com/watch?v=TW-g0ERndqE) — 학습 계기. 시험 정보와 모델별 경험칙은 옮기지 않았다.
+- [YouTube, 길리랩, 왜 10년 된 CNN이 최신 LLM을 이긴 결과가 오히려 더 위험한가](https://www.youtube.com/watch?v=N-lrFdwcWiQ) — 학습 계기. 임계값, 유병률과 생성형 모델 평가 설계. 인용된 모델 비교 수치는 옮기지 않았다.
 
 ## 관련 문서
 

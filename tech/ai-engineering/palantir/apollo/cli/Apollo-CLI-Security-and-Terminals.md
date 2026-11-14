@@ -22,7 +22,7 @@ aliases: []
 
 ## 터미널 접근의 세 단계
 
-Experimental terminal 명령은 policy, grant, session을 구분한다. policy list는 요청 가능한 정책을, grant list는 현재 사용자가 가진 정책과 만료를, session list는 환경의 세션을 보여준다.
+Experimental terminal 명령은 policy, grant, session과 세션 대상 node 조회(`terminal node`)를 구분한다. terminal, terminal node, terminal node list와 terminal session create 문서는 각각 `apollo-cli configure`에서 V1이 아닌 `V2 experimental commands`를 켜야 실행할 수 있다고 안내한다. 공식 빠른 시작의 설정 예는 V2 experimental을 disabled로 보여 주므로, terminal 명령을 쓰기 전에 설치된 CLI의 이 설정을 먼저 확인한다(2026-11-14 확인). 설정이 꺼졌을 때의 오류 문구는 확인하지 않았다. policy list는 요청 가능한 정책을, grant list는 현재 사용자가 가진 정책과 만료를, session list는 환경의 세션을 보여준다.
 
 `grant request <policy-name>`은 인증된 사용자 자신의 접근 권한을 위한 CR을 만든다. duration을 생략하면 정책의 기본 기간을 쓴다. 요청 제출만으로 grant가 생겼다고 판단하지 않는다.
 
@@ -35,10 +35,12 @@ Experimental terminal 명령은 policy, grant, session을 구분한다. policy l
 - [Palantir, apollo-cli cve grype](https://www.palantir.com/docs/apollo/apollo-cli/apollo-cli_cve_grype) — 로컬 Grype 검사 그룹.
 - [Palantir, apollo-cli cve grype scan](https://www.palantir.com/docs/apollo/apollo-cli/apollo-cli_cve_grype_scan) — NVD 우선 정규화, 유효 보고서와 비정상 종료 처리.
 - [Palantir, apollo-cli cve list](https://www.palantir.com/docs/apollo/apollo-cli/apollo-cli_cve_list) — 릴리스와 이미지별 CVE 기한, 제품 입력은 최신 릴리스.
+- [Palantir, Getting started with the Apollo CLI](https://www.palantir.com/docs/apollo/apollo-getting-started/apollo-cli-getting-started) — configure 예시의 V2 experimental disabled.
 - [Palantir, apollo-cli terminal Experimental](https://www.palantir.com/docs/apollo/apollo-cli/apollo-cli_terminal) — 터미널은 policy, grant, session을 분리.
 - [Palantir, apollo-cli terminal grant Experimental](https://www.palantir.com/docs/apollo/apollo-cli/apollo-cli_terminal_grant) — 접근 grant 조회와 요청 그룹.
 - [Palantir, apollo-cli terminal grant list Experimental](https://www.palantir.com/docs/apollo/apollo-cli/apollo-cli_terminal_grant_list) — 자신의 grant 종류와 만료 조회.
 - [Palantir, apollo-cli terminal grant request Experimental](https://www.palantir.com/docs/apollo/apollo-cli/apollo-cli_terminal_grant_request) — 자기 접근 CR과 정책 기본 duration.
+- [Palantir, apollo-cli terminal node Experimental](https://www.palantir.com/docs/apollo/apollo-cli/apollo-cli_terminal_node) — 세션 대상 Kubernetes node 조회 그룹, V2 experimental 설정 필요.
 - [Palantir, apollo-cli terminal node list Experimental](https://www.palantir.com/docs/apollo/apollo-cli/apollo-cli_terminal_node_list) — 세션 대상 node와 label 조회.
 - [Palantir, apollo-cli terminal policy Experimental](https://www.palantir.com/docs/apollo/apollo-cli/apollo-cli_terminal_policy) — 터미널 접근 정책 그룹.
 - [Palantir, apollo-cli terminal policy list Experimental](https://www.palantir.com/docs/apollo/apollo-cli/apollo-cli_terminal_policy_list) — 요청 가능한 TAP 조회.
