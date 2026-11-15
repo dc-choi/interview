@@ -1,7 +1,7 @@
 ---
 tags: [architecture, design-pattern, behavioral, command]
 status: done
-verified_at: 2026-09-27
+verified_at: 2026-11-15
 category: "Architecture & Design"
 aliases: ["Command Pattern", "커맨드 패턴"]
 ---
@@ -53,6 +53,12 @@ NestJS CQRS의 Command는 쓰기 의도를 나타내는 메시지와 Handler를 
 여러 단계의 Undo와 Redo는 실행한 Command의 이력 목록으로 구현한다. 목록을 뒤로 이동하며 `undo()`를 호출하면 효과가 취소되고, 앞으로 이동하며 `execute()`를 다시 호출하면 재실행된다. 목록의 최대 길이가 되돌릴 수 있는 단계 수이고, 한 단계만 필요하면 마지막 Command 하나만 보관한다. Undo 뒤에 새 Command를 실행했을 때 남은 Redo 이력을 버릴지도 정한다.
 
 같은 모델을 두 스택으로 구현할 수 있다. 새 명령이 성공하면 Undo 스택에 넣고, Undo에 성공하면 Redo 스택으로, Redo에 성공하면 Undo 스택으로 옮긴다. 삭제 명령은 복원할 텍스트와 위치를 실행 시점에 보관해야 한다. 선형 이력에서는 Undo 뒤 새 명령을 실행하면 Redo를 비운다. 남겨 둔 명령의 위치와 전제 상태가 새 편집으로 달라졌기 때문이다. 이전 분기를 유지하려면 단순 스택 대신 분기 이력과 상태 복원 정책이 필요하다.
+
+Command 이력 기반 Undo는 시간을 되돌리는 기능이 아니라 기록해 둔 Command의 역연산을 실행하는 기능이다. 그래서 이력에 무엇을 한 단위로 기록하느냐가 사용자가 느끼는 되돌리기 단위를 정한다.
+
+- 묶기(amalgamation): 글자 하나마다 기록하면 이력이 지나치게 길어지고 되돌리기도 번거롭다. 그래서 편집기는 흔히 연속된 문자 입력 같은 비슷한 변경을 한 기록으로 묶는다. 예를 들어 GNU Emacs는 연속된 문자 입력 명령을 보통 하나의 undo 기록으로 묶고, 묶을 변경의 최대 개수를 변수 `amalgamating-undo-limit`(기본값 20, 1이면 묶지 않음)으로 정한다(2026-11-15 emacs-mirror master의 `simple.el`과 `fixit.texi` 대조). 묶음 경계를 언제 끊을지(입력 종류 변경, 커서 이동, 개수 상한)가 제품마다 다른 설계 선택이다.
+- 길이 상한: 이력은 메모리를 쓰므로 단계 수나 용량의 상한과, 넘었을 때 가장 오래된 기록부터 버릴지를 정한다. 버린 단계는 되돌릴 수 없으므로 상한을 사용자 기대와 맞춘다(설계 제안).
+- Redo를 버리지 않는 모델: Emacs는 Undo 뒤 새 명령을 실행하면 Redo 스택을 버리는 대신, 방금 실행한 Undo들이 각각 이력의 기록으로 남는다. Undo가 아닌 명령이 Undo 연속을 끊으면 그때까지의 Undo들이 이력의 기록이 되므로, 계속 Undo하면 그 Undo들을 되돌려 이전 분기의 상태로 돌아갈 수 있다. 대신 이력이 한 방향으로 길어져 원하는 상태까지 여러 번 눌러야 할 수 있다(설계 해석). `M-x undo-redo`는 이전 Undo를 되돌리면서 자신은 되돌릴 수 있는 명령으로 기록하지 않는다.
 
 - 선택된 대상이나 실행 전 값처럼 실행마다 달라지는 상태를 가진 Command를 같은 인스턴스로 재사용하면 이전 실행의 되돌리기 정보를 덮어쓴다. 이력에 넣기 전에 복사하거나 실행마다 새 인스턴스를 만든다. 복사해 쓰는 Command는 [[Prototype패턴이란|Prototype]] 역할을 하고, 실행해도 상태가 바뀌지 않는 Command는 참조만 보관해도 된다.
 - 부동소수점 배율 조정처럼 역연산이 정확한 역이 아니면 실행과 취소를 반복할 때 오차가 쌓여 원래 값과 어긋날 수 있다. 정확한 복원이 필요하면 실행 전 상태를 [[Memento패턴이란|Memento]]로 보관한다.
@@ -142,6 +148,8 @@ JavaScript 함수는 일급 객체라 인자로 넘기고 배열이나 필드에
 - [Node.js 공식 문서, Timers](https://nodejs.org/api/timers.html)
 - [Univer — dream-num](https://github.com/dream-num/univer) — 2026-11-09 README의 라이선스와 오픈소스, 상용 기능 범위 대조
 - [Univer command.service.ts — dream-num](https://github.com/dream-num/univer/blob/b6dce6c6d9017e8ae3b2ca1e072ac35803134860/packages/core/src/services/command/command.service.ts) — 2026-11-09 dev 브랜치 b6dce6c6d9의 `CommandType` 주석 대조
+- [GNU Emacs Manual, Undo (fixit.texi)](https://github.com/emacs-mirror/emacs/blob/master/doc/emacs/fixit.texi) — 2026-11-15 master 브랜치로 연속 문자 입력의 묶음, Undo 연속이 끊길 때 Undo들의 기록과 `undo-redo` 대조
+- [Emacs simple.el — emacs-mirror](https://github.com/emacs-mirror/emacs/blob/master/lisp/simple.el) — 2026-11-15 master 브랜치로 `amalgamating-undo-limit`의 기본값과 설명 대조
 
 ## 관련 문서
 
