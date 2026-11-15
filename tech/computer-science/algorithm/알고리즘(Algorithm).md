@@ -11,6 +11,7 @@ aliases: ["Algorithm"]
 
 ## 목차
 - [x] [[NPC-Attack-Scheduling|NPC 공격 스케줄링]] — 접근과 공격의 예산, 위치 배정과 쿨다운
+- [x] [[Crowd-Flow-Field-Navigation|군중 흐름장 내비게이션]] — 목적지별 흐름장, 밀도와 속도장, 장 교체 지연, 희소 격자와 표현 비용 절감
 - [x] [[Contraction-Hierarchies|축약 계층과 도로망 최단 경로]] — 전처리, shortcut, CCH의 비용 갱신과 경로 복원
 - [x] [[Adversarial-Search|적대적 탐색과 미니맥스]] — 게임 상태, 상대의 최선, 알파 베타 가지치기와 깊이 제한
 - [x] [[Audio-Fingerprinting|오디오 핑거프린팅]] — 스펙트로그램 피크 쌍, 해시 후보와 시간차 검증, 녹음 식별의 한계, 저작권 관리의 참조 자격과 권리 충돌
