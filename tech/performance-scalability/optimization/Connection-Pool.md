@@ -97,6 +97,25 @@ Pool이 모두 사용 중이면 요청은 acquisition queue에서 기다리거�
 
 Pool metric은 active, idle, pending, timeout을 함께 본다. Application metric의 transaction duration, DB의 active session, slow query와 lock wait를 같은 시간축으로 연결해야 원인을 찾을 수 있다.
 
+### 대기 구간을 둘로 나눈다
+
+앱 서버를 늘렸는데 처리량은 그대로이고 DB 요청 대기만 길어졌다면, 서버를 더 붙이기 전에 DB 요청이 어디서 기다리는지부터 나눈다.
+
+| 구간 | 무엇을 기다리나 | 먼저 볼 것 |
+|---|---|---|
+| connection 획득 전(앱 안) | pool의 connection을 모두 빌려가 대여를 기다림 | acquisition wait, 앞 요청이 connection을 빌려서 돌려주기까지의 시간 |
+| connection 획득 뒤(DB 안) | query 실행, lock 대기, CPU와 디스크 경쟁 | slow query와 실행 계획, lock wait, DB CPU와 I/O |
+
+두 구간은 이어져 있다. 앞 요청이 DB 안에서 다른 작업의 lock을 기다리는 동안에도 connection은 반환되지 않으므로 다음 요청은 DB에 닿기도 전에 pool에서 기다린다. 그래서 pool 대기가 길 때는 connection 수만 늘리지 않고 앞 요청이 왜 늦게 돌려주는지를 함께 본다. 요청마다 획득 대기와 DB 안 시간을 나란히 기록하면 획득 대기가 큰 요청과 DB 안 시간이 큰 요청을 다른 조사로 나눌 수 있다.
+
+pool의 사용 중 connection 수와 DB의 활성 세션 수는 같은 값이 아니다(PostgreSQL 18 문서 기준, 2026-11-15 대조).
+
+- connection을 빌렸지만 아직 query를 보내지 않았으면 pool은 사용 중으로 세지만 `pg_stat_activity.state`는 `idle`(새 명령 대기)이고, 트랜잭션 안에서 query 사이에 멈춰 있으면 `idle in transaction`이다.
+- `active`는 query를 실행 중이라는 뜻일 뿐이다. `state`와 `wait_event`는 독립적이어서 `active`이면서 `wait_event`가 있으면 query가 시스템 어딘가에서 막혀 있다. `wait_event_type`이 `Lock`이면 heavyweight lock을 기다리는 중이다. 활성 세션 수만 보고 계산이 진행 중이라고 판단하지 않는다.
+- DB 안 시간이 긴 query는 `EXPLAIN ANALYZE`로 접근 방법과 작업량을 본다. 결과가 한 행이어도 `Seq Scan`에 `Rows Removed by Filter`가 크면 많은 행을 읽고 버린 것이다. `EXPLAIN ANALYZE`는 query를 실제로 실행하므로 변경 query는 트랜잭션 안에서 실행한 뒤 ROLLBACK하고, 포화된 DB에서는 다시 실행하는 부하를 고려한다. 인덱스를 검토하되 인덱스가 늘 빠르다고 단정하지 않고 실제 계획과 시간을 다시 잰다 → [[Execution-Plan-PostgreSQL|PostgreSQL 실행 계획]].
+
+원인을 고친 뒤에도 DB 용량이 모자라면 CPU, 디스크, 대기와 처리한 읽기와 쓰기 수를 함께 측정해 읽기와 쓰기 중 어느 쪽이 막혔는지에 맞춰 확장 방식을 고른다. 앱 서버나 connection 수만 늘리면 같은 DB 자원을 두고 경쟁하는 query만 늘어난다.
+
 ## 분리와 proxy
 
 - 긴 batch와 latency-sensitive OLTP가 서로 pool을 점유한다면 별도 concurrency budget을 검토한다.
@@ -132,6 +151,8 @@ Pool metric은 active, idle, pending, timeout을 함께 본다. Application metr
 - [HikariCP, About Pool Sizing](https://github.com/brettwooldridge/HikariCP/wiki/About-Pool-Sizing)
 - [HikariCP, Configuration](https://github.com/brettwooldridge/HikariCP#configuration-knobs-baby)
 - [PgBouncer, Features](https://www.pgbouncer.org/features.html)
+- [PostgreSQL 18 Documentation, The Cumulative Statistics System](https://www.postgresql.org/docs/current/monitoring-stats.html)
+- [PostgreSQL 18 Documentation, Using EXPLAIN](https://www.postgresql.org/docs/current/using-explain.html)
 - [HikariCP, HikariDataSource](https://github.com/brettwooldridge/HikariCP/blob/dev/src/main/java/com/zaxxer/hikari/HikariDataSource.java)
 - [HikariCP, HikariPool](https://github.com/brettwooldridge/HikariCP/blob/dev/src/main/java/com/zaxxer/hikari/pool/HikariPool.java)
 - [Spring Boot, DataSourceBuilder](https://github.com/spring-projects/spring-boot/blob/main/module/spring-boot-jdbc/src/main/java/org/springframework/boot/jdbc/DataSourceBuilder.java)
@@ -144,6 +165,7 @@ Pool metric은 active, idle, pending, timeout을 함께 본다. Application metr
 - 김영한 강사, [DataSource 예제 2, 커넥션 풀](https://www.inflearn.com/courses/lecture?courseId=328723&unitId=110073)
 - 김영한 강사, [DataSource 적용](https://www.inflearn.com/courses/lecture?courseId=328723&unitId=110074)
 - 김영한 강사, [정리](https://www.inflearn.com/courses/lecture?courseId=328723&unitId=110075)
+- JSCODE 박재성 강사, [CS 면접 대비 (분산 시스템편) 2.5 애플리케이션 서버를 늘렸는데 전체 처리량은 그대로이고 DB 요청 대기만 길어졌습니다. 무엇부터 확인하시겠어요?](https://www.youtube.com/watch?v=BXJNkRjAHEo)
 
 ## 관련 문서
 

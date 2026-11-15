@@ -22,6 +22,21 @@ Row 단위로 나눠서 테이블을 저장하는 방법이다. 데이터를 각
 - **Consistent Hashing**: 노드 추가, 제거 시 평균 1/N만 재배치돼 증설과 장애 복구에 유리하다. 가상 노드로 분포를 균등화한다 → [[Consistent-Hashing]].
 - **고정 슬롯**: Redis Cluster의 16384 슬롯처럼 슬롯을 노드에 명시 할당해 운영자가 분배를 제어 → [[Redis-Cluster-Sharding]].
 
+### 범위 분할과 해시 분할의 선택
+
+주문 시각처럼 계속 증가하는 값을 키로 쓸 때 두 방식의 장단이 뚜렷하게 갈린다. 아래 동작은 MongoDB 9.0 매뉴얼 기준(2026-11-15 대조)이며 다른 저장소에서는 라우팅과 분할 단위를 따로 확인한다.
+
+| 기준 | 범위 분할(ranged) | 해시 분할(hashed) |
+|---|---|---|
+| 배치 | 키 값의 연속 구간마다 담당 샤드를 둔다. 가까운 값이 같은 곳에 모인다 | 키를 해시해 해시 값의 구간으로 나눈다. 가까운 값도 다른 샤드로 흩어질 수 있다 |
+| 범위 조회(예: 오전 주문 목록) | 그 구간을 맡은 샤드만 읽는다 | 원래 순서가 해시 값에 남지 않아 여러 샤드에 보내는 broadcast가 되기 쉽다 |
+| 단건 등치 조회 | 해당 샤드 한 곳 | 해당 샤드 한 곳 |
+| 단조 증가 키의 쓰기 | 새 값이 모두 마지막 구간(상한이 `maxKey`인 chunk)으로 가서 그 샤드가 쓰기 병목이 된다 | 새 쓰기가 여러 샤드로 흩어진다 |
+
+조회가 연속 구간 중심이면 범위 분할을, 단조 증가 키의 쓰기 집중이 더 급하면 해시 분할을 고르고 실제 조회 비율과 쓰기 병목을 측정해 확인한다.
+
+해시를 쓴다는 사실만으로 쓰기가 고르게 퍼지지는 않는다. 해시에 넣는 값이 거칠면(예: 주문 시각 대신 날짜만 넣으면) 같은 날의 주문이 모두 같은 해시 값을 얻어 한 샤드로 간다. MongoDB에서 같은 shard key 값은 한 시점에 한 chunk에만 있을 수 있어, 서로 다른 값의 수(cardinality)가 적거나 일부 값에 문서가 몰리면(frequency) 그 chunk가 나눌 수도 없는 병목이 된다. cardinality가 높아도 그것만으로 고른 분포가 보장되지는 않으므로 키 분포와 요청량을 함께 본다.
+
 ## Citus의 PostgreSQL 샤딩 모델
 
 Citus는 PostgreSQL extension으로 coordinator가 metadata를 보고 쿼리를 worker의 shard로 전달하거나 여러 worker에 병렬화한다. 단순히 테이블을 여러 조각으로 만드는 것보다 distribution column을 실제 query boundary와 일치시키는 일이 핵심이다.
@@ -125,6 +140,10 @@ User/tenant key는 관련 데이터를 함께 배치할 수 있지만 특정 대
 - [YouTube, 쉬운코드, DB 파티셔닝, 샤딩, 레플리케이션](https://www.youtube.com/watch?v=P7LqaEO-nGU)
 - [MySQL 8.4 Reference Manual, InnoDB Row Formats](https://dev.mysql.com/doc/refman/8.4/en/innodb-row-format.html)
 - [PostgreSQL 18 Documentation, TOAST](https://www.postgresql.org/docs/current/storage-toast.html)
+- [MongoDB 9.0 Manual, Ranged Sharding](https://www.mongodb.com/docs/manual/core/ranged-sharding/)
+- [MongoDB 9.0 Manual, Hashed Sharding](https://www.mongodb.com/docs/manual/core/hashed-sharding/)
+- [MongoDB 9.0 Manual, Choose a Shard Key](https://www.mongodb.com/docs/manual/core/sharding-choose-a-shard-key/)
+- [YouTube, JSCODE 박재성, CS 면접 대비 (분산 시스템편) 3.5 샤드를 범위로 나누는 방식과 해시로 나누는 방식은 언제 각각 유리한가요?](https://www.youtube.com/watch?v=VH3BtrLvx1E)
 
 
 ## 관련 문서
@@ -135,3 +154,4 @@ User/tenant key는 관련 데이터를 함께 배치할 수 있지만 특정 대
 - [[Consistent-Hashing|Consistent Hashing]]
 - [[Redis-Cluster-Sharding|Redis Cluster, Hash Slot]]
 - [[PostgreSQL-Extensions|PostgreSQL 확장 생태계]]
+- [[Distributed-System-Basics|분산 시스템 기초]]

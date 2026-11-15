@@ -38,6 +38,17 @@ Cassandra는 이 선택을 요청마다 consistency level로 연다. `ONE`은 �
 
 따라서 몇 대가 확인했는지만으로 쓰기가 안전하다고 단정하지 않고, 각 확인이 어떤 저장 단계 뒤에 나오는지 설정에서 확인한다.
 
+## 리더 없는 구조에서 확인 수가 풀지 못하는 것
+
+리더 없는 구조에서 W개의 확인은 각 복제본이 **요청한 그 버전을 저장했다**는 뜻이다. 다른 요청의 변경과 합쳤다는 뜻은 아니다. 같은 이전 값을 읽은 두 요청이 객체 전체를 각자 고쳐 보낸다고 하자. 한 요청은 배송지만, 다른 요청은 수령인만 바꿨다. 두 요청 모두 W개의 확인을 모아 성공할 수 있고, 어느 쪽도 상대의 변경을 포함하지 않는다. 이런 관계를 동시(concurrent) 변경이라 부른다. 여기서 동시는 같은 시각에 도착했다는 뜻이 아니라 서로의 변경을 모른 채 같은 이전 값에서 출발했다는 뜻이다.
+
+동시 변경을 다루는 방식은 저장소마다 다르다.
+
+- **last-write-wins**: timestamp가 큰 쪽을 남긴다. Cassandra는 이 규칙을 column마다 적용하므로(Cassandra 5.0 문서 기준) 각 요청이 바꾼 column만 쓰면 서로 다른 column의 동시 변경은 둘 다 남는다. 객체 전체를 한 값으로 저장하거나 모든 필드를 다시 쓰는 모델이면 두 요청이 서로 다른 필드를 바꿨어도 진 쪽의 변경이 사라진다. 이긴 쪽이 읽어 둔 오래된 필드 값이 그 자리를 덮어쓰기 때문이다.
+- **여러 버전 보존**: 2007년 Dynamo 논문의 설계(AWS DynamoDB 서비스의 동작과 구분한다)는 버전마다 vector clock((노드, 카운터) 쌍의 목록)을 붙인다. 한 clock의 모든 카운터가 다른 clock 이하이면 앞의 버전은 조상이라 버릴 수 있고, 그렇지 않으면 두 버전은 충돌로 남는다. 시스템이 스스로 합칠 수 없는 버전은 읽기 때 모두 클라이언트에 돌려주고, 클라이언트는 읽기에서 받은 context(vector clock 정보)를 다음 쓰기에 넘긴다. 그 쓰기가 갈라진 버전을 하나로 합친 새 버전이 된다. 장바구니처럼 버전을 합치는 규칙에서는 담기 연산은 잃지 않지만 삭제한 항목이 되살아날 수 있어, 병합 규칙은 업무 의미로 정한다.
+
+읽기 확인 수 R을 늘려 W + R > N으로 새 값을 가진 복제본과 겹치게 하는 것과, 겹친 응답 사이에서 어느 버전을 최종 값으로 삼을지는 다른 문제다. 앞의 것은 확인 수가, 뒤의 것은 버전 정보와 병합 규칙이 정한다. Dynamo처럼 장애 중 선호 목록 밖 노드가 대신 쓰기를 받는 sloppy quorum에서는 W + R > N이어도 이 겹침이 보장되지 않는다.
+
 ## 리더가 성공 응답 직후 멈추면
 
 사용자가 배송 메모를 바꾸고 저장 완료 응답을 받은 직후 리더가 멈췄다고 하자. 새 리더에 그 변경이 없으면 사용자에게는 저장된 내용이 사라진 것처럼 보인다. 유실은 두 지점에서 생긴다.
@@ -50,7 +61,8 @@ Cassandra는 이 선택을 요청마다 consistency level로 연다. `ONE`은 �
 ## Raft가 두 규칙을 지키는 방식
 
 - **확정(commit)**: 리더가 자기 term에 만든 로그 항목을 과반 서버에 복제하면 그 항목이 확정되고, 그 앞의 항목도 함께 확정된다. 리더는 확정된 항목을 상태 머신에 적용한 뒤 클라이언트에 결과를 응답한다. 구성에 속한 리더는 과반 계산에 자신도 넣는다(5대 클러스터면 리더와 팔로워 2대). 구성 변경 중 새 구성에 속하지 않는 리더는 항목을 복제하되 자신을 과반에 세지 않는다. 기다리는 특정 서버가 아니라 필요한 수의 영속 확인이 기준이다.
-- **선출 제한(election restriction)**: 후보는 RequestVote에 자기 마지막 로그 항목의 index와 term을 담고, 투표자는 자기 로그가 후보보다 최신이면 표를 주지 않는다. 마지막 항목의 term이 크면 더 최신이고, term이 같으면 로그가 긴 쪽이 더 최신이다. 후보는 과반의 표가 있어야 리더가 되고, 확정된 항목은 과반 중 적어도 한 서버에 있으므로 확정된 항목이 없는 후보는 당선되지 못한다(Leader Completeness).
+- **선출 제한(election restriction)**: 후보는 RequestVote에 자기 마지막 로그 항목의 index와 term을 담고, 투표자는 자기 로그가 후보보다 최신이면 표를 주지 않는다. 마지막 항목의 term이 크면 더 최신이고, term이 같으면 로그가 긴 쪽이 더 최신이다. 후보는 과반의 표가 있어야 리더가 되고, 확정된 항목은 과반 중 적어도 한 서버에 있으므로 확정된 항목이 없는 후보는 당선되지 못한다(Leader Completeness). 과반은 기록을 가진 서버가 선거에 반드시 끼게 만들고, 그 서버가 로그를 비교해 표를 거절하므로 뒤처진 후보가 막힌다. 응답이 빠르거나 먼저 나선 후보가 아니라 로그 검사를 통과한 과반의 표를 모은 후보가 리더가 된다.
+- **term으로 옛 리더 차단**: 후보는 자기 term을 하나 올려 선거를 시작하고, 각 서버는 한 term에 최대 한 후보에게만 표를 준다. 통신만 끊긴 옛 리더는 스스로를 여전히 리더로 여길 수 있지만 과반의 확인을 모을 수 없어 새 항목을 확정하지 못한다. 연결이 돌아와 옛 term으로 AppendEntries를 보내면 더 높은 term을 아는 서버는 거절하고, 응답에 담긴 더 높은 term을 본 옛 리더는 팔로워로 물러난다. 자신을 리더로 여기는 것과 쓰기를 확정할 수 있는 것은 다르다. 다만 옛 리더가 로그를 거치지 않고 읽기에 바로 답하면 오래된 값이 나갈 수 있다. 로그를 거치지 않는 읽기를 선형화 가능하게 하려면 리더가 term 시작 때 빈 no-op 항목을 확정해 확정 범위를 알고, 읽기 전용 요청에 답하기 전에 과반과 heartbeat를 주고받아 물러나지 않았는지 확인한다. heartbeat 대신 lease에 기대면 안전성이 시계 오차 한계라는 가정에 걸린다.
 - **이전 term 항목**: 리더는 이전 term에서 만들어진 항목을 복제본 수만 세어 확정하지 않는다. 과반에 저장된 옛 항목도 이후 리더가 덮어쓸 수 있기 때문이다. 현재 term의 항목을 과반에 확정하면 그 앞의 항목이 간접적으로 확정된다.
 - **구성 변경**: 옛 구성에서 새 구성으로 직접 전환하면 모든 서버를 원자적으로 동시에 바꿀 수 없어 서버마다 전환 시점이 달라지고, 그 사이 두 구성이 각각 과반을 만들어 같은 term에 리더가 둘 생길 수 있다. Raft는 joint consensus라는 두 단계 전환으로 이 구간을 막는다. 앞의 강제 재구성은 이런 안전한 구성 변경 절차를 건너뛴 경우다.
 
@@ -71,18 +83,24 @@ Raft에서 리더가 응답한 뒤에도 팔로워가 늦거나 멈추면 리더
 - 메모리 수신 확인과 영속 저장 확인을 구분한다.
 - 성공 응답 직후 리더 장애에서 쓰기가 사라지는 두 원인(이른 응답, 안전한 선출과 구성 변경 우회)을 든다.
 - Raft의 과반 확정과 선출 제한이 확정된 쓰기를 새 리더에 남기는 이유를 설명한다.
+- 통신만 끊긴 옛 리더가 새 쓰기를 확정하지 못하는 이유(과반 확인, term 거절)를 말한다.
+- 리더 없는 구조에서 W개의 확인이 동시 변경의 병합을 뜻하지 않음을 말하고, last-write-wins와 여러 버전 보존을 비교한다.
 
 ## 출처
 
 - [In Search of an Understandable Consensus Algorithm (Extended Version) — Diego Ongaro, John Ousterhout](https://raft.github.io/raft.pdf)
+- [Dynamo: Amazon's Highly Available Key-value Store — SOSP 2007, Giuseppe DeCandia 외](https://www.allthingsdistributed.com/files/amazon-dynamo-sosp2007.pdf)
 - [Apache Cassandra 5.0 Documentation, Dynamo](https://cassandra.apache.org/doc/5.0/cassandra/architecture/dynamo.html)
 - [Apache Cassandra 5.0 Documentation, Storage Engine](https://cassandra.apache.org/doc/5.0/cassandra/architecture/storage-engine.html)
 - [YouTube, JSCODE 박재성, CS 면접 대비 (분산 시스템편) 4.2 복제본을 여러 대 두면, 데이터가 바뀔 때 그 변경을 각 복제본에 어떻게 반영하나요?](https://www.youtube.com/watch?v=XlKsgLeSCu4)
+- [YouTube, JSCODE 박재성, CS 면접 대비 (분산 시스템편) 4.3 리더가 쓰기를 받는 구조에서 리더가 멈췄습니다. 어떤 복제본이 쓰기를 이어받아야 하나요?](https://www.youtube.com/watch?v=Wj6wY3SWBkA)
 - [YouTube, JSCODE 박재성, CS 면접 대비 (분산 시스템편) 4.4 기존 리더가 쓰기 성공을 응답했는데 새 리더에는 그 쓰기가 없을 수도 있나요?](https://www.youtube.com/watch?v=YViT4u1G3R8)
+- [YouTube, JSCODE 박재성, CS 면접 대비 (분산 시스템편) 4.5 리더 없이 여러 복제본이 쓰기를 받는 구조에서는 언제 성공이라고 응답하나요?](https://www.youtube.com/watch?v=cr1FyN9I57c)
 
 ## 관련 문서
 
 - [[CAP-Theorem|CAP 정리 (분할 중 일관성과 가용성)]]
+- [[Distributed-System-Basics|분산 시스템 기초]]
 - [[Replication|MySQL Replication (async, semisync, failover)]]
 - [[Read-Replica-Routing|Read Replica 라우팅]]
 - [[Blockchain-Replication-and-Consensus-Cost|블록체인 복제와 합의 비용]]
