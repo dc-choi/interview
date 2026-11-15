@@ -40,6 +40,21 @@ verified_at: 2026-09-30
 - 비동기 호출에서 **재시도 모두 실패** 시 메시지를 SQS/SNS로 격리
 - Destinations(OnFailure)가 더 유연한 후속자. 신규는 Destinations 권장
 
+### 다른 계정의 SNS 토픽에 함수 구독하기
+
+2026-11-15 AWS Lambda, SNS 개발자 가이드 대조 기준이다. SNS는 Lambda를 비동기로 호출하며, SNS 트리거는 standard 토픽만 지원하고 FIFO 토픽은 지원하지 않는다. 토픽이 계정 A, 함수가 계정 B에 있으면 권한이 양쪽에 필요하다. 아래 명령은 주요 옵션만 적은 생략형이며 전체 형태는 Lambda 개발자 가이드의 교차 계정 자습서에 있다.
+
+| 위치 | 필요한 권한 | 예 (생략형) |
+|---|---|---|
+| 계정 A의 토픽 정책 | 계정 B가 구독할 수 있게 허용 | `aws sns add-permission --topic-arn <토픽 ARN> --label <이름> --aws-account-id <B> --action-name Subscribe ListSubscriptionsByTopic` |
+| 계정 B의 함수 리소스 기반 정책 | `sns.amazonaws.com`의 `lambda:InvokeFunction` 허용, `AWS:SourceArn`을 토픽 ARN으로 제한 | `aws lambda add-permission --function-name <함수> --statement-id <ID> --principal sns.amazonaws.com --source-arn <토픽 ARN> --action lambda:InvokeFunction` |
+
+자습서는 토픽 계정이 opt-in 리전에 있으면 리전이 같아도 principal을 `sns.<토픽 리전>.amazonaws.com`으로 지정하라고 안내한다(예: 홍콩 리전은 `sns.ap-east-1.amazonaws.com`).
+
+같은 리전 자습서 기준으로 구독은 계정 B에서 `aws sns subscribe --topic-arn <토픽 ARN> --protocol lambda --notification-endpoint <함수 ARN>`으로 만든다. 콘솔의 Add trigger로 SNS를 붙이면 Lambda가 필요한 권한과 구독을 설정한다고 개발자 가이드가 밝히지만 교차 계정에서도 같은지는 명시하지 않는다. AWS Knowledge Center 영상은 토픽 정책을 먼저 허용한 뒤 계정 B의 Add trigger에 토픽 ARN을 넣는 경로를 제시하지만 이 문서에서 시험하지는 않았으므로, 어느 경로든 두 정책을 직접 확인한다. 연결 뒤에는 토픽에 테스트 메시지를 게시하고 계정 B의 `Invocations` 지표나 로그로 실제 호출을 확인한다.
+
+리전이 다른 경우 구독 명령은 토픽이 있는 리전으로 실행한다. SNS 교차 리전 페이지의 예시는 이때 구독 명령을 토픽 계정 A에서 실행하므로, 계정과 리전이 모두 다른 조합에서 계정 B가 구독하는 경로는 확인되지 않았다. 구독 뒤 확인 대기(`PendingConfirmation`) 상태가 아닌지 본다. opt-in 리전의 토픽에서 기본 활성 리전의 함수로 보낼 때는 함수 정책의 principal을 `sns.<토픽 리전>.amazonaws.com`으로 바꾼다. 그 밖의 조합(기본 활성 리전에서 opt-in 리전으로, opt-in 리전끼리)은 2026-11-15 기준 SNS 개발자 가이드의 Lambda 전제 조건 페이지가 미지원으로, 교차 리전 전달 페이지가 principal을 함수 리전으로 둔 지원으로 적어 서로 상충하므로 실제 구성 전에 현행 문서와 시험으로 확인한다. 이 절은 권한과 구독 절차만 대조했으며 실제 계정에서 구독을 만들어 시험하지 않았다. SQS 큐를 교차 계정으로 구독하는 경우의 확인 절차는 [[SNS#교차 계정 SNS와 SQS의 구독 확인|SNS의 교차 계정 SQS 구독]]에서 다룬다.
+
 ## 동시성 제어
 
 ### 사용자 수를 호출률과 실행 시간으로 바꿔 계산한다
@@ -59,6 +74,17 @@ verified_at: 2026-09-30
 | **Account Concurrency Quota** | 계정, 리전 단위 기본 할당량이 있으며 증설 요청 가능 | 가용 동시성 초과 시 **Throttle (TooManyRequestsException)** |
 
 Throttle 발생 시: 동기 호출은 즉시 에러, 비동기는 자동 재시도. 버퍼링이 필요하면 **SQS를 앞에 끼우면** 자연스럽게 흡수.
+
+### Throttling 오류 진단 순서
+
+진단 순서는 AWS Knowledge Center 영상의 절차를 따르고, 지표 정의와 수치는 2026-11-15 AWS Lambda 개발자 가이드와 API 레퍼런스로 대조했다. 이 순서는 일반 Lambda 함수의 호출 throttle을 다룬다. Managed Instances는 CPU, 메모리, 디스크, 동시성별 throttle 지표를 따로 제공하고, Lambda 관리 API의 초당 요청 한도 초과는 `Throttles`에 세지 않는 별도 원인이다. `Rate exceeded`나 `TooManyRequestsException`이 보이면 먼저 Lambda가 호출을 거절했는지, 함수 코드가 부른 다른 API가 거절당했는지 가른다.
+
+1. **함수 throttle인지 확인:** CloudWatch의 함수별 `Throttles`를 `Sum`으로 본다. 이 지표는 throttle된 호출 요청 수이며, throttle된 요청은 `Invocations`나 `Errors`에 세지 않는다. `Throttles`가 0인데 오류가 보이면 함수 코드가 호출한 다른 서비스 API의 throttling일 수 있으므로 실행 로그에서 어느 호출이 거절됐는지 확인한다.
+2. **동시성 사용량 확인:** 함수별 `ConcurrentExecutions`와 리전 단위 지표를 `Max`로 본다. 동시성 한도는 리전의 모든 함수가 공유하므로 함수 하나만 봐서는 부족하다. `ClaimedAccountConcurrency`는 예약, 프로비저닝으로 잡힌 동시성과 예약 없는 함수의 사용량을 더한 값으로, Lambda가 on-demand 호출에 남은 동시성을 판단할 때 쓴다. 이 값을 동시성 quota로 나눈 사용률에 알람을 건다(문서 예시는 70%).
+3. **원인 구분:** 트래픽이 늘거나 실행 시간이 길어지면 동시성 사용량이 함께 는다. 리전 quota에 닿기 전에 throttle되면 Reserved Concurrency가 너무 낮지 않은지 본다. 예약 동시성은 그 함수의 상한이기도 해서 다른 곳에 남은 동시성을 끌어 쓰지 못하며, 0으로 두면 모든 호출이 throttle된다. 함수별 확장 속도(10초마다 실행 환경 1,000개)에 먼저 닿는 경우도 있다. 동기 on-demand 호출은 초당 요청 한도(동시성의 10배)도 받고, 비동기 호출은 가용 동시성으로만 제한된다. Provisioned concurrency는 할당량이나 그 10배의 초당 요청을 넘으면 on-demand 동시성으로 넘쳐(spillover) 콜드 스타트가 생길 수 있으며, on-demand 쪽까지 소진돼야 throttle된다.
+4. **대응:** 동기 호출의 호출 측은 지수 백오프로 재시도한다. 비동기 호출은 throttle(429)과 시스템 오류(5xx) 때 Lambda가 이벤트를 큐로 되돌려 기본 최대 6시간 동안 재시도하고, 간격은 1초에서 최대 5분까지 지수적으로 늘어난다. 만료되거나 재시도를 다 쓴 이벤트는 버려지므로 DLQ나 OnFailure 대상을 둔다. 예외로 예약 동시성이 0인 함수의 비동기 이벤트는 재시도 없이 바로 DLQ나 OnFailure 대상으로 간다. 버려진 비동기 이벤트는 DLQ나 대상으로 먼저 보냈는지와 관계없이 `AsyncEventsDropped`에 집계된다. 지속적으로 더 큰 동시성이 필요하면 Service Quotas에서 증설을 요청한다.
+
+기본 계정 동시성은 리전당 1,000이고, 예약하지 않은 함수를 위해 100은 항상 남겨 두므로 기본값에서는 최대 900까지 예약할 수 있다. `aws lambda get-account-settings` 출력의 `UnreservedConcurrentExecutions`는 계정 한도에서 함수별 예약 합계를 뺀 예약되지 않은 풀이며, 추가로 예약할 수 있는 양은 여기서 100을 뺀 값이다(예약이 없는 기본 계정이면 1,000이고 예약 가능량은 900). 이 정의는 API 레퍼런스를 따른 것이며, 개발자 가이드의 동시성 페이지는 이 값을 아직 할당할 수 있는 예약 동시성으로 다르게 설명한다. 같은 이름의 CloudWatch 지표는 예약 없는 함수의 사용량이라 의미가 다르다. 한도 값은 계정과 시점에 따라 다르므로 Service Quotas에서 확인한다.
 
 ### Provisioned Concurrency의 준비와 실제 사용 확인
 
@@ -125,3 +151,15 @@ Provisioned Concurrency는 콜드 스타트를 절대 제거하지 않는다. �
 - [Lambda 함수의 Amazon VPC 리소스 접근](https://docs.aws.amazon.com/lambda/latest/dg/configuration-vpc.html)
 - [Lambda 복원력과 다중 AZ](https://docs.aws.amazon.com/lambda/latest/dg/security-resilience.html)
 - [인프런, Sungmin Kim, Lambda - VPC Access](https://www.inflearn.com/courses/lecture?courseId=326598&unitId=75666)
+- [Lambda 함수 지표 유형 (Throttles, ConcurrentExecutions, ClaimedAccountConcurrency)](https://docs.aws.amazon.com/lambda/latest/dg/monitoring-metrics-types.html)
+- [Lambda 확장 동작과 확장 속도](https://docs.aws.amazon.com/lambda/latest/dg/scaling-behavior.html)
+- [Lambda 예약 동시성 구성](https://docs.aws.amazon.com/lambda/latest/dg/configuration-concurrency.html)
+- [Lambda 비동기 호출 오류 처리와 재시도](https://docs.aws.amazon.com/lambda/latest/dg/invocation-async-error-handling.html)
+- [Amazon SNS 알림으로 Lambda 호출](https://docs.aws.amazon.com/lambda/latest/dg/with-sns.html)
+- [교차 계정 SNS 토픽으로 Lambda 호출 자습서](https://docs.aws.amazon.com/lambda/latest/dg/with-sns-example.html)
+- [SNS와 다른 리전 Lambda 연결 전제 조건](https://docs.aws.amazon.com/sns/latest/dg/lambda-prereq.html)
+- [SNS 교차 리전 전달 지원 표](https://docs.aws.amazon.com/sns/latest/dg/sns-cross-region-delivery.html)
+- [AccountLimit API의 UnreservedConcurrentExecutions 정의](https://docs.aws.amazon.com/lambda/latest/api/API_AccountLimit.html)
+- [Lambda quota (동기, 비동기 호출의 초당 요청 한도)](https://docs.aws.amazon.com/lambda/latest/dg/gettingstarted-limits.html)
+- [How do I resolve Lambda function Rate exceeded and TooManyRequestsException throttling errors? — Amazon Web Services (YouTube)](https://www.youtube.com/watch?v=0RR3cM3N6fs)
+- [How do I set up a cross-account AWS Lambda subscription with an SNS topic? — Amazon Web Services (YouTube)](https://www.youtube.com/watch?v=Q3GDJawgfr8)

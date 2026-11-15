@@ -20,6 +20,7 @@ RDS 외의 데이터베이스와 분석 서비스 모음. RDS, Aurora는 [[rds|r
 - [[DMS|DMS — 데이터베이스 마이그레이션, endpoint 연결과 TLS 검증]]
 - [[HealthOmics-Workflows|HealthOmics 워크플로 — 실행 단위, 상태 이벤트 누락 대비와 자원 관측]]
 - [[HealthLake-FHIR-Data|HealthLake와 FHIR — 표준화, 변환과 의미 검증, 데이터 기반과 임상 판단의 구분]]
+- [[Neptune-Cost-Optimization|Neptune Database 비용 최적화 — 과금 항목, 정지 7일 제한, high water mark 스토리지, I/O-Optimized 전환 기준]]
 - [[DocumentDB-TTL-Operations|DocumentDB TTL — 비동기 삭제, I/O와 부하 검증, 시간별 컬렉션 비교]]
 
 ## 관련 문서
