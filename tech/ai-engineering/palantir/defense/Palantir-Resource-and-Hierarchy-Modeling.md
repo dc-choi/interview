@@ -80,7 +80,15 @@ aliases: ["Palantir 자원과 조직 관계 모델링"]
 
 2026-11-09 대조한 공개 상세에서 `Organization`을 직접 확장하는 인터페이스는 `Unit`과 `Combatant Command` 둘이다. `Combatant Command`는 다시 지역 책임을 맡는 `Geographic Combatant Command`와 기능 임무 중심의 `Functional Combatant Command`로 확장된다. 사령부 계열 세 인터페이스(`Combatant Command`, `Geographic Combatant Command`, `Functional Combatant Command`)는 모두 자체 속성과 링크 제약이 없다. `Organization`도 자체 속성 없이 계층 관계, 작전, 배정 물자, 물자 변화와 상태 이벤트(개별 물자 상태 이벤트 포함)와 요구사항으로 향하는 8개의 선택적 다중 링크 제약만 정의한다. 이 공개 상세 기준으로는 사령부 갈래가 새 데이터 필드를 더하지 않고 조직의 종류를 인터페이스 계층으로 구분하는 분류 층으로 읽힌다(모델링 해석). 사령부 인터페이스를 구현한 객체 타입이라도 관할 지역이나 임무 같은 값이 인터페이스 계약으로 보장되지 않으므로 실제 구현 객체 타입의 속성을 확인한다. 공개 상세만으로는 두 하위 인터페이스를 함께 구현하는 것이 금지되는지도 알 수 없다.
 
-`Unit Type`은 이름, 약칭과 정의를 필수로 갖는 별도 분류다. Unit의 의미 있는 식별자, 소속 구분과 규모 속성은 선택 사항이다. 일부 속성의 값 목록은 대소문자를 구분한다. 표시용 설명을 그대로 저장값으로 복사하기보다 실제 value type의 허용값을 사용한다.
+### 조직과 Unit의 방향별 링크
+
+2026-11-16 공개 `Organization`과 `Unit` 상세를 대조했다. `Organization`으로 들어오는 링크 제약 8개(개별 물자와 개별 물자 상태 이벤트의 배정 조직, 조직 계층 관계의 부모와 자식, 작전의 소유 조직, 물자 변화와 상태 이벤트, 요구사항의 조직)는 모두 선택적 단일 관계다. 조직 계층 관계를 구현하는 객체 타입에도 부모와 자식 조직 링크의 매핑 의무가 없다. 매핑하더라도 개별 관계 객체의 연결은 비어 있을 수 있으므로, 관계 한 건이 양 끝을 모두 갖는지는 구현의 데이터 검증에서 확인한다(모델링 판단).
+
+`Unit`의 자체 속성은 Unit Identifier, Military Service, Echelon, SIDC, Affiliation, Allegiance 여섯 개이며 모두 매핑 선택인 string이고 value type이 없다. 이 상세에서 설명의 예시(Brigade, Corps, Friend, Hostile)는 허용값 목록으로 정의되지 않는다(이전 스키마와의 차이는 아래 Unit Type 문단). SIDC는 군대 부호를 식별하는 영숫자 코드이고, 형식이 MIL-STD-2525C나 2525D 같은 적용 표준에 따라 달라진다고 설명한다. 그래서 어느 표준으로 해석할지를 코드 문자열만으로 정하지 않는다(모델링 판단).
+
+`Unit`이 직접 선언한 링크 8개는 모두 매핑 선택이다. Unit 계층 관계의 부모와 자식, 화력지원협조수단(FSCM)의 소유, 조정과 제한 면제, `Target Engagement Authority`로 향하는 링크는 다중이고, `Unit Type`과 `Operation`으로 향하는 링크는 단일이다. Operation 링크의 설명은 복수형(operations owned by this unit)이지만 다중성은 단일이다. 들어오는 링크 중 매핑 필수는 `Target Engagement Authority`의 소유 Unit 하나다. FSCM의 소유와 조정 Unit 링크는 설명이 must contain을 쓰지만 `required`는 false다. `Operation`은 소유 조직과 소유 Unit 링크를 따로 두므로, Unit을 구현한 객체가 두 경로 중 어디로 작전 소유를 표현하는지 구현에서 정한다(모델링 판단).
+
+`Unit Type`은 이름, 약칭과 정의를 매핑 필수 속성으로 두는 별도 분류다. 2026-11-16 공개 상세 기준으로 `Unit`과 `Unit Type`의 속성에는 value type이나 허용값 목록이 없다. 2026-10-16 수집한 Unit 상세에서는 Military Service, Echelon, Affiliation에 대소문자를 구분하는 허용값 목록의 value type이 있었으므로 공개 스키마가 바뀐 것으로 보인다. 배포된 온톨로지나 생성한 SDK 버전에 따라 이전 제약이 남아 있을 수 있어 구현의 속성 메타데이터를 확인한다. 설명의 예시(IN, AR 등)를 저장값 규칙으로 옮기지 않는다(모델링 판단).
 
 ## 계획 시각과 실제 시각
 
@@ -150,6 +158,8 @@ aliases: ["Palantir 자원과 조직 관계 모델링"]
 - [Palantir Documentation, Unit Hierarchy Node Relationship Type](https://www.palantir.com/docs/defense-osdk/api/orderOfBattle/interfaceTypes/com-palantir-ontology-defense-types-unitHierarchyNodeRelationshipType/)
 - [Palantir Documentation, Unit Type](https://www.palantir.com/docs/defense-osdk/api/orderOfBattle/interfaceTypes/com-palantir-ontology-defense-types-unitType/)
 - [Palantir Documentation, Operation](https://www.palantir.com/docs/defense-osdk/api/missionPlanning/interfaceTypes/com-palantir-ontology-defense-types-operation/)
+- [Palantir Documentation, Fire Support Coordination Measure](https://www.palantir.com/docs/defense-osdk/api/targetingFires/interfaceTypes/com-palantir-ontology-defense-types-fireSupportCoordinationMeasure/)
+- [Palantir Documentation, Target Engagement Authority](https://www.palantir.com/docs/defense-osdk/api/targetingFires/interfaceTypes/com-palantir-ontology-defense-types-targetEngagementAuthority/)
 - [Palantir Documentation, Vessel](https://www.palantir.com/docs/defense-osdk/api/orderOfBattle/interfaceTypes/com-palantir-ontology-defense-types-vessel/)
 - [Palantir Documentation, Commercial Vessel](https://www.palantir.com/docs/defense-osdk/api/orderOfBattle/interfaceTypes/com-palantir-ontology-defense-types-commercialVessel/)
 - [Palantir Documentation, Military Vessel](https://www.palantir.com/docs/defense-osdk/api/orderOfBattle/interfaceTypes/com-palantir-ontology-defense-types-militaryVessel/)
