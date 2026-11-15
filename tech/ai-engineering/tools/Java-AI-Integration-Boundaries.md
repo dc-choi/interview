@@ -76,6 +76,21 @@ HAT(Heterogeneous Accelerator Toolkit)는 Babylon의 code reflection으로 데�
 
 HAT 예제의 kernel은 제한된 Java 부분집합을 사용하고 코드 모델을 최적화한 뒤 OpenCL/CUDA 코드를 생성한다. 임의의 Java 서비스 전체가 수정 없이 GPU에서 실행된다는 뜻이 아니다. 이 문서는 공개 문서의 계약을 확인했으며 HAT를 빌드하거나 성능을 재현하지 않았다.
 
+### JVM 안 학습 라이브러리의 CPU 가속과 GPU 호출
+
+2026-11-15 JDK 27 API 문서와 Deep Netts 공개 자료를 부분 대조한 기준이다. Deep Netts는 JVM 안에서 학습과 추론을 함께 구현하면서 CPU 계산과 GPU 호출을 서로 다른 경로로 가속한다고 설명한다. 다른 라이브러리는 JNI 바인딩이나 위 HAT 같은 코드 변환 등 다른 경로를 쓸 수 있다.
+
+| 경로 | 동작 | 확인할 조건 |
+|---|---|---|
+| Vector API(CPU) | `jdk.incubator.vector` 모듈은 런타임에 x64의 AVX, AArch64의 NEON 같은 SIMD 명령으로 컴파일될 수 있는 계산을 Java 코드로 표현하는 API다 | JDK 27 문서는 이 incubating 모듈이 이후 릴리스에서 제거된다고 표시하므로 의존 코드는 JDK 버전별로 확인한다. 플랫폼이 지원하지 않는 벡터 shape나 연산은 기본 스칼라 구현으로 실행되므로 preferred species 사용과 실제 벡터화 여부를 확인한다. 행렬 곱처럼 반복되는 계산을 벡터 단위로 다시 표현해야 하며, CPU 종류별 성능은 따로 측정한다 |
+| FFM으로 네이티브 GPU 라이브러리 호출 | CUDA 네이티브 라이브러리(Deep Netts 홈페이지는 CUDA, cuBLAS, cuDNN을 든다)를 FFM API로 호출해 이미 검증된 연산을 쓴다 | 위 HAT처럼 Java 계산을 kernel 코드로 변환하는 경로와 다르다. 직접 kernel을 작성하지 않는 대신 네이티브 라이브러리와 드라이버 배포, 지원 GPU를 운영 환경에서 맞춘다 |
+
+- Deep Netts는 두 경로를 모두 제시하지만 공개 저장소의 Community Edition(pom 기준 GPL v3 with Classpath Exception, Java 25 컴파일 설정. 가격 페이지는 GPL only로만 표기한다)과 Vector API, CUDA 가속을 포함한 배포판은 기능과 라이선스 조건이 다르다(2026-11-15 공식 사이트 가격 페이지 기준). 라이브러리 이름만으로 가속 기능의 사용 가능 여부를 판단하지 않는다.
+- 벤더가 제시한 CPU와 GPU 속도 비교는 벤더의 측정이다. 같은 모델과 입력으로 CPU 기준 결과를 맞춘 뒤 데이터 이동을 포함한 전체 시간을 직접 측정한다(적용 제안).
+- JSR 381(VisRec)은 2022-02-11 Final Release된, 이미지 내용의 탐지, 인식과 주석을 위한 Java API 명세다. Final Release 페이지는 RI 저장소로 `JavaVisRec/visrec-ri`를 연결하며, 발표자와 벤더는 Deep Netts를 JSR 381 구현으로 소개한다(벤더 주장). 명세 채택이 구현체 간 성능이나 기능 동등성을 뜻하지는 않는다.
+
+이 절은 문서상의 실행 경로와 배포 조건만 확인했다. Vector API 코드, GPU 호출과 성능은 시험하지 않았으며 기존 절의 검증일은 유지한다.
+
 ## 선택과 검증 질문
 
 ### HAT의 애플리케이션, compute와 kernel 경계
@@ -111,6 +126,14 @@ HAT 예제의 kernel은 제한된 Java 부분집합을 사용하고 코드 모�
 - [ONNX Runtime, Get Started with ORT for Java](https://onnxruntime.ai/docs/get-started/with-java.html) — 모델 실행, 입력 이름, 결과 수명과 배포물 구분.
 - [ONNX Runtime Java API, OrtSession.Result](https://onnxruntime.ai/docs/api/java/ai/onnxruntime/OrtSession.Result.html) — 소유한 출력만 해제하는 `close()`, pinned output 예외와 `isResultOwner(int)`.
 - [Oracle Java SE 22, Foreign Function and Memory API](https://docs.oracle.com/en/java/javase/22/core/foreign-function-and-memory-api.html) — 외부 함수와 메모리 접근.
+- [Oracle Java SE 27, Module jdk.incubator.vector](https://docs.oracle.com/en/java/javase/27/docs/api/jdk.incubator.vector/module-summary.html) — SIMD 명령으로의 런타임 컴파일과 incubating feature 표시(2026-11-15 부분 대조).
+- [Oracle Java SE 27, Package jdk.incubator.vector](https://docs.oracle.com/en/java/javase/27/docs/api/jdk.incubator.vector/jdk/incubator/vector/package-summary.html) — 벡터 명령으로 컴파일되지 못할 때의 스칼라 구현.
+- [JCP, JSR 381: Visual Recognition (VisRec) Specification](https://www.jcp.org/en/jsr/detail?id=381) — 명세 목적과 Final Release 일자.
+- [JCP, JSR 381 Final Release](https://jcp.org/aboutJava/communityprocess/final/jsr381/index.html) — RI 저장소 표시.
+- [Deep Netts](https://www.deepnetts.com/) — FFM API로 호출하는 CUDA 라이브러리 목록(벤더 자료).
+- [Deep Netts, Pricing](https://www.deepnetts.com/pricing/) — 에디션별 Vector API와 CUDA 가속 포함 범위(벤더 자료).
+- [Deep Netts Community Edition — GitHub](https://github.com/deepnetts/deepnetts-communityedition) — 공개 범위, pom의 라이선스와 Java 버전.
+- [Zoran Sevarac and Deep Netts on a Bootiful Podcast — Coffee + Software, Josh Long](https://www.youtube.com/watch?v=Ujlz_8xGJlE) — 03:35의 JSR 381 언급과 22:52~36:24의 Vector API와 FFM 기반 CUDA 라이브러리 호출. 전사문의 VectorAP는 Vector API로, JSR 3.8.1은 JSR 381로 교정했고 벤치마크 수치와 출시 전망은 옮기지 않았다.
 - [Babylon code-reflection README — OpenJDK](https://github.com/openjdk/babylon/blob/code-reflection/README.md) — 개발 브랜치의 incubating 모듈.
 - [Heterogeneous Accelerator Toolkit — OpenJDK](https://github.com/openjdk/babylon/blob/code-reflection/hat/README.md) — 실행 전제, backend와 kernel의 제한된 Java 범위.
 - [Reflect, Transform, Accelerate: Bringing GPU Computing to Java — Java, Juan Fumero](https://www.youtube.com/watch?v=_1fi5GaWXxY) — 17:31~28:48의 코드 모델과 실행 계층. 전사문의 coreflexion은 code reflection으로 교정하고, API 표기는 공식 HAT 예제와 대조했다.
