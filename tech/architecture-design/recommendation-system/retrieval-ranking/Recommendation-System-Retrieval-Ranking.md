@@ -13,6 +13,7 @@ aliases: ["추천 후보와 랭킹", "Recommendation Retrieval and Ranking"]
 
 - [[Recommendation-System-Taxonomy-Content-Based|택소노미와 콘텐츠 기반 추천]]
 - [[Recommendation-System-Candidate-Generation|후보 생성]]
+- [[Recommendation-System-Shared-Embedding-Space|통합 임베딩 공간과 범용 리트리버]]
 - [[Recommendation-System-Multi-Interest-Modeling|다중 관심 사용자 표현]]
 - [[Recommendation-System-Hubness-Popularity-Debiasing|허브니스와 사용자 무관 점수 성분]]
 - [[Recommendation-System-Ranking-Reranking|랭킹과 재랭킹]]

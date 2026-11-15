@@ -1,7 +1,7 @@
 ---
 tags: [ai, mcp, security, oauth, gateway, credential, http-header]
 status: done
-verified_at: 2026-10-12
+verified_at: 2026-11-15
 category: "AI엔지니어링(AIEngineering)"
 aliases: ["MCP Security Boundaries", "MCP 보안 경계", "MCP Gateway", "MCP 게이트웨이", "Credential Injection", "자격 증명 주입", "x-mcp-header", "MCP 헤더 미러링"]
 ---
@@ -37,10 +37,13 @@ MCP 명세(2026-07-28)의 기준:
 | @zereight/mcp-gitlab | 인증, 파일 경로 | SSE 전송이 인증 없이 모든 도구를 노출했고, `upload_markdown`의 `file_path`로 `/proc/self/environ`을 읽어 개인 액세스 토큰을 빼낼 수 있었다. 권고는 SSE를 Docker 배포의 기본 모드로, docker-compose의 3002 포트 매핑이 0.0.0.0에 열린다고 적는다(GHSA-cv3r-c5h8-f4g5) | 2.1.27 |
 | @zereight/mcp-gitlab | API 목적지 | 동적 API URL 설정에서 요청 헤더 `X-GitLab-API-URL`을 host 검증 없이 API 기준 URL로 써서, 서버가 붙이는 GitLab 토큰이 공격자 host로 갈 수 있었다(GHSA-2h44-8472-frjj) | 2.1.27 |
 | @zereight/mcp-gitlab | Origin과 Host | 기본 bind 주소가 127.0.0.1인데도 Streamable HTTP endpoint에 유효한 Host, Origin 허용 목록이 없어 DNS rebinding으로 로컬 서버에 닿았다(GHSA-vmp7-252j-cwp7) | 2.1.30 |
+| awslabs.aws-serverless-mcp-server | 파일 경로 | 배포 상태 컴포넌트가 프로젝트 이름 입력으로 파일 위치를 정했는데, 상대 경로(`..`)나 절대 경로가 든 이름을 막지 못했다(CWE-23, CWE-36). 에이전트에 영향을 줄 수 있는 행위자가 의도한 디렉터리 밖의 JSON 파일을 에이전트 컨텍스트로 읽어 오게 할 수 있었고, 쓰기 접근을 켠 서버에서는 그 위치에 배포 메타데이터를 써서 JSON 파일을 만들거나 덮어쓸 수 있었다(GHSA-r6mm-377j-qg8m, CVE-2026-116635) | 0.2.1 |
 
-mcp-atlassian 권고는 2026-07-10 저장소 보안 권고로 게시됐고 해당 CVE(CVE-2026-77254, CVE-2026-77248)는 2026-09-22에 공개됐다. @zereight/mcp-gitlab 권고는 2026-06-22(GHSA-cv3r), 2026-07-01(GHSA-2h44), 2026-07-03(GHSA-vmp7)에 저장소 보안 권고로 게시됐고 해당 CVE는 2026-09-15에 공개됐다. 버전과 식별자는 2026-10-06 OSV와 GitHub 보안 권고 기준이다.
+mcp-atlassian 권고는 2026-07-10 저장소 보안 권고로 게시됐고 해당 CVE(CVE-2026-77254, CVE-2026-77248)는 2026-09-22에 공개됐다. @zereight/mcp-gitlab 권고는 2026-06-22(GHSA-cv3r), 2026-07-01(GHSA-2h44), 2026-07-03(GHSA-vmp7)에 저장소 보안 권고로 게시됐고 해당 CVE는 2026-09-15에 공개됐다. 버전과 식별자는 2026-10-06 OSV와 GitHub 보안 권고 기준이다. awslabs.aws-serverless-mcp-server 권고는 2026-11-02 AWS 보안 공지(2026-164-AWS)와 저장소 보안 권고로 함께 게시됐고 둘 다 우회책이 없다고 밝혔다. CWE와 CVSS 3.1 6.1(Moderate)은 저장소 보안 권고에만 있다. 2026-11-15 두 공지 기준이다.
 
 - 같은 패키지라도 권고마다 수정 버전이 다를 수 있다(@zereight/mcp-gitlab은 2.1.27과 2.1.30). 패치 버전 하나만 보고 판단하지 않고 권고별로 확인한다.
+- 파일 경로 경계는 `file_path`라는 이름의 인자에만 있지 않다. 프로젝트 이름처럼 식별자로 보이는 입력도 서버가 경로를 만드는 데 쓰면 같은 검증 대상이다. 공지가 전제한 공격자는 서버에 직접 접근하는 사람이 아니라 에이전트에 영향을 줄 수 있는 제3자이므로, 모델이 채운 인자도 서버가 경로를 정규화해 허용 디렉터리 안인지 확인한다.
+- 쓰기를 끈 설정은 수정 버전을 대신하지 못한다. AWS 사례에서 쓰기 설정은 디렉터리 밖 파일의 생성과 덮어쓰기만 좌우했고 디렉터리 밖 읽기는 그대로 남았다. 코드를 복사하거나 포크해 쓰는 경우에도 수정 반영 여부를 따로 확인하라고 공지는 권고한다.
 - 배포 기본값이 사고의 크기를 정한다. 기본 Docker 배포 구성을 그대로 쓴 서버는 네트워크에서 인증 없이 도구를 부를 수 있었다.
 - 목적지 검증은 한 번의 수정으로 끝나지 않을 수 있다. mcp-atlassian은 SSRF 수정 뒤에도 검증한 IP를 연결에 고정하지 않아 생긴 DNS rebinding 우회(GHSA-72fm-whvq-jghf, GHSA-489g-7rxv-6c8q)와 리디렉션 우회(GHSA-v9m3-wfh8-5646) 권고를 따로 냈다.
 
@@ -131,6 +134,8 @@ downstream 자격 증명은 네 방식으로 나눠 볼 수 있다.
 - [Unauthenticated arbitrary file read via upload_markdown enables PAT exfiltration and full account takeover (GHSA-cv3r-c5h8-f4g5) — GitHub, zereight/gitlab-mcp](https://github.com/zereight/gitlab-mcp/security/advisories/GHSA-cv3r-c5h8-f4g5)
 - [Server-Side Request Forgery (SSRF) in zereight/mcp-gitlab (GHSA-2h44-8472-frjj) — GitHub, zereight/gitlab-mcp](https://github.com/zereight/gitlab-mcp/security/advisories/GHSA-2h44-8472-frjj)
 - [DNS rebinding reaches local Streamable HTTP MCP transport (GHSA-vmp7-252j-cwp7) — GitHub, zereight/gitlab-mcp](https://github.com/zereight/gitlab-mcp/security/advisories/GHSA-vmp7-252j-cwp7)
+- [CVE-2026-116635 - Improper limitation of a pathname to a restricted directory in the deployment status component of the AWS Serverless MCP Server — AWS Security Bulletins](https://aws.amazon.com/security/security-bulletins/2026-164-aws/)
+- [Improper limitation of a pathname to a restricted directory in the AWS Serverless MCP Server (GHSA-r6mm-377j-qg8m) — GitHub, awslabs/mcp](https://github.com/awslabs/mcp/security/advisories/GHSA-r6mm-377j-qg8m)
 - [OSV, CVE-2026-77254](https://osv.dev/vulnerability/CVE-2026-77254)
 - [OSV, CVE-2026-77248](https://osv.dev/vulnerability/CVE-2026-77248)
 - [OSV, CVE-2026-61560](https://osv.dev/vulnerability/CVE-2026-61560)
