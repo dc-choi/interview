@@ -190,4 +190,5 @@ verified_at: 2026-07-21
 - [[Interest-Rates-Monetary-Policy|금리와 통화정책]] — 금리차가 환율을 움직임
 - [[Inflation|인플레이션과 디플레이션]] — 환율과 물가가 서로를 끌어당김
 - [[GDP-Economic-Growth|GDP와 경제성장]] — 순수출(X − M)이 GDP의 한 축
+- [[Dollar-International-Role-Indicators|달러의 국제적 역할을 읽는 지표]] — 외환보유액과 외환거래에서 달러 비중을 읽는 법
 - [[거시경제(Macroeconomics)]] — 지도
