@@ -3,7 +3,7 @@ tags: [gpu, inference, memory, kv-cache, intel, nvidia, tensor-core]
 status: done
 verified_at: 2026-10-16
 category: "인프라&클라우드(Infrastructure&Cloud)"
-aliases: ["GPU Inference Hardware", "추론용 GPU 선택", "Intel D270", "GeForce Tensor Rate", "gpu-unlock"]
+aliases: ["GPU Inference Hardware", "추론용 GPU 선택", "Intel D270", "GeForce Tensor Rate", "gpu-unlock", "RTX PRO 6000 Blackwell", "Max-Q", "DGX Spark"]
 ---
 
 # 추론용 GPU: 메모리 용량과 서비스 성능
@@ -88,9 +88,26 @@ GeForce는 FP32 누산 경로를 FP16 누산의 절반으로 표기하고, 전�
 - **전력과 냉각:** 향상폭이 전력 한도에 크게 좌우된다. 성능과 함께 전력 한도, 온도와 클럭을 기록한다. 일부 카드는 450W까지 올려야 효과가 크다는 사용자 의견이 있으므로 냉각 여유도 확인한다(커뮤니티 의견).
 - **서빙 효과:** GEMM 향상률을 서비스 처리량으로 옮기지 않는다. 배치를 채운 vLLM 서빙에서 실제 향상이 7~8%였다는 사용자 보고도 있다(미검증). 같은 모델, 배치와 입출력 길이로 첫 토큰 지연과 토큰 간 지연을 따로 잰다.
 
+## 같은 GPU도 에디션마다 전력과 냉각 방식이 다르다
+
+2026-11-16 NVIDIA 제품 페이지와 대조했다. RTX PRO 6000 Blackwell의 세 에디션은 모두 96GB GDDR7 ECC 메모리와 PCIe Gen 5 x16을 쓰지만, 전력 한도와 냉각 방식, 의도한 장착 구성이 다르다.
+
+| 에디션 | 최대 전력 | 냉각 | 메모리 대역폭 | 의도한 구성 |
+| --- | --- | --- | --- | --- |
+| Workstation | 600W | Double flow-through | 1,792GB/s | 단일 GPU 워크스테이션의 최대 성능 |
+| Max-Q Workstation | 300W | Active | 1,792GB/s | 한 시스템에 최대 4장을 꽂는 고밀도 워크스테이션 |
+| Server | 400~600W(설정 가능) | Passive | 1,597GB/s | 수동 냉각 멀티 GPU 서버 |
+
+- **전력을 낮춘 에디션:** Max-Q는 메모리 용량과 대역폭은 Workstation과 같고 전력 한도를 절반으로 둔다. 벤더가 표기한 AI TOPS(FP4, sparsity 이론값)는 4,000 대 3,511이다. 디코드처럼 메모리 대역폭에 묶인 작업은 연산 피크 차이만큼 느려진다고 보지 않는다([[LLM-Inference-Bottlenecks#프리필과 디코드는 병목이 다르다|프리필과 디코드의 병목]]).
+- **수동 냉각:** Server 에디션은 카드에 팬이 없는 수동 냉각으로 표기된다. 카드 냉각은 서버 섀시의 공기 흐름에 맡기므로, 섀시 팬 소음과 설치 공간을 장비 선택 조건에 넣는다. 서버 페이지는 단일 슬롯 수랭 폼팩터도 함께 표기한다.
+- **메모리 용량 비교:** 같은 Blackwell 세대의 GeForce RTX 5090은 32GB GDDR7, 총 그래픽 전력 575W다. 모델을 한 카드에 올릴 수 있는지는 카드 메모리, 응답 속도는 대역폭으로 따로 본다.
+- **통합 메모리 장비:** DGX Spark는 LPDDR5x 통합 메모리(대역폭 273GB/s)를 쓰며, NVIDIA는 128GB 구성 한 대에서 최대 200B, OEM 파트너 전용 64GB 구성에서 최대 100B 파라미터 모델의 추론을 안내한다. ConnectX-7로 최대 4대를 연결하며 4대는 외부 스위치가 필요하다. 용량은 크지만 대역폭이 RTX PRO 6000의 약 6분의 1이라 같은 모델의 디코드 속도는 낮을 수 있다(대역폭 비율에서 나온 추론이며 실측하지 않음).
+
+2026년 10월 팟캐스트의 사용 사례에서는 Max-Q 4장을 워크스테이션에 붙여 꽂아 로컬 모델을 상시 실행했다. 부하가 걸리면 GPU 온도가 한계 근처까지 올랐고, 서버형 장비는 소음 때문에 사무 공간에 두기 어렵다는 경험담이 나왔다. 대량의 전사 검수나 장면 분석은 로컬 모델에 맡기고 일부 결과만 상용 모델로 다시 검토하는 혼합 운용도 소개됐다. 출연자 경험이며 온도와 처리 속도는 재현하지 않았다.
+
 ## 구매 및 배포 전 확인
 
-같은 모델, 정밀도와 동시성으로 첫 토큰 지연, 토큰 간 지연, 총처리량과 전력 사용량을 측정한다. 드라이버, framework 버전과 실제 사용 가능한 커널도 고정한다. 최대 메모리 사양을 실제 서비스 용량으로 그대로 계산하지 않는다.
+설치 장소의 소음과 열 배출, 전원 용량, 카드 수에 맞는 에디션(단일 고성능, 고밀도, 수동 냉각)을 먼저 정한다. 같은 모델, 정밀도와 동시성으로 첫 토큰 지연, 토큰 간 지연, 총처리량과 전력 사용량을 측정한다. 드라이버, framework 버전과 실제 사용 가능한 커널도 고정한다. 최대 메모리 사양을 실제 서비스 용량으로 그대로 계산하지 않는다.
 
 제품 사양만 대조했으며 장비 접근과 실측은 하지 않았다.
 
@@ -107,6 +124,13 @@ GeForce는 FP32 누산 경로를 FP16 누산의 절반으로 표기하고, 전�
 - [How Nvidia Ampere generation GPUs got unlocked — Zagitta](https://github.com/Zagitta/gpu-unlock/blob/main/docs/How%20Ampere%20was%20unlocked.md) — 2026-10-27 booter 취약점과 PLM 설명 대조
 - [Firmware provenance and distribution scope — Zagitta](https://github.com/Zagitta/gpu-unlock/blob/main/firmware/NOTICE.md) — 2026-10-27 펌웨어 출처와 재배포 고지 대조
 - [GPU-unlock - RTX 30 시리즈의 AI 연산 성능 제한을 해제하는 Linux 모듈 — GeekNews](https://news.hada.io/topic?id=35938) — 소개 글과 Hacker News 의견 번역. 전력과 서빙 효과의 사용자 의견 출처
+- [NVIDIA, RTX PRO 6000 Blackwell Family](https://www.nvidia.com/en-us/products/workstations/professional-desktop-gpus/rtx-pro-6000-family/) — 2026-11-16 세 에디션의 전력, 냉각, 메모리와 의도한 구성 대조
+- [NVIDIA, RTX PRO 6000 Blackwell Workstation Edition](https://www.nvidia.com/en-us/products/workstations/professional-desktop-gpus/rtx-pro-6000/)
+- [NVIDIA, RTX PRO 6000 Blackwell Max-Q Workstation Edition](https://www.nvidia.com/en-us/products/workstations/professional-desktop-gpus/rtx-pro-6000-max-q/)
+- [NVIDIA, RTX PRO 6000 Blackwell Server Edition](https://www.nvidia.com/en-us/data-center/rtx-pro-6000-blackwell-server-edition/)
+- [NVIDIA, GeForce RTX 5090](https://www.nvidia.com/en-us/geforce/graphics-cards/50-series/rtx-5090/)
+- [NVIDIA, DGX Spark](https://www.nvidia.com/en-us/products/workstations/dgx-spark/) — 2026-11-16 메모리, 대역폭, 연결 대수와 안내 모델 크기 대조. 새 절만 대조했으므로 frontmatter 날짜를 유지한다.
+- [RTX PRO 6000 x4 사용기 — YouTube, 44BITS](https://www.youtube.com/watch?v=dMmtMZohr_c) — 2026-10-30 공개 팟캐스트. 사용 사례 문단의 출처
 
 ## 관련 문서
 
