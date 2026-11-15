@@ -13,6 +13,7 @@ Polling, SSE, WebSocket, STOMP, 실시간 통신 아키텍처. 게임 클라이�
 - [x] [[Game-State-Authority-and-Prediction|게임 상태 판정과 예측]] — 서버 권위, 예측 보정, 지연 보상의 되감기와 피커 어드밴티지, 명령 공유와 결정적 시뮬레이션
 - [x] [[Game-Loop-Frame-Timing|게임 루프의 프레임 시간]] — 프레임 의존 이동, 델타 타임, 고정 시간 간격과 보간, 소수 픽셀의 나머지 누적
 - [x] [[Unity-UI-Canvas-Batching|Unity UI 캔버스 배칭과 분할]] — 요소 하나의 변경이 캔버스 전체를 다시 묶는 이유, 갱신 주기별 분할과 드로우콜 증가의 균형, Raycaster와 레이아웃 그룹 비용
+- [x] [[Unity-2D-Pixel-Art-Rendering|Unity 2D 픽셀 아트 렌더링]] — Point 필터와 압축 없음, 단일 PPU, Pixel Perfect Camera의 기준 해상도와 격자 스냅, 업스케일 렌더 텍스처
 - [x] [[Realtime-Communication-Comparison|실시간 통신 기술 비교 (Polling/Long Polling/SSE/WebSocket/WebRTC/WebTransport)]]
 - [x] [[RTP-and-RTCP|RTP와 RTCP (UDP 위 미디어 전송, 순서 번호와 타임스탬프, SSRC와 CSRC, 품질 보고와 lip sync, rtcp-mux)]]
 - [x] [[Server-Sent-Events|Server-Sent Events (SSE, 유한 스트림, BFF 점진 조립)]]

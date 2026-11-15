@@ -1,9 +1,9 @@
 ---
 tags: [ai, agent, coding-agent, macos, operations, security, terminal-multiplexer]
 status: done
-verified_at: 2026-10-27
+verified_at: 2026-11-15
 category: "AI엔지니어링(AIEngineering)"
-aliases: ["Always-On Mac Agent Host", "상시 실행 Mac 에이전트 호스트", "맥미니 에이전트 서버", "Corgi"]
+aliases: ["Always-On Mac Agent Host", "상시 실행 Mac 에이전트 호스트", "맥미니 에이전트 서버", "Corgi", "Rex terminal"]
 ---
 
 # 상시 실행 Mac 에이전트 호스트의 전원, 재시작과 원격 접근
@@ -61,12 +61,23 @@ Tailscale SSH는 WireGuard 위에서 Tailscale node key로 연결을 인증하�
 | Claude Code Remote Control | 호스트 Mac의 잠자기와 네트워크 단절(다시 온라인이 되면 자동 재연결) | 컴퓨터나 `claude` 프로세스가 끝나면 오프라인이 된다. 깨어 있는데 네트워크가 약 10분 넘게 끊기면 서버 모드 프로세스는 종료하고, 대화형 세션은 복구될 때까지 재시도한다 |
 | Claude Code background session(agent view, research preview) | 터미널 종료와 분리. 별도 supervisor 프로세스가 실행한다 | 잠자는 동안 진행이 멈췄다가 깨어나면 재개하고, 종료나 재시작에서는 멈춘다 |
 | Corgi(에이전트용 터미널 멀티플렉서) | 분리와 SSH 끊김. 다시 접속하면 실행 중인 에이전트와 개발 서버로 돌아온다. 충돌이나 재부팅 뒤에는 저장한 화면 배치와 출력을 복원하고, 기록된 에이전트 대화는 휴면 상태로 돌아와 그 창에 초점이 가면 이어진다 | 다른 창은 새 셸로 시작하며 임의 프로세스의 메모리 상태는 복원하지 못한다. 탭이나 창을 닫으면 그 안의 프로세스도 끝난다 |
+| Rex(서버와 클라이언트를 나눈 터미널, 베타) | 클라이언트 연결 종료. 세션은 Rex 서버가 쥐며 다른 장비의 서버에도 붙을 수 있다 | 서버가 멈추면 세션도 끝난다. Linux 개인 서버는 linger나 `rex server install` 없이 로그아웃하면 세션이 모두 죽는다 |
 
 Claude Code 문서는 원격 머신의 터미널에서 `claude`를 실행할 때 SSH 연결이 끊긴 뒤에도 세션이 남도록 `tmux`나 `screen` 안에서 실행하라고 권한다. Remote Control은 바깥으로 나가는 HTTPS 요청만 하고 Mac의 인바운드 포트를 열지 않는다. 기능별 제약은 [[Claude-Code-Customization#원격 제어 — 실행 위치 분리|Claude Code 원격 제어]]를 따른다.
 
 Corgi 행은 2026-10-27 공식 저장소 문서(main 8ea591038f, MIT) 기준이며, README의 설치 대상은 Apple Silicon macOS와 amd64 Linux다. Corgi는 창에서 실행된 Claude Code와 Codex를 알아보고 그 설정에 자체 훅을 추가한다(Codex는 `/hooks`에서 한 번 신뢰를 요구). 문서는 로그와 복구 파일에 대화와 터미널 내용이 들어갈 수 있다고 경고한다. 상시 실행 장비에서는 이 훅 추가를 에이전트 설정의 변경으로 기록하고, 복구 파일과 로그 위치를 백업과 공유 범위에서 확인한다(운영 제안).
 
-네 방식 모두 실행 중인 프로세스를 재부팅 너머로 넘기지 못한다. 화면과 대화를 되살려도 진행 중이던 명령과 개발 서버는 다시 띄워야 한다. 재부팅 뒤 다시 띄울 작업, 중간 결과를 남길 위치와 재개 뒤 확인할 출력은 미리 적어 둔다(운영 제안). 상태 표시와 완료 판정의 구분은 [[Agent-Terminal-Workspaces|에이전트 터미널과 작업 공간]]을 따른다.
+Rex(Superlogical, 베타)는 세션을 쥔 서버와 화면을 그리는 클라이언트를 나눈 터미널이다. 2026-11-15 공식 설치 문서 기준이며 설치와 실행은 하지 않았다.
+
+- **서버와 앱의 분리:** Linux의 `rex`는 서버와 CLI를 한 바이너리에 담고, macOS 앱은 로컬 서버를 직접 실행한다. 아무 `rex` 명령이나 서버가 없으면 띄우며, 이렇게 뜬 개인 서버는 마지막 세션과 연결이 닫히고 약 10초 뒤 스스로 끝난다. `rex server start`로 띄운 서버는 계속 돌고, `rex server stop`은 그 서버의 모든 세션을 끝낸다. Mac 앱을 종료할 때 세션이 남는지는 문서에서 확인하지 못했다.
+- **로그아웃과 부팅:** Linux에서 개인 서버의 소켓은 로그아웃하면 사라지고 실행 중인 세션도 모두 죽는다. 문서는 `loginctl enable-linger`나, 부팅 때 서버를 띄우고 로그아웃 중에도 유지하는 `rex server install`을 안내한다. 개인 모드는 혼자 쓰는 장비용이고, 여러 사용자가 쓰는 Linux 장비에는 공유(`rex` 시스템 계정)와 로그인(root가 사용자별 서버를 넘겨줌) 모드가 있다. 로그인 모드에서는 로그인 서버가 멈추거나 재시작, 업그레이드돼도 계정별 서버가 계속 돌아 세션이 남는다고 설명한다. 장비 재부팅 뒤의 세션 유지는 이 설명에 없다.
+- **원격 접속:** 서버는 기본으로 로컬 소켓에서만 듣는다. 문서가 현재 권하는 경로는 시스템 `ssh`를 쓰는 `ssh://` 주소이고, 원격 장비에도 `rex`가 있어야 한다. 내장 Tailscale(`--tailscale`)은 서버가 tailnet에 자기 기기로 참여하며, tailnet에 MagicDNS와 HTTPS 인증서가 켜져 있어야 한다. 기본으로는 그 장비(또는 Rex 기기)를 소유한 Tailscale 사용자만 들어온다.
+- **인증 한계:** 문서는 Rex가 지금은 연결 방식만으로 호출자를 신뢰하며 SSH 키를 포함한 인증 체계를 준비 중이라고 밝힌다. 일반 HTTP나 다른 VPN에 쓰는 `--allow-anonymous`는 모든 연결에 전체 권한을 준다. 상시 실행 장비에서는 이 옵션을 쓰지 않고 SSH나 tailnet 정책으로 좁힌다(운영 제안).
+- **지원 범위:** 테스터에게 macOS 앱과 Linux, FreeBSD 서버를 제공하고 Windows 서버는 일부 테스터에게만 연다. 안정판 태그는 아직 없다. iOS, Linux, Windows 클라이언트는 테스트 대상이 아니다.
+
+Mac mini에서 Rex 서버를 돌리고 노트북 앱으로 붙으면 노트북을 덮어도 세션은 Mac mini에서 계속된다. 세션이 노트북 자신의 서버에 있으면 노트북이 잠들 때 함께 멈춘다(학습 계기 영상의 시연과 서버 분리 구조에서 도출하며, 인용한 문서는 macOS를 원격 서버로 쓰는 절차를 다루지 않는다). 이 경우에도 Mac mini 쪽 잠자기, 재시작과 FileVault 조건은 위 절들을 그대로 따른다.
+
+다섯 방식 모두 실행 중인 프로세스를 재부팅 너머로 넘기지 못한다. 화면과 대화를 되살려도 진행 중이던 명령과 개발 서버는 다시 띄워야 한다. 재부팅 뒤 다시 띄울 작업, 중간 결과를 남길 위치와 재개 뒤 확인할 출력은 미리 적어 둔다(운영 제안). 상태 표시와 완료 판정의 구분은 [[Agent-Terminal-Workspaces|에이전트 터미널과 작업 공간]]을 따른다.
 
 ## 확장과 업데이트는 소유자를 정한다
 
@@ -106,6 +117,11 @@ Corgi 행은 2026-10-27 공식 저장소 문서(main 8ea591038f, MIT) 기준이�
 - [Claude Code Docs, Manage multiple agents with agent view](https://code.claude.com/docs/en/agent-view)
 - [Corgi — GitHub, tals](https://github.com/tals/corgi) — README와 `docs/reference.md`, 2026-10-27 main 8ea591038f 기준. 분리와 복구 범위, 에이전트 훅 추가, 로그와 복구 파일의 내용 대조. 설치와 실행은 하지 않음
 - [Corgi - 여러 AI 코딩 에이전트를 한눈에 관리하는 터미널 도구 — GeekNews](https://news.hada.io/topic?id=35971) — 학습 계기
+- [Rex Docs, Installation](https://www.superlogical.com/rex/docs/installation) — 2026-11-15 베타 범위와 macOS 앱의 로컬 서버 대조
+- [Rex Docs, Linux installation](https://www.superlogical.com/rex/docs/linux/installation.md) — 2026-11-15 서버와 CLI 바이너리, `rex server install`, 안정판 부재 대조
+- [Rex Docs, Server modes](https://www.superlogical.com/rex/docs/linux/server-modes.md) — 2026-11-15 개인 서버의 자동 시작과 종료, 공유와 로그인 모드 대조
+- [Rex Docs, Remote access](https://www.superlogical.com/rex/docs/linux/remote-access.md) — 2026-11-15 SSH 권장, 내장 Tailscale 조건, 인증 한계와 `--allow-anonymous` 대조
+- [Ghostty's Creator Just Launched a New Terminal (Rex) — YouTube, Better Stack](https://www.youtube.com/watch?v=pde1xL9D7ic) — 2026-11-06 공개 영상, 학습 계기
 - [Claude Code Docs, Plugin security and trust](https://code.claude.com/docs/en/plugins/security)
 - [Claude Code Docs, Install and manage plugins](https://code.claude.com/docs/en/discover-plugins)
 - [Claude Code Docs, Advanced setup](https://code.claude.com/docs/en/setup)
