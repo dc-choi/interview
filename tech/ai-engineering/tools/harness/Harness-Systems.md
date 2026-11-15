@@ -14,6 +14,7 @@ aliases: ["Harness Systems", "하네스 시스템"]
 - [[Harness-Gate-Placement|게이트 배치]]: 게이트는 비용이라는 전제, 요청 층과 강제 층의 판별 질문, 걸 곳 셋과 걸지 않을 곳 둘, 위험 명령 A/B 실증, 여섯 방어 시점과 각 층이 놓치는 것, 푸시 전 이해 확인 훅과 강제 통제의 차이
 - [[Harness-Adoption-Ladder|하네스 도입 계단]]: Lv.0에서 Lv.5까지의 성숙도와 얹는 순서, 다섯 단계 파이프라인과 네 게이트, 대조 가능한 계획 파일, 한 사람의 도입 6단계 사례
 - [[BMad-Method|BMad Method]]: 역할별 에이전트와 파일 산출물로 나눈 기성 워크플로우, v6에서 v7로의 전환, story 단위 plan과 리뷰 기록, 무인 실행으로 확장할 때의 실천
+- [[Pstack|pstack]]: 작업별 playbook과 원칙 skill 묶음, 프로젝트 전용 검증 skill의 생성과 유지(drift, 도구 공백, 제품 버그 분류), 반복 실수를 아키텍처부터 문서 순으로 강제 층에 내리는 correct, 시작 전 의도 재진술
 - [[Harness-Component-Evaluation|코딩 에이전트 하네스 구성요소 평가]]: 계획, 행동 인터페이스, 컨텍스트 관리의 조건부 실험과 평가 기준, 학습 분포 밖 언어(KillSwitch)로 기억 의존을 줄이려는 평가 시도와 교란 요인, 팀 하네스의 정기 평가와 enterprise harness, 하네스 교체 때 고정 지시와 확장 경로 비교
 - [[Harness-AI-Native|AI 네이티브 시스템과 조직 (ai-native/ 서브폴더)]]: 레포 단위의 결정론적 강제(부탁 vs 강제, 제어 4계층, AST 아키텍처 테스트)와 조직 공용 실행 계층(팀챗 위 전사 AI 실행 플랫폼, 상태머신+HITL, 4계층 메모리, 조직 6요소)
 - [[Harness-Production|프로덕션 에이전트 운영과 격리 (production/ 서브폴더)]]: 프로덕션 에이전트 아키텍처(분업, Defense in Depth, Metric Registry, Closure-loop 위임 경계), Bedrock AgentCore 운영 경계, 에이전트 군집 격리

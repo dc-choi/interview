@@ -9,6 +9,8 @@ aliases: ["AI Slop Quality Gate", "AI 슬롭", "판단 관문"]
 
 AI 슬롭(slop)은 문체나 AI가 쓴 비율의 문제가 아니라, 인간의 이해와 판단, 근거, 독창적 기여가 빠진 산출물이다. 핵심 특징은 비용의 전가다 — 창작자가 감당해야 할 수고(검증, 관점 형성, 중요도 판단)를 건너뛰고 그 부담을 읽는 사람에게 떠넘긴다. 독자가 신뢰성과 사실 여부를 스스로 판별해야 하면 그 글은 슬롭이다. 같은 정의가 코드에도 적용된다 — 생성은 빨랐지만 맥락과 검증, 판단이 빠져 리뷰어나 다음 사람이 그 부담을 지면 슬롭 코드다.
 
+AIE Code Summit 2026의 연사와 참석자가 애자일 선언문을 계기로 삼아 쓴 No AI Slop 선언문도 같은 비용 전가의 축으로 슬롭을 정의한다. 만드는 데 들인 노력이 받는 사람이 이해하는 데 써야 하는 노력보다 적으면 슬롭이며, AI를 썼다는 사실만으로 슬롭이 되지는 않는다고 본다. 가치는 산출보다 성과, 속도보다 이해, 모델의 첫 초안보다 자기 생각, 쉬운 일보다 더 나은 일, 결과물을 땜질하기보다 시스템 개선의 다섯 쌍이다. 실천 원칙에는 에이전트가 작성한 것을 보낼 때 그 사실을 밝히고 중요한 부분을 확인하기, 슬롭을 받으면 친절하게 알리고 먼저 검토해 달라고 요청하기, 린터와 타입 검사 같은 자동 검사가 잡을 수 있는 것은 자동 검사에 맡기기, 에이전트 리뷰와 린터, 검증기는 유용하지만 충분하지 않다고 보기가 들어 있다(2026-11-15 원문 확인, 원문 표기 서명 403건).
+
 ## 멘탈 모델 — 절약분을 어디로 보내는가
 
 AI는 수고를 줄이는 장치다. 줄인 수고를 어디로 보내느냐가 품질을 가른다. 아낀 시간을 더 많은 산출로 돌리면 슬롭이 양산되고 더 나은 원재료와 검증으로 돌리면 품질이 오른다. 그래서 문제는 AI 사용 여부가 아니라 절약분의 재투자 방향이다.
@@ -169,6 +171,7 @@ XP(Extreme Programming)의 spike solution에도 같은 구분이 있다. spike�
 - [The end of the curl bug-bounty — Daniel Stenberg](https://daniel.haxx.se/blog/2026/01/26/the-end-of-the-curl-bug-bounty/) — 2026-01-26, 2026-11-09 종료일, 확인 비율 변화와 남은 신고 경로 대조. 이후 변경은 확인하지 않음
 - [AI_POLICY.md — Ghostty, GitHub](https://github.com/ghostty-org/ghostty/blob/main/AI_POLICY.md) — 2026-11-09 공개와 이해 요구 확인. 에세이가 든 수락된 이슈 한정 조건은 현재 문서에서 찾지 못함
 - [Awesome repositories are no longer awesome — Erik Gahner Larsen](https://erikgahner.github.io/posts/2026/awesome-repositories-are-no-longer-awesome/) — 2026-11-05, 2026-11-09 대량 PR 사례와 거절 사유 대조
+- [No AI Slop: A Manifesto — GitHub Gist, dexhorthy 게시](https://gist.github.com/dexhorthy/4cc96f01be5b1208519e75dad250a948) — AIE Code Summit 2026 연사와 참석자 공동 작성, 2026-11-15 정의, 가치와 실천 원칙 대조
 - [How I use AI (Oct 2026) — Ben Stolovitz](https://ben.stolovitz.com/posts/how-use-ai-oct-2026/) — 2026-10-31, 2026-11-09 4,000줄 교체와 에이전트 코드 품질 서술 대조. 자기 보고
 
 ## 관련 문서
