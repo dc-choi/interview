@@ -40,6 +40,15 @@ ego(lite)의 공개 FAQ는 사용자가 Space에서 작업을 지켜보고 언�
 
 인계 순서를 시스템이 강제하는 예도 있다. Rakazo에서 사용자가 봇 화면의 제어를 가져가면 그 화면의 배타적 제어 lease를 받는데, 봇이 실행 중이면 인계를 거부(HTTP 409)하고 봇을 먼저 멈추게 한다. 로그인, 2단계 인증이나 CAPTCHA처럼 보호된 입력이 필요하면 봇이 인계를 요청하고 기다린다. 실패한 조작은 확인된 진행과 결과가 불확실한지를 함께 보고하며, 문서는 현재 상태를 먼저 확인하고 완료됐거나 불확실한 조작을 자동으로 다시 실행하지 말라고 정한다.
 
+관리형 브라우저 에이전트 서비스인 Amazon Nova Act도 사람 개입을 두 패턴으로 나눈다. 2026-11-15 공식 문서 기준 Nova Act는 자연어 작업을 `act()` 호출로 넘기고 Python 코드로 여러 호출을 엮은 workflow를 AWS에 배포해 실행 기록을 콘솔에서 본다. 문서에 표시된 리전은 미국 동부(버지니아 북부)뿐이다. 사람 개입(HITL)은 두 패턴이다.
+
+| 패턴 | 동작 |
+|---|---|
+| 사람 승인 | 현재 화면을 캡처해 검토자에게 보여 주고 승인, 거부나 선택지를 비동기로 받는다 |
+| UI 인계 | 원격 브라우저 세션을 실시간 화면으로 넘겨 사람이 마우스와 키보드로 조작한다 |
+
+HITL은 SDK가 제공하는 기능이며 문서는 관리형 AWS 서비스가 아니라고 밝힌다. 알림과 감독 화면은 자기 계정에 CDK로 배포하는 공개 패키지를 쓰거나 직접 만든다. 따라서 승인 단계를 workflow의 어느 지점에 둘지, 응답이 없을 때 언제 끝낼지는 작성자가 정한다. 문서도 세션 나이에 맞춘 시간 제한을 권한다. 서비스를 실행해 승인 흐름을 확인하지는 않았다.
+
 ### 화면 공유 협업의 원격 조작과 AI 조작 승인
 
 2026-10-27 공식 저장소 문서(main 0fb9c45074, Apache-2.0, 1.0 이전) 기준 Petal은 공유한 창을 참여자의 데스크톱에 실제 네이티브 창으로 띄우는 원격 협업 앱이다. 다른 참여자에게 공유 창의 키보드와 마우스 조작을 넘길 수 있고, 기본값은 요청마다 공유자에게 동의 창을 띄우는 방식이다. 신뢰 모델은 인증된 회의 참여자를 모두 잠재적 조작자로 보되 호스트 쪽 검사로 막는다. 사용자별 허용 목록은 없고, 조작을 끄면 모든 조작자를 즉시 회수하며, 권한을 줄 때마다 새 토큰을 발급해 오래되거나 재전송된 입력을 막는다. 다만 이전 클라이언트와의 호환을 위해 토큰 없는 입력을 경고와 함께 받아 주는 기간이 아직 남아 있다고 문서가 밝힌다. Windows 공유에서 커서를 넘겨주는 전체 제어로 바꾸는 것은 공유자 승인으로만 일어나고, 실패한 조작이 더 강한 권한을 얻지 않는다.
@@ -82,6 +91,9 @@ ego(lite)도 비밀번호, 쿠키, 북마크와 방문 기록의 로컬 보관�
 
 ## 출처
 
+- [AWS, What is Amazon Nova Act?](https://docs.aws.amazon.com/nova-act/latest/userguide/what-is-nova-act.html) — 2026-11-15 `act()`, workflow, 배포와 리전 대조
+- [AWS, Human-in-the-loop (HITL)](https://docs.aws.amazon.com/nova-act/latest/userguide/hitl.html) — 2026-11-15 승인과 UI 인계 패턴, SDK 기능과 배포 선택지 대조
+- [Introducing Amazon Nova Act - Generally Available in AWS — Amazon Web Services](https://www.youtube.com/watch?v=xVtjlBuWXOY) — 공식 발표 영상을 검토 계기로 사용. 학습 방식과 신뢰성 주장은 옮기지 않았다.
 - [milind-soni/OpenMausBot — GitHub](https://github.com/milind-soni/OpenMausBot) — 2026-11-09 README 확인
 - [Aside Help Center, Run tasks](https://docs.aside.com/help/tasks)
 - [Aside Help Center, Set agent permissions](https://docs.aside.com/help/security)

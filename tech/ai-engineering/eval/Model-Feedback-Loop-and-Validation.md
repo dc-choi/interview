@@ -56,6 +56,20 @@ SageMaker AI의 관리형 shadow test는 같은 endpoint에서 추론 요청을 
 
 **배송 모델에 적용하는 예:** 도로 이동 시간과 건물 도착 후 문 앞까지 걸린 시간을 구분해 관측하고, 새 모델이 무엇을 예측하는지 먼저 고정한다. 지역, 물량과 수집 조건이 다른 데이터를 함께 쓸 때는 평가 구간을 나누어 비교한다. 학습과 배포 리드타임이 줄어든 결과와 실제 배송 지연이 줄어든 결과도 별도로 측정한다. 이는 평가 설계 제안이며 특정 업체의 성과나 자동화 도구의 효과를 보장하는 설명이 아니다.
 
+### 반복 실행은 파이프라인과 승인 상태로 고정한다
+
+노트북에서 한 번 성공한 학습을 같은 조건으로 다시 돌리려면 전처리, 학습, 배포 검사와 평가를 단계로 나누고, 단계 사이의 입력과 출력을 명시한 DAG로 만든다. 단계마다 필요한 컴퓨팅이 다르면 인스턴스 유형도 단계별로 정한다. 실험 추적 도구에는 하이퍼파라미터, 학습 지표와 자원 사용 지표를 함께 남겨, 바꾼 설정과 품질 변화, 병목이나 과잉 할당을 같은 실행에서 비교한다.
+
+SageMaker AI 구현 사례는 다음과 같다(2026-11-15 공식 문서 대조).
+
+- `@step` 데코레이터는 로컬 ML 코드를 하나 이상의 파이프라인 단계로 바꾸고, 데코레이터를 붙인 함수를 이어 여러 단계의 DAG를 만든다.
+- 함수의 입력과 출력은 S3에 직렬화되며 기본값은 기본 버킷이다. 모범 사례 문서는 파이프라인 전용 버킷을 `S3RootUri`로 지정하고 그 경로의 쓰기 권한을 제한하라고 권한다.
+- 같은 모범 사례 문서는 `@step(keep_alive_period_in_seconds=900)`처럼 학습 작업의 warm pool을 켜 단계 실행을 빠르게 하는 방법을 안내한다. 재사용은 인스턴스 유형과 수 등 설정이 같은 다음 작업에만 적용되므로 단계마다 유형을 달리하면 효과가 없고 유지한 인스턴스 비용만 남는다. 재사용 조건, 할당량과 과금은 [[GPU-Server-Infrastructure|GPU 서버 인프라]]의 Managed Warm Pools 설명을 따른다.
+- 관리형 MLflow는 MLflow Model Registry의 모델을 SageMaker Model Registry에 자동 등록하는 연동을 제공한다. 이 동기화는 선택 기능이라 tracking server나 MLflow App에서 켜야 한다.
+- 모델 버전의 승인 상태로 `PendingManualApproval`, `Approved`, `Rejected`가 있다. 상태는 등록 요청의 `ModelApprovalStatus`로 지정하며 문서의 등록 예시는 `PendingManualApproval`을 쓴다. 등록 때 `Approved`로 지정할 수도 있으므로 수동 승인 관문이 필요하면 등록 단계의 값부터 확인한다. SageMaker AI가 제공하는 project template을 쓸 때는 `Approved`로 바꾸면 그 버전의 CI/CD 배포가 시작되고, `Approved`에서 `Rejected`로 바꾸면 남은 최신 `Approved` 버전을 배포한다. template 없이 직접 만든 파이프라인에서는 이 연결을 따로 구성해야 한다.
+
+승인 상태 변경은 배포를 시작하는 신호일 뿐 품질 판정이 아니다. 승인 전에 위 표의 재학습 비교와 통합 검사 결과를 그 모델 버전에 연결해 두고, 승인한 사람과 근거도 기록한다(운영 제안). 파이프라인을 실제로 실행해 확인하지는 않았다.
+
 ## 생성형 모델은 프롬프트와 평가 자료도 운영 대상으로 둔다
 
 MLOps의 데이터, 코드와 모델 추적은 생성형 모델에서도 필요하다. 여기에 프롬프트 관리, 모델 선택과 비결정적 출력의 평가가 더해진다. 모델을 직접 학습하는 제공자, 기존 모델을 조정하는 미세조정자, API나 인터페이스로 사용하는 소비자는 관리할 범위가 다르다. API 소비자는 자체 학습 파이프라인이 없어도 입력 구성과 출력 평가를 운영해야 한다.
@@ -136,7 +150,7 @@ MLOps의 데이터, 코드와 모델 추적은 생성형 모델에서도 필요�
 - [Going Deep: AWS + NFL Next Gen Stats — AWS](https://aws.amazon.com/sports/nfl/going-deep/) — 2026-11-04 Episode 3의 공식 소개와 모델 개발, 배포 판단 범위 대조
 - [AWS, Label verification and adjustment](https://docs.aws.amazon.com/sagemaker/latest/dg/sms-verification-data.html) — 2026-11-04 검수와 수정의 구분, API 라벨 속성명과 신규 고객 제한 대조
 - [클라우드 기반 AI 전주기 지원 플랫폼을 통한 산업 혁신 — Amazon Web Services Korea](https://www.youtube.com/watch?v=wkWdpDyjFQc) — 2024년 공개 발표의 데이터 추출, 사용 승인과 학습 흐름을 검토 계기로 사용. 기업별 성과와 제품 도입 효과는 일반화하지 않음
-- [AWS, Accelerate generative AI development using managed MLflow on Amazon SageMaker AI](https://docs.aws.amazon.com/sagemaker/latest/dg/mlflow.html) — 2026-10-29 Tracking Server의 메타데이터와 S3 아티팩트 저장 경계, 접근 권한 대조
+- [AWS, Accelerate generative AI development using managed MLflow on Amazon SageMaker AI](https://docs.aws.amazon.com/sagemaker/latest/dg/mlflow.html) — 2026-10-29 Tracking Server의 메타데이터와 S3 아티팩트 저장 경계, 접근 권한 대조. 2026-11-15 SageMaker Model Registry 자동 등록 연동 대조
 - [엔터프라이즈 AI 경쟁력을 위한 하이브리드 MLOps 운영 전략 — Amazon Web Services Korea](https://www.youtube.com/watch?v=Qdb8Ult2H8k) — 2024년 공개 발표의 반복 개발과 하이브리드 실행을 검토 계기로 사용. 제품 절감률과 고객 성과는 일반화하지 않음
 - [AWS Prescriptive Guidance, Evaluating your ML project with the MLOps checklist](https://docs.aws.amazon.com/pdfs/prescriptive-guidance/latest/mlops-checklist/mlops-checklist.pdf) — 8절의 재학습 정의와 데이터, 모델, 코드 변경 트리거를 2026-10-27 대조
 - [AWS Prescriptive Guidance, Continuous integration](https://docs.aws.amazon.com/prescriptive-guidance/latest/mlops-checklist/continuous-integration.html) — 데이터, 통합, 부하와 극단 입력 검사의 분리, 2026-10-27 대조
@@ -148,6 +162,12 @@ MLOps의 데이터, 코드와 모델 추적은 생성형 모델에서도 필요�
 - [AI Fuels Genentech’s R&D Ecosystem — Genentech](https://www.gene.com/stories/ai-fuels-genentech-r-and-d-ecosystem?topic=behind-the-science) — 공개 검색 색인의 lab-in-the-loop 본문을 발표 전사와 대조했다. 직접 페이지 열기는 탐색 메뉴만 반환해 전체 본문은 재확인하지 못했다.
 - [Storm Reply Accelerates Autonomous Driving Development with AWS — Amazon Web Services](https://www.youtube.com/watch?v=N6FtSBT-WZg) — 공식 영상 설명과 사람이 작성한 자막을 대조했다.
 - [AWS, Amazon SageMaker AI Shadow tests](https://docs.aws.amazon.com/sagemaker/latest/dg/shadow-tests.html)
+- [AWS, Lift-and-shift Python code with the @step decorator](https://docs.aws.amazon.com/sagemaker/latest/dg/pipelines-step-decorator.html) — 2026-11-15 로컬 코드의 단계 변환과 DAG 구성 대조
+- [AWS, Best Practices for @step](https://docs.aws.amazon.com/sagemaker/latest/dg/pipelines-step-decorator-best.html) — 2026-11-15 warm pool 설정, S3 직렬화와 `S3RootUri` 권한 대조
+- [AWS, Automatically register SageMaker AI models with SageMaker Model Registry](https://docs.aws.amazon.com/sagemaker/latest/dg/mlflow-track-experiments-model-registration.html) — 2026-11-15 Model Registry 동기화가 선택 기능이라는 조건 대조
+- [AWS, CreateModelPackage](https://docs.aws.amazon.com/sagemaker/latest/APIReference/API_CreateModelPackage.html) — 2026-11-15 `ModelApprovalStatus`가 선택 입력이고 세 값을 받는다는 점 대조
+- [AWS, Update the Approval Status of a Model](https://docs.aws.amazon.com/sagemaker/latest/dg/model-registry-approve.html) — 2026-11-15 승인 상태와 project template의 CI/CD 동작 대조
+- [Getting started with MLOps on Amazon SageMaker AI — Amazon Web Services](https://www.youtube.com/watch?v=ZMUT8EmjmMA) — 2025-12-17 공개 영상의 파이프라인 단계 구성과 실험 추적 시연을 검토 계기로 사용
 
 ## 관련 문서
 

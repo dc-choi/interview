@@ -106,6 +106,8 @@ GC 수행 중 **모든 애플리케이션 스레드를 일시 정지**시키는 
 - `-Xms` 초기, `-Xmx` 최대. 보통 같은 값으로 → 런타임 리사이즈 비용 제거 (전용 서버, 지연 민감 기준. 컨테이너에서 커밋 풋프린트와 메모리 지표가 중요하면 Initial을 낮춰 분리하기도 한다 — [[JVM-Container-Memory]])
 - 너무 크면 Full GC가 드물지만 **한 번 돌 때 길어짐** → 지연 민감 서비스는 중간 크기 + G1/ZGC
 
+**ZGC의 적응형 힙 크기(JEP 546)**: 힙 크기를 사람이 고정하는 대신 수집기가 메모리와 GC CPU 사용의 균형을 맞추도록 하는 선택 정책이다. `-XX:+UseZGC -XX:+ZAdaptiveHeapSizing`으로 켜며, 켜면 기본 최대 힙이 물리 메모리의 대부분(작은 예비분 제외)으로 커지고 실행 중 힙을 늘리거나 줄인다. 시스템의 여유 메모리가 줄면 힙을 줄이려 한다. 같은 장비의 다른 프로세스와 메모리를 나눠 쓰는 환경이면 기본 최대 힙이 커지는 영향을 먼저 확인한다(적용 제안). 2026-11-15 기준 JEP 페이지의 상태는 Integrated, 대상 릴리스는 JDK 28이라 아직 정식 릴리스에서 쓸 수 있는 기능이 아니다. openjdk.org가 자동 열기를 거부해 공개 검색 색인의 JEP 본문으로 대조했으므로, 조정 옵션과 기존 `-Xmx` 설정의 관계는 JDK 28 출시 때 다시 확인한다.
+
 ### 세대 비율
 
 - `-XX:NewRatio`(Old/Young 비율), `-XX:SurvivorRatio`(Eden/Survivor)
@@ -172,6 +174,8 @@ GC 수행 중 **모든 애플리케이션 스레드를 일시 정지**시키는 
 - [JEP 474 — Generational ZGC by Default (OpenJDK)](https://openjdk.org/jeps/474)
 - [JEP 490 — Remove Non-Generational ZGC (OpenJDK)](https://openjdk.org/jeps/490)
 - [JEP 523 — Make G1 the Default Garbage Collector in All Environments (OpenJDK)](https://openjdk.org/jeps/523) — 2026-11-03 JDK 27 대상과 이전 Serial 선택 조건 대조
+- [JEP 546 — Adaptive Heap Sizing for ZGC (OpenJDK)](https://openjdk.org/jeps/546) — 2026-11-15 공개 검색 색인의 본문으로 선택 정책, 활성화 옵션, 최대 힙 기본값 변화와 상태 대조. 직접 열기는 HTTP 403
+- [Valhalla? AI? Better Modules? String Templates? - Ask the Architects at Devoxx 2026 — Java](https://www.youtube.com/watch?v=c_8ElIjbstk) — 42:55 이후의 ZGC 힙 크기 자동화 질의응답을 검토 계기로 사용
 - [daddyprogrammer — JVM GC](https://daddyprogrammer.org/post/2058/tech-terms-concept/)
 
 ## 관련 문서

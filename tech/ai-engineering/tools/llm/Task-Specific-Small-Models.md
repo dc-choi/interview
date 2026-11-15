@@ -86,6 +86,16 @@ WorldTUI는 화면의 각 행을 배치의 별도 원소로 동시에 디코딩�
 - 범용 능력도 필요하면 과제 점수와 관련 범용 benchmark를 함께 평가한다. Nova data mixing은 고객 자료와 Nova 학습 자료를 섞는 기능이며, 혼합 비율과 자료 범주를 바꾼 짧은 실행으로 두 성능의 균형을 비교한다.
 - 학습량만 늘리지 않고 실제 운영 입력을 대표하는 평가 자료로 과적합과 성능 저하를 확인한다. Data mixing을 켰다는 사실만으로 능력 보존을 판정하지 않는다.
 
+새 도메인 자료만으로 지속 사전학습(continued pre-training)을 하면 지시 이행 같은 기존 능력을 잃을 위험이 있다. AWS의 Nova Forge 소개는 공개 가중치 모델은 원 학습 자료에 접근할 수 없어 이 위험이 크다고 설명한다(공급자 주장). Nova Forge는 학습 단계별 checkpoint와 Nova 학습 자료 혼합을 함께 제공한다. 2026-11-15 공식 CPT 문서 대조 기준은 다음과 같다.
+
+- checkpoint는 pre-trained, mid-trained, post-trained로 나뉜다. Nova 1.0은 Micro, Lite, Pro에, Nova 2.0은 Lite 2.0에만 단계별 checkpoint를 둔다. post-trained는 정렬까지 마친 최종 모델(`prod`)이다.
+- pre-trained와 mid-trained text checkpoint는 instruction tuning이 없어 쓸모 있는 과제와 지시 이행에 post-training이 더 필요하다. 문서는 10B 토큰 미만의 작은 CPT나 지시 이행을 지켜야 할 때 `prod` checkpoint가 더 적절할 수 있다고 안내한다. 중간 checkpoint는 새 자료를 받아들이는 여지를, data mixing은 기존 능력 보존을 맡는 구분이다.
+- Nova 2.0의 mid-trained checkpoint는 사전학습보다 보수적인 학습률로 자료를 넣으며 파괴적 망각을 피하는 용도로 설명된다.
+- 문서는 data mixing이 기존 기술과 지식을 보존해 파괴적 망각을 막는다고 설명하고, 법률 문서만으로 학습한 모델이 코딩이나 수학 능력을 잃을 수 있다는 예를 든다. 혼합 비율은 고정값 대신 도메인 자료에 섞는 Nova 자료의 양을 바꾼 실험으로 고르게 한다.
+- 상세 문서는 구독 뒤 제공된다.
+
+이 설명은 위험을 줄이는 장치이며 보존 결과는 위 실험 기준처럼 범용 benchmark로 따로 확인한다. 어느 단계에서 시작할지는 자료의 양과 형태, 유지할 정렬 수준으로 정한다(적용 제안).
+
 적용 제안: 프롬프트만 사용한 기준선과 미세조정 모델을 같은 홀드아웃에서 비교하고, 배포에 필요한 정확도와 지연을 함께 만족하는지 확인한다. 정해진 출력 공간 밖의 요청까지 검증했다고 확대하지 않는다. 실제 학습과 배포는 재현하지 않았다.
 
 ## 안전 경계
@@ -125,6 +135,8 @@ Muon, FP8과 사다리꼴 학습률을 사용했다는 사실만으로 각 요�
 - [Desert Ant Labs, Eye SDK docs](https://desertant.com/docs/eye/) — 2026-11-03 사진 분석 출력과 유사 사진 묶음 대조.
 - [Eye: On-device Photo Tagging and Scoring — Desert Ant Labs](https://desertant.com/models/eye/) — 2026-11-03 실행기, 임계값과 보관/삭제 태그의 한계 대조.
 - [AWS, Amazon Nova: Supervised Fine-Tuning](https://docs.aws.amazon.com/nova/latest/userguide/nova-forge-sft.html) — 2026-11-03 과제/범용 평가, data mixing과 중간 checkpoint 검증 부분 대조.
+- [AWS, Amazon Nova: Continued Pre-Training and Mid-Training](https://docs.aws.amazon.com/nova/latest/userguide/nova-forge-cpt.html) — 2026-11-15 단계별 checkpoint 이름, mid-trained checkpoint의 학습률 설명, 중간 checkpoint의 instruction tuning 부재와 `prod` 권장 조건, data mixing의 망각 방지 설명 대조
+- [Introducing Amazon Nova Forge — Amazon Web Services](https://www.youtube.com/watch?v=9xkkSUJ1OpM) — 공식 소개 영상의 지속 사전학습 위험 설명을 검토 계기로 사용. 고객 사례의 성능 주장은 옮기지 않았다.
 - [EP12: Forge & Parcel.ai Model Customization at Scale — Amazon Web Services](https://www.youtube.com/watch?v=58ENTbfZD64) — 2026-10-20 공개, 19:56과 47:20~49:53의 평가 범위 논의. 음성 인식 전사에서 확인한 논점을 공식 SFT 문서와 대조했으며 사례 성능 수치는 옮기지 않았다.
 - [From Activity to Intent: Generating User Journeys with LLMs — Pinterest Engineering](https://medium.com/pinterest-engineering/from-activity-to-intent-generating-user-journeys-with-llms-9652b9417626) — 2026-10-09 게시, 2026-10-27에 같은 블로그의 공개 RSS 본문으로 대조
 - [WorldTUI: I trained a 360M model to pretend to be a terminal — SimEdw's Blog, Simon Edwardsson](https://simedw.com/2026/10/21/world-model-terminal/) — 2026-10-21 게시, 2026-10-27 대조
