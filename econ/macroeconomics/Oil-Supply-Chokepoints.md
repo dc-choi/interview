@@ -34,6 +34,19 @@ EIA는 spare capacity를 **30일 이내 가동해 최소 90일 유지할 수 있
 
 이 항로 설명은 2026-03-03 갱신된 EIA 자료를 2026-10-07 확인한 기준이다. 현재 통항 여부, 피해 규모, 복구 일정과 운임을 뜻하지 않는다.
 
+## 선박 간 환적과 AIS 공백은 따로 확인한다
+
+유조선끼리 바다에서 화물을 옮기는 선박 간 환적(STS, ship-to-ship transfer)은 화물을 실은 선박의 크기와 선박 추적 자료에 드러나는 모습을 바꿀 수 있다. 그러나 환적만으로 해협을 지나는 경로가 사라지지는 않는다. 해협 안쪽에서 실은 화물을 바깥 해역의 다른 선박으로 옮기려면 그 화물을 실은 선박 가운데 하나는 여전히 해협을 지나야 하므로, 환적 물량은 동원할 선박 수, 환적 위치와 안전 조건에 묶이며 차단 전 통항량과 같다고 보지 않는다(분석 기준).
+
+- **STS의 국제 규칙:** MARPOL 부속서 I 제8장은 STS 작업에 참여하는 유조선이 승인된 STS 작업 계획을 선내에 두도록 요구한다. 당사국의 영해나 배타적 경제수역(EEZ)에서 계획한 STS는 그 국가에 미리 통보해야 한다. [MPA Shipping Circular No. 16 of 2024](https://www.mpa.gov.sg/api/media/206148d2-ec65-4b78-b604-c06a808a6ed2/sc_no_16_of_2024.pdf)
+- **AIS(Automatic Identification System):** SOLAS 제V장 regulation 19는 국제 항해에 종사하는 300 총톤 이상의 모든 선박, 국제 항해를 하지 않는 500 총톤 이상의 화물선과 크기와 관계없는 모든 여객선에 AIS 탑재를 요구한다. 탑재 의무는 2002-07-01부터 2008-07-01까지 단계적으로 적용됐다(A.1106(29) Annex 3항). AIS는 선박의 식별 정보, 종류, 위치, 침로, 속력과 항해 상태 등을 육상 기지국(shore station), 다른 선박과 항공기에 자동으로 보낸다. 항해 정보 보호를 정한 국제 협정, 규칙이나 표준이 적용되는 경우를 빼고는 상시 작동해야 하며, 기국은 일부 선박의 탑재를 면제할 수 있다. [IMO, AIS transponders](https://www.imo.org/en/OurWork/Safety/Pages/AIS.aspx)
+- **AIS를 끌 수 있는 경우:** IMO 결의 A.1106(29)의 운용 지침(권고)은 선박이 항해 중이거나 정박 중이면 AIS를 작동하도록 하면서도, 계속 작동하면 선박의 안전이나 보안이 위태로워진다고 선장이 판단하거나 보안 사고가 임박하면 끌 수 있게 한다. 이 경우 그 사실과 이유를 항해일지에 기록하고, 위험이 사라지면 바로 다시 켜야 한다. [IMO Resolution A.1106(29), Annex 22항](https://wwwcdn.imo.org/localresources/en/OurWork/Safety/Documents/AIS/Resolution%20A.1106(29).pdf)
+- **그림자 선단 결의:** IMO 총회는 2023-12-06 결의 A.1192(33)을 채택했다. 이 결의는 제재 회피, 안전이나 환경 규제 회피, 보험 비용 회피 등을 위해 불법 운항하는 선박을 dark fleet 또는 shadow fleet로 정의하고, 그 행위의 예로 정당한 안전이나 보안상 이유 없이 AIS나 LRIT 송신을 끄거나 실제 선박 식별을 숨기는 일을 든다. 기국에는 자국 선박이 STS 작업의 시기와 장소를 기국에 통보하도록, 특히 대양 한가운데(mid-ocean)에서 환적할 때 그렇게 하도록 STS 작업 계획을 고치게 하는 방안을 검토하라고 촉구한다. 항만국에는 탐지를 피한 선박에 대해 정당한 사유가 있었는지 확인하는 초기 조사 뒤 강화 검사를 권고하고, 연안국에는 regulation 42에 따라 통보된 영해와 EEZ 안의 STS 작업과 통보 이행을 감시하라고 촉구한다. [MPA Shipping Circular No. 16 of 2024, Annex A](https://www.mpa.gov.sg/api/media/206148d2-ec65-4b78-b604-c06a808a6ed2/sc_no_16_of_2024.pdf)
+
+A.1106(29)는 AIS를 싣지 않는 선박이나 탑재를 면제받은 선박이 있고 AIS를 탑재한 선박도 장비를 끈 상태일 수 있으므로 AIS가 주변 교통의 완전하거나 정확한 모습을 보여 주지 않을 수 있다고 경고한다. 따라서 AIS 추적 지도에 선박이 보이지 않는다는 사실로 통항이 없다고 판단하지 않는다. 반대로 A.1192(33)은 육상 기지국이나 위성이 AIS 송신을 받지 못한 사실만으로 불법 활동이 확정되지는 않으며 추가 조사의 사유가 될 수 있다고 적으므로, AIS 공백을 곧바로 불법 운항으로 단정하지도 않는다. 통항량 추정을 비교할 때는 AIS, 위성 영상, 항만 통계 중 어느 자료를 기준으로 했는지 먼저 맞춘다(분석 기준).
+
+부분 확인(2026-11-15): IMO의 AIS 안내, 결의 A.1106(29) 원문과 결의 A.1192(33) 원문(MPA 회람 Annex A)을 대조했다. MARPOL 부속서 I 제8장은 MPA 회람의 요약으로만 확인했으며 STS 사전 통보의 시한, 적용 톤수와 발효일은 MARPOL 원문과 대조하지 못해 적지 않았다. 특정 분쟁 중의 환적 물량, 운임과 선박 가격은 검증하지 않았다.
+
 ## 비교하는 유가의 기준부터 맞춘다
 
 유가라는 말이 같은 가격을 뜻하지는 않는다. Brent, WTI와 Dubai/Oman은 서로 다른 원유의 가격 기준이다. 개별 원유와 기준 가격의 차이에는 품질, 운송비와 지역별 수급 등이 반영된다. 따라서 두 기준의 가격 차이를 특정 해협의 위험 프리미엄 하나로 설명하지 않는다. [EIA의 가격 기준 설명](https://www.eia.gov/Todayinenergy/detail.php?id=18571)
@@ -59,6 +72,7 @@ EIA는 spare capacity를 **30일 이내 가동해 최소 90일 유지할 수 있
 - 추가 생산 여력과 우회 송유관 용량이 서로 다른 이유를 설명할 수 있는가?
 - 실제 공급 중단이 확인되기 전에도 유가가 오를 수 있는 이유는 무엇인가?
 - 우회 항로를 평가할 때 출발지와 목적지를 함께 확인해야 하는 이유는 무엇인가?
+- AIS 추적 지도에 통항 선박이 거의 보이지 않을 때 실제 물동량을 판단하려면 무엇을 더 확인해야 하는가?
 
 ## 출처
 
@@ -66,6 +80,9 @@ EIA는 spare capacity를 **30일 이내 가동해 최소 90일 유지할 수 있
 - [Oil prices and outlook — U.S. Energy Information Administration](https://www.eia.gov/energyexplained/oil-and-petroleum-products/prices-and-outlook.php)
 - [What drives crude oil prices: Spot Prices — U.S. Energy Information Administration](https://www.eia.gov/finance/markets/crudeoil/spot_prices.php)
 - [World Oil Transit Chokepoints — U.S. Energy Information Administration](https://www.eia.gov/international/content/analysis/special_topics/World_Oil_Transit_Chokepoints/) — 2026-03-03 갱신 자료의 항로와 우회 제약
+- [AIS transponders — International Maritime Organization](https://www.imo.org/en/OurWork/Safety/Pages/AIS.aspx) — SOLAS V/19의 탑재 대상, 송신 정보와 상시 작동 요건, 2026-11-15 대조
+- [Resolution A.1106(29), Revised guidelines for the onboard operational use of shipborne AIS — International Maritime Organization](https://wwwcdn.imo.org/localresources/en/OurWork/Safety/Documents/AIS/Resolution%20A.1106(29).pdf) — 2015-12-02 채택, Annex 3항의 단계적 탑재 기간과 AIS 정보의 한계, 22항의 작동과 차단 조건, 2026-11-15 대조
+- [Shipping Circular No. 16 of 2024 — Maritime and Port Authority of Singapore](https://www.mpa.gov.sg/api/media/206148d2-ec65-4b78-b604-c06a808a6ed2/sc_no_16_of_2024.pdf) — 2024-12-20 회람의 MARPOL 부속서 I 제8장 요약과 Annex A의 IMO 결의 A.1192(33) 원문, 2026-11-15 대조
 
 ## 관련 문서
 
