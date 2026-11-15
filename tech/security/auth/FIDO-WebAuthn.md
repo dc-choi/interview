@@ -68,6 +68,16 @@ UP는 터치 같은 사용자 존재 확인이며 PIN이나 생체 정보를 통
 
 기술적으로는 discoverable credential(예전 명칭 resident key)이 핵심이다. 아이디를 먼저 입력하지 않아도 인증기가 자격증명을 찾아 `userHandle`을 반환하는 흐름이 가능하다. 서버는 이 값과 등록된 계정 및 자격증명의 연결을 검증한다. 패스키는 별도 프로토콜이 아니며, 모든 패스키가 동기화되는 것도 아니다.
 
+### 다른 기기의 패스키로 로그인하기 (hybrid transport)
+
+로그인하려는 기기에 해당 RP의 패스키가 없어도 휴대폰 같은 다른 기기의 패스키로 로그인할 수 있다. FIDO Alliance는 이를 Cross-Device Authentication(CDA)이라 부르고, CTAP 2.2에서 이 전송 방식의 이름은 `hybrid`다. WebAuthn L3도 `AuthenticatorTransport`에 `hybrid`를 두고 데이터 전송과 근접 확인 수단을 조합해 인증기에 연결하는 방식(예: 데스크톱에서 스마트폰으로 인증)으로 정의한다.
+
+1. 클라이언트(데스크톱 브라우저 등)가 공개키와 16바이트 난수(QR secret)를 담은 QR 코드를 띄우고 사용자가 휴대폰으로 스캔한다.
+2. 휴대폰은 BLE 광고로 연결 시도를 알린다. CTAP 2.2는 공격 방지를 위해 이 근접 증명을 요구하며, FIDO Alliance도 BLE로 물리적 근접을 확인한다고 설명한다.
+3. CTAP 2.2에서 실제 CTAP 메시지는 tunnel service라는 네트워크 중계 서비스를 거쳐 오간다. 중계 구간의 메시지는 QR secret과 BLE 광고에서 유도한 키로 두 기기 사이에서 암호화되며(Noise 핸드셰이크 뒤 AES-256-GCM), 사용자는 휴대폰에서 평소처럼 생체나 PIN으로 확인한다. CTAP 2.3 Proposed Standard(2026-02-26)는 tunnel service 외에 BLE 같은 로컬 데이터 채널도 선택할 수 있게 했다.
+
+CTAP 2.2는 QR 없이 이전 연결 상태로 시작하는 state-assisted 방식도 정의한다. 이 경로에서도 휴대폰은 근접 확인을 위해 BLE 광고를 보내고, 중계는 tunnel service가 맡는다. 근접 증명은 전송 계층의 공격 방어 장치이며, hybrid로 받은 assertion도 origin과 challenge 검증은 여전히 RP의 몫이다. RP는 `getClientCapabilities()`의 `hybridTransport` 값으로 hybrid 지원을 확인할 수 있다. 클라이언트는 키를 생략할 수 있고, 키가 없으면 지원 여부를 알 수 없다는 뜻이지 미지원이 아니다.
+
 ## 보안성과 사용자 통제권을 따로 평가한다
 
 2026-10-12의 패스키 비판과 10-15의 반론을 함께 연결한다. 2026-10-16에 두 논쟁 글과 WebAuthn의 attestation 개념을 대조했다. 아래는 판단 축이며 모든 제공자의 동작을 시험한 결과가 아니다.
@@ -158,6 +168,8 @@ HIPAA Security Rule은 covered entity와 business associate가 다루는 ePHI에
 
 2026-10-11 부분 검증: FIDO Alliance의 2013 출범 보도자료와 2022 공동 발표, 패스키 페이지의 동기화 구분, 2025 백서의 잔여 위험, RFC 9449의 DPoP 보안 한계, eIDAS 원문(제1조, 제6조)과 2024-10-18 통합본(제3조, 제5f조), eCFR 2026-10-06 판 45 CFR 160.103, Part 164 Subpart C와 E 제목, 164.302, 164.306, 164.312와 Security Rule 개정안(NPRM)을 대조했다. HHS 안내 페이지는 접근이 막혀 규정 원문으로 확인했고, EUDI Wallet의 기술 사양은 확인하지 못했다.
 
+2026-11-16 부분 검증: hybrid transport 절을 WebAuthn L3 §5.8.4, §5.8.7의 `hybrid`와 `hybridTransport`, CTAP 2.2 §11.5(QR 내용, BLE 근접 증명, tunnel service와 암호화, state-assisted), CTAP 2.3 PS §11.5의 데이터 채널 변경과 FIDO Alliance 패스키 페이지의 CDA 설명에 대조했다. 특정 플랫폼의 구현 동작은 시험하지 않았다.
+
 - [Web Authentication: An API for accessing Public Key Credentials Level 3 — W3C Recommendation, 2026-08-25](https://www.w3.org/TR/webauthn-3/)
 - [WebAuthn L3 §7.1 Registering a New Credential](https://www.w3.org/TR/webauthn-3/#sctn-registering-a-new-credential)
 - [WebAuthn L3 §7.2 Verifying an Authentication Assertion](https://www.w3.org/TR/webauthn-3/#sctn-verifying-assertion)
@@ -166,6 +178,8 @@ HIPAA Security Rule은 covered entity와 business associate가 다루는 ePHI에
 - [WebAuthn L3 §13.4.9 Validating the origin of a credential](https://www.w3.org/TR/webauthn-3/#sctn-validating-origin)
 - [FIDO Alliance — Specifications Overview (FIDO2, WebAuthn, CTAP)](https://fidoalliance.org/specifications/)
 - [FIDO Alliance — Passkeys](https://fidoalliance.org/passkeys/)
+- [Client to Authenticator Protocol (CTAP) v2.2 Proposed Standard, 2025-07-14 (§11.5 Hybrid transports) — FIDO Alliance](https://fidoalliance.org/specs/fido-v2.2-ps-20250714/fido-client-to-authenticator-protocol-v2.2-ps-20250714.html)
+- [Client to Authenticator Protocol (CTAP) v2.3 Proposed Standard, 2026-02-26 (§11.5 Hybrid transports) — FIDO Alliance](https://fidoalliance.org/specs/fido-v2.3-ps-20260226/fido-client-to-authenticator-protocol-v2.3-ps-20260226.html)
 - [Lenovo, Nok Nok Labs, PayPal, and Validity Lead an Open Industry Alliance to Revolutionize Online Authentication — FIDO Alliance, 2013-02-12](https://fidoalliance.org/assets/downloads/FIDO_Alliance_launch__FINAL__02_12_13docx.pdf)
 - [Apple, Google and Microsoft Commit to Expanded Support for FIDO Standard to Accelerate Availability of Passwordless Sign-Ins — FIDO Alliance, 2022-05-05](https://fidoalliance.org/apple-google-and-microsoft-commit-to-expanded-support-for-fido-standard-to-accelerate-availability-of-passwordless-sign-ins/)
 - [Passkeys: The Journey to Prevent Phishing Attacks, Part 3. Full Prevention — FIDO Alliance, 2025-03](https://fidoalliance.org/wp-content/uploads/2025/03/Passkeys-The-Journey-to-Prevent-Phishing-Pt3.pdf)
