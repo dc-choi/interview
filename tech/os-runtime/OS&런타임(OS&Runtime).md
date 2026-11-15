@@ -44,6 +44,7 @@ aliases: ["OS&런타임(OS&Runtime)", "OS & Runtime"]
 - [x] [[File-Descriptor-Limit|File descriptor limit]] — 기존 보강: [[Storage-and-FileSystem-Files#파일 메타데이터와 파일 디스크립터|파일 디스크립터 구조]], [[libuv-Threading#완료 시점과 오류 분류|libuv 오류 분류]]
 - [x] [[Epoll-Kqueue|epoll / kqueue]] — 기존 보강: [[libuv-Architecture#OS 알림과 실행 모델|libuv의 OS별 이벤트 제공자]]
 - [x] [[Linux-Netfilter-and-iptables|netfilter와 iptables (hook, table, chain, conntrack, 규칙 운영, 컨테이너 경로)]] — 기존 보강: [[Docker-Bridge-Networking#netfilter, iptables와 nftables|Docker의 firewall backend]]
+- [x] [[Linux-Kernel-Security-Updates|리눅스 커널 보안 업데이트]] — Ubuntu CVE 상태 값과 priority, 커널 패키지 종류별 수정 시점, 지원 기간, 완화와 Livepatch의 한계, 적용 확인 순서
 
 ## Runtime 체크리스트
 - [x] [[Debugging-Profiling-Memory#Heap Snapshot|Heap Snapshot (생성, DevTools 로드, Comparison 분석)]]
