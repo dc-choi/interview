@@ -1,0 +1,119 @@
+---
+tags: [infrastructure, cloud, nist, deployment-model, availability-zone, cost]
+status: done
+verified_at: 2026-11-15
+category: "Infrastructure - 클라우드 기초"
+aliases: ["Cloud Computing Definition", "클라우드 컴퓨팅 정의", "NIST SP 800-145", "클라우드 배포 모델", "Public Private Hybrid Cloud"]
+---
+
+# 클라우드 컴퓨팅의 정의와 배포 모델
+
+흔히 말하는 클라우드(퍼블릭 클라우드)는 남의 데이터센터에 있는 계산, 저장과 네트워크 자원을 필요할 때 스스로 꺼내 쓰고 보통 쓴 만큼 내는 방식이다. 정의상으로는 한 조직이 자기 시설에서 운영하는 private cloud도 클라우드다. 클라우드는 기술 이름이 아니라 자원을 제공하고 소비하는 방식의 이름이라서, 가상화를 했다는 사실만으로 클라우드가 되지는 않는다. 여기서는 NIST 정의의 다섯 가지 특징과 배포 모델, 리전과 가용 영역에 서버를 나누는 책임, 사는 것과 빌리는 것의 비용 판단을 다룬다. 무엇까지 빌리느냐(IaaS, PaaS, SaaS)는 [[Cloud-Service-Models|클라우드 서비스 모델]]에서 다룬다.
+
+## NIST 정의의 다섯 가지 특징
+
+NIST SP 800-145(2011년 9월)는 클라우드를 다섯 가지 필수 특징, 세 가지 서비스 모델, 네 가지 배포 모델로 정의한다. 클라우드의 정의로 자주 인용되는 문서다.
+
+| 특징 | 뜻 | 확인 질문 |
+| --- | --- | --- |
+| On-demand self-service | 사용자가 제공자 직원과 상호작용하지 않고 서버 시간과 저장소 같은 자원을 스스로 준비한다 | 담당자에게 요청서를 내지 않고 콘솔이나 API로 바로 만들 수 있는가 |
+| Broad network access | 휴대폰, 노트북 같은 다양한 단말이 표준 방식으로 네트워크를 통해 접근한다 | 접근이 특정 단말이나 현장에 묶여 있지 않은가 |
+| Resource pooling | 제공자의 자원을 multi-tenant로 묶어 수요에 따라 동적으로 할당한다. 사용자는 정확한 위치를 모르지만 국가, 지역, 데이터센터 같은 상위 수준의 위치는 지정할 수 있다 | 내 워크로드가 어느 물리 서버에 있는지 몰라도 되는가 |
+| Rapid elasticity | 수요에 맞춰 빠르게 늘리고 줄이며, 경우에 따라 자동으로 한다. 사용자에게는 자원이 사실상 무한해 보인다 | 행사 날 늘렸다가 끝나면 줄일 수 있는가 |
+| Measured service | 계량 기능으로 사용량을 자동 측정, 제어하고 보고한다. 보통 사용량 기반 과금의 근거가 된다 | 쓴 만큼 측정되고 청구되는가 |
+
+과금 단위는 제품마다 다르다. 예를 들어 EC2 On-Demand는 Linux, Windows, RHEL 등 대부분의 운영체제에서 최소 60초 이후 초 단위로 과금하지만 SUSE Linux Enterprise Server는 시간 단위로 과금한다(2026-11-15 요금 페이지 기준).
+
+## 가상화와 클라우드는 같은 말이 아니다
+
+클라우드에서 빌리는 서버는 대개 하이퍼바이저가 물리 서버를 나눈 가상 머신이다([[Virtual-Machines-and-Hypervisors|가상 머신과 하이퍼바이저]]). 그러나 가상화는 자원을 나누는 기술이고 클라우드는 나눈 자원을 셀프서비스와 계량으로 제공하는 방식이다.
+
+- 사내 서버실에 하이퍼바이저를 깔아도 직원이 티켓을 내고 운영팀이 수동으로 VM을 만들어 준다면 자원 공유는 있지만 셀프서비스와 계량이 없다.
+- 반대로 NIST의 resource pooling은 가상 자원뿐 아니라 물리 자원의 동적 할당도 포함한다. 물리 서버를 통째로 빌려 주는 bare-metal 상품도 공유 풀에서 수요에 따라 할당되고 다섯 특징을 갖추면 클라우드 방식으로 제공되는 것이다. 다만 1년, 3년 약정의 Dedicated Host로만 구매할 수 있는 EC2 High Memory metal처럼 이 조건에 맞지 않는 상품도 있다. EC2 FAQ의 High Memory 항목은 metal을 Intel VT-x 같은 하드웨어 기능에 접근해야 하거나, 라이선스나 지원 조건 때문에 비가상화 환경이 필요하거나, 자체 하이퍼바이저를 돌리는 경우에 쓰라고 안내한다. 같은 FAQ는 C8i, M8i, R8i 가상 인스턴스 안에서도 중첩 가상화로 Hyper-V나 KVM을 돌릴 수 있다고 적으므로(2026-11-15 기준), 하이퍼바이저 실행만으로 bare metal이 필요하다고 보지 않는다.
+
+## 배포 모델: 누가 함께 쓰는가
+
+| 모델 | NIST 정의의 핵심 | 흔한 오해 |
+| --- | --- | --- |
+| Private | 한 조직(여러 부서 포함)이 독점해 쓴다. 조직이나 제3자가 소유, 운영할 수 있고 사내에 있든 밖에 있든 상관없다 | 사내에 있어야 private인 것은 아니다. 외부 업체가 전용으로 운영해도 private이다 |
+| Community | 임무, 보안 요구, 규정 준수 같은 관심사를 공유하는 조직들의 공동체가 독점해 쓴다 | 퍼블릭과 프라이빗만 있다고 보면 이 범주가 빠진다 |
+| Public | 일반 대중에게 열려 있고 클라우드 제공자의 시설에 있다 | 퍼블릭이라고 보안을 모두 제공자가 맡지는 않는다. 책임 경계는 [[Cloud-Service-Models#책임 공유 모델 (Shared Responsibility)\|책임 공유 모델]]을 따른다 |
+| Hybrid | 둘 이상의 서로 다른 클라우드 인프라가 각자 독립된 실체로 남되, 데이터와 애플리케이션을 옮길 수 있게 하는 기술로 묶인다. 예로 클라우드 사이 부하 분산을 위한 cloud bursting을 든다 | 두 곳을 따로 쓰는 것만으로는 hybrid가 아니다. 이식성을 주는 연결이 있어야 한다 |
+
+멀티클라우드는 NIST의 배포 모델이 아니라 실무에서 통용되는 용어로, 홈페이지는 한 클라우드 회사에, 데이터 분석은 다른 회사에 두는 식으로 클라우드 회사를 둘 이상 쓰는 구성을 가리킨다. 현장에서는 사내 서버와 퍼블릭 클라우드를 업무별로 나눠 쓰는 구성도 하이브리드라고 부른다. NIST 정의의 기준은 두 가지다. 양쪽이 모두 클라우드 인프라(private, community, public)여야 하고, 둘을 데이터와 애플리케이션 이식성을 주는 기술로 묶어야 한다. 사내 서버가 private cloud가 아니면 VPN으로 연결만 한 구성은 이 정의의 hybrid가 아니다. 서비스 모델(IaaS, FaaS, SaaS)을 한 애플리케이션에서 섞는 일은 이와 별개 개념이다([[Cloud-Service-Models#하이브리드, 멀티 레이어|서비스 모델의 혼용]]). 워크로드 이전 경로는 [[Cloud-Migration-Strategies|클라우드 전환 전략]], 리전 단위 데이터 격리는 [[SaaS-Regional-Data-Isolation|SaaS 리전별 데이터 격리]]를 참고한다.
+
+## 리전과 가용 영역: AZ에 속한 자원의 분산은 사용자의 설계다
+
+- **리전**: 제공자가 데이터센터를 모아 둔 지리적 지역이다. resource pooling의 상위 수준 위치 지정이 여기에 해당한다.
+- **가용 영역(AZ)**: 한 리전 안에서 이중화된 전력, 네트워크와 연결 설비를 갖춘 하나 이상의 독립 데이터센터 묶음이다. AWS는 리전마다 최소 3개의 AZ를 두고, AZ끼리는 수 킬로미터 이상 떨어져 있지만 모두 서로 100km(60마일) 안에 있다고 설명한다. 서울 리전(ap-northeast-2)의 AZ는 4개다(2026-11-15 AWS 문서 기준). 계정마다 쓸 수 있는 AZ 수는 다를 수 있어, 예를 들어 US West(N. California)의 신규 계정은 2개만 쓴다. AZ 개수는 제공자마다 세는 방식이 다르고 자주 바뀌며, 거리 기준도 제공자마다 다르다. AWS 용어의 세부는 [[AWS-Fundamentals|AWS 기본 용어]]에 있다.
+
+AWS는 고가용성을 원하는 고객이 여러 AZ에서 실행되도록 애플리케이션을 설계할 수 있다고 설명한다. S3처럼 리전 서비스는 기본으로 요청과 데이터를 여러 AZ에 분산하지만, EC2 인스턴스나 EBS 볼륨처럼 특정 AZ에 속하는 자원은 어디에 나눠 둘지 사용자가 정한다. 서버 두 대를 같은 AZ에 두면 그 AZ의 장애에 함께 멈추고, 서로 다른 AZ에 두어야 한 AZ의 장애를 견딘다. RDS도 Multi-AZ 배포를 선택해야(생성 시 지정하거나 기존 Single-AZ 인스턴스를 전환) 다른 AZ에 대기 복제본을 둔다.
+
+리전 단위의 장애도 일어난다. 2025년 10월 19~20일 AWS us-east-1에서는 DynamoDB DNS 관리 자동화의 잠재된 경쟁 조건(race condition) 때문에 리전 엔드포인트의 DNS 레코드가 빈 값이 됐고, 자동화가 이를 복구하지 못해 수동 개입이 필요했다. DynamoDB 자체는 몇 시간 안에 회복됐지만 EC2 인스턴스 시작과 NLB 헬스체크 등으로 영향이 번졌고, AWS가 밝힌 사건 구간은 PDT 기준 19일 오후 11시 48분부터 20일 오후 2시 20분까지 약 14시간 반이다. 일부 Redshift 클러스터의 복구는 21일 오전 4시 5분까지 이어졌다. DynamoDB 장애 구간에 global tables를 쓰던 고객은 다른 리전의 복제 테이블에 계속 접속할 수 있었고, us-east-1 복제본과의 복제 지연이 길어졌다. 그래서 정말 중요한 시스템은 AZ뿐 아니라 리전 분산과 복구 전략까지 검토한다. 복구 목표에 따른 선택지는 [[DR-Strategy|재해 복구 전략]]을 참고한다.
+
+## 사는 것과 빌리는 것
+
+서버를 사면 처음에 큰 돈이 나가고 몇 년에 걸쳐 감가상각한다(CAPEX, 자본 지출). 클라우드는 목돈 없이 매달 쓴 만큼 청구된다(OPEX, 운영 비용). 사는 쪽은 몇 년 뒤의 수요까지 내다보고 사야 하므로 많이 사면 놀고 적게 사면 모자란다.
+
+클라우드가 잘 맞는 경우는 다음과 같다.
+
+- 트래픽이 들쭉날쭉해 elasticity의 가치가 큰 서비스
+- 접을 수도 있는 새 사업이나 실험처럼 수요 예측 자체가 어려운 일
+- 장비를 둘 공간과 운영 인력이 없는 작은 팀([[Cloud-Service-Models#작은 팀과 작은 예산의 단계별 선택|작은 팀의 단계별 선택]])
+
+반대로 비용을 먼저 따져야 하는 경우가 있다.
+
+- **24시간 일정하게 도는 워크로드**: 빌리는 값이 해마다 쌓여 사는 값을 넘을 수 있다. 큰 제공자는 일정 기간의 사용을 약정하면 할인하는 요금제를 두므로, 자체 서버와 비교하기 전에 이 가격부터 확인한다([[Reserved-Instance|예약 인스턴스와 Savings Plans]]).
+- **데이터를 밖으로 많이 내보내는 서비스**: AWS 예시로, 인터넷으로 나가는 전송은 모든 서비스와 리전을 합쳐 월 100GB까지 무료(중국과 GovCloud 제외)이고 그 뒤는 계층 요율로 양에 비례해 과금된다(2026-11-15 EC2 요금 페이지 기준). 같은 리전의 AZ 사이 전송처럼 내부 이동에도 요금이 붙는 경로가 있다. 영상처럼 큰 파일을 많이 내보내면 이 항목이 커진다([[Egress-Cost|데이터 전송 비용]]).
+- **데이터를 둘 수 있는 위치가 정해진 경우**: 개인정보나 규제 데이터는 저장 국가와 국외 이전 요건에 묶일 수 있어 리전을 국내로 고르거나 민감 데이터를 사내에 남기기도 한다.
+
+### 사례: 안정 워크로드의 클라우드 이탈 계산
+
+37signals(Basecamp, HEY 운영사)는 2023년 2월, 2022년 클라우드 지출 320만 달러 중 S3를 뺀 서버 비용 약 230만 달러를 자체 하드웨어로 옮기면 5년간 약 700만 달러를 아낄 수 있다는 예비 계산을 공개했다. 약 60만 달러어치 서버를 5년 감가(연 12만 달러)하고 두 데이터센터의 코로케이션 비용(연 약 72만 달러)을 더해 연 84만 달러로 잡았다.
+
+이 계산을 일반화하기 전에 확인할 조건이 있다.
+
+- 이미 운영팀이 있었고 인원을 늘리지 않는다는 전제다. 운영 인력이 없는 조직의 계산이 아니다.
+- 코로케이션 공간을 이미 빌려 두고 있었다.
+- 저장소(S3)는 계산에서 뺐고 이전은 뒤로 미뤘다.
+- 글쓴이는 안정적인 워크로드를 가진 중간 규모 이상의 SaaS에 임대 비용과의 비교를 권했다.
+- 실현된 절감액이 아니라 발표 시점의 추정이다.
+
+## 운영 체크포인트
+
+- 가상화된 사내 인프라를 클라우드라고 부르기 전에 셀프서비스, elasticity와 계량이 있는지 확인한다.
+- 이중화 요구가 있으면 인스턴스와 데이터 저장소가 실제로 서로 다른 AZ에 있는지, RDS 같은 관리형 DB의 Multi-AZ 설정이 켜져 있는지 확인한다.
+- 리전 장애를 견뎌야 하는 시스템은 다른 리전의 복제본, 엔드포인트 전환 절차와 복제 지연을 함께 설계한다.
+- 이전이나 이탈을 판단할 때는 같은 워크로드의 약정 할인 가격, egress, 운영 인력과 공간 비용을 한 표에 놓고 비교한다.
+
+## 면접 체크포인트
+
+- 가상화와 클라우드의 차이를 NIST 특징으로 설명할 수 있는가
+- private cloud가 반드시 사내에 있어야 하는가
+- hybrid와 multi-cloud의 차이는 무엇인가
+- 클라우드를 쓰면 이중화가 자동으로 되는가
+- 어떤 워크로드에서 클라우드가 자체 서버보다 비싸지는가
+
+## 출처
+
+- [NIST, SP 800-145 The NIST Definition of Cloud Computing](https://csrc.nist.gov/pubs/sp/800/145/final)
+- [AWS, AWS Availability Zones](https://docs.aws.amazon.com/global-infrastructure/latest/regions/aws-availability-zones.html)
+- [AWS, Regions and Availability Zones](https://aws.amazon.com/about-aws/global-infrastructure/regions_az/)
+- [AWS, Amazon EC2 On-Demand Pricing](https://aws.amazon.com/ec2/pricing/on-demand/)
+- [AWS, Amazon EC2 FAQs](https://aws.amazon.com/ec2/faqs/)
+- [AWS, AWS Fault Isolation Boundaries, Regional services](https://docs.aws.amazon.com/whitepapers/latest/aws-fault-isolation-boundaries/regional-services.html)
+- [AWS, Amazon RDS Multi-AZ](https://aws.amazon.com/rds/features/multi-az/)
+- [Summary of the Amazon DynamoDB Service Disruption in the Northern Virginia (US-EAST-1) Region — AWS](https://aws.amazon.com/message/101925/)
+- [We stand to save $7m over five years from our cloud exit — DHH](https://world.hey.com/dhh/we-stand-to-save-7m-over-five-years-from-our-cloud-exit-53996caa)
+- [YouTube, 동국시스템즈 IT 채널, 클라우드란? 퍼블릭, 프라이빗, 하이브리드, 리전과 가용 영역까지](https://www.youtube.com/watch?v=kLA4ZsNLrcM) — 2026-11-04 공개 강의, 이 문서의 계기 자료. NIST, AWS와 37signals 관련 사실은 위 1차 출처로 대조했다. 멀티클라우드와 현장의 하이브리드 용례, CAPEX와 OPEX 설명, 데이터 위치 제약의 일반 설명은 강의의 설명이다. 클라우드 시장 점유율, 국내 정부 고시와 개인정보 국외 이전의 구체 요건은 원문을 대조하지 않아 옮기지 않았다
+
+## 관련 문서
+
+- [[Cloud-Service-Models|클라우드 서비스 모델]]
+- [[Virtual-Machines-and-Hypervisors|가상 머신과 하이퍼바이저]]
+- [[AWS-Fundamentals|AWS 기본 용어]]
+- [[DR-Strategy|재해 복구 전략]]
+- [[Reserved-Instance|예약 인스턴스]]
+- [[Egress-Cost|데이터 전송 비용]]
+- [[SaaS-Regional-Data-Isolation|SaaS 리전별 데이터 격리]]
+- [[Cloud-Migration-Strategies|클라우드 전환 전략]]
