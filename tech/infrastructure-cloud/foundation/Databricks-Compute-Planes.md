@@ -3,7 +3,7 @@ tags: [databricks, cloud, control-plane, compute-plane, serverless]
 status: done
 verified_at: 2026-11-03
 category: "Infrastructure - 클라우드 기초"
-aliases: ["Databricks Control Plane", "Databricks 제어와 연산 영역"]
+aliases: ["Databricks Control Plane", "Databricks 제어와 연산 영역", "Databricks Compute Types", "Databricks compute 종류"]
 ---
 
 # Databricks의 제어 영역과 연산 영역
@@ -42,6 +42,26 @@ Databricks의 control plane은 웹 애플리케이션과 관리용 백엔드 서
 
 선택 점검 제안: notebook과 job 작업의 요구를 위 표의 모든 행과 공식 제약 목록 전체에 먼저 대조한다. 표나 공식 문서의 대안으로 풀리지 않는 항목이 있으면 classic compute를 쓴다. 걸리는 항목이 없어도 serverless 단가와 위 네트워크 비용, NCC와 방화벽 준비를 classic compute의 운영 부담과 함께 비교한 뒤 serverless를 우선 검토한다. 이 선택을 제어 범위와 운영 부담의 교환으로 보는 것은 계기 영상의 관점을 옮긴 이 문서의 해석이다.
 
+## 무엇을 실행할지로 compute를 고른다
+
+Notebook은 코드를 쓰고 결과를 보는 작업 공간이고, compute는 그 코드를 실제로 계산하는 자원과 실행 환경이다. compute 선택은 두 질문으로 나눈다. 무엇을 실행하는가(notebook에서 대화형 분석, 반복 job, SQL 조회)와 인프라를 얼마나 직접 관리하는가(classic, serverless)다. 두 질문은 따로 고르는 것이라 notebook, job과 SQL warehouse 모두 serverless 선택지가 있다. 다만 serverless가 모든 작업을 지원하지는 않으므로 지원 범위는 위 제약 절을 따른다. 아래는 2026-11-15 Databricks AWS 문서(Compute 11-05, Compute configuration reference 11-06, Manage classic compute 11-05, Configure compute for jobs 11-11, Connect to a SQL warehouse 10-09, SQL warehouse types 10-30 갱신 표기) 대조 기준이다.
+
+| 용도 | classic 선택지 | 특징 |
+| --- | --- | --- |
+| 대화형 분석 | all-purpose compute | 여러 명령을 이어서 실행하며 분석한다. standard access mode는 여러 사용자가 데이터 격리를 둔 채 함께 쓰고, dedicated access mode는 한 사용자나 그룹에 배정한다. job task에도 붙일 수 있지만 Databricks는 운영 job에 이 구성을 권하지 않는다 |
+| 예약, 반복 job | job compute | job 실행에 맞춰 만들고 job이 끝나면 종료되며 다시 시작할 수 없다. 같은 job의 여러 task가 하나를 함께 쓸 수 있고, 그 compute를 쓰는 마지막 task가 끝날 때 종료된다. 공유 job cluster는 한 번의 job 실행 범위라 다른 job이나 같은 job의 다른 실행이 쓸 수 없다 |
+| SQL 조회와 BI | classic, pro SQL warehouse | Databricks의 데이터를 SQL로 조회하는 compute다. 데이터를 저장하는 곳이 아니다. Power BI, Tableau 같은 BI 도구가 연결한다. 문서는 가능하면 serverless SQL warehouse를 권하며, pro와 classic의 연산 계층은 고객 AWS 계정에 있다 |
+
+- 같은 job의 task들이 공유 job compute를 쓰면 같은 driver JVM에서 실행되어 Scala singleton과 불러온 라이브러리가 그 실행 동안 task 사이에 남는다.
+- 공유 job compute는 그 compute를 쓰지 않는 다른 task가 도는 동안에도 켜진 채 대기한다.
+- 실행 환경은 나눠도 데이터는 복사하지 않는다. 엔지니어가 job으로 가공한 테이블을 분석가가 SQL warehouse에서 조회하는 식으로 같은 테이블과 Unity Catalog 관리 기준을 함께 쓴다.
+
+운영할 때는 세 가지를 따로 확인한다.
+
+1. **자원 규모:** 부족해서 느린지, 필요 이상으로 큰지 본다.
+2. **자동 종료:** 쓰지 않는 compute도 종료 전까지 DBU와 클라우드 인스턴스 비용이 쌓인다. all-purpose compute의 자동 종료는 마지막 명령 이후 비활성 시간(10~10,000분, 0이면 끔)을 넘으면 종료한다. Spark job, Structured Streaming, JDBC 호출과 웹 터미널 활동이 모두 끝나야 비활성으로 본다.
+3. **compute 권한과 데이터 권한:** compute 권한은 NO PERMISSIONS, CAN VIEW(Beta), CAN ATTACH TO, CAN RESTART, CAN MANAGE로 나뉘고, SQL warehouse의 대부분 자산에 대한 데이터 접근은 Unity Catalog가 관리한다. compute에 붙을 수 있어도 테이블 조회 권한은 따로 확인한다. 반대로 instance profile이 걸린 compute는 붙을 권한만 있어도 그 역할이 통제하는 자원에 접근할 수 있다. 문서는 이를 막으려면 compute 권한으로 붙을 수 있는 사용자를 제한하라고 안내한다. S3 연결에는 데이터 접근을 한곳에서 관리하고 감사할 수 있다는 이유로 instance profile 대신 Unity Catalog external location을 따로 권한다.
+
 ## 적용할 때 확인할 경계
 
 다음은 위 구조를 적용한 설계 점검 제안이다.
@@ -57,6 +77,13 @@ Databricks의 control plane은 웹 애플리케이션과 관리용 백엔드 서
 - [Databricks, High-level architecture](https://docs.databricks.com/aws/en/getting-started/high-level-architecture/)
 - [Databricks, Serverless compute limitations](https://docs.databricks.com/aws/en/compute/serverless/limitations)
 - [Databricks, Serverless compute plane networking](https://docs.databricks.com/aws/en/security/network/serverless-network-security/)
+- [Databricks, Compute](https://docs.databricks.com/aws/en/compute/)
+- [Databricks, Compute configuration reference](https://docs.databricks.com/aws/en/compute/configure)
+- [Databricks, Manage classic compute](https://docs.databricks.com/aws/en/compute/clusters-manage)
+- [Databricks, Configure compute for jobs](https://docs.databricks.com/aws/en/jobs/compute)
+- [Databricks, Connect to a SQL warehouse](https://docs.databricks.com/aws/en/compute/sql-warehouse/)
+- [Databricks, SQL warehouse types](https://docs.databricks.com/aws/en/compute/sql-warehouse/warehouse-types)
+- [처음부터 이해하는 Databricks Ep8. Compute의 종류 이해하기 — YouTube, 현수IT HyunsooIT](https://www.youtube.com/watch?v=-YrMgQJeqqc) — 용도와 관리 방식의 두 질문, 운영 세 가지 확인 항목의 계기. 종류별 동작과 설정 범위는 위 공식 문서로 대조했다.
 - [서버리스가 무조건 정답일까? Classic vs Serverless 이해하기 — YouTube, 현수IT HyunsooIT](https://www.youtube.com/watch?v=Uv5lAPLKJVM) — 제어와 운영 부담의 교환이라는 관점의 계기. 제약과 네트워크 사실은 위 공식 문서로 대조했다.
 
 ## 관련 문서

@@ -36,6 +36,7 @@ aliases: ["CS Fundamentals"]
 - [x] [[Conditional-Probability-and-Bayes|조건부확률과 베이즈 정리]] — 결합확률과 주변확률, 조건의 방향, 전체확률과 기저율, 독립과 조건부 독립의 세 연결 구조
 - [x] [[Confidence-Intervals-and-Standard-Error|신뢰구간과 표준오차]] — 원자료와 표집분포, SD와 SE, 반복 표집의 95%, 부트스트랩의 한계
 - [x] [[Hypothesis-Testing-Basics|가설검정 기초]] — 귀무가설과 양측, 단측 검정, t 통계량, p값 해석, 제1종과 제2종 오류와 검정력, 대응 표본, 두 표본 KS와 정규성 검정
+- [x] [[Composite-Scores-and-Ranking|종합 점수와 순위]] — z점수와 Min-Max 정규화, 가치 판단인 가중치, 상관 지표의 이중 계산, 극단값, 근거의 양, 가중치 민감도와 순위 역전
 
 ## 출처
 
