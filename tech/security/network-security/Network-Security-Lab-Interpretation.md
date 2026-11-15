@@ -73,6 +73,12 @@ Nmap의 호스트 발견은 ICMP ping에만 한정되지 않으며 로컬 Ethern
 
 WPA를 IEEE 워킹그룹이 만든 표준으로, AES 도입을 WPA의 특징으로 설명하면 틀린다. 현재 Wi-Fi Alliance는 WPA3를 Wi-Fi CERTIFIED 기기의 필수 요건으로 두고 PMF 사용을 요구한다. 위 역사와 구조의 근거인 NIST SP 800-97(2007)은 2025년 12월 31일 기술적으로 오래됐다는 이유로 철회됐으므로 현재 구성 권고로 쓰지 않는다.
 
+**TKIP는 WEP 장비를 살리려는 과도기 설계였다.** TKIP는 WEP만 지원하던 기존 장비를 펌웨어나 드라이버 업그레이드로 전환할 수 있게 설계돼 RC4 스트림 암호와 CRC-32 ICV를 그대로 남겼다. 그 위에 세 장치를 더했다. 세션 키와 IV를 섞어 패킷마다 다른 RC4 키를 만드는 키 혼합 함수, 약한 CRC-32 대신 무결성을 맡는 64비트 MIC인 Michael, 순서가 뒤처진 패킷을 버려 단순 재전송을 막는 시퀀스 카운터(TSC)다. ICV가 맞는데 MIC 검증이 실패하면 공격으로 보고 MIC failure report를 보내며, 60초 안에 실패가 반복되면 통신을 끊고 60초의 대기 뒤 키를 다시 협상한다.
+
+Beck과 Tews의 2008년 11월 논문(ACM WiSec 2009 게재)은 약한 PSK에 대한 사전 공격을 빼면 저자들이 아는 한 WPA에 대한 첫 실용 공격을 보였다. 조건은 TKIP 사용, 공격자가 주소 대부분을 아는 IPv4 대역(예: 192.168.0.X), 긴 재키 주기(예: 3600초), 여러 트래픽 채널을 두는 IEEE 802.11e QoS 지원, 연결된 단말이다. QoS가 없는 망에서도 단말 연결을 끊어 비슷한 공격이 가능해 보인다고 적었지만 이 변형은 구현하지 않았다. 공격자는 길이로 식별되는 암호화된 ARP 패킷을 골라, 원래 패킷보다 TSC가 낮은 다른 QoS 채널에서 WEP의 chopchop 기법을 변형해 한 바이트씩 추측한다. 틀린 추측은 조용히 버려지고 맞은 추측만 MIC failure report를 일으키므로 60초 이상 간격을 두며 진행하면 12분 남짓에 마지막 12바이트(MIC와 ICV)를 복호화한다. Michael은 일방향 함수가 아니어서 평문과 MIC로 AP에서 단말 방향의 MIC 키를 되돌려 계산할 수 있고, 이 키와 키 스트림으로 TSC가 아직 낮은 채널마다 사용자 지정 패킷을 보낸다(트래픽이 채널 0에만 몰린 일반 망에서 7개). 암호화 키나 PSK를 알아내는 완전한 키 복구 공격은 아니고 한 방향의 MIC 키와 키 스트림만 얻지만 강한 비밀번호의 WPA도 TKIP라면 패킷 복호화와 주입이 가능함을 보였다. 논문이 제시한 대응은 120초 이하의 짧은 재키 주기, 단말의 MIC failure report 전송 비활성화였고, 가장 좋은 해법은 TKIP를 끄고 CCMP만 쓰는 망이었다.
+
+Wi-Fi Alliance는 2015년 3월 16일 시행 기술 노트에서 TKIP가 WEP와 같은 암호를 써 비슷한 공격에 취약하다고 보고, 관리자에게 AP를 WPA2 only로 구성하라고 권고했다. 레거시 단말 때문에 TKIP가 필요하면 방화벽으로 분리하거나 다른 망과 독립된 망에 두라고 했다. 이 노트 기준으로 인증 기기는 기본 설정 화면에서 TKIP-only 옵션을 제공할 수 없었고 보조 인터페이스에서만 둘 수 있었으며, WPA/WPA2 mixed mode는 허용됐지만 권장되지 않았다. 이후 인증 규칙의 변경은 이 문서에서 확인하지 않았다. 공유기 설정에서 TKIP나 WPA/WPA2 mixed가 보이면 그 망에 TKIP 경로가 남아 있는지부터 확인한다.
+
 ## WPA2-Personal 시연은 후보 검색의 조건을 본다
 
 WPA2-Personal의 PSK 방식에서는 무선 비밀번호 자체를 핸드셰이크에 그대로 보내지 않는다. 관찰자는 필요한 핸드셰이크 자료를 확보하면 후보 비밀번호로 키와 무결성 검증 값을 계산해 오프라인으로 대조할 수 있다. 이는 캡처가 곧 비밀번호라는 뜻이나 AES 암호를 직접 풀었다는 뜻이 아니다.
@@ -131,6 +137,9 @@ Evil Twin은 정상망처럼 보이는 무선 AP로 접속을 유도하는 방�
 - [Agency Announces Settlement of Separate Actions Against Retailer TJX, and Data Brokers Reed Elsevier and Seisint for Failing to Provide Adequate Security for Consumers' Data — FTC](https://www.ftc.gov/news-events/news/press-releases/2008/03/agency-announces-settlement-separate-actions-against-retailer-tjx-data-brokers-reed-elsevier-seisint) — 2008-03-27 complaint 요약(무선 접근 제한, 평문 저장과 전송, 비밀번호, 방화벽 등 접근 제한).
 - [FTC, In the Matter of The TJX Companies, Inc., Complaint (Docket C-4227)](https://www.ftc.gov/sites/default/files/documents/cases/2008/08/080801tjxcomplaint.pdf) — 8항(보안 미흡 주장의 세부).
 - [#NW 0031 - 10분 만에 뚫리는 와이파이? WEP 보안의 흑역사 90초 완벽 정리 — 길리랩](https://www.youtube.com/watch?v=P4-1xYZEh7o) — 음성 전사 기반. 크랙 소요 시간과 표준 폐기 연도는 1차 출처로 확인하지 못해 쓰지 않았고, TJX 사례는 위 조사 보고서로 대조했다.
+- [Practical attacks against WEP and WPA — Martin Beck, Erik Tews](https://dl.aircrack-ng.org/breakingwepandwpa.pdf) — 2008-11-08 판, 초록과 1절(첫 실용 공격이라는 저자 주장), 6절(완전한 키 복구 공격이 아님), 5절(TKIP 구조, 공격 조건, chopchop 변형, MIC 키 복구, 7개 패킷 주입)과 5.1절(대응). ACM WiSec 2009 게재본은 [DOI 10.1145/1514274.1514286](https://doi.org/10.1145/1514274.1514286).
+- [Wi-Fi Alliance, Technical Note: Removal of TKIP from Wi-Fi Devices](https://www.wi-fi.org/system/files/Wi-Fi_Alliance_Technical_Note_TKIP_v1.0.pdf) — v1.0, 2015-03-16 시행. 권고 1~3과 인증 영향 절.
+- [#NW 0032 - WPA1 총정리: 2003년 와이파이를 구한 응급처치, 그리고 치명적 약점 — 길리랩](https://www.youtube.com/watch?v=1uVb4y_dgJ0) — 음성 전사 기반. 공격 결과와 TKIP 퇴출 조건은 위 논문과 기술 노트로 대조했다.
 
 ## 관련 문서
 
