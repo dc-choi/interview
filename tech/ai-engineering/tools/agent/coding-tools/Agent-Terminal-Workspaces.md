@@ -1,7 +1,7 @@
 ---
 tags: [ai, agent, terminal, workspace, worktree, observability]
 status: done
-verified_at: 2026-11-12
+verified_at: 2026-11-15
 category: "AI엔지니어링(AIEngineering)"
 aliases: ["Agent Terminal Workspaces", "에이전트 터미널 작업 공간", "T3 Code"]
 ---
@@ -112,6 +112,17 @@ Anthropic은 중앙 LLM이 작업을 동적으로 나눠 worker에 위임하고 
 
 발표에 나온 도구 구성과 배포 자동화는 재현하지 않았다.
 
+### 위임 계층을 도구가 제공하는 경우
+
+같은 orchestrator-workers 구성을 터미널 작업 공간이 기능으로 제공하기도 한다. 2026-11-15 Orca 공식 orchestration 문서 기준, 이 기능은 Settings의 Experimental에서 켜며 조정 에이전트가 `orca orchestration` CLI로 다음 단위를 다룬다.
+
+- **Run:** 지속 이름공간이자 기본 수신함이다(만들 때 `--objective`로 목표를 준다). worker를 배치하거나 일정을 정하지 않는다.
+- **Task:** 명세, 의존성과 상태(`pending`, `ready`, `dispatched`, `completed`, `failed`, `blocked`)를 가진 작업 항목이다.
+- **Dispatch:** Task 하나를 터미널 하나에서 시도한 기록이다. worker는 끝나면 성공이나 실패를 밝힌 `worker_done`을 이 Dispatch에 보고한다.
+- **Decision gate:** 조정자가 소유한 질문으로, 답이 정해질 때까지 해당 Task를 막는다.
+
+worker는 Task마다 `--agent`로 Claude Code, Codex 같은 다른 에이전트를 고르고 일부 에이전트는 실행 단위 `--model`, `--effort`를 받는다(`--effort`는 `--model`과 함께 써야 하고 해당 모델이 그 수준을 지원할 때만 적용된다). 조정자는 worker를 띄운 뒤 차례를 끝내고, worker가 보고하거나 질문하거나 멈추면 Orca가 조정자를 깨워 수신함을 확인하게 한다. worker의 질문은 터미널 입력 대신 `orca orchestration ask`로 조정자 수신함에 모이며, 문서는 이를 worker와 조정자 사이의 질문으로 규정한다. 사람이 직접 보는 것은 권한 프롬프트다. 허용은 기본적으로 사람만 할 수 있고, orchestration 설정에서 조정자 승인을 켜면 조정자도 승인할 수 있다. 위의 운영 제안은 그대로 남는다. `worker_done`의 성공은 worker의 자기 보고이므로 merge 판단은 diff와 검사 결과로 한다. 이 기능은 설치하거나 실행해 보지 않았다.
+
 ### 위임 계층 없이 한 사람이 여러 세션을 돌릴 때
 
 위임 계층을 두지 않고 한 사람이 세션 여러 개를 직접 돌린 기록도 같은 병목을 보고한다. 아래 세 사례는 2026-10~11월 공개된 개인 글과 에세이를 원문과 대조한 것이며, 산출과 효과는 모두 작성자의 자기 보고다.
@@ -156,6 +167,8 @@ Thoughtworks Technology Radar Vol.35(2026-11)도 세션을 병렬로 돌리거�
 - [Herdr Documentation, Agent automation](https://herdr.dev/docs/agent-automation/)
 - [Orca Documentation, Worktrees](https://github.com/stablyai/orca/blob/main/docs/site/content/docs/model/worktrees.mdx)
 - [Orca — stablyai](https://github.com/stablyai/orca) — 2026-11-03 Mobile Companion과 SSH Worktrees의 역할 부분 대조.
+- [Orca Documentation, Orchestration](https://github.com/stablyai/orca/blob/main/docs/site/content/docs/cli/orchestration.mdx) — 2026-11-15 활성화 위치, Run, Task, Dispatch, Decision gate 정의와 worker별 에이전트, 모델, effort 지정 대조.
+- [Orca로 LLM 오케스트레이션 액기스 모음 — YouTube, 코드팩토리](https://www.youtube.com/watch?v=d893Vei2Ll4) — 2026-11-05. 오케스트레이션 절의 단서로만 쓰고 용어와 동작은 공식 문서로 대조.
 - [Git Documentation, git-worktree](https://git-scm.com/docs/git-worktree)
 - [T3 Code — pingdotgg](https://github.com/pingdotgg/t3code) — README와 `docs/user/remote-access.md`, `docs/user/permission-modes.md`, 2026-10-27 main 210b2e7c6a 기준
 - 사용자 제공 GeekNews 알림 요약(2026-10-16~27): T3 Code. 게시물 URL은 확인하지 못했고 위 저장소로 대조했다.

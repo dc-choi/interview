@@ -42,9 +42,10 @@ CLAUDE.md 지시는 무시될 수 있지만 훅은 라이프사이클 시점에 
 
 ### 역할별 모델 설정과 강제 지정
 
-2026-10-20 공식 subagents와 advisor 문서로 이 절만 대조했다. 나머지 확장 기능의 재검증을 뜻하지 않으므로 frontmatter 검증일은 유지한다.
+2026-10-20 공식 subagents와 advisor 문서로 이 절만 대조했다. 2026-11-15에 subagents 문서의 Choose a model 절(호출 인자의 별칭 제한), Choose an effort level 절, model-config 문서의 effort 상한과 변경 기록(2.1.292)으로 호출 단위 model, effort 항목을 추가 대조했다. 나머지 확장 기능의 재검증을 뜻하지 않으므로 frontmatter 검증일은 유지한다.
 
-- 일반 모델 선택의 우선순위는 호출 인자, 에이전트 정의, `CLAUDE_CODE_SUBAGENT_MODEL`, 메인 모델 순이다. `model: inherit`는 메인 모델을 명시적으로 선택한다. 자세한 버전별 차이는 [[Claude-Code-Dynamic-Workflows#비용 통제|동적 워크플로우]]에서 함께 확인한다.
+- 일반 모델 선택의 우선순위는 호출 인자, 에이전트 정의, `CLAUDE_CODE_SUBAGENT_MODEL`, 메인 모델 순이다. `model: inherit`는 메인 모델을 명시적으로 선택한다. Agent 도구 호출의 `model` 인자는 별칭만 받고 전체 모델 ID나 `inherit`는 받지 않는다. 자세한 버전별 차이는 [[Claude-Code-Dynamic-Workflows#비용 통제|동적 워크플로우]]에서 함께 확인한다.
+- effort도 호출 단위로 정할 수 있다. 사용자가 특정 effort로 서브에이전트를 돌리라고 말하면 Claude가 Agent 도구 호출에 `effort` 인자를 넘길 수 있다(v2.1.292 이상, fork가 아닌 서브에이전트만). 우선순위는 `CLAUDE_CODE_EFFORT_LEVEL` 환경 변수, 호출 인자, 정의의 `effort` 필드, 세션 effort 순이며, 호출 인자는 그 서브에이전트를 재개해도 유지된다. 어느 경로로 정하든 `maxEffortLevel`이나 조직의 effort 상한이 실제 수준을 제한한다. 둘 다 없을 때 세션 effort(`/effort`, `--effort`)를 따르는 것은 서브에이전트가 메인 대화와 같은 모델일 때뿐이다. 다른 모델이면 세션 값이 적용되지 않으므로 `effort` 필드로 정한다.
 - `CLAUDE_CODE_SUBAGENT_MODEL_FORCE=1`과 모델 환경 변수를 함께 쓰면 개별 정의의 `model`을 무시하고 호출 때 모델을 지정할 수도 없다(v2.1.257 이상). 단, fork와 `model: inherit`를 지정한 서브에이전트 실행 스킬은 메인 모델을 유지한다. 역할별 검증 모델을 보존하려면 일괄 강제 옵션부터 확인한다.
 - 설정 파일에 적힌 모델과 실제 실행 모델은 구분한다. 실행 중 `/tasks`에서 모델과 지정된 effort를 확인한다. 이 표시는 v2.1.242 이상에서 지원한다.
 
@@ -154,7 +155,8 @@ Advisor는 별도 작업을 맡기는 서브에이전트와 다르다. 전체 �
 - [Claude Code Docs, Troubleshoot a mod](https://code.claude.com/docs/en/plugins/mods/troubleshoot)
 - [Claude Code Docs, Settings reference (disableSideloadFlags)](https://code.claude.com/docs/en/settings-reference#disablesideloadflags)
 - [클로드 코드 Mods로 어디까지 바꿀 수 있을까 — YouTube, 잔재미코딩(DaveLee)](https://www.youtube.com/watch?v=ABpu4VbEpqM) — 2026-10-11, 일곱 가지 mod 제작 사례와 한글 명령 이름 등록 실패는 발표자의 사용 사례
-- [Claude Code CHANGELOG — GitHub, anthropics/claude-code](https://github.com/anthropics/claude-code/blob/main/CHANGELOG.md) — 2.1.287의 You should know 추가와 활성화 조건
+- [Claude Code CHANGELOG — GitHub, anthropics/claude-code](https://github.com/anthropics/claude-code/blob/main/CHANGELOG.md) — 2.1.287의 You should know 추가와 활성화 조건. 2026-11-15, 2.1.292의 Agent 도구 `effort` 인자 추가 항목 확인
+- [최신 클로드코드 신기능 정리 — YouTube, 잔재미코딩(DaveLee)](https://www.youtube.com/watch?v=7-QTR2XXKZg) — 2026-11-05, 서브에이전트 effort를 말로 정하는 항목의 단서로만 쓰고 동작과 우선순위는 subagents 문서로 대조
 - [Claude Code 2026 — YouTube, 토비의 스프링](https://www.youtube.com/watch?v=Y2mEVnN-FKY) — 2026-10-11, 2026년 변경을 소개하는 TTS 내레이션 영상. 내장 mod 항목의 단서로만 쓰고 이름과 동작은 Mods overview로 대조
 - [Claude Code Docs, Plugin security and trust](https://code.claude.com/docs/en/plugins/security)
 - [Claude Code Docs, Create a marketplace](https://code.claude.com/docs/en/plugins/create-marketplace)

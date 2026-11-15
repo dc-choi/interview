@@ -119,6 +119,8 @@ ARPU는 사용자당 매출이며 이익이 아니다. GA4의 ARPU는 활성 사
 
 위 세 항목은 가이드의 주지표와 보조 지표 구분을 적용한 사업 운영 제안이다. 특정 국가의 결제율, 보편적인 최적 광고 횟수나 실제 수익 개선을 확인한 결과는 아니다. 기존 스토어 조건의 검증일은 유지한다.
 
+AdMob 콘솔 설정으로도 사용자당 노출 상한을 둘 수 있다. 2026-11-15 AdMob 도움말 기준, 빈도 제한(frequency capping, 한국어 도움말 표기는 최대 게재빈도)은 사용자 한 명에게 분, 시간, 일 단위 기간 동안 허용할 노출 수를 정한다. 앱 설정과 광고 단위의 고급 설정 두 수준에서 걸 수 있고, 도움말은 두 수준 모두 전면, 보상형, 앱 오프닝 광고만 언급한다(배너와 네이티브 지원 여부는 확인하지 않았다). 앱 수준 상한은 그 앱의 해당 광고 단위 전체에 적용된다. Google 수요와 서드파티 광고 소스에 모두 적용되고, 사용자가 받는 광고 수는 두 상한 중 먼저 닿은 쪽에 달려 있다. 변경 반영에 최대 24시간이 걸리고 약간의 서버 지연만으로도 상한이 가끔 초과될 수 있다. 상한은 최대치만 정한다는 점에 주의한다(도움말 정의에서 나온 해석). Firebase 빈도 최적화 가이드의 실험군은 광고 단위별 상한이므로, 여러 광고 단위에 합산되는 앱 수준 상한은 같은 실험 조건이 아니다. 적용 뒤에는 실제 사용자당 노출을 확인한다(운영 제안).
+
 ## 스토어 조건 (2026-10-02 확인)
 
 - **Apple App Store Small Business Program:** 전년도 모든 앱의 proceeds가 100만 달러 이하인 기존 개발자와 신규 개발자가 신청할 수 있고, 유료 앱과 인앱결제에 15% 수수료가 적용된다. proceeds는 Apple 수수료와 일부 세금, 조정액을 제외한 금액으로 매출 총액과 다르다. 연관 개발자 계정의 proceeds를 합산하며, 당해 100만 달러를 넘으면 이후 판매에는 표준 수수료가 적용된다. 신청과 승인 뒤 정해진 효력 발생일에 적용된다.
@@ -153,6 +155,7 @@ ARPU는 사용자당 매출이며 이익이 아니다. GA4의 ARPU는 활성 사
 
 스토어 조건과 공헌이익 개념의 대조 기준은 2026-10-02다. 2026-10-07에는 ARPU와 최초 실행 코호트의 분모, 광고 크레딧 조건만 다시 확인했다. 2026-11-03에는 게임형 반복 결제 절의 스토어 상품 유형, 심사 지침 3.1.1, EU 원칙과 CPC 공동성명, 게임산업법 제33조와 시행령 별표 3의2만 대조했다.
 
+- [Create new ad units and set up frequency capping in AdMob — Firebase Documentation](https://firebase.google.com/docs/tutorials/optimize-ad-frequency/step-1) — 2026-11-15 실험군이 광고 단위별 상한이라는 점 대조
 - [Set up an A/B test in the Firebase console — Firebase Documentation](https://firebase.google.com/docs/tutorials/optimize-ad-frequency/step-2) — 2026-11-04 주지표와 보조 지표 설정 대조
 - [Start the A/B test and review the test results in the Firebase console — Firebase Documentation](https://firebase.google.com/docs/tutorials/optimize-ad-frequency/step-4) — 2026-11-04 승자 판단과 보조 지표 검토의 구분 대조
 - [App Store Small Business Program — Apple Developer](https://developer.apple.com/app-store/small-business-program/)
@@ -168,12 +171,14 @@ ARPU는 사용자당 매출이며 이익이 아니다. GA4의 ARPU는 활성 사
 - [The Consumer Protection Cooperation Network's Key Principles on In-game Virtual Currencies — European Commission](https://commission.europa.eu/document/download/8af13e88-6540-436c-b137-9853e7fe866a_en?filename=Key+principles+on+in-game+virtual+currencies.pdf) — 2025-03-21 발행. 적용 범위와 비구속 각주, 원칙 1~7 대조
 - [Joint Statement of the Consumer Protection Cooperation Network on Stronger Consumer Protection in Video Games across the EU Single Market — European Commission](https://commission.europa.eu/document/download/75ff33d4-77a6-4f14-916a-766a8c6c281c_en?filename=CPC+Network+Joint+Statement+of+the+Consumer+Protection+Cooperation+Network+on+online+games.pdf) — 2026-09-30, 정황 확인과 조정 조치 11건
 - [바이브코딩 앱 수익화 — 모바일게임 결제 구조 3가지 — YouTube, 투더제이 TTJ](https://www.youtube.com/watch?v=i1mcEl6gKms) — 2026-10-24 공개, 게임형 반복 결제 절의 세 갈래 구분에만 계기 자료로 사용
+- [앱 만들기는 쉬워졌다, 이제 돈 버는 방법 | Google AdMob | Global App Summit 2026 — YouTube, 조코딩 JoCoding](https://www.youtube.com/watch?v=Zt9_SAgsaaw) — 2026-11-05 공개, 광고 빈도 제한 문단의 계기 자료로만 사용하고 내용은 AdMob 도움말로 대조
 - [App testing requirements for new personal developer accounts — Google Play Console Help](https://support.google.com/googleplay/android-developer/answer/14151465?hl=en)
 - [Service fees — Google Play Console Help](https://support.google.com/googleplay/android-developer/answer/112622?hl=en)
 - [Changes to Google Play's service fee in 2021 — Google Play Console Help](https://support.google.com/googleplay/android-developer/answer/10632485?hl=en)
 - [Understanding Google Play's lower service fees — Google Play Console Help](https://support.google.com/googleplay/android-developer/answer/16954621?hl=en)
 - [Getting started FAQs — Google AdMob Help](https://support.google.com/admob/answer/6168758?hl=en)
 - [Use Saved searches and alerts in the Ad review center — Google AdMob Help](https://support.google.com/admob/answer/16374191?hl=en)
+- [Set frequency caps for apps or ad units — Google AdMob Help](https://support.google.com/admob/answer/6244508?hl=en) — 2026-11-15 단위, 설정 위치, 대상 형식, 적용 수요 범위, 먼저 닿는 상한, 반영 지연과 초과 가능성 대조(한국어 용어는 같은 문서의 hl=ko 판)
 - [About Picture-in-Picture banner ads (Beta) — Google AdMob Help](https://support.google.com/admob/answer/17155813?hl=en)
 - [GoogleMobileAds (Beta), GADSwipeableInterstitialAd — Google for Developers](https://developers.google.com/admob/ios/api/beta/reference/Classes/GADSwipeableInterstitialAd)
 - [Analytics dimensions and metrics — Google Analytics Help](https://support.google.com/analytics/table/13948007?hl=en) — ARPU의 활성 사용자 분모와 최초 실행 코호트 매출 지표
