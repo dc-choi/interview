@@ -44,6 +44,21 @@ eG Enterprise의 게스트 OS 검사는 CPU 소비가 큰 프로세스를 상세
 
 조사 적용 예시: 같은 `WorkspaceId`와 시간 구간에서 왕복 지연과 자원 사용률을 비교한다. CPU 사용률이 낮아도 세션 왕복 지연이 높을 수 있으므로 컴퓨트 증설을 바로 결론 내리지 않는다. 프로토콜을 바꿔 비교할 때는 UDP 손실률의 측정 방향도 바뀐다는 점을 기록한다.
 
+### 끊김과 재연결은 프로토콜별 왕복 지연 기준부터 본다
+
+2026-11-15 WorkSpaces Personal 클라이언트 네트워크 요구사항 대조 기준이다. 클라이언트와 WorkSpace가 있는 리전 사이의 왕복 시간(RTT) 권장값이 프로토콜마다 다르다.
+
+| 프로토콜 | 권장 | 접속은 되지만 성능 저하 | 연결 종료 |
+|---|---|---|---|
+| PCoIP | 100ms 미만 | 100~200ms는 성능 영향, 200~375ms는 저하 | 375ms 초과 시 클라이언트 연결이 종료됨 |
+| DCV | 250ms 미만 | 250~400ms | 문서에 종료 기준이 없음 |
+
+- 그래서 같은 네트워크에서도 PCoIP 사용자만 자주 끊길 수 있다. 끊김 신고를 받으면 프로토콜을 먼저 기록하고 `InSessionLatency`를 그 프로토콜의 기준과 비교한다(진단 제안).
+- 클라이언트 위치의 RTT는 Amazon WorkSpaces Connection Health Check로 확인할 수 있다.
+- 같은 문서는 WorkSpaces가 VPC에 연결된 VPN을 통해서는 접근할 수 없고 VPN으로 접근하려면 VPN의 공인 IP를 거치는 인터넷 연결이 필요하며, 클라이언트가 애플리케이션 수준의 프록시 리디렉션을 지원하지 않고, VPN을 쓰면 MTU를 1200바이트 이상으로 두라고 적는다. 사용자 쪽 VPN과 프록시 구성을 지연 원인 후보에 함께 넣는다(진단 제안).
+
+이 하위 절은 계기 영상(AWS Knowledge Center)의 점검 항목 중 공식 요구사항 문서로 확인한 범위만 옮겼다. 영상의 세션 안 VPN, DCV의 UDP 스트리밍 설정, 백신 예외, 전원 정책과 SAML 세션 시간 항목은 해당 Knowledge Center 글을 읽지 못해 검증하지 않았다. 기존 `verified_at`은 유지한다.
+
 ## 스토리지 비교에서는 용량과 동시 부하를 분리한다
 
 2026-10-21 공식 문서 대조 기준이다. VDI의 스토리지를 비교할 때 VM에 할당한 논리 용량, 실제 사용량, 클러스터의 raw 물리 용량과 보호 정책을 반영한 usable 용량을 구분한다.
@@ -98,6 +113,8 @@ Omnissa의 Horizon 8 설계 문서는 여러 VM이 동시에 작업하는 I/O st
 - [Broadcom, vSAN space reporting feature overview](https://knowledge.broadcom.com/external/article/315553) — vSAN ESA 9.1의 usable 용량 정의
 - [Omnissa, Storage Bandwidth Considerations](https://docs.omnissa.com/HorizonOverviewDeployment/StorageBandwidthConsiderations) — 동시 I/O 부하. 기존 CPU와 세션 지표 절의 확인일은 유지한다.
 - [AWS, Monitor your WorkSpaces using CloudWatch metrics](https://docs.aws.amazon.com/workspaces/latest/adminguide/cloudwatch-metrics.html) — 2026-10-14 WorkSpaces 절만 추가 대조, 기존 Horizon과 ESXi 절의 검증일은 유지
+- [AWS, Client network requirements for WorkSpaces Personal](https://docs.aws.amazon.com/workspaces/latest/adminguide/workspaces-network-requirements.html) — 2026-11-15 프로토콜별 RTT 기준, VPN과 프록시 제약 대조
+- [Why does my WorkSpace frequently disconnect and reconnect? — Amazon Web Services](https://www.youtube.com/watch?v=z6w0wwsVNGo) — 2025-12-12 공개 Knowledge Center 영상, 계기 자료. 공식 문서로 확인한 RTT 기준만 반영
 - [eG Innovations, Horizon User Logon Details - OS Test](https://docs.eginnovations.com/Omnissa-Horizon-Desktop-Group/Horizon-User-Logon-Details-OS-Test.htm)
 - [eG Innovations, System Details - OS Test](https://docs.eginnovations.com/Omnissa-Horizon-Desktop-Group/System-Details-OS-Test.htm)
 - [High Network Latency and CPU Ready Time on Virtual Appliances with CPU Limits — Broadcom](https://knowledge.broadcom.com/external/article/456240/high-network-latency-and-cpu-ready-time.html)

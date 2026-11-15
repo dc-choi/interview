@@ -44,6 +44,26 @@ Model invocation logging은 기본 비활성화다. 지원 호출의 요청, 응
 
 로그 부재는 호출 부재의 증거가 아니다. 로깅 설정, 지원 endpoint, 목적지 권한과 `ModelInvocationLogsCloudWatchDeliveryFailure` 같은 전달 실패 지표를 확인한다.
 
+## 지식 베이스 수집 로그로 문서별 상태를 본다
+
+2026-11-15 공식 문서 기준이다. 지식 베이스의 수집(ingestion) 작업이 성공했다는 사실만으로 어떤 문서나 URL이 실제로 색인됐는지는 알 수 없다. S3와 custom 데이터 소스는 문서 조회 API(`ListKnowledgeBaseDocuments`, `GetKnowledgeBaseDocuments`)로도 문서별 상태를 볼 수 있지만, Web Crawler처럼 그 조회가 닿지 않는 데이터 소스는 지식 베이스의 로그 전달을 따로 켜야 문서 단위 상태가 남는다.
+
+- 로그 종류는 수집 작업 중 파일별 현재 상태를 기록하는 `APPLICATION_LOGS` 하나다. CloudWatch Logs, S3, Data Firehose로 보낼 수 있다. 콘솔과 API 모두 `bedrock:AllowVendedLogDeliveryForResource` 권한이 사전 조건이고, 목적지별 권한(예: `logs:CreateDelivery`)도 따로 필요하다. 콘솔에서는 지식 베이스를 편집해 로그 전달을 추가한 뒤 전달이 활성 상태인지 확인하고, API로는 CloudWatch Logs의 vended log 전달(`PutDeliverySource`, `PutDeliveryDestination`, `CreateDelivery`)을 쓴다.
+- 구조화 데이터 저장소로 만든 지식 베이스와 Kendra GenAI Index는 로그 전달을 지원하지 않는다.
+- 수집 작업 단위 로그(`StartIngestionJob.StatusChanged`)는 작업 상태와 갱신, 수집, 삭제, 실패한 리소스 수를 담는다. 리소스 단위 로그(`StartIngestionJob.ResourceStatusChanged`)는 문서 위치, 상태, 상태 사유와 청크 통계를 담는다.
+- 리소스 상태에는 `RESOURCE_IGNORED`(사유는 `status_reasons`), `EMBEDDING_FAILED`, `INDEXING_FAILED`, 최종 상태 `INDEXED`, `PARTIALLY_INDEXED`, `FAILED`와 크롤링 관련 `RESOURCE_CRAWLED`, `RESOURCE_FETCHED` 등이 있다.
+
+Web Crawler 데이터 소스로 어떤 URL이 들어갔는지 보려면 로그 전달을 켠 뒤 동기화하고, 동기화 기록의 수집 작업 ID로 CloudWatch Logs Insights에서 그 작업의 리소스 로그를 거른다. 아래는 문서에 나온 필드로 만든 예시이며 실행 검증은 하지 않았다. 웹 문서의 `document_location` 구조는 문서 예시(S3)에 없고, 객체인 `document_location`과 배열인 `status_reasons`가 `fields`에서 어떻게 펼쳐지는지(예: `event.status_reasons.0`)도 실제 로그로 확인한다.
+
+```text
+fields @timestamp, event.status, @message
+| filter event_type = "StartIngestionJob.ResourceStatusChanged"
+| filter event.ingestion_job_id = "<수집 작업 ID>"
+| sort @timestamp asc
+```
+
+Web Crawler 커넥터는 preview이며, 2026-09-30부터 고객 관리형 지식 베이스에서 Web Crawler 등 일부 커넥터를 새로 만들 수 없다(기존 커넥터는 계속 동작). 범위(Default, Host only, Subdomains), 포함과 제외 정규식(각 25개, 충돌 시 제외 우선), robots.txt 준수(robots.txt를 찾지 못하면 기본이 disallow), 동기화당 최대 페이지 1~25,000과 호스트당 분당 1~300 URL 제한이 수집 결과를 바꾼다. 최대 페이지를 넘으면 동기화가 실패하고 웹 페이지가 하나도 수집되지 않는다. 기대한 URL이 없으면 로그의 `RESOURCE_IGNORED` 사유와 이 설정을 함께 본다(진단 제안). 이 절만 부분 검증했으며 문서 전체의 검증일은 갱신하지 않았다.
+
 ## 요청 흐름과 품질을 연결한다
 
 다음은 RAG 애플리케이션에 적용할 계측 설계다. Bedrock이 모든 단계를 자동 기록한다는 뜻은 아니다.
@@ -88,6 +108,9 @@ Guardrail을 연결했다면 `applyGuardrailInterval`로 출력 문자 검사 �
 - [Amazon Bedrock, Increase model invocation capacity with Provisioned Throughput](https://docs.aws.amazon.com/bedrock/latest/userguide/prov-throughput.html)
 - [Amazon Bedrock, Monitor bedrock-runtime inference using CloudWatch metrics](https://docs.aws.amazon.com/bedrock/latest/userguide/monitoring-runtime-metrics.html)
 - [Amazon Bedrock, Monitor model invocation using CloudWatch Logs and Amazon S3](https://docs.aws.amazon.com/bedrock/latest/userguide/model-invocation-logging.html)
+- [Amazon Bedrock, Monitor knowledge bases using CloudWatch Logs](https://docs.aws.amazon.com/bedrock/latest/userguide/knowledge-bases-logging.html) — 2026-11-15 로그 종류, 전달 목적지, 상태 값과 지원 제외 대조
+- [Amazon Bedrock, Crawl web pages for your knowledge base](https://docs.aws.amazon.com/bedrock/latest/userguide/webcrawl-data-source-connector.html) — 2026-11-15 preview 상태, 신규 생성 종료, 범위, 필터와 한도 대조
+- [How do I view the list of URLs that the Amazon Bedrock provided Web Crawler adds to the data source? — Amazon Web Services](https://www.youtube.com/watch?v=ymndRgWOJ7c) — 2025-12-09 공개 Knowledge Center 영상, 계기 자료. 화면의 쿼리 원문은 확인하지 못해 문서 필드로 예시를 다시 만들었다
 - [Amazon CloudWatch, Embedding metrics within logs](https://docs.aws.amazon.com/AmazonCloudWatch/latest/monitoring/CloudWatch_Embedded_Metric_Format.html)
 
 ## 관련 문서

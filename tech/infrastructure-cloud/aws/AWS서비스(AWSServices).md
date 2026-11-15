@@ -40,6 +40,7 @@ EC2, ASG, ALB, Lambda — 주요 AWS 컴퓨트 서비스.
 - [x] [[End-User-Messaging-Two-Way-SMS|양방향 SMS 수신]] — 번호 지원, SNS와 Connect 목적지, IAM 신뢰 정책과 KMS 권한
 - [x] [[Elemental-Inference|Elemental Inference]] — 인코딩과 AI 메타데이터, 크롭과 자막의 검수 경계
 - [x] [[Amazon-Connect-Conversation-Continuity|Amazon Connect 대화 연속성]] — 채팅 복원 범위, 비동기 전사문 준비와 인증 경계
+- [x] [[Amazon-Connect-Telephony-Troubleshooting|Amazon Connect 통화 실패 진단과 전화번호 이전]] — 흐름 미연결과 동시 통화 지표, 발신 권한과 발신 번호, E.164, 국가 허용 목록, UpdatePhoneNumber
 - [x] [[EC2|EC2 (Nitro, Instance Store, Placement Group, IMDSv2, T 시리즈 크레딧, AMI, ENA, Key Pair, Lifecycle)]]
 - [x] [[EBS|EBS (gp2/gp3/io1/io2/st1/sc1, io2 Multi-Attach, 증분 스냅샷, Cross-Region 공유, KMS 암호화)]]
 - [x] [[Auto-Scaling|EC2 Auto Scaling (ASG, Launch Template, Target Tracking/Simple/Step, Cooldown, Lifecycle Hook, Health Check)]]

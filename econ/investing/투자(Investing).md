@@ -30,6 +30,7 @@ aliases: ["투자(Investing)", "Investing Map"]
 - [[Tax-Advantaged-Accounts-Income-Types|투자소득의 구분과 건강보험료]] — 보유 방식별 이자, 배당, 양도소득 구분, 건강보험료의 금융소득 1천만원 문턱, 커버드콜 분배금의 과세 재원 ✅
 
 - [[AI-Company-Valuation-and-Funding|AI 기업가치와 자금 조달]] — 인식 매출과 run-rate, 순손실과 현금소진, 유출 자료와 평가 의견
+- [[Vendor-Financing-and-Earnings-Quality|벤더 파이낸싱과 이익의 질 점검]] — 고객 금융과 보증의 손실 경로, 2000년 전후 통신 장비사 공시, AI 인프라의 의향서와 보증, DSO 정의 차이와 공시 점검 항목
 
 ### 3. 실행과 심리
 - [[Investment-Strategies|투자 전략]] — 액티브 vs 패시브, 효율적 시장 가설, 적립식, 마켓타이밍의 함정 ✅
