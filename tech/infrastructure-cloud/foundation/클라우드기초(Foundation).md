@@ -18,6 +18,7 @@ IaaS/PaaS/FaaS 구분, IaC, 클라우드 전환 전략 — 클라우드 추상�
 - [x] [[Cloud-Foundry|Cloud Foundry]] — `cf push` 스테이징과 droplet, buildpack, Service Broker와 `cf cups`, org와 space 역할, cf-deployment, Korifi 보관과 kind 로컬 설치
 - [x] [[Cloud-Definition-and-Deployment-Models|클라우드 컴퓨팅의 정의와 배포 모델]] — NIST 다섯 가지 특징, 가상화와의 차이, private/community/public/hybrid, AZ에 속한 자원의 분산은 사용자 설계, 사는 것과 빌리는 것
 - [x] [[Cloud-Service-Models|IaaS/PaaS/FaaS/SaaS (추상화 계층, 책임 공유 모델, 서버리스 범위)]]
+- [x] [[Cloud-Shared-Responsibility-Model|클라우드 공동 책임 모델]] — AWS, Azure, Google의 경계 표현, 모델과 관계없이 남는 고객 몫, 설정 오류 위험과 이전 전 위험 평가, SLA 제외, 모델별 이식성, 무엇을 맡길지 고르는 질문
 - [x] [[Cloud-Migration-Strategies|클라우드 전환 전략 (AWS 7 Rs와 Microsoft CAF 용어 차이, 12 Factor, AI 계획과 cutover 검증, 가상화 플랫폼 유지와 DR 복구 조건)]]
 - [x] [[IaC|IaC (선언형 vs 명령형, 프로비저닝과 구성 관리, 검증 단계와 생략 결과, 드리프트/불변 인프라, GitOps)]]
 - [x] [[CDK-vs-Terraform|CDK vs Terraform (CloudFormation 경유 diff 신뢰성, 드리프트 대응, 투명성, 도구 선택 기준)]]
