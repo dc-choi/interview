@@ -17,6 +17,7 @@ aliases: ["웹&네트워크(Web&Network)", "Web & Network"]
 - [[tech/web/network/네트워크(Network)|네트워크 (Network)]] — TLS, OSI 계층과 캡슐화(소켓 식별과 역다중화, 스트림과 메시지 경계, MTU/MSS, DPI), IP 헤더, LAN과 WAN, 토폴로지 유형, L2 스위치 계층과 업링크, 라우팅과 NAT, 응용 프로토콜(DHCP, DNS, SSH, 메일), 패킷 캡처와 Wireshark, TCP(헤더, 핸드셰이크, 흐름/오류 제어), Loopback, Browser URL Flow
 - [[tech/web/realtime/실시간(Realtime)|실시간 (Realtime)]] — SSE, WebSocket, STOMP, 채널 응답 매칭과 대기 종료, 채팅 아키텍처(메시지 전달 경로, 오프라인 알림, 이력 저장소), Web SDK 책임 경계
 - [[Mobile-App-Architectures|모바일 앱 개발 방식 4유형]] — 네이티브, 모바일 웹, 웹 앱(SPA), 하이브리드(웹뷰), 다중 버전 공존과 API 호환, 코드 공유 전제의 재평가
+- [[Android-WebView-JavaScript-Bridge|Android WebView와 JavaScript 브리지]] — WebView 도입 장단점, addJavascriptInterface와 addWebMessageListener 비교, requestId 응답 매칭, 브리지 보안 체크리스트
 - [[Expo|Expo]] — Home/Guides/EAS/Reference/Learn 전체, SDK API, Expo UI, native 확장과 배포
 
 ## 추가 주제

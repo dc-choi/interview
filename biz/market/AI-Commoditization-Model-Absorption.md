@@ -1,7 +1,7 @@
 ---
 tags: [business, market, ai, differentiation, foundation-model]
 status: done
-verified_at: 2026-11-02
+verified_at: 2026-11-16
 category: "비즈니스&제품(Business&Product)"
 aliases: ["AI Model Absorption", "Foundation Model Feature Absorption", "기반 모델의 기능 흡수", "모델 흡수와 AI 사업 방어력"]
 ---
@@ -93,12 +93,13 @@ Wilbur Labs가 2026-04-28 공개한 2026 Report on Startup Failure는 미국 기
 
 ## 대응 사례
 
-2026-11-02 각 회사의 공식 발표와 사이트로 확인한 방향이다. 회사가 스스로 밝힌 위치이며 전환 뒤의 매출이나 유지율을 확인한 자료는 아니다.
+2026-11-02(Adobe는 2026-11-16) 각 회사의 공식 발표와 사이트로 확인한 방향이다. 회사가 스스로 밝힌 위치이며 전환 뒤의 매출이나 유지율을 확인한 자료는 아니다.
 
 - **라이너:** 자사 서비스 운영에서 쌓은 모델 평가 역량을 B2B 상품으로 만든 사례다. 2026-09-15 출시한 라이너 모델 API는 코딩, 수학, 복합 추론이 필요한 고난도 질의를 상위 모델에, 나머지를 효율적인 모델에 배정하는 오케스트레이션 상품이다. 라이너는 라이너 검색, 라이너 스콜라 같은 에이전트 제품을 운영하며 만든 모델 평가 체계를 근거로 들고, 실사용 데이터 자체 평가에서 고성능 모델 배정 비중이 약 43%였으며 답변 품질을 유지하면서 토큰 비용을 50% 이상 줄이도록 설계했다고 밝혔다. 라우팅은 위 표의 모델 간 차이 보완 층이라, 평가 데이터와 운영 경험이 공급자의 기본 기능보다 나은 결과를 계속 내는지가 관건이다.
 - **Jasper:** 2023-07-10 CEO 글에서 Jasper는 빠른 기술 발전과 소비자용 AI 도구의 급증으로 업계가 크게 바뀌었다고 설명하고, 중견기업과 대기업 마케팅 팀을 도울 때 가장 효과적이라며 일부 직무를 없애 초점을 좁힌다고 밝혔다. 현재 공식 사이트는 기업 마케팅용 응용 AI를 내걸고 현장 배치 전문가, 맥락, 거버넌스와 에이전트를 한 시스템으로 묶는다고 소개한다. 브랜드, 제품과 고객층 정보를 모든 산출물의 맥락으로 쓰는 Jasper IQ, 캠페인의 빠른 출시와 지역별 현지화, 마케팅 업무를 끝까지 수행하는 전용 에이전트를 앞세운다. 글 생성 결과물보다 기업 고객의 브랜드 맥락과 업무 흐름에 무게를 둔다.
 - **Copy.ai:** 공식 사이트는 자사를 GTM(시장 진출) AI 플랫폼으로 소개하며 여러 코파일럿과 단일 기능 도구 대신 하나의 플랫폼을 내세운다. 계정과 연락처를 조사해 영업 메시지 초안을 쓰는 기능, CRM 데이터 보강, 프로세스와 모범 사례를 AI 워크플로로 옮기는 기능을 앞세운다. 2026-05-27 자사 블로그는 에이전트형 AI가 작업을 자동화한다면 워크플로는 프로세스를 자동화한다고 설명한다. 단일 생성 작업보다 여러 단계 업무 흐름과 고객 시스템 연동을 상품 단위로 둔다.
 - **Perplexity:** 공식 페이지에서 Comet을 사용자를 위해 일하는 AI 브라우저로 소개하고 작업 자동화, 웹 조사, 이메일 정리를 예로 든다. 답변 제공에서 작업 위임으로 범위를 넓힌 형태이며, 앞의 방문 추세와의 인과는 확인하지 않았다.
+- **Adobe:** 기존 도구 회사가 외부 에이전트에 앱을 여는 사례다(2026-11-16 Adobe 공식 블로그와 뉴스룸 확인). 2026-11-10 Adobe MAX에서 사용자가 이미 쓰는 서드파티 에이전트가 Photoshop, Illustrator, Premiere, After Effects를 호출하게 하는 MCP 통합을 미리 공개했다. 사용자 컴퓨터에서 로컬로 돌아 에이전트가 앱 고유 형식의 프로젝트 파일에서 직접 작업하므로 레이어, 벡터, bin과 시퀀스가 편집 가능한 상태로 남는다고 설명하며, 2027년 초 비공개 베타로 제공할 예정이다(블로그는 대상을 Creative Cloud 고객으로 적는다). 같은 날 Premiere, Illustrator, InDesign, After Effects, Frame.io에 AI Assistant(베타)를 넣었고, Premiere의 생성 기능 안에서 Firefly와 Google, Kling, Runway, Luma 같은 파트너 모델을 고르게 했다. 두 경우는 내주는 범위가 다르다. 파트너 모델은 작업의 시작점을 Adobe 앱에 둔 채 생성 엔진만 바꾸고, MCP 통합은 시작점을 외부 에이전트에 넘긴다. 어느 쪽이든 Adobe가 붙잡는 것은 결과물을 다시 다듬는 편집 단계와 자사 파일 형식의 전환 비용으로, 위 표의 업무 흐름 소유에 가깝다. MCP 연결 자체는 표의 통합 층에서 말한 표준 연동이라 그만으로는 방어력이 되지 않는다(이 문서의 해석). 2026-11-09 발표한 Disney와의 다년 제휴에서는 Firefly Foundry로 Disney 자산에 맞춘 생성형 AI 모델을 함께 만든다고 밝혔다. 고객 접점이 외부 에이전트로 옮겨 갈 때의 과금 방식은 발표에서 확인하지 못했다.
 
 ## 적용 점검
 
@@ -132,6 +133,9 @@ Wilbur Labs가 2026-04-28 공개한 2026 Report on Startup Failure는 미국 기
 - [GTM AI Platform — Copy.ai](https://www.copy.ai/) — 2026-11-02 공식 사이트의 소개 범위 확인
 - [Agentic AI for GTM: Why Workflows Win — Copy.ai](https://www.copy.ai/blog/agentic-ai-for-gtm) — 2026-05-27 게시
 - [Comet Browser: a Personal AI Assistant — Perplexity](https://www.perplexity.ai/comet) — 2026-11-02 소개 문구 확인
+- [Explore new ways to create across Creative Cloud and Adobe Firefly while advancing your craft with more precision, choice and control — Adobe Blog](https://blog.adobe.com/en/publish/2026/11/10/explore-new-ways-create-across-creative-cloud-adobe-firefly-while-advancing-craft-precision-choice-control) — 2026-11-10 게시. 2026-11-16 MCP 통합 미리보기와 제공 시기, AI Assistant(베타) 대상 앱, Premiere 파트너 모델 확인
+- [Creative Cloud 도구 발표 보도자료 — Adobe](https://news.adobe.com/news/2026/11/adobe-transforms-creative-cloud-tools) — 2026-11-10 발표. 2026-11-16 검증 단계에서 로컬 MCP 통합의 2027년 초 비공개 베타 제공 문구 확인
+- [Adobe and The Walt Disney Company Announce Multi-Year Strategic Alliance to Support Disney Innovation with New AI-Powered Tools — Adobe](https://news.adobe.com/news/2026/11/adobe-and-the-walt-disney-company-alliance) — 2026-11-09 발표. 2026-11-16 Firefly Foundry 맞춤 모델 공동 개발 확인
 - [Most AI Startups Won't Survive (Here's How to Build One That Does) — Verticals, Keith Rabois](https://www.youtube.com/watch?v=_8wcKJFxIa4) — 2026-10-28 공개 46분 대담, 2026-11-09 로컬 음성 인식 전사로 00:00~25:10의 판단 기준과 40:50 이후의 롤업, 기존 버티컬 SaaS 견해 확인
 
 ## 관련 문서
