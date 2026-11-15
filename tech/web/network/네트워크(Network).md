@@ -19,6 +19,7 @@ OSI 7계층과 캡슐화, IP 헤더, 스위치와 라우팅, TLS, 패킷 캡처,
 - [x] [[Software-Defined-Networking|소프트웨어 정의 네트워킹(SDN)]] — 제어 평면과 데이터 평면 분리, OpenFlow 스위치의 flow table과 기본 action, Google B4의 중앙 TE와 링크 사용률, 트레이드오프
 - [x] [[Intelligent-Network|지능망과 SSP, SCP]] — 교환과 서비스 로직의 분리, 기능 엔티티와 물리 엔티티, 호 처리 흐름, Freephone 예시
 - [x] [[SS7-Signaling|SS7 공통선 신호방식]] — 회선별 신호(R2)와 공통선 신호, 신호점과 STP, 신호 전달 방식, MTP, SCCP, TC(TCAP) 기능 블록, 로밍과 문자 메시지의 MAP
+- [x] [[PCM-Voice-Coding|전화 음성의 PCM 부호화와 G.711]] — 표본화, 양자화, 부호화와 64 kbit/s, A-law와 μ-law, 국가 간 경로 규칙, TDM과 RTP의 PCMU/PCMA, DPCM과 ADPCM
 - [x] [[HTTPS-TLS|HTTPS / TLS Handshake]]
 - [x] [[OSI-7-Layer|OSI 7계층 (osi-layers/ 서브폴더) — 계층별 상세 (L1/L2 MAC과 프레임, L2 스위칭, L3 IP와 라우팅, ARP, ICMP, L4 TCP/UDP, 소켓 식별과 역다중화, 메시지 경계와 프레이밍, L5/6/7), TCP/IP 4계층 대응과 역사, Internet vs Ethernet]]
 - [x] [[Network-Encapsulation|캡슐화와 데이터 단위 (프로토콜과 계층, 라우터 홉의 재캡슐화, 소켓 스트림, 세그먼트, 패킷, 프레임, MTU/MSS, 단편화, DPI)]]

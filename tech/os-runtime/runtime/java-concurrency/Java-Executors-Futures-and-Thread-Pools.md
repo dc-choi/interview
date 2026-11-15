@@ -1,7 +1,7 @@
 ---
 tags: [java, executor, future, thread-pool, virtual-thread]
 status: done
-verified_at: 2026-08-04
+verified_at: 2026-11-15
 category: "OS&런타임(OS&Runtime)"
 aliases: ["Java Executors Futures and Thread Pools", "자바 Executor Future 스레드 풀"]
 ---
@@ -54,6 +54,8 @@ var pool = new ThreadPoolExecutor(
 
 `shutdown()`은 새 task를 거절하고 제출된 task를 처리한다. `shutdownNow()`는 대기 task를 반환하고 실행 task에는 interrupt를 시도한다. 제한 시간이 있는 service shutdown은 orderly shutdown, bounded await, interrupt 요청, 재대기 순으로 수행하고 호출 thread가 interrupt되면 status를 복원한다.
 
+두 메서드 모두 실행 중인 task가 끝나기를 기다리지 않고 바로 반환한다. 기다리려면 `awaitTermination(timeout, unit)`을 호출하며, 이 메서드는 종료되면 `true`, 시간이 먼저 지나면 `false`를 반환하고 기다리는 중 interrupt되면 `InterruptedException`을 던진다. `shutdownNow()`의 중단은 best-effort이고 일반 구현은 `Thread.interrupt()`로 취소하므로, interrupt에 반응하지 않는 task는 끝나지 않을 수 있다. 애플리케이션 코드가 쓰는 `java.lang.Thread` API에는 다른 thread를 강제로 멈추는 메서드도 없다. `Thread.stop()`은 Java SE 25 API에서 항상 `UnsupportedOperationException`을 던지고 Java SE 26 API에는 없다. 따라서 task 코드가 blocking 호출의 `InterruptedException`을 처리하고 긴 계산 루프에서 interrupt 상태를 확인해야 종료가 실제로 끝난다.
+
 Java 19부터 `ExecutorService`는 `AutoCloseable`이며 `close()`는 orderly shutdown 후 종료까지 기다린다. `try`-with-resources는 lexical lifetime에는 편하지만 deadline 없이 오래 기다릴 수 있으므로, 운영 종료 deadline이 있으면 명시적인 two-phase shutdown을 유지한다.
 
 ## Java 21 이후 virtual thread
@@ -90,6 +92,12 @@ core=2, max=4, queue=2이고 작업이 아직 끝나지 않았다면 첫 두 작
 - [ThreadPoolExecutor, Java SE 26](https://docs.oracle.com/en/java/javase/26/docs/api/java.base/java/util/concurrent/ThreadPoolExecutor.html)
 - [Future, Java SE 26](https://docs.oracle.com/en/java/javase/26/docs/api/java.base/java/util/concurrent/Future.html)
 - [JEP 444, Virtual Threads](https://openjdk.org/jeps/444)
+- [Thread, Java SE 25](https://docs.oracle.com/en/java/javase/25/docs/api/java.base/java/lang/Thread.html)
+- [Thread, Java SE 26](https://docs.oracle.com/en/java/javase/26/docs/api/java.base/java/lang/Thread.html)
+
+## 학습 계기
+
+- [How can you shutdown an ExecutorService? — YouTube, Java](https://www.youtube.com/watch?v=8uN-7kAUpTk) — 종료 절의 사실은 위 API 문서로 대조
 
 ## 관련 문서
 
