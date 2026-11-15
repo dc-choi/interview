@@ -178,6 +178,7 @@ AWS 예시의 처리 흐름을 2026-10-14 대조했다. 현행 규제 전체의 
 - [[Proxy-Trust-and-Anonymity|중계 경로의 신뢰 모델 (아웃바운드 통제)]]
 - [[ARP-Spoofing|ARP 스푸핑 (내부망도 신뢰할 수 없는 이유)]]
 - [[Supply-Chain-Security|공급망 보안]]
+- [[Air-Gap-Covert-Channels|에어갭 은닉 채널 (물리 방출로 격리망을 넘는 유출)]]
 - [[VPC-NAT-Security|VPC, NAT와 보안 (규제 관점)]]
 - [[Fintech-Seminar#망분리|핀테크 세미나: 금융권 망분리 의무]]
 - [[TS-Backend-Meetup-1#금융권보안현실|TS 백엔드 밋업: 금융권 보안 현실]]
