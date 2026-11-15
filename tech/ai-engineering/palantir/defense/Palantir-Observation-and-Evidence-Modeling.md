@@ -1,7 +1,7 @@
 ---
 tags: [palantir, ontology, data-modeling, provenance, data-quality]
 status: done
-verified_at: 2026-10-16
+verified_at: 2026-11-16
 category: "AI엔지니어링(AIEngineering)"
 aliases: ["Palantir 관측과 근거 모델링"]
 ---
@@ -17,6 +17,19 @@ aliases: ["Palantir 관측과 근거 모델링"]
 `Report`는 보고서 생성 시각을 필수로 갖고 여러 `Report Observation`과 연결될 수 있다. 한 관측도 여러 보고서에 연결될 수 있으므로, 보고서 안에 관측 내용을 반복 복사하는 모델만 가능한 것은 아니다. 보고서 작성 시각을 관측 발생 시각으로 바꾸어 해석하지 않는다.
 
 `Intelligence`는 보고 시각이 필수이고 보고 위치와 정규화한 신뢰도는 선택 사항이다. 정보의 생산 주체(`Intelligence Producer`)와 대상(`Intelligence Subject`)을 별도 인터페이스로 연결하며 양쪽 모두 여러 정보 객체와 연결될 수 있다. 근거를 생산한 주체와 근거가 설명하는 대상을 분리하면 한 자료가 여러 대상에 적용되는 경우도 표현할 수 있다.
+
+### Report Observation은 속성 없는 연결 계약이다
+
+2026-11-16 공개 `Report Observation` 상세를 대조했다. 설명은 보고서의 관측 또는 항목(line item)이며, 인터페이스 자신이 정의한 속성은 없고 상위로 확장하는 인터페이스도 없다. 자체 링크 제약은 `Report`로 가는 `Reports` 하나다.
+
+| 링크 제약 | 다중성 | 매핑 |
+| --- | --- | --- |
+| Report Observation의 `Reports` | 한 관측이 여러 보고서 | 선택 |
+| Report의 `Report Observations`(관측 쪽에서는 들어오는 링크) | 한 보고서가 여러 관측 | 선택 |
+
+이 인터페이스를 확장하는 것은 물자 쪽의 `Materiel Status Event`, `Materiel (Item) Status Event`, `Materiel Change Event`이며, 공개 상세에 나열된 확장은 이 세 개다. 세 확장은 모두 보고 시각(`Reported At`)과 출처 메타데이터를 필수 매핑으로 정의하지만 `Report Observation` 계약에는 없다([[Palantir-Resource-and-Hierarchy-Modeling]]). 그래서 이 인터페이스만 기준으로 여러 관측을 모아 볼 때는 공통 시각이나 출처 필드를 전제할 수 없고, 정렬과 필터 기준은 하위 인터페이스나 구현 객체 타입에서 정한다(모델링 판단). 공개 상세의 자동 생성 OSDK 예제가 정렬과 필터에 쓰는 `someProperty`는 속성 목록에 없는 이름으로, 자리표시자로 보인다.
+
+매핑이 선택이라 구현 타입에 Report로 가는 링크 타입 자체가 없을 수 있고, 매핑되어 있어도 개별 관측의 연결은 비어 있을 수 있다. 보고서 없이 들어온 관측을 허용할지는 구현의 데이터 검증 규칙에서 정한다.
 
 ## 숫자 범위와 의미의 정규화
 
