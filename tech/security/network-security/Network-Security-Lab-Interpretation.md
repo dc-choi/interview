@@ -1,7 +1,7 @@
 ---
 tags: [security, network-security, wireshark, vulnerability-assessment, wifi]
 status: done
-verified_at: 2026-11-01
+verified_at: 2026-11-15
 category: "Security - 네트워크 보안"
 aliases: ["Network Security Lab Interpretation", "네트워크 보안 시연 해석", "WPA2 PSK 오프라인 추측", "Evil Twin 신뢰 경계"]
 ---
@@ -50,6 +50,26 @@ Nmap의 호스트 발견은 ICMP ping에만 한정되지 않으며 로컬 Ethern
 첫 코드 실행과 이후 로컬 권한 상승은 서로 다른 취약 조건을 필요로 할 수 있다. 방어에서도 서비스 수정과 커널 수정, 불필요한 노출 제거, 접근 범위 제한과 최소 권한을 나눠 본다. 최신 패치 하나로 모든 침해가 불가능해진다는 결론으로 바꾸지 않는다.
 
 반환 연결을 새로 만드는 reverse shell과 이미 연결된 소켓을 사용하는 셸도 구분해야 한다. 시연의 명칭만으로 연결 방향을 확정하지 않고 패킷이나 코드를 확인한다. 특정 익스플로잇의 메모리 조작 방식과 커널 권한 상승 원인은 아래의 확인 후보로 남긴다.
+
+## IEEE 802.11i, WPA와 WPA2는 만든 주체가 다르다
+
+무선 시연 결과를 읽기 전에 보안 모드의 이름이 무엇을 가리키는지 정리한다. IEEE 802.11i는 IEEE가 2004년 6월 승인한 802.11의 여섯 번째 개정(Amendment 6: MAC Security Enhancements)이고, WPA와 WPA2는 Wi-Fi Alliance의 상호운용성 인증 프로그램이다. 802.11i는 현재 Superseded 상태라 802.11 본 규격에서 확인한다.
+
+**WEP의 문제는 키 길이가 아니라 구조였다.** WEP는 RC4 스트림 암호에 24비트 IV를 붙여 키 스트림을 만들고 IV를 평문으로 보낸다. IV 공간이 1,700만 개 미만이라 바쁜 망에서는 몇 시간 안에 소진되고, 같은 IV를 쓴 두 메시지 중 하나의 평문을 알면 다른 메시지도 쉽게 알아낼 수 있다. 무결성 값은 암호화한 CRC-32라 비트 반전 공격을 막지 못하고, 재전송 방지 장치가 없으며, 모든 단말이 같은 키를 공유하는데 키 관리 표준도 없었다. 키를 길게 늘려도 이 결함은 남는다.
+
+**802.11i가 정의한 것** — RSNA(Robust Security Network Association)만 허용하는 RSN, 데이터 보호 프로토콜 TKIP와 CCMP, 인증을 위한 IEEE 802.1X 사용, 키 관리 절차인 4-Way Handshake와 Group Key Handshake다.
+
+- **4-Way Handshake**: 양쪽이 같은 PMK(pairwise master key)를 가졌는지 확인하고, 임시 키의 설치를 동기화하며, 선택한 암호 스위트를 확정한다. PMK는 미리 설정한 PSK이거나 802.1X의 EAP 인증 결과로 분배된 값이다.
+- **키 계층**: 단말과 AP 사이 유니캐스트를 보호하는 쌍별 키 계층(PTK)과 멀티캐스트, 브로드캐스트를 보호하는 그룹 키 계층(GTK)을 나눈다.
+- **보호 범위**: RSN은 링크 계층 보호다. 단말과 AP 사이의 무선 구간만 지키며 웹 서버까지의 종단 간 보호는 TLS나 IPsec이 맡는다. AP와 인증 서버 사이의 유선 구간 보호도 규격 범위 밖이고, 관리 프레임 보호는 이후 802.11w(PMF)가 더했다.
+
+| 이름 | 성격 | 핵심 |
+| --- | --- | --- |
+| WPA (2003) | 802.11i 완성 전에 나온 부분집합 인증 | 802.1X/EAP, 4-Way Handshake, TKIP. AES-CCMP는 요구하지 않음 |
+| WPA2 (2004년 9월) | 승인된 802.11i 전체에 대한 인증 | AES 기반 CCMP. 2006년 3월부터 Wi-Fi CERTIFIED 제품에 의무 |
+| Personal / Enterprise | 두 인증의 등급 | Personal은 PSK, Enterprise는 인증 서버를 둔 EAP 인증 |
+
+WPA를 IEEE 워킹그룹이 만든 표준으로, AES 도입을 WPA의 특징으로 설명하면 틀린다. 현재 Wi-Fi Alliance는 WPA3를 Wi-Fi CERTIFIED 기기의 필수 요건으로 두고 PMF 사용을 요구한다. 위 역사와 구조의 근거인 NIST SP 800-97(2007)은 2025년 12월 31일 기술적으로 오래됐다는 이유로 철회됐으므로 현재 구성 권고로 쓰지 않는다.
 
 ## WPA2-Personal 시연은 후보 검색의 조건을 본다
 
@@ -100,6 +120,11 @@ Evil Twin은 정상망처럼 보이는 무선 AP로 접속을 유도하는 방�
 - [HPE Aruba Networking, WPA3-Personal](https://arubanetworking.hpe.com/techdocs/aos/wifi-design-deploy/security/modes/wpa3-personal/)
 - [HPE Aruba Networking, Protected management frames](https://arubanetworking.hpe.com/techdocs/aos/wifi-design-deploy/security/features/pmf/)
 - [MITRE ATT&CK, Adversary-in-the-Middle: Evil Twin](https://attack.mitre.org/techniques/T1557/004/)
+- [IEEE SA, IEEE 802.11i-2004](https://standards.ieee.org/ieee/802.11i/3127/) — 승인일, Superseded 상태, TKIP/CCMP와 4-Way Handshake, Group Key Handshake의 범위.
+- [NIST, SP 800-97: Establishing Wireless Robust Security Networks: A Guide to IEEE 802.11i](https://csrc.nist.gov/pubs/sp/800/97/final) — 3.2~3.3절(WEP 결함, RSN, 4-Way Handshake), 4.1~4.2절(링크 계층 보호, 키 계층), 7.2~7.3절(WPA와 WPA2 인증). 2025-12-31 철회 문서라 역사와 구조 설명에만 썼다.
+- [Wi-Fi Alliance, Security](https://www.wi-fi.org/discover-wi-fi/security) — WPA3 필수와 PMF 요구.
+- [#NW 0030 - 당신의 와이파이는 어떻게 해킹을 막을까? IEEE 802.11i 90초 완벽 정리 — 길리랩](https://www.youtube.com/watch?v=Qg1A1eprjAQ) — 음성 전사 기반. WPA를 IEEE 워킹그룹의 결과물로 설명한 부분은 위 1차 출처로 바로잡았다.
+- [IEEE SA, IEEE 802.11w-2009](https://standards.ieee.org/ieee/802.11w/3736/) — 관리 프레임 보호(Protected Management Frames) 개정.
 
 ## 관련 문서
 

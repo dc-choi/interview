@@ -11,7 +11,7 @@ aliases: ["Network Security", "네트워크 보안"]
 
 ## 목차
 
-- [[Network-Security-Lab-Interpretation|네트워크 보안 시연을 해석하는 기준]] — HTTP Basic과 TLS/VPN 경계, 탐색과 취약 조건, 셸과 권한, WPA2 오프라인 추측과 WPA3 SAE/PMF, ARP MITM과 Evil Twin
+- [[Network-Security-Lab-Interpretation|네트워크 보안 시연을 해석하는 기준]] — HTTP Basic과 TLS/VPN 경계, 탐색과 취약 조건, 셸과 권한, WEP 결함과 802.11i, WPA/WPA2 인증의 구분, WPA2 오프라인 추측과 WPA3 SAE/PMF, ARP MITM과 Evil Twin
 - [[Public-WiFi-Trust-Boundaries|공공 Wi-Fi의 신뢰 경계]] — HTTPS, 서비스 신뢰와 기기 제어 권한, 미러링 시연의 사전 인증 조건
 - [[SSH-Authentication|SSH 인증]] — 서버 호스트 키, 사용자 인증 키와 세션 키, 첫 접속의 신뢰와 호스트 키 변경, Tailscale 포워딩의 권한 경계, musl 환경의 비밀번호 인증 우회와 salt 차용의 배경
 - [[Network-Perimeter-Security|네트워크 경계 보안]] — 공인 IP 배치 원칙, DNS 응답 IP와 실제 서버, UTM, 보안 장비가 로드밸런서보다 앞에 서는 순서, 프록시 방식 WAF와 SSL 종료, 클라우드의 퍼블릭/프라이빗 구분
