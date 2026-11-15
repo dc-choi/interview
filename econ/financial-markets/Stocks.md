@@ -282,4 +282,5 @@ AI, 로봇이나 친환경 같은 투자 테마는 여러 산업을 가로지를
 - [[Bonds|채권]] — 자본구조의 다른 한 축
 - [[Valuation|밸류에이션]] — 주식이 싼지 비싼지 따지는 법
 - [[Duplicate-Listing-Regulation|중복상장 규제]] — 상장 모회사가 자회사를 따로 상장할 때의 의무와 심사
+- [[Financial-Industrial-Separation-Share-Limits|금산분리와 금융계열사의 주식소유한도]] — 자사주 소각으로 계열 금융사 지분율이 한도를 넘을 때의 처리
 - [[금융시장(Financial Markets)]] — 지도
