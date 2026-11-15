@@ -21,6 +21,7 @@ Software 3.0 패러다임, LLM과 에이전트, 하네스, 평가, 조직 전환
 - [[eval|평가, 신뢰성, 캘리브레이션]] — LLM 평가 전략, Abstention(모른다고 말하는 능력), 환각 유형과 검증, 평가 주도 개발(EDD), 루브릭과 점수 게이트, LLM 판정기, 골든셋과 배포 관문, 서빙 모델 드리프트 감시
 
 ## 세부 학습
+- [x] [[Multi-Agent-Coordination-Cost|멀티 에이전트의 조정 비용과 증설 판단]] — Amdahl 상한과 통신 경로, 작업 구조별 효과 측정, 네 가지 실패 패턴, 구조 선택과 단계적 증설
 - [x] [[Hugging-Face-Hub|Hugging Face 모델 허브와 버전 고정]] — 모델 카드, 접근 승인과 라이선스, 다운로드 revision, 로딩과 평가의 분리
 - [x] [[Contrail-Avoidance-Model-Evaluation|비행운 회피 모델의 현장 평가]] — 배정과 실행 집단, 발생률과 온난화 추정, 기종 보정 연료 비교
 - [x] [[Realtime-Vision-Agent-Pipeline|실시간 영상 에이전트]] — 미디어 전송, 영상 processor, 대화 모델과 음성 처리의 역할 구분

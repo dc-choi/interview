@@ -57,6 +57,8 @@ Nmap의 호스트 발견은 ICMP ping에만 한정되지 않으며 로컬 Ethern
 
 **WEP의 문제는 키 길이가 아니라 구조였다.** WEP는 RC4 스트림 암호에 24비트 IV를 붙여 키 스트림을 만들고 IV를 평문으로 보낸다. IV 공간이 1,700만 개 미만이라 바쁜 망에서는 몇 시간 안에 소진되고, 같은 IV를 쓴 두 메시지 중 하나의 평문을 알면 다른 메시지도 쉽게 알아낼 수 있다. 무결성 값은 암호화한 CRC-32라 비트 반전 공격을 막지 못하고, 재전송 방지 장치가 없으며, 모든 단말이 같은 키를 공유하는데 키 관리 표준도 없었다. 키를 길게 늘려도 이 결함은 남는다.
 
+**사례: WEP 매장망이 결제 시스템 침입의 진입 경로로 지목됐다.** 캐나다 연방 개인정보보호위원회(OPC)와 앨버타 주 정보개인정보보호위원회의 2007년 9월 25일 공동 조사 보고서에서 TJX는 침입자가 미국 매장 두 곳의 무선 LAN으로 처음 들어온 것으로 보았다. 북미 매장은 WEP를 쓰고 있었고, 첫 침입(2005년 7월) 뒤인 2005년 10월 WPA 전환을 시작해 2007년 1월 중순에 마쳤다. 접근은 2005년 7월부터 2007년 1월 중순까지 간헐적으로 이어졌고, 2006년 12월 18일 의심 소프트웨어가 발견되면서 드러났다. 영향은 여러 나라의 결제 카드 약 4,500만 장으로 추정됐다. 보고서는 WEP가 비교적 쉽게 무력화된다고 보고, 약한 암호 때문에 침입자가 결제 처리 서버에 접근했을 수 있다고 판단했다. 그리고 약한 암호를 합리적 기간 안에 전환하지 못한 점과 전환 중 카드 데이터를 별도 서버로 분리한 정황이 없다는 점을 보호조치 위반의 근거로 들었다. 2008년 미국 FTC는 complaint에서 무선 접근 제한 미흡, 개인정보의 평문 저장과 전송, 강한 비밀번호를 요구하지 않은 점, 카드 승인 컴퓨터를 방화벽 등으로 격리해 컴퓨터와 인터넷 사이의 접근을 제한하지 않은 점을 문제로 제기했고 TJX는 동의 명령으로 합의했다. 무선 구간이 뚫리더라도 그것은 시작일 뿐이며, 망 분리와 저장 데이터 보호가 없으면 피해가 결제 시스템까지 이어질 수 있다. 오래된 암호를 교체하는 동안에는 위험한 구간을 따로 격리하는 보완 통제를 둔다.
+
 **802.11i가 정의한 것** — RSNA(Robust Security Network Association)만 허용하는 RSN, 데이터 보호 프로토콜 TKIP와 CCMP, 인증을 위한 IEEE 802.1X 사용, 키 관리 절차인 4-Way Handshake와 Group Key Handshake다.
 
 - **4-Way Handshake**: 양쪽이 같은 PMK(pairwise master key)를 가졌는지 확인하고, 임시 키의 설치를 동기화하며, 선택한 암호 스위트를 확정한다. PMK는 미리 설정한 PSK이거나 802.1X의 EAP 인증 결과로 분배된 값이다.
@@ -125,6 +127,10 @@ Evil Twin은 정상망처럼 보이는 무선 AP로 접속을 유도하는 방�
 - [Wi-Fi Alliance, Security](https://www.wi-fi.org/discover-wi-fi/security) — WPA3 필수와 PMF 요구.
 - [#NW 0030 - 당신의 와이파이는 어떻게 해킹을 막을까? IEEE 802.11i 90초 완벽 정리 — 길리랩](https://www.youtube.com/watch?v=Qg1A1eprjAQ) — 음성 전사 기반. WPA를 IEEE 워킹그룹의 결과물로 설명한 부분은 위 1차 출처로 바로잡았다.
 - [IEEE SA, IEEE 802.11w-2009](https://standards.ieee.org/ieee/802.11w/3736/) — 관리 프레임 보호(Protected Management Frames) 개정.
+- [PIPEDA Report of Findings #2007-389: TJX Companies Inc. / Winners Merchant International L.P. — Office of the Privacy Commissioner of Canada, Office of the Information and Privacy Commissioner of Alberta](https://www.priv.gc.ca/en/opc-actions-and-decisions/investigations/investigations-into-businesses/2007/tjx_rep_070925/) — 1절(영향 카드 수), 11~25절(발견일, 무선 LAN 진입 추정, 침입 기간, WEP 사용), 80~93절(WEP 판단, WPA 전환 기간, 데이터 분리 미흡, 보호조치 위반 결론).
+- [Agency Announces Settlement of Separate Actions Against Retailer TJX, and Data Brokers Reed Elsevier and Seisint for Failing to Provide Adequate Security for Consumers' Data — FTC](https://www.ftc.gov/news-events/news/press-releases/2008/03/agency-announces-settlement-separate-actions-against-retailer-tjx-data-brokers-reed-elsevier-seisint) — 2008-03-27 complaint 요약(무선 접근 제한, 평문 저장과 전송, 비밀번호, 방화벽 등 접근 제한).
+- [FTC, In the Matter of The TJX Companies, Inc., Complaint (Docket C-4227)](https://www.ftc.gov/sites/default/files/documents/cases/2008/08/080801tjxcomplaint.pdf) — 8항(보안 미흡 주장의 세부).
+- [#NW 0031 - 10분 만에 뚫리는 와이파이? WEP 보안의 흑역사 90초 완벽 정리 — 길리랩](https://www.youtube.com/watch?v=P4-1xYZEh7o) — 음성 전사 기반. 크랙 소요 시간과 표준 폐기 연도는 1차 출처로 확인하지 못해 쓰지 않았고, TJX 사례는 위 조사 보고서로 대조했다.
 
 ## 관련 문서
 

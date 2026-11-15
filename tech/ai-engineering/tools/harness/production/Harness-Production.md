@@ -13,6 +13,7 @@ aliases: ["Harness Production", "프로덕션 에이전트 운영과 격리"]
 
 - [[Production-Agent-Architecture|프로덕션 에이전트 아키텍처]]: 분업, Lazy Load, Defense in Depth, 프롬프트 3계층과 루프 가드레일, Metric Registry, Eval, 고가용성, Closure-loop 위임 경계
   - [[Production-Agent-Architecture-Orchestration|분업과 오케스트레이션]]: 컴포넌트 분업, 환경을 넘는 위임, 핵심 엔진, Lazy Load
+- [[Multi-Agent-Coordination-Cost|멀티 에이전트의 조정 비용과 증설 판단]]: Amdahl 상한과 통신 경로, 작업 구조별 효과 측정, 네 가지 실패 패턴, 구조 선택과 단계적 증설
   - [[Production-Agent-Architecture-Guardrails|다층 안전망과 루프 가드레일]]: Defense in Depth, 프롬프트 3계층, 루프 가드레일, 사용량 제한
   - [[Production-Agent-Architecture-Knowledge|지식 체계]]: Metric Registry, 조회 우선순위, Auto Memory 비활성화
   - [[Production-Agent-Architecture-Eval-and-Operations|Eval, 운영 루프와 고가용성]]: 검증 4축, 운영 루프, 처리 시간 계측, 워커 풀
