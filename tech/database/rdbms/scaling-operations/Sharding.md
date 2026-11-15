@@ -104,6 +104,18 @@ Citus metadata의 shard와 placement 정보를 query의 distribution filter와 �
 
 수평 partitioning의 partition key를 sharding에서는 shard key, 나뉜 조각을 shard라고 부른다. 키를 고르는 기준은 같다. 가장 자주 쓰는 조회가 키 조건을 포함해야 조각 하나만 읽고, 키 값이 고르게 퍼져야 특정 조각만 커지지 않는다. 사용자 ID로 나눈 구독 테이블은 한 사용자의 구독 목록을 한 조각에서 읽지만, 채널 ID로 구독자를 찾는 조회는 모든 조각을 읽는다. Hash로 나눈 뒤 조각 수를 바꾸면 기존 행 일부를 새 조각으로 옮겨야 하므로 처음 조각 수와 재배치 방식([[#키 → 서버 매핑 방식|키 매핑]])을 함께 설계한다. MySQL 내장 partitioning의 방식과 pruning은 [[MySQL-Partitioning|MySQL Partitioning]]에, replication의 지연과 failover는 [[Replication]]에 있다.
 
+### 같은 서버 안의 파티션은 쓰기 자원을 늘리지 않는다
+
+DB 서버 한 대의 쓰기 처리량이 한계일 때 같은 서버에 파티션을 더 만들어도 CPU와 메모리는 그대로다. 파티션을 같은 저장 장치에 두는 한 디스크도 그대로라 어느 파티션에 쓰든 같은 물리 자원을 나눠 쓴다. 파티션별 tablespace로 데이터 파일을 다른 디스크에 둘 수는 있지만 CPU와 메모리는 여전히 서버 한 대 몫이다. PostgreSQL 18 문서가 드는 파티셔닝의 이점은 자주 접근하는 행이 일부 파티션에 몰릴 때의 조회 성능, 한 파티션의 큰 비율을 읽거나 고칠 때의 순차 스캔, 파티션 추가와 제거로 처리하는 대량 적재와 삭제(`DROP TABLE`이나 `DETACH PARTITION`은 대량 `DELETE`보다 훨씬 빠르고 `VACUUM` 부담도 없다), 드물게 쓰는 데이터의 저렴한 저장 매체 이전이다. MySQL 8.4 문서도 한 디스크에 담기 어려운 데이터의 저장, 파티션 삭제와 추가, pruning을 든다. 두 문서의 이점 목록에 일부 조회와 갱신의 성능 개선은 있지만 서버 전체의 쓰기 처리량이 늘어난다는 항목은 없다.
+
+쓰기가 밀린다고 물리 자원이 부족하다는 뜻은 아니다. PostgreSQL 18에서 다른 트랜잭션이 갱신 중인 행(충돌하는 모드로 잠근 행)을 `UPDATE`하려는 트랜잭션은 잠금을 잡은 트랜잭션이 끝날 때까지 기다린다. 같은 행을 바꾸려는 요청끼리의 이 대기는 그 행을 다른 서버로 옮겨도 사라지지 않는다. 그래서 샤딩을 검토하기 전에 쓰기 요청이 무엇을 기다리는지부터 나눠 잰다.
+
+- **쿼리 실행 시간**: 실행 계획, 인덱스와 트랜잭션 길이에서 오래 걸리는 구간을 찾는다.
+- **잠금 대기**: PostgreSQL의 `pg_stat_activity`에서 `wait_event_type`이 `Lock`이면 heavyweight lock을 기다리는 중이다. 같은 행에 갱신이 몰리면 트랜잭션을 짧게 하고 갱신을 흩는 쪽을 먼저 본다([[Hot-Partition]]).
+- **I/O 대기**: `wait_event_type`이 `IO`면 I/O 완료를 기다리는 중이다. 디스크가 이미 한계이고 파티션이 같은 디스크에 있다면 파티션을 늘려도 쓰기는 같은 디스크로 간다.
+
+측정한 뒤에도 서버 한 대의 CPU와 디스크가 부족할 때 쓰기를 여러 서버로 나누는 샤딩을 검토한다. 애플리케이션의 connection pool 대기와 DB 안 대기의 구분은 [[Connection-Pool|커넥션 풀]]에 있다.
+
 ### 수직 분할이 I/O를 줄이는 조건
 
 행 저장 DB는 필요한 column만 골라 디스크에서 읽지 않고 행이 담긴 page 단위로 읽는다. 목록 화면에 필요 없는 본문 column이 행 안에 있으면 page당 행 수가 줄어, 같은 목록을 읽는 데 더 많은 page와 buffer pool을 쓴다. 다만 큰 값은 엔진이 이미 행 밖으로 옮기기도 한다.
@@ -144,6 +156,11 @@ User/tenant key는 관련 데이터를 함께 배치할 수 있지만 특정 대
 - [MongoDB 9.0 Manual, Hashed Sharding](https://www.mongodb.com/docs/manual/core/hashed-sharding/)
 - [MongoDB 9.0 Manual, Choose a Shard Key](https://www.mongodb.com/docs/manual/core/sharding-choose-a-shard-key/)
 - [YouTube, JSCODE 박재성, CS 면접 대비 (분산 시스템편) 3.5 샤드를 범위로 나누는 방식과 해시로 나누는 방식은 언제 각각 유리한가요?](https://www.youtube.com/watch?v=VH3BtrLvx1E)
+- [YouTube, JSCODE 박재성, CS 면접 대비 (분산 시스템편) 3.2 DB 서버 한 대의 쓰기 처리량이 한계라면 테이블 파티션만 늘려서 해결할 수 있나요?](https://www.youtube.com/watch?v=0GNm8r9qm9g)
+- [PostgreSQL 18 Documentation, Table Partitioning](https://www.postgresql.org/docs/current/ddl-partitioning.html)
+- [PostgreSQL 18 Documentation, Explicit Locking](https://www.postgresql.org/docs/current/explicit-locking.html)
+- [PostgreSQL 18 Documentation, The Cumulative Statistics System](https://www.postgresql.org/docs/current/monitoring-stats.html)
+- [MySQL 8.4 Reference Manual, Overview of Partitioning in MySQL](https://dev.mysql.com/doc/refman/8.4/en/partitioning-overview.html)
 
 
 ## 관련 문서

@@ -2,7 +2,7 @@
 tags: [ai, evaluation, quality]
 status: done
 category: "AI엔지니어링(AIEngineering)"
-aliases: ["LLM Eval Strategy", "LLM 평가 전략", "Pass@k", "AI 평가"]
+aliases: ["LLM Eval Strategy", "LLM 평가 전략", "Pass@k", "pass^k", "AI 평가"]
 ---
 
 # LLM 평가 전략 (LLM Eval Strategy)
@@ -22,6 +22,17 @@ LLM, 에이전트 시스템은 같은 입력에도 출력이 흔들린다. 결�
 - 재시도와 워커 교체는 Pass@k 자체가 아니라 실제 복구 정책의 성공률, 지연과 비용으로 별도 평가한다
 
 이는 [[Production-Agent-Architecture]]의 고가용성(워커 풀 교체), Closure-loop과 같은 사고다. 한 번에 맞히게 만들기보다, 틀려도 루프 안에서 회복하게 만든다.
+
+## pass^k: k번 모두 성공할 가능성
+
+Pass@k가 k번 중 한 번이라도 성공할 확률이라면, pass^k(pass hat k)는 같은 과제를 독립적으로 k번 실행했을 때 k번 모두 성공할 확률을 과제 전체에 평균한 값이다. 2024년 6월 Sierra 연구진의 τ-bench 논문이 고객 응대처럼 매번 올바르게 동작해야 하는 에이전트의 신뢰성 지표로 제안했다.
+
+- **추정**: 과제마다 n번 실행해 c번 성공했다면 과제별 C(c,k)/C(n,k)를 과제 전체에 평균한다. k=1이면 pass^1과 Pass@1은 둘 다 평균 성공률이다.
+- **k에 따른 방향**: k가 커지면 Pass@k는 오르고 pass^k는 내려간다. 정확히는 k에 대해 늘지 않으며, 시행마다 성공과 실패가 섞이는 과제가 있을 때 내려간다. 시행마다 독립적으로 75% 성공하는 에이전트가 세 번 모두 성공할 확률은 0.75³, 약 42%다.
+- **평균이 숨기는 것**: 평균 성공률이 50%로 같아도, 과제 절반은 매번 성공하고 절반은 매번 실패하면 pass^k는 k와 관계없이 50%다. 모든 과제가 시행마다 50%로 흔들리면 pass^k는 0.5^k로 떨어진다(계산 예시).
+- **사례 수치**: τ-bench 논문의 gpt-4o function calling 에이전트는 retail 과제에서 pass^1 약 61%였지만 pass^8은 약 25%까지 떨어졌다. 2024년 당시 모델과 설정의 결과다.
+
+한 번만 성공하면 되고 후보를 검증해 고를 수 있는 도구는 Pass@k를, 사용자가 매번 같은 결과를 기대하는 에이전트는 pass^k를 본다. 모델이나 로컬 모델 교체를 비교할 때는 평균 성공률과 함께 같은 과제를 k번 실행해 모두 성공한 과제 수를 기록하고, 두 모델의 결과를 과제 단위로 짝지어 어느 과제에서 갈렸는지 확인한다(설계 제안). 성공 판정은 완료했다는 응답이 아니라 [[#평가 인식과 운영 환경의 차이|실제 실행 결과와 최종 상태]]로 한다.
 
 ## 모델 라우팅은 같은 업무와 전체 비용으로 비교한다
 
@@ -122,6 +133,7 @@ Claude Sonnet 4.5의 2025년 안전성 평가에서는 특히 인위적이거나
 |---|---|---|
 | Pass@1 | 사용자가 한 번에 받는 답의 합격률이 기준선 이상인가 | 단일 결과 경로의 기본 지표 |
 | Pass@k | k개 후보 안에 합격 후보가 존재하는가 | oracle과 후보 선택 절차 필요 |
+| pass^k | 같은 과제를 k번 실행해 매번 성공하는가 | 일관성이 필요한 에이전트, k가 커질수록 낮아짐 |
 | 정확성 | 수치, 사실이 맞는가 | CSAT와 충돌 가능 |
 | 만족도(CSAT) | 사용자가 만족했는가 | 정확도와 충돌 가능 |
 | 데이터 품질 | 지식 베이스에 노이즈가 없는가 | Precision 우선, 인간 게이트 |
@@ -156,7 +168,9 @@ Q. 데이터 품질은 어떻게 지키나?
 - [Abacus.AI, RouteLLM API Reference](https://api.abacus.ai/help/route-llm/) — 2026-10-22 자동 모델 선택과 크레딧 회계, 가격 조회 안내 확인. 절감률과 운영 품질은 별도 평가 대상이다.
 - [Abacus.AI, OpenAI Chat Completions API](https://api.abacus.ai/help/route-llm/chat-completions/) — 2026-10-22 모델 ID 지정과 `route-llm` 선택 확인.
 - [YouTube, 코드팩토리, 매번 가장 효율적인 LLM을 선택하는법](https://www.youtube.com/watch?v=6vabSapGFqE) — 상담의 고정 모델, 수동 분기와 자동 선택 비교를 학습 계기로 사용했다. 시연의 모델별 결과와 절감 수치는 일반 성능으로 반영하지 않았다.
-- [Demystifying evals for AI agents — Anthropic](https://www.anthropic.com/engineering/demystifying-evals-for-ai-agents) — 반복 trial, 모델과 하네스의 공동 평가, 양방향 과제와 초기 환경 격리. 기억과 라우팅 비교 절차는 이를 적용한 설계 제안이다. 2026-10-09 확인, 2026-10-22 라우팅 평가에 사용한 원칙 재대조. 2026-11-03 반복 trial, 최종 상태와 환경 격리 원칙을 부분 대조해 웹 생성 비교에 적용했다.
+- [Demystifying evals for AI agents — Anthropic](https://www.anthropic.com/engineering/demystifying-evals-for-ai-agents) — 반복 trial, 모델과 하네스의 공동 평가, 양방향 과제와 초기 환경 격리. 기억과 라우팅 비교 절차는 이를 적용한 설계 제안이다. 2026-10-09 확인, 2026-10-22 라우팅 평가에 사용한 원칙 재대조. 2026-11-03 반복 trial, 최종 상태와 환경 격리 원칙을 부분 대조해 웹 생성 비교에 적용했다. 2026-11-15 pass@k와 pass^k의 정의, 75% 세 번 예시와 용도 구분을 대조했다.
+- [τ-bench: A Benchmark for Tool-Agent-User Interaction in Real-World Domains — arXiv, Shunyu Yao 외 (Sierra)](https://arxiv.org/abs/2406.12045) — 2024-06-17 v1. pass^k의 정의와 추정식, gpt-4o의 pass^1과 pass^8 결과를 2026-11-15 확인
+- [YouTube, 큰돌의터전, 3090 그래픽카드로 sonnet5.5를 이김](https://www.youtube.com/watch?v=syY8goNT3t8) — pass^k 개념의 학습 계기. 영상이 소개한 로컬 모델과 상용 모델의 비교 수치는 원 실험을 확인하지 못해 반영하지 않았다.
 - [How Amazon uses Amazon Nova models to automate operational readiness testing for new fulfillment centers — AWS](https://aws.amazon.com/blogs/machine-learning/how-amazon-uses-amazon-nova-models-to-automate-operational-readiness-testing-for-new-fulfillment-centers/) — 2026-02-10 공개 사례의 ORT 절차와 평가 결과. 2026-10-09 확인.
 - [Anthropic’s Transparency Hub — Anthropic](https://www.anthropic.com/transparency) — Claude Sonnet 4.5의 Model Alignment and Evaluation Awareness 절
 - [InfoQ AI, ML and Data Engineering Trends Report - 2026 — InfoQ, Srini Penchikala 외](https://www.infoq.com/articles/ai-ml-data-engineering-trends-2026/) — 2026-10-30, 2026-11-09 에이전트 평가 범위와 지표, 운영 단계로의 관심 이동 대조
