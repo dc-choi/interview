@@ -1,7 +1,7 @@
 ---
 tags: [cs, javascript, browser, dom, web-components, design-system]
 status: done
-verified_at: 2026-11-14
+verified_at: 2026-11-15
 category: "CS - JavaScript"
 aliases: ["Web Components", "웹 컴포넌트", "Custom Elements", "Shadow DOM"]
 ---
@@ -54,13 +54,49 @@ aliases: ["Web Components", "웹 컴포넌트", "Custom Elements", "Shadow DOM"]
 | 서버 렌더링과 SEO가 중요 | declarative shadow DOM 지원과 프레임워크의 SSR 처리를 먼저 확인한다 |
 | 외부 스크립트로부터 내부 보호가 목적 | Shadow DOM은 스타일 캡슐화이지 보안 경계가 아니다. iframe이나 서버 측 통제를 검토한다 |
 
-작은 조직에서 디자인 시스템을 직접 운영하면 프레임워크 교체 비용을 줄일 수 있지만, 컴포넌트 문서, 접근성 검증과 버전 배포를 맡을 사람이 있어야 자산으로 남는다(적용 제안). 표준 API만으로 작성할 수도 있고 Lit 같은 라이브러리로 반응형 렌더링을 보탤 수도 있다.
+작은 조직에서 디자인 시스템을 직접 운영하면 프레임워크 교체 비용을 줄일 수 있지만, 컴포넌트 문서, 접근성 검증과 버전 배포를 맡을 사람이 있어야 자산으로 남는다(적용 제안). 표준 API만으로 작성할 수도 있고 Lit 같은 라이브러리로 반응형 렌더링을 보탤 수도 있다. 컴포넌트별 상태 재현, 문서와 접근성 검사는 [[Storybook|Storybook]]에 모을 수 있다.
+
+## Lit으로 작성하기
+
+Lit은 `LitElement`를 상속한 클래스로 custom element를 만들고, `observedAttributes`와 `attributeChangedCallback`을 직접 쓰는 대신 반응형 속성 선언으로 attribute 변환과 다시 그리기를 맡긴다. 아래는 Lit 3 문서를 2026-11-15에 대조한 기준이다.
+
+- **공개 속성**: `@property()`로 선언한다. 기본으로 속성 이름을 소문자로 바꾼 attribute와 연결되므로 `helperText`는 `helpertext`가 되고, `helper-text`가 필요하면 `attribute` 옵션으로 이름을 정한다. `type`은 attribute 문자열을 속성 값으로 바꾸는 런타임 변환 기준이지 타입 검사가 아니다. `reflect: true`면 속성 값이 attribute로 다시 쓰여 CSS 속성 선택자로 상태를 꾸밀 수 있다. 기본값은 `false`다.
+- **내부 상태**: `@state()`로 선언한다. 바뀌면 다시 그리지만 attribute가 없고 바깥에서 쓰지 않는 값이며, 옵션은 `hasChanged`만 받는다. 열림 여부나 비밀번호 표시 여부처럼 사용자가 주입하지 않는 상태가 여기에 해당한다.
+- **갱신 주기**: 속성 변경이나 `requestUpdate()`가 갱신을 예약하고, 다음 그리기 전 microtask 시점에 한 번 실행한다. 예약 뒤 시작 전까지의 여러 변경은 한 번의 갱신으로 묶이며, 끝나면 `updateComplete` promise가 resolve된다. 테스트에서 속성을 바꾼 직후 DOM을 확인하려면 이 promise를 기다린다.
+- **이벤트**: 컴포넌트의 결과는 `CustomEvent`로 알리고 값은 `detail`에 담는다. 다른 shadow root 바깥의 조상까지 받게 하려면 `bubbles: true`와 `composed: true`를 함께 준다. `composed`만 주고 `bubbles`를 빼면 보낸 요소와 그 요소를 품은 shadow host에서만 받을 수 있다.
+
+```ts
+import { LitElement, html } from 'lit';
+import { customElement, property, state } from 'lit/decorators.js';
+
+@customElement('password-input')
+export class PasswordInput extends LitElement {
+  @property() label = '';
+  @property({ type: Boolean, reflect: true }) required = false;
+  @state() private visible = false;
+
+  render() {
+    return html`
+      <label>${this.label}<input type=${this.visible ? 'text' : 'password'} ?required=${this.required} @input=${this.onInput}></label>
+      <button @click=${() => { this.visible = !this.visible; }}>표시</button>
+      <slot name="helper-text"></slot>`;
+  }
+
+  private onInput(e: Event) {
+    const value = (e.target as HTMLInputElement).value;
+    this.dispatchEvent(new CustomEvent('value-change', { detail: { value }, bubbles: true, composed: true }));
+  }
+}
+```
+
+Decorator 설정은 빌드 결과에 영향을 준다. Lit은 TypeScript에서 당분간 `experimentalDecorators: true`와 `useDefineForClassFields: false`를 권한다. 표준 decorator를 쓰면 `@property()`, `@state()` 같은 decorator를 class field가 아닌 auto-accessor(`@property() accessor label = ''`)에 붙여야 한다. 위 예시는 experimental decorator 설정을 전제로 한다.
 
 ## 면접 체크포인트
 
 - Shadow DOM이 막는 것(스타일 누수, DOM 선택자 간섭)과 막지 못하는 것(같은 페이지 스크립트의 접근)을 구분해 설명할 수 있는가.
 - 디자인 토큰을 shadow DOM 안으로 전달하는 방법으로 custom property 상속과 `::part()`의 차이를 말할 수 있는가.
 - React 19 전후로 웹 컴포넌트에 객체 prop을 넘기는 방식이 어떻게 달라졌는가.
+- Lit의 `@property`와 `@state`를 공개 API 여부로 구분하고, 이벤트를 shadow root 밖으로 보내는 옵션을 말할 수 있는가.
 
 ## 출처
 
@@ -74,7 +110,12 @@ aliases: ["Web Components", "웹 컴포넌트", "Custom Elements", "Shadow DOM"]
 - [React v19 — React Blog](https://react.dev/blog/2024/12/05/react-19)
 - [Custom Elements Everywhere](https://custom-elements-everywhere.com/)
 - [Lit, Documentation](https://lit.dev/docs/)
+- [Lit, Reactive properties](https://lit.dev/docs/components/properties/)
+- [Lit, Lifecycle](https://lit.dev/docs/components/lifecycle/)
+- [Lit, Events](https://lit.dev/docs/components/events/)
+- [Lit, Decorators](https://lit.dev/docs/components/decorators/)
 - [프론트 스택 1편. 웹 컴포넌트로 진행하는 이유 (Web Components vs Frameworks) — 하찮은오후](https://www.youtube.com/watch?v=h1QFZn0hqrQ) — 2026-11-01 업로드, 정리의 계기. 사실은 위 1차 출처로 대조
+- [프론트 스택 2편. 개발 스택 선정: Lit과 Storybook을 선택한 이유 — 하찮은오후](https://www.youtube.com/watch?v=TEFl9Y3bFDQ) — 2026-11-04 업로드, Lit 절의 계기. 사실은 Lit 문서로 대조
 
 ## 관련 문서
 
@@ -82,3 +123,4 @@ aliases: ["Web Components", "웹 컴포넌트", "Custom Elements", "Shadow DOM"]
 - [[Event-Bubbling-Capturing|DOM event 전파와 위임]] — Shadow DOM retargeting
 - [[Browser-DOM-Manipulation-and-Safety|브라우저 DOM 조작과 안전성]]
 - [[React-DOM-Components|React DOM 컴포넌트]] — React의 attribute와 property 계약
+- [[Storybook|Storybook]] — 컴포넌트 상태 재현, 자동 문서와 접근성 검사
