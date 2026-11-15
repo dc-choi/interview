@@ -97,6 +97,7 @@ aliases: ["가계 지원금과 바우처", "Household Support Benefits", "근로
 ## 관련 문서
 
 - [[Youth-Support-Programs|청년 지원 제도 확인]] — 취업지원, 직업훈련과 지역 청년 지원
+- [[Welfare-Application-Principle|복지급여 신청주의와 복지 찾는 경로]] — 자동지급, 신청 간주, 직권신청과 복지멤버십 안내
 - [[Personal-Cash-Flow-Planning|개인 현금흐름 계획]] — 현금 수입과 제한된 이용권의 구분
 - [[Personal-Income-Tax-Basics|개인 소득세와 연말정산]] — 소득과 세액공제의 구분
 - [[Government-Support-Programs|정부 지원사업의 구조]] — 기업 지원과 가계 지원의 구분
