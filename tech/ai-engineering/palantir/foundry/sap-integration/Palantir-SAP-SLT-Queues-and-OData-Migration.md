@@ -1,7 +1,7 @@
 ---
 tags: [palantir, foundry, operations]
 status: done
-verified_at: 2026-11-14
+verified_at: 2026-11-16
 category: "AI엔지니어링(AIEngineering)"
 aliases: ["SAP SLT 큐와 OData 구독 계약"]
 ---
@@ -10,7 +10,7 @@ aliases: ["SAP SLT 큐와 OData 구독 계약"]
 
 ## 복제와 소비 상태
 
-SLT는 원본 ERP의 데이터베이스 트리거로 변경을 Operational Delta Queue에 복제하고 Foundry가 이를 소비하는 경로다. 최초 전체 적재, 이후 변경 polling, SLT 자체의 큐 보존을 구분한다. source의 RFC remote context는 SLT와 원본 ERP 사이 연결의 식별자다. 소스 설정 값의 `SLT~<Alias_Name>` 형식과, 아래 표의 OData 미적용이 이 소스 설정 값에도 해당하는지 문서에 명시되지 않은 점은 [[Palantir-SAP-SLT-Connector#Remote context 값|SAP SLT 커넥터의 Remote context 절]]을 따른다.
+SLT는 원본 ERP의 데이터베이스 트리거로 변경을 Operational Delta Queue에 복제하고 Foundry가 이를 소비하는 경로다. 최초 전체 적재, 이후 변경 polling, SLT 자체의 큐 보존을 구분한다. source의 RFC remote context는 SLT와 원본 ERP 사이 연결의 식별자다. 소스 설정 값의 `SLT~<Alias_Name>` 형식은 [[Palantir-SAP-SLT-Connector#Remote context 값|SAP SLT 커넥터의 Remote context 절]]을 따른다. 2026-11-16 확인한 OData 전환 가이드 기준으로 SAP SLT source의 OData sync도 이 소스 Remote context(SLT queue alias)를 context로 쓰며(Custom source는 아래 배치의 Context와 streaming의 `connectionType.slt.context`), 아래 표의 미적용은 Remote context를 이용한 초기 적재 우회만 뜻한다.
 
 이전 ODP 경로에서는 remote context를 지정한 초기 적재가 SLT 큐를 우회해 RFC로 읽을 수 있으며 parallel paging도 적용된다. 이 두 옵션을 OData에 그대로 옮길 수 없다. 원본과 게이트웨이의 DIA/BG 작업 여유, ODQ와 커넥터 paging 양쪽의 임시 저장공간을 고려한다.
 
@@ -22,7 +22,7 @@ SLT는 원본 ERP의 데이터베이스 트리거로 변경을 Operational Delta
 |---|---|---|
 | 전제 | PALODATA, SAP_BASIS 7.50 SP09 이상 | 이전 ODP/RFC 설정 |
 | 테이블 구독 | 테이블과 SAP 사용자 조합마다 활성 구독 하나 | 여러 구독 가능했던 계약 |
-| Remote context | 적용 안 됨 | 지원 |
+| Remote context 초기 적재 우회 | 적용 안 됨 | 지원 |
 | Parallel paging | 적용 안 됨 | 지원 |
 | 문서의 판단 | 이전 대상 경로 | 2026-10-16 문서는 SAP가 더 이상 허용하지 않는다고 명시, 2026-11-14 문서는 SAP가 접근을 제한하며 보안 패치 적용 뒤 실패한다고 설명 |
 
@@ -41,6 +41,39 @@ Reset queue registration은 현재 sync 자신의 OData 구독만 초기화한�
 OData 구독은 테이블과 source가 인증하는 SAP 사용자 조합마다 하나만 활성이다. 같은 자격증명을 쓰는 두 sync는 filter나 schedule이 달라도 같은 테이블을 OData로 함께 받을 수 없다. 충돌의 흔한 원인으로 문서는 같은 자격증명으로 이미 그 테이블을 받는 다른 SLT 또는 SAP Custom source sync, Foundry에서 지우거나 교체했지만 SAP에 구독이 남은 sync, 같은 테이블과 사용자로 했던 이전 OData 시험을 든다. 오류 메시지에 구독을 가진 sync의 incremental ID, 마지막 실행일과 생성자가 나오므로 소유 sync를 찾는 데 쓴다.
 
 해소 방법은 둘이다. 하나는 소유자와 맞춰 그 sync를 먼저 멈추고 SAP Basis 팀이 `ODQMON`에서 해당 테이블과 사용자의 구독을 종료하는 것이다. 업무 테이블의 데이터는 지워지지 않지만 구독을 잃은 sync는 증분을 이어가지 못하고, 계속 필요하면 새 초기 적재가 필요해 충돌이 되살아난다. 그래서 두 sync가 같은 테이블을 독립적으로 받아야 하면 서로 다른 SAP 사용자로 인증하는 source를 쓰는 것이 다른 방법이다.
+
+## 배치 sync의 OData 전환
+
+2026-11-16 확인한 전환 가이드 기준이다. 실제 SAP 시스템에서 실행해 보지는 않았다.
+
+- 적용 범위: SAP SLT source의 SLT Replication Server 객체 유형(배치와 streaming), SAP Custom source의 SLT 객체 유형 배치 sync, SAP Custom source의 streaming sync만 API 선택 대상이다. SLT source의 Local table sync와 ERP table, InfoProvider, extractor 같은 다른 객체 유형은 이 선택을 쓰지 않는다. 기존 sync는 source와 출력 dataset 또는 stream을 유지한 채 그 자리에서 전환된다.
+- 기본값: SAP SLT source의 새 배치 sync는 add-on이 2.34(SP34)보다 오래됐다고 판단되지 않으면 OData가 기본이다. 가이드는 source를 구분하지 않고 새 stream의 기본값도 같은 조건의 OData로 적는다. 반면 SAP Custom source의 새 배치 sync는 ODP가 기본이라 OData를 직접 골라야 한다. Custom source 배치 sync는 legacy SLT 배치용 OData를 지원하는 커넥터 릴리스가 필요하며 Reset queue registration을 쓸 수 없다.
+- 거래 유형: APPEND는 직전 성공 실행 이후 ODQ에 쌓인 변경을 받아 dataset에 덧붙이고, SNAPSHOT은 실행 결과로 dataset 전체를 바꾼다. 증분 설정을 둔 채 APPEND를 SNAPSHOT으로만 바꾸면 SAP는 여전히 마지막 실행 이후 변경만 보내므로 dataset이 부분 데이터나 빈 상태로 덮일 수 있다. 전체 재적재는 Reset incremental state로 한다.
+- 증분 필드: Custom source의 OData 증분 sync는 Incremental field를 `pointer`로만 둘 수 있다.
+- ODQ 보존: ODQ가 delta 요청을 보존하는 기간(기본 24시간)보다 드물게 실행하면 delta 포인터를 잃어 sync가 실패할 수 있으므로 보존 기간보다 자주 실행되게 schedule한다(SAP Note 2888122).
+
+### 증분 배치 sync의 전환 순서
+
+ODP의 delta 포인터는 OData로 이어지지 않으므로 OData로 한 번 전체 재적재한 뒤 증분으로 돌아간다.
+
+1. SAP Basis 팀과 전환 시간대를 정한다. 재적재는 초기 적재처럼 SLT와 ODQ 자원을 쓴다.
+2. 그 sync가 들어간 schedule을 모두 멈추고 진행 중인 실행이 끝나기를 기다린다.
+3. API version을 OData로 바꾸고 Reset incremental state를 켠다. Foundry가 거래 유형을 SNAPSHOT으로 바꾸고 증분 설정을 잠근다. 구독을 유지하려면 증분 설정이 필요하므로 지우지 않는다. 저장한다.
+4. 같은 테이블과 SAP 사용자로 다른 OData 구독이 있으면 앞의 구독 충돌 절의 방법으로 먼저 해소한다.
+5. 승인이 필요한 환경이면 받은 뒤 수동 실행해 전체 초기 적재로 dataset을 바꾸고, 행 수가 SAP 테이블과 맞는지 filter와 제외한 열을 고려해 확인한다.
+6. Reset incremental state를 끄면 거래 유형이 APPEND로 돌아온다. 확인하고 저장한 뒤 한 번 더 수동 실행해 재적재 이후 변경만 담긴 APPEND인지 본다. 변경이 없으면 빈 transaction이 정상이다.
+7. schedule을 다시 켜고, SAP Basis 팀이 `ODQMON`에서 남은 ODP 구독을 검토한다. 다른 소비자의 구독은 종료하지 않는다.
+
+Reset incremental state를 켠 채 두면 실행마다 SAP 전체 초기 적재가 일어나 dataset을 바꾼다. Max rows per sync(Custom source는 `maxRowsPerSync`)로 초기 적재를 나눴다면 첫 SNAPSHOT 실행이 성공한 직후 Reset incremental state를 끄고 나머지를 APPEND 실행으로 받는다. 켜 둔 채 반복하면 초기 적재가 매번 처음부터 시작해 끝나지 않는다. 행 수 대조는 초기 적재가 다 끝난 뒤 한다. 기존 SNAPSHOT sync는 전제를 확인하고, Custom source면 아래 설정 조건도 맞춘 뒤 API version을 OData로 바꿔 저장한다. 증분 상태 초기화는 필요 없다.
+
+### SAP Custom source의 설정 조건
+
+조건을 어기면 실행이 해당 설정 이름을 담은 오류로 실패한다.
+
+- SLT 객체 유형만 OData를 쓸 수 있고 Context를 지정해야 한다.
+- TSV 직렬화를 쓰는 source는 Advanced 탭에 `useKernelJsonSerialization: true`를 더한다. 페이지의 전송 인코딩만 바뀌고 추출 행은 그대로다.
+- `timestamp`, `resourceCheck`, `debug` 값은 `true`, `false`, `ON`, `OFF` 중 하나여야 한다.
+- `filter`, `incrementalType`, `initialIncrementalValue`, `twinTable`, `twinMap`, `twinJoinConfigItems`, `incrementalSubTypes`, `incrementalComparator`, `trace`, `continuousResourceCheck`는 값이 비어 있어도 sync YAML에서 지운다. BEx, function, TSV 전용처럼 다른 객체 유형의 설정도 지운다. `filter`를 지우면 추출 행이 바뀌므로 OData가 지원하는 같은 의미의 filter를 찾기 전에는 전환하지 않는다. Parallel paging threads는 무시된다.
 
 ## 기존 stream의 ODP에서 OData 전환
 

@@ -1,7 +1,7 @@
 ---
 tags: [ai, mathematics, research, formal-verification, learning]
 status: done
-verified_at: 2026-11-03
+verified_at: 2026-11-16
 category: "AI엔지니어링(AIEngineering)"
 aliases: ["AI-Assisted Mathematical Research", "AI 보조 수학 연구"]
 ---
@@ -37,6 +37,19 @@ Lean은 프로그래밍 언어이면서 증명 보조기다. 증명 생성 과�
 5. 코드, 의존성 버전, 명제, 검사 명령과 실제 결과를 함께 남긴다. 도구가 검사했다고 말한 것과 실행 기록을 구분한다.
 
 이 항목은 공식 검증 절차에서 뽑은 점검 틀이다. 이 문서에서 실제 Lean 증명을 빌드하거나 안전성을 검증한 것은 아니다. 커널 검사도 공리 체계의 무모순성, 구현 전체의 무결성과 현실 적용의 정확성을 동시에 보증하지 않는다.
+
+### 사례: ETH 반증 주장과 Lean 형식화
+
+지수 시간 가설(Exponential Time Hypothesis, ETH)은 변수 n개의 3-SAT을 어떤 상수 δ > 0에 대해 2^(δn)보다 빠르게 풀 수 없다는 가설이다. 모든 δ > 0에 대해 2^(δn) 시간 알고리즘이 있으면 반증되며, 2^o(n) 시간 알고리즘 하나는 그 충분조건이다(표준 정의, 원논문 미대조).
+
+2026-11-16 두 공개 저장소를 대조했다. OpenAI의 `openai/math` 변경 기록은 2026-10-26 항목에 원고 「The Exponential Time Hypothesis is False」를 Lean 형식화와 함께 추가했다고 적는다. 고정 폭 CNF의 만족 할당 수를 결정적으로, 부분지수 시간과 다항 공간에 정확히 세는 알고리즘이며 3-SAT의 경우가 ETH를 반증한다는 주장이다. Russell Impagliazzo, Ramamohan Paturi, Ryan Williams가 이끄는 독립 그룹이 증명을 검토하고 설명할 예정이며, 그 그룹의 요청으로 자료를 즉시 공개했다고 밝힌다. Anthropic의 `anthropics/formal-math` 저장소 `eth` 폴더는 「A 2^o(n) Time Algorithm for 3-SAT」를 내부 연구용 Claude 모델이 발견했다고 밝히고, #3-SAT을 2^O(n log log n / √log n) 시간에 세는 결정적 알고리즘을 Mathlib의 튜링 기계 위에서 형식화했다고 적는다. 두 저장소는 서로를 언급하지 않아 같은 결과인지는 확인하지 못했다.
+
+앞 절의 점검 틀을 이 사례에 대 보면 다음과 같다.
+
+- 명제 대조: Anthropic README는 Lean이 증명을 검사하지만 진술 파일이 논문의 진술과 같은지는 기계가 검사하지 않는다고 밝히고, 진술 파일을 짧게 두고 논문 부록에 차이를 나열했다. 사람이 읽어 확인할 부분이 남는다.
+- 공리와 재검사: 주요 정리 두 개가 Lean 표준 공리 `propext`, `Classical.choice`, `Quot.sound`에만 의존한다고 제시하고, 빌드의 `sorry` 경고 두 개는 진술만 담은 `Challenge.lean`에서 나온다고 설명한다. Comparator로 진술을 대조하고 독립 구현한 두 번째 커널 `nanoda`로 다시 검사하는 절차를 둔다.
+- 검토 상태: 두 저장소 모두 동료 심사 완료를 밝히지 않는다. 같은 `openai/math` 기록은 2026-10-07에 부호 오류로 다른 원고 세 편을 철회한 이력도 남겼다. 형식 증명이 있어도 공동체 검토 전에는 주장 상태로 둔다.
+- 의미의 범위: Anthropic README는 결과가 순수하게 점근적이며 실제 공식을 푸는 속도에 관해 말하지 않는다고 적는다. 위 #3-SAT 시간 상한도 n의 다항식보다 빠르게 커지므로 이 결과가 맞더라도 3-SAT의 다항 시간 해법, 즉 P와 NP 문제의 해결을 뜻하지 않으며 두 저장소도 그런 주장을 하지 않는다.
 
 ## 검증이 싸고 실패 비용이 낮은 환경부터
 
@@ -78,6 +91,8 @@ EBS 14강의 인지적 풍요와 인지적 비만은 값싼 답이 많아져도 
 - [EBS, 테렌스 타오, 새로운 지식의 탄생](https://www.ebssw.kr/edc/cultursens/cultursensMvpView.do?alctcrSn=59337&cntntsSn=33493&stepSn=58322&lctreSn=1879185&pageIndex=1) — 넥스트 비전 13강, 2026-11-03 전체 음성 전사 확인. 연구 경험과 전망의 귀속 유지
 - [EBS, 테렌스 타오, 스스로 생각하는 힘](https://www.ebssw.kr/edc/cultursens/cultursensMvpView.do?alctcrSn=59337&cntntsSn=33495&stepSn=58322&lctreSn=1879196&pageIndex=1) — 넥스트 비전 14강, 2026-11-03 전체 음성 전사 확인. 말미 다음 강연 예고 제외
 - [Lean Language Reference, Validating a Lean Proof](https://lean-lang.org/doc/reference/latest/ValidatingProofs/) — 2026-11-03 형식 명제의 의미, 공리 검사와 신뢰 수준별 검증 절차 대조. 실제 빌드 미실행
+- [openai/math history.md — GitHub, OpenAI](https://github.com/openai/math/blob/main/history.md) — 2026-10-26 항목, 2026-11-16 주장 범위, 검토 그룹과 철회 이력 대조. 원고와 Lean 코드는 읽지 않음
+- [formal-math eth README — GitHub, Anthropic](https://github.com/anthropics/formal-math/blob/main/eth/README.md) — 2026-11-16 정리 진술, 의존 공리와 검사 절차 설명 대조. 빌드는 실행하지 않음
 - [Mathematics in the age of AI — Terence Tao](https://arxiv.org/abs/2608.16753) — 2026-08 에세이. 2026-11-03 초록과 문제 설정 대조. 능력의 도래를 가정한 공동체의 목표 논의이며 보편적인 능력 입증이 아님
 
 ## 관련 문서

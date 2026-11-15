@@ -15,7 +15,7 @@ SAP SLT는 SAP ERP의 일반 batch sync와 달리 변경 queue를 stream으로 �
 
 커넥터 문서는 이 값이 SLT Replication Server와 원본 ERP 사이의 RFC 연결을 식별한다고 설명한다. 가이드에서 원본 RFC 연결은 같은 SLT 구성의 Source System 절에서 고르므로 alias가 구성을 거쳐 그 연결을 가리킨다고 읽을 수 있지만, 문서가 직접 설명하지는 않는다. 권장 경로인 Post-Installation Wizard의 입력에는 Queue Alias 항목이 없고 `Context Name`을 고유한 구성 이름으로 설명하므로, 이 이름이 alias에 해당하는지는 LTRC의 실제 구성으로 확인한다(운영 제안).
 
-배치 sync 고급 설정의 Remote context 항목은 값이 있으면 초기 적재가 SLT 큐를 우회해 RFC로 읽게 하며 OData sync에는 적용되지 않는다. API 비교표도 OData가 remote context를 포함하지 않는다고 적는다. 문서는 일부 고급 설정을 소스 수준에서도 정할 수 있다고만 적고, 가이드는 alias를 sync 정의에 쓴다고 하는 반면 커넥터 문서는 소스 설정에 둔다. 커넥터 문서의 Setup은 OData 예외 없이 이 값을 요구한다. 다만 표의 OData 미포함과 고급 설정의 OData 미적용이 이 소스 설정 값에도 해당하는지, 두 항목이 같은 설정인지는 명시하지 않는다.
+배치 sync 고급 설정의 Remote context 항목은 값이 있으면 초기 적재가 SLT 큐를 우회해 RFC로 읽게 하며 OData sync에는 적용되지 않는다. API 비교표도 OData가 remote context를 포함하지 않는다고 적는다. 문서는 일부 고급 설정을 소스 수준에서도 정할 수 있다고만 적고, 가이드는 alias를 sync 정의에 쓴다고 하는 반면 커넥터 문서는 소스 설정에 둔다. 커넥터 문서의 Setup은 OData 예외 없이 이 값을 요구한다. 2026-11-16 확인한 OData 전환 가이드는 이를 정리한다. SLT source의 새 OData 배치 sync는 context를 소스의 Remote context 설정에서 가져오고, streaming sync의 SLT context도 소스의 Remote context(`SLT~<Alias_Name>`)이며 전환으로 바뀌지 않는다. Remote context와 관련해 OData가 쓰지 않는 것은 이를 이용한 초기 적재 우회뿐이다(parallel paging도 별도로 쓰지 않는다).
 
 ## OData와 legacy ODP
 
