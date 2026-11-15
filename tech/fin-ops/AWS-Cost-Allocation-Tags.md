@@ -26,6 +26,17 @@ aliases: ["AWS 비용 할당 태그", "AWS Cost Allocation Tags"]
 
 태그를 늘리기 전에 키별 책임자와 허용값을 정한다. 리소스 이름에서 팀을 추정해야 한다면 확정된 명명 규칙과 예외 목록을 먼저 확인한다. 모호한 값은 자동으로 덮어쓰지 않고 미분류로 남기는 편이 비용 귀속 오류를 줄인다.
 
+### EC2 태그의 기본 규칙
+
+2026-11-15 Amazon EC2와 EC2 Auto Scaling 사용 설명서, EC2 API Reference 대조 기준이다.
+
+- 태그는 키와 선택적 값으로 이뤄진 문자열 라벨이다. EC2 서비스에는 아무 의미가 없다. 콘솔의 인스턴스 이름도 키가 `Name`인 태그일 뿐이며, 콘솔은 이 태그로 리소스를 정리해 보여 줄 수 있다. AWS 문서는 목적, 소유자, 환경 같은 기준으로 리소스를 분류하는 예를 든다. 이름과 함께 소유자와 목적을 태그로 남기면 여러 사람이 쓰는 계정에서 누가 왜 만든 리소스인지 추적할 수 있다. 키의 대소문자 표기는 위 표처럼 한 가지로 정한다
+- 리소스당 태그는 50개까지다. 키는 UTF-8 기준 128자, 값은 256자까지이며 키와 값 모두 대소문자를 구분한다. 같은 키로 다시 붙이면 값을 덮어쓴다. `aws:` 접두사는 AWS 예약이라 사용자가 고치거나 지울 수 없고 50개 한도에도 세지 않는다. EC2는 어떤 문자든 허용하지만 다른 서비스와 함께 쓸 태그의 키와 값은 영문자, 숫자, 공백과 `+ - = . _ : / @`로 제한한다
+- 인스턴스 시작 마법사에서는 태그마다 인스턴스, 볼륨, 네트워크 인터페이스 중 붙일 리소스 종류를 고른다. Spot 요청에 붙인 태그는 그 요청으로 시작한 인스턴스와 볼륨에 자동으로 붙지 않는다. `RunInstances`도 리소스 종류별로 태그를 받는다. Auto Scaling은 그룹 태그를 EBS 볼륨에 전파하지 않고 launch template에 볼륨 태그를 지정하라고 안내하므로, 인스턴스 태그가 볼륨으로 자동 복사된다고 가정하지 않고 비용을 나눌 리소스 종류마다 지정한다
+- 콘솔은 대부분 리소스를 만든 직후에 태그를 붙인다. 생성 시점에 태그를 함께 붙이려면 AWS CLI의 `--tag-specifications`(API의 `TagSpecification`)를 쓰며, 이때 태그를 붙이지 못하면 리소스 생성도 되돌린다. 태그 없는 생성을 막는 것은 별개로, 생성 액션에 IAM 조건 `aws:RequestTag`나 `ForAnyValue`를 붙인 `aws:TagKeys`를 건다
+- 태그는 IAM의 `aws:ResourceTag` 조건으로 접근 제어에도 쓰인다. 이때 태그를 붙이고 지우는 권한도 함께 제한하지 않으면 사용자가 태그를 바꿔 제한을 우회할 수 있다([[IAM-Policy|IAM 정책]]). 태그는 `DescribeTags`를 막아도 여러 API 응답에 노출되므로 민감한 정보를 넣지 않는다. 위 표에서 개인 이름 대신 팀을 쓰는 기준은 노출 관점에서도 맞는다
+- 인스턴스 안에서 태그를 읽으려면 메타데이터 옵션 `InstanceMetadataTags=enabled`를 따로 켠다([[EC2-Network-Access|IMDS]]). 기본값은 꺼짐이다. 켜면 그 인스턴스의 태그 키 자체가 영문자, 숫자와 `+ - = . , _ : @`만 쓸 수 있고 `.`, `..`, `_index`만으로 이뤄질 수 없으며, 어기면 새 인스턴스는 시작에 실패하고 기존 인스턴스는 오류가 난다. 공백이나 `/`가 든 비용 태그 키를 쓰는 계정에서는 켜기 전에 확인한다
+
 ## 자동화에서 놓치기 쉬운 범위
 
 - Resource Groups Tagging API의 `GetResources`는 현재 태그가 있거나 과거에 태그가 있었던 리소스를 조회한다. `TagFilters`가 없으면 태그를 제거한 리소스도 빈 `Tags` 목록으로 반환될 수 있지만, 태그를 붙인 적 없는 리소스까지 전수 발견하지는 못한다. 미태깅 자산 탐색에는 AWS Resource Explorer의 `tag:none` 검색을 함께 검토한다.
@@ -107,6 +118,16 @@ Cost Categories는 계정, 서비스, 태그 등의 규칙으로 비용을 묶�
 - [AWS 공식 문서, Building a cost allocation strategy](https://docs.aws.amazon.com/whitepapers/latest/tagging-best-practices/building-a-cost-allocation-strategy.html) — 비용 측정 범위와 태깅할 수 없는 비용의 처리, 과거 태그 적용은 위 backfill 절의 별도 문서를 따른다
 - [AWS Billing, Activating user-defined cost allocation tags](https://docs.aws.amazon.com/awsaccountbilling/latest/aboutv2/activating-tags.html)
 - [AWS Resource Groups Tagging API, GetResources](https://docs.aws.amazon.com/resourcegroupstagging/latest/APIReference/API_GetResources.html)
+- [Amazon EC2, Tag your Amazon EC2 resources](https://docs.aws.amazon.com/AWSEC2/latest/UserGuide/Using_Tags.html)
+- [Amazon EC2, Reference for Amazon EC2 instance configuration parameters](https://docs.aws.amazon.com/AWSEC2/latest/UserGuide/ec2-instance-launch-parameters.html)
+- [Amazon EC2, View tags for your EC2 instances using instance metadata](https://docs.aws.amazon.com/AWSEC2/latest/UserGuide/work-with-tags-in-IMDS.html)
+- [Amazon EC2, Identity-based policies for Amazon EC2](https://docs.aws.amazon.com/AWSEC2/latest/UserGuide/iam-policies-for-amazon-ec2.html#control-access-with-tags)
+- [Amazon EC2, Add and remove tags for Amazon EC2 resources](https://docs.aws.amazon.com/AWSEC2/latest/UserGuide/Using_Tags_Console.html#create-tag-examples)
+- [Amazon EC2, Tag Spot Instance requests](https://docs.aws.amazon.com/AWSEC2/latest/UserGuide/concepts-spot-instances-request-tags.html)
+- [Amazon EC2 API Reference, RunInstances](https://docs.aws.amazon.com/AWSEC2/latest/APIReference/API_RunInstances.html)
+- [Amazon EC2, Grant permission to tag Amazon EC2 resources during creation](https://docs.aws.amazon.com/AWSEC2/latest/UserGuide/supported-iam-actions-tagging.html)
+- [Amazon EC2 Auto Scaling, Tag Auto Scaling groups and instances](https://docs.aws.amazon.com/autoscaling/ec2/userguide/ec2-auto-scaling-tagging.html)
+- [EC2 태그로 주인과 목적을 기록 — 데브아트 DevArt](https://www.youtube.com/watch?v=VaXpQS12VJE)
 - [Amazon EKS, Organize Amazon EKS resources with tags](https://docs.aws.amazon.com/eks/latest/userguide/eks-using-tags.html)
 - [AWS Billing, Backfill cost allocation tags](https://docs.aws.amazon.com/awsaccountbilling/latest/aboutv2/cost-allocation-backfill.html)
 - [AWS Billing, Creating cost categories](https://docs.aws.amazon.com/awsaccountbilling/latest/aboutv2/create-cost-categories.html)

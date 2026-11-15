@@ -67,7 +67,17 @@ Redis의 단일 스레드 명령 처리 모델(→ [[Redis-Architecture]])은 �
 ## 지원 정책
 
 - 각 minor 버전은 첫 릴리스부터 3년간 버그와 보안 패치를 받고, 각 major의 마지막 minor는 5년간 확장 보안 지원을 받는다
-- 2026-09-30 기준 최신 안정 버전은 9.1.2(2026-08-31)이고 9.2.0-rc1(2026-09-16)이 나와 있다. major 업그레이드는 명령 동작과 기본 설정값을 바꿀 수 있으므로 릴리스 노트를 읽고 replica부터 올린다
+- 2026-11-15 GitHub releases 기준 최신 안정 버전은 9.1.3(2026-10-26)이고, 9.2.0은 rc2(2026-11-04)까지만 나와 GA가 아니다. major 업그레이드는 명령 동작과 기본 설정값을 바꿀 수 있으므로 릴리스 노트를 읽고 replica부터 올린다
+
+### 보안 릴리스는 쓰던 계열의 patch로 올린다
+
+부분 검증(2026-11-15): Valkey 9.1.3, 9.0.7 릴리스 노트와 GitHub 보안 권고 GHSA-f4q9-j22m-xqq9를 대조했다. 기존 엔진 버전, 패키지와 가격은 재검증하지 않아 `verified_at`은 유지한다.
+
+- 릴리스 노트는 첫머리에 업그레이드 긴급도를 적는다(9.2.0-rc2는 LOW). 9.1.3과 9.0.7(둘 다 2026-10-26)은 SECURITY 등급이고, 보안 수정을 가능한 한 빨리 적용하라고 권한다. 고친 보안 결함은 같고 일반 버그 수정 목록은 계열마다 다르다
+- 이 결함은 cluster 모드의 Pub/Sub 메시지를 만들 때 길이를 `size_t`에서 `uint32_t`로 잘라 생기는 힙 버퍼 오버플로다. 채널과 메시지의 합이 `UINT32_MAX`(약 4GiB)를 넘어야 하며, 기본 `proto-max-bulk-len`(512MB)이 클라이언트의 직접 전송을 막아도 스크립트로 서버 안에서 값을 만들 수 있다. 권고의 심각도는 High(CVSS 3.1 8.8)이고, 2026-11-15 기준 권고에 CVE ID는 배정되지 않았다
+- 공격 주체는 cluster 모드 서버의 채널에 publish할 수 있는 인증된 사용자다. cluster 모드가 아닌 서버는 영향이 없다. 프로세스 crash는 확실하고 원격 코드 실행은 가능성으로 적혀 있다. 인증이 필요하다는 조건은 대상을 줄일 뿐 패치를 미룰 근거가 아니다(해석). publish 권한과 스크립트 실행 권한을 가진 앱 계정 하나가 탈취돼도 조건을 채우고, ACL이나 비밀번호 없이 기본 사용자로 접속을 받는 서버라면 접속할 수 있는 모든 클라이언트가 인증된 사용자로 다뤄진다
+- 수정 버전은 9.1.3, 9.0.7, 8.1.11, 8.0.12, 7.2.15, 9.2.0-rc2다. 이 권고는 지원 중인 이전 계열에도 수정을 backport했으므로 major나 minor를 바꾸지 않고 쓰던 계열의 patch 버전으로 올린다. 바로 올릴 수 없고 앱이 스크립트와 함수를 쓰지 않는다면 권고대로 ACL로 `EVAL`, `EVALSHA`, `EVAL_RO`, `EVALSHA_RO`, `FCALL`, `FCALL_RO`, `FUNCTION`을 막고 `proto-max-bulk-len`을 기본값보다 올리지 않는다
+- 같은 릴리스의 일반 수정 중 데이터 정합성과 관련된 항목은 업그레이드 뒤 확인한다. 9.1.3과 9.0.7 모두 만료됐다고 판단한 해시 필드를 `HDEL` 등이 전파해 replica와 AOF 재로딩 결과가 primary와 어긋나던 문제, 원자적 슬롯 마이그레이션의 import 대상이 eviction을 replica에 복제하지 않아 replica가 `maxmemory`를 크게 넘던 문제, `cluster-databases`가 1보다 클 때 원자적 슬롯 마이그레이션이 스냅샷 중의 쓰기를 대상의 다른 DB에 적용하던 문제를 고쳤다. Stream 소비 상태를 바꾸는 `XGROUP`, `XSETID`, `XREADGROUP`, `XACK`, `XCLAIM`, `XAUTOCLAIM`도 이제 `WATCH`와 client-side tracking 무효화를 일으킨다
 
 ## 비용 — ElastiCache
 
@@ -135,6 +145,7 @@ ElastiCache 인플레이스 업그레이드는 새 노드를 붙여 데이터를
 - [Valkey 공식 문서, Migration from Redis to Valkey](https://valkey.io/topics/migration/)
 - [Valkey 공식 문서, Releases and versioning schema](https://valkey.io/topics/releases/)
 - [Valkey 공식 문서, INFO](https://valkey.io/commands/info/)
+- [Valkey 공식 문서, ACL](https://valkey.io/topics/acl/)
 - [Valkey 공식 문서, Lua API reference](https://valkey.io/topics/lua-api/)
 - [Redis 공식 문서, Redis licensing overview](https://redis.io/legal/licenses/)
 - [Redis Adopts Dual Source-Available Licensing — Redis](https://redis.io/blog/redis-adopts-dual-source-available-licensing/)
@@ -145,6 +156,9 @@ ElastiCache 인플레이스 업그레이드는 새 노드를 붙여 데이터를
 - [Valkey 8.1: Continuing to Deliver Enhanced Performance and Reliability — Valkey Blog](https://valkey.io/blog/valkey-8-1-0-ga/)
 - [Valkey 9.1 delivers improvements in security, performance, and more — Valkey Blog](https://valkey.io/blog/valkey-9-1-delivers-improvements-in-security-performance-and-more/)
 - [Valkey releases와 release notes — valkey-io/valkey](https://github.com/valkey-io/valkey/releases)
+- [Valkey 9.1.3 release notes — valkey-io/valkey](https://github.com/valkey-io/valkey/releases/tag/9.1.3)
+- [Valkey 9.0.7 release notes — valkey-io/valkey](https://github.com/valkey-io/valkey/releases/tag/9.0.7)
+- [Integer truncation in Valkey cluster publish message construction causes a heap buffer overflow — valkey-io/valkey, GHSA-f4q9-j22m-xqq9](https://github.com/valkey-io/valkey/security/advisories/GHSA-f4q9-j22m-xqq9)
 - [valkey.conf 9.1 — valkey-io/valkey](https://github.com/valkey-io/valkey/blob/9.1/valkey.conf)
 - [redis.conf 8.4 — redis/redis](https://github.com/redis/redis/blob/8.4/redis.conf)
 - [Ubuntu Packages, valkey 패키지 검색](https://packages.ubuntu.com/search?keywords=valkey&searchon=names&suite=all&section=all)

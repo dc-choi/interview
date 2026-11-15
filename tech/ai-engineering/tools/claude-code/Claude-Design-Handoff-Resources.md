@@ -3,7 +3,7 @@ tags: [ai, design, frontend, claude-code, skills, shadcn, license, design-system
 status: done
 verified_at: 2026-10-12
 category: "AI엔지니어링(AIEngineering)"
-aliases: ["Generative UI Resources", "생성 UI 외부 자원 출처 확인", "Taste Skill", "Hallmark", "oh-my-design", "AnimateIcons", "Tween UI", "Minimal Gallery", "React Frontend Skills", "Colorion Text Effects", "design-agent-skills", "Glimpse", "MiniDev UI", "Kibo UI"]
+aliases: ["Generative UI Resources", "생성 UI 외부 자원 출처 확인", "Taste Skill", "Hallmark", "oh-my-design", "AnimateIcons", "Tween UI", "Minimal Gallery", "React Frontend Skills", "Colorion Text Effects", "design-agent-skills", "Glimpse", "MiniDev UI", "Kibo UI", "Interfaces skills", "jakub.kr skills"]
 ---
 
 # 생성 UI를 다듬는 외부 자원과 납품 전 출처 확인
@@ -12,9 +12,10 @@ aliases: ["Generative UI Resources", "생성 UI 외부 자원 출처 확인", "T
 
 ## 범주별 역할과 라이선스
 
-지침 스킬, 코드 작성 스킬, 컴포넌트, 아이콘, 레퍼런스 갤러리와 디자인 시스템 카탈로그는 다듬는 대상이 다르고 출처와 라이선스를 남기는 방법도 다르다. 아래 개수와 라이선스는 2026-10-12에 각 공식 사이트, 저장소와 LICENSE 원문을 대조한 기준이며 바뀔 수 있다. 2026-10-21과 2026-10-26에 확인한 컴포넌트와 글꼴, 스킬 카탈로그, 글자 효과와 시각 캔버스, 2026-11-08에 확인한 Taste Skill 2.5와 Hallmark는 아래 별도 절에 있다.
+지침 스킬, 코드 작성 스킬, 컴포넌트, 아이콘, 레퍼런스 갤러리와 디자인 시스템 카탈로그는 다듬는 대상이 다르고 출처와 라이선스를 남기는 방법도 다르다. 아래 개수와 라이선스는 2026-10-12에 각 공식 사이트, 저장소와 LICENSE 원문을 대조한 기준이며 바뀔 수 있다. 2026-10-21과 2026-10-26에 확인한 컴포넌트와 글꼴, 스킬 카탈로그, 글자 효과와 시각 캔버스, 2026-11-08에 확인한 Taste Skill 2.5와 Hallmark는 아래 별도 절에 있고, 검토와 개선 스킬 항목은 2026-11-15 기준이다.
 
 - **지침 스킬:** Taste Skill(MIT)과 Hallmark(MIT)는 방향을 먼저 배정하고 브라우저로 검사하는 지침 스킬이며, 2026-11-08 확인한 절차, 설치와 외부 요청은 아래 별도 절에 있다. Taste Skill의 2026-11-08 README도 저장소에 `design-taste-frontend` 하나를 두고, 기존 스킬은 taste-skill-classics와 imagegen-skills 같은 별도 저장소로 옮겼다고 밝힌다. 2026-10-23과 2026-11-08 README 모두 기존 `redesign-existing-projects`를 바꾸기 전에 실제 브라우저에서 기존 페이지를 점검하는 기본 스킬의 일부로 적는다. 2026-10-12에 확인한 13개 스킬 묶음, 세 다이얼과 출력 전 체크리스트만으로 현재 판을 설명하지 않는다. 설치 전 확인은 [[Agent-Skills#설치 경로와 신뢰 — 표면마다 따로, 출처는 먼저|스킬 설치의 신뢰 경계]]를 따른다.
+- **검토와 개선 스킬:** 방향을 배정하는 대신 이미 만든 화면을 검토하고 고치는 묶음도 있다. Jakub Krehel의 skills 저장소(MIT)는 2026-11-15 README 기준 접근성(WCAG 2.2), 레이아웃, 문구, 타이포그래피, 색, 표면과 모션을 각각 다루는 `better-*` 스킬과 이를 한 번에 돌려 순위를 매긴 보고서 하나로 묶는 `better-interface`를 둔다. 사용자가 부르는 스킬은 브랜치, PR이나 미커밋 변경의 인터페이스 회귀를 보는 `interface-review`, 컴포넌트의 모든 상태를 mock 데이터와 전환 스위치가 있는 임시 페이지에 그리는 `state-machine`, 여러 시안을 만들어 고르게 하는 `variant`, 모든 시나리오로 컴포넌트를 시험하는 `break`, 라이브 URL이나 스크린샷으로 구현 방식을 설명하는 `explain-interface`, 사용자가 없는 동안 몇 시간씩 돌며 개선안을 `afk/<날짜>` 로컬 브랜치에 구현해 커밋하고, `.git/info/exclude`에 등록한 `.afk/<날짜>.md` 실행 노트를 바탕으로 마지막 메시지에 보고서를 쓰는 `afk` 등이다. Figma 파일이나 디자인 이미지로 UI를 만드는 `build-design`도 있다. `teardown`은 2026-11-12 커밋으로 제거됐고, 같은 날 README에서 Claude Code 플러그인 설치 절도 빠져 `.claude-plugin/`의 plugin.json(이름 interfaces, 1.20.0)과 marketplace.json만 남았다. README의 설치 경로는 `npx skills add jakubkrehel/skills`이고, 이전의 가벼운 단일 스킬 make-interfaces-feel-better는 별도 저장소로 따로 설치한다. 두 매니페스트에는 훅과 MCP 선언이 없고 `afk`, `state-machine`, `break`의 SKILL.md frontmatter에도 훅이 없지만, 나머지 스킬 폴더의 훅과 스크립트는 확인하지 않았다. `state-machine`과 `break`의 임시 페이지는 사용자가 지우라고 할 때까지 앱 안에 남으므로, 이런 스킬과 `afk`는 작업 브랜치와 정리 범위를 먼저 정한다(적용 제안).
 - **코드 작성 스킬:** 시각 지침이 아니라 코드 작성 지침을 담은 묶음도 있다. React Frontend Skills(MIT)는 React, Next.js, TypeScript, Tailwind, shadcn, TanStack Query, Zod, Vitest, Playwright 등 18개 스킬을 React 19.3 기준으로 묶고, 프로젝트가 다른 버전을 고정했으면 그 버전의 공식 문서를 따르라고 적는다. Claude Code 전용이 아니라 Codex와 Cursor 같은 여러 에이전트를 대상으로 하며, skills CLI의 `-s` 옵션으로 필요한 스킬만 골라 설치할 수 있다. 스킬 파일은 Markdown뿐이고 훅과 스크립트는 없다. 다만 react, nextjs 같은 스킬 본문이 `npx -y @pymodel/react-frontend-skills detect` 같은 동반 CLI 실행을 지시하고 MCP 서버 안내도 `npx -y`를 써서, 원격 패키지를 확인 없이 실행하게 된다. `web-design-guidelines` 스킬은 리뷰마다 커밋으로 고정한 외부 지침을 내려받는다.
 - **컴포넌트:** Colorlib의 Velora UI는 React, Tailwind CSS 4와 shadcn/ui용 애니메이션 컴포넌트 100개와 블록 31개를 MIT로 공개한다. README 기준 100개 중 51개는 런타임 의존성이 없고 나머지는 Motion만 쓴다. 출시 예정인 유료 Pro 등급은 가격표에 MIT가 아닌 Commercial로 표시되므로 어느 등급에서 받은 항목인지 함께 기록한다. Tween UI(StaticMania, MIT)는 GSAP과 CSS로 움직이는 React 19, Tailwind v4용 컴포넌트 23개와 블록 33개를 패키지 없이 shadcn 레지스트리로 배포하며(README는 아직 16개, 20개로 적는다), 항목에 따라 gsap, @gsap/react, swiper 같은 의존성이 함께 들어온다. SHIUI는 React 요소 112개와 Astro 블록 24개를 소스 복사 방식으로 제공한다. 블록은 Astro라 React 프로젝트에 바로 넣을 수 없다. SHIUI는 README와 package.json에 ISC를 선언했지만 저장소에 LICENSE 파일이 없고 두 파일에 저작권자 표기도 없다.
 - **아이콘:** heroicons-animated는 Tailwind Labs의 Heroicons를 Motion으로 움직이게 만든 개인 프로젝트(Aniket Pawar, MIT)로 316개를 표시한다. 이 저장소의 LICENSE에는 Aniket Pawar의 저작권 고지만 있으므로 원본 Heroicons LICENSE의 고지(Copyright (c) Tailwind Labs, Inc.)도 함께 보존하는 편이 안전하다. 2026-10-12 확인한 이전 Taste Skill 기본 스킬은 아이콘 허용 목록을 Phosphor, HugeIcons, Radix, Tabler로 두고 프로젝트마다 한 계열만 쓰라고 지시하므로, Heroicons 계열을 쓸 프로젝트라면 그 선택을 프로젝트 지침에 적어 둔다. 당시 같은 저장소의 redesign 스킬은 Phosphor, Heroicons나 자체 세트를 권해 두 스킬의 지시가 다르다. AnimateIcons(Avijit Dey, MIT)는 Lucide 스타일 669개와 Hugeicons 스타일 501개, 모두 1170개의 움직이는 React 아이콘을 npm 패키지(`@animateicons/react`), shadcn 레지스트리와 자체 CLI로 배포한다. 저장소의 THIRD_PARTY_NOTICES는 아이콘 모양이 Lucide(ISC), Feather(MIT), Hugeicons(MIT)에 기반하고 그 라이선스가 아이콘 복제물에 저작권 고지를 남기도록 요구한다고 밝힌다. npm 패키지에는 LICENSE와 THIRD_PARTY_NOTICES가 들어 있지만 shadcn 레지스트리로 받은 소스에는 라이선스 헤더가 없다.
@@ -87,6 +88,10 @@ DESIGN.md를 고를 때는 파일 형식과 작성 주체를 따로 확인한다
 
 - [getdesign.md](https://getdesign.md/) — 2026-11-03 DESIGN.md 카탈로그의 역할과 색, 글꼴, 간격, 컴포넌트 지침 확인.
 - [Design System Analysis: BMW — getdesign.md](https://getdesign.md/bmw/design-md) — 2026-11-03 다운로드 및 설치 안내, 독립 분석과 비제휴 고지 확인. 설치와 PPT 생성은 수행하지 않았다.
+- [jakubkrehel/skills — GitHub](https://github.com/jakubkrehel/skills) — 2026-11-15 README의 스킬 목록과 설치 명령, LICENSE(MIT), `.claude-plugin/plugin.json`, teardown 제거와 README의 플러그인 설치 절 삭제 커밋(2026-11-12), `afk`, `state-machine`, `break`의 SKILL.md
+- [Skills — jakub.kr](https://jakub.kr/skills)
+- [jakubkrehel/make-interfaces-feel-better — GitHub](https://github.com/jakubkrehel/make-interfaces-feel-better)
+- [AI 디자인 엄청 개선해주는 jakub.kr/skills 한번 써보세요 — ZeroCho TV](https://www.youtube.com/watch?v=kDlShJKqMZM) — 2026-11-06 업로드, 사용 소감만 있어 효과 주장의 근거로 사용하지 않음
 - [21st](https://21st.dev/) — 레지스트리와 소스 복사, 프롬프트 전달 방식
 - [affectUI, Introduction](https://www.affectui.com/docs/introduction) — TSX 파일, 컴포넌트 문서와 Free/Pro 접근 범위
 - [affectUI, Using with AI](https://www.affectui.com/docs/ai) — MCP의 검색, 문서 조회와 소스 조회 도구
