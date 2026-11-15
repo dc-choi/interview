@@ -60,6 +60,26 @@ aliases: ["Glue", "AWS Glue", "Glue Data Catalog"]
 
 AI 입력 파이프라인에 적용할 때는 품질 실패 후 색인이나 후속 작업이 실행되지 않는지 확인한다. 실패 결과와 알림을 남기고 복구 뒤 재처리하는 경로는 별도 설계 사항이다. Data Quality 도입만으로 데이터의 의미적 정확성이나 답변의 사실성이 보장되지는 않는다.
 
+### 행 단위 결과로 통과 행과 실패 행을 나눈다
+
+2026-11-15 공식 문서 확인 기준. 작업을 멈추는 대신 실패 행만 따로 보관하려면 변환의 행 단위 출력을 쓴다. Glue Studio의 Evaluate Data Quality 변환에서 `Original data` 출력을 고르면 입력과 같은 스키마의 `rowLevelOutcomes` 노드가 생긴다. 오류 표시 열 추가를 켜면 `DataQualityRulesPass`, `DataQualityRulesFail`, `DataQualityRulesSkip`(규칙 이름 배열)과 행별 `Passed` 또는 `Failed`를 담은 `DataQualityEvaluationResult`가 붙는다. 다른 출력인 `Data quality results`는 규칙별 통과와 실패를 담아 S3 등에 쓰는 용도다.
+
+- `RowCount`, `ColumnCount`, `ColumnExists`, `Mean`, `StandardDeviation`, `AggregateMatch`, `RowCountMatch`처럼 데이터셋 전체를 보는 규칙은 행 단위 평가에서 건너뛴다. `CustomSql`은 집계 형태면 건너뛰지만, Glue ETL에서 주 테이블의 레코드를 반환하는 형태(예: `select id from primary where age < 100`)는 실패 레코드를 식별할 수 있다. 그래서 행이 모두 `Passed`여도 규칙 묶음 전체는 실패할 수 있다.
+- 공식 notebook 예시는 `DataQualityEvaluationResult == "Passed"`로 걸러 통과 행만 S3에 쓴다. 실패 행을 검토용 격리 위치에 쓰고 통과 행은 원래 대상으로 보내는 분기는 이 결과로 만드는 설계다(적용 제안).
+- 결과 지표는 Amazon CloudWatch에 게시할 수 있고 Amazon EventBridge에도 발행된다. 결과 위치에 S3 경로를 지정하면 규칙별 결과가 남는다.
+
+실패 행 분리는 작업 실패 동작과 다른 선택이다. 데이터셋 수준 규칙의 실패는 행 분리로 걸러지지 않으므로, 행 수 급감처럼 전체를 막아야 하는 조건은 실패 동작으로 따로 다룬다.
+
+### 이상 탐지는 점수와 따로 움직인다
+
+2026-11-15 공식 문서 확인 기준. Data Quality의 이상 탐지는 규칙과 analyzer(예: `RowCount`, `AllStatistics "fare_amount"`)가 실행마다 모은 통계를 Glue에 저장하고, 기계학습 모델로 다음 값을 예측해 범위를 벗어나면 Anomaly Observation을 만든다.
+
+- 최소 3개의 데이터 포인트가 쌓여야 탐지한다.
+- 이상이 생겨도 품질 점수는 바뀌지 않는다. 명시적으로 제외하지 않은 이상 값은 이후 예측의 입력으로 쓰이므로 알림과 검토 절차를 함께 둔다.
+- 모드는 추세와 계절성을 반영하는 LINEAR(기본)와 데이터 포인트를 같은 간격으로 보는 FIXED가 있다.
+- 탐지에 걸린 시간 동안 통계마다 1 DPU가 과금되고 통계 저장은 무료다. 계정당 통계는 100,000개까지, 보관은 최대 2년이다.
+
+
 ## 수집 로그를 분석 테이블로 만드는 경계
 
 2026-10-07 공식 문서 확인 기준. Crawler는 저장소의 스키마를 추론해 Data Catalog 메타데이터를 만든다. 실제 데이터의 읽기, 변환과 적재는 ETL 작업이 수행한다. Crawler 실행을 중첩 JSON의 평탄화나 데이터 정제 완료로 취급하지 않는다.
@@ -202,3 +222,6 @@ NAT 추가를 모든 연결 실패의 해결책으로 삼지 않는다. 먼저 �
 - [AWS Glue, Evaluating data quality for ETL jobs in AWS Glue Studio](https://docs.aws.amazon.com/glue/latest/dg/tutorial-data-quality.html)
 - [AWS Glue, Completeness](https://docs.aws.amazon.com/glue/latest/dg/dqdl-rule-types-Completeness.html)
 - [AWS Glue, DataFreshness](https://docs.aws.amazon.com/glue/latest/dg/dqdl-rule-types-DataFreshness.html)
+- [AWS Glue, CustomSql](https://docs.aws.amazon.com/glue/latest/dg/dqdl-rule-types-CustomSql.html)
+- [AWS Glue, Anomaly detection in AWS Glue Data Quality](https://docs.aws.amazon.com/glue/latest/dg/data-quality-anomaly-detection.html)
+- [AWS Glue, Data Quality for ETL jobs in AWS Glue Studio notebooks](https://docs.aws.amazon.com/glue/latest/dg/data-quality-gs-studio-notebooks.html)

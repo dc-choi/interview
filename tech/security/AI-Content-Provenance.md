@@ -1,7 +1,7 @@
 ---
 tags: [security, ai, provenance, watermark, c2pa, biosecurity]
 status: done
-verified_at: 2026-11-09
+verified_at: 2026-11-15
 category: "보안(Security)"
 aliases: ["AI 콘텐츠 출처 증명", "AI Content Provenance", "텍스트 워터마크", "SynthID Bio", "단백질 설계 워터마크", "Provable Inference", "검증 가능한 추론", "FlashProve", "AI 이미지 탐지"]
 ---
@@ -28,6 +28,32 @@ AI 처리 흔적을 판단할 때는 텍스트의 통계적 신호, 파일의 �
 Claude의 공개 설명은 SynthID-Text 계열 방식을 사용한다. 의미상 선택 여지가 있는 단어를 고를 때 키와 앞선 문맥을 이용해 난수 선택을 구성한다. 문장 뒤에 숨은 문자를 덧붙이는 방식이 아니다. 따라서 숨은 문자 제거와 통계적 워터마크 검사는 별개다.
 
 짧은 글이나 정답이 고정된 표현은 검출에 필요한 선택이 적다. 교정한 글은 수정된 단어에만 신호가 생길 수 있다. 검출은 Claude의 관여 가능성을 나타내며, 최초 작성자나 다른 AI의 사용 여부를 확정하지 않는다.
+
+### 단어 선택을 치우치게 하는 두 방식
+
+숨은 문자는 짧은 제거 코드로 쉽게 지울 수 있다. 그래서 통계적 워터마크는 모델이 다음 토큰을 고르는 단계에 앞선 문맥에서 계산한 의사 난수 기준을 섞고, 검출기는 그 선택이 기준을 얼마나 자주 통과했는지 센다. 기준을 만드는 값을 비밀 키로 두면 키가 없는 사람은 검출할 수 없다. green list 논문의 기본 알고리즘은 공개 해시를 쓰는 공개 방식이라 모델 없이 누구나 검출할 수 있고, 비밀 키를 쓰는 private 모드는 선택지로 둔다. SynthID-Text와 Claude는 키를 쓴다.
+
+| 방식 | 생성할 때 | 검출할 때 |
+|---|---|---|
+| green list (Kirchenbauer 외, ICML 2023) | 직전 토큰의 해시로 난수를 씨드해 어휘의 γ 비율을 green list로 고르고, green 토큰의 logit에 δ를 더한다 | green 토큰 수를 one proportion z-test로 검정한다. 논문의 예시는 z > 4를 기준으로 할 때 거짓 양성 확률 3×10⁻⁵다 |
+| SynthID-Text (Google DeepMind) | 키와 앞선 n-gram 문맥으로 계산한 g-function 값을 tournament sampling에 써서 모델이 낸 후보 중 하나를 고른다 | 키로 g 값을 다시 계산한다. Hugging Face Transformers에는 학습이 필요한 Bayesian 검출기가 들어 있다 |
+
+green list 논문의 soft 방식은 green 토큰의 logit에 δ를 더하므로, 엔트로피가 매우 낮아 모델이 한 토큰을 확신하는 자리에서는 영향이 거의 없고 δ를 키울수록 품질 부담이 커진다. SynthID-Text의 tournament sampling이 품질에 주는 영향은 Nature 원 논문으로 확인하지 않았다. 2024-10-23 Hugging Face 글 기준으로 Transformers v4.46.0에 들어갔고, 키는 무작위 정수 20~30개, `ngram_len`은 기본 5(최소 2)를 권한다. 후보 수, tournament의 층 수와 승자 규칙, 대규모 서비스 실험의 규모와 결과는 Nature 원 논문을 열지 못해 확인하지 않았다.
+
+공통 한계는 같다. DeepMind와 Hugging Face 설명은 사실형 응답에서 워터마크가 덜 효과적이고, 글을 철저히 다시 쓰거나 다른 언어로 번역하면 검출 신뢰도가 크게 떨어질 수 있다고 적는다. 일부 잘라내기, 몇 단어 수정과 가벼운 의역은 견딘다고 한다. green list 논문의 기준값과 SynthID의 설정값은 각 방식의 값이며 Claude 검출기의 기준으로 옮기지 않는다.
+
+### Claude 워터마크의 적용 범위 (2026-11-15 확인)
+
+Anthropic 공지(2026-08-14 게시, 2026-09-01 갱신)와 지원 문서를 대조했다. 검출 API는 호출하지 않았다.
+
+- **배경:** EU AI Act가 2026-08-02부터 EU 시장의 AI 제공자에게 AI 생성 콘텐츠 표시를 요구한다는 점을 이유로 든다. 지원 문서는 Article 50(2)의 AI 생성 콘텐츠 투명성 Code of Practice를 명시하고, 공지는 Anthropic이 2026-07에 이 Code에 서명했다고 적는다. 방식은 SynthID-Text의 한 변형이며, 2022년 Scott Aaronson의 제안에서 이어지는 계열이라고 설명한다.
+- **대상 모델:** 2026-08-02 당일이나 그 뒤에 EU에 출시하는 Claude 모델은 출시 때부터 기계 판독 표시를 지원하고, 그 전 모델에는 전환 기간 동안 순차로 추가한다. 지원 문서의 모델별 표에서 모델마다 지원 항목이 다르다. Sonnet 4.6은 temperature, top_p, top_k를 기본값이 아닌 값으로 두면 텍스트 워터마크가 안정적으로 남지 않을 수 있다고 적는다.
+- **지역:** 지역별로 범위를 나눌 지속 가능한 방법이 아직 없어 전 세계에 적용한다.
+- **비용과 개인정보:** 추가 토큰이 들지 않고 가격도 오르지 않는다. 워터마크와 그 키에는 사람, 조직이나 대화를 식별할 정보가 없다고 밝힌다.
+- **글의 종류:** 정확한 출력이 필요한 코드에는 사실상 적용되지 않고 코드 주석에는 남을 수 있다. 번역은 Claude가 모든 단어를 고르므로 워터마크가 남고, 교정은 Claude가 고른 단어가 적어 신호도 적다. 가벼운 편집으로는 아마 다 지워지지 않겠지만 모든 단어를 바꾼 재작성은 지운다고 설명한다.
+- **검출 접근:** 검출 API는 private preview다. 규제기관, 수사기관, 언론, 팩트체커, 독립 연구자, 교육기관과 EU 시민사회 단체에 열려 있다. 워터마크를 확인할 의무가 비슷하게 있는 일부 기업도 자체 출력 확인에 쓸 수 있으며, 접근을 넓혀 갈 계획이라고 적는다. 따라서 일반 사용자가 임의의 글을 직접 판정할 수 있다고 가정하지 않는다.
+
+DeepMind 설명의 번역은 워터마크가 들어간 글을 다른 언어로 옮기는 경우이고, Anthropic 설명의 번역은 Claude가 번역문을 생성하는 경우다. 두 서술은 서로 다른 상황을 말한다(해석).
 
 ## 파일의 출처 정보와 내용의 사실성
 
@@ -93,6 +119,9 @@ Claude의 파일 표시는 지원되는 파일 형식과 제품 기능에 따라
 
 - [How Claude’s text watermark works — Anthropic](https://www.anthropic.com/news/claude-text-watermark)
 - [Anthropic, How Claude marks AI-generated content](https://support.claude.com/en/articles/16266773-how-claude-marks-ai-generated-content)
+- [A Watermark for Large Language Models — arXiv, John Kirchenbauer 외](https://arxiv.org/abs/2301.10226) — ICML 2023, green list와 z-test
+- [Introducing SynthID Text — Hugging Face](https://huggingface.co/blog/synthid-text) — 2024-10-23, Transformers 통합과 설정, 한계
+- [Watermarking AI-generated text and video with SynthID — Google DeepMind](https://deepmind.google/discover/blog/watermarking-ai-generated-text-and-video-with-synthid/) — 2024-05-14, 사실형 응답과 재작성, 번역의 한계
 - [C2PA, Content Credentials Explainer 2.2](https://spec.c2pa.org/specifications/specifications/2.2/explainer/Explainer.html)
 - [OpenAI API, Content provenance](https://developers.openai.com/api/docs/guides/content-provenance) — 2026-10-21 이미지와 오디오 검사 범위, 결과 해석, 텍스트 검증 접근과 업로드 제한
 - [Introducing SynthID Bio — Google DeepMind](https://deepmind.google/blog/introducing-synthid-bio/)
