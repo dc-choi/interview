@@ -2,7 +2,7 @@
 tags: [cs, probability, statistics, bayes, conditional-probability]
 status: done
 category: "CS - 기초"
-aliases: ["조건부확률과 베이즈 정리", "Conditional Probability and Bayes", "기저율과 경보 확률", "조건부 독립", "Conditional Independence"]
+aliases: ["조건부확률과 베이즈 정리", "Conditional Probability and Bayes", "기저율과 경보 확률", "조건부 독립", "Conditional Independence", "베이즈 네트워크", "Bayesian Network", "마르코프 블랭킷", "Markov Blanket"]
 ---
 
 # 조건부확률과 베이즈 정리
@@ -106,12 +106,52 @@ $$
 
 클래스 `Y`가 주어졌을 때 특징 `X₁`, `X₂`가 조건부 독립이라고 가정하면 `P(X₁ ∩ X₂ | Y) = P(X₁ | Y)P(X₂ | Y)`로 곱해 계산을 크게 줄인다. 나이브 베이즈는 클래스가 주어지면 각 특징이 나머지 특징 전체와 조건부 독립이라고 가정해 `P(X₁, …, Xₙ | Y) = ∏ P(Xᵢ | Y)`로 곱하는 분류기다. 특징이 셋 이상이면 쌍마다 조건부 독립인 것만으로는 이 곱셈이 보장되지 않는다. 실제 특징이 같은 클래스 안에서도 서로 연관되어 있으면 곱한 값은 근사다.
 
+## 베이즈 네트워크: 조건부 독립으로 결합분포를 쪼갠다
+
+베이즈 네트워크는 변수를 노드로, 직접 의존을 방향 간선으로 둔 비순환 방향 그래프(DAG)와 노드마다 하나씩 둔 조건부 확률표(CPT) `P(Xᵢ | 부모(Xᵢ))`로 결합분포를 나타낸다. 연쇄 법칙의 각 인수가 부모에만 의존한다고 두면 결합분포는 다음 곱이 된다.
+
+$$
+P(X_1, \dots, X_n) = \prod_{i} P(X_i \mid \mathrm{Pa}(X_i))
+$$
+
+이 인수분해는 국소 마르코프 성질과 짝을 이룬다. 각 변수는 부모가 주어지면 자손이 아닌 나머지 변수들과 조건부 독립이다.
+
+**경우의 수가 줄어드는 정도.** 아래는 비 `R`, 교통체증 `T`, 늦잠 `O`, 지각 `L`, 지각 연락 `C`의 다섯 이진 변수로 만든 **가상 모형**이다. 간선은 `R → T`, `T → L`, `O → L`, `L → C`다.
+
+| 접근 | 필요한 독립 확률값 |
+|---|---:|
+| 결합분포 표 전체 | 2⁵ = 32칸, 합이 1이라 31개 |
+| 네트워크의 CPT | `R` 1 + `T`(부모 `R`) 2 + `O` 1 + `L`(부모 `T`, `O`) 4 + `C`(부모 `L`) 2 = 10개 |
+
+노드마다 필요한 행 수는 부모 값 조합의 수다. 값이 `d`가지이고 부모가 최대 `k`개면 전체 크기는 `O(n × d^(k+1))`로, 부모 수 `k`가 `n`보다 훨씬 작으면 결합분포 표의 `O(dⁿ)`보다 훨씬 작다. 부모가 적을수록 줄어드는 폭이 크다.
+
+**한 경우의 확률은 각 표의 값을 곱한다.** `P(R) = 0.2`, `P(T | R) = 0.8`, `P(O) = 0.1`, `P(L | T, Oᶜ) = 0.5`, `P(C | L) = 0.9`라고 두면(모두 가상 값) 비가 오고 체증이 있고 늦잠은 안 잤으며 지각했고 연락한 경우는 다음과 같다.
+
+$$
+P(R, T, O^c, L, C) = 0.2 \times 0.8 \times 0.9 \times 0.5 \times 0.9 = 0.0648
+$$
+
+`C`의 부모는 `L`뿐이므로 `C`는 `L`이 주어지면 `R`, `T`, `O`와 조건부 독립이고, `C`의 표에는 지각 여부별 두 행만 있으면 된다.
+
+### 마르코프 블랭킷
+
+어떤 변수 `X`의 마르코프 블랭킷은 그 집합이 주어지면 `X`가 나머지 모든 변수와 조건부 독립이 되는 최소 집합이다. 베이즈 네트워크에서는 **부모, 자식, 자식의 다른 부모**로 이루어진다. 자식의 다른 부모가 들어가는 이유는 공통 결과 구조에서 자식을 알면 부모끼리 의존하게 되는 explaining away 때문이다.
+
+위 모형에서 `T`의 블랭킷은 부모 `R`, 자식 `L`, `L`의 다른 부모 `O`다. 따라서 `P(T | R, O, L, C) = P(T | R, O, L)`이고, `T`를 추론할 때 `C`는 빼도 된다.
+
+### 그래프 방향을 인과로 읽기 전에
+
+`X → Y`와 `X ← Y`는 같은 조건부 독립 관계를 나타낸다. 일반적으로 두 그래프의 뼈대(방향을 뺀 연결)와 v-구조(공통 결과) 집합이 같으면 표현하는 독립 관계가 같다(I-동치). 그래서 간선을 뒤집어도 v-구조를 없애거나 새로 만들지 않고 순환도 생기지 않으면 독립 관계가 유지된다. 위 모형에서 `R → T`는 뒤집어도 같지만, `L → C`를 뒤집으면 `T → L ← C`라는 새 v-구조가 생겨 `L`을 알 때 `C`와 `T`가 의존하게 된다.
+
+I-동치인 그래프들은 같은 분포를 표현할 수 있으므로, 관측 데이터에 확률표가 맞는다는 사실만으로는 이런 간선의 방향이 정해지지 않는다. 이는 I-동치에서 따라 나오는 결론이며, 화살표를 인과로 읽으려면 개입 실험, 시간 순서나 도메인 지식 같은 추가 근거가 필요하다.
+
 ## 이해 확인과 적용
 
 1. 첫 표에서 경보가 없을 때 누수일 확률은 무엇인가? 분모는 경보가 없는 전체 확률이므로 `0.02 / 0.83 ≈ 2.41%`다.
 2. 탐지율이 같아도 사후확률이 달라지는 이유는 무엇인가? 사전확률이 달라지면 실제 탐지와 오탐의 상대적인 양이 달라진다.
 3. 두 센서의 조건부확률을 곱하기 전에 확인할 것은 무엇인가? 무엇을 조건으로 두었는지와, 그 조건 아래에서 두 센서가 서로 영향을 주지 않는 구조인지다.
 4. 추천시스템에서 클릭 확률을 읽을 때 무엇이 주어진 조건인지 먼저 적는다. 사용자, 아이템과 노출 맥락을 조건으로 둔 확률과 전체 관측 클릭 비율을 구분하는 출발점이다. 모델링과 노출 편향은 [[Recommendation-System-Modeling-Foundations|추천시스템 모델링 기초]]에서 별도로 다룬다.
+5. 앞의 다섯 변수 모형에서 `L`의 마르코프 블랭킷은 무엇인가? 부모 `T`, `O`와 자식 `C`다. `C`의 다른 부모가 없으므로 더할 변수가 없고, `R`은 `T`를 통해서만 연결되어 빠진다.
 
 ## 출처
 
@@ -122,10 +162,13 @@ $$
 - [Introduction to Probability, Statistics, and Random Processes, Bayes' Rule — Hossein Pishro-Nik](https://www.probabilitycourse.com/chapter1/1_4_3_bayes_rule.php)
 - [Introduction to Probability, Statistics, and Random Processes, Independence — Hossein Pishro-Nik](https://www.probabilitycourse.com/chapter1/1_4_1_independence.php)
 - [Introduction to Probability, Statistics, and Random Processes, Conditional Independence — Hossein Pishro-Nik](https://www.probabilitycourse.com/chapter1/1_4_4_conditional_independence.php) — 2026-11-09 조건부 독립의 정의와 독립과의 비함의 관계 대조
-- [CS228 Notes, Bayesian networks — Stanford, Ermon Group](https://ermongroup.github.io/cs228-notes/representation/directed/) — 2026-11-09 연쇄, 공통 원인, 공통 결과 구조의 관측 여부별 독립과 explaining away 대조
+- [CS228 Notes, Bayesian networks — Stanford, Ermon Group](https://ermongroup.github.io/cs228-notes/representation/directed/) — 2026-11-09 연쇄, 공통 원인, 공통 결과 구조의 관측 여부별 독립과 explaining away 대조. 2026-11-17 인수분해, `O(n × d^(k+1))` 파라미터 수와 뼈대와 v-구조가 같은 그래프의 I-동치 대조
 - [scikit-learn User Guide, Naive Bayes](https://scikit-learn.org/stable/modules/naive_bayes.html) — 2026-11-09 클래스가 주어질 때 각 특징의 조건부 독립 가정과 곱셈 공식 대조
+- [CS228 Notes, Markov random fields — Stanford, Ermon Group](https://ermongroup.github.io/cs228-notes/representation/undirected/) — 2026-11-17 마르코프 블랭킷의 최소 집합 정의 대조
+- [Probabilistic Modelling and Reasoning, Notes (DGM) — University of Edinburgh, Hodari, Gutmann](https://opencourse.inf.ed.ac.uk/sites/default/files/https/opencourse.inf.ed.ac.uk/pmr/2025/notes-dgm.pdf) — 2026-11-17 국소 방향 마르코프 성질과 DAG의 마르코프 블랭킷(부모, 자식, 자식의 다른 부모) 대조
 - [YouTube, ZeroCho TV, 인공지능 7편 - 경보가 울리면 정말 누수일까?](https://www.youtube.com/watch?v=ywqtA2GBE2Q) — 누수 사례의 출발점. 전사문의 수치를 공식에 대입해 검산
 - [YouTube, ZeroCho TV, 인공지능 8편 - 센서 두 개가 울리면 누수 확률도 두 배일까?](https://www.youtube.com/watch?v=BwX8fUOPyFE) — 세 연결 구조와 두 센서 사례의 출발점. 두 센서의 사후확률은 앞 모형의 수치로 새로 계산
+- [YouTube, ZeroCho TV, 인공지능 9탄 - 강화학습 배우는데 조건부독립을 먼저 배우는 이유](https://www.youtube.com/watch?v=PPRDU3Z15mQ) — 다섯 변수 지각 모형과 마르코프 블랭킷의 출발점. 영상에 없는 늦잠과 지각 확률은 가상 값으로 채워 계산
 
 ## 관련 문서
 
