@@ -47,23 +47,49 @@ Google SRE의 toil은 단순히 싫거나 번거로운 일이 아니다. 운영�
 
 이를 커리어에 적용하는 점검안은 과제의 목적, 범위와 우선순위를 합의하고 결과와 재사용 가능한 개선을 남기는 것이다. 같은 요청이 계속 돌아오면 혼자 처리하는 양보다 원인 제거, 절차 개선과 인계 가능성을 살핀다. 이는 SRE의 운영 원칙에서 도출한 적용안이며 승진이나 시장 가치 상승을 입증한 공식이 아니다.
 
+팀의 마찰을 줄이는 glue work를 보상 구조에 맞춰 자기 프로젝트에서만 전술적으로 할지, 한 번 해 두면 마찰이 사라지는 일이라면 맡을지를 두고 엇갈리는 두 입장은 [[Strategic-Slack#glue work를 둘러싼 두 입장|glue work를 둘러싼 두 입장]]에 정리했다.
+
+## 일상에서 강점의 단서를 찾는 질문
+
+직함과 칭찬보다 반복되는 행동을 본다. 익숙해서 대수롭지 않게 넘긴 일은 본인 눈에 잘 보이지 않는다. 아래 네 단서는 한 커리어 콘텐츠 채널의 제안이며 검증된 진단 도구가 아니다.
+
+| 단서 | 확인 질문 | 구분할 것 |
+|---|---|---|
+| 시키지 않아도 먼저 하는 일 | 오늘 아무도 요청하지 않았는데 한 일이 있는가 | 꼼꼼함은 시킨 일을 빈틈없이 끝내는 것이고, 이 단서는 시키지 않은 일에 먼저 손이 가는 것이다 |
+| 해도 덜 지치는 일 | 피곤한 시간대에도 시간이 빨리 간 일이 있는가 | 쉬운 일은 끝나면 그만이고, 덜 지치는 일은 하고 나서 기운이 남는다 |
+| 일이 바뀌어도 같은 방식으로 하는 일 | 최근 맡은 일 두 개의 시작 순서가 같았는가 | 버릇으로 넘기기 쉽지만 과제와 팀이 바뀌어도 나오면 몸에 밴 일하는 방식이다 |
+| 여러 사람에게서 반복해 받는 부탁 | 지난 한 달 받은 부탁 가운데 같은 종류가 있는가 | 자리가 가깝거나 말 걸기 편해서 오는 부탁과 구분한다. 사람이 바뀌어도 같은 종류면 단서다 |
+
+- 네 가지가 모두 맞는 일을 찾으면 없다고 결론 내리기 쉽다. 두 가지가 겹치는 일을 후보로 삼는다. 두 가지라는 기준은 제안자의 경험칙이다.
+- 상사의 칭찬은 참고만 한다. 칭찬은 그 조직이 지금 필요로 하는 것을 기준으로 나온다. 시키지 않았어도 했을 일인지 되묻는다.
+- 타인의 부탁을 단서로 보는 근거는 자기 평가와 타인 평가의 비대칭이다. Vazire(2010)의 SOKA 모델은 불안처럼 겉으로 잘 드러나지 않는 특성은 본인이, 지적 능력처럼 평가가 강하게 걸리는 특성은 타인이 더 정확히 판단한다고 본다. 대학 보도자료와 2차 요약으로 확인했고 표본 크기와 특성별 결과는 논문 원문으로 대조하지 못했다([[Self-Knowledge-Through-Others|타인을 통한 자기 인식]]).
+- 유명인의 출발점에 단서를 대 보는 설명은 결과를 알고 난 뒤의 해석이다. 성공 경로의 근거로 쓰지 않는다.
+- 반복해 받는 부탁이 강점의 단서라는 것과 그 부탁을 계속 떠맡아야 한다는 것은 다르다. 위의 반복 잡무 구분을 함께 본다.
+
+적용: 하루에 한 일 하나를 골라 네 질문에 답하고, 비슷한 부탁이 올 때마다 한 줄씩 적어 둔다. 쌓인 기록이 이력서와 면접에서 강점을 설명하는 근거가 된다([[Self-Analysis|자기 분석]]).
+
 ## 체크포인트
 
 - 약점에만 집중해 자존감을 깎고 있지 않은가
 - 내 **강점을 구체적으로** 말할 수 있는가
 - 소극성의 원인을 하드스킬로만 보는가, 자신감, 안전감으로도 보는가
 - 팀을 강점의 조합으로 설계하는가, 모두를 같은 기준으로 평준화하는가
+- 시키지 않아도 하는 일, 덜 지치는 일, 늘 같은 방식으로 하는 일, 반복해 받는 부탁 가운데 겹치는 것이 있는가
 
 ## 출처
 
 - [Strengths-based positive psychology interventions: a randomized placebo-controlled online trial on long-term effects for a signature strengths- vs. a lesser strengths-intervention — Frontiers in Psychology, Proyer 외 (2015)](https://www.frontiersin.org/journals/psychology/articles/10.3389/fpsyg.2015.00456/full)
 - 강점 기반 성장과 강점찾기 — 개인 블로그 회고
 - [재능이라는 허상 — 곽지욱](https://www.gwagjiug.com/blog/illusion_of_talent)
+- [요즘 평균 직장인의 재능, 본인만 모릅니다 — YouTube, 브랜디액션](https://www.youtube.com/watch?v=lP6Lt7Wo58k) — 2026-11-09 업로드, 2026-11-16 사람이 단 자막 전체 확인. 네 단서의 출처. 채널이 자체 진단을 함께 안내하며(유료 여부 미확인), 영상이 인용한 직장인 설문 수치는 원 조사를 찾지 못해 넣지 않음
+- [Who knows what about a person? The self-other knowledge asymmetry (SOKA) model — Journal of Personality and Social Psychology, Simine Vazire (2010)](https://pubmed.ncbi.nlm.nih.gov/20085401/) — 98(2), 281-300. 초록 일부와 서지만 확인
+- [Others may know us better than we know ourselves, study finds — Washington University in St. Louis](https://source.washu.edu/2010/03/others-may-know-us-better-than-we-know-ourselves-study-finds/) — 2010-03 대학 보도자료, 검색 요약으로 확인
 - [Eliminating Toil — Google SRE](https://sre.google/sre-book/eliminating-toil/) — 번거로운 일과 지속적인 가치가 없는 반복 운영 작업의 구분
 
 ## 관련 문서
 
 - [[Self-Belief|자기 믿음]] — 자기효능감, 특성의 조합
+- [[Self-Knowledge-Through-Others|타인을 통한 자기 인식]] — 남이 보는 나와 내가 보는 나의 차이
 - [[Developer-Growth-Stages|개발자 성장 단계]] — 약점 자각, 정체기
 - [[Growth-Principles|성장의 7가지 원칙]] — 자기효능감
 - [[Org-Scaling-Culture-Dilution|조직 급성장과 문화 희석]] — 소극성과 심리적 안전

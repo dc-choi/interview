@@ -10,10 +10,11 @@ aliases: ["Habits"]
 뛰어난 개발자의 행동 패턴, 회고 기법, AI 시대 집중 관리.
 
 ## 목차
-- [x] [[Habit-Formation-and-Consistency|습관 형성과 꾸준함]] — 일정한 시작 조건, 형성 기간의 개인차, 실행 누락과 학습 품질 구분
+- [x] [[Habit-Formation-and-Consistency|습관 형성과 꾸준함]] — 일정한 시작 조건, 형성 기간의 개인차, 실행 누락과 학습 품질 구분, 의지보다 먼저 점검할 상황(장소, 사람, 피드백, 규칙)
 - [x] [[Great-Developer-Habits|뛰어난 개발자의 행동 패턴 (기본기, 주도성, 코드 분석, 에러 로그 읽기와 해결 뒤 원인 확인, 논리 증명과 대안 비교, 기술서 소화 깊이 등 7가지)]]
 - [x] [[Software-Craftsmanship-Professionalism|소프트웨어 장인정신과 프로페셔널리즘 (장인정신 선언, 회사는 고객, 거절과 대안, 마감 두려움, 작동 vs 정교, 시간 없어서의 함정)]]
 - [x] [[Personal-Task-Management|개인 할 일 관리 (방향 점검, 탐색 후 신호에 따른 집중, 장기 시간 배분, 단순한 체계, GTD와 퍼스널 칸반)]]
+- [x] [[Planning-Under-Uncertainty|불확실성 아래의 계획]] — 완성된 계획을 기다릴 수 없는 이유, 일찍 만들어 숨은 가정 찾기, OKR과 MECE와 So What, Why So 점검, 주간 계획과 수정, 기록에서 원칙 남기기
 - [x] [[Retrospective-Methods|회고 기법 (CSS, 4L, KPT, TIL, WIW)]]
 - [x] [[Meeting-Debrief-Template|면담 복기 템플릿 (기대 결과, 책임 범위, 사실과 해석 분리, 확인 메시지)]]
 - [x] [[Failure-Driven-Growth|실패를 성장으로 바꾸기 (해석 프레임: 버린 시간 vs 과정 자산, 눈과 손의 간격, 실패 정의 확장, 감정→기록→한 가지 행동 루틴, 실패는 개발의 기본값)]]

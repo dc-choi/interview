@@ -65,7 +65,7 @@ aliases: ["Org Scaling Culture Dilution", "조직 급성장 문화 희석", "인
 ## 관련 문서
 - [[Startup-Is-Not-Kindergarten|스타트업은 유치원이 아니다]] — 인재 밀도, 프로 스포츠팀
 - [[Team-Attrition-Resilience|연쇄 이탈과 회복력]] — 인재 밀도의 역설
-- [[Hiring-Under-Uncertainty|불확실성 속 채용]] — 단계 전환과 적합성
+- [[Hiring-Under-Uncertainty|불확실성 속 채용]] — 단계 전환과 적합성, 관리 인원과 Dunbar 구간의 채용 임계점
 - [[Failure-Tolerant-Culture|실패에 관대한 문화]] — 심리적 안전
 - [[Team-Contribution-Culture|팀 기여 문화]] — 도우미형 리드
 - [[Strength-Based-Growth|강점 기반 성장]] — 소극성과 자신감

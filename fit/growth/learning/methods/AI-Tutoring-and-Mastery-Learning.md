@@ -39,6 +39,8 @@ AI 튜터링의 목표는 답을 대신 만드는 것이 아니라 학습자가 
 
 동료에게 가르치는 활동은 설명하는 학생의 빈틈도 드러낸다. 최근 같은 어려움을 겪은 동료는 학습자의 혼란을 이해할 수 있고, 질문과 설명의 교환은 의사소통과 협업 연습이 된다. AI와 일대일로 대화하는 시간만 늘려 이 상호작용을 없애지 않는다.
 
+사람 동료의 자리에 AI 동료를 두는 도구도 있다. 2026-11-16 README 기준 오픈소스 플랫폼 OpenMAIC(Open Multi-Agent Interactive Classroom, MIT)는 주제나 첨부 자료를 강의 개요로 만든 뒤 개요 항목마다 슬라이드, 퀴즈, HTML 시뮬레이션이나 프로젝트 학습 활동을 장면으로 생성한다. AI 교사가 음성으로 설명하고 화이트보드에 그리며, 서로 다른 페르소나의 AI 에이전트들이 학습자와 함께 토론한다. 퀴즈는 AI가 바로 채점하고 피드백한다. README에는 학습 효과 수치가 없고 연구 근거로는 2026년 학술지 논문(From MOOC to MAIC) 한 편을 연결한다. 수업 형식을 빨리 만든다는 사실과 학습자가 혼자 풀 수 있게 됐다는 사실은 아래 지표 구분으로 따로 확인하고, AI 채점의 정확성과 기준의 일관성은 사람이 확인한다.
+
 ## 위험을 수업 설계와 평가로 옮긴다
 
 - 인지적 외주화: 완성 답안을 제출하는 능력과 문제를 푸는 능력을 구분한다. 중간 시도, 구두 설명과 AI 없는 짧은 평가를 남긴다.
@@ -76,6 +78,8 @@ AI로 사라지는 과업과 새로 생기는 일의 수, 전환 속도와 재�
 - [How Khan Academy Is Building a Better AI Tutor: Our Most Recent Learnings — Khan Academy](https://blog.khanacademy.org/how-khan-academy-is-building-a-better-ai-tutor-our-most-recent-learnings/) — 2026-05 발표, 2026-11-03 지표 정의와 실험 범위 대조
 - [One Click Away: AI Tutoring with Khanmigo in a Two-Year School Experiment — EdWorkingPapers, Philip Oreopoulos와 Nina Low](https://edworkingpapers.com/ai26-1551) — 2026-08 작업논문, 2026-11-03 초록 대조. 본문과 원자료 재분석은 하지 않음
 - [Making AI Tutoring Productive: Evidence from a Mastery-Based Math Practice Experiment — EdWorkingPapers, Philip Oreopoulos 외](https://edworkingpapers.com/ai26-1552) — 2026-08 작업논문, 2026-11-03 초록 대조. 본문과 원자료 재분석은 하지 않음
+- [OpenMAIC — THU-MAIC](https://github.com/THU-MAIC/OpenMAIC) — 2026-11-16 README의 개요와 장면 2단계 생성, AI 교사와 토론 에이전트, 퀴즈의 AI 채점, 연결한 논문과 수치 근거의 범위 확인. 설치와 실행, 논문 본문 확인은 하지 않음
+- [OpenMAIC - 주제나 문서를 AI 교사와 토론하는 수업으로 만드는 오픈소스 플랫폼 — GeekNews](https://news.hada.io/topic?id=37017) — 학습 계기
 
 ## 관련 문서
 

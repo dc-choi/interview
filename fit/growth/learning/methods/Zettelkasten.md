@@ -63,6 +63,8 @@ LLM은 관련 문헌, 통념과 표준적인 틀은 알지만, 아직 말로 풀
 
 ## 관련 문서
 
+- [[Planning-Under-Uncertainty|불확실성 아래의 계획]] — 주간 기록에서 남길 메모를 고르는 절차
+
 - [[Tech-Writing-Craft|개발자 글쓰기]] — 메모를 초안, 글로 키우는 과정
 - [[Purpose-Driven-Learning|목적 있는 학습]] — 연결, 재구성이 깊은 학습을 만든다
 - [[Source-Code-Analysis|소스 코드 분석]] — 기록하며 읽기

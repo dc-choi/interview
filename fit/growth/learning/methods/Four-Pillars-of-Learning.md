@@ -41,6 +41,16 @@ aliases: ["Four Pillars of Learning", "학습의 네 기둥", "How We Learn"]
 
 예를 들어 추천시스템 기반 학습에서 행렬 곱이나 코사인 유사도를 배울 때, 작은 행렬의 결과를 먼저 손으로 예측하고 NumPy로 확인한 뒤 어긋난 지점을 적고, 다음 날 같은 계산을 보지 않고 다시 해 본다.
 
+## 다 읽었다는 것과 이해했다는 것
+
+설명형 책이나 강의를 끝까지 보고도 핵심을 거의 남기지 못하는 경우가 있다. Andy Matuschak의 에세이 Why books don't work(2019)는 원인을 매체가 깔고 있는 전달주의(transmissionism), 곧 지식이 가르치는 사람에게서 배우는 사람에게 바로 전해지고 문장을 읽으면 흡수된다는 암묵적 모델에서 찾는다.
+
+- **피드백 고리는 독자의 몫이다:** 이해했는지, 다시 읽어야 하는지, 다른 자료를 봐야 하는지를 독자가 스스로 계속 묻는 메타인지 작업이 필요하고, 낯선 내용일수록 부담이 크다. 책은 정적이라 문장이 독자의 생각을 자극할 수는 있어도 그 생각에 반응하지는 못한다.
+- **강좌는 그 부담을 나눠 맡는다:** 일정, 피드백, 질의 시간과 토론이 메타인지 부담의 상당 부분을 대신 지고, 사회적, 정서적 동기도 준다.
+- **매체를 다시 설계한다:** 읽는 것이 곧 이해가 되는 매체를 묻고, 본문 사이에 질문을 넣어 점점 늘어나는 간격으로 다시 묻는 기억 매체 Quantum Country를 예로 든다.
+
+이 문서의 네 기둥으로 보면 혼자 책을 읽는 일은 능동적 참여와 오류 피드백, 통합을 독자가 직접 설계해야 하는 일이다(해석). 장을 읽기 전에 답할 질문을 적고, 읽은 뒤 책을 덮고 설명하거나 예제를 풀어 본 다음 막힌 곳만 다시 읽고, 며칠 뒤 다시 떠올린다(적용 제안). 독자가 흡수하는 양이 적다는 판단은 저자가 공식 연구를 찾지 못해 직관에 기댄 것이고, 기억 매체가 다음 장의 작업 기억 부담을 줄일 것이라는 효과도 기대로 적혀 있다.
+
 ## 한계
 
 네 기둥은 학습에 필요한 조건의 틀이지 특정 공부법의 효과 크기를 정한 처방이 아니다. 같은 틀 안에서도 필요한 지원은 사람마다 다를 수 있다. 수면 단계별 기능처럼 2015년 강의 소개에서 확정되지 않았던 부분은 현재 연구 상태를 확인하기 전까지 확정된 사실로 옮기지 않는다.
@@ -57,6 +67,8 @@ aliases: ["Four Pillars of Learning", "학습의 네 기둥", "How We Learn"]
 - [Collège de France, Stanislas Dehaene, Attention and executive control](https://www.college-de-france.fr/en/agenda/lecture/cognitive-foundations-of-school-learning/attention-and-executive-control) — 2015 강의, 2026-11-16 강의 소개 대조
 - [Collège de France, Stanislas Dehaene, Active engagement, curiosity and error correction](https://www.college-de-france.fr/en/agenda/lecture/cognitive-foundations-of-school-learning/active-engagement-curiosity-and-error-correction) — 2015 강의, 2026-11-16 강의 소개 대조
 - [Collège de France, Stanislas Dehaene, Learning consolidation and the importance of sleep](https://www.college-de-france.fr/en/agenda/lecture/cognitive-foundations-of-school-learning/learning-consolidation-and-the-importance-of-sleep) — 2015 강의, 2026-11-16 강의 소개 대조
+- [Why books don't work — Andy Matuschak](https://andymatuschak.org/books/) — 2019-05 에세이, 2026-11-16 전달주의, 독자의 피드백 고리, 강좌와의 비교, 기억 매체의 기대 효과와 연구 부재 단서 대조
+- [책이 제 역할을 하지 못하는 이유 (2019) — GeekNews](https://news.hada.io/topic?id=36969) — 2026-11-16 접속 시 브라우저 확인 페이지로 요약 미열람, 위 원문으로 대조
 
 ## 관련 문서
 
