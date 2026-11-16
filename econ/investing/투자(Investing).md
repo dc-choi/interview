@@ -34,6 +34,7 @@ aliases: ["투자(Investing)", "Investing Map"]
 
 ### 3. 실행과 심리
 - [[Investment-Strategies|투자 전략]] — 액티브 vs 패시브, 효율적 시장 가설, 적립식, 마켓타이밍의 함정 ✅
+- [[Dividend-Index-Screening|배당 지수의 선별 기준]] — 배당수익률 순위 선별의 한계, 배당 이력과 재무 체력과 배당 성장의 세 축, Dow Jones U.S. Dividend 100 Index 규칙, 커버드콜 분배와의 차이 ✅
 - [[Behavioral-Biases-Risk|행동 편향과 리스크 관리]] — 손실 회피, 군중 심리, 소셜 심리와 매매 신호의 구분, 규칙 기반 관리, 자기 통제 ✅
 - [[Backtesting-Pitfalls|백테스트의 함정]] — 미래 정보 누수, 과최적화, 비용, 표본 외 검증, 모의/실거래와 적립 계산의 구분 ✅
 - [[Quant-Investing-Machine-Learning|퀀트 투자의 머신러닝]] — 적은 독립 표본과 낮은 신호 대 잡음비, 시장 적응, 단어 사전과 언어 모델의 텍스트 신호, 신호 가중치 학습과 1/N 비교, 해석 가능성 ✅
