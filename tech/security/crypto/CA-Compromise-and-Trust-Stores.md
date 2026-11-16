@@ -1,7 +1,7 @@
 ---
 tags: [security, crypto, pki, tls, certificate, trust-store, revocation]
 status: done
-verified_at: 2026-11-02
+verified_at: 2026-11-16
 category: "Security - 암호"
 aliases: ["CA Compromise and Trust Stores", "CA 침해와 신뢰 저장소", "Trust Store", "신뢰 저장소", "CA Distrust"]
 ---
@@ -61,6 +61,7 @@ CT 강제는 또 다른 방어선이다. Chrome은 공개 신뢰 인증서에 �
 - **루트 제거**: Mozilla는 emSign ECC Root CA - G3의 긴급 신뢰 제거를 발표했고, 해당 변경(Bug 2084101)을 담은 NSS 3.131.1이 2026-10-20 나왔다. Apple은 2026-10-23부터 이 루트도 막았고, Chrome Root Store의 제거는 2026-10-27 배포 예정으로 발표됐으며 실제 배포 여부는 확인하지 않았다. eMudhra는 이전이 필요한 인증서를 초기 추정 약 30,000개(약 97%가 ACME 발급)로 밝히고 G1(RSA 루트)로 이어지는 중간 CA로 옮기겠다고 했다. 이후 eMudhra 상태 페이지는 독립 운영되는 다른 공개 신뢰 CA 계층에서 교체 인증서를 발급한다고 밝혀, 2026-11-02 확인한 버그 기록 범위에서 최종 이전 경로는 정해지지 않았다. 같은 기록에는 eMudhra가 글로벌 TLS 인증서 사업에서 철수한다는 보도자료와, InCommon 전환에 한해 G1 RSA 루트 경로를 임시로 쓴다는 상태 페이지 갱신이 인용됐다. Chrome Root Program은 2026-10-21 CT 데이터에서 emSign ECC Root CA - G3로 이어지는 만료 전 사전 인증서를 약 30,800개로 집계했다. 침해된 중간 CA는 CT에 기록된 TLS 인증서를 발급한 적이 없으므로 이 수는 같은 루트 아래 다른 하위 CA의 발급분이다(이 문서의 해석).
 - **비브라우저 경로**: Apple은 2026-10-29 공지에서 macOS 기본 명령행 도구가 파일이 갱신되기 전까지 이 인증서를 받아들일 수 있다고 밝혔다. Node.js는 2026-10-21 보안 릴리스(26.12.1, 24.22.1, 22.23.4)에서 번들 루트를 NSS 3.131.1 기준으로 갱신하고 차단 공개키 목록을 넣었다. Google은 차단 전 이 중간 CA로 이어지는 TLS 인증서가 CT에 기록된 적이 없어 CT를 강제하는 클라이언트에는 쓰일 수 없었다고 설명했다.
 - **Go와 certifi**: Go는 2026-10-19 go1.27.3과 go1.26.10을 내고 SPKI SHA-256 해시 8개를 차단 목록에 넣어 `Certificate.Verify`가 그 공개키를 담은 체인을 돌려주지 않게 했다(GO-2026-6809, CVE 별칭 CVE-2026-111943). Go 공지와 이슈는 CA 이름을 밝히지 않고 특정 CA의 소수 중간 인증서라고만 적었으며, 공개 시점과 개수가 이 중간 CA 8개와 맞는다(이 문서의 해석). certifi는 2026.10.18에서 emSign 루트들을 뺐고, 2026-10-20 PyPI에 올린 2026.10.19에서 영향받지 않은 emSign 루트를 되돌렸다.
+- **Kubernetes 애드온**: cert-manager 1.20 계열의 v1.20.5(2026-10-28) 릴리스 노트는 두 층의 변경을 함께 적었다. 기반 이미지를 Debian 13으로 옮겼고 그 이미지는 emSign ECC Root CA - G3와 AAA Certificate Services 루트를 신뢰하지 않는다고 적었으며, Go 1.26.10으로 올려 `crypto/x509`가 침해된 중간 CA를 거치는 체인을 거부한다고 적었다. 같은 노트는 HTTP/2 수정이 든 `golang.org/x/net` v0.60.0 이상이 Go 1.26을 요구해 `go.mod`의 go 지시자를 1.26으로 올렸으며, 이는 소스 빌드와 Go 모듈로 가져오는 경우에만 해당하고 배포 바이너리는 이미 Go 1.26으로 빌드됐다고 밝혔다. 다른 릴리스 계열의 대응은 확인하지 않았다. 이미지의 루트 목록은 배포판 번호가 아니라 이미지에 든 `ca-certificates` 패키지 버전이 정하고, 바이너리의 차단 목록은 빌드한 Go 버전이 정하므로 컨트롤러 이미지를 점검할 때 둘을 따로 확인한다(운영 제안).
 - **서비스 사업자**: Cloudflare는 2026-10-20 Cloudflare One Client(WARP)와 1.1.1.1 앱, cloudflared 2026.10.2의 보안 업데이트를 내고, 컨테이너로 배포한 cloudflared는 수정된 이미지로 다시 배포하라고 안내했다. 자사 서비스에서는 실제 악용을 확인하지 못했다고 밝혔다.
 - **탐지 공백**: Chrome은 이 중간 CA들이 CT에 기록된 말단 인증서를 발급한 적이 없어 CT 기반 감시에 들어오지 않았고, 쓰던 표준 린트 도구에 작은 스칼라 검사가 없었다고 밝혔다. CCADB 공개 전에 약한 키 자동 검사를 넣는 작업도 제안했다. 앞서 2025-06에는 Sectigo가 이 가운데 TLS 중간 CA 6개의 CRL에 잘못된 ECDSA 서명이 달려 있다고 보고했다(Bug 1970728). eMudhra는 2026-10 버그에서 그 CRL이 원래 개인키로 서명돼 검증에 실패했고 이후 결함 있는 키로 다시 서명했다고 설명했으며, 2025년 사고 보고서는 원인을 수동 CRL 생성 절차의 키 구성 오류로 적고 두 번째 키 쌍은 언급하지 않았다. CA가 낸 서명이 인증서 공개키로 검증되지 않으면 서명을 다시 만들기 전에 HSM의 키와 인증서 공개키가 같은 키인지부터 확인한다(운영 제안).
 
@@ -100,6 +101,7 @@ CT 강제는 또 다른 방어선이다. Chrome은 공개 신뢰 인증서에 �
 - [Node.js v22.23.4 release notes — Node.js](https://nodejs.org/en/blog/release/v22.23.4)
 - [tls: reject chains containing blocked public keys (#66871) — GitHub, nodejs/node](https://github.com/nodejs/node/pull/66871)
 - [Release History — Go](https://go.dev/doc/devel/release) — go1.27.3과 go1.26.10 출시일
+- [cert-manager v1.20.5 release notes — GitHub, cert-manager/cert-manager](https://github.com/cert-manager/cert-manager/releases/tag/v1.20.5) — 2026-11-16 대조. Debian 13 기반 이미지의 루트 제외, Go 1.26.10, go 지시자 변경의 영향 범위
 - [crypto/x509: mitigation for security concerns with a specific Certificate Authority (#82345) — GitHub, golang/go](https://github.com/golang/go/issues/82345)
 - [crypto/x509: distrust a handful of intermediates (7f86f95) — GitHub, golang/go](https://github.com/golang/go/commit/7f86f95) — master 커밋. SPKI 해시 방식, macOS와 Windows 플랫폼 검증 경로의 변경
 - [release-branch.go1.27 crypto/x509: distrust a handful of intermediates (90617fb) — GitHub, golang/go](https://github.com/golang/go/commit/90617fb) — 1.27 백포트, 같은 세 파일 변경(1.26 백포트는 go1.26.10 태그 소스로 대조)

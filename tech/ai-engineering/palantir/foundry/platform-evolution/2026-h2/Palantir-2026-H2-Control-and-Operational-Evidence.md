@@ -1,7 +1,7 @@
 ---
 tags: [palantir, release-history]
 status: done
-verified_at: 2026-11-01
+verified_at: 2026-11-16
 category: "AI엔지니어링(AIEngineering)"
 ---
 
@@ -36,6 +36,20 @@ Automate manual retry의 Include canceled는 기본 선택이며 canceled batch�
 ## 평가 성공률 표시
 
 10월21일 Workflow Lineage는 AIP Logic과 function node에 연결된 AIP Evals 성공률을 표시한다. 성공률은 그 resource에 연결된 모든 evaluation suite의 가장 최근 실행에서 통과한 test case의 비율이다. 최근 실행만 반영하므로 suite가 다루는 범위, 실행 시점과 실패한 test case를 함께 확인한다.
+
+## 11월 peering 경계, 변경 경고와 관리 설정
+
+11월11일 Peer Manager는 peer connection 생성과 import 요청에서 Multipass Principal Peering V2를 끄는 옵션을 없애 항상 켠 상태로 설정한다. Space 선택은 network 설정 뒤의 별도 단계가 됐고 기존 권한 필터가 선택 가능한 space를 계속 제한한다. Ontology data를 export하도록 구성하지 않은 connection에 object/link type을 더하면 **Exports allowed**가 비활성화되고 **Exports blocked**가 기본 선택되지만 import는 구성할 수 있다. 화면에서 export를 고를 수 없다는 사실과 connection의 export 구성을 바꾸는 일은 별개다.
+
+Broken 상태에 hover하면 local과 remote의 실패 이유를 보이고 marking 관련 문제마다 marking ID를 붙인다. 두 enrollment가 같은 boundary error를 보고하면 두 보고를 local, remote 표시와 함께 보이며, 인식한 실패 이유가 없으면 tooltip을 비활성화하는 대신 대체 메시지를 보인다. File peering connection을 local server가 인식하지 못하면 connection의 file peering 설정 문제와 local server 구성 문제를 나눠 진단한다. Namespace의 producer가 Foundry와 Gotham 모두에 있으면 생성/승인 때 그 목록과 preferred environment를 보이고, preferred가 없으면 Gotham을 저장한다. 기존 preference는 바꾸지 않는다.
+
+Ontology Manager는 peering이 구성된 object type에서 모든 edit을 drop하거나 영구 삭제하는 migration을 staged하면 change review에 경고를 띄운다. 삭제는 local object type에만 적용돼 연결된 peer의 같은 edit은 남으므로 데이터가 어긋날 수 있고, 영구 삭제는 삭제 기록 대신 peering metadata까지 지운다. Saved peering index가 있는 object type의 security group 생성/삭제, policy/type 변경과 property 이동도 경고하지만 저장은 막지 않는다. 경고가 없다는 것을 peer 정합성의 증거로 쓰지 않고 상대 enrollment의 상태를 따로 확인한다.
+
+같은 날 Control Panel의 새 audit log export(dataset/Iceberg table)는 시작일 기본값을 오늘에서 구성한 retention 기간을 뺀 날짜로 두고, 그보다 이른 날짜를 고르면 경고한다. MCP Hub Overview는 Ontology MCP server 뒤의 Developer Console application에 Ontology MCP read와 Ontology write operation이 빠졌으면 경고하고 빠진 operation만 추가하는 action을 제공한다. 이 action은 기존 grant와 scope를 유지하며 application scope 편집 권한이 없으면 비활성화된다. Unrestricted operation application은 대상이 아니고, 이전 방식의 restricted operation grant를 가진 application은 먼저 Developer Console에서 migration해야 한다. Developer Console에서 application을 편집할 때는 단일 global 설정 대신 그 application을 소유한 organization의 rollout 설정을 쓰지만 scope 한도는 계속 global이다.
+
+## 11월 보호 branch의 자동화 일시정지
+
+Automate는 protected main branch에서 editor가 automation을 일시정지할 수 있게 했다. 보호 branch 제한에서 일시정지만 예외가 됐으며, 재개와 다른 편집은 여전히 제한되고 edit 권한이 없는 사용자는 일시정지할 수 없다.
 
 ## 9월 접근 검증과 관측 범위
 
