@@ -46,6 +46,7 @@ Software 3.0 패러다임, LLM과 에이전트, 하네스, 평가, 조직 전환
 - [x] [[Claude-Code-Projects|Claude Code Projects]] — 조율과 실행의 분리, 공유 메모리, 병합 충돌과 병렬 사용량
 - [x] [[Deep-Learning-Foundations-and-Practice|딥러닝 기초와 실습]] — 개념과 과업의 연결, Transformer 계보(RNN에서 GPT, BERT와 비텍스트 확장까지)와 이차 비용, 파괴적 망각, Keras 학습과 평가, 교재 범위와 실행 검증의 구분
 - [x] [[Supervised-Learning-Validation-and-Metrics|지도학습 검증과 평가 지표]] — 학습, 검증, 테스트의 역할, K-fold와 누수 방지, macro F1과 로그 오차의 입력 조건
+- [x] [[Agent-in-the-Loop-Optimizer|학습 중 옵티마이저를 고치는 에이전트]] — OPAL의 감싸기와 결정 주기, 샌드박스 없는 권한 규칙, 라벨 잡음 실험에서 에이전트와 가중치 평균의 기여 구분, 시간과 비용
 - [x] [[Document-Parsing-Context|페이지 간 문서 파싱]] — SR-SWA 참조 예산과 전역 구조 손실, 표와 문단의 연결 검수
 - [x] [[Multimodal-Video-Retrieval|멀티모달 영상 검색]] — 시간 구간 근거, 색인과 생성 분리, 모델과 API 지원 경계
 - [x] [[Synthetic-Vision-Data-Evaluation|합성 비전 데이터 평가]] — 희소 조건 보충, 생성 결과 검수와 실제 인식 성능의 분리
