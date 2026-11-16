@@ -1,7 +1,7 @@
 ---
 tags: [palantir, foundry, aip, api, llm, governance]
 status: done
-verified_at: 2026-10-20
+verified_at: 2026-11-16
 category: "AI엔지니어링(AIEngineering)"
 aliases: ["팔란티어 LLM 프록시 API"]
 ---
@@ -18,6 +18,8 @@ Foundry LLM proxy는 provider SDK의 요청 형식을 유지하면서 Foundry의
 | OpenAI Chat Completions | `/api/v2/llm/proxy/openai/v1/chat/completions` | model RID, messages | choices의 message content |
 | OpenAI Embeddings | `/api/v2/llm/proxy/openai/v1/embeddings` | embedding model RID와 input | data |
 | OpenAI Responses | `/api/v2/llm/proxy/openai/v1/responses` | model RID와 input | output_text 또는 output content |
+
+이 표는 reference 문서가 있는 네 경로에 한정한다. 개요 문서는 xAI Chat Completions와 Responses, Google generateContent와 streamGenerateContent의 Beta 경로도 나열하며, 이는 [[Palantir-Registered-Models-and-Provider-Proxies|등록 모델과 provider proxy]]에서 다룬다.
 
 여기서 `model`은 provider의 일반 model ID 대신 Model Catalog에서 찾은 Foundry language-model RID다. 예제에 표시된 model이 모든 enrollment에 제공되거나 현재 기본값이라는 뜻은 아니다. 실제 사용 가능한 Catalog 항목과 그 기능을 확인한다.
 
@@ -66,7 +68,17 @@ TypeScript 예제는 OSDK `PlatformClient.tokenProvider()`와 `PlatformClient.fe
 
 공식 Python SDK와 OSDK가 자동으로 설정한다고 명시된 header는 `attribution`, `traceParent`, `traceState`다. 확인일의 세 경로 예제(curl, Python, TypeScript)에는 세션 header를 설정하는 코드가 없다. helper나 PlatformClient를 쓴다고 세션 header까지 붙는다고 전제하지 않으며, 사용하려면 호출 코드에서 직접 지정하고 실제 요청에 포함됐는지 확인한다.
 
-위 내용은 네 proxy 문서의 header 표와 예제를 대조한 것이며 실제 라우팅, backend 선택이나 캐시 적중률을 측정한 결과가 아니다. proxy 응답이 provider의 캐시 사용량 field를 그대로 전달하는지도 확인하지 않았다. 캐시 재사용의 일반 원리와 측정 방법은 [[LLM-Prompt-Caching|프롬프트 캐싱]]에서 다룬다.
+#### 식별자 범위와 client 세션 ID의 관계
+
+2026-11-16 LLM-provider compatible APIs 개요 문서를 대조한 기준으로 세 가지 운영 지침이 더 있다.
+
+- **같은 prefix를 공유하는 요청에만 재사용한다.** 같은 대화의 턴처럼 공통 프롬프트 prefix를 가진 요청에만 같은 값을 쓰고, 서로 관련 없는 대화에는 다른 값을 쓴다. 관련 없는 트래픽에 한 값을 공유하면 캐시 이득 없이 요청이 한 backend에 몰릴 수 있다고 문서가 경고한다.
+- **client가 쓰는 세션 ID로 대신하지 않는다.** Anthropic 요청에서는 Anthropic client나 Claude Code client가 이미 쓰는 세션 식별자와 함께 `X-Palantir-session-id`를 따로 설정한다. Foundry의 라우팅 친화성은 이 Palantir header가 정하며, 공개 proxy endpoint에서 provider나 client의 세션 식별자는 이를 대신하지 않는다.
+- **provider의 캐싱 조건을 대신하지 않는다.** 이 header는 캐시 적중을 보장하지 않으며 provider가 요구하는 프롬프트 캐싱 조건도 대체하지 않는다. 캐시를 쓰려면 provider 쪽 조건을 별도로 맞춘다.
+
+개요 문서의 curl 예제는 `FOUNDRY_HOSTNAME`, `FOUNDRY_TOKEN`, `SESSION_ID`를 셸 변수로 두고 Anthropic Messages 경로에 header를 붙이며, 같은 대화의 후속 요청에 같은 `SESSION_ID`를 유지하라고 한다. 개별 proxy reference 예제와 달리 이 개요 예제는 header를 직접 넣는다. 이것도 호출 코드가 지정한 것이며 helper가 자동으로 붙인다는 뜻은 아니다.
+
+위 내용은 네 proxy 문서의 header 표와 예제, 그리고 개요 문서를 대조한 것이며 실제 라우팅, backend 선택이나 캐시 적중률을 측정한 결과가 아니다. proxy 응답이 provider의 캐시 사용량 field를 그대로 전달하는지도 확인하지 않았다. 캐시 재사용의 일반 원리와 측정 방법은 [[LLM-Prompt-Caching|프롬프트 캐싱]]에서 다룬다.
 
 ### 보존 정책과 provider 기능
 
@@ -74,7 +86,7 @@ proxy는 다른 AIP 사용과 같은 ZDR, georestriction 요구를 적용하며 
 
 provider가 새 field나 tool 기능을 출시한 사실만으로 Foundry proxy에서 즉시 같은 기능을 사용할 수 있다고 판단하지 않는다. 모델 RID의 지원 기능, 거버넌스와 proxy 지원 범위를 함께 확인한다. 지역/보존 정책을 앱의 별도 로그나 외부 후처리에도 자동 전파하는 것으로 확대하지 않는다.
 
-이 문서는 네 proxy 문서의 요청/인증/계측/거버넌스 설명과 코드를 대조한 기록이다. provider 전체 schema, streaming/event별 동작, 오류 mapping과 enrollment별 지원은 이 문서만으로 확정하지 않았다. 모델 호출과 사용량 귀속을 실제로 시험하지 않았다.
+이 문서는 네 proxy 문서의 요청/인증/계측/거버넌스 설명과 코드, 그리고 개요 문서의 세션 지침을 대조한 기록이다. provider 전체 schema, streaming/event별 동작, 오류 mapping과 enrollment별 지원은 이 문서만으로 확정하지 않았다. 모델 호출과 사용량 귀속을 실제로 시험하지 않았다.
 
 ## 출처
 
@@ -82,6 +94,7 @@ provider가 새 field나 tool 기능을 출시한 사실만으로 Foundry proxy�
 - [Palantir, OpenAI Chat Completions Proxy](https://www.palantir.com/docs/foundry/api/llm-apis/models/openai-chat-completions-proxy)
 - [Palantir, OpenAI Embeddings Proxy](https://www.palantir.com/docs/foundry/api/llm-apis/models/openai-embeddings-proxy)
 - [Palantir, OpenAI Responses Proxy](https://www.palantir.com/docs/foundry/api/llm-apis/models/openai-responses-proxy)
+- [Palantir, LLM-provider compatible APIs](https://www.palantir.com/docs/foundry/aip/llm-provider-compatible-apis) — 2026-11-16 세션 식별자의 재사용 범위와 Anthropic client 세션 ID와의 관계를 대조했다.
 
 ## 관련 문서
 
