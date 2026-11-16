@@ -47,6 +47,7 @@ aliases: ["보안(Security)", "Security Index"]
 - [[CIA-Triad|CIA Triad (기밀성, 무결성, 가용성)]] — 세 보안 목표, 위협과 통제, 트레이드오프와 가장 약한 고리
 - [[Security-Policy-and-Assessment|보안 정책과 점검]] — 자산과 위험, 역할별 교육, 점검 범위와 증거, Prowler와 Service Screener, 예외 처리와 재점검
 - [[Security-Incident-Response|보안 사고 대응]] — NIST CSF 2.0 수명주기, 로그 상관분석, IOC 검사의 미탐/검사 범위, 자동 차단과 AI 리포트의 실행 경계, 증거 보존과 복구 조건
+- [[Linux-Host-Security-Checks|Linux 호스트 보안 점검]] — 해시 기준선과 보관 위치, 수정 시각의 한계, utmp/wtmp와 process accounting, UID 0과 RID 500, umask 비트 계산과 default ACL, pam_pwquality 음수 credit
 - [[Access-Control-Models|접근 제어 모델 (RBAC, ABAC, PBAC)]] — 역할, 속성, 정책의 관계, PAP/PDP/PIP/PEP, 하이브리드 설계와 운영
 - [[tech/security/auth/인증(Auth)|인증 (Auth)]] — Session과 비밀번호 변경 재인증, JWT, OAuth2, Token Exchange, FIDO, Refresh Token, Spring Security의 자동 로그인 저장소와 검증
 - [[tech/security/crypto/암호(Crypto)|암호 (Cryptography)]] — 패스워드 해싱, 공개키, RSA, 난수와 파일 키, 저장장치 인증과 휴대폰 잠금 상태, 이메일 암호화, 인터넷 투표의 검증
