@@ -23,6 +23,7 @@ aliases: ["연령 검증", "신원 검증", "Age Assurance", "Identity Verificat
 - [[Age-Verification-Regulation|규제 지형]] — 영국 OSA HEAA, EU eIDAS 블루프린트, 미국 Paxton, 호주 16세, COPPA, 생체 프라이버시 충돌, 프론티어 AI 게이팅
 - [[Identity-Verification-Processor-Risk|제3자 위탁 리스크]] — 외주 검증의 breach 클래스, 검증과 학습 데이터 경계, FTC disgorgement, 완화 설계, Claude 신원검증 사례, 지원사업이 연결한 솔루션 공급기업의 유출 사례
 - [[Decentralized-Identity-Credentials|탈중앙 신원과 검증 가능한 자격증명]] — DID와 DID document, VC 2.0의 발급자, 보유자, 검증자, 선택적 공개와 연결 가능성, EUDI Wallet과 한국 모바일 신분증
+- [[Identity-Verification-History-Lookup|본인확인 내역 조회와 미사용 계정 정리]] — 개인정보 포털의 수단별 조회 기간, 가입 목록과의 차이, 탈퇴 대행의 범위와 거절 사유, 명의도용 의심의 별도 확인
 
 ## 관련 문서
 
