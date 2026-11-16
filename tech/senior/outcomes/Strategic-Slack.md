@@ -31,6 +31,14 @@ aliases: ["Strategic Slack", "의도적 여유", "80% 가동률", "Doing Nothing
 2. **약탈적 요청** — 공식 경로가 아닌 백채널로 들어오는, 보상 없는 작업 요청
 3. **소멸 가능 작업** — 중간에 취소될 가능성이 높은 프로젝트. 완수해도 성과가 증발한다
 
+## glue work를 둘러싼 두 입장
+
+이 문서의 출처와 같은 저자인 Sean Goedecke의 Glue work considered harmful(2024-12-16)은 문서와 로드맵 정리, 기술 부채 해소, 온보딩, 팀 사이 연결처럼 팀이 효율적으로 돌아가는 데 필요한 눈에 띄지 않는 일을 회사가 보상하지 않는 이유를 회사가 그 일을 우선하길 원하지 않기 때문이라고 본다. 직원의 일은 리더십의 미션을 수행하는 것이고, 효율 전반을 높이느라 시간을 다 쓰다 지치느니 그 미션을 60% 효율로 수행하는 편이 낫다며, glue work는 자신이 이끄는 프로젝트를 위해 전술적으로 하라고 권한다. 대형 테크 기업은 어느 시점에서든 대략 20~60% 효율로 움직인다는 진단도 붙인다.
+
+sunshowers 블로그의 반론 글(2026-11-12)은 이 인센티브 묘사를 받아들이되 그것을 내면화하지 말고 더 나은 상태가 가능하다는 점을 기억하라고 한다. 근거는 그 일에 걸맞은 공을 들여 제대로 한 glue work가 마찰을 영구히 없앤다는 것이다. 테스트 실행 도구 cargo-nextest를 그런 예로 들고, 테스트 flake 패턴을 모은 카탈로그와 그것을 쓰는 에이전트 스킬로 팀의 flake를 열 개 가까이 고쳤다고 적는다. 조직에 주는 권고는 일정 규모를 넘으면 일을 보이게 하는 장치(legibility)가 필요하지만 모든 일을 보이게 만들라고 요구하지 말고 나머지는 직원을 믿을 것, 성과 평가를 없애는 쪽이 도움이 된다는 것, 과잉 채용과 관리자에게 채용 인원을 늘릴 유인을 주는 구조를 피할 것이다. 개인에게는 성과 평가에 무엇이 좋을지 대신 어떻게 도움이 될 수 있는지를 묻는 태도를 권한다. 두 글 모두 저자의 경험에 기댄 주장이며 측정 결과가 아니다.
+
+적용 판단(이 문서의 해석): 위 거절 대상은 조직이 우선순위를 주지 않은 glue work다. 한 번 해 두면 반복 마찰이 사라지는 일(도구화, 카탈로그, 자동화)과 사람이 계속 메워야 하는 반복 잡무를 먼저 나누고([[Strength-Based-Growth#강점을 쓸 문제와 반복 잡무를 구분한다|반복 잡무 구분]]), 전자는 가시화해 우선순위를 받은 뒤 맡는다. 보상 구조가 바뀌지 않는다는 이유만으로 동료의 마찰을 줄일 기회를 버리지도, 보이지 않는 일을 무한정 떠안지도 않는다.
+
 ## 리듬 — 평시 80%, 결정적 시기 100%
 
 - 연중 대부분: 80% 노력 수준. 남긴 20%가 기회 감지와 즉응의 자원
@@ -53,6 +61,9 @@ aliases: ["Strategic Slack", "의도적 여유", "80% 가동률", "Doing Nothing
 ## 출처
 
 - [Doing nothing at work — Sean Goedecke](https://www.seangoedecke.com/doing-nothing-at-work/)
+- [Glue work considered harmful — Sean Goedecke](https://www.seangoedecke.com/glue-work-considered-harmful/) — 2024-12-16, 2026-11-16 보상하지 않는 이유, 미션 수행과 60% 효율, 전술적 수행 권고 대조
+- [Contra "Glue work considered harmful" — sunshowers](https://sunshowers.io/posts/glue-work/) — 2026-11-12, 2026-11-16 반론의 논지, 마찰 제거 사례, 조직과 개인 권고 대조
+- [글루 워크는 해롭다에 대한 반론 — GeekNews](https://news.hada.io/topic?id=37134) — 2026-11-16 접속 시 브라우저 확인 페이지로 요약 미열람, 위 원문으로 대조
 
 ## 관련 문서
 
@@ -61,3 +72,4 @@ aliases: ["Strategic Slack", "의도적 여유", "80% 가동률", "Doing Nothing
 - [[Productivity-Business-Ceiling|개발 생산성과 사업 성과 (Min/Max 프레임)]]
 - [[Software-Productivity-Measurement|소프트웨어 생산성 측정의 함정]]
 - [[Output-vs-Outcome|산출물 vs 사용자 성과]]
+- [[Strength-Based-Growth|강점 기반 성장]] — 지속 가치가 남는 일과 반복 잡무의 구분

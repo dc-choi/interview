@@ -11,7 +11,7 @@ aliases: ["Outcomes"]
 
 ## 목차
 - [x] [[Engineering-Influence|엔지니어링 영향력 — 일을 보이게 하기 (가시화, 태도, 레버리지)]]
-- [x] [[Strategic-Slack|의도적 여유 (80% 가동률, 시간 의존적 고영향 기회, 거절할 작업 3종, 평시 80 결정적 100 리듬)]]
+- [x] [[Strategic-Slack|의도적 여유 (80% 가동률, 시간 의존적 고영향 기회, 거절할 작업 3종, glue work를 둘러싼 두 입장, 평시 80 결정적 100 리듬)]]
 - [x] [[Business-Outcomes|비즈니스 성과와 재무 (비즈니스 임팩트, Min/Max 프레임, 스타트업 재무 규율)]]
 - [x] [[Output-vs-Outcome|산출물 vs 사용자 성과 (완료의 정의, 사용성=품질, SI 다단계 하도급의 구조적 함정)]]
 - [x] [[Outcome-Measurement|성과 측정과 서술 프레임 (신뢰성 지표, 운영 효율, 트레이드오프, 생산성 측정의 함정)]]

@@ -106,6 +106,12 @@ Atlassian의 DACI는 결정 절차를 진행하는 Driver와 최종 결정을 �
 - **상태 동기 주기**: 실시간 회의 대신 주간 상태 갱신으로 충분한 의존이 대부분이다. 마일스톤과 상태 보고의 프로젝트 절차는 [[Project-Management|프로젝트 관리]]로 위임한다.
 - **실무자 간 직접 채널**: 리더를 거쳐 전달하면 스펙을 아는 사람이 대화에서 빠지고, 왕복마다 정보가 깎인다. 리더는 우선순위와 리소스를 협상하고, 세부 인터페이스는 실무자끼리 직접 맞춘다.
 
+### 동기와 비동기를 고르는 기준
+
+동기 작업은 정해진 일정에 실시간으로 함께 하는 일이고, 비동기 작업은 각자의 일정에 맞춰 하는 일이다. Seth Godin은 2026-11-04 글에서 동기가 서로의 에너지를 키우고 실시간 반응과 통제를 주지만 사람을 같은 시간에 맞추는 비용과 대기가 든다고 보고, 다음 관찰을 덧붙인다. 회의를 소집한 사람은 이미 다른 사람들의 시간을 쓰기로 결정한 것이다. 이메일, 메신저와 문자는 비동기 도구인데 동기의 응답 기대를 얹어 쓰면 동기의 에너지 없이 방해만 남는다. 마감은 비동기 작업에 부과한 동기 지점이며, 일하는 방식이 바뀌는 지점에 기회와 함정이 함께 있다. 신뢰는 동기에서 쌓이고 비동기에서 쓰인다. 에이전트는 회의가 필요 없고 새벽에도 일하므로 사람이 동기 병목이 된다. 결론은 비동기보다 분명한 이점이 있을 때만 동기로 하라는 것이다.
+
+에세이의 관점이며 측정 결과는 아니다. 팀 간 협업에 옮기면(적용 제안) 처음 함께 일하는 팀과는 짧은 동기 접점으로 맥락과 신뢰를 먼저 만들고, 안정된 의존은 위의 문서, 결정 로그와 주간 갱신으로 옮긴다. 메신저로 받은 요청에는 기대 응답 시간을 함께 정하고, 마감처럼 비동기 작업이 동기로 바뀌는 지점은 인계 대상과 완료 조건을 미리 합의한다.
+
 ## 안티패턴
 
 ### 시차가 있는 팀에 같은 회의 참석을 요구한다
@@ -143,6 +149,8 @@ GitLab의 원격 회의 지침은 사전 안건, 비동기 의견과 실시간 �
 - [How to Win at Dependency Mapping: a Step-By-Step Guide — Atlassian Team Playbook](https://www.atlassian.com/team-playbook/plays/dependency-mapping)
 - [Key concepts and practices for applying a Team Topologies approach to team-of-teams org design — Team Topologies](https://teamtopologies.com/key-concepts)
 - [Work the policy, not the exceptions — Irrational Exuberance, Will Larson](https://lethain.com/work-policy-not-exceptions/)
+- [The power of sync — Seth's Blog, Seth Godin](https://seths.blog/2026/11/the-power-of-sync-2/) — 2026-11-04, 2026-11-16 정의, 회의 소집, 동기 기대를 얹은 비동기 도구, 전환 지점, 신뢰와 에이전트에 관한 문장과 실천 제안 대조
+- [세스 고딘: 동기식의 힘 — GeekNews](https://news.hada.io/topic?id=37240) — 2026-11-16 접속 시 브라우저 확인 페이지로 요약 미열람, 위 원문으로 대조
 
 ## 관련 문서
 
