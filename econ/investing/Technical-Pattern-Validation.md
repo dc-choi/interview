@@ -62,6 +62,18 @@ CandleCharts의 분류에서 몸통이 작고 한쪽 꼬리가 긴 캔들은 모
 
 실무 검토에서는 신호가 완성된 시점, 진입과 청산 조건, 비용과 재진입 규칙을 먼저 고정한다. 골든크로스나 데드크로스 하나로 기계적으로 매매하지 않으며, 장기 보유와 추세 매매를 사후에 바꿔 붙여 성과를 설명하지 않는다. 교차의 정의와 매매 판단의 한계는 2026-10-24 Fidelity 자료와 대조했고, 특정 시장의 예측력이나 수익성은 검증하지 않았다.
 
+### 장기 이동평균 아래에서 쉬는 규칙의 손익 구조
+
+지수가 200일선 위에 있으면 보유하고, 아래로 의미 있게 내려가면 비중을 줄이거나 현금으로 쉬었다가 다시 위로 올라오면 재진입하는 규칙이 있다. 2026-11-17 Fidelity 자료와 대조한 범위에서 가격이 이동평균 위에 있으면 흔히 강세, 아래에 있으면 약세 신호일 수 있다고 해석하고, 지지선 역할을 하던 이동평균 아래로 내려가면 단기 매도 신호로 볼 수 있다. 같은 자료는 지표가 내는 신호를 전략에 따라 따르지 않을 수 있다고도 적는다. 규칙의 해석 관행일 뿐 수익성이 검증됐다는 뜻은 아니다.
+
+손익 구조는 이동평균의 지연에서 나온다(정의에서 도출한 해석).
+
+- 장기 평균은 반응이 늦으므로 청산은 고점보다 낮은 가격에서, 재진입은 저점보다 높은 가격에서 일어난다. 이 규칙은 저점 매수와 고점 매도를 노리지 않고 긴 하락의 일부를 피하는 대가로 그 차이를 비용으로 낸다.
+- 하락이 짧게 끝나고 곧 회복되면 판 가격보다 비싸게 다시 사게 된다. 가격이 평균 근처에서 오르내리며 매도와 재진입 신호가 짧은 간격으로 반복되는 현상은 흔히 휩소(whipsaw)라고 부른다(통용 용어). 거래 비용이 신호마다 쌓이고, 계좌와 과세 제도에 따라 세금도 생길 수 있다.
+- 하락이 길게 이어지면 그 구간의 손실 일부를 피해 최대 낙폭(MDD)을 줄일 수 있다. 따라서 성과 차이는 평가 기간에 긴 하락이 몇 번 들어 있었는지에 크게 좌우된다. 200일선 이탈이 몇 번뿐인 표본에서는 한 사건이 결과를 좌우할 수 있으므로 비교 결과를 일반 규칙으로 보지 않는다.
+
+검증할 때는 다음을 먼저 고정한다(검증 설계 제안). 대상 지수와 평균 방식(SMA 또는 EMA), 이탈의 판정(종가 기준인지, 몇 퍼센트나 며칠 연속 이탈인지), 판정 뒤 실제 주문 시점, 쉬는 동안 자금을 둘 자산, 비용과 세금, 비교 기준인 단순 보유다. MDD 감소와 총수익 손실을 함께 보고하며, 특정 기간의 MDD나 수익률 차이 주장은 계산 기간과 규칙이 공개되지 않으면 재현 전까지 쓰지 않는다. 검증 원칙은 [[Backtesting-Pitfalls|백테스트의 함정]]을 따른다.
+
 ### 이동평균의 숫자보다 봉 단위를 먼저 맞춘다
 
 2026-11-04 Fidelity의 SMA 안내는 200개 봉 평균을 장기 추세, 50개 봉 평균을 중기 추세의 일반적인 대용 지표로 설명한다. 이는 특정 국가 투자자의 선호를 조사한 결과가 아니다. 같은 200이라는 설정도 일봉의 200개와 5분봉의 200개는 관찰 범위가 다르다. 일봉의 20개 관측을 특정 달의 전체 거래일과 항상 같다고 보거나, 200개 관측을 정확한 1년으로 바꾸어 읽지 않는다(기간 정의의 적용 해석).
@@ -106,7 +118,9 @@ Lo, Mamaysky와 Wang의 연구는 차트 모양을 주관적으로 고르는 문
 
 - [Support and resistance — Fidelity](https://www.fidelity.com/learning-center/trading-investing/technical-analysis/support-and-resistance) — 2026-11-04 지지와 저항의 정의, 가상 참여자의 심리와 역할 전환 관행만 대조. 특정 보유자나 돌파 수익률을 검증하지 않음
 - [Fidelity, Simple Moving Average (SMA)](https://www.fidelity.com/learning-center/trading-investing/technical-analysis/technical-indicator-guide/sma)
-- [Moving average stock signal — Fidelity](https://www.fidelity.com/viewpoints/active-investor/moving-averages) — 이동평균 교차의 정의와 기계적 매매의 한계만 확인, 본문의 시황 전망은 반영하지 않음
+- [Moving average stock signal — Fidelity](https://www.fidelity.com/viewpoints/active-investor/moving-averages) — 이동평균 교차의 정의와 기계적 매매의 한계만 확인, 본문의 시황 전망은 반영하지 않음. 2026-11-17 이동평균 아래 이탈의 단기 매도 신호 해석과 신호를 따르지 않을 수 있다는 문장을 추가 대조
+- [What is an indicator? — Fidelity](https://www.fidelity.com/learning-center/trading-investing/what-is-an-indicator) — 2026-11-17 가격과 이동평균의 위아래 관계를 강세와 약세 신호로 해석하는 문장만 확인
+- [“200일선 깨지면 투매가 나옵니다”…하락장에서 개미가 살아남는 단 하나의 기준 — 이효석아카데미](https://www.youtube.com/watch?v=dkEtkF5yuyc) — 2026-11-08 공개 영상, 장기 이동평균 규칙 절의 계기. 영상의 과거 사례별 MDD와 수익률 차이 수치는 계산 규칙이 공개되지 않아 옮기지 않음
 - [CME Group, Technical Analysis, Chart Types: candlestick, line, bar](https://www.cmegroup.com/education/courses/technical-analysis/chart-types-candlestick-line-bar)
 - [CME Group, Technical Analysis, Technical Patterns: Reversals](https://www.cmegroup.com/education/courses/technical-analysis/technical-patterns-reversals)
 - [Foundations of Technical Analysis: Computational Algorithms, Statistical Inference, and Empirical Implementation — NBER, Andrew W. Lo, Harry Mamaysky, Jiang Wang](https://www.nber.org/papers/w7613) — 공식 검색 반환의 초록 확인. 페이지 직접 조회는 403으로 실패했으며 논문 전체를 검증하지 않았다.
