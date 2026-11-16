@@ -54,6 +54,20 @@ awslabs의 `aidlc-workflows` 저장소는 방법론을 도구 중립 코어와 �
 - **스펙이 자산이다.** 한 백엔드의 V2를 만들 때 기존 코드를 버리고 갱신한 스펙에서 다시 생성했다는 사례를 들었다.
 - **모델을 하나에 묶지 않는다.** 모델과 가격이 자주 바뀌므로 중장기에는 여러 모델을 고를 수 있는 도구 사슬을 권한다.
 
+## 도입 사례: 레거시 SaaS 개발 조직의 전환
+
+같은 팟캐스트의 다른 회차(2026-11-07 업로드)에서 기업 사회공헌 플랫폼 Benevity의 엔지니어링 리더 두 명이 도입 경험을 말했다. 4월에 개발 조직의 절반, 6월에 나머지가 새 방식으로 옮겼고 화자는 약 6개월째라고 말한다. 회사가 직접 밝힌 경험담이며 수치와 효과는 독립 검증하지 않았다.
+
+- **적용 범위:** 새 기능(Microsoft Teams 안에서 쓰는 경험)과 레거시 현대화(14개 영역, 음성 전사 기준, greenfield와 facade를 둔 brownfield 포함)에 모두 썼다. 첫 workshop에서 Teams 앱을 3일 만에 만들려던 목표는 이루지 못했고, 현대화의 중요성을 확인한 실패였다고 말한다.
+- **선택 이유:** 검토한 spec 중심 방법론은 엔지니어링 경계 안에 머물러, 다른 부서까지 참여시키는 Mob Elaboration이 큰 전환에 맞았다고 평가한다. 개발자 한 명이 PM과 디자이너를 겸하게 하는 방향에는 반대했다.
+- **bolt의 해석:** 블로그는 bolt를 몇 주가 아닌 몇 시간이나 며칠 단위의 짧은 주기로 설명하지만, 이 회사는 bolt에 시간 한도를 두지 않고 목표한 결과를 얻을 때까지 이어 가는 단위로 운영했다. 우선순위 목록의 맨 위 항목을 끌어오는 scaled Kanban에 가깝다고 설명하며, 시작과 끝을 알 수 없어 계획이 어려워졌다고 인정한다. 실제 bolt 길이는 밝히지 않았다. story point를 버리고 capability 단위로 추정하는 방식을 새로 만들었다.
+- **지표:** 1차 지표는 cycle time이고 DORA 지표와 개발자 경험 신호는 유지했다. 품질은 나아진 경우와 그렇지 않은 경우가 섞여 있어 따로 다루는 중이라고 말한다. PR당 토큰 수와 비용도 관찰한다. PR이 코드 줄 수에 가까운 단위라 위험하다고 인정하면서도 기준 단위로 삼으며, 성과 관리가 아니라 탐색 목적이라고 말한다.
+- **효과가 안 보일 때의 진단:** 첫 cohort 뒤 고객이 받는 가치가 늘지 않아 효과를 의심했다. 진행 중인 capability를 이전 deliverable과 견줘 보니 작업 폭이 생각했던 것보다 약 5배 넓었다고 설명한다. 같은 분석을 다른 화자는 capability 기준 end-to-end로 약 4~4.5배 빨라졌다고 표현했으며 산정 방법은 공개하지 않았다. 출시량이 늘면서 go-to-market, 고객 성공과 마케팅 팀, 고객에게 부담이 옮겨 갔다고 말한다.
+- **조직:** 예전 scrum 팀으로 돌아가지 않도록 팀을 섞어 재편하고 팀별 code ownership을 없앴다. 대신 AI-DLC center of excellence가 표준을 관리한다. QA 팀과 보안 팀이 확장을 기여했고, 팀이나 개인의 제안은 실험을 거쳐 타당하면 전 팀에 적용한다. 인증 같은 아키텍처 표준을 워크플로우에 넣어 자동으로 적용한다고 설명한다.
+- **사람 쪽 비용:** 함께 일하는 시간이 길어 혼자 몰입하던 방식을 그리워하는 개발자가 있다. 회의적인 구성원의 입력 품질 질문은 낙관론자가 놓치는 신호로 활용한다고 말한다.
+
+코드 생성 속도만 보면 효과를 잘못 판단하기 쉬우므로, 진행 중인 작업의 폭, cycle time과 고객에게 도달한 결과를 함께 보는 편이 낫다(해석). bolt에서 시간 한도를 없애면 결과 중심으로 일할 수 있지만 일정 예측이 어려워지므로, 이 운영은 블로그 설명과 다른 해석으로 구분해 인용한다(해석).
+
 ## 트레이드오프
 
 - **장점:** 요구사항 단계에 관련 부서를 함께 넣어 개발 뒤에 드러나는 제약을 줄인다. 산출물이 저장소에 남아 세션이 끊겨도 이어서 작업하고 감사할 수 있다.
@@ -67,12 +81,14 @@ awslabs의 `aidlc-workflows` 저장소는 방법론을 도구 중립 코어와 �
 - 기획, 보안, 컴플라이언스의 제약을 구현 전에 AI 맥락으로 모으는 방법과 그 비용
 - 스펙과 계획 파일을 저장소에 남길 때 얻는 것(세션 연속성, 감사)과 관리할 것(스펙과 코드의 불일치)
 - 자율 처리 범위를 넓히기 전에 갖춰야 할 검증 기반
+- AI 도입 뒤 고객이 체감하는 가치가 늘지 않을 때 진행 중인 작업의 폭과 cycle time으로 원인을 나눠 보는 방법
 
 ## 출처
 
 - [AI-Driven Development Life Cycle: Reimagining Software Engineering — AWS DevOps & Developer Productivity Blog, Raja SP](https://aws.amazon.com/blogs/devops/ai-driven-development-life-cycle/) — 2025-07-31 게시
 - [aidlc-workflows — GitHub, awslabs](https://github.com/awslabs/aidlc-workflows) — 2026-11-15 README 확인
 - [AI-DLC: The AI-Driven Development Lifecycle — YouTube, Amazon Web Services](https://www.youtube.com/watch?v=Zjx_F5EJZqI) — 2026-11-04 업로드, Humans In The Loop 팟캐스트, 음성 전사 기준
+- [Benevity's AI-DLC Success Story — YouTube, Amazon Web Services](https://www.youtube.com/watch?v=MJOJwXQ-NIU) — 2026-11-07 업로드, Humans In The Loop 팟캐스트, 음성 전사 기준
 
 ## 관련 문서
 
