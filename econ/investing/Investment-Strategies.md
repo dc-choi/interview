@@ -100,6 +100,8 @@ S&P 500은 유동 시가총액 가중 지수이며, S&P가 편입과 편출을 �
 
 매달 새로 생기는 소득을 투자하는 경우와 이미 있는 목돈의 투입을 나누는 경우는 구분한다. 후자는 아직 투자하지 않은 현금을 보유하므로 하락 노출을 줄일 수 있지만, 상승 기회를 놓치거나 거래 횟수에 따른 비용이 늘 수 있다. 적립식도 투자 대상의 손실 위험을 없애지 않으며, 자금 목적에 맞는 비중을 따로 정해야 한다.
 
+목돈 분할의 기대 비용은 과거 자료로 가늠할 수 있다. Vanguard 연구(2023-02)는 MSCI World 지수의 1976~2022년 수익률로 목돈을 한 번에 넣는 경우와 3등분해 한 달 간격으로 넣는 3개월 분할을 1년 뒤 자산으로 비교했다. 주식 100%이고 대기 현금에 이자가 없다는 가정에서 일시 투자가 분할보다 나은 경우가 68%였고, 대기 현금에 3개월 미국 국채 금리를 주면 65%였다. 같은 연구에서 분할이 현금을 계속 들고 있는 것보다 나은 경우도 69%였다. 1년 뒤 자산의 중앙값 차이는 주식 100%에서 2.2%, 주식 40%와 채권 60%(채권은 Bloomberg U.S. Aggregate 지수)에서 1.2%였다. 분할 기간이 길수록 현금으로 기다리는 기간이 늘어 기대 비용도 커진다. 반대로 가장 나쁜 결과 구간에서는 분할이 앞섰다. 25번째 백분위수에서는 세 배분 모두 일시 투자가 여전히 앞섰고, 5번째 백분위수에서 분할이 앞섰다. 이 연구는 대부분의 투자자, 특히 손실 회피가 크지 않은 투자자에게 목돈을 바로 넣으라고 권한다. 분할은 심한 하락장의 낙폭과 후회를 줄여 투자 계획을 지키게 도울 수 있지만 낮은 기대수익과 함께 저울질해야 하며, 위험 회피와 손실 회피가 모두 매우 커서 목돈을 현금으로만 둘 투자자에게 짧은 분할(3개월 등)을 선택지로 둔다. 손실 회피는 [[Behavioral-Biases-Risk|행동 편향과 리스크 관리]]에서 다룬다. 이 수치는 과거 지수 기준의 확률이며 어느 해의 결과를 보장하지 않는다(2026-11-16 원문 대조).
+
 ## 5. 마켓타이밍의 함정
 
 시장 고점과 저점을 반복해서 예측하는 것은 어렵고, 거래비용과 세금, 빠른 반등일을 놓치는 위험이 있다. 다만 목표 시점과 위험 한도에 따른 자산배분 변경까지 금지한다는 뜻은 아니다. 지속 투자와 사전 규칙이 단기 예측 의존을 줄이는 방법이다.
@@ -187,6 +189,7 @@ S&P 500은 유동 시가총액 가중 지수이며, S&P가 편입과 편출을 �
 - [U.S. Persistence Scorecard Year-End 2025](https://www.spglobal.com/spdji/en/documents/spiva/persistence-scorecard-year-end-2025.pdf) — 2026-10-05 상위 성과의 낮은 지속성 대조
 - [Investor.gov, Index Funds](https://www.investor.gov/introduction-investing/investing-basics/investment-products/mutual-funds-and-exchange-traded-4)
 - [The Benefits and Limitations of Dollar-Cost Averaging — FINRA](https://www.finra.org/investors/insights/dollar-cost-averaging) — 2026-10-03 적립식의 행동상 이점, 목돈 분할의 기회비용과 거래비용 대조
+- [Cost averaging: Invest now or temporarily hold your cash? — Vanguard, Megan Finlay, Josef Zorn](https://corporate.vanguard.com/content/dam/corp/research/pdf/cost_averaging_invest_now_or_temporarily_hold_your_cash.pdf) — 2023-02 Vanguard Research, 2026-11-16 3개월 분할과 일시 투자의 1년 뒤 비교(68%, 현금 이자 반영 65%, 현금 대비 69%), 배분별 중앙값 차이와 손실 회피 투자자의 선택 대조
 - [What Is Market Timing? — FINRA](https://www.finra.org/investors/insights/market-timing) — 2026-10-03 단기 예측 매매의 비용과 반등을 놓칠 위험 대조
 
 > 2026-10-03 부분 대조: 패시브의 추적 오차, 적립식과 마켓타이밍의 한계. SPIVA 범주별 수치와 효율적 시장 가설 전체를 다시 검증한 날짜는 아니다.

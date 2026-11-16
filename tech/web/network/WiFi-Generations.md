@@ -3,7 +3,7 @@ tags: [network, wireless, wifi, ieee-802-11, troubleshooting, captive-portal]
 status: done
 verified_at: 2026-11-16
 category: "Web - 네트워크"
-aliases: ["Wi-Fi Generations", "Wi-Fi 세대", "와이파이 세대", "802.11n", "Wi-Fi 4", "802.11ac", "802.11ax", "802.11be", "802.11bn", "Wi-Fi 7", "Wi-Fi 8", "802.11p", "WAVE", "802.11bd"]
+aliases: ["Wi-Fi Generations", "Wi-Fi 세대", "와이파이 세대", "802.11n", "Wi-Fi 4", "802.11ac", "802.11ax", "802.11be", "802.11bn", "Wi-Fi 7", "Wi-Fi 8", "802.11p", "WAVE", "802.11bd", "DSRC"]
 ---
 
 # Wi-Fi 세대와 연결 구간 진단
@@ -53,6 +53,7 @@ WAVE(Wireless Access in Vehicular Environments)는 802.11 위에 IEEE 1609 계�
 
 - 1609.1은 2006년 시험용 표준(WAVE Resource Manager)으로, 도로변 장치(RSU)를 거쳐 원격 애플리케이션이 차량 탑재 장치(OBU)에 접근하게 하는 자원 관리자를 정의했지만 2008-12-31 철회됐다. 1609.1을 현행 계층으로 설명하는 자료는 2006년 구성을 기준으로 한 것이다.
 - 후속 개정 802.11bd-2022(Enhancements for Next Generation V2X, 승인 2022-12-03, 현재 Superseded로 802.11 일정표상 802.11-2024 통합판의 기반 개정)는 5.9GHz와 60GHz 대역의 차세대 V2X(차량과 모든 것 사이의 통신)를 위해 PHY와 MAC을 고쳤다. 진행 중인 1609.0 개정안(P1609.0)은 1609 표준과 802.11에 더해 LTE-V2X(셀룰러 기반 차량 통신)를 기반 기술로 포함한다. 802.11 계열 하나가 차량 통신을 독점하는 구도가 아니므로, 지역별 주파수 정책과 채택 기술은 별도로 확인한다(2026-11-16 IEEE SA 페이지 대조).
+- 미국이 그 예다. FCC는 1999년 5.850~5.925GHz의 75MHz 전체를 ITS(지능형 교통 시스템)에 배정했지만, 2020년 First Report and Order에서 아래쪽 45MHz(5.850~5.895GHz)를 비면허 용도로 돌리고 위쪽 30MHz(5.895~5.925GHz)만 C-V2X(셀룰러 기반 차량 통신) 방식의 ITS에 남겼다. 2024-11-20 채택한 Second Report and Order는 C-V2X 기술 규칙을 정하고, 802.11p-2010을 따르던 DSRC(Dedicated Short Range Communications) 운용을 이 명령의 연방관보 게재일부터 2년 안에 끝내게 했으며, 규칙 시행 뒤 새 면허는 C-V2X만 허가한다. 연방관보 게재는 2024-12-13, 규칙 시행은 2025-02-11이고, 기존 DSRC 면허의 갱신은 2026-12-14를 넘을 수 없다. 2026-11-16 기준으로 이 기한은 아직 지나지 않았으며, 기한 뒤에는 미국에서 802.11p 기반 차량 통신의 운용 근거가 끝난다. 기한의 연장 여부와 다른 지역의 채택 기술은 각국 규제 문서로 따로 확인한다(2026-11-16 FCC 24-123과 연방관보 원문 대조).
 
 ## 연결 구간을 나눠 진단한다
 
@@ -104,6 +105,8 @@ Wi-Fi 아이콘이 가득 찼는데 인터넷이 안 된다면 단말과 AP 사�
 - [IEEE SA, IEEE 1609.2-2025](https://standards.ieee.org/ieee/1609.2/12070/)
 - [IEEE SA, IEEE 1609.3-2020](https://standards.ieee.org/ieee/1609.3/10360/)
 - [IEEE SA, IEEE 1609.4-2016](https://standards.ieee.org/ieee/1609.4/6183/)
+- [FCC, FCC 24-123 Use of the 5.850-5.925 GHz Band, Second Report and Order](https://docs.fcc.gov/public/attachments/FCC-24-123A1_Rcd.pdf) — 2024-11-20 채택, 2024-11-21 공개. 2020년 대역 재배치, DSRC의 802.11p-2010 준수 규정, 연방관보 게재일부터 2년의 DSRC 종료 기한과 신규 면허의 C-V2X 한정
+- [Federal Register, Use of the 5.850-5.925 GHz Band (FR Doc 2024-28980, 89 FR 100838)](https://www.govinfo.gov/content/pkg/FR-2024-12-13/html/2024-28980.htm) — 2024-12-13 게재, 시행일 2025-02-11과 DSRC 면허 갱신 한도 2026-12-14
 - [Wi-Fi Alliance, Wi-Fi (MAC/PHY)](https://www.wi-fi.org/discover-wi-fi/wi-fi-certified-7) — 세대별 기능과 Wi-Fi 8 소개
 - [Wi-Fi Alliance, Wi-Fi 6E: Wi-Fi in the 6 GHz band (2021)](https://www.wi-fi.org/file/wi-fi-6e-wi-fi-in-the-6-ghz-band-2021)
 - [IEEE 802.11, Official IEEE 802.11 Working Group Project Timelines](https://www.ieee802.org/11/Reports/802.11_Timelines.htm) — 2026-10-27 갱신본, 802.11be 승인과 발행일, 802.11bn 예측 일정, 802.11p와 802.11bd가 기반이 된 통합판
@@ -115,6 +118,7 @@ Wi-Fi 아이콘이 가득 찼는데 인터넷이 안 된다면 단말과 AP 사�
 - [바이브코딩할 때 무조건 알아야 할 인터넷 기초 개념과 Wi-Fi 원리 — 투더제이 TTJ](https://www.youtube.com/watch?v=T7jtlfeYgAA)
 - [#NW 0035 와이파이 속도 10배 높인 혁명! IEEE 802.11n 완벽 정리 — 길리랩](https://www.youtube.com/watch?v=OMO3Z8r7BqI) — 2026-11-06 공개 쇼츠, 802.11n 보강의 계기이며 내용은 위 IEEE SA와 Cisco 자료로 대조
 - [#NW 0036 차끼리 대화하는 도로?! IEEE 802.11p WAVE 90초 완전정리 — 길리랩](https://www.youtube.com/watch?v=MIj1WcKIgp0) — 2026-11-07 공개 쇼츠, WAVE 보강의 계기이며 내용은 위 IEEE SA 페이지로 대조
+- [#NW 0037 자동차끼리 대화한다고? V2X 기술 90초 완벽 정리 — 길리랩](https://www.youtube.com/watch?v=ahuyjL8zLnY) — 2026-11-07 공개 쇼츠, 미국 5.9GHz 정책 보강의 계기이며 내용은 위 FCC 명령으로 대조. 통신 거리 수치와 유럽 표준 설명은 확인하지 못해 옮기지 않음
 
 ## 관련 문서
 
