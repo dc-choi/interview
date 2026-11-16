@@ -29,7 +29,9 @@ Foundry worker는 capability별 컨테이너를 사용하므로 agent JVM heap�
 
 2026-10-16 공지 기준, 2026년 8월부터 Foundry worker의 data ingest와 export, media ingest, Iceberg extract는 compute 비용을 발생시키지 않는다. 이전에는 일반 transform과 같은 방식으로 과금됐고, Palantir는 이 변경의 목적을 agent worker에서 Foundry worker로의 이전 지원이라고 밝혔다. 이 작업들에 이전에 부과된 compute 비용에는 credit을 주지 않는다. Streaming ingest는 계속 과금되며 streaming 가격 모델은 추후 공개 예정이다. 같은 공지는 agent worker로 ingest나 export를 하는 경우 가능한 한 빨리 이전하라고 권하지만, 2026-10-19 확인한 비교 문서는 여전히 agent worker를 legacy이지만 fully supported로 설명한다. 이전 권고를 지원 종료로 읽지 않는다.
 
-이 문서의 적용 제안: 이전 효과를 비교할 때는 공지가 compute 비용에서 제외한 네 작업과 계속 과금되는 streaming ingest를 나눠 보고, 공지에 따로 언급되지 않은 streaming export와 CDC sync는 해당 여부를 따로 확인한다. 실제 청구 반영은 enrollment의 사용량 기록으로 확인한다.
+2026-11-05 공지는 streaming ingest 과금도 바꿨다. 2026년 11월 1일부터 Foundry worker에서 실행하는 streaming ingest의 compute 비용이 이전 방식으로 계산했을 때보다 약 97.5% 줄어든다고 설명한다. 무료 전환이 아니라 감소이며, 공지는 수치를 기대치(around)로 표현하고 별도 가격 모델의 세부를 밝히지 않는다. 목적은 10월 공지와 같이 agent worker에서 Foundry worker로의 이전 지원이며, agent worker로 streaming ingest를 하는 경우 가능한 한 빨리 이전하라고 권한다. 같은 공지는 Foundry worker를 legacy agent worker를 대체하는 권장 방식으로 소개하지만 agent worker의 지원 종료 날짜는 적지 않는다. 2026-11-16 이 공지를 원문과 대조했다.
+
+이 문서의 적용 제안: 이전 효과를 비교할 때는 공지가 compute 비용에서 제외한 네 작업과 공지상 2026-11-01부터 약 97.5% 감소가 예고된 streaming ingest를 나눠 보고, 공지에 따로 언급되지 않은 streaming export와 CDC sync는 해당 여부를 따로 확인한다. 네 작업은 2026년 8월, streaming ingest는 2026-11-01을 경계로 과금 기준이 바뀌었으므로 경계 전후가 섞인 사용량을 한 기준으로 비교하지 않는다. 실제 청구 반영은 enrollment의 사용량 기록으로 확인한다.
 
 ## 30일 복귀 창
 
@@ -53,6 +55,7 @@ Foundry worker는 capability별 컨테이너를 사용하므로 agent JVM heap�
 - [Palantir, Agent proxy configuration reference](https://www.palantir.com/docs/foundry/data-connection/agent-proxy)
 - [Palantir, Foundry worker vs. agent worker](https://www.palantir.com/docs/foundry/data-connection/foundry-worker-vs-agent-worker)
 - [Palantir, October 2026 announcements](https://www.palantir.com/docs/foundry/announcements/2026-10) — 2026-10-16 Foundry worker의 compute 비용 제외 범위
+- [Palantir, November 2026 announcements](https://www.palantir.com/docs/foundry/announcements/2026-11) — 2026-11-16 Foundry worker streaming ingest의 compute 비용 약 97.5% 감소와 적용일 대조
 
 ## 관련 문서
 

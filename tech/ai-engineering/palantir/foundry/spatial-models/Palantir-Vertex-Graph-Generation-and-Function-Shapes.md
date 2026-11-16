@@ -52,7 +52,7 @@ Search Around 패널은 여러 단계의 link 탐색과 filter를 묶어 새 gra
 
 재사용을 위해 parameter를 정의할 수 있다. Parameter는 이름, 설명과 기본값을 가지며 기본값은 Search Around를 불러올 때마다 적용된다. 같은 자료형의 filter 필드에만 연결할 수 있고 값을 바꾸면 그 parameter를 쓰는 모든 filter가 함께 바뀐다. V1의 저장 대화상자는 이름과 위치를 받고, 저장한 Search Around는 다른 graph나 graph template에서 쓰는 resource가 된다. 불러온 뒤에는 graph에서 시작 객체를 골라야 하며 알맞은 type의 객체만 고를 수 있다. 따라서 재사용 단위는 특정 시작 객체가 아니라 탐색 정의로 읽힌다(해석). 저장 대화상자에서 시작 object type을 지정하는 기능은 V2 문서에만 있다.
 
-V2가 켜진 enrollment에서는 V2 패널이 V1을 대체하고 단계마다 여러 object type, wildcard 단계, 반복 단계와 object-backed link type을 지원한다. 패널에서 **Any Object Type** 단계를 추가할 수 있으면 V2다. Enrollment가 V2로 바뀐 뒤에도 V1에서 저장한 Search Around는 계속 쓸 수 있고, graph와 template은 V2에서 명시적으로 다시 저장하기 전까지 V1 버전을 실행한다. 다시 저장하는 이전은 손실이 생길 수 있다. 불러오지 못한 filter는 저장 시 빠지며 이전 경고가 그 filter를 알려 준다. Filter가 빠지면 결과가 넓어질 수 있으므로 경고를 확인한 뒤 저장한다. V1은 범위 filter의 최소와 최대가 뒤바뀌면 자동으로 맞바꿨지만 V2는 그러지 않아 결과가 비므로, 이전 뒤 범위 filter의 순서도 점검한다. 문서나 교육 자료를 볼 때는 화면이 어느 버전인지 먼저 확인한다.
+V2가 켜진 enrollment에서는 V2 패널이 V1을 대체하고 단계마다 여러 object type, wildcard 단계, 반복 단계와 object-backed link type을 지원한다. 패널에서 **Any Object Type** 단계를 추가할 수 있으면 V2다. 2026-11-10 공지는 Search Around V2가 Vertex에서 generally available이 됐다고 발표했다. 그러나 2026-11-16 확인한 V2 문서는 여전히 enrollment에서 V2가 켜져 있지 않을 수 있다고 적으므로, GA 공지를 모든 enrollment의 활성화로 읽지 않고 위 Any Object Type 단계로 확인한다. Enrollment가 V2로 바뀐 뒤에도 V1에서 저장한 Search Around는 계속 쓸 수 있고, graph와 template은 V2에서 명시적으로 다시 저장하기 전까지 V1 버전을 실행한다. 다시 저장하는 이전은 손실이 생길 수 있다. 불러오지 못한 filter는 저장 시 빠지며 이전 경고가 그 filter를 알려 준다. Filter가 빠지면 결과가 넓어질 수 있으므로 경고를 확인한 뒤 저장한다. V1은 범위 filter의 최소와 최대가 뒤바뀌면 자동으로 맞바꿨지만 V2는 그러지 않아 결과가 비므로, 이전 뒤 범위 filter의 순서도 점검한다. 문서나 교육 자료를 볼 때는 화면이 어느 버전인지 먼저 확인한다.
 
 ### V2의 계획과 실행
 
@@ -136,6 +136,7 @@ Styled layer는 multiple layer가 켜진 enrollment에서 같은 object type의 
 - [Palantir vertex, timeline](https://www.palantir.com/docs/foundry/vertex/timeline)
 - [Palantir vertex, use-time-selection](https://www.palantir.com/docs/foundry/vertex/use-time-selection)
 - [Palantir vertex, vertex-settings-control-panel](https://www.palantir.com/docs/foundry/vertex/vertex-settings-control-panel)
+- [Palantir Foundry, November 2026 announcements](https://www.palantir.com/docs/foundry/announcements/2026-11)
 
 ## 관련 문서
 
