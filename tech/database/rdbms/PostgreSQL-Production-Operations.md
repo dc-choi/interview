@@ -77,7 +77,7 @@ PostgreSQL 운영의 핵심은 빠른 쿼리 하나를 찾는 데 있지 않다.
 ## Vacuum, bloat와 wraparound
 
 - standard `VACUUM`은 dead row version과 index의 공간을 이후 재사용할 수 있게 하지만, 보통 운영체제에 디스크 공간을 반환하지는 않는다.
-- `VACUUM FULL`은 table을 다시 작성해 공간을 반환할 수 있지만 `ACCESS EXCLUSIVE` lock과 추가 디스크 공간을 요구한다. bloat를 발견한 뒤의 기본 대응이 아니라, 원인과 허용 가능한 중단 시간을 확인한 뒤 선택한다.
+- `VACUUM FULL`은 table을 다시 작성해 공간을 반환할 수 있지만 `ACCESS EXCLUSIVE` lock과 추가 디스크 공간을 요구한다. bloat를 발견한 뒤의 기본 대응이 아니라, 원인과 허용 가능한 중단 시간을 확인한 뒤 선택한다. PostgreSQL 19의 온라인 재작성 `REPACK (CONCURRENTLY)`와 `pg_repack` 비교는 [[PostgreSQL-REPACK|PostgreSQL REPACK]]을 본다.
 - autovacuum은 table별 변경량과 XID age를 기준으로 `VACUUM`과 `ANALYZE`를 실행한다. write가 집중된 relation은 전역 기본값만 보지 말고 dead tuple, worker 포화, I/O, `relfrozenxid`, `relminmxid`와 장기 transaction을 함께 관측한다.
 - XID와 MultiXact wraparound 방지는 가용성 문제다. anti-wraparound vacuum, 오래 열린 transaction, 오래된 prepared transaction과 replication slot을 정기적으로 점검한다. wraparound 경고 같은 치명 신호는 이메일함이 아니라 대응이 보장되는 알림 경로에 연결한다.
 - index bloat의 재구성은 `REINDEX INDEX CONCURRENTLY` 같은 선택지가 있지만, 지원 버전, 디스크 여유, 작업 시간과 실패 복구를 확인한다.

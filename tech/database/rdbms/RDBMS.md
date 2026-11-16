@@ -109,6 +109,7 @@ aliases: ["RDBMS", "OLTP"]
 - [x] [[Distributed-SQLite|분산 SQLite]] — 합의, 변경 스트리밍과 CRDT 병합, 쓰기 소유권과 복구/손실 경계
 - [x] [[scaling-operations|확장과 운영 폴더 인덱스 (샤딩, 복제, 클러스터링, Read Replica 라우팅)]]
 - [x] [[PostgreSQL-Production-Operations|PostgreSQL 운영 (실행 계획, Online DDL, vacuum, partitioning, pgAudit 감사 로깅)]]
+- [x] [[PostgreSQL-REPACK|PostgreSQL REPACK (19의 온라인 테이블 재작성, VACUUM FULL과 CLUSTER 통합, pg_repack 비교)]]
 - [x] [[PostgreSQL-Extensions|PostgreSQL 확장 생태계 (PostGIS, 검색, pg_cron, Citus)]]
 - [x] [[Aurora-PostgreSQL-Lake-Query|Aurora PostgreSQL의 데이터 레이크 직접 조회 (aurora_analytics, 내장 DuckDB, 읽기 전용 foreign table, 전용 reader 격리)]]
 - [x] [[Sharding|Sharding]]
