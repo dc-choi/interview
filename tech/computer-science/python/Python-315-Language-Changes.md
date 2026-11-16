@@ -47,4 +47,5 @@ Python 3.15는 2026-10-09 공개된 버전이다. 문법과 내장 타입의 변
 ## 관련 문서
 
 - [[Python-Iteration-and-Functions|Python 반복문과 함수]]
+- [[CPython-Experimental-JIT|CPython 실험적 JIT (거버넌스와 main 제거 기한)]]
 - [[Compile-and-Runtime|컴파일과 런타임]]
