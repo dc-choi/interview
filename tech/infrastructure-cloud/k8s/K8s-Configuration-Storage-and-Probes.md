@@ -51,7 +51,7 @@ Pod 교체가 일상인 환경에서는 설정, 상태와 health contract를 ima
 PV는 cluster storage resource이고 PVC는 namespaced storage 요청이다. StorageClass와 CSI provisioner가 PVC를 보고 volume을 동적으로 만들 수 있다.
 
 - access mode는 backend capability와 attach topology를 함께 확인한다. 이름만 보고 모든 storage driver가 동일한 강제 의미를 제공한다고 가정하지 않는다.
-- volume binding, node/AZ affinity와 scheduler가 맞지 않으면 Pod가 Pending에 머문다.
+- volume binding, node/AZ affinity와 scheduler가 맞지 않으면 Pod가 Pending에 머문다. binding 시점을 정하는 StorageClass 설정은 [[K8s-StorageClass-Volume-Binding|volume binding mode]]에 있다.
 - reclaim policy `Delete`와 `Retain`은 PVC 삭제 뒤 PV/backend 처리에 영향을 준다.
 - PV가 있다고 backup이 생기는 것은 아니다. application-consistent snapshot, restore drill과 retention을 별도로 설계한다.
 - 여러 Pod가 같은 filesystem을 mount할 수 있다는 것과 application data가 동시 쓰기에 안전하다는 것은 별개다.

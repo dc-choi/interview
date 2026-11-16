@@ -21,4 +21,5 @@ aliases: ["LLM 원리와 운영", "LLM 운영", "LLM Fundamentals and Operations
 - [x] [[LLM-Operations|LLM 선택, 서빙과 운영 (operations/ 서브폴더) — 모델 티어 선택과 라우팅, 모델 발표 수치 읽기, 결정 모델, 추론 병목, 프롬프트 캐싱, 게이트웨이, 실패 처리]]
 - [x] [[Event-Log-Highlight-Generation|이벤트 로그 기반 하이라이트]] — 로그 정규화, SQL 템플릿, 사실 검증과 검토 처리량
 - [x] [[LLM-Product-Attribute-Extraction|상품 이미지의 속성 추출]] — OCR 후보 선별, 형식과 의미 검증, 보류 비율과 정확도
+- [x] [[LLM-Search-Query-Understanding|LLM 검색 쿼리 이해]] — 카테고리 후보 재순위와 유사도 guardrail, 목적별 쿼리 재작성, 오프라인 teacher와 캐시, LoRA student의 지연 예산
 - [x] [[LLM-Provider-Usage-Policy|LLM 제공자 이용 정책과 제품 설계]] — Anthropic Usage Policy 2026 개정, 챗봇 AI 고지, 에이전트 준수 책임, 높은 위험 권고의 사람 검토, 물리 행동 요건, 제품 개발 체크포인트
