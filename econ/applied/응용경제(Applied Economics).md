@@ -20,6 +20,7 @@ aliases: ["응용경제(Applied Economics)", "Applied Economics Map"]
 - [[Reading-Economic-Indicators|경제지표 캘린더 읽는 법]] — 발표치와 예상, 헤드라인과 근원, 계절조정, 연율화와 개정치, 수출 호황과 체감 경기의 분해, 달러 지수의 구성 ✅
 - [[Housing-Rental-Market-Indicators|주택 매매와 임대차 지표 읽기]] — 가격지수와 계약자료, 계약일과 신고일, 신규와 갱신 계약, 전월세전환율과 같은 집의 전세, 월세 비용 비교, 월세 비중의 분류와 집계 기준, 전망의 검증 범위 ✅
 - [[Hidden-Infrastructure-Markets|보이지 않는 B2B 인프라 시장]] — 수요 원천과 수익 구조, 장기 계약의 듀레이션, 데이터센터 건설과 운영 고용의 구분 ✅
+- [[Rail-Infrastructure-Maintenance-and-Punctuality|철도 인프라 유지보수와 정시율 읽기]] — 유지보수 이연의 시차, 정시율의 기준 시간과 취소 처리, 투자 확대 초기의 공사 영향, 전기화와 고속철도 망 지표 ✅
 
 - [[AI-Infrastructure-Capital-Cycle|AI 인프라 투자와 자본 순환]] — 수요, 설비투자, 가동과 자금 회수의 구분
 - [[AI-Compute-Commitment-Under-Uncertainty|AI 연산 설비의 선행 확보 판단]] — 검증 전 약정의 이유, 발언과 공시의 비용 구분, 주 위험과 상관된 하방, 설비 자산화와 연구비 비용 처리의 비대칭

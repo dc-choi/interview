@@ -1,7 +1,7 @@
 ---
 tags: [econ, stablecoin, currency, reserves, liquidity]
 status: done
-verified_at: 2026-10-22
+verified_at: 2026-11-17
 category: "Economics"
 aliases: ["스테이블코인 가치와 상환", "Stablecoin Value and Redemption"]
 ---
@@ -64,15 +64,35 @@ IMF의 2026-08-07 공개 설명도 거시정책의 신뢰, 통화 대체의 정�
 
 USDC 약관은 준비자산에서 발생한 이자에 대한 보유자의 권리를 인정하지 않으며, USDC 자체가 보유자에게 이자를 발생시키지 않는다고 명시한다. 따라서 예치나 대여로 제시하는 수익은 토큰 보유와 분리해 상대방, 담보와 출금 조건을 검토한다. FDIC의 보호 대상에도 암호자산 자체는 포함되지 않는다.
 
+## 보유 이자 금지와 제3자 보상의 경계
+
+현행 미국 법률이 직접 금지하는 것은 발행사의 이자 지급이다. 거래소 같은 제3자의 보상은 계류 중인 법안과 감독기관의 우회 판단에 달려 있다. 아래는 2026-11-17 법률과 법안 원문, 감독기관 발표를 대조한 기준이다.
+
+| 지급 주체 | 근거 | 상태 |
+|---|---|---|
+| 발행사 | GENIUS Act(Public Law 119-27, 2025-07-18 제정) 제4조(a)(11)은 허가받은 결제용 스테이블코인 발행사와 외국 발행사가 보유자에게 스테이블코인의 보유(holding), 사용(use) 또는 계속 보유(retention)만을 이유로 현금, 토큰이나 그 밖의 대가로 어떤 형태의 이자나 수익도 지급하지 못하게 한다 | 현행 법률. 제정 18개월 뒤와 최종 규정 발표 120일 뒤 중 이른 날 시행된다(제20조). OCC는 2026-10-21 최종 규정과 법이 2027-01-18 시행된다고 발표했다 |
+| 거래소 등 디지털자산 서비스 제공자 | GENIUS Act 조문은 발행사만 명시한다. 의회조사국(CRS) 2026-03-06 보고서도 이 법이 거래소의 보상 지급을 명시적으로 막지 않고 보유자를 정의하지 않는다고 정리한다. 다만 같은 법 제4조(h)(1)은 우회를 막는 규정 권한을 두고, OCC 최종 규정 문서는 계열사와 관련 제3자와의 일부 거래를 위반으로 추정하는 조항이 규정안에 있었다고 적는다. 최종 규정이 그 조항과 우회 판단을 어떻게 정했는지는 원문 본문에서 확인하지 못했다 | 계류 법안. 상원 은행위원회가 2026-06-01 보고한 CLARITY Act(H.R. 3633) 수정안 제404조는 서비스 제공자와 그 계열사(OCC에 등록한 발행사는 제외)가 고객이나 이용자인 미국인에게 직간접으로 보유만을 이유로, 또는 은행의 이자부 예금 이자와 경제적이나 기능적으로 같은 방식으로 이자나 수익을 주지 못하게 한다. 예금 이자와 동등하지 않은 실제 활동이나 거래에 근거한 보상만 SEC, CFTC와 재무장관이 공동으로 정할 규정에 따라 예외로 둔다 |
+
+CLARITY Act는 2025-07-17 하원을 통과했다. 상원은 2026-09-15 심의 개시 동의에 대한 토론 종결 표결을 49 대 50으로 부결했고, 같은 날 재의 동의가 제출돼 재표결 경로가 남았다. 제404조는 본회의 심의에 들어가지 못한 위원회 보고 수정안의 문구이므로 법이 아니다. 본회의 표결 전 수정판이 나왔다는 보도가 있으나 그 문안과 이후 상원 진행은 대조하지 못했다. CRS 보고서는 2026-01 한 대형 거래소가 수익 조항 등을 이유로 지지를 철회하고 위원회 심사가 연기됐다고 적어, 제3자 보상이 입법의 쟁점임을 보여 준다.
+
+수정안이 금지 기준을 은행 예금 이자와의 경제적 동등성으로 잡은 점에서, 보유 보상은 스테이블코인이 예금과 같은 기능을 하느냐의 문제로 읽을 수 있다(조문에서 끌어낸 해석). 보상 상품을 볼 때는 다음을 나눈다.
+
+1. 지급 주체가 발행사인가, 거래소나 그 계열사인가?
+2. 보상이 잔액 보유에 붙는가, 결제나 거래 같은 활동에 붙는가?
+3. 보상의 재원(발행사가 대는 자금인지 포함)과 지급 조건(잠금 기간, 출금 제한, 상대방 위험)은 무엇인가?
+
+**중앙은행 디지털화폐와의 비교.** 신화통신은 2025-12-29 중국인민은행을 인용해, 디지털 위안 관리 행동방안(关于进一步加强数字人民币管理服务体系和相关金融基础设施建设的行动方案)을 2026-01-01부터 시행한다고 보도했고, 2026-01-13 기사에서 시행됐다고 전했다. 방안에 따르면 은행이 실명 디지털 위안 지갑 잔액에 예금 금리 자율 규약에 맞춰 이자를 지급하고, 예금보험이 예금과 같은 보호를 제공한다. 은행 운영기관이 개설한 지갑의 잔액은 지급준비금 적립 기준에 넣고, 비은행 운영기관에는 100% 보증금을 적용한다. 인민은행 2021년 백서는 디지털 위안을 현금(M0)으로 규정하고 이자를 지급하지 않는다고 설명했으므로, 이 조치는 실명 지갑 잔액을 은행 예금에 가깝게 다루는 변화다. 익명 지갑의 처리와 실제 적용 금리는 보도 원문에서 확인하지 못했다. 한 나라의 디지털 화폐가 이자를 준다는 사실이 다른 나라의 스테이블코인 이자 허용으로 이어진다고 단정하지 않는다.
+
 ## 확인 질문
 
 - 발표된 성장 수치는 거래량인가, 유통잔액인가, 준비자산 보유액인가?
 - 직접 상환과 거래소 매도 중 실제로 사용할 수 있는 경로는 무엇인가?
 - 달러 가격이 유지돼도 원화 손실이 나는 이유를 설명할 수 있는가?
+- 스테이블코인 보상을 주는 주체가 발행사인지 거래소인지, 그 보상이 잔액에 붙는지 활동에 붙는지 구분했는가?
 
 ## 출처
 
-- [Understanding Stablecoins — IMF Departmental Papers](https://www.imf.org/-/media/files/publications/dp/2025/english/usea.pdf) — 2025년 12월 직원 연구진 보고서, 본문 26쪽 Currency Substitution. 2026-11-03 통화 대체의 배경과 조건부 전달 경로만 대조했으며 기존 상환 약관의 검증일은 유지한다.
+- [Understanding Stablecoins — IMF Departmental Papers](https://www.imf.org/-/media/files/publications/dp/2025/english/usea.pdf) — 2025년 12월 직원 연구진 보고서, 본문 26쪽 Currency Substitution. 2026-11-03 통화 대체의 배경과 조건부 전달 경로만 대조했다. Circle 약관과 FDIC 항목은 2026-10-22 대조 기준이다.
 - [Stablecoins: Promise, Risks, and Policy Choices for Emerging Markets — IMF](https://www.imf.org/en/news/articles/2026/08/07/sp080726-stablecoins-emerging-markets-dan-katz) — 2026-08-07 공개 설명의 국가별 영향 조건, 2026-11-03 대조
 - [Circle, Tokenizing and redeeming USDC](https://help.circle.com/support/en/tokenizing-and-redeeming-usdc?id=kb_article_view&sysparm_article=KB0010781)
 - [Circle, Transparency & stability](https://www.circle.com/transparency)
@@ -80,6 +100,16 @@ USDC 약관은 준비자산에서 발생한 이자에 대한 보유자의 권리
 - [Circle, USDC/EURC redemption structure](https://help.circle.com/support/en/usdc-eurc-redemption-structure?id=kb_article_view&sysparm_article=KB0010644) — 처리 시간과 은행 결제 시간 구분
 - [Stablecoin Issuers’ Growing Appetite for Treasury Securities — Federal Reserve Bank of San Francisco](https://www.frbsf.org/research-and-insights/publications/economic-letter/2026/09/stablecoin-issuers-growing-appetite-for-treasury-securities/) — 2026-09-28 분석, 신규 수요와 보유 수단 전환 및 만기 차이
 - [FDIC, Electronic Deposit Insurance Estimator FAQs](https://edie.fdic.gov/fdic_info.html) — 보호 대상 계정 설명의 암호자산 제외 항목
+- [GovInfo, Public Law 119-27 (GENIUS Act)](https://www.govinfo.gov/content/pkg/PLAW-119publ27/html/PLAW-119publ27.htm) — 제4조(a)(11) 이자 금지와 제20조 시행일, 2026-11-17 대조
+- [OCC Advances U.S. Digital Asset Leadership with Final Rule to Implement GENIUS Act — OCC](https://occ.gov/news-issuances/news-releases/2026/nr-occ-2026-92.html) — 2026-10-21 보도자료(News Release 2026-92), 최종 규정과 법의 2027-01-18 시행
+- [OCC, GENIUS Act 최종 규정 문서](https://www.occ.gov/news-issuances/news-releases/2026/nr-occ-2026-92a.pdf) — 규정안의 계열사와 관련 제3자 거래 위반 추정 조항 언급(4쪽). 최종 처리 본문은 미대조
+- [GovInfo, H.R. 3633 Engrossed in House](https://www.govinfo.gov/content/pkg/BILLS-119hr3633eh/html/BILLS-119hr3633eh.htm) — 2025-07-17 하원 통과 표기
+- [GovInfo, H.R. 3633 Reported in Senate](https://www.govinfo.gov/content/pkg/BILLS-119hr3633rs/html/BILLS-119hr3633rs.htm) — 2026-06-01 상원 은행위원회 수정안 제404조, 2026-11-17 대조
+- [GovInfo, Congressional Record Daily Digest 2026-09-15](https://www.govinfo.gov/content/pkg/CREC-2026-09-15/pdf/CREC-2026-09-15-dailydigest.pdf) — H.R. 3633 심의 개시 동의의 토론 종결 부결(49 대 50)
+- [The Stablecoin Yield Debate — Congressional Research Service](https://www.everycrsreport.com/reports/IF13174.html) — 2026-03-06 In Focus IF13174, congress.gov 원본이 HTTP 403이라 EveryCRSReport 게재본으로 대조. 발행사 외 보상의 공백과 상원 심사 연기 경위
+- [数字人民币迎来重大调整 — 新华社](https://www.news.cn/20251229/442a77288543426294939796802ac43e/c.html) — 2025-12-29 보도, 행동방안의 실명 지갑 이자, 예금보험, 지급준비금과 보증금 처리. 인민은행 원문은 찾지 못함
+- [디지털 위안 행동방안 시행 보도 — 新华网](https://www.news.cn/fortune/20260113/f867b0a0fc02424b84916c998910aef2/c.html) — 2026-01-13 게재, 2026-01-01 시행 사실
+- [中国人民银行, 中国数字人民币的研发进展白皮书](https://www.pbc.gov.cn/goutongjiaoliu/113456/113469/4293590/2021071614200022055.pdf) — 2021-07 백서, M0 규정과 무이자(5쪽, 9쪽)
 
 ## 관련 문서
 
