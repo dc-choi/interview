@@ -1,7 +1,7 @@
 ---
 tags: [palantir, foundry, api, ontology]
 status: done
-verified_at: 2026-11-13
+verified_at: 2026-11-17
 category: "AI엔지니어링(AIEngineering)"
 ---
 
@@ -26,6 +26,8 @@ Search/ObjectSet의 pageSize는 최대치다. 내부 메모리 한도로 더 적
 Search는 body의 where로 필터하고 orderBy.fields로 정렬한다. field는 V1의 `properties.age`가 아닌 V2 property API name을 쓴다. 비교/null/array/논리와 text query를 조합하며 and/or query는 최대 세 단계다.
 
 텍스트 이름은 containsAllTerms/containsAnyTerm, containsAllTermsInOrder와 containsAllTermsInOrderPrefixLastTerm이다. startsWith는 마지막 조건의 deprecated alias다. term은 일반적으로 공백/punctuation으로 나뉘며 별도 명시 없이는 부분 term을 매칭하지 않는다. 상세 ObjectSet filter는 [[Palantir-Ontology-SQL-API]]의 필터 계약과 같은 schema를 사용한다.
+
+2026-11-17 수집한 Get RAG Context For Session 문서(Preview인 AIP Agents endpoint)의 ObjectSet filter schema에는 containsAllTerms, containsAnyTerm, containsAllTermsInOrder, containsAllTermsInOrderPrefixLastTerm과 startsWith에 optional `analyzerSelection`(BASE_ANALYZER, PHONETIC_ANALYZER)이 있다. 2026-10-31 수집한 같은 문서에는 이 필드가 없었다. 생략하면 BASE_ANALYZER로, field를 색인할 때 쓴 analyzer로 검색한다. PHONETIC_ANALYZER는 field의 phonetic 색인으로 발음이 비슷한 term을 찾는다. containsAllTerms와 containsAnyTerm에서 PHONETIC_ANALYZER를 고르면 fuzzy는 생략하거나 false로 둬야 한다. 같은 schema에서 wildcard, regex, interval, 비교 조건에는 이 필드가 없다. 같은 날 Search Objects와 Load Object Set 참조 페이지에서는 이 필드를 확인하지 못했으므로, endpoint별 지원은 요청 schema에서 다시 확인한다. phonetic 검색은 철자가 다른 결과를 포함할 수 있으니 정확한 이름 일치가 필요한 조건에는 쓰지 않는다(적용 제안). 어떤 field에 phonetic 색인이 있는지와 실제 매칭 품질은 확인하지 않았다.
 
 orderBy의 fields를 주면 orderType은 fields가 되고 전체 orderBy 생략은 정렬 미지정이다. relevance는 text/nearestNeighbors 일치도를 내림차순 정렬하지만 다른 query에서는 순서가 미지정이다. **relevance paging은 snapshot 일반 설명과 별개로 페이지 간 중복/누락이 가능하다.** 완전성이 필요할 때는 문서가 단일 페이지 사용을 안내하며, 이것을 전체 데이터 추출의 보장으로 확대하지 않는다. relevance는 비용이 클 수 있다.
 
@@ -65,6 +67,7 @@ includeComputeUsage는 OSDK application에서만 제공하며 성능 저하 때�
 - [Load Multiple Object Types](https://www.palantir.com/docs/foundry/api/ontologies-v2-resources/ontology-object-sets/load-object-set-multiple-object-types)
 - [Load Objects Or Interfaces](https://www.palantir.com/docs/foundry/api/ontologies-v2-resources/ontology-object-sets/load-object-set-objects-or-interfaces)
 - [Create Temporary Object Set](https://www.palantir.com/docs/foundry/api/ontologies-v2-resources/ontology-object-sets/create-temporary-object-set)
+- [Get Rag Context For Session](https://www.palantir.com/docs/foundry/api/aip-agents-v2-resources/sessions/get-rag-context-for-session)
 - [November 3, 2026, API Gateway no longer returns derived properties by default — Palantir release notes](https://www.palantir.com/docs/foundry/announcements/release-notes/2026/#7b208b5a-49c2-4598-ae0a-4cee37280ca6)
 
 ## 관련 문서
