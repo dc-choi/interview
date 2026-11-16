@@ -1,7 +1,7 @@
 ---
 tags: [palantir, ai-fde, agent, skill, governance]
 status: done
-verified_at: 2026-11-09
+verified_at: 2026-11-16
 category: "AI엔지니어링(AIEngineering)"
 aliases: ["AI FDE와 AIP Skills"]
 ---
@@ -10,13 +10,17 @@ aliases: ["AI FDE와 AIP Skills"]
 
 AI FDE는 Foundry를 대화형으로 조작하는 개발 agent다. 별도 service account가 아니라 현재 사용자의 session과 권한으로 실행하며 AIP enablement가 필요하다. Ontology 변경에는 Global Branching enablement가 권장된다. 코드를 async function으로 배포하는 [[Palantir-Pro-Code-Agents]]와 실행 모델이 다르다.
 
+Model은 enrollment에서 활성화된 것만 쓸 수 있고, 2026-11-16 수집한 overview는 Anthropic, OpenAI, Google, xAI model을 native tool API와 함께 first-class로 지원한다고 적는다. 같은 문서는 AIP 기능 가용성이 바뀔 수 있고 고객마다 다를 수 있다고 덧붙이므로 실제 선택지는 enrollment에서 확인한다. First-class 지원 목록을 사용 가능한 model 전체로 보지 않으며, 등록 model의 사용 조건은 [[Palantir-Registered-Models-and-Provider-Proxies|모델 등록과 provider proxy]]에서 본다.
+
 ## Mode와 capability는 문맥 구성이다
 
 Mode는 data integration/connection, Ontology/function, exploration, governance, machine learning과 OSDK React 같은 작업 범위에 맞춰 문서와 도구를 고른다. Capability는 mode 전환, 질문, 계획, 문서/skill 로드, context 관리와 실제 domain 동작 같은 세부 기능이다.
 
 사용자나 agent가 mode를 바꿀 수 있고 Manage capabilities를 켜면 agent도 활성 도구를 조정할 수 있다. 따라서 처음 고른 mode를 영구적인 권한 경계로 보지 않는다. 실제 서버 permission과 tool approval은 별도다.
 
-Context는 처음 최소 상태에서 시작해 resource 첨부, drag/drop, 문서 bundle과 search tool로 늘린다. Datasets/functions/branches/interfaces/actions/object types 등을 넣을 수 있다. Chat outline은 prompt/응답/tool과 message token 수를 보여주며 요약/삭제로 context를 관리한다. 문맥 감소가 이미 수행한 외부 변경의 취소를 뜻하지 않는다.
+Mode는 사용자가 Modes 메뉴에서 직접 고르거나, 과제만 설명하면 agent가 prompt를 보고 골라 그 mode의 context와 tool을 정한다. Mode에 따라 function 작성 언어나 Pipeline Builder 대신 transforms를 쓸지 같은 추가 설정이 붙는다. 공식 navigation 문서는 과제에 필요한 tool만 켜야 model이 더 잘 동작한다고 안내한다.
+
+Context는 처음 최소 상태에서 시작한다. 공식 overview는 이 최소 초기 상태를 관련 없는 정보가 추론을 흐리는 context pollution을 막고 model의 능력과 지식 경계를 통제하는 설계로 설명한다. 이후 resource 첨부, drag/drop, 문서 bundle, media 업로드와 search tool로 늘린다. 입력란 위 ribbon에서는 datasets/functions/branches/interfaces/action types/object types 같은 Foundry resource를 고를 수 있다. Chat outline은 prompt/응답/tool과 message token 수를 보여주며 요약/삭제로 context를 관리한다. 문맥 감소가 이미 수행한 외부 변경의 취소를 뜻하지 않는다.
 
 ## Approval과 서버 인가는 서로 다른 검사다
 
@@ -45,6 +49,8 @@ Promotion은 skill resource의 접근 권한을 바꾸지 않아 사용자에게
 긴 공통 지침은 skill로, 선택 객체나 구체 수정 요청은 prompt로 나누면 링크 전체를 고치지 않고 공통 절차를 갱신할 수 있다. URL에 넣은 문맥은 공유/기록 경로에 노출될 수 있으므로 민감한 원문을 무분별하게 넣지 않는 것은 이 전달 방식에서 도출한 설계상 주의다.
 
 ## 생성 품질과 기반 자원 사용을 관찰한다
+
+AI FDE는 action을 실행하고 결과를 관찰해 다음 action을 정하는 closed-loop로 동작한다. 공식 overview가 예로 드는 자기 검증 수단에는 transform preview, function preview와 Code Repositories의 CI check 확인이 있다. 이 자기 검증을 업무 결과의 검수로 해석하지 않는다.
 
 작업을 작은 단계로 나누고 필요한 context/tool만 제공한다. Agent의 preview와 test 성공을 최종 업무 정확성으로 확정하지 않는다. Function 변경은 AIP Evals 사례와 기준으로 전후를 비교한다.
 
