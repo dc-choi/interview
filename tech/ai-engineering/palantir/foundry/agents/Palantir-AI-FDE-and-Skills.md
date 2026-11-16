@@ -20,6 +20,10 @@ Mode는 data integration/connection, Ontology/function, exploration, governance,
 
 Mode는 사용자가 Modes 메뉴에서 직접 고르거나, 과제만 설명하면 agent가 prompt를 보고 골라 그 mode의 context와 tool을 정한다. Mode에 따라 function 작성 언어나 Pipeline Builder 대신 transforms를 쓸지 같은 추가 설정이 붙는다. 공식 navigation 문서는 과제에 필요한 tool만 켜야 model이 더 잘 동작한다고 안내한다.
 
+Mode 목록에는 Foundry 동작 방식에 대한 일반 질문을 다루는 Platform Q&A도 있다. 세부 설정은 data integration의 Python transforms/Pipeline Builder, function editing의 언어, machine learning의 Model Studio(no-code)/pro-code와 선호 코드 편집 환경이며, agent는 이 선택으로 읽을 문서와 호출할 tool을 정한다. 2026-11-16 수집한 modes 문서 기준이다.
+
+Capability는 하나 이상의 tool에 대응하며 agent capability와 domain capability로 나뉜다. Agent capability는 mode 전환, 객관식/자유 서술 질문, 실행 전 계획 초안, 문서/skill 로드, context/capability 관리처럼 agent가 자신을 관리하고 소통하는 기능이다. Domain capability는 filesystem의 폴더 생성, resource 탐색과 이동, Notepad 문서 편집, solution design diagram 편집, ontology object에 대한 Action 실행처럼 Foundry에서 실제로 수행하는 동작이며 공식 목록은 이것으로 한정하지 않는다. 계획 검토나 질문 기능이 있어도 변경 작업은 아래 security 문서 기준의 approval과 사용자 권한 범위에서 따로 통제된다. 개별 domain capability별 approval 동작은 도구 설정에서 확인한다.
+
 Context는 처음 최소 상태에서 시작한다. 공식 overview는 이 최소 초기 상태를 관련 없는 정보가 추론을 흐리는 context pollution을 막고 model의 능력과 지식 경계를 통제하는 설계로 설명한다. 이후 resource 첨부, drag/drop, 문서 bundle, media 업로드와 search tool로 늘린다. 입력란 위 ribbon에서는 datasets/functions/branches/interfaces/action types/object types 같은 Foundry resource를 고를 수 있다. Chat outline은 prompt/응답/tool과 message token 수를 보여주며 요약/삭제로 context를 관리한다. 문맥 감소가 이미 수행한 외부 변경의 취소를 뜻하지 않는다.
 
 ## Approval과 서버 인가는 서로 다른 검사다
