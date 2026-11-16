@@ -1,7 +1,7 @@
 ---
 tags: [palantir, ontology, action, function, authorization, transaction]
 status: done
-verified_at: 2026-10-16
+verified_at: 2026-11-16
 category: "AI엔지니어링(AIEngineering)"
 aliases: ["Palantir Actions and Functions", "팔란티어 액션과 함수"]
 ---
@@ -65,10 +65,23 @@ Read/write authorizations는 기존 사용자 권한과 제출 조건에 **추�
 - 기본 batched writes에서는 같은 실행의 후속 조회가 자신이 모은 편집을 보지 못한다. Staged writes는 이를 보지만 현재 legacy isolation만 지원한다.
 - 새 batched Action의 기본은 snapshot isolation이다. 충돌 검사는 쓴 객체 단위이며 다른 속성을 바꿔도 충돌할 수 있다.
 - 읽기만 한 객체는 충돌 검사에 포함되지 않아 write skew가 가능하다. 여러 객체에 걸친 불변조건은 공유 객체 쓰기로 표현하는 등의 재설계가 필요하다.
-- Read committed는 문서에 출시 예정으로 표시되어 현재 사용 가능하다고 전제하지 않는다.
 - 자동 재시도는 설정에 따라 외부 호출을 반복할 수 있다. 재실행 안전성을 확인해야 한다.
 
-Transient retry는 처음부터 다시 실행하며 최대 5회 시도한다. 기본값은 외부 호출 없는 Action만 재시도하고, All actions는 외부 호출까지 반복하며 Disabled는 첫 오류를 caller에 돌려준다. Backing dataset rebuild는 실제 대상 객체 값이 안 바뀌어도 더 넓은 충돌을 만들 수 있다. Snapshot의 일관 시점은 Action이 직접 수행한 Ontology read의 계약이며 source가 수행하는 별도 읽기/외부 작업에는 확장되지 않는다. [Consistency and isolation](https://www.palantir.com/docs/foundry/action-types/consistency-guarantees)
+2026-11-16 확인한 같은 문서는 격리 수준 세 가지를 Ontology Manager의 Capabilities 탭에서 고르는 선택지로 설명한다. 이전 확인 때의 출시 예정 표시는 Read committed 절에 더 이상 없다.
+
+| 수준 | 읽기 | 충돌 검사 |
+|---|---|---|
+| Legacy | 한 시점에서 읽는 것이 보장되지 않아 같은 실행의 읽기가 서로 다른 상태를 볼 수 있음 | 이 Action이 쓴 객체를 다른 Action이 바꾸면 실패 |
+| Snapshot isolation | 실행 시작 때 잡은 snapshot 하나로 모든 읽기 | Legacy와 같음 |
+| Read committed | 읽는 순간의 최신 커밋 값 | 동시 변경이 있어도 커밋, 두 Action이 같은 속성을 쓰면 나중 커밋이 이김 |
+
+Legacy는 명시적 격리 수준이 생기기 전에 만든 Action type의 하위 호환용이다. 객체 저장소에서 데이터를 가져오다 오류가 나면 실행 중 데이터가 새로 고쳐져 읽은 객체끼리 시점이 섞일 수 있으므로, 기존 Action type은 snapshot isolation으로 옮기는 것이 문서의 권장이다. 다만 같은 시점을 끝까지 쓰므로 오래 실행되면서 자주 갱신되는 데이터를 편집하는 Action은 더 자주 실패할 수 있다.
+
+Read committed는 서로 다른 속성의 변경을 모두 보존하고 같은 속성만 나중 커밋으로 덮는다. 동시 실행이 많으면 이 수준에서도 드물게 충돌 오류가 날 수 있다. 문서는 충돌 실패가 잦고, 허용되는 이상 현상을 이해하며, 파라미터로 받은 값처럼 이미 가진 값만 쓰고 읽은 값으로 쓸 내용을 정하지 않는 Action에만 이 수준을 권한다. Logic rule은 사용자가 기본값을 그대로 둔 파라미터도 매핑된 속성에 쓰므로, read committed에서는 사용자가 건드리지 않은 필드의 기본값이 다른 Action의 변경을 덮을 수 있다. 바꿀 속성만 rule에 매핑한다.
+
+격리 수준이 다른 두 Action이 같은 객체를 동시에 바꾸면 각자 자기 수준으로 충돌을 검사한다. 둘 다 상대의 커밋 전에 시작했을 때 Read committed Action이 먼저 커밋하면 snapshot이나 legacy Action의 그 실행은 충돌 검사에 실패한다. 자동 재시도가 꺼져 있으면 그 Action의 편집은 하나도 반영되지 않고, 재시도 대상이면 아래 재시도 설정에 따라 다시 실행된다. 반대 순서면 둘 다 커밋한다. Function-backed Action의 격리 수준을 정할 때 backing function의 snapshot 설정은 Default로 둔다. Disable snapshots는 snapshot isolation과, Enable snapshots는 read committed와 호환되지 않아 실행이 실패할 수 있다.
+
+Transient retry는 처음부터 다시 실행하며 최대 5회 시도한다. 기본값은 외부 호출 없는 Action만 재시도하고, All actions는 외부 호출까지 반복하며 Disabled는 첫 오류를 caller에 돌려준다. 외부 호출로 분류되는 것은 writeback webhook, backing function의 Data Connection source 접근이나 webhook 호출, 읽기 전용을 포함한 OSDK 사용, 다른 함수 호출, 자기 편집을 커밋하는 다른 Action 호출이다. 이 분류는 Action type 설정과 함수가 선언한 리소스로 정하므로 특정 실행이 그 리소스를 쓰지 않아도 적용된다. 그래서 설정만 다른 두 Action type 중 하나는 항상 성공하는 듯 보이고 다른 하나는 충돌 오류를 돌려줄 수 있으며, 자주 충돌하는 Action은 결국 성공해도 완료가 늦어질 수 있다. Backing dataset rebuild는 실제 대상 객체 값이 안 바뀌어도 더 넓은 충돌을 만들 수 있다. Snapshot의 일관 시점은 Action이 직접 수행한 Ontology read의 계약이며 source가 수행하는 별도 읽기/외부 작업에는 확장되지 않는다. [Consistency and isolation](https://www.palantir.com/docs/foundry/action-types/consistency-guarantees)
 
 설계 적용 예로, 동시에 두 주문을 배정하면서 같은 라이더의 수용량을 각각 검사하고 서로 다른 주문만 바꾸면 그 검사만으로 총량을 지킨다고 볼 수 없다. 공통 용량 상태에 대한 충돌과 재시도 경계를 검토한다. 이는 앞의 동시성 조건에서 도출한 예시이며 해당 업무를 실험한 결과가 아니다.
 

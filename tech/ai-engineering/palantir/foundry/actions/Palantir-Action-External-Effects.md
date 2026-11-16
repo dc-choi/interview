@@ -1,7 +1,7 @@
 ---
 tags: [palantir, action, webhook, notification, upload, branch]
 status: done
-verified_at: 2026-10-16
+verified_at: 2026-11-16
 category: "AI엔지니어링(AIEngineering)"
 aliases: ["Palantir Action 외부 효과"]
 ---
@@ -53,7 +53,9 @@ Schedule rule은 project-scoped schedule만 참조하고 parameterized schedule�
 
 ## Branch는 외부 시스템을 자동 복제하지 않는다
 
-Action이 수정하는 모든 object type을 branch에 색인해야 편집을 시험할 수 있다. 색인하지 않으면 valid Action이어도 편집 없이 read-only 안내가 나온다. Function의 branch awareness와 관계없이 branch Action의 객체 쓰기는 branch에만 남으며 main merge에 편집을 가져가지 않는다.
+Action이 수정하는 모든 object type을 branch에 색인해야 편집을 시험할 수 있다. 색인하지 않으면 valid Action이어도 편집 없이 read-only 안내가 나온다. Function의 branch awareness와 관계없이 branch Action의 객체 쓰기는 branch에만 남으며 main merge에 편집을 가져가지 않는다. Branch-aware 함수는 branch에서 고치고 branch의 schema를 읽지만, 그렇지 않은 함수는 main의 schema만 읽는다.
+
+Media를 업로드하는 Action은 backing media set을 같은 global branch에 추가해야 branch에서 실행할 수 있다. 이때 업로드한 파일은 그 branch의 media set에 남아 main과 다른 global branch에서 격리된다.
 
 기본적으로 branch의 webhook/notification은 실행하지 않고 external call을 하는 function-backed Action은 전체 실패한다. 각각 명시적으로 허용할 수 있지만 허용하면 main과 같은 external endpoint를 호출하므로 production에 영향을 줄 수 있다. Notification은 branch owner로 돌리거나 원 수신자를 유지하도록 선택한다.
 

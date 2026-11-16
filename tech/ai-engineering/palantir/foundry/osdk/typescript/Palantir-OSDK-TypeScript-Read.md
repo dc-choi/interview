@@ -35,7 +35,7 @@ page 사이 불일치를 감지하면 순회가 `PagingInconsistencyDetected`로
 - append-only 데이터는 고정된 시간 기준으로 최근 객체를 제외한다. 순회 중 늦게 도착한 데이터나 backfill이 기준 이전 구간에 객체를 추가할 수 없을 때만 성립한다.
 - snapshot을 요청하지 않은 `fetchPage()`를 `$nextPageToken`으로 직접 이어 읽는다. 함수 실행에 설정된 snapshot은 `fetchPage()`에도 적용되므로 함수 snapshot의 만료는 이 방법으로 피하지 못한다. `$primaryKey`로 이미 처리한 객체를 건너뛰면 중복은 걸러지지만 누락은 되살리지 못한다.
 
-TypeScript v2 function 안에서는 함수의 consistent snapshot 설정도 적용되며, client가 함수 실행의 snapshot을 가지면 loading method와 관계없이 그 snapshot으로 읽는다. snapshot isolation으로 설정한 function-backed Action은 Action의 snapshot을 쓰고 snapshot을 켜 둬야 한다. read committed 격리에서는 Action이 snapshot을 주지 않지만 `asyncIter()`는 자기 순회용 snapshot을 요청한다. read committed를 현재 선택할 수 있는 설정으로 전제하지 않는 이유는 [[Palantir-OSDK-Python-Read|Python OSDK 조회]]의 같은 절과 [[Palantir-Actions-and-Functions|Action 격리 수준]]에 둔다.
+TypeScript v2 function 안에서는 함수의 consistent snapshot 설정도 적용되며, client가 함수 실행의 snapshot을 가지면 loading method와 관계없이 그 snapshot으로 읽는다. snapshot isolation으로 설정한 function-backed Action은 Action의 snapshot을 쓰고 snapshot을 켜 둬야 한다. read committed 격리에서는 Action이 snapshot을 주지 않지만 `asyncIter()`는 자기 순회용 snapshot을 요청한다. 격리 수준별 동작과 read committed의 문서상 상태 변화는 [[Palantir-Actions-and-Functions|Action 격리 수준]]에 둔다.
 
 긴 함수가 snapshot 만료로 실패하면 여러 읽기에 걸친 일관된 view가 필요한지 다시 판단한다. 필요 없으면(snapshot isolation Action의 함수는 제외) 함수 설정에서 snapshot을 끄고, 필요하면 켠 채 만료 전에 읽기를 끝낸다. snapshot을 꺼도 `asyncIter()`는 자체 snapshot을 요청하므로 page 불일치 오류를 막지 못한다.
 

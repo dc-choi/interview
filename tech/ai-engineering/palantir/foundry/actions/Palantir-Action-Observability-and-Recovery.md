@@ -71,7 +71,7 @@ Monitoring은 p95 duration과 시간창 내 실패 건수 임계값을 감시한
 - OSDK와 Actions API는 앞 Action이 끝난 뒤 다음을 제출한다.
 - Automate는 한 event의 여러 Action을 별도 effect로 나눠 순차 실행한다. 한 effect의 Configured Actions 여러 개는 순서를 보장하지 않는다. Event 사이에는 Queue effect executions를, 두 automation 사이에는 automation dependency를 쓴다.
 - 여러 Action이 공유 객체(예: 작업 완료와 프로젝트의 완료 건수)를 각각 바꾸면 Action 하나로 합친다. 합친 Action이 자기 편집을 다시 읽어 집계해야 하면 staged writes를 쓰는 function-backed Action으로 만든다. 같은 실행의 후속 조회가 자기 편집을 보지만, staged writes는 현재 legacy isolation만 지원해 고정 snapshot을 보장하지 않는다.
-- Datasource 갱신과 겹치면 갱신 완료를 기다리거나 갱신 빈도를 줄인다. 이런 변경이 불가능할 때만 read committed를 검토한다. 충돌 문서는 이를 대안으로 안내한다. [[Palantir-Actions-and-Functions|실행, 격리와 권한]]의 이전 대조 기록과 현재 문서의 가용성 표시가 다를 수 있으므로, 사용 전에 enrollment의 Capabilities에서 선택 가능 여부를 확인한다.
+- Datasource 갱신과 겹치면 갱신 완료를 기다리거나 갱신 빈도를 줄인다. 이런 변경이 불가능할 때만 read committed를 검토한다. 충돌 문서는 이를 대안으로 안내한다. 2026-11-16 확인한 일관성 문서는 read committed를 Capabilities 탭의 선택지로 설명한다. 같은 속성을 동시에 쓰면 나중 커밋이 덮어쓰므로 허용 조건은 [[Palantir-Actions-and-Functions|실행, 격리와 권한]]을 따르고, 사용 전에 enrollment의 Capabilities에서 선택 가능 여부를 확인한다.
 
 ## Undo는 전체 업무 rollback이 아니다
 

@@ -52,6 +52,18 @@ Standard의 월 무료 구간은 저장 10 GB-month, Class A 100만 회와 Class
 
 운영 비교에서는 저장량, 읽기와 쓰기 횟수, 캐시 적중률, 전송량과 원본 저장소에서 옮겨 오는 비용을 각각 계산한다. 이미지와 영상의 총 전송량만으로 요청료를 추정하거나 특정 서비스의 절감률을 다른 서비스에 그대로 적용하지 않는다. 저장소 교체와 파일 크기 축소를 함께 했다면 두 변경의 효과도 나눠 측정한다.
 
+## 떠날 때의 전송 비용은 평소 egress와 따로 본다
+
+클라우드를 떠나며 쌓인 데이터를 한꺼번에 빼면 인터넷 egress 요금이 크게 나올 수 있어, 사내 서버나 다른 클라우드와 총소유비용(TCO)을 비교할 때 이전 비용도 넣는다. 2026-11-16 AWS 공지 대조 기준이며 이 절만 부분 검증했으므로 기존 `verified_at`은 유지한다.
+
+- AWS는 2024-03-05 공지로 AWS를 떠나는 고객에게 이전하는 데이터의 인터넷 데이터 전송(DTO) 요금을 크레딧으로 돌려주는 제도를 시작했다. AWS Support에 요청해 승인을 받아야 한다. 공지는 이를 위해 계정 폐쇄를 요구하지 않는다고 적지만, 프로그램 조건은 아래처럼 따로 확인해야 한다.
+- 2026-10 갱신 문구 기준 대상은 정상 상태인 payer 계정이며, 해당 계정들에서 모든 데이터를 옮기거나 특정 서비스의 데이터를 모두 옮기는 경우다. EU 밖 고객은 180일 안에 이전을 마쳐야 하고 더 걸리면 즉시 Support에 알린다. EU와 영국 고객은 각 지역의 전환 부속 약관을 따른다.
+- 2025-09 갱신으로 월 100GB 초과 사용이라는 요청 조건이 빠졌다. 같은 계정이 여러 번 요청하면 추가 심사를 받는다.
+- 공지는 평소 사업으로 나가는 전송인지 전환을 위한 일회성 전송인지 AWS가 대체로 알 수 없어 Support 요청을 받는다고 설명한다. 서비스 운영 중 계속 나가는 데이터를 이 제도로 줄일 수 있다고 계산하지 않는다.
+- 사전 통지 요건과 프로그램 조건은 공지가 EC2 FAQ로 넘긴다. 이 절은 FAQ를 직접 대조하지 않았으므로 요청 전에 FAQ의 해당 항목을 확인한다. 공지에서 빠진 것은 월 100GB 초과 전송이라는 요청 조건이며, FAQ에 다른 용량 기준이 남아 있는지는 따로 확인한다.
+
+90일처럼 현재 공지와 다른 기한을 인용한 자료가 남아 있으므로 계획 전에 현재 공지를 다시 확인한다.
+
 ## NAT Gateway가 특히 위험
 
 프라이빗 서브넷의 외부 통신이 전부 NAT를 거치면 **처리량 요금이 누적**된다. S3와 DynamoDB는 시간 요금과 데이터 처리 요금이 없는 Gateway Endpoint로 빼면 그만큼 NAT 처리 요금이 그대로 줄어든다.
@@ -93,6 +105,7 @@ Standard의 월 무료 구간은 저장 10 GB-month, Class A 100만 회와 Class
 ## 출처
 
 - [Cloudflare — R2 Pricing](https://developers.cloudflare.com/r2/pricing/) — 2026-10-28, 저장 클래스별 과금, 무료 구간, 청구 단위 올림과 연동 서비스의 별도 요금
+- [AWS News Blog — Free data transfer out to internet when moving out of AWS](https://aws.amazon.com/blogs/aws/free-data-transfer-out-to-internet-when-moving-out-of-aws/) — 2024-03-05 게시, 2025-09와 2026-10 갱신 문구까지 2026-11-16 대조
 - [AWS — Overview of Data Transfer Costs](https://aws.amazon.com/blogs/architecture/overview-of-data-transfer-costs-for-common-architectures/)
 - [AWS — VPC Endpoints (Gateway vs Interface)](https://docs.aws.amazon.com/vpc/latest/privatelink/concepts.html)
 - [Amazon VPC pricing — NAT Gateway, Gateway Endpoint 요금](https://aws.amazon.com/vpc/pricing/)

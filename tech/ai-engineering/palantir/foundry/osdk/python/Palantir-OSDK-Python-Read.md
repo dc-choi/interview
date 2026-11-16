@@ -44,7 +44,7 @@ Beta인 비동기 method는 다르게 동작할 수 있으며, 일부 SDK 버전
 Python function 안에서 쓰면 함수의 consistent snapshot 설정도 적용되며, client가 함수 실행의 snapshot을 가지면 loading method와 관계없이 그 snapshot으로 읽는다.
 
 - Snapshot isolation으로 설정한 function-backed Action은 함수 실행에 Action의 snapshot을 쓰며 snapshot을 켜 둬야 한다.
-- Read committed 격리에서는 Action이 실행에 snapshot을 주지 않지만 `iterate()`는 자기 순회용 snapshot을 요청한다. 2026-11-08 확인한 Action 일관성 문서는 read committed 절에서 곧 제공될 모드라고 밝히지만 같은 문서의 격리 수준 표와 선택 안내에는 다른 수준과 함께 나열해 표시가 엇갈리므로, 현재 선택할 수 있는 설정으로 전제하지 않는다([[Palantir-Actions-and-Functions|Action 격리 수준]]).
+- Read committed 격리에서는 Action이 실행에 snapshot을 주지 않지만 `iterate()`는 자기 순회용 snapshot을 요청한다. 2026-11-08 확인 때는 Action 일관성 문서의 read committed 절에 곧 제공될 모드라는 표시가 있었으나, 2026-11-16 확인한 문서에는 그 표시가 없고 세 격리 수준을 Capabilities 탭의 선택지로 설명한다([[Palantir-Actions-and-Functions|Action 격리 수준]]). 실제 enrollment에서 선택할 수 있는지는 Capabilities 탭에서 확인한다.
 - Snapshot은 수명이 제한된다. 긴 함수가 snapshot 만료로 실패하면 여러 읽기에 걸친 일관된 view가 필요한지 다시 판단한다. 필요 없으면(snapshot isolation Action의 함수는 제외) 함수 설정에서 snapshot을 끄고, 필요하면 켠 채 만료 전에 읽기를 끝낸다. Snapshot을 꺼도 `iterate()`는 자체 snapshot을 요청하므로 page 불일치 오류를 막지 못한다.
 
 ## modifier와 representation
