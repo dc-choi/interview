@@ -1,7 +1,7 @@
 ---
 tags: [cs, javascript, browser, dom, web-components, design-system]
 status: done
-verified_at: 2026-11-15
+verified_at: 2026-11-17
 category: "CS - JavaScript"
 aliases: ["Web Components", "웹 컴포넌트", "Custom Elements", "Shadow DOM"]
 ---
@@ -89,6 +89,8 @@ export class PasswordInput extends LitElement {
 }
 ```
 
+React 앱에 배포할 때는 `@lit/react`의 `createComponent()`로 React 래퍼를 만들 수 있다. 래퍼는 `tagName`, `elementClass`, `react`(React 객체)와 `events` 옵션을 받는다. 요소에 `in` 검사로 확인되는 prop은 property로, `events`에 적은 prop은 `addEventListener()`로, 나머지는 attribute로 넘긴다. `events: { onvaluechange: 'value-change' }`처럼 handler prop 이름을 이벤트 이름에 연결하고, TypeScript에서는 `'value-change' as EventName<CustomEvent<{ value: string }>>`로 handler 인자의 이벤트 타입을 지정한다. Lit 문서는 React가 JSX 속성을 attribute로 보아 property를 설정할 방법이 없고, 이벤트는 `addEventListener()` 대신 이벤트 속성으로 다뤄 복잡한 컴포넌트에는 `ref`와 명령형 코드가 필요하다는 점을 래퍼가 필요한 이유로 든다. 2026-11-17 확인 기준 Lit 문서는 React 19를 언급하지 않는다. 반면 현재 React 문서는 custom element의 이벤트를 `on` 뒤에 이벤트 이름을 그대로 붙인 JSX 속성(`onvalue-change`)으로 받을 수 있고 이벤트 이름은 대소문자를 구분하며 하이픈을 지원한다고 설명한다. 이 문서는 적용 버전을 밝히지 않으므로, 래퍼는 사용하는 React 버전에서 property와 이벤트 전달을 확인한 뒤 타입이 붙은 prop과 이벤트가 필요할 때 고르는 선택지로 본다.
+
 Decorator 설정은 빌드 결과에 영향을 준다. Lit은 TypeScript에서 당분간 `experimentalDecorators: true`와 `useDefineForClassFields: false`를 권한다. 표준 decorator를 쓰면 `@property()`, `@state()` 같은 decorator를 class field가 아닌 auto-accessor(`@property() accessor label = ''`)에 붙여야 한다. 위 예시는 experimental decorator 설정을 전제로 한다.
 
 ## 면접 체크포인트
@@ -114,8 +116,11 @@ Decorator 설정은 빌드 결과에 영향을 준다. Lit은 TypeScript에서 �
 - [Lit, Lifecycle](https://lit.dev/docs/components/lifecycle/)
 - [Lit, Events](https://lit.dev/docs/components/events/)
 - [Lit, Decorators](https://lit.dev/docs/components/decorators/)
+- [Lit, React](https://lit.dev/docs/frameworks/react/)
+- [React, Common components (custom HTML elements)](https://react.dev/reference/react-dom/components#custom-html-elements) — 2026-11-17 custom element 이벤트의 `on` 접두사 연결 확인
 - [프론트 스택 1편. 웹 컴포넌트로 진행하는 이유 (Web Components vs Frameworks) — 하찮은오후](https://www.youtube.com/watch?v=h1QFZn0hqrQ) — 2026-11-01 업로드, 정리의 계기. 사실은 위 1차 출처로 대조
 - [프론트 스택 2편. 개발 스택 선정: Lit과 Storybook을 선택한 이유 — 하찮은오후](https://www.youtube.com/watch?v=TEFl9Y3bFDQ) — 2026-11-04 업로드, Lit 절의 계기. 사실은 Lit 문서로 대조
+- [프론트 스택 4편. Lit 기반 웹 컴포넌트 제작 실습 — 하찮은오후](https://www.youtube.com/watch?v=aidWA-QjRXk) — 2026-11-08 업로드, React 래퍼 절의 계기. 사실은 Lit 문서로 대조
 
 ## 관련 문서
 

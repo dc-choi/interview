@@ -41,20 +41,36 @@ Google 검색의 관련 질문(People Also Ask)은 최초 검색과 관련된 �
 
 공식 문서는 탐색 요소를 사이트 주제 발굴에 참고할 수 있다고 안내하지만 표시 내용을 통제할 수 있다고 하지는 않는다. 질문 개수를 검색량이나 구매 수요로 해석하지 않는다. 정해진 수의 하위 주제와 질문을 만들거나 매일 발행하면 계정이 성장한다는 보장도 확인되지 않았다. 후보 수보다 고객 적합성과 실제 반응으로 다음 제작 대상을 고른다.
 
+## 영상 주제의 관심 신호를 나누어 본다
+
+영상 플랫폼에서 주제를 고를 때는 관심의 지속 기간, 공급이 부족해 보이는 신호와 실제 유입 경로를 따로 본다.
+
+- **관심의 지속 기간:** Google Trends의 값은 각 시점의 검색을 해당 지역과 기간의 전체 검색으로 나눈 뒤 0~100으로 조정한 상대값이다. 같은 값이어도 절대 검색량은 다를 수 있고, 검색량이 적은 검색어는 0으로 표시된다. 관심이 낮은 검색어의 일회성 급등은 Google이 넣은 통계적 잡음일 수 있다(2026-11-17 Google Trends 도움말 확인). 며칠 만에 꺼지는 이슈와 몇 달 이어지는 주제를 구분해 제작 우선순위를 정하는 데 쓸 수 있다. 이는 운영 제안이며 조회수 예측이 아니다. Trends 해석의 일반 기준은 [[Trend-Research-Validation|트렌드 조사의 검증]]에 있다.
+- **공급 부족의 가설 신호:** 구독자가 적은 채널의 특정 영상이 평소보다 훨씬 많이 조회됐다면, 그 주제를 원하는 시청자에 비해 만든 사람이 적다는 가설을 세울 수 있다. 썸네일과 제목이 건드린 감정, 그 시점에 관심이 몰린 이유를 함께 기록한다. 공식 규칙이 아닌 경험칙이므로, 같은 주제의 낮은 성과 영상도 함께 보고 직접 만든 영상의 반응으로 확인한다.
+- **유입 경로:** YouTube Studio의 콘텐츠에서 영상을 고른 뒤 분석의 도달범위 탭(Insights, Reach)을 열면 시청자가 영상을 찾은 경로가 나온다. 탐색 기능은 홈, 구독, 나중에 볼 동영상, 인기 급상승과 탐색 화면에서, 추천 동영상은 다른 영상의 옆이나 뒤에 뜨는 추천과 설명란 링크에서, YouTube 검색은 검색 결과에서 온 유입이다(2026-11-17 YouTube 도움말 확인). 검색 유입이 적고 탐색과 추천 유입이 크면 검색보다 추천 노출의 비중이 컸을 가능성이 있다(해석). 탐색 기능에는 구독 피드와 나중에 볼 동영상도, 추천 동영상에는 설명란 링크도 들어가므로 세부 항목을 함께 본다.
+- **추천이 보는 신호:** YouTube는 추천에 시청 행동, 좋아요와 싫어요, 구독, 만족도 설문 응답을 참고하고 채널의 평판과 품질도 고려한다고 설명한다. 로그인한 사용자의 홈에는 맞춤 동영상이 뜨고, 다음 동영상 추천은 현재 시청 중인 콘텐츠와 시청 기록을 바탕으로 한다(2026-11-17 공식 설명 확인). 한 영상이 많이 노출된 뒤 같은 채널의 이전 영상 조회수도 함께 올랐다는 경험담이 있지만, 공식 설명으로 확인한 메커니즘은 아니다.
+
 ## 적용 전 확인
 
 - 발표 기관, 대상 플랫폼, 지역과 언어를 구분했는가?
 - 검색 증가율의 분모와 비교 기간, 설문의 표본을 확인했는가?
 - 검색 수치와 댓글, 저장, 클릭, 실제 구매를 분리했는가?
 - 콘텐츠 제작 시간과 고객 적합성을 함께 평가하는가?
+- Trends의 상대값과 절대 검색량, 남의 채널에서 본 이상치와 내 영상의 유입 경로를 구분했는가?
 
 ## 출처
 
 - [Pinterest Beauty Trend Report 2026 — Pinterest Newsroom](https://newsroom.pinterest.com/news/beauty-trend-report-2026/)
 - [Google Search Central, Visual Elements gallery of Google Search](https://developers.google.com/search/docs/appearance/visual-elements-gallery) — 2026-10-26 탐색 기능 절 확인. Google 관련 질문만 추가 대조했으므로 기존 Pinterest 수치의 검증일은 유지
+- [Google Trends Help, FAQ about Google Trends data](https://support.google.com/trends/answer/4365533?hl=en) — 2026-11-17 0~100 정규화, 표본, 낮은 검색량의 0 표시와 통계적 잡음 확인
+- [YouTube Help, Understand your YouTube video reach](https://support.google.com/youtube/answer/9314355?hl=en) — 2026-11-17 도달범위 탭의 유입 경로 정의 확인
+- [YouTube 작동의 원리, YouTube의 알고리즘 기반 맞춤 동영상](https://www.youtube.com/howyoutubeworks/recommendations/) — 2026-11-17 추천 신호와 홈, 다음 동영상 추천 확인. 영상 주제 절만 추가 대조했으므로 문서의 verified_at은 유지
+- [만든 지 일주일만에 구독자 3000명. 유튜브 잘하는 방법 다 공개합니다 — YouTube, developer nossi](https://www.youtube.com/watch?v=80joH4W2UYI) — 2026-11-08 업로드. 영상 주제 절의 계기이며 채널 성과와 수익 수치는 검증하지 않았다
 
 ## 관련 문서
 
 - [[Content-Marketing|콘텐츠 마케팅]]
 - [[Market-Analysis|시장 분석]]
 - [[Lead-Magnet-and-Entry-Offer|리드 마그넷과 진입 제안]]
+- [[Trend-Research-Validation|트렌드 조사의 검증]] — Google Trends 값을 읽는 기준
+- [[Branded-Entertainment-Channel|브랜드를 앞세우지 않는 기업 콘텐츠 채널]] — YouTube 추천 신호와 채널 주제

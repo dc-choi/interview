@@ -28,6 +28,7 @@ aliases: ["투자(Investing)", "Investing Map"]
 - [[Tax-Advantaged-Accounts|절세 계좌]] — 세액공제와 환급의 차이, ISA 가입 제한, 연금수령한도와 과세, 퇴직연금의 위험자산 한도와 편입 제한 ✅
 - [[Coast-FIRE-Target-Math|Coast FIRE의 목표 금액 계산과 점검]] — 목표 자산의 할인 계산, 수익률 가정의 민감도, 인출률과 명목, 실질 기준 맞추기, 적립 중단 기간과 인출 기간의 위험 구분 ✅
 - [[Tax-Advantaged-Accounts-Income-Types|투자소득의 구분과 건강보험료]] — 보유 방식별 이자, 배당, 양도소득 구분, 건강보험료의 금융소득 1천만원 문턱, 커버드콜 분배금의 과세 재원 ✅
+- [[Bitcoin-Halving-and-Holding-Routes|비트코인의 반감기와 보유 경로]] — 210,000블록 반감 규칙과 2,100만 개 상한, 4년 주기설의 표본 한계, 거래소 위탁과 자기 보관과 현물 ETP의 위험 구분 ✅
 
 - [[AI-Company-Valuation-and-Funding|AI 기업가치와 자금 조달]] — 인식 매출과 run-rate, 순손실과 현금소진, 유출 자료와 평가 의견
 - [[Vendor-Financing-and-Earnings-Quality|벤더 파이낸싱과 이익의 질 점검]] — 고객 금융과 보증의 손실 경로, 2000년 전후 통신 장비사 공시, AI 인프라의 의향서와 보증, DSO 정의 차이와 공시 점검 항목
