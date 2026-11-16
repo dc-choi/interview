@@ -3,7 +3,7 @@ tags: [infrastructure, network, proxy, socket, stream, l4, l7, tunnel]
 status: done
 category: "Infrastructure - 네트워크"
 aliases: ["Proxy Internals", "프락시 동작 구조", "프록시 동작 원리", "애플리케이션 프록시", "소켓 스트림 중계", "L4 프록시와 L7 프록시", "프록시 두 연결"]
-verified_at: 2026-09-16
+verified_at: 2026-11-17
 ---
 
 # 프락시 동작 구조: 소켓 스트림 중계와 두 개의 연결
@@ -88,11 +88,33 @@ L4와 L7은 제품의 등급이 아니라 그 구간에서 쓰는 처리 단위�
 
 PROXY protocol 명세는 수신 측 설정을 강제한다. "The receiver MUST be configured to only receive the protocol described in this specification and MUST not try to guess whether the protocol header is present or not." 추측을 허용하면 신뢰되지 않은 클라이언트가 출발지 주소를 위조할 수 있기 때문이다. 헤더 표기의 상세는 [[Forward-vs-Reverse-Proxy#X-Forwarded-For 헤더|X-Forwarded-For]].
 
+## 연결 단위 인증과 업스트림 연결 고정
+
+업스트림 연결 재사용은 HTTP가 stateless라는 전제에 기댄다. RFC 9110은 각 요청 메시지를 독립적으로 해석할 수 있고 연결과 메시지의 관계가 해석에 영향을 주지 않는다고 정의하며, 많은 구현이 이 성질 덕분에 프락시 연결을 재사용하거나 요청을 여러 서버로 분산한다고 적는다. 그래서 서버는 연결이 보호되고 특정 에이전트 전용이 아니면 같은 연결의 두 요청이 같은 사용자 에이전트에서 왔다고 가정하면 안 된다(MUST NOT). 같은 절(3.3)은 RFC 4559 같은 비표준 확장이 이 요구를 어겨 보안과 상호운용성 문제를 낳았다고 지적한다. 새 인증 방식에 대한 고려사항(16.4.2)은 연결에 기반하거나 묶인 인증을 명세 범위 밖으로 두고, 그 연결을 인증된 사용자 외에는 쓸 수 없도록 보장하지 않으면 본질적으로 결함이 있다고 본다.
+
+RFC 4559의 `Negotiate`(SPNEGO로 Kerberos나 NTLM을 협상)와, 스스로를 RFC 4559와 비슷한 방식으로 설명하고 보안 고려사항을 RFC 4559 6절에 맡기는 NTLM over HTTP(MS-NTHT)가 그 예다. 서버가 `401`과 `WWW-Authenticate: Negotiate`로 응답하면 보안 컨텍스트가 완성될 때까지 토큰 교환이 이어질 수 있고, 클라이언트는 `401`을 받기 전에 첫 토큰을 `Authorization` 헤더에 담아 먼저 보낼 수도 있다. RFC 4559의 보안 고려사항은 클라이언트와 서버 사이의 HTTP 프락시가 인증된 연결을 서로 다른 인증 클라이언트 사이에서 공유하지 않아야 하며, 지키지 않으면 서버가 보안 컨텍스트의 연결 관계를 잃는다고 적는다.
+
+리버스 프락시는 이런 백엔드 앞에서 업스트림 연결 공유를 깨고 클라이언트 연결 A마다 전용 연결 B를 고정해야 한다. 고정에는 수명 관리 질문 두 가지가 따른다.
+
+- **언제 고정하는가:** 백엔드의 `WWW-Authenticate: NTLM`이나 `Negotiate` 도전을 본 뒤에 고정하면 그런 백엔드로 가는 연결에서만 전용 자원이 생기지만, 클라이언트가 도전 전에 먼저 보낸 자격증명 요청은 공유 풀에서 처리될 수 있다. Traefik은 PR #13902에서 이 경우 인증된 업스트림 소켓이 공유 풀에 남아 다른 클라이언트 연결에 넘어가 신원을 물려줄 수 있다는 점을 변경 이유로 들었다. 요청의 `Authorization` 헤더를 보고 고정하면 자격증명이 공유 풀에 섞이지 않지만, 인증하지 않은 클라이언트도 헤더 하나로 전용 자원을 만들 수 있다. 어느 쪽이든 아래 해제가 함께 있어야 한다.
+- **언제 푸는가:** 클라이언트 연결이 닫히면 전용 transport와 유휴 업스트림 연결, 이를 처리하는 goroutine이나 작업 스레드를 바로 해제해야 한다. Traefik처럼 클라이언트 연결마다 transport와 풀을 따로 만드는 구현에서는 호스트당 유휴 연결 상한 같은 풀 설정이 이 자원 전체를 묶어 주지 않는다(PR #14144의 코드 주석). 해제가 유휴 타임아웃에만 맡겨지면 짧은 연결을 빠르게 반복하는 것만으로 메모리, 파일 디스크립터와 업스트림 연결이 쌓인다.
+
+### 사례: Traefik의 전용 transport 누수 (2026-11 권고 기준)
+
+Traefik은 NTLM이나 Kerberos(`Negotiate`) 자격증명을 담은 요청을 공유 백엔드 풀에 닿기 전에 연결 단위 전용 transport로 보내도록 바꿨다(PR #13902 사전 인증 연결 격리와 FastProxy용 #13914, v3.7.14 릴리스 노트에 수록). 권고는 이 동작이 v2.11.58과 v3.7.14부터라고 적는다. 연결 단위 인증의 자격증명이 공유 풀에서 처리되지 않게 하려는 변경이다. 그런데 클라이언트 연결이 닫혀도 전용 transport를 놓아 주는 처리가 없었고, 이 결함이 보안 권고 GHSA-xv5x-242w-7hf7(High, CVSS 3.1 7.5, 가용성 영향만, CVE 미할당)로 공개됐다.
+
+- **원인:** 요청의 `Authorization` 헤더가 `NTLM`이나 `Negotiate` 방식이면 유효한 자격증명이나 백엔드 도전 없이도 전용 transport가 할당되고, 클라이언트 연결이 닫혀도 그 transport와 유휴 백엔드 연결, goroutine이 유휴 연결 타임아웃까지 남았다. v3 계열은 FastProxy 경로에도 같은 패턴이 있었다.
+- **영향:** 인증하지 않은 클라이언트가 짧은 연결을 많이 열어 Traefik 프로세스의 메모리, 파일 디스크립터와 백엔드 연결을 고갈시킬 수 있다. NTLM이나 Kerberos 백엔드를 구성했는지와 무관하다.
+- **버전:** 영향 범위는 v2 `>= v2.11.58, <= v2.11.60`, v3 `>= v3.7.14, <= v3.7.16`이고 수정 버전은 v2.11.61과 v3.7.17이다. 권고는 v3.6 이하의 v3 계열과 v2.11.57 이하는 백엔드 도전을 받은 뒤에만 transport를 전용으로 두어 영향이 없다고 적는다. 권고는 우회책을 제시하지 않는다.
+- **수정 범위:** 수정(PR #14144, v3 FastProxy는 #14158)은 클라이언트 연결이 닫히거나 hijack될 때 전용 transport를 해제하고 유휴 백엔드 연결을 닫는 처리를 더했다. #14144의 변경은 헤더를 보고 전용 transport를 할당하는 조건 자체를 바꾸지 않는다. #14158은 클라이언트 연결이 닫힐 때 아직 사용 중이던 백엔드 연결은 해제 뒤 풀로 돌아가 유휴 타임아웃에 닫힌다고 적는다.
+- **판단:** 인증 설정이 아니라 실행 중인 버전으로 대상 여부를 정한다. 권고에는 재현 명령이나 합격 기준 수치가 없다. 패치 뒤 점검은 `NTLM` 방식과 토큰을 담은 `Authorization` 헤더로 짧은 연결을 반복하되 응답을 끝까지 받은 뒤 연결을 닫고, 연결이 닫힌 직후 유휴 연결 타임아웃보다 충분히 이른 시점에 프로세스의 디스크립터와 백엔드 연결 수가 돌아오는지 보는 운영 점검으로 둔다. 타임아웃 뒤에 보면 영향 버전도 자원이 돌아와 구분되지 않는다. 이 점검은 문서 기반 제안이며 실제로 실행한 기록은 아니다.
+
 ## 설계 체크포인트
 
 - 이 구간에서 필요한 것이 패킷 수준 전달인지 스트림 수준 해석인지 먼저 정한다. 내용을 보지 않아도 되면 L4로 두는 편이 단순하고 빠르다.
 - 타임아웃, 재시도, keep-alive는 연결 A와 연결 B에 각각 존재한다. 한쪽만 조정하고 끝났다고 보지 않는다.
 - 업스트림 연결은 프락시가 소유하므로 커넥션 풀 크기, 재사용 정책, 업스트림당 포트와 디스크립터 소비를 함께 계산한다.
+- NTLM이나 `Negotiate` 같은 연결 단위 인증 백엔드가 있으면 업스트림 연결을 전용으로 고정하는 조건과 클라이언트 연결 종료 때의 해제를 함께 확인한다.
 - TLS를 어디서 끊을지 정한다. 종단하면 내용 기반 처리가 가능해지고, 터널로 통과시키면 종단 간 기밀성이 유지되지만 L7 기능을 쓸 수 없다.
 - 클라이언트 IP가 필요하면 전달 방법과 신뢰 경계를 함께 정한다. 신뢰할 프락시 IP 목록이 없으면 전달받은 값은 근거가 되지 못한다.
 - 헤더 조작이나 검사가 필요한 구간에 splice 계열 최적화를 기대하지 않는다. 내용을 보는 것과 복사를 생략하는 것은 함께 성립하지 않는다.
@@ -106,6 +128,7 @@ PROXY protocol 명세는 수신 측 설정을 강제한다. "The receiver MUST b
 - L4 프락시와 L7 프락시가 같은 제품 안에서 모드로 갈리는 구조, Envoy에서 HTTP connection manager가 맡는 역할
 - 터널(CONNECT)이 프락시와 다른 점과 그때 프락시가 볼 수 있는 정보의 범위
 - `X-Forwarded-For`와 PROXY protocol의 적용 범위 차이, 두 방법 모두 신뢰 경계 설정 없이는 위조 가능한 이유
+- 연결 단위 인증이 업스트림 연결 재사용과 충돌하는 이유, 전용 연결의 할당 시점(도전 뒤와 요청 헤더 기준)의 트레이드오프와 해제가 빠졌을 때의 자원 고갈 위험
 
 ## 출처
 
@@ -116,6 +139,16 @@ PROXY protocol 명세는 수신 측 설정을 강제한다. "The receiver MUST b
 - [Linux man-pages, splice(2)](https://man7.org/linux/man-pages/man2/splice.2.html)
 - [Nginx, ngx_stream_proxy_module](https://nginx.org/en/docs/stream/ngx_stream_proxy_module.html)
 - [Envoy, What is Envoy](https://www.envoyproxy.io/docs/envoy/latest/intro/what_is_envoy)
+- [IETF, RFC 4559: SPNEGO-based Kerberos and NTLM HTTP Authentication in Microsoft Windows](https://www.rfc-editor.org/rfc/rfc4559)
+- [Microsoft, MS-NTHT 1.3 Overview](https://learn.microsoft.com/en-us/openspecs/windows_protocols/ms-ntht/3f2e7732-30ea-4de2-a1b1-29af933c7996)
+- [Microsoft, MS-NTHT 5.1 Security Considerations for Implementers](https://learn.microsoft.com/en-us/openspecs/windows_protocols/ms-ntht/816231a1-39c0-41bc-91af-1e1420bcd7a2)
+- [Per-connection backend transport leak from unauthenticated Negotiate/NTLM headers (GHSA-xv5x-242w-7hf7) — Traefik GitHub Security Advisory](https://github.com/traefik/traefik/security/advisories/GHSA-xv5x-242w-7hf7)
+- [Isolate preauthenticated NTLM and Kerberos backend connections (#13902) — Traefik GitHub](https://github.com/traefik/traefik/pull/13902)
+- [Fix backend connection leak for NTLM and Kerberos authentication (#14144) — Traefik GitHub](https://github.com/traefik/traefik/pull/14144)
+- [Fix FastProxy backend connection leak for NTLM and Kerberos (#14158) — Traefik GitHub](https://github.com/traefik/traefik/pull/14158)
+- [Traefik v3.7.14 — GitHub Releases](https://github.com/traefik/traefik/releases/tag/v3.7.14)
+- [Traefik v3.7.17 — GitHub Releases](https://github.com/traefik/traefik/releases/tag/v3.7.17)
+- [Traefik v2.11.61 — GitHub Releases](https://github.com/traefik/traefik/releases/tag/v2.11.61)
 
 ## 관련 문서
 
