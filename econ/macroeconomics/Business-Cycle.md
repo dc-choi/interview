@@ -67,6 +67,19 @@ GDP 갭은 생산의 **수준** 비교이고 경기침체는 경제활동의 **�
 
 그러다 어느 순간 자산 가격이 꺾이면, 빚을 갚으려 자산을 팔고, 그 매도가 가격을 더 떨어뜨려 또 팔게 만드는 역방향 소용돌이가 시작된다. 이 전환점을 **민스키 모먼트**라 부른다. 2008년 글로벌 금융위기가 주택담보대출 버블이 터진 전형적 사례다.
 
+### 기술 투자 붐의 버블 논쟁을 나눠 읽는 질문
+
+새 기술에 투자가 몰릴 때 나오는 버블 찬반 주장은 서로 다른 질문을 한데 묶기 쉽다. 아래 질문으로 나눠 읽는다.
+
+- **자산 가격과 기술의 쓸모는 다른 질문이다.** 인터넷처럼 기술이 남아 널리 쓰여도 그 시기에 산 투자자는 손실을 볼 수 있다. 사회적 편익, 기업의 가치 회수와 투자 시점의 구분은 [[General-Purpose-Technology-Productivity|범용 기술의 생산성 지연과 J커브]] 5절에서 다룬다.
+- **설비 지출은 한 번으로 끝나는가.** 데이터센터를 다 지으면 지출이 급감한다는 주장은 서버와 가속기의 교체 주기, 수요 증가에 따른 증설을 함께 따져야 성립한다. 건물과 달리 계산 장비는 빨리 낡아 설비투자 부담이 이어진다는 반론이 나온다. 회계상 내용연수의 선택은 [[Valuation|밸류에이션]]의 감가상각 설명에서 본다.
+- **부채는 매출이 아니라 현금흐름으로 갚는다.** 부채 총액을 연수로 나눠 큰 기업의 매출과 견주면 상환 여력을 부풀린다. 영업비용과 재투자를 뺀 현금흐름, 만기와 차환 조건을 맞춰 본다. 장기 약정을 부채처럼 다루는 방법은 [[AI-Company-Valuation-and-Funding|AI 기업가치와 자금 조달]]에 있다.
+- **상장 대형주의 배수만 보지 않는다.** 대형 기술주의 PER이 닷컴 시기의 수백 배가 아니라는 비교는 비상장 기업의 평가액, 장부 밖 약정과 신용 시장의 위험을 담지 못한다.
+- **금융 구조를 읽을 수 있는가.** 실제 부채와 지출 약정이 복잡한 금융 구조에 묶여 규모를 파악하기 어렵거나 공급자가 고객에게 자금을 대는 구조라면, 매출 성장이 꺾일 때 위험이 커진다. 버블이 아니라고 보는 쪽도 이 점은 위험으로 인정한다. [[Vendor-Financing-and-Earnings-Quality|벤더 파이낸싱과 이익의 질 점검]]과 [[AI-Infrastructure-Capital-Cycle|AI 인프라 투자와 자본 순환]]을 함께 본다.
+- **말과 투자가 다르다는 관찰.** 다들 버블이라 말하는데 돈이 계속 들어온다는 사실은 버블이 아니라는 증거가 되지 못한다. 참가자가 고평가를 알면서도 더 오를 것을 기대해 사는 상황은 버블에서 흔하다(이 문서의 해석).
+
+이 질문들은 2026-11 AI 투자가 버블이라고 단정하기 어렵다는 블로그 글과 그 반론을 계기로 정리한 점검 틀이며, 특정 시점의 버블 여부를 판정하지 않는다.
+
 ## 7. 경기 대응 정책 (counter-cyclical)
 
 정부와 중앙은행은 경기의 진폭을 줄이려 **경기와 반대 방향으로** 움직인다.
@@ -111,9 +124,14 @@ GDP 갭은 생산의 **수준** 비교이고 경기침체는 경제활동의 **�
 - [IMF, The Output Gap: Veering from Potential](https://www.imf.org/external/pubs/ft/fandd/basics/22_output-gap.htm) — 2026-10-02 생산 수준과 변화 방향의 구분 대조
 - [IMF, Making Monetary Policy Decisions in the Dark](https://www.imf.org/en/Blogs/Articles/2015/08/12/making-monetary-policy-decisions-in-the-dark) — 잠재GDP와 GDP 갭의 추정 및 수정 불확실성
 - [S&P Global, Purchasing Managers' Index](https://www.spglobal.com/market-intelligence/en/solutions/products/pmi) — PMI의 전월 대비 조사 기준
+- [I'm Not Convinced The AI Bubble Exists — matteoraso.github.io](https://matteoraso.github.io/im-not-convinced-the-ai-bubble-exists.html) — 2026-11-08 게시. 2026-11-16 일회성 구축비, 부채 상환 계산, 배수 비교와 금융 구조 위험의 논거 대조. 작성자의 의견
+- [AI 버블이라고 확신하기 어려운 이유 — GeekNews](https://news.hada.io/topic?id=36874) — 2026-11-16 장비 교체 주기, 매출과 이익의 혼동을 지적한 댓글 반론 확인(같은 날 재확인 시도는 접속 차단으로 실패)
 
 ## 관련 문서
 
 - [[Interest-Rates-Monetary-Policy|금리와 통화정책]] — 경기에 대응하는 핸들
 - [[Inflation|인플레이션과 디플레이션]] — 과열과 침체의 물가 신호
+- [[General-Purpose-Technology-Productivity|범용 기술의 생산성 지연과 J커브]] — 기술의 가치와 투자 수익의 구분
+- [[AI-Infrastructure-Capital-Cycle|AI 인프라 투자와 자본 순환]] — AI 설비투자의 현금 회수와 위험
+- [[Vendor-Financing-and-Earnings-Quality|벤더 파이낸싱과 이익의 질 점검]] — 공급자 금융과 매출의 질
 - [[거시경제(Macroeconomics)]] — 지도

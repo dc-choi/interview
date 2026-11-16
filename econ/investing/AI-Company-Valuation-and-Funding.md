@@ -98,6 +98,14 @@ Capex는 같은 분기의 영업비용과 같지 않다. 위 표의 영업이익
 
 위의 10월 초 보고서는 공개 신고서 이전 자료를 이용한 역사적 평가로 남긴다. 회사의 10월 26일 발표 당시 공모 주식 수와 가격 범위는 미정이었고 신고서는 아직 효력이 발생하지 않았다. 위 표의 대조는 최초 신고서의 해당 실적과 비용 정의에 한정한다. 아래 정정 신고서의 약정 검토와 구분하며, 최종 공모 조건, 연말 전망과 향후 투자 수익은 검증하지 않았다.
 
+### 공모 조건과 IR 자료의 분기 비율
+
+2026-11-10 로드쇼 시작과 함께 공모 가격 범위는 주당 70~78달러로, 공모 주식은 회사가 새로 발행하는 Class A 8억 135만 주와 매출 주주의 2,365만 주, 초과배정 옵션 1억 2,375만 주로 보도됐다(SEC 신고서를 인용한 보도. 세 수의 합 9억 4,875만 주는 정정 신고서의 등록 수수료 표와 같다). 대부분이 신주라 조달 자금은 주로 회사로 들어간다. 공모 뒤 전체 발행 주식 수는 확인하지 않았으므로 가격 범위로 기업가치를 계산하지 않는다. 일정과 의결권 구조는 [[Voting-Control-and-Public-Benefit-Corporations|의결권 구조와 공익법인(PBC)]]에서 본다.
+
+회사 IPO 사이트의 IR 자료(IPO Fact Sheet)는 분기 매출을 같은 분기의 컴퓨팅 및 인프라 비용으로 나눈 비율을 2025년 1분기 0.40배, 2026년 1분기 1.40배, 2분기 2.08배, 3분기 1.72배로 보여 준다. 각주는 3분기 하락을 기본 효율 개선이 단기 약정 50억 달러를 포함한 추가 컴퓨팅 도입으로 일부 상쇄된 결과로 설명하고, 단기 약정 컴퓨팅이 다년 약정보다 현재 훨씬 비싸다고 적는다. 2026-11-08 한 블로그 글은 AI가 버블이 아니라는 근거로 S-1에 따르면 컴퓨팅 1달러당 2.08달러를 번다고 썼는데, 이는 Fact Sheet의 2분기 값과 같고 제시된 분기 가운데 가장 높다. 상반기 합산은 약 1.82배, 직후 분기는 1.72배이고, 이 비용에는 연구와 모델 개발도 들어 있어 추론 마진이 아니다. 비율 주장을 볼 때는 어느 기간의 값인지부터 확인한다.
+
+같은 자료의 3분기 조정 영업이익률은 15%지만 GAAP 영업손실은 5억 6,700만 달러(영업이익률 -3%)다. 조정표는 주식보상 10억 7,000만 달러와 직원 지분에 연동된 기부 매칭의 비현금 비용 19억 6,000만 달러를 더한다. 순손실 232억 9,100만 달러에는 전환상품 공정가치 변동 손실 219억 3,600만 달러가 들어 있다. 2026년 10월 기준 연환산 매출 약 810억 달러는 회사가 정의한 run-rate라 인식 매출과 섞지 않는다. 컴퓨팅 약정은 약 9,000억 달러, 2026-09-30 이후 12개월 도래분 약 707억 달러, 2030년 말 이전분 약 4,516억 달러로 아래 11-02 정정 신고서의 수치보다 조금 크다. 정정 신고서와 IR 자료마다 합계가 갱신되므로 같은 날짜의 자료끼리 비교한다.
+
 ### 장기 약정은 합계와 지급 시기, 해지 조건을 나눈다
 
 장기 계약의 총액을 현재 지급할 청구서나 한 해의 비용으로 읽지 않는다. 총액을 연수로 균등하게 나누는 계산도 실제 지급 일정과 다를 수 있다. 보유 현금과 비교하려면 같은 기간의 지급 의무, 영업현금흐름과 조달 조건을 함께 본다.
@@ -150,6 +158,10 @@ AMD의 2026-09-28 Form 8-K는 9월 26일 World Labs의 전체 지분을 인수�
 - [The Anthropic Feedback Loop: The Cost of Capital Delusion and Diversion! — Aswath Damodaran, Musings on Markets](https://aswathdamodaran.blogspot.com/2026/11/the-anthropic-feedback-loop-cost-of.html) — 2026-11-03 게시, 2026-11-15 약정의 부채 성격 규정, 현재가치, 도래 일정, 실패 확률과 자본비용, CoreWeave 비교 대조
 - [다모다란 교수, 앤트로픽 약정 발언 — 묘수의 관점 (YouTube)](https://www.youtube.com/watch?v=YoL_9f8GAFg) — 인터뷰 클립, 약 7,500억 달러 약정과 손실 전이 우려(원본 인터뷰 미확인)
 - [Anthropic files S-1 with the SEC for proposed initial public offering — Anthropic](https://www.anthropic.com/news/s1-sec) — 2026-10-26 최초 신고서 제출과 당시 공모 조건의 미확정 상태
+- [IPO Fact Sheet — Anthropic](https://ipo.anthropic.com/documents/us/factsheet.pdf) — 2026-11 IR 자료(PDF). 2026-11-16 분기 매출/컴퓨팅 비율 도표와 3분기 각주, 3분기 손익과 조정표, run-rate, 컴퓨팅 약정 각주 대조
+- [Anthropic Sets IPO Price Range At $70-$78 Per Share; Launches Roadshow — RTTNews](https://www.rttnews.com/3712632/anthropic-sets-ipo-price-range-at-70-78-per-share-launches-roadshow.aspx) — 2026-11-10 보도, SEC 신고서를 인용한 가격 범위와 신주, 구주, 초과배정 주식 수. 신고서 본문은 10MB를 넘어 직접 열지 못함
+- [I'm Not Convinced The AI Bubble Exists — matteoraso.github.io](https://matteoraso.github.io/im-not-convinced-the-ai-bubble-exists.html) — 2026-11-08 게시, 컴퓨팅 1달러당 2.08달러 주장 확인
+- [AI 버블이라고 확신하기 어려운 이유 — GeekNews](https://news.hada.io/topic?id=36874)
 - [NYU Stern, Aswath Damodaran, Discounted Cashflow Models: What They Are and How to Choose the Right One](https://pages.stern.nyu.edu/~adamodar/New_Home_Page/lectures/basics.html) — 현금흐름과 할인율의 대응
 - [NYU Stern, Aswath Damodaran, The FCFE Discount Model](https://pages.stern.nyu.edu/~adamodar/New_Home_Page/lectures/fcfe.html) — 성장 단계, 잔존가치, 재투자와 안정기 할인율 조건
 - [NYU Stern, Aswath Damodaran, Price-Sales Multiples](https://pages.stern.nyu.edu/~adamodar/New_Home_Page/lectures/ps.html) — 매출 배수의 순이익률, 배당성향, 성장과 위험 조건
@@ -170,3 +182,5 @@ AMD의 2026-09-28 Form 8-K는 9월 26일 World Labs의 전체 지분을 인수�
 - [[Startup-Equity-and-Dilution|스타트업 지분과 희석]]
 - [[AI-Infrastructure-Capital-Cycle|AI 인프라 투자와 자본 순환]]
 - [[AI-Software-Replication-and-Due-Diligence|AI 소프트웨어 복제와 기술 실사]]
+- [[Voting-Control-and-Public-Benefit-Corporations|의결권 구조와 공익법인(PBC)]] — Anthropic 공모 일정과 의결권 구조
+- [[Business-Cycle|경기순환]] — 기술 투자 붐의 버블 논쟁을 나눠 읽는 질문

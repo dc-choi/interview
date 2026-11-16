@@ -17,7 +17,7 @@ aliases: ["거시경제(Macroeconomics)", "Macroeconomics Map"]
 
 ### 1. 생산과 성장
 - [[GDP-Economic-Growth|GDP와 경제성장]] — 국내총생산, 명목 vs 실질, 실질 GDI와 교역조건, 성장률, 잠재성장률, 복리의 힘, 분모별 성장률과 일본 저성장의 인구 구조와 생산성 경로 ✅
-- [[General-Purpose-Technology-Productivity|범용 기술의 생산성 지연과 J커브]] — 생산성 역설, 전기화의 group drive와 unit drive, 무형 보완 투자와 측정 오차, 기술 기업과 나머지 기업의 AI 투자 성과, GDP-B와 WTA, 가치 창출과 회수 및 분배 ✅
+- [[General-Purpose-Technology-Productivity|범용 기술의 생산성 지연과 J커브]] — 생산성 역설, 전기화의 group drive와 unit drive, 무형 보완 투자와 측정 오차, 기술 기업과 나머지 기업의 AI 투자 성과, GDP-B와 WTA, 가치 창출과 회수 및 분배, 생산성 향상이 임금과 여가로 바뀌는 경로 ✅
 
 ### 2. 물가
 - [[Inflation|인플레이션과 디플레이션]] — 물가 수준과 상승률, 디스인플레이션, CPI, 실질수익률과 위험 ✅
@@ -34,10 +34,10 @@ aliases: ["거시경제(Macroeconomics)", "Macroeconomics Map"]
 
 ### 4. 고용
 - [[Unemployment-Employment|실업과 고용]] — 실업률과 보완 지표, 자연실업률의 추정, 필립스 곡선의 조건과 오쿤의 법칙 ✅
-- [[Youth-Employment-Labor-Market-Duality|청년고용 부진과 노동시장 이중구조]] — 실업률, 고용률, 확장실업률이 엇갈리는 이유, 1차와 2차 노동시장의 채용 조정, 2023년 이후 부진의 질적 악화와 AI 노출 분석의 해석 한계 ✅
+- [[Youth-Employment-Labor-Market-Duality|청년고용 부진과 노동시장 이중구조]] — 실업률, 고용률, 확장실업률이 엇갈리는 이유, 1차와 2차 노동시장의 채용 조정, 과거 부진기의 대기와 최근의 하향취업, 2023년 이후 부진의 질적 악화와 AI 노출 분석의 해석 한계 ✅
 
 ### 5. 순환과 대외
-- [[Business-Cycle|경기순환]] — 경기침체와 GDP 갭의 구분, PMI 해석, 버블과 금융위기 ✅
+- [[Business-Cycle|경기순환]] — 경기침체와 GDP 갭의 구분, PMI 해석, 버블과 금융위기, 기술 투자 붐의 버블 논쟁을 나눠 읽는 질문 ✅
 - [[Exchange-Rates-Balance-of-Payments|환율과 국제수지]] — 금리 결정과 시장 기대, 환율 결정, 국제수지, 트릴레마, 달러 패권 ✅
 - [[Dollar-International-Role-Indicators|달러의 국제적 역할을 읽는 지표]] — 외환보유액 통화 구성(COFER)과 평가효과, BIS 외환거래 비중과 200% 합계, 통화 가치 희석 서사를 점검하는 순서 ✅
 

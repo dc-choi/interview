@@ -73,6 +73,16 @@ GDP-B의 B는 benefits를 뜻한다. 신상품과 무료 디지털 재화의 후
 
 이 사례에서 기간 유비는 기술 확산의 역사에서, 가격 유비는 밸류에이션과 과거 가격 유사 사례에서, 10월 전망은 수급과 재정에서 나온 서로 다른 근거다. 1980년대 PC 시기는 1절의 생산성 역설 구간이므로 그 시기를 productivity miracle로 부른 것은 측정 통계가 아니라 화자의 역사 해석이다. 앞의 J커브 논의대로 생산성 효과가 아직 남았다는 판단은 주가가 그 효과를 이미 얼마나 반영했는지를 말해 주지 않는다. GDP 대비 시가총액 비율도 시가총액과 GDP의 집계 범위와 시점에 따라 값이 달라지므로 발화된 수치를 공식 통계로 옮기지 않는다. 인터뷰는 한 투자자의 견해이며 시장 정점의 시점을 예측하는 근거로 쓰지 않는다.
 
+### 생산성 향상이 임금과 여가로 바뀌는 경로
+
+위 표의 셋째 줄, 곧 생산성 향상이 일하는 사람의 임금과 시간으로 돌아가는지는 따로 따진다. Keynes는 1930년 글에서 진보한 나라의 생활수준이 100년 뒤 4~8배가 될 것으로 보고, 남은 일을 3시간 교대나 주 15시간 근무로 나누는 모습을 그렸다. 산출이 늘어도 근로시간이 그만큼 줄지 않는 이유는 세 연결로 나눠 본다.
+
+- **생산성에서 보통 임금으로:** 시간당 산출이 늘어도 소유자에게 가는 몫이 커지거나 임금 분포가 벌어지면 중간 노동자의 임금은 덜 오른다. Acemoglu와 Restrepo(Econometrica, 2022)는 지난 40년 미국 임금 구조 변화의 50~70%를 빠르게 자동화된 산업에서 반복 과업을 맡던 노동자 집단의 상대 임금 하락으로 설명하고, 큰 불평등 변화가 완만한 생산성 증가와 함께 나타날 수 있다고 봤다. 생산성과 임금을 서로 다른 물가 지수로 실질화하면 격차의 크기가 달라지므로 두 계열의 기준을 맞춘다.
+- **임금에서 시간으로:** 임금이 오른 만큼 덜 일할지는 일을 줄이거나 거절할 여지에 달려 있다. 미국 두 주의 저소득층 약 1,000명에게 3년간 월 1,000달러를 조건 없이 지급한 실험(대조군 약 2,000명은 월 50달러)에서는 이전소득을 뺀 개인 소득이 연 약 1,900달러 줄고 노동시장 참여가 4.2%p, 근로시간이 주 1~2시간 줄었으며, 늘어난 시간은 주로 여가에 쓰였다. 저자들은 중간 정도의 노동공급 효과로 요약한다(Vivalt 외, NBER 작업논문 32719, 2026-08 개정 초록 기준, 2026년 QJE 게재). 이 실험은 근로와 무관한 소득이 늘 때의 반응(소득효과)을 본 것이며, 임금이 오를 때는 일의 대가가 커지는 대체효과가 함께 작용하므로 임금 상승의 효과로 그대로 옮기지 않는다.
+- **여가가 생애의 어디에 오는가:** 주당 근로시간 단축 대신 교육과 은퇴처럼 근로소득이 없는 기간이 길어지는 형태로 올 수 있고, 그 기간은 이전과 자산 소득으로 지탱된다. 생애주기 적자와 재원은 [[National-Transfer-Accounts|국민이전계정과 생애주기 적자]]에서 본다.
+
+2026-11-11 한 블로그 글은 미국 BEA 자료로 1973년 주 40시간의 산출을 지금은 약 16시간에 만들지만 1973년 40시간으로 사던 것을 사려면 약 34시간을 일해야 한다고 계산하고, 그 차이를 소유자 몫, 임금 분산과 분리하기 어려운 나머지로 나눴다. 같은 글은 지난 세기에 늘어난 여가가 주로 학업과 은퇴로 생애의 앞뒤에 왔다고 보고, 단순 모형에서 기계 생산성이 100배가 되면 소득 중 노동 몫이 60%에서 17%로 준다고 계산한 뒤 임금 과세에 기댄 이전 대신 공공 기금, 투자 즉시 상각과 토지 임대료 과세로 소유 몫을 나누자고 제안한다. 계산과 모형은 작성자의 것이며 이 문서는 수치를 재계산하지 않았다. 자동화의 과업 대체와 복원 효과는 [[Unemployment-Employment|실업과 고용]]에서 다룬다.
+
 ## 6. 경제 변화를 관측할 때 지표를 나눈다
 
 Stanford Digital Economy Lab의 AI Economic Indicators는 도입, 노동시장과 거시 변화를 나눠 관측하는 구조다. 2026-08-10 개정된 첫 연구 노트에서 세 구성 요소를 대조했다. 최신 월별 수치를 확인한 기록은 아니다.
@@ -120,6 +130,11 @@ EBS 10강에서 제시한 약 5년의 AI 보완 투자 기간과 2030년 생산�
 - [Paul Tudor Jones says 2027 could be a really challenging year for the stock market — CNBC](https://www.cnbc.com/2026/10/13/paul-tudor-jones-2027-really-challenging-year.html) — 2026-10-13 인터뷰 기사. 2026-11-08 수급, 재정적자 근거와 1999년 비유 대조
 - [The IBM PC — IBM](https://www.ibm.com/history/personal-computer) — 2026-11-08 1981-08-12 공개와 Microsoft 운영체제 확인
 - ["지금은 1999년 10월" 폴 튜더 존스 — YouTube, 묘수의 관점](https://www.youtube.com/watch?v=iuwM92tkfDs) — 2026-10-28 공개된 5월 인터뷰 발췌. 수집 계기
+- [Economic Possibilities for our Grandchildren — The Nation & Athenaeum, John Maynard Keynes](https://www.hetwebsite.net/het/texts/keynes/keynes1930grandchildren.htm) — 1930-10-11과 10-18 두 차례 게재, HET 사이트 전재본. 2026-11-16 4~8배 생활수준과 3시간 교대, 주 15시간 문장 대조
+- [Tasks, Automation, and the Rise in US Wage Inequality — NBER, Daron Acemoglu, Pascual Restrepo](https://www.nber.org/papers/w28920) — 작업논문 w28920(2021-06), Econometrica 90권 5호(2022) 게재. 2026-11-16 초록의 50~70%와 생산성 증가와의 관계 대조
+- [The Employment Effects of a Guaranteed Income: Experimental Evidence from Two U.S. States — NBER, Eva Vivalt 외](https://www.nber.org/papers/w32719) — 작업논문 w32719(2024-07, 2026-08 개정), The Quarterly Journal of Economics 141권 4호(2026). 2026-11-16 초록의 표본, 지급액, 소득과 노동시장 효과 대조
+- [Why Are We Still Working This Hard? — Wilsons Blog](https://wilsoniumite.com/2026/11/11/why-are-we-still-working-this-hard/) — 2026-11-11 게시. 2026-11-16 시간 환산, 격차 분해, 모형 결과와 제안 대조. 계산과 모형은 재계산하지 않음
+- [우리는 왜 아직도 이렇게 열심히 일하는가? — GeekNews](https://news.hada.io/topic?id=37008)
 
 ## 관련 문서
 
@@ -129,4 +144,7 @@ EBS 10강에서 제시한 약 5년의 AI 보완 투자 기간과 2030년 생산�
 - [[AI-Infrastructure-Capital-Cycle|AI 인프라 투자와 자본 순환]] — 공급 측 투자와 현금 회수
 - [[Inflation|인플레이션과 디플레이션]] — AI의 생산성 효과와 투자 수요의 구분
 - [[AX-Transformation|AX 조직 전환]] — 조직 단위의 승인 대기와 핸드오프 병목
+- [[National-Transfer-Accounts|국민이전계정과 생애주기 적자]] — 근로소득이 없는 기간의 재원
+- [[Unemployment-Employment|실업과 고용]] — 자동화의 과업 대체와 복원 효과
+- [[Business-Cycle|경기순환]] — 기술 투자 붐의 버블 논쟁을 나눠 읽는 질문
 - [[거시경제(Macroeconomics)]] — 지도

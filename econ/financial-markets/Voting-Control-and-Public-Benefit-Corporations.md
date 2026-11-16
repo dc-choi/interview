@@ -39,11 +39,11 @@ Anthropic은 델라웨어 공익법인(Anthropic, PBC)이다. 2026-11-02 S-1/A�
 - **공익 목적:** 정관 Article III은 장기적으로 인류에 이익이 되도록 고급 AI를 책임 있게 개발하고 유지하는 것을 공익으로 적는다.
 - **보통주의 의결권:** Class A는 1주 1표다. Class N은 법이 요구하는 경우 말고는 의결권이 없다. 우선주도 의결권 있는 시리즈와 없는 시리즈로 나뉜다.
 - **Class T:** 2026년 9월 1,000주를 1주로 합친 뒤 승인 주식 수가 1주다. 일반 안건에는 투표하지 않지만 정관이 정한 이사 선임과 일부 안건에서 권리를 가진다. 이사회 7명 중 2026-02-11 이후 Class T 보유자가 4명, 일부 우선주 보유자가 1명, 의결권 보통주 보유자가 2명을 선출하도록 정한다.
-- **장기이익신탁(Long-Term Benefit Trust):** 2023-09-19 게시한 회사 설명에 따르면 Class T는 신탁만 보유하며, 신탁은 회사에 금전적 이해관계가 없도록 설계한 5명 정원의 수탁자 기구다. 같은 글의 각주는 2026년 10월 기준 현직 수탁자를 4명으로 적는다. 2023년 설명은 신탁이 뽑는 이사 수가 시간과 자금 조달 기준에 따라 늘어 결국 이사회 과반이 된다고 했고, 위 정관은 2026-02-11부터 7석 중 4석을 이미 Class T 몫으로 정한다.
+- **장기이익신탁(Long-Term Benefit Trust):** 2023-09-19 게시한 회사 설명에 따르면 Class T는 신탁만 보유하며, 신탁은 회사에 금전적 이해관계가 없도록 설계한 5명 정원의 수탁자 기구다. 같은 글의 각주는 2026년 10월 기준 현직 수탁자를 4명으로 적는다. 2023년 설명은 신탁이 뽑는 이사 수가 시간과 자금 조달 기준에 따라 늘어 결국 이사회 과반이 된다고 했고, 위 정관은 2026-02-11부터 7석 중 4석을 이미 Class T 몫으로 정한다. 2026년 11월 IPO 자료(IPO Fact Sheet)도 신탁이 현재 금전적 이해관계가 없는 수탁자 4명으로 구성되며 일반적으로 이사회 과반을 선출할 권한을 가진다고 적는다. 상장 뒤에도 같은 권한이 유지되는지는 이 자료만으로 확인하지 않았다.
 - **개정 경로:** 2023년 회사 설명에 따르면 신탁 구조는 보통 수탁자와 이사회 또는 다른 주주의 합의로 바꾼다. 충분히 큰 주주 초다수가 동의하면 수탁자 동의 없이 바꿀 수 있는 안전장치(failsafe)가 있고, 필요한 초다수 비율은 신탁의 권한이 커질수록 높아진다.
-- **상장 계획:** 2026-10-26 발표 기준으로 회사는 Class A 보통주를 Nasdaq Global Select Market에 ANT로 상장할 계획이며, 공모 주식 수와 가격 범위는 정해지지 않았다고 밝혔다. 2026-11-10 S-1/A의 등록 수수료 표는 초과배정 옵션을 포함한 Class A 948,750,000주를 주당 최고 공모가격 78.00달러로 계산한다. 이는 수수료 계산 기준이며 확정 공모가가 아니다.
+- **상장 계획:** 2026-10-26 발표 기준으로 회사는 Class A 보통주를 Nasdaq Global Select Market에 ANT로 상장할 계획이며, 공모 주식 수와 가격 범위는 정해지지 않았다고 밝혔다. 2026-11-10 S-1/A의 등록 수수료 표는 초과배정 옵션을 포함한 Class A 948,750,000주를 주당 최고 공모가격 78.00달러로 계산한다. 이는 수수료 계산 기준이며 확정 공모가가 아니다. 회사 IPO 사이트는 11월 10일 로드쇼를 시작해 11월 18일 가격을 정하고 11월 19일 거래를 시작할 예정이라고 적는다(미국 동부 기준, 규제 승인 전제). 2026-11-10 보도된 가격 범위는 주당 70~78달러로(SEC 신고서를 인용한 보도) 수수료 표의 최고가와 맞는다. 신주와 구주 구성은 [[AI-Company-Valuation-and-Funding|AI 기업가치와 자금 조달]]에서 다룬다.
 
-2026-11-02 제출 정관 기준으로, 지분율이 큰 투자자도 Class A나 의결권 우선주가 아니면 표가 없고, 표가 있어도 이사회 7석 중 일부만 뽑는다. 상장 뒤 의결권 구조와 이사 선임 몫, Class T의 처리는 S-1 본문(10MB를 넘어 이번에 열지 못함)과 최종 투자설명서로 확인할 후속 과제이며, 이 문서는 보도된 내용을 적지 않는다. 재무와 장기 약정은 [[AI-Company-Valuation-and-Funding|AI 기업가치와 자금 조달]]에서 다룬다.
+2026-11-02 제출 정관 기준으로, 지분율이 큰 투자자도 Class A나 의결권 우선주가 아니면 표가 없고, 표가 있어도 이사회 7석 중 일부만 뽑는다. 상장 뒤 의결권 구조와 이사 선임 몫, Class T의 처리는 S-1 본문(10MB를 넘어 이번에 열지 못함)과 최종 투자설명서로 확인할 후속 과제이며, 상장 뒤 의결권 구조에 대해서는 보도된 내용을 적지 않는다. 재무와 장기 약정은 [[AI-Company-Valuation-and-Funding|AI 기업가치와 자금 조달]]에서 다룬다.
 
 ## 4. 투자설명서에서 확인할 질문
 
@@ -62,6 +62,10 @@ Anthropic은 델라웨어 공익법인(Anthropic, PBC)이다. 2026-11-02 S-1/A�
 - [Filing fee exhibit to Form S-1/A, November 10, 2026 — Anthropic, SEC](https://www.sec.gov/Archives/edgar/data/2130357/000162828026072484/exfilingfees.htm) — 등록 주식 수와 수수료 계산 기준 가격
 - [The Long-Term Benefit Trust — Anthropic](https://www.anthropic.com/news/the-long-term-benefit-trust) — 2023-09-19 게시, 2026년 10월 기준 수탁자 각주 포함
 - [Anthropic files S-1 with the SEC for proposed initial public offering — Anthropic](https://www.anthropic.com/news/s1-sec)
+- [Anthropic IPO — Anthropic](https://ipo.anthropic.com/us/) — 2026-11-16 로드쇼 시작, 가격 결정과 거래 시작 예정일 확인
+- [IPO Fact Sheet — Anthropic](https://ipo.anthropic.com/documents/us/factsheet.pdf) — 2026-11-16 장기이익신탁의 수탁자 수와 이사 선출 권한 문구 확인
+- [Anthropic Sets IPO Price Range At $70-$78 Per Share; Launches Roadshow — RTTNews](https://www.rttnews.com/3712632/anthropic-sets-ipo-price-range-at-70-78-per-share-launches-roadshow.aspx) — 2026-11-10 보도, SEC 신고서를 인용한 가격 범위. 신고서 본문은 직접 열지 못함
+- [Anthropic, IPO 희망가 70~78달러 공개… 11월 19일 나스닥 거래 예상 — GeekNews](https://news.hada.io/topic?id=37054)
 
 ## 관련 문서
 

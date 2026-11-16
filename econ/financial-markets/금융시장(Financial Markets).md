@@ -24,7 +24,7 @@ aliases: ["금융시장(Financial Markets)", "Financial Markets Map"]
 - [[Duplicate-Listing-Regulation|중복상장 규제]] — 2026-08-03 시행 원칙 금지와 예외 허용, 자회사 범위, 모회사 이사회 다섯 의무와 주주동의, 거래소 특례 심사와 제재, 해외 상장 적용, 솔리다임 IPO 검토 중단 사례 ✅
 - [[Mandatory-Tender-Offer|의무공개매수제도]] — 전량과 50%+1주 수량, 기보유분 공제와 선행매수, 안분비례로 갈리는 일반주주의 매도 기회, 2026-09-17 정무위 대안 구조와 미상정 경과, 영국 Rule 9와 EU 지침 비교 ✅
 - [[Financial-Industrial-Separation-Share-Limits|금산분리와 금융계열사의 주식소유한도]] — 금산법 제24조의 합산 한도와 사전 승인, 부득이한 사유의 승인 신청과 처분명령, 자사주 소각이 계열 금융사 지분율을 올리는 원리와 2026년 삼성생명, 삼성화재 처분 결정 사례 ✅
-- [[Voting-Control-and-Public-Benefit-Corporations|의결권 구조와 공익법인(PBC)]] — 무의결권 주식과 이사 선임권 주식으로 지분과 지배권을 나누는 방식, 델라웨어 PBC의 균형 의무와 강제 수단의 문턱, Anthropic 상장 전 정관과 장기이익신탁 사례 ✅
+- [[Voting-Control-and-Public-Benefit-Corporations|의결권 구조와 공익법인(PBC)]] — 무의결권 주식과 이사 선임권 주식으로 지분과 지배권을 나누는 방식, 델라웨어 PBC의 균형 의무와 강제 수단의 문턱, Anthropic 상장 전 정관과 장기이익신탁 사례, 공모 가격 범위와 일정 ✅
 - [[Anti-Money-Laundering|자금세탁방지(AML)]] — 고액현금거래보고와 의심거래보고의 기준, 기준 아래로 쪼개기의 보고 의무, 내부 통제 실패, 전문 세탁 조직과 가상자산 주소 분산 사례, 접근매체 양도와 대여 처벌 ✅
 - [[Virtual-Asset-Exchange-Registration|가상자산사업자 신고 제도]] — 특정금융정보법상 신고와 불수리 사유, 해외 사업자 적용 기준, 미신고 영업 처벌과 앱, 웹 차단, FIU 명단 확인 ✅
 - [[Tokenized-Bonds-and-Wholesale-CBDC|국채 토큰화와 기관용 CBDC]] — DvP와 원자적 결제, 기관용 CBDC와 예금토큰과 스테이블코인의 차이, 한국은행 2027년 실증 계획과 미정 사항 ✅
