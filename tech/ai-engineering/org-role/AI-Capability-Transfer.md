@@ -84,6 +84,17 @@ FDE(Forward Deployed Engineer)는 고객 현장에 들어가 문제를 풀고 �
 
 기존 프로젝트에서 이 증거를 찾고 비어 있는 부분만 독립 예제로 보완한다. 수료증 수, 투입 시간이나 저장소 수만으로 납품 역량을 판정하지 않는다. 공개 사례에는 합성 데이터와 공개 가능한 구조를 쓰고 고객의 비공개 데이터, 내부 코드와 식별자는 넣지 않는다.
 
+### 벤더 자격으로 본 FDE 기술 범위 (AWS Partner FDE)
+
+AWS는 파트너 소속 엔지니어의 FDE 역량을 확인하는 자격 두 가지(FDE Validated, FDE Advanced)를 AWS Skill Builder에 두었다. 2026-10-01 AWS Partner Network 블로그 기준이며, 같은 글은 고객이 AWS가 직접 맡는 FDE, 파트너 전문가가 참여하는 AWS 주도 방식, Partner-Led FDE 중에서 고를 수 있다고 소개한다. 현재 요건, 인정되는 이전 이수와 자격 정책의 정본은 Skill Builder 화면이라고 적는다.
+
+- 검증 범위: Ground(신뢰할 수 있는 기업 데이터, 시스템, 도메인 ontology와 업무 맥락), Orchestrate(agent, tool, workflow, identity와 복구), Prove(평가, 관측 가능성, 보안, 정책과 사람의 통제) 세 pathway다. 각각 시스템이 업무를 이해하고 믿을 만한 정보를 쓰는지, 실제 일을 안정적으로 수행하는지, 고객이 production에서 신뢰할 수 있는지를 묻는다. 블로그는 이를 기술 역량 pathway로 설명하며 별도 납품 모델이나 고정된 직함으로 보지 않는다.
+- 평가 방식: assessment, SimuLearn, microcredential 등 AWS가 제공한 환경의 실습형 활동이다. 강좌 수료나 객관식 시험만으로 받는 자격이 아니며 준비용 교육 자료는 검증과 별개다. 블로그는 파트너가 세 pathway에 무료로 접근할 수 있다고 적는다.
+- FDE Validated: 활성 AWS 자격, 한 pathway 이상의 필수 활동 전부 완료와 세 pathway 합산 필요 점수가 조건이다. 블로그는 Associate 또는 Professional 등급 자격을 적고 점수는 밝히지 않는다. 2026-11-06 AWS 공식 채널의 소개 영상(음성 인식 전사로 확인)은 Specialty 등급도 선수 자격으로 들고 필요 점수를 600점으로 말한다. 두 자료는 자격 등급에서 다르고 점수는 영상에만 있으므로, 등급과 점수는 등록 전에 Skill Builder에서 확인한다.
+- FDE Advanced: 활성 AWS Certified Generative AI Developer – Professional 자격과 세 pathway 전체의 검증 요건 완료가 조건이다. 영상은 두 자격이 같은 활동을 공유해 한쪽에서 마친 활동이 다른 쪽에도 반영된다고 설명한다.
+
+이 자격은 앞 표의 LLM 품질 평가, 시스템 연동과 운영 항목 일부를 벤더가 제공한 환경에서 확인하는 수단이다. 문제 정의와 범위 합의, 고객 피드백, 반복 가능한 패턴처럼 실제 고객 현장에서 드러나는 항목은 대신하지 않으므로 자격 취득을 고객 납품 경력으로 기록하지 않는다(해석).
+
 ## 사례
 
 - 한 배달 플랫폼 회사의 교육 코치가 도움이 필요하다는 설문에 전 부서 92명이 손을 들자, 개발을 전혀 모르는 동료 15명과 5주 파일럿(매주 평일 저녁 2시간, 페어별 1시간 별도 코칭)을 시작했다. 3기까지 내부 AI 코치 65명이 배출됐고, 다음 기수 코치 신청 31명과 동료 추천 22건이 이어졌다. 피코치 12명의 자기효능감 평균은 사전 2.58점에서 마지막 세션 뒤 4.17점이 됐다.
@@ -105,6 +116,8 @@ FDE(Forward Deployed Engineer)는 고객 현장에 들어가 문제를 풀고 �
 - [AX 시대의 FDE는 조직에 무엇을 남길까 — 개인 블로그](https://mun-jeong-min.github.io/personal-blog/posts/ax-fde-organizational-capability.html)
 - [Forward Deployed Engineer (London) — Anthropic 채용 공고](https://job-boards.greenhouse.io/anthropic/jobs/5423029008)
 - [Forward Deployed AI Engineer — Palantir 채용 공고](https://jobs.lever.co/palantir/636fc05c-d348-4a06-be51-597cb9e07488)
+- [New FDE Pathways For AWS Partners: Get Ready for Production Agentic AI Delivery — AWS Partner Network (APN) Blog](https://aws.amazon.com/blogs/apn/new-fde-pathways-for-aws-partners-get-ready-for-production-agentic-ai-delivery/)
+- [AWS Partner: Forward Deployed Engineer (FDE) Credentials — Amazon Web Services (YouTube)](https://www.youtube.com/watch?v=0lagdP830NU)
 
 ## 관련 문서
 

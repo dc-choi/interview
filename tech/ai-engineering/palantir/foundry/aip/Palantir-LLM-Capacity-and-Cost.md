@@ -34,7 +34,20 @@ Model capacity는 모델별 독립이다. Default medium 외 large/XL 등 tier�
 
 USG 행은 해당 모델과 backend가 지원하는 impact level에만 적용한다. **Experimental** 표시는 그 backend의 실험적 제공 상태이며, 표에 행이 있어도 해당 환경과 접근 요건을 충족해야 한다. Gemma 4 26B A4B, Gemma 4 31B, NVIDIA Nemotron 3 Nano 30B와 Nemotron 3 Super 120B의 Bedrock 기본 한도는 provider capacity 예약을 뜻하지 않는다.
 
-이 절은 기본 한도표만 추가 대조한 범위다. 기존 비용, 예약 용량과 override 설명의 확인일은 유지하며 실제 enrollment 설정이나 부하 처리량은 시험하지 않았다.
+이 절은 기본 한도표만 추가 대조한 범위다. 기존 비용, 예약 용량과 override 설명의 확인일은 유지하며 실제 enrollment 설정이나 부하 처리량은 시험하지 않았다. 위 Haiku 4.5 값은 2026-11-16 수집한 표에서도 같다.
+
+### 같은 모델도 backend별 기본 한도가 크게 다르다
+
+2026-11-16 수집한 같은 표 기준이다. 표의 backend는 Anthropic, Amazon Bedrock, Azure, Google Vertex, OpenAI, xAI, Fireworks와 Palantir-hosted이며 USG 행은 따로 둔다. Medium tier 기본값을 비교하면 다음과 같다.
+
+| 모델 | Backend별 Medium enrollment 기본값 |
+| --- | --- |
+| GPT-5.5 | Azure 4,000,000 TPM/2,000 RPM, OpenAI 3,000,000 TPM/1,500 RPM, Amazon Bedrock 250,000 TPM/60 RPM |
+| Claude Opus 5.5 | Google Vertex 5,000,000 TPM/2,000 RPM, Amazon Bedrock 3,000,000 TPM/300 RPM, Anthropic 1,000,000 TPM/200 RPM, Azure 1,000,000 TPM/100 RPM |
+
+모델 이름만으로 처리량을 추정하지 않고 활성화한 backend의 행을 찾는다. 이 비교는 기본 한도의 차이이며 backend 간 응답 품질, 지연 시간이나 비용을 비교한 결과는 아니다.
+
+Per-user 기본값이 해당 행의 enrollment 값보다 큰 경우도 있다. GPT-5.5의 Amazon Bedrock 행은 per-user 1,000,000 TPM/1,000 RPM, Medium enrollment 250,000 TPM/60 RPM이다. User 귀속 요청에는 enrollment 한도도 함께 적용되므로, 이 모델에 Bedrock backend만 활성화한 Medium 환경이라면 사용자 한 명이 per-user 수치만큼 쓸 수 없다. 여러 backend를 활성화하면 enrollment 한도가 합산되므로 비교 대상은 그 합계다. USG는 impact level에 따라 행이 나뉘기도 한다. Gemini 3.6 Flash의 Google Vertex USG Medium 기본값은 IL2/IL4가 12,000,000 TPM, IL5가 7,000,000 TPM이다.
 
 ## Project percentage는 예약량이 아니다
 

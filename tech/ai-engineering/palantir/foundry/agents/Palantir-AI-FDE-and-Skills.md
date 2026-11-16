@@ -56,7 +56,9 @@ Promotion은 skill resource의 접근 권한을 바꾸지 않아 사용자에게
 
 AI FDE는 action을 실행하고 결과를 관찰해 다음 action을 정하는 closed-loop로 동작한다. 공식 overview가 예로 드는 자기 검증 수단에는 transform preview, function preview와 Code Repositories의 CI check 확인이 있다. 이 자기 검증을 업무 결과의 검수로 해석하지 않는다.
 
-작업을 작은 단계로 나누고 필요한 context/tool만 제공한다. Agent의 preview와 test 성공을 최종 업무 정확성으로 확정하지 않는다. Function 변경은 AIP Evals 사례와 기준으로 전후를 비교한다.
+작업을 작은 단계로 나누고 필요한 context/tool만 제공한다. 공식 best practices는 불필요한 context와 tool이 부정확한 동작을 부를 수 있고, 이를 제한하면 민감한 작업과 정보에 닿는 범위도 줄어든다고 설명한다. Tool approval 요청에서는 model이 실행하려는 동작과 사용하는 tool을 확인한 뒤 승인한다. Agent의 preview와 test 성공을 최종 업무 정확성으로 확정하지 않는다. Function 변경은 AIP Evals 사례와 기준으로 전후를 비교한다.
+
+같은 문서는 AI FDE가 여러 접근을 빠르게 시험하는 prototyping에 특히 효과적이라고 보고, production 품질의 구현은 AI가 만든 기반에 사람의 수동 개발로 세부 조정과 최적화를 더하도록 권한다. 기본 구조에서 시작해 각 구성 요소를 검증한 뒤 복잡도를 늘리는 순서다. Tool 제한은 실수 범위를 줄이는 운용 방법이며 서버 인가를 대신하는 권한 경계는 아니다.
 
 전체 통과율과 항목별 회귀를 함께 본다. DevCon 5 시연의 agent 생성 요약 표는 10개 사례의 전체 통과가 1개에서 9개로 늘었지만 severity 일치는 10개에서 9개로 줄었다고 표시한다. 화면의 요약을 실제 실행 기록의 독립 검증으로 간주하지 않으며, 반복 수정에 사용한 사례의 통과율을 새로운 운영 데이터의 정확도로 일반화하지 않는다. (2026-10-18 [시연 7분 55초 화면](https://www.youtube.com/watch?v=pyudERNI1Qo&t=475s) 확인)
 
