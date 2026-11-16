@@ -29,6 +29,7 @@ aliases: ["Algorithm"]
 - [x] [[Trie-and-Autocomplete|Trie와 자동완성]]
 - [x] [[Algorithm-Practice|필수 알고리즘 체크리스트, 통과한 풀이 개선(Two Sum), 백엔드 활용 사례, 학습 방법]]
 - [x] [[Problem-Solving-Techniques|누적합, 완전탐색, Greedy, 이분탐색, LIS, Fenwick tree, 시뮬레이션, 정수론과 KMP]]
+- [x] [[Rank-Aggregation-and-Rating-Systems|순위 결합과 레이팅]] — 위치 점수 합산과 쌍대 비교의 순환, RRF의 k, Elo와 FIDE의 K와 기대 득점
 - [x] [[Algorithm-Quad-Remeshing|쿼드 리메싱/리토폴로지 (조합 문제의 연속 완화 + 정수 제약, 위상 하한, 파이프라인 분해)]]
 
 - [x] [[Constraint-Based-Resource-Placement|제약 기반 자원 배치 (하드 제약과 목적, 지역 탐색, MIP와 최적성)]]

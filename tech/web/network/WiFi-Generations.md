@@ -3,7 +3,7 @@ tags: [network, wireless, wifi, ieee-802-11, troubleshooting, captive-portal]
 status: done
 verified_at: 2026-11-16
 category: "Web - 네트워크"
-aliases: ["Wi-Fi Generations", "Wi-Fi 세대", "와이파이 세대", "802.11n", "Wi-Fi 4", "802.11ac", "802.11ax", "802.11be", "802.11bn", "Wi-Fi 7", "Wi-Fi 8"]
+aliases: ["Wi-Fi Generations", "Wi-Fi 세대", "와이파이 세대", "802.11n", "Wi-Fi 4", "802.11ac", "802.11ax", "802.11be", "802.11bn", "Wi-Fi 7", "Wi-Fi 8", "802.11p", "WAVE", "802.11bd"]
 ---
 
 # Wi-Fi 세대와 연결 구간 진단
@@ -36,6 +36,23 @@ Wi-Fi Alliance는 2018-10-03 세대 번호 이름을 도입하며 802.11ax 기�
 - Wi-Fi Alliance의 Wi-Fi CERTIFIED 6 인증은 2019년 9월, Wi-Fi CERTIFIED 7 인증은 2024-01-08에 시작했다. IEEE 규격 승인보다 인증 제품이 먼저 나온 세대가 있으므로 제품 출시일과 규격 승인일을 구분한다.
 - 802.11bn의 목표는 802.11be 대비 신호 품질 수준 중 적어도 하나에서 처리량 25% 향상, 지연 분포 95번째 백분위수 25% 감소, BSS 사이 이동(로밍)을 포함한 MPDU 손실 25% 감소 등이다. Wi-Fi Alliance는 Wi-Fi 8을 신뢰성을 높이는 세대로 소개하고, AP들이 스펙트럼을 두고 경쟁하는 대신 협력하는 조율 기능을 그 특징 중 하나로 든다. 2026-10-27 IEEE 802.11 일정표 기준 초안은 D2.x 단계이고 IEEE 최종 승인은 2028년 5월로 예측돼 있다. 그 전에 나오는 제품은 초안 기준 구현이다.
 - 단말과 AP가 둘 다 지원하는 세대로만 붙는다. AP만 새 세대로 바꾸면 기존 단말은 이전 세대로 연결된다. macOS에서는 Option 키를 누른 채 메뉴 막대의 Wi-Fi 상태 메뉴를 열면 현재 연결의 채널, 대역, 보안 방식과 802.11 프로토콜을 볼 수 있다.
+
+## 세대 밖의 용도별 개정: 차량 통신(802.11p와 WAVE)
+
+세대 번호는 소비자용 성능 개정의 이름이고, 802.11에는 특정 환경에 맞춘 개정도 있다. 802.11p-2010(Amendment 6: Wireless Access in Vehicular Environments)은 달리는 차량 환경에서 무선 통신을 하도록 802.11의 MAC과 PHY를 확장한 개정이다(IEEE SA 승인 2010-06-17, 발행 2010-07-15). IEEE SA 페이지의 현재 상태는 Superseded Standard이고, IEEE 802.11 작업반 일정표는 802.11p-2010을 802.11-2012 통합판의 기반 개정으로 적는다. 현행 요구사항은 최신 802.11 통합판에서 확인한다.
+
+WAVE(Wireless Access in Vehicular Environments)는 802.11 위에 IEEE 1609 계열 표준을 얹은 차량 통신 구조다. 아키텍처 안내서 1609.0-2019는 BSS(basic service set, AP와 그에 결합한 단말의 집합) 밖에서 동작하는 802.11과 함께 다음 표준을 구성 요소로 든다. 표의 판 번호와 상태는 2026-11-16 IEEE SA 페이지 기준이다.
+
+| 표준 | 역할 |
+|---|---|
+| 1609.2 | 애플리케이션과 관리 메시지의 보안 서비스(현행 1609.2-2025) |
+| 1609.3 | 네트워킹 서비스(현행 1609.3-2020) |
+| 1609.4 | 멀티채널 운영(현행 1609.4-2016, 2016-01-29 승인, 개정 프로젝트 없음. 10년 안에 개정되지 않으면 비활성 절차 대상이 된다) |
+| 1609.11 | ITS 전자 결제 데이터 교환(10년 안에 개정되지 않아 2021-03-25 비활성) |
+| 1609.12 | 식별자 |
+
+- 1609.1은 2006년 시험용 표준(WAVE Resource Manager)으로, 도로변 장치(RSU)를 거쳐 원격 애플리케이션이 차량 탑재 장치(OBU)에 접근하게 하는 자원 관리자를 정의했지만 2008-12-31 철회됐다. 1609.1을 현행 계층으로 설명하는 자료는 2006년 구성을 기준으로 한 것이다.
+- 후속 개정 802.11bd-2022(Enhancements for Next Generation V2X, 승인 2022-12-03, 현재 Superseded로 802.11 일정표상 802.11-2024 통합판의 기반 개정)는 5.9GHz와 60GHz 대역의 차세대 V2X(차량과 모든 것 사이의 통신)를 위해 PHY와 MAC을 고쳤다. 진행 중인 1609.0 개정안(P1609.0)은 1609 표준과 802.11에 더해 LTE-V2X(셀룰러 기반 차량 통신)를 기반 기술로 포함한다. 802.11 계열 하나가 차량 통신을 독점하는 구도가 아니므로, 지역별 주파수 정책과 채택 기술은 별도로 확인한다(2026-11-16 IEEE SA 페이지 대조).
 
 ## 연결 구간을 나눠 진단한다
 
@@ -78,9 +95,18 @@ Wi-Fi 아이콘이 가득 찼는데 인터넷이 안 된다면 단말과 AP 사�
 - [802.11n: The Standard Revealed — Cisco](https://community.cisco.com/legacyfs/online/legacy/1/1/3/68311-white_paper_c11-427843_v1.pdf) — 2009 백서. 공간 스트림 최대 4개, 40MHz 채널 결합, 보호 구간별 최고 전송률, A-MSDU와 A-MPDU, Block Ack, 초안 2.0 인증 대조
 - [IEEE SA, IEEE 802.11ac-2013](https://standards.ieee.org/ieee/802.11ac/4473/)
 - [IEEE SA, IEEE 802.11ax-2021](https://standards.ieee.org/ieee/802.11ax/7180/)
+- [IEEE SA, IEEE 802.11p-2010](https://standards.ieee.org/ieee/802.11p/3953/) — 차량 환경 개정, 승인 2010-06-17, Superseded 상태
+- [IEEE SA, IEEE 802.11bd-2022](https://standards.ieee.org/ieee/802.11bd/7451/) — 차세대 V2X, 5.9GHz와 60GHz, Superseded 상태
+- [IEEE SA, IEEE 1609.11-2010](https://standards.ieee.org/standard/1609_11-2010.html) — Inactive-Reserved, 2021-03-25 비활성
+- [IEEE SA, IEEE 1609.0-2019 Guide for WAVE Architecture](https://standards.ieee.org/ieee/1609.0/6792/) — WAVE 구성 표준 목록
+- [IEEE SA, P1609.0](https://standards.ieee.org/ieee/1609.0/12069/) — LTE-V2X를 포함하는 개정안
+- [IEEE SA, IEEE 1609.1-2006](https://standards.ieee.org/ieee/1609.1/3958/) — Resource Manager, 2008-12-31 철회
+- [IEEE SA, IEEE 1609.2-2025](https://standards.ieee.org/ieee/1609.2/12070/)
+- [IEEE SA, IEEE 1609.3-2020](https://standards.ieee.org/ieee/1609.3/10360/)
+- [IEEE SA, IEEE 1609.4-2016](https://standards.ieee.org/ieee/1609.4/6183/)
 - [Wi-Fi Alliance, Wi-Fi (MAC/PHY)](https://www.wi-fi.org/discover-wi-fi/wi-fi-certified-7) — 세대별 기능과 Wi-Fi 8 소개
 - [Wi-Fi Alliance, Wi-Fi 6E: Wi-Fi in the 6 GHz band (2021)](https://www.wi-fi.org/file/wi-fi-6e-wi-fi-in-the-6-ghz-band-2021)
-- [IEEE 802.11, Official IEEE 802.11 Working Group Project Timelines](https://www.ieee802.org/11/Reports/802.11_Timelines.htm) — 2026-10-27 갱신본, 802.11be 승인과 발행일, 802.11bn 예측 일정
+- [IEEE 802.11, Official IEEE 802.11 Working Group Project Timelines](https://www.ieee802.org/11/Reports/802.11_Timelines.htm) — 2026-10-27 갱신본, 802.11be 승인과 발행일, 802.11bn 예측 일정, 802.11p와 802.11bd가 기반이 된 통합판
 - [IEEE 802.11, Status of Project IEEE 802.11bn](https://www.ieee802.org/11/Reports/tgbn_update.htm) — UHR 목표
 - [Apple, Use the Wi-Fi status menu on Mac](https://support.apple.com/guide/mac-help/use-the-wi-fi-status-menu-on-mac-mchlfad426fa/mac)
 - [Next.js, app/api-reference/config/next-config-js/allowedDevOrigins](https://nextjs.org/docs/app/api-reference/config/next-config-js/allowedDevOrigins)
@@ -88,6 +114,7 @@ Wi-Fi 아이콘이 가득 찼는데 인터넷이 안 된다면 단말과 AP 사�
 - [RFC 8910, Captive-Portal Identification in DHCP and Router Advertisements (RAs)](https://www.rfc-editor.org/rfc/rfc8910)
 - [바이브코딩할 때 무조건 알아야 할 인터넷 기초 개념과 Wi-Fi 원리 — 투더제이 TTJ](https://www.youtube.com/watch?v=T7jtlfeYgAA)
 - [#NW 0035 와이파이 속도 10배 높인 혁명! IEEE 802.11n 완벽 정리 — 길리랩](https://www.youtube.com/watch?v=OMO3Z8r7BqI) — 2026-11-06 공개 쇼츠, 802.11n 보강의 계기이며 내용은 위 IEEE SA와 Cisco 자료로 대조
+- [#NW 0036 차끼리 대화하는 도로?! IEEE 802.11p WAVE 90초 완전정리 — 길리랩](https://www.youtube.com/watch?v=MIj1WcKIgp0) — 2026-11-07 공개 쇼츠, WAVE 보강의 계기이며 내용은 위 IEEE SA 페이지로 대조
 
 ## 관련 문서
 
