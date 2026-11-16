@@ -44,6 +44,10 @@ Google 공식 발표는 2026-06-03 일부 웹사이트에 공개하고 2026-08-3
 
 Bing도 공식 데이터를 제공한다. 2026-02-10 공개 프리뷰로 발표한 Bing Webmaster Tools의 AI Performance는 Microsoft Copilot, Bing AI 요약과 일부 파트너에서의 인용 수, 하루 평균 고유 인용 페이지 수, URL별 인용과 grounding query 표본을 보여준다. 다만 개별 답변에서의 인용 위치, 페이지의 역할이나 순위를 뜻하지 않는다 (2026-10-02 공식 발표 확인). 2026-06-16에는 grounding query의 의도(Intents)와 주제(Topics) 분류, 같은 grounding query에 표시된 전체 인용 중 우리 사이트의 비율인 Citation Share, 이전 기간 비교(Compare)의 프리뷰가 전 세계에 순차 제공되기 시작했다. Citation Share도 경쟁 도메인, 트래픽 점유나 순위를 보여주지 않는다 (2026-10-04 공식 발표 확인).
 
+ChatGPT도 사업자용 집계 지표를 내기 시작했다. GeekNews 요약(2026-11-15) 기준 OpenAI는 비즈니스 허브를 베타로 열었다. 사업자는 ChatGPT에 표시되는 자사 소유권을 인증한 뒤 회사 정보와 가격, 판매 여부를 담은 제품 피드를 등록하고, ChatGPT에서의 언급 횟수, 웹사이트 클릭 수와 자사 사이트가 인용된 대화의 주요 주제를 본다. 개별 사용자 대화와 에이전트 채팅은 공유하지 않으며 일정 기준 이상 쌓여야 통계를 보여 준다. 미국의 일부 전자상거래와 온라인 서비스 기업은 답변에 나온 회사 프로필에서 대화가 시작되는 비즈니스 에이전트도 만들 수 있고, 이 대화와 유료 게재 항목은 일반 답변과 구분해 표시한다고 설명한다. OpenAI 원문과 도움말은 2026-11-16 HTTP 403으로 대조하지 못했다.
+
+이 지표도 층을 나눠 읽는다. 언급 횟수는 링크 표시(1층)와도 답변 점유(4층)와도 다른 브랜드 등장 횟수이고, 인용된 대화의 주제는 2층, 웹사이트 클릭은 3층의 일부다. 비즈니스 에이전트와의 대화는 사업자가 운영하는 채널이므로 일반 답변에서의 점유와 섞지 않는다(이 문서의 제안).
+
 노출 자격과 실제 노출도 구분한다. Google은 AI Overviews와 AI Mode의 지원 링크가 되려면 페이지가 색인되어 있고 검색에서 snippet 표시 자격을 갖춰야 한다고 설명한다. 별도 AI 파일이나 특수 schema.org 구조화 데이터는 필요하지 않으며, 구조화 데이터를 쓴다면 화면의 본문과 맞아야 한다. 요건 충족만으로 색인이나 노출이 보장되지는 않는다. Bing이 권하는 헤딩, 표와 FAQ 개선도 인용을 늘리기 위한 제안으로 보고 인용 보장이나 Google의 별도 필수 조건으로 옮기지 않는다.
 
 ## 노출이 오르는 것과 성과가 오르는 것은 다르다
@@ -81,6 +85,7 @@ AI 영역이 화면에서 넓어질수록 그 안에 링크가 표시될 기회�
 |---|---|---|
 | Search Console 생성 AI 노출 | 1층, 구글 엔진 한정 | 쿼리와 인용 방식 구분 없음 |
 | Bing Webmaster AI Performance | 2층 일부, 지원되는 Microsoft AI 경험과 파트너의 인용 | grounding query는 표본이며 답변 내 위치, 역할과 순위는 제공하지 않음 |
+| ChatGPT 비즈니스 허브 인사이트(베타) | 언급 횟수, 인용된 대화의 주제와 사이트 클릭, ChatGPT 한정 | 기준 미만이면 통계가 없고 개별 대화는 제공하지 않음. 원문 미대조 |
 | GA4의 AI 레퍼러 | 3층 일부 | AI 서비스의 레퍼러나 캠페인 식별 정보가 전달된 유입만 분리 가능. 정보가 없으면 direct 등으로 섞일 수 있고, 구글 AI 경로는 이 표만으로 분리할 수 없음 |
 | 문의 폼 자기신고 | 3층 일부, 전환 근처 | 표본이 작고 응답 편향이 있다 |
 
@@ -131,6 +136,8 @@ AI 영역이 화면에서 넓어질수록 그 안에 링크가 표시될 기회�
 - [The 50 Most-Cited Websites in Google AI Overviews (September 2026) — Ahrefs](https://ahrefs.com/blog/most-cited-domains-ai-overviews/)
 - [The 10 Most Mentioned Domains for ChatGPT, Perplexity, and AI Overviews Across 78.6M Searches — Ahrefs](https://ahrefs.com/blog/top-10-most-cited-domains-ai-assistants/)
 - [Top Brand Visibility Factors in ChatGPT, AI Mode, and AI Overviews (75k Brands Studied) — Ahrefs](https://ahrefs.com/blog/ai-brand-visibility-correlations/)
+- [ChatGPT 내 비즈니스 기능 소개 — OpenAI](https://openai.com/ko-KR/index/introducing-businesses-chatgpt/) — 2026-11-16 HTTP 403으로 원문 미대조
+- [ChatGPT 내 비즈니스 기능 소개 — GeekNews](https://news.hada.io/topic?id=37183) — 2026-11-15 요약. 소유권 인증, 제품 피드, 집계 인사이트와 공개 조건, 비즈니스 에이전트의 제공 범위와 표시 구분의 출처
 
 ## 관련 문서
 

@@ -17,7 +17,7 @@ aliases: ["Marketing", "마케팅"]
 - [x] [[YouTube-Revenue-and-Production-Cost|유튜브 수익 단가와 제작 원가]] — RPM과 CPM, 예상과 확정 수익, 손익분기 조회수, 단계별 제작 원가
 - [x] [[Promotional-Products-Execution|판촉물 제작과 납기]] — 샘플, 배송 보상의 조건, 재고와 배포 성과의 구분
 - [x] [[Customer-Data-Activation-Strategy|고객 데이터 활성화의 도입 판단]] — 대상 조건, 실행 시점, 운영 개선과 구매 효과의 구분
-- [x] [[AI-Marketing-Analysis|AI 마케팅 분석]] — 조회와 판단, 마케팅 엔지니어의 고객 언어, 실험 실행과 승인 경계, 이탈 예측과 증분 효과
+- [x] [[AI-Marketing-Analysis|AI 마케팅 분석]] — 조회와 판단, 마케팅 엔지니어의 고객 언어, 캠페인 목적과 결정 이력의 맥락, 실험 실행과 승인 경계, 이탈 예측과 증분 효과
 - [x] [[AI-Marketing-Connectors|AI 마케팅 커넥터의 권한과 데이터 경계]] — 계정, 서버와 호스트의 권한 층, 조회와 집행의 승인 분리, 수집의 약관과 개인정보, 무료 한도의 초과 동작
 - [x] [[Affiliate-Marketing|제휴 마케팅]] — CPC와 CPA, 적격 성과와 정산 수익의 구분, 쿠팡 파트너스의 표시 기준과 제재
 - [x] [[Marketing-Fundamentals|마케팅, 브랜딩, 광고와 홍보 기초 (PR의 관계 관리, 브랜드와 제품 통합의 구분, STP, 4P, Customer Journey)]]
@@ -39,7 +39,7 @@ aliases: ["Marketing", "마케팅"]
 - [x] [[Trademark-and-Brand-Clearance|상표와 브랜드 권리 확인]] — 상호와 도메인, 선출원, 지정상품과 권리 유지, 외부 로고의 파일 라이선스와 상표 사용 조건
 - [x] [[Storytelling|스토리텔링]] — 욕망과 갈등, 구원과 대가, 캐릭터, 구조와 감정 표현
 - [x] [[Meta-Paid-Ads|Meta 유료 광고 실행 구조 (픽셀과 전환 API 중복 제거, 캠페인-세트-광고와 1-1-N, 소재 4축 조합, 문제와 자기 인식에 맞춘 메시징, 리드 선별과 고객당 비용, 지표 해석, 소재 피로)]]
-- [x] [[Performance-Ad-Budget-and-Bidding|퍼포먼스 광고의 예산과 입찰]] — 한계 ROAS 곡선과 최적 예산, 입찰의 다섯 문제, 캠페인 목표와 데이터와 탐색 여지, 소재 대량 실험
+- [x] [[Performance-Ad-Budget-and-Bidding|퍼포먼스 광고의 예산과 입찰]] — 한계 ROAS 곡선과 최적 예산, 입찰의 다섯 문제, 캠페인 목표와 데이터와 탐색 여지, 소재 대량 실험, 유료 광고의 변수 통제, 1인 개발 게임의 증액분 설치 단가와 손익 사례
 - [x] [[CTV-Performance-Advertising|CTV 퍼포먼스 광고와 증분 측정]] — 브랜드 TV 광고와의 차이, 가구 단위 기기 연결, 클릭 기여와 증분 실험의 차이, 사례 수치의 해석
 - [x] [[AI-Search-Visibility|AI 검색 가시성 측정 (가시성 4층, Search Console 생성 AI 리포트의 범위, 노출과 인용이 성과가 아닌 이유, 엔진별 출처 차이)]]
 - [x] [[App-Store-Listing-Localization|앱스토어 등록 정보의 기본 언어와 현지화 (스토어와 기기 언어별 선택, 기본 언어 변경의 심사 조건, Google Play 자동 번역)]]

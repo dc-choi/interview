@@ -94,6 +94,9 @@ LG전자와 AWS의 공개 설계는 마케팅 질문의 계획 수립, 코드 �
 | 문체 | 채택하거나 거절한 예시와 이유 |
 | 창업자 관점 | 시장과 고객에 대한 고유한 판단 |
 | 실패 기록 | 실패한 캠페인, 관찰한 원인과 다음에 피할 조건 |
+| 캠페인 목적과 결정 이력 | 캠페인별 목표(판매, 인지도), 정할 당시의 전략과 이후 취한 조치 |
+
+표의 마지막 행은 위 운영 제안과 다른 출처에서 온 보완이다. 성과 판정의 기준은 데이터가 아니라 브랜드의 목표에서 온다. 인지도를 넓히려고 노출을 극대화한 캠페인을 몇 주 뒤 지표만으로 평가하면 전환이 늘지 않았다는 이유로 실패로 잘못 분류할 수 있다. 캠페인을 정할 때의 목적과 전략이 분석 시점의 맥락에 들어 있어야 같은 수치를 맞게 읽는다. 같은 광고 운영 자동화 제품이 서로 갈리는 지점도 무엇을 좋은 성과로 정의하고 어떤 맥락을 넣느냐다(광고 운영 에이전트 스타트업 공동 창업자의 견해).
 
 파일 이름이나 개수는 필수 규격이 아니다. 에이전트의 추측을 근거 후보로 남기고 사람의 검토 없이 고객 정의나 회사 정책으로 승격하지 않는 경계가 핵심이다.
 
@@ -140,6 +143,7 @@ LG전자와 AWS의 공개 설계는 마케팅 질문의 계획 수립, 코드 �
 - [Loop Marketing strategy: A framework for stellar AI-era growth — HubSpot, Ramona Sukhraj](https://blog.hubspot.com/marketing/loop-marketing-strategy) — 퍼널, 실행 루프와 closed-loop 측정의 역할 구분.
 - [마케팅 엔지니어: AI 에이전트로 100배 더 많은 실험하기 — GeekNews](https://news.hada.io/topic?id=35448) — 2026-10-16 제공 발췌와 검색 색인 확인.
 - [Marketing Engineers: 100x More Experiments with AI agents — X, Greg Isenberg](https://x.com/gregisenberg/status/2108188646973313195) — 원본 직접 열람 실패, [Thread Navigator 재수록 본문](https://threadnavigator.com/thread/2108188646973313195/)으로 확인. 생산성 배수와 미래 조직 규모는 미검증 전망.
+- [“취업이 어려워진 건 맞지만…” 스탠퍼드 컴공생이 말하는 AI 시대의 새로운 경쟁력 — YouTube, 희야기 HeeChan](https://www.youtube.com/watch?v=BnSWtotl4DA) — 2026-11-07 업로드, 2026-11-16 음성 인식 전사 전체 확인. 캠페인 목적과 결정 이력을 맥락으로 넣어야 한다는 견해의 출처
 - [AWS Generative AI Lens, Establish performance evaluation processes](https://docs.aws.amazon.com/wellarchitected/latest/generative-ai-lens/genperf01.html)
 - [Google Ads Help, About Target ROAS bidding](https://support.google.com/google-ads/answer/6268637?hl=en)
 - [Google Analytics, Measure ecommerce](https://developers.google.com/analytics/devguides/collection/ga4/ecommerce)

@@ -64,13 +64,14 @@ Buy for Me에서는 고객이 Amazon 화면에서 배송지, 세금과 배송비
 
 ## 사이트의 접근 통제가 에이전트의 작업 범위를 정한다
 
-에이전트가 예약과 구매를 실제로 끝낼 수 있는지는 모델 성능보다 방문하는 사이트의 참여 정책과 봇 방지 장치에 좌우될 수 있다. 2026년 9~10월 보도와 당사자 입장에서 확인한 접근 통제의 유형은 다음과 같다.
+에이전트가 예약과 구매를 실제로 끝낼 수 있는지는 모델 성능보다 방문하는 사이트의 참여 정책과 봇 방지 장치에 좌우될 수 있다. 2026년 9~11월 보도와 당사자 입장에서 확인한 접근 통제의 유형은 다음과 같다.
 
 | 유형 | 사례 | 확인 수준 |
 |---|---|---|
 | 특정 에이전트 차단 | Amazon은 2026-09-20부터 Meta Muse의 쇼핑을 막았다. Amazon은 Meta가 Muse의 접근을 미리 알리지 않았고 Muse가 탐색 중 자신을 밝히지 않았다고 설명했으며, 사용자에게는 승인되지 않은 AI 에이전트의 계속된 접근이 이용 조건 위반이라는 안내가 표시됐다. Meta는 Muse가 비밀번호와 결제 정보를 볼 수 없다고 반박했다 | 보도된 당사자 입장 |
 | 유료 데이터 계약 참여자만 허용 | Yelp는 데이터 라이선스 프로그램으로 이용료를 낸 에이전트가 아니면 사람이 아닌 트래픽을 허용하지 않는다고 밝혔다 | TechCrunch에 밝힌 당사자 입장(2026-10-06) |
 | 제휴 없음과 계좌 접근 거부 | Delta는 외부 AI 에이전트가 고객 대신 항공권을 사거나 예약하게 하는 제휴나 연동이 없고, 승인되지 않은 자동화 활동에서 고객을 보호하는 조치를 하고 있다고 했다. 차단 여부는 직접 답하지 않았다. JPMorgan Chase와 Charles Schwab은 보안 우려로 외부 에이전트의 고객 계좌 접근을 막는다고 확인했고, Schwab은 고객의 로그인 정보나 브라우저 자동화를 쓰는 접근을 막는다고 설명했다 | 보도된 당사자 입장(TechCrunch, American Banker). Delta가 대리 예약을 막고 있다는 표현은 The Verge의 서술 |
+| 이용 정책으로 대리 예약 금지 | United는 승인되지 않은 제3자 개인 AI 에이전트가 여행자를 대신해 항공편을 예약하는 것을 금지하고, 자사 디지털 플랫폼과 여행사, 애그리게이터를 통한 간접 접근도 제한하며 예약과 발권 정책을 이에 맞춰 고친다고 밝혔다. 이유로는 계정 자격 증명 공유에 따른 민감 정보 노출, 의도하지 않은 구매와 계정 변경, 마일리지 사용, 그리고 수하물에 금지 물질이 없음을 여행자가 직접 확인하도록 한 규정처럼 연방 규정에 어긋날 가능성을 들었다. 같은 기사에서 항공 분석가는 또 하나의 중개자를 피하고 봇 검색 급증의 비용을 줄이려는 동기로 해석했지만 회사가 밝힌 이유는 아니다. Southwest는 ChatGPT 이용자에게 항공편 재고를 연 반대 사례로 소개됐다 | CBS News에 밝힌 당사자 입장(2026-11-11). 시행 시점과 위반 시 조치는 기사에 없다 |
 | 공지 없는 기존 봇 방지 장치 | Muse, xAI Grok, OpenAI Dots와 Instinct 이용자가 여러 사이트에서 막혔다고 보고했고, Cars.com과 Amtrak처럼 차단을 발표하지 않은 사이트에서도 작동이 멈췄다는 보고가 있다 | The Verge가 전한 사용자 보고, 원인 미확인 |
 
 법원 판단은 이 통제의 법적 근거가 어디까지인지 보여 준다. 미국 제9순회항소법원은 2026-08-04 Amazon.com Services v. Perplexity AI(No. 26-1444)에서 Perplexity의 에이전트 브라우저 Comet의 Amazon 사용을 막은 지방법원의 가처분(2026년 3월 심리 뒤 발령)을 취소하고 환송했다. 가처분 단계의 판단으로, 컴퓨터 사기 및 남용법(CFAA)과 캘리포니아 CDAFA의 접근(access) 요건에 대해 현재 기록에서는 Perplexity가 아니라 사용자가 AI 도구를 이용해 Amazon 컴퓨터에 접근했다고 보아 Amazon이 본안에서 이길 가능성이 낮다(unlikely to succeed)고 판단했다. 본안의 최종 판단은 아니다. 판결은 에이전트형 AI를 규율하는 새 법체계를 세우지 않고, 불법행위 청구 같은 다른 맥락의 책임은 다루지 않으며, 이 기록과 이 기술 상태에 한정된다고 밝혔다. 각주에는 이 결과가 Amazon이 이용약관으로 사이트 접근을 규율하는 능력을 해치지 않는다고 적었다. 이 판결을 사이트가 에이전트를 막을 수 없다는 뜻이나 모든 에이전트가 허용된다는 뜻으로 읽지 않는다.
@@ -78,7 +79,7 @@ Buy for Me에서는 고객이 Amazon 화면에서 배송지, 세금과 배송비
 **사업 적용 제안:**
 
 - **에이전트가 우리 서비스에 들어올 때:** 허용, 유료 계약, 차단 중 무엇을 택할지 정하고 이용약관과 봇 정책에 적는다. 계좌와 결제처럼 사고 비용이 큰 기능은 화면 자동 조작보다 승인 단계를 둔 API나 위임 수단을 먼저 검토한다.
-- **우리 제품이 에이전트로 외부 사이트를 쓸 때:** 대상 사이트의 약관, 차단 여부와 대체 경로를 출시 전에 확인한다. 막히면 사용자에게 실패를 알리고, 차단을 자동으로 우회하는 기능은 넣지 않는다.
+- **우리 제품이 에이전트로 외부 사이트를 쓸 때:** 대상 사이트의 약관, 차단 여부와 대체 경로를 출시 전에 확인한다. 막히면 사용자에게 실패를 알리고, 차단을 자동으로 우회하는 기능은 넣지 않는다. 체크인의 위험물 확인처럼 규정이 이용자 본인의 확인을 요구하는 단계는 에이전트가 대신 동의하지 않고 사용자에게 넘긴다.
 - **해석의 경계:** 차단 사례가 늘었다는 보도만으로 에이전트 시장 전체의 실패나 특정 기업의 차단 동기를 확정하지 않는다. 봇 방지 장치가 강해지면 사람 이용자도 확인 절차를 더 거치게 될 수 있다는 전망은 AI 안전성 평가 기업 EquiStamp 대표가 The Verge에 밝힌 의견이다.
 
 ### 국내 서비스는 금지 범위와 허용 예외를 함께 읽는다
@@ -111,6 +112,8 @@ Buy for Me에서는 고객이 Amazon 화면에서 배송지, 세금과 배송비
 - [The next hurdle for AI agents: getting websites to let them in — TechCrunch, Sarah Perez](https://techcrunch.com/2026/10/06/the-next-hurdle-for-ai-agents-getting-websites-to-let-them-in/) — 2026-10-06 보도, 2026-10-27 확인. Yelp와 Delta가 매체에 밝힌 입장
 - [Schwab blocks unauthorized AI agents, points clients to Charley — American Banker, Dan Shaw](https://www.americanbanker.com/news/schwab-blocks-unauthorized-ai-agents-points-clients-to-charley) — 2026-10-15 보도, 2026-10-27 확인. Schwab의 차단 범위와 JPMorgan Chase CEO의 발언
 - [웹사이트들이 AI 에이전트에 문을 닫고 있음 — GeekNews](https://news.hada.io/topic?id=35590) — 2026-10-17 The Verge 기사 요약
+- [United Airlines bans AI agents from booking flights on behalf of travelers — CBS News, Megan Cerullo](https://www.cbsnews.com/news/united-airlines-bans-ai-agents-booking-flights/) — 2026-11-11 보도, 2026-11-16 원문 확인. United의 금지 대상과 범위, 밝힌 이유, 항공 분석가의 해석과 Southwest 사례
+- [United Airlines, AI 에이전트의 여행객 대리 항공편 예약 금지 — GeekNews](https://news.hada.io/topic?id=37014) — 학습 계기
 
 - [Shopify Help Center, Shopify Catalog and product discovery for agentic storefronts](https://help.shopify.com/en/manual/online-sales-channels/agentic-storefronts/products) — Catalog 참여와 공개 검색 노출의 차이를 2026-10-10 대조
 - [How We Built Safety Into Muse — Meta AI Research](https://research.meta.ai/blog/security-and-safety-for-ai-agents-our-approach-with-muse) — 출시 시점의 Purchases 절, 2026-10-09 대조. Stripe Link 제휴 문장은 2026-10-20 재대조

@@ -20,12 +20,12 @@ aliases: ["Product Strategy", "제품 전략"]
 
 - [[Founder-Background-and-Capability-Gaps|창업자 배경과 역량 공백]] — 고객 접점, 구현 도구, 유통과 운영의 남은 과제, 단독 창업의 판단과 지지 공백, 공동창업자 선택과 결정 방식
 
-- [[Solo-Game-Scope-and-Asset-Budget|1인 게임의 범위와 에셋 예산]] — 대표 장면, 자산 재사용과 적용 비용, 번들 구성과 라이선스 표기 충돌
+- [[Solo-Game-Scope-and-Asset-Budget|1인 게임의 범위와 에셋 예산]] — 대표 장면, 자산 재사용과 적용 비용, 번들 구성과 라이선스 표기 충돌, AI가 넓히는 제작 기회와 결과 검증
 - [[B2B-Sales-Pipeline-and-Pilot|B2B 영업 파이프라인과 파일럿]] — 구매 역할, 공통 지인의 소개와 구매 증거 구분, 단계별 증거, 인바운드 첫 연락 기한, 고객 도입과 전략적 투자 구분, 플랫폼 발표와 구매 조건의 구분, 예상 계약금액의 한계, 청구 일정과 금액 구분
 - [[Solo-Seller-Execution-Lessons|1인 판매자의 실행 원칙과 AI 활용]] — 시작 구조, 하루 단위 목표, 판매 숫자로 고치기, 실패에서 배운 순서, [[Solo-Seller-Execution-Lessons-AI-Automation|AI 활용과 자동화 경계]]
 - [[Product-Owner-Role|PO의 역할과 책임]] — 제품 기반 매출, 고객 근거, 실험, 조직 정렬, 인접 직무와의 차이
 
-- [[B2B-GTM-AI-Operating-System|AI 기반 B2B GTM 실행 체계]] — 주요 방식, 구매 신호, 컨텍스트와 가격의 연결
+- [[B2B-GTM-AI-Operating-System|AI 기반 B2B GTM 실행 체계]] — 주요 방식, 구매 신호, 컨텍스트와 가격의 연결, 첫 사용 사례에서 계정 확장과 FDE의 제품 환류
 
 ## 현장 사례
 

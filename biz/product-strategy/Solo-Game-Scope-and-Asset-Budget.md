@@ -62,6 +62,15 @@ aliases: ["Solo Game Scope and Asset Budget", "1인 게임의 범위와 에셋 �
 
 이 문서는 어느 표기가 우선하는지 판정하지 않는다. 배포자에게 충돌을 확인하고 실제 배포 파일에 포함된 조건도 확인하기 전에는 자유로운 재배포가 가능하다고 결론짓지 않는 방식을 제안한다. 이번 확인은 공개 페이지의 불일치를 찾은 것이며 번들 전체의 권리 검토나 개별 납품물의 이용 허가가 아니다.
 
+## AI가 넓히는 제작 기회와 남는 검증
+
+벤처캐피털 a16z 소속 저자 세 명의 2026-11-12 글은 AI의 기여를 기존 게임을 돕는지 새 게임을 돕는지, 주된 기여가 비용 절감인지 새 가능성인지의 두 축으로 나눈다. 기술 하나가 부족해 멈췄던 1인 개발자를 플레이 가능한 시제품까지 데려가는 제작(Produce), 제작 보조가 처음부터 끝까지 한 게임을 만드는 데 쓰이는 창작(Invent), 플레이어가 이미 아는 세계에 자기 아이디어를 더하는 확장(Extend, 모드), 디컴파일로 옛 게임을 되살리는 복원(Recover)이다. 제작에서는 에이전트가 기획 문서, Blender 에셋 제작, 엔진의 장면 조립, 스크린샷 검토와 수정 시도를 나눠 맡는 흐름을 소개한다.
+
+투자사의 전망 글이므로 두 가지를 따로 확인한다(적용 제안).
+
+- **재미의 출처:** AI로 만든 게임은 만든 사람과 소수의 친구에게나 재미있을 수 있고 그 재미도 오락성보다 만드는 새로움에서 온다는 비판이 있다. 글은 만들기가 오래전부터 놀이였다고 답하지만 이는 판매 가능성의 근거가 아니다. 플레이 반응은 [[Game-Feel-and-Feedback|게임 손맛과 피드백]], 수요는 [[Solo-Product-Market-Validation|시장 검증]]으로 나눠 본다.
+- **결과를 받아들일 기준:** 복원 사례에서 에이전트가 처음 만든 코드는 읽기 쉬웠지만 동작이 틀렸고, 재구성한 함수를 컴파일해 원본 바이너리와 비교하는 검사(주소가 바뀔 수 있는 참조까지 고려)를 넣어야 했다. 1인 제작에서도 장면과 조작이 의도대로 동작하는지 판정할 기준을 에이전트에 맡기기 전에 정한다. 디컴파일의 동등성 기준은 [[Agent-Reverse-Engineering#디컴파일과 정적 재컴파일이 확인하는 동등성을 구분한다|디컴파일과 정적 재컴파일의 동등성]]을 따르며, 글은 법적 쟁점을 다루지 않는다.
+
 ## 출처
 
 - [LÖVE](https://love2d.org/) — 2026-11-03 Lua 기반 2D 프레임워크와 지원 플랫폼 확인.
@@ -71,10 +80,13 @@ aliases: ["Solo Game Scope and Asset Budget", "1인 게임의 범위와 에셋 �
 - [Godot Engine, Your first 2D game](https://docs.godotengine.org/en/stable/getting_started/first_2d_game/index.html) — 2026-10-24 확인, 초보자의 2D 시작 권고와 예제 범위. 엔진 구현 절차를 검증한 문서는 아니다.
 - [Creator Bundle: Volume 1 — itch.io, RG Poly와 EmaceArt](https://itch.io/b/3905/creator-bundle-volume-1) — 2026-10-24 공개 판매 페이지의 구성, 가격 표시와 팩별 형식 안내. 다운로드와 실행은 하지 않았다.
 - [Free Fantasy Medieval Houses — itch.io, EmaceArt](https://emaceart.itch.io/free-fantasy-medieval-houses-and-props-pack) — 2026-10-24 본문의 License 절과 Asset license 필드의 불일치 확인. 적용 조건은 미확정이다.
+- [Gaming's Next Origin Stories — a16z, Elena Burger, Anish A, Jon Lai](https://www.a16z.news/p/gamings-next-origin-stories) — 2026-11-12, 2026-11-16 두 축과 네 칸, 에이전트의 작업 분담, 디컴파일 검증 사례, 비판과 응답 대조. 투자사의 전망 글
+- [AI 시대, 새로운 게임 개발자는 어떻게 탄생할까 — GeekNews](https://news.hada.io/topic?id=37243) — 2026-11-16 접속 시 브라우저 확인 페이지로 요약 미열람, 위 원문으로 대조
 
 ## 관련 문서
 
 - [[AI-Solo-Software-Business|AI 시대 1인 소프트웨어 사업]]
 - [[Solo-Product-Market-Validation|1인 제품 시장 검증]]
 - [[Game-Feel-and-Feedback|게임 손맛과 피드백]]
+- [[Agent-Reverse-Engineering|에이전트 역공학]] — 디컴파일 결과의 동등성 확인
 - [[제품전략(ProductStrategy)|제품 전략 인덱스]]

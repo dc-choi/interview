@@ -71,6 +71,19 @@ aliases: ["Product Roadmap", "프로덕트 로드맵", "Story Mapping", "스토�
 
 예를 들어 자동 견적 기능의 출시 여부만 세지 않고, 견적을 기다리는 시간이 줄었는지와 사람이 다시 고치는 일이 늘었는지를 함께 확인한다. 결과가 기대와 다르면 기능 수를 늘리기 전에 가정이나 제공 방식을 바꾼다. 이는 적용 예시이며, 실험 실패를 무조건 허용하거나 계약상 납기를 가설로 바꾼다는 뜻은 아니다.
 
+### 외부 변수가 크면 계획 지평을 줄이고 고정할 것을 따로 정한다
+
+새 사업은 통제할 수 없는 변수가 많다. 기반 모델 공급사가 같은 기능을 내놓거나([[AI-Commoditization-Model-Absorption|기반 모델의 기능 흡수]]) 투자와 협력 약속이 바뀌면, 연 단위 마일스톤을 월과 주로 쪼갠 계획은 그대로 가지 못한다. 이때 고를 수 있는 운영 방식은 두 가지다.
+
+| 방식 | 하는 일 | 감수하는 것(이 문서의 판단) |
+|---|---|---|
+| 짧은 주기 | 몇 주에서 석 달 안에 거칠게 내놓고 반응을 본 뒤 계속할지 접을지 정한다 | 완성도, 접는 결정이 잦아지는 피로 |
+| 긴 지속 | 반응이 없어도 한 분야를 계속 파며 시장이 맞아 올 때를 기다린다 | 수입 없는 기간, 끝내 오지 않을 가능성 |
+
+두 방식 모두 일하는 사람이 몰입할 수 있는 대상이어야 버틴다. 그래서 연 단위 수치 목표를 고정하지 않고 매일의 판단 기준이 되는 핵심 가치 하나(예: 비용 절감, 최저가)를 고정하며, 계획은 눈앞의 주기만 세운다는 것이 이 관점의 제안이다. 짧은 주기 안의 측정 가능한 목표와 완료 조건은 위 절들을 그대로 따른다. 별개의 참고로, Nvidia의 당시 최고경영자(2026-11-12 사임 발표 이전 재임)는 과거 인터뷰에서 주기적 계획 체계를 두지 않고 계획을 계속 고친다고 말한 것으로 보도됐다(검색 요약으로만 확인했고, 이 발언이 위 제안의 근거는 아니다).
+
+읽을 때의 조건: 계획 지평을 줄인다는 말은 방향이 없다는 뜻이 아니다. 긴 지속의 성공담은 살아남은 사례만 보이는 생존자 편향이 있으므로 감당할 손실 한도와 중단 조건은 따로 정한다([[Solo-Product-Market-Validation#결과에 따른 결정|결과에 따른 결정]]). 설비 투자가 크거나 계약 납기가 있는 사업에는 그대로 옮기기 어렵다. 한 강연자의 경영 관점이며 측정된 비교가 아니다.
+
 ### 장기 비전과 현재 제공 능력을 구분한다
 
 장기 비전을 로드맵으로 옮길 때는 목표로 제시한 능력, 아직 해결할 과제와 고객에게 제공했다고 확인한 범위를 나누어 적는다. 다음은 공개 제품 소개를 읽을 때 적용할 질문이며, 특정 기업의 개발 단계 분류를 그대로 가져온 양식은 아니다.
@@ -156,6 +169,8 @@ AWS 공개 대담에서는 Micro-battles의 시간 범위를 최대 3~4개월로
 - [소프트웨어 뒤에 있는 사람 — GN⁺ (GeekNews)](https://news.hada.io/topic?id=35592)
 - [Exploit the Product Life Cycle — Theodore Levitt (Harvard Business Review)](https://hbr.org/1965/11/exploit-the-product-life-cycle) — 1965년 11월호. 2026-11-13 공개 첫 문단에서 개념의 전략적 활용이 드물다는 지적만 대조했고 단계 명칭과 본문은 유료라 확인하지 않음
 - [엔지니어를 위한 비즈니스의 이해 — 채널데브톡 (YouTube)](https://www.youtube.com/watch?v=QxQvFglNSq8) — 2026-10-30 업로드, 사내 세션을 공개한 영상. 새 기능 곡선의 운영 비용과 수용 단계별 도입 지원은 발표자의 실무 관점
+- [AI시대, 전혀 새로운 사업법 — 라이프코드 LIFECODE (YouTube)](https://www.youtube.com/watch?v=U9juw8VapfI) — 2026-11-08 업로드 강연, 2026-11-16 음성 인식 전사 전체 확인. 두 운영 방식과 핵심 가치는 강연자의 경영 관점. 특정 회사의 사업 피해와 인물 일화는 대조하지 못해 반영하지 않았다
+- [Jensen Huang's Unusual Nvidia Management Style Doesn't Include Long-Term Plans or Reports — Tom's Hardware](https://www.tomshardware.com/news/nvidia-ceo-shares-management-style-always-learn-make-no-plans) — 계획 체계에 관한 발언. 기사 게시 시점은 확인하지 못했다. 2026-11-16 검색 결과 요약으로만 확인했고 원 인터뷰는 열람하지 못했다
 
 ## 관련 문서
 - [[Tech-Roadmap|기술 로드맵 수립]]
@@ -163,3 +178,6 @@ AWS 공개 대담에서는 Micro-battles의 시간 범위를 최대 3~4개월로
 - [[User-Feedback|사용자 피드백 관리 (Kano, RICE, MoSCoW)]]
 - [[PRD-Writing|PRD 작성법]]
 - [[GTM-Strategy|Go-to-Market 전략]]
+- [[AI-Commoditization-Model-Absorption|기반 모델의 기능 흡수]]
+- [[Solo-Product-Market-Validation|1인 제품의 시장 검증]]
+- [[Offline-Experience-Differentiation|오프라인 경험의 차별화]]
