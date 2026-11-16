@@ -3,7 +3,7 @@ tags: [ai, llm, diffusion, generation, inference]
 status: done
 verified_at: 2026-10-27
 category: "AI엔지니어링(AIEngineering)"
-aliases: ["Diffusion Language Models", "확산 언어 모델", "dLLM", "Masked Diffusion Language Model", "Block Diffusion"]
+aliases: ["Diffusion Language Models", "확산 언어 모델", "dLLM", "Masked Diffusion Language Model", "Block Diffusion", "Next-Concept Modeling"]
 ---
 
 # 확산 언어 모델: 여러 위치를 함께 채우고 단계마다 확정하는 생성
@@ -55,8 +55,36 @@ aliases: ["Diffusion Language Models", "확산 언어 모델", "dLLM", "Masked D
 
 자체 보고 수치를 읽을 때의 조건은 [[Model-Release-Claims#속도와 지연은 측정 위치와 날짜를 붙인다|모델 발표 수치 읽기]]를 따른다.
 
+## 인접 방식: 거친 수준에서 세밀한 수준으로 내려가는 생성
+
+Next-Concept Modeling(NCM)은 토큰 단위 자기회귀도 확산도 아닌 경로로, 이미지 생성의 다음 스케일 예측(VAR)을 텍스트로 옮긴 연구다. Stanford와 Together AI 소속 저자들이 2026-10-09 arXiv에 올린 v1을 2026-11-16에 대조했다.
+
+- **1단계, 토크나이저**: 다중 스케일 잔차 VQ-VAE가 길이 L의 토큰 열을 K개 수준의 이산 코드로 바꾼다. 수준마다 남은 잔차를 더 적은 수의 잠재 벡터로 줄여 코드북에서 가장 가까운 항목을 고르고, 이를 길이 L로 되돌려 누적 복원에 더한다. 수준이 내려갈수록 코드 수가 늘어 마지막 수준에서 L개가 된다. 학습 때 앞쪽 수준만 남기는 nested dropout으로 거친 수준이 전체 의미를 담게 한다.
+- **2단계, 생성기**: 트랜스포머가 한 번의 순전파로 한 수준의 코드 전체를 예측한다. 같은 수준 안의 코드는 서로 조건부 독립으로 뽑는다. 생성에는 수준 수 K만큼의 순전파가 들고, K는 데이터셋에 따라 8~32로 L보다 훨씬 작다. 마지막에 디코더가 모든 위치의 토큰 분포를 내고 argmax로 토큰을 고른다.
+- **확산과의 차이**: 확산은 단계마다 L개 위치 전체를 다시 계산하지만, NCM은 수준 k에서 그 수준의 코드 수만큼만 예측하고 단계 수가 K로 고정된다.
+- **concept의 뜻**: 논문은 계층의 거친 수준이 담는 정보를 concept라고 부른다. 사람처럼 개념으로 사고한다는 주장이 아니며, 문장 표현을 하나씩 예측하는 Large Concept Models와도 다른 구조다.
+
+| 과제 | NCM | 비교 대상 |
+|---|---|---|
+| LM1B 생성 | 97M, 12 NFE, 생성 perplexity 93.05 | 확산 DUO 139M, 128 NFE, 97.30. 논문은 21배 빠르다고 보고 |
+| XSum 요약 | 88M, 8 NFE, ROUGE-1/2/L 35.0/12.8/28.0 | 확산 AURORA-LM 130M, 128 NFE, 34.7/12.2/26.6. 31배 빠르다고 보고 |
+| WMT14 독영 번역 | 120M, 11 NFE, BLEU 22.6 | 확산 E2D2 99M, 64 NFE, 24.8. 같은 크기 자기회귀 25.2 |
+| Sudoku(쉬움, 중간, 어려움) | 25M, 12 NFE, 99.5/96.5/86.1% | FMLM+ 29M, 16 NFE, 97.7/92.8/81.3%. 자기회귀 25M 13.9/5.1/0.6% |
+
+NFE는 순전파 횟수이고 LM1B의 생성 perplexity는 GPT-2-large로 채점한 값이다. 이 결과를 읽을 때의 조건은 다음과 같다.
+
+- **속도 비교의 상대는 확산 모델뿐이다**: 10~31배라는 수치는 H100 한 장에서 배치 16으로 1,024개 시퀀스를 생성한 전체 시간을 확산 기준선과 비교한 값이다. 체크포인트가 공개되지 않은 기준선은 무작위 초기화 가중치로 시간을 쟀다. 같은 크기 자기회귀 모델과의 시간이나 배치 처리량 비교는 논문에 없다.
+- **품질은 과제에 따라 자기회귀가 앞선다**: OpenWebText의 생성 perplexity는 자기회귀 35.45(1,024 NFE), NCM 83.12(32 NFE)이고 TinyStories는 8.89 대 15.41, WMT14 BLEU는 25.2 대 22.6이다. Sudoku에서는 NCM이 자기회귀를 앞선다. XSum은 위 표에 확산 기준선과의 비교만 있어 자기회귀와의 우열은 적지 않는다.
+- **길이가 고정이다**: 출력 길이 L과 수준 구성을 데이터셋마다 고정해, 짧은 출력도 전체 계층을 거친다. 토크나이저는 생성기와 따로 학습한다.
+- **규모가 작다**: 주 실험은 약 1억 파라미터이고 가장 큰 생성기가 7억 2,500만이다. 과제마다 따로 학습한 모델이며 범용 대화 모델과 비교한 결과가 아니다. 저자들도 더 큰 규모로의 확장을 미해결로 둔다.
+- **학습 토큰 수치의 단위**: 확산 기준선보다 4~5배 적다는 값은 토크나이저와 생성기 학습에 노출된 토큰 수 기준이며(LM1B 13.36B 대 66B) 연산량 비교가 아니다.
+- **예시 문장의 BLEU 77.8**: 번역 예시 한 문장을 수준별로 복호화해 참조문과 비교한 마지막 수준의 값이다. 수준별 값은 8번째 51.7, 9번째 38.9처럼 단조롭게 오르지 않는다. 데이터셋 전체 점수인 22.6과 섞지 않는다.
+
+독립 재현과 서비스 제공은 2026-11-16 기준 확인하지 못했다. 효율이 올라 개인 기기에서 고성능 모델을 돌릴 수 있게 된다는 전망은 이 실험 규모에서 나오는 결론이 아니다(이 문서의 판단).
+
 ## 점검 체크포인트
 
+- 수준별 생성(NCM)의 속도 주장에서 비교 대상, 측정 조건과 자기회귀 대비 품질을 따로 확인하는가
 - 한 단계에서 여러 토큰을 확정할 때 생기는 불일치를 단계 수, remasking과 증류가 각각 어떻게 다루는지 설명할 수 있는가
 - 블록 확산이 가변 길이와 KV 캐시 재사용을 되찾는 방식을 설명할 수 있는가
 - 속도 주장에서 사용자당 속도, 배치 처리량, 단계 수와 하드웨어를 구분해 묻는가
@@ -73,6 +101,8 @@ aliases: ["Diffusion Language Models", "확산 언어 모델", "dLLM", "Masked D
 - [Introducing Mercury 3 — Inception](https://www.inceptionlabs.ai/blog/introducing-mercury-3) — 2026-10-19, 규모와 속도 주장, 가격과 제공 경로
 - [Inception Docs, Models](https://docs.inceptionlabs.ai/get-started/models) — 2026-10-27 모델 ID, 컨텍스트, 최대 출력, 추론 강도와 가격 확인
 - [Inception: Models — Artificial Analysis](https://artificialanalysis.ai/models/creators/inception) — 2026-10-27 열람, Mercury 3 미등재
+- [Next-Concept Modeling: Fast, Parallel Coarse-to-Fine Text Generation — arXiv, Hermann Kumbong 외](https://arxiv.org/abs/2610.14162) — 2026-10-09 v1. 2026-11-16 본문 3~4절, Table 1~3, 5, 7, 8, 12와 부록 D.2, I 대조. 그림에만 있는 수치는 확인하지 못함
+- [NCM: The Ultimate Evolution of AI? Next-Concept Modeling — YouTube, Gao Dalie](https://www.youtube.com/watch?v=fxKCYWcJ-PE) — 2026-11-13, 학습 계기. 수치는 위 논문으로 대조
 - [Mercury 3 - 텍스트를 병렬로 생성하는 대규모 확산 기반 LLM — GeekNews](https://news.hada.io/topic?id=35658) — 학습 계기, 수치는 위 공식 자료로 대조
 - [확산 언어 모델을 만드는 방법 — GeekNews](https://news.hada.io/topic?id=34095) — 해설 원문을 찾은 경로
 

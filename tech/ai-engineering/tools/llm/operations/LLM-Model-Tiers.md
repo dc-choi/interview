@@ -20,7 +20,7 @@ aliases: ["LLM Model Tiers", "모델 티어 선택", "모델 라우팅", "Model 
 | 균형형 | 일상 업무용, 플래그십 대비 큰 폭 저렴 | 대부분의 프로덕션 트래픽, 일반 생성, 요약 |
 | 저비용형 | 가장 빠르고 가장 싼 | 분류, 추출, 라우팅, 단순 변환, 대량 배치 |
 
-벤더별 매핑 예: 2026-09-29 Codex 모델 문서 기준 OpenAI는 GPT-6 Astra를 가장 강한 모델로, GPT-6 Sol(복잡한 코딩과 에이전트 작업)과 GPT-6 Luna(범위가 분명한 대량 반복 작업)를 권장 모델로 안내한다. 이전 세대 GPT-5.6 Sol, Terra, Luna는 롤아웃 기간 동안 유지된다. Anthropic은 Opus, Sonnet, Haiku에 더해 2026년부터 Opus 위에 Fable/Mythos 최상위 티어가 생겨 4층이 됐다 ([[Claude-Fable-5-Mythos-5|Fable 5, Mythos 5]]). [[Claude-Opus-5|Opus 5]]가 Fable 5의 절반 단가로 근접 성능을 내는 것은 한 티어 아래가 윗 티어를 따라잡는 단가 패턴의 실측 사례다. 2026-10-12 공식 모델 개요 기준 현재 모델은 Fable 5.1(100만 토큰당 입력 $10, 출력 $50), Opus 5.5($4, $20), Sonnet 5.5($2, $10), Haiku 5.5(프롬프트 10만 토큰 이하 $0.10, $0.50)이고 네 모델 모두 컨텍스트 1M, 최대 출력 128K다. 2026-10-07 출시된 Haiku 5.5가 저비용형 자리를 이었고 Haiku 4.5($1, $5, 컨텍스트 200K)는 2026-10-12 기준 레거시 목록에 남아 아직 쓸 수 있다. 공식 안내는 대부분의 작업을 Opus 5.5로 시작하고, 어려운 추론과 장기 에이전트 작업이나 Opus 5.5를 높은 effort로 돌려도 eval이 모자랄 때 Fable 5.1을 쓰라는 것이다. 대부분의 작업에서 Opus 5.5가 Fable 5.1 수준이라는 벤더 발표도 같은 패턴을 잇는다. Google은 Gemini Pro, Flash 계열. 이름은 달라도 capability/cost 축에서 같은 자리를 차지한다.
+벤더별 매핑 예: 2026-09-29 Codex 모델 문서 기준 OpenAI는 GPT-6 Astra를 가장 강한 모델로, GPT-6 Sol(복잡한 코딩과 에이전트 작업)과 GPT-6 Luna(범위가 분명한 대량 반복 작업)를 권장 모델로 안내한다. 이전 세대 GPT-5.6 Sol, Terra, Luna는 롤아웃 기간 동안 유지된다. Anthropic은 Opus, Sonnet, Haiku에 더해 2026년부터 Opus 위에 Fable/Mythos 최상위 티어가 생겨 4층이 됐다 ([[Claude-Fable-5-Mythos-5|Fable 5, Mythos 5]]). [[Claude-Opus-5|Opus 5]]가 Fable 5의 절반 단가로 근접 성능을 내는 것은 한 티어 아래가 윗 티어를 따라잡는 단가 패턴의 실측 사례다. 2026-10-12 공식 모델 개요 기준 현재 모델은 Fable 5.1(100만 토큰당 입력 $10, 출력 $50), Opus 5.5($4, $20), Sonnet 5.5($2, $10), Haiku 5.5(프롬프트 10만 토큰 이하 $0.10, $0.50)이고 네 모델 모두 컨텍스트 1M, 최대 출력 128K다. 2026-10-07 출시된 Haiku 5.5가 저비용형 자리를 이었고 Haiku 4.5($1, $5, 컨텍스트 200K)는 2026-10-12 기준 레거시 목록에 남아 아직 쓸 수 있다. 공식 안내는 대부분의 작업을 Opus 5.5로 시작하고, 어려운 추론과 장기 에이전트 작업이나 Opus 5.5를 높은 effort로 돌려도 eval이 모자랄 때 Fable 5.1을 쓰라는 것이다. 대부분의 작업에서 Opus 5.5가 Fable 5.1 수준이라는 벤더 발표도 같은 패턴을 잇는다. Google은 Gemini Pro, Flash 계열을 써 왔고, Gemini 4 세대는 Carbon과 Argon 아래에 빠른 실행용 Hydrogen을 둔다([[Gemini-4-Argon#Gemini 4 계열의 Carbon과 Hydrogen|Gemini 4 계열]]). 이름은 달라도 capability/cost 축에서 같은 자리를 차지한다.
 
 ## 티어 간 트레이드오프
 
@@ -35,7 +35,7 @@ aliases: ["LLM Model Tiers", "모델 티어 선택", "모델 라우팅", "Model 
 
 Haiku 5.5 사례를 2026-10-12 공식 발표, 가격표와 모델 문서에 대조한 내용이다. 티어 이름만 보고 이전 세대의 저비용형과 같은 조건이라고 가정하지 않는다.
 
-- **프롬프트 길이에 따른 단가 구간**: Haiku 5.5는 프롬프트가 10만 토큰 이하면 입력 $0.10, 출력 $0.50, 넘으면 $0.50, $2.50이다(100만 토큰당). 프롬프트 길이에는 캐시 읽기와 쓰기 토큰도 들어가고, 높은 단가는 넘은 부분이 아니라 그 요청 전체에 붙는다. 가격표는 Claude 4.6 이후 모델 가운데 Haiku 5.5만 예외로 두고 나머지는 1M 컨텍스트 전체를 같은 단가로 받는다고 적는다. 긴 문서를 통째로 넣는 경로와 대화가 길어지는 에이전트는 몇 번째 요청부터 구간을 넘는지 계산한다.
+- **프롬프트 길이에 따른 단가 구간**: Haiku 5.5는 프롬프트가 10만 토큰 이하면 입력 $0.10, 출력 $0.50, 넘으면 $0.50, $2.50이다(100만 토큰당). 프롬프트 길이에는 캐시 읽기와 쓰기 토큰도 들어가고, 높은 단가는 넘은 부분이 아니라 그 요청 전체에 붙는다. 가격표는 Claude 4.6 이후 모델 가운데 Haiku 5.5만 예외로 두고 나머지는 1M 컨텍스트 전체를 같은 단가로 받는다고 적는다. 긴 문서를 통째로 넣는 경로와 대화가 길어지는 에이전트는 몇 번째 요청부터 구간을 넘는지 계산한다. 다른 공급사의 저비용형은 갈린다. Meta의 Muse Ember는 프롬프트가 20만 토큰을 넘으면 입력, 캐시 입력, 출력 단가가 모두 3배가 되고(2026-11-09 발표), Gemini 4 Hydrogen은 2026-11-16 가격표에 길이 구간을 두지 않는다.
 - **평균 절감률의 조건**: 공식 발표는 Haiku 4.5 대비 단가가 10만 토큰 이하 요청에서 90%, 넘는 요청에서 50% 낮다고 하면서 평균 실행 비용 절감은 약 75%로 적는다. 이 평균에는 Haiku 4.5 요청의 약 90%가 10만 토큰 이하였다는 요청 구성과, 같은 텍스트가 약 30% 많은 토큰으로 세어지는 새 토크나이저(증가 폭은 내용에 따라 다름)가 함께 반영됐다. 이전 턴의 사고 블록을 컨텍스트에 남기므로 다턴 대화의 입력 토큰은 토크나이저 차이보다 더 늘 수 있다. 단가 인하율을 비용 절감률로 그대로 쓰지 않고 같은 과업의 토큰 수와 요청 길이 분포로 비교한다.
 - **안전 분류기 거절**: Haiku 5.5는 안전 분류기가 요청을 거절할 수 있고(HTTP 200의 `stop_reason: "refusal"`), Haiku 4.5에서 옮기면 새로 생기는 응답이다. 서버 측 폴백과 폴백 크레딧이 없어 클라이언트가 직접 처리한다([[LLM-Failure-Handling-Recovery#폴백과 기능 저하|LLM 실패 처리]]). 사이버 보안 세이프가드는 Haiku 4.5보다 엄격하고 다른 최신 모델보다는 다소 완화돼 Sonnet 5.5보다 넓은 방어 작업을 허용하지만 침투 테스트 같은 공격 쪽 기법은 막는다. 보안 업무 경로라면 거절률을 eval에 넣고, 해당되면 Cyber Verification Program을 검토한다.
 - **맡길 일**: 공식 안내는 분류, 추출, 라우팅 같은 대량, 지연 민감 작업과 코딩 작업의 서브에이전트를 쓰임으로 들고, 복잡한 에이전트 코딩은 Sonnet 5.5와 Opus 5.5가 낫다고 적는다. effort를 지원하는 첫 Haiku이며 Claude API의 기본값은 `medium`이다.
@@ -86,10 +86,12 @@ DeepSeek 사례를 2026-10-26 공식 가격표, 변경 이력과 모델 카드�
 코딩 에이전트에서는 라우팅이 호출 단위가 아니라 역할 단위로 나타난다. 상위 티어가 요구사항 해석, 계획, 최종 리뷰와 통합을 맡고, 하위 티어가 코드 탐색, 구현, 테스트와 자료 조사처럼 범위가 좁고 반복적인 일을 맡는다. 질문이 어떤 모델이 가장 좋은가에서 어떤 일을 어떤 모델에 맡기는가로 바뀐다.
 
 - **구성 수단(Codex 기준)**: 커스텀 에이전트는 `~/.codex/agents/`(개인)나 `.codex/agents/`(프로젝트)에 TOML 파일 하나당 하나씩 정의하고, 파일 안에 `model`, `model_reasoning_effort`, `sandbox_mode`를 둘 수 있다. 전역 기본값은 `config.toml`의 `[agents]`(`default_subagent_model`, `default_subagent_reasoning_effort`)이고, 아무것도 지정하지 않으면 서브에이전트는 부모의 모델과 추론 수준을 상속한다. 언제 위임할지는 AGENTS.md나 SKILL.md에 적어 두면 Codex가 따른다. 공식 예시도 읽기 전용 탐색 에이전트에 `gpt-6-luna`, 리뷰 에이전트에 `gpt-6-sol`을 배정하며, 같은 문서는 GPT-6 Sol과 GPT-6 Luna를 기본 선택지로 안내하고 GPT-5.6 계열은 롤아웃 기간 동안 유지한다고 밝힌다(2026-09-29 공식 문서 확인)
-- **구성 수단(Claude Code 기준)**: `opusplan` 별칭은 plan 모드에서 Opus, 실행에서 Sonnet으로 자동 전환해 계획과 구현의 모델을 나눈다. 공식 도움말은 Opus가 턴당 Sonnet의 몇 배를 쓰고 Sonnet은 Haiku보다 많이 쓴다며 계획은 Opus, 실행은 Sonnet을 권한다. 2026-09-30 API 단가로는 Opus 5.5가 Sonnet 5.5의 2배, Fable 5.1이 Opus 5.5의 2.5배이고, 실제 소비는 effort와 사고 토큰에 따라 달라진다. 서브에이전트는 정의 파일의 `model` 필드로 따로 고른다([[Claude-Code-Extension-Reference|확장 메커니즘]])
+- **구성 수단(Claude Code 기준)**: `opusplan` 별칭은 plan 모드에서 Opus, 실행에서 Sonnet으로 자동 전환해 계획과 구현의 모델을 나눈다. 공식 도움말은 Opus가 턴당 Sonnet의 몇 배를 쓰고 Sonnet은 Haiku보다 많이 쓴다며 계획은 Opus, 실행은 Sonnet을 권한다. 2026-09-30 API 단가로는 Opus 5.5가 Sonnet 5.5의 2배, Fable 5.1이 Opus 5.5의 2.5배이고(2026-11-09 이후의 5.2 단가와 역할 안내는 [[Claude-Fable-5-Mythos-5#5.2 세대의 변경점 (2026-11-16 확인)|5.2 세대의 변경점]] 참고), 실제 소비는 effort와 사고 토큰에 따라 달라진다. 서브에이전트는 정의 파일의 `model` 필드로 따로 고른다([[Claude-Code-Extension-Reference|확장 메커니즘]])
 - **상위 지휘, 하위 실행**: 공개된 오케스트레이터 사례는 탐색, 구현, 조사, 테스트를 하위 티어 에이전트가 차례로 맡고, 독립 리뷰와 최종 통합을 상위 티어가 맡는 순서를 쓴다. 역할 파일, AGENTS.md와 호출용 스킬을 한 묶음으로 배포하는 형태다
 - **서로 다른 모델의 교차 검토**: 한 모델이 계획을 쓰면 다른 벤더 모델이 승인할 때까지 계획을 검토하고, 저가 모델이 구현한 뒤 계획 작성 모델이 변경분 전체를 읽고 고친다. 마지막에 검토 모델이 계획 대비 코드를 승인할 때까지 다시 본다. 프레임워크나 MCP 없이 CLI를 부르는 셸 스크립트 하나로 만든 사례가 있고, 효과의 원천은 도구 개수보다 서로 검토하게 만드는 구성이라는 주장이다. 구현과 리뷰를 서로 다른 에이전트 제품에 나눠 맡기는 경험칙도 같은 계열이다
 - **반대 방향 조합**: 최상위 모델의 사용량이 제한될 때 한 단계 아래 모델로 스펙, 구현 계획, 테스트 계획 문서까지 만들고, 그 문서를 상위 모델에 넣어 구현만 맡긴다. 비싼 토큰을 문서로 확정한 결정의 실행에만 쓰는 방식이다
+- **대량 분류의 분담 사례**: 한 공개 개인 프로젝트는 상위 모델(Opus 5.5, 기본 추론 강도 medium)이 Hacker News 댓글 전체를 내려받아 거르고, 워크플로로 묶은 하위 모델(Sonnet)을 돌린 뒤 스팸을 지웠다(작성자 글이 적은 순서). 영상을 추천한 댓글 약 4만 건에서 150개 주제의 YouTube 영상 6,454개를 뽑았고, 작성자는 약 2시간이 걸렸다고 적었다. 작성자는 코드를 읽거나 쓰지 않고 터미널 명령도 직접 실행하지 않았으며, API 키 발급, 서버 생성과 도메인 구입은 손으로 했다. 사이트 데이터의 내보내기 파일을 제공해 각자 자기 에이전트로 변형을 만들게 했고, 앱 코드는 글에 연결하지 않았다. 결과만 확인하는 운영은 개인용 도구라서 성립하며 제품에는 [[Developer-Role-AI-Era#개인용 도구와 제품의 성공 기준|다른 성공 기준]]이 적용된다. 비용, 분류 정확도와 단일 모델 대비 비교는 공개되지 않았다
+- **한 작업 안의 양방향 전환**: Google Antigravity의 Orchestrator(2026-11-12)는 첫 프롬프트로 모델 하나를 고르는 정적 라우터와 달리, 한 작업 안에서 Carbon이 계획과 재계획을, Hydrogen이 편집과 테스트 실행을 맡고 Hydrogen이 막히면 Carbon으로 되돌린다고 소개된다. 에스컬레이션을 세션 안에서 자동화한 형태이며, 할당량과 속도 수치의 벤치마크 판은 발표마다 다르게 적혀 있다([[Gemini-4-Argon#Antigravity Orchestrator: 한 작업 안에서 모델을 오간다|Antigravity Orchestrator]]). Meta도 Muse Ember 발표에서 가장 어려운 문제는 Muse Wonder가 계획하고 Ember가 물량을 처리하는 조합을 권한다
 
 한계와 반론:
 
@@ -134,6 +136,8 @@ DeepSeek 사례를 2026-10-26 공식 가격표, 변경 이력과 모델 카드�
 
 ## 출처
 
+- [HackerTube — Andrej Karpathy](https://karpathy.bearblog.dev/hacker-tube/) — 2026-10-31 글. 2026-11-16 본문에서 모델과 추론 강도, 처리 순서, 영상과 댓글 수, 소요 시간, 데이터 내보내기를 대조
+- [세계 최고 AI 엔지니어 카파시가 실제로 AI를 쓰는 법 — YouTube, Tech Bridge](https://www.youtube.com/watch?v=lcp0_GnT54o) — 2026-11-07 공개, 2026-11-16 음성 인식 전사 전체 확인. 제3자가 정리한 영상이며 작성자 글로 확인된 내용만 반영
 - [오픈AI, 차세대 AI 'GPT-5.6' 공개, 정부 승인 파트너만 우선 사용 — 리드경제](https://www.leadeconomy.co.kr/news/articleView.html?idxno=8339)
 - [Previewing GPT-5.6 Sol: a next-generation model — OpenAI](https://openai.com/index/previewing-gpt-5-6-sol/)
 - [차세대 모델 GPT-5.6 Sol 미리 살펴보기 (한국어판) — OpenAI](https://openai.com/ko-KR/index/previewing-gpt-5-6-sol/)
@@ -145,7 +149,9 @@ DeepSeek 사례를 2026-10-26 공식 가격표, 변경 이력과 모델 카드�
 - [OpenAI API, GPT-6.1 Terra](https://developers.openai.com/api/docs/models/gpt-6.1-terra) (2026-11-04 소개 문구, 쓰임 예시와 `computer_use` 도구 지원 확인)
 - [OpenAI API, Model selection](https://developers.openai.com/api/docs/guides/model-selection) (2026-11-04 GPT-6.1 Terra 권장 쓰임, GPT-6.1 Sol 비교와 컴퓨터 사용 결과 확인 안내 확인)
 - [OpenAI API, Changelog](https://developers.openai.com/api/docs/changelog) (2026-11-04 확인, 2026-10-26 GPT-6.1 Terra 출시 항목)
-- [Gemini API, Pricing](https://ai.google.dev/gemini-api/docs/pricing) (2026-10-06 Gemini 3.1 Pro Preview 가격 확인)
+- [Gemini API, Pricing](https://ai.google.dev/gemini-api/docs/pricing) (2026-10-06 Gemini 3.1 Pro Preview 가격 확인, 2026-11-16 aistudio.google.com/docs/pricing으로 옮겨진 주소에서 Gemini 4 Hydrogen의 단가와 길이 구간 없음 확인)
+- [Introducing Our Smallest, Most Efficient Model: Muse Ember — Meta AI Research](https://research.meta.ai/blog/muse-ember) (2026-11-09 게시, 긴 프롬프트의 단가 구간과 Muse Wonder와의 조합 권장 확인)
+- [Gemini 4 Hydrogen and Orchestrator — Google Antigravity](https://antigravity.google/blog/gemini-4-hydrogen-in-google-antigravity/) (2026-11-12 게시, Orchestrator의 전환 흐름과 수치의 벤치마크 판 표기 확인)
 - [DeepSeek API Docs, Models & Pricing](https://api-docs.deepseek.com/quick_start/pricing/) (2026-10-26 모델 판, 한도, 시간대별 단가, Search와 Fetch 과금, 이전 이름의 처리 확인)
 - [DeepSeek API Docs, Change Log](https://api-docs.deepseek.com/updates/) (2026-09-10 이름 변경, 2026-10-17 판 교체와 하네스 권고 항목)
 - [Hugging Face, deepseek-ai/DeepSeek-V4.1-Flash-1017](https://huggingface.co/deepseek-ai/DeepSeek-V4.1-Flash-1017) (2026-10-26 벤치마크 표의 하네스 조건, 라이선스와 safetensors 파라미터 표시 확인)

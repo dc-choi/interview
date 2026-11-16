@@ -1,7 +1,7 @@
 ---
 tags: [ai, agent, data-analysis, sandbox, reporting, dashboard, data-literacy]
 status: done
-verified_at: 2026-10-28
+verified_at: 2026-11-16
 category: "AI엔지니어링(AIEngineering)"
 aliases: ["Agent Data Analysis Workflow", "에이전트 데이터 분석과 보고서", "datapitfalls", "생성형 대시보드"]
 ---
@@ -123,6 +123,12 @@ Data Agent Bench 공동저자의 2026-10-23 인터뷰는 당시 최상위 에이
 
 초기에는 대시보드 JavaScript가 세션과 같은 origin에서 돌고 모든 직원이 모든 대시보드를 읽을 수 있었다고 팀 스스로 밝힌다. 사내망과 SSO만으로는 이 구조의 XSS 위험이 사라지지 않는다는 반례다. 비용 비교(8개월 구축비 약 8,300달러 대 같은 기간 Looker 평균 라이선스 환산 약 10만 달러, 대시보드 하나에 약 100만 토큰과 약 0.5달러)는 작성자의 자체 측정이며, 엔지니어 3명이 다른 업무와 병행한 8개월의 인건비는 넣지 않았다고 함께 밝힌다. 웨어하우스 권한, dbt 의미 계층과 운영 플랫폼을 이미 갖춘 조직의 사례로 읽는다.
 
+관리형 제품은 다른 공유 모델을 쓰기도 한다. 2026-11-10 Anthropic 발표 기준 Claude Data(10월 베타 때 이름은 Claude Dashboards)는 데이터 웨어하우스나 CRM 커넥터로 질의한 결과로 대시보드를 만든다.
+
+- **결과 공유와 질의 권한:** 실시간 공유(베타)에서 조회자는 커넥터 권한이 없어도 최신 수치를 보지만, 공유자가 승인한 질의의 결과만 보고 공유자의 접근으로 다른 질의를 실행하지는 못한다. 위 사례가 조회자의 신원으로 질의해 데이터 권한을 공유하지 않는 것과 달리, 이 모델에서는 조회자가 원래 볼 수 없던 수치도 승인한 범위 안에서 보게 되므로 공유 대상과 승인할 질의를 정하는 일이 곧 접근 제어다(이 문서의 해석).
+- **지표 일치:** 데이터 팀이 모두가 쓸 질의를 인증하면 그 질의로 만든 차트에 certified 배지가 붙는다(베타). 같은 지표를 대시보드마다 다르게 계산하는 문제를 질의 단위에서 줄이는 장치다.
+- **신선도와 이력:** 대시보드별 캐싱과 갱신 주기를 둘 수 있고(이전에는 열 때마다 다시 불러왔다), 누가 바꿨는지 보고 이전 버전으로 되돌릴 수 있다. 캐시를 쓰면 화면 수치의 기준 시각을 함께 보여 준다(운영 제안).
+
 ## 출처
 
 - [YouTube, Metrics](https://developers.google.com/youtube/analytics/metrics) — audienceWatchRatio와 subscribersGained의 정의 및 집계 범위를 2026-10-24 대조.
@@ -141,6 +147,8 @@ Data Agent Bench 공동저자의 2026-10-23 인터뷰는 당시 최상위 에이
 - [datapitfalls - 차트뿐 아니라 데이터 분석 전 과정의 함정을 찾는 도구 — GeekNews](https://news.hada.io/topic?id=35842) — 학습 계기
 - [Can we replace a $150k Looker with a bucket of HTML files? — David Lequin](https://david.lequin.dev/blog/bi-software-is-dead/) — 2026-10-14 개인 블로그 회고. 권한과 격리 설계, 초기 보안 상태, 비용 수치와 제외한 비용을 2026-10-27 원문 대조. 수치는 작성자 자체 측정
 - [연 15만 달러짜리 Looker를 AI가 만든 HTML 대시보드로 대체할 수 있을까? — GeekNews](https://news.hada.io/topic?id=35975) — 학습 계기
+- [Introducing Claude Whiteboards, Claude Sheets, and Claude Data — Claude](https://claude.com/resources/articles/sheets-whiteboards-data) — 2026-11-10 발표. Claude Data의 실시간 공유 범위, 인증 질의, 캐싱과 갱신 주기, 변경 이력을 2026-11-16 원문 대조
+- [Claude Whiteboards, Claude Sheets, Claude Data - 팀 협업 보드, 스프레드시트, 데이터 분석 도구 — GeekNews](https://news.hada.io/topic?id=36958) — 학습 계기
 
 - [Can data agents do real analysis? — The Analytics Engineering Podcast](https://roundup.getdbt.com/p/can-data-agents-do-real-analysis) — 2026-10-23 공동저자 인터뷰, 2026-11-02 공개 편집 전사 대조.
 - [DataAgentBench — UC Berkeley EPIC](https://github.com/ucbepic/DataAgentBench) — 2026-11-02 공식 저장소의 문제/채점 구조 확인.

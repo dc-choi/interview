@@ -60,3 +60,4 @@ aliases: ["Siri AI 앱 연동", "Siri AI App Intents", "Siri AI Developer Previe
 - [[Agent-Integration|에이전트와 업무 시스템 연결]]
 - [[Agent-Ready-API-Design|에이전트 친화 API 설계]]
 - [[Agent-Desktop-Accessibility-CLI|접근성 트리 기반 데스크톱 조작]]
+- [[Apple-Foundation-Models-Framework|Apple Foundation Models 프레임워크]] — 앱이 기기, PCC와 외부 모델을 부르는 반대 방향

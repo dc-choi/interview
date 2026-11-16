@@ -1,7 +1,7 @@
 ---
 tags: [ai, agent, computer-use, accessibility, desktop-automation, cli]
 status: done
-verified_at: 2026-11-14
+verified_at: 2026-11-16
 category: "AI엔지니어링(AIEngineering)"
 aliases: ["agent-desktop", "Agent Desktop", "접근성 트리 기반 데스크톱 조작", "Accessibility Tree Computer Use"]
 ---
@@ -19,6 +19,8 @@ agent-desktop은 앱의 접근성 트리를 읽어 JSON으로 돌려주고, 그 
 | macOS | 13 이상, Intel 또는 Apple Silicon | AX API |
 | Windows | 10 1809 이상, x64 또는 ARM64 | UI Automation |
 | Linux | Ubuntu 24.04 이상, x86_64 또는 aarch64, X11 또는 Wayland | AT-SPI |
+
+같은 Vercel Labs의 agent-browser는 이 snapshot과 ref 루프를 브라우저에 적용한다. 2026-11-16 README 기준 agent-browser는 기본으로 자신이 띄운 Chrome for Testing의 페이지를(실행 중인 Chrome에 붙는 CDP 모드도 있다) 접근성 트리 기반의 간결한 텍스트와 `@e1` 같은 ref로 돌려주고, 에이전트는 ref로 동작한 뒤 페이지를 다시 읽어 결과를 확인한다. 대체로 웹 페이지 안의 작업은 agent-browser가, 브라우저 밖의 설치형 앱과 창은 agent-desktop이 맡는다(GeekNews 소개의 구분을 두 README로 대조).
 
 ## 동작 방식: snapshot과 ref
 
@@ -49,7 +51,8 @@ ref는 그 snapshot 안에서만 유효하다. snapshot id가 없는 `@e8`은 `I
 - 비밀 값은 `type`, `set-value`, `clipboard-set`의 `--stdin`으로 넘겨 프로세스 인자에 남기지 않는다. batch JSON의 텍스트는 프로세스 인자에 나타나므로 비밀 단계는 별도 명령으로 실행한다.
 - OS가 암호 필드로 표시한 칸의 값은 출력하지 않는다. 기본 모드는 이벤트 JSONL만 기록하지만, `session start --screenshots`로 켠 재생 산출물(동작 전후 PNG)은 가리지 않은 채 남고 HTML 내보내기에 들어갈 수 있다.
 - 접근성 권한은 다른 앱의 내용을 읽고 조작하는 강한 권한이다. 상시 실행하는 에이전트에 줄 때는 [[Agent-Execution-Isolation|에이전트 실행 격리]]처럼 대상 앱, 계정과 네트워크 범위를 함께 제한한다(이 문서의 제안).
-- 1.0 출시(2026-10-28) 뒤 16일 만에 1.3.1(2026-11-13)까지 나왔다(GitHub 릴리스 UTC 기준). 명령과 옵션이 빠르게 바뀌므로 사용 전 현재 README와 릴리스 노트를 다시 확인한다.
+- 1.0 출시(2026-10-28) 뒤 16일 만에 1.3.1(2026-11-13)까지 나왔다(GitHub 릴리스 UTC 기준, 2026-11-16 확인 때도 최신). 명령과 옵션이 빠르게 바뀌므로 사용 전 현재 README와 릴리스 노트를 다시 확인한다.
+- 2026-11 GeekNews 댓글의 한 사용 후기는 지원되는 앱이 아직 적고 Word와 Excel 조작, 한글 입력과 일부 요소 인식이 잘 되지 않았으며 앱 포커스를 갑자기 가져가기도 했다고 적었다. 개인 후기이고 재현하지 않았다. 포커스를 가져가지 않는 기본값은 문서가 밝힌 설계이므로, 도입 전에 대상 앱과 한글 입력으로 직접 시험한다(운영 제안).
 
 ## 선택할 때 확인할 조건
 
@@ -66,8 +69,10 @@ ref는 그 snapshot 안에서만 유효하다. snapshot id가 없는 `@e8`은 `I
 
 - [agent-desktop README — Vercel Labs](https://github.com/vercel-labs/agent-desktop) — 2026-11-14 정의, 지원 OS와 API, ref 규칙, headless 기본값, 설치, 보안 안내 대조
 - [agent-desktop CONCEPTS — Vercel Labs](https://github.com/vercel-labs/agent-desktop/blob/main/CONCEPTS.md) — 2026-11-14 fail-closed 해석, Interaction Lease, 다중 에이전트 세션, 암호 필드와 replay 산출물 대조
-- [agent-desktop Releases — Vercel Labs](https://github.com/vercel-labs/agent-desktop/releases) — 2026-11-14 v1.0.0(10-28), v1.2.0 MCP, v1.3.0 sandbox, v1.3.1(11-13) 대조
+- [agent-desktop Releases — Vercel Labs](https://github.com/vercel-labs/agent-desktop/releases) — 2026-11-14 v1.0.0(10-28), v1.2.0 MCP, v1.3.0 sandbox, v1.3.1(11-13) 대조. 2026-11-16 GitHub API로 최신 릴리스가 v1.3.1임을 재확인
 - [클로드에 붙여 쓰는 미친 도구 agent-desktop — 잔재미코딩](https://www.youtube.com/watch?v=luEhiMTWlW8) — 2026-11-01 공개 쇼츠, 작성 계기이며 동작 설명은 위 저장소 문서로 대조
+- [agent-browser README — Vercel Labs](https://github.com/vercel-labs/agent-browser) — 2026-11-16 브라우저 페이지의 접근성 트리 텍스트, ref 동작과 재확인 루프 대조
+- [Vercel agent-desktop - AI 에이전트가 데스크톱 앱을 조작하는 CLI — GeekNews](https://news.hada.io/topic?id=36967) — agent-browser와의 역할 구분, 사용 후기 댓글
 
 ## 관련 문서
 

@@ -3,7 +3,7 @@ tags: [ai, llm, inference, serving, determinism, speculative-decoding, structure
 status: done
 verified_at: 2026-11-08
 category: "AI엔지니어링(AIEngineering)"
-aliases: ["LLM Inference Serving Engines", "추론 서빙 엔진", "DeepInfer", "DSpark", "Batch Invariance", "배치 불변 추론"]
+aliases: ["LLM Inference Serving Engines", "추론 서빙 엔진", "DeepInfer", "DSpark", "Batch Invariance", "배치 불변 추론", "ggml", "DGX Station 텐서 병렬"]
 ---
 
 # LLM 추론 서빙 엔진: 엔진 기능과 서비스 구성의 경계
@@ -34,6 +34,13 @@ aliases: ["LLM Inference Serving Engines", "추론 서빙 엔진", "DeepInfer", 
 - **API 계층:** 별도 저장소 deepseek-recipe(MIT)는 Messages, Chat Completions와 Responses 요청을 Conversation 형식으로 바꾸고, DeepSeek V4와 V4.1 프롬프트 렌더링, 토큰화와 응답 변환을 맡는다. 모델 추론, 도구 실행과 HTTP 전송은 호출자가 제공해야 한다.
 
 두 저장소를 내려받는 것만으로 공개 API와 같은 서비스가 구성되지는 않는다. HTTP 서버와 인증, KV 캐시 계층, 단계 분리와 복제본 라우팅은 직접 만들거나 다른 서빙 계층과 결합한다.
+
+### ggml: 엔진 아래 텐서 라이브러리의 판을 맞춘다
+
+ggml은 llama.cpp와 whisper.cpp가 쓰는 텐서 연산 라이브러리로, CPU, CUDA, Metal, Vulkan, SYCL, OpenCL, WebGPU, Hexagon 같은 백엔드 커널이 이 계층에 있다. 2026-11-13 게시된 v1.0.0 릴리스 노트(2026-11-16 확인)는 폐기 예정 API와 `DIAG_MASK_INF`, `DIAG_MASK_ZERO` 연산을 제거하고, RPC 프로토콜을 v9로 올려 호환되지 않는 상대를 거부하게 했다. 변경 대부분은 llama.cpp 저장소에서 먼저 들어와 동기화된 것이다.
+
+- **판 정책:** 2026-08 메인테이너 토론(#1579)은 ggml, llama.cpp, whisper.cpp에 시맨틱 버전을 쓰기로 했다. llama.cpp는 ABI를 깨는 변경(열거형 값 추가 포함)과 서버 추론 엔드포인트의 파괴적 변경에 major를 올린다. llama.cpp와 whisper.cpp는 ggml 사본을 내장하며, 내장본이 공식 ggml 릴리스와 같을 때만 릴리스 태그를 만들어 시스템 ggml에 링크해도 호환되게 한다. `b[번호]` 태그는 nightly 빌드다. 같은 토론의 Debian 메인테이너 댓글은 1.0에 맞춰 새 soname의 `libggml1`을 기존 `libggml0`과 함께 설치할 수 있다고 적는다.
+- **올릴 때 점검:** 시스템 ggml에 링크하는 빌드는 ggml과 llama.cpp의 판을 함께 고정한다. ggml C API를 직접 부르는 코드는 제거된 API를 찾는다. RPC 백엔드로 여러 장비를 묶었다면 서버와 클라이언트를 함께 올린다. 1.0에는 API 정리와 판 정책 전환 외에 백엔드별 실행 경로 변경도 들어 있으므로, 성능은 올리기 전후에 같은 모델과 설정으로 프리필과 생성 속도를 재서 확인한다([[LLM-Inference-Bottlenecks#로컬 엔진 비교는 측정 구간과 설정을 맞춘다|로컬 엔진 비교 조건]]).
 
 ## 결정적 출력은 배치 불변성에서 출발한다
 
@@ -70,6 +77,23 @@ API 계층이 스키마 요청을 받아들였다는 사실을 디코딩 단계�
 ## 공개 벤치마크의 측정 조건
 
 DeepInfer README의 성능 그래프는 프리필에 SM100 GPU 4개, 디코드에 64개를 쓰고 각각 하나의 scale-up domain 안에서 측정했다고 밝힌다. 본문에는 수치가 없고 그래프와 재현 스크립트 `examples/sweep/run_sweep.sh`만 있다. 장비 수와 연결 구조가 다른 환경에 결과를 옮기지 않는다.
+
+## 사례: 워크스테이션 두 대에 걸친 텐서 병렬
+
+2026-11-13 NVIDIA 기술 블로그의 절차 기준이다. GLM-5.3 NVFP4(전체 753B, 토큰당 활성 40B의 MoE) 체크포인트는 약 464GB라 GB300 한 장의 252GB HBM3e에 들어가지 않는다. GB300 DGX Station 두 대를 ConnectX-8 RDMA(RoCE, 400Gb/s, MTU 9000) 직결 레일로 잇고, 두 장비에 같은 vLLM v0.30.0 이미지(다이제스트 고정)와 모델 리비전을 둔 뒤 TP=2로 띄운다. CPU 가중치 오프로딩은 끈다. 어느 GPU도 모델 전체를 갖지 않아 토큰마다 두 rank가 부분 결과를 교환하며, 시작 로그의 GPU당 가중치는 약 218GiB다. 노드 안 TP와 노드 사이 PP를 조합하라는 일반 안내([[GPU-Inference-Hardware#병렬화는 연결 구조에 맞춘다|병렬화와 연결 구조]])와 달리 노드마다 GPU가 하나라 노드 사이 RDMA 연결이 TP 통신을 맡는다(구성에서 읽은 차이).
+
+- **엔진 설정:** 문맥 98,304토큰, GPU 메모리 93%, MTP로 단계당 초안 4토큰, FP8 KV 캐시, prefix caching, 자동 도구 선택. 플래그는 한 번에 하나씩 바꾸고 다시 검증하라고 안내한다.
+- **통신 검증:** 상태 API가 응답해도 NCCL 로그에서 GPU RDMA를 쓰는지, TCP 소켓으로 내려가지 않았는지 따로 본다. 이미지에 든 NCCL 2.30.7보다 이전 판은 RoCE의 노드 간 CUDA 그래프 재실행에서 교착될 수 있다고 적는다.
+- **API 노출:** `--host 0.0.0.0`과 host 네트워크를 함께 쓰면 인증 없는 API가 관리 인터페이스를 포함한 모든 인터페이스에 열린다. 포트를 의도한 클라이언트로 제한하고 넓게 공개하기 전에 인증과 TLS를 둔다([[VLLM-Serving-Security|vLLM 서빙 보안]]).
+
+| 동시 요청 | 전체 출력 tok/s | 요청당 tok/s | 평균 TTFT | 토큰 간 지연 |
+|---|---|---|---|---|
+| 1 | 107.4 | 115.3 | 480ms | 8.8ms |
+| 8 | 386.0 | 53.0 | 434ms | 19.0ms |
+| 16 | 607.8 | 42.4 | 483ms | 23.8ms |
+| 32 | 385.0 | 13.0 | 899ms | 77.9ms |
+
+AIPerf 0.12.0과 SPEED-Bench Coding(80개 대화, 89턴), 출력 한도 8,192토큰, 추론 강도 max, prefix caching 사용 조건이며 토큰 수에 추론 토큰이 들어간다. 1, 8, 16 그룹은 `--max-num-seqs 16`, 32 그룹은 32로 따로 띄웠다. 전체 처리량이 16에서 정점을 찍고 32에서 떨어지므로 동시성을 늘리면 처리량도 오른다고 가정하지 않고, 자기 프롬프트로 지연 목표를 만족하는 동시성을 다시 잰다. NVIDIA의 측정이며 재현하지 않았다.
 
 ## 단계 분리에서는 KV 페이지 소유권이 요청 격리의 경계다
 
@@ -117,6 +141,11 @@ README, 저장소의 배포 Q&A 문서와 소스의 환경 변수 정의, 공개
 - [PD: Do not admit intake-rejected requests to a PD handoff — sgl-project/sglang](https://github.com/sgl-project/sglang/pull/38935) — 2026-09-16 병합. 인계 전 거절의 수정 범위 대조
 - [Disaggregation: Honor admission aborts before KV handoff — sgl-project/sglang](https://github.com/sgl-project/sglang/pull/38704) — 2026-10-10 병합 없이 닫힘. 전송 길이 대조를 넣은 초안
 - [vLLM, NixlConnector Usage Guide](https://docs.vllm.ai/en/latest/features/nixl_connector_usage.html) — 2026-11-08 디코드가 프리필의 KV 블록을 RDMA로 읽어 오는 구조 대조
+- [ggml v1.0.0 — ggml-org](https://github.com/ggml-org/ggml/releases/tag/v1.0.0) — 2026-11-16 제거된 API, RPC v9와 백엔드 변경 대조
+- [dist : releases and versioning of ggml-org projects — ggml-org/ggml](https://github.com/ggml-org/ggml/discussions/1579) — 2026-08-07 작성된 토론, 2026-11-16 시맨틱 버전, major 기준과 내장 ggml의 릴리스 태그 조건 대조
+- [When One GPU Isn't Enough: Serving GLM-5.3 Across Two NVIDIA DGX Stations with vLLM — NVIDIA Technical Blog, Fatima Fall](https://developer.nvidia.com/blog/when-one-gpu-isnt-enough-serving-glm-5-3-across-two-nvidia-dgx-stations-with-vllm/) — 2026-11-13 게시. 2026-11-16 구성, 플래그, 검증 절차와 결과 표 대조
+- [ggml v1.0.0 - 폐기 예정 API 제거, FP8 지원과 백엔드 성능 개선 — GeekNews](https://news.hada.io/topic?id=37153)
+- [DGX Station 2대에서 vLLM으로 GLM-5.3 로컬 서빙하기 — GeekNews](https://news.hada.io/topic?id=37221)
 
 ## 관련 문서
 

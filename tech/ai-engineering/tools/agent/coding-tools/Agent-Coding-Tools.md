@@ -11,7 +11,7 @@ aliases: ["Agent Coding Tools", "코딩 에이전트 작업 도구"]
 
 ## 목차
 
-- [[Agent-Oriented-Programming-Languages|에이전트용 프로그래밍 언어]]: Zerolang의 그래프 편집과 텍스트 검토, Mog의 호스트 capability와 보안 검증 경계
+- [[Agent-Oriented-Programming-Languages|에이전트용 프로그래밍 언어]]: Zerolang의 그래프 편집과 텍스트 검토, Mog의 호스트 capability와 보안 검증 경계, Exact와 Text.js가 런타임에서 제공하는 관찰과 조작 명령
 - [[Agent-Diagram-Evidence|에이전트 다이어그램의 근거와 검증]]: Archify의 독립 HTML, 커밋 근거, 자동 검사와 의미 검증, 버전별 라이선스
 - [[Agent-Code-Search|에이전트 코드 인텔리전스]]: rg 전수 검색, Semble 후보 발견, Serena 심볼 검증/수정, Graphify 구조 경로, index freshness
 - [[Codebase-Knowledge-Map|대규모 코드베이스 지식 지도]]: 규모 측정과 공통 식별자, 결정론적 파서와 호출 관계 보강, 확인, 추론과 미해결의 구분, 템플릿과 재구축 동일성 검사, 그래프 순회 상한, 상시 벡터 DB 없는 exact 비교
@@ -20,6 +20,7 @@ aliases: ["Agent Coding Tools", "코딩 에이전트 작업 도구"]
 - [[Agent-Terminal-Workspaces|에이전트 터미널과 작업 공간]] — 화면과 상태, worktree 분리, Herdr app/core와 TUI 구분, Prospero 원격 호스트, 한 사람이 돌리는 병렬 세션의 비용과 저장소에 두는 판단 대기열
 - [[JetBrains-IDE-Agent-Integration|JetBrains IDE의 코딩 에이전트 통합]]: Air in IDEs의 실행 화면과 세션 diff, ACP registry, 구독 인증 경로, 내장 MCP 서버의 도구 노출과 Brave mode, 로그포인트와 에이전트 디버깅, 스킬 설치 위치, ThinkRail의 pi 호스트와 worktree, SPEC.md 그래프와 승인
 - [[Agent-Always-On-Mac-Host|상시 실행 Mac 에이전트 호스트]]: 잠자기 방지와 정전 뒤 시동, FileVault와 자동 로그인의 재시작 절충, Remote Login과 Tailscale SSH, 세션 유지 방식의 재부팅 한계, Corgi의 화면/대화 복원과 에이전트 훅, 플러그인과 업데이트 소유
+- [[Agent-Session-History|에이전트 세션 기록의 보존, 검색과 이어받기]]: 제품별 transcript 보존 기간, Atuin Threads의 수집 범위와 가림, 다른 에이전트로 넘길 때 빠지는 추론, DeltaDB와 Entire 체크포인트처럼 Git 밖에 남는 기록
 
 - [[Agent-Reverse-Engineering|에이전트 역공학과 실행 하네스]]: REA의 연결 도구와 공식 배포 경로, 하드웨어 버스 기록 비교(hw-harness), 매칭 디컴파일과 정적 재컴파일의 동등성 구분, 게임 상태 재현, 브라우저 이식의 검증, Xbox Labs 발표, Ruby 생태계 보강과 국내 저작권법의 프로그램코드역분석 요건
 

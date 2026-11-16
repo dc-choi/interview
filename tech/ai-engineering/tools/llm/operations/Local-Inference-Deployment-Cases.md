@@ -1,9 +1,9 @@
 ---
 tags: [ai, local-llm, moe, inference, distributed, mlx, rdma]
 status: done
-verified_at: 2026-11-03
+verified_at: 2026-11-16
 category: "AI엔지니어링(AIEngineering)"
-aliases: ["Local Inference Deployment Cases", "Janas", "Apple Minions", "Uzu", "LFM2.5-24B-A2B", "Muse Spark Open", "MLX Distributed Inference", "JACCL", "PS5LM"]
+aliases: ["Local Inference Deployment Cases", "Janas", "Apple Minions", "Uzu", "LFM2.5-24B-A2B", "Muse Spark Open", "MLX Distributed Inference", "JACCL", "PS5LM", "Edge0-145B", "Apple Harbor"]
 ---
 
 # 로컬 AI 추론의 메모리, 저장 계층과 분산 실행
@@ -28,6 +28,15 @@ MoE는 토큰마다 일부 전문가만 계산해 활성 연산량을 줄인다.
 2026-10-16 공식 저장소 대조 기준, Janas는 RAM보다 큰 MoE 모델의 가중치를 NVMe에서 읽고 자주 쓰는 전문가를 캐시한다. CPU와 GPU 실행 경로를 제공한다.
 
 프로젝트는 32GB RAM의 Core Ultra 9 185H 노트북에서 약 48.4GB Qwen3-Next-80B-A3B를 초당 24토큰, 초안 기반 생성 사용 시 37토큰으로 실행했다고 보고한다. 비교한 llama.cpp는 2.8토큰/초다. 이는 제작자 측정이며 이 문서에서 재현하지 않았다. 모델 정밀도, 프롬프트, 생성 길이와 초안 사용을 맞추지 않은 속도 배율을 모든 모델에 적용하지 않는다.
+
+## Edge0-145B: 전문가와 임베딩을 RAM과 SSD에 나눠 둔다
+
+2026-11-12 Edge0 발표와 Hugging Face 모델 카드를 2026-11-16 대조한 기준이다. 모델 카드는 Qwen3.8-Flash-Next의 48개 층 전체에서 라우팅 전문가를 좁은 잠재 폭(145B는 1,792)에서 계산하는 latent MoE로 바꿔 다시 만든 모델이라고 설명한다. 층마다 전문가 512개 가운데 라우팅 10개와 공유 1개가 토큰마다 쓰이고, 전체 145B 가운데 토큰당 활성 파라미터는 약 10.12B다. 발표는 이를 전문가 64개씩의 묶음이 큰 행렬 두 개를 공유하고 전문가마다 작은 고유 파라미터만 두는 구조로 설명한다(64는 묶음의 크기이고 층당 전문가 수는 512개).
+
+- **메모리 계층:** 발표는 약 40GB의 전문가 라이브러리를 시스템 메모리에 두고 필요한 전문가만 GPU 메모리로 올리며, 약 48GB의 어휘 데이터는 SSD에 두고 필요할 때 읽는다고 적는다. 모델 카드는 fp8의 51.2B n-gram 임베딩 표와 디스크의 NVFP4 전문가 풀 44.3GiB를 적고, 캐시에 없는 전문가를 SSD에서 읽는 `--mmap-experts` 모드와 정적 전문가 프로필을 요구한다. 위 표의 RAM/SSD 계층화이며 Janas가 전문가를 SSD에서 읽는 방식과 같은 비용(캐시 미스, 랜덤 I/O)을 확인한다.
+- **메모리 수치는 측정 조건과 함께 읽는다:** 발표는 노트북 최대 메모리를 29GB로 적고 다른 문단은 28GB로 적는다. 모델 카드는 RTX 5090 D 24 GB(카드의 표기)에서 상주 설정을 켜면 Q3_K(가중치 40.81GiB)가 VRAM 23.14GiB와 RAM 31.28GiB, NVFP4(47.79GiB)가 VRAM 23.25GiB와 RAM 38.27GiB에 나뉘어 올라간다고 적는다. 같은 카드를 VRAM 16GiB(`--vram-reserve-mib 8192`)와 RAM 20GiB(cgroup `MemoryMax=20G`, 스왑 없음)로 묶은 제한 예산에서는 Q3_K의 대화 디코드가 36.8 tok/s로, 묶지 않았을 때의 99.7 tok/s보다 크게 낮다. 상주시키는 전문가가 줄면 호스트 메모리와 SSD에서 읽는 양이 늘어 속도가 떨어진다는 계층화의 비용이 수치로 드러난 예다(이 문서의 해석). 헤드라인의 29GB를 장비에 필요한 RAM과 저장 공간의 총량으로 읽지 않는다.
+- **플랫폼별 빌드:** 발표는 첫날부터 Apple M 시리즈를 포함한 macOS, Windows, Linux를 지원한다고 적지만, 모델 카드 기준 NVFP4 빌드(47.79GiB)는 CUDA 전용이고 Apple Silicon의 Metal은 Q3_K 빌드(40.81GiB)가 맡는다. 같은 이름의 모델도 플랫폼마다 양자화가 달라 품질과 속도를 따로 잰다.
+- **속도와 평가:** 모델 카드의 RTX 5090 D 측정에서는 Q3_K가 프리필 4K 2,169.9, 16K 3,554.9 tok/s와 대화 디코드 99.7, 에이전트 디코드 121.2 tok/s로 같은 카드의 NVFP4(1,839.6, 3,165.7, 79.6, 98.3)보다 빠르고, Apple M2 Ultra(Metal, Q3_K)의 대화 디코드는 60.9 tok/s다. 발표는 노트북에서 프리필 1,100 tok/s 이상, 디코드 80 tok/s 이상과 약 120W를 적지만 어느 장비와 빌드의 측정인지는 밝히지 않는다. 품질 표는 대부분 Edge0의 내부 평가이고 비교 대상에 Claude Opus 4.6과 DeepSeek-V4-Flash-0731 같은 이전 세대 모델, Terminal-Bench 2.1이 있으며 전체 평가 설정은 기술 보고서로 미뤘다. 라이선스 조건은 [[Model-Release-Claims#라이선스와 제공 상태는 발표 문구와 따로 확인한다|모델 발표 수치 읽기]]에 적었다.
 
 ## Minions: 유휴 Mac에 독립 추론 작업을 분배한다
 
@@ -63,6 +72,8 @@ Muse Spark Open(전체 816B, 활성 42B)은 NVFP4로 줄여도 가중치만 약 
 65,536토큰에서 2대 텐서 병렬의 TTFT가 파이프라인보다 느린 이유로 Apple은 전문가 출력의 별도 정규화가 프리필 통신을 늘린 점을 든다. 장비를 4대로 늘린 텐서 병렬의 65,536토큰 TTFT(40.6초)는 2대 파이프라인(47.6초)보다 짧았다. Apple은 4대 파이프라인 결과를 보고하지 않았으므로 같은 장비 수에서 두 방식을 비교한 값은 아니다. 같은 4대 구성의 65,536토큰 TTFT는 케이블 1개일 때 약 50.5초, 2개일 때 40.6초였다. `mlx.launch`로 `mlx_lm.server`를 띄우면 OpenAI 호환 주소(`http://127.0.0.1:8080/v1`)를 OpenCode 같은 도구에 연결할 수 있으며, 필드 보존은 [[LLM-Gateway#호환성은 요청 수락과 기능 보존으로 나눠 확인한다|호환성 점검]]으로 확인한다.
 
 이 표는 Apple의 측정이며 이 문서에서 재현하지 않았다. 4비트 NVFP4 결과를 원 정밀도의 품질이나 속도로 옮기지 않고, 128토큰보다 긴 출력과 동시 요청의 성능은 따로 잰다.
+
+2026-11-10 9to5Mac은 유출자가 공개한 앱 소개를 근거로, Apple이 Claris 브랜드의 비공개 프리뷰로 Mac 앱 Harbor를 시험 중이라고 보도했다. 소개 문구는 Thunderbolt 5로 연결한 Mac을 자동으로 찾아 클러스터를 만들고 통합 메모리를 하나의 추론 자원으로 묶으며, 앱 안에서 오픈 웨이트 모델을 찾아 내려받는다고 적는다. Apple의 공식 발표가 아니고 출시 시점도 정해지지 않았다. RDMA나 MLX 같은 구현은 보도에 없으므로 위 수동 준비(복구 모드의 `rdma_ctl enable`, 완전 연결 배선)를 앱이 대신하는지는 출시 뒤 확인한다. NVIDIA 워크스테이션 두 대를 RoCE로 묶은 텐서 병렬 사례는 [[LLM-Inference-Serving-Engines#사례: 워크스테이션 두 대에 걸친 텐서 병렬|추론 서빙 엔진]]에 있다.
 
 ## Uzu: Apple 기기의 앱 안에서 모델을 실행한다
 
@@ -122,6 +133,9 @@ Mirai가 공개한 벤치마크(2026-10-18 측정, Apple M5 Max 128GB, Uzu 0.6.9
 
 - [Underdog Saluki 27B 1.0 — ConwayResearch](https://huggingface.co/ConwayResearch/Underdog-Saluki-27B-1.0) — 2026-11-03 파일 형식과 크기, 실행 설정, 자체 평가와 외부 공개 점수의 구분, SWE-bench Verified 부분집합과 제한 사항 대조
 - [Janas — prabanta-dev](https://github.com/prabanta-dev/janas)
+- [Introducing Edge0-145B: Frontier AI Capabilities on Your Own Computer — Edge0](https://edge0.ai/blog/introducing-edge0-145b-frontier-ai-capabilities-on-your-own-computer) — 2026-11-12, 구조, 메모리 계층, 플랫폼 지원, 속도와 평가 표의 측정 주체 대조
+- [Edge0/Edge0-145B-NVFP4 — Hugging Face, Edge0](https://huggingface.co/Edge0/Edge0-145B-NVFP4) — 2026-11-16 활성 파라미터, 빌드별 크기와 지원 백엔드, 메모리 측정과 제한 예산 조건, 속도 표 대조
+- [Edge0-145B - 개인 컴퓨터에서 실행하는 1,450억 매개변수 AI 모델 — GeekNews](https://news.hada.io/topic?id=37100) — 학습 계기
 - [Minions: A Dynamic and Distributed Virtual GPU Cloud Built on Idle Apple Silicon Devices — Apple Machine Learning Research](https://machinelearning.apple.com/research/distributed-gpu-cloud)
 - [uzu — trymirai](https://github.com/trymirai/uzu)
 - [Mirai, About](https://docs.trymirai.com/)
@@ -139,6 +153,8 @@ Mirai가 공개한 벤치마크(2026-10-18 측정, Apple M5 Max 128GB, Uzu 0.6.9
 - [MLX, Distributed Communication](https://ml-explore.github.io/mlx/build/html/usage/distributed.html) — 2026-10-27 JACCL의 macOS, RDMA 활성화와 완전 연결 조건, `MLX_METAL_FAST_SYNCH` 경고 대조
 - [PS5LM — cobanov](https://github.com/cobanov/PS5LM) — 2026-10-27 README의 메모리 예산, API, 요구 조건과 속도 표 대조
 - [MLX로 Mac Studio 여러 대에서 대형 AI 모델 실행하기 — GeekNews](https://news.hada.io/topic?id=35483) — 2026-10-17 소개 글
+- [Apple has new Mac app coming to make running local AI models easy — 9to5Mac, Ryan Christoffel](https://9to5mac.com/2026/11/10/apple-has-new-mac-app-coming-to-make-running-local-ai-models-easy/) — 2026-11-10 게시. 유출 정보에 근거한 보도이며 Apple의 공식 발표가 아니다
+- [Apple, 여러 Mac을 묶어 로컬 AI 모델을 실행하는 Harbor 준비 중 — GeekNews](https://news.hada.io/topic?id=36982)
 - [PS5LM - 탈옥한 PS5에서 llama.cpp로 모든 GGUF 모델을 콘솔에서 네이티브 실행 — GeekNews](https://news.hada.io/topic?id=35496) — 2026-10-17 소개 글
 - 사용자 제공 GeekNews 발췌: 2026-10-12 로컬 AI 대전환, 2026-10-14 Janas와 Minions, 2026-10-16 LFM2.5와 Muse Spark Open. 시장 전망과 미대조 세부 수치는 본문에 별도 표시했다.
 

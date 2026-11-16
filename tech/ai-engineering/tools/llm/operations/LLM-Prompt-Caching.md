@@ -117,7 +117,7 @@ API의 토큰 단가와 구독형 앱의 사용량 차감은 구분한다. 2026-
 2026년 하반기 OpenAI와 Anthropic의 가격 변경에는 캐시 읽기 단가만 내린 경우가 섞여 있다. 같은 변경도 요청의 토큰 구성에 따라 효과가 없을 수도, 청구액 대부분을 줄일 수도 있으므로 발표된 인하율을 자기 청구액 변화로 옮기지 않는다. 인하의 형태와 원인은 [[LLM-API-Price-Competition|LLM API 가격 경쟁]]이 다룬다.
 
 - **캐시 읽기만 내린 변경**: 2026-10-27 가격표 기준 Fable 5.1은 입출력 단가가 Fable 5와 같고 캐시 읽기만 100만 토큰당 $1에서 $0.25다. GPT-6.1 Sol도 입출력은 GPT-6 Sol과 같은 $2, $10이고 캐시 입력만 $0.20에서 $0.10이다.
-- **에이전트 세션은 캐시 읽기가 입력의 대부분이다**: 멀티턴 에이전트는 매 턴 앞선 대화 전체를 다시 보내므로 새 입력보다 캐시에서 읽는 토큰이 훨씬 많다. Max Woolf(2026-10-25)는 에이전트 코딩에서 캐시 읽기가 토큰 지출의 96~99%이고 적중률이 90~100%라고 적었지만 근거 자료와 계산 방법은 밝히지 않았다. 자기 비중은 사용량 필드로 잰다.
+- **에이전트 세션은 캐시 읽기가 입력의 대부분이다**: 멀티턴 에이전트는 매 턴 앞선 대화 전체를 다시 보내므로 새 입력보다 캐시에서 읽는 토큰이 훨씬 많다. Max Woolf(2026-10-25)는 에이전트 코딩에서 캐시 읽기가 토큰 지출의 96~99%이고 적중률이 90~100%라고 적었지만 근거 자료와 계산 방법은 밝히지 않았다. 자기 비중은 사용량 필드로 잰다. 토큰 구성을 공개한 개인 사례로, Fable 5.2로 게임을 만든 이틀간 요청 약 600회의 토큰은 캐시 읽기 약 3억 2천만, 캐시 쓰기 약 1,900만, 출력 약 100만이었다(작성자 공개값, 2026-11-10, 캐시되지 않은 입력은 미공개). 2026-11-16 API 정가로 환산하면 캐시 읽기 $64, 출력 $40인데 캐시 쓰기는 5분 수명이면 $190, 1시간 수명이면 $304라서, 토큰의 약 6%인 캐시 쓰기가 비용의 가장 큰 몫이 된다(이 문서의 계산이며 작성자가 쓴 요금제와 실제 청구액은 밝히지 않았다).
 
 계산 예(2026-10-27 가격표 단가로 한 이 문서의 계산이며 토큰 구성은 가정이다): 에이전트 한 턴은 캐시 읽기 15만, 새로 캐시에 쓰는 입력 2천(5분 수명), 출력 500토큰으로, 단발 채팅은 캐시 없는 입력 2천, 출력 500토큰으로 둔다.
 
@@ -154,7 +154,8 @@ API의 토큰 단가와 구독형 앱의 사용량 차감은 구분한다. 2026-
 - [OpenAI API Docs, Prompt caching](https://developers.openai.com/api/docs/guides/prompt-caching) (기본 활성, 최소 토큰, 30분 TTL, 쓰기와 읽기 배율, 사용량 필드, TPM 산입. 2026-10-27 12시간 수명과 2.5배 쓰기, GPT-6.1 Terra 0.05배 읽기, prewarm 요청 확인)
 - [OpenAI API Docs, Pricing](https://developers.openai.com/api/docs/pricing) (GPT-6 계열 캐시 읽기와 쓰기 단가, 2026-10-27 GPT-6.1 Sol과 Terra, 30분과 12시간 쓰기 단가 대조)
 - [OpenAI API Docs, Changelog](https://developers.openai.com/api/docs/changelog) (2026-10-20 Responses API 12시간 프롬프트 캐싱 추가)
-- [Anthropic Docs, Pricing](https://platform.claude.com/docs/en/about-claude/pricing) (2026-10-27 모델별 캐시 쓰기, 읽기 단가와 0.05배, 0.025배 적용 모델, 토크나이저의 토큰 수 차이)
+- [Anthropic Docs, Pricing](https://platform.claude.com/docs/en/about-claude/pricing) (2026-10-27 모델별 캐시 쓰기, 읽기 단가와 0.05배, 0.025배 적용 모델, 토크나이저의 토큰 수 차이. 2026-11-16 Fable 5.2의 수명별 캐시 쓰기와 읽기 단가)
+- [Fable 5.2 One-Shotted My Nephew's Dream Game — Notes by Lex](https://notesbylex.com/fable-5-2-one-shotted-my-nephews-dream-game) — 2026-11-10, 요청 수와 토큰 구성. 비용 환산은 이 문서의 계산
 - [Kimi API Docs, Model Pricing](https://platform.kimi.ai/docs/pricing/chat) (2026-10-27 K3.1 Pro의 캐시 입력과 수명별 쓰기 단가)
 - [OpenAI and Anthropic cut their LLM prices by up to 80% within a few months. Why? — Max Woolf's Blog](https://minimaxir.com/2026/10/cheap-llms/) — 2026-10-25, 캐시 읽기 비중 96~99%와 적중률 90~100%는 근거를 밝히지 않은 저자 추정
 - [OpenAI와 Anthropic은 몇 달 만에 LLM 가격을 최대 80% 내렸다. 왜일까? — GeekNews](https://news.hada.io/topic?id=36009) — 단가 환산 절의 학습 계기이며 수치는 위 가격표와 변경 이력으로 대조

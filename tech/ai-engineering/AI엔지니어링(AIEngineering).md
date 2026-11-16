@@ -27,7 +27,7 @@ Software 3.0 패러다임, LLM과 에이전트, 하네스, 평가, 조직 전환
 - [x] [[Realtime-Vision-Agent-Pipeline|실시간 영상 에이전트]] — 미디어 전송, 영상 processor, 대화 모델과 음성 처리의 역할 구분
 - [x] [[Route-Travel-Time-Prediction|경로 선택과 통행시간 예측 평가]] — 경로 계산과 미래 교통 예측, GNN 도로 표현과 추천 피드백
 - [x] [[Generative-3D-Asset-Workflow|생성형 3D 자산 제작]] — Flow 입력과 실행, 형태와 텍스처 분리, 리깅 편집과 결과 검수
-- [x] [[Agent-Oriented-Programming-Languages|에이전트용 프로그래밍 언어]] — Zerolang의 검사된 그래프 편집, Mog의 호스트 권한과 검증 한계
+- [x] [[Agent-Oriented-Programming-Languages|에이전트용 프로그래밍 언어]] — Zerolang의 검사된 그래프 편집, Mog의 호스트 권한과 검증 한계, Exact와 Text.js의 런타임 관찰 명령
 - [x] [[ML-Proxy-Discrimination|대리변수와 모델 공정성]] — 간접 정보, 집단별 오류와 공정성 기준의 차이
 - [x] [[Mechanistic-Interpretability|신경망의 기계적 해석가능성]] — 뉴런과 특성, 중첩의 실험 범위, 회로 조사와 작업 가설의 구분, 다른 모델이 가중치를 읽고 고친 실험의 도구 조건과 장애 제거의 구분
 - [x] [[LLM-Statistical-Citation-Verification|AI 인용과 통계의 원출처 검증]] — 숫자와 분모, 재인용 경로, 위키백과 정리와 탐지 한계
@@ -136,8 +136,8 @@ Software 3.0 패러다임, LLM과 에이전트, 하네스, 평가, 조직 전환
 - [x] [[Context-Development-Lifecycle|컨텍스트 개발 수명주기]] — 생성, 평가, 배포와 관찰, 조직 맥락 문서(회사 두뇌)와 아는 답 시험, 정정 기록
 - [x] [[MCP-Gateway-Architecture|MCP 게이트웨이]] — Uber의 발견, 활성화와 실행 권한 분리
 - [x] [[LLM-Decision-Models-Calibration-Cases|결정 모델 보정과 버전 변경]] — Qwen, Microsoft-Decision-1, Jev 1.14와 표현 안정성, 애매한 구간만 상위 모델로 넘기는 구성과 오답 분포
-- [x] [[Local-Inference-Deployment-Cases|로컬 추론 배포]] — Janas, Minions, MLX 분산 추론(JACCL, Muse Spark Open 2대와 4대 측정), Uzu, PS5LM, Saluki의 양자화와 도구 호출 평가, LFM2.5와 Muse Spark Open
-- [x] [[LLM-Inference-Serving-Engines|추론 서빙 엔진의 기능 경계]] — 엔진과 서비스 책임, DeepInfer 공개 범위, 배치 불변성과 결정적 샘플링, DSpark 가변 길이 검증, 구조화 출력 강제 경계
+- [x] [[Local-Inference-Deployment-Cases|로컬 추론 배포]] — Janas, Minions, MLX 분산 추론(JACCL, Muse Spark Open 2대와 4대 측정), Uzu, PS5LM, Saluki의 양자화와 도구 호출 평가, LFM2.5와 Muse Spark Open, Harbor 보도의 확인 수준
+- [x] [[LLM-Inference-Serving-Engines|추론 서빙 엔진의 기능 경계]] — 엔진과 서비스 책임, DeepInfer 공개 범위, 배치 불변성과 결정적 샘플링, DSpark 가변 길이 검증, 구조화 출력 강제 경계, ggml 1.0의 판 정책, DGX Station 두 대의 텐서 병렬
 - [x] [[AI-Infrastructure-Language-Layers|AI 서비스 스택의 언어 계층]] — 꼬리 지연과 GC, data race 검사, PyO3와 C ABI 통합, pickle과 safetensors, GPU 커널 계층
 - [x] [[Agent-Model-Capability-Contracts|기억과 전문 영역 모델 평가]] — 전문 모델과 승인 경계, 카나나의 개인화 인터페이스와 발표 계획, Inkling 2 Small의 예산 안 자율 실험, Kimi K3.1 Pro의 추론 내용 반환 계약과 공개판 사이버 능력 조정, Hy4의 API 먼저 제공
 - [x] [[AI-Research-Innovation-Evaluation|AI 연구 혁신 평가]] — InnovationEval의 과제와 개선 달성률
@@ -146,8 +146,10 @@ Software 3.0 패러다임, LLM과 에이전트, 하네스, 평가, 조직 전환
 - [x] [[Generative-Artifact-Contracts|시각 산출물 생성 계약]] — AesCode의 검증 가능한 코드와 Krea 3의 부분 편집, GPT Image 2.6의 위치 표시 편집과 SVG, GIF 출력
 - [x] [[Bedrock-AgentCore-Runtime|Bedrock AgentCore Runtime 실행 계약]] — 컴퓨트 타입, 세션 수명과 새 버전 반영, 엔드포인트 고정과 롤백, 프로토콜 계약, 사용자 ID 헤더의 신뢰 경계, 스냅샷 기반 V2
 - [x] [[Agent-Always-On-Mac-Host|상시 실행 Mac 에이전트 호스트]] — 전원 설정, FileVault와 무인 재시작의 절충, 원격 접속, 세션 유지와 재부팅, 플러그인 신뢰
+- [x] [[Agent-Session-History|에이전트 세션 기록의 보존, 검색과 이어받기]] — transcript 보존 기간, Atuin Threads의 수집 범위와 가림, 다른 에이전트로 넘길 때 빠지는 추론, Git 밖에 남는 작업 기록
 - [x] [[JetBrains-IDE-Agent-Integration|JetBrains IDE의 코딩 에이전트 통합]] — Air in IDEs의 실행 화면과 세션 diff, 구독 인증 경로, 내장 MCP 서버와 로그포인트 디버깅
 - [x] [[Bedrock-Model-Inference|Bedrock 모델 호출]] — 모델 ID와 요청 스키마, Converse의 대화 상태, 콘솔 실험과 코드 검증
+- [x] [[Apple-Foundation-Models-Framework|Apple Foundation Models 프레임워크]] — 기기, PCC와 외부 모델의 실행 위치, Dynamic Profiles와 transcript 공유, PCC 비용 조건과 하루 한도, 외부 모델 자격 증명
 - [x] [[Bedrock-Agents-Action-Execution|Bedrock Agents 작업 실행]] — Agents Classic의 제공 범위, 작업 정의, Lambda와 RETURN_CONTROL, 사용자 확인과 멱등성
 - [x] [[LLM-API-Version-Migration|LLM API 버전과 SDK 마이그레이션]] — 날짜 기반 버전 고정, SDK 메이저와 기본 버전 헤더, 제거된 파라미터 검색, 요청 단위 분리와 재시도하지 않는 400
 - [x] [[Agent-Skills-Kiro#Kiro Steering: 포함 모드와 적용 범위|Kiro Steering 포함 모드]] — always, fileMatch, manual, auto의 로드 시점, workspace 우선과 AGENTS.md, custom agent의 기본 상속과 해제 설정
@@ -158,7 +160,7 @@ Software 3.0 패러다임, LLM과 에이전트, 하네스, 평가, 조직 전환
 - [x] [[AI-Work-Output-and-Employment#산출이 늘면 병목은 다음 단계로 옮겨 간다|산출 증가 뒤의 병목 이동]] — 사람의 주의, 개발 인프라, 리뷰와 수정 용량의 사례와 읽을 때의 경계
 - [x] [[Agent-Reverse-Engineering#하드웨어 프로토콜은 기준 드라이버의 버스 기록과 비교한다|하드웨어 역공학]] — Windows VM 패스스루와 usbmon 기록 비교, 실제 장치 판정과 upstream 관계
 - [x] [[Agent-Runtime-Deployment#일회용 샌드박스의 파일 상태를 트랜잭션으로 남기는 Tines 3B|샌드박스 파일 상태의 트랜잭션]] — 불변 스냅샷과 포인터, 포크, 같은 파일 충돌과 복구 시점의 한계
-- [x] [[Diffusion-Language-Models|확산 언어 모델]] — 마스크 확산 학습과 perplexity 상한, 단계별 확정과 remasking, 블록 확산의 가변 길이와 KV 캐시, 샘플러별 단계 수와 품질, Mercury 계열의 공개 범위
+- [x] [[Diffusion-Language-Models|확산 언어 모델]] — 마스크 확산 학습과 perplexity 상한, 단계별 확정과 remasking, 블록 확산의 가변 길이와 KV 캐시, 샘플러별 단계 수와 품질, Mercury 계열의 공개 범위, 수준별 생성(NCM)의 구조와 비교 조건
 - [x] [[Latent-Reasoning|잠재 추론]] — 은닉 상태를 다음 입력으로 되먹이는 연속 사고, 도구 호출과 가독성의 한계, HybridLink와 모드 전환, 잠재 벡터 교체 실험, 비용 추정의 조건과 공개 코드의 차이
 - [x] [[Time-Series-Foundation-Models|시계열 파운데이션 모델]] — zero-shot 예측, 21개 분위수와 pinball loss, fev-bench의 skill score와 누출 신고 규칙, 매출 기준 가중치 라이선스
 - [x] [[Model-Release-Claims|모델 발표 수치 읽기]] — 측정 주체, 비용과 캐시, 메모리와 라이선스, Carbon과 Mistral Large 4의 평가 및 제공 상태

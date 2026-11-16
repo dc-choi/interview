@@ -3,7 +3,7 @@ tags: [ai, llm, decision-model, classification, calibration]
 status: done
 verified_at: 2026-10-06
 category: "AI엔지니어링(AIEngineering)"
-aliases: ["LLM Decision Models Mechanics", "결정 모델 동작 원리", "결정 모델 질문 스키마", "System One Models"]
+aliases: ["LLM Decision Models Mechanics", "결정 모델 동작 원리", "결정 모델 질문 스키마", "System One Models", "Flide", "Exact State Forking"]
 ---
 
 # 결정 모델: 정의와 동작 원리
@@ -49,11 +49,22 @@ Jev 문서 기준으로 같은 요청의 질문은 서로 독립적으로, 병�
 
 Clef는 Qwen 기반 모델을 고정한 채 라우팅 헤드와 rank-256 LoRA 어댑터를 학습한 구조로, 입력을 한 번 처리(prefill)한 뒤 스키마가 허용한 선택지를 병렬로 채점한다. 결정 단계가 비자기회귀(non-autoregressive)라 토큰을 하나씩 만드는 디코드가 없다. 모델은 질문마다 허용된 선택지 하나당 logit 하나를 내고, 질문별 softmax로 확률을 만든다. 출력 길이만큼 늘어나는 디코드 구간([[LLM-Inference-Bottlenecks#프리필과 디코드는 병목이 다르다|프리필과 디코드]])을 건너뛰므로 비용과 지연은 주로 입력 크기를 따른다. 2026-10-06 확인 기준 Jev는 출력 토큰을 과금하지 않고, Workers AI 가격표도 Clef에 입력 토큰 단가만 둔다.
 
+### 자체 호스팅 엔진은 공통 state를 한 번만 처리한다
+
+같은 `state`에 질문 여러 개를 붙이면 공통 입력의 프리필을 한 번 계산하고, 그 시점의 모델 상태에서 질문마다 갈라 답할 수 있다. 2026-11-16 확인한 Flide(Apache-2.0) README는 이를 exact state forking으로 구현하며, 각 답이 그 질문만 단독으로 받았을 때의 답과 같다고 밝힌다. 위의 질문 간 독립성을 엔진에서 지키는 방식이고, `flide verify`로 자기 모델과 요청에서 이 동일성을 확인한다. Jev 형식의 `/v1/systemone` API를 제공하며 질문당 선택지는 256개까지 받는다.
+
+- **배수는 비교 기준과 모델마다 다르다:** 소개 문구는 vLLM과 SGLang보다 최대 9.5배 빠르다고 하지만, 성능표는 각 모델 배포본이 쓰던 엔진을 기준으로 H200 한 장에서 요청별 지연 중앙값을 비교한다. OneJev는 약 4.7~7.3배, Qwen3.5는 약 1.3~4.8배, Gemma 4와 Clef는 약 1.0~1.7배다. 같은 표에는 28.1배(Senova의 MultiRC)처럼 소개 문구보다 큰 값도 있어, 9.5배는 vLLM과 SGLang을 기준으로 한 값으로 읽는다. OneJev1.6-0.8B 예시는 이메일 1만 건에 질문 8개씩 답하는 데 28초가 걸렸다.
+- **이득의 조건:** 공통 입력이 길고 질문이 많을수록 아끼는 계산이 커진다. 입력마다 같은 질문 하나를 던지는 작업은 공통 부분이 질문 쪽에 있어 이득이 작을 수 있다(구조에서 도출한 추론). 자기 작업 형태로 따로 잰다.
+- **세션 캐시와 배치 불변 모드:** `--session-cache-gb`는 이전 요청의 상태를 보관해 에이전트의 다음 단계가 새로 붙은 부분만 읽게 한다. `--batch-invariant`는 함께 배치된 요청과 무관하게 같은 결과 비트를 내는 대신 속도를 일부 내준다. 확률 문턱을 회귀 시험하는 경로라면 켤지 정한다([[LLM-Inference-Serving-Engines#결정적 출력은 배치 불변성에서 출발한다|배치 불변성]]).
+
+수치는 프로젝트 팀의 측정이며 재현하지 않았다.
+
 ### 확률과 confidence 읽기
 
 - 보정(calibration)된 확률은 0.8을 받은 결과들이 약 80% 실제로 일어난다는 집단 수준의 성질이며 개별 답을 보장하지 않는다. TypeSafe는 보정된 확률을 내도록 학습하는 방법으로 RLCD(Reinforcement Learning for Calibrated Decisions)를 들고, Cloudflare는 유효한 스키마 출력을 label smoothing을 건 cross-entropy로 학습하고 Brier loss로 보정을 다듬으며, RLCD를 인접한 순서 선택지에 부분 점수를 주는 보조 최적화 목표로 쓴다. 이름은 같아도 두 학습에서 맡는 역할이 다르다. 그래도 보정은 학습 목표일 뿐이므로 자기 도메인에서 다시 측정한다([[LLM-Abstention|LLM Abstention]]).
 - Choice의 `confidence`는 최고 확률이 균등 분포 `1/n`보다 얼마나 위에 있는지를 0(균등)부터 1(확실)로 잰 `(p_max - 1/n) / (1 - 1/n)`이다. 선택지 3개에서 (0.6, 0.3, 0.1)과 (0.6, 0.2, 0.2)는 둘 다 0.4이므로 2등 후보와의 차이가 중요하면 `probabilities`를 직접 본다.
 - Score의 `confidence`는 가장 가능성 높은 단계에서 먼 단계에 실린 확률일수록 더 많이 깎인다. Noul은 `confidence`를 주지 않으며 필요하면 `|2p - 1|`을 쓰도록 안내한다.
+- 같은 이름의 confidence도 제공자마다 정의가 다르다. Gemini Decisions API 문서(2026-11-16 확인)는 최상위 답이 맞을 확률의 추정치로 정의해 choice와 score는 최상위 확률을, noul은 `max(p, 1 - p)`를 쓴다. 선택지 3개의 (0.6, 0.3, 0.1)은 위 TypeSafe 식으로 0.4지만 Gemini 정의로는 0.6이다. 제공자를 바꾸면 문턱을 다시 정한다([[LLM-Decision-Models-Use-Cases#Gemini Decisions API는 같은 질문 타입에 다른 계약을 둔다|Gemini Decisions API]]).
 
 ## 출처
 
@@ -72,6 +83,9 @@ Clef는 Qwen 기반 모델을 고정한 채 라우팅 헤드와 rank-256 LoRA �
 - [TypeSafe Docs, AI primer](https://docs.typesafe.ai/introduction/machine-learning-primer)
 - [TypeSafe Docs, How to build with TypeSafe](https://docs.typesafe.ai/concepts/how-to-build-with-system-one)
 - [TypeSafe Docs, Speculative fan-out](https://docs.typesafe.ai/patterns/fan-out)
+- [Flide — GitHub, OmniJev](https://github.com/OmniJev/Flide) — 2026-11-16 README의 state 분기, 성능표의 비교 기준, 세션 캐시와 배치 불변 옵션 대조
+- [Gemini API, Decisions API](https://aistudio.google.com/docs/decisions-api) — 2026-11-16 confidence 정의 대조
+- [Flide - Jev같은 의사결정 모델을 최대 9.5배 빠르게 실행 — GeekNews](https://news.hada.io/topic?id=36894)
 
 ## 관련 문서
 

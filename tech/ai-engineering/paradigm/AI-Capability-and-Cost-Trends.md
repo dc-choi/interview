@@ -85,7 +85,7 @@ GPT-6 Astra는 단가가 Opus 5.5의 2.5배지만 생성 토큰이 4분의 1에 
 ## 4. 오픈웨이트 모델과 사용량 점유율
 
 - **토큰과 지출은 다르다**: OpenRouter 자료에서 중국 오픈소스 모델의 주간 토큰 점유율은 2024-11~2025-11 평균 약 13%였다. 2026년 6월 초에는 중국 모델이 토큰 점유율에서 미국 모델을 앞질렀고, 2026-09-14 주에는 토큰의 69%가 중국 연구소 모델, 72%가 오픈웨이트 모델이었다. 원문이 9월 둘째 주라고 적은 주에는 지출의 73%가 클로즈드웨이트 모델에 갔다(2026-01-05 주는 89%). 모두 OpenRouter를 거친 사용량이며 시장 전체 점유율이 아니다. 점유율의 분모와 채널을 읽는 기준은 [[LLM-Market-Landscape|생성형 AI 시장 경쟁 구도]]를 따른다.
-- **능력 격차는 지표마다 다르다**: Epoch AI 능력 지수(ECI)로 보면 중국 모델은 2023년 이후 미국 프런티어보다 평균 7개월, 2026년 1월 이후의 최고 오픈웨이트 모델은 프런티어 클로즈드 모델보다 평균 4개월 뒤처졌다. Stanford HAI 2026 AI Index의 Arena 투표 기준으로는 2026년 3월 미국 최고 모델이 중국 최고 모델보다 2.7%, 최고 클로즈드 모델이 최고 오픈 모델보다 3.3% 앞섰다.
+- **능력 격차는 지표마다 다르다**: Epoch AI 능력 지수(ECI)는 50개가 넘는 벤치마크의 점수를 하나의 일반 능력 척도로 합친 지수이며, 벤치마크 난이도는 손으로 정하지 않고 모델 결과가 겹치는 부분에서 추정한다(2026-11-16 Epoch 페이지 확인). 이 지수로 보면 중국 모델은 2023년 이후 미국 프런티어보다 평균 7개월, 2026년 1월 이후의 최고 오픈웨이트 모델은 프런티어 클로즈드 모델보다 평균 4개월 뒤처졌다. Stanford HAI 2026 AI Index의 Arena 투표 기준으로는 2026년 3월 미국 최고 모델이 중국 최고 모델보다 2.7%, 최고 클로즈드 모델이 최고 오픈 모델보다 3.3% 앞섰다.
 - **성능과 가격을 비율로 묶은 요약**: Artificial Analysis는 2026-04-30 오픈웨이트 상위 세 모델(지수 52~54)이 선두 독점 모델(최고 60)과 비슷한 지능을 2분의 1에서 6분의 1 가격에 제공한다고 했고, 2026-10-12 지수(v4.3.2)에서는 오픈웨이트 최고 46, 전체 1위 58이었다. 지수 비율은 성능 비율로 정의된 지표가 아니고 지수 버전이 바뀌면 직접 비교할 수 없다.
 
 ## 5. 긴 소프트웨어 과제 수행 능력의 추세
@@ -174,6 +174,7 @@ METR는 사람 전문가가 걸리는 시간으로 잰 소프트웨어와 추론
 - [OpenAI API, Pricing](https://developers.openai.com/api/docs/pricing) — 2026-10-18 GPT-6 Astra 단가 대조
 - [Meta Model API, Pricing and rate limits](https://dev.meta.ai/docs/pricing-rate-limits) — 2026-10-18 Muse Wonder 단가 대조
 - [Muse Wonder: A Frontier Model For Personal & Professional AI Agents — Meta AI Research](https://research.meta.ai/blog/muse-wonder) — 2026-10-12
+- [Epoch Capabilities Index — Epoch AI](https://epoch.ai/benchmarks/eci) — 2026-11-16 지수의 구성 방식 확인
 - [Chinese AI models have lagged the US frontier by 7 months on average since 2023 — Epoch AI](https://epoch.ai/data-insights/us-vs-china-eci) — 2026-01-02
 - [Open models lag state-of-the-art closed models by 4 months — Epoch AI](https://epoch.ai/data-insights/open-closed-eci-gap) — 2026-05-29
 - [Measuring AI Ability to Complete Long Software Tasks — METR](https://metr.org/blog/2025-03-19-measuring-ai-ability-to-complete-long-tasks/) — 2025-03-19

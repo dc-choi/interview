@@ -172,6 +172,7 @@ XP(Extreme Programming)의 spike solution에도 같은 구분이 있다. spike�
 - [AI_POLICY.md — Ghostty, GitHub](https://github.com/ghostty-org/ghostty/blob/main/AI_POLICY.md) — 2026-11-09 공개와 이해 요구 확인. 에세이가 든 수락된 이슈 한정 조건은 현재 문서에서 찾지 못함
 - [Awesome repositories are no longer awesome — Erik Gahner Larsen](https://erikgahner.github.io/posts/2026/awesome-repositories-are-no-longer-awesome/) — 2026-11-05, 2026-11-09 대량 PR 사례와 거절 사유 대조
 - [No AI Slop: A Manifesto — GitHub Gist, dexhorthy 게시](https://gist.github.com/dexhorthy/4cc96f01be5b1208519e75dad250a948) — AIE Code Summit 2026 연사와 참석자 공동 작성, 2026-11-15 정의, 가치와 실천 원칙 대조
+- [No AI Slop 선언문 — GeekNews](https://news.hada.io/topic?id=37128) — 원문 링크는 공식 사이트 slopmanifesto.com, 2026-11-16 사이트 본문이 위 gist와 같은 가치와 원칙임을 확인
 - [How I use AI (Oct 2026) — Ben Stolovitz](https://ben.stolovitz.com/posts/how-use-ai-oct-2026/) — 2026-10-31, 2026-11-09 4,000줄 교체와 에이전트 코드 품질 서술 대조. 자기 보고
 
 ## 관련 문서

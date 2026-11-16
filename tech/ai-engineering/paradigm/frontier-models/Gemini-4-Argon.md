@@ -1,9 +1,9 @@
 ---
 tags: [ai, llm, gemini, model, evaluation, availability]
 status: done
-verified_at: 2026-10-27
+verified_at: 2026-11-16
 category: "AI엔지니어링(AIEngineering)"
-aliases: ["Gemini 4 Argon", "제미나이 4 아르곤"]
+aliases: ["Gemini 4 Argon", "제미나이 4 아르곤", "Gemini 4 Carbon", "Gemini 4 Hydrogen", "Antigravity Orchestrator"]
 ---
 
 # Gemini 4 Argon
@@ -12,7 +12,7 @@ aliases: ["Gemini 4 Argon", "제미나이 4 아르곤"]
 
 복잡한 코딩, 지식 업무, 멀티모달 이해와 방어적 보안 작업을 겨냥한 Google의 모델이다. 2026-09-30 발표됐으며, 발표 가격과 초기 접근 계획은 2026-10-01 확인 기준이다. 구독자 가용성은 아래에 2026-10-14 확인 내용을 별도로 적었다.
 
-장시간 작업을 이어가는 추론 능력과 실제 서비스에서 호출할 수 있는 조건은 따로 판단한다. 모델 발표를 일반 API 공개로 해석하면 안 된다.
+장시간 작업을 이어가는 추론 능력과 실제 서비스에서 호출할 수 있는 조건은 따로 판단한다. 모델 발표를 일반 API 공개로 해석하면 안 된다. 같은 세대의 Carbon과 Hydrogen, 두 모델을 오가는 Antigravity Orchestrator는 [[#Gemini 4 계열의 Carbon과 Hydrogen|아래 절]]에 둔다.
 
 ## 출력 한도와 긴 작업
 
@@ -89,6 +89,28 @@ aliases: ["Gemini 4 Argon", "제미나이 4 아르곤"]
 - **할인 기한**: Standard 단가는 100만 토큰당 입력 $2, 출력 $10(사고 토큰 포함)이 2026-11-30까지이고, 2026-12-01부터 입력 $4, 출력 $20이다. 캐시 입력은 같은 날 $0.10에서 $0.20으로 바뀌며 암시적 캐싱만 지원하고 명시적 캐싱은 지원하지 않는다. Batch와 Flex는 입력 $1, 출력 $5에서 $2, $10으로 바뀐다. 무료 등급에서는 쓸 수 없다. 9월 발표의 도입 가격과 종료 후 가격이 이 기한과 함께 가격표에 올라간 것이므로, 12월 이후 예산은 바뀐 단가로 계산한다.
 - **Google Cloud 경로**: 2026-10-13 릴리스 노트는 `gemini-4-argon`과 방어적 사이버 보안용 `gemini-4-argon-cyber-permissive`를 GA로 적고, 후자는 Fairwind Program 허용 목록 뒤에 둔다. 알려진 문제로 `continuation_token`을 쓰는 long decode는 `v1beta1` API에서만 지원하고 `v1`에서는 지원하지 않는다고 적는다. long decode를 쓰는 경로는 호출하는 API 버전까지 확인한다([[LLM-API-Version-Migration|LLM API 버전과 SDK 마이그레이션]]).
 
+## Gemini 4 계열의 Carbon과 Hydrogen
+
+2026-11-16에 Google 발표, Gemini API 변경 이력과 가격표, Artificial Analysis 페이지를 대조했다. 이 대조로 `verified_at`을 갱신했으며, 이날 가격표의 Argon 단가와 기한은 위 절과 같았다. 위 성능표와 평가 방법론은 다시 대조하지 않았다.
+
+| 모델 | Google이 밝힌 위치 | API 상태와 단가(100만 토큰당, 2026-11-16 가격표) |
+|---|---|---|
+| Gemini 4 Carbon (`gemini-4-carbon`) | Argon 위의 최상위. 사이버 보안, 장기 에이전트 작업, 소프트웨어 엔지니어링과 과학 추론 | 2026-11-10 GA, 무료 등급 없음. Standard 입력 $2, 출력 $10(사고 토큰 포함)은 2026-11-30까지이고 12월 1일부터 $4, $20. 캐시 입력은 같은 날 $0.10에서 $0.20(암시적 캐싱만). Batch와 Flex는 Standard의 절반, Priority는 1.8배 |
+| Gemini 4 Argon (`gemini-4-argon`) | 대부분의 소프트웨어 엔지니어링과 지식 업무 | Carbon과 같은 등급별 단가와 기한. 초대제 비공개 프리뷰인 Contributor 등급(입력 $1, 출력 $5, 사용분이 제품 개선에 쓰일 수 있음)도 표시 |
+| Gemini 4 Hydrogen (`gemini-4-hydrogen`) | 일상 작업용 단독 모델이자 Carbon, Argon과 짝을 이루는 실행 엔진 | 2026-11-12 GA. 무료 등급에서 입력, 출력과 캐시를 무료로 표시하고 그 사용분은 제품 개선에 쓰일 수 있다고 적음. 유료 입력 $1.50, 출력 $7.50, 캐시 입력 $0.075이고 Batch와 Flex는 절반, Priority는 1.8배. 특별가 기한과 프롬프트 길이 구간 없음 |
+
+- **같은 단가, 다른 토큰 수**: Carbon은 Argon과 단가가 같지만 Google은 Carbon이 더 철저히 탐색하고 검증 루프를 길게 돌리느라 Argon보다 토큰을 더 쓴다고 적는다. 둘 사이의 선택은 단가가 아니라 같은 과업의 토큰 수, 성공률과 과업당 비용으로 한다([[Model-Release-Claims#비용 절감률은 단가, 토큰 수, 과업당 비용으로 나눈다|과업당 비용]]). CursorBench 4.0, WANDR, AutomationBench 1위와 차순위 외부 모델보다 과업당 비용이 절반 미만이라는 주장은 Google 발표이며, 비교 모델과 추론 설정은 이 발표에서 확인하지 못했다.
+- **제공 경로**: Carbon은 GA 2주 전 Fairwind Program의 사이버 방어자에게 먼저 열렸다. GA와 함께 유료 Gemini API 개발자 전체, 유료 기업 고객과 Google AI Ultra 구독자(Antigravity, Gemini 앱, 검색 AI Mode)로 넓어졌고, 과학자는 신청을 받아 자격, 용량과 선정 심사를 거쳐 Argon과 Carbon을 6개월 무료로 쓰게 한다. Hydrogen은 AI Studio 전 등급과 Antigravity의 유료 Pro, Ultra 구독자에게 열리고, Gemini 앱의 무료 사용자는 자동 모델 선택을 통해 쓴다고 각주에 적는다. 변경 이력은 Hydrogen을 Gemini Managed Agents의 Antigravity 에이전트 기본 모델로 적는다.
+- **Hydrogen의 사고 수준과 발표 수치**: 사고 수준은 low, medium, high(기본)와 새로 생긴 xhigh다. Google은 Artificial Analysis Intelligence Index에서 기본 high가 Argon(50점)을 넘는다고 적었고, 2026-11-16 Artificial Analysis 페이지(v5.0.1)도 High 51점, Xhigh 54점을 보인다. 같은 페이지에서 Xhigh는 지수 평가에 출력 토큰 3억 400만(High 1억 1천만)을 썼고 과업당 비용은 $3.16이다. Terminal-Bench 4.1의 57%(Gemini 3.8 Flash 18.2%)는 하네스를 밝히지 않았고, 3.8 Flash보다 작업을 2.5배 빨리 끝낸다는 주장과 파트너 시험의 2~2.8배 속도, 12~23% 토큰 감소에는 초당 토큰 수와 측정 조건이 없다. 발표의 검색 비교 이미지는 비교 대상을 Gemini 3.5 Flash로 표기해 본문(3.8 Flash)과 어긋난다.
+
+### Antigravity Orchestrator: 한 작업 안에서 모델을 오간다
+
+Orchestrator(2026-11-12)는 Antigravity의 모델 선택지 하나로, 첫 프롬프트로 모델 하나를 골라 작업 전체를 맡기는 정적 라우터가 아니라 한 작업 궤적 안에서 Carbon과 Hydrogen 사이를 양방향으로 오간다고 소개된다. Antigravity 블로그가 예로 든 흐름은 Carbon이 읽기 전용 단계에서 의존성을 살피고 모호함을 풀어 재계획 조건을 명시한 계획을 세우면, Hydrogen이 편집, 패키지 갱신과 테스트 실행을 넘겨받고, Hydrogen이 막히면 Carbon이 상태를 점검해 계획을 고친 뒤 실행을 잇는 것이다. 블로그는 이 흐름을 할 수 있다는 형태로만 설명하며 전환 판단 기준, 결과 검증과 사람 승인 지점은 밝히지 않는다. 큰 작업을 여러 worktree의 병렬 에이전트 팀으로 나누는 `/swarm`과는 별개 기능이다.
+
+- **수치의 조건**: Carbon에 가까운 성공률을 평균 할당량 24% 적게, 19% 빠르게 냈다는 같은 수치를 Google 블로그는 Terminal-Bench 4.0, Antigravity 블로그는 Terminal-Bench 4.1의 결과로 적고, 비교 기준선도 밝히지 않는다. 판 표기가 엇갈리는 동안은 다른 모델의 점수와 비교하지 않는다. 구독 할당량의 감소이므로 API 비용 절감률로 옮기지 않는다.
+- **제공 범위**: Google AI Ultra 구독자는 Orchestrator(Carbon)와 Orchestrator(Argon)를, 유료 Pro 구독자는 Orchestrator(Argon)를 쓰고, 기업은 Gemini for business로 쓴다. Argon 변형이 어느 모델과 오가는지와 프리뷰인지 GA인지는 블로그에 없다.
+- **일반화**: 계획과 재계획은 상위 모델, 실행은 하위 모델이 맡고 막히면 위로 되돌리는 구성은 [[LLM-Model-Tiers#티어별 역할 분리와 상호 검토|티어별 역할 분리]]의 에스컬레이션을 한 세션 안에서 자동화한 형태다. 모델 전환에 따른 캐시 재사용 조건은 발표에 없으므로 자기 작업의 사용량으로 확인한다(적용 제안).
+
 ## 출처
 
 - [Gemini 4 Argon: our next era of frontier intelligence — Google](https://blog.google/innovation-and-ai/models-and-research/gemini-models/gemini-4-argon/)
@@ -99,8 +121,15 @@ aliases: ["Gemini 4 Argon", "제미나이 4 아르곤"]
 - [Gemini 4 Argon is now available for developers — Google](https://blog.google/innovation-and-ai/technology/developers-tools/build-with-gemini-4-argon/)
 - [Gemini 4 Argon: Built to solve your hardest problems — Google](https://blog.google/intl/en-in/products/introducing-gemini-4-argon/)
 - 사용자 제공 GeekNews 발췌: 2026-10-14 정식 출시, 2026-10-15 로봇 제어와 시뮬레이션 활용. 기존 가격과 전체 성능표를 다시 검증하지 않아 그때는 문서 전체 검증일을 유지했다.
-- [Gemini API Changelog — Google AI for Developers](https://ai.google.dev/gemini-api/docs/changelog) — 2026-10-13 GA 항목, 2026-10-27 확인
-- [Google AI for Developers, Gemini Developer API pricing](https://ai.google.dev/gemini-api/docs/pricing) — 2026-10-27 할인 기한, 캐시, Batch와 Flex 단가 확인
+- [Gemini API Changelog — Google AI for Developers](https://ai.google.dev/gemini-api/docs/changelog) — 2026-10-13 GA 항목, 2026-10-27 확인. 2026-11-16에는 aistudio.google.com/docs/changelog로 옮겨진 주소에서 2026-11-10 Carbon과 2026-11-12 Hydrogen의 GA 항목, Hydrogen의 사고 수준과 Antigravity 기본 모델 지정 확인
+- [Google AI for Developers, Gemini Developer API pricing](https://ai.google.dev/gemini-api/docs/pricing) — 2026-10-27 할인 기한, 캐시, Batch와 Flex 단가 확인. 2026-11-16에는 aistudio.google.com/docs/pricing으로 옮겨진 주소에서 Carbon, Argon, Hydrogen의 등급별 단가와 기한 확인
+- [Gemini 4 Carbon is now available — Google](https://blog.google/innovation-and-ai/models-and-research/gemini-models/gemini-4-carbon-now-available/) — 2026-11-10, 제공 경로, 특별가 각주, 토큰 사용량 설명과 공급사 벤치마크 주장
+- [Introducing Gemini 4 Hydrogen — Google](https://blog.google/innovation-and-ai/models-and-research/gemini-models/introducing-gemini-4-hydrogen/) — 2026-11-12 게시(11-13 갱신), 위치, 제공 범위, 사고 수준, 발표 수치와 Orchestrator 수치(Terminal-Bench 4.0 표기)
+- [Gemini 4 Hydrogen and Orchestrator — Google Antigravity](https://antigravity.google/blog/gemini-4-hydrogen-in-google-antigravity/) — 2026-11-12, Orchestrator의 전환 흐름, 제공 범위와 수치(Terminal-Bench 4.1 표기)
+- [Gemini 4 Hydrogen Intelligence, Performance & Price Analysis — Artificial Analysis](https://artificialanalysis.ai/models/gemini-4-hydrogen) — 2026-11-16 열람, 사고 수준별 지수, 출력 토큰과 과업당 비용
+- [Google, 복잡한 코딩과 연구를 위한 Gemini 4 Carbon 일반 공개 — GeekNews](https://news.hada.io/topic?id=36950) — 학습 계기
+- [Gemini 4 Hydrogen - 일상적인 코딩과 에이전트 작업을 위한 빠른 실행 모델 — GeekNews](https://news.hada.io/topic?id=37068) — 학습 계기
+- [Google Antigravity에 Orchestrator 추가, 코딩 중 Carbon과 Hydrogen 자동 전환 — GeekNews](https://news.hada.io/topic?id=37077) — 학습 계기
 - [Gemini Enterprise Agent Platform release notes — Google Cloud](https://docs.cloud.google.com/gemini-enterprise-agent-platform/release-notes) — 2026-10-13 GA, Cyber Permissive 허용 목록, long decode의 API 버전 제한
 - 사용자 제공 알림: 긱뉴스 GeekCast의 오늘의 긱뉴스(2026.10.13~10.17) 영상. 학습 계기이며 영상은 열람하지 않았고, 정식 제공 사실은 위 공식 문서로 대조했다.
 

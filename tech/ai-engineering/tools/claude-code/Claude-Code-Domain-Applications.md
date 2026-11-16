@@ -67,6 +67,29 @@ claude plugin install equity-research@claude-for-financial-services
 - **사본 관리**: 에이전트 플러그인에는 쓰는 스킬의 동기화 사본이 들어 있어 스킬을 따로 설치할 필요가 없다. `scripts/sync-agent-skills.py`가 원본 변경을 사본에 전파하고, `scripts/check.py`는 매니페스트 검사와 파일 간 참조 확인에 더해 사본이 원본에서 벗어나면 실패한다. README는 푸시 전에 이 검사를 돌리라고 안내하지만 확인한 pre-commit 훅과 GitHub Actions 워크플로우는 check.py를 부르지 않아 drift 검사는 수동 실행에 기댄다. 관리형 런타임 cookbook도 같은 에이전트 플러그인의 사본을 참조하므로, 확인할 drift는 원본과 사본 사이, 저장소와 `/v1/skills`에 올린 스킬 사이에 있다(설계 점검)
 - **관리형 런타임 배포**: cookbook과 배포 스크립트로 같은 에이전트를 Claude Managed Agents에 올릴 때의 권한 배치, 인계 신호와 API 필드 차이는 [[Agent-Runtime-Deployment#플러그인 스킬을 관리형 런타임으로 옮기는 Claude Managed Agents|에이전트 런타임과 배포]]에서 다룬다. 도구 설정상의 에이전트별 분리는 같은 샌드박스와 파일시스템, 원문을 직접 읽으라는 오케스트레이터 프롬프트 때문에 격리로 이어지지 않는다
 
+## 역할별 지시 파일과 승인 지점으로 나눈 콘텐츠 제작 사례
+
+코드를 쓰지 않는 직장인이 영상 제작 흐름을 작업 폴더 하나에 구성한 사례다(2026-10 제작자 자체 공개이며 결과와 소요 시간은 대조하지 못했다).
+
+- **채팅과 달라지는 지점**: 채팅은 답을 주고, 옮기고 확인하고 다음 지시를 내리는 일은 사람이 한다. 작업 폴더에 채널 주제, 판단 기준, 지난 결과를 파일로 두면 에이전트가 그것을 읽고 시작하고, 결과를 파일로 남겨 다음 단계가 이어받는다.
+- **구성 요소**: 사용자가 말하는 단일 창구, 그 창구가 일을 넘기는 역할별 에이전트, 역할마다 읽을 자료와 만들 것과 확인받을 곳을 적은 지시 파일, 공통 규칙 파일(쉬운 말로 설명, 파일 삭제 금지, 게시와 결제는 먼저 묻기)로 이뤄진다.
+- **승인 지점**: 조사 결과와 대본 단계에서 사람이 승인해야 다음 단계로 넘어간다. 제작자는 지시 한 번과 승인 두 번이라고 밝혔지만 승인 사이에 수정 요청이 여러 번 있었다고도 말했다.
+- **교차 검토**: 조정 역할과 다른 모델을 검토 역할로 두어 판단이 한쪽으로 쏠리는 것을 견제한다.
+- **수정의 축적**: 결과가 마음에 들지 않을 때 고친 내용을 지시 파일에 반영해 다음 실행에 남긴다. 처음부터 맞게 돌아가지 않는다는 점을 전제로 한다.
+
+역할 수는 성과의 근거가 아니다. 이 사례의 역할 23개는 지시 파일의 개수이고 제작자도 처음에는 3개로 시작하라고 권한다. 역할이 늘수록 드는 조정 비용은 [[Multi-Agent-Coordination-Cost|멀티 에이전트 조정 비용]]에서 다룬다. 다른 영상의 주제와 구조를 참고하는 단계는 저작권과 플랫폼의 반복 콘텐츠 정책을 따로 확인한다.
+
+## 에이전트에게 관찰 장치를 붙인 물리 문제 사례
+
+Simon Willison은 이삿짐 상자로 가득한 방에서 간헐적으로 울리는 삐 소리의 위치를 Claude Code로 만든 도구로 찾았다(2026-11-09 개인 블로그, 저자 보고이며 재현하지 않음).
+
+- **구성**: 노트북의 Python 웹 서버가 화면을 띄우고, 휴대폰, 태블릿과 노트북 여러 대가 브라우저 WebAudio로 마이크를 열어 WebSocket으로 접속한다. 각 기기는 최근 60초의 소리를 보관하고 FFT와 고역 통과 필터로 삐 소리 후보를 찾는다.
+- **시각 맞추기**: 후보가 보고되면 서버는 왕복 지연이 가장 짧은 기기에 짧은 chirp를 재생시키고, 모든 기기가 삐 소리 직전부터 chirp 직후까지의 구간을 올린다. chirp로 기기별 녹음을 정렬한 뒤 소리가 도착한 시각 차이와 기기 간 소리 크기 차이(약 6dB 크면 거리가 대략 절반)로 위치를 좁힌다.
+- **사람의 몫**: 기기끼리 서로의 위치를 자동으로 추정하는 방식이 잘 되지 않아 사람이 지도에 기기를 대략 놓는 모드를 더했다. 서버가 새 JavaScript 모듈을 WebSocket으로 보내 기기의 코드를 바꿔 끼우므로 기기마다 마이크 권한을 다시 승인하지 않았다.
+- **결과와 한계**: 약 40cm 범위로 좁혀 배터리를 갈아야 하는 오래된 일산화탄소 경보기를 찾았다. 화면은 물리적으로 불가능한 도착 시각(메아리나 다른 소리)을 경고하며, 기기 수와 배치가 정확도를 제한한다.
+
+모델에 마이크가 없어도 실행할 수 있는 코드가 센서 입력을 숫자로 바꾸면 에이전트가 물리 세계의 문제를 관찰하고 반복할 수 있다. 사람은 장치를 놓고 방향을 정하며, 결과에 붙은 불확실성 경고는 사람이 판단한다(이 사례에서 도출한 적용 제안).
+
 ## 체크포인트
 
 - 전문 도구(FFmpeg, statsmodels)를 사용자가 몰라도 Claude가 다룰 수 있게 위임하는가
@@ -89,6 +112,9 @@ claude plugin install equity-research@claude-for-financial-services
 - [Claude Platform Docs, Claude Managed Agents overview](https://platform.claude.com/docs/en/managed-agents/overview)
 - [Claude Platform Docs, Multiagent orchestration](https://platform.claude.com/docs/en/managed-agents/multiagent-orchestration)
 - [Claude Code Docs, Extend Claude with skills](https://code.claude.com/docs/en/skills)
+- [AI 에이전트, 진작 만들어볼걸 — YouTube, AI 비밀무기](https://www.youtube.com/watch?v=urlbNkusl1Q) — 2026-10-25 업로드, 2026-11-16 음성 인식 전사 전체 확인. 콘텐츠 제작 사례의 출처. 모델 비교와 요금 관련 발언은 음성 인식이 불명확하고 시점에 따라 달라 넣지 않음
+- [Locating the source of a mysterious beep with Claude — Simon Willison's Weblog](https://simonwillison.net/2026/Nov/9/mysterious-beeps/) — 2026-11-09 게시, 2026-11-16 원문 대조. 장치 구성, chirp 정렬, 수동 배치와 결과의 출처
+- [정체불명의 삐 소리가 나는 위치 찾기 — GeekNews](https://news.hada.io/topic?id=36936) — 학습 계기
 
 ## 관련 문서
 

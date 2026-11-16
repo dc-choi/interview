@@ -3,12 +3,12 @@ tags: [ai, llm, decision-model, routing]
 status: done
 verified_at: 2026-10-06
 category: "AI엔지니어링(AIEngineering)"
-aliases: ["LLM Decision Models Use Cases", "결정 모델 활용", "OpenAI Decisions API"]
+aliases: ["LLM Decision Models Use Cases", "결정 모델 활용", "OpenAI Decisions API", "Gemini Decisions API", "Strands Decider"]
 ---
 
 # 결정 모델: 활용 예시
 
-선택지가 닫혀 있고 입력만으로 판정할 수 있는 분기, 라우팅, 모더레이션과 RAG 보조에 결정 모델을 쓰는 방법과 confidence 문턱, 도구 기록 선별 압축, OpenAI Decisions API의 계약을 다룬다. Jev와 Clef의 가격, 지연과 정확도 비교는 [[LLM-Decision-Models-Comparison|모델 비교, 한계와 운영 체크포인트]]에 있다. 상위: [[LLM-Decision-Models|결정 모델]].
+선택지가 닫혀 있고 입력만으로 판정할 수 있는 분기, 라우팅, 모더레이션과 RAG 보조에 결정 모델을 쓰는 방법과 confidence 문턱, 생성형 LLM 분류를 옮긴 전환 사례, 도구 기록 선별 압축, OpenAI와 Gemini Decisions API의 계약을 다룬다. Jev와 Clef의 가격, 지연과 정확도 비교는 [[LLM-Decision-Models-Comparison|모델 비교, 한계와 운영 체크포인트]]에 있다. 상위: [[LLM-Decision-Models|결정 모델]].
 
 ## 예시: 어디에 쓰는가
 
@@ -43,6 +43,24 @@ Noul의 문턱도 오판 비용으로 정한다. 예와 아니오의 처리 비�
 
 로컬 실행 가능성은 운영 비용이 없다는 뜻이 아니다. 모델 호스팅과 라우팅을 포함한 전체 지연, 자원 사용량과 업무 성공률을 측정한다. 여기서는 공개 계약만 대조했으며 모델 실행이나 포커 실력, 비용 절감 효과를 검증하지 않았다.
 
+### 생성형 LLM 분류를 결정 모델로 옮긴 사례
+
+2026-11-09 Strands Agents 블로그 기준, Amazon과 AWS 팀은 내부 티켓 시스템에서 Claude Sonnet 4.6이 JSON으로 내던 20개 범주 라벨을 Strands Decider로 옮겼다. 처음 쓴 2B 대신 시험 티켓에서 더 나았던 Gemma 4 기반 E4B를 골랐고, 라벨 적용 문턱을 조정한 뒤 별도 티켓 집합에서 운영 중인 Sonnet보다 좋은 결과를 냈다고 밝힌다. 평가 집합의 크기, 지표와 점수는 공개하지 않았다.
+
+- **입력을 모델 한도에 맞춘다:** 기존 라벨 설명만으로 4,096토큰 문맥을 넘어 20개 라벨을 한두 문장의 판정 기준으로 다시 쓰고, 단일 choice 질문에 `none` 선택지를 더했다. 긴 티켓은 가장 오래된 댓글부터 잘라 넣으므로 잘린 부분에 근거가 있으면 정보가 빠진다.
+- **세 단계로 전환한다:** 분류 Lambda가 메시지마다 AppConfig에서 `BEDROCK`(Sonnet만), `DUAL`(두 모델을 병렬 호출하고 Sonnet 결과만 적용하며 비교), `DECIDER`(Decider만)를 읽는다. 실제 트래픽의 불일치를 검토해 오프라인 평가보다 많은 정보를 얻었고, 되돌리는 데는 설정 변경 45초가 걸렸다고 밝힌다. 모델 종류와 무관하게 재사용할 수 있는 섀도 실행 방식이다.
+- **직렬화 순서도 확률을 바꾼다:** 내용이 같아도 JSON 키 순서가 다르면 출력 확률이 최대 0.19 달라져 모든 요청의 키를 정렬해 보낸다. 선택지 순서처럼 입력 순서를 회귀 시험 항목에 넣는다.
+
+| 항목 (블로그 공개값) | Sonnet 4.6 | Decider E4B |
+|---|---|---|
+| 호출당 평균 시간 | 4,215ms | 897ms |
+| 티켓당 입력, 출력 토큰 | 6,554, 170 | 2,009, 1 |
+| 티켓당 비용 | 약 $0.0222 | 약 $0.0005 |
+
+비용은 us-east-1 공개 정가 기준이다. Sonnet은 Bedrock 글로벌 엔드포인트의 토큰 단가(입력 100만 토큰당 $3, 출력 $15)로, Decider는 SageMaker `ml.g5.xlarge`(A10G 1장, 시간당 $1.408)의 가동 시간으로 계산했다. 요청당 약 640ms라 완전 가동하면 100만 건당 약 $250이지만 급증에 대비한 여유를 두어 약 $500로 잡았고 Lambda 비용은 뺐다. 토큰 과금이 인스턴스 시간 과금으로 바뀌므로 절감액은 가동률에 달려 있다([[LLM-Cost-Optimization#오픈 웨이트 소형 모델을 직접 서빙할 때|직접 서빙 비용]]). 연간 수백만 달러를 아낀다는 전망은 티켓 물량을 공개하지 않아 검증할 수 없다. 100만 건당 차이가 약 $21,700이므로 연 100만 달러를 아끼려면 연간 약 4,600만 건이 필요하다(계산).
+
+작성 팀이 든 적용 조건은 닫힌 목록에서 고르고, 처리량이 높고, 기존 경로의 지연이 중요한 작업이다. 라벨에 설명문이 필요하거나 목록이 매주 바뀌거나 유용한 문맥을 수천 토큰 안에 담을 수 없으면 대체하기 어렵다고 본다. 사례 수치는 작성 팀의 보고이며 재현하지 않았다.
+
 ### 도구 기록을 선별하는 압축
 
 결정 모델은 요약문을 새로 쓰는 대신 도구 호출과 결과를 남길지 고를 수 있다. `fast-jev-compaction`의 공개 README에서 확인한 설계(2026-10-06)는 호출과 결과를 ID로 짝지은 뒤, 호출 보존과 결과 원문 보존을 각각 `noul`로 묻는다. 결과를 남기거나, 호출과 결과 앞부분만 남기거나, 둘을 함께 제거한다. 첫 메시지와 최근 메시지는 보호하며 출력의 사용자, 어시스턴트 텍스트는 유지한다.
@@ -71,6 +89,18 @@ Noul의 문턱도 오판 비용으로 정한다. 예와 아니오의 처리 비�
 - **비용 구조:** 비캐시 입력은 100만 토큰당 $0.10이고 출력 토큰은 과금하지 않는다. 캐시 히트는 할인되고 캐시 쓰기는 과금되며, 재사용할 공통 접두부는 1,024 토큰 이상이어야 하고, 질문 내용은 이 최소 길이에 포함되지 않는다. 지역 처리 할증과 긴 문맥 입력 배수도 적용된다(2026-10-26 가이드 기준). 질문 상한이 늘어 같은 근거를 공유하는 질문을 한 요청에 더 많이 묶을 수 있으므로, 질문 분할과 캐시 재사용을 함께 따져 입력 토큰을 비교한다.
 - **지연 주장에는 조건이 없다:** 가이드는 Responses API보다 typed answer를 약 10배 빠르게 돌려준다고만 밝히고 측정 조건을 공개하지 않는다. 자기 경로에서 네트워크와 라우터를 포함한 전체 지연을 잰다.
 
+### Gemini Decisions API는 같은 질문 타입에 다른 계약을 둔다
+
+2026-11-11 Google 발표와 2026-11-16 확인한 문서 기준이다. `gemini-decision-1`로 `POST https://generativelanguage.googleapis.com/v1beta/decisions`를 호출하며(SDK의 `api_version`도 `v1beta`), 문서에는 preview나 GA 표기가 없다. 질문 타입 이름(`noul`, `choice`, `score`)은 Jev와 같지만 교체할 때 다시 확인할 계약이 있다.
+
+- **입력:** 공유 근거는 `input`(문자열이나 Content 블록), 질문은 1~1,000개의 `questions` 맵이다. 텍스트, JSON, 이미지, 오디오, 비디오와 PDF를 한 입력에 섞을 수 있고, 문맥은 입력과 모든 질문을 합쳐 262,144토큰이다. 대화 이력, thought와 도구 호출 블록은 받지 않으므로 여러 턴의 맥락은 텍스트로 직렬화한다.
+- **confidence와 확률 범위:** confidence는 최상위 답이 맞을 확률의 추정치라 [[LLM-Decision-Models-Mechanics#확률과 confidence 읽기|TypeSafe의 정의]]와 척도가 다르다. noul 확률은 0.01~0.99 범위로 나온다.
+- **선택지 키:** choice 선택지는 2~255개이며 키를 UTF-8 바이트 순으로 정렬하고 동률이면 앞선 키를 고른다. 문서는 해당 없음 선택지에 `none_of_the_above` 대신 위치와 무관한 `other` 같은 키를 권한다.
+- **차단 처리:** 입력이 안전 필터에 걸리면 질문별 답 대신 HTTP 400 오류(`safety`, `prohibited_content`, `blocklist`, `image_safety`, `content_blocked`)를 돌려준다. OpenAI의 질문별 `refusal`과 달리 요청 전체가 실패하므로 재시도와 폴백을 요청 단위로 설계한다.
+- **비용과 지연:** 입력 100만 토큰당 $0.10이고 출력 토큰은 과금하지 않으며, 공유 입력은 질문 수와 관계없이 요청당 한 번 과금한다. 컨텍스트 캐싱, Batch API와 Flex/Priority 추론은 지원하지 않아 반복 입력도 매번 전부 과금된다. Google은 16K 토큰 이하 문맥에서 종단 간 150~250ms(모델 연산 중앙값 50~100ms)이고 질문이 1개에서 100개로 늘어도 거의 같다고 밝히며, 같은 벤치마크 묶음에서 Interactions API의 Gemini 3.5 Flash-Lite보다 약 5배 싸다고 주장한다. 그 벤치마크의 점수와, 성능을 견준 다른 모델의 이름은 발표 본문에 없다.
+
+문서의 작성 권장은 [[LLM-Decision-Models-Comparison#한계|Jev 1.13의 약점]]과 겹친다. 숫자와 날짜 비교는 코드에서 계산해 입력에 넣고, 부정형 대신 긍정형으로 묻고, 점수 척도는 선형으로 둔다.
+
 ## 출처
 
 - [Strands Decider README — Strands Labs](https://github.com/strands-labs/strands-decider) — 2026-10-28 CLI와 HTTP 입력, 질문별 출력 예시와 pointer head 구조 확인. 공개 벤치마크 수치를 실제 업무 성능으로 옮기지 않았다.
@@ -87,6 +117,11 @@ Noul의 문턱도 오판 비용으로 정한다. 예와 아니오의 처리 비�
 - [TypeSafe Docs, How to build with TypeSafe](https://docs.typesafe.ai/concepts/how-to-build-with-system-one)
 - [TypeSafe Docs, Confidence-gated routing](https://docs.typesafe.ai/patterns/confidence-routing)
 - [TypeSafe Docs, Cookbooks](https://docs.typesafe.ai/cookbooks)
+- [Amazon saves millions by replacing Sonnet 4.6 with Strands Decider — Strands Agents](https://strandsagents.com/blog/amazon-saves-millions-replacing-sonnet-with-strands-decider/) — 2026-11-09 게시. 2026-11-16 전환 단계, 입력 변경, 지연과 토큰, 비용 계산 조건 대조
+- [Gemini Decisions API: Fast, calibrated multimodal decisions — Google](https://blog.google/innovation-and-ai/technology/developers-tools/gemini-decisions-api/) — 2026-11-11 게시. 가격, 지연 조건과 비용 비교 주장 대조
+- [Gemini API, Decisions API](https://aistudio.google.com/docs/decisions-api) — 2026-11-16 요청과 응답, 한도, 차단 오류와 작성 권장 대조
+- [Amazon, Sonnet 4.6을 Strands Decider로 대체해 수백만 달러 절감 — GeekNews](https://news.hada.io/topic?id=36935)
+- [Gemini Decisions API - 입력 하나에 최대 1,000개 질문을 평가하는 멀티모달 API — GeekNews](https://news.hada.io/topic?id=37011)
 
 ## 관련 문서
 

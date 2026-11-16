@@ -47,6 +47,16 @@ AI가 후보 실험을 많이 생성하거나 시뮬레이션하는 능력은 �
 
 같은 인터뷰는 2026년 여름 에이전트의 Hugging Face 침입을 1979년 Three Mile Island 사고에 빗댄 경고로 보고, 출시 전에 독립 기관에 해보다 이익이 크다는 통계적 근거를 내게 하는 의약품 심사 같은 제도를 제안했다. 사건의 기술적 경위는 [[Agent-Swarm-Containment|에이전트 군집 격리]], 독립 감독 제안을 판별하는 질문은 [[AI-Frontier-Regulation-Debate|프론티어 AI 규제 논쟁]]에서 다룬다. 발언자의 권위와 별개로 예측은 기한이 지난 뒤 판정 기준에 맞춰 다시 확인한다.
 
+### 질병 정복 시한은 임상 검증 단계와 함께 읽는다
+
+2026-11-10 Anthropic이 공개한 42분 분량의 상장 설명 영상에서 Anthropic CEO는 암, 알츠하이머, 심장병, 정신질환이 10년이 안 돼 과거의 일이 될 것이라고 말했다. 영상 원본과 전사는 열지 못했고 보도와 인용으로 확인한 발언이다. 일라이 릴리 CEO는 그렇게 되면 놀랍겠지만 가능성은 낮다고 하면서, 생물학의 지도는 아직 대부분 빈 페이지이고 사람을 대상으로 한 무작위 검증이 가장 오래 걸리는 단계라고 답했다. AI 활용에는 기대하지만 진전은 꾸준하고 점진적일 것이라고도 했다(Marcus 글이 옮긴 X 게시물로 확인).
+
+| 발언의 대상 | 발언의 시점과 규모 | 확인해야 할 조건 |
+|---|---|---|
+| 주요 질환이 과거의 일이 됨 | 2026-11 발언, 10년 미만 | 질환마다 완치, 만성 관리, 발병 예방 가운데 무엇을 판정 기준으로 삼는지, 후보 발굴이 아니라 무작위 임상시험과 승인에 걸리는 기간, 정신질환처럼 생물학적 기전과 측정 지표가 불분명한 영역 |
+
+반론의 구조는 위의 [[#가속 전망을 검토하는 법|가속 전망 검토]]와 같다. AI가 후보 물질과 실험 설계를 빠르게 내도 사람 대상 시험은 건너뛸 수 없는 단계로 남는다는 것이 위 반론의 요지다. 발언이 투자자를 겨냥한 상장 설명 영상에서 나왔다는 맥락도 함께 기록하고, 기한이 지난 뒤 질환별 판정 기준으로 다시 확인한다.
+
 ## 능력 확장의 서로 다른 층
 
 - 도구 사용: 외부 시스템에서 검색, 초안 작성, 계산과 제작을 지원받는다.
@@ -101,6 +111,9 @@ AI의 후보물질 탐색, 디지털 생물학과 체내 나노기계가 질병�
 - [An instantaneous voice-synthesis neuroprosthesis — Maitreyee Wairagkar 외, Nature](https://www.nature.com/articles/s41586-025-09127-3) — 2025년 연구의 초록과 한 참가자 범위를 2026-11-03 확인.
 - [A Pioneer In AI is Wondering Whether Humanity Might Be Better Off Without It — International Business Times, Brian Slupski](https://www.ibtimes.com/geoffrey-hinton-ai-leaders-profits-safety-warning-3809431) — 2026-11-04. 2026-11-09 Hinton의 가디언 인터뷰 발언을 직접 인용과 기사 요약으로 나눠 확인한 2차 보도.
 - [Geoffrey Hinton 인터뷰 — The Guardian](https://www.theguardian.com/uk-news/2026/nov/03/ai-godfather-geoffrey-hinton-better-off-without-ai) — 2026-11-03 원 인터뷰. 이 환경에서 열지 못해 본문을 대조하지 않았다.
+- [Breaking: Eli Lilly CEO becomes latest to push back on Dario Amodei's … medical claims — Marcus on AI, Gary Marcus](https://garymarcus.substack.com/p/breaking-eli-lilly-ceo-becomes-latest) — 2026-11-12. 2026-11-16 발언 인용과 일라이 릴리 CEO의 X 게시물 인용을 대조했다. 제목의 일부와 글쓴이의 평가, 다른 반응자의 실명 발언은 옮기지 않았다.
+- [Dario Amodei says AI will cure cancer and Alzheimer's in a decade. Doctors aren't buying it. — Business Insider(DNYUZ 재게시)](https://dnyuz.com/?p=328369) — 2026-11-11. 2026-11-16 영상의 길이와 공개일, 발언 인용 대조.
+- [일라이 릴리 CEO, 다리오 아모데이의 ‘10년 내 주요 질환 극복’ 전망에 반박 — GeekNews](https://news.hada.io/topic?id=37115) — 학습 계기.
 - [EBS, 넥스트 비전, 07. 레이 커즈와일 <특이점이 온다> - 마침내 특이점이 시작된다](https://www.ebssw.kr/edc/cultursens/cultursensMvpView.do?alctcrSn=59337&cntntsSn=33468&stepSn=58322&lctreSn=1879155&pageIndex=1)
 - [EBS, 넥스트 비전, 08. 레이 커즈와일 <특이점이 온다> - 영생은 가능한가](https://www.ebssw.kr/edc/cultursens/cultursensMvpView.do?alctcrSn=59337&cntntsSn=33469&stepSn=58322&lctreSn=1879156&pageIndex=1)
 - [EBS, 넥스트 비전, 09. 레이 커즈와일 <특이점이 온다> - AI와 인간의 융합](https://www.ebssw.kr/edc/cultursens/cultursensMvpView.do?alctcrSn=59337&cntntsSn=33470&stepSn=58322&lctreSn=1879157&pageIndex=1)

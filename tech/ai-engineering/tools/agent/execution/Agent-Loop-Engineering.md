@@ -46,6 +46,16 @@ aliases: ["Loop Engineering", "루프 엔지니어링", "Agent Loops", "에이�
 - 위임 사다리를 오른쪽으로 갈수록 사람의 역할이 검증자(checker)에서 **루틴을 설계하고 언제 끌지 판단하는 director**로 이동한다.
 - 두 축의 대응: agent loop는 turn-based에, verification loop는 goal-based의 evaluator에, event-driven loop는 time-based/proactive의 트리거에 대응한다. hill-climbing은 공식 분류에서 별도 루프가 아니라 운영 원칙으로 들어간다 — 기준 미달 건을 그것만 고치고 멈추지 말고 **이후 모든 반복이 좋아지도록 시스템에 인코딩**하라.
 
+### 목표 상태의 전이 권한을 나눈다
+
+Goal 루프에서는 누가 목표의 상태를 바꿀 수 있는지도 설계 대상이다. 2026-11-16 nac 저장소 문서 기준 durable goal은 direct와 direct-with-orchestrator 세션에서만 쓰는 옵트인 기능이며, 목표 문장은 필수이고 토큰 예산은 선택이며 기본값이 없다.
+
+- 상태는 `active`, `paused`, `blocked`, `usage_limited`, `budget_limited`, `complete` 여섯 가지다. active면 세션이 쉴 때 이어 가는 실행을 하나 시작하고, 대기 중인 입력이 먼저 처리된다. 실행이 실패하면 blocked, 사용자가 취소하면 부분 실행을 정산하고 paused가 되어 곧바로 다시 시작하지 않는다. 예산에 닿으면 budget_limited가 되어 더 이어 가지 않는다.
+- 모델 도구는 목표를 complete나 실제로 막힌 blocked로만 바꿀 수 있고, 일시정지, 재개, 삭제와 한도 상태는 사용자와 시스템의 권한이다. 목표 생성 도구는 사용자가 명시적으로 요청할 때만 쓰라고 지시한다.
+- Local 백엔드의 일반 direct 세션에서는 구조화된 질문의 답을 기다리는 동안 목표가 active로 남지만 자동으로 이어 가지 않는다.
+
+위 표의 Goal-based가 별도 evaluator로 완료를 판정한다면, 이 설계는 작업 모델이 complete를 선언하게 두는 대신 멈춤, 재개와 한도 같은 나머지 전이를 모델에게서 뺀다. 어느 쪽이든 완료 선언 뒤의 검증은 루프 밖에서 따로 한다(이 문서의 해석). 같은 하네스의 오케스트레이터 구조는 [[Agent-Context-Budget#실행 컨텍스트를 버리고 인계 요약만 남긴다|컨텍스트 예산]]에 있다.
+
 ## 성숙형 합성 — 바깥은 발견, 안쪽은 수렴
 
 표준 레시피: 스케줄이 주기적으로 일감을 발견하고(time-based), 발견된 항목마다 goal 루프가 완료 기준까지 수렴하고(goal-based), 복수 해법을 병렬 worktree에서 만들어 judge가 적대적으로 리뷰하고, 상태 파일이 뭘 시도했고 뭐가 통과했는지 기억해 다음 실행이 멈춘 지점에서 이어받는다. 리뷰와 판정은 코드를 만든 에이전트가 아니라 **컨텍스트가 신선한 두 번째 에이전트**에게 맡긴다. 이런 합성을 노드와 엣지로 명시하고 실패 시 돌아갈 노드와 사람 승인 지점까지 정하는 설계는 [[Agent-Graph-Engineering|그래프 엔지니어링]]이 다룬다.
@@ -109,6 +119,7 @@ Evaluator-optimizer는 생성 호출과 평가 및 피드백 호출을 반복해
 - [Building effective agents — Anthropic](https://www.anthropic.com/research/building-effective-agents)
 - [Agentic Design Patterns Part 1: Four AI agent strategies that improve GPT-4 and GPT-3.5 performance — The Batch, Andrew Ng](https://www.deeplearning.ai/the-batch/how-agents-can-improve-llm-performance/) — 2024-03-20 게시, HumanEval 수치와 여러 연구 팀 결과의 분석이라는 범위 확인
 - [YouTube, 메타코드M, 루프 엔지니어링의 모든 것 40분 무료강의](https://www.youtube.com/watch?v=GE03mhxcmKk) — 카드뉴스 루프의 채점 시연, 보고 전용으로 시작하는 단계적 권한 확대
+- [nac Docs, Durable direct goals](https://github.com/arcee-ai/nac/blob/main/docs/usage/direct-goals.md) — 2026-11-16 목표 상태, 전이 권한, 예산과 질문 대기 규칙 대조
 
 ## 관련 문서
 
@@ -120,4 +131,5 @@ Evaluator-optimizer는 생성 호출과 평가 및 피드백 호출을 반복해
 - [[Claude-Code-Workflows|Claude Code 개발 워크플로우 (스킬을 루프에 태우는 반복 업무 자동화)]]
 - [[LLM-Workflow-Patterns|LLM 워크플로우 패턴 (체인 vs 에이전트 선택, Plan-and-Execute)]]
 - [[Agent-Graph-Engineering|그래프 엔지니어링 (루프를 노드와 되돌아가는 엣지로 품는 실행 그래프)]]
+- [[Agent-Context-Budget|에이전트 컨텍스트 예산 (실행 컨텍스트를 버리고 인계 요약만 남기는 구조)]]
 - [[Same-AI-Different-Results-2026-11-06|같은 AI, 다른 결과 밋업 기록 (종료 조건과 검증 신호의 운영 경험)]]

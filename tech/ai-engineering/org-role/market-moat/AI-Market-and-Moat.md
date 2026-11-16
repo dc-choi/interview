@@ -21,5 +21,5 @@ aliases: ["AI Market and Moat", "AI 시장 구도와 해자"]
 
 - [[AI-Commoditization-Differentiation#실적 발표에서 회사들이 내세운 방어 논리|SaaS 실적 발표의 방어 논리]]
 
-- [[LLM-API-Price-Competition|LLM API 가격 경쟁]] — 가격 인하 형태와 기한, 캐시 읽기 비중과 공급사 벤치마크의 비교 조건
+- [[LLM-API-Price-Competition|LLM API 가격 경쟁]] — 가격 인하 형태와 기한, 캐시 읽기 비중과 공급사 벤치마크의 비교 조건, 구매 측의 직원별 사용 상한
 - [[org-role|AI 시대 조직, 역할]]

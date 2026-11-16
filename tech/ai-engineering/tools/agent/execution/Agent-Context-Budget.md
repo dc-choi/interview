@@ -88,6 +88,18 @@ aliases: ["Agent Context Budget", "컨텍스트 예산", "Context Budget", "에�
 - 압축은 의미는 보존하지만 **정확한 값을 잃을 수 있다** — 요약된 ID는 실행에 쓸 수 없다
 - 결론: 누적된 컨텍스트를 나중에 줄이기보다 **각 tool response가 처음부터 작게** 들어오게 설계. 대화형 챗봇(의미 보존이면 충분)과 작업 실행 에이전트(값 보존 필수)는 compaction 적합성이 다르다
 
+### 실행 컨텍스트를 버리고 인계 요약만 남긴다
+
+긴 작업에서는 조사, 도구 출력과 시행착오가 한 대화에 쌓여 성능이 떨어지고 압축 때 중요한 세부가 빠질 수 있다. Arcee의 오픈소스 하네스 nac는 작업에 쓰는 임시 컨텍스트와 흐름을 잇는 영속 상태를 나눈다(2026-08-13 기술 글과 2026-11-16 저장소 문서 기준, 실행하지 않음).
+
+- 오케스트레이터는 계획과 분해만 하고 명령 실행과 파일 편집 도구가 없다. 할 수 있는 행동은 thread를 띄우는 것이다.
+- thread는 한 작업 항목의 episode 목록이다. 호출마다 새 worker 프로세스와 모델 컨텍스트가 뜨고, 도구 호출 없는 응답이 나올 때까지 일한 뒤 그 마지막 응답이 episode(한 일의 구조화된 요약, 쓸모 있는 파일과 결과)가 된다. 별도 요약 단계는 없고 worker의 실행 컨텍스트는 버려진다.
+- 같은 thread에 일을 다시 맡기면 새 worker는 시스템 프롬프트, 요청한 일과 그 thread의 모든 episode를 받는다. 다른 thread의 최신 episode를 참고로 넘길 수 있지만 대상 thread의 기록에는 복사하지 않는다. 한 번에 띄우는 thread 호출은 DAG여야 하며 중복 대상과 순환은 실행 전에 거부한다.
+- 한계: worker 실패는 트랜잭션이 아니어서, 환경을 바꾼 worker가 episode 없이 끝나면 환경이 기록보다 앞서 있을 수 있다. 작업 범위를 좁히라는 것은 프롬프트 지시이며 런타임이 강제하지 않는다. 한 코딩 세션에 끝나는 단일 변경은 직접 하는 편이 단순하고 대개 빠르다고 글이 직접 밝힌다.
+- 2026-11-16 저장소 문서 기준 웹 UI의 기본 세션은 이 구조가 아니라 durable goal을 쓰는 direct 코딩 에이전트이고, 오케스트레이터 구조는 `NAC_ORCHESTRATION=1`로 켠다. 목표 상태의 권한 분리는 [[Agent-Loop-Engineering#목표 상태의 전이 권한을 나눈다|목표 상태의 전이 권한]]에 있다.
+
+episode는 작업한 모델이 쓴 요약이므로 위의 값 보존 문제가 남는다. 다음 작업에 필요한 ID, 경로와 수치는 요약문이 아니라 파일과 환경에 남기고 episode에는 그 위치를 적게 한다(이 문서의 제안).
+
 ## 비용과 안전은 런타임이 강제한다
 
 프롬프트는 방향 제시일 뿐이다. 지키게 만드는 것은 코드다.
@@ -117,6 +129,9 @@ Q. 모델이 알아서 조금만 읽게 프롬프트로 지시하면?
 - [Anthropic, Token counting](https://platform.claude.com/docs/en/build-with-claude/token-counting)
 - [Anthropic, Prompt caching](https://platform.claude.com/docs/en/build-with-claude/prompt-caching)
 - [Harness Engineering 101: Context Is a Budget, Not a Bag — Isuru Maduranga](https://github.com/IsuruMaduranga/harness-engineering-101/blob/main/src/06-context-is-a-budget.md)
+- [Nac: Arcee's Open-Source Harness for Long-Running Agent Work — Arcee AI](https://arcee.ai/blog/nac) — 2026-08-13 기술 글. thread와 episode 구조, 다른 thread의 episode 참고, 실패 처리와 범위 강제의 한계를 2026-11-16 대조
+- [nac — Arcee AI](https://github.com/arcee-ai/nac) — 2026-11-16 README와 `docs/usage`의 세션 동작(기본 direct, `NAC_ORCHESTRATION=1`) 대조
+- [nac - 긴 작업에서 원래 목표를 잃지 않게 하는 에이전트 하네스 — GeekNews](https://news.hada.io/topic?id=37085) — 학습 계기
 
 ## 관련 문서
 
