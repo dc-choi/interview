@@ -114,6 +114,7 @@ aliases: ["오픈소스 라이선스 검토", "OSS License Review", "상용 소�
 
 - **Bitwarden 배포 사례**: 2026-10-11 제공 발췌에는 다음 릴리스부터 앱 스토어를 상용 라이선스 빌드로 바꾸고 GPLv3 버전은 GitHub에서 유지한다고 적혀 있다. 당시 기능은 양쪽에 유지하지만 향후 일부 기능은 상용 빌드에만 들어갈 수 있으며, 셀프 호스팅, 포크와 요금은 변하지 않는다는 안내다. 공식 공지 URL을 찾았지만 2026-10-16 직접 열람은 403으로 실패했다. 따라서 이 항목은 발췌 기록이며 실제 릴리스의 조건은 공지와 파일별 라이선스를 다시 확인한다.
 - **GitHub 의존성 논쟁**: 2026-10-12 제공 발췌는 GNU의 비판을 라이선스 고지의 불명확성, 비자유 JavaScript, 원격 서비스 통제, Git 협업의 중앙화로 나눈다. 이는 GNU의 자유 소프트웨어 관점과 이전 권고이며, GitHub의 모든 사용이 라이선스 위반이라는 법적 판정은 아니다. Git 저장소 복제 가능성과 이슈, PR, CI, 계정 기반 협업의 이동 비용은 별도로 평가한다. 해당 비판 원문 전체는 이번에 확보하지 못했다.
+- **저작권 게시 중단(DMCA)과 포크 네트워크**: 2026-11-16 GitHub의 DMCA 게시 중단 정책과 github/dmca 저장소에 공개된 Nintendo 통지문(2026-11-06자 네 건)을 대조했다. 통지문은 Switch 에뮬레이터가 게임 파일 암호화(prod.keys)를, 모드칩 펌웨어(SX Core, SX Lite, Picofly, HWFLY 등)가 콘솔 부트 시퀀스 검증을 우회한다며 미국 저작권법 17 U.S.C. § 1201(a)(1), (2)를 근거로 저장소 전체의 삭제를 요청했다. GitHub은 원본을 내려도 포크를 자동으로 함께 내리지 않지만, 통지가 그 시점의 포크를 모두 특정했거나 100개가 넘는 네트워크에서 대부분의 포크가 같은 정도로 침해한다고 진술하면 네트워크 전체를 처리할 수 있다. 이번 통지 가운데 두 건은 이 조건으로 71개와 144개 저장소의 네트워크 전체에 적용됐다. 우회 기술 주장은 기술과 법률 전문가가 함께 검토하고 판단이 불확실하면 콘텐츠를 남기며, 반론 통지가 오면 권리자가 10~14일 안에 소송 제기 사실을 알리지 않는 한 복구한다. 통지는 권리자의 주장이지 법원 판단이 아니다. 빌드가 기대는 외부 저장소는 이런 통지로 포크와 함께 사라질 수 있으므로, 필요한 의존성은 라이선스를 확인한 뒤 사내 미러나 아티팩트 저장소에 보존한다. 통지 대상이 된 콘텐츠 자체는 미러 보존으로 해결되지 않으므로 법무 검토로 넘긴다(운영 제안).
 
 후속 확인: Bitwarden의 실제 배포 버전과 두 빌드의 포함 모듈, GNU 원문의 고지 권고와 GitHub 현재 안내를 각각 대조한다. 이 기록은 사용자의 도구 변경 결정이 아니다.
 
@@ -128,6 +129,9 @@ aliases: ["오픈소스 라이선스 검토", "OSS License Review", "상용 소�
 - [GitHub의 문제점 — GeekNews](https://news.hada.io/topic?id=35206) (2026-10-12 제공 발췌의 출처 식별)
 
 - [GitHub Docs, Licensing a repository](https://docs.github.com/en/repositories/managing-your-repositorys-settings-and-features/customizing-your-repository/licensing-a-repository)
+- [GitHub Docs, DMCA Takedown Policy](https://docs.github.com/en/site-policy/content-removal-policies/dmca-takedown-policy) — 2026-11-16 포크 처리 조건, 우회 기술 주장의 검토, 반론 통지 뒤 복구와 통지문 공개 확인
+- [2026-11-06 Nintendo DMCA 통지문 (에뮬레이터) — GitHub, github/dmca](https://github.com/github/dmca/blob/master/2026/11/2026-11-06-nintendo-4.md) — 1201 근거와 71개 저장소 네트워크 처리 확인
+- [2026-11-06 Nintendo DMCA 통지문 (모드칩 펌웨어) — GitHub, github/dmca](https://github.com/github/dmca/blob/master/2026/11/2026-11-06-nintendo-2.md) — 144개 저장소 네트워크 처리 확인
 - [OSI, The Open Source Definition](https://opensource.org/osd)
 - [OSI, The MIT License](https://opensource.org/license/mit)
 - [Apache Software Foundation, Apache License Version 2.0](https://www.apache.org/licenses/LICENSE-2.0)

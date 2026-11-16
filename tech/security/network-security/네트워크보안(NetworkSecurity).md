@@ -13,7 +13,7 @@ aliases: ["Network Security", "네트워크 보안"]
 
 - [[Network-Security-Lab-Interpretation|네트워크 보안 시연을 해석하는 기준]] — HTTP Basic과 TLS/VPN 경계, 탐색과 취약 조건, 셸과 권한, WEP 결함과 802.11i, WPA/WPA2 인증의 구분, WPA2 오프라인 추측과 WPA3 SAE/PMF, ARP MITM과 Evil Twin
 - [[Public-WiFi-Trust-Boundaries|공공 Wi-Fi의 신뢰 경계]] — HTTPS, 서비스 신뢰와 기기 제어 권한, 미러링 시연의 사전 인증 조건
-- [[SSH-Authentication|SSH 인증]] — 서버 호스트 키, 사용자 인증 키와 세션 키, 첫 접속의 신뢰와 호스트 키 변경, Tailscale 포워딩의 권한 경계, musl 환경의 비밀번호 인증 우회와 salt 차용의 배경
+- [[SSH-Authentication|SSH 인증]] — 서버 호스트 키, 사용자 인증 키와 세션 키, 첫 접속의 신뢰와 호스트 키 변경, 하드웨어에 묶은 사용자 키(FIDO, TPM, Secure Enclave)와 복구, Tailscale 포워딩의 권한 경계, musl 환경의 비밀번호 인증 우회와 salt 차용의 배경
 - [[Network-Perimeter-Security|네트워크 경계 보안]] — 공인 IP 배치 원칙, DNS 응답 IP와 실제 서버, UTM, 보안 장비가 로드밸런서보다 앞에 서는 순서, 프록시 방식 WAF와 SSL 종료, 클라우드의 퍼블릭/프라이빗 구분
 - [[Inline-vs-Out-of-Path|인라인과 아웃오브패스 배치]] — 경로 위 제어 장비와 사본 관찰 센서, fail-open과 fail-closed, 소프트웨어와 하드웨어 bypass, 포트 미러링(SPAN)과 TAP, 미러 포트 대역폭 병목과 사본 유실, IDS와 IPS, 클라우드의 GWLB와 Traffic Mirroring, AI 검사 API의 판정과 실제 차단
 - [[Network-Separation|망분리와 망연계]] — 막는 경로와 못 막는 경로, 물리적 분리와 서버 기반(VDI), 단말 기반 논리적 분리, 가상화 탈출과 공유 기능, 스냅샷 복원의 한계, 망연계와 data diode, 금융과 개인정보 규정의 요구 범위, N2SF, 경계 모델과 제로 트러스트
@@ -21,6 +21,7 @@ aliases: ["Network Security", "네트워크 보안"]
 - [[ARP-Spoofing|ARP 스푸핑]] — 검증 없는 ARP 캐시 갱신, 양방향 위조와 중계로 만드는 MITM, 경로 위 공격자와 TLS, HSTS의 경계, 같은 원리를 쓰는 ARP 기반 NAC 차단의 트레이드오프, DHCP snooping과 DAI, 탐지 신호, 공용망과 VPC와 컨테이너의 위협 모델, IPv6 ND와 RA Guard
 - [[5G-Security-Architecture|5G 보안 구조]] — SUPI와 SUCI 은닉, null-scheme의 경계, 5G AKA 상호 인증과 가짜 기지국 해석, K에서 K_gNB까지의 키 계층과 갱신 시점, SBA의 TLS와 OAuth 2.0, SEPP, 슬라이스 인증(NSSAA)
 - [[Proxy-Trust-and-Anonymity|중계 경로의 신뢰 모델]] — 프락시 경유가 만드는 익명성과 그 대가, 중계자가 볼 수 있는 범위, Tor의 회로와 계층 암호화, 프락시/VPN/Tor의 신뢰 가정 비교, 아웃바운드 통제
+- [[Host-Outbound-Firewall|호스트의 앱별 아웃바운드 통제]] — 네트워크 egress 통제와 판정 단위의 차이, Windows 기본 방화벽 위의 질문형 규칙(PacketHound), 서명된 기본 도구의 예외, 첫 연결 차단과 경로 기반 규칙의 제약, 알림 피로
 
 ## 관련 문서
 

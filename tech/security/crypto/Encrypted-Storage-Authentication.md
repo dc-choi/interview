@@ -3,7 +3,7 @@ tags: [security, encryption, storage, hardware, authentication]
 status: done
 verified_at: 2026-11-02
 category: "Security - 암호"
-aliases: ["Encrypted Storage Authentication", "암호화 저장장치의 인증 경계", "FU100", "TSD303"]
+aliases: ["Encrypted Storage Authentication", "암호화 저장장치의 인증 경계", "FU100", "TSD303", "BFU", "AFU", "휴대폰 잠금 상태와 포렌식 추출"]
 ---
 
 # 암호화 저장장치의 인증 경계
@@ -39,12 +39,24 @@ aliases: ["Encrypted Storage Authentication", "암호화 저장장치의 인증 
 
 위 항목은 검토 제안이다. 실제 장치를 분해하거나 제품 소프트웨어, 복호화 도구와 에이전트를 실행하지 않았다.
 
+## 휴대폰은 첫 잠금 해제 전후로 보호 수준이 갈린다
+
+휴대폰의 잠금 화면도 인증 UI와 키 상태를 나눠 본다. 이탈리아 비영리 단체 Osservatorio Nessuno의 기술 개요(2026-05-07 게시, 05-20 갱신)는 전원이 꺼졌거나 켜진 뒤 한 번도 잠금 해제하지 않은 상태(BFU)와 한 번 이상 잠금 해제한 상태(AFU)를 나눈다. AFU에서는 사용자 데이터를 푸는 키가 메모리에 올라가 남아 있어 잠금 화면이 암호학적 장벽이 아니라 UI 요소가 되므로, 포렌식 도구가 노리는 면이 두 상태에서 근본적으로 다르다고 설명한다. 포렌식 업체 자료와 공개 문서를 정리한 글이며 직접 시험한 결과가 아니다.
+
+- **BFU로 되돌린다:** 압수나 검문이 걱정되면 전원을 끄는 것이 가장 효과적인 단일 조치라고 본다. 일정 시간 잠금 해제가 없으면 재부팅하는 기능은 2~4시간처럼 짧을 때 가장 쓸모 있다고 적는다.
+- **비밀번호와 보안 칩:** 6자리 이하 숫자 PIN은 쉽게 복구된다고 보고, 문자와 기호를 섞은 강한 비밀번호만 의미 있는 저항을 준다고 권한다. Pixel 3부터 들어간 Titan M처럼 별도 보안 칩이 시도마다 지연을 강제하는지도 BFU 방어를 가른다.
+- **잠긴 상태의 USB:** iOS는 11부터 USB 제한 모드가 있고 Android 15가 USB 제한 옵션을 들였다고 적는다.
+- **잠금 모드와 업데이트:** 잠금 모드였던 iPhone은 추출하지 못했다는 FBI 쪽 법정 문서의 기록을 인용한다. 보안 업데이트 지연, 약한 TEE 구현과 보안 칩 부재가 겹친 기기는 취약하다고 평가하며, 기기별 평가는 포렌식 업체 자료의 시점에 따라 바뀐다.
+
+같은 글은 이런 도구의 상업 시장이 모든 사용자의 기기를 약하게 만든다며 시장 자체에 반대하는 입장을 밝힌다(출처의 입장). 조직에서는 기기 관리 정책의 자동 재부팅과 USB 제한, 출장 전 전원 끄기 안내로 옮길 수 있다(운영 제안). 구체적인 추출 기법은 옮기지 않았다.
+
 ## 출처
 
 - [Breaking Encrypted USB Drives with Time-Travel Debugging — RE//verse, Xusheng Li](https://github.com/xusheng6/breaking_encrypted_USB_drives_with_TTD/blob/main/Breaking_Encrypted_USB_Drives_v2.pdf) — 2026-03 발표 슬라이드의 FU100, TSD303와 수정 경과 대조
 - [Discovering a Backdoor and Flaws in More Encrypted USB Drives — Binary Ninja, Xusheng Li](https://binary.ninja/2026/10/22/breaking-more-encrypted-usb-drives-with-ai.html) — 2026-10-22 후속 직접 분석
 - [Lenovo, LEN-210545](https://support.lenovo.com/us/en/product_security/LEN-210545) — 확인 후보. 2026-11-02 도구에서 본문을 가져오지 못해 현행 서비스 절차의 근거로 사용하지 않았다.
 - GeekNews, 2026-11-02 10:50 사용자 제공 발췌 — 제품 사례와 후속 연구의 계기 자료
+- [Demystifying phone unlocking tools: A technical overview — Osservatorio Nessuno](https://osservatorionessuno.org/blog/2026/05/demystifying-phone-unlocking-tools-a-technical-overview/) — 2026-05-07 게시, 05-20 갱신. 2026-11-16 BFU와 AFU, 자동 재부팅, 비밀번호, USB 제한과 잠금 모드 관련 문장 확인
 
 ## 관련 문서
 

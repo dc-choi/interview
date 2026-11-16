@@ -85,6 +85,15 @@ awk -F'"' '{print $6}' /var/log/nginx/access.log | sort | uniq -c | sort -rn | h
 
 WAF는 앞 계층을 지나 남은 특정 경로나 봇에 User-Agent, 경로, IP 평판 조건의 규칙을 둔다. 처음에는 AWS WAF의 `Count`처럼 허용이나 차단을 정하지 않고 매칭만 세는 동작으로 켜서 걸린 요청의 User-Agent와 경로를 확인한 뒤 차단으로 바꾼다. Challenge와 CAPTCHA는 기록만 하는 동작이 아니다. AWS WAF는 유효한 토큰이 없는 요청을 원래 목적지로 보내지 않고 Challenge는 202, CAPTCHA는 405로 응답하며, 토큰을 만드는 interstitial 스크립트는 HTML을 기대하는 클라이언트만 처리할 수 있다. 그래서 JavaScript를 실행하지 않는 수집기와 링크 미리보기 봇, 토큰 없이 들어오는 API 호출에는 차단과 같은 결과가 된다(AWS WAF 문서 기준, 다른 WAF는 해당 문서로 확인한다). 쓸 수 있는 동작, 규칙 수와 로그 범위는 서비스와 요금제마다 다르고 바뀌므로 현재 문서로 확인한다. AWS WAF의 `Count` 동작과 검증된 봇 분류는 [[Shield-WAF-NetworkFirewall|Shield, WAF, Network Firewall]]과 [[WAF-Bot-Control|AWS WAF Bot Control]]에 있다.
 
+### 함정 링크로 자동 차단할 때
+
+사람에게 보이지 않는 링크를 페이지에 넣고 그 경로를 `robots.txt`에서 금지하면, 그 경로를 요청한 클라이언트는 금지 지시를 무시하고 링크를 따라간 수집기일 가능성이 높다. 2026-11-09 한 취미 사이트 운영자는 이 경로에 닿은 IP를 `.htaccess` 차단 목록에 자동으로 더해 이후 요청에 402를 돌려주는 PHP 도구를 공개했다. 링크는 접근성 트리와 CSS로 숨기고 텍스트에는 보이지 않는 문자를 썼다. 운영자 보고로는 일주일 동안 IP 400개 이상을 막았고 봇 트래픽이 80% 넘게 줄었으며, 하루 전송량이 최고 216GB에서 약 25GB로 내려갔다. 한 사이트의 자체 관측이다.
+
+- **판정 기준이 하나다:** User-Agent와 국가는 보지 않고 경고나 이의 제기 절차도 없다. 링크를 따라간 사람, 봇이 떠난 뒤 같은 IP를 받은 사용자와 공유 IP 뒤의 사용자가 함께 막힐 수 있으므로 차단 응답에 해제 요청 방법을 적고, 오래된 항목은 기한을 두어 푼다(운영자의 제안).
+- **잡지 못하는 수집기:** `robots.txt`를 지키면서도 부하를 일으키는 수집기와 숨은 링크를 따라가지 않는 수집기는 걸리지 않는다. `robots.txt`를 무시하는 유용한 봇은 허용 목록으로 따로 빼고, IP를 계속 바꾸는 수집기는 주소만 바꿔 다시 온다.
+- **차단할 주소를 어디서 읽는가:** 공개한 코드는 `X-Forwarded-For` 헤더를 먼저 읽는다. 이 헤더는 요청자가 직접 적을 수 있으므로 그대로 믿으면 다른 사람의 주소를 차단 목록에 올리게 만들 수 있다. 앞단 프록시가 붙인 값만 믿도록 신뢰할 프록시를 정한다(해석).
+- **목록의 비용:** 목록이 길어지면 요청마다 `.htaccess`를 해석하는 비용이 늘 수 있다고 운영자도 적었다. 목록이 커지면 웹 서버의 맵 파일이나 방화벽 계층으로 옮기는 것을 검토한다(운영 제안).
+
 ### 사이트 성격과 오탐
 
 - 정적 사이트 생성기로 만든 사이트는 요청 대부분이 파일 응답이라 캐시와 CDN을 먼저 손보고, 요청 제한과 WAF는 문제가 남을 때 더한다. 검색, 로그인, 댓글, API처럼 동적 경로가 많은 사이트는 캐시가 맞지 않는 경로가 생기므로 관찰 다음에 그 경로의 요청 제한을 일찍 검토한다.
@@ -123,6 +132,7 @@ Google의 `siteverify` 방식에서는 클라이언트가 받은 토큰을 백�
 - [Google for Developers, reCAPTCHA v3](https://developers.google.com/recaptcha/docs/v3)
 - [Google for Developers, Verifying the user's response](https://developers.google.com/recaptcha/docs/verify)
 - [I posted to HN, and then my website was flooded with AI BOT traffic — Sammy Straus](https://www.sammystraus.com/)
+- [Blunt Banhammer Blocks Basic Bots Ballistically — Terence Eden](https://shkspr.mobi/blog/2026/11/blunt-banhammer-blocks-basic-bots-ballistically/) — 2026-11-09 게시, 차단 기준, 운영자 보고 수치와 한계, 차단 주소를 읽는 헤더 순서 확인
 - [RFC 9309, Robots Exclusion Protocol](https://www.rfc-editor.org/rfc/rfc9309.html)
 - [RFC 9111, HTTP Caching](https://www.rfc-editor.org/rfc/rfc9111.html)
 - [OpenAI, Overview of OpenAI Crawlers](https://developers.openai.com/api/docs/bots)

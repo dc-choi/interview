@@ -40,6 +40,19 @@ OTA는 네트워크를 통한 업데이트 전달 방식이다. 전송이 끝난
 
 NISTIR 8259A의 기본 역량은 기기 식별, 구성 변경, 데이터 보호, 인터페이스 접근 제한, 소프트웨어 업데이트, 보안 상태 인지다. 인증과 부팅 검증만으로 전체 운영 요건이 충족됐다고 판단하지 않는다.
 
+## 클라우드에 묶인 기기의 신뢰 부트스트랩과 로컬 동작
+
+클라우드를 거쳐야만 동작하는 기기는 서비스 장애나 종료가 곧 기능 상실이다. ETSI EN 303 645 V3.1.3의 5.9-2는 네트워크 접속을 잃어도 기기가 로컬에서 계속 동작하고, 전원이 돌아오면 깨끗하게 복구되도록 권고한다(should).
+
+2026-11-11 한 사용자가 Coway 공기청정기를 제조사 클라우드 대신 자기 서버에 붙인 역공학 기록은 다음 지점을 보여 준다. 글쓴이의 개인 분석이며 제조사가 확인한 내용이 아니다.
+
+- **연결 구조:** 앱이 블루투스로 Wi-Fi 정보와 서버 주소를 기기에 넘기고, 기기는 TLS 위의 MQTT(8883번 포트)로 제조사 서버와 통신한다. 설정 중 받은 서버 API 응답에는 기기용 개인키 파일의 주소가 들어 있었다. 개인키를 기기 밖에서 만들어 내려보내는 구조로 보인다(해석).
+- **신뢰 앵커를 평문으로 받는다:** 기기에 내장된 루트 인증서가 없고, 신뢰할 루트 CA 인증서를 평문 HTTP로 받아 온다. 그 경로에 끼어든 쪽이 신뢰 대상을 바꿀 수 있는 구조다. ETSI 5.5-1은 모범 사례 암호로 안전하게 통신하도록 요구한다(shall).
+- **예측 가능한 키 재료:** 블루투스 설정 구간의 암호키 구성에 기기의 MAC 주소가 쓰였다. ETSI 5.4-4는 업데이트 검증과 연관 서비스 통신 보호에 쓰는 중요 보안 파라미터를 기기마다 고유하게, 같은 제품군 전체를 노린 자동 공격의 위험을 줄이는 방식으로 만들도록 요구한다(shall). MAC 주소 같은 공개 식별자에서 유도한 값은 이 목적에 맞지 않는다(해석).
+- **비공식 연동은 쉽게 깨진다:** 제조사 웹 화면 구조의 변경, 앱 개편(IoCare에서 IoCare+)과 계정 차단으로 기존 비공식 Home Assistant 연동이 여러 번 깨졌다. 글쓴이는 제조사가 결국 이 서비스를 유료화하거나 끝낼 것으로 예상하고 로컬 서버로 옮겼으며, 그 뒤 인증서 발급과 브로커 운영의 보안 책임은 사용자 몫이 된다.
+
+운영 제안: 클라우드 의존 기기를 들일 때 네트워크 없이 남는 기능, 지원 기간(위 점검 5번)과 서비스 종료 정책, 로컬 제어 경로를 함께 확인한다. 직접 로컬 서버로 옮긴다면 제조사 약관과 계정 정책, 펌웨어 갱신으로 연동이 깨질 가능성도 본다. 2026-11-16 ETSI 5.4-4, 5.5-1, 5.9-2 원문을 대조했고 기기 동작은 재현하지 않았다. 집 안 기기가 무엇을 수집하고 보내는지는 [[Smart-Device-Data-Collection|스마트 기기의 데이터 수집과 거부의 범위]]에서 다룬다.
+
 ## 검증 범위
 
 2026-11-03 NISTIR 8259A, ETSI EN 303 645 V3.1.3과 AWS IoT Core의 인증서 문서를 대조했다. 특정 기기, 펌웨어나 인증서 교체 동작을 시험하지 않았다. 영상의 공격 비중, 영구 신원 보장과 공격 완전 차단 주장은 채택하지 않았다.
@@ -47,12 +60,15 @@ NISTIR 8259A의 기본 역량은 기기 식별, 구성 변경, 데이터 보호,
 ## 출처
 
 - [NIST, IoT Device Cybersecurity Capability Core Baseline (NISTIR 8259A)](https://nvlpubs.nist.gov/nistpubs/ir/2020/NIST.IR.8259A.pdf) — Table 1의 식별, 업데이트와 여섯 기본 역량
-- [ETSI, EN 303 645 V3.1.3](https://www.etsi.org/deliver/etsi_en/303600_303699/303645/03.01.03_60/en_303645v030103p.pdf) — 5.1, 5.3과 5.7의 비밀번호, 업데이트, 지원 기간과 secure boot
+- [ETSI, EN 303 645 V3.1.3](https://www.etsi.org/deliver/etsi_en/303600_303699/303645/03.01.03_60/en_303645v030103p.pdf) — 5.1, 5.3과 5.7의 비밀번호, 업데이트, 지원 기간과 secure boot. 2026-11-16 5.4-4, 5.5-1, 5.9-2 추가 대조
 - [AWS IoT Core, X.509 client certificates](https://docs.aws.amazon.com/iot/latest/developerguide/x509-client-certs.html) — 개인키 보유 증명, 인증서 상태, 만료와 교체
 - [IoT 인증 & 펌웨어 보안 90초 총정리 — 길리랩](https://www.youtube.com/watch?v=7bRPyeAOBdA) — 학습 계기. 기술 주장은 위 공식 자료로 대조
+- [Reverse Engineering My Coway Air Purifier to Ditch the Cloud — Scott J. Goldman](https://scottjg.com/posts/2026-11-11-reverse-engineering-my-coway-air-purifier-to-ditch-the-cloud/) — 2026-11-11 게시, 연결 구조, 평문 루트 CA 수신, 키 재료와 연동이 깨진 이유 확인. 재현 절차는 옮기지 않음
 
 ## 관련 문서
 
 - [[Certificate-Lifecycle-Management|인증서 수명주기 관리]]
+- [[CA-Compromise-and-Trust-Stores|CA 침해와 신뢰 저장소]] — 신뢰 앵커의 배포와 교체
+- [[Smart-Device-Data-Collection|스마트 기기의 데이터 수집과 거부의 범위]]
 - [[Public-Key-Cryptography|공개키 암호]]
 - [[Security-Architecture-and-Threat-Modeling|보안 아키텍처와 위협 모델링]]

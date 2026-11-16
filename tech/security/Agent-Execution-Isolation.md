@@ -22,6 +22,8 @@ aliases: ["Agent Execution Isolation", "에이전트 실행 격리", "MXC"]
 
 정책 파일이 존재하는 것과 선택한 백엔드가 그 정책을 실제로 강제하는 것은 다르다. 허용된 정상 작업과 거절돼야 할 작업을 모두 시험한다. 프롬프트만으로 비밀 파일 접근이나 외부 전송을 차단했다고 판단하지 않는다.
 
+격리가 실패할 때 어느 쪽으로 열리는지도 확인한다. 2026-11-16 저장소 문서 기준 nac의 Podman 샌드박스는 Git 저장소에서 `HEAD`로 만든 세션별 worktree를 마운트해 커밋하지 않은 변경과 작업 트리를 보호하지만, 저장소를 검사하지 못하거나 worktree를 만들지 못하면 서버 stderr에 경고만 남기고 원래 checkout을 쓰기 가능하게 마운트한다. 반면 Git 관리 경로에 symlink가 있는 등 검증할 수 없으면 실행을 거부한다. 격리에 기대는 작업은 이런 대체 경고를 실행 실패로 다룬다(운영 제안).
+
 ## MXC의 공통 API와 백엔드 차이
 
 2026-10-16 Microsoft 공식 README 기준, MXC는 앱에 내장하는 Rust, .NET, Node SDK다. Windows, Linux, macOS에서 OS 프로세스 샌드박스부터 VM까지 여러 백엔드를 같은 요청 모델로 다룬다. 파일 경로의 읽기/쓰기/차단, 네트워크와 GUI 정책을 제공하지만 기능 강도는 백엔드별로 확인해야 한다.
@@ -130,6 +132,7 @@ OpenAI는 Codex의 감시가 모델 요청을 처리하는 서비스 안에서 �
 - [AI Models Can Provably Hide Arbitrary Capabilities — arXiv](https://arxiv.org/html/2610.13928v1) — 암호학적 조건, 구현 비용과 사전학습 모델 통합 한계 대조
 
 - [Microsoft eXecution Container — Microsoft](https://github.com/microsoft/mxc)
+- [nac Docs, Sandbox — Arcee AI](https://github.com/arcee-ai/nac/blob/main/docs/usage/sandbox.md) — 2026-11-16 세션별 worktree 마운트, 실패 시 원래 checkout 대체와 거부 조건 대조
 - [Models as Insider Risks in the Super Intelligence Era — Satya Nadella](https://x.com/satyanadella/article/2108931348857827686) (원문 전체 대조 미완료)
 - [AI agents aren’t ‘going rogue.’ Frontier labs are skipping security basics. — CSO](https://www.csoonline.com/article/4234854/ai-agents-arent-going-rogue-frontier-labs-are-skipping-security-basics.html) (제공 발췌 식별, 사고 기술 검증 근거로 사용하지 않음)
 - [How abliterated models can get you pwned — ProjectDiscovery, Prince Chaddha](https://projectdiscovery.io/research/how-abliterated-models-can-get-you-pwned) — 2026-10-06. 2026-10-19 학습 조건, 트리거 평가, 페이로드와 권고를 대조. 2026-10-27 1.5B 오염 비율 실험, 7B 오염 비율과 층 분석(대상 모델 미표기) 대조

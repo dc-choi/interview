@@ -11,13 +11,15 @@ aliases: ["보안(Security)", "Security Index"]
 
 - [[Targeted-Social-Engineering|표적형 사회공학: 채용 위장과 AI로 개인화한 사기]] — 공개 정보로 만든 신뢰, 사전 채용 과제와 개발 도구 교체를 통한 단말 침해, 내부 도구를 거친 확산과 서명 서비스 접근, 공개 문장을 되비춘 사기 메일, 조직과 구직자의 점검
 - [[Personal-Knowledge-Graph-Privacy|기기 안 개인 지식 그래프와 추론 데이터의 프라이버시]] — 메타데이터로 추정한 관계, macOS 지식 그래프의 저장과 보호 범위, 근거보다 오래 남는 결론, 추론 기능의 삭제와 정정 점검
+- [[Smart-Device-Data-Collection|스마트 기기의 데이터 수집과 거부의 범위]] — TV의 자동 콘텐츠 인식(ACR)과 수집 주체, 기본값과 동의 단위, 끈 뒤에도 남는 전송과 오프라인 버퍼, 같은 네트워크의 기기 탐색, 음성 저장, 설정을 바꿀 수 없는 주변인
 - [[Smart-Contract-Price-Feed-Validation|스마트 컨트랙트 가격 피드 검증]] — 부호, 자릿수와 최신성, 누적값과 TWAP, 장애 시 기능 경계
-- [[IoT-Device-and-Firmware-Security|IoT 기기 인증과 펌웨어 보안]] — 식별과 개인키 보유 증명, 인증서 교체, secure boot와 OTA 검증, 업데이트 복구와 지원 기간
+- [[IoT-Device-and-Firmware-Security|IoT 기기 인증과 펌웨어 보안]] — 식별과 개인키 보유 증명, 인증서 교체, secure boot와 OTA 검증, 업데이트 복구와 지원 기간, 클라우드 의존 기기의 평문 신뢰 앵커와 로컬 동작
+- [[Vulnerability-Operations-AI-Agents|취약점 운영(VulnOps)과 보안팀의 AI 에이전트 활용]] — 고치는 속도에 맞춘 운영, 취약점 원장과 중복 묶기, 배포 확인으로 판정하는 완료, 에이전트의 수행과 검증 분리, 여러 모델의 합의와 반증, 소규모 보안팀의 도구 직접 개발, Project Zero의 공개 기한 단축과 패치 격차, Apache mod_http2의 독립 발견과 HTTP/2 끄기 완화
 - [[AI-Accelerated-Threat-Defense|악용 시간 단축과 AI 공격에 대비하는 방어]] — 악용까지의 시간 관측값과 읽는 법, 자산과 소프트웨어 목록, 패치 작성과 적용의 병목, 번들 런타임과 배포 형태별 수정 경로, 패치 시나리오와 단계적 배포, 업데이트 기본값과 패치 물결, 오염된 업데이트와 관찰 기간의 한계, 독립된 다층 통제, AI 방어 자동화의 권한 경계
 - [[Hardware-Wallet-Physical-Trust|하드웨어 지갑의 물리적 신뢰 경계]] — 정품 칩 인증과 추가 부품 탐지의 차이, 화면 경로의 비밀 노출
 - [[Public-WiFi-Trust-Boundaries|공공 Wi-Fi의 신뢰 경계]] — 통신 암호화와 피싱, 기기 제어의 인증 조건
 - [[Elliptic-Curve-Parameter-Provenance|타원곡선 파라미터의 출처]] — 공개 seed 재현과 개인키 복구의 구분, 미해결 선택 과정
-- [[Security-Architecture-and-Threat-Modeling|보안 아키텍처와 위협 모델링]] — 데이터 흐름, 신뢰 경계, 자원별 접근과 통제 검증
+- [[Security-Architecture-and-Threat-Modeling|보안 아키텍처와 위협 모델링]] — 데이터 흐름, 신뢰 경계, 자원별 접근과 통제 검증, 가릴 목록 대신 처리 결과를 넘기는 반출 조건(구글 지도 국외반출)
 - [[Forensic-Watermarking|포렌식 워터마킹]] — 배포본 식별, 변형 내성, 검출과 행위 판단의 구분
 - [[Coding-Agent-Package-Hallucination|코딩 에이전트의 패키지 환각 공격]] — 규칙 파일 인젝션과 의존성 대체, 알아채고도 따른 사례, 탐지기의 미탐과 오탐, 리뷰 시점별 점검
 - [[Malicious-Agent-Skills|악성 에이전트 스킬]] — 자연어 페이로드의 비중, scanner 비교의 기준, 빈 줄과 HTML 주석과 보이지 않는 Unicode로 숨긴 지시, 메모리 파일 지속성, 설치 전후 점검
@@ -31,14 +33,14 @@ aliases: ["보안(Security)", "Security Index"]
 - [[Memory-Safety-Vulnerabilities|메모리 안전성 취약점]] — 읽기/수명 결함, PHP2Shell의 시도와 성공 및 권한 상승, EDK II의 PXE 부팅 노출, 설정 완화와 앞단 WAF 규칙의 범위, 업데이트와의 구분, 조사 시작일
 - [[VM-Guest-to-Host-Escape|VM 게스트에서 호스트로의 탈출]] — 하이퍼바이저 밖 호스트 커널 경로까지 포함한 격리 경계, 검사 후 사용 결함, 게스트가 아닌 호스트 패치와 롤링 재부팅, 에이전트 샌드박스 다층 방어, 공유 커널 컨테이너에서 microVM으로의 전환, PwnEscape 사례
 - [[Enterprise-Browser-Control|기업용 브라우저 통제]] — Firefox Enterprise의 관리 위치와 early access
-- [[Bot-Traffic-Operations|봇 트래픽 운영]] — 요청 로그와 사용자 분석, 차단과 부하 측정, AI 수집기 이름과 실제 요청자, robots.txt 응답 코드와 그룹 규칙, 관찰부터 캐시, 요청 제한, WAF까지 쌓는 순서
+- [[Bot-Traffic-Operations|봇 트래픽 운영]] — 요청 로그와 사용자 분석, 차단과 부하 측정, AI 수집기 이름과 실제 요청자, robots.txt 응답 코드와 그룹 규칙, 관찰부터 캐시, 요청 제한, WAF까지 쌓는 순서, 함정 링크 자동 차단과 오탐
 - [[Signed-Payload-Deserialization|서명된 페이로드 역직렬화]] — 키 유출과 객체 복원 위험
 - [[FIDO-WebAuthn#보안성과 사용자 통제권을 따로 평가한다|패스키 논쟁의 구분]] — 피싱 저항, 인증기 증명과 이전/복구
 
 - [[Inline-vs-Out-of-Path#AI 런타임 검사: API 판정과 실제 차단|AI 런타임 검사 위치]] — 네트워크 인라인과 애플리케이션 검사 API, TLS 가시성, 스트리밍 전달과 차단 시점
 - [[Grafana-Shared-Dashboard-Security|Grafana 공유 대시보드 보안]] — 일시정지와 토큰 폐기, 데이터 소스 설정 노출, 브랜치별 수정 기준
 - [[Synthetic-Data-Privacy|합성 데이터와 개인정보 보호]] — 합성과 익명성의 구분, DP 보장과 정확도 검증
-- [[SSH-Authentication|SSH 인증]] — 서버 인증과 사용자 인증의 분리, 키 교환, 호스트 키 검증, Tailscale 포워딩 권한, musl 환경의 비밀번호 인증 우회
+- [[SSH-Authentication|SSH 인증]] — 서버 인증과 사용자 인증의 분리, 키 교환, 호스트 키 검증, 하드웨어에 묶은 사용자 키, Tailscale 포워딩 권한, musl 환경의 비밀번호 인증 우회
 - [[OpenSSF-Scorecard|OpenSSF Scorecard]] — 저장소 보안 관행 평가, 검사별 근거와 총점의 한계
 - [[Application-Security|애플리케이션 보안 / 시큐어코딩]] — 4대 원칙, 진단 vs 모의해킹, OWASP Top 10, OWASP API Security Top 10:2023, 트렌드 리스크, 클라이언트 불신, 비밀번호 확인 UI와 서버 검증 계약, 학습 경로
 - [[Java-Secure-Coding-Guidelines|Java SE 시큐어코딩 가이드라인]] — 명백히 결함 없는 설계와 검사 지점, 서드파티 코드 추적, 자원 한도와 기밀정보, 데이터를 코드로 해석하는 인젝션, XXE와 DTD 제한, API 동작 검증, 역직렬화 필터 계층, Security Manager 비활성화 이후의 격리
@@ -47,7 +49,7 @@ aliases: ["보안(Security)", "Security Index"]
 - [[Security-Incident-Response|보안 사고 대응]] — NIST CSF 2.0 수명주기, 로그 상관분석, IOC 검사의 미탐/검사 범위, 자동 차단과 AI 리포트의 실행 경계, 증거 보존과 복구 조건
 - [[Access-Control-Models|접근 제어 모델 (RBAC, ABAC, PBAC)]] — 역할, 속성, 정책의 관계, PAP/PDP/PIP/PEP, 하이브리드 설계와 운영
 - [[tech/security/auth/인증(Auth)|인증 (Auth)]] — Session과 비밀번호 변경 재인증, JWT, OAuth2, Token Exchange, FIDO, Refresh Token, Spring Security의 자동 로그인 저장소와 검증
-- [[tech/security/crypto/암호(Crypto)|암호 (Cryptography)]] — 패스워드 해싱, 공개키, RSA, 난수와 파일 키, 저장장치 인증, 이메일 암호화, 인터넷 투표의 검증
+- [[tech/security/crypto/암호(Crypto)|암호 (Cryptography)]] — 패스워드 해싱, 공개키, RSA, 난수와 파일 키, 저장장치 인증과 휴대폰 잠금 상태, 이메일 암호화, 인터넷 투표의 검증
 - [[Certificate-Lifecycle-Management|인증서 수명주기 관리]] — 인벤토리, 공인 TLS 유효기간 단축, 갱신 후 적용 확인과 복구 경계
 - [[tech/security/web-attacks/웹공격(WebAttacks)|웹 공격 (Web Attacks)]] — 아카이브 파서 차이, CORS, CSRF, XSS와 프레임 메시지, SQL/Command Injection, 파일 업로드, IDOR, SSRF, 공유 링크
 - [[Actuator-Exposure|Actuator 노출 (Security Misconfiguration)]] — 운영 엔드포인트 노출, 필요한 것만 열기
@@ -56,10 +58,10 @@ aliases: ["보안(Security)", "Security Index"]
 - [[tech/security/secrets/Hardcoded-Credentials|하드코딩된 자격증명]] — 소스 접근이 운영 접근이 되는 경로, 증폭 요인(장기 키, 전체 접근, 메신저 공유, 짧은 로그), 시크릿 스캐닝 한계와 임시 자격증명
 - [[Supply-Chain-Security|공급망 보안 (Supply Chain)]] — PyPI/npm과 IDE 확장 배포, 아카이브 검사/설치 차이, postinstall/.pth, 전이 의존성, lockfile 핀과 별도 영속성 대응, Homebrew 탭 신뢰와 cask quarantine
 - [[IDE-Extension-Trust-Model|IDE 확장 신뢰 모델과 AI 코딩 도구의 공격 표면]] — 확장의 편집기 동일 권한, 시작 시 활성화와 Workspace Trust 선언, 자동 업데이트 지연, 게시자 신뢰와 허용 목록, MCP 서버와 패키지 경로, 의도된 전송과 침해의 구분, 방어 계층 순서
-- [[Dependency-Release-Cooldown|의존성 릴리스 쿨다운]] — 고정, 해시, 쿨다운이 막는 단계, uv, pip, pnpm, npm의 게시 시점 필터와 기본값, 업로드 시각이 없을 때의 차이, 예외 경로와 보안 수정 지연
+- [[Dependency-Release-Cooldown|의존성 릴리스 쿨다운]] — 고정, 해시, 쿨다운이 막는 단계, uv, pip, pnpm, npm, Cargo의 게시 시점 필터와 기본값, 업로드 시각이 없을 때의 차이, 저장소 프록시에서 강제하는 쿨다운, 오래된 릴리스에 늦게 붙는 파일과 PyPI 게시 경로 경고, 예외 경로와 보안 수정 지연
 - [x] [[SaaS-Application-Trust-Compromise|SaaS 앱 신뢰와 자격증명 침해]] — 외부 앱의 기존 권한 악용, 인증과 유출의 구분, 차단과 증거 보존
-- [[Open-Source-License-Review|오픈소스 라이선스 검토]] — MIT/Apache 고지, GPL 전달 조건, AGPL 네트워크 조건, SaaS와 납품, SPDX/SBOM의 판단 범위
-- [[tech/security/network-security/네트워크보안(NetworkSecurity)|네트워크 보안 (Network Security)]] — 경계 보안과 공인 IP 배치, UTM, 보안 장비 배치 순서, 인라인과 아웃오브패스, 포트 미러링과 TAP, IDS와 IPS, ARP 스푸핑과 DAI, ARP 기반 NAC 차단, 망분리와 망연계
+- [[Open-Source-License-Review|오픈소스 라이선스 검토]] — MIT/Apache 고지, GPL 전달 조건, AGPL 네트워크 조건, SaaS와 납품, SPDX/SBOM의 판단 범위, DMCA 게시 중단과 포크 네트워크
+- [[tech/security/network-security/네트워크보안(NetworkSecurity)|네트워크 보안 (Network Security)]] — 경계 보안과 공인 IP 배치, UTM, 보안 장비 배치 순서, 인라인과 아웃오브패스, 포트 미러링과 TAP, IDS와 IPS, ARP 스푸핑과 DAI, ARP 기반 NAC 차단, 망분리와 망연계, 호스트의 앱별 아웃바운드 통제
 - [[LLM-Application-Security|LLM 애플리케이션 보안 (OWASP Top 10 2025, 2026판 순위 변경)]] — 프롬프트 인젝션, Spotlighting과 Instruction Hierarchy의 한계, Dual-LLM과 CaMeL 격리, 가드의 한계, 적응형 공격과 Rule of Two, 민감정보 유출, 공급망, 출력 처리, 과도한 위임, RAG 임베딩, 허위정보, 무제한 소비
 - [[tech/security/age-identity-verification/연령신원검증(AgeIdentityVerification)|연령/신원 검증 (Age & Identity Verification)]] — age assurance, IDV, PET, 규제 지형, 제3자 위탁 리스크
 

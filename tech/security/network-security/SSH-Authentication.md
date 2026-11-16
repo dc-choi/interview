@@ -88,6 +88,24 @@ puttygen input.ppk -O private-openssh -o converted.pem
 
 변환 전후 공개키 지문을 같은 알고리즘으로 비교하고 출력 파일의 접근 권한과 암호화 여부를 확인한다. 패스프레이즈를 새로 설정하거나 바꾸려면 `-P`를 사용한다. 개인키를 온라인 변환 사이트에 올리지 않고, 신뢰하는 로컬 도구에서 처리한다. 이는 운영 점검 제안이며 실제 키 파일을 읽거나 변환한 기록은 아니다.
 
+## 사용자 개인키를 하드웨어에 묶는다
+
+패스프레이즈로 암호화한 개인키 파일은 파일과 패스프레이즈가 함께 새면 다른 장비에서도 쓸 수 있다. 하드웨어에 묶은 키는 서명을 장치 안에서 하므로 디스크의 파일만으로는 쓸 수 없고, 대신 장치를 잃거나 고장 내면 그 키도 함께 잃는다(해석).
+
+OpenSSH의 FIDO 인증기 키(`ecdsa-sk`, `ed25519-sk`)는 디스크의 개인키 파일에 키 핸들만 두고, 인증기마다 고유한 개인키는 하드웨어 밖으로 내보낼 수 없다. 그래서 키를 쓸 때 인증기가 연결돼 있어야 한다. `ssh-keygen`의 `-O resident`는 키 핸들을 인증기 안에 저장해 `-K`로 다른 장비에서 내려받게 하고, `-O verify-required`는 서명마다 PIN 같은 사용자 검증을 요구한다. `-O no-touch-required`로 만든 키는 서명할 때 터치(사용자 존재 확인)를 요구하지 않으며, 서버의 `authorized_keys`에서 그 키에 같은 이름의 옵션을 붙여야 그런 서명을 받는다.
+
+2026-11-04 한 운영자는 디스크에 보호되지 않은 키 재료를 남기지 않으려고 전통적인 키 파일을 모두 지우고 세 방식을 섞어 쓴 경험을 공개했다. 아래 한계는 그 글의 설명이다.
+
+| 방식 | 키 재료가 있는 곳 | 글에 적힌 한계 |
+|---|---|---|
+| FIDO 보안 키(YubiKey 5 이상, OpenSSH만으로 생성) | 인증기 안. 디스크 파일은 핸들 | 장치 비용. 터치를 끈 키는 장비에 접근한 공격자가 확인 없이 쓸 수 있다 |
+| TPM(`ssh-tpm-agent`) | 그 장비의 TPM으로만 복호화되는 암호화된 키 파일이 디스크에 남는다 | 부팅 상태 측정값(PCR)을 확인하지 않아 펌웨어나 OS가 바뀌어도 잠금이 풀린다 |
+| Apple Secure Enclave(macOS Sequoia 이상의 `sc_auth`) | 내보낼 수 없는 키로 생성 | Touch ID를 요구하는 키는 덮개를 닫은 상태에서 만들거나 쓸 수 없다. 핸들을 내보내면 등록된 키 전체의 핸들이 함께 나온다 |
+
+같은 글은 패스프레이즈와 ssh-agent로도 대부분의 위협 모델에 충분할 수 있다고 인정한다. 운영에 옮길 점은 두 가지다(운영 제안). 장치 분실과 고장에 대비해 서로 다른 장치의 키를 `authorized_keys`에 여럿 등록하고 복구를 미리 시험한다. 무인 작업 때문에 터치나 PIN을 끈 키는 그 호스트가 침해되면 사람 개입 없이 쓰일 수 있으므로 접속 대상과 권한을 좁힌다.
+
+2026-11-16 ssh-keygen(1)과 sshd(8)의 FIDO 옵션을 대조했다. TPM과 Secure Enclave 설정은 글의 설명만 확인했고 실행하지 않았으며, 기존 구현 설명의 `verified_at`은 유지한다.
+
 ## 포워딩 권한도 로그인 계정의 경계 안에 둔다
 
 SSH 로그인 허용과 포워딩 허용은 따로 점검한다. 서버 프로세스가 높은 권한으로 실행되더라도 포워딩 대상 파일과 Unix 소켓의 접근은 인증된 사용자 권한으로 제한해야 한다. 경로 문자열 검사만으로 심볼릭 링크 교체나 검사 후 사용의 경합까지 막았다고 판단하지 않는다.
@@ -127,6 +145,8 @@ PAM 없이 비밀번호를 확인하는 OpenSSH는 입력한 비밀번호를 `cr
 - [IETF, RFC 4254: The Secure Shell (SSH) Connection Protocol](https://www.rfc-editor.org/rfc/rfc4254.html) — 세션, 선택적 터미널 할당과 셸 및 명령 요청
 - [OpenBSD, ssh(1)](https://man.openbsd.org/ssh.1)
 - [OpenBSD, ssh-keyscan(1)](https://man.openbsd.org/ssh-keyscan.1)
+- [OpenBSD, ssh-keygen(1)](https://man.openbsd.org/ssh-keygen.1) — 2026-11-16 FIDO 키 유형, `-O resident`, `verify-required`, `no-touch-required`와 `-K` 대조
+- [OpenBSD, sshd(8)](https://man.openbsd.org/sshd.8) — 2026-11-16 `authorized_keys`의 `no-touch-required`, `verify-required` 대조
 - [OpenBSD, ssh_config(5)](https://man.openbsd.org/ssh_config.5) — 2026-11-13 `ForwardAgent`의 agent 인증 연산 노출 경고와 `StrictHostKeyChecking`의 호스트 키 변경 시 동작 대조
 - [PuTTY, Using public keys for SSH authentication](https://the.earth.li/~sgtatham/putty/0.85/htmldoc/Chapter8.html)
 - [PuTTY, puttygen(1), Debian 매뉴얼 배포본](https://manpages.debian.org/testing/putty-tools/puttygen.1.en.html)
@@ -144,9 +164,11 @@ PAM 없이 비밀번호를 확인하는 OpenSSH는 입력한 비밀번호를 `cr
 - [Determine appropriate salt for invalid users — GitHub openssh/openssh-portable](https://github.com/openssh/openssh-portable/commit/9286875a73b2de7736b5e50692739d314cd8d9dc) — 2016-07-15 커밋
 - [sshole 설명 페이지 — Wakefield](https://sshhole.com) — 발견자 측 설명. salt 차용 경로와 musl `crypt()` 실패 반환값의 변경 이력 확인
 - [tor-relays: Security incident affecting some relay operators — Tor Project Forum](https://forum.torproject.org/t/tor-relays-security-incident-affecting-some-relay-operators/22231) — 2026-10-05 relay의 SSH 가로채기, `torrc` 변조, 네트워크 배제와 운영자 대응 순서 확인
+- [I deleted all my SSH keys — infected.systems, Alex Haydock](https://blog.infected.systems/posts/2026-11-03-i-deleted-all-my-ssh-keys/) — 2026-11-04 게시, YubiKey, TPM, Secure Enclave로 옮긴 방식과 한계 확인
 
 ## 관련 문서
 
 - [[Public-Key-Cryptography|공개키 암호와 서명]]
+- [[FIDO-WebAuthn|FIDO와 WebAuthn]] — 인증기, 사용자 존재 확인과 사용자 검증
 - [[Single-Host-SPA-API-Deployment-SSH-Workflow|SSH 배포 workflow]]
 - [[네트워크보안(NetworkSecurity)|네트워크 보안]]
