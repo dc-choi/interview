@@ -1,9 +1,9 @@
 ---
-tags: [compiler, aot, bun, turbopython, compatibility]
+tags: [compiler, aot, bun, turbopython, compatibility, dotnet, readytorun]
 status: done
-verified_at: 2026-10-16
+verified_at: 2026-11-16
 category: "CS&프로그래밍(CS&Programming)"
-aliases: ["Native Compilation Compatibility", "네이티브 컴파일과 호환성", "Bun AOT", "TurboPython"]
+aliases: ["Native Compilation Compatibility", "네이티브 컴파일과 호환성", "Bun AOT", "TurboPython", "ReadyToRun", "x86-64-v2"]
 ---
 
 # 네이티브 컴파일: 배포 단위와 언어 계약
@@ -35,6 +35,22 @@ TurboPython은 Python 문법에 정적 타입과 소유권 규칙을 적용하�
 
 공식 프로젝트는 `tpy-lang.org`, 배포명은 `tpy-lang`이다. 같은 이름의 별도 `turbopython` 패키지와 혼동하지 않는다. 2026-10-13 입력의 C++ 변환, GC 없는 소유권과 `Own` 설명을 공식 사이트에서 대조했다.
 
+## 실행 하한과 사전 컴파일 대상
+
+런타임이 시작할 수 있는 최소 CPU 기능과, 미리 만든 기계어가 가정하는 CPU 기능은 따로 정해진다. .NET 11 런타임 문서(2026-11-12 갱신, GA 기준)는 둘을 JIT/AOT 최소 요구와 ReadyToRun(R2R) 대상으로 나눠 적는다. 아래는 문서 대조이며 실제 장비에서 실행해 보지는 않았다.
+
+| 아키텍처와 OS | JIT/AOT 최소 요구 | R2R 대상 |
+|---|---|---|
+| x86/x64 (Apple, Linux, Windows) | `x86-64-v1`에서 `x86-64-v2`로 상향 | Windows와 Linux는 `x86-64-v2`에서 `x86-64-v3`로, Apple은 그대로 |
+| Arm64 Windows | `armv8.0-a`에 LSE 추가 | `armv8.2-a + RCPC` |
+| Arm64 Linux | `armv8.0-a` 그대로 | `armv8.0-a + LSE` |
+| Arm64 Apple | Apple M1 그대로 | 그대로 |
+
+- 최소 요구에 못 미치는 CPU에서는 .NET 11이 실행되지 않고 `The current CPU is missing one or more of the baseline instruction sets.` 같은 메시지를 낼 수 있다. `x86-64-v2`는 `CMOV`, `CX8`, `SSE`, `SSE2`에 `CX16`, `POPCNT`, `SSE3`, `SSSE3`, `SSE4.1`, `SSE4.2`를 더한 수준이며, 문서는 Windows 11이 이 수준을 요구하고 Windows 10이 공식 지원하는 x86/x64 CPU도 모두 갖췄다고 적는다.
+- R2R은 Microsoft가 AOT의 한 형태로 부르지만 IL과 같은 코드의 기계어를 함께 담고 JIT를 대체하지 않는다. 다른 어셈블리에 정의된 제네릭, 네이티브 interop, 대상 장비에서 안전하다고 증명하지 못한 하드웨어 intrinsic, 리플렉션이나 LINQ의 동적 메서드는 실행 중 JIT가 맡고, 계층형 컴파일은 자주 쓰는 R2R 메서드를 JIT 코드로 바꾼다. 그래서 R2R 대상에 못 미치는 지원 장비에서는 실패 대신 시작할 때 JIT 부담이 늘 수 있다.
+- 상향 이유로 문서는 오래된 하드웨어 지원이 키우는 코드베이스 복잡도, AOT가 기본으로 맞춰야 하는 최소 공통분모의 성능 손해, OS 하드웨어 요구와의 정렬을 든다.
+- 런타임을 올리기 전에 실제 장비와 VM이 노출하는 CPU 기능을 최소 요구와 대조한다(적용 제안).
+
 ## 평가 절차
 
 1. 오류, 숫자 범위, 객체 별칭과 외부 라이브러리 동작을 같은 입력으로 비교한다.
@@ -49,8 +65,12 @@ TurboPython은 Python 문법에 정적 타입과 소유권 규칙을 적용하�
 - [Bun, Single-file executable](https://bun.com/docs/bundler/executables)
 - [WIP #743 — GitHub, oven-sh/WebKit](https://github.com/oven-sh/WebKit/pull/743)
 - [TurboPython](https://tpy-lang.org/)
+- [Microsoft Learn, What's new in .NET 11 runtime](https://learn.microsoft.com/en-us/dotnet/core/whats-new/dotnet-11/runtime) — 2026-11-16 최소 하드웨어 요구와 R2R 대상 표, 실패 메시지, 상향 이유 대조
+- [Microsoft Learn, ReadyToRun deployment overview](https://learn.microsoft.com/en-us/dotnet/core/deploying/ready-to-run) — R2R에 IL이 함께 남는 이유, JIT가 계속 맡는 경우와 계층형 컴파일
+- [.NET 11 런타임의 새로운 기능 — GeekNews](https://news.hada.io/topic?id=36957)
 
 ## 관련 문서
 
 - [[Compile-and-Runtime|컴파일과 런타임]]
 - [[Python-315-Language-Changes|Python 3.15 언어 변경]]
+- [[Version-Upgrade-Difficulty|버전 업그레이드의 난이도 구조]] — 런타임 업그레이드가 올리는 플랫폼 하한

@@ -87,6 +87,12 @@ Java compiler는 JVM class file을 만들 수 있고 JVM 구현은 이를 해석
 - VM을 쓴다고 반드시 느리거나, 한 번 만든 산출물이 모든 환경에서 그대로 실행되는 것은 아니다.
 - startup, steady-state throughput, latency, memory, binary size와 배포 편의는 서로 다른 평가 축이다.
 
+### 인터프리터를 이루는 부품: 손으로 쓴 BASIC
+
+BASIC 인터프리터는 몇 개의 고정 부품과 명령마다의 루틴으로 나눌 수 있다. 줄 편집기, 키워드를 짧은 토큰으로 줄여 저장하는 토큰화기, 토큰을 하나씩 꺼내 해당 루틴을 부르는 인출과 실행 루프, 수식 평가기, 변수 접근, 오류 출력, 처음 시작(cold boot)과 복구용 재시작(warm boot)이 고정 부품이고, 명령 이름과 진입점을 잇는 표와 오류 메시지 표가 둘을 연결한다. 부품마다 크기가 작아 따로 작성할 수 있다. 토큰화한 프로그램을 실행하므로 이 경우도 소스 글자를 한 줄씩 읽는 방식이 아니다.
+
+Apple-1용 BASIC(뒤의 Integer BASIC)이 이 분해를 종이 위에서 한 사례다. 스티브 워즈니악은 1986년 연설에서, 어셈블러를 쓰려면 수천 달러의 시분할 사용료를 내야 해서 명령을 페이지 오른쪽에, 주소를 왼쪽에 적고 명령마다 16진 값을 찾아 손으로 어셈블했으며 작은 ALGOL 시뮬레이터로 BASIC 처리기를 시뮬레이션해 보았다고 회고했다. 첫 Apple II와 함께 낸 BASIC은 어셈블러를 거친 적이 없는 손으로 쓴 사본 하나뿐이었고, Apple에는 이 BASIC의 어셈블리 소스 목록이 없었다. 원본 소스가 없으면 나중에 기능을 덧붙이는 비용이 커진다(해석). 6502는 명령과 주소 지정 방식의 조합마다 opcode가 하나로 정해져 손 변환이 쉬운 편이라는 설명, Integer BASIC이 약 6KiB에 약 2,000개 명령이고 Apple-1판이 약 4KiB라는 수치는 Stack Exchange 답변자의 설명과 디스어셈블리 기반 추정이다.
+
 ## 고급어와 저급어
 
 기계어는 ISA가 정의한 bit pattern이고, assembly language는 그 명령과 데이터를 사람이 다루기 위한 표기다. 고급 언어는 자료형, 함수, 객체, module 같은 추상화를 제공한다. 경계는 교육적 분류이며, inline assembly, intrinsic, FFI처럼 한 프로그램 안에서 층이 섞일 수 있다.
@@ -148,3 +154,7 @@ Bytecode와 source의 이식성은 runtime 자체가 모든 OS에서 같은 바�
 - [GeekNews, 2026년은 Rust 컴파일러에게도, 나에게도 흥미진진한 해](https://news.hada.io/topic?id=35739)
 - [Android Developers, SDK packages](https://developer.android.com/studio/intro/update)
 - [W3C, UI Events](https://www.w3.org/TR/uievents/#dom-keyboardevent-repeat)
+- [Retrocomputing Stack Exchange, How did Woz write the Apple 1 BASIC before building the computer?](https://retrocomputing.stackexchange.com/questions/17957) — 2021-02 질문과 채택 답변. 인터프리터 부품 분해, 6502 손 변환의 쉬움과 크기 수치는 답변자 설명
+- [Apple II History, And Then There Was Apple](https://apple2history.org/museum-a-l/articles/ca8610/) — Call-A.P.P.L.E. 1986년 10월호에 실린 워즈니악의 Apple World 연설 전사. 2026-11-16 BASIC 절의 손 어셈블, 시분할 비용, ALGOL 시뮬레이터, 손으로 쓴 사본 하나 발언 대조
+- [Apple II History, 3. The Apple II](https://apple2history.org/history/ah03/) — Integer BASIC의 어셈블리 소스 목록이 Apple에 없었다는 서술
+- [GeekNews, Woz는 컴퓨터를 만들기도 전에 어떻게 Apple 1 BASIC을 작성했을까?](https://news.hada.io/topic?id=37196)

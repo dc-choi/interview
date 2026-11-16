@@ -58,6 +58,15 @@ SageMaker Model Registry는 모델 그룹 안에 1부터 증가하는 버전을 
 
 관문 통과는 품질 보증이 아니다. 저장소 예제는 임계값 0으로 파이프라인 동작만 확인하며, 3 에피소드 중 1개 성공한 결과가 파이프라인이 동작했다는 증거일 뿐 운영 준비가 된 정책이라는 뜻이 아니라고 적는다. 등록 뒤에도 승인자가 계보(lineage)를 검토한다. Toolchain 블로그는 Jetson으로의 엣지 배포를 흐름에 넣지만, 저장소의 엣지 배포 구성 요소는 2026-11-14 확인 시점에 Planned로 표시되어 있다.
 
+## 범용 프런티어 모델로 로봇을 직접 제어하는 경로
+
+Fortune의 2026-11-13 보도(OpenAI 대변인 확인)에 따르면 OpenAI는 독립 로보틱스 팀을 해체하고 로보틱스 연구 인력은 본 연구 조직으로, 응용 로보틱스와 하드웨어 인력은 Applied 조직으로 옮겼다. 회사는 로봇을 접는 것이 아니라 진전을 가속하려는 개편이라고 설명하며, 연초에는 Sora 같은 영상 모델을 바탕으로 하는 경로가 최선이라고 봤지만 이후 GPT-6 Astra 같은 범용 프런티어 모델을 로봇에 직접 적용할 수 있음을 확인한 것이 계기라고 밝혔다.
+
+- **구성:** 기사는 연구진이 GPT-6 Astra에 카메라 영상, 로봇 정보와 동작을 명령하는 제어 인터페이스를 주고 로봇 전용 학습 없이 썼다고 설명한다. 호출 경로, 제어 주기와 동작 표현은 기사에 없다. 위의 VLA처럼 동작을 직접 출력하도록 시연 데이터로 학습한 정책과는 다른 경로다.
+- **수치의 범위:** 기사가 인용한 Nvidia 연구에서 Astra 기반 에이전트는 시뮬레이션 조작 벤치마크의 성공률 74.8%로 같은 순위표의 최고 로봇 특화 모델(51.0%)보다 높았다. 시뮬레이션 결과이므로 위의 sim-to-real 차이가 그대로 남는다.
+- **반론:** 기사 속 연구자들은 연결 없이 로봇 안에서 도는 작은 모델이 여전히 필요하고(클라우드의 대형 모델은 느리다), 현장 배치에서 쌓은 데이터가 특정 장소와 작업에 적응하는 우위를 준다고 본다.
+- **해석(이 문서의 판단):** GR00T N1이 느린 VLM(10Hz)과 빠른 동작 생성기(120Hz)를 나눴듯이, 범용 모델은 장면 해석과 상위 계획에 두고 고주파 제어와 비상 정지는 로봇 안의 정책과 제어기에 두는 계층 구성으로 읽는 편이 안전하다([[Physical-AI-and-Liquid-Control#판단과 반사를 계층으로 나눈다|판단과 반사의 계층]]). 범용 모델을 직접 붙일 때는 응답 지연, 연결이 끊겼을 때의 안전 정지와 실제 장비의 성공률을 따로 시험한다.
+
 ## 운영 체크포인트
 
 - 성공률을 보고할 때 에피소드 수, 환경 수, 시뮬레이터 버전과 정책 체크포인트를 함께 남긴다. 3 에피소드의 33%와 200 에피소드의 60%는 같은 강도의 증거가 아니다.
@@ -86,11 +95,14 @@ SageMaker Model Registry는 모델 그룹 안에 1부터 증가하는 버전을 
 - [Amazon SageMaker AI, Model Groups and Versions](https://docs.aws.amazon.com/sagemaker/latest/dg/model-registry-models.html) — 2026-11-14 버전 번호 규칙 대조.
 - [Amazon SageMaker AI, Update the Approval Status of a Model](https://docs.aws.amazon.com/sagemaker/latest/dg/model-registry-approve.html) — 2026-11-14 프로젝트 템플릿의 승인 상태 전이와 배포 동작 대조.
 - [GenerAIly Speaking: Let's train some humanoids — Amazon Web Services](https://www.youtube.com/watch?v=ljUjsyPhVOE) — 2026-11-02 게시 발표. 파이프라인 흐름의 계기.
+- [Exclusive: OpenAI disbands its stand-alone robotics team as its general models start running robots — Fortune](https://fortune.com/2026/11/13/openai-disbands-robotics-team-as-its-general-models-start-running-robots/) — 2026-11-13. 2026-11-16 회사가 확인한 개편 내용과 이유, 제어 구성 설명, Nvidia 연구 수치와 연구자 반론 대조. 출처가 밝혀지지 않은 손실 보도와 일정 목표는 옮기지 않았다.
+- [OpenAI, 범용 모델이 로봇을 제어하기 시작하면서 로보틱스 팀 해체 — GeekNews](https://news.hada.io/topic?id=37180) — 학습 계기.
 
 ## 관련 문서
 
 - [[Robotics|로보틱스 지도]]
 - [[Physical-AI-and-Liquid-Control|피지컬 AI와 리퀴드 제어]]
 - [[World-Models|월드 모델]]
+- [[Gemini-4-Argon#10월 일반 제공과 로봇 활용의 확인 범위|Gemini 4 Argon의 로봇 활용 조건]]
 - [[Reinforcement-Learning-from-Experience|경험 기반 강화학습]]
 - [[Time-Series-Forecast-Evaluation|시계열 예측 평가]]

@@ -31,4 +31,5 @@ C는 메모리 주소, 객체 수명과 범위 검사를 프로그래머에게 �
 - [[Data-Structures-in-C|C로 구현하는 자료구조]]
 - [[Stack-vs-Heap|스택 vs 힙]]
 - [[Compile-and-Runtime|컴파일과 런타임]]
+- [[Zig-Safety-and-C-Interop|Zig의 안전 장치와 C 연동]] — C의 정리, 오류 보고, 범위와 넘침 문제를 Zig가 다루는 방식
 - [[Digital-Fundamentals|디지털 기초]]

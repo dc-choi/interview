@@ -1,9 +1,9 @@
 ---
-tags: [cs, functional, error-handling, monad, typescript, kotlin]
+tags: [cs, functional, error-handling, monad, typescript, kotlin, gleam]
 status: done
 category: "CS&프로그래밍(CS&Programming)"
 aliases: ["Railway Oriented Programming", "ROP", "철도지향 프로그래밍", "Result 모나드"]
-verified_at: 2026-10-01
+verified_at: 2026-11-16
 ---
 
 # Railway-Oriented Programming (ROP)
@@ -118,6 +118,7 @@ const flatMap = <T, U, E>(r: Result<T, E>, f: (t: T) => Result<U, E>): Result<U,
 - Scala: `for { user <- getUser(1); posts <- getPosts() } yield ...` 형태의 for comprehension. Haskell은 do 표기법이다.
 - Kotlin: Arrow의 `either { }` 블록 안에서 `.bind()`로 값을 꺼내고 실패는 즉시 반환된다. 현재 Arrow는 `Raise<E>`를 확장 리시버로 제공하고, context parameters는 향후 선택지로 언급된다.
 - TypeScript: neverthrow의 `safeTry`는 제너레이터 안에서 `yield*`로 Result를 풀고 `Err`이면 바로 반환한다. 라이브러리 없이도 `if (!r.ok) return r;` 식의 조기 반환으로 같은 효과를 낸다.
+- Gleam: `use user <- result.try(get_user(1))`처럼 쓴다. `use` 아래의 코드 전체가 익명 함수가 되어 오른쪽 호출의 마지막 인자로 들어가는 문법 설탕이고, `result.try`는 `Ok`이면 그 함수를 부르고 `Error`이면 부르지 않고 원래 `Error`를 돌려준다(flatMap). 둘을 합치면 `?`처럼 실패에서 바로 빠진다. `use`는 Result 전용이 아니라 콜백을 마지막 인자로 받는 모든 함수에 쓰이며, Gleam 공식 투어는 남용하면 코드가 불명확해질 수 있다고 경고한다.
 
 ## 중첩 컨테이너 문제
 
@@ -151,6 +152,10 @@ const flatMap = <T, U, E>(r: Result<T, E>, f: (t: T) => Result<U, E>): Result<U,
 - [kciter.so — Railway-Oriented Programming](https://kciter.so/posts/railway-oriented-programming/)
 - [neverthrow — GitHub](https://github.com/supermacro/neverthrow)
 - [Arrow, Working with typed errors](https://arrow-kt.io/learn/typed-errors/working-with-typed-errors/)
+- [Gleam Language Tour, Use](https://tour.gleam.run/advanced-features/use/) — 2026-11-16 `use`의 변환 규칙과 남용 경고 대조
+- [gleam_stdlib, gleam/result](https://gleam-stdlib.hexdocs.pm/gleam/result.html) — v1.0.5 `try`가 `Error`에서 함수를 부르지 않는 동작
+- [You should try Gleam — Nicolas Chagnet](https://nchagnet.eu/blog/you-should-try-gleam) — 콜백 중첩을 줄이는 `use`의 쓰임
+- [Gleam을 써보자 — GeekNews](https://news.hada.io/topic?id=36975)
 
 ## 관련 문서
 - [[Category-Theory-For-Programmers|Category Theory for Programmers — 수학적 토대]]

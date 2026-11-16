@@ -76,6 +76,7 @@ Miri는 Rust 프로그램을 실행하며 범위 밖 접근, 해제 뒤 사용�
 
 ## 관련 문서
 
+- [[Rust-Ownership-and-Borrowing|Rust 소유권과 대여]] — 소유권과 참조 규칙의 기본
 - [[Programming-Language-Landscape|프로그래밍 언어 지형과 구분 기준]] — 메모리 안전 언어의 적용 경계
 - [[Compile-and-Runtime|컴파일과 런타임]] — 검사 시점과 실제 실행의 구분
 - [[Nodejs-Native-Addons|Node.js Native Addons]] — 네이티브 코드 경계의 책임
