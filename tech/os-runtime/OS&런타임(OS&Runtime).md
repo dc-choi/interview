@@ -40,6 +40,7 @@ aliases: ["OS&런타임(OS&Runtime)", "OS & Runtime"]
 - [[Emulation-and-Compatibility-Layers|에뮬레이션과 호환 계층]] — Wine과 Proton, Rosetta, 셰이더 변환, TBDR과 이식 판단
 
 ## Linux 체크리스트
+- [x] [[Linux-System-Boot-Composition|Linux 시스템 구성과 부팅 경로 (커널과 PID 1, 로더와 C 라이브러리, initramfs와 부트 로더, 배포판 커널, VM과 컨테이너와 WSL 2)]]
 - [x] [[Container-Memory-Metrics|Page cache와 컨테이너 메모리 지표 (RSS, file cache, working set, reclaim, cgroup 진단)]]
 - [x] [[File-Descriptor-Limit|File descriptor limit]] — 기존 보강: [[Storage-and-FileSystem-Files#파일 메타데이터와 파일 디스크립터|파일 디스크립터 구조]], [[libuv-Threading#완료 시점과 오류 분류|libuv 오류 분류]]
 - [x] [[Epoll-Kqueue|epoll / kqueue]] — 기존 보강: [[libuv-Architecture#OS 알림과 실행 모델|libuv의 OS별 이벤트 제공자]]

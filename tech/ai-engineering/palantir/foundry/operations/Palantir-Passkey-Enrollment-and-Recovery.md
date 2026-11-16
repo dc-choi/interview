@@ -1,7 +1,7 @@
 ---
 tags: [palantir, foundry]
 status: done
-verified_at: 2026-11-09
+verified_at: 2026-11-16
 category: "AI엔지니어링(AIEngineering)"
 ---
 
@@ -17,7 +17,7 @@ Enrollment는 기존 identity provider의 SSO를 사용하거나 일부 Develope
 
 어떤 authenticator를 쓸 수 있는지는 directory의 보안 정책이 정한다. Recommended나 Government profile을 쓰는 directory는 자격을 갖춘 hardware passkey만 받으므로, 기기나 비밀번호 관리자를 고르기 전에 enrollment 관리자에게 허용 유형을 확인한다. 정책이 허용하는 범위 안에서 현재 기기의 Windows Hello/Chrome/iCloud 등, 별도 mobile 또는 hardware security key를 선택할 수 있다. QR 기반 다른 기기 인증에는 Bluetooth와 지원 OS/browser가 필요하다. 기본 제안 store를 반드시 선택할 필요는 없다.
 
-검증일 기준 계정당 최대 4개, credential store당 하나의 passkey를 등록할 수 있다. 정책이 백업 credential을 허용하면 허용된 passkey를 최소 두 개 준비하고, hardware passkey만 받는 directory에서는 승인된 예비 hardware key를 백업으로 둔다. 관리자가 복구 과정에서 보는 이름에는 개인 정보를 넣지 않는다. 여러 기기에서 쓸 수 있는지는 device-specific 여부, sync와 autofill provider 설정에 달려 있다.
+login 문서 기준(2026-11-08 대조) 계정당 최대 4개, credential store당 하나의 passkey를 등록할 수 있다. 정책이 백업 credential을 허용하면 허용된 passkey를 최소 두 개 준비하고, hardware passkey만 받는 directory에서는 승인된 예비 hardware key를 백업으로 둔다. 관리자가 복구 과정에서 보는 이름에는 개인 정보를 넣지 않는다. 여러 기기에서 쓸 수 있는지는 device-specific 여부, sync와 autofill provider 설정에 달려 있다.
 
 Passkey를 삭제할 때는 platform 등록과 원래 credential store 양쪽에서 지운다. Store에 이전 항목을 남기면 같은 store의 새 등록이 실패할 수 있다. 서버의 등록 해제만으로 기기 항목이 사라지는 것은 아니다.
 
@@ -41,11 +41,24 @@ Passkey를 삭제할 때는 platform 등록과 원래 credential store 양쪽에
 | Government | Recommended보다 제한적인 하드웨어 인증기 집합 |
 | Custom | 기본 profile에 AAGUID를 추가/제외. 기본 집합의 변경도 반영 |
 
+새 directory의 기본 profile은 enrollment 구성이 정한다. Custom은 directory마다 하나만 저장할 수 있다. 인증기는 AAGUID로 식별하며, profile이 받는 인증기 집합은 MDS가 새 인증기, 인증 상태 변경과 보안 문제를 보고하면 바뀔 수 있다. 예를 들어 Permissive가 받는 비밀번호 관리자를 Standard는 받지 않을 수 있고, FIDO 인증이 없는 MDS 인증기는 Standard에는 들고 Recommended에서는 빠질 수 있다.
+
 **Check impact는 저장이나 결과 예약이 아니다.** 일부/전체 passkey를 잃는 사용자를 구분하고, 관리자 자신의 대체 passkey를 등록/시험한 뒤 다시 확인한다. 저장 때 재평가하며 변경 사유가 감사에 남는다. `Enforce anyway`도 실행 관리자의 마지막 허용 passkey를 없애는 변경을 허용하지 않는다. 미리보기는 passkey 등록 사용자를 집계하며 조회 권한에 따라 표시 표본은 더 작을 수 있다.
 
-AAGUID만으로 하드웨어 진위를 증명하지 못한다. Custom 추가로 보안 차단이나 필요한 attestation 부재를 우회할 수 없으며, 신뢰할 metadata를 불러오지 못하면 평가는 실패한다.
+AAGUID만으로 하드웨어 진위를 증명하지 못한다.
 
-이 절은 2026-10-30에 수집 본문과 공식 페이지의 검색 색인 본문으로 확인했고(당시 직접 URL 열기는 실패), 2026-11-08 공식 페이지를 직접 열어 내용이 유지됨을 다시 확인했다. 실제 정책 변경은 시험하지 않았다.
+### Attestation과 기존 credential
+
+- 모든 profile은 전역 차단, 폐기, 침해 보고된 인증기를 거부하며, 정책 변경 전에 등록한 credential에도 같은 제외가 적용된다.
+- 등록 당시 MDS에 있던 인증기의 credential은 신뢰할 수 있는 attestation이 있어야 한다. Attestation이 없거나 검증되지 않았으면 출처의 증거가 되지 않는다. Permissive와 Standard는 MDS 밖의 지원 소프트웨어 인증기를 별도 관리 집합으로 받지만, 그 AAGUID도 진짜 하드웨어나 준수 기준 충족의 증거가 아니다.
+- MDS에 오르기 전에 등록한 credential은 Palantir가 등록 시점에 미등재 사실을 기록해 두었다면 attestation 검사를 통과할 수 있다. MDS 등재 뒤의 등록은 신뢰할 수 있는 attestation이 필요하다. 이 예외도 profile 자격과 보안 제외를 면제하지 않으며, 그 기록이 없는 오래된 credential은 교체가 필요할 수 있다.
+- 기존 allowlist의 시행일은 profile 검사를 늦추거나 면제하지 않는다. 신뢰할 metadata를 불러오지 못하면 알려진 MDS 인증기를 미등재로 취급하지 않고 평가 자체가 실패한다.
+
+### 거부와 미리보기 실패 대응
+
+미리보기를 계산하지 못하면 정책을 정하기 전에 다시 시도한다. 관리자 자신이 차단된다는 경고는 오류가 아니라 유효한 결과이므로 허용되는 대체 credential을 먼저 등록한다. 인증기가 거부되면 선택한 profile이 그 AAGUID를 받는지, 차단, 폐기, 침해 보고 대상인지, credential에 신뢰할 attestation이 있는지를 확인한다. AAGUID가 profile 밖이면 Custom을 쓸 수 있는 enrollment에서 그 AAGUID를 추가할 수 있다. 차단된 인증기나 attestation 부재는 Custom으로 풀리지 않으므로 credential을 교체해야 하며, 교체와 계정 복구는 passkey 관리 workflow로 준비한다.
+
+이 절은 2026-10-30에 수집 본문과 공식 페이지의 검색 색인 본문으로 확인했고(당시 직접 URL 열기는 실패), 2026-11-08 공식 페이지를 직접 열어 내용이 유지됨을 다시 확인했다. 2026-11-16 수집 본문과 공식 페이지를 다시 대조해 기본 profile, Custom 개수, attestation 예외와 거부 점검 항목을 더했다. 같은 날 profile 페이지는 Government가 가장 제한적인 기본 profile이며 FIPS 검증 hardware 인증기를 요구하고 배포 인증이나 AAL을 성립시키지 않는다고도 적는다. 실제 정책 변경은 시험하지 않았다.
 
 ## Government profile과 FIPS, AAL3 요건
 
@@ -85,7 +98,7 @@ FedRAMP 관리자는 Recommended나 Government를 profile 예외 승인 없이 �
 
 ## 출처
 
-- [Palantir Foundry, Configure passkey profiles](https://www.palantir.com/docs/foundry/authentication/user-directory-passkey-profiles) — 2026-10-30 profile 범위, 영향 미리보기, 관리자 잠금 방지와 attestation 조건 대조.
+- [Palantir Foundry, Configure passkey profiles](https://www.palantir.com/docs/foundry/authentication/user-directory-passkey-profiles) — 2026-10-30 profile 범위, 영향 미리보기, 관리자 잠금 방지와 attestation 조건 대조, 2026-11-16 기본 profile, Custom 개수, attestation 예외와 거부 점검 재대조.
 
 - [Palantir Foundry, authentication](https://www.palantir.com/docs/foundry/getting-started/authentication/)
 - [Palantir Foundry, login](https://www.palantir.com/docs/foundry/getting-started/login/)
