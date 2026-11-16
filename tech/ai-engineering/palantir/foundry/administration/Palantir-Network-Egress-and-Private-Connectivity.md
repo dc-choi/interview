@@ -1,7 +1,7 @@
 ---
 tags: [palantir, foundry, networking, egress, private-link]
 status: done
-verified_at: 2026-10-16
+verified_at: 2026-11-16
 category: "AI엔지니어링(AIEngineering)"
 aliases: ["Foundry 네트워크 egress"]
 ---
@@ -30,7 +30,7 @@ Direct는 DNS/IPv4/CIDR, port 1~65535와 TLS/TCP/UDP를 설정한다. DNS에는 
 
 Palantir 클라우드에서 운영하는 Foundry가 직접 연결할 때의 egress IP 대역은 Control Panel의 network egress 관리 화면에 표시되므로, 목적지의 allowlist에는 그 CIDR을 넣는다. AWS에서 운영하는 Foundry의 같은 region S3는 VPC endpoint를, Azure에서 운영하는 Foundry의 Azure Storage는 subnet ID를 허용한다. Agent를 거치는 연결은 고객 인프라의 agent host에서 나가므로 agent와 목적지 사이의 연결은 고객이 맡는다. Secure tunnel도 Foundry가 목적지에 직접 연결하지 않으므로, 목적지는 Foundry의 연결 대신 initiator의 연결을 허용해야 한다.
 
-Wildcard는 왼쪽 첫 label 하나로 한 단계 subdomain만 일치한다. `*.example.com`은 `a.example.com`과 일치하지만 apex나 `a.b.example.com`과는 다르다. Public suffix, 중간/다중 wildcard는 안 된다. Direct/agent proxy 지원 설명과 secure tunnel 표의 wildcard 설명은 전용 경로 설정을 함께 확인한다. Private link/bucket endpoint에는 사용하지 않는다.
+Wildcard는 왼쪽 첫 label 하나로 한 단계 subdomain만 일치한다. `*.example.com`은 `a.example.com`과 일치하지만 apex나 `a.b.example.com`과는 다르다. 중간/다중 wildcard는 안 되고, public suffix를 겨냥한 wildcard(`*.com`, `*.co.uk`, `*.s3.amazonaws.com` 등)는 쓸 수 없는 policy가 된다. 지원 경로는 direct, agent proxy와 secure tunnel이며 private link/bucket endpoint는 정확한 domain 하나씩 policy를 만든다. Azure SQL redirect mode, Kafka node, MongoDB SRV처럼 subdomain이 동적이거나 미리 알 수 없는 원천에 쓰는 기능이므로, 열리는 범위가 그 domain 아래 모든 한 단계 host라는 점을 승인 검토에 포함한다.
 
 ## Policy의 사용 권한은 실행 능력이다
 
@@ -44,7 +44,7 @@ Wildcard는 왼쪽 첫 label 하나로 한 단계 subdomain만 일치한다. `*.
 
 ## S3 endpoint와 원천 인증을 함께 적용한다
 
-신형 bucket endpoint는 enrollment별 endpoint, source attachment와 최대 1,000개 policy를 제공한다. 구형 S3 bucket policy는 platform instance별 endpoint, source attachment 없는 즉시 전체 workload 적용과 최대 10개 제한으로 다르다. 구형 endpoint가 여러 Foundry instance에 공유될 수 있으므로 VPCE 출처만 허용해 데이터 인가를 끝내지 않는다. 신형도 여러 policy가 endpoint를 공유할 수 있어 AWS 인증/인가가 필요하다. 구형 same-region S3 bucket policy에서 고르는 `READ ONLY`와 `READ WRITE`는 VPC endpoint로 보장되는 최소 접근 수준이며, Palantir는 허용 bucket 목록을 넓히거나 `READ ONLY`를 `READ WRITE`로 올릴 수 있다. 그래서 S3 source에는 AWS 인증과 인가를 따로 둔다.
+신형 bucket endpoint는 enrollment별 endpoint, source attachment와 최대 1,000개 policy를 제공한다. AWS에서 운영하는 Foundry가 같은 region의 외부 S3 bucket에 연결할 때 필요하며, policy에는 정확한 domain, port 443과 S3 bucket 이름을 넣는다. 생성 뒤 policy 개요 화면에 표시되는 VPC endpoint를 bucket policy가 허용해야 연결된다. 구형 S3 bucket policy는 platform instance별 endpoint, source attachment 없는 즉시 전체 workload 적용과 최대 10개 제한으로 다르다. 구형은 계속 동작하지만 앞으로 bucket endpoint로 migration이 필요하다고 예고됐으므로 새 연결의 대안으로 고르지 않는다. 구형 endpoint가 여러 Foundry instance에 공유될 수 있으므로 VPCE 출처만 허용해 데이터 인가를 끝내지 않는다. 신형도 여러 policy가 endpoint를 공유할 수 있어 AWS 인증/인가가 필요하다. 구형 same-region S3 bucket policy에서 고르는 `READ ONLY`와 `READ WRITE`는 VPC endpoint로 보장되는 최소 접근 수준이며, Palantir는 허용 bucket 목록을 넓히거나 `READ ONLY`를 `READ WRITE`로 올릴 수 있다. 그래서 S3 source에는 AWS 인증과 인가를 따로 둔다.
 
 Azure Storage도 subnet ID 허용과 원천 인증/인가, Foundry egress policy를 함께 적용한다. Subnet 공유 가능성 때문에 network origin만을 신뢰하지 않는다. GCP-hosted Foundry의 BigQuery/GCS/PubSub 연결 추가 구성은 지원 요청 경로다.
 
@@ -80,7 +80,7 @@ Source terminal은 source와 같은 network access에서 `dig`, `curl`, `netcat`
 
 Control Panel과 Builds telemetry의 로그는 policy/source/connection ID, byte 수와 duration을 연결한다. Direct 성공은 Foundry 밖으로 나갔다는 뜻, agent proxy 성공은 agent로 전달됐다는 뜻이다. 목적지 ingress firewall, TLS와 인증 실패는 그 뒤에도 가능하다. Observability는 TCP-level allowlisting policy에만 제공된다. 먼저 실패한 hop을 구분하고 DNS, policy attachment, agent health와 외부 인가를 확인한다.
 
-2026-10-19 검증은 방화벽 두 층과 운영 권고, agent proxy와 secure tunnel policy 옵션, TCP-level allowlisting의 보안 영향, egress IP와 경로별 연결 책임, 권한 기본값과 승인 처리, Paused와 Palantir 관리 또는 self-service 적용, 구형 S3 접근 수준을 Palantir 공식 Configure network egress 문서와 대조한 범위에 한정한다. 나머지 내용의 확인일은 frontmatter의 날짜로 유지한다.
+2026-10-19 검증은 방화벽 두 층과 운영 권고, agent proxy와 secure tunnel policy 옵션, TCP-level allowlisting의 보안 영향, egress IP와 경로별 연결 책임, 권한 기본값과 승인 처리, Paused와 Palantir 관리 또는 self-service 적용, 구형 S3 접근 수준을 Palantir 공식 Configure network egress 문서와 대조한 범위에 한정한다. 2026-11-16에는 같은 문서로 wildcard 지원 경로와 public suffix 제한, bucket endpoint의 설정 항목을 대조했고 문서의 다른 문장과 이 문서 사이의 상충이 없음을 확인했다. Cloud identity, 인증서, private link와 observability 절은 2026-10-16, secure tunnel 절은 2026-10-21 확인 기준이다.
 
 ## 출처
 
