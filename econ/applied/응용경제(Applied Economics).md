@@ -22,6 +22,7 @@ aliases: ["응용경제(Applied Economics)", "Applied Economics Map"]
 - [[Hidden-Infrastructure-Markets|보이지 않는 B2B 인프라 시장]] — 수요 원천과 수익 구조, 장기 계약의 듀레이션, 데이터센터 건설과 운영 고용의 구분 ✅
 
 - [[AI-Infrastructure-Capital-Cycle|AI 인프라 투자와 자본 순환]] — 수요, 설비투자, 가동과 자금 회수의 구분
+- [[AI-Compute-Commitment-Under-Uncertainty|AI 연산 설비의 선행 확보 판단]] — 검증 전 약정의 이유, 발언과 공시의 비용 구분, 주 위험과 상관된 하방, 설비 자산화와 연구비 비용 처리의 비대칭
 - [[GPU-Collateral-and-Securitization|GPU 담보 금융과 유동화]] — 플랫폼 목표와 대출 집행, 정상 상환과 담보 회수, 고객 계약 조건, 유동화와 잔존 가치 지원의 범위
 - [[Data-Center-Grid-Access-Politics|데이터센터 전력망 연결과 지역 수용성]] — 접속 대기열과 실제 수요, 감사 지시와 정보 요구 항목, 비용 배분과 자금 구조별 지연 영향
 
