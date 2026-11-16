@@ -35,7 +35,7 @@ SPA, MPA와 SSR은 위 배포 형태와 다른 축이다. 모바일 브라우저
 ## 선택 기준
 
 1. **기능** — 고성능 카메라 필터, 정교한 모션이 핵심이면 네이티브. 콘텐츠와 폼 중심이면 웹 계열로 충분.
-2. **배포 주기** — 빠른 실험과 핫픽스가 중요하면 웹, 웹뷰 비중을 높인다. 2026-10-27 확인한 Apple 안내는 통상 제출물의 최소 50%를 24시간 미만에, 90%를 48시간 미만에 심사한다고 설명한다. 이는 개별 제출물의 완료 기한을 보장하지 않는다. 심사 대기와 리젝 후 재제출, 사용자의 업데이트 지연이 있어 웹처럼 즉시 반영되지는 않는다. 플랫폼과 변경 범위별 실제 소요를 일정에 반영한다.
+2. **배포 주기** — 빠른 실험과 핫픽스가 중요하면 웹, 웹뷰 비중을 높인다. 2026-11-16 재확인한 Apple 안내는 통상 제출물의 최소 50%를 24시간 미만에, 90%를 48시간 미만에 심사한다고 설명한다. 이는 개별 제출물의 완료 기한을 보장하지 않는다. 심사 대기와 리젝 후 재제출, 사용자의 업데이트 지연이 있어 웹처럼 즉시 반영되지는 않는다. 플랫폼과 변경 범위별 실제 소요를 일정에 반영한다.
 3. **리소스** — OS별 네이티브 구현은 플랫폼별 개발과 유지보수 비용이 든다. 초기 팀은 크로스플랫폼, 하이브리드나 웹으로 시작하는 경우가 많다.
 4. **전제의 유효성** — 크로스플랫폼 선택의 원래 전제는 코드 공유로 중복 구현 비용을 줄인다는 것이고, 이 전제는 구현 인건비가 병목일 때 성립한다. 구현, 번역, 테스트, 리뷰를 코딩 에이전트가 맡아 두 번 구현하는 한계 비용이 급락하면, 공유의 이득이 추상화 레이어의 세금(프레임워크 레이어, 의존성, 플랫폼 신기능 지연)보다 작아지는 교차점이 생긴다. 채택 결정의 근거 가정을 적어 두고, 가정이 무너지는 사건이 오면 first principles에서 다시 판단한다. 재평가 트리거는 도구의 성능 저하가 아니라 가정 붕괴다.
 
@@ -46,6 +46,12 @@ SPA, MPA와 SSR은 위 배포 형태와 다른 축이다. 모바일 브라우저
 2026-09-10 Shopify는 Shop 앱 전환 결과를 자체 보고했다. 엔지니어 한 명의 1주 개념 증명에서 시작해 핵심 엔지니어 6명이 기반과 주요 사용자 흐름을 만들고 기능 팀이 중간에 합류했으며, 네이티브 앱의 스토어 배포까지 12주가 걸렸다. React Native 이전 버전과 비교해 콜드 스타트는 iOS 3,200ms에서 2,466ms로 23%, Android 4,433ms에서 2,233ms로 50% 줄었다. 세션 안정성은 99.5% 이상에서 99.95% 이상으로 올라 크래시가 나는 세션이 10분의 1로 줄었다고 밝혔다. 앱 크기는 iOS가 67MB에서 68MB로 1MB(1.5%) 늘고 Android가 293MB에서 184MB로 37.2% 줄었으며, 릴리스 빌드 시간은 Android에서 약 75% 줄고 iOS에서는 비슷했다. 측정 기간, 기기와 백분위 같은 조건은 밝히지 않았으므로 독립 검증된 비교가 아니라 한 회사의 자체 보고로 읽고, 다른 조직의 일반 기준으로 옮기지 않는다.
 
 전환 과정에서는 계획 승인을 계획 내용의 해시에 묶어 계획이 바뀌면 이전 승인이 무효가 되게 했다. 지정한 체크포인트마다 두 앱의 화면과 이벤트 구간을 캡처하고 원시 이벤트 캡처로 이벤트 이름, 개수와 payload 필드를 비교했으며, 타임스탬프와 페이지 UUID처럼 실행마다 자연히 달라지는 값은 비교 지시에서 따로 고려했다. 전문화된 서브에이전트가 기존 React Native 소스 분석과 동작 문서화, 플랫폼별 계획, 기능 구현, 패리티 리뷰를 나눠 맡았고, 개발자 한 명이 변경과 실행을 반복하는 대신 여러 에이전트 세션을 별도 worktree에서 돌리는 방식을 자주 썼다.
+
+### 사례 — 심사 대기의 꼬리와 반복 거절
+
+2026-11-12 음악 기술 매체 Synth Anatomy는 iOS 음악 앱 개발자들이 심사에서 몇 주씩 기다린 사례를 보도했다. 한 앱은 승인까지 25일이 걸렸고 다른 앱은 기사 시점에 29일째 심사 중이었으며, VST판과 동시에 내려던 제품은 iOS판이 약 2주 늦게 나왔다. 오디오판과 MIDI판을 따로 낸 플러그인은 네 차례 거절됐고 마지막에는 MIDI판이 비슷한 앱이라는 이유로 스팸으로 분류돼 오디오판만 먼저 출시했다. 다른 신시사이저 앱은 디자인 스팸, 중복 앱, 앱 생성 템플릿 사용을 이유로 네 번 연속 거절됐는데, 상태가 몇 초 만에 심사 중에서 거절로 바뀌어 개발자가 자동 처리를 의심했다. AI로 만든 앱이 늘어 하루 10~20개의 iOS 음악 앱이 나온다는 수치는 출처 없는 기사 측 추정이고, Apple이 AI로 심사한다는 말은 개발자들의 의심이다.
+
+Apple의 App Review 안내는 통상 제출물의 최소 50%를 24시간 안에, 90%를 48시간 안에 심사한다고 설명하고, 치명적 버그 수정이나 직접 관련된 행사 일정이 있으면 신속 심사를 요청하게 하며, 거절에 대한 이의 제기는 App Review Board에 제출물당 한 번 할 수 있게 한다(2026-11-16 재대조). 이 수치는 분포의 앞부분을 말할 뿐 개별 제출의 상한이 아니다. 여러 플랫폼 동시 출시나 날짜가 정해진 출시는 거절 뒤 재제출까지 포함한 여유를 두고, 같은 제품의 변형을 앱 여러 개로 나눌지 한 바이너리에 묶을지를 중복 앱 판정 위험과 함께 검토한다(적용 제안).
 
 ## 코드 공유와 렌더링 자원 한도를 구분한다
 
@@ -90,7 +96,7 @@ SPA, MPA와 SSR은 위 배포 형태와 다른 축이다. 모바일 브라우저
 ## 출처
 - [Android Developers, MediaCodecInfo.CodecCapabilities](https://developer.android.com/reference/android/media/MediaCodecInfo.CodecCapabilities#getMaxSupportedInstances()) — 동시 코덱 인스턴스 수의 상한 힌트와 가용 자원 조건
 - [Android Developers, Bitmap.Config](https://developer.android.com/reference/android/graphics/Bitmap.Config#HARDWARE) — HARDWARE의 그래픽 메모리 저장과 불변성
-- [App Review — Apple Developer](https://developer.apple.com/distribute/app-review/) — 2026-10-27 심사 시간 안내만 재대조
+- [App Review — Apple Developer](https://developer.apple.com/distribute/app-review/) — 2026-11-16 심사 시간, 신속 심사와 이의 제기 안내만 재대조
 - [Sending web push notifications in web apps and browsers — Apple Developer](https://developer.apple.com/documentation/usernotifications/sending-web-push-notifications-in-web-apps-and-browsers)
 - [MDN, Single-page application](https://developer.mozilla.org/en-US/docs/Glossary/SPA)
 - [MDN, Progressive web apps](https://developer.mozilla.org/en-US/docs/Web/Progressive_web_apps)
@@ -98,6 +104,8 @@ SPA, MPA와 SSR은 위 배포 형태와 다른 축이다. 모바일 브라우저
 - [Native is now the future of mobile at Shopify — Shopify Engineering](https://shopify.engineering/back-to-native)
 - [Migrating Shop app from React Native to native — Shopify Engineering](https://shopify.engineering/shop-app-migration)
 - [Shopify, React Native에서 네이티브로 복귀 — GeekNews](https://news.hada.io/topic?id=33485)
+- [AI is turning Apple's app review process into a nightmare for developers — Synth Anatomy](https://synthanatomy.com/2026/11/ai-is-turning-apples-app-review-process-into-a-nightmare-for-developers.html) — 2026-11-12 게시. 대기 일수와 거절 사유는 개발자 보고
+- [애플 앱스토어 심사에 몇 주씩 걸리는 iOS 음악 앱들 — GeekNews](https://news.hada.io/topic?id=37117)
 - [인프런, 제미니, 상품 목록 - 요구사항 느끼기](https://www.inflearn.com/courses/lecture?courseId=340204&unitId=392731)
 - [인프런, 제미니, 상품 목록 - 레거시 x AI 느끼기](https://www.inflearn.com/courses/lecture?courseId=340204&unitId=392732)
 - [인프런, 제미니, 상품 목록 - 코드 느끼기](https://www.inflearn.com/courses/lecture?courseId=340204&unitId=392733)

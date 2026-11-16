@@ -1,9 +1,9 @@
 ---
-tags: [gpu, inference, memory, kv-cache, intel, nvidia, tensor-core]
+tags: [gpu, inference, memory, kv-cache, intel, nvidia, tensor-core, tpu, npu, pim]
 status: done
 verified_at: 2026-10-16
 category: "인프라&클라우드(Infrastructure&Cloud)"
-aliases: ["GPU Inference Hardware", "추론용 GPU 선택", "Intel D270", "GeForce Tensor Rate", "gpu-unlock", "RTX PRO 6000 Blackwell", "Max-Q", "DGX Spark"]
+aliases: ["GPU Inference Hardware", "추론용 GPU 선택", "Intel D270", "GeForce Tensor Rate", "gpu-unlock", "RTX PRO 6000 Blackwell", "Max-Q", "DGX Spark", "TPU 8tx", "TPU 8i Max", "DX-M2", "PIM", "메모리 내 연산"]
 ---
 
 # 추론용 GPU: 메모리 용량과 서비스 성능
@@ -105,6 +105,32 @@ GeForce는 FP32 누산 경로를 FP16 누산의 절반으로 표기하고, 전�
 
 2026년 10월 팟캐스트의 사용 사례에서는 Max-Q 4장을 워크스테이션에 붙여 꽂아 로컬 모델을 상시 실행했다. 부하가 걸리면 GPU 온도가 한계 근처까지 올랐고, 서버형 장비는 소음 때문에 사무 공간에 두기 어렵다는 경험담이 나왔다. 대량의 전사 검수나 장면 분석은 로컬 모델에 맡기고 일부 결과만 상용 모델로 다시 검토하는 혼합 운용도 소개됐다. 출연자 경험이며 온도와 처리 속도는 재현하지 않았다.
 
+## GPU 밖의 추론 가속기
+
+### TPU 8세대는 용도별 시스템으로 나뉜다
+
+2026-11-09 Google 발표 기준이다. 8세대 TPU는 기존 칩을 바탕으로 패키징, 메모리, 네트워크와 보안 구성을 바꾼 네 시스템이다. 8t의 2.7배와 8i의 80%는 2026년 4월 Cloud Next 발표 수치다.
+
+| 시스템 | 겨냥한 일 | 발표 내용 |
+| --- | --- | --- |
+| TPU 8t | 대규모 학습 | 이전 세대 대비 학습 성능 최대 2.7배 |
+| TPU 8i | 저지연 추론 | 이전 세대 대비 추론 가격 대비 성능 80% 개선, 칩 간 통신 지연 최대 절반 감소 |
+| TPU 8tx | 기밀 추론과 소규모 학습 | 8t와 같은 실리콘에 5세대 AMD EPYC 호스트, 저지연 Boardfly 네트워크로 8t 대비 지연 최대 절반 |
+| TPU 8i Max | 긴 문맥과 랙 밀도 | 8i 칩 두 개를 한 패키지에 넣어 연산, SRAM, HBM 대역폭이 8i의 2배 |
+
+- **기밀 추론:** 데이터는 저장과 전송 중에 암호화해도 처리 중에는 메모리에서 복호화된다. 8tx는 사용 중인 데이터와 모델 가중치를 하드웨어 계층에서 보호하고 격리해, 규제 산업이 민감 데이터로 추론, 미세조정과 증류를 같은 시스템에서 하도록 한다고 설명한다. 격리 방식의 세부와 인증 범위는 발표에 없다.
+- **확인하지 못한 것:** HBM 용량, FLOPS, 팟 규모, 전력, 출시일, 리전과 가격은 발표에 없다. 배수는 최대값이고 이전 세대 TPU와의 비교다. InferenceX와 AgentX에서 최상위 가격 대비 성능을 냈다는 주장도 조건이 본문에 없다.
+- **함께 발표한 소프트웨어:** vLLM과 SGLang의 TPU 백엔드([[PyTorch-on-TPU|TorchTPU]]), 긴 문맥의 KV 캐시를 HBM 밖의 호스트 DRAM과 공유 스토리지로 옮기는 TPU Sync(KV 전송 지연과 TTFT를 90% 이상 줄였다는 주장), GKE의 Cloud Pathways와 dynamic slicing 정식 출시다.
+
+### 엣지 NPU는 메모리 대역폭과 전력 예산으로 읽는다
+
+2026-11-09 EE Times 보도 기준, DeepX의 2세대 가속기 DX-M2가 테이프아웃했다. 로봇, 드론처럼 전력과 발열 예산이 작은 기기에서 생성형 모델을 실행하려는 칩이다.
+
+- **회사 발표 사양:** 1세대와 같은 5W 예산, 2nm 공정, 80 TOPS, 메모리 대역폭 150GB/s(1세대 50GB/s). 전체 200억~1,000억, 활성 약 30억~200억 파라미터 모델을 모델에 따라 초당 10~30토큰으로 돌리는 것이 목표다. 전체와 활성 파라미터를 따로 적은 MoE 기준이므로 1,000억 dense 모델을 같은 속도로 돌린다는 뜻으로 읽지 않는다.
+- **대역폭으로 상한을 가늠한다:** 작은 배치의 디코드는 토큰마다 활성 가중치를 읽으므로 초당 토큰의 상한은 대략 메모리 대역폭을 토큰당 읽는 바이트로 나눈 값이다. 4비트 가중치라면 활성 200억은 토큰당 약 10GB라 150GB/s에서 초당 약 15토큰, 활성 30억은 약 1.5GB라 약 100토큰이 상한이다(KV 캐시와 효율 손실을 뺀 계산). TOPS만으로 디코드 속도를 판단하지 않는 이유는 [[LLM-Inference-Bottlenecks#가속기 스펙 읽기|가속기 스펙 읽기]]와 같다.
+- **PIM:** 메모리 내 연산(processing-in-memory)은 디코드의 주된 연산인 행렬-벡터 곱(GEMV)을 메모리 칩 안에서 처리해 가중치 이동을 줄이고 실효 대역폭을 높인다. DeepX는 Samsung의 맞춤형 LPDDR5x-PIM으로 GEMV를 넘기면 Llama3.1-8B 처리량이 PIM 없는 DX-M2의 6.7배가 된다고 시뮬레이션으로 예측했다. 이때 전체 전력은 2.7배(5W 기준 약 13.5W, 계산)로 늘고, 같은 전력에서는 약 2배를 기대한다고 밝힌다. PIM용 컴파일러는 시뮬레이션 기반 시제품이고 하드웨어 모듈은 시험 단계다. 기사는 PIM이 LPDDR6의 JEDEC 표준에 들어갈 예정이라고 전한다.
+- **일정과 경계:** 샘플은 2027년 3월, 양산은 2027년 가을 목표다. 테이프아웃은 설계를 제조로 넘긴 단계이지 출하가 아니다. Nvidia 대비 배터리 수명 20배 같은 회사 주장은 독립 검증이 없다.
+
 ## 구매 및 배포 전 확인
 
 설치 장소의 소음과 열 배출, 전원 용량, 카드 수에 맞는 에디션(단일 고성능, 고밀도, 수동 냉각)을 먼저 정한다. 같은 모델, 정밀도와 동시성으로 첫 토큰 지연, 토큰 간 지연, 총처리량과 전력 사용량을 측정한다. 드라이버, framework 버전과 실제 사용 가능한 커널도 고정한다. 최대 메모리 사양을 실제 서비스 용량으로 그대로 계산하지 않는다.
@@ -131,6 +157,10 @@ GeForce는 FP32 누산 경로를 FP16 누산의 절반으로 표기하고, 전�
 - [NVIDIA, GeForce RTX 5090](https://www.nvidia.com/en-us/geforce/graphics-cards/50-series/rtx-5090/)
 - [NVIDIA, DGX Spark](https://www.nvidia.com/en-us/products/workstations/dgx-spark/) — 2026-11-16 메모리, 대역폭, 연결 대수와 안내 모델 크기 대조. 새 절만 대조했으므로 frontmatter 날짜를 유지한다.
 - [RTX PRO 6000 x4 사용기 — YouTube, 44BITS](https://www.youtube.com/watch?v=dMmtMZohr_c) — 2026-10-30 공개 팟캐스트. 사용 사례 문단의 출처
+- [Our newest TPUs: 8tx and 8i Max, built for the agentic era — Google](https://blog.google/innovation-and-ai/infrastructure-and-cloud/global-network/tpu-8i-max-and-8tx/) — 2026-11-09 게시. 2026-11-16 시스템 구성, 발표 배수와 공개하지 않은 사양 대조. 새 절만 대조했으므로 frontmatter 날짜를 유지한다.
+- [DeepX Tapes Out Second-Gen Chip, Projects 6.7× Performance Gain With LPDDR5x-PIM — EE Times, Sally Ward-Foxton](https://www.eetimes.com/deepx-tapes-out-second-gen-chip-projects-6-7x-performance-gain-with-lpddr5x-pim/) — 2026-11-09 게시. 2026-11-16 사양, 시뮬레이션 조건, 전력과 일정 대조
+- [Google, 8세대 TPU에 기밀 추론용 8tx와 긴 컨텍스트용 8i Max 추가 — GeekNews](https://news.hada.io/topic?id=36918)
+- [DeepX, 2세대 AI 칩 DX-M2 테이프아웃 완료 - 5W 미만에서 최대 1,000억 파라미터 모델 추론 목표 — GeekNews](https://news.hada.io/topic?id=36920) — 소개 글과 Hacker News 의견 번역
 
 ## 관련 문서
 

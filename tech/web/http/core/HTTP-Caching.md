@@ -1,5 +1,5 @@
 ---
-tags: [web, http, cache, conditional-request, etag]
+tags: [web, http, cache, conditional-request, etag, range-request]
 status: done
 verified_at: 2026-10-01
 category: "Web - HTTP"
@@ -99,6 +99,18 @@ Method 정의가 캐시 조건을 명시해야 응답을 저장할 수 있다. R
 - Cache는 non-error 응답을 받은 unsafe Method의 Target URI를 반드시 무효화한다. `Location`과 `Content-Location`의 URI는 캐시가 선택적으로 무효화할 수 있는 후보이며, Target URI와 Origin이 다르면 무효화해서는 안 된다. 이것이 도메인상 연관된 모든 URI, 애플리케이션 Cache와 CDN purge까지 대신하지는 않는다.
 - 이미 긴 TTL로 배포된 응답은 새 응답 Header만으로 즉시 회수하기 어렵다. versioned URL이나 CDN purge 절차를 준비한다.
 
+## Range 요청과 단일 파일 배포
+
+`Range: bytes=0-16383`처럼 표현의 일부를 요청하면 Range를 지원하는 서버는 `206 Partial Content`와 `Content-Range`로 그 범위만 보낸다. 응답의 `Accept-Ranges`는 대상 리소스가 범위 요청을 지원하는지 알린다. 서버는 Range를 무시하고 `200`과 전체 표현을 보낼 수도 있으므로 클라이언트는 상태 코드로 구분하고, 요청한 범위를 만족할 수 없으면 `416`을 받는다. 중단된 내려받기를 이어 받을 때는 `If-Range`를 함께 보낸다. 조건이 맞지 않으면 서버가 Range를 무시하므로 서로 다른 버전의 조각이 섞이지 않는다.
+
+이 계약을 쓰면 내부 색인을 가진 큰 파일 하나를 정적 저장소에 두고 클라이언트가 필요한 조각만 읽게 할 수 있다. 지도 타일 아카이브 PMTiles가 그 예다. PMTiles v3 명세는 127바이트 헤더를 파일 맨 앞에 두고 루트 디렉터리를 앞 16 KiB 안에 넣게 해, 클라이언트가 앞부분을 먼저 읽어 색인을 얻은 뒤 화면에 필요한 타일의 바이트 범위만 요청할 수 있게 한다. 타일 서버 없이 오브젝트 스토리지와 CDN만으로 지도를 배포하는 구성이다.
+
+운영 조건은 CDN 설정이 정한다. 아래는 2026-11-15 개인 블로그의 Bunny CDN 구성 사례이며 가격과 설정 이름은 글쓴이 기준이다.
+
+- **Range 응답 캐시:** 이 사례는 대용량 객체 전송 최적화(Optimize for large object delivery)를 켜야 Range 요청이 캐시됐다. CDN마다 Range 응답을 캐시하는 방식이 다르므로 조각 요청마다 원본 저장소까지 가지 않는지 확인한다.
+- **비용 상한:** 전 세계 지도 파일은 약 139GB였다. 누군가 파일 전체를 내려받으면 전송 요금이 한 번에 커지므로 허용 referrer를 지정하고, 한 요청에서 10MB를 보낸 뒤 10kB/s로 줄이는 속도 제한을 걸었다. 필요한 지역과 줌 범위만 잘라 내면 파일도 작아진다.
+- **비용 추정:** 글쓴이는 유럽 지도를 열어 도시까지 확대하는 데 약 5MB가 전송된다고 보고 지도 로딩 1,000회당 약 0.05달러로 계산했다. 사용 패턴과 CDN 단가에 따라 달라지는 추정이므로 지도 API의 로딩당 요금과 비교할 때는 자기 트래픽으로 다시 계산한다.
+
 ## 출처
 
 - 김영한 강사, [HTTP 메서드 - GET, POST](https://www.inflearn.com/courses/lecture?courseId=326277&unitId=61365)
@@ -113,6 +125,9 @@ Method 정의가 캐시 조건을 명시해야 응답을 저장할 수 있다. R
 - [RFC 9111, HTTP Caching and invalidation](https://www.rfc-editor.org/rfc/rfc9111.html#section-4.4)
 - [RFC 8246, HTTP Immutable Responses](https://www.rfc-editor.org/rfc/rfc8246.html)
 - [RFC 5789, PATCH Method for HTTP](https://www.rfc-editor.org/rfc/rfc5789.html)
+- [Protomaps PMTiles, PMTiles Version 3 Specification](https://github.com/protomaps/PMTiles/blob/main/spec/v3/spec.md) — 2026-11-16 헤더와 루트 디렉터리 위치 대조
+- [Protomaps: Self-hosting map tiles has gotten cheap and easy — Bruce Röttgers](https://bruceroettgers.eu/blog/protomaps/) — 2026-11-15 개인 블로그. 가격, 전송량과 CDN 설정은 글쓴이 기준
+- [Protomaps: 지도 타일 셀프 호스팅이 저렴하고 쉬워졌다 — GeekNews](https://news.hada.io/topic?id=37239)
 
 ## 관련 문서
 

@@ -1,5 +1,5 @@
 ---
-tags: [web, browser, standards, legacy, interoperability]
+tags: [web, browser, standards, legacy, interoperability, webassembly, webgpu]
 status: done
 category: "웹&네트워크(Web&Network)"
 aliases: ["Web Technology Evolution", "Legacy Web Technologies", "사라진 웹 기술들"]
@@ -43,6 +43,14 @@ SOAP, jQuery와 Classic ASP는 완전히 사라졌다고 단정할 수 없다. �
 
 jQuery는 브라우저 호환성 문제를 크게 줄였고 Flash는 초기 멀티미디어 웹을 확장했다. 이후 표준 API와 브라우저 구현이 발전하면서 이 도구들이 담당하던 기능이 플랫폼 자체로 이동했다. 성공한 도구도 문제의 형태가 바뀌면 역할이 축소될 수 있다.
 
+## 표준 API로 만드는 앱
+
+플러그인이 맡던 기능의 상당 부분은 이제 브라우저 표준 API에 있다. 암호 연산은 Web Crypto API, 네이티브에 가까운 속도의 코드 실행은 WebAssembly, 2D와 3D 그래픽은 WebGL과 WebGPU, 오디오 믹싱은 Web Audio API가 맡고, PDF는 PDF.js 같은 JavaScript 라이브러리로 브라우저 안에서 처리한다. 이런 API를 다루는 수고가 줄면서 개인도 큰 웹 앱을 만들어 배포하기 쉬워졌다는 관찰이 나온다.
+
+- **링크에 담는 상태:** 데이터를 URL에 저장한다고 소개된 오피스 도구 모음 TinyLittleOffice는 Cloudflare에서 호스팅됐다. 제작자는 출시 직후 방문이 몰려 무료 플랜 한도를 넘자 카드를 등록했고, 이후 수십만 명이 방문했는데도 호스팅 비용은 0달러였다고 밝혔다(2026-10-21 제작자 뉴스레터, 서버 저장 여부는 글에 없다). 문서를 링크에 담는 방식이라면 링크가 전달되는 범위가 곧 데이터의 공개 범위다(해석).
+- **한 코드베이스로 데스크톱과 브라우저:** 목공 설계 앱 BenchUp은 Rust로 작성해 Windows, macOS, Linux 설치형 앱과 WebAssembly 브라우저판으로 낸다. 렌더러는 wgpu와 WGSL 셰이더를 쓰고 브라우저에서 WebGPU를 쓸 수 없으면 WebGL2로 대체한다(2026-11-16 저장소 README 기준). 브라우저판은 계정과 클라우드 저장 없이 로컬에 자동 저장하며 같은 origin과 포트로 열어야 저장한 모델을 다시 불러온다. 브라우저 데이터를 지우면 자동 저장한 작업이 사라질 수 있어 보존할 작업은 파일로 저장하라고 안내한다.
+- **남는 한계:** 이 API들은 수십억 명에게 안전하게 배포하려는 대형 조직의 요구에 맞춰 커져 왔고, 하나하나의 범위가 넓어 개인이 모두 익히기는 어렵다는 지적이 같은 뉴스레터에 있다. 지원 범위도 브라우저마다 달라 BenchUp처럼 대체 경로를 둔다.
+
 ## 기술 선택 체크리스트
 
 1. 여러 브라우저와 운영체제에서 같은 계약으로 동작하는가
@@ -64,6 +72,11 @@ jQuery는 브라우저 호환성 문제를 크게 줄였고 Flash는 초기 멀�
 ## 출처
 
 - [사라진 웹 기술들 — 코딩하는기술사](https://www.youtube.com/watch?v=L-A-zIEM5UE)
+- [The Web Is More Than Enough — The Aboard Newsletter, Paul Ford](https://ftrain.com/aboard-the-web-is-more-than-enough) — 2026-10-21 게시. 방문 수와 호스팅 비용은 제작자 보고
+- [웹이면 충분하고도 남는다 — GeekNews](https://news.hada.io/topic?id=36870)
+- [BenchUp README — BenchUp](https://github.com/BenchUp3D/editor) — 2026-11-16 기술 구성, 지원 플랫폼과 저장 방식 대조
+- [BenchUp, App](https://ketchup3d.github.io/app/) — 브라우저 자동 저장의 보존 주의
+- [BenchUp - Rust와 WebGPU로 만든 오픈소스 SketchUp 대안 — GeekNews](https://news.hada.io/topic?id=36854)
 
 ## 관련 문서
 

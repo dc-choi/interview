@@ -10,13 +10,13 @@ aliases: ["OS&런타임(OS&Runtime)", "OS & Runtime"]
 ## 목차
 
 - [[BSD-System-Composition|OS 구성과 패키지 출처 정책]] — 커널과 사용자 공간, AlpineBSD 미확인 구성 후보
-- [[Terminal-and-Editor-Interfaces|터미널과 편집기]] — Emacs 확장과 공통 명령, atto의 modeless 입력, Kwi의 파서와 GPU 렌더링
+- [[Terminal-and-Editor-Interfaces|터미널과 편집기]] — Emacs 확장과 공통 명령, 에이전트 시대의 편집기 숙련, atto의 modeless 입력, Kwi의 파서와 GPU 렌더링
 - [[Desktop-Window-Management|데스크톱 창 관리]] — 타일링, 스크롤링, 플로팅 배치와 작업 공간별 선택, macOS 창 테두리 도구의 비공개 API와 손쉬운 사용 권한, quarantine을 지우는 cask
 
 
 
 
-- [[tech/os-runtime/os-fundamentals/OS기초(OSFundamentals)|OS 기초 (OS Fundamentals)]] — 동시성과 false sharing, 프로세스와 fork/exec 제약, 스레딩 모델, 스케줄링, 가상 메모리, 파일시스템, NVMe와 EDSFF, RAID 용량과 장애 위치, 배터리 잔량 추정과 시스템 종료
+- [[tech/os-runtime/os-fundamentals/OS기초(OSFundamentals)|OS 기초 (OS Fundamentals)]] — 동시성과 false sharing, 프로세스와 fork/exec 제약, 스레딩 모델, 스케줄링, 가상 메모리, 파일시스템, NVMe와 EDSFF, RAID 용량과 장애 위치, 배터리 잔량 추정과 시스템 종료, 프로세스 관찰 도구의 권한 경계
 - [[tech/os-runtime/linux/Linux-File-System|Linux]] — 파일 시스템, 디렉토리 구조 (FHS), 실행 비트와 파일 시그니처, 로그와 디스크 진단 명령, 파일 생성과 덮어쓰기, 삭제 확인
 - [[tech/os-runtime/runtime/런타임(Runtime)|런타임 (Runtime)]] — Thread vs Event Loop, I/O 동시성과 병목 관측, async/await, Backpressure, Go 동시성, 저지연 오디오 출력
 - [[tech/os-runtime/jvm/JVM|JVM]] — 로딩과 초기화 경계, 로더별 타입 동일성, GC pause와 할당 정체, 메모리 누수, 컨테이너 메모리, 첫 장애 진단(GC 로그, heap dump, hs_err)
@@ -36,7 +36,7 @@ aliases: ["OS&런타임(OS&Runtime)", "OS & Runtime"]
 - [[Linux-Page-Cache-Contention|Linux 페이지 캐시 경합]] — folio 참조와 공유 카운터, 개발 패치의 확인 경계
 - [[Linux-Laptop-GPU-Power-Management|Linux 노트북 GPU 전력 관리]] — CPU와 GPU 전력 배분의 OS별 구성요소, nvidia-powerd 조건, WSL의 호스트 드라이버, 전원 연결과 배터리 비교
 - [[Linux-on-Apple-Silicon|Apple Silicon Mac에서 Linux 실행]] — OS별 부트 정책과 recoveryOS 확인, 칩과 기능별 Asahi 지원 범위, Omarchy Mac 설치기의 단계와 문서별 지원 표시 차이, 암호화와 Touch ID 위험
-- [[Native-Compilation-Compatibility|네이티브 컴파일과 호환성]] — Bun 패키징과 AOT 실험, TurboPython의 소유권
+- [[Native-Compilation-Compatibility|네이티브 컴파일과 호환성]] — Bun 패키징과 AOT 실험, TurboPython의 소유권, .NET 11의 CPU 하한과 ReadyToRun 대상
 - [[Emulation-and-Compatibility-Layers|에뮬레이션과 호환 계층]] — Wine과 Proton, Rosetta, 셰이더 변환, TBDR과 이식 판단
 
 ## Linux 체크리스트

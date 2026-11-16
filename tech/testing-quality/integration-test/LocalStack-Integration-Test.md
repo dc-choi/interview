@@ -1,5 +1,5 @@
 ---
-tags: [testing, integration-test, localstack, aws, docker-compose, ci]
+tags: [testing, integration-test, localstack, aws-emulator, aws, docker-compose, ci]
 status: done
 category: "테스트&품질(Testing&Quality)"
 aliases: ["LocalStack Integration Test", "LocalStack 통합 테스트", "AWS 통합 테스트"]
@@ -142,6 +142,22 @@ done
 - **서비스별 미지원 기능**: LocalStack은 AWS의 모든 API를 1:1로 구현하지 않는다. 예로 2021~2022 시점 SES는 **API v2 미지원**이라, v2 SDK가 받는 404를 JSON으로 파싱하려다 깨졌다. v1 경로를 쓰는 식의 우회가 필요했다. 채택 전 해당 서비스의 지원 범위 확인이 필수.
 - **리전, 자격증명 더미**: 검증 대상이 IAM, 리전 라우팅이 아니라면 더미 값으로 충분하다. 권한 정책 자체를 검증하고 싶다면 LocalStack의 한계를 인지하고 별도 수단을 쓴다.
 
+## AWS Emulator와 비교
+
+AWS가 공개한 공식 로컬 에뮬레이터 AWS Emulator도 같은 용도다. 아래는 2026-11-16 공식 사용자 가이드와 저장소 기준이며 직접 설치하거나 실행하지 않았다.
+
+| 기준 | LocalStack(위 구성) | AWS Emulator |
+|---|---|---|
+| 실행과 연결 | 컨테이너의 `4566` 포트, SDK `endpoint` 지정 | Linux는 RPM과 Debian 패키지, macOS와 Windows는 제공 Dockerfile로 만든 이미지. 기본 `127.0.0.1:9297`에서 받고 환경 변수로 CLI와 SDK를 연결. Rust SDK 테스트는 테스트 프로세스 안에서 인스턴스마다 상태를 따로 두는 embedded mode |
+| 자격 증명 | 더미 값 | 실행마다 새 키를 만들어 `~/.aws/emulator/<port>/`에 쓰고, 기본값에서는 서명 없는 요청과 다른 키로 서명한 요청을 거부 |
+| 상태와 수명 | 컨테이너가 떠 있는 동안 유지 | 메모리에만 두고 종료하면 삭제. 재시작하면 깨끗한 상태가 되고 `--idle-timeout`으로 스스로 멈추게 할 수 있다. 장시간 실행과 부하 테스트는 시험하지 않았다고 명시 |
+| 리전과 계정 | 더미 리전 | 어떤 값이든 받지만 리전과 계정별로 자원을 나누지 않는다. 여러 리전은 포트를 달리한 에뮬레이터를 따로 띄운다 |
+
+- **충실도를 수치로 공개한다:** 서비스마다 SDK로 실제 AWS의 결과, 상태와 오류를 단언하는 fidelity test를 두고 통과 수와 전체 수를 릴리스마다 공개한다. 점수는 같은 테스트 버전끼리만 비교한다. 구현하지 않은 operation은 HTTP 501 `NotImplemented`로 바로 실패한다. 지금은 control plane API가 가장 가깝고 data plane과 CloudFormation, Terraform, CDK 지원은 서비스마다 다르며, 대조 기준 리전은 `us-west-2`(글로벌 서비스는 `us-east-1`)다.
+- **보안 판단에는 쓰지 않는다:** IAM 정책, 권한 경계, 리소스 기반 정책, KMS 키 정책과 계정이나 리전 사이의 접근을 AWS처럼 평가하지 않는다. 자기 키로 서명한 요청은 거부하지 않으므로 AWS가 거부할 요청이 통과하거나 그 반대가 될 수 있다. LocalStack의 IAM 한계와 같은 경계다.
+- **실제 AWS 호출을 막는다:** `AWS_ENDPOINT_URL`이 설정되지 않으면 코드는 찾은 자격 증명으로 실제 AWS를 호출한다. 테스트를 실행하는 같은 스크립트에서 변수를 설정하고 실제 자격 증명 변수는 지운다. 함수 코드처럼 에뮬레이터가 대신 실행하는 코드는 격리되지 않고 사용자 권한으로 돈다.
+- **운영 조건:** 익명 사용, 오류 텔레메트리가 기본으로 켜져 있으며 `--telemetry off`나 `EMULATOR_TELEMETRY=off`로 끈다. 보안 수정은 최신 릴리스에만 나온다.
+
 ## 면접 체크포인트
 
 - 실제 AWS로 통합 테스트할 때의 비용, 보안, 격리 문제와 LocalStack이 각각을 어떻게 해소하는지
@@ -155,6 +171,11 @@ done
 - [LocalStack Docs, Initialization Hooks](https://docs.localstack.cloud/aws/capabilities/config/initialization-hooks/)
 - [LocalStack Docs, Configuration](https://docs.localstack.cloud/aws/capabilities/config/configuration/)
 - [Docker Docs, Compose version top-level element](https://docs.docker.com/reference/compose-file/version-and-name/)
+- [AWS Emulator User Guide, What is AWS Emulator?](https://docs.aws.amazon.com/emulator/latest/userguide/what-is-service.html)
+- [AWS Emulator User Guide, Fidelity in AWS Emulator](https://docs.aws.amazon.com/emulator/latest/userguide/fidelity.html)
+- [AWS Emulator User Guide, Security in AWS Emulator](https://docs.aws.amazon.com/emulator/latest/userguide/security.html)
+- [aws/aws-emulator — GitHub](https://github.com/aws/aws-emulator) — 2026-11-16 실행 방식과 텔레메트리 설정 대조
+- [AWS가 마침내 자체 AWS 에뮬레이터를 만들었다 — GeekNews](https://news.hada.io/topic?id=37001)
 
 ## 관련 문서
 - [[TestContainers-Integration|Testcontainers 통합 테스트]]

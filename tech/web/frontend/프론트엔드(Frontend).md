@@ -9,7 +9,7 @@ aliases: ["Frontend", "프론트엔드"]
 
 ## 목차
 
-- [[Code-Driven-Motion-Graphics|코드 기반 모션 그래픽과 영상 출력]] — 화면 렌더러와 파일 처리의 역할, 프레임 기반 시간 제어와 출력 검수
+- [[Code-Driven-Motion-Graphics|코드 기반 모션 그래픽과 영상 출력]] — 화면 렌더러와 파일 처리의 역할, 프레임 기반 시간 제어와 출력 검수, 자체 GPU 엔진(raea)의 영상과 게임 출력, 에이전트용 프레임 추출과 자동 검사
 - [[Frontend-Framework-Evaluation|프론트엔드 도구 평가]] — AI 개발 비용의 실험 조건, Pico CSS 종료와 유지보수 책임
 
 

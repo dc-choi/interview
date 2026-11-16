@@ -1,9 +1,9 @@
 ---
-tags: [finops, vps, hosting, cost, bandwidth]
+tags: [finops, vps, hosting, cost, bandwidth, gpu]
 status: done
 verified_at: 2026-11-04
 category: "비용&운영(FinOps)"
-aliases: ["VPS Hosting Cost and Service Boundaries", "VPS 비용과 운영 조건"]
+aliases: ["VPS Hosting Cost and Service Boundaries", "VPS 비용과 운영 조건", "GPU Rental Pricing", "GPU 임대 단가 비교"]
 ---
 
 # VPS 호스팅 비용과 운영 조건
@@ -40,6 +40,21 @@ Contabo의 Auto Backup은 Core VPS와 Performance VPS에 추가하는 기능이�
 
 운영에 적용할 때는 백업이 존재하는지와 별개로 복원 절차, 데이터 정합성과 소요 시간을 시험한다. 월 비용에는 필요한 백업과 복구 시험 비용도 포함한다.
 
+## GPU 임대 단가도 같은 조건으로 맞춘다
+
+datareceipts 저장소의 H100 가격 비교(가격 확인일 2026-11-09)는 AWS와 Azure의 공개 가격 API와 RunPod, Lambda 가격 페이지에서 온디맨드 정가를 모아 GPU 1개의 시간당 달러로 환산했다. H100 SXM 80GB는 RunPod Community $2.69, RunPod Secure $3.99, AWS `p5.48xlarge` $6.88, Azure `ND96isr_H100_v5` $12.29로 최저와 최고가 4.57배다(AWS `us-east-1`, Azure `eastus` 한 리전씩). 이 배수를 공급자의 마진이나 우열로 읽기 전에 다음 조건을 맞춘다.
+
+| 맞출 조건 | 확인할 내용 |
+|---|---|
+| GPU 변형 | H100도 SXM 80GB, PCIe 80GB, NVL 94GB가 다른 제품이라 한 비교에 섞지 않는다 |
+| GPU당 환산 | 인스턴스 가격을 GPU 수로 나누며, GPU 수는 가격 항목명이 아니라 제품 문서로 확인한다 |
+| 노드 간 연결 | Azure ND는 GPU당 400Gbps InfiniBand와 GPUDirect RDMA로 다중 노드 학습을 겨냥해 같은 회사의 단일 H100 NC($6.98)보다도 비싸다. 단일 노드 미세조정에는 필요 없는 값이다 |
+| 호스트와 SLA | RunPod Community는 제3자 호스트의 장비라 데이터센터 SLA, 기업 규정 준수와 용량 보장을 기대하기 어렵다 |
+| 계약 형태 | 정가만 비교했다. 예약, 약정과 스팟 할인은 하이퍼스케일러와의 격차를 크게 줄일 수 있다([[Reserved-Instance\|약정과 스팟의 역할]]) |
+| 확보 가능성 | 가격에 들어 있지 않다. 구할 수 없는 저가 GPU는 실제 가격이 아니다 |
+
+Lambda는 공개 가격이 2026-11-16부터 적용되고 확인일의 현재 가격은 로그인 뒤에 있어 배수 계산에서 뺐다. GeekNews가 옮긴 Hacker News 댓글에는 하이퍼스케일러의 리전별 GPU 할당 한도를 받기 어렵다는 경험, 최근 스팟 가격이 온디맨드 바로 아래까지 올랐다는 관찰, 제3자 시장의 사양 속임과 느린 디스크 I/O 경험이 있다. 개인 경험이라 검증하지 않았으며, 도입 전에는 할당 한도, 중단 정책과 같은 작업의 실제 처리량을 함께 잰다.
+
 ## 이전을 결정하기 전의 비교표
 
 다음은 도입 검토용 제안이다.
@@ -58,9 +73,12 @@ Contabo의 Auto Backup은 Core VPS와 Performance VPS에 추가하는 기능이�
 - [Contabo Help, Are there any bandwidth or traffic limits at Contabo?](https://help.contabo.com/en/support/solutions/articles/103000271195-are-there-any-bandwith-limits-at-contabo-)
 - [Contabo Product Documentation, VPS Auto Backup](https://docs.contabo.com/docs/servers-hosting/vps-auto-backup/)
 - [AWS, Amazon Lightsail Pricing](https://aws.amazon.com/lightsail/pricing/)
+- [What an H100 actually costs per hour — GitHub, datareceipts](https://github.com/datareceipts/data-receipts/tree/main/109-gpu-pricing) — 2026-11-16 README와 `vendors.json`의 가격 확인일, 비교 범위와 한계 대조. AWS와 Azure 가격표는 직접 대조하지 않았다
+- [같은 H100도 어디서 빌리느냐에 따라 시간당 2.69달러 또는 12.29달러 — GeekNews](https://news.hada.io/topic?id=36893) — 소개 글과 Hacker News 의견 번역
 
 ## 관련 문서
 
 - [[Cloud-Unit-Cost|클라우드 단위 비용]]
+- [[GPU-Server-Infrastructure|GPU 서버 인프라]]
 - [[AWS-Pricing-Estimation|AWS 비용 추정]]
 - [[Egress-Cost|데이터 전송 비용]]

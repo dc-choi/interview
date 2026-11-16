@@ -39,6 +39,8 @@ aliases: ["Failure Evolution Under Load", "부하에 따른 장애 진화", "장
 - 재개 지점에 필요한 상태와 이미 끝난 외부 부수효과를 구분한다. 결제나 발송은 재시작만으로 중복이 방지되지 않는다.
 - 과부하가 남은 상태에서 다시 시작하는 시험을 한다. 재시작 성공과 필수 기능의 회복을 별도로 확인한다.
 
+밀린 작업의 만료 시한도 복구 설계에 들어간다. 2026-11 Microsoft 365 장애 복구에서 Microsoft는 지연된 메일을 보호하려고 이메일 timeout window를 48시간으로 늘리겠다고 밝혔고, 이후 트래픽을 점진적으로 복구하고 있다고 알렸다. CNN은 timeout window를 메일 서버나 클라이언트가 오류를 돌려주기 전에 기다리는 최대 시간으로 설명한다. 이를 밀린 작업의 만료 시한으로 읽은 것은 이 문서의 해석이다. 복구 속도는 북미가 유럽과 아시아태평양보다 빨랐고, 회사는 일부 사용자에게 간헐적 접근 문제나 메일 지연이 남을 수 있다고 공지했다(CNN 보도). 재시도 대기열의 만료가 복구에 걸리는 시간보다 짧으면 장애가 끝난 뒤에도 메시지가 반송되거나 버려질 수 있으므로, 복구 계획에 밀린 작업의 보존 기한 연장과 단계적 재유입을 함께 넣고 지역별 복구 상태를 따로 알린다(적용 제안). 원인 쪽 교훈은 [[Root-Cause-Investigation-Loop#문제 인지: 빨리, 단서와 함께|근본 원인 조사 루프]]에 있다.
+
 ## 관측은 아키텍처의 일부다
 
 - 오류, 메트릭, 분산 추적을 함께 보고 느린 데이터베이스 쿼리에서 원래 사용자 요청까지 거슬러 올라갈 수 있게 한다.
@@ -70,6 +72,8 @@ aliases: ["Failure Evolution Under Load", "부하에 따른 장애 진화", "장
 
 - [Apollo 11 Program Alarms — NASA, Peter Adler](https://www.nasa.gov/wp-content/uploads/static/history/alsj/a11/a11.1201-pa.html) — 개발 참여자의 경보와 재시작 보호 설명. 경보 원인의 세부 회고나 자원 개수를 현대 시스템의 보편 규칙으로 사용하지 않는다.
 - [천만 MAU를 지탱하는 커뮤니티 시스템을 소개해요 — 당근 기술 블로그](https://medium.com/daangn/%EC%B2%9C%EB%A7%8C-mau%EB%A5%BC-%EC%A7%80%ED%83%B1%ED%95%98%EB%8A%94-%EC%BB%A4%EB%AE%A4%EB%8B%88%ED%8B%B0-%EC%8B%9C%EC%8A%A4%ED%85%9C%EC%9D%84-%EC%86%8C%EA%B0%9C%ED%95%B4%EC%9A%94-090fb4021e20)
+- [Microsoft reports email service is ‘approaching normal levels’ following widespread global outage — CNN](https://www.cnn.com/2026/11/12/business/live-news/microsoft-global-outage-intl-hnk) — 2026-11-13 갱신된 라이브 기사. 복구 조치와 공지는 Microsoft 발표 인용
+- [Microsoft 365 전 세계 장애 — GeekNews](https://news.hada.io/topic?id=37113)
 
 ## 관련 문서
 
@@ -79,3 +83,4 @@ aliases: ["Failure Evolution Under Load", "부하에 따른 장애 진화", "장
 - [[Traffic-Scaling-Playbook|트래픽 스케일링 플레이북]]
 - [[Connection-Pool|커넥션 풀 (소진 장애의 전형)]]
 - [[Modular-Monolith|모듈형 모놀리스 (같은 시스템의 구조 축)]]
+- [[Root-Cause-Investigation-Loop|근본 원인 조사 루프 (잠복 결함을 드러낸 변경)]]

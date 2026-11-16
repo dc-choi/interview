@@ -131,6 +131,21 @@ const streamPromise = renderToReadableStream(<App />, { signal: controller.signa
 const stop = () => controller.abort();
 ```
 
+## 요청자별 렌더링 사례
+
+X는 2026-11-04 공식 엔지니어링 블로그에서 사람, 검색 크롤러와 링크 미리보기 봇에 따로 쓰던 서버 세 개를 React streaming SSR 서버 하나로 합친 과정을 공개했다. 아래 수치와 판단은 그 글의 자체 측정과 설명이다.
+
+| 요청자 | 응답 | 이유 |
+|---|---|---|
+| 사람 | shell을 먼저 보내고 데이터가 오는 대로 각 Suspense 경계를 스트리밍 | 첫 화면을 빨리 보이게 한다 |
+| 검증된 검색 크롤러 | 모든 경계가 해결될 때까지 기다린 완성 문서. hydration하지 않으므로 클라이언트 번들, 라우터 상태와 placeholder가 없다 | 위 onAllReady, allReady처럼 전체 완료를 기다리는 경로에 해당한다(해석). 판별은 User-Agent가 아니라 엣지가 검증한 IP로 해 성능 측정 도구가 크롤러 경로를 타거나 헤더만 바꾼 요청이 비싼 경로를 요구하지 못하게 했고, 검증되지 않은 요청은 비로그인 방문자와 같은 응답을 받는다 |
+| 링크 미리보기 봇 | 라우트의 데이터 로딩과 head 태그만 실행해 제목, 설명과 카드 이미지를 반환 | 본문 렌더링과 본문에만 필요한 요청을 생략한다 |
+
+- **완성 문서 크기:** Google 문서는 Google 검색용 크롤링에서 Googlebot이 지원 파일 형식의 첫 2MB(압축 해제 기준, PDF는 64MB)만 가져오고 HTML이 참조하는 CSS와 JavaScript는 리소스마다 따로 가져온다고 설명한다(2026-11-16 대조). X는 긴 스레드의 HTML이 2.2~3.5MB가 되어 뒤쪽 답글이 잘리자 아이콘을 문서 앞의 숨은 sprite 하나로 모으고, 구조화 데이터의 중복 텍스트와 URL을 줄이고, JavaScript가 실행돼야 의미가 있는 출력을 크롤러 문서에서 뺐다.
+- **데이터 전달:** 정규화된 Relay store를 HTML에 직렬화하면 원래 GraphQL 응답보다 4~5배 컸다. 서버가 받은 응답을 JSON 텍스트로 한 번만 싣고 브라우저가 빈 store에 다시 재생하게 바꿨다. 아무도 읽지 않은 응답은 스트림이 끝난 뒤 30초 동안 보관한다.
+- **hydration 시작:** 진입 스크립트가 deferred module이면 브라우저가 문서 파싱을 마친 뒤 실행하므로, 스트리밍 문서에서는 마지막 경계가 도착할 때까지 hydration이 늦어진다. async module로 바꾸자 대화 조회를 5초 늦춘 시험에서 React가 589ms에 붙었고 문서 파싱은 6,017ms에 끝났다.
+- **대가:** 서버가 데이터를 가져와 렌더링한 뒤 응답하므로 로그인 상태의 첫 바이트는 중앙값 430~560ms로 기존 앱(300ms 미만)보다 늦었다. 대신 느린 네트워크 조건에서 프로필과 게시물은 JavaScript가 도착하기 전에 보였다.
+
 ## 이해 확인
 
 1. Web render 함수가 resolve했다면 모든 data가 로드됐는가? shell만 준비됐을 수 있다. allReady는 별도다.
@@ -145,6 +160,9 @@ const stop = () => controller.abort();
 - [React DOM, renderToReadableStream](https://react.dev/reference/react-dom/server/renderToReadableStream)
 
 - [React, ReactDOMFizzServerNode v19.3.0](https://github.com/facebook/react/blob/v19.3.0/packages/react-dom/src/server/ReactDOMFizzServerNode.js)
+- [Google Search Central, Googlebot](https://developers.google.com/search/docs/crawling-indexing/googlebot) — 2026-11-16 파일 크기 한도와 리소스별 적용 대조
+- [Rebuilding the global town square from scratch — X Engineering Blog, Yagiz Nizipli](https://blog.x.com/en/engineering/rebuilding-the-global-town-square-from-scratch) — 2026-11-04 게시. 수치는 X의 실험실과 운영 측정
+- [X.com을 처음부터 다시 구축하기 - 서버 3개를 하나로 — GeekNews](https://news.hada.io/topic?id=37245)
 
 ## 관련 문서
 
@@ -154,3 +172,5 @@ const stop = () => controller.abort();
 - [[React-DOM-Legacy-Server-Rendering]]
 - [[React-Server-Components]]
 - [[React-Server-Boundaries]]
+- [[Shadow-Traffic|Shadow Traffic (재작성 검증과 전환 사례)]]
+- [[Module-Federation|Module Federation (재작성 중 기능 공유)]]

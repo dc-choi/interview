@@ -74,6 +74,8 @@ Remote URL을 Host의 webpack 설정에 하드코딩하면, Fragment가 새 버�
 
 얻는 효과는 기능별 저장소의 독립 CI와 배포다. 발표 사례에서는 기능 팀 저장소에 백엔드와 Remote 프론트엔드를 함께 두면서, 큰 단일 앱의 긴 CI를 기다리지 않게 됐다. LLM에 개발 맥락을 주기도 쉬워졌다.
 
+재작성 기간에 구 앱과 신 앱이 같은 기능을 함께 쓰는 데도 런타임 통합을 쓸 수 있다. X는 2026-11-04 공식 엔지니어링 블로그에서 기존 웹 앱과 새 앱이 모두 chat.x.com이 배포하는 X Chat을 Module Federation으로 실행 시점에 불러와, 전환 중에도 두 앱이 같은 채팅을 실행한다고 설명했다. 새 앱은 X Calls와 Money도 같은 방식으로 불러오면서 페이지의 React와 공유 라이브러리를 Money에 빌려줘 첫 Money 페이지의 코드 다운로드를 gzip 기준 590KB에서 509KB로 줄였다고 밝혔다. 두 앱이 import하는 analytics 같은 코드는 별도 공유 패키지로 남겼다. 공존 기간에 공통 기능을 양쪽에 다시 만들지 않는 방법이 된다(해석, [[Shadow-Traffic#언제 Shadow, 언제 Canary|재작성 검증과 전환 사례]]).
+
 ## 면접 체크포인트
 
 - 운영 중인 앱을 Host로 두고 기능을 Remote로 떼어 낼 때 props 계약 대신 Host expose를 택하는 이유와 그래도 남는 Host 배포 조건,, shared에 넣을 의존성과 빼야 할 의존성의 기준
@@ -93,6 +95,8 @@ Remote URL을 Host의 webpack 설정에 하드코딩하면, Fragment가 새 버�
 - [webpack, Module Federation](https://webpack.js.org/concepts/module-federation/)
 - [webpack, ModuleFederationPlugin](https://webpack.js.org/plugins/module-federation-plugin/)
 - [Module Federation 도입기 — 채널데브톡, 채널데브세션](https://www.youtube.com/watch?v=wuD-tWILgbs)
+- [Rebuilding the global town square from scratch — Yagiz Nizipli, X Engineering Blog](https://blog.x.com/en/engineering/rebuilding-the-global-town-square-from-scratch) — 2026-11-04 게시. 다운로드 감소량은 X의 자체 측정
+- [X.com을 처음부터 다시 구축하기 - 서버 3개를 하나로 — GeekNews](https://news.hada.io/topic?id=37245)
 
 ## 관련 문서
 

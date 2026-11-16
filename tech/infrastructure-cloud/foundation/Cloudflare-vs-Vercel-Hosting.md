@@ -1,16 +1,16 @@
 ---
 tags: [infrastructure, cloud, hosting, vercel, cloudflare, r2, s3, egress, dns, email, oci, coolify, self-hosting]
 status: done
-verified_at: 2026-11-13
+verified_at: 2026-11-16
 category: "인프라&클라우드(Infrastructure&Cloud)"
 aliases: ["Cloudflare vs Vercel Hosting", "1인 제품 호스팅 플랫폼 선택", "Vercel과 Cloudflare"]
 ---
 
 # 1인 제품 호스팅 플랫폼 선택: Vercel과 Cloudflare
 
-1인 개발자나 작은 팀이 웹 제품을 올릴 때 호스팅 플랫폼은 배포 편의만으로 고르면 나중에 약관, 도메인 운영과 트래픽 비용에서 다시 옮기게 된다. Vercel은 프런트엔드 프레임워크 배포 경험에 강하고, Cloudflare는 DNS, CDN, 보안, 엣지 실행과 스토리지를 한 계정에서 묶는 쪽에 강하다. 선택은 제품의 수익화 여부, 도메인과 이메일 운영, 정적 파일 트래픽, 백엔드와 DB 연동이라는 네 축으로 판단한다. 관리형 플랫폼 대신 무료 VM에 자체 호스팅 PaaS를 올리는 대안은 운영 책임을 함께 비교한다.
+1인 개발자나 작은 팀이 웹 제품을 올릴 때 호스팅 플랫폼은 배포 편의만으로 고르면 나중에 약관, 도메인 운영과 트래픽 비용에서 다시 옮기게 된다. Vercel은 프런트엔드 프레임워크 배포 경험에 강하고, Cloudflare는 DNS, CDN, 보안, 엣지 실행과 스토리지를 한 계정에서 묶는 쪽에 강하다. 선택은 제품의 수익화 여부, 도메인과 이메일 운영, 정적 파일 트래픽, 백엔드와 DB 연동이라는 네 축으로 판단한다. 관리형 플랫폼 대신 무료 VM에 자체 호스팅 PaaS를 올리는 대안은 운영 책임을 함께 비교하고, 플랫폼이 문을 닫을 때의 이전 경로도 미리 본다.
 
-이 문서의 가격, 한도와 약관은 2026-09-29 공식 페이지 기준이며, Vercel cron 한도는 2026-10-12에, OCI Always Free와 Coolify는 2026-11-13에 대조했다. 요금제는 자주 바뀌므로 결정 시점에 다시 확인한다.
+이 문서의 가격, 한도와 약관은 2026-09-29 공식 페이지 기준이며, Vercel cron 한도는 2026-10-12에, OCI Always Free와 Coolify는 2026-11-13에, Val Town 종료 일정과 Deno 런타임 지원 기간은 2026-11-16에 대조했다. 요금제는 자주 바뀌므로 결정 시점에 다시 확인한다.
 
 ## 판단 축
 
@@ -57,6 +57,12 @@ Vercel 같은 관리형 플랫폼의 요금 대신 무료 VM에 자체 호스팅
 
 월 서버비가 0원이라는 말은 이 조건 안에서만 성립한다. 서버 한 대에 여러 제품을 모으면 그 서버의 장애, 회수와 계정 정지가 모든 제품에 동시에 미친다. 고객과 계약한 서비스라면 백업 복원 연습과 외부 관측 경로를 먼저 갖추고, 운영 시간을 비용에 넣어 관리형 플랫폼 요금과 비교한다([[Self-Hosting-Small-Server|소형 서버 셀프호스팅]]).
 
+### 6. 플랫폼의 존속과 이전 경로
+
+작은 관리형 플랫폼은 요금이나 약관을 바꾸는 데서 그치지 않고 서비스를 닫을 수 있다. Val Town은 2026-11-10 클라우드 컴퓨팅 시장에서 사업적으로 경쟁하지 못했다며 단계적 종료를 발표했다. 당일 신규 가입, 요금제 업그레이드와 과금을 멈추고 기존 구독은 무료로 유지하고 연간 선결제 고객에게는 일부를 환불한다고 했다. 2026-12-10 코드를 읽기 전용으로 바꾸되 SQLite와 Blob 스토리지는 이 전환에서 뺐고, 앱은 2027-01-10 호스팅 종료까지 실행되며, 2027-02-01 소스를 공개할 계획이다. 이전 안내는 Cloudflare, Vercel, Netlify, Render와 GitHub별 가이드와 AI 에이전트용 이전 프롬프트를 제공하고, 이전한 앱을 검증해 데이터를 동기화한 뒤 기존 `*.val.run` URL을 새 주소로 리디렉션하며 외부 서비스에 등록한 webhook URL은 각 제공자에서 직접 바꾸라고 한다.
+
+플랫폼이 기대는 런타임도 이전 범위에 들어간다. Val Town은 [[Deno-Runtime|Deno]] 런타임 위에서 돌았고, Deno는 2026-10-09 팀 전체가 Cloudflare에 합류하며 런타임을 1년 더 월간 버그 수정과 보안 업데이트로 지원하고 Deno Deploy는 6개월 뒤 닫는다고 발표했다. 그래서 Val Town 이전 안내는 Node, Bun이나 Cloudflare Workers, Vercel Functions 같은 제공자 런타임으로 옮기라고 권한다. 플랫폼을 고를 때는 코드와 데이터를 꺼내는 방법, 공개 URL과 webhook을 옮기는 방법, 플랫폼 밖에서도 그대로 도는 런타임인지를 함께 본다(적용 제안).
+
 ## 예시
 
 - **광고가 붙은 개인 블로그**: 광고 게재가 상업 이용이므로 Vercel이면 Pro가 필요하다. Cloudflare Pages로 정적 배포하고 DNS와 이메일 수신 전달을 함께 두는 구성은 Cloudflare 약관과 한도를 확인한다는 전제에서 무료 범위에 들어올 수 있다.
@@ -80,6 +86,7 @@ Vercel 같은 관리형 플랫폼의 요금 대신 무료 VM에 자체 호스팅
 - 서버 렌더링, 이미지 최적화, DB 연결처럼 런타임 의존 기능을 이전 전에 검증했는가
 - 메일 발송 예약, 정산 같은 주기 작업의 빈도와 실행 시각 정밀도가 쓰려는 플랜의 cron 한도 안에 드는가
 - 무료 VM에 자체 호스팅한다면 홈 리전, 유휴 회수 조건, 단일 서버 장애 범위와 DB 백업 복원을 누가 어떻게 맡는가
+- 플랫폼이 종료되면 코드, 데이터, 공개 URL과 webhook을 어디로 옮기고, 그 플랫폼이 기대는 런타임은 언제까지 지원되는가
 
 ## 출처
 
@@ -98,6 +105,10 @@ Vercel 같은 관리형 플랫폼의 요금 대신 무료 VM에 자체 호스팅
 - [Coolify Docs, Build and Deployment Model](https://coolify.io/docs/core/build-deployment-model)
 - [Coolify Docs, Networking in Coolify](https://coolify.io/docs/core/networking-in-coolify)
 - [Coolify Docs, Databases](https://coolify.io/docs/databases)
+- [Val Town Docs, Migration guide](https://docs.val.town/migration) — 2026-11-16 읽기 전용 전환, 이전 절차와 권장 런타임 대조
+- [Val Town is winding down — Val Town Blog, Steve Krouse](https://blog.val.town/winding-down) — 2026-11-10 게시
+- [Deno is joining Cloudflare — Deno Blog](https://deno.com/blog/cloudflare) — 2026-10-09 게시. 런타임 지원 기간과 Deno Deploy 종료 예정을 2026-11-16 대조
+- [Val Town, 단계적으로 서비스 종료 — GeekNews](https://news.hada.io/topic?id=36961)
 - [Vercel에서 Cloudflare로 이전 후기 — Threads, chamyworks](https://www.threads.com/@chamyworks/post/DcNn-dQkvM-)
 - [스토리지는 Cloudflare R2 — Threads, catlovessubakba](https://www.threads.com/@catlovessubakba/post/DW-aobrElRk)
 - [YouTube, 양실장의 바이브코딩대학, 3시간 순삭) 55개 기술 의사결정, 소스코드 해설까지! 현존 바이브코딩 기본 강의 중 가장 실전적인 강의](https://www.youtube.com/watch?v=K6Rsy-pHBi0) — 2026-08-18, 2:49:38에 Hobby 배포를 위해 에이전트가 메일 예약 작업을 하루 1회로 낮춘 시연 사례
@@ -111,3 +122,4 @@ Vercel 같은 관리형 플랫폼의 요금 대신 무료 VM에 자체 호스팅
 - [[S3-Security-Cost|S3 보안과 비용]]
 - [[Self-Hosting-Small-Server|소형 서버 셀프호스팅]] — 자체 호스팅으로 옮겨 오는 운영 범위
 - [[Fullstack-BaaS-Boundaries|풀스택 프레임워크와 BaaS의 경계]] — Supabase 무료 플랜 조건과 종속 범위
+- [[Deno-Runtime|Deno 런타임]] — Cloudflare 합류 뒤 런타임과 Deno Deploy의 유지 계획

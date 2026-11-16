@@ -13,7 +13,7 @@ HTTP의 버전 독립 의미, 메시지와 헤더, 캐시를 연결하는 핵심
 
 - [x] [[HTTP-Semantics-and-Messages|HTTP 의미와 메시지]]
 - [x] [[HTTP-Header-Semantics|HTTP 헤더 의미와 콘텐츠 협상]]
-- [x] [[HTTP-Caching|HTTP 캐싱과 조건부 요청]]
+- [x] [[HTTP-Caching|HTTP 캐싱, 조건부 요청과 Range 기반 단일 파일 배포]]
 
 ## 인접 문서
 

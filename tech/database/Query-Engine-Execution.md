@@ -12,6 +12,17 @@ aliases: ["Query Engine", "쿼리 엔진", "Trino와 DuckDB", "Ad Hoc Query Engi
 
 같은 SQL도 데이터가 어디에 있는지, 몇 명이 몇 번 반복해서 조회하는지, 이미 쓰는 플랫폼이 무엇인지에 따라 맞는 엔진이 달라진다. 테이블 형식과 카탈로그는 [[Data-Lake-Table-Formats|데이터 레이크의 테이블 형식]], 저장과 계산의 역할 지도는 [[Data-Infrastructure-Layers|데이터 인프라의 계층과 계약]]에서 다룬다.
 
+## 분석 영역에서의 위치
+
+a16z의 데이터 인프라 지도는 저장 다음 단계를 데이터의 쓰임새에 따라 Historical과 Predictive로 나눈다. 이 이름은 GeekCast 영상의 설명을 따른 것이며, a16z 페이지에서는 도표 이미지에만 있어 본문 텍스트로는 대조하지 못했다.
+
+| 구분 | 묻는 것 | 예 |
+|---|---|---|
+| Historical | 기록된 데이터에서 무슨 일이 있었는가 | 광고로 들어온 고객이 주문한 상품. 오래된 데이터만 뜻하지 않으며 방금 들어온 이벤트의 실시간 분석도 이쪽에 연결된다 |
+| Predictive | 기록의 패턴으로 볼 때 아직 모르는 결과는 무엇인가 | 키보드를 산 고객에게 추천할 상품, 다음 구매 가능성 |
+
+같은 방문과 주문 기록을 다른 질문에 쓰는 구분이다. 필요할 때 SQL로 묻는 쿼리 엔진(Ad Hoc Query Engine)과 새 이벤트를 빠르게 조회하는 실시간 분석 시스템, 모델을 만들고 실행하는 라이브러리와 플랫폼이 이 단계에 함께 놓인다. 앞의 둘을 Historical에, 뒤의 것을 Predictive에 두는 배치는 이 문서의 해석이다. 데이터 사이언스 도구는 예측뿐 아니라 앞쪽의 분석에도 쓰여 두 영역에 걸친다. 예측 쪽의 데이터 준비는 [[Data-Infrastructure-Workloads|분석과 머신러닝의 데이터 인프라]]에서 다룬다.
+
 ## SQL 한 줄 뒤의 실행 계획
 
 광고로 들어온 고객이 어떤 상품군을 주문했는지 묻는 SQL을 예로 든다. 방문과 주문은 레이크에, 상품 분류는 운영 DB에 있다고 가정한다. 이름의 앞부분은 Trino처럼 데이터 소스별 카탈로그를 붙이는 표기를 빌렸다.
@@ -61,7 +72,7 @@ Trino는 처리의 일부를 데이터 소스에 맡길 수 있다. 조건으로
 |---|---|---|---|
 | 받은 Parquet나 CSV를 내 프로그램에서 바로 분석 | DuckDB | 별도 DBMS 서버 없이 호스트 프로세스 안에서 실행되는 분석용 엔진, 열 단위 벡터화 실행 | 한 프로세스의 CPU와 메모리, 여러 사용자가 동시에 쓰는 구성은 별도 검토 |
 | 레이크와 다른 DB의 데이터를 한 SQL로 조회 | Trino | connector와 catalog, coordinator와 worker의 분산 실행 | 원본 DB 부하, 네트워크 이동, connector별 pushdown 차이 |
-| 같은 연결과 집계를 여러 사람이 반복 조회 | Dremio | 공유 뷰, Reflections | 사전 계산 사본의 저장, 갱신 주기와 신선도 |
+| 같은 연결과 집계를 여러 사람이 반복 조회 | Dremio | 공유 뷰, Reflections, Power BI와 Tableau 같은 BI 도구 연결 | 사전 계산 사본의 저장, 갱신 주기와 신선도 |
 | 스키마를 미리 정의하지 않은 JSON 탐색 | Apache Drill | JSON, Parquet 같은 자기 기술형 데이터를 Hive metastore 정의 없이 조회 | 반복 분석이 되면 테이블로 정리할지 판단 |
 | 이미 쓰는 Hadoop과 Hive 환경의 대화형 SQL | Apache Impala | Hive Metastore의 테이블 정보 사용, 클러스터에서 query fragment를 병렬 실행, MapReduce를 거치지 않음 | 기존 Hadoop 환경에 대한 의존 |
 
@@ -75,6 +86,8 @@ DuckDB 2.0 문서 기준, Parquet를 읽을 때 쿼리에 필요한 열만 읽�
 SELECT * FROM 'orders/*.parquet';
 SELECT * FROM read_parquet(['visits/*.parquet', 'visits_backfill/*.parquet']);
 ```
+
+DuckDB는 morsel-driven parallelism으로 쿼리를 병렬 실행한다(Why DuckDB 문서 기준). 서버를 따로 두지 않아도 한 장비의 여러 코어를 함께 쓰는 근거다.
 
 [[DuckLake|DuckLake]]처럼 테이블 상태를 관리하는 카탈로그를 붙이면 파일을 직접 읽는 분석에서 관리되는 테이블을 읽는 분석으로 넓어진다.
 
@@ -104,6 +117,8 @@ Trino 블로그의 경위 설명에 따르면 Presto는 2012년 Facebook 데이�
 
 2026-11-05 공개된 GeekCast 시즌2 EP04의 10분 57초 영상에서 사람이 단 한국어 자막 216구간을 2026-11-09 확보해 전체를 읽었다. 실행 계획의 흐름, 연합 쿼리, Presto와 Trino의 관계, Dremio, Drill, Impala와 DuckDB의 쓰임새, 같은 Iceberg 테이블의 다중 엔진 조회를 학습했다. 엔진 구조와 기능은 위 공식 문서로 대조했고, 화면에만 나온 SQL과 도표는 확인하지 않았다. 엔진을 설치해 실행하거나 성능을 비교하지 않았다. 다음 편 예고인 수집과 변환, 6편의 실시간 분석과 9편의 머신러닝은 추가 학습 후보이며, 문서 정리를 학습 완료로 처리하지 않는다.
 
+2026-11-16 같은 자막을 다시 읽어 Historical과 Predictive 구분, Dremio의 BI 도구 연결과 DuckDB의 병렬 실행을 보강했다. 뒤의 둘은 Dremio 26.x와 DuckDB 문서로 대조했다. Historical과 Predictive라는 이름은 a16z 페이지의 도표 이미지에만 있어 영상 설명으로만 적었다. 나머지 절은 다시 대조하지 않았다.
+
 ## 출처
 
 - [GeekCast, 최신 데이터 인프라 이해하기 시즌2, EP04 쿼리 엔진은 어떻게 동작할까? Trino와 DuckDB 이해하기](https://www.youtube.com/watch?v=6z7kymKqhAo) — 2026-11-05 공개, 2026-11-09 한국어 수동 자막 전체 확인
@@ -112,6 +127,8 @@ Trino 블로그의 경위 설명에 따르면 Presto는 2012년 Facebook 데이�
 - [Trino, Pushdown](https://trino.io/docs/current/optimizer/pushdown.html)
 - [We're rebranding PrestoSQL as Trino — Trino blog, Martin Traverso, Dain Sundstrom, David Phillips](https://trino.io/blog/2020/12/27/announcing-trino.html)
 - [Dremio, Accelerate Queries](https://docs.dremio.com/current/acceleration/) — 26.x 문서
+- [Dremio, Client Applications](https://docs.dremio.com/current/client-applications/) — 26.x 문서, Power BI와 Tableau 연결
+- [Emerging Architectures for Modern Data Infrastructure — a16z](https://a16z.com/emerging-architectures-for-modern-data-infrastructure/) — 도표의 영역 이름은 이미지에만 있다
 - [Apache Drill, Drill Introduction](https://drill.apache.org/docs/drill-introduction/)
 - [Apache Impala, Introducing Apache Impala](https://impala.apache.org/docs/build/html/topics/impala_intro.html)
 - [Apache Impala, Overview](https://impala.apache.org/overview.html) — MapReduce를 거치지 않는 분산 쿼리 엔진
@@ -124,6 +141,7 @@ Trino 블로그의 경위 설명에 따르면 Presto는 2012년 Facebook 데이�
 
 - [[Data-Infrastructure-Layers|데이터 인프라의 계층과 계약]]
 - [[Data-Lake-Table-Formats|데이터 레이크의 테이블 형식]]
+- [[Data-Infrastructure-Workloads|분석과 머신러닝의 데이터 인프라]]
 - [[DuckLake|DuckLake]]
 - [[OLTP-vs-OLAP|OLTP vs OLAP]]
 - [[SQL-Tuning-Terminology|SQL 튜닝 용어]]

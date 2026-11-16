@@ -12,5 +12,5 @@ Testcontainers, LocalStack, 테스트 데이터 롤백 — 실제 인프라를 �
 ## 목차
 - [x] [[TestContainers-Integration|Testcontainers 통합 테스트 (멱등성, Random 포트, 병렬 테스트, 하위 인덱스)]]
 - [x] [[Migration-Backed-Test-Database|마이그레이션 기반 테스트 데이터베이스 (빌드 입력으로 선언한 DB variant, cold/warm path, 결정적 dump cache)]]
-- [x] [[LocalStack-Integration-Test|LocalStack AWS 통합 테스트 (단일 4566 엔드포인트, Docker Compose vs Testcontainers, init hooks)]]
+- [x] [[LocalStack-Integration-Test|LocalStack AWS 통합 테스트 (단일 4566 엔드포인트, Docker Compose vs Testcontainers, init hooks, AWS Emulator 비교)]]
 - [x] [[Transactional-Test-Antipattern|Spring database 통합 테스트 (test-managed transaction과 수동 구현, rollback, embedded DB 이름과 수명, schema 초기화, cleanup)]]

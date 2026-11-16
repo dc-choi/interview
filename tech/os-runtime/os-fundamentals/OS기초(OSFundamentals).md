@@ -20,6 +20,7 @@ aliases: ["OS Fundamentals"]
 
 ## 프로세스 & 스케줄링
 - [x] [[Process-Lifecycle|Process lifecycle (PCB, 상태 전이, 시스템 콜과 인터럽트 흐름, fork/exec 사이의 준비와 멀티스레드 제약, 좀비, 쓰레드, 컴파일)]]
+- [x] [[Process-Inspection-Tools|프로세스 관찰 도구 (Process Explorer와 macOS판, 공개 API의 범위, 권한 있는 헬퍼의 승인, 빈 값과 라이선스 확인)]]
 - [x] [[Thread-Models|스레드 종류와 스레딩 모델 (멀티프로그래밍부터 멀티프로세싱까지, 하드웨어 스레드와 SMT, OS 스레드, 1:1, N:1, M:N, 그린 스레드와 virtual thread)]]
 - [x] [[Context-Switching|Context switching (수행 주체, CPU와 I/O 버스트, 스케줄러와 디스패처, 선점과 비선점, 스케줄링 목표)]]
 - [x] [[Context-Switching-Scheduling-Algorithms|CPU 스케줄링 알고리즘 (FIFO, SJF, SRTF, 우선순위, RR, 다단계 큐, MLFQ, 에이징, Linux sched_ext)]]

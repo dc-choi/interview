@@ -78,6 +78,7 @@ shadow 경로가 실제 쓰기를 하면 그 순간부터 검증이 아니라 �
 - **Canary가 맞는 경우** — 사용자 반응이 판단 근거인 변경, 응답을 실제로 내보내야 의미가 있는 UI와 정책 변경.
 - **실무 순서** — shadow로 정합성과 부하를 통과시킨 뒤 canary로 비율을 올린다. 추천 서빙의 구체적 게이트 절차는 [[Recommendation-System-Serving-Operations|추천 서빙 운영]]에 있다.
 - **한계** — 쓰기와 상태 변경이 본질인 변경은 부수효과를 끄는 순간 검증 대상 자체가 사라진다. 이런 변경은 shadow 대신 데이터 이중 기록 후 대조나 canary로 간다. 어느 쪽이든 되돌릴 수 있게 만드는 판단 프레임은 [[One-Way-vs-Two-Way-Door|일방향과 양방향 문]]을 따른다.
+- **사례, 미러 대신 기존 서버를 명세로 쓴 재작성** — X는 2026-11-04 공개한 웹 앱 재작성에서 크롤러용 기존 SSR 서버 둘을 동작 명세로 삼았다. 같은 경로를 두 서버에 검증된 Googlebot으로 요청해 상태 코드와 리다이렉트, title, description, canonical URL, robots 태그, Open Graph와 X card 태그, 언어 대체 링크 수와 구조화 데이터 타입을 비교하는 스크립트로 차이를 하나씩 메웠고, 메운 동작은 출처 서버를 이름에 단 테스트로 고정했다. 에이전트가 기존 서버의 처리 방식을 읽어 이식하고 테스트를 쓰면 사람이 원본과 대조해 검토했다. 전환 순서는 크롤러, 비로그인, 로그인이며 게시 시점에 로그인 사용자는 옮기는 중이다. 엣지가 경로와 요청자로 응답할 서버를 고르고(새 앱에 없는 경로는 기존 앱), 기능 스위치가 배포 없이 대상 집단을 넣고 빼며, 로그인 사용자는 국가 단위로 옮기면서 첫 국가에서 두 앱을 나눠 쓰는 실험으로 실제 트래픽을 비교한다. 출력으로 정답이 정해지는 부분은 비교로, 사용자 체감은 실험으로 판정한 셈이다(해석). 렌더링 쪽 결정은 [[React-DOM-Streaming-SSR#요청자별 렌더링 사례|요청자별 렌더링 사례]]에 있다.
 
 ## 흔한 실수
 
@@ -101,6 +102,8 @@ shadow 경로가 실제 쓰기를 하면 그 순간부터 검증이 아니라 �
 - [Envoy Documentation, HTTP route components (RouteAction.RequestMirrorPolicy)](https://www.envoyproxy.io/docs/envoy/latest/api-v3/config/route/v3/route_components.proto)
 - [nginx documentation, Module ngx_http_mirror_module](https://nginx.org/en/docs/http/ngx_http_mirror_module.html)
 - [Apache Kafka 4.0 Javadoc, KafkaConsumer](https://kafka.apache.org/40/javadoc/org/apache/kafka/clients/consumer/KafkaConsumer.html)
+- [Rebuilding the global town square from scratch — X Engineering Blog, Yagiz Nizipli](https://blog.x.com/en/engineering/rebuilding-the-global-town-square-from-scratch) — 2026-11-04 게시
+- [X.com을 처음부터 다시 구축하기 - 서버 3개를 하나로 — GeekNews](https://news.hada.io/topic?id=37245)
 
 ## 관련 문서
 

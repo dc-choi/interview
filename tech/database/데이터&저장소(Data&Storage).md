@@ -12,7 +12,7 @@ aliases: ["데이터&저장소(Data&Storage)", "Data & Storage"]
 - [[tech/database/rdbms/RDBMS|RDBMS (OLTP)]] — 스키마, 인덱스, 트랜잭션, 격리 수준, Lock, 샤딩, 복제, 제품 비교
 - [[tech/database/in-memory/캐시&KV(Redis)|Cache & KV Store (Redis)]] — 자료구조, TTL, 캐시 전략, 분산 Lock, Stampede, 일관 해싱의 메모리와 링 교체
 - [[tech/database/nosql/nosql|NoSQL (Document, 검색, OLAP)]] — MongoDB 스키마 설계, OpenSearch, ClickHouse
-- [[tech/database/vector/vector|벡터 검색 (Vector)]] — 임베딩 유사도와 점수 임계값, CLIP 멀티모달 이미지 검색, HNSW, pgvector, OpenSearch k-NN, hybrid와 embedding pipeline
+- [[tech/database/vector/vector|벡터 검색 (Vector)]] — 임베딩 유사도와 점수 임계값, CLIP 멀티모달 이미지 검색, HNSW, IVF 중심점 학습과 학습 라우팅, pgvector, OpenSearch k-NN, hybrid와 embedding pipeline
 - [[tech/database/orm/ORM허브(ORMHub)|ORM, 도메인 모델링 (ORM)]] — TypeORM 실무, 임피던스 불일치, Aggregate 경계, Domain Model
 
 ## 저장 엔진 구조
@@ -22,7 +22,7 @@ aliases: ["데이터&저장소(Data&Storage)", "Data & Storage"]
 ## 레이크하우스와 검색 엔진 선택
 
 - [[DuckLake|DuckLake]] — SQL 카탈로그와 Parquet 데이터, 형식과 확장 구분
-- [[Query-Engine-Execution|쿼리 엔진]] — 실행 계획의 읽기, 이동과 계산, Trino의 분산 실행과 pushdown, DuckDB와 Dremio, Drill, Impala의 선택 조건
+- [[Query-Engine-Execution|쿼리 엔진]] — Historical과 Predictive 분석 영역에서의 위치, 실행 계획의 읽기, 이동과 계산, Trino의 분산 실행과 pushdown, DuckDB와 Dremio, Drill, Impala의 선택 조건
 - [[Columnar-Storage-and-Vectorized-Execution|컬럼 저장과 벡터화 실행]] — row group과 경량 압축, 벡터 단위 실행, 임베디드 OLAP의 동시성과 자원 한계, DuckDB 2.0 LTS 도입 점검
 - [[pg-vectorsearch-PRISM|PRISM 벡터 검색]] — pgvector 타입 호환과 recall 기준 비교
 - [[PostgreSQL-Storage-Bottlenecks|PostgreSQL 스토리지 병목]] — NVMe 비교 조건과 내구성 설계
@@ -42,7 +42,7 @@ aliases: ["데이터&저장소(Data&Storage)", "Data & Storage"]
 ## DB 장애 진단
 - [[PostgreSQL-Production-Operations#DDL 대기열과 시간 제한|PostgreSQL DDL 대기열]] — 잠금 보유자와 대기자, `lock_timeout`과 `statement_timeout`의 경계
 - [[DB-Incident-Triage|DB 장애 분석 방법론 (시점 비교, 장애 분류)]] — baseline과 부하/대기/blocker 대조, 발표 사례의 쿼리 변화 3유형, 실행계획+통계, MongoDB
-- [[Self-Service-DB-Diagnostics|셀프서비스 DB 진단 플랫폼]] — 흩어진 모니터링 통합, 개발자 직접 분석, Slack 문의, AI/MCP 반자동 분석, 보안 설계
+- [[Self-Service-DB-Diagnostics|셀프서비스 DB 진단 플랫폼]] — 흩어진 모니터링 통합, 개발자 직접 분석, Slack 문의, AI/MCP 반자동 분석, 보안 설계, 데스크톱 DB 클라이언트의 안전장치
 
 ## Data Modeling
 - [[SCD-Type2|SCD Type 2 (이력 차원 관리)]] — Slowly Changing Dimension, KPI 분석용 시계열 보존

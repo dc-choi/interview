@@ -3,12 +3,14 @@ tags: [cicd, version-control, monorepo, scaling, merge-queue]
 status: done
 verified_at: 2026-11-02
 category: "CI/CD&배포(CI/CD&Delivery)"
-aliases: ["Server-centric Version Control", "서버 중심 버전 관리", "Scion", "Rubicon", "Ref-CAS", "에이전트 규모 Git 저장소"]
+aliases: ["Server-centric Version Control", "서버 중심 버전 관리", "Scion", "Rubicon", "Ref-CAS", "에이전트 규모 Git 저장소", "Pando", "Aspen"]
 ---
 
 # 서버 중심 버전 관리
 
 대규모 모노레포에서 이력 조회와 체크아웃을 반복하는 비용이 병목이면, 전체 저장소를 각 작업에 복제하는 방식과 서버 API로 필요한 데이터만 가져오는 방식을 비교한다. 클라이언트의 오프라인 자율성과 중앙 서비스 의존성은 교환 관계다. 병합량이 검사 처리량을 넘으면 병합 전 검사를 어디까지 유지할지도 함께 정한다.
+
+사례는 바꾼 층으로 나눠 비교한다. 커밋을 만들고 `clone`과 `push`를 하는 클라이언트와 프로토콜, 객체를 보관하고 전달하며 브랜치를 갱신하는 서버와 저장소, 리뷰와 CI와 `main` 병합의 협업 흐름이다. 아래 Scion은 클라이언트와 프로토콜까지 바꾼 사례이고, 저장 계층 사례들은 Git 명령을 그대로 둔다(GeekNews 2026-11-12 정리의 구분).
 
 ## Scion 사례의 전제
 
@@ -34,6 +36,8 @@ GitHub merge queue는 PR의 변경을 최신 base와 큐 앞 PR들의 변경에 
 - Anthropic은 사내 코드 리뷰 도구 Antique의 merge queue 상태를 원격 측정과 로그로 지켜보는 Claude(superfan)도 소개하므로, 큐를 없앴다기보다 큐에 전역 저장소 잠금을 걸지 못했다는 뜻으로 읽힌다(이 문서의 해석). 모노레포와 분리된 저장소를 쓰는 Claude Code 팀은 merge queue에서 통합 결과를 다시 검사한다고 밝혔다([[Code-Review-AI-Agent-Operations|에이전트 시대 코드 리뷰 운영]]).
 - 커밋을 잠금 없이 가볍게 만드는 원칙과, changeset 생성과 별개로 Spanner 단일 행의 compare-and-swap으로 처리하는 ref 이동은 저장과 쓰기 경로의 설계이며 위의 merge queue 전역 저장소 잠금과는 별개다(이 문서의 구분). Scion은 main과 release branch 외의 ref를 권장하지 않는다.
 - Anthropic은 자동 bisect와 revert 파이프라인 같은 사내 도구도 저렴한 프로그래밍 방식의 source control 접근이 없으면 이 규모에서 실용적이지 않다고 설명한다.
+
+충돌 없는 병합과 동작하는 병합은 다르다. 한 에이전트가 API 응답 형식을 바꾸고 다른 에이전트가 기존 형식을 전제로 화면을 고치면 Git은 서로 다른 파일의 변경을 충돌 없이 합치지만 화면은 깨질 수 있다. 아래 저장 계층 사례들이 푸시 처리량을 늘려도 합친 상태를 검증하는 비용은 남는다. 여러 PR의 반영 결과로 `main`을 한 번만 갱신하는 Aspen의 방식도 갱신 횟수를 줄일 뿐 그 묶음의 검사를 대신하지 않는다(GeekNews 정리의 예시와 이 문서의 해석).
 
 다음은 Anthropic이 설명한 Scion 절차가 아니라 이 문서의 해석과 권고다. 병합될 정확한 상태의 검사가 끝날 때까지 main을 붙잡아 두는 잠금이 없으면 변경은 검사받은 main과 다른 main 위에 병합될 수 있고, 동시에 병합된 변경의 조합은 병합 전에 함께 검사되지 않을 수 있다. 그런 조합의 문제는 병합 뒤 검사로 찾아 고치거나 되돌리고 배포 전 검사로 다시 걸러야 한다. 병합량이 큐의 검사 처리량 안에 있는 팀은 merge queue나 최신 base 검사를 유지하는 편이 단순하다. 처리량이 모자라면 병합 전 검사를 덜어내기 전에 동시 빌드 수(GitHub에서는 1~100)와 CI 용량부터 늘린다. GitHub의 한 번에 병합할 PR 수는 merge_group 빌드를 합치지 않으므로 검사 횟수를 줄이지 않고, base에 함께 병합되는 PR 단위를 정해 병합 뒤 CI나 배포가 도는 횟수에 영향을 준다. 그래도 병합 뒤 검증으로 옮기려면 배포 전 관문, 원인 변경을 자동으로 찾고 되돌리는 경로와 충돌을 빨리 고칠 주체를 먼저 갖춘다.
 
@@ -61,6 +65,12 @@ Git 객체는 내용 주소라 두 작성자가 같은 객체를 조율 없이 �
 | GitLab 차세대 SCM(2026-10-13 글) | Git 프로토콜을 유지하고 공유 객체 저장소 위에 수평 확장하는 무상태 계산을 둔다. 에이전트는 필요한 파일과 이력만 요청한다. 고객이 관리하는 S3 호환 저장소와 폐쇄망도 대상이다 | 비공개 베타. 초기 내부 시험의 최고치로 작업 완료 최대 50배, 토큰 최대 절반, 네트워크 트래픽 최대 1/1,000을 보고하지만 작업, 저장소 크기와 동시성 조건은 밝히지 않았다 |
 | ERSC(2026-09-10 글) | 일반 git 클라이언트와 Git 프로토콜로 접속하고, 서버는 Git 저장소가 아닌 자체 저장 엔진을 Git bridge 뒤에 둔다. 고객마다 배포를 나눈다. jj 사용자는 Git 백엔드로 같은 서버를 쓴다 | 저장소 기능은 베타 신청 단계이고 성능 수치는 없다. jj 고유 프로토콜 bridge는 계획이다 |
 | Pierre Code Storage(2025-10-14 공개) | 애플리케이션이 저장소를 필요할 때 만들고 푸시하는 white-label Git 계층이며, 분산 quorum 기반이라고 소개한다 | OpenAI가 Pierre 인수 계획을 발표했고, Code Storage 기능을 Codex에 통합하며 기존 고객은 기능이 옮겨질 때까지 계속 쓸 수 있다 |
+| OpenAI Pando(2026-11 발표) | 브랜치마다 푸시를 따로 처리해 서로 다른 브랜치의 푸시가 기다리지 않는다. 같은 브랜치의 갱신 순서는 지키지만 여러 브랜치를 함께 읽는 도구는 브랜치마다 다른 시점을 볼 수 있다. 팩파일을 재사용하고 지역 캐시에서 제공해 같은 요청마다 다시 압축하는 일을 줄인다 | 사내 백엔드이며 개발자와 에이전트는 기존 `git clone`과 `git push`를 쓴다 |
+| Cursor Continuity | 푸시를 S3의 변경 로그에 기록하고, 서버 디스크의 저장소 사본은 필요하면 다시 만드는 캐시로 쓴다 | 수치는 대조하지 않음 |
+| Entire 분산 Git 네트워크 | GitHub를 원본으로 두고 에이전트는 가까운 지역 미러에서 `clone`과 `pull`을 한다. 장애 대비 사본이 아니라 평소 원본으로 가던 읽기 요청을 나누는 사본이다 | 읽기 경로만 바꾼다 |
+| Aspen(오픈소스) | Pando 설계를 독립 구현한 Git 서버. PR마다 별도 커밋을 남기되 여러 PR을 모두 반영한 결과로 `main`을 한 번만 갱신한다 | 자체 실험에서 `git.git` 저장소의 브랜치 전용 URL로 5분간 초당 567회 푸시를 처리했고, 같은 변경을 `main`에 하나씩 반영하면 초당 약 4회였다. 두 수치 모두 CI를 포함하지 않는다 |
+
+Pando, Continuity, Entire 미러와 Aspen 행은 GeekNews의 2026-11-12 정리를 기준으로 했고 각 회사 원문은 대조하지 못했다(OpenAI 원문은 2026-11-16 HTTP 403).
 
 OpenAI 발표 원문은 2026-11-09 HTTP 403으로 대조하지 못했다. 인수 계획, Codex 통합, Trees와 Diffs의 오픈소스 유지, 기존 고객의 계속 사용은 InfoWorld 보도(2026-11-06)로 확인했고, 규제 승인 등 거래 종결 조건은 GeekNews 요약에만 있다.
 
@@ -68,7 +78,7 @@ GitLab 글은 소스 관리를 빠르게 해도 병목이 CI, 검증, 보안 검
 
 ## 선택 기준
 
-먼저 checkout 횟수, 저장소 크기와 작업별 필요 범위를 측정한다. 기존 Git의 partial/shallow clone, sparse checkout과 캐시로 해소 가능한지도 본다. Git 매뉴얼의 `scalar`(2.53.0 문서 기준, 2.56.0까지 변경 없음)는 대형 저장소용 고급 설정과 백그라운드 maintenance를 적용하고, `scalar clone`은 기본으로 commit과 tree 객체만 받고 sparse-checkout을 초기화한다. 중앙 서비스로 옮기면 가용성, IAM, 복구, 외부 협업과 이력 내보내기가 설계 비용에 추가된다.
+먼저 checkout 횟수, 저장소 크기와 작업별 필요 범위를 측정한다. 기존 Git의 partial/shallow clone, sparse checkout과 캐시로 해소 가능한지도 본다. Git 매뉴얼의 `scalar`(2.53.0 문서 기준, 2.56.0까지 변경 없음)는 대형 저장소용 고급 설정과 백그라운드 maintenance를 적용하고, `scalar clone`은 기본으로 commit과 tree 객체만 받고 sparse-checkout을 초기화한다. 중앙 서비스로 옮기면 가용성, IAM, 복구, 외부 협업과 이력 내보내기가 설계 비용에 추가된다. 리뷰의 대화와 편집 기록을 Git 밖(DeltaDB, 별도 체크포인트 ref)에 두는 도구를 쓰면 저장소 이전과 미러링 때 그 기록이 함께 옮겨지는지도 확인한다([[Agent-Session-History#Git 밖에 남는 작업 기록|Git 밖에 남는 작업 기록]]).
 
 ## 출처
 
@@ -82,6 +92,7 @@ GitLab 글은 소스 관리를 빠르게 해도 병목이 CI, 검증, 보안 검
 - [Introducing Code Storage — Pierre Computer Company](https://code.storage/changelog/introducing-code-storage) — 2025-10-14 게시. 제품 정의를 2026-11-09 대조
 - [OpenAI buys tiny software developer to improve Codex — InfoWorld, Maxwell Cooter](https://www.infoworld.com/article/4245719/openai-buys-tiny-software-developer-to-improve-codex.html) — 2026-11-06 보도. OpenAI 발표 원문(https://openai.com/index/openai-to-acquire-pierre/)은 2026-11-09 HTTP 403으로 미대조
 - [OpenAI, Pierre Computer Company 인수 예정 — GeekNews](https://news.hada.io/topic?id=36621) — 거래 종결 조건의 출처
+- [AI 시대, git push 앞뒤에서 바뀌는 것들 — GeekNews](https://news.hada.io/article/git-push-in-the-agent-era) — 2026-11-12 GeekNews 아티클(토픽 37034). 세 층 구분, 충돌 없는 병합의 동작 검증 예시, Pando, Continuity, Entire 미러와 Aspen의 구조와 수치의 출처. 각 회사 원문은 대조하지 못함
 
 ## 관련 문서
 
@@ -90,3 +101,4 @@ GitLab 글은 소스 관리를 빠르게 해도 병목이 CI, 검증, 보안 검
 - [[Version-Control-Tooling|버전 관리 도구 선택]]
 - [[Monorepo-CICD|모노레포 CI/CD]]
 - [[Open-Source-License-Review|호스팅과 라이선스의 경계]]
+- [[Agent-Session-History|에이전트 세션 기록의 보존과 Git 밖의 작업 기록]]

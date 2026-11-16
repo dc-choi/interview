@@ -57,6 +57,13 @@ aliases: ["Property Based Testing", "속성 기반 테스트", "PBT", "퍼즈 �
 
 다른 실험으로 RFC 1950 명세를 Claude가 쓰고 Linux 커널 zlib 구현의 x86 바이너리가 이를 따름을 Claude가 생성한 x86 의미론 위에서 증명했으며, Rust로 만든 Python 부분 인터프리터를 Verus로 CPython 의미론에 맞춰 증명한 뒤 무작위 프로그램 170만 개에서 99.95% 같은 동작을 측정했다고 밝힌다.
 
+2026-11-10 Google DeepMind가 공개한 AlphaProof Code는 같은 분업을 암호 프로토콜 구현에 적용했다(벤더 발표, 2026-11-16 블로그와 공개 산출물 페이지 대조, 증명 검사는 실행하지 않음).
+
+- **대상과 실행 모델:** libsignal v0.105.4와 spqr v1.6.0을 고치지 않고 감싼 얇은 CLI를 rustc 1.98.1과 musl 정적 링크로 만든 AArch64 사용자 모드 Linux 바이너리다. 1:1 세션의 PQXDH 핸드셰이크와 Triple Ratchet 송수신을 다루고, 키 생성과 그룹 메시징은 범위 밖이다.
+- **분업과 규모:** 사람 전문가가 무엇을 증명할지 정하고, 연구자가 여러 모델과 함께 보안 목표를 명세로 옮긴 뒤 사람이 모든 명세를 검토했다. Gemini Carbon 기반 에이전트들이 약 4주 동안 Lean 증명 600만 줄 이상을 만들었고, 사람이 다시 봐야 한다고 에이전트가 표시한 부분은 코드베이스의 약 1%였다고 밝힌다. 순방향 비밀성, 침해 후 보안과 인증 같은 기호적 모델의 정리 10개와, 계산적 모델에서 공격자 우위의 상한을 증명했다고 적는다.
+- **신뢰 기반:** Lean 커널과 AArch64 의미론(명령어 467개, 시스템 콜 31개)을 믿고 Rust 소스와 컴파일러는 믿지 않는다. 의미론 자체는 증명이 아니라 Unicorn, Sail 모델과의 대조 실행으로 시험했다. 해시, 대칭 암호, 곡선 연산과 KEM 등 37개 루틴은 계약으로 가정해 내부 코드를 검증하지 않았고, 부채널은 범위 밖이다.
+- **방법의 음성 대조:** 이미 고친 실제 버그 두 개를 격리한 사본에 다시 넣자 두 경우 모두 그 버전이 안전하지 않다는 기계 검증 증명을 냈다고 밝힌다.
+
 ### 퍼저가 놓친 버그의 형태
 
 퍼저는 보통 1 MB로 상한을 둔 작은 입력을 변형하고 커버리지에 기대므로, 큰 입력이나 특정 호출 순서에서만 나는 결함을 놓치기 쉽다. 발표의 예는 약 20 MB의 드문 배치에서만 일어난 카운터 언더플로와 범위 밖 쓰기, 64 MB 입력과 2 GB 넘는 메모리가 필요한 이미지 디코더의 범위 밖 읽기, 같은 파일에 대한 두 핸들의 호출 순서가 필요한 범위 밖 읽기, 깊게 중첩된 입력으로 일어나는 libexpat CVE-2026-56132의 재발견이다. 충돌하지 않는 논리 결함(파일 로드를 제한하는 기능이 항상 적용되지는 않음)도 나왔고, 전체로 수백 건의 버그가 드러났다고 밝힌다. 증명을 끝내지 못해도 시도 과정에서 실제 버그가 나온다는 점이 실무 가치다.
@@ -87,6 +94,9 @@ aliases: ["Property Based Testing", "속성 기반 테스트", "PBT", "퍼즈 �
 - [LLMs are making formal software verification feasible at a much larger scale — Anthropic, Frontier Red Team](https://www.anthropic.com/research/formal-verification) — 2026-10-22, 파이프라인, 범위와 전제, 신뢰 기반, 버그 사례, 한계와 비용을 2026-10-27 대조. 2026-10-28 정상 종료 표현과 증명 범위를 재대조
 - [oss-verify-proofs — GitHub, theorem-labs](https://github.com/theorem-labs/oss-verify-proofs/blob/240e37ad8d/README.md) — 2026-10-28 고정 커밋 README로 공개 범위, 진술 형태, 빌드와 검사 버전, 종료 보장의 부재 대조. 증명 검사는 실행하지 않음
 - [LLM이 훨씬 더 큰 규모의 소프트웨어 정형 검증을 가능하게 하고 있음 — GeekNews](https://news.hada.io/topic?id=35855) — 학습 계기
+- [Introducing AlphaProof Code: a breakthrough in verifying complex software at depth — Google DeepMind, Pushmeet Kohli, Swarat Chaudhuri](https://deepmind.google/blog/introducing-alphaproof-code/) — 2026-11-10 게시, 분업, 규모, 사람 검토 비율과 버그 재삽입 실험 대조
+- [AlphaProof Code, Signal 검증 산출물 — Google DeepMind](https://google-deepmind.github.io/code-verification) — 2026-11-16 대상 버전, AArch64 의미론, 신뢰 기반과 범위 밖 항목 대조
+- [AlphaProof Code - Signal 암호화 구현을 기계어 수준에서 형식 검증 — GeekNews](https://news.hada.io/topic?id=36944) — 학습 계기
 
 ## 관련 문서
 

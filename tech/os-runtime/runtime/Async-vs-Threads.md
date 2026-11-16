@@ -1,7 +1,7 @@
 ---
-tags: [runtime, concurrency, async, threads, virtual-threads, structured-concurrency]
+tags: [runtime, concurrency, async, threads, virtual-threads, structured-concurrency, supervisor, dotnet]
 status: done
-verified_at: 2026-10-05
+verified_at: 2026-11-16
 category: "OS&런타임(OS&Runtime)"
 aliases: ["Async vs Threads", "async/await vs 스레드", "가상 스레드", "Function Coloring"]
 ---
@@ -43,6 +43,8 @@ async/await의 비용과 **가상 스레드 + 구조적 동시성 + 채널** 모
 
 스레드는 현재 물리 콜 스택을 남기므로 core dump, debugger와 profiler가 실행 위치를 추적하기 쉽다. async/await는 대기 지점에서 물리 스택이 풀려 비동기 호출 관계가 끊길 수 있지만, V8의 async stack trace나 런타임의 task introspection이 논리 프레임을 일부 복원한다. 도구가 지원하지 않는 경계와 컨텍스트 전파 누락은 여전히 디버깅과 프로파일링을 어렵게 만든다.
 
+구현 방식도 스택의 모양을 바꾼다. 기존 C# async는 컴파일러가 메서드마다 상태 머신 클래스를 만들어 실행 중 스택에 그 기반 프레임이 섞인다. .NET 11의 Runtime Async는 런타임이 일시 중단과 재개를 직접 추적한다. Microsoft Learn 예제에서 세 단계 async 호출을 실행하는 중에 찍은 스택은 13프레임에서 실제 호출 사슬 5프레임으로 줄었다. 예외의 스택 추적은 원래도 같았고, 달라지는 것은 프로파일러, 디버거와 `new StackTrace()`가 보는 실행 중 스택이다. `net11.0` 프로젝트에 `<Features>runtime-async=on</Features>`를 넣어 켜고, 런타임 라이브러리는 이미 이 방식으로 컴파일돼 컴파일러가 만든 상태 머신이 없다. 프로젝트 단위로 끌 때는 `<UseRuntimeAsync>false</UseRuntimeAsync>`를 쓴다(2026-11-12 갱신 문서 기준).
+
 ## 그래서 무엇이 대안인가
 
 ### 가상 스레드 (Virtual / Green Threads)
@@ -63,6 +65,12 @@ Java 가상 스레드, Go goroutine과 Erlang/Elixir 프로세스는 블로킹�
 - detached task나 스코프 밖 자원은 자동 관리 대상이 아니므로 작업 누수 가능성을 줄이지만 없애지는 않음
 
 대표 구현: Python `Trio`, Java 26의 preview API인 `StructuredTaskScope`, Kotlin `coroutineScope`. 구체적인 실패와 취소 정책, Java API 상태는 사용하는 버전에서 확인한다.
+
+### 감독자 (Supervisor)
+
+BEAM(Erlang VM) 계열은 실패를 부모로 전파해 함께 끝내는 데서 멈추지 않고 감독자가 다시 시작한다. 링크된 프로세스가 비정상 종료하면 종료 신호가 링크를 따라가고, 종료를 가로채지(trap) 않는 프로세스는 함께 종료된다. Gleam의 `process.spawn`은 자식을 만든 프로세스와 링크하고 `spawn_unlinked`는 링크하지 않는다. OTP 감독자는 자식 프로세스를 시작, 중지, 감시하고 필요하면 재시작한다. 범위는 전략이 정한다. `one_for_one`은 종료된 자식만 다시 시작하고, `one_for_all`은 나머지 자식도 모두 종료한 뒤 함께 다시 시작하며, `rest_for_one`은 시작 순서상 그 뒤의 자식만 종료한 뒤 함께 다시 시작한다. 마지막 `MaxT`초 동안 재시작이 `MaxR`번을 넘으면 감독자는 자식을 모두 끝내고 자신도 종료해 판단을 상위 감독자에게 넘긴다(기본값 1회, 5초).
+
+한 VM 안의 재시작이라 노드 장애, 배치와 자원 격리는 맡지 않는다. Gleam 소개 글은 OTP의 감독 구조가 Kubernetes의 컨트롤러와 파드 관계와 매우 비슷하다고 하면서도, Erlang 노드를 여러 대 묶을 수는 있지만 OTP에는 클러스터 스케줄러, 배치와 컨테이너 격리가 없어 노드의 배포와 배치는 직접 맡는다고 적는다. 여러 파드로 나눈 작업 스케줄러를 한 BEAM 애플리케이션의 액터로 합치는 안은 그 글 저자의 제안이며 운영 결과가 아니다.
 
 ### 채널 (Channel) 기반 메시지 전달
 
@@ -113,6 +121,12 @@ CPU 바운드는 **Worker Threads**로, I/O 바운드는 **이벤트 루프**로
 - [Python Documentation, queue.SimpleQueue](https://docs.python.org/3/library/queue.html#queue.SimpleQueue)
 - [concurrent/futures/thread.py — CPython 3.14 저장소](https://github.com/python/cpython/blob/3.14/Lib/concurrent/futures/thread.py)
 - [YouTube, 쉬운코드, 스레드 풀을 쓰는 이유와 사용 팁](https://www.youtube.com/watch?v=B4Of4UgLfWc)
+- [Microsoft Learn, What's new in .NET 11 runtime](https://learn.microsoft.com/en-us/dotnet/core/whats-new/dotnet-11/runtime) — 2026-11-16 Runtime Async의 스택 예제, 켜고 끄는 속성 대조
+- [.NET 11 런타임의 새로운 기능 — GeekNews](https://news.hada.io/topic?id=36957)
+- [Erlang System Documentation, Supervisor Behaviour](https://www.erlang.org/doc/system/sup_princ.html) — OTP 29.1.2 문서. 감독자의 역할, 재시작 전략과 최대 재시작 강도
+- [gleam_erlang, gleam/erlang/process](https://gleam-erlang.hexdocs.pm/gleam/erlang/process.html) — v1.3.0. `spawn`과 `spawn_unlinked`, 링크와 종료 신호
+- [You should try Gleam — Nicolas Chagnet](https://nchagnet.eu/blog/you-should-try-gleam) — 2026-11-01 게시. OTP와 Kubernetes 비교, 작업 스케줄러 통합 제안. 저자는 언어 경험이 아직 많지 않다고 밝힌다
+- [Gleam을 써보자 — GeekNews](https://news.hada.io/topic?id=36975)
 
 ## 관련 문서
 - [[Thread-vs-Event-Loop|Thread vs Event Loop]]

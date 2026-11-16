@@ -44,3 +44,4 @@ aliases: ["pg_vectorsearch", "PRISM 벡터 인덱스"]
 - [[Vector-Similarity-Search|벡터 유사도 검색]]
 - [[pgvector|pgvector]]
 - [[pgvector-Query-Optimization|pgvector 쿼리 최적화]]
+- [[IVF-Clustering-and-Routing|IVF 중심점 학습과 질의 라우팅]] — 클러스터 기반 인덱스의 중심점 학습과 라우팅 누락

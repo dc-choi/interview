@@ -1,7 +1,7 @@
 ---
 tags: [web, frontend, animation, video, rendering]
 status: done
-verified_at: 2026-11-04
+verified_at: 2026-11-16
 category: "웹&네트워크(Web&Network)"
 aliases: ["Code-Driven Motion Graphics", "코드 기반 모션 그래픽"]
 ---
@@ -22,6 +22,8 @@ aliases: ["Code-Driven Motion Graphics", "코드 기반 모션 그래픽"]
 | Mediabunny | TypeScript로 영상과 음성 파일을 읽고 쓰고 변환 | 컨테이너와 코덱 처리 기능이 장면 기획이나 디자인을 대신하지 않는다 |
 
 이 구분은 조합을 설계할 때의 역할 분해다. 모든 도구 사이의 직접 연동이나 특정 브라우저에서의 출력 성공을 검증한 결과는 아니다. AI가 코드를 작성하도록 도울 수 있어도, 이 도구들의 기본 렌더링 기능을 생성형 모델의 추론 기능으로 분류하지 않는다.
+
+브라우저 대신 자체 GPU 엔진으로 같은 형태의 장면을 그리는 도구도 있다. 2026-11-16 README(v0.1.1) 기준 raea는 현재 프레임을 그리는 React와 TypeScript 컴포지션을 GPU에서 합성하고, 하드웨어 인코더가 있는 기기에서는 그것으로 인코딩한다. README 예제는 `useCurrentFrame`, `Composition`, `interpolate`처럼 Remotion과 같은 이름의 API를 쓴다. 같은 파일을 영상으로 렌더링하거나(`raea render`), 입력, 물리와 소리를 붙인 게임으로 실시간 실행하거나(`raea play`), 독립 프로그램으로 내보낸다(`raea export-game`). 3D 장면은 Bevy 0.20이 그린다. GeekNews 소개는 Remotion이 Chromium에서, HyperFrames가 headless Chrome에서 프레임을 그리는 방식과 대비한다. 렌더러가 다르면 같은 React 코드라도 지원하는 CSS와 브라우저 API의 범위가 다를 수 있으므로, 옮길 때는 대표 장면의 출력으로 확인한다(이 문서의 해석). README는 첫 정식 릴리스이며 Windows 빌드가 가장 덜 검증됐다고 밝힌다.
 
 ## 기획, 자산과 움직임에 필요한 도구를 고른다
 
@@ -66,7 +68,9 @@ Remotion의 기본 모델은 현재 프레임 번호에 따라 React 화면을 �
 4. 실제 파일을 출력해 글꼴, 자막 잘림, 프레임 순서와 음성 싱크를 재생 검수한다. 미리보기와 파일 출력의 성공 여부를 따로 남긴다.
 5. 코드, 글꼴, 이미지와 모델을 함께 쓴다면 각 이용 조건을 따로 확인한다. 공개 저장소라는 사실만으로 같은 상업 이용 조건을 가정하지 않는다.
 
-Remotion README는 일부 사용에 회사 라이선스가 필요하다고 안내한다. 여기서는 요금과 적용 대상의 세부 조건을 판정하지 않는다. 이용 전에 공식 라이선스를 대조하며, 기존 소재 검수 항목은 [[Talking-Head-Video-Auto-Editing|녹화 영상 자동 편집]]과 [[Open-Source-License-Review|오픈소스 라이선스 검토]]에서 확인한다.
+에이전트가 만든 영상은 사람이 재생하기 전에 자동 검사를 먼저 거칠 수 있다. raea README는 특정 프레임 하나를 PNG로 뽑아 에이전트가 보고 고치게 하고(`raea render 파일 -o frame.png --frame 45`), `raea check`로 잘린 글자, 낮은 대비, 안전 영역 밖 요소, 멈춘 화면과 음량 문제를 잡는다고 설명한다. 설치 스크립트는 에이전트 스킬을 `~/.claude/skills`에 더하므로 [[Agent-Skills|에이전트 스킬]]의 외부 스킬 설치 기준을 함께 적용한다. 자동 검사는 4번 재생 검수의 앞단일 뿐이며, 검사 항목에 없는 글꼴 대체, 프레임 순서와 음성 싱크는 실제 파일로 확인한다(이 문서의 제안).
+
+Remotion README는 일부 사용에 회사 라이선스가 필요하다고 안내한다. raea README는 FSL-1.1-ALv2에 따라 raea와 경쟁하는 제품 외의 사용, 수정과 재배포를 허용하고 각 버전이 출시 2년 뒤 Apache-2.0이 된다고 밝힌다. 여기서는 요금과 적용 대상의 세부 조건을 판정하지 않는다. 이용 전에 공식 라이선스를 대조하며, 기존 소재 검수 항목은 [[Talking-Head-Video-Auto-Editing|녹화 영상 자동 편집]]과 [[Open-Source-License-Review|오픈소스 라이선스 검토]]에서 확인한다.
 
 ## 출처
 
@@ -92,10 +96,14 @@ Remotion README는 일부 사용에 회사 라이선스가 필요하다고 안�
 - [Mediabunny — Vanilagy](https://github.com/Vanilagy/mediabunny) — 미디어 읽기, 쓰기와 변환 기능
 - [Remotion, The core idea](https://www.remotion.dev/docs/idea) — 프레임 번호, 영상 속성과 composition
 - [Remotion, Animating properties](https://www.remotion.dev/docs/animating-properties) — 프레임 기반 애니메이션과 CSS transition 주의사항
+- [raea — shinyobjectz](https://github.com/shinyobjectz/raea) — 2026-11-16 README(v0.1.1)의 GPU 합성, 영상과 게임 출력, 프레임 추출과 `raea check` 검사 항목, 스킬 설치 위치와 FSL-1.1-ALv2 조건 대조. 설치와 실행은 하지 않음
+- [raea - AI가 코드로 만든 영상/3D/게임을 GPU에서 렌더링하는 엔진 — GeekNews](https://news.hada.io/topic?id=36917) — 학습 계기, Remotion과 HyperFrames의 렌더링 방식 비교
 
 ## 관련 문서
 
 - [[프론트엔드(Frontend)|프론트엔드]]
 - [[Talking-Head-Video-Auto-Editing|녹화 영상 자동 편집과 자막]]
 - [[Generative-Video-Editing|생성형 영상 편집과 결과 검증]]
+- [[Generative-Video-Production-Workflow|생성형 영상 제작 워크플로]]
+- [[Agent-Skills|에이전트 스킬]]
 - [[Open-Source-License-Review|오픈소스 라이선스 검토]]

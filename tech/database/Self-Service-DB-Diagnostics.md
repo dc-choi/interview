@@ -1,5 +1,5 @@
 ---
-tags: [database, operations, self-service, observability, aiops, mcp, security]
+tags: [database, operations, self-service, observability, aiops, mcp, security, db-client]
 status: done
 verified_at: 2026-08-26
 category: "데이터&저장소(Data&Storage)"
@@ -90,6 +90,21 @@ DopeDB의 공개 README는 Analysis Article에 정제한 HTML과 읽기 전용 �
 - **조회와 재현:** 대상 DB, SQL, 매개변수, 실행 시각을 기록한다. 과거 수치의 재현이 필요하면 결과 스냅숏이나 해당 시점의 데이터를 별도로 보존한다.
 - **조회와 변경:** 진단용 읽기 경로와 쓰기 경로를 분리한다. 변경 기능을 제공한다면 모델의 제안만으로 실행하지 않고 대상과 실제 변경 내용을 확인하는 별도 승인을 둔다.
 
+## 데스크톱 DB 클라이언트의 안전장치
+
+개발자가 진단 도구 밖에서 쓰는 DB 클라이언트도 같은 경계를 지켜야 한다. Rust와 GPUI로 만든 GPL-3.0 클라이언트 DBDelve의 README가 설명하는 기능을 경계별로 옮기면 다음과 같다(2026-11-16 README 대조, 제품 설치와 실행은 하지 않았다). 오른쪽 열은 설계 제안이다.
+
+| 경계 | 클라이언트 기능 | 점검할 것 |
+|---|---|---|
+| 쓰기 방지 | 연결마다 읽기 전용, 읽기/쓰기, 전체 권한 가운데 하나를 고르고 파괴적 작업 전에 확인 | 클라이언트 설정은 실수 방지다. 운영 DB의 읽기 전용은 DB 계정 권한으로 강제한다 |
+| 환경 식별 | 연결별 제목 표시줄 색 | 운영 연결을 눈으로 구분하되 권한 통제를 대신하지 않는다 |
+| 변경 확인 | 결과 표의 셀을 고치면 실행할 `UPDATE` 문을 먼저 보여 주고 확인 뒤 실행 | 조건절이 기본 키로 대상 행만 가리키는지 확인한다 |
+| 자격 증명 | 로그인 때마다 명령을 실행해 비밀번호를 받고 지정 시간 동안 메모리에서만 재사용. RDS 같은 클라우드의 IAM 토큰 인증에 쓴다 | 공유 연결 정의에 비밀을 넣지 않는 위 원칙과 같다 |
+| 접속 경로 | SSH 터널은 시스템 `ssh`를 실행해 사용자의 설정, 에이전트와 하드웨어 키를 그대로 쓰고, 비공개 DB는 AWS CLI와 Session Manager 플러그인으로 연결 | 클라이언트가 자체 SSH 구현이나 별도 키 저장소를 두는지 본다 |
+| 실행 계획 | 노드별 예상 행 수와 실제 행 수, 시간을 보여 주고 크게 어긋난 추정을 경고 | 실제 행 수는 문장을 실제로 실행해야 얻는다(PostgreSQL `EXPLAIN ANALYZE`). 운영 DB의 쓰기 문장과 무거운 조회에는 신중히 쓴다 |
+
+같은 README의 성능 비교는 DBDelve 0.3.6과 DBeaver 25.3.1을 같은 Postgres 테이블에서 5회 실행한 중앙값이다(2026-10-11, M1 Pro, 32GB). 앱 시작 시간(Launch) 1.1초와 5.2초, 유휴 메모리 133MB와 606MB, 1,000행 쿼리 0.21초와 1.96초였고, 행 제한을 끄고 100만 행 전체를 메모리에 올리면 56초와 4.9GB, 208초와 17GB였다. 제작자 측정이며 독립적으로 재현하지 않았다.
+
 ## 면접 체크포인트
 
 - 흩어진 모니터링 도구가 만드는 비용(화면 이동 + 팀 간 커뮤니케이션)과 셀프서비스 통합의 가치
@@ -105,6 +120,8 @@ DopeDB의 공개 README는 Analysis Article에 정제한 HTML과 읽기 전용 �
 ## 출처
 - [DopeDB README — DopeDB](https://github.com/json-choi/dopedb/blob/main/README.md) — 2026-10-30 공유 연결과 구성원 자격증명, Analysis Article의 공개 스냅숏과 인증 후 재실행 설명만 대조. 기존 AWS와 MCP 문서는 재검증하지 않아 verified_at을 유지한다.
 - [DB 클라이언트 이제는 도프디비로 — YouTube, 큰돌의터전](https://www.youtube.com/watch?v=CSIJMHoDj7M) — 2026-10-22 제작자 시연의 저장 SQL과 공유 분석을 학습 계기로 삼았다. 다른 클라이언트와의 기능 동등성, 비용과 안전성 우위는 채택하지 않았다.
+- [DBDelve README — DBDelve](https://github.com/ShayanAbbas1/dbdelve) — 2026-11-16 기능, 안전장치와 벤치마크 조건만 대조. 기존 AWS와 MCP 문서는 재검증하지 않아 verified_at을 유지한다.
+- [DBDelve - Rust와 GPUI로 만든 가벼운 오픈소스 데이터베이스 클라이언트 — GeekNews](https://news.hada.io/topic?id=37236)
 - [Amazon CloudWatch, CloudWatch Database Insights](https://docs.aws.amazon.com/AmazonCloudWatch/latest/monitoring/Database-Insights.html)
 - [Amazon RDS, Performance Insights overview and console end of life](https://docs.aws.amazon.com/AmazonRDS/latest/UserGuide/USER_PerfInsights.Overview.html)
 - [Model Context Protocol 2026-07-28, Authorization](https://modelcontextprotocol.io/specification/2026-07-28/basic/authorization)

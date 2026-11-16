@@ -1,7 +1,7 @@
 ---
-tags: [architecture, evolution, compatibility, upgrade, database, nodejs, npm, dependency]
+tags: [architecture, evolution, compatibility, upgrade, database, nodejs, npm, dependency, rust, zig, dotnet]
 status: done
-verified_at: 2026-09-02
+verified_at: 2026-11-16
 category: "Architecture - 진화"
 aliases: ["Version Upgrade Difficulty", "버전 업그레이드 난이도", "업그레이드 난이도 구조", "DB 런타임 패키지 업그레이드"]
 ---
@@ -74,6 +74,17 @@ Node.js 26까지는 짝수 메이저만 LTS로 승격됐고, 공식 릴리스 �
 
 **방치된 패키지가 허브가 된다.** 옛 peer 범위를 고정한 채 업데이트가 끊긴 패키지 하나가 나머지 전부를 막는다. 이것은 업그레이드가 아니라 교체 문제라서 가장 오래 걸린다.
 
+## 언어와 런타임 공급자의 호환성 정책
+
+업그레이드 비용의 일부는 공급자가 정한다. 무엇을 깨도 되는지, 얼마나 미리 알리는지, 어떤 하드웨어까지 지원하는지가 언어와 런타임마다 다르다. 다음은 2026년 11월 릴리스와 공식 발표에서 확인한 사례다.
+
+- **에디션 밖으로 나온 변경:** Rust는 호환을 깨는 변경을 에디션으로 묶지만, 1.100(2026-11-12)은 `Infallible`을 `!`의 별칭으로 바꾸려고 2015, 2018, 2021 에디션의 never 타입 폴백도 `()`에서 `!`로 바꿨다. 발표는 드물게 추론과 도달 불가 판정이 달라질 수 있다고 적고, 미리 future-compatibility 경고를 내고 깨진 공개 crate에 수정판을 낸 뒤 바꿨다고 밝힌다. 의존성이 이 변경으로 실패하면 먼저 그 의존성을 갱신한다 ([[Rust-Ownership-and-Borrowing|Rust 소유권과 대여]]).
+- **1.0 이전 언어의 폐기 주기:** Zig 0.17은 0.16에서 폐기를 예고한 `@cImport`를 제거하고 C 변환을 별도 패키지로 옮겼다. 한 저자는 0.17에 맞추려고 자기 책의 Zig 파일 152개 중 35개를 고쳤다고 밝혔다 ([[Zig-Safety-and-C-Interop|Zig의 안전 장치와 C 연동]]).
+- **하드웨어 하한:** .NET 11은 x86/x64 최소 요구를 `x86-64-v2`로, Windows Arm64는 LSE 포함으로 올려 그보다 오래된 CPU에서는 실행되지 않는다. 앞의 Node.js glibc 하한처럼 런타임 업그레이드가 실행 환경 교체를 끌고 온다 ([[Native-Compilation-Compatibility|네이티브 컴파일과 호환성]]).
+- **안정성을 목표로 거는 생태계:** Haskell Foundation 기술 리더십 위원회는 2026-11-13 10년 된 Haskell 코드를 소스 수정 없이 최신 GHC로 컴파일하는 것을 목표로 내걸고, 사용자가 breaking change를 피하는 방법, 지원 기간과 업그레이드 경험을 풀어야 할 질문으로 적었다. 안정 패키지 세트와 생태계 단위의 업그레이드 조율도 지원 후보로 든다. 목표 선언이며 달성된 보장이 아니다.
+
+언어와 런타임을 고를 때 폐기 예고 기간, 이전 에디션이나 버전에도 미친 변경의 전례, 최소 하드웨어와 OS, 업그레이드를 돕는 경고와 도구를 함께 확인한다(적용 제안).
+
 ## 난이도를 실제로 가르는 조건
 
 기술 축보다 다음 세 조건이 난이도를 더 크게 바꾼다.
@@ -92,6 +103,8 @@ Node.js 26까지는 짝수 메이저만 LTS로 승격됐고, 공식 릴리스 �
 - **런타임은 LTS 일정에 맞춘다.** 다음 LTS가 Active가 되면 CI 매트릭스에 먼저 추가하고 현재 버전이 Maintenance로 내려가기 전에 기본값을 옮긴다.
 - **DB 마이너는 관리형 자동 적용을 검토하고 메이저는 복제본 리허설과 Blue/Green으로 간다** ([[DB-Provisioning-Pipeline|DB 프로비저닝 파이프라인]]).
 - **게이트 순서는 타입 체크, 테스트, 스테이징, 제한 배포다.** 앞 단계가 싸고 빠르므로 거기서 대부분을 걸러낸다.
+
+축을 섞는 비용은 제품 규모에서도 같다. KDE 4는 툴킷을 Qt 3에서 Qt 4로 옮기는 일과 데스크톱 구성 요소의 재작성을 함께 진행했다. 2026년 공개된 KDE 다큐멘터리에서 당시 개발자들은 한꺼번에 너무 많이 바꿨다고 회고한다. 개발이 길어지는 동안 기여자와 사용자가 줄었고, 4.0을 미완성 데스크톱의 미리보기로 내며 배포판에 기본값으로 싣지 말라고 요청했지만 일부 배포판은 기본값으로 실었다. 사용자 반발이 컸고, 좋은 평가를 받기까지 시작부터 약 5년 반이 걸렸다고 말한다. 같은 다큐멘터리는 이후 Plasma 5에서 6으로의 전환은 매끄러웠다고 평가한다. 미리보기라는 표시는 기본값을 정하는 하위 배포자가 따르지 않으면 지켜지지 않는다(해석).
 
 ## 면접 체크포인트
 
@@ -127,6 +140,13 @@ Node.js 26까지는 짝수 메이저만 LTS로 승격됐고, 공식 릴리스 �
 - [Announcing NestJS 11: What's New — Trilon](https://trilon.io/blog/announcing-nestjs-11-whats-new)
 - [CHANGELOG 0.3.0 — GitHub, typeorm/typeorm](https://github.com/typeorm/typeorm/blob/master/CHANGELOG.md#030-2022-03-17)
 - [Renovate Docs, Automerge configuration](https://docs.renovatebot.com/key-concepts/automerge/)
+- [Announcing Rust 1.100.0 — Rust Blog](https://blog.rust-lang.org/2026/11/12/Rust-1.100.0/) — 2026-11-16 never 타입 폴백 변경과 사전 경고, 공개 crate 수정 대조
+- [Zig 0.17.0 Release Notes](https://ziglang.org/download/0.17.0/release-notes.html) — `@cImport`의 0.16 폐기 예고와 0.17 제거
+- [Why Zig Over C for Systems Programming — Mihalis Tsoukalos](https://www.mtsoukalos.eu/2026/11/why-zig-over-c-for-systems-programming/) — 0.17 이전에 고친 파일 수의 저자 보고
+- [Microsoft Learn, What's new in .NET 11 runtime](https://learn.microsoft.com/en-us/dotnet/core/whats-new/dotnet-11/runtime) — 최소 하드웨어 요구 상향
+- [A technical vision for the Haskell ecosystem — Haskell Discourse, Haskell Foundation 기술 리더십 위원회](https://discourse.haskell.org/t/a-technical-vision-for-the-haskell-ecosystem/15078) — 2026-11-13 게시. 안정성 목표와 질문 대조
+- [KDE: The Documentary — The Story of Free Software Underdogs — Kockatoo Tube, KDE 채널](https://tube.kockatoo.org/w/fFinNHfanLT7aBEb2B8y4c) — 약 62분, 2026-11-14 게시(원 공개일 표기 2026-10-13). 2026-11-16 사람이 단 영어 자막 전체 확인. KDE 4 관련 내용은 당사자 회고
+- [KDE 다큐멘터리: 자유 소프트웨어의 언더독들 이야기 — GeekNews](https://news.hada.io/topic?id=37168)
 
 ## 관련 문서
 
@@ -143,3 +163,5 @@ Node.js 26까지는 짝수 메이저만 LTS로 승격됐고, 공식 릴리스 �
 - [[Runtime-Stack-Evolution|런타임 스택 진화]] — 언어 업그레이드 방치의 비용
 - [[Technical-Debt|기술 부채]] — 미룬 업그레이드는 이자가 붙는 부채
 - [[Dependency-Selection|의존성 선택]] — 도입 시점의 유지보수 활성도와 semver 준수 판단이 나중 업그레이드 비용을 정한다
+- [[Native-Compilation-Compatibility|네이티브 컴파일과 호환성]] — .NET 11의 CPU 하한과 ReadyToRun 대상
+- [[Zig-Safety-and-C-Interop|Zig의 안전 장치와 C 연동]] — 1.0 이전 언어의 변경 비용

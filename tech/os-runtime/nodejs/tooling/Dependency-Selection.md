@@ -1,5 +1,5 @@
 ---
-tags: [runtime, nodejs, tooling, dependency]
+tags: [runtime, nodejs, tooling, dependency, governance]
 status: done
 verified_at: 2026-10-06
 category: "OS & Runtime"
@@ -92,8 +92,11 @@ HTTP 클라이언트는 [[HTTP-Networking#Axios에서 Fetch로 이전]], 테스�
 - 분쟁 시 결정을 되돌리는 절차가 있는가 (법원 명령 밖의 경로)
 - 포크 가능성의 실효성: 라이선스만이 아니라 배포 경로를 확보할 수 있는가
 - 사용자 계정과 접근권이 누구의 재량에 걸려 있는가
+- 공급 기업이 인수되거나 오픈소스 개발을 멈출 때 남는 권리를 정한 계약이나 재단이 있는가
 
 한 기업이 인프라, 최대 기여자, 상업 라이선스 독점을 동시에 쥐면 그 기업의 내부 분쟁이 생태계 전체의 가용성 사건이 되고, 기여 시간 자체가 협상 지렛대로 쓰일 수 있다. WordPress에서는 GPL 소프트웨어, 상표를 가진 재단, 플러그인과 업데이트 인프라를 개인적으로 통제하는 한 기업의 CEO가 분리돼 있었다. 2024년 한 호스팅 업체와의 분쟁에서 인프라 접근 차단, 로그인 확인 절차, 플러그인 포크와 업데이트 경로 전환이 잇따랐고 되돌림은 법원의 예비적 금지명령으로만 작동했다. 2026년 9월에는 그 기업 이사회가 CEO를 유급 휴직 조치했다가 48시간 안에 복귀하는 일이 있었다.
+
+사용자 쪽 공동체가 계약으로 이 위험을 줄인 사례도 있다. KDE 데스크톱은 Trolltech의 Qt 위에 만들어졌는데, 당시 Qt는 돈을 버는 사용에는 비용을 받는 라이선스라 자유 소프트웨어 진영이 반발했고 GTK 기반의 GNOME이 대안으로 시작됐다(2026년 KDE 다큐멘터리의 당사자 회고). 1998년 Trolltech와 KDE e.V.가 세운 노르웨이 재단 KDE Free Qt Foundation은, Qt 회사가 정해진 오픈소스 라이선스로 Qt Free Edition을 개발하기를 멈추면 재단이 Qt를 BSD 계열이나 다른 오픈소스 라이선스로 공개할 권리를 갖는다는 합의를 관리한다. KDE 측은 이 합의에 서명할 법인이 필요해 KDE e.V.를 세웠다고 회고한다. 합의는 인수, 합병이나 파산에도 유지되고, 이사회는 양측 2명씩이며 동수일 때는 KDE 측 표로 정한다. Qt의 소유는 Nokia와 Digia를 거쳐 지금의 Qt Group으로 넘어갔고 KDE 공식 페이지는 원래 합의가 계속 유효하다고 밝힌다. 지금의 라이선스만이 아니라 공급자가 바뀌거나 사라질 때 무엇이 남는지를 계약 구조로 확인한다(적용 제안).
 
 ## 6. 자금 리스크 — 누가 유지보수 비용을 내나
 
@@ -107,6 +110,8 @@ HTTP 클라이언트는 [[HTTP-Networking#Axios에서 Fetch로 이전]], 테스�
 다음은 2026-10-06에 확인한 당사자 발표 기준의 사례다. Tailwind CSS를 처음 만든 메인테이너는 2026년 1월 문서 저장소의 공개 PR 댓글에서, Tailwind가 그 어느 때보다 많이 쓰이는데도 문서 트래픽은 2023년 초보다 약 40%, 매출은 80% 가까이 줄었고 AI가 사업에 준 타격으로 엔지니어링 팀의 75%가 일자리를 잃었다고 밝혔다. 문서가 상용 제품을 알리는 유일한 경로여서, LLM이 문서를 읽기 쉬워질수록 문서 방문과 유료 제품을 알게 되는 사람이 줄어든다고 설명했다. 2026-09-09 Tailwind Labs는 Shopify 합류를 발표하며 오픈소스 프로젝트는 MIT 라이선스로 남고 기존 팀이 Shopify의 지원으로 계속 유지보수한다고 밝혔고, 상용 제품인 Tailwind Plus와 ui.sh는 기존 고객의 이용을 유지하되 신규 가입을 닫았다.
 
 후원사가 떠나는 쪽의 사례도 있다. 2026-09-10 Shopify는 모바일 앱의 네이티브 전환을 발표하며 자사가 만들거나 후원한 React Native 라이브러리별 계획을 공지했다. React Native Skia는 2026년 말까지 후원하고 이후 기존 메인테이너가 포크해 새 이름으로 배포하며, 이전이 끝나면 원 저장소를 보관 처리한다. Shopify가 주간 약 200만 다운로드라고 밝힌 FlashList는 호환성을 깨는 치명적 문제를 계속 고치면서 장기 유지보수를 맡을 기업들과 논의 중이다. 사용자 기반이 작은 Restyle은 2026년 말까지 동작을 유지한 뒤 유지보수를 중단하고 저장소를 보관 처리하며, 포크는 누구나 할 수 있다고 밝혔다.
+
+공동 기부금을 나눠 주는 소액 지원도 있다. 국내 FOSS for All은 2026-10-19 첫 기부금 모집과 분배 사업인 FOSS for All Microgrants 2026의 결과를 공고했다. 프로젝트와 커뮤니티 13곳이 지원해 심사위원과의 회의로 5곳을 골랐고, 금액은 밝히지 않은 채 큰 기부금은 아니라고 했다. 이런 지원은 작은 프로젝트를 알리고 돕는 신호이지 유지보수 인력의 급여를 감당하는 수입원과 같지 않으므로, 위 질문의 답은 따로 확인한다(해석).
 
 ## 면접 포인트
 
@@ -133,6 +138,11 @@ HTTP 클라이언트는 [[HTTP-Networking#Axios에서 Fetch로 이전]], 테스�
 - [Tailwind Labs is joining Shopify — Tailwind CSS Blog](https://tailwindcss.com/blog/tailwind-is-joining-shopify)
 - [feat: add llms.txt endpoint for LLM-optimized documentation (PR #2388) — GitHub tailwindlabs/tailwindcss.com](https://github.com/tailwindlabs/tailwindcss.com/pull/2388)
 - [Native is now the future of mobile at Shopify — Shopify Engineering](https://shopify.engineering/back-to-native)
+- [KDE Free Qt Foundation — KDE](https://kde.org/community/whatiskde/kdefreeqtfoundation/) — 2026-11-16 설립 주체와 연도, 재공개 권리의 조건, 인수와 파산 시 유지, 이사회 구성 대조. 페이지에 작성일이 없다
+- [KDE: The Documentary — The Story of Free Software Underdogs — Kockatoo Tube, KDE 채널](https://tube.kockatoo.org/w/fFinNHfanLT7aBEb2B8y4c) — 2026-11-16 사람이 단 영어 자막 확인. 초기 Qt 라이선스, GNOME의 출발과 KDE e.V. 설립 경위는 당사자 회고
+- [KDE 다큐멘터리: 자유 소프트웨어의 언더독들 이야기 — GeekNews](https://news.hada.io/topic?id=37168)
+- [FOSS for All Microgrants 2026: 수혜조직 선정 완료 공고 — FOSS for All Forum](https://forum.fossforall.org/t/foss-for-all-microgrants-2026/162) — 2026-10-19 게시. 지원 금액과 선정 기준은 공개되지 않았다
+- [국내 오픈소스 소액 지원 사업 FOSS for All Microgrants 2026 수혜 프로젝트 5곳 — GeekNews](https://news.hada.io/topic?id=36847)
 
 ## 관련 문서
 - [[Dependency-Management|의존성 관리]]

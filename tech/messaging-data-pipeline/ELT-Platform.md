@@ -156,6 +156,7 @@ Airbyte, Fivetran 같은 기성 커넥터 솔루션이 있는데 왜 자체 구�
 - [[메시징&파이프라인(Messaging&Pipeline)]] — 카테고리 인덱스
 - [[Airflow-DAG-Parsing]] — 동적 DAG 생성의 파싱 비용
 - [[CDC&Outbox]] — 스냅샷 sync의 실시간 대안
+- [[Incremental-Data-Pipeline|증분 파이프라인]] — 적재한 변경을 파생 테이블까지 전달하는 구성
 - [[Event-Driven-Architecture]] — 파이프라인을 둘러싼 아키텍처 결정
 - [[Correlation-ID|Correlation ID / Trace ID]] — 배치 실행 단위의 상관 키
 - [[Agent-Ready-Data|에이전트용 데이터 준비]] — 에이전트가 쓰는 데이터의 신뢰, 추적과 거버넌스
