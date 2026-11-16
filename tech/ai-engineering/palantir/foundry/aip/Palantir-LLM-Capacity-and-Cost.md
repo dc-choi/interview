@@ -1,7 +1,7 @@
 ---
 tags: [palantir, aip, rate-limit, capacity, cost]
 status: done
-verified_at: 2026-10-16
+verified_at: 2026-11-16
 category: "AI엔지니어링(AIEngineering)"
 aliases: ["AIP LLM 용량과 비용"]
 ---
@@ -65,6 +65,14 @@ AIP usage & limits는 minute별 token/request와 per-model threshold, project/us
 Compute usage 표는 AWS-hosted Foundry와 특정 default 계약 기준이며 모든 고객에게 적용되지 않는다. Input/output/region, 긴 context 구간과 model version을 맞춰 계산한다. 일부 모델은 threshold 이상 context에 다른 input/output rate를 사용하므로 단일 고정 단가를 곱하지 않는다.
 
 기본 계산은 `inputTokens × inputRate / 10,000 + outputTokens × outputRate / 10,000`이며 cache/reasoning/다른 modality의 계약은 별도 실제 usage를 확인한다. 기존 표에는 retired/legacy 모델의 수치도 남아 있을 수 있어 **단가표 등재가 현재 사용 가능하다는 증거는 아니다**. Availability/enablement와 rate table을 따로 대조한다.
+
+예를 들어 공식 문서는 GPT-4o로 보낸 24 token 문장을 `24 × 43 / 10,000 = 0.1032` compute-seconds로 계산한다. 43은 단가표의 GPT-4o North America input 단가와 같은 값이다. Token은 AIP가 아니라 요청을 받은 backing model이 세므로 같은 문장도 provider와 모델에 따라 token 수가 달라질 수 있다. 문서의 평균 약 4자라는 설명은 언어를 밝히지 않으므로 한국어나 코드의 token 수 추정에 그대로 쓰지 않는다.
+
+### 비용은 요청한 resource에 귀속된다
+
+LLM compute-seconds는 사용량을 요청한 개별 application resource에 붙는다. Pipeline Builder에서 AIP로 pipeline 설명을 만들면 그 pipeline에 귀속되는 식이다. AIP Assist나 Error Explainer처럼 한 resource로 귀속할 수 없는 사용은 사용을 시작한 사용자의 user folder에 귀속된다. 비용 화면에서 user folder 항목이 커지면 개인 사용 패턴을, 특정 resource가 커지면 그 workflow의 입력 크기를 먼저 본다.
+
+Token 사용량의 주된 동인은 보내는 정보량과 출력 길이다. Pipeline Builder 설명에서는 선택한 transform node 수가 늘수록 설정 텍스트가 늘어 token이 늘고, AIP Assist에 긴 코드 생성을 요청하면 output token이 늘며, AIP Logic에 큰 텍스트를 붙이면 input token이 는다. Token을 쓰는 앱은 AIP Assist, Logic, Error Enhancer, Code Assist, Analyst, AI FDE, Workshop, Quiver와 Pipeline Builder의 LLM 도구, 그리고 Python과 TypeScript 라이브러리를 통한 Language Model Service 직접 호출이다.
 
 Daily AIP Token Usage export는 model/resource/token type/compute/currency를 연결한다. LLM token 외 dataset query, function과 Ontology compute가 함께 드는 workflow는 해당 비용도 합쳐 본다. Context의 도구 정의와 큰 결과를 반복 전송하는 agent에서는 질문 수만 세면 비용을 과소평가할 수 있다.
 

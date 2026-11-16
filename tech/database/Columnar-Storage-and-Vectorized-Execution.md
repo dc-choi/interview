@@ -1,7 +1,7 @@
 ---
-tags: [database, olap, duckdb, columnar-storage, vectorized-execution, embedded-database]
+tags: [database, olap, duckdb, columnar-storage, vectorized-execution, embedded-database, quack]
 status: done
-verified_at: 2026-11-13
+verified_at: 2026-11-16
 category: "데이터&저장소(Data&Storage)"
 aliases: ["Columnar Storage and Vectorized Execution", "컬럼 저장과 벡터화 실행", "임베디드 OLAP"]
 ---
@@ -45,7 +45,7 @@ Why DuckDB 페이지는 병렬화가 morsel 기반이라고 적는다. 입력을
 
 ## 임베디드 구조의 이득과 대가
 
-DuckDB의 기본 배치는 별도 프로세스 없이 애플리케이션 프로세스 안에 라이브러리로 들어가는 임베디드다. 2.0은 Quack 프로토콜로 서버와 클라이언트 구성도 제공하지만, 이 절은 임베디드 배치만 다루며 Quack 구성의 운영 특성은 검증하지 않았다. 임베디드에서는 소켓 왕복과 결과 직렬화가 없고, Python에서는 보이는 범위의 pandas DataFrame을 변수 이름으로 바로 조회할 수 있다(replacement scan, `SET python_enable_replacements = false;`로 끌 수 있다). 라이선스는 MIT다.
+DuckDB의 기본 배치는 별도 프로세스 없이 애플리케이션 프로세스 안에 라이브러리로 들어가는 임베디드다. 2.0은 Quack 프로토콜로 서버와 클라이언트 구성도 제공하며, 이 구성은 아래 [[#Quack 서버 구성|Quack 서버 구성]]에서 다룬다. 임베디드에서는 소켓 왕복과 결과 직렬화가 없고, Python에서는 보이는 범위의 pandas DataFrame을 변수 이름으로 바로 조회할 수 있다(replacement scan, `SET python_enable_replacements = false;`로 끌 수 있다). 라이선스는 MIT다.
 
 ```python
 import duckdb
@@ -62,6 +62,38 @@ duckdb.sql("SELECT region, sum(amount) FROM orders GROUP BY region").df()
 | 동시성 | 읽기와 쓰기는 한 프로세스만 열 수 있고, 여러 프로세스는 읽기 전용으로만 연다. 한 프로세스 안의 여러 스레드는 MVCC와 낙관적 동시성 제어로 함께 쓸 수 있으며, 두 스레드가 같은 행을 동시에 고치면 충돌한다 | 여러 서비스가 한 파일에 동시에 쓰는 구조에는 맞지 않는다. 문서는 다중 프로세스 쓰기 경로로 Quack 프로토콜이나 PostgreSQL 카탈로그를 쓰는 [[DuckLake|DuckLake]]를 안내한다 |
 | 자원 경쟁 | `memory_limit` 기본값은 RAM의 80%, `threads` 기본값은 CPU 코어 수다 | 애플리케이션과 같은 프로세스의 자원을 나눠 쓰므로 두 값을 의도적으로 정한다 |
 | 장애 격리 | 엔진이 프로세스 안에 있다 | 프로세스가 죽으면 엔진도 함께 멈춘다 |
+
+## Quack 서버 구성
+
+DuckDB 2.0 문서 기준, 네이티브 파일에 여러 프로세스가 쓰는 경로는 Quack 원격 프로토콜이다. `quack` 확장이 한 DuckDB 인스턴스를 서버로 바꾸고, 다른 DuckDB 인스턴스가 클라이언트로 HTTP 접속해 읽기와 쓰기를 보낸다. 2026-05-12 발표된 뒤 1.5.3(2026-05-20)부터 코어 확장으로 들어가 처음 쓸 때 자동으로 설치되고 로드되며, 2.0.0은 성능과 안정성을 다듬은 버전을 함께 배포한다. 클라이언트는 파일을 직접 열지 않고 서버 프로세스에 SQL을 보낸다. 여러 클라이언트의 트랜잭션이 같은 행을 고칠 때의 충돌 동작은 확인한 문서에 나오지 않는다.
+
+2026-11-16 확인한 Quack FAQ 기준 Quack은 베타이며 아직 production-ready가 아니다. 2.0의 다듬은 버전도 프로토콜은 안정화되지 않았고 breaking change가 예고되어 있으므로, FAQ가 말하는 프로토타이핑 용도에서 먼저 쓰고 버전을 고정하는 편이 안전하다.
+
+```sql
+-- 서버 쪽 DuckDB (기본 포트 9494, 기본 바인딩 localhost)
+CALL quack_serve('quack:localhost', token = 'my_token');
+
+-- 클라이언트 쪽 DuckDB
+ATTACH 'quack:localhost' AS qk (TOKEN 'my_token');
+CONNECT qk;  -- DISCONNECT로 로컬 DB에 돌아온다
+```
+
+CLI는 `duckdb -serve`와 `duckdb -connect`를 쓰고, 상태 없이 한 번만 질의할 때는 `quack_query(uri, query)`를 쓴다. `ATTACH`는 원격 테이블 정의를 클라이언트에서 모두 바인딩하므로 정의 하나가 바인딩되지 않으면 연결 전체가 실패한다. 공식 문서의 예는 테이블을 늦게 해석하는 Iceberg 카탈로그다.
+
+| 항목 | 2.0 문서 기준 동작 | 운영 판단 |
+|---|---|---|
+| 노출 범위 | 서버 세션이 볼 수 있는 모든 테이블의 읽기와 쓰기를 포함한 SQL 전체를 노출한다. 기본 인가(`quack_nop_authorization`)는 모두 허용한다 | 기본 설정에서 토큰을 가진 클라이언트는 서버 세션이 볼 수 있는 모든 테이블을 읽고 쓸 수 있다. 읽기 전용 같은 제한은 `quack_authorization_function`에 SQL 매크로나 확장 UDF로 직접 건다(Python UDF는 쓸 수 없다) |
+| 인증 | 토큰이 필수이고, 주지 않으면 시작할 때 무작위 토큰을 만든다 | 토큰을 비밀 값으로 관리하고 클라이언트는 `CREATE SECRET (TYPE quack, ...)`로 넘길 수 있다 |
+| 바인딩과 TLS | localhost만 바인딩하며 다른 호스트는 `allow_other_hostname = true`가 필요하다. 로컬 URI는 TLS를 쓰지 않고, 로컬이 아닌 URI는 기본으로 자체 서명 인증서의 HTTPS를 쓴다 | 2.0 발표문은 `allow_other_hostname`을 시험용으로 두고, 보안 문서는 인터넷에 직접 노출하지 말고 TLS를 종료하는 리버스 프록시(nginx, Caddy) 뒤에 두기를 권한다 |
+
+보안 문서는 `SELECT`, `WITH` 같은 읽기용 첫 단어만 정규식으로 허용하는 읽기 전용 예시가 견고하지 않다고 경고한다. `WITH x AS (SELECT 1) INSERT INTO t SELECT * FROM x`는 허용된 `WITH`로 시작하지만 데이터를 바꾸므로, 문자열 검사로 권한 경계를 만들지 않는다. 같은 문서는 운영에서 읽기 전용을 강제하려면 데이터베이스를 읽기 전용 모드로 attach하거나, 원문 텍스트가 아니라 파싱한 문장 유형을 검사하는 인가 함수를 쓰라고 권한다. 사용자별 토큰과 접근 목록도 인증 함수와 인가 함수를 교체해 운영자가 직접 만드는 방식이다. 2026-11-16 확인한 Quack 보안 문서와 FAQ에는 서버형 DB의 역할이나 GRANT 같은 내장 권한 모델이 나오지 않는다.
+
+2026-05-12 Quack 발표문의 벤치마크(발표 시점의 초기 구현이며 발표문은 DuckDB 버전을 밝히지 않는다, 같은 가용 영역의 AWS m8g.2xlarge 두 대, 5회 중앙값)는 다음과 같다. 2.0에서 다시 잰 수치가 아니므로 자기 환경에서 재현한다.
+
+- 대량 전송: TPC-H `lineitem` 6천만 행을 Quack 4.94초, Arrow Flight 17.40초, PostgreSQL 프로토콜 158.37초에 옮겼다. 표준 PostgreSQL 클라이언트는 읽기를 병렬화하지 않는다는 조건이 붙는다.
+- 작은 쓰기: 행마다 `INSERT` 트랜잭션 하나를 보낸 시험에서 8스레드 기준 Quack 5,434 tx/s, PostgreSQL 4,320 tx/s였다. 8스레드를 넘으면 같은 테이블의 동시 삽입이라는 DuckDB 자체 한계에 걸린다.
+
+FAQ는 OLTP 용도에 대해 8 CPU, 32GB RAM 서버에서 초당 수천 건의 쓰기를 처리할 수 있다고 답한다. 이 문서의 판단은 그 수치와 베타 상태를 함께 본 해석이다. Quack은 소수의 내부 서비스나 대시보드가 한 분석 파일을 함께 읽고 쓰는 프로토타입에서 먼저 검토할 만하고, 초당 수천 건을 넘는 트랜잭션 쓰기나 세밀한 사용자 권한이 핵심인 서비스 DB를 대신하기는 어렵다. 5월 발표문이 이후 계획으로 적은 항목 중 확장 자동 설치는 1.5.3에 들어갔다. Quack을 DuckLake 카탈로그 DB로 쓰는 구성은 1.5.3 발표문이 지원을 알렸고, 2026-11-16 확인한 FAQ는 이를 실험적 지원으로 적는다. 읽기 복제본용 복제 프로토콜은 2026-11-16 확인한 문서에 아직 없다.
 
 ## 맞는 자리와 맞지 않는 자리
 
@@ -85,7 +117,7 @@ DuckDB 2.0.0은 2026-10-21 LTS로 나왔고, 발표문은 최소 2027년 10월�
 
 ## 학습 범위
 
-2026-10-30 공개된 34분 강의 영상의 음성 인식 전사문을 전부 읽고, 행 저장과 컬럼 저장, 압축, 블록 건너뛰기, 벡터화 실행, 임베디드 구조와 도입 판단을 학습했다. 기본값, 압축 목록, 동시성, 설정과 2.0 LTS 내용은 아래 DuckDB 공식 문서로 대조했고, 문서에서 확인하지 못한 화면의 코드와 도표는 쓰지 않았다. DuckDB를 실행해 성능을 측정하지 않았다.
+2026-10-30 공개된 34분 강의 영상의 음성 인식 전사문을 전부 읽고, 행 저장과 컬럼 저장, 압축, 블록 건너뛰기, 벡터화 실행, 임베디드 구조와 도입 판단을 학습했다. 기본값, 압축 목록, 동시성, 설정과 2.0 LTS 내용은 아래 DuckDB 공식 문서로 대조했고, 문서에서 확인하지 못한 화면의 코드와 도표는 쓰지 않았다. DuckDB를 실행해 성능을 측정하지 않았다. Quack 서버 구성은 2026-11-06 공개된 짧은 소개 영상을 계기로 2026-11-16 Quack 공식 문서, 보안 문서와 발표문으로 대조했고 서버를 직접 띄워 보지 않았다.
 
 ## 출처
 
@@ -99,6 +131,13 @@ DuckDB 2.0.0은 2026-10-21 LTS로 나왔고, 발표문은 최소 2027년 10월�
 - [DuckDB, Tuning Workloads](https://duckdb.org/docs/2.0/guides/performance/how_to_tune_workloads.html) — row group 122,880행
 - [DuckDB, Data Ingestion (Python)](https://duckdb.org/docs/2.0/clients/python/data_ingestion.html) — DataFrame 이름 조회
 - [DuckDB, Why DuckDB](https://duckdb.org/why_duckdb)
+- [DuckDB, Quack Remote Protocol](https://duckdb.org/docs/2.0/quack/overview.html) — 서버 시작, 클라이언트 연결, 기본 포트
+- [DuckDB, Quack Security](https://duckdb.org/docs/2.0/quack/security.html) — 토큰, 바인딩, TLS, 인가 함수
+- [DuckDB, Quack Extension](https://duckdb.org/docs/2.0/core_extensions/quack) — 자동 설치와 로드
+- [DuckDB, Quack FAQ](https://duckdb.org/quack/faq) — 베타 상태, DuckLake 카탈로그 실험 지원
+- [Quack: The DuckDB Client-Server Protocol — DuckDB](https://duckdb.org/2026/05/12/quack-remote-protocol.html) — 초기 구현 벤치마크와 이후 계획
+- [DuckDB 1.5.3: Not an Ordinary Patch Release — DuckDB](https://duckdb.org/2026/05/20/announcing-duckdb-153) — Quack 코어 확장, DuckLake 카탈로그
+- [DuckDB 2.0 Now Comes With a Server — Better Stack](https://www.youtube.com/watch?v=NLdS5fHANHs) — 2026-11-06 공개
 - [DuckDB, Release Calendar](https://duckdb.org/release_calendar)
 - [Announcing DuckDB 2.0.0 LTS — DuckDB](https://duckdb.org/2026/10/21/announcing-duckdb-200.html)
 - [Lightweight Compression in DuckDB — DuckDB](https://duckdb.org/2022/10/28/lightweight-compression.html) — 세그먼트별 알고리즘 선택

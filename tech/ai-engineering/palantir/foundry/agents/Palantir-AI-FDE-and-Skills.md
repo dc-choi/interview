@@ -28,11 +28,11 @@ Context는 처음 최소 상태에서 시작한다. 공식 overview는 이 최�
 
 ## Approval과 서버 인가는 서로 다른 검사다
 
-Default/main 변경, unbranched resource 생성과 dataset build 같은 부수효과에는 tool approval이 필요하다. 공식 security 문서는 Ontology Action, app/widget 생성, publish/tag는 매번 확인하고 branch-aware file edit/build는 feature branch에서 auto-approve될 수 있다고 설명한다. Session의 branch/project 범위 pre-approval도 가능하다. 실제 도구별 설정을 확인한다.
+Default/main 변경, unbranched resource 생성과 dataset build 같은 부수효과에는 tool approval이 필요하다. 공식 security 문서는 Ontology Action, app/widget 생성, publish/tag는 매번 확인하고 branch-aware file edit/build는 feature branch에서 auto-approve될 수 있다고 설명한다. Session의 branch/project 범위 pre-approval도 가능하다. 검색과 정의 읽기 같은 read-only 작업은 auto-approve되며, 기본값은 production workflow에 영향을 줄 수 있는 작업을 자동 승인하지 않는 쪽이다. 실제 도구별 설정을 확인한다. 서버 인가는 OSDK app 생성, ontology 편집, dataset build와 code repository 작업에 똑같이 적용되고 권한 오류도 사용자가 직접 수행할 때와 같다. 그래서 AI FDE에서 권한 오류가 나면 agent 설정이 아니라 사용자의 Foundry 권한부터 확인한다.
 
 기본 변경은 branch proposal/PR로 제시하지만 승인된 mutation이 언제나 harmless하거나 자동 rollback된다는 뜻은 아니다. 대표 sample로 transform/function preview, CI와 생성 자원을 검토하고 production 반영을 따로 판단한다.
 
-Session은 작성자만 접근하며 생성 때 사용자가 접근 가능한 marking을 적용한다. 이후 그 marking 접근을 잃으면 session도 못 열고 권한을 회복하면 다시 열 수 있다. API/audit와 LLM 사용량은 사용자 identity에 귀속된다. AI FDE가 사용자의 권한을 넘어선 service identity를 갖는 구조로 설명하지 않는다.
+Session은 작성자만 접근하며 생성 때 사용자가 접근 가능한 marking을 적용한다. 이후 그 marking 접근을 잃으면 session도 못 열고 권한을 회복하면 다시 열 수 있다. API/audit와 LLM 사용량은 사용자 identity에 귀속되며, 사용량 추적과 rate limiting도 사용자 단위로 적용된다. 활동은 AI FDE session log와 표준 Foundry audit log 양쪽에 남는다. AI FDE가 사용자의 권한을 넘어선 service identity를 갖는 구조로 설명하지 않는다.
 
 ## Skill은 활성화와 실제 로드를 구분한다
 
