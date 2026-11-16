@@ -1,9 +1,9 @@
 ---
 tags: [security, network-security, wireshark, vulnerability-assessment, wifi]
 status: done
-verified_at: 2026-11-15
+verified_at: 2026-11-16
 category: "Security - 네트워크 보안"
-aliases: ["Network Security Lab Interpretation", "네트워크 보안 시연 해석", "WPA2 PSK 오프라인 추측", "Evil Twin 신뢰 경계"]
+aliases: ["Network Security Lab Interpretation", "네트워크 보안 시연 해석", "WPA2 PSK 오프라인 추측", "Evil Twin 신뢰 경계", "Wi-Fi Enhanced Open", "OWE"]
 ---
 
 # 네트워크 보안 시연을 해석하는 기준
@@ -98,6 +98,14 @@ WPA3-Personal only 모드와 WPA2/WPA3 transition 모드도 구분한다. HPE Ar
 
 PMF(Protected Management Frames)는 연결 후 위조된 연결 해제와 인증 해제 같은 관리 프레임으로부터 보호하는 기능이다. 모든 무선 공격이나 전파 방해를 차단하는 기능은 아니다. 지원, 협상 상태와 구현 업데이트가 별도 점검 대상이다.
 
+Wi-Fi Alliance 블로그는 WPA3-Personal이 forward secrecy를 포함해, 나중에 비밀번호를 알아낸 사람도 이전 세션이나 다른 사용자의 트래픽을 복호화하지 못한다고 설명한다.
+
+## WPA3-Enterprise 192-bit 모드와 Wi-Fi Enhanced Open은 따로 확인한다
+
+작성일이 표기되지 않은 같은 Wi-Fi Alliance 블로그 기준으로, WPA3-Enterprise의 192-bit 모드는 정부, 금융처럼 민감한 망을 위한 선택 모드다. 같은 글은 이 모드가 각 암호 구성요소의 설정을 지정해 정해진 수준 아래로 구성할 수 없게 하고, 망의 모든 클라이언트가 같은 192-bit 모드로 동작해야 한다고 적는다. 현재 Security 페이지는 WPA3-Enterprise를 민감한 데이터 망을 위한 더 높은 등급의 보안 프로토콜로만 설명한다. WPA3-Enterprise라는 이름만으로 192-bit 모드가 켜졌다고 보지 않으며, 지원하지 않는 기기는 그 망에 붙지 못하는 운영 비용도 함께 본다. 이 모드의 개별 cipher와 해시 구성은 WPA3 Specification으로 대조할 후속 확인 대상이며 이 문서에서는 1차 출처로 대조하지 않았다.
+
+비밀번호 없는 공공 Wi-Fi의 암호화는 WPA3가 아니라 Wi-Fi Enhanced Open이다. Wi-Fi Alliance는 WPA3, Wi-Fi Enhanced Open과 PMF를 별개의 보안 기술로 나열하고, Enhanced Open을 인증 없는 데이터 암호화로 설명한다. RFC 9672는 RFC 8110을 Wi-Fi Enhanced Open으로도 불린다고 적는다. 바탕인 OWE(Opportunistic Wireless Encryption, RFC 8110, 2017년 3월 Informational)는 공개 PSK 대신 Diffie-Hellman 교환 결과를 4-way handshake에 넣어, 공유 비밀번호를 아는 관찰자가 핸드셰이크를 보고 다른 사용자의 트래픽 키를 계산하는 수동 도청을 막는다. 다만 RFC 8110은 OWE가 인증을 제공하지 않고 무선 구간만 보호하며 종단 간 보안이 아니라고 적고, AP를 가장한 능동 공격에는 취약하다고 적는다. 그래서 Enhanced Open 망에서도 Evil Twin 판단은 아래 절의 조건을 그대로 따르고, 실제 인증이 있는 대안을 쓸 수 있으면 OWE를 쓰지 않는다. RFC는 OWE 망에 자물쇠 아이콘을 표시하지 않아야 한다고 권고하므로, 사용자 화면에서 일반 Open 망과 구별되지 않을 수 있다. RFC 9672는 OWE 프로토콜의 이후 작업을 IEEE 802.11 워킹그룹으로 넘긴다고 밝히며 RFC 8110을 갱신했다. 프로토콜 자체를 개정한 문서로 읽지 않는다.
+
 ## ARP MITM과 Evil Twin은 다른 경계를 건드린다
 
 [[ARP-Spoofing|ARP 스푸핑]]은 로컬망의 IP와 MAC 대응을 속여 트래픽의 다음 홉을 바꾸는 공격이다. 중계 경로를 얻는 것과 TLS를 복호화하는 것은 별개다. 평문 HTTP를 읽은 시연을 HTTPS 본문 노출로 확대하지 않는다. 원리, DAI와 DHCP snooping의 방어 조건은 기존 문서를 따른다.
@@ -130,7 +138,11 @@ Evil Twin은 정상망처럼 보이는 무선 AP로 접속을 유도하는 방�
 - [MITRE ATT&CK, Adversary-in-the-Middle: Evil Twin](https://attack.mitre.org/techniques/T1557/004/)
 - [IEEE SA, IEEE 802.11i-2004](https://standards.ieee.org/ieee/802.11i/3127/) — 승인일, Superseded 상태, TKIP/CCMP와 4-Way Handshake, Group Key Handshake의 범위.
 - [NIST, SP 800-97: Establishing Wireless Robust Security Networks: A Guide to IEEE 802.11i](https://csrc.nist.gov/pubs/sp/800/97/final) — 3.2~3.3절(WEP 결함, RSN, 4-Way Handshake), 4.1~4.2절(링크 계층 보호, 키 계층), 7.2~7.3절(WPA와 WPA2 인증). 2025-12-31 철회 문서라 역사와 구조 설명에만 썼다.
-- [Wi-Fi Alliance, Security](https://www.wi-fi.org/discover-wi-fi/security) — WPA3 필수와 PMF 요구.
+- [Wi-Fi Alliance, Security](https://www.wi-fi.org/discover-wi-fi/security) — WPA3 필수와 PMF 요구. 2026-11-16 WPA3, Wi-Fi Enhanced Open과 PMF를 별개 기술로 나열한 구성과 Enhanced Open의 인증 없는 암호화 설명을 추가 대조.
+- [What's new in Wi-Fi security? — Wi-Fi Alliance](https://www.wi-fi.org/beacon/the-beacon/whats-new-in-wi-fi-security) — 본문에 작성일 표기 없음. 2026-11-16 WPA3-Personal의 오프라인 사전 공격 저항과 forward secrecy, WPA3-Enterprise 192-bit 모드의 선택 여부와 클라이언트 요건 확인.
+- [RFC Editor, RFC 8110: Opportunistic Wireless Encryption](https://www.rfc-editor.org/rfc/rfc8110) — 2절(공개 PSK 도청 문제), 6절(자물쇠 아이콘), 7절(인증 없음, 무선 구간 한정, AP 가장 공격).
+- [RFC Editor, RFC 9672: Transferring Opportunistic Wireless Encryption to the IEEE 802.11 Working Group](https://www.rfc-editor.org/rfc/rfc9672) — 초록(RFC 8110 갱신, 이후 작업의 IEEE 802.11 이관)과 서론(Wi-Fi Enhanced Open 명칭).
+- [#NW 0034 - 와이파이 해킹 걱정 끝! WPA3 보안의 비밀 90초 완벽 정리 — 길리랩](https://www.youtube.com/watch?v=UZQG6TUV07g) — 음성 전사 기반. 개방형 망 암호화를 WPA3의 기능으로 설명한 부분은 위 1차 출처로 Wi-Fi Enhanced Open으로 바로잡았고, 192-bit 모드의 개별 암호 구성은 1차 출처로 대조하지 못해 쓰지 않았다.
 - [#NW 0030 - 당신의 와이파이는 어떻게 해킹을 막을까? IEEE 802.11i 90초 완벽 정리 — 길리랩](https://www.youtube.com/watch?v=Qg1A1eprjAQ) — 음성 전사 기반. WPA를 IEEE 워킹그룹의 결과물로 설명한 부분은 위 1차 출처로 바로잡았다.
 - [IEEE SA, IEEE 802.11w-2009](https://standards.ieee.org/ieee/802.11w/3736/) — 관리 프레임 보호(Protected Management Frames) 개정.
 - [PIPEDA Report of Findings #2007-389: TJX Companies Inc. / Winners Merchant International L.P. — Office of the Privacy Commissioner of Canada, Office of the Information and Privacy Commissioner of Alberta](https://www.priv.gc.ca/en/opc-actions-and-decisions/investigations/investigations-into-businesses/2007/tjx_rep_070925/) — 1절(영향 카드 수), 11~25절(발견일, 무선 LAN 진입 추정, 침입 기간, WEP 사용), 80~93절(WEP 판단, WPA 전환 기간, 데이터 분리 미흡, 보호조치 위반 결론).

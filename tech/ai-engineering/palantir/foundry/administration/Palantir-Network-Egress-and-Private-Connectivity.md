@@ -56,6 +56,8 @@ Cloud identity UI는 AWS/Rubix-hosted enrollment에 제공되며 static credenti
 
 Egress client certificate는 mTLS 인증용 공개 인증서와 private key를 포함한다. PEM chain과 정확히 맞는 PKCS#8/RSA private key를 입력하고 read/import/manage 권한을 설정한다. Server certificate bundle은 private CA로 서명된 서버를 검증하는 공개 인증서 집합이며 client identity와 역할이 다르다.
 
+Client certificate를 만드는 경로는 둘이다. Direct entry는 외부에서 만든 인증서와 private key를 PEM으로 올리는 방식이고, 올린 private key는 암호화돼 Foundry에 저장된다. Signing request는 Foundry가 private key와 CSR을 만들고 private key는 플랫폼 밖으로 나가지 않는다. Alias와 common name, 필요한 SAN과 조직/위치 정보를 넣어 CSR을 만든 뒤 내려받아 CA에 서명을 요청하고, 서명된 인증서(`.pem` 또는 `.crt`)를 같은 요청에 올린다. Private key를 외부에서 생성, 보관하거나 전달하는 절차를 없애고 싶으면 signing request를 고른다. 문서가 적용 대상으로 명시한 것은 Foundry worker를 쓰는 Data Connection source다. Agent worker source에 같은 인증서를 쓸 수 있는지는 이 문서로 확인하지 않았다. 2026-11-16 [Configure egress certificates](https://www.palantir.com/docs/foundry/administration/configure-egress-certificates)로 두 생성 경로와 적용 대상을 대조했다.
+
 ## Private link는 생성, 승인과 policy가 모두 필요하다
 
 한도는 enrollment당 20 links, link당 10 private domains다. AWS는 endpoint service name과 provider allowed principal에 Foundry account를 설정한다. Custom TLS domain은 CNAME mapping을 추가하고 사용할 default/zonal/private domain마다 egress policy를 만든다. Ready 상태만으로 source 설정이 끝나지는 않는다. AWS S3는 이 private link 경로로 지원하지 않으며 bucket endpoint 경로를 확인한다.
@@ -80,7 +82,7 @@ Source terminal은 source와 같은 network access에서 `dig`, `curl`, `netcat`
 
 Control Panel과 Builds telemetry의 로그는 policy/source/connection ID, byte 수와 duration을 연결한다. Direct 성공은 Foundry 밖으로 나갔다는 뜻, agent proxy 성공은 agent로 전달됐다는 뜻이다. 목적지 ingress firewall, TLS와 인증 실패는 그 뒤에도 가능하다. Observability는 TCP-level allowlisting policy에만 제공된다. 먼저 실패한 hop을 구분하고 DNS, policy attachment, agent health와 외부 인가를 확인한다.
 
-2026-10-19 검증은 방화벽 두 층과 운영 권고, agent proxy와 secure tunnel policy 옵션, TCP-level allowlisting의 보안 영향, egress IP와 경로별 연결 책임, 권한 기본값과 승인 처리, Paused와 Palantir 관리 또는 self-service 적용, 구형 S3 접근 수준을 Palantir 공식 Configure network egress 문서와 대조한 범위에 한정한다. 2026-11-16에는 같은 문서로 wildcard 지원 경로와 public suffix 제한, bucket endpoint의 설정 항목을 대조했고 문서의 다른 문장과 이 문서 사이의 상충이 없음을 확인했다. Cloud identity, 인증서, private link와 observability 절은 2026-10-16, secure tunnel 절은 2026-10-21 확인 기준이다.
+2026-10-19 검증은 방화벽 두 층과 운영 권고, agent proxy와 secure tunnel policy 옵션, TCP-level allowlisting의 보안 영향, egress IP와 경로별 연결 책임, 권한 기본값과 승인 처리, Paused와 Palantir 관리 또는 self-service 적용, 구형 S3 접근 수준을 Palantir 공식 Configure network egress 문서와 대조한 범위에 한정한다. 2026-11-16에는 같은 문서로 wildcard 지원 경로와 public suffix 제한, bucket endpoint의 설정 항목을 대조했고 문서의 다른 문장과 이 문서 사이의 상충이 없음을 확인했다. Cloud identity, 인증서, private link와 observability 절은 2026-10-16, secure tunnel 절은 2026-10-21 확인 기준이며, 인증서 절의 client certificate 생성 경로와 적용 대상은 2026-11-16에 다시 대조했다.
 
 ## 출처
 
