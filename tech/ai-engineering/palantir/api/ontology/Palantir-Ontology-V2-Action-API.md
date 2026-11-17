@@ -53,6 +53,8 @@ Batch의 `options`에는 `returnEdits`만 정의돼 있고 기본값은 `NONE`�
 
 schema에서 `requests`와 항목의 `parameters`는 선택 필드지만 빈 요청의 유효성이나 업무상 성공을 보장한다는 뜻은 아니다. 필요한 입력은 Action 정의와 대조한다. 인증 호출, 오류 응답과 timeout 후 상태는 시험하지 않았으며, 이 부분 검증으로 문서 전체의 `verified_at`을 갱신하지 않는다.
 
+2026-11-17 수집한 Apply Action Batch 명세에서도 항목별 `parameters`의 DataValue 표가 단건 Apply Action과 같이 바뀌었다. Time Series Reference는 2026-11-01 수집본(위 2026-11-03 대조 대상)에서 `type` 판별자 객체였고, 새 수집본에서는 seriesId 문자열 또는 JSON 객체(`{"seriesId": ..., "syncRid": ...}`, `{"templateRid": ..., "templateVersion": "1"}`)로 표기된다. 같은 수집본의 batch 응답에는 단건의 `returnValue`가 생기지 않았고 여전히 선택 필드 `edits`만 있다. 그러므로 단건 응답의 반환값 처리를 batch 응답 파서에 옮기지 않는다. batch 명세의 이 행과 응답 필드만 부분 대조했으므로 frontmatter 검증일은 유지한다. 이전 인코딩 수용 여부와 인증 호출은 시험하지 않았다.
+
 ## Parameter metadata와 동적 validation
 
 Action type metadata의 validation.defaultValidation은 allowedValues와 arraySize다. allowedValues에는 labelled oneOf, datetime, attachment size, valueType, markdown length, numeric range, mustBeEmpty와 text length/regex가 있다. text regex는 Elasticsearch regex semantics다.

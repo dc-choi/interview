@@ -126,6 +126,7 @@ Query metadata는 재귀 dataType과 typeReferences를 제공한다. execute의 
 - `version`, `branch`, `sdkPackageRid`, `sdkVersion`, `transactionId`, `scenarioRid`는 URL의 query parameter다. JSON body에는 함수 입력을 담는 `parameters` map을 둔다. Global Query 실행의 body에 버전 선택값을 넣는 형식([[Palantir-Query-Execution-API|Global Query API]])을 이 경로로 그대로 복사하지 않는다. Global body의 `latestVersionResolution`과 `includePrerelease`는 이 경로의 query parameter로도 정의돼 있지 않다.
 - 요청의 `parameters`는 선택 map이지만 함수 정의의 필수 입력까지 생략 가능하다는 뜻은 아니다. 응답의 `value`는 필수이며 DataValue에 `null`도 포함된다. 값이 `null`인 결과와 `value` 필드가 없는 응답을 구분한다.
 - 요청 `parameters`와 응답 `value`의 DataValue 인코딩 표에는 Geoshape가 있다. GeoJSON geometry를 객체 또는 문자열로 표현하며, 표의 예시는 `{"type": "Point", "coordinates": [102.0, 0.5]}`다.
+- 2026-11-18 수집한 명세에서는 요청과 응답 두 DataValue 표의 Time Series Reference가 함께 바뀌었다. 2026-11-01 수집본은 `type` 판별자를 둔 JSON 객체(`{"type":"seriesId","seriesId":"sensor-123"}` 등)였고, 새 수집본은 seriesId 문자열 또는 JSON 객체이며 예시는 `"sensor-123"`, `{"seriesId": ..., "syncRid": ...}`, `{"templateRid": ..., "templateVersion": "1"}`다. 같은 개정은 Apply Action에도 들어갔다([[Palantir-Ontology-V2-Action-API]]). 이 DataValue 표는 Action과 Query가 함께 쓰는 설명이며, 2026-10-18 수집한 Get Query Type의 Query 타입 union에는 time series reference variant가 없다. 그러므로 Query 입력이나 출력에 이 값이 실제로 나타나는지는 확인하지 못했고, 나타나는 경우에 한해 문자열과 객체 두 형태를 받도록 파싱한다(설계 제안). 이전 형식 수용 여부와 실제 응답은 시험하지 않았다.
 
 클라이언트 설계 제안: 실행 대상과 branch, version, scenario, transaction 문맥을 명시적으로 관리하고 함수 metadata의 입력 요건을 대조한다. 실제 인증 호출과 문맥 조합은 시험하지 않았고, 다른 metadata 항목의 검증일은 유지한다.
 
