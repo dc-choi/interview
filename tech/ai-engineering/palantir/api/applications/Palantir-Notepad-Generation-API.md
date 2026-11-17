@@ -1,7 +1,7 @@
 ---
 tags: [palantir, foundry, api, notepad, template, asynchronous]
 status: done
-verified_at: 2026-10-16
+verified_at: 2026-11-17
 category: "AI엔지니어링(AIEngineering)"
 aliases: ["팔란티어 Notepad 생성과 Export API"]
 ---
@@ -22,7 +22,7 @@ Template은 content를 생성하는 자원이고 GenerationJob은 그 생성 실
 
 ## Endpoint와 scope
 
-모든 아래 endpoint는 Preview이며 `preview=true`가 필요하다. 공통 prefix는 `/api/v2/notepad`다.
+공통 prefix는 `/api/v2/notepad`다. 2026-10-16 확인 때는 아래 여섯 endpoint 페이지 모두 Preview 경고와 `preview=true` query parameter가 있었다. 2026-11-17 확인한 페이지에서는 여섯 곳 모두 그 경고와 `preview` parameter가 빠졌고 scope는 그대로다. 문서 표시가 바뀐 것이므로 이미 배포된 클라이언트가 계속 붙이는 `preview=true`의 처리나 enrollment별 활성화는 이 페이지만으로 확정하지 않는다.
 
 | 작업 | Method와 나머지 경로 | operation scope |
 |---|---|---|

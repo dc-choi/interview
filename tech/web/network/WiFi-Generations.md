@@ -3,7 +3,7 @@ tags: [network, wireless, wifi, ieee-802-11, troubleshooting, captive-portal]
 status: done
 verified_at: 2026-11-17
 category: "Web - 네트워크"
-aliases: ["Wi-Fi Generations", "Wi-Fi 세대", "와이파이 세대", "802.11n", "Wi-Fi 4", "802.11ac", "802.11ax", "802.11be", "802.11bn", "Wi-Fi 7", "Wi-Fi 8", "802.11p", "WAVE", "802.11bd", "DSRC"]
+aliases: ["Wi-Fi Generations", "Wi-Fi 세대", "와이파이 세대", "802.11n", "Wi-Fi 4", "802.11ac", "802.11ax", "802.11be", "802.11bn", "Wi-Fi 7", "Wi-Fi 8", "802.11p", "WAVE", "802.11bd", "DSRC", "802.11ad", "802.11ay", "WiGig", "60GHz Wi-Fi"]
 ---
 
 # Wi-Fi 세대와 연결 구간 진단
@@ -15,7 +15,7 @@ Wi-Fi는 단말과 AP(공유기) 사이의 짧은 무선 구간을 맡는 IEEE 8
 - **변조**: 송신 측은 비트열을 전파의 진폭과 위상 조합(심볼)에 싣고 수신 측은 이를 비트로 되돌린다. 모뎀(modem)은 변조(modulation)와 복조(demodulation)를 합친 이름이다. 구별되는 심볼이 1024개(1024-QAM)면 심볼 하나에 log2(1024) = 10비트, 4096개(4K QAM)면 12비트를 싣는다. 심볼 간 간격이 좁아지므로 신호 품질이 좋을 때만 쓸 수 있다.
 - **OFDM**: 채널 폭을 많은 부반송파로 나눠 병렬로 보낸다. 벽에 반사돼 늦게 도착한 신호(다중 경로)가 섞여도 덜 뭉개지게 하려는 구조다. 부반송파 묶음을 여러 단말에 배분하는 OFDMA는 [[Wireless-Multiple-Access|무선 다중접속과 공간 다중화]]에 있다.
 - **매체 접근**: 같은 채널을 여러 단말이 나눠 쓰므로, 보내기 전에 채널이 비었는지 듣고 충돌 가능성이 있으면 임의 시간만큼 물러났다가 다시 시도한다(CSMA/CA). 수신 측은 프레임을 받으면 ACK를 돌려주고, ACK가 없으면 송신 측이 재전송한다. 유선의 CSMA/CD와의 차이는 [[Physical-DataLink-Layer|L1/L2 물리와 데이터링크]]에 있다. 단말이 많을수록 채널을 기다리는 시간이 늘어 단말별 처리량과 지연이 나빠진다.
-- **대역**: 2.4GHz, 5GHz, 6GHz 대역을 쓴다. 일반적으로 높은 주파수일수록 벽과 거리에 따른 감쇠가 커서, AP 가까이에서는 5GHz나 6GHz가 넓은 채널로 빠르고 벽 여러 개 너머에서는 2.4GHz가 더 안정적일 수 있다.
+- **대역**: 세대 번호가 붙은 Wi-Fi는 2.4GHz, 5GHz, 6GHz 대역을 쓴다(60GHz는 아래 별도 절). 일반적으로 높은 주파수일수록 벽과 거리에 따른 감쇠가 커서, AP 가까이에서는 5GHz나 6GHz가 넓은 채널로 빠르고 벽 여러 개 너머에서는 2.4GHz가 더 안정적일 수 있다.
 - **암호화**: 전파는 벽 너머로도 퍼지므로 보호된 네트워크는 프레임 내용을 암호화한다. 신호가 닿는 것과 내용을 읽을 수 있는 것은 다르다.
 
 ## 세대 이름과 IEEE 규격
@@ -56,6 +56,16 @@ WAVE(Wireless Access in Vehicular Environments)는 802.11 위에 IEEE 1609 계�
 - 1609.1은 2006년 시험용 표준(WAVE Resource Manager)으로, 도로변 장치(RSU)를 거쳐 원격 애플리케이션이 차량 탑재 장치(OBU)에 접근하게 하는 자원 관리자를 정의했지만 2008-12-31 철회됐다. 1609.1을 현행 계층으로 설명하는 자료는 2006년 구성을 기준으로 한 것이다.
 - 후속 개정 802.11bd-2022(Enhancements for Next Generation V2X, 승인 2022-12-03, 현재 Superseded로 802.11 일정표상 802.11-2024 통합판의 기반 개정)는 5.9GHz와 60GHz 대역의 차세대 V2X(차량과 모든 것 사이의 통신)를 위해 PHY와 MAC을 고쳤다. 진행 중인 1609.0 개정안(P1609.0)은 1609 표준과 802.11에 더해 LTE-V2X(셀룰러 기반 차량 통신)를 기반 기술로 포함한다. 802.11 계열 하나가 차량 통신을 독점하는 구도가 아니므로, 지역별 주파수 정책과 채택 기술은 별도로 확인한다(2026-11-16 IEEE SA 페이지 대조).
 - 미국이 그 예다. FCC는 1999년 5.850~5.925GHz의 75MHz 전체를 ITS(지능형 교통 시스템)에 배정했지만, 2020년 First Report and Order에서 아래쪽 45MHz(5.850~5.895GHz)를 비면허 용도로 돌리고 위쪽 30MHz(5.895~5.925GHz)만 C-V2X(셀룰러 기반 차량 통신) 방식의 ITS에 남겼다. 2024-11-20 채택한 Second Report and Order는 C-V2X 기술 규칙을 정하고, 802.11p-2010을 따르던 DSRC(Dedicated Short Range Communications) 운용을 이 명령의 연방관보 게재일부터 2년 안에 끝내게 했으며, 규칙 시행 뒤 새 면허는 C-V2X만 허가한다. 연방관보 게재는 2024-12-13, 규칙 시행은 2025-02-11이고, 기존 DSRC 면허의 갱신은 2026-12-14를 넘을 수 없다. 2026-11-16 기준으로 이 기한은 아직 지나지 않았으며, 기한 뒤에는 미국에서 802.11p 기반 차량 통신의 운용 근거가 끝난다. 기한의 연장 여부와 다른 지역의 채택 기술은 각국 규제 문서로 따로 확인한다(2026-11-16 FCC 24-123과 연방관보 원문 대조).
+
+## 세대 밖의 대역 확장: 60GHz(802.11ad, 802.11ay, WiGig)
+
+802.11ad-2012(Amendment 3: Enhancements for Very High Throughput in the 60 GHz Band)는 802.11의 PHY와 MAC을 고쳐 60GHz 부근 주파수에서 매우 높은 처리량으로 동작하게 한 개정이다(IEEE SA 승인 2012-10-19, 발행 2012-12-28). 현재 Superseded이고 802.11 일정표상 802.11-2016 통합판의 기반 개정이다. 이 개정이 정의한 단말을 DMG(directional multi-gigabit) 단말이라 부른다.
+
+802.11ay-2021(Enhanced Throughput for Operation in License-exempt Bands above 45 GHz, IEEE SA 승인 2021-03-25, 발행 2021-07-28, 현재 Superseded로 802.11 일정표상 802.11-2024 통합판의 기반 개정)은 MAC 데이터 서비스 접근점에서 잰 최대 처리량 20Gb/s 이상의 동작 모드를 하나 이상 두는 것을 목표로 했다. TGay 목표 문장은 같은 대역에서 동작하는 802.11ad DMG 단말과의 하위 호환과 공존을 함께 요구한다. TGay 기고 목록에는 mmWave distribution network usage model(11-17/1019r2)과 multi-hop, backhaul, fronthaul 요구사항 기고(11-15/1339r1)도 있어, 60GHz를 실내 근거리 용도로만 한정해 읽지 않는다.
+
+Wi-Fi Alliance는 2016-10-24 802.11ad 기반 제품의 인증을 Wi-Fi CERTIFIED WiGig라는 이름으로 발표했다. 발표문은 최대 8Gbps 데이터 전송률, 최대 10m 거리의 낮은 지연, 신호를 한 방향으로 모으는 빔포밍, 2.4GHz, 5GHz, 60GHz를 함께 지원하는 멀티밴드 인증 제품의 대역 간 핸드오프를 든다. 이는 인증 프로그램 발표의 주장이며 제품마다 실측은 다르다. 발표문이 드는 용도는 무선 도킹, AR/VR, 멀티미디어 스트리밍, 게임과 네트워킹이다. 802.11ay 기반 인증은 2026-11-17 Wi-Fi Alliance 페이지에서 확인하지 못했다.
+
+60GHz 기능은 위 세대 표의 2.4GHz, 5GHz, 6GHz 성능 개정과 별도의 개정이므로 Wi-Fi 세대 번호만으로 지원 여부를 알 수 없고 제품의 802.11ad/ay 지원이나 WiGig 인증을 따로 확인한다.
 
 ## 연결 구간을 나눠 진단한다
 
@@ -104,6 +114,11 @@ Wi-Fi 아이콘이 가득 찼는데 인터넷이 안 된다면 단말과 AP 사�
 - [IEEE SA, IEEE 802.11ax-2021](https://standards.ieee.org/ieee/802.11ax/7180/)
 - [IEEE SA, IEEE 802.11p-2010](https://standards.ieee.org/ieee/802.11p/3953/) — 차량 환경 개정, 승인 2010-06-17, Superseded 상태
 - [IEEE SA, IEEE 802.11bd-2022](https://standards.ieee.org/ieee/802.11bd/7451/) — 차세대 V2X, 5.9GHz와 60GHz, Superseded 상태
+- [IEEE SA, IEEE 802.11ad-2012](https://standards.ieee.org/ieee/802.11ad/4527/) — 60GHz 매우 높은 처리량, 승인 2012-10-19, 발행 2012-12-28, Superseded 상태
+- [IEEE SA, IEEE 802.11ay-2021](https://standards.ieee.org/ieee/802.11ay/6142/) — 45GHz 이상 비면허 대역, 최대 처리량 20Gb/s 이상 모드, 승인 2021-03-25, 발행 2021-07-28, Superseded 상태
+- [IEEE 802.11, Status of Project IEEE 802.11ay](https://www.ieee802.org/11/Reports/tgay_update.htm) — 802.11ad DMG 단말과의 하위 호환과 공존 목표, 기고 목록의 distribution network usage model(11-17/1019r2)과 backhaul 요구사항(11-15/1339r1) 제목
+- [Wi-Fi CERTIFIED WiGig brings multi-gigabit performance to Wi-Fi devices — Wi-Fi Alliance](https://www.wi-fi.org/news-events/newsroom/wi-fi-certified-wigig-brings-multi-gigabit-performance-to-wi-fi-devices) — 2016-10-24, 802.11ad 기반 인증, 최대 8Gbps와 10m, 빔포밍, 멀티밴드 핸드오프
+- [Wi-Fi Alliance, Wi-Fi CERTIFIED WiGig: Wi-Fi expands to 60 GHz (2016)](https://www.wi-fi.org/file/wi-fi-certified-wigig-wi-fi-expands-to-60-ghz-2016-0)
 - [IEEE SA, IEEE 1609.11-2010](https://standards.ieee.org/standard/1609_11-2010.html) — Inactive-Reserved, 2021-03-25 비활성
 - [IEEE SA, IEEE 1609.0-2019 Guide for WAVE Architecture](https://standards.ieee.org/ieee/1609.0/6792/) — WAVE 구성 표준 목록
 - [IEEE SA, P1609.0](https://standards.ieee.org/ieee/1609.0/12069/) — LTE-V2X를 포함하는 개정안
@@ -113,9 +128,9 @@ Wi-Fi 아이콘이 가득 찼는데 인터넷이 안 된다면 단말과 AP 사�
 - [IEEE SA, IEEE 1609.4-2016](https://standards.ieee.org/ieee/1609.4/6183/)
 - [FCC, FCC 24-123 Use of the 5.850-5.925 GHz Band, Second Report and Order](https://docs.fcc.gov/public/attachments/FCC-24-123A1_Rcd.pdf) — 2024-11-20 채택, 2024-11-21 공개. 2020년 대역 재배치, DSRC의 802.11p-2010 준수 규정, 연방관보 게재일부터 2년의 DSRC 종료 기한과 신규 면허의 C-V2X 한정
 - [Federal Register, Use of the 5.850-5.925 GHz Band (FR Doc 2024-28980, 89 FR 100838)](https://www.govinfo.gov/content/pkg/FR-2024-12-13/html/2024-28980.htm) — 2024-12-13 게재, 시행일 2025-02-11과 DSRC 면허 갱신 한도 2026-12-14
-- [Wi-Fi Alliance, Wi-Fi (MAC/PHY)](https://www.wi-fi.org/discover-wi-fi/wi-fi-certified-7) — 세대별 기능과 Wi-Fi 8 소개
+- [Wi-Fi Alliance, Wi-Fi (MAC/PHY)](https://www.wi-fi.org/discover-wi-fi/wi-fi-certified-7) — 세대별 기능과 Wi-Fi 8 소개, 2016년 WiGig 인증 도입과 60GHz 용도
 - [Wi-Fi Alliance, Wi-Fi 6E: Wi-Fi in the 6 GHz band (2021)](https://www.wi-fi.org/file/wi-fi-6e-wi-fi-in-the-6-ghz-band-2021)
-- [IEEE 802.11, Official IEEE 802.11 Working Group Project Timelines](https://www.ieee802.org/11/Reports/802.11_Timelines.htm) — 2026-10-27 갱신본, 802.11be 승인과 발행일, 802.11bn 예측 일정, 802.11p와 802.11bd가 기반이 된 통합판
+- [IEEE 802.11, Official IEEE 802.11 Working Group Project Timelines](https://www.ieee802.org/11/Reports/802.11_Timelines.htm) — 2026-10-27 갱신본, 802.11be 승인과 발행일, 802.11bn 예측 일정, 802.11p, 802.11bd, 802.11ad와 802.11ay가 기반이 된 통합판
 - [IEEE 802.11, Status of Project IEEE 802.11bn](https://www.ieee802.org/11/Reports/tgbn_update.htm) — UHR 목표
 - [Apple, Use the Wi-Fi status menu on Mac](https://support.apple.com/guide/mac-help/use-the-wi-fi-status-menu-on-mac-mchlfad426fa/mac)
 - [Next.js, app/api-reference/config/next-config-js/allowedDevOrigins](https://nextjs.org/docs/app/api-reference/config/next-config-js/allowedDevOrigins)
@@ -126,6 +141,7 @@ Wi-Fi 아이콘이 가득 찼는데 인터넷이 안 된다면 단말과 AP 사�
 - [#NW 0036 차끼리 대화하는 도로?! IEEE 802.11p WAVE 90초 완전정리 — 길리랩](https://www.youtube.com/watch?v=MIj1WcKIgp0) — 2026-11-07 공개 쇼츠, WAVE 보강의 계기이며 내용은 위 IEEE SA 페이지로 대조
 - [#NW 0037 자동차끼리 대화한다고? V2X 기술 90초 완벽 정리 — 길리랩](https://www.youtube.com/watch?v=ahuyjL8zLnY) — 2026-11-07 공개 쇼츠, 미국 5.9GHz 정책 보강의 계기이며 내용은 위 FCC 명령으로 대조. 통신 거리 수치와 유럽 표준 설명은 확인하지 못해 옮기지 않음
 - [#NW 0038 기가비트 와이파이의 개막! IEEE 802.11ac(Wi-Fi 5) 핵심 기술 90초 총정리 — 길리랩](https://www.youtube.com/watch?v=we3eNIyAkNI) — 2026-11-07 공개 쇼츠, Wi-Fi 5 보강의 계기이며 내용은 위 IEEE SA, Wi-Fi Alliance, Cisco 자료로 대조. 최대 6.9Gbps와 802.11n 대비 3배 이상 수치, 빔포밍과 동적 대역폭 운영 설명은 1차 출처로 확인하지 못해 옮기지 않음
+- [#NW 0044 와이파이보다 10배 빠르다?! 90초로 정리하는 WiGig의 모든 것 — 길리랩](https://www.youtube.com/watch?v=z2o8QCgmMTU) — 2026-11-09 공개 쇼츠, 60GHz 보강의 계기이며 내용은 위 IEEE SA, TGay, Wi-Fi Alliance 페이지로 대조. 10m와 빔포밍은 Wi-Fi Alliance 발표문으로 확인했고 영상의 최대 7Gbps 대신 발표문의 8Gbps로 적음. 20~30Gbps는 IEEE SA의 20Gb/s 이상 목표와 하한만 맞아 목표 문장으로 적음. 33m 거리, 10배 이상, 암호 방식, 저전력 설계, HDMI, DisplayPort, USB, PCIe 케이블 대체, 기존 Wi-Fi와의 완전 호환 설명은 1차 출처로 확인하지 못해 옮기지 않음
 
 ## 관련 문서
 
