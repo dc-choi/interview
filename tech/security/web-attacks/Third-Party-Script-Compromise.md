@@ -1,7 +1,7 @@
 ---
 tags: [security, web-attacks, third-party-script, supply-chain, csp, sri]
 status: done
-verified_at: 2026-11-15
+verified_at: 2026-11-18
 category: "Security - 웹 공격"
 aliases: ["Third-Party Script Compromise", "서드파티 스크립트 침해", "외부 스크립트 공급망 공격", "Third-Party JavaScript Management"]
 ---
@@ -33,6 +33,26 @@ aliases: ["Third-Party Script Compromise", "서드파티 스크립트 침해", "
 사후 보고는 공급자 이름, 영향받은 사용자 수와 지갑 유형, 거래 승인 요청이 화면에 떴는지를 밝히지 않았다. 언론과 보안 업체가 보도한 공급자 이름과 피해 지갑 수는 사후 보고에 없어 이 문서에 사실로 쓰지 않는다.
 
 이 사례에서 일반화할 교훈은 공급자를 믿을 수 있느냐보다 그 코드가 무엇에 닿을 수 있느냐다. 속도를 재는 스크립트가 돈을 옮기는 코드와 같은 페이지, 같은 세션에서 실행되면 공급자 한 곳의 침해가 곧 거래 권한의 침해가 된다.
+
+## 공급자를 침해하지 않아도 되는 경로: 만료, 주소 변경, 오타
+
+공급자 서버를 뚫지 않고도 그 주소의 주인이 되면 같은 결과가 난다. 2012년 Alexa 상위 1만 개 사이트를 크롤링한 연구(약 330만 페이지, 원격 스크립트 포함 8,439,799건)는 이런 취약점 유형을 네 가지 보고했다. 아래 표는 그중 주소의 주인이 바뀌는 세 가지이고, 나머지 하나인 `localhost`와 사설 IP 포함은 표 아래에서 다룬다.
+
+| 경로 | 생기는 방식 | 연구에서 확인한 규모 |
+| --- | --- | --- |
+| 만료된 도메인(stale domain-name-based inclusion) | 스크립트를 제공하던 도메인이 갱신되지 않고 만료됐는데 포함하는 사이트가 `<script src>`를 그대로 둔다. 포함하는 쪽이 오류를 정기적으로 점검하지 않으면 제공 사이트가 응답을 멈춘 것을 알아채지 못한다 | 등록 가능한 상태였던 도메인 56개가 상위 1만 사이트 중 47곳에 포함돼 있었다. 그중 6개는 오타 도메인이었다. 연구진이 두 도메인을 직접 등록해 15일 동안 요청을 기록했다 |
+| IP 주소 직접 지정(stale IP-address-based inclusion) | 도메인 대신 IP로 스크립트를 부르는데 그 IP가 바뀌거나 반납된다. 같은 IP를 할당받은 쪽이 응답을 제공한다 | IP 지정 페이지 299개를 석 달 뒤 다시 보니 IP 주소 39개(논문 표기 13.04%)가 그대로 남은 채 스크립트를 주지 않았고, 그중 35개는 연결 시간 초과였다. 그 IP를 얻는 일은 도메인 등록보다 확실히 어렵다고 연구는 한정한다 |
+| 오타 도메인(Typosquatting Cross-site Scripting) | 개발자가 스크립트 URL을 잘못 적는다. 오타 도메인을 등록한 쪽이 그 페이지의 모든 방문자에게 코드를 준다 | 연구진이 오타 도메인 하나를 등록하자 15일 동안 고유 방문자 163,188명이 들어왔다 |
+
+연구는 만료 도메인 경로를 저장형 XSS와 같은 효과로 본다. 취약한 페이지가 이미 스크립트 태그를 들고 있어서 공격자는 피해자와 상호작용하거나 특정 페이지로 유인할 필요 없이 도메인만 등록하면 된다. 같은 연구는 공급자의 유지 관리 수준을 평가하는 지표에 도메인 등록 만료 여부와 IP가 사설 대역인지를 넣었다. 둘 다 공격자가 도메인 등록이나 IP 확보로 제공자를 사칭할 수 있게 하기 때문이다.
+
+이 경로에서 통제의 효과는 다음과 같이 갈린다. 연구는 로컬 사본, 샌드박싱과 CSP를 다뤘고, 그 밖의 정리는 이 문서의 다른 통제를 경로에 맞춰 본 것이다. 연구는 거친(coarse-grained) 샌드박싱이 스크립트 프로필에 이미 허용된 접근을 공격자가 그대로 쓸 수 있어 충분하지 않다고 결론 낸다.
+
+- **CSP 허용 목록은 경로마다 다르다.** 연구는 URL에 오타가 있을 때 같은 오타를 담지 않은 CSP 정책이 그 URL의 로드를 막는다고 적는다. 만료 도메인은 호스트 이름이 그대로라 새 주인이 보낸 코드도 허용 출처에서 온 코드가 되므로, 호스트 허용 목록 정책은 막지 못한다.
+- **SRI는 파일 내용이 달라지면 막는다.** 해시를 고정한 태그는 새 등록자가 다른 파일을 주면 로드를 거부한다. 버전 없는 URL이라 SRI를 쓰지 않았다면 효과가 없다.
+- **로컬 사본은 외부 주소 의존을 없앤다.** 연구는 로컬 사본이 원격 사이트의 보안과 포함하는 사이트의 보안을 분리한다고 본다. 갱신을 직접 해야 하는 비용이 따른다.
+- **로컬 사본으로 옮기지 못하면 목록과 만료를 감시한다.** 페이지가 실제로 부르는 외부 호스트를 정기적으로 수집해 서드파티 스크립트 목록과 맞추고, 응답하지 않거나 등록이 만료된 호스트는 태그에서 지운다. 자기 회사가 소유한 스크립트 도메인과 예비(fallback) 도메인도 갱신 일정을 관리한다. 등록을 놓친 도메인은 다른 사람이 등록할 수 있다.
+- **IP 직접 지정과 개발 환경 주소를 배포 코드에 남기지 않는다.** 같은 연구는 `localhost`나 사설 IP에서 스크립트를 부르는 태그도 발견했다. 다중 사용자 환경이나 같은 네트워크의 다른 사용자가 그 주소를 차지하면 코드를 주입할 수 있다.
 
 ## 통제별로 막는 것과 못 막는 것
 
@@ -70,6 +90,7 @@ aliases: ["Third-Party Script Compromise", "서드파티 스크립트 침해", "
 - 성능 측정 스크립트가 거래를 실행할 수 있는 이유와 브라우저의 실제 권한 경계
 - CSP 허용 목록, SRI, 버전 고정, 샌드박스가 각각 막는 단계의 차이
 - SRI와 공급자의 무버전 URL 갱신이 충돌하는 지점
+- 만료된 스크립트 도메인을 재등록한 공격을 CSP가 막지 못하는 이유와 SRI, 외부 호스트 목록 감시의 역할
 - `allow-scripts`와 `allow-same-origin` 조합의 위험
 - 서드파티 침해 사고에서 세션 초기화와 캐시 삭제가 필요한 이유
 
@@ -78,6 +99,7 @@ aliases: ["Third-Party Script Compromise", "서드파티 스크립트 침해", "
 - [Security incident - 3rd party vendor compromised — Polymarket Status](https://status.polymarket.com/cmvvek1i90eme14ruga1z6tuj) — 2026-10-29 장애 기록과 2026-10-30 사후 보고. 언론이 보도한 공급자 이름과 피해 규모는 사후 보고에 없어 채택하지 않았다.
 - [OWASP Cheat Sheet Series, Third Party JavaScript Management Cheat Sheet](https://cheatsheetseries.owasp.org/cheatsheets/Third_Party_Javascript_Management_Cheat_Sheet.html)
 - [MDN, Subresource Integrity](https://developer.mozilla.org/en-US/docs/Web/Security/Subresource_Integrity)
+- [You Are What You Include: Large-scale Evaluation of Remote JavaScript Inclusions — ACM CCS 2012, Nikiforakis 외](https://www.securitee.org/files/jsinclusions_ccs2012.pdf) — 2.2절, 3.2절, 4.1~4.4절, 5.1~5.2절, 6절
 - [MDN, `<iframe>`: The Inline Frame element](https://developer.mozilla.org/en-US/docs/Web/HTML/Reference/Elements/iframe) — `sandbox` 속성
 - [How One Script Stole Millions From Polymarket — ByteMonk](https://www.youtube.com/watch?v=eynDCMF5Wmc) — 음성 전사 기반. 화면에 승인 요청이 떴다는 연구자 분석은 1차 출처로 확인하지 못해 쓰지 않았다.
 
