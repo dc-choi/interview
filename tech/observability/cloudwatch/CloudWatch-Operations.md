@@ -52,6 +52,17 @@ CloudWatch Agent (EC2)
 
 메모리와 디스크는 차원 조합이 다를 수 있다. 알람을 만들기 전에 실제 게시된 네임스페이스, 지표 이름과 차원을 선택한다. 프로세스가 실행 중이라는 사실과 올바른 대상의 지표가 도착했다는 사실은 별도로 확인한다. 위 절차는 공식 문서 대조이며 실제 EC2 실행 검증은 아니다.
 
+### 여러 인스턴스는 Systems Manager Run Command로 설치한다
+
+2026-11-17 CloudWatch agent 설치 문서 대조 기준이다. 인스턴스에 접속하지 않고 여러 대에 같은 설정을 배포할 때 쓴다. 실제 실행 검증은 아니다.
+
+1. **사전 조건:** 대상이 [[Systems-Manager|Systems Manager]] 관리형 인스턴스여야 하며 EC2에서는 SSM Agent 2.2.93.0 이상이 필요하다. 대상 목록에 인스턴스가 보이지 않으면 관리형 인스턴스 구성부터 확인한다. 인스턴스 역할에는 `CloudWatchAgentServerPolicy`를 붙이는데, 이 정책은 Systems Manager 관리 권한을 주지 않으므로 관리형 노드 권한과 Systems Manager 연결 조건은 따로 갖춘다. 인터넷 경로가 없는 private subnet이면 ssm, ssmmessages, ec2messages interface endpoint와 S3 gateway endpoint, CloudWatch 전송용 monitoring, logs와 에이전트의 인스턴스 태그 조회용 ec2 endpoint가 필요하다.
+2. **설치:** Run Command에서 `AWS-ConfigureAWSPackage` 문서를 고르고 Action은 `Install`, Name은 `AmazonCloudWatchAgent`, Version은 `latest`로 둔다. 설치와 업데이트는 `Uninstall and reinstall` 방식만 지원한다. Amazon Linux 2023과 Amazon Linux 2는 패키지로도 제공되어 `AWS-RunShellScript`로 `yum install amazon-cloudwatch-agent`를 실행할 수 있다.
+3. **설정 저장:** 수집 설정 JSON을 [[SSM-Parameter-Store|Parameter Store]]에 저장한다. `CloudWatchAgentServerPolicy`는 이름이 `AmazonCloudWatch-`로 시작하는 매개변수에만 `ssm:GetParameter`를 허용하므로 이 접두사를 붙인다. 접두사가 없으면 에이전트가 `AccessDeniedException`으로 설정을 읽지 못한다. 문서는 Parameter Store 저장을 EC2 인스턴스에서 하고 그 인스턴스에 `CloudWatchAgentAdminRole`을 붙이라고 안내한다. 쓰기 권한은 `AmazonCloudWatch-` 매개변수에 `ssm:PutParameter`를 허용하는 관리형 정책 `CloudWatchAgentAdminPolicy`가 준다. 저장용 인스턴스와 역할을 분리하고, 수집 인스턴스의 역할에는 쓰기 권한을 주지 않는다(최소 권한 제안).
+4. **설정 적용과 시작:** `AmazonCloudWatch-ManageAgent` 문서에서 Action은 `configure`, Optional Configuration Source는 `ssm`, Optional Configuration Location은 위 매개변수 이름, Optional Restart는 `yes`로 실행한다. 로컬 명령으로는 `amazon-cloudwatch-agent-ctl -a fetch-config -s -m ec2 -c ssm:<매개변수 이름>`과 같다. 설정 변경은 에이전트를 재시작해야 반영된다.
+
+Run Command 성공은 명령 전달과 실행 결과일 뿐이다. 앞 절의 수신 확인처럼 `CWAgent` 네임스페이스에 최근 데이터포인트가 도착했는지 따로 확인한다.
+
 ## EventBridge (구 CloudWatch Events)
 
 상태 변화 이벤트 라우팅 — EC2 인스턴스 상태, CodeDeploy 배포, CloudWatch Alarm 발화 등을 Lambda, SQS, Step Functions로:
@@ -120,6 +131,11 @@ S3나 Firehose로 직접 전달해도 CloudWatch 전달 요금이 발생한다. 
 - [AWS, Manually create or edit the CloudWatch agent configuration file](https://docs.aws.amazon.com/AmazonCloudWatch/latest/monitoring/CloudWatch-Agent-Configuration-File-Details.html)
 - [AWS, Create the CloudWatch agent configuration file](https://docs.aws.amazon.com/AmazonCloudWatch/latest/monitoring/create-cloudwatch-agent-configuration-file.html)
 - [AWS, Metrics collected by the CloudWatch agent](https://docs.aws.amazon.com/AmazonCloudWatch/latest/monitoring/metrics-collected-by-CloudWatch-agent.html)
+- [AWS, Install the CloudWatch agent using AWS Systems Manager](https://docs.aws.amazon.com/AmazonCloudWatch/latest/monitoring/installing-cloudwatch-agent-ssm.html)
+- [AWS, CloudWatchAgentAdminPolicy](https://docs.aws.amazon.com/aws-managed-policy/latest/reference/CloudWatchAgentAdminPolicy.html)
+- [AWS, Prerequisites](https://docs.aws.amazon.com/AmazonCloudWatch/latest/monitoring/prerequisites.html) — `AmazonCloudWatch-` 매개변수 접두사와 `GetParameter` 오류
+- [AWS, Create the CloudWatch agent configuration file with the wizard](https://docs.aws.amazon.com/AmazonCloudWatch/latest/monitoring/create-cloudwatch-agent-configuration-file-wizard.html)
+- [How to see memory and disk metrics for Amazon EC2 — Amazon Web Services](https://www.youtube.com/watch?v=eS4HSqsfLWU)
 - [AWS, PutAccountPolicy](https://docs.aws.amazon.com/AmazonCloudWatchLogs/latest/APIReference/API_PutAccountPolicy.html)
 - [AWS, Encrypt log data in CloudWatch Logs using AWS Key Management Service](https://docs.aws.amazon.com/AmazonCloudWatch/latest/logs/encrypt-log-data-kms.html)
 

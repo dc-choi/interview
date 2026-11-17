@@ -55,7 +55,7 @@ aliases: ["AWS Pricing", "AWS pricing 구조", "AWS 요금 구조", "AWS 과금 
 
 ## 신규 계정의 크레딧과 Free plan 종료
 
-2026-10-12 AWS Billing과 계정 관리 문서, AWS Free Tier 약관(2025-07-09 갱신), Free Tier FAQ와 2025-07-15 AWS News Blog 대조 기준이며 `Sign up for AWS (advanced)` 경로로 만든 계정에 해당한다. 2025-07-15 이전에 만든 계정은 레거시 Free Tier를 따르고, Free plan과 크레딧은 AWS 계정을 가진 적이 없는 신규 고객만 받는다. 2026-10-12 일부 고객에게 제한 배포 중인 `Sign up for AWS (new)` 경로는 root 사용자를 만들지 않고 AWS Organizations와 IAM Identity Center에 자동으로 참여하며, Paid plan 프로젝트에 월 세전 비용 한도(spend limit)를 둘 수 있는 등 지원 기능이 달라 아래 조건을 그대로 적용하지 않는다.
+2026-10-12 AWS Billing과 계정 관리 문서, AWS Free Tier 약관(2025-07-09 갱신), Free Tier FAQ와 2025-07-15 AWS News Blog 대조 기준이며 `Sign up for AWS (advanced)` 경로로 만든 계정에 해당한다. 2025-07-15 이전에 만든 계정은 레거시 Free Tier를 따르고, Free plan과 크레딧은 AWS 계정을 가진 적이 없는 신규 고객만 받는다. 2026-10-12 일부 고객에게 제한 배포 중인 `Sign up for AWS (new)` 경로는 root 사용자를 만들지 않고 AWS Organizations와 IAM Identity Center에 자동으로 참여하며, Paid plan 프로젝트에 월 세전 비용 한도(spend limit)를 둘 수 있는 등 지원 기능이 달라 아래 조건을 그대로 적용하지 않는다. 2026-11-17 계정 관리 문서는 이 경로를 제한 배포 표시 없이 두 가입 방법 중 하나로 설명하고, FAQ는 새 가입 경험이 2026년 10월 출시됐다고 적는다. 이 경로의 프로젝트, 고정 리전과 spend limit은 [[AWS-New-Sign-Up-Projects|AWS 새 가입 경로와 프로젝트]]를 따른다.
 
 - **크레딧:** 가입 크레딧 100달러는 플랜과 관계없이 받는다. 콘솔의 Explore AWS 위젯에 있는 활동 다섯 개(EC2 인스턴스 시작, Bedrock playground에서 모델 호출, Budgets 비용 예산 설정, Lambda 웹 앱 만들기, RDS 데이터베이스 생성)를 마치면 활동당 20달러, 최대 100달러를 더 받는다. Budgets를 뺀 네 활동은 실제 서비스를 쓰므로 그 사용료가 크레딧에서 차감된다. 활동은 계정을 연 날부터 6개월 안에 마쳐야 하고, AWS Organizations에 가입하거나 Control Tower landing zone을 설정하면 남은 활동이 즉시 만료되고 추가 크레딧 자격도 끝난다.
 - **Free plan에 머무는 동안의 위험은 청구가 아니라 계정 폐쇄다:** Free plan에서는 요금이 발생하지 않는 대신, 6개월이 지나거나 크레딧을 다 쓰면 계정이 자동으로 닫히고 리소스와 데이터에 접근할 수 없게 된다. AWS는 콘텐츠를 90일 동안 보관한 뒤 계정과 리소스를 영구 삭제하며, 그 안에 Paid plan으로 전환하면 계정을 다시 열고 접근을 복구할 수 있다. 약관도 Free plan 계정을 평가용으로 두고 민감한 데이터 처리에 쓰지 말라고 정한다. 따라서 운영 중인 서비스를 Free plan 계정에 두면 플랜 종료 시점이 곧 서비스 중단 위험이 된다(운영 판단).
@@ -185,3 +185,4 @@ EC2 인스턴스로 실행하는 Marketplace 소프트웨어는 구독 취소만
 - [[Egress-Cost|데이터 전송 비용]]
 - [[Resource-Right-Sizing|리소스 적정화]]
 - [[Cloud-Service-Models|IaaS/PaaS/FaaS 비용 모델]]
+- [[AWS-New-Sign-Up-Projects|AWS 새 가입 경로와 프로젝트]]

@@ -70,6 +70,7 @@ EC2, ASG, ALB, Lambda — 주요 AWS 컴퓨트 서비스.
 - [x] [[IAM|IAM (정책 평가, Permission Boundary, AssumeRole, Condition Key)]]
 - [x] [[AWS-Builder-ID-Recovery|AWS Builder ID (복구 이메일 등록, 비밀번호와 MFA 복구, 소셜 로그인 전환)]]
 - [x] [[AWS-Organizations|AWS Organizations (멀티 계정, SCP, OU, 통합 결제, CloudTrail Org Trail)]]
+- [x] [[AWS-New-Sign-Up-Projects|AWS 새 가입 경로와 프로젝트 (Builder ID 소유, 고정 리전, spend limit, 고급 기능 활성화, Agent Toolkit)]]
 - [x] [[Cognito|Cognito (User Pool 인증, 운영 설정(셀프 가입, SES, 앱 클라이언트), Identity Pool 임시 자격 증명, OAuth2/OIDC, Federated Identity, Lambda Trigger)]]
 - [x] [[KMS|KMS (CMK 3종, 키 정책 관리자와 사용자, SSE-KMS 이중 권한, Envelope Encryption, Key Rotation, Multi-Region Key, SSE-S3/KMS/C/DSSE)]]
 - [x] [[Secrets-Manager|Secrets Manager (자동 회전, RDS 통합, Cross-Region Replication, KMS 암호화)]]
