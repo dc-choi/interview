@@ -21,6 +21,7 @@ aliases: ["Network Security", "네트워크 보안"]
 - [[ARP-Spoofing|ARP 스푸핑]] — 검증 없는 ARP 캐시 갱신, 양방향 위조와 중계로 만드는 MITM, 경로 위 공격자와 TLS, HSTS의 경계, 같은 원리를 쓰는 ARP 기반 NAC 차단의 트레이드오프, DHCP snooping과 DAI, 탐지 신호, 공용망과 VPC와 컨테이너의 위협 모델, IPv6 ND와 RA Guard
 - [[5G-Security-Architecture|5G 보안 구조]] — SUPI와 SUCI 은닉, null-scheme의 경계, 5G AKA 상호 인증과 가짜 기지국 해석, K에서 K_gNB까지의 키 계층과 갱신 시점, SBA의 TLS와 OAuth 2.0, SEPP, 슬라이스 인증(NSSAA)
 - [[Proxy-Trust-and-Anonymity|중계 경로의 신뢰 모델]] — 프락시 경유가 만드는 익명성과 그 대가, 중계자가 볼 수 있는 범위, Tor의 회로와 계층 암호화, 프락시/VPN/Tor의 신뢰 가정 비교, 아웃바운드 통제
+- [[Residential-Proxy-Networks|주거용 프록시 네트워크와 내부망 노출]] — 앱 내장 SDK와 사전 설치 펌웨어로 출구가 되는 기기, DNS로 사설 대역 차단을 우회한 내부망 접근, 정부 기관 네트워크 출구 관측 사례, 관측과 침해의 구분, 게스트와 IoT 분리
 - [[Host-Outbound-Firewall|호스트의 앱별 아웃바운드 통제]] — 네트워크 egress 통제와 판정 단위의 차이, Windows 기본 방화벽 위의 질문형 규칙(PacketHound), 서명된 기본 도구의 예외, 첫 연결 차단과 경로 기반 규칙의 제약, 알림 피로
 
 ## 관련 문서

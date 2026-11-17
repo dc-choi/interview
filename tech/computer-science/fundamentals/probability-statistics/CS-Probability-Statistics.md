@@ -15,6 +15,7 @@ aliases: ["CS Probability and Statistics", "확률과 통계 기초"]
 - [x] [[Descriptive-Statistics-and-Distribution|기술통계와 분포 (평균, 중앙값과 최빈값, 분산의 분모, 표준편차와 IQR, 상자그림 수염, 관측 순서와 기하평균)]]
 - [x] [[Discrete-Probability-Distributions|이산 확률분포 (이항, 기하와 포아송, PMF와 CDF, 기댓값, 큰 수의 법칙과 정규분포의 구분)]]
 - [x] [[Conditional-Probability-and-Bayes|조건부확률과 베이즈 정리]] — 결합확률과 주변확률, 조건의 방향, 전체확률과 기저율, 독립과 조건부 독립의 세 연결 구조, 베이즈 네트워크의 인수분해와 마르코프 블랭킷
+- [x] [[Markov-Chain-and-Stationary-Distribution|마르코프 체인과 정상 분포]] — 마르코프 성질과 시간 동질 가정, 전이 행렬과 `π(0)P^n`, 경로 확률과 주변 분포, 정상 분포의 장기 비율 해석, 기약과 비주기 수렴 조건과 주기 체인 반례
 - [x] [[Confidence-Intervals-and-Standard-Error|신뢰구간과 표준오차]] — 원자료와 표집분포, SD와 SE, 반복 표집의 95%, 부트스트랩의 한계
 - [x] [[Hypothesis-Testing-Basics|가설검정 기초]] — 귀무가설과 양측, 단측 검정, t 통계량, p값 해석, 제1종과 제2종 오류와 검정력, 대응 표본, 두 표본 KS와 정규성 검정
 - [x] [[Composite-Scores-and-Ranking|종합 점수와 순위]] — z점수와 Min-Max 정규화, 가치 판단인 가중치, 상관 지표의 이중 계산, 극단값, 근거의 양, 가중치 민감도와 순위 역전

@@ -31,6 +31,14 @@ Branch와 transaction은 experimental이며 모든 workflow 지원을 보장하�
 
 검증 범위는 단건 적용의 요청과 응답 명세다. Batch, 편집 이력과 다른 metadata 전체를 재검증하지 않았으므로 frontmatter의 검증일은 유지한다.
 
+### 반환값 필드와 Time Series Reference 인코딩
+
+2026-11-17 수집하고 2026-11-18 공개 페이지에서 다시 확인한 Apply Action 명세 기준이다. 성공 응답 `SyncApplyActionResponseV2`에 선택 필드 `returnValue`가 더해졌다. 타입은 any이고 설명은 parameter와 같은 DataValue 인코딩 표다. 공식 응답 예시는 `rename-employee` 요청 뒤 `"returnValue": "Anna Smith-Doe"`를 담는다. 2026-11-03 수집본의 응답 schema와 예시에는 이 필드가 없었다.
+
+같은 시기 Action type metadata에 선택 필드 `returnType`이 생겼다([[Palantir-Ontology-V2-Metadata-API]]). 다만 Apply Action 페이지는 `returnValue`가 언제 채워지는지, `returnType`이나 `VALIDATE_ONLY`와 어떤 관계인지 설명하지 않는다. 그러므로 클라이언트는 `returnValue`가 없어도 실패로 보지 않고, 값이 있어도 `validation.result` 확인을 대신하지 않는다. 값이 `null`인 경우와 필드가 없는 경우도 구분한다(설계 제안).
+
+같은 명세의 DataValue 표에서 Time Series Reference 인코딩이 바뀌었다. 2026-11-03 수집본은 `type` 판별자를 둔 객체(`{"type":"seriesId","seriesId":...}`, `templateRid`, `qualifiedSeriesId` variant)였다. 2026-11-17 수집본은 seriesId 문자열 또는 JSON 객체이며 예시는 `"sensor-123"`, `{"seriesId": ..., "syncRid": ...}`, `{"templateRid": ..., "templateVersion": "1"}`다. 이전 형식으로 직렬화하던 클라이언트는 실제 요청을 다시 대조한다(설계 제안). 이전 형식을 아직 받는지와 인증 호출 결과는 시험하지 않았으므로 frontmatter의 검증일은 유지한다. Time series의 seriesId와 sync 개념은 [[Palantir-Time-Series-Identity-Schema-and-Sync]]를 참고한다.
+
 ## Batch와 제한
 
 applyBatch는 같은 action type을 최대 20개 적용하며 OSv2만 수정하고 Function을 호출하지 않는 경우 더 높은 한도를 받을 수 있다. Notification은 지원하지 않는다. Batch options.returnEdits는 ALL/NONE이고 단일 호출의 ALL_V2_WITH_DELETIONS와 같지 않다.
@@ -74,3 +82,4 @@ filter는 timestampFilter 또는 operationIdsFilter다. Timestamp start/end는 *
 
 - [[Palantir-Ontology-V2-Metadata-API]]
 - [[Palantir-Ontology-V2-Property-API]]
+- [[Palantir-Time-Series-Identity-Schema-and-Sync]]
