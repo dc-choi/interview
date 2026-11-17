@@ -108,9 +108,24 @@ GNU/Linux 같은 자유, 오픈소스 소프트웨어와 Wikipedia가 대표 예
 
 제공된 2026-10-30 발췌는 Stack Overflow의 2026년 9월 질문 969건, 2025년 9월 5,072건으로 약 81% 감소했다고 제시한다. 2026년 1월 3,627건, 7월 1,175건과 8월 1,019건도 포함한다. 이번에는 해당 Stack Exchange Data Explorer SQL과 실행 시점 결과를 확보하지 못했으므로 미검증 수치로 보존한다. 생성 월별 집계라도 삭제된 글 포함 여부와 갱신 시점에 따라 달라질 수 있다. 후속 확인은 원 SQL, post type, 기간 경계와 삭제 처리다.
 
+### 축적한 지식의 수익화와 자산 가치
+
+신규 기여가 줄어도 운영사는 이미 쌓인 질문과 답변을 외부 AI 제공자에게 API로 제공하는 제휴를 맺을 수 있다. Stack Overflow는 2024-05-06 OpenAI와 API 제휴를 발표했다. 발표에 따르면 OpenAI는 OverflowAPI로 개발자 대상 모델 성능을 높이고 ChatGPT에 Stack Overflow의 기술 지식을 보여 주며 그 안에서 Stack Overflow 커뮤니티를 출처로 표시하기로 했고, Stack Overflow는 OpenAI 모델을 자사 OverflowAI 개발에 쓰기로 했다. 첫 통합은 2024년 상반기 제공 예정이었다. 발표는 이 제휴로 커뮤니티 기능에 계속 재투자할 수 있다고 설명했지만 대가의 유무와 금액은 밝히지 않았고, 이 문서는 이후 이행 상태를 대조하지 않았다.
+
+수익과 이익이 나아져도 인수 당시 기대한 가치가 유지된다는 뜻은 아니다. Prosus는 2021-06-02 약 18억 달러에 Stack Overflow를 인수한다고 발표했고 2021년 8월 인수를 마쳤다. Prosus의 FY26(2026-03-31 종료) 연차보고서 요약에서 Stack Overflow 단독 매출은 1억 1,500만 달러에서 1억 2,900만 달러로 12% 늘었다. 조정 지표인 aEBITDA는 900만 달러 손실에서 1,200만 달러 이익으로, aEBIT는 2,200만 달러 손실에서 100만 달러 이익으로 돌아섰다. 요약은 매출 성장의 원인을 Stack Overflow 단독으로 설명하지 않는다. 같은 해 Prosus는 영업권과 기타 자산의 손상 4억 8,200만 달러를 인식했고, 주로 Stack Overflow와 GoodHabitz에 관련되며 두 사업이 생성형 AI의 교란 이후 인수 당시 기대만큼 성과를 내지 못한다고 밝혔다. 이 손상액은 회사별로 나뉘어 있지 않고 FY26 한 해의 금액이며, 이전 회계연도의 손상은 여기서 다루지 않는다. 요약은 Stack Overflow 단독의 IFRS 영업손익을 싣지 않고 그룹 IFRS 영업손익은 이 손상과 무형자산 상각 증가로 손실이었으므로, 위의 흑자 전환은 조정 지표 기준으로만 읽는다.
+
+공개 지식 커뮤니티를 사업으로 볼 때는 다음을 나눠 본다(해석).
+
+- **기여 흐름과 축적 자산:** 신규 질문 감소는 기여 흐름의 지표이고 API 제휴는 축적 자산의 활용이다. 하나가 줄어도 다른 하나가 함께 줄었다고 단정하지 않는다. 다만 새 기여가 끊기면 제공하는 데이터가 새 기술과 버전을 덜 다루게 된다.
+- **이익과 장부 가치:** 조정 이익이 흑자로 돌아서도 인수가를 정당화하던 성장 전망이 꺾여 장부금액이 회수가능액을 넘으면 손상이 생길 수 있다. 회사의 존속 여부와 투자 가치 판단을 같은 숫자로 하지 않는다.
+- **기여자의 기대와 권리:** 기여물을 외부 AI 제공자에게 제공하는 결정은 운영사가 내린다. 앞의 동료 생산 기준처럼 결과물의 이용 조건을 누가 정하는지 미리 공개하지 않으면 기여자의 반발과 이탈로 이어질 수 있다(운영 제안).
+
 ## 출처
 
 - GeekNews 제공 발췌, 2026-10-30 StackOverflow의 월간 질문 수 1,000건 미만 — 원 SQL과 집계 결과 미확보
+- [Stack Overflow and OpenAI Partner to Strengthen the World's Most Popular Large Language Models — Stack Overflow](https://stackoverflow.co/company/press/archive/openai-partnership) — 2026-11-17 발표일(2024-05-06), OverflowAPI 이용, ChatGPT 내 출처 표시와 재투자 설명 대조
+- [Prosus to acquire Stack Overflow for US$1.8 billion — Stack Overflow](https://stackoverflow.co/company/press/archive/prosus-acquisition) — 2026-11-17 발표일(2021-06-02)과 인수가 대조. 2021년 8월 인수 완료는 같은 사이트의 [Press](https://stackoverflow.co/company/press/) 페이지 기준
+- [Summary from the annual report for the year ended 31 March 2026 — Prosus](https://www.prosus.com/~/media/Files/P/prosus-corp-v2/results-reports-and-events-archive/annual-report/2026/prosus-financial-results-fy26-booklet.pdf) — 2026-11-17 6쪽(손상 4억 8,200만 달러와 사유, IFRS 영업손실)과 17~19쪽(Stack Overflow 단독 매출, aEBITDA, aEBIT) 대조
 
 - [LEGO, What happens to my product idea after I reach 10,000 supporters?](https://www.lego.com/en-us/service/help-topics/article/what-happens-to-my-product-idea-after-i-reach-10-000-supporters) — 2026-10-28 지지 기준 뒤 검토, 추가 자료 요청과 제품화 가능성 대조
 - [LEGO Ideas — LEGO](https://www.lego.com/en-us/themes/ideas/about) — 2026-10-28 팬의 제품 아이디어와 제품화 검토 구조 확인. 고객 기여 방식의 비교표는 운영 제안이다.
