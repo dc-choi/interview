@@ -44,6 +44,17 @@ aliases: ["AI Code Delegation and Review", "AI 구현 위임과 코드 리뷰"]
 
 사례: 한 개발자의 회고(2026-10-15)에서는 생산성이 오르자 PR 검토가 병목이 되면서 계획과 깊게 읽을 곳이 위처럼 옮겨 갔다. Anthropic의 Scion 글(2026-10-13)에서는 엔지니어가 모든 줄 대신 변경의 의도를 검토했고, 그 역할은 Claude의 접근을 거절하는 일인 경우가 많았다(2026-10-27 원문 대조). 나머지 패턴은 2026년 10월 Hacker News 질문 글(이해하지 못한 AI 작성 코드를 배포하는 문제)에 모인 개인 경험이며 개별 사례는 검증하지 않았다.
 
+### 위임과 인지적 항복을 가르는 질문
+
+인지적 항복(Cognitive Surrender)은 AI의 출력을 거의 검토하지 않고 받아들여 직관과 숙고를 모두 AI의 답으로 대체하는 상태다. Shaw와 Nave(Wharton, 2026년 초 SSRN working paper, Stanford SCALE 저장소 표기는 2026년 2월)는 직관과 숙고의 이중 과정 모델에 뇌 밖의 인공 인지를 세 번째 체계로 더한 Tri-System Theory를 제안했다. 변형한 인지 반성 검사(CRT)로 사전 등록한 실험 3개(N = 1,372, 9,593 시행)에서 참가자는 과반의 시행에서 AI를 참고했다. 첫 실험에서 AI에 접근할 수 없던 기준 집단보다 정확도가 AI가 맞을 때 25%p 오르고 틀릴 때 15%p 내렸으며, AI 사용은 오답 뒤에도 확신을 높였다. 시간 압박, 문항별 보상과 피드백은 기본 성과를 바꿨지만 틀린 AI가 정확도를 낮추는 효과는 사라지지 않았고, AI 신뢰가 높고 인지 욕구와 유동 지능이 낮을수록 더 많이 따랐다. 실험 과제는 추론 문항이며 코드 리뷰를 직접 측정한 결과는 아니다. 출력을 검토 없이 따른다는 점에서 [[AI-Anxiety-and-FOMO|자동화 편향]]과 맞닿는다(해석).
+
+한 실무 강의(2026-11-09)는 이 용어를 코딩 에이전트에 옮겨 실행(코드 작성, 파일 수정, 테스트 실행)과 판단(이 변경이 시스템과 설계 의도에 맞는가)을 나눈다. 위임은 판단 기준을 사람이 정한 채 실행만 넘기고, 결과는 그 기준에 대조할 후보로 본다. 항복은 기준까지 넘겨 결과가 맞는지도 에이전트의 설명에 기대는 상태다. 가르는 질문은 이 결과가 틀렸을 때 내가 알아챌 수 있는가다. 강의는 위 논문을 인용하지 않으며 두 자료를 잇는 것은 이 문서의 연결이다. 아래는 강의의 권고이며 효과를 측정한 결과는 아니다.
+
+- **위임 크기는 검토 용량으로 정한다:** 한 문장으로 쓸 수 있는 단일 목적, 한 번에 읽을 수 있는 diff, 동료에게 짧게 설명할 수 있는 변경을 상한으로 둔다. 큰 기능은 기반(타입, 스키마), 로직, 외부 연결 순으로 커밋 단위로 나누고 하나씩 맡겨 검증하고 커밋한 뒤 다음으로 간다. 에이전트가 만든 분해 계획도 사람이 승인한다.
+- **완료 조건은 관찰 가능한 결과로 먼저 적는다:** 그대로 실행할 검증 명령, 기대 결과(새 테스트가 실패에서 통과로 바뀌는지), 이번에 하지 않을 일, 건드리지 않을 영역(기존 테스트 파일, 마이그레이션, 공용 설정)을 적고 `git diff --stat`으로 금지 영역이 바뀌지 않았는지 확인한다. 확인 방법을 한 문장으로 답할 수 없으면 아직 맡길 단계가 아니다.
+- **검증 수단이 없으면 먼저 만든다:** 테스트 없는 레거시는 현재 동작을 고정하는 특성화 테스트를 먼저 쓰게 하고 확인한 뒤 본 작업을 맡긴다. 보안 정책, 데이터 보존 기간 같은 도메인 판단처럼 검증 수단을 만들 수 없는 결정은 사람이 한다.
+- **게이트는 의지가 아니라 절차로 둔다:** 포매터와 린트, 타입 검사와 단위 테스트, 통합 테스트와 보안 스캔을 자동으로 통과한 뒤 사람이 변경의 필요성, 범위 이탈, 위험 영역 접촉과 테스트 약화(assertion 삭제, skip 추가)를 본다. 이 질문을 PR 템플릿과 담당자 지정으로 고정하고, 에이전트의 자기 리뷰는 보조 수단으로만 쓴다.
+
 ## 관례와 피드백
 
 프레임워크의 기존 구조를 재사용하면 생성할 코드와 검토할 범위를 줄일 수 있다. 자연어 관례와 실행 단계의 강제는 다르다. 프레임워크를 쓴다고 업무 요구나 보안이 자동 보장되지는 않는다.
@@ -167,6 +178,9 @@ Dafny 4 튜토리얼의 절댓값 예제에서 후조건이 `0 <= y`뿐이면 �
 - [PostgreSQL 19 Beta 1 Released! — PostgreSQL](https://www.postgresql.org/about/news/postgresql-19-beta-1-released-3313/) — 2026-06-04, 정식 출시 예고(9~10월 무렵)를 2026-10-27 대조
 - [PostgreSQL 19 Beta 4 Released! — PostgreSQL](https://www.postgresql.org/about/news/postgresql-19-beta-4-released-3386/) — 2026-09-24, RC와 GA 예고(10월)와 되돌린 기능 목록을 2026-10-27 대조
 - [Postgres 19 delayed after AI reviewers find more bugs than humans can fix — The Register, Lindsay Clark](https://www.theregister.com/databases/2026/10/16/postgres-19-delayed-after-ai-reviewers-find-more-bugs-than-humans-can-fix/5303471) — 2026-10-16 보도, 아래 GeekNews 연기 요약의 원문. 일정은 위 공식 공지로 대조
+- [Thinking—Fast, Slow, and Artificial: How AI is Reshaping Human Reasoning and the Rise of Cognitive Surrender — SSRN, Steven D. Shaw, Gideon Nave](https://papers.ssrn.com/abstract=6097646) — 2026년 초 working paper. SSRN은 접근 차단이라 [Stanford SCALE 저장소의 초록](https://scale.stanford.edu/ai/repository/thinking-fast-slow-and-artificial-how-ai-reshaping-human-reasoning-and-rise-cognitive)으로 실험 수, 표본, 정확도 변화와 조절 변수를 2026-11-17 대조
+- [How AI Is Reshaping Human Intuition and Reasoning — Knowledge at Wharton, Gideon Nave, Steven Shaw](https://knowledge.wharton.upenn.edu/podcast/ripple-effect/how-ai-is-reshaping-human-intuition-and-reasoning-gideon-nave-and-steven-shaw/) — 2026-02-24 저자 대담, 세 번째 체계 정의를 2026-11-17 확인
+- [YouTube, 길리랩, 인지적 항복을 모르면 에이전트 코드가 팀을 망친다](https://www.youtube.com/watch?v=5xn2LqBHq0c) — 2026-11-09 실무 강의. 위임 크기, 완료 조건, 리뷰 게이트 권고이며 사례와 수치는 강의 안의 가상 예시
 - 사용자 제공 GeekNews 알림 요약(2026-10-16~27): Claude Code 팀의 코드 리뷰 방식, [Brain Sandwich](https://news.hada.io/topic?id=35604), [예전의 내 일은 이제 멀게 느껴진다](https://news.hada.io/topic?id=35541), [Ask HN](https://news.hada.io/topic?id=35662), [Postgres 19 출시 지연](https://news.hada.io/topic?id=35488), Linux 7.2 통계, Torvalds 발언. 위 원문으로 대조했다
 
 ## 관련 문서
