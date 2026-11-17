@@ -3,7 +3,7 @@ tags: [infrastructure, load-balancer, dns, proxy, spof, gslb, health-check]
 status: done
 category: "인프라&클라우드(Infrastructure&Cloud)"
 aliases: ["Load Balancer", "로드밸런서", "GSLB", "Global Server Load Balancing"]
-verified_at: 2026-11-01
+verified_at: 2026-11-18
 ---
 
 # Load Balancer
@@ -75,6 +75,17 @@ L4와 L7은 대상 선택에 어떤 정보를 쓰는지 설명하는 분류다. 
 - 헬스 체크 API의 응답 확인
 - 트래픽을 받을 준비가 됐는지 확인하는 범위에서 의존성 검사와 실패 기준을 정함
 
+판정은 네 숫자로 조절한다. ALB 대상 그룹(2026-11-18 공식 문서 기준)을 예로 들면 다음과 같다.
+
+| 설정 | 의미 | 기본값과 범위 |
+|---|---|---|
+| Interval | 한 대상에 대한 검사 사이의 대략적인 간격 | instance, ip 30초, lambda 35초, 5~300초 |
+| Timeout | 이 시간 안에 응답이 없으면 그 검사를 실패로 본다 | instance, ip 5초, lambda 30초, 2~120초 |
+| Healthy threshold | unhealthy 대상을 healthy로 되돌리는 데 필요한 연속 성공 횟수 | 5, 2~10 |
+| Unhealthy threshold | 대상을 unhealthy로 보는 데 필요한 연속 실패 횟수 | 2, 2~10 |
+
+threshold는 누적이 아니라 연속 횟수다. 각 검사는 독립적이고 응답에 걸린 시간이 다음 검사 간격을 바꾸지 않는다. 그래서 instance, ip 기본값에서 장애 대상이 빠지기까지 기본값 2회와 30초를 곱해 계산하면 약 1분이 걸리고(실패가 timeout으로 판정되면 Timeout만큼 더 걸린다), unhealthy 대상이 회복해 다시 들어오기까지는 ECS 가이드가 계산한 대로 30초 곱하기 5인 150초 안팎이 걸린다. 장애가 검사 주기의 어디에서 시작했는지와 timeout에 따라 실제 시간이 달라지므로 전환 시각은 측정으로 확인한다. 새로 등록한 대상은 Healthy threshold와 관계없이 검사 한 번을 통과하면 healthy가 되고, Healthy threshold는 unhealthy에서 회복할 때만 적용된다(배포 중 영향은 [[ECS-Rolling-Deployment|ECS 롤링 배포]]). 검사 포트는 기본으로 대상이 트래픽을 받는 포트이고 별도 포트(예: 8080의 관리용 endpoint)로 바꿀 수 있다. 성공 코드(Matcher)는 protocol version이 HTTP/1.1이나 HTTP/2이면 기본 200이고 200~499 안에서 목록이나 범위로 지정하며, gRPC면 0~99 범위에 기본 12다. Interval과 threshold를 줄이면 감지는 빨라지지만 일시적인 지연에도 대상이 빠졌다 들어오기를 반복할 수 있다.
+
 헬스 체크가 실패한 대상을 어떻게 다루는지는 제품과 설정에 따라 다르다. 예를 들어 모든 대상이 unhealthy일 때 fail-open 하는 구현도 있으므로, 장애 시 실제 라우팅을 운영 환경에서 확인한다.
 
 ### 대상 제거와 드레이닝
@@ -132,6 +143,7 @@ L4와 L7은 대상 선택에 어떤 정보를 쓰는지 설명하는 분류다. 
 ## 출처
 - [AWS Elastic Load Balancing, How Elastic Load Balancing works](https://docs.aws.amazon.com/elasticloadbalancing/latest/userguide/how-elastic-load-balancing-works.html)
 - [AWS Elastic Load Balancing, Health checks for Application Load Balancer target groups](https://docs.aws.amazon.com/elasticloadbalancing/latest/application/target-group-health-checks.html)
+- [Amazon ECS, Optimize load balancer health check parameters for Amazon ECS](https://docs.aws.amazon.com/AmazonECS/latest/developerguide/load-balancer-healthcheck.html)
 - [AWS Elastic Load Balancing, Target group health and DNS failover](https://docs.aws.amazon.com/elasticloadbalancing/latest/application/load-balancer-target-groups.html)
 - [AWS Elastic Load Balancing, Edit target group attributes for your Application Load Balancer](https://docs.aws.amazon.com/elasticloadbalancing/latest/application/edit-target-group-attributes.html)
 - [AWS Elastic Load Balancing, Troubleshoot your Application Load Balancers](https://docs.aws.amazon.com/elasticloadbalancing/latest/application/load-balancer-troubleshooting.html)

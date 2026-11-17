@@ -1,7 +1,7 @@
 ---
 tags: [palantir, foundry, api, orchestration, build]
 status: done
-verified_at: 2026-10-16
+verified_at: 2026-11-18
 category: "AI엔지니어링(AIEngineering)"
 ---
 
@@ -43,7 +43,7 @@ Job.outputs는 지원되는 Dataset와 transactional Media Set만 나열한다. 
 
 `POST /builds/{buildRid}/cancel`은 아직 끝나지 않은 모든 Job에 취소를 요청한다. 비동기 endpoint라 성공 응답 뒤에도 Build status가 즉시 바뀌지 않는다. 요청 전 이미 끝났거나 취소 반영 전 완료되면 상태가 바뀌지 않을 수 있다. cancel 성공을 CANCELED의 증거로 처리하지 않고 후속 조회로 확인한다.
 
-create/cancel permission 오류와 BuildNotFound/JobNotFound, 공통 인증/제한 오류를 구별한다. 비어 있는 endpoint별 errorResponses는 오류가 불가능하다는 의미가 아니다. 공개 명세를 확인했으며 실제 Build 실행, 재시도나 취소를 수행하지 않았다.
+create/cancel permission 오류와 BuildNotFound/JobNotFound, 공통 인증/제한 오류를 구별한다. Get Build 명세의 2026-11-18 수집본은 BuildNotFound(NOT_FOUND) 앞에 InvalidBuildRid(INVALID_ARGUMENT, parameter buildRid)를 두며, 2026-10-19 수집본에는 이 오류가 없었다(두 날짜 모두 KST). 명세는 이 오류를 주어진 RID가 유효한 Build RID가 아닌 경우로만 설명하므로, 찾을 수 없는 Build의 BuildNotFound와 다른 오류로 처리한다. 같은 시기 Cancel Build는 InvalidBuildRid와 CancelBuildPermissionDenied를, List Jobs Of Build는 InvalidBuildRid만 나열하며 두 문서 모두 BuildNotFound는 나열하지 않는다. Create Build, Get Builds Batch와 Job endpoint의 같은 변경 여부는 각 명세에서 다시 확인한다. 비어 있는 endpoint별 errorResponses는 오류가 불가능하다는 의미가 아니다. 공개 명세를 확인했으며 실제 Build 실행, 재시도나 취소를 수행하지 않았다.
 
 ## 출처
 

@@ -3,7 +3,7 @@ tags: [network, wireless, wpan, iot, ipv6, bluetooth, zigbee, 6lowpan]
 status: done
 verified_at: 2026-11-18
 category: "Web - 네트워크"
-aliases: ["WPAN", "Wireless Personal Area Network", "무선 개인 통신망", "6LoWPAN", "LoWPAN", "IEEE 802.15.4", "BLE", "Bluetooth Low Energy"]
+aliases: ["WPAN", "Wireless Personal Area Network", "무선 개인 통신망", "6LoWPAN", "LoWPAN", "IEEE 802.15.4", "BLE", "Bluetooth Low Energy", "L2CAP", "Logical Link Control and Adaptation Protocol"]
 ---
 
 # WPAN과 6LoWPAN
@@ -26,6 +26,24 @@ WPAN(무선 개인 통신망)은 사람이나 기기 주변의 짧은 거리에�
 | 6LoWPAN | IEEE 802.15.4 위의 IETF 적응 계층 | IPv6 패킷을 단편화와 헤더 압축으로 802.15.4 프레임에 싣는다 |
 
 같은 IEEE 802.15.4 무선을 써도 Zigbee와 6LoWPAN은 그 위가 다르다. Zigbee는 CSA의 자체 상위 규격을 두고, 6LoWPAN은 IPv6를 그대로 올리는 쪽을 택한다. 6LoWPAN 기법은 RFC 7668로 Bluetooth LE 위의 IPv6에도 쓰인다.
+
+## Bluetooth의 L2CAP
+
+L2CAP(Logical Link Control and Adaptation Protocol)은 Bluetooth Host 스택에서 ATT, SMP 같은 상위 프로토콜과 Controller의 논리 링크 사이를 잇는 계층이다. 상위 계층에 연결형과 비연결형 데이터 서비스를 주고 최대 64KB의 SDU를 다룬다(Bluetooth Core 6.2 Vol 3 Part A 기준, 아래 내용은 Core 7.0의 같은 Part에서도 같다). 한 LE 링크 위에서 ATT와 SMP가 함께 동작하는 것처럼 여러 상위 프로토콜이 두 기기 사이의 한 논리 링크를 나눠 쓰는 일은 L2CAP의 채널 다중화가 맡는다. 서로 다른 기기와의 동시 연결은 링크가 따로 있으므로 이 다중화와 구분한다.
+
+| 기능 | 하는 일 |
+|---|---|
+| 프로토콜, 채널 다중화 | 채널 수립 때 연결을 맞는 상위 프로토콜로 보내고, 데이터 전송 때 채널 ID(CID)로 여러 상위 엔티티를 구분한다 |
+| 분할(segmentation)과 재조립 | 모드에 따라 SDU를 segment로 나눠 PDU 길이를 제어하고, 여러 애플리케이션의 데이터를 끼워 보내 지연 요구를 맞춘다 |
+| 채널별 흐름 제어 | 한 Controller 위의 여러 스트림을 채널마다 따로 조절한다 |
+| 오류 제어와 재전송 | PDU의 오류를 검사하고 재전송한다. 흐름 제어가 첫 전송과 재전송을 함께 제한한다 |
+| 단편화(fragmentation)와 재결합 | L2CAP PDU를 하위 전송에 맞는 fragment로 나누고 수신 측에서 PDU로 되돌린다. HCI 드라이버나 Controller에서도 일어날 수 있다 |
+| Streaming, QoS | flush timeout으로 송신을 이어 가고, 연결 설정 때 기대 QoS를 교환한다 |
+
+- segmentation은 SDU를 나누는 절차이고 Basic 모드에는 없다. fragmentation은 PDU를 하위 계층 전송용으로 나누는 절차이며 모든 모드에 적용될 수 있다. 6LoWPAN의 링크 단편화와 이름이 비슷하지만 계층과 대상이 다르다.
+- 비연결형 채널(CID 0x0002)은 BR/EDR의 ACL-U와 APB-U CID 표에만 있고 LE-U 표에는 없다. 따라서 Bluetooth LE가 비연결형만 지원한다는 설명은 틀렸다. LE에는 링크가 서자마자 쓸 수 있는 고정 채널(0x0004 ATT, 0x0005 LE Signaling, 0x0006 SMP)과 동적 연결형 채널(0x0040~0x007F)이 있다.
+- 모드는 링크에 따라 다르다. Basic은 필수이자 기본값이며 LE에서는 일부 고정 채널에만 쓴다. Flow Control, Retransmission, Enhanced Retransmission, Streaming은 BR/EDR 전용, LE Credit Based Flow Control은 LE 전용, Enhanced Credit Based Flow Control은 BR/EDR과 LE에 모두 쓴다. LE의 연결형 채널은 credit 방식으로 흐름을 조절하며, LE에서 쓸 수 있는 모드에는 L2CAP 재전송 모드가 없다.
+- LE 물리 링크의 모든 채널은 best effort로 하나의 LE-U 논리 링크에 매핑된다. 채널별 QoS 보장을 LE에서 기대하지 않는다.
 
 ## IEEE 802.15.4의 제약
 
@@ -74,6 +92,7 @@ IPv6는 링크 MTU로 최소 1280옥텟을 요구하는데 802.15.4 물리 계�
 - 6LoWPAN이 필요한 이유를 MTU 1280과 127바이트 프레임의 차이로 설명할 수 있는가.
 - 6LoWPAN과 Zigbee의 차이를 같은 802.15.4 무선 위에 IPv6를 올리는지, CSA 자체 상위 규격을 쓰는지로 나눠 말할 수 있는가.
 - 인터넷 연결에 6LBR이 하는 일(prefix 배포, 경계 라우팅)을 말할 수 있는가.
+- L2CAP의 segmentation과 fragmentation을 나누고, 비연결형 채널이 BR/EDR에만 있다는 점을 CID 표로 설명할 수 있는가.
 
 ## 출처
 
@@ -89,10 +108,13 @@ IPv6는 링크 MTU로 최소 1280옥텟을 요구하는데 802.15.4 물리 계�
 - [Bluetooth SIG, Understanding Bluetooth Range](https://www.bluetooth.com/learn-about-bluetooth/key-attributes/range/)
 - [Bluetooth SIG, Bluetooth Core 7.0 Feature Overview](https://www.bluetooth.com/bluetooth-core-7-0-feature-overview/)
 - [Bluetooth High Data Throughput Opens a New Chapter in Wireless Performance — Bluetooth SIG](https://www.bluetooth.com/press/bluetooth-high-data-throughput-opens-a-new-chapter-in-wireless-performance/) — 2026-11-04 HDT 채택 발표
+- [Bluetooth SIG, Bluetooth Core 6.2 Vol 3 Part A Logical Link Control and Adaptation Protocol Specification](https://www.bluetooth.com/wp-content/uploads/Files/Specification/HTML/Core-62/out/en/host/logical-link-control-and-adaptation-protocol-specification.html)
+- [Bluetooth SIG, Bluetooth Core 7.0 Vol 3 Part A Logical Link Control and Adaptation Protocol (L2CAP) Specification](https://www.bluetooth.com/wp-content/uploads/Files/Specification/HTML/Core_v7.0/out/en/host/logicallinkcontrol-andadaptationprotocol-l2cap--specification.html)
 - [Bluetooth SIG, LE Audio](https://www.bluetooth.com/learn-about-bluetooth/feature-enhancements/le-audio/)
 - [Connectivity Standards Alliance, Zigbee FAQ](https://csa-iot.org/all-solutions/zigbee/zigbee-faq/)
 - [#NW 0045 - 무선 이어폰은 어떻게 연결될까? WPAN 90초 완벽 정리 — 길리랩](https://www.youtube.com/watch?v=bn3J-xodWY0) — 학습 계기, 거리와 기술 분류는 위 1차 출처로 교정
 - [#NW 0046 - 쌀알만 한 센서에도 IP 주소를? 6LoWPAN 90초 완벽 정리 — 길리랩](https://www.youtube.com/watch?v=Wn4p_EbybAg) — 학습 계기, 주소 유일성과 인터넷 연결 설명은 RFC로 교정
+- [#NW 0048 - 블루투스의 숨은 영웅 L2CAP, 90초 완벽 정리! — 길리랩](https://www.youtube.com/watch?v=70o03jLh7EM) — 학습 계기, LE의 비연결형 설명과 다중화 예시는 Core 6.2로 교정
 
 ## 관련 문서
 
