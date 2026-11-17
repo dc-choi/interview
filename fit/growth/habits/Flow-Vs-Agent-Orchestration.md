@@ -69,3 +69,4 @@ aliases: ["Flow vs Agent Orchestration", "멀티 에이전트 주의력", "딥�
 - [[Great-Developer-Habits|뛰어난 개발자의 행동 패턴]]
 - [[Retrospective-Methods|회고 기법]] — 단일 몰입(일기, 회고) 습관
 - [[Flow-Theory-and-Learning|몰입 이론과 학습]] — 몰입의 조건, 과제와 실력의 균형
+- [[Unstimulated-Time-and-Self-Check|자극 없는 시간과 자기 점검]] — 비는 시간을 자극으로 채우지 않는 연습과 근거의 한계

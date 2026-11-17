@@ -180,6 +180,7 @@ CS 문서를 읽을 때는 먼저 필요한 절을 찾고, 정의와 조건이 �
 - [인프런, JSCODE 박재성, 학습 Tip: First Word 법칙](https://www.inflearn.com/courses/lecture?courseId=334085&unitId=228056)
 
 ## 관련 문서
+- [[Structure-First-Memorization|구조를 먼저 외우고 가린 채 떠올리기]] — 갈래와 개수로 줄여 회상하는 절차
 - [[Dreyfus-Skill-Model|드레퓌스 기술 습득 모형]]
 - [[Developer-Growth-Stages|개발자 성장 단계]]
 - [[Self-Development-While-Working|일하면서 자기계발]]

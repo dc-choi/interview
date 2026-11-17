@@ -191,6 +191,7 @@ Erin Meyer의 The Culture Map은 문화 간 차이를 여덟 척도로 설명하
 
 ## 관련 문서
 
+- [[Spoken-Explanation-Ordering|말로 설명할 때 생각의 순서]] — 즉답과 구두 설명의 순서
 - [[Code-Review-Culture|생산적 코드 리뷰 문화]]
 - [[First-90-Days|새 직장 첫 90일 원칙]]
 - [[Cross-Functional-Product-Collaboration|직군 간 프로덕트 협업]]

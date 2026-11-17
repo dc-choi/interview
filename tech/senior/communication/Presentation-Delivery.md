@@ -149,6 +149,7 @@ PNG나 비트맵으로 붙인 결과는 이미지이므로 원래 텍스트 상�
 ## 관련 문서
 
 - [[Developer-Communication|개발자 커뮤니케이션]] — 두괄식과 독자별로 나눠 쓰기
+- [[Spoken-Explanation-Ordering|말로 설명할 때 생각의 순서]] — 준비 시간이 없는 즉답의 순서
 - [[Tech-Writing-Craft|개발자 글쓰기]] — 독자와 목적 좁히기, 전문용어 풀어 쓰기 같은 글쓰기 원칙
 - [[Visual-Hierarchy|시각적 위계]] — 그룹 안 간격과 그룹 사이 간격 구분, 강조 총량
 - [[커뮤니케이션(Communication)|커뮤니케이션]]

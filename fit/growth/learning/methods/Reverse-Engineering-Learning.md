@@ -45,6 +45,14 @@ aliases: ["Reverse Engineering Learning", "역설계 학습", "모방을 통한 
 
 같은 동작을 무수히 반복하는 뻔한 연습이 아니라, 약점을 겨냥하고 피드백을 받는 **전략적 연습**이 실력을 만든다. 그러려면 지표를 제대로 나눠야 한다 — 결과를 나타내는 후행지표만 보지 말고, 그 결과를 만드는 행동과 과정인 **선행지표**를 정의해 관리한다. 선행지표가 통제 가능한 레버다.
 
+### 반복해 자동화할 것과 견줘서 고칠 것을 나눈다
+
+효율적인 절차 하나를 정해 의식하지 않아도 나올 때까지 반복하는 일과, 잘하는 사람의 수행에 자기 수행을 견줘 차이를 고치는 일은 다른 연습이다. 반복만으로는 어느 수준 이상 가기 어렵고, 그 뒤는 잘하는 사람의 강의, 학회와 조언에서 자기와 다른 지점(자세, 각도)을 찾아야 넘어간다는 것이 이 구분의 요지다. 위 문단의 전략적 연습과 아래의 의도적 연습은 견줘서 고치는 쪽에 가깝고, 자동화 반복은 맞다고 확인한 절차를 굳히는 데 쓴다(해석, [[Flow-Theory-and-Learning#의도적 연습과 몰입은 같은 순간에 겹치지 않을 수 있다|의도적 연습과 몰입]]). 반복이 숙련의 80%, 견주기가 20%라는 비율과 만 번이라는 횟수는 임상의 한 명의 경험칙이며 근거를 대조하지 못했다.
+
+- **정의**: Ericsson, Krampe와 Tesch-Römer(1993)는 향상을 최적화하도록 설계한, 노력이 드는 활동을 의도적 연습(deliberate practice)이라 부르고, 엘리트 수행자 사이의 개인차도 의도적 연습량과 밀접하게 관련된다고 봤다. 타고난 재능으로 여기던 특성의 다수가 최소 10년에 걸친 강도 높은 연습의 결과라는 주장이다(초록 기준).
+- **설명력의 한계**: Macnamara, Hambrick과 Oswald(2014)의 메타분석에서 의도적 연습이 수행의 분산을 설명한 비율은 게임 26%, 음악 21%, 스포츠 18%, 교육 4%, 직업 1% 미만이었다. 저자들은 의도적 연습이 중요하지만 주장된 만큼은 아니라고 결론 냈다(초록 기준). 이 결과는 연습량의 차이가 성과 차이의 대부분을 설명한다는 주장을 뒷받침하지 않는다. 분산 설명 비율은 집단 안 개인차에 관한 값이라 한 사람이 어디까지 도달하는지를 직접 말해 주지 않으므로, 같은 방식으로 노력하면 누구나 상위권에 든다는 말의 근거로 쓸 수 없다는 정도로 읽는다(해석).
+- **적용**: 굳히려는 절차가 틀린 방식이면 반복은 오류를 굳힌다. 그래서 반복 횟수를 늘리기 전에 잘하는 사람의 수행과 한 번 견주고, 견줄 항목은 아래 절처럼 좁혀 정한다(해석). 반복해 굳힐 절차의 한 예(외울 내용용)는 [[Structure-First-Memorization|구조를 먼저 외우고 가린 채 떠올리기]]에 있다. 경험칙의 순서는 반복 뒤 비교이고, 비교를 앞에 두는 것은 이 문서의 해석이다.
+
 ## 전문가에게 값진 조언 얻는 법
 
 전문가는 비전문가와 생각하는 방식이 다르다. 자신도 의식하지 못하는 지름길을 쓰고, 자기가 아는 것을 모르는 상태를 상상하지 못한다(전문가의 저주, 암묵지). 그래서 "성공에 필요한 행동을 분석해 달라"고 하면 핵심의 상당 부분을 빠뜨리고, 말해 주는 일부도 알아듣기 어려운 언어로 설명한다.
@@ -78,11 +86,15 @@ aliases: ["Reverse Engineering Learning", "역설계 학습", "모방을 통한 
 - 역설계 학습과 탁월함에 대한 개인 블로그 에세이
 - Decoding Greatness(론 프리드먼) — 역설계, 전략적 연습, 과정 상상, 리스크 관리
 - 직업으로서의 소설가, 달리기를 말할 때 내가 하고 싶은 이야기(무라카미 하루키) — 필사를 통한 모방 학습(두 책에서 필사를 다룬 대목은 미확인)
+- [The role of deliberate practice in the acquisition of expert performance — Psychological Review, Ericsson, Krampe, Tesch-Römer](https://doi.org/10.1037/0033-295X.100.3.363) — 100권 3호 363~406쪽(1993). 2026-11-17 OpenAlex에 실린 초록으로 정의와 주장만 확인, 본문 미열람
+- [Deliberate Practice and Performance in Music, Games, Sports, Education, and Professions: A Meta-Analysis — Psychological Science, Macnamara, Hambrick, Oswald](https://doi.org/10.1177/0956797614535810) — 25권 8호 1608~1618쪽(2014). 2026-11-17 OpenAlex에 실린 초록으로 영역별 설명 비율과 결론만 확인, 본문 미열람
+- [진작 알았다면.. 훨씬 잘했을텐데...진짜 똑똑한 사람들의 공부법 — YouTube, 이상욱의 진료실 밖 처방전](https://www.youtube.com/watch?v=FEt7NyGHS8k) — 2025-12-26 업로드, 2026-11-17 음성 인식 전사 전체 확인. 반복과 견주기를 나누는 구분의 출처이며 비율과 횟수는 화자의 경험칙
 - [build-your-own-x — GitHub, codecrafters-io](https://github.com/codecrafters-io/build-your-own-x)
 - [일 잘하는 선배의 습관을 따라 한 경험 — Threads, hidden.gemgem](https://www.threads.com/@hidden.gemgem/post/Db8QnHPCao6)
 - [build-your-own-x 소개 — Threads, mori_mement0](https://www.threads.com/@mori_mement0/post/Da2ulbJmD9A)
 
 ## 관련 문서
+- [[Structure-First-Memorization|구조를 먼저 외우고 가린 채 떠올리기]] — 외울 내용을 갈래로 줄여 회상하는 절차
 - [[Source-Code-Analysis|소스 코드 분석]] — 남의 코드 읽는 법, 직접 구현 뒤 실제 구현과 비교
 - [[Purpose-Driven-Learning|목적 있는 학습]] — 가르치기 위해, 질문을 위해 발췌
 - [[AI-Handicap-Learning|AI 접바둑 학습]] — 교수법을 AI에 심어 모델 모방
