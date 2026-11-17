@@ -1,7 +1,7 @@
 ---
 tags: [palantir, foundry, api, model, versioning]
 status: done
-verified_at: 2026-10-16
+verified_at: 2026-11-17
 category: "AI엔지니어링(AIEngineering)"
 ---
 
@@ -22,6 +22,8 @@ Model은 버전을 보관하는 resource이고 Model Version은 직렬화한 데
 ## Model API의 입출력 Schema
 
 modelApi는 이름 있는 inputs/outputs 목록이다. 유형은 parameter, tabular 또는 unsupported를 구분한다. parameter는 이름, required와 dataType을 갖는다. tabular는 columns와 PANDAS/SPARK format이며 기본 PANDAS다. input/output required와 column required는 기본 true이고 false면 null 또는 omission을 허용한다.
+
+parameter와 tabular input/output, tabular column에는 optional description이 있다. 입력/출력의 목적이나 column 값의 의미를 설명하며, 설명이 없으면 필드 자체가 빠진다. 500 Unicode code point를 넘는 description은 Model Version 생성 시 버려진다. 조회 결과에 넣은 description이 없으면 500 code point 제한과, 사용 중인 SDK나 클라이언트가 이 필드를 노출하는지를 확인한다.
 
 dataType은 date/boolean/string/array/double/integer/float/any/map/long/timestamp와 unsupported를 포함한다. array itemType과 map keyType/valueType은 재귀다. unsupported 표현을 수신했다고 실행 지원으로 바꾸지 않는다. dataframe format과 실제 HTTP inference JSON 직렬화는 다른 경계다.
 
