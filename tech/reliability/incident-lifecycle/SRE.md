@@ -128,6 +128,7 @@ SRE용 모니터링, 자동화 도구는 이미 많다. 하지만 오래 운영�
 - [[Incident-Recovery-Prevention|장애 복구와 재발 방지]]
 - [[SLI-SLO|SLI/SLO/에러 버짓]]
 - [[DevOps-vs-DevSecOps|DevOps vs DevSecOps]]
+- [[DevOps-Ecosystem-Map|DevOps 생태계 지도]] — 신뢰성이 전달 흐름에서 놓이는 자리
 
 ## 출처
 

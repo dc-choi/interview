@@ -101,6 +101,7 @@ Redis는 cache, stream이나 작업 큐의 기반으로 모두 사용할 수 있
 - [[Backpressure|배압]]
 - [[Throughput-vs-Latency|처리량과 지연시간]]
 - [[Consumer-Group|소비자 그룹]]
+- [[Async-Job-API|비동기 작업 API]] — 접수 응답과 상태 조회
 
 ## 출처
 
