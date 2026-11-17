@@ -103,10 +103,28 @@ F5-TTS의 평가는 영어와 중국어 자료를 사용하므로 논문 점수�
 
 위는 도입 전 확인할 조건이며 특정 사업의 이용 허용 여부를 판정한 결과는 아니다. 모델 이름, 평가 언어와 조건, 배포 라이선스를 고정한 뒤 성능과 운영 비용을 비교한다.
 
+## 호스팅 API는 모델 지정과 과금 단위를 먼저 확인한다
+
+2026-11-17 Fish Audio 공식 문서 기준이다. 호스팅 API에서 Drama 3를 쓰려면 `POST /v1/tts` 요청의 `model` 헤더를 `drama-3`로 둔다. 헤더가 없거나 철자가 틀리면 오류 없이 `s2.1-pro`로 생성되므로, 비교 실험에서는 요청 로그에 실제 모델 지정이 남았는지 확인한다.
+
+TTS 요금은 입력 텍스트의 UTF-8 바이트 100만 개 단위다. 정가는 `drama-3` 50달러, `s2.1-pro` 15달러이며 `drama-3`는 2026-11-30까지(12-01 00:00 PT) 10달러의 출시 할인가가 적용된다. 한글 음절은 UTF-8에서 한 글자 3바이트라 같은 바이트 예산으로 영문 알파벳보다 적은 글자를 합성한다. 대본 길이를 글자 수로만 잡지 말고 바이트로 환산해 비용을 비교한다(해석).
+
+같은 회사의 Fish Agents(공개 베타)는 음성 인식, 턴 처리와 음성 합성을 묶은 호스팅 음성 에이전트다. 새 에이전트는 영어 전용 전이중 모델 Live 3로 시작하고, 그 밖의 언어 세션은 `voice.tts_model`(기본값 `drama-3`)로 말한다. 그래서 한국어 상담원의 목소리 품질은 이 TTS 모델 기준으로 평가한다. 음성 인식 모델과 LLM은 고르거나 OpenAI 호환 엔드포인트로 바꿀 수 있다.
+
+과금은 대화 시간 단위다. 정가는 분당 0.07달러(초 단위 계량)이고 음성 인식과 TTS가 포함되며, 기본 LLM 세 종의 포함은 현재 프로모션으로 한정된다. 2026-11-17 요금 페이지는 정가의 50% 할인인 분당 0.035달러를 표시한다. 전화 연결 요금과 번호 조건은 별도다. 제품명 같은 낯선 단어는 음성 인식 keyterms(`asr.keyterms`)에 등록해 볼 수 있다(적용 제안). 일부 음성 인식 모델은 길이 한도(20~50자)를 넘는 항목을 무시한다. 턴 종료와 지연 판단은 [[Realtime-Voice-Architecture|실시간 음성 에이전트]]의 기준으로 따로 확인하며, 요금은 구매 시점에 다시 본다.
+
 ## 출처
 
 - [Fish Audio, Voice Cloning](https://docs.fish.audio/features/voice-cloning) — 2026-11-04 요청별 참조, 목소리 ID 재사용, 상태와 샘플 준비 조건 대조.
 - [Fish Audio, Emotion Control](https://docs.fish.audio/developer-guide/core-features/emotions) — 2026-11-04 S2 대괄호 지시, S1 문법과 문장별 배치 권고 대조.
+- [Fish Audio, Pricing and Rate Limits](https://docs.fish.audio/developer-guide/models-pricing/pricing-and-rate-limits) — 2026-11-17 모델별 UTF-8 바이트 단가와 `drama-3` 출시 할인 기한 대조.
+- [Fish Audio, Drama 3](https://docs.fish.audio/features/text-to-speech/drama-3) — 2026-11-17 `model` 헤더 지정과 누락 시 `s2.1-pro` 대체 대조.
+- [Fish Audio, Agents Overview](https://docs.fish.audio/agents/overview) — 2026-11-17 공개 베타와 웹, 전화 배포 범위 대조.
+- [Fish Audio, Agents Voice and Language](https://docs.fish.audio/agents/build/voice-language) — 2026-11-17 Live 3와 `voice.tts_model` 기본값, 음성 인식 모델별 keyterms 길이 한도 대조.
+- [Fish Audio, Agent Configuration](https://docs.fish.audio/agents/build/configuration) — 2026-11-17 `asr.keyterms` 설정 위치 대조.
+- [Fish Audio, Agents Custom LLM](https://docs.fish.audio/agents/build/custom-llm) — 2026-11-17 OpenAI 호환 엔드포인트 연결 조건 대조.
+- [Fish Audio, Agents Pricing](https://docs.fish.audio/agents/pricing) — 2026-11-17 분당 정가, 포함 범위와 기본 LLM 포함의 프로모션 조건 대조. 실제 계정 과금은 시험하지 않았다.
+- [Fish Audio, Plans](https://fish.audio/plan/?plans=agent) — 2026-11-17 Agents 분당 0.035달러 할인 표시 대조.
 - [ElevenLabs, Voice Cloning](https://elevenlabs.io/docs/eleven-creative/voices/voice-cloning) — 2026-11-04 IVC와 PVC의 학습 방식, 권장 녹음 길이 대조.
 - [ElevenLabs, Professional Voice Cloning](https://elevenlabs.io/docs/eleven-creative/voices/voice-cloning/professional-voice-cloning) — 2026-11-04 녹음량, 단일 화자와 일관된 스타일, 목표 언어 및 본인 음성 확인 조건 대조.
 - [ElevenLabs, Best practices](https://elevenlabs.io/docs/overview/capabilities/text-to-speech/best-practices) — 2026-11-04 Prompting Eleven v4/v3의 태그, 목소리 선택과 표현 제어 한계 대조. 공급사 간 성능 우열은 검증하지 않았다.
