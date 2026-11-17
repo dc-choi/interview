@@ -13,7 +13,9 @@ Media Set 안의 Media Item RID, mediaItemPath와 mediaSetViewRid는 역할이 �
 
 Preview `GET /api/v2/mediasets/{mediaSetRid}`는 schema 종류, defaultBranchName, transactionPolicy와 pathsRequired를 반환한다. `batchTransactions`는 branch별 transaction을 만들어야 하고 commit까지 쓰기가 보이지 않는다. `noTransactions`는 즉시 보이며 create/commit transaction 호출이 오류다.
 
-schema 종류는 AUDIO/CAD/DICOM/DOCUMENT/IMAGERY/MODEL_3D/MULTIMODAL/SPREADSHEET/STREAMING_VIDEO/TILED_RASTER/VIDEO/EMAIL이다. 반환 schema 이름만으로 모든 변환 지원을 보장하지 않는다. branch name은 비어 있지 않고 256자 미만이며 유효한 RID 자체여서는 안 된다.
+schema 종류는 AUDIO/CAD/DICOM/DOCUMENT/IMAGERY/MODEL_3D/MULTIMODAL/SPREADSHEET/STREAMING_VIDEO/TILED_FORMAT/VIDEO/EMAIL이다. 반환 schema 이름만으로 모든 변환 지원을 보장하지 않는다. branch name은 비어 있지 않고 256자 미만이며 유효한 RID 자체여서는 안 된다.
+
+2026-11-17 Get Media Set 명세에서 이전 수집본(2026-10)의 `TILED_RASTER` 자리에 `TILED_FORMAT`이 들어갔고 나머지 열한 값은 같다. 명세에 이름 변경이나 별칭에 대한 설명은 없으므로 두 값이 같은 schema인지, 기존 Media Set이 어느 값을 반환하는지는 확인하지 못했다. `mediaSchema`를 고정 enum으로 파싱하는 클라이언트는 모르는 값을 오류로 끝내지 않고 미지원으로 분류하도록 점검한다(설계 제안). 실제 호출은 시험하지 않았다.
 
 ## 기존 Media Set에 쓰기
 
