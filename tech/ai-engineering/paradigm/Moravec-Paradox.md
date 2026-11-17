@@ -1,0 +1,78 @@
+---
+tags: [ai, paradigm, robotics, career, automation]
+status: done
+category: "AI엔지니어링(AIEngineering)"
+aliases: ["Moravec's Paradox", "모라벡의 역설", "인간과 AI의 역량 비대칭"]
+---
+
+# 모라벡의 역설 — AI에 쉬운 일과 어려운 일의 비대칭
+
+> 한 줄 요약: 사람에게 어려운 추론, 지능 검사와 게임은 기계에 비교적 쉽고, 사람에게 쉬운 지각과 움직임은 어렵다는 1980년대의 관찰이다. 어떤 일이 먼저 자동화될지 가늠하는 출발점으로 쓰이지만 예측력에 대한 비판이 있고, 실제 대체 여부는 능력 외에 비용, 책임과 로봇 기술의 진전이 함께 정한다.
+
+## 정의
+
+Hans Moravec은 1988년에 컴퓨터가 지능 검사나 체커에서 성인 수준의 성능을 내게 하기는 비교적 쉽지만, 지각과 이동에서 한 살 아이의 능력을 주기는 어렵거나 불가능하다고 썼다. 1980년대에 Moravec, Rodney Brooks, Marvin Minsky 등이 같은 관찰을 내놓았고, Steven Pinker는 1994년에 이를 어려운 문제는 쉽고 쉬운 문제는 어렵다는 말로 요약했다(Wikipedia가 옮긴 인용 기준, 원저는 열람하지 못했다).
+
+## 설명: 능력이 다듬어진 시간
+
+Moravec이 든 설명은 진화다. 감각과 운동을 맡는 뇌 영역에는 세계에서 살아남는 법에 대한 아주 긴 시간의 경험이 담겨 있고, 의식적인 추론은 그 위에 얹힌 얇은 층이다. 추상적 사고는 길어야 10만 년쯤 된 새 기술이다. 오래 다듬어진 능력은 무의식적으로 돌아가서 쉬워 보이지만 기계로 다시 만들기는 어렵고, 사람이 애써야 하는 능력은 그 자체로는 그렇게 어렵지 않을 수 있다.
+
+이것은 가능한 설명 하나이며 검증된 법칙이 아니다. 얼굴 알아보기, 공간에서 움직이기, 공 잡기가 오래 진화한 능력의 예로, 수학, 논리와 게임이 최근에 생긴 능력의 예로 꼽힌다(Wikipedia의 정리). 앞쪽이 기계에 어렵다는 평가는 관찰이 나온 1980년대 기준이다.
+
+## 일에 적용하기
+
+역설을 일에 옮기면 디지털 입력과 출력으로 끝나는 논리 작업과 물리 환경을 거치는 작업을 나누게 된다. 아래 구분과 IT 인프라 예는 IT 업계 현업자 한 명(본인 표현으로 주니어)의 2026-11 공개 견해를 정리한 것이며 비용이나 인력을 측정한 자료가 아니다.
+
+| 구분 | 논리 계층의 작업 | 물리 계층의 작업 |
+|---|---|---|
+| 예 | 코드, 스크립트, 정형화된 설정, 시험 문제 풀이 | 장비 운반, 케이블 교체, 두 구간 사이의 물리 장애 확인 |
+| 환경 | 형식이 정해진 디지털 환경 | 돌발 변수가 많은 비정형 환경 |
+| 확장 방식(왼쪽은 현업자의 견해, 오른쪽은 이 문서의 추론) | 주로 연산 자원을 늘린다 | 로봇이나 사람의 수와 숙련을 늘린다 |
+
+IT 인프라 운영이 한 예다. 광케이블과 UTP가 빽빽한 곳에서 이상이 있는 케이블을 찾아 바꾸는 일은 사람에게는 평범하지만 로봇에 맡기면 지금은 사람보다 비싸다는 것이 이 견해의 요점이다. 네트워크의 공격, 병목과 장애 구간을 찾아 주는 AI 기반 솔루션은 논리 계층 위에서 돌고, 물리 구간의 장애를 현장에서 확인하고 고치는 일은 따로 남는다. 케이블 예는 로봇도 할 수 있지만 지금은 비싸다는 경제성 판단이다. 같은 견해는 현장 숙련을 AI가 따라갈 수 없다고도 단정했는데 근거는 제시되지 않았고 이 문서는 그 단정을 채택하지 않는다. 비용을 비교한 자료는 확인하지 못했다. 힘들고 정보가 적어 진입하는 사람이 적다는 점이 해자가 된다는 것도 같은 견해다.
+
+수요 쪽 자료를 볼 때는 무엇을 말하는지 구분한다.
+
+- Uptime Institute의 2025년 세계 데이터센터 조사(2025-04~05, 800명 넘는 소유자와 운영자 응답)에서 운영자의 3분의 2 가까이가 직원 유지나 자격을 갖춘 지원자 확보, 또는 둘 다에 어려움이 있다고 답했다. 보도자료에는 현장 물리 작업 인력을 따로 나눈 수치가 없고(조사 보고서 본문은 열람하지 못했다), 같은 보도자료에서 Uptime의 연구 책임자는 경력 초기보다 시니어 인력의 채용과 유지가 어렵다는 운영자가 처음으로 더 많아졌다고 말했다. 인력난의 자료이며 임금이나 대체 불가능성의 자료가 아니다.
+- Nvidia의 Jensen Huang은 2025-10에 보도된 Channel 4 News 인터뷰에서 전기 기술자, 배관공과 목수가 수십만 명 필요하고 숙련 기능 직종이 호황을 맞을 것이라고 말했다. 근거는 AI 데이터센터(발언의 표현은 factories)를 짓는 수요다. 건설 수요가 는다는 주장이지 그 직업이 AI에 대체되지 않는다는 주장이 아니므로 둘을 섞어 인용하지 않는다.
+
+## 한계와 반론
+
+- **시점이 있는 관찰이다**: 역설은 1980년대의 관찰이고 물리 작업의 난도가 고정돼 있다는 뜻이 아니다. 로봇 정책 학습의 진전은 [[Robot-Policy-Training-Pipeline|로봇 정책 학습 파이프라인]]과 [[Physical-AI-and-Liquid-Control|피지컬 AI와 리퀴드 제어]]에서 본다. 물리 현장의 대체까지 최소 10년이 남았다는 말은 개인의 추정이다.
+- **관찰 자체와 예측력에 대한 비판이 있다**: Allen Newell은 1983년에 이 생각을 신화라고 비판했고, Arvind Narayanan은 이 역설을 어떤 문제가 AI에 쉽거나 어려울지 예측하는 근거가 아니라 AI 연구 공동체가 무엇을 연구할 가치가 있다고 여기는지에 대한 진술로 읽는다(Wikipedia가 옮긴 인용 기준). 직무가 자동화되는 순서를 이 역설만으로 정하지 않는다.
+- **환경을 바꾸면 작업이 줄 수 있다**: 로봇이 사람 손을 흉내 내지 않아도, 데이터센터를 모듈 단위로 교체하도록 설계하면 사람이 하던 비정형 작업 자체가 줄 수 있다. 같은 현업자가 든 경로이며 실제 도입 사례는 확인하지 못했다.
+- **현장직의 수요도 자동화가 제한할 수 있다**: 직무 이름만으로 안전성을 판단하지 않는다는 점은 [[IT-Downturn-Career-Strategy-Market-Shift#직무 전환은 과업 노출도와 진입 조건을 함께 본다|직무 전환의 과업 노출도와 진입 조건]]에서 본다.
+- **논리 작업이 통째로 넘어가지도 않는다**: 넘어가는 단위를 직무보다 과업으로 보고 검증과 책임이 사람에게 남는다고 보는 논의는 [[Developer-Role-AI-Era|AI 시대 개발자 역할]]과 [[PLC-Engineering-AI|AI 코드 생성과 PLC 엔지니어링]]에 있다.
+- **시험을 푸는 능력과 직무 수행은 다르다**: 시험은 직무의 일부를 표본으로 잰다. AI가 자격시험 문제에 답할 수 있다는 사실만으로 그 직군이 대체된다고 결론짓지 않는다(이 문서의 해석).
+- **전망 인용은 기준을 확인한다**: 특이점이 2029년에 온다는 식의 인용이 있지만 Kurzweil의 2029년은 AGI 전망이고 특이점 전망은 2045년이다. 두 시점의 차이는 [[AI-Forecasts-and-Human-Augmentation|AI 전망과 인간 능력 확장]]에 있다.
+
+## 자격, 책임과 경험
+
+AI의 출력으로 결정하더라도 마지막 책임은 사람이 진다는 것이 같은 현업자의 견해다. 이 견해를 따르면 자격증은 지식의 증명이 약해져도 책임을 맡을 수 있는 공식 자격으로는 남을 수 있다. 다만 시험이 부정행위에 뚫리면 그 자격의 신호 가치도 함께 떨어진다. 이 구조는 [[Signaling-Screening#시험 부정행위와 확인 비용|시험 부정행위와 확인 비용]]에서 다룬다.
+
+누구나 같은 답을 얻는 획일화된 지식의 값은 내려가고, 사람마다 다르게 쌓이는 경험과 관점은 복제하기 어렵다는 견해도 같은 맥락이다. [[First-Hand-Experience-AI-Era|AI 시대의 직접 경험기와 작성자 신뢰]]가 다룬다.
+
+## 점검 질문
+
+- 내 업무에서 디지털 입력과 출력으로 끝나는 부분과 물리 환경이나 사람을 직접 거치는 부분은 각각 무엇인가.
+- 물리 작업이라면 환경을 정형화하거나 모듈로 바꿔 작업 자체를 줄일 수 있는가.
+- 그 일에 로봇을 쓰는 비용이 사람의 비용보다 낮아지는 조건은 무엇인가.
+- 결과에 대한 책임을 누가 지고, 그 책임에 법정 자격이 필요한가.
+
+## 출처
+
+- [Moravec's paradox — Wikipedia](https://en.wikipedia.org/wiki/Moravec%27s_paradox) — 2026-11-17 Moravec의 1988년 인용문과 진화 설명, Pinker의 요약 확인
+- [Uptime's 15th Annual Global Data Center Survey Results Show Both Commitment and Hesitancy… — Uptime Institute(Silicon UK의 Business Wire 재게시)](https://www.silicon.co.uk/press-release/uptimes-15th-annual-global-data-center-survey-results-show-both-commitment-and-hesitancy-as-industry-plans-for-wider-ai-usage-climate-change-reporting-and-the-nvidia-revolution-to-come) — 2025-07-30 보도자료. 인력 유지와 채용의 어려움, 조사 기간과 응답 수. 문항 원문과 정확한 비율은 보도자료에 없다
+- [Job losses might be likely due to AI but Nvidia's CEO says the booming billion-dollar industry will always need more plumbers and electricians — PC Gamer](https://www.pcgamer.com/hardware/job-losses-might-be-likely-due-to-ai-but-nvidias-ceo-says-the-booming-billion-dollar-industry-will-always-need-more-plumbers-and-electricians) — 2025-10-02 보도. Channel 4 News 인터뷰 발언. 인터뷰 영상은 확인하지 못함
+- [Nvidia CEO Says These Two Trade Jobs Will Be Crucial To The AI Boom — SlashGear](https://www.slashgear.com/1987555/nvidia-ceo-ai-trade-jobs-electrians-plumbers/) — 2025-10-06 보도. 발언이 AI 데이터센터 건설에 대한 질문의 답이었다는 맥락
+- [세무사 AI 부정행위 사태를 보며 깨달은 인간의 유일한 '살길' — minux](https://www.youtube.com/watch?v=25FrGvvwhCs) — 2026-11-16 영상, 자막(ko) 전사 확인(화면 미확인). 인프라 현장의 예와 견해
+
+## 관련 문서
+
+- [[Robot-Policy-Training-Pipeline|로봇 정책 학습 파이프라인]]
+- [[Physical-AI-and-Liquid-Control|피지컬 AI와 리퀴드 제어]]
+- [[World-Models|월드 모델]]
+- [[AI-Forecasts-and-Human-Augmentation|AI 전망과 인간 능력 확장]]
+- [[Developer-Role-AI-Era|AI 시대 개발자 역할]]
+- [[PLC-Engineering-AI|AI 코드 생성과 PLC 엔지니어링]]
+- [[Signaling-Screening|신호와 선별]]

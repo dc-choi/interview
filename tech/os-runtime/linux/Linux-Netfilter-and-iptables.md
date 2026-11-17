@@ -60,7 +60,7 @@ hook은 호출 시점이고, table은 목적별로 chain을 묶은 단위다. ch
 | SNAT | 출발지를 `--to-source`로 지정한 주소로 변경 | nat의 POSTROUTING, INPUT |
 | MASQUERADE | 출발지를 나가는 interface의 주소로 변경하고 interface가 내려가면 연결을 잊음 | nat의 POSTROUTING. 동적 IP 환경용이고 고정 IP면 SNAT |
 
-- DROP은 상대가 응답 없이 timeout까지 기다리게 하고, REJECT는 즉시 실패를 알려 진단이 빠르다. 외부 노출면과 내부 운영의 진단 편의를 함께 보고 고른다.
+- DROP은 상대가 응답 없이 timeout까지 기다리게 하고, REJECT는 대개 즉시 실패를 알려 진단이 빠르다(돌려주는 ICMP 유형에 따른 차이는 [[OSI-7-Layer#계층으로 장애 위치를 좁힌다|계층으로 장애 위치를 좁힌다]]). 외부 노출면과 내부 운영의 진단 편의를 함께 보고 고른다.
 - conntrack 상태가 INVALID인 packet에는 REJECT를 무분별하게 쓰지 말고 DROP한다(iptables-extensions의 경고).
 
 ## conntrack과 stateful 규칙

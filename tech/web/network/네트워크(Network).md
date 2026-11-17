@@ -21,7 +21,7 @@ OSI 7계층과 캡슐화, IP 헤더, 스위치와 라우팅, TLS, 패킷 캡처,
 - [x] [[SS7-Signaling|SS7 공통선 신호방식]] — 회선별 신호(R2)와 공통선 신호, 신호점과 STP, 신호 전달 방식, MTP, SCCP, TC(TCAP) 기능 블록, 로밍과 문자 메시지의 MAP
 - [x] [[PCM-Voice-Coding|전화 음성의 PCM 부호화와 G.711]] — 표본화, 양자화, 부호화와 64 kbit/s, A-law와 μ-law, 국가 간 경로 규칙, TDM과 RTP의 PCMU/PCMA, DPCM과 ADPCM
 - [x] [[HTTPS-TLS|HTTPS / TLS Handshake]]
-- [x] [[OSI-7-Layer|OSI 7계층 (osi-layers/ 서브폴더) — 계층별 상세 (L1/L2 MAC과 프레임, L2 스위칭, L3 IP와 라우팅, ARP, ICMP, L4 TCP/UDP, 소켓 식별과 역다중화, 메시지 경계와 프레이밍, L5/6/7), TCP/IP 4계층 대응과 역사, Internet vs Ethernet]]
+- [x] [[OSI-7-Layer|OSI 7계층 (osi-layers/ 서브폴더) — 계층별 상세 (L1/L2 MAC과 프레임, L2 스위칭, L3 IP와 라우팅, ARP, ICMP, L4 TCP/UDP, 소켓 식별과 역다중화, 메시지 경계와 프레이밍, L5/6/7), TCP/IP 4계층 대응과 역사, Internet vs Ethernet, 오류 증상으로 장애 계층 좁히기]]
 - [x] [[Network-Encapsulation|캡슐화와 데이터 단위 (프로토콜과 계층, 라우터 홉의 재캡슐화, 소켓 스트림, 세그먼트, 패킷, 프레임, MTU/MSS, 단편화, DPI)]]
 - [x] [[Network-Layer|IP 주소의 범위 (공인, 사설, 루프백), CIDR와 라우팅]]
 - [x] [[IPv4-Subnetting|서브넷팅과 주소 관리 (비트 계산, 게이트웨이, /31 예외, VLAN과 브로드캐스트)]]
@@ -38,6 +38,7 @@ OSI 7계층과 캡슐화, IP 헤더, 스위치와 라우팅, TLS, 패킷 캡처,
 - [x] [[Application-Layer-Protocols|DHCP, DNS, SSH, FTP, SMTP, POP3, IMAP 프로토콜 지도 (DORA 주소 지정, SSH 공개키 서명 인증과 양자 내성 알고리즘, 화면 원격의 페어링, 메일 포트와 TLS, SMTP 수락과 배달 실패)]]
 - [x] [[Loopback-And-Localhost|Loopback, Localhost 동작 원리 (127.0.0.1, ::1, loopback NIC, 커널 내 처리, 디버깅)]]
 - [x] [[Browser-URL-Flow|브라우저 URL 입력 프로세스 (DNS→ARP→TCP/TLS→HTTP→렌더링, Core Web Vitals)]]
+- [x] [[Network-Failure-Cases|네트워크 장애 사례로 보는 기본 원리]] — 주소, 포트, TCP와 UDP, DNS의 네 그림, 2021년 Meta 장애와 2008년 YouTube 경로 탈취, 500마일 이메일의 타임아웃, 로컬 이름 해석의 공격 표면, 물리 계층 사례
 - [x] [[Packet-Capture-and-Wireshark|패킷 캡처와 Wireshark (libpcap/Npcap, dumpcap, dissector, promiscuous 모드, 캡처 필터와 디스플레이 필터, TCP 스트림 재조립, SPAN/TAP, TLS 복호화, 법적 범위)]]
 - [x] [[WiFi-Generations|Wi-Fi 세대와 연결 구간 진단 (변조와 QAM, CSMA/CA, Wi-Fi 5/6/6E/7/8과 802.11ac/ax/be/bn, 인증과 승인일 구분, ping과 traceroute 구간 진단, captive portal RFC, 개발 서버 사설 IP 접속)]]
 - [x] [[WiFi-Direct|Wi-Fi Direct (AP 없는 기기 간 연결, 탐색, provision discovery, 그룹 오너 intent 협상과 초대, WPS 프로비저닝, WPA2와 R2의 WPA3, Android P2P API 권한)]]
