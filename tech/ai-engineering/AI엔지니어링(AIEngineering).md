@@ -138,6 +138,7 @@ Software 3.0 패러다임, LLM과 에이전트, 하네스, 평가, 조직 전환
 - [x] [[MCP-Gateway-Architecture|MCP 게이트웨이]] — Uber의 발견, 활성화와 실행 권한 분리
 - [x] [[LLM-Decision-Models-Calibration-Cases|결정 모델 보정과 버전 변경]] — Qwen, Microsoft-Decision-1, Jev 1.14와 표현 안정성, 애매한 구간만 상위 모델로 넘기는 구성과 오답 분포
 - [x] [[Local-Inference-Deployment-Cases|로컬 추론 배포]] — Janas, Minions, MLX 분산 추론(JACCL, Muse Spark Open 2대와 4대 측정), Uzu, PS5LM, Saluki의 양자화와 도구 호출 평가, LFM2.5와 Muse Spark Open, Harbor 보도의 확인 수준
+- [x] [[Local-AI-Hardware-Lifecycle|로컬 AI 장비의 수명]] — 소프트웨어 지원, 모델 크기와 비용의 세 기한, 구형 GPU의 런타임 지원 종료, 사용 연수로 나눈 가격, 구매와 임대와 API 비교
 - [x] [[LLM-Inference-Serving-Engines|추론 서빙 엔진의 기능 경계]] — 엔진과 서비스 책임, DeepInfer 공개 범위, 배치 불변성과 결정적 샘플링, DSpark 가변 길이 검증, 구조화 출력 강제 경계, ggml 1.0의 판 정책, DGX Station 두 대의 텐서 병렬
 - [x] [[AI-Infrastructure-Language-Layers|AI 서비스 스택의 언어 계층]] — 꼬리 지연과 GC, data race 검사, PyO3와 C ABI 통합, pickle과 safetensors, GPU 커널 계층
 - [x] [[Agent-Model-Capability-Contracts|기억과 전문 영역 모델 평가]] — 전문 모델과 승인 경계, 카나나의 개인화 인터페이스와 발표 계획, Inkling 2 Small의 예산 안 자율 실험, Kimi K3.1 Pro의 추론 내용 반환 계약과 공개판 사이버 능력 조정, Hy4의 API 먼저 제공

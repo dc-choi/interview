@@ -23,6 +23,8 @@ aliases: ["AI Work Output and Employment", "AI 코드 생산과 제품 성과 �
 
 AI 사용률은 위 표의 어느 층위의 결과도 아니다([[AX-Transformation#문화와 시스템이 AI 효과를 좌우하는 조건|채택 신호와 KPI의 구분]]). McKinsey의 2025년 글로벌 설문(2025-06-25~07-29, 105개국 1,993명, 응답자 국가의 세계 GDP 비중으로 가중)에서 소속 조직이 최소 한 업무 기능에서 AI를 정기적으로 쓴다는 응답은 88%였다. 반면 전사 확산을 시작했다는 응답은 약 3분의 1, 전사 EBIT에 영향이 있다는 응답은 39%였다. 기업 수가 아니라 응답자 비율이며, 2025년에 사용의 정의를 도입에서 정기 사용으로 바꿨으므로 전년 수치(78%)와의 비교에는 정의 차이가 섞인다(2026-10-26 보고서 본문, Exhibit 1 각주와 조사 개요 대조).
 
+아낀 시간도 재작업을 빼고 본다. Workday가 2026-01-14 공개한 조사(Hanover Research가 2025년 11월 수행, 매출 1억 달러 이상 조직의 AI 사용자 3,200명)에서 AI로 아낀 시간의 약 40%는 결과물을 고치는 재작업에 쓰였고, 분명한 순이익을 일관되게 얻는다는 직원은 14%였다. 응답자의 85%는 주당 1~7시간을 아낀다고 답했고 조직의 89%는 역할의 절반 미만만 갱신했다. HR 소프트웨어 회사가 의뢰한 설문의 자기 보고이며 작업 시간을 실측한 값이 아니다(2026-11-17 보도자료 대조).
+
 ## 산출이 늘면 병목은 다음 단계로 옮겨 간다
 
 2026년 10~11월 공개된 사례들은 AI로 작성이나 결함 발견이 늘어난 뒤 어느 단계가 먼저 막혔는지 보여 준다. Anthropic의 세 사례는 해당 조직의 자체 보고이며 원자료는 공개되지 않았다. PostgreSQL 사례의 원인 분석은 커미터 한 명의 개인 회고이고, 되돌린 기능은 공개 릴리스 공지로 확인할 수 있다. Tano 사례는 엔지니어 한 명의 개인 에세이다. 구현이 싸질 때 병목이 결정과 승인 대역폭으로 옮겨 가는 원리는 [[Developer-Role-AI-Era#구현이 싸질 때 옮겨 가는 병목 — 결정과 승인 대역폭|결정과 승인 대역폭]]에서 다룬다.
@@ -177,6 +179,7 @@ Where is all the new, good software? 에세이는 공개 제품의 부족에 대
 - [PostgreSQL 19 Beta 4 Released! — PostgreSQL](https://www.postgresql.org/about/news/postgresql-19-beta-4-released-3386/) — 2026-09-24, 되돌린 기능 목록을 2026-10-27 대조
 - [How software engineering is changing: a tale of two eras — The Pragmatic Engineer, Neil Kakkar](https://newsletter.pragmaticengineer.com/p/how-software-engineering-is-changing) — 2026-11-03 에세이, 2026-11-09 PR 배수, 바뀐 운영 방식, 새 병목과 편집자의 단서 대조
 - 사용자 제공 GeekNews 알림 요약(2026-10-16~27): Anthropic 신규 기술직 채용의 주니어 비율과 에이전트 작업 시간, [Scion으로 Git 교체](https://news.hada.io/topic?id=35309), [Claude Code 팀의 코드 리뷰 방식](https://news.hada.io/topic?id=35495), [Postgres 19 출시 지연](https://news.hada.io/topic?id=35488). 위 원문으로 대조했다
+- [New Workday Research: Companies Are Leaving AI Gains on the Table — Workday Newsroom](https://newsroom.workday.com/2026-01-14-New-Workday-Research-Companies-Are-Leaving-AI-Gains-on-the-Table) — 2026-01-14 보도자료, 2026-11-17 재작업 비중, 순이익을 얻는 직원 비율, 절감 시간 분포, 역할 갱신 비율과 조사 개요 대조
 
 ## 관련 문서
 

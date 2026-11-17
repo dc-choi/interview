@@ -107,7 +107,7 @@ XP(Extreme Programming)의 spike solution에도 같은 구분이 있다. spike�
 
 연구진은 이 요인 분석을 하위 집단을 나눈 다중 비교에 필요한 통계적 검정력을 갖추지 못한, 감속 기제에 대한 추측성의 시사적 근거라고 밝히고, 개별 근거에 과도하게 기대지 말라고 강하게 경고했다. 검토 시간이 감속의 주원인이라거나 다른 팀에서도 검토가 구현보다 오래 걸린다는 결론으로 옮기지 않는다. 연구진은 품질 기준이 매우 높거나 문서화, 테스트 범위, 린트와 포맷처럼 사람이 익히는 데 오래 걸리는 암묵적 요구가 많은 환경에서는 AI의 능력이 상대적으로 낮게 나타날 수 있다고 해석했고, 이 결과가 오래됐으며 현재 AI 모델이 오픈소스 개발 생산성에 주는 영향을 더는 반영하지 않는다고 본다는 안내를 붙였다(2026-10-19 METR 페이지 기준). 후속 데이터의 한계는 [[AI-Leverage-Small-Teams|AI 시대 작은 팀의 구조적 레버리지]]가 다룬다.
 
-설문에서도 같은 방향의 부담이 보고된다. 2025 Stack Overflow 개발자 설문에서 AI 도구를 쓰며 겪은 문제나 불만을 고르는 복수 선택 문항의 응답자 31,476명 중 66%는 거의 맞지만 완전히 맞지는 않는 해법을, 45%는 AI가 생성한 코드의 디버깅에 시간이 더 든다는 점을 골랐다. 선택지에는 AI 도구를 정기적으로 쓰지 않는다(23.5%)와 문제를 겪지 않았다(4%)도 있었다(2026-10-19 공식 결과 확인). 겪어 본 문제를 고른 자기보고이지 오류율이나 소요 시간을 잰 값이 아니며, 응답 집단의 한계는 [[Software-Productivity-Measurement#AI 도구 설문을 생산성 근거로 읽는 법|생산성 측정의 설문 해석]]을 따른다. 거의 맞는 코드를 빠른 출발점으로 쓰려면 어디가 틀렸는지 찾아낼 수 있어야 하며, 그 판별 능력의 형성은 [[Expertise-Formation-AI|AI 시대 전문성 형성]]이 다룬다.
+설문에서도 같은 방향의 부담이 보고된다. 2025 Stack Overflow 개발자 설문에서 AI 도구를 쓰며 겪은 문제나 불만을 고르는 복수 선택 문항의 응답자 31,476명 중 66%는 거의 맞지만 완전히 맞지는 않는 해법을, 45%는 AI가 생성한 코드의 디버깅에 시간이 더 든다는 점을 골랐다. 선택지에는 AI 도구를 정기적으로 쓰지 않는다(23.5%)와 문제를 겪지 않았다(4%)도 있었다(2026-10-19 공식 결과 확인). 이 66%와 45%는 겪어 본 문제를 고른 자기보고이지 오류율이나 소요 시간을 잰 값이 아니며, 응답 집단의 한계는 [[Software-Productivity-Measurement#AI 도구 설문을 생산성 근거로 읽는 법|생산성 측정의 설문 해석]]을 따른다. 같은 설문에서 응답자의 84%가 AI 도구를 쓰거나 쓸 계획이라고 답했지만 출력의 정확성을 불신하는 응답(46%)이 신뢰하는 응답(33%)보다 많았고 매우 신뢰한다는 응답은 3%였다. 경력 10년 이상에서는 매우 신뢰가 2.6%로 가장 낮고 매우 불신이 20%로 가장 높았다(2026-11-17 확인, 공식 요약문의 값이며 같은 페이지의 집계 데이터로는 2.5%와 20.7%). 신뢰 문항도 자기보고 평정이다. Google이 새 코드의 75%를 AI가 생성하고 사람 개발자가 검토한다고 밝혔다는 보도도 생성 비중과 함께 사람의 검토를 조건으로 적는다. 검토에서 반려되거나 다시 쓰인 비율은 보도에 없다(2026-04-23 The Decoder 기준, 회사 원문 미대조). 거의 맞는 코드를 빠른 출발점으로 쓰려면 어디가 틀렸는지 찾아낼 수 있어야 하며, 그 판별 능력의 형성은 [[Expertise-Formation-AI|AI 시대 전문성 형성]]이 다룬다.
 
 ## 공유 자원의 관리자에게 넘어가는 검증 비용
 
@@ -158,6 +158,7 @@ XP(Extreme Programming)의 spike solution에도 같은 구분이 있다. spike�
 - [Measuring the Impact of Early-2025 AI on Experienced Open-Source Developer Productivity — arXiv, Becker et al.](https://arxiv.org/abs/2507.09089)
 - [Measuring the Impact of Early-2025 AI on Experienced Open-Source Developer Productivity — METR](https://metr.org/blog/2025-07-10-early-2025-ai-experienced-os-dev-study/)
 - [2025 Developer Survey: AI — Stack Overflow](https://survey.stackoverflow.co/2025/ai)
+- [Google says 75 percent of its new code is now written by AI — The Decoder](https://the-decoder.com/google-says-75-percent-of-its-new-code-is-now-written-by-ai/) — 2026-04-23 보도, 2026-11-17 기사 요약 문장으로 수치와 사람의 검토 조건 대조. 2차 보도
 - [요즘 컴퓨터 공학과 전공자들이 상담할때 많이 말하는것 — YouTube, 팀노바](https://www.youtube.com/watch?v=ELjGcMdLyv8) — 2026-10-16, 실무에서 검토 시간이 늘었다는 언급을 다룬 계기. 코딩 2일 대 검토 3일 같은 비율, 리눅스 코드 줄 수와 생성 비용 추정은 검증하지 않아 쓰지 않음
 - [Spike Solution — c2 wiki](https://c2.com/xp/SpikeSolution.html)
 - [The Mythical Man-Month: Essays on Software Engineering, Anniversary Edition — Addison-Wesley, Frederick P. Brooks](https://ptgmedia.pearsoncmg.com/images/9780201835953/samplepages/0201835959.pdf) — 출판사 공개 견본. 목차와 20주년판 서문만 확인했고 11장과 19장 본문은 대조하지 않음
