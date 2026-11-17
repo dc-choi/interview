@@ -22,6 +22,7 @@ aliases: ["Strength Training Basics", "짧은 근력운동의 근거", "주간 �
 
 - 근비대 자극은 주간 합계로 쌓인다. 주 2회, 부위당 1종목 3~4세트면 부위당 주 6~8세트가 된다. 최대 근비대 구간(주 10세트 이상)보다는 낮지만 5~9세트 구간에서도 의미 있는 증가가 관찰됐다.
 - 건강 기준으로는 WHO 성인 지침이 주요 근육군 전체를 쓰는 중간 강도 이상의 근력운동을 주 2일 이상 권고한다. 짧은 전신 루틴으로도 이 기준을 채울 수 있다.
+- WHO fact sheet는 성인의 권고 수준을 주 150분 이상의 중간 강도 신체 활동으로 적고, 걷기를 누구나 할 수 있는 흔한 방법 가운데 하나로 든다. 성인의 신체 활동이 우울과 불안 증상을 줄인다고도 적는다(2026-11-17 확인). 이 기준을 근력운동 권고와 따로 채운다는 점은 WHO 2020 지침 기준이며 이번에 다시 대조하지 않았다. 스트레스를 받을 때 10분 걷기 한 번이 불안을 낮춘다는 식의 구체적인 효과는 대조하지 않았다.
 - 누적 볼륨을 키우는 것은 세션 길이보다 지속성이다. 자주 끊기는 긴 루틴은 매주 지키는 짧은 루틴보다 주간 볼륨이 적어지기 쉽다.
 
 ## 예시: 주 2회 전신 루틴
@@ -63,13 +64,15 @@ ACSM의 2026년 건강한 성인 지침은 파워 훈련에서 1RM의 30~70% 부
 
 ## 나이, 수면과 영양
 
-- **나이** — 근육량과 근력은 청년기에 정점에 이르고 중년에 유지되다가 나이가 들며 줄어든다. 유럽 근감소증 합의문(EWGSOP2)은 50세 이후 다리 근육량이 연 1~2%, 근력이 연 1.5~5% 줄었다는 보고를 인용하고, 영양과 운동이 이 과정을 늦추거나 되돌릴 수 있다고 본다. 목표는 젊을 때 근육을 최대한 만들고 중년에 유지하는 것이다.
+- **나이** — 근육량과 근력은 청년기에 정점에 이르고 중년에 유지되다가 나이가 들며 줄어든다. 유럽 근감소증 합의문(EWGSOP2)은 50세 이후 다리 근육량이 연 1~2%, 근력이 연 1.5~5% 줄었다는 보고를 인용하고, 영양과 운동이 이 과정을 늦추거나 되돌릴 수 있다고 본다. 목표는 젊을 때 근육을 최대한 만들고 중년에 유지하는 것이다. 30대부터 근감소증이 시작된다는 대중적인 표현은 이 서술보다 시점이 이르다(합의문의 정점과 유지 시기 문구는 2026-11-17에 다시 대조하지 못했다). 근육량이 줄기 시작하는 것과 근감소증 진단은 같은 말이 아니며, 30대의 감소율은 이 문서에서 대조하지 않았다.
 - **단백질** — 근력운동과 단백질 보충의 메타분석(49개 연구)은 하루 총섭취량 약 1.62g/kg에서 제지방량 증가 효과의 변곡점을 추정했다. 95% 신뢰구간은 1.03~2.20g/kg이며, 건강하고 에너지 섭취를 제한하지 않는 성인이 대상이었다. 약 1.6g/kg은 참고값이지 모든 사람의 절대 상한이나 감량기 처방이 아니다. 보충제와 식사를 합한 총량으로 계산한다.
 - **수면** — 회복과 호르몬 환경의 바탕이다. 건강한 젊은 남성 10명을 대상으로 한 연구에서 일주일간 하루 5시간 수면은 낮 시간 테스토스테론을 10~15% 낮췄다. 표본이 작아 일반화에는 한계가 있지만 수면 부족을 운동으로 메울 수 없다는 근거로는 충분하다.
 
 ### 수면 환경과 일정
 
 일반 성인은 대체로 하루 7~9시간의 수면이 필요하다. 취침과 기상 시각을 모두 일정하게 유지하고 침실을 어둡고 조용하며 서늘하게 만든다. 일정한 취침이 일정한 기상보다 우월하다거나 알람 없이 깨는 것이 항상 낫다는 결론은 여기서 대조한 지침으로 확인되지 않았다. [NIH 수면 안내](https://health.nih.gov/health-topics-a-z/insomnia), [NHLBI 수면 습관](https://www.nhlbi.nih.gov/health/sleep-deprivation/healthy-sleep-habits)
+
+NHLBI는 잠들기 전 한 시간을 조용히 보내며 격한 운동과 TV, 컴퓨터 화면 같은 밝은 인공 조명을 피하고, 취침 몇 시간 안에는 과식을 피하라고 안내한다(가벼운 간식은 괜찮다). 카페인의 효과는 최대 8시간 이어질 수 있어 늦은 오후의 커피 한 잔도 잠드는 것을 방해할 수 있다(2026-11-17 확인). NHLBI는 끊는 시각을 따로 정하지 않지만, 효과가 최대 8시간 간다는 설명에 비추면 취침 한 시간 전부터 카페인을 끊는다는 자기계발 콘텐츠의 기준은 너무 늦다(이 문서의 해석). 잠들기 3~5시간 전에 마지막 식사를 끝내고 기상 뒤 1~2시간 안에 첫 끼를 먹으라는 식사 시각 조언은 자기계발 콘텐츠의 주장이며, 구체적인 시간 범위와 폭식 감소 같은 효과는 대조하지 않았다.
 
 잠들기 전 다음 날 할 일과 걱정을 적어 두는 방법은 이완을 돕기 위한 실천 후보로 둘 수 있다. 효과를 보장하는 치료법으로 취급하지 않는다.
 
@@ -112,14 +115,18 @@ ACSM의 2026년 건강한 성인 지침은 파워 훈련에서 1RM의 30~70% 부
 
 화면에만 제시된 운동표와 식단표는 확인하지 못했다. 자막의 운동 예시를 완성된 프로그램으로 복원하지 않았다. [연결 운동계획](https://zero2kombat.com/workout-plans/)은 본문을 확보하지 못했으므로 세부 종목, 세트와 휴식시간은 후속 확인 대상으로 남긴다.
 
+2026-11-17 보강은 나이 항목의 대중적 표현, 수면 안내와 걷기 불릿에 한정했고 NHLBI 안내와 WHO fact sheet만 대조했다. EWGSOP2 원문과 WHO 2020 지침은 다시 열지 않았다.
+
 ## 출처
 
 - [YouTube, Zero2Kombat, How Fighters Actually Build Muscle](https://www.youtube.com/watch?v=C3KUxm6jFNE)
+- [YouTube, 햄찌 교수, 30대에 안 바꾸면 40대에 진짜 후회하는 것들 | 시사 애니메이션](https://www.youtube.com/watch?v=5EQkjp9rOas) — 2025-12-24 업로드, 2026-11-17 음성 인식 전사 전체 확인. 30대의 근감소, 식사 시각, 취침 전 카페인과 걷기 주장의 출처이며 근거를 제시하지 않는다
 - [ACSM Unveils Landmark 2026 Resistance Training Guidelines — ACSM (2026)](https://acsm.org/resistance-training-guidelines-update-2026/)
 - [Insomnia — NIH](https://health.nih.gov/health-topics-a-z/insomnia)
 - [Sleep Deprivation and Deficiency: Healthy Sleep Habits — NHLBI](https://www.nhlbi.nih.gov/health/sleep-deprivation/healthy-sleep-habits)
 - [Multivitamin/mineral Supplements — NIH Office of Dietary Supplements](https://ods.od.nih.gov/factsheets/MVMS-Consumer/)
 - [WHO, Guidelines on physical activity and sedentary behaviour (2020)](https://www.who.int/publications/i/item/9789240015128)
+- [WHO, Physical activity (fact sheet)](https://www.who.int/news-room/fact-sheets/detail/physical-activity)
 - [Dose-response relationship between weekly resistance training volume and increases in muscle mass — Journal of Sports Sciences, Schoenfeld, Ogborn, Krieger (2017)](https://doi.org/10.1080/02640414.2016.1210197)
 - [Loading Recommendations for Muscle Strength, Hypertrophy, and Local Endurance: A Re-Examination of the Repetition Continuum — Sports, Schoenfeld 외 (2021)](https://doi.org/10.3390/sports9020032)
 - [Sarcopenia: revised European consensus on definition and diagnosis — Age and Ageing, Cruz-Jentoft 외 (2019)](https://doi.org/10.1093/ageing/afy169)

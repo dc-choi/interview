@@ -65,6 +65,8 @@ Google SRE의 toil은 단순히 싫거나 번거로운 일이 아니다. 운영�
 - 타인의 부탁을 단서로 보는 근거는 자기 평가와 타인 평가의 비대칭이다. Vazire(2010)의 SOKA 모델은 불안처럼 겉으로 잘 드러나지 않는 특성은 본인이, 지적 능력처럼 평가가 강하게 걸리는 특성은 타인이 더 정확히 판단한다고 본다. 대학 보도자료와 2차 요약으로 확인했고 표본 크기와 특성별 결과는 논문 원문으로 대조하지 못했다([[Self-Knowledge-Through-Others|타인을 통한 자기 인식]]).
 - 유명인의 출발점에 단서를 대 보는 설명은 결과를 알고 난 뒤의 해석이다. 성공 경로의 근거로 쓰지 않는다.
 - 반복해 받는 부탁이 강점의 단서라는 것과 그 부탁을 계속 떠맡아야 한다는 것은 다르다. 위의 반복 잡무 구분을 함께 본다.
+- 반복되는 짜증도 단서 후보로 볼 수 있다(같은 채널의 다른 영상 제안). 실행 없이 말만 도는 회의에 유독 화가 나면 방향과 속도 있는 실행을, 검토 없이 일단 움직이는 것에 화가 나면 위험 검토와 더 나은 의사결정을 중요하게 여긴다는 신호일 수 있다. 짜증은 중요하게 여기는 것을 가리킬 수 있을 뿐 그 일을 잘한다는 증거는 아니다(이 문서의 해석). 거슬리는 지점 하나를 자기 방식으로 한 번 고쳐 보라는 것은 같은 영상의 제안이고, 그 결과와 주변 반응으로 확인하자는 것은 이 문서의 제안이다. 피로와 과부하에서 온 짜증일 수도 있으므로 업무 요구와 회복 상태를 따로 본다([[Burnout-Sustainable-Pace|번아웃과 지속 가능한 페이스]]). 피로와 구분하는 기준도 이 문서의 제안이다.
+- 부러움은 원하는 방향의 단서 후보로 볼 수 있다(한 자기계발 콘텐츠의 제안). 강점의 단서는 아니다(이 문서의 구분). 대단하다고 느끼는 것과 부러운 것은 다르다. 부러웠던 장면에서 정확히 무엇이 부러웠는지(수입, 시간의 자유, 회사 밖의 인정)를 나눠 적고, 하고 싶었지만 무서워서 미뤄 온 일의 목록과 겹치는 것을 원하는 방향의 후보로 삼는다. van de Ven, Zeelenberg와 Pieters(2009)는 부러움을 자기 위치를 끌어올리려는 동기로 이어지는 유형과 상대를 끌어내리려는 동기로 이어지는 유형으로 나누고 그 구분을 경험적으로 뒷받침했다(초록 기준). 감탄과 부러움을 나누는 위 구분과는 다른 축이며, 부러움을 원하는 방향의 단서로 쓰는 방법을 검증한 연구는 아니다. 원하는 것을 활동 뒤의 욕구로 나눠 적는 방법은 [[Intrinsic-vs-Extrinsic-Motivation#좋아하는 이유를 활동이 아닌 욕구에서 찾는다|좋아하는 이유와 욕구]]에 있다. 두려운 일에 기회가 숨어 있다는 말에는 근거가 제시되지 않았으므로 작은 시도로 확인한다(이 문서의 해석).
 
 적용: 하루에 한 일 하나를 골라 네 질문에 답하고, 비슷한 부탁이 올 때마다 한 줄씩 적어 둔다. 쌓인 기록이 이력서와 면접에서 강점을 설명하는 근거가 된다([[Self-Analysis|자기 분석]]).
 
@@ -82,6 +84,9 @@ Google SRE의 toil은 단순히 싫거나 번거로운 일이 아니다. 운영�
 - 강점 기반 성장과 강점찾기 — 개인 블로그 회고
 - [재능이라는 허상 — 곽지욱](https://www.gwagjiug.com/blog/illusion_of_talent)
 - [요즘 평균 직장인의 재능, 본인만 모릅니다 — YouTube, 브랜디액션](https://www.youtube.com/watch?v=lP6Lt7Wo58k) — 2026-11-09 업로드, 2026-11-16 사람이 단 자막 전체 확인. 네 단서의 출처. 채널이 자체 진단을 함께 안내하며(유료 여부 미확인), 영상이 인용한 직장인 설문 수치는 원 조사를 찾지 못해 넣지 않음
+- [직업, 적성, 진로 찾는법? 이 영상 하나만 보셔도 됩니다. (평생직업 1,2편 몰아보기) — YouTube, 브랜디액션](https://www.youtube.com/watch?v=WF_3MMlOmJA) — 2026-06-27 업로드, 음성 인식 전사문 기준, 13:54~18:18의 짜증 단서와 한 번 고쳐 보라는 제안. 설명란에서 외부 사이트의 진단을 안내한다(운영 주체와 유료 여부 미확인)
+- [Leveling up and down: The experiences of benign and malicious envy — Emotion, van de Ven, Zeelenberg, Pieters (2009)](https://doi.org/10.1037/a0015669) — 9(3), 419-429. 2026-11-17 OpenAlex에 실린 서지와 초록으로 두 유형의 구분만 확인, 본문 미열람
+- ["새해까지 기다리지 마세요" 남은 90일로 인생 리셋하는 방법 (뻔한 것 아님) — YouTube, 오너스 OWNOS](https://www.youtube.com/watch?v=nTunuxNVGNw) — 2026-10-04 업로드, 2026-11-17 음성 인식 전사 전체 확인. 부러움과 두려움을 나란히 적는 제안의 출처
 - [Who knows what about a person? The self-other knowledge asymmetry (SOKA) model — Journal of Personality and Social Psychology, Simine Vazire (2010)](https://pubmed.ncbi.nlm.nih.gov/20085401/) — 98(2), 281-300. 초록 일부와 서지만 확인
 - [Others may know us better than we know ourselves, study finds — Washington University in St. Louis](https://source.washu.edu/2010/03/others-may-know-us-better-than-we-know-ourselves-study-finds/) — 2010-03 대학 보도자료, 검색 요약으로 확인
 - [Eliminating Toil — Google SRE](https://sre.google/sre-book/eliminating-toil/) — 번거로운 일과 지속적인 가치가 없는 반복 운영 작업의 구분

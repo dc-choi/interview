@@ -50,7 +50,34 @@ CISSP의 Associate 경로는 필요한 경력을 쌓을 기간을 최대 6년으
 3. **시험 범위와 비교한다.** 필요한 지식 중 자격 공부가 채워 주는 부분과 별도 실습이 필요한 부분을 나눈다.
 4. **조건과 비용을 확인한다.** 응시 가능 시점, 인정 경력, 준비 시간과 유지 의무를 비교한다. 자격 이름을 많이 모으는 것과 원하는 업무를 수행할 수 있는지는 별도로 평가한다.
 
-보안 인력 부족 수치, 클라우드와 AI 보안의 채용 증가율, 특정 기술이 업계 전체의 필수 조건이라는 주장은 이 문서에서 검증하지 않았다. 분야 전망을 개인의 채용 확률이나 확정 진로로 바꾸지 않는다.
+보안 인력 부족 규모의 추정치, 클라우드와 AI 보안의 채용 증가율, 특정 기술이 업계 전체의 필수 조건이라는 주장은 이 문서에서 검증하지 않았다. 분야 전망을 개인의 채용 확률이나 확정 진로로 바꾸지 않는다.
+
+## 신입과 주니어 채용에서 확인된 조사 결과
+
+아래는 2026-11-17에 원문을 대조한 조사다. ISC2는 자격증을 운영하는 기관이라 자격의 가치에 이해관계가 있다. Hiring Trends 조사의 대상 6개국과 영국 보고서에 한국은 없고, Workforce Study 보도자료는 응답자의 거주 지역(북미, 중남미, 아시아태평양, 유럽과 중동과 아프리카)만 밝혀 한국 포함 여부를 확인하지 못했다. 국내 채용 시장의 근거로 옮기지 않는다.
+
+**채용 담당자가 답한 기준(ISC2 2025 Cybersecurity Hiring Trends, 2024-12 조사, 6개국 929명)**
+
+응답자는 팀에 신입이나 주니어 보안 인력을 둔 채용 담당자로 한정됐다. 신입을 이미 뽑는 쪽의 응답이라 전체 채용 담당자로 넓히지 않는다.
+
+- IT 업무 경력만 있는 지원자를 고려한다는 응답이 90%, 입문 수준 보안 자격만 있는 지원자는 89%, IT, 사이버 보안, 컴퓨터 과학 학력만 있는 지원자는 81%였다(81%는 같은 날 보도자료). 보고서는 앞의 두 응답을 경험과 자격이 학위만 있는 경우보다 유리할 수 있다는 근거로 해석한다(8~9%p 차이는 보고서의 90%, 89%와 보도자료의 81%로 이 문서가 계산).
+- 응답 조직의 84%가 신입과 주니어 지원자에게 역량 기반 평가나 시험을 쓴다. 54%는 소셜 미디어 활동 때문에 지원자를 떨어뜨린 적이 있다고 답했다.
+- 신입에게 맡기는 과업은 문서화(절차와 프로세스) 43%, 알림과 이벤트 관리 35%, 보고서 작성 32%, 물리적 접근 통제 30%, 사용자 인식 교육 29% 순이다. 주니어는 백업과 복구, 침입 탐지(각 53%), 알림과 이벤트 관리(51%), 프레임워크(50%), 침투 테스트(50%)다.
+- 가장 중시한다는 다섯 역량 중 셋(팀워크, 문제 해결, 분석적 사고)이 비기술 역량이었다.
+- 같은 보고서는 채용 담당자의 약 3분의 1이 신입(34%)과 주니어(33%) 직무에 CISSP를 요구하거나 기대한다고 전한다. 본문 문장은 지원자의 3분의 1에게 기대한다는 뜻으로도 읽혀 비율의 기준이 모호하지만, 바로 앞의 CISA 문장과 서문은 채용 담당자 비율로 읽힌다. 위 표처럼 이 자격은 누적 경력 5년을 요구하므로, 보고서도 요구와 현실의 간극으로 지적한다.
+
+**공고와 인력 현황**
+
+- 영국 정부(DSIT)의 2025년 보고서에서 핵심 사이버 보안 채용 공고 중 경력 1년 미만을 찾는 비중은 2022년 25%, 2023년 22%, 2024년 17%로 줄었고, 63%는 중간 경력(2~6년)을 요구했다. 핵심 직무 공고 수 자체도 2023년보다 33% 줄었다. 공고 자료이며 채용 결과가 아니다.
+- ISC2의 2025 Workforce Study(2025-05~06, 16,029명)에서 예산 삭감을 겪었다는 응답은 36%, 해고는 24%였고(둘 다 전년보다 1%p 낮다), 59%가 팀에 심각하거나 상당한 기술 부족이 있다고 답했다. ISC2의 대행 CEO는 가장 시급한 문제가 인원수가 아니라 기술이라고 말했다.
+
+**읽는 법(이 문서의 해석)**
+
+- 인력이 부족하다는 말과 신입 자리가 많다는 말은 다르다. Workforce Study는 인력 부족도 남아 있다고 적지만 응답자가 더 크게 우려한 것은 역량 부족이고, 영국 공고에서는 신입 대상 비중이 줄었다.
+- 침투 기술만으로 첫 직무를 상정하지 않는다. 조사에서 신입 과업의 앞자리는 문서화, 알림 처리와 보고였으므로, 앞 절의 수행 증거로는 분석 과정과 결론을 적은 보고서 한 건이 직접적인 증거가 된다.
+- IT 직무 경험을 먼저 쌓고 입문 자격 하나를 갖춘 뒤 경력 요건이 있는 자격은 나중으로 미루라는 조언이 있다. 위 조사와 방향은 맞지만 보안 교육 서비스의 협찬을 받은 영상 한 편의 견해이며 효과가 검증된 순서가 아니다.
+
+절차를 공개한 회사도 있다. 보안 업체 Trail of Bits는 2022년에 30분쯤의 첫 통화, 2시간 이내의 take-home 평가, 2시간쯤의 최종 면접, 5영업일 안의 결과 통보라는 채용 절차를 공개했다. 현재도 같은지는 확인하지 않았다.
 
 ## 체크포인트
 
@@ -66,6 +93,12 @@ CISSP의 Associate 경로는 필요한 경력을 쌓을 기간을 최대 6년으
 - [한국방송통신전파진흥원, 정보보안기사](https://www.cq.or.kr/qh_quagm01_020.do) — 시험과목과 응시 자격 안내를 대조했다.
 - [EC-Council, Application Process Eligibility](https://cert.eccouncil.org/application-process-eligibility.html) — CEH의 공식 교육 이수와 교육 없이 신청하는 경로를 대조했다.
 - [One Constant: The CISSP Standard — ISC2](https://www.isc2.org/landing/CISSP-one-constant) — FAQ의 경력, 면제와 Associate 경로를 대조했다. 세부 경력 인정과 승인 자격 목록은 신청 시 다시 확인한다.
+- [Cybersecurity Hiring Trends: ISC2 Research — ISC2](https://www.isc2.org/Insights/2025/06/cybersecurity-hiring-trends-study) — 2025-06-11 게시. 조사 방법, 고려 기준, 기술 평가, 소셜 미디어, 중시 역량과 CISSP 기대를 대조했다. 도표 이미지의 수치는 확인하지 못했다.
+- [ISC2 Research Reveals Organizations Must Amend Early Career Hiring Practices to Strengthen Teams — ISC2](https://www.isc2.org/Insights/2025/06/ISC2-Research-Organizations-Must-Amend-Early-Career-Hiring-Practices) — 2025-06-11 보도자료. 신입과 주니어의 과업 순위와 학력만 있는 지원자의 고려 비율을 대조했다.
+- [ISC2 Study: Budget Constraints Remain, Skill Needs Grow — ISC2](https://www.isc2.org/Insights/2025/12/ISC2-Publishes-2025-Cybersecurity-Workforce-Study) — 2025-12-04 보도자료. 응답 수, 조사 기간, 예산 삭감과 해고 비율, 기술 부족 응답과 발언을 대조했다.
+- [Cyber security skills in the UK labour market 2025 — GOV.UK](https://www.gov.uk/government/publications/cyber-security-skills-in-the-uk-labour-market-2025/cyber-security-skills-in-the-uk-labour-market-2025) — 2025-09-19 게시. 경력 1년 미만 수요, 중간 경력 요구 비율과 공고 수 감소를 대조했다.
+- [The Trail of Bits Hiring Process — Trail of Bits](https://blog.trailofbits.com/2022/06/28/the-trail-of-bits-hiring-process/) — 2022-06-28 게시. 절차의 단계와 시간을 대조했다.
+- [Cybersecurity interviews have become insane — YouTube, rootsh](https://www.youtube.com/watch?v=uDPCRswVx24) — 2026-11-16 공개, 음성 인식 전사문 기준. 정리의 계기이며 수치는 위 원문으로 대조했다. 풍자 형식이고 보안 교육 서비스의 협찬이 있다. 영상이 든 공고 표본 분석(10,584건), Glassdoor와 Blind의 면접 후기, 개별 채용 공고는 대조하지 않아 넣지 않았다.
 - [ISACA, How to get CISA certified](https://www.isaca.org/credentialing/cisa/get-cisa-certified) — 응시와 인증의 차이, 경력 기간과 신청 기한을 대조했다. 대체 경력의 세부 항목은 이 문서의 검증 범위에서 제외했다.
 
 ## 관련 문서
@@ -74,3 +107,5 @@ CISSP의 Associate 경로는 필요한 경력을 쌓을 기간을 최대 6년으
 - [[Backend-Engineer-Baseline|백엔드 엔지니어 기본 역량]]
 - [[Security-Incident-Response|보안 사고 대응]]
 - [[Security-Policy-and-Assessment|보안 정책과 평가]]
+- [[AI-Assisted-Hiring-Assessments|AI 활용 과제 전형]]
+- [[Targeted-Social-Engineering|표적형 사회공학]] — 위장 지원자와 채용 쪽의 확인 수단

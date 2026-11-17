@@ -28,7 +28,7 @@ aliases: ["Professional Networking", "외부 네트워킹", "멘토 확보", "�
 
 가까운 관계는 정보나 기회를 얻는 수단으로만 평가하지 않는다. 오래된 친구와 가족, 신뢰하는 동료와의 시간은 관계 자체의 가치가 있다. 성과를 높이려는 시간 관리가 이 시간을 계속 밀어내고 있지 않은지 따로 살핀다.
 
-호기심과 도전을 지지하는 사람도 현실적인 반대 의견을 낼 수 있다. 근거 있는 비판을 야망을 꺾는 태도로 단정하지 않고, 반복적인 비하와 구분한다. 주변 몇 사람의 평균이 곧 자신의 수준이라는 말을 측정된 법칙으로 쓰거나 도움이 되지 않는다는 이유만으로 관계를 끊는 기준으로 삼지 않는다.
+호기심과 도전을 지지하는 사람도 현실적인 반대 의견을 낼 수 있다. 근거 있는 비판을 야망을 꺾는 태도로 단정하지 않고, 반복적인 비하와 구분한다. 주변 몇 사람의 평균이 곧 자신의 수준이라는 말을 측정된 법칙으로 쓰거나 도움이 되지 않는다는 이유만으로 관계를 끊는 기준으로 삼지 않는다. 그래서 자신이 가장 부족한 사람인 모임에 일부러 들어가 보라는 조언은 배울 것이 많은 자리를 고르라는 뜻으로만 쓴다.
 
 ## 오프라인 행사에서의 원칙
 
@@ -69,6 +69,7 @@ aliases: ["Professional Networking", "외부 네트워킹", "멘토 확보", "�
 - 멘토의 가치는 객관적인 판단에 있다. 아직 포기할 때가 아니라고 말해 주거나, 실패의 원인을 짚어 주는 역할이다.
 - 멘토는 식사와 술자리 상대가 아니라, 무언가를 이뤘을 때 가장 먼저 알리고 싶은 사람에 가깝다.
 - 많은 것을 바라지 않는다. 기대를 낮추면 관계가 오래가고, 한두 번의 날카로운 조언이 방향을 바꾸기도 한다.
+- 조언은 그 일을 실제로 해 본 사람의 것에 무게를 둔다는 기준이 있다. 사업을 해 보지 않은 사람의 사업 조언과 해 본 사람의 조언은 무게가 다르다는 것이다. 다만 해 본 사람의 조언도 한 사람의 경로에서 나온 것이라 자기 조건에 맞는지는 따로 확인한다([[Career-Attitude#성공 이후의 확신과 당시의 판단을 나눈다|사후 확신]]).
 
 ## 예시
 
@@ -97,6 +98,7 @@ aliases: ["Professional Networking", "외부 네트워킹", "멘토 확보", "�
 - [열심히 사는데 인생이 제자리인 이유(샘 알트먼, 오픈AI) — 인간지능](https://www.youtube.com/watch?v=Fjnwlosd0LY) — 전체 음성 전사를 읽고 관계와 열린 접점에 관한 부분을 공식 인터뷰와 대조
 - [Sam Altman on Choosing Projects, Creating Value, and Finding Purpose — Y Combinator](https://www.ycombinator.com/blog/sam-altman-on-choosing-projects-creating-value-and-finding-purpose) — 2018-11-08, 2026-11-01 공식 전사 06:58~08:06, 18:35~19:15, 24:45~26:18 대조. 만남의 양과 관점 전환은 경험적 조언
 - [The days are long but the decades are short — Sam Altman](https://blog.samaltman.com/the-days-are-long-but-the-decades-are-short) — 2026-11-01 본문 1, 11, 19, 21항 대조. 관계와 친절의 가치를 설명하는 개인 조언이며 주변 사람의 영향에 관한 인과 연구는 아님
+- [30대에 안 바꾸면 40대에 진짜 후회하는 것들 | 시사 애니메이션 — 햄찌 교수](https://www.youtube.com/watch?v=5EQkjp9rOas) — 2025-12-24 업로드, 2026-11-17 음성 인식 전사 전체 확인. 조언자의 경험과 모임 선택에 관한 조언의 출처이며 근거를 제시하지 않는다
 - [오프라인 네트워킹 원칙 — Threads, careernomad_](https://www.threads.com/@careernomad_/post/DWniR-riMB0)
 - [멘토 확보 15단계 — Threads, careernomad_](https://www.threads.com/@careernomad_/post/DRej9msgU2w)
 - [멘토의 정의와 멘토링 태도 — Threads, monk_on_weekdays](https://www.threads.com/@monk_on_weekdays/post/DL4iPRzok-t)

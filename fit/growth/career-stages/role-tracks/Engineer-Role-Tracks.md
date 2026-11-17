@@ -13,7 +13,7 @@ aliases: ["Engineer Role Tracks", "직군별 진로와 기본 역량"]
 - [[Backend-Engineer-Baseline|백엔드 엔지니어 기본 역량]]: 버전관리부터 보안까지 10개 영역 체크리스트, 레벨별 기대치, 혼자 할 때 빠지기 쉬운 함정
 - [[Frontend-Engineer-Growth|프론트엔드 엔지니어 성장]]: UX를 북극성으로 둔 기술 선택, JavaScript는 문법이 아니라 프로그래밍 사고, 프레임워크보다 바닐라, HTML/CSS에서 프론트엔드 엔지니어로
 - [[Data-Analyst-Role-and-Skills|데이터 분석가 역할과 역량]]: 질문 정의, 데이터 품질, 분석 결과 전달, 도구와 직무 요건의 구분
-- [[Security-Career-and-Certifications|보안 직무와 자격증 선택]]: NICE의 업무 범주, 직함과 과업, 정보보안기사, CEH, CISSP와 CISA의 응시와 취득 조건
+- [[Security-Career-and-Certifications|보안 직무와 자격증 선택]]: NICE의 업무 범주, 직함과 과업, 정보보안기사, CEH, CISSP와 CISA의 응시와 취득 조건, 신입과 주니어 채용 조사(ISC2, 영국 정부)
 
 ## 함께 볼 문서
 
