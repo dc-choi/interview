@@ -59,6 +59,7 @@ aliases: ["투자의 기본 원칙", "Investing Principles"]
 
 - **위험과 수익**: 높은 기대수익에는 높은 위험이 따른다 → [[Risk-and-Return|위험과 수익]]. 공짜로 높은 수익을 주는 자산은 없다.
 - **시간지평**: 돈이 필요한 시점이 멀수록 단기 변동을 견딜 여지가 커질 수 있어 위험자산 비중을 높일 수 있다. 그러나 긴 시간도 영구 손실을 없애거나 수익을 보장하지 않는다. 목표, 손실 감내도, 현금흐름, 분산을 함께 본다.
+- **데이 트레이딩으로 월급을 대신하려는 계획**: 돈이 필요한 시점을 뜻하는 위의 시간지평과는 다른 문제다. 하루 안에 사고파는 매매는 대부분의 거래자가 돈을 잃고 손실 이력이 있어도 거래를 이어 간다는 근거가 있다. Barber 외(2020)는 대만의 데이 트레이더를 분석해 이들의 성과 합계가 음수이고, 데이 트레이딩 거래량의 74%가 손실 이력이 있는 거래자에게서 나오며, 데이 트레이더의 97%가 이후의 데이 트레이딩에서 돈을 잃을 가능성이 높다고 보고했다. 손실을 본 거래자가 이익을 본 거래자보다 그만둘 가능성이 높기는 하지만, 이 연구는 앞의 세 결과가 합리적 학습 모형과는 맞지 않고 과신과 편향된 학습 모형과 맞는다고 해석한다(초록 기준, 대만 시장의 자료이며 다른 시장과 기간에 옮길 수 있는지는 확인하지 않았다). 들인 시간이 수익 가능성을 높이지 않는다는 것은 한 영상의 주장이고, 이 연구를 그 근거로 읽는 것은 이 문서의 해석이다. 초록은 경험과 성과의 관계를 직접 보고하지 않는다. 보유 기간이 길수록 수익을 낼 확률이 높아진다는 같은 영상의 설명은 대상이 개별 종목인지 지수인지와 수치의 출처를 확인하지 못했다. 긴 시간도 수익을 보장하지 않는다는 위 단서가 그대로 적용된다. 과신과 과잉 매매는 [[Behavioral-Biases-Risk|행동 편향과 리스크 관리]]에서, 매매 수수료와 세금은 아래 5절에서, 매매 빈도에 따른 비용은 [[Investment-Strategies|투자 전략]]에서 본다.
 
 ### 경제 성장, 자본의 몫과 주주 수익은 다르다
 
@@ -98,6 +99,8 @@ aliases: ["투자의 기본 원칙", "Investing Principles"]
 - [Gauge Your Risk Tolerance — Investor.gov](https://www.investor.gov/introduction-investing/investing-basics/save-and-invest/gauge-your-risk-tolerance) — 2026-10-03 목표 시점과 단기 자금의 손실 위험 대조
 - [Understanding Fees — Investor.gov](https://www.investor.gov/introduction-investing/getting-started/understanding-fees) — 2026-10-03 반복 비용의 누적 영향 대조
 - [Quote Origin: The Eighth Wonder of the World Is Compound Interest — Quote Investigator](https://quoteinvestigator.com/2019/09/09/interest/) — 2026-10-12 아인슈타인 귀속의 근거 부재, 1925년 광고와 1988년 첫 아인슈타인 귀속 대조
+- [Learning, Fast or Slow — The Review of Asset Pricing Studies](https://doi.org/10.1093/rapstu/raz006) — Brad M. Barber, Yi-Tsung Lee, Yu-Jane Liu, Terrance Odean, Ke Zhang. 10권 1호 61~93쪽, 2019-07-31 온라인 공개, 권호 연도 2020(OpenAlex 서지와 그 안의 RePEc 식별자 기준). 2026-11-17 OpenAlex의 초록으로 성과 합계, 74%와 97%를 대조했고 본문은 열람하지 못함
+- [Ranking Every Way to Escape Your 9–5 — WhyLearn](https://www.youtube.com/watch?v=klvBZyHkmDg) — 2026-11-04 공개 영상, 2026-11-17 음성 인식 전사 전체 확인. 데이 트레이딩 불릿의 계기이며 99.9%는 수사적 표현이라 옮기지 않았고, 보유 기간별 확률은 전사문에 출처가 나오지 않고 화면 자료를 확인하지 못해 수치 없이 미확인 주장으로만 적음
 - [퇴사하고 싶은데 월급은 필요하다면? 내 돈도 돈을 벌기 시작하는 ‘이 순간’ — 경제학 똑똑](https://www.youtube.com/watch?v=8Ill4MR-IQA) — 2026-10-11 공개 영상. 적립식 전환점 절의 계기이며 수치는 직접 계산하고 명언 귀속은 위 원문으로 확인
 
 ## 관련 문서
@@ -107,6 +110,7 @@ aliases: ["투자의 기본 원칙", "Investing Principles"]
 - [[Tax-Advantaged-Accounts|절세 계좌]] — 세금을 늦추고 줄이는 계좌 구조
 - [[Backtesting-Pitfalls|백테스트의 함정]] — 장기 적립 시뮬레이션의 미래가치 공식과 수익률 순서
 - [[Investment-Strategies|투자 전략]] — 적립과 인출
+- [[Behavioral-Biases-Risk|행동 편향과 리스크 관리]] — 과신과 과잉 매매
 - [[투자(Investing)]] — 지도
 
 > 이 문서는 일반 학습 자료이며 개인의 목표, 재무상태, 세금과 위험 감내도를 반영한 투자 자문이 아니다.

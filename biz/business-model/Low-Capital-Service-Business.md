@@ -190,3 +190,4 @@ aliases: ["Low Capital Service Business", "소자본 생활 서비스 사업", "
 - [[Dev-Outsourcing-Engagement|개발 외주의 계약과 수주]]
 - [[Pricing-Strategy|가격 정책과 관련 추가 작업의 패키지]]
 - [[Business-Continuity-for-Small-Business|소규모 사업의 연속성 계획]]
+- [[B2B-Recurring-Task-Outsourcing|기업의 반복 업무를 대행하는 소규모 사업]] — 기업 고객의 문서와 대조 업무 대행

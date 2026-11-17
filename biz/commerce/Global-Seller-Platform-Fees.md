@@ -28,10 +28,10 @@ aliases: ["Global Seller Platform Fees", "해외 판매 플랫폼 수수료", "E
 - **등록 수수료**: 등록 1건당 USD 0.20이고 팔리지 않아도 부과된다. 등록은 4개월 뒤 만료되며 자동 갱신하면 다시 USD 0.20이 붙는다. 한 등록에서 여러 수량이 팔리면 추가 수량마다 USD 0.20이 붙는다.
 - **거래 수수료**: 주문 총액의 6.5%다. 판매자가 구매자에게 받은 배송비와 선물 포장비도 포함된다.
 - **결제 처리 수수료**: 거래 수수료와 별도이며 대금을 받는 은행 계좌의 국가로 요율이 정해진다. 대한민국은 판매 총액(배송비와 해당 판매세 포함)의 6.5%에 주문당 USD 0.30이다.
-- **Offsite Ads 수수료**: Etsy가 외부에 낸 광고를 거쳐 들어온 주문에는 주문 총액의 15%가 더 붙고, 주문당 상한은 USD 100이다. 연속된 365일 중 어느 구간에서든 USD 10,000 이상을 판 적이 있는 샵은 12%이고 이후 참여가 의무다. 한 번도 넘지 않은 샵은 15%이며 설정에서 참여를 거부할 수 있다. 광고 클릭 뒤 30일 안에 그 샵에서 한 주문이 대상이다.
+- **Offsite Ads 수수료**: Etsy가 외부에 낸 광고를 거쳐 들어온 주문에는 주문 총액(상품가, 배송비, 선물 포장비, 일부 관할에서는 세금 포함)의 15%가 더 붙고, 주문당 상한은 USD 100이다. 매월 1일 기준으로(정책 문서 기준, 도움말은 연속 365일 구간으로 적는다) 지난 365일 매출이 USD 10,000에 한 번이라도 도달한 샵은 12%이고, 이후 매출이 줄어도 12%와 의무 참여가 유지된다. 도달한 적 없는 샵은 15%이며 참여를 거부할 수 있다. 광고 클릭 뒤 30일 안에 그 샵에서 한 주문이 대상이다.
 - **환전 수수료**: 등록 통화와 대금 계좌의 통화가 달라 환전이 필요하면 2.5%가 붙는다.
-- **VAT**: 대한민국 판매자는 VAT ID를 등록하지 않으면 판매자 수수료에 VAT가 부과되고, 결제 처리 수수료에도 VAT가 징수될 수 있다. 세율과 VAT ID로 인정되는 번호의 종류는 확인하지 않았다.
-- **개점 비용**: 개점할 때 1회 set-up fee가 있고 금액은 지역에 따라 다르다. 대한민국 금액은 확인하지 않았다.
+- **VAT**: 대한민국 판매자는 VAT ID를 등록하지 않으면 판매자 수수료에 VAT가 부과되고, 결제 처리 수수료에도 VAT가 징수될 수 있다. 세율과 대한민국에서 VAT ID로 인정되는 번호의 종류는 확인한 Etsy 도움말 문서 세 건(수수료 VAT 징수, VAT ID 추가, VAT ID 등록 의무 안내)에 나와 있지 않다.
+- **개점 비용**: 개점할 때 1회 set-up fee를 요구할 수 있고 낸 뒤에는 환불되지 않는다. 금액은 Etsy 정책과 도움말에 적혀 있지 않고 지역에 따라 다르며 개점 과정에서 표시된다. Payoneer로 가입하면 USD로 청구된다.
 - **대금 수령**: 대한민국 판매자는 Payoneer 결제 계정으로 Etsy Payments에 가입한다. Payoneer의 출금 최소액과 추가 수수료가 적용될 수 있다.
 
 ### Gumroad: 전자책, 템플릿 같은 디지털 파일 판매
@@ -49,12 +49,12 @@ aliases: ["Global Seller Platform Fees", "해외 판매 플랫폼 수수료", "E
 
 ## 예시: 주문 한 건의 수수료 비교
 
-가정 값이다. 판매세, VAT, 환전, 중간 계정 수수료와 세금은 빼고 플랫폼 수수료만 비교한다. Offsite Ads 행은 주문 총액에 배송비가 포함된다고 가정했다.
+가정 값이다. 판매세, VAT, 환전, 중간 계정 수수료와 세금은 빼고 플랫폼 수수료만 비교한다.
 
 | 경우 | 매출 | 플랫폼 수수료 | 수수료 비율 |
 |---|---|---|---|
 | Etsy, 상품 USD 20 + 배송비 USD 5, 등록 1건 | USD 25 | 등록 0.20 + 거래 1.625 + 결제 처리 (1.625 + 0.30) = 약 USD 3.75 | 약 15% |
-| 같은 Etsy 주문이 Offsite Ads를 거친 경우(어느 365일 구간에서도 USD 10,000을 넘긴 적 없는 샵) | USD 25 | 위 3.75 + 광고 3.75 = 약 USD 7.50 | 약 30% |
+| 같은 Etsy 주문이 Offsite Ads를 거친 경우(지난 365일 매출이 USD 10,000에 도달한 적 없는 샵) | USD 25 | 위 3.75 + 광고 3.75 = 약 USD 7.50 | 약 30% |
 | Gumroad 직접 링크, USD 20, 카드 결제 | USD 20 | 2.00 + 0.50 + 결제 처리 (0.58 + 0.30) = USD 3.38 | 약 16.9% |
 | Gumroad Discover, USD 20 | USD 20 | USD 6.00 | 30% |
 | Preply 신규 강사, 시간당 USD 20 정규 수업 | USD 20 | USD 6.60 | 33% |
@@ -80,7 +80,8 @@ Etsy의 6.5%는 거래와 결제 처리에 각각 붙으므로 한국 판매자�
 
 - [Etsy Help, Etsy Fee Basics](https://help.etsy.com/hc/en-us/articles/360035902374) — 등록 수수료와 거래 수수료
 - [Etsy Help, What are the Fees and Taxes for Selling on Etsy?](https://help.etsy.com/hc/en-us/articles/115014483627) — 등록 만료와 갱신, 거래 수수료 대상, Offsite Ads 요율과 상한, 환전 수수료, set-up fee
-- [Etsy Help, How Etsy's Offsite Ads Work](https://help.etsy.com/hc/en-us/articles/360000338367-How-Etsy-s-Offsite-Ads-Work) — 12%와 15%의 기준 구간, 의무 참여와 거부, 30일 귀속
+- [Etsy, Fees & Payments Policy](https://www.etsy.com/legal/fees/) — 2026-10-05 개정판. Offsite Ads의 주문 총액 구성과 12% 전환 조건, set-up fee의 청구 방식
+- [Etsy Help, How Etsy's Offsite Ads Work](https://help.etsy.com/hc/en-us/articles/360000338367-How-Etsy-s-Offsite-Ads-Work) — 의무 참여와 거부, 30일 귀속, 주문당 상한. 기준 구간을 any consecutive 365 day period로 적어 매월 1일 산정은 위 정책 문서가 근거
 - [Etsy Help, What are Payment Processing Fees for Selling on Etsy?](https://help.etsy.com/hc/articles/115015628847) — 국가별 결제 처리 수수료, 대한민국 6.5% + USD 0.30
 - [Etsy Help, How VAT Is Collected on Seller Fees](https://help.etsy.com/hc/en-us/articles/360040584433-How-VAT-Is-Collected-on-Seller-Fees) — VAT ID 미등록 판매자의 수수료 VAT
 - [Etsy Help, What is Etsy Payments?](https://help.etsy.com/hc/articles/360002120927) — 대한민국 판매자의 Payoneer 가입

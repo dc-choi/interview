@@ -232,6 +232,7 @@ Q. 비즈니스 모델은 어떻게 설계했는가?
 
 ## 관련 문서
 - [[Pricing-Strategy|가격 정책 설계]]
+- [[Software-Company-Economics|소프트웨어 회사의 경제 구조]] — 지표가 소프트웨어 사업에서 문제를 만드는 순서와 Schneider Electric의 PTC 인수 합의 사례
 - [[AI-Native-Services|결과를 파는 AI 네이티브 서비스]] — 사람 투입 비중과 매출총이익률로 보는 성장의 질
 - [[Solo-Product-Market-Validation|노동 비용과 운영 용량을 포함한 검증]]
 - [[Bootstrapped-Single-Product-Growth|현금과 확장 투자]]

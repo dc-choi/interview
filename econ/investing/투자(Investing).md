@@ -16,7 +16,7 @@ aliases: ["투자(Investing)", "Investing Map"]
 ## 토픽 지도
 
 ### 1. 토대
-- [[Investing-Principles|투자의 기본 원칙]] — 복리, 인플레이션과 자금의 목적, 위험과 수익, 시간지평, 비용 관리 ✅
+- [[Investing-Principles|투자의 기본 원칙]] — 복리, 인플레이션과 자금의 목적, 위험과 수익, 시간지평, 데이 트레이딩의 성과 근거, 비용 관리 ✅
 
 ### 2. 설계
 - [[Memory-Semiconductor-Cycle|메모리와 반도체 장비의 업황 구분]] — 가격 수준과 상승률, 제조사와 장비사의 지표, 공시와 주가 예측의 경계
