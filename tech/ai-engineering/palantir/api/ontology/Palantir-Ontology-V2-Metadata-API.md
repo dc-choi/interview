@@ -25,6 +25,7 @@ Object type 목록은 요청 pageSize보다 작거나 클 수 있다. Action/obj
 - 첫 요청에서는 `pageToken`을 생략한다. 이후 응답의 `nextPageToken`을 다음 요청에 전달하고 후속 토큰이 없으면 끝낸다. 항목 수가 500보다 작다는 이유로 종료하지 않는다.
 - 응답 schema에서 `data`와 `nextPageToken`은 모두 선택 필드다. 클라이언트는 `data`가 존재한다고 가정하지 않고 후속 토큰을 별도로 확인한다(설계 제안).
 - `branch`를 생략하면 기본 branch를 사용한다. Branch는 experimental 기능이며 모든 workflow 지원을 보장하지 않는다. 페이지 순회 중 같은 Ontology와 branch 조건을 유지하는 것은 클라이언트 설계 제안이다.
+- 2026-11-17 수집한 같은 페이지의 `ActionTypeV2` schema에는 이전 수집본에 없던 선택 필드 `returnType`이 있다. 설명은 Ontology Query의 parameter와 output이 지원하는 타입의 union이며 `string`, `date`, `struct`, `objectSet`, `void` 등의 variant를 포함한다. 선택 필드이므로 클라이언트는 값이 없을 수 있다고 보고, 알 수 없는 variant를 받아도 목록 순회가 실패하지 않게 처리한다(설계 제안). 이 페이지는 Action 적용 응답에 실제 반환값이 담기는지는 설명하지 않으므로 실행 결과의 계약으로 해석하지 않는다. 같은 날 수집한 Get Action Type, Get Action Type By Rid와 By Rid Batch 페이지의 `ActionTypeV2`에도 같은 선택 필드가 있어, 아래 단건 조회 절의 2026-11-02 기준 선택 필드 목록에 `returnType`이 더해진 것으로 읽는다.
 
 실제 페이지 순회와 branch별 권한은 시험하지 않았다. 다른 metadata endpoint 전체를 재검증하지 않았으므로 frontmatter의 검증일은 유지한다.
 

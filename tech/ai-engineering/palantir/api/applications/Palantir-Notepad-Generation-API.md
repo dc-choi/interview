@@ -64,7 +64,7 @@ CreateExportJob의 오류는 원인별로 나뉜다. 권한 거부는 Document e
 
 적용 제안: running 오류는 생성 완료를 기다린 뒤 다시 요청하고, failed 오류는 그 GenerationJob의 errorMessage를 먼저 확인한다. 오류 응답은 generationJobRid만 주므로 errorMessage는 GenerationJob 조회(`api:notepad-write`, 생성한 사용자만 접근)로 따로 읽어야 한다. 이 구분은 공식 명세의 지시가 아니다.
 
-ExportJob은 RID와 status를 반환한다. running에서 polling을 이어가고 failed이면 errorMessage와 선택적 errorCode/errorInstanceId를 확인한다. succeeded이면 fileRid로 content를 내려받는다. 파일 content는 binary format이며 JSON 응답으로 강제 처리하지 않는다.
+ExportJob은 RID와 status를 반환한다. running에서 polling을 이어가고 failed이면 errorMessage와 선택적 errorCode/errorInstanceId를 확인한다. succeeded이면 fileRid로 content를 내려받는다. 파일 content는 binary format이며 JSON 응답으로 강제 처리하지 않는다. fileRid의 schema 타입은 string이고 페이지 예시 값은 `ri.notepad.main.file.<UUID>` 형태다. 접두사 규칙은 명세에 없으므로 클라이언트 검증 규칙으로 쓰지 않는다. Content File 페이지에 나열된 오류는 내려받을 권한이 없을 때의 ContentFilePermissionDenied(PERMISSION_DENIED, fileRid 보고) 하나다. 7일 사용 기한이 지난 File의 응답은 이 페이지에 따로 적혀 있지 않으므로 권한 거부와 만료를 같은 원인으로 단정하지 않는다.
 
 ## 만료와 재시도 경계
 
