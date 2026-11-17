@@ -1,9 +1,9 @@
 ---
 tags: [ai, local-llm, moe, inference, distributed, mlx, rdma]
 status: done
-verified_at: 2026-11-16
+verified_at: 2026-11-18
 category: "AI엔지니어링(AIEngineering)"
-aliases: ["Local Inference Deployment Cases", "Janas", "Apple Minions", "Uzu", "LFM2.5-24B-A2B", "Muse Spark Open", "MLX Distributed Inference", "JACCL", "PS5LM", "Edge0-145B", "Apple Harbor"]
+aliases: ["Local Inference Deployment Cases", "Janas", "Apple Minions", "Uzu", "LFM2.5-24B-A2B", "Muse Spark Open", "MLX Distributed Inference", "JACCL", "PS5LM", "Edge0-145B", "Apple Harbor", "Colibri"]
 ---
 
 # 로컬 AI 추론의 메모리, 저장 계층과 분산 실행
@@ -37,6 +37,15 @@ MoE는 토큰마다 일부 전문가만 계산해 활성 연산량을 줄인다.
 - **메모리 수치는 측정 조건과 함께 읽는다:** 발표는 노트북 최대 메모리를 29GB로 적고 다른 문단은 28GB로 적는다. 모델 카드는 RTX 5090 D 24 GB(카드의 표기)에서 상주 설정을 켜면 Q3_K(가중치 40.81GiB)가 VRAM 23.14GiB와 RAM 31.28GiB, NVFP4(47.79GiB)가 VRAM 23.25GiB와 RAM 38.27GiB에 나뉘어 올라간다고 적는다. 같은 카드를 VRAM 16GiB(`--vram-reserve-mib 8192`)와 RAM 20GiB(cgroup `MemoryMax=20G`, 스왑 없음)로 묶은 제한 예산에서는 Q3_K의 대화 디코드가 36.8 tok/s로, 묶지 않았을 때의 99.7 tok/s보다 크게 낮다. 상주시키는 전문가가 줄면 호스트 메모리와 SSD에서 읽는 양이 늘어 속도가 떨어진다는 계층화의 비용이 수치로 드러난 예다(이 문서의 해석). 헤드라인의 29GB를 장비에 필요한 RAM과 저장 공간의 총량으로 읽지 않는다.
 - **플랫폼별 빌드:** 발표는 첫날부터 Apple M 시리즈를 포함한 macOS, Windows, Linux를 지원한다고 적지만, 모델 카드 기준 NVFP4 빌드(47.79GiB)는 CUDA 전용이고 Apple Silicon의 Metal은 Q3_K 빌드(40.81GiB)가 맡는다. 같은 이름의 모델도 플랫폼마다 양자화가 달라 품질과 속도를 따로 잰다.
 - **속도와 평가:** 모델 카드의 RTX 5090 D 측정에서는 Q3_K가 프리필 4K 2,169.9, 16K 3,554.9 tok/s와 대화 디코드 99.7, 에이전트 디코드 121.2 tok/s로 같은 카드의 NVFP4(1,839.6, 3,165.7, 79.6, 98.3)보다 빠르고, Apple M2 Ultra(Metal, Q3_K)의 대화 디코드는 60.9 tok/s다. 발표는 노트북에서 프리필 1,100 tok/s 이상, 디코드 80 tok/s 이상과 약 120W를 적지만 어느 장비와 빌드의 측정인지는 밝히지 않는다. 품질 표는 대부분 Edge0의 내부 평가이고 비교 대상에 Claude Opus 4.6과 DeepSeek-V4-Flash-0731 같은 이전 세대 모델, Terminal-Bench 2.1이 있으며 전체 평가 설정은 기술 보고서로 미뤘다. 라이선스 조건은 [[Model-Release-Claims#라이선스와 제공 상태는 발표 문구와 따로 확인한다|모델 발표 수치 읽기]]에 적었다.
+
+## Colibrì: 상주 부분만 RAM에 두고 전문가를 디스크에서 읽는다
+
+2026-11-18 공식 저장소 README 대조 기준이다. Colibrì는 Apache 2.0의 C 추론 엔진으로 BLAS와 실행 시 Python 없이 CPU만으로 돌고, CUDA, Vulkan과 Metal 백엔드는 선택이다. Python은 설정, 실행기, 변환기와 API 게이트웨이에만 쓴다. README는 GLM-5.2(전체 744B, 토큰당 약 40B)를 int4로 실행하며 attention, 공유 전문가와 임베딩으로 된 상주 부분(배너 기준 9.9GB)을 RAM에 두고, 토큰마다 바뀌는 라우팅 전문가만 디스크에서 읽는다고 설명한다. README가 GLM-5.2에 쓰라고 안내하는 gs64 컨테이너는 429GB이고 GLM-5.2의 RAM 기준은 16GB(그 미만은 시작하지 않음), 측정 속도는 24GB부터다.
+
+- **읽기 경로:** 전문가 하나의 세 행렬을 `pread` 한 번으로 읽고, 상주 전문가를 계산하는 동안 로더 풀이 놓친 전문가를 읽는다. 다음 층을 미리 읽는 router lookahead가 있으며 README는 GLM-5.2의 라우팅이 한 층 앞에서 71.6% 예측 가능하다고 적는다. `DIRECT=1`(O_DIRECT)은 빠른 NVMe에서 크게 이득일 수 있지만 다른 드라이브에서는 차이가 없거나 더 나쁠 수 있다.
+- **캐시:** 층별 LRU 캐시에 더해, 사용자 대화에서 학습해 매 턴 갱신하는 고정(pinned) 상주 집합을 둔다. README는 학습한 고정 집합이 한 프롬프트에 과적합할 수 있다고 경고한다. Janas, Edge0와 같은 RAM/SSD 계층화이며 캐시 미스와 랜덤 I/O 비용이 그대로 남는다.
+- **속도는 장비 폭이 크다:** README가 모은 GLM-5.2 디코드는 프로젝트가 시작된 25GB 노트북의 cold 상태에서 0.05~0.1 tok/s, 128GB CPU 전용(Ryzen AI Max+ 395) warm 1.83 tok/s, RTX 5070 Ti 노트북급 1.07 tok/s, 전문가를 모두 상주시킨(VRAM과 약 251GiB 시스템 RAM에 나눠 둔) RTX 5090 6장 5.8~6.8 tok/s다. README는 수치가 여러 사용자의 실제 장비에서 나온다고 밝히며, 128GB와 RTX 5070 Ti 값은 README가 연결한 이슈의 커뮤니티 사용자 보고다. RTX 5070 Ti 이슈의 보고자는 1.07 tok/s가 품질 버그를 포함한 값이었고 품질을 지킨 속도는 0.82 tok/s라고 정정했지만 README의 표는 바뀌지 않았다. 이 문서에서 재현하지 않았다.
+- **용도 판단:** 25GB 장비의 cold 속도는 토큰당 10~20초라 대화형 사용은 어렵다. 배치 작업이나 외부 전송이 막힌 환경에 쓰려면 README에 GLM-5.2의 프리필과 첫 토큰 시간이 없으므로 전체 처리 시간을 먼저 잰다(적용 제안).
 
 ## Minions: 유휴 Mac에 독립 추론 작업을 분배한다
 
@@ -133,6 +142,10 @@ Mirai가 공개한 벤치마크(2026-10-18 측정, Apple M5 Max 128GB, Uzu 0.6.9
 
 - [Underdog Saluki 27B 1.0 — ConwayResearch](https://huggingface.co/ConwayResearch/Underdog-Saluki-27B-1.0) — 2026-11-03 파일 형식과 크기, 실행 설정, 자체 평가와 외부 공개 점수의 구분, SWE-bench Verified 부분집합과 제한 사항 대조
 - [Janas — prabanta-dev](https://github.com/prabanta-dev/janas)
+- [We Just Hit the Local LLM Tipping Point (colibrì) — YouTube, The Coding Gopher](https://www.youtube.com/watch?v=SxkzFmn4Ww8) — 2026-11-10 공개 영상. Colibrì 절의 계기이며 구조와 속도는 저장소 README로 대조했고, 영상의 캐시 적중률 수치는 README에서 확인하지 못해 쓰지 않음
+- [colibrì — JustVugg, Vincenzo Fornaro](https://github.com/JustVugg/colibri) — 2026-11-18 README의 구조, 읽기 경로와 캐시, 요구 사양과 GLM-5.2 속도 표 대조
+- [colibrì issue #273 — GitHub](https://github.com/JustVugg/colibri/issues/273) — RTX 5070 Ti 속도 보고와 보고자의 0.82 tok/s 정정
+- [colibrì GLM-5.2 6x RTX 5090 실험 기록 — GitHub](https://github.com/JustVugg/colibri/blob/main/docs/experiments/glm52-6x5090-2026-07-12.md) — 2026-07-12, 전문가 상주의 VRAM과 RAM 분할
 - [Introducing Edge0-145B: Frontier AI Capabilities on Your Own Computer — Edge0](https://edge0.ai/blog/introducing-edge0-145b-frontier-ai-capabilities-on-your-own-computer) — 2026-11-12, 구조, 메모리 계층, 플랫폼 지원, 속도와 평가 표의 측정 주체 대조
 - [Edge0/Edge0-145B-NVFP4 — Hugging Face, Edge0](https://huggingface.co/Edge0/Edge0-145B-NVFP4) — 2026-11-16 활성 파라미터, 빌드별 크기와 지원 백엔드, 메모리 측정과 제한 예산 조건, 속도 표 대조
 - [Edge0-145B - 개인 컴퓨터에서 실행하는 1,450억 매개변수 AI 모델 — GeekNews](https://news.hada.io/topic?id=37100) — 학습 계기
