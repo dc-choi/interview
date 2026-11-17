@@ -60,6 +60,20 @@ Sprite Atlas의 Type이 Master(기본값)일 때 아래 패킹 속성을 쓸 수
 - **Variant 아틀라스:** 원본 아틀라스와 같은 스프라이트를 더 낮은 해상도로 묶는다. Scale을 0.5로 두면 원본의 절반 해상도 텍스처를 만든다. 기본값으로는 원본과 변형이 모두 빌드에 들어가며, 이 경우 Unity가 실행 중 어느 쪽을 쓸지 무작위로 고른다. 저사양 기기용으로 쓰려면 빌드에 넣을 쪽을 정한다. 둘 다 Include in Build를 끄면 텍스처가 빌드에 없어 해당 스프라이트가 보이지 않는다.
 - **Include in Build와 late binding:** Include in Build를 켜면 프로젝트 시작 때 아틀라스를 불러와 스프라이트에 붙인다. 끄면 실행 중에 직접 불러오며 이를 late binding이라고 한다. 아직 불러오지 않은 아틀라스를 스프라이트가 요청하면 `SpriteAtlasManager.atlasRequested` 콜백이 호출되고, 콜백에서 `Resources.Load`나 AssetBundle API로 아틀라스를 넘긴다. 다음 레벨에서 필요한 그림만 그때 메모리에 올리는 식으로 쓴다.
 
+## 실행 중에 아틀라스를 만드는 API(Unity 6.4)
+
+Unity 6.4(6000.4)부터 `SpriteAtlasManager.CreateSpriteAtlas`로 실행 중에 스프라이트 아틀라스를 만들 수 있다. 미리 만든 아틀라스 에셋을 늦게 불러오는 late binding과 달리, 어떤 그림을 함께 묶을지 실행 시점에 정할 수 있다. 예를 들어 상점이나 인벤토리처럼 함께 보이는 그림이 플레이어 상태에 따라 달라지는 화면을 떠올릴 수 있다(레퍼런스에 없는 작성 예시).
+
+```csharp
+public static SpriteAtlas CreateSpriteAtlas(string name, SpriteAtlasRuntimeConfig config, AtlasPage[] pages)
+```
+
+- `name`은 아틀라스 이름이자 Tag로 쓰인다.
+- `pages`는 스프라이트와 이미 묶은(packed) 텍스처를 담은 페이지 배열이다. `AtlasPage`의 `assets`는 스프라이트 같은 객체와 그 packed 위치(X, Y 좌표)를 담은 `ObjectData` 배열이고, `packedTextures`는 묶인 텍스처를 가리키는 `TextureData` 배열이다. 그림을 새 텍스처에 배치하는 패킹은 이 메서드가 아니라 호출하는 쪽이 준비한 결과를 넘기는 구조로 읽힌다.
+- `SpriteAtlasRuntimeConfig`의 필드는 스프라이트에 적용할 `scaleMultiplier` 하나다.
+
+2026-11-17에 대조한 6000.5 레퍼런스에는 텍스처의 Read/Write 요구, 지원 텍스처 형식, 호출 비용에 관한 설명이 없다. 그래서 이 문서는 요구사항을 확정하지 않는다. 다만 호출하는 쪽이 그림을 새 텍스처로 옮겨 묶는 동안에는 그 작업 시간이 들고, 원본 텍스처를 내리기 전까지는 원본과 결과 텍스처가 함께 메모리를 차지할 수 있다. 평소에는 함께 쓰는 단위로 미리 아틀라스를 나눠 두고, 실행 중 생성은 묶음이 상태마다 크게 달라지는 화면에 한정해 장면 전환이나 로딩 화면처럼 프레임 끊김이 보이지 않는 때에 하는 구성을 고려한다(실무 제안). 실제 비용은 대상 기기에서 프로파일러로 잰다.
+
 ## 점검 질문
 
 - 아틀라스를 도입하기 전후로 드로우콜 수와 프레임 시간을 같은 장면에서 비교했는가. SRP Batcher를 쓰면 드로우콜 수만으로 판단하지 않는다.
@@ -74,6 +88,11 @@ Sprite Atlas의 Type이 Master(기본값)일 때 아래 패킹 속성을 쓸 수
 - [Unity Manual 6000.5, Variant sprite atlases](https://docs.unity.com/en-us/engine/6000.5/manual/unity2d/sprite/atlas/master-variant-sprite-atlases)
 - [Unity Manual 6000.5, Sprite Atlas reference](https://docs.unity.com/en-us/engine/6000.5/manual/unity2d/sprite/atlas/sprite-atlas-reference) — Include in Build, Tight Packing, Allow Rotation의 Canvas UI 주의, Padding 기본값 4, Alpha Dilation(2026-11-17 대조)
 - [Unity Manual 6000.5, Load a sprite atlas with SpriteAtlasManager.atlasRequested](https://docs.unity.com/en-us/engine/6000.5/manual/unity2d/sprite/atlas/load-sprite-atlas-spriteatlasmanageratlasrequested)
+- [Unity Manual 6000.5, New in Unity 6.4](https://docs.unity.com/en-us/engine/6000.5/manual/whats-new/unity64) — 실행 중 아틀라스 생성 API 추가(2026-11-17 대조)
+- [Unity Scripting API 6000.5, SpriteAtlasManager.CreateSpriteAtlas](https://docs.unity.com/en-us/engine/6000.5/script-reference/unityengine/u2d/spriteatlasmanager/createspriteatlas) — 시그니처와 인자 설명. `AtlasPage`, `SpriteAtlasRuntimeConfig` 구조체 페이지도 함께 대조(2026-11-17)
+- [Unity Scripting API 6000.5, ObjectData](https://docs.unity.com/en-us/engine/6000.5/script-reference/unityengine/u2d/objectdata) — packed 객체와 위치 정보
+- [Unity Scripting API 6000.5, TextureData](https://docs.unity.com/en-us/engine/6000.5/script-reference/unityengine/u2d/texturedata) — packed 텍스처 참조
+- [유니티 6.4에 생긴 런타임 아틀라스, 언제 써야 할까? — Todaycoding](https://www.youtube.com/watch?v=4GgIgvV3XaM) — 2026-11-09 공개 쇼츠, 실행 중 생성 절의 계기. 실행 중 생성의 순간 부하와 메모리 우려, 장면 전환이나 로딩 시점에 한정하라는 권고는 이 영상의 제안이다. 에디터 설정 미지원, 2D Common 패키지 샘플과 그 샘플의 Read/Write 요구는 레퍼런스로 확인하지 못해 쓰지 않았다
 - [Unity Manual 6000.5, Use the Sprite Editor](https://docs.unity.com/en-us/engine/6000.5/manual/unity2d/sprite/use-editor) — Sprite Mode Multiple와 Slice 방식
 - [Unity Manual 6000.2, Sprite Editor](https://docs.unity3d.com/6000.2/Documentation/Manual/sprite/sprite-editor/use-editor.html) — pivot 정의
 - [Unity Manual 6000.5, SRP Batcher](https://docs.unity.com/en-us/engine/6000.5/manual/analysis/graphics-performance-profiling/in-urp/reduce-draw-calls-urp/srpbatcher/srpbatcher) — 지원 파이프라인

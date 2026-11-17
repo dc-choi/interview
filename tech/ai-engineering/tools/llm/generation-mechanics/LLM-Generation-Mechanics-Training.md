@@ -161,6 +161,10 @@ vLLM과 SGLang은 기반 모델 위에 어댑터를 따로 두고 요청마다 �
 
 vLLM 문서는 요청 단위 어댑터 서빙의 오버헤드가 작다고 설명하면서도 `--max-lora-rank`를 필요보다 훨씬 크게 잡으면 메모리 낭비와 성능 문제가 생길 수 있다고 적는다. 이 설명을 비병합 서빙의 지연이 병합 배포와 같다는 근거로 쓰지 않는다. 어댑터 하나를 지연 우선으로 서빙하면 병합을, 여러 어댑터를 기반 모델 하나로 함께 서빙하면 비병합을 먼저 검토하고 같은 부하에서 지연, 처리량과 메모리를 비교한다(적용 제안). 2026-11-04 LoRA 논문 4.2절, vLLM의 LoRA 문서와 엔진 인자 문서, SGLang의 LoRA 문서를 대조했으며 서빙 성능은 측정하지 않았다. 기존 절의 검증 날짜는 유지한다.
 
+FP8(8비트 부동소수점)로 저장한 checkpoint 위의 어댑터 학습도 기반 가중치를 고정하고 어댑터만 학습하는 LoRA 구조다. 기반 가중치는 고정되므로 역전파는 가중치 기울기가 아니라 역양자화한 가중치를 거쳐 입력 쪽으로 기울기를 전달하면 된다. Hugging Face Transformers는 v5.22.0(2026-10-29 릴리스)에서 dense와 grouped FP8 행렬곱에 이 입력 역전파를 넣고 `is_trainable`을 `True`로 바꿔, `Trainer`가 FP8 모델 위의 PEFT 모델(LoRA 등)을 받게 했다. 이전에는 `FP8Linear` 출력에 `grad_fn`이 없어 기울기가 조용히 버려졌고 grouped 경로는 역전파에서 오류가 났다. 이 변경은 입력 역전파만 더했고 릴리스 노트도 어댑터 학습만 적으므로, FP8 가중치 자체를 갱신하는 전체 미세조정이 이 변경으로 열린다고 보지 않는다(출처 설명에서 도출). FP4 가중치와 batched_mm/deepgemm expert 경로는 이 PR 기준으로 역전파가 없다.
+
+릴리스 노트의 메모리 수치는 측정 범위를 붙여 읽는다. 함께 들어간 변경은 grouped 역전파에서 expert를 약 1 GiB 이하 청크로 나눠 역양자화하고 다음 청크 전에 앞 청크를 해제한다. 릴리스 노트는 8k 토큰에서 MoE 층 역전파의 최대 메모리가 약 28.9 GiB에서 2.8 GiB로 줄었다고만 적고 모델과 장비를 밝히지 않는다. 해당 PR의 표는 H200에서 DeepSeek-V3와 같은 형태(shape)의 MoE 층 하나(gate_up과 down)의 역전파를 top-8 라우팅으로 잰 값이며 최대값은 가장 큰 일시 할당이다. 같은 PR에서 Qwen3-30B-A3B-FP8의 학습 한 단계(시퀀스 2048)는 활성값이 지배해 청크 방식과 관계없이 최대 메모리 증가가 14.8 GiB로 같았다. 따라서 이 수치를 전체 학습의 GPU 메모리 절감률로 옮기지 않고, 도입할 때는 자기 입력 길이와 학습 구성의 전체 최대 메모리를 따로 잰다(적용 제안). 2026-11-17 릴리스 노트와 PR #50031, #50117을 대조했으며 직접 실행하지 않았다.
+
 **QLoRA**는 고정된 기반 가중치를 주로 4비트로 저장하고 LoRA 파라미터를 학습한다. 원 논문은 연산 시 BFloat16으로 역양자화하며, NF4, 양자화 상수를 다시 양자화하는 double quantization, 메모리 급증을 다루는 paged optimizer를 결합한다. 저장 비트 수와 연산 정밀도는 다르다. 원 논문 초록은 이 조합으로 65B 파라미터 모델을 48GB GPU 한 장에서 미세조정할 만큼 메모리를 줄이면서 16비트 전체 미세조정의 과업 성능을 유지했다고 보고한다(2026-11-04 초록 대조). 다만 본문에서 65B 모델은 16비트 전체 미세조정이 아니라 16비트 LoRA와 비교했다(4절, Table 4).
 
 메모리 절감이 같은 비율의 학습 속도 향상을 뜻하지 않는다. 기반 가중치를 고정해도 어댑터 학습을 위한 순전파와 역전파가 필요하다. 논문에서 비교한 과업의 성능 회복을 모든 모델과 데이터의 무손실 보장으로 확대하지 않는다.
@@ -205,6 +209,10 @@ ZeRO-3는 순전파와 역전파 중 필요한 파라미터를 모으고 다시 
 - [vLLM, LoRA Adapters](https://docs.vllm.ai/en/stable/features/lora/)
 - [vLLM, Engine Arguments](https://docs.vllm.ai/en/stable/configuration/engine_args/)
 - [SGLang, LoRA Serving](https://docs.sglang.io/advanced_features/lora.html)
+- [v5.22.0: Mistral Large 4 (Le Chonk) — Hugging Face Transformers 릴리스 노트](https://github.com/huggingface/transformers/releases/tag/v5.22.0) — 2026-10-29, Quantization 절의 FP8 어댑터 학습과 MoE 역전파 메모리
+- [Train adapters on top of FP8 weights (#50031) — Hugging Face Transformers](https://github.com/huggingface/transformers/pull/50031) — 입력 역전파, `is_trainable`, 이전 동작과 FP4 등 미지원 경로
+- [FP8 backward: chunked expert dequant, skip autograd.Function at inference (#50117) — Hugging Face Transformers](https://github.com/huggingface/transformers/pull/50117) — H200, DeepSeek-V3 형태 MoE 층의 측정 조건과 Qwen3-30B-A3B-FP8 학습 단계 비교
+- [FP8 LoRA 메모리 28.9→2.8 GiB, 어디서 잰 숫자일까 — 길리랩](https://www.youtube.com/watch?v=wysve3E-H2I) — 2026-11-09 쇼츠, FP8 어댑터 학습 단락의 계기. 수치와 범위는 위 릴리스 노트와 PR로 대조
 - [LoRA 실무 잡기술 — ImcommIT](https://www.youtube.com/watch?v=vGyLTu8g35w) — 2026-10-27, LoRA 병합과 QLoRA 소개 영상. vLLM과 SGLang이 일반 LLM 구성에 맞춰져 있어 병합하지 않은 어댑터가 비효율적으로 보인다는 설명은 두 엔진 문서의 배치 내 다중 어댑터 서빙 설명과 맞지 않아 그 이유로는 채택하지 않음. 병합이 추가 지연을 없앤다는 점은 LoRA 논문 4.1절, 4.2절로 대조했고, 비병합 서빙의 지연은 본문처럼 같은 부하에서 측정해 판단
 
 - [Introduction to Large Language Models — Google Machine Learning Crash Course](https://developers.google.com/machine-learning/crash-course/llm)

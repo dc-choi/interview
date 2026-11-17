@@ -86,10 +86,12 @@ QueryDataType은 scalar 외에 struct, set/array, union, null, void, attachment,
 - array와 set은 subType을 가진다. union은 unionTypes를 담는다.
 - valueTypeReference는 Ontology에 등록한 value type의 RID와 versionId를 지정한다.
 - typeReference의 typeId는 같은 Query 응답의 typeReferences map을 참조한다. 자기 자신을 참조하는 재귀 타입도 표현할 수 있다.
-- 2026-11-17 Get Query와 Get By Rid 명세에는 Ontology 참조 variant 네 개가 새로 보인다. `object`와 `objectSet`은 필수 `objectTypeApiName`으로 object type을, `interfaceObject`와 `interfaceObjectSet`은 필수 `interfaceTypeApiName`으로 interface type을 가리킨다. 이 variant는 parameter와 output뿐 아니라 entrySet의 key/value 같은 중첩 타입 자리에도 나타난다. 타입 판별자를 고정 목록으로 처리하는 클라이언트는 모르는 variant를 오류로 끝내지 않고 미지원으로 분류하도록 점검한다(설계 제안).
+- 2026-11-17 Get Query, Get By Rid와 Get By Rid Queries Batch 명세에는 Ontology 참조 variant 네 개가 새로 보인다. `object`와 `objectSet`은 필수 `objectTypeApiName`으로 object type을, `interfaceObject`와 `interfaceObjectSet`은 필수 `interfaceTypeApiName`으로 interface type을 가리킨다. 이 variant는 parameter와 output뿐 아니라 entrySet의 key/value 같은 중첩 타입 자리에도 나타난다. 타입 판별자를 고정 목록으로 처리하는 클라이언트는 모르는 variant를 오류로 끝내지 않고 미지원으로 분류하도록 점검한다(설계 제안).
 - 집계 key는 date, boolean, string, double, integer, timestamp와 range를 표현한다. range subtype은 date/double/integer/timestamp다. 집계 value와 중첩 집계의 형식도 해당 metadata에서 확인한다.
 
 실행 parameters는 parameter ID에서 DataValue로 매핑한다. 일반 JSON이라고 해서 모든 수치가 number는 아니다. Decimal과 Long은 문자열이며 timestamp는 UTC offset date-time 문자열, date는 local date 문자열이다. Array/Set은 배열, Struct는 객체, attachment는 RID 문자열로 표현한다. 집계는 groups/key/value 구조의 객체이며 nested 값도 허용한다.
+
+Execute Query 명세의 DataValue 표에는 Ontology 값(Object, Interface object)과 Entry set, Marking, Geoshape의 encoding도 있다. 수집한 명세 버전으로 보면 Object와 Interface object 행은 2026-11-17 판에서 새로 보이고 나머지 셋은 2026-10-31 판에도 있었다. Object는 primary key 값 자체(예: `123`)이고, Interface object는 `{"objectTypeApiName": "Aircraft", "primaryKeyValue": 123}`처럼 구체 object type의 API name과 primary key를 함께 담는다. Entry set은 `[{"key": "alpha", "value": 1}]` 같은 key/value entry 배열, Marking은 문자열, Geoshape는 객체나 문자열로 쓴 GeoJSON geometry다. 같은 명세는 entry-set, object, interface-object 값과 object-set 입력을 이 endpoint가 지원하지 않는다고 적으므로, 표에 encoding이 있다는 사실을 단일 JSON execute의 지원으로 읽지 않는다. 이 표는 값의 표현 규칙이고 endpoint별 지원 여부는 각 실행 명세의 제한 문장으로 확인한다. Object 값은 primary key만 담아 object type을 스스로 드러내지 않으므로, 클라이언트는 metadata의 `objectTypeApiName`과 함께 해석한다(설계 제안). 실제 호출은 시험하지 않았다.
 
 ### Entry-set의 실행 조건은 metadata 조회와 별개다
 
@@ -97,7 +99,7 @@ QueryDataType은 scalar 외에 struct, set/array, union, null, void, attachment,
 
 두 조회 응답 모두 `parameters`와 `typeReferences`는 선택 필드이고 `output`은 필수다. 클라이언트 구현에서는 예제에 map이 있다고 해서 모든 응답에 존재한다고 가정하지 않고, 실제 `output`과 참조 타입을 확인한 뒤 실행 경로를 선택한다(설계 제안). 조회 명세의 설명 문구만으로 SSE 호출이 entry-set을 처리한다고 단정하지 않으며, 구체적인 실행 endpoint와 결과 회수 계약을 별도로 확인한다.
 
-2026-11-02 대조는 두 조회 endpoint의 응답 필드와 entry-set 요구에, 2026-11-17 대조는 같은 두 명세의 개정분(entry-set 문장 삭제, Ontology object와 interface variant 추가)과 Execute Query의 지원 제한 문장에 한정했다. 실제 비동기 실행은 시험하지 않았고 기존 실행 endpoint 전체의 호환성도 재검증하지 않았으므로 frontmatter의 검증일은 유지한다.
+2026-11-02 대조는 두 조회 endpoint의 응답 필드와 entry-set 요구에, 2026-11-17 대조는 같은 두 명세의 개정분(entry-set 문장 삭제, Ontology object와 interface variant 추가)과 Execute Query의 지원 제한 문장, DataValue 표에 한정했다. 같은 날 수집한 Get By Rid Queries Batch 명세도 응답 Query 타입에서 entry-set의 비동기 실행 문장이 빠지고 같은 네 variant가 들어가 단건 조회와 같은 개정이 반영된 것을 확인했다. 실제 비동기 실행은 시험하지 않았고 기존 실행 endpoint 전체의 호환성도 재검증하지 않았으므로 frontmatter의 검증일은 유지한다.
 
 ## SSE는 HTTP 성공 이후에도 실패할 수 있다
 
