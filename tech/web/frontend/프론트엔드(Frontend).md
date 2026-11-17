@@ -16,6 +16,7 @@ aliases: ["Frontend", "프론트엔드"]
 
 
 - [[WebGPU-Cross-Runtime|WebGPU 코드 공유]] — vgpu, WGSL 모듈과 환경별 초기화
+- [[Web-3D-Adoption|웹 3D 채택의 장벽과 AI 코딩 이후의 변화]] — 보안 경계, 기기 호환성과 구현 난이도, WebGPU 지원 범위, three.js 다운로드 증가를 읽는 법, 개인 3D 공간 사례와 도입 전 점검
 - [[Desktop-App-Runtime-Choices|데스크톱 앱 런타임 선택]] — Electron의 다중 프로세스, 시스템 WebView의 엔진 차이, 네이티브 GPU UI의 성숙도와 메모리 비교 조건
 - [[Cross-Platform-Keyboard|플랫폼별 키보드 입력]] — 문자 입력, 단축키와 기본 편집 보존
 - [[URL-Embedded-Documents|URL에 담긴 문서]] — 사본 공유, fragment와 저장 경계

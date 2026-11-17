@@ -81,7 +81,22 @@ Google의 AdSense 준비 안내는 방문자에게 관련 있는 독자적 콘�
 
 이는 신청과 운영의 점검 항목이며, 방문자 수나 연결 방식만으로 승인 가능성을 계산하는 기준은 아니다. 기존 수익 추정과 운영자 사례 전체를 다시 검증한 것은 아니므로 문서의 기존 검증일은 유지한다.
 
+## 자동 방문은 광고 노출이 아니다
+
+HTML만 가져가는 크롤러는 광고 스크립트를 실행하지 않아 광고 노출을 만들지 않는다. 브라우저를 구동하는 자동 방문이 노출이나 클릭을 만들더라도 광고 네트워크의 무효 트래픽 판정 대상이어서 수입으로 이어진다고 볼 수 없다(구조에 대한 설명이며 네트워크별 판정 기준은 대조하지 않았다). 사람이 검색 결과를 눌러 들어오는 대신 AI가 대신 읽고 답을 전하면, 사이트에는 서버 비용이 생기고 사람이 보는 광고 노출은 생기지 않는다. 따라서 요청 수가 늘어도 광고 수입이 따라 늘지 않을 수 있고, 수익 계산의 분모는 사람이 본 페이지뷰로 좁혀야 한다.
+
+- **자동 방문의 규모**: Cloudflare의 2025년 집계에서 Googlebot을 뺀 AI 봇은 HTML 요청의 4.2%, Googlebot 하나가 4.5%였다. 같은 집계에서 2025-12-02 기준 사람의 요청은 HTML 요청의 47%, AI가 아닌 봇은 44%여서 자동 요청 전체는 AI 봇의 비중보다 훨씬 크다. 사용자의 요청을 받아 AI가 페이지를 가져오는 방문은 한 해 동안 15배 넘게 늘었다(요약 기준, 본문은 1월부터 12월 초까지 21배 넘게로 적는다). 한 사업자의 네트워크 기준이다. 인터넷 트래픽의 상당 부분이 AI라는 말은 이 자료로는 뒷받침되지 않고, 증가 속도가 빠르다는 데까지만 확인된다.
+- **제3자 사이트 광고의 추이**: Alphabet의 Google Network 매출(AdMob, AdSense, Google Ad Manager로 다른 사이트와 앱에 게재한 광고)은 2022년 327억 8,000만 달러에서 2023년 313억 1,200만, 2024년 303억 5,900만, 2025년 297억 9,200만 달러로 3년 연속 줄었다. 같은 기간 회사 전체 매출은 늘었다. 연차보고서는 감소 요인으로 2023년 Google Ad Manager와 AdSense, 2024년 Google Ad Manager와 AdMob 및 환율, 2025년 AdSense(AdMob 증가가 일부 상쇄)를 들었고 AI를 원인으로 적지 않았다. 2026년 3분기는 74억 5,500만 달러로 전년 같은 분기 73억 5,400만 달러보다 많다. 이 추이를 AI 방문 때문이라고 읽는 것은 확인되지 않은 해석이다.
+- **기여의 감소**: 질문과 답변이 쌓이던 사이트의 신규 질문 감소 사례와, 그 원인을 AI로 단정하지 못하는 이유는 [[Community-Knowledge-and-Co-Creation#신규 질문 수와 커뮤니티 가치|신규 질문 수와 커뮤니티 가치]]에 있다.
+
+적용 제안: 광고 기반 사이트를 계획할 때 서버 로그의 요청 수와 광고 보고서의 페이지뷰를 따로 기록하고, 자동 방문은 [[Bot-Traffic-Operations|봇 트래픽의 관측과 제한]]의 기준으로 분리한다. 이용자가 서로의 공간을 오가며 생기는 유입을 광고비보다 앞에 두는 견해는 [[Web-3D-Adoption#사례: 개인이 만든 3D 공간의 확산 (2026년 가을, 한국)|개인 3D 공간 사례]]에 있다. 2026-11-17 이 절만 부분 대조했으며 기존 검증일은 유지한다.
+
 ## 출처
+
+- [Alphabet Inc., Form 10-K for the fiscal year ended December 31, 2025](https://www.sec.gov/Archives/edgar/data/1652044/000165204426000018/goog-20251231.htm) — 2026-11-17 MD&A의 유형별 매출 표와 Google Network 증감 설명 대조. 2022~2024년 값은 [FY2023](https://www.sec.gov/Archives/edgar/data/1652044/000165204424000022/goog-20231231.htm)과 [FY2024](https://www.sec.gov/Archives/edgar/data/1652044/000165204425000014/goog-20241231.htm) 10-K의 같은 표로 대조
+- [Alphabet Announces Third Quarter 2026 Results — Alphabet](https://www.sec.gov/Archives/edgar/data/1652044/000165204426000080/googexhibit991q32026.htm) — 2026-10-28 발표, 2026-11-17 분기 Google Network 매출 대조
+- [The 2025 Cloudflare Radar Year in Review — Cloudflare](https://blog.cloudflare.com/radar-2025-year-in-review/) — 2026-11-17 AI 봇의 HTML 요청 비중과 사용자 행동 크롤링 증가 대조
+- [AI가 바꿔놓은 웹 개발의 미래 — YouTube, 홍정모](https://www.youtube.com/watch?v=BO-BTTnITnM) — 2026-11-14 라이브, 2026-11-17 음성 인식 전사 전체 확인. 자동 방문과 광고 수익을 나눠 보는 문제 제기의 계기이며 수치의 근거로 쓰지 않음
 
 - [Google AdSense Help, Add a new site to your AdSense sites list](https://support.google.com/adsense/answer/12169212?hl=en) — 2026-11-04 연결 방식, 광고 크롤러와 검토 요청 단계 대조
 - [Google AdSense Help, What to do when your site is not ready to show ads](https://support.google.com/adsense/answer/12176698?hl=en) — 2026-11-04 공개 접근, 비밀번호와 robots.txt, 계정 활성화 후 크롤러 로그인 예외 대조
@@ -106,5 +121,7 @@ Google의 AdSense 준비 안내는 방문자에게 관련 있는 독자적 콘�
 ## 관련 문서
 
 - [[Metrics-Framework|지표 설계]]
+- [[Bot-Traffic-Operations|봇 트래픽의 관측과 제한]] — 자동 방문의 식별과 분리
+- [[Community-Knowledge-and-Co-Creation|커뮤니티 지식 축적과 공동창작]] — 신규 기여 감소와 축적 지식의 수익화
 - [[Content-Marketing|콘텐츠 마케팅]]
 - [[Lead-Magnet-and-Entry-Offer|리드 마그넷과 진입 제안]]

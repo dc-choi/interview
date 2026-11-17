@@ -24,7 +24,7 @@ aliases: ["HTTP 상태 코드", "HTTP Status Code", "401 vs 403", "502 vs 504"]
 
 - `200 OK`: Method에 따른 일반 성공이다.
 - `201 Created`: 하나 이상의 Resource가 생성됐다. 주 Resource의 URI를 `Location`으로 보낼 수 있다.
-- `202 Accepted`: 처리를 접수했지만 아직 완료하지 않았다. 처리 상태를 조회할 Monitor URI나 결과 확인 방법을 표현에 제공한다.
+- `202 Accepted`: 처리를 접수했지만 아직 완료하지 않았다. 처리 상태를 조회할 Monitor URI나 결과 확인 방법을 표현에 제공한다([[Async-Job-API|비동기 작업 API]]).
 - `204 No Content`: 성공했으며 응답 content가 없다. 204 응답에 content를 넣지 않는다.
 - `206 Partial Content`: Range 요청의 일부 Representation을 반환한다.
 

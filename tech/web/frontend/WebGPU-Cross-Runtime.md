@@ -31,5 +31,6 @@ CPU 계산을 GPU로 옮길 때는 입력 전송, 파이프라인 준비와 결�
 
 ## 관련 문서
 
+- [[Web-3D-Adoption|웹 3D 채택의 장벽과 AI 코딩 이후의 변화]] — 브라우저별 WebGPU 지원 범위
 - [[Browser-Main-Thread-Offloading|브라우저 작업 분담]]
 - [[GPU-Server-Infrastructure|GPU 메모리와 실행 구조]]

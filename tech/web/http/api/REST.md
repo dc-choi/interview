@@ -138,7 +138,7 @@ REST API 자체가 성능 튜닝 대상은 아니지만, 설계, 응답 수준�
 - **응답 압축** — `Accept-Encoding: gzip, br`를 활용한다. Streaming 응답은 압축 임계치와 Proxy buffering 동작을 측정한다.
 - **HTTP 캐싱** — `Cache-Control`, `ETag`, `If-None-Match`로 304 응답. CDN, Reverse Proxy 캐시 레이어 활용
 - **N+1 회피** — Repository 계층에서 연관 엔티티 한 번에 로딩(fetch join, DataLoader 패턴)
-- **비동기 처리** — 무거운 작업은 202 Accepted + 폴링/웹훅으로 분리
+- **비동기 처리** — 무거운 작업은 202 Accepted + 폴링/웹훅으로 분리([[Async-Job-API|비동기 작업 API]])
 - **HTTP/2, HTTP/3** — multiplexing으로 커넥션 수 절감. 정적 리소스 많은 API에 특히 유효
 - **Partial Response** — 대용량 파일은 `Range` 헤더로 부분 요청 허용
 

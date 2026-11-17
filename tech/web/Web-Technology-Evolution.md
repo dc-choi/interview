@@ -80,6 +80,7 @@ jQuery는 브라우저 호환성 문제를 크게 줄였고 Flash는 초기 멀�
 
 ## 관련 문서
 
+- [[Web-3D-Adoption|웹 3D 채택의 장벽과 AI 코딩 이후의 변화]] — 표준 API가 있어도 채택이 느렸던 이유
 - [[Internet-vs-Web|인터넷과 웹]]
 - [[Web-Service-Structure|웹 서비스의 구조]]
 - [[Mobile-App-Architectures|모바일 앱 아키텍처]]

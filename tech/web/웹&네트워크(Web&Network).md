@@ -30,6 +30,7 @@ aliases: ["웹&네트워크(Web&Network)", "Web & Network"]
 - [x] [[Unity-UI-Canvas-Batching|Unity UI 캔버스 배칭과 분할]] — 캔버스 전체 재구성, 갱신 주기별 분할과 드로우콜 증가의 균형
 - [[Satellite-Direct-to-Device|위성 직접 연결]] — LTE와 NTN 방식, 도플러와 서비스 지원 조건
 - [[WebGPU-Cross-Runtime|WebGPU 코드 공유]]
+- [[Web-3D-Adoption|웹 3D 채택의 장벽과 AI 코딩 이후의 변화]]
 - [[Cross-Platform-Keyboard|플랫폼별 키보드 입력]]
 - [[URL-Embedded-Documents|URL에 담긴 문서]]
 - [x] [[Bootstrap-6-Migration|Bootstrap 6 전환]] — alpha 기준 클래스와 Sass, JavaScript 로딩과 브라우저 조건
