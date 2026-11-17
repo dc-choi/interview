@@ -31,17 +31,17 @@ outputs는 alias별 Model RID다. 응답 Config Version은 integer version과 �
 
 ### Branch 선택
 
-2026-11-17 수집한 Create, List, Get과 Latest 명세에는 optional `branch` query parameter가 있다. 값은 branch RID나 dataset branch identifier이며 global branch를 가리켜야 한다. `main`, `master`를 포함한 non-global branch 이름은 `FoundryBranchNotFound`로 거부된다. 생략하면 default branch에서 만들거나 읽는다.
+2026-11-17 수집한 Config Version의 Create, List, Get, Latest와 Launch, List Runs 명세에는 optional `branch` query parameter가 있다. 값은 branch RID나 dataset branch identifier이며 global branch를 가리켜야 한다. `main`, `master`를 포함한 non-global branch 이름은 `FoundryBranchNotFound`로 거부된다. 생략하면 default branch에서 만들거나 읽는다.
 
-API에 `branch=main`을 넣지 않는다. default branch는 parameter를 생략하고, 다른 branch는 global branch의 RID나 dataset branch identifier로 지정한다. UI 문서가 초기 학습 위치로 부르는 `main`이 API의 default branch에 해당한다는 것은 추론이다. Create와 List의 `FoundryBranchNotFound`는 errorResponses 목록에는 없고 parameter 설명에만 나오므로 공통 오류 처리 경로에서도 받을 수 있게 둔다.
+API에 `branch=main`을 넣지 않는다. default branch는 parameter를 생략하고, 다른 branch는 global branch의 RID나 dataset branch identifier로 지정한다. UI 문서가 초기 학습 위치로 부르는 `main`이 API의 default branch에 해당한다는 것은 추론이다. `branch`를 받는 여섯 명세 모두 `FoundryBranchNotFound`가 errorResponses 목록에는 없고 parameter 설명에만 나오므로 공통 오류 처리 경로에서도 받을 수 있게 둔다.
 
-Launch와 Runs는 2026-10 수집본만 있고 그 수집본에는 `branch`가 없어 이번에 현재 명세와 대조하지 않았다. 다른 branch에 config를 만든 뒤 아래 Launch를 호출할 때는 현재 명세의 branch 지정 여부를 먼저 확인한다. 그렇지 않으면 default branch의 최신 config로 실행될 수 있다. branch별 configuration 복사와 병합 흐름은 [[Palantir-Model-Studio-Workflow]]를 따른다.
+Launch에서 `branch`를 생략하면 default branch의 최신 Config Version으로 실행한다. 다른 branch에 config를 만들었다면 Launch에도 같은 branch를 넘긴다. 지정한 branch의 최신 config로 실행된다는 것은 생략 시 설명과 UI의 branch별 학습 설명에 근거한 해석이며, config가 없는 branch를 API로 Launch할 때의 동작은 명세에 없다. List Runs도 생략하면 default branch의 run만 반환하므로 branch에서 실행한 run은 같은 `branch`로 조회한다. branch별 configuration 복사와 병합 흐름은 [[Palantir-Model-Studio-Workflow]]를 따른다.
 
 ## Launch는 최신 Config를 실행한다
 
-`POST /modelStudios/{modelStudioRid}/launch`는 body 없이 **최신 Config Version**으로 새 학습 Run을 시작한다. 특정 과거 버전을 지정하는 인자를 임의로 추가하지 않는다. models-write scope를 사용하며 응답의 configVersion과 buildRid/jobRid를 추적한다. 반환 성공은 학습 완료가 아니다.
+`POST /modelStudios/{modelStudioRid}/launch`는 body 없이 **최신 Config Version**으로 새 학습 Run을 시작한다. query로는 optional `branch`와 `preview`만 받으며 특정 과거 버전을 지정하는 인자는 없다. models-write scope를 사용하며 응답의 configVersion과 buildRid/jobRid를 추적한다. 반환 성공은 학습 완료가 아니다.
 
-`GET /modelStudios/{modelStudioRid}/runs`는 optional configVersion으로 필터하고 paging한다. Run은 runId, build/job RID, configVersion, startedBy/time과 optional buildStatus/resolvedOutputs를 담는다. runId는 studio/config/build에서 유도한 식별자다.
+`GET /modelStudios/{modelStudioRid}/runs`는 optional `branch`와 configVersion으로 범위를 좁히고 pageToken/pageSize로 paging한다. errorResponses에는 ModelStudioConfigVersionNotFound(studioRid, configVersion)가 있으며 발생 조건은 명세에 없다. Run은 runId, build/job RID, configVersion, startedBy/time과 optional buildStatus/resolvedOutputs를 담는다. runId는 studio/config/build에서 유도한 식별자다.
 
 resolvedOutputs는 alias별 Model RID와 생성한 Model Version RID, optional Experiment RID를 제공한다. configured output Model과 실제로 만든 버전/실험은 구별한다. buildStatus RUNNING/SUCCEEDED/FAILED/CANCELED와 없는 상태를 다루고 [[Palantir-Build-Job-API]]로 실행을 연결한다.
 
