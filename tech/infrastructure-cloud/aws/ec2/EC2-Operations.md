@@ -214,6 +214,18 @@ AMI 기반 표준화는 부팅 시간 단축, 구성 일관성 확보의 핵심 
 
 운영 점검 제안: 계정 간 이전에서 대상 AMI로 새 인스턴스를 시작한 뒤 애플리케이션 설정이 원본 계정의 데이터와 서비스에 계속 연결되는지 확인한다. 복사 완료와 서비스 이전 완료를 구분하고 원본 정리는 별도로 결정한다. 실제 계정 간 복사나 부팅 시험은 수행하지 않았으며 기존 절 전체의 검증일은 유지한다.
 
+### Launch more like this와 인스턴스에서 AMI 만들기
+
+부분 검증(2026-11-17): EC2의 Launch more like this와 EBS 기반 AMI 생성 공식 문서를 대조했다. 두 기능은 같은 옵션의 서버와 같은 내용의 서버라는 차이가 있다.
+
+- **Launch more like this:** 실행 중인 인스턴스의 일부 구성(AMI ID, 인스턴스 타입, 서브넷, 보안 그룹, IAM 역할, 태그, User Data 등)을 시작 마법사에 채울 뿐 인스턴스를 복제하지 않는다. 스토리지는 원본이 아니라 AMI와 인스턴스 타입의 기본 구성으로 정해지고 네트워크 인터페이스도 기본 1개다. 따라서 원본에서 직접 설치하거나 바꾼 디스크 내용은 따라오지 않는다고 보는 것이 맞다(문서는 볼륨 데이터 복사를 언급하지 않는다).
+- **Create image:** 인스턴스의 루트 볼륨과 연결된 다른 EBS 볼륨의 스냅샷을 만들어 AMI로 등록한다. 설치한 소프트웨어와 설정이 디스크 상태 그대로 남으므로 이 AMI로 같은 내용의 인스턴스를 여러 대 시작할 수 있다. AWS도 인스턴스의 사본이 필요하면 AMI를 먼저 만들라고 안내한다.
+- **재부팅 기본값:** 콘솔은 정지 상태의 데이터로 일관된 스냅샷을 만들기 위해 기본으로 인스턴스를 재부팅한다. 재부팅을 끄면(`--no-reboot`) 파일 시스템 무결성을 보장하지 않으므로 애플리케이션 쓰기를 멈췄거나 파일 시스템을 freeze할 수 있을 때만 쓴다.
+- **포함되지 않는 것:** 새 인스턴스의 instance store 볼륨은 원본 instance store 데이터를 담지 않는다. AMI는 EBS 볼륨 스냅샷으로 만들어지므로 디스크에 기록되지 않은 실행 중 메모리 내용은 담기지 않는다(문서가 메모리를 직접 언급하지는 않는다).
+- **비용과 시간:** AMI의 스냅샷은 AMI 등록 해제와 스냅샷 삭제 전까지 과금된다. 생성은 경우에 따라 최대 24시간까지 걸릴 수 있다. 미리 스냅샷을 만들어 두면 AMI 생성 단계는 빨라지지만 스냅샷 생성의 총 소요 시간은 같다.
+
+운영 점검 제안: 같은 설정만 반복하려면 Launch Template, 설치까지 같은 서버가 필요하면 AMI(가능하면 Packer 등으로 재현 가능한 베이크)를 쓴다. 비밀 값이나 인스턴스 고유 설정이 디스크에 남아 있으면 AMI로 함께 복제되므로 생성 전에 정리한다. 실제 이미지 생성은 수행하지 않았으며 기존 절 전체의 검증일은 유지한다.
+
 ## 출처
 
 - [AWS 공식 문서, Run commands when you launch an EC2 instance with user data input](https://docs.aws.amazon.com/AWSEC2/latest/UserGuide/user-data.html)
@@ -221,6 +233,8 @@ AMI 기반 표준화는 부팅 시간 단축, 구성 일관성 확보의 핵심 
 - [AWS 공식 문서, Share an AMI with specific AWS accounts](https://docs.aws.amazon.com/AWSEC2/latest/UserGuide/sharingamis-explicit.html)
 - [AWS 공식 문서, How Amazon EC2 AMI copy works](https://docs.aws.amazon.com/AWSEC2/latest/UserGuide/how-ami-copy-works.html)
 - [AWS 공식 문서, Copy an Amazon EC2 AMI](https://docs.aws.amazon.com/AWSEC2/latest/UserGuide/CopyingAMIs.html)
+- [AWS 공식 문서, Launch an EC2 instance using details from an existing instance](https://docs.aws.amazon.com/AWSEC2/latest/UserGuide/launch-more-like-this.html)
+- [AWS 공식 문서, Create an Amazon EBS-backed AMI](https://docs.aws.amazon.com/AWSEC2/latest/UserGuide/creating-an-ami-ebs.html)
 - [AWS 공식 문서, AWSSupport-UpgradeWindowsAWSDrivers](https://docs.aws.amazon.com/systems-manager-automation-runbooks/latest/userguide/automation-awssupport-upgradewindowsawsdrivers.html)
 - [AWS 공식 문서, Amazon EC2 instance state changes](https://docs.aws.amazon.com/AWSEC2/latest/UserGuide/ec2-instance-lifecycle.html)
 - [AWS 공식 문서, Troubleshoot impaired Windows instance with the EC2Rescue GUI](https://docs.aws.amazon.com/AWSEC2/latest/UserGuide/ec2rw-gui.html)

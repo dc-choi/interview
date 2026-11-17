@@ -82,4 +82,5 @@ NVIDIA는 표준 HBM4e 대비 스택당 대역폭 최대 30% 증가와 HBM 전�
 ## 관련 문서
 
 - [[Sequential-Logic-and-Memory|순차 논리회로와 메모리]]
+- [[DRAM-Cell-and-3D-DRAM|DRAM 셀과 3D DRAM]] — 셀 적층형 3D DRAM과 HBM 다이 적층의 구분
 - [[LLM-Inference-Bottlenecks|LLM 추론 병목]]
