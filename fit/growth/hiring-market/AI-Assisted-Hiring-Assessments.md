@@ -34,6 +34,18 @@ CJ올리브영은 AI와 함께 문제를 해결하는 역량을 더 면밀히 �
 
 넥슨 사례는 회사 뉴스룸 원문을 찾지 못해 보도로 확인했다. 2026-10-29 공개된 채용 세미나는 무신사의 AI 네이티브 신입 채용과 엔씨소프트의 AI 리터러시 검증도 소개했지만, 이 문서에서는 원문을 대조하지 못해 표에 넣지 않았다. 검색 결과 요약으로는 무신사(2026년 1월 신입 공채)가 코딩 테스트 뒤에 AI 도구 활용 테스트를 두었고, 엔씨소프트(2025년 하반기 2026년 신입 공채)가 온라인 코딩 테스트를 유지하면서 서류와 면접에서 AI 활용 역량을 평가했다고 보도됐다(미대조). 같은 세미나의 강사는 OpenAI 채용 총괄의 발언이라며 빈 폴더에서 공개 URL 배포까지 해내는 사람을 뽑는다는 기준을 소개하면서 원문 표현과는 다르다고 밝혔다. 이 문서는 그 원문을 찾지 못했다.
 
+Meta는 지원자가 AI 어시스턴트를 쓰는 코딩 면접을 개발 중이라고 2025년 7월 보도됐다. 보도가 인용한 사내 공지는 그 방식이 입사 뒤의 개발 환경을 더 잘 대표하고 LLM을 이용한 부정행위의 효과를 줄인다고 설명했다(404 Media의 보도를 인용한 기사로 확인, 회사 공식 발표와 현재 적용 범위는 대조하지 못함).
+
+## AI가 과제를 풀어 버릴 때의 재설계와 AI 없이 보는 기본값
+
+AI를 쓰게 하는 전형에서도 모델이 과제를 사람만큼 풀게 되면 과제를 다시 만들어야 한다. 이와 별개로, 따로 허용한다고 알리지 않는 한 AI 없이 치르게 하는 전형도 있다.
+
+- **과제 재설계(Anthropic)**: Anthropic의 성능 엔지니어링 팀은 2024년 초부터 가상 가속기용 코드를 최적화하는 take-home 과제를 썼고 1,000명 넘는 지원자가 치렀다. 이 과제는 AI 도구 사용을 명시적으로 허용했다. 과제는 지금까지 세 판이 있었다. 4시간짜리 첫 판에서 같은 제한 시간의 Claude Opus 4가 대부분의 지원자보다 나은 결과를 냈고, 회사는 과제를 고쳐 제한 시간을 2시간으로 줄였다. 그 둘째 판에서 출시 전 Opus 4.5는 담당자가 달성 가능한 수치를 알려 준 뒤 2시간 시점에 그 시간 제한 안의 사람 최고 점수와 같아졌다(그 사람도 Claude 4를 많이 썼다). 회사는 내부 실행 환경에서도 2시간 안에 사람을 앞서는 것을 확인했다고 적었다. 시간 제한이 없으면 사람의 최고 성과가 여전히 높다고 한다. 회사는 셋째 판을 낯설고 제약이 큰 명령어 집합의 퍼즐로 다시 만들었고 시각화나 디버깅 도구를 일부러 주지 않았다. 디버깅 수단에 얼마나 투자할지의 판단이 평가의 일부이며, 코딩 모델에게 디버거를 만들게 하는 선택도 열려 있다. 담당자는 AI 사용을 금지하자는 제안을 받아들이지 않았다(2026-01-21 회사 기술 블로그).
+- **기본값은 사용 금지(Anthropic)**: 같은 회사의 지원자 안내는 이력서 다듬기와 면접 준비에 Claude를 쓰라고 권하면서, take-home은 Claude 없이, 실시간 면접은 AI 도움 없이 치르되 둘 다 회사가 따로 알리는 경우는 예외라고 적는다. 안내가 든 이유는 take-home에서는 지원자 고유의 역량과 강점을, 실시간 면접에서는 문제를 실시간으로 풀어 가는 사고를 보려는 것이다.
+- **허용 범위는 회사와 단계마다 다르다(이 문서의 정리)**: 위 표의 세 회사는 일부 전형에서 AI 사용을 전제로 과정을 보고, Jane Street의 대부분 라운드와 Anthropic의 기본값은 AI 없이 본다. 같은 회사 안에서도 과제마다 다르므로 전형별 안내를 확인한다.
+
+면접 중 답을 띄워 주는 도구의 확산과 그에 따른 대면 면접 회귀(Google, Cisco, McKinsey)는 2026-11 영상 두 편이 전한 내용이다. 채용 책임자의 72%가 지원자 부정을 막으려고 대면 라운드를 요구한다는 Gartner 조사 수치는 신원 조회 업체의 보고서가 인용한 문장으로만 확인했고 Gartner 원문과 원 보도는 대조하지 못했다. AI로 쓴 지원서 검토로 채용이 느려졌다는 HR 책임자 응답 67%와 AI 지원서로 경쟁이 심해졌다는 직장인 응답 46%는 조사 기관을 확인하지 못해 근거로 쓰지 않는다. 원격 채용에서 신원을 꾸민 지원자가 통과한 사례와 채용 쪽의 확인 수단은 [[Targeted-Social-Engineering#반대 방향: 위장 지원자가 채용 절차를 통과한다|위장 지원자가 채용 절차를 통과한다]]에 있다. 도구 없이 보는 자리가 남아 있으므로 기본 개념을 말로 설명하는 연습은 유지한다(적용 제안).
+
 ## 준비할 때의 판단
 
 아래는 세미나 강사의 주장과 이를 바탕으로 한 적용 제안이며 채용 결과로 검증된 기준은 아니다.
@@ -57,10 +69,18 @@ CJ올리브영은 AI와 함께 문제를 해결하는 역량을 더 면밀히 �
 - [2026 개발자 채용과 준비법 패스트캠퍼스 세미나 — YouTube, 잔재미코딩(DaveLee)](https://www.youtube.com/watch?v=7n-_Mp_zcP4) — 2026-10-29 공개, 패스트캠퍼스 유료 강의 홍보 세미나. 정리의 계기이며 준비 판단의 강사 주장 출처
 - [Our software engineering interviews are changing (a little) — Jane Street Tech Blog, Matthew Saffer](https://blog.janestreet.com/software-engineering-interviews-are-changing-a-little/) — 2026-11-02 게시, 2026-11-16 대상과 시험 시점, 유지하는 라운드, 새 라운드의 평가 범위와 LLM 사용 기대 대조
 - [Jane Street의 소프트웨어 엔지니어링 면접이 조금 달라집니다 — GeekNews](https://news.hada.io/topic?id=37075) — 2026-11-16 접속 시 브라우저 확인 페이지로 요약 미열람, 위 원문으로 대조
+- [Designing AI-resistant technical evaluations — Anthropic Engineering, Tristan Hume](https://www.anthropic.com/research/AI-resistant-technical-evaluations) — 2026-01-21 게시, 2026-11-17 과제의 시작 시점, 응시자 수, AI 허용, 모델별 결과와 재설계 내용 대조
+- [Guidance on Candidates' AI Usage — Anthropic](https://www.anthropic.com/candidate-ai-guidance) — 2026-11-17 take-home과 실시간 면접의 AI 사용 기준 대조. 게시일 표기 없음(최종 수정 2025-07-10 표기)
+- [Cybersecurity interviews have become insane — YouTube, rootsh](https://www.youtube.com/watch?v=uDPCRswVx24) — 2026-11-16 공개, 음성 인식 전사문 기준. 정리의 계기. 면접 부정행위 도구와 대면 면접 회귀에 관한 내용은 대조하지 못함
+- [Meta says it will let candidates use AI in some job interviews — TechRadar](https://www.techradar.com/pro/meta-is-going-to-let-candidates-use-ai-in-job-interviews) — 2025-07-30 게시, 2026-11-17 인용된 사내 공지 문장 대조. 1차 보도는 404 Media
+- [The hiring hoax 2026: Fraud doesn't end at the offer — Checkr](https://checkr.com/resources/articles/hiring-hoax-manager-survey-2026) — 2026-11-17 Gartner 조사를 인용한 문장만 확인. 신원 조회 업체의 자료이며 2차 인용
+- [Why AI Replacing Software Engineers Has Completely Backfired — YouTube, Aman Manazir](https://www.youtube.com/watch?v=Di9OciIUe7w) — 2026-11-09 공개, 2026-11-17 음성 인식 전사 전체 확인. 취업 코칭 프로그램 홍보가 포함된 영상. 대면 면접 회귀와 지원서 설문 수치의 출처
 
 ## 관련 문서
 
+- [[Targeted-Social-Engineering|표적형 사회공학]] — 위장 지원자와 채용 쪽의 확인 수단
 - [[Take-Home-Assignment-Evidence|과제 전형 제출 근거]]
+- [[AI-Era-Hiring-Signals|AI 활용 역량을 채용에서 읽는 신호]] — 기업 발표의 기준과 면접 답변 구조
 - [[Live-Coding-Process|라이브 코딩과 설계 면접]]
 - [[Effort-Value-In-Hiring|채용 시장에서 노력의 가치]]
 - [[IT-Downturn-Career-Strategy-Developer-Strategy|개발자 대응 전략]]

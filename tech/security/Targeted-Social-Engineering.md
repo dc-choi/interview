@@ -3,12 +3,12 @@ tags: [security, social-engineering, phishing, developer-security, supply-chain,
 status: done
 verified_at: 2026-11-17
 category: "보안(Security)"
-aliases: ["Targeted Social Engineering", "표적형 사회공학", "가짜 채용 면접", "Fake Job Interview Malware", "채용 위장 공격", "AI 개인화 사기", "크리에이터 채널 탈취"]
+aliases: ["Targeted Social Engineering", "표적형 사회공학", "가짜 채용 면접", "Fake Job Interview Malware", "채용 위장 공격", "AI 개인화 사기", "크리에이터 채널 탈취", "위장 지원자", "Fake IT Worker"]
 ---
 
 # 표적형 사회공학: 채용 위장과 AI로 개인화한 사기
 
-표적형 사회공학은 경력, 작품 소개처럼 공개된 정보로 상대에게 맞춘 신뢰를 만든 뒤 코드 실행, 정보 제공이나 송금을 요구하는 공격이다. 기술 취약점 없이도 정상 사용자의 손으로 첫 실행이 일어나므로, 방어는 탐지 도구 하나보다 업무 절차의 경계(어떤 기기에서 무엇을 실행해도 되는가)와 권한 경로의 분리에 둔다.
+표적형 사회공학은 경력, 작품 소개처럼 공개된 정보로 상대에게 맞춘 신뢰를 만든 뒤 코드 실행, 정보 제공이나 송금을 요구하는 공격이다. 기술 취약점 없이도 정상 사용자의 손으로 첫 실행이 일어나므로, 방어는 탐지 도구 하나보다 업무 절차의 경계(어떤 기기에서 무엇을 실행해도 되는가)와 권한 경로의 분리에 둔다. 신원을 꾸며 채용 절차 자체를 통과하려는 반대 방향의 위장도 같은 주제로 다룬다.
 
 ## 공개 정보가 신뢰 신호로 쓰이는 구조
 
@@ -42,6 +42,25 @@ Binance는 2026년에 북한 연계로 의심되는 사이버 위협 57건을 �
 
 - Homebrew는 설치를 소유한 계정으로 빌드와 설치를 실행한다(Homebrew FAQ). 그래서 같은 계정 권한으로 도는 악성 코드가 관리자 권한 없이 그 경로의 개발 도구를 바꿀 수 있고, PATH에서 앞서는 개발 도구 경로는 지속성 거점이 된다(해석).
 - 기기와 자격 증명을 교체한 뒤에도 같은 팀의 역할과 동료 관계가 표적으로 남았다. 단말 하나를 정리했다고 사건을 닫지 않고, 역할과 권한 경로 단위로 노출을 다시 본다(해석).
+
+## 반대 방향: 위장 지원자가 채용 절차를 통과한다
+
+앞 절은 가짜 채용 담당자가 지원자를 노리는 경우다. 반대로 지원자가 신원을 꾸며 원격 IT 직무에 채용되는 경우도 있다. 임금이 제재 대상 정권으로 흘러가고, 채용된 사람의 계정과 지급 장비가 내부 접근 경로가 된다. 아래는 표적이 된 기업이 스스로 공개한 두 사례다. KnowBe4는 실제 채용까지 갔고, Kraken은 채용 전에 알아챈 뒤 조사 목적으로 전형을 계속했다.
+
+| 사례 | 거친 절차 | 드러난 지점 |
+|---|---|---|
+| KnowBe4 (2024-07-23 자체 보고) | 소프트웨어 엔지니어 채용에서 화상 면접 네 차례, 신원 조회와 추천인 확인. 유효하지만 도용된 미국인 신원을 썼고 사진은 AI로 보정한 것이었다 | 지급한 Mac이 도착하자마자 악성코드를 받기 시작해 EDR이 탐지했다. 2024-07-15 21:55(EST)에 경보가 났고 SOC의 통화 요청을 피하다 응답을 끊자 22:20쯤 기기를 격리했다. 회사는 불법 접근이나 데이터 유출이 없었다고 밝혔다 |
+| Kraken (2025-05-01 자체 글) | 엔지니어링 직무 지원자가 여러 차례의 기술 평가를 거쳤다. 회사가 수법을 조사하려고 일부러 절차를 진행했다 | 첫 통화에 이력서와 다른 이름으로 접속했다가 바꿨고 목소리가 가끔 바뀌었다. 업계에서 받은 공격 집단 연관 이메일 목록과 지원 이메일이 일치했다. 최종 면접에서 위치 확인, 정부 발급 신분증 제시, 거주한다는 도시의 식당 추천을 요구하자 제대로 답하지 못했다 |
+
+KnowBe4가 설명한 운영 방식은 장비를 대신 받아 주는 주소로 업무용 기기를 배송시킨 뒤 VPN으로 접속하고, 미국 낮 시간에 맞춰 야간에 일하는 것이다. 회사는 수집한 자료를 Mandiant, FBI와 공유해 북한 IT 인력으로 확인했다고 밝혔다.
+
+- **규모(벤더와 기업 발표)**: CrowdStrike는 2025-08-04 보도자료에서 북한 연계 공격자가 생성형 AI로 가속한 공격으로 320곳 넘는 기업에 침투했다고 밝혔다(보도자료에 집계 기간은 없다). Amazon의 최고보안책임자는 2024-04 이후 북한 연계로 의심되는 지원자 1,800명 넘게를 막았고, 2025년에는 북한 연계 지원이 전 분기 대비 27%씩 늘었다고 말했다(The Register 2025-12-18 보도 기준, 원 게시글은 확인하지 못했다). 둘 다 자사 탐지 기준의 집계라 서로 비교하지 않는다.
+- **실시간 딥페이크의 문턱**: Palo Alto Networks Unit 42는 이미지 편집 경험이 없는 연구자 한 명이 5년 된 컴퓨터로 70분 만에 면접용 합성 신원을 만들었다고 보고했다(2025-04). 같은 글이 든 탐지 단서는 빠른 머리 움직임에서 생기는 화면 깨짐, 손이 얼굴을 가릴 때의 복원 실패, 조명이 급변할 때의 가장자리 불일치, 입 모양과 소리의 지연이다. 글 작성 시점의 한계이므로 계속 통한다고 가정하지 않는다.
+- **신원 조회가 도용된 실제 신원을 걸러내지 못할 수 있다**: KnowBe4의 사례에서 조회 결과는 깨끗했고, 회사는 사후에 조회가 미흡해 보이며 쓰인 이름들이 일치하지 않았다고 평가했다. 회사가 든 보완책은 원격 기기 점검, 지원자가 실제로 그 장소에 있는지 확인, 이력의 불일치 검토, 화상으로 하는 업무 질문, 장비 배송 주소와 거주지가 다르면 경고로 보기, 이메일만으로 추천인을 확인하지 않기다.
+- **입사 초기의 권한 제한이 피해 범위를 줄인다(해석)**: KnowBe4에서는 EDR 경보 뒤 25분쯤 만에 기기를 격리했고, 회사는 신규 입사자가 제한된 영역에서 시작해 운영 시스템 접근 권한이 없었던 점을 다행으로 꼽았다. 채용 단계에서 걸러내지 못한 경우를 전제로 한 통제다.
+- **단일 질문에 기대지 않는다**: Kraken이 실제로 쓴 것은 업계에서 받은 이메일 목록 대조, 공개 정보 조사, 신분증과 위치 확인의 결합이고, KnowBe4에서 위장이 드러난 계기는 채용 단계의 확인이 아니라 입사 뒤의 EDR 경보와 SOC 대응이다. Kraken은 확인 질문에 패턴을 만들지 말라고 권하고, Unit 42는 어느 한 가지 탐지 방법도 보호를 보장하지 않는다고 적는다. 특정 정치 지도자를 비난하게 해 가려낸다는 창업자 발언이 보도됐다고 하나 이 문서는 그 보도를 대조하지 못했다.
+
+AI 사용 조건과 과제 재설계처럼 전형 쪽에서 생긴 변화는 [[AI-Assisted-Hiring-Assessments|AI 활용 과제 전형]]에 있다. 원격 면접의 신뢰 저하로 대면 면접이 늘었다는 주장은 그 문서에서도 대조하지 못한 상태다.
 
 ## AI로 개인화한 사기 메일과 광고
 
@@ -82,6 +101,7 @@ YouTube 도움말(2026-11-17 확인)이 주는 판별 기준은 다음과 같다
 - 개발 단말의 권한이 운영 배포 토큰과 서명 경로로 바로 이어지지 않는가. 배포 토큰의 수명과 사용 위치를 제한했는가
 - 패키지 관리자 경로의 실행 파일 교체와 심볼릭 링크 변경을 탐지 신호로 모으는가(운영 제안)
 - 사내 AI 도구가 다른 직원의 단말이나 계정에 대해 할 수 있는 일을 권한 목록으로 관리하는가
+- 원격 채용에서 화상으로 신분증과 얼굴을 대조하고, 장비 배송 주소와 신고한 거주지가 같은지 확인하며, 추천인을 이메일 밖의 채널로 확인하는가. 신규 입사자의 초기 접근 권한을 제한하는가
 
 개인(구직자와 창작자):
 
@@ -93,6 +113,12 @@ YouTube 도움말(2026-11-17 확인)이 주는 판별 기준은 다음과 같다
 ## 출처
 
 - [29 October 2026 Binance Security Incident: Initial Findings and Response Update — Binance](https://www.binance.com/en/blog/community/3229153443759566763) — 2026-11-03 게시, 2026-11-09 공격 단계, 탐지 실패, 내부 AI 도구 언급, 위협 건수와 후속 조치 대조. 자체 조사
+- [How a North Korean Fake IT Worker Tried to Infiltrate Us — KnowBe4, Stu Sjouwerman](https://blog.knowbe4.com/how-a-north-korean-fake-it-worker-tried-to-infiltrate-us) — 2024-07-23 게시(2024-10-19 갱신 표기), 2026-11-17 채용 절차, 탐지 시각, 운영 방식과 권고 대조. 자체 보고
+- [How we identified a North Korean hacker who tried to get a job at Kraken — Kraken Blog](https://blog.kraken.com/news/how-we-identified-a-north-korean-hacker) — 2025-05-01 게시, 2026-11-17 징후, 조사 방법과 최종 면접의 확인 질문 대조. 자체 글
+- [False Face: Unit 42 Demonstrates the Alarming Ease of Synthetic Identity Creation — Palo Alto Networks Unit 42](https://unit42.paloaltonetworks.com/north-korean-synthetic-identity-creation/) — 2025-04-21 게시, 2026-11-17 제작 시간과 조건, 탐지 단서 대조
+- [CrowdStrike Releases 2025 Threat Hunting Report — CrowdStrike](https://www.crowdstrike.com/en-us/press-releases/crowdstrike-releases-2025-threat-hunting-report/) — 2025-08-04 보도자료의 침투 기업 수. 보고서 본문은 열람하지 못함
+- [Amazon blocked 1,800 suspected North Korean scammers seeking jobs — The Register, Jessica Lyons](https://www.theregister.com/2025/12/18/amazon_blocked_fake_dprk_workers/) — 2025-12-18 보도. 최고보안책임자의 게시글 원문은 확인하지 못함
+- [Cybersecurity interviews have become insane — YouTube, rootsh](https://www.youtube.com/watch?v=uDPCRswVx24) — 2026-11-16 공개, 음성 인식 전사문 기준. 정리의 계기이며 사례는 위 원문으로 대조, 창업자 발언 보도는 대조하지 못함. 풍자 형식의 영상이고 보안 교육 서비스의 협찬이 있다
 - [FBI, North Korea Aggressively Targeting Crypto Industry with Well-Disguised Social Engineering Attacks (I-090324-PSA)](https://www.ic3.gov/PSA/2024/PSA240903) — 2024-09-03 공익 경보의 수법, 징후와 권고
 - [Homebrew, FAQ](https://docs.brew.sh/FAQ) — 소유 계정으로 빌드와 설치를 실행하는 원칙
 - [Phishing campaign targets YouTube creators with cookie theft malware — Google Threat Analysis Group, Ashley Shen](https://blog.google/threat-analysis-group/phishing-campaign-targets-youtube-creators-cookie-theft-malware/) — 2021-10-20 게시, 2026-11-17 유인 수법, pass-the-cookie, 규모와 차단 수치 대조
@@ -109,3 +135,4 @@ YouTube 도움말(2026-11-17 확인)이 주는 판별 기준은 다음과 같다
 - [[HSM-Key-Custody|HSM 키 보관]] — 서명 서비스 악용과 위임 철회
 - [[Security-Incident-Response|보안 사고 대응]]
 - [[Security-Policy-and-Assessment|보안 정책과 점검]] — 역할별 교육과 의심 요청 신고
+- [[AI-Assisted-Hiring-Assessments|AI 활용 과제 전형]] — AI 사용 조건과 과제 재설계

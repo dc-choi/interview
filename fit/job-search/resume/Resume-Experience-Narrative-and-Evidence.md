@@ -204,3 +204,4 @@ AI 도구 이름이나 생성 결과만 나열하지 않는다. 개발자로서 
 - [[Resume-Portfolio-Writing-Guide|포트폴리오 작성 가이드]]
 - [[Career-Description-and-Pivot|경력기술서, 직무 전환]]
 - [[Hiring-Interview|채용 인터뷰]] — 채용자 관점의 신입 vs 경력 ROI
+- [[Experience-Selection-and-Job-Language|경험 선별과 직무 언어 번역]] — 대표 경험의 조건과 읽는 사람의 언어로 옮기는 단계
