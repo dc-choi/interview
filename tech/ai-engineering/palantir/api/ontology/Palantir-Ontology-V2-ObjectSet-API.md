@@ -17,7 +17,7 @@ V2 object는 V1의 rid/properties wrapper와 달리 property를 직접 담고 `_
 
 2026-11-03 release note(API Gateway 1.1891.0)는 API Gateway가 ontology-defined derived property를 기본으로 반환하지 않게 되며, 계속 받으려면 요청에서 명시적으로 선택하라고 안내했다. 쓰지 않는 property의 계산과 지연을 줄이려는 변경이다. 그러나 2026-11-13 확인한 Load Object Set과 List Objects 참조 문서는 그때까지 이 flag의 기본값을 true로 적어 release note와 어긋났다. release note 데이터의 prominence는 Basic이고, 2026-11-13 확인한 November 2026 공지 페이지에는 이 항목이 없었다. 당시의 이 불일치 때문에 derived property가 필요한 클라이언트는 기본 반환에 기대지 말고 select/selectV2에 넣는 것으로 정리했다. 그러면 flag 기본값과 무관하게 반환된다. 실제 enrollment의 버전 도달과 응답은 확인하지 않았다.
 
-2026-11-17 다시 수집한 List Linked Objects, Get Linked Object, Load Object Set, Load Multiple Object Types와 Load Objects Or Interfaces 참조 문서는 이 flag를 `Defaults to false`로 적는다. 2026-10-18 수집본은 모두 `Defaults to true`였다. 나머지 설명(명시적 selection이 있으면 무시, experimental)은 그대로다. List Objects 참조 문서는 2026-11-18 웹 조회 요약에서 false로 보였지만 원문 문장을 직접 대조하지 못했다. 이로써 참조 문서와 release note의 방향은 맞춰졌다. 다만 derived property가 필요한 클라이언트는 기본값이 다시 바뀌거나 enrollment마다 다르게 적용될 수 있으므로 flag에 기대지 않고 select/selectV2로 명시하는 편이 안전하다(설계 제안). 이 flag를 생략한 기존 linked object 조회가 derived property를 받아 왔다면 기본값 변경 뒤에는 응답에서 빠질 수 있다.
+2026-11-17 다시 수집한 List Linked Objects, Get Linked Object, Load Object Set, Load Multiple Object Types와 Load Objects Or Interfaces 참조 문서는 이 flag를 `Defaults to false`로 적는다. 2026-10-18 수집본은 모두 `Defaults to true`였다. 나머지 설명(명시적 selection이 있으면 무시, experimental)은 그대로다. 2026-11-18 수집한 List Objects와 Get Object 참조 문서의 원문도 `Defaults to false`다. 이로써 참조 문서와 release note의 방향은 맞춰졌다. 다만 derived property가 필요한 클라이언트는 기본값이 다시 바뀌거나 enrollment마다 다르게 적용될 수 있으므로 flag에 기대지 않고 select/selectV2로 명시하는 편이 안전하다(설계 제안). 이 flag를 생략한 기존 linked object 조회가 derived property를 받아 왔다면 기본값 변경 뒤에는 응답에서 빠질 수 있다.
 
 List와 linked list는 기본적으로 동시 변경 중 페이지의 누락/중복이 가능하다. `snapshot=true`는 paging 시작 전 일관된 뷰를 사용하고 false 기본값은 새 결과가 들어오는 대신 누락/중복이 가능하다. 페이지마다 같은 snapshot, query, selection과 크기를 유지한다.
 
@@ -39,7 +39,7 @@ orderBy의 fields를 주면 orderType은 fields가 되고 전체 orderBy 생략�
 
 `createTemporary`는 Preview이고 read/write scope 모두 필요하다. 정의에서 만든 temporary objectSetRid는 **한 시간 후 만료**한다. 영구적으로 재사용할 식별자로 저장하지 않는다.
 
-Branch와 transaction은 experimental이며 모든 workflow 지원을 보장하지 않는다. endpoint별 scenarioRid 지원도 다르므로 GET list, Search와 ObjectSet endpoint에 일괄 복사하지 않는다. executeInMemoryOnly는 기본 false이고 true면 무거운 계산으로 넘어갈 요청을 실패시킨다. 일반 결과 크기 제한을 끄는 옵션이 아니다.
+Branch와 transaction은 experimental이며 모든 workflow 지원을 보장하지 않는다. endpoint별 scenarioRid 지원도 다르므로 GET list, Search와 ObjectSet endpoint에 일괄 복사하지 않는다. 예를 들어 2026-11-18 수집한 Get Object(`GET /objects/{objectType}/{primaryKey}`)는 branch, `transactionId`, `scenarioRid`를 받지만, 같은 날 수집한 List Objects는 branch와 snapshot만 있고 `transactionId`와 `scenarioRid`가 없다. executeInMemoryOnly는 기본 false이고 true면 무거운 계산으로 넘어갈 요청을 실패시킨다. 일반 결과 크기 제한을 끄는 옵션이 아니다.
 
 ## 세 가지 로드 결과
 
@@ -65,6 +65,7 @@ includeComputeUsage는 OSDK application에서만 제공하며 성능 저하 때�
 
 - [Search Objects](https://www.palantir.com/docs/foundry/api/ontologies-v2-resources/ontology-objects/search-objects)
 - [List Objects](https://www.palantir.com/docs/foundry/api/ontologies-v2-resources/ontology-objects/list-objects)
+- [Get Object](https://www.palantir.com/docs/foundry/api/ontologies-v2-resources/ontology-objects/get-object)
 - [List Linked Objects](https://www.palantir.com/docs/foundry/api/ontologies-v2-resources/linked-objects/list-linked-objects)
 - [Get Linked Object](https://www.palantir.com/docs/foundry/api/ontologies-v2-resources/linked-objects/get-linked-object)
 - [Load Object Set](https://www.palantir.com/docs/foundry/api/ontologies-v2-resources/ontology-object-sets/load-object-set)
