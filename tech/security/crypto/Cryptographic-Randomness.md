@@ -1,7 +1,7 @@
 ---
-tags: [security, crypto, randomness, entropy, pdf]
+tags: [security, crypto, randomness, entropy, pdf, aes, brute-force, grover]
 status: done
-verified_at: 2026-11-02
+verified_at: 2026-11-17
 category: "Security - 암호"
 aliases: ["Cryptographic Randomness", "암호학적 난수", "키 엔트로피", "PDF 난수 취약점"]
 ---
@@ -19,6 +19,18 @@ aliases: ["Cryptographic Randomness", "암호학적 난수", "키 엔트로피",
 | salt와 nonce | 사용하는 암호 방식이 요구하는 고유성 또는 무작위성 조건을 따름 |
 
 nonce마다 비밀성이 필요한 것은 아니며, salt도 비밀번호 대신 비밀로 보관하는 값이 아니다. 요구사항은 알고리즘과 프로토콜별로 확인한다. Python 공식 문서는 비밀값에 운영체제 난수원을 사용하는 `secrets`를 권하고 `random`을 보안 용도로 사용하지 않도록 한다.
+
+## 무작위 256비트 키의 전수 탐색 규모
+
+키가 실제로 256비트 공간에서 고르게 뽑혔다면 후보는 2^256(약 1.16×10^77, 78자리)개다. 전수 탐색은 맞는 키가 나올 때까지 후보를 하나씩 시험하는 공격이다. 아래 계산은 규모를 보여 주기 위한 가정이며 특정 장비의 실제 성능이 아니다.
+
+- **고전 컴퓨터**: 초당 10^21개를 시험하는 공격자가 우주 나이(약 138억 년, 약 4.4×10^17초) 동안 쉬지 않아도 약 4.4×10^38개를 시험한다. 전체 후보의 약 3.8×10^-39에 해당해 소수점 아래 0이 38개 이어진다.
+- **양자 컴퓨터(Grover)**: Grover 알고리즘은 전수 탐색의 단계 수를 제곱근 수준으로 줄여 AES-256 키 탐색을 약 2^128(약 3.4×10^38, 39자리)단계 규모로 만든다. 초당 10^9단계를 순차로 실행한다고 가정하면 약 3.4×10^29초, 즉 우주 나이의 수천억 배가 걸린다.
+- **병렬화의 한계**: Zalka는 Grover 알고리즘이 질의 횟수 면에서 최적이고, 탐색 공간을 나눠 독립된 양자 컴퓨터에 맡기는 단순 분할보다 더 잘 병렬화할 수 없음을 보였다. 양자 컴퓨터 S대로 공간을 나누면 시간은 √S배만 줄고 전체 단계 수는 늘어난다. 고전 공격처럼 기계를 늘려 시간을 비례해 줄이기 어렵다. 이 한계는 구조를 쓰지 않는 블랙박스 탐색의 질의 횟수에 대한 결과이며, AES의 구조를 이용하는 새 분석은 이 범위 밖이다.
+
+NIST의 양자내성 암호 FAQ에서 AES 키 길이를 지금 두 배로 늘려야 하는지 묻는 답(2018-11-18 추가, 2026-11-17 확인)은 양자 하드웨어가 고전 하드웨어보다 비쌀 가능성과 Grover의 순차 실행 요건을 근거로, Grover가 AES 공격에 거의 이점을 주지 못할 가능성이 높고 AES-128도 수십 년 안전할 것으로 본다. 양자 컴퓨터가 예상보다 훨씬 싸져도 AES-192와 AES-256은 매우 오랫동안 안전할 것이라고 한다. 이 판단은 AES 자체에서 고전이나 양자 암호 분석의 새 약점이 발견되지 않는다는 가정 위에 있다. 같은 답은 현재 응용이 128, 192, 256비트 AES를 계속 쓸 수 있다고 한다. 112비트 수준 대칭 방식의 사용 기한 같은 이후 전환 일정은 이 답만으로 판단하지 않고 NIST의 최신 전환 문서에서 따로 확인한다.
+
+이 계산은 키가 정말 무작위일 때만 성립한다. 공격자는 2^256 공간이 아니라 생성 과정이 남긴 실제 후보를 탐색하므로, 아래 사례처럼 키를 결정하는 상태가 몇 비트뿐이면 AES-256 파일 키도 짧은 시간에 찾을 수 있다. 공개키 암호와 대칭키가 양자 위협에서 어떻게 다른지는 [[Public-Key-Cryptography#양자 위협을 구분하는 기준|양자 위협을 구분하는 기준]]에 둔다.
 
 ## 비밀번호와 파일 키는 다른 값일 수 있다
 
@@ -42,7 +54,7 @@ PDF의 AES-256 암호화에서는 무작위 파일 키가 본문을 암호화하
 | Foxit Reader 2026.1.3.36551 | 시각과 분석 환경에서 0으로 채워진 메모리가 파일 키를 결정. Ryzen 9 7950X, 32스레드에서 1970년 이후 초 단위 후보 탐색 약 4.85초 |
 | OpenPDF 3.0.5, iText 9.7.1 | 밀리초 시각과 JVM 여유 메모리로 초기화한 ARC4 스트림이 파일 키와 공개 salt에 함께 사용됨. 위 두 사례보다 상태 변화 폭이 큼 |
 
-MuPDF 1.28.5 릴리스 기록에는 Bug 709668의 ChaCha20 기반 암호학적 PRNG 전환이 있다. 이 수정이 다른 제품에도 적용됐다고 가정하지 않는다. Foxit, OpenPDF와 iText의 수정 버전은 이번에 확인하지 못했다.
+MuPDF 1.28.5 릴리스 기록에는 Bug 709668의 ChaCha20 기반 암호학적 PRNG 전환이 있다. 이 수정이 다른 제품에도 적용됐다고 가정하지 않는다. Foxit, OpenPDF와 iText의 수정 버전은 2026-11-02 대조에서 확인하지 못했다.
 
 ## 수정 뒤 기존 산출물도 확인한다
 
@@ -55,6 +67,9 @@ MuPDF 1.28.5 릴리스 기록에는 Bug 709668의 ChaCha20 기반 암호학적 P
 - [The case of the 9 bit AES key — V12](https://v12.sh/blog/the-case-of-the-9bit-aes-key) — 2026-10-27, 연구자가 분석한 버전과 측정 조건, 기존 파일에 남는 영향 대조
 - [MuPDF, Release history](https://mupdf.com/releases/history) — 1.28.5의 Bug 709668 확인
 - [Python, secrets — Generate secure random numbers for managing secrets](https://docs.python.org/3/library/secrets.html)
+- [NIST, Post-Quantum Cryptography FAQs](https://csrc.nist.gov/Projects/post-quantum-cryptography/faqs) — AES 키 길이를 지금 두 배로 늘려야 하는지에 대한 답, Grover의 완화 요인
+- [Grover's quantum searching algorithm is optimal — arXiv, Christof Zalka](https://arxiv.org/abs/quant-ph/9711070) — 질의 횟수의 최적성과 병렬화 한계
+- [Planck 2018 results. VI. Cosmological parameters — arXiv, Planck Collaboration](https://arxiv.org/abs/1807.06209) — 우주 나이 약 138억 년
 - GeekNews, 2026-10-30 11:30 사용자 제공 발췌 — PDF 난수 사례의 계기 자료
 
 ## 관련 문서
