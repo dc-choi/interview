@@ -15,6 +15,7 @@ Session, JWT, OAuth2, Token Exchange, FIDO, Refresh Token — 인증 방식과 �
 - [x] [[Session|Session (Stateless 로그인 판단, 쿠키-세션 구조, 하이재킹 방어, 비밀번호 변경 재인증, 확장성)]]
 - [x] [[JWT|JWT (서명과 기밀성, Bearer replay, 저장과 폐기 전략)]]
 - [x] [[OAuth2|OAuth2 / OIDC]]
+- [x] [[OIDC-Provider-Authorization-Claims|사내 플랫폼 OIDC Provider의 인가 claim 설계 (프로젝트별 groups와 역할 claim, 등록 주체별 aud 제한, 토큰 claim만으로 인가, introspection 대신 짧은 수명)]]
 - [x] [[OAuth2-Token-Exchange|OAuth 2.0 Token Exchange (Keycloak V2, V1 가장, 위임)]]
 - [x] [[OAuth2-PAR|OAuth 2.0 PAR (인가 요청의 back-channel 등록, request_uri, FAPI 2.0)]]
 - [x] [[FIDO-WebAuthn|FIDO2, WebAuthn (등록과 인증, 서버 검증, challenge 만료와 단회 소비)]]
