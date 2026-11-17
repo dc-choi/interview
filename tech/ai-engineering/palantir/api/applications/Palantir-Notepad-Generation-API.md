@@ -60,6 +60,10 @@ running/failed job은 FailedPrecondition 오류로 저장/후속 export가 거�
 
 CreateExportJob의 source는 기존 documentRid 또는 성공한 GenerationJob의 templateRid/generationJobRid다. 확인일 target union은 PDF를 제공한다. userLocale과 userTimezone을 지정해 export의 날짜/시간 표현을 결정한다. locale 검증 실패와 timezone 검증 실패는 따로 반환된다.
 
+CreateExportJob의 오류는 원인별로 나뉜다. 권한 거부는 Document export 권한 없음(ExportDocumentPermissionDenied), GenerationJob export 권한 없음(ExportGenerationJobPermissionDenied), ExportJob 생성 자체 거부(CreateExportJobPermissionDenied)의 세 가지이고, NotFound는 Document(DocumentNotFound)와 GenerationJob(GenerationJobNotFound, generationJobRid와 templateRid를 함께 보고)로 구분된다. 아직 running이거나 failed인 GenerationJob을 source로 쓰면 각각 GenerationJobStatusRunning과 GenerationJobStatusFailed(FAILED_PRECONDITION)다. GetExportJob endpoint 페이지에 나열된 오류는 ExportJobNotFound 하나이며, 인증과 호출률 같은 공통 오류는 [[Palantir-API-Client-Contract]]를 따른다.
+
+적용 제안: running 오류는 생성 완료를 기다린 뒤 다시 요청하고, failed 오류는 그 GenerationJob의 errorMessage를 먼저 확인한다. 오류 응답은 generationJobRid만 주므로 errorMessage는 GenerationJob 조회(`api:notepad-write`, 생성한 사용자만 접근)로 따로 읽어야 한다. 이 구분은 공식 명세의 지시가 아니다.
+
 ExportJob은 RID와 status를 반환한다. running에서 polling을 이어가고 failed이면 errorMessage와 선택적 errorCode/errorInstanceId를 확인한다. succeeded이면 fileRid로 content를 내려받는다. 파일 content는 binary format이며 JSON 응답으로 강제 처리하지 않는다.
 
 ## 만료와 재시도 경계
