@@ -1,13 +1,15 @@
 ---
 tags: [palantir, foundry, api, ontology]
 status: done
-verified_at: 2026-10-16
+verified_at: 2026-11-18
 category: "AI엔지니어링(AIEngineering)"
 ---
 
 # Ontology V2 집계의 정확도 계약
 
-`POST /objects/{objectType}/aggregate`는 where로 고른 객체를, `/objectSets/aggregate`는 재귀 ObjectSet 정의를 집계한다. 둘 다 `api:ontologies-read`가 필요하다. ObjectSet 쪽은 branch/transaction/scenario와 executeInMemoryOnly도 명시적으로 제공한다.
+`POST /objects/{objectType}/aggregate`는 where로 고른 객체를, `/objectSets/aggregate`는 재귀 ObjectSet 정의를 집계한다. 둘 다 `api:ontologies-read`가 필요하다. Aggregate Objects도 experimental `branch` query parameter를 받지만 transactionId, scenarioRid와 executeInMemoryOnly는 없다. ObjectSet 쪽은 이것들을 함께 제공한다.
+
+2026-11-18 수집한 Aggregate Objects 참조 문서의 where schema와 2026-11-17 수집한 Aggregate Object Set 참조 문서의 ObjectSet filter에는 containsAllTerms, containsAnyTerm, containsAllTermsInOrder, containsAllTermsInOrderPrefixLastTerm과 startsWith에 optional `analyzerSelection`(BASE_ANALYZER, PHONETIC_ANALYZER)이 있다. 두 문서의 2026-10-18 수집본에는 없었다. 생략하면 BASE_ANALYZER이고, containsAllTerms와 containsAnyTerm에서 PHONETIC_ANALYZER를 고르면 fuzzy는 생략하거나 false로 둔다. phonetic 매칭은 철자가 다른 객체를 집계 대상에 넣을 수 있으므로 정확한 이름 기준의 count나 합계에는 쓰지 않는다(적용 제안). 의미는 [[Palantir-Ontology-V2-ObjectSet-API]]의 Search 절과 같고, 실제 phonetic 색인 여부와 매칭 품질은 확인하지 않았다.
 
 ## Metric과 property 식별자
 

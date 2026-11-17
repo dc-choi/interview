@@ -87,6 +87,19 @@ Claude Startups는 2026-10-06 공지, 프로그램 페이지와 약관을 대조
 
 승인 뒤에도 Console에서 실제 제공된 혜택과 수령 조건을 확인한다. 신청 준비 때는 현재 제품과 Claude 사용 방식을 사실대로 설명하고, 실제로 줄일 수 있는 비용만 현금 계획에 반영한다. 신청 후기가 심사 기준이나 개인 사업자의 적격 여부를 대신하지 않는다. 재심사로 상태가 바뀔 수 있다는 안내가 있으므로 승인 메일만으로 혜택을 기본 시나리오에 넣지 않는다.
 
+NVIDIA Inception은 2026-11-18 공식 프로그램 페이지와 FAQ를 확인한 사례다. 신청 수수료, 멤버십 비용과 지분 요구가 없다고 밝힌다. 페이지가 안내하는 혜택은 교육, 개발 도구, 할인, 클라우드 크레딧과 연결 기회이며 현금 지급은 안내하지 않는다. 혜택 자격을 유지하려면 포털의 제품과 회사 정보를 계속 갱신해야 한다.
+
+| 확인할 항목 | 공개 조건과 예산 반영 경계 |
+| --- | --- |
+| 신청 자격 | 작동하는 웹사이트, 법인 설립, 설립 10년 미만, NVIDIA 기술의 명확한 활용 사례와 활동 중인 창업자 1명 이상이다. 투자 단계와 관계없이 신청할 수 있고 투자 상태는 성숙도 지표로 본다. NVIDIA GPU나 SDK를 아직 쓰지 않아도 신청할 수 있다 |
+| 제외 대상 | 컨설팅사와 외주 개발사, 암호화폐 관련 기업, 클라우드 서비스 제공사, 리셀러와 유통사, 상장사 |
+| 교육과 도구 | Deep Learning Institute 자기주도 과정 무료 코드와 강사 주도 워크숍 할인, SDK와 모델 라이브러리 접근, 일부 하드웨어와 소프트웨어의 우대 가격 |
+| 클라우드 크레딧 | NVIDIA와 파트너가 제공한다고 안내하지만 프로그램 페이지에는 금액이 없다. 파트너별 한도는 별도 공지와 회원 포털에서 현재 조건을 확인하고, 확인 전에는 예산에 넣지 않는다 |
+| 하드웨어 우대 가격 | 대상은 일부 엔터프라이즈급 GPU이고 변경될 수 있다. NVIDIA가 회원에게 직접 판매하지 않고 공급사 가격을 통제하지 않으며, 공급사 표준 가격에서 차감하는 리베이트 방식이다. 할인율은 밝히지 않고 특정 제품의 공급을 보장하지 않는다 |
+| 투자와 판로 | VC 네트워크 노출(Inception Capital Connect)은 자격에 따라 제공된다. 배지와 공동 브랜드 콘텐츠는 브랜드 혜택으로, 판로 기회는 NVIDIA와의 협력이 깊어질수록 열린다고 안내한다. 연결이나 배지를 투자 유치나 매출로 계산하지 않는다 |
+
+신청서에는 사업과 제품 정보, 법인 설립일, 투자 상태와 피치덱을 낸다. 프로그램 페이지에는 심사 기간이 없다. 신청 판단 제안: 페이지는 컨설팅사와 외주 개발사를 제외 대상으로 적지만 외주와 자체 제품을 병행하는 회사의 판단 기준은 밝히지 않는다. 회사가 소유한 AI 제품이 있다면 그 사실과 사업 구성을 사실대로 설명하고 적격 여부를 확인한다.
+
 ## 만료 전후 현금 지출을 따로 계산한다
 
 다음은 지원 정책 자체가 아니라, 일시적 혜택을 현금 계획에 반영하는 관리 방법이다.
@@ -115,6 +128,7 @@ Claude Startups는 2026-10-06 공지, 프로그램 페이지와 약관을 대조
 - [Claude Help Center, What is the Team plan?](https://support.claude.com/en/articles/9266767-what-is-the-team-plan) — 2026-10-11 Team 플랜의 최소 인원 확인
 - [Anthropic, Startup Program Official Terms](https://www.anthropic.com/startup-program-official-terms) — 심사 요소와 적격 판단
 - [Anthropic, Claude Startups Additional Benefits Addendum](https://www.anthropic.com/legal/startup-program-addendum) — 제휴사 혜택의 제공 주체, 제공사가 달리 정하지 않을 때의 1회 교환, 양도 불가와 현금 가치 없음
+- [NVIDIA Inception Program for Startups — NVIDIA](https://www.nvidia.com/en-us/startups/) — 2026-11-18 자격, 제외 업종, 무료 가입, 혜택 종류, 하드웨어 우대 가격 방식과 신청 자료 확인. 크레딧 금액과 심사 기간은 이 페이지에 없음
 - [AWS Activate Credits — AWS Startups](https://aws.amazon.com/startups/credits/) — 2026-10-07 자격, Founders와 Portfolio 조건 확인
 - [AWS, AWS Promotional Credit Terms & Conditions](https://aws.amazon.com/awscredits/) — 현금 교환, 환급, 초과 요금, 세금과 만료 조건
 - [AWS Billing, Applying AWS credits](https://docs.aws.amazon.com/awsaccountbilling/latest/aboutv2/useconsolidatedbilling-credits.html) — 잔액, 적용 상품과 유효기간 확인
