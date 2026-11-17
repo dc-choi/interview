@@ -7,7 +7,19 @@ category: "AI엔지니어링(AIEngineering)"
 
 # Ontology V2의 타입, Interface와 Query metadata
 
-V2 경로의 `{ontology}`는 API name 또는 RID다. `GET /api/v2/ontologies`는 현재 사용자에게 보이는 Ontology 목록을 반환한다. 새 Ontology 반영에는 수 분이 걸릴 수 있다. metadata와 Query 실행의 OAuth2 scope는 `api:ontologies-read`다.
+V2 경로의 `{ontology}`는 API name 또는 RID다. `GET /api/v2/ontologies`는 현재 사용자에게 보이는 Ontology 목록을 반환한다. V2 Ontology basics에 따르면 Ontology 변경은 eventually consistent여서 새 Ontology가 수 분 동안 API에 반영되지 않고 `OntologyNotFound`가 날 수 있다. List Ontologies와 Get Ontology 페이지 자체에는 이 설명이 없다. metadata와 Query 실행의 OAuth2 scope는 `api:ontologies-read`다.
+
+## Ontology 목록과 단건 조회의 응답
+
+2026-11-17 List Ontologies와 Get Ontology 명세 부분 대조 기준이다. `GET /api/v2/ontologies`는 보이는 Ontology를 `data` 목록으로, `GET /api/v2/ontologies/{ontology}`는 API name 또는 RID로 지정한 Ontology 하나를 `OntologyV2` 객체로 반환한다. 두 endpoint의 OAuth2 operation scope는 `api:ontologies-read`이며, 명세에 query parameter와 요청 본문이 정의돼 있지 않다.
+
+- `OntologyV2`의 필수 필드는 `apiName`, `displayName`, `description`, `rid`, `defaultBranchOntologyVersion`이다. 목록 응답의 `data`는 선택 필드다.
+- `defaultBranchOntologyVersion`은 2026-10-18 수집본에 없고 2026-11-17 수집본에 필수로 추가됐다. List Ontologies 페이지의 `OntologyV2` 타입 설명은 default branch에 있는 Ontology의 최신 버전이며, 요청이 다른 branch를 대상으로 해도 default branch 기준이라고 한다. Get Ontology 페이지에는 이 필드 설명이 없다. 두 endpoint에는 branch 인자가 없으므로 이 조건은 `OntologyV2`를 반환하는 다른 응답에 해당한다. 이 값을 요청한 branch의 버전으로 해석하지 않는다.
+- 값은 `0000000d-2acf-537c-a228-3a9fe3cdc523` 같은 문자열 예시만 있고 정렬이나 증가 규칙은 명세에 없다. 크기 비교 대신 같음과 다름만 비교하는 것이 안전하다(설계 제안).
+- 두 endpoint의 공식 응답 예시는 필수인 `defaultBranchOntologyVersion`을 생략하고, 목록 예시는 서로 다른 두 Ontology에 같은 `rid`를 쓴다. 예시를 테스트 fixture로 복사하지 않고 schema를 따른다.
+- 명세의 응답 schema에 필수 필드가 추가됐으므로 알 수 없는 필드를 거부하는 엄격한 역직렬화 설정은 이런 변경에 깨질 수 있다. 반대로 이 필드를 클라이언트에서 필수로 검증하면 아직 반환하지 않는 환경에서 실패할 수 있다. 응답 모델이 추가 필드를 허용하는지와 실제 응답의 필드 유무를 함께 확인한다(운영 제안).
+
+실제 인증 호출, branch를 지정하는 다른 응답에서의 값과 버전 변경 시점은 시험하지 않았다. 다른 metadata 항목의 검증일은 유지한다.
 
 ## Object type, Action type과 bulk 읽기
 
@@ -142,6 +154,9 @@ Query metadata는 재귀 dataType과 typeReferences를 제공한다. execute의 
 
 ## 출처
 
+- [Ontology basics](https://www.palantir.com/docs/foundry/api/ontologies-v2-resources/ontologies/ontology-basics)
+- [List Ontologies](https://www.palantir.com/docs/foundry/api/ontologies-v2-resources/ontologies/list-ontologies)
+- [Get Ontology](https://www.palantir.com/docs/foundry/api/ontologies-v2-resources/ontologies/get-ontology)
 - [List Action Types](https://www.palantir.com/docs/foundry/api/ontologies-v2-resources/action-types/list-action-types)
 - [Get Action Type](https://www.palantir.com/docs/foundry/api/ontologies-v2-resources/action-types/get-action-type)
 - [Get Action Type By Rid](https://www.palantir.com/docs/foundry/api/ontologies-v2-resources/action-types/get-action-type-by-rid)
