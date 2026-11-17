@@ -14,6 +14,20 @@ aliases: ["Load Shedding", "부하 차단", "로드 셰딩"]
 
 [[Rate-Limiting|rate limit과 throttling]]이 클라이언트별 한도로 클라이언트 사이의 공정성을 지키고 [[Backpressure|배압]]이 생산자에게 속도를 늦추라고 알린다면, 부하 차단은 보호 대상(서버 자체나 앞단 계층)의 처리 여력을 넘는 초과분을 거절하는 데 초점을 둔다.
 
+## 확장과 대기열에 견준 선택
+
+처리 능력을 넘는 요청이 몰릴 때의 대응은 세 갈래로 나눠 볼 수 있다. 캐시처럼 부하 자체를 줄이는 최적화는 이 구분의 바깥이다. 응답 품질을 낮춰 받아 주는 기능 저하는 [[Rate-Limiting#거절 외의 과부하 대응|거절 외의 과부하 대응]]에서 다룬다.
+
+| 갈래 | 하는 일 | 맞는 조건 | 한계 |
+|---|---|---|---|
+| 늘리기 | 수직 확장이나 수평 확장으로 처리 능력을 키운다([[Scale-Up-vs-Out\|수직 vs 수평 확장]]) | 병목인 자원이 분명하고 그 자원을 쉽게 늘릴 수 있다 | 병목이 DB 같은 다른 계층에 있으면 효과가 작고, 새 용량이 준비되는 동안에도 요청은 들어오며, 비용 부담이 커질 수 있다 |
+| 담아 두기 | 앞에 대기열을 두고 감당할 수 있는 속도로 처리한다. 작업을 기다리게 하는 큐([[Cache-vs-Queue#burst 흡수와 backlog 소진 시간\|burst 흡수와 backlog 소진 시간]])와 사용자를 기다리게 하는 [[Virtual-Waiting-Room-Architecture\|가상 대기열]]이 있다 | 몰림이 일시적이고, 나중에 처리하거나 기다리게 해도 되는 일이다 | 처리 능력은 그대로라서 유입이 계속 처리율을 넘으면 대기열과 대기 시간이 계속 는다 |
+| 거절하기 | 초과분을 일찍 거절한다(이 문서) | 더 받으면 정상 요청까지 위험해진다 | 거절된 사용자는 그 순간 서비스를 쓰지 못하고, 과부하의 원인은 그대로 남는다 |
+
+세 갈래는 배타적이지 않다. 서버를 늘리고, 오래 걸리는 작업은 큐에 담고, 그래도 넘는 요청은 앞단에서 거절하는 식으로 겹쳐 쓸 수 있다. 확장과 함께 쓸 때는 부하 차단 기준이 증설 신호를 가리지 않게 한다([[Load-Shedding#자동 확장과의 간섭|자동 확장과의 간섭]]). 거절 응답의 상태 코드(429와 503의 구분, `Retry-After`)는 [[Rate-Limiting#응답 설계|응답 설계]]를 따른다.
+
+부하 차단은 전력망에서도 쓰는 말이다. 전력 수요가 공급 능력을 넘으면 전체 정전을 피하는 마지막 수단으로 지역을 나눠 공급을 차례로 끊는 순환 정전(rolling blackout)을 rotational load shedding이라고도 부른다.
+
 ## 과부하에서 goodput이 무너지는 과정
 
 1. 사용률이 오르면 지연도 함께 오르고, 변곡점을 넘으면 지연이 훨씬 빠르게 나빠진다.
@@ -36,6 +50,8 @@ aliases: ["Load Shedding", "부하 차단", "로드 셰딩"]
 - 로드 밸런서의 헬스 체크: 과부하 중에 헬스 체크에 응답하지 못하면 로드 밸런서가 한동안 새 요청을 보내지 않아 서버가 놀게 되고, 용량이 가장 필요한 때에 플릿이 줄어든다.
 - 이미 시작한 작업의 마무리: 시작과 종료 API를 모두 불러야 끝나는 작업이면 종료 요청을 시작 요청보다 우선한다. 시작 요청을 우선하면 클라이언트가 시작한 작업을 끝내지 못해 브라운아웃이 된다.
 - 헬스 체크 다음의 우선순위 기준은 서비스마다 다르다. 예를 들어 amazon.com 화면 데이터를 주는 서비스에서 검색 크롤러를 위한 요청은 사람이 보낸 요청보다 덜 중요할 가능성이 크다. 크롤러 요청도 처리해야 하지만 가능하면 한산한 시간으로 미룬다. 다만 여러 서비스가 협력하는 환경에서 서비스마다 상충하는 우선순위 기준을 쓰면 전체 가용성이 나빠지고 일이 낭비될 수 있으므로, 이런 조정은 클라이언트의 첫 요청을 받는 서비스처럼 가능한 한 앞에서 한다.
+- 요청에 중요도 등급을 붙여 낮은 등급부터 거절하는 방식도 있다. Google의 SRE 책은 백엔드로 가는 요청에 네 값 가운데 하나를 붙인다고 설명한다. 실패하면 사용자에게 심각한 영향이 보이는 `CRITICAL_PLUS`, 프로덕션 작업(production job)이 보내는 요청의 기본값인 `CRITICAL`, 부분적인 불가용을 예상하는 `SHEDDABLE_PLUS`(나중에 재시도할 수 있는 배치 작업의 기본값), 잦은 부분 불가용과 가끔의 전체 불가용을 예상하는 `SHEDDABLE`이다. 서비스는 예상되는 `CRITICAL`과 `CRITICAL_PLUS` 트래픽 전체를 감당할 용량을 갖출 것으로 기대되고, 과부하인 태스크는 낮은 등급부터 먼저 거절한다. 등급은 하위 호출로 자동 전파되어, 요청 A를 처리하며 보내는 요청 B와 C는 기본으로 A의 등급을 따른다. 같은 책은 서비스마다 따로 만들어 서로 호환되지 않던 중요도 기준을 RPC 시스템에서 표준화하고 전파한 덕분에, 호출 단계가 깊어도 과부하인 의존 서비스가 위에서 정한 등급에 따라 거절한다고 믿을 수 있게 됐다고 설명한다. Google은 등급을 브라우저나 모바일 클라이언트에 최대한 가까운 곳(보통 HTTP 프런트엔드)에서 정하고 필요한 지점에서만 덮어쓰는 것을 관행으로 든다. 앞 불릿의 서비스 간 우선순위 기준 상충을 줄이는 방법이다.
+- 중요도와 지연 요구는 별개의 축이다. 같은 책의 예로, 검색어를 입력하는 동안 보여 주는 결과와 추천은 지연 요구가 엄격한 편이지만 과부하일 때는 보여 주지 않아도 되는 요청이다. 빨리 응답해야 하는 요청이 곧 중요한 요청은 아니다.
 - 클라이언트별 한도 안의 요청을 한도를 넘긴 버스트보다 우선한다. 우선순위와 throttling을 함께 쓰면 엄격한 한도를 두지 않고도 과부하를 막을 수 있다.
 
 ## 버려질 일을 하지 않는다
@@ -61,6 +77,7 @@ DDoS 같은 악의적 트래픽 폭증은 부하 차단으로 버티기보다 �
 
 - 거절 경로가 보호하려는 처리보다 충분히 싼가?
 - 헬스 체크와 이미 시작한 작업의 마무리가 새 요청보다 우선하는가?
+- 어떤 요청부터 거절할지 등급으로 정해 두었고, 그 등급이 하위 호출까지 전달되는가?
 - 요청의 남은 시간을 확인하고 하위 호출로 넘기는가?
 - 부하 차단 기준이 자동 확장 신호를 가리지 않는가?
 - 성공 요청과 거절 요청의 지연을 나눠 보는가?
@@ -68,8 +85,13 @@ DDoS 같은 악의적 트래픽 폭증은 부하 차단으로 버티기보다 �
 
 ## 출처
 
+2026-11-17 부분 검증: 중요도 등급과 지연 요구 서술을 Google SRE 책 Handling Overload 장에 대조했다. 세 갈래 구분은 영상의 음성 인식 전사문, 전력망 용례는 Wikipedia 도입부 기준이다. API Gateway와 AWS WAF 등 AWS 관련 기존 서술은 이번에 다시 대조하지 않아 기존 `verified_at`을 유지한다.
+
 - [Using load shedding to avoid overload — Amazon Builders' Library](https://builder.aws.com/content/3Eun1EEyX6p2e3VYNyRLSJzLuMV/using-load-shedding-to-avoid-overload)
 - [Building Resilient Cloud Services 7: Mitigating software risks — Amazon Web Services](https://www.youtube.com/watch?v=AT-FbrDt7sI)
+- [Handling Overload — Site Reliability Engineering, Google](https://sre.google/sre-book/handling-overload/)
+- [Rolling blackout — Wikipedia](https://en.wikipedia.org/wiki/Rolling_blackout)
+- [서버만 늘리면 해결될까? | 과부하에 대응하는 3가지 아키텍처 전략 — 코딩하는기술사](https://www.youtube.com/watch?v=p4s_-9yC1Cs) — 2026-11-16 공개, 음성 인식 전사문 기준(화면 미확인). 세 갈래 구분, 선택 조건과 한계
 - [AWS, Resources that you can protect with AWS WAF](https://docs.aws.amazon.com/waf/latest/developerguide/how-aws-waf-works-resources.html)
 
 ## 관련 문서
@@ -77,6 +99,9 @@ DDoS 같은 악의적 트래픽 폭증은 부하 차단으로 버티기보다 �
 - [[Retry-Backoff-Jitter|재시도, 지수 백오프와 지터]]
 - [[Rate-Limiting|Rate Limit 정책 설계]]
 - [[Backpressure|Backpressure (배압)]]
+- [[Scale-Up-vs-Out|수직 vs 수평 확장]]
+- [[Cache-vs-Queue|캐시 vs 큐]] — 큐의 burst 흡수와 backlog
+- [[Virtual-Waiting-Room-Architecture|가상 대기열 아키텍처]]
 - [[Failure-Evolution-Under-Load|부하에 따른 장애 진화]]
 - [[N-1-Capacity-Headroom|N-1 가용량 헤드룸]]
 - [[Cell-Based-Failure-Isolation|셀 기반 장애 격리와 셔플 샤딩]]

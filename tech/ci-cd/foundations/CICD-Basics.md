@@ -213,6 +213,7 @@ AI가 코드, 테스트나 리뷰 초안을 만들었다는 사실과 변경이 
 - [배포가 무서운 개발자에게 — Team Grit](https://teamgrit.co/article/384)
 
 ## 관련 문서
+- [[DevOps-Ecosystem-Map|DevOps 생태계 지도]] — 인프라부터 운영까지 영역별 질문과 연결
 - [[CICD-Tool-Selection|CI/CD 툴 선택 평가 기준]]
 - [[GitHub-Actions|GitHub Actions]]
 - [[Docker-Image-Pipeline|Docker 이미지 빌드 파이프라인]]

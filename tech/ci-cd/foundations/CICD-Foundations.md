@@ -9,6 +9,7 @@ aliases: ["CICD Foundations", "CI/CD 기초와 도구 선택"]
 
 CI/CD의 개념 구분과 파이프라인을 어떤 도구로 만들지의 판단 기준을 모은다.
 
+- [[DevOps-Ecosystem-Map|DevOps 생태계 지도]]: 영역별 질문, 영역에서 뽑은 운영 원칙, 상세 문서로 가는 연결
 - [[CICD-Basics|CI/CD 기초]]: CI/Delivery/Deployment, 배포 두려움과 미루기, 파이프라인 단계, 트리거, 생성형 AI 보조와 배포 판정, 성숙도 0~5
 - [[CICD-Tool-Selection|CI/CD 툴 선택 평가 기준]]: 러닝 커브, 운영 효율성, 비용, GitHub Actions, ArgoCD, FluxCD 비교
   - [[CICD-Tool-Selection-AWS-Code-Services|AWS Code 시리즈 운영]]: CodeDeploy 전제와 배포 구성 판정, EC2 lifecycle hook, CodePipeline S3 source, CodeBuild Docker build와 ECR push

@@ -105,6 +105,7 @@ verified_at: 2026-10-25
 - 같은 작업 범위와 품질 기준에서 채택된 변경당 비용, 검토와 재작업, 전달 시간과 실패율을 함께 본다. 생성량을 늘려 동료의 검토 부담으로 넘겼다면 팀 전체의 개선으로 계산하지 않는다.
 - 사용량 최소화도 단독 목표로 두지 않는다. 탐색과 학습에 필요한 실험을 허용하되, 예산과 완료 기준을 두고 결과를 평가한다.
 - Thoughtworks Technology Radar Vol.35(2026-11)도 AI가 생성한 코드 비율이나 소비 토큰 같은 활동 지표를 생산성 척도로 쓰는 일을 Caution에 올렸다. 도입 수준은 보여 주지만 실제 생산성의 대리 지표로는 약하고, 이를 목표로 삼으면 지표를 채우려고 AI로 바쁜 일을 만드는 개발자가 생긴다며 DORA 지표와 협업 품질, 사업 결과에 연결하라고 권한다.
+- Amazon이 2026-10-27에 공개한 엔지니어링 리더십 메모는 토큰 사용량과 AI 도구 채택 같은 입력 지표, 코드 변경과 리뷰 같은 처리량 지표가 중요한 결과와 떨어져 있어 결함이 크다고 적었다. 측정값이 아닌 목표로 쓰면 비용(토큰 맥싱)과 복잡도(코드 줄 수 측정)가 늘 수 있다고 봤다. 같은 메모는 이 입력 지표들이 중요한 산출과 잘 상관돼 왔고 당분간 그럴 것으로 본다며, 신중한 판단을 전제로 경력과 조직 성과를 따질 때 이 지표를 쓰는 것은 적절하다고 적었다. AI를 받아들이지 않는 팀과 개인은 뒤처지고 있다고도 봐, 지표를 버리자는 문서가 아니라 목표로 삼지 말라는 문서다. 자기 업무가 지금의 AI 도구로 나아지지 않으면 실패가 아니라 발견이니 이유를 문서로 남겨 공유하라고 한다(2026-11-17 공개 메모 확인).
 
 이는 측정 체계의 설계 원칙이다. 특정 회사의 비용 절감률이나 전체 업계의 채택 상태를 입증하는 통계로 읽지 않는다.
 
@@ -171,6 +172,7 @@ verified_at: 2026-10-25
 ## 출처
 - [Finding balance in the era of tokenmaxxing — DORA](https://dora.dev/insights/finding-balance-in-the-era-of-tokenmaxxing/)
 - [Coding throughput as a measure of productivity — Thoughtworks Technology Radar Vol. 35](https://www.thoughtworks.com/radar/techniques/summary/coding-throughput-as-a-measure-of-productivity) — 2026-11, 2026-11-09 Caution 링과 권고 대조
+- [An update from Amazon engineering leadership on the role of the developer in the age of AI — About Amazon](https://www.aboutamazon.com/news/company-news/amazon-software-engineer-role-guideline-ai) — 2026-10-27 게시, 2026-11-17 지표에 대한 서술 확인
 - [2025 Developer Survey: AI — Stack Overflow](https://survey.stackoverflow.co/2025/ai)
 - [2025 Developer Survey: Methodology — Stack Overflow](https://survey.stackoverflow.co/2025/methodology)
 - [2025 Developer Survey: Work — Stack Overflow](https://survey.stackoverflow.co/2025/work)
