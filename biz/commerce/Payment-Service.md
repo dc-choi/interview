@@ -108,6 +108,7 @@ Visa, Mastercard 같은 카드 네트워크는 직접 카드를 발급하거나 
 Merchant of Record(MoR)는 최종 구매자에게 법적으로 판매하는 주체다. PG나 결제 프로세서를 쓰면 판매자 자신이 판매 주체라 국가별 부가가치세와 판매세 등록, 신고, 환불과 차지백을 직접 떠안는다. MoR 플랫폼은 상품을 넘겨받아 구매자에게 파는 구조라 결제 처리, 세금 계산과 징수와 납부, 환불과 차지백, PCI 준수를 플랫폼이 맡고 판매자는 정산금을 받는다(2026-09-29 각 공식 문서 기준).
 
 - Paddle은 SaaS, 모바일 앱, AI와 디지털 상품 회사를 위한 MoR로, Lemon Squeezy도 MoR로 스스로를 정의한다. Gumroad는 2025-01-01부터 모든 판매에서 MoR로 판매세와 VAT를 징수하고 납부한다. 그래서 플랫폼을 고를 때는 MoR 여부보다 구독 결제, 라이선스 관리, 결제 API처럼 필요한 기능과 수수료를 비교한다.
+- Polar도 스스로를 MoR로 정의하며 전 세계 판매세, VAT와 GST의 계산, 징수와 납부를 맡는다고 밝힌다(2026-11-18 공식 문서 기준). 대상은 소프트웨어와 SaaS, 디지털 상품, 유료 콘텐츠와 접근권이고 라이선스 키, 파일 다운로드, GitHub 저장소 접근 같은 혜택을 구매에 연결한다. 실물 상품, 사람이 제공하는 서비스, 마켓플레이스와 고위험 업종은 지원하지 않으므로 외주 용역 대금 수납에는 맞지 않는다. 결제는 Stripe 위에서 처리하고 정산은 판매자의 Stripe Connect Express 계정으로 받는다. 같은 날 확인한 2026-05-27 이후 생성 조직의 무료 요금제는 거래당 5% + 50센트이고, 월정액 요금제(월 20달러부터)는 거래 요율이 낮다. 미국 외 카드는 1.5%가 추가되고 분쟁은 결과와 관계없이 건당 15달러이며, 판매자가 환불해도 처음 거래 수수료는 돌려받지 못한다. 출금에는 Stripe 정산 수수료(출금이 있는 달 2달러, 건당 0.25% + 25센트, 통화 환전 0.25~1%)가 따로 붙는다. 해외 판매 비중이 큰 1인 판매자는 이 추가 요율과 출금 비용까지 합쳐 비교한다. 요금제와 조건은 바뀔 수 있으므로 도입 시 요금 페이지를 다시 확인한다.
 - 1인 기업이 해외 구매자에게 디지털 상품을 팔 때 국가별 세금 등록 부담을 줄이는 것이 MoR의 핵심 가치다. 판매자의 소득세 신고는 그대로 남는다.
 - 대가는 수수료와 통제권이다. 수수료에 세무와 분쟁 처리 비용이 들어 있으므로 PG 요율과 숫자만 비교하지 않고 각 가격 페이지로 확인한다. 결제 화면, 환불 판단, 구매자 데이터와 지원 결제수단은 플랫폼 정책을 따른다. 매출이 커지면 직접 결제와 세무 대응 비용과 다시 비교한다.
 
@@ -156,6 +157,10 @@ Merchant of Record(MoR)는 최종 구매자에게 법적으로 판매하는 주�
 - [Paddle — What is Paddle?](https://developer.paddle.com/get-started/how-paddle-works/)
 - [Lemon Squeezy — Merchant of Record](https://docs.lemonsqueezy.com/help/payments/merchant-of-record)
 - [Gumroad — Gumroad is becoming a Merchant of Record](https://gumroad.com/blog/p/gumroad-is-becoming-a-merchant-of-record-more-updates)
+- [Polar, Merchant of Record](https://polar.sh/docs/merchant-of-record/introduction)
+- [Polar, Fees](https://polar.sh/docs/merchant-of-record/fees)
+- [Polar, Acceptable Use](https://polar.sh/docs/merchant-of-record/acceptable-use/introduction)
+- [Polar, Payout accounts](https://polar.sh/docs/features/finance/accounts)
 - [Kajabi, 제품 기능](https://www.kajabi.com/)
 - [beehiiv, 뉴스레터 플랫폼과 기능](https://www.beehiiv.com/)
 - [Kit, 이메일 마케팅과 수익화 기능](https://kit.com/)

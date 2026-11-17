@@ -1,7 +1,7 @@
 ---
 tags: [data-lake, lakehouse, parquet, orc, avro, iceberg, delta-lake, catalog]
 status: done
-verified_at: 2026-11-02
+verified_at: 2026-11-18
 category: "메시징&파이프라인(Messaging&Pipeline)"
 aliases: ["데이터 레이크의 파일, 테이블과 카탈로그"]
 ---
@@ -49,6 +49,18 @@ flowchart LR
 
 Iceberg의 스냅샷은 특정 상태를 구성하는 파일들을 메타데이터로 연결한다. 스냅샷마다 모든 데이터를 복사한다는 뜻은 아니다. Delta Lake는 트랜잭션 로그의 파일 추가와 제외 등의 동작을 해석해 테이블 상태를 구성한다. 이 로그는 고객이 주문을 취소한 이유를 적는 업무 이벤트 로그와 구분한다. 파일을 목록에서 제외하는 것과 즉시 물리 삭제하는 것도 다르다.
 
+### Delta Lake 트랜잭션 로그와 동시 쓰기
+
+2026-11-18 Delta 프로토콜 명세와 공식 문서를 대조한 범위다. 실제 Spark나 다른 엔진에서 실행해 확인하지 않았다.
+
+- **로그의 위치와 버전:** 테이블 루트의 `_delta_log` 디렉터리에 커밋마다 JSON 파일(`00000000000000000000.json`처럼 버전 번호를 20자리로 채운 이름)이 쌓인다. 이 파일이 원자성의 단위이며 테이블 버전은 연속해 증가하는 정수로 하나의 직렬 이력을 이룬다.
+- **로그에 담기는 것:** `add`와 `remove`(데이터 파일의 포함과 제외), `metaData`(필수 `schemaString`으로 테이블 스키마, 파티션 열과 설정), `protocol`, `commitInfo`, `txn` 등의 action이다. 나중의 `metaData`는 이전 메타데이터를 통째로 덮어쓴다.
+- **읽기:** 커밋 버전 순으로 action을 재생해 파일별 최신 참조만 남긴 `add` 목록이 그 버전의 테이블이다. 모든 JSON을 처음부터 읽지 않도록 특정 버전까지 재생한 결과를 checkpoint로 저장하고(classic checkpoint는 Parquet, V2 checkpoint는 JSON이나 Parquet), 독자는 `_delta_log/_last_checkpoint`로 최근 checkpoint를 찾는다.
+- **`remove`는 즉시 삭제가 아니다:** 명세는 `remove`를 VACUUM을 위한 tombstone으로 정의한다. 물리 파일은 보존 기간이 지난 뒤 지워지며, 그 사이 이전 snapshot을 읽는 독자가 계속 동작할 수 있다. DELETE 결과도 VACUUM 전에는 저장소에 남는다.
+- **동시 쓰기:** 공식 문서는 낙관적 동시성 제어를 설명한다. 작업은 읽은 snapshot을 기준으로 새 파일을 쓰고, 커밋 시점에 그 뒤 커밋된 변경과 충돌하는지 검사한다. 충돌이 없으면 새 버전으로 커밋하고, 충돌하면 테이블을 망가뜨리는 대신 `ConcurrentAppendException` 같은 동시 수정 예외로 실패한다. Concurrency control 문서에는 자동 재시도 설명이 없으므로 재시도 여부와 횟수를 작업 쪽에서 정해 두는 편이 안전하다(적용 제안). 파일 시스템 기반 테이블에 대해 프로토콜은 기존 로그 항목을 덮어쓰지 말고 가능하면 파일 시스템의 원자적 기능을 쓰라고 요구할 뿐 특정 기능을 지정하지 않는다. 그래서 저장소별 동시 쓰기 지원은 엔진과 저장소 설정 문서에서 확인한다. 카탈로그가 관리하는 테이블(`catalogManaged` 기능)은 커밋을 `_delta_log/_staged_commits/`에 준비하고 성공 여부를 카탈로그가 판정하므로 카탈로그 문서도 함께 확인한다.
+- **UPDATE, DELETE, MERGE:** 기본적으로 한 행을 지워도 그 행이 들어 있는 Parquet 파일 전체를 다시 쓰고, 로그에는 기존 파일의 `remove`와 새 파일의 `add`가 남는다. deletion vector를 켠 테이블에서는 일부 작업이 파일을 다시 쓰지 않고 행을 삭제로 표시한다. 문서가 이 기능을 experimental 지원으로 분류하므로 엔진과 버전별 지원을 확인한다.
+- **타임 트래블의 조건:** 해당 버전의 로그와 데이터 파일이 모두 남아 있어야 한다. 기본값은 로그 보존(`delta.logRetentionDuration`) 30일, 삭제 파일 보존(`delta.deletedFileRetentionDuration`) 7일이며, VACUUM은 로그가 아니라 데이터 파일만 지운다. 보존 기간보다 오래된 버전은 VACUUM 뒤 읽을 수 없고, 로그 정리 때문에 보존 기간 안의 버전을 읽지 못하는 경우도 있다고 문서가 밝힌다.
+
 Iceberg의 필드 ID와 스키마 진화는 열 이름이나 위치 변화와 데이터의 정체성을 구분한다. 파티션 진화는 이전 파일을 모두 다시 쓰지 않고 새 분할 규칙을 도입할 수 있게 한다. 쿼리 엔진의 읽기/쓰기 지원과 테이블 버전은 별도로 확인한다.
 
 Delta Lake는 데이터 레이크에 ACID 트랜잭션과 테이블 관리 계층을 제공한다. Hive ACID도 base/delta 파일과 트랜잭션 관리, compaction을 사용하는 별도 구현이다. Hive Metastore가 존재한다는 사실만으로 그 테이블이 Hive ACID가 되는 것은 아니다.
@@ -94,7 +106,7 @@ Parquet 파일만 저장한다고 단정하면 작은 입력을 놓칠 수 있�
 
 ## 확인 범위
 
-기존에는 2026-10-29 공개된 시즌2 EP03의 발췌만 기록했다. 2026-11-02에는 영상 URL과 한국어 수동 자막 전체(13분 13초)를 확보해 읽고, 파일 형식, 변경 관리와 레이크하우스 설명을 보강했다. 공식 명세와 문서로 새 설명을 대조했으며 화면의 도식은 직접 확인하지 않았다. 다중 엔진 동시 쓰기, 성능과 복구 실습은 수행하지 않았다. 문서 정리를 사용자의 학습 완료나 현재 로드맵의 진도 통과로 처리하지 않는다.
+기존에는 2026-10-29 공개된 시즌2 EP03의 발췌만 기록했다. 2026-11-02에는 영상 URL과 한국어 수동 자막 전체(13분 13초)를 확보해 읽고, 파일 형식, 변경 관리와 레이크하우스 설명을 보강했다. 공식 명세와 문서로 새 설명을 대조했으며 화면의 도식은 직접 확인하지 않았다. 다중 엔진 동시 쓰기, 성능과 복구 실습은 수행하지 않았다. 2026-11-18에는 Delta Lake 로그, 동시 쓰기와 타임 트래블 설명을 Delta 프로토콜 명세와 공식 문서로 대조해 보강했다. 문서 정리를 사용자의 학습 완료나 현재 로드맵의 진도 통과로 처리하지 않는다.
 
 ## 출처
 
@@ -106,6 +118,10 @@ Parquet 파일만 저장한다고 단정하면 작은 입력을 놓칠 수 있�
 - [Apache Iceberg, Maintenance](https://iceberg.apache.org/docs/latest/maintenance/)
 - [Delta Lake, Documentation](https://docs.delta.io/)
 - [Delta Lake, Transaction Log Protocol](https://github.com/delta-io/delta/blob/master/PROTOCOL.md)
+- [Delta Lake, Concurrency control](https://docs.delta.io/latest/concurrency-control.html)
+- [Delta Lake, Table batch reads and writes](https://docs.delta.io/latest/delta-batch.html)
+- [Delta Lake, Table utility commands](https://docs.delta.io/latest/delta-utility.html)
+- [Delta Lake, Deletion vectors](https://docs.delta.io/delta-deletion-vectors/)
 - [Apache Hive, Hive Transactions](https://hive.apache.org/docs/latest/user/hive-transactions/)
 - [DuckLake, DuckDB Extension Introduction](https://ducklake.select/docs/stable/duckdb/introduction)
 - [DuckLake, Choosing a Catalog Database](https://ducklake.select/docs/stable/duckdb/usage/choosing_a_catalog_database)

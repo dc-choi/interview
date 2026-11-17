@@ -1,7 +1,7 @@
 ---
 tags: [palantir, foundry, api, ontology]
 status: done
-verified_at: 2026-11-17
+verified_at: 2026-11-18
 category: "AI엔지니어링(AIEngineering)"
 ---
 
@@ -13,9 +13,11 @@ V2 object는 V1의 rid/properties wrapper와 달리 property를 직접 담고 `_
 
 선택을 생략하면 Vector를 제외한 property를 가져온다. Vector는 select에 명시한다. null 값은 응답에서 생략된다. select와 재귀 PropertyIdentifier의 selectV2는 동시에 채우지 않는다. excludeRid는 RID 조회를 생략해 OSv2 성능을 개선할 수 있지만 primary key와 type 식별자의 용도를 대신하지 않는다.
 
-`loadOntologyDefinedDerivedProperties`는 experimental이며 기본 true다. 명시적 selection이 없을 때만 적용하고, select/selectV2로 고른 property는 flag와 무관하게 반환한다. Interface property가 OTDP로 구현되었다면 multiple/interface 로딩에서 이 flag와 무관하게 반환된다.
+`loadOntologyDefinedDerivedProperties`는 experimental이며 일반 공개 전 기능이다. 참조 문서의 기본값은 2026-11-17 수집본부터 false로 바뀌었다(아래 절). 명시적 selection이 없을 때만 적용하고, select/selectV2로 고른 property는 flag와 무관하게 반환한다. Interface property가 OTDP로 구현되었다면 multiple/interface 로딩에서 이 flag와 무관하게 반환된다.
 
-2026-11-03 release note(API Gateway 1.1891.0)는 API Gateway가 ontology-defined derived property를 기본으로 반환하지 않게 되며, 계속 받으려면 요청에서 명시적으로 선택하라고 안내했다. 쓰지 않는 property의 계산과 지연을 줄이려는 변경이다. 그러나 2026-11-13 확인한 Load Object Set과 List Objects 참조 문서는 여전히 이 flag의 기본값을 true로 적는다. release note 데이터의 prominence는 Basic이고, 2026-11-13 확인한 November 2026 공지 페이지에는 이 항목이 없다. 참조 문서와 release note가 어긋나므로 derived property가 필요한 클라이언트는 기본 반환에 기대지 말고 select/selectV2에 넣는다. 그러면 flag 기본값과 무관하게 반환된다. 실제 enrollment의 버전 도달과 응답은 확인하지 않았다.
+2026-11-03 release note(API Gateway 1.1891.0)는 API Gateway가 ontology-defined derived property를 기본으로 반환하지 않게 되며, 계속 받으려면 요청에서 명시적으로 선택하라고 안내했다. 쓰지 않는 property의 계산과 지연을 줄이려는 변경이다. 그러나 2026-11-13 확인한 Load Object Set과 List Objects 참조 문서는 그때까지 이 flag의 기본값을 true로 적어 release note와 어긋났다. release note 데이터의 prominence는 Basic이고, 2026-11-13 확인한 November 2026 공지 페이지에는 이 항목이 없었다. 당시의 이 불일치 때문에 derived property가 필요한 클라이언트는 기본 반환에 기대지 말고 select/selectV2에 넣는 것으로 정리했다. 그러면 flag 기본값과 무관하게 반환된다. 실제 enrollment의 버전 도달과 응답은 확인하지 않았다.
+
+2026-11-17 다시 수집한 List Linked Objects, Get Linked Object, Load Object Set, Load Multiple Object Types와 Load Objects Or Interfaces 참조 문서는 이 flag를 `Defaults to false`로 적는다. 2026-10-18 수집본은 모두 `Defaults to true`였다. 나머지 설명(명시적 selection이 있으면 무시, experimental)은 그대로다. List Objects 참조 문서는 2026-11-18 웹 조회 요약에서 false로 보였지만 원문 문장을 직접 대조하지 못했다. 이로써 참조 문서와 release note의 방향은 맞춰졌다. 다만 derived property가 필요한 클라이언트는 기본값이 다시 바뀌거나 enrollment마다 다르게 적용될 수 있으므로 flag에 기대지 않고 select/selectV2로 명시하는 편이 안전하다(설계 제안). 이 flag를 생략한 기존 linked object 조회가 derived property를 받아 왔다면 기본값 변경 뒤에는 응답에서 빠질 수 있다.
 
 List와 linked list는 기본적으로 동시 변경 중 페이지의 누락/중복이 가능하다. `snapshot=true`는 paging 시작 전 일관된 뷰를 사용하고 false 기본값은 새 결과가 들어오는 대신 누락/중복이 가능하다. 페이지마다 같은 snapshot, query, selection과 크기를 유지한다.
 
@@ -63,6 +65,8 @@ includeComputeUsage는 OSDK application에서만 제공하며 성능 저하 때�
 
 - [Search Objects](https://www.palantir.com/docs/foundry/api/ontologies-v2-resources/ontology-objects/search-objects)
 - [List Objects](https://www.palantir.com/docs/foundry/api/ontologies-v2-resources/ontology-objects/list-objects)
+- [List Linked Objects](https://www.palantir.com/docs/foundry/api/ontologies-v2-resources/linked-objects/list-linked-objects)
+- [Get Linked Object](https://www.palantir.com/docs/foundry/api/ontologies-v2-resources/linked-objects/get-linked-object)
 - [Load Object Set](https://www.palantir.com/docs/foundry/api/ontologies-v2-resources/ontology-object-sets/load-object-set)
 - [Load Multiple Object Types](https://www.palantir.com/docs/foundry/api/ontologies-v2-resources/ontology-object-sets/load-object-set-multiple-object-types)
 - [Load Objects Or Interfaces](https://www.palantir.com/docs/foundry/api/ontologies-v2-resources/ontology-object-sets/load-object-set-objects-or-interfaces)
