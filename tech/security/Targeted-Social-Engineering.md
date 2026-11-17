@@ -1,9 +1,9 @@
 ---
 tags: [security, social-engineering, phishing, developer-security, supply-chain, endpoint]
 status: done
-verified_at: 2026-11-09
+verified_at: 2026-11-17
 category: "보안(Security)"
-aliases: ["Targeted Social Engineering", "표적형 사회공학", "가짜 채용 면접", "Fake Job Interview Malware", "채용 위장 공격", "AI 개인화 사기"]
+aliases: ["Targeted Social Engineering", "표적형 사회공학", "가짜 채용 면접", "Fake Job Interview Malware", "채용 위장 공격", "AI 개인화 사기", "크리에이터 채널 탈취"]
 ---
 
 # 표적형 사회공학: 채용 위장과 AI로 개인화한 사기
@@ -55,6 +55,24 @@ Binance는 2026년에 북한 연계로 의심되는 사이버 위협 57건을 �
 - 내 공개 문장을 정확히 인용하는 칭찬이나 제안은 상대가 그 문장을 읽었거나 도구로 읽혔다는 뜻일 뿐 관계나 신원의 증거가 아니다. 돈, 개인정보나 링크 클릭을 요구하면 상대가 메일에 적은 연락처가 아닌 독립된 경로로 확인한다.
 - 광고 상품은 판매자와 상품의 실재를 별도로 확인한다.
 
+## 크리에이터 채널 탈취: 협업 제안과 가짜 저작권 경고
+
+채널은 되팔거나 사기 방송에 쓸 수 있는 자산이라 표적이 된다. Google TAG는 2021-10-20 글에서 2019년 말부터 이어진 캠페인을 다음처럼 정리했다.
+
+- **유인**: 백신, VPN, 음악 플레이어, 사진 편집, 게임 데모 홍보 같은 가짜 협업 제안을 보내고, 수락하면 메일이나 Google Drive의 PDF로 가짜 다운로드 페이지를 건넨다. Gmail 탐지를 피하려고 WhatsApp, Telegram, Discord로 대화를 옮겼다.
+- **비밀번호 없이도 세션을 가져간다**: 관찰된 악성코드 대부분은 비밀번호와 쿠키를 함께 훔칠 수 있었고, 채널 탈취에는 브라우저 쿠키로 세션을 이어받는 pass-the-cookie 공격을 썼다. TAG는 이 수법이 다시 늘어난 이유가 MFA 확산일 수 있다고 본다. 로그인이 끝난 세션을 가져가므로 로그인 단계의 2단계 인증만으로는 막지 못한다(해석, [[Session|세션 하이재킹]]).
+- **규모**: 공격자 계정 약 15,000개, 이 목적으로 만든 도메인 1,011개 이상이었고, Google은 2021년 5월 이후 관련 Gmail 피싱 메일을 99.6% 줄였다고 밝혔다.
+
+YouTube 도움말(2026-11-17 확인)이 주는 판별 기준은 다음과 같다.
+
+- 정상 YouTube 메일은 `@youtube.com`이나 `@google.com` 주소에서만 오고, YouTube는 비밀번호나 계정 정보를 묻지 않는다. 도움말은 Google 비밀번호를 `myaccount.google.com` 외의 사이트에 입력하지 말라고 적지만, 실제 Google 로그인 화면은 `accounts.google.com`에서 열리므로 두 Google 도메인 외의 주소를 의심한다(해석).
+- 저작권 경고 알림은 `no-reply@youtube.com`에서 오며, 실제 경고는 YouTube Studio 대시보드의 Active copyright strikes나 콘텐츠 목록의 Copyright 필터에서 확인한다. 메일의 링크를 따라가지 않고 Studio를 직접 여는 것이 안전하다(해석).
+- 악성코드는 흔히 비밀번호가 걸린 압축 파일 안의 `.scr`, `.exe`로 오며, 백신이 암호화된 파일을 검사하지 못할 수 있어 Chrome의 향상된 세이프 브라우징을 권한다. 브랜드 제안은 회사에 전화하는 식으로 별도 확인한다.
+- 2단계 인증 수단 중 패스키를 피싱에 가장 강한 수단으로, 보안 키를 피싱에 강한 수단으로, SMS와 백업 코드를 덜 안전한 수단으로 분류한다([[FIDO-WebAuthn#피싱과 재사용 공격에 강한 이유|피싱 저항의 원리]]).
+- Google 계정 도움말은 표적 공격 위험이 큰 사람에게 로그인에 보안 키나 패스키를 요구하는 Advanced Protection Program을 권한다. 예시는 언론인, 활동가, 정치 캠페인 관계자, 기업 리더, IT 관리자 등이며 크리에이터를 명시하지는 않는다.
+
+사례(2026-11, 한 개발 유튜버의 공개 영상 속 관찰이며 검증하지 않음): 같은 날 가짜 저작권 경고 두 건을 받았다. 하나는 YouTube가 실제로 보낸 동영상 공유 알림 메일이라 발신 주소로 걸러지지 않았고, 연결된 채널은 남의 인기 영상을 걸어 조회수를 공식 채널처럼 보이게 한 뒤 QR 코드로 피싱 사이트에 보냈다. 다른 하나는 youtube.com 링크가 외부 사이트로 이어졌고, 대상 채널을 넣어야만 통과하는 가짜 확인 화면이 그 채널의 당일 영상을 보여 준 뒤 Google과 같은 모양의 로그인 창을 띄웠다. 정상 플랫폼이 보낸 메일과 정상 도메인의 링크도 내용까지 보증하지 않으므로, 판단은 발신 경로가 아니라 Studio에서 직접 확인한 상태와 로그인 창의 주소로 한다(해석). 이 유튜버는 협업 메일을 AI 비서가 먼저 검토하게 해 의심 메일을 걸러 낸다고 말했는데, 같은 메일이 모델에 주입하는 지시도 될 수 있으므로 판정 보조로만 쓴다(해석).
+
 ## 점검 체크리스트
 
 조직:
@@ -69,12 +87,20 @@ Binance는 2026년에 북한 연계로 의심되는 사이버 위협 57건을 �
 
 - 면접 과제는 업무 기기가 아닌 개인 VM이나 컨테이너에서 열고, 실행 전에 `package.json`의 scripts와 설치 스크립트를 읽는다([[Supply-Chain-Security#설치 시점 자동 실행|설치 시점 자동 실행]])
 - 채용 담당자와 회사는 회사 공식 사이트나 별도 채널로 확인하고, 화상 통화를 핑계로 한 프로그램 설치 요구는 거절한다
+- 채널 운영자는 저작권이나 정책 경고를 메일 링크가 아닌 YouTube Studio에서 직접 확인하고, 채널 계정의 2단계 인증 수단을 패스키나 보안 키로 둔다
+- 협업 제안에 딸린 비밀번호 압축 파일과 실행 파일은 열지 않고, 외부 사이트의 Google 로그인 요구는 주소창의 도메인을 확인한다
 
 ## 출처
 
 - [29 October 2026 Binance Security Incident: Initial Findings and Response Update — Binance](https://www.binance.com/en/blog/community/3229153443759566763) — 2026-11-03 게시, 2026-11-09 공격 단계, 탐지 실패, 내부 AI 도구 언급, 위협 건수와 후속 조치 대조. 자체 조사
 - [FBI, North Korea Aggressively Targeting Crypto Industry with Well-Disguised Social Engineering Attacks (I-090324-PSA)](https://www.ic3.gov/PSA/2024/PSA240903) — 2024-09-03 공익 경보의 수법, 징후와 권고
 - [Homebrew, FAQ](https://docs.brew.sh/FAQ) — 소유 계정으로 빌드와 설치를 실행하는 원칙
+- [Phishing campaign targets YouTube creators with cookie theft malware — Google Threat Analysis Group, Ashley Shen](https://blog.google/threat-analysis-group/phishing-campaign-targets-youtube-creators-cookie-theft-malware/) — 2021-10-20 게시, 2026-11-17 유인 수법, pass-the-cookie, 규모와 차단 수치 대조
+- [YouTube Help, Safety tips and resources for YouTube creators](https://support.google.com/youtube/answer/2802848) — 2026-11-17 공식 발신 주소, 계정 정보 요구 여부, 제안 확인 방법
+- [YouTube Help, Secure your YouTube channel](https://support.google.com/youtube/answer/9701986) — 2026-11-17 악성 파일 형태, 향상된 세이프 브라우징, 2단계 인증 수단 분류
+- [YouTube Help, Understand copyright strikes](https://support.google.com/youtube/answer/2814000) — 2026-11-17 알림 발신 주소와 Studio 확인 경로
+- [Google Account Help, Get Google's strongest account security with the Advanced Protection Program](https://support.google.com/accounts/answer/7519408) — 2026-11-17 대상과 보안 키, 패스키 요구
+- [와 또 제 채널 해킹시도 들어왔네요;; 점점 교묘해집니다. — YouTube, ZeroCho TV](https://www.youtube.com/watch?v=p6sK29gUdcg) — 2026-11-08 공개, 사례 관찰. 검증하지 않음
 - [Everything is an AI scam now — David Ralph Lewis](https://www.davidralphlewis.co.uk/posts/everything-is-an-ai-scam-now/) — 2026-08-28 개인 블로그, 사례와 관찰
 
 ## 관련 문서

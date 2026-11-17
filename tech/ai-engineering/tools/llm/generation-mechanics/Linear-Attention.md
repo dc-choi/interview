@@ -77,6 +77,18 @@ softmax 읽기는 질의와 각 키의 유사도 점수를 비선형 가중치�
 
 하이브리드 구성의 품질과 속도는 모델 전체의 결과이며, 선형 어텐션 층 비율만으로 긴 문맥 정확도를 예측하지 않는다. 공급사 평가표를 읽는 조건은 [[Model-Release-Claims|모델 발표 수치 읽기]]를 따른다.
 
+## 게이트를 정확한 값으로 몰면 상태가 메모리가 된다: Qwenputer
+
+게이트형 델타 규칙의 α_t와 β_t는 보통 학습된 값이지만, 가중치를 직접 정해 토큰마다 정확한 값을 내게 하면 상태를 주소 지정 가능한 메모리로 쓸 수 있다. 개인 연구 프로젝트 Qwenputer(Divyansh Agrawal)가 그 예다. 아래는 2026-11-17에 저장소 README, 설계 문서 `rv32.md`와 Hugging Face 모델 카드를 대조한 범위이며 독립 재현 결과는 아니다.
+
+- **읽기와 쓰기**: 쓰기 때 컴퓨터용 헤드는 α=1(아무것도 감쇠하지 않음), β=1이다. 이 문서의 표처럼 S를 값 차원×키 차원으로 두고 키를 one-hot `e_j`로 주면 `S_t = S_{t-1}(I − e_j e_jᵀ) + v e_jᵀ`이므로 j번째 열만 v로 바뀌고 다른 열은 그대로 남으며, 같은 one-hot 질의로 읽으면 `S_t e_j = v`가 나온다. README는 식 없이 one-hot 키가 한 행을 고른다고 표현하며, 키가 행을 가리키는 전치 방향으로 읽힌다(해석). 설계 문서의 β는 `sigmoid(256g − 128)`(g는 0 이하 또는 1) 꼴의 쓰기 허용 신호로 정확히 0이나 1이 되고, README는 α=0을 한 토큰 동안 주면 헤드 전체가 지워지고 α=½이면 매 단계 값이 절반이 되어 카운터로 쓴다고 적는다. README는 주소의 하위 비트가 헤드를, 나머지 비트가 행을 고르고 한 행에 1바이트를 담는다고 설명하지만, `rv32.md`의 RV32 빌드는 키 헤드 16개×값 헤드 2개×128행×1워드(층당 16KB)로 적어 세부 배치는 빌드마다 다르다.
+- **구성**: Qwen3.5-4B의 32개 층 앞에 컴파일러가 모든 가중치를 계산한 11개 층을 붙여 RV32IM, Zba와 자체 bignum 보조 프로세서를 구현한다. Qwen 자체 가중치는 바꾸지 않았다고 적는다. 모델 카드 기준 은닉 차원은 2560에서 3968로 넓어지고 trace 토큰 230,324개가 어휘에 더해지며, bf16 체크포인트는 18.8GB지만 대부분 0 패딩이고 컴퓨터 부분의 0이 아닌 가중치는 약 1M개다.
+- **실행**: 모델은 stock `Qwen3_5ForCausalLM` 클래스로 불러오고, README의 실행 경로는 전용 드라이버 `RvChat`이 프롬프트 뒤에 펌웨어를 DeltaNet 상태로 적재하고 디코딩 중 trace 토큰을 Qwen 층에서 빼는 방식이다. Qwen이 계산용 tool call을 쓰면 컴퓨터 층이 이를 실행하고 모델이 결과를 자릿수 단위로 생성한다. README는 모델 밖에서 실행하는 것이 없다고 적지만, 일반 추론 엔진에서 드라이버 없이 같은 동작이 나오는지는 확인하지 않았다. 설계 문서는 MicroPython이 아직 병합 모델 안에서 돌지 않는다고 적는다.
+- **검증 주장**: 병합 전 P2 코어 회로 기준(IR teacher-forced, GPU free-run)으로 rv32ui 38개, rv32um 8개, rv32uzba 3개 riscv-tests를 통과했다(`fence_i`, `ma_data` 제외). 병합 모델은 약 23만 개 출력 위치를 참조 구현으로 재생해 불일치 0, 일반 텍스트 분포 변화는 KL 6e-4(노이즈 바닥 5e-4)였고, 설계 문서는 병합 모델과 기본 모델의 greedy 텍스트가 16개 프롬프트 중 10개에서 같았다고 적는다.
+- **벤치마크 읽기**: 세트당 40문제 greedy 평가에서 DeepMind `mul_big`은 기본 모델 55.0%에서 97.5%였고, 호스트 Python 도구를 쓴 기본 모델은 100%였다. `div_big`(97.5 대 95.0)과 `mul_div_multiple_longer`(100.0 대 97.5)에서는 Qwenputer가 앞섰지만, 두 값은 계산기 펌웨어 v2로 다시 돈 결과이고 v1의 `div_big`은 38/40 대 39/40으로 도구가 앞섰다. 40문제에서 2.5%p는 한 문제 차이라 안정된 우열로 읽지 않는다. 비교 대상은 도구 없는 모델보다 도구를 쓰는 모델로 잡는다. NUPA 48.6%에서 100% 같은 수치는 이전 CHIP-8 버전의 결과이고 저자도 벤치마크별로 개발 체크포인트 전체에서 가장 좋은 모드를 고른 값이라고 밝히므로 RISC-V 빌드 수치와 섞지 않는다.
+
+LLM 안에서 계산이 정확히 실행될 수 있다는 구성 증명이지 학습으로 얻은 능력이 아니다. 처리 속도는 L4에서 Triton 실행기 기준 trace 토큰 초당 약 3,200개(README), 설계 문서 기준 HF 경로는 약 250개라 같은 계산을 호스트 도구로 부르는 쪽이 대개 싸고 빠를 것이다(해석). 선형 어텐션 상태가 게이트 값을 정확히 통제하면 정확한 연관 기억으로 동작한다는 점을 확인하는 예로 둔다(해석).
+
 ## 어텐션 없이 고정 이웃만 섞는 시도: Grassmann flow
 
 선형 어텐션은 모든 위치의 정보를 고정 크기 상태로 모으는 쪽이다. 반대로 각 위치가 정해진 거리의 이웃 몇 개만 보게 해 길이에 선형인 비용을 얻는 시도도 있다. arXiv 2512.19428(Zhang Chong 단독 저자, 2025-12-22 v1, "Attention Is Not What You Need: Grassmann Flows as an Attention-Free Alternative for Sequence Modeling")이 그 예이며, 2026-11-13에 v1 본문을 대조했다.
@@ -94,6 +106,7 @@ softmax 읽기는 질의와 각 키의 유사도 점수를 비선형 가중치�
 3. 하이브리드 모델에서 긴 문맥의 KV 캐시 크기를 정하는 층은 어느 쪽인가?
 4. 게이트형 델타 규칙에서 α_t를 0에 가깝게 두는 것과 β_t를 1에 가깝게 두는 것은 상태에 각각 어떤 변화를 주는가?
 5. 고정 이웃만 섞는 층이 인과 언어 모델에서 미래 위치를 참조하면 학습 지표에 어떤 문제가 생기는가?
+6. α=1, β=1, one-hot 키로 쓰면 상태의 다른 열(값×키 방향 기준)이 바뀌지 않는 이유를 갱신 식으로 설명할 수 있는가?
 
 ## 출처
 
@@ -106,6 +119,10 @@ softmax 읽기는 질의와 각 키의 유사도 점수를 비선형 가중치�
 - [KRAFTON/Raon-1-mini-preview — Hugging Face, KRAFTON](https://huggingface.co/KRAFTON/Raon-1-mini-preview) — 2026-10-27 층 구성, RDA 설명, KV 캐시 크기와 문맥 길이 확인
 - [zai-org/GLM-5.3-Flash — Hugging Face, Z.ai](https://huggingface.co/zai-org/GLM-5.3-Flash) — 2026-10-27 하이브리드 어텐션 설명 확인
 - [Attention Is Not What You Need: Grassmann Flows as an Attention-Free Alternative for Sequence Modeling — arXiv, Zhang Chong](https://arxiv.org/abs/2512.19428) — 2026-11-13 v1 본문 대조, 3.2절 구성, 복잡도, Wikitext-2와 SNLI 결과, 한계
+- [qwenputer README — GitHub, Divyansh Agrawal](https://github.com/divagr18/qwenputer) — 2026-11-17 헤드 고정 방식, 층 구성, ISA, 벤치마크와 CHIP-8 버전 구분 대조
+- [rv32.md — GitHub, divagr18/qwenputer](https://github.com/divagr18/qwenputer/blob/main/experimental/riscv/docs/rv32.md) — 2026-11-17 riscv-tests 범위, n=40 원자료, MicroPython 한계 대조
+- [divagr1925/Qwen3.5-4B-Qwenputer — Hugging Face, Divyansh Agrawal](https://huggingface.co/divagr1925/Qwen3.5-4B-Qwenputer) — 2026-11-17 은닉 차원, trace 토큰 수, 체크포인트 크기 대조
+- [Someone Put a Working Computer Inside an AI Model — YouTube, Better Stack](https://www.youtube.com/watch?v=myHkgWZTbgQ) — 학습 계기, 수치는 위 저장소와 모델 카드로 대조. 영상의 NES 파생 프로젝트는 1차 출처를 찾지 못해 쓰지 않았다
 - [크래프톤, 자체 개발 30B급 고효율 LLM 'Raon-1 mini' 프리뷰 공개 — GeekNews](https://news.hada.io/topic?id=35752) — 학습 계기, 구조는 모델 카드로 대조
 
 ## 관련 문서
