@@ -1,9 +1,9 @@
 ---
 tags: [ai, interpretability, neural-networks, superposition]
 status: done
-verified_at: 2026-11-09
+verified_at: 2026-11-17
 category: "AI엔지니어링(AIEngineering)"
-aliases: ["Mechanistic Interpretability", "기계적 해석가능성", "Weight-Space Programming", "가중치 공간 프로그래밍"]
+aliases: ["Mechanistic Interpretability", "기계적 해석가능성", "Weight-Space Programming", "가중치 공간 프로그래밍", "Model Editing", "모델 편집", "ROME", "MEMIT"]
 ---
 
 # 신경망의 기계적 해석가능성
@@ -40,6 +40,35 @@ aliases: ["Mechanistic Interpretability", "기계적 해석가능성", "Weight-S
 
 Recursive generalization은 처음의 패턴이 관련된 다른 패턴으로 확장된다는 설명 가설이다. 이를 모든 다의미성의 확정 원인이나 중첩 연구 전체의 반증으로 기록하지 않는다. 비전 모델의 관측, 언어모델의 예비 조사와 후속 기술 논문 예고를 구분한다.
 
+## 위치를 찾아 고치는 모델 편집(ROME, MEMIT)
+
+모델의 행동을 바꾸는 방법은 무엇을 근거로 어디를 바꾸는지로 나뉜다. 프롬프트는 함수의 입력을 바꾸고, 나머지는 함수 자체인 가중치를 바꾼다. 아래 표는 학습 계기가 된 영상의 비교 틀을 정리한 개념 비교이며, 모델 편집 행의 근거만 ROME 논문과 대조했다.
+
+| 방법 | 바꾸는 대상 | 근거 | 되돌리기 |
+|---|---|---|---|
+| 프롬프트, RAG | 입력 컨텍스트 | 지시와 예시 | 입력을 바꾸면 끝난다 |
+| 전체 미세조정 | 모든 가중치 | 학습 데이터와 기울기 | 이전 체크포인트를 보관해야 한다 |
+| LoRA | 저랭크 변화량(병합하면 가중치 자체) | 학습 데이터와 기울기 | 병합하지 않았으면 어댑터를 뗀다 |
+| 모델 편집 | 고른 층의 소수 행렬 | 고칠 사실(ROME 1건, MEMIT 수천 건), 값 벡터 최적화와 사전 계산한 키 통계, 닫힌 형태의 행렬 갱신 | 편집 전 가중치나 변경분을 보관해야 한다 |
+
+LoRA의 구조와 병합은 [[LLM-Generation-Mechanics-Training#LoRA와 QLoRA: 바꾸는 파라미터와 저장 정밀도|LoRA와 QLoRA]]에서 다룬다.
+
+모델 편집은 사실 하나를 고치려고 다시 학습하는 비용과 부작용을 줄이려는 연구 흐름이다. 2021년 공개된 KnowledgeEditor와 MEND는 편집을 수행하는 별도 신경망(하이퍼네트워크, 보조 편집 망)을 학습시켰다. 2022년의 ROME(Rank-One Model Editing)은 위치를 찾은 뒤 그 가중치를 직접 고친다.
+
+1. **위치 찾기(causal tracing):** 주어 토큰의 임베딩에 잡음을 넣어 계산을 방해한 뒤 개별 은닉 상태를 하나씩 되살려 정답 예측이 얼마나 돌아오는지 잰다. 연구진은 주어의 마지막 토큰을 처리하는 동안 중간 층들의 feed-forward(MLP) 모듈이 사실 예측을 매개한다고 보고했다.
+2. **해석:** 그 MLP를 키가 주어를, 값이 주어에 대한 지식을 담는 키-값 저장소로 본다. 이는 편집 방법의 전제가 된 해석 가설이다.
+3. **쓰기:** MLP 안에서 키를 값으로 바꾸는 행렬 하나에 rank-one 변경을 더해 새 키-값 쌍을 직접 써 넣는다. 연구진은 약 2만 2천 개 레코드(21,919)의 반사실 데이터셋 CounterFact에서 일반화와 특이성(관계없는 사실 보존)을 함께 유지했다고 보고했다.
+
+후속 MEMIT은 편집량을 한 층이 아니라 사실 예측을 매개하는 여러 핵심 MLP 층(GPT-J에서는 3~8층)에 나눠 반영한다. GPT-J(6B)와 GPT-NeoX(20B)에서 수천 건을 한 번에 넣었다고 보고했다.
+
+### 편집됐다는 것과 지식이 바뀌었다는 것은 다르다
+
+- **위치와 편집 효과는 따로 논다:** 2023년 연구는 causal tracing의 위치 결론이 어느 MLP 층을 편집하는 것이 가장 좋은지 알려 주지 못하고, 어느 층을 편집했는지가 성능을 더 잘 예측한다고 보고했다. 위치를 찾았다는 사실이 그 위치를 고치는 것이 최선이라는 근거가 되지 않는다.
+- **연결된 사실이 따라 바뀌지 않는다:** 사실 편집 5천 건(초록 기준)마다 그 편집으로 따라 바뀌거나 유지돼야 할 사실을 묻는 질의를 붙인 진단 벤치마크에서, 기존 편집 방법은 일관된 지식 변화를 만들지 못했고 컨텍스트에 새 사실을 넣는 단순한 기준선이 가장 높은 점수를 냈다(2023년 연구).
+- **누적 편집에서 망각이 보고됐다:** 2024년 연구는 ROME과 MEMIT으로 사실을 순차적으로 계속 고치면 앞서 고친 사실과 하위 과업 능력을 잃고, 점진적 망각 뒤에 급격한 망각이 오는 두 단계가 나타났다고 보고했다.
+
+따라서 편집 결과는 고친 문장 하나의 정답률만 보지 않는다. 말을 바꾼 질문(일반화), 관계없는 사실(특이성), 연결된 사실(파급), 편집 횟수에 따른 일반 과업 성능을 함께 기록하고, 수정본은 원본의 평가 결과를 물려받지 않으므로 안전성 평가도 다시 한다(적용 제안). 아래의 가중치 공간 프로그래밍 주장도 이 계보와 같은 기준으로 읽는다.
+
 ## 모델이 다른 모델의 가중치를 읽고 고친 실험의 범위
 
 MIT CSAIL 연구진이 2026-11-02 공개한 연구 글은 GPT-6 Astra에 신경망 가중치를 건네 읽기, 작성, 수정 과제를 맡겼다. 실험마다 입력과 허용한 도구가 달라 결과를 하나의 능력으로 묶어 읽지 않는다. 아래 수치는 연구진의 보고값이며 이 문서에서 재현하지 않았다.
@@ -72,7 +101,7 @@ MIT CSAIL 연구진이 2026-11-02 공개한 연구 글은 GPT-6 Astra에 신경�
 5. 설명 가능한 특성의 비율, 특정 행동의 원인 설명과 전체 모델의 안전성을 서로 다른 결과로 보고한다.
 6. 가중치 편집 결과는 허용 도구, 실행 예산, 연습셋과 평가셋의 분리, 기준선의 생성 설정을 함께 기록하고, 길이 한도나 반복 같은 알려진 실패의 해소인지 새 능력인지 나눈다.
 
-이 목록은 위 연구를 읽고 적용할 검사 기준이다. 이번 문서 작성에서 모델 실행, 뉴런 개입, 가중치 편집이나 보고된 비율의 독립 재현은 하지 않았다.
+이 목록은 위 연구를 읽고 적용할 검사 기준이다. 이번 문서 작성에서 모델 실행, 뉴런 개입, 가중치 편집이나 보고된 비율의 독립 재현은 하지 않았다. 모델 편집 절은 2026-11-17 각 논문의 arXiv 초록과 ROME, MEMIT 프로젝트 페이지로 대조했다. ROME 논문 본문은 주어 임베딩 잡음(2.1절), 값 벡터 최적화와 키 통계(3.1절), CounterFact 레코드 수(3.3절)만 대조했고 그 밖의 실험 설정과 수치는 대조하지 않았다. 비교 표의 되돌리기 열은 개념 정리이며 논문으로 대조한 사실이 아니다.
 
 ## 출처
 
@@ -85,6 +114,16 @@ MIT CSAIL 연구진이 2026-11-02 공개한 연구 글은 GPT-6 Astra에 신경�
 - [The 'Astra can read and write weights to improve Qwen' post is misleading — Matthew Honnibal](https://honnibal.dev/blog/astra-read-write-misleading) — 2026-11-03. 도구 없는 읽기 실험의 범위와 실패 사례.
 - [Qwen 3.8 27B on my laptop can interpret model weights, too — Simon Willison](https://simonwillison.net/2026/Nov/3/qwen-can-interpret-model-weights/) — 2026-11-03. 로컬 모델의 게임 식별 결과와 소요 시간.
 - [Qwen/Qwen3.5-0.8B — Hugging Face, Qwen](https://huggingface.co/Qwen/Qwen3.5-0.8B) — 2026-11-09 thinking loop 경고와 권장 샘플링 값 대조.
+- [Locating and Editing Factual Associations in GPT — arXiv, Kevin Meng 외](https://arxiv.org/abs/2202.05262) — NeurIPS 2022. 중간 층 feed-forward 모듈의 매개, rank-one 편집, 일반화와 특이성 보고. 2.1절 주어 임베딩 잡음, 3.1절 $W_{proj}$ 갱신과 키 공분산, 3.3절 CounterFact 21,919개 레코드 대조.
+- [Locating and Editing Factual Associations in GPT (ROME 프로젝트 페이지) — Kevin Meng 외](https://rome.baulab.info/) — 오염과 상태 복원, 주어 마지막 토큰, MLP 키-값 해석, rank-one 변경, CounterFact.
+- [Mass-Editing Memory in a Transformer — arXiv, Kevin Meng 외](https://arxiv.org/abs/2210.07229) — GPT-J(6B), GPT-NeoX(20B)에서 수천 건 편집.
+- [Mass-Editing Memory in a Transformer (MEMIT) — Kevin Meng 외](https://memit.baulab.info/) — ICLR 2023 프로젝트 페이지. 여러 핵심 MLP 층에 편집량을 나누는 방식과 GPT-J의 층 범위.
+- [Does Localization Inform Editing? — arXiv, Peter Hase 외](https://arxiv.org/abs/2301.04213) — NeurIPS 2023. 위치 결론과 편집 층 선택의 불일치.
+- [Evaluating the Ripple Effects of Knowledge Editing in Language Models — arXiv, Roi Cohen 외](https://arxiv.org/abs/2307.12976) — TACL 2024. 5천 건 진단 벤치마크와 컨텍스트 편집 기준선.
+- [Model Editing at Scale leads to Gradual and Catastrophic Forgetting — arXiv, Akshat Gupta 외](https://arxiv.org/abs/2401.07453) — ACL 2024 Findings. ROME과 MEMIT의 순차 편집과 두 단계 망각.
+- [Fast Model Editing at Scale — arXiv, Eric Mitchell 외](https://arxiv.org/abs/2110.11309) — ICLR 2022. MEND, 보조 편집 망.
+- [Editing Factual Knowledge in Language Models — arXiv, Nicola De Cao 외](https://arxiv.org/abs/2104.08164) — EMNLP 2021. KnowledgeEditor, 하이퍼네트워크.
+- [AI가 가중치를 직접 고친다? 검증 없이 믿으면 위험한 이유 — 길리랩 - 실전 구현 랩](https://www.youtube.com/watch?v=G_z1bWn5HYU) — 2026-11-08 영상. 바꾸는 방법 비교 틀과 모델 편집 계보의 학습 계기. 모델 편집의 사실은 위 논문과 프로젝트 페이지로 대조했고, 비교 표의 다른 행은 개념 정리로만 썼다.
 
 ## 관련 문서
 

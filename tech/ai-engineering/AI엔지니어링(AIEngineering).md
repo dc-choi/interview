@@ -29,7 +29,7 @@ Software 3.0 패러다임, LLM과 에이전트, 하네스, 평가, 조직 전환
 - [x] [[Generative-3D-Asset-Workflow|생성형 3D 자산 제작]] — Flow 입력과 실행, 형태와 텍스처 분리, 리깅 편집과 결과 검수
 - [x] [[Agent-Oriented-Programming-Languages|에이전트용 프로그래밍 언어]] — Zerolang의 검사된 그래프 편집, Mog의 호스트 권한과 검증 한계, Exact와 Text.js의 런타임 관찰 명령
 - [x] [[ML-Proxy-Discrimination|대리변수와 모델 공정성]] — 간접 정보, 집단별 오류와 공정성 기준의 차이
-- [x] [[Mechanistic-Interpretability|신경망의 기계적 해석가능성]] — 뉴런과 특성, 중첩의 실험 범위, 회로 조사와 작업 가설의 구분, 다른 모델이 가중치를 읽고 고친 실험의 도구 조건과 장애 제거의 구분
+- [x] [[Mechanistic-Interpretability|신경망의 기계적 해석가능성]] — 뉴런과 특성, 중첩의 실험 범위, 회로 조사와 작업 가설의 구분, ROME과 MEMIT 모델 편집의 절차와 한계(위치와 편집 효과, 파급, 누적 망각), 다른 모델이 가중치를 읽고 고친 실험의 도구 조건과 장애 제거의 구분
 - [x] [[LLM-Statistical-Citation-Verification|AI 인용과 통계의 원출처 검증]] — 숫자와 분모, 재인용 경로, 위키백과 정리와 탐지 한계
 
 - [x] [[Expertise-Formation-AI|AI 시대 전문성 형성]] — 기본기와 지식의 폭, 필요할 때의 깊이, SRE 탈숙련 논의의 유추 한계
