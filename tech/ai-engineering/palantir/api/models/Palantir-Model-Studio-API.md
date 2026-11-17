@@ -1,7 +1,7 @@
 ---
 tags: [palantir, foundry, api, model-studio, training]
 status: done
-verified_at: 2026-10-16
+verified_at: 2026-11-17
 category: "AI엔지니어링(AIEngineering)"
 ---
 
@@ -28,6 +28,14 @@ workerConfig의 customConfig는 trainer JSON schema와 맞아야 한다. inputs�
 outputs는 alias별 Model RID다. 응답 Config Version은 integer version과 실제 trainer ID/version, workerConfig/resources, 생성 시각/사용자를 포함한다. 생성 입력에는 trainerId만 있고 trainer version 선택 필드는 없으므로 조회 응답의 실제 버전을 기록한다.
 
 조회는 `/configVersions/{modelStudioConfigVersionVersion}`, 최신 단건은 `/configVersions/latest`, 전체 목록은 `/configVersions`다. 이름이 latestModelStudioConfigVersions여도 응답은 단일 Config Version이다. 목록은 pageToken/pageSize와 nextPageToken으로 계속 읽는다.
+
+### Branch 선택
+
+2026-11-17 수집한 Create, List, Get과 Latest 명세에는 optional `branch` query parameter가 있다. 값은 branch RID나 dataset branch identifier이며 global branch를 가리켜야 한다. `main`, `master`를 포함한 non-global branch 이름은 `FoundryBranchNotFound`로 거부된다. 생략하면 default branch에서 만들거나 읽는다.
+
+API에 `branch=main`을 넣지 않는다. default branch는 parameter를 생략하고, 다른 branch는 global branch의 RID나 dataset branch identifier로 지정한다. UI 문서가 초기 학습 위치로 부르는 `main`이 API의 default branch에 해당한다는 것은 추론이다. Create와 List의 `FoundryBranchNotFound`는 errorResponses 목록에는 없고 parameter 설명에만 나오므로 공통 오류 처리 경로에서도 받을 수 있게 둔다.
+
+Launch와 Runs는 2026-10 수집본만 있고 그 수집본에는 `branch`가 없어 이번에 현재 명세와 대조하지 않았다. 다른 branch에 config를 만든 뒤 아래 Launch를 호출할 때는 현재 명세의 branch 지정 여부를 먼저 확인한다. 그렇지 않으면 default branch의 최신 config로 실행될 수 있다. branch별 configuration 복사와 병합 흐름은 [[Palantir-Model-Studio-Workflow]]를 따른다.
 
 ## Launch는 최신 Config를 실행한다
 
