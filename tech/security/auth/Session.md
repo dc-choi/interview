@@ -1,7 +1,7 @@
 ---
 tags: [security, auth, session, cookie, stateless, session-hijacking]
 status: done
-verified_at: 2026-10-07
+verified_at: 2026-11-19
 category: "Security - 인증"
 aliases: ["Session", "세션", "세션 하이재킹", "Session Hijacking"]
 ---
@@ -53,6 +53,36 @@ user_id 같은 식별자를 쿠키에 직접 담지 않고 추측 불가능한 �
 - **로그인과 권한 변경 시 세션 ID 재발급** — 세션 고정(session fixation)을 막고 이전 ID를 무효화한다.
 - **민감 작업 재인증** — 비밀번호 변경, 결제, 개인정보 조회에서 비밀번호 재확인이나 2단계 인증을 요구하는 이유: 세션 쿠키만으로는 처음 비밀번호를 입력한 실제 사용자와 세션 탈취자를 구분할 수 없기 때문
 
+## MFA를 통과한 뒤의 세션 탈취
+
+MFA는 로그인 순간의 인증을 강화한다. 그러나 로그인 결과로 발급된 세션 쿠키를 빼앗기면 서버는 쿠키만 보고 요청을 받는다. 공격 경로는 둘로 나눠 본다.
+
+- **AiTM(adversary-in-the-middle) 피싱**: 피싱 사이트가 사용자와 실제 사이트 사이에서 요청을 중계하는 프록시로 동작한다. 사용자가 넣은 비밀번호와 OTP를 실제 사이트에 그대로 넘기고, 인증이 끝나면 발급된 세션 쿠키를 가로챈다. 공격자는 이 쿠키를 자기 브라우저에 넣어 MFA가 켜져 있어도 인증 단계를 건너뛴다. MFA의 취약점이 아니라 인증의 결과물을 훔치는 공격이다.
+- **기기 감염(인포스틸러)**: 사용자 기기의 악성코드가 브라우저에 저장된 세션 쿠키를 빼내고, 공격자가 다른 환경에서 재생(replay)한다. 로그인 과정에 끼어들지 않으므로 인증 수단을 강화해도 막지 못한다.
+
+| 층 | 수단 | 막는 것 | 남는 한계 |
+|---|---|---|---|
+| 로그인 | 피싱 저항 인증([[FIDO-WebAuthn\|FIDO2 패스키]], 인증서 기반) | 사람이 도메인을 눈으로 확인하는 데 기대지 않으므로 비밀번호와 OTP를 중계하는 AiTM이 통하지 않는다. 패스키는 자격증명이 RP ID에 묶이고 브라우저가 origin과 RP ID를 대조하며 RP가 서명된 origin을 검증한다 | 이미 발급된 쿠키의 탈취, 비밀번호와 OTP 같은 피싱 가능한 대체 로그인 경로, MFA 재설정 같은 복구 경로 |
+| 세션 | 기기 바인딩(DBSC) | 기기에서 빼낸 쿠키를 다른 기기에서 계속 쓰는 재생 | 공격자가 기기에 머무는 동안의 로컬 사용, 등록 시점에 공격자가 끼어든 세션 |
+| 세션 이후 | 지속 평가와 교차 앱 폐기(CAEP, 전역 토큰 폐기) | IdP가 위험을 감지한 뒤에도 연동 앱에 남은 세션 | 수신 앱이 신호를 받아 실제로 끊어야 효과가 있다 |
+
+### 기기 바인딩: DBSC
+
+Device Bound Session Credentials(DBSC)는 세션을 기기에 보관한 키 쌍에 묶는다. 등록 때 브라우저가 키 쌍을 만들고, 서버는 공개키를 세션 식별자와 함께 저장한다. 이후 서버는 이 세션에 묶인 쿠키를 발급하며, 쿠키 수명은 서버가 정한다. 쿠키가 만료되면 브라우저가 서버의 최근 challenge를 개인키로 서명해 갱신 endpoint로 보내고, 서버는 저장한 공개키로 검증한 뒤에만 새 쿠키를 준다. 명세는 오래된 challenge의 서명을 거부하라고 권한다(should). 빼돌린 쿠키는 만료 뒤 개인키 없이는 갱신할 수 없으므로, 보호 창은 서버가 쿠키 수명을 짧게 잡는 것을 전제로 한다. 개인키를 어떻게 보호할지는 브라우저 구현이 정한다. Chrome은 Windows의 TPM, macOS의 Secure Enclave처럼 키를 밖으로 내보낼 수 없는 보안 하드웨어를 쓴다.
+
+명세는 비목표도 밝힌다. 공격자가 사용자 기기에 상주하는 동안의 세션 접근은 막지 않으며, 같은 사용자로 실행되는 프로그램은 서명 기능을 쓸 수 있다. 세션 등록 시점에 이미 감염된 기기도 보호하지 못한다. 서버는 세션이 어느 기기에 등록됐는지나 그 기기의 상태에 대한 보증을 받지 못한다. 키 보호가 구현 의존이고 Google은 세션별 공개키 외에 기기 식별자나 attestation을 보내지 않는다고 밝히므로, 서버가 키의 하드웨어 결합을 직접 확인할 수도 없다. 목표는 악성코드가 기기 안에서만 움직이게 만들어 탐지와 대응을 쉽게 하는 것이다.
+
+2026-11-19 확인 기준 W3C 게시본은 WebAppSec WG의 First Public Working Draft(2025-08-21)이고, 이 절은 최신 Editor's Draft(2026-11-09판)를 따랐다. Google은 2026-04-09 글에서 Chrome 146의 Windows 공개와 macOS 확대 예정을 밝혔다. Chrome Enterprise 릴리스 노트는 Windows는 Chrome 145, macOS는 Chrome 147부터 점진 배포한다고 적는다. Google Workspace 사용자에게는 Windows Chrome의 기본 적용(관리자 해제 불가)을 2026-05-25부터 최대 60일에 걸쳐 점진 배포했고, 개인 Google 계정도 제공 대상에 들어간다. 모든 사용자에게 배포가 끝났는지는 확인하지 않았다. 보안 하드웨어가 없는 기기는 소프트웨어 키 지원을 검토 중이라고만 밝혔다. 사이트가 등록과 갱신 endpoint를 구현해야 하므로, 브라우저가 지원한다는 사실만으로 자기 서비스의 세션이 보호된다고 보지 않는다.
+
+### 지속 평가와 교차 앱 폐기
+
+SSO로 로그인하면 IdP 세션과 각 앱의 세션이 따로 생긴다. 로그아웃 전파를 구현하지 않았다면 IdP 세션을 끊거나 계정을 정지해도 앱이 이미 발급한 세션과 refresh token은 남는다. 로그아웃 전파에는 OpenID Connect Back-Channel Logout 1.0처럼 OP가 RP에 직접 알리는 규격도 있다. 다만 이 규격은 offline_access로 발급한 refresh token은 보통 폐기하지 않는 것(SHOULD NOT)을 기본으로 둔다. 여기서는 위험 신호 공유와 전체 토큰 폐기를 다루는 둘을 본다.
+
+- **OpenID Shared Signals Framework(SSF) 1.0과 CAEP 1.0**: 2025-08-29 게시본이 Final Specification으로 승인됐다(2025-09-16 발표). SSF는 Transmitter가 Receiver에게 보안 이벤트를 SET(RFC 8417)으로 push(RFC 8935)나 poll(RFC 8936) 방식으로 전달하는 틀이다. CAEP는 그 위의 이벤트 종류를 정의한다. `session-revoked`, `credential-change`, `device-compliance-change`, `assurance-level-change`, `token-claims-change`, `risk-level-change` 등이다. CAEP는 Receiver가 이벤트를 받은 뒤 할 일을 강제하지 않고, SSF는 정보 참고부터 강제 집행까지 배포마다 정하게 둔다. `session-revoked`를 수신한다고 세션이 끊긴다고 가정하지 말고 수신 앱의 처리 규칙을 따로 정의하고 시험한다.
+- **Global Token Revocation(IETF 개인 초안 `draft-parecki-oauth-global-token-revocation`)**: Okta Universal Logout 개발자 문서 기준, IdP가 앱이 정한 endpoint에 서명한 JWT와 사용자 식별자를 POST하면 앱은 그 사용자의 refresh token과 세션 쿠키를 모두 폐기한다. Okta 문서는 access token 폐기를 기대하지 않는다고 적고, 초안 -06 본문은 무효화를 권하되(SHOULD) 기술적으로 어려울 수 있다고 인정한다. 어느 쪽이든 이미 발급된 access token은 만료 때까지 남을 수 있다. 성공 응답은 폐기를 시도하고 있다는 뜻이라 즉시 완료를 보장하지 않는다. 2026-11-19 datatracker 기준 이 초안은 -06(2026-02-25)이 2026-08 말 만료된 개인 초안이며 WG 채택본이 없다. 표준으로 확정된 규격이 아니라 벤더 구현이 참조하는 초안으로 본다.
+
+설계 제안으로, 자체 개발 앱이 이런 신호를 처리하려면 서버가 사용자별 세션 목록을 찾아 일괄 무효화할 수 있어야 한다. 세션 ID만 저장하고 사용자 기준 조회 경로가 없거나 자체 검증만 하는 장수명 [[JWT]]에 기대면, 신호를 받아도 끊을 대상을 찾지 못한다. 수신 endpoint 자체도 서명 검증과 재전송 방지가 필요한 공격 표면이다.
+
 ## 비밀번호 변경과 재인증 상태
 
 로그인한 사용자가 현재 비밀번호를 아는 상태에서 변경하는 흐름과, 비밀번호를 잊어 복구하는 흐름은 구분한다. 일반적인 비밀번호 변경에서는 유효한 세션과 현재 비밀번호 검증이 필요하다. 현재 입력은 [[Password-Hashing|패스워드 해시 검증 함수]]로 확인하며, 새 비밀번호 두 칸이 같다는 사실로 현재 사용자 인증을 대신하지 않는다.
@@ -80,9 +110,28 @@ user_id 같은 식별자를 쿠키에 직접 담지 않고 추측 불가능한 �
 - 쿠키와 세션의 구분 (클라이언트의 기억 vs 서버의 기억)
 - 세션 하이재킹의 원리와 방어 조합 (HTTPS, HttpOnly, Secure, SameSite, 만료, ID 재발급)
 - 민감 작업에서 비밀번호를 다시 묻는 이유
+- MFA를 통과한 세션이 탈취되는 두 경로(AiTM, 기기 감염)와 층별 대응(피싱 저항 인증, DBSC, CAEP와 전역 토큰 폐기)의 한계
 - 세션 방식의 확장성 한계와 대안 (외부 세션 저장소, JWT)
 
 ## 출처
+
+2026-11-19에는 MFA 이후 세션 탈취 절을 아래 자료와 대조했다. DBSC 명세는 Editor's Draft라 바뀔 수 있다. 피싱 저항 인증 행의 메커니즘은 WebAuthn Level 3와 대조했다. 계기가 된 Okta와 토크아이티 웨비나의 제품 기능과 효과 주장은 검증하지 않았다.
+
+- [From cookie theft to BEC: Attackers use AiTM phishing sites as entry point to further financial fraud — Microsoft Security Blog](https://www.microsoft.com/en-us/security/blog/2022/07/12/from-cookie-theft-to-bec-attackers-use-aitm-phishing-sites-as-entry-point-to-further-financial-fraud/)
+- [W3C WebAppSec WG, Device Bound Session Credentials (Editor's Draft)](https://w3c.github.io/webappsec-dbsc/)
+- [W3C, Device Bound Session Credentials publication history](https://www.w3.org/standards/history/dbsc/)
+- [Protecting Cookies with Device Bound Session Credentials — Google](https://blog.google/security/protecting-cookies-with-device-bound-session-credentials/)
+- [Prevent account takeovers with Device Bound Session Credentials (DBSC), now generally available in the Chrome browser for Windows — Google Workspace Updates](https://workspaceupdates.googleblog.com/2026/05/prevent-account-takeovers-with-DBSC-now-generally-available-in-the-Chrome-browser-for-Windows.html)
+- [Previous release notes, Chrome 147 (Device Bound Session Credentials) — Google Chrome Enterprise and Education Help](https://support.google.com/chrome/a/answer/10314655?hl=en)
+- [IETF Datatracker, draft-parecki-oauth-global-token-revocation](https://datatracker.ietf.org/doc/draft-parecki-oauth-global-token-revocation/)
+- [Global Token Revocation, draft-parecki-oauth-global-token-revocation-06 — IETF](https://www.ietf.org/archive/id/draft-parecki-oauth-global-token-revocation-06.txt)
+- [W3C, Web Authentication: An API for accessing Public Key Credentials Level 3](https://www.w3.org/TR/webauthn-3/)
+- [AI 시대, 기업 Identity 보안의 새로운 전략, 인증을 넘어 계정, 권한, 세션까지 — 토크아이티, Okta 웨비나](https://www.youtube.com/watch?v=XP_2i3tzcjQ) — 공격 경로 구분의 계기로만 사용
+- [OpenID Foundation, OpenID Connect Back-Channel Logout 1.0](https://openid.net/specs/openid-connect-backchannel-1_0.html)
+- [OpenID Foundation, OpenID Shared Signals Framework Specification 1.0](https://openid.net/specs/openid-sharedsignals-framework-1_0-final.html)
+- [OpenID Foundation, OpenID Continuous Access Evaluation Profile 1.0](https://openid.net/specs/openid-caep-1_0-final.html)
+- [OpenID Foundation finalizes global standards for real-time identity security — OpenID Foundation](https://openid.net/press-release-openid-foundation-finalizes-global-standards-for-real-time-identity-security/)
+- [Okta Developer, Build Universal Logout for your app](https://developer.okta.com/docs/guides/oin-universal-logout-overview/)
 
 2026-10-07에는 비밀번호 변경과 재인증 절을 아래 OWASP 자료와 대조했다. 상태 필드와 원자적 소비는 이를 적용한 설계 제안이며 특정 프레임워크의 기본 동작을 뜻하지 않는다.
 
@@ -101,6 +150,7 @@ user_id 같은 식별자를 쿠키에 직접 담지 않고 추측 불가능한 �
 
 - [[Cookie|Cookie (보안 속성, 쿠키 종류)]]
 - [[JWT]]
+- [[FIDO-WebAuthn|FIDO2, WebAuthn]]
 - [[OAuth2]]
 - [[Auth-Method-Selection|인증 방식 선택]]
 - [[Refresh-Token-Rotation|Refresh Token Rotation]]
