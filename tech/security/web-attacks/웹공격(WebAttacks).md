@@ -25,5 +25,5 @@ CORS, CSRF, XSS, SQL Injection, Command Injection, 파일 업로드, IDOR, SSRF 
 - [x] [[Security-Headers|Security Headers (CSP, HSTS, X-Frame-Options, Helmet)]]
 - [x] [[IDOR|IDOR / Broken Access Control (부적절한 인가, 인증 vs 인가, 소유 조건 조회와 404 응답)]]
 - [x] [[SSRF|SSRF (서버 측 요청 위조, 클라우드 메타데이터, 화이트리스트)]]
-- [x] [[Third-Party-Script-Compromise|서드파티 스크립트 침해 (페이지 권한으로 실행되는 외부 코드, CSP 허용 목록과 SRI, 버전 고정, 샌드박스 iframe의 경계)]]
+- [x] [[Third-Party-Script-Compromise|서드파티 스크립트 침해 (페이지 권한으로 실행되는 외부 코드, CSP 허용 목록과 SRI, 버전 고정, 샌드박스 iframe의 경계, 공급자 설정 코드 주입과 결제 입력의 교차 출처 분리)]]
 - [x] [[Capability-URL-Exposure|공유 링크(Capability URL)의 노출 경로 (Referer와 로그, 호스트 이름과 패시브 DNS, 만료와 폐기)]]

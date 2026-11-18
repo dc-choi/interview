@@ -3,7 +3,7 @@ tags: [security, web-attacks, xss, owasp]
 status: done
 category: "Security - 웹 공격"
 aliases: ["XSS", "Cross-Site Scripting", "크로스 사이트 스크립팅"]
-verified_at: 2026-08-05
+verified_at: 2026-11-18
 ---
 
 # XSS (Cross-Site Scripting)
@@ -51,7 +51,7 @@ React, Angular 같은 모던 프레임워크는 기본 렌더 경로에서 자�
 - Angular `bypassSecurityTrustAs*` 계열
 - Lit `unsafeHTML`, Polymer `inner-h-t-m-l`와 템플릿 인젝션
 
-서버 사이드도 같다. 템플릿 엔진의 raw 출력 문법(Thymeleaf `th:utext`, EJS `<%- %>` 등)이 동일한 탈출구다.
+서버 사이드도 같다. 템플릿 엔진의 raw 출력 문법(Thymeleaf `th:utext`, EJS `<%- %>`, Jinja `|safe` 필터와 `{% autoescape false %}` 블록 등)과 Python `Markup`처럼 값을 안전한 HTML로 표시하는 API가 동일한 탈출구다. Flask 문서는 Jinja 자동 이스케이프가 켜져 있어도 따옴표 없는 속성값과 `href`의 `javascript:` URL은 막지 못한다고 명시한다([[Python-Flask-Web#자동 이스케이프와 남는 구멍|Flask와 Jinja]]).
 
 ## HTML을 허용해야 할 때 — 살균(sanitization)
 
@@ -131,6 +131,8 @@ Q. HttpOnly 쿠키를 쓰면 XSS로부터 안전한가?
 - [OWASP Cheat Sheet Series — Cross Site Scripting Prevention](https://cheatsheetseries.owasp.org/cheatsheets/Cross_Site_Scripting_Prevention_Cheat_Sheet.html)
 - [OWASP Cheat Sheet Series — DOM based XSS Prevention](https://cheatsheetseries.owasp.org/cheatsheets/DOM_based_XSS_Prevention_Cheat_Sheet.html)
 - [OWASP — Types of Cross-Site Scripting](https://owasp.org/www-community/Types_of_Cross-Site_Scripting)
+- [Flask 3.1.x — Templates](https://flask.palletsprojects.com/en/stable/templating/)
+- [Flask 3.1.x — Security Considerations](https://flask.palletsprojects.com/en/stable/web-security/)
 - [MDN — Using HTTP cookies](https://developer.mozilla.org/en-US/docs/Web/HTTP/Guides/Cookies)
 
 ## 관련 문서
@@ -141,3 +143,4 @@ Q. HttpOnly 쿠키를 쓰면 XSS로부터 안전한가?
 - [[Cookie|Cookie]]
 - [[Application-Security|애플리케이션 보안]]
 - [[Browser-DOM-Manipulation-and-Safety#id 조회와 window named access|DOM clobbering]]
+- [[Python-Flask-Web|Flask와 Jinja 자동 이스케이프]]

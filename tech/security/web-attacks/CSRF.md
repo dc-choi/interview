@@ -3,7 +3,7 @@ tags: [security, csrf, web-attacks, owasp]
 status: done
 category: "Security"
 aliases: ["CSRF", "XSRF", "Cross-Site Request Forgery"]
-verified_at: 2026-10-02
+verified_at: 2026-11-18
 ---
 
 # CSRF
@@ -12,7 +12,9 @@ verified_at: 2026-10-02
 
 방어의 핵심은 **자동 전송된 인증 쿠키만으로 요청을 신뢰하지 않는 것**이다. 공격자가 알 수 없는 토큰을 요구하거나, 브라우저가 제공하는 출처 신호를 서버에서 검증한다. 쿠키의 크로스 사이트 전송 여부는 SameSite, 요청의 credentials 설정과 브라우저의 쿠키 정책에 따라 달라진다.
 
-2026-10-02 부분 검증: 토큰 패턴, 출처 헤더, SameSite와 API preflight 방어의 조건, 아래 패키지 계약을 공식 출처와 대조했다. 브라우저별 공격 재현이나 특정 애플리케이션의 배선은 검증하지 않았다.
+상태 변경 요청을 POST로만 받는 것은 방어가 아니다. 링크나 이미지 태그처럼 GET으로 실행되는 경로만 줄일 뿐, 공격 페이지가 숨긴 값을 채운 폼을 JavaScript로 자동 제출하면 POST도 전송된다. OWASP는 POST 전용, 비밀 쿠키, 다단계 트랜잭션과 HTTPS 단독을 효과 없는 방어로 분류한다.
+
+2026-10-02 부분 검증: 토큰 패턴, 출처 헤더, SameSite와 API preflight 방어의 조건, 아래 패키지 계약을 공식 출처와 대조했다. 브라우저별 공격 재현이나 특정 애플리케이션의 배선은 검증하지 않았다. 2026-11-18에는 POST 전용 방식이 효과 없는 방어로 분류된다는 점을 OWASP 커뮤니티 문서와 대조했다.
 
 ## Synchronizer Token 패턴
 
@@ -94,6 +96,7 @@ Q. SameSite=Lax면 CSRF는 끝난 것 아닌가?
 ## 출처
 
 - [OWASP Cheat Sheet Series — Cross-Site Request Forgery Prevention](https://cheatsheetseries.owasp.org/cheatsheets/Cross-Site_Request_Forgery_Prevention_Cheat_Sheet.html)
+- [OWASP Community — Cross Site Request Forgery (CSRF)](https://community.owasp.org/attacks/csrf)
 - [MDN — Using HTTP cookies](https://developer.mozilla.org/en-US/docs/Web/HTTP/Guides/Cookies)
 - [MDN — Set-Cookie](https://developer.mozilla.org/en-US/docs/Web/HTTP/Reference/Headers/Set-Cookie)
 - [MDN — Site](https://developer.mozilla.org/en-US/docs/Glossary/Site)
@@ -109,3 +112,4 @@ Q. SameSite=Lax면 CSRF는 끝난 것 아닌가?
 - [[XSS]]
 - [[Cookie]]
 - [[Spring-Security-Session-and-CSRF|Spring Security CSRF]]
+- [[Python-Flask-Web|Flask와 Flask-WTF CSRFProtect]]

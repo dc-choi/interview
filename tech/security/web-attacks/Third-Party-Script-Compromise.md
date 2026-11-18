@@ -34,6 +34,26 @@ aliases: ["Third-Party Script Compromise", "서드파티 스크립트 침해", "
 
 이 사례에서 일반화할 교훈은 공급자를 믿을 수 있느냐보다 그 코드가 무엇에 닿을 수 있느냐다. 속도를 재는 스크립트가 돈을 옮기는 코드와 같은 페이지, 같은 세션에서 실행되면 공급자 한 곳의 침해가 곧 거래 권한의 침해가 된다.
 
+## 사례: 공급자 계정 경로로 여러 고객의 설정 코드를 바꾼 침해
+
+2026-11-16 A/B 테스트 서비스 Optimizely Web의 여러 고객 프로젝트에서 Project JavaScript에 외부 스크립트를 부르는 로더가 들어갔다. Project JavaScript는 고객이 프로젝트 설정에서 작성하고 스니펫 코드보다 먼저 실행되는 사용자 정의 코드다(Optimizely 문서). 아래 표는 2026-11-17 StepSecurity 분석(같은 날 여러 차례 수정) 기준이다. 규모와 iOS 단계는 그 분석이 인용한 Scott Helme(Report URI)의 조사이며, Helme의 원 글과 Optimizely의 공식 공지는 대조하지 못했다.
+
+| 항목 | 분석 기준 내용 |
+| --- | --- |
+| 주입 위치 | 모든 페이지에서 실행되는 Project JavaScript 필드. 스니펫의 나머지는 그대로였고 파일은 공급자 CDN에서 공급자 인증서로 제공됐다. CDN 캐시 오염이 아니라 CDN이 받은 내용을 그대로 전달한 경우다 |
+| 규모 | 확인한 스니펫 1,611개 중 188개, 178개 조직. 찾아낸 스니펫만 확인한 수치다 |
+| 노출 시간 | 첫 주입 04:21 UTC, 일괄 정리 20:40~21:10 UTC, 모든 파일 정리 확인 23:11 UTC. 대부분 사이트에서 약 16시간 |
+| 페이로드 | 결제 문맥의 암호화폐 주소 바꿔치기, 바꿔치기 뒤 화면 캡처와 `document.cookie` 전송, 결제 폼의 카드 정보 수집. iOS 기기에는 2단계 스크립트를 붙였고 Helme는 이를 알려진 iOS 공격 키트(Coruna, DarkSword)와 연결했다. 분석 업체는 그 파일을 분석하지 않았고, 공개 스캔은 공격 페이지가 제공된 사실만 보여 준다 |
+| 공급자 대응 | 취약한 경로 차단과 수정, 주입 코드 제거, 세션 종료와 토큰 폐기, 영향 고객 통지. 원인을 계정 가입 흐름으로 설명했지만 그것이 서로 무관한 고객 프로젝트의 쓰기 권한으로 이어진 방식은 분석 시점까지 밝혀지지 않았다 |
+
+이 사례에서 통제별로 드러난 점은 다음과 같다.
+
+- **자체 도메인 제공도 피하지 못했다.** 스니펫을 자기 도메인에서 내려 주던 사이트도 같은 프로젝트 내용을 받아 와 영향을 받았다. 공급자 설정을 그대로 받아 오는 자체 호스팅은 공급자 쪽 변경을 그대로 옮긴다(해석).
+- **SRI를 걸 고정 파일이 없다.** Optimizely 문서는 스니펫을 SDK 갱신 때만 바뀌는 정적 부분과, 실험 설정, 변형, 사용자 정의 코드처럼 자주 바뀌는 동적 부분으로 나눈다. 해시 비교로는 정적 부분만 검증할 수 있고 동적 부분은 내부 거버넌스로 다룬다고 적는다. 이번 주입은 동적 쪽인 사용자 정의 코드에서 일어났다(해석).
+- **CSP는 지시어에 따라 갈렸다.** `script-src` 호스트 허용 목록은 외부 로더 다운로드를, `connect-src` 허용 목록은 수집한 데이터의 전송을 막는다. `strict-dynamic`과 nonce 정책은 신뢰한 스크립트가 추가한 스크립트도 신뢰하므로 이 로더를 막지 못한다. 도메인이 막히면 페이로드 전체를 인라인으로 담아 `eval`로 실행하는 변형도 있었으므로 로더 차단만으로 끝났다고 보지 않고 전송 단계까지 막는다(해석).
+- **교차 출처로 뺀 입력은 남았다.** 카드 수집 코드는 교차 출처 결제 iframe 안을 읽지 못했고, `document.cookie`로는 HttpOnly 쿠키를 읽지 못한다. 결제 제공자가 호스팅하는 입력 필드를 교차 출처 iframe으로 쓰면 이 단계의 피해가 준다.
+- **자기 저장소를 보는 통제는 닿지 않는다.** 코드 리뷰와 저장소 스캔은 공급자가 호스팅하는 설정 코드를 보지 못한다. 동의 배너는 스크립트를 언제 실행할지 정할 뿐 무엇을 실행할지는 정하지 않는다.
+
 ## 공급자를 침해하지 않아도 되는 경로: 만료, 주소 변경, 오타
 
 공급자 서버를 뚫지 않고도 그 주소의 주인이 되면 같은 결과가 난다. 2012년 Alexa 상위 1만 개 사이트를 크롤링한 연구(약 330만 페이지, 원격 스크립트 포함 8,439,799건)는 이런 취약점 유형을 네 가지 보고했다. 아래 표는 그중 주소의 주인이 바뀌는 세 가지이고, 나머지 하나인 `localhost`와 사설 IP 포함은 표 아래에서 다룬다.
@@ -60,7 +80,7 @@ aliases: ["Third-Party Script Compromise", "서드파티 스크립트 침해", "
 | --- | --- | --- |
 | CSP `script-src`, `connect-src` | 허용하지 않은 출처의 스크립트 로드와 연결 | 허용한 출처에서 온 바뀐 코드의 실행, 허용한 출처로 보내는 요청의 내용 |
 | SRI(`integrity` 속성) | 검토한 파일과 해시가 다른 파일의 실행. 불일치하면 브라우저가 로드를 거부하고 네트워크 오류를 낸다 | 공급자가 파일을 정상 갱신할 때의 기능 중단, 처음부터 악성인 파일 |
-| 버전 고정과 자체 호스팅(미러링) | 공급자 서버의 파일 교체가 곧바로 반영되는 것 | 고정한 버전 자체의 결함, 페이지 안에서 실행되는 동안의 권한 |
+| 버전 고정과 자체 호스팅(미러링) | 공급자 서버의 파일 교체가 곧바로 반영되는 것 | 고정한 버전 자체의 결함, 페이지 안에서 실행되는 동안의 권한, 공급자 설정을 받아 와 그대로 내려 주는 구성 |
 | 샌드박스 `iframe` | 호스트 페이지 DOM과 쿠키에 대한 직접 접근 | iframe 안 자체 기능의 악용, 잘못 연 sandbox 토큰 |
 | 서버 측 수집 | 해당 수집을 브라우저 밖으로 빼 페이지 코드 수를 줄임 | 여전히 페이지에서 실행되는 다른 스크립트 |
 | 데이터 레이어 | 공급자에게 넘길 값을 정하는 약속 | 페이지에서 실행되는 스크립트의 권한 제한. 데이터 레이어는 샌드박스가 아니다 |
@@ -84,6 +104,8 @@ aliases: ["Third-Party Script Compromise", "서드파티 스크립트 침해", "
 - 버전 없는 최신 URL은 공급자가 갱신할 때마다 해시가 어긋나 SRI를 유지하기 어렵다는 점을 기록하고 대신 쓸 통제(자체 호스팅, 격리)를 정한다.
 - 사고 대응 절차에 스크립트 제거, 캐시 삭제(CDN과 서비스 워커 포함), 민감 기능의 일시 중단, 활성 세션 일괄 초기화를 넣는다. 위 사례의 사후 보고도 스크립트 제거와 캐시 삭제, 거래 중단, 세션 초기화를 조치로 들었다.
 - CSP 위반 보고와 실제 로드되는 스크립트 해시의 변화를 모니터링해 공급자 파일 교체를 감지한다.
+- 공급자 관리 화면의 사용자, API 토큰과 모든 페이지에서 실행되는 설정 코드 필드를 서드파티 목록에 함께 올려 정기적으로 검토한다. 공급자 쪽 설정 변경은 자기 저장소의 리뷰를 거치지 않는다.
+- 공급자 침해가 알려지면 지표 문자열 하나만 검색하지 않고 설정 코드 전체를 점검하며, 첫 주입 시각부터 프록시와 DNS 로그, CSP 위반 보고를 본다. 노출 시간에 결제 폼에 입력된 카드는 유출된 것으로 다룬다. 위 Optimizely 사례의 분석도 같은 조치를 권했다.
 
 ## 면접 체크포인트
 
@@ -93,6 +115,7 @@ aliases: ["Third-Party Script Compromise", "서드파티 스크립트 침해", "
 - 만료된 스크립트 도메인을 재등록한 공격을 CSP가 막지 못하는 이유와 SRI, 외부 호스트 목록 감시의 역할
 - `allow-scripts`와 `allow-same-origin` 조합의 위험
 - 서드파티 침해 사고에서 세션 초기화와 캐시 삭제가 필요한 이유
+- 공급자 설정 코드에 주입된 공격을 자체 도메인 제공과 SRI가 막지 못한 이유, `strict-dynamic`이 로더를 신뢰한 이유
 
 ## 출처
 
@@ -102,6 +125,9 @@ aliases: ["Third-Party Script Compromise", "서드파티 스크립트 침해", "
 - [You Are What You Include: Large-scale Evaluation of Remote JavaScript Inclusions — ACM CCS 2012, Nikiforakis 외](https://www.securitee.org/files/jsinclusions_ccs2012.pdf) — 2.2절, 3.2절, 4.1~4.4절, 5.1~5.2절, 6절
 - [MDN, `<iframe>`: The Inline Frame element](https://developer.mozilla.org/en-US/docs/Web/HTML/Reference/Elements/iframe) — `sandbox` 속성
 - [How One Script Stole Millions From Polymarket — ByteMonk](https://www.youtube.com/watch?v=eynDCMF5Wmc) — 음성 전사 기반. 화면에 승인 요청이 떴다는 연구자 분석은 1차 출처로 확인하지 못해 쓰지 않았다.
+- [OPTIMJACK: Optimizely-Hosted Scripts Loaded a Crypto Clipper and Card Skimmer on 178 Organizations — StepSecurity, Owais Shaikh](https://www.stepsecurity.io/blog/optimjack-optimizely-hosted-scripts-crypto-clipper-card-skimmer) — 2026-11-17 게시, 같은 날 여러 차례 수정된 판을 2026-11-18 확인. 규모와 iOS 단계는 Scott Helme 조사의 인용이며 Helme 원 글과 Optimizely 공식 공지는 대조하지 못했다. 공격자 지갑 금액은 추정치가 출처마다 달라 옮기지 않았다.
+- [Optimizely, Project Settings: jQuery and Project JavaScript settings](https://docs.optimizely.com/web-experimentation/docs/u04X-project-settings-jquery-and-project-javascript-settings) — Project JavaScript가 스니펫 코드보다 먼저 실행된다는 설명
+- [Optimizely, Snippet integrity check with Cloudflare](https://docs.optimizely.com/web-experimentation/docs/snippet-integrity-check-with-cloudflare) — 스니펫의 정적 부분과 동적 부분 구분, 해시 비교로 검증할 수 있는 범위
 
 ## 관련 문서
 
