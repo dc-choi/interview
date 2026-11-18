@@ -1,7 +1,7 @@
 ---
 tags: [cs, robotics, vla, imitation-learning, simulation, mlops]
 status: done
-verified_at: 2026-11-14
+verified_at: 2026-11-19
 category: "CS - 로보틱스"
 aliases: ["로봇 정책 학습과 평가 파이프라인", "Robot Policy Training Pipeline", "VLA 미세조정과 시뮬레이션 평가"]
 ---
@@ -41,6 +41,15 @@ GR00T N1 논문은 학습 데이터를 피라미드로 설명한다. 아래층�
 - **Isaac Lab-Arena:** Isaac Lab을 확장한 오픈소스 정책 평가 프레임워크다. 장면, 로봇(embodiment)과 과제를 조합해 환경을 만들고, 정책을 클라이언트-서버 구조로 붙여 여러 환경에서 병렬 평가한다. 공식 저장소 README(v0.3, 2026-11-14 확인)는 알파 소프트웨어이고 API가 불안정해 바뀐다고 적으며 운영 환경에 쓰지 말라고 명시한다.
 
 Arena 0.3.1 문서의 GR1 휴머노이드 예제는 물체를 집어 냉장고에 넣고 문을 닫는 과제(`put_item_in_fridge_and_close_door`)와 전자레인지 문을 여는 과제를 GR00T N1.6으로 다룬다. 전자레인지 예제는 단일 환경에서 성공률 0.8 이상을 기대 결과로 제시하고, 2개 GPU에서 환경 10개씩 200 에피소드를 돌린 예시 결과는 성공률 0.605다. 같은 체크포인트도 평가 규모와 환경 구성에 따라 성공률이 달라진다.
+
+### 산업 작업 기준의 손재주 벤치마크: DexBench
+
+RLWRLD는 상자 옮기기나 집안일 같은 연구용 과제의 성공률로는 공장, 물류센터나 매장에서 쓸 손재주를 판단하기 어렵다고 보고, 2026-06-09 NVIDIA와의 협력으로 DexBench를 발표했다.
+
+- **분류 구조:** 2026-11-19 확인한 dexbench.org는 손재주를 손의 속성이 아니라 과제를 해내는 능력으로 정의한다(Dexterity Regimes 페이지). 실제 산업 현장의 과제(World)를 Skill 단위로 나누어 분석하고, Skill은 한 가지 목적의 최소 조작 단위인 Action 하나에 병목 하나를 결합해 정의한다. 현재 사이트는 Action 16개 아래 Skill 78개를 두고, 다섯 손재주 영역(Grasp Diversity, Spatial Precision, Temporal Precision, Contact Precision, Context Awareness)을 제시한다.
+- **공개 저장소(2026-11-19 확인):** GitHub의 RLWRLD/DexBench(첫 커밋 2026-11-09)는 IsaacLab-Arena와 Newton 물리 엔진 위에 만든 평가 환경이다. 소매 3개, 물류 4개, 제조 5개, 호텔 식음료 3개로 네 산업 환경의 15개 과제를 두고, 물체, 공간, 물리 일반화를 따로 시험한다. 이번 공개분은 평가와 OpenXR 원격 조작을 포함하고, 학습 시연 데이터는 LeRobot v3.0 형식으로 Hugging Face에 공개됐다. 데이터 생성과 모델 학습 스크립트는 빠져 있고 기술 보고서는 공개 예정으로 표시돼 있다.
+- **문서마다 다른 단위:** 2026-06 보도자료는 다섯 영역이 18개 핵심 원자 과제(Key Atomic Tasks)에 걸친다고 적었다. 보도자료의 18개, 사이트의 Action 16개와 Skill 78개, 저장소의 15개 과제가 서로 어떻게 대응하는지는 확인한 세 출처(dexbench.org, 저장소 README, 보도자료)가 밝히지 않고 시뮬레이션 사이트 dexbench.ai의 과제 페이지는 확인하지 못했으므로, 인용할 때 단위 이름, 기준 문서와 시점을 함께 적는다. 보도자료가 계획으로 밝힌 손재주 조작 데이터 형식 정의와 공개 산업 사양 제안의 완료 여부는 확인하지 않았다.
+- **읽는 법(이 문서의 판단):** 벤치마크를 만든 회사가 자사 모델(RLDX-1)도 평가하므로, 독립 평가가 나오기 전까지 점수는 자체 보고로 읽는다. README가 링크하는 dexbench.ai의 순위표 내용은 확인하지 못했다. 환경별 결과는 어떤 작업에 먼저 투입을 검토할지 고르는 재료이며 현장 성공률이 아니다.
 
 시뮬레이션 성공률은 방향을 잡는 근거다. 시뮬레이터와 실제 환경의 차이(sim-to-real gap) 때문에 실제 성공률로 옮겨지지 않을 수 있으며, 배치할 환경을 시뮬레이터가 닮을수록 평가가 유효해진다. 실제 장비의 센서 오차, 지연과 비상 정지는 따로 시험한다([[IoT-Edge-Cloud-Pipeline#생성형 AI의 작업 제안과 물리 제어를 분리한다|생성형 AI와 물리 제어의 분리]]).
 
@@ -87,6 +96,10 @@ Fortune의 2026-11-13 보도(OpenAI 대변인 확인)에 따르면 OpenAI는 독
 - [Isaac-GR00T — NVIDIA, GitHub](https://github.com/NVIDIA/Isaac-GR00T) — 2026-11-14 README의 N1.7 일반 제공과 변경점, 데이터셋 형식, embodiment tag, 열린 루프 평가 안내 대조.
 - [Isaac Lab-Arena — NVIDIA, GitHub](https://github.com/isaac-sim/IsaacLab-Arena) — 2026-11-14 README의 정의와 알파 표기 대조.
 - [Isaac Lab-Arena, Documentation release 0.3.1](https://isaac-sim.github.io/IsaacLab-Arena/release/0.3.1/) — 2026-11-14 static manipulation 예제의 평가 단계(GR1 전자레인지 과제의 기대 성공률과 다중 GPU 예시 결과)와 sequential static manipulation 예제(냉장고 넣기와 문 닫기 과제) 대조.
+- [DexBench: Defining the Taxonomy for Industrial Dexterity — RLWRLD](https://dexbench.org/) — 2026-11-19 루트 페이지의 Action, Skill, World 정의와 개수, `/en/dexterity-regimes/`의 손재주 정의와 다섯 영역 대조.
+- [DexBench — RLWRLD, GitHub](https://github.com/RLWRLD/DexBench) — 2026-11-19 README의 기반 플랫폼, 환경별 과제 수, 공개 범위와 데이터셋 형식, 커밋 날짜 대조.
+- [RLWRLD Launches DexBench Initiative to Define Next-Generation Industry Standards for Humanoid AI in Collaboration with NVIDIA — RLWRLD, PR Newswire](https://en.prnasia.com/releases/global/rlwrld-launches-dexbench-initiative-to-define-next-generation-industry-standards-for-humanoid-ai-in-collaboration-with-nvidia-536553.shtml) — 2026-06-09 발표의 세 가지 계획, 다섯 영역과 18개 과제 표기, 2026-11-19 대조.
+- [엔비디아는 왜 한국 스타트업과 로봇 손재주 동맹 맺었나? (류중희 리얼월드 대표) — 티타임즈TV](https://www.youtube.com/watch?v=MNJANd25Tp0) — 2026-11-11 업로드, 음성 인식 전사문 기준. 산업 작업 기준 벤치마크의 문제의식.
 - [MimicGen: A Data Generation System for Scalable Robot Learning using Human Demonstrations — Mandlekar 외, arXiv](https://arxiv.org/abs/2310.17596) — 2026-11-14 초록의 시연 합성 규모 대조.
 - [Introducing AWS Physical AI Toolchain — AWS Physical AI Blog](https://aws.amazon.com/blogs/physical-ai/introducing-aws-physical-ai-toolchain/) — 2026-10-07 게시. 구성 요소와 단계 대조.
 - [sample-the-physical-ai-toolchain-on-aws — aws-samples, GitHub](https://github.com/aws-samples/sample-the-physical-ai-toolchain-on-aws) — 2026-11-14 README의 구성 요소와 상태 표기, `isaac-lab-arena-on-aws` README 앞부분의 다섯 단계, 승인 상태와 임계값 설명 대조.
@@ -102,6 +115,7 @@ Fortune의 2026-11-13 보도(OpenAI 대변인 확인)에 따르면 OpenAI는 독
 
 - [[Robotics|로보틱스 지도]]
 - [[Physical-AI-and-Liquid-Control|피지컬 AI와 리퀴드 제어]]
+- [[Tactile-Grasp-Control|촉각 기반 파지 제어]]
 - [[World-Models|월드 모델]]
 - [[Gemini-4-Argon#10월 일반 제공과 로봇 활용의 확인 범위|Gemini 4 Argon의 로봇 활용 조건]]
 - [[Reinforcement-Learning-from-Experience|경험 기반 강화학습]]

@@ -14,6 +14,7 @@ aliases: ["인프라&클라우드(Infrastructure&Cloud)", "Infrastructure & Clou
 - [[Cloudflare-Durable-Objects|Durable Objects]] — 객체별 상태와 실행, 메모리 수명, SQLite 트랜잭션과 셀프호스팅
 - [[Internal-Developer-Platform|내부 개발자 플랫폼]] — 반복 요청의 셀프서비스, 비동기 생성과 운영 책임
 - [[GPU-Server-Infrastructure|GPU 서버 인프라]] — CPU와 GPU, 워프와 분기 발산, 메모리와 통신 경로, 전력과 냉각, 사용률 해석, GPU 공유와 CUDA 체크포인트 제약
+- [[GPU-Cloud-Compute-Sourcing|GPU 클라우드와 AI 연산 조달]] — 플랫폼 공급자, 클라우드 사업자와 고객의 역할, NVIDIA Cloud Partner, 용량과 납기 및 작업 전체 비용, 학습과 추론의 배치, 원격 접근과 수출 통제
 - [[PyTorch-on-TPU|PyTorch on TPU]] — TorchTPU의 PyTorch/XLA 대체, eager 모드와 torch.compile, 기본 정밀도, 분산 초기화와 MPMD 위험
 - [[PyTorch-Version-Upgrade-and-Rollback|PyTorch 버전 업그레이드와 롤백]] — 패키지 롤백으로 복구되지 않는 체크포인트 형식과 기본값 변경, 2.15의 DCP, NCCL backend, FSDP2 reduce dtype과 설치 조건
 - [[Optical-Interconnect-and-CPO|광통신과 CPO]] — 광 변환 위치, 전기 경로와 외부 레이저, 제품별 정비 경계

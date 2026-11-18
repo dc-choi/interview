@@ -36,6 +36,20 @@ CASE 2023의 영상 기반 촉각 센서 연구에서 확인한 한 가지 구�
 
 네 손가락 선택은 목표 작업과 부품 복잡성의 절충이다. 추가 손가락에 필요한 액추에이터 세 개의 공간, 비용과 고장 가능성을 고려한 설계 판단이며, 다섯 손가락이 모든 작업에서 불필요하다는 실험 결론은 아니다. 공개 소개의 도구 조작 시연을 장기 성공률이나 수리 시간의 보장으로 확대하지 않는다.
 
+관절 수와 자유도도 구분해 읽는다. 로봇 손 사양의 DOF에는 액추에이터가 독립적으로 움직이는 구동 자유도(actuated DOF)만 세는 표기와, 다른 관절에 연동돼 따라 움직이는 under-actuated 움직임까지 합친 표기가 섞여 있다. 아래 서베이의 비교표도 두 값을 actuated/total로 병기한다. 자유도를 능동 관절의 수로만 세야 한다는 정의는 아래 인터뷰 발화자의 설명이다. Shadow Robot의 Dexterous Hand 비교표(2026-11-19 확인)는 구동 DOF 20개, under-actuated 움직임 4개(관절 24개)와 DC 모터 20개를 적고, 같은 페이지 본문은 힘줄(tendon) 구동과 24 degrees of freedom을 적는다. 같은 제품군의 Lite 모델은 13 DOF와 관절 16개로 표기한다. 사양표의 DOF가 구동 자유도인지 관절 수인지 먼저 확인한다.
+
+### 손의 동력 전달 방식
+
+2025-12 개정된 손재주 조작 서베이(arXiv 2504.03515v5)는 사람형 다지 로봇 손을 동력 전달 방식에 따라 힘줄형(tendon-driven), 링크형(linkage-driven), 직결형(direct-drive)과 혼합형으로 나눈다.
+
+- **힘줄형:** 케이블로 관절을 구동해 사람의 힘줄을 모사한다. 자유도가 많으면 액추에이터를 흔히 전완에 두어 손 무게를 줄이지만, 긴 전달 경로가 마찰과 힘줄 마모를 만든다. 이를 피하려 액추에이터를 모두 손바닥 안에 넣는 설계도 있다. 서베이는 Shadow Hand를 전완에 모터 20개를 둔 원격 힘줄형으로 분류한다.
+- **직결형:** 중간 전달 기구 없이 액추에이터를 관절에 직접 연결하며, 모터를 손가락 마디에 넣는 모듈형 손가락 설계가 예다. 구조가 단순하고 관절 단위로 정밀하게 제어할 수 있지만 질량, 회전 관성과 손가락 부피가 커진다. 서베이는 이것이 직결형 손 다수가 네 손가락 구성을 택하는 이유의 일부라고 본다. 일반 기계 용어에서 감속기 없는 구동을 뜻하는 direct drive와는 범위가 다르다.
+- **혼합형:** 엄지는 직결형, 검지와 중지는 링크형, 약지와 소지는 힘줄형처럼 손가락마다 방식을 섞는다.
+
+인터뷰 발화자는 힘줄형도 자유도 하나에 액추에이터 하나를 배정하는 것은 피할 수 없다고 설명했다. 움직임마다 독립적으로 구동하려면 그만큼의 액추에이터가 필요하고 손 밖으로 빼도 그 수는 줄지 않으므로, 배치 공간과 무게는 방식과 관계없이 남는 제약으로 읽는다(이 문서의 해석).
+
+2026-11 업계 인터뷰(아래 출처의 RLWRLD 대표)는 어떤 관절에 어떤 방식을 쓸지 아직 최적의 답이 없다고 봤다. 어느 방식이든 목표 작업에 필요한 힘, 정밀도, 반복 내구성과 정비 부담으로 비교하고, 시연 영상의 손동작만으로 양산과 현장 운용이 가능하다고 판단하지 않는다([[Robot-Manufacturing-and-Serviceability|로봇 제작과 정비성]]).
+
 적용 제안: 손가락 개수보다 대상 물체를 잡은 뒤 회전, 미끄러짐 복구와 독립적인 도구 조작이 필요한지 먼저 정한다. 성공률, 물체 손상과 반복 작업 후 정비 부담은 별도로 측정한다. 여기서는 설계 설명만 대조했으며 실제 로봇을 시험하지 않았다.
 
 ## 감지 속도와 제어 마감시간
@@ -49,9 +63,14 @@ CASE 2023의 영상 기반 촉각 센서 연구에서 확인한 한 가지 구�
 ## 출처
 
 - [Robot Hands for Modern AI and Real Work — Boston Dynamics](https://bostondynamics.com/blog/robot-hands-for-modern-ai-and-real-work/) — 2026-11-03 손가락/자유도 구성, 촉각 센서와 추가 액추에이터의 설계 절충 대조.
+- [Shadow Dexterous Hand Series — Shadow Robot](https://www.shadowrobot.com/dexterous-hand-series/) — 2026-11-19 구동 DOF와 관절 수, 모터 수, 힘줄 구동 표기 대조.
+- [엔비디아는 왜 한국 스타트업과 로봇 손재주 동맹 맺었나? (류중희 리얼월드 대표) — 티타임즈TV](https://www.youtube.com/watch?v=MNJANd25Tp0) — 2026-11-11 업로드, 음성 인식 전사문 기준. 구동 방식의 최적 배분에 답이 없다는 발화자 견해와 이 절의 계기.
+- [Dexterous Manipulation through Imitation Learning: A Survey — Shan An 외, arXiv](https://arxiv.org/html/2504.03515v5) — v5(2025-12-17) IV-B절의 동력 전달 방식 분류, 힘줄형의 전완과 손바닥 배치, 직결형의 장단점과 혼합형 예, 2026-11-19 대조.
 - [Enabling Robot Manipulation of Soft and Rigid Objects with Vision-based Tactile Sensors — Michael C. Welle 외, CASE 2023](https://arxiv.org/html/2306.05791v1)
 - [Introduction to Real-time Systems — Jackie Kay (ROS 2 Design)](https://design.ros2.org/articles/realtime_background.html) — 2016년 설계 배경 문서, 2026-10-23 마감시간과 저지연의 구분 및 비결정적 실행 요인 대조. 현재 ROS 2 배포판의 실시간 성능 보증으로 해석하지 않음
 
 ## 관련 문서
 
 - [[Robotics|로보틱스 지도]]
+- [[Robot-Manufacturing-and-Serviceability|로봇 제작과 정비성]]
+- [[Robot-Policy-Training-Pipeline|로봇 정책 학습과 평가 파이프라인]]
