@@ -26,6 +26,7 @@ aliases: ["응용경제(Applied Economics)", "Applied Economics Map"]
 - [[AI-Compute-Commitment-Under-Uncertainty|AI 연산 설비의 선행 확보 판단]] — 검증 전 약정의 이유, 발언과 공시의 비용 구분, 주 위험과 상관된 하방, 설비 자산화와 연구비 비용 처리의 비대칭
 - [[GPU-Collateral-and-Securitization|GPU 담보 금융과 유동화]] — 플랫폼 목표와 대출 집행, 정상 상환과 담보 회수, 고객 계약 조건, 유동화와 잔존 가치 지원의 범위
 - [[Data-Center-Grid-Access-Politics|데이터센터 전력망 연결과 지역 수용성]] — 접속 대기열과 실제 수요, 감사 지시와 정보 요구 항목, 비용 배분과 자금 구조별 지연 영향
+- [[Profit-Linked-Bonus-Design|이익연동 성과급 설계]] — 이익 N% 요구와 합의의 구분, 기준 지표와 재원 방식, 상한과 이연, 운과 기여의 분리, 사업부 간 격차 ✅
 
 ### 2. 의사결정
 - [[Personal-Cash-Flow-Planning|개인 현금흐름 계획]] — 주별 잔액, 목적별 자금 구분, 소득 변동에 맞춘 자동이체, 목표 기한에서 역산한 부족액과 세 가지 수단 ✅
