@@ -1,9 +1,9 @@
 ---
 tags: [security, email, encryption, tls, openpgp, smime]
 status: done
-verified_at: 2026-11-02
+verified_at: 2026-11-18
 category: "Security - 암호"
-aliases: ["Email Encryption Boundaries", "이메일 암호화의 보호 범위", "MTA-STS", "SMTP DANE", "제로 액세스 암호화"]
+aliases: ["Email Encryption Boundaries", "이메일 암호화의 보호 범위", "MTA-STS", "SMTP DANE", "제로 액세스 암호화", "TLS-RPT", "STARTTLS 스트리핑", "EFAIL"]
 ---
 
 # 이메일 암호화: 전송, 저장과 종단의 보호 범위
@@ -22,12 +22,19 @@ aliases: ["Email Encryption Boundaries", "이메일 암호화의 보호 범위",
 
 서비스가 키를 가지고 암호문을 복호화할 수 있다면 저장 암호화만으로 서비스 침해나 데이터 제출 요구에 대한 보호가 보장되지 않는다. E2EE도 법적 의무 자체를 없애는 기능은 아니며, 서비스가 실제로 보유한 메타데이터와 계정 기록은 따로 확인한다.
 
+## TLS는 홉 단위로 끝난다
+
+메일은 MUA(사용자 클라이언트)에서 제출 서버, 중계 MTA, 수신 서버의 사서함을 거쳐 다시 MUA로 간다. 각 서버는 메일을 받아 큐에 저장한 뒤 다음 홉으로 넘기므로, 연결마다 TLS 세션이 따로 열리고 서버에 도착하면 그 세션의 보호가 끝난다. 서버는 스팸과 악성코드 검사, DKIM 서명과 저장을 위해 본문을 처리할 수 있는 위치에 있다. 그래서 모든 구간에 TLS가 적용돼도 각 서버의 운영자와 그 서버를 장악한 공격자는 본문을 읽을 수 있다. 클라이언트 설정에서 제출 구간(587 STARTTLS, 465 implicit TLS)에 TLS를 켰다는 사실도 상대 도메인까지의 서버 간 구간(25)을 보증하지 않는다. 포트와 프로토콜의 구분은 [[Application-Layer-Protocols|응용 계층 프로토콜]]에 있다.
+
 ## SMTP의 기회적 TLS를 보완한다
 
-서버 간 STARTTLS가 기회적으로 사용되면 공격자가 TLS 협상이나 서버 탐색을 방해해 평문 전송을 유도할 수 있다. 다음 두 방식은 송신 서버가 수신 도메인의 요구를 알아내고 인증된 TLS를 요구하게 하는 접근이다.
+서버 간 STARTTLS가 기회적으로 사용되면 공격자가 TLS 협상이나 서버 탐색을 방해해 평문 전송을 유도할 수 있다. RFC 3207의 보안 고려 사항은 중간자가 서버 응답에서 `250 STARTTLS` 줄을 지우면 클라이언트가 TLS를 시도하지 않게 되고, TLS 핸드셰이크 전의 교환은 평문이라 능동 공격자가 바꿀 수 있다고 적는다. 기회적 모드는 TLS를 못 쓰면 평문으로라도 배달하므로 송신 측 사용자는 이 강등을 알아채기 어렵다. 다음 두 방식은 송신 서버가 수신 도메인의 요구를 알아내고 인증된 TLS를 요구하게 하는 접근이다.
 
-- **MTA-STS(RFC 8461):** 수신 도메인이 HTTPS로 제공하는 정책에 TLS와 허용 MX 조건을 선언한다. `enforce` 정책의 조건을 만족하지 못하면 전송을 실패 또는 지연시킨다. 정책을 처음 알아내는 단계와 캐시, 정책 만료의 조건도 확인한다.
+- **MTA-STS(RFC 8461):** 수신 도메인이 `_mta-sts.<도메인>` TXT 레코드(`v=STSv1; id=...`)로 정책의 존재를 알리고, `https://mta-sts.<도메인>/.well-known/mta-sts.txt`에 TLS와 허용 MX 조건을 둔다. `mode`는 `enforce`, `testing`, `none`이다. `enforce`면 MX 일치나 인증서 검증에 실패하거나 STARTTLS를 지원하지 않는 호스트로 배달하지 않고, `testing`이면 실패가 있어도 배달하되 송신 MTA와 수신 도메인이 모두 TLS-RPT를 구현했을 때 실패를 보고한다. TXT 레코드가 있어도 정책을 가져오지 못하고 유효한 캐시도 없으면 MTA-STS가 없는 것처럼 배달을 이어 가므로, 정책을 처음 알아내는 단계와 캐시, 정책 만료의 조건도 확인한다.
 - **SMTP DANE(RFC 7672):** DNSSEC으로 검증한 TLSA 레코드를 이용해 SMTP 서버의 인증 조건을 확인한다. DNSSEC 검증과 TLSA 처리 지원이 전제이며 모든 도메인에 자동 적용되지는 않는다.
+- **TLS-RPT(RFC 8460):** 강제 수단이 아니라 보고 수단이다. 수신 도메인이 `_smtp._tls.<도메인>` TXT 레코드(`v=TLSRPTv1; rua=...`)로 보고 주소를 게시하면, 송신 측이 TLS 협상과 정책 검증 실패를 JSON(I-JSON) 집계 보고서로 보낸다. 보고서는 UTC 기준 하루를 포괄하도록 권고된다(SHOULD).
+
+MTA-STS를 `testing`으로 게시하고 TLS-RPT 보고로 실패 지점을 본 뒤 `enforce`로 올리면, 강제 전환으로 정상 메일이 막히는 위험을 미리 확인할 수 있다. 이는 위 RFC의 모드 정의에서 끌어낸 운영 순서이며 RFC가 정한 필수 절차는 아니다.
 
 이는 서버 사이 전송의 보호다. 수신 서버가 내용을 읽을 수 없는 종단 간 암호화로 바뀌는 것은 아니다.
 
@@ -39,6 +46,38 @@ aliases: ["Email Encryption Boundaries", "이메일 암호화의 보호 범위",
 
 OpenPGP(RFC 9580)와 S/MIME 4.0(RFC 8551)은 메시지 암호화와 서명의 표준이다. 암호화만 했다고 발신자의 신원을 검증한 것은 아니므로 키의 소유자와 신뢰 경로도 확인한다. 제목, 발신/수신 주소와 전달에 필요한 메타데이터의 보호 범위는 실제 클라이언트와 프로토콜 구성별로 확인한다.
 
+### 종단 간 암호화에도 남는 것
+
+- **헤더:** S/MIME 4.0(RFC 8551)에서 서명과 암호화 대상인 MIME 엔터티에는 RFC 822 헤더가 들어가지 않고, 헤더를 보호하려면 전체 메시지를 `message/rfc822`로 감쌀 수 있다(MAY)고 했다. RFC 9788(2025)은 RFC 8551을 갱신해 헤더 필드를 암호화 페이로드에 직접 넣는 다른 헤더 보호 방식을 두고, 이전의 `message/rfc822` 감싸기 메시지는 생성하지 않도록(MUST NOT) 했다. 어느 방식이든 바깥 헤더와 배달에 필요한 봉투 정보, 경유 기록은 남으므로 실제 클라이언트가 어떤 헤더 보호를 지원하는지 확인한다.
+- **키 수명:** 본문은 세션 키로 암호화하고 그 세션 키를 수신자의 장기 공개키로 암호화하는 구조다. 수신자 개인키를 잃으면 과거 메일을 읽을 수 없고, 개인키가 유출되면 보관된 과거 암호문도 풀릴 수 있다.
+- **규격의 무결성 결함과 클라이언트 구현:** 2018년 공개된 EFAIL은 HTML 메일의 능동 콘텐츠(외부 이미지 요청 등)를 이용해 OpenPGP와 S/MIME으로 암호화된 메일의 평문을 빼낸 공격이다. CBC/CFB gadget 공격은 규격의 약점을 이용하므로 규격 변경이 필요하다고 공개 자료가 밝힌다. S/MIME의 CBC에는 무결성 보호가 없고, OpenPGP는 MDC(Modification Detection Code)가 있어도 검증 실패를 무시하거나 MDC 없는 패킷을 받아들인 처리가 문제였다. 직접 유출(direct exfiltration)은 Apple Mail, iOS Mail, Thunderbird 같은 클라이언트의 취약점이다. 시험한 S/MIME 클라이언트 35개 중 25개, OpenPGP 클라이언트 28개 중 10개에서 유출 경로가 있었다. S/MIME 4.0은 인증 없이 쓰면 EnvelopedData 암호문 변조가 탐지되지 않을 수 있다고 적고 AES-GCM 같은 인증 암호로 옮기기를 권한다.
+- **종단:** 수신 단말이 침해되면 복호화된 평문이 그대로 노출된다. 잘못된 수신자에게 보내거나 공개키 지문을 확인하지 않는 실수도 암호화가 막지 못한다.
+
+## 공격자별로 읽을 수 있는 범위
+
+아래 표는 위의 보호 구간과 키 보유자에서 끌어낸 판단이다. 서비스가 키를 쥔 저장 암호화를 기준으로 하며, 고객 관리 키(BYOK, CMK)도 처리 시점에 서비스가 복호화한다면 같은 열로 본다. 종단 간 암호화 열은 개인키와 복호화하는 클라이언트 코드가 서비스의 통제 밖에 있다는 전제이며, 어느 행에서도 헤더와 메타데이터는 따로 본다.
+
+| 공격자 | 서버 간 TLS(기회적) | TLS 강제(MTA-STS, DANE) | 서비스 키 저장 암호화 | 종단 간 암호화 |
+|---|---|---|---|---|
+| 서버 간 전송 경로의 수동 도청자 | TLS가 협상되면 막음 | 막음 | 해당 없음 | 본문은 막음 |
+| 서버 간 경로의 능동 중간자 | 강등 공격에 취약 | enforce 정책이 캐시됐거나 DANE을 검증하는 송신 서버라면 막음, MTA-STS는 첫 접촉의 정책 탐색 차단이 남음(DANE은 DNSSEC으로 탐색을 보호) | 해당 없음 | 본문은 막음 |
+| 메일 서비스 운영자, 내부자 | 못 막음 | 못 막음 | 못 막음 | 본문은 막음 |
+| 가동 중인 서버를 장악한 공격자 | 못 막음 | 못 막음 | 못 막음 | 본문은 막음 |
+| 분실한 디스크나 별도 키로 보호한 유출 백업 | 못 막음 | 못 막음 | 막음 | 본문은 막음 |
+| 계정 탈취자 | 못 막음 | 못 막음 | 못 막음 | 개인키가 단말에만 있으면 본문은 막음 |
+
+계정 탈취는 암호를 깨지 않고 로그인해서 읽는 경로라, 전송 구간 강제보다 다단계 인증, 레거시 기본 인증 차단과 자동 전달 규칙 점검이 먼저일 수 있다. 제로 액세스 서비스의 웹메일처럼 비밀번호로 키를 푸는 구성은 계정 비밀번호 탈취가 곧 키 접근이 될 수 있으므로 서비스의 키 보관 설계를 따로 확인한다.
+
+## 상황별 선택
+
+아래는 위 보호 범위에서 끌어낸 일반 판단 기준이며 RFC가 권하는 선택은 아니다.
+
+- 일반 업무 메일은 서버 간 TLS 강제, TLS-RPT 관찰과 계정 보안을 기준선으로 둔다.
+- 상대가 정해져 있고 반복되는 고민감 메일은 S/MIME이나 OpenPGP를 검토한다. 상대도 인증서나 공개키를 가져야 하고, 서버 측 검색과 스팸 분류, 키 분실 복구의 운영 부담이 따른다.
+- 불특정 외부 수신자에게는 메일에 링크만 넣고 인증 뒤 포털에서 받게 하는 보안 메일 방식이 현실적일 수 있다. 이 경우 포털 사업자가 내용을 처리할 수 있는지 확인한다.
+- 첨부 파일 암호화는 비밀번호를 같은 메일로 보내면 같은 경로를 본 사람에게 함께 노출된다. 비밀번호는 다른 채널로 전한다.
+- 암호화는 발신자가 진짜임을 보증하지 않는다. 도메인 사칭은 SPF, DKIM, DMARC 같은 발신 인증으로 다루며 [[SES-Sender-Authentication|SES 발신 인증]]에 정리했다.
+
 ## 운영 체크포인트
 
 - 어느 홉에서 TLS가 종료되고, 본문을 읽을 수 있는 주체는 누구인가?
@@ -46,19 +85,28 @@ OpenPGP(RFC 9580)와 S/MIME 4.0(RFC 8551)은 메시지 암호화와 서명의 �
 - 키 분실과 계정 복구가 기존 암호문 복구에 어떤 영향을 주는가?
 - 메일 검색, 미리보기, 알림, 백업과 포워딩이 평문 사본을 남기는가?
 - 본문과 첨부뿐 아니라 제목과 메타데이터의 보관 정책도 확인했는가?
+- 수신 도메인에 MTA-STS 정책과 TLS-RPT 레코드가 있고, 정책 모드가 의도한 단계인가?
+- 막으려는 공격자가 네트워크 도청자인지, 운영자와 서버 침해자인지, 계정 탈취자인지 먼저 정했는가?
 
 ## 출처
 
+- [IETF, RFC 3207: SMTP Service Extension for Secure SMTP over Transport Layer Security](https://www.rfc-editor.org/rfc/rfc3207)
 - [IETF, RFC 8461: SMTP MTA Strict Transport Security](https://www.rfc-editor.org/rfc/rfc8461)
+- [IETF, RFC 8460: SMTP TLS Reporting](https://www.rfc-editor.org/rfc/rfc8460)
 - [IETF, RFC 7672: SMTP Security via Opportunistic DANE TLS](https://www.rfc-editor.org/rfc/rfc7672)
 - [IETF, RFC 9580: OpenPGP](https://www.rfc-editor.org/rfc/rfc9580)
 - [IETF, RFC 8551: S/MIME Version 4.0 Message Specification](https://www.rfc-editor.org/rfc/rfc8551)
+- [IETF, RFC 9788: Header Protection for Cryptographically Protected Email](https://www.rfc-editor.org/rfc/rfc9788)
 - [Proton, How Proton Mail messages are encrypted](https://proton.me/support/proton-mail-encryption-explained)
 - [Proton, What is zero-access encryption?](https://proton.me/learn/encryption/types-of-encryption/zero-access)
+- [EFAIL — efail.de, Poddebniak 외](https://efail.de/) — 논문은 USENIX Security 2018 발표
 - GeekNews, 2026-11-02 11:10 사용자 제공 발췌 — 계기 자료. 원 아티클 URL은 제공되지 않아 특정 글 전체를 확인했다고 보지 않는다.
+- [왜 '암호화됨' 표시가 오히려 더 위험한가: 이메일 보안의 진실 — 길리랩](https://www.youtube.com/watch?v=iyL6WZI3YxM) — 학습 계기, 프로토콜 동작은 위 RFC와 EFAIL 공개 자료로 대조
 
 ## 관련 문서
 
+- [[Application-Layer-Protocols|응용 계층 프로토콜]]
+- [[SES-Sender-Authentication|SES 발신 인증]]
 - [[HTTPS-TLS|HTTPS와 TLS]]
 - [[TLS-Config|TLS 설정]]
 - [[Public-Key-Cryptography|공개키 암호와 서명]]

@@ -1,7 +1,7 @@
 ---
 tags: [java, collections, iterable, iterator, comparable, comparator, sorting]
 status: done
-verified_at: 2026-09-30
+verified_at: 2026-11-18
 category: "CS&프로그래밍(CS&Programming)"
 aliases: ["Java Iteration and Sorting", "Java 순회와 정렬"]
 ---
@@ -50,6 +50,25 @@ for (Iterator<String> i = names.iterator(); i.hasNext(); ) {
 - `Collection`이 `Iterable`을 상속하므로 `List`, `Set`, `Queue`는 같은 방식으로 순회된다. 구현체는 자기 구조에 맞는 iterator를 돌려준다. OpenJDK에서 `ArrayList`는 내부 클래스 `Itr`, `HashSet`은 배경 `HashMap`의 key iterator를 쓰지만 사용하는 쪽은 `hasNext()`, `next()`만 알면 된다.
 - 매개변수를 `Iterable<Integer>`나 `Iterator<Integer>`로 받으면 `ArrayList`, `HashSet`과 이후에 만들 자료구조를 같은 코드로 처리한다.
 - 컬렉션의 내부 표현을 노출하지 않고 원소에 차례로 접근하게 하는 [[Iterator패턴이란|Iterator 패턴]]의 Java 대응이다. `Iterable.iterator()`가 Aggregate의 iterator 생성 연산이고, 각 구현체의 iterator가 ConcreteIterator다.
+
+### 배열에서 Iterator 만들기
+
+배열은 for-each 대상이지만 `Iterable`이 아니고 `iterator()` 메서드가 없다. `Arrays`에도 `iterator`라는 메서드는 없다.
+
+```java
+String[] names = {"a", "b"};
+Iterator<String> it1 = Arrays.asList(names).iterator();          // 객체 배열: 복사 없이 감싸기
+Iterator<String> it2 = Spliterators.iterator(Arrays.spliterator(names));
+
+int[] scores = {90, 80};
+PrimitiveIterator.OfInt it3 = Spliterators.iterator(Arrays.spliterator(scores));
+int first = it3.nextInt();                                         // boxing 없음
+// Arrays.asList(scores)는 원소가 int[] 하나인 List<int[]>가 된다
+```
+
+- `Arrays.asList(T...)`는 배열을 배경 저장소로 쓰는 고정 크기 리스트를 돌려준다. 원소 복사가 없어 객체 배열에는 가볍지만, `T`에 기본형이 올 수 없어 `int[]`를 넘기면 그 배열 자체가 원소 하나가 된다.
+- `int[]`, `long[]`, `double[]` 배열은 `Arrays.spliterator(int[])`처럼 전용 overload로 `Spliterator.OfInt`를 얻고 `Spliterators.iterator(Spliterator.OfInt)`로 `PrimitiveIterator.OfInt`를 만든다. `Spliterator` 자체에는 `iterator()`가 없어 `Spliterators`의 정적 메서드를 거친다. `byte[]`, `char[]`, `short[]`, `float[]`, `boolean[]`용 spliterator와 `PrimitiveIterator`는 없다.
+- `PrimitiveIterator.OfInt`는 `Iterator<Integer>`이기도 하다. `nextInt()`는 `int`를 그대로 돌려주고, `next()`의 기본 구현은 `nextInt()` 결과를 boxing한다. boxing을 피하려면 `nextInt()`나 `forEachRemaining(IntConsumer)`를 쓴다. stream으로 새 리스트를 모은 뒤 iterator를 얻는 방법은 원소를 복사한다.
 
 ## Comparable과 Comparator
 
@@ -125,6 +144,7 @@ Java SE 26 API를 2026-10-09에 대조한 비교 계약이다.
 - `Iterable`과 상태를 가진 `Iterator`의 역할 차이
 - 향상된 for문이 가능한 대상과 `Map` 순회 방법
 - 향상된 for문이 컴파일 뒤 어떤 루프가 되는지와 직접 만든 자료구조를 for-each 대상으로 만드는 방법
+- 기본형 배열에 `Arrays.asList`를 쓰면 안 되는 이유와 boxing 없이 `int[]`의 iterator를 만드는 방법
 - 자연 순서와 외부 comparator를 나누는 이유
 - `BigDecimal("1.0")`과 `BigDecimal("1.00")`을 `HashSet`과 `TreeSet`에 넣었을 때 크기가 달라지는 이유
 - comparator도 `Comparable`도 없을 때 `TreeSet`이 첫 삽입부터 실패하는 이유
@@ -154,6 +174,9 @@ Java SE 26 API를 2026-10-09에 대조한 비교 계약이다.
 - [BigDecimal](https://docs.oracle.com/en/java/javase/26/docs/api/java.base/java/math/BigDecimal.html)
 - [Iterable](https://docs.oracle.com/en/java/javase/26/docs/api/java.base/java/lang/Iterable.html)
 - [Iterator](https://docs.oracle.com/en/java/javase/26/docs/api/java.base/java/util/Iterator.html)
+- [Spliterators](https://docs.oracle.com/en/java/javase/26/docs/api/java.base/java/util/Spliterators.html)
+- [Spliterator](https://docs.oracle.com/en/java/javase/26/docs/api/java.base/java/util/Spliterator.html)
+- [PrimitiveIterator.OfInt](https://docs.oracle.com/en/java/javase/26/docs/api/java.base/java/util/PrimitiveIterator.OfInt.html)
 - [JLS 14.14.2, 향상된 for문](https://docs.oracle.com/javase/specs/jls/se26/html/jls-14.html#jls-14.14.2)
 - [Comparable](https://docs.oracle.com/en/java/javase/26/docs/api/java.base/java/lang/Comparable.html)
 - [Comparator](https://docs.oracle.com/en/java/javase/26/docs/api/java.base/java/util/Comparator.html)
@@ -166,6 +189,7 @@ Java SE 26 API를 2026-10-09에 대조한 비교 계약이다.
 - [Java SE 7 and JDK 7 Compatibility](https://www.oracle.com/java/technologies/compatibility.html)
 - [JDK-6880672, dual-pivot quicksort 도입](https://bugs.openjdk.org/browse/JDK-6880672)
 - [JDK-6804124, TimSort 도입](https://bugs.openjdk.org/browse/JDK-6804124)
+- [How can you create an iterator on an array? — Java](https://www.youtube.com/watch?v=sdm8-0hN5QA) — 학습 계기, API 동작은 위 Java SE 26 문서로 대조
 
 ## 관련 문서
 

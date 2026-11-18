@@ -3,7 +3,7 @@ tags: [network, wireless, wpan, iot, ipv6, bluetooth, zigbee, 6lowpan]
 status: done
 verified_at: 2026-11-18
 category: "Web - 네트워크"
-aliases: ["WPAN", "Wireless Personal Area Network", "무선 개인 통신망", "6LoWPAN", "LoWPAN", "IEEE 802.15.4", "BLE", "Bluetooth Low Energy", "L2CAP", "Logical Link Control and Adaptation Protocol"]
+aliases: ["WPAN", "Wireless Personal Area Network", "무선 개인 통신망", "6LoWPAN", "LoWPAN", "IEEE 802.15.4", "BLE", "Bluetooth Low Energy", "L2CAP", "Logical Link Control and Adaptation Protocol", "UWB", "Ultra-Wideband", "초광대역", "IEEE 802.15.4z"]
 ---
 
 # WPAN과 6LoWPAN
@@ -26,6 +26,23 @@ WPAN(무선 개인 통신망)은 사람이나 기기 주변의 짧은 거리에�
 | 6LoWPAN | IEEE 802.15.4 위의 IETF 적응 계층 | IPv6 패킷을 단편화와 헤더 압축으로 802.15.4 프레임에 싣는다 |
 
 같은 IEEE 802.15.4 무선을 써도 Zigbee와 6LoWPAN은 그 위가 다르다. Zigbee는 CSA의 자체 상위 규격을 두고, 6LoWPAN은 IPv6를 그대로 올리는 쪽을 택한다. 6LoWPAN 기법은 RFC 7668로 Bluetooth LE 위의 IPv6에도 쓰인다.
+
+## UWB와 정밀 거리 측정
+
+UWB(Ultra-Wideband, 초광대역)는 아주 넓은 대역에 낮은 출력 밀도로 신호를 퍼뜨리는 무선이다. 지금 스마트폰과 차량 키에서 쓰는 주된 용도는 대용량 전송보다 두 기기 사이의 거리와 방향을 정밀하게 재는 것이다.
+
+- **정의(미국 FCC 47 CFR 15.503, Cornell LII 재게시본 2026-11-18 조회 기준):** 최고 방사 지점보다 10dB 낮은 두 지점 사이를 UWB 대역폭으로 보고, 이 대역폭이 500MHz 이상이거나 분수 대역폭 2(fH−fL)/(fH+fL)이 0.20 이상이면 UWB 송신기다.
+- **대역과 출력:** 실내 시스템(15.517)과 휴대 시스템(15.519)은 UWB 대역폭이 3100~10600MHz 안에 있어야 하고, 이 구간의 평균 EIRP는 1MHz 분해능 대역폭 기준 −41.3dBm으로 제한된다. 휴대 시스템은 고정 인프라를 쓰지 않아야 한다. 간섭이 원래 없다기보다 이렇게 낮은 출력 밀도 제한 안에서 다른 무선과 대역을 나눠 쓰도록 규제된다. 다른 나라의 대역과 허용 조건은 각 규제를 따로 확인한다.
+- **표준:** IEEE 802.15.4z-2020은 802.15.4의 UWB PHY에 코딩 옵션을 더해 거리 측정의 무결성과 정확도를 높이고, MAC이 비행 시간(time-of-flight) 측정 절차를 제어하고 측정 정보를 주고받도록 보강한 개정이다. IEEE 사이트에는 Superseded 상태로 표시되므로 구현 근거는 현행 802.15.4 개정판을 확인한다.
+- **측정 방식:** TWR(Two-Way Ranging)은 두 기기가 주고받은 메시지의 왕복 시간으로 비행 시간과 거리를 구한다. TDoA(Time Difference of Arrival)는 도착 시각의 차이로 위치를 구하며 방향이 둘이다. UL-TDoA는 태그가 보낸 신호를 시간이 맞춰진 여러 앵커가 받고 시스템이 위치를 계산한다. DL-TDoA는 앵커들이 보낸 메시지를 기기가 엿듣고 스스로 위치를 계산하므로 사용자 기기가 송신하지 않는다. FiRa 인증 프로그램도 OWR(One-Way Ranging) UL TDoA와 DL TDoA를 따로 둔다.
+- **상호 운용:** FiRa Consortium은 IEEE가 정한 MAC과 PHY 위에 프로파일을 만들고 제품을 인증해 UWB 기기 간 상호 운용을 맞추려는 단체다. 따라서 UWB가 본질적으로 제조사 간 호환되지 않는다고 외우기보다, 기기와 프로파일이 같은 규격과 인증을 지원하는지로 판단한다.
+
+| 사례 | 확인한 범위 |
+|---|---|
+| Apple 기기의 UWB | Apple은 iPhone 11 이후 일부 모델, Apple Watch, AirTag 등을 1세대와 2세대 UWB 칩으로 나눠 안내하고, 국가와 지역 규제에 따라 UWB를 쓸 수 없는 곳이 있다고 밝힌다. AirTag의 정밀 탐색(Precision Finding)에는 UWB를 지원하는 iPhone이 필요하며, 2026-09 Apple 안내는 Find(Find Nearby)를 iPhone 15 이후에서 쓸 수 있다고 적는다 |
+| 차량 디지털 키 | 2021-04 CCC 발표 기준 Digital Key Release 3.0은 UWB와 Bluetooth LE를 함께 써서 휴대폰을 꺼내지 않는 패시브 출입과 시동을 지원하고, NFC를 필수 예비 수단으로 유지한다. 후속 버전(v3.1.x, v4.x)의 변경은 확인하지 않았다 |
+
+시험 요약에서 UWB에 함께 붙는 480Mbps 전송률, MAC의 OFDMA 같은 수치와 구성은 위 802.15.4z 자료에서 확인되지 않았다. UWB라는 이름의 서로 다른 고속 전송 규격과 섞였을 수 있으므로 규격 원문으로 확인하기 전에는 쓰지 않는다.
 
 ## Bluetooth의 L2CAP
 
@@ -93,6 +110,7 @@ IPv6는 링크 MTU로 최소 1280옥텟을 요구하는데 802.15.4 물리 계�
 - 6LoWPAN과 Zigbee의 차이를 같은 802.15.4 무선 위에 IPv6를 올리는지, CSA 자체 상위 규격을 쓰는지로 나눠 말할 수 있는가.
 - 인터넷 연결에 6LBR이 하는 일(prefix 배포, 경계 라우팅)을 말할 수 있는가.
 - L2CAP의 segmentation과 fragmentation을 나누고, 비연결형 채널이 BR/EDR에만 있다는 점을 CID 표로 설명할 수 있는가.
+- UWB를 대역폭 정의(500MHz 또는 분수 대역폭 0.20)와 낮은 출력 밀도 제한으로 설명하고, TWR과 TDoA의 차이를 말할 수 있는가.
 
 ## 출처
 
@@ -104,6 +122,16 @@ IPv6는 링크 MTU로 최소 1280옥텟을 요구하는데 802.15.4 물리 계�
 - [RFC Editor, RFC 8931 IPv6 over Low-Power Wireless Personal Area Network (6LoWPAN) Selective Fragment Recovery](https://www.rfc-editor.org/rfc/rfc8931)
 - [RFC Editor, RFC 7668 IPv6 over BLUETOOTH(R) Low Energy](https://www.rfc-editor.org/rfc/rfc7668)
 - [IEEE 802.15, WPAN Low Rate Alternative PHY Task Group 4a (TG4a)](https://www.ieee802.org/15/pub/TG4a.html)
+- [IEEE SA, IEEE 802.15.4z-2020 Amendment 1: Enhanced Ultra Wideband (UWB) Physical Layers (PHYs) and Associated Ranging Techniques](https://standards.ieee.org/ieee/802.15.4z/10230/)
+- [eCFR (Cornell LII), 47 CFR 15.503 Definitions](https://www.law.cornell.edu/cfr/text/47/15.503)
+- [eCFR (Cornell LII), 47 CFR 15.517 Technical requirements for indoor UWB systems](https://www.law.cornell.edu/cfr/text/47/15.517)
+- [eCFR (Cornell LII), 47 CFR 15.519 Technical requirements for hand held UWB systems](https://www.law.cornell.edu/cfr/text/47/15.519)
+- [FiRa Consortium, Technical Specifications](https://www.firaconsortium.org/certifications/technical-specifications)
+- [FiRa Consortium, Certification Program](https://www.firaconsortium.org/certifications/certification-program)
+- [Untracked Indoor Navigation — FiRa Consortium](https://www.firaconsortium.org/resource-hub/blog/untracked-indoor-navigation)
+- [Apple, Ultra Wideband availability](https://support.apple.com/en-us/109512)
+- [Apple, Use AirTag and Find My to keep track of your personal items](https://support.apple.com/en-us/109021)
+- [Car Connectivity Consortium Delivers Digital Key Release 3.0 Specification — Car Connectivity Consortium](https://carconnectivity.org/car-connectivity-consortium-delivers-digital-key-release-3-0-specification-businesswire/)
 - [Bluetooth SIG, Bluetooth Technology Overview](https://www.bluetooth.com/learn-about-bluetooth/tech-overview/)
 - [Bluetooth SIG, Understanding Bluetooth Range](https://www.bluetooth.com/learn-about-bluetooth/key-attributes/range/)
 - [Bluetooth SIG, Bluetooth Core 7.0 Feature Overview](https://www.bluetooth.com/bluetooth-core-7-0-feature-overview/)
@@ -115,6 +143,7 @@ IPv6는 링크 MTU로 최소 1280옥텟을 요구하는데 802.15.4 물리 계�
 - [#NW 0045 - 무선 이어폰은 어떻게 연결될까? WPAN 90초 완벽 정리 — 길리랩](https://www.youtube.com/watch?v=bn3J-xodWY0) — 학습 계기, 거리와 기술 분류는 위 1차 출처로 교정
 - [#NW 0046 - 쌀알만 한 센서에도 IP 주소를? 6LoWPAN 90초 완벽 정리 — 길리랩](https://www.youtube.com/watch?v=Wn4p_EbybAg) — 학습 계기, 주소 유일성과 인터넷 연결 설명은 RFC로 교정
 - [#NW 0048 - 블루투스의 숨은 영웅 L2CAP, 90초 완벽 정리! — 길리랩](https://www.youtube.com/watch?v=70o03jLh7EM) — 학습 계기, LE의 비연결형 설명과 다중화 예시는 Core 6.2로 교정
+- [#NW 0049 - 에어태그의 비밀, UWB 90초 완벽 정리! — 길리랩](https://www.youtube.com/watch?v=QDF6ETP7pLw) — 학습 계기, 간섭과 호환성 설명은 FCC 규정과 FiRa 자료로 교정하고 전송률과 MAC 구성은 확인하지 못해 쓰지 않음
 
 ## 관련 문서
 
