@@ -44,6 +44,8 @@ arccos/arcsin의 [-1, 1] 밖 입력, 0 이하 값의 로그와 음수의 제곱�
 
 `hyperbolicCosineV1`(Hyperbolic cosine)은 이름은 삼각 함수와 비슷하지만 단위 enum 없이 `Expression<Numeric>` 값 하나만 받아 Double을 반환한다. 쌍곡선 함수의 인자는 원의 각도가 아닌 실수(쌍곡각)이므로 degree/radian 선택이 없다는 점과 맞는다(해석). 예제는 1.0에서 1.543080634815244, null에서 null이며 Batch/Faster/Streaming을 표시한다(2026-11-17 수집한 공개 레퍼런스 기준). 1.0의 결과는 정의식 (e + e⁻¹)/2의 값 약 1.5431과 일치한다(해석). cosh는 입력 절댓값이 커지면 지수적으로 커지므로 큰 입력에서 Double 범위를 넘을 때의 결과는 공개 예제가 없어 확정하지 않는다.
 
+`hyperbolicSineV1`(Hyperbolic sine)과 `hyperbolicTangentV1`(Hyperbolic tangent)도 같은 계약이다. 단위 enum 없이 `Expression<Numeric>` 값 하나를 받아 Double을 반환하고, null에서 null이며 Batch/Faster/Streaming을 표시한다(2026-11-17 수집한 공개 레퍼런스 기준). 예제는 1.0에서 sinh가 1.1752011936438014, tanh가 0.7615941559557649다. 두 값은 정의식 (e - e⁻¹)/2 약 1.1752와 sinh/cosh 약 0.7616과 일치한다(해석). sinh는 입력 절댓값이 커지면 결과의 절댓값이 지수적으로 커지고 부호는 입력을 따르며, Double 범위를 넘을 때의 결과는 cosh와 마찬가지로 공개 예제가 없어 확정하지 않는다. tanh의 수학적 범위는 (-1, 1)이고 큰 입력에서 ±1로 포화한다(해석). Double 결과는 포화 구간에서 정확히 ±1.0으로 반올림될 수 있지만 큰 입력의 공개 예제가 없어 확정하지 않는다. 포화 구간에서는 입력 차이가 출력에 거의 드러나지 않으므로, tanh 결과로 순위나 임계값을 정할 때는 입력 범위를 먼저 확인하고 1과의 엄격 비교나 결과를 다시 역함수나 log(1 - tanh)에 넣는 계산을 피한다(설계 제안).
+
 `exponentialV1`, `logV1`, `sqrtV1`은 `Expression<Numeric>`을 받아 Double을 반환한다(e^2.0은 7.38905609893, 16.3216의 제곱근은 4.04). `logNV1`의 Base는 `Literal<Double>`, Expression은 `Expression<Numeric>`이다(밑 2.0에서 8의 로그는 3.0). 밑이 literal이라 행마다 다른 밑 column을 넘기는 용도로 보기 어렵고(해석), 행별 밑이 필요하면 `logV1` 두 결과의 비율을 검토한다(설계 제안).
 
 거리와 무게 변환은 `Expression<DefiniteNumeric>` 양과 현재 단위, 목표 단위 enum을 받는다. 1 kilometer는 1000.0 meter, 5 kilogram은 5000.0 gram이며 null은 null이다. 공개 페이지의 단위 enum은 일부만 나열된다.
@@ -128,6 +130,8 @@ Natural random은 하한을 포함하고 상한을 제외한다. Normal random�
 - [Palantir, Bitwise not](https://www.palantir.com/docs/foundry/pb-functions-expression/bitwiseNotV1)
 - [Palantir, Bitwise xor](https://www.palantir.com/docs/foundry/pb-functions-expression/bitwiseXorV1)
 - [Palantir, Hyperbolic cosine](https://www.palantir.com/docs/foundry/pb-functions-expression/hyperbolicCosineV1)
+- [Palantir, Hyperbolic sine](https://www.palantir.com/docs/foundry/pb-functions-expression/hyperbolicSineV1)
+- [Palantir, Hyperbolic tangent](https://www.palantir.com/docs/foundry/pb-functions-expression/hyperbolicTangentV1)
 - [Palantir, Functions index](https://www.palantir.com/docs/foundry/pipeline-builder/functions-index)
 
 ## 관련 문서
