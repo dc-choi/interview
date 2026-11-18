@@ -40,7 +40,7 @@ aliases: ["CS Fundamentals"]
 
 
 
-- [x] [[CS-Data-Representation|데이터 표현 (비트, 진법, 정수 표현, 엔디언, 문자와 미디어의 비트 표현, Base64, 체크섬과 해시, 오류 정정 부호)]]
+- [x] [[CS-Data-Representation|데이터 표현 (비트, 진법, 정수 표현, 엔디언, 문자와 미디어의 비트 표현, Base64, JSON Lines, 체크섬과 해시, 오류 정정 부호)]]
 - [x] [[CS-Computer-Architecture|컴퓨터 구조 (불 대수와 ALU, 순차 논리회로와 메모리, CPU 데이터패스와 명령어 사이클, 교육용 CPU 프로그램)]]
 - [x] [[CS-Language-Execution|언어와 실행 (언어 지형과 구분 기준, 컴파일과 런타임, 네이티브 컴파일 호환성, 에뮬레이션과 호환 계층, Rust 소유권과 건전성, Rust 추상화 선택과 디스패치, Zig의 안전 장치와 C 연동)]]
 - [x] [[Math-Logic-For-Programming|프로그래밍에 필요한 수학과 논리 (명제, 집합, 드 모르간, 귀납법, 작은 모델의 탐색과 증명 구분)]]
