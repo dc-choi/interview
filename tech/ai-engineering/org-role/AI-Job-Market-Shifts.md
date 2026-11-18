@@ -181,6 +181,7 @@ AI 활용 역량을 평가하는 전형이 무엇을 묻는지는 [[AI-Assisted-
 
 - [[Product-Design-Workflow-and-Handoff-Organization|프로덕트 조직 구조와 업무 루프]] — 직군 통합의 지원 조건과 평가
 - [[AI-Assisted-Hiring-Assessments|AI 활용 과제 전형]] — AI 활용 역량을 묻는 전형
+- [[Junior-Developer-Evidence-AI-Era|AI 시대 신입 개발자의 경험 증거]] — 책임 범위, 사용자 검증과 판단 기록
 - [[Expertise-Formation-AI|AI 시대의 전문성 형성]] — 위임과 이해의 축적
 - [[AI-Capability-Transfer|AI 역량 이전]] — 공급사 FDE 공고의 요건과 자립 역량 기준
 - [[AI-Work-Output-and-Employment|AI 코드 생산과 제품 성과 및 고용]] — 생산량 지표와 고용 효과 연구의 한계

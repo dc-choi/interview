@@ -160,3 +160,4 @@ AI가 증명을 생성하는 능력과 수학을 이해하고 설명하는 사�
 - [[AI-Slop-Quality-Gate|AI 슬롭과 판단 관문]] — 생성 뒤 검토 시간, 위험도별 검토 강도와 소유의 세 조건
 - [[AI-Code-Delegation-Review#위임 앞뒤에 사람이 생각하는 구간을 둔다|위임 앞뒤의 사고 구간]] — 위임 전 이해와 위임 뒤 검토를 사람이 맡는 구성(Brain Sandwich)
 - [[AI-Code-Delegation-Review-Cognitive-Surrender|위임과 인지적 항복]] — 판단 위탁으로 미끄러지는 과정과 검증 병목의 선택
+- [[Junior-Developer-Evidence-AI-Era|AI 시대 신입 개발자의 경험 증거]] — 작업 완료와 학습 완료의 구분, 판단 기록
