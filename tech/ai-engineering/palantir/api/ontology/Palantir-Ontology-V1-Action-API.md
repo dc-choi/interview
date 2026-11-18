@@ -63,6 +63,18 @@ Struct parameter는 field별 제약과 required를, array parameter는 지원되
 
 2026-11-03 버전 없는 주소와 `/api/v1/` 문서 주소의 검증 경로, 입력과 응답 스키마, 기본값 미지원 및 응답 예제를 대조했다. 실제 API 실행과 다른 절 전체의 재검증은 하지 않아 기존 `verified_at`은 유지한다.
 
+## Action type 정의 조회
+
+`GET /api/v1/ontologies/{ontologyRid}/actionTypes`는 Ontology의 action type 목록을, `GET /api/v1/ontologies/{ontologyRid}/actionTypes/{actionTypeApiName}`는 API name 하나의 정의를 읽는다. 두 endpoint의 OAuth2 scope는 `api:ontologies-read`이며 Action을 적용하거나 검증하지 않는다. V1 명세는 이 자리를 Ontology RID로 설명한다. V2 metadata 경로는 Ontology API name과 RID를 모두 받으므로, V2에서 API name으로 호출하던 값을 V1 경로에 그대로 옮기지 않는다. V2 쪽 계약은 [[Palantir-Ontology-V2-Metadata-API|Ontology V2 metadata API]]에 있다.
+
+목록은 `pageSize`(기본 500)와 `pageToken`으로 넘긴다. 한 페이지는 요청 크기보다 작을 수 있지만, 남은 결과가 있으면 적어도 1개는 담긴다. 응답 개수가 `pageSize`보다 작다는 이유로 끝났다고 판단하지 않고, 응답의 `nextPageToken`을 다음 요청의 `pageToken`으로 넘겨 이어 읽는다. 응답 스키마에서 `nextPageToken`과 `data`는 모두 선택 필드다.
+
+응답의 action type은 `apiName`, `rid`, `status`가 필수이고 `description`, `displayName`, `parameters`, `operations`는 선택이다. `parameters` map의 키는 parameter ID이며, 값에는 필수인 `baseType`과 `required`, 선택인 `dataType`과 `description`이 있다. `operations`는 아래 Action logic의 규칙 목록이다. `rid`는 다른 Foundry API와 연동할 때 쓰고, 적용과 검증 경로에는 API name을 넣는다.
+
+공식 응답 스키마는 단건 조회의 action type 필드를 본문 최상위에 두지만, 같은 문서의 예제는 이를 `data` 객체로 감싼다. 목록과 단건 예제 모두 필수인 action type의 `status`와 parameter의 `required`도 생략한다. 예제를 그대로 파서 계약으로 쓰지 않고 실제 응답으로 형태를 확인한다.
+
+2026-11-18 두 endpoint의 경로, scope, paging, 응답 스키마와 예제를 공식 문서와 대조했다. 실제 API 호출과 다른 절의 재검증은 하지 않아 기존 `verified_at`은 유지한다.
+
 ## Action logic과 직렬화
 
 Action logic에는 object/interface object의 create/modify/delete, link 변경과 applyScenario가 있다. link API name은 object type 내부에서만 유일하다. applyScenario는 scenario에 누적한 edit를 현재 Ontology 문맥에 반영하며 영향받는 object/link type 범위를 명시한다.
@@ -85,7 +97,8 @@ Attachment metadata GET과 `/content` binary GET은 `api:ontologies-read`다. me
 - [Apply Action Batch (v1)](https://www.palantir.com/docs/foundry/api/v1/ontology-resources/actions/apply-action-batch) — 2026-11-03 요청 배열, OAuth2 scope, 빈 성공 응답과 적용 제한 대조
 - [Validate Action](https://www.palantir.com/docs/foundry/api/ontology-resources/actions/validate-action)
 - [Validate Action (v1)](https://www.palantir.com/docs/foundry/api/v1/ontology-resources/actions/validate-action) — 2026-11-03 검증 요청과 응답 스키마, INVALID 성공 응답 예제 대조
-- [Get Action Type](https://www.palantir.com/docs/foundry/api/ontology-resources/action-types/get-action-type)
+- [List Action Types](https://www.palantir.com/docs/foundry/api/ontology-resources/action-types/list-action-types) — 2026-11-18 V1 경로, paging과 응답 스키마 대조
+- [Get Action Type](https://www.palantir.com/docs/foundry/api/ontology-resources/action-types/get-action-type) — 2026-11-18 경로 식별자, 응답 스키마와 예제의 `data` 감싸기 차이 대조
 - [Upload Attachment](https://www.palantir.com/docs/foundry/api/ontology-resources/attachments/upload-attachment)
 
 ## 관련 문서

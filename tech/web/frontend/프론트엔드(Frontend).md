@@ -38,6 +38,7 @@ aliases: ["Frontend", "프론트엔드"]
 - [[Atomic-Design|Atomic Design과 컴포넌트 계층 규칙]] — 다섯 단계, Atom 범위, Molecule과 Organism 경계, 순수 컴포넌트와 부수 효과 계층, 목록과 모달 배치
 - [[Storybook|Storybook]] — story, args와 Controls, Autodocs, 웹 컴포넌트의 Custom Elements Manifest, play 함수와 axe-core 접근성 검사의 단계적 도입
 - [[Design-System-Lint|디자인 시스템 lint]] — 테마 토큰과 공용 컴포넌트 계약 위반 검출, `@shadcn/lint` 여섯 규칙과 예외 설정, 진단을 AI 수정 입력으로 쓰는 루프, 단계적 도입과 CI 게이트, 토큰 생성과 화면 대비 검증의 경계
+- [[Design-To-Code-Connection|디자인 산출물과 코드 컴포넌트의 연결]] — 컴포넌트 명세, DTCG 2025.10 토큰 형식과 Resolver, Figma Code Connect와 MCP 연동, 커스텀 영역만 검수하는 흐름
 - [[In-Browser-Build|브라우저 내 빌드 런타임]] — esbuild-wasm 브라우저 컴파일, import map 의존성 해석, 로드 타임을 빌드 타임으로 옮겨 프리뷰 가속
 
 ## 관련 문서
