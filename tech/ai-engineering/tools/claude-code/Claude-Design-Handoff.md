@@ -3,7 +3,7 @@ tags: [ai, design, prototype, claude-code, handoff, frontend, impeccable, licens
 status: done
 verified_at: 2026-10-12
 category: "AI엔지니어링(AIEngineering)"
-aliases: ["Claude Design Handoff", "AI 디자인과 구현 인계", "Impeccable", "AI 디자인 기본값 수렴", "DESIGN.md", "oh-my-design"]
+aliases: ["Claude Design Handoff", "AI 디자인과 구현 인계", "Impeccable", "AI 디자인 기본값 수렴", "DESIGN.md", "oh-my-design", "unslop"]
 ---
 
 # AI 디자인 시스템과 구현 인계
@@ -35,7 +35,7 @@ AI로 만든 화면을 구현에 넘길 때는 이미지뿐 아니라 디자인 
 
 ## 생성 UI가 같은 기본값으로 모이는 문제
 
-이 절은 2026-10-11 Anthropic의 공식 글과 frontend-design 스킬, Impeccable 저장소와 문서, GitHub 제품 페이지를 대조한 부분 검증이다. 2026-11-08에는 frontend-design의 계획 단계와 개정 이력, Impeccable의 규칙 수, 명령, 훅과 외부 요청을 저장소, 커밋과 개인정보 안내로 다시 대조했다. 다른 절은 다시 대조하지 않아 문서의 `verified_at`은 유지한다.
+이 절은 2026-10-11 Anthropic의 공식 글과 frontend-design 스킬, Impeccable 저장소와 문서, GitHub 제품 페이지를 대조한 부분 검증이다. 2026-11-08에는 frontend-design의 계획 단계와 개정 이력, Impeccable의 규칙 수, 명령, 훅과 외부 요청을 저장소, 커밋과 개인정보 안내로 다시 대조했다. 2026-11-18에는 unslop 하위 절을 그 저장소와 대조했다. 다른 절은 다시 대조하지 않아 문서의 `verified_at`은 유지한다.
 
 지침 없이 LLM에 랜딩 페이지를 맡기면 Inter 글꼴, 흰 배경 위 보라 그라데이션, 최소한의 애니메이션으로 거의 매번 수렴한다는 관찰이 있다(2025-11 Anthropic 글 기준). 이는 분포 수렴(distributional convergence)으로 설명된다. 어디에나 무난한 디자인 선택이 웹 학습 데이터의 다수를 차지하고, 방향을 주지 않으면 모델이 그 확률 높은 중심에서 고른다는 것이다. 당시 제시된 대응은 글꼴, 색과 테마, 움직임, 배경을 구체적으로 지시하는 약 400토큰 분량의 지침을 스킬로 두고 필요할 때만 불러오는 방식이며, 현재 스킬 본문은 이후 개정으로 이보다 길다.
 
@@ -61,6 +61,18 @@ Impeccable은 지침과 결정적 검사를 묶은 사례다. Paul Bakaus가 Ant
 - 새 디자인을 시작하면 스킬은 impeccable.style 카탈로그에서 시각 방향 후보를 받아 오고, 버전 확인도 보통 하루 한 번 이하로 한다. 텔레메트리를 꺼도 후보와 미리보기 이미지 요청은 남고, 꺼지는 것은 어떤 방향이 제시되고 선택됐는지의 익명 기록이다. 로컬 카탈로그를 설정하면 후보 요청 없이 후보를 받을 수 있지만, 미리보기를 띄우면 그 이미지는 따로 Impeccable 서버에서 받을 수 있다. README와 개인정보 안내(2026-10-21 갱신)는 이 요청들이 프로젝트 이름, 파일 경로와 코드, 프롬프트와 브리프, `PRODUCT.md`와 탐지 결과를 Impeccable 서버로 보내지 않는다고 밝힌다. 이 범위 밖에서 `OPENAI_API_KEY`로 Impeccable의 이미지 생성기를 쓰면 이미지 프롬프트와 명령에 준 참고 이미지가 OpenAI로 올라가고, 아래 live 모드의 Apply는 최근 1분 안에 폴링한 채팅 에이전트가 없으면 편집 내용과 소스 경로 후보를 에이전트 CLI에 넘긴다. 기록은 `npx impeccable telemetry off`, `DO_NOT_TRACK=1`, `IMPECCABLE_NO_TELEMETRY=1`이나 프로젝트 `.impeccable/config.json`의 `"telemetry": false`로, 버전 확인은 `IMPECCABLE_NO_UPDATE_CHECK=1`로 끈다. 외부 요청을 줄여야 하는 고객 작업은 이 값을 작업 셸에 먼저 둔다.
 - live 모드의 Apply는 대기 중인 문구 수정을 채팅 에이전트에 넘기는데, 최근 1분 안에 폴링한 에이전트가 없으면 PATH의 `codex` CLI(없으면 `claude`)를 승인, 권한 검사와 샌드박스를 끈 채(`--dangerously-bypass-approvals-and-sandbox` 또는 `--permission-mode bypassPermissions`) 현재 환경을 물려받아 실행한다. 프롬프트에는 그 수정, 편집한 요소의 HTML과 주변 텍스트, 페이지 URL과 소스 경로 후보가 들어간다(2026-11-02 README에 명시). 무인 하위 프로세스 실행을 피하려면 live 모드를 시작하는 환경에 `IMPECCABLE_LIVE_COPY_AGENT=chat`(채팅 세션에서 적용)이나 `off`(Apply 끔)를 미리 둔다. 서버는 이 값을 시작할 때 한 번만 읽는다([[Claude-Code-Config-Permissions|권한 모드]]).
 - 이번에 확인한 개선 근거는 제작자 쪽 분석이고 GitHub 소개 문구에도 측정값이 없다. 독립 평가는 찾지 못했으므로 자기 화면에서 적용 전후를 비교하고 사람이 브리프와 대조해 판정한다.
+
+### 탐지기 없이 고치는 순서를 정한 스킬
+
+unslop은 결정적 탐지기 없이, 디자이너가 레드라인 검토를 하듯 층별로 고치는 순서를 스킬 지침으로 정한 사례다. Impeccable과 달리 결과를 검사하는 훅이 없어 아래 순서는 모델이 따르는 지시이며 강제되지 않는다. 2026-11-18 저장소의 README, SKILL.md와 `references/signs.md`를 대조했다. 라이선스는 CC BY 4.0이고 Claude Code(플러그인), Codex와 Google Antigravity에 설치한다. README는 Claude Code에서 플러그인으로 옮길 때 `~/.claude/skills/`에 직접 복사한 이전 사본을 지우지 않으면 `/unslop`이 그 사본을 계속 실행한다고 경고한다.
+
+- **진단과 변경 폭:** 화면을 렌더링하는 파일을 찾고 가능하면 띄워 본 뒤, 흔적 목록으로 위치별 진단을 한 줄씩 적는다. 흔적이 많으면 전체 과정을 돌리고, 적으면 진단한 항목만 고치며 기존 팔레트, 서체, 레이아웃을 유지하는 polish 모드로 간다. 흔적이 없으면 그렇다고 말하고 정확한 값을 붙인 작은 개선 2~3개만 제안한다.
+- **방향과 승인:** Product, Character, World, Moments, Signature 다섯 줄로 방향을 쓰고 진단과 함께 보여 준 뒤, 사용자가 이미 바로 진행하라고 한 경우가 아니면 답을 받기 전에는 편집하지 않도록 지시한다. Character에는 clean, modern, sleek, minimal, premium처럼 모든 템플릿에 붙는 단어를 쓰지 못하고, Moments는 색과 재질, 세부를 몰아줄 한두 곳이다.
+- **아홉 단계:** 간격, 색, 아이콘, 문구, 서체, 레이아웃, 세부, 시각 자료, 움직임 순서로 단계마다 화면 전체를 끝낸 뒤 다음으로 간다. 리듬이 맞아야 나머지가 달리 보이므로 간격이 먼저이고, 제목 길이가 크기와 위치를 정하므로 문구가 서체와 레이아웃보다 앞서며, 시각 자료와 움직임은 그것 없이도 작동하는 화면에 맞추도록 마지막에 둔다.
+- **바꾸지 않는 것:** 제품 이름을 바꾸지 않고, 사용자가 더 요청하지 않는 한 기능, 내용과 섹션 순서를 유지하며 기능, 주장, 데이터를 지어내지 않는다. `Loved by 10,000+ teams`처럼 확인할 수 없는 문구는 사용자에게 묻고 보고서에 나열하며, 사실로 확인되면 차분하고 구체적인 표현으로 바꾸고 아니면 지운다.
+- **링크만 있을 때:** Playwright와 Chromium을 설치하면 스냅샷 스크립트가 라이브 페이지를 로컬에 저장하고 스킬은 그 사본을 고친다. 결과는 사용자가 실제 사이트 담당자에게 넘길 수 있는 코드다. 페이지의 스크립트가 그리는 움직이는 배경은 저장되지 않으므로 라이브 페이지를 보고 진단에 적는다.
+
+한 공개 적용 사례(2026-11-11 영상)에서는 서비스 세 곳의 변경 폭이 화면 구조 변경부터 글자 크기와 간격 조정까지 서로 달랐고 각 서비스의 원래 색 계열은 남았다. 같은 사례는 한글 화면의 글자 굵기를 전체적으로 낮춰 힘이 빠져 보이는 경향과 이미 다듬어진 화면이 오히려 나빠질 수 있다는 점을 들어, 원래 화면을 보존한 비교 페이지로 전후를 보고 나아진 것이 확인될 때 반영하라고 권한다. 한 사용자의 관찰이며 일반화된 평가는 아니다.
 
 ## 생성 UI를 다듬는 외부 자원과 납품 전 출처 확인
 
@@ -147,6 +159,10 @@ HyperFrames는 장면, 시간과 움직임을 HTML 프로젝트로 관리하며 
 - [Impeccable, audit](https://impeccable.style/docs/audit)
 - [GitHub Copilot app — GitHub](https://github.com/features/ai/github-app)
 - [Impeccable Kills AI Design Slop — Better Stack](https://www.youtube.com/watch?v=J1RYxganY20) — 2026-10-10 업로드, 규칙 수 61개는 당시 README의 59개와 다르며 효과 주장의 근거로 사용하지 않음
+- [heydamir/unslop — GitHub](https://github.com/heydamir/unslop) — 2026-11-18 README의 라이선스, 지원 도구와 설치, Playwright 스냅샷 조건
+- [unslop SKILL.md — GitHub, heydamir/unslop](https://github.com/heydamir/unslop/blob/main/skills/unslop/SKILL.md) — 2026-11-18 확인, 변경 폭 3단계, 다섯 줄 방향과 금지어, 승인 대기, 아홉 단계 순서와 이유, 바꾸지 않는 것
+- [unslop signs.md — GitHub, heydamir/unslop](https://github.com/heydamir/unslop/blob/main/skills/unslop/references/signs.md) — 진단에 쓰는 흔적 목록
+- [바이브코딩 AI 티 없애는 건당 200만원 기술, 클로드 코드 무료 스킬로 풀려서 제 서비스에 적용했습니다 — 투더제이 TTJ](https://www.youtube.com/watch?v=6rgRkP3kqXk) — 2026-11-11 업로드, 적용 사례의 관찰. 영상의 패턴 수(10개 분야 64가지)는 2026-11-13 오른쪽에서 왼쪽 쓰기 묶음이 추가되기 전 signs.md의 절과 항목 수에 해당하고 현재 목록은 그 뒤 늘어 본문에 쓰지 않음
 
 ## 관련 문서
 
