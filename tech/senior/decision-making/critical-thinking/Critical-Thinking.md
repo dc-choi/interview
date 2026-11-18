@@ -12,7 +12,7 @@ aliases: ["Critical Thinking", "비판적 사고"]
 ## 목차
 
 - [[Cognitive-Biases-Programming|프로그래밍 인지 편향]] — IKEA Effect, 90-90, Dunning-Kruger, Pre-mortem
-- [[Constructive-Skepticism|근거 기반 검증]] — 주장, 증거 범위, 반증 조건과 다음 검증 분리
+- [[Constructive-Skepticism|근거 기반 검증]] — 주장, 증거 범위, 반증 조건과 다음 검증 분리, 전략 이견과 전망 이견의 구분
 - [[Dialectics|변증법]] — 정반합과 지양, 헤겔의 확장, 설계 토론 적용
 
 ## 상위 문서

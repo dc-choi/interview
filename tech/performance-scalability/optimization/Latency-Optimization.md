@@ -102,6 +102,14 @@ aliases: ["Latency Optimization", "레이턴시 최적화", "응답 시간 최�
 - **wall-clock 프로파일링**: CPU 프로파일은 스레드가 CPU를 쓰는 순간만 샘플링해 소켓 대기 같은 블로킹 시간이 그래프에 나타나지 않는다. 응답은 느린데 서버 CPU는 한가하면 경과 시간 전체를 샘플링하는 wall-clock 모드(예: async-profiler `-e wall`)로 스레드가 어디서 시간을 흘리는지 본다
 - **대조 실험으로 가설을 반박**: 네트워크가 느려서라는 가설은 같은 API를 다른 클라이언트로 호출해 보면 검증된다. 같은 서버, 같은 회선에서 한쪽만 느리면 원인은 회선이 아니라 클라이언트 측 차이다 — 예: HTTP 클라이언트가 Accept-Encoding gzip 협상을 하지 않아 비압축 원본 전체를 수신하는 경우. 고지연 링크에서 크기가 왕복 횟수로 바뀌는 기전은 [[TCP-Congestion-Control|TCP 혼잡 제어]] 참조
 
+## 팬아웃이 키우는 꼬리 지연
+
+요청 하나가 여러 서버의 응답을 모두 모아야 하면 서버마다 드문 지연이 요청 전체에는 흔한 지연이 된다. 각 서버가 독립적으로 1%의 확률로 느리다면 100대가 모두 제때 답할 확률은 0.99^100, 약 37%라서 요청의 약 63%가 느린 응답을 기다린다. 화면 하나가 API를 여러 번 부를 때의 같은 계산은 [[Monitoring-Graph-Reading|모니터링 그래프 읽기]]에 있다. 2013년 CACM에 실린 The Tail at Scale은 복제본을 활용해 이 꼬리를 줄이는 요청 기법을 제시한다.
+
+- **Hedged request**: 같은 요청을 다른 복제본에도 보내 먼저 온 결과를 쓰고 남은 요청은 취소한다. 처음부터 두 곳에 보내면 부하가 크게 늘므로, 첫 요청이 그 요청 종류의 95번째 백분위 예상 지연을 넘도록 끝나지 않았을 때만 두 번째를 보내 추가 부하를 약 5%로 묶는다. 같은 글의 Google BigTable 벤치마크(서버 100대에 분산된 키 1,000개 조회)에서는 10ms 뒤 hedge를 보내 1,000개 전체 조회의 P99.9가 1,800ms에서 74ms로 줄었고 요청은 2% 늘었다.
+- **Tied request**: 두 서버의 큐에 함께 넣되 서로의 존재를 알려 두고, 먼저 실행을 시작한 쪽이 상대에게 취소를 보낸다. 실행 전 서버 큐 대기가 지연 변동의 흔한 원인이라는 점을 노려, hedge가 남기는 중복 실행을 줄인다.
+- **적용 조건**: 느림의 원인이 요청 자체가 아니라 다른 작업과의 간섭이어서 여러 복제본이 동시에 느려지지 않을 때 효과가 난다. 같은 글은 이 기법들이 시스템 상태를 중요하게 바꾸지 않는 연산에 가장 잘 맞는다고 밝힌다. 쓰기 요청에 적용하려면 두 번 실행돼도 결과가 같은지부터 확인한다(적용 판단, [[Idempotency-Key|멱등성 키]]).
+
 ## 흔한 실수
 
 - **병목 측정 없이 캐시부터 넣는다** → 정작 병목은 외부 API였음
@@ -115,6 +123,7 @@ aliases: ["Latency Optimization", "레이턴시 최적화", "응답 시간 최�
 
 - **레이턴시 vs 처리량** 차이를 설명할 수 있는가
 - **P50 vs P99** 중 어느 쪽을 왜 보는가
+- **팬아웃**이 꼬리 지연을 키우는 이유와 hedged request가 추가 부하를 묶는 방법을 설명할 수 있는가
 - **캐시 일관성 전략**(write-through / write-back / write-around)을 말할 수 있는가
 - **N+1 문제**와 해결법(eager loading, DataLoader, batching)을 설명할 수 있는가
 - 비동기 처리에서 **멱등성, 순서, 실패 재처리**를 어떻게 다룰 것인가
@@ -133,6 +142,8 @@ aliases: ["Latency Optimization", "레이턴시 최적화", "응답 시간 최�
 - [@fastify/compress, README](https://github.com/fastify/fastify-compress#readme)
 - [HikariCP, About Pool Sizing](https://github.com/brettwooldridge/HikariCP/wiki/About-Pool-Sizing)
 - [인프런, Hong, 첫번쨰 서버 최적화 방법](https://www.inflearn.com/courses/lecture?courseId=336089&unitId=272599)
+- [The Tail at Scale — Communications of the ACM, Jeffrey Dean, Luiz André Barroso](https://doi.org/10.1145/2408776.2408794) — 2013년 2월호(Vol. 56, No. 2). 2026-11-18 팬아웃 63% 예, hedged와 tied request, 적용 조건과 상태 변경 연산의 범위 대조
+- [Math Every Programmer ACTUALLY Needs — YouTube, The Coding Gopher](https://www.youtube.com/watch?v=-gBgZpC6ehA) — 2026-11-17 업로드, 음성 인식 전사 기준. 느린 서버를 두고 다른 서버에 백업 요청을 보낸다는 언급이 보강의 계기이며 세부는 위 논문으로 대조
 
 ## 관련 문서
 - [[TCP-Congestion-Control|TCP 혼잡 제어]] — 고지연 링크에서 응답 크기가 왕복 횟수로 바뀌는 기전
@@ -142,6 +153,8 @@ aliases: ["Latency Optimization", "레이턴시 최적화", "응답 시간 최�
 - [[HTTPS-TLS|HTTPS / TLS]]
 - [[Rate-Limiting|Rate Limiting]]
 - [[Connection-Pool|커넥션 풀 사이징]]
+- [[Monitoring-Graph-Reading|모니터링 그래프 읽기]] — 여러 번 호출할 때 꼬리를 만날 확률
+- [[AI-Infrastructure-Language-Layers|AI 서비스 스택의 언어 계층]] — 같은 논문이 꼽은 지연 변동의 원인과 백그라운드 작업 완화
 - [[NestJS-Middleware|NestJS 미들웨어]] — compression 설정과 리버스 프록시 오프로드
 - [[메시징&파이프라인(Messaging&Pipeline)|메시징 & 파이프라인 인덱스]]
 - [[데이터&저장소(Data&Storage)|데이터 & 저장소 인덱스]]

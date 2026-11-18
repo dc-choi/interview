@@ -10,7 +10,7 @@ aliases: ["테스트&품질(Testing&Quality)", "Testing & Quality"]
 ## Checklist
 
 - [x] [[Ruff-Upgrade-Validation|Ruff 업그레이드 검증]] — Python 기준, 기본 규칙, 수정 제안과 적용, CI와 편집기 연결
-- [[Agentic-Verification|에이전트 기반 검증]] — 완료 조건, E2E, 속성과 검사 기준 보호
+- [[Agentic-Verification|에이전트 기반 검증]] — 완료 조건, E2E, 속성과 검사 기준 보호, verify 스킬과 차등 테스트, flaky 정책, 커밋 게이트와 놓친 결함의 규칙 승격
 - [[Ephemeral-Desktop-Test-VM|일회용 데스크톱 테스트 VM]] — Linux 실행기, Windows warm pool과 폐기
 - [x] [[Requirements-Traceability|요구사항 추적성 (양방향 연결, 변경 영향 분석, 링크와 검증 결과의 구분)]]
 - [x] [[Test-Pyramid#Unit Test|Unit test (단위 범위, AAA 구조, 격리와 실행 비용)]]
@@ -37,6 +37,7 @@ aliases: ["테스트&품질(Testing&Quality)", "Testing & Quality"]
 - [x] [[Integration-Test-Environment|통합 테스트 환경 (Testcontainers, LocalStack, 테스트 @Transactional 안티패턴)]]
 - [x] [[Test-Strategy-Layers|테스트 전략과 계층 폴더 인덱스 (피라미드 계층별 범위, 서비스 레이어 테스트 경계, 계층이 못 잡는 사각지대)]]
 - [x] [[Natural-Language-E2E-Agent|자연어 E2E 테스트 에이전트 (접근성 트리 우선과 비전 폴백, 반응형 vs 계획형 프로파일, 결정성과 검증 게이트, CI 비용, ARTEMIS)]]
+- [x] [[Browser-Test-Recording|브라우저 테스트 녹화와 실행 증거 (Playwright 녹화 모드, CDP 프레임 전송과 Chrome 내장 녹화, chrome-capture의 조건과 한계, 실패 영상 보관과 민감 정보)]]
 
 ## 현장사례
 - [[11st-Engineer-Seminar#테스트전략|11번가 테스트 전략]] — 컨트롤러→통합, 서비스→단위, Mock 최소화

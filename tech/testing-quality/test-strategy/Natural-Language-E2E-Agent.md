@@ -53,4 +53,5 @@ Google이 공개한 오픈소스(Apache-2.0, Python) 도구로, 자연어로 And
 - [[Deterministic-Test|Deterministic test]] — 재현 가능한 테스트의 조건
 - [[Test-Pyramid-Blind-Spots|초록불이 못 잡는 것]]
 - [[Agent-Test-Verification-Behavior|에이전트 검증 행동]]
+- [[Browser-Test-Recording|브라우저 테스트 녹화와 실행 증거]] — 실패 영상의 보관 범위와 판정의 구분
 - [[MCP|MCP]] — 코딩 에이전트와 도구 연결

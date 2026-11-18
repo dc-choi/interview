@@ -56,6 +56,7 @@ k6 공식 자동화 가이드는 실행 지점을 세 갈래로 나눈다.
 - **데이터 시드** — 매 실행을 동일한 데이터 상태에서 시작한다. 이전 run이 남긴 행이 누적되면 쿼리 지연이 코드 변경과 무관하게 증가해 상대 회귀 판정이 통째로 거짓이 된다.
 - **워밍업 제외** — 램프업 구간은 판정 대상에서 뺀다. JIT 컴파일, 캐시 적재, 커넥션 풀 초기화가 섞인 구간을 함께 집계하면 p95가 위로 끌려간다.
 - **환경 안정성** — k6 가이드는 staging과 pre-release 환경이 안정적이어야 결과가 일관된다고 명시하고, 워크로드 규모를 그 환경의 인프라에 맞춰 조정하라고 안내한다. 운영의 1/10 규모 환경에서 잰 절대값을 운영 SLO와 직접 비교할 수는 없다.
+- **장비 세대와 코어 수** — 작은 장비에서의 통과가 큰 장비에서의 안전을 뜻하지 않는다. 잠금 경합처럼 동시성에 반응하는 결함은 코어가 많은 장비에서 더 심해질 수 있다. 2026-11 Microsoft 365 장애의 예비 PIR은 부하 시험이 코어가 적은 약한 장비 위주라 최신 다코어 장비에서 심해지는 경합 결함을 잡지 못했다고 적는다([[N-1-Capacity-Headroom#사례 — 시험에서 잰 한계가 운영 장비의 한계보다 높았다|N-1 헤드룸 사례]]). 릴리스 전 단계에 운영과 같은 장비 SKU와 트래픽 구성으로 도는 시나리오를 하나 이상 둔다(운영 제안).
 
 ## 게이트 운영
 
@@ -93,6 +94,7 @@ k6 공식 자동화 가이드는 실행 지점을 세 갈래로 나눈다.
 - [Grafana k6 공식 문서, Integrations](https://grafana.com/docs/k6/latest/misc/integrations/)
 - [GitHub Docs, GitHub-hosted runners reference](https://docs.github.com/en/actions/reference/runners/github-hosted-runners)
 - [run-k6-action — GitHub, grafana](https://github.com/grafana/run-k6-action/blob/main/README.md)
+- [Preliminary Post Incident Report For Microsoft 365 — Microsoft](https://next.ink/wp-content/uploads/2026/11/PostIncidentReport.pdf) — 2026-11-15 작성 예비 PIR, next.ink가 게시한 PDF 사본을 2026-11-18 대조. 부하 시험 장비와 운영 장비의 차이
 
 ## 관련 문서
 
@@ -105,3 +107,4 @@ k6 공식 자동화 가이드는 실행 지점을 세 갈래로 나눈다.
 - [[CICD-Pipeline|CI/CD 파이프라인]]
 - [[Ops-Level-Indicator|운영 수준 지표]], [[SLI-SLO|SLI와 SLO]]
 - [[Capacity-Planning|캐퍼시티 플래닝 (램프업 대비 스텝 BMT)]]
+- [[N-1-Capacity-Headroom|N-1 가용량 헤드룸 (시험에서 잰 한계와 운영 장비의 한계)]]

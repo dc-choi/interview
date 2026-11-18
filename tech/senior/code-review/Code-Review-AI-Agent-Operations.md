@@ -101,6 +101,7 @@ LinkedIn 엔지니어링 블로그(2026-08-13)가 밝힌 사내 리뷰어 구성
 - **사람에게 남길 결정:** 만들지 여부(방향, 취향, 범위), 위험 코드 검토(과금, 자동 업데이트, CI 워크플로), 다른 사람이 따라 할 구조 검토, 증거 읽기(테스트 출력, 실행한 명령, 스크린샷, 리뷰 지적), 누가 입력했든 배포된 변경의 결과 책임이다.
 - **코드 익히기:** 코드의 한 부분을 이해해야 하면 그 부분의 설명서를 에이전트에게 요청한다. 몇 분이면 현재 코드 기준의 설명이 나오고, 사소한 diff를 읽기보다 곧 바꿀 모듈의 설명서에서 배울 것이 많다. 설명서는 아래 운영 점검처럼 코드와 대조한다.
 - **측정:** PR당 사람 승인 수의 중앙값과 95퍼센타일, 사람 댓글 수, PR이 사람을 기다린 시간으로 사람 시간을 재고 되돌림과 장애 비율을 안전선으로 둔다. 되돌림과 장애 비율이 오르면 사람 시간을 아낀 것이 아니라 옮긴 것이다. 리뷰어의 프롬프트, 도구나 모델을 바꾸면 사고와 되돌림으로 만든 평가 세트로 다시 채점한다. 위 필터 A/B 비교와 이 재채점은 직접 구성한 리뷰어에 맞는 방식이다. 관리형 Code Review는 리뷰에 쓸 모델을 서비스가 고르고 관리자 설정에 모델 선택이 없으므로, 같은 평가 세트를 정기적으로 다시 돌리는 형태로 적용한다.
+- **평가 세트의 구성:** 같은 팀의 2026-11-16 검증 글(2026-11-18 대조)은 평가 방법을 더 적었다. 병합 뒤 되돌린 변경, 병합 전에 메인테이너가 거절한 변경, 크기를 맞춘 무사고 변경을 함께 추적한다. 알려진 사고마다 저장소를 리뷰 당시 상태로 되돌리고 버그를 한 문장으로 적은 정답 키를 두어 그 버그를 바르게 설명한 지적에만 점수를 주며, 병합 뒤 안정적인 변경을 대조군으로 넣어 과잉 지적을 잡는다. 후보 발견, 검증 뒤와 최종 리뷰의 재현율을 따로 재서 이미 찾은 버그를 뒤 단계에서 잃는지 본다. 알려진 사고 PR에 버그 탐지기 셋을 다시 돌려 둘 이상이 찾으면 탐지 가능한 버그로 보고, 작은 diff에서 놓쳤으면 REVIEW.md 규칙 후보로 둔다. 검증 루프 쪽 운영은 [[Agentic-Verification#검증 계층을 변경이 닿지 않는 곳에 둔다|에이전트 기반 검증]]에 있다.
 
 사례 글의 도입 점검표는 PR 전, 모든 PR, 승인, 머지와 이후라는 PR 단계로 항목을 묶었을 뿐 실행 순서를 정하지 않는다. 도입 과정에 순서를 둔 권고는 AI 리뷰어를 저장소 하나에서 몇 주 다듬은 뒤 넓히는 것과 위험 등급을 엄격하게 시작해 근거가 쌓이면 완화하는 것 두 가지다.
 
@@ -126,6 +127,7 @@ LinkedIn 엔지니어링 블로그(2026-08-13)가 밝힌 사내 리뷰어 구성
 - [High-Signal AI Code Review That Adapts to Your Codebase at Scale — LinkedIn Engineering, Min Chen, Shailesh Jannu, Mishal Patel, Peter Phan, Vidit S](https://www.linkedin.com/blog/engineering/ai/high-signal-ai-code-review-that-adapts-to-your-codebase-at-scale) — 2026-08-13, 2026-11-12 구성, 평가와 수용률 대조
 
 - [How the Claude Code team does code review — claude.dev, Addy Osmani, Morgan Westlee Lunt, Qing Wang](https://claude.dev/blog/solving-code-review-at-anthropic/)
+- [How the Claude Code team thinks about verification — claude.dev, Addy Osmani](https://claude.dev/blog/how-the-claude-code-team-thinks-about-verification/) — 2026-11-16, 2026-11-18 리뷰어 평가 세트, 단계별 재현율과 탐지기 재실행 기준 대조
 - [Bringing Code Review to Claude Code — claude.com](https://claude.com/resources/articles/code-review) — 2026-03-09 research preview 출시 글, 사내 도입 전후 16%와 54% 대조
 - [Claude Code 공식 문서, Code Review](https://code.claude.com/docs/en/code-review)
 - [GitHub 공식 문서, Approving a pull request with required reviews](https://docs.github.com/en/pull-requests/collaborating-with-pull-requests/reviewing-changes-in-pull-requests/approving-a-pull-request-with-required-reviews)

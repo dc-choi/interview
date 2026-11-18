@@ -15,6 +15,7 @@ aliases: ["Problem Framing", "문제 정의와 대응"]
 - [[Problem-Response-Patterns|문제 대응의 세 가지 패턴]] — 문제 이동, 보존, 새 문제 부상과 시스템 경계
 - [[Debugging-Principles|디버깅 원칙]] — 의심하기, 재현 절차와 기대/실제 결과를 나눈 버그 보고, 결함 층 분류, 가설과 실험의 피드백 루프
 - [[Change-Pressure-Proportion|변경 압력과 비례 감각]] — 비가시 변경 비용, 완료 정의 부재, 그대로 두는 능력
+- [[Cynefin-Framework|Cynefin 프레임워크]] — 체크리스트, 전문가, 안전한 실험, 안정화로 가리는 상황 판별, Clear와 Chaotic 사이의 절벽, 비판과 한계
 
 ## 상위 문서
 

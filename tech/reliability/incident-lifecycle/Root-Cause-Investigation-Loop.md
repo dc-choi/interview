@@ -25,7 +25,8 @@ aliases: ["Root Cause Investigation Loop", "근본 원인 조사 루프", "장�
 
 - 인지가 늦으면 이후 단계가 모두 늦어진다. 로그를 저장소에 적재한 뒤 주기적으로 조회해 알림을 만들면 적재와 조회 주기만큼 늦다. 로그 스트림을 서비스와 경로 같은 키로 묶어 짧은 시간 창으로 집계하고, 창이 닫힐 때 집계값이 임계치를 넘으면 바로 알림 이벤트를 내보내는 스트리밍 집계는 이 지연을 줄인다.
 - 알림에 오류 통계와 함께 최근 변경 이력(프론트엔드와 백엔드 배포, 인프라 작업)을 붙인다. 동작하던 시스템은 설정 변경이나 처리하는 부하의 성격 변화 같은 외부 힘이 가해지기 전까지 하던 대로 움직이는 경향이 있어 최근 변경이 원인 조사의 좋은 출발점이 된다(Google SRE). 여러 출처의 변경 이력을 한 형식으로 모아 두면 알림이 그 통일된 뷰에서 변경 이력을 꺼내 붙일 수 있다. 그래프에 배포 마커를 겹치는 방법은 [[Monitoring-Graph-Reading|모니터링 그래프 해석]]을 따른다.
-- 최근 변경은 원인이 아니라 잠복한 결함을 드러낸 계기일 수 있다. 2026-11-12 시작된 Microsoft 365 전 세계 장애에서 Microsoft는 이전 네트워크 용량 증설 중에 생긴 문제가 최근 네트워크 변경 뒤에 드러났다고 설명했고, 검토 뒤 사후 보고서를 공개하겠다고 했다(CNN 보도의 회사 설명). 알림에 붙이는 변경 이력은 가장 최근 변경에서 멈추지 않고 같은 구성 요소에 쌓인 이전 변경까지 거슬러 볼 수 있게 기간을 잡는다(적용 제안).
+- 최근 변경은 원인이 아니라 잠복한 결함을 드러낸 계기일 수 있다. 2026-11-12 시작된 Microsoft 365 전 세계 장애의 2026-11-15 예비 사후 보고서(PIR)는 세 요인의 결합을 원인으로 든다. 네트워크 게이트웨이 서버 전용으로 만든 수정이 7월부터 배포돼 석 달 넘게 문제없이 돌았지만, 특정 부하에서 Windows 내부 프로세스의 잠금 경합으로 CPU와 메모리를 고갈시키는 결함을 담고 있었다. 장애 약 15시간 전 Teams가 다른 게이트웨이에서 이 게이트웨이로 failover해 부하와 트래픽 패턴이 바뀌었고(보고서는 이 failover를 정상 운영의 일부로 적는다), 전날의 별개 문제로 게이트웨이 서버 용량의 약 14%가 빠져 있었다. 결함이 몇 달 전 변경이라 평소의 롤백, 단계적 노출(flighting)과 기능 플래그로는 빨리 되돌리지 못했고, 코드 경로를 이전 정상 상태로 되돌리는 갱신을 따로 만들어 적용했다. 장애 첫날의 회사 설명(CNN 보도)은 이전 네트워크 용량 증설 중에 생긴 문제가 최근 네트워크 변경 뒤에 드러났다는 수준이었고, 예비 보고서도 최종 보고서로 대체되면서 바뀔 수 있다.
+- 그래서 알림에 붙이는 변경 이력은 가장 최근 변경에서 멈추지 않고 같은 구성 요소에 쌓인 이전 변경까지 거슬러 볼 수 있게 기간을 잡고, failover와 용량 감소처럼 배포가 아닌 부하와 구성의 변화도 같은 이력에 남긴다(적용 제안).
 
 ## 자료 수집: 사람이 들어가지 않아도 모이게
 
@@ -109,7 +110,8 @@ aliases: ["Root Cause Investigation Loop", "근본 원인 조사 루프", "장�
 - [Engineers Pinpoint Cause of Voyager 1 Issue, Are Working on Solution — NASA](https://science.nasa.gov/blogs/voyager/2024/04/04/engineers-pinpoint-cause-of-voyager-1-issue-are-working-on-solution/)
 - [NASA’s Voyager 1 Resumes Sending Engineering Updates to Earth — NASA JPL](https://www.jpl.nasa.gov/news/nasas-voyager-1-resumes-sending-engineering-updates-to-earth/)
 - [Voyager 1 Returning Science Data From All Four Instruments — NASA](https://science.nasa.gov/missions/voyager-program/voyager-1/voyager-1-returning-science-data-from-all-four-instruments/)
-- [Microsoft reports email service is ‘approaching normal levels’ following widespread global outage — CNN](https://www.cnn.com/2026/11/12/business/live-news/microsoft-global-outage-intl-hnk) — 2026-11-13 갱신된 라이브 기사. 원인 설명은 Microsoft 발표 인용이며 사후 보고서는 확인하지 못했다
+- [Microsoft reports email service is ‘approaching normal levels’ following widespread global outage — CNN](https://www.cnn.com/2026/11/12/business/live-news/microsoft-global-outage-intl-hnk) — 2026-11-13 갱신된 라이브 기사. 장애 첫날의 원인 설명은 Microsoft 발표 인용
+- [Preliminary Post Incident Report For Microsoft 365 — Microsoft](https://next.ink/wp-content/uploads/2026/11/PostIncidentReport.pdf) — 2026-11-15 작성 예비 PIR(EX1550543/MO1550821). next.ink가 게시한 PDF 사본을 2026-11-18 대조했다. 최종 PIR은 2026-11-20 예정이며 내용이 바뀔 수 있다
 - [Microsoft 365 전 세계 장애 — GeekNews](https://news.hada.io/topic?id=37113)
 
 ## 관련 문서
@@ -121,4 +123,5 @@ aliases: ["Root Cause Investigation Loop", "근본 원인 조사 루프", "장�
 - [[Structured-Logging|Structured Logging]]
 - [[Linux-Netfilter-and-iptables|Linux netfilter와 conntrack]]
 - [[Redis-Architecture|Redis architecture (Pipeline)]]
-- [[Failure-Evolution-Under-Load|부하에 따른 장애 진화 (복구 중 밀린 작업 보존)]]
+- [[Failure-Evolution-Under-Load|부하에 따른 장애 진화 (복구 중 밀린 작업 보존, 자동 재라우팅의 연쇄)]]
+- [[N-1-Capacity-Headroom|N-1 가용량 헤드룸 (시험 장비와 운영 장비의 한계 차이)]]

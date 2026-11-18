@@ -101,10 +101,13 @@ aliases: ["Evidence Based Verification", "근거 기반 검증", "반증 가능�
 
 의견이 다르면 사람의 확신도를 비교하지 말고 같은 조건에서 예측을 비교한다. 결정 뒤에는 누가 맞았는지가 아니라 결과가 가설과 맞았는지 확인한다.
 
+무엇을 할지(전략)를 두고 맞서는 이견이 실제로는 앞으로 무엇이 얼마나 빨리 일어날지(전망)의 차이에서 오는 경우가 있다. 이때 전략만 놓고 토론하면 좁혀지지 않으므로 각자의 전망과 그 전망을 바꿀 관측을 먼저 적는다. 전망이 관측으로 정리되면 남는 이견은 가치와 위험 감수의 차이로 좁혀진다. OpenAI CEO는 2026-10-21 공개된 Stanford GSB 대담에서 사내 안전 전략 논쟁의 상당 부분이 모델이 얼마나 빨리 얼마나 좋아질지에 대한 이견이 전략 논쟁으로 바뀌어 나타난 것이었고, 능력 향상을 직접 보고 느낄수록 이견의 폭이 줄었지만 무엇을 할지에 대한 이견은 조금 남았다고 말했다(한 조직 대표의 관찰이며 측정 근거는 없다). 이 논쟁의 배경은 [[AI-Frontier-Regulation-Debate#속도 조절을 정당화하는 전제|프론티어 AI 규제 논쟁]]에 있다.
+
 ## 면접 체크포인트
 
 - "기존 방식에 문제를 느낀 경험은?" → 기존 전제, 반증 가능한 가설, 비교와 결과 순서로 답한다.
 - "권위자와 의견이 다를 때?" → 사람보다 주장과 예측을 비교하고 작은 검증으로 불확실성을 줄인 과정을 말한다.
+- "팀이 방향을 두고 갈렸을 때?" → 전략 이견과 전망 이견을 나누고, 전망을 바꿀 관측부터 합의한 과정을 말한다.
 - "본인의 판단이 틀렸던 경험은?" → 가장 중요한 의심 대상은 나 자신. 편향 인정 + 근거로 교정.
 - "검증이 끝났다고 어떻게 판단했는가?" → 증거가 보장하는 범위, 미확정 상태, 운영 검증과 증거의 만료 조건을 분리.
 
@@ -128,3 +131,5 @@ aliases: ["Evidence Based Verification", "근거 기반 검증", "반증 가능�
 - [Google SRE Book — Monitoring Distributed Systems](https://sre.google/sre-book/monitoring-distributed-systems/)
 - [Google SRE Book — Effective Troubleshooting](https://sre.google/sre-book/effective-troubleshooting/)
 - [Google SRE Workbook — Canarying Releases](https://sre.google/workbook/canarying-releases/)
+- [Sam Altman, Co-Founder and CEO of OpenAI: Staying Human While Scaling Superintelligence — YouTube, Stanford Graduate School of Business](https://www.youtube.com/watch?v=anAmTGcewX8) — 2026-10-21 공개된 View From The Top 대담(48:48, 대담 날짜 미확인). 2026-11-18 사람이 단 영어 자막으로 17:05~18:10의 사내 이견에 관한 발언을 확인. 한 조직 대표의 관찰
+- [샘 올트먼 영상은 정말 꼭 보세요(오픈 AI CEO, 챗GPT) — YouTube, 인간지능](https://www.youtube.com/watch?v=rfhk-TZFoXY) — 2026-11-07 공개된 위 대담의 편집본(44:20). 음성 인식 전사 전체를 공식 자막과 대조, 정리의 계기

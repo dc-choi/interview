@@ -27,8 +27,8 @@ verified_at: 2026-10-12
 
 ### 기본값: GitHub Actions
 - GitHub 저장소, 권한, PR 이벤트와 바로 연결할 수 있어 초기 구성이 비교적 단순
-- 2026-10-12 기준 public 저장소의 표준 GitHub-hosted runner와 self-hosted runner에는 Actions 사용 요금이 부과되지 않는다. 다만 larger runner와 부가 기능은 과금될 수 있고 self-hosted 인프라 비용은 사용자가 부담한다.
-- private 저장소의 포함 실행 시간과 스토리지는 플랜별이다. 예를 들어 GitHub Free는 월 2,000분을 포함하지만 이 수치를 모든 private 저장소에 일반화하면 안 된다.
+- 2026-11-18 기준 public 저장소의 표준 GitHub-hosted runner와, 저장소 공개 여부와 관계없이 self-hosted runner 사용에는 Actions 사용 요금이 부과되지 않는다. 다만 larger runner는 public 저장소에서도 과금되고 부가 기능도 과금될 수 있으며 self-hosted 인프라 비용은 사용자가 부담한다.
+- private 저장소의 포함 사용량과 스토리지는 플랜별이다. 2026-11-18 문서 기준 포함 사용량은 분이 아니라 금액으로 표시되며 GitHub Free는 월 12달러다. 표준 Linux runner의 분당 0.006달러로 환산하면 약 2,000분이지만 다른 runner의 단가는 따로 확인하고, 이 수치를 모든 private 저장소에 일반화하지 않는다.
 - 유효한 결제 수단이 없는 계정은 포함량을 다 쓰면 사용이 차단된다. 이를 피하려고 private 저장소를 public으로 바꾸면 코드와 Actions 실행 기록, 로그가 누구에게나 공개되고 누구나 fork할 수 있다. 고객 코드나 내부 업무 도구의 저장소라면 공개 전환 대신 결제 수단 등록, self-hosted runner, 저장소를 직접 연결해 빌드하는 배포 플랫폼을 비교한다.
 - 마켓플레이스 action을 재사용할 때도 공급망 위험을 줄이기 위해 신뢰할 수 있는 게시자인지 확인하고 commit SHA 고정을 고려
 - 단, 대규모 self-hosted 러너가 필요하면 운영 부담 증가
@@ -44,6 +44,26 @@ verified_at: 2026-10-12
 
 ### Kubernetes 중심
 **ArgoCD**(배포) + **Tekton** 또는 **GitHub Actions**(빌드). GitOps 패러다임 — Git을 배포 상태의 Source of Truth.
+
+## 교체 범위를 층으로 나눈다
+
+느리거나 불안정한 CI를 고칠 때 도구 전체를 바꿀지부터 묻지 않고, 어느 층을 바꿀지 먼저 정한다.
+
+| 층 | 바꾸는 것 | 그대로 두는 것 | 효과와 한계 |
+|---|---|---|---|
+| 러너 | job을 실행하는 기계. GitHub Actions에서는 `runs-on` 라벨로 고르는 self-hosted runner나 외부 업체 runner | workflow YAML, 트리거, 권한과 필수 검사 | 기동 시간, CPU와 메모리, 캐시 위치와 비용이 바뀐다. self-hosted runner도 GitHub에 연결해 job을 배정받고, 라벨이 맞는 runner가 없으면 job은 대기열에 남는다. GitHub 쪽 스케줄링 장애는 러너를 바꿔도 그대로 받는다 |
+| 오케스트레이션 플랫폼 | 이벤트 수신, job 스케줄링, 로그와 결과 보고 | 빌드와 테스트 명령 자체 | 장애 의존과 스케줄링 제어가 바뀐다. workflow를 새 문법으로 다시 쓰고, `uses:`로 가져다 쓴 액션, 자동 발급되는 `GITHUB_TOKEN`에 기댄 단계, 브랜치 보호의 필수 상태 검사 연결을 옮겨야 한다 |
+| 빌드 엔진 | 단계, 의존 관계와 캐시를 코드로 정의해 실행한다(Bazel, Dagger 등) | 기존 CI의 한 단계에서 명령으로 실행할 수 있다 | 같은 파이프라인을 로컬과 CI에서 돌리고 증분 실행과 캐시로 작업량 자체를 줄인다. 학습과 이전 비용이 가장 크다 |
+
+층의 경계는 고정돼 있지 않다. Dagger 문서는 스스로를 Jenkins와 GitHub Actions 다음의 3세대 CI로 소개하며 YAML 설정을 대신하겠다고 밝힌다. 엔진이 플랫폼 영역으로, 러너 업체가 오케스트레이션 영역으로 넓히는 움직임이 있으므로 제품 이름보다 바꾸려는 층을 기준으로 비교한다.
+
+판단 순서는 다음을 제안한다.
+
+1. 대기열 시간, 러너 기동, 의존성 설치와 캐시 복원, 빌드와 테스트 실행을 나눠 잰다. 병목이 실행 환경이면 러너, 장애 의존과 스케줄링 제어면 플랫폼, 작업량이면 빌드 엔진과 캐시를 본다.
+2. 플랫폼 이전 비용은 YAML 줄 수보다 `uses:` 단계 수, `GITHUB_TOKEN` 권한에 기댄 단계와 필수 상태 검사 이름을 세어 추정한다.
+3. 외부 업체 runner는 저장소 코드와 job에 주입되는 secret을 실행하는 곳이다. 격리 방식, 데이터 보관과 접근 통제를 self-hosted runner와 같은 기준으로 검토한다.
+
+2026-11 GeekNews 요약(원문 미확보)은 이 세 층을 CI 시장의 세 갈래로 보고, workflow YAML이 사실상 표준이 되고 러너가 범용 상품이 되면서 러너 교체 쪽 경쟁이 가장 치열하며 GitHub Actions는 속도, 디버깅과 2026년 안정성 문제로 우위가 약해지고 있다고 해석한다. 원문과 근거 자료를 확인하지 못한 시장 해석이므로 도구 선택의 근거로 쓰지 않는다.
 
 ## 파이프라인 구조 예시
 
@@ -128,13 +148,18 @@ Blue-Green은 이전 환경을 유지하는 동안 빠르게 트래픽을 되돌
 - CI vs CD vs Continuous Deployment 구분
 - Rolling, Blue-Green, Canary 배포 전략 선택 기준
 - CI 파이프라인에서 캐싱의 중요성
+- 느린 CI를 러너, 오케스트레이션 플랫폼, 빌드 엔진 가운데 어느 층에서 고칠지 정하는 기준
 - GitOps(ArgoCD)의 핵심 아이디어 (Git = Source of Truth)
 
 ## 출처
 - [velog @city7310 — 백엔드가 이정도는 해줘야 함 11. 배포 자동화](https://velog.io/@city7310/%EB%B0%B1%EC%97%94%EB%93%9C%EA%B0%80-%EC%9D%B4%EC%A0%95%EB%8F%84%EB%8A%94-%ED%95%B4%EC%A4%98%EC%95%BC-%ED%95%A8-11.-%EB%B0%B0%ED%8F%AC-%EC%9E%90%EB%8F%99%ED%99%94)
 - [GitHub Actions 요금 및 사용 개념](https://docs.github.com/en/actions/concepts/billing-and-usage)
-- [GitHub Actions 제품별 포함량](https://docs.github.com/en/billing/concepts/product-billing/github-actions)
+- [GitHub Actions 제품별 포함량](https://docs.github.com/en/billing/concepts/product-billing/github-actions) — 2026-11-18 확인, 금액으로 표시되는 포함 사용량, 무료로 남는 사용 범위와 결제 수단이 없을 때의 차단
 - [GitHub 저장소 공개 범위 설정](https://docs.github.com/en/repositories/managing-your-repositorys-settings-and-features/managing-repository-settings/setting-repository-visibility) — 2026-10-12 확인, private에서 public으로 바꿀 때 공개되는 범위
+- [GitHub Actions self-hosted runner 레퍼런스](https://docs.github.com/en/actions/reference/runners/self-hosted-runners) — 2026-11-18 확인, runner가 GitHub에 연결해 job을 배정받는 구조와 라벨 기반 대기
+- [Dagger, Documentation](https://docs.dagger.io/) — 2026-11-18 확인, 3세대 CI라는 자기 소개와 로컬 또는 원격 엔진 실행
+- [GitHub Actions Alternatives: Runners, Platforms, and Engines — Avrea](https://avrea.com/github-actions-alternatives) — 러너, 플랫폼, 엔진의 세 교체 방식과 이전 비용 항목(`uses:` 단계, `GITHUB_TOKEN`, 필수 검사), 러너 업체의 오케스트레이션 확장(자사 CI 엔진, closed beta). runner와 CI 엔진을 파는 업체의 글이며 제품 정보는 2026-08-20 확인 기준
+- GeekNews, 2026-11-17 제공 요약: CI 시장은 세 갈래로 나뉘었다 (토픽 번호와 원문 미확인, 시장 해석은 원문 미대조)
 - [YouTube, 양실장의 바이브코딩대학, 직장인 2시간 필수 투자) 평생 써먹는 바이브코딩 자동화 대시보드 설계부터 구축까지](https://www.youtube.com/watch?v=sozxBiyc3qQ) — 2026-08-20 공개 강의, 2:11:21~2:34:29의 스테이징과 운영 배포 시연. 환경 혼동, 하드코딩한 식별자와 인증 전 운영 배포 항목은 시연에서 드러난 문제를 일반화했다.
 
 ## 관련 문서
