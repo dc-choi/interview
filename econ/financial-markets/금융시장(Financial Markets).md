@@ -41,6 +41,7 @@ aliases: ["금융시장(Financial Markets)", "Financial Markets Map"]
 ### 3. 위험
 - [[Risk-and-Return|위험과 수익]] — 위험의 종류, 총수익률과 CAGR, 입출금의 처리, 분산과 베타 ✅
 - [[Derivatives|파생상품]] — 선물과 옵션과 스왑, 헤지와 투기, 레버리지, 시스템 리스크 ✅
+- [[VIX-Term-Structure|VIX와 변동성 기간구조]] — S&P 500 옵션으로 계산하는 30일 기대 변동성, 만기별 변동성 지수와 VIX 선물 곡선, 콘탱고와 역전의 의미와 바닥 신호 해석의 한계 ✅
 
 ## 처음 읽는 순서 추천
 

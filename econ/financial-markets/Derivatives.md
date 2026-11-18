@@ -189,5 +189,6 @@ UMA 문서는 DVM 2.0을 UMA를 스테이킹한 보유자가 48시간 주기의 
 
 - [[Risk-and-Return|위험과 수익]] — 파생상품이 옮기고 키우는 대상
 - [[Financial-System-Overview|금융시스템 개관]] — 위험 이전이라는 시장 기능
+- [[VIX-Term-Structure|VIX와 변동성 기간구조]] — 지수 옵션 가격에서 뽑은 기대 변동성과 VIX 선물 곡선
 - [[Tax-Advantaged-Accounts-Income-Types|투자소득의 구분과 건강보험료]] — 국내 상장 커버드콜 ETF 분배금의 과세 재원
 - [[금융시장(Financial Markets)]] — 지도
