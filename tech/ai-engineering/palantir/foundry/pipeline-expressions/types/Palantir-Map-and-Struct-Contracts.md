@@ -1,7 +1,7 @@
 ---
 tags: [palantir, pipeline-builder, map, struct]
 status: done
-verified_at: 2026-10-16
+verified_at: 2026-11-18
 category: "AI엔지니어링(AIEngineering)"
 ---
 
@@ -12,6 +12,8 @@ Map은 키와 값의 대응, Struct는 이름이 있는 필드 구조다. 같은
 ## Map 조회, 변경과 행 수
 
 `valueFromMapV1`은 키가 없거나 map 또는 키가 null이면 null을 반환한다. 따라서 반환값 하나만으로 없는 키와 null 값인 키를 구분할 수 없다. 키는 ComparableType이며 배열과 중첩 배열을 키로 조회하는 예제도 있다. [Value from map](https://www.palantir.com/docs/foundry/pb-functions-expression/valueFromMapV1)
+
+`mapContainsKeyV1`은 키의 존재 여부를 Boolean으로 반환한다. map이나 키가 null이면 null이고, 키가 있으면 값이 null이어도 true다. 그래서 `valueFromMapV1`이 null을 반환했을 때 이 함수로 없는 키와 null 값인 키를 나눌 수 있다(적용 제안). 이는 두 페이지의 예제를 이은 추론이며, `valueFromMapV1` 페이지에는 값이 null인 키를 조회하는 예제가 없고 실제 실행도 검증하지 않았다. 결과는 true, false와 null 세 가지이고 null map과 null 키는 둘 다 null이라 서로 구분되지 않는다. 이 페이지의 null 예제에는 ANSI mode 구분이 없지만, 결과를 and/or 같은 하류 Boolean 연산에 넣으면 null 처리가 ANSI 설정에 따라 달라질 수 있으므로([[Palantir-Boolean-and-Validation-Contracts]]) filter나 조건 분기에서 null을 false로 볼지 따로 정한다(적용 제안). 키 타입 K는 ComparableType이고 배열 키(`[1]`)를 찾는 예제가 있으며, Batch/Faster/Streaming을 지원한다. [Map contains key](https://www.palantir.com/docs/foundry/pb-functions-expression/mapContainsKeyV1)
 
 `addOrUpdateMapEntryV1`은 기존 키를 덮어쓰거나 새 키를 추가한다. null 값도 저장하지만 map 자체가 null이면 새 map으로 만들지 않는다. null 키는 ANSI mode off에서 원본 map 유지, on에서 null 결과인 예제가 있다. `removeMapEntryByKeyV1`도 null 키의 ANSI 차이가 있으며, 없는 키를 지우면 원본 map을 유지한다. [Add or update](https://www.palantir.com/docs/foundry/pb-functions-expression/addOrUpdateMapEntryV1), [Remove](https://www.palantir.com/docs/foundry/pb-functions-expression/removeMapEntryByKeyV1)
 
