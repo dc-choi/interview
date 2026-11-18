@@ -25,6 +25,8 @@ aliases: ["Planning Under Uncertainty", "불확실성 아래의 계획", "거칠
 
 제품에서도 같은 순서가 쓰인다. 최소한으로 쓸 수 있는 것을 먼저 내고 반응을 본 뒤 고치는 방식이며, 프로젝트에 적용하는 절차는 [[Thin-Start-Project-Approach|얇게 시작하기]]에 있다.
 
+일 자체를 배우는 데도 같은 순서가 맞는 경우가 있다. 많은 사람이 해 온 일은 교실에서 미리 익힐 수 있는 부분이 있지만, 특정 스타트업을 운영하는 일처럼 해 본 사람이 드문 일은 하면서 배울 수밖에 없다는 견해다. 이때 하면서 배운다는 말은 아무렇게나 부딪히는 것이 아니다. 실험을 여러 번 돌리고, 결과가 좋든 나쁘든 돌아보고, 자기 모델을 고친다. OpenAI CEO는 2026-10-21 공개된 Stanford GSB 대담에서 사람들이 하면서 배우기보다 준비에 너무 많은 시간을 쓰며, 이렇게 뛰어들면 대개 스스로 놀랄 만큼 빨리 익힌다고 했다. 첫 창업 시기를 그 전후 어느 때보다 배움이 빨랐던 때로 꼽은 개인 경험에서 나온 말이며 측정 근거는 없다. 그는 이 방식을 의도적 연습이라 불렀는데, 향상을 위해 설계한 연습이라는 연구의 정의보다 넓게 쓴 표현이다([[Reverse-Engineering-Learning#반복해 자동화할 것과 견줘서 고칠 것을 나눈다|의도적 연습의 정의와 설명력]]).
+
 ## 계획의 뼈대와 점검 질문
 
 거칠게 시작한다는 것은 계획 없이 시작한다는 뜻이 아니다. 짧은 시간에 세울 수 있고 틀린 곳이 보이는 형태로 세운다.
@@ -82,6 +84,7 @@ aliases: ["Planning Under Uncertainty", "불확실성 아래의 계획", "거칠
 ## 점검 질문
 
 - 지금 미루는 이유가 정보 부족인가, 시작해야만 나오는 정보인가?
+- 지금 배우려는 일이 교실에서 미리 익힐 수 있는 일인가, 해 본 사람이 드물어 하면서 배워야 하는 일인가?
 - 계획의 항목을 겹치지 않고 빠짐없이 나눴을 때 비어 있는 칸은 무엇인가?
 - 핵심 결과를 모두 이뤘다고 가정하면 목표가 이뤄졌다고 말할 수 있는가?
 - 이번 주에 끝낼 수 있는 행동이 한 장에 적혀 있는가?
@@ -101,6 +104,8 @@ aliases: ["Planning Under Uncertainty", "불확실성 아래의 계획", "거칠
 - [The Paradox of Stretch Goals: Organizations in Pursuit of the Seemingly Impossible — Academy of Management Review, Sitkin 외](https://doi.org/10.5465/amr.2008.0038) — 36권 3호(2011), 2026-11-17 OpenAlex에 실린 서지와 초록으로 결론과 틀의 제안만 확인, 본문 미열람
 - ["새해까지 기다리지 마세요" 남은 90일로 인생 리셋하는 방법 (뻔한 것 아님) — YouTube, 오너스 OWNOS](https://www.youtube.com/watch?v=nTunuxNVGNw) — 2026-10-04 업로드, 2026-11-17 음성 인식 전사 전체 확인. 열 배 목표, 판정 가능한 세 목표와 한 문장의 출처. 영상이 든 자기계발서 두 권은 읽지 않았다
 - [Build a tower, build a team — TED, Tom Wujec](https://www.ted.com/talks/tom_wujec_build_a_tower_build_a_team) — 2010-02 발표. 전문은 열지 못했고 재료, 시간과 집단별 높이는 2차 자료의 검색 요약으로 확인
+- [Sam Altman, Co-Founder and CEO of OpenAI: Staying Human While Scaling Superintelligence — YouTube, Stanford Graduate School of Business](https://www.youtube.com/watch?v=anAmTGcewX8) — 2026-10-21 업로드, View From The Top 대담(48:48, 대담 날짜 미확인). 2026-11-18 사람이 단 영어 자막으로 03:58~07:03의 배움의 속도, 하면서 배우기와 의도적 연습 발언을 확인. 개인 경험에 기반한 견해
+- [샘 올트먼 영상은 정말 꼭 보세요(오픈 AI CEO, 챗GPT) — YouTube, 인간지능](https://www.youtube.com/watch?v=rfhk-TZFoXY) — 2026-11-07 업로드, 위 대담의 편집본(44:20). 2026-11-18 음성 인식 전사 전체를 공식 자막과 대조, 정리의 계기
 
 ## 관련 문서
 

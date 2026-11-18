@@ -60,6 +60,12 @@ AI로 제품을 구현할 수 있다는 사실만으로 지금 창업할지 결�
 
 기회비용은 창업하지 않았을 때의 소득만으로 계산하지 않는다. 검증에 쓸 시간과 비용, 감당할 무수익 기간, 중단하거나 다른 경로로 돌아갈 조건, 선택을 통해 얻는 학습과 자율성을 함께 적는다. 다른 사람의 자산 상승을 확정된 미래로 놓고 비교하지 않는다. 작은 사업의 수익과 유지 부담은 [[AI-Solo-Software-Business#목표 소득에서 구독자 수와 유지 부담을 역산한다|구독 손익 계산]]으로 확인한다.
 
+## 큰 전환은 보호된 작은 실험에서 준비한다
+
+Frank W. Geels의 다층 관점(multi-level perspective)은 기술 전환을 세 층의 상호작용으로 설명한다. 새로운 시도가 경쟁 압력에서 보호받으며 다듬어지는 니치(niche), 인프라, 습관과 기대로 굳은 지배적 방식인 레짐(regime), 누구도 통제하지 못하는 느린 배경 변화인 랜드스케이프(landscape)다. 미국에서 마차가 자동차로 바뀐 과정(1860~1930)을 분석한 연구는 단순한 기술 대체 설명이 전차와 자전거 같은 디딤돌을 놓친다고 비판하고, 휘발유 자동차가 증기와 전기 자동차를 이긴 데에는 특정 니치와 넓은 사회기술 맥락이 결정적이었다고 본다.
+
+경력이나 사업의 전환에 옮기면(비유), 지금의 하루 구성과 약속이 레짐이고 조직 개편이나 산업 변화가 랜드스케이프다. 본업을 한 번에 끊는 정면 전환은 생활비 같은 기존 약속에 막히기 쉽다. 대신 주말 오전에만 받는 작은 외주처럼 작고 일정이 있으며 남의 허락이 필요 없는 실험을 니치로 오래 키워 두면, 외부 변화로 창이 열릴 때 이미 작동하는 실천을 들고 옮겨 갈 수 있다. 니치에는 당장 인상적이어야 한다는 요구를 걸지 않는다. 원 이론은 사회 단위의 기술 전환을 설명하며 개인의 경력 전환을 검증한 연구가 아니고, 창이 반드시 열린다는 보장도 없다. 시작 전에 아래 적용 점검의 겸업 조항을 확인한다.
+
 ## 트레이드오프와 경계
 
 - 회사에서 본 내부 숫자, 고객 정보, 계약 조건과 영업 자료는 회사의 자산이다. 배워 나오는 것은 판단 방식과 구조이지 자료가 아니다. 퇴사 뒤 같은 고객이나 같은 사업을 겨냥할 때는 계약상 제한과 영업비밀 문제를 먼저 확인한다.
@@ -79,6 +85,9 @@ AI로 제품을 구현할 수 있다는 사실만으로 지금 창업할지 결�
 - [AI 시대, 지금 1인 창업하면 1년 안에 망합니다 | 스타트업 헤드헌터, VC가 본 진짜 현실 — YouTube, JOB담](https://www.youtube.com/watch?v=6TRgy2sz-9Q) — 2026-06-29, 01:10 판단과 실행, 16:10~22:24 선택 목적과 기회비용, 팀의 품질 기준과 채용 경험. 토론의 경험적 의견을 점검 질문으로 정리했으며 취업이나 창업의 우위를 입증하는 자료는 아님
 - [Panasonic Holdings, The Basic Business Philosophy of the Panasonic Group: 10. Developing People and Making the Most of Their Potential](https://holdings.panasonic/global/corporate/about/philosophy/10.html) — 2026-10-23 확인, 현장 학습과 위임 시 상사의 책임
 - [Panasonic Holdings, Maximizing the Potential of Diverse Talent and Organizations (Initiatives)](https://holdings.panasonic/global/corporate/sustainability/social/employees/initiatives.html) — 2026-10-23 확인, Basic Human Resource Development System의 OJT와 집합 교육 결합
+- [YouTube, Ideas To Thrive, Think In Systems: The Skill Most People Never Learn (Full Course)](https://www.youtube.com/watch?v=t1xKo4spo3s) — 2026-08-06 공개, 2026-11-18 음성 인식 전사 전체 확인. 레짐 안에서 보호된 니치를 키우는 개인 적용 제안의 출처이며 사례 인물과 기간은 강의의 가상 사례. 전사의 Nietzsche's는 niches로 교정
+- [The dynamics of transitions in socio-technical systems: a multi-level analysis of the transition pathway from horse-drawn carriages to automobiles (1860–1930) — Technology Analysis & Strategic Management, Frank W. Geels](https://doi.org/10.1080/09537320500357319) — 2005, 17권 4호 445~476쪽. 2026-11-18 검색 결과의 초록으로 사례, 니치와 디딤돌의 역할만 확인. 출판사 페이지는 접속 거부(403), 원문 미열람
+- [Technological transitions as evolutionary reconfiguration processes: a multi-level perspective and a case-study — Research Policy, Frank W. Geels](https://ideas.repec.org/a/eee/respol/v31y2002i8-9p1257-1274.html) — 2002, 31권 8~9호 1257~1274쪽. 2026-11-18 서지와 검색 결과의 초록으로 니치, 레짐, 랜드스케이프 세 층만 확인, 원문 미열람
 
 ## 관련 문서
 
@@ -88,3 +97,4 @@ AI로 제품을 구현할 수 있다는 사실만으로 지금 창업할지 결�
 - [[Own-Your-Core|코어는 직접 소유하라]]
 - [[Retrospective-Methods|회고 방법]]
 - [[AI-Solo-Software-Business|AI 시대 1인 소프트웨어 사업의 유형과 순서]]
+- [[Systems-Thinking|시스템 사고의 기본 어휘]] — 정면으로 밀기 전에 구조와 개입 지점 보기

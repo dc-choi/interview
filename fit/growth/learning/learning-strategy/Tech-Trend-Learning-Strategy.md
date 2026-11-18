@@ -127,9 +127,12 @@ AI가 내 일을 대체할지 한 번에 묻는 대신, 일을 세 층으로 나
 
 학습 목적도 같은 방식으로 나눠 본다. Steve Krouse의 2026-10-19 에세이는 교육을 좋은 사람과 시민 되기, 생계, 세상 개선, 기초 지식 같은 여러 목적이 떠받치는 탁자에 비유하고, 생계 능력이라는 다리가 흔들리고 나서야 그 목적이 자신에게 얼마나 중심이었는지 알았다고 적었다. 같은 글은 필자가 교육의 한 단어 목적으로 꼽았던, 주어진 자원으로 문제를 찾아 푸는 자원 활용 능력(resourcefulness)이 도구를 쓰는 AI 에이전트에서 완성된 모습을 본다고 했다. 반대로 라디오와 영화가 교사를 대체한다는 예측과 MOOC가 교육을 뒤엎는다는 필자 자신의 예측은 빗나갔고, 학교가 공식 목적보다 기금, 명성과 돌봄 수요 같은 일상적인 힘으로 유지돼 왔다고 해석한다. 학습 목적을 생계 한 갈래에 두면 그 갈래가 자동화될 때 학습 동기 전체가 흔들릴 수 있다는 것은 이 비유를 옮긴 적용 해석이다. 기술이 제도와 학습의 형태를 곧바로 바꾼다는 예측은 따로 검증한다.
 
+AI가 대신할 수 있는 기술을 그래도 직접 배울지는 두 질문으로 가를 수 있다. 그 기술이 생각하는 힘을 기르는가, 그리고 기계의 영역이 될 것이 분명하면서 사람들이 그 결과 자체에 가치를 두지 않는가. OpenAI CEO가 2026-10-21 공개된 Stanford GSB 대담에서 든 예로, 어릴 때 배운 필기체는 소근육 훈련이 목적이라면 납득할 수 있지만 필기체 그 자체를 위해서라면 배울 이유가 약했고, 작가가 될 생각이 없어도 배운 글쓰기는 생각과 아이디어를 구조화하는 도구라 가치가 있었다. 그는 안전 문제를 잘 넘긴다는 전제에서 사람이 한 일은 그 뒤에 사람이 있다는 이유로 계속 중요하고, 다른 사람에게 쓸모 있는 것을 만드는 법은 생각보다 배울 수 있는 기술이라고 봤다(화자의 견해). 글쓰기를 사고의 도구로 보는 관점은 [[Tech-Writing-Craft|개발자 글쓰기]]와 [[LLM-Assisted-Editing|LLM 보조 편집]], 사고 활동을 맡길 때의 근거는 [[Expertise-Formation-AI|AI 시대 전문성 형성]]에 있다.
+
 - 내 일을 하는 일, 만드는 가치와 돈의 출처로 나눠 적을 수 있는가
 - 각 일을 기계가 더 잘하게 되면 남는 가치와 사라지는 가치를 말할 수 있는가
 - 학습 목적을 생계, 이해의 즐거움, 다른 사람에 대한 기여처럼 여러 갈래로 적어 두었는가
+- 배우려는 기술이 생각하는 힘을 기르는지, 기계의 영역이면서 사람이 결과에 가치를 두지 않는 기술인지 나눠 봤는가
 
 ## 출처
 - [최신 기술 트렌드에 올라타는 개발자 되는 법 (T자형 인재) — YouTube, 코딩맨](https://www.youtube.com/watch?v=FJ2qMjs34t0) — 2025-10-01, 깊이와 확장에 관한 실천 조언, 상위 비율과 유일한 성장 경로 주장은 사용하지 않음
@@ -148,6 +151,8 @@ AI가 내 일을 대체할지 한 번에 묻는 대신, 일을 세 층으로 나
 - [Will it be a golden age or a dark age for mathematics (and science)? — What's new, Francesco Maggi](https://terrytao.wordpress.com/2026/10/18/will-it-be-a-golden-age-or-a-dark-age-for-mathematics-and-science/) — 2026-10-18 Terence Tao 블로그 기고, 2026-10-27 확인. 지적 능력을 키우되 전문성을 만드는 인지 활동을 맡기지 않는 사용법에 관한 기고자의 의견과 일화적 보고
 - [Creativity at the Knowledge Frontier: The Impact of Specialization in Fast- and Slow-paced Domains — Administrative Science Quarterly, Florenta Teodoridis, Michaël Bikard, Keyvan Vakili](https://doi.org/10.1177/0001839218793384) — 2019, 64(4), 894~927쪽. 출판사 최종본과 온라인 부록은 열지 못했다
 - [Creativity at the knowledge frontier, 수락 원고 — LBS Research Online](https://lbsresearch.london.edu/id/eprint/996) — 2026-11-01 표본, 측정, 결과와 한계 확인
+- [Sam Altman, Co-Founder and CEO of OpenAI: Staying Human While Scaling Superintelligence — YouTube, Stanford Graduate School of Business](https://www.youtube.com/watch?v=anAmTGcewX8) — 2026-10-21 공개된 View From The Top 대담(48:48, 대담 날짜 미확인). 2026-11-18 사람이 단 영어 자막으로 25:52~30:05의 직접 배울 기술에 관한 답변을 확인. 화자의 견해
+- [샘 올트먼 영상은 정말 꼭 보세요(오픈 AI CEO, 챗GPT) — YouTube, 인간지능](https://www.youtube.com/watch?v=rfhk-TZFoXY) — 2026-11-07 공개된 위 대담의 편집본(44:20). 음성 인식 전사 전체를 공식 자막과 대조, 정리의 계기
 
 ## 관련 문서
 - [[CS-Fundamentals-Value|CS 기초의 가치]] — 그 변화도 기반기술 위에 적층되며 기초가 흡수를 돕는다 (보완 관계)
