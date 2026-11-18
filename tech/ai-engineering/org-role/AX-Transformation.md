@@ -184,7 +184,9 @@ METR의 2025년 RCT(무작위 대조 실험)에 따르면 숙련 개발자들이
 
 METR은 2026년 후속 글에서 최신 도구의 속도 향상이 더 클 가능성은 높다고 봤지만, AI를 쓰고 싶은 태스크가 실험에서 빠지는 선택 편향과 병렬 에이전트의 시간 측정 문제 때문에 향상 폭을 신뢰성 있게 추정할 수 없다고 밝혔다. 특정 시점의 19% 수치를 현재 도구에 적용하는 것이 아니라 체감과 실측을 분리하고 조건별로 다시 측정하는 데 초점을 둔다.
 
-시사점: 도구 도입만으로 생산성 상승을 가정하지 않는다. 업무 흐름, 품질, 안정성과 고객 결과를 함께 측정한다.
+조직 단위에서는 체감과 실측의 비교가 아니라 확산과 실현 가치 사이의 간극이 자기 평가로 보고된다. Gartner가 2026-10-19 발표한 2027 CIO and Technology Executive Agenda 설문(2026년 5~7월, CIO와 기술 임원 2,002명)에서 기업이 AI로 상당하거나 변혁적인 가치를 실현했다고 답한 CIO는 13%였다. 같은 발표는 지난 2년 동안 AI 활용 사례가 빠르게 늘었지만 사례의 성공 가능성은 5분의 1에 머문다고 적는다. AI 파일럿을 운영으로 넘기지 않을 때를 정하는 지침을 둔 곳은 31%, 이미 운영 중인 저가치 AI 이니셔티브를 접는 기준을 둔 곳은 17%였고, 51%는 AI가 기술 솔루션의 총소유비용을 늘릴 것으로 예상했다. 이 수치는 응답자의 자기 평가이지 감사된 수익이 아니며, 13% 밖의 기업이 아무 효과도 얻지 못했다는 뜻도 아니다.
+
+시사점: 도구 도입만으로 생산성 상승을 가정하지 않는다. 업무 흐름, 품질, 안정성과 고객 결과를 함께 측정하고, 파일럿을 시작할 때 운영 전환과 중단의 기준도 함께 정한다.
 
 ## 시니어가 던져야 할 질문
 
@@ -242,6 +244,8 @@ METR은 2026년 후속 글에서 최신 도구의 속도 향상이 더 클 가�
 - [Harvard Business Review Recognizes BBVA as a Benchmark for Corporate AI Adoption — BBVA](https://www.bbva.com/en/innovation/harvard-business-review-recognizes-bbva-as-a-benchmark-for-corporate-ai-adoption/)
 - [An important update on our team — Atlassian](https://www.atlassian.com/blog/announcements/atlassian-team-update-march-2026)
 - [We are Changing our Developer Productivity Experiment Design — METR](https://metr.org/blog/2026-02-24-uplift-update/)
+- [Gartner Survey Finds Only 13% of CIOs Say Their Enterprise Has Realized Significant or Transformational Value from AI — Gartner](https://www.gartner.com/en/newsroom/press-releases/2026-10-19-gartner-survey-finds-only-13-percent-of-cios-say-their-enterprise-has-realized-significant-or-transformational-value-from-ai) — 2026-10-19 보도자료. Gartner 페이지는 접근이 막혀 2026-11-19 Business Wire 배포본(https://www.businesswire.com/news/home/20261019796927/en/)의 Barchart 재게시(https://www.webull.com/news/15775766583127040)로 표본, 13%, 31%, 17%, 51%와 성공 가능성 5분의 1을 대조
+- [환상이 끝나고 95%가 망한다! AI 종말론 비웃는 조용한 승자 — 와이스트릿](https://www.youtube.com/watch?v=af-jhT7bemg) — 2026-11-12 공개, 학습 계기. 로컬 음성 인식 전사 기준으로 읽었다. 영상의 AI 활용 4배 증가는 보도자료에서 확인되지 않아 쓰지 않았고, 총소유비용 50% 언급은 전사에서 문장이 끊겨 있어 보도자료의 51%가 증가를 예상한다는 응답만 썼다
 - [From Pilots to Paradigm Shift: AI Transformation at Jabil — AWS Executive Insights](https://www.youtube.com/watch?v=1Lq_0moA14M)
 - [Reinventing the Enterprise with Agentic AI — AWS Executive Insights](https://www.youtube.com/watch?v=zGIe-56QpZs)
 - [AWS Prescriptive Guidance, Architect for multi-tenancy and control](https://docs.aws.amazon.com/prescriptive-guidance/latest/strategy-operationalizing-agentic-ai/focus-areas-multitenancy.html)

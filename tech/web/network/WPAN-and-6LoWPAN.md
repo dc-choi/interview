@@ -3,7 +3,7 @@ tags: [network, wireless, wpan, iot, ipv6, bluetooth, zigbee, 6lowpan]
 status: done
 verified_at: 2026-11-18
 category: "Web - 네트워크"
-aliases: ["WPAN", "Wireless Personal Area Network", "무선 개인 통신망", "6LoWPAN", "LoWPAN", "IEEE 802.15.4", "BLE", "Bluetooth Low Energy", "L2CAP", "Logical Link Control and Adaptation Protocol", "UWB", "Ultra-Wideband", "초광대역", "IEEE 802.15.4z"]
+aliases: ["WPAN", "Wireless Personal Area Network", "무선 개인 통신망", "6LoWPAN", "LoWPAN", "IEEE 802.15.4", "BLE", "Bluetooth Low Energy", "L2CAP", "Logical Link Control and Adaptation Protocol", "UWB", "Ultra-Wideband", "초광대역", "IEEE 802.15.4z", "Zigbee PRO", "Many-to-One Routing", "Zigbee Trust Center"]
 ---
 
 # WPAN과 6LoWPAN
@@ -26,6 +26,18 @@ WPAN(무선 개인 통신망)은 사람이나 기기 주변의 짧은 거리에�
 | 6LoWPAN | IEEE 802.15.4 위의 IETF 적응 계층 | IPv6 패킷을 단편화와 헤더 압축으로 802.15.4 프레임에 싣는다 |
 
 같은 IEEE 802.15.4 무선을 써도 Zigbee와 6LoWPAN은 그 위가 다르다. Zigbee는 CSA의 자체 상위 규격을 두고, 6LoWPAN은 IPv6를 그대로 올리는 쪽을 택한다. 6LoWPAN 기법은 RFC 7668로 Bluetooth LE 위의 IPv6에도 쓰인다.
+
+## Zigbee PRO의 주소, 라우팅과 보안
+
+Zigbee 2007 릴리스에는 Zigbee와 Zigbee PRO라는 두 기능 집합이 있었다. Zigbee 기능 집합은 코디네이터를 중심으로 트리 주소를 나눠 망을 만들고, Zigbee PRO는 트리의 제약을 피하려고 확률적(stochastic) 주소 할당을 쓰며 테이블 라우팅을 항상 쓴다고 Silicon Labs Zigbee Fundamentals 8.2.0은 적는다. 다만 같은 문서의 라우팅 설명에서 아래의 소스 라우팅 프레임은 라우팅 테이블 대신 망 헤더의 경로를 따르므로, 테이블 라우팅을 기본으로 이해한다. TI의 ZBOSS 문서는 Zigbee PRO 스택 프로파일(ID 2)이 Zigbee 3.0에 쓰인다고 적는다.
+
+버전은 2026-11-19 CSA 자료 기준이다. CSA FAQ는 Zigbee PRO 2023(TI 문서 표기로 R23)이 2023년 3월에 나왔다고 적는다. CSA는 2025-11-18 Zigbee 4.0을 발표하며 Zigbee Core R23.2, Base Device Behavior v3.1 등을 규격 문서로 들고 Zigbee 3.0과 완전히 하위 호환된다고 밝혔다. 같은 발표는 Sub-GHz 메시 기능의 새 이름을 Suzi로 정했다.
+
+- **확률적 주소:** 새로 붙는 기기는 합류하는 상대 기기에게서 무작위로 정한 16비트 주소를 받고, 망 계층 메시지로 주소 충돌을 검사한다. 부모가 바뀌어도 주소는 유지되며, 주소는 스택이 정하게 두는 것이 권장된다.
+- **Many-to-one과 소스 라우팅:** 게이트웨이처럼 많은 기기의 트래픽이 모이는 중앙 기기(concentrator)가 경로 탐색을 한 번 보내 모든 라우터에 자기 쪽으로 가는 경로 항목 하나씩을 만든다. 라우터마다 중앙 기기로 일대일 경로 요청을 보내는 대신 요청 하나와 라우터당 경로 항목 하나로 끝난다. 중앙 기기로 가는 메시지는 먼저 route record로 거친 홉을 기록하고, 중앙 기기는 이를 역순으로 source route table에 저장해 기기 쪽으로 보내는 메시지의 망 헤더에 경로를 싣는다. 그 대가는 구현에 따라 다르다. TI Z-Stack 문서 기준으로 경로를 캐시하는 중앙 기기는 메모리를 더 쓰고 각 기기는 route record를 한 번만 보내면 되지만, 캐시하지 않으면 기기가 데이터 패킷마다 route record를 함께 보낸다. 경로가 실패하면 기본적으로 many-to-one 경로 탐색을 다시 하며, 탐색과 경로 유지 시점은 애플리케이션이 정한다.
+- **Trust Center와 키:** TI 문서(Zigbee 3.0 기준)에 따르면 중앙 집중형 보안 망에서는 코디네이터가 Trust Center로서 키를 배포하고 합류를 허가하는 유일한 기기다. 라우터가 만든 분산형 망에는 이런 보안 관리자가 없고 어느 라우터든 합류 기기에 망 키를 전달할 수 있다. 이하 TI Z-Stack 문서(R22 인증 스택 기준)의 설명이다. 망 계층 보안은 필수이며 끌 수 없다. 링크 키는 APS 계층 키이고, 망 키를 보내는 Transport Key 명령은 모든 기기가 공유하는 기본 전역 Trust Center 링크 키나 설치 코드에서 유도한 링크 키로 APS 암호화된다. 설치 코드 사용 강제는 정책 설정이며 기본값은 꺼져 있다. 분산형 망은 별도의 분산형 기본 전역 키를 쓴다. 이를 정리하면(이 문서의 요약) 망 키는 모든 기기의 망 계층 프레임을, 링크 키는 합류 때의 키 전달을 맡으며, TI는 애플리케이션 데이터 보안을 중앙 집중형 보안 망에서만 제공하는 기능으로 따로 든다. 모든 프레임을 두 키로 이중 암호화한다는 설명은 이 자료에서 확인되지 않는다. R23 이후는 다를 수 있다. CSA는 Zigbee PRO 2023과 Zigbee 4.0의 보안 기능으로 ECC 기반 Dynamic Link Key를 들며, 그 세부는 규격 원문으로 확인하지 못했다. CSA는 무선 구간 암호화를 AES-128-CCM으로 적는다.
+
+망 규모는 CSA 자료 안에서도 기준에 따라 표현이 다르다. FAQ는 주소 체계가 망당 수백 노드를 지원한다고 하면서, 메시의 확장성은 Zigbee 소개 페이지와 같이 수천 노드로 적는다. 한 노드가 죽어도 다른 경로로 우회하는 자가 치유(self-healing) 메시가 장점이지만, 실제 규모는 스택과 기기의 메모리, 트래픽 형태로 확인한다.
 
 ## UWB와 정밀 거리 측정
 
@@ -108,6 +120,7 @@ IPv6는 링크 MTU로 최소 1280옥텟을 요구하는데 802.15.4 물리 계�
 - WPAN을 10m 이내 네트워크로 외웠다면 거리는 PHY와 출력, 환경에 따라 달라진다는 점을 덧붙인다.
 - 6LoWPAN이 필요한 이유를 MTU 1280과 127바이트 프레임의 차이로 설명할 수 있는가.
 - 6LoWPAN과 Zigbee의 차이를 같은 802.15.4 무선 위에 IPv6를 올리는지, CSA 자체 상위 규격을 쓰는지로 나눠 말할 수 있는가.
+- Zigbee PRO의 many-to-one 라우팅에서 route record와 소스 라우팅이 각각 어느 방향의 트래픽에 쓰이는지 말할 수 있는가.
 - 인터넷 연결에 6LBR이 하는 일(prefix 배포, 경계 라우팅)을 말할 수 있는가.
 - L2CAP의 segmentation과 fragmentation을 나누고, 비연결형 채널이 BR/EDR에만 있다는 점을 CID 표로 설명할 수 있는가.
 - UWB를 대역폭 정의(500MHz 또는 분수 대역폭 0.20)와 낮은 출력 밀도 제한으로 설명하고, TWR과 TDoA의 차이를 말할 수 있는가.
@@ -140,10 +153,18 @@ IPv6는 링크 MTU로 최소 1280옥텟을 요구하는데 802.15.4 물리 계�
 - [Bluetooth SIG, Bluetooth Core 7.0 Vol 3 Part A Logical Link Control and Adaptation Protocol (L2CAP) Specification](https://www.bluetooth.com/wp-content/uploads/Files/Specification/HTML/Core_v7.0/out/en/host/logicallinkcontrol-andadaptationprotocol-l2cap--specification.html)
 - [Bluetooth SIG, LE Audio](https://www.bluetooth.com/learn-about-bluetooth/feature-enhancements/le-audio/)
 - [Connectivity Standards Alliance, Zigbee FAQ](https://csa-iot.org/all-solutions/zigbee/zigbee-faq/)
+- [Connectivity Standards Alliance, Zigbee](https://csa-iot.org/all-solutions/zigbee/)
+- [The Connectivity Standards Alliance Announces Zigbee 4.0 and Suzi — Connectivity Standards Alliance](https://csa-iot.org/newsroom/the-connectivity-standards-alliance-announces-zigbee-4-0-and-suzi-empowering-the-next-generation-of-secure-interoperable-iot-devices/) — 2025-11-18 발표, 2026-11-19 규격 문서 목록과 하위 호환 대조
+- [Silicon Labs, Zigbee Fundamentals: Zigbee Routing Concepts](https://docs.silabs.com/zigbee/8.2.0/zigbee-fundamentals/04-zigbee-routing-concepts) — Zigbee 8.2.0 문서
+- [Silicon Labs, Zigbee Fundamentals: The Zigbee Stack](https://docs.silabs.com/zigbee/8.2.0/zigbee-fundamentals/05-the-zigbee-stack) — Zigbee 8.2.0 문서
+- [Silicon Labs, Zigbee Fundamentals: Network Node Types](https://docs.silabs.com/zigbee/8.2.0/zigbee-fundamentals/03-network-node-types) — Zigbee 8.2.0 문서
+- [Texas Instruments, ZBOSS Overview](https://dev.ti.com/tirex/explore/content/simplelink_lowpower_f3_sdk_8_20_00_119/docs/zigbee/html/zboss/zboss-overview.html) — Zigbee PRO 2023(R23) 인증 스택 문서
+- [Texas Instruments, Z-Stack Overview](https://dev.ti.com/tirex/content/simplelink_cc13x2_26x2_sdk_5_10_00_48/docs/zigbee/html/zigbee/z-stack-overview.html) — Zigbee PRO 2017(R22) 인증 스택 문서
 - [#NW 0045 - 무선 이어폰은 어떻게 연결될까? WPAN 90초 완벽 정리 — 길리랩](https://www.youtube.com/watch?v=bn3J-xodWY0) — 학습 계기, 거리와 기술 분류는 위 1차 출처로 교정
 - [#NW 0046 - 쌀알만 한 센서에도 IP 주소를? 6LoWPAN 90초 완벽 정리 — 길리랩](https://www.youtube.com/watch?v=Wn4p_EbybAg) — 학습 계기, 주소 유일성과 인터넷 연결 설명은 RFC로 교정
 - [#NW 0048 - 블루투스의 숨은 영웅 L2CAP, 90초 완벽 정리! — 길리랩](https://www.youtube.com/watch?v=70o03jLh7EM) — 학습 계기, LE의 비연결형 설명과 다중화 예시는 Core 6.2로 교정
 - [#NW 0049 - 에어태그의 비밀, UWB 90초 완벽 정리! — 길리랩](https://www.youtube.com/watch?v=QDF6ETP7pLw) — 학습 계기, 간섭과 호환성 설명은 FCC 규정과 FiRa 자료로 교정하고 전송률과 MAC 구성은 확인하지 못해 쓰지 않음
+- [#NW 0051 - 수천 개 센서를 하나로 묶는 무선 기술! ZigBee PRO 90초 완전 정리 — 길리랩](https://www.youtube.com/watch?v=IAywvVXZ8Ww) — 학습 계기, 수만 노드 확장 설명은 CSA 자료와 맞지 않아 쓰지 않음. CSA Zigbee 규격 원문은 접근이 막혀 대조하지 못했고 벤더 스택 문서로 확인
 
 ## 관련 문서
 
