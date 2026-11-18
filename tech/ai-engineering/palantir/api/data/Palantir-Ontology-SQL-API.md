@@ -1,7 +1,7 @@
 ---
 tags: [palantir, foundry, api, ontology, sql, object-set]
 status: done
-verified_at: 2026-10-16
+verified_at: 2026-11-18
 category: "AI엔지니어링(AIEngineering)"
 aliases: ["팔란티어 온톨로지 SQL API"]
 ---
@@ -46,6 +46,8 @@ collectList와 collectSet의 limit 상한은 100이다. property가 없는 objec
 비교 lt/lte/gt/gte/eq, in, contains, isNull과 and/or/not을 조합할 수 있다. **in의 빈 배열은 모든 object를 매칭한다.** 빈 선택을 결과 없음으로 바꾸고 싶다면 호출 측에서 따로 처리해야 한다. string의 eq/in full term matching은 Ontology Manager의 Selectable 설정이 필요하다.
 
 텍스트 조건은 wildcard, regex, containsAllTerms/containsAnyTerm, 순서 있는 term 조건, interval을 구분한다. regex는 non-analyzed text, interval은 analyzed text에 적용된다. startsWith는 이름이 부정확한 deprecated alias이며 containsAllTermsInOrderPrefixLastTerm이 권장된다. SQL 일반 prefix 연산과 동일하다고 가정하지 않는다.
+
+2026-11-18 수집본은 tableProviders ObjectSet filter의 containsAllTerms, containsAnyTerm, containsAllTermsInOrder, containsAllTermsInOrderPrefixLastTerm과 startsWith에 optional `analyzerSelection`(BASE_ANALYZER, PHONETIC_ANALYZER)을 더했다. 2026-10-19 수집본에는 없었고(두 날짜 모두 KST), 두 수집본의 최상위 요청 필드와 오류 목록은 같다. 생략하면 field를 색인할 때 쓴 base analyzer로 검색하고, PHONETIC_ANALYZER는 field의 phonetic 색인으로 발음이 비슷한 term을 찾는다. containsAllTerms와 containsAnyTerm에서 phonetic analyzer를 고르면 fuzzy는 생략하거나 false로 둬야 한다. wildcard, regex, interval에는 이 필드가 없다. 다른 Ontology endpoint의 같은 변경은 [[Palantir-Ontology-V2-ObjectSet-API]]에 있다. 실제 SQL 실행 결과와 phonetic 색인이 있는 field는 확인하지 않았다.
 
 interval은 allOf/anyOf/match, 마지막 token prefix, fuzzy를 조합한다. ordered와 maxGaps로 순서/간격을 제어하며 fuzzy edit distance는 0/1/2, 기본 2다. term 조건의 optional fuzzy와는 서로 다른 구조다.
 

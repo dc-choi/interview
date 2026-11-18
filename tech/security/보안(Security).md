@@ -61,6 +61,7 @@ aliases: ["보안(Security)", "Security Index"]
 - [[Supply-Chain-Security|공급망 보안 (Supply Chain)]] — PyPI/npm과 IDE 확장 배포, 아카이브 검사/설치 차이, postinstall/.pth, 전이 의존성, lockfile 핀과 별도 영속성 대응, Homebrew 탭 신뢰와 cask quarantine
 - [[IDE-Extension-Trust-Model|IDE 확장 신뢰 모델과 AI 코딩 도구의 공격 표면]] — 확장의 편집기 동일 권한, 시작 시 활성화와 Workspace Trust 선언, 자동 업데이트 지연, 게시자 신뢰와 허용 목록, MCP 서버와 패키지 경로, 의도된 전송과 침해의 구분, 방어 계층 순서
 - [[Dependency-Release-Cooldown|의존성 릴리스 쿨다운]] — 고정, 해시, 쿨다운이 막는 단계, uv, pip, pnpm, npm, Cargo의 게시 시점 필터와 기본값, 업로드 시각이 없을 때의 차이, 저장소 프록시에서 강제하는 쿨다운, 오래된 릴리스에 늦게 붙는 파일과 PyPI 게시 경로 경고, 예외 경로와 보안 수정 지연
+- [[Dependency-Patch-Cycle|의존성 패치 반영 지연과 CI 패치 사이클]] — 패치가 나와도 남는 이유, 권고문 전 공백, OSV-Scanner 진단과 guided remediation 전략, 만료 있는 예외, MR 게이트와 예약 스캔
 - [x] [[SaaS-Application-Trust-Compromise|SaaS 앱 신뢰와 자격증명 침해]] — 외부 앱의 기존 권한 악용, 인증과 유출의 구분, 차단과 증거 보존
 - [[Open-Source-License-Review|오픈소스 라이선스 검토]] — MIT/Apache 고지, GPL 전달 조건, AGPL 네트워크 조건, SaaS와 납품, SPDX/SBOM의 판단 범위, DMCA 게시 중단과 포크 네트워크
 - [[tech/security/network-security/네트워크보안(NetworkSecurity)|네트워크 보안 (Network Security)]] — 경계 보안과 공인 IP 배치, UTM, 보안 장비 배치 순서, 인라인과 아웃오브패스, 포트 미러링과 TAP, IDS와 IPS, ARP 스푸핑과 DAI, ARP 기반 NAC 차단, 망분리와 망연계, 호스트의 앱별 아웃바운드 통제
