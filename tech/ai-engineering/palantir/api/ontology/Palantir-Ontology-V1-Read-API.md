@@ -44,6 +44,18 @@ Object 표현은 RID와 properties map이다. null property는 목록 응답에�
 
 Query type은 Query Function으로 만든 로직이다. metadata는 API name, display name, description, parameter의 required/baseType, output type, function RID와 version을 제공한다. `POST /queries/{queryApiName}/execute`에 parameters를 전달하며 optional parameter는 생략할 수 있다. 응답은 단일 `value`이며 output type에 맞춰 해석한다.
 
+### List Query Types 응답에서 선택 필드를 구분한다
+
+2026-11-18 List Query Types 명세 대조 기준, `GET /api/v1/ontologies/{ontologyRid}/queryTypes`이며 버전 없는 문서 주소와 `/v1/` 주소의 명세 본문이 같다. pageSize(기본 100)와 pageToken만 query parameter이고 첫 요청에는 pageToken을 생략한다.
+
+응답의 `data`와 `nextPageToken`은 모두 선택 필드다. QueryType에서 필수는 `apiName`, function `rid`, `version`뿐이고 description, displayName, parameters, output은 생략될 수 있다. version은 `<major>.<minor>.<patch>-<tag>` 형식이며 tag는 선택이다.
+
+Parameter에서는 `baseType` 문자열과 `required` boolean이 필수이고 description과 `dataType`은 선택이다. baseType은 `Array<String>`, `OntologyObject<Employee>`, `Struct<...>`, `TimeSeries<Double>`처럼 중첩 가능한 문자열 표기다. dataType과 output은 date, struct, set, cipherText, marking 등을 담는 Ontology data type union으로 정의돼 있다. 명세의 응답 예시는 output을 `"Double"`, `"Array<OntologyObject<Employee>>"` 같은 문자열로 보여 스키마와 표현이 다르다.
+
+클라이언트는 `data`가 없으면 빈 목록으로 처리하고, 선택 필드 부재를 오류로 보지 않는다. 실행 입력 검증은 항상 있는 baseType과 required를 기준으로 하고, output과 dataType은 실제 응답 형태를 확인한 뒤 해석한다(설계 제안).
+
+### 실행 값의 직렬화
+
 날짜와 UTC timestamp는 형식 문자열, long/decimal도 문자열이다. object reference는 primary key JSON 값, interface reference는 objectTypeApiName과 primaryKeyValue 조합, object type reference는 API name이다. object set은 RID 또는 definition으로 표현한다. EntrySet은 key/value 배열이며 struct는 JSON object다. 이 직렬화 계약을 일반 JavaScript number나 RID 문자열 하나로 통일하지 않는다.
 
 ### V1 실행 계약을 Global Query와 구분한다
@@ -63,6 +75,7 @@ Query type은 Query Function으로 만든 로직이다. metadata는 API name, di
 - [Filtering objects](https://www.palantir.com/docs/foundry/api/ontology-resources/objects/ontology-object-basics)
 - [Get outgoing link type](https://www.palantir.com/docs/foundry/api/ontology-resources/object-types/get-outgoing-link-type)
 - [Execute query](https://www.palantir.com/docs/foundry/api/ontology-resources/queries/execute-query)
+- [List Query Types (v1)](https://www.palantir.com/docs/foundry/api/v1/ontology-resources/query-types/list-query-types) — 2026-11-18 응답 필드의 필수 여부 대조
 - [Execute Query (v1)](https://www.palantir.com/docs/foundry/api/v1/ontology-resources/queries/execute-query) — 2026-11-03 V1 실행 계약 부분 대조
 - [Execute Query (v2, Global)](https://www.palantir.com/docs/foundry/api/v2/functions-v2-resources/queries/execute-query) — 2026-11-03 Global Query의 scope와 버전 선택 인자 비교
 
