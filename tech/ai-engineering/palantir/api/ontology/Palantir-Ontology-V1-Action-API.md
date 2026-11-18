@@ -71,6 +71,8 @@ Struct parameter는 field별 제약과 required를, array parameter는 지원되
 
 2026-11-03 버전 없는 주소와 `/api/v1/` 문서 주소의 검증 경로, 입력과 응답 스키마, 기본값 미지원 및 응답 예제를 대조했다. 실제 API 실행과 다른 절 전체의 재검증은 하지 않아 기존 `verified_at`은 유지한다.
 
+2026-11-18 수집한 V1 Validate Action 명세(버전 없는 주소와 `/api/v1/` 주소의 본문이 같다)도 DataValue 표의 Time Series Reference 행만 2026-11-01 수집본과 다르다. Apply Action과 같이 `type` 판별자 객체 대신 seriesId 문자열 또는 JSON 객체로 표기된다. 이 표는 요청 `parameters`의 값과 응답 parameter 결과의 `defaultValue` 두 곳에 붙어 있어 둘 다 바뀌었다. 경로, scope, 기본값 미지원 설명, 제약 union과 요청, 응답 예제는 그대로다. 검증과 적용에 같은 직렬화를 쓰고, 응답 `defaultValue`를 읽는 코드도 두 형식을 함께 다룬다(설계 제안). `defaultValue`는 선택 필드이고 공식 응답 예제에 없어 서버가 실제로 돌려주는 형식은 확인하지 못했다. SDK 문서와의 표기 차이는 위 Batch 문단을 따른다. 이전 형식의 수용 여부와 인증 호출은 시험하지 않았다. 수집본 사이의 차이(이 행)와 나머지 본문의 무변경만 확인했고 이 절의 기존 주장은 다시 대조하지 않았으므로 frontmatter 검증일은 유지한다.
+
 ## Action type 정의 조회
 
 `GET /api/v1/ontologies/{ontologyRid}/actionTypes`는 Ontology의 action type 목록을, `GET /api/v1/ontologies/{ontologyRid}/actionTypes/{actionTypeApiName}`는 API name 하나의 정의를 읽는다. 두 endpoint의 OAuth2 scope는 `api:ontologies-read`이며 Action을 적용하거나 검증하지 않는다. V1 명세는 이 자리를 Ontology RID로 설명한다. V2 metadata 경로는 Ontology API name과 RID를 모두 받으므로, V2에서 API name으로 호출하던 값을 V1 경로에 그대로 옮기지 않는다. V2 쪽 계약은 [[Palantir-Ontology-V2-Metadata-API|Ontology V2 metadata API]]에 있다.
@@ -105,7 +107,7 @@ Attachment metadata GET과 `/content` binary GET은 `api:ontologies-read`다. me
 - [Apply Action Batch (v1)](https://www.palantir.com/docs/foundry/api/v1/ontology-resources/actions/apply-action-batch) — 2026-11-03 요청 배열, OAuth2 scope, 빈 성공 응답과 적용 제한 대조, 2026-11-18 수집본의 Time Series Reference 행 대조
 - [foundry-platform-python, V1 DataValue](https://github.com/palantir/foundry-platform-python/blob/develop/docs/v1/Ontologies/models/DataValue.md) — 2026-11-18 SDK 문서의 Time Series Reference 이전 표기 확인
 - [Validate Action](https://www.palantir.com/docs/foundry/api/ontology-resources/actions/validate-action)
-- [Validate Action (v1)](https://www.palantir.com/docs/foundry/api/v1/ontology-resources/actions/validate-action) — 2026-11-03 검증 요청과 응답 스키마, INVALID 성공 응답 예제 대조
+- [Validate Action (v1)](https://www.palantir.com/docs/foundry/api/v1/ontology-resources/actions/validate-action) — 2026-11-03 검증 요청과 응답 스키마, INVALID 성공 응답 예제 대조, 2026-11-18 수집본의 Time Series Reference 행 대조
 - [List Action Types](https://www.palantir.com/docs/foundry/api/ontology-resources/action-types/list-action-types) — 2026-11-18 V1 경로, paging과 응답 스키마 대조
 - [List Action Types (v1)](https://www.palantir.com/docs/foundry/api/v1/ontology-resources/action-types/list-action-types) — 2026-11-18 수집본의 dataType union 대조
 - [Get Action Type](https://www.palantir.com/docs/foundry/api/ontology-resources/action-types/get-action-type) — 2026-11-18 경로 식별자, 응답 스키마와 예제의 `data` 감싸기 차이 대조
