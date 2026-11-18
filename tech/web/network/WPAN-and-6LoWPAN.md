@@ -1,9 +1,9 @@
 ---
 tags: [network, wireless, wpan, iot, ipv6, bluetooth, zigbee, 6lowpan]
 status: done
-verified_at: 2026-11-18
+verified_at: 2026-11-19
 category: "Web - 네트워크"
-aliases: ["WPAN", "Wireless Personal Area Network", "무선 개인 통신망", "6LoWPAN", "LoWPAN", "IEEE 802.15.4", "BLE", "Bluetooth Low Energy", "L2CAP", "Logical Link Control and Adaptation Protocol", "UWB", "Ultra-Wideband", "초광대역", "IEEE 802.15.4z", "Zigbee PRO", "Many-to-One Routing", "Zigbee Trust Center"]
+aliases: ["WPAN", "Wireless Personal Area Network", "무선 개인 통신망", "6LoWPAN", "LoWPAN", "IEEE 802.15.4", "BLE", "Bluetooth Low Energy", "L2CAP", "Logical Link Control and Adaptation Protocol", "UWB", "Ultra-Wideband", "초광대역", "IEEE 802.15.4z", "Zigbee PRO", "Many-to-One Routing", "Zigbee Trust Center", "BLE Beacon", "iBeacon", "비콘", "Channel Sounding"]
 ---
 
 # WPAN과 6LoWPAN
@@ -55,6 +55,18 @@ UWB(Ultra-Wideband, 초광대역)는 아주 넓은 대역에 낮은 출력 밀�
 | 차량 디지털 키 | 2021-04 CCC 발표 기준 Digital Key Release 3.0은 UWB와 Bluetooth LE를 함께 써서 휴대폰을 꺼내지 않는 패시브 출입과 시동을 지원하고, NFC를 필수 예비 수단으로 유지한다. 후속 버전(v3.1.x, v4.x)의 변경은 확인하지 않았다 |
 
 시험 요약에서 UWB에 함께 붙는 480Mbps 전송률, MAC의 OFDMA 같은 수치와 구성은 위 802.15.4z 자료에서 확인되지 않았다. UWB라는 이름의 서로 다른 고속 전송 규격과 섞였을 수 있으므로 규격 원문으로 확인하기 전에는 쓰지 않는다.
+
+## BLE 비콘과 실내 근접 판단
+
+BLE 비콘은 정해진 Bluetooth LE 광고(advertising) 데이터를 주기적으로 내보내기만 하는 기기다. 매장에 들어서면 쿠폰이 뜨는 장면에서 쿠폰을 보내는 쪽은 비콘이 아니다. 휴대폰의 운영체제가 광고를 감지해 앱에 알리고, 앱이 준비한 내용(앱에 담았거나 서버에서 받은)을 보여 준다.
+
+- **식별자(Apple iBeacon 기준):** 128비트 proximity UUID(조직이나 비콘 종류), 16비트 major(같은 UUID 안의 묶음, 예: 매장), 16비트 minor(같은 major 안의 개별 비콘)를 광고한다. UUID는 필수이고 major와 minor는 선택이다. 앱은 UUID만, UUID와 major, 세 값 모두로 감시 범위를 넓히거나 좁힌다.
+- **감시와 거리 추정(2016 Apple 보관 가이드 기준):** 감시(monitoring)는 비콘 영역에 들어오고 나간 사건만 알려 주고, 거리 추정(ranging)은 주변 비콘을 대략의 거리 순으로 돌려준다. 근접 값은 상대적인 거리감이다. 벽, 문과 물(사람의 몸 포함)이 신호를 약하게 만들고, 거리 추정은 포그라운드에서만 쓰라고 권한다. 비콘 영역 감시는 iOS 7.0 이후 기능이다. Android는 4.3(API 18)에서 BLE API를 추가했고, 현행 문서는 central 역할의 플랫폼 지원으로 설명한다. 스캔 결과로 위치를 추정하는 Android 앱은 `ACCESS_FINE_LOCATION`을 선언해야 한다.
+- **RSSI 거리의 한계:** iBeacon 광고에는 1m 거리에서 기대되는 신호 세기(TX Power)가 들어 있고, 수신 쪽은 TX Power와 수신 세기(RSSI)의 차이로 경로 손실을 셈해 거리를 짐작한다. 경로 손실이 장애물과 환경에 따라 달라지므로 1세대 방식인 이 추정은 근접 판정용으로 보고 정확한 좌표로 쓰지 않는다.
+- **정밀 측위로 가는 기능:** Bluetooth SIG는 존재는 광고, 방향은 Direction Finding(AoA/AoD, 2019 Core 5.1), 거리는 RSSI와 Channel Sounding으로 나눈다. Channel Sounding은 2024년에 채택된 Core 6.0의 기능이며 연결된 두 기기가 1:1로 거리를 잰다. 주 측정은 위상 기반 측정(PBR)이고 왕복 시간(RTT)은 보안용 교차 확인으로 함께 쓴다. 위 UWB의 TWR과 닮은 쪽은 RTT다.
+- **채널:** SIG 기술 개요 표 기준 Bluetooth LE의 40개 채널 중 3개가 광고 채널, 37개가 데이터 채널이다. iBeacon 같은 레거시 광고는 광고 채널 37, 38, 39만 차례로 쓴다. 채널을 바꿔 가는 동작은 연결의 주파수 도약과 Bluetooth 5 이후 주기적 광고의 채널 선택에 해당하므로 레거시 광고만 하는 비콘의 혼선 회피 원리로 옮기지 않는다.
+
+누가 신호를 보내고 누가 위치를 계산하는지로 구성을 나눈다(이 문서의 정리). 고정 비콘이 광고하고 휴대폰 앱이 듣는 구성은 사용자 기기가 계산하며 앱 설치, Bluetooth와 위치 권한이 전제다. 자산 태그가 신호를 보내고 고정 수신기가 받는 RTLS 구성은 시스템 쪽이 계산한다. SIG는 AoA에서 안테나 하나로 보내는 송신 쪽 예로 RTLS의 자산 태그를 든다. 송신과 계산의 방향은 UWB의 UL-TDoA와 같지만 측정 원리는 다르다.
 
 ## Bluetooth의 L2CAP
 
@@ -152,6 +164,15 @@ IPv6는 링크 MTU로 최소 1280옥텟을 요구하는데 802.15.4 물리 계�
 - [Bluetooth SIG, Bluetooth Core 6.2 Vol 3 Part A Logical Link Control and Adaptation Protocol Specification](https://www.bluetooth.com/wp-content/uploads/Files/Specification/HTML/Core-62/out/en/host/logical-link-control-and-adaptation-protocol-specification.html)
 - [Bluetooth SIG, Bluetooth Core 7.0 Vol 3 Part A Logical Link Control and Adaptation Protocol (L2CAP) Specification](https://www.bluetooth.com/wp-content/uploads/Files/Specification/HTML/Core_v7.0/out/en/host/logicallinkcontrol-andadaptationprotocol-l2cap--specification.html)
 - [Bluetooth SIG, LE Audio](https://www.bluetooth.com/learn-about-bluetooth/feature-enhancements/le-audio/)
+- [Bluetooth SIG, Bluetooth Channel Sounding Technical Overview](https://www.bluetooth.com/channel-sounding-tech-overview/) — 2026-11-19 조회, iBeacon의 TX Power와 경로 손실, PBR 주 측정과 RTT 보안 확인, Direction Finding의 Core 5.1
+- [Bluetooth SIG introduces true distance awareness — Bluetooth SIG](https://www.bluetooth.com/press/bluetooth-channel-sounding/) — 2024-09-03 Core 6.0의 Channel Sounding 발표
+- [Bluetooth SIG, Bluetooth Low Energy Primer](https://www.bluetooth.com/bluetooth-le-primer/) — 레거시 광고 채널 37, 38, 39와 주기적 광고의 채널 선택
+- [Bluetooth SIG, Direction Finding](https://www.bluetooth.com/learn-about-bluetooth/feature-enhancements/direction-finding/)
+- [Apple, Location and Maps Programming Guide: Region Monitoring and iBeacon](https://developer.apple.com/library/archive/documentation/UserExperience/Conceptual/LocationAwarenessPG/RegionMonitoring/RegionMonitoring.html) — 보관 문서(2016-03-21 갱신)
+- [Android Developers, Bluetooth Low Energy](https://developer.android.com/guide/topics/connectivity/bluetooth-le.html)
+- [Android Developers, Android 4.3 APIs](https://developer.android.com/about/versions/android-4.3)
+- [Android Developers, Bluetooth permissions](https://developer.android.com/develop/connectivity/bluetooth/bt-permissions)
+- [#NW 0052 - 매장에 들어오자마자 쿠폰이 뜨는 이유? 비콘(Beacon) 90초 완전정리 — 길리랩](https://www.youtube.com/watch?v=3dJpXmbCzg0) — 학습 계기, 비콘의 주파수 도약 설명은 SIG 채널 구성으로 교정하고 신호 종류별 비콘 분류는 확인하지 못해 쓰지 않음
 - [Connectivity Standards Alliance, Zigbee FAQ](https://csa-iot.org/all-solutions/zigbee/zigbee-faq/)
 - [Connectivity Standards Alliance, Zigbee](https://csa-iot.org/all-solutions/zigbee/)
 - [The Connectivity Standards Alliance Announces Zigbee 4.0 and Suzi — Connectivity Standards Alliance](https://csa-iot.org/newsroom/the-connectivity-standards-alliance-announces-zigbee-4-0-and-suzi-empowering-the-next-generation-of-secure-interoperable-iot-devices/) — 2025-11-18 발표, 2026-11-19 규격 문서 목록과 하위 호환 대조
