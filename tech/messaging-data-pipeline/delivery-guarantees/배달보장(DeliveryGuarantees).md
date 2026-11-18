@@ -14,3 +14,4 @@ Delivery semantics, At-Least-Once, Idempotency, Consumer Group — 메시지 처
 - [x] [[At-Least-Once|At-Least-Once (Insert-First 패턴, 상태 머신, 멱등성)]]
 - [x] [[Idempotency-Key|Idempotency Key (고유 식별자, 중복 감지, TTL, Stripe 사례)]]
 - [x] [[Consumer-Group|Consumer Group (Redis Streams, Kafka 비교, 리밸런싱, 파티션 배타성과 처리 배타성)]]
+- [x] [[Hydro-Typed-Delivery-Guarantees|전달 보장을 타입으로 표현하는 분산 프로그래밍 (Hydro의 위치, 순서, 재전송 타입과 nondet!)]]
