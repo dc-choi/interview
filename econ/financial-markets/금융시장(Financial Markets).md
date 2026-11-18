@@ -20,6 +20,7 @@ aliases: ["금융시장(Financial Markets)", "Financial Markets Map"]
 - [[Financial-System-Overview|금융시스템 개관]] — 직접금융과 간접금융, 금융중개, 발행시장과 유통시장, 한국의 예금자보호 범위 ✅
 - [[Market-Stabilization-Mechanisms|시장 안정화 장치]] — 사이드카와 서킷브레이커의 기준, 정지 범위와 해제 조건, 종목별 VI와의 구분, 급락 대응을 거래 장치와 수요 보강, 구조 개선으로 나누는 기준과 2026년 인도네시아의 MSCI 재분류 협의 사례 ✅
 - [[Investor-Flows-and-Market-Funds|투자자별 매매동향과 증시 자금]] — 순매수 합계 0의 항등식, 집계 범위와 잠정치, 두 시장의 주문 배분과 최선집행, 외국인 순매도와 한국은행 증권투자자금의 차이, 투자자예탁금과 은행 수신 ✅
+- [[IPO-Lockup-and-Share-Supply|IPO 보호예수 해제와 시장 공급 물량 읽기]] — lockup의 정의와 180일, 해제와 신주 발행 및 실제 매도의 구분, 미국 재무부 Quarterly Refunding의 입찰 규모와 bill 대응, 차환과 순증의 구분 ✅
 - [[Securities-Settlement-Cycle|증권 결제주기와 T+1 전환]] — 체결과 결제의 구분, 미결제 위험과 담보, 대금 수령, 미수와 배당 기준일 매수 기한의 변화, 미국과 EU, 홍콩의 전환 일정 ✅
 - [[Duplicate-Listing-Regulation|중복상장 규제]] — 2026-08-03 시행 원칙 금지와 예외 허용, 자회사 범위, 모회사 이사회 다섯 의무와 주주동의, 거래소 특례 심사와 제재, 해외 상장 적용, 솔리다임 IPO 검토 중단 사례 ✅
 - [[Mandatory-Tender-Offer|의무공개매수제도]] — 전량과 50%+1주 수량, 기보유분 공제와 선행매수, 안분비례로 갈리는 일반주주의 매도 기회, 2026-09-17 정무위 대안 구조와 미상정 경과, 영국 Rule 9와 EU 지침 비교 ✅
