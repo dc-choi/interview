@@ -54,6 +54,12 @@ Parameter에서는 `baseType` 문자열과 `required` boolean이 필수이고 de
 
 클라이언트는 `data`가 없으면 빈 목록으로 처리하고, 선택 필드 부재를 오류로 보지 않는다. 실행 입력 검증은 항상 있는 baseType과 required를 기준으로 하고, output과 dataType은 실제 응답 형태를 확인한 뒤 해석한다(설계 제안).
 
+### Get Query Type과 dataType union의 geohash
+
+2026-11-18 Get Query Type 명세 대조 기준, 단건 조회는 `GET /api/v1/ontologies/{ontologyRid}/queryTypes/{queryApiName}`이고 scope는 `api:ontologies-read`다. path parameter는 Ontology RID와 query API name뿐이며 query parameter와 request body는 없다. 응답 body는 목록의 원소와 같은 QueryType 객체라 필수와 선택 필드 구분이 같다. 버전 없는 문서 주소와 `/v1/` 주소의 명세 본문은 같다.
+
+2026-11-18 수집한 Get Query Type 명세는 parameter `dataType`과 `output` union, 그 안의 struct field, set/array 원소, map key/value 타입 union에 `geohash` variant를 더했다. 2026-10-19 수집본에는 없었다. 같은 날 수집한 List Query Types 명세도 dataType과 output에 같은 variant를 가진다. 단건과 목록 응답의 파서는 같은 data type 처리를 공유하고, 새 variant를 만나도 metadata 파싱 전체를 실패시키지 않는다(설계 제안). 같은 명세의 baseType 설명 표에는 geohash 표기가 없어 이 타입 parameter의 baseType 문자열은 확인하지 못했다. 이번 확인은 수집한 명세 본문 대조에 한정했고 실제 응답과 SDK 반영은 시험하지 않아 기존 `verified_at`을 유지한다.
+
 ### 실행 값의 직렬화
 
 날짜와 UTC timestamp는 형식 문자열, long/decimal도 문자열이다. object reference는 primary key JSON 값, interface reference는 objectTypeApiName과 primaryKeyValue 조합, object type reference는 API name이다. object set은 RID 또는 definition으로 표현한다. EntrySet은 key/value 배열이며 struct는 JSON object다. 이 직렬화 계약을 일반 JavaScript number나 RID 문자열 하나로 통일하지 않는다.
@@ -76,6 +82,7 @@ Parameter에서는 `baseType` 문자열과 `required` boolean이 필수이고 de
 - [Get outgoing link type](https://www.palantir.com/docs/foundry/api/ontology-resources/object-types/get-outgoing-link-type)
 - [Execute query](https://www.palantir.com/docs/foundry/api/ontology-resources/queries/execute-query)
 - [List Query Types (v1)](https://www.palantir.com/docs/foundry/api/v1/ontology-resources/query-types/list-query-types) — 2026-11-18 응답 필드의 필수 여부 대조
+- [Get Query Type (v1)](https://www.palantir.com/docs/foundry/api/v1/ontology-resources/query-types/get-query-type) — 2026-11-18 단건 조회 계약과 geohash variant 대조
 - [Execute Query (v1)](https://www.palantir.com/docs/foundry/api/v1/ontology-resources/queries/execute-query) — 2026-11-03 V1 실행 계약 부분 대조
 - [Execute Query (v2, Global)](https://www.palantir.com/docs/foundry/api/v2/functions-v2-resources/queries/execute-query) — 2026-11-03 Global Query의 scope와 버전 선택 인자 비교
 
