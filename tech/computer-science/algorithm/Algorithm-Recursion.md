@@ -96,11 +96,14 @@ void draw(int h) {
 
 - 출력이 재귀 호출 뒤에 있어 `draw(1)`의 1층이 가장 먼저 찍히고, 호출이 반환될 때마다 한 층씩 아래에 붙는다. 출력을 호출 앞으로 옮기면 h층부터 찍혀 뒤집힌 계단이 된다. 같은 재귀식이라도 side effect를 호출 앞에 두느냐 뒤에 두느냐가 결과 순서를 정한다.
 - base case를 `h == 0`으로만 두면 음수 입력은 0에서 멀어지기만 해 base case에 닿지 못하고, 호출이 쌓이다 stack 한도를 넘는다. 줄어드는 방향의 모든 값을 덮도록 `h <= 0`으로 둔다.
+- base case가 아예 없어 모든 경로가 자신을 다시 부르면 컴파일러 경고로 잡을 수 있다. Clang은 `-Wall`에 포함된 `-Winfinite-recursion`으로 `all paths through this function will call itself` 경고를 내고 GCC도 12부터 같은 이름의 경고를 `-Wall`에 넣었으며, `-Werror` 빌드에서는 오류가 된다. 끝나는 경로가 하나라도 있으면 경고는 없다. `h == 0`만 검사한 `draw`에 -1을 넘긴 코드는 Apple clang 21의 `-Wall -Wextra`에서 경고 없이 컴파일됐고, macOS에서 실행하자 SIGSEGV로 끝났다(셸 종료 상태 139, [[Stack-vs-Heap#스택 오버플로와 버퍼 오버플로|스택 오버플로]]).
 - 호출 깊이가 h라 call stack을 O(h) 쓰고, 찍는 칸은 `h(h+1)/2`개라 시간은 이중 loop와 같은 Θ(h²)다. 재귀로 바꿔도 일은 줄지 않고, 문제를 자기 자신으로 정의한 구조가 코드에 드러날 뿐이다.
 
 ### 분할 정복
 
 분할 정복(divide and conquer)은 세 단계로 쓴다. divide는 문제를 같은 모양의 더 작은 subproblem으로 나누고, conquer는 각 subproblem을 같은 방식으로 재귀 해결하되 충분히 작으면 직접 답하며, combine은 subproblem의 답을 합쳐 원래 답을 만든다. 보통 둘 이상의 독립 subproblem으로 나누며 merge sort가 대표적이다. merge sort는 divide가 가운데를 자르는 일뿐이고 combine인 merge에 O(n)이 들며, quick sort는 반대로 divide인 partition에 일이 몰리고 combine이 없다([[Algorithm-Sorting|정렬]]). binary search도 divide가 탐색할 절반을 고르고 combine은 고른 쪽의 답을 그대로 쓰는 분할 정복의 예로 든다. subproblem이 겹치면 같은 계산이 반복될 수 있으며, 이때 [[Algorithm-DP|메모이제이션 또는 동적 프로그래밍]]을 검토한다.
+
+독립된 subproblem은 동시에 풀 수 있다. n명이 각자 1을 들고 둘씩 짝지어 더한 뒤 한 명은 빠지기를 되풀이하면 마지막 한 명이 n을 든다. 덧셈은 모두 n-1번으로 한 명이 차례로 세는 것과 같지만, 짝들이 동시에 더하면 ⌈log₂ n⌉ 라운드에 끝난다(141명이면 8라운드, 100만 명이면 20라운드). 이 방식은 전체 연산량(work)을 그대로 두고, 처리기를 무한히 써도 남는 실행 시간(span)을 차례로 셀 때의 n-1단계에서 ⌈log₂ n⌉단계로 줄인다. 묶는 순서가 바뀌어도 같은 답이 나와야 하므로 연산은 결합 법칙을 만족해야 한다([[Java-Parallel-Streams-and-ForkJoin#Parallel reduction 조건|parallel reduction 조건]]).
 
 ### 하노이 탑
 
@@ -130,6 +133,8 @@ side effect를 쓰는 재귀에서는 `push -> call -> pop`, `visited=true -> ca
 - [[Algorithm-DP|동적 프로그래밍 (메모이제이션, 타뷸레이션)]]
 - [[Algorithm-Sorting|병합 정렬과 퀵 정렬]]
 - [[Exhaustive-Search-and-Backtracking|완전탐색과 백트래킹]]
+- [[Stack-vs-Heap|스택 vs 힙 (스택 오버플로)]]
+- [[Java-Parallel-Streams-and-ForkJoin|Java 병렬 스트림과 Fork/Join (parallel reduction)]]
 
 ## 출처
 
@@ -140,8 +145,12 @@ side effect를 쓰는 재귀에서는 `push -> call -> pop`, `visited=true -> ca
 - 인프런, 감자 강사, [재귀](https://www.inflearn.com/courses/lecture?courseId=328971&unitId=116184), [재귀적으로 생각하기](https://www.inflearn.com/courses/lecture?courseId=328971&unitId=116362), [재귀와 하노이 탑](https://www.inflearn.com/courses/lecture?courseId=328971&unitId=116528)
 - YouTube, 쉬운코드, [divide and conquer와 merge sort](https://www.youtube.com/watch?v=aj3vw_KDmxc)
 - 부스트코스, 모두를 위한 컴퓨터 과학 (CS50 2019), [재귀](https://www.boostcourse.org/cs112/lecture/119025)
+- YouTube, Harvard CS50 (2026), [Lecture 3: Algorithms](https://www.youtube.com/watch?v=gmuTjeQUbTM&t=24812s)
 - [바킹독의 실전 알고리즘 0x0B강, 재귀 — YouTube, BaaarkingDog](https://www.youtube.com/watch?v=8vDDJm5EewM)
 - [NIST DADS, recursion](https://xlinux.nist.gov/dads/HTML/recursion.html)
 - [NIST DADS, divide and conquer](https://xlinux.nist.gov/dads/HTML/divideAndConquer.html)
 - [Princeton Algorithms, Programming Model](https://algs4.cs.princeton.edu/11model/)
 - [MDN, Array.prototype.slice()](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Array/slice)
+- [Clang, Diagnostic flags in Clang](https://clang.llvm.org/docs/DiagnosticsReference.html#winfinite-recursion) — 2026-11-18 `-Winfinite-recursion`과 `-Wmost` 대조
+- [GCC 12.1 Manual, Options to Request or Suppress Warnings](https://gcc.gnu.org/onlinedocs/gcc-12.1.0/gcc/Warning-Options.html) — 2026-11-18 대조, 11.4 매뉴얼에는 이 경고가 없음
+- [OpenCilk, Glossary](https://www.opencilk.org/doc/reference/glossary/) — work, span, parallelism의 정의

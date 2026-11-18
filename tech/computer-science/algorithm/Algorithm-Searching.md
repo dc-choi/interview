@@ -64,7 +64,7 @@ return NOT_FOUND
 전화번호부처럼 이름(key)으로 찾아 번호(값)를 돌려주는 검색은 데이터를 묶는 방식이 정확성을 좌우한다.
 
 - **병렬 배열**: `names[i]`와 `numbers[i]`를 따로 두고 같은 index로 짝을 맞춘다. 짝이 맞는다는 불변식을 삽입, 삭제, 정렬하는 모든 코드가 지켜야 한다. 이진 검색을 하려고 `names`만 정렬하면 짝이 어긋나 다른 사람의 번호를 돌려준다.
-- **구조체 배열**: 이름과 번호를 구조체 하나로 묶어 배열에 담는다. 레코드가 한 단위로 움직이므로 정렬과 삭제가 짝을 깨지 않고, 필드를 더해도 검색 코드는 그대로다.
+- **구조체 배열**: 이름과 번호를 구조체 하나로 묶어 배열에 담는다. 레코드가 한 단위로 움직이므로 정렬과 삭제가 짝을 깨지 않고, 필드를 더해도 검색 코드는 그대로다. 구조체의 대입, 복사와 비교 규칙은 [[C-Arrays-and-Strings#구조체로 다른 타입 묶기|C 구조체]]에 있다.
 
 ```c
 #include <stdlib.h>
@@ -101,6 +101,7 @@ const char *find_sorted(const person people[], size_t n, const char *name) {
 - C 문자열은 `strcmp`로 내용을 비교한다. 같으면 0이고, 다르면 결과의 부호가 처음 다른 문자 쌍을 `unsigned char`로 본 차이의 부호와 같다. 정해진 것은 부호뿐이라 -1이나 1이라고 가정하지 않는다. `==`는 두 pointer가 같은 주소인지만 본다.
 - `bsearch`를 쓰려면 배열이 같은 비교 함수 기준으로 key보다 작은 것, 같은 것, 큰 것 순서로 나뉘어 있어야 하고(정렬돼 있으면 충족), 아니면 동작이 정의되지 않는다. 그래서 `qsort(people, n, sizeof people[0], by_name)`처럼 검색과 같은 함수로 정렬한다. 같은 key가 여럿이면 어느 원소를 돌려줄지 정해져 있지 않다.
 - 한 필드만 훑는 검색이 대부분이고 성능이 중요하면 필드별 배열이 캐시에 유리할 수 있다. 이때도 짝을 맞추는 책임은 배열들을 바꾸는 코드에 남는다.
+- 전화번호처럼 숫자로만 보이는 식별자도 산술 대상이 아니면 문자열로 둔다. `+`, `-`, 괄호 같은 기호를 그대로 담고, 정수로 바꾸면 0으로 시작하는 번호의 앞자리 0이 사라진다.
 
 ## 흔한 오류
 
@@ -120,6 +121,7 @@ const char *find_sorted(const person people[], size_t n, const char *name) {
 
 - [부스트코스, 모두를 위한 컴퓨터 과학 (CS50 2019), 검색 알고리즘](https://www.boostcourse.org/cs112/lecture/119019)
 - [부스트코스, 모두를 위한 컴퓨터 과학 (CS50 2019), 선형 검색](https://www.boostcourse.org/cs112/lecture/119021)
+- [YouTube, Harvard CS50 (2026), Lecture 3: Algorithms](https://www.youtube.com/watch?v=gmuTjeQUbTM&t=24812s)
 - [Princeton Algorithms, Elementary Symbol Tables](https://algs4.cs.princeton.edu/31elementary/)
 - [cppreference, bsearch](https://en.cppreference.com/w/c/algorithm/bsearch)
 - [cppreference, qsort](https://en.cppreference.com/w/c/algorithm/qsort)
@@ -135,3 +137,4 @@ const char *find_sorted(const person people[], size_t n, const char *name) {
 - [[Binary-Search-and-LIS|이분탐색, 매개변수 탐색과 LIS]]
 - [[Linear-Data-Structures|배열, 연결 리스트, Stack, Queue와 Deque]]
 - [[Hash-Table|해시 테이블]]
+- [[C-Arrays-and-Strings|C 배열과 문자열 (구조체)]]

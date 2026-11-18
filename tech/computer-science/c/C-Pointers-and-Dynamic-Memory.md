@@ -1,9 +1,9 @@
 ---
 tags: [cs, c, pointer, memory, malloc, free, valgrind, sanitizer]
 status: done
-verified_at: 2026-10-05
+verified_at: 2026-11-18
 category: "CS - C"
-aliases: ["C Pointers and Dynamic Memory", "C 포인터와 동적 메모리", "C 포인터", "malloc과 free", "메모리 누수", "Pass by Value in C"]
+aliases: ["C Pointers and Dynamic Memory", "C 포인터와 동적 메모리", "C 포인터", "malloc과 free", "메모리 누수", "Pass by Value in C", "구조체 padding"]
 ---
 
 # C 포인터와 동적 메모리
@@ -24,13 +24,15 @@ printf("%i\n", *p);          // 50
 - 주소는 보통 16진수로 표기한다. 16진수 한 자리가 4비트, 두 자리가 1바이트라 바이트 경계가 보인다([[Digital-Fundamentals#진법과 변환|진법과 변환]]).
 - `%p`는 `void *`를 기대하므로 다른 객체 포인터는 `(void *)`로 바꿔 넘긴다.
 - `int *p`의 `*`는 타입이 아니라 선언자에 붙는다. `int *p, q;`의 q는 `int`다. 같은 기호가 선언에서는 포인터 타입을, 식에서는 역참조를 뜻한다.
-- 포인터 크기는 구현이 정한다. 64비트 Linux, macOS(LP64)와 64비트 Windows(LLP64)에서는 8바이트다.
-- 아무것도 가리키지 않는 포인터는 `NULL`이다. NULL 역참조는 UB이고 흔히 segmentation fault로 끝나지만 보장은 아니다. 초기화하지 않은 포인터는 정해지지 않은 주소를 담고 있어 더 위험하다.
+- 주소를 `int`에 담는 `int p = &n;`은 단순 대입이 허용하는 암시 변환이 아니다. Clang은 15부터 `-Wint-conversion`을 모든 C 모드에서 기본 오류로 내고, GCC는 14부터 정수와 포인터를 섞은 대입을 타입 오류로 거부한다. Apple clang 21의 메시지는 `incompatible pointer to integer conversion initializing 'int' with an expression of type 'int *'`다.
+- 포인터 크기는 구현이 정한다. 64비트 Linux, macOS(LP64)와 64비트 Windows(LLP64)에서는 8바이트다. 32비트 주소로 구분할 수 있는 바이트는 2^32개(4 GiB)라 그보다 큰 가상 주소 공간에는 더 넓은 포인터가 필요하다. 기준은 장착한 RAM이 아니라 주소 공간이다([[Digital-Fundamentals#CPU의 비트 수와 주소 공간을 따로 읽기|비트 수와 주소 공간]]).
+- 아무것도 가리키지 않는 포인터는 `NULL`이다. NULL 역참조는 UB이고 흔히 segmentation fault로 끝나지만 보장은 아니다. 초기화하지 않은 포인터는 정해지지 않은 주소를 담고 있어 더 위험하다. 문자열 끝의 NUL(`'\0'`)은 값이 0인 문자이고 `NULL`은 null pointer constant라 이름만 비슷하다.
 
 ## 포인터 산술
 
 - `p + 1`은 1바이트가 아니라 `sizeof *p`바이트 뒤의 다음 원소를 가리킨다. `a[i]`는 정의상 `*(a + i)`다.
 - `char *s = "EMMA";`이면 `*(s + 1)`은 `'M'`이고, `&s[0]`, `&s[1]`처럼 이웃 문자의 주소는 1씩 커진다.
+- `%s`는 받은 주소부터 NUL 앞까지 출력하므로 `printf("%s\n", s + 1)`은 `MMA`를 출력한다. 문자열은 시작 주소와 NUL 종단 약속뿐이라 중간 주소에서 시작해도 접미 문자열이 된다.
 - 산술 결과는 같은 배열 안이나 마지막 원소 바로 다음(one past the end)까지만 정의된다. 그 밖을 가리키는 계산은 역참조하지 않아도 UB다. 같은 배열을 가리키는 두 포인터의 차는 원소 수이고 타입은 `ptrdiff_t`다.
 
 ## 문자열 비교와 복사
@@ -101,6 +103,7 @@ free(x);
 ```
 
 - `malloc`(`<stdlib.h>`)은 초기화되지 않은 공간의 시작 주소를, 실패하면 NULL을 돌려준다. C에서는 `void *`가 다른 객체 포인터로 자동 변환되므로 캐스트가 필요 없다. 0으로 채운 공간이 필요하면 `calloc(n, size)`를 쓴다. 배열을 키우는 `realloc`과 연결 리스트 같은 node 구조는 [[Data-Structures-in-C|C로 구현하는 자료구조]]에서 다룬다.
+- 크기는 손으로 더하지 말고 `sizeof`로 계산한다. 구조체에는 멤버 사이와 끝에 padding이 들어갈 수 있어 크기가 멤버 크기의 합보다 클 수 있다. `int`와 자기 타입 포인터 하나를 가진 연결 리스트 node는 64비트 Linux, macOS와 Windows 대상에서 4 + 8 = 12가 아니라 16바이트이고, 자식 포인터가 둘인 트리 node는 20이 아니라 24바이트다(32비트 x86 Linux는 8, 12바이트. Apple clang 21로 대상별 확인). 그래서 `malloc(12)`가 아니라 `malloc(sizeof(node))`로 할당하며, 할당기는 이 크기를 다시 자기 단위로 올려 잡는다.
 - Linux는 기본적으로 낙관적 할당을 하므로 `malloc`이 NULL이 아닌 값을 돌려줘도 실제 메모리가 보장되지는 않는다. 메모리가 고갈되면 OOM killer가 프로세스를 종료할 수 있다.
 - `malloc(0)`의 결과는 구현 정의다.
 - `free(p)`에는 할당 함수가 돌려준 포인터를 한 번만 넘긴다. NULL을 넘기면 아무 일도 하지 않는다. 같은 포인터를 두 번 해제하거나, 해제한 뒤 접근하거나, 할당 함수가 주지 않은 포인터를 해제하면 UB다. 해제 뒤 `p = NULL;`로 두면 실수로 다시 쓰는 경로가 줄어든다.
@@ -125,6 +128,7 @@ free(x);
 - `int *p, q;`에서 q의 타입은?
 - `s == t`가 내용 비교가 아닌 이유와 `strcmp` 반환값의 의미는?
 - `t = s`와 `malloc(strlen(s) + 1)` 뒤 `strcpy`의 차이, `+ 1`이 필요한 이유는?
+- `int`와 포인터 하나를 가진 node의 `sizeof`가 12가 아니라 16인 이유는?
 - `swap(int a, int b)`가 실패하는 이유를 저장 기간과 값 전달로 설명할 수 있는가?
 - 누수, 범위 밖 쓰기, use-after-free를 각각 어떤 도구 출력으로 알아보는가?
 
@@ -137,7 +141,13 @@ free(x);
 - [부스트코스, 모두를 위한 컴퓨터 과학 (CS50 2019), 문자열 복사](https://www.boostcourse.org/cs112/lecture/119031)
 - [부스트코스, 모두를 위한 컴퓨터 과학 (CS50 2019), 메모리 할당과 해제](https://www.boostcourse.org/cs112/lecture/119032)
 - [부스트코스, 모두를 위한 컴퓨터 과학 (CS50 2019), 메모리 교환, 스택, 힙](https://www.boostcourse.org/cs112/lecture/119033)
+- [YouTube, Harvard CS50 (2026), Lecture 4: Memory](https://www.youtube.com/watch?v=gmuTjeQUbTM&t=31987s)
+- [YouTube, Harvard CS50 (2026), Lecture 5: Data Structures](https://www.youtube.com/watch?v=gmuTjeQUbTM&t=40382s)
 - [cppreference, Pointer declaration](https://en.cppreference.com/w/c/language/pointer)
+- [cppreference, Assignment operators](https://en.cppreference.com/w/c/language/operator_assignment)
+- [cppreference, Struct declaration](https://en.cppreference.com/w/c/language/struct)
+- [cppreference, Null-terminated byte strings](https://en.cppreference.com/w/c/string/byte)
+- [cppreference, NULL](https://en.cppreference.com/w/c/types/NULL)
 - [cppreference, Member access operators](https://en.cppreference.com/w/c/language/operator_member_access)
 - [cppreference, Arithmetic operators (pointer arithmetic)](https://en.cppreference.com/w/c/language/operator_arithmetic)
 - [cppreference, Storage-class specifiers](https://en.cppreference.com/w/c/language/storage_class_specifiers)
@@ -151,6 +161,8 @@ free(x);
 - [Valgrind, Quick Start Guide](https://valgrind.org/docs/manual/quick-start.html)
 - [Valgrind, Memcheck: a memory error detector](https://valgrind.org/docs/manual/mc-manual.html)
 - [Clang, AddressSanitizer](https://clang.llvm.org/docs/AddressSanitizer.html)
+- [Clang 15.0.0 Release Notes — LLVM](https://releases.llvm.org/15.0.0/tools/clang/docs/ReleaseNotes.html)
+- [Porting to GCC 14 — GCC](https://gcc.gnu.org/gcc-14/porting_to.html)
 - [MITRE CWE, CWE-122: Heap-based Buffer Overflow](https://cwe.mitre.org/data/definitions/122.html)
 
 ## 관련 문서

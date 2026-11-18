@@ -17,6 +17,7 @@ node가 value와 다음 node reference를 가진다. doubly linked list는 previ
 - index나 value를 찾아가는 과정: O(n)
 - random access: O(n)
 - node별 allocation과 pointer 때문에 memory overhead와 cache locality가 불리할 수 있음
+- 64비트 Linux, macOS와 Windows의 C에서 `int` 하나를 담는 node는 padding까지 16바이트라 `int` 배열 원소(4바이트)의 4배이고, 여기에 node마다 할당기의 블록 단위가 더해짐([[C-Pointers-and-Dynamic-Memory#동적 할당: malloc과 free|sizeof와 padding]])
 
 연결 리스트의 삽입이 항상 O(1)이라는 설명은 target node를 이미 알고 있다는 전제가 빠진 것이다. 위치를 먼저 찾아야 하면 전체 연산은 O(n)이다. 검색도 같은 이유로 느리다. 정렬된 배열은 가운데 원소로 O(1)에 가서 이진 검색이 O(log n)이지만, 연결 리스트는 정렬돼 있어도 가운데 node까지 걸어가야 해 이진 검색을 흉내 내도 이동이 n/2 + n/4 + ... 로 n에 가까워 O(n)이다. 정렬되지 않은 배열의 검색도 O(n)이므로 배열이 검색의 점근 비용에서 앞서는 것은 정렬을 유지할 때다([[Binary-Search-and-LIS|이분탐색]]).
 
@@ -48,6 +49,7 @@ node가 value와 다음 node reference를 가진다. doubly linked list는 previ
 - [Princeton Algorithms, Bags, Queues, and Stacks](https://algs4.cs.princeton.edu/13stacks/)
 - [BJ.22 리스트, array list와 linked list — YouTube, 쉬운코드](https://www.youtube.com/watch?v=xvi-n11kym0)
 - [연결 리스트: 시연 — 부스트코스, 모두를 위한 컴퓨터 과학 (CS50 2019)](https://www.boostcourse.org/cs112/lecture/119040)
+- [Lecture 5: Data Structures — YouTube, Harvard CS50 (2026)](https://www.youtube.com/watch?v=gmuTjeQUbTM&t=40382s)
 
 ## 관련 문서
 
@@ -55,6 +57,7 @@ node가 value와 다음 node reference를 가진다. doubly linked list는 previ
 - [[Linear-Data-Structures-Array|배열과 동적 배열]]
 - [[Linear-Data-Structures-Stack-Queue-Deque|Stack, Queue와 Deque]]
 - [[Data-Structures-in-C|C로 구현하는 자료구조]]
+- [[C-Pointers-and-Dynamic-Memory|C 포인터와 동적 메모리 (sizeof와 padding)]]
 - [[Functional-Data-Structures|함수형 자료구조 (불변 연결 리스트와 구조 공유)]]
 - [[Binary-Search-and-LIS|이분탐색]]
 - [[Hash-Table-LRU-Cache|LRU Cache (hash map과 doubly linked list)]]

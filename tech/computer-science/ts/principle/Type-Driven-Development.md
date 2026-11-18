@@ -122,6 +122,7 @@ const calculate = (expression: string): number => evaluate(tokenize(expression))
 - 타입을 지나치게 많이, 복잡하게 만들면 작성과 읽기가 모두 어려워진다. 실수 비용이 큰 값과 경계에서 섞이기 쉬운 값부터 타입으로 구분한다.
 - 타입은 기본적으로 빌드 결과에서 지워지므로 외부 입력은 런타임 검증이 필요하다.
 - 설계자가 타입으로 규칙을 만들면 다른 개발자가 잘못 쓰기 어려운 API가 된다. 이 규칙은 문서보다 강제력이 크다.
+- 타입을 먼저 정한다는 순서가 설계를 처음에 한 번에 확정하는 큰 사전 설계(Big Design Up Front)를 뜻하지는 않는다. 테스트나 문서처럼 타입도 도메인 이해가 바뀔 때마다 다시 고치며 설계와 API를 다듬는 도구로 쓴다는 실무 견해가 있다. Rust에서 열거형과 정적 디스패치로 도메인을 모델링하는 선택은 [[Rust-Abstraction-Choices|Rust의 추상화 선택과 비용]]에 있다.
 
 ## 체크포인트
 
@@ -137,6 +138,7 @@ const calculate = (expression: string): number => evaluate(tokenize(expression))
 - [TypeScript Wiki, FAQ](https://github.com/microsoft/TypeScript/wiki/FAQ)
 - [Kotlin Documentation, Generics: in, out, where](https://kotlinlang.org/docs/generics.html)
 - [Parse, don't validate — lexi-lambda.github.io, Alexis King](https://lexi-lambda.github.io/blog/2019/11/05/parse-don-t-validate/)
+- [How Rust Changed Me As A Developer — Secret Weblog, Martijn Faassen](https://blog.startifact.com/posts/how-rust-changed-me/) — 2026-11-16 개인 회고. 타입을 반복적으로 고치는 설계 도구로 쓰는 견해의 출처
 
 ## 관련 문서
 

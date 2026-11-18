@@ -14,7 +14,7 @@ aliases: ["로보틱스", "Robotics"]
 - [x] [[Robot-Manufacturing-and-Serviceability|로봇 제작과 정비성]] — 제작과 조립의 피드백, 모듈 교체와 복귀, 제작 시간과 출하량의 구분, 조립 자동화의 원가 조건
 - [x] [[Tactile-Grasp-Control|촉각 기반 파지 제어]] — 접촉과 미끄러짐 감지, 센서 보정, 실험 범위와 실패 조건
 
-- [x] [[Physical-AI-and-Liquid-Control|피지컬 AI와 리퀴드 제어]] — 몸체와 제어의 공동 설계, 연속시간 동역학과 환경 전이
+- [x] [[Physical-AI-and-Liquid-Control|피지컬 AI와 리퀴드 제어]] — 몸체와 제어의 공동 설계, 판단과 반사의 계층, 통신 지연과 화성 로버의 현장 자율, 연속시간 동역학과 환경 전이
 - [x] [[Robot-Policy-Training-Pipeline|로봇 정책 학습과 평가 파이프라인]] — VLA 미세조정, 시연 데이터 증강, 시뮬레이터 폐루프 평가와 성공률 관문, 모델 레지스트리 승인, 범용 프런티어 모델의 직접 제어와 계층 구성
 
 ## 관련 문서

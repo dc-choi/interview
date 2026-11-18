@@ -188,6 +188,7 @@ const isValidWebhookSignature = ({ rawBody, signatureHeader, secret }: VerifySig
 - [[TCP-Header|TCP 헤더 (체크섬 계산)]]
 - [[IPv4-Header|IPv4 헤더 (헤더 체크섬)]]
 - [[Physical-DataLink-Layer|물리와 데이터링크 계층 (FCS)]]
+- [[Error-Correcting-Codes|오류 정정 부호 (검출을 넘어 정정, 재전송과 FEC의 선택)]]
 - [[Hash-Table|해시 테이블]]
 - [[Hash-Collision|해시 충돌]]
 - [[Password-Hashing|패스워드 해싱 (암호학적 해시 조건, 해시 DoS)]]

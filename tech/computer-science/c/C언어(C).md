@@ -11,11 +11,11 @@ C는 메모리 주소, 객체 수명과 범위 검사를 프로그래머에게 �
 
 ## 목차
 
-- [x] [[C-Build-and-Debugging|빌드와 디버깅 (전처리, 컴파일, 어셈블, 링크, make, 디버거)]]
+- [x] [[C-Build-and-Debugging|빌드와 디버깅 (전처리, 컴파일, 어셈블, 링크, 번역의 정보 손실, make, 디버거와 IDE)]]
 - [x] [[C-Types-Control-Flow-and-Functions|자료형, 제어 흐름과 함수 (데이터 모델, 연산자, 프로토타입, overflow와 부동소수점 오차)]]
-- [x] [[C-Arrays-and-Strings|배열과 문자열 (VLA, NUL 종단, 문자 분류, 명령행 인자)]]
-- [x] [[C-Pointers-and-Dynamic-Memory|포인터와 동적 메모리 (포인터 산술, 값 전달, 저장 기간, malloc과 free, Valgrind)]]
-- [x] [[C-Standard-IO-and-Files|표준 입출력과 파일 (scanf, fgets, fopen, fread, 매직 넘버)]]
+- [x] [[C-Arrays-and-Strings|배열과 문자열 (초기화 목록, VLA, 구조체, NUL 종단, 문자 분류, 명령행 인자와 종료 상태)]]
+- [x] [[C-Pointers-and-Dynamic-Memory|포인터와 동적 메모리 (포인터 산술, 값 전달, 저장 기간, malloc과 free, 구조체 padding, Valgrind)]]
+- [x] [[C-Standard-IO-and-Files|표준 입출력과 파일 (scanf, fgets, fopen, fread와 fwrite 파일 복사, 매직 넘버와 BMP 구조)]]
 
 ## 학습 순서
 

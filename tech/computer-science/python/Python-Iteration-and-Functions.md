@@ -1,7 +1,7 @@
 ---
 tags: [python, iteration, functions, programming]
 status: done
-verified_at: 2026-10-09
+verified_at: 2026-11-18
 category: "CS&프로그래밍(CS&Programming)"
 aliases: ["Python Iteration and Functions", "Python 반복문과 함수"]
 ---
@@ -45,6 +45,37 @@ assert list(enumerate(columns)) == [(0, "product"), (1, "quantity")]
 assert list(enumerate(columns, start=1)) == [(1, "product"), (2, "quantity")]
 ```
 
+## 반복의 else와 do-while 대체
+
+`for`와 `while`의 `else` 절은 반복이 `break` 없이 끝났을 때 실행되고, `break`로 끝나면 실행되지 않는다. 반복 대상이 비어 있어도 실행된다. 찾았는지 기록하는 플래그 변수 없이 찾지 못한 경우를 처리한다.
+
+```python
+def find(items, target):
+    for item in items:
+        if item == target:
+            result = "found"
+            break
+    else:
+        result = "not found"
+    return result
+
+assert find(["Python", "C"], "C") == "found"
+assert find(["Python", "C"], "SQL") == "not found"
+assert find([], "SQL") == "not found"
+```
+
+Python에는 do-while 문이 없다. 적어도 한 번 실행한 뒤 조건을 만족할 때까지 되묻는 입력 검증은 `while True`와 `break`로 쓴다. 정수가 아닌 입력은 `ValueError`이므로 [[Python-Values-Types-and-Errors#예외: 결과와 실패 신호를 분리한다|예외 처리]]와 함께 쓴다. `if`, `for`, `while`은 스코프를 만들지 않아 반복 안에서 대입한 `height`를 반복 뒤에서도 쓸 수 있다.
+
+```python
+while True:
+    height = int(input("Height: "))
+    if height > 0:
+        break
+```
+
+- 값을 쓰지 않는 반복 변수는 `for _ in range(3):`처럼 `_`로 이름 짓는 경우가 많다. `_`는 언어가 특별히 다루는 이름이 아니라 쓰지 않는 변수에 흔히 쓰는 일반 식별자다.
+- `++`와 `--` 연산자가 없어 `i += 1`로 쓴다. `x++`는 `SyntaxError`지만 `++x`는 단항 `+`를 두 번 적용한 식이라 오류 없이 값을 바꾸지 않는다.
+
 ## print와 return의 차이
 
 `def`로 함수를 정의하고 `함수명(인자)`로 호출한다. 함수 이름만 적는 것은 호출이 아니다. `print`는 출력하고 `return`은 호출자에게 값을 돌려준다. `return` 없이 끝나거나 값 없이 `return`하면 반환값은 `None`이다.
@@ -61,6 +92,44 @@ assert add(2, 3) == 5
 ```
 
 다음 계산에 쓸 결과라면 출력만 하지 말고 반환한다. 화면에 숫자가 보였다는 이유로 반환값까지 그 숫자라고 판단하지 않는다.
+
+## 키워드 인자와 기본값
+
+공식 문서의 시그니처 `print(*objects, sep=' ', end='\n', file=None, flush=False)`는 위치 인자를 몇 개든 받고(`*objects`), 그 뒤의 `sep`, `end`, `file`, `flush`는 기본값이 있어 생략할 수 있으며 넘길 때는 반드시 이름을 붙인다는 뜻이다.
+
+```python
+print("?", "?", sep="")     # ??와 줄바꿈
+print("?" * 4, end="")      # ????, 줄바꿈 없음
+print()                     # end의 기본값 "\n"만 출력
+
+def meow(times=1):
+    return "meow\n" * times
+
+assert meow() == "meow\n"
+assert meow(times=3) == meow(3) == "meow\n" * 3
+```
+
+기본값이 있는 매개변수는 호출에서 생략할 수 있고, 호출할 때 키워드 인자는 위치 인자 뒤에 둔다. 인자가 많은 함수는 이름을 붙여 넘기면 순서를 외우지 않아도 되고 읽는 사람도 의미를 바로 안다. 매개변수 목록에서 `*` 뒤에 둔 매개변수는 키워드로만 받는다(`def f(a, *, verbose=False)`).
+
+## 정의 시점과 main 관용구
+
+`def`는 실행되는 문장이다. 실행되면 함수 이름을 함수 객체에 묶을 뿐 본문은 호출할 때 실행한다. 그래서 정의보다 위에서 호출하면 `NameError: name 'meow' is not defined`가 나고, C처럼 파일 위에 프로토타입을 선언하는 방법은 없다.
+
+```python
+def main():
+    print(meow(3), end="")  # 호출 시점에는 meow가 정의되어 있다
+
+
+def meow(times):
+    return "meow\n" * times
+
+
+if __name__ == "__main__":
+    main()
+```
+
+- 진입 함수를 `main()`으로 두는 것은 관례일 뿐 Python이 자동으로 부르지 않는다. 모든 정의가 끝난 파일 끝에서 호출한다. 위처럼 최상위 정의 사이를 빈 줄 두 개로 띄우는 것은 PEP 8의 권고다.
+- `python3 cat.py`로 실행한 파일의 `__name__`은 `"__main__"`이고, import한 모듈의 `__name__`은 모듈 이름이다. 위 조건문 덕분에 다른 코드가 이 파일을 import해도 `main()`이 실행되지 않아 같은 파일을 스크립트와 모듈로 함께 쓸 수 있다.
 
 ## 여러 결과와 빈 입력의 계약
 
@@ -101,13 +170,21 @@ for operation in (bounds, mean):
 1. `range(2, 7, 2)`의 값과 반복 횟수를 실행 전에 설명할 수 있는가?
 2. `show_sum()`의 출력과 반환값은 왜 다른가?
 3. 빈 데이터에서 평균 0을 반환하면 실제 평균 0인 데이터와 어떻게 구분할 것인가?
+4. `if __name__ == "__main__":` 없이 맨 끝에서 `main()`을 부르는 파일을 다른 코드가 import하면 무엇이 달라지는가?
 
 ## 출처
 
 - [Python Documentation, More Control Flow Tools](https://docs.python.org/3/tutorial/controlflow.html)
 - [Python Documentation, Built-in Functions](https://docs.python.org/3/library/functions.html)
 - [Python Documentation, Tuples and Sequences](https://docs.python.org/3/tutorial/datastructures.html#tuples-and-sequences)
+- [Python Documentation, Compound statements](https://docs.python.org/3/reference/compound_stmts.html) — 함수 정의의 실행 시점, `for`의 `else`
+- [Python Documentation, Lexical analysis](https://docs.python.org/3/reference/lexical_analysis.html) — `_` 식별자
+- [Python Documentation, Modules](https://docs.python.org/3/tutorial/modules.html) — 모듈을 스크립트로 실행하기
+- [PEP 8, Style Guide for Python Code](https://peps.python.org/pep-0008/)
+- [YouTube, Harvard CS50 (2026), Lecture 6: Python](https://www.youtube.com/watch?v=gmuTjeQUbTM&t=47955s)
 
 ## 관련 문서
 
+- [[Python-Values-Types-and-Errors|Python 값, 타입과 예외]]
+- [[Python-Modules-and-File-IO|Python 모듈, 명령행과 파일 입출력]]
 - [[CS&프로그래밍(CS&Programming)|CS와 프로그래밍]]

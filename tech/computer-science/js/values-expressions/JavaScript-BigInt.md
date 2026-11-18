@@ -1,7 +1,7 @@
 ---
 tags: [cs, javascript, bigint, precision]
 status: done
-verified_at: 2026-10-01
+verified_at: 2026-11-18
 category: "CS - JavaScript"
 ---
 
@@ -22,6 +22,8 @@ console.log(alreadyRounded); // 9007199254740992n
 ```
 
 서버가 JSON number로 보낸 큰 정수를 클라이언트에서 BigInt로 바꿔도 앞서 손실된 비트는 돌아오지 않는다. 큰 ID는 문자열로 전송하는 등 경계 계약부터 정한다. `Number(bigint)`는 범위를 확인한 뒤 명시적으로 사용한다.
+
+시각을 상위 비트에 두는 Snowflake 계열 64비트 ID는 운영 초기에 이미 이 범위를 넘는다. Twitter Snowflake는 기준 시각(custom epoch)부터 흐른 밀리초를 41비트에 담아 22비트 왼쪽으로 밀고, 아래 22비트에 machine ID 10비트와 sequence 12비트를 둔다. 경과 시간이 2^31ms, 약 24.9일이 되면 가장 작은 ID도 2^31 × 2^22 = 2^53이므로 그 뒤에 발급한 ID는 모두 안전 범위 밖이다. 이런 ID는 첫 발급부터 문자열 같은 경계 계약을 둔다.
 
 ## 연산 규칙
 
@@ -64,6 +66,8 @@ const restoredId = BigInt(data.id); // 실제 경계에서는 형식과 길이�
 
 - [BigInt: arbitrary-precision integers in JavaScript — V8](https://v8.dev/features/bigint)
 - [ECMAScript, BigInt Objects](https://tc39.es/ecma262/multipage/numbers-and-dates.html#sec-bigint-objects)
+- [IdWorker.scala — Twitter Snowflake snowflake-2010](https://github.com/twitter-archive/snowflake/blob/snowflake-2010/src/main/scala/com/twitter/service/snowflake/IdWorker.scala) — 2026-11-18 custom epoch, 비트 폭과 22비트 shift 대조. 같은 태그의 README가 41비트 시각, 10비트 machine ID, 12비트 sequence 구성을 설명
+- [Math Every Programmer ACTUALLY Needs — YouTube, The Coding Gopher](https://www.youtube.com/watch?v=-gBgZpC6ehA) — 2026-11-17 업로드, 음성 인식 전사 기준. Snowflake ID가 약 25일 뒤 2^53을 넘는다는 언급이 보강의 계기이며 수치는 위 소스로 다시 계산
 
 ## 관련 문서
 

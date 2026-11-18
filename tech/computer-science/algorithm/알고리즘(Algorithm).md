@@ -13,10 +13,11 @@ aliases: ["Algorithm"]
 - [x] [[NPC-Attack-Scheduling|NPC 공격 스케줄링]] — 접근과 공격의 예산, 위치 배정과 쿨다운
 - [x] [[Crowd-Flow-Field-Navigation|군중 흐름장 내비게이션]] — 목적지별 흐름장, 밀도와 속도장, 장 교체 지연, 희소 격자와 표현 비용 절감
 - [x] [[Contraction-Hierarchies|축약 계층과 도로망 최단 경로]] — 전처리, shortcut, CCH의 비용 갱신과 경로 복원
-- [x] [[Adversarial-Search|적대적 탐색과 미니맥스]] — 게임 상태, 상대의 최선, 알파 베타 가지치기와 깊이 제한
+- [x] [[Search-Problem-Formulation|탐색 문제의 정식화와 탐색 전략]] — 상태와 전이 모델, frontier와 탐색 집합, 무정보와 정보 탐색, 탐욕적 최우선 탐색과 A*, 중복 규칙과 목표 판정 시점
+- [x] [[Adversarial-Search|적대적 탐색과 미니맥스]] — 게임 상태와 함수 표기, 상대의 최선, 알파 베타 가지치기, 깊이 제한과 평가 함수
 - [x] [[Audio-Fingerprinting|오디오 핑거프린팅]] — 스펙트로그램 피크 쌍, 해시 후보와 시간차 검증, 녹음 식별의 한계, 저작권 관리의 참조 자격과 권리 충돌
 - [x] [[Algorithm-Complexity|시간복잡도와 Big O, 케이스별 분석, 함수 호출 비용, P-NP (결정 문제, 최적화 문제)]]
-- [x] [[Algorithm-Recursion|재귀 (기저 조건, 콜스택, 하향식 계산)]]
+- [x] [[Algorithm-Recursion|재귀 (기저 조건, 무한 재귀 경고, 콜스택, 하향식 계산, 분할 정복의 병렬 합산과 work, span)]]
 - [x] [[Algorithm-Searching|검색 (선형 검색, 이진 검색, 정렬해 두고 찾을지 판단, 레코드 검색)]]
 - [x] [[Algorithm-Sorting|정렬 (버블, 선택, 삽입, 병합, 퀵, 힙, 비교 정렬의 하한)]]
 - [x] [[Algorithm-DP|동적 프로그래밍 (메모이제이션, 타뷸레이션)]]
@@ -33,6 +34,9 @@ aliases: ["Algorithm"]
 - [x] [[Algorithm-Quad-Remeshing|쿼드 리메싱/리토폴로지 (조합 문제의 연속 완화 + 정수 제약, 위상 하한, 파이프라인 분해)]]
 
 - [x] [[Constraint-Based-Resource-Placement|제약 기반 자원 배치 (하드 제약과 목적, 지역 탐색, MIP와 최적성)]]
+- [x] [[Local-Search-and-Simulated-Annealing|지역 탐색과 담금질 기법 (언덕 오르기 변형, 국소 최적과 무작위 재시작, 온도와 수락 확률, 2-opt)]]
+- [x] [[Linear-Programming|선형 계획법 (정식화와 변환, 단체법과 내부점법, SciPy linprog, 정수 조건과 LP 완화)]]
+- [x] [[Constraint-Satisfaction-Problem|제약 충족 문제 (아크 일관성과 AC-3, 백트래킹과 MAC, MRV, 차수 휴리스틱, LCV)]]
 
 ## 예제 코드 폴더
 - `recursion/` — 팩토리얼, 하노이 탑, pow, 배열 합

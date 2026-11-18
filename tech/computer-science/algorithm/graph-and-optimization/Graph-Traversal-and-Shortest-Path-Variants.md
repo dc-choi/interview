@@ -113,4 +113,5 @@ adjacency list에서 간선을 실제로 지우려면 그 간선을 찾아 목�
 - [[Graph-Algorithms-and-Optimization|그래프 알고리즘 인덱스]]
 - [[Exhaustive-Search-and-Backtracking|상태 공간 탐색]]
 - [[IDA-Star-Pattern-Database|IDA*와 패턴 데이터베이스]]
+- [[Search-Problem-Formulation|탐색 문제의 정식화와 탐색 전략]] — 상태 공간 탐색의 구성 요소, h만 보는 탐욕적 최우선 탐색과 A*의 비교
 - [[Heap|Priority Queue]]

@@ -50,3 +50,6 @@ Meta의 Rebalancer는 배치 문제를 DSL로 정의하고 solver를 바꾸어 �
 
 - [[Graph-Optimization-Algorithms|Greedy, MST와 최대 유량]]
 - [[Capacity-Planning|캐퍼시티 플래닝]]
+- [[Local-Search-and-Simulated-Annealing|지역 탐색과 담금질 기법]] — 이웃 정의, 국소 최적과 무작위 재시작
+- [[Linear-Programming|선형 계획법]] — 정수 조건을 뺀 LP 완화와 MIP의 한계값
+- [[Constraint-Satisfaction-Problem|제약 충족 문제]] — 하드 제약만으로 배치를 찾는 정식화

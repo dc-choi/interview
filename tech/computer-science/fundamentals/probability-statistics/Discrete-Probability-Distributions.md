@@ -2,7 +2,7 @@
 tags: [cs, statistics, probability, binomial, geometric, poisson]
 status: done
 category: "CS - 기초"
-aliases: ["이산 확률분포", "Discrete Probability Distributions", "이항분포와 기하분포", "포아송분포"]
+aliases: ["이산 확률분포", "Discrete Probability Distributions", "이항분포와 기하분포", "포아송분포", "범주형 분포", "Categorical Distribution"]
 ---
 
 # 이산 확률분포와 관측 단위
@@ -14,11 +14,14 @@ aliases: ["이산 확률분포", "Discrete Probability Distributions", "이항�
 | 분포 | 확률변수 | 고정하는 것 | 가능한 값 |
 |---|---|---|---|
 | 베르누이 | 한 번의 성공 여부 | 한 시행의 성공확률 `p` | 0, 1 |
+| 범주형 | 한 번의 결과가 어느 범주인지 | 범주별 확률(합 1) | 정해진 범주들 |
 | 이항 | `n`번 중 성공 횟수 | 시행 수 `n`, 성공확률 `p` | 0부터 `n`까지의 정수 |
 | 기하 | 첫 성공이 나올 때까지의 시행 수 | 성공확률 `p` | 1, 2, 3, … |
 | 포아송 | 정해진 구간 안의 사건 수 | 그 구간의 기대 사건 수 `λ` | 0, 1, 2, … |
 
 성공은 분석자가 정한 사건의 이름이다. 구매, 오류나 실패도 셀 사건으로 정의할 수 있다. 두 결과만 있다는 조건은 한 시행의 베르누이 모형에 해당한다. 이항분포로 여러 시행의 성공 횟수를 계산하려면 고정된 시행 수, 시행 간 독립성과 같은 성공확률도 필요하다.
+
+AI의 확률 모형은 날씨나 배송 결과처럼 값이 숫자가 아닌 변수도 확률변수로 다룬다. 이런 범주형 확률변수의 분포는 값의 순서를 정해 두고 벡터로 쓴다. 배송 결과(정시, 지연, 취소)의 가상 분포를 `P(배송) = ⟨0.6, 0.3, 0.1⟩`로 쓰면 각 값은 0과 1 사이이고 합은 1이다. 베르누이분포는 범주가 둘인 범주형 분포다.
 
 ## 이항분포: 정해진 횟수에서 성공을 센다
 
@@ -89,6 +92,9 @@ aliases: ["이산 확률분포", "Discrete Probability Distributions", "이항�
 - [UC Berkeley, Law of Large Numbers](https://www.stat.berkeley.edu/~stark/Java/Html/lln.htm) — 베르누이 성공 비율의 수렴과 개별 시행열의 한계
 - [NIST/SEMATECH e-Handbook of Statistical Methods, Normal Distribution](https://www.itl.nist.gov/div898/handbook/eda/section3/eda3661.htm) — 정규분포와 표준정규분포의 구분
 - [UC Berkeley, STAT 135, Probability Prerequisites](https://www.stat.berkeley.edu/~ani/s201af14.old/prereq.html) — 큰 수의 법칙과 유한 분산, 독립 동일 분포 조건의 중심극한정리
+- [Harvard, CS50's Introduction to Artificial Intelligence with Python, Lecture 2 Uncertainty](https://cs50.harvard.edu/ai/2020/notes/2/) — 2026-11-18 값의 영역을 가진 확률변수와 분포의 벡터 표기 대조
+- [Categorical distribution — Wikipedia](https://en.wikipedia.org/wiki/Categorical_distribution) — 2026-11-18 범주별 확률의 범위와 합, 베르누이분포의 일반화 대조
+- [YouTube, freeCodeCamp.org, Harvard CS50's Artificial Intelligence with Python – Full University Course](https://www.youtube.com/watch?v=5NgNicANyqM&t=14225s) — Uncertainty 구간의 확률변수와 확률분포
 
 ## 관련 문서
 

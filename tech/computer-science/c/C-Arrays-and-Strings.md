@@ -1,9 +1,9 @@
 ---
-tags: [cs, c, array, string, null-terminator, command-line]
+tags: [cs, c, array, string, null-terminator, command-line, struct, exit-status]
 status: done
-verified_at: 2026-10-05
+verified_at: 2026-11-18
 category: "CS - C"
-aliases: ["C Arrays and Strings", "C 배열과 문자열", "널 종단 문자열", "Null-terminated String", "argc argv", "명령행 인자"]
+aliases: ["C Arrays and Strings", "C 배열과 문자열", "널 종단 문자열", "Null-terminated String", "argc argv", "명령행 인자", "C 구조체", "C Struct", "종료 상태", "Exit Status"]
 ---
 
 # C 배열과 문자열
@@ -20,6 +20,7 @@ scores[2] = 33;
 ```
 
 - `int` 3개가 연속으로 놓이고 index는 0부터 2까지다. `scores[i]`는 정의상 `*(scores + i)`와 같다.
+- 값을 미리 알면 `int scores[] = {72, 73, 33};`처럼 초기화 목록으로 선언한다. 크기를 비우면 값의 개수(3)가 크기가 되고, `int z[4] = {1};`처럼 목록이 짧으면 나머지 원소는 0이 된다. 크기보다 값이 많으면 오류지만 Apple clang 21은 `excess elements in array initializer` 경고만 내고 컴파일했다(`-pedantic-errors`면 오류).
 - 실행 중 범위 검사가 없다. `scores[3]`처럼 범위 밖에 접근하면 UB이고, 오류 없이 이웃 데이터를 읽거나 덮어쓸 수 있다.
 - 배열은 `a = b`로 대입해 복사할 수 없다. 원소별로 복사하거나 `memcpy`를 쓴다.
 - `sizeof scores`는 배열 전체 바이트 수이고 `sizeof scores / sizeof scores[0]`이 원소 개수다. 배열이 포인터로 바뀐 뒤에는 이 계산이 성립하지 않는다.
@@ -51,13 +52,32 @@ float average(int length, const int array[])
 - 원본 배열의 주소가 넘어가므로 함수가 원소를 바꾸면 호출자 배열이 바뀐다. 읽기만 하면 `const`로 의도를 드러낸다.
 - 정수 합을 그대로 나누면 소수점이 버려진다(178 / 3은 59). 나누기 전에 실수로 바꾼다.
 
+## 구조체로 다른 타입 묶기
+
+배열 원소는 모두 같은 타입이다. 이름과 번호처럼 함께 다닐 값은 구조체로 묶어 구조체 배열에 담는다. 병렬 배열로 두면 짝을 맞추는 책임이 그 배열을 바꾸는 모든 코드에 퍼진다([[Algorithm-Searching#레코드 검색|레코드 검색]]).
+
+```c
+typedef struct
+{
+    char name[16];
+    const char *number;
+} person;
+
+person people[] = {{"Alice", "+1-617-555-0100"}, {.name = "Bob"}};
+person copy = people[0];  // 모든 멤버를 복사한다
+```
+
+- 멤버는 `people[0].name`처럼 `.`으로, 구조체를 가리키는 포인터에서는 `->`로 접근한다([[Data-Structures-in-C#자기 참조 구조체로 node 정의하기|자기 참조 구조체]]). `.name =`처럼 멤버를 지정해 초기화할 수 있고 지정하지 않은 멤버는 0이나 NULL이 된다.
+- 배열과 달리 구조체는 `=`로 대입되고 함수에도 값으로 복사돼 넘어간다. 배열 멤버 `name`은 내용까지 복사되지만 포인터 멤버 `number`는 주소만 복사돼 원본과 같은 문자열을 가리킨다. 원본을 바꾸거나 큰 복사를 피하려면 `const person *`처럼 주소를 넘긴다.
+- 구조체끼리 `==`로 비교하면 컴파일 오류다. 멤버별로 비교하고 문자열 멤버는 `strcmp`를 쓴다. 멤버 사이와 끝에 들어갈 수 있는 패딩 바이트의 값은 정해지지 않아 `memcmp` 비교도 믿을 수 없다(패딩과 `sizeof`는 [[C-Pointers-and-Dynamic-Memory#동적 할당: malloc과 free|동적 할당]]).
+
 ## 문자열은 NUL로 끝나는 char 배열
 
 `"HI!"`는 메모리에 `H`, `I`, `!`, `\0` 4바이트로 놓인다. 문자열 길이는 첫 NUL 앞까지의 문자 수(3)이고 저장에는 NUL 몫 1바이트가 더 든다.
 
 - 배열은 자기 길이를 들고 다니지 않으므로 끝을 표시할 약속이 필요하다. `printf`의 `%s`, `strlen`, `strcmp`는 모두 NUL을 만날 때까지 진행한다. NUL이 없는 배열을 넘기면 배열 밖까지 읽는 UB다.
 - `char *s = "EMMA";`의 `s`는 프로그램 내내 존재하는 문자열 리터럴 배열의 첫 문자를 가리킨다. 리터럴을 수정하면 UB이고 읽기 전용 메모리에 놓일 수 있으므로 `const char *s = "EMMA";`로 선언해 수정 시도를 컴파일러가 막게 한다.
-- `char s[] = "EMMA";`는 리터럴 내용을 복사한 수정 가능한 5바이트 배열이다.
+- `char s[] = "EMMA";`는 리터럴 내용을 복사한 수정 가능한 5바이트 배열이다. 크기를 `char s[4]`로 적으면 C에서는 NUL을 버린 4바이트 배열이 돼 문자열 함수에 넘길 수 없다. Apple clang 21은 `-Wextra`에서만 경고했고 C++에서는 오류다.
 - 같은 내용의 리터럴이 같은 주소를 공유할지는 정해져 있지 않다.
 - 교육용 라이브러리의 `string`은 `typedef char *string;`이다. 문자열 자체가 아니라 첫 문자의 주소를 담는 포인터이고, 이 사실이 비교와 복사의 함정을 만든다([[C-Pointers-and-Dynamic-Memory#문자열 비교와 복사|문자열 비교와 복사]]).
 
@@ -114,9 +134,15 @@ int main(int argc, char *argv[])
 
 - `argc`는 0 이상의 인자 개수, `argv`는 문자열 포인터 배열이다. 크기는 최소 `argc + 1`이고 `argv[argc]`는 NULL이다.
 - `argc`가 0보다 크면 `argv[0]`은 프로그램 이름이고, 환경이 이름을 주지 못하면 빈 문자열이다. `argc`가 0이면 `argv[0]`은 NULL이라 확인 없이 `%s`로 출력하면 안 된다. 사용자 인자는 `argv[1]`부터다.
+- `argc` 검사 없이 `argv[1]`을 출력하면 인자 없이 실행했을 때 NULL을 `%s`에 넘긴다. `%s`는 문자 배열을 가리키는 포인터를 요구하므로 UB다. glibc와 macOS libc는 `(null)`을 출력하지만 방어 동작일 뿐이고, glibc 매뉴얼도 일부러 넘기지 말라고 적는다.
 - 인자는 언제나 문자열로 들어온다. 숫자가 필요하면 `strtol` 같은 변환 함수로 바꾸고 실패를 검사한다.
 - `argv`의 문자열은 프로그램이 수정할 수 있고, 수정은 호스트 환경으로 돌아가지 않는다.
 - 명령행 인자를 받으면 대화형 입력 없이 스크립트와 파이프라인에서 같은 프로그램을 자동으로 실행할 수 있다. 파일 이름을 받아 내용을 검사하는 예는 [[C-Standard-IO-and-Files#파일 읽기와 매직 넘버|파일 읽기와 매직 넘버]]에 있다.
+
+### 종료 상태
+
+- `main`의 반환값이 프로세스의 종료 상태가 된다. 0은 성공이고 0이 아닌 값으로 실패와 그 종류를 알린다. 셸에서는 `echo $?`로 직전 명령의 종료 상태를 보고, 스크립트와 CI는 이 값으로 성공을 판정한다(`EXIT_SUCCESS`, `EXIT_FAILURE`는 [[C-Standard-IO-and-Files|C 표준 입출력과 파일]]).
+- 셸이 보는 종료 상태는 반환값을 256으로 나눈 나머지다. macOS에서 `return 256`은 0, `return -1`은 255로 보여 실패가 성공으로 읽힐 수 있었다. 셸은 명령을 찾지 못하면 127, 실행할 수 없으면 126을 쓰고 시그널로 끝난 명령에는 128보다 큰 값을 주므로(SIGSEGV로 끝난 프로그램은 139였다) 프로그램의 실패 코드는 이 값들과 겹치지 않게 고른다.
 
 ## 점검 질문
 
@@ -125,6 +151,7 @@ int main(int argc, char *argv[])
 - `char *s = "EMMA"`와 `char s[] = "EMMA"`의 차이는?
 - `const char *names[]`와 `char grid[4][8]`의 메모리 구조 차이는?
 - `i < strlen(s)` 조건이 느린 이유와 `toupper`에 `unsigned char`를 넘기는 이유는?
+- 구조체를 대입할 때 배열 멤버와 포인터 멤버는 각각 무엇이 복사되는가?
 
 ## 출처
 
@@ -134,6 +161,8 @@ int main(int argc, char *argv[])
 - [부스트코스, 모두를 위한 컴퓨터 과학 (CS50 2019), 문자열의 활용](https://www.boostcourse.org/cs112/lecture/119017)
 - [부스트코스, 모두를 위한 컴퓨터 과학 (CS50 2019), 명령행 인자](https://www.boostcourse.org/cs112/lecture/119018)
 - [부스트코스, 모두를 위한 컴퓨터 과학 (CS50 2019), 문자열](https://www.boostcourse.org/cs112/lecture/119029)
+- [YouTube, Harvard CS50 (2026), Lecture 2: Arrays](https://www.youtube.com/watch?v=gmuTjeQUbTM&t=16078s)
+- [YouTube, Harvard CS50 (2026), Lecture 3: Algorithms](https://www.youtube.com/watch?v=gmuTjeQUbTM&t=24812s)
 - [cppreference, Array declaration](https://en.cppreference.com/w/c/language/array)
 - [cppreference, Array initialization](https://en.cppreference.com/w/c/language/array_initialization)
 - [cppreference, Member access operators (subscript)](https://en.cppreference.com/w/c/language/operator_member_access)
@@ -142,6 +171,12 @@ int main(int argc, char *argv[])
 - [cppreference, toupper](https://en.cppreference.com/w/c/string/byte/toupper)
 - [cppreference, Character sets and encodings](https://en.cppreference.com/w/c/language/charset)
 - [cppreference, Main function](https://en.cppreference.com/w/c/language/main_function)
+- [cppreference, Struct and union initialization](https://en.cppreference.com/w/c/language/struct_initialization)
+- [cppreference, Assignment operators](https://en.cppreference.com/w/c/language/operator_assignment)
+- [cppreference, Comparison operators](https://en.cppreference.com/w/c/language/operator_comparison)
+- [cppreference, printf, fprintf, sprintf, snprintf](https://en.cppreference.com/w/c/io/fprintf)
+- [The GNU C Library, Other Output Conversions](https://sourceware.org/glibc/manual/latest/html_node/Other-Output-Conversions.html)
+- [POSIX.1-2024, Exit Status for Commands](https://pubs.opengroup.org/onlinepubs/9799919799/utilities/V3_chap02.html#tag_19_08_02)
 - [cs50.h — libcs50](https://github.com/cs50/libcs50/blob/main/src/cs50.h)
 
 ## 관련 문서
@@ -152,3 +187,4 @@ int main(int argc, char *argv[])
 - [[C-Standard-IO-and-Files|C 표준 입출력과 파일]]
 - [[Cpp-Language-Memory-and-STL|C++ 값과 메모리 (array-to-pointer conversion)]]
 - [[Linear-Data-Structures|선형 자료구조]]
+- [[Algorithm-Searching|검색 (병렬 배열과 구조체 배열)]]

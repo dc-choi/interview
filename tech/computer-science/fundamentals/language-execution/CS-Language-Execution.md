@@ -17,6 +17,7 @@ aliases: ["CS Language and Execution", "언어와 실행 모델"]
 - [x] [[Emulation-and-Compatibility-Layers|다른 플랫폼용 프로그램 실행 (에뮬레이터, Wine과 Proton 호환 계층, Rosetta 명령어 변환, 셰이더 변환, TBDR 최적화와 이식 판단)]]
 - [x] [[Rust-Ownership-and-Borrowing|Rust 소유권과 대여]] — 소유권 세 규칙과 이동, 참조 규칙과 데이터 경쟁, Option과 Result, never 타입, 할당자 지정과 DropGuard, 이터레이터의 zero-cost 범위, 빌드 프로파일과 미사용 의존성 경고
 - [x] [[Rust-Soundness-and-Lifetime-Boundaries|Rust 건전성과 수명 계약]] — 공변 필드 대입과 Drop, unsafe 계약, Miri 검사와 건전성 증명의 차이
+- [x] [[Rust-Abstraction-Choices|Rust의 추상화 선택과 비용]] — 열거형, 제네릭과 트레이트 객체의 디스패치 시점, derive 매크로와 리플렉션 부재, 부모 참조의 Weak와 아레나, TypeScript 대응
 - [x] [[Zig-Safety-and-C-Interop|Zig의 안전 장치와 C 연동]] — errdefer와 error union, 빌드 모드별 안전 검사, 할당자 인자와 누수 시험, C 빌드 통합, 1.0 이전의 변경 비용
 
 ## 관련 문서

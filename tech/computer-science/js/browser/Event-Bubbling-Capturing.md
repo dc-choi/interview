@@ -29,6 +29,7 @@ menu.addEventListener("click", onMenuClick, {
 - `removeEventListener`도 이 세 값만 비교한다. 셋째 인자 boolean은 `{ capture }`와 같고 `once`, `passive`, `signal`은 제거 대상 판별에 쓰이지 않으므로, capture로 등록한 listener는 capture를 `true`로 넘겨야 제거된다.
 - 인자 자리에서 바로 만든 익명 함수나 호출할 때마다 새로 만든 `bind` 결과는 등록한 것과 다른 function object라 제거되지 않는다. callback을 변수에 담아 두거나 AbortSignal로 해제한다.
 - inline HTML event handler는 markup/code/CSP를 섞으므로 사용하지 않는다.
+- 기존 코드의 `<form onsubmit="greet(); return false;">`처럼 inline handler나 `on*` property 함수가 `false`를 반환하면 HTML의 event handler 처리 규칙이 event를 취소한다(`window.onerror`는 반대로 `true`일 때 취소하고 `beforeunload`는 별도 규칙이다). `addEventListener` listener의 반환값은 dispatch가 쓰지 않으므로 같은 효과는 `event.preventDefault()`로 낸다.
 - 같은 EventTarget, 같은 phase의 listener는 등록 순서대로 호출된다. dispatch는 target마다 호출 직전에 listener 목록을 복제하므로, listener 안에서 같은 target에 새로 등록한 listener는 이번 dispatch에서 실행되지 않는다. 반대로 아직 호출되지 않은 listener를 제거하면 이번 dispatch에서도 실행되지 않는다.
 - `onclick` 같은 event handler도 처음 non-null 값을 대입할 때 listener 하나로 목록에 들어간다. 재대입은 그 자리를 유지한 채 함수만 바꾸므로 호출 순서는 첫 대입 전에 `addEventListener`로 등록한 listener, 현재 handler, 첫 대입 뒤 등록한 listener 순이다. `null` 대입은 그 listener를 제거하고, 다시 대입하면 목록 끝에 새로 붙는다.
 - 앞 listener가 만든 상태를 뒤 listener가 읽는 로직은 등록 코드의 위치에 암묵적으로 결합된다. 순서가 중요하면 한 listener 안에서 호출 순서를 드러낸다.
@@ -99,7 +100,7 @@ ordinary `addEventListener` callback의 `this`는 일반적으로 `currentTarget
 - [DOM Standard, Events](https://dom.spec.whatwg.org/#events)
 - [DOM Standard, EventTarget](https://dom.spec.whatwg.org/#interface-eventtarget)
 - [DOM Standard, invoke](https://dom.spec.whatwg.org/#concept-event-listener-invoke), [DOM Standard, closest()](https://dom.spec.whatwg.org/#dom-element-closest)
-- [HTML Standard, Event handler IDL attributes](https://html.spec.whatwg.org/multipage/webappapis.html#event-handler-idl-attributes), [HTML Standard, activate an event handler](https://html.spec.whatwg.org/multipage/webappapis.html#activate-an-event-handler), [CSSOM View Module, Scrolling events](https://drafts.csswg.org/cssom-view/#scrolling-events), [W3C, Pointer Events](https://w3c.github.io/pointerevents/)
+- [HTML Standard, Event handler IDL attributes](https://html.spec.whatwg.org/multipage/webappapis.html#event-handler-idl-attributes), [HTML Standard, activate an event handler](https://html.spec.whatwg.org/multipage/webappapis.html#activate-an-event-handler), [HTML Standard, The event handler processing algorithm](https://html.spec.whatwg.org/multipage/webappapis.html#the-event-handler-processing-algorithm), [CSSOM View Module, Scrolling events](https://drafts.csswg.org/cssom-view/#scrolling-events), [W3C, Pointer Events](https://w3c.github.io/pointerevents/)
 - [MDN, EventTarget: dispatchEvent() method](https://developer.mozilla.org/en-US/docs/Web/API/EventTarget/dispatchEvent), [MDN, Element: mouseleave event](https://developer.mozilla.org/en-US/docs/Web/API/Element/mouseleave_event), [MDN browser-compat-data, EventTarget](https://github.com/mdn/browser-compat-data/blob/main/api/EventTarget.json)
 - [Node.js v26.10.0, Events: EventTarget and Event API](https://nodejs.org/docs/v26.10.0/api/events.html#eventtarget-and-event-api)
 - [EventTarget removeEventListener does not match all listeners, Issue #65244 — nodejs/node](https://github.com/nodejs/node/issues/65244), [Node.js v26 changelog — nodejs/node](https://github.com/nodejs/node/blob/main/doc/changelogs/CHANGELOG_V26.md)
@@ -107,6 +108,7 @@ ordinary `addEventListener` callback의 `this`는 일반적으로 `currentTarget
 - listener/전파: [onclick/addEventListener](https://www.inflearn.com/courses/lecture?courseId=328275&unitId=102184), [stopPropagation](https://www.inflearn.com/courses/lecture?courseId=328275&unitId=102185), [isTrusted/dispatch](https://www.inflearn.com/courses/lecture?courseId=328275&unitId=102189), [capture/bubble/currentTarget](https://www.inflearn.com/courses/lecture?courseId=328275&unitId=102190)
 - delegation: [개요](https://www.inflearn.com/courses/lecture?courseId=328275&unitId=102191), [target/currentTarget](https://www.inflearn.com/courses/lecture?courseId=328275&unitId=102192), [동적 menu 1](https://www.inflearn.com/courses/lecture?courseId=328275&unitId=102193), [동적 menu 2](https://www.inflearn.com/courses/lecture?courseId=328275&unitId=102194)
 - [모던 자바스크립트 딥다이브 스터디 #10-1 (CH 40 이벤트) — FE재남](https://www.youtube.com/watch?v=vPeuNKiWPiA)
+- [YouTube, Harvard CS50 (2026), HTML, CSS, JavaScript](https://www.youtube.com/watch?v=gmuTjeQUbTM&t=67927s) — freeCodeCamp.org 채널, 2026-02-05 공개, 18:52:07부터. handler 반환값 규칙의 계기이며 2026-11-18 HTML 표준의 event handler 처리 알고리즘과 DOM 표준의 inner invoke로 대조했다.
 
 ## 관련 문서
 

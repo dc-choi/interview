@@ -1,9 +1,9 @@
 ---
 tags: [cs, data-structure, hash, hash-table]
 status: done
-verified_at: 2026-10-05
+verified_at: 2026-11-18
 category: "CS - 자료구조"
-aliases: ["Hash Table", "해시 테이블", "HashTable", "Hash Map", "해시 맵", "직접 주소 테이블", "Direct Address Table", "해시 함수", "적재율", "Load Factor"]
+aliases: ["Hash Table", "해시 테이블", "HashTable", "Hash Map", "해시 맵", "직접 주소 테이블", "Direct Address Table", "해시 함수", "적재율", "Load Factor", "Incremental Rehashing", "점진적 rehash"]
 ---
 
 # Hash Table (해시 테이블)
@@ -62,7 +62,9 @@ hash table은 더 작은 bucket array를 두고 hash function으로 넓은 key �
 
 α가 커지면 chain이나 probe가 길어진다. 구현은 정책 임계치에서 더 큰 table을 만들고 항목을 새 bucket 수에 맞춰 재배치한다. 한 번의 resize는 Θ(n)이지만 충분히 큰 폭으로 확장하면 여러 insert에 나눈 amortized 비용을 작게 유지할 수 있다. 임계치와 성장 배수는 구현 정책이지 보편 상수가 아니다.
 
-bucket 수를 고정하면 기대 O(1)이 성립하지 않는다. separate chaining의 검색과 삽입 비교 수는 n/m에 비례하므로, 이름의 첫 글자로 26개 bucket에 나누는 table은 이름이 고르게 퍼져도 평균 chain 길이가 n/26이라 Θ(n)이고 상수만 26분의 1로 줄어든다. 실제 첫 글자 분포는 고르지 않아 긴 chain은 더 길다. 기대 O(1)은 n이 늘 때 m도 늘려 n/m을 상수 범위에 묶는 resize를 전제한다. Princeton `SeparateChainingHashST`는 평균 chain 길이가 10 이상이면 table을 2배로 늘리고, chain 수가 기본 초기값 4보다 클 때 평균이 2 이하로 떨어지면 절반으로 줄인다.
+amortized 비용이 작아도 resize를 일으킨 그 연산은 Θ(n)을 혼자 기다린다. 응답 지연이 중요한 서버는 옮기는 일을 여러 연산에 나눈다. Redis 8.10.3의 `dict`는 resize 때 새 table을 하나 더 만들고, 이후 조회와 갱신이 일어날 때마다 옛 table의 bucket을 하나씩 새 table로 옮긴다(점진적 rehash). 한 단계가 빈 bucket을 끝없이 훑지 않도록 빈 bucket은 단계 수의 10배까지만 방문한다. 옮기는 동안 새 key는 새 table에 넣고, 조회는 이미 옮긴 bucket이면 새 table만, 아니면 옛 table과 새 table을 차례로 본다. 대가로 이동이 끝날 때까지 두 table의 memory를 함께 쓰고, 연산이 없으면 이동이 끝나지 않는다. 그래서 기본값 `activerehashing yes`는 CPU 시간 100ms마다 1ms를 들여 최상위 key를 담는 주 hash table의 rehash를 돕고, 설정 파일은 가끔 2ms 늦은 응답도 곤란할 만큼 지연 요구가 엄격하면 이 옵션을 끄라고 안내한다.
+
+bucket 수를 고정하면 기대 O(1)이 성립하지 않는다. separate chaining의 검색과 삽입 비교 수는 n/m에 비례하므로, 이름의 첫 글자로 26개 bucket에 나누는 table은 이름이 고르게 퍼져도 평균 chain 길이가 n/26이라 Θ(n)이고 상수만 26분의 1로 줄어든다. 실제 첫 글자 분포는 고르지 않아 긴 chain은 더 길다. 첫 세 글자로 bucket을 정하면 26³ = 17,576칸이 되어 chain은 짧아지지만, 저장할 이름이 수천 개라면 칸 대부분이 비고 bucket 수는 여전히 고정이라 n이 커지면 같은 문제가 돌아온다. 기대 O(1)은 n이 늘 때 m도 늘려 n/m을 상수 범위에 묶는 resize를 전제한다. Princeton `SeparateChainingHashST`는 평균 chain 길이가 10 이상이면 table을 2배로 늘리고, chain 수가 기본 초기값 4보다 클 때 평균이 2 이하로 떨어지면 절반으로 줄인다.
 
 항목마다 hash를 함께 저장하는 구현은 resize 때 hash function을 다시 부르지 않고 저장된 hash로 새 index만 계산한다(OpenJDK `HashMap`의 `Node.hash`, CPython dict 일반 entry의 `me_hash`, 문자열 key만 담은 dict는 문자열 객체에 cache된 hash). 같은 값은 조회에서 후보를 거르는 데도 쓰인다(아래 Key 절).
 
@@ -168,8 +170,12 @@ CPython dict와 set, OpenJDK `HashMap`은 모두 table 크기를 2의 거듭제�
 - [Java SE 26 API, HashMap](https://docs.oracle.com/en/java/javase/26/docs/api/java.base/java/util/HashMap.html)
 - [dictobject.c — CPython v3.14.0](https://github.com/python/cpython/blob/v3.14.0/Objects/dictobject.c)
 - [HashMap.java — OpenJDK jdk-21+35](https://github.com/openjdk/jdk/blob/jdk-21%2B35/src/java.base/share/classes/java/util/HashMap.java)
+- [dict.c — Redis 8.10.3](https://github.com/redis/redis/blob/8.10.3/src/dict.c) — 2026-11-18 두 table, bucket 단위 이동, 빈 bucket 방문 상한, 삽입과 조회 경로 대조
+- [redis.conf — Redis 8.10.3](https://github.com/redis/redis/blob/8.10.3/redis.conf) — `activerehashing`의 설명과 기본값
 - [부스트코스, 모두를 위한 컴퓨터 과학 (CS50 2019), 해시 테이블](https://www.boostcourse.org/cs112/lecture/119042)
 - [부스트코스, 모두를 위한 컴퓨터 과학 (CS50 2019), 스택, 큐, 딕셔너리](https://www.boostcourse.org/cs112/lecture/119044)
+- [YouTube, Harvard CS50 (2026), Lecture 5: Data Structures](https://www.youtube.com/watch?v=gmuTjeQUbTM&t=40382s)
 - [NIST DADS, dictionary](https://xlinux.nist.gov/dads/HTML/dictionary.html)
 - [Princeton Algorithms, SeparateChainingHashST.java](https://algs4.cs.princeton.edu/34hash/SeparateChainingHashST.java.html)
 - [Princeton Algorithms, TrieST.java](https://algs4.cs.princeton.edu/52trie/TrieST.java.html)
+- [Math Every Programmer ACTUALLY Needs — YouTube, The Coding Gopher](https://www.youtube.com/watch?v=-gBgZpC6ehA) — 2026-11-17 업로드, 음성 인식 전사 기준. 한 번에 확장하지 않고 bucket을 조금씩 옮긴다는 언급이 보강의 계기이며 동작은 위 Redis 소스로 대조

@@ -27,7 +27,7 @@ function meanSquaredError(xs, ys, f) {
 }
 ```
 
-모르는 기호를 만나면 의미를 찾아 코드로 옮겨 본다. `∫`(적분)처럼 의미 자체가 무거운 기호도 있지만, 대부분은 변수와 규칙의 조합이라 풀어 보면 별것 아니다.
+모르는 기호를 만나면 의미를 찾아 코드로 옮겨 본다. `∫`(적분)처럼 의미 자체가 무거운 기호도 있지만([[Calculus-Integrals-and-Fundamental-Theorem|적분과 미적분의 기본정리]]), 대부분은 변수와 규칙의 조합이라 풀어 보면 별것 아니다.
 
 ## 명제 (Proposition)
 
@@ -167,6 +167,7 @@ function factorial(n) {
 
 ## 관련 문서
 - [[Types-As-Proofs|타입은 증명이다]] — 명제/증명을 타입 시스템으로 (커리-하워드 대응)
+- [[Propositional-Logic-and-Inference|명제 논리와 추론]] — 모델과 논리적 귀결, 추론 규칙, CNF와 resolution, 1차 논리
 - [[Digital-Fundamentals|디지털 기초]] — n진법, 인코딩
 - [[CPU-and-Arithmetic|CPU와 연산]] — 논리회로(AND/OR/NOT 게이트)와 사칙연산
 - [[tech/computer-science/algorithm/알고리즘(Algorithm)|알고리즘]] — 재귀, 정당성 증명
@@ -177,3 +178,5 @@ function factorial(n) {
 - [[Binary-Search-and-LIS|이분탐색과 LIS]] — 절반씩 줄이는 탐색
 - [[Algorithm-DP|동적 프로그래밍 (DP)]] — 겹치는 하위 문제 저장
 - [[Exhaustive-Search-and-Backtracking|완전탐색과 백트래킹]] — 경우의 수와 가지치기
+- [[Calculus-Limits-and-Derivatives|미분: 극한, 연속과 도함수]] — 연속 수학의 변화율, 표로 계산한 극한과 증명의 구분
+- [[Calculus-Integrals-and-Fundamental-Theorem|적분: 리만 합, 정적분과 미적분의 기본정리]] — Σ의 극한으로서의 적분

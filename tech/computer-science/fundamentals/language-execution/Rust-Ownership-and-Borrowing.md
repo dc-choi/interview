@@ -153,6 +153,7 @@ Cargo는 빌드 도구와 패키지 관리자를 겸한다. `cargo new`가 프�
 ## 관련 문서
 
 - [[Rust-Soundness-and-Lifetime-Boundaries|Rust 건전성과 수명 계약]] — unsafe 계약과 대여 검사기의 결함
+- [[Rust-Abstraction-Choices|Rust의 추상화 선택과 비용]] — 디스패치 방식, derive 매크로, 부모 참조의 Weak와 아레나
 - [[Programming-Language-Landscape|프로그래밍 언어 지형과 구분 기준]] — 메모리 관리 방식의 언어별 비교
 - [[Compile-and-Runtime|컴파일과 런타임]] — 검사 시점과 실행의 구분
 - [[Rust-Style-Guide|Rust 스타일 가이드]]

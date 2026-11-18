@@ -1,9 +1,9 @@
 ---
 tags: [cs, c, stdio, scanf, file-io, magic-number]
 status: done
-verified_at: 2026-10-05
+verified_at: 2026-11-18
 category: "CS - C"
-aliases: ["C Standard I/O and Files", "C 표준 입출력과 파일", "scanf와 fgets", "fopen fread fprintf", "파일 시그니처", "Magic Number"]
+aliases: ["C Standard I/O and Files", "C 표준 입출력과 파일", "scanf와 fgets", "fopen fread fprintf", "파일 시그니처", "Magic Number", "fwrite 파일 복사", "BMP 파일 구조"]
 ---
 
 # C 표준 입출력과 파일
@@ -41,9 +41,11 @@ if (scanf("%4s", s) == 1)  // NUL 자리를 남긴 폭 4
 
 - 값을 저장할 위치의 주소를 넘기면 `scanf`가 그 주소에 값을 쓴다. 배열은 첫 원소의 주소로 변환되므로 `&` 없이 넘긴다.
 - `%s`는 공백 전까지 읽고 NUL을 덧붙인다. 폭이 없으면 입력이 배열보다 길 때 배열 밖에 쓰므로 `gets`만큼 위험하다. 배열 크기가 n이면 폭은 n - 1이다.
+- 저장할 공간 없이 `char *s;`만 선언해 `scanf("%s", s)`에 넘기면 초기화하지 않은 포인터가 가리키는 정해지지 않은 주소에 쓴다. 짧은 입력에서는 멀쩡해 보여 놓치기 쉽다. Apple clang 21은 `-Wall`에서 `variable 's' is uninitialized when used here` 경고를 낸다. 배열이나 `malloc`으로 공간을 먼저 만든다.
 - 반환값은 대입에 성공한 항목 수이고, 첫 대입 전에 입력이 끝나면 `EOF`다. 형식이 맞지 않는 입력은 소비하지 않고 남기므로, 반환값을 보지 않고 반복하면 같은 입력에서 끝없이 실패한다([[Cpp-Coding-Test-Workflow-IO-and-Strings#입력|입력 끝까지 읽기]]).
 - 줄 단위 입력은 `fgets(buf, sizeof buf, stdin)`가 안전하다. 최대 `sizeof buf - 1`문자를 읽고, 줄바꿈을 만나면 그것까지 담고, 뒤에 NUL을 붙인다. 아무것도 읽지 못한 채 EOF를 만나면 NULL을 돌려준다. 읽은 줄은 `sscanf`나 `strtol`로 해석한다.
 - 길이 제한 없이 한 줄을 받으려면 버퍼를 키워 가며 다시 할당해야 한다. POSIX `getline`은 `*lineptr`가 NULL이면 버퍼를 할당하고 부족하면 `realloc`으로 늘리며, 그 버퍼는 호출자가 `free`한다.
+- 교육용 libcs50(v11.0.4)의 `get_string`도 `fgetc`로 한 글자씩 읽으며 `realloc`으로 용량을 1바이트씩 늘리고, 실패하면 NULL을 돌려준다. 다만 돌려준 문자열을 전역 배열에 기록해 두었다가 `atexit`로 등록한 정리 함수가 종료 때 모두 해제하므로, 호출자가 `free`하면 같은 블록을 두 번 해제하게 된다. 반환 메모리를 누가 해제하는지는 API 계약마다 다르다.
 
 ## 파일 쓰기
 
@@ -108,8 +110,29 @@ int main(int argc, char *argv[])
 - 바이트는 `unsigned char`로 담는다. plain `char`의 부호는 구현 정의라 signed인 환경에서는 `0xFF` 바이트가 -1이 되어 `== 0xff`(255)가 거짓이 된다.
 - `"b"` 플래그는 POSIX에서는 효과가 없지만 Windows에서는 `'\n'`과 `'\x1A'`의 특수 처리를 끈다. 바이너리 파일은 `"rb"`, `"wb"`로 연다.
 - JPEG 압축 데이터는 SOI 마커 `FF D8`로 시작하고 모든 마커가 `FF`로 시작하므로 처음 세 바이트가 `FF D8 FF`다. PNG는 처음 8바이트가 언제나 `89 50 4E 47 0D 0A 1A 0A`다.
+- BMP는 `42 4D`(`BM`)로 시작하는 14바이트 `BITMAPFILEHEADER` 뒤에 너비, 높이와 색 형식을 담은 정보 헤더가 오고, `bfOffBits`가 픽셀 배열의 시작 위치를 준다. 압축하지 않은 24비트 BMP는 픽셀마다 파랑, 초록, 빨강 순서의 3바이트를 두고, 각 행의 바이트 수를 4의 배수로 맞추며(너비 3픽셀이면 9바이트에 padding 3바이트), 높이가 양수면 맨 아래 행부터 저장한다. 한 행 안에서는 왼쪽 픽셀부터다.
 - 시그니처 일치는 필요조건일 뿐이다. 우연히 같은 바이트로 시작하는 다른 파일일 수 있어 결과를 Maybe로 둔다. 업로드 검증에서 시그니처만 믿지 않는 이유는 [[File-Upload-Security|파일 업로드 보안]]에 있다.
 - 종료 상태 0과 `EXIT_SUCCESS`는 성공, `EXIT_FAILURE`는 실패를 뜻하며 관례상 실패에는 0이 아닌 값을 돌려준다. 셸과 다른 프로그램은 이 값으로 성공 여부를 판단한다. 사용법과 오류 메시지는 표준 출력의 결과와 섞이지 않도록 `stderr`로 보낸다.
+
+## 파일 복사: fread와 fwrite
+
+```c
+// src는 "rb", dst는 "wb"로 열고 둘 다 NULL이 아님을 확인한 뒤
+unsigned char buffer[4096];
+size_t n;
+while ((n = fread(buffer, 1, sizeof buffer, src)) > 0)
+{
+    if (fwrite(buffer, 1, n, dst) != n)
+    {
+        break;  // 쓰기 오류
+    }
+}
+```
+
+- 원소 크기를 1로 두면 `fread`가 읽은 바이트 수를 돌려주므로 마지막 부분 조각도 그 길이만큼 쓴다. `fread(buffer, sizeof buffer, 1, src)`로 읽으면 4,096바이트에 못 미치는 마지막 조각에서 0을 받아 그 조각을 버린다. 로컬 실행에서 10,000바이트 파일이 8,192바이트로 복사됐다.
+- `fwrite`는 쓴 원소 수를 돌려주고 오류가 날 때만 요청보다 적다. 반복이 끝나면 `ferror(src)`로 읽기 오류와 EOF를 구분하고, `fclose(dst)`의 반환값으로 남은 버퍼를 쓰다 난 실패도 확인한다.
+- 원본과 대상이 같은 파일이면 대상을 `"wb"`로 여는 순간 내용이 지워져 0바이트 파일이 남는다. 경로 문자열이 달라도 링크로 같은 파일일 수 있으므로 POSIX에서는 `stat`의 `st_dev`와 `st_ino` 쌍으로 같은 파일인지 확인한다.
+- 1바이트씩 `fread`, `fwrite`해도 결과는 같다. 대화형 장치가 아닌 파일 스트림은 완전 버퍼링되어 OS 호출은 버퍼 단위로 묶이지만 라이브러리 함수 호출은 바이트 수만큼 일어난다.
 
 ## 점검 질문
 
@@ -118,23 +141,32 @@ int main(int argc, char *argv[])
 - `fread`의 반환값은 무엇을 세는가? `fread(b, 3, 1, f)`와 `fread(b, 1, 3, f)`의 차이는?
 - 바이트를 `char`가 아니라 `unsigned char`로 담는 이유는?
 - 시그니처가 맞아도 Maybe로 판단하는 이유는?
+- 복사 루프에서 `fread(buffer, 1, sizeof buffer, src)`로 읽어야 하는 이유와, 원본과 대상이 같을 때 `"wb"`가 위험한 이유는?
 
 ## 출처
 
 - [부스트코스, 모두를 위한 컴퓨터 과학 (CS50 2019), 파일 쓰기](https://www.boostcourse.org/cs112/lecture/119034)
 - [부스트코스, 모두를 위한 컴퓨터 과학 (CS50 2019), 파일 읽기](https://www.boostcourse.org/cs112/lecture/119035)
+- [YouTube, Harvard CS50 (2026), Lecture 4: Memory](https://www.youtube.com/watch?v=gmuTjeQUbTM&t=31987s)
 - [cppreference, scanf, fscanf, sscanf](https://en.cppreference.com/w/c/io/fscanf)
 - [cppreference, fgets](https://en.cppreference.com/w/c/io/fgets)
 - [cppreference, fopen](https://en.cppreference.com/w/c/io/fopen)
 - [cppreference, fclose](https://en.cppreference.com/w/c/io/fclose)
 - [cppreference, fread](https://en.cppreference.com/w/c/io/fread)
+- [cppreference, fwrite](https://en.cppreference.com/w/c/io/fwrite)
 - [cppreference, perror](https://en.cppreference.com/w/c/io/perror)
 - [cppreference, Main function](https://en.cppreference.com/w/c/language/main_function)
 - [Linux, getline(3)](https://man7.org/linux/man-pages/man3/getline.3.html)
 - [POSIX.1-2024, _Exit, _exit](https://pubs.opengroup.org/onlinepubs/9799919799/functions/_exit.html)
+- [POSIX.1-2024, sys/stat.h](https://pubs.opengroup.org/onlinepubs/9799919799/basedefs/sys_stat.h.html)
 - [RFC 4180, Common Format and MIME Type for CSV Files](https://www.rfc-editor.org/rfc/rfc4180)
 - [ITU-T, T.81 Digital compression and coding of continuous-tone still images](https://www.w3.org/Graphics/JPEG/itu-t81.pdf)
 - [W3C, Portable Network Graphics (PNG) Specification (Third Edition)](https://www.w3.org/TR/png-3/)
+- [Microsoft Learn, BITMAPFILEHEADER structure (wingdi.h)](https://learn.microsoft.com/en-us/windows/win32/api/wingdi/ns-wingdi-bitmapfileheader)
+- [Microsoft Learn, BITMAPINFOHEADER structure (wingdi.h)](https://learn.microsoft.com/en-us/windows/win32/api/wingdi/ns-wingdi-bitmapinfoheader)
+- [Microsoft Learn, BITMAPINFOHEADER structure (Windows GDI 보관 문서)](https://learn.microsoft.com/en-us/previous-versions/dd183376%28v=vs.85%29)
+- [Microsoft Learn, Bitmap Storage](https://learn.microsoft.com/en-us/windows/win32/gdi/bitmap-storage)
+- [cs50.c — libcs50 v11.0.4](https://github.com/cs50/libcs50/blob/v11.0.4/src/cs50.c)
 
 ## 관련 문서
 
@@ -143,3 +175,4 @@ int main(int argc, char *argv[])
 - [[C-Pointers-and-Dynamic-Memory|C 포인터와 동적 메모리]]
 - [[Cpp-Coding-Test-Workflow-IO-and-Strings|C++ 입출력과 문자열]]
 - [[File-Upload-Security|파일 업로드 보안]]
+- [[Digital-Fundamentals#이미지의 비트 표현|디지털 기초 (이미지의 비트 표현)]]

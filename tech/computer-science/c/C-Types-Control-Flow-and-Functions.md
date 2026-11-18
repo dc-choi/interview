@@ -1,7 +1,7 @@
 ---
 tags: [cs, c, type, operator, control-flow, function, overflow, floating-point]
 status: done
-verified_at: 2026-10-05
+verified_at: 2026-11-18
 category: "CS - C"
 aliases: ["C Types, Control Flow and Functions", "C 자료형과 연산자", "C 제어 흐름", "C 함수 프로토타입", "C 정수 overflow와 부동소수점 오차"]
 ---
@@ -54,6 +54,8 @@ C는 변수마다 타입을 선언하고, 타입이 크기, 표현 범위, 연�
 - C23 이전에는 `true`, `false`, `bool`을 쓰려면 `<stdbool.h>`가 필요하다.
 - 반복 변수를 갱신하지 않으면 끝나지 않는다. 조건식은 매 반복 전에 다시 평가된다.
 - 중첩 루프는 바깥이 행, 안쪽이 열을 만든다. n x n 격자를 그리면 안쪽 본문이 n²번 실행된다.
+- `break`는 가장 안쪽의 루프나 `switch` 하나만 끝내고 바로 뒤 문장으로 가므로 중첩 루프를 한 번에 모두 빠져나오지는 않는다. `continue`는 본문의 나머지를 건너뛰고 본문 끝으로 간다. 그래서 `for`는 갱신식을 실행한 뒤 조건을 검사하고, `while`과 `do-while`은 곧바로 조건을 검사한다. `while (true)` 안에서 입력을 받아 맞으면 `break`하는 루프는 `do-while` 하나로 줄일 수 있다.
+- 루프 본문도 블록이라 본문 안에서 선언한 변수의 범위는 본문의 `}`에서 끝난다. `do { int n = next(); } while (n < 1);`은 조건식에서 `n`이 보이지 않아 컴파일 오류(`use of undeclared identifier 'n'`)가 나므로, 조건식이나 루프 뒤에서 쓸 변수는 아래 예처럼 루프 앞에 선언한다.
 
 ```c
 int n;
@@ -121,7 +123,7 @@ void cough(int n)  // 정의
 ### 범위를 넘은 사례
 
 - Y2K: 연도를 끝 두 자리로 저장하면 99 다음의 00이 1900년인지 2000년인지 구분할 수 없다.
-- 2038년 문제: 1970-01-01 UTC부터 센 초를 32비트 signed `time_t`로 담으면 2^31 - 1초인 2038-01-19 03:14:07 UTC가 마지막이다. Linux `time(2)`은 32비트 `time_t`로 빌드한 실행 파일을 64비트 커널에서 2038-01-19 03:14:08 UTC 이후에 실행하면 `EOVERFLOW`가 날 수 있다고 적는다. 타임스탬프 기준과 폭은 [[System-Time-and-Clock-Sync#타임스탬프의 기준은 시스템마다 다르다|시스템 시간]]에서 다룬다.
+- 2038년 문제: 1970-01-01 UTC부터 센 초를 32비트 signed `time_t`로 담으면 2^31 - 1초인 2038-01-19 03:14:07 UTC가 마지막이다. 그다음 값이 2의 보수로 감기면 -2^31초, 곧 1901-12-13 20:45:52 UTC로 읽힌다. Linux `time(2)`은 32비트 `time_t`로 빌드한 실행 파일을 64비트 커널에서 2038-01-19 03:14:08 UTC 이후에 실행하면 `EOVERFLOW`가 날 수 있다고 적는다. 타임스탬프 기준과 폭은 [[System-Time-and-Clock-Sync#타임스탬프의 기준은 시스템마다 다르다|시스템 시간]]에서 다룬다.
 - Boeing 787: FAA AD 2015-09-07은 248일 동안 전원이 계속 켜져 있으면 발전기 제어 장치(GCU) 내부 소프트웨어 카운터가 overflow해 GCU가 동시에 failsafe 모드로 들어가고 모든 교류 전력을 잃을 수 있다며 주기적인 전원 차단 정비를 요구했다. 카운터가 100분의 1초 단위 signed 32비트라면 2^31 / 100초는 약 248.55일이라 수치가 맞지만, AD가 카운터의 단위와 폭을 밝힌 것은 아니다.
 - 공통 교훈: 누적 시간, 개수, 날짜처럼 커지는 값의 상한을 설계할 때 계산해 타입 폭과 비교하고, 오래 켜 두는 시스템의 카운터와 시간 표현을 의심한다.
 
@@ -132,6 +134,7 @@ void cough(int n)  // 정의
 - signed overflow와 unsigned wrap의 차이, UBSan 메시지는 누가 내는가?
 - 프로토타입이 필요한 이유를 유효 범위와 인자 검사로 설명할 수 있는가?
 - C에서 `const int`가 배열 크기 상수가 아닌 이유와 대안은?
+- `continue`가 `for`의 갱신식을 건너뛰는가? `do { int n = ...; } while (n < 1);`이 컴파일되지 않는 이유는?
 
 ## 출처
 
@@ -143,12 +146,16 @@ void cough(int n)  // 정의
 - [부스트코스, 모두를 위한 컴퓨터 과학 (CS50 2019), 하드웨어의 한계](https://www.boostcourse.org/cs112/lecture/119010)
 - [부스트코스, 모두를 위한 컴퓨터 과학 (CS50 2019), 배열(1)](https://www.boostcourse.org/cs112/lecture/119014)
 - [부스트코스, 모두를 위한 컴퓨터 과학 (CS50 2019), 배열(2)](https://www.boostcourse.org/cs112/lecture/119015)
+- [YouTube, Harvard CS50 (2026), Lecture 1: C](https://www.youtube.com/watch?v=gmuTjeQUbTM&t=7060s)
 - [cppreference, Arithmetic types](https://en.cppreference.com/w/c/language/arithmetic_types)
 - [cppreference, printf, fprintf, sprintf, snprintf](https://en.cppreference.com/w/c/io/fprintf)
 - [cppreference, Arithmetic operators](https://en.cppreference.com/w/c/language/operator_arithmetic)
 - [cppreference, Logical operators](https://en.cppreference.com/w/c/language/operator_logical)
 - [cppreference, C Operator Precedence](https://en.cppreference.com/w/c/language/operator_precedence)
 - [cppreference, do-while loop](https://en.cppreference.com/w/c/language/do)
+- [cppreference, break statement](https://en.cppreference.com/w/c/language/break)
+- [cppreference, continue statement](https://en.cppreference.com/w/c/language/continue)
+- [WG14, N3220 ISO/IEC 9899:2024 working draft](https://www.open-std.org/jtc1/sc22/wg14/www/docs/n3220.pdf) — 2026-11-18 6.2.1 블록 범위, 6.8.1 블록, 6.8.6 반복문, 6.8.7.3 continue, 6.8.7.4 break 대조
 - [cppreference, Function declarations](https://en.cppreference.com/w/c/language/function_declaration)
 - [cppreference, Scope](https://en.cppreference.com/w/c/language/scope)
 - [cppreference, Initialization](https://en.cppreference.com/w/c/language/initialization)

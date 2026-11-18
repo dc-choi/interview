@@ -153,3 +153,4 @@ TypeScript 같이 두 패러다임을 다 지원하는 언어는 둘 다 자연�
 - [[Monads-In-TypeScript|Monads in TypeScript — Maybe/Either는 coproduct]]
 - [[Types-As-Proofs|Types as Proofs — Exhaustiveness]]
 - [[Railway-Oriented-Programming|Railway-Oriented Programming]]
+- [[Rust-Abstraction-Choices|Rust의 추상화 선택과 비용 — 열거형, 제네릭, 트레이트 객체의 선택 기준]]

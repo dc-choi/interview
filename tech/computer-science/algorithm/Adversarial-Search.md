@@ -13,14 +13,14 @@ aliases: ["Adversarial Search", "적대적 탐색", "미니맥스", "Minimax"]
 
 여기서는 두 사람이 번갈아 행동하는 결정적, 완전정보, 제로섬 게임을 다룬다. MAX의 이득은 MIN의 손해이며, 효용은 MAX 관점으로 통일한다.
 
-| 요소 | 의미 |
-|---|---|
-| 상태와 차례 | 현재 판과 다음 행동을 고를 플레이어 |
-| 가능한 행동과 전이 | 현재 차례에 허용되는 수와 그 결과 상태 |
-| 종료 조건과 효용 | 게임이 끝나는 조건과 결과 점수 |
-| 전략 | 도달한 상태에서 선택할 행동 |
+| 요소 | 의미 | 함수 표기 |
+|---|---|---|
+| 상태와 차례 | 시작 판, 현재 판과 다음 행동을 고를 플레이어 | `S0`, `PLAYER(s)` |
+| 가능한 행동과 전이 | 현재 차례에 허용되는 수와 그 결과 상태 | `ACTIONS(s)`, `RESULT(s, a)` |
+| 종료 조건과 효용 | 게임이 끝나는 조건과 결과 점수 | `TERMINAL(s)`, `UTILITY(s)` |
+| 전략 | 도달한 상태에서 선택할 행동 | 아래 미니맥스가 계산한다 |
 
-게임 트리는 현재 상태에서 가능한 행동을 펼친 것이다. 우연, 숨겨진 정보나 서로 다른 플레이어의 목표가 있으면 이 전제를 그대로 적용하지 않는다.
+단일 에이전트 [[Search-Problem-Formulation|탐색 문제]]의 목표 판정과 경로 비용 자리에 종료 판정과 효용이 들어가고, 차례를 알려 주는 `PLAYER(s)`가 더해진 형태다. 틱택토라면 X 승리 1, 무승부 0, O 승리 -1로 효용을 두고 X를 MAX, O를 MIN으로 본다. 게임 트리는 현재 상태에서 가능한 행동을 펼친 것이다. 우연, 숨겨진 정보나 서로 다른 플레이어의 목표가 있으면 이 전제를 그대로 적용하지 않는다.
 
 ## 상대의 최선까지 고려한다
 
@@ -29,6 +29,22 @@ aliases: ["Adversarial Search", "적대적 탐색", "미니맥스", "Minimax"]
 - 종료 상태: 정해진 효용을 반환한다.
 - MAX 차례: 자식 값의 최댓값을 고른다.
 - MIN 차례: 자식 값의 최솟값을 고른다.
+
+```text
+MAX-VALUE(s):
+  TERMINAL(s)이면 UTILITY(s)를 반환
+  v ← -∞
+  ACTIONS(s)의 각 a에 대해 v ← max(v, MIN-VALUE(RESULT(s, a)))
+  v를 반환
+
+MIN-VALUE(s):
+  TERMINAL(s)이면 UTILITY(s)를 반환
+  v ← +∞
+  ACTIONS(s)의 각 a에 대해 v ← min(v, MAX-VALUE(RESULT(s, a)))
+  v를 반환
+```
+
+두 함수가 서로를 부르며 종료 상태까지 내려간다. 실제로 둘 수를 고를 때 MAX는 `MIN-VALUE(RESULT(s, a))`가 가장 큰 a를, MIN은 `MAX-VALUE(RESULT(s, a))`가 가장 작은 a를 고른다. v를 -∞와 +∞에서 시작하므로 첫 행동의 값이 바로 기준이 된다.
 
 예를 들어 MAX가 왼쪽과 오른쪽을 고르고, 이어 MIN이 최종 결과를 고른다고 하자.
 
@@ -41,9 +57,9 @@ MAX는 `max(min(3, 5), min(2, 9)) = 3`이므로 왼쪽을 고른다. 9점을 얻
 
 ## 탐색 비용과 근사의 한계
 
-분기 수가 `b`, 탐색 깊이가 `m`이면 기본 탐색 시간은 `O(b^m)`이다. 알파 베타 가지치기는 이미 확인한 대안보다 좋아질 수 없는 가지를 생략한다. 위 예에서 왼쪽 값 3을 구한 뒤 오른쪽의 2를 보면, 나머지 결과를 읽지 않아도 오른쪽을 버릴 수 있다.
+분기 수가 `b`, 탐색 깊이가 `m`이면 기본 탐색 시간은 `O(b^m)`이다. 틱택토는 가능한 게임 진행이 255,168가지라 끝까지 계산할 수 있지만, 체스는 분기 수가 약 35, 깊이가 약 100이라 끝까지 펼칠 수 없다. 양쪽이 네 수씩 둔 8 ply까지만 세어도 가능한 진행이 84,998,978,956가지다(그 전에 끝난 게임은 세지 않은 값). 알파 베타 가지치기는 이미 확인한 대안보다 좋아질 수 없는 가지를 생략한다. 위 예에서 왼쪽 값 3을 구한 뒤 오른쪽의 2를 보면, 나머지 결과를 읽지 않아도 오른쪽을 버릴 수 있다.
 
-깊이 제한에서 미완료 상태를 평가 함수로 점수화하면 계산량을 줄이지만 값은 추정이다. 끝까지 계산한 미니맥스의 최적성 보장을 그대로 주장할 수 없다.
+깊이 제한에서 미완료 상태를 평가 함수로 점수화하면 계산량을 줄이지만 값은 추정이다. 끝까지 계산한 미니맥스의 최적성 보장을 그대로 주장할 수 없다. 평가 함수는 상태의 미니맥스 값, 곧 그 상태에서 기대할 효용을 추정하며, 흔히 상태의 특징마다 가중치를 곱해 더한 선형 결합으로 만든다. 체커라면 `2 × 내 킹 수 + 내 일반 말 수 - 2 × 상대 킹 수 - 상대 일반 말 수` 같은 식이다. 평가 함수가 실제 값에 가까울수록 최적에 가까운 수를 두므로, 깊이 제한 탐색의 수준은 탐색 깊이와 함께 평가 함수의 정확도에 좌우된다.
 
 이해 확인: 오른쪽 결과를 4와 9로 바꾸면 어떤 수를 골라야 하는가? MIN 차례까지 모두 최댓값으로 계산하면 어떤 가정을 잘못 넣게 되는가?
 
@@ -83,12 +99,18 @@ Expectimax는 우연이나 확률적으로 모델링한 상대 행동을 chance 
 ## 출처
 
 - [UC Berkeley, CS 188 Introduction to Artificial Intelligence, Games](https://inst.eecs.berkeley.edu/~cs188/textbook/games/games.html)
-- [UC Berkeley, CS 188 Introduction to Artificial Intelligence, Minimax](https://inst.eecs.berkeley.edu/~cs188/textbook/games/minimax.html)
+- [UC Berkeley, CS 188 Introduction to Artificial Intelligence, Minimax](https://inst.eecs.berkeley.edu/~cs188/textbook/games/minimax.html) — 깊이 제한, 평가 함수의 특징 선형 결합과 체커 예, 체스의 분기 수와 깊이
 - [UC Berkeley, CS 188 Introduction to Artificial Intelligence, Expectimax](https://inst.eecs.berkeley.edu/~cs188/textbook/games/expectimax.html) — 확률 노드, 혼합 층과 가지치기 조건. 수치 예는 기대효용 식으로 계산했다.
 - [UC Berkeley, CS 188 Introduction to Artificial Intelligence, Spring 2025 Lecture 6: Adversarial Search](https://inst.eecs.berkeley.edu/~cs188/archive/sp25/assets/lectures/cs188-sp25-lec06.pdf) — 알파 베타 경계와 방문 순서, 깊이 제한과 반복 심화.
+- [Harvard, CS50's Introduction to Artificial Intelligence with Python, Lecture 0 Search Notes](https://cs50.harvard.edu/ai/2020/notes/0/) — 게임 함수 표기, MAX-VALUE와 MIN-VALUE 의사코드, 틱택토 게임 수
+- [YouTube, Harvard CS50's Artificial Intelligence with Python, Search](https://www.youtube.com/watch?v=5NgNicANyqM&t=4412s) — 1:13:32부터 적대적 탐색
+- [YouTube, Harvard CS50 (2026), Artificial Intelligence](https://www.youtube.com/watch?v=gmuTjeQUbTM&t=66408s) — freeCodeCamp.org 채널, 2026-02-05 공개. 18:26:48부터 틱택토 미니맥스와 체스 초반 경우의 수
+- [OEIS, A048987 Number of possible chess games at the end of the n-th ply](https://oeis.org/A048987) — 2026-11-18 a(8) = 84,998,978,956과 그 전에 끝난 게임을 세지 않는다는 주석 대조
 
 ## 관련 문서
 
 - [[Exhaustive-Search-and-Backtracking|완전탐색과 백트래킹]]
 - [[Algorithm-Recursion|재귀와 종료 조건]]
 - [[Graph-Traversal-and-Shortest-Path-Variants|최단 경로 변형]] — 간선의 최댓값을 최소화하는 minimax 경로와 게임 미니맥스는 다른 문제다.
+- [[Search-Problem-Formulation|탐색 문제의 정식화와 탐색 전략]] — 상대가 없는 탐색의 구성 요소와 frontier 전략
+- [[Monte-Carlo-Tree-Search|몬테카를로 트리 탐색과 UCT]] — 끝까지 펼칠 수 없는 게임 트리에서 시뮬레이션 통계로 계산을 배분하는 방법

@@ -2,7 +2,7 @@
 tags: [cs, probability, statistics, bayes, conditional-probability]
 status: done
 category: "CS - 기초"
-aliases: ["조건부확률과 베이즈 정리", "Conditional Probability and Bayes", "기저율과 경보 확률", "조건부 독립", "Conditional Independence", "베이즈 네트워크", "Bayesian Network", "마르코프 블랭킷", "Markov Blanket"]
+aliases: ["조건부확률과 베이즈 정리", "Conditional Probability and Bayes", "기저율과 경보 확률", "조건부 독립", "Conditional Independence", "베이즈 네트워크", "Bayesian Network", "마르코프 블랭킷", "Markov Blanket", "확률의 공리", "Probability Axioms", "포함배제", "곱셈 규칙"]
 ---
 
 # 조건부확률과 베이즈 정리
@@ -20,6 +20,8 @@ aliases: ["조건부확률과 베이즈 정리", "Conditional Probability and Ba
 | 합계 | 0.17 | 0.83 | 1.00 |
 
 각 내부 칸은 두 사건이 함께 일어나는 결합확률이다. `P(L ∩ A) = 0.08`이다. 행과 열의 합은 다른 사건의 여부를 합쳐 없앤 주변확률로, `P(L) = 0.10`, `P(A) = 0.17`이다.
+
+표의 계산은 확률의 공리에서 나온다. 모든 사건의 확률은 0 이상이고 가능한 모든 경우의 확률을 더하면 1이며, 서로 겹치지 않는 사건들의 합사건 확률은 각 확률의 합이다. 여기서 여사건 규칙 `P(Lᶜ) = 1 − P(L) = 0.90`이 나온다. 겹칠 수 있는 두 사건의 합사건은 겹친 부분을 한 번 빼야 한다(포함배제). `P(L ∪ A) = 0.10 + 0.17 − 0.08 = 0.19`이고, 둘 다 아닌 칸 0.81을 1에서 뺀 값과 같다.
 
 ## 조건을 바꾸면 분모가 바뀐다
 
@@ -43,7 +45,9 @@ P(A) = P(A \mid L)P(L) + P(A \mid L^c)P(L^c)
      = 0.8 \times 0.1 + 0.1 \times 0.9 = 0.17
 $$
 
-이는 전체확률의 법칙이다. 누수와 누수 없음처럼 서로 겹치지 않고 전체를 덮는 경우로 나눈다. 베이즈 정리는 다음처럼 조건의 방향을 바꾼다.
+이는 전체확률의 법칙이다. 누수와 누수 없음처럼 서로 겹치지 않고 전체를 덮는 경우로 나눈다. 값이 여럿인 확률변수 `Y`로 나누면 `P(X = x) = Σ_y P(X = x | Y = y)P(Y = y)`이고, 조건부확률 대신 결합확률을 더하는 `P(X = x) = Σ_y P(X = x, Y = y)`가 주변화다. 베이즈 네트워크는 관측하지 않은 변수를 이렇게 더해 없애며 [[Bayesian-Network-Inference|추론]]한다.
+
+조건부확률의 정의를 곱셈으로 쓰면 `P(L ∩ A) = P(A | L)P(L) = P(L | A)P(A)`다. 두 표현이 같으므로 `P(A)`로 나누면 다음 베이즈 정리가 나오며, 조건의 방향을 바꾼다.
 
 $$
 P(L \mid A) = \frac{P(A \mid L)P(L)}{P(A)}
@@ -66,6 +70,8 @@ $$
 ## 독립과 조건부 독립
 
 두 사건 `A`, `B`는 `P(A ∩ B) = P(A)P(B)`일 때 독립이다. 동전을 두 번 던지면 앞의 결과가 뒤의 결과에 영향을 주지 않으므로 둘 다 앞면일 확률은 `1/2 × 1/2 = 1/4`다.
+
+동시에 일어날 수 없는 배반 사건은 확률이 0보다 크면 독립이 아니다. 주사위를 한 번 던져 6이 나오는 사건과 4가 나오는 사건은 `P(6 ∩ 4) = 0`이지만 `P(6)P(4) = 1/36`이다. 하나가 일어났다는 사실이 다른 하나를 불가능하게 만들므로 서로에 대한 정보를 준다.
 
 `P(C) > 0`인 사건 `C`가 주어졌을 때 다음이 성립하면 `A`와 `B`는 `C` 아래에서 조건부 독립이다.
 
@@ -169,9 +175,13 @@ I-동치인 그래프들은 같은 분포를 표현할 수 있으므로, 관측 
 - [YouTube, ZeroCho TV, 인공지능 7편 - 경보가 울리면 정말 누수일까?](https://www.youtube.com/watch?v=ywqtA2GBE2Q) — 누수 사례의 출발점. 전사문의 수치를 공식에 대입해 검산
 - [YouTube, ZeroCho TV, 인공지능 8편 - 센서 두 개가 울리면 누수 확률도 두 배일까?](https://www.youtube.com/watch?v=BwX8fUOPyFE) — 세 연결 구조와 두 센서 사례의 출발점. 두 센서의 사후확률은 앞 모형의 수치로 새로 계산
 - [YouTube, ZeroCho TV, 인공지능 9탄 - 강화학습 배우는데 조건부독립을 먼저 배우는 이유](https://www.youtube.com/watch?v=PPRDU3Z15mQ) — 다섯 변수 지각 모형과 마르코프 블랭킷의 출발점. 영상에 없는 늦잠과 지각 확률은 가상 값으로 채워 계산
+- [YouTube, freeCodeCamp.org, Harvard CS50's Artificial Intelligence with Python – Full University Course](https://www.youtube.com/watch?v=5NgNicANyqM&t=13179s) — Uncertainty 구간. 확률 공리, 곱셈 규칙, 배반 사건의 독립 반례와 확률변수의 주변화의 출발점
+- [Introduction to Probability, Statistics, and Random Processes, Probability — Hossein Pishro-Nik](https://www.probabilitycourse.com/chapter1/1_3_2_probability.php) — 2026-11-18 확률의 세 공리 대조
+- [CS50's Introduction to Artificial Intelligence with Python, Lecture 2 Uncertainty — Harvard](https://cs50.harvard.edu/ai/2020/notes/2/) — 2026-11-18 여사건, 포함배제, 확률변수의 주변화와 조건화 식 대조
 
 ## 관련 문서
 
+- [[Bayesian-Network-Inference|베이즈 네트워크 추론]] — 열거 추론과 샘플링
 - [[Discrete-Probability-Distributions|이산 확률분포와 관측 단위]]
 - [[Descriptive-Statistics-and-Distribution|기술통계와 분포]]
 - [[Recommendation-System-Modeling-Foundations|추천시스템 모델링 기초]]

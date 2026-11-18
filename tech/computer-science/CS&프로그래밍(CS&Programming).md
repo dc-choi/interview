@@ -26,7 +26,7 @@ aliases: ["CS&프로그래밍(CS&Programming)", "CS & Programming Language"]
 - [[tech/computer-science/code-quality/코드품질(CodeQuality)|코드 품질 (Code Quality)]] — 하드코딩 제거, 응집, 가독성 인지과학, 용어 엄밀성
 - [[tech/computer-science/functional/함수형(Functional)|함수형 프로그래밍 (Functional)]] — 카테고리 이론, Functor, Monad, CCC
 - [[tech/computer-science/data-structure/자료구조(DataStructure)|자료구조 (Data Structure)]] — Array, LinkedList, Stack, Queue, Hash, Set
-- [[tech/computer-science/algorithm/알고리즘(Algorithm)|알고리즘 (Algorithm)]] — Big O, 재귀, 정렬, DP, 탐색, 최단 경로, P-NP, 오디오 핑거프린팅, 게임 미니맥스
+- [[tech/computer-science/algorithm/알고리즘(Algorithm)|알고리즘 (Algorithm)]] — Big O, 재귀, 정렬, DP, 탐색, 최단 경로, P-NP, 오디오 핑거프린팅, 게임 미니맥스, 지역 탐색, 선형 계획법, 제약 충족
 - [[Robotics|로보틱스]] — 촉각 센서와 파지 제어, 제작 반복성과 현장 정비
 - [[tech/computer-science/c/C언어(C)|C]] — 빌드와 디버깅, 자료형과 함수, 배열과 문자열, 포인터와 동적 메모리, 표준 입출력과 파일
 - [[tech/computer-science/cpp/C++(Cpp)|C++]] — 값과 메모리, STL, 코딩 테스트 구현 규칙
@@ -34,10 +34,13 @@ aliases: ["CS&프로그래밍(CS&Programming)", "CS & Programming Language"]
 - [[tech/computer-science/js/자바스크립트(JS)|JavaScript]] — Promise, 모듈, Prototype, BigInt, Unicode, Intl과 리소스 해제, JSON과 설정 파일 문법, 유틸리티 라이브러리 선택, ECMAScript 연도별 변화와 런타임 도입
 - [[Browser-CSS-Animation-and-Compatibility|브라우저 CSS 애니메이션]] — 이징, 스태거와 경로의 구분, reduced motion과 호환성, Baseline과 Interop 2027 CSS 후보
 - [[tech/computer-science/java/자바(Java)|Java]] — 언어 기초, 백엔드 면접 필수
-- [[Python-Iteration-and-Functions|Python 반복문과 함수]] — range 경계, enumerate, 출력과 반환, 튜플과 빈 입력
+- [[Python-Values-Types-and-Errors|Python 값, 타입과 예외]] — C와 비교한 실행 모델, 정수 정밀도와 floor 나눗셈, 불변 문자열, EAFP와 isnumeric 함정, 컬렉션 선택
+- [[Python-Iteration-and-Functions|Python 반복문과 함수]] — range 경계, enumerate, for-else와 do-while 대체, 키워드 인자, 정의 시점과 main 관용구, 출력과 반환, 튜플과 빈 입력
+- [[Python-Modules-and-File-IO|Python 모듈, 명령행과 파일 입출력]] — import와 패키지, venv와 PEP 668, sys.argv와 종료 코드, with와 open, csv 모듈
 - [[Python-315-Language-Changes|Python 3.15 변경]] — 지연 임포트, 불변 매핑, UTF-8과 관측
 - [[CPython-Experimental-JIT|CPython 실험적 JIT]] — copy-and-patch, Informational과 Standards Track PEP, PEP 836 철회와 main 제거 기한
 - [[Python-Tkinter-GUI|Python Tkinter GUI]] — 위젯과 이벤트 루프, 콜백, expand와 fill, 느린 DB 호출의 경계
+- [[Python-Flask-Web|Python Flask 웹 애플리케이션]] — 라우트와 request.args/form, Jinja 상속과 자동 이스케이프의 빈틈, 서버 검증과 PRG, 서명 쿠키 세션과 변경 감지, CSRF 토큰, JSON 응답
 - [[Native-Compilation-Compatibility|네이티브 컴파일과 호환성]] — Bun AOT 실험과 TurboPython, .NET 11의 CPU 하한과 ReadyToRun 대상
 - [[Constraint-Based-Resource-Placement|제약 기반 자원 배치]] — Rebalancer, 지역 탐색과 MIP
 

@@ -1,7 +1,7 @@
 ---
 tags: [cs, robotics, physical-ai, control, liquid-neural-network]
 status: done
-verified_at: 2026-11-16
+verified_at: 2026-11-18
 category: "CS - 로보틱스"
 aliases: ["피지컬 AI와 리퀴드 제어", "Physical AI and Liquid Control", "Liquid Neural Networks"]
 ---
@@ -60,6 +60,15 @@ aliases: ["피지컬 AI와 리퀴드 제어", "Physical AI and Liquid Control", 
 - 구동기의 마찰과 백래시 같은 물리 잡음을 모두 학습 데이터로 덮으려 하기보다 하드웨어와 저수준 제어에서 먼저 줄이고, AI는 판단과 조정에 쓰는 설계 관점이 있다. 어느 잡음을 어느 계층에서 처리할지는 과업과 장치별로 측정해 정한다.
 - 통제된 공장 공정의 반복 작업은 기존 고정 자동화가 더 단순하고 안전할 수 있다. 발표자는 범용 로봇이 가치를 내는 곳을 공정을 바꿔 가며 다양한 작업을 맡는 영역으로 본다. 이를 평가할 때는 한 동작의 반복 데이터 축적과 다양한 동작의 수행 능력을 구분한다.
 
+### 통신 지연이 길면 현장 계층이 맡는 범위가 넓어진다
+
+계층을 나누는 기준은 제어 주기만이 아니다. 화성은 지구에서 평균 약 2억 2,500만 km 떨어져 있어 실시간 원격 조종이 불가능하다(JPL 2026-01-30 발표). 이 거리를 빛이 가는 데만 편도 약 12.5분이 걸린다(평균 거리로 계산한 값이며 실제 지연은 두 행성의 위치에 따라 달라진다, [[Throughput-vs-Latency#전파 지연은 처리량으로 없앨 수 없다|전파 지연]]). Perseverance는 상위 판단과 하위 반응을 지구와 로버에 나눠 둔다.
+
+- **지구의 상위 판단**: 운영팀이 지형과 상태 자료로 경로를 그리고 경유지(waypoint)를 정한다. 2025-12-08과 12-10의 두 주행(210m, 246m)에서는 JPL이 Anthropic과 함께 Claude 시각 언어 모델로 HiRISE 궤도 영상과 지형 경사 자료를 분석해 경유지를 포함한 경로를 만들었다. 명령은 보내기 전에 JPL의 디지털 트윈에서 50만 개가 넘는 텔레메트리 변수로 검증했다. 생성 모델이 맡은 것은 지구에서의 경로 제안이고, 로버에 간 것은 검증을 통과한 명령이다.
+- **로버의 하위 반응**: AutoNav가 좌우 카메라 영상으로 앞 지형의 3D 지도를 만들고 위험을 찾아, 운영팀이 정한 정지점 사이의 경로를 스스로 고른다. 바퀴가 움직이는 동안 영상을 처리하는 thinking while driving으로, 멈춰서 영상을 찍고 처리한 뒤에야 경로를 고르던 Curiosity와 달리 움직이면서 계산한다.
+
+왕복 지연이 길수록 지구의 판단을 기다릴 수 없는 장애물 회피와 정지를 현장 계층이 스스로 해야 한다(이 문서의 해석). 상위 판단에 생성 모델을 쓰더라도 [[#물리 제어의 모델 요구사항|위의 요구사항]]처럼 실행 전 검증 단계를 둔 사례다.
+
 ## 웨어러블 로봇: 규격과 1인칭 데이터
 
 웨어러블 로봇(외골격)은 스스로 과업을 판단하는 로봇과 달리 사람이 의도한 동작의 부족한 힘을 보조한다. 사람의 판단을 대신하지 않아야 하므로 의도 인식, 동작 보조와 안전 정지의 설계가 중심이 된다.
@@ -92,6 +101,7 @@ Neural Circuit Policy(NCP)는 생물 신경회로에서 영감을 얻어 작고 
 - 온디바이스 추론이 빨라도 로봇이 위험해질 수 있는 경우는 무엇인가?
 - 학습한 환경과 다른 장소에서 성공했다는 결과를 어느 범위까지 일반화할 수 있는가?
 - 부품이 예상보다 미끄러울 때의 보정과 다음 부품을 고르는 일을 각각 어느 계층에 두고, 왜 그런가?
+- 화성 로버에서 경유지 결정과 장애물 회피를 각각 어느 계층에 두고, 생성 모델이 만든 경로는 어떤 관문을 거쳐야 하는가?
 
 ## 출처
 
@@ -105,6 +115,9 @@ Neural Circuit Policy(NCP)는 생물 신경회로에서 영감을 얻어 작고 
 - [eCFR (Cornell LII), 21 CFR 890.3480 Powered lower extremity exoskeleton](https://www.law.cornell.edu/cfr/text/21/890.3480) — 2026-11-16 정의, Class II와 특별 통제 항목 대조.
 - [CYBATHLON 2020 Global Edition winners interview: powered exoskeleton race — Robohub](https://robohub.org/cybathlon2020globaledition-winners-interview-powered-exoskeleton-race) — 2020-12-04, 2026-11-16 경기 대상과 메달 결과 대조.
 - [휴머노이드 시대에 왜 웨어러블 로봇이 더 중요해졌나? — 티타임즈TV, 공경철](https://www.youtube.com/watch?v=J55KSi05eNE) — 2026-11-06 업로드. 발표자는 KAIST 기계공학과 교수이자 웨어러블 로봇 기업 엔젤로보틱스 대표다. 판단과 반사의 계층 분리, 구동기 단의 잡음 처리, 1인칭 데이터와 제조 현장 휴머노이드의 한계라는 관점. 산업 전망, 국가 비교와 해커톤 일화는 옮기지 않았다.
+- [NASA's Perseverance Rover Completes First AI-Planned Drive on Mars — NASA JPL](https://www.jpl.nasa.gov/news/nasas-perseverance-rover-completes-first-ai-planned-drive-on-mars/) — 2026-01-30 릴리스 2026-008, 2026-11-18 주행 날짜와 거리, 모델과 분석 자료, 경유지 생성, 디지털 트윈 검증, 평균 거리와 기존 수동 경로 계획을 대조.
+- [How Perseverance Drives on Mars — NASA](https://science.nasa.gov/resource/how-perseverance-drives-on-mars/) — 2022-04-08 공개(2024-11-15 갱신), 2026-11-18 AutoNav의 3D 지도와 위험 식별, 운영팀이 정하는 정지점, thinking while driving과 Curiosity 비교를 대조.
+- [YouTube, Lattice, Insane Computer Science Concepts](https://www.youtube.com/watch?v=Sgfzo6OGFkI) — 2026-11-05 업로드, 2026-11-18 음성 인식 전사 전체 확인. 지연 때문에 로버에 판단을 맡긴다는 관점과 AutoNav, 생성 AI 경로 계획 사례의 계기. 시차 지도, 점구름, 높이 지도, 비용 함수와 ACE로 이어지는 세부 단계와 AEGIS 표적 선택은 1차 자료로 대조하지 못해 넣지 않았다.
 
 ## 관련 문서
 
@@ -113,3 +126,4 @@ Neural Circuit Policy(NCP)는 생물 신경회로에서 영감을 얻어 작고 
 - [[Robot-Policy-Training-Pipeline|로봇 정책 학습과 평가 파이프라인]]
 - [[World-Models|월드 모델]]
 - [[Reinforcement-Learning-from-Experience|경험 기반 강화학습]]
+- [[Error-Correcting-Codes|오류 정정 부호]] — 왕복이 긴 링크에서 재전송 대신 정정 부호로 기우는 이유

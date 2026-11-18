@@ -3,7 +3,7 @@ tags: [cs, digital, bit, encoding]
 status: done
 category: "CS - 기초"
 aliases: ["디지털 기초", "비트와 진법", "정수 표현과 엔디언"]
-verified_at: 2026-10-05
+verified_at: 2026-11-18
 ---
 
 # 디지털 기초: 비트, 진법, 정수 표현
@@ -130,11 +130,11 @@ SI 접두사와 이진 접두사를 구분한다.
 
 ## 문자 인코딩
 
-- **ASCII**: 7비트 코드로 `U+0000`부터 `U+007F`에 대응하는, 제어 문자를 포함한 128개 부호를 표현한다. `A`는 65(`0x41`, `100 0001₂`), `B`는 66이다.
+- **ASCII**: 7비트 코드로 `U+0000`부터 `U+007F`에 대응하는, 제어 문자를 포함한 128개 부호를 표현한다. `A`는 65(`0x41`, `100 0001₂`), `B`는 66이고 `a`는 97(`110 0001₂`)이라 영문 대문자와 소문자는 `0x20` 비트 하나만 다르다. ASCII에는 128부터 255까지의 부호가 없다. RFC 20은 8비트 바이트에 담을 때 최상위 비트를 항상 0으로 두라고 권하며, 그 범위에 문자를 배정한 8비트 문자 집합은 ASCII가 아닌 별개 인코딩이다.
 - **Unicode**: 문자에 코드 포인트를 부여하는 표준이다. 코드 공간은 `U+0000`부터 `U+10FFFF`까지다.
 - **UTF-8**: Unicode 스칼라 값을 1바이트에서 4바이트로 인코딩하며 ASCII 범위는 같은 1바이트 값을 유지한다.
 
-저장하고 전송하는 바이트열은 인코딩이 정한다. UTF-32는 코드 단위 값이 코드 포인트 값과 같지만, UTF-16은 보충 평면 문자를 서로게이트 쌍으로, UTF-8은 ASCII 밖 문자를 여러 바이트로 나눠 코드 포인트와 다른 값을 담는다. 기쁨의 눈물 이모지(FACE WITH TEARS OF JOY)는 코드 포인트 `U+1F602`(128,514)이고 UTF-32로는 `0001F602`, UTF-16으로는 서로게이트 쌍 `D83D DE02`, UTF-8로는 `F0 9F 98 82` 4바이트다. 받는 쪽은 바이트열을 코드 포인트로 디코딩한 뒤 글꼴의 글리프로 그린다. Unicode는 문자만 정하고 글리프 모양은 글꼴 제작사가 정하므로 같은 이모지도 운영체제와 글꼴마다 다르게 보일 수 있다.
+저장하고 전송하는 바이트열은 인코딩이 정한다. UTF-32는 코드 단위 값이 코드 포인트 값과 같지만, UTF-16은 보충 평면 문자를 서로게이트 쌍으로, UTF-8은 ASCII 밖 문자를 여러 바이트로 나눠 코드 포인트와 다른 값을 담는다. 기쁨의 눈물 이모지(FACE WITH TEARS OF JOY)는 코드 포인트 `U+1F602`(128,514)이고 UTF-32로는 `0001F602`, UTF-16으로는 서로게이트 쌍 `D83D DE02`, UTF-8로는 `F0 9F 98 82` 4바이트다. 이 네 바이트를 32비트 정수 하나로 읽은 4,036,991,106(`0xF09F9882`)은 인코딩된 바이트열의 값일 뿐 코드 포인트가 아니다. 받는 쪽은 바이트열을 코드 포인트로 디코딩한 뒤 글꼴의 글리프로 그린다. Unicode는 문자만 정하고 글리프 모양은 글꼴 제작사가 정하므로 같은 이모지도 운영체제와 글꼴마다 다르게 보일 수 있다.
 
 문자 수와 바이트 수는 같지 않다. UTF-8에서 `A`는 1바이트, 현대 한글 음절 `가`는 3바이트지만, 사용자에게 보이는 한 글자가 여러 코드 포인트로 구성될 수도 있다.
 
@@ -181,9 +181,10 @@ RGB 8 bit 채널 세 개는 pixel당 3 B, RGBA는 4 B다. 디코딩 buffer 크�
 - 인프런, 감자 강사, [빅 엔디안과 리틀 엔디안](https://www.inflearn.com/courses/lecture?courseId=336749&unitId=277632), [오버플로우와 인터럽트](https://www.inflearn.com/courses/lecture?courseId=336749&unitId=277637), [음수](https://www.inflearn.com/courses/lecture?courseId=336749&unitId=277641)
 - YouTube, 쉬운코드, [컴퓨터 양의 정수 표현 방법](https://www.youtube.com/watch?v=P6s_66Ta72s), [컴퓨터 음의 정수 표현 방법](https://www.youtube.com/watch?v=oMX8305gTmQ), [10000000 십진수 변환 해설](https://www.youtube.com/watch?v=6-6x6s5Rme8)
 - 부스트코스, 모두를 위한 컴퓨터 과학 (CS50 2019), [2진법](https://www.boostcourse.org/cs112/lecture/118997), [정보의 표현](https://www.boostcourse.org/cs112/lecture/118998)
+- YouTube, Harvard CS50 (2026), [Lecture 0: Scratch](https://www.youtube.com/watch?v=gmuTjeQUbTM)
 - [Unicode Standard 17.0, Chapter 2 General Structure](https://www.unicode.org/versions/Unicode17.0.0/core-spec/chapter-2/)
 - [Unicode Character Database 17.0, UnicodeData.txt](https://www.unicode.org/Public/17.0.0/ucd/UnicodeData.txt)
-- [IETF RFC 20, ASCII format for Network Interchange](https://www.rfc-editor.org/rfc/rfc20)
+- [IETF RFC 20, ASCII format for Network Interchange](https://www.rfc-editor.org/rfc/rfc20) — 2026-11-18 8비트 바이트의 최상위 비트 0 권고와 `A`(4/1), `a`(6/1) 위치 대조
 - [NIST, Prefixes for binary multiples](https://physics.nist.gov/cuu/Units/binary.html)
 - [NIST, Metric (SI) Prefixes](https://www.nist.gov/pml/owm/metric-si-prefixes)
 - [Microsoft Learn, WAVEFORMATEX structure (mmeapi.h)](https://learn.microsoft.com/en-us/windows/win32/api/mmeapi/ns-mmeapi-waveformatex)
