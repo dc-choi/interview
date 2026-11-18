@@ -79,5 +79,6 @@ aliases: ["Agent-in-the-Loop Optimizer", "Reactive Optimizers", "OPAL", "학습 
 
 - [[Supervised-Learning-Validation-and-Metrics|지도학습 검증과 평가 지표]]
 - [[Deep-Learning-Foundations-and-Practice|딥러닝 기초와 실습]]
+- [[PyTorch-Training-Loop#optimizer|PyTorch 학습 루프의 optimizer]]
 - [[AI-Scientific-Discovery-Loops|AI 과학 발견 루프]]
 - [[Mechanistic-Interpretability|신경망의 기계적 해석가능성]]

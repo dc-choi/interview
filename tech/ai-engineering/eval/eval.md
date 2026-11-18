@@ -17,6 +17,7 @@ LLM 출력의 평가와 모른다고 말하는 능력, 비전 모델의 합성 �
 - [x] [[Crowdsourced-Human-Evaluation|크라우드소싱 사람 평가]] — 평가자 자격과 응답 검수, 주의력 검사와 Mechanical Turk 종료
 - [x] [[AI-Consciousness-Evidence|AI 의식의 증거]] — 자기보고와 행동, 내부 구조 지표와 기능 검증의 구분
 - [x] [[Benchmark-Coverage-and-Workplace-Performance|벤치마크 평가 범위와 업무 성과]] — 업무 과업 매핑, AAII v5 구성 변경과 비공개 평가, 날짜와 제공 상태의 비교, 변형 과제로 본 일반화와 숨은 테스트 추정
+- [x] [[LLM-Perplexity-and-Benchmarks|perplexity와 객관식 벤치마크 채점]] — perplexity의 정의, 범위와 비교 조건, 교차 엔트로피의 하한, 사후학습 뒤의 보정 저하, MMLU 채점 구현에 따른 점수 차, n-gram 겹침과 순서 교환 오염 검사
 - [x] [[Synthetic-Vision-Data-Evaluation|합성 비전 데이터 평가]] — 생성과 인식 모델의 분리, 라벨 검수와 실제 데이터 평가
 - [x] [[Model-Feedback-Loop-and-Validation|모델 피드백 루프와 검증]] — 실험 결과 환류, shadow 비교와 실제 행동의 구분
 - [x] [[LLM-Sycophancy-Evaluation|LLM 아첨 편향 평가]] — 정답 훼손, 정정 수용과 선호만 바꾼 쌍 비교
@@ -28,7 +29,7 @@ LLM 출력의 평가와 모른다고 말하는 능력, 비전 모델의 합성 �
 - [x] [[Evaluation-Driven-Development|평가 주도 개발 EDD (Generator와 Evaluator 두 축, Eval과 테스트의 차이, 성숙도 Lv.0에서 Lv.5, 하네스 부품의 승격, 회귀와 이행과 품질 순서, 실행 기록과 최종 결과 대조, GEPA 개선 후보 평가)]]
 - [x] [[Eval-Rubric-and-Score-Gate|루브릭과 점수 게이트 (채점기 3종, 결정론과 LLM-as-Judge와 사람의 3층, 규칙의 결정론 번역, 거부권 배점, 미달 항목 루프와 3중 안전장치, 실행 불가 판정과 중단 출구, 완료 선언 차단과 fail-closed, 점수 의심 순서)]]
 - [x] [[Eval-LLM-Judge|LLM 판정기 LLM-as-a-Judge (참조 기반 지표의 한계, 판정 입력과 출력, 판정 방식 넷, 위치와 장황함과 자기 선호 편향, 사람 라벨 교정과 kappa, 판정기 교체와 grader hacking)]]
-- [x] [[Eval-Golden-Set-and-Deploy-Gates|골든셋과 배포 관문 (프롬프트와 Eval의 앞뒷면, 실패 20~50건으로 시작, 문항 구성과 홀드아웃, 베이스라인과 표류, 배포 세 관문과 카나리, 가드레일 회귀, promptfoo, 안티패턴 5)]]
+- [x] [[Eval-Golden-Set-and-Deploy-Gates|골든셋과 배포 관문 (프롬프트와 Eval의 앞뒷면, 실패 20~50건으로 시작, 문항 구성과 홀드아웃, 베이스라인과 표류, 문항 수의 표본 오차와 부트스트랩, 슬라이스와 심슨의 역설, 배포 세 관문과 카나리, 가드레일 회귀, promptfoo, 안티패턴 5)]]
 - [x] [[Eval-Model-Drift-Monitoring|서빙 모델 드리프트 감시 (같은 이름 아래 바뀌는 네 층, 스냅샷 고정이 막는 것과 못 막는 것, 동결 기준점과 정답률, 토큰, 비용의 분리 판정, 반복과 연속 확인 경보, 공개 추적 보드 읽는 법, 경보 시 원인 분리 순서)]]
 - [x] [[Responsible-AI-Lens|책임 있는 AI 설계 검토 (AWS Responsible AI Lens)]] — 열 가지 차원과 여덟 초점 영역, 좁은 사용 사례, 위험 매트릭스, 예/아니오 출시 기준과 결정의 신뢰도, 답변과 행동의 위험 차이
 - [x] [[Agent-Recovery-Evaluation|에이전트 복구 평가]] — 같은 상태에서 가른 복구와 무복구 갈래, 구제와 훼손 4분류, 순효과, 훼손 가중 개입 규칙

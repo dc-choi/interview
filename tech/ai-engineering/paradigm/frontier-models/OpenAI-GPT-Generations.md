@@ -1,16 +1,16 @@
 ---
 tags: [ai, llm, openai, gpt, model, history]
 status: done
-verified_at: 2026-11-01
+verified_at: 2026-11-18
 category: "AI엔지니어링(AIEngineering)"
-aliases: ["OpenAI GPT Generations", "GPT 세대별 변화", "GPT-2에서 GPT-6까지", "GPT Model Lineage"]
+aliases: ["OpenAI GPT Generations", "GPT 세대별 변화", "GPT-2에서 GPT-6까지", "GPT Model Lineage", "GPT-6.2 Astra", "GPT-6.2 Sol"]
 ---
 
 # OpenAI GPT 세대별 변화
 
 이 문서는 GPT 세대 번호를 한 모델이 커진 순서가 아니라 학습 방식, 호출 인터페이스, 컨텍스트 한도와 제공 형태가 바뀐 시점들로 읽는다. 이는 OpenAI의 설명이 아니라 이 문서의 읽기 틀이다. 네 축은 서로 다른 때에 바뀌었다. 지시 따르기를 위한 RLHF는 GPT-4보다 앞서 InstructGPT(2022)가 GPT-3에 적용했고(RLHF 자체는 그보다 앞선 연구에서 나왔다), 추론 토큰과 effort는 GPT-5보다 앞선 o1 계열에서, 100만 토큰대 컨텍스트는 GPT-6보다 앞선 GPT-4.1과 GPT-5.4에서 먼저 나왔다. 세대 이름으로 기능을 추정하지 말고 모델 단위로 확인한다.
 
-이 문서는 2026-11-01에 논문, 시스템 카드와 OpenAI API의 모델 페이지, 가이드, 변경 이력으로 대조한 내용이다. 가격과 벤치마크는 [[AI-Capability-and-Cost-Trends|AI 능력과 비용 추세 읽기]]와 [[LLM-Model-Tiers|LLM 모델 티어 선택]]이 다룬다.
+이 문서는 2026-11-01에 논문, 시스템 카드와 OpenAI API의 모델 페이지, 가이드, 변경 이력으로 대조한 내용이다. GPT-6.2 항목, 대화 중 설정 변경과 제거 일정은 2026-11-18에 모델 페이지, 마이그레이션 가이드, 추론, 접두사 유지, 구조화 출력, 프롬프트 캐싱 가이드와 변경 이력, 지원 종료 목록으로 다시 대조했다. 가격과 벤치마크는 [[AI-Capability-and-Cost-Trends|AI 능력과 비용 추세 읽기]]와 [[LLM-Model-Tiers|LLM 모델 티어 선택]]이 다룬다.
 
 ## 네 축으로 나눠 읽는다
 
@@ -35,10 +35,12 @@ aliases: ["OpenAI GPT Generations", "GPT 세대별 변화", "GPT-2에서 GPT-6�
 
 ## GPT-6 계열에서 바뀐 호출 계약
 
-- **구성**: GPT-6 Astra(2026-09-03), GPT-6 Sol과 GPT-6 Luna(2026-09-22), GPT-6.1 Sol(2026-09-29), GPT-6.1 Terra(2026-10-26) 순으로 나왔다. 2026-11-01 모델 목록의 Flagship 절에는 Astra, GPT-6.1 Sol, GPT-6.1 Terra, GPT-6 Luna가 있고 네 모델 모두 텍스트와 이미지를 입력받는다. 지식 기준일은 Astra와 GPT-6.1 Sol이 2026-04-30, Luna가 2026-05-18, GPT-6.1 Terra가 2026-06-01로 서로 다르다. 이 문서의 GPT-6 계열 설명은 이 네 모델 기준이다. 2026-10-30에는 생명과학 연구용 GPT-6 Rosalind(`gpt-6-rosalind`)도 나왔지만, 접근은 신뢰 접근(trusted-access) 프로그램에서 승인받은 기관의 내부 연구용이다.
+- **구성**: GPT-6 Astra(2026-09-03), GPT-6 Sol과 GPT-6 Luna(2026-09-22), GPT-6.1 Sol(2026-09-29), GPT-6.1 Terra(2026-10-26) 순으로 나왔다. 2026-11-01 모델 목록의 Flagship 절에는 Astra, GPT-6.1 Sol, GPT-6.1 Terra, GPT-6 Luna가 있고 네 모델 모두 텍스트와 이미지를 입력받는다. 지식 기준일은 Astra와 GPT-6.1 Sol이 2026-04-30, Luna가 2026-05-18, GPT-6.1 Terra가 2026-06-01로 서로 다르다. 이 문서의 GPT-6 계열 설명은 이 네 모델 기준이고, 2026-11-17 나온 GPT-6.2는 아래 두 항목에 따로 적는다. 2026-10-30에는 생명과학 연구용 GPT-6 Rosalind(`gpt-6-rosalind`)도 나왔지만, 접근은 신뢰 접근(trusted-access) 프로그램에서 승인받은 기관의 내부 연구용이다.
+- **GPT-6.2 구성(2026-11-17)**: 가장 어려운 작업용 GPT-6.2 Astra(`gpt-6.2-astra`)와 일상 코딩과 대규모 에이전트용 GPT-6.2 Sol(`gpt-6.2-sol`)이 나왔다. 2026-11-18 모델 목록의 대표 모델은 GPT-6.2 Astra, GPT-6.2 Sol, GPT-6.1 Terra, GPT-6 Luna다. 두 모델의 컨텍스트는 GPT-6 계열과 같은 1,050,000토큰(입력 최대 922,000, 출력 최대 128,000)이고 지식 기준일은 Astra 2026-05-18, Sol 2026-06-01이다. 모델 페이지 기준 둘 다 effort `none`을 거부하고, 마이그레이션 가이드는 `none`이나 `minimal`을 쓰던 호출을 `low`로 옮기고 새 통합은 `medium`에서 시작하라고 권한다. Chat Completions도 받지만 도구 호출에는 Responses API가 필요하다. 단가 변화는 [[LLM-API-Price-Competition#인하의 다섯 가지 형태|LLM API 가격 경쟁]], 발표 수치의 비교 조건은 [[Model-Release-Claims#비용 절감률은 단가, 토큰 수, 과업당 비용으로 나눈다|모델 발표 수치 읽기]]에 둔다.
+- **GPT-6.2의 접두사 변경과 지시 위치**: GPT-6.2부터 Responses API는 대화 기록의 중간을 고치거나(접두사 변경), 하위 모델로 바꾸는 것 같은 일부 모델 변경을 하거나, 최종 사용자나 조직이 바뀌면 안전장치의 하나로 그 뒤의 reasoning 항목을 버린다. 추론을 잃은 모델은 앞의 작업을 다시 하느라 토큰을 더 쓰고 품질이 떨어질 수 있다. 최상위 `instructions`는 `input` 뒤에 붙고 캐시에 적중해도 캐시하지 않은 입력 단가로 과금되므로, 재사용할 지시는 `input`의 첫 `developer` 메시지에 두고 그 턴에만 쓸 지시를 `instructions`에 둔다. effort와 출력 형식은 `configuration_update` 항목으로, 도구 추가는 `additional_tools` 항목으로 덧붙이고, 응답의 `input_transformations`로 어떤 reasoning 항목이 왜(`prefix_mismatch` 등) 빠졌는지 본다. 지난 도구 출력을 잘라 줄이는 것도 접두사 변경이므로 큰 출력은 처음 보낼 때 줄이거나 compaction을 쓴다. OpenAI compaction은 접두사가 바뀌어도 뒤의 reasoning 항목을 유지하고, 직접 만든 요약은 기록 앞이 아니라 끝에 둔다.
 - **비동기 도구 호출**: function 도구나 custom 도구 정의에 `async: true`를 두면 모델은 도구 결과를 기다리지 않고 작업을 이어 간다. 도구 실행은 여전히 애플리케이션이 맡고, 결과는 원래 `call_id`로 이후의 Responses 요청에 돌려준다. 호스티드 내장 도구에는 적용되지 않으며, 응답 생성 자체를 비동기로 돌리는 background mode와 다른 기능이다. GPT-6 Astra와 그 이후 모델이 지원한다.
 - **실행 중 지시(mid-turn steering)**: Responses API의 WebSocket 연결에서 진행 중인 응답에 `response.steer` 이벤트로 지시를 더한다. GPT-6 계열이 지원하고 GPT-5.6과 그 이전 모델은 지원하지 않는다. 수락은 지시가 대기열에 들어갔다는 뜻이고, 서버는 진행 중인 출력 항목과 이미 돌던 호스티드 도구 작업을 마친 뒤 지시를 반영한 새 응답을 이어 만든다. 클라이언트 도구 결과나 승인이 필요하면 그 결과를 보낼 때까지 지시가 대기한다. 이미 보낸 출력을 고치거나 시작된 도구를 취소하지 않으며, 대기 중인 지시는 현재 연결에만 있으므로 연결이 끊긴 뒤 남아 있다고 가정하지 않는다.
-- **대화 중 effort 변경**: 다음 사용자 메시지 앞에 `configuration_update` 항목을 넣어 effort만 바꾼다. 요청 수준의 `reasoning.effort`는 그대로 두므로 캐시용 프롬프트 접두사를 유지한 채 어려운 작업에서 올리고 일상적인 후속 질문(routine follow-ups)에서 내릴 수 있다. GPT-6 계열의 표준 단일 에이전트 모드에서 지원한다. 추론 가이드는 자동 compaction이나 자동 truncation과 함께 쓰지 말라고 안내하며, 독립 `/responses/compact` 엔드포인트는 이 항목이 든 기록을 거부한다. 응답의 `reasoning.effort`는 이 항목으로 바꾼 값이 아니라 요청 수준 설정을 계속 보고한다.
+- **대화 중 effort와 출력 형식 변경**: 다음 사용자 메시지 앞에 `configuration_update` 항목을 넣어 effort나 출력 형식(`text.format`의 `json_schema`나 `text`)을 바꾼다. 한 항목에 둘을 함께 넣을 수 있고 하나만 바꾸면 다른 하나는 유지된다. 요청 수준의 `reasoning.effort`와 `text.format`은 그대로 두므로 캐시용 프롬프트 접두사를 유지한 채 어려운 작업에서 올리고 일상적인 후속 질문(routine follow-ups)에서 내릴 수 있다. GPT-6 이후 지원 모델의 표준 단일 에이전트 모드에서 지원한다. 2026-11-01 추론 가이드는 자동 compaction이나 자동 truncation과 함께 쓰지 말라고 안내했지만, 2026-11-18 가이드는 `context_management`의 자동 compaction과는 함께 쓸 수 있고 API가 compaction 항목 뒤에 최신 effort와 형식을 담은 갱신을 다시 넣는다고 적는다. 자동 truncation과 독립 `/responses/compact` 엔드포인트는 여전히 이 항목이 든 기록을 거부한다. 응답의 `reasoning.effort`와 `text.format`은 이 항목으로 바꾼 값이 아니라 요청 수준 설정을 계속 보고한다.
 - **Astra의 제약과 감시**: GPT-6 Astra는 effort `none`, 사용자 지정 `temperature`와 `top_p`, `logprobs`를 지원하지 않고 도구 호출에는 Responses API가 필요하다. 지원하는 Responses API 요청에서는 에이전트 작업 중 비정렬 감시가 비동기로 돈다.
 
 ## 흔한 오독
@@ -60,7 +62,7 @@ aliases: ["OpenAI GPT Generations", "GPT 세대별 변화", "GPT-2에서 GPT-6�
 - **세대 비교 수치는 비교 대상 모델과 날짜를 붙인다**: 같은 GPT-4 세대에도 8,192토큰 `gpt-4`와 128,000토큰 GPT-4 Turbo가 있었다. 발표 수치의 일반 조건은 [[Model-Release-Claims|모델 발표 수치 읽기]]를 따른다.
 - **effort 값과 샘플링 파라미터를 모델별로 확인한다**: GPT-6 계열은 effort가 `none`이 아니면 `temperature`, `top_p`, `top_logprobs`를 빼야 하고, Chat Completions에서는 `logprobs`도, Responses에서는 `include`의 `message.output_text.logprobs`도 뺀다. Astra와 GPT-6.1 Sol은 `none`을 받지 않는다. 이전 모델의 호출을 옮길 때 제거할 파라미터부터 찾는다([[LLM-API-Version-Migration|LLM API 버전과 SDK 마이그레이션]]).
 - **새 호출 기능의 적용 조건을 확인한다**: 비동기 도구 호출은 애플리케이션이 실행하는 function과 custom 도구, 실행 중 지시는 WebSocket 연결, effort 변경 항목은 GPT-6 계열의 단일 에이전트 모드가 조건이다.
-- **스냅샷과 제거 일정을 기록한다**: 2026-11-01 기준 GPT-6 계열 모델 페이지에는 모델 이름과 같은 스냅샷 하나만 있으므로 응답의 `model` 값을 남긴다([[Eval-Model-Drift-Monitoring|서빙 모델 드리프트 감시]]). 지원 종료 목록의 2026-06-11 공지에 따르면 `gpt-5` 별칭과 `gpt-5-2025-08-07` 스냅샷은 2026-12-11 API에서 제거될 예정이고 권장 대체는 `gpt-5.6-sol`이다(`gpt-5-mini`는 `gpt-5.6-terra`, `gpt-5-nano`는 `gpt-5.6-luna`). 2026-11-01에 열람한 GPT-5 모델 페이지는 최신 GPT-6 Astra를 권하므로, 대체 모델은 출처마다 다르게 적혀 있다.
+- **스냅샷과 제거 일정을 기록한다**: 2026-11-01 기준 GPT-6 계열 모델 페이지에는 모델 이름과 같은 스냅샷 하나만 있으므로 응답의 `model` 값을 남긴다([[Eval-Model-Drift-Monitoring|서빙 모델 드리프트 감시]]). 지원 종료 목록(공지일 2026-06-11)에 따르면 `gpt-5` 별칭과 `gpt-5-2025-08-07` 스냅샷은 2026-12-11 API에서 제거될 예정이다. 권장 대체는 2026-11-01 열람 때 `gpt-5.6-sol`(`gpt-5-mini`는 `gpt-5.6-terra`, `gpt-5-nano`는 `gpt-5.6-luna`)이었고, 2026-11-18에는 공지일은 그대로인 채 `gpt-6.1-sol`, `gpt-6.1-terra`, `gpt-6-luna`로 바뀌어 있었다. 2026-11-01에 열람한 GPT-5 모델 페이지는 최신 GPT-6 Astra를 권했으므로, 대체 모델은 출처와 열람일마다 다르게 적혀 있다.
 
 ## 출처
 
@@ -73,8 +75,8 @@ aliases: ["OpenAI GPT Generations", "GPT 세대별 변화", "GPT-2에서 GPT-6�
 - [GPT-5 System Card — OpenAI](https://cdn.openai.com/gpt-5-system-card.pdf) — 2025-08-13판, 1절의 라우터, API 제공 모델(thinking, mini, nano)과 후속 모델 표, 2절의 학습 설명
 - [GPT-5.1-Codex-Max System Card — OpenAI Deployment Safety Hub](https://deploymentsafety.openai.com/gpt-5-1-codex-max) — 2025-11-18, 5.1.3.2절의 Extra High reasoning effort 측정 조건
 - [GPT-6 Astra System Card — OpenAI Deployment Safety Hub](https://deploymentsafety.openai.com/gpt-6-astra) — 2026-09-03 게시, 변경 이력이 2026-10-30 항목까지인 판을 2026-11-01 열람, 1절의 외부 배포 비정렬 감시, 학습 설명, 8.6절의 배포 시뮬레이션 방법과 비정렬 플래그 비교
-- [Changelog — OpenAI API](https://developers.openai.com/api/docs/changelog) — 2026-11-01 GPT-4 Turbo(2023-11-06), o1-preview(2024-09-12), o1과 `reasoning_effort`(2024-12-17), GPT-5(2025-08-07)부터 GPT-6 Rosalind(2026-10-30)까지의 출시와 기능 항목, GPT-6 Astra 마이그레이션 노트 대조
-- [OpenAI API, Models](https://developers.openai.com/api/docs/models) — 2026-11-01 Flagship 절의 GPT-6 계열 목록
+- [Changelog — OpenAI API](https://developers.openai.com/api/docs/changelog) — 2026-11-01 GPT-4 Turbo(2023-11-06), o1-preview(2024-09-12), o1과 `reasoning_effort`(2024-12-17), GPT-5(2025-08-07)부터 GPT-6 Rosalind(2026-10-30)까지의 출시와 기능 항목, GPT-6 Astra 마이그레이션 노트 대조. 2026-11-18 GPT-6.2 출시(2026-11-17)와 접두사, `instructions` 변경 항목 대조
+- [OpenAI API, Models](https://developers.openai.com/api/docs/models) — 2026-11-01 Flagship 절의 GPT-6 계열 목록, 2026-11-18 대표 모델 목록
 - [OpenAI API, GPT-4](https://developers.openai.com/api/docs/models/gpt-4)
 - [OpenAI API, GPT-4 Turbo](https://developers.openai.com/api/docs/models/gpt-4-turbo)
 - [OpenAI API, GPT-4.1](https://developers.openai.com/api/docs/models/gpt-4.1)
@@ -86,12 +88,17 @@ aliases: ["OpenAI GPT Generations", "GPT 세대별 변화", "GPT-2에서 GPT-6�
 - [OpenAI API, GPT-6.1 Sol](https://developers.openai.com/api/docs/models/gpt-6.1-sol)
 - [OpenAI API, GPT-6.1 Terra](https://developers.openai.com/api/docs/models/gpt-6.1-terra)
 - [OpenAI API, GPT-6 Luna](https://developers.openai.com/api/docs/models/gpt-6-luna)
-- [OpenAI API, Using GPT-6](https://developers.openai.com/api/docs/guides/latest-model) — 모델별 effort, 제거할 샘플링 파라미터와 logprobs 설정
+- [OpenAI API, Using GPT-6](https://developers.openai.com/api/docs/guides/latest-model) — 모델별 effort, 제거할 샘플링 파라미터와 logprobs 설정. 2026-11-18에는 같은 주소가 Using GPT-6.2로 바뀌어 있어 접두사 변경, `instructions` 위치, effort 시작값과 도구 호출 조건을 대조했다
+- [OpenAI API, GPT-6.2 Astra](https://developers.openai.com/api/docs/models/gpt-6.2-astra) — 2026-11-18 컨텍스트와 입출력 최대, 지식 기준일, `none` 거부
+- [OpenAI API, GPT-6.2 Sol](https://developers.openai.com/api/docs/models/gpt-6.2-sol) — 2026-11-18 컨텍스트와 입출력 최대, 지식 기준일, `none` 거부
+- [OpenAI API, Keep the prefix unchanged](https://developers.openai.com/api/docs/guides/keep-prefix-unchanged) — 2026-11-18 reasoning 항목을 버리는 조건, 덧붙이기 대안, compaction 처리와 `input_transformations`
+- [OpenAI API, Structured model outputs](https://developers.openai.com/api/docs/guides/structured-outputs) — 2026-11-18 대화 중 출력 형식 변경의 지원 모델과 제약
+- [OpenAI API, Prompt caching](https://developers.openai.com/api/docs/guides/prompt-caching) — 2026-11-18 GPT-6.2의 `instructions` 위치와 과금
 - [OpenAI API, Async tool calling](https://developers.openai.com/api/docs/guides/async-tool-calling)
 - [OpenAI API, Mid-turn steering](https://developers.openai.com/api/docs/guides/steering)
-- [OpenAI API, Reasoning models](https://developers.openai.com/api/docs/guides/reasoning) — 추론 토큰, effort 값, 25,000토큰 권고, `configuration_update`와 compaction 병용 안내
+- [OpenAI API, Reasoning models](https://developers.openai.com/api/docs/guides/reasoning) — 추론 토큰, effort 값, 25,000토큰 권고, `configuration_update`와 compaction 병용 안내. 2026-11-18 출력 형식 동시 변경과 자동 compaction 병용 허용 대조
 - [OpenAI API, Conversation state](https://developers.openai.com/api/docs/guides/conversation-state) — 컨텍스트 창의 최대 토큰에 입력, 출력, 추론 토큰 포함
-- [OpenAI API, Deprecations](https://developers.openai.com/api/docs/deprecations) — `gpt-4-32k` 종료(2025-06-06), 2026-06-11 공지의 `gpt-5`와 `gpt-5-2025-08-07` 제거 예정(2026-12-11)과 대체 모델
+- [OpenAI API, Deprecations](https://developers.openai.com/api/docs/deprecations) — `gpt-4-32k` 종료(2025-06-06), 2026-06-11 공지의 `gpt-5`와 `gpt-5-2025-08-07` 제거 예정(2026-12-11)과 대체 모델. 2026-11-18 바뀐 권장 대체 대조
 
 ## 관련 문서
 

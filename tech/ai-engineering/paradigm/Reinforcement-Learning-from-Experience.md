@@ -1,8 +1,8 @@
 ---
-tags: [ai, reinforcement-learning, reward, temporal-difference, experience]
+tags: [ai, reinforcement-learning, reward, temporal-difference, mdp, q-learning, experience]
 status: done
 category: "AI엔지니어링(AIEngineering)"
-aliases: ["경험 기반 강화학습", "Reinforcement Learning from Experience", "경험의 시대", "검증 가능한 보상 강화학습", "RLVR"]
+aliases: ["경험 기반 강화학습", "Reinforcement Learning from Experience", "경험의 시대", "검증 가능한 보상 강화학습", "RLVR", "Markov Decision Process", "MDP", "Q-learning", "ε-greedy"]
 ---
 
 # 경험 기반 강화학습
@@ -33,9 +33,35 @@ Temporal-Difference(TD) 학습은 새 보상과 다음 상태의 가치 추정�
 
 탐험(exploration)은 덜 아는 행동을 시도해 정보를 얻는 일이며, 활용(exploitation)은 현재 가장 좋아 보이는 행동을 선택하는 일이다. 실제 장비나 사람에게 영향을 주는 탐험에는 실패 비용과 안전 제약을 먼저 정해야 한다.
 
+## MDP와 Q-learning
+
+강화학습 문제는 보통 Markov decision process(MDP)로 정식화한다. [[Markov-Chain-and-Stationary-Distribution|마르코프 체인]]은 상태가 확률에 따라 다음 상태로 넘어갈 뿐 고르는 주체가 없다. MDP는 여기에 상태마다 고를 수 있는 행동과, 행동의 결과에 붙는 보상을 더한다.
+
+- 상태 집합 `S`
+- 상태 `s`에서 고를 수 있는 행동 집합 `Actions(s)`
+- 전이 모델 `P(s' | s, a)`: `s`에서 `a`를 했을 때 `s'`에 도착할 확률. 결정적인 환경이면 한 상태의 확률이 1이다
+- 보상 함수 `R(s, a, s')`: `s`에서 `a`를 해 `s'`에 도착했을 때의 보상
+
+Q-learning은 전이 모델과 보상 함수를 모르는 상태에서 경험으로 행동 가치 `Q(s, a)`를 추정한다. `Q(s, a)`는 상태 `s`에서 행동 `a`를 한 뒤 얻을 보상의 추정값이다. 처음에는 모든 `Q(s, a)`를 0으로 두고, `s`에서 `a`를 해 보상 `r`과 다음 상태 `s'`를 관측할 때마다 갱신한다.
+
+`Q(s, a) ← Q(s, a) + α × (새 추정값 − Q(s, a))`, `새 추정값 = r + γ × max_a' Q(s', a')`
+
+- **α(학습률):** 새 경험과 기존 추정의 비중이다. 1이면 기존 값을 버리고 새 추정값으로 바꾸고, 0이면 새 경험을 무시한다. 같은 행동을 아홉 번 해 본 뒤의 열 번째 경험만으로 값을 덮어쓰지 않으려면 그 사이 값을 쓴다.
+- **`max_a' Q(s', a')`:** 다음 상태에서 가장 좋은 행동의 현재 추정으로 미래 보상을 대신한다. 과제가 끝난 상태라면 이 항이 없다. 당장 보상이 없어도 보상으로 이어지는 상태의 가치가 이 항을 타고 앞 상태로 전해진다.
+- **γ(할인율):** 미래 보상을 지금 보상보다 얼마나 낮게 칠지 정한다. 생략하면 미래 보상을 지금 보상과 같은 무게로 더한다.
+- 새 추정값과 현재 값의 차이로 고치는 구조는 위의 TD 학습과 같다.
+
+학습한 `Q`로 행동을 고르는 가장 단순한 정책은 현재 상태에서 `Q`가 가장 큰 행동을 고르는 탐욕(greedy) 정책이다. 보상에 닿는 경로를 하나 찾은 에이전트가 탐욕 정책만 쓰면 시도해 보지 않은 더 짧은 경로를 끝내 찾지 못할 수 있다. ε-greedy는 확률 `1 − ε`로 가장 좋은 행동을 고르고(활용), 확률 `ε`로 무작위 행동을 고른다(탐험). 학습 초기에는 ε를 크게 두고 충분히 탐험한 뒤 줄이는 방식도 쓴다. 갱신 목표는 실제로 다음에 고를 행동과 상관없이 다음 상태의 최대 `Q`를 쓴다.
+
+보상이 게임이 끝날 때만 나오는 과제도 같은 틀로 배운다. Nim은 여러 돌 더미 중 하나를 골라 돌을 1개 이상 가져가고, 마지막 돌을 가져가는 쪽이 지는 게임이다. 상태는 더미별 남은 개수, 행동은 어느 더미에서 몇 개를 가져갈지, 보상은 이기면 1, 지면 −1이다. 자기 자신과 대국을 반복하며 `Q`를 갱신하면 전략을 따로 알려 주지 않아도 좋은 수를 배운다.
+
+상태와 행동의 조합이 적으면 `Q`를 표에 하나씩 저장할 수 있지만, 체스처럼 상태가 많으면 모든 조합을 방문하거나 저장할 수 없다. 함수 근사(function approximation)는 상태의 특징으로 `Q(s, a)`를 계산하는 함수를 학습해, 비슷해 보이는 상태에서 배운 가치를 처음 보는 상태로 일반화한다. 어떤 특징을 쓸지는 설계 선택이며, 신경망을 이 함수로 쓰면 상태 특징을 입력으로, 행동별 가치를 출력으로 둔다([[Neural-Network-Fundamentals#여러 출력과 다중 분류|신경망 기초]]).
+
 ## 시뮬레이션 경험과 실제 경험
 
 게임의 자기 대국이나 운전 시뮬레이터는 많은 시행착오를 반복하게 해 준다. 실제 세계에서는 시간, 마모와 사고 비용 때문에 같은 규모의 탐험이 어려울 수 있다. 시뮬레이터의 허점을 이용한 정책이 현실에서도 유효한지는 별도 시험이 필요하다([[World-Models|월드 모델]]).
+
+실제 장비에서는 시행 하나가 비싸므로 사람의 시연으로 정책을 초기화하고 강화학습으로 다듬기도 한다. Kormushev 외(IROS 2010)는 7자유도 로봇 팔의 팬케이크 뒤집기가 동역학이 복잡해 처음부터 강화학습으로 배우기 어렵다고 보고, 사람이 팔을 잡고 움직인 시연(kinesthetic teaching)으로 정책을 초기화한 뒤 EM 기반 PoWER로 다듬었다. 보상은 사람이 그때그때 주는 신호가 아니라 모션 캡처로 잰 팬케이크의 회전과 착지 위치로 계산했고, 이전 시행을 다시 쓰는 중요도 샘플링으로 50회 시행 뒤 성공 동작을 얻었다(논문은 100회 미만이면 충분했다고 적는다). 떨어진 팬케이크를 받으려 팬을 위아래로 흔드는 것처럼 설계하지 않은 동작도 학습에서 나왔다.
 
 《Welcome to the Era of Experience》(2025)의 연구 방향은 다음 네 가지다.
 
@@ -95,6 +121,7 @@ The Bitter Lesson(2019)은 체스, 바둑, 음성, 비전 등의 AI 연구 역�
 - 시뮬레이션에서 높은 보상을 얻은 정책을 현실에 배포하기 전에 어떤 실패를 확인할 것인가?
 - 자기 대전에서 새 전략이 나왔을 때, 의도한 해법과 시뮬레이터 허점의 이용을 무엇으로 구분하는가?
 - 맞은 표본을 골라낼 검증기가 없는 과제에서 표본 수를 늘린 성공 확률을 정답률로 보고하면 무엇을 과대평가하는가?
+- 같은 상태와 행동의 보상이 무작위로 달라지는 환경에서 α를 1로 둔 Q-learning의 값은 어떻게 움직이는가? ε를 처음부터 0으로 두면 무엇을 놓칠 수 있는가?
 
 ## 출처
 
@@ -105,9 +132,15 @@ The Bitter Lesson(2019)은 체스, 바둑, 음성, 비전 등의 AI 연구 역�
 - [What objective is reasoning solving? — Alex Wang](https://alexwang.ai/posts/reasoning-as-pathfinding/) — 2026-11-08. 2026-11-16 성공 확률 목적, 표본 수 확장식, REINFORCE와 거부 표본 미세조정의 관계, 사고 길이, 충실성과 보상 해킹의 설명, 인용 결과와 가정을 대조. 새 실험은 없는 글이다.
 - [추론은 어떤 목적함수를 풀고 있는가? — GeekNews](https://news.hada.io/topic?id=37055) — 학습 계기.
 - [Emergent Tool Use From Multi-Agent Autocurricula — Bowen Baker 외, arXiv](https://arxiv.org/abs/1909.07528) — 2026-11-14 v2 HTML 본문의 보상 규칙, 여섯 단계와 에피소드 수, 상자 타기의 원인, count-based 탐험 비교, 전이 평가 요약과 학습 규모 대조. OpenAI 블로그는 403으로 열람하지 못했다.
+- [YouTube, Harvard CS50's Artificial Intelligence with Python, Learning](https://www.youtube.com/watch?v=5NgNicANyqM&t=30522s) — freeCodeCamp.org 채널, 2023-08-10 공개. 2026-11-18 8:28:42부터의 강화학습 부분(MDP, Q-learning, 탐욕과 ε-greedy, Nim 자기 대국, 함수 근사)을 사람이 단 영어 자막으로 대조했다.
+- [Harvard, CS50's Introduction to Artificial Intelligence with Python, Lecture 4 Learning Notes](https://cs50.harvard.edu/ai/2020/notes/4/) — 이전 판으로 표시된 공식 노트. 2026-11-18 MDP 구성 요소, Q-learning 갱신식, γ의 역할, 탐욕과 ε-greedy, 함수 근사를 대조했다. γ를 넣은 전체 식은 노트에서 이미지라 본문으로 확인하지 못했고, 자막의 미래 보상 항 설명과 노트의 γ 서술을 합쳐 적었다. Sutton과 Barto 교재 사이트는 이번에도 인증서 오류로 열지 못했다.
+- [Robot Motor Skill Coordination with EM-based Reinforcement Learning — Petar Kormushev 외, IROS 2010](https://calinon.ch/papers/Kormushev-IROS2010.pdf) — 2026-11-18 저자 공개 PDF로 시연 초기화, PoWER와 중요도 샘플링, 모션 캡처 보상식, 50회 시행 뒤의 성공 장면과 100회 미만 언급, 설계하지 않은 팬 흔들기 대조
+- [YouTube, Harvard CS50 (2026), Artificial Intelligence](https://www.youtube.com/watch?v=gmuTjeQUbTM&t=66844s) — freeCodeCamp.org 채널, 2026-02-05 공개. 18:34:04부터 팬케이크 로봇과 미로의 탐험과 활용. 연구자가 키를 눌러 보상했을 것이라는 설명은 위 논문의 모션 캡처 보상으로 바로잡았다
 
 ## 관련 문서
 
+- [[ml-foundations|머신러닝 기초]]
+- [[Neural-Network-Fundamentals|신경망 기초]]
 - [[Deep-Learning-Foundations-and-Practice|딥러닝 기초와 실습]]
 - [[World-Models|월드 모델]]
 - [[Monte-Carlo-Tree-Search|몬테카를로 트리 탐색과 UCT]]

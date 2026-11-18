@@ -30,6 +30,7 @@ Huang 등의 서베이(ACM TOIS)는 LLM 환각을 비교 기준에 따라 두 �
 
 - 사전학습: 틀린 문장을 사실과 구별할 수 없으면 환각은 자연스러운 통계적 압력으로 생긴다. 문장이 타당한지 가리는 이진 분류(Is-It-Valid)로 환원하면 생성 오류율은 대략 그 분류 오류율의 2배 이상이다. 생일처럼 규칙 없이 외워야 하는 사실은 학습 데이터에 정확히 한 번 나온 비율이 하한이 되어, 생일 사실의 20%가 한 번만 나왔다면 기본 모델은 적어도 20%에서 환각할 것으로 본다.
 - 사후학습과 평가: 대부분의 평가가 모르겠다는 답보다 추측을 보상하므로 모델은 시험을 잘 보는 쪽으로 최적화되고 환각이 남는다. 채점 구조와 처방은 [[LLM-Abstention#채점 방식이 추측을 보상한다|채점 방식이 추측을 보상한다]]에서 다룬다.
+- 지도 미세조정의 새 지식: Gekhman et al.(2024)의 닫힌 질의응답 실험에서 기반 모델이 모르던 사실을 담은 미세조정 예시는 아는 내용과 맞는 예시보다 늦게 학습됐고, 학습될수록 환각 경향이 선형으로 커졌다. 모범 답이 사실이어도 모델이 근거를 갖지 못한 내용이면 그럴듯하게 지어내는 법을 가르칠 수 있다(해석, [[LLM-Post-Training#SFT만으로 부족한 이유|사후학습]]).
 
 ## 검증을 생성과 분리한다: Chain-of-Verification
 
@@ -172,6 +173,7 @@ API 성공도 검사 실행의 증거는 아니다. `Converse`에서 `guardConte
 
 - [A Survey on Hallucination in Large Language Models: Principles, Taxonomy, Challenges, and Open Questions — ACM TOIS, Huang et al.](https://arxiv.org/abs/2311.05232)
 - [Why Language Models Hallucinate — arXiv, Kalai et al.](https://arxiv.org/abs/2509.04664)
+- [Does Fine-Tuning LLMs on New Knowledge Encourage Hallucinations? — arXiv, Gekhman et al.](https://arxiv.org/abs/2405.05904) — 2026-11-18 초록 대조, 지도 미세조정의 새 지식 항목
 - [Chain-of-Verification Reduces Hallucination in Large Language Models — arXiv, Dhuliawala et al.](https://arxiv.org/abs/2309.11495)
 - [Language Models Don't Always Say What They Think: Unfaithful Explanations in Chain-of-Thought Prompting — NeurIPS 2023, Turpin et al.](https://arxiv.org/abs/2305.04388)
 - [Reasoning Models Don't Always Say What They Think — arXiv, Chen et al.](https://arxiv.org/abs/2505.05410)

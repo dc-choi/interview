@@ -3,12 +3,12 @@ tags: [ai, agent, workflow, plan-and-execute, human-in-the-loop]
 status: done
 verified_at: 2026-10-06
 category: "AI엔지니어링(AIEngineering)"
-aliases: ["LLM Workflow Patterns Chain vs Agent", "체인 vs 에이전트", "자율 vs 절차 통제", "Plan-and-Execute"]
+aliases: ["LLM Workflow Patterns Chain vs Agent", "체인 vs 에이전트", "자율 vs 절차 통제", "Plan-and-Execute", "Compound AI System"]
 ---
 
 # LLM 워크플로우 패턴: 체인과 에이전트, 그리고 절충
 
-업무의 예측 가능성에 따라 체인과 에이전트를 고르고, 두 방식 사이의 절충과 통제 지점을 다룬다. 현장 제어와 대화 지원의 분리, 그래프 워크플로우, Plan-and-Execute, 되돌릴 수 없는 행동 직전 승인, 콘텐츠 승인 대기열과 시각적 워크플로우의 오류 처리를 포함한다. 상위: [[LLM-Workflow-Patterns|LLM 워크플로우 패턴]].
+업무의 예측 가능성에 따라 체인과 에이전트를 고르고, 두 방식 사이의 절충과 통제 지점을 다룬다. compound AI system과 고정 단계 구성의 사례, 현장 제어와 대화 지원의 분리, 그래프 워크플로우, Plan-and-Execute, 되돌릴 수 없는 행동 직전 승인, 콘텐츠 승인 대기열과 시각적 워크플로우의 오류 처리를 포함한다. 상위: [[LLM-Workflow-Patterns|LLM 워크플로우 패턴]].
 
 ## 체인 워크플로우 vs 에이전트 워크플로우, 그리고 절충
 
@@ -39,6 +39,15 @@ LLM은 모델이고 에이전트는 그 모델과 도구, 실행 상태를 연�
 - 모델 사용 여부만으로 사람 검토를 생략하지 않는다. 입력의 모호성, 실패 영향과 검증 가능한 완료 기준으로 검토 지점을 정한다.
 
 예를 들어 문서에서 금액 후보를 추출하는 일과 확정한 값의 합계를 계산하는 일을 나눌 수 있다. 모델을 제거해도 잘못된 규칙이나 입력은 잘못된 결과를 만들므로, 결정론적 실행과 업무상 정확성을 구분한다.
+
+### 워크플로우도 compound AI system이다
+
+모델 하나만 부르지 않고 여러 모델 호출, 검색기와 외부 도구를 결합해 과제를 푸는 시스템을 compound AI system이라 부른다(BAIR, 2024-02-18). 워크플로우와 에이전트는 모두 여기에 속하고, 다음 단계를 누가 정하는지만 다르다. 모델이 단계를 고르지 않는 구성도 강한 결과를 낸 예가 있다. 2026-11-18 각 1차 출처와 대조했다.
+
+- **AlphaCode 2(2023):** Gemini 기반 모델로 문제마다 최대 100만 개의 코드 샘플을 만들고, 문제에 공개된 입출력 예시를 통과하지 못하거나 컴파일되지 않는 샘플을 걸러 평균 약 95%를 버린다. 남은 샘플을 동작이 비슷한 것끼리 묶고 큰 묶음 10개에서 채점 모델로 하나씩 골라 최대 10개만 제출한다. 기술 보고서는 Codeforces에서 참가자 대비 평균 85번째 백분위로 추정했다. 생성, 거르기, 묶기와 채점의 순서를 코드가 정하는 파이프라인이다.
+- **Agentless와 SWE-agent(2024):** SWE-agent는 모델이 전용 인터페이스(ACI)로 파일을 열고 고치고 테스트를 실행하며 다음 행동을 고르는 에이전트다. Agentless는 위치 찾기, 수정, 패치 검증의 세 단계를 고정하고 모델이 다음 행동을 정하지 않게 했다. 논문 기준 SWE-bench Lite에서 Agentless(GPT-4o)는 공개 소스 접근 중 가장 높은 32.00%(300개 중 96개)를 평균 0.70달러로 냈고, 같은 표의 SWE-agent(GPT-4o)는 18.33%에 평균 2.53달러였다. 비공개 상용 시스템 일부는 더 높았고 이후 모델과 에이전트도 바뀌었으므로, 순위가 아니라 고정 단계로도 경쟁력이 있을 수 있다는 근거로 읽는다.
+
+에이전트를 기본값으로 두지 않고 같은 과제에서 고정 단계 구성과 성공률, 비용을 비교해 고른다(설계 제안). 단계 안에서 모델이 자유롭게 생성하더라도 단계의 순서와 판정을 코드에 두면 위 표의 통제와 감사 이점을 얻는다.
 
 ### 현장 제어와 대화 지원의 지연 예산을 나눈다
 
@@ -97,6 +106,7 @@ Get My Parking의 AWS 공개 사례는 컴퓨터 비전과 AI 상담을 함께 �
 - 판단 축은 업무의 예측 가능성 — 탐색적이면 에이전트, 절차가 확정되고 감사가 필요하면 체인, 비용의 비대칭(에이전트는 같은 절차 반복마다, 체인은 계획 변경마다 비용)
 - Plan-and-Execute(Planner, Executor, Replanner) — 구조는 절차를 미리 확정해 집행하는 쪽을 닮았는데 계획의 저자는 모델, 계획이 데이터로 외부화되어 검토, 승인, 진행률 표시 가능, 재계획이 잦아도 통제 이득은 남음
 - Plan-and-Execute와 되돌릴 수 없는 행동 직전 승인 — 서로 다른 두 절충, 굵은 계획(3~5단계)은 전자의 완화책
+- 워크플로우와 에이전트가 모두 compound AI system인 이유와, 고정 단계 구성이 에이전트와 경쟁한 사례(AlphaCode 2, Agentless)
 
 ## 출처
 - [Get My Parking accelerates AI innovation in the parking industry — AWS](https://aws.amazon.com/aws-startups/learn/get-my-parking-accelerates-ai-innovation-in-the-parking-industry/)
@@ -106,6 +116,11 @@ Get My Parking의 AWS 공개 사례는 컴퓨터 비전과 AI 상담을 함께 �
 - [Building effective agents — Anthropic](https://www.anthropic.com/engineering/building-effective-agents)
 - [LLM 에이전트 실무 사례 (물어보세, 스마트 마이 노트, HyperCLOVA X Skill Universe) — 개발 컨퍼런스 (YouTube)](https://www.youtube.com/watch?v=wEVPnYOuAf8&list=PLgXGHBqgT2TtGi82mCZWuhMu-nQy301ew)
 - [AI 에이전트, 자율에 맡길까 절차로 통제할까 — DEVOCEAN](https://devocean.sk.com/blog/techBoardDetail.do?id=168417&boardType=techBlog&isShared=Y)
+- [The Shift from Models to Compound AI Systems — BAIR Blog, Matei Zaharia 외](https://bair.berkeley.edu/blog/2024/02/18/compound-ai-systems/) — 2024-02-18. 2026-11-18 compound AI system 정의 대조
+- [AlphaCode 2 Technical Report — Google DeepMind](https://storage.googleapis.com/deepmind-media/AlphaCode2/AlphaCode2_Tech_Report.pdf) — 2026-11-18 샘플 수, 거르기와 묶기, 채점 모델, 85번째 백분위 추정 대조
+- [Agentless: Demystifying LLM-based Software Engineering Agents — arXiv, Chunqiu Steven Xia 외](https://arxiv.org/abs/2407.01489) — v2. 2026-11-18 세 단계 구성과 표 1의 성공률, 평균 비용 대조
+- [SWE-agent: Agent-Computer Interfaces Enable Automated Software Engineering — arXiv, John Yang 외](https://arxiv.org/abs/2405.15793) — 2026-11-18 초록의 ACI 정의 대조
+- [YouTube, Stanford CS329Z Engineering AI Agents, Lecture 1 What Are AI Agents? Agentic Systems Explained](https://www.youtube.com/watch?v=DGI4vucR71w) — 2026-09-23 녹화. compound AI system 안에서 워크플로우와 에이전트를 나누는 정리 계기
 
 ## 관련 문서
 - [[LLM-Workflow-Patterns|LLM 워크플로우 패턴 (묶음 인덱스)]]
@@ -120,3 +135,4 @@ Get My Parking의 AWS 공개 사례는 컴퓨터 비전과 AI 상담을 함께 �
 - [[Harness-Engineering|하네스 엔지니어링]] — HITL 배치 (고위험 결정에 사람 개입)
 - [[AI-Native-Org|AI 네이티브 조직]] — 계획 승인을 상태 전이 게이트로 고정한 사례
 - [[Agent-Email-Interface|에이전트 이메일 인터페이스]] — 발신만 사람 게이트로 남기는 HITL 배치의 전형
+- [[AI-Agent-Anatomy-and-Lineage|AI 에이전트의 정의, 계보와 구성 요소]] — 에이전트 정의와 구성 요소별 실패 지점

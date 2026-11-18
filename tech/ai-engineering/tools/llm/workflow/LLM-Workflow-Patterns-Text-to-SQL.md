@@ -117,6 +117,8 @@ AWS의 구조화 데이터 연결 지침은 임의 SQL 실행의 위험을 명�
 ## 사례
 - 데이터 분석 보조: Text-to-SQL + 데이터 디스커버리 + 지식 공유(위키, Slack 서포트 채널 자동 답변 + 근거 링크), 질문 분류 후 멀티 체인, 일부는 평가 노드를 둔 그래프 에이전트로 구성. Slack을 UI로, LLMOps로 배포/모니터링.
 - 업무 맥락 조회 결합(2026-11-03 세미나 발표): 같은 모델과 읽기 전용 계정에 업무 맥락 조회 도구와 "먼저 용어와 지표가 어느 테이블, 컬럼, 코드값인지 찾는다"는 지침 한 줄을 더해 업무 어휘 질문 정답률이 56%에서 100%(8문항 2회), 첫 시도 정답률이 25%에서 81%로 올랐다고 소개됐다. 단독 구성의 오답은 모두 오류 신호 없이 나왔고, 결합 구성은 질문당 약 9초가 더 걸렸다. 발표사 내부 데모 DB 표본이며 독립 검증된 수치가 아니다.
+- 업무 정의의 효과와 표본 내 조정(AntV AVA, 2026-11-18 저장소와 문서 대조): AVA는 파일과 DB(CSV, Excel, Parquet, PostgreSQL, MySQL 등)를 한 질의로 묶어 분석하는 MIT 라이선스 JavaScript 프레임워크로, 적재한 데이터의 구조와 결측을 프로파일하고 업무 정의(예: 할인 뒤 금액을 매출로 본다)를 맥락에 더한 뒤 SQL을 만들어 실행하고, 답과 함께 실행한 질의와 결과를 돌려준다. GLM-5.1, DuckDB, Direct 조건의 자체 평가에서 정확도는 표 머리와 앞 3행만 준 기준선, 스키마와 프로파일 추가, 업무 정의 추가 순으로 DataBench(1,789문항) 83.51%, 84.18%, 93.01%, Spider2-Lite SQLite 부분집합(135문항) 25.93%, 33.33%, 80.74%였다. 그러나 저장소의 2026-10-22 보고서는 두 벤치마크 모두 업무 정의를 정답을 참고해 표본 안에서 맞췄고 홀드아웃 평가가 아니라고 적는다. Spider2-Lite 값은 틀린 문항을 차례로 고치며 정의를 조정한 뒤 전체를 다시 돌린 결과로 업무 정의만의 효과를 통제한 추정도 아니며, DataBench 값은 예전 실행의 행에 표적 재실행을 합친 결과다. DataBench의 스키마 조건은 예전 SQL을 다시 실행한 값이라 메타데이터별 효과를 분리하지 못한다고도 밝힌다. 문서 사이트의 결과표에는 이 조건이 보이지 않는다. 업무 정의의 효과는 정의를 다듬는 데 쓰지 않은 질문으로 따로 잰다.
+- 같은 문서의 반복 실행(Loop) 비교: 오류를 고쳐 가며 여러 번 실행하는 Loop는 Direct보다 질문당 토큰이 약 2~7배였고, BIRD 개발셋(1,534문항)에서 정확도 차이는 모델에 따라 +2.7점에서 −2.3점이었다. 모델이 도구와 단계를 고르는 에이전트 스킬 통합은 같은 모델의 SDK 고정 흐름보다 DataBench에서 질문당 토큰이 약 10배였고 정확도는 2.2점 낮았다. 실행 설정이 다른 과거 실행을 모은 비교라고 문서가 밝힌다. 위의 오류 종류별 복구 지점처럼 반복의 양보다 돌아갈 단계를 먼저 정한다.
 
 ### SQL 분석에 외부 도구를 연결할 때
 
@@ -157,6 +159,9 @@ Databricks Genie Agent는 SQL과 파일 분석에 MCP connector의 외부 자료
 - [arXiv, A Benchmark to Understand the Role of Knowledge Graphs on Large Language Model's Accuracy for Question Answering on Enterprise SQL Databases](https://arxiv.org/abs/2311.07509) — 2026-11-09 초록의 16%와 54%, 보험 도메인 스키마 대조
 - [PostgreSQL, F.32. pg_stat_statements](https://www.postgresql.org/docs/current/pgstatstatements.html)
 - [Oracle, Database Reference: V$SQLAREA](https://docs.oracle.com/en/database/oracle/oracle-database/26/refrn/V-SQLAREA.html)
+- [AVA — GitHub, antvis](https://github.com/antvis/AVA) — 2026-11-18 README의 분석 흐름, 데이터 원천과 라이선스, `evals/` 설명과 `evals/reports/`의 2026-10-22 보고서(실행 방식, 표본 내 조정과 한계 문구) 대조
+- [AVA, Benchmarks](https://ava.antv.vision/documentation/reference/benchmarks/) — 2026-11-18 조건별 정확도, 질문당 토큰, 전략과 통합 방식 비교 대조
+- 사용자 제공 GeekNews 알림(2026-11-17): AVA, AI 에이전트용 데이터 분석 및 시각화 프레임워크. 학습 계기이며 게시물 번호는 확인하지 못했다
 - [[IT-Chosun-Monthly-AX-2026-11-03|IT조선 월간AX 세미나 기록]] — 2026-11-03 제네시스랩(유대훈) 발표. 오류 없는 오답 유형, 맥락 원천, 쿼리 이력의 도구 승격과 실측 사례를 반영했고 수치는 발표 기준이다.
 
 ## 관련 문서

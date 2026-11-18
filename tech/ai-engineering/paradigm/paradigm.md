@@ -22,4 +22,4 @@ AI 시대 엔지니어링의 토대 — 패러다임 전환과 모델, API 거�
 - [x] [[Moravec-Paradox|모라벡의 역설]] — 추론과 감각운동의 난도 비대칭, 진화 설명, 논리 계층과 물리 계층의 작업 구분, 인력 수요 자료를 읽는 법, 한계와 반론
 - [x] [[Image-Diffusion-Latent-and-Pixel-Space|이미지 생성 모델의 잠재 공간과 픽셀 공간]] — VAE 잠재 공간과 큰 패치 픽셀 공간, 해상도별 토큰 수, 저비용 학습 발표의 금액과 지표
 - [x] [[Helmholtz-Machine-Wake-Sleep|헬름홀츠 머신과 wake-sleep 학습]] — 인식 모델과 생성 모델, 관측 확률의 하한과 설명 길이, wake와 sleep 단계의 갱신, 공상 데이터와 곱 분포의 한계, VAE와의 차이
-- [x] [[Reinforcement-Learning-from-Experience|경험 기반 강화학습]] — 행동과 보상, 지연 신용 할당, TD와 환경 피드백, 검증 가능한 보상으로 학습하는 추론 모델의 성공 확률 목적과 표본 수 확장
+- [x] [[Reinforcement-Learning-from-Experience|경험 기반 강화학습]] — 행동과 보상, 지연 신용 할당, TD와 환경 피드백, MDP와 Q-learning, ε-greedy와 함수 근사, 실제 로봇의 시연 초기화, 검증 가능한 보상으로 학습하는 추론 모델의 성공 확률 목적과 표본 수 확장

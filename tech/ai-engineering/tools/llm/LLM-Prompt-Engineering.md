@@ -41,6 +41,34 @@ Anthropic의 프롬프트 엔지니어링 개요는 시작 조건으로 사용 �
 - 웹페이지, 메일 본문, OCR 결과 같은 외부 콘텐츠는 `tool_result` 블록에만 넣고, 가능하면 JSON 객체의 문자열로 감싸 지시와의 경계를 분명히 한다. 앱의 지시는 `tool_result` 안에 넣지 않고 뒤따르는 user 턴에 둔다. 도구 결과도 같은 경량 모델 검사를 거친 뒤 돌려줄 수 있다.
 - 작은 가드 모델은 본 모델과의 해석 능력 차이로 우회될 수 있으므로 검사 하나에 기대지 않고 출력과 도구 실행 단계의 권한 검사를 함께 둔다([[LLM-Application-Security#가드 모델 우회 — 능력 격차가 곧 취약점|가드 모델 우회]]).
 
+## 개발자 지시와 사용자 입력을 역할로 나눈다
+
+시스템 프롬프트는 애플리케이션 개발자가 쓰는 지시로 역할, 다룰 범위와 금지할 행동을 정하고, 사용자 프롬프트는 최종 사용자가 보낸 내용이다. 2026-11-18 OpenAI 문서 기준 Responses API는 앞의 것을 `developer` 메시지나 `instructions`로, 뒤의 것을 `user` 메시지로 받고 `developer` 메시지를 `user` 메시지보다 우선한다. 문서는 둘을 함수 정의와 그 함수에 넘기는 인자에 비유한다. 아래 예는 openai Python SDK 3.55.0으로 매개변수와 `output_text` 정의만 확인했고 API는 호출하지 않았다.
+
+```python
+from openai import OpenAI
+
+client = OpenAI()  # OPENAI_API_KEY 환경 변수를 읽는다
+
+student_question = input("질문: ")
+response = client.responses.create(
+    model="gpt-6.2-sol",
+    input=[
+        {"role": "developer", "content": (
+            "너는 입문 프로그래밍 과목의 조교다. 과목과 컴퓨터과학 질문에만 답한다. "
+            "과제의 완성 답안과 코드는 주지 말고 다음 단계를 생각하게 하는 질문이나 힌트를 준다."
+        )},
+        {"role": "user", "content": student_question},
+    ],
+)
+print(response.output_text)
+```
+
+- **지시와 입력을 한 문자열로 잇지 않는다**: 지시 끝에 사용자 질문을 붙여 한 메시지로 보내면 모델이 개발자 지시와 사용자 입력을 역할로 구분할 근거가 사라진다(이 문서의 판단). 역할을 나눠도 우선순위가 지시 위반을 막는다는 보장은 아니므로 [[LLM-Application-Security#프롬프트와 모델 수준 방어 — Spotlighting과 Instruction Hierarchy|Instruction Hierarchy와 그 한계]]를 함께 본다.
+- **`instructions`와 첫 `developer` 메시지를 구분한다**: 최상위 `instructions`는 그 요청에만 적용되고 `previous_response_id`로 이은 다음 응답에 넘어가지 않는다. 여러 턴에 쓸 지시는 `input`의 첫 `developer` 메시지에 둔다. GPT-6.2부터의 과금 차이는 [[OpenAI-GPT-Generations|OpenAI GPT 세대]]에 있다.
+- **`output_text`는 SDK 편의 속성이다**: `output` 배열의 message 항목에서 `output_text` 조각만 이어 붙인다. 거절(`refusal`)이나 도구 호출만 있는 응답이면 빈 문자열이 되므로, 빈 답과 거절을 구분하려면 `output` 항목의 `type`을 본다.
+- **금지 지시도 평가로 확인한다**: 완성 답안 요청, 범위 밖 질문, 지시를 무시하라는 요청을 평가 문항에 넣고 답 유출을 잰다. 답을 주지 않도록 지시했다는 사실이 실제로 답을 주지 않는다는 보장은 아니다([[AI-Tutoring-and-Mastery-Learning#위험을 수업 설계와 평가로 옮긴다|AI 튜터링의 위험]]).
+
 ## 템플릿은 입력 조립과 모델 호출을 분리한다
 
 고정 지시와 매번 바뀌는 입력을 템플릿과 변수로 나누면 같은 지시를 여러 입력에 재사용할 수 있다. LangChain Python의 `PromptTemplate.from_template`은 문자열 템플릿을 만들며 기본 형식은 `f-string`이다. `ChatPromptTemplate.from_messages`는 역할과 내용으로 된 메시지 템플릿을 구성한다. 후자의 `invoke` 결과는 변수가 채워진 `ChatPromptValue`이며 모델이 생성한 답변이 아니다. 모델 호출은 별도로 연결한다. 이 절은 2026-11-04 LangChain 공식 API 참조로 확인했으며 실행 시험은 하지 않았다.
@@ -48,6 +76,15 @@ Anthropic의 프롬프트 엔지니어링 개요는 시작 조건으로 사용 �
 **적용 제안:** 고객 리뷰를 처리한다면 검토 기준과 출력 필드는 고정하고, 리뷰 원문과 조회한 상품 정보만 변수로 전달한다. 변수 치환이 성공했는지와 답변이 업무 기준에 맞는지는 별도로 검사한다. 템플릿으로 분리했다는 이유만으로 입력 속 지시문이 무력화되거나 출력이 안전해졌다고 판단하지 않는다.
 
 템플릿 본문을 누가 작성하는지도 신뢰 경계다. LangChain API 참조는 신뢰할 수 없는 출처의 Jinja2 템플릿이 임의 Python 코드 실행으로 이어질 수 있다고 경고한다. 기본 샌드박스도 보안 보장이 아니므로 외부에서 받은 Jinja2 템플릿을 실행하지 않도록 권한다. 신뢰한 템플릿에 외부 텍스트를 값으로 넣는 것과 외부 텍스트 자체를 템플릿으로 실행하는 것을 구분한다.
+
+## 채팅 템플릿은 모델이 학습한 형식을 따른다
+
+메시지 API에 역할별 메시지를 보내면 그 메시지를 모델 입력으로 직렬화하는 일은 제공자가 맡는다. 가중치를 직접 서빙하거나 프롬프트 문자열을 손으로 조립하면 이 일을 애플리케이션이 맡는다. 채팅 모델도 토큰 시퀀스를 이어 쓰는 모델이라 `role`과 `content` 목록은 `<|user|>`나 `[INST]` 같은 제어 토큰이 든 하나의 토큰 시퀀스로 바뀌고, 그 형식을 정한 것이 채팅 템플릿이다. 형식은 모델마다 다르고 같은 기반 모델에서 나온 모델끼리도 다를 수 있다. Mistral-7B에서 미세조정한 두 모델 가운데 Mistral-7B-Instruct는 `[INST]`와 `[/INST]`를, Zephyr-7B는 `<|user|>`와 `<|assistant|>`를 쓰며, 제어 토큰이 틀리면 성능이 크게 떨어진다. 2026-11-18 Hugging Face Transformers v5.23.0 문서와 vLLM 문서 기준이다.
+
+- **저장소의 템플릿을 적용한다**: 모델과 함께 배포된 템플릿을 `apply_chat_template`으로 적용하고 형식을 손으로 잇지 않는다. vLLM 서버도 토크나이저 설정의 템플릿을 쓰며, 템플릿이 없는 모델은 `--chat-template`으로 지정하지 않으면 chat 요청이 모두 오류다. 템플릿도 모델 저장소에서 오므로 [[Hugging-Face-Hub#다운로드할 버전을 고정한다|버전 고정]] 범위에 넣는다(적용 제안).
+- **특수 토큰을 두 번 넣지 않는다**: 템플릿에는 필요한 특수 토큰이 이미 들어 있다. `tokenize=False`로 만든 문자열을 다시 토큰화할 때 `add_special_tokens=False`를 주지 않으면 `<bos>` 같은 토큰이 중복돼 성능이 떨어질 수 있으므로, `tokenize=True`로 한 번에 처리하는 편이 안전하다.
+- **응답 시작 표지를 붙인다**: 추론 때는 `add_generation_prompt=True`로 assistant 응답이 시작된다는 토큰을 붙인다. 빠지면 모델이 답하지 않고 사용자 메시지를 이어 쓸 수 있다. 마지막 assistant 메시지를 이어 쓰게 하는 프리필은 `continue_final_message`로 하며 두 옵션을 함께 주면 오류다. 미세조정 데이터도 같은 템플릿으로 만들되 이 표지는 붙이지 않는다.
+- **어긋나도 호출은 성공한다**: 형식이 학습 때와 조금 달라도 모델은 오류 없이 무언가를 생성하므로 품질 저하가 오류 로그로 드러나지 않는다. 서빙 엔진이나 프롬프트 조립 도구를 바꾸면 렌더링한 입력 문자열을 이전 경로와 비교하고 같은 평가 세트로 다시 잰다(해석과 적용 제안).
 
 ## 프리필로 하던 일을 옮긴다
 
@@ -102,11 +139,16 @@ Bedrock의 프롬프트 개념 문서는 모델별 가이드를 따르라고 하
 - 프리필로 JSON을 강제하던 코드를 Claude 4.6 이후 모델로 옮길 때의 대체 수단과 구조화 출력이 보장하지 않는 것
 - 수동 CoT와 내장 사고의 차이, 모델에게 추론을 출력하라고 요구할 때 생기는 문제
 - 프롬프트 체이닝을 단일 호출보다 고를 조건과 늘어나는 비용
+- 가중치를 직접 서빙할 때 채팅 템플릿과 특수 토큰을 모델이 학습한 형식에 맞춰야 하는 이유와, 어긋나도 오류가 나지 않는 문제
+- 시스템 프롬프트와 사용자 입력을 역할로 나눠 보내는 이유와, 금지 지시가 실제로 지켜지는지 확인하는 방법
 
 ## 출처
 
+- [OpenAI API Docs, Text generation](https://developers.openai.com/api/docs/guides/text), [Create a model response](https://developers.openai.com/api/reference/resources/responses/methods/create) — 2026-11-18 developer와 user 역할의 우선순위, `instructions`와 첫 developer 메시지의 쓰임, `output_text` 설명 대조. openai Python SDK 3.55.0 소스로 `output_text`가 거절을 빼고 text 조각만 잇는 것을 확인했다
 - [LangChain Reference, PromptTemplate.from_template](https://reference.langchain.com/python/langchain-core/prompts/prompt/PromptTemplate/from_template)
 - [LangChain Reference, ChatPromptTemplate](https://reference.langchain.com/python/langchain-core/prompts/chat/ChatPromptTemplate)
+- [Hugging Face Transformers, Chat templates](https://huggingface.co/docs/transformers/chat_templating) — 2026-11-18 v5.23.0 문서의 제어 토큰 차이, 특수 토큰 중복 경고, `add_generation_prompt`와 `continue_final_message`, 학습 데이터 전처리 대조
+- [vLLM, Online Serving](https://docs.vllm.ai/en/latest/serving/online_serving/) — 2026-11-18 Chat Template 절의 토크나이저 설정 요구, `--chat-template`과 템플릿이 없을 때의 오류 대조
 - [Claude Platform Docs, Prompt engineering overview](https://platform.claude.com/docs/en/build-with-claude/prompt-engineering/overview)
 - [Claude Platform Docs, Prompting best practices](https://platform.claude.com/docs/en/build-with-claude/prompt-engineering/claude-prompting-best-practices)
 - [Claude Platform Docs, Define success criteria and build evaluations](https://platform.claude.com/docs/en/test-and-evaluate/develop-tests)
@@ -127,6 +169,8 @@ Bedrock의 프롬프트 개념 문서는 모델별 가이드를 따르라고 하
 - [Amazon Bedrock, Anthropic Claude Text Completions API (legacy)](https://docs.aws.amazon.com/bedrock/latest/userguide/model-parameters-anthropic-claude-text-completion.html)
 - [Chain-of-Thought Prompting Elicits Reasoning in Large Language Models — arXiv, Wei et al.](https://arxiv.org/abs/2201.11903)
 - [Amazon Bedrock을 활용한 프롬프트 엔지니어링 모범사례 — Amazon Web Services Korea (YouTube)](https://www.youtube.com/watch?v=84462rNBg1k) — 2024-09-12 공개. 학습 계기로 삼았고 본문에는 2026-10-26 공식 문서로 대조한 내용만 넣었다.
+- [YouTube, Marina Wyss, AI Engineering in 76 Minutes (Complete Course/Speedrun!)](https://www.youtube.com/watch?v=JV3pL1_mn2M) — 2025-04-01 업로드. Chip Huyen의 책 AI Engineering(O'Reilly Media, 2025)을 요약한 강의로 채팅 템플릿 절의 계기다. 사실은 위 Hugging Face와 vLLM 문서로 대조했고, 기존 절은 다시 대조하지 않아 `verified_at`은 유지한다
+- [YouTube, Harvard CS50 (2026), Artificial Intelligence](https://www.youtube.com/watch?v=gmuTjeQUbTM&t=65059s) — freeCodeCamp.org 채널, 2026-02-05 공개, 18:04:19부터. 역할 분리 절의 계기이며 사실은 위 OpenAI 문서와 SDK로 대조했고, 기존 절은 다시 대조하지 않아 `verified_at`은 유지한다
 
 ## 관련 문서
 
@@ -141,3 +185,4 @@ Bedrock의 프롬프트 개념 문서는 모델별 가이드를 따르라고 하
 - [[Context-Engineering|컨텍스트 엔지니어링]]
 - [[LLM-Application-Security|LLM 애플리케이션 보안]]
 - [[Bedrock-Model-Inference|Bedrock 모델 호출]]
+- [[Hugging-Face-Hub|Hugging Face 모델 허브와 버전 고정]] — 채팅 템플릿이 함께 오는 모델 저장소

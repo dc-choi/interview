@@ -2,12 +2,12 @@
 tags: [ai, llm, writing, readability, post-training, psycholinguistics]
 status: done
 category: "AI엔지니어링(AIEngineering)"
-aliases: ["AI-Generated Text Readability", "AI 생성 글의 처리 난도", "AI 글이 읽기 어려운 이유", "Information Density Pressure", "정보 밀도 압력"]
+aliases: ["AI-Generated Text Readability", "AI 생성 글의 처리 난도", "AI 글이 읽기 어려운 이유", "Information Density Pressure", "정보 밀도 압력", "명료성 결함", "AI Slop Clarity"]
 ---
 
 # AI 생성 글의 처리 난도 — 정보 밀도 압력과 심리언어학 지표
 
-최근 LLM이 쓴 글이 읽기 어렵다는 인상은 사람의 문장 처리 난도와 상관이 알려진 언어 특징의 빈도로 잴 수 있다. 이 문서는 Clark, Martin, Mahowald의 arXiv 논문(2026-10-21 제출)을 2026-10-27에 대조해, 무엇을 쟀고 어떤 가설을 세웠는지와 실무 글쓰기에서 무엇을 점검할지 정리한다. 논문은 영어만 다뤘고 독자의 읽기 시간이나 이해도를 직접 잰 실험은 없다. 상위: [[LLM-Generation-Mechanics|LLM 동작 원리]].
+최근 LLM이 쓴 글이 읽기 어렵다는 인상은 사람의 문장 처리 난도와 상관이 알려진 언어 특징의 빈도로 잴 수 있다. 이 문서는 Clark, Martin, Mahowald의 arXiv 논문(2026-10-21 제출)을 2026-10-27에 대조해, 무엇을 쟀고 어떤 가설을 세웠는지와 실무 글쓰기에서 무엇을 점검할지 정리한다. 논문은 영어만 다뤘고 독자의 읽기 시간이나 이해도를 직접 잰 실험은 없다. 사람이 읽고 결함 유형으로 표시하는 명료성 분류는 아래 별도 절에 둔다. 상위: [[LLM-Generation-Mechanics|LLM 동작 원리]].
 
 ## 처리 난도의 대리 지표
 
@@ -52,6 +52,22 @@ aliases: ["AI-Generated Text Readability", "AI 생성 글의 처리 난도", "AI
 - 최상위 모델의 인과를 확인하려면 후학습 과정 자체를 연구해야 하는데 규모상 어려워 대리 지표에 기댔다.
 - 독자 실험이 없다. 지표는 처리 난도와 상관이 알려진 특징이며 실제 이해도를 잰 값이 아니다.
 
+## 명료성 결함 세 가지로 나눠 본다
+
+위 지표가 문장 처리의 난도를 재는 대리 지표라면, 사람이 읽고 불명확한 곳을 결함 유형으로 표시하는 방법도 있다. Williams와 Bizup의 『Style: The Basics of Clarity and Grace』(5판)의 명료성 원칙에 기댄 아래 분류는 Zonder Labs가 2026-11-09 공개한 측정에서 썼고, 2026-11-18 원문과 대조했다.
+
+| 결함 | 내용 | 고치는 방향 |
+|---|---|---|
+| 숨은 행위자와 행동 | 누가 무엇을 하는지가 주어와 동사가 아니라 명사 속에 묻힌다 | 행위자를 주어로, 행동을 동사로 둔다 |
+| 모호한 표현 | 지시 대상이 불분명한 말, 명사 연쇄, 상식에 맞지 않는 단어 조합(레모네이드 가판대를 음료 소매점이라 부르는 식) | 흔하고 구체적인 표현으로 바꾼다 |
+| 빈 문장과 엇나간 강조 | 이해는 되지만 요점이 묻혀 독자가 찾아야 한다 | 요점을 앞에 두고 빈 문장을 지운다 |
+
+- **업무 글에서 비용이 크다**: 소셜 미디어의 슬롭은 넘기면 되지만 Slack 메시지나 PR 설명은 읽고 해독해야 한다. 이미 복잡한 업무 내용에 해독 부담이 더해진다.
+- **측정 결과와 한계**: 이 분류로 잰 불명확한 비율은 AI 기사 54%, 사람 기사 10%, Claude Code 답변 78%, Stack Overflow 답변 11%였고, Claude Code 답변에서는 모호한 표현이 가장 흔한 결함이었다. 판정 단위(문장, 문단, 답변), 표본 수와 판정자는 공개되지 않았으므로 비율은 측정 방법을 확인하기 전까지 방향을 보는 데만 쓴다.
+- **AI 탐지와 다른 축이다**: 같은 네 집단에 AI 생성 판정기(IdeaLens)를 돌리면 AI 기사와 Claude Code 답변은 99%, 사람 기사와 Stack Overflow 답변은 4%와 0%가 AI로 판정됐다. AI로 판정된 비율과 불명확한 비율은 같은 값이 아니므로(AI 기사 99% 대 54%), delve 같은 어휘나 em dash 같은 흔적을 지우는 편집과 명료성을 고치는 편집은 서로 다른 작업으로 다룬다(이 문서의 해석).
+- **예시**: Claude Code가 쓴 문장 "The database readiness check sits at the user-session entry boundary, before the authentication handler runs."는 누가 무엇을 언제 하는지가 명사구에 묻혀 있다. 행위와 순서를 동사로 드러내면 "인증 핸들러가 실행되기 전에, 사용자 세션이 시작되는 지점에서 데이터베이스가 준비됐는지 확인한다"가 된다(이 문서의 고쳐 쓰기).
+- **지시로 다루는 예**: OpenAI의 GPT-6.2 프롬프트 가이드(2026-11-18 확인)는 능동태, 관련 세부를 붙여 두기, 핵심 먼저, 뒤에서야 뜻을 알 수 있는 참조 피하기를 지시 예로 든다. 같은 가이드는 긴 작업에서 모델이 추론이나 다른 에이전트의 약칭을 최종 답변에 옮길 수 있다고 적고, 추론, 도구 호출과 하위 에이전트 지시에서 쓴 약어와 약칭을 최종 답변에 옮기지 말라는 지시 예를 준다.
+
 ## 실무 점검(적용 제안)
 
 사람이 읽을 문서, 고객 안내와 코드 설명을 모델에게 맡길 때 아래를 편집 점검 항목으로 쓴다. 논문이 검증한 개선 방법은 아니다.
@@ -66,6 +82,9 @@ aliases: ["AI-Generated Text Readability", "AI 생성 글의 처리 난도", "AI
 
 - [Why is AI-generated language so hard to understand? — arXiv, Thomas Hikaru Clark, Matias B. Martin, Kyle Mahowald](https://arxiv.org/abs/2610.29162) — 2026-10-21 제출(v1), CC BY 4.0, 2026-10-27 초록과 HTML 본문 대조
 - [AI가 쓴 글은 왜 이해하기 어려울까? — GeekNews](https://news.hada.io/topic?id=35947) — 학습 계기
+- [Why is AI Slop so Frustrating to Read? — Zonder Labs](https://zonderlabs.com/slop) — 2026-11-09, 2026-11-18 세 결함과 예시, 불명확 비율과 AI 탐지율, Claude Code 예문 대조. 판정 단위, 표본과 판정자는 공개되지 않음
+- [OpenAI API, Using GPT-6.2](https://developers.openai.com/api/docs/guides/latest-model) — 2026-11-18 Writing style 절의 지시 예 확인
+- 사용자 제공 GeekNews 알림(2026-11-17): AI 슬롭은 왜 이렇게 읽기 짜증날까. 학습 계기이며 게시물 번호는 확인하지 못했다
 
 ## 관련 문서
 

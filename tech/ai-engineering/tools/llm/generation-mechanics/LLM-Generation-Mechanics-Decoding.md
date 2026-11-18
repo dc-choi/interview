@@ -39,6 +39,7 @@ Transformer 원 논문(Vaswani et al., 2017)이 sinusoidal을 고른 근거는 �
 
 ### 토크나이저는 빈도로 어휘를 만든다 (BPE)
 
+- **왜 하위 단어인가**: 단어를 그대로 어휘로 쓰면 오타나 처음 보는 단어에 줄 ID가 없고, 중국어나 일본어처럼 단어 사이를 띄어 쓰지 않는 언어는 단어 경계부터 정하기 어렵다. 문자나 바이트를 그대로 쓰면 어휘 문제는 없지만 시퀀스가 길어지고 self-attention 비용은 길이의 제곱으로 늘어난다(아래 층당 계산량). 하위 단어 토크나이저는 자주 나오는 조각만 한 토큰으로 묶어 두 문제 사이에서 절충한다
 - **학습**: 바이트 수준 BPE는 256개 바이트를 기본 토큰으로 두고, 학습 말뭉치에서 가장 자주 이웃하는 두 조각을 새 토큰으로 더하는 일을 목표 어휘 크기까지 반복한다. 어휘 크기는 초기 기호 수에 병합 횟수를 더한 값이다. 원 논문도 단어 경계를 넘는 쌍은 세지 않으며 병합 횟수를 유일한 하이퍼파라미터로 둔다. tiktoken의 학습 함수는 그 단어 경계를 정하는 정규식(`pat_str`)을 따로 받고, 병합은 정규식이 나눈 조각 안에서만 일어난다
 - **결과**: 자주 나오는 문자열은 한 토큰이 되고 드문 조합은 여러 조각으로 남는다. 경계를 문법이나 형태소가 아니라 학습 말뭉치의 빈도와 단어를 먼저 나누는 정규식으로 정하므로 사람 눈에는 어색하게 잘릴 수 있다. 문서와 검색어를 형태소로 자르는 검색 분석기와는 목적이 다르다([[OpenSearch-Korean-Text-Analysis|Nori 형태소 분석]])
 - **인코딩**: 입력에는 학습 때 먼저 만들어진(순위가 낮은) 병합부터 적용하고, 각 조각을 고유한 토큰 ID로 바꿔 모델에 넣는다. 바이트에서 출발하므로 학습에 없던 텍스트도 표현할 수 있고 원문으로 손실 없이 되돌릴 수 있다
@@ -50,6 +51,7 @@ Transformer 원 논문(Vaswani et al., 2017)이 sinusoidal을 고른 근거는 �
 - **토크나이저는 모델마다 다르다**: 같은 문장도 모델 세대에 따라 토큰 수가 달라진다. Anthropic은 Opus 4.7부터 새 토크나이저를 쓰며, 1M 토큰에 들어가는 영어가 이전 약 75만 단어에서 약 55.5만 단어(약 250만 Unicode 문자)로 줄었다고 안내한다(2026-09-30 모델 개요). 모델을 바꾸면 같은 입력의 비용과 컨텍스트 여유를 다시 잰다
 - **언어마다 환산이 다르다**: 영어에는 토큰당 약 4자라는 경험칙이 있다(Anthropic 가격 FAQ는 약 4자 또는 0.75단어, Gemini 문서는 100토큰당 60~80단어, tiktoken README는 평균 약 4바이트로 설명한다). 그러나 경험칙은 토크나이저 세대를 반영하지 않는다. 2026-10-06 기준 같은 Anthropic 가격 문서는 Claude 4.7 이후 토크나이저가 같은 텍스트에 약 30% 더 많은 토큰을 만들고 정확한 증가폭은 내용과 작업 형태에 따라 다르다고 밝히며, 모델 개요 기준 현재 토크나이저의 1M 토큰은 약 250만 문자(토큰당 약 2.5자)다. 토큰당 문자 수는 언어에 따라 달라진다. 한국어가 영어보다 토큰을 더 쓴다는 설명이 흔하지만 차이는 토크나이저 어휘 구성에 좌우되고 공식 배율은 없으므로, 비용 추정은 토큰 카운팅 API로 대표 문서를 직접 재서 정한다
 - **문자 단위 작업에 약하다**: 모델은 문자열이 아니라 Token ID 배열을 받는다. 글자 수 세기, 철자 뒤집기, 특정 위치의 문자처럼 토큰 경계와 어긋나는 질문은 틀리기 쉬우므로 정확한 값은 코드 실행으로 계산하게 한다
+- **숫자도 토큰 경계로 쪼개진다**: tiktoken에서 GPT-2 계열(r50k_base)은 병합 전 정규식이 숫자열 전체를 한 덩어리로 두지만, cl100k_base와 o200k_base는 앞에서부터 1~3자리씩 끊는다(`\p{N}{1,3}`). 그래서 12345는 123과 45로 나뉘어 자릿값과 어긋난다. LLaMA(2023)는 모든 숫자를 한 자리씩 나눴다. 1~3자리 숫자마다 토큰이 있는 GPT-3.5와 GPT-4에 숫자를 쉼표로 3자리씩 끊어 넣어 뒤에서부터 나뉘게 하자 산술 정확도가 크게 올랐고, 그 차이는 큰 모델일수록 줄었다(Singh and Strouse, 2024 초록). 토큰 경계가 산술 오류의 일부를 설명하더라도 정확한 계산은 코드 실행에 맡긴다
 - **이미지도 토큰으로 환산된다**: 2026-10-06 벤더 문서 기준으로 Anthropic은 28×28px 패치를 시각 토큰으로 보고 ⌈너비/28⌉×⌈높이/28⌉로 센다. Claude 4.7 이후 모델은 고해상도 등급(긴 변 2576px, 최대 4784토큰), 나머지 모델은 표준 등급(1568px, 1568토큰)이다. 한도를 넘는 이미지는 기본적으로 비율을 유지한 채 줄여서 처리하므로 이미지당 비용에 상한이 생긴다(1920×1080은 표준 1560토큰, 고해상도 2691토큰). OpenAI는 이미지 토큰을 입력으로 과금하고 TPM 한도에도 넣는다. GPT-6 Astra와 GPT-5.6 계열 등은 32×32px 패치 수(⌈너비/32⌉×⌈높이/32⌉)에 모델별 배수를 곱해 과금 토큰을 세고, GPT-4o 같은 일부 이전 모델은 타일 단위로 센다. Gemini 3 계열은 `media_resolution` 수준이 이미지에 배정할 최대 토큰을 정한다(low 280, medium 560, high 1120, ultra high 2240, 이미지 기본 1120). 그래서 비용 레버도 다르다. 패치 방식에서는 작업에 필요한 해상도로 줄여 보내거나 OpenAI의 `detail` 수준을 고르고, Gemini 3에서는 `media_resolution` 수준을 고른다. Anthropic도 고해상도 충실도가 필요 없으면 줄여 보내라고 권한다
 - **과금과 한도의 단위**: 입력, 출력, 사고가 모두 토큰으로 계산되고 컨텍스트 윈도도 토큰으로 잰다. 사고 토큰은 화면에 요약만 보여도 전부 출력 토큰으로 과금된다. 2026-10-06 벤더 문서 기준으로 Anthropic은 `display` 설정과 무관하게 생성된 사고 전체를 과금하고, OpenAI 추론 토큰은 API로 보이지 않지만 컨텍스트를 차지하며 출력으로 과금되고, Gemini 가격표의 출력 단가는 사고 토큰을 포함한다. 사고는 출력 상한(Anthropic `max_tokens`, OpenAI Responses API `max_output_tokens`)도 함께 쓰므로 상한이 작으면 보이는 답 없이 입력과 사고 비용만 낼 수 있다. 상한은 사고와 답을 함께 담을 크기로 잡는다(OpenAI는 처음 실험할 때 추론과 출력에 25,000토큰 이상을 남기라고 권한다). 사고 비중은 `usage.output_tokens_details`의 `thinking_tokens`(Anthropic)와 `reasoning_tokens`(OpenAI)로 본다
 
@@ -115,6 +117,7 @@ Transformer 원 논문의 base는 encoder와 decoder가 각 6층(N=6), `d_model 
 5. 출력 상한을 작게 잡은 추론 요청이 보이는 답 없이 비용만 낼 수 있는 이유는 무엇인가?
 6. 원 논문이 √dₖ로 나누고 sinusoidal 위치 표현을 고른 이유 가운데 실험으로 확인한 것과 가설로 남은 것은 무엇인가?
 7. Beam search가 번역에서는 흔히 쓰이는데 열린 텍스트 생성에서는 반복으로 퇴화하기 쉬운 이유는 무엇인가?
+8. 같은 덧셈도 숫자를 쉼표로 끊어 넣으면 정확도가 달라질 수 있는 이유는 무엇인가?
 
 ## 출처
 
@@ -140,7 +143,11 @@ Transformer 원 논문의 base는 encoder와 decoder가 각 6층(N=6), `d_model 
 - [tiktoken — GitHub, openai](https://github.com/openai/tiktoken)
 - [tiktoken/_educational.py — GitHub, openai](https://github.com/openai/tiktoken/blob/main/tiktoken/_educational.py)
 - [How to count tokens with tiktoken — OpenAI Cookbook](https://developers.openai.com/cookbook/examples/how_to_count_tokens_with_tiktoken)
+- [tiktoken_ext/openai_public.py — GitHub, openai](https://github.com/openai/tiktoken/blob/main/tiktoken_ext/openai_public.py) — 2026-11-18 인코딩별 숫자 정규식 대조
+- [LLaMA: Open and Efficient Foundation Language Models — Touvron et al.](https://arxiv.org/abs/2302.13971) — 2026-11-18 2절 토크나이저의 숫자 분할 대조
+- [Tokenization counts: the impact of tokenization on arithmetic in frontier LLMs — Singh and Strouse](https://arxiv.org/abs/2402.14903) — 2026-11-18 초록 대조. 효과 크기의 세부 수치는 확인하지 않았다
 - [인프런, 널널한 개발자, LLM 서비스, 토큰, 컨텍스트](https://www.inflearn.com/courses/lecture?courseId=344484&unitId=498588)
+- [YouTube, Stanford CS229, Building Large Language Models (LLMs)](https://www.youtube.com/watch?v=9vM4p9NN0Ts) — 2024-08-27 업로드. 하위 단어를 쓰는 이유와 숫자 토큰화 단락의 계기이며, 사실은 위 소스와 논문으로 대조했다. 기존 절의 확인일은 유지한다
 
 ## 관련 문서
 

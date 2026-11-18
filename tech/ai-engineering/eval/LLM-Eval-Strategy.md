@@ -34,6 +34,8 @@ Pass@k가 k번 중 한 번이라도 성공할 확률이라면, pass^k(pass hat k
 
 한 번만 성공하면 되고 후보를 검증해 고를 수 있는 도구는 Pass@k를, 사용자가 매번 같은 결과를 기대하는 에이전트는 pass^k를 본다. 모델이나 로컬 모델 교체를 비교할 때는 평균 성공률과 함께 같은 과제를 k번 실행해 모두 성공한 과제 수를 기록하고, 두 모델의 결과를 과제 단위로 짝지어 어느 과제에서 갈렸는지 확인한다(설계 제안). 성공 판정은 완료했다는 응답이 아니라 [[#평가 인식과 운영 환경의 차이|실제 실행 결과와 최종 상태]]로 한다.
 
+pass^k가 재는 일관성은 신뢰성의 한 축이다. Princeton 연구진(ICML 2026)은 에이전트 신뢰성을 일관성(결과, 행동 순서와 자원 사용이 실행마다 같은가), 견고성(장애, 환경 변화와 지시문의 바꿔 쓰기를 견디는가), 예측 가능성(스스로 밝힌 확신이 실제 성공률과 맞고 실패할 과제를 가려내는가), 안전(실패해도 피해가 제한되는가)의 네 차원, 12개 지표로 나누고 15개 모델을 GAIA와 τ-bench에서 쟀다. 정확도는 세대마다 올랐지만 신뢰성은 조금만 나아졌고 GAIA에서는 거의 그대로였다. 결과 일관성은 모든 모델에서 낮았고, 실행마다 비슷한 종류의 행동을 고르면서도 순서는 달랐다. 장애와 환경 변화에는 대부분 잘 버텼지만 지시문을 표현만 바꿔도 결과가 크게 흔들리는 정도는 모델마다 달랐다. 정확도 순위로 신뢰성 순위를 대신하지 않고, 모델이나 하네스를 바꿀 때 반복 실행, 바꿔 쓴 지시문과 확신 보정을 함께 잰다(적용 제안). 2026-11-18 논문 v3의 초록과 5절을 대조했다.
+
 ## 모델 라우팅은 같은 업무와 전체 비용으로 비교한다
 
 모델 자동 선택이 제공된다는 사실과 자기 업무에서 품질을 유지하며 비용을 줄인다는 결론은 다르다. 예를 들어 Abacus.AI RouteLLM은 2026-10-22 공식 API 문서 기준 `route-llm`으로 자동 선택을 요청하거나 모델 ID를 지정할 수 있다. 이 기능 설명만으로 고정 모델보다 높은 정답률이나 일정한 절감률을 보장하지 않는다.
@@ -170,6 +172,8 @@ Q. 데이터 품질은 어떻게 지키나?
 - [YouTube, 코드팩토리, 매번 가장 효율적인 LLM을 선택하는법](https://www.youtube.com/watch?v=6vabSapGFqE) — 상담의 고정 모델, 수동 분기와 자동 선택 비교를 학습 계기로 사용했다. 시연의 모델별 결과와 절감 수치는 일반 성능으로 반영하지 않았다.
 - [Demystifying evals for AI agents — Anthropic](https://www.anthropic.com/engineering/demystifying-evals-for-ai-agents) — 반복 trial, 모델과 하네스의 공동 평가, 양방향 과제와 초기 환경 격리. 기억과 라우팅 비교 절차는 이를 적용한 설계 제안이다. 2026-10-09 확인, 2026-10-22 라우팅 평가에 사용한 원칙 재대조. 2026-11-03 반복 trial, 최종 상태와 환경 격리 원칙을 부분 대조해 웹 생성 비교에 적용했다. 2026-11-15 pass@k와 pass^k의 정의, 75% 세 번 예시와 용도 구분을 대조했다.
 - [τ-bench: A Benchmark for Tool-Agent-User Interaction in Real-World Domains — arXiv, Shunyu Yao 외 (Sierra)](https://arxiv.org/abs/2406.12045) — 2024-06-17 v1. pass^k의 정의와 추정식, gpt-4o의 pass^1과 pass^8 결과를 2026-11-15 확인
+- [Towards a Science of AI Agent Reliability — arXiv, Stephan Rabanser 외 (Princeton)](https://arxiv.org/abs/2602.16666) — v3 2026-06-02, ICML 2026 채택. 2026-11-18 네 차원과 12개 지표, 15개 모델과 두 벤치마크, 5절의 차원별 결과 대조
+- [YouTube, Stanford CS329Z Engineering AI Agents, Lecture 1 What Are AI Agents? Agentic Systems Explained](https://www.youtube.com/watch?v=DGI4vucR71w) — 2026-09-23 녹화. 능력과 신뢰성의 차이를 다룬 정리 계기
 - [YouTube, 큰돌의터전, 3090 그래픽카드로 sonnet5.5를 이김](https://www.youtube.com/watch?v=syY8goNT3t8) — pass^k 개념의 학습 계기. 영상이 소개한 로컬 모델과 상용 모델의 비교 수치는 원 실험을 확인하지 못해 반영하지 않았다.
 - [How Amazon uses Amazon Nova models to automate operational readiness testing for new fulfillment centers — AWS](https://aws.amazon.com/blogs/machine-learning/how-amazon-uses-amazon-nova-models-to-automate-operational-readiness-testing-for-new-fulfillment-centers/) — 2026-02-10 공개 사례의 ORT 절차와 평가 결과. 2026-10-09 확인.
 - [Anthropic’s Transparency Hub — Anthropic](https://www.anthropic.com/transparency) — Claude Sonnet 4.5의 Model Alignment and Evaluation Awareness 절

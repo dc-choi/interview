@@ -2,7 +2,7 @@
 tags: [ai, agent, loop, harness, automation]
 status: done
 category: "AI엔지니어링(AIEngineering)"
-aliases: ["Loop Engineering", "루프 엔지니어링", "Agent Loops", "에이전트 루프 4분류"]
+aliases: ["Loop Engineering", "루프 엔지니어링", "Agent Loops", "에이전트 루프 4분류", "Live Delivery"]
 ---
 
 # 루프 엔지니어링 (Loop Engineering)
@@ -66,7 +66,9 @@ Goal 루프에서는 누가 목표의 상태를 바꿀 수 있는지도 설계 �
 
 - 3종 가드: **반복 횟수 상한**, **진전 없음 체크**(최근 실행에서 diff가 더 이상 변하지 않으면 종료), **토큰/비용 지출 상한**
 - 진전 없음은 호출 단위로도 잡는다. 같은 도구를 같은 인자로 연속 호출하면 끊고, 가드에 걸려 멈춘 작업은 버리지 않고 사람에게 넘긴다(밋업 발표의 운영 경험)
+- 예약 실행 루프에서는 세션 한도를 다음 실행 주기 전에 끝나는 크기로 잡고, 한도에 걸려 끊긴 세션의 진행분은 draft PR 같은 세션 밖 기록으로 다음 실행에 넘기며, 같은 작업이 연속으로 끊기면 사람에게 넘긴다([[Autonomous-Graph-Driven-Development#무인 세션의 한도와 이어받기|무인 세션의 한도와 이어받기]], 발표 사례)
 - 긴 실행에는 중간 확인 지점을 둔다. 한 AI 칩 회사의 소프트웨어 팀장은 절차를 길게 적은 프롬프트로 밤새 돌린 에이전트가 지엽적인 문제에 토큰의 80%를 쓰고 큰 문제를 보지 못한 경험을 들며, 몇 시간마다 진행을 보고 방향을 고쳐 다시 실행하는 방식으로 바꿨다고 밝혔다. 3~4일 동안 가장 비싼 모델과 최대 추론 설정으로 풀던 문제가 모델과 추론 강도를 낮춘 설정에서 3시간에 풀렸다는 경험도 함께 들었다(2026-11-16 채용 행사 발표, 개인의 사례이며 대조하지 못함). 최고 설정을 기본값으로 두지 않고 과제별로 비교한다
+- 중간 확인을 버전 인도로 만든 하네스도 있다. Qwen 팀의 Qwen-Live-Delivery-Plugin(2026-11-14 공개, Apache-2.0, 0.1.0, 출시 시점 지원은 Codex CLI뿐)은 쓸 수 있는 최소 첫 버전을 먼저 내고 실제 결과를 보고 다음 버전을 정하며, 버전마다 검증과 인도를 넣는다. MCP 도구가 인도 계획, 버전 스냅샷과 남은 시간 예산(최대 7일)을 관리하고, 훅이 사용자의 추가 요구를 도구 호출 뒤나 재개한 턴에 문맥으로 넣으며, 작업이 진행 중이고 예산이 남았으면 이른 턴 종료를 막는다. 멈추거나 예산이 끝나도 인도한 버전은 남는다. 모델과 API 키는 들어 있지 않아 Codex에 설정한 모델로 돌고, 브라우저 작업의 기본 샌드박스는 `workspace-write`다. 아래의 루프가 맞지 않는 일(하면서 요구사항이 정해지는 일)을 버전마다 방향을 받는 방식으로 다루려는 설계로 읽힌다(이 문서의 해석, 2026-11-18 README 대조, 실행하지 않음)
 - 완료 판정은 겹으로 둔다. 스키마 검증은 형식만 거르므로 금액 0원이나 미래 날짜처럼 형식은 맞고 값이 틀린 결과는 업무 규칙 검증이 잡고, 규칙으로 판정하기 어려운 것만 판정 모델에 넘긴다. 테스트가 없는 작업은 루프를 돌리기 전에 통과 기준을 먼저 만든다
 - 좋은 루프의 설계 요소: 명확한 목표, 유용한 컨텍스트, 작은 행동, 신뢰할 만한 관찰, 명시적 정지 규칙
 - 절제: 모든 작업에 복잡한 루프가 필요한 건 아니다 — 가장 단순한 해법부터 시작해 선택적으로 쓴다
@@ -101,6 +103,31 @@ Evaluator-optimizer는 생성 호출과 평가 및 피드백 호출을 반복해
 
 이 절은 2026-10-28 ReAct 논문과 Anthropic의 2024년 설계 글에서 원리를 대조했다. 특정 SDK나 제품의 현재 기능을 검증한 내용은 아니다.
 
+사용자가 접수한 문제를 고치는 루프에서는 에이전트가 고쳤다고 보고한 시점이 아니라 접수한 사람이 해결을 확인한 시점을 과제의 완료로 둘 수 있다. 확인 부담을 줄이려고 해결과 미해결 두 선택지만 주고, 미해결이면 남은 문제를 적게 해 다음 수정의 입력으로 넣는다. 접수자의 확인은 그 증상이 사라졌다는 신호일 뿐 다른 기능의 회귀나 변경의 안전성을 보증하지 않으므로, 수정을 반영하기 전의 테스트와 리뷰, 에이전트의 수정 권한은 따로 정한다(적용 제안). 사내 업무 프로그램의 오류 접수에 이 흐름을 붙인 사례는 바쁜 담당자의 눈치를 보느라 오류 신고가 미뤄지던 문제를 도입 이유로 들었고, 도입 뒤의 효과는 밝히지 않았다(2026-11-04 공개 영상, 개인의 사례).
+
+## ReAct는 사실 환각을 줄이고 반복 루프를 남긴다
+
+ReAct 논문은 PaLM-540B로 푼 HotpotQA 궤적을 ReAct와 CoT에서 정답과 오답을 50개씩, 모두 200개 뽑아 사람이 성공과 실패 유형을 분류했다.
+
+| 유형 | ReAct | CoT |
+|---|---|---|
+| 성공했지만 추론이나 사실을 지어냄 | 6% | 14% |
+| 실패 원인이 환각 | 0% | 56% |
+| 실패 원인이 추론 오류(같은 생각과 행동의 반복 포함) | 47% | 16% |
+| 실패 원인이 검색 결과(빈 결과나 쓸모없는 결과) | 23% | 해당 없음 |
+
+나머지 실패는 정답 표기와 어긋난 레이블 모호성(29%, 28%)이었다. 외부 지식을 조회하는 루프는 사실 환각을 줄이지만, 추론을 행동 사이에 끼워야 하는 구조 때문에 같은 생각과 행동을 되풀이하는 오류가 늘고, 검색이 쓸모없는 결과를 주면 추론이 그쪽으로 끌려간다. 논문은 두 방식을 섞는 규칙으로 이 절충을 다뤘다. ReAct가 정한 단계(HotpotQA 7단계, FEVER 5단계) 안에 답하지 못하면 CoT-SC로 넘어가고, CoT-SC 샘플 n개 중 다수 답이 n/2번 미만이면 내부 지식을 믿기 어렵다고 보고 ReAct로 넘어간다. HotpotQA에서는 앞의 전환(EM 35.1), FEVER에서는 뒤의 전환(정확도 64.6)이 가장 좋았고, 두 조합 모두 CoT-SC가 샘플 21개로 낸 성능에 샘플 3~5개로 도달했다. 반복 루프는 위 가드의 진전 없음 체크가, 단계 상한 뒤의 전환은 정지 조건에 붙인 대체 경로가 다루는 문제다(이 문서의 연결). 수치는 2022년 PaLM-540B 프롬프팅 결과이며, 2026-11-18 논문 3.3절의 표 1, 표 2와 결합 규칙을 대조했다.
+
+## 실패를 글로 남겨 다음 시도에 쓰는 Reflexion
+
+Reflexion(2023)은 가중치를 바꾸지 않고 언어 피드백으로 에이전트를 개선한다. 행동을 만드는 Actor, 결과를 채점하는 Evaluator, 궤적과 점수를 보고 무엇이 틀렸고 다음에 무엇을 바꿀지 글로 쓰는 Self-Reflection 모델로 나뉜다. 이번 시도의 궤적은 단기 기억이고 성찰문은 장기 기억에 쌓여 다음 시도의 입력이 되며, 컨텍스트 한도 때문에 보통 최근 1~3개만 남긴다. 이름에 강화학습이 들어가지만 그래디언트 갱신이 아니라 프롬프트로 구현한 개선이다.
+
+- **보고된 효과:** 기준 에이전트보다 ALFWorld에서 12번의 시도에 걸쳐 22%p(134개 중 130개 해결), HotPotQA에서 20%, HumanEval에서 최대 11% 나아졌다. HumanEval Python pass@1은 91.0으로 당시 GPT-4의 80.1을 넘었다.
+- **평가 신호가 효과를 정한다:** 코드 과제의 Evaluator는 모델이 직접 만든 단위 테스트다. 그 테스트를 모두 통과했는데 실제로는 틀린 제출의 비율이 MBPP Python에서 16.3%(HumanEval Python은 1.4%)였고, MBPP Python에서는 GPT-4 기준선 80.1보다 낮은 77.1에 그쳤다. 가장 어려운 HumanEval Rust 50문제에서 테스트 생성을 빼면 언제 멈출지 모른 채 코드를 고쳐 기준선 60%에서 52%로 떨어졌고, 성찰문 없이 테스트만 돌리면 60%에서 오르지 않았다. 둘을 함께 쓴 구성은 68%였다.
+- **한계:** 국소 최적에서 벗어나지 못할 수 있다. 다양한 탐색이 필요한 WebShop에서는 4번 시도해도 나아지지 않아 실행을 멈췄다. 장기 기억은 크기가 고정된 슬라이딩 윈도였다.
+
+적용하면 성찰 루프의 개선 폭은 성찰문의 문장력보다 Evaluator 신호의 정확도에 묶인다. 거짓 통과를 내는 검사기는 루프를 일찍 끝내고, 검사기가 없으면 루프는 멈출 기준 없이 결과를 바꾼다(이 문서의 해석). 성찰문을 기억에 쌓는 구조는 [[Agent-Memory-Write-and-Consolidation-Failures|기억의 쓰기와 정리 실패]]의 위험도 함께 진다. 2026-11-18 논문 3절, 4절, 5절과 부록 B.1을 대조했다.
+
 ## 면접 체크포인트
 
 - 루프의 본질을 트리거 종류가 아니라 정지 조건으로 정의할 수 있는가
@@ -111,17 +138,22 @@ Evaluator-optimizer는 생성 호출과 평가 및 피드백 호출을 반복해
 - evaluator 분리 — maker/checker 분리가 정지 조건 판정에 적용되는 방식
 - hill-climbing 층이 따로 있는 이유 (일의 자동화와 개선의 자동화 구분)
 - 검증 루프의 점수가 올랐는데 결과물이 나아지지 않을 때 확인할 것 (생성자 출력과 검사자 입력의 축, 항목별 점수, 주관적 기준의 판정 흔들림)
+- ReAct와 CoT의 실패 양상이 갈리는 이유와 두 방식을 전환하는 조건, Reflexion의 효과가 Evaluator 신호의 정확도에 묶이는 이유
 
 ## 출처
 
 - [Loop engineering이란 도대체 무엇인가 — Toby's Codex](https://codex.epril.com/loop-engineering-structural-comparison/)
 - [Getting started with loops — Claude Code (@ClaudeDevs, X 아티클)](https://x.com/ClaudeDevs/article/2074208949205881033)
-- [ReAct: Synergizing Reasoning and Acting in Language Models — Shunyu Yao 외](https://arxiv.org/abs/2210.03629)
+- [ReAct: Synergizing Reasoning and Acting in Language Models — Shunyu Yao 외](https://arxiv.org/abs/2210.03629) — ICLR 2023 판(v3). 2026-11-18 3.3절의 표 1, 표 2와 ReAct, CoT-SC 전환 규칙 대조
+- [Reflexion: Language Agents with Verbal Reinforcement Learning — Noah Shinn 외](https://arxiv.org/abs/2303.11366) — v4. 2026-11-18 3절 구성과 기억, 4절 결과와 절제 실험, 5절 한계와 부록 B.1 대조
 - [Building effective agents — Anthropic](https://www.anthropic.com/research/building-effective-agents)
 - [Agentic Design Patterns Part 1: Four AI agent strategies that improve GPT-4 and GPT-3.5 performance — The Batch, Andrew Ng](https://www.deeplearning.ai/the-batch/how-agents-can-improve-llm-performance/) — 2024-03-20 게시, HumanEval 수치와 여러 연구 팀 결과의 분석이라는 범위 확인
 - [YouTube, 메타코드M, 루프 엔지니어링의 모든 것 40분 무료강의](https://www.youtube.com/watch?v=GE03mhxcmKk) — 카드뉴스 루프의 채점 시연, 보고 전용으로 시작하는 단계적 권한 확대
+- [YouTube, Stanford CS329Z Engineering AI Agents, Lecture 1 What Are AI Agents? Agentic Systems Explained](https://www.youtube.com/watch?v=DGI4vucR71w) — 2026-09-23 녹화. ReAct와 CoT의 실패 비교, Reflexion 소개의 계기. 수치는 각 논문으로 대조했다
 - [nac Docs, Durable direct goals](https://github.com/arcee-ai/nac/blob/main/docs/usage/direct-goals.md) — 2026-11-16 목표 상태, 전이 권한, 예산과 질문 대기 규칙 대조
+- [Qwen-Live-Delivery-Plugin — GitHub, QwenLM](https://github.com/QwenLM/Qwen-Live-Delivery-Plugin) — 2026-11-18 README의 세 모듈(스킬, MCP, 생애주기 훅), 예산과 이른 종료 차단, 지원 범위, 샌드박스 기본값과 라이선스 대조. 설치하지 않음
 - [AI NEXT CAREER FAIR 2026 | AI시대의 새로운 직무와 채용 — YouTube, 면접왕 이형](https://www.youtube.com/watch?v=sxbbpZQNUJ0) — 2026-11-16 행사 생중계, 2026-11-17 음성 인식 전사 확인(현직자 세션). 긴 실행의 중간 확인과 모델, 추론 설정 과용에 관한 개인 사례
+- [YouTube, 보스턴빌더, 하네스, 루프, 그래프 엔지니어링? | 비개발자도 20분안에 완벽히 이해하기](https://www.youtube.com/watch?v=uKbw2Lfn3wI) — 2026-11-04 공개, 음성 인식 전사 기준. 접수자의 해결 확인으로 닫는 오류 수정 루프의 개인 사례, 효과 측정 없음
 
 ## 관련 문서
 
@@ -133,5 +165,7 @@ Evaluator-optimizer는 생성 호출과 평가 및 피드백 호출을 반복해
 - [[Claude-Code-Workflows|Claude Code 개발 워크플로우 (스킬을 루프에 태우는 반복 업무 자동화)]]
 - [[LLM-Workflow-Patterns|LLM 워크플로우 패턴 (체인 vs 에이전트 선택, Plan-and-Execute)]]
 - [[Agent-Graph-Engineering|그래프 엔지니어링 (루프를 노드와 되돌아가는 엣지로 품는 실행 그래프)]]
+- [[Autonomous-Graph-Driven-Development|자율 그래프 주도 개발 (매시간 도는 노드의 턴 한도, draft PR 이어받기와 연속 중단 상한)]]
 - [[Agent-Context-Budget|에이전트 컨텍스트 예산 (실행 컨텍스트를 버리고 인계 요약만 남기는 구조)]]
 - [[Same-AI-Different-Results-2026-11-06|같은 AI, 다른 결과 밋업 기록 (종료 조건과 검증 신호의 운영 경험)]]
+- [[AI-Agent-Anatomy-and-Lineage|AI 에이전트의 정의, 계보와 구성 요소 (계획과 추론이 루프에서 차지하는 자리)]]

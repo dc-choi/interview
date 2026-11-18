@@ -19,6 +19,7 @@ Software 3.0 패러다임, LLM과 에이전트, 하네스, 평가, 조직 전환
 - [[tools|실천 도구]] — 하네스 시스템(구성요소 비교 실험, 런타임 구성도, 게이트 배치, 도입 계단, AI 네이티브 시스템과 조직, 군집 격리), 컨텍스트(멀티레포 분석과 업무 기록 재사용), 에이전트, 사용량 관측, RAG, MCP, LLM 원리와 운영(학습과 생성, 추론 병목과 로컬 메모리 예산, 모델 티어, 워크플로우 패턴과 승인 대기열, 결정 모델, 프롬프트 캐싱, 실패 처리), 음성 인식(로컬 STT 엔진 비교, 영상 전사 파이프라인)
 - [[org-role|조직, 역할]] — AX 조직 전환(Maker→Closer), 개발자 역할 재정의, 도달력(Distribution)이 새 해자, 생성형 AI 시장 구도와 규제 논쟁, AI 시민 개발
 - [[eval|평가, 신뢰성, 캘리브레이션]] — LLM 평가 전략, Abstention(모른다고 말하는 능력), 환각 유형과 검증, 평가 주도 개발(EDD), 루브릭과 점수 게이트, LLM 판정기, 골든셋과 배포 관문, 서빙 모델 드리프트 감시
+- [[ml-foundations|머신러닝 기초]] — 지도학습 모델과 손실(k-NN, perceptron, SVM, 정규화), k-means, 신경망과 역전파, dropout, 합성곱 신경망, 자연어 처리 기초(문법, n-gram, Naive Bayes, word2vec), PyTorch 텐서와 학습 루프(autograd, optimizer, DataLoader)
 
 ## 세부 학습
 - [x] [[Multi-Agent-Coordination-Cost|멀티 에이전트의 조정 비용과 증설 판단]] — Amdahl 상한과 통신 경로, 작업 구조별 효과 측정, 네 가지 실패 패턴, 구조 선택과 단계적 증설
@@ -54,10 +55,13 @@ Software 3.0 패러다임, LLM과 에이전트, 하네스, 평가, 조직 전환
 - [x] [[Java-AI-Integration-Boundaries|Java AI 통합의 실행 경계]] — 원격 및 로컬 추론, 외부 함수 호출과 GPU 코드 변환의 구분
 - [x] [[VLLM-Serving-Security|vLLM 서빙 보안]] — API 키의 경로 범위, 내부 통신 격리, 동적 LoRA 관리 권한과 v0.32.0의 CORS 기본값 제한
 - [x] [[AI-Code-Delegation-Review|AI 구현 위임과 코드 리뷰]] — 구현 계약, 시스템 이해와 배포 책임, 경험 기반 전망의 한계
+- [x] [[AI-Code-Delegation-Review-Cognitive-Surrender|위임과 인지적 항복]] — 위임, 판단 위탁과 항복의 구분, 검증 병목에서 검사를 조이거나 속도를 늦추는 선택, 검사 통과가 증명한 범위와 실행 증거, 요청 전 가설, 모델이 좋아져도 남는 책임
 - [x] [[Agent-Repository-Instructions#사용자 판단 기준의 보존과 재정렬|에이전트와 사용자 기준 맞추기]] — ALIGN.md, 선호와 절차의 분리, 재정렬과 벤치마크 해석
 - [x] [[Tacit-Knowledge-Judgment-Agent|암묵지와 판단 에이전트]] — 암묵지와 형식지, Nonaka의 네 변환 방식, 사례와 피드백 흡수, 반복 판단의 원칙 승격, 판단 에이전트의 배치와 홀드아웃 일치도
 - [x] [[Ontology-Knowledge-Graph|온톨로지와 지식 그래프]] — 의미 규칙과 실제 사실의 구분, 허용 관계와 식별자, 반영 전 검사, Palantir Foundry Ontology의 object, link, action과 권한, 정의를 한곳에 두고 행동까지 잇기, RDF 그래프와 속성 그래프
 - [x] [[Agent-Graph-Engineering|그래프 엔지니어링]] — 실행 그래프의 노드와 엣지, 코드와 모델과 사람의 판정 분담, 실패 노드 복귀와 재시도 한도, 그래프를 쓰지 않을 작업
+- [x] [[Autonomous-Graph-Driven-Development|자율 그래프 주도 개발]] — 예약 실행 노드와 스펙 원장, 질문 이슈와 승인으로만 참여하는 사람, 강등과 재확정, 턴 한도와 draft PR 이어받기, 형식적 승인과 같은 오해를 통과시킨 검사, 결정 대기로 수렴하는 리드타임
+- [x] [[AI-Agent-Anatomy-and-Lineage|AI 에이전트의 정의, 계보와 구성 요소]] — 약한 에이전트 개념, 액터 모델에서 AutoGPT까지, LLM 코어와 계획, 기억, 도구, 환경, CoALA의 내부와 외부 행동, 시스템, 데이터, 평가 층의 문제 진단, 구성 요소별 실패 지점과 행동 단계의 개인정보 유출
 - [x] [[AI-Work-Tool-Selection|AI 업무 도구 선택]] — 병목과 산출물로 제품 및 공개 저장소 비교, 검색과 생성과 관리의 구분, 모델과 데이터 API 및 검수 비용을 포함한 자동화 효과 측정
 - [x] [[LLMs-Txt|llms.txt]] — 웹 문서 색인, v2 발견 규칙, 생성 도구와 운영 검증
 - [x] [[Agent-Repository-Instructions|AGENTS.md]] — 저장소 지침의 작성과 호스트별 적용, 권한 통제와 검증 경계
@@ -129,7 +133,7 @@ Software 3.0 패러다임, LLM과 에이전트, 하네스, 평가, 조직 전환
 - [x] [[Linear-Attention|선형 어텐션]] — 특징 맵, 정규화와 인과 누적 상태, 공개 모델의 하이브리드 층 배치와 KV 캐시
 - [x] [[Audio-Token-Generation|음악과 소리 생성]] — 신경망 오디오 코덱과 RVQ, 코드북 펼치기 순서, 조건 방식과 상용 서비스의 공개 범위
 - [x] [[Claude-Code-Workflows#긴 작업의 완료와 중단 조건|에이전트의 완료와 중단 조건]] — 결과 증거, 작업 목록과 검증 한계
-- [x] [[LLM-Generation-Mechanics-Analogies|비개발자 설명용 LLM 비유와 한계]] — 학습 때 정해지는 것과 요청마다 고르는 것, 네 가지 수량, 비유가 맞는 부분과 깨지는 지점
+- [x] [[LLM-Generation-Mechanics-Analogies|비개발자 설명용 LLM 비유와 한계]] — 학습 때 정해지는 것과 요청마다 고르는 것, 네 가지 수량, 비유가 맞는 부분과 깨지는 지점, 멀티모달, 지식 베이스와 RAG, MCP, 에이전트, 하네스 같은 모델 바깥 용어가 바꾸는 대상
 - [x] [[LLM-Generation-Mechanics-Context-and-Agent#프롬프트, RAG와 파인튜닝은 바꿀 대상으로 고른다|프롬프트, RAG와 파인튜닝 선택]] — 바꾸는 층, 지식과 행동 문제의 구분, 구조화 출력, 비용 비교와 파인튜닝 제공 범위
 - [x] [[Agent-Runtime-Deployment|에이전트 런타임과 배포]] — Eve, Mecatl, Strands Harness SDK, OpenCode 2.0, Claude Managed Agents의 책임과 확인 수준
 - [x] [[Agent-Reverse-Engineering|에이전트 역공학과 실행 하네스]] — REA, 매칭 디컴파일과 정적 재컴파일의 동등성 구분, 게임 상태 재현, 브라우저 이식, Xbox Labs 발표, Ruby 생태계 사례와 국내 저작권법의 프로그램코드역분석 요건
@@ -139,7 +143,7 @@ Software 3.0 패러다임, LLM과 에이전트, 하네스, 평가, 조직 전환
 - [x] [[LLM-Decision-Models-Calibration-Cases|결정 모델 보정과 버전 변경]] — Qwen, Microsoft-Decision-1, Jev 1.14와 표현 안정성, 애매한 구간만 상위 모델로 넘기는 구성과 오답 분포
 - [x] [[Local-Inference-Deployment-Cases|로컬 추론 배포]] — Janas, Minions, MLX 분산 추론(JACCL, Muse Spark Open 2대와 4대 측정), Uzu, PS5LM, Saluki의 양자화와 도구 호출 평가, LFM2.5와 Muse Spark Open, Harbor 보도의 확인 수준
 - [x] [[Local-AI-Hardware-Lifecycle|로컬 AI 장비의 수명]] — 소프트웨어 지원, 모델 크기와 비용의 세 기한, 구형 GPU의 런타임 지원 종료, 사용 연수로 나눈 가격, 구매와 임대와 API 비교
-- [x] [[LLM-Inference-Serving-Engines|추론 서빙 엔진의 기능 경계]] — 엔진과 서비스 책임, DeepInfer 공개 범위, 배치 불변성과 결정적 샘플링, DSpark 가변 길이 검증, 구조화 출력 강제 경계, ggml 1.0의 판 정책, DGX Station 두 대의 텐서 병렬
+- [x] [[LLM-Inference-Serving-Engines|추론 서빙 엔진의 기능 경계]] — 엔진과 서비스 책임, DeepInfer 공개 범위, 배치 불변성과 결정적 샘플링, DSpark 가변 길이 검증, 프롬프트 n-gram 초안, 구조화 출력 강제 경계, ggml 1.0의 판 정책, DGX Station 두 대의 텐서 병렬
 - [x] [[AI-Infrastructure-Language-Layers|AI 서비스 스택의 언어 계층]] — 꼬리 지연과 GC, data race 검사, PyO3와 C ABI 통합, pickle과 safetensors, GPU 커널 계층
 - [x] [[Agent-Model-Capability-Contracts|기억과 전문 영역 모델 평가]] — 전문 모델과 승인 경계, 카나나의 개인화 인터페이스와 발표 계획, Inkling 2 Small의 예산 안 자율 실험, Kimi K3.1 Pro의 추론 내용 반환 계약과 공개판 사이버 능력 조정, Hy4의 API 먼저 제공
 - [x] [[AI-Research-Innovation-Evaluation|AI 연구 혁신 평가]] — InnovationEval의 과제와 개선 달성률
@@ -157,7 +161,7 @@ Software 3.0 패러다임, LLM과 에이전트, 하네스, 평가, 조직 전환
 - [x] [[Agent-Skills-Kiro#Kiro Steering: 포함 모드와 적용 범위|Kiro Steering 포함 모드]] — always, fileMatch, manual, auto의 로드 시점, workspace 우선과 AGENTS.md, custom agent의 기본 상속과 해제 설정
 - [x] [[Agent-Skills-Kiro#Kiro MCP: 설정 범위와 도구 승인|Kiro MCP 설정과 도구 승인]] — user와 workspace 설정 병합, Tool Search, autoApprove와 permission 규칙, workspace 신뢰와 접근 격리의 한계
 - [x] [[Bedrock-Knowledge-Base-Retrieval|Bedrock 지식 베이스 조회]] — 검색 유형과 저장소 조건, 재순위 결과 수와 권한, 질의 분해와 에이전틱 검색, 프롬프트 자리표시자와 가드레일 범위
-- [x] [[LLM-Prompt-Engineering|프롬프트 엔지니어링]] — 프리필 대체와 구조화 출력, 내장 사고와 수동 CoT, 예시 수와 형식, 체이닝의 쓰임, Bedrock 평가 기반 최적화와 홀드아웃
+- [x] [[LLM-Prompt-Engineering|프롬프트 엔지니어링]] — 개발자 지시와 사용자 입력의 역할 분리, 프리필 대체와 구조화 출력, 내장 사고와 수동 CoT, 예시 수와 형식, 체이닝의 쓰임, Bedrock 평가 기반 최적화와 홀드아웃, 자체 서빙의 채팅 템플릿
 - [x] [[AI-Code-Delegation-Review#AI 리뷰가 결함을 더 빨리 찾으면 수정 용량이 병목이 된다|AI 리뷰와 수정 용량]] — PostgreSQL 19 되돌림, Linux Fixes 태그 증가, 발견과 수정의 용량 계획, 위임 앞뒤의 사고 구간
 - [x] [[AI-Work-Output-and-Employment#산출이 늘면 병목은 다음 단계로 옮겨 간다|산출 증가 뒤의 병목 이동]] — 사람의 주의, 개발 인프라, 리뷰와 수정 용량의 사례와 읽을 때의 경계
 - [x] [[Agent-Reverse-Engineering#하드웨어 프로토콜은 기준 드라이버의 버스 기록과 비교한다|하드웨어 역공학]] — Windows VM 패스스루와 usbmon 기록 비교, 실제 장치 판정과 upstream 관계
@@ -165,6 +169,11 @@ Software 3.0 패러다임, LLM과 에이전트, 하네스, 평가, 조직 전환
 - [x] [[Diffusion-Language-Models|확산 언어 모델]] — 마스크 확산 학습과 perplexity 상한, 단계별 확정과 remasking, 블록 확산의 가변 길이와 KV 캐시, 샘플러별 단계 수와 품질, Mercury 계열의 공개 범위, 수준별 생성(NCM)의 구조와 비교 조건
 - [x] [[Latent-Reasoning|잠재 추론]] — 은닉 상태를 다음 입력으로 되먹이는 연속 사고, 도구 호출과 가독성의 한계, HybridLink와 모드 전환, 잠재 벡터 교체 실험, 비용 추정의 조건과 공개 코드의 차이
 - [x] [[Reasoning-Model-Test-Time-Compute|추론 모델의 사고 길이]] — 사고 토큰과 추론 시점 계산, DeepSeek-R1-Zero의 규칙 보상과 GRPO, 과잉 사고의 효율 지표와 완화, 추론 시점 계산의 역 스케일링과 측정 설계
+- [x] [[LLM-Pretraining-Data-Pipeline|LLM 사전학습 데이터 파이프라인]] — 웹 크롤 정제와 중복 제거, 모델 기반 품질 필터, 실험으로 정하는 데이터 혼합, 어닐링과 긴 문맥 단계
+- [x] [[LLM-Scaling-Laws|LLM 스케일링 법칙]] — 손실의 거듭제곱 법칙, 6ND 연산 어림, Chinchilla 연산 최적 배분과 추론 비용을 넣은 과학습, 작은 실험으로 큰 학습 정하기
+- [x] [[LLM-Post-Training|LLM 사후학습]] — SFT의 손실과 데이터 양, 보상 모델과 PPO의 KL 벌점, DPO, 새 지식 미세조정과 환각, 길이 편향, 모델 평균과 병합
+- [x] [[LLM-Training-Throughput|LLM 학습 처리량]] — 연산량에서 GPU 시간으로, MFU와 HFU, 활성값 체크포인팅, 커널 융합과 torch.compile, 혼합 정밀도 학습
+- [x] [[LLM-Perplexity-and-Benchmarks|perplexity와 객관식 벤치마크 채점]] — perplexity의 정의와 비교 조건, MMLU 채점 구현에 따른 점수 차, 순서 교환 오염 검사
 - [x] [[Time-Series-Foundation-Models|시계열 파운데이션 모델]] — zero-shot 예측, 21개 분위수와 pinball loss, fev-bench의 skill score와 누출 신고 규칙, 매출 기준 가중치 라이선스
 - [x] [[Model-Release-Claims|모델 발표 수치 읽기]] — 측정 주체, 비용과 캐시, 메모리와 라이선스, Carbon과 Mistral Large 4의 평가 및 제공 상태
 - [x] [[Evaluator-Guided-Program-Search|평가기 주도 프로그램 탐색]] — 모델 밖 평가기, 대리 지표와 비교 기준, 표본 검사의 실패율 경계, AlphaEvolve와 Claude Mythos 5 양자 회로 사례
@@ -191,5 +200,5 @@ Software 3.0 패러다임, LLM과 에이전트, 하네스, 평가, 조직 전환
 - [x] [[AI-Alignment-and-Control|AI 목표 정렬과 행동 통제]] — 목표와 권한, 감시와 중단, 자기 개선과 거버넌스, 안전 연구 과업의 은밀한 저성능과 짝 평가, 에이전트 전용 커뮤니티 대화의 해석
 - [x] [[AI-Forecasts-and-Human-Augmentation|AI 전망과 인간 능력 확장]] — 예측의 가정, 기능 보조와 전면적 증강, 생물학적 진화와 문화적 변화, 위험 경고의 시점과 판정 기준
 - [x] [[AI-Scientific-Discovery-Loops|AI 과학 발견 루프]] — 문제 정의와 실험, 반도체 적용, 교육과 고용 및 접근성 전망
-- [x] [[Reinforcement-Learning-from-Experience|경험 기반 강화학습]] — 보상과 가치, TD와 시뮬레이션, 계산 확장과 연구 비전
+- [x] [[Reinforcement-Learning-from-Experience|경험 기반 강화학습]] — 보상과 가치, TD와 시뮬레이션, MDP와 Q-learning, ε-greedy와 함수 근사, 계산 확장과 연구 비전
 - [x] [[Generative-Video-Production-Workflow|생성형 영상 제작 워크플로]] — 창작 협업, 자산 트리, 장편 사례와 출처 표시

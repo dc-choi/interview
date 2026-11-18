@@ -72,6 +72,10 @@ AI 정렬(alignment)은 시스템의 행동이 인간이 의도한 목표와 제
 
 초지능의 모든 행동을 사람이 예상하기 어렵다는 문제와 안전한 제약을 전혀 만들 수 없다는 결론도 다르다. 하라리의 04회에서 통제 가능하면 초지능이 아니라는 표현은 그의 정의와 논증이다. 초지능 정렬의 불가능성을 증명한 정리로 쓰지 않는다.
 
+### 능력이 오르면 안전 보장 수단이 바뀐다
+
+안전 보장 수단마다 통하는 능력 범위가 다르다는 견해가 있다. OpenAI CEO는 2026-10-21 공개된 Stanford GSB 대담에서, 한동안은 시스템을 샌드박스에 가두고 그에 기대어 일부 안전을 보장할 수 있지만 모델이 너무 똑똑해져 샌드박스가 무엇을 뜻하는지조차 이해하기 어려워지면 그 보장은 깨지고, 그다음 한동안은 감시 가능성(monitorability)에 기댈 수 있으며, 결국에는 사람이 이해하고 확신할 수 있는 정렬만 통한다고 봤다. 2020년 말에는 정렬이 더 어려울 것이라 믿었으나 일부 중요한 방식에서 사람을 크게 넘는 모델과 지금까지 예상보다 쉬웠던 정렬이 함께 왔다고 하면서도, 이 관찰을 다음 세대 모델에 그대로 연장해 앞서 달리는 시도를 걱정했고 정렬이 틀렸을 때의 비용은 크게 늘었다고 했다. 그가 속도 조절을 말하는 이유도 이 순서에 있다(화자의 견해이며 각 단계가 끝나는 능력 수준을 잰 근거는 없다). 감시의 현재 한계는 위의 평가 절, 격리의 실행 경계는 [[Agent-Swarm-Containment|에이전트 군집 격리]], 속도 조절의 전제는 [[AI-Frontier-Regulation-Debate#속도 조절을 정당화하는 전제|프론티어 AI 규제 논쟁]], 지난 관찰을 연장하는 문제는 [[AI-Forecasts-and-Human-Augmentation#가속 전망을 검토하는 법|가속 전망 검토]]에서 본다.
+
 ## 정렬, 거버넌스와 발전 순서
 
 기술적으로 지시를 따르는 AI도 누가 어떤 목적으로 쓰느냐에 따라 피해를 낼 수 있다. 보스트롬의 24회는 기술적 정렬, 사람 사이의 권력과 분배 문제, 디지털 마음에 대한 윤리, 우주적 다른 지능과의 관계를 구분한다. 마지막 항목인 cosmic host는 다른 초지능이나 상위 존재가 있다는 가정 아래의 철학적 사고실험이다. 외계 문명이나 우주적 규범의 존재가 확인되었다는 뜻은 아니다.
@@ -85,6 +89,7 @@ AI 정렬(alignment)은 시스템의 행동이 인간이 의도한 목표와 제
 - 능력, 목표, 접근 권한과 외부 영향의 범위를 각각 기록했는가?
 - 평가 중의 행동과 배포 뒤 행동을 구분하고 새 실패 유형도 찾는가?
 - 감시자가 놓치는 행동과 감시자 자체를 우회하는 행동을 확인하는가?
+- 지금 기대는 안전 보장 수단(격리, 감시, 정렬)이 어느 능력 수준까지 통한다고 보는지 적었는가?
 - 중단과 복구를 실제로 실행할 수 있으며 책임자가 정해졌는가?
 - 위험 시나리오, 관측한 사건과 아직 검증하지 못한 주장을 분리했는가?
 
@@ -102,6 +107,8 @@ AI 정렬(alignment)은 시스템의 행동이 인간이 의도한 목표와 제
 - [EBS, 넥스트 비전, 09. 레이 커즈와일 <특이점이 온다> - AI와 인간의 융합](https://www.ebssw.kr/edc/cultursens/cultursensMvpView.do?alctcrSn=59337&cntntsSn=33470&stepSn=58322&lctreSn=1879157&pageIndex=1)
 - [EBS, 넥스트 비전, 23. 닉보스트롬 <초지능의 탄생> - 초지능을 통제할 수 있을까](https://www.ebssw.kr/edc/cultursens/cultursensMvpView.do?alctcrSn=59337&cntntsSn=33645&stepSn=58322&lctreSn=1879799&pageIndex=1)
 - [EBS, 넥스트 비전, 24. 닉보스트롬 <초지능의 탄생> - 초지능 이후의 사회](https://www.ebssw.kr/edc/cultursens/cultursensMvpView.do?alctcrSn=59337&cntntsSn=33651&stepSn=58322&lctreSn=1879864&pageIndex=1)
+- [Sam Altman, Co-Founder and CEO of OpenAI: Staying Human While Scaling Superintelligence — YouTube, Stanford Graduate School of Business](https://www.youtube.com/watch?v=anAmTGcewX8) — 2026-10-21 공개된 View From The Top 대담(48:48, 대담 날짜 미확인). 2026-11-18 사람이 단 영어 자막으로 35:20~37:33의 정렬 전망과 단계별 안전 보장 발언을 확인. 화자의 견해
+- [샘 올트먼 영상은 정말 꼭 보세요(오픈 AI CEO, 챗GPT) — YouTube, 인간지능](https://www.youtube.com/watch?v=rfhk-TZFoXY) — 2026-11-07 공개된 위 대담의 편집본(44:20). 음성 인식 전사 전체를 공식 자막과 대조, 정리의 계기
 
 ## 관련 문서
 
@@ -110,3 +117,4 @@ AI 정렬(alignment)은 시스템의 행동이 인간이 의도한 목표와 제
 - [[Agent-Swarm-Containment|에이전트의 권한과 격리]]
 - [[LLM-Hallucination-Verification|주장과 실행 근거의 대조]]
 - [[Eval-Rubric-and-Score-Gate|루브릭과 점수 게이트]] — 결과물의 채점 항목으로 저성능 비교
+- [[AI-Frontier-Regulation-Debate|프론티어 AI 규제 논쟁]] — 속도 조절의 전제와 공개 모델의 해악 문턱

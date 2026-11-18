@@ -77,6 +77,14 @@ aliases: ["Golden Set", "골든셋", "배포 관문", "Deploy Gates"]
 
 여기까지는 내가 바꾼 것의 회귀다. 코드와 프롬프트를 그대로 두었는데 제공자 쪽(별칭, 서빙 인프라, 하네스 기본값)에서 생기는 변화는 골든셋 일부를 실제 호출 경로로 정기 실행해 잡고, 그 설계는 [[Eval-Model-Drift-Monitoring]]이 맡는다.
 
+### 문항 수가 만드는 오차를 관문 한도와 맞춘다
+
+실행마다 흔들리는 폭과 별개로, 어떤 문항을 골랐는지에서 오는 표본 오차가 있다. 평가 세트에서 같은 수의 문항을 복원 추출한 부트스트랩 표본을 여러 벌 만들어 점수를 다시 계산하면 그 폭이 보이고, 표본마다 90%와 70%처럼 크게 갈리면 그 세트의 점수 하나로는 판정할 수 없다. 정답률 p, 문항 수 n인 점수의 표준오차는 `√(p(1−p)/n)`이라 p가 0.8일 때 50문항이면 약 5.7%포인트(95% 구간 약 ±11%포인트), 1,000문항이면 약 1.3%포인트(약 ±2.5%포인트)다(정규 근사 계산 예). 50문항에서는 한 문항이 2%포인트라 아래 관문 1의 3%포인트 한도는 대부분 표본 오차 안에 든다. 두 버전을 같은 문항으로 채점해 문항별 차이를 부트스트랩하면, 두 버전의 정오가 문항마다 함께 움직이는 만큼 따로 잰 두 점수를 비교할 때보다 구간이 좁아진다. 작은 세트는 방향을 보는 데 쓰고, 작은 회귀를 막는 관문은 문항 수와 반복 실행을 그 한도에 맞춘다(적용 제안).
+
+점수는 요청 유형, 언어, 고객군 같은 슬라이스로 나눠서도 본다. 평균이 오르는 사이 한 슬라이스만 무너질 수 있다. 슬라이스 구성비가 다른 두 결과, 예를 들어 버전마다 받은 트래픽이 다른 운영 지표를 비교하면 모든 슬라이스에서 진 쪽이 전체 평균에서는 이기는 심슨의 역설도 생긴다. 같은 문항 세트로 두 버전을 채점하면 슬라이스별 가중치가 같아 이 역전은 일어나지 않으므로, 역전이 보이면 구성비부터 맞춘다.
+
+합격선은 점수 구간을 사업 결과에 대응시켜 정한다. 상담 답변의 사실 일관성이 어느 수준일 때 사람 없이 닫을 수 있는 문의가 얼마인지 추정해 두면 출시할 수 있는 최소 점수와 1%포인트 개선의 가치가 함께 정해진다. 지표끼리의 상관도 본다. 거의 같이 움직이는 두 지표는 하나로 충분하고, 서로 무관하게 움직이면 어느 한쪽이 의도와 다른 것을 재고 있지 않은지 확인한다(적용 제안).
+
 ## 배포로 가는 세 관문
 
 | 관문 | 판정 | 통과 조건 |
@@ -143,6 +151,7 @@ aliases: ["Golden Set", "골든셋", "배포 관문", "Deploy Gates"]
 - 절대 점수가 아니라 베이스라인 대비 차이로 판정하는 이유와 베이스라인 표류
 - 배포 세 관문에서 관문 하나만 고른다면 무엇이고 왜인가
 - 가드레일에서 탐지율, 차단율, 과잉 차단을 따로 재야 하는 이유
+- 50문항 골든셋의 3%포인트 하락 한도가 표본 오차에 묻히는 이유와 두 버전을 같은 문항으로 짝지어 비교하는 이유
 
 ## 출처
 
@@ -154,6 +163,7 @@ aliases: ["Golden Set", "골든셋", "배포 관문", "Deploy Gates"]
 - [Bypassing LLM Guardrails: An Empirical Analysis of Evasion Attacks against Prompt Injection and Jailbreak Detection Systems — arXiv (2025-04)](https://arxiv.org/abs/2504.11168)
 - [Anthropic, Define success criteria and build evaluations](https://platform.claude.com/docs/en/test-and-evaluate/develop-tests)
 - [Google for Developers, Machine Learning Crash Course, Datasets: Dividing the original dataset](https://developers.google.com/machine-learning/crash-course/overfitting/dividing-datasets)
+- [YouTube, Marina Wyss, AI Engineering in 76 Minutes (Complete Course/Speedrun!)](https://www.youtube.com/watch?v=JV3pL1_mn2M) — 2025-04-01 업로드. Chip Huyen의 책 AI Engineering(O'Reilly Media, 2025)을 요약한 강의로 부트스트랩, 슬라이스와 합격선 단락의 계기다. 표준오차와 구간은 이 문서의 계산이고, 심슨의 역설이 생기는 조건(구성비 차이)은 영상에 없어 산술로 더했다
 
 ## 관련 문서
 

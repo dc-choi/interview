@@ -89,7 +89,7 @@ Weight는 문장을 행 단위로 저장한 사실 데이터베이스가 아니�
 
 ## 사전학습 데이터와 재현 가능한 공개 범위
 
-가중치를 내려받을 수 있다는 사실만으로 학습을 재현할 수 있는 것은 아니다. 데이터 출처와 전처리, tokenizer, 학습 코드, hyperparameter, 로그와 checkpoint의 공개 범위를 함께 확인한다. 공개된 각 구성요소의 사용 조건도 별도 확인 대상이다.
+가중치를 내려받을 수 있다는 사실만으로 학습을 재현할 수 있는 것은 아니다. 데이터 출처와 전처리, tokenizer, 학습 코드, hyperparameter, 로그와 checkpoint의 공개 범위를 함께 확인한다. 공개된 각 구성요소의 사용 조건도 별도 확인 대상이다. 수집, 정제, 혼합과 어닐링 단계는 [[LLM-Pretraining-Data-Pipeline|사전학습 데이터 파이프라인]], 모델 크기와 학습 토큰 수의 배분은 [[LLM-Scaling-Laws|스케일링 법칙]]에서 다룬다.
 
 데이터 선별에서는 노이즈 제거, 중복 제거와 품질 평가가 서로 다른 역할을 한다. KORMo의 2025년 기술 보고서는 한국어 웹 데이터에 이 세 단계를 적용한 사례다. 특정 품질 점수의 상위 데이터만 고르는 규칙을 모든 언어와 과업에 그대로 적용하지 않고, 남은 데이터 규모와 실제 과업 성능을 함께 비교한다.
 
@@ -136,7 +136,7 @@ Weight는 문장을 행 단위로 저장한 사실 데이터베이스가 아니�
 | **RLHF** | 응답 비교로 학습한 Reward Model과 강화학습 | 사람의 선호에 가까운 행동 강화 |
 | **DPO** | 선호 응답과 비선호 응답의 쌍 | 별도 강화학습 루프 없이 선호를 직접 최적화 |
 
-이는 가능한 대표 단계이지 모든 모델의 필수 고정 순서가 아니다. 데이터 구성, 목적 함수와 선호 최적화 방식은 모델 계열마다 다르다. 후속 학습은 행동을 조정하지만 사실 정확성을 자동으로 보장하지 않는다.
+이는 가능한 대표 단계이지 모든 모델의 필수 고정 순서가 아니다. 데이터 구성, 목적 함수와 선호 최적화 방식은 모델 계열마다 다르다. 후속 학습은 행동을 조정하지만 사실 정확성을 자동으로 보장하지 않는다. 단계별 손실과 데이터, 보상 모델, PPO와 DPO의 목적식, 선호 데이터의 함정은 [[LLM-Post-Training|사후학습]]에서 다룬다.
 
 ## LoRA와 QLoRA: 바꾸는 파라미터와 저장 정밀도
 
@@ -227,6 +227,10 @@ ZeRO-3는 순전파와 역전파 중 필요한 파라미터를 모으고 다시 
 - [[LLM-Generation-Mechanics-Decoding|추론과 디코딩]]
 - [[LLM-Generation-Mechanics-Context-and-Agent|Context, 환각과 에이전트]]
 - [[LLM-Generation-Mechanics-Analogies|비개발자 설명용 비유와 한계]]
+- [[LLM-Post-Training|사후학습]] — SFT, RLHF와 DPO의 손실과 데이터
+- [[LLM-Pretraining-Data-Pipeline|사전학습 데이터 파이프라인]] — 정제, 혼합, 어닐링과 긴 문맥 단계
+- [[LLM-Scaling-Laws|LLM 스케일링 법칙]] — 손실 예측과 연산 예산 배분
+- [[LLM-Training-Throughput|LLM 학습 처리량]] — MFU, 혼합 정밀도와 커널 융합
 - [[AI-Generated-Text-Readability|AI 생성 글의 처리 난도]] — 검증 가능한 정답 보상으로 후학습하면 출력이 압축 쪽으로 밀린다는 가설과 GRPO 개념 증명
 - [[Task-Specific-Small-Models|작은 특화 모델]] — 교사 모델 증류와 환경 실행 기록, 자기 오류 교정(DAgger) 학습 사례
 - [[Recommendation-System-Modeling-Foundations|추천 시스템 모델링 기초]]

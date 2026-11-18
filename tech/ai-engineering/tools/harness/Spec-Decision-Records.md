@@ -89,3 +89,5 @@ SDD 자체의 정의와 문서 계층은 [[RFC-Writing#Spec-Driven Development (
 - [[Pstack|pstack (반복 실수를 강제 층에 내리는 correct)]]
 - [[BMad-Method|BMad Method (story 단위 plan과 리뷰 기록)]]
 - [[Claude-Code-Customization|Claude Code 커스터마이즈 (플러그인과 자동 업데이트)]]
+- [[Autonomous-Graph-Driven-Development|자율 그래프 주도 개발 (스펙 원장의 상태 전이로 스펙 작성부터 검증까지 무인 진행)]]
+- [[Spec-Driven-Development|코딩 에이전트와 스펙 주도 개발 (헌법, 기능 루프와 재계획, Spec Kit과 OpenSpec)]]

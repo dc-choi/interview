@@ -74,4 +74,5 @@ aliases: ["Agent Overengineering Guard", "에이전트 과잉설계 방지", "YA
 - [[Code-Quality-Criteria|코드 품질의 기준 (응집, 책임 분리)]]
 - [[TDD-Refactoring-Practice|TDD 리팩토링 연습법 (과설계 경계, 작은 문제부터)]]
 - [[Agent-Skills|에이전트 스킬 (스킬 구성)]]
+- [[Agent-Platform-Knowledge-Skills|플랫폼 지식 스킬 (네이티브 플랫폼 기능 칸에 들어갈 지식과 호환성 목표)]]
 - [[Harness-Engineering|하네스 엔지니어링]]

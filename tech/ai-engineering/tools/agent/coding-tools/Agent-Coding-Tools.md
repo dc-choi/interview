@@ -16,6 +16,7 @@ aliases: ["Agent Coding Tools", "코딩 에이전트 작업 도구"]
 - [[Agent-Code-Search|에이전트 코드 인텔리전스]]: rg 전수 검색, Semble 후보 발견, Serena 심볼 검증/수정, Graphify 구조 경로, index freshness
 - [[Codebase-Knowledge-Map|대규모 코드베이스 지식 지도]]: 규모 측정과 공통 식별자, 결정론적 파서와 호출 관계 보강, 확인, 추론과 미해결의 구분, 템플릿과 재구축 동일성 검사, 그래프 순회 상한, 상시 벡터 DB 없는 exact 비교
 - [[Agent-Skills|에이전트 스킬]]: 재사용 작업 단위 = 온디맨드 플레이북, SKILL.md 폴더+description 자동 로드, 점진적 공개, Claude vs Codex 같은 포맷 다른 관례, 스킬 vs 훅, 수명주기 감사, 표면별 설치와 외부 스킬 신뢰
+- [[Agent-Platform-Knowledge-Skills|플랫폼 지식 스킬]]: 학습 뒤에 바뀐 플랫폼 기능을 검색형 지침으로 넣기, 저장소 지침의 Baseline 호환성 목표와 기본값, 보정된 검사와 대조군 평가, 정적 현대화 스캔과 실행 확인(Modern Web Guidance 1.0)
 - [[Agent-Skills-Kiro|Kiro Steering, 훅, 스킬, MCP와 Powers]]: Steering 포함 모드와 AGENTS.md, Hooks 형식과 차단 경계, 스킬 범위와 이식 점검, MCP 설정 병합과 도구 승인, workspace 신뢰, Powers 키워드 활성화, plugin.json과 스킬, API 명세 조회와 생성 코드 검증, SageMaker Unified Studio 원격 작업 경계
 - [[Agent-Terminal-Workspaces|에이전트 터미널과 작업 공간]] — 화면과 상태, worktree 분리, Herdr app/core와 TUI 구분, Prospero 원격 호스트, 한 사람이 돌리는 병렬 세션의 비용과 저장소에 두는 판단 대기열
 - [[JetBrains-IDE-Agent-Integration|JetBrains IDE의 코딩 에이전트 통합]]: Air in IDEs의 실행 화면과 세션 diff, ACP registry, 구독 인증 경로, 내장 MCP 서버의 도구 노출과 Brave mode, 로그포인트와 에이전트 디버깅, 스킬 설치 위치, ThinkRail의 pi 호스트와 worktree, SPEC.md 그래프와 승인

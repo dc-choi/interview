@@ -198,5 +198,6 @@ const routeAfterVerify = (state: ResearchState): NextNode => {
 - [[LLM-Hallucination-Verification|LLM 환각 유형과 검증 (규칙은 코드가 판정, 인용의 존재와 적용과 지지)]]
 - [[Eval-Rubric-and-Score-Gate|루브릭과 점수 게이트 (검증 노드의 채점 기준과 완료 선언 차단)]]
 - [[AI-Native-Org|AI 네이티브 조직 (상태 전이마다 사람 개입점을 고정한 사례)]]
+- [[Autonomous-Graph-Driven-Development|자율 그래프 주도 개발 (예약 실행 노드가 스펙 원장의 상태 전이로 개발을 진행하고 사람을 질문 이슈로 부르는 사례)]]
 - [[Agent-From-Scratch|에이전트 직접 만들기 (계획 검증과 단계 사이 데이터 흐름)]]
 - [[GraphRAG-Retrieval|GraphRAG 검색 (같은 그래프라는 이름을 쓰는 지식 쪽 구조)]]

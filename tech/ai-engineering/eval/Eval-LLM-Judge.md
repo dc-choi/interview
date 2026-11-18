@@ -76,6 +76,8 @@ aliases: ["LLM-as-a-Judge", "LLM-as-Judge", "LLM Judge", "LLM 판정기"]
 
 수치는 당시 모델의 값이므로 현재 판정기에 옮기지 않고, 같은 점검을 자기 판정기에 다시 돌려 본다. few-shot 예시는 GPT-4의 순서 교체 일관성을 65.0%에서 77.5%로 올렸지만, 일관성이 정확성을 뜻하지는 않고 예시가 새 편향을 들일 수 있으며 프롬프트가 길어져 호출 비용이 4배가 됐다.
 
+장황함 편향은 평가받는 모델에 답의 길이만 바꾸라고 지시해도 점수를 움직인다. AlpacaEval은 지시 805개마다 평가 모델과 기준 모델(GPT-4 Turbo)의 답을 GPT-4 Turbo 판정기로 비교하고, 판정기가 평가 모델을 고를 확률의 기댓값을 승률로 낸다. 기준 모델 자신(gpt4_1106_preview)에게 가능한 한 자세히, 또는 필요한 정보는 담되 최대한 간결하게 답하라고 지시하는 것만으로 승률이 22.9%에서 64.3% 사이로 움직였다. Length-Controlled AlpacaEval은 판정기의 선호를 모델, 지시 난도와 두 답의 길이 차이를 항으로 갖는 일반화 선형 모형으로 맞춘 뒤, 길이 차이 항을 0으로 두고 승률을 다시 계산한다. 두 답의 길이가 같았다면 어떤 선호가 나왔을지를 묻는 보정이다. 같은 지시 변화에서 승률 폭은 41.9%에서 51.6%로 줄었고, Chatbot Arena와의 Spearman 상관은 0.94에서 0.98로 올랐다(2024 논문 기준). 회귀 보정은 길이라는 알려진 교란 하나만 통제하므로 다른 편향은 남는다. 사후학습이 출력을 길게 만드는 경향은 [[LLM-Post-Training#선호 데이터의 함정|선호 데이터의 함정]]에서 다룬다.
+
 ## 동시 비교와 교차검토를 서로 다른 단계로 기록한다
 
 여러 모델에 같은 질문을 보내는 단계와 한 모델의 답을 다른 모델에 넘겨 수정하는 단계는 구분한다. 앞 단계는 최초 답의 차이를 보여 주고, 뒤 단계는 다른 답을 입력으로 받은 수정 결과를 보여 준다. 수정 뒤 답이 같아졌다는 사실을 최초 답의 독립적인 일치로 집계하지 않는다.
@@ -142,6 +144,8 @@ aliases: ["LLM-as-a-Judge", "LLM-as-Judge", "LLM Judge", "LLM 판정기"]
 - [Judging LLM-as-a-Judge with MT-Bench and Chatbot Arena — arXiv, Lianmin Zheng 외](https://arxiv.org/abs/2306.05685)
 - [G-Eval: NLG Evaluation using GPT-4 with Better Human Alignment — arXiv, Yang Liu 외](https://arxiv.org/abs/2303.16634)
 - [LLM Evaluators Recognize and Favor Their Own Generations — arXiv, Arjun Panickssery 외](https://arxiv.org/abs/2404.13076)
+- [Length-Controlled AlpacaEval: A Simple Way to Debias Automatic Evaluators — arXiv, Yann Dubois 외](https://arxiv.org/abs/2404.04475) — 2026-11-18 대조. 2절 AlpacaEval 구성, 3절 일반화 선형 모형 보정, 4.1~4.2절 장황함 조작과 Chatbot Arena 상관. 기존 문서 전체를 재검증하지 않아 `verified_at`은 유지한다
+- [YouTube, Stanford CS229, Building Large Language Models (LLMs)](https://www.youtube.com/watch?v=9vM4p9NN0Ts) — 2024-08-27 업로드. 장황함 조작 단락의 계기이며 수치는 위 논문으로 대조했다
 - [Ragas: Automated Evaluation of Retrieval Augmented Generation — arXiv, Shahul Es 외](https://arxiv.org/abs/2309.15217)
 - [Bleu: a Method for Automatic Evaluation of Machine Translation — ACL Anthology, Kishore Papineni 외](https://aclanthology.org/P02-1040/)
 - [ROUGE: A Package for Automatic Evaluation of Summaries — ACL Anthology, Chin-Yew Lin](https://aclanthology.org/W04-1013/)

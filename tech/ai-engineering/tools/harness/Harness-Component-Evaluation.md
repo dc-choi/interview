@@ -49,6 +49,20 @@ aliases: ["Harness Component Evaluation", "하네스 구성요소 평가", "코�
 
 토큰 종류와 수집 누락의 의미는 [[AI-Coding-Agent-Usage-Telemetry|사용량 텔레메트리]]와 함께 확인한다.
 
+### 모델을 바꾸면 하네스 순위도 다시 잰다
+
+하네스와 모델의 조합 전체를 같은 과제로 돌리면 하네스의 효과가 모델마다 같은지 볼 수 있다. Runta가 2026-11-17 공개한 FrontierHarness Eval v1.1은 18개 하네스에서 나온 22개 구성(DeepSeek Harness 프로필 4개와 OpenCode 두 버전을 따로 셈)과 Baseten이 서빙한 공개 모델 5개(GLM-5.3, GLM-5.3 Flash, DeepSeek V4.1 Flash 1017, Muse Spark Open, Kimi-K3)를 터미널 과제 62개에 4번씩, 모두 27,280번 돌렸다. Harbor 평가 프레임워크에서 하네스 기본 설정과 최대 추론 강도를 쓰고 시도마다 새 런타임을 만들었다가 지웠으며, 보상 해킹으로 판정한 216건(온라인 조회 163건 포함)은 0점으로 셌다. 2026-11-18 공개 글로 대조했고 재현하지 않았다.
+
+- **통과당 비용과 선택 규칙**: 과제당 평균 비용을 통과율로 나눈 통과당 비용이 가장 낮은 하네스를 고르되, 통과당 비용이 30% 이내로 더 들면서 통과율이 5점 이상 높은 후보가 있으면 그쪽을 고른다. 비용은 Baseten 정가에 토큰 수를 곱한 추정치다.
+- **비용의 대부분은 모델이 정한다**: 과제당 비용(로그)의 분산 분석에서 모델이 92.8%, 하네스가 2.3%, 조합(상호작용과 잡음)이 4.9%를 설명했다. 그래도 모델을 고정하면 하네스에 따라 과제당 비용이 1.8~5.0배, 통과당 비용이 1.9~4.9배 달랐다.
+- **가장 싼 하네스가 모델마다 다르다**: Codex CLI는 GLM-5.3에서 통과당 비용 1위($0.803)였지만 Kimi-K3에서는 16위였다. 데이터를 반으로 나눠 다시 매긴 순위의 상관은 같은 모델끼리 0.71, 다른 모델끼리 0.26이었다. 과제를 4,000번 다시 뽑았을 때 GLM-5.3과 Codex CLI 조합은 99.6% 1위를 지켰지만, 나머지 네 모델의 1위는 근접한 후보들 가운데 가장 자주 이긴 하네스였다(25~53%).
+- **비싼 하네스가 더 통과하지 않는다**: 모델별 과제당 비용과 통과율의 순위 상관은 −0.39에서 +0.22였고, 통과율 1위 하네스의 비용 순위는 22개 중 5위에서 20위였다.
+- **단계 수가 비용을 설명한다**: 첫 요청 크기, 도구 수와 캐시 적중률은 통과당 비용을 예측하지 못했고 실행 단계 수만 순위 상관 +0.51(p = 0.015)이었다. 단계마다 전체 문맥을 다시 보내 시도당 평균 입력이 200만~480만 토큰이었다. 첫 요청이 가장 작은 mini-SWE-agent(882토큰)도 통과 한 번에 38단계가 들어 통과당 비용 17위였다.
+- **실패에 쓴 비용**: 채점된 실행 비용의 64.5%가 통과하지 못한 시도에 들었다(실패 52.7%, 시간 초과 11.8%). 모델별 최적으로 고른 다섯 하네스에서도 실패한 시도의 68%(Pi)~82%(Codex CLI)는 시간 제한에 걸린 것이 아니라 최종 답을 내고 끝났으므로, 완료 선언을 검증 없이 성공으로 세지 않는다.
+- **한계**: 공개 모델만 한 사업자에서 서빙했으므로 비공개 모델이나 다른 사업자의 캐시 동작과 단가에서는 순위가 달라질 수 있다. 통과율의 95% 구간이 약 ±10점이라 몇 점 차이는 동률로 본다.
+
+적용하면, 모델을 바꿀 때 하네스 후보도 자기 과제로 다시 비교하고, 하네스를 고칠 때는 첫 요청의 토큰보다 통과까지 걸리는 단계 수를 먼저 줄인다. 통과당 비용은 실패 시도까지 넣은 위의 `전체 시도 비용 / 합격한 작업 수`와 같은 계산이다.
+
 ### 토큰 절감 도구는 계측 대상과 개입을 나눠 비교한다
 
 입력 압축률, 생성 출력의 감소와 실제 청구액 절감은 같은 지표가 아니다. 2026-10-20 Headroom의 공개 README와 공식 문서에서 확인한 구분은 다음과 같다. 설치하거나 벤치마크를 재현한 결과는 아니다.
@@ -132,6 +146,8 @@ Pi 공식 사이트(2026-11-09 확인)는 Pi를 MIT 라이선스의 최소 에�
 - [TokenEconomizer README — GitHub, microsoft](https://github.com/microsoft/TokenEconomizer) — 2026-11-17 세 개입의 기본값, 저장 범위와 중단 안내 확인. 설치하지 않음
 - [TokenEconomizer: Experience-Driven Black-Box Cost Control for Coding Agents — arXiv](https://arxiv.org/abs/2610.22732) — 2026-10-15 제출, 2026-11-17 SWE-bench 실험 구성, 비용과 Pass@1 결과, 한계 대조
 - [agent-cost-bench — AWS Samples](https://github.com/aws-samples/sample-agent-cost-bench)
+- [Introducing FrontierHarness Eval v1.1 — RUNTA, Shilin Zhu](https://runta.com/blog/introducing-frontierharness-eval-v1-1/) — 2026-11-17, 2026-11-18 실험 구성, 통과당 비용 정의와 선택 규칙, 분산 분석, 모델별 순위, 단계 수와 비용, 한계 대조. 재현하지 않음
+- 사용자 제공 GeekNews 알림 요약(2026-11-18): 모델별로 가장 좋은 하네스는 무엇일까. 게시물 URL은 확인하지 못했다
 - [An Empirical Study of Harness Design for Coding Agents — arXiv](https://arxiv.org/abs/2609.20804)
 - [코딩 에이전트 하네스 설계에 관한 실증 연구 — GeekNews](https://news.hada.io/topic?id=33905)
 - [Write bot-resistant code with KillSwitch, a programming language designed to confuse LLMs — The Register, Brandon Vigliarolo](https://www.theregister.com/a/5303919) — 2026-10-19, 설계, 벤치마크 결과와 제작자의 한계 언급을 2026-10-27 대조

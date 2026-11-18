@@ -194,3 +194,4 @@ Thoughtworks Technology Radar Vol.35(2026-11)도 세션을 병렬로 돌리거�
 - [[Agent-Always-On-Mac-Host|상시 실행 Mac 에이전트 호스트]]
 - [[Harness-Adoption-Ladder|하네스 도입 계단]] — 계획 의존성, 게이트와 공통 규칙 변경
 - [[Developer-Role-AI-Era#구현이 싸질 때 옮겨 가는 병목 — 결정과 승인 대역폭|결정과 승인 대역폭]] — 사람의 감독 용량 병목
+- [[Autonomous-Graph-Driven-Development|자율 그래프 주도 개발]] — 사람의 판단을 질문 이슈로 모으고 동시 작업 한도를 검토 속도에 맞춘 무인 개발 그래프

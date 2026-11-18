@@ -21,6 +21,8 @@ CoALA는 기억을 현재 의사결정에 쓰는 작업 기억과 장기 기억�
 
 CoALA의 작업 기억은 LLM 호출 사이에도 유지되는 상태 구조다. 매 호출에서는 그 일부로 입력을 만들므로 컨텍스트 윈도우와 같은 개념이 아니다. 절차 기억에는 에이전트 코드뿐 아니라 모델 가중치에 내재한 지식도 포함된다. 자연어로 적은 작업 절차는 실무상 보조 수단이지만, 실행을 강제하는 코드와 동일하지 않다.
 
+절차 기억을 실행 가능한 코드로 쌓은 예가 Voyager(2023)의 스킬 라이브러리다. Minecraft 에이전트가 과제를 푸는 프로그램을 환경 피드백, 실행 오류와 자기 검증으로 고치고, 자기 검증이 과제 완료를 확인한 뒤에야 라이브러리에 넣는다. 각 프로그램은 설명문의 임베딩으로 색인돼 비슷한 상황에서 검색되고, 복잡한 스킬은 단순한 프로그램을 조합해 만든다. 저장할 때 완료를 확인하고 쓸 때 검색하는 구조다. 2026-11-18 논문 2절과 대조했다.
+
 반면 아래의 `retain`, `recall`, `reflect`는 기억에 수행하는 연산이다. 특정 사건을 저장하고 검색한 뒤 일반적인 설명을 생성할 수 있지만, 그 설명이 검증된 사실로 자동 승격되는 것은 아니다. CoALA의 역할 분류와 Hindsight의 기억망 분류도 일대일 대응으로 간주하지 않는다.
 
 ## 컨텍스트와 영속 기억의 경계
@@ -161,6 +163,8 @@ Hindsight의 ACL 2026 공개 논문은 world, experience, observation, opinion�
 - [AWS, Amazon Quick: Memories](https://docs.aws.amazon.com/quick/latest/userguide/memories-desktop.html)
 - [AWS, Amazon Quick: Security, privacy, and architecture](https://docs.aws.amazon.com/quick/latest/userguide/desktop-security.html)
 - [Cognitive Architectures for Language Agents — CoALA 연구진](https://arxiv.org/html/2309.02427v3)
+- [Voyager: An Open-Ended Embodied Agent with Large Language Models — Guanzhi Wang et al.](https://arxiv.org/abs/2305.16291) — v2. 2026-11-18 2절 스킬 라이브러리의 색인, 조합과 등록 조건 대조
+- [YouTube, Stanford CS329Z Engineering AI Agents, Lecture 1 What Are AI Agents? Agentic Systems Explained](https://www.youtube.com/watch?v=DGI4vucR71w) — 2026-09-23 녹화. 일화, 의미, 절차 기억과 Voyager 사례를 다룬 정리 계기
 - [Hindsight: Structured Agent Memory that Retains, Recalls, and Reflects — ACL Anthology](https://aclanthology.org/2026.acl-demo.27/)
 - [recall vs reflect: Search Your Agent's Memory, or Ask It — Hindsight](https://hindsight.vectorize.io/blog/2026/07/24/recall-vs-reflect)
 

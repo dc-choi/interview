@@ -3,7 +3,7 @@ tags: [ai, agent, browser, automation, permissions, privacy, computer-use, remot
 status: done
 verified_at: 2026-10-28
 category: "AI엔지니어링(AIEngineering)"
-aliases: ["Browser Agent Task Boundaries", "브라우저 에이전트의 작업과 권한 경계", "컴퓨터 조작 에이전트의 권한 경계", "Rakazo", "Petal"]
+aliases: ["Browser Agent Task Boundaries", "브라우저 에이전트의 작업과 권한 경계", "컴퓨터 조작 에이전트의 권한 경계", "Rakazo", "Petal", "OpenCode Browse"]
 ---
 
 # 브라우저 에이전트의 작업과 권한 경계
@@ -31,6 +31,18 @@ ego(lite)는 Chromium 기반이며 엔진 안에서 semantic snapshot을 구성�
 여러 봇이 컴퓨터를 함께 쓰는 자체 호스팅 비서에서도 같은 구분이 필요하다. 2026-10-27 공식 저장소 문서(main e37a428f06, Apache-2.0, 베타) 기준 Rakazo는 역할별 봇이 대화, 기억, 일정 작업과 기록을 유지하며 브라우저, 터미널, 파일과 데스크톱을 조작하게 한다. 기본 Team Computer에서는 활성 봇마다 별도 X 디스플레이와 Chrome 프로세스, 봇 신원에 묶인 영구 Chrome 프로필을 두어 로그인, 쿠키와 방문 기록을 논리적으로 나눈다. 그러나 문서가 정한 보안 경계는 컴퓨터 컨테이너다. Team 봇들은 같은 OS 사용자, 작업 공간, 셸과 X11 접근을 쓰므로 다른 봇의 프로필 파일에도 접근할 수 있다. 봇별 폴더는 작업 정리용이라 모든 Team 봇이 전체 작업 공간에 접근할 수 있다. 화면 lease는 도구 호출의 순서를 조율할 뿐 서로 믿을 수 없는 프로세스를 격리하지 않으므로, 격리가 필요한 업무에는 봇 전용 Private Computer를 쓴다. 봇별 프로필 분리를 봇 사이의 권한 경계로 해석하지 않는다.
 
 OpenMausBot도 봇마다 쓸 컴퓨터를 따로 고르게 한다. 선택지는 유료 제3자 클라우드 데스크톱, 로컬 VM, macOS와 Ubuntu Xorg의 호스트 직접 제어(명시적 선택, Wayland에서는 꺼짐)다. 셸 명령과 파일 수정은 허용과 거부 카드로 승인받는다. harness는 로컬 루프백 주소에서 돌고 API 키를 0600 권한의 평문 설정 파일에 둔다. 호스트 직접 제어는 작업 공간 분리가 아니라 사용자 계정 그대로의 권한이므로 격리된 VM과 구분해 쓴다(2026-11-09 README 확인).
+
+### 쓰던 브라우저를 빌려줄 때 가드레일과 데이터 경계를 나눈다
+
+OpenCode Browse(anomalyco/browse, MIT)는 MCP 서버와 Chromium 확장으로 에이전트가 사용자의 실제 브라우저, 로그인 상태와 확장 프로그램을 쓰게 한다. OpenCode, Claude Code, Codex, Cursor 같은 MCP 클라이언트에 붙는다. 2026-11-18 README 기준 구조와 경계는 다음과 같다. 설치해 시험하지는 않았다.
+
+- **연결 구조**: 에이전트가 띄운 stdio MCP 프록시가 `127.0.0.1`의 릴레이로 호출을 넘기고, 확장은 WebSocket으로 릴레이에 붙어 `chrome.debugger`로 명령을 실행한다. 릴레이 요청에는 사용자만 읽을 수 있는 토큰 파일이 필요하고, 브라우저는 10분 동안 한 번만 쓰는 코드로 페어링해 ECDH 키 합의로 자기 키를 받는다. 릴레이는 시작할 때와 매시간 새 릴리스를 확인해 기본값으로 스스로 설치하므로(알림만 받거나 설치하지 않게 바꿀 수 있다), 로그인된 브라우저를 조작하는 구성 요소의 갱신 경로도 신뢰 대상에 넣는다.
+- **탭 소유와 인계**: 에이전트는 자기가 연 탭(접힌 백그라운드 그룹)과 사용자가 툴바 버튼으로 빌려준 탭만 쓴다. 로그인, 2단계 인증과 결제는 탭을 사용자에게 넘기고, 사용자가 카드나 툴바 버튼으로 Continue를 실제로 눌러야 이어 가므로 페이지가 인계 완료를 흉내 낼 수 없다. Cloudflare나 captcha 같은 봇 확인은 풀지 않고 사용자에게 넘긴다.
+- **가드레일은 데이터 경계가 아니다**: `allowedOrigins`는 이동과 에이전트가 여는 탭을 제한할 뿐 페이지가 스스로 보내는 요청은 거르지 않는다. `readOnly`는 클릭과 입력을 막지만 `eval`은 페이지가 읽을 수 있는 모든 것을 읽고 페이지 자격으로 요청을 보낼 수 있다. README도 에이전트가 읽지 않기를 바라는 페이지는 이 브라우저에서 열지 말라고 적고, `execute` 스크립트의 QuickJS 샌드박스를 경계가 아니라 사용자 권한으로 도는 코드로 다루라고 한다. 쿠키 삭제, 브라우저 종료와 사이트 권한 변경 같은 CDP 명령은 거부한다.
+- **가림의 범위**: `fill`은 비밀번호와 일회용 코드 칸의 값만 가리고, 네트워크 캡처는 이름과 형태로 자격 증명을 가리므로 평범한 이름에 든 비밀 값은 남을 수 있다. 페이지 글, 콘솔과 스크린샷은 그대로 돌려준다. README는 에이전트가 모델 제공자에게 보내는 것 말고는 컴퓨터 밖으로 나가는 것이 없다고 적는데, 이 문서의 아래 절처럼 그 전송이 곧 페이지 내용의 외부 전송이다.
+- **사람처럼 보이는 입력**: 페이지가 감지할 수 있는 CDP 기능을 켜지 않고 곡선 마우스 경로와 속도를 조절한 입력을 써서 에이전트를 알아보기 어렵게 한다. 불가능하게 만들지는 않으며 디버깅 알림 막대는 보인다. 탐지를 피하기 쉽다는 것이 사이트의 자동화 허용 여부를 바꾸지는 않는다(적용 제안).
+
+적용 제안: 실제 프로필을 빌려줄 때는 맡길 탭과 계정을 좁히고, 열린 탭의 내용이 모델로 전송된다는 전제로 작업을 고른다. 출처 제한과 읽기 전용 같은 설정은 에이전트가 엉뚱한 곳으로 가지 않게 하는 장치로 쓰고, 민감한 페이지를 지키는 수단으로 쓰지 않는다.
 
 ### 제어권 인계와 게시 승인을 나눈다
 
@@ -73,6 +85,12 @@ HITL은 SDK가 제공하는 기능이며 문서는 관리형 AWS 서비스가 �
 
 운영 점검 제안: 필요한 계정과 파일 범위를 좁힌 뒤 조회, 변경, 전송의 허용 조건을 각각 확인한다. 테스트용 계정에서 승인 요청과 거부 경로를 확인하기 전에는 모드 이름만으로 외부 효과의 통제를 입증하지 않는다.
 
+## 화면의 팝업이 작업을 가로챈다
+
+화면을 보고 조작하는 에이전트는 화면에 보이는 요소를 과제와 관련된 안내로 받아들일 수 있다. Zhang 외(ACL 2025)는 사람이라면 알아보고 무시할 적대적 팝업을 OSWorld와 VisualWebArena 시험 환경에 넣었다. 비전 언어 모델 에이전트는 평균 86%의 비율로 팝업을 눌렀고 과제 성공률은 47% 떨어졌다. 에이전트에게 팝업을 무시하라고 지시하거나 팝업에 광고 표시를 붙이는 기본 방어는 효과가 없었다. 2026-11-18 논문 초록과 대조했다.
+
+적용 제안: 지시문만으로 방해 요소를 막는다고 가정하지 않는다. 결제, 게시, 설치처럼 상태를 바꾸는 조작은 위의 도구 권한과 승인 단계로 막고, 시험 세트에 팝업과 배너 같은 방해 요소를 넣은 경우를 따로 둔다. 사람에게 보이지 않게 숨긴 AI용 지시는 [[Web-Content-Manipulation-for-AI|AI가 읽는 웹 콘텐츠의 조작]]에서 다룬다.
+
 ## 정기 실행과 기억의 수명을 구분한다
 
 Aside의 cron routine은 일정마다 새 작업을 만들고, heartbeat routine은 기존 대화를 깨워 이어 간다. 겹친 routine 실행은 건너뛰고 대상 대화를 사용할 수 없으면 routine을 일시 중지한다. 반복 업무 제안은 초안이며 검토 후 활성화하는 단계가 있다.
@@ -95,6 +113,9 @@ ego(lite)도 비밀번호, 쿠키, 북마크와 방문 기록의 로컬 보관�
 - [AWS, Human-in-the-loop (HITL)](https://docs.aws.amazon.com/nova-act/latest/userguide/hitl.html) — 2026-11-15 승인과 UI 인계 패턴, SDK 기능과 배포 선택지 대조
 - [Introducing Amazon Nova Act - Generally Available in AWS — Amazon Web Services](https://www.youtube.com/watch?v=xVtjlBuWXOY) — 공식 발표 영상을 검토 계기로 사용. 학습 방식과 신뢰성 주장은 옮기지 않았다.
 - [milind-soni/OpenMausBot — GitHub](https://github.com/milind-soni/OpenMausBot) — 2026-11-09 README 확인
+- [browse — GitHub, anomalyco](https://github.com/anomalyco/browse) — 2026-11-18 README의 연결 구조, 탭 소유와 인계, 보안 절의 가드레일, 가림 범위와 입력 방식 대조. 설치하지 않음
+- [OpenCode Browse — OpenCode](https://opencode.ai/product/browse) — 2026-11-18 제품 설명과 지원 브라우저 확인
+- 사용자 제공 GeekNews 알림(2026-11-18): OpenCode Browse. 학습 계기이며 게시물 번호는 확인하지 못했다
 - [Aside Help Center, Run tasks](https://docs.aside.com/help/tasks)
 - [Aside Help Center, Set agent permissions](https://docs.aside.com/help/security)
 - [Aside Help Center, Configure password autofill](https://docs.aside.com/help/passwords)
@@ -106,6 +127,8 @@ ego(lite)도 비밀번호, 쿠키, 북마크와 방문 기록의 로컬 보관�
 - [Rakazo - 내 PC에서 운영하는 Grok Bot 오픈소스 대체제 — GeekNews](https://news.hada.io/topic?id=35894) — 학습 계기
 - [Petal — GitHub, kiruna-labs](https://github.com/kiruna-labs/petal) — README, `docs/remote-control-trust-model.md`와 `site/src/content/docs/using/ai-chat.md`, 2026-10-27 main 0fb9c45074 기준. 조작 동의, 신뢰 모델, 결과 표현과 AI 조작 승인 대조
 - [Petal - 동료가 공유한 창을 내 데스크톱 창처럼 쓰는 원격 협업 앱 — GeekNews](https://news.hada.io/topic?id=36003) — 학습 계기
+- [Attacking Vision-Language Computer Agents via Pop-ups — ACL 2025, Yanzhe Zhang 외](https://arxiv.org/abs/2411.02391) — v2. 2026-11-18 공격 성공률, 과제 성공률 하락과 기본 방어의 효과 없음 대조
+- [YouTube, Stanford CS329Z Engineering AI Agents, Lecture 1 What Are AI Agents? Agentic Systems Explained](https://www.youtube.com/watch?v=DGI4vucR71w) — 2026-09-23 녹화. 화면 방해 요소에 대한 에이전트의 견고성을 다룬 정리 계기
 
 ## 관련 문서
 
@@ -115,3 +138,4 @@ ego(lite)도 비밀번호, 쿠키, 북마크와 방문 기록의 로컬 보관�
 - [[Agent-Memory-Retain-Recall-Reflect|에이전트 기억의 저장, 검색과 추론]]
 - [[ChatGPT-Dots|ChatGPT dots]] — 호스팅형 상시 실행 에이전트의 컴퓨터 선택과 위임 계약
 - [[Agent-Swarm-Containment|에이전트 군집 격리]] — 공유 자원과 권한 경계
+- [[Web-Content-Manipulation-for-AI|AI가 읽는 웹 콘텐츠의 조작]] — 화면에 보이지 않는 AI용 지시

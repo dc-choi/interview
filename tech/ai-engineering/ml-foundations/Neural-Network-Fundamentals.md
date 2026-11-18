@@ -1,0 +1,132 @@
+---
+tags: [ai, deep-learning, neural-network, gradient-descent, backpropagation, dropout, rnn, keras, learning]
+status: done
+verified_at: 2026-11-18
+category: "AI엔지니어링(AIEngineering)"
+aliases: ["신경망 기초", "Neural Network Fundamentals", "인공 신경망", "Artificial Neural Network", "활성 함수", "Activation Function", "경사 하강법", "Gradient Descent", "역전파", "Backpropagation", "드롭아웃", "Dropout", "순환 신경망", "Recurrent Neural Network"]
+---
+
+# 신경망 기초: 유닛, 경사 하강법과 역전파
+
+인공 신경망(artificial neural network)은 입력을 출력으로 대응시키는 수학 함수다. 생물의 뉴런이 서로 신호를 주고받고 일정 수준을 넘으면 활성화된다는 관찰에서 착안했지만, 실제로는 가중치를 곱해 더하는 유닛을 층으로 연결한 계산이며 그 가중치를 데이터로 학습한다. 신경망 학습이 데이터, 손실, 평가 절차 안에서 차지하는 위치는 [[Deep-Learning-Foundations-and-Practice|딥러닝 기초와 실습]]에 있다.
+
+## 유닛과 활성 함수
+
+유닛 하나는 입력 `x1 ... xn`에 가중치 `w1 ... wn`을 곱해 더하고 bias `w0`를 더한 뒤 활성 함수 `g`를 적용한다.
+
+`출력 = g(w0 + w1 × x1 + ... + wn × xn)`
+
+입력 둘에 출력 하나인 이 구조가 가장 단순한 신경망이며, [[Supervised-Learning-Models#선형 분류기와 perceptron 학습 규칙|선형 분류기]]를 그래프로 그린 것과 같다. 학습은 가중치와 bias를 정하는 일이다.
+
+| 활성 함수 | 정의 | 쓰임 |
+|---|---|---|
+| 계단(step) | 가중합이 임계값 0 이상이면 1, 아니면 0 | 이진 판단. 중간값이 없다 |
+| sigmoid(logistic) | `1 / (1 + exp(−z))`, 항상 0과 1 사이 | 이진 분류 출력의 확신 정도 |
+| tanh | `(exp(z) − exp(−z)) / (exp(z) + exp(−z))`, 항상 −1과 1 사이 | 0을 중심으로 대칭인 출력이 필요할 때. `2 × sigmoid(2z) − 1`과 같다 |
+| ReLU | `max(z, 0)`. 음수는 0, 양수는 그대로 | 은닉층에서 널리 쓴다 |
+| GELU | `z × Φ(z)`. Φ는 표준정규분포의 누적분포함수 | 양수는 거의 그대로 두고 음수는 0에 가까운 작은 값으로 줄이며, ReLU와 달리 0에서 꺾이지 않고 매끄럽다 |
+| softmax | `exp(z_i) / sum(exp(z))`. 각 값이 0과 1 사이이고 합이 1 | 다중 분류 출력의 확률 분포 |
+
+Keras 문서 기준으로 sigmoid는 둘째 원소를 0으로 둔 2원소 softmax와 같다.
+
+### 가중치로 OR와 AND 만들기
+
+계단 함수(0 이상이면 1)를 쓰는 유닛에서 두 입력의 가중치를 모두 1로 두면 bias가 함수를 정한다.
+
+| 입력 (x1, x2) | bias −1의 가중합과 출력(OR) | bias −2의 가중합과 출력(AND) |
+|---|---|---|
+| (0, 0) | −1 → 0 | −2 → 0 |
+| (1, 0) 또는 (0, 1) | 0 → 1 | −1 → 0 |
+| (1, 1) | 1 → 1 | 0 → 1 |
+
+이처럼 단순한 함수는 사람이 가중치를 정할 수 있지만, 습도와 기압으로 비를 예측하는 함수의 가중치는 데이터에서 찾아야 한다.
+
+## 경사 하강법과 배치 크기
+
+손실 함수의 기울기(gradient)는 현재 가중치에서 손실이 가장 빠르게 커지는 방향이다. 경사 하강법은 무작위 가중치에서 시작해 기울기를 계산하고, 그 반대 방향, 곧 손실이 줄어드는 방향으로 가중치를 조금 옮기는 일을 반복한다. 한 번에 옮기는 크기는 학습률이 정한다. 손실 함수의 종류는 [[Supervised-Learning-Models#손실 함수|손실 함수]]에 있다.
+
+| 방식 | 한 번의 갱신에 쓰는 데이터 | 절충 |
+|---|---|---|
+| 배치 경사 하강법 | 모든 학습 표본 | 기울기가 정확하지만 표본이 많으면 갱신 한 번이 비싸다 |
+| 확률적 경사 하강법(SGD) | 무작위로 고른 표본 하나 | 갱신이 싸고 빠르지만 기울기 추정이 부정확하다 |
+| 미니배치 경사 하강법 | 표본 몇 개의 작은 묶음 | 계산 비용과 기울기 정확도 사이의 절충이다 |
+
+학습 데이터를 한 번 모두 훑는 단위를 epoch라 한다. epoch 수, 배치 크기와 학습률은 사람이 정하는 하이퍼파라미터다. 선형 회귀의 기울기를 손으로 구해 한 스텝 갱신하는 예와 학습률이 너무 클 때의 결과는 [[PyTorch-Training-Loop#손으로 계산하는 한 스텝|PyTorch 학습 루프]]에 있다.
+
+## 여러 출력과 다중 분류
+
+출력 유닛을 늘리면 비, 맑음, 흐림, 눈처럼 여러 범주를 다룬다. 입력이 출력에 바로 연결된 구조에서는 출력 유닛끼리 연결되지 않으므로, 출력마다 자기 가중치를 가진 단일 유닛 여럿을 함께 학습하는 것과 같다. 마지막에 softmax로 출력을 합이 1인 확률 분포로 바꾸고 가장 큰 값의 범주를 고른다.
+
+같은 구조는 강화학습에도 쓴다. 입력에 상태의 특징을 넣고 출력 유닛마다 한 행동의 가치를 내게 하면 출력이 가장 큰 행동을 고를 수 있다([[Reinforcement-Learning-from-Experience#MDP와 Q-learning|MDP와 Q-learning]]).
+
+## 단층의 한계와 은닉층
+
+출력 유닛 하나로 이진 분류하는 perceptron은 입력의 선형 결합으로 경계를 정하므로 직선(초평면) 경계만 배운다. 대각선으로 마주 보는 사분면에 같은 클래스가 놓인 데이터나, 한 클래스가 원 안쪽에 몰린 데이터는 직선 하나로 나눌 수 없다.
+
+다층 신경망은 입력층과 출력층 사이에 은닉층(hidden layer)을 하나 이상 둔다. 은닉 유닛은 입력의 선형 결합에 활성 함수를 적용해 자기 값(activation)을 내고, 다음 층은 그 값들을 다시 결합한다. 은닉 유닛마다 서로 다른 경계를 배우고 출력이 그 경계들을 조합하므로 비선형 경계를 표현한다. 원 모양 데이터는 은닉 유닛이 2개일 때 두 직선 사이의 띠로, 3개 이상이면 직선 여러 개로 둘러싼 영역으로 점점 가깝게 근사된다.
+
+- 은닉층이 둘 이상이면 심층 신경망(deep neural network)이라 한다. 층마다 앞 층의 결과를 바탕으로 더 높은 수준의 특징을 계산한다.
+- 은닉층이 있어도 활성 함수가 모두 선형이면 층을 합성한 결과가 다시 하나의 선형 변환이라 경계도 선형이다. 층을 쌓는 효과는 비선형 활성 함수에서 나온다.
+- 유닛과 층을 늘리면 더 복잡한 함수를 표현하지만 학습할 가중치가 늘어 계산이 비싸지고 과적합 위험도 커진다. 층 수와 층당 유닛 수는 검증 데이터로 고르는 하이퍼파라미터다([[Supervised-Learning-Validation-and-Metrics|지도학습 검증과 평가 지표]]).
+
+## 역전파
+
+학습 데이터에는 입력과 출력의 정답만 있고, 은닉 유닛이 내야 할 값은 없다. 그래서 은닉층의 오차는 직접 계산할 수 없다. 역전파(backpropagation)는 출력층의 오차에서 출발해, 각 가중치가 그 오차에 얼마나 기여했는지에 따라 오차를 한 층씩 뒤로 나눠 보내 은닉 유닛의 오차를 추정한다.
+
+1. 무작위 가중치에서 시작한다.
+2. 출력층의 오차를 계산한다.
+3. 출력층부터 가장 앞의 은닉층까지 차례로, 오차를 한 층 뒤로 전파하고 그 층의 가중치를 갱신한다.
+4. 손실이 충분히 줄 때까지 2와 3을 반복한다.
+
+이 계산은 미분의 연쇄 법칙(chain rule)으로 모든 가중치의 기울기를 구하는 방법이며, 경사 하강법과 함께 은닉층이 있는 신경망을 학습할 수 있게 한 핵심 알고리즘이다. TensorFlow 같은 라이브러리는 층 구조와 데이터만 정하면 역전파를 대신 실행한다. PyTorch autograd가 연산을 그래프로 기록하고 `backward()`로 기울기를 채우는 방식은 [[PyTorch-Training-Loop#autograd|PyTorch 학습 루프]]에 있다. LLM 사전학습에서 순전파, 손실, 역전파와 옵티마이저가 이어지는 흐름과 역전파 없이 기울기를 추정하는 방법은 [[LLM-Generation-Mechanics-Training#LLM은 어떻게 학습하는가|LLM 학습 원리]]에 있다.
+
+## dropout
+
+유닛이 많은 신경망은 일부 유닛에 지나치게 의존하는 방식으로 학습 데이터에 과적합할 수 있다. dropout은 학습 중 무작위로 고른 유닛을 일시적으로 없는 것처럼 빼고 가중치를 갱신하며, 다음 갱신에서는 다른 유닛을 뺀다. 어느 유닛이 빠져도 동작하도록 학습되므로 특정 유닛 의존이 줄어든다.
+
+Keras `Dropout` 층 기준의 동작은 다음과 같다.
+
+- `rate`는 버릴 입력 유닛의 비율(0과 1 사이)이다. 남은 입력은 `1 / (1 − rate)`배로 키워 입력 합이 달라지지 않게 맞춘다(무작위로 버리므로 기대값 기준이다).
+- 학습 모드(`training=True`)에서만 적용되고 추론에서는 아무것도 버리지 않는다. `model.fit`은 학습 모드를 자동으로 켜고, 그 밖의 경우 층을 호출할 때 `training`을 명시할 수 있다.
+
+## 순차 데이터와 순환 신경망
+
+지금까지의 구조는 앞먹임 신경망(feed-forward neural network)이다. 연결이 입력에서 출력으로 한 방향으로만 이어지고, 입력과 출력의 크기가 구조로 고정되며, 한 번의 실행이 다음 실행에 정보를 남기지 않는다. 길이가 제각각인 문장, 영상, 음성은 이 틀에 바로 맞지 않는다.
+
+순환 신경망(recurrent neural network, RNN)은 한 단계의 출력(은닉 상태)을 다음 단계의 입력으로 다시 넣는다. 같은 가중치의 같은 망을 여러 번 실행하면서 상태로 앞 단계의 정보를 넘기므로 순서가 있는 데이터를 다룬다.
+
+| 형태 | 예 | 동작 |
+|---|---|---|
+| 일대다(one-to-many) | 이미지 한 장으로 설명 문장 만들기 | 이미지로 첫 단어를 내고, 출력과 상태를 다시 넣어 다음 단어를 잇는다 |
+| 다대일(many-to-one) | 영상의 장르 분류, 리뷰의 긍정과 부정, 음성으로 화자 구분 | 프레임, 단어나 음성 조각을 차례로 넣고 마지막에 분류 하나를 낸다 |
+| 다대다(many-to-many) | 기계 번역 | 원문을 모두 읽어 상태에 담은 뒤 번역문을 한 단어씩 낸다. 언어마다 어순과 단어 수가 달라 단어별 대응으로는 부족하다 |
+
+LSTM(long short-term memory)은 널리 쓰인 RNN 변형이다. RNN은 앞 단계의 상태를 계산해야 다음 단계로 넘어가므로 시퀀스 방향으로 병렬화하기 어렵고, 이 제약은 attention만으로 위치 사이 정보를 결합하는 Transformer로 이어졌다([[Deep-Learning-Foundations-and-Practice#순환 모델과 Transformer의 병렬성|순환 모델과 Transformer의 병렬성]]). 번역에 쓰는 인코더-디코더와 attention은 [[Natural-Language-Processing-Foundations#순서를 다루는 신경망|자연어 처리 기초]]에 있다.
+
+## 이해 확인
+
+1. OR 유닛의 가중치는 그대로 두고 bias만 바꿔 AND를 만들 수 있는 이유를 가중합 표로 설명한다.
+2. 학습 표본 100만 개에서 배치, 확률적, 미니배치(크기 32) 경사 하강법이 한 epoch 동안 가중치를 몇 번 갱신하는지 계산하고 각각의 절충을 설명한다.
+3. 활성 함수를 모두 항등 함수로 바꾼 3층 신경망이 단층 선형 모델과 같은 경계만 표현하는 이유를 설명한다.
+4. dropout이 추론에서도 켜져 있으면 같은 입력의 예측이 어떻게 되는지 설명한다.
+5. 영상 분류, 이미지 설명 생성, 번역을 일대다, 다대일, 다대다로 나누고 각각 출력이 언제 나오는지 설명한다.
+
+## 출처
+
+- [YouTube, Harvard CS50's Artificial Intelligence with Python, Neural Networks](https://www.youtube.com/watch?v=5NgNicANyqM&t=32681s) — freeCodeCamp.org 채널, 2023-08-10 공개. 2026-11-18 9:04:41부터의 유닛, 경사 하강법, 은닉층, 역전파, dropout과 순환 신경망 부분을 사람이 단 영어 자막으로 대조했다. 화면의 시뮬레이션 그림과 데모 정확도 수치는 옮기지 않았다.
+- [Harvard, CS50's Introduction to Artificial Intelligence with Python, Lecture 5 Neural Networks Notes](https://cs50.harvard.edu/ai/2020/notes/5/) — 이전 판으로 표시된 공식 노트. 2026-11-18 활성 함수 설명, OR와 AND의 bias, 경사 하강법 세 방식의 절충, 역전파 의사코드, 심층 신경망과 dropout의 정의, 앞먹임과 순환 신경망의 구분을 대조했다.
+- [Keras, Layer activation functions](https://keras.io/api/layers/activations/) — 2026-11-18 relu, sigmoid, softmax의 정의와 sigmoid와 2원소 softmax의 관계 대조.
+- [Keras, Dropout layer](https://keras.io/api/layers/regularization_layers/dropout/) — 2026-11-18 `rate`의 뜻, 남은 입력의 `1 / (1 - rate)` 배율, 학습 모드에서만 적용되는 조건 대조.
+- [YouTube, Zachary Huang, Give me 31 minutes, I will make PyTorch click forever](https://www.youtube.com/watch?v=K1ksiPHfgVs) — 2026-10-13 공개. 2026-11-18 로컬 음성 인식 전사로 tanh와 GELU를 포함한 활성 함수 목록을 확인했다. 두 함수의 정의는 아래 PyTorch 문서로 대조했다.
+- [PyTorch, torch.nn.Tanh](https://docs.pytorch.org/docs/2.15/generated/torch.nn.Tanh.html), [torch.nn.GELU](https://docs.pytorch.org/docs/2.15/generated/torch.nn.GELU.html) — 2.15 문서. 2026-11-18 tanh와 GELU의 정의 대조.
+
+## 관련 문서
+
+- [[ml-foundations|머신러닝 기초]]
+- [[Deep-Learning-Foundations-and-Practice|딥러닝 기초와 실습]]
+- [[Supervised-Learning-Models|지도학습 기본 모델과 손실 함수]]
+- [[Convolutional-Neural-Networks|합성곱 신경망]]
+- [[Natural-Language-Processing-Foundations|자연어 처리 기초]]
+- [[PyTorch-Training-Loop|PyTorch 학습 루프]]
+- [[LLM-Generation-Mechanics-Training|LLM 학습 원리]]
+- [[Reinforcement-Learning-from-Experience|경험 기반 강화학습]]

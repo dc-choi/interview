@@ -64,6 +64,8 @@ DeepInfer의 DSpark는 초안 토큰으로 디코딩을 가속하는 speculative
 
 저장소의 배포 Q&A 문서는 EP64/DP64 벤치마크 데이터로 계산한 추정치를 제시한다. 가변 길이 검증은 단계당 검증하는 초안 수를 5에서 3.2~4.4로 약 30% 줄이고 평균 수락 길이는 고정 길이 3.29 대 가변 길이 3.20으로 거의 유지해, 운영 지점(rank당 동시 시퀀스 약 60개)에서 처리량을 4~7% 높인다. 같은 표에서 동시 시퀀스 16개는 -1.5%, 96개는 +11.0%라 이득의 크기와 부호가 동시성에 따라 달라진다. DeepSeek의 자체 추정이며 재현하지 않았다. 초안 모델의 구조와 출력 품질 영향은 README와 Q&A 문서 모두 설명하지 않는다. speculative decoding의 일반 비용 구조는 [[LLM-Inference-Bottlenecks#서빙 기법이 줄이는 비용은 다르다|서빙 기법의 비용 비교]]를 따르고, 성능 비교에는 최대 초안 길이, 가변 길이 검증 여부와 실제 수락률을 함께 남긴다.
 
+초안은 따로 학습한 모델 없이 입력에서 가져올 수도 있다. 2026-11-18 vLLM 문서 기준으로 n-gram 추측은 프롬프트의 n-gram 일치로 초안을 만들고, 창 크기는 `prompt_lookup_min`과 `prompt_lookup_max`(둘 다 생략하면 5), 단계당 초안 수는 `num_speculative_tokens`로 정한다. 문서는 이 방식을 가볍고 켜기 쉬우며 이득은 작거나 중간 정도라고 분류한다. 출력이 입력의 문구를 그대로 옮기는 문서 질의응답이나 코드 수정에서 초안이 맞을 여지가 크다(해석). 검증은 대상 모델이 하므로 이론상 출력 분포가 바뀌지 않지만, 같은 문서는 하드웨어의 수치 정밀도와 배치 크기에 따라 출력이 조금 달라질 수 있다고 덧붙인다.
+
 ## 긴 문맥 재처리의 범위를 제한한다
 
 SWA bounded replay는 디코더 프리필에서 정해진 길이의 끝부분만 다시 처리해 작업을 줄인다. V4.1 기본값은 `DEEPINFER_YOCO_PREFILL_TRUNCATION_MODE=compact`와 `DEEPINFER_YOCO_PREFILL_KEEP_TOKENS=140`이며, 남기는 끝부분은 sliding window attention의 창과 최대 backtracking 길이를 모두 덮어야 한다. 모델 구조에 묶인 값이므로 다른 모델이나 체크포인트에 그대로 옮기지 않는다.
@@ -141,11 +143,14 @@ README, 저장소의 배포 Q&A 문서와 소스의 환경 변수 정의, 공개
 - [PD: Do not admit intake-rejected requests to a PD handoff — sgl-project/sglang](https://github.com/sgl-project/sglang/pull/38935) — 2026-09-16 병합. 인계 전 거절의 수정 범위 대조
 - [Disaggregation: Honor admission aborts before KV handoff — sgl-project/sglang](https://github.com/sgl-project/sglang/pull/38704) — 2026-10-10 병합 없이 닫힘. 전송 길이 대조를 넣은 초안
 - [vLLM, NixlConnector Usage Guide](https://docs.vllm.ai/en/latest/features/nixl_connector_usage.html) — 2026-11-08 디코드가 프리필의 KV 블록을 RDMA로 읽어 오는 구조 대조
+- [vLLM, Speculative Decoding](https://docs.vllm.ai/en/latest/features/speculative_decoding/) — 2026-11-18 n-gram 설정 키와 기본값, 방법별 이득 분류, 무손실의 조건 대조. 기존 절은 다시 대조하지 않아 `verified_at`은 유지한다
+- [vLLM, N-Gram Speculation](https://docs.vllm.ai/en/latest/features/speculative_decoding/n_gram/) — 2026-11-18 프롬프트의 n-gram 일치로 초안을 만든다는 설명 대조
 - [ggml v1.0.0 — ggml-org](https://github.com/ggml-org/ggml/releases/tag/v1.0.0) — 2026-11-16 제거된 API, RPC v9와 백엔드 변경 대조
 - [dist : releases and versioning of ggml-org projects — ggml-org/ggml](https://github.com/ggml-org/ggml/discussions/1579) — 2026-08-07 작성된 토론, 2026-11-16 시맨틱 버전, major 기준과 내장 ggml의 릴리스 태그 조건 대조
 - [When One GPU Isn't Enough: Serving GLM-5.3 Across Two NVIDIA DGX Stations with vLLM — NVIDIA Technical Blog, Fatima Fall](https://developer.nvidia.com/blog/when-one-gpu-isnt-enough-serving-glm-5-3-across-two-nvidia-dgx-stations-with-vllm/) — 2026-11-13 게시. 2026-11-16 구성, 플래그, 검증 절차와 결과 표 대조
 - [ggml v1.0.0 - 폐기 예정 API 제거, FP8 지원과 백엔드 성능 개선 — GeekNews](https://news.hada.io/topic?id=37153)
 - [DGX Station 2대에서 vLLM으로 GLM-5.3 로컬 서빙하기 — GeekNews](https://news.hada.io/topic?id=37221)
+- [YouTube, Marina Wyss, AI Engineering in 76 Minutes (Complete Course/Speedrun!)](https://www.youtube.com/watch?v=JV3pL1_mn2M) — 2025-04-01 업로드. Chip Huyen의 책 AI Engineering(O'Reilly Media, 2025)을 요약한 강의로 입력에서 초안을 가져오는 디코딩 단락의 계기다. 사실은 vLLM 문서로 대조했다
 
 ## 관련 문서
 

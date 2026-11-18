@@ -11,7 +11,7 @@ aliases: ["Decision Models", "결정 모델"]
 
 ## 목차
 
-- [[LLM-Decision-Models-Mechanics|정의와 동작 원리]]: System One, state와 noul/choice/score 질문 스키마, 질문 간 독립성과 Speculative fan-out, 비자기회귀 채점과 입력 토큰 과금, 자체 호스팅 엔진의 state 분기(Flide)와 세션 캐시, 보정된 확률과 confidence 계산, 제공자별 confidence 정의 차이
+- [[LLM-Decision-Models-Mechanics|정의와 동작 원리]]: System One, state와 noul/choice/score 질문 스키마, 질문 간 독립성과 Speculative fan-out, Score 기댓값과 Choice argmax의 차이, 비자기회귀 채점과 입력 토큰 과금, 자체 호스팅 엔진의 state 분기(Flide)와 세션 캐시, 보정된 확률과 confidence 계산, 제공자별 confidence 정의 차이
 - [[LLM-Decision-Models-Use-Cases|활용 예시]]: 에이전트 분기, 라우팅과 트리아지, 모더레이션과 가드레일, RAG 보조, 행동별 confidence 문턱과 Noul 문턱, 티켓 분류를 결정 모델로 옮긴 섀도 전환과 비용 조건, 도구 기록을 선별하는 압축, OpenAI Decisions API의 요청과 실행 경계, Gemini Decisions API의 입력, 차단과 캐시 계약
 - [[LLM-Decision-Models-Comparison|모델 비교, 한계와 운영 체크포인트]]: Jev와 Clef, Clef-flash의 제공 방식, 가격과 지연, Cloudflare 정확도 비교, 로컬 Laya와 MLX 포트, 과업별 미세조정 평가, Red Hat 가드레일 비교 평가, 닫힌 선택지와 Jev 1.13의 약점, 프롬프트 인젝션과 언어 한계, 운영 체크포인트
 

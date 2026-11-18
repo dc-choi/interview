@@ -29,6 +29,12 @@ AI 제품의 기반 모델과 기능은 빠르게 복제될 수 있다. 사용 �
 
 클릭과 체류 시간처럼 해석이 여러 개인 지표만 모으면 제품이 왜 좋아지거나 나빠졌는지 알기 어렵다. 업무 결과와 연결된 신호일수록 개선 루프가 짧고 명확해진다.
 
+### 대화형 제품의 명시적 신호와 암묵적 신호
+
+대화형 AI 제품의 피드백은 사용자가 직접 남기는 명시적 신호(좋아요와 싫어요, 별점, 의견)와 대화 행동에서 읽는 암묵적 신호로 나뉜다([[Recommendation-System-Feedback-Data#Explicit와 implicit feedback|explicit와 implicit feedback]]). 암묵적 신호에는 생성 중단, 다시 생성, 정정이나 바꿔 묻기, 불만 표현과 감정, 대화 길이가 있는데 대부분 해석이 갈린다. 다시 생성은 첫 답이 틀렸다는 뜻일 수도 다른 선택지를 보려는 탐색일 수도 있고, 긴 대화는 상담 제품에서는 해결이 늦다는 뜻이지만 대화 상대 제품에서는 몰입일 수 있다(해석). 그래서 이런 신호는 위 목록처럼 결과를 판정할 수 있는 신호와 짝지어 읽는다.
+
+피드백 요청은 사용자에게 마찰이므로 묻는 자리를 고른다. 처음에 수준이나 선호를 묻는 보정, 지연이나 오류처럼 예상과 다른 일이 생긴 직후, 두 답 가운데 하나를 고르게 하는 선택 지점이 그 자리다. 두 답의 선택은 그대로 비교 데이터가 되어 평가와 [[LLM-Post-Training#선호 데이터의 함정|선호 학습]]에 쓸 수 있지만, 보여 준 순서와 답의 길이가 선택에 섞이는지 따로 본다(적용 제안).
+
 ## 문제 복잡도와 도입 난이도
 
 AI 제품의 데이터 축적 조건은 문제 난이도와 도입 난이도를 함께 봐야 한다.
@@ -91,6 +97,7 @@ Kevin Kelly의 2016년 책을 10년 뒤 돌아본 공개 글은 Google의 검색
 
 - [Data is your only moat — The AI Frontier](https://frontierai.substack.com/p/data-is-your-only-moat-884)
 - [데이터가 유일한 해자다 — GeekNews](https://news.hada.io/topic?id=31606)
+- [YouTube, Marina Wyss, AI Engineering in 76 Minutes (Complete Course/Speedrun!)](https://www.youtube.com/watch?v=JV3pL1_mn2M) — 2025-04-01 업로드. Chip Huyen의 책 AI Engineering(O'Reilly Media, 2025)을 요약한 강의로 대화형 피드백 신호 단락의 계기다. 신호의 분류와 묻는 시점은 영상이 요약한 책의 설명이고, 신호별 해석과 짝지어 읽는 방법은 이 문서의 해석과 적용 제안이다
 
 ## 관련 문서
 
@@ -99,3 +106,5 @@ Kevin Kelly의 2016년 책을 10년 뒤 돌아본 공개 글은 Google의 검색
 - [[LLM-Market-Landscape|생성형 AI 시장 경쟁 구도]]
 - [[LLM-API-Price-Competition|LLM API 가격 경쟁]] — 전환 비용이 낮은 모델 API의 단가 압력과 오픈 웨이트 기준선
 - [[AI-Native-System|AI 네이티브 시스템]]
+- [[Recommendation-System-Industry-Ad-Bidding|실시간 입찰 광고 추천 산업 사례]] — 입찰 결과가 예측과 예산 배분으로 되돌아가는 광고 시스템의 루프
+- [[Recommendation-System-Feedback-Data|추천 시스템 피드백 데이터]] — explicit와 implicit feedback, 미관측과 부정 신호의 구분

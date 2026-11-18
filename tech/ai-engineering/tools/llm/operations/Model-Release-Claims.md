@@ -1,14 +1,14 @@
 ---
 tags: [ai, llm, model-selection, benchmark, open-weights, license]
 status: done
-verified_at: 2026-11-16
+verified_at: 2026-11-18
 category: "AI엔지니어링(AIEngineering)"
-aliases: ["Model Release Claims", "모델 발표 수치 읽기", "벤더 벤치마크 읽기", "Vendor Benchmark Reading", "자체 보고 벤치마크", "Muse Ember"]
+aliases: ["Model Release Claims", "모델 발표 수치 읽기", "벤더 벤치마크 읽기", "Vendor Benchmark Reading", "자체 보고 벤치마크", "Muse Ember", "Qwen4-Max", "MAI Code 2", "Work360"]
 ---
 
 # 모델 발표 수치 읽기
 
-모델 발표문은 점수, 비용 절감률, 속도, 파라미터 수, 필요 메모리, 라이선스와 제공 상태를 한 번에 내놓는다. 이 숫자들은 누가 쟀는지, 무엇과 비교했는지, 어떤 설정과 날짜에서 나왔는지가 다르면 서로 비교할 수 없다. 이 문서는 발표 수치를 모델 선택의 근거로 쓰기 전에 붙여 둘 조건을 정리하고, 2026-10-27에 공식 발표, 모델 카드, 공식 문서와 Artificial Analysis 페이지로 대조한 2026년 10월 출시 사례로 설명하고, 2026년 11월 사례(Claude Fable 5.2, Muse Ember, Edge0-145B, Gemini 4 Hydrogen)는 2026-11-16에 같은 방식으로 대조했다. 벤치마크 점수의 일반 조건과 비용 추세는 [[AI-Capability-and-Cost-Trends|AI 능력과 비용 추세 읽기]], 티어와 라우팅은 [[LLM-Model-Tiers|LLM 모델 티어 선택]]이 다룬다.
+모델 발표문은 점수, 비용 절감률, 속도, 파라미터 수, 필요 메모리, 라이선스와 제공 상태를 한 번에 내놓는다. 이 숫자들은 누가 쟀는지, 무엇과 비교했는지, 어떤 설정과 날짜에서 나왔는지가 다르면 서로 비교할 수 없다. 이 문서는 발표 수치를 모델 선택의 근거로 쓰기 전에 붙여 둘 조건을 정리하고, 2026-10-27에 공식 발표, 모델 카드, 공식 문서와 Artificial Analysis 페이지로 대조한 2026년 10월 출시 사례로 설명하고, 2026년 11월 사례(Claude Fable 5.2, Muse Ember, Edge0-145B, Gemini 4 Hydrogen)는 2026-11-16에 같은 방식으로 대조했다. 2026-11-16~17 발표(Qwen4-Max, GPT-6.2 Astra와 Sol, MAI Code 2)는 2026-11-18에 공식 발표, 모델 문서, 가격표와 개발자 커뮤니티 공지로 대조했다. 벤치마크 점수의 일반 조건과 비용 추세는 [[AI-Capability-and-Cost-Trends|AI 능력과 비용 추세 읽기]], 티어와 라우팅은 [[LLM-Model-Tiers|LLM 모델 티어 선택]]이 다룬다.
 
 ## 누가 쟀는지 먼저 표시한다
 
@@ -29,6 +29,8 @@ aliases: ["Model Release Claims", "모델 발표 수치 읽기", "벤더 벤치�
 - **자체 벤치마크와 학습 분포**: Paper Instruments는 GLM-5.3 Flash를 88개 환경 유형과 과제별 루브릭으로 강화학습한 뒤, 같은 회사의 Feather 하네스와 내부 벤치마크로 평가했다. 기술 보고서는 학습 과제와 평가 과제를 어떻게 분리했는지 설명하지 않는다. 발표가 제시한 PI Knowledge Work와 Artificial Analysis 지수의 상관(24개 실행, r = 0.81)은 벤치마크가 일반 능력과 같은 방향으로 움직인다는 근거일 뿐, 특정 모델의 점수가 학습 분포와 겹치지 않았다는 근거는 아니다(이 문서의 판단). 같은 기반 모델의 전문 영역 후학습 비교는 [[Agent-Model-Capability-Contracts#Ultramarine 1 Flash: 같은 기반 모델의 업무 산출물 후학습|에이전트 모델의 능력 계약]]에 둔다.
 - **모든 항목의 우세가 아니다**: Raon-1 mini preview 표에서 GPQA Diamond 84.3과 IFBench 84.2는 비교 MoE 모델(Qwen3.6-35B-A3B, Gemma 4 26B-A4B)보다 높지만 MMLU Pro 76.5(Qwen3.6-35B-A3B 85.9), BFCL v4 Overall 59.8, Terminal-Bench Lite 47.0은 낮다. 한국어 챗봇 평가는 공개하지 않은 내부 평가다. 음성 모델 발표도 마찬가지로, Voxtral 3의 화자 분리 비교(AMI, Switchboard, AISHELL-4의 cpWER 거시 평균에서 Voxtral Small Transcribe 3 18.4%, Scribe v2 23.0%, Gemini 3.5 Transcribe 38.4%)는 Mistral이 직접 낸 차트이며 누가 평가를 실행했는지는 밝히지 않는다.
 - **모델마다 다른 하네스와 내부 합성 지표**: Muse Ember 발표(2026-11-09, Meta)는 Terminal-Bench 4.0을 모델마다 공개된 최고 하네스로 쟀다고 각주에 적는다(Ember는 mini-swe-agent, Claude Haiku 5.5는 Claude Code, GPT-6 Luna는 Codex). 하네스가 다르면 모델의 차이와 하네스의 차이가 한 점수에 섞인다. 같은 표의 Personal Superintelligence Index는 Meta가 여덟 개 평가를 묶은 내부 합성 지표이고, OSWorld 2.1은 부분 점수를 앞세우며 이진 채점(Ember 33.8, Haiku 5.5 27.8)을 따로 싣는다. Artificial Analysis가 잰 FrontierCode 2.0-AA에서는 Ember(27.2)가 Haiku 5.5(34.9)보다 낮다.
+- **상대 백분율과 섞인 측정 주체**: Microsoft AI의 MAI Code 2 발표(2026-11-17)는 네 코딩 벤치마크(DeepSWE 1.1, Terminal Bench 2.1, SWE-Atlas, FrontierCode v1.1) 평균으로 GPT-6.1 Sol 성능의 98%를 비용 40%에, Claude Opus 5.5의 96%를 비용 5%에 낸다고 적는다. 각주에 따르면 모든 모델을 max 추론으로 돌렸고, 세 벤치마크는 Microsoft 내부 평가 플랫폼(MSBench)에서 서브에이전트 없는 GitHub Copilot CLI로 쟀으며, FrontierCode 점수와 비용은 Artificial Analysis 값이고, MAI Code 2의 비용은 50% 프로모션 가격으로 계산했다. 세 벤치마크에서 하네스를 하나로 맞춘 점은 위의 모델별 최고 하네스 비교와 다르지만, 측정 주체가 섞였고 네 벤치마크 평균의 백분율은 벤치마크별 차이를 가린다. 발표 글에는 정가, 프로모션 종료일과 컨텍스트 크기가 없고, 기초 과학 연구와 아주 긴 에이전트 작업에는 아직 맞추지 않았다고 적는다. Code 2 Flash는 세 벤치마크에서 GPT-6 Luna와 Claude Haiku 5.5에 견줄 성능을 각각 비용 65%와 20%에 낸다고 적고, 벤치마크별 통과율과 과업당 비용은 차트에만 있어 대조하지 못했다.
+- **직전 모델과만 비교한 자체 벤치마크**: Alibaba의 Qwen4-Max 보도자료(2026-11-16)는 721개 전문 분야의 어려운 업무 과제로 만든 자체 벤치마크 Work360에서 Qwen3.8-Max를 전반적으로 앞서고, High 추론에서 토큰을 35% 덜 쓰며 과업당 평균 비용을 약 60% 줄였다고 적는다. 비교 대상이 자기 직전 모델뿐이라 다른 공급사 모델 대비 위치는 이 벤치마크로 알 수 없고, 함께 이름을 든 Agents' Last Exam, Vals Index, JobBench와 Chartography는 보도자료에 점수가 없다. 점수 47.74에서 52.69, 과업당 비용 $4.43에서 $1.67(62% 감소)은 공식 블로그 차트를 옮긴 2차 자료와 GeekNews 요약에만 있고, 공식 블로그 본문은 열지 못했다.
 
 ## 비용 절감률은 단가, 토큰 수, 과업당 비용으로 나눈다
 
@@ -39,6 +41,8 @@ aliases: ["Model Release Claims", "모델 발표 수치 읽기", "벤더 벤치�
 - **출시 특별가와 제3자 지수의 단가 기준**: Gemini 4 Carbon 발표(2026-10-28)는 Argon과 같은 출시 특별가(100만 토큰당 입력 $2, 출력 $10, 캐시 입력은 입력 단가의 95% 할인)를 적고, 각주에서 특별가 기간이 끝나면 입력 $4, 출력 $20이 적용된다고 밝히지만 종료일은 적지 않는다. 같은 시점의 Argon은 Google 가격표에 특별가를 2026-11-30까지로 적는다. Artificial Analysis의 Carbon 페이지(2026-11-09 열람, Intelligence Index v5.0.1, High 설정)는 Google API 기준 단가를 $4, $20으로 표시하고 지수 과업당 비용 $7.76을 보인다. 이 단가는 Google 발표의 특별가 종료 뒤 단가와 같은 값이다(이 문서의 대조). 공급사 특별가와 제3자 지수의 과업당 비용은 서로 다른 단가로 계산된 값이므로, 비교할 때 어느 단가를 넣었는지 먼저 맞춘다. 같은 날 Carbon은 Gemini Developer API 가격표에 없었고 일반 개발자에게 열리지도 않았으므로(아래 절) 발표 단가가 곧 호출 가능한 단가라는 뜻도 아니다.
 - **단가를 내려도 과업당 비용은 오를 수 있다**: Claude Fable 5.2(2026-11-09)는 5.1보다 단가를 20% 내렸지만(100만 토큰당 입력 $10, 출력 $50에서 $8, $40), 2026-11-16 Artificial Analysis(Intelligence Index v5.0.1, Max 설정)에서 지수 평가의 출력 토큰은 1억 6,300만에서 2억 7,500만으로 늘었고 과업당 비용은 $12.99에서 $26.54로 약 2배가 됐다. 지수는 49에서 65로 올랐다. 출력 단가와 출력 토큰만 곱한 배율은 약 1.35배라서, 같은 산정 방식이라면 입력과 캐시 쪽 비용이 2배 넘게 늘어야 차이가 설명된다(이 문서의 계산이며 입력 토큰 수는 페이지에서 확인하지 못했다).
 - **같은 점수를 낮은 추론 강도로 맞춘 비교**: Anthropic 발표는 초기 시험에서 FrontierCode 2.0의 Fable 5.2 High(45.3%)가 Opus 5.5의 최고 점수(45.5%, Max)와 비슷하면서 과업당 비용은 약 절반이었고, Perplexity의 WANDR에서는 Medium으로 약 40%, HLE에서는 Low로 10분의 1 미만의 비용에 Opus 5.5의 최고 점수와 맞췄다고 적는다. 누가 쟀는지는 밝히지 않는다. 같은 모델도 추론 강도에 따라 토큰이 크게 달라서, 2026-11-16 Artificial Analysis에서 Fable 5.2는 High 62점에 출력 토큰 8,530만, Max 65점에 2억 7,500만을 썼고 Gemini 4 Hydrogen은 High 51점에 1억 1천만, Xhigh 54점에 3억 400만을 썼다. 두 모델 모두 마지막 3점에 출력 토큰이 약 3배 들었다(이 문서의 대조). 헤드라인의 비교가 어느 추론 강도끼리인지와 자기 과업의 합격선에 필요한 강도를 함께 본다.
+- **비교 쌍의 추론 강도와 헤드라인 문장의 범위**: OpenAI의 GPT-6.2 공지(2026-11-17, 개발자 커뮤니티 게시본으로 대조)는 Agents' Last Exam에서 xhigh로 돌린 GPT-6.2 Astra가 max로 돌린 GPT-6 Astra보다 5.2점 높고 과업당 비용은 절반 미만이라고 적는다. 과업당 비용이 3분의 1 미만이라는 표현은 전문 업무와 과학 연구 평가 전반에 대한 별도 문장이므로 Agents' Last Exam 한 벤치마크의 비율로 옮기지 않는다. 같은 공지는 FrontierCode 2.0에서 GPT-6.2 Sol이 Astra에 거의 맞먹으면서 비용은 약 5분의 1이라고 적고 점수는 차트로만 낸다. 가격표의 두 모델 단가는 100만 토큰당 입력 $8과 $2, 출력 $40과 $10(입력 272K 이하)으로 4배 차이다.
+- **추론 강도 이름은 공급사마다 단계가 다르다**: Qwen4-Max API(2026-11-18 Model Studio 문서)는 low, high, xhigh 세 단계이고 기본값은 high다. OpenAI 호환 호출의 `minimal`, `medium`, `max`는 각각 low, high, xhigh로 바꿔 받는다. 비교표에 max라고 적혀 있어도 모델마다 실제 단계 수와 기본값이 다르므로, 같은 이름을 같은 계산량으로 읽지 않는다.
 - **한 차트 안에서 단가 기준이 엇갈린다**: Muse Ember 발표의 지능 대비 비용 차트는 캡션에 Ember 비용이 제안 가격(proposed pricing) 기준 추정이라고 적고, 차트 하단에는 Ember 비용이 정가(list pricing) 기준이라고 적는다. 같은 글이 밝힌 단가는 100만 토큰당 입력 $0.10, 캐시 입력 $0.004, 출력 $0.50이고 프롬프트가 20만 토큰을 넘으면 각각 $0.30, $0.012, $1.50이다. 차트의 과업당 비용을 비교에 쓰기 전에 어느 단가로 계산했는지와 긴 프롬프트 구간이 반영됐는지 확인한다.
 
 ## 속도와 지연은 측정 위치와 날짜를 붙인다
@@ -72,6 +76,8 @@ FLUX 3 Image Klein 발표는 생성기 가중치를 BF16 11.2GB, FP8 5.6GB로 �
 | Voxtral 3 | 미표기 | Mistral API(EU, 미국, 글로벌 엔드포인트). 전체 스택의 온프레미스 배치는 문의. 문서 변경 이력은 2026-10-20 Public Preview로 표시 |
 | Edge0-145B | 공개(NVFP4, Q3_K) | 2026-11-16 확인. 발표 글은 오픈소스로 공개한다고만 적고, 모델 카드는 Edge0 Community Model License 1.0을 표시한다. 개인 사용, 연구, 수정, 비상업적 공유, 내부 사용과 생성 결과의 상업적 사용은 허용하지만 모델 판매, 상업적 번들과 상업 모델 서비스 운영은 별도 서면 라이선스가 필요하다. Qwen3.8-Flash-Next를 다시 만든 모델이라 Qwen 유래 부분은 Qwen Community License 1.0을 따르며 두 조건을 함께 지켜야 하고, Edge0의 허락이 Qwen의 별도 허가와 표기 요구를 대신하지 않는다 |
 | Muse Ember | 미표기 | 2026-11-16 확인. Muse Code, Meta Model API, Google Cloud와 Oracle Cloud 제공. 발표는 가중치 공개를 언급하지 않음 |
+| Qwen4-Max | 미표기 | 2026-11-18 확인. QwenCloud의 Token Plan과 API, QwenWork와 QwenStudio 제공. 보도자료는 Max의 가중치를 언급하지 않고 작은 Qwen4 공개 가중치 모델을 곧 낸다고만 적는다(날짜와 라이선스 없음). 단가는 1M 이하 한 구간이며 싱가포르 100만 토큰당 입력 $1.5, 출력 $4.5, 베이징 등 다른 리전 $1.413, $4.24 |
+| MAI Code 2, Code 2 Flash | 미표기 | 2026-11-18 확인. 두 모델 모두 GitHub Copilot, Code 2 Flash는 Microsoft Foundry의 제한 접근 프리뷰. 발표 글에 API 정가와 가중치 공개 언급 없음 |
 
 - 가중치를 받을 수 있다는 사실만으로 상업적 사용, 파생물 배포와 출력 활용 범위를 판단하지 않는다([[Open-Source-License-Review#오픈 웨이트 모델과 Open Source AI는 다르다|오픈 웨이트와 Open Source AI]]). 매출 기준 조항은 누구의 매출(이용자, 고용주, 계열사)을 어떤 기간으로 세는지 원문으로 확인한다(적용 제안).
 - 제공 상태는 연구 프리뷰, 비공개 프리뷰, 공개 프리뷰, GA로 나뉘고 같은 모델도 판매 경로마다 다르다([[LLM-Market-Landscape#모델 공급사와 판매 채널의 분리|판매 채널의 분리]]).
@@ -90,6 +96,8 @@ Google 발표는 Carbon의 지수를 v5.0 59점 1위로 적고 추론 설정을 
 Mistral은 Low, Medium, High 추론 모드를 안내한다. 공개 라이선스는 Mistral Ecosystem Open-Weight이며 Model-as-a-Service 사업자의 상업 이용에는 별도 라이선스 조건이 있다. 단순 MIT나 무제한 상업 이용으로 줄여 적지 않는다.
 
 ## 채택 전에 기록할 것
+
+후보는 프롬프트나 미세조정으로 바꿀 수 없는 조건(라이선스, 데이터를 외부로 보낼 수 있는지, 배포 위치와 장비에 맞는 크기, 학습 데이터의 공개 범위, 미세조정이나 로그 확률 접근 같은 통제 수준)으로 먼저 거른다. 정확도, 유해성, 사실 일관성처럼 적응 기법으로 움직일 수 있는 속성은 남은 후보를 자기 과업으로 잴 때 보고, 발표 수치는 그 사이에서 후보를 좁히는 데만 쓴다. 채택한 뒤에는 [[Eval-Model-Drift-Monitoring|서빙 모델 드리프트 감시]]로 이어 간다(적용 제안).
 
 1. 수치마다 측정 주체, 측정일, 설정(추론 강도, 하네스, 실행 횟수)과 비교 대상의 세대를 적는다.
 2. 자기 업무 표본으로 같은 하네스와 비용 한도에서 다시 잰다([[LLM-Eval-Strategy|LLM 평가 전략]]).
@@ -133,6 +141,15 @@ Mistral은 Low, Medium, High 추론 모드를 안내한다. 공개 라이선스�
 - [Claude Fable 5.2, Artificial Analysis 지능 지수에서 역대 최고인 65점 기록 — GeekNews](https://news.hada.io/topic?id=36910) — 학습 계기. 출시 직후 속도와 지연 값은 이 요약에서 가져왔다
 - [Muse Ember - Meta의 가장 작고 효율적인 모델 — GeekNews](https://news.hada.io/topic?id=36903) — 학습 계기
 - [Edge0-145B - 개인 컴퓨터에서 실행하는 1,450억 매개변수 AI 모델 — GeekNews](https://news.hada.io/topic?id=37100) — 학습 계기
+- [Introducing GPT-6.2 Astra and Sol — OpenAI](https://openai.com/index/introducing-gpt-6-2-astra-sol/) — 2026-11-17 발표 원문. 2026-11-18 자동 열람이 HTTP 403으로 막혀 본문과 차트를 대조하지 못했다
+- [GPT-6.2 Astra and Sol are now available — OpenAI Developer Community](https://community.openai.com/t/gpt-6-2-astra-and-sol-are-now-available/1417531) — 2026-11-17 공지 게시본. 2026-11-18 Agents' Last Exam 비교의 추론 강도와 비용 문구, FrontierCode 2.0 문장, 단가 대조
+- [OpenAI API Docs, Pricing](https://developers.openai.com/api/docs/pricing) — 2026-11-18 GPT-6.2 Astra와 Sol 단가
+- [Alibaba Unveils Qwen4-Max: New AI Teammate for Work, Creativity, and Discovery — Alibaba Cloud](https://www.alibabacloud.com/press-room/alibaba-unveils-qwen4-max) — 2026-11-16 보도자료. 2026-11-18 구조, Work360 정의, 토큰과 비용 문구, 이름만 든 벤치마크, 제공 경로와 공개 가중치 계획 대조
+- [Alibaba Cloud Model Studio, Qwen4-Max](https://www.alibabacloud.com/help/en/model-studio/qwen4-max) — 2026-11-18 리전별 단가, 입력과 출력 한도, 추론 강도 단계와 대응표
+- [Qwen4-Max: Features, Benchmarks, Pricing, and Access — DataCamp](https://www.datacamp.com/blog/qwen4-max) — 공식 블로그 차트의 Work360 점수와 과업당 비용을 옮긴 2차 자료
+- [MAI Code 2 and Code 2 Flash: Everyday coding at scalable prices — Microsoft AI](https://microsoft.ai/news/introducing-mai-code-2-and-mai-code-2-flash/) — 2026-11-17. 2026-11-18 벤치마크 구성, 각주의 측정 조건과 프로모션 가격, 제공 경로 대조
+- 사용자 제공 GeekNews 알림(2026-11-17~18): Qwen4-Max, GPT-6.2 Astra와 Sol, MAI Code 2와 Code 2 Flash. 학습 계기이며 게시물 번호는 확인하지 못했다. Code 2 Flash의 벤치마크별 통과율(61.0%, GPT-6 Luna 55.1%, Claude Haiku 5.5 53.9%)과 과업당 비용 $0.052, FrontierCode 2.0에서 두 모델을 최대 설정으로 잰 0.5점 이내 차이는 이 요약에만 있고 원문 본문으로 대조하지 못했다
+- [YouTube, Marina Wyss, AI Engineering in 76 Minutes (Complete Course/Speedrun!)](https://www.youtube.com/watch?v=JV3pL1_mn2M) — 2025-04-01 업로드. Chip Huyen의 책 AI Engineering(O'Reilly Media, 2025)을 요약한 강의로, 바꿀 수 없는 조건과 적응으로 바뀌는 속성을 나눠 후보를 거르는 순서의 계기다
 
 ## 관련 문서
 

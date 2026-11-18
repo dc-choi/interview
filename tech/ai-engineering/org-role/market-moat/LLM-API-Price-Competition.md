@@ -15,9 +15,9 @@ aliases: ["LLM API Price Competition", "LLM API 가격 경쟁", "LLM 가격 인�
 | 형태 | 사례(2026년, 100만 토큰당 입력, 캐시 입력, 출력) | 예산에서 확인할 것 |
 |---|---|---|
 | 같은 모델의 정가 인하 | 2026-07-30 GPT-5.6 Luna 80%, GPT-5.6 Terra 20% 인하. 확인일의 Luna는 $0.20, $0.02, $1.20 | 모델 ID를 바꾸지 않아도 적용되는지와 적용 시작일 |
-| 한시 프로모션 | 2026-08-21 GPT-5.6 Sol을 $4, $0.40, $20으로 인하. 가격표는 적어도 2026-11-21까지 적용한다고 표시 | 종료일 뒤 단가로 예산을 잡는다 |
+| 한시 프로모션 | 2026-08-21 GPT-5.6 Sol을 $4, $0.40, $20으로 인하. 가격표는 2026-10-27에 적어도 2026-11-21까지, 2026-11-18에는 2026-11-30까지 적용한다고 표시 | 종료일 뒤 단가로 예산을 잡고, 기한이 바뀌는지 가격표를 다시 본다 |
 | 도입가의 정가 전환 | Claude Sonnet 5의 $2, $10은 2026-08-31까지의 도입가로 발표됐다가 정가가 됐고, 9월 1일 예정했던 $3, $15 인상은 취소됐다 | 발표 문구의 기한과 가격표 각주 |
-| 더 싼 후속 모델 | Opus 5.5(2026-09-22) $4, $0.20, $20은 Opus 5의 $5, $0.50, $25보다 입출력 20%, 캐시 읽기 60% 낮다. GPT-6 Sol(2026-09-22) $2, $0.20, $10, GPT-6 Luna $0.10, $0.01, $0.50, GPT-6.1 Terra(2026-10-26) $1, $0.05, $5 | 모델 교체이므로 품질, 토큰 사용량과 동작 차이를 다시 평가한다. 이전 모델의 단가는 그대로다 |
+| 더 싼 후속 모델 | Opus 5.5(2026-09-22) $4, $0.20, $20은 Opus 5의 $5, $0.50, $25보다 입출력 20%, 캐시 읽기 60% 낮다. GPT-6 Sol(2026-09-22) $2, $0.20, $10, GPT-6 Luna $0.10, $0.01, $0.50, GPT-6.1 Terra(2026-10-26) $1, $0.05, $5. GPT-6.2 Astra(2026-11-17) $8, $0.40, $40은 GPT-6 Astra의 $10, $1, $50보다 입출력 20%, 캐시 입력 60% 낮고, 같은 날 나온 GPT-6.2 Sol은 GPT-6.1 Sol과 같은 $2, $0.10, $10이다(2026-11-18 가격표, 입력 272K 이하) | 모델 교체이므로 품질, 토큰 사용량과 동작 차이를 다시 평가한다. 이전 모델의 단가는 그대로다 |
 | 캐시 읽기만 인하 | Fable 5.1(2026-09-01)은 입출력이 Fable 5와 같은 $10, $50이고 캐시 읽기만 $1에서 $0.25. GPT-6.1 Sol(2026-09-29)은 GPT-6 Sol과 입출력이 같고 캐시 입력만 $0.20에서 $0.10. Sonnet 5.5는 Sonnet 5와 입출력이 같고 캐시 읽기가 $0.20에서 $0.10 | 효과가 워크로드의 캐시 읽기 비중에 따라 없음에서 대부분까지 달라진다 |
 
 헤드라인의 최대 80%는 GPT-5.6 Luna 한 모델의 정가 인하율이다. 같은 기간의 다른 변경은 인하 폭과 대상 항목이 모두 다르므로, 기사 제목의 인하율을 자기 청구액 변화로 옮기지 않는다.
@@ -68,8 +68,8 @@ Bloomberg의 2026-11-05 보도(익명 관계자 인용, Apple은 논평 거부)�
 
 ## 출처
 
-- [OpenAI API Docs, Pricing](https://developers.openai.com/api/docs/pricing) — 2026-10-27 모델별 입력, 캐시 입력, 캐시 쓰기, 출력 단가와 GPT-5.6 Sol 프로모션 기한
-- [OpenAI API Docs, Changelog](https://developers.openai.com/api/docs/changelog) — 2026-07-30 Luna, Terra 인하, 2026-08-21 GPT-5.6 Sol 인하, GPT-6 Sol과 Luna, GPT-6.1 Sol과 Terra 출시일
+- [OpenAI API Docs, Pricing](https://developers.openai.com/api/docs/pricing) — 2026-10-27 모델별 입력, 캐시 입력, 캐시 쓰기, 출력 단가와 GPT-5.6 Sol 프로모션 기한. 2026-11-18 GPT-6.2 Astra와 Sol, GPT-6 Astra 단가와 바뀐 GPT-5.6 Sol 기한 대조
+- [OpenAI API Docs, Changelog](https://developers.openai.com/api/docs/changelog) — 2026-07-30 Luna, Terra 인하, 2026-08-21 GPT-5.6 Sol 인하, GPT-6 Sol과 Luna, GPT-6.1 Sol과 Terra 출시일, 2026-11-17 GPT-6.2 출시
 - [Anthropic Docs, Pricing](https://platform.claude.com/docs/en/about-claude/pricing) — 2026-10-27 모델별 단가, Sonnet 5 도입가의 정가 전환 각주, 토크나이저의 토큰 수 차이
 - [Introducing Claude Opus 5.5 — Anthropic](https://www.anthropic.com/claude-opus-5-5) — 2026-09-22, 서빙 연산과 가격, 입출력과 캐시 읽기 인하율, 기본 설정의 40% 절감 주장
 - [Kimi API Docs, Model Pricing](https://platform.kimi.ai/docs/pricing/chat) — 2026-10-27 K3.1 Pro, Highspeed, K3의 단가와 캐시 쓰기

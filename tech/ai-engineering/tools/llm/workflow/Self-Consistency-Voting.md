@@ -3,12 +3,12 @@ tags: [ai, llm, inference, reasoning, voting, workflow]
 status: done
 verified_at: 2026-11-09
 category: "AI엔지니어링(AIEngineering)"
-aliases: ["Self-Consistency", "Sampling and Voting", "Universal Self-Consistency", "자기 일관성", "샘플 투표"]
+aliases: ["Self-Consistency", "Sampling and Voting", "Universal Self-Consistency", "자기 일관성", "샘플 투표", "Multiagent Debate", "멀티 에이전트 토론"]
 ---
 
 # 자기 일관성과 샘플 투표
 
-같은 질문에 모델 답을 여러 번 뽑은 뒤 가장 많이 겹치는 답을 고르는 추론 시점 기법이다. 모델 가중치를 바꾸지 않고 호출 수를 늘려 정확도를 사는 방식이라, 단일 호출 비용이 낮은 모델을 여러 번 부르는 설계에서 검토할 만하다. 이 문서는 2026-11-09에 아래 세 논문의 초록과 본문을 대조한 기준이다.
+같은 질문에 모델 답을 여러 번 뽑은 뒤 가장 많이 겹치는 답을 고르는 추론 시점 기법이다. 모델 가중치를 바꾸지 않고 호출 수를 늘려 정확도를 사는 방식이라, 단일 호출 비용이 낮은 모델을 여러 번 부르는 설계에서 검토할 만하다. 이 문서는 2026-11-09에 아래 세 논문의 초록과 본문을 대조한 기준이고, 멀티 에이전트 토론 절은 2026-11-18에 따로 대조했다.
 
 ## 동작 방식
 
@@ -28,6 +28,16 @@ aliases: ["Self-Consistency", "Sampling and Voting", "Universal Self-Consistency
 - **Sampling and Voting(2024)**: 초록은 성능이 인스턴스화한 에이전트(샘플) 수에 따라 늘고, 개선 폭이 과제 난이도와 상관된다고 적는다. 본문은 어려운 과제와 약한 모델에서 이득이 더 크다고 한다. 합성 과제에서 난이도를 세 축으로 나눠 보면, 고유 난이도가 오를수록 이득이 늘다가 줄었고, 추론 단계 수가 늘수록 이득이 커졌으며, 정답의 사전 확률이 높을수록 성능이 올랐다. 강화한 Llama2-13B가 GSM8K 59%로 단일 질의 Llama2-70B의 54%를 넘었다고 보고하지만, 같은 70B에 40개 앙상블을 적용하면 74%였다.
 
 마지막 비교는 작은 모델을 여러 번 부르면 큰 모델 단일 호출을 넘을 수 있다는 근거이지, 큰 모델이 필요 없다는 근거는 아니다. GSM8K의 이 설정에서는 70B에도 40개 앙상블을 쓰면 다시 15점 앞선다(이 문서의 해석이며 다른 과제와 모델 쌍으로 일반화하지 않는다).
+
+## 서로의 답을 읽고 고치는 멀티 에이전트 토론
+
+독립 샘플을 모아 투표하는 대신 여러 모델 인스턴스가 서로의 답과 추론을 읽고 여러 라운드에 걸쳐 고쳐 공통 답에 이르게 할 수도 있다. Du 외(2023)의 멀티 에이전트 토론이며, 논문은 이를 society of minds 접근이라 불렀다. ChatGPT 기반 에이전트 3개가 2라운드 토론한 설정에서 산술 정확도는 단일 에이전트 67.0%, 자기 답을 비판하게 한 단일 에이전트 72.1%, 세 에이전트 다수결 69.0%, 토론 81.8%였고, GSM8K는 단일 에이전트 77.0%에서 토론 85.0%로 올랐다. 에이전트 수나 라운드를 늘리면 더 오른 경우도 있었다.
+
+- **비용:** 에이전트 수와 라운드 수만큼 생성이 늘어 다른 프롬프팅 기법보다 비싸다.
+- **긴 토론:** 토론이 길어지면 모델이 전체 토론을 다 처리하지 못하고 가장 최근 응답에 주로 집중했다.
+- **합의는 정답이 아니다:** 토론은 대개 하나의 답으로 모였지만, 그 답이 틀린 경우에도 모델은 다른 에이전트와 일치한다며 확신했다. 아래 한계의 일관성 문제와 같은 구조다.
+
+수치는 2023년 ChatGPT 기준이다. 단일 에이전트가 이미 잘 푸는 과제일수록 에이전트를 더하는 이득이 줄거나 음수가 되는 경향도 측정됐으므로([[Multi-Agent-Coordination-Cost#작업 구조에 따라 효과의 방향이 바뀐다|멀티 에이전트 효과의 조건]]), 토론은 같은 호출 예산을 샘플 수에 쓴 자기 일관성과 비교해 고른다(설계 제안). 성능이 아니라 데이터 접근 범위나 담당 영역을 나누려고 에이전트를 분리할 때는 정확도 대신 권한 경계와 조정 비용으로 평가한다. 2026-11-18 논문의 표 1, 3절 분석과 5절 한계를 대조했다.
 
 ## 한계
 
@@ -51,6 +61,8 @@ aliases: ["Self-Consistency", "Sampling and Voting", "Universal Self-Consistency
 - [Self-Consistency Improves Chain of Thought Reasoning in Language Models — arXiv, Xuezhi Wang 외](https://arxiv.org/abs/2203.11171) — 2022-03-21 제출, v4 2023-03-07, ICLR 2023. 방법 정의, 초록의 이득 수치, 40개 샘플 설정, 고정 답 집합 제약
 - [Universal Self-Consistency for Large Language Model Generation — arXiv, Xinyun Chen 외](https://arxiv.org/abs/2311.17311) — 2023-11-29 제출. LLM 선택 방식, 샘플 수 실험, 문맥 길이와 일관성의 한계
 - [More Agents Is All You Need — arXiv, Junyou Li, Qin Zhang, Yangbin Yu, Qiang Fu, Deheng Ye](https://arxiv.org/abs/2402.05120) — 2024-02-03 제출, v2 2024-10-11, TMLR. 샘플 수 확장, 난이도와의 관계, Llama2-13B와 70B 비교
+- [Improving Factuality and Reasoning in Language Models through Multiagent Debate — arXiv, Yilun Du 외](https://arxiv.org/abs/2305.14325) — 2023-05-23 제출. 에이전트 3개와 2라운드 설정, 표 1의 산술과 GSM8K 결과, 5절 한계 대조
+- [YouTube, Stanford CS329Z Engineering AI Agents, Lecture 1 What Are AI Agents? Agentic Systems Explained](https://www.youtube.com/watch?v=DGI4vucR71w) — 2026-09-23 녹화. 멀티 에이전트 토론과 강한 모델에서 줄어드는 이득을 다룬 정리 계기
 
 ## 관련 문서
 
@@ -58,3 +70,4 @@ aliases: ["Self-Consistency", "Sampling and Voting", "Universal Self-Consistency
 - [[Eval-LLM-Judge|LLM 심판 평가]] — LLM이 후보를 고르고 채점할 때의 편향
 - [[LLM-Generation-Mechanics-Decoding|디코딩과 샘플링]] — 탐욕 디코딩과 샘플링의 차이
 - [[LLM-Workflow-Patterns|LLM 워크플로우 패턴]]
+- [[AI-Agent-Anatomy-and-Lineage|AI 에이전트의 정의, 계보와 구성 요소]] — 계획과 추론 구성 요소의 대표 기법
