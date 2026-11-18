@@ -1,7 +1,7 @@
 ---
 tags: [llm, wiki, knowledge-management, rag, provenance]
 status: done
-verified_at: 2026-11-09
+verified_at: 2026-11-19
 category: "AI엔지니어링(AIEngineering)"
 aliases: ["LLM Wiki", "LLM 위키", "지식 합성의 영속화"]
 ---
@@ -89,6 +89,16 @@ LLM 위키가 검색을 지원하지 않는다는 구분은 맞지 않는다. �
 
 두 번째 정리 과정은 존재하지 않는 페이지를 가리키던 링크 9개를 기존 페이지로 고치고 색인(index), 지시 이메일, 에스컬레이션 페이지 3개를 더했다. 위키가 원문보다 커질 수 있고 링크가 끊길 수 있다는 점은 위의 구조 검사가 필요한 이유와 같다. 수치는 발행사가 자기 모델과 자료로 잰 값이며 대부분 반복 횟수와 분산을 밝히지 않았다. 기억 층과 정리 과정 자체는 [[Agent-Memory-Retain-Recall-Reflect#기억의 층과 세션 사이의 정리|에이전트 기억의 층]]에서 다룬다.
 
+## 로컬 모델로 위키를 만들 때
+
+사내 문서를 외부 서비스에 올리기 어려우면 Ollama 같은 로컬 실행기와 Obsidian 커뮤니티 플러그인으로 위키 생성을 PC 안에 둘 수 있다. 문서 반출은 줄지만 다음 조건을 함께 본다.
+
+- **속도와 장비:** 2026-11-12 공개 강의 사례에서 M3 Pro 18GB MacBook에서 12B급 로컬 모델로 초당 약 12토큰을 내며 문서 15건을 위키로 정리하는 데 2시간 38분이 걸렸다. 강사 한 사람의 측정이며 문서 크기와 설정은 밝히지 않았다. 강사가 Gemma 4 기반으로 보이는 사용자 정의 태그를 썼다고 말했지만, 기반 모델과 양자화는 음성 전사만으로 확인되지 않는다. 더 큰 모델은 메모리를 더 요구한다. Ollama 라이브러리의 `gemma4` 기본 태그 내려받기 크기는 `12b` 약 8GB, `26b` 16~19GB, `31b` 19~20GB이고(2026-11-19 확인), 실행 메모리는 이보다 크며 양자화와 컨텍스트 길이에 따라 늘어난다.
+- **컨텍스트 길이:** Ollama의 기본 컨텍스트 길이는 VRAM에 따라 24GiB 미만 4k, 24~48GiB 32k, 48GiB 이상 256k다. 앱 설정의 슬라이더나 `OLLAMA_CONTEXT_LENGTH`로 바꾸고, 늘릴수록 메모리가 더 든다. 에이전트와 코딩 도구에는 64000 토큰 이상을 권하며, 실제 적용값은 `ollama ps`의 `CONTEXT` 열에서 확인한다(2026-11-19 공식 문서).
+- **틀리는 방식:** 같은 시연에서 작은 모델은 출처 없는 인용을 섞었고, 설문 28건 중 8건인 항목을 9건으로 세는 식으로 합계를 틀렸다. 강사는 엔티티의 태그가 비거나 잘못 들어갈 수 있다고도 했다. 강사는 표, CSV, 스프레드시트, PPTX, HWPX처럼 구조가 있는 자료에는 더 큰 모델을 권했다. 위키를 한 번 만들고 끝내지 않고, 답변의 출처 링크를 열어 원문과 대조하며 고쳐 나간다. 앞의 자동 갱신 검증 경계가 로컬 모델에도 그대로 적용된다.
+- **플러그인 신뢰:** Obsidian은 기본으로 제한 모드에서 제3자 코드를 실행하지 않는다. 커뮤니티 플러그인을 켜면 플러그인이 Obsidian의 접근 수준을 물려받아 파일 접근, 인터넷 연결과 추가 프로그램 설치를 할 수 있고, Obsidian은 플러그인 권한을 안정적으로 제한하지 못한다. 모든 버전을 자동 검사해 플러그인 페이지에 안전 점수표(safety scorecard)로 보여 주지만 사람의 검토는 인기, 추천, 문제가 표시된(flagged) 플러그인에만 이어지므로, 민감한 자료에는 사용 전 독립 보안 감사를 권한다(2026-11-19 공식 도움말). 모델이 로컬이어도 플러그인이 자료를 밖으로 보낼 수 있어서, 다운로드 수와 공개 저장소 확인은 최소 점검일 뿐 반출이 없다는 증거가 아니다.
+- **에이전트 하네스 연결:** 강사는 Ollama 기본 채팅보다 Claude Code, Codex처럼 하네스를 갖춘 에이전트에서 로컬 모델을 쓰라고 권했다. Ollama는 Anthropic 호환 API로 Claude Code를 로컬과 클라우드 모델에 연결한다(`ollama launch claude`). 클라우드 모델은 내려받지 않고 원격에서 쓰는 모델이라 문서를 PC 밖에 두지 않으려는 목적과 맞지 않는다(이 문서의 판단).
+
 ## 비용과 실패 조건
 
 갱신은 여러 페이지의 재작성과 검토 비용을 만든다. 원문 변경이 위키에 반영되기 전에는 두 내용이 어긋나고, 잘못된 합성을 다음 답변의 근거로 반복하면 오류도 누적된다. 원문 링크와 변경 이력을 유지하며, 저장할 만한 재사용 가치와 검토 비용을 함께 판단한다.
@@ -105,6 +115,11 @@ LLM 위키가 검색을 지원하지 않는다는 구분은 맞지 않는다. �
 - [YouTube, 메타코드M, 클로드 x 옵시디언으로 우리 회사 LLM Wiki 만들기](https://www.youtube.com/watch?v=yZKXJMMPrxc) — 2026-10-06 공개 강의, 33:56 이후 자동 갱신과 검증 사례
 - [[IT-Chosun-Monthly-AX-2026-11-03|IT조선 월간AX 세미나 기록]] — 2026-11-03 제네시스랩(유대훈) 발표. LLM Wiki의 목차와 링크 문제, DB 기반 구조와 사람 확정 학습 사례를 반영했다.
 - [The components of agent memory — Anthropic, Lance Martin](https://www.anthropic.com/research/components-of-agent-memory) — 2026-11-06 게시. 위키 생성 실험의 자료 규모, 조건과 결과를 2026-11-09 대조
+- [YouTube, 메타코드M, 내 PC에서만 돌아가는 사내 AI 위키 (Ollama+Obsidian 30분 완성)](https://www.youtube.com/watch?v=dBkPixj7I5c) — 2026-11-12 공개 강의, 음성 전사 기준. 로컬 모델의 처리 시간과 오답 사례
+- [Ollama, Context length](https://docs.ollama.com/context-length) — 2026-11-19 기본 길이, 변경 방법과 권장값 대조
+- [Ollama, Claude Code](https://docs.ollama.com/integrations/claude-code) — 2026-11-19 Anthropic 호환 API 연결과 로컬, 클라우드 모델 구분 대조
+- [Ollama, gemma4](https://ollama.com/library/gemma4) — 2026-11-19 태그별 크기 확인
+- [Obsidian Help, Plugin security](https://obsidian.md/help/plugin-security) — 2026-11-19 제한 모드, 플러그인 권한과 검토 범위 대조
 
 ## 관련 문서
 
@@ -114,3 +129,4 @@ LLM 위키가 검색을 지원하지 않는다는 구분은 맞지 않는다. �
 - [[RAG-Retrieval-Engineering|RAG 검색 엔지니어링]]
 - [[LLM-Hallucination-Verification|LLM 환각과 근거 검증]]
 - [[Harness-Gate-Placement|하네스 검증 관문 배치]]
+- [[Local-Inference-Deployment-Cases|로컬 AI 추론의 메모리와 실행 사례]]
