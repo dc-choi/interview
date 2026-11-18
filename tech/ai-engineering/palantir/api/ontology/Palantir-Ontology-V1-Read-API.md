@@ -74,6 +74,14 @@ Parameter에서는 `baseType` 문자열과 `required` boolean이 필수이고 de
 
 이번 확인은 V1 실행의 경로, scope와 요청/응답 계약에 한정했다. 실제 호출과 다른 조회 endpoint는 재검증하지 않아 기존 `verified_at`을 유지한다.
 
+### Execute Query DataValue 표의 Time Series Reference 개정
+
+2026-11-18 수집한 V1 Execute Query 명세(버전 없는 주소와 `/v1/` 주소의 본문이 같다)에서 요청 `parameters`와 응답 `value`의 DataValue 표가 함께 바뀌었다. 2026-11-01 수집본(위 2026-11-03 대조 대상)의 Time Series Reference는 `type` 판별자를 둔 JSON 객체(`seriesId`, `templateRid`, `qualifiedSeriesId` variant)였다. 새 수집본은 seriesId 문자열 또는 JSON 객체이며 예시는 `"sensor-123"`, `{"seriesId": ..., "syncRid": ...}`, `{"templateRid": ..., "templateVersion": "1"}`다. V1 Apply Action에 같은 시기 들어간 개정([[Palantir-Ontology-V1-Action-API]])과 같은 표기다.
+
+2026-11-01 수집본과 비교해 바뀐 행은 Time Series Reference뿐이다. 같은 표의 Scenario Reference(scenario RID 문자열)와 Geoshape(GeoJSON geometry를 객체 또는 문자열로 표현)는 2026-11-01 수집본에도 있었고, Geoshape는 2026-10-19 수집본에는 없었다. 경로, scope, 요청 body의 `parameters`만 있는 구조와 필수 `value` 응답은 바뀌지 않았다.
+
+이 DataValue 표는 Action과 Query가 함께 쓰는 설명이다. V1 Get Query Type 명세의 baseType 표에는 `TimeSeries<T>`만 있고 dataType union에는 time series, scenario, geoshape variant가 없으므로, 세 타입이 Query 입출력에 실제로 나타나는지는 확인하지 못했다. 위 직렬화 절의 보충으로만 읽는다. Action과 Query가 같은 DataValue 직렬화 함수를 쓰면 함께 맞추되, 공식 Python SDK의 V1 DataValue 문서가 아직 이전 `type` 판별자 표기를 적고 있어 공식 자료끼리 엇갈리므로([[Palantir-Ontology-V1-Action-API]]의 Batch 절) 실제 요청으로 확인한 뒤 바꾼다(설계 제안). 이전 형식의 수용 여부와 실제 호출은 시험하지 않았다. 이 표와 실행 계약만 부분 대조했으므로 기존 `verified_at`을 유지한다.
+
 ## 출처
 
 - [Ontology basics](https://www.palantir.com/docs/foundry/api/ontology-resources/ontologies/ontology-basics)
@@ -83,7 +91,7 @@ Parameter에서는 `baseType` 문자열과 `required` boolean이 필수이고 de
 - [Execute query](https://www.palantir.com/docs/foundry/api/ontology-resources/queries/execute-query)
 - [List Query Types (v1)](https://www.palantir.com/docs/foundry/api/v1/ontology-resources/query-types/list-query-types) — 2026-11-18 응답 필드의 필수 여부 대조
 - [Get Query Type (v1)](https://www.palantir.com/docs/foundry/api/v1/ontology-resources/query-types/get-query-type) — 2026-11-18 단건 조회 계약과 geohash variant 대조
-- [Execute Query (v1)](https://www.palantir.com/docs/foundry/api/v1/ontology-resources/queries/execute-query) — 2026-11-03 V1 실행 계약 부분 대조
+- [Execute Query (v1)](https://www.palantir.com/docs/foundry/api/v1/ontology-resources/queries/execute-query) — 2026-11-03 V1 실행 계약 부분 대조, 2026-11-18 수집본의 DataValue 표 대조
 - [Execute Query (v2, Global)](https://www.palantir.com/docs/foundry/api/v2/functions-v2-resources/queries/execute-query) — 2026-11-03 Global Query의 scope와 버전 선택 인자 비교
 
 ## 관련 문서
