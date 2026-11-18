@@ -37,7 +37,7 @@ Five Forces는 산업 구조와 수익성의 압력을 분석한다. 개별 기�
 
 ## 경쟁 해자 (Competitive Moat)
 
-Warren Buffett이 투자 분석에서 널리 알린 개념. 경쟁자의 진입을 막는 구조적 장벽이다.
+Warren Buffett이 투자 분석에서 널리 알린 개념. 경쟁자의 진입을 막는 구조적 장벽이다. 유형별 정의를 더 좁게 나눈 틀은 [[Seven-Powers|7 Powers]]에 있다.
 
 | 해자 유형 | 설명 | 예시 |
 |---|---|---|

@@ -3,7 +3,7 @@ tags: [infrastructure, docker]
 status: done
 category: "Infrastructure - Container"
 aliases: ["Docker Compose", "도커 컴포즈"]
-verified_at: 2026-10-15
+verified_at: 2026-11-19
 ---
 
 # Docker Compose
@@ -97,6 +97,22 @@ Compose v5.6.0(2026-10-02)의 jobs 지원은 수동 트리거에 한정된다. �
 
 위 점검은 릴리스의 지원 범위에 근거한 적용 기준이다. jobs의 구체적인 YAML 문법이나 예약 실행 도입 시점은 이 릴리스 노트만으로 확정하지 않는다.
 
+## v5.7.0 업그레이드 점검: CLI와 Go SDK의 영향 차이
+
+v5.7.0(GitHub 릴리스 2026-11-02)은 `up`의 내부 실행 방식을 바꿨지만, 릴리스 노트는 CLI가 이전처럼 동작한다고 밝힌다. 영향이 큰 쪽은 Compose를 Go 라이브러리로 쓰는 코드다. 컴파일이 통과해도 동작이 바뀐 부분이 있으므로 오류 경로를 테스트로 확인한다.
+
+**라이브러리(Go SDK) 사용자**
+
+- **단일 실행 계획**: `Up`은 Create와 Start 단계를 데몬 상태의 스냅샷 하나에 대한 계획 하나로 실행한다. 두 단계 사이에 데몬을 다시 조회하지 않으므로, 계획 뒤 종료된 컨테이너는 다시 시작하지 않고, 그사이 삭제된 컨테이너는 건너뛰지 않고 start가 실패하며, Start 단계의 계획 오류는 컨테이너를 만들기 전에 실패한다. 같은 릴리스에서 `scale`과 watch 재빌드(#14291), `start`(#14296)가 계획 기반 실행으로 옮겨졌고 `up -d`(#14290)와 대화형 `up`(#14305)이 여기에 합류했다. v5.6.x에서 올리면 이 명령들 모두 계획 기반 실행으로 바뀐다.
+- **옵션 조합 검증**: `UpOptions.Validate()`가 `*api.IncompatibleOptionsError`를 반환하며 `errors.Is(err, api.ErrIncompatibleOptions)`로 구분한다(#14306). 대상은 `Start.Wait`와 `Start.Attach`를 함께 쓴 경우, `Start.Attach` 없는 분리 실행에 `OnExit`, `ExitCodeFrom`, `Watch` 중 하나를 쓴 경우다. 이전에는 조용히 무시되던 조합이라, 잘못된 조합을 일부러 넣어 오류가 호출부까지 전달되는지 확인한다. `Up`은 `StartOptions.Project`를 무시하고 넘겨받은 프로젝트로 동작한다.
+- **API 변경**: 내비게이션 메뉴는 `NavigationMenu: true`와 `compose.WithNavigationMenu(...)` 구현 주입이 모두 있어야 나온다. `NavigationMenu: true`인데 구현을 주입하지 않으면 메뉴 없이 경고만 낸다(#14324). `DownOptions.Images`는 `api.ImagePruneMode` 타입이 되어 `string` 변수는 변환해야 하며, 잘못된 값은 아무것도 지우기 전에 거부된다(#14149). `compose.ServiceHash`, `NetworkHash`, `VolumeHash`는 내부 패키지로 옮겨져 더 이상 공개되지 않는다(#14405). 릴리스 노트는 대체 공개 API를 제시하지 않는다.
+
+**CLI 사용자**
+
+- `push --ignore-push-failures`는 폐기 예정이고 로컬에 없는 이미지를 건너뛰는 `--ignore-missing`이 그 대안이다(#14341, #14354). 릴리스 노트에 제거 일정은 없지만 CI 스크립트에서 쓰고 있으면 옮길 대상으로 기록한다.
+- `run --no-recreate`는 기존 의존 서비스를 그대로 재사용한다(#14144). `stats`에 `--all-projects`와 `--aggregate`가 생겼고, `--parallel` 값은 bake에 `--jobs`로 전달된다.
+- `down -v`는 프로젝트가 소유하지 않은 volume을 남긴다(#14374). 위 배포 패턴의 `down -v` 주의는 그대로 유효하다.
+
 ## 면접 포인트
 
 Q. Docker Compose를 왜 사용하는가?
@@ -118,7 +134,11 @@ Q. 코드를 바꿨는데 `docker compose up`에 반영되지 않는 이유는?
 
 2026-10-15 부분 검증: CLI 버전 설명, v5.6.0 jobs와 provider 변경, 미지원 속성 경고와 dry-run의 경계를 공식 이력, 릴리스 노트와 CLI 문서에 대조했다. dry-run 변경의 성격은 PR #14150의 검토와 변경 전 commit 경로도 확인했다. 실행 환경에서의 재현은 포함하지 않는다.
 
+2026-11-19 부분 검증: v5.7.0 절의 단일 실행 계획, 옵션 검증, Go API 변경과 CLI 변경을 v5.7.0 릴리스 노트에 대조했다. 개별 PR 본문과 실행 재현은 확인하지 않았다.
+
 - [v5.6.0 릴리스 — docker/compose](https://github.com/docker/compose/releases/tag/v5.6.0)
+- [v5.7.0 릴리스 — docker/compose](https://github.com/docker/compose/releases/tag/v5.7.0)
+- [Docker Compose 5.7.0, 컴파일이 통과하면 끝일까 — 길리랩](https://www.youtube.com/watch?v=gSHv9GEzvTI) — 2026-11-12 업로드, 학습 계기
 - [PR #14150 dry-run 방어 강화와 기존 동작 검토 — docker/compose](https://github.com/docker/compose/pull/14150)
 - [변경 전 commit 경로의 dry-run 검사 — docker/compose](https://github.com/docker/compose/blob/727fa0e/pkg/compose/commit.go)
 - [Docker Docs — docker compose](https://docs.docker.com/reference/cli/docker/compose/)

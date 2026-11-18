@@ -53,6 +53,18 @@ RLWRLD는 상자 옮기기나 집안일 같은 연구용 과제의 성공률로�
 
 시뮬레이션 성공률은 방향을 잡는 근거다. 시뮬레이터와 실제 환경의 차이(sim-to-real gap) 때문에 실제 성공률로 옮겨지지 않을 수 있으며, 배치할 환경을 시뮬레이터가 닮을수록 평가가 유효해진다. 실제 장비의 센서 오차, 지연과 비상 정지는 따로 시험한다([[IoT-Edge-Cloud-Pipeline#생성형 AI의 작업 제안과 물리 제어를 분리한다|생성형 AI와 물리 제어의 분리]]).
 
+### 구동기 모델을 실측에 맞춰 sim-to-real 차이를 줄인다
+
+시뮬레이터의 구동기 모델이 실물과 다르면 정책은 실제 하드웨어가 할 수 없는 동작을 배울 수 있다. 예를 들어 시뮬레이터의 모터가 실제보다 힘을 빨리 내면, 정책은 실물에서는 늦을 타이밍에 힘을 쓰는 법을 익힌다(설명을 위한 예시). 2026-11 Boston Dynamics가 공개한 바퀴 단 Atlas 실험은 이 차이를 줄이는 과정을 보여 준다. 시판 스쿠터 바퀴를 어댑터 하나로 기존 발목 구동기에 달아, 출발, 회전, 정지마다 모터가 실제 하중을 받은 채 토크-속도 범위 전체를 오가게 만든 연구용 시험대다.
+
+- **학습:** 시뮬레이션에서 전신 강화학습 정책을 학습했다. 기존 정책 프레임워크를 가져와 보상 구성, 학습할 명령의 범위와 자세 유지 방식만 조정했다. 일부 동작은 사람 모션캡처를 따라가게 했는데, 발을 많이 미끄러뜨리는 클립을 일부러 골랐다.
+- **레퍼런스에 없던 행동:** 사람은 옆으로 미끄러질 때 발을 끌지만, 정책은 바퀴 방향을 틀어 굴러가는 방법을 찾았다. 사람에게 바퀴가 없으니 시연 데이터로는 줄 수 없는 동작이다.
+- **sim-to-real 작업:** 모든 소프트웨어 환경에서 저수준 제어 파라미터가 일치하는지 확인하고, 실제 구동기의 특성 측정 실험을 한 뒤 시뮬레이터의 모터 모델을 측정값에 맞췄다. 어떤 근사는 안전하고 어떤 근사는 정책이 악용하는지도 따로 판단했다. 측정 신호와 맞춘 파라미터의 세부는 공개되지 않았다.
+- **주장의 범위:** 첫 시도에 성공했다는 표현은 사람의 회전 점프 기록을 따라가는 360도 점프 정책 하나에 붙은 것이고, 회사도 그 동작을 위험이 낮은 동작으로 설명했다. 모든 동작이 첫 시도에 옮겨졌다는 뜻은 아니다.
+- **다음 과제:** 회사는 이 교훈을 Atlas의 표준 구성(standard configuration)에 반영하고 있으며, 구동기 고장에 대한 정책의 대응을 다음 연구로 밝혔다.
+
+정확한 구동기 모델과 학습 기반 상위 제어는 대체 관계가 아니라 함께 쓸 때 효과가 난다는 것이 이 사례의 요지다. 정책을 실물에 옮기기 전에 시뮬레이터의 구동기 응답, 제어 주기와 게인이 실물과 같은지 먼저 확인한다(이 문서의 판단).
+
 ## 성공률 관문과 모델 레지스트리
 
 AWS의 Physical AI Toolchain(2026-10 공개, Apache 2.0)은 NVIDIA의 GR00T, Isaac Sim, Isaac Lab, Cosmos, OSMO를 SageMaker, Batch, EKS 같은 AWS 서비스에 올리는 참조 아키텍처와 IaC(구성 요소 대부분이 독립 Terraform 모듈) 모음이다. 그 안의 Isaac Lab Arena 평가 구성(저장소 표기 Preview)은 다음 다섯 단계를 SageMaker 파이프라인으로 묶는다.
@@ -100,6 +112,8 @@ Fortune의 2026-11-13 보도(OpenAI 대변인 확인)에 따르면 OpenAI는 독
 - [DexBench — RLWRLD, GitHub](https://github.com/RLWRLD/DexBench) — 2026-11-19 README의 기반 플랫폼, 환경별 과제 수, 공개 범위와 데이터셋 형식, 커밋 날짜 대조.
 - [RLWRLD Launches DexBench Initiative to Define Next-Generation Industry Standards for Humanoid AI in Collaboration with NVIDIA — RLWRLD, PR Newswire](https://en.prnasia.com/releases/global/rlwrld-launches-dexbench-initiative-to-define-next-generation-industry-standards-for-humanoid-ai-in-collaboration-with-nvidia-536553.shtml) — 2026-06-09 발표의 세 가지 계획, 다섯 영역과 18개 과제 표기, 2026-11-19 대조.
 - [엔비디아는 왜 한국 스타트업과 로봇 손재주 동맹 맺었나? (류중희 리얼월드 대표) — 티타임즈TV](https://www.youtube.com/watch?v=MNJANd25Tp0) — 2026-11-11 업로드, 음성 인식 전사문 기준. 산업 작업 기준 벤치마크의 문제의식.
+- [Atlas On a Roll — Boston Dynamics, Xiaoyu (Andy) Wu](https://bostondynamics.com/blog/atlas-on-a-roll/) — 2026-11 게시(본문에 날짜 표기 없음). 2026-11-19 바퀴 장착 방식, 학습 조정 항목, 모션캡처 선택 기준, sim-to-real 작업과 첫 시도 성공의 범위 대조.
+- [보스턴다이내믹스의 바퀴 달린 아틀라스 영상 공개 — 안될공학](https://www.youtube.com/watch?v=vjDOT44-Fpw) — 2026-11-12 업로드, 음성 인식 전사문 기준. 학습 계기.
 - [MimicGen: A Data Generation System for Scalable Robot Learning using Human Demonstrations — Mandlekar 외, arXiv](https://arxiv.org/abs/2310.17596) — 2026-11-14 초록의 시연 합성 규모 대조.
 - [Introducing AWS Physical AI Toolchain — AWS Physical AI Blog](https://aws.amazon.com/blogs/physical-ai/introducing-aws-physical-ai-toolchain/) — 2026-10-07 게시. 구성 요소와 단계 대조.
 - [sample-the-physical-ai-toolchain-on-aws — aws-samples, GitHub](https://github.com/aws-samples/sample-the-physical-ai-toolchain-on-aws) — 2026-11-14 README의 구성 요소와 상태 표기, `isaac-lab-arena-on-aws` README 앞부분의 다섯 단계, 승인 상태와 임계값 설명 대조.
@@ -116,6 +130,7 @@ Fortune의 2026-11-13 보도(OpenAI 대변인 확인)에 따르면 OpenAI는 독
 - [[Robotics|로보틱스 지도]]
 - [[Physical-AI-and-Liquid-Control|피지컬 AI와 리퀴드 제어]]
 - [[Tactile-Grasp-Control|촉각 기반 파지 제어]]
+- [[Robot-Perception-Degradation-Safety|카메라 열화와 로봇의 위험 지시 거부]]
 - [[World-Models|월드 모델]]
 - [[Gemini-4-Argon#10월 일반 제공과 로봇 활용의 확인 범위|Gemini 4 Argon의 로봇 활용 조건]]
 - [[Reinforcement-Learning-from-Experience|경험 기반 강화학습]]
