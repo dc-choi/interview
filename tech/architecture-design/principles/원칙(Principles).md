@@ -11,6 +11,7 @@ aliases: ["Principles"]
 
 ## 목차
 - [x] [[Why-Architecture-Matters|소프트웨어 아키텍처의 중요성]]
+- [x] [[Architecture-Trade-offs|아키텍처 트레이드오프 (기능, 품질, 제약의 세 입력, 결정 전 세 질문, 감수한 단점의 운영 관리, 요구사항 변화와 재검토, Gmail, Netflix, YouTube 사례)]]
 - [x] [[Software-Boundaries|소프트웨어의 경계 (코드, 물리, 사람 범주의 경계, 추상화 누수, 숨은 경계, 세 가지 질문, 경계의 진화)]]
 - [x] [[Abstraction-and-Structural-Thinking|추상적 사고와 구조적 사고 (추출로서의 추상화, 추상화 수준, MECE 구조화, 분류와 추출과 일반화, 리팩터링의 세 수준)]]
 - [x] [[Software-Modeling|소프트웨어 모델링과 좋은 모델의 기준 (추상화와 구조화, 문제 해결, 블랙박스 계약, 인지 범위, 예측 가능성)]]

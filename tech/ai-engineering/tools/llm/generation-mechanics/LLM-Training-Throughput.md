@@ -1,7 +1,7 @@
 ---
 tags: [ai, llm, training, gpu, performance]
 status: done
-verified_at: 2026-11-18
+verified_at: 2026-11-19
 category: "AI엔지니어링(AIEngineering)"
 aliases: ["LLM Training Throughput", "LLM 학습 처리량", "Model FLOPs Utilization", "Mixed Precision Training", "혼합 정밀도 학습", "Kernel Fusion", "커널 융합", "Activation Checkpointing", "활성값 체크포인팅"]
 ---
@@ -20,6 +20,18 @@ GPU 시간 ≈ 학습 FLOPs ÷ GPU 한 장의 실제 처리량(FLOP/s)
 Llama 3 405B의 사전학습 연산 3.8×10^25 FLOPs를 보고서 표 4의 GPU당 처리량 400 TFLOP/s(16,384장 구성, BF16 MFU 41%)로 나누면 약 9.5×10^10 GPU초, 즉 약 2,640만 GPU 시간이다. 16,384장이면 약 67일이다. 모델 카드가 밝힌 Llama 3.1 405B의 학습 시간은 3,084만 GPU 시간(H100-80GB, TDP 700W)으로 이 어림보다 크다. 처리량이 더 낮은 긴 문맥 단계(380 TFLOP/s)와 중단 뒤 재시작이 어림에 빠져 있기 때문으로 보인다(해석). Llama 3 보고서는 54일 동안 작업 중단 466번을 겪으면서 경과 시간 중 실제 학습에 쓴 비율(effective training time)을 90% 넘게 유지했다고 적는다. 동기식 학습이라 GPU 한 장의 고장도 작업 전체의 재시작으로 이어질 수 있어 이 비율을 따로 관리한다.
 
 비용은 이 GPU 시간에 시간당 단가를 곱해 어림한다. 단가는 시점, 공급처와 계약 조건에 따라 다르므로 기준일을 붙인다.
+
+### 중단, 체크포인트 저장, 네트워크와 전력
+
+같은 보고서의 3.3절은 중단, 저장소, 네트워크와 전력에 관한 운영 조건도 적는다(arXiv v3 기준).
+
+- **중단의 원인**: 54일 동안의 466번 중단 중 47번은 자동 유지보수 같은 계획된 중단이고 419번이 예상하지 못한 중단이다. 예상하지 못한 중단의 약 78%는 확인됐거나 의심되는 하드웨어 문제(GPU나 호스트 부품 고장, silent data corruption, 계획에 없던 호스트 유지보수)로 분류됐고, GPU 문제가 58.7%로 가장 큰 범주다. 표 5에서는 고장 난 GPU가 30.1%, GPU의 HBM3 메모리가 17.2%다(30.1%와 이를 포함해 합산한 58.7%는 표에 인쇄된 값이며, 건수로 계산하면 148/419는 35.3%, GPU 범주 268건은 64.0%다). 중단이 많았지만 큰 수동 개입이 필요했던 것은 세 번이고 나머지는 자동화가 처리했다.
+- **체크포인트 저장**: Meta의 분산 파일 시스템 Tectonic으로 SSD 서버 7,500대, 240PB의 저장소를 꾸렸고 지속 처리량 2TB/s, 최대 7TB/s를 낸다. GPU마다 1MB~4GB의 모델 상태를 짧은 시간에 몰아 쓰는 체크포인트 쓰기가 저장소를 잠깐 포화시키는 것이 주된 난제로 꼽힌다. 보고서는 체크포인트 중 GPU 정지 시간을 줄이고 체크포인트를 더 자주 남겨 중단 뒤 잃는 작업을 줄이는 것을 목표로 든다.
+- **GPU 사이 연결**: 405B는 RoCE, 작은 모델은 InfiniBand 클러스터에서 학습했고 두 클러스터 모두 GPU 사이를 400Gbps로 잇는다.
+- **전력 변동**: 수만 장의 GPU가 체크포인트나 집합 통신이 끝나기를 함께 기다리거나 작업 전체가 시작하고 멈출 때 동시에 전력을 올리고 내려, 데이터센터 전력이 순간적으로 수십 MW 단위로 출렁일 수 있고, 보고서는 이것이 전력망의 한계를 시험한다고 적는다.
+- **환경 요인**: 낮 시간의 높은 기온이 GPU의 동적 전압, 주파수 조절에 영향을 줘 하루 주기로 처리량이 1~2% 변한 것도 관측됐다.
+
+학습은 수많은 GPU가 한 작업으로 묶여 몇 주에서 몇 달 동안 쉬지 않고 도는 일이라, 고장과 재시작, 체크포인트 저장이 처리량과 함께 학습 기간에 영향을 준다(해석). 사용자 요청에 맞춰 짧게 반복되는 추론의 병목은 [[LLM-Inference-Bottlenecks|LLM 추론 병목]]이 다룬다.
 
 ## MFU는 모델이 필요로 하는 연산만 센다
 
@@ -94,7 +106,7 @@ PyTorch AMP에서는 `torch.autocast`가 연산마다 정밀도를 고른다. CU
 ## 출처
 
 - [PaLM: Scaling Language Modeling with Pathways — Chowdhery et al.](https://arxiv.org/abs/2204.02311) — 2026-11-18 대조. 4.1절 MFU와 HFU, 표 3, 부록 B 계산식
-- [The Llama 3 Herd of Models — Llama Team, AI @ Meta](https://arxiv.org/abs/2407.21783) — 2026-11-18 대조. 3.3.1절 장비, 3.3.2절의 표 4와 MFU, 3.3.4절 중단과 실제 학습 시간 비율
+- [The Llama 3 Herd of Models — Llama Team, AI @ Meta](https://arxiv.org/abs/2407.21783) — 2026-11-18 대조. 3.3.1절 장비, 3.3.2절의 표 4와 MFU, 3.3.4절 중단과 실제 학습 시간 비율. 2026-11-19 v3의 3.3.1절 저장소와 네트워크, 3.3.4절 중단 분류(표 5)와 전력 변동 대조
 - [Llama 3.1 Model Card — GitHub, meta-llama](https://github.com/meta-llama/llama-models/blob/main/models/llama3_1/MODEL_CARD.md) — 2026-11-18 학습 GPU 시간과 장비 확인
 - [FlashAttention: Fast and Memory-Efficient Exact Attention with IO-Awareness — Dao et al.](https://arxiv.org/abs/2205.14135) — 2026-11-18 2.1절 메모리 계층, 실행 모델, 연산 분류와 커널 융합 대조
 - [Mixed Precision Training — Micikevicius et al.](https://arxiv.org/abs/1710.03740) — 2026-11-18 대조. 초록, 3.1절 FP32 마스터 가중치, 3.2절 손실 스케일링, 3.3절 산술 정밀도
@@ -103,6 +115,7 @@ PyTorch AMP에서는 `torch.autocast`가 연산마다 정밀도를 고른다. CU
 - [PyTorch 2.15, torch.compile](https://docs.pytorch.org/docs/2.15/generated/torch.compile.html) — 2026-11-18 기본 백엔드와 모드 확인
 - [PyTorch 2.15, torch.utils.checkpoint](https://docs.pytorch.org/docs/2.15/checkpoint.html) — 2026-11-18 연산과 메모리의 교환, 역전파에서의 재계산과 `use_reentrant` 권고 확인
 - [YouTube, Stanford CS229, Building Large Language Models (LLMs)](https://www.youtube.com/watch?v=9vM4p9NN0Ts) — 2024-08-27 업로드. 정리의 계기이며 계산과 수치는 위 논문, 보고서와 공식 문서로 대조했다
+- [YouTube, 디케이앤유, AI 학습과 추론, 인프라가 어떻게 다른가](https://www.youtube.com/watch?v=DDFR7NZxpVw) — 2026-11-12 업로드. 중단, 저장과 전력 단락의 계기이며 수치는 Llama 3 보고서로 대조했다
 - [YouTube, Marina Wyss, AI Engineering in 76 Minutes (Complete Course/Speedrun!)](https://www.youtube.com/watch?v=JV3pL1_mn2M) — 2025-04-01 업로드. Chip Huyen의 책 AI Engineering(O'Reilly Media, 2025)을 요약한 강의로 활성값 체크포인팅 단락의 계기다. 사실은 PyTorch 문서로 대조했다
 
 ## 관련 문서
