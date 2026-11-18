@@ -115,6 +115,15 @@ Java 21 이후 virtual thread 모델에서는 스레드가 희소 자원이 아�
 | active와 queue가 모두 낮은데 처리 정체 | 풀 포화가 아닌 caller, submission 또는 관측 경로의 병목 | 유입량, executor 제출 지점과 downstream 지표를 함께 확인 |
 | 시간이 지날수록 active 우상향 | 반환 누락, 누수 | 타임아웃과 자원 해제 경로 점검 |
 
+## 의존성 지연이 공용 풀을 잠식하는 계산
+
+외부 API, DB, Redis처럼 응답을 동기로 기다리는 의존성이 느려지면 그 호출의 스레드 점유 시간이 늘어난다. Little's Law를 대입하면 그 의존성 호출이 요구하는 동시 스레드 수는 대략 `해당 호출의 유입률 × 스레드 점유 시간`이다(해석). 이 값이 공용 풀에서 다른 요청이 쓰는 몫을 뺀 크기를 넘으면 안정 상태가 없어 실제 점유는 풀 크기에서 멈추고 대기열이 계속 자란다. 그때부터 의존성과 무관한 요청도 실행할 스레드를 얻지 못한다. 한 기능의 장애가 서비스 전체 장애로 번지는 경로다. 유입은 평균이 아니라 파형으로 오므로 평균 곱이 한도에 닿기 전에 대기가 시작될 수 있다.
+
+- 예시 계산(발표 실험의 조건, Tomcat 요청 스레드 최대 40개): 외부 호출 초당 10건, 응답 5초 무응답 지연이면 요구 동시성은 `10 × 5 = 50 > 40`이고, 첫 응답이 오는 5초보다 앞선 `40 ÷ 10 = 4초` 뒤 풀이 가득 찬다. Read timeout을 1초로 두면 `10 × 1 = 10`으로 줄어 관계없는 API가 버틴다. 그러나 유입이 초당 50건이 되면 `50 × 1 = 50 > 40`이라 timeout이 있어도 다시 포화된다.
+- 식의 시간 항은 호출 하나가 스레드를 잡는 전체 시간의 상한이어야 한다. 이 실험은 응답이 아예 오지 않는 지연이라 read timeout 1초가 그 상한 역할을 했다. Read timeout은 바이트가 오지 않는 구간만 재므로 연결 시간, 조금씩 오는 응답, timeout 뒤 재시도가 있으면 전체 deadline과 재시도 횟수로 계산한다(해석).
+- Timeout은 호출 하나의 점유 시간을 줄일 뿐, 실패할 호출이 계속 들어오는 유입률은 줄이지 못한다. 그래서 `유입률 × 점유 시간 상한`이 그 의존성에 허용한 슬롯을 넘을 수 있으면 timeout 하나로는 부족하다(해석). 발표 실험은 반복 실패를 감지해 호출 자체를 즉시 실패시키는 circuit breaker로 이를 보완했고, 의존성별 슬롯을 따로 두는 bulkhead는 이 문서가 더하는 보완이다 — [[External-Service-Resilience|외부 서비스 장애 대응]].
+- 실험의 가용성은 외부 API를 호출하지 않는 API가 HTTP 200을 1초 안에 돌려준 비율로 정의했다. 이 결과는 해당 실험 조건의 측정값이며 모든 서버의 기준치가 아니다. 자기 서비스에서는 장애를 주입한 의존성을 호출하지 않는 핵심 API의 성공률과 지연을 같은 방식으로 정의해 장애 주입 시험의 판정 기준으로 쓴다(적용 제안). 요청당 스레드 모델이 전제이며, virtual thread 환경에서는 앞의 Virtual thread 이후 절처럼 제한 자원이 달라진다.
+
 ## 격리와 분리
 
 성격이 다른 작업을 한 풀에 태우면 느린 쪽이 빠른 쪽의 슬롯을 먹는다. Bulkhead 패턴의 구현과 timeout 계층은 [[External-Service-Resilience|외부 서비스 장애 대응]]에 있고, 분리 여부의 판단 기준만 적으면 이렇다.
@@ -155,6 +164,7 @@ Java 21 이후 virtual thread 모델에서는 스레드가 희소 자원이 아�
 - [Linux man-pages, listen(2)](https://man7.org/linux/man-pages/man2/listen.2.html)
 - [nginx conf/nginx.conf — GitHub](https://github.com/nginx/nginx/blob/master/conf/nginx.conf)
 - [How to set an ideal thread pool size — Zalando Engineering Blog](https://engineering.zalando.com/posts/2019/04/how-to-set-an-ideal-thread-pool-size.html)
+- [10분 테코톡 맥스의 장애 전파 관점에서 바라본 서버 가용성 — 우아한테크](https://www.youtube.com/watch?v=Tv44xv3BF2s)
 - [인프런, 김영한, 동시 요청 - 멀티 쓰레드](https://www.inflearn.com/courses/lecture?courseId=326674&unitId=71162)
 
 ## 관련 문서

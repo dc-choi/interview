@@ -24,6 +24,14 @@ Proposal은 ADD/MOD/DEL 변경과 column stats, unit test, comment를 검토한�
 
 Rebase는 base의 non-conflicting 변경을 기본으로 받아들인다. Discard new changes from base는 이들까지 버릴 수 있으며 Squash intermediate versions는 중간 version을 줄인다. Reset branch는 saved/unsaved 변경과 이력을 다른 branch 상태로 바꾸며 되돌릴 수 없다고 설명한다. 단순 충돌 해결과 reset을 혼동하지 않는다.
 
+## 여러 pipeline의 일괄 migration
+
+Bulk migration은 pipeline을 직접 바꾸지 않고 적용 대상 pipeline마다 proposal을 만든다. 각 proposal을 검토하고 merge해야 그 pipeline의 main branch에 반영되므로, migration 실행과 변경 적용을 같은 사건으로 보지 않는다. 범위는 Projects(project와 그 안 folder의 pipeline 전체), Pipelines(개별 선택), All in enrollment 중에서 고른다. Projects와 Pipelines는 선택한 각 대상의 Edit 권한이 필요하고, enrollment 전체 migration은 별도 권한이 필요하며 enrollment 관리자가 기본으로 가진다. Migration 이름은 enrollment의 모든 사용자에게 보이지만 각 사용자는 권한이 있는 resource만 볼 수 있으므로, 이름에 공개하면 안 되는 project나 고객 정보를 넣지 않는다(운영 권고).
+
+2026-11-17 수집한 문서 기준 migration 유형은 둘이다. Convert to Faster는 standard batch pipeline을 faster pipeline으로 바꾼다. 단일 pipeline 변환은 호환되지 않는 기능이 있으면 변환 전에 경고나 오류 메시지로 알리지만(tips와 faster pipelines 문서 기준), bulk migration은 호환되는 pipeline마다 proposal을 만들고 호환되지 않는 pipeline은 Skipped로 건너뛴다. 이미 faster인 pipeline처럼 standard batch가 아니거나 호환성 검사를 통과하지 못한 pipeline이 이에 해당한다. Replace model은 Use LLM node와 Text to embeddings expression의 모델을 현재 모델과 대체 모델의 mapping으로 바꾸며, 한 migration에 mapping을 여러 개 둘 수 있다. Source 모델을 쓰지 않거나 이미 바뀐 pipeline은 건너뛴다. 다른 유형은 향후 지원 예정이라고만 적혀 있다.
+
+Pipeline별 상태는 Not started, In progress, Success, Failed, Skipped, Canceled다. Success는 proposal 생성 성공일 뿐 변경 적용이 아니며, Failed는 검사나 proposal 준비 중 오류다. 진행 중에도 이미 만든 proposal을 검토할 수 있고, 실행 중 취소하면 처리가 점차 멈추며 이미 만든 proposal은 남는다. 따라서 잘못된 설정으로 취소한 뒤에는 남은 proposal을 merge하지 않도록 따로 정리한다(운영 권고). Skipped와 Failed pipeline은 proposal이 없어 바뀌지 않으므로 상태 필터(Show all pipelines)로 따로 확인한다(운영 권고). 모델 교체 뒤의 출력 품질과 비용 변화는 proposal의 diff만으로 알 수 없으므로 preview와 평가로 확인한다(운영 권고).
+
 ## 재사용의 변경 반경
 
 Global parameter는 constant/regex/struct locator/column/expression을 참조한다. 한 값을 바꾸면 모든 사용처의 논리가 달라진다. Placeholder를 쓰더라도 실제 값이 없으면 deploy error이며 column 존재도 각 사용 transform에서 확인한다.
@@ -46,6 +54,7 @@ AI generate는 선택한 node 뒤에 prompt로 새 transform node를 만들고, 
 
 ## 출처
 
+- [Palantir Pipeline Builder, bulk-migrate-pipelines](https://www.palantir.com/docs/foundry/pipeline-builder/bulk-migrate-pipelines)
 - [Palantir Pipeline Builder, branches-approve-a-change](https://www.palantir.com/docs/foundry/pipeline-builder/branches-approve-a-change)
 - [Palantir Pipeline Builder, branches-create-a-branch](https://www.palantir.com/docs/foundry/pipeline-builder/branches-create-a-branch)
 - [Palantir Pipeline Builder, branches-fallback-branches](https://www.palantir.com/docs/foundry/pipeline-builder/branches-fallback-branches)
