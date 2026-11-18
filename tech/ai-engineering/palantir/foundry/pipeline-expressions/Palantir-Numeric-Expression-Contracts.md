@@ -42,6 +42,8 @@ aliases: ["Pipeline Builder 수치 연산 계약"]
 
 arccos/arcsin의 [-1, 1] 밖 입력, 0 이하 값의 로그와 음수의 제곱근은 공개 예제가 없다. 결과가 null, NaN, 오류 중 무엇인지 가정하지 말고 입력 범위를 먼저 검증한다(설계 제안). 같은 90도에서 cos는 0.0으로 표시되지만 sec는 약 1.633E16이므로 표시된 0.0을 정확한 0으로 단정하지 않는다(해석). 삼각 함수 결과는 0과 정확히 비교하지 말고 허용 오차를 둔다(설계 제안).
 
+`hyperbolicCosineV1`(Hyperbolic cosine)은 이름은 삼각 함수와 비슷하지만 단위 enum 없이 `Expression<Numeric>` 값 하나만 받아 Double을 반환한다. 쌍곡선 함수의 인자는 원의 각도가 아닌 실수(쌍곡각)이므로 degree/radian 선택이 없다는 점과 맞는다(해석). 예제는 1.0에서 1.543080634815244, null에서 null이며 Batch/Faster/Streaming을 표시한다(2026-11-17 수집한 공개 레퍼런스 기준). 1.0의 결과는 정의식 (e + e⁻¹)/2의 값 약 1.5431과 일치한다(해석). cosh는 입력 절댓값이 커지면 지수적으로 커지므로 큰 입력에서 Double 범위를 넘을 때의 결과는 공개 예제가 없어 확정하지 않는다.
+
 `exponentialV1`, `logV1`, `sqrtV1`은 `Expression<Numeric>`을 받아 Double을 반환한다(e^2.0은 7.38905609893, 16.3216의 제곱근은 4.04). `logNV1`의 Base는 `Literal<Double>`, Expression은 `Expression<Numeric>`이다(밑 2.0에서 8의 로그는 3.0). 밑이 literal이라 행마다 다른 밑 column을 넘기는 용도로 보기 어렵고(해석), 행별 밑이 필요하면 `logV1` 두 결과의 비율을 검토한다(설계 제안).
 
 거리와 무게 변환은 `Expression<DefiniteNumeric>` 양과 현재 단위, 목표 단위 enum을 받는다. 1 kilometer는 1000.0 meter, 5 kilogram은 5000.0 gram이며 null은 null이다. 공개 페이지의 단위 enum은 일부만 나열된다.
@@ -66,7 +68,7 @@ Natural random은 하한을 포함하고 상한을 제외한다. Normal random�
 
 대부분의 기본 수치 함수는 Batch/Faster/Streaming을 표시하지만 `positiveModuloV1`, `UnhexV1`, median과 standardDeviation은 Batch/Faster, product는 Batch만 표시한다. 2026-10-26 index 대조 기준 삼각과 역삼각, 지수와 로그, 제곱근, 거리/무게 단위 변환, hex/octal, ceil/floor, subtract와 negate는 모두 Batch/Faster/Streaming이고, 2026-10-24 index 수집본의 Numeric expression 분류 전체로는 `convertBaseV1`(Batch/Streaming)과 `similarityScoreV1`(Batch)도 위 목록 밖의 예외다. 같은 범주의 함수가 같은 엔진에서 모두 지원된다고 가정하지 않는다.
 
-## Bitwise and, or, not은 Binary 분류의 정수 계약이다
+## Bitwise and, or, not, xor는 Binary 분류의 정수 계약이다
 
 `bitwiseAndV1`(Bitwise and)은 두 정수 값에서 공통으로 켜진 bit만 남긴다. 분류는 Numeric이 아니라 Binary이고 Batch/Faster만 표시하므로 Streaming pipeline에서 쓸 수 있다고 가정하지 않는다(2026-11-17 수집한 공개 레퍼런스 기준). Left와 Right는 각각 Byte, Integer, Long, Short만 받고 출력도 이 네 정수 타입 중 하나다. Decimal, Double, Float는 받지 않는다. 소수 값을 정수로 바꾸면 소수부가 사라질 수 있으므로 bit 의미가 있는 정수 column에만 쓴다(설계 제안). 같은 Binary 분류의 shift 함수는 [[Palantir-Type-and-Encoding-Contracts|타입과 인코딩 계약]]에 있으며 실행 모드 표시가 Batch/Streaming이라 Bitwise and와 다르다. Mask와 shift를 한 pipeline에서 함께 쓰면 두 함수의 공통 실행 모드가 Batch뿐인지 먼저 확인한다(해석).
 
@@ -75,6 +77,8 @@ Natural random은 하한을 포함하고 상한을 제외한다. Normal random�
 `bitwiseOrV1`(Bitwise or)은 두 정수 중 어느 한쪽에라도 켜진 bit를 남긴다. 분류, Batch/Faster 표시, Left와 Right의 타입 범위(Byte, Integer, Long, Short), 출력 타입, 한쪽 null이면 null, 좁은 타입을 넓힌다는 설명은 Bitwise and와 같다(2026-11-17 수집한 공개 레퍼런스 기준). 예제에서 12와 10은 14(1100과 1010의 합집합 1110), -16과 3은 -13이다. -16은 하위 4bit가 0이고 나머지가 모두 1이므로 3의 하위 2bit를 켜면 -13이 된다는 해석과 일치한다. 넓히기 예제도 12와 10이라 출력 타입 결정 규칙은 예제로 확인할 수 없다. Flag를 켜는 용도로 쓸 때 null 입력은 기존 flag까지 null로 만들므로 결측 flag를 0으로 볼지 먼저 정한다(설계 제안).
 
 `bitwiseNotV1`(Bitwise not)은 인자 하나(Expression)의 모든 bit를 뒤집는다. 같은 Binary 분류, Batch/Faster 표시, 네 정수 타입 입력과 출력, null 입력에 null 반환이다(2026-11-17 수집한 공개 레퍼런스 기준). 예제는 5에서 -6, 12345678910에서 -12345678911, -1에서 0, 0에서 -1이다. 네 수치 예제는 2의 보수에서 not x가 -x-1이라는 관계와 일치하고, 12345678910은 32bit 정수 범위를 넘으므로 Long 입력 예제로 보인다(해석). Byte나 Short 입력의 결과 타입과 부호를 보여 주는 예제는 없으므로 좁은 정수 column에서 not을 mask 생성에 쓸 때는 결과 타입을 실제 pipeline에서 확인한다(설계 제안).
+
+`bitwiseXorV1`(Bitwise xor)은 두 정수 중 정확히 한쪽에만 켜진 bit를 남긴다. 분류, Batch/Faster 표시, Left와 Right의 타입 범위(Byte, Integer, Long, Short), 출력 타입, 한쪽 null이면 null, 좁은 타입을 넓힌다는 설명은 Bitwise and, or와 같다(2026-11-17 수집한 공개 레퍼런스 기준). 예제에서 12와 10은 6(1100과 1010에서 한쪽에만 있는 bit 0110), -1과 5는 -6이다. -1은 모든 bit가 1이라 xor가 5의 bit를 모두 뒤집으므로 not 5와 같은 -6이 된다는 해석과 일치한다. 넓히기 예제도 12와 10이라 출력 타입 결정 규칙은 예제로 확인할 수 없다. Xor로 두 flag 값의 차이를 찾을 때 결과가 0이 아니면 다른 bit가 있다는 뜻이지만, null 입력은 차이 여부와 무관하게 null이므로 비교 전에 결측을 따로 처리한다(설계 제안).
 
 ## 분류 이름과 실제 타입
 
@@ -122,6 +126,8 @@ Natural random은 하한을 포함하고 상한을 제외한다. Normal random�
 - [Palantir, Bitwise and](https://www.palantir.com/docs/foundry/pb-functions-expression/bitwiseAndV1)
 - [Palantir, Bitwise or](https://www.palantir.com/docs/foundry/pb-functions-expression/bitwiseOrV1)
 - [Palantir, Bitwise not](https://www.palantir.com/docs/foundry/pb-functions-expression/bitwiseNotV1)
+- [Palantir, Bitwise xor](https://www.palantir.com/docs/foundry/pb-functions-expression/bitwiseXorV1)
+- [Palantir, Hyperbolic cosine](https://www.palantir.com/docs/foundry/pb-functions-expression/hyperbolicCosineV1)
 - [Palantir, Functions index](https://www.palantir.com/docs/foundry/pipeline-builder/functions-index)
 
 ## 관련 문서
