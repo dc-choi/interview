@@ -61,6 +61,8 @@ Khosla Ventures의 Keith Rabois는 2026-10-28 공개된 대담에서 OpenAI나 A
 
 같은 업종 안에서도 층이 갈린다. 회계를 예로 들면 장부 마감은 맥락만 있으면 모델 공급자도 할 수 있는 영역에 가깝지만, 감사는 제3자 자격이 필요하고 세무는 틀렸을 때의 책임이 따른다. 그는 빠른 성장 자체를 생존의 증거로 보지 않으며, 대부분의 스타트업은 거대 자본으로 데이터를 먼저 모으는 방식보다 쓸모 있는 제품을 쐐기로 써서 낮은 추가 비용으로 데이터를 쌓는 방식을 따라야 한다고 봤다. 같은 대담에서 AI로 성장을 끌어올린다는 근거가 없는 AI 롤업과, 웹에서 모바일로 넘어갈 때처럼 처음부터 새로 만든 회사들이 나올 것으로 본 기존 버티컬 소프트웨어 회사에도 비관적이라고 밝혔다. 언급한 투자사의 성과 수치는 투자자와 회사의 주장이라 옮기지 않았다.
 
+기능을 흡수하는 쪽의 견해도 같은 방향이다. OpenAI CEO는 2026-10-21 공개된 Stanford GSB 대담에서 더 좋은 모델이 소프트웨어 해자를 삼킨다는 학생의 질문에, 대략 말해 소프트웨어 자체가 강한 해자였던 적은 많지 않았고 네트워크 효과(예: Facebook), 규모의 효과(예: Google), 데이터 해자(많은 기업용 소프트웨어)처럼 다른 종류의 해자가 있었다고 답했다. 소프트웨어는 일시적 우위를 얻어 그 전통적 해자를 쌓는 데 쓰는 것이고 이 구조는 앞으로도 같을 것이라고 봤다. 이 관점에서 위 표의 노출이 작은 층은 일시적 우위를 옮겨 담을 자리이고, 모델 개선이 기능의 차별점을 더 빨리 없앤다면 바뀌는 것은 해자의 종류보다 그 전환에 쓸 수 있는 시간이다(이 문서의 해석). 네트워크 효과와 규모의 경제는 [[Competitive-Analysis#경쟁 해자 (Competitive Moat)|경쟁 해자]]에서 본다.
+
 ## 근거
 
 ### 미세조정 경험의 감소
@@ -121,6 +123,7 @@ Wilbur Labs가 2026-04-28 공개한 2026 Report on Startup Failure는 미국 기
 - 대응 사례는 회사의 공식 발표와 사이트에 적힌 자기 설명이고(ElevenLabs는 대표의 대담 발언으로, 매출 구성이나 점유율로 확인하지 않았다), 라이너의 비용 절감 수치도 독립 검증이 없는 자체 평가다. 내세운 방향이 실제 방어력으로 이어졌는지는 확인하지 않았다.
 - 층별 노출 표는 판단 틀이다. 어떤 기능이 언제 흡수될지 예측하지 않으며, 노출이 작은 층도 영구히 안전하다고 보지 않는다.
 - Rabois 대담은 자신이 투자한 회사를 예로 드는 투자자의 견해다. 음성 인식 전사로 확인했으며 사례 회사의 절감액과 고객 수는 독립 검증이 없다.
+- OpenAI CEO의 해자 견해는 기능을 흡수할 수 있는 모델 공급자 대표의 대담 발언이다. 공식 영상의 사람 자막으로 발언을 확인했고, 예로 든 회사들의 해자 원천을 따로 검증하지 않았다.
 
 ## 출처
 
@@ -141,6 +144,8 @@ Wilbur Labs가 2026-04-28 공개한 2026 Report on Startup Failure는 미국 기
 - [Most AI Startups Won't Survive (Here's How to Build One That Does) — Verticals, Keith Rabois](https://www.youtube.com/watch?v=_8wcKJFxIa4) — 2026-10-28 공개 46분 대담, 2026-11-09 로컬 음성 인식 전사로 00:00~25:10의 판단 기준과 40:50 이후의 롤업, 기존 버티컬 SaaS 견해 확인
 - [Building One of AI’s Fastest-Growing Companies — David Senra, Mati Staniszewski](https://www.youtube.com/watch?v=RFccAuyPPOg) — 2026-09-09 공개 71분 대담, 2026-11-16 사람 자막으로 02:59~08:07의 더빙에서 내레이션으로의 출발, 12:37~22:30의 연구와 제품 구분, 제품 선택 기준, 생태계와 들어가지 않을 영역 확인
 - [ElevenLabs는 어떻게 영화 더빙에서 음성 AI 플랫폼으로 확장했나 — GeekNews](https://news.hada.io/topic?id=36923)
+- [Sam Altman, Co-Founder and CEO of OpenAI: Staying Human While Scaling Superintelligence — Stanford Graduate School of Business, Sam Altman](https://www.youtube.com/watch?v=anAmTGcewX8) — 2026-10-21 공개 48분 View From The Top 대담(대담 날짜 미확인), 2026-11-18 사람 자막으로 40:34~41:47의 소프트웨어 해자 답변 확인
+- [샘 올트먼 영상은 정말 꼭 보세요(오픈 AI CEO, 챗GPT) — 인간지능](https://www.youtube.com/watch?v=rfhk-TZFoXY) — 2026-11-07 공개된 위 대담의 편집본(44:20). 음성 인식 전사 전체를 공식 자막과 대조, 정리의 계기
 
 ## 관련 문서
 

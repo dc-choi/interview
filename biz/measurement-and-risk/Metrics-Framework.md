@@ -16,7 +16,7 @@ Dave McClure(500 Startups)가 제안한 스타트업 성장 지표 프레임워�
 | **Acquisition** | 사용자가 어떻게 오는가? | 채널별 유입, 가입 수 |
 | **Activation** | 핵심 가치를 경험했는가? | 온보딩 완료율, Aha moment 도달 |
 | **Retention** | 다시 오는가? | DAU/MAU, 주간 리텐션 |
-| **Referral** | 다른 사람에게 알리는가? | 초대 전환율, 바이럴 계수 |
+| **Referral** | 다른 사람에게 알리는가? | 초대 전환율, 바이럴 계수([[Viral-Loop\|바이럴 루프의 설계와 측정]]) |
 | **Revenue** | 돈을 내는가? | 유료 전환율, ARPU |
 
 ## North Star Metric (NSM)

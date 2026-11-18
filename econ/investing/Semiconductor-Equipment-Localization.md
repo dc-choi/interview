@@ -107,4 +107,5 @@ Naura의 개별 실적 수치, 특정 장비의 공정별 점유율, 도포와 �
 - [[Memory-Semiconductor-Cycle|메모리와 반도체 장비의 업황 구분]]
 - [[Semiconductor-Advanced-Packaging|반도체 첨단 패키징]]
 - [[Growth-Quality-and-Scenario-Valuation|공시와 시나리오 가치평가]]
+- [[Revenue-Mix-and-Growth-Interpretation|매출 구성과 성장률 해석]] — 청구지와 본사 소재지 기준 지역 매출의 차이, 수출 규제 뒤 비중 변화의 분해
 - [[투자(Investing)|투자 지도]]

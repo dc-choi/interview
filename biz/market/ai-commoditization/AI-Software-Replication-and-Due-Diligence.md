@@ -36,8 +36,11 @@ PhotoCraft의 공개 README는 UI, CLI, JSON 제어 채널과 MCP가 같은 명�
 - **지속적으로 생성되는 데이터:** 데이터를 보유했다는 사실보다 적법한 접근권, 갱신 과정과 개선 효과를 본다.
 - **유통과 신뢰:** 고객의 조달, 보안 심사와 업무 흐름에 자리 잡았는지 확인한다.
 - **실물 운영:** 설치, 물류나 현장 지원은 코드 재생성만으로 복제되지 않는다. 인건비와 자본 부담도 함께 생긴다.
+- **개발 생태계:** 고객이 한 플랫폼에 맞춰 쌓은 코드, 라이브러리와 숙련이 전환 비용이 된다. 다만 아래처럼 AI와 상위 프레임워크가 이 비용을 줄이는 조건을 함께 본다.
 
 기능 복제의 비용 하락이 모든 해자의 소멸을 뜻하지는 않는다. 고객이 결과를 얻도록 책임지는 모델은 차별화 후보지만 책임 비용이 가격을 넘으면 성립하지 않는다.
+
+개발 생태계의 전환 비용은 상위 프레임워크가 하드웨어 차이를 감출 때 줄어든다. ROCm용 PyTorch는 `torch.cuda` 인터페이스를 재사용해, 장치 이름 `cuda`를 쓴 코드도 AMD GPU에서 거의 수정 없이 돌 수 있다([[GPU-Server-Infrastructure|GPU 서버 인프라]]). AI가 경쟁사 하드웨어용 코드를 빠르게 쓰면 개발자를 NVIDIA 칩에 묶어 두던 CUDA의 해자가 약해질 수 있다는 분석도 나왔다(요약만 확인). 수요 쪽에서는 요구하는 인프라가 다른 추론과 에이전트 오케스트레이션이 모델 학습을 앞지르면서 칩 다변화가 강해졌다는 업계 매체의 정리(2026-11-12)가 있다. 남는 것은 문서화된 기능 차이, 성능 최적화와 운영 검증의 비용이며, 그 비용이 실제로 얼마나 줄었는지는 같은 작업을 옮겨 본 결과로 확인한다(적용 판단). 최대 고객이 대체품을 직접 설계하는 구조는 [[Revenue-Mix-and-Growth-Interpretation#고객 집중은 직접 고객과 간접 고객을 나눠 읽는다|고객 집중과 경쟁자 목록]]에서 본다.
 
 ## 모델 공급자가 응용 사업을 모두 직접 하지 않는 이유
 
@@ -92,6 +95,8 @@ PhotoCraft의 공개 README는 UI, CLI, JSON 제어 채널과 MCP가 같은 명�
 - [AI 기업 인수에서는 ARR보다 코드부터 봐야 하는 이유 — GeekNews](https://news.hada.io/topic?id=35386) — 소셜 게시물 기반 사례, 원 거래와 코드 미확보
 - [Ask HN: If the models are so good, why doesn't OpenAI just start 100 companies? — Hacker News](https://news.ycombinator.com/item?id=50200997) — 2026-10-22 게시, 2026-10-27 질문 본문과 사례 댓글 대조. 참여자 의견과 익명 경험담이며 AI 기업의 전략을 확인한 자료가 아님
 - [Ask HN: 모델이 그렇게 뛰어나다면, OpenAI는 왜 직접 회사 100개를 세우지 않을까? — GeekNews](https://news.hada.io/topic?id=35862)
+- [Huang Resigns: Nvidia's AI Infrastructure Roadmap in Question — Data Center Knowledge, Beth Pariseau](https://datacenterknowledge.com/data-center-chips/huang-resigns-nvidia-s-ai-infrastructure-roadmap-in-question) — 2026-11-12 게시, 2026-11-18 추론과 에이전트 작업으로 인한 칩 다변화 서술 확인. 이 서술이 인용한 Silicon Analysts의 2월 보고서는 보지 않았다
+- Nvidia는 젠슨 황 논란 이전부터 어려움을 겪고 있었다 — GeekNews, 2026-11-17 사용자 제공 발췌. 원 기사 미확인. CUDA 해자가 약해질 수 있다는 주장은 이 발췌로만 확인
 
 ## 관련 문서
 
@@ -101,3 +106,5 @@ PhotoCraft의 공개 README는 UI, CLI, JSON 제어 채널과 MCP가 같은 명�
 - [[Valuation|기업가치 평가]]
 - [[Agent-Reverse-Engineering|에이전트 역공학]] — 관찰과 재구현, 매칭 디컴파일과 정적 재컴파일의 동등성 구분, 국내 저작권법의 프로그램코드역분석 요건
 - [[Platform-Power|플랫폼 파워]] — 트래픽 입구, 유통 경로와 플랫폼 의존
+- [[GPU-Server-Infrastructure|GPU 서버 인프라]] — CUDA와 ROCm용 PyTorch의 호환 범위
+- [[Revenue-Mix-and-Growth-Interpretation|매출 구성과 성장률 해석]] — 고객 집중과 고객이 경쟁자가 되는 구조

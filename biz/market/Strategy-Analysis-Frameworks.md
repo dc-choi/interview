@@ -64,6 +64,14 @@ Reeves 외(2014)는 매트릭스가 여전히 가치 있다고 보면서, 더 �
 - 어떤 question mark를 키우고 어떤 pet과 cash cow를 먼저 정리할지 넓은 데이터와 예측 분석으로 엄격하게 고른다.
 - question mark의 수와 비용, star가 될 확률과 허용할 수 있는 실패 비용을 관리하고, star와 question mark가 결국 cash cow와 pet의 이익을 대신할 만큼 수익을 내게 한다. Henderson이 가치 없다고 본 pet에서도 실패 신호를 거둬 정보 가치를 최대화한다.
 
+### 현재 사업의 성장과 다음 사업의 준비를 따로 본다
+
+Henderson의 네 번째 규칙처럼 성장의 보상은 성장이 느려질 때 오지 않으면 끝내 오지 않는다. cash cow와 star의 매출과 이익이 늘어도 question mark에 대한 투자가 끊겼다면, 지금의 성과가 다음 시장에서 자리를 잡지 못한 문제를 가릴 수 있다(이 문서의 적용).
+
+경영진 교체는 이 배분을 바꾸는 계기가 된다. NVIDIA의 2026-11-12 CEO 교체([[Business-Continuity-for-Small-Business#대표자 부재와 공급업체 중단을 함께 본다|회사 발표 내용]]) 직후 업계 매체에 실린 분석가 의견은 현재 로드맵의 실행과 다음 방향의 결정을 나눠 위험을 봤다. 한 분석가는 현재 로드맵 실행에 전 CEO의 지휘 결정이 많이 필요하고 다음 로드맵은 정해지지 않았다는 점을 위험으로 들었다. 다른 분석가는 덜 효과적인 후임이 나오면 2000년 Microsoft의 CEO 승계 뒤 강한 매출 성장에도 소비자 기기 시장에서 경쟁자에게 밀린 일을 되풀이할 수 있다고 비유했다. 최대 고객들이 자체 AI 칩을 만드는 상황에서 실행 중심의 후임이 장기 투자부터 줄일 수 있다는 분석도 있었다(요약만 확인). 모두 의견이며 실제 투자 배분의 변화는 이후 공시로 확인할 대상이다.
+
+1인 사업에 옮기면 현재 매출을 내는 일과 다음 상품 실험에 쓴 시간과 돈을 따로 기록하고, 다음 상품의 신호(문의, 시범 고객, 재구매)를 현재 매출과 섞지 않는다. 외주 매출이 늘어 실험이 멈췄다면 그 사실을 성장 기록과 함께 남긴다(적용 제안).
+
 ## 자원 기반 관점: 지속적 경쟁 우위의 네 지표
 
 Barney(1991)는 전략적 자원이 기업마다 이질적으로 분포하고 그 차이가 시간이 지나도 안정적이라는 가정에서 출발해 기업 자원과 지속적 경쟁 우위의 관계를 다뤘다. 자원이 지속적 경쟁 우위를 만들 잠재력을 보는 경험적 지표로 가치, 희소성, 모방 가능성, 대체 가능성의 네 가지를 논의했다. 이 문서는 네 지표를 자원마다 가치가 있는가, 드문가, 경쟁자가 모방할 수 있는가, 대체할 다른 자원이 있는가를 묻는 질문으로 옮겨 쓴다(이 문서의 적용).
@@ -83,6 +91,7 @@ VRIO 형태는 이 문서에서 원문을 확인하지 않았다. 네 지표는 
 - 시장 개발과 다각화는 무엇이 바뀌는지로 어떻게 구분하는가?
 - Henderson(1970)과 2014년 재검토는 pet을 각각 어떻게 다루는가?
 - 자원의 네 지표로 볼 때 흔한 기술 스택이 약한 지표는 무엇인가?
+- 현재 사업의 매출 성장이 다음 사업의 준비 부족을 가리지 않는지 어떤 기록으로 확인하는가?
 
 ## 출처
 
@@ -91,6 +100,8 @@ VRIO 형태는 이 문서에서 원문을 확인하지 않았다. 네 지표는 
 - [The Product Portfolio — BCG, Bruce Henderson](https://www.bcg.com/publications/1970/strategy-the-product-portfolio) — 1970. 2026-11-02 현금 흐름 네 규칙과 균형 포트폴리오 대조
 - [BCG Classics Revisited: The Growth Share Matrix — BCG, Martin Reeves, Sandy Moose, Thijs Venema](https://www.bcg.com/publications/2014/growth-share-matrix-bcg-classics-revisited) — 2014-06-04. 2026-11-02 1980~2012년 분석과 적용 원칙 대조
 - [Firm Resources and Sustained Competitive Advantage — Journal of Management, Jay Barney](https://doi.org/10.1177/014920639101700108) — 1991, 17권 1호 99~120쪽. 2026-11-02 Crossref에 등록된 초록 대조
+- [Huang Resigns: Nvidia's AI Infrastructure Roadmap in Question — Data Center Knowledge, Beth Pariseau](https://datacenterknowledge.com/data-center-chips/huang-resigns-nvidia-s-ai-infrastructure-roadmap-in-question) — 2026-11-12 게시, 2026-11-18 분석가의 로드맵 실행 위험과 Microsoft 승계 비유 확인. 분석가 의견
+- 젠슨 황 이후, Nvidia는 어디로 가나? — GeekNews, 2026-11-17 사용자 제공 발췌. 원 기사 미확인. 실행 중심 후임의 장기 투자 축소 가능성은 이 발췌로만 확인
 
 ## 관련 문서
 
@@ -99,3 +110,4 @@ VRIO 형태는 이 문서에서 원문을 확인하지 않았다. 네 지표는 
 - [[Category-Expansion|카테고리 확장과 카니발리제이션]] — 인접 카테고리 확장의 적합성 판단
 - [[Expansion-Strategy|성장과 확장]]
 - [[AI-Commoditization-Differentiation|AI 범용화와 사업 차별화]]
+- [[Business-Continuity-for-Small-Business|소규모 사업의 연속성 계획]] — 대표자 부재와 CEO 교체 사례

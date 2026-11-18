@@ -45,7 +45,7 @@ aliases: ["Commerce Revenue Formula", "이커머스 수익 공식"]
 
 역사적 맥락은 [[Commerce-Korea-History|한국 이커머스 역사]] 참조. 옥션의 오픈마켓 전환(2001)은 이 분해에서 거래액, 인식 매출과 비용 구조가 함께 바뀐 사례다.
 
-- **내부 광고는 단계적 매출원** — 트래픽과 입점사가 늘고 광고 지면과 계약 구조가 갖춰진 뒤 검토한다. 마진 구조는 재고, 물류, 광고 판매비용을 함께 비교해 판단한다.
+- **내부 광고는 단계적 매출원** — 트래픽과 입점사가 늘고 광고 지면과 계약 구조가 갖춰진 뒤 검토한다. 마진 구조는 재고, 물류, 광고 판매비용을 함께 비교해 판단한다. 고객 경험도 조건이다. 광고가 검색 결과와 목록을 차지할수록 고객이 찾는 상품이 밀려나므로, 유통사가 광고 도입을 늦추는 이유로 이 우려가 꼽힌다. 광고 기술 공급자는 구매 의향을 예측해 관련성 높은 상품만 보이면 고객, 플랫폼과 입점 판매자 모두에게 이익이라고 주장한다(2026-11 행사 기조 발표 기준). 그 관련성이 실제로 높은지는 광고 노출 뒤의 검색 이탈과 구매 전환 같은 지표로 따로 확인한다(이 문서의 제안). 입점 브랜드가 광고를 쓰는 방식은 [[Commerce-Media-Advertising|커머스 미디어 광고]]를 따른다.
 - **서비스 비용에는 IT 투자가 들어 있다** — 기술을 비용으로만 취급하면 내재화에 실패하고 차별화 수단을 잃는다 (2000년대 초 솔루션, 외주 의존의 교훈).
 
 ## 거래액 분해와 레버별 시책 매핑
@@ -85,6 +85,7 @@ aliases: ["Commerce Revenue Formula", "이커머스 수익 공식"]
 - [Compare and Contrast Variable and Absorption Costing — OpenStax, Principles of Accounting](https://openstax.org/books/principles-managerial-accounting/pages/6-5-compare-and-contrast-variable-and-absorption-costing)
 - [17 Ideas for Marketing a Seasonal Business in the Off-Season — Rieva Lesonsky (SBA)](https://www.sba.gov/blog/2018/2018-09/17-ideas-marketing-seasonal-business-season/)
 - [The Pros and Cons of Running a Seasonal Business — Ijeoma S. Nwatu (SBA)](https://www.sba.gov/blog/2016/2016-06/pros-cons-running-seasonal-business/)
+- [Molocon 26-01 Ikkjin keynote — MOLOCO (YouTube)](https://www.youtube.com/watch?v=75BpZ1KO5Fo) — 2026-11-15 업로드, 2026-11-18 음성 인식 전사 전체 확인. 유통사의 광고 도입 우려와 관련성 주장의 출처이며 광고 기술 공급자 CEO의 발표
 
 ## 관련 문서
 - [[Commerce-Overview|커머스 도메인 개요]]
@@ -92,3 +93,4 @@ aliases: ["Commerce Revenue Formula", "이커머스 수익 공식"]
 - [[Commerce-Order|커머스 주문 도메인]]
 - [[Metrics-Framework|지표 설계]]
 - [[Marketplace-Seller-Launch|오픈마켓 셀러 첫 상품 출시 절차]]
+- [[Commerce-Media-Advertising|커머스 미디어 광고]] — 입점 브랜드 관점의 광고 운영

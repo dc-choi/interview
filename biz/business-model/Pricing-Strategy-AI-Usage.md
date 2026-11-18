@@ -55,6 +55,10 @@ LLM API만 호출하는 기능은 호출량과 토큰 단가로 원가를 추정
 
 2026년 2분기 SaaS 실적 발표를 모은 VC 집계(2026-10-12)는 성과 과금이 좌석을 대체하기보다 보완하는 형태로 늘고 있다고 정리했다. AI 전문가가 해결한 사례당 과금, 토큰 대신 요청 단위 과금, 업무 흐름 완료에 필요한 토큰을 포함한 거래 단위 과금, AI 기능의 사용량 과금 전환이 예로 거론됐다. 집계에 인용된 회사 발언이며 각 회사의 가격표로 대조하지 않았다. 좌석은 전달한 가치의 대리 지표였고 에이전트가 가치를 직접 잴 수 있게 하므로 성과 과금이 다음 단계라는 해석도 집계자의 전망이다. 결과를 파는 서비스의 지표는 [[AI-Native-Services|결과를 파는 AI 네이티브 서비스]]에서 본다.
 
+뉴스레터 Growth Unhinged 운영자가 2026년 4~5월 B2B 소프트웨어와 AI 기업 230여 곳에 물은 설문(사용량 과금 플랫폼 Metronome 후원)에서는 혼합형 가격이 37%로 가장 많았고 1년 전 25%에서 늘었다. AI 가격이 복잡해지면서 고객이 여러 과금 방식 가운데 고르게 한 곳도 21%에서 29%로 늘었다. 사용량 과금과 성과 과금을 쓰는 기업은 매출을 예측하기 어렵다고 답했다. 아래 기업 계약 절에서 구매자가 꺼리는 청구액 변동이 공급자 쪽에서는 매출 예측의 어려움으로 나타나는 셈이다. AI 제품의 목표 매출총이익률은 중앙값 약 50%였고 80% 이상을 노리는 곳은 12%였다. 응답 기업의 목표치이며 실제 마진이 아니다.
+
+해결이나 완료 단위의 가격은 청구 단위를 맞춰 비교한다. 대화당 가격과 해결당 가격은 그대로 비교할 수 없으므로 대화당 가격을 해결률로 나눠 해결 한 건의 실효 가격으로 바꾼다. 대화당 2.00달러에 해결률 60%면 해결 한 건에 약 3.33달러다. 사람에게 넘긴 건과 실패한 건도 청구하는지, 해결을 누가 어떤 기준으로 판정하는지 계약 전에 적어 둔다.
+
 ## 기업 계약은 고정, 변동, 서비스로 나눠 짠다
 
 기업 고객에게 파는 AI 제품의 계약은 고정 요금(연간 플랫폼 요금), 변동 요금(토큰, 크레딧, 처리한 업무 단위)과 서비스(FDE의 연동 작업, 도입 프로젝트)를 조합한다. 아래 조건과 사례는 Bain Capital Ventures가 2026년 7~8월 시드부터 상장 전 단계까지의 AI 네이티브 스타트업 수십 곳을 인터뷰하고, 2026년 2분기 후기 비상장과 상장 기업의 기술 책임자 약 50명을 설문해 정리한 관찰이다(2026-10-29 게시). 투자사가 모은 표본의 패턴이며 검증된 가격 공식이 아니다.
@@ -91,6 +95,8 @@ OpenRouter의 인사이트 책임자가 2026-10-22 공개한 플랫폼 자기 �
 
 2026-11-16에는 기업 계약 절을 Bain Capital Ventures 글의 본문과 대조했다. 인터뷰 대상 회사와 설문 문항, 도표의 응답 비율은 글에 실리지 않아 표본의 대표성과 수치는 확인하지 못했다.
 
+2026-11-18에는 Growth Unhinged 2026 조사의 무료 공개분에서 표본과 조사 기간, 혼합형과 고객 선택형 비중, 매출 예측의 어려움, 목표 AI 매출총이익률 문장을 대조했다. 37쪽 유료 보고서는 보지 못했고 응답은 기업의 자기 보고다. 해결당 실효 가격의 환산 예는 SaaStr 글에서 옮겼다. 이 보강의 계기가 된 GeekNews 요약의 원 글은 찾지 못했다.
+
 ## 출처
 
 - [The Current State of AI Tokenomics: What CFOs Should Know — OnlyCFO, Peter Walker](https://www.onlycfo.io/p/ai-tokenomics) — 2026-10-22, 2026-11-02 OpenRouter 자기 보고의 모집단과 성공 건당 비용 예시 확인. 원시 요청 데이터는 독립 검증하지 않음
@@ -107,6 +113,9 @@ OpenRouter의 인사이트 책임자가 2026-10-22 공개한 플랫폼 자기 �
 - [AI 가격 책정 및 패키징에 도대체 무슨 일이 벌어지고 있는 걸까? — GeekNews](https://news.hada.io/topic?id=36005)
 - [There Is No AI Pricing Playbook. Here Are the Patterns Winning Right Now. — Bain Capital Ventures](https://baincapitalventures.com/insight/there-is-no-ai-pricing-playbook-here-are-the-patterns-winning-right-now/) — 2026-10-29 게시. 2026-11-16 혼합, 고정, 변동 구성의 조건, 사례와 구매자 설문 결과 대조. 투자사의 인터뷰와 약 50명 설문 기반
 - [기업용 AI 제품은 어떻게 가격을 매기는가 — GeekNews](https://news.hada.io/topic?id=36970)
+- [The state of B2B monetization in 2026 — Growth Unhinged, Kyle Poyar](https://www.growthunhinged.com/p/the-state-of-b2b-monetization-in-2026) — 2026-05-13 게시. 2026-11-18 무료 공개분에서 230여 곳의 표본과 조사 기간, 혼합형과 고객 선택형 비중, 매출 예측의 어려움, 목표 AI 매출총이익률 대조. 사용량 과금 플랫폼 Metronome 후원, 유료 보고서 미확인
+- [The 3 New Pricing Models in B2B. Pick One, Because The Old One (Just Seats) Really is Dying — SaaStr, Jason Lemkin](https://www.saastr.com/the-3-new-pricing-models-in-b2b-pick-one-because-the-old-one-just-seats-is-dying/) — 2026-11-18 확인, 사용량, 성과와 해결 단위 과금의 위험, 대화당 가격의 해결당 환산 예. 게시일 미표시
+- [B2B 요금 모델: 사용자 수 기반 과금을 대체하는 3가지 방식 — GeekNews](https://news.hada.io/topic?id=37378) — 사용자 제공 요약만 확인, 원 글 미확인
 
 ## 관련 문서
 

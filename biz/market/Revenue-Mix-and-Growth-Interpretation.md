@@ -1,7 +1,7 @@
 ---
 tags: [business, market, revenue, financial-analysis, growth]
 status: done
-verified_at: 2026-11-09
+verified_at: 2026-11-18
 category: "비즈니스&제품(Business&Product)"
 aliases: ["Revenue Mix and Growth Interpretation", "매출 구성과 성장률 해석"]
 ---
@@ -46,6 +46,30 @@ AMD 전망의 하단이 Intel 전망의 상단보다 높으므로, 두 회사가
 
 같은 공시에서 AMD의 Data Center 부문은 8,546백만 달러로 전년 대비 97% 늘었고, 전체 매출의 약 63.9%다(공시 표로 계산). 부문 이름이 비슷해도 범위가 같다고 가정하지 않는다. Intel 공시는 부문 매출에 부문 간 거래가 포함된다고 밝히며, 3분기 부문 간 제거액이 6,291백만 달러다. 그래서 Intel Products, Intel Foundry와 All Other 부문 매출의 합은 연결 매출보다 크다. 부문 비중을 계산할 때는 분모가 연결 매출인지, 제거 전 부문 합계인지 적는다.
 
+## 지역 매출은 집계 기준부터 확인한다
+
+공시의 지역 매출은 회사가 정한 기준으로 거래를 나눈 값이다. 청구지, 고객 본사 소재지와 실제 배송지가 다르면 같은 거래도 다른 지역에 잡힌다. NVIDIA의 두 10-K는 같은 해의 중국(홍콩 포함) 매출을 다른 기준으로 보여 준다. 단위는 백만 달러이고 비중은 공시 표로 계산했다.
+
+| 회계연도(종료일) | 청구지 기준(2025 회계연도 10-K) | 본사 소재지 기준(2026 회계연도 10-K) | 전체 매출 |
+|---|---:|---:|---:|
+| 2024 (2024-01-28) | 10,306 (약 16.9%) | 12,330 (약 20.2%) | 60,922 |
+| 2025 (2025-01-26) | 17,108 (약 13.1%) | 25,048 (약 19.2%) | 130,497 |
+| 2026 (2026-01-25) | 공시 없음 | 19,677 (약 9.1%) | 215,938 |
+
+- 청구지 기준을 쓰던 2025 회계연도 10-K는 싱가포르가 매출의 18%였지만 고객이 싱가포르에서 청구를 모을 뿐 제품은 거의 언제나 다른 곳으로 배송되고, 싱가포르로의 배송은 매출의 2% 미만이었다고 적었다.
+- 회사는 2026 회계연도 3분기에 고객 본사 소재지 기준으로 바꾸고 과거 기간을 다시 작성했다. 최종 고객과 배송지는 본사 소재지와 다를 수 있다고 함께 적는다.
+- 그래서 다른 해의 보고서에서 뽑은 비중을 이어 붙이면 기준이 섞인다. 같은 보고서에서 다시 작성된 표끼리 비교한다.
+
+비중이 낮아진 이유는 금액과 분모로 나눈다. 본사 소재지 기준으로 2024에서 2026 회계연도 사이 중국 매출은 약 60% 늘었지만 전체 매출이 약 3.5배가 되면서 비중은 약 20.2%에서 약 9.1%로 낮아졌다. 2026 회계연도에는 금액도 전년보다 약 21% 줄었다. 같은 10-K는 H20의 중국 수출에 허가가 필요하다는 미국 정부의 통보, 2026 회계연도 1분기에 인식한 H20 초과 재고와 구매 약정 관련 45억 달러 비용, 회계연도 말에 중국 데이터센터 연산 시장에서 사실상 경쟁할 수 없게 된 상황을 적는다. 분모의 급증과 규제 뒤의 금액 감소가 함께 비중을 낮춘 예다.
+
+기간의 길이도 맞춘다. 2027 회계연도 2분기(2026-07-26 종료 3개월)의 중국 비중은 약 8.2%(7,880 / 96,221)지만 같은 날 끝난 6개월은 약 7.0%다. 연간 비중과 한 분기 비중을 이어 추세로 읽지 않는다.
+
+## 고객 집중은 직접 고객과 간접 고객을 나눠 읽는다
+
+같은 10-K에서 직접 고객 한 곳이 2026 회계연도 매출의 22%, 다른 한 곳이 14%였다. 2025 회계연도에는 12%, 11%, 11%의 세 곳, 2024 회계연도에는 13%의 한 곳이었다. 회사는 NVIDIA에서 직접 사는 보드 제조사, 유통사, ODM, OEM, 클라우드 사업자, AI 모델 개발사와 시스템 통합사를 직접 고객으로, 이들을 거쳐 사는 클라우드 사업자, 네오클라우드, AI 모델 개발사, 기업과 공공 부문을 간접 고객으로 부른다. 간접 고객의 구매가 직접 고객을 거치므로 직접 고객 기준의 10% 공시는 최종 수요의 집중도와 다를 수 있다(해석). 회사도 매출이 소수의 직접 고객과 간접 고객에 집중돼 있다고 적는다.
+
+같은 10-K의 경쟁 항목은 하드웨어와 소프트웨어를 내부에서 설계하는 대형 클라우드 회사(Alibaba, Alphabet, Amazon, Baidu, Huawei, Microsoft)를 경쟁자로 꼽는다. 큰 구매자가 대체품을 직접 만들 수 있으면 [[Competitive-Analysis|Five Forces]]의 구매자 교섭력이 커진다. 상위 고객의 매출 비중과 함께 고객 유형이 경쟁자 목록과 겹치는지 본다.
+
 ## 확인할 질문
 
 - 실적과 전망을 구분하고, 전망은 범위의 양 끝으로 비교했는가
@@ -55,6 +79,9 @@ AMD 전망의 하단이 Intel 전망의 상단보다 높으므로, 두 회사가
 - 성장률 변화와 구성 비중 변화를 구분했는가
 - 일회성 수익, 인수 효과와 환율 효과를 확인했는가
 - 수익성과 현금흐름을 매출 증가로 대신 판단하지 않았는가
+- 지역 매출의 기준(청구지, 본사 소재지, 배송지)과 과거 기간의 재작성 여부를 확인했는가
+- 연간 비중과 분기 비중처럼 길이가 다른 기간을 이어 붙이지 않았는가
+- 상위 고객이 직접 고객인지 최종 구매자인지 구분하고, 고객 유형과 경쟁자 목록이 겹치는지 봤는가
 
 ## 출처
 
@@ -63,9 +90,15 @@ AMD 전망의 하단이 Intel 전망의 상단보다 높으므로, 두 회사가
 - [AMD Reports Third Quarter 2026 Financial Results — AMD, SEC Form 8-K Exhibit](https://www.sec.gov/Archives/edgar/data/0000002488/000000248826000188/q32026991.htm) — 2026-11-03, 2026-11-09 부문 매출과 4분기 전망 확인. Data Center 비중은 표의 수치로 계산
 - [Intel Reports Third-Quarter 2026 Financial Results — Intel](https://www.intc.com/news-events/press-releases/detail/1786/intel-reports-third-quarter-2026-financial-results) — 2026-10-29, 2026-11-09 부문 매출, 부문 간 제거액과 4분기 전망 확인
 - [AMD expects to outsell Intel in Q4 for the first time in history — Tom's Hardware](https://www.tomshardware.com/pc-components/cpus/amd-expects-to-outsell-intel-in-q4-for-the-first-time-in-history-usd17b-guidance-would-exceed-intels-projections) — 비교의 계기 기사, 본문은 열람하지 못해 수치는 위 공시로만 확인. 2027년 Data Center 비중 전망은 공시에 없어 옮기지 않음
+- [Form 10-K for the fiscal year ended January 25, 2026 — NVIDIA, SEC EDGAR](https://www.sec.gov/Archives/edgar/data/1045810/000104581026000021/nvda-20260125.htm) — 2026-11-18 Segment Information 주석(XBRL R25, R84)의 본사 소재지 기준 지역 매출과 재작성, 직접 고객 집중과 고객 정의, 경쟁 항목, H20 수출 허가와 비용, 중국 시장 서술 대조
+- [Form 10-K for the fiscal year ended January 26, 2025 — NVIDIA, SEC EDGAR](https://www.sec.gov/Archives/edgar/data/1045810/000104581025000023/nvda-20250126.htm) — 2026-11-18 Segment Information 주석(XBRL R25)의 청구지 기준 지역 매출과 싱가포르의 청구, 배송 설명 대조
+- [Form 10-Q for the quarter ended July 26, 2026 — NVIDIA, SEC EDGAR](https://www.sec.gov/Archives/edgar/data/1045810/000104581026000075/nvda-20260726.htm) — 2026-11-18 지역별 매출 상세(XBRL R65)의 3개월, 6개월 수치 대조
+- Nvidia는 젠슨 황 논란 이전부터 어려움을 겪고 있었다 — GeekNews, 2026-11-17 사용자 제공 발췌. 원 기사 미확인. 발췌의 중국 비중 20%에서 8%는 본사 소재지 기준 2024 회계연도 연간 값과 2027 회계연도 2분기 값으로 보면 위 공시와 맞는다
 
 ## 관련 문서
 
 - [[Market-Analysis|시장 분석]]
 - [[Metrics-Framework|지표 설계]]
 - [[Startup-Financial-Discipline|매출, 이익과 현금의 구분]]
+- [[Competitive-Analysis|경쟁사 분석]] — Five Forces의 구매자 교섭력
+- [[Semiconductor-Equipment-Localization|반도체 장비 국산화와 공급사 경쟁]] — 배송지 기준 지역 매출과 수출 규제의 노출
