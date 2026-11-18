@@ -74,6 +74,7 @@ POST 처리 후 303으로 결과 페이지를 GET하게 하는 PRG는 새로고�
 - `408 Request Timeout`: Server가 기다리던 완전한 요청을 받지 못해 연결을 닫으려 한다.
 - `409 Conflict`: 현재 Resource 상태와 요청이 충돌한다.
 - `415 Unsupported Media Type`: 요청 content 형식이나 coding을 지원하지 않는다.
+- `418 (Unused)`: 1998-04-01 만우절 RFC 2324가 HTTP 남용을 풍자하며 정의한 코드가 농담으로 자주 배포되자, RFC 9110은 이 코드를 다른 용도로 할당하지 못하게 IANA 레지스트리에 예약해 두었다. 4xx 코드가 고갈되면 재할당될 수 있는 예약 상태라 표준 의미가 없으므로 API 응답 계약에 쓰지 않는다.
 - `421 Misdirected Request`: 대상 URI에 권위 있는 응답을 제공할 수 없거나 제공하지 않으려는 서버로 요청이 향했다. 잔액 부족을 뜻하는 코드가 아니다.
 - `422 Unprocessable Content`: 형식과 구문은 이해했지만 포함된 지시를 처리할 수 없다.
 - `429 Too Many Requests`: 요청량 제한을 초과했다. 별도 RFC 6585가 정의하며 `Retry-After`를 함께 보낼 수 있다.
@@ -96,6 +97,14 @@ POST 처리 후 303으로 결과 페이지를 GET하게 하는 PRG는 새로고�
 
 5xx라는 이유만으로 자동 재시도하지 않는다. Method의 멱등성, 전체 시간 제한, backoff, jitter와 Server가 제시한 `Retry-After`를 함께 판단한다.
 
+## 상태 코드와 헤더 확인
+
+2026-11-18 RFC 9110, 로컬 curl 8.7.1 매뉴얼과 Chrome DevTools 문서로 대조한 내용이다.
+
+- `curl -I URL`은 HEAD 요청을 보내 상태 줄과 헤더만 출력한다. RFC 9110은 HEAD 응답에도 GET과 같은 헤더를 보내라고 권하지만(SHOULD) `Content-Length`, `Vary`처럼 본문을 만들며 정해지는 헤더는 빠질 수 있다고 허용하므로(MAY), GET 응답 그대로를 봐야 하면 `curl -i URL`로 헤더와 본문을 함께 받는다.
+- curl은 `-L`이 없으면 redirect를 따라가지 않아 첫 응답을 그대로 보여 준다. `http://`로 요청해 `301`과 `Location: https://...`가 오는지 보면 HTTPS 전환 redirect를 확인할 수 있고, `-L`을 `-i`나 `-I`와 함께 주면 거쳐 간 모든 응답의 헤더가 출력된다.
+- 브라우저 개발자 도구의 Network 패널은 요청마다 Method와 Status를 보여 준다. 페이지 이동과 redirect 뒤에도 앞 요청을 남기려면 Preserve log를, 첫 방문처럼 캐시 없이 받으려면 Disable cache를 켠다. 화면에 오류 안내가 보이는 페이지도 Status 열에서 실제 코드가 404인지 200인지 확인한다.
+
 ## 출처
 
 - 김영한 강사, [HTTP 상태코드 소개](https://www.inflearn.com/courses/lecture?courseId=326277&unitId=61370)
@@ -103,7 +112,11 @@ POST 처리 후 303으로 결과 페이지를 GET하게 하는 PRG는 새로고�
 - 김영한 강사, [3xx 리다이렉션 1](https://www.inflearn.com/courses/lecture?courseId=326277&unitId=61372)
 - 김영한 강사, [3xx 리다이렉션 2](https://www.inflearn.com/courses/lecture?courseId=326277&unitId=61780)
 - 김영한 강사, [4xx 클라이언트 오류, 5xx 서버 오류](https://www.inflearn.com/courses/lecture?courseId=326277&unitId=61373)
+- David J. Malan 강사, [Harvard CS50 (2026), HTML, CSS, JavaScript](https://www.youtube.com/watch?v=gmuTjeQUbTM&t=67927s) — YouTube freeCodeCamp.org 채널, 2026-02-05 공개, 18:52:07부터. 418과 curl, 개발자 도구 확인 절의 계기이며 사실은 아래 RFC와 문서로 대조했다.
 - [RFC 9110, HTTP Semantics](https://www.rfc-editor.org/rfc/rfc9110.html)
+- [RFC 2324, Hyper Text Coffee Pot Control Protocol (HTCPCP/1.0)](https://www.rfc-editor.org/rfc/rfc2324.html)
+- [curl, curl man page](https://curl.se/docs/manpage.html) — 2026-11-18 로컬 curl 8.7.1의 `-I`, `-i`, `-L` 설명 대조
+- [Chrome for Developers, Network features reference](https://developer.chrome.com/docs/devtools/network/reference)
 - [RFC 6585, Additional HTTP Status Codes](https://www.rfc-editor.org/rfc/rfc6585.html)
 - [RFC 9457, Problem Details for HTTP APIs](https://www.rfc-editor.org/rfc/rfc9457.html)
 - [Stripe, Payment status updates](https://docs.stripe.com/payments/payment-intents/verifying-status)

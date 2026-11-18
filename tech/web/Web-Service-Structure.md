@@ -45,7 +45,7 @@ HTML, CSS, JavaScript는 각각 자료구조, 표현, 제어를 맡는다는 점
 | 클라이언트 스크립트 | 문서와 데이터를 제공 | JavaScript가 화면 일부를 갱신 | 전체 새로고침 없는 반응 | 상태와 로직이 양쪽에 흩어짐 |
 | API와 SPA | JSON API 제공 | 클라이언트가 화면 구성과 라우팅 담당 | 여러 클라이언트가 같은 API 공유 | 초기 로드, SEO, 상태 동기화 비용 |
 
-각 단계는 앞 단계를 없애지 않고 위에 얹힌다. 서버 렌더링과 클라이언트 렌더링을 섞는 현대의 선택 기준은 [[Mobile-App-Architectures]], 서버 템플릿 렌더링의 구현은 [[Java-Web-JSP-and-SSR]]에서 이어진다.
+각 단계는 앞 단계를 없애지 않고 위에 얹힌다. 서버 렌더링과 클라이언트 렌더링을 섞는 현대의 선택 기준은 [[Mobile-App-Architectures]], 서버 템플릿 렌더링의 구현은 [[Java-Web-JSP-and-SSR]]과 [[Python-Flask-Web|Flask와 Jinja]]에서 이어진다.
 
 ## 상태를 어디에 기억하는가
 
@@ -165,5 +165,8 @@ HTTP는 각 요청을 다른 요청과 독립적으로 해석하는 무상태 �
 - [[Cookie|Cookie]]
 - [[Session|Session]]
 - [[Browser-Main-Thread|브라우저 메인 스레드]]
+- [[HTML-Document-Structure-and-Forms|HTML 기초 (문서 구조, 의미 요소와 폼)]]
+- [[CSS-Selectors-Cascade-and-Inheritance|CSS 기초 (선택자, 캐스케이드와 상속)]]
 - [[Spring-MVC-Essentials|WAS vs Web Server]]
+- [[Python-Flask-Web|Flask 웹 애플리케이션 (라우트, Jinja, 세션)]]
 - [[웹&네트워크(Web&Network)|웹&네트워크 인덱스]]

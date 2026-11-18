@@ -14,7 +14,7 @@ HTTP 진화, 메서드 의미, 상태 코드, Content-Type, REST, GraphQL, gRPC,
 
 ## HTTP 기본
 - [x] [[HTTP-Core|HTTP 핵심 (의미, 메시지, 헤더, 캐싱)]] — `core/` 서브폴더
-- [x] [[HTTP-Status-Code|Status Code / Header]]
+- [x] [[HTTP-Status-Code|Status Code / Header]] — 부류와 주요 코드, redirect 선택, 418 예약 코드, curl과 개발자 도구로 상태와 헤더 확인
 - [x] [[Cookie|Cookie]]
 - [x] [[HTTP-Content-Type|Content-Type, MIME Type, 표현 헤더 (JSON/form-urlencoded/multipart)]]
 - [x] [[Content-Negotiation|Content Negotiation (Accept, qvalue, Vary와 406)]]

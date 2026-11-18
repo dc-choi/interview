@@ -77,3 +77,4 @@ htmx는 `hx-get`과 `hx-post` 같은 속성으로 요청을 보내고 응답 HTM
 - [[React-DOM-Client-Roots|React hydration 계약]]
 - [[Browser-Main-Thread|브라우저 메인 스레드]]
 - [[NextJS-Rendering-Strategy|Next.js 렌더링 전략]]
+- [[Fine-Grained-Reactivity|세밀한 반응성: 시그널 그래프와 비동기]] — 로드 뒤 화면을 누가 어떤 단위로 갱신하는가

@@ -66,6 +66,9 @@ aliases: ["RDBMS", "OLTP"]
 - [x] [[Oracle-Index-Features|Oracle index 기능과 운영]]
 - [x] [[Data-Dictionary|데이터 딕셔너리 (Oracle vs MySQL 메타데이터 매핑)]]
 
+## SQLite
+- [x] [[SQLite-Fundamentals|SQLite 기본기 (CSV 가져오기와 문자열 숫자, 타입 친화성과 STRICT, 외래 키 기본값, EXPLAIN QUERY PLAN과 LIKE 인덱스, 단일 writer 트랜잭션)]]
+
 ## 인덱스 & 쿼리
 - [x] [[Index|Index design (B-Tree, hash 인덱스와의 차이, covering index, SHOW INDEX와 결과 순서)]]
 - [x] [[B-Tree-Index-Depth|B-Tree 인덱스 깊이 분석 (InnoDB 페이지, fan-out 실측, 페이지 분할과 병합, PK 사이즈, hash 인덱스와 비교)]]

@@ -29,3 +29,4 @@ SQL은 관계형 데이터베이스의 스키마, 데이터와 권한을 선언�
 
 - [[MySQL-Query|MySQL 조회와 SQL 기능]]
 - [[MySQL-Stored-Procedures|MySQL 저장 프로시저]]
+- [[SQLite-Fundamentals|SQLite 기본기 (문자열 리터럴과 LIKE 대소문자, 타입 친화성, EXPLAIN QUERY PLAN)]]

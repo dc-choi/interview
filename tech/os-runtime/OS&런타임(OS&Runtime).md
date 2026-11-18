@@ -24,6 +24,7 @@ aliases: ["OS&런타임(OS&Runtime)", "OS & Runtime"]
 - [[V8-Cpp-API|V8 C++ API]] — Isolate와 native 자원 수명, module 실행, 직렬화, cppgc와 Inspector
 - [[Deno-Runtime|Deno]] — Node와의 차이, TypeScript 실행, import map, 캐시와 lockfile, Docker 배포, Cloudflare 합류 뒤 유지보수 범위와 커뮤니티 포크
   - [[Deno-Runtime-Permissions|Deno 권한 모델]] — 자원별 flag, NotCapable, sandbox를 벗어나는 flag, task별 권한 분리와 permission set
+- [[Python-Flask-Web|Python Flask]] — 라우트와 요청 데이터, Jinja 자동 이스케이프의 빈틈, 서버 검증과 PRG, 서명 쿠키 세션, CSRF 토큰, JSON 응답
 - [[tech/os-runtime/nestjs/NestJS|NestJS]] — DI, HTTP, GraphQL, Microservices, 웹훅, durable workflow, 보안과 신뢰성
 - [[tech/os-runtime/spring/Spring|Spring]] — Request Lifecycle, @Transactional, JPA 영속성
   - [[Spring-MVC-Manual-Validation|Spring MVC 수동 검증]] — 비동기 아이디 확인, 최종 저장의 유일성과 계정 존재 노출 경계

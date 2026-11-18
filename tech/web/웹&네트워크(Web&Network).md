@@ -33,6 +33,8 @@ aliases: ["웹&네트워크(Web&Network)", "Web & Network"]
 - [[Web-3D-Adoption|웹 3D 채택의 장벽과 AI 코딩 이후의 변화]]
 - [[Cross-Platform-Keyboard|플랫폼별 키보드 입력]]
 - [[URL-Embedded-Documents|URL에 담긴 문서]]
+- [x] [[HTML-Document-Structure-and-Forms|HTML 기초]] — 문서 골격, 의미 요소와 랜드마크, GET 폼과 제약 검증의 한계
+- [x] [[CSS-Selectors-Cascade-and-Inheritance|CSS 기초]] — 선택자, 캐스케이드와 명시도, 상속과 초기값의 구분
 - [x] [[Bootstrap-6-Migration|Bootstrap 6 전환]] — alpha 기준 클래스와 Sass, JavaScript 로딩과 브라우저 조건
 - [x] [[Responsive-Web-Layout|반응형 웹 레이아웃]] — 좁은 화면의 정보 보존, 하단 바와 모달 메뉴의 접근성
 - [x] [[Swiper-Carousel|Swiper 이미지 슬라이드]] — CSS와 JavaScript 구성, 상호작용 뒤 재생과 접근성 제어
@@ -40,6 +42,7 @@ aliases: ["웹&네트워크(Web&Network)", "Web & Network"]
 - [x] [[Design-System-Lint#토큰 생성, 정적 검사와 화면 검증을 나눈다|디자인 토큰과 화면 검증]] — 기준값 생성, 실측 생략 표시, 일반 텍스트와 큰 텍스트의 대비 기준
 - [x] [[HTTP-2#바이너리 프레이밍과 요청 스머글링|HTTP/2의 요청 스머글링 경계]] — 가변 길이 프레임, 필드 검증과 HTTP/1.1 변환
 - [x] [[Frontend-Rendering-Models|프런트엔드 렌더링과 상호작용 모델]] — hydration, islands, resumability와 서버 HTML 조각 교체의 실행 비용
+- [x] [[Fine-Grained-Reactivity|세밀한 반응성: 시그널 그래프와 비동기]] — 식 단위 갱신, Solid 2.0의 비동기 보류, 낙관적 갱신, 서버 함수와 진단 코드
 - [x] [[Application-Layer-Protocols#SMTP 수락과 최종 배달은 다르다|SMTP 성공의 경계]] — 수신자 수락, 본문 수락과 배달 실패 반송
 - [x] [[HTTP-3#스트림별 멀티플렉싱 (HOL 블로킹 제거)|QUIC의 손실 격리 범위]] — 여러 스트림을 담은 패킷, 공유 제어와 QPACK 대기
 - [x] [[Foldable-Web-Layout|폴더블 웹 레이아웃]] — Device Posture, 구획 수와 CSS 환경 변수, 미지원 환경의 기본 화면

@@ -1,14 +1,14 @@
 ---
-tags: [runtime, jvm, java, jit, aot, performance, leyden, crac]
+tags: [runtime, jvm, java, jit, aot, performance, leyden, crac, intrinsic, security]
 status: done
-verified_at: 2026-11-09
+verified_at: 2026-11-18
 category: "OS&런타임(OS&Runtime)"
-aliases: ["HotSpot JIT and AOT Cache", "HotSpot JIT 최적화", "AOT 캐시", "Project Leyden", "Compact Object Headers", "JDK 기본값 변화", "CRaC", "Coordinated Restore at Checkpoint"]
+aliases: ["HotSpot JIT and AOT Cache", "HotSpot JIT 최적화", "AOT 캐시", "Project Leyden", "Compact Object Headers", "JDK 기본값 변화", "CRaC", "Coordinated Restore at Checkpoint", "HotSpot Intrinsic", "Java4Shell"]
 ---
 
 # HotSpot JIT 최적화와 AOT 캐시
 
-HotSpot은 바이트코드를 해석하면서 실행 프로파일을 모으고, 자주 실행되는 코드를 그 프로파일에 기대 기계어로 컴파일한다. 그래서 같은 코드도 기동 직후와 충분히 실행한 뒤의 성능이 다르고, JDK를 올리기만 해도 컴파일러, GC와 기본값이 바뀌어 결과가 달라진다. 이 문서는 C2의 추측 최적화와 그 한계, 학습 실행의 결과를 재사용하는 AOT 캐시, 실행 중인 JVM을 저장했다가 되살리는 CRaC, JDK 업그레이드에서 함께 바뀌는 기본값을 다룬다. 실행 엔진의 전체 구성은 [[JVM-Architecture#Execution Engine|JVM 아키텍처]]를 따른다.
+HotSpot은 바이트코드를 해석하면서 실행 프로파일을 모으고, 자주 실행되는 코드를 그 프로파일에 기대 기계어로 컴파일한다. 그래서 같은 코드도 기동 직후와 충분히 실행한 뒤의 성능이 다르고, JDK를 올리기만 해도 컴파일러, GC와 기본값이 바뀌어 결과가 달라진다. 이 문서는 C2의 추측 최적화와 그 한계, CPU별 기계어로 바꿔 실행하는 intrinsic의 메모리 안전 경계, 학습 실행의 결과를 재사용하는 AOT 캐시, 실행 중인 JVM을 저장했다가 되살리는 CRaC, JDK 업그레이드에서 함께 바뀌는 기본값을 다룬다. 실행 엔진의 전체 구성은 [[JVM-Architecture#Execution Engine|JVM 아키텍처]]를 따른다.
 
 아래 JDK 상태는 2026-11-03 기준이다. JDK 26은 2026-03-17, JDK 27은 2026-09-15에 GA가 됐고, JDK 28의 GA 예정일은 2027-03-09다.
 
@@ -39,6 +39,22 @@ HotSpot은 인터프리터와 C1 단계에서 호출 횟수, 분기 방향과 �
 JDK 내부의 `@Stable` 필드는 기본값이 아닌 값이 한 번 들어가면 바뀌지 않는다고 JIT에 알린다. JDK 25는 `String`이 캐시하는 hash 필드를 이렇게 다뤄, 상수 문자열의 `hashCode()`가 상수 접기 대상이 될 수 있게 했다(JDK-8354300). 해당 마이크로벤치마크는 약 8배 빨라졌지만, `@Stable`은 기본값이 아닌 값만 확정된 값으로 믿으므로 hash 값이 0인 문자열은 접히지 않는다(관련 개선 JDK-8354777은 2026-11-03 Open). 문자열을 키로 쓰는 불변 조회 구조에서 효과가 커질 수 있는 변경이며, 일반 애플리케이션의 처리량 개선 폭으로 옮기지 않는다.
 
 애플리케이션 코드에서 같은 지연 초기화 상수를 표현하는 API는 preview 단계의 `LazyConstant`다(JDK 25의 StableValue를 JDK 26의 JEP 526에서 개명). preview API는 릴리스 사이에 의미가 바뀔 수 있다. JDK 26 Javadoc은 계산 함수가 예외를 던지면 초기화되지 않은 상태로 남아 다음 `get()`이 다시 계산할 수 있다고 적지만, JDK 27 Javadoc은 많아야 한 번 초기화한다고 적는다. 실패하면 그 호출부터 `NoSuchElementException`을 던지고(첫 호출은 원래 예외를 cause로 담는다) 다시 계산하지 않는다. JDK 28에는 변경 없이 다시 preview로 제안돼 있다(JEP 547, Candidate).
+
+## intrinsic은 자바의 메모리 안전 보장 밖에서 돈다
+
+HotSpot은 `java.util.Base64` 같은 일부 JDK 메서드를 바이트코드 대신 CPU 명령 집합별로 손으로 작성한 기계어 루틴(intrinsic)으로 실행한다. 자바 코드의 배열 범위 검사는 이 루틴 안까지 미치지 않으므로 루틴의 계산이 틀리면 자바 프로그램에서도 C 코드와 같은 메모리 오류가 난다. 어느 루틴을 쓸지는 CPU 기능과 VM 플래그가 정한다. OpenJDK 소스(2026-11-18 master 기준)에서 x86은 `UseAVX`가 2 이상이면 `UseBASE64Intrinsics`를 기본으로 켜고, x86 전용 플래그인 `UseAVX`(기본 3, 범위 0~3)가 3보다 작으면 AVX-512 기능을 끈다.
+
+2026-11-17 공개된 Java4Shell(CVE-2026-114938)이 이 경계에서 나왔다. 아래는 발견자 Calif의 공개 글, Oracle이 CNA로 등록한 CVE 레코드와 CISA 경보 기준이며 공격을 재현할 정보는 옮기지 않는다.
+
+| 항목 | 내용 |
+|---|---|
+| 원인 | AVX-512 VBMI를 쓰는 x86-64 Base64 디코드 intrinsic이 패딩으로 끝나는 잘못된 입력에서 출력 길이를 음수로 계산해, 할당한 배열 끝을 넘어 힙을 덮어쓴다(Calif). CISA ADP의 분류는 CWE-122(힙 버퍼 오버플로)다. 루틴이 먼저 메모리를 쓴 뒤 자바 코드가 그 입력을 `IllegalArgumentException`으로 거부하므로, 예외가 났을 때는 인접 객체가 이미 손상됐을 수 있다(Calif) |
+| 점수 | Oracle의 CVSS 3.1 기본 점수 8.1(공격 복잡도 높음, 인증 없는 네트워크 공격). Calif가 따로 매긴 CVSS 4.0 점수는 9.2다. 2026-11-18 CVE 레코드의 CISA SSVC 평가는 악용 관측 없음이었다 |
+| 영향 범위 | CVE 레코드는 Oracle Java SE 8u511b33-perf, 17.0.21.0.3, 21.0.13.0.3, 25.0.5.0.3, 27.0.1.0.3과 GraalVM 일부 버전을 영향 버전으로 적는다. Calif는 OpenJDK 17.0.6 이후와 이를 바탕으로 한 배포판을 영향 대상으로, ARM64는 비대상으로 본다 |
+| 수정 | CVE 레코드와 CISA 경보가 가리키는 Oracle 권고는 2026-11 Critical Security Patch Update이고, Calif는 Oracle 수정본과 OpenJDK 권고가 2026-11-17 함께 나왔다고 적는다. 배포판마다 일정이 다르며 Amazon Corretto는 27.0.1.1.4(2026-11-17) 변경 기록에서 이 CVE를 다룬다 |
+
+- **노출은 JDK 버전과 CPU 기능이 함께 정한다.** Calif는 Linux에서 `/proc/cpuinfo`에 `avx512f`, `avx512bw`, `avx512vbmi`, `bmi2`가 모두 있는지로 해당 장비를 가리라고 안내한다. 노드 세대가 섞인 클러스터는 아래 AOT 코드와 CRaC처럼 노드 풀마다 판정이 달라진다(해석). 패치 전 완화로 Calif는 `-XX:-UseBASE64Intrinsics`와 `-XX:UseAVX=2`를 들고, `UseAVX`는 ARM JVM이 모르는 옵션이라 그대로 주면 기동하지 못한다고 경고한다. 두 플래그는 CVE 레코드와 CISA 경보에 없는 발견자의 제안이고, AVX-512를 통째로 끄면 다른 intrinsic과 벡터화 성능도 함께 낮아질 수 있다(해석).
+- **JDK는 재고에서 보이지 않을 수 있다.** CISA는 서드파티 애플리케이션, 컨테이너 이미지와 장비에 번들된 JDK가 소프트웨어 재고에 별도 항목으로 나타나지 않을 수 있다며 내장 설치까지 찾고 인터넷에 노출된 시스템부터 패치하라고 권한다. 즉시 패치할 수 없으면 애플리케이션 경계의 Base64 입력 검증, 입력 크기 제한과 인증 없는 접근 제한을 보완 통제로, 예상 밖 JVM 충돌과 의심스러운 Java 프로세스를 침해 신호로 든다. 경계 검증이 디코더에 닿는 모든 경로를 덮는다는 보장은 없으므로 업데이트를 대신하지 않는다(해석). 애플리케이션 의존성 스캔은 런타임 자체를 보지 않으므로 런타임 버전은 [[Dependency-Vulnerability-Scanning#언어 런타임은 버전 관리와 호스팅 책임으로 대응한다|언어 런타임 절]]처럼 따로 관리한다. 메모리 안전 언어가 보장하지 못하는 범위는 [[Memory-Safety-Vulnerabilities#결함을 줄이는 층: 언어, 퍼징, 코드 분석|메모리 안전성 취약점]]에 있다.
 
 ## 기동과 워밍업을 앞당기는 AOT 캐시
 
@@ -107,6 +123,7 @@ JEP 534는 SPECjbb2015에서 힙 22%, CPU 8%, GC 횟수 15%가 줄었다는 측�
 - AOT 캐시의 학습 실행이 운영 경로를 대표하고, 캐시를 만든 JDK, 클래스 경로, 모듈 옵션과 에이전트, CPU 기능과 GC가 운영과 같은가?
 - preview API의 동작을 JDK 버전별 Javadoc으로 확인했는가?
 - CRaC 이미지를 쓴다면 checkpoint의 CPU 기능 설정이 모든 restore 노드를 포괄하고, 이미지의 비밀 노출과 restore 실패 시 일반 기동 경로를 정했는가?
+- JDK 보안 권고의 영향을 판단할 때 JDK 버전과 함께 노드의 CPU 기능(AVX-512)과 intrinsic 플래그를 확인했는가?
 
 ## 출처
 
@@ -156,6 +173,12 @@ JEP 534는 SPECjbb2015에서 힙 22%, CPU 8%, GC 횟수 15%가 줄었다는 측�
 - [Performance Improvements in JDK 25 — Inside.java](https://inside.java/2025/10/20/jdk-25-performance-improvements/)
 - [Performance Improvements in JDK 26 — Inside.java](https://inside.java/2026/06/09/jdk-26-performance-improvements/)
 - [Performance Improvements in JDK 27 — Inside.java](https://inside.java/2026/09/28/performance-update-jdk27/)
+- [Java4Shell: Write once, RCE everywhere — Calif](https://calif.io/java4shell/) — 2026-11-17 게시. 원인 분류, 영향 CPU와 배포판, 임시 완화 플래그. 공격 재현 정보는 옮기지 않았다
+- [CVE Program, CVE-2026-114938](https://www.cve.org/CVERecord?id=CVE-2026-114938) — 2026-11-18 CVE API 레코드로 CNA Oracle의 영향 버전과 CVSS 3.1 벡터, CISA ADP의 CWE-122와 SSVC 대조. 레코드가 참조하는 Oracle 권고와 OpenJDK 권고 원문은 자동 접근이 막혀 대조하지 못했다
+- [Critical Java Vulnerability Requires Immediate Patching — CISA](https://www.cisa.gov/news-events/alerts/2026/11/17/critical-java-vulnerability-requires-immediate-patching) — 2026-11-17 게시. 번들 JDK 재고, 보완 통제와 침해 신호
+- [CHANGELOG.md — GitHub, corretto/corretto-27](https://github.com/corretto/corretto-27/blob/27.0.1.1.4/CHANGELOG.md) — 27.0.1.1.4(2026-11-17)의 CVE-2026-114938 항목
+- [vm_version_x86.cpp — GitHub, openjdk/jdk](https://github.com/openjdk/jdk/blob/master/src/hotspot/cpu/x86/vm_version_x86.cpp) — 2026-11-18 master. `UseBASE64Intrinsics` 활성 조건과 `UseAVX` 3 미만의 AVX-512 기능 해제
+- [globals_x86.hpp — GitHub, openjdk/jdk](https://github.com/openjdk/jdk/blob/master/src/hotspot/cpu/x86/globals_x86.hpp) — 2026-11-18 master. x86 전용 `UseAVX` 선언, 기본값 3과 범위 0~3
 
 ## 관련 문서
 

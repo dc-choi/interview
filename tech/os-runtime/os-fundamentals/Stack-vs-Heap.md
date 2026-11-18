@@ -1,7 +1,7 @@
 ---
 tags: [os, memory, stack, heap, fragmentation, memory-pool, stack-overflow, buffer-overflow]
 status: done
-verified_at: 2026-10-05
+verified_at: 2026-11-18
 category: "OS - 기초"
 aliases: ["Stack vs Heap", "스택 vs 힙", "메모리 풀", "메모리 파편화", "스택 오버플로와 버퍼 오버플로"]
 ---
@@ -39,6 +39,7 @@ aliases: ["Stack vs Heap", "스택 vs 힙", "메모리 풀", "메모리 파편�
 C 표준은 스택과 힙이라는 영역 대신 저장 기간을 정한다. 지역 변수와 매개변수는 자동 저장 기간, `malloc`으로 만든 객체는 할당 저장 기간이고, 이를 스택과 힙에 배치하는 것은 구현이다([[C-Pointers-and-Dynamic-Memory#저장 기간과 메모리 영역|C 저장 기간]]).
 
 - 함수를 호출할 때마다 새 스택 프레임에 매개변수와 지역 변수가 생긴다. `swap(int a, int b)`의 a, b는 호출자 x, y의 복사본이라 다른 위치에 있고, a와 b를 바꿔도 x와 y는 그대로다. 원본을 바꾸려면 x, y의 주소를 넘긴다.
+- 함수가 반환해도 흔한 구현은 프레임의 바이트를 지우지 않고, 다음 호출이 같은 영역을 새 프레임으로 쓴다. 초기화하지 않은 지역 변수에서 이전에 그 자리를 쓴 값의 흔적(쓰레기 값)이 보이는 이유다. C 표준은 자동 저장 기간 객체의 초기값을 불확정으로 두므로 어떤 값도 기대할 수 없다. 초기화식이 없어도 0과 null pointer로 채워지는 것은 전역, `static`과 스레드 저장 기간 객체다.
 - 지역 배열의 주소를 반환하면 프레임이 사라진 뒤의 위치를 가리킨다. 호출이 끝난 뒤에도 쓸 데이터는 `malloc`으로 할당해 포인터를 반환하고 해제 책임을 함께 넘긴다.
 - GC가 없는 C에서 `free`하지 않은 블록은 프로세스가 끝날 때까지 할당된 채로 남는다(메모리 누수).
 - 힙과 스택이 주소 공간 양 끝에서 서로를 향해 자란다는 그림은 단순화다. 성장 방향은 흔한 ABI의 예일 뿐이고, 실제 주소 공간에는 `mmap` 영역과 스레드마다 따로 잡힌 스택이 섞여 있다([[Concurrency-and-Process-Overview#프로세스메모리구조(상세)|프로세스 메모리 구조]]). 두 영역이 맞부딪쳐 서로를 덮어쓰는 식으로 실패하기보다, Linux에서 메인 스레드 스택은 `RLIMIT_STACK` 한도에서, 다른 스레드 스택은 끝의 guard 영역에 닿을 때 SIGSEGV를 받고, 힙 할당 실패는 `malloc`의 NULL 반환이나 OOM killer로 드러난다.
@@ -91,14 +92,18 @@ Java, V8 같은 런타임의 GC는 참조되지 않는 객체를 회수하고, �
 
 `free()`는 우선 할당기에 공간을 돌려준다. 할당기가 재사용을 위해 보관하는 공간은 OS로 즉시 반환되지 않을 수 있으므로 해제 직후 RSS가 줄지 않는다는 사실만으로 누수를 확정하지 않는다.
 
+`free`와 `realloc`이 크기 없이 주소만 받는 것은 할당기가 그 주소로 블록 크기를 알아낼 수 있기 때문이다. glibc의 `malloc_usable_size`와 macOS의 `malloc_size`는 그 크기를 돌려주는 비표준 함수이고, 값은 요청한 크기보다 클 수 있다. macOS 26.6(arm64)에서는 `malloc(12)`와 `malloc(16)`이 16바이트, `malloc(17)`이 32바이트 블록이었다.
+
 ## 출처
 
 - [Linux, malloc(3)](https://man7.org/linux/man-pages/man3/malloc.3.html)
 - [Linux, mallopt(3)](https://man7.org/linux/man-pages/man3/mallopt.3.html)
+- [Linux, malloc_usable_size(3)](https://man7.org/linux/man-pages/man3/malloc_usable_size.3.html)
 - [Linux, getrlimit(2)](https://man7.org/linux/man-pages/man2/getrlimit.2.html)
 - [Linux, pthread_attr_setguardsize(3)](https://man7.org/linux/man-pages/man3/pthread_attr_setguardsize.3.html)
 - [GNU C Library, Aligned Memory Blocks](https://sourceware.org/glibc/manual/latest/html_node/Aligned-Memory-Blocks.html)
 - [cppreference, Storage-class specifiers](https://en.cppreference.com/w/c/language/storage_class_specifiers)
+- [cppreference, Initialization](https://en.cppreference.com/w/c/language/initialization)
 - [MITRE CWE, CWE-121: Stack-based Buffer Overflow](https://cwe.mitre.org/data/definitions/121.html)
 - [MITRE CWE, CWE-122: Heap-based Buffer Overflow](https://cwe.mitre.org/data/definitions/122.html)
 
@@ -108,6 +113,8 @@ Java, V8 같은 런타임의 GC는 참조되지 않는 객체를 회수하고, �
 - [부스트코스, 모두를 위한 컴퓨터 과학 (CS50 2019), 메모리 할당과 해제](https://www.boostcourse.org/cs112/lecture/119032)
 - [부스트코스, 모두를 위한 컴퓨터 과학 (CS50 2019), 메모리 교환, 스택, 힙](https://www.boostcourse.org/cs112/lecture/119033)
 - [부스트코스, 모두를 위한 컴퓨터 과학 (CS50 2019), 파일 쓰기](https://www.boostcourse.org/cs112/lecture/119034)
+- [YouTube, Harvard CS50 (2026), Lecture 4: Memory](https://www.youtube.com/watch?v=gmuTjeQUbTM&t=31987s)
+- [YouTube, Harvard CS50 (2026), Lecture 5: Data Structures](https://www.youtube.com/watch?v=gmuTjeQUbTM&t=40382s)
 
 ## 관련 문서
 
