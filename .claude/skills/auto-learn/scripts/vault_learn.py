@@ -56,7 +56,7 @@ DEFAULTS = {"k": 6, "jobs": 2, "whisper_threads": 4, "learn_timeout_min": 180, "
             "learn_gap_min": 90, "channel_keep": [], "claude": "claude",
             "threads_reposts_url": "", "adhoc_dir": "", "instagram_saved_url": "",
             "instagram_saved_collection": "", "instagram_dm_name": "", "instagram_dm_thread_url": "",
-            "email_since": "", "email_senders": [],
+            "email_since": "", "email_senders": [], "instagram_backfill_per_run": 6,
             "video_max_age_days": 365, "video_old_allow": {"channels": [], "videos": []}}
 # 30초 간격 3회 재시도는 사용자 결정이다. 그 뒤 6시간 쉬고 다시 시도하며, 세 차례 모두 실패하면 제외한다.
 ATTEMPTS, RETRY_WAIT_S, COOLDOWN_S, MAX_ROUNDS, MAX_LIVE_ROUNDS = 3, 30, 6 * 3600, 3, 20
@@ -1320,13 +1320,20 @@ def cmd_publish(a):
 # ---------------------------------------------------------------- learn 후보
 
 def settle_deferred(log_rows, today):
-    """처리 끝난 key. 보류는 7일 뒤 재시도하며 Palantir 외에는 두 번 보류하면 끝난 것으로 본다."""
-    final, deferred = set(), {}
+    """처리 끝난 key. 보류는 7일 뒤 재시도하며 Palantir 외에는 두 번 보류하면 끝난 것으로 본다. 기록은 덧붙이기만 하므로
+    reopened 행(릴스 소급 추출)은 그 key의 앞선 결과와 보류 날짜를 지워 다시 후보로 만들고, 그 뒤의 결과만 센다."""
+    final, deferred, reflected = set(), {}, set()
     for r in log_rows:
-        if r.get("result") == "deferred":
+        if r.get("result") == "reopened":
+            if r.get("key") not in reflected:  # 이미 반영한 key는 다시 열지 않는다(중복 학습 방지).
+                final.discard(r.get("key"))
+                deferred.pop(r.get("key"), None)
+        elif r.get("result") == "deferred":
             deferred.setdefault(r.get("key"), []).append(r.get("ts", "")[:10])
         else:
             final.add(r.get("key"))
+            if r.get("result") in ("learned", "merged"):
+                reflected.add(r.get("key"))
     for key, dates in deferred.items():
         exhausted = len(dates) >= 2 and not (key or "").startswith("palantir:")
         if exhausted or (today - dt.date.fromisoformat(max(dates))).days < 7:
@@ -1377,7 +1384,9 @@ def idle_candidates(k, done):
 
 
 def inbox_leads(done):
-    """처리하지 않은 단서(Threads 리포스트, Instagram 글, 이메일 뉴스레터)를 최근 수집, 수집 순서대로 준다."""
+    """처리하지 않은 단서(Threads 리포스트, Instagram 글, 이메일 뉴스레터)를 최근 수집, 수집 순서대로 준다. 화면 글자나
+    음성 전사 절이 붙은 Instagram 릴스(소급 추출로 다시 연 단서 포함)에는 extracted: true를 붙인다."""
+    import reel_media  # VL이 쓴 절을 알아보는 기준(reel_media.extracted)을 한 곳에 둔다.
     leads = []
     for src, prefix in INBOX.items():
         root = S / "inbox" / src
@@ -1392,7 +1401,8 @@ def inbox_leads(done):
                           "date": (meta.get("posted_at") or meta.get("date", ""))[:10], "path": str(path),
                           "chain": meta.get("chain", ""), "links": body.count("\n- http"),
                           "harvested": meta.get("harvested_at", ""),
-                          "order": as_int(meta.get("repost_order") or meta.get("order"))})
+                          "order": as_int(meta.get("repost_order") or meta.get("order"))}
+                         | ({"extracted": True} if src == "instagram" and reel_media.extracted(body) else {}))
     leads.sort(key=lambda x: (x["harvested"], -x["order"]), reverse=True)
     return leads
 
@@ -1467,6 +1477,9 @@ def state_summary():
                                              if r[0] in done and f"video:{r[0]}" not in keys])[1],
             "leads_unlearned": {src: sum(1 for p in (S / "inbox" / src).glob("*.md") if f"{prefix}:{p.stem}" not in keys)
                                 for src, prefix in INBOX.items()},
+            # 옛 릴스 소급 추출 대기 목록의 상태별 수(pending, reopened, extracted, dropped).
+            "reel_backfill": dict(Counter(r[1] for r in rows(S / "inbox" / "instagram" / "BACKFILL.tsv")[1:]
+                                          if len(r) > 1)),
             "processed": dict(Counter(r.get("result") for r in log_rows)),
             "palantir": palantir_docs.summary(S, log_rows) | {"enabled": palantir_docs.listed(read_lines(REPO / SOURCES))},
             "channels": dict(Counter(r[3] for r in rows(S / "channels.tsv")[1:] if len(r) > 3))
@@ -1532,8 +1545,9 @@ def cmd_inbox_reindex(a):
     if not set(a.complete) <= allowed:
         raise ValueError(f"잘못된 complete: {a.source}")
     root, prefix = S / "inbox" / a.source, INBOX[a.source] + ":"
-    status = {r["key"][len(prefix):]: r["result"] for r in read_jsonl(S / "digests" / "log.jsonl")
-              if str(r.get("key", "")).startswith(prefix)}
+    # 마지막 처리 결과. 다시 연(reopened) 단서는 처리하지 않은 단서처럼 new로 보인다.
+    status = {r["key"][len(prefix):]: "new" if r["result"] == "reopened" else r["result"]
+              for r in read_jsonl(S / "digests" / "log.jsonl") if str(r.get("key", "")).startswith(prefix)}
     old_reason = {r[1]: r[3] for r in rows(root / "INDEX.tsv")[1:] if len(r) > 3}
     friend = cfg()["instagram_dm_name"].strip()
     records, normalized, problems = [], [], []
@@ -1582,6 +1596,59 @@ def cmd_inbox_reindex(a):
     emit({"rows": len(records), "index_changed": changed, "normalized": normalized, "new_seen": len(new_seen),
           "state": state, "problems": problems})
     return 1 if problems else 0
+
+
+def backfill_records():
+    """릴스 대기 목록의 판정에 쓰는 처리 기록: (다시 열 수 있는 처리 끝난 key, key별 판정 기준 기록, reopened 행을 덧붙이는
+    함수). 한 번 다시 연 key는 뺀다. 다시 열기는 key당 한 번이라, reopened 행을 쓴 뒤 목록 저장 전에 끊기고 그사이 learn이
+    또 건너뛰어도 행이 더 쌓이지 않는다."""
+    import reel_media
+    path = S / "digests" / "log.jsonl"
+    log_rows = read_jsonl(path)
+    reopened = {r.get("key") for r in log_rows if r.get("result") == "reopened"}
+    return (settle_deferred(log_rows, dt.date.today()) - reopened, reel_media.records(log_rows),
+            lambda row: append(path, json.dumps(row, ensure_ascii=False) + "\n"))
+
+
+def cmd_reel_extract(a):
+    """instagram 모드가 받은 릴스 트랙의 화면 글자와 음성 전사를 단서 파일에 붙이고 받은 폴더를 지운다(reel_media.py).
+    입력이 맞으면 추출 전에 그 릴스를 소급 추출 대기 목록에 넣어 두어, 실패하거나 SIGTERM이나 강제 종료로 끊겨도 다음
+    instagram 실행이 다시 시도하게 하고, 끝나면 결과대로 그 항목을 정리한다(reel_media.backfill_settle)."""
+    import reel_media  # 쓸 때 불러온다. 릴스 명령과 pick(inbox_leads)이 쓰고, hook의 VL check는 이 모듈에 기대지 않는다.
+    # 에이전트의 Bash 시간 제한 등으로 SIGTERM을 받아도 finally가 도구 프로세스 그룹을 끝내고 받은 폴더를 지운다.
+    signal.signal(signal.SIGTERM, lambda signum, _frame: sys.exit(128 + signum))
+    added = False
+    if not reel_media.inputs(S, a.id, a.dir)[0]:  # 입력 오류(이미 처리한 릴스의 재실행 포함)는 목록을 늘리지 않는다.
+        with locked("reel-backfill"):
+            added = bool(reel_media.backfill_add(S, [a.id], backfill_records()[1], now().isoformat(timespec="seconds"),
+                                                 note="추출하다 끊기면 다음 실행이 다시 시도한다")["added"])
+    report = reel_media.extract(S, a.id, a.dir, cfg()["whisper_threads"], TRANSCRIBE, a.duration)
+    with locked("reel-backfill"):
+        reel_media.backfill_settle(S, a.id, report["status"], *backfill_records(),
+                                   now().isoformat(timespec="seconds"))
+    if added and report["status"] == "failed":
+        report["note"] += "; 소급 추출 대기 목록에 넣었다"
+    emit(report)
+    return 1 if report["status"] == "failed" else 0
+
+
+def cmd_reel_backfill(a):
+    """옛 릴스 소급 추출 대기 목록(S/inbox/instagram/BACKFILL.tsv). add로 넣고, instagram 모드가 next로 받아 시도한 뒤
+    mark로 결과를 남긴다. 절이 생긴 단서가 skipped나 deferred로 끝나 있었으면 처리 기록에 reopened를 덧붙여 learn
+    후보로 되돌린다(기록은 덧붙이기만 한다)."""
+    import reel_media
+    stamp = now().isoformat(timespec="seconds")
+    with locked("reel-backfill"):
+        done, last, reopen = backfill_records()
+        if a.action == "add":
+            report = reel_media.backfill_add(S, a.ids, last, stamp)
+        elif a.action == "next":
+            n = cfg()["instagram_backfill_per_run"] if a.n is None else a.n
+            report = reel_media.backfill_next(S, max(0, int(n)), done, last, reopen, stamp)
+        else:
+            report = reel_media.backfill_mark(S, a.id, a.gone, done, last, reopen, stamp)
+    emit(report)
+    return 1 if "error" in report else 0
 
 
 def cmd_email_query(a):
@@ -1740,10 +1807,12 @@ def agent_prompt(mode, conf):
     browser = ""
     if mode in BROWSER:  # TaskSpace 이름은 모드마다 고정해 끝내지 못한 공간을 다음 실행이 이어받게 하고, 파일 접두사는 실행마다 바꾼다.
         guide = ego_guide()
+        helpers = (f"{SCRIPT.parent}/reel_tracks.js" if mode == "instagram" else
+                   f"{SCRIPT.parent}/youtube_subs.js와 {SCRIPT.parent}/threads_extract.js")
         browser = ((f" 브라우저 단계 전에 VL이 저장한 ego-browser 안내 {guide}를 끝 줄까지 읽고 따른다." if guide else
                     " 브라우저 단계 전에 `ego-browser skill`을 실행해 끝까지 읽고 따른다.")
                    + f" TaskSpace 이름은 vault-learn-{mode}, 이 실행의 파일 접두사는 {S}/tmp/vault-learn-{mode}-{stamp()}이고 "
-                   f"헬퍼는 {SCRIPT.parent}/youtube_subs.js와 {SCRIPT.parent}/threads_extract.js다. ego-browser가 ego lite에 "
+                   f"헬퍼는 {helpers}다. ego-browser가 ego lite에 "
                    "연결하지 못하면 CHROME_UNAVAILABLE(ego lite를 쓸 수 없다는 뜻)만, 사용자가 브라우저를 넘겨받았거나 그 "
                    "TaskSpace 이름을 사용자 소유 공간이 쓰고 있으면 USER_TAKEOVER만 출력한다. "
                    "권한 규칙이나 정책이 브라우저 동작을 거부했으면 POLICY_BLOCKED만 출력하고 끝낸다. "
@@ -2244,7 +2313,7 @@ def cmd_status(a):
 def cmd_doctor(a):
     problems = []
     for tool in ("python3", "uvx", "ffmpeg", "ffprobe", "whisper-cli", "node", "git", "osascript", "ego-browser",
-                 cfg()["claude"]):
+                 "swiftc", cfg()["claude"]):
         if not shutil.which(tool):
             problems.append(f"PATH에서 {tool}을 찾지 못했다")
     models = Path(os.environ.get("WHISPER_CPP_MODEL_DIR", "~/.cache/whisper-cpp")).expanduser()
@@ -2877,6 +2946,13 @@ def cmd_selftest(a):
                 {"key": "c", "result": "deferred", "ts": "2026-10-01"},
                 {"key": "d", "result": "deferred", "ts": "2026-09-01"}, {"key": "d", "result": "deferred", "ts": "2026-09-20"}]
     assert settle_deferred(log_rows, today) == {"a", "b", "d"}
+    # 릴스 소급 추출의 reopened는 앞선 결과와 보류 횟수를 지우고, 그 뒤에 다시 오는 결과는 다시 처리 끝으로 센다.
+    reopen = {"key": "r", "result": "reopened", "ts": "2026-10-09"}
+    skip = {"key": "r", "result": "skipped", "ts": "2026-10-01"}
+    assert "r" not in settle_deferred([skip, reopen], today) and "r" in settle_deferred([skip, reopen, skip], today)
+    assert "d" not in settle_deferred(log_rows + [reopen | {"key": "d"}], today)  # 두 번 보류한 뒤 다시 연 key
+    assert "d" in settle_deferred(log_rows + [reopen | {"key": "d"}, {"key": "d", "result": "deferred",
+                                                                      "ts": "2026-10-09"}], today)
     assert PHONE.search("문의 010-1234-5678") and not PHONE.search("2026-10-05")
     assert not SAFE_EMAIL.search("someone@corp.co.kr") and SAFE_EMAIL.search("git@github.com")
     assert SAFE_EMAIL.search("icon@2x.png") and SAFE_EMAIL.search("ec2-user@10.0.0.1")
@@ -2974,10 +3050,18 @@ def cmd_selftest(a):
                 claude_prompt = agent_prompt("harvest", DEFAULTS)  # TaskSpace 이름은 고정, 파일 접두사는 실행마다 다르다.
                 assert (f"ego-browser 안내 {guide}를" in claude_prompt) == bool(guide)
                 assert ("`ego-browser skill`을 실행해" in claude_prompt) == (not guide)
+            insta_prompt = agent_prompt("instagram", DEFAULTS).split("\n\n")[0]
         finally:
             ego_guide = real_guide
         assert "TaskSpace 이름은 vault-learn-harvest," in claude_prompt and f"{S}/tmp/vault-learn-harvest-" in claude_prompt
         assert "threads_extract.js" in claude_prompt and "CHROME_UNAVAILABLE(ego lite" in claude_prompt
+        # instagram은 릴스 트랙 헬퍼만, harvest는 기존 두 헬퍼만 안내한다.
+        assert f"헬퍼는 {SCRIPT.parent}/reel_tracks.js다." in insta_prompt and "threads_extract.js" not in insta_prompt
+        assert "reel_tracks.js" not in claude_prompt.split("\n\n")[0]
+        for command, flags in ((["reel-extract"], ("--id", "--dir", "--duration")), (["reel-backfill", "mark"], ("--gone",)),
+                               (["reel-backfill", "next"], ("--n",))):
+            helped = subprocess.run([sys.executable, str(SCRIPT), *command, "--help"], capture_output=True, text=True)
+            assert helped.returncode == 0 and all(flag in helped.stdout for flag in flags), command
         assert "USER_TAKEOVER만" in claude_prompt and "USER_TAKEOVER" not in agent_prompt("digest", DEFAULTS).split("\n\n")[0]
         assert "POLICY_BLOCKED만 출력하고 끝낸다. 정책 거부를 연결 실패로 바꾸거나 다른 브라우저로 우회하지 않는다." in claude_prompt
         allow, deny = agent_rules("harvest")
@@ -3091,6 +3175,18 @@ def main():
     p.add_argument("--complete", action="append", default=[], choices=("mail", "saved"),
                    help="처음부터 모으기를 끝낸 부분(email은 mail, instagram은 saved)")
     p.add_argument("--dry-run", action="store_true")
+    p = add("reel-extract", cmd_reel_extract, "릴스 트랙의 화면 글자와 음성 전사를 Instagram 단서에 붙인다(instagram)")
+    p.add_argument("--id", required=True, help="릴스 주소의 코드. S/inbox/instagram/<id>.md가 있어야 한다")
+    p.add_argument("--dir", required=True, help="video.mp4나 audio.mp4를 받은 S/tmp 아래 <id> 폴더. 끝나면 지운다")
+    p.add_argument("--duration", type=float, help="헬퍼가 준 페이지의 영상 길이(초). 받은 파일과 크게 다르면 기록하지 않는다")
+    p = add("reel-backfill", cmd_reel_backfill, "옛 릴스 소급 추출 대기 목록(S/inbox/instagram/BACKFILL.tsv)")
+    actions = p.add_subparsers(dest="action", required=True)
+    actions.add_parser("add", help="대상 릴스를 pending으로 넣는다").add_argument("ids", nargs="+")
+    actions.add_parser("next", help="이번 실행에서 시도할 pending 항목").add_argument(
+        "--n", type=int, help="기본값은 config.json의 instagram_backfill_per_run")
+    p = actions.add_parser("mark", help="시도 결과를 남긴다")
+    p.add_argument("--id", required=True)
+    p.add_argument("--gone", action="store_true", help="게시물이 삭제됐거나 볼 수 없다")
     add("email-query", cmd_email_query, "harvest의 Gmail 검색어와 발신자")
     add("lead-id", cmd_lead_id, "외부 링크의 수집함 id").add_argument("url")
     p = add("channels-merge", cmd_channels_merge, "ego lite에서 읽은 구독 목록을 channels.tsv에 합친다")
