@@ -39,6 +39,8 @@ OSv1 object/link 변경은 eventual consistency, OSv2 변경은 Action 완료 �
 
 2026-11-03 버전 없는 문서 주소와 `/api/v1/` 문서 주소가 설명하는 위 V1 endpoint, 요청 예제, 빈 응답과 제한을 대조했다. OSv1/OSv2 변경 가시성은 위 저장소 구분을 따른다. 실제 API 호출이나 장애 시 부분 적용 여부를 재현한 검증은 아니다.
 
+2026-11-18 수집한 V1 Apply Action Batch 명세(버전 없는 주소와 `/api/v1/` 주소의 본문이 같다)에서도 항목별 `parameters`의 DataValue 표에서 Time Series Reference 행이 단건 Apply Action과 같이 바뀌었다. 2026-11-01 수집본의 `type` 판별자 객체 대신 seriesId 문자열 또는 JSON 객체로 표기된다. 같은 날 `/api/v1/` 공개 페이지 본문에서도 경로, 20개 상한, 기본값과 notification 미지원, scope와 `{}` 응답 예제는 그대로다. 단건과 batch가 같은 직렬화 함수를 쓰면 이 행의 처리도 함께 맞춘다(설계 제안). 2026-11-18 공식 Python SDK 저장소의 V1 DataValue 문서는 아직 `type` 판별자 형식을 적고 있어 공식 자료끼리 표기가 엇갈린다. 클라이언트 변경은 실제 요청으로 확인한 뒤 한다(설계 제안). 이전 형식의 수용 여부와 인증 호출은 시험하지 않았고 이 행과 공개 페이지의 경로, 제한, scope, 응답 예제만 부분 대조했으므로 frontmatter 검증일은 유지한다.
+
 ## 검증은 적용 성공의 보증이 아니다
 
 `POST .../validate`는 `api:ontologies-read`로 parameter와 submission criteria를 평가해 VALID/INVALID를 반환한다. 성능 때문에 기존 객체나 Foundry 데이터를 검사하지 않으므로 primary key 유일성, user ID 존재 여부는 검증하지 않는다. 생략 parameter는 null이며 Action의 configured default value를 적용하지 않는다.
@@ -100,7 +102,8 @@ Attachment metadata GET과 `/content` binary GET은 `api:ontologies-read`다. me
 - [Apply Action](https://www.palantir.com/docs/foundry/api/ontology-resources/actions/apply-action)
 - [Apply Action (v1)](https://www.palantir.com/docs/foundry/api/v1/ontology-resources/actions/apply-action) — 2026-11-03 경로 식별자와 요청 스키마를 대조한 버전 명시 주소, 2026-11-18 수집본의 Time Series Reference 행 대조
 - [Apply Action Batch](https://www.palantir.com/docs/foundry/api/ontology-resources/actions/apply-action-batch)
-- [Apply Action Batch (v1)](https://www.palantir.com/docs/foundry/api/v1/ontology-resources/actions/apply-action-batch) — 2026-11-03 요청 배열, OAuth2 scope, 빈 성공 응답과 적용 제한 대조
+- [Apply Action Batch (v1)](https://www.palantir.com/docs/foundry/api/v1/ontology-resources/actions/apply-action-batch) — 2026-11-03 요청 배열, OAuth2 scope, 빈 성공 응답과 적용 제한 대조, 2026-11-18 수집본의 Time Series Reference 행 대조
+- [foundry-platform-python, V1 DataValue](https://github.com/palantir/foundry-platform-python/blob/develop/docs/v1/Ontologies/models/DataValue.md) — 2026-11-18 SDK 문서의 Time Series Reference 이전 표기 확인
 - [Validate Action](https://www.palantir.com/docs/foundry/api/ontology-resources/actions/validate-action)
 - [Validate Action (v1)](https://www.palantir.com/docs/foundry/api/v1/ontology-resources/actions/validate-action) — 2026-11-03 검증 요청과 응답 스키마, INVALID 성공 응답 예제 대조
 - [List Action Types](https://www.palantir.com/docs/foundry/api/ontology-resources/action-types/list-action-types) — 2026-11-18 V1 경로, paging과 응답 스키마 대조

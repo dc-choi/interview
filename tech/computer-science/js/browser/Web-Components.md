@@ -1,7 +1,7 @@
 ---
 tags: [cs, javascript, browser, dom, web-components, design-system]
 status: done
-verified_at: 2026-11-17
+verified_at: 2026-11-18
 category: "CS - JavaScript"
 aliases: ["Web Components", "웹 컴포넌트", "Custom Elements", "Shadow DOM"]
 ---
@@ -93,6 +93,33 @@ React 앱에 배포할 때는 `@lit/react`의 `createComponent()`로 React 래�
 
 Decorator 설정은 빌드 결과에 영향을 준다. Lit은 TypeScript에서 당분간 `experimentalDecorators: true`와 `useDefineForClassFields: false`를 권한다. 표준 decorator를 쓰면 `@property()`, `@state()` 같은 decorator를 class field가 아닌 auto-accessor(`@property() accessor label = ''`)에 붙여야 한다. 위 예시는 experimental decorator 설정을 전제로 한다.
 
+## 빌드한 컴포넌트를 순수 HTML 페이지에 붙이기
+
+프레임워크가 없는 페이지나 서버가 HTML을 그리는 백오피스에서는 빌드한 ES module을 `<script type="module">`로 불러오면 정의된 태그를 마크업에 바로 쓸 수 있다. Module script는 `defer` 없이도 기본으로 지연 실행된다([[JavaScript-ES-Modules|ES Modules]]).
+
+- **의존성을 빼고 빌드한 경우**: 결과 파일에 `import { LitElement } from 'lit'` 같은 bare specifier가 남는다. Import map이 없으면 module specifier는 절대 URL이나 상대 URL이어야 하므로, `<script type="importmap">`의 JSON `imports`에 이름과 실제 URL을 적는다. `lit/decorators.js`처럼 하위 경로도 쓰면 끝에 `/`를 붙인 접두사 항목을 함께 두며, 이때 값도 `/`로 끝나야 한다. 가리킨 파일이 다시 다른 bare specifier를 import하면 그 이름도 map에 있어야 한다. Import map은 그 specifier를 쓰는 module script보다 먼저 선언되고 처리돼야 한다. Import map을 하나만 허용하는 브라우저 버전은 어떤 module보다도 먼저 나와야 하므로 모든 module script 앞에 둔다.
+- **의존성을 포함해 빌드한 경우**: 파일 하나만 불러오면 된다. 다만 Lit 문서는 재사용 패키지를 배포할 때 번들, 압축과 최적화를 하지 말고 앱이 맡게 하라고 하며, 번들이 앱에 여러 버전의 Lit을 들일 수 있다고 설명한다. 한 페이지가 Lit을 포함한 번들 여러 개를 불러오면 번들마다 Lit 사본을 싣는다. 같은 문서는 CDN 사용을 지원하려면 CDN용 module과 운영 배포용 module을 명확히 나누라고 권한다.
+- **페이지 코드와 주고받기**: 문자열 설정은 `setAttribute()`, 객체와 배열은 요소의 property에 직접 대입한다. `setAttribute()`는 값을 문자열로 바꿔 저장하므로 객체를 그대로 넘기면 `[object Object]` 같은 문자열이 된다([[Browser-DOM-Manipulation-and-Safety|attribute와 property 차이]]). Lit 컴포넌트가 속성을 `type: Object`나 `type: Array`로 선언했다면 JSON 문자열 attribute를 `JSON.parse()`로 되돌리지만, 이는 컴포넌트가 정한 변환이다. 컴포넌트가 보낸 결과는 `addEventListener()`로 받고, `CustomEvent`의 `detail`은 이벤트를 만들 때 넘긴 데이터를 그대로 돌려준다.
+
+```html
+<script type="importmap">
+  { "imports": { "lit": "/vendor/lit/index.js", "lit/": "/vendor/lit/" } }
+</script>
+<script type="module" src="/dist/components.js"></script>
+
+<password-input label="비밀번호"></password-input>
+<script type="module">
+  const input = document.querySelector('password-input');
+  input.setAttribute('label', '새 비밀번호');
+  input.required = true;
+  input.addEventListener('value-change', (e) => {
+    console.log(e.detail.value);
+  });
+</script>
+```
+
+예시는 `/vendor/lit/`에 다른 bare specifier가 없는 독립 빌드를 두었다고 가정한다. npm의 lit 3 패키지 파일을 그대로 복사하면 진입 파일이 `@lit/reactive-element`, `lit-html`, `lit-element`를 다시 import하므로 이 이름과 `/` 접두사 항목도 map에 넣어야 한다.
+
 ## 면접 체크포인트
 
 - Shadow DOM이 막는 것(스타일 누수, DOM 선택자 간섭)과 막지 못하는 것(같은 페이지 스크립트의 접근)을 구분해 설명할 수 있는가.
@@ -117,10 +144,16 @@ Decorator 설정은 빌드 결과에 영향을 준다. Lit은 TypeScript에서 �
 - [Lit, Events](https://lit.dev/docs/components/events/)
 - [Lit, Decorators](https://lit.dev/docs/components/decorators/)
 - [Lit, React](https://lit.dev/docs/frameworks/react/)
+- [MDN, `<script type="importmap">`](https://developer.mozilla.org/en-US/docs/Web/HTML/Reference/Elements/script/type/importmap) — 2026-11-18 선언 순서, JSON 형식과 접두사 항목 규칙 확인
+- [MDN, `<script>`: The Script element](https://developer.mozilla.org/en-US/docs/Web/HTML/Reference/Elements/script) — 2026-11-18 module script의 기본 지연 실행과 URL specifier 조건 확인
+- [MDN, CustomEvent: detail property](https://developer.mozilla.org/en-US/docs/Web/API/CustomEvent/detail)
+- [Lit, Publishing](https://lit.dev/docs/tools/publishing/) — 2026-11-18 재사용 패키지의 번들 금지 권고와 CDN용 module 분리 권고 확인
+- [lit 3 index.js — unpkg](https://unpkg.com/lit@3/index.js) — 2026-11-18 진입 파일의 bare specifier import 확인
 - [React, Common components (custom HTML elements)](https://react.dev/reference/react-dom/components#custom-html-elements) — 2026-11-17 custom element 이벤트의 `on` 접두사 연결 확인
 - [프론트 스택 1편. 웹 컴포넌트로 진행하는 이유 (Web Components vs Frameworks) — 하찮은오후](https://www.youtube.com/watch?v=h1QFZn0hqrQ) — 2026-11-01 업로드, 정리의 계기. 사실은 위 1차 출처로 대조
 - [프론트 스택 2편. 개발 스택 선정: Lit과 Storybook을 선택한 이유 — 하찮은오후](https://www.youtube.com/watch?v=TEFl9Y3bFDQ) — 2026-11-04 업로드, Lit 절의 계기. 사실은 Lit 문서로 대조
 - [프론트 스택 4편. Lit 기반 웹 컴포넌트 제작 실습 — 하찮은오후](https://www.youtube.com/watch?v=aidWA-QjRXk) — 2026-11-08 업로드, React 래퍼 절의 계기. 사실은 Lit 문서로 대조
+- [프론트 스택 5편. HTML 및 웹 프로젝트 적용 예제 실습 — 하찮은오후](https://www.youtube.com/watch?v=Zy-H2NeA3fM) — 2026-11-11 업로드, 순수 HTML 연결 절의 계기. 사실은 MDN과 Lit 문서로 대조
 
 ## 관련 문서
 
