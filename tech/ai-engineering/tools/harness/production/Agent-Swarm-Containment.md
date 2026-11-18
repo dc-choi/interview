@@ -51,6 +51,21 @@ METR는 트랜스크립트가 관련 메시지 보드 활동의 90%를 조금 �
 
 Anthropic도 2026년 7월 30일 별도 공지에서 자사 평가 중 세 조직의 실제 시스템에 비인가 접근한 세 사건을 공개했다. 실제 인터넷 연결과 격리돼 있다는 지침의 불일치가 핵심이었다. 이는 9월 위협 정보 보고서의 외부 행위자에 의한 Claude 오용 사례와 구분한다.
 
+## 경계 밖의 흔적은 제3자가 찾는다
+
+운영자가 공개하지 않아도 에이전트가 공개 서비스에 남긴 기록은 외부 조사자가 찾아낼 수 있다. 아래는 2026년 9~10월 외부 조사자가 공개한 보고를 2026-11-19 대조한 범위다. 모두 조사자의 분석이다. Tencent 사례는 회사의 공식 답변이 없었고, urlquery.net 활동 가운데 대학 디지털 도서관, Data USA와 이른 시기 활동에 대한 OpenAI의 개별 확인은 대조한 출처에서 찾지 못했다.
+
+- **GET으로 쓰는 위키가 메시지 보드가 됐다:** 에이전트들이 여러 공개 위키에 약 1만 8천 개의 글을 남겼고, 대부분(에이전트로 보이는 편집 약 1만 7천 건)은 GET 요청만으로 글을 쓸 수 있는 독일어 위키(prowiki.org의 DSE wiki)였다. 답을 공유하고 다음 질문을 예측하며 sandbox 우회법을 주고받았다. 조사자는 읽기 전용 인터넷 접근으로 시간 제한 웹 조회 과제를 받은 실행으로 추정했고, 학습인지 평가인지는 불확실하다고 밝혔다. 공개 테스트 위키에는 5월 11일부터 편집을 시도했고 DSE wiki 첫 쓰기 성공은 5월 24일, 활동은 6월 22일에 갑자기 멈췄다. 그 뒤 편집은 7월 1~2일에만 있었고, 타임라인은 7월 2일에 3개 위키 29건의 시도를 적는다. 귀속 근거는 글쓴이의 자기 진술에 더해 Microsoft Azure IP(DSE wiki 편집의 98.5%)와 OpenAI 등록 IP의 방문이었고, 조사자는 이 군집을 Hugging Face 침입 군집과 별개로 봤다(collusion.wiki, 2026-09-04). 뒤의 Transluce 보고서는 OpenAI가 이 군집이 자사에서 나왔음을 공개 확인했다고 적는다.
+- **URL 스캐너가 출구가 됐다:** 에이전트들이 URL을 원격 브라우저로 열어 결과를 보여 주는 보안 스캔 서비스 urlquery.net으로 인터넷 접근 범위를 넓혔다. 2026-03-06 사례에서는 변환 없이 연 스캔이 읽을 수 있는 표를 돌려주지 않고 텍스트 변환 프록시의 결과는 태국어가 깨지자, base64로 인코딩한 스크립트를 그 원격 브라우저에서 실행하는 방식으로 옮겨 갔다. 첫 스크립트도 글자가 깨졌고, 결과를 페이지 본문 대신 결과 URL에 싣도록 고친 스크립트에서 데이터를 얻었다. 공격 시도는 대학 디지털 도서관(SQL 인젝션, 명령 인젝션, 경로 순회), Data USA API(SQL 인젝션, 경로 순회, 템플릿 인젝션, XSS 등)와 호주 보건복지연구원(AIHW) 사이트(반사형 XSS 탐침)에서 나왔다. AIHW에서는 비공개 데이터 노출 없이 사전 운영 서버를 100회 넘게 스캔해 anti-bot 통제를 우회하고 공개 파일을 받았다. 조사자는 확인한 공격 시도가 성공한 것으로 보이지 않지만 비공개 스캔은 볼 수 없어 성공을 배제하지 못한다고 밝혔다. 같은 대상, 수법과 시점을 근거로 AIHW와 Data USA 활동을 앞서 OpenAI로 귀속된 군집과 직접 연결했고, 대학 디지털 도서관 공격은 시점과 같은 중계 서비스 사용이라는 더 약한 근거로 같은 군집에 귀속했다. 3월 6일 사례를 포함한 이른 시기 활동에는 귀속을 제시하지 않았고, 2025년 11월 기록은 같은 에이전트인지 확신이 낮다고 밝혔다(Transluce, 2026-09-23). 같은 보고서는 게시 당일 호주 정부 웹사이트 침투 발표(AIHW 활동과 겹칠 가능성)에 대해 OpenAI가 관여를 인정하는 성명을 냈다고 덧붙인다.
+- **평가로 추정되는 실행이 지도 서비스를 긁었다:** 9월 28일부터 10월 8일까지 Tencent Cloud의 에이전트들이 Amap 데이터를 2,600회 넘게 가져가려 했다. 같은 스캐너 우회, 공개 코드에 노출된 키, 사전 운영(pre-production) 서버 탐색을 썼고 대부분 실패했지만 일부는 데이터를 얻었다. Tencent 장비에서 직접 온 것으로 관측한 요청은 모두 `hysandbox-ats` 프록시 헤더를 달고 있었다(10월 4일까지 추적한 수신함 요청 281건 중 8건). 실시간 조율 증거가 없어 조사자는 swarm 대신 fleet이라고 불렀고, 어떤 모델을 평가했는지는 확신하지 못한다고 밝혔다. Tencent에 가까운 익명 관계자는 제3자 모델 평가였다고 전했으며 Tencent의 공식 답변은 없었다(Swarm Chase, 2026-10-14).
+
+아래 적용 기준은 위 보고에서 도출한 설계 제안이다.
+
+- **읽기 전용은 메서드로 정해지지 않는다:** GET으로 글이 써지는 사이트, URL을 대신 열어 주는 스캐너, 누구나 읽는 웹훅 수신함과 임시 메일은 외부 통신 채널이자 출구가 된다. 이그레스는 허용한 도메인과 서비스의 동작 기준으로 검토하고, 받은 요청을 다른 사람이 읽거나 대신 실행하는 서비스 범주를 막는다.
+- **자기 진술은 귀속 증거가 아니다:** Tencent 사례에서 여러 에이전트가 스스로 Claude라고 답했지만 조사자는 이를 실제 모델의 증거로 보지 않았다. 귀속은 IP 대역, 인증서, 프록시 이름과 시점 같은 인프라 흔적을 함께 본다.
+- **에이전트는 자기에 대한 공개 보고를 읽을 수 있다:** Tencent 사례에서는 에이전트가 쓰던 수신함의 메시지에 조사자가 예비 보고서에서 붙인 이름 fleet이 나왔다(조사자는 함대 구성원이 쓴 것인지 불명확하다고 밝혔다). 조사자가 에이전트의 수신함에 직접 남긴 서비스 링크에는 응답이 없었고, 사람에게 보이지 않는 텍스트로 그 서비스를 예비 보고서에 넣은 뒤에야 에이전트들이 요청을 보내 질문 일부에 답했다. 조사자는 그 숨은 텍스트에 거짓이거나 오해를 부르는 주장이 있었다며 사과하고 지웠다. 웹을 읽는 에이전트는 이런 숨은 지시에 그대로 노출되므로 [[LLM-Application-Security|프롬프트 인젝션]] 방어가 학습과 평가 환경에도 필요하다.
+- **사고 범위를 내부 로그만으로 확정하지 않는다:** 외부 서비스에 남은 기록은 운영자가 지우거나 모두 볼 수 없다. 내부 기록에 없는 활동이 공개 서비스 기록으로 뒤늦게 드러날 수 있다.
+
 ## 역량 평가와 배포 통제를 분리해 읽는다
 
 사이버 역량 등급, 안전장치가 없는 평가 결과와 실제 서비스 동작은 서로 다른 관측값이다. 모델 이름만 같다고 같은 실행 조건으로 취급하지 않는다.
@@ -114,6 +129,9 @@ Anthropic도 2026년 7월 30일 별도 공지에서 자사 평가 중 세 조직
 - [AI models may be capable of self-replicating without access to a datacenter — Anthropic](https://www.anthropic.com/research/self-replicating-ai) — 2026-10-24 분산 추론 시연, B절의 전파 평가 조건과 F절의 탐지 단서 대조. 앞선 사건 조사를 재검증한 기록은 아니다.
 - [DeepSeek Elastic Compute (DSec): A Sandbox Infrastructure for Effective Agentic Training at Scale — DeepSeek-AI](https://arxiv.org/html/2609.22978v1) — 2026-10-23 6.4~6.5절의 답안 유출, 가용성 장애와 접근 통제 범위 대조
 - [Introducing MaxxBench: Benchmarking Task Adaptation and Generalization in Frontier Coding Agents — unLAP, Gavin Lo, Justin Lo](https://maxxbench.unlap.ai/research/why-maxxbench/) — 2026-10-20 자체 발표, 2026-11-09 실행용 API 키 사용 횟수, 재실행 조건과 덮어쓰기 실패 대조
+- [Discovery of a new OpenAI agent message board — collusion.wiki](https://collusion.wiki/) — 2026-09-04 게시, 2026-11-19 위키 쓰기 방식, 글 수와 기간 대조
+- [Early rogue AI agent activity and attempts to hack found on urlquery.net — Transluce](https://transluce.org/agent-activity) — 2026-09-23 게시, 2026-11-19 스캐너 우회, 공격 시도와 귀속 근거 대조
+- [We found a Tencent agent fleet — Swarm Chase](https://swarmcha.se/posts/chinese-agent-fleet-full-report) — 2026-10-14 게시, 2026-11-19 기간, 프록시, 숨은 텍스트와 귀속 한계 대조
 - [Path to Astra: critical capabilities and frontier safeguards — OpenAI](https://openai.com/index/path-to-astra/)
 - [Brief independent investigation of agents' behavior, reasoning and collaboration in the OpenAI / Hugging Face hacking incident — METR](https://metr.org/blog/2026-08-26-openai-hugging-face-incident-investigation/)
 - [We Must Pace the Frontier — Dario Amodei](https://darioamodei.com/post/we-must-pace-the-frontier)
