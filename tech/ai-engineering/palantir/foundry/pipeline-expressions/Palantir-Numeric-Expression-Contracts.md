@@ -66,11 +66,15 @@ Natural random은 하한을 포함하고 상한을 제외한다. Normal random�
 
 대부분의 기본 수치 함수는 Batch/Faster/Streaming을 표시하지만 `positiveModuloV1`, `UnhexV1`, median과 standardDeviation은 Batch/Faster, product는 Batch만 표시한다. 2026-10-26 index 대조 기준 삼각과 역삼각, 지수와 로그, 제곱근, 거리/무게 단위 변환, hex/octal, ceil/floor, subtract와 negate는 모두 Batch/Faster/Streaming이고, 2026-10-24 index 수집본의 Numeric expression 분류 전체로는 `convertBaseV1`(Batch/Streaming)과 `similarityScoreV1`(Batch)도 위 목록 밖의 예외다. 같은 범주의 함수가 같은 엔진에서 모두 지원된다고 가정하지 않는다.
 
-## Bitwise and는 Binary 분류의 정수 계약이다
+## Bitwise and, or, not은 Binary 분류의 정수 계약이다
 
 `bitwiseAndV1`(Bitwise and)은 두 정수 값에서 공통으로 켜진 bit만 남긴다. 분류는 Numeric이 아니라 Binary이고 Batch/Faster만 표시하므로 Streaming pipeline에서 쓸 수 있다고 가정하지 않는다(2026-11-17 수집한 공개 레퍼런스 기준). Left와 Right는 각각 Byte, Integer, Long, Short만 받고 출력도 이 네 정수 타입 중 하나다. Decimal, Double, Float는 받지 않는다. 소수 값을 정수로 바꾸면 소수부가 사라질 수 있으므로 bit 의미가 있는 정수 column에만 쓴다(설계 제안). 같은 Binary 분류의 shift 함수는 [[Palantir-Type-and-Encoding-Contracts|타입과 인코딩 계약]]에 있으며 실행 모드 표시가 Batch/Streaming이라 Bitwise and와 다르다. Mask와 shift를 한 pipeline에서 함께 쓰면 두 함수의 공통 실행 모드가 Batch뿐인지 먼저 확인한다(해석).
 
 예제에서 12와 10은 8(1100과 1010의 공통 bit 1000), -1과 255는 255다. -1은 2의 보수 표기에서 모든 bit가 1이라 255의 bit를 그대로 남긴다는 해석과 일치한다. 한쪽이 null이면 null을 반환한다. 두 입력의 타입이 다르면 좁은 타입을 넓은 타입으로 넓힌다고 설명하지만, 해당 예제의 인자 값이 기본 예제와 같은 12와 10이라 실제 출력 타입이 어떻게 정해지는지는 예제로 확인할 수 없다. Flag column을 mask로 검사할 때는 결과를 0과 비교하기 전에 null을 별도로 처리한다(설계 제안).
+
+`bitwiseOrV1`(Bitwise or)은 두 정수 중 어느 한쪽에라도 켜진 bit를 남긴다. 분류, Batch/Faster 표시, Left와 Right의 타입 범위(Byte, Integer, Long, Short), 출력 타입, 한쪽 null이면 null, 좁은 타입을 넓힌다는 설명은 Bitwise and와 같다(2026-11-17 수집한 공개 레퍼런스 기준). 예제에서 12와 10은 14(1100과 1010의 합집합 1110), -16과 3은 -13이다. -16은 하위 4bit가 0이고 나머지가 모두 1이므로 3의 하위 2bit를 켜면 -13이 된다는 해석과 일치한다. 넓히기 예제도 12와 10이라 출력 타입 결정 규칙은 예제로 확인할 수 없다. Flag를 켜는 용도로 쓸 때 null 입력은 기존 flag까지 null로 만들므로 결측 flag를 0으로 볼지 먼저 정한다(설계 제안).
+
+`bitwiseNotV1`(Bitwise not)은 인자 하나(Expression)의 모든 bit를 뒤집는다. 같은 Binary 분류, Batch/Faster 표시, 네 정수 타입 입력과 출력, null 입력에 null 반환이다(2026-11-17 수집한 공개 레퍼런스 기준). 예제는 5에서 -6, 12345678910에서 -12345678911, -1에서 0, 0에서 -1이다. 네 수치 예제는 2의 보수에서 not x가 -x-1이라는 관계와 일치하고, 12345678910은 32bit 정수 범위를 넘으므로 Long 입력 예제로 보인다(해석). Byte나 Short 입력의 결과 타입과 부호를 보여 주는 예제는 없으므로 좁은 정수 column에서 not을 mask 생성에 쓸 때는 결과 타입을 실제 pipeline에서 확인한다(설계 제안).
 
 ## 분류 이름과 실제 타입
 
@@ -116,6 +120,8 @@ Natural random은 하한을 포함하고 상한을 제외한다. Normal random�
 - [Palantir, Convert to hexadecimal](https://www.palantir.com/docs/foundry/pb-functions-expression/HexV1)
 - [Palantir, Convert to octal](https://www.palantir.com/docs/foundry/pb-functions-expression/octalV1)
 - [Palantir, Bitwise and](https://www.palantir.com/docs/foundry/pb-functions-expression/bitwiseAndV1)
+- [Palantir, Bitwise or](https://www.palantir.com/docs/foundry/pb-functions-expression/bitwiseOrV1)
+- [Palantir, Bitwise not](https://www.palantir.com/docs/foundry/pb-functions-expression/bitwiseNotV1)
 - [Palantir, Functions index](https://www.palantir.com/docs/foundry/pipeline-builder/functions-index)
 
 ## 관련 문서

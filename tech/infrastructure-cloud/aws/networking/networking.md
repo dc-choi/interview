@@ -11,6 +11,7 @@ aliases: ["AWS 네트워킹 인덱스"]
 
 - [[ELB|ELB — ALB, NLB 로드밸런서]]
   - [[ELB-5XX-Troubleshooting|ALB 5XX 진단 — 502와 504 원인 분리, keep-alive 경합과 NLB TCP reset 구분]]
+  - [[ALB-Target-Health-Checks|ALB 헬스 체크 — 경로, 성공 코드 기본 200과 reason code]]
 - [[API-Gateway|API Gateway — 관리형 API 프론트도어, Authorizer, Throttling]]
 - [[CloudFront|CloudFront — CDN, OAI/OAC, Signed URL, 정액제의 성능과 과금 경계]]
   - [[CloudFront-SaaS-Manager|CloudFront SaaS Manager — multi-tenant distribution, tenant별 도메인과 인증서, connection group]]
