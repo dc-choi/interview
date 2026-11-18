@@ -59,6 +59,8 @@ aliases: ["Chaos Testing", "카오스 테스팅", "카오스 엔지니어링"]
 
 도구는 취향이 아니라 **실행 환경이 정한다**. Kubernetes 위면 Chaos Mesh나 Litmus, AWS 관리형 리소스의 종료와 페일오버까지 다루려면 FIS, 단일 의존의 지연과 타임아웃만 재현하려면 Toxiproxy가 가장 적은 비용으로 끝난다. Well-Architected는 상태 추적, 로그, 롤백과 중단 조건을 갖추지 못한 커스텀 스크립트로 실험하는 것을 권하지 않는다.
 
+Kubernetes에서 Chaos Mesh Workflow로 여러 장애의 시점을 고정하고 매일 밤 회귀로 돌리는 구성, 주입 실패가 성공처럼 보이는 함정은 [[Chaos-Mesh-Kubernetes-Failure-Tests|Chaos Mesh 장애 테스트 자동화]]에 있다.
+
 ## EKS 실험의 중단과 서비스 복구를 구분한다
 
 부분 검증(2026-10-14): AWS FIS의 action, stop condition과 실험 중단 문서를 대조했다. FIS는 EKS Pod 삭제와 네트워크 지연 action을 제공한다. `aws:eks:inject-kubernetes-custom-resource`로 Chaos Mesh 또는 Litmus 실험을 실행하려면 대상 클러스터에 해당 도구를 설치해야 한다. 이 설치 조건을 모든 FIS Pod action의 공통 전제로 확대하지 않는다.
@@ -119,6 +121,7 @@ aliases: ["Chaos Testing", "카오스 테스팅", "카오스 엔지니어링"]
 ## 관련 문서
 
 - [[Test-Pyramid-Blind-Spots|초록불이 못 잡는 것 (계층별 테스트의 사각지대)]]
+- [[Chaos-Mesh-Kubernetes-Failure-Tests|Chaos Mesh 장애 테스트 자동화 (Kubernetes 적용 사례)]]
 - [[performance|성능 테스트 (유형별 종료 조건과 SLO 역산 판정)]]
 - [[Load-Test-Automation|부하 테스트 자동화 (CI 파이프라인 판정)]]
 - [[External-Service-Resilience|외부 연동 회복 패턴 (카오스 실험이 검증하는 대상)]]

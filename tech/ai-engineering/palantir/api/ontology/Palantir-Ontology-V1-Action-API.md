@@ -23,6 +23,12 @@ OSv1 object/link 변경은 eventual consistency, OSv2 변경은 Action 완료 �
 
 2026-11-03 Apply Action의 경로, 입력 스키마, 기본값 미지원과 빈 성공 응답을 공식 문서와 대조했다. 이 부분 확인은 아래 Batch, Validate와 Attachment 계약 전체의 재검증을 뜻하지 않는다.
 
+### Time Series Reference 인코딩 개정
+
+2026-11-18 수집한 V1 Apply Action 명세의 DataValue 표에서 Time Series Reference 행이 바뀌었다. 2026-10-19와 2026-11-01 수집본(2026-11-01 수집본이 위 2026-11-03 대조 대상)은 `type` 판별자를 둔 JSON 객체(`seriesId`, `templateRid`, `qualifiedSeriesId` variant)였다. 새 수집본은 seriesId 문자열 또는 JSON 객체이며 예시는 `"sensor-123"`, `{"seriesId": ..., "syncRid": ...}`, `{"templateRid": ..., "templateVersion": "1"}`다. V2 Apply Action에서 같은 시기에 바뀐 표기([[Palantir-Ontology-V2-Action-API]])와 같다. 다만 V1 응답은 이번 수집본에서도 빈 object이고 V2의 `returnValue` 같은 필드가 생기지 않았다. V2 응답 처리를 V1에 옮기지 않는다.
+
+이전 형식으로 직렬화하던 V1 클라이언트는 실제 요청을 다시 대조한다(설계 제안). 이전 형식을 아직 받는지와 인증 호출 결과는 시험하지 않았다. 이 행과 응답 schema만 부분 대조했으므로 frontmatter의 검증일은 유지한다.
+
 ### 여러 번 적용하는 Batch의 경계
 
 `applyBatch`는 같은 action type을 여러 번 적용한다. 일반 상한은 한 요청 20개다. OSv2 객체만 수정하고 Function을 호출하지 않는 Action은 더 높은 한도를 받을 수 있으므로 이를 모든 Action의 보장치로 쓰지 않는다. Batch는 default parameter와 notification을 지원하지 않는다. 공개 본문에 없는 전체 batch 원자성이나 안전한 자동 재시도는 추정하지 않는다.
@@ -79,7 +85,7 @@ Struct parameter는 field별 제약과 required를, array parameter는 지원되
 
 Action logic에는 object/interface object의 create/modify/delete, link 변경과 applyScenario가 있다. link API name은 object type 내부에서만 유일하다. applyScenario는 scenario에 누적한 edit를 현재 Ontology 문맥에 반영하며 영향받는 object/link type 범위를 명시한다.
 
-parameter baseType 문자열뿐 아니라 선택적 재귀 dataType도 확인한다. array/struct/object set/object/interface/scenario/time series와 marking/cipher text 같은 값은 서로 다른 구조다. long/decimal을 숫자로 강제 변환하면 정밀도를 잃는다. object reference는 primary key 값이며 interface reference는 type 이름까지 필요하다.
+parameter baseType 문자열뿐 아니라 선택적 재귀 dataType도 확인한다. 2026-11-18 수집한 V1 Get Action Type 명세에서는 dataType union에 `geohash` variant가 더해졌다. 2026-10-19 수집본에는 없었다. 알 수 없는 variant를 만나도 파싱 전체를 실패시키지 않는 처리를 둔다(설계 제안). array/struct/object set/object/interface/scenario/time series와 marking/cipher text 같은 값은 서로 다른 구조다. long/decimal을 숫자로 강제 변환하면 정밀도를 잃는다. object reference는 primary key 값이며 interface reference는 type 이름까지 필요하다.
 
 ## Attachment의 수명
 
@@ -99,6 +105,7 @@ Attachment metadata GET과 `/content` binary GET은 `api:ontologies-read`다. me
 - [Validate Action (v1)](https://www.palantir.com/docs/foundry/api/v1/ontology-resources/actions/validate-action) — 2026-11-03 검증 요청과 응답 스키마, INVALID 성공 응답 예제 대조
 - [List Action Types](https://www.palantir.com/docs/foundry/api/ontology-resources/action-types/list-action-types) — 2026-11-18 V1 경로, paging과 응답 스키마 대조
 - [Get Action Type](https://www.palantir.com/docs/foundry/api/ontology-resources/action-types/get-action-type) — 2026-11-18 경로 식별자, 응답 스키마와 예제의 `data` 감싸기 차이 대조
+- [Get Action Type (v1)](https://www.palantir.com/docs/foundry/api/v1/ontology-resources/action-types/get-action-type) — 2026-11-18 수집본의 dataType union 대조
 - [Upload Attachment](https://www.palantir.com/docs/foundry/api/ontology-resources/attachments/upload-attachment)
 
 ## 관련 문서

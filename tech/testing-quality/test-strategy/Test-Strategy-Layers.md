@@ -19,6 +19,7 @@ aliases: ["Test Strategy Layers", "테스트 전략과 계층"]
 - [[Load-Test-Automation|부하 테스트 자동화]]: 기준선, 단계적 부하와 CI 판정
 - [[Regression-Test-Automation|회귀 테스트 자동화]]: 우선순위, 변경 영향 선택, CI 배포 전 게이트, 유지 비용
 - [[Chaos-Testing|카오스 테스팅]]: 장애 가설, 격리된 실험과 복구 검증
+- [[Chaos-Mesh-Kubernetes-Failure-Tests|Chaos Mesh 장애 테스트 자동화]]: 장애 CRD와 Daemon, Workflow 시점 고정, 시나리오 설계, 주입 실패 탐지, 매일 밤 회귀
 - [[Natural-Language-E2E-Agent|자연어 E2E 테스트 에이전트]]: 접근성 트리 우선과 비전 폴백, 반응형과 계획형 프로파일, 결정성과 검증 게이트, CI 비용
 
 ## 함께 볼 문서

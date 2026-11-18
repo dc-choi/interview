@@ -25,7 +25,7 @@ aliases: ["테스트&품질(Testing&Quality)", "Testing & Quality"]
 - [x] [[Property-Based-Testing|속성 기반 테스트]] — 입력 생성과 판정 규칙, shrinking, 회귀 사례 보존과 명세 추적, 퍼즈 하네스의 형식 검증과 증명 범위(실행 모델, 신뢰 기반, 보상 해킹), 기계어 수준 Signal 구현 증명(AlphaProof Code)
 - [x] [[NestJS-Testing-Transport-and-Contracts|NestJS transport와 계약 테스트]], [[NestJS-Testing-Durable-Processes|웹훅과 durable workflow의 실패 복구 검증]]
 - [x] [[Load-Test-Automation|Load test automation]] — 기존 보강: [[performance|SLO 역산 threshold로 CI 판정 자동화]], [[Load-Test-K6|k6 도구와 실행 설정]], [[Test-Pyramid|성능 테스트의 파이프라인 위치]]
-- [x] [[Chaos-Testing|Chaos testing (optional)]]
+- [x] [[Chaos-Testing|Chaos testing (optional)]] — Kubernetes 적용: [[Chaos-Mesh-Kubernetes-Failure-Tests|Chaos Mesh 장애 테스트 자동화 (Workflow 시점 고정, 주입 실패 탐지, 매일 밤 회귀)]]
 - [x] [[performance|성능 테스트 (유형별 종료 조건, 핵심 지표, open과 closed 부하 모델, 스파이크 설계와 종단 간 유실 측정, threshold CI 판정, 생성기 병목 확인, 실행 절차와 결과 리포트)]]
 - [x] [[TDD-BDD|TDD, BDD (Red-Green-Refactor, 세 법칙의 적용 범위, 비용과 회수 시점, 집중 실행과 watch, Given-When-Then)]]
 - [x] [[TDD-Refactoring-Practice|TDD 리팩토링 연습법 (다음 테스트 선택, Fake It과 삼각법, Getting Stuck, TPP 가설, Working Skeleton과 외부 연동)]]
