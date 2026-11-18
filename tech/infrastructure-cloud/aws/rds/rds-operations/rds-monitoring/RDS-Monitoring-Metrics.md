@@ -44,6 +44,16 @@ RDS for Oracle은 메모리 관리 모드와 PGA, SGA 사용량을 추가로 확
 
 이 절은 2026-10-09 AWS Knowledge Center의 swap 해석과 Oracle 메모리 진단 절차를 대조했다. 예제의 메모리 비율을 모든 인스턴스에 적용하는 처방으로 사용하지 않는다.
 
+RDS for MySQL은 엔진 안에서 어느 구성 요소와 연결이 메모리를 잡는지 Performance Schema의 메모리 계측으로 좁힌다.
+
+- **계측 확인:** 먼저 파라미터 그룹에서 `performance_schema`가 켜져 있는지 본다. MySQL 8.4에서 메모리 계측은 기본으로 켜져 있다. 꺼져 있으면 `setup_instruments`에서 `memory/%`의 `ENABLED`를 `YES`로 바꾸거나 시작 옵션 `performance-schema-instrument='memory/%=ON'`으로 켠다. 계측이 꺼진 동안 할당한 블록은 집계되지 않으므로 장애 중에 켠 직후의 수치를 전체 사용량으로 읽지 않는다(매뉴얼의 할당 규칙에서 도출). 실제 상태는 엔진 버전과 파라미터 그룹에서 확인한다.
+- **구성 요소에서 연결로:** sys 스키마의 `memory_global_by_current_bytes`로 이벤트별 현재 할당과 최고치(`high_alloc`)를, `memory_by_thread_by_current_bytes`로 스레드별 사용량을 본다. 스레드는 백그라운드 스레드일 수도 있으므로 `sys.processlist`의 `conn_id`나 `performance_schema.threads`의 `PROCESSLIST_ID`(백그라운드 스레드는 `NULL`)로 연결 ID에 잇는다. MySQL 8.4 매뉴얼 기준 `threads`의 `MAX_TOTAL_MEMORY`는 스레드 실행 중 최대 사용량이며, 8.0 마이너 버전에 이 열이 있는지는 해당 버전 매뉴얼로 확인한다.
+- **OS 스레드와 잇기:** `threads`의 `THREAD_OS_ID`는 Linux에서 `gettid()` 값이며 스레드 풀 플러그인을 쓰는 세션은 `NULL`일 수 있다. Enhanced Monitoring의 OS 프로세스 목록은 CPU와 메모리 상위 프로세스와 스레드를 합쳐 최대 100개만 보여 주고 스레드에는 CPU 사용률만 표시하므로, 스레드별 메모리는 Performance Schema에서 본다.
+- **기록의 수명:** Performance Schema 통계는 메모리에 있어 재시작하면 사라진다. 메모리 요약 테이블을 `TRUNCATE`하면 최고치가 현재값으로 돌아갈 뿐 메모리를 돌려주지 않는다. 추세가 필요하면 주기적으로 밖에 저장한다.
+- **알람 예:** AWS Knowledge Center 영상은 `FreeableMemory`가 인스턴스 메모리의 5% 아래로 내려가면 알리는 CloudWatch 알람을 예로 든다. 위 swap 판단과 아래 알람 원칙처럼 기준선과 함께 정한다.
+
+부분 검증(2026-11-19): 위 MySQL 목록을 MySQL 8.4 매뉴얼의 메모리 요약 테이블과 threads 테이블, Aurora MySQL 메모리 문제 해결 문서, RDS의 OS 프로세스 목록 설명과 대조했다. sys 뷰를 쓰는 절차는 Aurora MySQL 문서의 예이며 RDS for MySQL용 같은 문서는 확인하지 못했다. 나머지 절의 검증일은 유지한다.
+
 ### ReplicaLag가 0이어도 따라왔다고 단정하지 않는다
 
 RDS for MySQL과 MariaDB의 `ReplicaLag`는 replica가 보고하는 지연 초 값이다. AWS 문서는 `Seconds_Behind_Master`로 적지만 MySQL 8.0.22 이상의 `SHOW REPLICA STATUS`에서는 이 필드 이름이 `Seconds_Behind_Source`이고, MariaDB와 8.0.22 이전 MySQL은 `Seconds_Behind_Master`를 쓴다. `-1`은 복제가 활성 상태가 아니라는 뜻이고 `NULL`과 같다. 0은 보통 replica가 따라왔다는 뜻이지만 값의 정의상 receiver 지연은 드러나지 않을 수 있다.
@@ -119,6 +129,11 @@ RDS의 기본 CloudWatch 지표는 보통 1분 단위로 게시된다. **Enhance
 - [MariaDB Documentation, SHOW REPLICA STATUS](https://mariadb.com/kb/en/show-replica-status/)
 - [AWS Database Blog — Prewarm an Amazon RDS for Oracle database to reduce the impact of lazy loading](https://aws.amazon.com/blogs/database/prewarm-an-amazon-rds-for-oracle-database-to-reduce-the-impact-of-lazy-loading)
 - [Amazon Web Services (YouTube) — How do I troubleshoot high replica lag with Amazon RDS for MySQL?](https://www.youtube.com/watch?v=XG4UYKS611k)
+- [AWS Aurora, Troubleshooting memory usage issues for Aurora MySQL databases](https://docs.aws.amazon.com/AmazonRDS/latest/AuroraUserGuide/ams-workload-memory.html) — 2026-11-19 sys 뷰 절차, 스레드와 연결 매핑, 재시작 시 초기화 대조
+- [MySQL 8.4 Reference Manual, Memory Summary Tables](https://dev.mysql.com/doc/refman/8.4/en/performance-schema-memory-summary-tables.html)
+- [MySQL 8.4 Reference Manual, The threads Table](https://dev.mysql.com/doc/refman/8.4/en/performance-schema-threads-table.html)
+- [AWS RDS, Viewing OS metrics in the RDS console](https://docs.aws.amazon.com/AmazonRDS/latest/UserGuide/USER_Monitoring.OS.Viewing.html) — 2026-11-19 OS 프로세스 목록의 100개 한도와 스레드 표시 대조
+- [Amazon Web Services (YouTube) — Amazon RDS for MySQL データベースの空きメモリが少ない場合のトラブルシューティング方法を教えてください。](https://www.youtube.com/watch?v=Y_l1gLJr4qE) — 2026-11-12 업로드, MySQL 메모리 진단 목록의 계기와 알람 예
 
 ## 관련 문서
 

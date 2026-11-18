@@ -1,7 +1,7 @@
 ---
 tags: [payment, emv, nfc, qr, iso8583]
 status: done
-verified_at: 2026-10-02
+verified_at: 2026-11-19
 category: "Reliability"
 aliases: ["결제 입력 프로토콜"]
 ---
@@ -33,6 +33,23 @@ EMV 칩의 거래별 cryptogram과 PAN 대체 토큰은 다른 기능이다. 모
 ## NFC, MST와 지갑
 
 NFC는 가까운 거리에서 데이터를 교환하는 통신 기술이고, EMV 비접촉 결제는 그 위의 결제 규칙이다. 모바일 지갑은 인증, 자격 정보와 토큰을 관리하는 서비스다. 단말의 NFC 하드웨어, 결제 커널, 매입사 설정과 지갑 지원이 함께 맞아야 한다.
+
+### 통신 범위와 동작 모드
+
+NFC Forum 규격은 13.56MHz 대역에서 동작한다. 거리는 출처마다 표현이 다르다. Android 문서는 연결을 시작하려면 보통 4cm 이하가 필요하다고 적고, NFC Forum은 일반 범위를 최대 2cm 안팎으로, 인증 적합 범위를 5mm로 적는다. 10cm 같은 단일 수치를 규격이 보장하는 거리로 쓰지 않는다. 전송 속도도 NFC Forum 소개 페이지가 46kbit/s에서 1.7Mbit/s까지의 범위로 적으므로 특정 값 하나를 NFC의 최대 속도로 단정하지 않는다(2026-11-19 대조).
+
+NFC Forum은 동작 모드를 card emulation(비접촉 카드처럼 reader에 응답), reader/writer(태그나 기기를 읽고 씀), peer-to-peer(두 기기가 맞대어 데이터 교환)와 무선 충전으로 나눈다. Android 개요는 앱이 쓰는 주 모드를 reader/writer와 card emulation 두 가지로 설명하고 peer-to-peer는 나열하지 않는다. 규격의 모드 목록을 특정 OS가 앱에 여는 기능으로 옮기지 않는다.
+
+### 카드 에뮬레이션에서 누가 응답하는가
+
+| 방식 | reader 명령을 처리하는 곳 | 특징 |
+|---|---|---|
+| SE 기반 | 기기에 내장된 보안 칩(eSE)이나 SE를 가진 SIM | NFC 컨트롤러가 reader의 데이터를 SE로 바로 보내고 Android 앱은 거래에 관여하지 않는다 |
+| HCE | 호스트 CPU에서 도는 앱 서비스 | Android 4.4부터 제공한다. ISO-DEP(ISO/IEC 14443-4) 위에서 ISO/IEC 7816-4 APDU를 앱의 `processCommandApdu()`가 받고 응답 APDU를 돌려준다 |
+
+두 방식이 함께 있으면 NFC 컨트롤러가 AID 라우팅 표로 목적지를 정한다. reader가 보낸 `SELECT AID` APDU가 규칙과 일치하면 그 APDU와 뒤따르는 APDU를 해당 목적지(호스트 CPU나 SE)로 보내고, 다른 `SELECT AID`가 오거나 연결이 끊길 때까지 유지한다. 표에 없는 AID는 기본 경로로 간다. Android는 앱이 SE와 직접 통신하는 API를 제공하지 않으며, HCE 기기의 UID는 무작위라고 가정하라고 안내하므로 UID를 카드나 사용자 식별자로 쓰지 않는다.
+
+짧은 통신 거리는 도청과 오인식의 범위를 줄이는 조건일 뿐 암호화나 거래 인증을 대신하지 않는다. 결제 자격 정보의 보호는 SE나 토큰화, EMV 암호문 같은 상위 층에서 따로 확인한다(설명).
 
 MST는 자기 띠 리더가 읽을 수 있는 신호를 전달하는 방식이다. 지갑의 토큰화와 인증 보안은 별도 층이다. 지원 여부는 지갑, 단말 모델, 지역과 시점에 따라 달라지므로 과거의 MST/NFC 지원표를 현재 제품 정책으로 사용하지 않는다.
 
@@ -109,6 +126,10 @@ CVM, offline data authentication과 거래 승인도 독립적이다. PIN을 카
 - [EMVCo, Contactless Chip](https://www.emvco.com/emv-technologies/emv-contactless-chip/)
 - [EMV Migration Forum, Standardization of Terminology v2.0](https://www.emv-connection.com/downloads/2013/02/EMV-Standard-Terminology-V2-012814.pdf)
 - [EMVCo, QR Codes](https://www.emvco.com/emv-technologies/qr-codes/)
+- [NFC Forum, NFC Technology](https://nfc-forum.org/learn/nfc-technology/) — 2026-11-19 주파수, 범위, 속도와 동작 모드 대조
+- [NFC Forum, What NFC Does](https://nfc-forum.org/learn/what-nfc-does/)
+- [Android Developers, NFC overview](https://developer.android.com/develop/connectivity/nfc)
+- [Android Developers, Host-based card emulation overview](https://developer.android.com/develop/connectivity/nfc/hce) — 2026-11-19 SE와 HCE, AID 라우팅과 무작위 UID 대조
 - [Adyen, Offline payments](https://docs.adyen.com/point-of-sale/offline-payment)
 - [카드가 계산을 시작하는 순간 — 결제 도메인 학습](https://mihyekang.github.io/study/payment/day-08.html)
 - [꽂지 않는 결제 — 결제 도메인 학습](https://mihyekang.github.io/study/payment/day-09.html)

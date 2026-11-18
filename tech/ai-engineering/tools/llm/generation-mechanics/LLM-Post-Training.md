@@ -1,9 +1,9 @@
 ---
 tags: [ai, llm, training, alignment, rlhf, dpo]
 status: done
-verified_at: 2026-11-18
+verified_at: 2026-11-19
 category: "AI엔지니어링(AIEngineering)"
-aliases: ["LLM Post-Training", "사후학습", "Supervised Fine-Tuning", "지도 미세조정", "Reward Model", "보상 모델", "Direct Preference Optimization", "Superficial Alignment Hypothesis", "Model Merging", "모델 병합"]
+aliases: ["LLM Post-Training", "사후학습", "Supervised Fine-Tuning", "지도 미세조정", "Reward Model", "보상 모델", "Direct Preference Optimization", "Superficial Alignment Hypothesis", "Model Merging", "모델 병합", "Deletion Tuning", "가중치 삭제 미세조정"]
 ---
 
 # LLM 사후학습: SFT, RLHF와 DPO
@@ -96,6 +96,15 @@ L_DPO(π_θ) = -E[ log σ( β log( π_θ(y_w|x) / π_ref(y_w|x) ) - β log( π_�
 - **층 쌓기**: 여러 모델의 층을 골라 이어 붙이는 방식(frankenmerging)은 파라미터 수가 늘 수 있어 메모리를 아끼는 수단이 아니다. 층을 늘려 모델을 키운 SOLAR 10.7B는 깊이 확장 뒤에 추가 사전학습을 거쳤다.
 - **비용과 확인**: 병합은 경사 하강 없이 텐서를 계산하는 일이라 mergekit은 CPU만으로 돌리거나 VRAM 8GB로 가속할 수 있다고 안내한다. 병합한 모델은 과제마다의 점수와 유지할 범용 능력을 따로 잰다(적용 제안, [[Task-Specific-Small-Models#특화 성능과 유지할 범용 능력을 따로 평가한다|특화 성능과 범용 능력의 평가]]).
 
+## 가중치를 지워 행동을 바꾼다
+
+Deletion Tuning(2026)은 사전학습 가중치를 고정한 채 어떤 가중치를 0으로 만들지만 학습한다. 대상은 각 transformer 블록 MLP의 gate projection 하나이고(MoE 모델은 전문가마다의 gate projection이며 라우터는 그대로 둔다), 대상 가중치마다 학습 가능한 logit `G`를 둔다. 학습 중에는 `W ⊙ σ(αG)`의 부드러운 마스크로 기울기를 흘리면서 α를 키워(GRPO 설정은 10^3에서 10^4로 선형 증가) 마스크를 0과 1에 가깝게 만들고, 배포에서는 `G > 0`인 가중치만 남기는 이진 마스크를 쓴다. 지울 비율은 고정하지 않고 학습이 정한다.
+
+- **보고된 결과**: GRPO, SFT와 자기 증류(SDFT)에서 전체 파라미터의 0.05% 미만을 지운 마스크가 큰 모델에서 전체 미세조정(FFT)과 비슷한 정확도를 냈다(Llama3-8B-Instruct의 GSM8K 83.55% 대 83.24%, Qwen2.5-14B의 수학 6종 평균 55.43% 대 54.87%). 작은 모델에서는 뒤졌다(Llama3.2-1B의 GSM8K 54.44% 대 60.50%). 실행별 삭제 비율이 표로 공개된 것은 GRPO 6개 실행(0.034~0.046%)뿐이고 나머지는 초록의 범위 서술이다. 논문은 지우기만 허용하는 제약이 약한 정규화로 작용해 FFT와 비슷해졌을 가능성도 적는다.
+- **저장 크기**: 마스크는 위치마다 1비트를 묶어 zstd로 압축하므로 Llama 8B 기준 8.4MB다. fp32로 계산한 FFT 체크포인트보다 GRPO 설정에서 3,600~4,700배 작고, 같은 표의 LoRA r=1(10.0MB)보다도 작다. 기반 모델 하나에 과제별 마스크만 바꿔 끼우는 배포를 검토할 수 있다(적용 해석).
+- **망각**: Llama 1B~8B의 GSM8K GRPO에서 기존 과제 6종 정확도가 FFT는 기반 모델보다 1.3~3.1점, LoRA와 가중치 0.05%만 갱신하는 희소 미세조정 기준선(MTH)은 최대 5.4점 떨어졌지만 Deletion Tuning은 1점 안에 머물렀다. 바꾸는 가중치 수가 비슷한 MTH보다도 망각이 적어 논문은 지우기 자체가 망각을 줄인다고 해석한다.
+- **한계**: 대상 가중치마다 logit을 두므로 학습 메모리는 FFT보다 적지만 LoRA보다 많다. 여러 과제를 차례로 학습하는 설정은 시험하지 않았다. 모두 저자 측정이며 재현하지 않았다.
+
 ## 운영 체크포인트
 
 - SFT만 한 모델과 선호 최적화를 더한 모델을 같은 프롬프트, 길이를 통제한 지표와 사람 표본으로 비교한다(적용 제안).
@@ -111,6 +120,7 @@ L_DPO(π_θ) = -E[ log σ( β log( π_θ(y_w|x) / π_ref(y_w|x) ) - β log( π_�
 4. DPO가 보상 모델 없이 같은 목적을 최적화할 수 있는 이유는 무엇이며, 그 대가로 무엇을 포기하는가?
 5. RLHF 뒤 응답이 길어졌다면 무엇을 의심하고 어떻게 확인하는가?
 6. 앙상블과 가중치 병합은 추론 비용이 어떻게 다르며, 과제 벡터를 더하는 병합은 어떤 전제에서 성립하는가?
+7. 가중치를 지우기만 하는 미세조정은 LoRA와 무엇을 학습하고 무엇을 저장하는지가 어떻게 다른가?
 
 ## 출처
 
@@ -129,6 +139,7 @@ L_DPO(π_θ) = -E[ log σ( β log( π_θ(y_w|x) / π_ref(y_w|x) ) - β log( π_�
 - [Editing Models with Task Arithmetic — Ilharco et al.](https://arxiv.org/abs/2212.04089) — 2026-11-18 초록 대조
 - [TIES-Merging: Resolving Interference When Merging Models — Yadav et al.](https://arxiv.org/abs/2306.01708) — 2026-11-18 초록 대조
 - [SOLAR 10.7B: Scaling Large Language Models with Simple yet Effective Depth Up-Scaling — Kim et al.](https://arxiv.org/abs/2312.15166) — 2026-11-18 초록의 깊이 확장 구성 대조
+- [The Surprising Effectiveness of Deleting Weights in LLM Post-Training — Lu et al.](https://arxiv.org/abs/2611.10866) — 2026-11-19 대조. 4절 방법과 마스크 날카롭게 하기 일정, 표 1, 2, 5, 6의 결과, 부록 A와 B의 저장 크기와 삭제 비율, 5.4절 망각, 6절 한계
 - [mergekit — GitHub, arcee-ai](https://github.com/arcee-ai/mergekit) — 2026-11-18 README의 CPU 실행과 passthrough 방식(층 쌓기) 설명 대조
 - [OpenAI API Docs, Supervised fine-tuning](https://developers.openai.com/api/docs/guides/supervised-fine-tuning) — 2026-11-18 예시 수 절과 플랫폼 축소 안내 대조
 - [OpenAI API Docs, Fine-tuning best practices](https://developers.openai.com/api/docs/guides/fine-tuning-best-practices) — 2026-11-18 데이터 품질과 양을 반복하는 절 대조
