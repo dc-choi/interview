@@ -177,7 +177,7 @@ export function readEvidence(options, args, snapshot) {
   if (request.sourceRevision !== manifest.revision) fail('snapshot_revision_mismatch');
   const indexedPaths = manifest.indexed_paths ? normalizeScopes(manifest.indexed_paths) : [];
   const unit = snapshot.entities.find((entity) => entity.id === request.evidenceUnitId);
-  if (!unit || !['Section', 'RelationAssertion'].includes(unit.type)
+  if (!unit || !['Section', 'RelationAssertion', 'ConceptDeclaration'].includes(unit.type)
     || !inScope(unit.source_uri ?? '', allowlist) || !inScope(unit.source_uri ?? '', indexedPaths)) {
     fail('evidence_not_found');
   }

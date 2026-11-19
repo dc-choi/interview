@@ -49,6 +49,21 @@ DB 변경이 성공했지만 프로세스 종료나 브로커 전송 실패로 �
 
 > 캐시 예열처럼 누락을 허용하고 다음 요청에서 복구되는 작업이라면 Outbox를 도입하지 않고, 단순 비동기 실행과 실패 관측으로 충분한지 먼저 판단하겠습니다.
 
+## 타입 선언과 개념 질의
+
+2026-11-19에 이 영역의 문제, 방법, 조건과 비용을 타입 개념과 관계로 선언했다. 선언은 [[Ontology-Instances]]의 문서 4개에 있으며 원문 12개에서 추출해 원문과 대조한 개념 126개와 관계 127개다. 이 지도의 표는 2026-09-05 기준 원문을 사람이 읽도록 요약한 것이고, 선언은 2026-11-19 기준 원문에서 검증했다. 두 내용이 다르면 선언과 그 근거 원문을 따른다. DB 변경 스트림 기반 Relay와 XA/2PC 대안처럼 이 표에 없는 항목도 선언에는 있다.
+
+구조 질문은 `context_concept`로 찾는다.
+
+| 질문 | 질의 |
+| --- | --- |
+| Outbox를 쓰려면 무엇이 전제인가 | `concept: "Transactional Outbox"`, `predicates: ["requires"]` |
+| Polling Relay의 비용은 무엇인가 | `concept: "Polling Relay"`, `predicates: ["has_tradeoff"]` |
+| Dual Write 문제를 다루는 방법은 무엇인가 | `concept: "Dual Write Problem"`, `predicates: ["addressed_by"]` |
+| Inbox 패턴의 대안은 무엇인가 | `concept: "Inbox 패턴"`, `predicates: ["alternative_to"]` |
+
+반환된 관계는 원문이 그렇게 서술한다는 기록이다. 현재 코드에 적용할지는 위 표의 확인 항목으로 판단한다. 입력과 추론 규칙은 [[Ontology-Concept-Query]]를 따른다.
+
 ## 원문 연결
 
 - [[Transactional-Outbox#문제: Dual Write Problem|Transactional Outbox, Dual Write Problem]]

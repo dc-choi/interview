@@ -62,6 +62,8 @@ aliases: ["Ontology Context Platform Implementation", "온톨로지 컨텍스트
 
 MVP 관계는 `contains`, `links_to`로 시작하고 category는 Document 속성으로만 둔다. `mentions`는 Concept, `supported_by`와 `contradicted_by`는 Claim 계층을 실제로 추가할 때 사용한다. extractor는 `mentions`, `supported_by`, `contradicted_by`, `calls`, `publishes`, `consumes`, `reads_from`, `writes_to`, `constrained_by`, `verified_by` 10종을 `ontology_relations` predicate로 이미 허용하지만, 실제 작성은 개발 질문에 필요하고 원문 근거를 확인했을 때만 한다.
 
+2026-11-19의 schema 2 구현은 이 MVP 범위를 넘었다. `Concept` 아래에 Topic, Category, Problem, Approach, Condition, Tradeoff 클래스를 두고, `addresses`, `requires`, `has_tradeoff`, `alternative_to`, `broader`에 정의역과 치역을 적용하며, 문서의 태그와 category를 `tagged_with`와 `in_category` 관계로 잇는다. 위 표의 `Claim`, `SystemEntity`, `Invariant`는 구현하지 않았다. 이 절의 나머지 문장(허용 predicate 10종, `subject`와 `target`의 canonical entity ID 요건, EvidenceUnit의 종류)은 2026-09 MVP 기준이다. schema 2는 `concept:<slug>` 축약과 위키링크 표기를 받고 `ConceptDeclaration` 근거 단위를 더한다. 현재 클래스와 predicate의 정본은 [[Ontology-Schema]]다.
+
 본문에서 실제 파일과 section으로 해석되는 위키링크는 `links_to`로 확정한다. 검토자가 typed relation 후보를 승인할 때는 생성 색인을 고치지 않고 canonical Markdown의 선택적 frontmatter에 기록한다. `subject`를 생략하면 해당 Document ID를 사용하고, 다른 주체면 이미 존재하는 canonical entity ID를 명시해야 한다. `target`도 같은 snapshot의 canonical entity ID로 해석되어야 하며 실패하면 relation 대신 coverage gap으로 남긴다. extractor는 각 항목을 `frontmatter.ontology_relations[index]` anchor를 가진 `RelationAssertion` 타입 EvidenceUnit으로 materialize하고 이 표기만 `source_confirmed`로 승격한다.
 
 ```yaml
@@ -107,7 +109,7 @@ MVP의 `Document` ID는 `document:<repo-id>:<relative-path>`, Section EvidenceUn
 1. source manifest에는 source별 저장소 식별자, revision, 포함과 제외 경로, schema와 추출기 버전, 결정론적 build 설정 hash와 완료 여부를 기록한다. 재현성 fingerprint는 이 입력들로 만들고 실행 시각과 오류 코드는 snapshot 밖의 run log에만 기록하며, 완료되지 않은 build는 serving index로 사용하지 않는다. 기본 build는 dirty working tree를 거부한다. `--committed-only`를 명시하면 `HEAD` blob만 색인하고 `unindexed_worktree`로 미반영 상태를 보고한다. 코드 저장소를 추가할 때는 source별 항목으로 확장한다.
 2. worktree를 순회하지 않고 manifest revision의 Git tree에서 tracked regular Markdown blob만 경로순으로 열거해 frontmatter, heading, 위키링크와 원문 anchor를 추출한다. untracked, ignored와 symlink entry는 읽지 않는다.
 3. 파일을 `Document`, heading section과 frontmatter relation assertion을 EvidenceUnit record, category와 alias를 속성으로 만든다. 실제 대상으로 해석된 위키링크는 `source_confirmed`인 `links_to`, 깨진 링크는 source, scope, anchor, reason과 unresolved target을 가진 manifest의 결정론적 `coverage_gaps`로 기록한다.
-4. LLM은 개념 정규화와 비명시 관계 후보를 별도 candidate queue에 제안하되 결정론적 serving index에 섞거나 자동 확정하지 않는다. 후속 단계이며 현재 구현에는 LLM 경로와 queue가 없고, `verification: candidate`처럼 지원하지 않는 필드가 있는 항목은 coverage gap으로 남긴다.
+4. LLM은 개념 정규화와 비명시 관계 후보를 별도 candidate queue에 제안하되 결정론적 serving index에 섞거나 자동 확정하지 않는다. 2026-11-19부터 후보 queue는 `ontology/candidates/`의 JSONL 파일이며 색인은 이 파일을 읽지 않는다. 제안자와 다른 검증자가 원문과 대조해 승인한 항목만 선언 문서의 frontmatter로 옮기고, 절차는 [[Ontology-Curation]]을 따른다. 색인 build 안에서 LLM을 호출하는 경로는 없고, `verification: candidate`처럼 지원하지 않는 필드가 있는 항목은 coverage gap으로 남긴다.
 5. 개발 질문에 필요할 때만 코드 parser, framework 설정, schema와 migration에서 시스템 관계를 보충한다.
 6. commit과 content hash를 비교해 변경된 단위만 다시 추출한다. 후속 단계이며 현재는 fingerprint가 바뀌면 전체를 다시 추출한다.
 7. 삭제된 원문에 연결된 관계는 제거하거나 tombstone으로 남긴다. 현재는 전체 재추출로 제거되며 tombstone은 없다.

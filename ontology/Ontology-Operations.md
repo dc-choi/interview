@@ -11,7 +11,7 @@ aliases: ["Ontology Operations", "온톨로지 실행 절차"]
 
 ## 구현 범위
 
-Git `HEAD`의 Markdown에서 문서, 절과 명시 관계를 추출하고 질문에 맞는 원문을 revision, 위치와 hash와 함께 반환한다. 검색 순위, 근거 선택, scope와 예산의 상세 계약은 [[Ontology-Runtime-Contract#구현 범위]]를 따른다.
+Git `HEAD`의 Markdown에서 문서, 절과 명시 관계를 추출하고 질문에 맞는 원문을 revision, 위치와 hash와 함께 반환한다. 검색 순위, 근거 선택, scope와 예산의 상세 계약은 [[Ontology-Runtime-Contract#구현 범위]]를 따른다. 2026-11-19부터 frontmatter의 개념과 관계 선언을 schema 2로 검증해 타입 개념과 관계로 색인하며, 형식과 위반 판정은 [[Ontology-Schema]]를 따른다.
 
 ## 기존 목차와 위키링크의 역할
 
@@ -29,7 +29,13 @@ npm run lookup -- --committed-only --query "transactional outbox"
 node src/cli.mjs search --committed-only --query "transactional outbox"
 npm run status
 npm run serve
+node src/cli.mjs concept "Transactional Outbox" --committed-only --predicate requires
+node src/cli.mjs validate
+node src/cli.mjs validate --staged
+node src/cli.mjs candidates --check candidates/event-publishing.jsonl
 ```
+
+`concept`는 개념 이름으로 타입 관계와 근거를 찾는다. 입력과 추론 규칙은 [[Ontology-Concept-Query]]를 따른다. `validate`는 `HEAD` 또는 stage한 내용의 선언 위반을 검사하고 cache를 쓰지 않으며 `--repo`만 받는다. `candidates --check`는 후보 파일을 `HEAD`의 원문과 대조한다. 두 명령의 판정과 커밋 hook의 실행 조건은 [[Ontology-Schema#검증 명령과 커밋 차단]], 후보에서 선언까지의 절차는 [[Ontology-Curation]]에 있다.
 
 `build`, `lookup`, `search`는 `--repo <absolute-path>`, `--cache <absolute-path>`, 반복 가능한 `--scope <repository-relative-prefix>`를 받는다. `lookup`은 `--allow`, `--depth 1|2`, `--max-bytes <positive-integer>`와 반복 가능한 `--condition`을 받는다. `search`는 `--allow`, `--max-bytes <positive-integer>`, `--cursor <opaque-token>`을 받으며 `--depth`는 받지 않는다. `--allow`를 생략하면 기본 범위 `README.md`, `biz/`, `econ/`, `fit/`, `ontology/`, `tech/`를 사용하며, 반복 지정하면 필요한 경로로 허용 범위를 제한한다. `lookup`과 `search`의 snapshot 범위는 항상 allowlist이고 `--scope`는 요청 범위만 좁힌다. 요청 scope 때문에 활성 snapshot을 다시 만들지 않는다 (2026-09-07 수정. 이전에는 `--scope tech` 조회가 활성 snapshot을 `tech` 전용으로 교체했다). scope는 glob이 아닌 repository-relative prefix이며 상위 경로 이동과 wildcard를 거부한다.
 
@@ -64,6 +70,8 @@ claude mcp get development-context
 MCP host는 tool argument로 repository나 cache 경로를 바꿀 수 없다. `context_lookup`은 `query`, 선택 `conditions`, `scope`, `depth`, `max_bytes`를 받고 알 수 없는 field와 크기 제한 초과 입력을 거부한다. `context_search`는 `query`, 선택 `scope`, `max_bytes`, `cursor`를 받고 document 후보만 페이지로 반환한다. cursor는 인증 정보가 아닌 consistency token이므로 query, scope, snapshot, query 코드가 바뀌면 재사용할 수 없다. tool 결과는 JSON text와 동일한 structured content다. 스킬의 일반 요청 예산은 24KB, 서버 상한은 64KiB다. 특정 host를 제한해야 하면 등록 명령에 `--allow <repository-relative-prefix>`를 반복해 추가한다.
 
 `context_read`는 `evidence_unit_id`, `source_revision`, `content_hash`, 선택 `offset_bytes`, `max_bytes`를 받는다. 근거 ID와 도구 입력 전체는 각각 최대 65,536 UTF-8 byte다. 긴 heading에서 생성돼 조회 응답에 담긴 ID도 그대로 읽을 수 있도록 읽기 입력 한도를 조회 출력 상한에 맞췄다. `context_lookup`의 입력 전체 제한은 8,192 byte다. 읽기 결과도 JSON text와 structured content가 일치하며 같은 host allowlist를 적용한다.
+
+`context_concept`는 `concept`, 선택 `predicates`, `types`, `depth`, `include_inferred`, `max_bytes`를 받고 입력 전체 제한은 8,192 byte다. 개념 하나의 타입 관계, 정의 근거와 관련 문서를 반환하며 같은 host allowlist를 적용한다. 등록된 서버는 작업 트리의 코드를 실행하므로 이 도구는 MCP 프로세스가 schema 2 코드로 다시 시작된 뒤에 보이고, 개념과 관계는 선언 문서가 `HEAD`에 커밋된 뒤에 반환된다.
 
 `context_outline`은 `document_id`, `source_revision`, 선택 `offset_sections`, `max_bytes`를 받는다. 문서 ID와 전체 입력 한도는 각각 65,536 UTF-8 byte이며, 목차 응답도 동일한 JSON 예산과 host allowlist를 따른다. 각 section의 ID/revision/hash는 `context_read` 입력으로 사용할 수 있다.
 
@@ -104,13 +112,13 @@ MCP host는 tool argument로 repository나 cache 경로를 바꿀 수 없다. `c
 ## 후속 설계
 
 - code repository의 symbol, framework 설정, migration, test와 runtime evidence 색인
-- embedding, LLM semantic inference, candidate relation review queue
-- 승인된 typed relation의 authoring UX와 stale, conflict 판정
+- embedding, LLM semantic inference. 후보 검증 queue는 2026-11-19에 파일 기반으로 도입했다([[Ontology-Curation]])
+- 승인된 typed relation의 stale, conflict 판정과 이벤트 발행 외 영역의 선언 확대
 - holdout 기반 retrieval recall, 불필요한 근거, 탐색 시간과 사용자 재설명 감소 측정
 - JSONL 병목이 확인된 뒤 SQLite, graph DB 또는 RDF 검토
 - 긴 자연어 질문의 section 랭킹과 root 상한 6개, 관계 탐색 순위의 재검토. 짧은 용어 검색과 관계 응답의 개선 결과는 [[Development-Ontology-Evaluation#검색 순위와 관계 응답 보강]]을 따른다
 
-현재 검색은 label, alias, tag, heading, 제한된 한영 키워드 확장과 명시 관계 탐색을 사용한다. 일반적인 동의어, 문맥, 인과관계와 코드 호출 관계를 추론하지 않으며 LLM이 relation을 자동 확정하지 않는다.
+현재 검색은 label, alias, tag, heading, 제한된 한영 키워드 확장과 명시 관계 탐색을 사용한다. 일반적인 동의어, 문맥, 인과관계와 코드 호출 관계를 추론하지 않으며 LLM이 relation을 자동 확정하지 않는다. 개념 질의의 추론은 schema가 선언한 대칭, 역방향 표기, `broader` 추이, 클래스 계층과 하위 개념의 문서를 문서 목록에 더하는 전파로 한정한다.
 
 ## 관련 문서
 
@@ -123,6 +131,9 @@ MCP host는 tool argument로 repository나 cache 경로를 바꿀 수 없다. `c
 - [[Ontology-Evidence-Read]]
 - [[Ontology-Document-Outline]]
 - [[Ontology-Document-Search]]
+- [[Ontology-Schema]]
+- [[Ontology-Concept-Query]]
+- [[Ontology-Curation]]
 - [[Ontology-Retrieval-Quality]]
 - [[Ontology-Context-Platform-Implementation]]
 - [[Ontology-Context-Platform-AI-Runtime]]

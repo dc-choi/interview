@@ -3,8 +3,13 @@ import { isUtf8 } from 'node:buffer';
 import { fromMarkdown } from 'mdast-util-from-markdown';
 import { parseDocument, visit as visitYaml } from 'yaml';
 import { ASSERTION_PREDICATES, ContextError } from './core.mjs';
+import { CONCEPT_TYPES } from './schema.mjs';
 
 const WIKILINK_PATTERN = /\[\[([^\]|\r\n]+?)(?:\\?\|[^\]\r\n]*)?\]\]/g;
+const SINGLE_WIKILINK = new RegExp(`^\\s*${WIKILINK_PATTERN.source}\\s*$`);
+const CONCEPT_SLUG = /^[a-z0-9][a-z0-9-]{0,79}$/;
+const RELATION_FIELDS = ['subject', 'predicate', 'target', 'evidence'];
+const CONCEPT_FIELDS = ['id', 'type', 'label', 'aliases', 'evidence', 'broader'];
 const INDEX_MEMBER_HEADINGS = new Set(['목차', '하위 영역', '하위 폴더 인덱스', '하위 문서']);
 const RELATED_DOCUMENT_HEADINGS = new Set(['관련 문서', '관련문서']);
 const PARENT_INDEX_PREFIX = /(?:^|[\s([{"'“‘.!?。！？])상위\s*:\s*$/u;
@@ -13,6 +18,11 @@ export function normalizeHeading(text) {
   const tree = fromMarkdown(`# ${text.replace(/[\r\n]+/g, ' ')}`);
   const value = tree.children.map((node) => inlineText(node)).join('');
   return value.replace(/\s+/g, ' ').trim();
+}
+
+/** Returns the target of a string that is exactly one wikilink, such as `[[Doc#Heading|label]]`. */
+export function wikilinkTarget(value) {
+  return SINGLE_WIKILINK.exec(value)?.[1].trim() || undefined;
 }
 
 export function extractMarkdown({ path, content, repoId, revision, updatedAt }) {
@@ -25,15 +35,9 @@ export function extractMarkdown({ path, content, repoId, revision, updatedAt }) 
   const headings = findHeadings(tree, bodyStart);
   const sections = createSections({ headings, path, repoId, revision, updatedAt, source, text });
   const metadata = readMetadata(frontmatter, path);
-  const relationData = createRelationAssertions({
-    frontmatter,
-    path,
-    repoId,
-    revision,
-    updatedAt,
-    source,
-    text,
-  });
+  const anchored = { frontmatter, path, repoId, revision, updatedAt, source, text };
+  const relationData = createRelationAssertions(anchored);
+  const conceptData = createConceptDeclarations(anchored);
   const links = extractWikilinks(tree, bodyStart, sections, text, {
     headings: headings.filter((heading) => !heading.quoted),
     status: metadata.value.status,
@@ -54,10 +58,11 @@ export function extractMarkdown({ path, content, repoId, revision, updatedAt }) 
       content_hash: hash(source),
       source_updated_at: updatedAt,
     },
-    units: [...sections, ...relationData.units],
+    units: [...sections, ...relationData.units, ...conceptData.units],
     links,
     assertions: relationData.assertions,
-    coverage_gaps: [...metadata.gaps, ...relationData.gaps],
+    concepts: conceptData.concepts,
+    coverage_gaps: [...metadata.gaps, ...relationData.gaps, ...conceptData.gaps],
   };
 }
 
@@ -159,80 +164,120 @@ function createSections({ headings, path, repoId, revision, updatedAt, source, t
   });
 }
 
-function createRelationAssertions({ frontmatter, path, repoId, revision, updatedAt, source, text }) {
+// Reads one frontmatter list whose items become byte-anchored evidence units.
+// YAML aliases are refused because an item's anchor would omit the aliased text.
+function frontmatterItems({ frontmatter, path, text }, field, { listGap, aliasGap, anchor }, gaps) {
+  if (!frontmatter.value || frontmatter.errors.length > 0) return [];
+  const value = frontmatter.value.toJS();
+  if (!isPlainObject(value) || value[field] === undefined) return [];
+  if (!Array.isArray(value[field])) {
+    gaps.push(coverageGap(path, listGap, `${field} must be an array.`));
+    return [];
+  }
+  const node = mapValueNode(frontmatter.value, field);
+  let hasAlias = false;
+  visitYaml(node, { Alias: () => { hasAlias = true; } });
+  if (hasAlias) {
+    gaps.push(coverageGap(path, aliasGap, `${field} must contain literal values within each ${anchor} anchor.`));
+    return [];
+  }
+  const byteOffset = createByteOffset(text);
+  return value[field].map((item, index) => {
+    const [startChar, endChar] = node?.items?.[index]?.range ?? [frontmatter.start, frontmatter.start];
+    return { item, index, start: byteOffset(frontmatter.start + startChar), end: byteOffset(frontmatter.start + endChar) };
+  });
+}
+
+function frontmatterUnit({ path, revision, updatedAt, source }, lineStarts, { id, type, label, field, index, start, end }) {
+  return section({ id, type, label, headingPath: ['frontmatter', field, String(index)], occurrence: 1,
+    start, end, path, revision, updatedAt, source, lineStarts });
+}
+
+function createRelationAssertions(anchored) {
+  const { path, repoId, source } = anchored;
   const gaps = [];
   const units = [];
   const assertions = [];
-  if (!frontmatter.value || frontmatter.errors.length > 0) return { gaps, units, assertions };
-
-  const frontmatterValue = frontmatter.value.toJS();
-  if (!isPlainObject(frontmatterValue)) return { gaps, units, assertions };
-
-  const relations = frontmatterValue.ontology_relations;
-  if (relations === undefined) return { gaps, units, assertions };
-  if (!Array.isArray(relations)) {
-    gaps.push(coverageGap(path, 'InvalidOntologyRelations', 'ontology_relations must be an array.'));
-    return { gaps, units, assertions };
-  }
-
-  const relationNode = mapValueNode(frontmatter.value, 'ontology_relations');
-  let hasAlias = false;
-  visitYaml(relationNode, { Alias: () => { hasAlias = true; } });
-  if (hasAlias) {
-    gaps.push(coverageGap(path, 'UnsupportedOntologyAlias', 'ontology_relations must contain literal values within each assertion anchor.'));
-    return { gaps, units, assertions };
-  }
-  const itemNodes = relationNode?.items ?? [];
-  const byteOffset = createByteOffset(text);
-  const lineStarts = createLineStarts(source);
-  relations.forEach((relation, index) => {
+  const items = frontmatterItems(anchored, 'ontology_relations',
+    { listGap: 'InvalidOntologyRelations', aliasGap: 'UnsupportedOntologyAlias', anchor: 'assertion' }, gaps);
+  const lineStarts = items.length > 0 ? createLineStarts(source) : [];
+  for (const { item: relation, index, start, end } of items) {
     if (!isPlainObject(relation)) {
       gaps.push(coverageGap(path, 'InvalidOntologyRelation', `ontology_relations[${index}] must be a mapping.`));
-      return;
+      continue;
     }
-    const node = itemNodes[index];
-    const [startChar, endChar] = node?.range ?? [frontmatter.start, frontmatter.start];
-    const start = byteOffset(frontmatter.start + startChar);
-    const end = byteOffset(frontmatter.start + endChar);
     const id = `unit:${repoId}:${path}:frontmatter.ontology_relations[${index}]`;
-    const subject = stringField(relation, 'subject', path, index, gaps);
-    const predicate = stringField(relation, 'predicate', path, index, gaps);
-    const target = stringField(relation, 'target', path, index, gaps);
-    const unknownFields = Object.keys(relation).filter((field) => !['subject', 'predicate', 'target'].includes(field));
-    const invalidFields = ['subject', 'predicate', 'target'].some(
+    const [subject, predicate, target, evidence] = RELATION_FIELDS
+      .map((field) => stringField(relation, field, path, index, gaps));
+    const unknownFields = Object.keys(relation).filter((field) => !RELATION_FIELDS.includes(field));
+    const invalidFields = RELATION_FIELDS.some(
       (field) => relation[field] !== undefined && typeof relation[field] !== 'string',
     );
 
     if (unknownFields.length > 0) {
       gaps.push(coverageGap(path, 'UnverifiedOntologyRelation', `ontology_relations[${index}] has unsupported fields: ${unknownFields.join(', ')}.`));
-      return;
+      continue;
     }
-    if (invalidFields) return;
+    if (invalidFields) continue;
     if (!predicate?.trim() || !target?.trim()) {
       gaps.push(coverageGap(path, 'InvalidOntologyRelation', `ontology_relations[${index}] requires non-empty predicate and target.`));
-      return;
+      continue;
     }
     if (!ASSERTION_PREDICATES.includes(predicate)) {
       gaps.push(coverageGap(path, 'UnsupportedOntologyPredicate', `ontology_relations[${index}] has unsupported predicate: ${predicate}.`));
-      return;
+      continue;
     }
-    units.push(section({
-      id,
-      type: 'RelationAssertion',
+    units.push(frontmatterUnit(anchored, lineStarts, { id, type: 'RelationAssertion',
       label: [subject, predicate, target].filter(Boolean).join(' ') || `ontology_relations[${index}]`,
-      headingPath: ['frontmatter', 'ontology_relations', String(index)],
-      occurrence: 1,
-      start,
-      end,
-      path,
-      revision,
-      updatedAt,
-      source,
-      lineStarts,
-    }));
-    assertions.push(compact({ subject, predicate, target, evidence_unit_id: id, assertion_occurrence: 1 }));
-  });
+      field: 'ontology_relations', index, start, end }));
+    assertions.push(compact({ subject, predicate, target, evidence, evidence_unit_id: id, assertion_occurrence: 1 }));
+  }
   return { gaps, units, assertions };
+}
+
+// Concept declarations follow the relation policy: an invalid item is a gap and
+// never becomes a unit. Graph validation decides whether a valid one becomes a Concept.
+function createConceptDeclarations(anchored) {
+  const { path, repoId, source } = anchored;
+  const gaps = [];
+  const units = [];
+  const concepts = [];
+  const items = frontmatterItems(anchored, 'ontology_concepts',
+    { listGap: 'invalid_concept_declaration', aliasGap: 'invalid_concept_declaration', anchor: 'declaration' }, gaps);
+  const lineStarts = items.length > 0 ? createLineStarts(source) : [];
+  for (const { item, index, start, end } of items) {
+    const [reason, problem] = conceptProblem(item);
+    if (reason) {
+      gaps.push(coverageGap(path, reason, `ontology_concepts[${index}] ${problem}`));
+      continue;
+    }
+    const id = `unit:${repoId}:${path}:frontmatter.ontology_concepts[${index}]`;
+    units.push(frontmatterUnit(anchored, lineStarts, { id, type: 'ConceptDeclaration', label: item.label,
+      field: 'ontology_concepts', index, start, end }));
+    concepts.push(compact({ id: `concept:${repoId}:${item.id}`, type: item.type, label: item.label,
+      aliases: item.aliases ?? [], evidence: item.evidence, broader: item.broader, evidence_unit_id: id }));
+  }
+  return { gaps, units, concepts };
+}
+
+function conceptProblem(item) {
+  const invalid = (problem) => ['invalid_concept_declaration', problem];
+  if (!isPlainObject(item)) return invalid('must be a mapping.');
+  const unknownFields = Object.keys(item).filter((field) => !CONCEPT_FIELDS.includes(field));
+  if (unknownFields.length > 0) return invalid(`has unsupported fields: ${unknownFields.join(', ')}.`);
+  if (typeof item.id !== 'string' || !CONCEPT_SLUG.test(item.id)) return invalid(`id must match ${CONCEPT_SLUG.source}.`);
+  if (typeof item.type !== 'string') return invalid('type must be a string.');
+  if (!CONCEPT_TYPES.includes(item.type)) return ['unsupported_concept_type', `has unsupported type: ${item.type}.`];
+  if (typeof item.label !== 'string' || !item.label.trim()) return invalid('label must be a non-empty string.');
+  if (item.aliases !== undefined && (!Array.isArray(item.aliases)
+    || !item.aliases.every((alias) => typeof alias === 'string' && alias.trim()))) {
+    return invalid('aliases must be an array of non-empty strings.');
+  }
+  if (item.evidence !== undefined && typeof item.evidence !== 'string') return invalid('evidence must be a string.');
+  if (item.broader !== undefined && (typeof item.broader !== 'string' || !CONCEPT_SLUG.test(item.broader))) {
+    return invalid('broader must be a concept slug.');
+  }
+  return [];
 }
 
 function findHeadings(tree, bodyStart) {

@@ -10,8 +10,17 @@ import tempfile
 from pathlib import Path
 
 SRC = Path(__file__).resolve().parents[2]
-COPY = [".claude/hooks/vault_guard.py", ".claude/skills/auto-learn/scripts/vault_learn.py", ".githooks/pre-commit", ".githooks/commit-msg"]
+COPY = [".claude/hooks/vault_guard.py", ".claude/skills/auto-learn/scripts/vault_learn.py", ".githooks/pre-commit", ".githooks/commit-msg",
+        *(p.relative_to(SRC).as_posix() for p in (SRC / "ontology/src").glob("*.mjs"))]
 ENV = os.environ | {"CLAUDE_HARNESS_STATE": tempfile.mkdtemp()}
+# node가 없는 환경: git과 python만 남긴 PATH, ~/.local/bin/node가 없는 HOME
+NO_NODE = ENV | {"PATH": "/usr/bin:/bin", "HOME": tempfile.mkdtemp()}
+
+
+def hook_commit(repo, env):
+    """git commit 없이 pre-commit 검사만 부른다(staged 상태는 호출 전에 만든다)."""
+    p = subprocess.run([sys.executable, str(repo / ".claude/hooks/vault_guard.py"), "commit"], capture_output=True, text=True, env=env, cwd=repo)
+    return p.returncode, p.stderr
 
 
 def run(repo, mode, data):
@@ -40,6 +49,7 @@ try:
     for f in COPY:
         (wt / f).parent.mkdir(parents=True, exist_ok=True)
         shutil.copy2(SRC / f, wt / f)
+    (wt / "ontology/node_modules").symlink_to(SRC / "ontology/node_modules")
 
     # pre: 금지 경로만 막는다(가운뎃점 사전 차단은 PC 하네스 몫)
     assert run(wt, "pre", edit(wt / "tech/CLAUDE.md"))[0] == 2
@@ -131,6 +141,77 @@ try:
     a.write_text(FM + "one\ntwo\nthree\n")
     assert commit(wt, str(a))[0] == 0
     assert commit(wt, str(skill))[0] == 0
+
+    # 온톨로지: 선언(frontmatter 키, 선언 폴더)이 없는 커밋은 node 없이도 통과하고, 있으면 node 22 이상을 요구한다
+    onto = wt / "tech/Ontology-Guard-Selftest.md"
+    onto.write_text(FM + "# 문제\n본문\n")
+    subprocess.run(["git", "add", str(onto)], cwd=wt, check=True)
+    assert hook_commit(wt, NO_NODE) == (0, ""), hook_commit(wt, NO_NODE)
+    # 본문 코드 블록 안의 키 줄은 예시일 뿐 선언이 아니다
+    onto.write_text(FM + "# 문제\n```yaml\nontology_concepts:\n  - {id: example}\nontology_relations: []\n```\n")
+    subprocess.run(["git", "add", str(onto)], cwd=wt, check=True)
+    assert hook_commit(wt, NO_NODE) == (0, ""), hook_commit(wt, NO_NODE)
+    onto.write_text("---\nstatus: done\nontology_concepts:\n"
+                    "  - {id: selftest-problem-zzz, type: Problem, label: Selftest Problem Zzz, evidence: \"[[#문제]]\"}\n"
+                    "ontology_relations:\n"
+                    "  - {subject: \"concept:selftest-problem-zzz\", predicate: addresses, target: \"concept:selftest-problem-zzz\", evidence: \"[[#문제]]\"}\n"
+                    "---\n# 문제\n본문\n")
+    subprocess.run(["git", "add", str(onto)], cwd=wt, check=True)
+    code, err = hook_commit(wt, NO_NODE)
+    assert code != 0 and "Node.js 22" in err, err
+    subprocess.run(["git", "reset", "-q", "--", str(onto)], cwd=wt)
+    # 새 위반(Problem이 addresses의 주어)은 사유와 frontmatter 항목을 보여 주며 막는다
+    code, err = commit(wt, str(onto))
+    assert code != 0 and "domain_violation" in err and "ontology_relations[0]" in err and "validate --staged" in err, err
+    # auto-learn 게시 형태(commit --only)는 임시 index를 검증한다: index에는 올바른 판, 작업 트리에는 위반 판을 둔다
+    invalid = onto.read_text()
+    onto.write_text(FM + "# 문제\n본문\n")
+    subprocess.run(["git", "add", "--all", "--", str(onto)], cwd=wt, check=True)
+    onto.write_text(invalid)
+    p = subprocess.run(["git", "-c", "core.hooksPath=.githooks", "-c", "user.name=T", "-c", "user.email=t@example.com",
+                        "commit", "-q", "--only", "-m", "t", "--", str(onto)], cwd=wt, capture_output=True, text=True, env=ENV)
+    assert p.returncode != 0 and "domain_violation" in p.stderr, p.stderr
+    subprocess.run(["git", "reset", "-q", "--", str(onto)], cwd=wt)
+    onto.unlink()
+    # ontology/instances 아래 경로는 내용과 상관없이 검증한다
+    inst = wt / "ontology/instances/Selftest-Instances-Zzz.md"
+    inst.parent.mkdir(parents=True, exist_ok=True)
+    inst.write_text(FM + "# Selftest instances\n")
+    subprocess.run(["git", "add", str(inst)], cwd=wt, check=True)
+    code, err = hook_commit(wt, NO_NODE)
+    assert code != 0 and "Node.js 22" in err, err
+    # 패키지가 없으면 검증을 실행하지 않고 npm ci를 안내한다
+    (wt / "ontology/node_modules").unlink()
+    code, err = hook_commit(wt, ENV)
+    (wt / "ontology/node_modules").symlink_to(SRC / "ontology/node_modules")
+    assert code != 0 and "npm ci --ignore-scripts" in err, err
+    # 검증이 죽으면 스택의 끝이 아니라 원인 줄을 보여 준다
+    validate_src = wt / "ontology/src/validate.mjs"
+    validate_src.write_text("export const = ;\n")
+    code, err = hook_commit(wt, ENV)
+    shutil.copy2(SRC / "ontology/src/validate.mjs", validate_src)
+    assert code != 0 and "SyntaxError: Unexpected token" in err and "Node.js v" not in err, err
+    subprocess.run(["git", "reset", "-q", "--", str(inst)], cwd=wt)
+    inst.unlink()
+    # 어휘 경로와 지식 문서 frontmatter의 올바른 선언은 검증을 거쳐 통과한다
+    vocab = wt / "ontology/vocabulary/Selftest-Vocabulary-Zzz.md"
+    vocab.parent.mkdir(parents=True, exist_ok=True)
+    vocab.write_text("---\ntags: [ontology]\nstatus: vocabulary\nontology_concepts:\n"
+                     "  - {id: selftest-topic-zzz, type: Topic, label: Selftest Topic Zzz}\n---\n# Selftest vocabulary\n")
+    decl = wt / "tech/Ontology-Declaring-Selftest.md"
+    decl.write_text("---\nstatus: done\nontology_concepts:\n"
+                    "  - {id: selftest-declared-zzz, type: Topic, label: Selftest Declared Zzz}\n---\n# 선언\n")
+    code, err = commit(wt, str(vocab), str(decl))
+    assert code == 0, err
+    # 선언 문서의 삭제와 키 제거는 staged 판에 키가 없어도 HEAD 판의 frontmatter로 잡는다
+    subprocess.run(["git", "rm", "-q", "--", str(decl)], cwd=wt, check=True)
+    code, err = hook_commit(wt, NO_NODE)
+    assert code != 0 and "Node.js 22" in err, err
+    subprocess.run(["git", "checkout", "-q", "HEAD", "--", str(decl)], cwd=wt, check=True)
+    decl.write_text(FM + "# 선언\n")
+    subprocess.run(["git", "add", str(decl)], cwd=wt, check=True)
+    code, err = hook_commit(wt, NO_NODE)
+    assert code != 0 and "Node.js 22" in err, err
 finally:
     subprocess.run(["git", "worktree", "remove", "--force", str(wt)], cwd=SRC, capture_output=True)
 print("ok")

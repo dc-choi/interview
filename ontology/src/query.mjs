@@ -3,13 +3,23 @@ import { spawnSync } from 'node:child_process';
 import path from 'node:path';
 import {
   ContextError,
+  conceptSlug,
   inScope,
+  labelKey,
   normalizeScopes,
   sha256,
   stableJson,
 } from './core.mjs';
 import { getRepoState, listMarkdown, readBlob, readBlobs } from './repository.mjs';
+import { CONCEPT_TYPES } from './schema.mjs';
 import { loadSnapshot } from './snapshot.mjs';
+
+// Query expansion switch. When true and the snapshot declares concepts, a query
+// n-gram equal to a concept label key adds that concept's other labels as lookup
+// terms, reported in matching.expanded_terms. Shipped disabled: the 2026-11-19
+// measurement had single words matching broad Topics regress individual case
+// sets. Enable only after a rerun shows no case set regresses.
+export const CONCEPT_QUERY_EXPANSION = false;
 
 const MAX_ARGUMENT_BYTES = 8192;
 const MAX_QUERY_BYTES = 4096;
@@ -23,8 +33,10 @@ const MAX_EXCERPT_BYTES = 1400;
 const MAX_SEARCH_DOCUMENTS = 20;
 const MAX_CURSOR_BYTES = 2048;
 const LINK_ROLE_PRIORITY = { index_member: 2, parent_index: 2, related_document: 1 };
+const MAX_CONCEPT_HINTS = 8;
+const PARTICLE_SUFFIX = /(하려면|하면|하나|인가|인가요|인가요|에서|으로|에게|까지|부터|처럼|보다|이후|중에|에는|에는|은|는|을|를|이|가|에)$/u;
 const QUERY_CODE_HASH = sha256(fs.readFileSync(new URL(import.meta.url)));
-const LIMITATIONS = [
+export const LIMITATIONS = [
   'freshness_not_checked',
   'semantic_conflict_not_checked',
   'runtime_not_checked',
@@ -33,7 +45,7 @@ const LIMITATIONS = [
 const own = (value, key) => Object.prototype.hasOwnProperty.call(value, key);
 const byteLength = (value) => Buffer.byteLength(stableJson(value), 'utf8');
 
-function outputBytes(payload) {
+export function outputBytes(payload) {
   const copy = { ...payload, budget: { ...payload.budget, used_bytes: 0 } };
   const fixedBytes = Buffer.byteLength(JSON.stringify(copy), 'utf8') - 1;
   let size = fixedBytes + 1;
@@ -212,7 +224,7 @@ function intersectScopes(left, right) {
   return [...result].sort();
 }
 
-function effectiveScopes(allowlist, indexedPaths, requested) {
+export function effectiveScopes(allowlist, indexedPaths, requested) {
   if (!indexedPaths?.length) return [];
   let scopes = intersectScopes(allowlist, normalizeScopes(indexedPaths));
   if (requested.length > 0) scopes = intersectScopes(scopes, requested);
@@ -250,11 +262,67 @@ function words(value) {
     ['복구', ['recovery', 'reconcile', 'retry']], ['검색', ['search']],
   ]);
   const normalized = raw.flatMap((word) => {
-    const stem = word.replace(/(하려면|하면|하나|인가|인가요|인가요|에서|으로|에게|까지|부터|처럼|보다|이후|중에|에는|에는|은|는|을|를|이|가|에)$/u, '');
+    const stem = word.replace(PARTICLE_SUFFIX, '');
     const base = stem.length >= 2 ? stem : word;
     return [base, ...(equivalents.get(base) ?? [])];
   });
   return [...new Set(normalized.filter((word) => !stop.has(word)))];
+}
+
+// Contiguous 1 to 4 word n-grams of the query that equal a concept label key,
+// also after removing a trailing particle, add that concept's other labels.
+// A key shared by two concepts resolves to nobody, as in the build label index.
+function conceptExpansion(query, concepts) {
+  const owners = new Map();
+  for (const concept of concepts) {
+    for (const name of [conceptSlug(concept.id), concept.label, ...concept.aliases]) {
+      const key = labelKey(name);
+      if (key) owners.set(key, owners.has(key) && owners.get(key) !== concept ? null : concept);
+    }
+  }
+  const raw = query.toLowerCase().match(/[\p{L}\p{N}_-]+/gu) ?? [];
+  const terms = [];
+  for (let start = 0; start < raw.length; start += 1) {
+    for (let size = 1; size <= 4 && start + size <= raw.length; size += 1) {
+      const gram = raw.slice(start, start + size).join('');
+      for (const key of new Set([labelKey(gram), labelKey(gram.replace(PARTICLE_SUFFIX, ''))])) {
+        const concept = owners.get(key);
+        if (!concept) continue;
+        for (const name of [concept.label, ...concept.aliases]) if (labelKey(name) !== key) terms.push(...words(name));
+      }
+    }
+  }
+  return terms;
+}
+
+// Concepts declared in, or supported by a Section of, the root documents. Those
+// supported by a returned evidence unit come first, then those whose label or
+// aliases contain more query tokens, then root rank, declared first and concept id.
+// An edge asserted outside the allowlist is ignored.
+function conceptHints(roots, relations, conceptsById, sectionsById, { evidenceIds, tokens, visibleUnit }) {
+  const rootRank = new Map(roots.map((root, index) => [root.doc.id, index]));
+  const pathRank = new Map(roots.map((root, index) => [sourcePath(root.doc), index]));
+  const found = [];
+  const supported = new Set();
+  for (const relation of relations) {
+    const declared = relation.predicate === 'declares';
+    if (!declared && relation.predicate !== 'supported_by') continue;
+    const concept = conceptsById.get(declared ? relation.object : relation.subject);
+    if (!concept || !visibleUnit(relation.evidence_unit_id)) continue;
+    if (!declared && evidenceIds.has(relation.object)) supported.add(concept.id);
+    const rank = declared ? rootRank.get(relation.subject) : pathRank.get(sourcePath(sectionsById.get(relation.object)));
+    if (rank !== undefined) found.push({ rank, declared, concept });
+  }
+  const overlap = new Map([...new Set(found.map((item) => item.concept))].map((concept) => [concept.id,
+    tokens.filter((token) => [concept.label, ...concept.aliases].some((name) => exactText(name).includes(token))).length]));
+  found.sort((a, b) => Number(supported.has(b.concept.id)) - Number(supported.has(a.concept.id))
+    || overlap.get(b.concept.id) - overlap.get(a.concept.id)
+    || a.rank - b.rank || Number(b.declared) - Number(a.declared) || a.concept.id.localeCompare(b.concept.id));
+  const hints = new Map();
+  for (const { concept } of found) {
+    if (!hints.has(concept.id)) hints.set(concept.id, { id: concept.id, type: concept.type, label: concept.label });
+  }
+  return [...hints.values()].slice(0, MAX_CONCEPT_HINTS);
 }
 
 function exactText(value) {
@@ -447,7 +515,7 @@ function addRelationBundleWithinBudget(payload, relation, entities, item, maximu
   return false;
 }
 
-function indexSync(manifest, current, scopes, errors, requestedScopeIndexed) {
+export function indexSync(manifest, current, scopes, errors, requestedScopeIndexed) {
   let status = 'synced';
   if (current.dirty) status = 'unindexed_worktree';
   else if (current.revision !== manifest.revision) status = 'revision_mismatch';
@@ -488,7 +556,22 @@ function boundedGaps(gaps, sourceId, scopes, maximum = 8) {
   ];
 }
 
-function queryRelevantGaps(allGaps, roots, sourceId, scopes) {
+// Messages of these gap reasons can name an entity or path of another document.
+const CROSS_DOCUMENT_GAP_REASONS = new Set(['duplicate_concept_id', 'domain_violation', 'range_violation',
+  'reflexive_relation', 'hierarchy_cycle', 'concept_label_collision']);
+
+/** Gaps of documents in scope. Scopes that hide indexed paths drop messages that can name other documents. */
+export function scopedGaps(manifest, scopes) {
+  const hidesPaths = (manifest.indexed_paths ?? []).some((indexed) => !inScope(indexed, scopes));
+  return (manifest.coverage_gaps ?? []).filter((gap) => !gap.source_uri || inScope(gap.source_uri, scopes))
+    .map((gap) => {
+      if (!hidesPaths || !CROSS_DOCUMENT_GAP_REASONS.has(gap.reason)) return gap;
+      const { message: _message, ...rest } = gap;
+      return rest;
+    });
+}
+
+export function queryRelevantGaps(allGaps, roots, sourceId, scopes) {
   const paths = new Set(roots.map((root) => sourcePath(root.doc)));
   const relevant = allGaps.filter((gap) => !gap.source_uri || paths.has(gap.source_uri));
   const returned = boundedGaps(relevant, sourceId, scopes);
@@ -617,11 +700,7 @@ function retrieve(options, args, snapshot, mode) {
     ? scopes.length > 0
     : request.scope.every((scope) => scopes.some((effective) => isPrefix(effective, scope)));
   const current = getRepoState(options.repo);
-  const gaps = boundedGaps(
-    [...(manifest.coverage_gaps ?? [])].filter((gap) => !gap.source_uri || inScope(gap.source_uri, scopes)),
-    manifest.source_id,
-    scopes,
-  );
+  const gaps = boundedGaps(scopedGaps(manifest, scopes), manifest.source_id, scopes);
   const errors = requestedScopeIndexed ? [] : ['requested_scope_not_indexed'];
   if (!requestedScopeIndexed) appendGap(gaps, {
     source_id: manifest.source_id, scope: request.scope, reason: 'requested_scope_not_indexed',
@@ -650,6 +729,7 @@ function retrieve(options, args, snapshot, mode) {
       omitted_relations: 0,
     },
   };
+  let hints = [];
   const finalize = () => {
     base.coverage_gaps = boundedGaps(base.coverage_gaps, manifest.source_id, scopes);
     if (base.budget.exhausted) {
@@ -660,6 +740,12 @@ function retrieve(options, args, snapshot, mode) {
       // The budget flag already reports exhaustion; its optional explanation
       // must not consume space needed by the selected source evidence.
       if (outputBytes(base) > effectiveMaxBytes) base.coverage_gaps = previousGaps;
+    }
+    // Concept hints are optional navigation and only use space left by evidence.
+    if (hints.length > 0) {
+      base.concepts = [...hints];
+      while (base.concepts.length > 0 && outputBytes(base) > effectiveMaxBytes) base.concepts.pop();
+      if (base.concepts.length === 0) delete base.concepts;
     }
     base.budget.used_bytes = outputBytes(base);
     if (base.budget.used_bytes > effectiveMaxBytes) fail('budget_too_small', 'max_bytes cannot hold required result metadata');
@@ -672,9 +758,16 @@ function retrieve(options, args, snapshot, mode) {
     return finalize();
   }
 
-  const documents = entities.filter((entity) => entity.type === 'Document' && inScope(sourcePath(entity), scopes));
+  // Vocabulary documents are schema data, never retrieval roots or evidence.
+  const vocabulary = new Set(entities.filter((entity) => entity.type === 'Document' && entity.status === 'vocabulary')
+    .map(sourcePath));
+  const retrievable = (entity) => inScope(sourcePath(entity), scopes) && !vocabulary.has(sourcePath(entity));
+  const documents = entities.filter((entity) => entity.type === 'Document' && retrievable(entity));
   const documentsByPath = new Map(documents.map((entity) => [sourcePath(entity), entity]));
-  const sections = entities.filter((entity) => (entity.type === 'Section' || entity.type === 'RelationAssertion') && inScope(sourcePath(entity), scopes));
+  const sections = entities.filter((entity) => (entity.type === 'Section' || entity.type === 'RelationAssertion') && retrievable(entity));
+  const conceptScopes = effectiveScopes(allowlist, manifest.indexed_paths, []);
+  const concepts = entities.filter((entity) => CONCEPT_TYPES.includes(entity.type)
+    && inScope(sourcePath(entity), conceptScopes));
   const searchableSections = sections.filter(isUsefulSection);
   const sectionsById = new Map(sections.map((entity) => [entity.id, entity]));
   const entitiesById = new Map([...documents, ...sections].map((entity) => [entity.id, entity]));
@@ -698,7 +791,11 @@ function retrieve(options, args, snapshot, mode) {
     return memo.get(uri);
   };
   const conditionTerms = request.conditions.map(words);
-  const tokens = [...new Set([...words(request.query), ...conditionTerms.flat()])];
+  const queryTokens = [...new Set([...words(request.query), ...conditionTerms.flat()])];
+  const expandedTerms = mode === 'lookup' && CONCEPT_QUERY_EXPANSION && concepts.length > 0
+    ? [...new Set(conceptExpansion(request.query, concepts))].filter((term) => !queryTokens.includes(term)) : [];
+  const tokens = [...queryTokens, ...expandedTerms];
+  if (expandedTerms.length > 0) base.matching.expanded_terms = expandedTerms;
   const sectionTerms = new Map();
   const scoreSection = (section, weights) => {
     const body = read(sourcePath(section)).subarray(section.anchor?.start_byte ?? 0, section.anchor?.end_byte ?? 0).toString('utf8').toLowerCase();
@@ -850,7 +947,7 @@ function retrieve(options, args, snapshot, mode) {
     base.traversal.limit_reached = true;
     appendGap(gaps, { source_id: manifest.source_id, scope: scopes, reason: 'retrieval_limit_reached' });
   }
-  const initialGaps = [...(manifest.coverage_gaps ?? [])].filter((gap) => !gap.source_uri || inScope(gap.source_uri, scopes));
+  const initialGaps = scopedGaps(manifest, scopes);
   const scopeErrors = base.coverage_gaps.filter((gap) => gap.reason === 'requested_scope_not_indexed');
   const traversalGaps = gaps.filter((gap) => gap.reason === 'retrieval_limit_reached');
   base.coverage_gaps = [...queryRelevantGaps(initialGaps, roots, manifest.source_id, scopes), ...scopeErrors, ...traversalGaps];
@@ -1136,5 +1233,14 @@ function retrieve(options, args, snapshot, mode) {
   }
   // Finish selected sections when their remaining context fits the response.
   completeEvidence();
+  // Hints read the final evidence and never change it; finalize fits them into the space left.
+  if (concepts.length > 0) {
+    const sourceOf = new Map(entities.map((entity) => [entity.id, sourcePath(entity)]));
+    hints = conceptHints(roots, relations, new Map(concepts.map((concept) => [concept.id, concept])), sectionsById, {
+      evidenceIds: new Set(base.evidence_units.map((item) => item.id)),
+      tokens,
+      visibleUnit: (id) => inScope(sourceOf.get(id) ?? '', conceptScopes),
+    });
+  }
   return finalize();
 }

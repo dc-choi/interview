@@ -11,6 +11,9 @@ category: "AI엔지니어링(AIEngineering)"
 ## 목차
 
 - [[Ontology-Runtime-Contract|검색 순위, 근거 구성, 관계와 snapshot 저장]]
+- [[Ontology-Schema|클래스, 관계, 선언 형식과 위반 판정]]
+- [[Ontology-Concept-Query|개념 질의와 질의 시점 추론]]
+- [[Ontology-Curation|개념과 관계의 후보 검증과 선언 절차]]
 - [[Ontology-Document-Search|문서 후보 검색과 cursor]]
 - [[Ontology-Document-Outline|문서의 다른 절 찾기]]
 - [[Ontology-Evidence-Read|같은 원문의 본문 이어 읽기]]

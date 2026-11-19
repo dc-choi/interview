@@ -1,0 +1,454 @@
+{
+  "revision": "d11d452884eb505e8e87f49a84777a0fa69447bd",
+  "lookup_lexical": {
+    "query": "retry delivery ordering",
+    "result_status": "ok",
+    "index_sync": [
+      {
+        "source_id": "interview-vault",
+        "status": "synced",
+        "revision": "d11d452884eb505e8e87f49a84777a0fa69447bd",
+        "fingerprint": "<masked>",
+        "manifest_hash": "<masked>",
+        "artifacts_verified": true,
+        "requested_scope_indexed": true,
+        "indexed_paths": [
+          "tech"
+        ],
+        "excluded_paths": [
+          "**/AGENTS.md",
+          "**/CLAUDE.md"
+        ],
+        "schema_version": "<masked>",
+        "extractor_version": "<masked>",
+        "completed": true,
+        "errors": []
+      }
+    ],
+    "entities": [
+      {
+        "aliases": [
+          "Alpha Pattern"
+        ],
+        "category": "tech",
+        "id": "document:interview-vault:tech/Alpha.md",
+        "label": "Alpha",
+        "status": "done",
+        "tags": [
+          "retry",
+          "messaging"
+        ],
+        "type": "Document",
+        "verified_at": null
+      },
+      {
+        "id": "unit:interview-vault:tech/Beta.md:Beta/Consumer#1",
+        "label": "Consumer",
+        "type": "Section"
+      },
+      {
+        "aliases": [],
+        "category": null,
+        "id": "document:interview-vault:tech/Beta.md",
+        "label": "Beta",
+        "status": null,
+        "tags": [],
+        "type": "Document",
+        "verified_at": null
+      }
+    ],
+    "evidence_units": [
+      {
+        "id": "unit:interview-vault:tech/Alpha.md:Alpha/Retry#1",
+        "source_uri": "tech/Alpha.md",
+        "anchor": {
+          "heading_path": [
+            "Alpha",
+            "Retry"
+          ],
+          "occurrence": 1,
+          "start_line": 9,
+          "end_line": 12,
+          "start_byte": 95,
+          "end_byte": 169
+        },
+        "source_revision": "d11d452884eb505e8e87f49a84777a0fa69447bd",
+        "content_hash": "sha256:955cf5bc67f665909df408e2cd9a23d6c198044f7b500bd37a17a77cc38b51bc",
+        "excerpt": "## Retry\n\nRetry the delivery with backoff. [[Beta#Consumer]] [[Missing]]\n\n",
+        "truncated": false
+      },
+      {
+        "id": "unit:interview-vault:tech/Alpha.md:Alpha/Notes#1",
+        "source_uri": "tech/Alpha.md",
+        "anchor": {
+          "heading_path": [
+            "Alpha",
+            "Notes"
+          ],
+          "occurrence": 1,
+          "start_line": 13,
+          "end_line": 15,
+          "start_byte": 169,
+          "end_byte": 214
+        },
+        "source_revision": "d11d452884eb505e8e87f49a84777a0fa69447bd",
+        "content_hash": "sha256:304fd635bbee783e222319b2ed8f84e70b5ce3938f73ac752ed51243e77d5c2a",
+        "excerpt": "## Notes\n\nOrdering matters for retry queues.\n",
+        "truncated": false
+      },
+      {
+        "id": "unit:interview-vault:tech/Beta.md:Beta/Consumer#1",
+        "source_uri": "tech/Beta.md",
+        "anchor": {
+          "heading_path": [
+            "Beta",
+            "Consumer"
+          ],
+          "occurrence": 1,
+          "start_line": 3,
+          "end_line": 5,
+          "start_byte": 8,
+          "end_byte": 65
+        },
+        "source_revision": "d11d452884eb505e8e87f49a84777a0fa69447bd",
+        "content_hash": "sha256:67f9ada8943bb2474f29106c13831d6559886cc2d75e4e4b01df3fdd29ea0d33",
+        "excerpt": "## Consumer\n\nThe consumer deduplicates retry deliveries.\n",
+        "truncated": false
+      }
+    ],
+    "relations": [
+      {
+        "assertion_occurrence": 1,
+        "conflict": "not_checked",
+        "evidence_unit_id": "unit:interview-vault:tech/Alpha.md:Alpha/Retry#1",
+        "extraction_method": "parser",
+        "extraction_version": "<masked>",
+        "freshness": "not_checked",
+        "id": "edge:sha256:d04c313519a054646eb5355ca599719cd72c7a71479bd6d061f11c31bfaf973f",
+        "object": "unit:interview-vault:tech/Beta.md:Beta/Consumer#1",
+        "predicate": "links_to",
+        "subject": "document:interview-vault:tech/Alpha.md",
+        "verification": "source_confirmed"
+      }
+    ],
+    "conflict_check_status": "not_supported",
+    "conflicts": null,
+    "coverage_gaps": [
+      {
+        "evidence_unit_id": "unit:interview-vault:tech/Alpha.md:Alpha/Retry#1",
+        "reason": "unresolved_link",
+        "source_uri": "tech/Alpha.md",
+        "unresolved_target": "Missing"
+      },
+      {
+        "source_id": "interview-vault",
+        "scope": [
+          "tech"
+        ],
+        "reason": "coverage_gaps_summary",
+        "total_in_scope": 1,
+        "related_to_retrieval": 1
+      }
+    ],
+    "limitations": [
+      "freshness_not_checked",
+      "semantic_conflict_not_checked",
+      "runtime_not_checked"
+    ],
+    "matching": {
+      "query_term_count": 3,
+      "max_section_term_matches": 2,
+      "assessment": "lexical_overlap"
+    },
+    "traversal": {
+      "depth": 1,
+      "max_matched_entities": 20,
+      "max_edges_per_entity": 50,
+      "limit_reached": false
+    },
+    "budget": {
+      "requested_max_bytes": 24000,
+      "server_max_bytes": 65536,
+      "effective_max_bytes": 24000,
+      "used_bytes": 3656,
+      "exhausted": false,
+      "omitted_evidence_units": 0,
+      "omitted_relations": 0
+    }
+  },
+  "lookup_alias": {
+    "query": "Alpha Pattern",
+    "result_status": "ok",
+    "index_sync": [
+      {
+        "source_id": "interview-vault",
+        "status": "synced",
+        "revision": "d11d452884eb505e8e87f49a84777a0fa69447bd",
+        "fingerprint": "<masked>",
+        "manifest_hash": "<masked>",
+        "artifacts_verified": true,
+        "requested_scope_indexed": true,
+        "indexed_paths": [
+          "tech"
+        ],
+        "excluded_paths": [
+          "**/AGENTS.md",
+          "**/CLAUDE.md"
+        ],
+        "schema_version": "<masked>",
+        "extractor_version": "<masked>",
+        "completed": true,
+        "errors": []
+      }
+    ],
+    "entities": [
+      {
+        "aliases": [
+          "Alpha Pattern"
+        ],
+        "category": "tech",
+        "id": "document:interview-vault:tech/Alpha.md",
+        "label": "Alpha",
+        "status": "done",
+        "tags": [
+          "retry",
+          "messaging"
+        ],
+        "type": "Document",
+        "verified_at": null
+      },
+      {
+        "id": "unit:interview-vault:tech/Beta.md:Beta/Consumer#1",
+        "label": "Consumer",
+        "type": "Section"
+      },
+      {
+        "aliases": [],
+        "category": null,
+        "id": "document:interview-vault:tech/Beta.md",
+        "label": "Beta",
+        "status": null,
+        "tags": [],
+        "type": "Document",
+        "verified_at": null
+      }
+    ],
+    "evidence_units": [
+      {
+        "id": "unit:interview-vault:tech/Alpha.md:Alpha#1",
+        "source_uri": "tech/Alpha.md",
+        "anchor": {
+          "heading_path": [
+            "Alpha"
+          ],
+          "occurrence": 1,
+          "start_line": 7,
+          "end_line": 8,
+          "start_byte": 86,
+          "end_byte": 95
+        },
+        "source_revision": "d11d452884eb505e8e87f49a84777a0fa69447bd",
+        "content_hash": "sha256:3b14b976af4d301b62dfaefe275d1e4f5a9417582bee1f33eeb1fc74e0fdd9ac",
+        "excerpt": "# Alpha\n\n",
+        "truncated": false
+      },
+      {
+        "id": "unit:interview-vault:tech/Alpha.md:Alpha/Retry#1",
+        "source_uri": "tech/Alpha.md",
+        "anchor": {
+          "heading_path": [
+            "Alpha",
+            "Retry"
+          ],
+          "occurrence": 1,
+          "start_line": 9,
+          "end_line": 12,
+          "start_byte": 95,
+          "end_byte": 169
+        },
+        "source_revision": "d11d452884eb505e8e87f49a84777a0fa69447bd",
+        "content_hash": "sha256:955cf5bc67f665909df408e2cd9a23d6c198044f7b500bd37a17a77cc38b51bc",
+        "excerpt": "## Retry\n\nRetry the delivery with backoff. [[Beta#Consumer]] [[Missing]]\n\n",
+        "truncated": false
+      },
+      {
+        "id": "unit:interview-vault:tech/Alpha.md:#1",
+        "source_uri": "tech/Alpha.md",
+        "anchor": {
+          "heading_path": [],
+          "occurrence": 1,
+          "start_line": 1,
+          "end_line": 6,
+          "start_byte": 0,
+          "end_byte": 86
+        },
+        "source_revision": "d11d452884eb505e8e87f49a84777a0fa69447bd",
+        "content_hash": "sha256:6c186b147f8a6fc5d0c02524f8821bc734b3a86191d6ea10b26d287e62bcd50b",
+        "excerpt": "---\naliases: [Alpha Pattern]\ntags: [retry, messaging]\ncategory: tech\nstatus: done\n---\n",
+        "truncated": false
+      }
+    ],
+    "relations": [
+      {
+        "assertion_occurrence": 1,
+        "conflict": "not_checked",
+        "evidence_unit_id": "unit:interview-vault:tech/Alpha.md:Alpha/Retry#1",
+        "extraction_method": "parser",
+        "extraction_version": "<masked>",
+        "freshness": "not_checked",
+        "id": "edge:sha256:d04c313519a054646eb5355ca599719cd72c7a71479bd6d061f11c31bfaf973f",
+        "object": "unit:interview-vault:tech/Beta.md:Beta/Consumer#1",
+        "predicate": "links_to",
+        "subject": "document:interview-vault:tech/Alpha.md",
+        "verification": "source_confirmed"
+      }
+    ],
+    "conflict_check_status": "not_supported",
+    "conflicts": null,
+    "coverage_gaps": [
+      {
+        "evidence_unit_id": "unit:interview-vault:tech/Alpha.md:Alpha/Retry#1",
+        "reason": "unresolved_link",
+        "source_uri": "tech/Alpha.md",
+        "unresolved_target": "Missing"
+      },
+      {
+        "source_id": "interview-vault",
+        "scope": [
+          "tech"
+        ],
+        "reason": "coverage_gaps_summary",
+        "total_in_scope": 1,
+        "related_to_retrieval": 1
+      }
+    ],
+    "limitations": [
+      "freshness_not_checked",
+      "semantic_conflict_not_checked",
+      "runtime_not_checked"
+    ],
+    "matching": {
+      "query_term_count": 2,
+      "max_section_term_matches": 2,
+      "assessment": "exact_metadata"
+    },
+    "traversal": {
+      "depth": 1,
+      "max_matched_entities": 20,
+      "max_edges_per_entity": 50,
+      "limit_reached": false
+    },
+    "budget": {
+      "requested_max_bytes": 65536,
+      "server_max_bytes": 65536,
+      "effective_max_bytes": 65536,
+      "used_bytes": 3594,
+      "exhausted": false,
+      "omitted_evidence_units": 0,
+      "omitted_relations": 0
+    }
+  },
+  "search": {
+    "query": "retry",
+    "result_status": "ok",
+    "index_sync": [
+      {
+        "source_id": "interview-vault",
+        "status": "synced",
+        "revision": "d11d452884eb505e8e87f49a84777a0fa69447bd",
+        "fingerprint": "<masked>",
+        "manifest_hash": "<masked>",
+        "artifacts_verified": true,
+        "requested_scope_indexed": true,
+        "indexed_paths": [
+          "tech"
+        ],
+        "excluded_paths": [
+          "**/AGENTS.md",
+          "**/CLAUDE.md"
+        ],
+        "schema_version": "<masked>",
+        "extractor_version": "<masked>",
+        "completed": true,
+        "errors": []
+      }
+    ],
+    "matching": {
+      "query_term_count": 1,
+      "max_section_term_matches": 1,
+      "assessment": "exact_metadata",
+      "query_terms": [
+        "retry"
+      ]
+    },
+    "candidates": [
+      {
+        "document": {
+          "aliases": [
+            "Alpha Pattern"
+          ],
+          "category": "tech",
+          "id": "document:interview-vault:tech/Alpha.md",
+          "label": "Alpha",
+          "status": "done",
+          "tags": [
+            "retry",
+            "messaging"
+          ],
+          "type": "Document",
+          "verified_at": null
+        },
+        "source_uri": "tech/Alpha.md",
+        "matched_terms": [
+          "retry"
+        ],
+        "best_evidence_ref": {
+          "id": "unit:interview-vault:tech/Alpha.md:Alpha/Retry#1",
+          "type": "Section",
+          "label": "Retry",
+          "source_uri": "tech/Alpha.md",
+          "source_revision": "d11d452884eb505e8e87f49a84777a0fa69447bd",
+          "content_hash": "sha256:955cf5bc67f665909df408e2cd9a23d6c198044f7b500bd37a17a77cc38b51bc",
+          "anchor": {
+            "end_byte": 169,
+            "end_line": 12,
+            "heading_path": [
+              "Alpha",
+              "Retry"
+            ],
+            "occurrence": 1,
+            "start_byte": 95,
+            "start_line": 9
+          }
+        }
+      }
+    ],
+    "coverage_gaps": [
+      {
+        "evidence_unit_id": "unit:interview-vault:tech/Alpha.md:Alpha/Retry#1",
+        "reason": "unresolved_link",
+        "source_uri": "tech/Alpha.md",
+        "unresolved_target": "Missing"
+      }
+    ],
+    "limitations": [
+      "freshness_not_checked",
+      "semantic_conflict_not_checked",
+      "runtime_not_checked"
+    ],
+    "pagination": {
+      "offset_documents": 0,
+      "returned_documents": 1,
+      "total_candidates": 1,
+      "complete": true,
+      "next_cursor": null
+    },
+    "budget": {
+      "requested_max_bytes": 65536,
+      "server_max_bytes": 65536,
+      "effective_max_bytes": 65536,
+      "used_bytes": 1841,
+      "exhausted": false
+    }
+  }
+}

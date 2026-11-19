@@ -181,7 +181,9 @@ test('typed relation assertion metadata outranks generic linked sections', (t) =
     '---',
     'ontology_relations:',
     `  - subject: '${needle.id}'`,
-    '    predicate: supported_by',
+    // Schema v2 limits supported_by to a Concept or RelationAssertion subject and a
+    // Section target, so this Document-to-Document assertion uses a legacy predicate.
+    '    predicate: verified_by',
     `    target: '${target.id}'`,
     '---',
     body,
@@ -195,7 +197,7 @@ test('typed relation assertion metadata outranks generic linked sections', (t) =
   const assertion = snapshot.entities.find((entity) => entity.type === 'RelationAssertion'
     && entity.source_uri === 'tech/Needle.md');
   const typed = snapshot.relations.find((relation) => relation.subject === needle.id
-    && relation.predicate === 'supported_by' && relation.object === target.id);
+    && relation.predicate === 'verified_by' && relation.object === target.id);
   assert.ok(assertion);
   assert.ok(typed);
   assert.equal(typed.evidence_unit_id, assertion.id);
@@ -204,7 +206,7 @@ test('typed relation assertion metadata outranks generic linked sections', (t) =
   assert.equal(genericLinks.length, 50);
 
   const result = lookup({ repo, cacheDir, allowlist: ['tech'] }, {
-    query: 'Needle supported_by', scope: ['tech'], depth: 1, max_bytes: 24 * 1024,
+    query: 'Needle verified_by', scope: ['tech'], depth: 1, max_bytes: 24 * 1024,
   });
   const relation = result.relations.find((entry) => entry.id === typed.id);
   assert.ok(relation, 'the typed assertion survives the incident-edge cap');
@@ -214,7 +216,7 @@ test('typed relation assertion metadata outranks generic linked sections', (t) =
   const evidence = result.evidence_units.find((entry) => entry.id === assertion.id);
   assert.ok(evidence);
   assert.equal(evidence.source_revision, snapshot.manifest.revision);
-  assert.ok(evidence.excerpt.includes('predicate: supported_by'));
+  assert.ok(evidence.excerpt.includes('predicate: verified_by'));
   const exactTitleResult = lookup({ repo, cacheDir, allowlist: ['tech'] }, {
     query: 'Needle', scope: ['tech'], depth: 1, max_bytes: 24 * 1024,
   });

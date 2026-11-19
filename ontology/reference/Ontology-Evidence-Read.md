@@ -21,7 +21,7 @@ aliases: ["온톨로지 근거 이어 읽기", "Ontology Evidence Read"]
 | `offset_bytes` | 선택. 근거 단위 시작 기준 상대 byte 위치이며 기본값은 0 |
 | `max_bytes` | 선택. JSON 응답 전체의 byte 예산이며 기본 24,000, 상한 65,536 |
 
-파일 경로, anchor, 저장소와 cache는 호출자가 지정하지 않는다. 서버는 검증된 snapshot에서 원문 위치를 찾고, host allowlist와 indexed scope 안에 있는 `Section` 또는 `RelationAssertion`만 읽는다. `Document` ID는 원문 읽기 입력으로 사용할 수 없다.
+파일 경로, anchor, 저장소와 cache는 호출자가 지정하지 않는다. 서버는 검증된 snapshot에서 원문 위치를 찾고, host allowlist와 indexed scope 안에 있는 `Section`, `RelationAssertion` 또는 `ConceptDeclaration`만 읽는다. `Document` ID는 원문 읽기 입력으로 사용할 수 없다.
 
 근거 ID와 입력 JSON 전체는 각각 최대 65,536 UTF-8 byte다. 성공한 조회 응답의 긴 ID도 읽기 입력으로 사용할 수 있도록 조회 출력 상한과 같은 크기로 제한한다.
 
@@ -59,7 +59,7 @@ node src/cli.mjs read --committed-only \
 
 ## 적용 범위
 
-새 MCP 프로세스는 `context_search`, `context_lookup`, `context_outline`, `context_read` 네 도구를 노출한다. `context_search`에서 Document 후보를 고른 뒤 `best_evidence_ref`를 바로 읽거나, 다른 heading도 확인해야 하면 `context_outline`으로 section receipt를 찾고 읽는다. 이미 연결된 프로세스는 이전 코드를 유지하므로 새 도구의 사용 가능 여부를 실제 `tools/list`로 확인한다. 현재 세션에 도구가 없으면 CLI 또는 같은 revision의 Git 원문 읽기로 보완한다.
+새 MCP 프로세스는 `context_search`, `context_lookup`, `context_concept`, `context_outline`, `context_read` 다섯 도구를 노출한다. `context_search`에서 Document 후보를 고른 뒤 `best_evidence_ref`를 바로 읽거나, 다른 heading도 확인해야 하면 `context_outline`으로 section receipt를 찾고 읽는다. 이미 연결된 프로세스는 이전 코드를 유지하므로 새 도구의 사용 가능 여부를 실제 `tools/list`로 확인한다. 현재 세션에 도구가 없으면 CLI 또는 같은 revision의 Git 원문 읽기로 보완한다.
 
 근거 이어 읽기는 이미 찾은 section의 누락된 뒷부분을 제공한다. 찾지 못한 문서의 검색 순위, 의미적 충돌 판정이나 모델의 자동 도구 선택을 해결했다는 뜻은 아니다. 검증 결과는 [[Development-Ontology-Evaluation]]에 기록한다.
 

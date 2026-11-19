@@ -1,4 +1,5 @@
 import { createHash } from 'node:crypto';
+import { PREDICATES } from './schema.mjs';
 
 export class ContextError extends Error {
   constructor(code, message = code) {
@@ -8,12 +9,16 @@ export class ContextError extends Error {
   }
 }
 
-export const STRUCTURAL_PREDICATES = Object.freeze(['contains', 'links_to']);
-export const ASSERTION_PREDICATES = Object.freeze(['mentions', 'supported_by', 'contradicted_by',
-  'calls', 'publishes', 'consumes', 'reads_from', 'writes_to', 'constrained_by', 'verified_by']);
+export const STRUCTURAL_PREDICATES = Object.freeze(PREDICATES.filter((item) => !item.authorable).map((item) => item.name));
+export const ASSERTION_PREDICATES = Object.freeze(PREDICATES.filter((item) => item.authorable).map((item) => item.name));
 export const DEFAULT_SCOPES = Object.freeze(['README.md', 'biz', 'econ', 'fit', 'ontology', 'tech']);
 
 export const sha256 = (data) => createHash('sha256').update(data).digest('hex');
+
+/** Concept label key: NFC, lowercase, without whitespace, `_` and `-`. */
+export const labelKey = (text) => text.normalize('NFC').toLowerCase().replace(/[\s_-]+/gu, '');
+/** Slug of a canonical concept ID `concept:<repo-id>:<slug>`. */
+export const conceptSlug = (id) => id.slice(id.lastIndexOf(':') + 1);
 
 export function stableJson(value) {
   function sorted(item) {

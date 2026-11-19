@@ -2,6 +2,7 @@ import { McpServer } from '@modelcontextprotocol/sdk/server/mcp.js';
 import { StdioServerTransport } from '@modelcontextprotocol/sdk/server/stdio.js';
 import * as z from 'zod/v4';
 
+import { CONCEPT_LIMITS, conceptQuery } from './concept.mjs';
 import { ContextError, DEFAULT_SCOPES, normalizeScopes } from './core.mjs';
 import { lookup, search } from './query.mjs';
 import { readEvidence, READ_LIMITS } from './read-evidence.mjs';
@@ -42,6 +43,16 @@ const readInputSchema = z.object({
   max_bytes: z.number().int().positive().max(Number.MAX_SAFE_INTEGER).optional(),
 }).strict();
 
+const conceptNames = z.array(z.string().min(1).max(64)).min(1).max(CONCEPT_LIMITS.maxFilters).optional();
+const conceptInputSchema = z.object({
+  concept: z.string().min(1).max(CONCEPT_LIMITS.maxConceptBytes),
+  predicates: conceptNames,
+  types: conceptNames,
+  depth: z.union([z.literal(1), z.literal(2), z.literal(3)]).optional(),
+  include_inferred: z.boolean().optional(),
+  max_bytes: z.number().int().positive().max(Number.MAX_SAFE_INTEGER).optional(),
+}).strict();
+
 const outlineInputSchema = z.object({
   document_id: z.string().min(1).max(OUTLINE_LIMITS.maxDocumentIdBytes),
   source_revision: z.string().regex(/^(?:[a-f0-9]{40}|[a-f0-9]{64})$/),
@@ -59,7 +70,7 @@ export function createContextServer(options) {
 
   server.registerTool('context_lookup', {
     title: 'Lookup personal knowledge',
-    description: 'Retrieves evidence from this personal knowledge vault. Use scope to limit retrieval to README.md, biz, econ, fit, ontology, or tech. Optional relation link_role describes source navigation: index_member, parent_index, or related_document; it does not establish applicability. A weak_lexical_overlap matching assessment requires checking whether the returned material addresses the question. Use context_outline to find other sections of a relevant Document and context_read to read their full evidence. If needed documents are not returned, use context_search. Inspect current project materials before applying knowledge. Ontology documents do not prove current implementation, adoption, or runtime behavior. For a multi-condition question, keep the original query and optionally pass up to three conditions as lexical selection hints with max_bytes 24000, then pursue only unresolved conditions. Conditions and result_status do not establish that the evidence supports an answer. The host flow has a total cap of 8 calls and 64000 serialized structuredContent bytes; semantic condition judgments belong to the host.',
+    description: 'Retrieves evidence from this personal knowledge vault. Use scope to limit retrieval to README.md, biz, econ, fit, ontology, or tech. Optional relation link_role describes source navigation: index_member, parent_index, or related_document; it does not establish applicability. A weak_lexical_overlap matching assessment requires checking whether the returned material addresses the question. Use context_outline to find other sections of a relevant Document and context_read to read their full evidence. If needed documents are not returned, use context_search. Inspect current project materials before applying knowledge. Ontology documents do not prove current implementation, adoption, or runtime behavior. For a multi-condition question, keep the original query and optionally pass up to three conditions as lexical selection hints with max_bytes 24000, then pursue only unresolved conditions. Conditions and result_status do not establish that the evidence supports an answer. The host flow has a total cap of 8 calls and 64000 serialized structuredContent bytes; semantic condition judgments belong to the host. When the vault declares typed concepts, concepts lists up to 8 concepts declared in, or supported by a Section of, the top-ranked matching Documents (not Documents reached through relations), those supported by a returned evidence unit first, and only in space the evidence leaves; use context_concept to follow their typed relations. matching.expanded_terms appears only when concept-label query expansion is enabled; it ships disabled.',
     inputSchema,
     annotations: {
       readOnlyHint: true,
@@ -100,6 +111,25 @@ export function createContextServer(options) {
         allowlist: settings.allowlist,
       }, args, snapshot);
       return payloadResult(payload);
+    } catch (error) {
+      return errorResult(error);
+    }
+  });
+
+  server.registerTool('context_concept', {
+    title: 'Query typed concepts',
+    description: 'Resolves one typed concept declared in this vault (Topic, Category, Problem, Approach, Condition, or Tradeoff) by concept id, concept:<slug>, slug, label, or alias, and returns its source-confirmed typed relations, definition evidence, and the Documents tagged with, mentioning, or categorized under it. With include_inferred (the default) documents also lists Documents of its narrower concepts within depth, flagged inferred true with that concept_id. ambiguous_concept returns candidates to retry with an exact id; concept_not_found means no visible concept has that exact name; its candidates then list concepts with a partially matching name to retry with an exact id, and an empty list means use context_lookup or context_search. predicates filters by predicate or inverse label (addressed_by, required_by, tradeoff_of, narrower) and types filters relation peers by class, including subclasses. Relations with inferred true are computed at query time from schema rules (symmetric, inverse label, transitive broader closure up to depth) and are not stated in the source; derived_from lists the asserted edge ids they come from. Pass an evidence item evidence_unit_id and content_hash with the index_sync revision to context_read, and a Document id to context_outline. A typed relation records what a source states; it does not establish that an approach applies to the current project.',
+    inputSchema: conceptInputSchema,
+    annotations: { readOnlyHint: true, destructiveHint: false, openWorldHint: false },
+  }, (args) => {
+    try {
+      assertArgumentSize(args, CONCEPT_LIMITS.maxArgumentBytes);
+      const { snapshot } = ensureFreshSnapshot(settings);
+      return payloadResult(conceptQuery({
+        repo: settings.repo,
+        cacheDir: settings.cacheDir,
+        allowlist: settings.allowlist,
+      }, args, snapshot));
     } catch (error) {
       return errorResult(error);
     }

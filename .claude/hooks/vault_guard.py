@@ -5,6 +5,7 @@ pre    Claude Write/Edit 전: 저장소 안 CLAUDE.md와 auto memory를 차단�
 post   Claude Write/Edit 뒤: VL check(가운뎃점, frontmatter, 깨진 위키링크, 연락처, 비밀 값, 동명 파일)로 막고
        200줄 초과와 폴더 과밀은 세션마다 파일당 한 번 분할 절차를 안내한다.
 commit git pre-commit: staged Markdown을 같은 검사로 막는다. 검사는 작업 트리를 읽으므로 부분 stage는 막는다.
+       온톨로지 선언(선언 폴더의 경로, staged나 HEAD 판 frontmatter의 키)이 바뀔 때만 validate --staged로 새 위반을 막는다.
 msg    git commit-msg: 커밋 메시지의 가운뎃점을 막는다. core.hooksPath=.githooks가 설정된 클론의 커밋에만 걸린다.
 위협 모델: 잊는 에이전트의 표류를 막을 뿐 일부러 우회하는 경우는 막지 못한다.
 자체 검사: python3 .claude/hooks/test_vault_guard.py
@@ -12,6 +13,7 @@ msg    git commit-msg: 커밋 메시지의 가운뎃점을 막는다. core.hooks
 import json
 import os
 import re
+import shutil
 import subprocess
 import sys
 import time
@@ -39,6 +41,23 @@ SPLIT = """200줄을 넘었다. 분할을 검토한다. 줄 수는 기준일 뿐
 - 전체 분할은 Parent-as-TOC: 1) 원본 파일명은 두고 내용만 30줄 이내 TOC로 교체(frontmatter `status: index`) 2) 섹션은 형제 파일 `<원본>-<주제>.md`(`status: done`) 3) [[원본]] 링크는 유효하다. 대상 카테고리 인덱스 반영은 도메인 규칙을 따르고, 규칙이 없으면 갱신한다.
 - 부분 분할은 부모를 TOC로 바꾸지 않고 주제 절만 `<원본>-<주제>.md`로 떼어낸다. 부모에 위임 문장을 남기고 대상 카테고리 인덱스를 갱신한다.
 - 분할 제외: `status: index|seminar|template`(로드맵형 학습 지도 인덱스는 200줄을 넘을 수 있다), `marp: true`, 트래커와 그 아카이브, AGENTS.md(전역 규칙은 루트, 경로 규칙은 가까운 AGENTS.md, 반복 절차는 Skill로 옮긴다)."""
+ONTOLOGY_KEYS = r"^(ontology_concepts|ontology_relations):"
+# markdown.mjs readFrontmatter와 같은 경계: 첫 줄의 ---부터 처음 나오는 --- 또는 ... 줄까지
+FRONTMATTER = re.compile(r"\A\ufeff?---[\t ]*\r?\n(.*?)^(?:---|\.\.\.)[\t ]*\r?$", re.S | re.M)
+DECLARING = ("ontology/vocabulary/", "ontology/instances/")
+VALIDATE_TIMEOUT = 100  # 무인 auto-learn은 120초에 git을 끊으므로 그 전에 끝낸다
+NODE = ("온톨로지 선언(ontology/vocabulary, ontology/instances, frontmatter의 ontology_concepts나 ontology_relations)이 "
+        "바뀐 커밋은 Node.js 22 이상으로 `node ontology/src/cli.mjs validate --staged`를 실행해 검사한다. "
+        "node를 찾지 못했거나 22 미만이다. Node.js 22 이상을 PATH(launchd라면 /opt/homebrew/bin) 또는 ~/.local/bin/node에 두고 다시 커밋한다.")
+NPM = ("온톨로지 검증에 필요한 패키지(ontology/node_modules/yaml)가 없다. "
+       "`ontology/`에서 `npm ci --ignore-scripts`를 실행해 설치한 뒤 다시 커밋한다.")
+TIMEOUT = (f"온톨로지 검증(validate --staged)이 {VALIDATE_TIMEOUT}초 안에 끝나지 않아 커밋을 막았다. 무인 커밋은 120초에 "
+           "git을 끊으므로 그 전에 멈췄다. `node ontology/src/cli.mjs validate --staged`를 직접 실행해 걸리는 곳을 확인한다.")
+ONTOLOGY = ("온톨로지 검증(validate --staged)이 이번 staged 변경으로 생긴 위반을 찾았다. 줄마다 파일, 사유, "
+            "frontmatter 항목(괄호 안 evidence_unit_id의 ontology_concepts[n] 또는 ontology_relations[n])을 고쳐 다시 stage한다. "
+            "HEAD에 이미 있던 위반과 Category 선언을 바꾸지 않은 커밋의 새 undeclared_category는 경고로만 알린다.")
+# 기존 gap 형식을 바꾸지 않으려고 unresolved_relation에는 message가 없다. 사람이 읽을 설명은 여기서 붙인다.
+UNRESOLVED = "subject나 target이 색인된 entity ID, concept:<slug>, 위키링크 어느 것으로도 해석되지 않는다(broader는 선언된 slug여야 한다)."
 FOLDER = """하위 폴더 분할을 검토한다. 파일 수만으로 이동을 강제하지 않고 독립된 주제 묶음이고 탐색이 쉬워질 때 나눈다.
 - 같은 접두사 3개 이상이면 접두사 폴더를, 직접 든 파일이 10개를 넘으면 공유 접두사가 없어도 주제 단위 폴더를 검토한다. 부모나 상위 폴더명에 상응하는 접두사(예: `resume/`의 `Resume-*`, `testing-quality/`의 `Test-*`)는 세지 않는다. 템플릿, 세미나 원본과 인덱스(`status: seminar|template|index`)는 분할 대상이 아니다.
 - 폴더명은 원래 접두사와 대응하는 kebab-case 소문자. 폴더에는 `status: index` TOC 인덱스를 두고 이름은 `<폴더명>.md` 또는 기존 접두사 대표 파일을 승격한다. 그 이름이 vault의 다른 파일과 동명이거나 일반명사면 대표 접두사형(예: `OpenSearch-Operations.md`)을 쓴다. 기존 `<폴더명>.md` 인덱스는 실제 충돌이 생길 때만 개명한다.
@@ -77,7 +96,7 @@ def kinds(problems):
 
 
 def git(*args):
-    return subprocess.run(["git", "-c", "core.quotePath=false", *args], cwd=REPO, capture_output=True, text=True)
+    return subprocess.run(["git", "-c", "core.quotePath=false", *args], cwd=REPO, capture_output=True, text=True, errors="replace")
 
 
 def rel(path):
@@ -144,6 +163,74 @@ def post(data):
     return problems, notes
 
 
+def declares(rev, path):
+    """rev(빈 문자열이면 index) 판의 frontmatter 안에 온톨로지 키 줄이 있는가. 본문 코드 블록의 예시는 세지 않는다."""
+    front = FRONTMATTER.match(git("show", f"{rev}:{path}").stdout)
+    return bool(front and re.search(ONTOLOGY_KEYS, front.group(1), re.M))
+
+
+def declaring():
+    """선언 폴더 경로가 어떤 상태로든 staged이거나, staged Markdown의 index 판 또는 HEAD 판 frontmatter에 키가 있는가.
+    HEAD 판까지 보므로 선언 문서의 삭제, 개명과 키 제거도 잡는다. git grep은 후보만 고르고 frontmatter 여부는 파일마다 확인한다.
+    근거로만 쓰인 문서의 편집은 잡지 않는다(heading을 바꾸면 다음 build의 missing_evidence로 드러난다)."""
+    changed = [p for p in git("diff", "--cached", "--name-only", "-z", "--no-renames").stdout.split("\0") if p]
+    if any(p.startswith(DECLARING) for p in changed):
+        return True
+    md = [p for p in changed if p.endswith(".md")]
+    if not md:
+        return False
+    for rev, where in (("", "--cached"), ("HEAD", "HEAD")):  # -e 뒤라 --cached도 옵션으로 읽힌다. HEAD 쪽 출력은 HEAD:<경로>
+        found = git("--literal-pathspecs", "grep", "-l", "-z", "-E", "-e", ONTOLOGY_KEYS, where, "--", *md).stdout.split("\0")
+        if any(declares(rev, p.split(":", 1)[1] if rev else p) for p in found if p):
+            return True
+    return False
+
+
+def cause(text):
+    """Node 오류 출력에서 원인 줄을 고른다. 소스 발췌와 스택 줄은 건너뛰고 `SyntaxError: ...`, `Error [ERR_...]: ...` 줄을,
+    없으면 첫 줄(CLI가 잡은 오류는 `code: message` 한 줄)을 쓴다."""
+    lines = [line.strip() for line in text.splitlines() if line.strip()]
+    return next((line for line in lines if re.match(r"\w*Error(?: \[\w+\])?: ", line)), lines[0] if lines else "출력 없음")
+
+
+def ontology():
+    """온톨로지 선언이 바뀐 커밋만 검증한다(약 10초). 그 밖의 커밋(무인 auto-learn 포함)은 git 호출 셋만 더 쓴다.
+    (사유 목록, 출력 줄)"""
+    if not declaring():
+        return [], []
+    node = shutil.which("node") or str(Path.home() / ".local/bin/node")
+    try:
+        version = subprocess.run([node, "--version"], capture_output=True, text=True, timeout=10).stdout
+    except (OSError, subprocess.SubprocessError):
+        version = ""
+    major = re.match(r"v(\d+)\.", version)
+    if not major or int(major.group(1)) < 22:
+        return ["node"], [NODE]
+    if not (REPO / "ontology/node_modules/yaml").exists():
+        return ["npm"], [NPM]
+    p = None
+    try:
+        p = subprocess.run([node, str(REPO / "ontology/src/cli.mjs"), "validate", "--staged", "--repo", str(REPO)],
+                           cwd=REPO, capture_output=True, text=True, timeout=VALIDATE_TIMEOUT)
+        report = json.loads(p.stdout)
+    except subprocess.TimeoutExpired:
+        return ["timeout"], [TIMEOUT]
+    except (OSError, subprocess.SubprocessError, ValueError) as e:
+        detail = cause((p.stderr or p.stdout) if p else str(e))
+        return ["error"], [f"온톨로지 검증을 실행하지 못했다: {detail}\n`node ontology/src/cli.mjs validate --staged`로 원인을 확인한다."]
+    if report.get("warnings"):
+        print(f"온톨로지 경고 {len(report['warnings'])}건은 커밋을 막지 않는다. HEAD에 이미 있던 위반이거나, Category 선언을 "
+              "바꾸지 않은 커밋의 새 undeclared_category다. `node ontology/src/cli.mjs validate --staged`로 목록을 확인한다.", file=sys.stderr)
+    if report.get("ok"):
+        return [], []
+    found = report.get("violations", [])
+    lines = [f"- {v.get('source_uri')}: {v.get('reason')}: "
+             f"{v.get('message') or (UNRESOLVED if v.get('reason') == 'unresolved_relation' else '')} ({v.get('evidence_unit_id', '')})"
+             for v in found[:30]]
+    more = [f"- 그 밖에 {len(found) - 30}건"] if len(found) > 30 else []
+    return sorted({v.get("reason", "") for v in found}), [ONTOLOGY, *lines, *more]
+
+
 def commit():
     staged = [p for p in git("diff", "--cached", "--name-only", "-z", "--diff-filter=ACMR").stdout.split("\0") if p]
     problems = [f"{f}: {CLAUDE_MD}" for f in staged if Path(f).name.lower() in BANNED]
@@ -157,10 +244,12 @@ def commit():
         log("commit partial-stage")
         return 1
     problems += vl_check(md) if md else []
-    if problems:
-        for k in kinds(problems):
+    reasons, onto = ontology()
+    if problems or onto:
+        for k in kinds(problems) + [f"ontology {r}" for r in reasons]:
             log(f"commit {k}")
-        print("vault 규칙 위반으로 커밋을 막았다.\n" + explain(problems), file=sys.stderr)
+        print("\n".join(["vault 규칙 위반으로 커밋을 막았다."] + ([explain(problems)] if problems else []) + onto),
+              file=sys.stderr)
         return 1
     return 0
 

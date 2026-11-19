@@ -11,6 +11,8 @@ aliases: ["개발 판단 온톨로지", "Development Knowledge Ontology"]
 
 현재 단계는 Markdown 원문을 Git `HEAD` blob으로 고정해 색인하고, `context_search`로 문서 후보를 찾거나 `context_lookup`으로 근거를 조회한 뒤 `context_outline`으로 문서 목차를 탐색하고 `context_read`로 근거를 끝까지 읽는 구현이다. 개인 지식은 이 저장소에 유지하며, 조회 결과를 현재 프로젝트의 코드나 런타임 사실로 해석하지 않는다.
 
+2026-11-19에 schema 2를 도입했다. 태그와 카테고리를 묶는 통제 어휘, 문제, 방법, 조건과 비용을 구분하는 타입 개념, 정의역과 치역이 있는 관계, 선언의 제약 검증, 개념 질의 `context_concept`를 갖춘 경량 지식 온톨로지다. OWL 추론기, RDF 저장, 그래프 DB와 데이터 변경 액션은 범위 밖이다. 문제, 방법, 조건과 비용의 선언은 이벤트 발행 한 영역에서 시작했으며 측정 결과와 한계는 [[Ontology-Competency-Evaluation]]에 있다.
+
 ## 사용 기준
 
 2026-10-16 사용자는 이 온톨로지를 만들게 된 계기 중 하나가 Palantir 문서를 참고하라는 조언이었다고 밝혔다. [[Palantir-Foundry]]에서 데이터, 로직, 행동과 보안을 연결하는 운영 온톨로지를 학습한다. 이는 설계 참고의 배경이며 Foundry 도입 결정이나 해당 제품 기능을 이 저장소에 구현했다는 기록은 아니다.
@@ -29,6 +31,10 @@ aliases: ["개발 판단 온톨로지", "Development Knowledge Ontology"]
 | 자료의 역할과 적용 판단 | [[Development-Ontology-Contract]] |
 | 설치, 실행과 MCP 등록 | [[Ontology-Operations]] |
 | 검색 도구와 근거 확인 절차 | [[Ontology-Reference]] |
+| 클래스, 관계와 선언 형식 | [[Ontology-Schema]] |
+| 개념 이름으로 관계와 근거 찾기 | [[Ontology-Concept-Query]] |
+| 개념과 관계의 후보 검증과 선언 | [[Ontology-Curation]] |
+| 통제 어휘와 영역별 선언 | [[Ontology-Vocabulary]], [[Ontology-Instances]] |
 | 개선 결과와 실험의 한계 | [[Ontology-History]] |
 
 ## 실행 경로

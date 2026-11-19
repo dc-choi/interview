@@ -2,22 +2,24 @@ import { homedir } from 'node:os';
 import { randomUUID } from 'node:crypto';
 import { basename, dirname, join, posix, relative, resolve, sep } from 'node:path';
 import { existsSync, lstatSync, mkdirSync, mkdtempSync, readdirSync, readFileSync, readlinkSync, realpathSync, renameSync, rmSync, symlinkSync, writeFileSync, appendFileSync } from 'node:fs';
-import { ASSERTION_PREDICATES, DEFAULT_SCOPES, STRUCTURAL_PREDICATES, ContextError, normalizeScopes, sha256, stableJson } from './core.mjs';
+import { DEFAULT_SCOPES, ContextError, conceptSlug, labelKey, normalizeScopes, sha256, stableJson } from './core.mjs';
 import { getRepoState, git, listMarkdown, readBlobs, resolveRepo, sourceUpdatedTimes } from './repository.mjs';
-import { extractMarkdown, normalizeHeading } from './markdown.mjs';
+import { extractMarkdown, normalizeHeading, wikilinkTarget } from './markdown.mjs';
+import {
+  CLASSES, CLASS_BY_NAME, EXTRACTOR_VERSION, PREDICATES, PREDICATE_BY_NAME, SCHEMA_VERSION,
+  allowsObject, allowsSubject, hasCharacteristic,
+} from './schema.mjs';
 
-const SCHEMA_VERSION = '1';
-const EXTRACTOR_VERSION = '12';
 const ARTIFACTS = ['schema.json', 'entities.jsonl', 'relations.jsonl'];
 const CACHE_MARKER = '.context-ontology-cache';
 const CACHE_MARKER_CONTENT = 'interview-context-ontology-v1\n';
 const LOCK_WAIT_MS = 10 * 60 * 1000;
-const PREDICATES = [...STRUCTURAL_PREDICATES, ...ASSERTION_PREDICATES];
 const key = (text) => text.normalize('NFC').toLowerCase();
+const byId = (a, b) => a.id < b.id ? -1 : Number(a.id > b.id);
 const jsonFile = (value) => `${stableJson(value)}\n`;
 let parsedRecordsCache;
 
-function configuredRepoId() {
+export function configuredRepoId() {
   const config = JSON.parse(readFileSync(new URL('../config.json', import.meta.url), 'utf8'));
   if (!config || typeof config !== 'object' || Array.isArray(config)
     || Object.keys(config).length !== 1 || typeof config.repository_id !== 'string'
@@ -56,7 +58,7 @@ function add(map, name, record) {
   map.set(id, entries);
 }
 
-function linkResolver(documents, units) {
+export function linkResolver(documents, units) {
   const paths = new Map();
   const names = new Map();
   const anchors = new Map();
@@ -114,15 +116,25 @@ function relation(subject, predicate, object, evidence, occurrence, linkRole) {
   };
 }
 
-function graph(records) {
+// Builds the asserted graph and validates it against the schema. A violation is
+// a coverage gap and never an edge or entity; inference is left to query time.
+export function graph(records, repoId) {
   const documents = records.map((record) => record.document);
   const units = records.flatMap((record) => record.units);
-  const entities = [...documents, ...units].sort((a, b) => a.id < b.id ? -1 : Number(a.id > b.id));
-  const ids = new Set(entities.map((entity) => entity.id));
-  if (ids.size !== entities.length) throw new ContextError('duplicate_entity_id');
   const resolveLink = linkResolver(documents, units);
   const relations = [];
   const gaps = [];
+  const gapFor = (source, unitId) => (reason, message) => gaps.push({ source_uri: source, reason,
+    evidence_unit_id: unitId, message });
+  // An evidence wikilink must resolve to exactly one Section.
+  const evidenceSection = (link, source) => {
+    const target = wikilinkTarget(link);
+    const match = target === undefined ? { reason: 'not_a_wikilink' } : resolveLink(target, source);
+    return match.entity?.type === 'Section' ? match : { reason: match.reason ?? 'not_a_section' };
+  };
+  const concepts = new Map();
+  const declarationOf = new Map();
+  const broaderRequests = [];
   for (const record of records) {
     const source = record.document.source_uri;
     gaps.push(...record.coverage_gaps.map((gap) => ({ source_uri: source, reason: gap.type, ...gap })));
@@ -140,20 +152,197 @@ function graph(records) {
           evidence_unit_id: link.evidence_unit_id });
       }
     }
+    // Records arrive in path order, so the first materialized declaration of a
+    // slug wins; a rejected one does not claim the slug.
+    for (const declaration of record.concepts) {
+      const gap = gapFor(source, declaration.evidence_unit_id);
+      if (concepts.has(declaration.id)) {
+        gap('duplicate_concept_id', `${declaration.id} is already declared in ${concepts.get(declaration.id).source_uri}.`);
+        continue;
+      }
+      const required = CLASS_BY_NAME.get(declaration.type).evidence_required;
+      const evidence = declaration.evidence === undefined ? null : evidenceSection(declaration.evidence, source);
+      if (evidence?.reason || (!evidence && required)) {
+        gap('missing_evidence', evidence ? `evidence ${declaration.evidence} does not resolve to one Section: ${evidence.reason}.`
+          : `${declaration.type} requires an evidence wikilink to one Section.`);
+        if (required) continue;
+      }
+      concepts.set(declaration.id, { id: declaration.id, type: declaration.type, label: declaration.label,
+        aliases: declaration.aliases, source_uri: source, source_revision: record.document.source_revision });
+      declarationOf.set(declaration.id, declaration.evidence_unit_id);
+      relations.push(relation(record.document.id, 'declares', declaration.id, declaration.evidence_unit_id, 1));
+      if (evidence?.entity) {
+        relations.push(relation(declaration.id, 'supported_by', evidence.entity.id, declaration.evidence_unit_id, 1));
+      }
+      if (declaration.broader) broaderRequests.push({ declaration, source });
+    }
+  }
+
+  const broader = [];
+  for (const { declaration, source } of broaderRequests) {
+    const object = `concept:${repoId}:${declaration.broader}`;
+    if (!concepts.has(object)) {
+      gaps.push({ source_uri: source, reason: 'unresolved_relation', evidence_unit_id: declaration.evidence_unit_id });
+    } else if (object === declaration.id) {
+      gapFor(source, declaration.evidence_unit_id)('reflexive_relation', `${declaration.id} cannot be broader than itself.`);
+    } else {
+      broader.push({ source, edge: relation(declaration.id, 'broader', object, declaration.evidence_unit_id, 1) });
+    }
+  }
+
+  const entityById = new Map([...documents, ...units, ...concepts.values()].map((entity) => [entity.id, entity]));
+  // Subject and target take a canonical ID, the shorthand concept:<slug>, or a wikilink.
+  const endpoint = (value, source) => {
+    const target = wikilinkTarget(value);
+    if (target !== undefined) return resolveLink(target, source).entity;
+    return entityById.get(/^concept:[^:]+$/.test(value) ? `concept:${repoId}:${value.slice(8)}` : value);
+  };
+  for (const record of records) {
+    const source = record.document.source_uri;
     for (const assertion of record.assertions) {
-      const subject = assertion.subject ?? record.document.id;
-      if (!ASSERTION_PREDICATES.includes(assertion.predicate) || !ids.has(subject) || !ids.has(assertion.target)) {
+      const predicate = PREDICATE_BY_NAME.get(assertion.predicate);
+      const subject = assertion.subject === undefined ? record.document : endpoint(assertion.subject, source);
+      const object = endpoint(assertion.target, source);
+      if (!predicate?.authorable || !subject || !object) {
         gaps.push({ source_uri: source, reason: 'unresolved_relation',
           evidence_unit_id: assertion.evidence_unit_id });
         continue;
       }
-      relations.push(relation(subject, assertion.predicate, assertion.target,
-        assertion.evidence_unit_id, assertion.assertion_occurrence));
+      const gap = gapFor(source, assertion.evidence_unit_id);
+      if (!allowsSubject(predicate, subject.type)) {
+        gap('domain_violation', `${predicate.name} requires subject type ${predicate.domain.join(' or ')}, not ${subject.type} ${subject.id}.`);
+        continue;
+      }
+      if (!allowsObject(predicate, object.type)) {
+        gap('range_violation', `${predicate.name} requires target type ${predicate.range.join(' or ')}, not ${object.type} ${object.id}.`);
+        continue;
+      }
+      if (hasCharacteristic(predicate, 'irreflexive') && subject.id === object.id) {
+        gap('reflexive_relation', `${predicate.name} cannot relate ${subject.id} to itself.`);
+        continue;
+      }
+      const evidence = assertion.evidence === undefined ? null : evidenceSection(assertion.evidence, source);
+      if (evidence?.reason || (!evidence && predicate.evidence_required)) {
+        gap('missing_evidence', evidence ? `evidence ${assertion.evidence} does not resolve to one Section: ${evidence.reason}.`
+          : `${predicate.name} requires an evidence wikilink to one Section.`);
+        if (predicate.evidence_required) continue;
+      }
+      const edge = relation(subject.id, predicate.name, object.id, assertion.evidence_unit_id, assertion.assertion_occurrence);
+      const support = evidence?.entity
+        ? relation(assertion.evidence_unit_id, 'supported_by', evidence.entity.id, assertion.evidence_unit_id, 1) : null;
+      if (predicate.name === 'broader') broader.push({ source, edge, support });
+      else relations.push(edge, ...(support ? [support] : []));
     }
   }
-  relations.sort((a, b) => a.id < b.id ? -1 : Number(a.id > b.id));
+
+  // ponytail: depth-first reachability per broader edge, O(E^2); the hierarchy is
+  // small. Edges are added in (subject, object, source) order, so a cycle drops its
+  // last edge in that order. Edge IDs hash list positions and only break exact ties,
+  // whose edges share one fate, so inserting a declaration never moves the drop.
+  const rank = ({ source, edge }) => `${edge.subject}\0${edge.object}\0${source}\0${edge.id}`;
+  const parents = new Map();
+  const reaches = (from, to) => {
+    const stack = [from];
+    const seen = new Set();
+    while (stack.length > 0) {
+      const node = stack.pop();
+      if (node === to) return true;
+      if (seen.has(node)) continue;
+      seen.add(node);
+      stack.push(...(parents.get(node) ?? []));
+    }
+    return false;
+  };
+  for (const { source, edge, support } of broader.sort((a, b) => rank(a) < rank(b) ? -1 : Number(rank(a) > rank(b)))) {
+    if (reaches(edge.object, edge.subject)) {
+      gapFor(source, edge.evidence_unit_id)('hierarchy_cycle', `${edge.subject} broader ${edge.object} closes a cycle.`);
+      continue;
+    }
+    parents.set(edge.subject, [...(parents.get(edge.subject) ?? []), edge.object]);
+    relations.push(edge, ...(support ? [support] : []));
+  }
+
+  // Label index: a key shared by two concepts resolves to nobody.
+  const owners = new Map();
+  for (const concept of concepts.values()) {
+    for (const name of [conceptSlug(concept.id), concept.label, ...concept.aliases]) {
+      const nameKey = labelKey(name);
+      if (nameKey) owners.set(nameKey, (owners.get(nameKey) ?? new Set()).add(concept.id));
+    }
+  }
+  const labelIndex = new Map();
+  for (const [nameKey, ids] of owners) {
+    if (ids.size === 1) {
+      labelIndex.set(nameKey, [...ids][0]);
+      continue;
+    }
+    for (const id of ids) {
+      gapFor(concepts.get(id).source_uri, declarationOf.get(id))('concept_label_collision',
+        `label key ${nameKey} is shared by ${[...ids].join(', ')}.`);
+    }
+  }
+  const categoryKeys = new Map();
+  for (const concept of concepts.values()) {
+    if (concept.type !== 'Category') continue;
+    for (const name of [concept.label, ...concept.aliases]) {
+      if (labelIndex.get(labelKey(name)) === concept.id) categoryKeys.set(labelKey(name), concept.id);
+    }
+  }
+  const declaresCategories = [...concepts.values()].some((concept) => concept.type === 'Category');
+  const tagKeys = new Set();
+  const mappedTags = new Set();
+  const unmappedCategories = new Set();
+  for (const record of records) {
+    const doc = record.document;
+    const root = record.units.find((unit) => unit.type === 'Section' && unit.anchor.heading_path.length === 0);
+    const tagged = new Set();
+    for (const tag of doc.tags) {
+      const tagKey = labelKey(tag);
+      if (!tagKey) continue;
+      tagKeys.add(tagKey);
+      const concept = labelIndex.get(tagKey);
+      if (!concept) continue;
+      mappedTags.add(tagKey);
+      if (!tagged.has(concept)) relations.push(relation(doc.id, 'tagged_with', concept, root.id, 1));
+      tagged.add(concept);
+    }
+    if (!doc.category) continue;
+    const category = categoryKeys.get(labelKey(doc.category));
+    if (category) {
+      relations.push(relation(doc.id, 'in_category', category, root.id, 1));
+      continue;
+    }
+    unmappedCategories.add(labelKey(doc.category));
+    if (declaresCategories) {
+      gapFor(doc.source_uri, root.id)('undeclared_category', `category ${doc.category} has no Category concept.`);
+    }
+  }
+
+  const entities = [...entityById.values()].sort(byId);
+  if (entities.length !== documents.length + units.length + concepts.size) throw new ContextError('duplicate_entity_id');
+  relations.sort(byId);
   gaps.sort((a, b) => stableJson(a) < stableJson(b) ? -1 : Number(stableJson(a) > stableJson(b)));
-  return { entities, relations, gaps };
+  return { entities, relations, gaps, stats: {
+    concepts: concepts.size,
+    typed_relations: relations.filter((item) => PREDICATE_BY_NAME.get(item.predicate).authorable).length,
+    tags_distinct: tagKeys.size,
+    tags_mapped: mappedTags.size,
+    tags_unmapped: tagKeys.size - mappedTags.size,
+    categories_unmapped: unmappedCategories.size,
+  } };
+}
+
+/** Parses one Git tree into the validated in-memory graph without writing a snapshot. */
+export function graphTree(repo, tree, { revision = tree, parsed = new Map() } = {}) {
+  const repoId = configuredRepoId();
+  const files = listMarkdown(repo, tree, DEFAULT_SCOPES);
+  const id = (file) => `${file.path}\0${file.oid}`;
+  const pending = files.filter((file) => !parsed.has(id(file)));
+  const blobs = readBlobs(repo, pending);
+  for (const file of pending) {
+    parsed.set(id(file), extractMarkdown({ path: file.path, content: blobs.get(file.path), repoId, revision }));
+  }
+  return { files, ...graph(files.map((file) => parsed.get(id(file))), repoId) };
 }
 
 function readRegular(path) {
@@ -297,14 +486,14 @@ export function buildSnapshot({ repo, cacheDir, scopes = DEFAULT_SCOPES, committ
     const times = sourceUpdatedTimes(repo, state.revision, files);
     const parsed = files.map((file) => extractMarkdown({ path: file.path, content: blobs.get(file.path),
       repoId, revision: state.revision, updatedAt: times.get(file.path) }));
-    const { entities, relations, gaps } = graph(parsed);
+    const { entities, relations, gaps, stats } = graph(parsed, repoId);
     const artifacts = {
-      'schema.json': jsonFile({ schema_version: SCHEMA_VERSION, entities: ['Document', 'Section', 'RelationAssertion'], predicates: PREDICATES }),
+      'schema.json': jsonFile({ schema_version: SCHEMA_VERSION, classes: CLASSES, predicates: PREDICATES }),
       'entities.jsonl': entities.map(jsonFile).join(''),
       'relations.jsonl': relations.map(jsonFile).join(''),
     };
-    const counts = { documents: files.length, units: entities.length - files.length,
-      relations: relations.length, coverage_gaps: gaps.length };
+    const counts = { documents: files.length, units: entities.length - files.length - stats.concepts,
+      relations: relations.length, coverage_gaps: gaps.length, ...stats };
     const manifest = { ...inputs, source_id: repoId, fingerprint,
       excluded_paths: ['**/AGENTS.md', '**/CLAUDE.md'], completed: true, counts,
       artifact_hashes: Object.fromEntries(ARTIFACTS.map((name) => [name, sha256(artifacts[name])])),

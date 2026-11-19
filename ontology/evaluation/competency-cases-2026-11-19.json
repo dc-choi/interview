@@ -1,0 +1,278 @@
+[
+  {
+    "id": "lost-event-after-commit-fix",
+    "split": "calibration",
+    "question": "결제 완료를 DB에 커밋하자마자 파드가 재시작됐고, 배송 서비스는 그 결제를 끝내 알지 못했다. DB 저장과 브로커 전송을 어떻게 엮어야 이런 누락을 막을 수 있을까?",
+    "start": "커밋 후 이벤트 유실",
+    "predicate": "addresses",
+    "expected_evidence": [
+      {"path": "tech/messaging-data-pipeline/cdc-outbox/Transactional-Outbox.md", "heading": "문제: Dual Write Problem"},
+      {"path": "tech/messaging-data-pipeline/cdc-outbox/Transactional-Outbox.md", "heading": "왜 되는가"}
+    ],
+    "expected_terms": ["Transactional Outbox", "XA/2PC"]
+  },
+  {
+    "id": "skip-locked-problem",
+    "split": "calibration",
+    "question": "outbox를 읽어 가는 쿼리에 FOR UPDATE SKIP LOCKED를 붙이자는 리뷰 의견을 받았다. 이 절이 막으려는 문제는 정확히 무엇일까?",
+    "start": "FOR UPDATE SKIP LOCKED",
+    "predicate": "addresses",
+    "expected_evidence": [
+      {"path": "tech/messaging-data-pipeline/cdc-outbox/Transactional-Outbox.md", "heading": "Relay를 여러 인스턴스에서 돌릴 때"},
+      {"path": "tech/messaging-data-pipeline/cdc-outbox/Transactional-Outbox.md", "heading": "행 단위 claim"}
+    ],
+    "expected_terms": ["중복 발행"]
+  },
+  {
+    "id": "negative-bicycle-chain-noise",
+    "split": "calibration",
+    "question": "자전거를 탈 때 체인에서 끼익거리는 소리가 계속 난다. 어떤 방법이 이 문제를 해결할까?",
+    "start": "자전거 체인 소음",
+    "predicate": "addresses",
+    "expected_evidence": [],
+    "expected_terms": [],
+    "expected_empty": true
+  },
+  {
+    "id": "outbox-prerequisites",
+    "split": "calibration",
+    "question": "outbox 테이블에 이벤트를 남겨 두기만 하면 결국 브로커와 소비자까지 안전하게 간다고 봐도 될까? 이 방식이 성립하려면 무엇이 함께 갖춰져야 하는지 알고 싶다.",
+    "start": "Transactional Outbox",
+    "predicate": "requires",
+    "expected_evidence": [
+      {"path": "tech/messaging-data-pipeline/cdc-outbox/Transactional-Outbox.md", "heading": "왜 되는가"}
+    ],
+    "expected_terms": ["같은 DB 트랜잭션", "Relay의 지속 실행과 장애 감시", "소비자 측 멱등성"]
+  },
+  {
+    "id": "debezium-mysql-server-settings",
+    "split": "calibration",
+    "question": "MySQL에서 바뀐 행을 Kafka로 흘려보내려고 커넥터를 붙이려 한다. 붙이기 전에 DB 서버 쪽에는 무엇이 설정돼 있어야 할까?",
+    "start": "Debezium MySQL connector",
+    "predicate": "requires",
+    "expected_evidence": [
+      {"path": "tech/messaging-data-pipeline/cdc-outbox/cdc-debezium/CDC-Debezium-Setup.md", "heading": "MySQL CDC의 전제"},
+      {"path": "tech/messaging-data-pipeline/cdc-outbox/cdc-debezium/CDC-Debezium-Operations.md", "heading": "Source와 connector 전제"}
+    ],
+    "expected_terms": ["binlog_format = ROW", "binlog_row_image = FULL", "server_id", "Binlog retention"]
+  },
+  {
+    "id": "nestjs-request-idempotency-prerequisites",
+    "split": "calibration",
+    "question": "NestJS API 서버 여러 대에 요청 멱등 키 인터셉터를 붙이려 한다. 운영 환경에서 재시도 중복을 제대로 막으려면 무엇을 갖춰야 할까?",
+    "start": "@nestjs/idempotency",
+    "predicate": "requires",
+    "expected_evidence": [
+      {"path": "tech/os-runtime/nestjs/integrations/nestjs-reliability/NestJS-Idempotency.md", "heading": "Store의 원자성"},
+      {"path": "tech/os-runtime/nestjs/integrations/nestjs-reliability/NestJS-Idempotency.md", "heading": "Key와 fingerprint"},
+      {"path": "tech/os-runtime/nestjs/integrations/nestjs-reliability/NestJS-Idempotency.md", "heading": "TTL과 효과 이후 실패"}
+    ],
+    "expected_terms": ["공유 store", "사용자별 scope", "client의 최대 retry window"]
+  },
+  {
+    "id": "single-runner-relay-costs",
+    "split": "calibration",
+    "question": "outbox 폴러가 여러 태스크 중 한 곳에서만 돌도록 advisory lock으로 묶으려 한다. 발행을 한 프로세스로 몰면 무엇을 잃게 될까?",
+    "start": "단일 러너 선출",
+    "predicate": "has_tradeoff",
+    "expected_evidence": [
+      {"path": "tech/messaging-data-pipeline/cdc-outbox/Transactional-Outbox.md", "heading": "Relay를 여러 인스턴스에서 돌릴 때"},
+      {"path": "tech/messaging-data-pipeline/cdc-outbox/Transactional-Outbox.md", "heading": "단일 러너 선출"}
+    ],
+    "expected_terms": ["처리량이 한 인스턴스에 묶임", "발행 전체가 멈춤", "발행 공백"]
+  },
+  {
+    "id": "polling-relay-costs",
+    "split": "calibration",
+    "question": "작은 팀이라 Kafka Connect 없이 애플리케이션 안에서 주기적으로 outbox를 읽어 보내려 한다. 이 선택의 대가는 무엇일까?",
+    "start": "Polling Relay",
+    "predicate": "has_tradeoff",
+    "expected_evidence": [
+      {"path": "tech/messaging-data-pipeline/cdc-outbox/Transactional-Outbox.md", "heading": "Relay 구현 방식"},
+      {"path": "tech/messaging-data-pipeline/cdc-outbox/Transactional-Outbox-Relay.md", "heading": "Polling 방식"}
+    ],
+    "expected_terms": ["폴링 지연", "중복 발행 제어"]
+  },
+  {
+    "id": "nestjs-default-inbox-gap",
+    "split": "calibration",
+    "question": "NestJS outbox 소비 쪽 inbox를 기본 설정 그대로 쓰고 있다. 이 기본 방식으로도 같은 메시지의 효과가 두 번 날 수 있는 틈이 남는다면 그게 무엇일까?",
+    "start": "NestJS 기본 inbox",
+    "predicate": "has_tradeoff",
+    "expected_evidence": [
+      {"path": "tech/os-runtime/nestjs/integrations/nestjs-reliability/NestJS-Outbox.md", "heading": "Inbox와 exactly-once 범위"},
+      {"path": "tech/os-runtime/nestjs/integrations/nestjs-reliability/NestJS-Outbox.md", "heading": "소비 순서와 커밋을 분리해서 검증"}
+    ],
+    "expected_terms": ["crash 간극", "다른 인스턴스의 병렬 실행"]
+  },
+  {
+    "id": "inbox-transaction-vs-processing-lease",
+    "split": "calibration",
+    "question": "inbox 기록과 업무 쓰기를 한 트랜잭션으로 묶는 방식은 외부 API를 오래 호출하는 소비 작업에는 맞지 않아 보인다. 그런 작업에서는 대신 무엇을 골라야 할까?",
+    "start": "Inbox 패턴",
+    "predicate": "alternative_to",
+    "expected_evidence": [
+      {"path": "tech/reliability/Idempotent-Consumer.md", "heading": "2. 멱등 키 + 상태 저장소"},
+      {"path": "tech/messaging-data-pipeline/delivery-guarantees/Idempotency-Key.md", "heading": "데이터베이스 (UNIQUE 제약)"}
+    ],
+    "expected_terms": ["PROCESSING lease"]
+  },
+  {
+    "id": "change-capture-method-options",
+    "split": "calibration",
+    "question": "검색 인덱스를 원본 테이블과 맞추려고 변경분을 뽑아야 한다. binlog를 읽는 방식 말고 고를 수 있는 변경 수집 방식은 무엇이 있을까?",
+    "start": "transaction log 기반 CDC",
+    "predicate": "alternative_to",
+    "expected_evidence": [
+      {"path": "tech/messaging-data-pipeline/cdc-outbox/cdc-debezium/CDC-Debezium-Concept.md", "heading": "변경을 얻는 방식"}
+    ],
+    "expected_terms": ["timestamp 또는 증가 key polling", "DB trigger와 change table"]
+  },
+  {
+    "id": "negative-outbox-event-router-alternative",
+    "split": "calibration",
+    "question": "outbox 행을 토픽, 키와 헤더로 바꿔 주는 Debezium Outbox Event Router 말고 같은 일을 맡길 다른 선택지는 무엇이 있을까?",
+    "start": "Outbox Event Router",
+    "predicate": "alternative_to",
+    "expected_evidence": [],
+    "expected_terms": [],
+    "expected_empty": true
+  },
+  {
+    "id": "outbox-publish-order-inversion",
+    "split": "holdout",
+    "question": "같은 주문 키로 이벤트 두 개를 거의 동시에 outbox에 넣었는데, 먼저 넣은 쪽 트랜잭션이 늦게 커밋되면서 브로커에는 순서가 뒤바뀌어 나갔다. 저장 단계에서 이 순서를 어떻게 지킬 수 있을까?",
+    "start": "outbox 발행 순서 역전",
+    "predicate": "addresses",
+    "expected_evidence": [
+      {"path": "tech/os-runtime/nestjs/integrations/nestjs-reliability/NestJS-Outbox.md", "heading": "순서와 claim"}
+    ],
+    "expected_terms": ["key별 transaction advisory lock"]
+  },
+  {
+    "id": "stale-update-overwrite",
+    "split": "holdout",
+    "question": "상품 가격 변경 메시지가 재전송 때문에 늦게 도착해서, 검색 인덱스의 최신 가격이 이전 가격으로 되돌아갔다. 이런 일을 막는 방식은 무엇이 있을까?",
+    "start": "stale update",
+    "predicate": "addresses",
+    "expected_evidence": [
+      {"path": "tech/messaging-data-pipeline/cdc-outbox/Transactional-Outbox.md", "heading": "Zero Payload 전략 — 오래된 payload 완화와 스키마 유연성"},
+      {"path": "tech/messaging-data-pipeline/cdc-outbox/cdc-debezium/CDC-Debezium-Concept.md", "heading": "순서와 전달 보장"},
+      {"path": "tech/messaging-data-pipeline/cdc-outbox/cdc-debezium/CDC-Debezium-Operations.md", "heading": "Consumer 안전성"}
+    ],
+    "expected_terms": ["Zero Payload", "entity version"]
+  },
+  {
+    "id": "client-dedup-problem",
+    "split": "holdout",
+    "question": "앱이 화면에 띄운 알림의 이벤트 ID를 기기 저장소에 남겨 두자는 제안이 나왔다. 이 장치가 해결하는 문제는 정확히 무엇일까?",
+    "start": "client dedup",
+    "predicate": "addresses",
+    "expected_evidence": [
+      {"path": "tech/reliability/Idempotent-Consumer.md", "heading": "외부 알림 발송과 클라이언트 event_id"}
+    ],
+    "expected_terms": ["같은 이벤트의 반복 표시"]
+  },
+  {
+    "id": "outbox-add-transaction-handle",
+    "split": "holdout",
+    "question": "Prisma에서 배열을 넘기는 방식의 트랜잭션으로 주문 저장과 outbox 메시지 등록을 묶었더니 등록이 거부됐다. 메시지 등록이 성립하려면 무엇을 넘겨야 할까?",
+    "start": "outbox.add",
+    "predicate": "requires",
+    "expected_evidence": [
+      {"path": "tech/os-runtime/nestjs/integrations/nestjs-reliability/NestJS-Outbox.md", "heading": "업무 transaction과 등록"}
+    ],
+    "expected_terms": ["업무 transaction callback의 handle", "interactive transaction client"]
+  },
+  {
+    "id": "effectively-once-conditions",
+    "split": "holdout",
+    "question": "결제 API를 호출하는 Kafka 컨슈머가 사실상 한 번만 처리된다고 설명하려 한다. Kafka 트랜잭션을 켠 것만으로 충분한지, 그렇게 말하려면 어떤 조건이 충족돼야 할까?",
+    "start": "effectively-once",
+    "predicate": "requires",
+    "expected_evidence": [
+      {"path": "tech/reliability/Idempotent-Consumer.md", "heading": "exactly-once의 보장 범위"}
+    ],
+    "expected_terms": ["dedup 보존 기간", "외부 provider의 계약"]
+  },
+  {
+    "id": "negative-espresso-crema",
+    "split": "holdout",
+    "question": "집에서 내린 에스프레소에 크레마가 거의 생기지 않는다. 크레마가 제대로 생기려면 어떤 조건이 갖춰져야 할까?",
+    "start": "에스프레소 크레마",
+    "predicate": "requires",
+    "expected_evidence": [],
+    "expected_terms": [],
+    "expected_empty": true
+  },
+  {
+    "id": "redis-set-nx-claim-risks",
+    "split": "holdout",
+    "question": "컨슈머 중복 방지를 Redis에 키를 먼저 박아 두는 한 줄로 끝내려 한다. 이 방식에서 감수해야 할 위험은 무엇일까?",
+    "start": "Redis SET NX",
+    "predicate": "has_tradeoff",
+    "expected_evidence": [
+      {"path": "tech/messaging-data-pipeline/delivery-guarantees/Idempotency-Key.md", "heading": "Redis (claim lease + TTL)"},
+      {"path": "tech/reliability/Idempotent-Consumer.md", "heading": "2. 멱등 키 + 상태 저장소"}
+    ],
+    "expected_terms": ["crash 뒤 작업 유실", "승인한 write 유실"]
+  },
+  {
+    "id": "slot-wal-limit-costs",
+    "split": "holdout",
+    "question": "디스크가 찰까 봐 Debezium이 쓰는 PostgreSQL 복제 슬롯의 WAL 보존량에 상한을 걸려고 한다. 이렇게 제한하면 무엇을 내주게 될까?",
+    "start": "max_slot_wal_keep_size",
+    "predicate": "has_tradeoff",
+    "expected_evidence": [
+      {"path": "tech/messaging-data-pipeline/cdc-outbox/cdc-debezium/CDC-Debezium-Setup.md", "heading": "PostgreSQL CDC의 전제"},
+      {"path": "tech/messaging-data-pipeline/cdc-outbox/cdc-debezium/CDC-Debezium-Setup.md", "heading": "미회수 슬롯 주의"},
+      {"path": "tech/messaging-data-pipeline/cdc-outbox/cdc-debezium/CDC-Debezium-Setup.md", "heading": "슬롯 지연과 장애 전환의 경계"}
+    ],
+    "expected_terms": ["슬롯 무효화", "새 snapshot"]
+  },
+  {
+    "id": "negative-event-store-costs",
+    "split": "holdout",
+    "question": "발행이 끝난 outbox 행을 지우지 않고 모든 이벤트의 영구 저장소로 쓰려 한다. 이렇게 확장할 때의 단점은 무엇일까?",
+    "start": "Event Store",
+    "predicate": "has_tradeoff",
+    "expected_evidence": [],
+    "expected_terms": [],
+    "expected_empty": true
+  },
+  {
+    "id": "client-key-vs-server-issued-id",
+    "split": "holdout",
+    "question": "결제 버튼 연타와 재시도로 결제가 두 번 실행되는 걸 막으려 한다. 클라이언트가 매번 키를 만들어 헤더로 보내게 하는 것 말고 다른 설계도 가능할까?",
+    "start": "Idempotency-Key",
+    "predicate": "alternative_to",
+    "expected_evidence": [
+      {"path": "tech/web/http/Idempotency.md", "heading": "서버가 먼저 발급한 ID로 실행 요청 식별"}
+    ],
+    "expected_terms": ["서버가 먼저 발급한 ID"]
+  },
+  {
+    "id": "initial-snapshot-alternatives",
+    "split": "holdout",
+    "question": "수억 건짜리 주문 테이블에 CDC를 새로 붙이는데, 처음 전체를 읽는 단계가 원본 DB를 너무 오래 붙잡을 것 같다. 기본 방식 말고 어떤 대안이 있을까?",
+    "start": "초기 스냅샷",
+    "predicate": "alternative_to",
+    "expected_evidence": [
+      {"path": "tech/messaging-data-pipeline/cdc-outbox/cdc-debezium/CDC-Debezium-Setup.md", "heading": "초기 스냅샷이 부담되는 경우"},
+      {"path": "tech/messaging-data-pipeline/cdc-outbox/cdc-debezium/CDC-Debezium-Operations.md", "heading": "Initial snapshot과 streaming 전환"}
+    ],
+    "expected_terms": ["incremental snapshot", "bulk load와 no_data"]
+  },
+  {
+    "id": "raw-cdc-vs-outbox-event",
+    "split": "holdout",
+    "question": "주문 테이블의 status 컬럼 변경을 CDC로 그대로 내보내서 다른 팀이 결제 완료를 알아채게 하려 한다. 행 변경을 그대로 쓰는 것 말고 고를 수 있는 방식은 무엇일까?",
+    "start": "Raw CDC",
+    "predicate": "alternative_to",
+    "expected_evidence": [
+      {"path": "tech/messaging-data-pipeline/cdc-outbox/cdc-debezium/CDC-Debezium-Concept.md", "heading": "Raw CDC와 domain event"},
+      {"path": "tech/messaging-data-pipeline/cdc-outbox/Transactional-Outbox-Relay.md", "heading": "DB 내장 변경 스트림"}
+    ],
+    "expected_terms": ["outbox"]
+  }
+]

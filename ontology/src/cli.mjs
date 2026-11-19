@@ -3,6 +3,7 @@ import { isAbsolute, relative, resolve } from 'node:path';
 import process from 'node:process';
 import { fileURLToPath } from 'node:url';
 
+import { conceptQuery } from './concept.mjs';
 import { ContextError } from './core.mjs';
 import { lookup, search } from './query.mjs';
 import { readEvidence } from './read-evidence.mjs';
@@ -10,8 +11,10 @@ import { outlineEvidence } from './outline.mjs';
 import { getRepoState } from './repository.mjs';
 import { buildSnapshot, defaultCacheDir, loadSnapshot } from './snapshot.mjs';
 import { DEFAULT_SCOPES, ensureFreshSnapshot, serveMcp, toErrorPayload } from './server.mjs';
+import { checkCandidates, validateOntology } from './validate.mjs';
 
 const DEFAULT_REPO = resolve(fileURLToPath(new URL('../..', import.meta.url)));
+const COMMANDS = ['build', 'lookup', 'search', 'read', 'outline', 'concept', 'serve', 'status', 'validate', 'candidates'];
 
 export async function main(argv = process.argv.slice(2)) {
   try {
@@ -22,7 +25,8 @@ export async function main(argv = process.argv.slice(2)) {
     }
     const result = await execute(parsed);
     if (result !== undefined) process.stdout.write(`${JSON.stringify(result)}\n`);
-    return 0;
+    // validate and candidates report violations in JSON and fail with ok: false.
+    return result?.ok === false ? 1 : 0;
   } catch (error) {
     const { code, message } = toErrorPayload(error);
     process.stderr.write(`${code}: ${message}\n`);
@@ -33,7 +37,7 @@ export async function main(argv = process.argv.slice(2)) {
 export function parseArguments(argv) {
   const [command, ...rest] = argv;
   if (!command || command === '--help' || command === '-h') return { help: true };
-  if (!['build', 'lookup', 'search', 'read', 'outline', 'serve', 'status'].includes(command)) {
+  if (!COMMANDS.includes(command)) {
     throw new ContextError('invalid_command', `Unknown command: ${command}`);
   }
 
@@ -55,7 +59,15 @@ export function parseArguments(argv) {
     offsetBytes: undefined,
     documentId: undefined,
     offsetSections: undefined,
+    concept: undefined,
+    predicates: [],
+    types: [],
+    includeInferred: undefined,
+    staged: false,
+    check: undefined,
   };
+  // concept takes its term as the first positional argument.
+  if (command === 'concept' && rest[0] !== undefined && !rest[0].startsWith('-')) options.concept = rest.shift();
   const seen = new Set();
   for (let index = 0; index < rest.length; index += 1) {
     const flag = rest[index];
@@ -63,14 +75,17 @@ export function parseArguments(argv) {
       if (rest.length !== 1) throw new ContextError('invalid_arguments', '--help cannot be combined with other arguments.');
       return { help: true };
     }
-    if (flag === '--committed-only') {
+    if (['--committed-only', '--staged', '--no-inferred'].includes(flag)) {
       if (seen.has(flag)) throw new ContextError('invalid_arguments', `${flag} was supplied more than once.`);
       seen.add(flag);
-      options.committedOnly = true;
+      if (flag === '--committed-only') options.committedOnly = true;
+      if (flag === '--staged') options.staged = true;
+      if (flag === '--no-inferred') options.includeInferred = false;
       continue;
     }
     if (!['--repo', '--cache', '--scope', '--allow', '--query', '--condition', '--depth', '--max-bytes', '--cursor',
-      '--evidence-unit-id', '--source-revision', '--content-hash', '--offset-bytes', '--document-id', '--offset-sections'].includes(flag)) {
+      '--evidence-unit-id', '--source-revision', '--content-hash', '--offset-bytes', '--document-id', '--offset-sections',
+      '--predicate', '--type', '--check'].includes(flag)) {
       throw new ContextError('invalid_arguments', `Unknown argument: ${flag}`);
     }
     const value = rest[index + 1];
@@ -90,6 +105,10 @@ export function parseArguments(argv) {
       options.conditions.push(value);
       continue;
     }
+    if (flag === '--predicate' || flag === '--type') {
+      options[flag === '--type' ? 'types' : 'predicates'].push(value);
+      continue;
+    }
     if (seen.has(flag)) throw new ContextError('invalid_arguments', `${flag} was supplied more than once.`);
     seen.add(flag);
     if (flag === '--repo') options.repo = absolutePath('--repo', value);
@@ -104,6 +123,7 @@ export function parseArguments(argv) {
     if (flag === '--offset-bytes') options.offsetBytes = parseInteger('--offset-bytes', value);
     if (flag === '--document-id') options.documentId = value;
     if (flag === '--offset-sections') options.offsetSections = parseInteger('--offset-sections', value);
+    if (flag === '--check') options.check = resolve(value);
   }
 
   if (options.cacheDir && isWithin(options.repo, options.cacheDir)) {
@@ -112,8 +132,14 @@ export function parseArguments(argv) {
   if (['lookup', 'search'].includes(options.command) && !options.query) {
     throw new ContextError('invalid_arguments', `${options.command} requires --query.`);
   }
-  if (options.depth !== undefined && options.depth !== 1 && options.depth !== 2) {
+  if (options.command === 'concept' && !options.concept) {
+    throw new ContextError('invalid_arguments', 'concept requires a term: concept <id, slug, label or alias>.');
+  }
+  if (options.command !== 'concept' && options.depth !== undefined && options.depth !== 1 && options.depth !== 2) {
     throw new ContextError('invalid_arguments', '--depth must be 1 or 2.');
+  }
+  if (options.command === 'concept' && options.depth !== undefined && ![1, 2, 3].includes(options.depth)) {
+    throw new ContextError('invalid_arguments', '--depth must be 1, 2 or 3 for concept.');
   }
   if (options.maxBytes !== undefined && options.maxBytes <= 0) {
     throw new ContextError('invalid_arguments', '--max-bytes must be a positive integer.');
@@ -121,14 +147,30 @@ export function parseArguments(argv) {
   if (!['lookup', 'search'].includes(options.command) && options.query !== undefined) {
     throw new ContextError('invalid_arguments', '--query is only valid for lookup or search.');
   }
-  if (options.command !== 'lookup' && options.depth !== undefined) {
-    throw new ContextError('invalid_arguments', '--depth is only valid for lookup.');
+  if (!['lookup', 'concept'].includes(options.command) && options.depth !== undefined) {
+    throw new ContextError('invalid_arguments', '--depth is only valid for lookup or concept.');
   }
   if (options.command !== 'lookup' && options.conditions.length > 0) {
     throw new ContextError('invalid_arguments', '--condition is only valid for lookup.');
   }
-  if (!['lookup', 'search', 'read', 'outline'].includes(options.command) && options.maxBytes !== undefined) {
-    throw new ContextError('invalid_arguments', '--max-bytes is only valid for lookup, search, read, or outline.');
+  if (!['lookup', 'search', 'read', 'outline', 'concept'].includes(options.command) && options.maxBytes !== undefined) {
+    throw new ContextError('invalid_arguments', '--max-bytes is only valid for lookup, search, read, outline, or concept.');
+  }
+  if (options.command !== 'concept' && (options.predicates.length || options.types.length || options.includeInferred !== undefined)) {
+    throw new ContextError('invalid_arguments', '--predicate, --type, and --no-inferred are only valid for concept.');
+  }
+  if (options.command === 'concept' && options.scopes.length) {
+    throw new ContextError('invalid_arguments', 'concept uses --allow, not --scope.');
+  }
+  if (options.command !== 'validate' && options.staged) {
+    throw new ContextError('invalid_arguments', '--staged is only valid for validate.');
+  }
+  if ((options.command === 'candidates') !== (options.check !== undefined)) {
+    throw new ContextError('invalid_arguments', 'candidates requires --check <file>, which is only valid for candidates.');
+  }
+  if (['validate', 'candidates'].includes(options.command)
+    && (options.scopes.length || options.allowlist.length || options.committedOnly || options.cacheDir)) {
+    throw new ContextError('invalid_arguments', `${options.command} reads committed or staged Git trees and accepts --repo only.`);
   }
   if (options.command !== 'search' && options.cursor !== undefined) {
     throw new ContextError('invalid_arguments', '--cursor is only valid for search.');
@@ -181,7 +223,9 @@ export async function execute(options) {
     });
     return summary;
   }
-  if (['lookup', 'search', 'read', 'outline'].includes(options.command)) {
+  if (options.command === 'validate') return validateOntology({ repo: options.repo, staged: options.staged });
+  if (options.command === 'candidates') return checkCandidates({ repo: options.repo, file: options.check });
+  if (['lookup', 'search', 'read', 'outline', 'concept'].includes(options.command)) {
     const { snapshot } = ensureFreshSnapshot({
       repo: options.repo,
       cacheDir: options.cacheDir,
@@ -190,6 +234,15 @@ export async function execute(options) {
       committedOnly: options.committedOnly,
     });
     const readOptions = { repo: options.repo, cacheDir: options.cacheDir, allowlist: options.allowlist };
+    if (options.command === 'concept') {
+      const args = { concept: options.concept };
+      if (options.predicates.length) args.predicates = options.predicates;
+      if (options.types.length) args.types = options.types;
+      if (options.depth !== undefined) args.depth = options.depth;
+      if (options.includeInferred !== undefined) args.include_inferred = options.includeInferred;
+      if (options.maxBytes !== undefined) args.max_bytes = options.maxBytes;
+      return conceptQuery(readOptions, args, snapshot);
+    }
     if (options.command === 'outline') {
       const args = { document_id: options.documentId, source_revision: options.sourceRevision };
       if (options.offsetSections !== undefined) args.offset_sections = options.offsetSections;
@@ -265,7 +318,7 @@ function isMissingSnapshot(error) {
 
 export function usage() {
   return [
-    'Usage: context-ontology <build|lookup|search|read|outline|serve|status> [options]',
+    'Usage: context-ontology <build|lookup|search|read|outline|concept|serve|status|validate|candidates> [options]',
     '  --repo <absolute-path>       Vault repository, defaults to this repository',
     '  --cache <absolute-path>      Cache outside the repository',
     `  --scope <path>               Repeatable build, lookup, or search scope, defaults to ${DEFAULT_SCOPES.join(', ')}`,
@@ -277,6 +330,10 @@ export function usage() {
     '  read accepts --offset-bytes <unit-relative-byte> and --max-bytes <integer>',
     '  outline requires --document-id <id> --source-revision <commit>',
     '  outline accepts --offset-sections <section-index> and --max-bytes <integer>',
+    '  concept <id|slug|label|alias> accepts repeatable --predicate <name> and --type <class>, --depth <1|2|3>,',
+    '    --no-inferred, --allow <path>, --committed-only and --max-bytes <integer>',
+    '  validate [--staged] checks the ontology of HEAD, or with --staged exits 1 only for violations the index adds',
+    '  candidates --check <file> checks a candidate JSONL queue against HEAD and exits 1 on any problem',
   ].join('\n');
 }
 

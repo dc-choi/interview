@@ -7,7 +7,7 @@ aliases: ["개발 판단 지식 계약", "Development Context Contract"]
 
 # 개발 판단 지식의 연결 계약
 
-> 상태: 2026-09-05. Markdown 구조를 결정론적으로 색인하고 조회하는 최소 실행 경로가 있다. 의미 추론과 코드 저장소 색인은 후속 설계다.
+> 상태: 2026-11-19. Markdown 구조를 결정론적으로 색인하고 조회하며, schema 2의 타입 개념과 관계를 검증해 개념 질의로 제공한다. 추론은 질의 시점의 schema 규칙으로 한정한다. LLM의 의미 추론을 색인에 넣는 경로와 코드 저장소 색인은 없다.
 
 ## 목표와 자료의 역할
 
@@ -36,7 +36,7 @@ AI는 두 자료를 읽어 현재 조건에 맞는 선택지, 적용 이유, 비
 
 ## 첫 개념과 관계
 
-아래 이름은 사람이 읽는 지도에 사용할 내부 어휘다. 실행 색인은 `Document`, `Section`, `RelationAssertion`, `contains`, `links_to`를 사용하며 이 지도는 그것을 교체하지 않는다.
+아래 개념과 관계는 2026-11-19부터 실행 색인의 클래스와 predicate다. 그 전에는 사람이 읽는 지도의 어휘였다. 색인은 기존 `Document`, `Section`, `RelationAssertion`, `contains`, `links_to`를 유지하고 여기에 타입 개념과 관계를 더한다. 전체 정의와 선언 형식은 [[Ontology-Schema]]를 따른다.
 
 | 개념 | 담을 내용 |
 |---|---|
@@ -52,9 +52,12 @@ AI는 두 자료를 읽어 현재 조건에 맞는 선택지, 적용 이유, 비
 | 적용 전제 `requires` | 방법 → 조건 | 조건을 확인할 원문 또는 코드 위치 |
 | 동반 비용 `has_tradeoff` | 방법 → 비용 | 비용이 발생하는 상황 |
 | 비교 대상 `alternative_to` | 방법 → 방법 | 같은 문제를 다루는 범위와 차이 |
-| 근거 `supported_by` | 검토 항목 → 원문 단위 | 해당 항목을 실제로 지지하는 section |
+| 근거 `supported_by` | 개념 또는 관계 선언 → 원문 단위 | 해당 항목을 실제로 지지하는 section |
+| 상위 개념 `broader` | 개념 → 개념 | 하위 개념의 문서 전부가 상위 개념에도 해당하는가 |
 
-`requires`는 문맥에 한정된 전제다. 논리 추론기의 공리나 모든 구현에 대한 필수 조건으로 사용하지 않는다. 이 파일럿은 관계의 역방향, 추이성과 대체 가능성을 자동 추론하지 않는다.
+`requires`는 문맥에 한정된 전제다. 논리 추론기의 공리나 모든 구현에 대한 필수 조건으로 사용하지 않는다.
+
+질의 시점의 추론은 schema가 선언한 성질 네 가지와 문서 전파 하나로 한정한다. 네 가지는 대칭 관계(`alternative_to`)의 반대 방향, 역방향 표기(`addressed_by`, `required_by`, `tradeoff_of`, `narrower`), `broader` 계층의 추이, 클래스 계층에 따른 타입 필터다. 문서 전파는 `depth` 안의 하위 개념에 연결된 문서를 상위 개념의 문서 목록에 더하는 것이다. 추론한 관계는 `inferred: true`와 근거 관계를, 전파한 문서는 `inferred: true`와 그 하위 개념의 ID를 함께 반환하며 어느 것도 snapshot에 저장하지 않는다. 대안의 대안, 하위 개념의 관계를 상위 개념으로 올리는 상속, 방법의 대체 가능성은 추론하지 않는다. 2026-09-05의 파일럿은 역방향과 추이성도 추론하지 않았으며, 위 범위로 넓힌 것은 2026-11-19의 변경이다.
 
 ## 검토 항목의 최소 내용
 
@@ -75,8 +78,10 @@ AI는 두 자료를 읽어 현재 조건에 맞는 선택지, 적용 이유, 비
 - `links_to`의 선택적 `link_role`은 기존 목차 소속, 상위 문서, 관련 문서 표기를 구분하는 구조 정보다. 폴더 소속이나 링크 역할을 선행 조건, 인과관계 또는 기술 채택으로 승격하지 않는다. 원문 표기의 추출 규칙은 [[Ontology-Runtime-Contract#기존 목차와 위키링크의 역할]]을 따른다.
 - 이 지도에서 AI가 정리한 의미 관계는 검토 후보로 취급한다. 질문 시 원문을 읽어 확인한 지식과 현재 프로젝트에 대한 추론을 분리한다.
 - 후보 지도는 AI가 원문을 찾는 탐색 보조 자료다. `context_lookup`은 후보 의미 관계를 생성하거나 확정하지 않는다.
-- 확정 typed relation은 canonical Markdown의 `ontology_relations`에서만 읽는다. `predicate`, `target`과 선택적인 `subject`가 모두 schema와 현재 snapshot entity ID에 맞을 때만 serving relation으로 승격한다. 지원하지 않는 필드, 후보 상태와 YAML alias는 coverage gap으로 남기고 별도 assertion unit이나 edge로 승격하지 않는다. `contains`와 `links_to`는 parser 전용 관계이며 typed relation으로 직접 작성하지 않는다.
-- 위 지도 관계 5종 중 `ontology_relations`에 쓸 수 있는 predicate는 `supported_by`뿐이다. `addresses`, `requires`, `has_tradeoff`, `alternative_to`는 사람이 읽는 지도 어휘이며 frontmatter에 적으면 `UnsupportedOntologyPredicate` gap이 된다.
+- 확정 개념과 typed relation은 canonical Markdown의 `ontology_concepts`와 `ontology_relations`에서만 읽는다. 선언이 schema의 형식, 정의역과 치역, 근거 요건에 맞고 양 끝이 현재 snapshot의 entity로 해석될 때만 serving entity와 relation으로 승격한다. 지원하지 않는 필드, 후보 상태와 YAML alias는 coverage gap으로 남기고 별도 unit이나 edge로 승격하지 않는다. `contains`, `links_to`, `declares`, `tagged_with`, `in_category`는 parser 전용 관계이며 직접 작성하지 않는다.
+- `addresses`, `requires`, `has_tradeoff`, `alternative_to`는 2026-11-19부터 `ontology_relations`에 쓸 수 있다. 원문 Section 하나로 해석되는 `evidence`가 필수이며, 없으면 `missing_evidence` gap이 되고 관계가 되지 않는다. 그 전에는 위 지도 관계 중 `supported_by`만 쓸 수 있었다.
+- AI가 제안한 개념과 관계는 `ontology/candidates/`의 후보로 두고, 제안자와 다른 검증자가 원문과 대조해 승인한 것만 선언 문서에 옮긴다. 색인은 후보 파일을 읽지 않는다. 절차는 [[Ontology-Curation]]을 따른다.
+- 선언된 관계는 원문이 그렇게 서술한다는 기록이다. 그 방법이 현재 프로젝트에 맞는지, 원문의 주장이 지금도 참인지는 확정하지 않는다.
 - 순환 위키링크와 `links_to` 탐색은 pinned revision의 유한 snapshot에서 depth 1 또는 2까지만 따른다. 연결이 있다는 사실은 의미 관계, 인과관계나 기술 채택을 확정하지 않는다.
 - 학습 원문에 설명된 방법을 현재 요청에 제안할 수 있다. 사용자가 채택하거나 명시적인 프로젝트 결정 근거가 생기기 전까지 결정 기록으로 저장하지 않는다.
 - 원문과 현재 코드가 충돌하면 양쪽의 역할과 시점을 확인한다. 현재 구현 사실은 현재 코드에서 확인하고, 설계 의도는 문서에서 확인한다.
