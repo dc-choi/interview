@@ -71,6 +71,20 @@ saveDocument는 성공한 GenerationJob에만 가능하고 parentFolderRid가 �
 
 running/failed job은 FailedPrecondition 오류로 저장/후속 export가 거부될 수 있다. 같은 폴더의 이름 충돌, FolderNotFound/InvalidFolder와 저장 권한 거부를 구분한다. 표시 이름은 `.` 또는 `..` 자체가 아니어야 하고 `/`를 포함할 수 없으며 최대 700자다.
 
+2026-11-19 확인한 Save Document Generation Job 페이지가 나열한 오류는 다음 일곱 가지다.
+
+| 오류 | errorCode | 보고하는 parameter |
+|---|---|---|
+| GenerationJobStatusRunning | FAILED_PRECONDITION | generationJobRid |
+| GenerationJobStatusFailed | FAILED_PRECONDITION | generationJobRid |
+| InvalidDisplayName | INVALID_ARGUMENT | displayName |
+| ResourceNameAlreadyExists | CONFLICT | parentFolderRid, displayName |
+| InvalidFolder | INVALID_ARGUMENT | resourceRid |
+| FolderNotFound | NOT_FOUND | folderRid |
+| SaveDocumentGenerationJobPermissionDenied | PERMISSION_DENIED | generationJobRid, templateRid |
+
+일부 오류가 보고하는 parameter 이름은 요청 필드 이름과 다르다. 요청 본문의 이름 필드는 documentName이지만 이름 오류는 displayName을 보고하고, 폴더 필드는 parentFolderRid이지만 InvalidFolder는 resourceRid, FolderNotFound는 folderRid를 보고한다. ResourceNameAlreadyExists는 parentFolderRid를 그대로 쓰고, 나머지 오류의 generationJobRid와 templateRid는 경로 parameter 이름과 같다. resourceRid와 folderRid에 요청한 parentFolderRid 값이 담긴다는 것은 이름으로 미루어 본 추정이며 페이지에 적혀 있지 않다. 입력 화면에 오류를 연결할 때는 오류 이름으로 대상 필드를 정하는 매핑을 둔다. 이 매핑은 적용 제안이며 명세의 지시가 아니다. documentName을 생략해 이름을 생성하게 한 요청에서도 ResourceNameAlreadyExists가 날 수 있는지는 페이지에 적혀 있지 않다.
+
 ## PDF Export와 binary 다운로드
 
 CreateExportJob의 source는 기존 documentRid 또는 성공한 GenerationJob의 templateRid/generationJobRid다. 확인일 target union은 PDF를 제공한다. userLocale과 userTimezone을 지정해 export의 날짜/시간 표현을 결정한다. locale 검증 실패와 timezone 검증 실패는 따로 반환된다.
