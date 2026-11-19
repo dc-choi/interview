@@ -131,6 +131,12 @@ build platform을 지정하지 않으면 image는 build를 수행한 BuildKit da
 
 운영 적용 제안: 사용하는 경로에 맞춰 기동, export/push, 외부 API와 frontend 접근, Windows data root 권한, overlay 송신 암호화를 따로 확인한다. 연결 실패를 암호화 성공으로 해석하지 않는다. 2026-10-23 위 릴리스 범위를 대조했으며 실제 환경 재현 결과나 최신 버전 권고는 아니다. 기존 본문의 전체 검증일은 유지한다.
 
+한 패치 릴리스에 묶인 보안 수정도 영향 조건이 서로 다르다. 29.9.3(2026-11-03)의 보안 수정은 여섯 건이며, 넷은 환경 조건에 따라 영향이 갈리고 둘은 입력 처리 결함이다. Swarm overlay network는 firewalld가 Docker의 iptables 규칙을 비운 뒤 암호화와 spoofing 방어가 빠지던 문제(CVE-2026-115538)이고, SwarmKit은 유효한 worker 인증서와 개인 키를 가진 공격자가 leader 변경 직후 짧은 구간에 manager 인증서를 얻을 수 있던 문제(CVE-2026-115539)다. BuildKit v0.34.2는 control API에 접근한 악의적 client가 state directory 밖 파일에 extended attribute를 설정해 host 권한 상승으로 이어질 수 있던 문제(GHSA-w26x-xg27-7qjc)와, 같은 Git source reference의 metadata를 두 번 해석하는 build가 resolver cache poisoning으로 daemon을 crash시킬 수 있던 문제(GHSA-2fqp-xg6f-v7gj)를 고쳤다. 나머지는 조작된 RSA key 파싱의 CPU 과다 사용(CVE-2026-116587)과 zstd 해제 중 panic(CVE-2026-116591)이다. 같은 릴리스는 부하 중 container, image, system API 요청에서 daemon이 멈추던 문제도 고쳤다.
+
+릴리스 노트는 항목별 심각도나 영향 버전의 전체 범위를 적지 않으며, 이는 각 항목에 연결된 GHSA 보안 권고에서 확인한다. CVE-2026-115538 권고는 encrypted overlay network를 쓰는 Swarm node에서 firewalld가 다른 애플리케이션의 iptables 규칙을 지우는 경우로 조건을 좁히고, 이때 트래픽이 암호화 없이 나가도 dockerd가 로그를 남기지 않는다고 설명한다. 그래서 overlay 통신이 된다는 사실은 암호화가 유지된다는 증거가 아니다.
+
+운영 적용 제안: Swarm에서 encrypted overlay network와 firewalld를 함께 쓰는지, worker 인증서가 노출될 수 있는지, BuildKit control API에 누가 접근하는지, Git source build를 쓰는지를 환경별로 대조해 적용 순서를 정한다. 29.10.0(2026-11-16)은 firewalld가 멈추거나 daemon보다 늦게 시작한 뒤 iptables 규칙이 복원되지 않던 문제의 수정을 별도 항목으로 기록한다. 같은 권고는 firewalld 중지와 늦은 시작도 CVE의 유발 조건으로 들지만, 두 수정의 관계는 릴리스 노트와 권고 어디에도 적혀 있지 않다. 따라서 firewalld를 쓰는 Swarm 환경에서 29.9.3만으로 이 경우까지 막힌다고 단정하지 않는다. 2026-11-19 릴리스 노트와 권고로 대조했으며 실제 환경 재현은 하지 않았다.
+
 ## 면접 포인트
 
 Q. Docker를 왜 사용하는가?
@@ -146,7 +152,8 @@ Q. `docker stop`, `docker kill`, `docker rm -f`는 무엇이 다른가?
 - stop은 SIGTERM 뒤 grace period를 주고, kill과 `rm -f`는 SIGKILL로 즉시 끝내 graceful shutdown을 건너뛴다. `rm -f`는 writable layer까지 지운다
 
 ## 출처
-- [Docker Engine version 29 release notes — Docker Docs](https://docs.docker.com/engine/release-notes/29/#2990) — 29.9.0의 수정 범위와 snapshotter 조건, 2026-10-23 확인.
+- [Docker Engine version 29 release notes — Docker Docs](https://docs.docker.com/engine/release-notes/29/) — 29.9.0의 수정 범위와 snapshotter 조건, 2026-10-23 확인. 29.9.3 보안 수정과 29.10.0 firewalld 복원 수정, 2026-11-19 확인.
+- [GHSA-6jhp-7446-hf7f 보안 권고 — moby/moby](https://github.com/moby/moby/security/advisories/GHSA-6jhp-7446-hf7f) — CVE-2026-115538의 유발 조건과 로그 부재, 2026-11-19 확인.
 - [Docker Docs — What is a container?](https://docs.docker.com/get-started/docker-concepts/the-basics/what-is-a-container/)
 - [Docker Docs — Dockerfile reference](https://docs.docker.com/reference/dockerfile/)
 - [Docker Docs — Volumes](https://docs.docker.com/engine/storage/volumes/)

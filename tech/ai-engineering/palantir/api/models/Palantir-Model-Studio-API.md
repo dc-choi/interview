@@ -1,7 +1,7 @@
 ---
 tags: [palantir, foundry, api, model-studio, training]
 status: done
-verified_at: 2026-11-17
+verified_at: 2026-11-19
 category: "AI엔지니어링(AIEngineering)"
 ---
 
@@ -27,6 +27,8 @@ workerConfig의 customConfig는 trainer JSON schema와 맞아야 한다. inputs�
 
 outputs는 alias별 Model RID다. 응답 Config Version은 integer version과 실제 trainer ID/version, workerConfig/resources, 생성 시각/사용자를 포함한다. 생성 입력에는 trainerId만 있고 trainer version 선택 필드는 없으므로 조회 응답의 실제 버전을 기록한다.
 
+2026-11-19 수집한 Create, Get과 Latest 명세의 schema에서 optional resources.gpu는 A100, A10G, A16, B200, B300, H100, H200, L4, L40S, T4, V100 중 하나인 enum이다. 공개 페이지는 이 하위 속성을 접어 두고 예제에도 memory와 CPU만 보이므로 접힌 속성까지 확인한다. 같은 이름이 enum에 있어도 해당 GPU가 Project resource queue에 있어야 쓸 수 있다. 2026-11-08 대조한 model live와 Workspace의 GPU 사용량 배율 표와 목록이 다르다. A16과 L40S는 이 enum에만, RTX PRO 6000은 배율 표에만 있다([[Palantir-Model-Live-Usage]], [[Palantir-Workspace-Sessions-and-Checkpoints]]).
+
 조회는 `/configVersions/{modelStudioConfigVersionVersion}`, 최신 단건은 `/configVersions/latest`, 전체 목록은 `/configVersions`다. 이름이 latestModelStudioConfigVersions여도 응답은 단일 Config Version이다. 목록은 pageToken/pageSize와 nextPageToken으로 계속 읽는다.
 
 ### Branch 선택
@@ -47,7 +49,7 @@ resolvedOutputs는 alias별 Model RID와 생성한 Model Version RID, optional E
 
 ## 오류가 가리키는 단계
 
-ModelStudioNotFound/ConfigVersionNotFound/TrainerNotFound는 각 선택자를 확인한다. CreateConfigValidationError의 validationFailures는 trainer schema, input/output과 compute 설정 검토에 사용한다. launch/create/get/latest의 작업 권한 오류와 공통 제한도 처리한다.
+ModelStudioNotFound/ConfigVersionNotFound/TrainerNotFound는 각 선택자를 확인한다. Config Version 단건 Get은 ModelStudioNotFound와 ModelStudioConfigVersionNotFound(둘 다 404)를, Latest는 ModelStudioNotFound와 LatestModelStudioConfigVersionsPermissionDenied(403)를 명세에 둔다. 오류 parameter 이름은 오류 이름이 아니라 endpoint마다 다르다. ModelStudioNotFound는 Config Version Get과 Latest 명세에서 studioRid를, Get Model Studio 명세에서 modelStudioRid를 쓰고, ModelStudioConfigVersionNotFound도 Get에서는 (modelStudioConfigVersionVersion, modelStudioRid), List Runs에서는 (studioRid, configVersion)이다. 같은 endpoint 안에서도 NotFound와 validation 오류는 studioRid를, Latest, Create, Launch의 작업 전용 PermissionDenied는 modelStudioRid를 쓴다. 오류 본문에서 식별자를 꺼낼 때는 모든 오류에서 두 이름을 함께 받는다. CreateConfigValidationError의 validationFailures는 trainer schema, input/output과 compute 설정 검토에 사용한다. 작업 전용 권한 오류는 launch, create와 latest 명세에 있고 Get과 List 명세에는 없으므로, 이들의 권한 실패가 어떤 오류로 오는지는 명세로 알 수 없다. 공통 권한 오류와 제한도 처리한다.
 
 공개 명세 확인이며 실제 trainer 가용성, GPU queue, 학습 Run이나 모델 품질을 시험하지 않았다.
 
@@ -58,8 +60,8 @@ ModelStudioNotFound/ConfigVersionNotFound/TrainerNotFound는 각 선택자를 �
 - [Palantir, Create Model Studio](https://www.palantir.com/docs/foundry/api/models-v2-resources/model-studios/create-model-studio)
 - [Palantir, Get Model Studio](https://www.palantir.com/docs/foundry/api/models-v2-resources/model-studios/get-model-studio)
 - [Palantir, Create Config Version](https://www.palantir.com/docs/foundry/api/models-v2-resources/model-studio-config-versions/create-model-studio-config-version)
-- [Palantir, Get Config Version](https://www.palantir.com/docs/foundry/api/models-v2-resources/model-studio-config-versions/get-model-studio-config-version)
-- [Palantir, Latest Config Version](https://www.palantir.com/docs/foundry/api/models-v2-resources/model-studio-config-versions/latest-model-studio-config-versions)
+- [Palantir, Get Config Version](https://www.palantir.com/docs/foundry/api/v2/models-v2-resources/model-studio-config-versions/get-model-studio-config-version)
+- [Palantir, Latest Config Version](https://www.palantir.com/docs/foundry/api/v2/models-v2-resources/model-studio-config-versions/latest-model-studio-config-versions)
 - [Palantir, List Config Versions](https://www.palantir.com/docs/foundry/api/models-v2-resources/model-studio-config-versions/list-model-studio-config-versions)
 - [Palantir, Launch Model Studio](https://www.palantir.com/docs/foundry/api/models-v2-resources/model-studios/launch-model-studio)
 - [Palantir, List Model Studio Runs](https://www.palantir.com/docs/foundry/api/models-v2-resources/model-studio-runs/list-model-studio-runs)
