@@ -89,11 +89,25 @@ running/failed job은 FailedPrecondition 오류로 저장/후속 export가 거�
 
 CreateExportJob의 source는 기존 documentRid 또는 성공한 GenerationJob의 templateRid/generationJobRid다. 확인일 target union은 PDF를 제공한다. userLocale과 userTimezone을 지정해 export의 날짜/시간 표현을 결정한다. locale 검증 실패와 timezone 검증 실패는 따로 반환된다.
 
+2026-11-19 확인한 Create Export Job 페이지 기준으로 요청 본문은 exportJobSource와 exportJobTarget 두 필드(둘 다 필수)다. generationJobSource variant를 고르면 templateRid와 generationJobRid가 모두 필수이고, documentSource variant는 documentRid 하나가 필수다. pdf target의 userLocale(예: en-US)과 userTimezone(예: Europe/Paris)도 필수이며 userTimezone은 Area/Location 형식의 IANA timezone만 받는다. 응답은 Generate Template처럼 RID 문자열 하나가 아니라 rid와 status를 담은 ExportJob 객체이고, 페이지 예시의 status는 running이다. 같은 페이지가 나열한 오류는 다음 아홉 가지다.
+
+| 오류 | errorCode | 보고하는 parameter |
+|---|---|---|
+| GenerationJobStatusFailed | FAILED_PRECONDITION | generationJobRid |
+| GenerationJobStatusRunning | FAILED_PRECONDITION | generationJobRid |
+| DocumentNotFound | NOT_FOUND | documentRid |
+| ExportDocumentPermissionDenied | PERMISSION_DENIED | documentRid |
+| ExportGenerationJobPermissionDenied | PERMISSION_DENIED | generationJobRid |
+| InvalidExportJobUserLocale | INVALID_ARGUMENT | userLocale |
+| InvalidTimezone | INVALID_ARGUMENT | userTimezone |
+| CreateExportJobPermissionDenied | PERMISSION_DENIED | 없음 |
+| GenerationJobNotFound | NOT_FOUND | generationJobRid, templateRid |
+
 CreateExportJob의 오류는 원인별로 나뉜다. 권한 거부는 Document export 권한 없음(ExportDocumentPermissionDenied), GenerationJob export 권한 없음(ExportGenerationJobPermissionDenied), ExportJob 생성 자체 거부(CreateExportJobPermissionDenied)의 세 가지이고, NotFound는 Document(DocumentNotFound)와 GenerationJob(GenerationJobNotFound, generationJobRid와 templateRid를 함께 보고)로 구분된다. 아직 running이거나 failed인 GenerationJob을 source로 쓰면 각각 GenerationJobStatusRunning과 GenerationJobStatusFailed(FAILED_PRECONDITION)다. GetExportJob endpoint 페이지에 나열된 오류는 ExportJobNotFound 하나이며, 인증과 호출률 같은 공통 오류는 [[Palantir-API-Client-Contract]]를 따른다.
 
 적용 제안: running 오류는 생성 완료를 기다린 뒤 다시 요청하고, failed 오류는 그 GenerationJob의 errorMessage를 먼저 확인한다. 오류 응답은 generationJobRid만 주므로 errorMessage는 GenerationJob 조회(`api:notepad-write`, 생성한 사용자만 접근)로 따로 읽어야 한다. 이 구분은 공식 명세의 지시가 아니다.
 
-ExportJob은 RID와 status를 반환한다. running에서 polling을 이어가고 failed이면 errorMessage와 선택적 errorCode/errorInstanceId를 확인한다. succeeded이면 fileRid로 content를 내려받는다. 파일 content는 binary format이며 JSON 응답으로 강제 처리하지 않는다. fileRid의 schema 타입은 string이고 페이지 예시 값은 `ri.notepad.main.file.<UUID>` 형태다. 접두사 규칙은 명세에 없으므로 클라이언트 검증 규칙으로 쓰지 않는다. Content File 페이지에 나열된 오류는 내려받을 권한이 없을 때의 ContentFilePermissionDenied(PERMISSION_DENIED, fileRid 보고) 하나다. 7일 사용 기한이 지난 File의 응답은 이 페이지에 따로 적혀 있지 않으므로 권한 거부와 만료를 같은 원인으로 단정하지 않는다.
+ExportJob은 RID와 status를 반환한다. running에서 polling을 이어가고 failed이면 errorMessage와 선택적 errorCode/errorInstanceId를 확인한다. succeeded이면 fileRid로 content를 내려받는다. 파일 content는 binary format이며 JSON 응답으로 강제 처리하지 않는다. fileRid의 schema 타입은 string이고 페이지 예시 값은 `ri.notepad.main.file.<UUID>` 형태다. 접두사 규칙은 명세에 없으므로 클라이언트 검증 규칙으로 쓰지 않는다. 2026-11-19 다시 확인한 Content File 페이지에 나열된 오류는 내려받을 권한이 없을 때의 ContentFilePermissionDenied(PERMISSION_DENIED, fileRid 보고) 하나다. 7일 사용 기한이 지난 File의 응답은 이 페이지에 따로 적혀 있지 않으므로 권한 거부와 만료를 같은 원인으로 단정하지 않는다.
 
 ## 만료와 재시도 경계
 

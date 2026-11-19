@@ -17,6 +17,7 @@ aliases: ["인프라&클라우드(Infrastructure&Cloud)", "Infrastructure & Clou
 - [[GPU-Cloud-Compute-Sourcing|GPU 클라우드와 AI 연산 조달]] — 플랫폼 공급자, 클라우드 사업자와 고객의 역할, NVIDIA Cloud Partner, 용량과 납기 및 작업 전체 비용, 학습과 추론의 배치, 원격 접근과 수출 통제
 - [[PyTorch-on-TPU|PyTorch on TPU]] — TorchTPU의 PyTorch/XLA 대체, eager 모드와 torch.compile, 기본 정밀도, 분산 초기화와 MPMD 위험
 - [[PyTorch-Version-Upgrade-and-Rollback|PyTorch 버전 업그레이드와 롤백]] — 패키지 롤백으로 복구되지 않는 체크포인트 형식과 기본값 변경, 2.15의 DCP, NCCL backend, FSDP2 reduce dtype과 설치 조건
+- [[AI-Cluster-Network-Fabric|AI 학습 클러스터의 네트워크]] — collective 통신과 straggler, NVLink 스케일업 도메인, RDMA 백엔드(InfiniBand와 RoCE), 레일과 리프/스파인, oversubscription과 토폴로지 인지 배치, 프런트엔드와 스토리지 망 분리
 - [[Optical-Interconnect-and-CPO|광통신과 CPO]] — 광 변환 위치, 전기 경로와 외부 레이저, 제품별 정비 경계
 - [[tech/infrastructure-cloud/foundation/클라우드기초(Foundation)|클라우드 기초 (Foundation)]] — IaaS/PaaS/FaaS, SaaS 리전별 데이터 격리와 운영 주권, IaC와 Pulumi 컴포넌트, 클라우드 전환 전략, Cloudflare cf CLI와 Artifacts
 - [[tech/infrastructure-cloud/container/컨테이너(Container)|컨테이너 (Container)]] — Docker, Compose, runc 초기화와 rootless, 이미지 빌드, OpenShell과 AI 학습 환경 격리
