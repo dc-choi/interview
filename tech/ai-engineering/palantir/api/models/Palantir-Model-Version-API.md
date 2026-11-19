@@ -1,7 +1,7 @@
 ---
 tags: [palantir, foundry, api, model, versioning]
 status: done
-verified_at: 2026-11-17
+verified_at: 2026-11-19
 category: "AI엔지니어링(AIEngineering)"
 ---
 
@@ -31,7 +31,9 @@ dataType은 date/boolean/string/array/double/integer/float/any/map/long/timestam
 
 `POST /models/{modelRid}/promoteVersion`은 sourceModelVersionRid를 target Model의 optional branch로 복사한다. 해당 branch의 최신 버전이 되지만 **새 Model Version RID**를 받는다. 원본 RID를 그대로 target에 붙였다고 기록하면 lineage를 잃는다. branch 기본은 대부분 master다.
 
-promote 후 source.promoted의 previousModelRid/previousModelVersionRid와 새 rid를 구분한다. 결과가 불변이어도 branch를 따라가는 [[Palantir-Live-Deployment-API]]의 실제 serving version은 이후 바뀔 수 있다.
+promote 후 source.promoted의 previousModelRid/previousModelVersionRid와 새 rid를 구분한다.
+
+promote 오류는 target Model이 없으면 ModelNotFound(modelRid), 원본 버전을 찾지 못하면 ModelVersionNotFound(modelRid, modelVersionRid), promote 작업이 거부되면 PromoteVersionModelPermissionDenied(modelRid)이며 명세는 어느 resource의 권한인지 구분하지 않는다. Model Version의 source 유형이 public API에서 지원되지 않으면 UnsupportedModelSource가 날 수 있고, 명세는 그 대상 버전을 특정하지 않는다. 목록 조회 문서에 명시된 오류는 UnsupportedModelSource와 ModelNotFound 두 가지이고 권한 거부 오류는 따로 나열되지 않았다. 결과가 불변이어도 branch를 따라가는 [[Palantir-Live-Deployment-API]]의 실제 serving version은 이후 바뀔 수 있다.
 
 ## Ontology Function으로 노출
 
@@ -49,8 +51,8 @@ Model API type이 function용으로 지원되지 않으면 ModelApiTypeUnsupport
 - [Palantir, Create Model](https://www.palantir.com/docs/foundry/api/models-v2-resources/models/create-model)
 - [Palantir, Get Model](https://www.palantir.com/docs/foundry/api/models-v2-resources/models/get-model)
 - [Palantir, Get Model Version](https://www.palantir.com/docs/foundry/api/models-v2-resources/model-versions/get-model-version)
-- [Palantir, List Model Versions](https://www.palantir.com/docs/foundry/api/models-v2-resources/model-versions/list-model-versions)
-- [Palantir, Promote Version Model](https://www.palantir.com/docs/foundry/api/models-v2-resources/models/promote-version-model)
+- [Palantir, List Model Versions](https://www.palantir.com/docs/foundry/api/v2/models-v2-resources/model-versions/list-model-versions)
+- [Palantir, Promote Version Model](https://www.palantir.com/docs/foundry/api/v2/models-v2-resources/models/promote-version-model)
 - [Palantir, Create Model Function](https://www.palantir.com/docs/foundry/api/models-v2-resources/model-functions/create-model-function)
 - [Palantir, Get Model Function](https://www.palantir.com/docs/foundry/api/models-v2-resources/model-functions/get-model-function)
 - [Palantir, Replace Model Function](https://www.palantir.com/docs/foundry/api/models-v2-resources/model-functions/replace-model-function)
