@@ -1516,6 +1516,21 @@ def channel_candidates(log_rows, listed=None, owner=None, keep=None, min_decided
                   key=lambda c: c["rate"])
 
 
+def ontology_check():
+    """온톨로지 선언의 근거 원문이 바뀌어 생긴 gap을 센다. 커밋 hook은 이 변경을 보지 않는다. 실패해도 다이제스트는 계속한다."""
+    try:
+        p = subprocess.run(["node", str(REPO / "ontology/src/cli.mjs"), "validate"], capture_output=True, text=True,
+                           timeout=120, cwd=REPO)
+        report = json.loads(p.stdout)
+        reasons = {}
+        for gap in report["gaps"]:
+            reasons[gap.get("reason", "unknown")] = reasons.get(gap.get("reason", "unknown"), 0) + 1
+        return {"ok": report["ok"], "gaps": len(report["gaps"]), "reasons": reasons,
+                "sources": sorted({g.get("source_uri", "") for g in report["gaps"]})[:10]}
+    except Exception as e:  # node 없음, 시간 초과, 깨진 출력
+        return {"ok": None, "error": f"{type(e).__name__}: {e}"[:200]}
+
+
 def cmd_digest_data(a):
     day = dt.date.fromisoformat(a.date) if a.date else dt.date.today()
     selection = S / "digests" / f"{day}.json"
@@ -1531,7 +1546,7 @@ def cmd_digest_data(a):
                 "takeaway": r.get("takeaway", ""), "commit": resolve_commit(r.get("commit"), r.get("subject"))}
                for r in log_rows if r.get("ts", "") > since and r.get("commit")]
     data = {"date": str(day), "generated_at": now().isoformat(timespec="seconds"), "since": since, "changes": changes,
-            "channel_candidates": channel_candidates(log_rows)}
+            "channel_candidates": channel_candidates(log_rows), "ontology": ontology_check()}
     write_json(selection, data)
     emit(data)
     return 0
