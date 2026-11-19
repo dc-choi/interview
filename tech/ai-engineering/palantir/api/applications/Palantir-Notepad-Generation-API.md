@@ -1,7 +1,7 @@
 ---
 tags: [palantir, foundry, api, notepad, template, asynchronous]
 status: done
-verified_at: 2026-11-17
+verified_at: 2026-11-19
 category: "AI엔지니어링(AIEngineering)"
 aliases: ["팔란티어 Notepad 생성과 Export API"]
 ---
@@ -46,11 +46,26 @@ parameter는 이름에서 tagged value로 매핑한다. 지원 variant는 object
 - objectRid와 objectSetRid는 각 자원의 RID다.
 - string/double은 각각 해당 variant의 value를 담는다.
 
-dateTime timestamp와 templateVersion은 Long 문자열 형식의 schema다. 같은 페이지 예제는 templateVersion을 숫자로 표시하므로 wire 형식을 예제만으로 확정하지 않는다. IANA timezone은 Area/Location 형식이며 잘못된 zone은 InvalidTimezone이다. 필수 parameter 누락과 잘못된 parameter 타입은 서로 다른 오류다.
+dateTime timestamp와 templateVersion은 Long 문자열 형식의 schema다. 같은 페이지 예제는 templateVersion을 숫자로 표시하므로 wire 형식을 예제만으로 확정하지 않는다. IANA timezone은 Area/Location 형식이다. 페이지는 InvalidTimezone을 나열하지만 dateTime의 timezone 검증 결과인지는 아래 설명처럼 확정하지 않는다. 필수 parameter 누락과 잘못된 parameter 타입은 서로 다른 오류다.
+
+2026-11-19 확인한 Generate Template 페이지의 응답 본문은 GenerationJob 객체가 아니라 GenerationJobRid 문자열 하나다. 같은 페이지가 나열한 오류는 다음 여섯 가지다.
+
+| 오류 | errorCode | 보고하는 parameter |
+|---|---|---|
+| TemplateNotFound | NOT_FOUND | templateRid |
+| GenerateTemplatePermissionDenied | PERMISSION_DENIED | templateRid |
+| InvalidGenerationJobTemplateVersion | INVALID_ARGUMENT | templateVersion |
+| MissingGenerationJobTemplateParameters | INVALID_ARGUMENT | templateParameterNames |
+| InvalidGenerationJobTemplateParameter | INVALID_ARGUMENT | templateParameterName, reason |
+| InvalidTimezone | INVALID_ARGUMENT | userTimezone |
+
+InvalidTimezone이 보고하는 이름은 userTimezone이지만 생성 요청 본문에는 그 이름의 필드가 없고 timezone은 dateTime parameter 값 안에 있다. 어느 값을 검증한 결과인지는 페이지만으로 확정하지 않는다. Create Export Job 페이지도 같은 InvalidTimezone(INVALID_ARGUMENT, userTimezone)을 나열하므로 공통 오류 정의를 공유하는 것으로 보인다. 누락 오류는 복수형 이름의 templateParameterNames를, 값 오류(타입 불일치 등)는 templateParameterName과 reason을 보고하므로 parameter 입력 화면에 오류를 연결할 때 두 경우를 나눠 처리할 수 있다.
 
 ## 생성 성공과 영구 Document 저장
 
 GenerationJob status는 running, failed와 succeeded union이다. 실패 variant에는 errorMessage가 있다. generation 성공 자체는 새 Document를 저장했다는 뜻이 아니다.
+
+Get Generation Job은 읽기 작업이지만 operation scope는 `api:notepad-write`다. 응답은 rid와 status뿐이며 생성된 content는 이 응답에 들어 있지 않다. 페이지에 나열된 오류는 GenerationJobNotFound(NOT_FOUND, generationJobRid와 templateRid를 함께 보고) 하나다. 경로의 templateRid가 job을 만든 Template과 다를 때나 다른 사용자가 조회할 때 어떤 오류가 오는지는 페이지에 따로 적혀 있지 않다.
 
 saveDocument는 성공한 GenerationJob에만 가능하고 parentFolderRid가 필수다. documentName을 생략하면 이름을 생성한다. 성공하면 새 documentRid를 반환한다.
 

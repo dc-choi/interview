@@ -20,6 +20,7 @@ aliases: ["컨텍스트", "Context Engineering Hub", "컨텍스트 허브"]
 - [x] [[Tacit-Knowledge-Judgment-Agent|암묵지와 판단 에이전트]] — 기억, 판단 사례와 원칙의 층, 피드백 흡수와 시점 보존, 목적별 분할과 개인 적합성의 한계
 - [x] [[Development-Ontology|개인 지식을 개발 판단에 연결하는 온톨로지 (파일 기반 지도, 적용 조건과 첫 파일럿)]]
 - [x] [[Context-Engineering|컨텍스트 엔지니어링 (수요 측 — Context Rot, Write/Select/Compress/Isolate, CLAUDE.md 200줄, Hook vs Advisory, 모델 세대와 지시 밀도)]]
+- [x] [[Context-Collection-and-Interpretation|컨텍스트 증강의 수집과 해석 분리]] — 자기 교정의 한계, 라우팅, 절차 템플릿과 관점 확장의 계보, Dual RAG와 수집기, 절차, 작성기 구조
 - [x] [[Tool-Output-Filtering|도구 출력 필터링 (토큰을 먹는 건 프롬프트가 아니라 도구 출력, 사전 필터링 > 사후 요약, 상태 기반 컨텍스트, 탐색 범위 제한)]]
 - [x] [[Agentic-Context-Platform|에이전트 컨텍스트 플랫폼 (출처별 의미 단위, provenance, typed evidence, 충돌과 불확실성 상태)]]
 - [x] [[AI-Workflow-Knowledge-Loop|AI 업무와 지식 환류 (멀티레포 분석, 이슈와 PR 추적, 운영 표준과 경험 분리, 현재 환경 대조)]]
