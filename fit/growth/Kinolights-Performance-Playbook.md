@@ -1,5 +1,5 @@
 ---
-tags: [fit, growth, kinolights, performance]
+tags: [fit, growth, kinolights, work-performance]
 status: done
 category: "Fit - 성장"
 aliases: ["Kinolights Performance Playbook", "키노라이츠 성과 플레이북"]

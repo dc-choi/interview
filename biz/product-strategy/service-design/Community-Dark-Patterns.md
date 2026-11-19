@@ -1,5 +1,5 @@
 ---
-tags: [business, product, community, retention, ethics, dark-pattern]
+tags: [business, product, community, user-retention, ethics, dark-pattern]
 status: done
 category: "비즈니스&제품(Business&Product)"
 aliases: ["Community Dark Patterns", "커뮤니티 다크 패턴", "리텐션 다크 패턴"]

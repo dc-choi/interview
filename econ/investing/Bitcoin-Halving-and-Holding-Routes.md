@@ -1,5 +1,5 @@
 ---
-tags: [econ, investing, bitcoin, crypto, custody]
+tags: [econ, investing, bitcoin, cryptocurrency, custody]
 status: done
 verified_at: 2026-11-17
 category: "Economics"

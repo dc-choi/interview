@@ -1,5 +1,5 @@
 ---
-tags: [growth, antipatterns, org-health, retention, hiring]
+tags: [growth, antipatterns, org-health, employee-retention, hiring]
 status: done
 category: "Growth - 안티패턴"
 aliases: ["Team Attrition Resilience", "연쇄 이탈", "동료가 복지의 역설", "채용 시스템 신뢰", "turnover contagion"]

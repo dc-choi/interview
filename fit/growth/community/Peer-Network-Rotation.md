@@ -1,5 +1,5 @@
 ---
-tags: [fit, growth, networking, team, peer, bootcamp]
+tags: [fit, growth, professional-networking, team, peer, bootcamp]
 status: done
 category: "Growth & Fit"
 aliases: ["Peer Network Rotation", "동료 네트워크 전략", "팀 로테이션"]

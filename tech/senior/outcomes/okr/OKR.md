@@ -1,5 +1,5 @@
 ---
-tags: [senior, outcomes, okr, performance]
+tags: [senior, outcomes, okr, work-performance]
 status: index
 category: "Senior - 성과"
 aliases: ["OKR", "Objectives and Key Results"]

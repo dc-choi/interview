@@ -1,5 +1,5 @@
 ---
-tags: [business, delegation, spending, performance, feedback, decision-making]
+tags: [business, delegation, spending, work-performance, feedback, decision-making]
 status: done
 category: "비즈니스&제품(Business&Product)"
 aliases: ["지출 재량과 성과 피드백", "Delegated Spending and Performance Feedback"]

@@ -1,5 +1,5 @@
 ---
-tags: [business, product, gamification, retention]
+tags: [business, product, gamification, user-retention]
 status: done
 category: "비즈니스&제품(Business&Product)"
 aliases: ["Gamification", "게이미피케이션"]

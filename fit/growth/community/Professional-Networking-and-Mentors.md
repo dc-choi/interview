@@ -1,5 +1,5 @@
 ---
-tags: [growth, community, networking, mentoring, coffee-chat]
+tags: [growth, community, professional-networking, mentoring, coffee-chat]
 status: done
 category: "Growth - 커뮤니티"
 aliases: ["Professional Networking", "외부 네트워킹", "멘토 확보", "커피챗 요청"]

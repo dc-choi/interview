@@ -1,5 +1,5 @@
 ---
-tags: [rust, enum, sum-type, dispatch, trait-object, generics, macro, derive, typescript]
+tags: [rust, enum, sum-type, dispatch, trait-object, generics, rust-macro, derive, typescript]
 status: done
 verified_at: 2026-11-18
 category: "CS - 기초"

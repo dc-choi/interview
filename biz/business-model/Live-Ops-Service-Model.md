@@ -1,5 +1,5 @@
 ---
-tags: [business, model, live-ops, retention, monetization, game]
+tags: [business, model, live-ops, user-retention, monetization, game]
 status: done
 category: "비즈니스&제품(Business&Product)"
 aliases: ["Live Ops Service Model", "라이브옵스와 서비스형 제품", "패키지형과 서비스형 제품"]

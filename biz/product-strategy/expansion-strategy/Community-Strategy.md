@@ -1,5 +1,5 @@
 ---
-tags: [business, product, community, retention]
+tags: [business, product, community, user-retention]
 status: done
 category: "비즈니스&제품(Business&Product)"
 aliases: ["Community Strategy", "커뮤니티 전략", "커머스 커뮤니티"]

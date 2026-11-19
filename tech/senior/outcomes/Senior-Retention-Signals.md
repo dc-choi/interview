@@ -1,5 +1,5 @@
 ---
-tags: [senior, outcomes, retention, leadership, engineering-management]
+tags: [senior, outcomes, employee-retention, leadership, engineering-management]
 status: done
 category: "Senior - 성과"
 aliases: ["Senior Retention Signals", "최고 엔지니어 이탈", "Engineering Retention"]

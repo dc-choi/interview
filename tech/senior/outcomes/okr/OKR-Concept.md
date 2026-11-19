@@ -1,5 +1,5 @@
 ---
-tags: [senior, outcomes, okr, performance, mbo]
+tags: [senior, outcomes, okr, work-performance, mbo]
 status: done
 category: "Senior - 성과"
 aliases: ["OKR 개념", "성과개발", "Performance Development", "MBO"]

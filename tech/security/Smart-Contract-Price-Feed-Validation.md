@@ -1,5 +1,5 @@
 ---
-tags: [security, smart-contract, oracle, chainlink, price-feed]
+tags: [security, smart-contract, price-oracle, chainlink, price-feed]
 status: done
 verified_at: 2026-11-04
 category: "보안(Security)"
