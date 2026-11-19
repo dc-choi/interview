@@ -19,6 +19,8 @@ Model은 버전을 보관하는 resource이고 Model Version은 직렬화한 데
 
 버전에는 modelApi, createdTime, optional condaRequirements/backingRepositories/source/linkedExperiment가 있다. source는 imported container, external, Code Workspace+branch, Model Studio, Code Repository+branch, SDK 또는 promoted다. promoted에는 이전 Model/Version RID가 있다. legacy/internal source는 UnsupportedModelSource가 날 수 있어 존재하는 모든 버전을 public API로 표현할 수 있다고 단정하지 않는다.
 
+단건 조회 문서에 명시된 오류는 두 가지다. 버전의 source 유형을 public API가 지원하지 않으면 UnsupportedModelSource(INVALID_ARGUMENT, parameter 없음), 버전을 찾지 못하면 ModelVersionNotFound(NOT_FOUND, modelRid와 modelVersionRid)다. 명세는 UnsupportedModelSource가 legacy나 internal workflow로 만든 model에서 생길 수 있다고 설명하므로 버전 부재(NOT_FOUND)와 같은 분기로 처리하지 않는다. 권한 거부 오류는 이 문서에 따로 나열되지 않았다.
+
 ## Model API의 입출력 Schema
 
 modelApi는 이름 있는 inputs/outputs 목록이다. 유형은 parameter, tabular 또는 unsupported를 구분한다. parameter는 이름, required와 dataType을 갖는다. tabular는 columns와 PANDAS/SPARK format이며 기본 PANDAS다. input/output required와 column required는 기본 true이고 false면 null 또는 omission을 허용한다.
@@ -50,7 +52,7 @@ Model API type이 function용으로 지원되지 않으면 ModelApiTypeUnsupport
 - [Palantir, Model basics](https://www.palantir.com/docs/foundry/api/models-v2-resources/models/model-basics)
 - [Palantir, Create Model](https://www.palantir.com/docs/foundry/api/models-v2-resources/models/create-model)
 - [Palantir, Get Model](https://www.palantir.com/docs/foundry/api/models-v2-resources/models/get-model)
-- [Palantir, Get Model Version](https://www.palantir.com/docs/foundry/api/models-v2-resources/model-versions/get-model-version)
+- [Palantir, Get Model Version](https://www.palantir.com/docs/foundry/api/v2/models-v2-resources/model-versions/get-model-version)
 - [Palantir, List Model Versions](https://www.palantir.com/docs/foundry/api/v2/models-v2-resources/model-versions/list-model-versions)
 - [Palantir, Promote Version Model](https://www.palantir.com/docs/foundry/api/v2/models-v2-resources/models/promote-version-model)
 - [Palantir, Create Model Function](https://www.palantir.com/docs/foundry/api/models-v2-resources/model-functions/create-model-function)
