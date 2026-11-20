@@ -37,6 +37,21 @@ ontology_concepts:
   - {id: publish-io-outside-claim-transaction, type: Condition, label: "발행 I/O를 claim 트랜잭션 밖에서 수행", aliases: ["claim 트랜잭션 안 브로커 호출 금지", "발행 network I/O는 claim transaction 밖"], evidence: "[[Transactional-Outbox#행 단위 claim]]"}
   - {id: fact-based-event, type: Approach, label: "사실 기반 이벤트", aliases: ["목적이 아닌 사실을 발행", "무엇이 일어났다 이벤트", "명령 대신 사실 이벤트"], evidence: "[[Transactional-Outbox#이벤트 설계 — 목적이 아닌 사실을 발행]]"}
   - {id: command-style-event-coupling, type: Problem, label: "발행자가 구독자의 행동을 지시하는 이벤트", aliases: ["명령형 이벤트", "Command 이벤트 결합", "구독자 추가 시 발행자 수정"], evidence: "[[Transactional-Outbox#이벤트 설계 — 목적이 아닌 사실을 발행]]"}
+  - {id: fluent-bit-filesystem-storage, type: Approach, label: "Fluent Bit filesystem 버퍼", aliases: ["storage.type filesystem", "Fluent Bit 파일시스템 버퍼"], evidence: "[[Transactional-Outbox#로컬 수집기 버퍼도 간극을 닫지 못한다]]"}
+  - {id: fluent-bit-storage-sync-full, type: Condition, label: "storage.sync full", aliases: ["Fluent Bit storage.sync full"], evidence: "[[Transactional-Outbox#로컬 수집기 버퍼도 간극을 닫지 못한다]]"}
+  - {id: librdkafka-message-timeout-drop, type: Problem, label: "message.timeout.ms를 넘긴 메시지 폐기", aliases: ["librdkafka message.timeout.ms 유실"], evidence: "[[Transactional-Outbox#로컬 수집기 버퍼도 간극을 닫지 못한다]]"}
+  - {id: rdkafka-message-timeout-over-outage, type: Approach, label: "rdkafka.message.timeout.ms를 견딜 장애 시간보다 길게", aliases: ["rdkafka.message.timeout.ms 연장"], evidence: "[[Transactional-Outbox#로컬 수집기 버퍼도 간극을 닫지 못한다]]"}
+  - {id: rdkafka-queue-memory-only-loss, type: Tradeoff, label: "큐 상한까지 메모리에만 있어 종료 grace 안에 못 보내거나 비정상 종료하면 유실", aliases: ["librdkafka 메모리 큐 유실"], evidence: "[[Transactional-Outbox#로컬 수집기 버퍼도 간극을 닫지 못한다]]"}
+  - {id: fluent-bit-exhausted-chunk-drop, type: Problem, label: "재시도를 다 쓴 chunk 폐기", aliases: ["Retry_Limit 소진 chunk 폐기"], evidence: "[[Transactional-Outbox#로컬 수집기 버퍼도 간극을 닫지 못한다]]"}
+  - {id: fluent-bit-retry-limit-raise, type: Approach, label: "Retry_Limit 한도 증가 또는 no_limits", evidence: "[[Transactional-Outbox#로컬 수집기 버퍼도 간극을 닫지 못한다]]"}
+  - {id: librdkafka-acks-1, type: Approach, label: "request.required.acks 1", aliases: ["acks=1"], evidence: "[[Transactional-Outbox#로컬 수집기 버퍼도 간극을 닫지 못한다]]"}
+  - {id: leader-ack-pre-replication-loss, type: Tradeoff, label: "leader 확인 직후 복제 전 장애 시 메시지 유실", evidence: "[[Transactional-Outbox#로컬 수집기 버퍼도 간극을 닫지 못한다]]"}
+  - {id: stranded-claimed-row, type: Problem, label: "claim 상태로 남은 행", aliases: ["좌초된 claim 행"], evidence: "[[Transactional-Outbox#행 단위 claim]]"}
+  - {id: lease-heartbeat-recovery, type: Approach, label: "lease와 하트비트 기반 회수", evidence: "[[Transactional-Outbox#행 단위 claim]]"}
+  - {id: transaction-level-advisory-lock, type: Approach, label: "트랜잭션 수준 advisory lock", evidence: "[[Transactional-Outbox#단일 러너 선출]]"}
+  - {id: three-tier-event-propagation, type: Approach, label: "3계층 이벤트 전파 구조", aliases: ["Application, Internal, External Event 분리", "이벤트 3계층 분리"], evidence: "[[Transactional-Outbox#3계층 이벤트 전파 구조]]"}
+  - {id: internal-info-leak-into-external-event, type: Problem, label: "내부에서만 쓸 정보의 외부 이벤트 유출", evidence: "[[Transactional-Outbox#3계층 이벤트 전파 구조]]"}
+  - {id: all-events-external-broker-cost, type: Problem, label: "모든 이벤트를 외부 브로커로 내보낼 때의 비용, 지연 증가", evidence: "[[Transactional-Outbox#3계층 이벤트 전파 구조]]"}
 ontology_relations:
   - {subject: "concept:transactional-outbox", predicate: addresses, target: "concept:dual-write-problem", evidence: "[[Transactional-Outbox#Transactional Outbox Pattern]]"}
   - {subject: "concept:transactional-outbox", predicate: has_tradeoff, target: "concept:outbox-at-least-once-duplicate-publish", evidence: "[[Transactional-Outbox#어느 축도 중복을 없애지는 못한다]]"}
@@ -71,12 +86,21 @@ ontology_relations:
   - {subject: "concept:dynamodb-streams-relay", predicate: broader, target: "concept:db-native-change-stream-relay", evidence: "[[Transactional-Outbox#Relay 구현 방식]]"}
   - {subject: "concept:cosmos-db-change-feed-relay", predicate: broader, target: "concept:db-native-change-stream-relay", evidence: "[[Transactional-Outbox#Relay 구현 방식]]"}
   - {subject: "concept:cockroachdb-changefeed-relay", predicate: broader, target: "concept:db-native-change-stream-relay", evidence: "[[Transactional-Outbox#Relay 구현 방식]]"}
+  - {subject: "concept:fluent-bit-filesystem-storage", predicate: requires, target: "concept:fluent-bit-storage-sync-full", evidence: "[[Transactional-Outbox#로컬 수집기 버퍼도 간극을 닫지 못한다]]"}
+  - {subject: "concept:rdkafka-message-timeout-over-outage", predicate: addresses, target: "concept:librdkafka-message-timeout-drop", evidence: "[[Transactional-Outbox#로컬 수집기 버퍼도 간극을 닫지 못한다]]"}
+  - {subject: "concept:rdkafka-message-timeout-over-outage", predicate: has_tradeoff, target: "concept:rdkafka-queue-memory-only-loss", evidence: "[[Transactional-Outbox#로컬 수집기 버퍼도 간극을 닫지 못한다]]"}
+  - {subject: "concept:fluent-bit-retry-limit-raise", predicate: addresses, target: "concept:fluent-bit-exhausted-chunk-drop", evidence: "[[Transactional-Outbox#로컬 수집기 버퍼도 간극을 닫지 못한다]]"}
+  - {subject: "concept:librdkafka-acks-1", predicate: has_tradeoff, target: "concept:leader-ack-pre-replication-loss", evidence: "[[Transactional-Outbox#로컬 수집기 버퍼도 간극을 닫지 못한다]]"}
+  - {subject: "concept:lease-heartbeat-recovery", predicate: addresses, target: "concept:stranded-claimed-row", evidence: "[[Transactional-Outbox#행 단위 claim]]"}
+  - {subject: "concept:transaction-level-advisory-lock", predicate: requires, target: "concept:publish-io-outside-claim-transaction", evidence: "[[Transactional-Outbox#단일 러너 선출]]"}
+  - {subject: "concept:three-tier-event-propagation", predicate: addresses, target: "concept:internal-info-leak-into-external-event", evidence: "[[Transactional-Outbox#3계층 이벤트 전파 구조]]"}
+  - {subject: "concept:three-tier-event-propagation", predicate: addresses, target: "concept:all-events-external-broker-cost", evidence: "[[Transactional-Outbox#3계층 이벤트 전파 구조]]"}
 ---
 
 # 이벤트 발행 온톨로지 선언: Outbox
 
-Dual Write 문제와 Transactional Outbox, 분산 트랜잭션 대안에 대한 개념 33개와 타입 관계 33개를 선언한다. 본문 지식은 여기에 두지 않고, 각 선언의 `evidence`가 가리키는 원문 섹션이 근거다.
+Dual Write 문제와 Transactional Outbox, 분산 트랜잭션 대안에 대한 개념 48개와 타입 관계 42개를 선언한다. 본문 지식은 여기에 두지 않고, 각 선언의 `evidence`가 가리키는 원문 섹션이 근거다.
 
-선언은 `ontology/candidates/event-publishing.jsonl`에서 원문 대조 검증을 통과한 후보만 옮긴 것이다. 새 선언은 후보 파일에 먼저 추가해 검증한 뒤 한 줄로 옮기고, 원문 heading이 바뀌면 `evidence`를 함께 고친다.
+선언은 `ontology/candidates/event-publishing*.jsonl`에서 원문 대조 검증을 통과한 후보만 옮긴 것이다. 새 선언은 후보 파일에 먼저 추가해 검증한 뒤 한 줄로 옮기고, 원문 heading이 바뀌면 `evidence`를 함께 고친다.
 
 상위: [[Ontology-Instances]]

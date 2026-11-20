@@ -41,6 +41,39 @@ ontology_concepts:
   - {id: redis-claim-lease, type: Approach, label: "Redis claim lease + TTL", aliases: ["Redis SET NX lease", "SET NX EX claim", "Redis 멱등성 claim"], evidence: "[[Idempotency-Key#Redis (claim lease + TTL)]]"}
   - {id: redis-cluster-acknowledged-write-loss, type: Tradeoff, label: "Redis Cluster 비동기 복제로 승인한 write 유실", aliases: ["Redis Cluster 장애 시 write 유실", "Redis 비동기 복제 유실"], evidence: "[[Idempotency-Key#Redis (claim lease + TTL)]]"}
   - {id: outcome-reconciliation, type: Approach, label: "결과 대사", aliases: ["객체 조회와 웹훅으로 결과 대사", "요청 기록 대사", "Result Reconciliation"], evidence: "[[Idempotency-Key#오류 응답 재생과 업무 결과 확인]]"}
+  - {id: at-least-once-delivery, type: Approach, label: "At-Least-Once 전달", aliases: ["At-Least-Once", "최소 한 번 전달", "At-Least-Once Delivery"], evidence: "[[At-Least-Once#At-Least-Once (최소 한 번 전달)]]"}
+  - {id: lambda-whole-batch-redelivery, type: Problem, label: "Lambda가 한 항목 실패 시 배치 전체 재노출", aliases: ["Lambda 배치 전체 재시도"], evidence: "[[At-Least-Once#상태 머신]]"}
+  - {id: report-batch-item-failures, type: Approach, label: "ReportBatchItemFailures", aliases: ["Lambda partial batch response"], evidence: "[[At-Least-Once#상태 머신]]"}
+  - {id: busy-visibility-deferral, type: Approach, label: "ACK일 때만 DeleteMessage, BUSY는 ChangeMessageVisibility로 연기", evidence: "[[At-Least-Once#상태 머신]]"}
+  - {id: max-receive-count-fit-to-lease, type: Condition, label: "처리시간과 lease에 맞춘 maxReceiveCount", evidence: "[[At-Least-Once#상태 머신]]"}
+  - {id: busy-redelivery-raises-receive-count, type: Tradeoff, label: "BUSY 재수신의 ApproximateReceiveCount 증가", evidence: "[[At-Least-Once#상태 머신]]"}
+  - {id: side-effect-runs-after-lease-loss, type: Tradeoff, label: "lease를 잃은 뒤에도 외부 부수효과 실행 가능", evidence: "[[At-Least-Once#상태 머신]]"}
+  - {id: external-side-effect-idempotent, type: Condition, label: "외부 부수효과의 멱등성", evidence: "[[At-Least-Once#상태 머신]]"}
+  - {id: kafka-txn-does-not-prevent-reexecution, type: Tradeoff, label: "Kafka exactly-once 효과는 코드가 다시 실행되지 않는다는 뜻이 아님", evidence: "[[Idempotent-Consumer#exactly-once의 보장 범위]]"}
+  - {id: kafka-txn-excludes-external-effects, type: Tradeoff, label: "Kafka 트랜잭션만으로는 외부 DB나 결제 API 효과가 원자적으로 묶이지 않음", evidence: "[[Idempotent-Consumer#exactly-once의 보장 범위]]"}
+  - {id: same-result-including-side-effects, type: Condition, label: "상태 전이 조건, trigger와 외부 부수효과까지 같은 결과", evidence: "[[Idempotent-Consumer#1. 자연 멱등 설계 (가장 좋음)]]"}
+  - {id: no-ack-for-in-progress-duplicate, type: Condition, label: "진행 중인 중복은 ACK하지 않음", aliases: ["신선한 lease는 ACK하지 않음", "신선한 PROCESSING은 ACK하지 않음"], evidence: "[[Idempotent-Consumer#2. 멱등 키 + 상태 저장소]]"}
+  - {id: fifo-dedup-misses-business-duplicates, type: Tradeoff, label: "비즈니스 단위 중복은 못 막음", evidence: "[[Idempotent-Consumer#SQS 특이점]]"}
+  - {id: separate-retry-policy, type: Condition, label: "재시도할 상태 코드, 백오프, 최대 횟수와 전체 시간 제한의 별도 정책", evidence: "[[Idempotency#왜 중요한가]]"}
+  - {id: idempotency-key-http-header, type: Approach, label: "Idempotency-Key 헤더", aliases: ["Idempotency-Key header", "Idempotency-Key HTTP 헤더"], evidence: "[[Idempotency#POST를 멱등하게 만드는 패턴]]"}
+  - {id: idempotency-key-header-not-rfc-standard, type: Tradeoff, label: "공통 RFC 표준이 아님 (2026-10-16 기준 IETF 작업 초안 만료)", evidence: "[[Idempotency#POST를 멱등하게 만드는 패턴]]"}
+  - {id: per-state-response-definition, type: Condition, label: "진행 중, 성공, 실패 상태별 응답 정의", evidence: "[[Idempotency#구현 포인트]]"}
+  - {id: stripe-v1-deleted-key-reexecution, type: Tradeoff, label: "Stripe API v1: 최소 24시간 보존 뒤 삭제된 키를 다시 쓰면 새 요청으로 실행될 수 있음", evidence: "[[Idempotency#응답 재사용과 보존 기간은 API 계약이다]]"}
+  - {id: lost-update-hidden-double-execution, type: Problem, label: "최종 행 값으로 드러나지 않는 부수효과 이중 실행", evidence: "[[Idempotency#서버가 먼저 발급한 ID로 실행 요청 식별]]"}
+  - {id: execution-count-and-log-verification, type: Approach, label: "실행 횟수, 이력 행과 외부 호출 로그로 확인", evidence: "[[Idempotency#서버가 먼저 발급한 ID로 실행 요청 식별]]"}
+  - {id: retried-put-overwrites-intervening-change, type: Problem, label: "재시도한 PUT이 다른 클라이언트의 중간 변경을 덮어씀", aliases: ["재시도 PUT의 lost update"], evidence: "[[Idempotency#네트워크 재시도 정책과 결합]]"}
+  - {id: if-match-conditional-request, type: Approach, label: "If-Match 조건부 요청", aliases: ["ETag If-Match", "조건부 PUT"], evidence: "[[Idempotency#네트워크 재시도 정책과 결합]]"}
+  - {id: version-based-optimistic-lock, type: Approach, label: "버전 기반 낙관적 잠금", evidence: "[[Idempotency#네트워크 재시도 정책과 결합]]"}
+  - {id: retried-conditional-put-412-ambiguity, type: Tradeoff, label: "재시도한 조건부 PUT의 412는 첫 시도 반영일 수 있음", evidence: "[[Idempotency#네트워크 재시도 정책과 결합]]"}
+  - {id: pending-confirmation-status, type: Approach, label: "결과 확정 전 확인 중 상태 안내", evidence: "[[Idempotency#네트워크 재시도 정책과 결합]]"}
+  - {id: new-key-per-intended-operation, type: Condition, label: "의도한 작업마다 새 키 생성", evidence: "[[Idempotency-Key#고유 식별자 종류]]"}
+  - {id: db-unique-idempotency-record, type: Approach, label: "UNIQUE 제약 멱등성 레코드", aliases: ["idempotency_records 테이블"], evidence: "[[Idempotency-Key#데이터베이스 (UNIQUE 제약)]]"}
+  - {id: idempotency-db-query-cost, type: Tradeoff, label: "DB 중복 감지의 쿼리 비용", evidence: "[[Idempotency-Key#데이터베이스 (UNIQUE 제약)]]"}
+  - {id: lease-renewal-with-owner-check, type: Condition, label: "긴 작업은 owner token을 확인하며 lease 연장", evidence: "[[Idempotency-Key#Redis (claim lease + TTL)]]"}
+  - {id: stripe-api-v1-idempotent-requests, type: Approach, label: "Stripe API v1 멱등 요청", evidence: "[[Idempotency-Key#실전 사례: Stripe Idempotency Key]]"}
+  - {id: stripe-api-v2-idempotency, type: Approach, label: "Stripe API v2 멱등성", evidence: "[[Idempotency-Key#실전 사례: Stripe Idempotency Key]]"}
+  - {id: stripe-v2-same-request-scope, type: Condition, label: "Stripe API v2: 같은 API, 계정 또는 sandbox와 키를 30일 안에 사용", evidence: "[[Idempotency-Key#실전 사례: Stripe Idempotency Key]]"}
+  - {id: stripe-v1-stored-500-replay, type: Tradeoff, label: "Stripe API v1: 저장된 500 응답 재생은 업무 미실행의 증거가 아님", evidence: "[[Idempotency-Key#오류 응답 재생과 업무 결과 확인]]"}
 ontology_relations:
   - {subject: "concept:natural-idempotency", predicate: addresses, target: "concept:duplicate-message-processing", evidence: "[[Idempotent-Consumer#1. 자연 멱등 설계 (가장 좋음)]]"}
   - {subject: "concept:idempotency-key", predicate: addresses, target: "concept:duplicate-message-processing", evidence: "[[Idempotency-Key#왜 필요한가]]"}
@@ -78,12 +111,47 @@ ontology_relations:
   - {subject: "concept:processing-lease-claim", predicate: alternative_to, target: "concept:inbox-pattern", evidence: "[[Idempotent-Consumer#2. 멱등 키 + 상태 저장소]]"}
   - {subject: "concept:redis-claim-lease", predicate: has_tradeoff, target: "concept:redis-cluster-acknowledged-write-loss", evidence: "[[Idempotency-Key#Redis (claim lease + TTL)]]"}
   - {subject: "concept:redis-claim-lease", predicate: alternative_to, target: "concept:inbox-pattern", evidence: "[[Idempotency-Key#Redis (claim lease + TTL)]]"}
+  - {subject: "concept:at-least-once-delivery", predicate: requires, target: "concept:consumer-idempotency-guaranteed", evidence: "[[At-Least-Once#At-Least-Once (최소 한 번 전달)]]"}
+  - {subject: "concept:inbox-pattern", predicate: requires, target: "concept:effect-in-same-db-as-inbox", evidence: "[[At-Least-Once#같은 DB의 짧은 작업]]"}
+  - {subject: "concept:provider-idempotency-key", predicate: addresses, target: "concept:ambiguous-outcome", evidence: "[[At-Least-Once#오래 걸리거나 외부 효과가 있는 작업]]"}
+  - {subject: "concept:outcome-reconciliation", predicate: addresses, target: "concept:ambiguous-outcome", evidence: "[[At-Least-Once#오래 걸리거나 외부 효과가 있는 작업]]"}
+  - {subject: "concept:report-batch-item-failures", predicate: addresses, target: "concept:lambda-whole-batch-redelivery", evidence: "[[At-Least-Once#상태 머신]]"}
+  - {subject: "concept:busy-visibility-deferral", predicate: requires, target: "concept:max-receive-count-fit-to-lease", evidence: "[[At-Least-Once#상태 머신]]"}
+  - {subject: "concept:busy-visibility-deferral", predicate: has_tradeoff, target: "concept:busy-redelivery-raises-receive-count", evidence: "[[At-Least-Once#상태 머신]]"}
+  - {subject: "concept:owner-conditioned-write", predicate: addresses, target: "concept:stale-owner-late-write", evidence: "[[At-Least-Once#상태 머신]]"}
+  - {subject: "concept:processing-lease-claim", predicate: has_tradeoff, target: "concept:side-effect-runs-after-lease-loss", evidence: "[[At-Least-Once#상태 머신]]"}
+  - {subject: "concept:processing-lease-claim", predicate: requires, target: "concept:external-side-effect-idempotent", evidence: "[[At-Least-Once#상태 머신]]"}
+  - {subject: "concept:kafka-transactional-read-process-write", predicate: has_tradeoff, target: "concept:kafka-txn-does-not-prevent-reexecution", evidence: "[[Idempotent-Consumer#exactly-once의 보장 범위]]"}
+  - {subject: "concept:kafka-transactional-read-process-write", predicate: has_tradeoff, target: "concept:kafka-txn-excludes-external-effects", evidence: "[[Idempotent-Consumer#exactly-once의 보장 범위]]"}
+  - {subject: "concept:natural-idempotency", predicate: requires, target: "concept:same-result-including-side-effects", evidence: "[[Idempotent-Consumer#1. 자연 멱등 설계 (가장 좋음)]]"}
+  - {subject: "concept:processing-lease-claim", predicate: requires, target: "concept:no-ack-for-in-progress-duplicate", evidence: "[[Idempotent-Consumer#2. 멱등 키 + 상태 저장소]]"}
+  - {subject: "concept:provider-idempotency-key", predicate: requires, target: "concept:same-key-reuse-on-retry", evidence: "[[Idempotent-Consumer#2. 멱등 키 + 상태 저장소]]"}
+  - {subject: "concept:outcome-reconciliation", predicate: addresses, target: "concept:effect-and-completion-record-partial-failure", evidence: "[[Idempotent-Consumer#원자성이 핵심 — check-then-act 레이스]]"}
+  - {subject: "concept:sqs-fifo-content-based-dedup", predicate: has_tradeoff, target: "concept:fifo-dedup-misses-business-duplicates", evidence: "[[Idempotent-Consumer#SQS 특이점]]"}
+  - {subject: "concept:automatic-retry-on-communication-failure", predicate: requires, target: "concept:separate-retry-policy", evidence: "[[Idempotency#왜 중요한가]]"}
+  - {subject: "concept:idempotency-key-http-header", predicate: has_tradeoff, target: "concept:idempotency-key-header-not-rfc-standard", evidence: "[[Idempotency#POST를 멱등하게 만드는 패턴]]"}
+  - {subject: "concept:idempotency-key-http-header", predicate: requires, target: "concept:provider-idempotency-contract", evidence: "[[Idempotency#Idempotency Key 헤더]]"}
+  - {subject: "concept:idempotency-key", predicate: requires, target: "concept:per-state-response-definition", evidence: "[[Idempotency#구현 포인트]]"}
+  - {subject: "concept:stripe-api-v1-idempotent-requests", predicate: has_tradeoff, target: "concept:stripe-v1-deleted-key-reexecution", evidence: "[[Idempotency#응답 재사용과 보존 기간은 API 계약이다]]"}
+  - {subject: "concept:execution-count-and-log-verification", predicate: addresses, target: "concept:lost-update-hidden-double-execution", evidence: "[[Idempotency#서버가 먼저 발급한 ID로 실행 요청 식별]]"}
+  - {subject: "concept:if-match-conditional-request", predicate: addresses, target: "concept:retried-put-overwrites-intervening-change", evidence: "[[Idempotency#네트워크 재시도 정책과 결합]]"}
+  - {subject: "concept:version-based-optimistic-lock", predicate: addresses, target: "concept:retried-put-overwrites-intervening-change", evidence: "[[Idempotency#네트워크 재시도 정책과 결합]]"}
+  - {subject: "concept:if-match-conditional-request", predicate: alternative_to, target: "concept:version-based-optimistic-lock", evidence: "[[Idempotency#네트워크 재시도 정책과 결합]]"}
+  - {subject: "concept:if-match-conditional-request", predicate: has_tradeoff, target: "concept:retried-conditional-put-412-ambiguity", evidence: "[[Idempotency#네트워크 재시도 정책과 결합]]"}
+  - {subject: "concept:pending-confirmation-status", predicate: addresses, target: "concept:ambiguous-outcome", evidence: "[[Idempotency#네트워크 재시도 정책과 결합]]"}
+  - {subject: "concept:idempotency-key", predicate: requires, target: "concept:new-key-per-intended-operation", evidence: "[[Idempotency-Key#고유 식별자 종류]]"}
+  - {subject: "concept:db-unique-idempotency-record", predicate: has_tradeoff, target: "concept:idempotency-db-query-cost", evidence: "[[Idempotency-Key#데이터베이스 (UNIQUE 제약)]]"}
+  - {subject: "concept:db-unique-idempotency-record", predicate: requires, target: "concept:idempotency-key-scope", evidence: "[[Idempotency-Key#데이터베이스 (UNIQUE 제약)]]"}
+  - {subject: "concept:redis-claim-lease", predicate: requires, target: "concept:lease-renewal-with-owner-check", evidence: "[[Idempotency-Key#Redis (claim lease + TTL)]]"}
+  - {subject: "concept:stripe-api-v2-idempotency", predicate: requires, target: "concept:stripe-v2-same-request-scope", evidence: "[[Idempotency-Key#실전 사례: Stripe Idempotency Key]]"}
+  - {subject: "concept:stripe-api-v1-idempotent-requests", predicate: has_tradeoff, target: "concept:stripe-v1-stored-500-replay", evidence: "[[Idempotency-Key#오류 응답 재생과 업무 결과 확인]]"}
+  - {subject: "concept:stripe-api-v1-idempotent-requests", predicate: requires, target: "concept:same-key-reuse-on-retry", evidence: "[[Idempotency-Key#오류 응답 재생과 업무 결과 확인]]"}
 ---
 
 # 이벤트 발행 온톨로지 선언: 멱등성
 
-중복 처리 문제, 멱등 컨슈머, 멱등성 키와 HTTP 요청 멱등성에 대한 개념 37개와 타입 관계 36개를 선언한다. 본문 지식은 여기에 두지 않고, 각 선언의 `evidence`가 가리키는 원문 섹션이 근거다.
+중복 처리 문제, at-least-once 처리 경계, 멱등 컨슈머, 멱등성 키와 HTTP 요청 멱등성에 대한 개념 70개와 타입 관계 71개를 선언한다. 본문 지식은 여기에 두지 않고, 각 선언의 `evidence`가 가리키는 원문 섹션이 근거다.
 
-선언은 `ontology/candidates/event-publishing.jsonl`에서 원문 대조 검증을 통과한 후보만 옮긴 것이다. 새 선언은 후보 파일에 먼저 추가해 검증한 뒤 한 줄로 옮기고, 원문 heading이 바뀌면 `evidence`를 함께 고친다.
+선언은 `ontology/candidates/event-publishing*.jsonl`에서 원문 대조 검증을 통과한 후보만 옮긴 것이다. 새 선언은 후보 파일에 먼저 추가해 검증한 뒤 한 줄로 옮기고, 원문 heading이 바뀌면 `evidence`를 함께 고친다.
 
 상위: [[Ontology-Instances]]

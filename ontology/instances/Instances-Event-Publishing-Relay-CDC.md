@@ -40,6 +40,64 @@ ontology_concepts:
   - {id: outbox-item-same-partition-key, type: Condition, label: "outbox 항목을 업무 항목과 같은 partition key에 둠", aliases: ["Cosmos DB partition key 트랜잭션"], evidence: "[[Transactional-Outbox-Relay#DB 내장 변경 스트림]]"}
   - {id: cockroachdb-changefeed-relay, type: Approach, label: "CockroachDB changefeed Relay", aliases: ["CockroachDB changefeed outbox"], evidence: "[[Transactional-Outbox-Relay#DB 내장 변경 스트림]]"}
   - {id: cockroachdb-no-cross-key-or-transaction-order, type: Tradeoff, label: "key 간 순서와 transaction 순서 없음", aliases: ["CockroachDB changefeed 순서 한계"], evidence: "[[Transactional-Outbox-Relay#DB 내장 변경 스트림]]"}
+  - {id: cosmos-latest-version-mode-no-deletes, type: Tradeoff, label: "latest version mode는 delete를 담지 않음", evidence: "[[Transactional-Outbox-Relay#DB 내장 변경 스트림]]"}
+  - {id: cosmos-order-within-partition-key-only, type: Tradeoff, label: "Cosmos DB change feed는 partition key 안에서만 순서 보장", aliases: ["Cosmos DB change feed 순서 범위"], evidence: "[[Transactional-Outbox-Relay#DB 내장 변경 스트림]]"}
+  - {id: native-stream-retention-overrun-unrecoverable, type: Tradeoff, label: "보존 기간을 넘긴 relay 중단은 복구 불가", aliases: ["변경 스트림 보존 기간 초과 복구 불가"], evidence: "[[Transactional-Outbox-Relay#DB 내장 변경 스트림]]"}
+  - {id: cdc-event-id-source-position-dedup, type: Approach, label: "Event ID 또는 source position 기반 중복 거부", aliases: ["Event ID/source position dedup"], evidence: "[[CDC-Debezium-Concept#순서와 전달 보장]]"}
+  - {id: exactly-once-product-option, type: Approach, label: "Exactly-once 제품 옵션", aliases: ["exactly-once 옵션"], evidence: "[[CDC-Debezium-Concept#순서와 전달 보장]]"}
+  - {id: exactly-once-option-not-end-to-end, type: Tradeoff, label: "외부 API, 다른 DB와 search index까지 하나의 transaction이 되지 않음", evidence: "[[CDC-Debezium-Concept#순서와 전달 보장]]"}
+  - {id: outbox-schema-dedup-retry-retention-needed, type: Tradeoff, label: "Outbox도 schema version, deduplication, retry와 retention이 별도로 필요", evidence: "[[CDC-Debezium-Concept#Raw CDC와 domain event]]"}
+  - {id: binlog-retention-exceeds-connector-outage, type: Condition, label: "Binlog retention이 connector의 최대 예상 중단과 복구 시간을 넘김", aliases: ["MySQL binlog retention 조건", "binlog 보관 기간이 connector 중단보다 김"], evidence: "[[CDC-Debezium-Operations#Source와 connector 전제]]"}
+  - {id: connector-identity-unique-per-environment, type: Condition, label: "Replication client identity와 connector name, topic.prefix의 환경별 유일", evidence: "[[CDC-Debezium-Operations#Source와 connector 전제]]"}
+  - {id: snapshot-streaming-event-overlap, type: Problem, label: "Snapshot event와 streaming event 겹침", evidence: "[[CDC-Debezium-Operations#Initial snapshot과 streaming 전환]]"}
+  - {id: idempotent-sink-upsert, type: Approach, label: "sink의 idempotent upsert", evidence: "[[CDC-Debezium-Operations#Initial snapshot과 streaming 전환]]"}
+  - {id: cdc-consumer-schema-incompatibility, type: Problem, label: "schema history 갱신에도 모든 consumer가 자동으로 호환되지 않음", aliases: ["CDC schema change consumer 비호환"], evidence: "[[CDC-Debezium-Operations#Schema evolution]]"}
+  - {id: cdc-schema-expand-contract, type: Approach, label: "CDC schema의 expand-contract 변경", aliases: ["CDC schema expand-contract"], evidence: "[[CDC-Debezium-Operations#Schema evolution]]"}
+  - {id: cdc-poison-event, type: Problem, label: "CDC consumer의 poison event", evidence: "[[CDC-Debezium-Operations#Consumer 안전성]]"}
+  - {id: poison-event-quarantine-manual-reprocess, type: Approach, label: "poison event 격리와 수동 재처리 경로", evidence: "[[CDC-Debezium-Operations#Consumer 안전성]]"}
+  - {id: cdc-consumer-transient-error, type: Problem, label: "CDC consumer의 일시 오류", evidence: "[[CDC-Debezium-Operations#Consumer 안전성]]"}
+  - {id: consumer-bounded-retry-backoff, type: Approach, label: "bounded retry/backoff", aliases: ["bounded retry"], evidence: "[[CDC-Debezium-Operations#Consumer 안전성]]"}
+  - {id: connector-outage-binlog-retained, type: Problem, label: "connector 중단, binlog 유지", evidence: "[[CDC-Debezium-Operations#장애별 복구]]"}
+  - {id: restart-from-same-offset, type: Approach, label: "같은 offset에서 재시작하고 duplicate 허용", aliases: ["같은 offset 재시작"], evidence: "[[CDC-Debezium-Operations#장애별 복구]]"}
+  - {id: required-binlog-purged, type: Problem, label: "필요한 binlog purge", evidence: "[[CDC-Debezium-Operations#장애별 복구]]"}
+  - {id: snapshot-backfill-rebuild-with-cutoff, type: Approach, label: "새 snapshot/backfill과 명시적 cutoff로 재구축", evidence: "[[CDC-Debezium-Operations#장애별 복구]]"}
+  - {id: schema-history-corruption, type: Problem, label: "schema history 손상", evidence: "[[CDC-Debezium-Operations#장애별 복구]]"}
+  - {id: schema-history-recovery-or-new-connector, type: Approach, label: "문서화된 recovery 절차 또는 새 connector로 재구축", evidence: "[[CDC-Debezium-Operations#장애별 복구]]"}
+  - {id: hot-table-delays-pipeline, type: Problem, label: "hot table이 전체를 지연", evidence: "[[CDC-Debezium-Operations#장애별 복구]]"}
+  - {id: connector-topic-split, type: Approach, label: "connector/topic 분리", evidence: "[[CDC-Debezium-Operations#장애별 복구]]"}
+  - {id: connector-topic-split-ordering-ops-cost, type: Tradeoff, label: "connector/topic 분리의 ordering과 운영 비용", evidence: "[[CDC-Debezium-Operations#장애별 복구]]"}
+  - {id: cdc-transform-field-masking, type: Approach, label: "Transform 기반 field masking", aliases: ["Transform field masking"], evidence: "[[CDC-Debezium-Operations#보안과 거버넌스]]"}
+  - {id: masked-raw-event-residue, type: Tradeoff, label: "Transform으로 가려도 raw event가 중간 topic이나 log에 남을 수 있음", evidence: "[[CDC-Debezium-Operations#보안과 거버넌스]]"}
+  - {id: binlog-row-image-full, type: Condition, label: "binlog_row_image = FULL", aliases: ["FULL row image", "binlog_row_image FULL"], evidence: "[[CDC-Debezium-Setup#MySQL CDC의 전제]]"}
+  - {id: mysql-binlog-enabled-unique-server-id, type: Condition, label: "binary log 활성화와 고유한 server_id", evidence: "[[CDC-Debezium-Setup#MySQL CDC의 전제]]"}
+  - {id: debezium-mysql-user-privileges, type: Condition, label: "Debezium 전용 계정과 REPLICATION SLAVE, REPLICATION CLIENT, SELECT, RELOAD, SHOW DATABASES 권한", aliases: ["Debezium MySQL 계정 권한"], evidence: "[[CDC-Debezium-Setup#MySQL CDC의 전제]]"}
+  - {id: pg-replication-slots-and-wal-senders, type: Condition, label: "max_replication_slots ≥ 1, max_wal_senders ≥ 1", evidence: "[[CDC-Debezium-Setup#PostgreSQL CDC의 전제]]"}
+  - {id: pgoutput-output-plugin, type: Condition, label: "pgoutput output plugin", aliases: ["pgoutput", "plugin.name=pgoutput"], evidence: "[[CDC-Debezium-Setup#PostgreSQL CDC의 전제]]"}
+  - {id: pg-publication-for-captured-tables, type: Condition, label: "Publication으로 캡처 대상 테이블 명시", aliases: ["PostgreSQL publication"], evidence: "[[CDC-Debezium-Setup#PostgreSQL CDC의 전제]]"}
+  - {id: pg-replication-attribute-and-select, type: Condition, label: "전용 계정의 REPLICATION 속성과 대상 테이블 SELECT 권한", evidence: "[[CDC-Debezium-Setup#PostgreSQL CDC의 전제]]"}
+  - {id: stalled-slot-unbounded-wal-retention, type: Problem, label: "멈춘 슬롯이 WAL을 제한 없이 보존해 생기는 디스크 고갈 위험", evidence: "[[CDC-Debezium-Setup#PostgreSQL CDC의 전제]]"}
+  - {id: limit-max-slot-wal-keep-size, type: Approach, label: "max_slot_wal_keep_size 제한", aliases: ["max_slot_wal_keep_size"], evidence: "[[CDC-Debezium-Setup#PostgreSQL CDC의 전제]]"}
+  - {id: slot-wal-removed-new-snapshot-needed, type: Tradeoff, label: "필요한 WAL이 제거되어 slot이 이어받지 못하고 새 snapshot 필요", evidence: "[[CDC-Debezium-Setup#PostgreSQL CDC의 전제]]"}
+  - {id: aurora-pg-replication-iam-auth, type: Approach, label: "Aurora PostgreSQL replication connection IAM 인증", aliases: ["Aurora PostgreSQL logical replication IAM 인증"], evidence: "[[CDC-Debezium-Setup#RDS/Aurora PostgreSQL 특수사항]]"}
+  - {id: rds-iam-auth-for-replication-enabled, type: Condition, label: "클러스터 IAM DB 인증과 rds.iam_auth_for_replication = 1", evidence: "[[CDC-Debezium-Setup#RDS/Aurora PostgreSQL 특수사항]]"}
+  - {id: iam-auth-token-15-minute-expiry, type: Tradeoff, label: "IAM 인증 token 기본 15분 뒤 만료", evidence: "[[CDC-Debezium-Setup#RDS/Aurora PostgreSQL 특수사항]]"}
+  - {id: slot-lag-and-recovery-operating-contract, type: Condition, label: "slot lag와 복구 절차를 운영 계약으로 둠", evidence: "[[CDC-Debezium-Setup#미회수 슬롯 주의]]"}
+  - {id: inactive-replication-slot-cleanup, type: Approach, label: "active = false 슬롯 정리", evidence: "[[CDC-Debezium-Setup#슬롯 지연과 장애 전환의 경계]]"}
+  - {id: slot-owner-and-no-resume-confirmed, type: Condition, label: "소유자와 재개 필요가 없는 것으로 확인한 슬롯", evidence: "[[CDC-Debezium-Setup#슬롯 지연과 장애 전환의 경계]]"}
+  - {id: needed-slot-deletion-loses-position, type: Tradeoff, label: "필요한 슬롯 삭제 시 기존 소비 위치를 이어받는 계약 상실", evidence: "[[CDC-Debezium-Setup#슬롯 지연과 장애 전환의 경계]]"}
+  - {id: pg-failover-logical-slot-sync, type: Approach, label: "failover 논리 슬롯 동기화", aliases: ["PostgreSQL 18 failover slot synchronization", "논리 슬롯 failover 동기화"], evidence: "[[CDC-Debezium-Setup#슬롯 지연과 장애 전환의 경계]]"}
+  - {id: failover-slot-sync-settings, type: Condition, label: "자동 주기 동기화에 필요한 원본 슬롯의 failover 활성화와 대기 서버의 sync_replication_slots, primary_slot_name, hot_standby_feedback, dbname을 포함한 primary_conninfo", evidence: "[[CDC-Debezium-Setup#슬롯 지연과 장애 전환의 경계]]"}
+  - {id: failover-slot-sync-asynchronous, type: Tradeoff, label: "failover 슬롯 동기화는 비동기", evidence: "[[CDC-Debezium-Setup#슬롯 지연과 장애 전환의 경계]]"}
+  - {id: synchronized-standby-slots, type: Approach, label: "synchronized_standby_slots에 물리 슬롯 지정", aliases: ["synchronized_standby_slots"], evidence: "[[CDC-Debezium-Setup#슬롯 지연과 장애 전환의 경계]]"}
+  - {id: logical-consumer-ahead-of-standby, type: Problem, label: "논리 소비자가 대기 서버보다 앞서 진행", evidence: "[[CDC-Debezium-Setup#슬롯 지연과 장애 전환의 경계]]"}
+  - {id: standby-wait-latency, type: Tradeoff, label: "대기 서버를 기다리는 지연", evidence: "[[CDC-Debezium-Setup#슬롯 지연과 장애 전환의 경계]]"}
+  - {id: lost-slot-or-required-wal, type: Problem, label: "이어받을 슬롯이나 필요한 WAL 없음", evidence: "[[CDC-Debezium-Setup#슬롯 지연과 장애 전환의 경계]]"}
+  - {id: consistent-snapshot-new-stream-resync, type: Approach, label: "일관된 스냅샷과 새 스트림 기준점을 맞춘 재동기화", evidence: "[[CDC-Debezium-Setup#슬롯 지연과 장애 전환의 경계]]"}
+  - {id: debezium-initial-snapshot, type: Approach, label: "Debezium initial snapshot", aliases: ["snapshot.mode initial"], evidence: "[[CDC-Debezium-Setup#1. Initial Snapshot]]"}
+  - {id: initial-snapshot-lock-and-long-transaction, type: Tradeoff, label: "잠금 획득과 장시간 transaction의 영향", evidence: "[[CDC-Debezium-Setup#1. Initial Snapshot]]"}
+  - {id: write-pause-bulk-load-cutover, type: Approach, label: "쓰기를 멈춘 상태의 외부 bulk load와 no_data 결합 절차", evidence: "[[CDC-Debezium-Setup#초기 스냅샷이 부담되는 경우]]"}
+  - {id: online-bulk-load-cutover, type: Approach, label: "외부 bulk load와 no_data의 온라인 방식", evidence: "[[CDC-Debezium-Setup#초기 스냅샷이 부담되는 경우]]"}
+  - {id: same-baseline-snapshot-and-version-guard-contract, type: Condition, label: "같은 기준점의 일관된 snapshot과 version guard를 증명한 cutover 계약", evidence: "[[CDC-Debezium-Setup#초기 스냅샷이 부담되는 경우]]"}
 ontology_relations:
   - {subject: "concept:polling-relay", predicate: alternative_to, target: "concept:cdc-relay", evidence: "[[Transactional-Outbox#Relay 구현 방식]]"}
   - {subject: "concept:polling-relay", predicate: alternative_to, target: "concept:db-native-change-stream-relay", evidence: "[[Transactional-Outbox#Relay 구현 방식]]"}
@@ -80,12 +138,60 @@ ontology_relations:
   - {subject: "concept:dynamodb-streams-relay", predicate: has_tradeoff, target: "concept:dynamodb-cross-item-order-not-guaranteed", evidence: "[[Transactional-Outbox-Relay#DB 내장 변경 스트림]]"}
   - {subject: "concept:cosmos-db-change-feed-relay", predicate: requires, target: "concept:outbox-item-same-partition-key", evidence: "[[Transactional-Outbox-Relay#DB 내장 변경 스트림]]"}
   - {subject: "concept:cockroachdb-changefeed-relay", predicate: has_tradeoff, target: "concept:cockroachdb-no-cross-key-or-transaction-order", evidence: "[[Transactional-Outbox-Relay#DB 내장 변경 스트림]]"}
+  - {subject: "concept:cosmos-db-change-feed-relay", predicate: has_tradeoff, target: "concept:cosmos-latest-version-mode-no-deletes", evidence: "[[Transactional-Outbox-Relay#DB 내장 변경 스트림]]"}
+  - {subject: "concept:cosmos-db-change-feed-relay", predicate: has_tradeoff, target: "concept:outbox-at-least-once-duplicate-publish", evidence: "[[Transactional-Outbox-Relay#DB 내장 변경 스트림]]"}
+  - {subject: "concept:cosmos-db-change-feed-relay", predicate: has_tradeoff, target: "concept:cosmos-order-within-partition-key-only", evidence: "[[Transactional-Outbox-Relay#DB 내장 변경 스트림]]"}
+  - {subject: "concept:cockroachdb-changefeed-relay", predicate: has_tradeoff, target: "concept:outbox-at-least-once-duplicate-publish", evidence: "[[Transactional-Outbox-Relay#DB 내장 변경 스트림]]"}
+  - {subject: "concept:db-native-change-stream-relay", predicate: has_tradeoff, target: "concept:native-stream-retention-overrun-unrecoverable", evidence: "[[Transactional-Outbox-Relay#DB 내장 변경 스트림]]"}
+  - {subject: "concept:db-trigger-change-table", predicate: alternative_to, target: "concept:log-based-cdc", evidence: "[[CDC-Debezium-Concept#변경을 얻는 방식]]"}
+  - {subject: "concept:db-trigger-change-table", predicate: alternative_to, target: "concept:incremental-key-polling", evidence: "[[CDC-Debezium-Concept#변경을 얻는 방식]]"}
+  - {subject: "concept:cdc-event-id-source-position-dedup", predicate: addresses, target: "concept:duplicate-message-processing", evidence: "[[CDC-Debezium-Concept#순서와 전달 보장]]"}
+  - {subject: "concept:exactly-once-product-option", predicate: has_tradeoff, target: "concept:exactly-once-option-not-end-to-end", evidence: "[[CDC-Debezium-Concept#순서와 전달 보장]]"}
+  - {subject: "concept:transactional-outbox", predicate: has_tradeoff, target: "concept:outbox-schema-dedup-retry-retention-needed", evidence: "[[CDC-Debezium-Concept#Raw CDC와 domain event]]"}
+  - {subject: "concept:debezium-mysql-connector", predicate: requires, target: "concept:binlog-retention-exceeds-connector-outage", evidence: "[[CDC-Debezium-Operations#Source와 connector 전제]]"}
+  - {subject: "concept:debezium-mysql-connector", predicate: requires, target: "concept:connector-identity-unique-per-environment", evidence: "[[CDC-Debezium-Operations#Source와 connector 전제]]"}
+  - {subject: "concept:idempotent-sink-upsert", predicate: addresses, target: "concept:snapshot-streaming-event-overlap", evidence: "[[CDC-Debezium-Operations#Initial snapshot과 streaming 전환]]"}
+  - {subject: "concept:bulk-backfill-with-cdc-catchup", predicate: addresses, target: "concept:large-table-snapshot-load", evidence: "[[CDC-Debezium-Operations#Initial snapshot과 streaming 전환]]"}
+  - {subject: "concept:cdc-schema-expand-contract", predicate: addresses, target: "concept:cdc-consumer-schema-incompatibility", evidence: "[[CDC-Debezium-Operations#Schema evolution]]"}
+  - {subject: "concept:poison-event-quarantine-manual-reprocess", predicate: addresses, target: "concept:cdc-poison-event", evidence: "[[CDC-Debezium-Operations#Consumer 안전성]]"}
+  - {subject: "concept:consumer-bounded-retry-backoff", predicate: addresses, target: "concept:cdc-consumer-transient-error", evidence: "[[CDC-Debezium-Operations#Consumer 안전성]]"}
+  - {subject: "concept:restart-from-same-offset", predicate: addresses, target: "concept:connector-outage-binlog-retained", evidence: "[[CDC-Debezium-Operations#장애별 복구]]"}
+  - {subject: "concept:restart-from-same-offset", predicate: has_tradeoff, target: "concept:connector-restart-redelivery", evidence: "[[CDC-Debezium-Operations#장애별 복구]]"}
+  - {subject: "concept:snapshot-backfill-rebuild-with-cutoff", predicate: addresses, target: "concept:required-binlog-purged", evidence: "[[CDC-Debezium-Operations#장애별 복구]]"}
+  - {subject: "concept:snapshot-backfill-rebuild-with-cutoff", predicate: requires, target: "concept:snapshot-stream-cutoff-token", evidence: "[[CDC-Debezium-Operations#장애별 복구]]"}
+  - {subject: "concept:schema-history-recovery-or-new-connector", predicate: addresses, target: "concept:schema-history-corruption", evidence: "[[CDC-Debezium-Operations#장애별 복구]]"}
+  - {subject: "concept:connector-topic-split", predicate: addresses, target: "concept:hot-table-delays-pipeline", evidence: "[[CDC-Debezium-Operations#장애별 복구]]"}
+  - {subject: "concept:connector-topic-split", predicate: has_tradeoff, target: "concept:connector-topic-split-ordering-ops-cost", evidence: "[[CDC-Debezium-Operations#장애별 복구]]"}
+  - {subject: "concept:cdc-transform-field-masking", predicate: has_tradeoff, target: "concept:masked-raw-event-residue", evidence: "[[CDC-Debezium-Operations#보안과 거버넌스]]"}
+  - {subject: "concept:debezium-mysql-connector", predicate: requires, target: "concept:binlog-row-image-full", evidence: "[[CDC-Debezium-Setup#MySQL CDC의 전제]]"}
+  - {subject: "concept:debezium-mysql-connector", predicate: requires, target: "concept:mysql-binlog-enabled-unique-server-id", evidence: "[[CDC-Debezium-Setup#MySQL CDC의 전제]]"}
+  - {subject: "concept:debezium-mysql-connector", predicate: requires, target: "concept:debezium-mysql-user-privileges", evidence: "[[CDC-Debezium-Setup#MySQL CDC의 전제]]"}
+  - {subject: "concept:debezium-postgresql-connector", predicate: requires, target: "concept:pg-replication-slots-and-wal-senders", evidence: "[[CDC-Debezium-Setup#PostgreSQL CDC의 전제]]"}
+  - {subject: "concept:debezium-postgresql-connector", predicate: requires, target: "concept:pgoutput-output-plugin", evidence: "[[CDC-Debezium-Setup#PostgreSQL CDC의 전제]]"}
+  - {subject: "concept:debezium-postgresql-connector", predicate: requires, target: "concept:pg-publication-for-captured-tables", evidence: "[[CDC-Debezium-Setup#PostgreSQL CDC의 전제]]"}
+  - {subject: "concept:debezium-postgresql-connector", predicate: requires, target: "concept:pg-replication-attribute-and-select", evidence: "[[CDC-Debezium-Setup#PostgreSQL CDC의 전제]]"}
+  - {subject: "concept:limit-max-slot-wal-keep-size", predicate: addresses, target: "concept:stalled-slot-unbounded-wal-retention", evidence: "[[CDC-Debezium-Setup#PostgreSQL CDC의 전제]]"}
+  - {subject: "concept:limit-max-slot-wal-keep-size", predicate: has_tradeoff, target: "concept:slot-wal-removed-new-snapshot-needed", evidence: "[[CDC-Debezium-Setup#PostgreSQL CDC의 전제]]"}
+  - {subject: "concept:aurora-pg-replication-iam-auth", predicate: requires, target: "concept:rds-iam-auth-for-replication-enabled", evidence: "[[CDC-Debezium-Setup#RDS/Aurora PostgreSQL 특수사항]]"}
+  - {subject: "concept:aurora-pg-replication-iam-auth", predicate: has_tradeoff, target: "concept:iam-auth-token-15-minute-expiry", evidence: "[[CDC-Debezium-Setup#RDS/Aurora PostgreSQL 특수사항]]"}
+  - {subject: "concept:debezium-postgresql-connector", predicate: requires, target: "concept:slot-lag-and-recovery-operating-contract", evidence: "[[CDC-Debezium-Setup#미회수 슬롯 주의]]"}
+  - {subject: "concept:inactive-replication-slot-cleanup", predicate: requires, target: "concept:slot-owner-and-no-resume-confirmed", evidence: "[[CDC-Debezium-Setup#슬롯 지연과 장애 전환의 경계]]"}
+  - {subject: "concept:inactive-replication-slot-cleanup", predicate: has_tradeoff, target: "concept:needed-slot-deletion-loses-position", evidence: "[[CDC-Debezium-Setup#슬롯 지연과 장애 전환의 경계]]"}
+  - {subject: "concept:pg-failover-logical-slot-sync", predicate: requires, target: "concept:failover-slot-sync-settings", evidence: "[[CDC-Debezium-Setup#슬롯 지연과 장애 전환의 경계]]"}
+  - {subject: "concept:pg-failover-logical-slot-sync", predicate: has_tradeoff, target: "concept:failover-slot-sync-asynchronous", evidence: "[[CDC-Debezium-Setup#슬롯 지연과 장애 전환의 경계]]"}
+  - {subject: "concept:synchronized-standby-slots", predicate: addresses, target: "concept:logical-consumer-ahead-of-standby", evidence: "[[CDC-Debezium-Setup#슬롯 지연과 장애 전환의 경계]]"}
+  - {subject: "concept:synchronized-standby-slots", predicate: has_tradeoff, target: "concept:standby-wait-latency", evidence: "[[CDC-Debezium-Setup#슬롯 지연과 장애 전환의 경계]]"}
+  - {subject: "concept:consistent-snapshot-new-stream-resync", predicate: addresses, target: "concept:lost-slot-or-required-wal", evidence: "[[CDC-Debezium-Setup#슬롯 지연과 장애 전환의 경계]]"}
+  - {subject: "concept:debezium-initial-snapshot", predicate: has_tradeoff, target: "concept:initial-snapshot-lock-and-long-transaction", evidence: "[[CDC-Debezium-Setup#1. Initial Snapshot]]"}
+  - {subject: "concept:debezium-initial-snapshot", predicate: alternative_to, target: "concept:debezium-incremental-snapshot", evidence: "[[CDC-Debezium-Setup#초기 스냅샷이 부담되는 경우]]"}
+  - {subject: "concept:online-bulk-load-cutover", predicate: requires, target: "concept:same-baseline-snapshot-and-version-guard-contract", evidence: "[[CDC-Debezium-Setup#초기 스냅샷이 부담되는 경우]]"}
+  - {subject: "concept:write-pause-bulk-load-cutover", predicate: alternative_to, target: "concept:online-bulk-load-cutover", evidence: "[[CDC-Debezium-Setup#초기 스냅샷이 부담되는 경우]]"}
 ---
 
 # 이벤트 발행 온톨로지 선언: Relay와 CDC
 
-Relay 구현 방식, 변경 캡처 방식과 Debezium 운영 조건에 대한 개념 36개와 타입 관계 39개를 선언한다. 본문 지식은 여기에 두지 않고, 각 선언의 `evidence`가 가리키는 원문 섹션이 근거다.
+Relay 구현 방식, 변경 캡처 방식과 Debezium 운영 조건에 대한 개념 94개와 타입 관계 87개를 선언한다. 본문 지식은 여기에 두지 않고, 각 선언의 `evidence`가 가리키는 원문 섹션이 근거다.
 
-선언은 `ontology/candidates/event-publishing.jsonl`에서 원문 대조 검증을 통과한 후보만 옮긴 것이다. 새 선언은 후보 파일에 먼저 추가해 검증한 뒤 한 줄로 옮기고, 원문 heading이 바뀌면 `evidence`를 함께 고친다.
+선언은 `ontology/candidates/event-publishing*.jsonl`에서 원문 대조 검증을 통과한 후보만 옮긴 것이다. 새 선언은 후보 파일에 먼저 추가해 검증한 뒤 한 줄로 옮기고, 원문 heading이 바뀌면 `evidence`를 함께 고친다.
 
 상위: [[Ontology-Instances]]
