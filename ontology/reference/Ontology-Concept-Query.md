@@ -83,9 +83,14 @@ entity ID, 축약 ID 순으로 찾고, 없으면 slug, label, alias의 비교 �
 
 ## context_lookup과의 연결
 
-snapshot에 개념이 있으면 `context_lookup` 응답에 `concepts`가 추가될 수 있다. 상위 후보 문서가 선언했거나 그 문서의 Section을 근거로 삼는 개념을 최대 8개 담으며, 여기서 얻은 ID로 `context_concept`를 호출한다. 반환한 근거 단위를 근거로 삼는 개념, 질의어가 label이나 alias에 많이 겹치는 개념 순서로 고른다.
+snapshot에 개념이 있으면 `context_lookup` 응답에 `concepts`가 추가될 수 있다. 최대 8개를 담으며, 여기서 얻은 ID로 `context_concept`를 호출해 그 개념의 대안, 전제, 비용과 다루는 문제를 확인한다. 개념은 두 종류다.
 
-이 목록은 근거 선택이 끝난 뒤 남은 byte에만 담는다. 근거 선택과 근거의 byte는 바꾸지 않는다. 2026-11-19 실제 Vault에서 24,000 byte 예산의 조회는 근거가 약 23,960 byte를 채워 개념이 0개 또는 1개만 담겼고, 65,536 byte에서는 8개가 담겼다. 기본 예산에서는 이 목록이 비어 있을 수 있으므로, 구조 질문이면 목록을 기다리지 말고 `context_concept`를 직접 호출한다. 개념 선언과 `ontology_relations`가 없는 snapshot의 응답은 버전과 fingerprint 필드, 검색 cursor를 빼면 schema 1 코드와 같다.
+- **근거 연결 개념**: 응답이 반환한 근거 단위가 그 개념의 선언 근거이거나, 그 개념이 양 끝인 관계 선언의 근거인 개념이다. 해당 근거 단위의 위치를 `evidence_unit_index`(응답의 `evidence_units` 순서)로 함께 준다.
+- **문서 연결 개념**: 상위 후보 문서가 선언했거나 그 문서의 Section을 근거로 삼는 그 밖의 개념이다. `id`, `type`, `label`만 준다.
+
+근거 연결 개념이 앞에 오며, 더 앞선 근거 단위가 뒷받침하는 개념, Problem, Approach, Condition, Tradeoff를 Topic과 Category보다, 질의어가 label이나 alias에 더 많이 겹치는 개념, ID 순서로 놓는다. 문서 연결 개념은 질의어 겹침, 문서 순위, 선언 문서 여부, ID 순서다.
+
+근거 연결 개념은 최대 5개까지 예산의 1/20 안에서 자리를 미리 확보한다. 근거가 예산을 채웠으면 이미 잘린 발췌문부터 같은 길이로 줄여 자리를 만들며, 근거 단위의 수, 순서와 ID는 바꾸지 않고, 줄인 발췌문은 `truncated: true`로 표시한다. 발췌문을 512 byte 아래로 줄이지 않으며 이미 그보다 짧은 발췌문은 줄이지 않는다. 줄여도 자리가 나지 않으면 개념 수를 하나씩 줄이고, 0개가 되면 응답은 예약하지 않았을 때와 같다. 문서 연결 개념은 근거와 근거 연결 개념을 담고 남은 byte에만 담는다. 반환한 근거가 어떤 개념도 뒷받침하지 않으면 아무것도 확보하지 않으므로 응답은 개념이 없는 snapshot의 응답과 같다. 2026-11-20 측정(선언 확장 전)에서 24,000 byte 예산의 판단 질문 56건 중 `concepts`를 받은 질문은 예약 전 6건에서 29건이 됐고, 발췌문이 줄어든 양은 응답당 최대 720 byte였으며 빠진 근거 단위는 없었다. 개념 선언과 `ontology_relations`가 없는 snapshot의 응답은 버전과 fingerprint 필드, 검색 cursor를 빼면 schema 1 코드와 같다.
 
 개념 label로 검색어를 넓히는 확장(`matching.expanded_terms`)은 구현돼 있으나 `CONCEPT_QUERY_EXPANSION = false`로 꺼 둔다. 2026-11-19 측정에서 한 단어가 넓은 Topic에 걸려 일부 사례 묶음의 순위가 나빠졌다. 결과는 [[Ontology-Competency-Evaluation#검색어 확장의 측정]]에 있다.
 

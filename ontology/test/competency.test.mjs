@@ -116,3 +116,51 @@ test('the follow arm retries a not-found start once with its first candidate and
     negative_starts_resolved: 1, errors: 0, positive_retried: 0, negative_retried: 1 });
   assert.match(report.arms.follow.input, /first candidate/);
 });
+
+test('the bridge arm follows lookup hints in order until a concept query returns a relation', (t) => {
+  const fixture = gitFixture(t, CONCEPT_FILES);
+  buildSnapshot(fixture);
+  const cases = join(fixture.root, 'cases.json');
+  const problem = 'DB와 브로커에 따로 쓰면 무엇을 검토해야 할까';
+  writeFileSync(cases, JSON.stringify([
+    // The hints start with dual-write-problem, which a returned Section supports.
+    { id: 'first-hint', split: 'holdout', question: problem, start: 'x', predicate: 'addressed_by',
+      expected_evidence: [{ path: 'tech/Outbox.md', heading: '해결: Outbox 테이블' }], expected_terms: ['Transactional Outbox'] },
+    // relay-lag has no alternative; the second hint, transactional-outbox, has one.
+    { id: 'second-hint', split: 'holdout', question: '릴레이 지연 비용', start: 'x', predicate: 'alternative_to',
+      expected_evidence: [{ path: 'tech/Outbox.md', heading: '대안' }], expected_terms: [] },
+    { id: 'no-hint', split: 'holdout', question: 'Polling', start: 'x', predicate: '',
+      expected_evidence: [{ path: 'tech/Relay.md', heading: 'Polling' }], expected_terms: [] },
+    { id: 'negative-answered', split: 'calibration', question: problem, start: 'x', predicate: 'addressed_by',
+      expected_evidence: [], expected_terms: [], expected_empty: true },
+    // Three hints tried, none required by anything: the bridge has no answer.
+    { id: 'negative-unanswered', split: 'calibration', question: problem, start: 'x', predicate: 'required_by',
+      expected_evidence: [], expected_terms: [], expected_empty: true },
+  ]));
+  const report = JSON.parse(execFileSync(process.execPath, [runner, '--cache', fixture.cacheDir, '--repo', fixture.repo,
+    '--cases', cases], { encoding: 'utf8' }));
+  const byId = Object.fromEntries(report.cases.map((item) => [item.id, item]));
+  const view = (id) => {
+    const { hints, tried, start, result_status: status, evidence_score: score } = byId[id].bridge;
+    return [hints > 0, tried, start?.split(':').at(-1) ?? null, status, score];
+  };
+  assert.deepEqual(view('first-hint'), [true, 1, 'dual-write-problem', 'ok', 1]);
+  assert.equal(byId['first-hint'].bridge.term_score, 1);
+  assert.deepEqual(view('second-hint'), [true, 2, 'transactional-outbox', 'ok', 1]);
+  assert.deepEqual(view('no-hint'), [false, 0, null, 'no_hint', 0]);
+  assert.deepEqual(view('negative-answered'), [true, 1, 'dual-write-problem', 'ok', 0]);
+  assert.deepEqual(view('negative-unanswered'), [true, 3, null, 'no_relation', 1]);
+  // The union scores what a host using both arms has.
+  assert.deepEqual(['first-hint', 'second-hint', 'no-hint'].map((id) => [byId[id].lookup.evidence_score,
+    byId[id].lookup_plus_bridge.evidence_score]), [[0, 1], [0, 1], [1, 1]]);
+  const { calibration, holdout } = report.splits;
+  assert.deepEqual(holdout.bridge, { positive_evidence_score: 2 / 3, negative_evidence_score: null,
+    positive_starts_resolved: 2, resolved_positive_evidence_score: 1, negative_starts_resolved: 0, errors: 0,
+    cases_with_hints: 2, hints_tried: 3 });
+  assert.deepEqual(holdout.lookup_plus_bridge, { positive_evidence_score: 1, negative_evidence_score: null });
+  assert.deepEqual(calibration.bridge, { positive_evidence_score: null, negative_evidence_score: 0.5,
+    positive_starts_resolved: 0, resolved_positive_evidence_score: null, negative_starts_resolved: 1, errors: 0,
+    cases_with_hints: 2, hints_tried: 4 });
+  assert.deepEqual(calibration.lookup_plus_bridge, { positive_evidence_score: null, negative_evidence_score: 0 });
+  assert.match(report.arms.bridge.input, /at most 3/);
+});

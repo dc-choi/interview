@@ -11,7 +11,7 @@ import {
   stableJson,
 } from './core.mjs';
 import { getRepoState, listMarkdown, readBlob, readBlobs } from './repository.mjs';
-import { CONCEPT_TYPES } from './schema.mjs';
+import { CONCEPT_TYPES, PREDICATES } from './schema.mjs';
 import { loadSnapshot } from './snapshot.mjs';
 
 // Query expansion switch. When true and the snapshot declares concepts, a query
@@ -34,6 +34,18 @@ const MAX_SEARCH_DOCUMENTS = 20;
 const MAX_CURSOR_BYTES = 2048;
 const LINK_ROLE_PRIORITY = { index_member: 2, parent_index: 2, related_document: 1 };
 const MAX_CONCEPT_HINTS = 8;
+// Hints whose concept a returned evidence unit supports may take the bytes they need
+// from evidence excerpts: at most five, within a twentieth of the budget. A judgment
+// hint serialized to 104 to 197 bytes on the 2026-11-20 vault, so at 24,000 bytes
+// (a 1,200 byte cap) five always fit and the count is the bound.
+const MAX_RESERVED_HINTS = 5;
+// A cut never leaves an excerpt shorter than this, and excerpts already shorter are
+// never cut; when the hints need more, fewer hints are reserved instead. The shortest
+// cut excerpt on the 2026-11-20 vault was 1,159 bytes, so this binds only at small budgets.
+const MIN_CUT_EXCERPT_BYTES = 512;
+// Classes at either end of a typed judgment relation: Problem, Approach, Condition, Tradeoff.
+const JUDGMENT_TYPES = new Set(PREDICATES.filter((item) => item.evidence_required)
+  .flatMap((item) => [...item.domain, ...item.range]));
 const PARTICLE_SUFFIX = /(하려면|하면|하나|인가|인가요|인가요|에서|으로|에게|까지|부터|처럼|보다|이후|중에|에는|에는|은|는|을|를|이|가|에)$/u;
 const QUERY_CODE_HASH = sha256(fs.readFileSync(new URL(import.meta.url)));
 export const LIMITATIONS = [
@@ -295,34 +307,79 @@ function conceptExpansion(query, concepts) {
   return terms;
 }
 
-// Concepts declared in, or supported by a Section of, the root documents. Those
-// supported by a returned evidence unit come first, then those whose label or
-// aliases contain more query tokens, then root rank, declared first and concept id.
-// An edge asserted outside the allowlist is ignored.
+// Concepts a returned evidence unit supports, as the concept's own evidence Section
+// or the evidence Section of a relation assertion linking it to another visible
+// concept, come first with evidence_unit_index, the first such unit: by that index,
+// then judgment classes before Topic and Category, then query tokens in the label or
+// aliases, then concept id. The concepts declared in, or supported by a Section of,
+// the root documents follow: by query tokens, root rank, declared first and concept
+// id. An edge asserted outside the allowlist is ignored.
 function conceptHints(roots, relations, conceptsById, sectionsById, { evidenceIds, tokens, visibleUnit }) {
   const rootRank = new Map(roots.map((root, index) => [root.doc.id, index]));
   const pathRank = new Map(roots.map((root, index) => [sourcePath(root.doc), index]));
+  const evidenceRank = new Map(evidenceIds.map((id, index) => [id, index]));
+  // First supporting evidence index of a concept or of a relation assertion unit.
+  const supportedAt = new Map();
+  const support = (id, index) => supportedAt.set(id, Math.min(supportedAt.get(id) ?? index, index));
   const found = [];
-  const supported = new Set();
+  const links = [];
   for (const relation of relations) {
     const declared = relation.predicate === 'declares';
-    if (!declared && relation.predicate !== 'supported_by') continue;
+    if (!declared && relation.predicate !== 'supported_by') {
+      if (conceptsById.has(relation.subject) && conceptsById.has(relation.object)) links.push(relation);
+      continue;
+    }
+    if (!visibleUnit(relation.evidence_unit_id)) continue;
+    if (!declared && evidenceRank.has(relation.object)) support(relation.subject, evidenceRank.get(relation.object));
     const concept = conceptsById.get(declared ? relation.object : relation.subject);
-    if (!concept || !visibleUnit(relation.evidence_unit_id)) continue;
-    if (!declared && evidenceIds.has(relation.object)) supported.add(concept.id);
     const rank = declared ? rootRank.get(relation.subject) : pathRank.get(sourcePath(sectionsById.get(relation.object)));
-    if (rank !== undefined) found.push({ rank, declared, concept });
+    if (concept && rank !== undefined) found.push({ rank, declared, concept });
   }
-  const overlap = new Map([...new Set(found.map((item) => item.concept))].map((concept) => [concept.id,
+  for (const link of links) {
+    const index = supportedAt.get(link.evidence_unit_id);
+    if (index === undefined || !visibleUnit(link.evidence_unit_id)) continue;
+    support(link.subject, index);
+    support(link.object, index);
+  }
+  const strong = [...supportedAt].filter(([id]) => conceptsById.has(id))
+    .map(([id, index]) => ({ index, concept: conceptsById.get(id) }));
+  const overlap = new Map([...new Set([...strong, ...found].map((item) => item.concept))].map((concept) => [concept.id,
     tokens.filter((token) => [concept.label, ...concept.aliases].some((name) => exactText(name).includes(token))).length]));
-  found.sort((a, b) => Number(supported.has(b.concept.id)) - Number(supported.has(a.concept.id))
-    || overlap.get(b.concept.id) - overlap.get(a.concept.id)
+  strong.sort((a, b) => a.index - b.index
+    || Number(JUDGMENT_TYPES.has(b.concept.type)) - Number(JUDGMENT_TYPES.has(a.concept.type))
+    || overlap.get(b.concept.id) - overlap.get(a.concept.id) || a.concept.id.localeCompare(b.concept.id));
+  found.sort((a, b) => overlap.get(b.concept.id) - overlap.get(a.concept.id)
     || a.rank - b.rank || Number(b.declared) - Number(a.declared) || a.concept.id.localeCompare(b.concept.id));
-  const hints = new Map();
+  const hints = new Map(strong.map(({ index, concept }) => [concept.id,
+    { id: concept.id, type: concept.type, label: concept.label, evidence_unit_index: index }]));
   for (const { concept } of found) {
     if (!hints.has(concept.id)) hints.set(concept.id, { id: concept.id, type: concept.type, label: concept.label });
   }
   return [...hints.values()].slice(0, MAX_CONCEPT_HINTS);
+}
+
+// The evidence units with every excerpt longer than one common byte length cut to
+// it, the longest length at which the payload fits `maximum`; null when none does.
+// The caller sets the output-limit status first, so the cut fits the final payload.
+// Excerpts already truncated are cut first, so complete ones stay complete when
+// they can. No excerpt is cut below MIN_CUT_EXCERPT_BYTES, and none at or under it is
+// cut. Units keep their order and ids, so an evidence_unit_index stays valid.
+function shrunkEvidence(payload, maximum) {
+  const texts = payload.evidence_units.map((item) => Buffer.from(item.excerpt, 'utf8'));
+  for (const eligible of [(item) => item.truncated, () => true]) {
+    const capped = (limit) => payload.evidence_units.map((item, index) => (!eligible(item) || texts[index].length <= limit
+      ? item : { ...item, excerpt: safeExcerpt(texts[index], 0, texts[index].length, limit).excerpt, truncated: true }));
+    const fits = (limit) => outputBytes({ ...payload, evidence_units: capped(limit) }) <= maximum;
+    let low = MIN_CUT_EXCERPT_BYTES;
+    let high = Math.max(low, ...texts.map((text) => text.length));
+    while (low < high) {
+      const middle = Math.ceil((low + high) / 2);
+      if (fits(middle)) low = middle;
+      else high = middle - 1;
+    }
+    if (fits(low)) return capped(low);
+  }
+  return null;
 }
 
 function exactText(value) {
@@ -730,8 +787,27 @@ function retrieve(options, args, snapshot, mode) {
     },
   };
   let hints = [];
+  let reserved = 0;
   const finalize = () => {
     base.coverage_gaps = boundedGaps(base.coverage_gaps, manifest.source_id, scopes);
+    // The first `reserved` hints are supported by returned evidence and take the bytes
+    // they need from its excerpts, before the optional gap; fewer when text runs out.
+    const { result_status: status, budget: { exhausted } } = base;
+    for (; reserved > 0; reserved -= 1) {
+      base.concepts = hints.slice(0, reserved);
+      if (outputBytes(base) <= effectiveMaxBytes) break;
+      // Cutting source text reaches the output limit; fit the cut with those flags.
+      base.result_status = 'partial';
+      base.budget.exhausted = true;
+      const units = shrunkEvidence(base, effectiveMaxBytes);
+      if (units) {
+        base.evidence_units = units;
+        break;
+      }
+      base.result_status = status;
+      base.budget.exhausted = exhausted;
+    }
+    if (reserved === 0) delete base.concepts;
     if (base.budget.exhausted) {
       const previousGaps = base.coverage_gaps;
       base.coverage_gaps = boundedGaps([...previousGaps, {
@@ -741,10 +817,10 @@ function retrieve(options, args, snapshot, mode) {
       // must not consume space needed by the selected source evidence.
       if (outputBytes(base) > effectiveMaxBytes) base.coverage_gaps = previousGaps;
     }
-    // Concept hints are optional navigation and only use space left by evidence.
-    if (hints.length > 0) {
+    // Other concept hints are optional navigation and only use space left by evidence.
+    if (hints.length > reserved) {
       base.concepts = [...hints];
-      while (base.concepts.length > 0 && outputBytes(base) > effectiveMaxBytes) base.concepts.pop();
+      while (base.concepts.length > reserved && outputBytes(base) > effectiveMaxBytes) base.concepts.pop();
       if (base.concepts.length === 0) delete base.concepts;
     }
     base.budget.used_bytes = outputBytes(base);
@@ -1233,14 +1309,17 @@ function retrieve(options, args, snapshot, mode) {
   }
   // Finish selected sections when their remaining context fits the response.
   completeEvidence();
-  // Hints read the final evidence and never change it; finalize fits them into the space left.
+  // Hints read the final evidence. Finalize cuts its text only for the hints counted
+  // here, which a returned unit supports, and fits the others into the space left.
   if (concepts.length > 0) {
     const sourceOf = new Map(entities.map((entity) => [entity.id, sourcePath(entity)]));
     hints = conceptHints(roots, relations, new Map(concepts.map((concept) => [concept.id, concept])), sectionsById, {
-      evidenceIds: new Set(base.evidence_units.map((item) => item.id)),
+      evidenceIds: base.evidence_units.map((item) => item.id),
       tokens,
       visibleUnit: (id) => inScope(sourceOf.get(id) ?? '', conceptScopes),
     });
+    while (reserved < Math.min(MAX_RESERVED_HINTS, hints.length) && own(hints[reserved], 'evidence_unit_index')
+      && byteLength({ concepts: hints.slice(0, reserved + 1) }) <= effectiveMaxBytes / 20) reserved += 1;
   }
   return finalize();
 }

@@ -12,13 +12,17 @@ import { loadSnapshot } from '../src/snapshot.mjs';
 // within the default allowlist, with (b) a concept query from start along
 // predicate (depth 2, inference on) and (c) the same query followed the way a host
 // would: when start is concept_not_found with candidates, retry once with the
-// first candidate's id and score that answer. Every arm scores the fraction of
-// expected (path, heading) evidence it returns. A case with expected_empty: true
-// (as in score.mjs) scores 1 when the arm returns nothing: no lookup evidence
-// units, no concept relations. Negative cases pass the concept arm by not
-// resolving, but a followed candidate can fail them, so split summaries report
-// positive and negative means apart. A concept query that throws scores 0 and
-// reports its error. The runner only reports; it never edits cases. Usage:
+// first candidate's id and score that answer. (d) The bridge starts from the
+// question alone: it follows the concepts of the lookup answer in order, at most
+// three, with the case predicate, and keeps the first concept query that returns a
+// relation; with none it has no answer. (e) lookup_plus_bridge scores the union of
+// the lookup and bridge evidence, what a host using both has. Every arm scores the
+// fraction of expected (path, heading) evidence it returns. A case with
+// expected_empty: true (as in score.mjs) scores 1 when the arm returns nothing: no
+// lookup evidence units, no concept relations. Negative cases pass the concept arm
+// by not resolving, but a followed candidate can fail them, so split summaries
+// report positive and negative means apart. A concept query that throws scores 0
+// and reports its error. The runner only reports; it never edits cases. Usage:
 // node evaluation/competency.mjs --cache <dir> [--repo <path>] [--cases <file>]
 const { values } = parseArgs({ options: {
   cache: { type: 'string' },
@@ -80,13 +84,28 @@ const askConcept = (sample, start) => {
     ...concept.relations.flatMap((relation) => relation.evidence)];
   const peerKeys = concept.relations.map((relation) => labelKey(relation.peer.label));
   const terms = sample.expected_terms.filter((term) => peerKeys.some((key) => key.includes(labelKey(term))));
-  return { response: concept, row: { result_status: concept.result_status, ...(error ? { error } : {}),
+  return { response: concept, evidence: conceptEvidence, row: { result_status: concept.result_status, ...(error ? { error } : {}),
     concept_id: concept.concept?.id ?? null,
     ...(error ? { evidence_score: 0, evidence_hits: [] } : score(sample, conceptEvidence, concept.relations.length > 0)),
     evidence_returned: conceptEvidence.length,
     relations_returned: concept.relations.length,
     term_score: sample.expected_terms.length > 0 ? terms.length / sample.expected_terms.length : null,
     terms_found: terms, bytes: concept.budget?.used_bytes ?? null } };
+};
+
+// The first of at most three lookup hints whose concept query returns a relation.
+const bridge = (sample, hints) => {
+  let error;
+  for (const [index, hint] of hints.slice(0, 3).entries()) {
+    const asked = askConcept(sample, hint.id);
+    if (asked.response.relations.length > 0) return { tried: index + 1, start: hint.id, ...asked };
+    error ??= asked.row.error;
+  }
+  return { tried: Math.min(3, hints.length), start: null, evidence: [], row: {
+    result_status: hints.length > 0 ? 'no_relation' : 'no_hint', ...(error ? { error } : {}), concept_id: null,
+    // An errored hint query is not a clean empty answer, as in askConcept.
+    ...(error ? { evidence_score: 0, evidence_hits: [] } : score(sample, [], false)), evidence_returned: 0, relations_returned: 0,
+    term_score: sample.expected_terms.length > 0 ? 0 : null, terms_found: [], bytes: null } };
 };
 
 const results = cases.map((sample) => {
@@ -96,6 +115,7 @@ const results = cases.map((sample) => {
   const first = askConcept(sample, sample.start);
   const [candidate] = first.response.result_status === 'concept_not_found' ? first.response.candidates : [];
   const followed = candidate ? askConcept(sample, candidate.id) : first;
+  const bridged = bridge(sample, answer.concepts ?? []);
   return {
     id: sample.id,
     split: sample.split,
@@ -107,6 +127,9 @@ const results = cases.map((sample) => {
     concept: first.row,
     follow: { retried: Boolean(candidate), ...(candidate ? { start: candidate.id, match: candidate.match } : {}),
       ...followed.row },
+    bridge: { hints: answer.concepts?.length ?? 0, tried: bridged.tried, start: bridged.start, ...bridged.row },
+    lookup_plus_bridge: score(sample, [...lookupEvidence, ...bridged.evidence],
+      lookupEvidence.length > 0 || bridged.start !== null),
   };
 });
 const resolved = (arm) => (row) => ['ok', 'partial'].includes(row[arm].result_status);
@@ -138,6 +161,10 @@ const summarize = (rows) => {
       ...armSummary('follow'),
       positive_retried: positive.filter((row) => row.follow.retried).length,
       negative_retried: negative.filter((row) => row.follow.retried).length },
+    bridge: { ...armSummary('bridge'), cases_with_hints: rows.filter((row) => row.bridge.hints > 0).length,
+      hints_tried: rows.reduce((total, row) => total + row.bridge.tried, 0) },
+    lookup_plus_bridge: { positive_evidence_score: evidenceScore(positive, 'lookup_plus_bridge'),
+      negative_evidence_score: evidenceScore(negative, 'lookup_plus_bridge') },
   };
 };
 console.log(JSON.stringify({
@@ -150,6 +177,10 @@ console.log(JSON.stringify({
       allowlist: options.allowlist },
     follow: { input: 'start; when it is concept_not_found with candidates, the first candidate id, once',
       predicates: 'case predicate, none when empty', depth: 2, include_inferred: true, allowlist: options.allowlist },
+    bridge: { input: 'question; the lookup concepts in order, at most 3, until a concept query returns a relation',
+      max_bytes: 24000, predicates: 'case predicate, none when empty', depth: 2, include_inferred: true,
+      allowlist: options.allowlist },
+    lookup_plus_bridge: { input: 'union of the lookup and bridge evidence' },
   },
   query_code_hash: sha256(readFileSync(new URL('../src/query.mjs', import.meta.url))),
   concept_code_hash: sha256(readFileSync(new URL('../src/concept.mjs', import.meta.url))),
