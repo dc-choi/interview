@@ -79,6 +79,53 @@ test('validate --staged counts identical gaps as a multiset', (t) => {
     'both new copies are reported');
 });
 
+test('validate --staged keys list gaps on the declaration, so a fixed violation cannot hide a new one', (t) => {
+  const doc = (heading, ...lines) => ['---', ...lines, '---', `# ${heading}`, ''].join('\n');
+  const relations = (...items) => ['ontology_relations:', ...items.map((item) => `  - ${item}`)];
+  const concepts = (...items) => ['ontology_concepts:', ...items.map((item) => `  - ${item}`)];
+  const domain = (target) => `{subject: "concept:dual-write-problem", predicate: addresses, target: "${target}", evidence: "[[Outbox#문제]]"}`;
+  // Each Hidden document fixes its HEAD violation and adds another of the same reason at another index.
+  const head = {
+    'tech/Hidden-Unresolved.md': doc('U', ...relations('{predicate: mentions, target: "concept:missing-a"}')),
+    'tech/Hidden-Broader.md': doc('B', ...concepts('{id: eta-zz, type: Topic, label: Eta, broader: nowhere-a}')),
+    'tech/Hidden-Invalid.md': doc('I', ...concepts('{id: alpha-zz, type: Topic, label: 5}')),
+    'tech/Hidden-Predicate.md': doc('P', ...relations('{subject: "concept:messaging", predicate: bogus, target: "concept:messaging"}')),
+    'tech/Hidden-Domain.md': doc('D', ...relations(domain('concept:relay-lag'))),
+    'tech/Hidden-Evidence.md': doc('Hidden Evidence', ...concepts('{id: gamma-zz, type: Problem, label: Gamma}')),
+    // An item that is not a mapping or has no id is keyed on its whole value.
+    'tech/Hidden-Raw.md': doc('R', ...concepts('plain-a', '{type: Topic, label: Kappa}')),
+    // Shift documents insert a valid item before an unchanged violation, which stays a warning.
+    'tech/Shift-Invalid.md': doc('SI', ...concepts('{id: eps-zz, type: Topic, label: 5}')),
+    'tech/Shift-Predicate.md': doc('SP', ...relations('{subject: "concept:messaging", predicate: bogus, target: "concept:messaging"}')),
+  };
+  const fixture = gitFixture(t, { ...CONCEPT_FILES, ...head });
+  fixture.write({
+    'tech/Hidden-Unresolved.md': doc('U', ...relations('{predicate: mentions, target: "concept:missing-b"}')),
+    'tech/Hidden-Broader.md': doc('B', ...concepts('{id: eta-zz, type: Topic, label: Eta}',
+      '{id: theta-zz, type: Topic, label: Theta, broader: nowhere-b}')),
+    'tech/Hidden-Invalid.md': doc('I', ...concepts('{id: alpha-zz, type: Topic, label: Alpha}', '{id: beta-zz, type: Topic, label: 7}')),
+    'tech/Hidden-Predicate.md': doc('P', ...relations('{predicate: mentions, target: "concept:messaging"}',
+      '{subject: "concept:delivery-guarantee", predicate: bogus, target: "concept:messaging"}')),
+    'tech/Hidden-Domain.md': doc('D', ...relations(domain('concept:dual-write-problem'))),
+    'tech/Hidden-Evidence.md': doc('Hidden Evidence', ...concepts('{id: gamma-zz, type: Problem, label: Gamma, evidence: "[[#Hidden Evidence]]"}',
+      '{id: delta-zz, type: Problem, label: Delta}')),
+    'tech/Hidden-Raw.md': doc('R', ...concepts('{id: iota-zz, type: Topic, label: Iota}', 'plain-b', '{type: Topic, label: Lambda}')),
+    'tech/Shift-Invalid.md': doc('SI', ...concepts('{id: zeta-zz, type: Topic, label: Zeta}', '{id: eps-zz, type: Topic, label: 5}')),
+    'tech/Shift-Predicate.md': doc('SP', ...relations('{predicate: mentions, target: "concept:messaging"}',
+      '{subject: "concept:messaging", predicate: bogus, target: "concept:messaging"}')),
+  });
+  fixture.git('add', '.');
+  const { code, report } = run('validate', '--staged', '--repo', fixture.repo);
+  const pairs = (gaps) => gaps.map((gap) => `${gap.source_uri} ${gap.reason}`).sort();
+  assert.equal(code, 1);
+  assert.deepEqual(pairs(report.violations), ['tech/Hidden-Broader.md unresolved_relation', 'tech/Hidden-Domain.md domain_violation',
+    'tech/Hidden-Evidence.md missing_evidence', 'tech/Hidden-Invalid.md invalid_concept_declaration',
+    'tech/Hidden-Predicate.md UnsupportedOntologyPredicate', 'tech/Hidden-Raw.md invalid_concept_declaration',
+    'tech/Hidden-Raw.md invalid_concept_declaration', 'tech/Hidden-Unresolved.md unresolved_relation']);
+  assert.deepEqual(pairs(report.warnings), ['tech/Shift-Invalid.md invalid_concept_declaration',
+    'tech/Shift-Predicate.md UnsupportedOntologyPredicate']);
+});
+
 test('validate --staged keeps a pre-existing hierarchy cycle a warning when declarations shift', (t) => {
   const path = 'ontology/vocabulary/Vocabulary-Cycle.md';
   const cycle = (...extra) => ['---', 'status: vocabulary', 'ontology_concepts:', ...extra,

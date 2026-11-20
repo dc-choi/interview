@@ -1,4 +1,5 @@
 import { readFileSync } from 'node:fs';
+import { parseDocument } from 'yaml';
 import { stableJson } from './core.mjs';
 import { wikilinkTarget } from './markdown.mjs';
 import { git, readBlobs, resolveRepo } from './repository.mjs';
@@ -19,12 +20,35 @@ const KIND_FIELDS = { concept: ['slug', 'type', 'label', 'aliases', 'broader'], 
 const isText = (value) => typeof value === 'string' && value.trim().length > 0;
 const isObject = (value) => value !== null && typeof value === 'object' && !Array.isArray(value);
 const normalizeText = (value) => value.normalize('NFC').replace(/\s+/gu, ' ').trim();
-// List positions are left out, so inserting one item does not make the
-// unchanged violations after it look new.
-const identity = (gap) => stableJson(gap).replace(/\[\d+\]/g, '[]');
+const LIST_INDEX = /(ontology_(?:concepts|relations))\[(\d+)\]/g;
+const ontologyGaps = (result) => result.gaps.filter((gap) => ONTOLOGY_GAPS.has(gap.reason));
 const categories = (result) => stableJson(result.entities.filter((entity) => entity.type === 'Category')
   .map(({ id, label, aliases }) => [id, label, [...aliases].sort()]));
 const headRevision = (repo) => git(repo, ['rev-parse', '--verify', 'HEAD^{commit}']).toString().trim();
+
+// The frontmatter value with the boundary of readFrontmatter in markdown.mjs. Only
+// a parsed frontmatter yields gaps with a list index, so nothing else is needed.
+function frontmatterValue(text) {
+  const rest = text.slice(/^(?:\uFEFF)?---[\t ]*\r?\n/.exec(text)?.[0].length ?? text.length);
+  const closing = /^(?:---|\.\.\.)[\t ]*\r?$/m.exec(rest);
+  return closing ? parseDocument(rest.slice(0, closing.index), { prettyErrors: false }).toJS() : undefined;
+}
+
+// Gap identities for one tree. A list index is replaced by what the item declares:
+// a relation by subject, predicate and target as written, a concept by its id, and
+// an item without them by its whole value. Inserting an item then keeps old
+// violations old, and fixing one cannot hide a new one with the same message.
+function identities(repo, result) {
+  const paths = new Set(ontologyGaps(result).filter((gap) => stableJson(gap).match(LIST_INDEX)).map((gap) => gap.source_uri));
+  const lists = new Map([...readBlobs(repo, result.files.filter((file) => paths.has(file.path)))]
+    .map(([path, blob]) => [path, frontmatterValue(blob.toString('utf8'))]));
+  return (gap) => stableJson(gap).replace(LIST_INDEX, (_, field, index) => {
+    const item = lists.get(gap.source_uri)?.[field]?.[index];
+    const key = !isObject(item) ? item
+      : field === 'ontology_relations' ? [item.subject, item.predicate, item.target] : item.id ?? item;
+    return `${field}[${stableJson(key)}]`;
+  });
+}
 
 /**
  * Validates the ontology of the HEAD tree, or with `staged` the index tree from
@@ -37,7 +61,6 @@ export function validateOntology({ repo, staged = false }) {
   const revision = headRevision(repo);
   const parsed = new Map();
   const head = graphTree(repo, revision, { revision, parsed });
-  const ontologyGaps = (result) => result.gaps.filter((gap) => ONTOLOGY_GAPS.has(gap.reason));
   const counts = (result) => ({ documents: result.files.length, ...result.stats, ontology_gaps: ontologyGaps(result).length });
   if (!staged) {
     const gaps = ontologyGaps(head);
@@ -46,14 +69,17 @@ export function validateOntology({ repo, staged = false }) {
   const tree = git(repo, ['write-tree']).toString().trim();
   const index = tree === git(repo, ['rev-parse', `${revision}^{tree}`]).toString().trim()
     ? head : graphTree(repo, tree, { revision, parsed });
+  const headIdentity = identities(repo, head);
+  const indexIdentity = index === head ? headIdentity : identities(repo, index);
   const remaining = new Map();
-  for (const gap of ontologyGaps(head)) remaining.set(identity(gap), (remaining.get(identity(gap)) ?? 0) + 1);
+  for (const key of ontologyGaps(head).map(headIdentity)) remaining.set(key, (remaining.get(key) ?? 0) + 1);
   const violations = [];
   const warnings = [];
   const categoriesChanged = categories(head) !== categories(index);
   for (const gap of ontologyGaps(index)) {
-    const count = remaining.get(identity(gap)) ?? 0;
-    if (count > 0) remaining.set(identity(gap), count - 1);
+    const key = indexIdentity(gap);
+    const count = remaining.get(key) ?? 0;
+    if (count > 0) remaining.set(key, count - 1);
     if (count === 0 && (categoriesChanged || gap.reason !== 'undeclared_category')) violations.push(gap);
     else warnings.push(gap);
   }

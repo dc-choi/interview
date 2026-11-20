@@ -58,7 +58,7 @@
 ## 시스템 강제 규칙
 
 - 2026-11-09 사용자 결정: 판정 가능한 규칙은 지침 대신 `.claude/hooks/vault_guard.py`(Claude 편집 전후)와 `.githooks/pre-commit`과 `commit-msg`(`core.hooksPath=.githooks`가 설정된 클론의 커밋, 새 장비와 새 클론은 `git config core.hooksPath .githooks`를 먼저 실행)이 강제한다. 가운뎃점(문서와 커밋 메시지), frontmatter, 깨진 위키링크(인라인 코드 안 표기는 제외), 연락처, 비밀 값, 새 지식 문서의 동명 파일, 부분 stage 커밋, 저장소 안 `CLAUDE.md`, auto memory 쓰기를 막고, 문서 길이와 폴더 분할 절차는 해당 상황에서 안내한다. `--no-verify`나 hook 설정 변경으로 우회하지 않는다.
-- 2026-11-19부터 커밋 hook은 stage한 Markdown의 frontmatter(stage한 내용 또는 `HEAD` 내용)에 `ontology_concepts:` 또는 `ontology_relations:`로 시작하는 줄이 있거나 stage한 경로가 `ontology/vocabulary/` 또는 `ontology/instances/` 아래일 때 `node ontology/src/cli.mjs validate --staged`를 실행하고, 그 커밋이 새로 만든 온톨로지 선언 위반이 있으면 막는다. 이 조건에 해당하는 커밋에는 Node.js 22 이상과 `ontology/node_modules`가 필요하다. 선언의 근거가 가리키는 원문의 heading을 바꾸는 커밋은 검사하지 않으므로, 근거로 쓰인 문서를 분할하거나 heading을 바꾼 뒤에는 `node ontology/src/cli.mjs validate`로 확인한다.
+- 2026-11-19부터 커밋 hook은 stage한 Markdown의 frontmatter(stage한 내용 또는 `HEAD` 내용)에 `ontology_concepts` 또는 `ontology_relations` key가 있거나 stage한 경로가 `ontology/vocabulary/` 또는 `ontology/instances/` 아래일 때 `node ontology/src/cli.mjs validate --staged`를 실행하고, 그 커밋이 새로 만든 온톨로지 선언 위반이 있으면 막는다. 이 조건에 해당하는 커밋에는 Node.js 22 이상과 `ontology/node_modules`가 필요하다. 선언의 근거가 가리키는 원문의 heading을 바꾸는 커밋은 검사하지 않으므로, 근거로 쓰인 문서를 분할하거나 heading을 바꾼 뒤에는 `node ontology/src/cli.mjs validate`로 확인한다.
 - 가운뎃점은 hook이 보지 않는 채팅 응답과 외부 제출문(면접 답변, 폼 입력)에도 쓰지 않는다.
 
 ## 표기 규칙 (문체)

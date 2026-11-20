@@ -5,7 +5,8 @@ pre    Claude Write/Edit 전: 저장소 안 CLAUDE.md와 auto memory를 차단�
 post   Claude Write/Edit 뒤: VL check(가운뎃점, frontmatter, 깨진 위키링크, 연락처, 비밀 값, 동명 파일)로 막고
        200줄 초과와 폴더 과밀은 세션마다 파일당 한 번 분할 절차를 안내한다.
 commit git pre-commit: staged Markdown을 같은 검사로 막는다. 검사는 작업 트리를 읽으므로 부분 stage는 막는다.
-       온톨로지 선언(선언 폴더의 경로, staged나 HEAD 판 frontmatter의 키)이 바뀔 때만 validate --staged로 새 위반을 막는다.
+       온톨로지 선언(선언 폴더의 경로, staged나 HEAD 판 frontmatter 안의 키 이름)이 바뀔 때와 그 감지가 실패할 때만
+       validate --staged로 새 위반을 막는다.
 msg    git commit-msg: 커밋 메시지의 가운뎃점을 막는다. core.hooksPath=.githooks가 설정된 클론의 커밋에만 걸린다.
 위협 모델: 잊는 에이전트의 표류를 막을 뿐 일부러 우회하는 경우는 막지 못한다.
 자체 검사: python3 .claude/hooks/test_vault_guard.py
@@ -41,9 +42,9 @@ SPLIT = """200줄을 넘었다. 분할을 검토한다. 줄 수는 기준일 뿐
 - 전체 분할은 Parent-as-TOC: 1) 원본 파일명은 두고 내용만 30줄 이내 TOC로 교체(frontmatter `status: index`) 2) 섹션은 형제 파일 `<원본>-<주제>.md`(`status: done`) 3) [[원본]] 링크는 유효하다. 대상 카테고리 인덱스 반영은 도메인 규칙을 따르고, 규칙이 없으면 갱신한다.
 - 부분 분할은 부모를 TOC로 바꾸지 않고 주제 절만 `<원본>-<주제>.md`로 떼어낸다. 부모에 위임 문장을 남기고 대상 카테고리 인덱스를 갱신한다.
 - 분할 제외: `status: index|seminar|template`(로드맵형 학습 지도 인덱스는 200줄을 넘을 수 있다), `marp: true`, 트래커와 그 아카이브, AGENTS.md(전역 규칙은 루트, 경로 규칙은 가까운 AGENTS.md, 반복 절차는 Skill로 옮긴다)."""
-ONTOLOGY_KEYS = r"^(ontology_concepts|ontology_relations):"
-# markdown.mjs readFrontmatter와 같은 경계: 첫 줄의 ---부터 처음 나오는 --- 또는 ... 줄까지
-FRONTMATTER = re.compile(r"\A\ufeff?---[\t ]*\r?\n(.*?)^(?:---|\.\.\.)[\t ]*\r?$", re.S | re.M)
+ONTOLOGY_KEYS = ("ontology_concepts", "ontology_relations")
+# markdown.mjs readFrontmatter와 같은 경계: 첫 줄의 ---부터 처음 나오는 --- 또는 ... 줄까지. 닫는 줄이 없으면 색인처럼 파일 끝까지 읽는다.
+FRONTMATTER = re.compile(r"\A\ufeff?---[\t ]*\r?\n(.*?)(?:^(?:---|\.\.\.)[\t ]*\r?$|\Z)", re.S | re.M)
 DECLARING = ("ontology/vocabulary/", "ontology/instances/")
 VALIDATE_TIMEOUT = 100  # 무인 auto-learn은 120초에 git을 끊으므로 그 전에 끝낸다
 NODE = ("온톨로지 선언(ontology/vocabulary, ontology/instances, frontmatter의 ontology_concepts나 ontology_relations)이 "
@@ -95,8 +96,13 @@ def kinds(problems):
     return sorted({re.sub(r"\s*(\[\[|/|[a-z]+/).*", "", p.split(": ", 1)[-1]).strip() for p in problems})
 
 
-def git(*args):
-    return subprocess.run(["git", "-c", "core.quotePath=false", *args], cwd=REPO, capture_output=True, text=True, errors="replace")
+def git(*args, ok=None):
+    """ok에 허용할 종료 코드를 주면 그 밖의 코드에서 예외를 낸다. 실패한 git의 빈 출력을 결과 없음으로 읽지 않기 위해서다."""
+    p = subprocess.run(["git", "-c", "core.quotePath=false", *args], cwd=REPO, capture_output=True, text=True, errors="replace")
+    if ok is not None and p.returncode not in ok:
+        command = next((a for a in args if not a.startswith("-")), "")
+        raise RuntimeError(f"git {command} 종료 코드 {p.returncode}: {p.stderr.strip()[-200:]}")
+    return p
 
 
 def rel(path):
@@ -164,23 +170,26 @@ def post(data):
 
 
 def declares(rev, path):
-    """rev(빈 문자열이면 index) 판의 frontmatter 안에 온톨로지 키 줄이 있는가. 본문 코드 블록의 예시는 세지 않는다."""
-    front = FRONTMATTER.match(git("show", f"{rev}:{path}").stdout)
-    return bool(front and re.search(ONTOLOGY_KEYS, front.group(1), re.M))
+    """rev(빈 문자열이면 index) 판의 frontmatter 안 어디든 온톨로지 키 이름이 있는가. 색인은 YAML을 해석하므로 따옴표 친 키,
+    콜론 앞 공백과 flow 형식도 선언이 되어 줄 맨 앞만 보지 않는다. 본문 코드 블록의 예시는 세지 않는다."""
+    front = FRONTMATTER.match(git("show", "--no-color", f"{rev}:{path}", ok=(0,)).stdout)
+    return bool(front and any(key in front.group(1) for key in ONTOLOGY_KEYS))
 
 
 def declaring():
-    """선언 폴더 경로가 어떤 상태로든 staged이거나, staged Markdown의 index 판 또는 HEAD 판 frontmatter에 키가 있는가.
+    """선언 폴더 경로가 어떤 상태로든 staged이거나, staged Markdown의 index 판 또는 HEAD 판 frontmatter에 키 이름이 있는가.
     HEAD 판까지 보므로 선언 문서의 삭제, 개명과 키 제거도 잡는다. git grep은 후보만 고르고 frontmatter 여부는 파일마다 확인한다.
-    근거로만 쓰인 문서의 편집은 잡지 않는다(heading을 바꾸면 다음 build의 missing_evidence로 드러난다)."""
-    changed = [p for p in git("diff", "--cached", "--name-only", "-z", "--no-renames").stdout.split("\0") if p]
+    근거로만 쓰인 문서의 편집은 잡지 않는다(heading을 바꾸면 다음 build의 missing_evidence로 드러난다). git이 실패하면 예외를 낸다."""
+    changed = [p for p in git("diff", "--cached", "--name-only", "-z", "--no-renames", ok=(0,)).stdout.split("\0") if p]
     if any(p.startswith(DECLARING) for p in changed):
         return True
     md = [p for p in changed if p.endswith(".md")]
     if not md:
         return False
+    keys = [arg for key in ONTOLOGY_KEYS for arg in ("-e", key)]
     for rev, where in (("", "--cached"), ("HEAD", "HEAD")):  # -e 뒤라 --cached도 옵션으로 읽힌다. HEAD 쪽 출력은 HEAD:<경로>
-        found = git("--literal-pathspecs", "grep", "-l", "-z", "-E", "-e", ONTOLOGY_KEYS, where, "--", *md).stdout.split("\0")
+        # --no-color: color.ui나 color.grep이 always면 파이프에도 경로에 색 코드가 붙는다. 1은 일치 없음이다.
+        found = git("--literal-pathspecs", "grep", "--no-color", "-l", "-z", "-F", *keys, where, "--", *md, ok=(0, 1)).stdout.split("\0")
         if any(declares(rev, p.split(":", 1)[1] if rev else p) for p in found if p):
             return True
     return False
@@ -194,9 +203,18 @@ def cause(text):
 
 
 def ontology():
-    """온톨로지 선언이 바뀐 커밋만 검증한다(약 10초). 그 밖의 커밋(무인 auto-learn 포함)은 git 호출 셋만 더 쓴다.
-    (사유 목록, 출력 줄)"""
-    if not declaring():
+    """온톨로지 선언이 바뀐 커밋만 검증한다(약 10초). 그 밖의 커밋(무인 auto-learn 포함)은 git 호출 셋을 더 쓰고,
+    키 이름이 본문에라도 든 파일은 판마다 git show를 하나씩 더 쓴다. 감지가 실패하면 기록과 안내를 남기고 검증 없이
+    통과시킨다. 검증으로 넘기면 Node 부재, 시간 초과나 근거 문서 편집의 위반이 선언과 무관한 무인 커밋을 막는다. (사유 목록, 출력 줄)"""
+    try:
+        needed = declaring()
+    except Exception as e:  # git 실패, git 실행 실패(인자 길이 초과 등)와 예상하지 못한 출력
+        # 무인 커밋을 막지 않는 쪽을 택한다. 선언을 바꾼 커밋이었다면 다음 validate(일일 다이제스트 포함)가 위반을 드러낸다.
+        log("commit ontology detect-failed", str(e))
+        print(f"온톨로지 선언 감지가 실패해 이 커밋의 선언 검증을 건너뛴다: {e}\n"
+              "선언을 바꿨다면 커밋 뒤 `node ontology/src/cli.mjs validate`로 확인한다.", file=sys.stderr)
+        needed = False
+    if not needed:
         return [], []
     node = shutil.which("node") or str(Path.home() / ".local/bin/node")
     try:
@@ -244,7 +262,10 @@ def commit():
         log("commit partial-stage")
         return 1
     problems += vl_check(md) if md else []
-    reasons, onto = ontology()
+    try:
+        reasons, onto = ontology()
+    except Exception as e:  # 검증 단계의 예상하지 못한 예외(형식이 다른 출력 등)도 traceback 대신 사유를 남기고 막는다
+        reasons, onto = ["error"], [f"온톨로지 검사가 예외로 끝났다: {e!r}\n`node ontology/src/cli.mjs validate --staged`로 원인을 확인한다."]
     if problems or onto:
         for k in kinds(problems) + [f"ontology {r}" for r in reasons]:
             log(f"commit {k}")

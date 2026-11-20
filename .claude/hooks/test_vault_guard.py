@@ -212,6 +212,67 @@ try:
     subprocess.run(["git", "add", str(decl)], cwd=wt, check=True)
     code, err = hook_commit(wt, NO_NODE)
     assert code != 0 and "Node.js 22" in err, err
+    subprocess.run(["git", "checkout", "-q", "HEAD", "--", str(decl)], cwd=wt, check=True)
+    renamed = wt / "tech/Ontology-Declaring-Renamed-Selftest.md"
+    subprocess.run(["git", "mv", "--", str(decl), str(renamed)], cwd=wt, check=True)
+    code, err = hook_commit(wt, NO_NODE)
+    assert code != 0 and "Node.js 22" in err, err  # 이름 변경도 선언 변경이다
+    subprocess.run(["git", "mv", "--", str(renamed), str(decl)], cwd=wt, check=True)
+
+    # 감지는 색인이 YAML로 읽는 철자를 모두 잡고, 실패한 git을 선언 없음으로 읽지 않는다.
+    # node가 없는 환경에서 Node.js 안내로 막히면 hook이 validate --staged를 실행하려 했다는 뜻이다.
+    shim = wt.parent / "git-shim"
+    shim.mkdir()
+    (shim / "git").write_text(f'#!/bin/sh\ncase " $* " in *" grep "*) echo "fatal: simulated" >&2; exit 128;; esac\n'
+                              f'exec "{shutil.which("git")}" "$@"\n')
+    (shim / "git").chmod(0o755)
+    broken_grep = NO_NODE | {"PATH": f"{shim}:{NO_NODE['PATH']}"}
+    color = NO_NODE | {"GIT_CONFIG_COUNT": "1", "GIT_CONFIG_KEY_0": "color.ui", "GIT_CONFIG_VALUE_0": "always"}
+
+    def validates(name, body, env=NO_NODE):
+        """name에 body를 새로 쓰고 stage했을 때 hook이 검증을 실행하려 하는가. 어떤 경우에도 예외로 끝나면 안 된다."""
+        path = wt / name
+        path.write_bytes(body if isinstance(body, bytes) else body.encode())
+        subprocess.run(["git", "-c", "core.autocrlf=false", "add", "--", name], cwd=wt, check=True)
+        code, err = hook_commit(wt, env)
+        subprocess.run(["git", "reset", "-q", "--", name], cwd=wt, check=True)
+        path.unlink()
+        assert "Traceback" not in err, err
+        return "Node.js 22" in err
+
+    concept = "  - {id: selftest-edge-zzz, type: Topic, label: Selftest Edge Zzz}\n"
+    declared = "---\nstatus: done\nontology_concepts:\n" + concept + "---\n# 선언\n"
+    cases = [
+        ("tech/온톨로지-선언-검사.md", declared, NO_NODE, True),
+        ("tech/Space Name Selftest.md", declared, NO_NODE, True),
+        ("tech/Paren (Selftest).md", declared, NO_NODE, True),
+        ("-Dash-Selftest.md", declared, NO_NODE, True),
+        ("tech/Quoted-Key-Selftest.md", declared.replace("ontology_concepts:", '"ontology_concepts":'), NO_NODE, True),
+        ("tech/Spaced-Colon-Selftest.md", declared.replace("ontology_concepts:", "ontology_concepts :"), NO_NODE, True),
+        ("tech/Flow-Selftest.md", "---\n{status: done, ontology_concepts: [{id: selftest-edge-zzz, type: Topic, label: Z}]}\n---\n# 선언\n",
+         NO_NODE, True),
+        ("tech/Crlf-Selftest.md", declared.replace("\n", "\r\n").encode(), NO_NODE, True),
+        # 닫는 줄이 없으면 색인은 파일 끝까지를 frontmatter로 읽고 선언을 잃는다(MalformedFrontmatter)
+        ("tech/Unclosed-Selftest.md", "---\nstatus: done\nontology_concepts:\n" + concept + "# 선언\n", NO_NODE, True),
+        ("tech/Latin1-Declared-Selftest.md", b"---\nstatus: done\nontology_concepts:\n" + concept.encode() + b"---\n# caf\xe9\n", NO_NODE, True),
+        ("tech/Latin1-Plain-Selftest.md", b"---\nstatus: done\n---\n# caf\xe9\n", NO_NODE, False),
+        ("tech/Body-Mention-Selftest.md", FM + "# 문제\n본문의 `ontology_relations` 설명\n", NO_NODE, False),
+        ("tech/Crlf-Fence-Selftest.md", (FM + "# 문제\n```yaml\nontology_concepts:\n  - {id: example}\n```\n").replace("\n", "\r\n").encode(),
+         NO_NODE, False),
+        ("tech/Color-Selftest.md", declared, color, True),  # color.ui=always는 git grep 출력의 경로에 색 코드를 넣는다
+        ("tech/Grep-Failure-Selftest.md", FM + "# 일반\n", broken_grep, False),  # 감지 실패는 기록만 남기고 검증 없이 통과한다
+    ]
+    wrong = [name for name, body, env, want in cases if validates(name, body, env) != want]
+    assert not wrong, wrong
+    # git 실패로는 막지 않는다: 검증 없이 통과하고 실패는 안내와 장부에 남긴다
+    plain = wt / "tech/Git-Failure-Selftest.md"
+    plain.write_text(FM + "# 일반\n")
+    subprocess.run(["git", "add", str(plain)], cwd=wt, check=True)
+    code, err = hook_commit(wt, ENV | {"PATH": f"{shim}:{ENV['PATH']}"})
+    assert code == 0 and "simulated" in err, err
+    assert "ontology detect-failed" in (Path(ENV["CLAUDE_HARNESS_STATE"]) / "events.jsonl").read_text(encoding="utf-8")
+    subprocess.run(["git", "reset", "-q", "--", str(plain)], cwd=wt)
+    plain.unlink()
 finally:
     subprocess.run(["git", "worktree", "remove", "--force", str(wt)], cwd=SRC, capture_output=True)
 print("ok")
