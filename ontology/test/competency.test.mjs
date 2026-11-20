@@ -64,6 +64,9 @@ test('the competency runner scores the lookup and concept arms on the same expec
     assert.match(report[field], /^[a-f0-9]{64}$/, field);
   }
 
+  assert.deepEqual(byId['dual-write'].follow, { retried: false, ...byId['dual-write'].concept });
+  assert.deepEqual(byId['query-error'].follow, { retried: false, ...byId['query-error'].concept });
+
   for (const [caseId, change] of [['no-split', { split: undefined }], ['bad-predicate', { predicate: 'fixes' }],
     ['missing-predicate', { predicate: undefined }]]) {
     writeFileSync(cases, JSON.stringify([{ id: caseId, split: 'holdout', question: 'q', start: 's', predicate: 'addresses',
@@ -72,4 +75,44 @@ test('the competency runner scores the lookup and concept arms on the same expec
     assert.notEqual(invalid.status, 0, caseId);
     assert.match(invalid.stderr.toString(), new RegExp(`Invalid competency case: ${caseId}`));
   }
+});
+
+test('the follow arm retries a not-found start once with its first candidate and counts the retries', (t) => {
+  const fixture = gitFixture(t, CONCEPT_FILES);
+  buildSnapshot(fixture);
+  const cases = join(fixture.root, 'cases.json');
+  const solved = [{ path: 'tech/Outbox.md', heading: '해결: Outbox 테이블' }];
+  writeFileSync(cases, JSON.stringify([
+    { id: 'reworded', split: 'holdout', question: 'q', start: '쓰기 이중 문제', predicate: 'addressed_by',
+      expected_evidence: solved, expected_terms: ['Transactional Outbox'] },
+    { id: 'exact', split: 'holdout', question: 'q', start: 'dual-write-problem', predicate: 'addressed_by',
+      expected_evidence: solved, expected_terms: [] },
+    { id: 'unknown', split: 'holdout', question: 'q', start: 'qzxv wplk', predicate: '', expected_evidence: solved,
+      expected_terms: [] },
+    { id: 'negative', split: 'calibration', question: 'qzxv wplk', start: 'Dual Write', predicate: 'addressed_by',
+      expected_evidence: [], expected_terms: [], expected_empty: true },
+  ]));
+  const report = JSON.parse(execFileSync(process.execPath, [runner, '--cache', fixture.cacheDir, '--repo', fixture.repo,
+    '--cases', cases], { encoding: 'utf8' }));
+  const byId = Object.fromEntries(report.cases.map((item) => [item.id, item]));
+  const { reworded, exact, unknown, negative } = byId;
+  assert.deepEqual([reworded.concept.result_status, reworded.concept.evidence_score], ['concept_not_found', 0]);
+  assert.deepEqual([reworded.follow.retried, reworded.follow.start, reworded.follow.match, reworded.follow.result_status,
+    reworded.follow.evidence_score, reworded.follow.term_score],
+  [true, 'concept:interview-vault:dual-write-problem', 'name_tokens', 'ok', 1, 1]);
+  assert.deepEqual(exact.follow, { retried: false, ...exact.concept });
+  assert.deepEqual([unknown.follow.retried, unknown.follow.result_status, unknown.follow.evidence_score],
+    [false, 'concept_not_found', 0]);
+  // A negative case passes the concept arm by not resolving; following its candidate fails it.
+  assert.deepEqual([negative.concept.evidence_score, negative.follow.retried, negative.follow.evidence_score], [1, true, 0]);
+  const { calibration, holdout } = report.splits;
+  assert.deepEqual(holdout.concept, { positive_evidence_score: 1 / 3, negative_evidence_score: null, positive_starts_resolved: 1,
+    resolved_positive_evidence_score: 1, negative_starts_resolved: 0, errors: 0 });
+  assert.deepEqual(holdout.follow, { evidence_score: 2 / 3, term_score: 1, positive_evidence_score: 2 / 3,
+    negative_evidence_score: null, positive_starts_resolved: 2, resolved_positive_evidence_score: 1,
+    negative_starts_resolved: 0, errors: 0, positive_retried: 1, negative_retried: 0 });
+  assert.deepEqual(calibration.follow, { evidence_score: 0, term_score: null, positive_evidence_score: null,
+    negative_evidence_score: 0, positive_starts_resolved: 0, resolved_positive_evidence_score: null,
+    negative_starts_resolved: 1, errors: 0, positive_retried: 0, negative_retried: 1 });
+  assert.match(report.arms.follow.input, /first candidate/);
 });

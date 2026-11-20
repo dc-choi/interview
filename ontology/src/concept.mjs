@@ -1,7 +1,7 @@
 import { ContextError, conceptSlug, inScope, labelKey, normalizeScopes, stableJson } from './core.mjs';
 import { CLASS_BY_NAME, CONCEPT_TYPES, PREDICATES, PREDICATE_BY_NAME, hasCharacteristic, isA } from './schema.mjs';
 import { LIMITATIONS, effectiveScopes, indexSync, outputBytes, queryRelevantGaps, scopedGaps } from './query.mjs';
-import { getRepoState } from './repository.mjs';
+import { getRepoState, listMarkdown, readBlobs } from './repository.mjs';
 import { loadSnapshot } from './snapshot.mjs';
 
 export const CONCEPT_LIMITS = Object.freeze({
@@ -24,6 +24,11 @@ const append = (map, key, value) => {
   else map.set(key, [value]);
 };
 const byId = (a, b) => a.id < b.id ? -1 : Number(a.id > b.id);
+const namesOf = (concept) => [conceptSlug(concept.id), concept.label, ...concept.aliases];
+const MATCH_KINDS = ['name', 'name_tokens', 'evidence_heading', 'evidence_text'];
+// NFC, lowercase runs of Hangul or of other letters and digits, at least 2 characters long.
+const tokensOf = (text) => [...new Set(text.normalize('NFC').toLowerCase()
+  .match(/\p{Script=Hangul}+|[[\p{L}\p{N}]--\p{Script=Hangul}]+/gv) ?? [])].filter((token) => token.length >= 2);
 
 function validateOptions(options) {
   if (!options || typeof options !== 'object' || Array.isArray(options)) fail('invalid_options', 'options must be an object');
@@ -110,28 +115,19 @@ export function conceptQuery(options, args, snapshot) {
   const termKey = labelKey(request.term);
   let matches = concepts.filter((concept) => concept.id === term);
   if (matches.length === 0 && termKey) {
-    matches = concepts.filter((concept) => [conceptSlug(concept.id), concept.label, ...concept.aliases]
-      .some((name) => labelKey(name) === termKey));
+    matches = concepts.filter((concept) => namesOf(concept).some((name) => labelKey(name) === termKey));
   }
   if (matches.length !== 1) {
     payload.result_status = matches.length === 0 ? 'concept_not_found' : 'ambiguous_concept';
-    // Not found: suggest concepts with a slug, label or alias that contains the term
-    // or is contained in it. The closest name wins: the shared length over the
-    // longer of the two keys, best name per concept, then concept id. A suggestion
-    // is never resolved automatically.
-    if (matches.length === 0 && termKey.length >= 2) {
-      const coverage = new Map();
-      for (const concept of concepts) {
-        const best = Math.max(0, ...[conceptSlug(concept.id), concept.label, ...concept.aliases].map((name) => labelKey(name))
-          .filter((name) => name.length >= 2 && (name.includes(termKey) || termKey.includes(name)))
-          .map((name) => Math.min(name.length, termKey.length) / Math.max(name.length, termKey.length)));
-        if (best > 0) coverage.set(concept, best);
-      }
-      matches = [...coverage.keys()].sort((a, b) => coverage.get(b) - coverage.get(a) || byId(a, b));
-    } else matches.sort(byId);
-    payload.candidates = matches.slice(0, MAX_CANDIDATES).map((concept) => ({ id: concept.id,
-      type: concept.type, label: concept.label, aliases: concept.aliases, declared_in: concept.source_uri }));
-    payload.budget.omitted_candidates = matches.length - payload.candidates.length;
+    // Ambiguous candidates are the exact matches in id order. Not-found candidates are
+    // suggestions, each with its match kind, and are never resolved automatically.
+    const listed = matches.length > 0 ? matches.sort(byId).map((concept) => ({ concept }))
+      : termKey.length >= 2 ? suggest(request.term, termKey, concepts,
+        evidenceFields(concepts, relations, entityById, visible, options.repo, manifest.revision)) : [];
+    payload.candidates = listed.slice(0, MAX_CANDIDATES).map(({ concept, match }) => ({ id: concept.id,
+      type: concept.type, label: concept.label, aliases: concept.aliases, declared_in: concept.source_uri,
+      ...(match ? { match } : {}) }));
+    payload.budget.omitted_candidates = listed.length - payload.candidates.length;
     payload.coverage_gaps = relevantGaps(payload.candidates.map((candidate) => candidate.declared_in));
     return fitBudget(payload);
   }
@@ -276,6 +272,94 @@ export function conceptQuery(options, args, snapshot) {
     ...payload.relations.flatMap((item) => [item.peer, ...item.evidence].map((entry) => entry.source_uri ?? entityById.get(entry.id)?.source_uri)),
     ...payload.concept.definition_evidence.map((item) => item.source_uri)].filter(Boolean));
   return fitBudget(payload);
+}
+
+// Heading paths and texts of the Sections supporting each concept: the supported_by
+// targets of the concept and of the relation assertions linking it to another visible
+// concept. As in the query above, an edge counts only when it is source confirmed and
+// its asserting unit is in the allowlist, and so must the Section be. Only the pinned
+// blobs of those Sections are read.
+function evidenceFields(concepts, relations, entityById, visible, repo, revision) {
+  const units = new Map(concepts.map((concept) => [concept.id, new Set()]));
+  const supports = new Map();
+  const links = [];
+  for (const relation of relations) {
+    const support = relation.predicate === 'supported_by';
+    if ((!support && !(units.has(relation.subject) && units.has(relation.object)))
+      || relation.verification !== 'source_confirmed' || !visible(entityById.get(relation.evidence_unit_id))) continue;
+    if (support) append(supports, relation.subject, relation.object);
+    else links.push(relation);
+  }
+  for (const [id, set] of units) for (const unit of supports.get(id) ?? []) set.add(unit);
+  for (const link of links) {
+    for (const unit of supports.get(link.evidence_unit_id) ?? []) {
+      units.get(link.subject).add(unit);
+      units.get(link.object).add(unit);
+    }
+  }
+  const sections = new Map(concepts.map((concept) => [concept, [...units.get(concept.id)]
+    .map((unit) => entityById.get(unit)).filter((unit) => visible(unit) && unit.type === 'Section' && unit.anchor)])
+    .filter(([, list]) => list.length > 0));
+  const paths = [...new Set([...sections.values()].flat().map((unit) => unit.source_uri))];
+  const files = paths.length > 0 ? listMarkdown(repo, revision, paths) : [];
+  if (files.length !== paths.length) fail('source_unavailable', 'cannot resolve every pinned document');
+  const blobs = readBlobs(repo, files);
+  const field = (read) => new Map([...sections].map(([concept, list]) => [concept, list.map(read)]));
+  return [field((unit) => unit.anchor.heading_path.join(' ')),
+    field((unit) => blobs.get(unit.source_uri).subarray(unit.anchor.start_byte, unit.anchor.end_byte).toString('utf8'))];
+}
+
+// A concept is suggested under its first matching kind: a slug, label or alias that
+// contains the term or is contained in it on word boundaries, closest first by the
+// shared length over the longer key (name); then a name (name_tokens), the heading path of a supporting
+// Section (evidence_heading) or its text (evidence_text) that holds the whole term or
+// enough of its tokens. A token matches a word starting with it, so a Korean particle
+// does not hide it. A phrase or token found in the field of more concepts than one
+// response lists cannot single one out and is ignored for that field. A token match
+// needs at least half of the term's tokens and two of them (the only one of a
+// one-token term). Name and name_tokens matches are ordered together by how many of
+// the term's words the name holds; within a kind the whole term ranks first, then more
+// shared tokens, then concept id.
+function suggest(term, termKey, concepts, evidence) {
+  const rank = new Map();
+  const tokens = tokensOf(term);
+  // Keys drop spaces, so containment alone crosses word boundaries ("econ" in
+  // "..._seconds", "updates" in "update skip"): each word of the shorter side must start
+  // a word of the longer side. A side without words (for example "c++") keeps plain containment.
+  const whole = (inner, outer) => inner.length === 0
+    || inner.every((token) => outer.some((word) => word.startsWith(token)));
+  for (const concept of concepts) {
+    const best = Math.max(0, ...namesOf(concept).map((name) => [labelKey(name), tokensOf(name)])
+      .filter(([name, words]) => name.length >= 2 && ((name.includes(termKey) && whole(tokens, words))
+        || (termKey.includes(name) && whole(words, tokens))))
+      .map(([name]) => Math.min(name.length, termKey.length) / Math.max(name.length, termKey.length)));
+    if (best > 0) rank.set(concept, [0, best]);
+  }
+  const needed = Math.max(Math.min(2, tokens.length), Math.ceil(tokens.length / 2));
+  [new Map(concepts.map((concept) => [concept, namesOf(concept)])), ...evidence].forEach((field, index) => {
+    const hits = new Map([...field].map(([concept, texts]) => [concept, texts.map((text) => {
+      const words = tokensOf(text);
+      // Names were matched on word boundaries above; a second, unaligned phrase test would bring "econ" in "seconds" back.
+      return { phrase: index > 0 && tokens.length > 0 && labelKey(text).includes(termKey),
+        tokens: tokens.filter((token) => words.some((word) => word.startsWith(token))) };
+    })]));
+    const common = (test) => [...hits.values()].filter((list) => list.some(test)).length > MAX_CANDIDATES;
+    const phrase = !common((hit) => hit.phrase);
+    const useful = tokens.filter((token) => !common((hit) => hit.tokens.includes(token)));
+    for (const [concept, list] of hits) {
+      const score = Math.max(0, ...list.map((hit) => phrase && hit.phrase ? tokens.length + 1
+        : hit.tokens.filter((token) => useful.includes(token)).length));
+      if (!rank.has(concept) && score > 0 && score >= needed) rank.set(concept, [index + 1, score]);
+    }
+  });
+  // Among name matches the one holding more of the term's words comes first, so a broad
+  // one-word Topic ("sqs") does not outrank a name holding every word of "SQS FIFO dedup".
+  const cover = new Map([...rank].filter(([, [kind]]) => kind < 2).map(([concept]) => [concept, Math.max(0,
+    ...namesOf(concept).map(tokensOf).map((words) => tokens.filter((token) => words.some((word) => word.startsWith(token))).length))]));
+  const group = (kind) => Math.max(kind, 1);
+  return [...rank].sort(([a, [kindA, scoreA]], [b, [kindB, scoreB]]) => group(kindA) - group(kindB)
+    || (cover.get(b) ?? 0) - (cover.get(a) ?? 0) || kindA - kindB || scoreB - scoreA || byId(a, b))
+    .map(([concept, [kind]]) => ({ concept, match: MATCH_KINDS[kind] }));
 }
 
 // Optional entries are dropped from the end, documents before relations, until

@@ -1,0 +1,177 @@
+[
+  {
+    "id": "check-then-act-dedup-race",
+    "split": "holdout",
+    "question": "컨슈머가 처리 기록 테이블을 먼저 SELECT로 확인하고 기록이 없을 때만 처리하는데, 처리가 길어져 같은 메시지가 동시에 다시 전달되자 둘 다 통과해 포인트가 두 번 쌓였다. 중복 확인을 어떻게 바꿔야 이걸 막을 수 있을까?",
+    "start": "중복 체크 레이스",
+    "predicate": "addresses",
+    "expected_evidence": [
+      {"path": "tech/reliability/Idempotent-Consumer.md", "heading": "원자성이 핵심 — check-then-act 레이스"}
+    ],
+    "expected_terms": ["INSERT ... ON CONFLICT", "SET NX"]
+  },
+  {
+    "id": "cdc-column-rename-consumers",
+    "split": "holdout",
+    "question": "원본 주문 테이블의 컬럼 이름과 타입을 바꾸려는데, 그 테이블의 변경 이벤트를 받아 쓰는 다른 팀 컨슈머들이 한꺼번에 깨질까 걱정된다. 소비 쪽을 깨지 않고 스키마를 바꾸려면 어떻게 진행해야 할까?",
+    "start": "CDC 스키마 변경",
+    "predicate": "addresses",
+    "expected_evidence": [
+      {"path": "tech/messaging-data-pipeline/cdc-outbox/cdc-debezium/CDC-Debezium-Operations.md", "heading": "Schema evolution"}
+    ],
+    "expected_terms": ["Additive nullable field", "새 field/topic/version"]
+  },
+  {
+    "id": "replayed-500-unknown-outcome",
+    "split": "holdout",
+    "question": "같은 멱등 키로 결제 생성 API를 다시 불렀더니 처음과 똑같은 500이 계속 돌아온다. 키를 새로 만들어 다시 호출하고 싶은데, 실제로 결제가 됐는지는 어떻게 판단해야 할까?",
+    "start": "멱등 키 500 응답",
+    "predicate": "addresses",
+    "expected_evidence": [
+      {"path": "tech/messaging-data-pipeline/delivery-guarantees/Idempotency-Key.md", "heading": "오류 응답 재생과 업무 결과 확인"},
+      {"path": "tech/web/http/Idempotency.md", "heading": "응답 재사용과 보존 기간은 API 계약이다"}
+    ],
+    "expected_terms": ["대사", "웹훅"]
+  },
+  {
+    "id": "negative-outbox-table-growth",
+    "split": "holdout",
+    "question": "발행이 끝난 outbox 행이 수천만 건 쌓이면서 미발행 행을 찾는 폴링 쿼리가 느려지고 테이블 용량도 계속 늘어난다. 어떤 방법이 이 문제를 해결할까?",
+    "start": "outbox 테이블 비대",
+    "predicate": "addresses",
+    "expected_evidence": [],
+    "expected_terms": [],
+    "expected_empty": true
+  },
+  {
+    "id": "cdc-relay-remaining-pieces",
+    "split": "holdout",
+    "question": "Debezium을 붙이면 애플리케이션이 outbox에 쓰는 일도, 발행 코드도 전부 없앨 수 있다는 의견이 나왔다. 변경 로그로 outbox 이벤트를 내보낼 때도 여전히 갖춰야 하는 것은 무엇일까?",
+    "start": "Debezium outbox relay",
+    "predicate": "requires",
+    "expected_evidence": [
+      {"path": "tech/messaging-data-pipeline/cdc-outbox/Transactional-Outbox-Relay.md", "heading": "CDC 방식"}
+    ],
+    "expected_terms": ["outbox 기록", "connector 설정", "CDC 인프라 운영"]
+  },
+  {
+    "id": "idempotency-interceptor-order",
+    "split": "holdout",
+    "question": "응답에서 민감 필드를 빼려고 AppModule에 전역 직렬화 인터셉터를 걸었더니, 멱등 키 모듈을 붙인 NestJS 서버가 기동을 거부한다. 재생 응답이 안전하게 나가려면 인터셉터 구성을 어떻게 맞춰야 할까?",
+    "start": "APP_INTERCEPTOR",
+    "predicate": "requires",
+    "expected_evidence": [
+      {"path": "tech/os-runtime/nestjs/integrations/nestjs-reliability/NestJS-Idempotency.md", "heading": "결과 보관과 interceptor 순서"}
+    ],
+    "expected_terms": ["idempotency를 바깥으로", "등록 순서"]
+  },
+  {
+    "id": "outbox-store-concurrency-test",
+    "split": "holdout",
+    "question": "직접 만든 NestJS outbox store를 인메모리 Postgres로 돌린 계약 테스트에서 동시성 케이스까지 모두 통과했다. 여러 relay가 행을 다투는 상황이 안전하다고 말하려면 어디서 검증해야 할까?",
+    "start": "PGlite 동시성 테스트",
+    "predicate": "requires",
+    "expected_evidence": [
+      {"path": "tech/os-runtime/nestjs/integrations/nestjs-reliability/NestJS-Outbox.md", "heading": "ORM과 검증 경계"}
+    ],
+    "expected_terms": ["실제 production DB engine/major version과 pool"]
+  },
+  {
+    "id": "negative-sourdough-starter",
+    "split": "holdout",
+    "question": "집에서 키우는 사워도우 발효종이 먹이를 줘도 잘 부풀지 않는다. 발효종이 활발하게 살아나려면 어떤 조건이 갖춰져야 할까?",
+    "start": "사워도우 르방",
+    "predicate": "requires",
+    "expected_evidence": [],
+    "expected_terms": [],
+    "expected_empty": true
+  },
+  {
+    "id": "dynamodb-streams-relay-ordering",
+    "split": "holdout",
+    "question": "DynamoDB를 쓰는 서비스에서 이벤트마다 outbox 항목을 새로 넣고 테이블의 스트림을 relay로 삼으려 한다. 별도 커넥터가 필요 없어 편해 보이는데, 이 방식이 감수하는 제약은 무엇일까?",
+    "start": "DynamoDB Streams",
+    "predicate": "has_tradeoff",
+    "expected_evidence": [
+      {"path": "tech/messaging-data-pipeline/cdc-outbox/Transactional-Outbox-Relay.md", "heading": "DB 내장 변경 스트림"}
+    ],
+    "expected_terms": ["같은 item(primary key) 단위", "record 보존(24시간)"]
+  },
+  {
+    "id": "claim-still-duplicates",
+    "split": "holdout",
+    "question": "relay를 여러 대 돌리면서 행 잠금으로 각자 다른 outbox 행을 집게 만들었다. 이제 같은 이벤트가 두 번 나갈 일은 없으니 컨슈머의 중복 방어를 걷어내도 될까, 이 구성에 남는 빈틈은 무엇일까?",
+    "start": "outbox 행 claim",
+    "predicate": "has_tradeoff",
+    "expected_evidence": [
+      {"path": "tech/messaging-data-pipeline/cdc-outbox/Transactional-Outbox.md", "heading": "어느 축도 중복을 없애지는 못한다"}
+    ],
+    "expected_terms": ["processed_at 마킹 직전", "유실을 중복으로 바꾼"]
+  },
+  {
+    "id": "cdc-pii-exposure",
+    "split": "holdout",
+    "question": "분석팀 요청으로 회원 테이블의 모든 변경을 CDC로 Kafka에 흘려보내려 한다. 연락처와 주소가 들어 있는 테이블인데, 보안 쪽에서 이 구성이 치르는 대가는 무엇일까?",
+    "start": "회원 테이블 CDC",
+    "predicate": "has_tradeoff",
+    "expected_evidence": [
+      {"path": "tech/messaging-data-pipeline/cdc-outbox/cdc-debezium/CDC-Debezium-Operations.md", "heading": "보안과 거버넌스"}
+    ],
+    "expected_terms": ["PII blast radius", "Capture allowlist", "field masking"]
+  },
+  {
+    "id": "negative-kafka-connect-standalone",
+    "split": "holdout",
+    "question": "Debezium 커넥터를 돌리는 Kafka Connect를 여러 워커의 클러스터 대신 standalone 모드 프로세스 하나로 띄우려 한다. 이렇게 하면 무엇을 감수해야 할까?",
+    "start": "Kafka Connect standalone",
+    "predicate": "has_tradeoff",
+    "expected_evidence": [],
+    "expected_terms": [],
+    "expected_empty": true
+  },
+  {
+    "id": "lease-free-short-consumer",
+    "split": "holdout",
+    "question": "포인트 테이블 한 줄만 고치는 짧은 컨슈머에, 외부 결제용으로 만든 PROCESSING 상태와 하트비트 갱신이 있는 처리 기록 설계를 그대로 가져다 쓰려 한다. 같은 DB 안에서 끝나는 이런 작업에는 대신 어떤 설계를 고를 수 있을까?",
+    "start": "heartbeat lease",
+    "predicate": "alternative_to",
+    "expected_evidence": [
+      {"path": "tech/messaging-data-pipeline/delivery-guarantees/At-Least-Once.md", "heading": "같은 DB의 짧은 작업"},
+      {"path": "tech/reliability/Idempotent-Consumer.md", "heading": "2. 멱등 키 + 상태 저장소"},
+      {"path": "tech/messaging-data-pipeline/delivery-guarantees/Idempotency-Key.md", "heading": "데이터베이스 (UNIQUE 제약)"}
+    ],
+    "expected_terms": ["하나의 짧은 DB transaction", "Inbox INSERT"]
+  },
+  {
+    "id": "command-event-vs-fact-event",
+    "split": "holdout",
+    "question": "주문이 취소되면 포인트 서비스에 '포인트 돌려줘'라는 이벤트를 보내도록 만들었는데, 쿠폰 서비스와 정산 서비스도 반응해야 해서 발행 쪽 코드를 계속 고치게 된다. 이렇게 할 일을 지시하는 이벤트 대신 어떤 방식으로 발행할 수 있을까?",
+    "start": "명령형 이벤트",
+    "predicate": "alternative_to",
+    "expected_evidence": [
+      {"path": "tech/messaging-data-pipeline/cdc-outbox/Transactional-Outbox.md", "heading": "이벤트 설계 — 목적이 아닌 사실을 발행"}
+    ],
+    "expected_terms": ["사실 기반 이벤트"]
+  },
+  {
+    "id": "snapshot-mode-never-replacement",
+    "split": "holdout",
+    "question": "예전 블로그 글을 따라 MySQL 커넥터의 스냅샷 모드를 never로 지정했더니 최신 Debezium에서 받아들여지지 않는다. 대신 고를 수 있는 스냅샷 모드는 무엇이 있을까?",
+    "start": "snapshot.mode=never",
+    "predicate": "alternative_to",
+    "expected_evidence": [
+      {"path": "tech/messaging-data-pipeline/cdc-outbox/cdc-debezium/CDC-Debezium-Setup.md", "heading": "1. Initial Snapshot"}
+    ],
+    "expected_terms": ["when_needed", "no_data"]
+  },
+  {
+    "id": "negative-marathon-carb-loading",
+    "split": "holdout",
+    "question": "풀코스 마라톤 사흘 전부터 탄수화물을 몰아 먹는 식단을 하려 했는데 속이 더부룩해서 부담스럽다. 이 방식 대신 고를 수 있는 대회 전 식단 전략은 무엇일까?",
+    "start": "카보로딩",
+    "predicate": "alternative_to",
+    "expected_evidence": [],
+    "expected_terms": [],
+    "expected_empty": true
+  }
+]

@@ -83,6 +83,115 @@ test('partial-name candidates rank the closest slug, label or alias first and co
   assert.deepEqual([exact.result_status, exact.concept.id, exact.budget.omitted_candidates], ['ok', id('d-worker'), 0]);
 });
 
+const suggested = (result) => result.candidates.map((item) => [item.id.slice(item.id.lastIndexOf(':') + 1), item.match]);
+
+test('a name holding more of the term outranks a one-word name match', (t) => {
+  const { query } = fixture(t, { 'tech/Sqs.md': ['---', 'ontology_concepts:',
+    '  - {id: sqs, type: Topic, label: SQS}',
+    '  - {id: fifo-dedup-window, type: Topic, label: "SQS FIFO content dedup window"}',
+    '---', '# Sqs', ''].join('\n') });
+  assert.deepEqual(suggested(query({ concept: 'SQS FIFO dedup' })), [['fifo-dedup-window', 'name_tokens'], ['sqs', 'name']]);
+});
+
+test('name containment follows word boundaries', (t) => {
+  const { query } = fixture(t, { 'tech/Words.md': ['---', 'ontology_concepts:',
+    '  - {id: econ, type: Topic, label: Econ}',
+    '  - {id: updates, type: Topic, label: Updates}',
+    '  - {id: skip-locked, type: Topic, label: "FOR UPDATE SKIP LOCKED"}',
+    '---', '# Words', ''].join('\n') });
+  assert.deepEqual(suggested(query({ concept: 'binlog_expire_logs_seconds' })), [], 'econ is inside seconds, not a word of it');
+  assert.deepEqual(suggested(query({ concept: 'FOR UPDATE SKIP' })), [['skip-locked', 'name']], 'updates spans two words');
+  assert.deepEqual(suggested(query({ concept: 'update' })), [['updates', 'name'], ['skip-locked', 'name']]);
+  assert.deepEqual(suggested(query({ concept: 'pdate' })), [], 'the term starts inside a word of the name');
+  assert.deepEqual(suggested(query({ concept: 'dates' })), [], 'dates is inside updates and spans UPDATE SKIP');
+});
+
+test('a reworded name suggests concepts sharing enough name tokens and never resolves them', (t) => {
+  const { query } = fixture(t);
+  for (const concept of ['쓰기 이중 문제', 'problem of dual write']) {
+    const result = query({ concept });
+    assert.deepEqual([result.result_status, result.concept, result.relations], ['concept_not_found', null, []], concept);
+    assert.deepEqual(suggested(result), [['dual-write-problem', 'name_tokens']], concept);
+    assert.equal(Buffer.byteLength(JSON.stringify(result)), result.budget.used_bytes);
+  }
+  assert.deepEqual(suggested(query({ concept: 'Dual Write' })), [['dual-write-problem', 'name']]);
+  assert.deepEqual(query({ concept: 'relay polling' }).candidates, [], 'one shared token is not enough');
+  // Ambiguous candidates are exact matches and keep their shape.
+  const ambiguous = fixture(t, { 'tech/Queues.md': '---\nontology_concepts:\n'
+    + '  - {id: job-queue, type: Topic, label: Job Queue, aliases: [Queue]}\n'
+    + '  - {id: message-queue, type: Topic, label: Message Queue, aliases: [queue]}\n---\n# Queues\n' }).query({ concept: 'queue' });
+  assert.equal(ambiguous.candidates.some((item) => Object.hasOwn(item, 'match')), false);
+});
+
+test('a term in a supporting Section suggests its concepts, heading before text, after name matches', (t) => {
+  const { query } = fixture(t, { ...CONCEPT_FILES, 'tech/Ledger.md': ['---', 'ontology_concepts:',
+    '  - {id: replay-window-lag, type: Tradeoff, label: Replay Window Lag, evidence: "[[#Lag]]"}',
+    '  - {id: window-of-replay, type: Topic, label: Window of Replay}',
+    '  - {id: journal-replay, type: Approach, label: Journal Replay, evidence: "[[#Replay window]]"}',
+    '  - {id: balance-drift, type: Problem, label: Balance Drift, evidence: "[[#Drift]]"}',
+    '---', '# Ledger', '## Replay window', 'Rebuild balances from the journal.', '## Lag', 'Catching up takes a while.',
+    '## Drift', 'Balances drift until the replay window closes.', ''].join('\n') });
+  assert.deepEqual(suggested(query({ concept: 'replay window' })), [['replay-window-lag', 'name'],
+    ['window-of-replay', 'name_tokens'], ['journal-replay', 'evidence_heading'], ['balance-drift', 'evidence_text']]);
+  // The 대안 Section supports cdc-relay and its alternative_to assertion with transactional-outbox.
+  assert.deepEqual(suggested(query({ concept: '커밋 로그' })), [['cdc-relay', 'evidence_text'],
+    ['transactional-outbox', 'evidence_text']]);
+  // Tokens match a word that starts with them, so Korean particles do not hide them.
+  assert.deepEqual(suggested(query({ concept: '트랜잭션 기록' })), [['dual-write-problem', 'evidence_text'],
+    ['transactional-outbox', 'evidence_text']]);
+});
+
+test('an evidence suggestion needs the Section, its asserting unit and the concept in the allowlist', (t) => {
+  const { query } = fixture(t, { ...CONCEPT_FILES,
+    // A concept declared outside, and a supported_by asserted outside, both on a visible Section.
+    'fit/Private.md': ['---', 'ontology_concepts:',
+      '  - {id: secret-approach, type: Approach, label: Secret Approach, evidence: "[[Outbox#대안]]"}',
+      '  - {id: secret-problem, type: Problem, label: Secret Problem, evidence: "[[#Secret]]"}',
+      'ontology_relations:',
+      "  - {subject: 'concept:dual-write-problem', predicate: supported_by, target: '[[Outbox#대안]]'}",
+      '---', '# Private', '## Secret', 'Zebra crossing note.', ''].join('\n'),
+    // Visible assertions: on a Section outside, on a concept outside, and to a peer outside.
+    'tech/Pointer.md': ['---', 'ontology_relations:',
+      "  - {subject: 'concept:relay-lag', predicate: supported_by, target: '[[Private#Secret]]'}",
+      "  - {subject: 'concept:secret-approach', predicate: supported_by, target: '[[Outbox#대안]]'}",
+      "  - {subject: 'concept:cdc-relay', predicate: addresses, target: 'concept:secret-problem', evidence: '[[Outbox#비용]]'}",
+      '---', '# Pointer', ''].join('\n') });
+  assert.deepEqual(suggested(query({ concept: '커밋 로그' })), [['cdc-relay', 'evidence_text'],
+    ['dual-write-problem', 'evidence_text'], ['secret-approach', 'evidence_text'], ['transactional-outbox', 'evidence_text']]);
+  assert.deepEqual(suggested(query({ concept: 'zebra crossing' })), [['relay-lag', 'evidence_text'],
+    ['secret-problem', 'evidence_text']]);
+  assert.deepEqual(suggested(query({ concept: '릴레이 지연' })), [['cdc-relay', 'evidence_text'], ['relay-lag', 'evidence_text'],
+    ['secret-problem', 'evidence_text'], ['transactional-outbox', 'evidence_text']]);
+  const scoped = ['tech', 'ontology'];
+  const visible = query({ concept: '커밋 로그' }, scoped);
+  assert.deepEqual(suggested(visible), [['cdc-relay', 'evidence_text'], ['transactional-outbox', 'evidence_text']],
+    'a concept declared outside, or a supported_by asserted outside, suggests nothing');
+  const hidden = query({ concept: 'zebra crossing' }, scoped);
+  assert.deepEqual(hidden.candidates, [], 'a Section outside suggests nothing');
+  const named = query({ concept: 'Secret Approach' }, scoped);
+  assert.deepEqual([named.result_status, named.candidates], ['concept_not_found', []], 'a concept outside is never named');
+  const peer = query({ concept: '릴레이 지연' }, scoped);
+  assert.deepEqual(suggested(peer), [['relay-lag', 'evidence_text'], ['transactional-outbox', 'evidence_text']],
+    'a relation to a concept outside is not evidence, as in the query of a resolved concept');
+  for (const result of [visible, hidden, named, peer]) assert.equal(JSON.stringify(result).includes('fit/'), false);
+});
+
+test('a phrase or token in more concepts than one response lists suggests nothing', (t) => {
+  const letters = [...'abcdefghi'];
+  const { query } = fixture(t, { 'tech/Events.md': ['---', 'ontology_concepts:',
+    ...letters.map((letter) => `  - {id: listener-${letter}, type: Approach, label: Event ${letter.toUpperCase()} Handler, evidence: "[[#${letter.toUpperCase()}]]"}`),
+    '  - {id: compaction, type: Approach, label: Compaction, evidence: "[[#Compaction]]"}',
+    '---', '# Events', ...letters.flatMap((letter) => [`## ${letter.toUpperCase()}`, 'The event store keeps the event log.']),
+    '## Compaction', 'Compacted snapshots replace old segments.', ''].join('\n') });
+  // Nine names share event and handler; nine Sections hold event store.
+  for (const concept of ['event handler', 'event store']) {
+    const result = query({ concept });
+    assert.deepEqual([result.result_status, result.candidates, result.budget.omitted_candidates],
+      ['concept_not_found', [], 0], concept);
+  }
+  assert.deepEqual(suggested(query({ concept: 'compacted snapshot' })), [['compaction', 'evidence_text']]);
+});
+
 test('symmetric and inverse rules present incoming edges from the concept and flag them inferred', (t) => {
   const { query } = fixture(t);
   assert.deepEqual(view(query({ concept: 'transactional-outbox' })), [

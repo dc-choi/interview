@@ -10,13 +10,15 @@ import { loadSnapshot } from '../src/snapshot.mjs';
 
 // Competency questions compare (a) a baseline lookup of the question, unscoped
 // within the default allowlist, with (b) a concept query from start along
-// predicate (depth 2, inference on). Both arms score the fraction of expected
-// (path, heading) evidence they return. A case with expected_empty: true (as in
-// score.mjs) scores 1 when the arm returns nothing: no lookup evidence units, no
-// concept relations. Negative cases pass the concept arm by not resolving, so
-// split summaries also report positive and negative means apart. A concept query
-// that throws scores 0 and reports its error. The runner only reports; it never
-// edits cases. Usage:
+// predicate (depth 2, inference on) and (c) the same query followed the way a host
+// would: when start is concept_not_found with candidates, retry once with the
+// first candidate's id and score that answer. Every arm scores the fraction of
+// expected (path, heading) evidence it returns. A case with expected_empty: true
+// (as in score.mjs) scores 1 when the arm returns nothing: no lookup evidence
+// units, no concept relations. Negative cases pass the concept arm by not
+// resolving, but a followed candidate can fail them, so split summaries report
+// positive and negative means apart. A concept query that throws scores 0 and
+// reports its error. The runner only reports; it never edits cases. Usage:
 // node evaluation/competency.mjs --cache <dir> [--repo <path>] [--cases <file>]
 const { values } = parseArgs({ options: {
   cache: { type: 'string' },
@@ -62,24 +64,38 @@ const score = (sample, evidence, answered) => {
 };
 const mean = (numbers) => numbers.length > 0 ? numbers.reduce((total, value) => total + value, 0) / numbers.length : null;
 
-const results = cases.map((sample) => {
-  const answer = lookup(options, { query: sample.question, max_bytes: 24000 }, snapshot);
-  const lookupEvidence = answer.evidence_units.map((unit) => ({ source_uri: unit.source_uri,
-    heading_path: unit.anchor.heading_path }));
+// One concept query from start, scored. Returns the response for the follow arm.
+const askConcept = (sample, start) => {
   let concept;
   let error;
   try {
-    concept = conceptQuery(options, { concept: sample.start, depth: 2, include_inferred: true,
+    concept = conceptQuery(options, { concept: start, depth: 2, include_inferred: true,
       ...(sample.predicate ? { predicates: [sample.predicate] } : {}) }, snapshot);
   } catch (caught) {
     // A failed query fails the arm; it is not an empty answer that passes a negative case.
     error = { code: caught.code ?? 'error', message: caught.message };
-    concept = { result_status: 'error', concept: null, relations: [] };
+    concept = { result_status: 'error', concept: null, candidates: [], relations: [] };
   }
   const conceptEvidence = [...(concept.concept?.definition_evidence ?? []),
     ...concept.relations.flatMap((relation) => relation.evidence)];
   const peerKeys = concept.relations.map((relation) => labelKey(relation.peer.label));
   const terms = sample.expected_terms.filter((term) => peerKeys.some((key) => key.includes(labelKey(term))));
+  return { response: concept, row: { result_status: concept.result_status, ...(error ? { error } : {}),
+    concept_id: concept.concept?.id ?? null,
+    ...(error ? { evidence_score: 0, evidence_hits: [] } : score(sample, conceptEvidence, concept.relations.length > 0)),
+    evidence_returned: conceptEvidence.length,
+    relations_returned: concept.relations.length,
+    term_score: sample.expected_terms.length > 0 ? terms.length / sample.expected_terms.length : null,
+    terms_found: terms, bytes: concept.budget?.used_bytes ?? null } };
+};
+
+const results = cases.map((sample) => {
+  const answer = lookup(options, { query: sample.question, max_bytes: 24000 }, snapshot);
+  const lookupEvidence = answer.evidence_units.map((unit) => ({ source_uri: unit.source_uri,
+    heading_path: unit.anchor.heading_path }));
+  const first = askConcept(sample, sample.start);
+  const [candidate] = first.response.result_status === 'concept_not_found' ? first.response.candidates : [];
+  const followed = candidate ? askConcept(sample, candidate.id) : first;
   return {
     id: sample.id,
     split: sample.split,
@@ -88,37 +104,40 @@ const results = cases.map((sample) => {
       .filter((target) => !sections.has(`${target.path}\0${target.heading}`)),
     lookup: { result_status: answer.result_status, ...score(sample, lookupEvidence, lookupEvidence.length > 0),
       evidence_returned: lookupEvidence.length, bytes: answer.budget.used_bytes },
-    concept: { result_status: concept.result_status, ...(error ? { error } : {}), concept_id: concept.concept?.id ?? null,
-      ...(error ? { evidence_score: 0, evidence_hits: [] } : score(sample, conceptEvidence, concept.relations.length > 0)),
-      evidence_returned: conceptEvidence.length,
-      relations_returned: concept.relations.length,
-      term_score: sample.expected_terms.length > 0 ? terms.length / sample.expected_terms.length : null,
-      terms_found: terms, bytes: concept.budget?.used_bytes ?? null },
+    concept: first.row,
+    follow: { retried: Boolean(candidate), ...(candidate ? { start: candidate.id, match: candidate.match } : {}),
+      ...followed.row },
   };
 });
-const resolved = (row) => ['ok', 'partial'].includes(row.concept.result_status);
+const resolved = (arm) => (row) => ['ok', 'partial'].includes(row[arm].result_status);
 const summarize = (rows) => {
   const positive = rows.filter((row) => !row.expected_empty);
   const negative = rows.filter((row) => row.expected_empty);
   const evidenceScore = (list, arm) => mean(list.map((row) => row[arm].evidence_score));
+  const armSummary = (arm) => ({
+    positive_evidence_score: evidenceScore(positive, arm),
+    negative_evidence_score: evidenceScore(negative, arm),
+    positive_starts_resolved: positive.filter(resolved(arm)).length,
+    resolved_positive_evidence_score: evidenceScore(positive.filter(resolved(arm)), arm),
+    negative_starts_resolved: negative.filter(resolved(arm)).length,
+    errors: rows.filter((row) => row[arm].error).length,
+  });
   return {
     cases: rows.length,
     lookup_evidence_score: evidenceScore(rows, 'lookup'),
     concept_evidence_score: evidenceScore(rows, 'concept'),
     concept_term_score: mean(rows.map((row) => row.concept.term_score).filter((value) => value !== null)),
-    concepts_resolved: rows.filter(resolved).length,
+    concepts_resolved: rows.filter(resolved('concept')).length,
     cases_with_unknown_expected_evidence: rows.filter((row) => row.unknown_expected_evidence.length > 0).length,
     positive_cases: positive.length,
     negative_cases: negative.length,
     lookup: { positive_evidence_score: evidenceScore(positive, 'lookup'), negative_evidence_score: evidenceScore(negative, 'lookup') },
-    concept: {
-      positive_evidence_score: evidenceScore(positive, 'concept'),
-      negative_evidence_score: evidenceScore(negative, 'concept'),
-      positive_starts_resolved: positive.filter(resolved).length,
-      resolved_positive_evidence_score: evidenceScore(positive.filter(resolved), 'concept'),
-      negative_starts_resolved: negative.filter(resolved).length,
-      errors: rows.filter((row) => row.concept.error).length,
-    },
+    concept: armSummary('concept'),
+    follow: { evidence_score: evidenceScore(rows, 'follow'),
+      term_score: mean(rows.map((row) => row.follow.term_score).filter((value) => value !== null)),
+      ...armSummary('follow'),
+      positive_retried: positive.filter((row) => row.follow.retried).length,
+      negative_retried: negative.filter((row) => row.follow.retried).length },
   };
 };
 console.log(JSON.stringify({
@@ -129,6 +148,8 @@ console.log(JSON.stringify({
     lookup: { input: 'question', scope: 'unscoped', allowlist: options.allowlist, max_bytes: 24000 },
     concept: { input: 'start', predicates: 'case predicate, none when empty', depth: 2, include_inferred: true,
       allowlist: options.allowlist },
+    follow: { input: 'start; when it is concept_not_found with candidates, the first candidate id, once',
+      predicates: 'case predicate, none when empty', depth: 2, include_inferred: true, allowlist: options.allowlist },
   },
   query_code_hash: sha256(readFileSync(new URL('../src/query.mjs', import.meta.url))),
   concept_code_hash: sha256(readFileSync(new URL('../src/concept.mjs', import.meta.url))),

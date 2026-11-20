@@ -1,0 +1,258 @@
+[
+ {
+  "id": "id-cursor-polling-missed-rows",
+  "split": "holdout",
+  "question": "변경분을 id가 마지막으로 읽은 값보다 큰 행만 가져오는 식으로 폴링하는데, 동시에 들어온 트랜잭션 중 작은 id가 늦게 커밋되면 그 행이 영영 안 읽힌다. 이 누락을 어떻게 줄일 수 있을까?",
+  "start": "auto_increment 커서 누락",
+  "predicate": "addresses",
+  "expected_evidence": [
+   {
+    "path": "tech/messaging-data-pipeline/cdc-outbox/cdc-debezium/CDC-Debezium-Concept.md",
+    "heading": "변경을 얻는 방식"
+   }
+  ],
+  "expected_terms": [
+   "지연 윈도우",
+   "log 기반 CDC"
+  ]
+ },
+ {
+  "id": "lambda-sqs-batch-redelivery",
+  "split": "holdout",
+  "question": "SQS를 트리거로 붙인 Lambda에서 배치 안 메시지 하나만 실패해도 이미 처리한 나머지 메시지까지 전부 다시 들어온다. 실패한 것만 다시 받게 하려면 어떻게 해야 할까?",
+  "start": "Lambda SQS 배치 실패",
+  "predicate": "addresses",
+  "expected_evidence": [
+   {
+    "path": "tech/messaging-data-pipeline/delivery-guarantees/At-Least-Once.md",
+    "heading": "상태 머신"
+   }
+  ],
+  "expected_terms": [
+   "ReportBatchItemFailures",
+   "batchItemFailures"
+  ]
+ },
+ {
+  "id": "if-match-on-put-retry",
+  "split": "holdout",
+  "question": "응답을 못 받아 PUT을 다시 보내는 클라이언트에 처음 조회할 때 받은 ETag를 If-Match로 같이 보내라는 리뷰를 받았다. PUT은 원래 멱등인데 이게 막아 주는 문제는 무엇일까?",
+  "start": "If-Match 헤더",
+  "predicate": "addresses",
+  "expected_evidence": [
+   {
+    "path": "tech/web/http/Idempotency.md",
+    "heading": "네트워크 재시도 정책과 결합"
+   }
+  ],
+  "expected_terms": [
+   "lost update"
+  ]
+ },
+ {
+  "id": "negative-houseplant-leaf-tips",
+  "split": "holdout",
+  "question": "거실에서 키우는 몬스테라 잎 끝이 갈색으로 바싹 마르고 있다. 어떤 방법이 이 문제를 해결할까?",
+  "start": "몬스테라 잎 마름",
+  "predicate": "addresses",
+  "expected_evidence": [],
+  "expected_terms": [],
+  "expected_empty": true
+ },
+ {
+  "id": "dedup-record-retention-length",
+  "split": "holdout",
+  "question": "이벤트 컨슈머가 남긴 처리 완료 기록이 계속 쌓여서 일정 기간이 지나면 지우려 한다. 그 보관 기간은 무엇보다 길어야 안전할까?",
+  "start": "멱등 키 TTL",
+  "predicate": "requires",
+  "expected_evidence": [
+   {
+    "path": "tech/messaging-data-pipeline/delivery-guarantees/Idempotency-Key.md",
+    "heading": "TTL 정리"
+   },
+   {
+    "path": "tech/os-runtime/nestjs/integrations/nestjs-reliability/NestJS-Outbox.md",
+    "heading": "Dead letter와 운영"
+   }
+  ],
+  "expected_terms": [
+   "DLQ redrive",
+   "수동 재처리 윈도",
+   "최대 redelivery/requeue 시간"
+  ]
+ },
+ {
+  "id": "aurora-pg-iam-replication-auth",
+  "split": "holdout",
+  "question": "Aurora PostgreSQL에 Debezium을 붙이면서 고정 비밀번호 대신 IAM 토큰으로 복제 연결을 맺고 싶다. DB 클러스터와 커넥터 양쪽에 무엇이 갖춰져야 할까?",
+  "start": "Aurora IAM 인증 CDC",
+  "predicate": "requires",
+  "expected_evidence": [
+   {
+    "path": "tech/messaging-data-pipeline/cdc-outbox/cdc-debezium/CDC-Debezium-Setup.md",
+    "heading": "RDS/Aurora PostgreSQL 특수사항"
+   }
+  ],
+  "expected_terms": [
+   "rds.iam_auth_for_replication",
+   "PostgresAwsIamConnectionFactory",
+   "AWS Advanced JDBC Wrapper"
+  ]
+ },
+ {
+  "id": "idempotency-record-key-rotation",
+  "split": "holdout",
+  "question": "NestJS 멱등 인터셉터가 저장하는 결제 결과를 암호화해 두었는데, 그 암호화 키를 새 키로 바꿔야 한다. 저장된 결과를 못 읽는 일 없이 교체하려면 어떤 순서와 조건을 지켜야 할까?",
+  "start": "멱등 레코드 키 로테이션",
+  "predicate": "requires",
+  "expected_evidence": [
+   {
+    "path": "tech/os-runtime/nestjs/integrations/nestjs-reliability/NestJS-Idempotency.md",
+    "heading": "Transport별 중복과 암호화"
+   }
+  ],
+  "expected_terms": [
+   "old,new",
+   "new,old",
+   "완료 ttl"
+  ]
+ },
+ {
+  "id": "negative-kafka-idempotent-producer-settings",
+  "split": "holdout",
+  "question": "Kafka 프로듀서의 재전송 중복을 없애려고 멱등 프로듀서 옵션을 켜려 한다. 이 옵션이 제대로 동작하려면 acks와 동시에 보낼 수 있는 요청 수를 어떻게 맞춰야 할까?",
+  "start": "enable.idempotence",
+  "predicate": "requires",
+  "expected_evidence": [],
+  "expected_terms": [],
+  "expected_empty": true
+ },
+ {
+  "id": "local-log-collector-forwarding-risk",
+  "split": "holdout",
+  "question": "서비스가 이벤트를 Kafka로 직접 보내지 않고 노드의 로그 수집기에 넘기면 브로커가 죽어도 디스크에 쌓았다가 다시 보내 주니 outbox가 필요 없다는 의견이 나왔다. 이 구성이 감수하는 위험은 무엇일까?",
+  "start": "Fluent Bit 경유 발행",
+  "predicate": "has_tradeoff",
+  "expected_evidence": [
+   {
+    "path": "tech/messaging-data-pipeline/cdc-outbox/Transactional-Outbox.md",
+    "heading": "로컬 수집기 버퍼도 간극을 닫지 못한다"
+   }
+  ],
+  "expected_terms": [
+   "message.timeout.ms",
+   "Retry_Limit",
+   "storage.sync"
+  ]
+ },
+ {
+  "id": "sqs-fifo-dedup-limit",
+  "split": "holdout",
+  "question": "중복 주문 처리를 막으려고 표준 큐를 FIFO 큐로 바꾸고 본문 기반 중복 제거를 켜기로 했다. 이것만 믿고 컨슈머 쪽 멱등 처리를 빼면 무엇을 놓치게 될까?",
+  "start": "SQS FIFO dedup",
+  "predicate": "has_tradeoff",
+  "expected_evidence": [
+   {
+    "path": "tech/reliability/Idempotent-Consumer.md",
+    "heading": "SQS 특이점"
+   }
+  ],
+  "expected_terms": [
+   "5분 윈도",
+   "비즈니스 단위 중복"
+  ]
+ },
+ {
+  "id": "cdc-offset-skip-cost",
+  "split": "holdout",
+  "question": "Debezium 커넥터가 파싱 못 하는 이벤트 하나에 걸려 계속 멈춘다. 저장된 offset을 앞으로 옮겨 그 이벤트를 건너뛰면 당장은 살아날 텐데, 그 대가는 무엇일까?",
+  "start": "Debezium offset 건너뛰기",
+  "predicate": "has_tradeoff",
+  "expected_evidence": [
+   {
+    "path": "tech/messaging-data-pipeline/cdc-outbox/cdc-debezium/CDC-Debezium-Operations.md",
+    "heading": "장애별 복구"
+   }
+  ],
+  "expected_terms": [
+   "data gap",
+   "backfill"
+  ]
+ },
+ {
+  "id": "negative-ev-fast-charging",
+  "split": "holdout",
+  "question": "전기차를 집밥 충전 없이 매번 고속도로 급속충전기로만 충전하려 한다. 이렇게 하면 감수해야 할 손해는 무엇일까?",
+  "start": "전기차 급속충전",
+  "predicate": "has_tradeoff",
+  "expected_evidence": [],
+  "expected_terms": [],
+  "expected_empty": true
+ },
+ {
+  "id": "dedup-table-free-alternatives",
+  "split": "holdout",
+  "question": "포인트 적립 컨슈머에 메시지 ID를 저장하는 중복 기록 테이블을 따로 두려 한다. 그런 기록 없이도 같은 메시지를 두 번 받아 견딜 수 있게 하는 다른 설계는 무엇일까?",
+  "start": "dedup 테이블",
+  "predicate": "alternative_to",
+  "expected_evidence": [
+   {
+    "path": "tech/reliability/Idempotent-Consumer.md",
+    "heading": "1. 자연 멱등 설계 (가장 좋음)"
+   },
+   {
+    "path": "tech/reliability/Idempotent-Consumer.md",
+    "heading": "3. 상태 머신 가드 (조건부 전이)"
+   }
+  ],
+  "expected_terms": [
+   "자연 멱등",
+   "유효한 전이만 허용"
+  ]
+ },
+ {
+  "id": "body-hash-as-key-alternatives",
+  "split": "holdout",
+  "question": "주문 API에서 클라이언트 수정 없이 요청 본문을 해시해 중복 판별 키로 쓰자는 안이 나왔다. 해시 대신 키로 삼을 만한 식별자는 무엇일까?",
+  "start": "요청 본문 해시",
+  "predicate": "alternative_to",
+  "expected_evidence": [
+   {
+    "path": "tech/messaging-data-pipeline/delivery-guarantees/Idempotency-Key.md",
+    "heading": "고유 식별자 종류"
+   }
+  ],
+  "expected_terms": [
+   "eventId",
+   "paymentId",
+   "fingerprint"
+  ]
+ },
+ {
+  "id": "aurora-mysql-binlog-retention-setting",
+  "split": "holdout",
+  "question": "Aurora MySQL에 CDC를 붙이려는데, 커넥터가 오래 멈춰도 binlog가 남아 있도록 보관 기간을 늘리고 싶다. 일반 MySQL처럼 서버 변수로 정할 수 없다면 대신 무엇을 써야 할까?",
+  "start": "binlog_expire_logs_seconds",
+  "predicate": "alternative_to",
+  "expected_evidence": [
+   {
+    "path": "tech/messaging-data-pipeline/cdc-outbox/cdc-debezium/CDC-Debezium-Setup.md",
+    "heading": "Aurora MySQL 특수사항"
+   }
+  ],
+  "expected_terms": [
+   "mysql.rds_set_configuration",
+   "binlog retention hours"
+  ]
+ },
+ {
+  "id": "negative-cdc-avro-format-alternatives",
+  "split": "holdout",
+  "question": "CDC 이벤트를 Avro로 직렬화해 Kafka에 싣고 있는데, 소비 팀이 다루기 어렵다고 한다. Avro 대신 고를 수 있는 직렬화 포맷은 무엇이 있을까?",
+  "start": "Avro 직렬화",
+  "predicate": "alternative_to",
+  "expected_evidence": [],
+  "expected_terms": [],
+  "expected_empty": true
+ }
+]

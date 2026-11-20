@@ -33,9 +33,22 @@ entity ID, 축약 ID 순으로 찾고, 없으면 slug, label, alias의 비교 �
 | `ok` | 개념 하나를 찾았고 상한 안에서 모두 반환 | 근거를 `context_read`로 확인 |
 | `partial` | 관계 50개 또는 문서 20개 상한을 넘었거나 byte 예산 때문에 일부만 반환 | `predicates`나 `types`로 좁히거나 `max_bytes`를 늘려 재질의 |
 | `ambiguous_concept` | 같은 이름의 개념이 둘 이상 | `candidates`의 ID로 재질의 |
-| `concept_not_found` | 정확히 같은 이름의 개념이 없음 | `candidates`가 있으면 그 ID로 재질의, 비어 있으면 `context_lookup` 또는 `context_search` |
+| `concept_not_found` | 정확히 같은 이름의 개념이 없음 | `candidates`의 label, 클래스와 `match`를 확인하고 맞는 ID로 재질의, 비어 있거나 맞는 것이 없으면 `context_lookup` 또는 `context_search` |
 
-정확히 같은 이름이 없을 때 `candidates`는 slug, label 또는 alias가 입력을 포함하거나 입력에 포함되는 개념을 최대 8개 제안한다. 겹친 길이를 두 키 중 긴 쪽의 길이로 나눈 값이 큰 순서, 같으면 ID 순서로 정렬하므로 입력과 가장 가까운 이름이 앞에 온다. 잘린 수는 `budget.omitted_candidates`로 보고한다. 제안된 개념을 자동으로 선택하지 않으며 2자 미만의 키는 제안하지 않는다. 짧은 입력은 무관한 개념을 제안할 수 있으므로 label과 alias를 확인하고 고른다.
+정확히 같은 이름이 없을 때 `candidates`는 표현이 다른 개념을 최대 8개 제안하고, 각 후보에 일치한 방식 `match`를 붙인다. 잘린 수는 `budget.omitted_candidates`로 보고한다. 제안된 개념을 자동으로 선택하지 않는다. 입력의 비교 키가 2자 미만이면 후보를 제안하지 않고, 비교 키가 2자 미만인 이름은 `name` 일치에서 제외한다.
+
+| `match` | 조건 |
+| --- | --- |
+| `name` | slug, label 또는 alias가 입력을 포함하거나 입력에 포함된다. 짧은 쪽의 단어가 긴 쪽 단어의 앞부분과 맞아야 하므로 `seconds` 안의 `econ` 같은 단어 중간 일치는 제외한다 |
+| `name_tokens` | 이름이 입력 단어의 절반 이상이자 2개 이상을 가진다. 단어가 하나인 입력은 그 단어 |
+| `evidence_heading` | 개념이나 그 관계를 지지하는 원문 Section의 heading 경로가 입력 전체 또는 위 기준의 단어를 가진다 |
+| `evidence_text` | 같은 Section의 본문이 가진다 |
+
+단어는 NFC와 소문자화 뒤 한글 연속과 그 밖의 글자, 숫자 연속으로 나누며 2자 미만은 버린다. 단어는 그 단어로 시작하는 낱말과 일치하므로 조사가 붙은 한글도 찾는다. `name_tokens`, `evidence_heading`, `evidence_text`에서는 그 영역에서 허용 범위 안 개념 8개보다 많은 개념에 나타나는 표현과 단어를 쓰지 않는다. 구별하는 힘이 없기 때문이다. `name` 일치는 개수와 관계없이 후보가 되고 8개를 넘는 수는 `budget.omitted_candidates`로 센다. 2자 이상의 단어가 없는 입력(기호만 있는 입력 등)은 `name` 일치만 쓰며 이때는 단어 경계를 확인하지 못한다.
+
+순서는 이름 일치(`name`, `name_tokens`), `evidence_heading`, `evidence_text`다. 이름 일치 안에서는 입력 단어를 더 많이 가진 이름이 앞에 오므로 `SQS FIFO dedup`에서 단어 하나만 겹치는 Topic `sqs`보다 세 단어를 모두 가진 개념이 먼저 나온다. 근거 일치는 선언과 그 근거 Section, 관계를 선언한 항목과 상대 개념이 모두 허용 범위 안일 때만 쓴다.
+
+첫 후보가 맞는 개념이라는 보장은 없다. 넓은 Topic이 이름 한 단어로 먼저 나올 수 있고, 본문 일치는 그 표현을 언급만 한 절의 개념을 제안할 수 있다. 측정한 정확도는 [[Ontology-Competency-Evaluation#이름 해석 개선과 새 미공개 질문]]에 있다. 본문 일치는 근거 문서의 Git blob을 읽으므로 찾지 못한 질의는 찾은 질의보다 수십 ms 더 걸리고, Git object가 없으면 `source_unavailable` 또는 `invalid_git_blob` 오류가 된다.
 
 ## 응답
 
