@@ -1,0 +1,149 @@
+---
+tags: [ai, ontology, instances, recommendation-system]
+status: vocabulary
+category: "AI엔지니어링(AIEngineering)"
+aliases: ["추천시스템 온톨로지 선언: 페이지 조립과 택소노미"]
+ontology_concepts:
+  - {id: score-sum-hides-unseen-items, type: Problem, label: "Item 점수 합산이 아래쪽 item과 row의 미노출을 숨김", evidence: "[[Recommendation-System-Page-Level-Optimization#세 단계의 책임]]"}
+  - {id: separate-exposure-selection-estimation, type: Approach, label: "Row 노출 확률, item 선택 확률과 surface 목적의 분리 추정", evidence: "[[Recommendation-System-Page-Level-Optimization#세 단계의 책임]]"}
+  - {id: page-decision-replay, type: Approach, label: "같은 입력과 bundle로 page를 다시 만드는 replay", aliases: ["Decision replay"], evidence: "[[Recommendation-System-Page-Level-Optimization#조립 계약]]"}
+  - {id: deterministic-tie-break, type: Condition, label: "결정론적 tie-break", evidence: "[[Recommendation-System-Page-Level-Optimization#조립 계약]]"}
+  - {id: greedy-constrained-page-assembler, type: Approach, label: "Greedy constrained assembler", evidence: "[[Recommendation-System-Page-Level-Optimization#Row 선택과 순서]]"}
+  - {id: learned-page-assembly-model, type: Approach, label: "학습형 row ranker, slate model 또는 end-to-end page model", evidence: "[[Recommendation-System-Page-Level-Optimization#Row 선택과 순서]]"}
+  - {id: sufficient-logs-and-traffic, type: Condition, label: "충분한 로그와 트래픽", evidence: "[[Recommendation-System-Page-Level-Optimization#Row 선택과 순서]]"}
+  - {id: cross-row-duplication, type: Problem, label: "Cross-row 중복", evidence: "[[Recommendation-System-Page-Level-Optimization#Cross-row 중복과 피로도]]"}
+  - {id: marginal-row-overlap-penalty, type: Approach, label: "이미 고른 row와의 중복에 대한 marginal penalty", evidence: "[[Recommendation-System-Page-Level-Optimization#Row 선택과 순서]]"}
+  - {id: slate-reranking, type: Approach, label: "Slate reranking", evidence: "[[Recommendation-System-Page-Level-Optimization#Intra-row ranking]]"}
+  - {id: franchise-concept-repetition, type: Problem, label: "Row 사이의 같은 franchise와 매우 유사한 concept 중복", evidence: "[[Recommendation-System-Page-Level-Optimization#Cross-row 중복과 피로도]]"}
+  - {id: first-viewport-duplicate-title, type: Problem, label: "초기 viewport의 동일 작품 중복", evidence: "[[Recommendation-System-Page-Level-Optimization#Cross-row 중복과 피로도]]"}
+  - {id: first-viewport-single-exposure, type: Approach, label: "초기 viewport의 동일 작품 1회 노출", evidence: "[[Recommendation-System-Page-Level-Optimization#Cross-row 중복과 피로도]]"}
+  - {id: franchise-cap-or-distance-constraint, type: Approach, label: "같은 franchise와 유사 concept의 상한 또는 거리 제약", evidence: "[[Recommendation-System-Page-Level-Optimization#Cross-row 중복과 피로도]]"}
+  - {id: provider-concentration, type: Problem, label: "같은 provider 편중", evidence: "[[Recommendation-System-Page-Level-Optimization#Cross-row 중복과 피로도]]"}
+  - {id: provider-exposure-cap-and-monitoring, type: Approach, label: "Surface별 provider 노출 상한과 분포 감시", evidence: "[[Recommendation-System-Page-Level-Optimization#Cross-row 중복과 피로도]]"}
+  - {id: impression-fatigue-penalty, type: Approach, label: "최근 viewable impression 반복의 시간 감쇠 penalty와 frequency cap", evidence: "[[Recommendation-System-Page-Level-Optimization#Cross-row 중복과 피로도]]"}
+  - {id: viewable-impression-basis, type: Condition, label: "API 응답이 아닌 실제 viewable impression 기준의 노출 집계", evidence: "[[Recommendation-System-Page-Level-Optimization#Cross-row 중복과 피로도]]"}
+  - {id: intersection-observer-viewport, type: Approach, label: "Intersection Observer의 viewport 교차 관측", evidence: "[[Recommendation-System-Page-Level-Optimization#Viewport와 scroll attribution]]"}
+  - {id: intersection-observer-no-paint-occlusion, type: Tradeoff, label: "실제 픽셀 표시와 다른 요소에 의한 가림은 보장하지 않음", evidence: "[[Recommendation-System-Page-Level-Optimization#Viewport와 scroll attribution]]"}
+  - {id: post-eligibility-item-shortage, type: Problem, label: "Eligibility 후 item 부족", evidence: "[[Recommendation-System-Page-Level-Optimization#Underfill과 fallback]]"}
+  - {id: bounded-overfetch-fallback-order, type: Approach, label: "제한된 overfetch, 같은 row 의미의 다음 source, row 축소 순서의 처리", evidence: "[[Recommendation-System-Page-Level-Optimization#Underfill과 fallback]]"}
+  - {id: row-semantic-mismatch, type: Problem, label: "Row 의미 불일치", evidence: "[[Recommendation-System-Page-Level-Optimization#Underfill과 fallback]]"}
+  - {id: drop-row-select-other-objective, type: Approach, label: "Row를 제거하고 다른 목적 row 후보 선택", evidence: "[[Recommendation-System-Page-Level-Optimization#Underfill과 fallback]]"}
+  - {id: row-source-timeout, type: Problem, label: "Row source timeout", evidence: "[[Recommendation-System-Page-Level-Optimization#Underfill과 fallback]]"}
+  - {id: row-cache-on-source-timeout, type: Approach, label: "Row source timeout 때 cache 사용", evidence: "[[Recommendation-System-Page-Level-Optimization#Underfill과 fallback]]"}
+  - {id: row-cache-valid-within-policy, type: Condition, label: "Cache가 policy 안에서 유효함", evidence: "[[Recommendation-System-Page-Level-Optimization#Underfill과 fallback]]"}
+  - {id: equivalent-fallback-row, type: Approach, label: "동급 fallback row 선택", evidence: "[[Recommendation-System-Page-Level-Optimization#Underfill과 fallback]]"}
+  - {id: page-assembler-timeout, type: Problem, label: "Page assembler timeout", evidence: "[[Recommendation-System-Page-Level-Optimization#Underfill과 fallback]]"}
+  - {id: validated-baseline-ordering, type: Approach, label: "검증된 baseline ordering 사용", evidence: "[[Recommendation-System-Page-Level-Optimization#Underfill과 fallback]]"}
+  - {id: remove-direct-watch-cta-and-refill, type: Approach, label: "직접 시청 CTA item 제거 후 최신 조건으로 다시 채움", evidence: "[[Recommendation-System-Page-Level-Optimization#Underfill과 fallback]]"}
+  - {id: page-primary-only-metric, type: Approach, label: "Page primary 지표 하나만 보기", evidence: "[[Recommendation-System-Page-Level-Optimization#지표]]"}
+  - {id: specific-row-sacrificed, type: Tradeoff, label: "특정 row 희생", evidence: "[[Recommendation-System-Page-Level-Optimization#지표]]"}
+  - {id: row-ctr-sum-only-metric, type: Approach, label: "Row CTR 합계만 보기", evidence: "[[Recommendation-System-Page-Level-Optimization#지표]]"}
+  - {id: discovery-experience-distorted, type: Tradeoff, label: "전체 발견 경험 왜곡", evidence: "[[Recommendation-System-Page-Level-Optimization#지표]]"}
+  - {id: layered-page-row-guardrail-metrics, type: Approach, label: "Page 결과, row 진단과 공급 및 안전 guardrail을 함께 보기", evidence: "[[Recommendation-System-Page-Level-Optimization#지표]]"}
+  - {id: row-wise-test-false-positives, type: Problem, label: "여러 row별 유의성 검정 반복의 거짓 양성 증가", evidence: "[[Recommendation-System-Page-Level-Optimization#실험 계약]]"}
+  - {id: limit-key-comparisons, type: Approach, label: "핵심 비교 제한", evidence: "[[Recommendation-System-Page-Level-Optimization#실험 계약]]"}
+  - {id: multiple-testing-correction, type: Approach, label: "다중 검정 보정", evidence: "[[Recommendation-System-Page-Level-Optimization#실험 계약]]"}
+  - {id: simultaneous-change-confounding, type: Problem, label: "UI layout, row selection과 item ranker 동시 변경 시 원인 분리 불가", evidence: "[[Recommendation-System-Page-Level-Optimization#실험 계약]]"}
+  - {id: staged-experiments, type: Approach, label: "단계 실험", evidence: "[[Recommendation-System-Page-Level-Optimization#실험 계약]]"}
+  - {id: factorial-design, type: Approach, label: "factorial 설계", evidence: "[[Recommendation-System-Page-Level-Optimization#실험 계약]]"}
+  - {id: post-exposure-only-generalization, type: Problem, label: "사후 노출자만 전체 효과로 일반화", evidence: "[[Recommendation-System-Page-Level-Optimization#실험 계약]]"}
+  - {id: itt-and-triggered-analysis, type: Approach, label: "응답 기준 ITT와 viewable 기준 triggered 분석 병행", evidence: "[[Recommendation-System-Page-Level-Optimization#실험 계약]]"}
+  - {id: page-offline-replay, type: Approach, label: "Page offline replay", evidence: "[[Recommendation-System-Page-Level-Optimization#실험 계약]]"}
+  - {id: replay-misses-new-page-behavior, type: Tradeoff, label: "새 page가 만드는 scroll과 선택 행동을 완전히 재현하지 못함", evidence: "[[Recommendation-System-Page-Level-Optimization#실험 계약]]"}
+  - {id: taxonomy-based-recommendation, type: Approach, label: "택소노미 기반 콘텐츠 추천", aliases: ["택소노미 기반 추천"], evidence: "[[Recommendation-System-Taxonomy-Content-Based#추천 시스템 택소노미와 콘텐츠 기반 추천]]"}
+  - {id: operational-taxonomy, type: Approach, label: "운영 택소노미", evidence: "[[Recommendation-System-Taxonomy-Content-Based#자유 태그와 택소노미를 구분한다]]"}
+  - {id: concept-version-deprecation-mapping, type: Condition, label: "version, 폐기와 대체 mapping", evidence: "[[Recommendation-System-Taxonomy-Content-Based#자유 태그와 택소노미를 구분한다]]"}
+  - {id: free-tag-synonym-split, type: Problem, label: "자유 태그의 동의어 분리", evidence: "[[Recommendation-System-Taxonomy-Content-Based#자유 태그와 택소노미를 구분한다]]"}
+  - {id: preferred-and-alternative-labels, type: Approach, label: "대표 label과 alternative label로 한 개념에 연결", evidence: "[[Recommendation-System-Taxonomy-Content-Based#자유 태그와 택소노미를 구분한다]]"}
+  - {id: inconsistent-free-tag-criteria, type: Problem, label: "작성자마다 다른 자유 태그 기준", evidence: "[[Recommendation-System-Taxonomy-Content-Based#자유 태그와 택소노미를 구분한다]]"}
+  - {id: scope-note-guide-review-status, type: Approach, label: "scopeNote, 할당 가이드와 검수 상태", evidence: "[[Recommendation-System-Taxonomy-Content-Based#자유 태그와 택소노미를 구분한다]]"}
+  - {id: policy-softened-by-similarity, type: Problem, label: "정책 입력이 유사도 점수로 완화됨", evidence: "[[Recommendation-System-Taxonomy-Content-Based#다축 개념 체계]]"}
+  - {id: separate-policy-inputs-from-taste-taxonomy, type: Approach, label: "연령 등급, 유해성, 법적 차단을 취향 택소노미와 분리된 정책 입력으로 관리", evidence: "[[Recommendation-System-Taxonomy-Content-Based#다축 개념 체계]]"}
+  - {id: market-relative-concept, type: Problem, label: "기준 시장에 따라 달라지는 표현(해외 배경)의 보편 concept 고정", evidence: "[[Recommendation-System-Taxonomy-Content-Based#작품 예시는 할당 정답이 아니다]]"}
+  - {id: derive-from-setting-country-ids, type: Approach, label: "해외 배경을 settingCountryIds에서 surface 시장 기준으로 파생", evidence: "[[Recommendation-System-Taxonomy-Content-Based#작품 예시는 할당 정답이 아니다]]"}
+  - {id: confidence-as-ranking-weight, type: Approach, label: "택소노미 할당 confidence를 ranking weight로 곱함", evidence: "[[Recommendation-System-Taxonomy-Content-Based#Concept와 Assignment 계약]]"}
+  - {id: calibrated-confidence, type: Condition, label: "calibration을 별도로 검증한 할당 confidence", evidence: "[[Recommendation-System-Taxonomy-Content-Based#Concept와 Assignment 계약]]"}
+  - {id: label-string-change, type: Problem, label: "택소노미 concept label 문자열의 추가와 변경", evidence: "[[Recommendation-System-Taxonomy-Content-Based#Concept와 Assignment 계약]]"}
+  - {id: record-concept-id-not-label, type: Approach, label: "추천과 event에 문자열 대신 conceptId 기록", evidence: "[[Recommendation-System-Taxonomy-Content-Based#Concept와 Assignment 계약]]"}
+  - {id: invalid-tagger-schema-or-id, type: Problem, label: "태깅 출력의 schema 위반과 존재하지 않는 ID", evidence: "[[Recommendation-System-Taxonomy-Content-Based#LLM 보조 태깅 pipeline]]"}
+  - {id: deterministic-tag-validator, type: Approach, label: "태깅 출력의 deterministic validator", evidence: "[[Recommendation-System-Taxonomy-Content-Based#LLM 보조 태깅 pipeline]]"}
+  - {id: constrained-output-allowed-ids, type: Approach, label: "허용 ID를 강제하는 constrained output", evidence: "[[Recommendation-System-Taxonomy-Content-Based#LLM 보조 태깅 pipeline]]"}
+  - {id: batch-output-order-not-guaranteed, type: Problem, label: "Bedrock batch inference 출력 record의 입력 순서 비보장", evidence: "[[Recommendation-System-Taxonomy-Content-Based#LLM 보조 태깅 pipeline]]"}
+  - {id: record-id-rejoin, type: Approach, label: "고유 recordId로 결과를 입력 snapshot과 다시 결합", evidence: "[[Recommendation-System-Taxonomy-Content-Based#LLM 보조 태깅 pipeline]]"}
+  - {id: taxonomy-common-genre-dominance, type: Problem, label: "흔한 장르가 모든 결과를 지배함", evidence: "[[Recommendation-System-Taxonomy-Content-Based#작품과 사용자 벡터]]"}
+  - {id: axis-weight-frequency-correction-or-cap, type: Approach, label: "axis weight, tag 빈도 보정 또는 축별 상한", evidence: "[[Recommendation-System-Taxonomy-Content-Based#작품과 사용자 벡터]]"}
+  - {id: broader-concept-partial-score, type: Approach, label: "하위 concept 일치 시 상위 concept 부분 점수", evidence: "[[Recommendation-System-Taxonomy-Content-Based#작품과 사용자 벡터]]"}
+  - {id: no-parent-child-double-count, type: Condition, label: "부모와 자식 concept를 중복 합산하지 않음", evidence: "[[Recommendation-System-Taxonomy-Content-Based#작품과 사용자 벡터]]"}
+  - {id: single-item-tags-copied-as-taste, type: Problem, label: "한 작품의 모든 tag를 사용자의 확정 취향으로 복제", evidence: "[[Recommendation-System-Taxonomy-Content-Based#작품과 사용자 벡터]]"}
+  - {id: repeated-positive-evidence-and-strength, type: Approach, label: "여러 positive에서 반복된 증거와 행동 강도를 함께 봄", evidence: "[[Recommendation-System-Taxonomy-Content-Based#작품과 사용자 벡터]]"}
+  - {id: rating-and-wishlist-signal, type: Approach, label: "평가와 찜 신호", evidence: "[[Recommendation-System-Taxonomy-Content-Based#작품과 사용자 벡터]]"}
+  - {id: explicit-hide-as-negative, type: Approach, label: "명시적 숨김의 negative 사용", evidence: "[[Recommendation-System-Taxonomy-Content-Based#작품과 사용자 벡터]]"}
+  - {id: hide-rejection-scope-ambiguity, type: Tradeoff, label: "작품 전체 거절인지 특정 tag 거절인지 불명확", evidence: "[[Recommendation-System-Taxonomy-Content-Based#작품과 사용자 벡터]]"}
+  - {id: sensitive-concept-affinity, type: Approach, label: "민감한 concept의 사용자 affinity", evidence: "[[Recommendation-System-Taxonomy-Content-Based#작품과 사용자 벡터]]"}
+  - {id: legitimate-purpose-consent-access-retention, type: Condition, label: "정당한 목적, 동의, 접근 통제와 보유 기간의 확인", evidence: "[[Recommendation-System-Taxonomy-Content-Based#작품과 사용자 벡터]]"}
+  - {id: taxonomy-only-overspecialization, type: Problem, label: "택소노미만으로 만든 목록의 overspecialization", evidence: "[[Recommendation-System-Taxonomy-Content-Based#후보 생성과 랭킹 연결]]"}
+  - {id: mix-popular-editorial-collaborative-candidates, type: Approach, label: "인기, 편집과 협업 후보 혼합", evidence: "[[Recommendation-System-Taxonomy-Content-Based#후보 생성과 랭킹 연결]]"}
+  - {id: new-item-taxonomy-assignment-ready, type: Condition, label: "신규 작품의 택소노미 할당 준비", evidence: "[[Recommendation-System-Taxonomy-Content-Based#후보 생성과 랭킹 연결]]"}
+  - {id: new-user-entry-strategy, type: Approach, label: "인기, 편집, 명시적 선호 선택과 제한된 탐색 같은 신규 사용자 진입 전략", evidence: "[[Recommendation-System-Taxonomy-Content-Based#후보 생성과 랭킹 연결]]"}
+ontology_relations:
+  - {subject: "concept:separate-exposure-selection-estimation", predicate: addresses, target: "concept:score-sum-hides-unseen-items", evidence: "[[Recommendation-System-Page-Level-Optimization#세 단계의 책임]]"}
+  - {subject: "concept:page-decision-replay", predicate: requires, target: "concept:deterministic-tie-break", evidence: "[[Recommendation-System-Page-Level-Optimization#조립 계약]]"}
+  - {subject: "concept:greedy-constrained-page-assembler", predicate: alternative_to, target: "concept:learned-page-assembly-model", evidence: "[[Recommendation-System-Page-Level-Optimization#Row 선택과 순서]]"}
+  - {subject: "concept:learned-page-assembly-model", predicate: requires, target: "concept:sufficient-logs-and-traffic", evidence: "[[Recommendation-System-Page-Level-Optimization#Row 선택과 순서]]"}
+  - {subject: "concept:marginal-row-overlap-penalty", predicate: addresses, target: "concept:cross-row-duplication", evidence: "[[Recommendation-System-Page-Level-Optimization#Row 선택과 순서]]"}
+  - {subject: "concept:slate-reranking", predicate: addresses, target: "concept:repeated-exposure", evidence: "[[Recommendation-System-Page-Level-Optimization#Intra-row ranking]]"}
+  - {subject: "concept:first-viewport-single-exposure", predicate: addresses, target: "concept:first-viewport-duplicate-title", evidence: "[[Recommendation-System-Page-Level-Optimization#Cross-row 중복과 피로도]]"}
+  - {subject: "concept:franchise-cap-or-distance-constraint", predicate: addresses, target: "concept:franchise-concept-repetition", evidence: "[[Recommendation-System-Page-Level-Optimization#Cross-row 중복과 피로도]]"}
+  - {subject: "concept:provider-exposure-cap-and-monitoring", predicate: addresses, target: "concept:provider-concentration", evidence: "[[Recommendation-System-Page-Level-Optimization#Cross-row 중복과 피로도]]"}
+  - {subject: "concept:impression-fatigue-penalty", predicate: addresses, target: "concept:repeated-exposure", evidence: "[[Recommendation-System-Page-Level-Optimization#Cross-row 중복과 피로도]]"}
+  - {subject: "concept:impression-fatigue-penalty", predicate: requires, target: "concept:viewable-impression-basis", evidence: "[[Recommendation-System-Page-Level-Optimization#Cross-row 중복과 피로도]]"}
+  - {subject: "concept:intersection-observer-viewport", predicate: has_tradeoff, target: "concept:intersection-observer-no-paint-occlusion", evidence: "[[Recommendation-System-Page-Level-Optimization#Viewport와 scroll attribution]]"}
+  - {subject: "concept:bounded-overfetch-fallback-order", predicate: addresses, target: "concept:post-eligibility-item-shortage", evidence: "[[Recommendation-System-Page-Level-Optimization#Underfill과 fallback]]"}
+  - {subject: "concept:drop-row-select-other-objective", predicate: addresses, target: "concept:row-semantic-mismatch", evidence: "[[Recommendation-System-Page-Level-Optimization#Underfill과 fallback]]"}
+  - {subject: "concept:row-cache-on-source-timeout", predicate: addresses, target: "concept:row-source-timeout", evidence: "[[Recommendation-System-Page-Level-Optimization#Underfill과 fallback]]"}
+  - {subject: "concept:row-cache-on-source-timeout", predicate: requires, target: "concept:row-cache-valid-within-policy", evidence: "[[Recommendation-System-Page-Level-Optimization#Underfill과 fallback]]"}
+  - {subject: "concept:equivalent-fallback-row", predicate: addresses, target: "concept:row-source-timeout", evidence: "[[Recommendation-System-Page-Level-Optimization#Underfill과 fallback]]"}
+  - {subject: "concept:row-cache-on-source-timeout", predicate: alternative_to, target: "concept:equivalent-fallback-row", evidence: "[[Recommendation-System-Page-Level-Optimization#Underfill과 fallback]]"}
+  - {subject: "concept:validated-baseline-ordering", predicate: addresses, target: "concept:page-assembler-timeout", evidence: "[[Recommendation-System-Page-Level-Optimization#Underfill과 fallback]]"}
+  - {subject: "concept:remove-direct-watch-cta-and-refill", predicate: addresses, target: "concept:availability-unknown", evidence: "[[Recommendation-System-Page-Level-Optimization#Underfill과 fallback]]"}
+  - {subject: "concept:page-primary-only-metric", predicate: has_tradeoff, target: "concept:specific-row-sacrificed", evidence: "[[Recommendation-System-Page-Level-Optimization#지표]]"}
+  - {subject: "concept:row-ctr-sum-only-metric", predicate: has_tradeoff, target: "concept:discovery-experience-distorted", evidence: "[[Recommendation-System-Page-Level-Optimization#지표]]"}
+  - {subject: "concept:layered-page-row-guardrail-metrics", predicate: alternative_to, target: "concept:page-primary-only-metric", evidence: "[[Recommendation-System-Page-Level-Optimization#지표]]"}
+  - {subject: "concept:layered-page-row-guardrail-metrics", predicate: alternative_to, target: "concept:row-ctr-sum-only-metric", evidence: "[[Recommendation-System-Page-Level-Optimization#지표]]"}
+  - {subject: "concept:limit-key-comparisons", predicate: addresses, target: "concept:row-wise-test-false-positives", evidence: "[[Recommendation-System-Page-Level-Optimization#실험 계약]]"}
+  - {subject: "concept:multiple-testing-correction", predicate: addresses, target: "concept:row-wise-test-false-positives", evidence: "[[Recommendation-System-Page-Level-Optimization#실험 계약]]"}
+  - {subject: "concept:limit-key-comparisons", predicate: alternative_to, target: "concept:multiple-testing-correction", evidence: "[[Recommendation-System-Page-Level-Optimization#실험 계약]]"}
+  - {subject: "concept:staged-experiments", predicate: addresses, target: "concept:simultaneous-change-confounding", evidence: "[[Recommendation-System-Page-Level-Optimization#실험 계약]]"}
+  - {subject: "concept:factorial-design", predicate: addresses, target: "concept:simultaneous-change-confounding", evidence: "[[Recommendation-System-Page-Level-Optimization#실험 계약]]"}
+  - {subject: "concept:staged-experiments", predicate: alternative_to, target: "concept:factorial-design", evidence: "[[Recommendation-System-Page-Level-Optimization#실험 계약]]"}
+  - {subject: "concept:itt-and-triggered-analysis", predicate: addresses, target: "concept:post-exposure-only-generalization", evidence: "[[Recommendation-System-Page-Level-Optimization#실험 계약]]"}
+  - {subject: "concept:page-offline-replay", predicate: has_tradeoff, target: "concept:replay-misses-new-page-behavior", evidence: "[[Recommendation-System-Page-Level-Optimization#실험 계약]]"}
+  - {subject: "concept:taxonomy-based-recommendation", predicate: addresses, target: "concept:new-item-cold-start", evidence: "[[Recommendation-System-Taxonomy-Content-Based#전체 위치]]"}
+  - {subject: "concept:operational-taxonomy", predicate: requires, target: "concept:concept-version-deprecation-mapping", evidence: "[[Recommendation-System-Taxonomy-Content-Based#자유 태그와 택소노미를 구분한다]]"}
+  - {subject: "concept:preferred-and-alternative-labels", predicate: addresses, target: "concept:free-tag-synonym-split", evidence: "[[Recommendation-System-Taxonomy-Content-Based#자유 태그와 택소노미를 구분한다]]"}
+  - {subject: "concept:scope-note-guide-review-status", predicate: addresses, target: "concept:inconsistent-free-tag-criteria", evidence: "[[Recommendation-System-Taxonomy-Content-Based#자유 태그와 택소노미를 구분한다]]"}
+  - {subject: "concept:separate-policy-inputs-from-taste-taxonomy", predicate: addresses, target: "concept:policy-softened-by-similarity", evidence: "[[Recommendation-System-Taxonomy-Content-Based#다축 개념 체계]]"}
+  - {subject: "concept:derive-from-setting-country-ids", predicate: addresses, target: "concept:market-relative-concept", evidence: "[[Recommendation-System-Taxonomy-Content-Based#작품 예시는 할당 정답이 아니다]]"}
+  - {subject: "concept:confidence-as-ranking-weight", predicate: requires, target: "concept:calibrated-confidence", evidence: "[[Recommendation-System-Taxonomy-Content-Based#Concept와 Assignment 계약]]"}
+  - {subject: "concept:record-concept-id-not-label", predicate: addresses, target: "concept:label-string-change", evidence: "[[Recommendation-System-Taxonomy-Content-Based#Concept와 Assignment 계약]]"}
+  - {subject: "concept:deterministic-tag-validator", predicate: addresses, target: "concept:invalid-tagger-schema-or-id", evidence: "[[Recommendation-System-Taxonomy-Content-Based#LLM 보조 태깅 pipeline]]"}
+  - {subject: "concept:constrained-output-allowed-ids", predicate: addresses, target: "concept:invalid-tagger-schema-or-id", evidence: "[[Recommendation-System-Taxonomy-Content-Based#LLM 보조 태깅 pipeline]]"}
+  - {subject: "concept:record-id-rejoin", predicate: addresses, target: "concept:batch-output-order-not-guaranteed", evidence: "[[Recommendation-System-Taxonomy-Content-Based#LLM 보조 태깅 pipeline]]"}
+  - {subject: "concept:axis-weight-frequency-correction-or-cap", predicate: addresses, target: "concept:taxonomy-common-genre-dominance", evidence: "[[Recommendation-System-Taxonomy-Content-Based#작품과 사용자 벡터]]"}
+  - {subject: "concept:broader-concept-partial-score", predicate: requires, target: "concept:no-parent-child-double-count", evidence: "[[Recommendation-System-Taxonomy-Content-Based#작품과 사용자 벡터]]"}
+  - {subject: "concept:repeated-positive-evidence-and-strength", predicate: addresses, target: "concept:single-item-tags-copied-as-taste", evidence: "[[Recommendation-System-Taxonomy-Content-Based#작품과 사용자 벡터]]"}
+  - {subject: "concept:rating-and-wishlist-signal", predicate: has_tradeoff, target: "concept:feedback-selection-bias", evidence: "[[Recommendation-System-Taxonomy-Content-Based#작품과 사용자 벡터]]"}
+  - {subject: "concept:explicit-hide-as-negative", predicate: has_tradeoff, target: "concept:hide-rejection-scope-ambiguity", evidence: "[[Recommendation-System-Taxonomy-Content-Based#작품과 사용자 벡터]]"}
+  - {subject: "concept:sensitive-concept-affinity", predicate: requires, target: "concept:legitimate-purpose-consent-access-retention", evidence: "[[Recommendation-System-Taxonomy-Content-Based#작품과 사용자 벡터]]"}
+  - {subject: "concept:mix-popular-editorial-collaborative-candidates", predicate: addresses, target: "concept:taxonomy-only-overspecialization", evidence: "[[Recommendation-System-Taxonomy-Content-Based#후보 생성과 랭킹 연결]]"}
+  - {subject: "concept:taxonomy-based-recommendation", predicate: requires, target: "concept:new-item-taxonomy-assignment-ready", evidence: "[[Recommendation-System-Taxonomy-Content-Based#후보 생성과 랭킹 연결]]"}
+  - {subject: "concept:new-user-entry-strategy", predicate: addresses, target: "concept:new-user-cold-start", evidence: "[[Recommendation-System-Taxonomy-Content-Based#후보 생성과 랭킹 연결]]"}
+---
+
+# 추천시스템 온톨로지 선언: 페이지 조립과 택소노미
+
+페이지 단위 최적화와 택소노미 기반 추천에 대한 개념 81개와 타입 관계 52개를 선언한다. 본문 지식은 여기에 두지 않고, 각 선언의 `evidence`가 가리키는 원문 섹션이 근거다.
+
+선언은 `ontology/candidates/recommendation-system-*.jsonl`에서 원문 대조 검증을 통과한 후보만 옮긴 것이다. 새 선언은 후보 파일에 먼저 추가해 검증한 뒤 한 줄로 옮기고, 원문 heading이 바뀌면 `evidence`를 함께 고친다.
+
+상위: [[Ontology-Instances]]

@@ -1,0 +1,243 @@
+[
+  {
+    "id": "inbatch-negative-popularity-penalty",
+    "split": "holdout",
+    "question": "투타워 리트리버 학습, in-batch negative 쓰는데 인기 상품이 오답으로 너무 자주 뽑혀서 점수가 깎임, 샘플링 확률 보정 방법, 배치 크기 늘리기, 하드 네거티브 섞기, 롱테일 노출",
+    "start": "인배치 네거티브 인기 쏠림",
+    "predicate": "addresses",
+    "expected_evidence": [
+      {"path": "tech/architecture-design/recommendation-system/retrieval-ranking/Recommendation-System-Hubness-Popularity-Debiasing.md", "heading": "logQ 보정과 구분한다"},
+      {"path": "tech/architecture-design/recommendation-system/retrieval-ranking/Recommendation-System-Shared-Embedding-Space.md", "heading": "학습: 대조 학습과 오답 설계"}
+    ],
+    "expected_terms": ["logQ 보정"],
+    "note": "Hubness: in-batch softmax에서 인기 상품이 negative로 자주 들어가 과하게 벌점을 받으므로 logit에서 log(p_j)를 빼는 Yi 등의 보정. Shared-Embedding 표: logQ 보정은 in-batch 오답의 인기 상품 쏠림을 줄인다."
+  },
+  {
+    "id": "purchased-item-repeat-recommendation",
+    "split": "holdout",
+    "question": "커머스 홈 개인화, 이미 산 냉장고랑 비슷한 상품이 계속 추천됨, 구매 이벤트를 관심 증가로만 반영하는 문제, 소모품 다시 살 타이밍, 관리형 추천 필터 반영 지연, 보유 상태 동기화",
+    "start": "구매 후 같은 상품 재노출",
+    "predicate": "addresses",
+    "expected_evidence": [
+      {"path": "tech/architecture-design/recommendation-system/system-contracts/Recommendation-System-Personalization-Failure-Modes.md", "heading": "완료된 목적과 지속 관심을 나눈다"},
+      {"path": "tech/architecture-design/recommendation-system/system-contracts/Recommendation-System-Personalization-Failure-Modes.md", "heading": "증상에서 빠진 계약을 찾는다"}
+    ],
+    "expected_terms": ["구매 완료 뒤 제외", "재구매 주기"],
+    "note": "내구재는 구매 뒤 같은 범주를 줄이고 소모품처럼 재구매 주기가 있는 상품만 주기에 맞춰 다시 노출하는 규칙을 둔다. 진단표 첫 행: 구매 완료 뒤 제외, 재구매 주기."
+  },
+  {
+    "id": "training-window-popularity-drift",
+    "split": "holdout",
+    "question": "동영상 홈 피드 랭커, 학습 윈도우 동안 인기 분포가 바뀌어서 모델이 과거 인기 기준으로 굳음, 신선도 보정용 피처, watch time 가중 학습, 클릭 낚시 영상 억제, 랭킹 라벨 정의",
+    "start": "학습 기간 인기도 변화",
+    "predicate": "addresses",
+    "expected_evidence": [
+      {"path": "tech/architecture-design/recommendation-system/industry-cases/Recommendation-System-Industry-Media.md", "heading": "Ranking과 label"}
+    ],
+    "expected_terms": ["example age"],
+    "note": "example age(t_max - t_N)를 서빙에서 0에 가깝게 두어 학습 기간에 변한 인기도 분포를 모델이 보정하도록 한다."
+  },
+  {
+    "id": "personalized-search-overrides-exact-match",
+    "split": "holdout",
+    "question": "OTT 작품 검색에 개인화 점수 섞기, 정확한 제목으로 검색했는데 취향 작품이 위로 올라옴, 개인화 가중치 상한, 짧고 모호한 검색어 처리, 비로그인 사용자 비개인화 폴백, 검색 랭커 라벨",
+    "start": "개인화가 검색 순위 왜곡",
+    "predicate": "addresses",
+    "expected_evidence": [
+      {"path": "tech/architecture-design/recommendation-system/ott-discovery/Recommendation-System-OTT-Discovery-Architecture.md", "heading": "개인화 검색 guardrail"}
+    ],
+    "expected_terms": ["relevance floor", "최대 boost"],
+    "note": "개인화가 exact title, 인물과 명시적 filter를 뒤집지 않도록 relevance floor와 최대 boost를 둔다."
+  },
+  {
+    "id": "cuped-covariate-requirement",
+    "split": "holdout",
+    "question": "추천 A/B 테스트 표본이 부족해서 기간 줄이고 싶음, 실험 전 기간 지표로 분산 줄이기, 공변량 고르는 기준, CTR 같은 비율 지표 표준오차, SRM 체크, 중간에 결과 들여다보기",
+    "start": "CUPED",
+    "predicate": "requires",
+    "expected_evidence": [
+      {"path": "tech/architecture-design/recommendation-system/evaluation-experimentation/Recommendation-System-Online-Experimentation-Statistics.md", "heading": "CUPED 분산 감소"}
+    ],
+    "expected_terms": ["assignment 전에 측정한 공변량", "treatment 영향을 받지 않는 공변량"],
+    "note": "X는 assignment 전에 측정되고 treatment의 영향을 받지 않아야 한다."
+  },
+  {
+    "id": "embedding-retrain-index-rebuild",
+    "split": "holdout",
+    "question": "아이템 인코더 다시 학습해서 벡터 차원이랑 정규화 바뀜, 기존 ANN 인덱스에 새 벡터 upsert해도 되는지, 무중단 인덱스 교체, 롤백 단위, 하위 랭커가 쓰는 임베딩 피처 버전 맞추기",
+    "start": "임베딩 모델 재학습",
+    "predicate": "requires",
+    "expected_evidence": [
+      {"path": "tech/architecture-design/recommendation-system/system-contracts/Recommendation-System-Serving-Operations.md", "heading": "Embedding 공간 자체 변경"},
+      {"path": "tech/architecture-design/recommendation-system/retrieval-ranking/Recommendation-System-Shared-Embedding-Space.md", "heading": "차원과 좌표계"}
+    ],
+    "expected_terms": ["전체 item 재embedding과 새 index", "병행 검증 뒤 bundle 전환", "하위 모델 버전 맞춤"],
+    "note": "공간이 바뀌면 기존 index에 vector를 섞지 않고 전체 item을 새로 embedding해 index B를 만들어 active A와 병행 검증한 뒤 bundle을 전환한다. Shared-Embedding: 재학습마다 좌표계가 바뀌므로 인덱스를 다시 만들거나 하위 모델을 같은 버전 임베딩으로 재학습해 버전을 맞춘다."
+  },
+  {
+    "id": "bid-value-calibration",
+    "split": "holdout",
+    "question": "앱 설치 광고 DSP 구축, 설치 확률 구매 확률 예측을 입찰가로 바꾸는 방법, 콘텐츠 랭킹 점수랑 뭐가 다른지, ROAS 목표, 며칠 뒤 들어오는 전환 라벨, 하루 예산 소진 속도",
+    "start": "예측 가치로 입찰가 산정",
+    "predicate": "requires",
+    "expected_evidence": [
+      {"path": "tech/architecture-design/recommendation-system/industry-cases/Recommendation-System-Industry-Ad-Bidding.md", "heading": "여섯 영역"},
+      {"path": "tech/architecture-design/recommendation-system/industry-cases/Recommendation-System-Industry-Ad-Bidding.md", "heading": "함께 볼 설계 질문"}
+    ],
+    "expected_terms": ["보정된 절대값", "calibration"],
+    "note": "광고는 합친 값이 광고주 목표 기준의 금액이어야 입찰가로 바뀌므로 보정된 절대값이 필요하다. 설계 질문: 가치 예측의 보정이 틀리면 입찰가가 그대로 틀린다."
+  },
+  {
+    "id": "downrank-seen-items-requirements",
+    "split": "holdout",
+    "question": "피드 랭킹 후처리 규칙, 이미 클릭했거나 여러 번 보여준 콘텐츠 순위 내리기, 최근 행동 기간별 조회 저장소, 노출 횟수 세는 기준, 같은 작성자 연속 노출 간격, 규칙 파라미터 A/B",
+    "start": "본 콘텐츠 순위 낮추기",
+    "predicate": "requires",
+    "expected_evidence": [
+      {"path": "tech/architecture-design/recommendation-system/retrieval-ranking/Recommendation-System-Ranking-Reranking-Business-Rules.md", "heading": "대표 규칙과 파라미터"}
+    ],
+    "expected_terms": ["최근 행동 조회(Redis Sorted Set)", "viewable impression 기준 노출 횟수"],
+    "note": "하향 규칙은 요청마다 사용자의 최근 행동을 읽으며 Redis Sorted Set에 행동 시각을 score로 둔다. 노출 횟수는 API 응답이 아니라 실제 viewable impression으로 센다."
+  },
+  {
+    "id": "din-candidate-attention-cost",
+    "split": "holdout",
+    "question": "광고 CTR 랭킹 모델, 사용자 행동 이력 중 지금 후보와 관련된 것만 강조하는 어텐션 구조, 전체 카탈로그 후보 생성에도 쓸 수 있는지, GPU 서빙 배칭, 다중 관심 리트리벌과 단계 구분",
+    "start": "후보별 어텐션 CTR 모델",
+    "predicate": "has_tradeoff",
+    "expected_evidence": [
+      {"path": "tech/architecture-design/recommendation-system/industry-cases/Recommendation-System-Industry-Commerce-Marketplace.md", "heading": "Local activation"}
+    ],
+    "expected_terms": ["전체 catalog retrieval에는 비쌈", "후보마다 history attention 재계산"],
+    "note": "Candidate마다 history attention을 다시 계산하므로 정밀 ranking에는 맞지만 전체 catalog retrieval에는 비싸다."
+  },
+  {
+    "id": "ppr-graph-candidate-tradeoff",
+    "split": "holdout",
+    "question": "알 수도 있는 사람 추천 기능, 2촌 3촌 이웃이랑 personalized pagerank로 후보 뽑기, 연결 적은 신규 가입자, 노출 쏠림 걱정, 초대 전송과 수락률 둘 다 보기, 후보 소스별 점수 보정",
+    "start": "그래프 워크 후보 생성",
+    "predicate": "has_tradeoff",
+    "expected_evidence": [
+      {"path": "tech/architecture-design/recommendation-system/industry-cases/Recommendation-System-Industry-Social-Graph.md", "heading": "Candidate generation"}
+    ],
+    "expected_terms": ["degree가 큰 node 반복 강화", "기존 연결 구조 반복 강화"],
+    "note": "Graph walk는 연결이 적은 사용자에게 후보 유동성을 만들 수 있지만 degree가 큰 node와 기존 연결 구조를 반복 강화할 위험도 있다."
+  },
+  {
+    "id": "taxonomy-only-recommendation-risk",
+    "split": "holdout",
+    "question": "OTT 작품 태그 체계로 비슷한 작품 추천, 시청 로그는 아직 적음, 신작 콜드스타트, 태그만으로 추천 목록 만들 때 문제점, LLM 자동 태깅 검수, 장르 편중",
+    "start": "태그 기반 콘텐츠 추천",
+    "predicate": "has_tradeoff",
+    "expected_evidence": [
+      {"path": "tech/architecture-design/recommendation-system/retrieval-ranking/Recommendation-System-Taxonomy-Content-Based.md", "heading": "후보 생성과 랭킹 연결"},
+      {"path": "tech/architecture-design/recommendation-system/ott-discovery/Recommendation-System-OTT-Discovery-Scenarios.md", "heading": "S1. Taxonomy-first"}
+    ],
+    "expected_terms": ["overspecialization", "신규 사용자 Cold Start 미해결", "흔한 장르의 지배"],
+    "note": "택소노미만으로 목록을 만들면 overspecialization이 생기고, 신규 작품 Cold Start는 완화하지만 신규 사용자 Cold Start는 해결하지 않는다. S1의 주요 위험: tag 오류, 흔한 장르의 지배, 비슷한 작품 반복과 편집 비용."
+  },
+  {
+    "id": "registry-polling-controller-tradeoff",
+    "split": "holdout",
+    "question": "랭킹 모델 여러 개를 TF Serving 한 서버에 올려 운영 중, 모델별 deployment로 쪼개고 MLflow alias 바뀌면 자동 배포하는 컨트롤러 만들기, 이 방식 단점, 모델 롤백, 쿠버네티스 readiness",
+    "start": "레지스트리 폴링 배포 컨트롤러",
+    "predicate": "has_tradeoff",
+    "expected_evidence": [
+      {"path": "tech/architecture-design/recommendation-system/system-contracts/Recommendation-System-Model-Serving-Platform.md", "heading": "모델별 배포와 레지스트리 기반 조정"}
+    ],
+    "expected_terms": ["조회 주기만큼의 반영 지연", "단일 장애점"],
+    "note": "비용은 조회 주기만큼의 반영 지연이고, controller를 단일 인스턴스로 두면 배포 경로의 단일 장애점이 된다."
+  },
+  {
+    "id": "ips-clipping-alternatives",
+    "split": "holdout",
+    "question": "추천 정책 오프라인 평가, 로그의 선택 확률이 아주 작은 행 때문에 추정치 분산 폭발, 가중치 자르기 말고 다른 방법, 유효 표본 수, 탐색 트래픽 늘리기, 온라인 실험 전 거르기",
+    "start": "IPS 가중치 클리핑",
+    "predicate": "alternative_to",
+    "expected_evidence": [
+      {"path": "tech/architecture-design/recommendation-system/evaluation-experimentation/Recommendation-System-Off-Policy-Evaluation.md", "heading": "Weight 안정화"}
+    ],
+    "expected_terms": ["Switch-DR", "Self-normalization", "Policy restriction"],
+    "note": "Weight 안정화 방법으로 clipping과 함께 Switch-DR, self-normalization, policy restriction을 나열하고, policy restriction을 배포 gate로 두는 것이 사후 clipping보다 해석이 쉽다고 비교한다."
+  },
+  {
+    "id": "ffm-lightweight-alternative",
+    "split": "holdout",
+    "question": "CTR 예측 모델 경량화, 범주형 피처 필드별 상호작용, FFM은 파라미터가 너무 많음, 실시간 서빙 메모리 예산, 이미지 텍스트 임베딩 차원 축소, 해시 버킷 크기",
+    "start": "FFM",
+    "predicate": "alternative_to",
+    "expected_evidence": [
+      {"path": "tech/architecture-design/recommendation-system/foundations/Recommendation-System-Modeling-Foundations.md", "heading": "Field 단위 상호작용과 CTR 모델 경량화"}
+    ],
+    "expected_terms": ["FwFM"],
+    "note": "FFM은 상대 field마다 잠재 벡터를 둬 파라미터가 늘고, FwFM은 특징마다 잠재 벡터 하나와 field 쌍 가중치만 학습해 FFM 파라미터의 4%로 비슷한 성능을 보고한다."
+  },
+  {
+    "id": "fixed-hash-embedding-alternative",
+    "split": "holdout",
+    "question": "숏폼 추천 실시간 학습, 사용자랑 아이템 ID가 계속 새로 생김, 해시 버킷 충돌로 서로 다른 ID가 임베딩 공유, 오래 안 쓰인 ID 정리, 파라미터 서버 증분 동기화, concept drift",
+    "start": "고정 크기 해시 임베딩",
+    "predicate": "alternative_to",
+    "expected_evidence": [
+      {"path": "tech/architecture-design/recommendation-system/industry-cases/Recommendation-System-Industry-Large-Scale-ML.md", "heading": "Collisionless embedding lifecycle"}
+    ],
+    "expected_terms": ["collisionless embedding table", "동적 key-value hash table"],
+    "note": "Fixed-size hashing은 collision을 만들 수 있고, Monolith는 동적 key-value hash table로 ID별 embedding을 분리하며 admission filtering과 expiry로 성장을 막는다."
+  },
+  {
+    "id": "filtered-ann-alternative",
+    "split": "holdout",
+    "question": "통합 임베딩 리트리버 API, 카테고리 브랜드 할인 조건 걸고 벡터 검색하면 결과가 빠짐, 조건 상품이 한쪽에 몰린 경우 recall 낮음, 조건 조합별 목록 미리 만들기 한계, 응답 지연 줄이기",
+    "start": "필터 걸린 ANN 검색",
+    "predicate": "alternative_to",
+    "expected_evidence": [
+      {"path": "tech/architecture-design/recommendation-system/retrieval-ranking/Recommendation-System-Shared-Embedding-Space.md", "heading": "조건 리트리벌: 정확도와 지연을 같이 지킨다"}
+    ],
+    "expected_terms": ["전수 계산", "비트맵으로 좁힌 후보의 exact scoring"],
+    "note": "조건이 있으면 ANN 대신 전수 계산을 고를 수 있다: 조건 모양을 미리 알 수 없으면 비트맵으로 좁힌 후보를 전수 계산해 recall 100%를 지킨다."
+  },
+  {
+    "id": "group-recommendation-negative",
+    "split": "holdout",
+    "question": "가족이 거실 TV에서 같이 볼 영화 추천, 구성원 여러 명 취향 합치는 집계 방식, 한 명이라도 싫어하는 작품 빼기, 공동 시청 세션 감지, 프로필 전환 없이 추천",
+    "start": "그룹 추천",
+    "predicate": "alternative_to",
+    "expected_evidence": [],
+    "expected_terms": [],
+    "expected_empty": true,
+    "note": "rg 'least misery|그룹 추천|공동 시청|여러 사용자.{0,10}취향|가족.{0,10}추천|group recommend' over tech/ and biz/: no match. household appears only as an experiment randomization unit, not as group preference aggregation."
+  },
+  {
+    "id": "lightgcn-oversmoothing-negative",
+    "split": "holdout",
+    "question": "그래프 기반 협업 필터링 LightGCN 도입, 레이어 수 늘리면 임베딩이 다 비슷해지는 오버스무딩, 이웃 정규화 방식, 사용자 아이템 이분 그래프 학습 비용",
+    "start": "LightGCN",
+    "predicate": "has_tradeoff",
+    "expected_evidence": [],
+    "expected_terms": [],
+    "expected_empty": true,
+    "note": "rg 'LightGCN|NGCF|over-?smoothing|오버스무딩|과평활|message passing' over tech/ and biz/: no recommender match. GCN appears only in Social-Graph PinSage (neighbor sampling, hard negatives, MapReduce inference) and a road-network GNN doc; neither covers layer depth or over-smoothing."
+  },
+  {
+    "id": "semantic-id-generative-retrieval-negative",
+    "split": "holdout",
+    "question": "생성형 추천 리트리벌, 아이템을 semantic ID 코드 시퀀스로 바꿔서 트랜스포머가 다음 아이템 ID를 생성, RQ-VAE 코드북 충돌, 신규 아이템 ID 부여 방식",
+    "start": "semantic ID 생성형 리트리벌",
+    "predicate": "requires",
+    "expected_evidence": [],
+    "expected_terms": [],
+    "expected_empty": true,
+    "note": "rg 'semantic ?ID|RQ-VAE|TIGER|generative retrieval|생성형 검색|codebook|코드북' over tech/ and biz/: only audio-token RVQ codebooks and llms.txt. Netflix GenRec in Industry-Media scores catalog items with learned item embeddings via prefill-only inference, not semantic ID generation."
+  },
+  {
+    "id": "next-poi-recommendation-negative",
+    "split": "holdout",
+    "question": "지도 앱 근처 장소 추천, 방문 체크인 기록으로 다음 갈 곳 예측, 거리 멀수록 선호 줄어드는 감쇠, 영업시간 필터, 이동 동선 시퀀스",
+    "start": "다음 방문 장소 추천",
+    "predicate": "addresses",
+    "expected_evidence": [],
+    "expected_terms": [],
+    "expected_empty": true,
+    "note": "rg '장소 추천|맛집|체크인|check-in|POI|거리 감쇠|distance decay|next location|다음 장소' over tech/ and biz/: only unrelated 'endpoint' substrings. Location appears only as eligibility (Airbnb market, delivery region) and route travel-time prediction, not POI preference modeling."
+  }
+]

@@ -166,6 +166,7 @@ aliases: ["판단 질문 평가", "Ontology Competency Evaluation"]
 
 ## 후속 작업
 
+- 2026-11-21에 추천시스템 문서 25개로 선언을 넓히고 실제 질의 형태와 LLM 호스트로 쟀다. 결과는 [[Ontology-Recommendation-System-Evaluation]]에 있다.
 - 미공개 분할을 새로 만들고, 이름 해석 실패를 줄이는 방법(부분 일치 후보의 자동 선택 기준, alias 보강)을 보정 분할로만 조정한다.
 - MySQL 범위의 binlog 보존 조건, relay 방식과 `transactional-outbox`의 관계처럼 반려한 항목을 범위를 한정한 개념으로 다시 제안한다.
 - 방법이 문제를 남겨 둔다는 서술을 담을 predicate가 없다. 필요한 사례가 쌓이면 schema에 추가한다.

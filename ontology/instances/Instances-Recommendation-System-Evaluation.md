@@ -1,0 +1,154 @@
+---
+tags: [ai, ontology, instances, recommendation-system]
+status: vocabulary
+category: "AI엔지니어링(AIEngineering)"
+aliases: ["추천시스템 온톨로지 선언: 평가와 온라인 실험"]
+ontology_concepts:
+  - {id: offline-evaluation, type: Approach, label: "오프라인 평가", aliases: ["Offline 평가", "offline evaluation"], evidence: "[[Recommendation-System-Evaluation-Experimentation#추천 시스템 평가와 실험]]"}
+  - {id: fixed-evaluation-contract, type: Approach, label: "비교 전 평가 계약 고정", aliases: ["평가 계약 고정", "재현 가능한 평가 계약"], evidence: "[[Recommendation-System-Evaluation-Experimentation#비교 전에 고정할 평가 계약]]"}
+  - {id: incomparable-offline-metrics, type: Problem, label: "평가 계약이 다른 오프라인 지표의 직접 비교", aliases: ["preprocessing, split과 negative sampling이 달라 점수를 직접 비교할 수 없음"], evidence: "[[Recommendation-System-Evaluation-Experimentation#비교 전에 고정할 평가 계약]]"}
+  - {id: post-cutoff-label-leakage, type: Problem, label: "cutoff 뒤 확정된 label의 학습 사용", evidence: "[[Recommendation-System-Evaluation-Experimentation#시간 누수를 막는다]]"}
+  - {id: attribution-window-purge-gap, type: Approach, label: "최대 attribution window만큼의 purge gap", evidence: "[[Recommendation-System-Evaluation-Experimentation#시간 누수를 막는다]]"}
+  - {id: censoring-delayed-feedback-estimator, type: Approach, label: "censoring과 delayed-feedback estimator의 평가 계약 고정", aliases: ["censoring과 delayed-feedback estimator"], evidence: "[[Recommendation-System-Evaluation-Experimentation#시간 누수를 막는다]]"}
+  - {id: recall-at-k, type: Approach, label: "Recall@K", evidence: "[[Recommendation-System-Evaluation-Experimentation#단계별 정확도 지표]]"}
+  - {id: recall-at-k-relevant-set-filter-sensitivity, type: Tradeoff, label: "Recall@K의 relevant set과 filter 위치 민감성", evidence: "[[Recommendation-System-Evaluation-Experimentation#단계별 정확도 지표]]"}
+  - {id: hit-rate-at-k, type: Approach, label: "Hit Rate@K", evidence: "[[Recommendation-System-Evaluation-Experimentation#단계별 정확도 지표]]"}
+  - {id: hit-rate-hides-multiple-misses, type: Tradeoff, label: "Hit Rate@K가 여러 relevant item의 누락을 숨김", evidence: "[[Recommendation-System-Evaluation-Experimentation#단계별 정확도 지표]]"}
+  - {id: precision-at-k, type: Approach, label: "Precision@K", evidence: "[[Recommendation-System-Evaluation-Experimentation#단계별 정확도 지표]]"}
+  - {id: precision-at-k-ignores-recall-graded-relevance, type: Tradeoff, label: "Precision@K의 recall과 graded relevance 미반영", evidence: "[[Recommendation-System-Evaluation-Experimentation#단계별 정확도 지표]]"}
+  - {id: ndcg-at-k, type: Approach, label: "NDCG@K", evidence: "[[Recommendation-System-Evaluation-Experimentation#단계별 정확도 지표]]"}
+  - {id: ndcg-gain-discount-dependence, type: Tradeoff, label: "NDCG@K의 gain과 discount 정의 의존", evidence: "[[Recommendation-System-Evaluation-Experimentation#단계별 정확도 지표]]"}
+  - {id: mean-reciprocal-rank, type: Approach, label: "MRR", aliases: ["Mean Reciprocal Rank"], evidence: "[[Recommendation-System-Evaluation-Experimentation#단계별 정확도 지표]]"}
+  - {id: mrr-ignores-list-after-first-hit, type: Tradeoff, label: "MRR의 첫 성공 뒤 목록 품질 미반영", evidence: "[[Recommendation-System-Evaluation-Experimentation#단계별 정확도 지표]]"}
+  - {id: rmse-mae-rating-metrics, type: Approach, label: "RMSE, MAE 평점 예측 지표", evidence: "[[Recommendation-System-Evaluation-Experimentation#단계별 정확도 지표]]"}
+  - {id: top-k-ranking-not-measured, type: Tradeoff, label: "Top K 목록 순위를 직접 측정하지 않음", evidence: "[[Recommendation-System-Evaluation-Experimentation#단계별 정확도 지표]]"}
+  - {id: accuracy-diversity-single-score, type: Approach, label: "정확도와 다양성의 단일 점수 합산", evidence: "[[Recommendation-System-Evaluation-Experimentation#목록과 생태계 지표]]"}
+  - {id: hidden-accuracy-diversity-tradeoff, type: Tradeoff, label: "정확도와 다양성 사이 tradeoff가 숨을 수 있음", evidence: "[[Recommendation-System-Evaluation-Experimentation#목록과 생태계 지표]]"}
+  - {id: full-catalog-evaluation, type: Approach, label: "Full-catalog 평가", aliases: ["전체 카탈로그 평가"], evidence: "[[Recommendation-System-Evaluation-Experimentation#Full-catalog와 sampled metric]]"}
+  - {id: full-catalog-scoring-cost, type: Tradeoff, label: "전체 카탈로그의 모든 negative를 scoring하는 평가가 비쌀 수 있음", evidence: "[[Recommendation-System-Evaluation-Experimentation#Full-catalog와 sampled metric]]"}
+  - {id: sampled-metric, type: Approach, label: "Sampled metric", evidence: "[[Recommendation-System-Evaluation-Experimentation#Full-catalog와 sampled metric]]"}
+  - {id: naive-sampled-metric-order-loss, type: Tradeoff, label: "naive sampling에서 exact metric과 모델 순서를 보존하지 않을 수 있음", evidence: "[[Recommendation-System-Evaluation-Experimentation#Full-catalog와 sampled metric]]"}
+  - {id: slice-evaluation, type: Approach, label: "Slice별 분리 평가", evidence: "[[Recommendation-System-Evaluation-Experimentation#Baseline과 Slice]]"}
+  - {id: average-masks-slice-failure, type: Problem, label: "전체 평균에 가려지는 Cold Start와 long-tail 실패", evidence: "[[Recommendation-System-Evaluation-Experimentation#Baseline과 Slice]]"}
+  - {id: personalize-same-dataset-group-comparison, type: Approach, label: "Amazon Personalize의 같은 dataset group 데이터로 recipe와 hyperparameter 비교", evidence: "[[Recommendation-System-Evaluation-Experimentation#관리형 추천도 평가 데이터 계약을 확인한다]]"}
+  - {id: personalize-solution-metrics, type: Approach, label: "Amazon Personalize solution version 오프라인 지표", evidence: "[[Recommendation-System-Evaluation-Experimentation#관리형 추천도 평가 데이터 계약을 확인한다]]"}
+  - {id: personalize-online-metrics-user-recorded, type: Tradeoff, label: "Amazon Personalize의 온라인 지표는 사용자가 생성하고 기록해야 함", evidence: "[[Recommendation-System-Evaluation-Experimentation#관리형 추천도 평가 데이터 계약을 확인한다]]"}
+  - {id: itt-analysis, type: Approach, label: "ITT 분석", aliases: ["Intention-to-treat 분석"], evidence: "[[Recommendation-System-Evaluation-Experimentation#출시와 단계 승급 게이트]]"}
+  - {id: exposure-conditioned-analysis, type: Problem, label: "노출자만 사후 선택한 실험 효과 분석", aliases: ["assignment 뒤 미노출 사용자의 분모 제외"], evidence: "[[Recommendation-System-Evaluation-Experimentation#출시와 단계 승급 게이트]]"}
+  - {id: product-structure-randomization-unit, type: Approach, label: "제품 구조에 맞는 randomization unit 선택", evidence: "[[Recommendation-System-Evaluation-Experimentation#출시와 단계 승급 게이트]]"}
+  - {id: user-interference, type: Problem, label: "user 간 interference", aliases: ["사용자 간 interference"], evidence: "[[Recommendation-System-Online-Experimentation-Statistics#Novelty, carryover와 interference]]"}
+  - {id: stage-promotion-gate, type: Approach, label: "출시와 단계 승급 gate", evidence: "[[Recommendation-System-Evaluation-Experimentation#출시와 단계 승급 게이트]]"}
+  - {id: primary-only-promotion, type: Problem, label: "Primary metric 상승만으로 한 승급", evidence: "[[Recommendation-System-Evaluation-Experimentation#출시와 단계 승급 게이트]]"}
+  - {id: composite-propensity, type: Approach, label: "실제 served action의 composite 확률 계산", aliases: ["합성 확률 계산", "규칙과 sampler를 합친 composite 확률 계산"], evidence: "[[Recommendation-System-Evaluation-Experimentation#Off-policy Evaluation]]"}
+  - {id: offline-winner-slo-failure, type: Problem, label: "Offline 상승 모델의 시스템 SLO 실패", evidence: "[[Recommendation-System-Evaluation-Experimentation#출시 판단표]]"}
+  - {id: optimize-or-shrink-candidates, type: Approach, label: "시스템 SLO를 실패한 Offline 상승 모델의 최적화 또는 후보 규모 축소", evidence: "[[Recommendation-System-Evaluation-Experimentation#출시 판단표]]"}
+  - {id: long-term-holdout, type: Approach, label: "장기 holdout", evidence: "[[Recommendation-System-Evaluation-Experimentation#출시 판단표]]"}
+  - {id: repeated-experiments, type: Approach, label: "출시 뒤 효과 유지를 확인하는 반복 실험", evidence: "[[Recommendation-System-Evaluation-Experimentation#출시 판단표]]"}
+  - {id: non-independent-rows-as-samples, type: Problem, label: "독립 단위 아래 row를 독립 표본으로 취급", evidence: "[[Recommendation-System-Online-Experimentation-Statistics#Randomization 단위와 분석 단위]]"}
+  - {id: user-level-ratio-aggregation, type: Approach, label: "user 단위 numerator와 denominator 집계", evidence: "[[Recommendation-System-Online-Experimentation-Statistics#Randomization 단위와 분석 단위]]"}
+  - {id: cluster-robust-method, type: Approach, label: "cluster-robust 방법", evidence: "[[Recommendation-System-Online-Experimentation-Statistics#Randomization 단위와 분석 단위]]"}
+  - {id: user-randomization, type: Approach, label: "User 단위 randomization", evidence: "[[Recommendation-System-Online-Experimentation-Statistics#Randomization 단위와 분석 단위]]"}
+  - {id: user-unit-request-correlation, type: Tradeoff, label: "User 단위의 여러 device와 반복 요청 상관", evidence: "[[Recommendation-System-Online-Experimentation-Statistics#Randomization 단위와 분석 단위]]"}
+  - {id: household-randomization, type: Approach, label: "Household 단위 randomization", evidence: "[[Recommendation-System-Online-Experimentation-Statistics#Randomization 단위와 분석 단위]]"}
+  - {id: household-id-error-sample-loss, type: Tradeoff, label: "household 식별 오류와 표본 감소", evidence: "[[Recommendation-System-Online-Experimentation-Statistics#Randomization 단위와 분석 단위]]"}
+  - {id: session-randomization, type: Approach, label: "Session 단위 randomization", evidence: "[[Recommendation-System-Online-Experimentation-Statistics#Randomization 단위와 분석 단위]]"}
+  - {id: session-carryover, type: Tradeoff, label: "Session 단위의 세션 사이 carryover", evidence: "[[Recommendation-System-Online-Experimentation-Statistics#Randomization 단위와 분석 단위]]"}
+  - {id: request-randomization, type: Approach, label: "Request 단위 randomization", evidence: "[[Recommendation-System-Online-Experimentation-Statistics#Randomization 단위와 분석 단위]]"}
+  - {id: request-unit-variant-contamination, type: Tradeoff, label: "같은 사용자가 variant를 오가며 생기는 오염", evidence: "[[Recommendation-System-Online-Experimentation-Statistics#Randomization 단위와 분석 단위]]"}
+  - {id: two-arm-sample-size-formula, type: Approach, label: "두 variant 평균 차이 양측 검정의 arm당 표본 수 근사식", evidence: "[[Recommendation-System-Online-Experimentation-Statistics#Power와 MDE]]"}
+  - {id: independent-equal-allocation-variance, type: Condition, label: "독립 두 variant의 같은 배정 수와 같은 분산", evidence: "[[Recommendation-System-Online-Experimentation-Statistics#Power와 MDE]]"}
+  - {id: mean-of-user-ratios, type: Approach, label: "사용자별 Y/X의 평균", evidence: "[[Recommendation-System-Online-Experimentation-Statistics#Ratio metric]]"}
+  - {id: mean-of-ratios-different-estimand, type: Tradeoff, label: "작은 denominator 사용자에게 같은 가중치를 줘 생기는 다른 estimand", evidence: "[[Recommendation-System-Online-Experimentation-Statistics#Ratio metric]]"}
+  - {id: delta-method-ratio-variance, type: Approach, label: "ratio metric의 delta method 분산 근사", evidence: "[[Recommendation-System-Online-Experimentation-Statistics#Ratio metric]]"}
+  - {id: delta-method-validity-conditions, type: Condition, label: "독립 사용자 단위 관측, 유한 분산, 0에서 떨어진 분모 평균과 큰 표본", evidence: "[[Recommendation-System-Online-Experimentation-Statistics#Ratio metric]]"}
+  - {id: ci-practical-effect-decision, type: Approach, label: "신뢰구간의 최소 실용 효과와 non-inferiority guardrail 판단", evidence: "[[Recommendation-System-Online-Experimentation-Statistics#효과와 불확실성]]"}
+  - {id: p-value-only-release, type: Problem, label: "`p < 0.05`만으로 한 출시", evidence: "[[Recommendation-System-Online-Experimentation-Statistics#효과와 불확실성]]"}
+  - {id: predefined-heavy-tail-handling, type: Approach, label: "winsorization, robust metric이나 bootstrap의 사전 정의", evidence: "[[Recommendation-System-Online-Experimentation-Statistics#효과와 불확실성]]"}
+  - {id: heavy-tail-metric, type: Problem, label: "Heavy-tail metric", evidence: "[[Recommendation-System-Online-Experimentation-Statistics#효과와 불확실성]]"}
+  - {id: cuped, type: Approach, label: "CUPED", aliases: ["CUPED 분산 감소"], evidence: "[[Recommendation-System-Online-Experimentation-Statistics#CUPED 분산 감소]]"}
+  - {id: experiment-metric-variance, type: Problem, label: "실험 지표의 variance", evidence: "[[Recommendation-System-Online-Experimentation-Statistics#CUPED 분산 감소]]"}
+  - {id: pre-assignment-unaffected-covariate, type: Condition, label: "assignment 전에 측정되고 treatment 영향을 받지 않는 공변량", evidence: "[[Recommendation-System-Online-Experimentation-Statistics#CUPED 분산 감소]]"}
+  - {id: srm-check, type: Approach, label: "SRM 검사", aliases: ["Sample Ratio Mismatch 검사"], evidence: "[[Recommendation-System-Online-Experimentation-Statistics#SRM과 데이터 품질]]"}
+  - {id: no-srm-not-pipeline-proof, type: Tradeoff, label: "SRM이 없어도 randomization과 metric pipeline의 정확성은 보장되지 않음", evidence: "[[Recommendation-System-Online-Experimentation-Statistics#SRM과 데이터 품질]]"}
+  - {id: peeking, type: Problem, label: "Peeking", evidence: "[[Recommendation-System-Online-Experimentation-Statistics#Peeking과 다중 비교]]"}
+  - {id: fixed-horizon-test, type: Approach, label: "Fixed horizon 검정", evidence: "[[Recommendation-System-Online-Experimentation-Statistics#Peeking과 다중 비교]]"}
+  - {id: sequential-testing, type: Approach, label: "Sequential 검정", evidence: "[[Recommendation-System-Online-Experimentation-Statistics#Peeking과 다중 비교]]"}
+  - {id: multiple-comparisons, type: Problem, label: "다중 비교", aliases: ["multiple comparisons"], evidence: "[[Recommendation-System-Online-Experimentation-Statistics#Peeking과 다중 비교]]"}
+  - {id: family-wise-error-control, type: Approach, label: "Holm 또는 Bonferroni family-wise error 통제", evidence: "[[Recommendation-System-Online-Experimentation-Statistics#Peeking과 다중 비교]]"}
+  - {id: fdr-or-exploratory-label, type: Approach, label: "탐색 지표의 FDR 또는 exploratory 표기 분리", evidence: "[[Recommendation-System-Online-Experimentation-Statistics#Peeking과 다중 비교]]"}
+  - {id: separate-safety-stop, type: Approach, label: "통계적 성공 중단과 분리한 safety stop", evidence: "[[Recommendation-System-Online-Experimentation-Statistics#Peeking과 다중 비교]]"}
+  - {id: error-or-ineligible-exposure-spike, type: Problem, label: "오류율이나 부적격 노출 급증", evidence: "[[Recommendation-System-Online-Experimentation-Statistics#Peeking과 다중 비교]]"}
+  - {id: novelty-effect, type: Problem, label: "Novelty effect", evidence: "[[Recommendation-System-Online-Experimentation-Statistics#Novelty, carryover와 interference]]"}
+  - {id: full-cycle-experiment-duration, type: Approach, label: "최소 한 번의 사용 주기와 label 완결 기간을 포함한 실험 기간", evidence: "[[Recommendation-System-Online-Experimentation-Statistics#Novelty, carryover와 interference]]"}
+  - {id: cluster-randomization, type: Approach, label: "Cluster randomization", evidence: "[[Recommendation-System-Online-Experimentation-Statistics#Novelty, carryover와 interference]]"}
+  - {id: switchback-experiment, type: Approach, label: "Switchback", aliases: ["Switchback 실험"], evidence: "[[Recommendation-System-Online-Experimentation-Statistics#Novelty, carryover와 interference]]"}
+  - {id: switchback-block-dependence, type: Tradeoff, label: "Switchback block 집계만으로는 시간적 독립성이 생기지 않음", evidence: "[[Recommendation-System-Online-Experimentation-Statistics#Novelty, carryover와 interference]]"}
+ontology_relations:
+  - {subject: "concept:offline-evaluation", predicate: has_tradeoff, target: "concept:offline-gain-not-online-effect", evidence: "[[Recommendation-System-Evaluation-Experimentation#평가 사다리]]"}
+  - {subject: "concept:fixed-evaluation-contract", predicate: addresses, target: "concept:incomparable-offline-metrics", evidence: "[[Recommendation-System-Evaluation-Experimentation#비교 전에 고정할 평가 계약]]"}
+  - {subject: "concept:point-in-time-feature-join", predicate: addresses, target: "concept:future-information-leakage", evidence: "[[Recommendation-System-Evaluation-Experimentation#시간 누수를 막는다]]"}
+  - {subject: "concept:attribution-window-purge-gap", predicate: addresses, target: "concept:post-cutoff-label-leakage", evidence: "[[Recommendation-System-Evaluation-Experimentation#시간 누수를 막는다]]"}
+  - {subject: "concept:censoring-delayed-feedback-estimator", predicate: addresses, target: "concept:post-cutoff-label-leakage", evidence: "[[Recommendation-System-Evaluation-Experimentation#시간 누수를 막는다]]"}
+  - {subject: "concept:attribution-window-purge-gap", predicate: alternative_to, target: "concept:censoring-delayed-feedback-estimator", evidence: "[[Recommendation-System-Evaluation-Experimentation#시간 누수를 막는다]]"}
+  - {subject: "concept:recall-at-k", predicate: has_tradeoff, target: "concept:recall-at-k-relevant-set-filter-sensitivity", evidence: "[[Recommendation-System-Evaluation-Experimentation#단계별 정확도 지표]]"}
+  - {subject: "concept:hit-rate-at-k", predicate: has_tradeoff, target: "concept:hit-rate-hides-multiple-misses", evidence: "[[Recommendation-System-Evaluation-Experimentation#단계별 정확도 지표]]"}
+  - {subject: "concept:precision-at-k", predicate: has_tradeoff, target: "concept:precision-at-k-ignores-recall-graded-relevance", evidence: "[[Recommendation-System-Evaluation-Experimentation#단계별 정확도 지표]]"}
+  - {subject: "concept:ndcg-at-k", predicate: has_tradeoff, target: "concept:ndcg-gain-discount-dependence", evidence: "[[Recommendation-System-Evaluation-Experimentation#단계별 정확도 지표]]"}
+  - {subject: "concept:mean-reciprocal-rank", predicate: has_tradeoff, target: "concept:mrr-ignores-list-after-first-hit", evidence: "[[Recommendation-System-Evaluation-Experimentation#단계별 정확도 지표]]"}
+  - {subject: "concept:rmse-mae-rating-metrics", predicate: has_tradeoff, target: "concept:top-k-ranking-not-measured", evidence: "[[Recommendation-System-Evaluation-Experimentation#단계별 정확도 지표]]"}
+  - {subject: "concept:accuracy-diversity-single-score", predicate: has_tradeoff, target: "concept:hidden-accuracy-diversity-tradeoff", evidence: "[[Recommendation-System-Evaluation-Experimentation#목록과 생태계 지표]]"}
+  - {subject: "concept:full-catalog-evaluation", predicate: has_tradeoff, target: "concept:full-catalog-scoring-cost", evidence: "[[Recommendation-System-Evaluation-Experimentation#Full-catalog와 sampled metric]]"}
+  - {subject: "concept:sampled-metric", predicate: has_tradeoff, target: "concept:naive-sampled-metric-order-loss", evidence: "[[Recommendation-System-Evaluation-Experimentation#Full-catalog와 sampled metric]]"}
+  - {subject: "concept:sampled-metric", predicate: alternative_to, target: "concept:full-catalog-evaluation", evidence: "[[Recommendation-System-Evaluation-Experimentation#Full-catalog와 sampled metric]]"}
+  - {subject: "concept:slice-evaluation", predicate: addresses, target: "concept:average-masks-slice-failure", evidence: "[[Recommendation-System-Evaluation-Experimentation#Baseline과 Slice]]"}
+  - {subject: "concept:personalize-same-dataset-group-comparison", predicate: addresses, target: "concept:incomparable-offline-metrics", evidence: "[[Recommendation-System-Evaluation-Experimentation#관리형 추천도 평가 데이터 계약을 확인한다]]"}
+  - {subject: "concept:personalize-solution-metrics", predicate: has_tradeoff, target: "concept:personalize-online-metrics-user-recorded", evidence: "[[Recommendation-System-Evaluation-Experimentation#관리형 추천도 평가 데이터 계약을 확인한다]]"}
+  - {subject: "concept:offline-evaluation", predicate: has_tradeoff, target: "concept:offline-gain-not-online-effect", evidence: "[[Recommendation-System-Evaluation-Experimentation#Offline과 Online이 어긋나는 이유]]"}
+  - {subject: "concept:itt-analysis", predicate: addresses, target: "concept:exposure-conditioned-analysis", evidence: "[[Recommendation-System-Evaluation-Experimentation#출시와 단계 승급 게이트]]"}
+  - {subject: "concept:triggered-analysis", predicate: addresses, target: "concept:exposure-conditioned-analysis", evidence: "[[Recommendation-System-Evaluation-Experimentation#출시와 단계 승급 게이트]]"}
+  - {subject: "concept:product-structure-randomization-unit", predicate: addresses, target: "concept:user-interference", evidence: "[[Recommendation-System-Evaluation-Experimentation#출시와 단계 승급 게이트]]"}
+  - {subject: "concept:stage-promotion-gate", predicate: addresses, target: "concept:primary-only-promotion", evidence: "[[Recommendation-System-Evaluation-Experimentation#출시와 단계 승급 게이트]]"}
+  - {subject: "concept:off-policy-evaluation", predicate: requires, target: "concept:served-slate-valid-propensity", evidence: "[[Recommendation-System-Evaluation-Experimentation#Off-policy Evaluation]]"}
+  - {subject: "concept:off-policy-evaluation", predicate: requires, target: "concept:logging-policy-support", evidence: "[[Recommendation-System-Evaluation-Experimentation#Off-policy Evaluation]]"}
+  - {subject: "concept:off-policy-evaluation", predicate: requires, target: "concept:reward-comparability", evidence: "[[Recommendation-System-Evaluation-Experimentation#Off-policy Evaluation]]"}
+  - {subject: "concept:composite-propensity", predicate: addresses, target: "concept:late-recheck-changes-sampled-slate", evidence: "[[Recommendation-System-Evaluation-Experimentation#Off-policy Evaluation]]"}
+  - {subject: "concept:exclude-request-from-ope", predicate: addresses, target: "concept:late-recheck-changes-sampled-slate", evidence: "[[Recommendation-System-Evaluation-Experimentation#Off-policy Evaluation]]"}
+  - {subject: "concept:composite-propensity", predicate: alternative_to, target: "concept:exclude-request-from-ope", evidence: "[[Recommendation-System-Evaluation-Experimentation#Off-policy Evaluation]]"}
+  - {subject: "concept:optimize-or-shrink-candidates", predicate: addresses, target: "concept:offline-winner-slo-failure", evidence: "[[Recommendation-System-Evaluation-Experimentation#출시 판단표]]"}
+  - {subject: "concept:long-term-holdout", predicate: alternative_to, target: "concept:repeated-experiments", evidence: "[[Recommendation-System-Evaluation-Experimentation#출시 판단표]]"}
+  - {subject: "concept:itt-analysis", predicate: alternative_to, target: "concept:triggered-analysis", evidence: "[[Recommendation-System-Online-Experimentation-Statistics#먼저 고정할 estimand]]"}
+  - {subject: "concept:user-level-ratio-aggregation", predicate: addresses, target: "concept:non-independent-rows-as-samples", evidence: "[[Recommendation-System-Online-Experimentation-Statistics#Randomization 단위와 분석 단위]]"}
+  - {subject: "concept:cluster-robust-method", predicate: addresses, target: "concept:non-independent-rows-as-samples", evidence: "[[Recommendation-System-Online-Experimentation-Statistics#Randomization 단위와 분석 단위]]"}
+  - {subject: "concept:user-level-ratio-aggregation", predicate: alternative_to, target: "concept:cluster-robust-method", evidence: "[[Recommendation-System-Online-Experimentation-Statistics#Randomization 단위와 분석 단위]]"}
+  - {subject: "concept:user-randomization", predicate: has_tradeoff, target: "concept:user-unit-request-correlation", evidence: "[[Recommendation-System-Online-Experimentation-Statistics#Randomization 단위와 분석 단위]]"}
+  - {subject: "concept:household-randomization", predicate: has_tradeoff, target: "concept:household-id-error-sample-loss", evidence: "[[Recommendation-System-Online-Experimentation-Statistics#Randomization 단위와 분석 단위]]"}
+  - {subject: "concept:session-randomization", predicate: has_tradeoff, target: "concept:session-carryover", evidence: "[[Recommendation-System-Online-Experimentation-Statistics#Randomization 단위와 분석 단위]]"}
+  - {subject: "concept:request-randomization", predicate: has_tradeoff, target: "concept:request-unit-variant-contamination", evidence: "[[Recommendation-System-Online-Experimentation-Statistics#Randomization 단위와 분석 단위]]"}
+  - {subject: "concept:two-arm-sample-size-formula", predicate: requires, target: "concept:independent-equal-allocation-variance", evidence: "[[Recommendation-System-Online-Experimentation-Statistics#Power와 MDE]]"}
+  - {subject: "concept:mean-of-user-ratios", predicate: has_tradeoff, target: "concept:mean-of-ratios-different-estimand", evidence: "[[Recommendation-System-Online-Experimentation-Statistics#Ratio metric]]"}
+  - {subject: "concept:delta-method-ratio-variance", predicate: requires, target: "concept:delta-method-validity-conditions", evidence: "[[Recommendation-System-Online-Experimentation-Statistics#Ratio metric]]"}
+  - {subject: "concept:ci-practical-effect-decision", predicate: addresses, target: "concept:p-value-only-release", evidence: "[[Recommendation-System-Online-Experimentation-Statistics#효과와 불확실성]]"}
+  - {subject: "concept:predefined-heavy-tail-handling", predicate: addresses, target: "concept:heavy-tail-metric", evidence: "[[Recommendation-System-Online-Experimentation-Statistics#효과와 불확실성]]"}
+  - {subject: "concept:cuped", predicate: addresses, target: "concept:experiment-metric-variance", evidence: "[[Recommendation-System-Online-Experimentation-Statistics#CUPED 분산 감소]]"}
+  - {subject: "concept:cuped", predicate: requires, target: "concept:pre-assignment-unaffected-covariate", evidence: "[[Recommendation-System-Online-Experimentation-Statistics#CUPED 분산 감소]]"}
+  - {subject: "concept:srm-check", predicate: has_tradeoff, target: "concept:no-srm-not-pipeline-proof", evidence: "[[Recommendation-System-Online-Experimentation-Statistics#SRM과 데이터 품질]]"}
+  - {subject: "concept:fixed-horizon-test", predicate: addresses, target: "concept:peeking", evidence: "[[Recommendation-System-Online-Experimentation-Statistics#Peeking과 다중 비교]]"}
+  - {subject: "concept:sequential-testing", predicate: addresses, target: "concept:peeking", evidence: "[[Recommendation-System-Online-Experimentation-Statistics#Peeking과 다중 비교]]"}
+  - {subject: "concept:fixed-horizon-test", predicate: alternative_to, target: "concept:sequential-testing", evidence: "[[Recommendation-System-Online-Experimentation-Statistics#Peeking과 다중 비교]]"}
+  - {subject: "concept:family-wise-error-control", predicate: addresses, target: "concept:multiple-comparisons", evidence: "[[Recommendation-System-Online-Experimentation-Statistics#Peeking과 다중 비교]]"}
+  - {subject: "concept:fdr-or-exploratory-label", predicate: addresses, target: "concept:multiple-comparisons", evidence: "[[Recommendation-System-Online-Experimentation-Statistics#Peeking과 다중 비교]]"}
+  - {subject: "concept:separate-safety-stop", predicate: addresses, target: "concept:error-or-ineligible-exposure-spike", evidence: "[[Recommendation-System-Online-Experimentation-Statistics#Peeking과 다중 비교]]"}
+  - {subject: "concept:full-cycle-experiment-duration", predicate: addresses, target: "concept:novelty-effect", evidence: "[[Recommendation-System-Online-Experimentation-Statistics#Novelty, carryover와 interference]]"}
+  - {subject: "concept:cluster-randomization", predicate: addresses, target: "concept:user-interference", evidence: "[[Recommendation-System-Online-Experimentation-Statistics#Novelty, carryover와 interference]]"}
+  - {subject: "concept:switchback-experiment", predicate: addresses, target: "concept:user-interference", evidence: "[[Recommendation-System-Online-Experimentation-Statistics#Novelty, carryover와 interference]]"}
+  - {subject: "concept:switchback-experiment", predicate: has_tradeoff, target: "concept:switchback-block-dependence", evidence: "[[Recommendation-System-Online-Experimentation-Statistics#Novelty, carryover와 interference]]"}
+  - {subject: "concept:per-variant-training-corpus-isolation", predicate: addresses, target: "concept:treatment-leak-via-pooled-retraining", evidence: "[[Recommendation-System-Online-Experimentation-Statistics#Novelty, carryover와 interference]]"}
+---
+
+# 추천시스템 온톨로지 선언: 평가와 온라인 실험
+
+오프라인 평가 계약, 출시 판단과 온라인 실험 통계에 대한 개념 79개와 타입 관계 59개를 선언한다. 본문 지식은 여기에 두지 않고, 각 선언의 `evidence`가 가리키는 원문 섹션이 근거다.
+
+선언은 `ontology/candidates/recommendation-system-*.jsonl`에서 원문 대조 검증을 통과한 후보만 옮긴 것이다. 새 선언은 후보 파일에 먼저 추가해 검증한 뒤 한 줄로 옮기고, 원문 heading이 바뀌면 `evidence`를 함께 고친다.
+
+상위: [[Ontology-Instances]]

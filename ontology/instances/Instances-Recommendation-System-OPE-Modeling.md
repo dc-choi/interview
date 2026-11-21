@@ -1,0 +1,153 @@
+---
+tags: [ai, ontology, instances, recommendation-system]
+status: vocabulary
+category: "AI엔지니어링(AIEngineering)"
+aliases: ["추천시스템 온톨로지 선언: Off-policy 평가와 모델링 기초"]
+ontology_concepts:
+  - {id: offline-gain-not-online-effect, type: Tradeoff, label: "오프라인 지표 개선이 온라인 효과나 출시 결론을 보장하지 않음", aliases: ["offline 개선이 A/B 결과를 잘 예측하지 못함"], evidence: "[[Recommendation-System-Modeling-Foundations#Accuracy보다 Top K를 보는 이유]]"}
+  - {id: logging-policy-support, type: Condition, label: "정책 간 support", aliases: ["Support/positivity", "logging support와 정책 간 overlap", "새 정책 action에 대한 과거 정책의 support"], evidence: "[[Recommendation-System-Off-Policy-Evaluation#식별 가정]]"}
+  - {id: reward-comparability, type: Condition, label: "정책 간 같은 reward 계약", aliases: ["Reward comparability"], evidence: "[[Recommendation-System-Off-Policy-Evaluation#식별 가정]]"}
+  - {id: risky-policy-entering-experiment, type: Problem, label: "위험한 정책의 온라인 실험 진입", evidence: "[[Recommendation-System-Off-Policy-Evaluation#추천 시스템 Off-Policy Evaluation]]"}
+  - {id: missing-logging-support, type: Problem, label: "target action의 logging support 부재", evidence: "[[Recommendation-System-Off-Policy-Evaluation#식별 가정]]"}
+  - {id: increase-exploration-traffic, type: Approach, label: "탐색 traffic 증가", evidence: "[[Recommendation-System-Off-Policy-Evaluation#식별 가정]]"}
+  - {id: policy-restriction, type: Approach, label: "target policy의 적용 범위를 logging support 안으로 제한", evidence: "[[Recommendation-System-Off-Policy-Evaluation#식별 가정]]"}
+  - {id: ips-estimator, type: Approach, label: "IPS estimator", aliases: ["Inverse Propensity Scoring", "Inverse propensity weighting"], evidence: "[[Recommendation-System-Off-Policy-Evaluation#IPS]]"}
+  - {id: logging-target-policy-difference, type: Problem, label: "logging policy와 target policy의 정책 차이", evidence: "[[Recommendation-System-Off-Policy-Evaluation#IPS]]"}
+  - {id: large-importance-weight-variance, type: Tradeoff, label: "큰 importance weight로 인한 고분산", aliases: ["작은 propensity action의 큰 weight와 분산 증가"], evidence: "[[Recommendation-System-Off-Policy-Evaluation#IPS]]"}
+  - {id: snips-estimator, type: Approach, label: "SNIPS", aliases: ["Self-Normalized IPS"], evidence: "[[Recommendation-System-Off-Policy-Evaluation#SNIPS]]"}
+  - {id: snips-normalization-bias, type: Tradeoff, label: "weight 합 정규화로 생기는 SNIPS 편향", evidence: "[[Recommendation-System-Off-Policy-Evaluation#SNIPS]]"}
+  - {id: direct-method, type: Approach, label: "Direct Method", aliases: ["Direct Method estimator"], evidence: "[[Recommendation-System-Off-Policy-Evaluation#Direct Method]]"}
+  - {id: reward-model-error-bias, type: Tradeoff, label: "reward model이 틀리면 그대로 생기는 편향", evidence: "[[Recommendation-System-Off-Policy-Evaluation#Direct Method]]"}
+  - {id: fold-split-or-cross-fitting, type: Approach, label: "학습과 평가 fold 분리 또는 cross-fitting", evidence: "[[Recommendation-System-Off-Policy-Evaluation#Direct Method]]"}
+  - {id: reward-memorization-leak, type: Problem, label: "같은 reward를 암기하는 reward model 누수", evidence: "[[Recommendation-System-Off-Policy-Evaluation#Direct Method]]"}
+  - {id: doubly-robust, type: Approach, label: "Doubly Robust", aliases: ["DR estimator", "Doubly Robust estimator"], evidence: "[[Recommendation-System-Off-Policy-Evaluation#Doubly Robust]]"}
+  - {id: reward-or-propensity-model-correct, type: Condition, label: "reward model과 propensity model 중 하나가 올바름", evidence: "[[Recommendation-System-Off-Policy-Evaluation#Doubly Robust]]"}
+  - {id: weight-clipping, type: Approach, label: "Weight clipping", aliases: ["importance weight clipping"], evidence: "[[Recommendation-System-Off-Policy-Evaluation#Weight 안정화]]"}
+  - {id: clipping-bias, type: Tradeoff, label: "clipping이 도입하는 원래 target value에 대한 편향", evidence: "[[Recommendation-System-Off-Policy-Evaluation#Weight 안정화]]"}
+  - {id: independence-unit-bootstrap, type: Approach, label: "독립성 단위 bootstrap", evidence: "[[Recommendation-System-Off-Policy-Evaluation#불확실성]]"}
+  - {id: full-slate-ope, type: Approach, label: "순서 있는 slate 전체 확률 비의 OPE", evidence: "[[Recommendation-System-Off-Policy-Evaluation#단일 action과 slate]]"}
+  - {id: slate-action-space-variance-growth, type: Tradeoff, label: "slate action space와 분산의 급격한 증가", evidence: "[[Recommendation-System-Off-Policy-Evaluation#단일 action과 slate]]"}
+  - {id: slot-probability-product, type: Approach, label: "Slot별 조건부 확률 곱", evidence: "[[Recommendation-System-Off-Policy-Evaluation#단일 action과 slate]]"}
+  - {id: same-sequential-factorization, type: Condition, label: "logging과 target policy의 같은 순차 factorization", evidence: "[[Recommendation-System-Off-Policy-Evaluation#단일 action과 slate]]"}
+  - {id: slot-reward-decomposition-estimator, type: Approach, label: "item reward를 slot별로 분해하는 estimator", evidence: "[[Recommendation-System-Off-Policy-Evaluation#단일 action과 slate]]"}
+  - {id: reward-decomposition-assumption, type: Condition, label: "slot별 reward decomposition 가정", evidence: "[[Recommendation-System-Off-Policy-Evaluation#단일 action과 slate]]"}
+  - {id: sparse-full-slate-support, type: Problem, label: "희박한 full-slate support", evidence: "[[Recommendation-System-Off-Policy-Evaluation#단일 action과 slate]]"}
+  - {id: narrow-slate-ope-scope, type: Approach, label: "OPE 범위를 source weight나 제한된 slot 변경으로 축소", evidence: "[[Recommendation-System-Off-Policy-Evaluation#단일 action과 slate]]"}
+  - {id: ope-unevaluable-policy, type: Tradeoff, label: "현재 로그로는 OPE로 신뢰성 있게 평가할 수 없는 정책", evidence: "[[Recommendation-System-Off-Policy-Evaluation#출시 gate]]"}
+  - {id: dot-product-score, type: Approach, label: "내적 점수", aliases: ["dot score"], evidence: "[[Recommendation-System-Modeling-Foundations#벡터, 내적과 코사인]]"}
+  - {id: cosine-similarity-score, type: Approach, label: "코사인 유사도 점수", aliases: ["cosine similarity"], evidence: "[[Recommendation-System-Modeling-Foundations#벡터, 내적과 코사인]]"}
+  - {id: ann-index-retrieval, type: Approach, label: "ANN index 기반 embedding 검색", evidence: "[[Recommendation-System-Modeling-Foundations#벡터, 내적과 코사인]]"}
+  - {id: ann-metric-matches-training-score, type: Condition, label: "모델 학습 점수와 ANN index 거리 함수의 일치", evidence: "[[Recommendation-System-Modeling-Foundations#벡터, 내적과 코사인]]"}
+  - {id: matrix-factorization, type: Approach, label: "Matrix Factorization", aliases: ["행렬 분해"], evidence: "[[Recommendation-System-Modeling-Foundations#알고리즘 사다리]]"}
+  - {id: mf-latent-axes-uninterpretable, type: Tradeoff, label: "MF latent 축이 사람이 붙인 의미와 일치한다는 보장 없음", evidence: "[[Recommendation-System-Modeling-Foundations#벡터, 내적과 코사인]]"}
+  - {id: impression-outcome-linked-logging, type: Approach, label: "request, candidate, slate, impression과 outcome 연결 기록", evidence: "[[Recommendation-System-Modeling-Foundations#Implicit Feedback와 미관측의 의미]]"}
+  - {id: prior-policy-position-selection-bias, type: Problem, label: "이전 정책과 position이 만든 선택 편향 학습", evidence: "[[Recommendation-System-Modeling-Foundations#Implicit Feedback와 미관측의 의미]]"}
+  - {id: training-negative-sampling, type: Approach, label: "학습용 negative sampling", aliases: ["Negative sampling(positive와 일부 negative로 softmax 근사)", "Negative sampling"], evidence: "[[Recommendation-System-Modeling-Foundations#Negative Sampling]]"}
+  - {id: all-unobserved-training-cost, type: Problem, label: "전체 미관측 item 학습 비용", evidence: "[[Recommendation-System-Modeling-Foundations#Negative Sampling]]"}
+  - {id: sampled-false-negatives, type: Tradeoff, label: "미관측이지만 관련 있는 item을 false negative로 넣을 수 있음", evidence: "[[Recommendation-System-Modeling-Foundations#Negative Sampling]]"}
+  - {id: popularity-editorial-recommendation, type: Approach, label: "인기와 편집 추천", evidence: "[[Recommendation-System-Modeling-Foundations#알고리즘 사다리]]"}
+  - {id: popularity-editorial-limits, type: Tradeoff, label: "인기와 편집 추천의 개인화와 long-tail 부족", evidence: "[[Recommendation-System-Modeling-Foundations#알고리즘 사다리]]"}
+  - {id: content-based-limits, type: Tradeoff, label: "콘텐츠 기반 추천의 overspecialization과 feature 품질 의존", evidence: "[[Recommendation-System-Modeling-Foundations#알고리즘 사다리]]"}
+  - {id: user-item-knn, type: Approach, label: "User/Item KNN", evidence: "[[Recommendation-System-Modeling-Foundations#알고리즘 사다리]]"}
+  - {id: knn-sparsity-cost-exposure-bias, type: Tradeoff, label: "User/Item KNN의 희소성, 비용과 노출 편향", evidence: "[[Recommendation-System-Modeling-Foundations#알고리즘 사다리]]"}
+  - {id: mf-cold-start-side-feature-limit, type: Tradeoff, label: "MF의 Cold Start와 side feature 한계", evidence: "[[Recommendation-System-Modeling-Foundations#알고리즘 사다리]]"}
+  - {id: learning-to-rank, type: Approach, label: "Learning to Rank", evidence: "[[Recommendation-System-Modeling-Foundations#알고리즘 사다리]]"}
+  - {id: ltr-biased-label-serving-cost, type: Tradeoff, label: "Learning to Rank의 편향된 label과 serving feature 비용", evidence: "[[Recommendation-System-Modeling-Foundations#알고리즘 사다리]]"}
+  - {id: bandit-recommendation-policy, type: Approach, label: "Bandit 추천 정책", evidence: "[[Recommendation-System-Modeling-Foundations#알고리즘 사다리]]"}
+  - {id: bandit-user-cost-support-variance, type: Tradeoff, label: "Bandit의 사용자 비용, support와 분산", evidence: "[[Recommendation-System-Modeling-Foundations#알고리즘 사다리]]"}
+  - {id: factorization-machine, type: Approach, label: "Factorization Machine", aliases: ["Factorization Machines"], evidence: "[[Recommendation-System-Modeling-Foundations#Factorization Machine과 희소 특징의 의미]]"}
+  - {id: sagemaker-builtin-fm, type: Approach, label: "SageMaker AI 내장 FM", evidence: "[[Recommendation-System-Modeling-Foundations#Factorization Machine과 희소 특징의 의미]]"}
+  - {id: recordio-protobuf-float32-input, type: Condition, label: "SageMaker AI 내장 FM의 `Float32` tensor `recordIO-protobuf` 학습 입력", evidence: "[[Recommendation-System-Modeling-Foundations#Factorization Machine과 희소 특징의 의미]]"}
+  - {id: field-aware-fm, type: Approach, label: "Field-aware FM", aliases: ["Field-aware Factorization Machine"], evidence: "[[Recommendation-System-Modeling-Foundations#Field 단위 상호작용과 CTR 모델 경량화]]"}
+  - {id: ffm-parameter-growth, type: Tradeoff, label: "Field-aware FM 파라미터의 특징 수와 field 수 곱 증가", evidence: "[[Recommendation-System-Modeling-Foundations#Field 단위 상호작용과 CTR 모델 경량화]]"}
+  - {id: field-weighted-fm, type: Approach, label: "Field-weighted FM", aliases: ["FwFM", "Field-weighted Factorization Machine"], evidence: "[[Recommendation-System-Modeling-Foundations#Field 단위 상호작용과 CTR 모델 경량화]]"}
+  - {id: side-feature-models, type: Approach, label: "side feature를 입력으로 받는 모델", evidence: "[[Recommendation-System-Modeling-Foundations#Field 단위 상호작용과 CTR 모델 경량화]]"}
+  - {id: serving-time-new-item-features, type: Condition, label: "신규 아이템 콘텐츠 특징의 서빙 시점 계산", evidence: "[[Recommendation-System-Modeling-Foundations#Field 단위 상호작용과 CTR 모델 경량화]]"}
+  - {id: ctr-model-serving-budget-overrun, type: Problem, label: "CTR 모델의 실시간 서빙 지연 예산과 메모리 초과", evidence: "[[Recommendation-System-Modeling-Foundations#Field 단위 상호작용과 CTR 모델 경량화]]"}
+  - {id: pretrained-embedding-reduction, type: Approach, label: "사전학습 임베딩 축소", evidence: "[[Recommendation-System-Modeling-Foundations#Field 단위 상호작용과 CTR 모델 경량화]]"}
+  - {id: embedding-table-sharing, type: Approach, label: "임베딩 테이블 공유", evidence: "[[Recommendation-System-Modeling-Foundations#Field 단위 상호작용과 CTR 모델 경량화]]"}
+  - {id: id-feature-hash-bucketing, type: Approach, label: "ID 특징 해시 범위", evidence: "[[Recommendation-System-Modeling-Foundations#Field 단위 상호작용과 CTR 모델 경량화]]"}
+  - {id: embedding-pooling, type: Approach, label: "사전학습 임베딩 축소를 위한 pooling", evidence: "[[Recommendation-System-Modeling-Foundations#Field 단위 상호작용과 CTR 모델 경량화]]"}
+  - {id: pooling-information-loss, type: Tradeoff, label: "사전학습 임베딩 축소에서 pooling의 큰 정보 손실", evidence: "[[Recommendation-System-Modeling-Foundations#Field 단위 상호작용과 CTR 모델 경량화]]"}
+  - {id: umap-projection, type: Approach, label: "UMAP 같은 비선형 투영", evidence: "[[Recommendation-System-Modeling-Foundations#Field 단위 상호작용과 CTR 모델 경량화]]"}
+  - {id: umap-retuning-burden, type: Tradeoff, label: "빠르게 변하는 데이터에서 UMAP 하이퍼파라미터 재조정 부담", evidence: "[[Recommendation-System-Modeling-Foundations#Field 단위 상호작용과 CTR 모델 경량화]]"}
+  - {id: autoencoder-embedding-reduction, type: Approach, label: "autoencoder 임베딩 축소", evidence: "[[Recommendation-System-Modeling-Foundations#Field 단위 상호작용과 CTR 모델 경량화]]"}
+  - {id: autoencoder-retrain-feature-shift, type: Tradeoff, label: "데이터 변화 시 autoencoder 재학습과 랭커 특징 공간 변경", evidence: "[[Recommendation-System-Modeling-Foundations#Field 단위 상호작용과 CTR 모델 경량화]]"}
+  - {id: encoder-ranker-co-versioning, type: Condition, label: "encoder와 랭커의 bundle feature 참조 함께 version 관리", evidence: "[[Recommendation-System-Modeling-Foundations#Field 단위 상호작용과 CTR 모델 경량화]]"}
+  - {id: table-sharing-collision-loss, type: Tradeoff, label: "완전히 같은 field가 아닌데 테이블을 공유하면 늘 수 있는 충돌과 정보 손실", evidence: "[[Recommendation-System-Modeling-Foundations#Field 단위 상호작용과 CTR 모델 경량화]]"}
+  - {id: hash-bucket-collision-parameter-tradeoff, type: Tradeoff, label: "해시 bucket 수에 따른 충돌과 파라미터 수의 맞교환", evidence: "[[Recommendation-System-Modeling-Foundations#Field 단위 상호작용과 CTR 모델 경량화]]"}
+  - {id: label-view-exposure-in-features, type: Problem, label: "label을 만든 같은 조회의 노출을 특징에 넣는 누수", evidence: "[[Recommendation-System-Modeling-Foundations#Field 단위 상호작용과 CTR 모델 경량화]]"}
+  - {id: pointwise-classification-metrics, type: Approach, label: "Pointwise classification의 accuracy, log loss와 calibration", evidence: "[[Recommendation-System-Modeling-Foundations#Accuracy보다 Top K를 보는 이유]]"}
+  - {id: movielens-baseline, type: Approach, label: "MovieLens 교육용 데이터 baseline", aliases: ["MovieLens 기반 offline 평가"], evidence: "[[Recommendation-System-Modeling-Foundations#첫 산출물: MovieLens Baseline]]"}
+  - {id: movielens-cannot-prove-production-readiness, type: Tradeoff, label: "MovieLens에 실제 impression, logging propensity, OTT availability와 production latency가 없어 exposure bias 교정, OPE, 온라인 효과나 실서비스 준비를 입증하지 못함", aliases: ["MovieLens 성과만으로 real-time serving, 안전 정책과 제품 KPI 개선을 주장할 수 없음"], evidence: "[[Recommendation-System-Modeling-Foundations#첫 산출물: MovieLens Baseline]]"}
+ontology_relations:
+  - {subject: "concept:off-policy-evaluation", predicate: has_tradeoff, target: "concept:ope-not-experiment-replacement", evidence: "[[Recommendation-System-Off-Policy-Evaluation#추천 시스템 Off-Policy Evaluation]]"}
+  - {subject: "concept:off-policy-evaluation", predicate: addresses, target: "concept:risky-policy-entering-experiment", evidence: "[[Recommendation-System-Off-Policy-Evaluation#추천 시스템 Off-Policy Evaluation]]"}
+  - {subject: "concept:resample-policy-with-new-id", predicate: addresses, target: "concept:late-recheck-changes-sampled-slate", evidence: "[[Recommendation-System-Off-Policy-Evaluation#추정 대상과 로그 계약]]"}
+  - {subject: "concept:resample-policy-with-new-id", predicate: alternative_to, target: "concept:composite-propensity", evidence: "[[Recommendation-System-Off-Policy-Evaluation#추정 대상과 로그 계약]]"}
+  - {subject: "concept:increase-exploration-traffic", predicate: addresses, target: "concept:missing-logging-support", evidence: "[[Recommendation-System-Off-Policy-Evaluation#식별 가정]]"}
+  - {subject: "concept:policy-restriction", predicate: addresses, target: "concept:missing-logging-support", evidence: "[[Recommendation-System-Off-Policy-Evaluation#식별 가정]]"}
+  - {subject: "concept:increase-exploration-traffic", predicate: alternative_to, target: "concept:policy-restriction", evidence: "[[Recommendation-System-Off-Policy-Evaluation#식별 가정]]"}
+  - {subject: "concept:ips-estimator", predicate: addresses, target: "concept:logging-target-policy-difference", evidence: "[[Recommendation-System-Off-Policy-Evaluation#IPS]]"}
+  - {subject: "concept:ips-estimator", predicate: requires, target: "concept:served-slate-valid-propensity", evidence: "[[Recommendation-System-Off-Policy-Evaluation#IPS]]"}
+  - {subject: "concept:ips-estimator", predicate: requires, target: "concept:logging-policy-support", evidence: "[[Recommendation-System-Off-Policy-Evaluation#IPS]]"}
+  - {subject: "concept:ips-estimator", predicate: has_tradeoff, target: "concept:large-importance-weight-variance", evidence: "[[Recommendation-System-Off-Policy-Evaluation#IPS]]"}
+  - {subject: "concept:snips-estimator", predicate: has_tradeoff, target: "concept:snips-normalization-bias", evidence: "[[Recommendation-System-Off-Policy-Evaluation#SNIPS]]"}
+  - {subject: "concept:direct-method", predicate: has_tradeoff, target: "concept:reward-model-error-bias", evidence: "[[Recommendation-System-Off-Policy-Evaluation#Direct Method]]"}
+  - {subject: "concept:fold-split-or-cross-fitting", predicate: addresses, target: "concept:reward-memorization-leak", evidence: "[[Recommendation-System-Off-Policy-Evaluation#Direct Method]]"}
+  - {subject: "concept:doubly-robust", predicate: requires, target: "concept:reward-or-propensity-model-correct", evidence: "[[Recommendation-System-Off-Policy-Evaluation#Doubly Robust]]"}
+  - {subject: "concept:doubly-robust", predicate: requires, target: "concept:logging-policy-support", evidence: "[[Recommendation-System-Off-Policy-Evaluation#Doubly Robust]]"}
+  - {subject: "concept:doubly-robust", predicate: has_tradeoff, target: "concept:large-importance-weight-variance", evidence: "[[Recommendation-System-Off-Policy-Evaluation#Doubly Robust]]"}
+  - {subject: "concept:weight-clipping", predicate: has_tradeoff, target: "concept:clipping-bias", evidence: "[[Recommendation-System-Off-Policy-Evaluation#Weight 안정화]]"}
+  - {subject: "concept:independence-unit-bootstrap", predicate: addresses, target: "concept:non-independent-rows-as-samples", evidence: "[[Recommendation-System-Off-Policy-Evaluation#불확실성]]"}
+  - {subject: "concept:full-slate-ope", predicate: has_tradeoff, target: "concept:slate-action-space-variance-growth", evidence: "[[Recommendation-System-Off-Policy-Evaluation#단일 action과 slate]]"}
+  - {subject: "concept:slot-probability-product", predicate: requires, target: "concept:same-sequential-factorization", evidence: "[[Recommendation-System-Off-Policy-Evaluation#단일 action과 slate]]"}
+  - {subject: "concept:slot-reward-decomposition-estimator", predicate: requires, target: "concept:reward-decomposition-assumption", evidence: "[[Recommendation-System-Off-Policy-Evaluation#단일 action과 slate]]"}
+  - {subject: "concept:narrow-slate-ope-scope", predicate: addresses, target: "concept:sparse-full-slate-support", evidence: "[[Recommendation-System-Off-Policy-Evaluation#단일 action과 slate]]"}
+  - {subject: "concept:off-policy-evaluation", predicate: has_tradeoff, target: "concept:ope-unevaluable-policy", evidence: "[[Recommendation-System-Off-Policy-Evaluation#출시 gate]]"}
+  - {subject: "concept:dot-product-score", predicate: alternative_to, target: "concept:cosine-similarity-score", evidence: "[[Recommendation-System-Modeling-Foundations#벡터, 내적과 코사인]]"}
+  - {subject: "concept:ann-index-retrieval", predicate: requires, target: "concept:ann-metric-matches-training-score", evidence: "[[Recommendation-System-Modeling-Foundations#벡터, 내적과 코사인]]"}
+  - {subject: "concept:matrix-factorization", predicate: has_tradeoff, target: "concept:mf-latent-axes-uninterpretable", evidence: "[[Recommendation-System-Modeling-Foundations#벡터, 내적과 코사인]]"}
+  - {subject: "concept:temporal-split", predicate: addresses, target: "concept:future-information-leakage", evidence: "[[Recommendation-System-Modeling-Foundations#Train, Validation과 Test]]"}
+  - {subject: "concept:random-split", predicate: alternative_to, target: "concept:temporal-split", evidence: "[[Recommendation-System-Modeling-Foundations#Train, Validation과 Test]]"}
+  - {subject: "concept:impression-outcome-linked-logging", predicate: addresses, target: "concept:prior-policy-position-selection-bias", evidence: "[[Recommendation-System-Modeling-Foundations#Implicit Feedback와 미관측의 의미]]"}
+  - {subject: "concept:training-negative-sampling", predicate: addresses, target: "concept:all-unobserved-training-cost", evidence: "[[Recommendation-System-Modeling-Foundations#Negative Sampling]]"}
+  - {subject: "concept:training-negative-sampling", predicate: has_tradeoff, target: "concept:sampled-false-negatives", evidence: "[[Recommendation-System-Modeling-Foundations#Negative Sampling]]"}
+  - {subject: "concept:popularity-editorial-recommendation", predicate: has_tradeoff, target: "concept:popularity-editorial-limits", evidence: "[[Recommendation-System-Modeling-Foundations#알고리즘 사다리]]"}
+  - {subject: "concept:content-based-recommendation", predicate: has_tradeoff, target: "concept:content-based-limits", evidence: "[[Recommendation-System-Modeling-Foundations#알고리즘 사다리]]"}
+  - {subject: "concept:user-item-knn", predicate: has_tradeoff, target: "concept:knn-sparsity-cost-exposure-bias", evidence: "[[Recommendation-System-Modeling-Foundations#알고리즘 사다리]]"}
+  - {subject: "concept:matrix-factorization", predicate: has_tradeoff, target: "concept:mf-cold-start-side-feature-limit", evidence: "[[Recommendation-System-Modeling-Foundations#알고리즘 사다리]]"}
+  - {subject: "concept:two-tower-retrieval", predicate: has_tradeoff, target: "concept:two-tower-cross-feature-limit", evidence: "[[Recommendation-System-Modeling-Foundations#알고리즘 사다리]]"}
+  - {subject: "concept:learning-to-rank", predicate: has_tradeoff, target: "concept:ltr-biased-label-serving-cost", evidence: "[[Recommendation-System-Modeling-Foundations#알고리즘 사다리]]"}
+  - {subject: "concept:sequential-recommendation", predicate: has_tradeoff, target: "concept:sequence-model-data-compute-ops-cost", evidence: "[[Recommendation-System-Modeling-Foundations#알고리즘 사다리]]"}
+  - {subject: "concept:bandit-recommendation-policy", predicate: has_tradeoff, target: "concept:bandit-user-cost-support-variance", evidence: "[[Recommendation-System-Modeling-Foundations#알고리즘 사다리]]"}
+  - {subject: "concept:sagemaker-builtin-fm", predicate: requires, target: "concept:recordio-protobuf-float32-input", evidence: "[[Recommendation-System-Modeling-Foundations#Factorization Machine과 희소 특징의 의미]]"}
+  - {subject: "concept:field-aware-fm", predicate: has_tradeoff, target: "concept:ffm-parameter-growth", evidence: "[[Recommendation-System-Modeling-Foundations#Field 단위 상호작용과 CTR 모델 경량화]]"}
+  - {subject: "concept:field-aware-fm", predicate: alternative_to, target: "concept:factorization-machine", evidence: "[[Recommendation-System-Modeling-Foundations#Field 단위 상호작용과 CTR 모델 경량화]]"}
+  - {subject: "concept:field-weighted-fm", predicate: alternative_to, target: "concept:field-aware-fm", evidence: "[[Recommendation-System-Modeling-Foundations#Field 단위 상호작용과 CTR 모델 경량화]]"}
+  - {subject: "concept:side-feature-models", predicate: requires, target: "concept:serving-time-new-item-features", evidence: "[[Recommendation-System-Modeling-Foundations#Field 단위 상호작용과 CTR 모델 경량화]]"}
+  - {subject: "concept:side-feature-models", predicate: alternative_to, target: "concept:matrix-factorization", evidence: "[[Recommendation-System-Modeling-Foundations#Field 단위 상호작용과 CTR 모델 경량화]]"}
+  - {subject: "concept:pretrained-embedding-reduction", predicate: addresses, target: "concept:ctr-model-serving-budget-overrun", evidence: "[[Recommendation-System-Modeling-Foundations#Field 단위 상호작용과 CTR 모델 경량화]]"}
+  - {subject: "concept:embedding-table-sharing", predicate: addresses, target: "concept:ctr-model-serving-budget-overrun", evidence: "[[Recommendation-System-Modeling-Foundations#Field 단위 상호작용과 CTR 모델 경량화]]"}
+  - {subject: "concept:id-feature-hash-bucketing", predicate: addresses, target: "concept:ctr-model-serving-budget-overrun", evidence: "[[Recommendation-System-Modeling-Foundations#Field 단위 상호작용과 CTR 모델 경량화]]"}
+  - {subject: "concept:embedding-pooling", predicate: has_tradeoff, target: "concept:pooling-information-loss", evidence: "[[Recommendation-System-Modeling-Foundations#Field 단위 상호작용과 CTR 모델 경량화]]"}
+  - {subject: "concept:umap-projection", predicate: has_tradeoff, target: "concept:umap-retuning-burden", evidence: "[[Recommendation-System-Modeling-Foundations#Field 단위 상호작용과 CTR 모델 경량화]]"}
+  - {subject: "concept:autoencoder-embedding-reduction", predicate: alternative_to, target: "concept:embedding-pooling", evidence: "[[Recommendation-System-Modeling-Foundations#Field 단위 상호작용과 CTR 모델 경량화]]"}
+  - {subject: "concept:autoencoder-embedding-reduction", predicate: alternative_to, target: "concept:umap-projection", evidence: "[[Recommendation-System-Modeling-Foundations#Field 단위 상호작용과 CTR 모델 경량화]]"}
+  - {subject: "concept:autoencoder-embedding-reduction", predicate: has_tradeoff, target: "concept:autoencoder-retrain-feature-shift", evidence: "[[Recommendation-System-Modeling-Foundations#Field 단위 상호작용과 CTR 모델 경량화]]"}
+  - {subject: "concept:autoencoder-embedding-reduction", predicate: requires, target: "concept:encoder-ranker-co-versioning", evidence: "[[Recommendation-System-Modeling-Foundations#Field 단위 상호작용과 CTR 모델 경량화]]"}
+  - {subject: "concept:embedding-table-sharing", predicate: has_tradeoff, target: "concept:table-sharing-collision-loss", evidence: "[[Recommendation-System-Modeling-Foundations#Field 단위 상호작용과 CTR 모델 경량화]]"}
+  - {subject: "concept:id-feature-hash-bucketing", predicate: has_tradeoff, target: "concept:hash-bucket-collision-parameter-tradeoff", evidence: "[[Recommendation-System-Modeling-Foundations#Field 단위 상호작용과 CTR 모델 경량화]]"}
+  - {subject: "concept:point-in-time-feature-join", predicate: addresses, target: "concept:label-view-exposure-in-features", evidence: "[[Recommendation-System-Modeling-Foundations#Field 단위 상호작용과 CTR 모델 경량화]]"}
+  - {subject: "concept:pointwise-classification-metrics", predicate: has_tradeoff, target: "concept:top-k-ranking-not-measured", evidence: "[[Recommendation-System-Modeling-Foundations#Accuracy보다 Top K를 보는 이유]]"}
+  - {subject: "concept:offline-evaluation", predicate: has_tradeoff, target: "concept:offline-gain-not-online-effect", evidence: "[[Recommendation-System-Modeling-Foundations#Accuracy보다 Top K를 보는 이유]]"}
+  - {subject: "concept:movielens-baseline", predicate: has_tradeoff, target: "concept:movielens-cannot-prove-production-readiness", evidence: "[[Recommendation-System-Modeling-Foundations#첫 산출물: MovieLens Baseline]]"}
+---
+
+# 추천시스템 온톨로지 선언: Off-policy 평가와 모델링 기초
+
+Off-policy estimator와 로그 계약, 추천 모델링의 기초 선택에 대한 개념 76개와 타입 관계 61개를 선언한다. 본문 지식은 여기에 두지 않고, 각 선언의 `evidence`가 가리키는 원문 섹션이 근거다.
+
+선언은 `ontology/candidates/recommendation-system-*.jsonl`에서 원문 대조 검증을 통과한 후보만 옮긴 것이다. 새 선언은 후보 파일에 먼저 추가해 검증한 뒤 한 줄로 옮기고, 원문 heading이 바뀌면 `evidence`를 함께 고친다.
+
+상위: [[Ontology-Instances]]

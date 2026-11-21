@@ -1,0 +1,164 @@
+---
+tags: [ai, ontology, instances, recommendation-system]
+status: vocabulary
+category: "AI엔지니어링(AIEngineering)"
+aliases: ["추천시스템 온톨로지 선언: 후보 생성과 허브니스"]
+ontology_concepts:
+  - {id: recsys-candidate-generation, type: Approach, label: "추천 후보 생성 단계", aliases: ["추천 후보 생성", "추천 Retrieval"], evidence: "[[Recommendation-System-Candidate-Generation#추천 시스템 후보 생성]]"}
+  - {id: full-catalog-scoring-latency, type: Problem, label: "전체 eligible catalog를 지연 예산 안에서 직접 scoring하기 어려움", aliases: ["전체 inventory를 모두 점수화할 수 없음"], evidence: "[[Recommendation-System-Candidate-Generation#추천 시스템 후보 생성]]"}
+  - {id: candidate-miss-unrecoverable-by-ranker, type: Tradeoff, label: "후보 단계에서 빠진 아이템은 뒤의 랭커가 복구할 수 없음", aliases: ["첫 단계에서 제외된 후보는 ranker가 복구할 수 없음"], evidence: "[[Recommendation-System-Candidate-Generation#추천 시스템 후보 생성]]"}
+  - {id: popularity-trending-source, type: Approach, label: "인기와 트렌딩 후보 source", evidence: "[[Recommendation-System-Candidate-Generation#후보 source 포트폴리오]]"}
+  - {id: popularity-source-concentration, type: Tradeoff, label: "인기 목록 source의 인기 집중과 개인화 부족", evidence: "[[Recommendation-System-Candidate-Generation#후보 source 포트폴리오]]"}
+  - {id: recent-behavior-source, type: Approach, label: "이어보기와 최근 행동 후보 source", evidence: "[[Recommendation-System-Candidate-Generation#후보 source 포트폴리오]]"}
+  - {id: resume-over-discovery, type: Tradeoff, label: "이어보기와 최근 행동 source는 발견보다 재개에 가까움", evidence: "[[Recommendation-System-Candidate-Generation#후보 source 포트폴리오]]"}
+  - {id: latent-taste-discovery, type: Problem, label: "latent 취향과 의외의 발견", evidence: "[[Recommendation-System-Candidate-Generation#후보 source 포트폴리오]]"}
+  - {id: interaction-sparsity, type: Tradeoff, label: "user-item interaction 희소성", evidence: "[[Recommendation-System-Candidate-Generation#후보 source 포트폴리오]]"}
+  - {id: behavior-exposure-bias, type: Tradeoff, label: "행동 데이터의 노출 편향", evidence: "[[Recommendation-System-Candidate-Generation#후보 source 포트폴리오]]"}
+  - {id: two-tower-ops-complexity, type: Tradeoff, label: "Two-Tower와 ANN의 학습과 인덱스 운영 복잡성", evidence: "[[Recommendation-System-Candidate-Generation#후보 source 포트폴리오]]"}
+  - {id: editorial-business-source, type: Approach, label: "편집과 비즈니스 목록 source", evidence: "[[Recommendation-System-Candidate-Generation#후보 source 포트폴리오]]"}
+  - {id: editorial-overrides-personalization, type: Tradeoff, label: "과도한 편집과 비즈니스 목록이 개인화 목적을 덮음", evidence: "[[Recommendation-System-Candidate-Generation#후보 source 포트폴리오]]"}
+  - {id: popular-new-editorial-baseline, type: Approach, label: "인기, 최신, 편집 baseline", evidence: "[[Recommendation-System-Candidate-Generation#Baseline이 먼저다]]"}
+  - {id: popularity-time-decay, type: Approach, label: "인기 집계의 시간 감쇠", evidence: "[[Recommendation-System-Candidate-Generation#Baseline이 먼저다]]"}
+  - {id: accumulated-vs-rising-popularity, type: Problem, label: "오래 누적된 인기와 최근 상승을 구분하지 못함", evidence: "[[Recommendation-System-Candidate-Generation#Baseline이 먼저다]]"}
+  - {id: content-based-recommendation, type: Approach, label: "콘텐츠 기반 추천", evidence: "[[Recommendation-System-Candidate-Generation#콘텐츠 기반 추천]]"}
+  - {id: metadata-quality-dependence, type: Tradeoff, label: "metadata가 빈약하면 추천 품질도 떨어짐", evidence: "[[Recommendation-System-Candidate-Generation#콘텐츠 기반 추천]]"}
+  - {id: overspecialization, type: Tradeoff, label: "과거 취향과 너무 비슷한 것만 골라 탐색 범위가 좁아짐", aliases: ["overspecialization"], evidence: "[[Recommendation-System-Candidate-Generation#콘텐츠 기반 추천]]"}
+  - {id: collab-filtering, type: Approach, label: "협업 필터링", evidence: "[[Recommendation-System-Candidate-Generation#협업 필터링과 Matrix Factorization]]"}
+  - {id: latent-meaning-not-guaranteed, type: Tradeoff, label: "Matrix factorization의 latent 축에 사람이 해석 가능한 의미가 보장되지 않음", evidence: "[[Recommendation-System-Candidate-Generation#협업 필터링과 Matrix Factorization]]"}
+  - {id: unexposed-as-rejection, type: Problem, label: "미관측이나 미노출 아이템을 거절(dislike)로 오해", evidence: "[[Recommendation-System-Candidate-Generation#Explicit와 implicit 목적의 차이]]"}
+  - {id: two-tower-retrieval, type: Approach, label: "Two-Tower retrieval", aliases: ["Two-Tower와 ANN", "Two-Tower"], evidence: "[[Recommendation-System-Candidate-Generation#Two-Tower Retrieval]]"}
+  - {id: two-tower-cross-feature-limit, type: Tradeoff, label: "독립 인코딩이라 사용자와 아이템의 세밀한 cross feature를 모든 조합에 적용하기 어려움", aliases: ["Two-Tower의 세밀한 cross feature 제약"], evidence: "[[Recommendation-System-Candidate-Generation#Two-Tower Retrieval]]"}
+  - {id: paired-tower-index-same-space, type: Condition, label: "query tower와 ANN index가 같은 embedding 공간을 씀", evidence: "[[Recommendation-System-Candidate-Generation#Two-Tower Retrieval]]"}
+  - {id: full-softmax-cost, type: Problem, label: "전체 카탈로그 softmax 계산 비용", aliases: ["매우 큰 class softmax 학습"], evidence: "[[Recommendation-System-Candidate-Generation#Negative Sampling은 학습 목표의 일부다]]"}
+  - {id: uniform-negative-sampling, type: Approach, label: "Uniform negative sampling", evidence: "[[Recommendation-System-Candidate-Generation#Negative Sampling은 학습 목표의 일부다]]"}
+  - {id: too-easy-negatives, type: Tradeoff, label: "너무 쉬운 negative가 많을 수 있음", evidence: "[[Recommendation-System-Candidate-Generation#Negative Sampling은 학습 목표의 일부다]]"}
+  - {id: in-batch-negative, type: Approach, label: "In-batch negative", evidence: "[[Recommendation-System-Candidate-Generation#Negative Sampling은 학습 목표의 일부다]]"}
+  - {id: hard-negative-mining, type: Approach, label: "Hard negative sampling(현재 모델이 높게 점수화한 오답에 집중)", evidence: "[[Recommendation-System-Candidate-Generation#Negative Sampling은 학습 목표의 일부다]]"}
+  - {id: mixed-negative-sampling, type: Approach, label: "Mixed negative sampling", evidence: "[[Recommendation-System-Candidate-Generation#Negative Sampling은 학습 목표의 일부다]]"}
+  - {id: accidental-hit-removal, type: Condition, label: "In-batch negative의 accidental hit 제거", evidence: "[[Recommendation-System-Candidate-Generation#Negative Sampling은 학습 목표의 일부다]]"}
+  - {id: per-source-store-reader-pair, type: Approach, label: "source 단위 저장 스키마와 서빙 조회기 짝 설계", evidence: "[[Recommendation-System-Candidate-Generation#Source별 저장과 조회를 짝으로 둔다]]"}
+  - {id: source-change-spreads, type: Problem, label: "한 source의 저장과 조회 코드 변경이 다른 source 경로로 번짐", evidence: "[[Recommendation-System-Candidate-Generation#Source별 저장과 조회를 짝으로 둔다]]"}
+  - {id: point-in-time-feature-join, type: Approach, label: "추천 당시 version으로 point-in-time join", aliases: ["Point-in-time join", "시점 기준 feature join"], evidence: "[[Recommendation-System-Candidate-Generation#Source별 저장과 조회를 짝으로 둔다]]"}
+  - {id: future-information-leakage, type: Problem, label: "최신값을 학습 특징에 써서 미래 정보가 섞임", aliases: ["미래 행동과 아이템 상태의 과거 학습 예제 혼입", "시간 누수", "temporal leakage", "미래 정보 누수"], evidence: "[[Recommendation-System-Candidate-Generation#Source별 저장과 조회를 짝으로 둔다]]"}
+  - {id: source-score-scale-mismatch, type: Problem, label: "서로 다른 source 점수의 scale이 같다고 보장되지 않음", aliases: ["source마다 scale과 의미가 다른 후보 점수", "여러 후보 source의 점수 분포 차이"], evidence: "[[Recommendation-System-Candidate-Generation#병합 계층의 계약]]"}
+  - {id: retrieval-filter-pushdown, type: Approach, label: "보편 제약과 surface 정책의 retrieval push down", aliases: ["eligibility 제약의 source push down"], evidence: "[[Recommendation-System-Candidate-Generation#Filter 순서와 underfill]]"}
+  - {id: source-pushdown-support, type: Condition, label: "source의 filter push down 지원", evidence: "[[Recommendation-System-Candidate-Generation#Filter 순서와 underfill]]"}
+  - {id: bounded-overfetch, type: Approach, label: "최근 filter pass rate 기반의 제한된 overfetch", evidence: "[[Recommendation-System-Candidate-Generation#Filter 순서와 underfill]]"}
+  - {id: result-underfill, type: Problem, label: "결과가 목표 개수에 못 미치거나 비는 underfill", evidence: "[[Recommendation-System-Candidate-Generation#Filter 순서와 underfill]]"}
+  - {id: adaptive-candidate-retry, type: Approach, label: "남은 deadline 안에서 횟수와 최대 K를 정한 adaptive retry", evidence: "[[Recommendation-System-Candidate-Generation#Filter 순서와 underfill]]"}
+  - {id: surface-defined-fallback, type: Approach, label: "surface가 정의한 fallback 또는 축소 응답", evidence: "[[Recommendation-System-Candidate-Generation#Filter 순서와 underfill]]"}
+  - {id: stale-candidate-eligibility, type: Problem, label: "후보 생성 뒤 낡은 eligibility 판정", evidence: "[[Recommendation-System-Candidate-Generation#Filter 순서와 underfill]]"}
+  - {id: new-user-cold-start, type: Problem, label: "신규 사용자 Cold Start(장기 취향과 interaction 부재)", aliases: ["취향 증거가 없는 신규 사용자 Cold Start"], evidence: "[[Recommendation-System-Candidate-Generation#Cold Start를 둘로 나눈다]]"}
+  - {id: new-item-cold-start, type: Problem, label: "신규 아이템 Cold Start(interaction과 노출 부재)", aliases: ["신규 작품 Cold Start"], evidence: "[[Recommendation-System-Candidate-Generation#Cold Start를 둘로 나눈다]]"}
+  - {id: onboarding-preference, type: Approach, label: "onboarding 선호 수집", evidence: "[[Recommendation-System-Candidate-Generation#Cold Start를 둘로 나눈다]]"}
+  - {id: session-and-entry-context, type: Approach, label: "현재 session과 유입 맥락 활용", evidence: "[[Recommendation-System-Candidate-Generation#Cold Start를 둘로 나눈다]]"}
+  - {id: exploration, type: Approach, label: "탐색(exploration)", evidence: "[[Recommendation-System-Candidate-Generation#Cold Start를 둘로 나눈다]]"}
+  - {id: attribute-based-embedding, type: Approach, label: "attribute 기반 embedding", evidence: "[[Recommendation-System-Candidate-Generation#Cold Start를 둘로 나눈다]]"}
+  - {id: new-release-source, type: Approach, label: "최신 아이템 source", evidence: "[[Recommendation-System-Candidate-Generation#Cold Start를 둘로 나눈다]]"}
+  - {id: exploration-short-term-cost, type: Tradeoff, label: "탐색의 단기 경험 비용", aliases: ["무작위 탐색이 많을 때의 단기 품질 하락"], evidence: "[[Recommendation-System-Candidate-Generation#Cold Start를 둘로 나눈다]]"}
+  - {id: increase-candidate-count, type: Approach, label: "후보 수 K 확대", evidence: "[[Recommendation-System-Candidate-Generation#후보 단계 평가와 운영 지표]]"}
+  - {id: low-candidate-recall, type: Problem, label: "후보 단계의 낮은 Recall", evidence: "[[Recommendation-System-Candidate-Generation#후보 단계 평가와 운영 지표]]"}
+  - {id: candidate-downstream-cost, type: Tradeoff, label: "후보 수를 늘리면 병합, 필터와 ranker 비용이 증가함", evidence: "[[Recommendation-System-Candidate-Generation#후보 단계 평가와 운영 지표]]"}
+  - {id: score-component-decomposition, type: Approach, label: "점수의 사용자 의존 성분과 사용자 무관 성분 분해", evidence: "[[Recommendation-System-Hubness-Popularity-Debiasing#허브니스와 사용자 무관 점수 성분]]"}
+  - {id: embedding-hubness, type: Problem, label: "허브니스(고차원 벡터 공간에서 일부 점이 매우 많은 k-NN 목록에 등장)", evidence: "[[Recommendation-System-Hubness-Popularity-Debiasing#허브니스와 인기 편향은 다르다]]"}
+  - {id: item-popularity-bias, type: Problem, label: "인기 편향(실제로 많이 클릭되거나 팔린 데이터 분포에서 오는 편향)", evidence: "[[Recommendation-System-Hubness-Popularity-Debiasing#허브니스와 인기 편향은 다르다]]"}
+  - {id: popularity-correction, type: Approach, label: "인기 보정", evidence: "[[Recommendation-System-Hubness-Popularity-Debiasing#허브니스와 인기 편향은 다르다]]"}
+  - {id: decomposition-working-hypothesis, type: Tradeoff, label: "성분 분해는 모델이 보장하지 않는 작업 가설", evidence: "[[Recommendation-System-Hubness-Popularity-Debiasing#점수를 두 성분으로 나눈다]]"}
+  - {id: user-vector-centering, type: Approach, label: "사용자 쪽 벡터 중심화", evidence: "[[Recommendation-System-Hubness-Popularity-Debiasing#점수를 두 성분으로 나눈다]]"}
+  - {id: linear-inner-product-score, type: Condition, label: "점수가 사용자 벡터와 상품 벡터의 내적처럼 선형", evidence: "[[Recommendation-System-Hubness-Popularity-Debiasing#점수를 두 성분으로 나눈다]]"}
+  - {id: batch-inference-item-mean-score, type: Approach, label: "전체 사용자 이력 배치 추론으로 상품별 평균 점수를 경험적으로 추정", evidence: "[[Recommendation-System-Hubness-Popularity-Debiasing#점수를 두 성분으로 나눈다]]"}
+  - {id: popular-candidate-reranking, type: Approach, label: "인기 상위 N개 후보의 reranking", evidence: "[[Recommendation-System-Hubness-Popularity-Debiasing#후보 집합이 허브를 키운다]]"}
+  - {id: mean-direction-candidates-dominate, type: Tradeoff, label: "인기 상위 후보가 사용자 평균 방향에 몰려 평균 방향과 가까운 관심이나 상품이 순위를 지배할 수 있음", evidence: "[[Recommendation-System-Hubness-Popularity-Debiasing#후보 집합이 허브를 키운다]]"}
+  - {id: centering, type: Approach, label: "중심화", aliases: ["centering"], evidence: "[[Recommendation-System-Hubness-Popularity-Debiasing#중심화]]"}
+  - {id: weighted-centering, type: Approach, label: "weighted centering", evidence: "[[Recommendation-System-Hubness-Popularity-Debiasing#중심화]]"}
+  - {id: serving-item-mean-subtraction, type: Approach, label: "서빙 점수에서 상품별 전체 사용자 평균 점수 차감", evidence: "[[Recommendation-System-Hubness-Popularity-Debiasing#중심화]]"}
+  - {id: popularity-erased-by-full-subtraction, type: Tradeoff, label: "평균 점수 전체를 빼면 인기 자체도 지워짐", evidence: "[[Recommendation-System-Hubness-Popularity-Debiasing#중심화]]"}
+  - {id: residual-popularity-split-correction, type: Approach, label: "인기로 설명되지 않는 잔차와 인기 성분을 지면별 계수로 나눠 빼는 보정", evidence: "[[Recommendation-System-Hubness-Popularity-Debiasing#중심화]]"}
+  - {id: relevance-absorbs-user-independent-component, type: Problem, label: "학습 중 사용자 무관 성분이 관련성 점수에 섞여 학습됨", evidence: "[[Recommendation-System-Hubness-Popularity-Debiasing#학습 때 상품별 편향을 분리한다]]"}
+  - {id: training-item-bias-separation, type: Approach, label: "학습 때 상품별 편향 b_i 분리와 서빙 때 차감", aliases: ["학습 편향 분리"], evidence: "[[Recommendation-System-Hubness-Popularity-Debiasing#학습 때 상품별 편향을 분리한다]]"}
+  - {id: macr, type: Approach, label: "MACR", aliases: ["Model-Agnostic Counterfactual Reasoning"], evidence: "[[Recommendation-System-Hubness-Popularity-Debiasing#학습 때 상품별 편향을 분리한다]]"}
+  - {id: in-batch-popular-negative-overpenalty, type: Problem, label: "In-batch negative에서 인기 상품이 negative로 자주 들어가 과한 벌점을 받음", evidence: "[[Recommendation-System-Hubness-Popularity-Debiasing#logQ 보정과 구분한다]]"}
+  - {id: logq-correction, type: Approach, label: "logQ 보정", aliases: ["logQ correction"], evidence: "[[Recommendation-System-Hubness-Popularity-Debiasing#logQ 보정과 구분한다]]"}
+  - {id: single-interest-dominates-top, type: Tradeoff, label: "max 집계에서 점수 규모가 큰 한 관심이 상위 목록을 채움", evidence: "[[Recommendation-System-Hubness-Popularity-Debiasing#관심을 벌려도 max 집계에서는 한 관심이 지배할 수 있다]]"}
+  - {id: recommendation-diversity-loss, type: Problem, label: "추천 결과의 다양성 부족", evidence: "[[Recommendation-System-Hubness-Popularity-Debiasing#관심을 벌려도 max 집계에서는 한 관심이 지배할 수 있다]]"}
+  - {id: category-diversity-postprocessing, type: Approach, label: "최종 목록의 카테고리 다양성 후처리", evidence: "[[Recommendation-System-Hubness-Popularity-Debiasing#관심을 벌려도 max 집계에서는 한 관심이 지배할 수 있다]]"}
+  - {id: recall-misses-interest-collapse, type: Problem, label: "Recall이 관심 붕괴로 인한 사용자 의존 성분 감소를 놓침", evidence: "[[Recommendation-System-Hubness-Popularity-Debiasing#지표가 두 성분을 못 볼 수 있다]]"}
+  - {id: click-misses-overexposure, type: Problem, label: "클릭만 보는 실험이 과노출을 개선으로 착각", evidence: "[[Recommendation-System-Hubness-Popularity-Debiasing#지표가 두 성분을 못 볼 수 있다]]"}
+  - {id: surface-metric-mixes-design-and-model, type: Problem, label: "지면 지표가 지면 설계와 모델 기여를 섞음", evidence: "[[Recommendation-System-Hubness-Popularity-Debiasing#지표가 두 성분을 못 볼 수 있다]]"}
+  - {id: offline-exposure-distribution-metrics, type: Approach, label: "offline 평가에 노출 분포 지표 추가", evidence: "[[Recommendation-System-Hubness-Popularity-Debiasing#지표가 두 성분을 못 볼 수 있다]]"}
+  - {id: online-overexposure-noninferiority-metric, type: Approach, label: "online 실험에 과노출 비열등성 지표 추가", evidence: "[[Recommendation-System-Hubness-Popularity-Debiasing#지표가 두 성분을 못 볼 수 있다]]"}
+  - {id: offline-surface-postprocessing-replay, type: Approach, label: "지면 후처리 규칙과 다양성 처리를 offline 평가에서 재현", evidence: "[[Recommendation-System-Hubness-Popularity-Debiasing#지표가 두 성분을 못 볼 수 있다]]"}
+  - {id: overexposed-item-suppression, type: Approach, label: "과노출 상품 빼기", evidence: "[[Recommendation-System-Hubness-Popularity-Debiasing#적용 점검]]"}
+  - {id: short-term-click-drop, type: Tradeoff, label: "과노출 상품을 빼면 단기 클릭이 줄 수 있음", evidence: "[[Recommendation-System-Hubness-Popularity-Debiasing#적용 점검]]"}
+ontology_relations:
+  - {subject: "concept:recsys-candidate-generation", predicate: addresses, target: "concept:full-catalog-scoring-latency", evidence: "[[Recommendation-System-Candidate-Generation#추천 시스템 후보 생성]]"}
+  - {subject: "concept:recsys-candidate-generation", predicate: has_tradeoff, target: "concept:candidate-miss-unrecoverable-by-ranker", evidence: "[[Recommendation-System-Candidate-Generation#추천 시스템 후보 생성]]"}
+  - {subject: "concept:popularity-trending-source", predicate: has_tradeoff, target: "concept:popularity-source-concentration", evidence: "[[Recommendation-System-Candidate-Generation#후보 source 포트폴리오]]"}
+  - {subject: "concept:recent-behavior-source", predicate: has_tradeoff, target: "concept:resume-over-discovery", evidence: "[[Recommendation-System-Candidate-Generation#후보 source 포트폴리오]]"}
+  - {subject: "concept:collab-filtering", predicate: addresses, target: "concept:latent-taste-discovery", evidence: "[[Recommendation-System-Candidate-Generation#후보 source 포트폴리오]]"}
+  - {subject: "concept:collab-filtering", predicate: has_tradeoff, target: "concept:interaction-sparsity", evidence: "[[Recommendation-System-Candidate-Generation#후보 source 포트폴리오]]"}
+  - {subject: "concept:collab-filtering", predicate: has_tradeoff, target: "concept:behavior-exposure-bias", evidence: "[[Recommendation-System-Candidate-Generation#후보 source 포트폴리오]]"}
+  - {subject: "concept:two-tower-retrieval", predicate: addresses, target: "concept:full-catalog-scoring-latency", evidence: "[[Recommendation-System-Candidate-Generation#후보 source 포트폴리오]]"}
+  - {subject: "concept:two-tower-retrieval", predicate: has_tradeoff, target: "concept:two-tower-ops-complexity", evidence: "[[Recommendation-System-Candidate-Generation#후보 source 포트폴리오]]"}
+  - {subject: "concept:editorial-business-source", predicate: has_tradeoff, target: "concept:editorial-overrides-personalization", evidence: "[[Recommendation-System-Candidate-Generation#후보 source 포트폴리오]]"}
+  - {subject: "concept:popular-new-editorial-baseline", predicate: addresses, target: "concept:new-user-cold-start", evidence: "[[Recommendation-System-Candidate-Generation#Baseline이 먼저다]]"}
+  - {subject: "concept:popularity-time-decay", predicate: addresses, target: "concept:accumulated-vs-rising-popularity", evidence: "[[Recommendation-System-Candidate-Generation#Baseline이 먼저다]]"}
+  - {subject: "concept:content-based-recommendation", predicate: addresses, target: "concept:new-item-cold-start", evidence: "[[Recommendation-System-Candidate-Generation#콘텐츠 기반 추천]]"}
+  - {subject: "concept:content-based-recommendation", predicate: has_tradeoff, target: "concept:metadata-quality-dependence", evidence: "[[Recommendation-System-Candidate-Generation#콘텐츠 기반 추천]]"}
+  - {subject: "concept:content-based-recommendation", predicate: has_tradeoff, target: "concept:overspecialization", evidence: "[[Recommendation-System-Candidate-Generation#콘텐츠 기반 추천]]"}
+  - {subject: "concept:matrix-factorization", predicate: has_tradeoff, target: "concept:latent-meaning-not-guaranteed", evidence: "[[Recommendation-System-Candidate-Generation#협업 필터링과 Matrix Factorization]]"}
+  - {subject: "concept:two-tower-retrieval", predicate: has_tradeoff, target: "concept:two-tower-cross-feature-limit", evidence: "[[Recommendation-System-Candidate-Generation#Two-Tower Retrieval]]"}
+  - {subject: "concept:two-tower-retrieval", predicate: requires, target: "concept:paired-tower-index-same-space", evidence: "[[Recommendation-System-Candidate-Generation#Two-Tower Retrieval]]"}
+  - {subject: "concept:training-negative-sampling", predicate: addresses, target: "concept:full-softmax-cost", evidence: "[[Recommendation-System-Candidate-Generation#Negative Sampling은 학습 목표의 일부다]]"}
+  - {subject: "concept:uniform-negative-sampling", predicate: has_tradeoff, target: "concept:too-easy-negatives", evidence: "[[Recommendation-System-Candidate-Generation#Negative Sampling은 학습 목표의 일부다]]"}
+  - {subject: "concept:in-batch-negative", predicate: alternative_to, target: "concept:uniform-negative-sampling", evidence: "[[Recommendation-System-Candidate-Generation#Negative Sampling은 학습 목표의 일부다]]"}
+  - {subject: "concept:in-batch-negative", predicate: alternative_to, target: "concept:hard-negative-mining", evidence: "[[Recommendation-System-Candidate-Generation#Negative Sampling은 학습 목표의 일부다]]"}
+  - {subject: "concept:in-batch-negative", predicate: alternative_to, target: "concept:mixed-negative-sampling", evidence: "[[Recommendation-System-Candidate-Generation#Negative Sampling은 학습 목표의 일부다]]"}
+  - {subject: "concept:in-batch-negative", predicate: requires, target: "concept:accidental-hit-removal", evidence: "[[Recommendation-System-Candidate-Generation#Negative Sampling은 학습 목표의 일부다]]"}
+  - {subject: "concept:per-source-store-reader-pair", predicate: addresses, target: "concept:source-change-spreads", evidence: "[[Recommendation-System-Candidate-Generation#Source별 저장과 조회를 짝으로 둔다]]"}
+  - {subject: "concept:point-in-time-feature-join", predicate: addresses, target: "concept:future-information-leakage", evidence: "[[Recommendation-System-Candidate-Generation#Source별 저장과 조회를 짝으로 둔다]]"}
+  - {subject: "concept:common-ranker", predicate: addresses, target: "concept:source-score-scale-mismatch", evidence: "[[Recommendation-System-Candidate-Generation#병합 계층의 계약]]"}
+  - {subject: "concept:retrieval-filter-pushdown", predicate: addresses, target: "concept:post-topk-filter-underfill", evidence: "[[Recommendation-System-Candidate-Generation#Filter 순서와 underfill]]"}
+  - {subject: "concept:retrieval-filter-pushdown", predicate: requires, target: "concept:source-pushdown-support", evidence: "[[Recommendation-System-Candidate-Generation#Filter 순서와 underfill]]"}
+  - {subject: "concept:bounded-overfetch", predicate: alternative_to, target: "concept:retrieval-filter-pushdown", evidence: "[[Recommendation-System-Candidate-Generation#Filter 순서와 underfill]]"}
+  - {subject: "concept:adaptive-candidate-retry", predicate: addresses, target: "concept:result-underfill", evidence: "[[Recommendation-System-Candidate-Generation#Filter 순서와 underfill]]"}
+  - {subject: "concept:surface-defined-fallback", predicate: addresses, target: "concept:result-underfill", evidence: "[[Recommendation-System-Candidate-Generation#Filter 순서와 underfill]]"}
+  - {subject: "concept:final-eligibility-recheck", predicate: addresses, target: "concept:stale-candidate-eligibility", evidence: "[[Recommendation-System-Candidate-Generation#Filter 순서와 underfill]]"}
+  - {subject: "concept:onboarding-preference", predicate: addresses, target: "concept:new-user-cold-start", evidence: "[[Recommendation-System-Candidate-Generation#Cold Start를 둘로 나눈다]]"}
+  - {subject: "concept:session-and-entry-context", predicate: addresses, target: "concept:new-user-cold-start", evidence: "[[Recommendation-System-Candidate-Generation#Cold Start를 둘로 나눈다]]"}
+  - {subject: "concept:exploration", predicate: addresses, target: "concept:new-user-cold-start", evidence: "[[Recommendation-System-Candidate-Generation#Cold Start를 둘로 나눈다]]"}
+  - {subject: "concept:exploration", predicate: addresses, target: "concept:new-item-cold-start", evidence: "[[Recommendation-System-Candidate-Generation#Cold Start를 둘로 나눈다]]"}
+  - {subject: "concept:attribute-based-embedding", predicate: addresses, target: "concept:new-item-cold-start", evidence: "[[Recommendation-System-Candidate-Generation#Cold Start를 둘로 나눈다]]"}
+  - {subject: "concept:new-release-source", predicate: addresses, target: "concept:new-item-cold-start", evidence: "[[Recommendation-System-Candidate-Generation#Cold Start를 둘로 나눈다]]"}
+  - {subject: "concept:exploration", predicate: has_tradeoff, target: "concept:exploration-short-term-cost", evidence: "[[Recommendation-System-Candidate-Generation#Cold Start를 둘로 나눈다]]"}
+  - {subject: "concept:increase-candidate-count", predicate: addresses, target: "concept:low-candidate-recall", evidence: "[[Recommendation-System-Candidate-Generation#후보 단계 평가와 운영 지표]]"}
+  - {subject: "concept:increase-candidate-count", predicate: has_tradeoff, target: "concept:candidate-downstream-cost", evidence: "[[Recommendation-System-Candidate-Generation#후보 단계 평가와 운영 지표]]"}
+  - {subject: "concept:popularity-correction", predicate: addresses, target: "concept:item-popularity-bias", evidence: "[[Recommendation-System-Hubness-Popularity-Debiasing#허브니스와 인기 편향은 다르다]]"}
+  - {subject: "concept:exploration", predicate: addresses, target: "concept:item-popularity-bias", evidence: "[[Recommendation-System-Hubness-Popularity-Debiasing#허브니스와 인기 편향은 다르다]]"}
+  - {subject: "concept:training-item-bias-separation", predicate: addresses, target: "concept:embedding-hubness", evidence: "[[Recommendation-System-Hubness-Popularity-Debiasing#허브니스와 인기 편향은 다르다]]"}
+  - {subject: "concept:score-component-decomposition", predicate: has_tradeoff, target: "concept:decomposition-working-hypothesis", evidence: "[[Recommendation-System-Hubness-Popularity-Debiasing#점수를 두 성분으로 나눈다]]"}
+  - {subject: "concept:user-vector-centering", predicate: requires, target: "concept:linear-inner-product-score", evidence: "[[Recommendation-System-Hubness-Popularity-Debiasing#점수를 두 성분으로 나눈다]]"}
+  - {subject: "concept:batch-inference-item-mean-score", predicate: alternative_to, target: "concept:user-vector-centering", evidence: "[[Recommendation-System-Hubness-Popularity-Debiasing#점수를 두 성분으로 나눈다]]"}
+  - {subject: "concept:popular-candidate-reranking", predicate: has_tradeoff, target: "concept:mean-direction-candidates-dominate", evidence: "[[Recommendation-System-Hubness-Popularity-Debiasing#후보 집합이 허브를 키운다]]"}
+  - {subject: "concept:centering", predicate: addresses, target: "concept:embedding-hubness", evidence: "[[Recommendation-System-Hubness-Popularity-Debiasing#중심화]]"}
+  - {subject: "concept:weighted-centering", predicate: addresses, target: "concept:embedding-hubness", evidence: "[[Recommendation-System-Hubness-Popularity-Debiasing#중심화]]"}
+  - {subject: "concept:serving-item-mean-subtraction", predicate: has_tradeoff, target: "concept:popularity-erased-by-full-subtraction", evidence: "[[Recommendation-System-Hubness-Popularity-Debiasing#중심화]]"}
+  - {subject: "concept:residual-popularity-split-correction", predicate: alternative_to, target: "concept:serving-item-mean-subtraction", evidence: "[[Recommendation-System-Hubness-Popularity-Debiasing#중심화]]"}
+  - {subject: "concept:training-item-bias-separation", predicate: addresses, target: "concept:relevance-absorbs-user-independent-component", evidence: "[[Recommendation-System-Hubness-Popularity-Debiasing#학습 때 상품별 편향을 분리한다]]"}
+  - {subject: "concept:macr", predicate: alternative_to, target: "concept:training-item-bias-separation", evidence: "[[Recommendation-System-Hubness-Popularity-Debiasing#학습 때 상품별 편향을 분리한다]]"}
+  - {subject: "concept:logq-correction", predicate: addresses, target: "concept:in-batch-popular-negative-overpenalty", evidence: "[[Recommendation-System-Hubness-Popularity-Debiasing#logQ 보정과 구분한다]]"}
+  - {subject: "concept:max-aggregation", predicate: has_tradeoff, target: "concept:single-interest-dominates-top", evidence: "[[Recommendation-System-Hubness-Popularity-Debiasing#관심을 벌려도 max 집계에서는 한 관심이 지배할 수 있다]]"}
+  - {subject: "concept:category-diversity-postprocessing", predicate: addresses, target: "concept:recommendation-diversity-loss", evidence: "[[Recommendation-System-Hubness-Popularity-Debiasing#관심을 벌려도 max 집계에서는 한 관심이 지배할 수 있다]]"}
+  - {subject: "concept:offline-exposure-distribution-metrics", predicate: addresses, target: "concept:recall-misses-interest-collapse", evidence: "[[Recommendation-System-Hubness-Popularity-Debiasing#지표가 두 성분을 못 볼 수 있다]]"}
+  - {subject: "concept:online-overexposure-noninferiority-metric", predicate: addresses, target: "concept:click-misses-overexposure", evidence: "[[Recommendation-System-Hubness-Popularity-Debiasing#지표가 두 성분을 못 볼 수 있다]]"}
+  - {subject: "concept:offline-surface-postprocessing-replay", predicate: addresses, target: "concept:surface-metric-mixes-design-and-model", evidence: "[[Recommendation-System-Hubness-Popularity-Debiasing#지표가 두 성분을 못 볼 수 있다]]"}
+  - {subject: "concept:overexposed-item-suppression", predicate: has_tradeoff, target: "concept:short-term-click-drop", evidence: "[[Recommendation-System-Hubness-Popularity-Debiasing#적용 점검]]"}
+---
+
+# 추천시스템 온톨로지 선언: 후보 생성과 허브니스
+
+후보 source, 병합과 필터, 인기 편향과 허브니스 보정에 대한 개념 86개와 타입 관계 62개를 선언한다. 본문 지식은 여기에 두지 않고, 각 선언의 `evidence`가 가리키는 원문 섹션이 근거다.
+
+선언은 `ontology/candidates/recommendation-system-*.jsonl`에서 원문 대조 검증을 통과한 후보만 옮긴 것이다. 새 선언은 후보 파일에 먼저 추가해 검증한 뒤 한 줄로 옮기고, 원문 heading이 바뀌면 `evidence`를 함께 고친다.
+
+상위: [[Ontology-Instances]]

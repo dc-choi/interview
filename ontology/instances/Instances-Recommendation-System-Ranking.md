@@ -1,0 +1,176 @@
+---
+tags: [ai, ontology, instances, recommendation-system]
+status: vocabulary
+category: "AI엔지니어링(AIEngineering)"
+aliases: ["추천시스템 온톨로지 선언: 랭킹과 비즈니스 규칙"]
+ontology_concepts:
+  - {id: repeated-exposure, type: Problem, label: "반복 노출", evidence: "[[Recommendation-System-Ranking-Reranking-Business-Rules#어떤 요구를 규칙으로 두는가]]"}
+  - {id: deterministic-business-rule-layer, type: Approach, label: "결정적 비즈니스 규칙 후처리 계층", aliases: ["비즈니스 규칙 후처리"], evidence: "[[Recommendation-System-Ranking-Reranking-Business-Rules#추천 비즈니스 규칙 후처리]]"}
+  - {id: single-objective-inexpressible-requirement, type: Problem, label: "하나의 목적함수로 표현하기 어려운 요구", evidence: "[[Recommendation-System-Ranking-Reranking-Business-Rules#추천 비즈니스 규칙 후처리]]"}
+  - {id: rule-altered-exposure-becomes-training-data, type: Tradeoff, label: "규칙이 바꾼 노출이 다시 학습과 실험 데이터가 됨", evidence: "[[Recommendation-System-Ranking-Reranking-Business-Rules#추천 비즈니스 규칙 후처리]]"}
+  - {id: rule-layer-no-selection-probability, type: Tradeoff, label: "선택 확률을 남기지 않음", evidence: "[[Recommendation-System-Ranking-Reranking-Business-Rules#어떤 요구를 규칙으로 두는가]]"}
+  - {id: soft-objective, type: Approach, label: "Soft objective", evidence: "[[Recommendation-System-Ranking-Reranking-Business-Rules#어떤 요구를 규칙으로 두는가]]"}
+  - {id: surface-eligibility, type: Approach, label: "Surface eligibility", evidence: "[[Recommendation-System-Ranking-Reranking-Business-Rules#어떤 요구를 규칙으로 두는가]]"}
+  - {id: short-term-interaction-weak-in-ranker, type: Problem, label: "짧은 기간의 상호작용이 랭커 점수를 크게 바꾸기 어려움", evidence: "[[Recommendation-System-Ranking-Reranking-Business-Rules#어떤 요구를 규칙으로 두는가]]"}
+  - {id: stacked-penalty-on-same-item, type: Problem, label: "같은 아이템이 여러 계층에서 여러 번 감점됨", evidence: "[[Recommendation-System-Ranking-Reranking-Business-Rules#어떤 요구를 규칙으로 두는가]]"}
+  - {id: split-repeat-suppression-responsibility, type: Approach, label: "반복 노출 억제 책임의 계층별 분리", evidence: "[[Recommendation-System-Ranking-Reranking-Business-Rules#어떤 요구를 규칙으로 두는가]]"}
+  - {id: downrank-rule, type: Approach, label: "하향(downrank) 규칙", aliases: ["downrank"], evidence: "[[Recommendation-System-Ranking-Reranking-Business-Rules#대표 규칙과 파라미터]]"}
+  - {id: misconfigured-interval-setting, type: Problem, label: "잘못 들어온 간격 설정", evidence: "[[Recommendation-System-Ranking-Reranking-Business-Rules#대표 규칙과 파라미터]]"}
+  - {id: in-code-interval-floor, type: Approach, label: "코드 안의 최소 간격 하한", evidence: "[[Recommendation-System-Ranking-Reranking-Business-Rules#대표 규칙과 파라미터]]"}
+  - {id: sorted-set-repeated-actions-merged, type: Problem, label: "Sorted Set member 유일성으로 반복 행동이 한 member로 합쳐짐", evidence: "[[Recommendation-System-Ranking-Reranking-Business-Rules#대표 규칙과 파라미터]]"}
+  - {id: event-id-in-sorted-set-member, type: Approach, label: "Sorted Set member에 event ID나 행동 시각 포함", evidence: "[[Recommendation-System-Ranking-Reranking-Business-Rules#대표 규칙과 파라미터]]"}
+  - {id: policy-change-needs-code-deploy, type: Problem, label: "정책 변화 대응에 코드 배포가 필요함", evidence: "[[Recommendation-System-Ranking-Reranking-Business-Rules#대표 규칙과 파라미터]]"}
+  - {id: externalized-rule-parameters, type: Approach, label: "규칙 파라미터의 코드 밖 설정", evidence: "[[Recommendation-System-Ranking-Reranking-Business-Rules#대표 규칙과 파라미터]]"}
+  - {id: ab-rule-parameter-tuning, type: Approach, label: "규칙 파라미터의 A/B 탐색", evidence: "[[Recommendation-System-Ranking-Reranking-Business-Rules#대표 규칙과 파라미터]]"}
+  - {id: ab-tuned-value-staleness, type: Tradeoff, label: "데이터와 사용자 행동이 바뀌면 실험으로 찾은 값이 낡음", evidence: "[[Recommendation-System-Ranking-Reranking-Business-Rules#대표 규칙과 파라미터]]"}
+  - {id: rule-proliferation-untraceable-order, type: Problem, label: "규칙 수 증가로 최종 순서의 원인 추적이 어려움", evidence: "[[Recommendation-System-Ranking-Reranking-Business-Rules#대표 규칙과 파라미터]]"}
+  - {id: per-rule-lifecycle-governance, type: Approach, label: "규칙별 owner, 목적 지표, 만료일, 적용 빈도와 순위 변화량 관리와 효과 없는 규칙 삭제", evidence: "[[Recommendation-System-Ranking-Reranking-Business-Rules#대표 규칙과 파라미터]]"}
+  - {id: pushed-out-items-untraced, type: Problem, label: "규칙이 화면 밖으로 밀어낸 아이템의 흔적 없음", evidence: "[[Recommendation-System-Ranking-Reranking-Business-Rules#추적과 학습 데이터]]"}
+  - {id: rule-decision-record, type: Approach, label: "규칙 계층에 들어온 모든 후보의 결정 기록", evidence: "[[Recommendation-System-Ranking-Reranking-Business-Rules#추적과 학습 데이터]]"}
+  - {id: rule-conflict, type: Problem, label: "규칙끼리의 충돌", evidence: "[[Recommendation-System-Ranking-Reranking-Business-Rules#추적과 학습 데이터]]"}
+  - {id: fixed-rule-priority-and-relaxation, type: Approach, label: "우선순위, 완화 순서와 underfill 처리의 설정 고정", evidence: "[[Recommendation-System-Ranking-Reranking-Business-Rules#추적과 학습 데이터]]"}
+  - {id: sequential-rule-application, type: Approach, label: "규칙의 순차 적용", evidence: "[[Recommendation-System-Ranking-Reranking-Business-Rules#추적과 학습 데이터]]"}
+  - {id: later-rule-breaks-earlier-guarantee, type: Tradeoff, label: "뒤 규칙이 앞 규칙의 보장을 깸", evidence: "[[Recommendation-System-Ranking-Reranking-Business-Rules#추적과 학습 데이터]]"}
+  - {id: rule-dependency-timeout, type: Problem, label: "행동 저장소 또는 reranker timeout", evidence: "[[Recommendation-System-Ranking-Reranking-Business-Rules#추적과 학습 데이터]]"}
+  - {id: predefined-rule-degradation-mode, type: Approach, label: "규칙 건너뛰기나 마지막 값 적용의 사전 결정(degradationMode)", evidence: "[[Recommendation-System-Ranking-Reranking-Business-Rules#추적과 학습 데이터]]"}
+  - {id: position-bias, type: Problem, label: "Position bias", evidence: "[[Recommendation-System-Ranking-Reranking-Business-Rules#추적과 학습 데이터]]"}
+  - {id: position-as-training-only-feature, type: Approach, label: "노출 위치의 학습 전용 특징(서빙 때 모든 후보에 같은 기본값)", evidence: "[[Recommendation-System-Ranking-Reranking-Business-Rules#추적과 학습 데이터]]"}
+  - {id: additive-uncrossed-position-feature, type: Condition, label: "위치 특징을 다른 특징과 교차하지 않는 더하는 항으로 둠", evidence: "[[Recommendation-System-Ranking-Reranking-Business-Rules#추적과 학습 데이터]]"}
+  - {id: exposure-bias, type: Problem, label: "Exposure bias", evidence: "[[Recommendation-System-Ranking-Reranking-Business-Rules#추적과 학습 데이터]]"}
+  - {id: rule-forbidden-slate-not-ope-identifiable, type: Tradeoff, label: "규칙 없는 정책이 규칙이 금지한 slate에 주는 확률 mass를 OPE로 식별할 수 없음", evidence: "[[Recommendation-System-Ranking-Reranking-Business-Rules#추적과 학습 데이터]]"}
+  - {id: rules-before-sampling-in-logging-policy, type: Approach, label: "결정적 규칙을 sampling 전에 적용해 logging policy의 일부로 기록", evidence: "[[Recommendation-System-Ranking-Reranking-Business-Rules#추적과 학습 데이터]]"}
+  - {id: treatment-leak-via-pooled-retraining, type: Problem, label: "두 variant 로그를 합친 재학습으로 처리 효과가 대조군으로 샘", aliases: ["Symbiosis", "symbiosis bias"], evidence: "[[Recommendation-System-Ranking-Reranking-Business-Rules#배포와 실험]]"}
+  - {id: per-variant-training-corpus-isolation, type: Approach, label: "학습 corpus의 variant별 격리", aliases: ["variant별 model version과 training corpus 격리"], evidence: "[[Recommendation-System-Ranking-Reranking-Business-Rules#배포와 실험]]"}
+  - {id: supplier-level-rule-interference, type: Problem, label: "작성자나 판매자 단위 규칙의 군 사이 간섭", evidence: "[[Recommendation-System-Ranking-Reranking-Business-Rules#배포와 실험]]"}
+  - {id: supplier-cluster-or-switchback-design, type: Approach, label: "공급자 cluster 또는 switchback 설계", evidence: "[[Recommendation-System-Ranking-Reranking-Business-Rules#배포와 실험]]"}
+  - {id: common-ranker, type: Approach, label: "공통 랭커", aliases: ["source별 후보를 공통 ranker로 다시 scoring"], evidence: "[[Recommendation-System-Ranking-Reranking#후보 점수와 랭킹 점수를 분리한다]]"}
+  - {id: same-feature-definition-training-serving, type: Condition, label: "training과 serving의 같은 특징 정의", evidence: "[[Recommendation-System-Ranking-Reranking#후보 점수와 랭킹 점수를 분리한다]]"}
+  - {id: pre-ranking-hard-filter, type: Approach, label: "법적 차단, 연령과 안전 조건의 랭킹 전 적용", evidence: "[[Recommendation-System-Ranking-Reranking#단계별 특징 비용]]"}
+  - {id: scoring-waste-on-blocked-candidates, type: Problem, label: "반드시 차단할 후보까지 랭킹하는 낭비", evidence: "[[Recommendation-System-Ranking-Reranking#단계별 특징 비용]]"}
+  - {id: pointwise-ranking, type: Approach, label: "Pointwise 학습", evidence: "[[Recommendation-System-Ranking-Reranking#학습 목표는 제품 행동을 만든다]]"}
+  - {id: pointwise-error-not-top-k-order, type: Tradeoff, label: "점수 오차가 Top K 순서와 같지 않음", evidence: "[[Recommendation-System-Ranking-Reranking#학습 목표는 제품 행동을 만든다]]"}
+  - {id: pairwise-ranking, type: Approach, label: "Pairwise 학습", evidence: "[[Recommendation-System-Ranking-Reranking#학습 목표는 제품 행동을 만든다]]"}
+  - {id: pair-sampling-changes-objective, type: Tradeoff, label: "pair sampling이 목표를 바꿈", evidence: "[[Recommendation-System-Ranking-Reranking#학습 목표는 제품 행동을 만든다]]"}
+  - {id: listwise-ranking, type: Approach, label: "Listwise 학습", evidence: "[[Recommendation-System-Ranking-Reranking#학습 목표는 제품 행동을 만든다]]"}
+  - {id: listwise-data-cost-composition-dependency, type: Tradeoff, label: "목록 단위 학습 데이터, loss 계산 비용과 목록 구성 의존성", evidence: "[[Recommendation-System-Ranking-Reranking#학습 목표는 제품 행동을 만든다]]"}
+  - {id: llm-score-result-cache, type: Approach, label: "LLM 랭커의 점수 결과 캐시", evidence: "[[Recommendation-System-Ranking-Reranking#LLM 재채점과 점수 캐시]]"}
+  - {id: independent-per-candidate-llm-scoring, type: Condition, label: "LLM 랭커가 후보마다 독립적으로 점수를 생성함", evidence: "[[Recommendation-System-Ranking-Reranking#LLM 재채점과 점수 캐시]]"}
+  - {id: llm-prompt-cache, type: Approach, label: "LLM 랭커의 프롬프트 캐시", evidence: "[[Recommendation-System-Ranking-Reranking#LLM 재채점과 점수 캐시]]"}
+  - {id: prompt-cache-hit-not-guaranteed, type: Tradeoff, label: "같은 prefix여도 적중이 보장되지 않음", evidence: "[[Recommendation-System-Ranking-Reranking#LLM 재채점과 점수 캐시]]"}
+  - {id: stale-llm-score-reuse, type: Problem, label: "ID가 같지만 내용이 바뀐 후보의 이전 점수 재사용", evidence: "[[Recommendation-System-Ranking-Reranking#LLM 재채점과 점수 캐시]]"}
+  - {id: version-aware-score-cache-key, type: Approach, label: "질의와 후보의 내용 버전, 평가 기준, 모델 버전과 맥락을 반영한 점수 캐시 키나 무효화 조건", evidence: "[[Recommendation-System-Ranking-Reranking#LLM 재채점과 점수 캐시]]"}
+  - {id: score-cache-ttl, type: Approach, label: "점수 캐시 TTL", evidence: "[[Recommendation-System-Ranking-Reranking#LLM 재채점과 점수 캐시]]"}
+  - {id: ttl-no-immediate-invalidation, type: Tradeoff, label: "TTL만으로는 즉시 무효화를 보장하지 않음", evidence: "[[Recommendation-System-Ranking-Reranking#LLM 재채점과 점수 캐시]]"}
+  - {id: click-label, type: Approach, label: "클릭 label", evidence: "[[Recommendation-System-Ranking-Reranking#Implicit label을 그대로 믿지 않는다]]"}
+  - {id: click-title-position-influence, type: Tradeoff, label: "클릭 label이 제목과 위치의 영향을 받음", evidence: "[[Recommendation-System-Ranking-Reranking#Implicit label을 그대로 믿지 않는다]]"}
+  - {id: watch-time-label, type: Approach, label: "재생 시간 label", evidence: "[[Recommendation-System-Ranking-Reranking#Implicit label을 그대로 믿지 않는다]]"}
+  - {id: watch-time-length-autoplay-influence, type: Tradeoff, label: "재생 시간 label이 콘텐츠 길이와 자동 재생의 영향을 받음", evidence: "[[Recommendation-System-Ranking-Reranking#Implicit label을 그대로 믿지 않는다]]"}
+  - {id: completion-rate-label, type: Approach, label: "완주율 label", evidence: "[[Recommendation-System-Ranking-Reranking#Implicit label을 그대로 믿지 않는다]]"}
+  - {id: completion-favors-short-content, type: Tradeoff, label: "완주율 label이 짧은 콘텐츠에 유리할 수 있음", evidence: "[[Recommendation-System-Ranking-Reranking#Implicit label을 그대로 믿지 않는다]]"}
+  - {id: save-like-label, type: Approach, label: "저장과 좋아요 label", evidence: "[[Recommendation-System-Ranking-Reranking#Implicit label을 그대로 믿지 않는다]]"}
+  - {id: save-like-low-frequency, type: Tradeoff, label: "저장과 좋아요 label의 낮은 사용 빈도", evidence: "[[Recommendation-System-Ranking-Reranking#Implicit label을 그대로 믿지 않는다]]"}
+  - {id: hide-skip-dislike-label, type: Approach, label: "숨김, 건너뛰기와 dislike label", evidence: "[[Recommendation-System-Ranking-Reranking#Implicit label을 그대로 믿지 않는다]]"}
+  - {id: negative-signal-ui-dependency, type: Tradeoff, label: "숨김, 건너뛰기와 dislike 신호가 UI 노출과 기능 인지 여부에 좌우됨", evidence: "[[Recommendation-System-Ranking-Reranking#Implicit label을 그대로 믿지 않는다]]"}
+  - {id: competing-recommendation-objectives, type: Problem, label: "클릭, 재생, 시청 시간, 완주, 만족도와 재방문처럼 경쟁하는 목표", aliases: ["서로 경쟁할 수 있는 여러 목적의 공동 학습"], evidence: "[[Recommendation-System-Ranking-Reranking#Multi-task와 Multi-objective]]"}
+  - {id: multi-task-model, type: Approach, label: "Multi-task 모델", evidence: "[[Recommendation-System-Ranking-Reranking#Multi-task와 Multi-objective]]"}
+  - {id: weighted-utility-combination, type: Approach, label: "단위가 다른 예측 출력을 합친 가중 utility", evidence: "[[Recommendation-System-Ranking-Reranking#Multi-task와 Multi-objective]]"}
+  - {id: output-semantics-calibration-clipping-weight-procedure, type: Condition, label: "출력의 의미, calibration, clipping과 weight 변경 절차", evidence: "[[Recommendation-System-Ranking-Reranking#Multi-task와 Multi-objective]]"}
+  - {id: clickbait-favored, type: Tradeoff, label: "CTR만 최적화할 때 clickbait가 유리해짐", evidence: "[[Recommendation-System-Ranking-Reranking#Multi-task와 Multi-objective]]"}
+  - {id: watch-time-only-optimization, type: Approach, label: "시청 시간만 최적화", evidence: "[[Recommendation-System-Ranking-Reranking#Multi-task와 Multi-objective]]"}
+  - {id: long-content-favored, type: Tradeoff, label: "시청 시간만 최적화할 때 긴 콘텐츠가 유리해짐", evidence: "[[Recommendation-System-Ranking-Reranking#Multi-task와 Multi-objective]]"}
+  - {id: missed-current-intent-shift, type: Problem, label: "장기 사용자 embedding만으로 현재 의도 변화를 놓침", evidence: "[[Recommendation-System-Ranking-Reranking#맥락과 순차 추천]]"}
+  - {id: session-based-recommendation, type: Approach, label: "Session-based 추천", evidence: "[[Recommendation-System-Ranking-Reranking#맥락과 순차 추천]]"}
+  - {id: sequential-recommendation, type: Approach, label: "Sequential 추천", aliases: ["Sequential 추천 모델", "Sequential model"], evidence: "[[Recommendation-System-Ranking-Reranking#맥락과 순차 추천]]"}
+  - {id: markov-item-to-item-baseline, type: Approach, label: "Markov 또는 item-to-item 방식", evidence: "[[Recommendation-System-Ranking-Reranking#맥락과 순차 추천]]"}
+  - {id: rnn-self-attention-sequence-model, type: Approach, label: "RNN과 self-attention 순차 모델", evidence: "[[Recommendation-System-Ranking-Reranking#맥락과 순차 추천]]"}
+  - {id: sequence-model-data-compute-ops-cost, type: Tradeoff, label: "RNN과 self-attention 순차 모델의 데이터, 계산과 운영 비용 증가", aliases: ["Sequential 추천 모델의 데이터, 계산과 운영 복잡도"], evidence: "[[Recommendation-System-Ranking-Reranking#맥락과 순차 추천]]"}
+  - {id: independent-scoring-top-concentration, type: Problem, label: "독립 scoring으로 상위 결과가 같은 시리즈나 장르로 몰림", evidence: "[[Recommendation-System-Ranking-Reranking#재랭킹은 목록 전체를 본다]]"}
+  - {id: soft-objective-accuracy-tradeoff, type: Tradeoff, label: "Soft objective의 정확도와의 교환", evidence: "[[Recommendation-System-Ranking-Reranking#Soft objective]]"}
+  - {id: two-sided-exposure-bias-monitoring, type: Approach, label: "소비자와 공급자 양쪽의 노출 편향 감시", evidence: "[[Recommendation-System-Ranking-Reranking#Soft objective]]"}
+  - {id: exposure-group-definition, type: Condition, label: "exposure를 볼 사용자와 공급자 집단의 별도 정의", evidence: "[[Recommendation-System-Ranking-Reranking#Soft objective]]"}
+  - {id: exploitation-only-exposure, type: Approach, label: "현재 점수가 높은 것만 반복 노출", evidence: "[[Recommendation-System-Ranking-Reranking#Exploration과 Exploitation]]"}
+  - {id: fewer-learning-opportunities, type: Tradeoff, label: "새 아이템과 취향을 학습할 기회 감소", evidence: "[[Recommendation-System-Ranking-Reranking#Exploration과 Exploitation]]"}
+  - {id: explore-within-eligible-candidates, type: Condition, label: "안전과 제공 조건을 통과한 후보 안에서만 탐색", evidence: "[[Recommendation-System-Ranking-Reranking#Exploration과 Exploitation]]"}
+  - {id: stochastic-logging-policy, type: Approach, label: "선택 확률을 아는 stochastic policy", aliases: ["Stochastic logging 정책"], evidence: "[[Recommendation-System-Ranking-Reranking#Exploration과 Exploitation]]"}
+  - {id: fixed-action-space-after-hard-eligibility, type: Condition, label: "최종 hard eligibility를 적용해 고정한 action space", evidence: "[[Recommendation-System-Ranking-Reranking#Exploration과 Exploitation]]"}
+  - {id: late-recheck-changes-sampled-slate, type: Problem, label: "늦은 재검사가 sampling한 slate를 바꿈", aliases: ["stochastic 선택 뒤 늦은 slate 변경", "sample 뒤 바뀐 served slate"], evidence: "[[Recommendation-System-Ranking-Reranking#Exploration과 Exploitation]]"}
+  - {id: resample-policy-with-new-id, type: Approach, label: "새 action space에서 정책 전체를 새 ID로 다시 sample", aliases: ["기존 결정 폐기 뒤 새 action space에서 정책 전체 재실행", "새 action space에서 정책 전체 재실행"], evidence: "[[Recommendation-System-Ranking-Reranking#Exploration과 Exploitation]]"}
+  - {id: exclude-request-from-ope, type: Approach, label: "해당 요청을 OPE에서 제외", aliases: ["propensity를 OPE 무효 상태로 표시", "OPE 무효 상태 표시", "바뀐 slate row를 `INVALIDATED`로 OPE에서 제외"], evidence: "[[Recommendation-System-Ranking-Reranking#Exploration과 Exploitation]]"}
+  - {id: model-only-rollback, type: Approach, label: "모델만 되돌리는 rollback", evidence: "[[Recommendation-System-Ranking-Reranking#평가와 운영 계약]]"}
+  - {id: feature-schema-embedding-compatibility, type: Condition, label: "feature schema와 embedding 호환", evidence: "[[Recommendation-System-Ranking-Reranking#평가와 운영 계약]]"}
+ontology_relations:
+  - {subject: "concept:deterministic-business-rule-layer", predicate: addresses, target: "concept:single-objective-inexpressible-requirement", evidence: "[[Recommendation-System-Ranking-Reranking-Business-Rules#추천 비즈니스 규칙 후처리]]"}
+  - {subject: "concept:deterministic-business-rule-layer", predicate: has_tradeoff, target: "concept:rule-altered-exposure-becomes-training-data", evidence: "[[Recommendation-System-Ranking-Reranking-Business-Rules#추천 비즈니스 규칙 후처리]]"}
+  - {subject: "concept:deterministic-business-rule-layer", predicate: has_tradeoff, target: "concept:rule-layer-no-selection-probability", evidence: "[[Recommendation-System-Ranking-Reranking-Business-Rules#어떤 요구를 규칙으로 두는가]]"}
+  - {subject: "concept:deterministic-business-rule-layer", predicate: alternative_to, target: "concept:surface-eligibility", evidence: "[[Recommendation-System-Ranking-Reranking-Business-Rules#어떤 요구를 규칙으로 두는가]]"}
+  - {subject: "concept:soft-objective", predicate: alternative_to, target: "concept:surface-eligibility", evidence: "[[Recommendation-System-Ranking-Reranking-Business-Rules#어떤 요구를 규칙으로 두는가]]"}
+  - {subject: "concept:deterministic-business-rule-layer", predicate: addresses, target: "concept:short-term-interaction-weak-in-ranker", evidence: "[[Recommendation-System-Ranking-Reranking-Business-Rules#어떤 요구를 규칙으로 두는가]]"}
+  - {subject: "concept:soft-objective", predicate: addresses, target: "concept:repeated-exposure", evidence: "[[Recommendation-System-Ranking-Reranking-Business-Rules#어떤 요구를 규칙으로 두는가]]"}
+  - {subject: "concept:split-repeat-suppression-responsibility", predicate: addresses, target: "concept:stacked-penalty-on-same-item", evidence: "[[Recommendation-System-Ranking-Reranking-Business-Rules#어떤 요구를 규칙으로 두는가]]"}
+  - {subject: "concept:downrank-rule", predicate: addresses, target: "concept:repeated-exposure", evidence: "[[Recommendation-System-Ranking-Reranking-Business-Rules#대표 규칙과 파라미터]]"}
+  - {subject: "concept:downrank-rule", predicate: requires, target: "concept:viewable-impression-basis", evidence: "[[Recommendation-System-Ranking-Reranking-Business-Rules#대표 규칙과 파라미터]]"}
+  - {subject: "concept:in-code-interval-floor", predicate: addresses, target: "concept:misconfigured-interval-setting", evidence: "[[Recommendation-System-Ranking-Reranking-Business-Rules#대표 규칙과 파라미터]]"}
+  - {subject: "concept:event-id-in-sorted-set-member", predicate: addresses, target: "concept:sorted-set-repeated-actions-merged", evidence: "[[Recommendation-System-Ranking-Reranking-Business-Rules#대표 규칙과 파라미터]]"}
+  - {subject: "concept:externalized-rule-parameters", predicate: addresses, target: "concept:policy-change-needs-code-deploy", evidence: "[[Recommendation-System-Ranking-Reranking-Business-Rules#대표 규칙과 파라미터]]"}
+  - {subject: "concept:ab-rule-parameter-tuning", predicate: has_tradeoff, target: "concept:ab-tuned-value-staleness", evidence: "[[Recommendation-System-Ranking-Reranking-Business-Rules#대표 규칙과 파라미터]]"}
+  - {subject: "concept:per-rule-lifecycle-governance", predicate: addresses, target: "concept:rule-proliferation-untraceable-order", evidence: "[[Recommendation-System-Ranking-Reranking-Business-Rules#대표 규칙과 파라미터]]"}
+  - {subject: "concept:rule-decision-record", predicate: addresses, target: "concept:pushed-out-items-untraced", evidence: "[[Recommendation-System-Ranking-Reranking-Business-Rules#추적과 학습 데이터]]"}
+  - {subject: "concept:fixed-rule-priority-and-relaxation", predicate: addresses, target: "concept:rule-conflict", evidence: "[[Recommendation-System-Ranking-Reranking-Business-Rules#추적과 학습 데이터]]"}
+  - {subject: "concept:sequential-rule-application", predicate: has_tradeoff, target: "concept:later-rule-breaks-earlier-guarantee", evidence: "[[Recommendation-System-Ranking-Reranking-Business-Rules#추적과 학습 데이터]]"}
+  - {subject: "concept:predefined-rule-degradation-mode", predicate: addresses, target: "concept:rule-dependency-timeout", evidence: "[[Recommendation-System-Ranking-Reranking-Business-Rules#추적과 학습 데이터]]"}
+  - {subject: "concept:position-as-training-only-feature", predicate: addresses, target: "concept:position-bias", evidence: "[[Recommendation-System-Ranking-Reranking-Business-Rules#추적과 학습 데이터]]"}
+  - {subject: "concept:position-as-training-only-feature", predicate: requires, target: "concept:additive-uncrossed-position-feature", evidence: "[[Recommendation-System-Ranking-Reranking-Business-Rules#추적과 학습 데이터]]"}
+  - {subject: "concept:exploration", predicate: addresses, target: "concept:exposure-bias", evidence: "[[Recommendation-System-Ranking-Reranking-Business-Rules#추적과 학습 데이터]]"}
+  - {subject: "concept:deterministic-business-rule-layer", predicate: has_tradeoff, target: "concept:rule-forbidden-slate-not-ope-identifiable", evidence: "[[Recommendation-System-Ranking-Reranking-Business-Rules#추적과 학습 데이터]]"}
+  - {subject: "concept:rules-before-sampling-in-logging-policy", predicate: alternative_to, target: "concept:composite-propensity", evidence: "[[Recommendation-System-Ranking-Reranking-Business-Rules#추적과 학습 데이터]]"}
+  - {subject: "concept:per-variant-training-corpus-isolation", predicate: addresses, target: "concept:treatment-leak-via-pooled-retraining", evidence: "[[Recommendation-System-Ranking-Reranking-Business-Rules#배포와 실험]]"}
+  - {subject: "concept:supplier-cluster-or-switchback-design", predicate: addresses, target: "concept:supplier-level-rule-interference", evidence: "[[Recommendation-System-Ranking-Reranking-Business-Rules#배포와 실험]]"}
+  - {subject: "concept:common-ranker", predicate: addresses, target: "concept:source-score-scale-mismatch", evidence: "[[Recommendation-System-Ranking-Reranking#후보 점수와 랭킹 점수를 분리한다]]"}
+  - {subject: "concept:common-ranker", predicate: requires, target: "concept:same-feature-definition-training-serving", evidence: "[[Recommendation-System-Ranking-Reranking#후보 점수와 랭킹 점수를 분리한다]]"}
+  - {subject: "concept:pre-ranking-hard-filter", predicate: addresses, target: "concept:scoring-waste-on-blocked-candidates", evidence: "[[Recommendation-System-Ranking-Reranking#단계별 특징 비용]]"}
+  - {subject: "concept:pointwise-ranking", predicate: has_tradeoff, target: "concept:pointwise-error-not-top-k-order", evidence: "[[Recommendation-System-Ranking-Reranking#학습 목표는 제품 행동을 만든다]]"}
+  - {subject: "concept:pairwise-ranking", predicate: has_tradeoff, target: "concept:pair-sampling-changes-objective", evidence: "[[Recommendation-System-Ranking-Reranking#학습 목표는 제품 행동을 만든다]]"}
+  - {subject: "concept:listwise-ranking", predicate: has_tradeoff, target: "concept:listwise-data-cost-composition-dependency", evidence: "[[Recommendation-System-Ranking-Reranking#학습 목표는 제품 행동을 만든다]]"}
+  - {subject: "concept:pointwise-ranking", predicate: alternative_to, target: "concept:pairwise-ranking", evidence: "[[Recommendation-System-Ranking-Reranking#학습 목표는 제품 행동을 만든다]]"}
+  - {subject: "concept:pointwise-ranking", predicate: alternative_to, target: "concept:listwise-ranking", evidence: "[[Recommendation-System-Ranking-Reranking#학습 목표는 제품 행동을 만든다]]"}
+  - {subject: "concept:pairwise-ranking", predicate: alternative_to, target: "concept:listwise-ranking", evidence: "[[Recommendation-System-Ranking-Reranking#학습 목표는 제품 행동을 만든다]]"}
+  - {subject: "concept:llm-score-result-cache", predicate: requires, target: "concept:independent-per-candidate-llm-scoring", evidence: "[[Recommendation-System-Ranking-Reranking#LLM 재채점과 점수 캐시]]"}
+  - {subject: "concept:llm-prompt-cache", predicate: has_tradeoff, target: "concept:prompt-cache-hit-not-guaranteed", evidence: "[[Recommendation-System-Ranking-Reranking#LLM 재채점과 점수 캐시]]"}
+  - {subject: "concept:version-aware-score-cache-key", predicate: addresses, target: "concept:stale-llm-score-reuse", evidence: "[[Recommendation-System-Ranking-Reranking#LLM 재채점과 점수 캐시]]"}
+  - {subject: "concept:score-cache-ttl", predicate: has_tradeoff, target: "concept:ttl-no-immediate-invalidation", evidence: "[[Recommendation-System-Ranking-Reranking#LLM 재채점과 점수 캐시]]"}
+  - {subject: "concept:click-label", predicate: has_tradeoff, target: "concept:click-title-position-influence", evidence: "[[Recommendation-System-Ranking-Reranking#Implicit label을 그대로 믿지 않는다]]"}
+  - {subject: "concept:watch-time-label", predicate: has_tradeoff, target: "concept:watch-time-length-autoplay-influence", evidence: "[[Recommendation-System-Ranking-Reranking#Implicit label을 그대로 믿지 않는다]]"}
+  - {subject: "concept:completion-rate-label", predicate: has_tradeoff, target: "concept:completion-favors-short-content", evidence: "[[Recommendation-System-Ranking-Reranking#Implicit label을 그대로 믿지 않는다]]"}
+  - {subject: "concept:save-like-label", predicate: has_tradeoff, target: "concept:save-like-low-frequency", evidence: "[[Recommendation-System-Ranking-Reranking#Implicit label을 그대로 믿지 않는다]]"}
+  - {subject: "concept:hide-skip-dislike-label", predicate: has_tradeoff, target: "concept:negative-signal-ui-dependency", evidence: "[[Recommendation-System-Ranking-Reranking#Implicit label을 그대로 믿지 않는다]]"}
+  - {subject: "concept:multi-task-model", predicate: addresses, target: "concept:competing-recommendation-objectives", evidence: "[[Recommendation-System-Ranking-Reranking#Multi-task와 Multi-objective]]"}
+  - {subject: "concept:weighted-utility-combination", predicate: requires, target: "concept:output-semantics-calibration-clipping-weight-procedure", evidence: "[[Recommendation-System-Ranking-Reranking#Multi-task와 Multi-objective]]"}
+  - {subject: "concept:click-only-objective", predicate: has_tradeoff, target: "concept:clickbait-favored", evidence: "[[Recommendation-System-Ranking-Reranking#Multi-task와 Multi-objective]]"}
+  - {subject: "concept:watch-time-only-optimization", predicate: has_tradeoff, target: "concept:long-content-favored", evidence: "[[Recommendation-System-Ranking-Reranking#Multi-task와 Multi-objective]]"}
+  - {subject: "concept:session-based-recommendation", predicate: addresses, target: "concept:missed-current-intent-shift", evidence: "[[Recommendation-System-Ranking-Reranking#맥락과 순차 추천]]"}
+  - {subject: "concept:sequential-recommendation", predicate: addresses, target: "concept:missed-current-intent-shift", evidence: "[[Recommendation-System-Ranking-Reranking#맥락과 순차 추천]]"}
+  - {subject: "concept:rnn-self-attention-sequence-model", predicate: has_tradeoff, target: "concept:sequence-model-data-compute-ops-cost", evidence: "[[Recommendation-System-Ranking-Reranking#맥락과 순차 추천]]"}
+  - {subject: "concept:markov-item-to-item-baseline", predicate: alternative_to, target: "concept:rnn-self-attention-sequence-model", evidence: "[[Recommendation-System-Ranking-Reranking#맥락과 순차 추천]]"}
+  - {subject: "concept:slate-reranking", predicate: addresses, target: "concept:independent-scoring-top-concentration", evidence: "[[Recommendation-System-Ranking-Reranking#재랭킹은 목록 전체를 본다]]"}
+  - {subject: "concept:soft-objective", predicate: has_tradeoff, target: "concept:soft-objective-accuracy-tradeoff", evidence: "[[Recommendation-System-Ranking-Reranking#Soft objective]]"}
+  - {subject: "concept:two-sided-exposure-bias-monitoring", predicate: requires, target: "concept:exposure-group-definition", evidence: "[[Recommendation-System-Ranking-Reranking#Soft objective]]"}
+  - {subject: "concept:deterministic-business-rule-layer", predicate: alternative_to, target: "concept:soft-objective", evidence: "[[Recommendation-System-Ranking-Reranking#결정적 비즈니스 규칙]]"}
+  - {subject: "concept:exploitation-only-exposure", predicate: has_tradeoff, target: "concept:fewer-learning-opportunities", evidence: "[[Recommendation-System-Ranking-Reranking#Exploration과 Exploitation]]"}
+  - {subject: "concept:exploration", predicate: has_tradeoff, target: "concept:exploration-short-term-cost", evidence: "[[Recommendation-System-Ranking-Reranking#Exploration과 Exploitation]]"}
+  - {subject: "concept:exploration", predicate: alternative_to, target: "concept:exploitation-only-exposure", evidence: "[[Recommendation-System-Ranking-Reranking#Exploration과 Exploitation]]"}
+  - {subject: "concept:exploration", predicate: requires, target: "concept:explore-within-eligible-candidates", evidence: "[[Recommendation-System-Ranking-Reranking#Exploration과 Exploitation]]"}
+  - {subject: "concept:stochastic-logging-policy", predicate: requires, target: "concept:fixed-action-space-after-hard-eligibility", evidence: "[[Recommendation-System-Ranking-Reranking#Exploration과 Exploitation]]"}
+  - {subject: "concept:resample-policy-with-new-id", predicate: addresses, target: "concept:late-recheck-changes-sampled-slate", evidence: "[[Recommendation-System-Ranking-Reranking#Exploration과 Exploitation]]"}
+  - {subject: "concept:exclude-request-from-ope", predicate: addresses, target: "concept:late-recheck-changes-sampled-slate", evidence: "[[Recommendation-System-Ranking-Reranking#Exploration과 Exploitation]]"}
+  - {subject: "concept:resample-policy-with-new-id", predicate: alternative_to, target: "concept:exclude-request-from-ope", evidence: "[[Recommendation-System-Ranking-Reranking#Exploration과 Exploitation]]"}
+  - {subject: "concept:off-policy-evaluation", predicate: requires, target: "concept:logging-policy-support", evidence: "[[Recommendation-System-Ranking-Reranking#Exploration과 Exploitation]]"}
+  - {subject: "concept:model-only-rollback", predicate: requires, target: "concept:feature-schema-embedding-compatibility", evidence: "[[Recommendation-System-Ranking-Reranking#평가와 운영 계약]]"}
+---
+
+# 추천시스템 온톨로지 선언: 랭킹과 비즈니스 규칙
+
+랭킹과 재랭킹, 학습 목표와 비즈니스 규칙 후처리에 대한 개념 94개와 타입 관계 66개를 선언한다. 본문 지식은 여기에 두지 않고, 각 선언의 `evidence`가 가리키는 원문 섹션이 근거다.
+
+선언은 `ontology/candidates/recommendation-system-*.jsonl`에서 원문 대조 검증을 통과한 후보만 옮긴 것이다. 새 선언은 후보 파일에 먼저 추가해 검증한 뒤 한 줄로 옮기고, 원문 heading이 바뀌면 `evidence`를 함께 고친다.
+
+상위: [[Ontology-Instances]]

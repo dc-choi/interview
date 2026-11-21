@@ -19,6 +19,7 @@ category: "AI엔지니어링(AIEngineering)"
 - [[Ontology-Condition-Evaluation|조건별 후속 탐색과 충분성 관측]]
 - [[Ontology-Retrieval-Latency|같은 결과를 유지한 지연 개선]]
 - [[Ontology-Competency-Evaluation|2026-11-19 타입 스키마 도입과 판단 질문 평가]]
+- [[Ontology-Recommendation-System-Evaluation|2026-11-21 추천시스템 선언과 LLM 호스트 측정]]
 
 ## 기록 읽는 법
 

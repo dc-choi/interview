@@ -1,0 +1,185 @@
+---
+tags: [ai, ontology, instances, recommendation-system]
+status: vocabulary
+category: "AI엔지니어링(AIEngineering)"
+aliases: ["추천시스템 온톨로지 선언: 모델 서빙과 개인화 실패"]
+ontology_concepts:
+  - {id: shared-model-serving-server, type: Approach, label: "sidecar 동기화와 여러 모델이 공유하는 프레임워크 전용 서빙 서버 하나", evidence: "[[Recommendation-System-Model-Serving-Platform#여러 모델이 서버 하나를 공유할 때의 한계]]"}
+  - {id: shared-server-coupled-scaling, type: Tradeoff, label: "트래픽이 큰 모델 하나 때문에 같은 서버의 모든 모델을 함께 확장", evidence: "[[Recommendation-System-Model-Serving-Platform#여러 모델이 서버 하나를 공유할 때의 한계]]"}
+  - {id: shared-server-scattered-config, type: Tradeoff, label: "모델 경로, 버전과 리소스 설정 분산", evidence: "[[Recommendation-System-Model-Serving-Platform#여러 모델이 서버 하나를 공유할 때의 한계]]"}
+  - {id: shared-server-fault-isolation-gap, type: Tradeoff, label: "모델별 오류와 지연 원인 분리 어려움", evidence: "[[Recommendation-System-Model-Serving-Platform#여러 모델이 서버 하나를 공유할 때의 한계]]"}
+  - {id: shared-server-framework-lock-in, type: Tradeoff, label: "한 프레임워크 형식 고정으로 다른 프레임워크 서빙 경로 별도 구성", evidence: "[[Recommendation-System-Model-Serving-Platform#여러 모델이 서버 하나를 공유할 때의 한계]]"}
+  - {id: per-model-deployment, type: Approach, label: "모델별 독립 배포", aliases: ["모델별 배포"], evidence: "[[Recommendation-System-Model-Serving-Platform#모델별 배포와 레지스트리 기반 조정]]"}
+  - {id: registry-alias-reconcile-controller, type: Approach, label: "레지스트리 alias를 주기적으로 조회하는 조정 루프 controller", evidence: "[[Recommendation-System-Model-Serving-Platform#모델별 배포와 레지스트리 기반 조정]]"}
+  - {id: reconcile-polling-delay, type: Tradeoff, label: "조회 주기만큼의 반영 지연", evidence: "[[Recommendation-System-Model-Serving-Platform#모델별 배포와 레지스트리 기반 조정]]"}
+  - {id: single-controller-spof, type: Problem, label: "단일 인스턴스 controller의 배포 경로 단일 장애점", evidence: "[[Recommendation-System-Model-Serving-Platform#모델별 배포와 레지스트리 기반 조정]]"}
+  - {id: lease-controller-leader-election, type: Approach, label: "Kubernetes Lease 기반 controller leader 선출", evidence: "[[Recommendation-System-Model-Serving-Platform#모델별 배포와 레지스트리 기반 조정]]"}
+  - {id: torchserve, type: Approach, label: "TorchServe", evidence: "[[Recommendation-System-Model-Serving-Platform#모델별 배포와 레지스트리 기반 조정]]"}
+  - {id: torchserve-archived-no-patches, type: Tradeoff, label: "TorchServe 저장소 보관(2025-08-07)과 보안 수정을 포함한 추가 패치 없음(2026-10-27 확인)", evidence: "[[Recommendation-System-Model-Serving-Platform#모델별 배포와 레지스트리 기반 조정]]"}
+  - {id: readiness-probe, type: Approach, label: "모델 서빙 Pod의 readiness probe", evidence: "[[Recommendation-System-Model-Serving-Platform#배포 안정성과 되돌리기]]"}
+  - {id: readiness-checks-model-load, type: Condition, label: "readiness probe가 프로세스 기동이 아닌 모델 로드와 응답 가능 여부를 확인", evidence: "[[Recommendation-System-Model-Serving-Platform#배포 안정성과 되돌리기]]"}
+  - {id: controller-applied-state-exposure, type: Approach, label: "controller가 반영한 alias, 버전과 시각의 상태 노출", evidence: "[[Recommendation-System-Model-Serving-Platform#운영 관측과 비용]]"}
+  - {id: alias-move-model-rollback, type: Approach, label: "alias 이동 기반 모델 rollback", evidence: "[[Recommendation-System-Model-Serving-Platform#배포 안정성과 되돌리기]]"}
+  - {id: non-atomic-alias-rollback, type: Tradeoff, label: "조회 주기와 rolling update 시간이 걸리는 비원자적 rollback", evidence: "[[Recommendation-System-Model-Serving-Platform#배포 안정성과 되돌리기]]"}
+  - {id: rollback-path-stalls-with-controller, type: Problem, label: "controller나 레지스트리 정지 시 rollback 경로 정지", evidence: "[[Recommendation-System-Model-Serving-Platform#배포 안정성과 되돌리기]]"}
+  - {id: emergency-direct-rollback, type: Approach, label: "Deployment 직접 revision 되돌리기 또는 설정 버전 고정 비상 경로", evidence: "[[Recommendation-System-Model-Serving-Platform#배포 안정성과 되돌리기]]"}
+  - {id: in-place-alias-move, type: Approach, label: "모델 endpoint의 제자리 alias 이동", aliases: ["제자리 alias 이동"], evidence: "[[Recommendation-System-Model-Serving-Platform#Serving Bundle과 맞추기]]"}
+  - {id: mixed-versions-during-rolling-update, type: Tradeoff, label: "rolling update 동안 이전 버전과 새 버전 동시 응답", evidence: "[[Recommendation-System-Model-Serving-Platform#Serving Bundle과 맞추기]]"}
+  - {id: bundle-compatible-model-version, type: Condition, label: "현재 bundle과 호환되는 새 버전 (같은 feature schema와 embedding 공간)", evidence: "[[Recommendation-System-Model-Serving-Platform#Serving Bundle과 맞추기]]"}
+  - {id: passed-full-rollout-gates, type: Condition, label: "rollout 단계 전체를 통과한 버전", evidence: "[[Recommendation-System-Model-Serving-Platform#Serving Bundle과 맞추기]]"}
+  - {id: pipeline-auto-alias-move, type: Approach, label: "학습 파이프라인의 alias 자동 이동", evidence: "[[Recommendation-System-Model-Serving-Platform#Serving Bundle과 맞추기]]"}
+  - {id: rollout-gate-bypass, type: Tradeoff, label: "게이트를 거치지 않은 버전의 alias 이동 조건 우회", evidence: "[[Recommendation-System-Model-Serving-Platform#Serving Bundle과 맞추기]]"}
+  - {id: model-not-reverted-by-bundle-switch, type: Tradeoff, label: "bundle 전환으로 모델이 되돌아가지 않음", evidence: "[[Recommendation-System-Model-Serving-Platform#Serving Bundle과 맞추기]]"}
+  - {id: keep-previous-version-deployment, type: Approach, label: "이전 버전 Deployment 유지", evidence: "[[Recommendation-System-Model-Serving-Platform#Serving Bundle과 맞추기]]"}
+  - {id: per-request-served-model-version, type: Condition, label: "제자리 alias 이동 경로에서 요청별로 기록한 실제 응답 모델 버전", evidence: "[[Recommendation-System-Model-Serving-Platform#Serving Bundle과 맞추기]]"}
+  - {id: model-only-rollback-unrecoverable-change, type: Problem, label: "모델 rollback만으로 복구되지 않는 특징 정의와 embedding 공간 변경", evidence: "[[Recommendation-System-Model-Serving-Platform#Serving Bundle과 맞추기]]"}
+  - {id: per-model-fixed-overhead, type: Tradeoff, label: "서버마다 더해지는 고정 오버헤드", evidence: "[[Recommendation-System-Model-Serving-Platform#운영 관측과 비용]]"}
+  - {id: deployment-state-guessed-from-logs, type: Problem, label: "배포 상태를 로그에서 추측", evidence: "[[Recommendation-System-Model-Serving-Platform#운영 관측과 비용]]"}
+  - {id: purchase-read-as-growing-interest, type: Problem, label: "구매를 관심 증가로만 반영", evidence: "[[Recommendation-System-Personalization-Failure-Modes#증상에서 빠진 계약을 찾는다]]"}
+  - {id: post-purchase-exclusion-repurchase-cycle, type: Approach, label: "구매 뒤 같은 범주 축소와 재구매 주기에 맞춘 재노출 규칙", evidence: "[[Recommendation-System-Personalization-Failure-Modes#완료된 목적과 지속 관심을 나눈다]]"}
+  - {id: one-off-task-read-as-lasting-interest, type: Problem, label: "일회성 과업을 지속 관심으로 취급", evidence: "[[Recommendation-System-Personalization-Failure-Modes#증상에서 빠진 계약을 찾는다]]"}
+  - {id: session-intent-long-term-interest-separation, type: Approach, label: "세션 의도와 장기 관심 분리", evidence: "[[Recommendation-System-Personalization-Failure-Modes#완료된 목적과 지속 관심을 나눈다]]"}
+  - {id: item-level-only-negative-memory, type: Problem, label: "반복된 부정 신호를 아이템 단위로만 기억", evidence: "[[Recommendation-System-Personalization-Failure-Modes#증상에서 빠진 계약을 찾는다]]"}
+  - {id: attribute-level-negative-aggregation, type: Approach, label: "부정 신호의 속성 단위 집계", evidence: "[[Recommendation-System-Personalization-Failure-Modes#반복된 부정 신호를 속성 단위로 모은다]]"}
+  - {id: location-read-as-language-preference, type: Problem, label: "위치를 언어 선호로 추정", evidence: "[[Recommendation-System-Personalization-Failure-Modes#증상에서 빠진 계약을 찾는다]]"}
+  - {id: explicit-setting-precedence, type: Approach, label: "명시 설정을 추정 맥락보다 우선하는 locale 결정", evidence: "[[Recommendation-System-Personalization-Failure-Modes#명시 설정은 추정 맥락보다 우선한다]]"}
+  - {id: interest-without-consumability, type: Problem, label: "관심만 보고 소비 가능성을 무시", evidence: "[[Recommendation-System-Personalization-Failure-Modes#증상에서 빠진 계약을 찾는다]]"}
+  - {id: consumability-eligibility, type: Approach, label: "지역, 언어와 접근 가능성의 자격 조건 필터", evidence: "[[Recommendation-System-Personalization-Failure-Modes#관심과 소비 가능성을 분리한다]]"}
+  - {id: ownership-state-disconnected, type: Problem, label: "보유와 계약 상태가 추천기에 연결되지 않음", evidence: "[[Recommendation-System-Personalization-Failure-Modes#증상에서 빠진 계약을 찾는다]]"}
+  - {id: ownership-source-of-truth, type: Approach, label: "보유와 계약 상태의 정본 연동", evidence: "[[Recommendation-System-Personalization-Failure-Modes#완료된 목적과 지속 관심을 나눈다]]"}
+  - {id: inferred-attribute-as-fact, type: Problem, label: "추정 속성을 사실처럼 사용", evidence: "[[Recommendation-System-Personalization-Failure-Modes#증상에서 빠진 계약을 찾는다]]"}
+  - {id: inferred-attribute-confidence-correction, type: Approach, label: "추정 속성의 사용 범위, 신뢰도 기준과 수정 경로", evidence: "[[Recommendation-System-Personalization-Failure-Modes#관심과 소비 가능성을 분리한다]]"}
+  - {id: personalize-purchase-exclusion-filter, type: Approach, label: "Amazon Personalize 구매 항목 제외 filter", evidence: "[[Recommendation-System-Personalization-Failure-Modes#완료된 목적과 지속 관심을 나눈다]]"}
+  - {id: personalize-interaction-filter-window, type: Tradeoff, label: "Amazon Personalize 상호작용 필터의 사용자별, 이벤트 유형별 최근 100개(조정 가능한 quota)와 3개월 미import 시 과거 이력 미고려", evidence: "[[Recommendation-System-Personalization-Failure-Modes#완료된 목적과 지속 관심을 나눈다]]"}
+  - {id: old-purchase-outside-filter-window, type: Problem, label: "필터 창 밖으로 밀린 오래된 구매의 재추천", evidence: "[[Recommendation-System-Personalization-Failure-Modes#완료된 목적과 지속 관심을 나눈다]]"}
+  - {id: recent-search-dominates-home, type: Problem, label: "최근 검색 하나가 홈 추천을 지배", evidence: "[[Recommendation-System-Personalization-Failure-Modes#완료된 목적과 지속 관심을 나눈다]]"}
+  - {id: search-query-order-withholding, type: Approach, label: "검색어 순서 정보를 버린 순서 없는 토큰 묶음 표현", evidence: "[[Recommendation-System-Personalization-Failure-Modes#완료된 목적과 지속 관심을 나눈다]]"}
+  - {id: surrogate-problem-overfitting, type: Problem, label: "사이트 구조를 이용한 대리 문제 과적합", evidence: "[[Recommendation-System-Personalization-Failure-Modes#완료된 목적과 지속 관심을 나눈다]]"}
+  - {id: explicit-negative-buried-by-volume, type: Problem, label: "명시적 부정 신호가 행동량 기반 점수에 묻힘", evidence: "[[Recommendation-System-Personalization-Failure-Modes#반복된 부정 신호를 속성 단위로 모은다]]"}
+  - {id: explicit-negative-priority, type: Approach, label: "명시적 부정 신호 우선순위", evidence: "[[Recommendation-System-Personalization-Failure-Modes#반복된 부정 신호를 속성 단위로 모은다]]"}
+  - {id: average-metrics-hide-feedback-failure, type: Problem, label: "피드백 반영 여부가 전체 평균 지표로 드러나지 않음", evidence: "[[Recommendation-System-Personalization-Failure-Modes#반복된 부정 신호를 속성 단위로 모은다]]"}
+  - {id: user-level-feedback-guardrail, type: Approach, label: "사용자 단위 피드백 반영 guardrail", evidence: "[[Recommendation-System-Personalization-Failure-Modes#반복된 부정 신호를 속성 단위로 모은다]]"}
+  - {id: inferred-language-auto-redirect, type: Approach, label: "추정 언어 기반 다른 언어 버전 자동 이동", evidence: "[[Recommendation-System-Personalization-Failure-Modes#명시 설정은 추정 맥락보다 우선한다]]"}
+  - {id: redirect-hides-other-language-versions, type: Tradeoff, label: "사용자와 검색 엔진이 다른 언어 버전을 볼 수 없게 됨", evidence: "[[Recommendation-System-Personalization-Failure-Modes#명시 설정은 추정 맥락보다 우선한다]]"}
+  - {id: ip-based-content-switch, type: Approach, label: "IP 위치 분석 기반 콘텐츠 변경", evidence: "[[Recommendation-System-Personalization-Failure-Modes#명시 설정은 추정 맥락보다 우선한다]]"}
+  - {id: ip-location-unreliable, type: Tradeoff, label: "IP 위치 분석의 어려움과 낮은 신뢰도", evidence: "[[Recommendation-System-Personalization-Failure-Modes#명시 설정은 추정 맥락보다 우선한다]]"}
+  - {id: hreflang-separate-url-explicit-links, type: Approach, label: "hreflang, 별도 URL과 명시적 링크", evidence: "[[Recommendation-System-Personalization-Failure-Modes#명시 설정은 추정 맥락보다 우선한다]]"}
+  - {id: current-location-residence-separation, type: Approach, label: "여행 중 현재 위치와 거주지 필드 분리", evidence: "[[Recommendation-System-Personalization-Failure-Modes#명시 설정은 추정 맥락보다 우선한다]]"}
+  - {id: temporary-move-overwrites-preferences, type: Problem, label: "일시적인 이동이 언어와 장기 관심을 덮어씀", evidence: "[[Recommendation-System-Personalization-Failure-Modes#명시 설정은 추정 맥락보다 우선한다]]"}
+  - {id: versioned-serving-bundle, type: Approach, label: "Versioned serving bundle", aliases: ["Serving Bundle"], evidence: "[[Recommendation-System-Serving-Operations#추천 시스템 서빙과 운영]]"}
+  - {id: incompatible-artifact-combination, type: Problem, label: "형식 오류 없이 품질만 무너지는 artifact 조합", evidence: "[[Recommendation-System-Serving-Operations#온라인과 오프라인 경로]]"}
+  - {id: same-dimension-different-embedding-space, type: Problem, label: "같은 차원이지만 다른 embedding 의미 공간", evidence: "[[Recommendation-System-Serving-Operations#Serving Bundle 계약]]"}
+  - {id: full-reembedding-new-index, type: Approach, label: "전체 item 재embedding과 대응 index, query encoder 동반 검증", evidence: "[[Recommendation-System-Serving-Operations#Serving Bundle 계약]]"}
+  - {id: mixed-encoder-vectors-in-index, type: Problem, label: "한 index에 서로 다른 candidate encoder vector 혼합", evidence: "[[Recommendation-System-Serving-Operations#호환성 실패 예]]"}
+  - {id: stale-online-feature-value, type: Problem, label: "online store에 보관한 최신 feature 값의 노후화", evidence: "[[Recommendation-System-Serving-Operations#Freshness와 Point-in-time correctness]]"}
+  - {id: feature-group-freshness-contract, type: Approach, label: "feature group별 timestamp, surface별 max age, missing policy와 transform hash 정의", evidence: "[[Recommendation-System-Serving-Operations#Freshness와 Point-in-time correctness]]"}
+  - {id: feature-definition-matches-bundle, type: Condition, label: "feature 정의의 immutable version과 serving bundle feature reference 일치", evidence: "[[Recommendation-System-Serving-Operations#Freshness와 Point-in-time correctness]]"}
+  - {id: late-event-drop, type: Approach, label: "늦게 도착한 구매와 완주 이벤트 폐기", evidence: "[[Recommendation-System-Serving-Operations#Batch Baseline과 Stream Delta]]"}
+  - {id: long-term-value-undervaluation, type: Tradeoff, label: "장기 가치 item 과소평가", evidence: "[[Recommendation-System-Serving-Operations#Batch Baseline과 Stream Delta]]"}
+  - {id: stale-batch-overwrites-delta, type: Problem, label: "오래된 batch snapshot이 최신 delta를 덮어씀", evidence: "[[Recommendation-System-Serving-Operations#Batch Baseline과 Stream Delta]]"}
+  - {id: snapshot-tombstone-ordering, type: Approach, label: "snapshot과 tombstone 순서 관리", evidence: "[[Recommendation-System-Serving-Operations#Batch Baseline과 Stream Delta]]"}
+  - {id: personalize-real-time-interactions, type: Approach, label: "Amazon Personalize 실시간 상호작용 입력", evidence: "[[Recommendation-System-Serving-Operations#관리형 추천의 입력, 갱신과 재학습을 구분한다]]"}
+  - {id: real-time-recipe-and-trained-item, type: Condition, label: "실시간 개인화 지원 recipe/use case와 최근 전체 학습에 포함된 항목", evidence: "[[Recommendation-System-Serving-Operations#관리형 추천의 입력, 갱신과 재학습을 구분한다]]"}
+  - {id: personalize-bulk-interaction-import, type: Approach, label: "Amazon Personalize 일괄 상호작용 가져오기", evidence: "[[Recommendation-System-Serving-Operations#관리형 추천의 입력, 갱신과 재학습을 구분한다]]"}
+  - {id: reflected-only-after-next-training, type: Tradeoff, label: "다음 학습 뒤에야 모델에 반영", evidence: "[[Recommendation-System-Serving-Operations#관리형 추천의 입력, 갱신과 재학습을 구분한다]]"}
+  - {id: ingestion-success-read-as-freshness, type: Problem, label: "이벤트 적재 성공을 추천 최신성으로 판정", evidence: "[[Recommendation-System-Serving-Operations#관리형 추천의 입력, 갱신과 재학습을 구분한다]]"}
+  - {id: freshness-by-path-training-cache-age, type: Approach, label: "입력 경로, 마지막 학습 시점과 응답 캐시 나이의 분리 측정", evidence: "[[Recommendation-System-Serving-Operations#관리형 추천의 입력, 갱신과 재학습을 구분한다]]"}
+  - {id: elasticsearch-mget, type: Approach, label: "Elasticsearch _mget 일괄 조회", evidence: "[[Recommendation-System-Serving-Operations#벡터 조회 부하도 따로 검증한다]]"}
+  - {id: mget-partial-results, type: Tradeoff, label: "Elasticsearch _mget의 일부 shard 실패 시 부분 결과 반환", evidence: "[[Recommendation-System-Serving-Operations#벡터 조회 부하도 따로 검증한다]]"}
+  - {id: http-success-read-as-complete-fetch, type: Problem, label: "전체 HTTP 성공을 특징 수집 완료로 판단", evidence: "[[Recommendation-System-Serving-Operations#벡터 조회 부하도 따로 검증한다]]"}
+  - {id: per-item-error-found-check, type: Approach, label: "항목별 오류와 found 검사", evidence: "[[Recommendation-System-Serving-Operations#벡터 조회 부하도 따로 검증한다]]"}
+  - {id: missing-replaced-with-zero, type: Problem, label: "누락 feature를 실제 값 0으로 대체", evidence: "[[Recommendation-System-Serving-Operations#벡터 조회 부하도 따로 검증한다]]"}
+  - {id: feature-missing-policy, type: Approach, label: "feature missing policy", evidence: "[[Recommendation-System-Serving-Operations#벡터 조회 부하도 따로 검증한다]]"}
+  - {id: add-pipeline-stages, type: Approach, label: "추천 pipeline stage 추가", evidence: "[[Recommendation-System-Serving-Operations#End-to-end Deadline]]"}
+  - {id: stage-queueing-fanout-tail-latency, type: Tradeoff, label: "queueing과 fan-out tail latency가 절약한 compute보다 커질 수 있음", evidence: "[[Recommendation-System-Serving-Operations#End-to-end Deadline]]"}
+  - {id: per-source-deadline, type: Approach, label: "candidate source별 독립 deadline", evidence: "[[Recommendation-System-Serving-Operations#End-to-end Deadline]]"}
+  - {id: missing-source-underfill-quality-drop, type: Tradeoff, label: "timeout source 누락에 따른 underfill과 품질 저하", evidence: "[[Recommendation-System-Serving-Operations#End-to-end Deadline]]"}
+  - {id: ranker-timeout, type: Problem, label: "Ranker timeout", evidence: "[[Recommendation-System-Serving-Operations#Fallback ladder]]"}
+  - {id: base-order-blend-fallback, type: Approach, label: "source별 검증된 base order의 사전 정의 blend policy 결합", evidence: "[[Recommendation-System-Serving-Operations#Fallback ladder]]"}
+  - {id: dedup-and-hard-filter-kept, type: Condition, label: "canonical dedup과 활성 surface hard filter 유지", evidence: "[[Recommendation-System-Serving-Operations#Fallback ladder]]"}
+  - {id: merged-alert-for-different-causes, type: Problem, label: "원인과 대응이 다른 이상을 한 경보로 합침", evidence: "[[Recommendation-System-Serving-Operations#관측 항목]]"}
+  - {id: cause-specific-alerts, type: Approach, label: "schema anomaly, skew, drift와 stale/missing의 경보 분리", evidence: "[[Recommendation-System-Serving-Operations#관측 항목]]"}
+  - {id: deleted-data-resurrection, type: Problem, label: "오래된 snapshot이나 replay의 삭제 데이터 부활", evidence: "[[Recommendation-System-Serving-Operations#삭제 전파]]"}
+  - {id: deletion-tombstone-cutoff, type: Approach, label: "삭제 tombstone과 cutoff", evidence: "[[Recommendation-System-Serving-Operations#삭제 전파]]"}
+  - {id: deleted-data-influence-in-model, type: Problem, label: "여러 사용자 로그로 학습한 모델에 남은 삭제 데이터 영향", evidence: "[[Recommendation-System-Serving-Operations#삭제 전파]]"}
+  - {id: retrain-for-deletion, type: Approach, label: "삭제 데이터 영향 제거를 위한 retrain", evidence: "[[Recommendation-System-Serving-Operations#삭제 전파]]"}
+  - {id: verified-unlearning, type: Approach, label: "검증된 unlearning 절차", evidence: "[[Recommendation-System-Serving-Operations#삭제 전파]]"}
+ontology_relations:
+  - {subject: "concept:shared-model-serving-server", predicate: has_tradeoff, target: "concept:shared-server-coupled-scaling", evidence: "[[Recommendation-System-Model-Serving-Platform#여러 모델이 서버 하나를 공유할 때의 한계]]"}
+  - {subject: "concept:shared-model-serving-server", predicate: has_tradeoff, target: "concept:shared-server-scattered-config", evidence: "[[Recommendation-System-Model-Serving-Platform#여러 모델이 서버 하나를 공유할 때의 한계]]"}
+  - {subject: "concept:shared-model-serving-server", predicate: has_tradeoff, target: "concept:shared-server-fault-isolation-gap", evidence: "[[Recommendation-System-Model-Serving-Platform#여러 모델이 서버 하나를 공유할 때의 한계]]"}
+  - {subject: "concept:shared-model-serving-server", predicate: has_tradeoff, target: "concept:shared-server-framework-lock-in", evidence: "[[Recommendation-System-Model-Serving-Platform#여러 모델이 서버 하나를 공유할 때의 한계]]"}
+  - {subject: "concept:registry-alias-reconcile-controller", predicate: has_tradeoff, target: "concept:reconcile-polling-delay", evidence: "[[Recommendation-System-Model-Serving-Platform#모델별 배포와 레지스트리 기반 조정]]"}
+  - {subject: "concept:lease-controller-leader-election", predicate: addresses, target: "concept:single-controller-spof", evidence: "[[Recommendation-System-Model-Serving-Platform#모델별 배포와 레지스트리 기반 조정]]"}
+  - {subject: "concept:torchserve", predicate: has_tradeoff, target: "concept:torchserve-archived-no-patches", evidence: "[[Recommendation-System-Model-Serving-Platform#모델별 배포와 레지스트리 기반 조정]]"}
+  - {subject: "concept:readiness-probe", predicate: requires, target: "concept:readiness-checks-model-load", evidence: "[[Recommendation-System-Model-Serving-Platform#배포 안정성과 되돌리기]]"}
+  - {subject: "concept:alias-move-model-rollback", predicate: has_tradeoff, target: "concept:non-atomic-alias-rollback", evidence: "[[Recommendation-System-Model-Serving-Platform#배포 안정성과 되돌리기]]"}
+  - {subject: "concept:emergency-direct-rollback", predicate: addresses, target: "concept:rollback-path-stalls-with-controller", evidence: "[[Recommendation-System-Model-Serving-Platform#배포 안정성과 되돌리기]]"}
+  - {subject: "concept:alias-move-model-rollback", predicate: alternative_to, target: "concept:emergency-direct-rollback", evidence: "[[Recommendation-System-Model-Serving-Platform#배포 안정성과 되돌리기]]"}
+  - {subject: "concept:in-place-alias-move", predicate: has_tradeoff, target: "concept:mixed-versions-during-rolling-update", evidence: "[[Recommendation-System-Model-Serving-Platform#Serving Bundle과 맞추기]]"}
+  - {subject: "concept:in-place-alias-move", predicate: requires, target: "concept:bundle-compatible-model-version", evidence: "[[Recommendation-System-Model-Serving-Platform#Serving Bundle과 맞추기]]"}
+  - {subject: "concept:in-place-alias-move", predicate: requires, target: "concept:passed-full-rollout-gates", evidence: "[[Recommendation-System-Model-Serving-Platform#Serving Bundle과 맞추기]]"}
+  - {subject: "concept:pipeline-auto-alias-move", predicate: has_tradeoff, target: "concept:rollout-gate-bypass", evidence: "[[Recommendation-System-Model-Serving-Platform#Serving Bundle과 맞추기]]"}
+  - {subject: "concept:in-place-alias-move", predicate: has_tradeoff, target: "concept:model-not-reverted-by-bundle-switch", evidence: "[[Recommendation-System-Model-Serving-Platform#Serving Bundle과 맞추기]]"}
+  - {subject: "concept:keep-previous-version-deployment", predicate: alternative_to, target: "concept:alias-move-model-rollback", evidence: "[[Recommendation-System-Model-Serving-Platform#Serving Bundle과 맞추기]]"}
+  - {subject: "concept:page-decision-replay", predicate: requires, target: "concept:per-request-served-model-version", evidence: "[[Recommendation-System-Model-Serving-Platform#Serving Bundle과 맞추기]]"}
+  - {subject: "concept:versioned-serving-bundle", predicate: alternative_to, target: "concept:in-place-alias-move", evidence: "[[Recommendation-System-Model-Serving-Platform#Serving Bundle과 맞추기]]"}
+  - {subject: "concept:versioned-serving-bundle", predicate: addresses, target: "concept:model-only-rollback-unrecoverable-change", evidence: "[[Recommendation-System-Model-Serving-Platform#Serving Bundle과 맞추기]]"}
+  - {subject: "concept:per-model-deployment", predicate: has_tradeoff, target: "concept:per-model-fixed-overhead", evidence: "[[Recommendation-System-Model-Serving-Platform#운영 관측과 비용]]"}
+  - {subject: "concept:controller-applied-state-exposure", predicate: addresses, target: "concept:deployment-state-guessed-from-logs", evidence: "[[Recommendation-System-Model-Serving-Platform#운영 관측과 비용]]"}
+  - {subject: "concept:per-model-deployment", predicate: alternative_to, target: "concept:shared-model-serving-server", evidence: "[[Recommendation-System-Model-Serving-Platform#사례]]"}
+  - {subject: "concept:post-purchase-exclusion-repurchase-cycle", predicate: addresses, target: "concept:purchase-read-as-growing-interest", evidence: "[[Recommendation-System-Personalization-Failure-Modes#증상에서 빠진 계약을 찾는다]]"}
+  - {subject: "concept:session-intent-long-term-interest-separation", predicate: addresses, target: "concept:one-off-task-read-as-lasting-interest", evidence: "[[Recommendation-System-Personalization-Failure-Modes#증상에서 빠진 계약을 찾는다]]"}
+  - {subject: "concept:attribute-level-negative-aggregation", predicate: addresses, target: "concept:item-level-only-negative-memory", evidence: "[[Recommendation-System-Personalization-Failure-Modes#증상에서 빠진 계약을 찾는다]]"}
+  - {subject: "concept:explicit-setting-precedence", predicate: addresses, target: "concept:location-read-as-language-preference", evidence: "[[Recommendation-System-Personalization-Failure-Modes#증상에서 빠진 계약을 찾는다]]"}
+  - {subject: "concept:consumability-eligibility", predicate: addresses, target: "concept:interest-without-consumability", evidence: "[[Recommendation-System-Personalization-Failure-Modes#증상에서 빠진 계약을 찾는다]]"}
+  - {subject: "concept:ownership-source-of-truth", predicate: addresses, target: "concept:ownership-state-disconnected", evidence: "[[Recommendation-System-Personalization-Failure-Modes#증상에서 빠진 계약을 찾는다]]"}
+  - {subject: "concept:inferred-attribute-confidence-correction", predicate: addresses, target: "concept:inferred-attribute-as-fact", evidence: "[[Recommendation-System-Personalization-Failure-Modes#증상에서 빠진 계약을 찾는다]]"}
+  - {subject: "concept:post-purchase-exclusion-repurchase-cycle", predicate: addresses, target: "concept:purchase-read-as-growing-interest", evidence: "[[Recommendation-System-Personalization-Failure-Modes#완료된 목적과 지속 관심을 나눈다]]"}
+  - {subject: "concept:personalize-purchase-exclusion-filter", predicate: has_tradeoff, target: "concept:personalize-interaction-filter-window", evidence: "[[Recommendation-System-Personalization-Failure-Modes#완료된 목적과 지속 관심을 나눈다]]"}
+  - {subject: "concept:ownership-source-of-truth", predicate: addresses, target: "concept:old-purchase-outside-filter-window", evidence: "[[Recommendation-System-Personalization-Failure-Modes#완료된 목적과 지속 관심을 나눈다]]"}
+  - {subject: "concept:search-query-order-withholding", predicate: addresses, target: "concept:recent-search-dominates-home", evidence: "[[Recommendation-System-Personalization-Failure-Modes#완료된 목적과 지속 관심을 나눈다]]"}
+  - {subject: "concept:search-query-order-withholding", predicate: addresses, target: "concept:surrogate-problem-overfitting", evidence: "[[Recommendation-System-Personalization-Failure-Modes#완료된 목적과 지속 관심을 나눈다]]"}
+  - {subject: "concept:attribute-level-negative-aggregation", predicate: addresses, target: "concept:item-level-only-negative-memory", evidence: "[[Recommendation-System-Personalization-Failure-Modes#반복된 부정 신호를 속성 단위로 모은다]]"}
+  - {subject: "concept:explicit-negative-priority", predicate: addresses, target: "concept:explicit-negative-buried-by-volume", evidence: "[[Recommendation-System-Personalization-Failure-Modes#반복된 부정 신호를 속성 단위로 모은다]]"}
+  - {subject: "concept:user-level-feedback-guardrail", predicate: addresses, target: "concept:average-metrics-hide-feedback-failure", evidence: "[[Recommendation-System-Personalization-Failure-Modes#반복된 부정 신호를 속성 단위로 모은다]]"}
+  - {subject: "concept:inferred-language-auto-redirect", predicate: has_tradeoff, target: "concept:redirect-hides-other-language-versions", evidence: "[[Recommendation-System-Personalization-Failure-Modes#명시 설정은 추정 맥락보다 우선한다]]"}
+  - {subject: "concept:ip-based-content-switch", predicate: has_tradeoff, target: "concept:ip-location-unreliable", evidence: "[[Recommendation-System-Personalization-Failure-Modes#명시 설정은 추정 맥락보다 우선한다]]"}
+  - {subject: "concept:ip-based-content-switch", predicate: alternative_to, target: "concept:hreflang-separate-url-explicit-links", evidence: "[[Recommendation-System-Personalization-Failure-Modes#명시 설정은 추정 맥락보다 우선한다]]"}
+  - {subject: "concept:current-location-residence-separation", predicate: addresses, target: "concept:temporary-move-overwrites-preferences", evidence: "[[Recommendation-System-Personalization-Failure-Modes#명시 설정은 추정 맥락보다 우선한다]]"}
+  - {subject: "concept:consumability-eligibility", predicate: addresses, target: "concept:interest-without-consumability", evidence: "[[Recommendation-System-Personalization-Failure-Modes#관심과 소비 가능성을 분리한다]]"}
+  - {subject: "concept:inferred-attribute-confidence-correction", predicate: addresses, target: "concept:inferred-attribute-as-fact", evidence: "[[Recommendation-System-Personalization-Failure-Modes#관심과 소비 가능성을 분리한다]]"}
+  - {subject: "concept:sensitive-attribute-use", predicate: requires, target: "concept:legitimate-purpose-and-access-control", evidence: "[[Recommendation-System-Personalization-Failure-Modes#관심과 소비 가능성을 분리한다]]"}
+  - {subject: "concept:versioned-serving-bundle", predicate: addresses, target: "concept:incompatible-artifact-combination", evidence: "[[Recommendation-System-Serving-Operations#온라인과 오프라인 경로]]"}
+  - {subject: "concept:full-reembedding-new-index", predicate: addresses, target: "concept:same-dimension-different-embedding-space", evidence: "[[Recommendation-System-Serving-Operations#Serving Bundle 계약]]"}
+  - {subject: "concept:feature-group-freshness-contract", predicate: addresses, target: "concept:stale-online-feature-value", evidence: "[[Recommendation-System-Serving-Operations#Freshness와 Point-in-time correctness]]"}
+  - {subject: "concept:feature-group-freshness-contract", predicate: requires, target: "concept:feature-definition-matches-bundle", evidence: "[[Recommendation-System-Serving-Operations#Freshness와 Point-in-time correctness]]"}
+  - {subject: "concept:late-event-drop", predicate: has_tradeoff, target: "concept:long-term-value-undervaluation", evidence: "[[Recommendation-System-Serving-Operations#Batch Baseline과 Stream Delta]]"}
+  - {subject: "concept:snapshot-tombstone-ordering", predicate: addresses, target: "concept:stale-batch-overwrites-delta", evidence: "[[Recommendation-System-Serving-Operations#Batch Baseline과 Stream Delta]]"}
+  - {subject: "concept:personalize-real-time-interactions", predicate: requires, target: "concept:real-time-recipe-and-trained-item", evidence: "[[Recommendation-System-Serving-Operations#관리형 추천의 입력, 갱신과 재학습을 구분한다]]"}
+  - {subject: "concept:personalize-bulk-interaction-import", predicate: has_tradeoff, target: "concept:reflected-only-after-next-training", evidence: "[[Recommendation-System-Serving-Operations#관리형 추천의 입력, 갱신과 재학습을 구분한다]]"}
+  - {subject: "concept:freshness-by-path-training-cache-age", predicate: addresses, target: "concept:ingestion-success-read-as-freshness", evidence: "[[Recommendation-System-Serving-Operations#관리형 추천의 입력, 갱신과 재학습을 구분한다]]"}
+  - {subject: "concept:full-reembedding-new-index", predicate: addresses, target: "concept:mixed-encoder-vectors-in-index", evidence: "[[Recommendation-System-Serving-Operations#Embedding 공간 자체 변경]]"}
+  - {subject: "concept:elasticsearch-mget", predicate: has_tradeoff, target: "concept:mget-partial-results", evidence: "[[Recommendation-System-Serving-Operations#벡터 조회 부하도 따로 검증한다]]"}
+  - {subject: "concept:per-item-error-found-check", predicate: addresses, target: "concept:http-success-read-as-complete-fetch", evidence: "[[Recommendation-System-Serving-Operations#벡터 조회 부하도 따로 검증한다]]"}
+  - {subject: "concept:feature-missing-policy", predicate: addresses, target: "concept:missing-replaced-with-zero", evidence: "[[Recommendation-System-Serving-Operations#벡터 조회 부하도 따로 검증한다]]"}
+  - {subject: "concept:add-pipeline-stages", predicate: has_tradeoff, target: "concept:stage-queueing-fanout-tail-latency", evidence: "[[Recommendation-System-Serving-Operations#End-to-end Deadline]]"}
+  - {subject: "concept:per-source-deadline", predicate: has_tradeoff, target: "concept:missing-source-underfill-quality-drop", evidence: "[[Recommendation-System-Serving-Operations#End-to-end Deadline]]"}
+  - {subject: "concept:base-order-blend-fallback", predicate: addresses, target: "concept:ranker-timeout", evidence: "[[Recommendation-System-Serving-Operations#Fallback ladder]]"}
+  - {subject: "concept:base-order-blend-fallback", predicate: requires, target: "concept:dedup-and-hard-filter-kept", evidence: "[[Recommendation-System-Serving-Operations#Fallback ladder]]"}
+  - {subject: "concept:cause-specific-alerts", predicate: addresses, target: "concept:merged-alert-for-different-causes", evidence: "[[Recommendation-System-Serving-Operations#관측 항목]]"}
+  - {subject: "concept:in-place-alias-move", predicate: has_tradeoff, target: "concept:model-not-reverted-by-bundle-switch", evidence: "[[Recommendation-System-Serving-Operations#Rollout, Replay와 Rollback]]"}
+  - {subject: "concept:page-decision-replay", predicate: requires, target: "concept:replay-artifacts-retained", evidence: "[[Recommendation-System-Serving-Operations#Rollout, Replay와 Rollback]]"}
+  - {subject: "concept:deletion-tombstone-cutoff", predicate: addresses, target: "concept:deleted-data-resurrection", evidence: "[[Recommendation-System-Serving-Operations#삭제 전파]]"}
+  - {subject: "concept:retrain-for-deletion", predicate: addresses, target: "concept:deleted-data-influence-in-model", evidence: "[[Recommendation-System-Serving-Operations#삭제 전파]]"}
+  - {subject: "concept:verified-unlearning", predicate: addresses, target: "concept:deleted-data-influence-in-model", evidence: "[[Recommendation-System-Serving-Operations#삭제 전파]]"}
+  - {subject: "concept:retrain-for-deletion", predicate: alternative_to, target: "concept:verified-unlearning", evidence: "[[Recommendation-System-Serving-Operations#삭제 전파]]"}
+---
+
+# 추천시스템 온톨로지 선언: 모델 서빙과 개인화 실패
+
+모델 서빙 플랫폼, 서빙 운영과 개인화 실패 유형에 대한 개념 100개와 타입 관계 69개를 선언한다. 본문 지식은 여기에 두지 않고, 각 선언의 `evidence`가 가리키는 원문 섹션이 근거다.
+
+선언은 `ontology/candidates/recommendation-system-*.jsonl`에서 원문 대조 검증을 통과한 후보만 옮긴 것이다. 새 선언은 후보 파일에 먼저 추가해 검증한 뒤 한 줄로 옮기고, 원문 heading이 바뀌면 `evidence`를 함께 고친다.
+
+상위: [[Ontology-Instances]]

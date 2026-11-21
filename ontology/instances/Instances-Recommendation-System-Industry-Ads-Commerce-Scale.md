@@ -1,0 +1,142 @@
+---
+tags: [ai, ontology, instances, recommendation-system]
+status: vocabulary
+category: "AI엔지니어링(AIEngineering)"
+aliases: ["추천시스템 온톨로지 선언: 산업 사례: 광고, 커머스와 대규모 학습"]
+ontology_concepts:
+  - {id: auction-time-general-llm, type: Approach, label: "경매 시점의 범용 LLM 예측", evidence: "[[Recommendation-System-Industry-Ad-Bidding#규모와 지연이 모델 선택을 정한다]]"}
+  - {id: llm-auction-cost-and-deadline, type: Tradeoff, label: "1조 건 규모에서 감당할 수 없는 요청당 추론 비용과 경매 제한 시간 초과", evidence: "[[Recommendation-System-Industry-Ad-Bidding#규모와 지연이 모델 선택을 정한다]]"}
+  - {id: general-llm-lacks-ad-behavior-signal, type: Tradeoff, label: "범용 모델은 광고 행동 신호가 없어 정밀한 가치 예측을 하지 못함", evidence: "[[Recommendation-System-Industry-Ad-Bidding#규모와 지연이 모델 선택을 정한다]]"}
+  - {id: ad-value-to-bid-conversion, type: Approach, label: "여러 행동 예측을 합친 광고 가치의 입찰가 변환", evidence: "[[Recommendation-System-Industry-Ad-Bidding#여섯 영역]]"}
+  - {id: calibrated-absolute-ad-value, type: Condition, label: "광고주 목표 기준 금액으로 보정된 절대값", evidence: "[[Recommendation-System-Industry-Ad-Bidding#여섯 영역]]"}
+  - {id: shared-signals-compound-structure, type: Approach, label: "CARA의 모든 영역이 Signals 계층을 함께 읽고 쓰는 복리 구조", evidence: "[[Recommendation-System-Industry-Ad-Bidding#복리 구조: 영역이 서로의 입력이다]]"}
+  - {id: cross-area-signal-error-propagation, type: Tradeoff, label: "잘못된 공유 신호가 가치 예측, 입찰과 예산 배분으로 함께 번짐", evidence: "[[Recommendation-System-Industry-Ad-Bidding#복리 구조: 영역이 서로의 입력이다]]"}
+  - {id: unbought-inventory-unobserved, type: Problem, label: "사지 않은 지면의 결과가 관측되지 않아 낮게 추정된 지면이 교정될 기회가 적음", evidence: "[[Recommendation-System-Industry-Ad-Bidding#복리 구조: 영역이 서로의 입력이다]]"}
+  - {id: bias-reducing-exploration-budget, type: Approach, label: "입찰에서 편향을 줄이는 탐색 예산", evidence: "[[Recommendation-System-Industry-Ad-Bidding#복리 구조: 영역이 서로의 입력이다]]"}
+  - {id: ad-model-frequent-retraining, type: Approach, label: "입찰 광고 모델의 짧은 주기 재학습과 배포", evidence: "[[Recommendation-System-Industry-Ad-Bidding#지연 피드백]]"}
+  - {id: delayed-feedback-handling, type: Condition, label: "delayed feedback 처리", aliases: ["지연 피드백 처리"], evidence: "[[Recommendation-System-Industry-Ad-Bidding#지연 피드백]]"}
+  - {id: ctv-impression-signal-scarcity, type: Problem, label: "TV 노출 자체의 신호 부족", evidence: "[[Recommendation-System-Industry-Ad-Bidding#같은 구조를 다른 지면으로 옮긴다]]"}
+  - {id: household-device-signal-linking, type: Approach, label: "같은 가정 네트워크 모바일 기기 신호를 잇는 가구 단위 기기 연결", aliases: ["가구 단위 기기 연결"], evidence: "[[Recommendation-System-Industry-Ad-Bidding#같은 구조를 다른 지면으로 옮긴다]]"}
+  - {id: household-linking-estimation-error-privacy, type: Tradeoff, label: "기기를 한 가구로 묶는 연결은 추정이라 생기는 오류와 개인정보 제약", evidence: "[[Recommendation-System-Industry-Ad-Bidding#같은 구조를 다른 지면으로 옮긴다]]"}
+  - {id: shared-ad-architecture-across-surfaces, type: Approach, label: "여러 광고 지면을 같은 구조 위에서 만듦", evidence: "[[Recommendation-System-Industry-Ad-Bidding#같은 구조를 다른 지면으로 옮긴다]]"}
+  - {id: per-combination-ad-models-infeasible, type: Problem, label: "앱, 지면, 광고주 목표와 소재의 조합마다 모델을 따로 둘 수 없음", evidence: "[[Recommendation-System-Industry-Ad-Bidding#같은 구조를 다른 지면으로 옮긴다]]"}
+  - {id: amazon-item-to-item-cf, type: Approach, label: "Amazon item-to-item collaborative filtering", aliases: ["Amazon offline relation table과 online context merge"], evidence: "[[Recommendation-System-Industry-Commerce-Marketplace#문제와 점수의 의미]]"}
+  - {id: online-item-pair-computation-load, type: Problem, label: "online 경로의 item pair 계산 부담", evidence: "[[Recommendation-System-Industry-Commerce-Marketplace#Offline과 online 분리]]"}
+  - {id: merged-similarity-across-relation-types, type: Approach, label: "유사 상품과 함께 사는 상품을 하나의 similarity로 합침", evidence: "[[Recommendation-System-Industry-Commerce-Marketplace#Product surface가 목적을 바꾼다]]"}
+  - {id: relation-type-merge-intent-mismatch, type: Tradeoff, label: "relation type을 합친 similarity와 사용자 의도의 불일치", evidence: "[[Recommendation-System-Industry-Commerce-Marketplace#Product surface가 목적을 바꾼다]]"}
+  - {id: fixed-user-vector-same-interest, type: Problem, label: "고정 user vector가 모든 후보에 같은 관심 표현을 사용함", evidence: "[[Recommendation-System-Industry-Commerce-Marketplace#Local activation]]"}
+  - {id: din-local-activation, type: Approach, label: "DIN local activation", aliases: ["DIN candidate-aware activation"], evidence: "[[Recommendation-System-Industry-Commerce-Marketplace#Local activation]]"}
+  - {id: per-candidate-attention-retrieval-cost, type: Tradeoff, label: "후보마다 history attention을 다시 계산해 전체 catalog retrieval에는 비쌈", evidence: "[[Recommendation-System-Industry-Commerce-Marketplace#Local activation]]"}
+  - {id: peak-candidate-scoring-load, type: Problem, label: "peak traffic에서 많은 candidate를 짧은 시간에 점수화해야 함", evidence: "[[Recommendation-System-Industry-Commerce-Marketplace#학습, 평가와 serving]]"}
+  - {id: din-request-batching-gpu-serving, type: Approach, label: "DIN serving의 request batching과 GPU serving 최적화", evidence: "[[Recommendation-System-Industry-Commerce-Marketplace#학습, 평가와 serving]]"}
+  - {id: mind-multi-interest-network, type: Approach, label: "MIND multi-interest network", aliases: ["Multi-Interest Network with Dynamic Routing"], evidence: "[[Recommendation-System-Industry-Commerce-Marketplace#Single-vector bottleneck]]"}
+  - {id: mind-serving-target-unknown, type: Problem, label: "MIND serving 시점에 target item을 미리 알 수 없음", evidence: "[[Recommendation-System-Industry-Commerce-Marketplace#Single-vector bottleneck]]"}
+  - {id: per-interest-ann-retrieval-merge, type: Approach, label: "MIND의 interest vector별 ANN retrieval과 후보 merge", evidence: "[[Recommendation-System-Industry-Commerce-Marketplace#Single-vector bottleneck]]"}
+  - {id: sparse-booking-long-term-embedding, type: Problem, label: "booking 희소성으로 raw user와 listing ID만으로는 long-term embedding을 만들기 어려움", evidence: "[[Recommendation-System-Industry-Commerce-Marketplace#Long-term과 양쪽 신호]]"}
+  - {id: airbnb-user-listing-type-embedding, type: Approach, label: "규칙으로 묶은 user type과 listing type embedding", evidence: "[[Recommendation-System-Industry-Commerce-Marketplace#Long-term과 양쪽 신호]]"}
+  - {id: type-abstraction-loses-individual-detail, type: Tradeoff, label: "Type abstraction으로 개인별 세부 차이를 잃음", evidence: "[[Recommendation-System-Industry-Commerce-Marketplace#Long-term과 양쪽 신호]]"}
+  - {id: retrieval-ranking-stage-confusion, type: Problem, label: "retrieval과 ranking 단계 혼동", evidence: "[[Recommendation-System-Industry-Commerce-Marketplace#전이 가능한 설계 선택]]"}
+  - {id: fix-stage-position-before-model, type: Approach, label: "모델 선택 전 surface, label, eligibility와 retrieval/ranking 위치 고정", evidence: "[[Recommendation-System-Industry-Commerce-Marketplace#전이 가능한 설계 선택]]"}
+  - {id: uniform-embedding-table-sharding, type: Approach, label: "embedding table 단순 균등 sharding", evidence: "[[Recommendation-System-Industry-Large-Scale-ML#병렬화와 시스템 영향]]"}
+  - {id: embedding-shard-load-imbalance, type: Tradeoff, label: "table별 cardinality와 access frequency 차이로 생기는 sharding 불균형", evidence: "[[Recommendation-System-Industry-Large-Scale-ML#병렬화와 시스템 영향]]"}
+  - {id: large-batch-throughput, type: Approach, label: "batch 크기를 키운 throughput 향상", evidence: "[[Recommendation-System-Industry-Large-Scale-ML#병렬화와 시스템 영향]]"}
+  - {id: batch-size-bounded-by-latency-budget, type: Tradeoff, label: "online latency budget에 묶이는 batch 크기", evidence: "[[Recommendation-System-Industry-Large-Scale-ML#병렬화와 시스템 영향]]"}
+  - {id: same-hardware-optimization-across-models, type: Approach, label: "여러 model에 같은 hardware 최적화 적용", evidence: "[[Recommendation-System-Industry-Large-Scale-ML#병렬화와 시스템 영향]]"}
+  - {id: sparse-dense-ratio-uneven-gain, type: Tradeoff, label: "model마다 sparse/dense 비율이 달라 같은 최적화가 같은 효과를 내지 않음", evidence: "[[Recommendation-System-Industry-Large-Scale-ML#병렬화와 시스템 영향]]"}
+  - {id: per-request-item-inference-cost, type: Problem, label: "매 요청마다 item을 다시 추론하는 비용", evidence: "[[Recommendation-System-Industry-Large-Scale-ML#Two-Tower retrieval]]"}
+  - {id: pair-feature-in-tower-input, type: Approach, label: "user-item pair feature를 tower 입력에 넣음", evidence: "[[Recommendation-System-Industry-Large-Scale-ML#Two-Tower retrieval]]"}
+  - {id: lost-tower-independence-cacheability, type: Tradeoff, label: "tower의 독립 계산과 cacheability 상실", evidence: "[[Recommendation-System-Industry-Large-Scale-ML#Two-Tower retrieval]]"}
+  - {id: downstream-pair-feature-ranker, type: Approach, label: "좁혀진 후보에 pair feature를 쓰는 downstream ranker", evidence: "[[Recommendation-System-Industry-Large-Scale-ML#Two-Tower retrieval]]"}
+  - {id: heavy-model-availability-tension, type: Problem, label: "무거운 모델과 가용성 사이의 긴장", evidence: "[[Recommendation-System-Industry-Large-Scale-ML#Ranking과 value model]]"}
+  - {id: explore-cache-precompute-continual-training, type: Approach, label: "Instagram Explore의 cache, off-peak precomputation과 hourly continual training 조합", evidence: "[[Recommendation-System-Industry-Large-Scale-ML#Ranking과 value model]]"}
+  - {id: windowed-aggregate-sparse-feature, type: Approach, label: "행동을 여러 window로 집계한 sparse feature", evidence: "[[Recommendation-System-Industry-Large-Scale-ML#집계 sparse feature의 한계]]"}
+  - {id: aggregation-loses-event-detail, type: Tradeoff, label: "event 순서와 간격, attribute 조합 같은 정보 손실", evidence: "[[Recommendation-System-Industry-Large-Scale-ML#집계 sparse feature의 한계]]"}
+  - {id: meta-ads-event-based-feature, type: Approach, label: "Meta Ads Event-Based Feature(EBF)", aliases: ["EBF"], evidence: "[[Recommendation-System-Industry-Large-Scale-ML#Event-Based Feature]]"}
+  - {id: raw-event-feature-redesign-burden, type: Tradeoff, label: "storage format, sequence truncation, serving kernel과 point-in-time correctness의 재설계 부담", evidence: "[[Recommendation-System-Industry-Large-Scale-ML#Event-Based Feature]]"}
+  - {id: long-sequence-self-attention-cost, type: Problem, label: "긴 sequence를 그대로 self-attention하는 비용", evidence: "[[Recommendation-System-Industry-Large-Scale-ML#Event-Based Feature]]"}
+  - {id: multi-head-attention-pooling, type: Approach, label: "multi-headed attention pooling", evidence: "[[Recommendation-System-Industry-Large-Scale-ML#Event-Based Feature]]"}
+  - {id: batch-retraining-concept-drift-lag, type: Problem, label: "빨리 바뀌는 관심의 concept drift를 batch retraining만으로 따라가기 어려움", evidence: "[[Recommendation-System-Industry-Large-Scale-ML#해결하려는 두 문제]]"}
+  - {id: monolith-online-training, type: Approach, label: "Monolith online training", evidence: "[[Recommendation-System-Industry-Large-Scale-ML#해결하려는 두 문제]]"}
+  - {id: fixed-size-hashing-collision, type: Problem, label: "fixed-size hashing에서 서로 다른 ID가 같은 embedding을 공유하는 collision", evidence: "[[Recommendation-System-Industry-Large-Scale-ML#Collisionless embedding lifecycle]]"}
+  - {id: collisionless-embedding-table, type: Approach, label: "Monolith collisionless embedding table", evidence: "[[Recommendation-System-Industry-Large-Scale-ML#Collisionless embedding lifecycle]]"}
+  - {id: embedding-table-unbounded-growth, type: Problem, label: "ID별 embedding table의 무한 성장", evidence: "[[Recommendation-System-Industry-Large-Scale-ML#Collisionless embedding lifecycle]]"}
+  - {id: embedding-id-lifecycle-policy, type: Approach, label: "ID admission filtering과 expiry lifecycle policy", evidence: "[[Recommendation-System-Industry-Large-Scale-ML#Collisionless embedding lifecycle]]"}
+  - {id: id-admission-expiry-tail-cold-start, type: Tradeoff, label: "ID admission과 expiry가 좌우하는 memory cost, tail item 학습과 재등장 ID의 cold start", evidence: "[[Recommendation-System-Industry-Large-Scale-ML#Collisionless embedding lifecycle]]"}
+  - {id: action-feature-arrival-order, type: Problem, label: "action과 feature의 도착 순서 미보장", evidence: "[[Recommendation-System-Industry-Large-Scale-ML#Streaming feedback loop]]"}
+  - {id: request-key-online-join, type: Approach, label: "request key 기반 action과 feature 결합", evidence: "[[Recommendation-System-Industry-Large-Scale-ML#Streaming feedback loop]]"}
+  - {id: late-arriving-action, type: Problem, label: "전환처럼 늦게 오는 action", evidence: "[[Recommendation-System-Industry-Large-Scale-ML#Streaming feedback loop]]"}
+  - {id: on-disk-kv-behind-memory-cache, type: Approach, label: "Monolith online joiner의 memory cache 뒤 on-disk KV storage", evidence: "[[Recommendation-System-Industry-Large-Scale-ML#Streaming feedback loop]]"}
+  - {id: negative-sampling-label-shift, type: Problem, label: "negative sampling으로 바뀐 label 분포", evidence: "[[Recommendation-System-Industry-Large-Scale-ML#Streaming feedback loop]]"}
+  - {id: serving-log-odds-correction, type: Approach, label: "serving의 log-odds correction", evidence: "[[Recommendation-System-Industry-Large-Scale-ML#Streaming feedback loop]]"}
+  - {id: full-model-swap-spike, type: Problem, label: "수 TB 모델 전체를 자주 교체할 때의 network와 memory spike", evidence: "[[Recommendation-System-Industry-Large-Scale-ML#Parameter sync와 reliability]]"}
+  - {id: incremental-sparse-key-sync, type: Approach, label: "Monolith의 최근 갱신 sparse key만 보내는 minute-level 증분 parameter sync", evidence: "[[Recommendation-System-Industry-Large-Scale-ML#Parameter sync와 reliability]]"}
+  - {id: slow-dense-parameter-sync, type: Approach, label: "dense parameter의 더 느린 주기 동기화", evidence: "[[Recommendation-System-Industry-Large-Scale-ML#Parameter sync와 reliability]]"}
+  - {id: serving-bundle-freshness-gap, type: Tradeoff, label: "serving bundle 내부의 의도적인 freshness 차이", evidence: "[[Recommendation-System-Industry-Large-Scale-ML#Parameter sync와 reliability]]"}
+  - {id: daily-training-ps-snapshot, type: Approach, label: "Monolith training PS의 일일 snapshot", evidence: "[[Recommendation-System-Industry-Large-Scale-ML#Parameter sync와 reliability]]"}
+  - {id: one-day-update-loss-on-failure, type: Tradeoff, label: "장애 시 하루 분량 update 손실", evidence: "[[Recommendation-System-Industry-Large-Scale-ML#Parameter sync와 reliability]]"}
+  - {id: duplicated-user-representation-learning, type: Problem, label: "여러 모델이 같은 사용자를 각각 표현해 데이터 준비와 학습이 반복됨", evidence: "[[Recommendation-System-Industry-Large-Scale-ML#공통 사용자 표현과 downstream 재사용]]"}
+  - {id: shared-user-representation, type: Approach, label: "공통 사용자 표현", evidence: "[[Recommendation-System-Industry-Large-Scale-ML#공통 사용자 표현과 downstream 재사용]]"}
+  - {id: shared-encoder-task-heads, type: Approach, label: "공통 encoder와 과제별 head", evidence: "[[Recommendation-System-Industry-Large-Scale-ML#공통 사용자 표현과 downstream 재사용]]"}
+  - {id: user-embedding-as-downstream-feature, type: Approach, label: "생성한 사용자 embedding을 별도 downstream 모델의 특징으로 제공", evidence: "[[Recommendation-System-Industry-Large-Scale-ML#공통 사용자 표현과 downstream 재사용]]"}
+  - {id: joint-training-task-relation-sensitivity, type: Tradeoff, label: "여러 과제를 함께 학습할 때 과제 관계에 민감한 성능", evidence: "[[Recommendation-System-Industry-Large-Scale-ML#공통 사용자 표현과 downstream 재사용]]"}
+  - {id: new-head-reevaluation-burden, type: Tradeoff, label: "새 이벤트마다 head를 늘리면 기존 head 성능도 다시 평가해야 함", evidence: "[[Recommendation-System-Industry-Large-Scale-ML#공통 사용자 표현과 downstream 재사용]]"}
+  - {id: taste-joint-model-app-event-drop, type: Problem, label: "TASTE에서 앱 이벤트와 소비 예측을 한 모델에 합쳤을 때의 앱 이벤트 성능 저하", evidence: "[[Recommendation-System-Industry-Large-Scale-ML#공통 사용자 표현과 downstream 재사용]]"}
+  - {id: taste-task-model-separation, type: Approach, label: "TASTE의 앱 이벤트와 소비 예측 모델 분리", evidence: "[[Recommendation-System-Industry-Large-Scale-ML#공통 사용자 표현과 downstream 재사용]]"}
+  - {id: taste-bench-proxy-comparison, type: Approach, label: "TASTE Bench의 proxy 모델 embedding 후보 비교", aliases: ["TASTE Bench"], evidence: "[[Recommendation-System-Industry-Large-Scale-ML#공통 사용자 표현과 downstream 재사용]]"}
+  - {id: proxy-not-replacing-online-validation, type: Tradeoff, label: "proxy 결과가 실제 모델의 재학습과 온라인 검증을 대체하지 못함", evidence: "[[Recommendation-System-Industry-Large-Scale-ML#공통 사용자 표현과 downstream 재사용]]"}
+ontology_relations:
+  - {subject: "concept:auction-time-general-llm", predicate: has_tradeoff, target: "concept:llm-auction-cost-and-deadline", evidence: "[[Recommendation-System-Industry-Ad-Bidding#규모와 지연이 모델 선택을 정한다]]"}
+  - {subject: "concept:auction-time-general-llm", predicate: has_tradeoff, target: "concept:general-llm-lacks-ad-behavior-signal", evidence: "[[Recommendation-System-Industry-Ad-Bidding#규모와 지연이 모델 선택을 정한다]]"}
+  - {subject: "concept:ad-value-to-bid-conversion", predicate: requires, target: "concept:calibrated-absolute-ad-value", evidence: "[[Recommendation-System-Industry-Ad-Bidding#여섯 영역]]"}
+  - {subject: "concept:shared-signals-compound-structure", predicate: has_tradeoff, target: "concept:cross-area-signal-error-propagation", evidence: "[[Recommendation-System-Industry-Ad-Bidding#복리 구조: 영역이 서로의 입력이다]]"}
+  - {subject: "concept:bias-reducing-exploration-budget", predicate: addresses, target: "concept:unbought-inventory-unobserved", evidence: "[[Recommendation-System-Industry-Ad-Bidding#복리 구조: 영역이 서로의 입력이다]]"}
+  - {subject: "concept:ad-model-frequent-retraining", predicate: requires, target: "concept:delayed-feedback-handling", evidence: "[[Recommendation-System-Industry-Ad-Bidding#지연 피드백]]"}
+  - {subject: "concept:household-device-signal-linking", predicate: addresses, target: "concept:ctv-impression-signal-scarcity", evidence: "[[Recommendation-System-Industry-Ad-Bidding#같은 구조를 다른 지면으로 옮긴다]]"}
+  - {subject: "concept:household-device-signal-linking", predicate: has_tradeoff, target: "concept:household-linking-estimation-error-privacy", evidence: "[[Recommendation-System-Industry-Ad-Bidding#같은 구조를 다른 지면으로 옮긴다]]"}
+  - {subject: "concept:shared-ad-architecture-across-surfaces", predicate: addresses, target: "concept:per-combination-ad-models-infeasible", evidence: "[[Recommendation-System-Industry-Ad-Bidding#같은 구조를 다른 지면으로 옮긴다]]"}
+  - {subject: "concept:amazon-item-to-item-cf", predicate: alternative_to, target: "concept:user-user-collaborative-filtering", evidence: "[[Recommendation-System-Industry-Commerce-Marketplace#문제와 점수의 의미]]"}
+  - {subject: "concept:amazon-item-to-item-cf", predicate: addresses, target: "concept:online-item-pair-computation-load", evidence: "[[Recommendation-System-Industry-Commerce-Marketplace#Offline과 online 분리]]"}
+  - {subject: "concept:merged-similarity-across-relation-types", predicate: has_tradeoff, target: "concept:relation-type-merge-intent-mismatch", evidence: "[[Recommendation-System-Industry-Commerce-Marketplace#Product surface가 목적을 바꾼다]]"}
+  - {subject: "concept:din-local-activation", predicate: addresses, target: "concept:fixed-user-vector-same-interest", evidence: "[[Recommendation-System-Industry-Commerce-Marketplace#Local activation]]"}
+  - {subject: "concept:din-local-activation", predicate: has_tradeoff, target: "concept:per-candidate-attention-retrieval-cost", evidence: "[[Recommendation-System-Industry-Commerce-Marketplace#Local activation]]"}
+  - {subject: "concept:din-request-batching-gpu-serving", predicate: addresses, target: "concept:peak-candidate-scoring-load", evidence: "[[Recommendation-System-Industry-Commerce-Marketplace#학습, 평가와 serving]]"}
+  - {subject: "concept:mind-multi-interest-network", predicate: addresses, target: "concept:single-vector-bottleneck", evidence: "[[Recommendation-System-Industry-Commerce-Marketplace#Single-vector bottleneck]]"}
+  - {subject: "concept:per-interest-ann-retrieval-merge", predicate: addresses, target: "concept:mind-serving-target-unknown", evidence: "[[Recommendation-System-Industry-Commerce-Marketplace#Single-vector bottleneck]]"}
+  - {subject: "concept:airbnb-user-listing-type-embedding", predicate: addresses, target: "concept:sparse-booking-long-term-embedding", evidence: "[[Recommendation-System-Industry-Commerce-Marketplace#Long-term과 양쪽 신호]]"}
+  - {subject: "concept:airbnb-user-listing-type-embedding", predicate: has_tradeoff, target: "concept:type-abstraction-loses-individual-detail", evidence: "[[Recommendation-System-Industry-Commerce-Marketplace#Long-term과 양쪽 신호]]"}
+  - {subject: "concept:fix-stage-position-before-model", predicate: addresses, target: "concept:retrieval-ranking-stage-confusion", evidence: "[[Recommendation-System-Industry-Commerce-Marketplace#전이 가능한 설계 선택]]"}
+  - {subject: "concept:uniform-embedding-table-sharding", predicate: has_tradeoff, target: "concept:embedding-shard-load-imbalance", evidence: "[[Recommendation-System-Industry-Large-Scale-ML#병렬화와 시스템 영향]]"}
+  - {subject: "concept:large-batch-throughput", predicate: has_tradeoff, target: "concept:batch-size-bounded-by-latency-budget", evidence: "[[Recommendation-System-Industry-Large-Scale-ML#병렬화와 시스템 영향]]"}
+  - {subject: "concept:same-hardware-optimization-across-models", predicate: has_tradeoff, target: "concept:sparse-dense-ratio-uneven-gain", evidence: "[[Recommendation-System-Industry-Large-Scale-ML#병렬화와 시스템 영향]]"}
+  - {subject: "concept:two-tower-retrieval", predicate: addresses, target: "concept:per-request-item-inference-cost", evidence: "[[Recommendation-System-Industry-Large-Scale-ML#Two-Tower retrieval]]"}
+  - {subject: "concept:pair-feature-in-tower-input", predicate: has_tradeoff, target: "concept:lost-tower-independence-cacheability", evidence: "[[Recommendation-System-Industry-Large-Scale-ML#Two-Tower retrieval]]"}
+  - {subject: "concept:downstream-pair-feature-ranker", predicate: alternative_to, target: "concept:pair-feature-in-tower-input", evidence: "[[Recommendation-System-Industry-Large-Scale-ML#Two-Tower retrieval]]"}
+  - {subject: "concept:explore-cache-precompute-continual-training", predicate: addresses, target: "concept:heavy-model-availability-tension", evidence: "[[Recommendation-System-Industry-Large-Scale-ML#Ranking과 value model]]"}
+  - {subject: "concept:windowed-aggregate-sparse-feature", predicate: has_tradeoff, target: "concept:aggregation-loses-event-detail", evidence: "[[Recommendation-System-Industry-Large-Scale-ML#집계 sparse feature의 한계]]"}
+  - {subject: "concept:meta-ads-event-based-feature", predicate: has_tradeoff, target: "concept:raw-event-feature-redesign-burden", evidence: "[[Recommendation-System-Industry-Large-Scale-ML#Event-Based Feature]]"}
+  - {subject: "concept:multi-head-attention-pooling", predicate: addresses, target: "concept:long-sequence-self-attention-cost", evidence: "[[Recommendation-System-Industry-Large-Scale-ML#Event-Based Feature]]"}
+  - {subject: "concept:monolith-online-training", predicate: addresses, target: "concept:batch-retraining-concept-drift-lag", evidence: "[[Recommendation-System-Industry-Large-Scale-ML#해결하려는 두 문제]]"}
+  - {subject: "concept:collisionless-embedding-table", predicate: addresses, target: "concept:fixed-size-hashing-collision", evidence: "[[Recommendation-System-Industry-Large-Scale-ML#Collisionless embedding lifecycle]]"}
+  - {subject: "concept:embedding-id-lifecycle-policy", predicate: addresses, target: "concept:embedding-table-unbounded-growth", evidence: "[[Recommendation-System-Industry-Large-Scale-ML#Collisionless embedding lifecycle]]"}
+  - {subject: "concept:embedding-id-lifecycle-policy", predicate: has_tradeoff, target: "concept:id-admission-expiry-tail-cold-start", evidence: "[[Recommendation-System-Industry-Large-Scale-ML#Collisionless embedding lifecycle]]"}
+  - {subject: "concept:request-key-online-join", predicate: addresses, target: "concept:action-feature-arrival-order", evidence: "[[Recommendation-System-Industry-Large-Scale-ML#Streaming feedback loop]]"}
+  - {subject: "concept:on-disk-kv-behind-memory-cache", predicate: addresses, target: "concept:late-arriving-action", evidence: "[[Recommendation-System-Industry-Large-Scale-ML#Streaming feedback loop]]"}
+  - {subject: "concept:serving-log-odds-correction", predicate: addresses, target: "concept:negative-sampling-label-shift", evidence: "[[Recommendation-System-Industry-Large-Scale-ML#Streaming feedback loop]]"}
+  - {subject: "concept:incremental-sparse-key-sync", predicate: addresses, target: "concept:full-model-swap-spike", evidence: "[[Recommendation-System-Industry-Large-Scale-ML#Parameter sync와 reliability]]"}
+  - {subject: "concept:slow-dense-parameter-sync", predicate: has_tradeoff, target: "concept:serving-bundle-freshness-gap", evidence: "[[Recommendation-System-Industry-Large-Scale-ML#Parameter sync와 reliability]]"}
+  - {subject: "concept:daily-training-ps-snapshot", predicate: has_tradeoff, target: "concept:one-day-update-loss-on-failure", evidence: "[[Recommendation-System-Industry-Large-Scale-ML#Parameter sync와 reliability]]"}
+  - {subject: "concept:shared-user-representation", predicate: addresses, target: "concept:duplicated-user-representation-learning", evidence: "[[Recommendation-System-Industry-Large-Scale-ML#공통 사용자 표현과 downstream 재사용]]"}
+  - {subject: "concept:shared-encoder-task-heads", predicate: alternative_to, target: "concept:user-embedding-as-downstream-feature", evidence: "[[Recommendation-System-Industry-Large-Scale-ML#공통 사용자 표현과 downstream 재사용]]"}
+  - {subject: "concept:shared-encoder-task-heads", predicate: has_tradeoff, target: "concept:joint-training-task-relation-sensitivity", evidence: "[[Recommendation-System-Industry-Large-Scale-ML#공통 사용자 표현과 downstream 재사용]]"}
+  - {subject: "concept:shared-encoder-task-heads", predicate: has_tradeoff, target: "concept:new-head-reevaluation-burden", evidence: "[[Recommendation-System-Industry-Large-Scale-ML#공통 사용자 표현과 downstream 재사용]]"}
+  - {subject: "concept:taste-task-model-separation", predicate: addresses, target: "concept:taste-joint-model-app-event-drop", evidence: "[[Recommendation-System-Industry-Large-Scale-ML#공통 사용자 표현과 downstream 재사용]]"}
+  - {subject: "concept:taste-bench-proxy-comparison", predicate: has_tradeoff, target: "concept:proxy-not-replacing-online-validation", evidence: "[[Recommendation-System-Industry-Large-Scale-ML#공통 사용자 표현과 downstream 재사용]]"}
+---
+
+# 추천시스템 온톨로지 선언: 산업 사례: 광고, 커머스와 대규모 학습
+
+광고 입찰, 마켓플레이스 추천과 대규모 추천 학습 사례에 대한 개념 80개와 타입 관계 46개를 선언한다. 본문 지식은 여기에 두지 않고, 각 선언의 `evidence`가 가리키는 원문 섹션이 근거다.
+
+선언은 `ontology/candidates/recommendation-system-*.jsonl`에서 원문 대조 검증을 통과한 후보만 옮긴 것이다. 새 선언은 후보 파일에 먼저 추가해 검증한 뒤 한 줄로 옮기고, 원문 heading이 바뀌면 `evidence`를 함께 고친다.
+
+상위: [[Ontology-Instances]]
