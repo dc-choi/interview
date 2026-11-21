@@ -207,6 +207,104 @@ test('concise matching evidence survives competition from long general notes', a
     && unit.excerpt.includes('preserves delivery after a failure')));
 });
 
+test('a long question ranks a document covering its terms across sections above a stronger single section', async (t) => {
+  const options = { ...await fixtureWithFiles(t, [
+    ['tech/Split.md', '# Split\n\n## One\n\nalpha bravo charlie\n\n## Two\n\ndelta echo foxtrot\n'],
+    ['tech/Single.md', '# Single\n\n## Only\n\nalpha bravo charlie delta\n'],
+  ]), allowlist: ['tech'] };
+  const order = (query) => search(options, { query, scope: ['tech'] }).candidates.map((item) => item.source_uri);
+  // Eight terms make a long question; Single's one section outscores each section of Split.
+  assert.deepEqual(order('alpha bravo charlie delta echo foxtrot golf hotel'), ['tech/Split.md', 'tech/Single.md']);
+  // Short questions still rank documents by their best section alone.
+  assert.deepEqual(order('alpha bravo charlie delta echo foxtrot'), ['tech/Single.md', 'tech/Split.md']);
+});
+
+test('a long question gives no coverage credit for frontmatter keys', async (t) => {
+  const aliases = Array.from({ length: 12 }, (_, index) => `Front note ${index}`).join(', ');
+  const options = { ...await fixtureWithFiles(t, [
+    ['tech/Front.md', `---\nstatus: done\nverified_at: 2026-11-01\ntags: [misc]\naliases: [${aliases}]\n---\n# Front\n\n## Body\n\nalpha bravo charlie delta\n`],
+    ['tech/Plain.md', '# Plain\n\n## Body\n\nalpha alpha bravo charlie delta and some filler\n'],
+  ]), allowlist: ['tech'] };
+  // Four of the eight terms are frontmatter keys of Front; crediting them would rank Front first.
+  const result = search(options, { query: 'alpha bravo charlie delta status tags aliases verified_at', scope: ['tech'] });
+  assert.deepEqual(result.candidates.map((item) => item.source_uri), ['tech/Plain.md', 'tech/Front.md']);
+});
+
+test('a long question does not credit the terms of a document best section twice', async (t) => {
+  const options = { ...await fixtureWithFiles(t, [
+    ['tech/alpha-bravo-charlie-delta.md', '# Meta\n\n## Note\n\necho\n'],
+    ['tech/Body.md', '# Body\n\n## Text\n\nalpha bravo charlie delta foxtrot\n'],
+  ]), allowlist: ['tech'] };
+  // Meta leads on path metadata. Crediting the terms of each best section again would
+  // add far more to Body, whose score comes from its section body.
+  const result = search(options, { query: 'alpha bravo charlie delta echo foxtrot golf hotel', scope: ['tech'] });
+  assert.deepEqual(result.candidates.map((item) => item.source_uri), ['tech/alpha-bravo-charlie-delta.md', 'tech/Body.md']);
+});
+
+test('a long question does not credit a title term again from its H1 section', async (t) => {
+  const options = { ...await fixtureWithFiles(t, [
+    ['tech/Kafka.md', '# Kafka\n\n## Notes\n\nalpha bravo charlie\n'],
+    ['tech/R.md', '# R\n\n## Text\n\nalpha bravo charlie delta echo with some plain filler words and a few more words to pad it out\n'],
+  ]), allowlist: ['tech'] };
+  // kafka is already in the Notes score through the file name and heading path.
+  const result = search(options, { query: 'kafka alpha bravo charlie delta echo foxtrot golf', scope: ['tech'] });
+  assert.deepEqual(result.candidates.map((item) => item.source_uri), ['tech/R.md', 'tech/Kafka.md']);
+});
+
+test('a metadata-led document gets no coverage credit for its best scanned section', async (t) => {
+  const options = { ...await fixtureWithFiles(t, [
+    ['tech/M.md', '---\naliases: [alpha bravo charlie delta]\n---\n# M\n\n## Note\n\necho foxtrot golf\n'],
+    ['tech/B.md', '# B\n\n## Text\n\nalpha alpha bravo bravo charlie delta hotel with some plain filler words\n'],
+  ]), allowlist: ['tech'] };
+  // M's alias match outscores its Note section and leads the entry; Note, its best
+  // scanned section, still earns no credit, or M would rank first.
+  const result = search(options, { query: 'alpha bravo charlie delta echo foxtrot golf hotel', scope: ['tech'] });
+  assert.deepEqual(result.candidates.map((item) => item.source_uri), ['tech/B.md', 'tech/M.md']);
+});
+
+test('a metadata-led document gets no coverage credit for terms its metadata already scored', async (t) => {
+  const options = { ...await fixtureWithFiles(t, [
+    ['tech/M.md', '---\naliases: [alpha bravo charlie delta]\n---\n# M\n\n## Note\n\necho foxtrot golf\n\n## More\n\nalpha bravo charlie delta\n'],
+    ['tech/B.md', '# B\n\n## Text\n\nalpha alpha bravo bravo charlie delta hotel with some plain filler words\n'],
+  ]), allowlist: ['tech'] };
+  // M's alias match leads the entry. More repeats the alias terms in its body; crediting
+  // them again would put M first.
+  const result = search(options, { query: 'alpha bravo charlie delta echo foxtrot golf hotel', scope: ['tech'] });
+  assert.deepEqual(result.candidates.map((item) => item.source_uri), ['tech/B.md', 'tech/M.md']);
+});
+
+test('coverage credit is scaled by its section, counted once per term and never taken from 출처', async (t) => {
+  const query = 'alpha bravo charlie delta echo foxtrot golf hotel';
+  const order = async (files) => search({ ...await fixtureWithFiles(t, files), allowlist: ['tech'] }, { query, scope: ['tech'] })
+    .candidates.map((item) => item.source_uri);
+  const best = '## One\n\nalpha bravo charlie delta\n\n';
+  const rival = (tail) => ['tech/T.md', `# T\n\n## Only\n\nalpha bravo charlie delta golf${tail}\n`];
+  // A long covering section earns a small credit; without the scaling S would rank first.
+  assert.deepEqual(await order([['tech/S.md', `# S\n\n${best}## Two\n\necho foxtrot\n\n${'Unrelated historical observations. '.repeat(57)}\n`],
+    rival(' with some plain filler words and a few more')]), ['tech/T.md', 'tech/S.md']);
+  // echo in two covering sections counts once; summed, S would rank first.
+  assert.deepEqual(await order([['tech/S.md', `# S\n\n${best}## Two\n\necho\n\n## Three\n\necho\n`],
+    rival(' with some plain filler words and more')]), ['tech/T.md', 'tech/S.md']);
+  // A 출처 section is not scanned body text; crediting it would rank S first.
+  assert.deepEqual(await order([['tech/S.md', `# S\n\n${best}## 출처\n\necho foxtrot\n`],
+    rival(' with some plain filler words and a few more words to pad')]), ['tech/T.md', 'tech/S.md']);
+});
+
+test('a long question ranks a concise note above a long note that matches more of its terms', async (t) => {
+  const options = { ...await fixtureWithFiles(t, [
+    ['tech/Long.md', `# Long\n\n## Archive\n\nalpha bravo charlie delta echo foxtrot golf\n\n${'Unrelated historical observations. '.repeat(28)}\n`],
+    ['tech/Short.md', '# Short\n\n## Answer\n\nalpha bravo charlie delta\n'],
+  ]), allowlist: ['tech'] };
+  const order = (query) => search(options, { query, scope: ['tech'] }).candidates.map((item) => item.source_uri);
+  const args = { query: 'alpha bravo charlie delta echo foxtrot golf hotel', scope: ['tech'], max_bytes: 24000 };
+  // Eight terms make a long question, whose steeper length penalty puts the concise note first.
+  assert.deepEqual(order(args.query), ['tech/Short.md', 'tech/Long.md']);
+  // Seven terms keep the gentle slope, so the long note's extra terms still win.
+  assert.deepEqual(order('alpha bravo charlie delta echo foxtrot golf'), ['tech/Long.md', 'tech/Short.md']);
+  // Lookup returns the documents in the same order, each read from its one matching section.
+  assert.deepEqual(lookup(options, args).evidence_units.map((unit) => unit.anchor.heading_path.at(-1)), ['Answer', 'Archive']);
+});
+
 test('long questions expose weak overlap without claiming semantic relevance or knowledge absence', async (t) => {
   const { repo, cacheDir } = await fixtureWithFiles(t, [
     ['tech/Settings.md', '# Settings\n\nCalibration changes the local instrument settings. Calibration can be repeated.\n'],

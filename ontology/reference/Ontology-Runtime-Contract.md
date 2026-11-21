@@ -20,7 +20,7 @@ category: "AI엔지니어링(AIEngineering)"
 | 조회 | exact label, alias, tag, heading과 키워드, source-confirmed relation 1 또는 2 hop, 개념 이름으로 찾는 타입 관계 |
 | MCP | stdio 서버의 읽기 전용 `context_search`, `context_lookup`, `context_concept`, `context_outline`, `context_read` |
 
-schema 2(extractor 13)의 클래스, predicate, 선언 형식과 위반 판정은 [[Ontology-Schema]], 개념 질의의 입력과 추론 규칙은 [[Ontology-Concept-Query]]를 따른다. 개념 선언과 `ontology_relations`가 없는 저장소에서는 entity가 schema 1과 같고, 조회 응답은 버전과 fingerprint 필드, 검색 cursor를 빼면 같다. `status: vocabulary` 문서는 선언 자료이므로 `context_lookup`과 `context_search`의 후보와 근거에서 제외한다.
+schema 2(extractor 13)의 클래스, predicate, 선언 형식과 위반 판정은 [[Ontology-Schema]], 개념 질의의 입력과 추론 규칙은 [[Ontology-Concept-Query]]를 따른다. 개념 선언과 `ontology_relations`가 없는 저장소에서는 entity가 schema 1과 같다. 그런 저장소의 조회 응답은 검색어 8개 미만인 질문에서 버전과 fingerprint 필드, 검색 cursor를 빼면 schema 1과 같다. 8개 이상인 질문은 2026-11-21에 바꾼 긴 질문 규칙([[#후보 검색과 순위]], [[#검색 비용과 진단]]) 때문에 root 순위, 읽기 시작 Section, 관계 탐색 순서와 반환 근거가 schema 1 시점과 다를 수 있다. `status: vocabulary` 문서는 선언 자료이므로 `context_lookup`과 `context_search`의 후보와 근거에서 제외한다.
 
 관계 ID는 subject, predicate, object, evidence unit ID, occurrence의 안정 JSON SHA-256이다. section ID의 heading component는 `encodeURIComponent`로 인코딩하고 빈 heading은 `%`로 구분한다. 같은 heading path의 occurrence를 ID와 anchor에 보존한다. 이 때문에 `A/B` heading과 `A` 아래의 `B` heading이 다른 entity가 된다. 위키링크 대상은 파일 경로와 파일명으로 찾으며, 표 셀 안에서 파이프를 escape한 `[[대상\|별칭]]` 표기도 대상만 추출한다. H1 제목과 frontmatter alias는 검색에만 사용한다. Document의 `verified_at`은 조회 결과의 entity 속성으로 반환하지만 freshness 판정에는 아직 쓰지 않는다.
 
@@ -28,7 +28,7 @@ schema 2(extractor 13)의 클래스, predicate, 선언 형식과 위반 판정�
 
 ## 후보 검색과 순위
 
-검색은 실제 field equality가 있는 label, alias, tag, heading과 entity ID를 부분 어휘 점수보다 먼저 순위에 두고, 문서당 읽기 시작 Section과 상위 root 6개를 선택한다. 정규화와 키워드 확장 뒤 2~3개 토큰인 짧은 질의는 문서 빈도를 이용해 구체 용어가 없는 일반어 후보를 제외한다. 더 긴 자연어 질의에는 이 제외 규칙을 적용하지 않는다. 정규화와 확장 후 8개 미만 토큰인 질문에서는 개별 토큰이 Document 제목 또는 alias 전체와 같은 후보를 일반 어휘 점수보다 먼저 둔다. `status: index`인 목차는 이 우선권에서 제외한다. tag는 이 주제명 우선권에 사용하지 않고, 질문 전체의 정확한 metadata 일치는 계속 최우선이다. 8개 이상이면 여러 조건이 일반 주제명에 밀리지 않도록 기존 어휘 순위를 유지한다. 정규화 후 한 토큰인 exact alias 또는 title 질의는 전체 색인 본문 스캔을 생략하되, 정확히 찾은 후보 문서의 유용한 Section 본문은 읽어 시작점을 고른다. 점수 기반 읽기 시작점에서는 heading이 없는 기존 root Section을 제외하지만, query가 root ID 전체와 정확히 일치하면 이 조회는 보존한다.
+검색은 실제 field equality가 있는 label, alias, tag, heading과 entity ID를 부분 어휘 점수보다 먼저 순위에 두고, 문서당 읽기 시작 Section과 상위 root 6개를 선택한다. 정규화와 키워드 확장 뒤 2~3개 토큰인 짧은 질의는 문서 빈도를 이용해 구체 용어가 없는 일반어 후보를 제외한다. 더 긴 자연어 질의에는 이 제외 규칙을 적용하지 않는다. 정규화와 확장 후 8개 미만 토큰인 질문에서는 개별 토큰이 Document 제목 또는 alias 전체와 같은 후보를 일반 어휘 점수보다 먼저 둔다. `status: index`인 목차는 이 우선권에서 제외한다. tag는 이 주제명 우선권에 사용하지 않고, 질문 전체의 정확한 metadata 일치는 계속 최우선이다. 8개 이상이면 여러 조건이 일반 주제명에 밀리지 않도록 이 우선권 없이 어휘 점수로 순위를 정하고, 문서 점수에 coverage 가산점을 더한다. 기준은 그 문서에서 본문까지 읽어 점수를 매긴 유용한 Section 중 점수가 가장 높은 Section이며, 문서 점수를 metadata 일치가 정했어도 같다. 가산 대상은 heading이 있는 다른 유용한 Section 본문에 있지만 제외 어휘가 아닌 질의어다. 제외 어휘는 기준 Section의 본문과 metadata(경로, H1을 포함한 heading 경로)에 겹친 질의어와, 문서 점수를 정한 근거의 metadata(본문이 이끌면 기준 Section, metadata가 이끌면 그 단위의 경로, 제목, alias, tag와 heading 경로)에 겹친 질의어다. 문서 metadata가 점수를 정한 경우 기준 Section의 본문 어휘는 점수에 들지 않았지만 보수적으로 함께 제외한다. 기준 Section이 H1 아래에 있거나 문서 metadata가 점수를 정하면, 파일 이름이나 제목의 어휘가 H1 Section 본문에 다시 나와도 가산하지 않는다. heading 없는 root 단위(frontmatter와 첫 heading 앞의 본문)는 `aliases:` 같은 key가 질의어와 겹칠 수 있으므로 세지 않고, `출처`와 `관련 문서` Section도 세지 않는다. 질의어마다 그 어휘를 담은 Section 중 가장 큰 값 하나만 더한다. 값은 그 Section에서 한 번 등장한 본문 점수, 즉 8 곱하기 문서 빈도 가중치를 그 Section의 길이 감점으로 나눈 값의 0.3배다. 번역어 검색어의 2배 가중치와 같은 Section 안의 반복 횟수는 반영하지 않는다. 질문의 조건이 한 문서의 여러 Section에 나뉘어 있어도 그 문서가 root 후보에 들게 하려는 규칙이며, 의미적 충족 판정은 아니다. 검색어 수에는 정규화가 덧붙이는 번역어도 들어간다. `재색인`은 `reindex`, `alias`, `backfill`을, `발행`은 `publish`, `event`, `outbox`를 더하므로 `재색인 발행` 같은 두 단어 질의도 8개로 세어 긴 질문 규칙을 받는다. 이 경계는 주제명 우선권과 `weak_lexical_overlap` 판정에도 같은 방식으로 쓰인다. 2026-11-21 기준 평가 질문 191건 중 번역어 때문에 경계를 넘은 질문은 없었다. 정규화 후 한 토큰인 exact alias 또는 title 질의는 전체 색인 본문 스캔을 생략하되, 정확히 찾은 후보 문서의 유용한 Section 본문은 읽어 시작점을 고른다. 점수 기반 읽기 시작점에서는 heading이 없는 기존 root Section을 제외하지만, query가 root ID 전체와 정확히 일치하면 이 조회는 보존한다.
 
 ## 근거 구성과 응답 예산
 
@@ -46,13 +46,13 @@ schema 2(extractor 13)의 클래스, predicate, 선언 형식과 위반 판정�
 
 ## 관계 탐색
 
-관계 탐색에서는 근거 unit의 현재 질문 점수를 먼저 본다. Section은 metadata와 본문 점수, RelationAssertion은 predicate와 endpoint 등의 metadata 점수를 사용한다. 동점이면 상대 entity 소유 Document의 점수, 구조 역할, relation ID 순으로 선택한다. 구조 역할은 `index_member`와 `parent_index`, `related_document`, 역할 없는 연결 순이며 두 질문 점수를 바꾸지 않는다. `출처`, `관련 문서`, `관련문서` section에는 이 우선순위용 점수를 부여하지 않는다. 관계가 기록된 본문과 상대 문서의 다른 본문을 구분하기 위한 순서이며, 원문 확정 상태와 scope, hop, entity와 edge 상한은 그대로 검사한다.
+관계 탐색에서는 근거 unit의 현재 질문 점수를 먼저 본다. Section은 metadata와 본문 점수, RelationAssertion은 predicate와 endpoint 등의 metadata 점수를 사용한다. 동점이면 상대 entity 소유 Document의 점수, 구조 역할, relation ID 순으로 선택한다. 검색어 8개 이상인 질문에서는 Section 점수에 긴 질문의 길이 감점이, Document 점수에 coverage 가산점이 들어가므로 탐색할 상대 문서와 관계 순서도 짧은 질문 규칙과 달라질 수 있다. 구조 역할은 `index_member`와 `parent_index`, `related_document`, 역할 없는 연결 순이며 두 질문 점수를 바꾸지 않는다. `출처`, `관련 문서`, `관련문서` section에는 이 우선순위용 점수를 부여하지 않는다. 관계가 기록된 본문과 상대 문서의 다른 본문을 구분하기 위한 순서이며, 원문 확정 상태와 scope, hop, entity와 edge 상한은 그대로 검사한다.
 
 ## 검색 비용과 진단
 
 정규화 후 한 토큰이며 정확한 metadata가 일치하면 전체 색인 본문 스캔은 생략한다. 정확히 찾은 후보 문서의 유용한 Section 본문과, 관계 순위에 필요한 현재 탐색 entity의 연결 근거 본문만 batch로 읽고 재사용한다. 검색어 가중치는 1이며 동일한 metadata 점수와 길이 감점을 적용한다. 이 추가 점수는 root 순위를 바꾸지 않는다.
 
-본문 점수에는 section 길이에 따른 완만한 감점을 적용하며 정확한 metadata 점수는 유지한다. `matching.query_term_count`는 정규화와 확장 후 검색어 수, `max_section_term_matches`는 같은 section의 metadata와 본문에 겹친 서로 다른 검색어 수의 최댓값이다. `assessment`는 `exact_metadata`, `lexical_overlap`, `no_lexical_overlap`, `weak_lexical_overlap`, `not_evaluated`를 구분한다. 검색어 8개 이상이면서 최대 겹침이 1~2개이면 `weak_lexical_overlap`이다. 후보를 삭제하는 규칙이나 의미적 적합성, 지식 부재의 확정 판정이 아니며, 관련성을 확인하고 재조회할 단서다.
+본문 점수는 `1 + 기울기 * log1p(section 본문 길이 / 200)`로 나눠 긴 section을 감점하며 정확한 metadata 점수는 유지한다. 기울기는 검색어 8개 미만이면 0.2, 8개 이상이면 1이다. 긴 질문은 긴 section의 일반어와 우연히 더 많이 겹치기 때문이다. 이 Section 점수가 root 순위, 문서별 읽기 시작 Section 선택, 관계 탐색의 근거 순서와 보충 절의 동점 정리에 함께 쓰인다. `matching.query_term_count`는 정규화와 확장 후 검색어 수, `max_section_term_matches`는 같은 section의 metadata와 본문에 겹친 서로 다른 검색어 수의 최댓값이다. `assessment`는 `exact_metadata`, `lexical_overlap`, `no_lexical_overlap`, `weak_lexical_overlap`, `not_evaluated`를 구분한다. 검색어 8개 이상이면서 최대 겹침이 1~2개이면 `weak_lexical_overlap`이다. 후보를 삭제하는 규칙이나 의미적 적합성, 지식 부재의 확정 판정이 아니며, 관련성을 확인하고 재조회할 단서다.
 
 전체 본문 스캔은 고정 revision의 파일 목록을 한 번 해석해 조회 대상 Document의 OID를 얻고 기존 `readBlobs`로 읽는다. scope, 경로별 symlink 검사와 대상 문서 수를 확인하며, 반환 근거의 hash 검사는 그대로 수행한다. 좁은 exact/graph 읽기는 기존 batch 경로를 쓴다. 응답 byte 계산도 한 번의 직렬화로 줄였으며, 출력 동등성과 반복 시간 비교는 [[Ontology-Retrieval-Latency]]를 따른다.
 

@@ -34,6 +34,17 @@ const MAX_SEARCH_DOCUMENTS = 20;
 const MAX_CURSOR_BYTES = 2048;
 const LINK_ROLE_PRIORITY = { index_member: 2, parent_index: 2, related_document: 1 };
 const MAX_CONCEPT_HINTS = 8;
+// A question with at least this many terms, counted after words() adds translation
+// equivalents, usually combines several conditions.
+const LONG_QUERY_TERMS = 8;
+// Section body scores are divided by 1 + slope * log1p(length / 200). A long question
+// also matches the broad terms of long sections by chance, so its slope is steeper.
+const LENGTH_PENALTY_SLOPE = 0.2;
+const LONG_QUERY_LENGTH_SLOPE = 1;
+// A long question's conditions can sit in different sections of one document. Each
+// query term that only its other heading sections match adds 0.3 of what one occurrence
+// scores in the best such section (8 times the term weight over its length penalty).
+const COVERAGE_CREDIT = 0.3 * 8;
 // Hints whose concept a returned evidence unit supports may take the bytes they need
 // from evidence excerpts: at most five, within a twentieth of the budget. A judgment
 // hint serialized to 104 to 197 bytes on the 2026-11-20 vault, so at 24,000 bytes
@@ -872,13 +883,16 @@ function retrieve(options, args, snapshot, mode) {
     ? [...new Set(conceptExpansion(request.query, concepts))].filter((term) => !queryTokens.includes(term)) : [];
   const tokens = [...queryTokens, ...expandedTerms];
   if (expandedTerms.length > 0) base.matching.expanded_terms = expandedTerms;
+  const longQuery = tokens.length >= LONG_QUERY_TERMS;
   const sectionTerms = new Map();
+  const sectionPenalties = new Map();
   const scoreSection = (section, weights) => {
     const body = read(sourcePath(section)).subarray(section.anchor?.start_byte ?? 0, section.anchor?.end_byte ?? 0).toString('utf8').toLowerCase();
     const match = scoreBodyMatch(body, tokens, weights);
     sectionTerms.set(section.id, match.matchedTokens);
     // Long notes can repeat broad terms without answering the specific query.
-    const lengthPenalty = 1 + 0.2 * Math.log1p(body.length / 200);
+    const lengthPenalty = 1 + (longQuery ? LONG_QUERY_LENGTH_SLOPE : LENGTH_PENALTY_SLOPE) * Math.log1p(body.length / 200);
+    sectionPenalties.set(section.id, lengthPenalty);
     return { ...match, score: entityScore(section, request.query, tokens) + match.score / lengthPenalty };
   };
   base.matching.query_term_count = tokens.length;
@@ -962,6 +976,32 @@ function retrieve(options, args, snapshot, mode) {
         });
       }
     }
+    // Coverage credit for long questions; see COVERAGE_CREDIT.
+    if (longQuery) {
+      for (const entry of scored.values()) {
+        // Absent only when even the root unit is skipped, as for a file named 출처.md.
+        const units = byDocument.get(entry.doc.id) ?? [];
+        // Excluded terms: the metadata of the unit that leads the entry, and the body and
+        // metadata (path and headings with the H1) of the best scanned section. For a
+        // metadata-led entry the best section's body is not in the score; excluding it is conservative.
+        const best = units.reduce((top, section) => (sectionScores.get(section.id) > sectionScores.get(top.id) ? section : top), units[0]);
+        const counted = new Set(best ? [...sectionTerms.get(best.id), ...matchingTokens(best, tokens)] : []);
+        for (const token of matchingTokens(entry.direct ?? entry.doc, tokens)) counted.add(token);
+        const credit = new Map();
+        for (const section of units) {
+          // The heading-less root unit holds the frontmatter; keys such as aliases are not body text.
+          if (section.anchor.heading_path.length === 0) continue;
+          for (const token of sectionTerms.get(section.id)) {
+            if (counted.has(token)) continue;
+            const value = COVERAGE_CREDIT * weights.get(token) / sectionPenalties.get(section.id);
+            credit.set(token, Math.max(credit.get(token) ?? 0, value));
+          }
+        }
+        let total = 0;
+        for (const value of credit.values()) total += value;
+        entry.score += total;
+      }
+    }
     const discriminative = tokens.length >= 2 && tokens.length <= 3
       ? discriminativeTokens(tokens, weights, documentFrequency)
       : [];
@@ -1006,12 +1046,12 @@ function retrieve(options, args, snapshot, mode) {
   base.matching.max_section_term_matches = maxSectionTermMatches;
   base.matching.assessment = maxSectionTermMatches > 0 ? 'lexical_overlap' : 'no_lexical_overlap';
   if (hasExactMetadataHit) base.matching.assessment = 'exact_metadata';
-  else if (tokens.length >= 8 && maxSectionTermMatches > 0 && maxSectionTermMatches <= 2) {
+  else if (longQuery && maxSectionTermMatches > 0 && maxSectionTermMatches <= 2) {
     base.matching.assessment = 'weak_lexical_overlap';
   }
   // ponytail: short topic queries use named concepts; long questions keep
   // lexical ranking so a broad name cannot displace their specific conditions.
-  const namedQueryMatch = (doc) => tokens.length < 8 && doc.status !== 'index'
+  const namedQueryMatch = (doc) => !longQuery && doc.status !== 'index'
     && [doc.label, ...(doc.aliases ?? [])]
     .some((field) => tokens.includes(exactText(field)));
   const roots = [...scored.values()].sort((a, b) => Number(b.metadataMatch) - Number(a.metadataMatch)
