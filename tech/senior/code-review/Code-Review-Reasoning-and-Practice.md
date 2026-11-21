@@ -58,8 +58,11 @@ Amazon S3의 객체 키 하나에 대한 갱신은 원자적이지만, 서로 �
 - **아차 사고 공유**: 발견 조건을 공유하고 가상의 피해를 사실로 기록하지 않는다.
 - **별도 모델 만들기**: 위험한 상태 전이를 코드와 독립적으로 표현해 비교한다.
 - **전문가 관찰**: 의심한 단서와 확인 순서를 설명하게 한다.
+- **직접 풀어 보기**: 맡길 수 있는 문제도 가끔 직접 구현해 본다. 직접 풀어 본 경험이 남이 쓴 코드를 볼 때 나라면 어떻게 풀었을지 견줄 기준이 된다는 것은 이 문서의 해석이다.
 
 훈련 효과는 이후 변경에서 같은 조건을 스스로 찾았는지 확인하는 방식으로 점검할 수 있다. 이 점검은 적용 제안이며, 위 방법들의 효과가 이미 입증됐다는 뜻은 아니다.
+
+구현을 대부분 에이전트에 맡기고 지시와 검토만 해서는 리뷰 역량도 유지되지 않으며 계속 직접 연습해야 한다는 견해가 있다(2026-11-20 개인 에세이). 쓰기를 멈추고 주로 AI가 쓴 글을 읽고 피드백만 하는 작가의 글솜씨는 꾸준히 줄 것이라는 유추로, 단기 산출 품질이 아니라 연습을 멈춘 사람의 숙련 변화를 문제 삼는다. 쇠퇴의 크기나 속도를 잰 자료는 없다. 현업이 같은 걱정을 감독의 역설로 인식한 사내 연구와, AI 보조로 새 라이브러리를 익힌 집단이 디버깅 문항에서 가장 크게 뒤진 실험은 [[Expertise-Formation-AI|AI 시대 전문성 형성]]에 있다.
 
 ## Linus의 법칙과 검토의 다양성
 
@@ -84,6 +87,8 @@ Linus의 법칙은 충분한 베타 테스터와 공동 개발자가 참여하�
 - [Google Engineering Practices, What to look for in a code review](https://google.github.io/eng-practices/review/reviewer/looking-for.html)
 - [Expectations, Outcomes, and Challenges of Modern Code Review — Microsoft Research](https://www.microsoft.com/en-us/research/publication/expectations-outcomes-and-challenges-of-modern-code-review/)
 - [AWS, Amazon S3 User Guide: Amazon S3 data consistency model](https://docs.aws.amazon.com/AmazonS3/latest/userguide/Welcome.html#ConsistencyModel)
+- [If you stop writing code, you also get worse at reviewing it — Christian Ekrem](https://cekrem.github.io/posts/if-you-stop-writing-code-you-also-get-worse-at-reviewing-it/) — 2026-11-20 개인 에세이, 2026-11-21 원문 확인. 측정 자료는 없음
+- 사용자 제공 GeekNews 알림(2026-11-21): 코드 작성을 멈추면 코드 리뷰 실력도 떨어진다. 학습 계기이며 게시물 번호는 확인하지 못했다
 
 ## 관련 문서
 
@@ -92,3 +97,4 @@ Linus의 법칙은 충분한 베타 테스터와 공동 개발자가 참여하�
 - [[Code-Review-Reviewability|검토 가능한 변경 크기와 맥락]]
 - [[Test-Pyramid-Blind-Spots|자동 테스트가 놓치는 경계]]
 - [[Response-Correlation|채널 응답 매칭과 종료 조건]]
+- [[Expertise-Formation-AI|AI 시대 전문성 형성]] — 감독의 역설과 유지할 능력의 연습

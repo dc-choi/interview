@@ -58,7 +58,7 @@ BOD 26-04의 대응 기한은 KEV 등재와 BOD 23-01 열거로 자산에서 취
 
 패치 생성 시간이 줄어도 자산 식별, 실제 악용 조건 평가, 서비스 영향 시험, 공급자 배포와 재시작이 남는다. 대응 시간을 한 숫자로 합치지 않고 발견, 판단, 완화, 수정본 적용과 실제 적용 확인에 나눠 기록한다. Brotli처럼 내장 사본이 많은 구성요소는 패키지 하나의 업데이트만으로 배포 전체의 수정이 끝났다고 보지 않는다([[Compressed-Input-Decoder-Security|압축 입력 디코더 보안]]).
 
-수집한 후속 학습 단서: GeekNews의 2026-10-29 11:50 발췌와 2026-11-02 Weekly #382는 취약점 공개 속도보다 방어 조직의 조사/적용 여력이 병목이라는 문제를 제기한다. 연결된 Jan Schaumann의 `This is not sustainable`은 원문 주소를 식별했으나 도구의 접근 제한으로 전체를 대조하지 못했다. KVM/TLS/PHP/Brotli 사례의 세부 평가와 10-29~30 KISA 공지 20여 건이라는 발췌 수치는 확인 후보다. 위 운영 원리는 이미 대조한 NIST SP 800-40의 자산/패치 절차와 연결하며, 발췌의 수치나 AI 원인 주장을 검증된 사실로 추가하지 않는다.
+수집한 후속 학습 단서: GeekNews의 2026-10-29 11:50 발췌와 2026-11-02 Weekly #382는 취약점 공개 속도보다 방어 조직의 조사/적용 여력이 병목이라는 문제를 제기한다. 연결된 Jan Schaumann의 `This is not sustainable`(2026-10-27, 개인 의견 글)은 2026-11-21 원문으로 대조했다. 수정 개발이 아니라 각 환경에서의 악용 가능성 판단, 공격 표면 파악과 배포가 병목이라고 보고, 한 주에 겹친 PwnEscape, eMudhra 인증서 침해, php2shell과 Brotli 사례로 설명하며, 겹친 사고 대응이 같은 소수 인력에게 몰려 소진을 부른다고 덧붙인다. 10-29~30 KISA 공지 20여 건이라는 발췌 수치는 확인 후보다. 위 운영 원리는 이미 대조한 NIST SP 800-40의 자산/패치 절차와 연결하며, 발췌의 수치나 AI 원인 주장을 검증된 사실로 추가하지 않는다.
 
 #### 사례: 번들 런타임의 수정 경로
 
@@ -67,7 +67,7 @@ BOD 26-04의 대응 기한은 KEV 등재와 BOD 23-01 열거로 자산에서 취
 - **수정은 번들된 Ruby에 들어 있다:** 공지는 이 수정이 GitLab 코드가 아니라 Ruby 패치이고 공식 Linux 패키지와 container image에만 들어 있다고 밝힌다. 공식 패키지의 Ruby 대신 자체 Ruby 런타임을 쓰는 설치(직접 컴파일한 설치나 사용자 정의 container image 등)는 GitLab 업그레이드만으로 부족하고 Ruby도 3.3.13, 3.4.12, 4.0.9 이상으로 올려야 한다.
 - **운영 주체에 따라 할 일이 다르다:** GitLab.com은 이미 수정 버전으로 운영됐고, Dedicated는 공지에 적힌 내부 버전(19.3.5-internal0, 19.4.2-internal0) 이상이면 조치가 필요 없었다. self-managed에는 즉시 업그레이드하라는 권고와, 공식 패키지의 Ruby를 쓰지 않는 설치는 Ruby도 올려야 한다는 지침이 있었고 설정으로 피하는 방법은 제시되지 않았다. self-managed용 탐지 규칙 2개(Onigmo native worker crash, Org mode render error burst)도 함께 공개됐다.
 - **backport 범위는 CVE마다 다르다:** GitLab 유지보수 정책의 보안 수정 기본 대상은 현재 안정 릴리스와 직전 두 월간 릴리스이고, 드물게 더 이전 버전으로 backport하는 예외 조항이 있다. 이 CVE는 18.11, 19.0, 19.1, 19.2 계열에도 추가로 backport됐지만, 같은 릴리스의 다른 보안 수정 11건은 19.3.6, 19.4.3, 19.5.1에만 들어갔다. 따라서 18.11.13, 19.0.10, 19.1.9, 19.2.9를 같은 공지의 모든 CVE를 고친 버전으로 보지 않는다(운영 제안).
-- **수정 버전 목록은 공지 시점의 값이다:** 2026-10-29(GitLab Docs 패치 릴리스 피드 게시일)에는 19.5.3, 19.4.5, 19.3.7, 19.2.10, 19.1.10, 19.0.11, 18.11.14가 나왔고, 이 릴리스의 보안 수정은 개인 키가 침해된 eMudhra 중간 CA 인증서 8개의 신뢰 제거(CVE-2026-111943)다. 19.5.2와 19.4.4는 건너뛰었다. 적용할 때는 이후 공지까지 확인해 그 시점의 최신 패치를 고르고, 자체 Ruby를 쓰는 설치는 Ruby 버전도 따로 기록한다(운영 제안).
+- **수정 버전 목록은 공지 시점의 값이다:** 2026-10-29(GitLab Docs 패치 릴리스 피드 게시일)에는 19.5.3, 19.4.5, 19.3.7, 19.2.10, 19.1.10, 19.0.11, 18.11.14가 나왔고, 이 릴리스의 보안 수정은 개인 키가 침해된 eMudhra 중간 CA 인증서 8개의 신뢰 제거(CVE-2026-111943)다. 19.5.2와 19.4.4는 건너뛰었다. 적용할 때는 이후 공지까지 확인해 그 시점의 최신 패치를 고르고, 자체 Ruby를 쓰는 설치는 Ruby 버전도 따로 기록한다(운영 제안). 같은 정규식 엔진과 문자열 변환의 후속 결함 7건(2026-11-18)과 사용자 패턴의 노출 경로는 [[Regex-Engine-Attack-Surface|정규식 엔진의 공격면]]에 있다.
 
 ## 먼저 갖출 것 2: 대응 경로를 미리 정해 둔다
 
@@ -145,7 +145,7 @@ OpenAI의 기술 보고서는 최소 권한, 격리와 분할, 강한 인증 같
 
 ## 출처
 
-- [This is not sustainable — Jan Schaumann](https://www.netmeister.org/blog/this-is-not-sustainable.html) — 확인 후보. 2026-11-02 원문 접근 제한으로 전체 본문과 개별 주장을 대조하지 못했다.
+- [This is not sustainable — Signs of Triviality, Jan Schaumann](https://www.netmeister.org/blog/defense-ddos.html) — 2026-10-27 게시, 개인 의견 글. 이전에 적은 주소(this-is-not-sustainable.html)는 2026-11-21 404였고, 블로그 목록에서 찾은 실제 주소로 본문의 병목 주장과 네 사례를 대조
 - [Preparing for a 'vulnerability patch wave' — NCSC, Ollie Whitehouse](https://www.ncsc.gov.uk/blogs/prepare-for-vulnerability-patch-wave) — 2026-05-01 게시. 2026-11-03 원인 진단과 update by default, 경계 우선, 자동 업데이트, 교체 권고 대조
 - [Stronger with every update: How we're making Chrome and the web safer in the AI Era — Google, Chrome Security Team](https://blog.google/security/chrome-stronger-with-every-update/) — 2026-07-30. Chrome 149와 150의 보안 버그 수, 릴리스 주기와 주 2회 보안 릴리스 시범
 - [Stable Channel Update for Desktop — Chrome Releases](https://chromereleases.googleblog.com/2026/06/stable-channel-update-for-desktop.html) — 2026-06-02 Chrome 149, 보안 수정 429건

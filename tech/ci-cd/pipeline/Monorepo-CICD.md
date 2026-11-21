@@ -2,7 +2,7 @@
 tags: [ci-cd, monorepo, build-cache, dependency, observability]
 status: done
 category: "CI/CD&배포(CI/CD&Delivery)"
-aliases: ["Monorepo CI/CD", "모노레포 CICD", "모노레포 캐시", "Turborepo", "Fan-in Fan-out", "Cache Invalidation Cascade", "순환 의존 감지"]
+aliases: ["Monorepo CI/CD", "모노레포 CICD", "모노레포 캐시", "Turborepo", "Fan-in Fan-out", "Cache Invalidation Cascade", "순환 의존 감지", "Hidden Dependency", "숨은 의존성", "ABFS"]
 ---
 
 # 모노레포 CI/CD와 플랫폼 건강 관리
@@ -31,6 +31,23 @@ Build-time 통합은 pnpm workspace의 `workspace:*` 참조로 성립한다. pnp
 - **inputs 정밀화** — `package.json`, `turbo.json`, package manager lockfile은 `inputs` 설정과 무관하게 항상 해시에 포함되므로 description 필드 변경에 따른 캐시 무효화는 피할 수 없다. 정밀화로 조절할 수 있는 것은 그 밖의 소스 파일 glob이며, `$TURBO_DEFAULT$`로 기본 input에 예외를 더할 수 있다. lint, typecheck, test, build마다 inputs, outputs, dependsOn을 분리한다.
 - **pnpm-lock.yaml 변경** — 외부 패키지 버전 업그레이드를 의미하므로 대부분의 도구가 전체 캐시를 무효화한다. 외부 패키지 업그레이드는 CI 부하가 크므로, 매번 조금씩보다 주기적으로 일괄 업그레이드하는 편이 CI 비용 면에서 효율적일 수 있다.
 
+### 선언한 입력만 보는 캐시 키와 숨은 의존성
+
+캐시 키는 작업이 선언한 입력(명령, 환경 변수, 입력 파일의 해시)으로 만든다. 작업이 선언하지 않은 파일을 읽으면 그 파일이 바뀌어도 키가 같아 오래된 결과를 재사용한다. 이 문서의 해석으로는 Turborepo의 `inputs`를 좁힐수록 적중은 늘지만, task가 실제로 읽는 파일을 빠뜨리면 같은 위험이 생긴다. 파일 수정 시각으로 다시 빌드할지 정하는 Make와 Ninja의 증분 빌드에서도 숨은 의존성은 조용히 오래된 산출물을 남겨, 결국 출력 폴더를 지우고 처음부터 빌드하게 만든다.
+
+대응은 둘이다.
+
+- **격리(sandbox)**: 선언한 입력만 둔 작업 디렉터리에서 실행해 숨은 의존성을 드러낸다. Bazel 문서는 이 sandbox가 절대 경로로 다른 파일을 읽는 것까지 막지는 않는다고 밝힌다(2026-11-21 확인).
+- **읽은 파일 검증**: 실행 중 실제로 읽고 쓰고 지운 파일을 기록해 결과와 함께 저장하고, 재사용 전에 두 단계로 확인한다.
+  1. 선언 키 조회: 명령, 환경과 선언한 입력 해시로 CI나 다른 개발자가 만든 후보 결과를 찾는다.
+  2. 읽은 파일 대조: 후보가 기록한 읽기 목록의 해시를 현재 파일 시스템과 대조해 모두 같을 때만 쓰기 결과를 적용한다. 하나라도 다르면 후보를 버리고 기록을 켠 채 다시 실행한다.
+
+읽은 파일 검증은 기록 비용을 내는 대신 선언이 빠진 빌드 그래프에서도 오래된 결과를 거른다. 다만 이 문서의 해석으로는 기록 당시 없던 파일이 검색 경로 앞쪽에 새로 생기는 경우(include 경로 탐색처럼 실패한 조회에 기대는 의존성)는 그 실패한 조회까지 기록해야 잡힌다. 날짜, 빌드 번호처럼 실행마다 달라지는 값과 단계마다 다른 환경 변수는 적중률을 떨어뜨리므로 비결정적 빌드 단계를 먼저 찾아 고친다. 저장소의 체크아웃 비용을 줄이는 쪽은 [[Server-Centric-Version-Control#작업 사본을 필요할 때 채운다|작업 사본 지연 로딩]]에서 다룬다.
+
+#### 사례: ABFS
+
+Google이 2026-11-17 오픈소스로 공개한 ABFS(Another Build File Service)는 파일 시스템 계층에서 읽기, 쓰기와 삭제를 기록(tapping)해 위의 두 단계 검증을 한다. Google 블로그와 저장소 구조 문서는 이 방식이 빌드 그래프가 불완전해도 깨끗한 빌드의 정확성을 지킨다고 설명한다. 구조 문서는 기록 대상을 실제로 읽은 파일과 디렉터리라고 적지만, 실패한 조회를 어떻게 다루는지는 밝히지 않는다(2026-11-21 확인). README의 Android 측정(64 vCPU VM, 3회 평균)에서 캐시를 끄고 돌린 빌드는 기존 빌드보다 느렸고(1시간 39분 대 1시간 20분), 원격 캐시가 차 있으면 2분 11초, 로컬 캐시까지 차 있으면 1분 19초였다. 제작자 측정이며 재현하지 않았다. README는 적중률보다 정확성을 우선한다고 밝힌다.
+
 ## 플랫폼 건강 지표 (의존성 관측)
 
 사람이 못 보는 전파를 도구로 가시화한다. 핵심 두 지표는 fan-in과 fan-out이다.
@@ -47,6 +64,7 @@ Build-time 통합은 pnpm workspace의 `workspace:*` 참조로 성립한다. pnp
 - `composite`/`incremental`/`.tsbuildinfo`로 타입 체크 점진 가속
 - pnpm의 content-addressable store + hardlink/symlink, `workspace:*` 프로토콜
 - 캐시 무효화 전파와 turbo `inputs` 정밀화, pnpm-lock 변경의 전체 무효화
+- 선언한 입력만 해시하는 캐시 키가 숨은 의존성에서 오래된 결과를 내는 이유와 sandbox, 읽은 파일 검증이라는 두 대응
 - fan-in/fan-out으로 전파 범위와 책임 과다를 진단, 순환 의존을 Tarjan SCC로 검출하고 error로 차단
 
 ## 출처
@@ -54,6 +72,11 @@ Build-time 통합은 pnpm workspace의 `workspace:*` 참조로 성립한다. pnp
 - 모노레포가 모놀리스가 되지 않으려면 (2편) — 미리캔버스 프론트엔드 팀(종현 김), Medium
 - [Turborepo, Caching](https://turborepo.com/docs/crafting-your-repository/caching)
 - [Turborepo, Configuring tasks](https://turborepo.com/docs/reference/configuration)
+- [Accelerating development for massive Git repositories — Google Developers Blog, The Android ABFS Team](https://developers.googleblog.com/accelerating-development-for-massive-git-repositories/) — 2026-11-17 게시, 2026-11-21 대조
+- [ABFS: Another Build File Service — GitHub, google/abfs](https://github.com/google/abfs) — README의 측정 조건과 한계를 2026-11-21 대조
+- [ABFS Architecture — GitHub, google/abfs](https://github.com/google/abfs/blob/main/doc/ARCHITECTURE.md) — tapping 기록 대상과 두 단계 캐시를 2026-11-21 대조. 실패한 조회의 처리는 언급 없음
+- [Bazel, Sandboxing](https://bazel.build/docs/sandboxing) — sandbox가 선언한 입력만 둔 작업 디렉터리를 쓰지만 절대 경로 접근은 막지 않는다는 설명, 2026-11-21 확인
+- [초대형 Git 저장소의 개발 속도 높이기 — GeekNews](https://news.hada.io/topic?id=37552) — 학습 계기
 
 ## 관련 문서
 

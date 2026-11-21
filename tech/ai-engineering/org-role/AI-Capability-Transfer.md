@@ -126,5 +126,5 @@ AWS는 파트너 소속 엔지니어의 FDE 역량을 확인하는 자격 두 �
 - [[Expertise-Formation-AI|AI 시대 전문성 형성]] — 판단 위임의 경계와 튜터형 활용
 - [[People-Leadership|멘토링과 1:1]] — 질문형 코칭과 위임
 - [[Software-Productivity-Measurement|소프트웨어 생산성 측정의 함정]]
-- [[Developer-Role-AI-Era|AI 시대 개발자 역할]] — Product Engineer, FDE 같은 직함을 맡길 문제로 읽기
+- [[Developer-Role-AI-Era-Employment|AI 시대 개발자 고용과 견습 사다리]] — Product Engineer, FDE 같은 직함을 맡길 문제로 읽기
 - [[AI-Job-Market-Shifts|AI 시대 직무 변화 읽기]] — AX 사업 유형에 따라 달라지는 FDE 업무와 수요 지속성

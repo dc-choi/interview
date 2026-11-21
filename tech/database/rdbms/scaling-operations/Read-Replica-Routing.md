@@ -2,8 +2,8 @@
 tags: [database, replication, read-replica, performance, routing]
 status: done
 category: "Data & Storage - RDB"
-aliases: ["Read Replica Routing", "읽기 복제본 라우팅"]
-verified_at: 2026-10-14
+aliases: ["Read Replica Routing", "읽기 복제본 라우팅", "WAIT FOR LSN", "read-your-writes"]
+verified_at: 2026-11-21
 ---
 
 # Read Replica 라우팅
@@ -76,6 +76,7 @@ Django는 `DATABASES`에 `default` 항목을 요구하고, 다른 DB를 고르�
 
 **3. 필요한 쓰기의 적용 위치 확인**
 MySQL 8.4는 해당 commit을 포함한 GTID 집합을 전달해 `WAIT_FOR_EXECUTED_GTID_SET(gtid_set, timeout)`으로 적용을 기다릴 수 있다. 반환값 0은 성공, 1은 시간 초과이며 `timeout=0`은 무기한 대기다.
+PostgreSQL 19(2026-11-19 출시)는 `WAIT FOR LSN` 명령을 추가했다. primary에서 쓰기가 commit된 뒤 `pg_current_wal_insert_lsn()` 등으로 그 commit 기록 끝 이후의 LSN을 얻어 클라이언트나 connection pooler에 보관하고, standby에서 `WAIT FOR LSN '<lsn>' WITH (TIMEOUT '100ms')`로 재생(기본 mode `standby_replay`)을 기다린 뒤 조회한다. 기본은 시간 초과를 오류로 내고, `NO_THROW`를 주면 `success`, `timeout`, `not in recovery` 상태로 돌려준다. snapshot이나 잠금을 쥔 채로는 거부되므로 트랜잭션 밖이나 첫 문장으로 실행하고, 대기 중 standby가 승격되면 `not in recovery`가 오므로 그 LSN이 여전히 유효한지 timeline을 다시 확인한다.
 - 행 존재만으로 특정 갱신의 반영을 판단하지 않는다. 대기한 replica에서 조회하고, 적용 전부터 유지한 오래된 snapshot도 재사용하지 않는다.
 - 제한 시간 초과나 오류 시 primary 조회 또는 명시적 실패로 처리한다. 성공으로 간주하지 않는다.
 
@@ -92,69 +93,9 @@ MySQL 8.4는 해당 commit을 포함한 GTID 집합을 전달해 `WAIT_FOR_EXECU
 
 ORM 확장이 transaction을 primary에 고정하는 것은 일반적인 쓰기 transaction의 안전한 기본값이다. stale 허용 read-only transaction을 replica로 보내려면 별도 client, read-only 표시와 freshness 요구를 명시한다.
 
-## 구현 예 1: Prisma (`extension-read-replicas`)
+## 구현 예
 
-```
-import { PrismaClient } from './generated/prisma/client' // prisma-client generator의 output 경로
-import { readReplicas } from '@prisma/extension-read-replicas'
-
-const primary = new PrismaClient({ adapter: primaryAdapter })
-const replica1 = new PrismaClient({ adapter: replicaAdapter1 })
-
-const prisma = primary.$extends(
-  readReplicas({ replicas: [replica1] })
-)
-
-// 자동: findMany → replica
-await prisma.user.findMany()
-
-// 명시: Read-Your-Own-Writes
-await prisma.user.update({...})
-await prisma.$primary().user.findUnique({...})
-```
-
-주의점:
-- 현재 확장은 Prisma 7.0+와 **Driver Adapter 또는 Accelerate URL**을 요구한다. Prisma 6.x는 확장 0.4.1을 사용한다.
-- 여러 replica면 랜덤 선택 → 부하 분산
-- 다른 확장과 체인 시 **마지막에 적용**
-- Raw 쿼리(`$queryRaw`)는 기본 primary — 복제본 쓰려면 `$replica()` 명시
-
-## 구현 예 2: TypeORM
-
-DataSource 설정에서 master, slaves 배열을 선언.
-
-```
-new DataSource({
-  type: 'mysql',
-  replication: {
-    master: { host: 'primary.db' },
-    slaves: [
-      { host: 'replica1.db' },
-      { host: 'replica2.db' },
-    ],
-  },
-})
-```
-
-TypeORM의 기본 find와 SelectQueryBuilder는 slave를 사용하고, write와 raw query는 master를 사용한다. `defaultMode: "master"`로 읽기 기본값을 바꿀 수 있다. QueryRunner로 목적지를 고정하고 사용 후 `finally`에서 해제한다.
-
-## 구현 예 3: 드라이버 직접 (Node.js pg, mysql2)
-
-ORM 없이 드라이버 두 개를 수동 관리:
-
-```
-const primary = createPool({ host: 'primary.db', ... })
-const replica = createPool({ host: 'replica.db', ... })
-
-async function getUser(id) {
-  return replica.query('SELECT ... WHERE id = ?', [id])
-}
-async function updateUser(id, data) {
-  return primary.query('UPDATE ... WHERE id = ?', [id])
-}
-```
-
-가장 유연하지만 **라우팅 로직 수동 관리**. 트랜잭션, Raw, Read-Your-Own-Writes 전부 개발자 책임.
+Prisma `extension-read-replicas`, TypeORM `replication` 설정과 드라이버 두 개를 직접 쓰는 구성의 코드와 주의점은 [[Read-Replica-Routing-Implementations|Read Replica 라우팅 구현 예]]로 나눴다.
 
 ## 흔한 함정
 
@@ -186,6 +127,7 @@ Replica 장애 시 primary fallback, 제한된 stale 결과, 명시적 실패 �
 ## 출처
 - [MySQL 8.4 Reference Manual — GTID Functions](https://dev.mysql.com/doc/refman/8.4/en/gtid-functions.html)
 - [PostgreSQL 18 Documentation — Write Ahead Log](https://www.postgresql.org/docs/18/runtime-config-wal.html)
+- [PostgreSQL 19 Documentation — WAIT](https://www.postgresql.org/docs/19/sql-wait.html) — 2026-11-21 대조
 - [Amazon Aurora User Guide — Reader endpoints](https://docs.aws.amazon.com/AmazonRDS/latest/AuroraUserGuide/Aurora.Endpoints.Reader.html)
 - [TypeORM Documentation — Multiple data sources, databases, schemas and replication setup](https://typeorm.io/docs/data-source/multiple-data-sources/)
 - [Sequelize v6 Documentation — Read Replication](https://sequelize.org/docs/v6/other-topics/read-replication/)
@@ -202,6 +144,7 @@ Replica 장애 시 primary fallback, 제한된 stale 결과, 명시적 실패 �
 - [[Connection-Pool|Connection Pool 사이징]]
 - [[Isolation-Level|Isolation Level]]
 - [[ORM|ORM]]
+- [[Read-Replica-Routing-Implementations|Read Replica 라우팅 구현 예 (Prisma, TypeORM, 드라이버)]]
 - [[RDS-Aurora-Endpoints|Aurora Endpoint 운영 (Writer와 Reader 읽기 분산 비율)]]
 - [[RDS-Operational-Pitfalls|RDS 운영 함정 (복제 지연 read-after-write 버그)]]
 - [[RDS-Zero-Downtime-Migration|무중단 마이그레이션 (Read Replica 승격 컷오버)]]

@@ -1,14 +1,14 @@
 ---
 tags: [ai, llm, search, evaluation, program-synthesis, workflow]
 status: done
-verified_at: 2026-10-27
+verified_at: 2026-11-21
 category: "AI엔지니어링(AIEngineering)"
-aliases: ["Evaluator-Guided Program Search", "평가기 주도 프로그램 탐색", "LLM Evolutionary Search", "AlphaEvolve", "OpenEvolve"]
+aliases: ["Evaluator-Guided Program Search", "평가기 주도 프로그램 탐색", "LLM Evolutionary Search", "AlphaEvolve", "OpenEvolve", "LLM 칩 설계", "RTL 재작성"]
 ---
 
 # 평가기 주도 프로그램 탐색
 
-LLM이 후보 프로그램을 제안하고, 모델 밖의 평가기가 정확성을 검사하고 비용을 점수로 매기며, 그 점수와 피드백을 다음 제안의 입력으로 돌려 개선을 반복하는 구성이다. 정답을 자동으로 판정할 수 있고 개선 정도를 숫자로 잴 수 있는 문제에 맞는다. 이 문서는 2026-10-27에 Google DeepMind의 AlphaEvolve 발표와 기술 보고서, Anthropic의 양자 회로 설계 연구 발표와 논문을 대조한 기준이다.
+LLM이 후보 프로그램을 제안하고, 모델 밖의 평가기가 정확성을 검사하고 비용을 점수로 매기며, 그 점수와 피드백을 다음 제안의 입력으로 돌려 개선을 반복하는 구성이다. 정답을 자동으로 판정할 수 있고 개선 정도를 숫자로 잴 수 있는 문제에 맞는다. 이 문서는 2026-10-27에 Google DeepMind의 AlphaEvolve 발표와 기술 보고서, Anthropic의 양자 회로 설계 연구 발표와 논문을 대조한 기준이고, 칩 설계 사례는 2026-11-21에 OpenAI 발표로 대조했다.
 
 ## 구성 요소
 
@@ -45,6 +45,17 @@ LLM이 후보 프로그램을 제안하고, 모델 밖의 평가기가 정확성
 - **사람의 역할과 관찰된 약점**: 사람은 점 덧셈 과제의 한 문단 명세를 쓰고 가끔 탐색을 넓히라고 지시했다. 발표는 모델이 개선을 지나치게 의심하고 잘 알려진 접근을 선호하는 경향이 있어, 여러 병렬 접근을 요구하고 가끔 탐색을 넓히도록 유도했다고 적는다.
 - **재현 범위**: 2026-10-27 공식 모델 페이지 기준 Mythos 5는 Cyber Verification Program 같은 Anthropic 검증 프로그램을 통과한 조직에만 제공되고(상태 Active), 현재 Mythos 모델은 2026-09-01 출시된 Mythos 5.1이다([[Claude-Fable-5-Mythos-5|Claude Fable 5, Mythos 5]]). 지금 재현하면 연구와 다른 판을 고르기 쉬우므로 쓴 모델 ID를 결과와 함께 기록한다(적용 제안). 같은 구성을 다른 모델로 돌린 결과는 이 연구가 보여 주지 않는다. 가족 수, 반복 횟수와 연산 예산은 논문 본문과 부록, 발표 글에서 찾지 못했다.
 
+## 사례: 칩 설계의 RTL 재작성과 RISC-V 평가
+
+2026-11-18 OpenAI 발표 기준이다. 결과는 모두 OpenAI의 보고이며 AMD의 검증도 OpenAI가 전한 내용이다.
+
+- **구성**: 모델이 회로를 기술하는 SystemVerilog RTL을 다시 쓰고, Synopsys 도구로 각 재작성이 블록의 동작을 보존하는지 검증하고 전력, 성능, 면적(PPA)의 절충을 평가했다. 제안기와 모델 밖 평가기를 나눈 위 구성이 EDA 도구 위에서 돈 형태다.
+- **보고된 결과**: OpenAI의 첫 자체 추론 칩 Jalapeño에는 2025년 초부터 o3-mini를 썼고, 모델이 제안한 변경으로 표준 셀 면적이 벡터 유닛에서 약 13%, 행렬 유닛에서 약 10% 줄었다고 팀이 추산하며 이 최적화가 실리콘 초기 구동(bring-up)에서 검증됐다고 적는다. 행렬 유닛의 한 곱셈기 재설계는 합성 기준 셀 면적을 약 15% 줄이면서 지연을 2클록에서 1클록으로 줄였고, 한 가산기 재설계는 2클록 지연을 유지한 채 면적을 약 15% 줄였다. AMD와는 주력 GPU IP에서 고도로 최적화된 기준선 대비 최대 14%의 PPA 개선을 냈고 일부는 최근 제조로 보낸 설계에 들어갔으며, 차기 주력 CPU의 주요 블록에서는 한 자릿수 %의 개선을 AMD가 검증했다고 적는다. 약 1년 분량의 진전을 5개월 안에 냈다는 표현은 OpenAI의 평가다.
+- **세대 비교용 평가 설계**: 공개 32비트 RISC-V 코어 두 개(FPGA용 소형 PicoRV32, OpenTitan 보안 칩의 Ibex)로, 기존 RTL을 고쳐 처리량을 올리는 과제와 서면 요구사항과 연결 템플릿에서 코어를 새로 설계하는 과제를 냈다. 시뮬레이션 검사에 실패하거나 원래 코어 면적의 16배를 넘으면 0점이고, 통과하면 모델에게 숨긴 워크로드의 클록당 명령 수 기하평균에 Yosys로 추정한 최대 클록을 곱해 초당 명령 수를 추정한 뒤 같은 제약에서 관찰한 최고 처리량을 1.0으로 둔다. 평균에는 0점 시도도 넣었고, 두 과제, 두 코어, 모든 토큰 예산을 합쳐 9,881회를 채점했다.
+- **결과와 해석의 경계**: 실행당 약 112,000토큰의 비교 예산에서 GPT-6.2 Astra가 두 코어 모두 평균 점수가 가장 높았고, 기존 PicoRV32를 고치는 과제에서는 GPT-6 Astra의 약 2배였다. 다섯 모델 모두 요구사항에서 새로 설계할 때 점수가 더 높았는데, OpenAI는 요구사항 과제가 성능 카운터나 추가 명령처럼 원래 코어에 있던 기능을 뺄 여지를 주고 그 기능이 시험 워크로드의 처리량에 거의 기여하지 않아 점수 우위의 일부를 설명할 수 있다고 적는다. 필요한 기능을 요구하고 면적 한도를 좁히고 물리 합성 뒤 타이밍을 검사해야 실제 칩 설계에 가까워진다고도 적는다.
+
+평가기가 확인하지 않는 기능은 최적화 과정에서 빠질 수 있으므로 위 [[#점수는 목적이 아니라 대리 지표다|대리 지표]] 절의 사례로 읽는다(이 문서의 판단). 시뮬레이션 통과, 합성 결과, 실리콘 검증과 양산 반영은 서로 다른 단계라 결과를 인용할 때 어느 단계의 근거인지 붙인다([[AI-Scientific-Discovery-Loops#반도체 설계와 제조에 적용하는 조건|반도체 설계와 제조]]). OpenAI는 Synopsys와 함께 EDA 도구를 전문 설계자처럼 쓰도록 GPT-Synopsys를 학습한다고 밝혔다.
+
 ## 적용 판단
 
 - 자동으로 판정할 수 있는 정답 조건과 숫자로 잴 수 있는 비용이 있는가
@@ -63,6 +74,8 @@ LLM이 후보 프로그램을 제안하고, 모델 밖의 평가기가 정확성
 - [Anthropic Platform Docs, Claude Mythos 5](https://platform.claude.com/docs/en/models/mythos-5/overview) — 2026-10-27 제공 조건과 상태
 - [Anthropic Platform Docs, Claude Mythos 5.1](https://platform.claude.com/docs/en/models/mythos-5-1/overview) — 2026-10-27 출시일과 제공 조건
 - [Claude로 더 효율적인 양자 회로 설계하기 — GeekNews](https://news.hada.io/topic?id=35530) — 학습 계기, 수치는 위 공식 자료로 대조
+- [Advancing chip design with OpenAI models — OpenAI](https://openai.com/index/advancing-chip-design-with-our-models/) — 2026-11-18. 2026-11-21 RTL 재작성과 Synopsys 검증, Jalapeño와 AMD 결과, RISC-V 평가의 채점식, 토큰 예산, 채점 횟수와 스스로 밝힌 한계 대조. 차트의 개별 점수와 외부 재현은 확인하지 못함
+- [OpenAI 모델을 활용한 칩 설계 개선 — GeekNews](https://news.hada.io/topic?id=37441) — 학습 계기
 
 ## 관련 문서
 
@@ -70,4 +83,5 @@ LLM이 후보 프로그램을 제안하고, 모델 밖의 평가기가 정확성
 - [[Monte-Carlo-Tree-Search|몬테카를로 트리 탐색]] — 탐색 예산과 보상 기반 선택
 - [[Evaluation-Driven-Development|평가 주도 개발]] — 만드는 축과 채점하는 축
 - [[AI-Capability-and-Cost-Trends|AI 능력과 비용 추세 읽기]] — 연구 결과 주장의 검증 조건
+- [[AI-Scientific-Discovery-Loops|AI 과학 발견 루프]] — 반도체 설계와 제조에 적용하는 조건
 - [[LLM-Workflow-Patterns|LLM 워크플로우 패턴]]

@@ -91,12 +91,28 @@ HTML만 가져가는 크롤러는 광고 스크립트를 실행하지 않아 광
 
 적용 제안: 광고 기반 사이트를 계획할 때 서버 로그의 요청 수와 광고 보고서의 페이지뷰를 따로 기록하고, 자동 방문은 [[Bot-Traffic-Operations|봇 트래픽의 관측과 제한]]의 기준으로 분리한다. 이용자가 서로의 공간을 오가며 생기는 유입을 광고비보다 앞에 두는 견해는 [[Web-3D-Adoption#사례: 개인이 만든 3D 공간의 확산 (2026년 가을, 한국)|개인 3D 공간 사례]]에 있다. 2026-11-17 이 절만 부분 대조했으며 기존 검증일은 유지한다.
 
+## 검색 화면이 바뀌면 사람의 방문이 줄어든다
+
+검색 유입에 기대는 사이트의 수입은 방문 수와 방문당 수입의 곱이다. 검색 결과 화면에서 광고와 AI 답변이 링크보다 먼저 나오면, 사이트의 글이 답의 재료로 쓰여도 사람의 방문은 줄 수 있다. AI 요약이 나온 검색에서 외부 클릭이 약 40% 줄었다는 무작위 실험과 노출 범위의 확대는 [[AI-Search-Visibility#AI 요약의 클릭 감소는 실험과 관측을 나눠 본다|AI 요약의 클릭 감소]]에 있다.
+
+사례: 베를린 이민자 생활 안내 사이트 All About Berlin의 운영자는 2017년부터 사이트를 운영했고 2020년부터 그 수입으로 생활해 왔다. 2026-05-26 글에서 7년 성장 뒤 트래픽의 70%(이후 75%로 고침)를 잃었고 원인을 Google AI Overviews로 본다고 적었다. 독자가 4분의 1로 줄어 새 가이드를 쓰는 대신 다른 수입원을 준비한다고 했다. 2026-11-18 후속 글은 트래픽이 여전히 매달 두 자릿수 비율로 줄고 있으며 한 일요일에는 처음으로 고유 방문자가 1,000명 아래였다고 적는다. 수입은 지난해보다 크게 줄었지만 생활비를 댈 수준에서 어느 정도 안정됐다. 제휴 수수료를 더 높게 협상하고, 많은 선택지를 모아 보여 주던 글을 직접 쓰는 것을 골라 주는 글로 바꿔 방문자당 수입이 몇 년 전보다 높아졌다고 한다. 앞으로는 이민자 대상 건강보험 판매 사업을 병행하고, 이민청 대기 시간과 임대료처럼 아직 글로 정리되지 않은 정보를 내며 2027년에 포럼을 열겠다고 밝혔다.
+
+이 사례는 운영자 한 사람의 원인 귀속이다. 같은 기간의 검색 알고리즘 변경, 경쟁 사이트와 계절성도 트래픽에 섞일 수 있고, 위 실험은 감소의 방향을 뒷받침할 뿐 이 사이트의 감소 폭을 설명하지 않는다. 점검 항목은 다음과 같다(운영 제안).
+
+- 수입을 유입 채널별로 나눠 기록해 검색 의존 비중을 안다.
+- AI 요약이 자주 붙는 질문형 검색어의 유입이 크게 줄 때의 수입 시나리오를 미리 계산한다.
+- 방문당 수입을 올리는 수단(제휴 조건, 큐레이션)과 검색 방문을 대신할 경로(뉴스레터, 커뮤니티, 별도 상품)를 나눠 검토한다.
+- 기존 글의 재조합으로 대신하기 어려운 자체 데이터와 현장 정보를 만든다.
+
 ## 출처
 
 - [Alphabet Inc., Form 10-K for the fiscal year ended December 31, 2025](https://www.sec.gov/Archives/edgar/data/1652044/000165204426000018/goog-20251231.htm) — 2026-11-17 MD&A의 유형별 매출 표와 Google Network 증감 설명 대조. 2022~2024년 값은 [FY2023](https://www.sec.gov/Archives/edgar/data/1652044/000165204424000022/goog-20231231.htm)과 [FY2024](https://www.sec.gov/Archives/edgar/data/1652044/000165204425000014/goog-20241231.htm) 10-K의 같은 표로 대조
 - [Alphabet Announces Third Quarter 2026 Results — Alphabet](https://www.sec.gov/Archives/edgar/data/1652044/000165204426000080/googexhibit991q32026.htm) — 2026-10-28 발표, 2026-11-17 분기 Google Network 매출 대조
 - [The 2025 Cloudflare Radar Year in Review — Cloudflare](https://blog.cloudflare.com/radar-2025-year-in-review/) — 2026-11-17 AI 봇의 HTML 요청 비중과 사용자 행동 크롤링 증가 대조
 - [AI가 바꿔놓은 웹 개발의 미래 — YouTube, 홍정모](https://www.youtube.com/watch?v=BO-BTTnITnM) — 2026-11-14 라이브, 2026-11-17 음성 인식 전사 전체 확인. 자동 방문과 광고 수익을 나눠 보는 문제 제기의 계기이며 수치의 근거로 쓰지 않음
+- [AI is killing All About Berlin — Nicolas Bouliane](https://nicolasbouliane.com/blog/death-by-ai) — 2026-05-26 운영자 글, 2026-11-21 운영 기간, 트래픽 감소율 수정(70%에서 75%)과 원인 귀속 확인
+- [Where do we go from here? — Nicolas Bouliane](https://nicolasbouliane.com/blog/life-after-ai) — 2026-11-18 후속 글, 2026-11-21 트래픽과 수입 상태, 방문자당 수입을 올린 방법과 앞으로의 계획 확인. 운영자의 자기 보고
+- [AI가 All About Berlin을 죽이고 있다 — GeekNews](https://news.hada.io/topic?id=37403) — 학습 계기
 
 - [Google AdSense Help, Add a new site to your AdSense sites list](https://support.google.com/adsense/answer/12169212?hl=en) — 2026-11-04 연결 방식, 광고 크롤러와 검토 요청 단계 대조
 - [Google AdSense Help, What to do when your site is not ready to show ads](https://support.google.com/adsense/answer/12176698?hl=en) — 2026-11-04 공개 접근, 비밀번호와 robots.txt, 계정 활성화 후 크롤러 로그인 예외 대조
@@ -122,6 +138,7 @@ HTML만 가져가는 크롤러는 광고 스크립트를 실행하지 않아 광
 
 - [[Metrics-Framework|지표 설계]]
 - [[Bot-Traffic-Operations|봇 트래픽의 관측과 제한]] — 자동 방문의 식별과 분리
+- [[AI-Search-Visibility|AI 검색 가시성 측정]] — AI 요약의 클릭 감소 실험과 인용 근거의 강도
 - [[Community-Knowledge-and-Co-Creation|커뮤니티 지식 축적과 공동창작]] — 신규 기여 감소와 축적 지식의 수익화
 - [[Content-Marketing|콘텐츠 마케팅]]
 - [[Lead-Magnet-and-Entry-Offer|리드 마그넷과 진입 제안]]

@@ -1,7 +1,7 @@
 ---
 tags: [database, rdbms, postgresql, operations, vacuum, bloat]
 status: done
-verified_at: 2026-11-17
+verified_at: 2026-11-21
 category: "Data & Storage - RDB"
 aliases: ["PostgreSQL REPACK", "REPACK CONCURRENTLY", "테이블 재작성으로 공간 회수"]
 ---
@@ -10,7 +10,7 @@ aliases: ["PostgreSQL REPACK", "REPACK CONCURRENTLY", "테이블 재작성으로
 
 `REPACK`은 PostgreSQL 19에 추가된 명령으로, 테이블 전체를 새 파일로 다시 써서 dead tuple이 차지하던 공간을 운영체제에 돌려준다. 이전의 `VACUUM FULL`과 `CLUSTER`가 하던 일을 한 명령으로 합쳤고, `CONCURRENTLY` 옵션을 주면 재작성 대부분의 시간 동안 다른 트랜잭션이 테이블을 계속 읽고 쓸 수 있다.
 
-버전 기준: PostgreSQL 19rc2 문서 기준이다. 2026-11-17 확인 시점에 19는 RC 단계이며 공식 로드맵의 출시 예정일은 2026-11-19다. 정식 출시 뒤 동작과 제한을 다시 확인한다.
+버전 기준: PostgreSQL 19 문서 기준이다. 2026-11-17에 19rc2 문서로 정리했고, 19는 2026-11-19 정식 출시됐다. 2026-11-21 정식 출시 문서의 REPACK, VACUUM과 `max_repack_replication_slots` 설명을 다시 대조해 아래 잠금, 실패 조건과 제한이 바뀌지 않았음을 확인했다.
 
 ## 왜 필요한가
 
@@ -96,6 +96,7 @@ REPACK (CONCURRENTLY) employees USING INDEX;  -- 클러스터링 인덱스 순�
 - [PostgreSQL 19 Documentation, Replication](https://www.postgresql.org/docs/19/runtime-config-replication.html)
 - [Release 19 — PostgreSQL](https://www.postgresql.org/docs/19/release-19.html)
 - [Roadmap — PostgreSQL](https://www.postgresql.org/developer/roadmap/)
+- [PostgreSQL 19 Released! — PostgreSQL](https://www.postgresql.org/about/news/postgresql-19-released-3449/) — 2026-11-19 출시 발표
 - [pg_repack 1.5.3 — reorg](https://reorg.github.io/pg_repack/)
 - [Postgres 19 Can Shrink Your Tables While They're Still Being Used (REPACK) — Better Stack](https://www.youtube.com/watch?v=Q0L4w1IAQjM)
 

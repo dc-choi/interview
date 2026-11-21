@@ -62,6 +62,18 @@ aliases: ["Small Server Self Hosting", "소형 서버 셀프호스팅"]
 
 BookOrbit는 도서, import 폴더, 앱 데이터와 PostgreSQL을 포함한 모든 쓰기 경로에 신뢰할 수 있는 로컬 파일시스템을 요구한다. README는 SMB/NFS, FUSE, 클라우드 마운트와 NAS 구성을 지원하지 않으며, 잠금과 rename 등의 차이로 손상이나 유실이 생길 수 있다고 명시한다. 운영에서는 원본 도서, PostgreSQL 데이터, 애플리케이션 데이터와 비밀 설정을 함께 복구 대상으로 검토한다. 자체 서버라고 외부 통신이 없어지는 것은 아니다. 메타데이터 제공자와 외부 독서 서비스 동기화의 활성화 여부를 확인한다. 실제 설치, 기기 동기화, 백업 복원과 EPUB 문장 강조는 시험하지 않았다.
 
+## 내 클라우드 계정에 배포하는 모델
+
+서버를 직접 두지 않고 오픈소스 앱을 사용자 소유의 관리형 클라우드 계정(서버리스 호스팅, 관리형 DB, 메일 발송, 파일 저장소)에 배포하는 방식도 있다. 데이터는 자기 계정과 고른 리전에 남고 패치할 서버는 없지만, 여러 서비스의 무료 플랜과 약관을 조합하므로 한도와 사용 조건이 운영 범위를 정한다.
+
+2026-11-21 README와 자체 호스팅 문서로 확인한 SignuDoc(MIT, 전자서명 앱)이 예다. Deploy 버튼이 사용자 Vercel 계정에 앱을 올리고 Neon Postgres, Resend 메일과 비공개 Vercel Blob을 만든다. 서명자는 계정 없이 메일 링크로 서명하며 최대 25명의 순서 또는 동시 서명을 지원한다. 운영에서 볼 점은 기능표보다 다음이다.
+
+- **가장 작은 무료 한도가 처리량을 정한다.** SignuDoc 문서는 서명자 2명인 문서 하나가 업로드 7~9회와 메일 5통을 쓴다고 보고, 무료 플랜 조합의 상한을 월 약 250건, 하루 약 20건으로 계산한다(2026-11-21 저장소 문서 기준). 근거가 되는 공식 한도는 같은 날 확인했다. Vercel Blob Hobby는 업로드, 복사와 목록 조회를 함께 세는 고급 작업 월 2,000회와 저장 1GB, Resend Free는 월 3,000통과 하루 100통이다.
+- **무료 한도는 과금 대신 멈추고, 풀리는 시점은 한도마다 다르다.** Vercel Blob Hobby는 한도를 넘으면 30일이 지날 때까지 Blob을 쓸 수 없다. Resend의 초과 발송 과금은 유료 플랜에만 있어 Free는 하루 한도나 월 한도에 닿으면 발송이 막힌다.
+- **무료 플랜의 사용 조건을 확인한다.** Vercel 이용약관은 Hobby 플랜을 개인 또는 비상업 용도로만 쓰게 하므로 조직의 업무용이면 Pro가 필요하다.
+- **설치를 먼저 연 사람이 관리자가 된다.** 주소가 알려지기 전에 설정을 끝내거나 `SETUP_TOKEN`을 둔다. 백업은 기본으로 꺼져 있다.
+- **법적 책임은 설치한 조직에 남는다.** 약관과 개인정보 처리방침, 보관 기간과 서명자 데이터 요청 처리를 운영 조직이 맡는다.
+
 ## 운영 체크포인트
 
 1. 외부 노출이 필요한 서비스와 VPN 안에 둘 서비스를 정한다.
@@ -79,6 +91,11 @@ BookOrbit는 도서, import 폴더, 앱 데이터와 PostgreSQL을 포함한 모
 - GeekNews, 2026-11-18 제공 요약: 더 많은 앱이 아니라 더 나은 오픈소스가 필요하다 (토픽 번호 미확인, 원문 식별에 사용)
 - [BookOrbit — GitHub, bookorbit/bookorbit](https://github.com/bookorbit/bookorbit) — 2026-11-02 기능과 버전 조건, 데이터 경로를 확인.
 - [BookOrbit, What is BookOrbit?](https://bookorbit.app/what-is-bookorbit) — 자체 호스팅과 외부 연동의 경계.
+- [SignuDoc — GitHub, NYLLON-SOFTWARE/SignuDoc](https://github.com/NYLLON-SOFTWARE/SignuDoc) — 2026-11-21 README와 docs/self-hosting.md로 배포 구성, 무료 한도 계산, 설치 선점과 운영 책임을 확인. 문서당 건수 상한은 저장소의 계산
+- [Vercel Docs, Vercel Blob Usage and Pricing](https://vercel.com/docs/vercel-blob/usage-and-pricing) — Hobby 포함량(고급 작업 2,000회, 저장 1GB)과 초과 시 30일 정지, 2026-11-21 확인
+- [Resend, Pricing](https://resend.com/pricing) — Free 플랜 월 3,000통과 하루 100통, 초과 과금은 유료 플랜만, 2026-11-21 확인
+- [Vercel, Terms of Service](https://vercel.com/legal/terms) — Hobby 플랜의 개인 또는 비상업 용도 조항, 2026-11-21 확인
+- [SignuDoc - 내 계정에 배포해 운영하는 오픈소스 전자서명 앱 — GeekNews](https://news.hada.io/topic?id=37551) — 학습 계기
 
 - [Immich, Backup and Restore](https://docs.immich.app/administration/backup-and-restore/)
 - [Vaultwarden README — Vaultwarden](https://github.com/dani-garcia/vaultwarden)

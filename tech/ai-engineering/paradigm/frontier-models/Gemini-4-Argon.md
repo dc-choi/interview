@@ -1,9 +1,9 @@
 ---
 tags: [ai, llm, gemini, model, evaluation, availability]
 status: done
-verified_at: 2026-11-16
+verified_at: 2026-11-21
 category: "AI엔지니어링(AIEngineering)"
-aliases: ["Gemini 4 Argon", "제미나이 4 아르곤", "Gemini 4 Carbon", "Gemini 4 Hydrogen", "Antigravity Orchestrator"]
+aliases: ["Gemini 4 Argon", "제미나이 4 아르곤", "Gemini 4 Carbon", "Gemini 4 Hydrogen", "Gemini 4 Neon", "Antigravity Orchestrator"]
 ---
 
 # Gemini 4 Argon
@@ -12,7 +12,7 @@ aliases: ["Gemini 4 Argon", "제미나이 4 아르곤", "Gemini 4 Carbon", "Gemi
 
 복잡한 코딩, 지식 업무, 멀티모달 이해와 방어적 보안 작업을 겨냥한 Google의 모델이다. 2026-09-30 발표됐으며, 발표 가격과 초기 접근 계획은 2026-10-01 확인 기준이다. 구독자 가용성은 아래에 2026-10-14 확인 내용을 별도로 적었다.
 
-장시간 작업을 이어가는 추론 능력과 실제 서비스에서 호출할 수 있는 조건은 따로 판단한다. 모델 발표를 일반 API 공개로 해석하면 안 된다. 같은 세대의 Carbon과 Hydrogen, 두 모델을 오가는 Antigravity Orchestrator는 [[#Gemini 4 계열의 Carbon과 Hydrogen|아래 절]]에 둔다.
+장시간 작업을 이어가는 추론 능력과 실제 서비스에서 호출할 수 있는 조건은 따로 판단한다. 모델 발표를 일반 API 공개로 해석하면 안 된다. 같은 세대의 Carbon, Neon과 Hydrogen, 모델을 오가는 Antigravity Orchestrator는 [[#Gemini 4 계열의 Carbon과 Hydrogen|아래 절]]에 둔다.
 
 ## 출력 한도와 긴 작업
 
@@ -91,13 +91,14 @@ aliases: ["Gemini 4 Argon", "제미나이 4 아르곤", "Gemini 4 Carbon", "Gemi
 
 ## Gemini 4 계열의 Carbon과 Hydrogen
 
-2026-11-16에 Google 발표, Gemini API 변경 이력과 가격표, Artificial Analysis 페이지를 대조했다. 이 대조로 `verified_at`을 갱신했으며, 이날 가격표의 Argon 단가와 기한은 위 절과 같았다. 위 성능표와 평가 방법론은 다시 대조하지 않았다.
+2026-11-16에 Google 발표, Gemini API 변경 이력과 가격표, Artificial Analysis 페이지를 대조했다. 이 대조로 `verified_at`을 갱신했으며, 이날 가격표의 Argon 단가와 기한은 위 절과 같았다. 위 성능표와 평가 방법론은 다시 대조하지 않았다. 2026-11-18 나온 Neon은 2026-11-21에 같은 종류의 자료로 대조했고, 이날 가격표의 Carbon 단가와 기한도 아래 표와 같았다.
 
-| 모델 | Google이 밝힌 위치 | API 상태와 단가(100만 토큰당, 2026-11-16 가격표) |
+| 모델 | Google이 밝힌 위치 | API 상태와 단가(100만 토큰당, 가격표 확인일은 행마다 표시) |
 |---|---|---|
-| Gemini 4 Carbon (`gemini-4-carbon`) | Argon 위의 최상위. 사이버 보안, 장기 에이전트 작업, 소프트웨어 엔지니어링과 과학 추론 | 2026-11-10 GA, 무료 등급 없음. Standard 입력 $2, 출력 $10(사고 토큰 포함)은 2026-11-30까지이고 12월 1일부터 $4, $20. 캐시 입력은 같은 날 $0.10에서 $0.20(암시적 캐싱만). Batch와 Flex는 Standard의 절반, Priority는 1.8배 |
-| Gemini 4 Argon (`gemini-4-argon`) | 대부분의 소프트웨어 엔지니어링과 지식 업무 | Carbon과 같은 등급별 단가와 기한. 초대제 비공개 프리뷰인 Contributor 등급(입력 $1, 출력 $5, 사용분이 제품 개선에 쓰일 수 있음)도 표시 |
-| Gemini 4 Hydrogen (`gemini-4-hydrogen`) | 일상 작업용 단독 모델이자 Carbon, Argon과 짝을 이루는 실행 엔진 | 2026-11-12 GA. 무료 등급에서 입력, 출력과 캐시를 무료로 표시하고 그 사용분은 제품 개선에 쓰일 수 있다고 적음. 유료 입력 $1.50, 출력 $7.50, 캐시 입력 $0.075이고 Batch와 Flex는 절반, Priority는 1.8배. 특별가 기한과 프롬프트 길이 구간 없음 |
+| Gemini 4 Carbon (`gemini-4-carbon`) | Argon 위의 최상위. 사이버 보안, 장기 에이전트 작업, 소프트웨어 엔지니어링과 과학 추론 | 2026-11-10 GA(2026-11-16 가격표, 11-21 재확인), 무료 등급 없음. Standard 입력 $2, 출력 $10(사고 토큰 포함)은 2026-11-30까지이고 12월 1일부터 $4, $20. 캐시 입력은 같은 날 $0.10에서 $0.20(암시적 캐싱만). Batch와 Flex는 Standard의 절반, Priority는 1.8배 |
+| Gemini 4 Neon (`gemini-4-neon`) | Carbon과 Hydrogen 사이. 복잡하면서 자주 하는 코딩, 분석과 기업 업무를 빠르고 싸게 | 2026-11-18 GA(2026-11-21 가격표), 무료 등급 없음. Standard 입력 $3, 출력 $15(사고 토큰 포함), 캐시 입력 $0.15(암시적 캐싱만). Batch와 Flex는 절반, Priority는 1.8배. 특별가 기한과 프롬프트 길이 구간 없음 |
+| Gemini 4 Argon (`gemini-4-argon`) | 대부분의 소프트웨어 엔지니어링과 지식 업무 | 2026-11-16 가격표 기준 Carbon과 같은 등급별 단가와 기한. 초대제 비공개 프리뷰인 Contributor 등급(입력 $1, 출력 $5, 사용분이 제품 개선에 쓰일 수 있음)도 표시 |
+| Gemini 4 Hydrogen (`gemini-4-hydrogen`) | 일상 작업용 단독 모델이자 Carbon, Argon과 짝을 이루는 실행 엔진 | 2026-11-12 GA(2026-11-16 가격표). 무료 등급에서 입력, 출력과 캐시를 무료로 표시하고 그 사용분은 제품 개선에 쓰일 수 있다고 적음. 유료 입력 $1.50, 출력 $7.50, 캐시 입력 $0.075이고 Batch와 Flex는 절반, Priority는 1.8배. 특별가 기한과 프롬프트 길이 구간 없음 |
 
 - **같은 단가, 다른 토큰 수**: Carbon은 Argon과 단가가 같지만 Google은 Carbon이 더 철저히 탐색하고 검증 루프를 길게 돌리느라 Argon보다 토큰을 더 쓴다고 적는다. 둘 사이의 선택은 단가가 아니라 같은 과업의 토큰 수, 성공률과 과업당 비용으로 한다([[Model-Release-Claims#비용 절감률은 단가, 토큰 수, 과업당 비용으로 나눈다|과업당 비용]]). CursorBench 4.0, WANDR, AutomationBench 1위와 차순위 외부 모델보다 과업당 비용이 절반 미만이라는 주장은 Google 발표이며, 비교 모델과 추론 설정은 이 발표에서 확인하지 못했다. CursorBench는 아래 순위표로 따로 대조했다.
 - **CursorBench 4.0의 설정별 비용(2026-11-18 열람)**: Cursor가 실제 세션에서 뽑은 모호한 다중 파일 과제의 순위표다. 과업당 평균 비용은 모델별 공개 단가(입력, 캐시 읽기, 캐시 쓰기, 출력)를 과제마다 쓴 토큰에 적용한 값이라 개발자 청구액의 추정이며 공급사의 원가가 아니다. Carbon은 High 60.4%($9.22, 71단계)로 1위, Medium 60.1%($8.49), Low 58.6%($11.89, 124단계)다. 3위는 Fable 5.2 Max 60.0%($32.79, 218단계)다. 상위 세 행이 0.4%p 안이라 페이지의 주의(작은 점수 차는 통계적으로 의미 없을 수 있다)대로 순위 차이보다 비용 차이를 본다. Fable 5.2는 Extra High 56.3%($15.48), High 56.9%($9.70), Medium 54.8%($4.66), Low 53.2%($3.94)이고 Opus 5.5 High는 56.0%($3.97)다.
@@ -105,8 +106,18 @@ aliases: ["Gemini 4 Argon", "제미나이 4 아르곤", "Gemini 4 Carbon", "Gemi
   - Fable 5.2는 Max에서 마지막 몇 %p가 비싸다. Max와 High의 3.1%p 차이에 과업당 약 $23을 더 쓴다. Extra High는 High보다 비싸지만 점수가 낮게 나와, 설정을 올린다고 점수가 단조롭게 오르지 않는다.
   - 낮은 추론 설정이 항상 싸지는 않다. Carbon Low는 High보다 단계가 많고(124 대 71) 과업당 비용도 높다. 페이지는 원인을 설명하지 않으며 단계 증가를 원인으로 보는 것은 이 문서의 추론이다. 같은 표의 Fable 5.2와 Opus 5.5는 낮은 설정일수록 쌌다. 설정은 단가가 아니라 과업당 비용과 성공률을 재서 고른다([[Model-Release-Claims#비용 절감률은 단가, 토큰 수, 과업당 비용으로 나눈다|과업당 비용]]).
   - Carbon 행에 11월 30일까지의 특별가와 12월 이후 단가 중 어느 것을 적용했는지는 페이지에 없다. 특별가로 계산한 값이라면 12월부터 입력, 출력과 캐시 단가가 모두 2배가 되므로 같은 토큰의 High 비용은 약 $18.44로 Fable 5.2 Max의 약 56%가 되어 절반 미만이 아니게 된다. 페이지의 변경 이력은 2026-10-07이 마지막이라 Carbon과 Fable 5.2 행이 들어간 날짜와 적용 단가는 확인하지 못했다. 이날은 Cursor 순위표만 대조했고 Google 가격표와 나머지 주장은 다시 대조하지 않아 `verified_at`은 바꾸지 않았다.
+- **느린 이유를 나눈 제3자 분석**: 자체 비공개 평가를 운영하는 Kernel은 버그 수정 평가에서 Carbon(high)이 Opus 5.5와 GPT-6 Astra가 high로 2~4분에 끝내는 과제에 평균 56분을 쓴 원인을 단계당 시간과 궤적 길이로 나눴다([[Benchmark-Coverage-and-Workplace-Performance#느린 실행은 단계당 시간과 단계 수로 나눈다|느린 실행의 분해]]). low로 낮추면 수정을 내지 못하고 이미 읽은 코드를 다시 읽으며 맴돌았다고 적어, 위 순위표에서 Low가 High보다 단계가 많았던 관찰과 같은 방향이다. 두 자료의 과제와 하네스는 다르다.
 - **제공 경로**: Carbon은 GA 2주 전 Fairwind Program의 사이버 방어자에게 먼저 열렸다. GA와 함께 유료 Gemini API 개발자 전체, 유료 기업 고객과 Google AI Ultra 구독자(Antigravity, Gemini 앱, 검색 AI Mode)로 넓어졌고, 과학자는 신청을 받아 자격, 용량과 선정 심사를 거쳐 Argon과 Carbon을 6개월 무료로 쓰게 한다. Hydrogen은 AI Studio 전 등급과 Antigravity의 유료 Pro, Ultra 구독자에게 열리고, Gemini 앱의 무료 사용자는 자동 모델 선택을 통해 쓴다고 각주에 적는다. 변경 이력은 Hydrogen을 Gemini Managed Agents의 Antigravity 에이전트 기본 모델로 적는다.
 - **Hydrogen의 사고 수준과 발표 수치**: 사고 수준은 low, medium, high(기본)와 새로 생긴 xhigh다. Google은 Artificial Analysis Intelligence Index에서 기본 high가 Argon(50점)을 넘는다고 적었고, 2026-11-16 Artificial Analysis 페이지(v5.0.1)도 High 51점, Xhigh 54점을 보인다. 같은 페이지에서 Xhigh는 지수 평가에 출력 토큰 3억 400만(High 1억 1천만)을 썼고 과업당 비용은 $3.16이다. Terminal-Bench 4.1의 57%(Gemini 3.8 Flash 18.2%)는 하네스를 밝히지 않았고, 3.8 Flash보다 작업을 2.5배 빨리 끝낸다는 주장과 파트너 시험의 2~2.8배 속도, 12~23% 토큰 감소에는 초당 토큰 수와 측정 조건이 없다. 발표의 검색 비교 이미지는 비교 대상을 Gemini 3.5 Flash로 표기해 본문(3.8 Flash)과 어긋난다.
+
+### Gemini 4 Neon: 단가 기한이 바꾸는 비교
+
+Neon은 Carbon의 깊이와 Hydrogen의 속도 사이를 맡는 모델로 소개된다. 사고 수준은 low, medium, high(기본), xhigh 네 단계다(변경 이력). 모델 문서는 입력과 출력이 함께 쓰는 통합 한도를 1,048,576토큰으로 적고, 기본 동기 출력 한도는 65,536토큰이며 long decode로 그 통합 한도까지 출력할 수 있다고 적는다. 위 Argon처럼 입력과 출력이 한 예산을 나눠 쓰므로 1M 입력과 1M 출력을 따로 쓸 수 있다는 뜻이 아니다. Antigravity에서는 유료 Pro와 Ultra 구독자에게 열렸고, Orchestrator가 Neon을 계획에, Hydrogen을 실행에 두는 조합을 새로 지원한다. 사이버 방어용 Neon for cyber는 Fairwind Program 회원에게 며칠에 걸쳐 열린다. Google은 Artificial Analysis 지수 xhigh 61점으로 전체 3위, Vals Index 2위라고 적고, 2026-11-21 Artificial Analysis에서도 Fable 5.2(Max) 65점과 GPT-6.2 Astra(Max) 62점 다음이었다(Vals Index 3위와의 점수 차는 [[Model-Release-Claims#자체 보고 점수는 비교 대상, 채점자와 독립성을 본다|모델 발표 수치 읽기]]).
+
+- **과업당 비용 주장은 비교 날짜의 단가에 묶인다**: Google은 기본 high가 Artificial Analysis 지수의 높은 점수와 함께 Carbon보다 과업당 비용이 32% 낮고, xhigh도 경쟁 모델의 최고 설정보다 36% 이상 낮다고 적는다. 앞의 비교에 Carbon의 어느 단가를 넣었는지, 뒤의 비교가 어느 벤치마크와 모델인지는 밝히지 않는다. Neon의 단가는 Carbon의 11월 특별가($2, $10)보다 높고 12월 정가($4, $20)보다 낮다. 2026-11-21 Artificial Analysis(v5.0.1)에서 같은 High끼리 보면 둘 다 60점이고 과업당 비용은 Neon $3.74(페이지에 내장된 데이터의 값), Carbon $7.76이며 Carbon 값은 정가로 계산돼 있다. Carbon은 11월 30일까지 입력, 캐시 입력, 출력 단가가 모두 절반이라 같은 토큰이면 약 $3.88이므로, High끼리는 정가 기준 약 52%, 특별가 기준 약 4% Neon이 싸다(이 문서의 계산). Google의 32%는 이 지수에서는 어느 Carbon 단가로도 재현되지 않는다(이 문서의 대조). 한 단계 높은 Neon Xhigh(61점, $6.44)와 Carbon High를 비교하면 11월에는 Carbon이, 12월부터는 Neon이 싸므로, 단가 기한이 순서를 바꾸는지는 어느 설정끼리 비교하느냐에 달렸다. 같은 날 GPT-6.2 Astra(Max)는 62점에 과업당 $4.00이었으므로, 36% 이상 낮다는 주장은 적어도 이 지수에서 GPT-6.2 Astra와 비교한 값은 아니다(이 문서의 대조).
+- **같은 점수에서 다른 토큰과 시간**: Artificial Analysis의 High 설정에서 Neon과 Carbon은 모두 60점이지만 지수 평가의 출력 토큰은 1억 2,300만 대 2억 500만이었고, 과업당 시간은 2026-11-21 두 번 열람한 값이 14.8분과 14.3분 대 37.0분과 36.6분이었다. 페이지 설명으로는 이 시간이 평가마다 과업당 출력 토큰을 출력 속도로 나눠 지수 가중치로 평균한 값이라 도구 실행 시간은 들어 있지 않다. 전체 출력 토큰을 헤드라인 출력 속도(같은 두 번의 열람에서 Neon High 101~105 tok/s, Carbon High 55~56 tok/s)로 나눈 비는 약 3배인데 시간 비는 약 2.5배라, 평가별 가중치와 속도 값을 모르면 이 계산을 재현할 수 없다(이 문서의 대조). 헤드라인 속도는 2026-11-03 성능 측정 v3.0.0부터 6시간마다 재는 워크로드별 값을 최근 5일 동안 평균한 것이라 같은 날에도 움직인다. 출시 당일 OpenRouter에서 Neon이 초당 127토큰, Carbon이 46토큰이었다는 값은 한 블로그의 관찰이며 측정 조건이 없다.
+- **속도를 넣은 순위 예측은 측정이 아니다**: OpenCode 위에서 두 에이전트를 겨루게 하는 Agent Duel의 운영자는 투표 승률을 모델, 속도, 작업이 끝나기 전에 투표했는지와 속도와 조기 투표의 상호작용으로 모형화하고, 속도가 모델 자체만큼 승률을 가른다고 적었다. Carbon은 조기 투표를 뺀 이 순위표에서 1위지만 느리다. 운영자는 이 모형에 Neon이 Carbon과 같은 성능이라는 가정과 127 tok/s를 넣어 Elo 1,066(Opus 5.5 1,078, 차이의 90% 구간 −94~+68, Opus 5.5 상대 예상 승률 48.3%)을 투영했다. Neon의 실제 대결 기록이 없는 투영값이다.
+- **하네스가 바꾸는 점수**: Google은 SWE-sweep에서 Neon이 mini-SWE 하네스로 12.8%, Antigravity 하네스로 39.0%라고 적는다. 같은 모델의 점수가 하네스에 따라 3배 넘게 달라지므로, 공급사 하네스로 잰 점수를 다른 하네스로 잰 모델 점수와 비교하지 않는다([[Harness-Component-Evaluation#모델을 바꾸면 하네스 순위도 다시 잰다|하네스 순위]]).
 
 ### Antigravity Orchestrator: 한 작업 안에서 모델을 오간다
 
@@ -126,8 +137,8 @@ Orchestrator(2026-11-12)는 Antigravity의 모델 선택지 하나로, 첫 프�
 - [Gemini 4 Argon is now available for developers — Google](https://blog.google/innovation-and-ai/technology/developers-tools/build-with-gemini-4-argon/)
 - [Gemini 4 Argon: Built to solve your hardest problems — Google](https://blog.google/intl/en-in/products/introducing-gemini-4-argon/)
 - 사용자 제공 GeekNews 발췌: 2026-10-14 정식 출시, 2026-10-15 로봇 제어와 시뮬레이션 활용. 기존 가격과 전체 성능표를 다시 검증하지 않아 그때는 문서 전체 검증일을 유지했다.
-- [Gemini API Changelog — Google AI for Developers](https://ai.google.dev/gemini-api/docs/changelog) — 2026-10-13 GA 항목, 2026-10-27 확인. 2026-11-16에는 aistudio.google.com/docs/changelog로 옮겨진 주소에서 2026-11-10 Carbon과 2026-11-12 Hydrogen의 GA 항목, Hydrogen의 사고 수준과 Antigravity 기본 모델 지정 확인
-- [Google AI for Developers, Gemini Developer API pricing](https://ai.google.dev/gemini-api/docs/pricing) — 2026-10-27 할인 기한, 캐시, Batch와 Flex 단가 확인. 2026-11-16에는 aistudio.google.com/docs/pricing으로 옮겨진 주소에서 Carbon, Argon, Hydrogen의 등급별 단가와 기한 확인
+- [Gemini API Changelog — Google AI for Developers](https://ai.google.dev/gemini-api/docs/changelog) — 2026-10-13 GA 항목, 2026-10-27 확인. 2026-11-16에는 aistudio.google.com/docs/changelog로 옮겨진 주소에서 2026-11-10 Carbon과 2026-11-12 Hydrogen의 GA 항목, Hydrogen의 사고 수준과 Antigravity 기본 모델 지정 확인. 2026-11-21 같은 주소에서 2026-11-18 Neon GA 항목의 사고 수준, 컨텍스트와 long decode 확인
+- [Google AI for Developers, Gemini Developer API pricing](https://ai.google.dev/gemini-api/docs/pricing) — 2026-10-27 할인 기한, 캐시, Batch와 Flex 단가 확인. 2026-11-16에는 aistudio.google.com/docs/pricing으로 옮겨진 주소에서 Carbon, Argon, Hydrogen의 등급별 단가와 기한 확인. 2026-11-21 Neon의 등급별 단가와 Carbon의 기한 재확인
 - [Gemini 4 Carbon is now available — Google](https://blog.google/innovation-and-ai/models-and-research/gemini-models/gemini-4-carbon-now-available/) — 2026-11-10, 제공 경로, 특별가 각주, 토큰 사용량 설명과 공급사 벤치마크 주장
 - [Introducing Gemini 4 Hydrogen — Google](https://blog.google/innovation-and-ai/models-and-research/gemini-models/introducing-gemini-4-hydrogen/) — 2026-11-12 게시(11-13 갱신), 위치, 제공 범위, 사고 수준, 발표 수치와 Orchestrator 수치(Terminal-Bench 4.0 표기)
 - [Gemini 4 Hydrogen and Orchestrator — Google Antigravity](https://antigravity.google/blog/gemini-4-hydrogen-in-google-antigravity/) — 2026-11-12, Orchestrator의 전환 흐름, 제공 범위와 수치(Terminal-Bench 4.1 표기)
@@ -137,6 +148,18 @@ Orchestrator(2026-11-12)는 Antigravity의 모델 선택지 하나로, 첫 프�
 - [Google, 복잡한 코딩과 연구를 위한 Gemini 4 Carbon 일반 공개 — GeekNews](https://news.hada.io/topic?id=36950) — 학습 계기
 - [Gemini 4 Hydrogen - 일상적인 코딩과 에이전트 작업을 위한 빠른 실행 모델 — GeekNews](https://news.hada.io/topic?id=37068) — 학습 계기
 - [Google Antigravity에 Orchestrator 추가, 코딩 중 Carbon과 Hydrogen 자동 전환 — GeekNews](https://news.hada.io/topic?id=37077) — 학습 계기
+- [Introducing Gemini 4 Neon — Google](https://blog.google/innovation-and-ai/models-and-research/gemini-models/introducing-gemini-4-neon/) — 2026-11-18 게시(11-19 갱신). 2026-11-21 위치, 단가, 사고 수준, 과업당 비용 주장, 제3자 순위, 하네스별 SWE-sweep 점수와 제공 범위 대조
+- [Gemini 4 Neon in Google Antigravity — Google Antigravity](https://antigravity.google/blog/gemini-4-neon-in-google-antigravity/) — 2026-11-18, Neon과 Hydrogen을 짝짓는 Orchestrator와 제공 범위
+- [Gemini 4 Neon Intelligence, Performance & Price Analysis — Artificial Analysis](https://artificialanalysis.ai/models/gemini-4-neon) — 2026-11-21 두 번 열람, 사고 수준별 지수, 출력 토큰, 과업당 시간과 비용(High는 페이지에 내장된 데이터에서 확인), 출력 속도와 과업당 시간의 계산 방식
+- [Language Model API Performance Benchmarking — Artificial Analysis](https://artificialanalysis.ai/methodology/performance-benchmarking) — 2026-11-21 열람, v3.0.0(2026-11-03)의 6시간 주기 측정과 최근 5일 워크로드 평균, 이전 방식(최근 72시간 중앙값) 대조
+- [Google AI for Developers, Gemini 4 Neon](https://aistudio.google.com/docs/models/gemini-4-neon) — 2026-11-21 입력과 출력의 통합 한도, 기본 동기 출력 한도와 long decode 확인
+- [Gemini 4 Carbon Intelligence, Performance & Price Analysis — Artificial Analysis](https://artificialanalysis.ai/models/gemini-4-carbon) — 2026-11-21 두 번 열람, High의 지수, 출력 토큰, 과업당 시간과 비용, 적용 단가와 출력 속도
+- [GPT-6.2 Astra Intelligence, Performance & Price Analysis — Artificial Analysis](https://artificialanalysis.ai/models/gpt-6-2-astra) — 2026-11-21 열람, Max의 지수와 과업당 비용
+- [Gemini 4 Neon looks like an Opus 5.5 competitor — micjm](https://micjm.com/blog/gemini-4-neon-looks-like-a-top-model/) — 2026-11-18, Agent Duel 승률 모형과 투영 조건, 출시 당일 OpenRouter 속도 관찰
+- [Why is Gemini 4 Carbon taking so long? — Kernel](https://kernel.dev/blog/why-is-gemini-4-carbon-taking-so-long/) — 2026-11 게시, 2026-11-21 버그당 평균 시간과 low 설정의 실패 양상 대조
+- [Gemini 4 Neon - 복잡한 코딩과 분석에 추론 성능과 효율을 갖춘 AI 모델 — GeekNews](https://news.hada.io/topic?id=37432) — 학습 계기
+- [Gemini 4 Neon, Opus 5.5의 경쟁자가 될 것으로 보임 — GeekNews](https://news.hada.io/topic?id=37456) — 학습 계기
+- [Gemini 4 Carbon은 왜 이렇게 오래 걸릴까? — GeekNews](https://news.hada.io/topic?id=37411) — 학습 계기
 - [Gemini Enterprise Agent Platform release notes — Google Cloud](https://docs.cloud.google.com/gemini-enterprise-agent-platform/release-notes) — 2026-10-13 GA, Cyber Permissive 허용 목록, long decode의 API 버전 제한
 - 사용자 제공 알림: 긱뉴스 GeekCast의 오늘의 긱뉴스(2026.10.13~10.17) 영상. 학습 계기이며 영상은 열람하지 않았고, 정식 제공 사실은 위 공식 문서로 대조했다.
 
@@ -147,3 +170,5 @@ Orchestrator(2026-11-12)는 Antigravity의 모델 선택지 하나로, 첫 프�
 - [[Harness-Component-Evaluation|하네스 구성요소 평가]]
 - [[Agent-Context-Budget|에이전트 컨텍스트 예산]]
 - [[Agent-Swarm-Containment|에이전트 군집 격리]]
+- [[Benchmark-Coverage-and-Workplace-Performance|벤치마크 평가 범위와 업무 성과]] — Carbon의 느린 실행을 단계당 시간과 단계 수로 나눈 분석
+- [[Model-Release-Claims|모델 발표 수치 읽기]] — 단가 기한, 과업당 비용과 순위 차이

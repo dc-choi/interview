@@ -142,6 +142,8 @@ CCC는 **단순 타입 람다 계산법(simply typed λ-calculus)의 모델**. �
 - **모든 카테고리가 CCC는 아니다** — Set은 CCC지만, 위상 공간 카테고리(Top)는 CCC 아님 (특정 조건 필요)
 - **Currying은 단순 문법 변환이 아님** — 카테고리 이론의 동형성으로 정당성이 보장된 변환. 임의 언어에서 가능
 - **부분 적용 ≠ Currying** — Currying은 다인자 → 단인자 체인 변환. 부분 적용은 그 결과를 인자 일부에만 적용. JS의 `bind`나 `f.bind(null, x)`는 부분 적용
+  - 부분 적용을 문법으로 지원하는 언어도 있다. PHP 8.6(2026-11-19 출시, RFC 기준)은 호출 인자 자리에 `?`(인자 하나)나 `...`(나머지 인자 전부)를 두면 함수를 호출하지 않고 남은 인자를 받는 Closure를 만든다. `array_filter($versions, version_compare(?, '8.6', '>='))`처럼 쓴다.
+  - 미리 채운 인자의 식은 Closure를 만들 때 한 번 평가돼 묶인다. 같은 모양의 화살표 함수는 호출할 때마다 식을 평가하므로, 부수 효과나 시간에 따라 바뀌는 값을 넣으면 두 방식의 결과가 달라진다
 - **Haskell의 모든 함수가 curried라는 게 성능 차이 없음** — 컴파일러가 인라인, 최적화로 일반 다인자 호출과 동일하게 처리
 - **`Either<A, B> → C ≅ (A → C) × (B → C)`** — sum type을 다루는 함수는 case별 함수의 쌍. 패턴 매칭의 카테고리적 의미
 
@@ -158,6 +160,8 @@ CCC는 **단순 타입 람다 계산법(simply typed λ-calculus)의 모델**. �
 ## 출처
 - [evan-moon — 프로그래머를 위한 카테고리 이론 9. Function Types](https://evan-moon.github.io/2024/04/18/category-theory-for-programmers-9-function-types/)
 - [Function Types — Bartosz Milewski](https://bartoszmilewski.com/2015/03/13/function-types/)
+- [PHP RFC, Partial Function Application (v2)](https://wiki.php.net/rfc/partial_function_application_v2) — Implemented, 2026-11-21 대조
+- GeekNews, 2026-11-20 제공 요약: PHP 8.6 새 기능 (토픽 번호 미확인, 원문 식별에 사용)
 
 ## 관련 문서
 - [[Category-Theory-For-Programmers|Category Theory for Programmers — 일반 개념]]

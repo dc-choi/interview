@@ -59,7 +59,7 @@ aliases: ["Harness Component Evaluation", "하네스 구성요소 평가", "코�
 - **비싼 하네스가 더 통과하지 않는다**: 모델별 과제당 비용과 통과율의 순위 상관은 −0.39에서 +0.22였고, 통과율 1위 하네스의 비용 순위는 22개 중 5위에서 20위였다.
 - **단계 수가 비용을 설명한다**: 첫 요청 크기, 도구 수와 캐시 적중률은 통과당 비용을 예측하지 못했고 실행 단계 수만 순위 상관 +0.51(p = 0.015)이었다. 단계마다 전체 문맥을 다시 보내 시도당 평균 입력이 200만~480만 토큰이었다. 첫 요청이 가장 작은 mini-SWE-agent(882토큰)도 통과 한 번에 38단계가 들어 통과당 비용 17위였다.
 - **실패에 쓴 비용**: 채점된 실행 비용의 64.5%가 통과하지 못한 시도에 들었다(실패 52.7%, 시간 초과 11.8%). 모델별 최적으로 고른 다섯 하네스에서도 실패한 시도의 68%(Pi)~82%(Codex CLI)는 시간 제한에 걸린 것이 아니라 최종 답을 내고 끝났으므로, 완료 선언을 검증 없이 성공으로 세지 않는다.
-- **한계**: 공개 모델만 한 사업자에서 서빙했으므로 비공개 모델이나 다른 사업자의 캐시 동작과 단가에서는 순위가 달라질 수 있다. 통과율의 95% 구간이 약 ±10점이라 몇 점 차이는 동률로 본다.
+- **한계**: 공개 모델만 한 사업자에서 서빙했으므로 비공개 모델이나 다른 사업자의 캐시 동작과 단가에서는 순위가 달라질 수 있다. 통과율의 95% 구간이 약 ±10점이라 몇 점 차이는 동률로 본다. Runta는 토큰 효율을 내세우는 에이전트 실행 계층을 파는 회사이고 이 순위표를 서빙 사업자 Baseten과 협력해 27,280회 실행에 토큰 830억 개를 써서 만들었다고 밝히므로, 측정 주체의 이해관계도 결과와 함께 적는다.
 
 적용하면, 모델을 바꿀 때 하네스 후보도 자기 과제로 다시 비교하고, 하네스를 고칠 때는 첫 요청의 토큰보다 통과까지 걸리는 단계 수를 먼저 줄인다. 통과당 비용은 실패 시도까지 넣은 위의 `전체 시도 비용 / 합격한 작업 수`와 같은 계산이다.
 
@@ -146,7 +146,7 @@ Pi 공식 사이트(2026-11-09 확인)는 Pi를 MIT 라이선스의 최소 에�
 - [TokenEconomizer README — GitHub, microsoft](https://github.com/microsoft/TokenEconomizer) — 2026-11-17 세 개입의 기본값, 저장 범위와 중단 안내 확인. 설치하지 않음
 - [TokenEconomizer: Experience-Driven Black-Box Cost Control for Coding Agents — arXiv](https://arxiv.org/abs/2610.22732) — 2026-10-15 제출, 2026-11-17 SWE-bench 실험 구성, 비용과 Pass@1 결과, 한계 대조
 - [agent-cost-bench — AWS Samples](https://github.com/aws-samples/sample-agent-cost-bench)
-- [Introducing FrontierHarness Eval v1.1 — RUNTA, Shilin Zhu](https://runta.com/blog/introducing-frontierharness-eval-v1-1/) — 2026-11-17, 2026-11-18 실험 구성, 통과당 비용 정의와 선택 규칙, 분산 분석, 모델별 순위, 단계 수와 비용, 한계 대조. 재현하지 않음
+- [Introducing FrontierHarness Eval v1.1 — RUNTA, Shilin Zhu](https://runta.com/blog/introducing-frontierharness-eval-v1-1/) — 2026-11-17, 2026-11-18 실험 구성, 통과당 비용 정의와 선택 규칙, 분산 분석, 모델별 순위, 단계 수와 비용, 한계 대조. 2026-11-21 Baseten과의 협력 표기와 회사 소개 확인. 재현하지 않음
 - 사용자 제공 GeekNews 알림 요약(2026-11-18): 모델별로 가장 좋은 하네스는 무엇일까. 게시물 URL은 확인하지 못했다
 - [An Empirical Study of Harness Design for Coding Agents — arXiv](https://arxiv.org/abs/2609.20804)
 - [코딩 에이전트 하네스 설계에 관한 실증 연구 — GeekNews](https://news.hada.io/topic?id=33905)

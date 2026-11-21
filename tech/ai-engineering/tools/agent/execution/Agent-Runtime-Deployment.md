@@ -98,6 +98,16 @@ Tines 3B는 앱, 에이전트와 자동화를 만들고 운영하는 워크플�
 
 배포는 Cursor 관리 인프라와 자체 인프라가 구분된다. `agent-sdk deploy`는 관리 인프라에 URL을 만들며, 자체 실행은 단일 Node 프로세스를 컨테이너로 묶을 수 있다. 비밀과 연결을 관리하는 기능이 있어도 승인 범위와 외부 도구의 실제 권한이 자동으로 안전해지는 것은 아니다. 배포 경로, 재시도와 부수효과, 평가 입력과 운영 입력의 차이를 검토한다(운영 제안). 이번에는 배포하지 않았다.
 
+## 하네스를 제품에 넣는 Agents API와 검토 화면이 부르는 원격 에이전트
+
+2026-11-17 공개 발표와 2026-11-21 공식 API 문서를 대조한 절이다. 발표는 Codex 하네스가 데스크톱 앱, CLI, Slack 호출과 dots를 움직인다고 설명하고, 같은 하네스를 자기 애플리케이션에 넣는 Agents API를 베타로 소개했다. 샌드박스와 플러그인 접근을 갖춘 임시(ephemeral) 세션을 수백, 수천 개 만들 수 있다고 했을 뿐 API 형태, 인증, 요금, 한도와 세션 수명은 설명하지 않았다.
+
+공식 문서로 확인한 범위는 다음과 같다. API 변경 이력은 2026-09-10 Agents API를 공개 베타로 냈다고 적고, 개요는 OpenAI가 관리하는 API로 Codex 하네스를 쓰게 해 주며 세션, 오케스트레이션, 컨텍스트 압축과 복구를 OpenAI가 맡는다고 설명한다. 세션은 작업을 맡고 입력에 응답하는 에이전트의 지속 인스턴스로 정의되고, 모델 사용량은 그 모델의 API 단가로, OpenAI 호스팅 샌드박스는 표준 컨테이너 단가로 과금된다. 호스팅 샌드박스는 small(1 vCPU, 1 GB), medium(2 vCPU, 4 GB, 기본값), large(4 vCPU, 16 GB) 가운데 고르고, 활동과 keep-alive가 한 시간 멈추면 지워질 수 있으며 이 시간은 바꿀 수 없다. 플러그인은 스킬, MCP 설정이나 둘 다를 묶은 단위다. 세션을 수백, 수천 개 만든다는 규모 표현은 문서에서 찾지 못했다.
+
+- **도입 점검(적용 제안):** 세션의 플러그인 접근이 누구의 자격 증명으로 일어나는지(운영자의 공용 연결인지 최종 사용자별 연결인지), 샌드박스가 지워진 뒤 남는 상태와 산출물이 어디인지, 세션 수가 늘 때 샌드박스와 호출 비용이 어떻게 쌓이는지를 확인하기 전에는 운영 경로에 넣지 않는다. 공개 베타이므로 변경 이력도 함께 본다.
+- **검토 화면이 작업의 시작점인 구조(발표자 설명):** 사내 영상 편집 앱은 사람이 올린 촬영본에 댓글을 남기고 검토 준비 신호를 보내면, 원격에서 도는 Codex 에이전트가 영상 편집 도구(DaVinci Resolve)와 편집 스킬로 새 컷을 만들어 올리고 다음 검토를 알린다. 사람은 검토와 수정 요청에 남고 생성은 비동기 작업이 맡는다. 이 앱이 Agents API 위에 만들어졌는지는 밝히지 않았고, 부수 영상 일부를 이 흐름이 전부 편집했다는 말은 자기 보고라 품질과 절감 시간은 확인되지 않았다. 적용 제안: 검토 요청, 생성 중, 재시도와 승인 상태를 화면이 보여 주고 생성 실패와 사람의 거부를 구분해 기록한다.
+- **호스팅(발표자 설명):** 에이전트가 만든 내부 앱을 올리는 ChatGPT Sites는 정적 페이지가 아니라 데이터베이스(D1), 파일 저장소(R2), ChatGPT 계정 로그인, 비밀 값, 분석과 플러그인 연결을 갖추고, 로그인으로 기능을 사용자별로 제한하거나 앱 전체를 숨길 수 있다고 소개됐다. 2026-11-21 공식 Sites 문서로는 D1(사이트당 10 GB)과 R2(고정 저장 한도 없음), 로그인 추가, 앱 연결과 분석 화면을 확인했고, 기능별 접근 제한의 방식은 대조하지 않았다. 인증을 직접 만들지 않아도 되는 대신 그 권한 모델과 데이터 위치는 문서로 확인한다(적용 제안).
+
 ## 작업 관리의 병목을 평가한다
 
 코딩 에이전트의 품질은 작업 성공률과 사용자의 개입량으로 확인한다. 2026-10-09 공개 경험 글인 「Why Are Coding Agents So Dumb?」는 병렬화 부족, 모델별 위임 부재, 읽기 어려운 계획과 반복 승인 비용을 지적한다. 특정 시점의 사용 경험이며 모든 제품의 현재 결함을 입증한 결과는 아니다.
@@ -129,6 +139,12 @@ Tines 3B는 앱, 에이전트와 자동화를 만들고 운영하는 워크플�
 
 - [Introducing the Agent SDK — Cursor](https://cursor.com/blog/agent-sdk) — 2026-10-20 GA 발표, 2026-11-02 코드 정의, eval/replay와 배포 경로 부분 대조.
 - [Could this just be a markdown file? — Builder's Day, CJ Brewer](https://builders.day/stream?session=cj-brewer) — 세션 페이지의 행사일 2026-10-26(사전 녹화 공개)을 2026-11-08 확인. 발표자는 workflow DSL과 관리형 런타임을 제공하는 Swirls AI의 공동창업자다. YouTube 영상(rBhzu8_qGjQ, 2026-10-27 업로드)의 00:05~21:06 로컬 음성 전사와 설명란을 2026-11-08 대조했고, 모델의 판단 정확도와 비용 주장은 검증하지 않음
+- [New Ways of Working with Codex — AI Engineer, Dominik Kundel, Charlie Guo](https://www.youtube.com/watch?v=IPh9YsWvDQk) — 2026-11-17 공개 영상의 37:08~42:02와 50:19~51:40을 사람이 단 영어 자막과 대조. Agents API 베타, 검토 화면이 원격 에이전트를 부르는 사례와 Sites 소개의 근거다. Agents API와 Sites는 2026-11-21 아래 공식 문서로 대조했고 사내 영상 편집 사례는 대조할 공식 자료가 없다.
+- 사용자 제공 GeekNews 알림 요약(https://news.hada.io/topic?id=37556): 같은 발표 소개. 학습 계기이며 게시물 본문은 확인하지 못했다
+- [OpenAI API Docs, Agents API overview](https://developers.openai.com/api/docs/guides/agents-api/overview) — 2026-11-21 하네스 제공 범위, 세션 정의와 과금 대조
+- [OpenAI API Docs, OpenAI-hosted environments](https://developers.openai.com/api/docs/guides/agents-api/environments/openai-hosted) — 2026-11-21 샌드박스 크기와 한 시간 무활동 삭제 대조
+- [OpenAI API Docs, Changelog](https://developers.openai.com/api/docs/changelog) — 2026-11-21 Agents API 공개 베타 출시일(09-10) 확인
+- [OpenAI, ChatGPT Sites](https://learn.chatgpt.com/docs/sites) — 2026-11-21 D1과 R2 한도, 로그인 추가, 앱 연결과 분석 대조
 
 ## 관련 문서
 
@@ -139,3 +155,4 @@ Tines 3B는 앱, 에이전트와 자동화를 만들고 운영하는 워크플�
 - [[Agent-Execution-Isolation|에이전트 실행 격리]]
 - [[Agentic-Verification|에이전트 기반 검증]]
 - [[Claude-Code-Domain-Applications|금융 참조 구현의 두 배포 경로]]
+- [[ChatGPT-Dots|ChatGPT dots]] — 같은 Codex 하네스 위의 상시 실행 에이전트와 Codex 클라우드 환경

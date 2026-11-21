@@ -54,6 +54,21 @@ Mathematics has changed. Let’s act like it는 2026-11-01 Frank Calegari가 Ter
 
 후속 확인은 OSM 원 프로젝트의 집계 시점과 응답 편향, AI 수학 성과의 공개 검토와 인간이 이해할 수 있는 증명 여부, 오픈소스 관리자의 이탈이 개인 사례를 넘어서는지다. 사례의 의미 상실을 개인의 나약함으로 평가하지 않으며, 실제 생계 위험과 활동의 의미 변화도 구분한다.
 
+## 검증 단계가 다른 증명 주장
+
+2026-11-20 전후로 AI를 많이 쓴 증명 주장 세 건과 AI를 쓰지 않은 증명 주장 한 건이 공개됐다. 비슷한 때 나왔어도 사람이 읽을 증명, 기계 검증과 공동체 검토가 어디까지 왔는지는 서로 다르다. Terence Tao는 앞의 세 건을 소화된 정도의 순서로 정리했다. 2026-11-21 기준으로 네 주장 모두 동료 심사를 마쳤다는 근거는 없다. 이 문서는 수학 내용을 검토하거나 Lean 빌드를 직접 실행하지 않으며(범위 밖), 아래의 검사 결과는 제3자가 공개한 기록이다. 형식화의 범위와 외부 검사 결과는 [[AI-Assisted-Mathematical-Research#사례: 리만 가설과 유체 방정식 특이점의 형식화 주장|형식화 주장 사례]]에서 다룬다.
+
+- **3차원 비압축 Euler 방정식의 외력 없는 유한 시간 특이점(Levent Alpöge, Tristan Buckmaster, Matei Coiculescu):** AI의 도움을 많이 받아 쓴 사람이 읽을 원고와, 원고와 대응하는 Lean 형식화가 함께 있다. Tao의 정리에서 가장 많이 소화된 결과다.
+- **3차원 비압축 Navier–Stokes 방정식의 외력 없는 유한 시간 폭발(Alpöge, Buckmaster):** Tao는 논문이 기술적으로는 사람이 읽을 수 있고, 수치로 근사 이산 자기유사 해를 만든 뒤 엄밀한 섭동 이론으로 정확한 해로 옮기는 증명 전략도 대체로 분명하지만, 제대로 된 전문적인 증명으로 쓰는 일이 더 남았다고 평가했다. Lean 패키지가 있지만 논문이 기대는 수치 인증서와 그 확인 계산은 형식화 밖이고, 인증서는 2026-11-21에도 공개되지 않았다.
+- **리만 가설과 Dirichlet L-함수의 일반화 리만 가설(Alpöge):** 발표자는 개인 사이트의 4쪽 발표문에서 Claude와 함께 증명을 찾았다고 믿는다고 밝혔고(Tao는 내부 AI 모델이라고 적는다), 사람이 읽을 증명 없이 Lean만 공개했다. 자동으로 만든 25만 쪽 이상의 서술 문서는 내지 않았고, 주변 수학을 아직 숙달하지 못했으며 Claude가 전문가인 부분의 개요는 부정확할 수 있다고 적었다. 확장 리만 가설까지 가리라는 말은 전망이다. 외부 검증자의 여러 검사기 재검사 결과가 하루 남짓 만에 공개됐지만 일부 검사는 진행 중이었고(2026-11-21 10:05 UTC 갱신판 기준), Lean 공동체가 따로 만든 비교 저장소도 같은 날 결과 절을 빌드 진행 중으로 두었다. 발표는 소속 회사의 상장 다음 날 나왔고, 발표문은 일정에 지켜야 할 제약이 있었다며 시점에 대한 냉소적 해석을 부인한다. 회사의 공식 발표는 찾지 못했다.
+- **Hecke L-함수의 일반화 리만 가설(Alessandro Maria Masullo):** Ravi Vakil은 이 증명안이 AI 없이 사람이 쓴 것이고 Brian Conrad가 수개월 검토해 지금까지 좋아 보인다고 공지했다(Conrad 본인의 공개 평가는 2026-11-21 공지 페이지와 검색에서도 찾지 못함). 1년 동안 다듬고 여러 사람의 검토를 거친 뒤 발표할 생각이었지만 지금은 현재 원고를 먼저 내는 편이 낫다고 적었다. 940쪽 원고의 서문은 12년 가까이 걸린 작업이고 서론이 미완성이며 알려진 결함이 몇 군데 있다고 인정하면서, 1년 다듬기 계획은 그대로 이어 간다고 적는다. 대상은 모든 수체와 모든 유니터리 Hecke 지표다. 약 8시간 뒤의 공지 갱신은 여러 사람이 서로 다른 AI 모델의 도움으로 찾은 문제를 보고해 왔다고 적고, 공지자는 증명 전략의 정확성을 주장하지 않으며 공동체가 납득할 만큼 해결돼야 받아들여진다고 덧붙였다. Lean 형식화는 없고 공지는 형식화를 요청했다.
+
+읽을 점은 셋이다.
+
+1. 기계 검증의 재현과 이해는 다른 단계다. 커널 재검사가 빨리 나와도 형식 진술이 원래 문제와 같은지, 형식화 밖의 계산이 맞는지, 전략을 사람이 이해했는지는 남는다. Tao는 일반화 리만 가설의 소화에 시간이 걸리겠지만 소통할 사람 저자가 있다는 점을 다행으로 꼽았고, Lean 공동체의 토론방도 논의를 Lean에 관한 측면으로 좁혔다.
+2. 이 사례에서는 사람이 쓴 원고의 검토에도 AI가 쓰였다. 보고된 문제가 고칠 수 있는 결함인지 전략의 실패인지는 아직 판정되지 않았다. 한 공지의 갱신에 근거한 관찰이므로 검토 관행 전반의 변화로 넓히지 않는다.
+3. 사람이 쓴 증명안은 다듬은 뒤 발표하려던 순서를 바꿔 현재 원고를 먼저 공개했다(원고 서문은 1년 다듬기 계획을 이어 간다고 적는다). 공지는 급하다고만 적고 원고 서문은 지금의 분위기를 이유로 든다. 같은 날의 경쟁 발표와 연결한 것은 독자들의 해석이다. 발표 순서와 결과의 정확성은 따로 판단한다.
+
 ## 출처
 
 - [Mathematics has changed. Let’s act like it — Frank Calegari, Terence Tao 블로그 기고](https://terrytao.wordpress.com/2026/11/01/mathematics-has-changed-lets-act-like-it/) — 2026-11-01, 2026-11-02 본문과 기고 귀속 확인, 연구 평가에 관한 의견
@@ -68,6 +83,18 @@ Mathematics has changed. Let’s act like it는 2026-11-01 Frank Calegari가 Ter
 - [수학에 뛰어들기에 지금보다 좋은 때는 없었다, 3Blue1Brown — GeekNews](https://news.hada.io/topic?id=35607)
 - [Why I'm no longer updating this repository — Paul Battley](https://po-ru.com/2026/10/18/why-im-no-longer-updating-this-repository) — 2026-10-18, 2026-10-27 확인. 저장소 수는 글에 없다
 - [Ruby gem 개발을 그만두는 이유 - AI가 바꾼 생태계 — GeekNews](https://news.hada.io/topic?id=35649)
+- [remark.pdf — Levent Alpöge](https://alpo.ge/remark.pdf) — 2026-11-20 공개 4쪽 발표문, 2026-11-21 전문 확인. 주장 범위, Lean만 공개한 이유, 25만 쪽 문서 비공개, 저자의 숙달 한계와 시점 해명 확인. Lean 압축 파일은 받지 않음
+- [RH Lean proof: verification files — MIT, Andrew Sutherland](https://math.mit.edu/~drew/grh/) — 2026-11-21 09:30 UTC 갱신판 대조, 같은 날 12:32 UTC에 10:05 UTC 갱신판을 다시 확인. 진행 중인 검사가 있어 이후 결과가 바뀔 수 있다
+- [riemann-hypothesis — GitHub, leanprover-community](https://github.com/leanprover-community/riemann-hypothesis) — 2026-11-21 독립 Comparator 설정, 검증 노트의 한계와 결과 절(빌드 진행 중) 확인
+- [Unforced Euler singularity, unforced Navier-Stokes singularity, and the Generalized Riemann Hypothesis — What's new, Terence Tao](https://terrytao.wordpress.com/2026/11/20/unforced-euler-singularity-unforced-navier-stokes-singularity-and-the-generalized-riemann-hypothesis/) — 2026-11-20, 세 결과의 소화 정도와 Lean 토론방 운영 갱신 확인. 2026-11-21 다시 확인했을 때 본문 갱신은 그 하나뿐이었고 이후 관련 새 글은 없었다
+- [Finite-Time Singularity Formation for the Three-Dimensional Euler Equations — GitHub, Alpöge, Buckmaster, Coiculescu](https://github.com/mcoiculescu/EulerBlowupPublic) — 2026-11-21 README의 형식화 대응, 공리와 예외 확인. 원고와 빌드는 확인하지 않음
+- [Finite-time blow-up for the Navier–Stokes equations — GitHub, Alpöge, Buckmaster](https://github.com/tristanbuckmaster/navier-stokes) — 2026-11-21 README의 형식화 범위, 형식화 밖 계산과 재빌드 상태, 인증서 미공개와 CI 없음 확인. 논문은 읽지 않음
+- [Hurried Announcement: Alessandro Masullo GRH — Math 216, Ravi Vakil](https://math216.wordpress.com/2026/11/20/hurried-announcement-alessandro-masullo-grh/) — 2026-11-20 공지와 약 8시간 뒤 갱신 확인. 2026-11-21에도 갱신은 그 하나였다
+- [The Music of the Primes — Alessandro Maria Masullo](https://math216.wordpress.com/wp-content/uploads/2026/11/the-music-of-the-primes.pdf) — 2026-11-20 원고, 2026-11-21 쪽수, 서문과 목차 확인. 수학 내용은 검증하지 않음
+- [Anthropic mathematician claims to prove Riemann hypothesis, most famous problem in all of math — Scientific American, Joseph Howlett](https://www.scientificamerican.com/article/anthropic-mathematician-claims-to-prove-riemann-hypothesis-most-famous-problem-in-all-of-math/) — 2026-11-20 보도, 회사 성명이 없다는 점과 상장 다음 날이라는 시점. 회사 공식 발표 부재는 2026-11-21 Anthropic 뉴스와 연구 목록으로도 확인
+- [Anthropic 수학자, Claude와 리만 가설 및 일반화 리만 가설을 증명했다고 발표 — GeekNews](https://news.hada.io/topic?id=37529)
+- [긴급 공지: Alessandro Masullo, 일반화 리만 가설(GRH) 증명안 공개 — GeekNews](https://news.hada.io/topic?id=37541)
+- [외력이 없는 Euler와 Navier-Stokes 방정식의 특이점과 일반화 리만 가설 — GeekNews](https://news.hada.io/topic?id=37546)
 
 ## 관련 문서
 
@@ -76,3 +103,5 @@ Mathematics has changed. Let’s act like it는 2026-11-01 Frank Calegari가 Ter
 - [[Expertise-Formation-AI|AI 시대 전문성 형성]]
 - [[AI-Tools-Automation-and-Learning|AI 도구, 자동화와 학습]]
 - [[Tech-Trend-Learning-Strategy|기술 변화와 학습 전략]] — 자동화를 가정한 일과 가치, 재원의 분해
+- [[AI-Assisted-Mathematical-Research|AI 보조 수학 연구]] — Lean 검사의 범위와 형식 명제 대조
+- [[AI-Research-Innovation-Evaluation#사례: 이론물리 미해결 문제 두 건과 공개 범위|이론물리 미해결 문제 사례]] — 같은 주의 AI 과학 결과와 선택 효과

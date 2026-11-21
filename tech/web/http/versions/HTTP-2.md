@@ -36,6 +36,11 @@ RFC 9113은 필드 값의 NUL, CR, LF 등을 금지하고, 잘못된 요청이�
 ### 멀티플렉싱 (다중화)
 **하나의 TCP 연결로 여러 요청과 응답을 동시에** 주고받는다. 각 요청-응답이 독립된 stream으로 interleave되어 HTTP/1.1의 response-order HOL과 여러 연결에 의존하던 병목을 줄인다. 동시 stream 수는 peer의 `SETTINGS_MAX_CONCURRENT_STREAMS`와 구현 정책의 제한을 받는다.
 
+### 흐름 제어
+한 연결의 여러 stream이 수신 측 버퍼를 나눠 쓰므로, 수신자는 stream별 창과 연결 전체 창으로 받을 수 있는 바이트 수를 알린다. 송신자는 두 창의 여유를 넘지 않게 보내고, 보낸 만큼 두 창이 줄며 수신자의 `WINDOW_UPDATE`로 다시 늘어난다. 흐름 제어 대상은 DATA 프레임뿐이고 연결 단위(한 hop)로 동작한다. 초기 창은 stream과 연결 모두 65,535바이트이고, `SETTINGS_INITIAL_WINDOW_SIZE` 변경은 열린 stream의 창까지 그 차이만큼 바꿔 음수로 만들 수도 있다(RFC 9113 5.2, 6.9).
+
+창은 2^31-1바이트를 넘으면 안 된다. 이를 넘게 하는 `WINDOW_UPDATE`를 받으면 stream은 `RST_STREAM`, 연결은 `GOAWAY`에 `FLOW_CONTROL_ERROR`를 담아 끊고, 어느 창이든 상한을 넘게 하는 `SETTINGS_INITIAL_WINDOW_SIZE` 변경은 연결 오류로 다룬다(RFC 9113 6.9.1, 6.9.2). 창 값은 상대가 보낸 프레임으로 바뀌는 신뢰할 수 없는 입력이므로, 구현은 프레임을 받을 때뿐 아니라 내부에서 창을 되돌리는 경로에서도 상한을 지켜야 한다(해석). nginx의 CVE-2026-123007은 취소한 응답 데이터의 몫을 상한 검사 없이 연결 창에 되돌리고, 연결을 끝내야 할 SETTINGS 변경에서 해당 stream만 재설정해 연결을 남겼다. 이어 `WINDOW_UPDATE` 검사의 부호 없는 산술이 언더플로해 창이 상한을 크게 넘었고, 그 값이 음수 길이로 쓰여 TLS 출력 경로의 메모리 복사가 버퍼 밖에 닿았다(Rapid7). 대응은 [[Vulnerability-Operations-AI-Agents#사례: nginx HTTP/2와 nginx2root|nginx 사례]]에 있다.
+
 ### 헤더 압축 (HPACK)
 헤더를 **HPACK**으로 압축하고, 이전에 보낸 헤더는 인덱스로 참조해 반복 전송을 줄인다.
 
@@ -73,6 +78,7 @@ HTTP/2의 멀티플렉싱은 HTTP 계층에선 병렬이지만 단일 TCP 연결
 - HTTP/2가 HTTP/1.1 대비 바꾼 것(전송, 프레이밍)과 유지한 것(의미)
 - 멀티플렉싱이 출처당 연결 수 제약과 HTTP/1.1 response-order HOL을 줄이지만 TCP-level HOL은 남기는 이유
 - HPACK이 무엇을 압축하는가
+- 흐름 제어 창이 2^31-1바이트를 넘게 되는 입력을 프로토콜은 어떻게 다루게 하며, 구현이 이 상한을 놓치면 무엇이 되는가
 - HTTP/2에서 번들링과 스프라이트가 왜 안티패턴이 되는가
 - HTTP/2의 HOL 블로킹이 TCP 계층에 남는 이유와 HTTP/3(QUIC)의 해법
 - LB, CDN이 HTTP/2를 종단하고 백엔드와 HTTP/1.1로 통신하는 구조
@@ -81,11 +87,14 @@ HTTP/2의 멀티플렉싱은 HTTP 계층에선 병렬이지만 단일 TCP 연결
 
 2026-10-07 부분 대조: 프레임 길이와 요청 스머글링 절은 RFC 9113의 4.1, 8.1.1, 8.2.1절을 확인했다. 브라우저 지원 현황과 AWS 설정은 이번 대조 범위에 포함하지 않아 기존 `verified_at`을 유지한다.
 
+2026-11-21 부분 대조: 흐름 제어 절은 RFC 9113의 5.2, 6.9.1, 6.9.2절과 Rapid7 분석을 확인했다. 다른 절은 다시 대조하지 않아 기존 `verified_at`을 유지한다.
+
 - [RFC 9112 — HTTP/1.1 (RFC Editor)](https://www.rfc-editor.org/rfc/rfc9112)
 - [RFC 9113 — HTTP/2 (RFC Editor)](https://www.rfc-editor.org/rfc/rfc9113)
 - [RFC 9218 — Extensible Prioritization Scheme for HTTP (RFC Editor)](https://www.rfc-editor.org/rfc/rfc9218)
 - [RFC 7541 — HPACK (RFC Editor)](https://www.rfc-editor.org/rfc/rfc7541)
 - AWS 환경에서 HTTP/2 적용하기 (HTTP/2 프로토콜, CloudFront, ALB) — 개인 블로그
+- [CVE-2026-123007: Critical NGINX HTTP/2 Integer Underflow Leads to RCE (FIXED) — Rapid7](https://www.rapid7.com/blog/post/ve-cve-2026-123007-critical-nginx-http-2-integer-underflow-leads-to-rce-fixed/) — 2026-11-18 게시, 흐름 제어 계산 결함의 연쇄. 공격 재현 정보는 옮기지 않았다
 
 ## 관련 문서
 - [[HTTP-3|HTTP/3, QUIC]] — QUIC stream으로 TCP 연결 단위 HOL을 stream별로 격리
@@ -97,3 +106,4 @@ HTTP/2의 멀티플렉싱은 HTTP 계층에선 병렬이지만 단일 TCP 연결
 - [[TCP-Handshake|TCP 핸드셰이크]] — HTTP/2가 올라타는 TCP
 - [[Latency-Optimization|지연 최적화]]
 - [[WebSocket|WebSocket]] — ALB가 함께 지원하는 실시간 프로토콜
+- [[Vulnerability-Operations-AI-Agents#사례: nginx HTTP/2와 nginx2root|nginx HTTP/2 취약점 대응]] — 흐름 제어 결함의 노출 조건, HTTP/2 끄기와 적용 확인

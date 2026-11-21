@@ -1,14 +1,14 @@
 ---
 tags: [database, rdbms, postgresql, sql, upsert, cte, window-function]
 status: done
-verified_at: 2026-08-04
+verified_at: 2026-11-21
 category: "Data & Storage - RDB"
-aliases: ["PostgreSQL SQL 패턴", "PostgreSQL Advanced SQL"]
+aliases: ["PostgreSQL SQL 패턴", "PostgreSQL Advanced SQL", "ON CONFLICT DO SELECT", "get-or-create"]
 ---
 
 # PostgreSQL SQL 패턴
 
-PostgreSQL 18 기준으로 DML 결과 반환, 원자적 UPSERT, CTE 최적화, 윈도 함수와 시간대 처리를 정리한다. 문법을 외우기보다 동시성 경계와 실행 계획에 어떤 영향을 주는지 이해하는 것이 중요하다.
+PostgreSQL 18 기준으로 DML 결과 반환, 원자적 UPSERT, CTE 최적화, 윈도 함수와 시간대 처리를 정리하고, 19에서 추가된 기능은 따로 표시한다. 문법을 외우기보다 동시성 경계와 실행 계획에 어떤 영향을 주는지 이해하는 것이 중요하다.
 
 ## `RETURNING`으로 변경 결과 받기
 
@@ -39,6 +39,20 @@ RETURNING account_id, balance, updated_at;
 - `DO UPDATE`에서 기존 행은 대상 테이블 이름으로, 삽입하려던 값은 `EXCLUDED`로 참조한다.
 - 충돌 대상은 실제 유일성 규칙과 일치해야 한다. 단순한 중복 회피가 아니라 어떤 키를 멱등성 경계로 삼을지 먼저 설계한다.
 - 덮어쓰기, 누적, 최신 버전만 수용 중 어떤 갱신 의미가 필요한지 명시한다. UPSERT 자체가 잘못된 도메인 갱신 규칙을 해결하지는 않는다.
+
+### get-or-create: `ON CONFLICT DO SELECT` (PostgreSQL 19)
+
+없으면 만들고 있으면 기존 행을 돌려받는 get-or-create는 18까지 한 문장으로 끝나지 않았다. `DO NOTHING`은 충돌한 행을 `RETURNING`으로 돌려주지 않아 다시 `SELECT`해야 하고, 그 사이 다른 트랜잭션이 행을 바꾸거나 지울 수 있다. 값을 바꾸지 않는 `DO UPDATE`로 행을 받아 내는 우회는 데이터가 같아도 물리적 UPDATE를 수행해 새 행 버전과 나중에 VACUUM이 치울 dead row를 남긴다. PostgreSQL 19(2026-11-19 출시)의 `DO SELECT`는 insert와 select 중 하나로 끝나는 원자적 결과를 주며, 공식 발표는 이를 네트워크 왕복 한 번을 줄이는 get-or-create로 소개한다.
+
+```sql
+INSERT INTO distributors (did, dname) VALUES (13, 'Advanced Systems')
+ON CONFLICT (did) DO SELECT FOR UPDATE   -- 기존 행을 반환하며 잠금
+RETURNING *;
+```
+
+- `DO SELECT`에는 `RETURNING`과 충돌 대상(`conflict_target`)이 반드시 있어야 한다. `WHERE`로 조건에 맞는 기존 행만 돌려받을 수 있고, 조건에 맞지 않은 행은 반환되지 않는다.
+- `FOR UPDATE`, `FOR NO KEY UPDATE`, `FOR SHARE`, `FOR KEY SHARE`로 돌려받는 기존 행을 잠글 수 있다. 권한은 테이블 `SELECT`가 필요하고, 잠금을 쓰면 최소 한 컬럼의 `UPDATE` 권한도 필요하다.
+- 반환된 행이 새로 넣은 것인지 기존 것인지 구분해야 하면 `RETURNING`의 `OLD`, `NEW` 값을 쓴다. insert 경로에서는 OLD 값이 NULL이고, select 경로에서는 OLD와 NEW가 같다.
 
 ## CTE는 가독성 도구이자 계획 경계
 
@@ -121,6 +135,9 @@ text와 길이 제한 없는 varchar는 가변 문자열에 적합하며 varchar
 ## 출처
 
 - [PostgreSQL 18 Documentation, INSERT](https://www.postgresql.org/docs/18/sql-insert.html)
+- [PostgreSQL 19 Documentation, INSERT](https://www.postgresql.org/docs/19/sql-insert.html) — 2026-11-21 `ON CONFLICT DO SELECT` 대조
+- [PostgreSQL 19 Released! — PostgreSQL](https://www.postgresql.org/about/news/postgresql-19-released-3449/)
+- [PostgreSQL 19 Documentation, Trigger Functions](https://www.postgresql.org/docs/19/functions-trigger.html) — 값이 같아도 UPDATE가 물리적 갱신을 하는 기본 동작
 - [PostgreSQL 18 Documentation, Returning Data from Modified Rows](https://www.postgresql.org/docs/18/dml-returning.html)
 - [PostgreSQL 18 Documentation, WITH Queries](https://www.postgresql.org/docs/18/queries-with.html)
 - [PostgreSQL 18 Documentation, Window Functions](https://www.postgresql.org/docs/18/functions-window.html)

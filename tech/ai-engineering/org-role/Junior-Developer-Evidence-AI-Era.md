@@ -7,7 +7,7 @@ aliases: ["Junior Developer Evidence in the AI Era", "AI 시대 신입 개발자
 
 # AI 시대 신입 개발자의 경험 증거 — 책임 범위, 사용자 검증, 판단 기록
 
-AI가 코드를 빠르게 쓰는 환경에서는 구현 속도로 사람을 구분하기 어렵다. 신입이 보여 줄 것은 어떤 기능을 만들 수 있는가에서, 누구의 문제를 이해했고 어떤 판단을 했으며 결과를 어디까지 책임졌는가로 넓어진다. 이 문서는 그 증거를 프로젝트 안에서 만드는 방법을 다룬다. 견습 사다리가 받는 구조적 압박은 [[Developer-Role-AI-Era|AI 시대 개발자 역할]], 위임과 이해의 축적은 [[Expertise-Formation-AI|AI 시대 전문성 형성]]이 다룬다.
+AI가 코드를 빠르게 쓰는 환경에서는 구현 속도로 사람을 구분하기 어렵다. 신입이 보여 줄 것은 어떤 기능을 만들 수 있는가에서, 누구의 문제를 이해했고 어떤 판단을 했으며 결과를 어디까지 책임졌는가로 넓어진다. 이 문서는 그 증거를 프로젝트 안에서 만드는 방법을 다룬다. 견습 사다리가 받는 구조적 압박은 [[Developer-Role-AI-Era-Employment|AI 시대 개발자 고용과 견습 사다리]], 위임과 이해의 축적은 [[Expertise-Formation-AI|AI 시대 전문성 형성]]이 다룬다.
 
 ## 근거의 성격
 
@@ -92,7 +92,7 @@ AI가 예전에 신입이 맡던 작업의 일부를 하게 되면, 작은 일�
 
 ## 관련 문서
 
-- [[Developer-Role-AI-Era|AI 시대 개발자 역할]] — 견습 사다리에 생기는 압박
+- [[Developer-Role-AI-Era-Employment|AI 시대 개발자 고용과 견습 사다리]] — 견습 사다리에 생기는 압박
 - [[Expertise-Formation-AI|AI 시대 전문성 형성]] — 직접 구현 구간과 튜터형 활용
 - [[AI-Job-Market-Shifts|AI 시대 직무 변화 읽기]] — 진입자가 쌓을 증거
 - [[AI-Assisted-Hiring-Assessments|AI 활용 과제 전형]] — AI 활용 역량을 묻는 전형

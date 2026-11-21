@@ -44,7 +44,8 @@ aliases: ["OS&런타임(OS&Runtime)", "OS & Runtime"]
 - [x] [[Linux-System-Boot-Composition|Linux 시스템 구성과 부팅 경로 (커널과 PID 1, 로더와 C 라이브러리, initramfs와 부트 로더, 배포판 커널, VM과 컨테이너와 WSL 2)]]
 - [x] [[Container-Memory-Metrics|Page cache와 컨테이너 메모리 지표 (RSS, file cache, working set, reclaim, cgroup 진단)]]
 - [x] [[File-Descriptor-Limit|File descriptor limit]] — 기존 보강: [[Storage-and-FileSystem-Files#파일 메타데이터와 파일 디스크립터|파일 디스크립터 구조]], [[libuv-Threading#완료 시점과 오류 분류|libuv 오류 분류]]
-- [x] [[Epoll-Kqueue|epoll / kqueue]] — 기존 보강: [[libuv-Architecture#OS 알림과 실행 모델|libuv의 OS별 이벤트 제공자]]
+- [x] [[Epoll-Kqueue|epoll / kqueue]] — 기존 보강: [[libuv-Architecture#OS 알림과 실행 모델|libuv의 OS별 이벤트 제공자]], 언어 런타임의 polling API(PHP 8.6 `Io\Poll`)
+- [x] [[Kernel-Bypass-Networking|커널 우회 네트워킹]] — 연결당 커널 메모리와 프로세스 비용, TUN/TAP, AF_XDP, DPDK의 장치 소유권, 사용자 공간 TCP/IP 스택의 빠진 기능과 관측 공백
 - [x] [[Linux-Netfilter-and-iptables|netfilter와 iptables (hook, table, chain, conntrack, 규칙 운영, 컨테이너 경로)]] — 기존 보강: [[Docker-Bridge-Networking#netfilter, iptables와 nftables|Docker의 firewall backend]]
 - [x] [[Linux-Kernel-CVE-Patching|리눅스 커널 보안 업데이트]] — Ubuntu CVE 상태 값과 priority, 커널 패키지 종류별 수정 시점, 지원 기간, 완화와 Livepatch의 한계, 적용 확인 순서
 

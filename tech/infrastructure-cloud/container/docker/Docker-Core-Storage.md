@@ -43,7 +43,7 @@ docker volume rm app-data          # 지운 volume의 data는 복구할 수 없�
 - `-v`에 없는 volume 이름을 주면 빈 volume을 자동으로 만든다. 이름 오타가 새 빈 volume을 붙여 data가 없어진 것처럼 보일 수 있으므로 운영에서는 `docker volume ls`로 이름을 대조한다.
 - 여러 container가 같은 volume을 공유할 수 있지만 동시 쓰기를 조정해 주지는 않는다. 쓰기 조정은 application 책임이고 DB data directory는 한 server process만 쓰게 둔다.
 - `docker volume prune`은 API 1.42 이상에서 기본적으로 어떤 container도 쓰지 않는 anonymous volume만 지우고, named volume까지 지우려면 `-a`가 필요하다. 멈춰 둔 DB container를 지운 뒤 `-a`를 습관처럼 붙이면 그 named volume도 사라진다. `docker system prune --volumes`도 anonymous volume만 대상이다. `compose down -v`와 함께 삭제 위험 명령으로 묶어 관리한다.
-- Docker Desktop의 `Mountpoint`는 내부 Linux VM 경로라 host에서 열 수 없다. data는 그 volume을 mount한 container로 확인한다([[Docker-Core#Docker Desktop의 Linux VM 경계|Desktop VM 경계]]).
+- Docker Desktop의 `Mountpoint`는 내부 Linux VM 경로라 host에서 열 수 없다. data는 그 volume을 mount한 container로 확인한다([[Docker-Core-Desktop#Docker Desktop의 Linux VM 경계|Desktop VM 경계]]).
 
 ## Bind mount 문법과 함정
 

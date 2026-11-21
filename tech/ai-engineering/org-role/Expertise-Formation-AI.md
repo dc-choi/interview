@@ -87,9 +87,11 @@ MIT Media Lab의 2025년 연구(Your Brain on ChatGPT)는 참가자 54명을 LLM
 
 SigNoz의 SRE 탈숙련 에세이는 2026-02-28 게시물이다. 10월에 다시 공유됐으며 최신 현장 효과를 측정한 연구로 보지 않는다. 기존 자동화의 역설을 AI 장애 대응에 연결해, 경력자의 연습 상실과 주니어가 기초를 처음 익히지 못할 위험을 구분한다. 운영 제안은 안전한 모의 장애에서 가설 수립, 로그 해석과 복구 이유를 사람이 먼저 설명하게 하는 것이다. 에세이에 인용된 의료, 항공 수치를 SRE의 효과 크기로 옮기지 않는다.
 
+복잡하고 취약한 시스템은 그 시스템을 깊이 알고 끝까지 책임지려는 사람들이 떠받친다는 관찰도 같은 축이다(2026-11-17 개인 에세이). 미국의 계좌 간 자동이체망 ACH처럼 오래되고 결함과 유산이 많은 시스템이 대체로 안전하고 싸게 작동하는 것은 결함을 고치고 우회하며 예외를 수작업으로 처리하는 사람들이 그 간극을 메우기 때문이라는 것이다. 이 시각에서 위험은 두 가지다. 실제 일을 하지 않는 경영진에게는 사람이 버티게 하는 시스템과 생성형 AI의 결과물이 똑같은 산출로 보여 사람을 기계로 바꾸기 쉽고, 직접 하던 일 대신 LLM을 감독하게 된 사람은 프롬프트를 쓸 때마다 시스템에서 멀어져 이해와 주인의식을 함께 잃는다. 같은 글은 한 주 사이의 Microsoft 365, 미국 항공 관제, 은행과 Apple 등의 장애를 이런 인력의 감소와 연결하지만 내부 정보 없이 경험에서 세운 추론이고 원인으로 확인되지 않았다. 장애 원인의 증거로 쓰지 않고, 시스템을 아는 사람의 예외 처리와 연습을 산출량 비교에서 빠뜨리지 말라는 경고로 읽는다(해석).
+
 ## 전문성 공급망 문제
 
-개인의 습관을 넘어 세대 차원의 위험으로 볼 수도 있다 — [[Developer-Role-AI-Era|AI 시대 개발자 역할]]의 견습 사다리 붕괴 우려와 같은 축이고, 그 순환 구조(검토가 주니어의 일이 되는데 검토 능력을 기를 직접 경험은 줄어드는 위험)는 그 문서가 다룬다. 이는 이미 공급망이 무너졌다는 실증 결론이 아니다. AI 사용에서 산출과 함께 학습 기회를 설계하느냐가 향후 경로를 바꿀 조건 중 하나다.
+개인의 습관을 넘어 세대 차원의 위험으로 볼 수도 있다 — [[Developer-Role-AI-Era-Employment|AI 시대 개발자 고용]]의 견습 사다리 붕괴 우려와 같은 축이고, 그 순환 구조(검토가 주니어의 일이 되는데 검토 능력을 기를 직접 경험은 줄어드는 위험)는 그 문서가 다룬다. 이는 이미 공급망이 무너졌다는 실증 결론이 아니다. AI 사용에서 산출과 함께 학습 기회를 설계하느냐가 향후 경로를 바꿀 조건 중 하나다.
 
 현업에서도 같은 걱정이 나온다. 예전에는 회사에서 몇 년 프로젝트를 하면 자연스럽게 체득되던 것이 AI로 쉬워지면서 오히려 직접 겪기 어려워졌고, 회사가 주니어보다 설계와 의사결정 경험이 있는 시니어를 찾는 것도 궂은일을 직접 겪은 사람과 아닌 사람의 차이를 알기 때문이라는 해석이다. 반대로 모두가 쉽게 만들어 품질이 떨어지는 결과물이 넘칠수록, 귀찮아도 사람이 끝까지 다듬는 쪽의 경쟁력이 오른다는 의견도 함께 나왔다(2026-11 현업 대담, 해석이며 측정 결과는 아님).
 
@@ -125,6 +127,8 @@ AI가 증명을 생성하는 능력과 수학을 이해하고 설명하는 사�
 - [AI로 PM도 개발하는 시대, 개발자의 경쟁력은 어디에 있을까? | EP.06 — 커밋하고퇴근](https://www.youtube.com/watch?v=RLcM0O-6tug) — 2026-11-17 공개 팟캐스트, 2026-11-21 사람이 단 자막 전체 확인. 현업 개발자 두 명의 경험담과 의견. 체득 기회의 감소와 시니어 선호에 대한 해석
 - [Here Be Monsters: What Do You Still Need to Know When Agents Do the Work? — Adrian Quiroga](https://blog.adrq.dev/here-be-monsters-what-do-you-still-need-to-know-when-agents-do-the-work) — 2026-11-02 원문 확인, 역량에 관한 실무자 견해
 - [AI Isn’t Replacing SREs. It’s Deskilling Them. — SigNoz, Elizabeth](https://newsletter.signoz.io/p/ai-isnt-replacing-sres-its-deskilling) — 2026-02-28 게시, 2026-11-02 자동화의 역설에 대한 유추와 제안 확인
+- [We Need Smart People Who Give a Shit — VioletPixel, Justin Michael](https://violetpixel.com/blog/2026-11-17-we-need-smart-people-who-give-a-shit/) — 2026-11-17 개인 에세이, 2026-11-21 원문 확인. ACH 사례, 경영진의 산출 비교와 감독 역할의 위험은 저자의 경험과 해석이고 장애와 인력 감소의 연결은 내부 정보 없는 추론. 인용된 장애 보도는 열지 않음
+- 사용자 제공 GeekNews 알림(2026-11-20): 우리에겐 진심으로 신경 쓰는 똑똑한 사람들이 필요하다. 학습 계기이며 게시물 번호는 확인하지 못했다
 
 - [The Impact of Generative AI on Critical Thinking: Self-Reported Reductions in Cognitive Effort and Confidence Effects From a Survey of Knowledge Workers — Microsoft Research, Lee et al.](https://www.microsoft.com/en-us/research/publication/the-impact-of-generative-ai-on-critical-thinking-self-reported-reductions-in-cognitive-effort-and-confidence-effects-from-a-survey-of-knowledge-workers/) — CHI 2025, 2026-10-22 초록의 표본, 연관성과 질적 분석 대조. 장기 능력 변화나 인과 효과의 근거로 사용하지 않음.
 - [What should we tell our students? — Álvaro Lozano-Robledo, Terence Tao 블로그 기고](https://terrytao.wordpress.com/2026/10/08/what-should-we-tell-our-students/) — 2026-10-08, 진로 의견과 볼록껍질 가설, 고용 예측 미검증

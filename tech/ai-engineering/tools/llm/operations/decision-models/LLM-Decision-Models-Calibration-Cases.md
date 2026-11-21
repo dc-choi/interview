@@ -2,7 +2,7 @@
 tags: [ai, decision-model, calibration, robustness]
 status: done
 category: "AI엔지니어링(AIEngineering)"
-aliases: ["Decision Model Calibration Cases", "Microsoft-Decision-1", "Qwen 의사결정 모델", "Jev 1.14", "Verbalized Confidence", "LLM 자기 보고 신뢰도", "Calibration and Sharpness"]
+aliases: ["Decision Model Calibration Cases", "Microsoft-Decision-1", "Microsoft-Decision-1.1", "Qwen 의사결정 모델", "Jev 1.14", "Verbalized Confidence", "LLM 자기 보고 신뢰도", "Calibration and Sharpness"]
 ---
 
 # 결정 모델의 보정, 표현 안정성과 버전 변경
@@ -24,6 +24,8 @@ aliases: ["Decision Model Calibration Cases", "Microsoft-Decision-1", "Qwen 의�
 Microsoft는 학습에서 가린 36개 평가에서 비교 모델 중 가장 높은 정확도와 낮은 지연을 보고한다. 제공 GeekNews 발췌의 세부 수치는 147,137문항, 평균 83.5%다. 이번에 추출한 공식 본문은 약 15만 문항이라는 범위를 확인해 주지만 세부 표 수치는 직접 대조하지 못했다. 83.5%를 독립 검증한 수치로 사용하지 않는다.
 
 도입 시에는 같은 질문의 순서, 키와 선택지 설명을 바꾸는 안정성 시험, 신뢰도 구간별 정확도, 검토로 넘길 비율과 오류 비용을 함께 측정한다. 벤더의 평균 순위가 특정 업무의 최선 모델을 정하지 않는다.
+
+후속 Decision 1.1(2026-11-17 Microsoft AI 발표)은 앱 안의 라우팅으로 크고 비싼 모델을 필요할 때만 부르게 한다고 소개되며, Microsoft는 고객 4,000곳이 쓰고 Artificial Analysis Decision Index에서 Jev, Google, OpenAI를 앞서면서 더 빠르고 싸며 GPT-6.1 Sol보다 50배 빠르고 79배 싸다고 적는다. 2026-11-21 Artificial Analysis 페이지에서 Microsoft-Decision-1.1은 68점(결정 모델 중앙값 66), 과업당 123ms(중앙값 199ms), 100만 과업당 $140(중앙값 $137)이라 지연은 짧지만 과업당 비용은 중앙값 수준이다. 생성형 LLM인 GPT-6.1 Sol과의 배율은 어떤 과제와 측정 조건의 비교인지 발표에 없으므로, 출력 토큰을 내지 않는 결정 모델과 생성 모델의 구조적 차이 이상으로 읽지 않는다(이 문서의 판단).
 
 ## Jev 1.14와 실험 기능을 구분한다
 
@@ -112,6 +114,8 @@ GPT-6 Luna는 쉬운 시험 단독 정확도가 97.3%로 Jev보다 높았지만 
 
 - [Build your own decision model — Nish Tahir](https://nishtahir.com/build-your-own-decision-model/)
 - [Introducing Microsoft-Decision-1, our model for fast decision-making — Microsoft](https://commandline.microsoft.com/microsoft-decision-1-model-foundry/)
+- [Seven new world-class models at scalable price-performance — Microsoft AI](https://microsoft.ai/news/microsoft-ignite-2026/) — 2026-11-17. 2026-11-21 Decision 1.1의 역할, 고객 수와 비교 문구 대조
+- [Microsoft-Decision-1.1: Release, Decision Index Score, Performance & Price — Artificial Analysis](https://artificialanalysis.ai/decision-models/microsoft-decision-1-1) — 2026-11-21 열람, Decision Index 점수, 과업당 지연과 100만 과업당 비용, 각각의 중앙값
 - [Jev: For the builders AND dreamers — TypeSafe AI](https://typesafe.ai/blog/jev-1-14)
 - [TypeSafe Docs, Models](https://docs.typesafe.ai/models)
 - [TypeSafe Docs, Images](https://docs.typesafe.ai/images) — 2026-10-24 입력 크기, 이미지 참조 반복, 방향 정보와 토큰 과금 대조

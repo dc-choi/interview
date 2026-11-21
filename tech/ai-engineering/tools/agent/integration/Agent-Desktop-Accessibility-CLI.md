@@ -45,6 +45,14 @@ ref는 그 snapshot 안에서만 유효하다. snapshot id가 없는 `@e8`은 `I
 - 설치: `npm install -g agent-desktop`(Bun, Yarn, pnpm 가능) 또는 macOS와 Linux의 `brew install agent-desktop`. 에이전트용 스킬은 `npx skills add https://github.com/vercel-labs/agent-desktop --skill agent-desktop`으로 더하고, 바이너리가 `agent-desktop skills get desktop`으로 사용 안내를 출력하기도 한다.
 - macOS: `agent-desktop permissions --guide`가 손쉬운 사용(Accessibility) 권한 부여를 안내하고, `agent-desktop status`가 권한과 지원 범위를 보여 준다. 스크린샷 기능에 화면 기록 권한이 필요한지는 확인하지 못했다.
 
+## 스크린샷에 접근성 트리 텍스트를 함께 보내는 캡처
+
+접근성 트리는 에이전트가 동작할 때만이 아니라 사용자가 지금 보는 화면을 넘길 때도 쓰인다. 2026-11-17 공개 발표에서 소개된 ChatGPT 데스크톱 앱(macOS, Windows)의 Appshots는 Mac에서는 양쪽 Command 키를, Windows에서는 양쪽 Alt 키를 함께 눌러 찍고, 2026-11-21 공식 Appshots 문서도 같은 단축키(설정에서 바꿀 수 있음)를 적는다. 찍는 범위는 화면 전체가 아니라 맨 앞의 앱 창 하나다. macOS에서는 처음에 화면 기록(Screen & System Audio Recording)과 손쉬운 사용(Accessibility) 권한을 요청할 수 있고, 손쉬운 사용 권한으로 창의 텍스트를 읽는다. 문서는 보이는 텍스트와 함께 앱이 보이는 스크롤 영역 밖으로도 내주는 텍스트를 포함한다고 적으므로, 스크롤 밖에 있어 이미지에 보이지 않는 변수, 숫자와 대화의 윗부분도 전달될 수 있다. 문서는 접근성 트리라는 말을 쓰지 않지만 권한 설명상 같은 경로로 읽힌다(이 문서의 해석). 시연은 첨부된 항목에서 텍스트 보기로 이 추가 정보를 보여 줬다. 이 절만 대조했으므로 문서의 `verified_at`은 그대로 둔다.
+
+- 읽기 전용 한 장이다. 위 snapshot과 ref 루프처럼 동작을 실행하거나 결과를 확인하지 않고, 찍은 뒤의 화면 변화도 따라가지 않는다. 기본값에서는 새 대화를 열거나 60초 안에 쓴 대화에 붙고, CLI는 새 appshot을 만들지 못한다.
+- 이미지만 보낸다고 생각하고 눌렀는데 화면에 없던 텍스트까지 모델에 전달될 수 있다(이 문서의 해석). 문서는 찍은 이미지와 텍스트가 ChatGPT와 공유된다며 민감한 내용은 찍지 말라고만 적고, 시연도 전송 전에 그 텍스트를 볼 수 있는지 보여 주지 않았다. 다른 사람의 대화나 비밀 값이 열려 있는 창에서는 쓰지 않는다.
+- 텍스트의 품질은 앱이 내주는 텍스트에 달려 있다. 문서는 Google Docs, Gmail, Google Sheets와 Slides에서는 보이는 스크린샷만 받고 문서 전체나 화면 밖 텍스트는 받지 못할 수 있다고 적으므로, 아래 선택 조건 표의 표준 위젯 조건이 여기에도 적용된다.
+
 ## 보안과 운영 체크포인트
 
 - snapshot, 클립보드 읽기, 스크린샷, 명령 출력과 디버그 산출물에는 데스크톱의 개인 정보가 담길 수 있어 공개 로그와 업로드에 넣지 않는다. 에이전트가 이 출력을 모델 공급자에게 보낸다는 점을 전제로 조작할 앱을 정한다(이 문서의 해석).
@@ -73,6 +81,8 @@ ref는 그 snapshot 안에서만 유효하다. snapshot id가 없는 `@e8`은 `I
 - [클로드에 붙여 쓰는 미친 도구 agent-desktop — 잔재미코딩](https://www.youtube.com/watch?v=luEhiMTWlW8) — 2026-11-01 공개 쇼츠, 작성 계기이며 동작 설명은 위 저장소 문서로 대조
 - [agent-browser README — Vercel Labs](https://github.com/vercel-labs/agent-browser) — 2026-11-16 브라우저 페이지의 접근성 트리 텍스트, ref 동작과 재확인 루프 대조
 - [Vercel agent-desktop - AI 에이전트가 데스크톱 앱을 조작하는 CLI — GeekNews](https://news.hada.io/topic?id=36967) — agent-browser와의 역할 구분, 사용 후기 댓글
+- [New Ways of Working with Codex — AI Engineer, Dominik Kundel, Charlie Guo](https://www.youtube.com/watch?v=IPh9YsWvDQk) — 2026-11-17 공개 영상의 13:05~14:13을 사람이 단 영어 자막과 대조. Appshots 절의 근거이며 기능 설명은 아래 공식 문서로 대조했다.
+- [OpenAI, Appshots](https://learn.chatgpt.com/docs/appshots) — 2026-11-21 단축키, 맨 앞 창만 찍는 범위, 스크롤 밖 텍스트, macOS 권한, 대화 배치 규칙과 Google 앱의 예외 대조
 
 ## 관련 문서
 

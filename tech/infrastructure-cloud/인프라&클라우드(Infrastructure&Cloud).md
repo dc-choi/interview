@@ -38,7 +38,7 @@ aliases: ["인프라&클라우드(Infrastructure&Cloud)", "Infrastructure & Clou
 - [[Server-Quotation-Checklist|서버 견적 검토]] — 메모리 배치, 옵션과 지원 조건, 물리 코어 라이선스의 적용 범위, 케이블과 트랜시버, DAC와 AOC, 전원 코드와 랙 PDU
 - [[GPU-Inference-Hardware|추론용 GPU 선택]] — Intel D270, 가중치와 KV 캐시, 실측 조건, GeForce 텐서 연산 제한과 외부 커널 모듈의 도입 경계, TPU 8세대의 용도별 시스템, 엣지 NPU의 대역폭 상한과 PIM
 - [[Rack-Scale-System-Emulation|랙 규모 시스템 에뮬레이션]] — Voxel, 실제 소프트웨어와 가상 하드웨어의 검증 경계
-- [[Self-Hosting-Small-Server|소형 서버 셀프호스팅]] — N100 사례, 네이티브와 Podman, 복구 책임, 오픈소스 채택을 가르는 설치와 운영 마찰
+- [[Self-Hosting-Small-Server|소형 서버 셀프호스팅]] — N100 사례, 네이티브와 Podman, 복구 책임, 오픈소스 채택을 가르는 설치와 운영 마찰, 내 클라우드 계정 배포 모델의 무료 한도와 약관
 - [[Smart-Home-Hub-and-Personal-Context|가정용 허브와 개인 맥락]] — HomeView와 Apple TV 4K, 기기 및 지역 조건
 
 ## AWS 체크리스트

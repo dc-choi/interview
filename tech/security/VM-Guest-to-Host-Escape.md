@@ -1,9 +1,9 @@
 ---
 tags: [security, virtualization, kvm, linux-kernel, sandbox, vulnerability, patch-management]
 status: done
-verified_at: 2026-11-09
+verified_at: 2026-11-21
 category: "보안(Security)"
-aliases: ["VM Escape", "Guest-to-Host Escape", "가상 머신 탈출", "게스트 호스트 탈출", "PwnEscape", "CVE-2026-99999", "microVM 샌드박스", "공유 커널 격리"]
+aliases: ["VM Escape", "Guest-to-Host Escape", "가상 머신 탈출", "게스트 호스트 탈출", "PwnEscape", "CVE-2026-99999", "microVM 샌드박스"]
 ---
 
 # VM 게스트에서 호스트로의 탈출 (Guest-to-Host Escape)
@@ -71,7 +71,7 @@ PwnEscape는 경쟁 조건이 없는 결정적 흐름이다. 이 문서는 검�
 ### 라이브 패치와 재부팅
 
 - 커널 라이브 패치는 재부팅 없이 중요한 함수를 고치는 수단이지만, 추적 가능한 함수만 패치할 수 있는 등의 제약이 있다(커널 livepatch 문서).
-- 제공 여부는 배포판과 커널 빌드마다 다르므로 배포판별 상태를 확인한다. PwnEscape의 2026-11-02 상태는 아래 사례 절에 있다.
+- 제공 여부는 배포판과 커널 빌드마다 다르므로 배포판별 상태를 확인한다. PwnEscape의 2026-11-02 상태와 그 뒤 나온 Red Hat kpatch는 아래 사례 절에 있다.
 - 라이브 패치는 다음 재부팅 창까지의 다리로 쓴다. 실행 중인 커널에 실제로 적용됐는지 확인하고, 수정 커널로 재부팅하는 일정을 따로 잡는다(운영 제안).
 
 ### 롤링 재부팅
@@ -104,32 +104,23 @@ PwnEscape는 경쟁 조건이 없는 결정적 흐름이다. 이 문서는 검�
 
 에이전트의 파일, 네트워크와 도구 권한은 [[Agent-Execution-Isolation|에이전트 실행 격리]], microVM과 네트워크 경계를 겹친 구성은 [[AI-Training-Environment-Containment|AI 학습 환경의 격리]], Firecracker 기반 관리형 샌드박스는 [[AWS-Lambda-MicroVMs|Lambda MicroVMs]]에서 다룬다.
 
-### 공유 커널 컨테이너에서 microVM으로 옮기는 이유
-
-컨테이너는 호스트 커널을 함께 쓰므로 그 커널의 로컬 권한 상승 결함 하나가 컨테이너 탈출로 이어지면 같은 호스트의 다른 워크로드, 자격 증명과 네트워크까지 닿을 수 있다. OpenAI는 2026-11-04 Linux 커널 로컬 권한 상승 948건의 발견 결과를 공개하며, 단기와 중기에는 최신 패치가 없는 운영체제의 낮은 권한 계정을 자원이 많은 공격자에게 사실상 루트로 보고 샌드박스와 Firecracker, gVisor 같은 격리로 피해 범위를 줄이라고 권했다(발견 경과는 [[Coordinated-Vulnerability-Disclosure#대량 발견은 재현, 경로 검증과 패치를 붙여 보고한다|대량 발견의 보고]]).
-
-Replit의 2026-11-04 글은 자율 에이전트가 늘며 이런 경계가 충분하지 않다고 보고, 호스트 커널을 공유하던 Docker 컨테이너 실행 환경을 샌드박스마다 커널을 둔 microVM 기반으로 다시 만든 사례다. 2026-11-09 대조했고 수치와 성과는 자체 보고다.
-
-- **커널을 샌드박스마다 둔다:** 샌드박스마다 자체 Linux 커널을 가진 microVM을 Cloud Hypervisor(Firecracker와 rust-vmm 구성요소를 공유)와 KVM으로 띄운다. 게스트 커널이 뚫려도 공격자는 가상화 경계를 한 번 더 넘어야 하고, 사용자가 VM 안에서 Docker를 써도 공유 호스트의 권한을 내주지 않는다.
-- **VM 안에도 층을 둔다:** 지원 서비스마다 microVM을 주는 대신 최소한의 runc 컨테이너로 나누고(오버헤드 대비 이득이 작다는 판단), namespace, seccomp, 장치 접근과 capability를 역할별로 정해 사용자 프로세스가 감시 에이전트의 권한을 물려받지 않게 한다. VMM은 capability가 없는 비특권 계정으로 돌린다. eBPF로 프로세스 실행, 파일 접근과 네트워크 활동을 관찰하고 Linux 보안 모듈(LSM) 훅으로 금지 동작을 막는다. 어느 LSM인지는 밝히지 않았다.
-- **게스트 커널을 줄인다:** 배포판 설정 대신 tinyconfig에서 시작해 Bluetooth, 무선, USB와 디스플레이 드라이버를 빼고, 필요한 드라이버는 내장하며 모듈 적재를 끈다. 2026-06-01~11-04 공개된 Linux CNA CVE 6,211건 중 5,969건(96.1%)을 피했다고 집계했는데 내역은 공개 전 반영된 수정 4,375건과 설정으로 제외된 676건이고 나머지 근거는 글에 없다. Linux 커널 CNA는 수정이 stable 트리에 들어간 뒤 CVE를 자동 배정하므로, 앞의 수는 갱신 주기의 효과이고 표면 축소의 직접 효과는 설정 제외분으로 읽는다(해석).
-- **이전과 속도:** 수억 개 프로젝트를 데이터 손실과 중단 없이 옮겼다고 밝혔지만 이전 절차는 공개하지 않았다. 고객 볼륨 연결과 지원 서비스 설정을 포함한 샌드박스 확보는 warm pool로 약 500ms라고 적는다.
+호스트 커널을 함께 쓰는 컨테이너에서 microVM으로 옮기는 이유, nginx2root의 SCTP 커널 단계와 모듈 차단, 기본 seccomp 프로필의 한계는 [[VM-Guest-to-Host-Escape-Shared-Kernel|공유 커널 컨테이너에서 호스트로의 탈출]]로 나눴다.
 
 ## 트레이드오프
 
 - **라이브 패치와 재부팅:** 라이브 패치는 중단 없이 노출 기간을 줄이지만 제공 범위와 기술 제약이 있다. AWS 권고처럼 수정 커널로 재부팅한 상태를 완료 기준으로 둔다(이 문서의 해석).
 - **재부팅 속도와 용량:** 한 리전에서 여러 호스트를 동시에 내리면 노출 기간은 줄지만 동시 용량 손실과 고객 영향이 커진다(이 문서의 해석).
-- **기능과 표면:** 중첩 가상화와 오프로드 같은 기능은 성능과 활용 범위를 넓히는 대신 게스트가 닿는 호스트 코드를 늘린다. 다만 AWS가 이번 결함에 우회책이 없다고 밝혔으므로, 벤더 확인 없이 기능 끄기를 완화책으로 간주하지 않는다(이 문서의 해석).
+- **기능과 표면:** 중첩 가상화와 오프로드 같은 기능은 성능과 활용 범위를 넓히는 대신 게스트가 닿는 호스트 코드를 늘린다. 이번 결함에서 AWS는 우회책이 없다고 했고 Red Hat은 QEMU virtio-net의 체크섬 오프로드를 끄는 완화책을 안내했듯 구성마다 판단이 다르므로, 쓰는 VMM과 벤더가 확인한 경우에만 기능 끄기를 완화책으로 쓴다(이 문서의 해석).
 - **밀도와 격리:** 테넌트별로 호스트를 나누면 비용이 늘고, 공유하면 호스트 결함 하나의 영향 범위가 커진다(이 문서의 해석).
 
 ## 사례: PwnEscape (CVE-2026-99999), 2026-10
 
-확인 수준 표기: [1차]는 CVE 레코드, 커널 커밋, 벤더 공지와 상태 기록으로 2026-11-02 확인한 내용, [자체 보고]는 발견자 측이나 당사자 게시물의 주장, [미확인]은 이 문서에서 확인하지 못한 내용이다.
+확인 수준 표기: [1차]는 CVE 레코드, 커널 커밋, 벤더 공지와 상태 기록으로 2026-11-02 확인한 내용(그 뒤 확인한 항목은 날짜를 함께 적는다), [자체 보고]는 발견자 측이나 당사자 게시물의 주장이다.
 
 - **원인 [1차]:** 잘못된 체크섬 메타데이터를 가진 패킷이 IPv4 스택에 들어오면 `skb_checksum_help`가 네트워크 헤더를 훼손할 수 있었다. 수정 커밋 `6785011f8b16`(ipv4: validate checksum_start before completing checksum)은 체크섬 완성 전에 시작 위치를 검사한다.
 - **악용 경로 [자체 보고]:** 지연된 체크섬 쓰기가 이미 해석한 IPv4 헤더의 첫 바이트를 `0x45`(헤더 20바이트)에서 `0x4f`(60바이트)로 바꾸면, 단편화 코드가 28바이트인 선형 영역에서 60바이트 헤더를 복사해 호스트 메모리 32바이트가 패킷에 실려 나간다.
 - **영향 범위 [1차]:** CVE 레코드는 2.6.27부터 영향으로 두고, 수정 커밋의 Fixes 태그는 TUN의 virtio_net_hdr GSO 지원 커밋과 AF_PACKET의 GSO, 체크섬 오프로드 지원 커밋을 가리킨다. 수정 버전은 5.10.272, 5.15.223, 6.1.190, 6.6.159, 6.12.113, 6.18.57, 7.2.11과 7.3이다. CVSS 3.1 기본 점수는 9.3(Critical)이고 벡터는 범위 변경(S:C)을 포함한다. 조회 시점의 CISA-ADP SSVC 악용(Exploitation) 값은 none이다.
-- **벤더와 배포판 [1차]:** AWS는 2026-10-15 공지 2026-137-AWS에서 관리형 EC2, Lambda와 Fargate는 영향이 없고 virtio-net과 KVM 자체 관리 고객은 호스트에 수정 커널을 적용해 재부팅해야 하며 우회책은 없다고 밝혔다. Debian은 DSA-6568-1(trixie 6.12.113-1), DLA-4841-1(bookworm 6.1.190-1)과 DLA-4850-1(bookworm의 linux-6.12 6.12.113-1~deb12u1)로 수정했다. 2026-11-02 조회한 TuxCare 추적기에서 KernelCare 패치는 RHEL 8, 9와 Debian 13 등은 Released, Debian 12와 Amazon Linux 2는 Planned였다. Ubuntu와 RHEL의 자체 수정 공지는 [미확인]이다.
+- **벤더와 배포판 [1차]:** AWS는 2026-10-15 공지 2026-137-AWS에서 관리형 EC2, Lambda와 Fargate는 영향이 없고 virtio-net과 KVM 자체 관리 고객은 호스트에 수정 커널을 적용해 재부팅해야 하며 우회책은 없다고 밝혔다. Debian은 DSA-6568-1(trixie 6.12.113-1), DLA-4841-1(bookworm 6.1.190-1)과 DLA-4850-1(bookworm의 linux-6.12 6.12.113-1~deb12u1)로 수정했다. 2026-11-02 조회한 TuxCare 추적기에서 KernelCare 패치는 RHEL 8, 9와 Debian 13 등은 Released, Debian 12와 Amazon Linux 2는 Planned였다. 2026-11-21 확인한 Ubuntu CVE 페이지(11-20 갱신)는 공개 익스플로잇을 이유로 우선순위를 High로 올리고 26.10, 26.04 LTS, 24.04 LTS(6.8.0-149.149)와 22.04 LTS의 `linux` 패키지 수정 버전을 적으며, 20.04, 18.04와 16.04의 수정은 Ubuntu Pro로 제공하며 14.04는 미수정으로 둔다. 같은 날 조회한 Red Hat 보안 데이터는 심각도를 Important(CVSS 3.1 8.8, 권한 요구를 Low로 봐 CVE 레코드의 9.3과 다르다)로 두고, RHEL 10(RHSA-2026:85321), 9(RHSA-2026:86033)와 8(RHSA-2026:89083)의 커널 수정을 10-19~24에, 일부 계열의 kpatch 라이브 패치를 11-19~20에 냈다. Red Hat은 QEMU에서 virtio-net 장치를 `csum=off`로 다시 붙이는 완화책도 안내한다.
 - **실증 범위 [자체 보고]:** Vercel은 호스트 메모리 노출은 자사 운영 샌드박스에서, 호스트 중단과 호스트 명령 실행은 Vercel 구성과 맞춘 연구자 소유의 KVM과 Firecracker 장비에서 시연됐고, 고객 데이터 접근을 보인 보고는 없었다고 밝혔다. 발견자 측도 어느 벤더의 운영 환경에서든 root 명령 실행을 주장하지 않는다고 적었다.
 - **일정:** 2026-08-20 Vercel 샌드박스 공개 챌린지에 첫 메모리 노출 보고, 2026-09-04 커널 보안팀과 네트워킹 유지보수자에게 원인과 후보 패치를 비공개 전달, 2026-09-19~22 netdev 메일링 리스트에 공개 패치 제출과 수정(수정 커밋의 Closes 링크도 2026-09-22 netdev 게시물을 가리킨다. 병합된 수정은 발견자의 패치가 아니라 다른 개발자의 패치이며 발견자는 Reported-by와 Closes로 기록됐다), 2026-10-08 net 트리 반영, 2026-10-14 메인라인 병합 [자체 보고]. Debian 추적기는 메인라인 수정을 7.3-rc7로 표기했고 CVE 레코드는 2026-10-15에 게시됐다 [1차]. 비공개 보고에서 공개까지의 흐름은 [[Coordinated-Vulnerability-Disclosure|조율된 취약점 공개]]와 같이 본다.
 - **호스팅 대응 [1차]:** Fly.io는 2026-10-16 16:22 UTC 플랫폼 전체 롤링 호스트 재시작을 공지하면서 호스트당 15~20분 중단과 한 리전의 여러 호스트 동시 중단 가능성을 알렸고, 관리형 Postgres(MPG) 사용자에게는 primary와 standby 전환이 늘 수 있다고 안내했다. 리전마다 단계적으로 재시작하며 진행률을 갱신했고, 2026-10-17 00:45 UTC 갱신에서 PwnEscape(CVE-2026-99999) 완화 조치라고 밝혔다. 03:48 UTC 모든 호스트 재시작을 마쳤고 05:15 UTC 해결로 닫았다(공지부터 약 13시간). 완료 뒤 남은 일부 저하 호스트는 따로 안내했다.
@@ -140,7 +131,6 @@ Replit의 2026-11-04 글은 자율 에이전트가 늘며 이런 경계가 충�
 1. 하이퍼바이저와 장치 모델이 견고해도 호스트 커널 네트워크 스택의 결함이 VM 탈출이 되는 이유는 무엇인가? PwnEscape에서 게스트가 정한 값은 호스트의 어떤 연산을 지시했는가?
 2. 이중 읽기와 메타데이터가 지시하는 지연 쓰기는 무엇이 다르고, 각각 어디에서 무엇을 검사해야 하는가?
 3. 자체 관리 KVM 호스트 수백 대에 같은 유형의 결함이 공개됐다. 노출 판정, 라이브 패치 사용 여부, 재부팅 순서와 고객 공지를 어떤 근거로 정하며, 게스트 커널 갱신만으로 끝나지 않는 이유는 무엇인가?
-4. 신뢰하지 않는 코드를 실행하는 서비스가 공유 커널 컨테이너에서 microVM으로 옮기면 커널 권한 상승 결함의 피해 범위는 어떻게 달라지고, VM 안에는 어떤 통제를 남겨야 하는가?
 
 ## 출처
 
@@ -151,13 +141,12 @@ Replit의 2026-11-04 글은 자율 에이전트가 늘며 이런 경계가 충�
 - [CVE Program, CVE-2026-99999](https://www.cve.org/CVERecord?id=CVE-2026-99999) — 2026-10-15 게시. 영향 시작 버전, 브랜치별 수정 버전, CVSS와 CISA-ADP SSVC
 - [Debian Security Tracker, CVE-2026-99999](https://security-tracker.debian.org/tracker/CVE-2026-99999)
 - [TuxCare CVE Tracker, CVE-2026-99999](https://tuxcare.com/cve-tracker/cve/details/cve-2026-99999/) — 2026-11-02 조회 시점의 배포판별 KernelCare 상태
+- [Ubuntu Security, CVE-2026-99999](https://ubuntu.com/security/CVE-2026-99999) — 2026-11-20 갱신판을 2026-11-21 조회. 우선순위와 그 이유, 릴리스별 `linux` 패키지 수정 버전과 Ubuntu Pro 제공 범위
+- [Red Hat Customer Portal, CVE-2026-99999](https://access.redhat.com/security/cve/CVE-2026-99999) — 2026-11-21 같은 CVE의 보안 데이터 API 응답과 함께 심각도, 점수 차이, RHSA와 kpatch 배포일, virtio-net `csum=off` 완화책 대조
 - [Fly.io Status, Platform Wide Rolling Host Reboots](https://status.flyio.net/incidents/01M52RAWMVC0NKEBRDKC3VXT3K) — 2026-10-16~17 갱신 기록
 - [Firecracker, Production Host Setup Recommendations](https://github.com/firecracker-microvm/firecracker/blob/main/docs/prod-host-setup.md)
 - [The Linux Kernel documentation, Livepatch](https://docs.kernel.org/livepatch/livepatch.html)
 - [Hosting Companies Rebooted EVERYTHING Because of This Bug — YouTube, Better Stack](https://www.youtube.com/watch?v=0BNlnYN3ryE) — 2026-10-22 공개 영상, 계기 자료. 사실관계는 이 목록의 1차 출처로 대조했고 확인하지 못한 수치는 쓰지 않음
-- [Inside Replit's New Sandbox Engine, Part 1: The Path to MicroVMs — Replit Frontier](https://frontier.replit.com/sandbox-engine-microvms-part-1/) — 2026-11-04 게시, 2026-11-09 구조, VM 안의 계층, 커널 설정, CVE 집계 방식과 이전 범위 대조. 자체 보고
-- [A thousand fewer paths to root — OpenAI](https://openai.com/index/a-thousand-fewer-paths-to-root/) — 2026-11-04 게시, 2026-11-09 공식 한국어 페이지로 저권한 계정과 격리 권고 대조
-- [The Linux Kernel documentation, CVEs](https://docs.kernel.org/process/cve.html) — 2026-11-09 수정 반영 뒤 자동 배정 원칙 확인
 
 ## 관련 문서
 
@@ -165,6 +154,7 @@ Replit의 2026-11-04 글은 자율 에이전트가 늘며 이런 경계가 충�
 - [[AI-Training-Environment-Containment|AI 학습 환경의 격리]]
 - [[AWS-Lambda-MicroVMs|Lambda MicroVMs]]
 - [[Container-Linux-Internals|Linux 컨테이너 내부 구조]]
+- [[VM-Guest-to-Host-Escape-Shared-Kernel|공유 커널 컨테이너에서 호스트로의 탈출]] — microVM 전환, nginx2root의 SCTP 커널 단계와 컨테이너 seccomp의 한계
 - [[Defensive-Copy-Basics|방어적 복사와 TOCTOU]]
 - [[Coordinated-Vulnerability-Disclosure|조율된 취약점 공개]]
 - [[AI-Accelerated-Threat-Defense|악용 시간 단축과 AI 공격 대비]]

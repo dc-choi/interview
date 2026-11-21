@@ -59,7 +59,7 @@ SK가 2026-10-12 발표한 SK AIGEN(아이젠)은 학력과 전공에 관계없�
 - **필터로 작동**: 서류 검토는 탈락 사유부터 거르는 네거티브 필터링이고([[Resume-15-Second-Rules|이력서 15초 룰]]), AI 실사용 경험의 부재가 그 상위 항목이 되어 가고 있다. 2026년 상반기 신입 시장에서 관찰된 지원 결과 양극화(한쪽은 주 3~4회 면접과 과제 소화, 다른 쪽은 50~60곳 지원에도 서류 무회신)의 한 축이 이 충족 여부다.
 - **신호의 실체**: 걸러지지 않는 쪽에 서게 하는 것은 개념 지식이 아니라 **실사용 경험**이고, 그 위에 생산성 향상 수치와 실패 사례를 돌아본 언어가 얹힌다. 유저가 있는 서비스를 직접 만들며 AI 워크플로우를 실험하고 기록한 프로필이 아직 희소한데, 이는 디폴트화가 진행 중일 뿐 공급이 따라잡은 위생 요인은 아니라는 뜻이다. 이 경험을 이력서에 쓰는 법(판단, 검증, 책임이 보이게)은 [[Resume-Experience-Narrative-and-Evidence|이력서 경험 서술과 증거 설계]]가 정본이다.
 
-역할별로 어떤 AI 역량을 쌓을지는 [[IT-Downturn-Career-Strategy-Developer-Strategy|개발자 대응 전략]], 주니어 채용 압력의 구조적 배경(견습 사다리 붕괴)은 [[Developer-Role-AI-Era|AI 시대 개발자 역할]] 참조.
+역할별로 어떤 AI 역량을 쌓을지는 [[IT-Downturn-Career-Strategy-Developer-Strategy|개발자 대응 전략]], 주니어 채용 압력의 구조적 배경(견습 사다리 붕괴)은 [[Developer-Role-AI-Era-Employment|AI 시대 개발자 고용과 견습 사다리]] 참조.
 
 ## 그래서 무엇을 — 임팩트로 환산되는 노력
 
@@ -162,7 +162,7 @@ PGT는 프로젝트로 증명한 것(Proof & Project), 학습 잠재력을 보�
 - [[Developer-Hiring-Insights-Growth|채용 인사이트 성장 축]] — 외부 자산 3축
 - [[IT-Downturn-Career-Strategy|긴축기 IT 커리어 전략]] — 시장 신호와 개인 전략
 - [[IT-Downturn-Career-Strategy-Developer-Strategy|개발자 대응 전략]] — 역할에 맞는 AI 활용 역량
-- [[Developer-Role-AI-Era|AI 시대 개발자 역할]] — 견습 사다리 붕괴와 주니어 채용 압력
+- [[Developer-Role-AI-Era-Employment|AI 시대 개발자 고용과 견습 사다리]] — 견습 사다리 붕괴와 주니어 채용 압력
 - [[Business-Impact|비즈니스 임팩트]] — 성과의 사업 지표 환산
 - [[Productivity-Business-Ceiling|Min/Max 프레임]] — 채용은 Min값 방어
 - [[Hiring-Under-Uncertainty|불확실성 속 채용]] — 실력×태도, 성실의 위치

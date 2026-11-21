@@ -20,7 +20,7 @@ aliases: ["Agentic Verification", "에이전트 기반 검증"]
 
 정렬 테스트라면 결과의 순서뿐 아니라 원소와 중복 개수 보존을 검사한다. 결제 같은 상태 변경은 한 요청의 반복 실행이 중복 차감하지 않는지도 검증한다. 테스트 개수를 늘리는 것보다 틀린 구현을 실제로 거절하는 판정식이 중요하다.
 
-기능이 다른 기능과 겹치는 문맥이 많아 사람이 시험 사례를 열거할 수 없는 시스템에서는 LLM 보조 퍼징이 조합 결함을 빨리 찾는다는 보고가 있다. 다만 발견이 늘면 고칠 사람의 시간이 먼저 바닥날 수 있으므로 발견과 수정 용량을 함께 계획한다([[AI-Code-Delegation-Review#AI 리뷰가 결함을 더 빨리 찾으면 수정 용량이 병목이 된다|PostgreSQL 19 사례]]).
+기능이 다른 기능과 겹치는 문맥이 많아 사람이 시험 사례를 열거할 수 없는 시스템에서는 LLM 보조 퍼징이 조합 결함을 빨리 찾는다는 보고가 있다. 다만 발견이 늘면 고칠 사람의 시간이 먼저 바닥날 수 있으므로 발견과 수정 용량을 함께 계획한다([[AI-Code-Delegation-Review-Fix-Capacity#AI 리뷰가 결함을 더 빨리 찾으면 수정 용량이 병목이 된다|PostgreSQL 19 사례]]).
 
 ## 반복을 끝내는 조건
 
@@ -56,6 +56,22 @@ Claude Code 팀은 코드의 약 90%를 Claude가 쓰고 리뷰한다고 밝히�
 
 리뷰어 자체를 평가하는 방법(알려진 사고 재현과 단계별 재현율)은 [[Code-Review-AI-Agent-Operations#지적 처리와 도입 점검|에이전트 시대 코드 리뷰 운영]]에 둔다. 이 운영을 옮길 때는 검사와 그 규칙이 변경과 같은 권한 아래 있는지부터 확인한다(적용 제안).
 
+## 실행 중인 앱의 내부 신호로 판정한다
+
+화면만 보는 검사는 화면에 드러나지 않는 실패를 놓친다. 결제 버튼이 조용히 500을 받거나, 배지는 12를 보이는데 상태 저장소는 0을 갖거나, 한 번의 클릭이 주문 요청을 두 번 보내도 화면은 정상으로 보일 수 있다. 에이전트가 변경을 마쳤다고 보고하면 조작 하나에 이어진 요청과 응답, 콘솔 오류, 화면 변화와 앱 상태를 묶어 판정하고 판정마다 근거를 남긴다.
+
+판정은 통과, 실패와 판단 불가로 나눈다. 근거가 모자라 판단할 수 없는 경우를 통과로 세지 않아야 검증이 조용히 초록불을 내지 않는다. 한 번 통과한 흐름은 저장해 두고 이후 변경마다 모델 없이 결정적으로 다시 돌리면, 매번 에이전트가 화면을 다시 조작하는 비용과 비결정성을 피하면서 새 수정이 이전 기능을 깨뜨리는 회귀를 잡을 수 있다.
+
+사례: Reticle은 개발 빌드에만 들어가는 SDK(production mode를 따로 켜면 운영 빌드에도 들어간다)를 앱에 넣고 MCP 도구로 에이전트에게 보기, 조작, 관찰과 판정을 제공한다(2026-11-21 README 기준, npm 패키지는 Apache-2.0). 설치하거나 실행해 보지는 않았다.
+
+- **판정과 근거:** `verified`는 yes, no, unknown(판단 불가)이고 yes만 통과다. 확인할 결과를 선언하지 않은 검사는 no-fault를 낸다. 판정에는 결론을 정한 요청, 상태 변화, 콘솔 줄과 원인 요소의 소스 `file:line`이 붙는다.
+- **읽는 신호:** 클릭에 묶인 네트워크 응답과 요청 수, 콘솔, 앱이 등록한 상태 저장소(zustand, Redux 등)와 React 렌더를 읽는다. 등록한 저장소를 읽으면 화면에 그린 것이 아니라 앱이 믿는 상태를 검증한다. 웹(React, Next.js 등)과 데스크톱(Electron, Tauri)을 지원한다.
+- **흐름 저장과 CI 게이트:** 검사가 들어간 조작은 세션이 끝날 때 흐름으로 저장되고 이후 모델 없이 다시 돈다. `reticle gate --since HEAD~1`은 변경이 건드린 저장 흐름마다 새 통과 기록이 없으면 실패하므로, 에이전트가 자기 diff를 근거로 통과를 주장할 수 없다. 앞 절의 검사 규칙을 변경이 고칠 수 없는 곳에 두는 원리와 같다.
+- **한계:** README는 IndexedDB, Web Worker, 닫힌 shadow root와 교차 출처 iframe을 아직 보지 못하고, 단일 조작 주변의 경쟁 상태는 끝나지 않은 요청과 두 번 보낸 요청만 잡는다고 밝힌다. 88개 결함을 심은 앱에서 Playwright 스크립트(59/88)보다 많이 잡았다(85/88)는 결과는 저장소에 커밋된 하네스로 낸 개발사 측정이며 여기서 재현하지 않았다. 내부 신호를 읽는 방식은 소유하지 않은 사이트, 여러 브라우저와 실제 픽셀 비교를 대신하지 않는다.
+- **설치 범위:** `init`은 개발 의존성과 빌드 설정 외에 `CLAUDE.md`와 `AGENTS.md`에 규칙을 덧붙이고, 찾은 에이전트마다 MCP 서버를 등록하며, 민감 값을 가린 프롬프트를 `.reticle/`에 남기는 훅을 설치한다. 별도 설치 스크립트(`reticle setup install`)는 PATH에 `codex`가 있으면 Codex 설정에 Reticle 도구의 승인 모드를 approve로 적되 사용자가 이미 정한 모드는 바꾸지 않는다. 익명 사용 통계는 기본으로 켜져 있다. 도입 전 `init --dry-run`으로 바뀔 파일을 보고 `--no-mcp`, `--no-prompt-capture` 같은 선택을 팀 정책과 대조한다(적용 제안).
+
+화면 바깥에서 접근성 트리로 조작하는 방식은 [[Natural-Language-E2E-Agent|자연어 E2E 테스트 에이전트]], 실패 영상과 실행 증거의 보관은 [[Browser-Test-Recording|브라우저 테스트 녹화와 실행 증거]]가 다룬다.
+
 ## 입력과 확인 수준
 
 2026-10-16 11:00 GeekNews 발췌의 E2E와 속성 기반 검증을 기존 테스트 지식에 연결했다. WPS의 `Agentic Verification` URL과 검색 본문 일부는 확인했지만 직접 열람은 실패했다. 기존 E2E와 속성 기반 검증 설명은 확보한 발췌와 기존 개념을 정리한 것이며 WPS 원문 전체 학습 완료를 뜻하지 않는다. 후속으로 전체 본문과 추가 검증 기법을 대조한다. TDD 실험은 별도로 위 절에 적은 원 실험 보고서와 대조했다.
@@ -68,6 +84,8 @@ Claude Code 팀은 코드의 약 90%를 Claude가 쓰고 리뷰한다고 밝히�
 - [The reverts will continue until morale improves — Peter Eisentraut](https://peter.eisentraut.org/blog/2026/10/09/the-reverts-will-continue-until-morale-improves) — 2026-10-09 개인 회고, LLM 보조 퍼징과 조합 결함 서술을 2026-10-27 대조
 - [How the Claude Code team thinks about verification — claude.dev, Addy Osmani](https://claude.dev/blog/how-the-claude-code-team-thinks-about-verification/) — 2026-11-16, 2026-11-18 verify 스킬, 검사 유형, flaky 정책, 세 라운드 이관, 커밋 게이트, 규칙 승격 조건과 별도 채점기 수치 대조
 - 사용자 제공 GeekNews 알림(2026-11-18): Claude Code 팀이 검증을 바라보는 방식. 학습 계기이며 게시물 번호는 확인하지 못했다
+- [reticlehq/reticle — GitHub](https://github.com/reticlehq/reticle) — 2026-11-21 main 브랜치(0bc1bc003e)의 README와 LICENSE로 판정 값, 읽는 신호, 흐름 저장과 gate, 한계, 설치 범위, 벤치마크 조건과 라이선스 확인. 설치와 실행은 하지 않음
+- 사용자 제공 GeekNews 알림(2026-11-19): Reticle. 학습 계기이며 게시물 번호는 확인하지 못했다
 
 ## 관련 문서
 
@@ -77,4 +95,5 @@ Claude Code 팀은 코드의 약 90%를 Claude가 쓰고 리뷰한다고 밝히�
 - [[Harness-Gate-Placement|하네스 게이트 배치]] — 검사를 어느 단계에 걸지
 - [[Test-Pyramid|테스트 계층]]
 - [[performance|성능 비교의 조건]]
-- [[AI-Code-Delegation-Review|AI 구현 위임과 코드 리뷰]] — AI 리뷰의 발견량과 수정 용량
+- [[AI-Code-Delegation-Review-Fix-Capacity|AI 리뷰의 발견량과 수정 용량]] — PostgreSQL 19와 Linux 7.2에서 발견이 수정 용량을 앞지른 사례
+- [[Natural-Language-E2E-Agent|자연어 E2E 테스트 에이전트]] — 화면 바깥에서 목표로 조작하는 방식과 결정성 문제

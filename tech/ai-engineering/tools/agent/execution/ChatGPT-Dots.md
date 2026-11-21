@@ -98,6 +98,17 @@ DevDay 2026 페이지는 dots를 지속적인 책임(ongoing responsibility)을 
 
 메신저 업무에 적용할 때는 대화 조회, 요약, 다른 방에 전달, 답장 발송을 별도 행동으로 정하는 방식을 권한다. 앱 접근 허용을 모든 대화의 재공유 승인으로 확대하지 않고, 발송 대상과 본문을 검토할 지점을 둔다. 이 절은 일반 조작 계약이며 특정 메신저의 공식 지원, 전송 성공률이나 생산성 배수를 검증한 결과가 아니다. 실제 앱 조작과 메시지 발송은 수행하지 않았다.
 
+### Codex 클라우드 환경은 저장소와 설정을 묶은 VM이다
+
+위 표의 코딩 작업이 쓰는 Codex 클라우드 환경을 2026-11-17 발표와 2026-11-21 공식 Cloud environments 문서로 대조해 정리한다. 이 절만 대조했으므로 문서의 `verified_at`은 그대로 둔다. 사용자 기기를 켜 두지 않아도 되는 대신 호스트하는 VM의 조건을 따른다.
+
+- **구성(문서 확인):** 작업마다 VM에서 돌고 기본 사양은 플랜별로 다르다(Plus 2 vCPU와 8 GiB, Pro와 Business, Enterprise 4 vCPU와 16 GiB). 처음 만들 때 Codex가 선택한 저장소(GitHub, GitLab.com)를 살펴 의존성과 도구를 설치하고 작업 흐름을 시험한 뒤 설치 스크립트(Install script)와 시작 스킬(Start skill)로 남기며, 추론하지 못한 값은 사용자에게 묻는다. Enterprise 워크스페이스에서는 환경을 워크스페이스와 공유하거나 나만 쓰게 둘 수 있고, 공유해도 다른 사람의 작업 파일이나 환경 편집 권한까지 주지는 않는다.
+- **최신 유지(일부만 문서 확인):** 게시하면 준비된 파일 시스템이 새 작업의 출발점이 되고, 저장소 갱신은 백그라운드에서 설치와 시작 명령을 다시 돌리지 않고 의존성 캐시를 보존한 채 이뤄진다. 작업의 VM 상태는 기본 7일까지 복구할 수 있다. 발표의 main 최신 변경 반영은 문서에 그 표현이 없고, 갱신 주기와 실패했을 때의 동작도 문서에서 찾지 못했다.
+- **OS와 iOS(문서 미확인):** 발표는 VM이 Linux라 iOS 앱을 빌드하거나 실행하지 못한다고 했고, 시연에서는 저장소의 iOS 앱을 알아보고 실행은 못 한다고 알린 뒤 참고용으로 남겨 모바일의 새 기능을 웹 플레이어에 옮겼다. 문서는 VM의 OS를 밝히지 않고(패키지 허용 목록에 Ubuntu와 Debian 저장소가 있을 뿐이다) 현재 제한으로 컴퓨터 사용과 자체 호스팅 GitHub Enterprise Server만 든다. 자기 장비를 환경으로 쓰는 기능도 Codex Cloud 문서에는 없다. macOS 빌드나 하드웨어에 묶인 일은 위 표의 연결한 컴퓨터가 맡는다.
+- **비밀과 네트워크(문서 확인):** 공개 인터넷 접근은 전부 허용하거나 패키지 관리자와 추가 허용 도메인으로 좁힌다. 비밀은 프로그램에 바로 주는 환경 변수, 프로그램에는 자리표시자만 주고 허용한 HTTPS 목적지로 갈 때 프록시가 실제 값으로 바꾸는 네트워크 비밀, 공유 환경이 사람마다 자기 계정에서 받는 개인 값으로 나뉜다. 클라우드 자원은 OIDC로 짧은 수명의 자격 증명을 받고(AWS와 Google Cloud는 대부분 지원, Azure의 Resource Manager와 Blob Storage는 아직 미지원), 사설망 자원은 현재 지원하는 VPN인 Tailscale로 연결한다. 발표는 이를 클라우드 환경이 막히는 흔한 지점으로 소개했다. 키 설정과 노출 범위는 [[VPN-and-Private-Network#클라우드 코딩 에이전트를 tailnet에 붙일 때|VPN과 사설 네트워크]]를 본다.
+
+점검(적용 제안): 환경이 볼 수 있는 저장소, 비밀과 사설 서비스를 작업 단위로 좁히고 공유 환경과 개인 환경의 비밀이 섞이지 않는지 확인한다. 오래된 스냅숏이 낡은 의존성으로 작업을 돌리지 않는지 갱신 상태를 확인할 수 있는지도 먼저 본다.
+
 ## 위임 계약 — 소유, 완료, 호출 조건과 금지 행동
 
 공식 시작 안내는 중요한 것과 관련 출처를 알려 주고, 어떤 결정에 사용자 입력이 필요한지와 업데이트를 보낼 곳, 사용자에게 끼어들 시점을 정하라고 권한다. 이를 네 항목으로 묶은 것이 아래 표다(이 문서의 정리). 완료 기준을 위임 전에 정하는 원리는 [[AI-Code-Delegation-Review|AI 구현 위임과 코드 리뷰]]의 구현 계약과 같다.
@@ -122,12 +133,22 @@ DevDay 2026 페이지는 dots를 지속적인 책임(ongoing responsibility)을 
 - 위임 작업은 dot이 넘긴 지시와 맥락만 받는다. 확인한 문서는 금지 조항이 위임 작업에 그대로 넘어간다고 설명하지 않으므로, 위임 지시에도 금지 조항을 다시 적게 하고 Activity에서 위임 작업의 진행과 결과를 확인한다(운영 제안).
 - 진행 상황 전체를 묻기보다 사용자 승인이나 입력을 기다리는 작업만 묻는 편이 확인 비용이 적다(영상의 사용 예).
 
+### Codex에서 같은 계약을 쓴 사례와 dots의 사용 방식
+
+2026-11-17 발표 기준의 사용 경험이다. 효과를 측정한 자료는 아니고, 아래 호출 표면의 문자와 음성 기능만 2026-11-21 공식 문서로 대조했으며 문서의 `verified_at` 범위에 들지 않는다.
+
+- **한 문장 위임:** 문서 사이트를 자정에 갱신해야 하는 일에서 발표자는 PR을 준비한 뒤, 승인을 제때 받도록 계속 시도하고, Slack 채널의 막판 변경을 지켜보고, 배포에 걸리는 20분을 앞당겨 시작한 뒤 라이브를 확인하라고 Codex에 맡겼다. 자정 4분 뒤 라이브라는 보고가 왔다. 소유(출시 진행), 완료(라이브 확인)와 시작 시각(소요 시간에서 거꾸로 계산)이 한 문장에 들어 있다는 점이 위 계약과 같다.
+- **대리 답장:** 전날 변경 내용과 미리보기 URL을 두고 발표자가 호출(태그)받았을 때 Codex가 대신 답했고 동료의 확인까지 받았는데, 발표자는 나중에야 알았다. 출시를 이끌도록 권한을 줬으므로 범위 안이라는 설명이지만, 지시에 적지 않은 발신이면 위 금지 항목과 부딪힐 수 있다. 대리 답장을 허용하려면 채널, 내용(사실 전달)과 범위 밖 대화는 하지 않는다는 문장을 적고 보낸 메시지를 알려 주게 한다(적용 제안).
+- **안전망:** dots는 묻지 않은 것도 알려 준다. 곧 낼 PR의 버그, 병합 충돌, 그 사람이 없는 채널에서 알게 된 동료의 PR이 낡았다는 사실을 전해 주라는 제안, 일정끼리의 겹침과 출퇴근에 영향을 줄 인근 재난 소식이 예로 나왔다. 위 선제적 리서치의 제안과 같은 계열이며, 위치와 일정 같은 개인 맥락을 알림에 쓰는 범위는 지시로 정한다(적용 제안).
+- **위임 수신함:** Slack에서 메시지를 dots에 계속 전달하며 조사하거나 할 일로 만들라고 시킨다. 직속 부하처럼 쓴다는 비유다. 전달한 메시지에 든 제3자의 정보는 위 정보 사용과 공개의 경계를 따른다(이 문서의 해석).
+- **호출 표면:** 앱, Slack과 Teams에 더해 전화와 문자(iMessage, RCS)까지 어디서든 부르는 것을 목표로 한다고 했다. 문자는 아래 이용 조건에 2026-10-21 기준 준비 중으로 적혀 있었고, 2026-11-21 공식 문서는 iMessage와 Android의 RCS로 일대일 대화를 하는 문자 기능을 미국의 ChatGPT Pro 사용자에게 베타로 순차 제공 중이라고 적는다. 통화는 dot 대화의 전화 버튼으로 걸고, dot이 먼저 거는 통화는 출시 뒤 계획이라고 한다. 같은 발표에서 Codex 앱의 음성 모드는 받아쓰기가 아니라 스레드 관리, 상태 확인, 컴퓨터 사용으로 다른 앱의 자료 가져오기, 새 스레드 생성과 고정을 대신하는 제어면으로 소개됐다. 공식 Voice 문서도 음성으로 긴 작업을 따로 시작하고 기존 작업을 확인할 수 있다고 적지만, 기존 Codex 작업 안의 음성은 순차 제공 중이다. 시연은 오디오 문제로 지연됐고 결과는 화면에 나오지 않았다.
+
 ## 이용 조건 (2026-10-21 기준)
 
 - 순차 배포 중이라 요금제 조건을 갖춰도 바로 보이지 않을 수 있다.
 - Pro 100, Pro 200, Pro 500은 유럽경제지역(EEA), 영국, 스위스 밖의 18세 초과(원문 over 18) 사용자가 대상이다.
 - Business Premium과 Enterprise는 전 세계에 순차 배포 중이다. Enterprise는 기본으로 꺼져 있어 워크스페이스 관리자가 켜야 하며, 관리자 문서의 권한 이름은 Use dots (Beta)다.
-- dot은 ChatGPT 모바일 앱, 데스크톱 앱, 데스크톱 브라우저에서 만들며 모바일 웹은 지원하지 않는다. 같은 dot에게 ChatGPT, Slack, Microsoft Teams와 통화로 연락할 수 있고 문자 메시지는 준비 중이다. Enterprise 관리자 문서는 Microsoft Teams 접근이 초대받은 경우에만 쓸 수 있는 알파(원문 invite-only alpha)로 제한된다고 적는다. 연락 수단을 추가해도 앱이나 컴퓨터 접근은 생기지 않는다.
+- dot은 ChatGPT 모바일 앱, 데스크톱 앱, 데스크톱 브라우저에서 만들며 모바일 웹은 지원하지 않는다. 같은 dot에게 ChatGPT, Slack, Microsoft Teams와 통화로 연락할 수 있고 문자 메시지는 준비 중이다(2026-11-21 문서에서는 미국 Pro 사용자에게 베타로 순차 제공 중). Enterprise 관리자 문서는 Microsoft Teams 접근이 초대받은 경우에만 쓸 수 있는 알파(원문 invite-only alpha)로 제한된다고 적는다. 연락 수단을 추가해도 앱이나 컴퓨터 접근은 생기지 않는다.
 
 ## 운영 점검
 
@@ -142,7 +163,7 @@ DevDay 2026 페이지는 dots를 지속적인 책임(ongoing responsibility)을 
 - [OpenAI, Computer Use](https://learn.chatgpt.com/docs/computer-use) — 2026-10-28 OS 권한과 앱 승인, macOS와 Windows 실행 방식 부분 대조.
 - [OpenAI, Meet dots](https://learn.chatgpt.com/docs/dots)
 - [OpenAI, Get started with your dot](https://learn.chatgpt.com/docs/dots/getting-started)
-- [OpenAI, Message your dot](https://learn.chatgpt.com/docs/dots/channels)
+- [OpenAI, Message your dot](https://learn.chatgpt.com/docs/dots/channels) — 2026-11-21 문자 베타의 대상과 통화 방식 부분 대조
 - [OpenAI, Tasks and memory](https://learn.chatgpt.com/docs/dots/tasks-and-memory)
 - [OpenAI, Connect computers and apps to your dot](https://learn.chatgpt.com/docs/dots/computers-and-apps)
 - [OpenAI, Control your dot](https://learn.chatgpt.com/docs/dots/controls)
@@ -150,9 +171,13 @@ DevDay 2026 페이지는 dots를 지속적인 책임(ongoing responsibility)을 
 - [DevDay 2026 — OpenAI](https://learn.chatgpt.com/docs/whats-new/devday-2026) — 2026-09-29 행사와 dots 공개
 - [GPT-6 Astra System Card — OpenAI Deployment Safety Hub](https://deploymentsafety.openai.com/gpt-6-astra) — 2026-09-29 dots 부록 추가와 GPT-6 Astra 기반 동작 확인
 - [챗GPT를 아직도 챗봇으로만 쓰는 사람은 모르는 것 — AI, AX 업무 자동화 | 타니](https://www.youtube.com/watch?v=eu45-gQ3C7Q) — 2026-10-14 공개 영상(공개 당시 제목: 말 안 걸어도 일하는 AI가 나왔습니다｜Codex Dot 실전 활용), 작성 계기이자 위임 계약 예시, 비교표의 틀, 실행 컴퓨터와 작업 위치를 적는 팁, 대기 작업 질문 예의 출처이며 기능 설명은 위 공식 문서로 대조
+- [New Ways of Working with Codex — AI Engineer, Dominik Kundel, Charlie Guo](https://www.youtube.com/watch?v=IPh9YsWvDQk) — 2026-11-17 공개 영상의 08:05~09:06, 28:27~37:08과 45:10~51:40을 사람이 단 영어 자막과 대조. Codex 클라우드 환경, 한 문장 위임과 대리 답장 사례, dots의 사용 방식과 음성 제어 소개의 근거다. 클라우드 환경, 문자와 음성 기능은 2026-11-21 공식 문서로 대조했고 사용 사례는 대조할 공식 자료가 없다.
+- [OpenAI, Cloud environments](https://learn.chatgpt.com/docs/environments/cloud-environments) — 2026-11-21 VM 사양과 상태 보존, 설치 스크립트와 시작 스킬, 공유 범위, 인터넷 접근, 비밀 종류, OIDC와 Tailscale, 현재 제한 대조. OS 표기는 없다
+- [OpenAI, Voice](https://learn.chatgpt.com/docs/features/voice) — 2026-11-21 별도 작업 시작과 기존 Codex 작업 안 음성의 순차 제공 대조
 
 ## 관련 문서
 
+- [[Always-On-Agent-Architecture|상시 실행 에이전트의 구조 (이벤트 수신함, 타이머, 메모리, 권한과 발신함)]]
 - [[Hermes-Agent|Hermes Agent (게이트웨이 상주 에이전트, 메신저 입력 경계와 명령 승인)]]
 - [[Agent-Always-On-Mac-Host|상시 실행 Mac 에이전트 호스트 (연결한 컴퓨터의 전원, 재시작과 원격 접근)]]
 - [[Codex-CLI|Codex CLI (휴대폰 원격 연결과 ChatGPT Work와의 사용량 공유)]]
@@ -161,3 +186,4 @@ DevDay 2026 페이지는 dots를 지속적인 책임(ongoing responsibility)을 
 - [[Agent-Loop-Engineering|루프 엔지니어링 (트리거와 정지 조건)]]
 - [[Harness-Engineering|하네스 엔지니어링 (제약, 검증과 HITL 배치)]]
 - [[AI-Code-Delegation-Review|AI 구현 위임과 코드 리뷰 (위임 전에 정할 계약)]]
+- [[Agent-Runtime-Deployment|에이전트 런타임과 배포 (Agents API 베타, 검토 화면이 부르는 원격 에이전트)]]

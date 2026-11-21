@@ -43,6 +43,17 @@ aliases: ["Agent Platform Knowledge Skills", "플랫폼 지식 스킬", "Modern 
 
 Chrome은 이 스킬을 Chrome DevTools for agents와 함께 쓰라고 권한다. 코드를 쓰는 것은 흐름의 일부이고, 저사양 CPU를 흉내 낸 성능 추적으로 메인 스레드 작업이 50ms 아래인지, 애니메이션과 `prefers-reduced-motion`, 캐시된 화면의 메모리 누수를 실행 중에 확인하는 예를 든다. 메인 스레드 예산은 [[Browser-Main-Thread-Scheduling|메인 스레드 작업 스케줄링]]을 본다.
 
+## 저장소 밖의 업무 맥락은 연결로 공급한다
+
+이 절은 2026-11-17 발표 기준 설명을 2026-11-21 공식 Plugins, 플러그인 확장과 Space 문서로 대조한 것이다. 이 절만 대조했으므로 문서의 `verified_at`은 그대로 둔다. 앞의 내용이 모델이 모르는 플랫폼 지식을 채운다면, 이 절은 저장소에 없는 조직의 맥락을 채우는 경로를 다룬다.
+
+저장소 안에서 지킬 표준(코딩 규칙, 린터, 빌드와 검증 명령)은 저장소에 둔다. 숙련된 엔지니어를 처음 그 저장소에 넣어도 실수 없이 기여할 수 있어야 한다는 기준은 에이전트에도 적용된다. 반면 메시지, 문서, 스프레드시트와 디자인 시스템은 저장소 밖에 있고, 이를 매번 받아 적게 하면 위임의 이점이 줄어든다. 발표에서 Codex는 이 맥락을 플러그인으로 연결한다.
+
+- **묶음과 공유 범위**: 플러그인은 MCP 서버, 스킬과 그 용도의 부가 자원을 묶은 단위다(문서도 스킬과 MCP 서버를 담을 수 있다고 적는다). 대부분 원격 MCP를 쓰므로 한 기기에 묶이지 않고, 같은 하네스를 쓰는 표면(데스크톱 앱, 웹, 모바일, Slack 호출, CLI)이 한 번 한 연결을 함께 쓴다고 설명했다. 문서 기준 플러그인은 웹, 데스크톱과 모바일의 ChatGPT와 데스크톱 앱의 Codex에서 쓰고 Codex CLI에는 플러그인 브라우저가 있지만 IDE 확장은 지원하지 않으며, 데스크톱 전용 플러그인도 있다. 원격 MCP라서 한 연결을 모든 표면이 공유한다는 설명은 문서에서 찾지 못했다. 공개 플러그인은 하나의 공용 디렉터리에 올리고, 저장소나 개인 마켓플레이스로 나누거나 워크스페이스 관리자가 GitHub 마켓플레이스를 가져와 동기화할 수 있다는 점은 문서와 같다. 연결이 여러 표면에서 쓰이므로 한 표면에서 준 읽기와 쓰기 범위가 다른 표면의 승인 정책 없이도 쓰이는지 확인하고, 외부 플러그인은 [[Agent-Skills#설치 경로와 신뢰 — 표면마다 따로, 출처는 먼저|외부 스킬 신뢰]]처럼 내용을 검토한 뒤 설치한다(적용 제안).
+- **모호한 요청의 해소**: 연결된 메시지와 문서가 있으면 어느 채널에서 누가 어떤 파일을 공유했는지 말하지 않은 요청도 풀렸다는 시연이 있었다. 풀렸다는 것이 맞게 풀렸다는 뜻은 아니므로, 대상이 여럿이면 되묻게 한다. 같은 발표의 음성 시연 자막에도 이름이 같은 동료 후보를 열거하며 어느 쪽인지 묻는 대목이 있고, 말한 쪽은 에이전트로 보이나 자막만으로는 확정하지 못했다.
+- **사용자가 고르는 주입**: 플러그인 확장은 사이드바 항목, 사이드 패널, 전체 화면 뷰, 파일 뷰어와 composer를 바꾸게 해 준다고 소개됐고, 개발자 문서도 전체 화면으로 여는 사이드바 앱, 대화 옆 패널, 파일 뷰어와 편집기, composer 멘션(데스크톱 composer 한정)을 든다. 디자인 시스템 탐색 화면을 플러그인으로 만들고 고른 구성요소의 정의를 composer에 넣는 시연은 에이전트가 검색해 찾는 방식과 다른 경로다. 검색 비용과 오선택은 줄지만 고르는 일을 사람이 맡는다(이 문서의 해석).
+- **문서별 지침과 갱신**: 공유 편집 페이지(ChatGPT Space)는 에이전트가 페이지를 고칠 때의 지침과 정기 갱신 지시를 페이지마다 둘 수 있고, 발표자는 이를 페이지용 AGENTS.md에 비유했다. 바뀐 명령을 반영하지 못해 낡는 런북 같은 문서에 쓴다는 설명이며, 갱신 결과를 누가 검증하는지는 설명하지 않았다. 문서는 페이지에 에이전트용 지침 블록(Agent Instructions)을 넣을 수 있다고 적지만, 정기 갱신(Keep Updated)은 출시 시점에 제공되지 않으며 페이지나 지침에 주기를 적는 것만으로는 예약 작업이 만들어지지 않으니 대화로 예약을 만든 뒤 실제 실행과 페이지 변경을 확인하라고 적는다. 계획을 저장소 PR에서 고치면 반복 수정과 피드백 수집이 번거롭다는 점이 이 페이지를 쓰는 이유로 소개됐다.
+
 ## 도입 체크포인트
 
 - 저장소 지침에 호환성 목표를 적었는가. 적지 않았다면 기본값(Widely available)이 의도와 맞는가
@@ -50,6 +61,7 @@ Chrome은 이 스킬을 Chrome DevTools for agents와 함께 쓰라고 권한다
 - 정적 스캔이 제안한 변경을 실행 검사와 화면 확인으로 검증하는가
 - 지침 묶음의 갱신 경로를 아는가. CLI로 설치하면 자동 갱신이 켜지지만 다른 설치 경로 상당수는 자동 갱신을 지원하지 않는다
 - 외부 스킬이므로 설치 전 내용과 출처를 검토하는가([[Agent-Skills#설치 경로와 신뢰 — 표면마다 따로, 출처는 먼저|외부 스킬 신뢰]])
+- 저장소 밖 맥락을 연결로 공급한다면 연결 계정의 읽기와 쓰기 범위, 여러 표면에서의 공유 여부와 대상이 여럿일 때 되묻는 규칙을 정했는가
 
 ## 출처
 
@@ -58,6 +70,11 @@ Chrome은 이 스킬을 Chrome DevTools for agents와 함께 쓰라고 권한다
 - [modern-web-guidance — GitHub, GoogleChrome](https://github.com/GoogleChrome/modern-web-guidance) — 2026-11-18 README의 목적, 기능 범위, 토큰 절감 방식, `legacy-scan` 명령, 공동 관리와 라이선스 대조
 - [OpenAI API, Using GPT-6.2](https://developers.openai.com/api/docs/guides/latest-model) — 2026-11-18 OpenAI Docs 스킬을 쓰는 마이그레이션 안내 확인
 - 사용자 제공 GeekNews 알림(2026-11-17): Modern Web Guidance 1.0. 학습 계기이며 게시물 번호는 확인하지 못했다
+- [New Ways of Working with Codex — AI Engineer, Dominik Kundel, Charlie Guo](https://www.youtube.com/watch?v=IPh9YsWvDQk) — 2026-11-17 공개 영상의 03:52~13:05와 17:52~20:52를 사람이 단 영어 자막과 대조. 저장소 밖 맥락의 플러그인 연결, 플러그인 확장과 공유 편집 페이지 절의 근거이며 기능 설명은 아래 공식 문서로 대조했다.
+- [OpenAI, Plugins](https://learn.chatgpt.com/docs/plugins) — 2026-11-21 플러그인 구성, 지원 표면과 IDE 확장 미지원, 공용 디렉터리와 마켓플레이스, 관리자의 GitHub 마켓플레이스 동기화 대조
+- [OpenAI Developers, Plugin extensions](https://developers.openai.com/plugins/build/extensions) — 2026-11-21 확장 진입점(사이드바 앱, 패널, 파일 뷰어, composer 멘션) 대조
+- [OpenAI, Work with agents in Space](https://learn.chatgpt.com/docs/space/agents) — 2026-11-21 Keep Updated 미제공과 예약 작업 확인 안내 대조. 지침 블록은 [Space pages](https://learn.chatgpt.com/docs/space/pages)로 확인
+- 사용자 제공 GeekNews 알림 요약(https://news.hada.io/topic?id=37556): 같은 발표 소개. 학습 계기이며 게시물 본문은 확인하지 못했다
 
 ## 관련 문서
 
@@ -67,3 +84,5 @@ Chrome은 이 스킬을 Chrome DevTools for agents와 함께 쓰라고 권한다
 - [[LLMs-Txt|llms.txt]] — 문서 위치 안내와의 차이
 - [[Agentic-Verification|에이전트 기반 검증]] — 틀린 구현을 거절하는 판정식
 - [[Browser-Main-Thread-Scheduling|메인 스레드 작업 스케줄링]] — 실행 확인의 성능 예산
+- [[ChatGPT-Dots|ChatGPT dots]] — 플러그인 연결을 쓰는 상시 실행 에이전트의 권한과 위임 계약
+- [[MCP-Security-Boundaries|MCP 보안 경계]] — 연결한 서비스의 자격 증명과 정책 범위

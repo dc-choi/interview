@@ -16,7 +16,7 @@ LLM 출력의 평가와 모른다고 말하는 능력, 비전 모델의 합성 �
 - [x] [[ML-Proxy-Discrimination|대리변수와 모델 공정성]] — 민감 속성 제외의 한계, 집단별 평가 기준과 적용 순서
 - [x] [[Crowdsourced-Human-Evaluation|크라우드소싱 사람 평가]] — 평가자 자격과 응답 검수, 주의력 검사와 Mechanical Turk 종료
 - [x] [[AI-Consciousness-Evidence|AI 의식의 증거]] — 자기보고와 행동, 내부 구조 지표와 기능 검증의 구분
-- [x] [[Benchmark-Coverage-and-Workplace-Performance|벤치마크 평가 범위와 업무 성과]] — 업무 과업 매핑, AAII v5 구성 변경과 비공개 평가, 날짜와 제공 상태의 비교, 변형 과제로 본 일반화와 숨은 테스트 추정
+- [x] [[Benchmark-Coverage-and-Workplace-Performance|벤치마크 평가 범위와 업무 성과]] — 업무 과업 매핑, AAII v5 구성 변경과 비공개 평가, 날짜와 제공 상태의 비교, 변형 과제로 본 일반화와 숨은 테스트 추정, 느린 에이전트 실행의 단계당 시간과 단계 수 분해
 - [x] [[LLM-Perplexity-and-Benchmarks|perplexity와 객관식 벤치마크 채점]] — perplexity의 정의, 범위와 비교 조건, 교차 엔트로피의 하한, 사후학습 뒤의 보정 저하, MMLU 채점 구현에 따른 점수 차, n-gram 겹침과 순서 교환 오염 검사
 - [x] [[Synthetic-Vision-Data-Evaluation|합성 비전 데이터 평가]] — 생성과 인식 모델의 분리, 라벨 검수와 실제 데이터 평가
 - [x] [[Model-Feedback-Loop-and-Validation|모델 피드백 루프와 검증]] — 실험 결과 환류, shadow 비교와 실제 행동의 구분
@@ -35,7 +35,7 @@ LLM 출력의 평가와 모른다고 말하는 능력, 비전 모델의 합성 �
 - [x] [[Operational-Agent-Replay-Evaluation|운영 에이전트의 피드백 기반 평가와 리플레이]] — 운영 댓글을 정답으로 쓰는 현황 집계, 사람이 확인한 원인으로 묶는 정확도, 알람 시점으로 되돌린 반복 재실행, 회귀, 개선, 진화의 구분, 그 시점에 적절했던 동작을 기준으로 한 판정, 원문의 대상, 피드백, 기준 분리
 - [x] [[Responsible-AI-Lens|책임 있는 AI 설계 검토 (AWS Responsible AI Lens)]] — 열 가지 차원과 여덟 초점 영역, 좁은 사용 사례, 위험 매트릭스, 예/아니오 출시 기준과 결정의 신뢰도, 답변과 행동의 위험 차이
 - [x] [[Agent-Recovery-Evaluation|에이전트 복구 평가]] — 같은 상태에서 가른 복구와 무복구 갈래, 구제와 훼손 4분류, 순효과, 훼손 가중 개입 규칙
-- [x] [[AI-Research-Innovation-Evaluation|AI 연구와 알고리듬 혁신 평가]] — InnovationEval의 기준선, 계산 예산과 연구 신규성, 연구 에이전트 산출물의 주장 원장, 단계별 재검증과 적대적 검토
+- [x] [[AI-Research-Innovation-Evaluation|AI 연구와 알고리듬 혁신 평가]] — InnovationEval의 기준선, 계산 예산과 연구 신규성, 연구 에이전트 산출물의 주장 원장, 단계별 재검증과 적대적 검토, 이론물리 미해결 문제 사례의 사람 역할, 선택 효과와 공개 범위
 - [x] [[Neural-Circuit-Interpretability|뉴런과 회로 해석]] — 원래 좌표 해석 가설, 관찰과 인과 개입의 구분
 - [x] [[AI-Assisted-Mathematical-Research|AI 보조 수학 연구]] — 과업 분해, 형식 증명과 명제의 의미, 독립 사고와 공동체의 이해
 - [x] [[AI-Alignment-and-Control|AI 목표 정렬과 행동 통제]] — 능력과 목표, 평가와 배포, 차등적 기술 발전과 조건부 위험

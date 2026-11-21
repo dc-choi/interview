@@ -12,7 +12,7 @@ aliases: ["Marketing", "마케팅"]
 ## 목차
 - [x] [[Advertising-Reference-Research|광고 레퍼런스 조사]] — 광고 영상, 캠페인 기사와 수상작의 탐색 범위, 열람 조건과 성과 검증의 구분
 - [x] [[Creator-Brand-Collaboration|크리에이터와 브랜드의 협업 범위]] — 시청자 적합성, 표현과 수정 범위, 제작과 광고 활용 권한의 구분
-- [x] [[Website-Traffic-and-Ad-Revenue|웹사이트 트래픽과 광고 수익]] — 방문과 페이지뷰, 외부 추정치와 Page RPM 시나리오의 구분
+- [x] [[Website-Traffic-and-Ad-Revenue|웹사이트 트래픽과 광고 수익]] — 방문과 페이지뷰, 외부 추정치와 Page RPM 시나리오의 구분, 검색 화면 변화와 검색 의존 사이트의 대응
 - [x] [[YouTube-Thumbnail-Testing|유튜브 제목과 썸네일 실험]] — 동시 비교, 시청 시간 기준과 제작 비용의 구분
 - [x] [[YouTube-Revenue-and-Production-Cost|유튜브 수익 단가와 제작 원가]] — RPM과 CPM, 예상과 확정 수익, 손익분기 조회수, 단계별 제작 원가
 - [x] [[Promotional-Products-Execution|판촉물 제작과 납기]] — 샘플, 배송 보상의 조건, 재고와 배포 성과의 구분
@@ -41,7 +41,8 @@ aliases: ["Marketing", "마케팅"]
 - [x] [[Meta-Paid-Ads|Meta 유료 광고 실행 구조 (픽셀과 전환 API 중복 제거, 캠페인-세트-광고와 1-1-N, 소재 4축 조합, 문제와 자기 인식에 맞춘 메시징, 리드 선별과 고객당 비용, 지표 해석, 소재 피로)]]
 - [x] [[Performance-Ad-Budget-and-Bidding|퍼포먼스 광고의 예산과 입찰]] — 한계 ROAS 곡선과 최적 예산, 입찰의 다섯 문제, 캠페인 목표와 데이터와 탐색 여지, 소재 대량 실험, 유료 광고의 변수 통제, 1인 개발 게임의 증액분 설치 단가와 손익 사례
 - [x] [[CTV-Performance-Advertising|CTV 퍼포먼스 광고와 증분 측정]] — 브랜드 TV 광고와의 차이, 가구 단위 기기 연결, 클릭 기여와 증분 실험의 차이, 사례 수치의 해석
-- [x] [[AI-Search-Visibility|AI 검색 가시성 측정 (가시성 4층, Search Console 생성 AI 리포트의 범위, 노출과 인용이 성과가 아닌 이유, 엔진별 출처 차이)]]
+- [x] [[AI-Search-Visibility|AI 검색 가시성 측정 (가시성 4층, Search Console 생성 AI 리포트의 범위, 노출과 인용이 성과가 아닌 이유, 엔진별 출처 차이, AI 요약의 클릭 감소 실험과 인용 근거의 강도)]]
 - [x] [[App-Store-Listing-Localization|앱스토어 등록 정보의 기본 언어와 현지화 (스토어와 기기 언어별 선택, 기본 언어 변경의 심사 조건, Google Play 자동 번역)]]
 - [x] [[AI-Generated-Content-Monetization|AI 대량 생성 콘텐츠 수익화 (차별화는 컨셉, 플랫폼 정책 위험, 합성 콘텐츠 표시, 생성 도구의 상업 이용 조건, 짧은 영상의 제작과 피드백)]]
+- [x] [[AI-Generated-Content-Monetization-Disclosure|AI 사용 공개와 사람 제작 표시 (Steam의 AI 공개와 탐색 필터, human-made 표현, 자기 인증 방식의 책 인증 표시와 Human Reserved)]]
 - [x] [[Brand-Identity-Design-Process|브랜드 정체성 설계 (고객 조사, 문제 정의, 시안 비교, 적용과 성과 확인)]]

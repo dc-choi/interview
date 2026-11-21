@@ -1,7 +1,7 @@
 ---
 tags: [os, thread, scheduling, sleep, timer, race-condition, randomness]
 status: done
-verified_at: 2026-09-27
+verified_at: 2026-11-21
 category: "OS&런타임(OS&Runtime)"
 aliases: ["Sleep and Timing", "Sleep 함수", "sleep", "타이머 해상도", "Timer Resolution", "고해상도 타이머", "QueryPerformanceCounter", "타이밍 의존 버그"]
 ---
@@ -63,6 +63,7 @@ console.log(samples); // 실행 예: [ 1446n, 1284n, 1316n, 1326n, 1359n ] (드�
 - **단위 변환**: 정수 나눗셈은 나머지를 버리므로 마이크로초로 바꿀 때는 먼저 1,000,000을 곱하고 주파수로 나눈다. 64비트 곱셈의 오버플로와 double 변환의 정밀도 손실도 함께 본다.
 - **TSC 직접 읽기**: `RDTSC`로 CPU 카운터를 직접 읽는 방식은 Microsoft가 강하게 말린다. 불변 TSC가 없는 하드웨어, 코어 간 비동기화, 가상 머신 이동에서 결과를 믿을 수 없다.
 - **Linux와 Node.js**: Linux는 `clock_gettime(CLOCK_MONOTONIC)`을 쓴다. 이 시계는 관리자의 시각 변경 같은 불연속 점프의 영향을 받지 않고 뒤로 가지 않는다. 다만 NTP의 주파수 조정은 받고, 시스템이 일시 중지된 시간은 세지 않는다. 일시 중지 시간까지 포함하려면 `CLOCK_BOOTTIME`을 쓴다. Node.js는 `process.hrtime.bigint()`나 `performance.now()`를 쓴다([[Application-Performance-Monitoring|APM 측정 기본기]]).
+- **기간은 시각과 다른 타입으로 넘긴다**: 잰 기간과 타임아웃을 단위 없는 정수(초, 밀리초, 나노초)로 주고받으면 단위를 잘못 읽기 쉽다. Go `time.Duration`, Java `java.time.Duration`, Rust `std::time::Duration`처럼 기간을 시각과 시간대에서 분리한 타입으로 두는 언어가 많고, PHP도 8.6(2026-11-19 출시)에서 나노초 정밀도의 `Time\Duration`을 추가해 타임아웃과 벤치마크 값에 쓰게 했다. 기간 타입은 값을 담을 뿐이므로 측정 자체는 여전히 단조 증가 시계로 한다.
 
 ## sleep으로 순서를 맞추는 코드
 
@@ -121,6 +122,8 @@ sleep 전후를 고해상도 카운터로 재면 매번 값이 달라지고, 그
 - [NIST, SP 800-90C: Recommendation for Random Bit Generator (RBG) Constructions](https://csrc.nist.gov/pubs/sp/800/90/c/final)
 - [IETF, RFC 3797: Publicly Verifiable Nominations Committee (NomCom) Random Selection](https://www.rfc-editor.org/rfc/rfc3797.html)
 - [Oracle, The Java Language Specification SE 26, 17.3 Sleep and Yield](https://docs.oracle.com/javase/specs/jls/se26/html/jls-17.html#jls-17.3)
+- [PHP RFC, Duration class](https://wiki.php.net/rfc/duration_class) — Implemented, 2026-11-21 대조. 정수 단위 인자의 문제, 나노초 정밀도, Go, Java, Rust의 Duration을 본뜬 설계
+- [PHP 8.6 Release Announcement — PHP](https://www.php.net/releases/8.6/en.php) — 2026-11-19 출시, 2026-11-21 대조
 
 ## 관련 문서
 

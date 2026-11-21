@@ -43,22 +43,9 @@ verified_at: 2026-09-30
 - daemon을 제어할 수 있으면 host root와 같은 권한을 갖는다. host directory를 접근 제한 없이 container에 mount할 수 있기 때문이며, `docker` group 가입도 root 수준 권한 부여다. `docker.sock`을 container에 mount하면 그 container에 daemon 제어권을 넘기는 셈이다.
 - build context도 builder로 전송된다. 범위와 `.dockerignore`는 [[Docker-Core-Dockerfile#Build context|Build context]].
 
-## Docker Desktop의 Linux VM 경계
+## Docker Desktop과 호환 엔진
 
-macOS와 Windows에는 Linux container를 돌릴 Linux kernel이 없으므로 Docker Desktop은 경량 Linux VM 안에서 Engine을 실행한다. host에서 직접 도는 것처럼 보여도 경계가 하나 더 있다.
-
-- `docker info`의 `OSType`은 macOS에서도 `linux`다. `Architecture`는 `uname -m` 형식이라 Apple Silicon은 `aarch64`, Intel은 `x86_64`로 나오고 image platform 표기(`arm64`, `amd64`)와 이름이 다르다.
-- image, container, volume과 build cache는 VM disk image 파일 하나에 들어 있다. macOS는 sparse file인 `Docker.raw`, Windows WSL 2 backend는 `docker_data.vhdx`다. 그래서 host 탐색기에서 보이지 않고 `docker volume inspect`의 `Mountpoint`도 VM 안 경로다.
-- host disk에 여유가 있어도 VM disk 한도에서 `no space left on device`가 날 수 있다. `docker system df -v`로 내부 사용량을 보고 [[Image-Size-Optimization#측정과 안전한 정리|정리 정책]]을 적용한다. macOS FAQ 기준 공간은 image를 지울 때 회수되며 실행 중 container 안에서 파일을 지우는 것만으로는 줄지 않고, host 파일 크기가 그대로면 `docker run --privileged --pid=host docker/desktop-reclaim-space`로 회수를 요청한다.
-- 설정의 Resources, Advanced에서 Disk image location으로 위치를 옮기고, Mac, Linux, Windows Hyper-V backend에서는 Disk usage limit으로 engine이 쓸 최대 용량을 정한다. WSL 2 backend의 memory, CPU 한도는 WSL 2 utility VM 설정을 따른다.
-
-local Desktop에서 되던 구성이 Linux 서버에서 실패할 때 먼저 볼 차이다.
-
-| 차이 | Docker Desktop | Linux 서버 |
-|---|---|---|
-| host network mode | VM의 network다. 4.34 이상에서 설정을 켜야 host의 TCP, UDP에 닿는다([[Docker-Bridge-Networking#기본 network와 driver|기본 network]]) | container가 host network stack을 그대로 쓴다 |
-| bind mount 권한 | VM 경계를 넘는 file sharing(VirtioFS 등)을 거친다. 소유권 mapping은 공식 문서에 명시가 없다(2026-09-30 확인) | host 파일의 numeric UID, GID로 판정해 `permission denied`가 날 수 있다([[Docker-Core-Storage#Bind mount 문법과 함정|bind mount 권한]]) |
-| CPU architecture | Apple Silicon은 arm64. 다른 architecture image도 내장 QEMU emulation으로 돈다 | emulation을 등록하지 않으면 다른 architecture image가 실행되지 않는다([[#CPU architecture 불일치|아래]]) |
+macOS와 Windows의 Docker Desktop은 경량 Linux VM 안에서 Engine을 실행하므로 disk image, host network, bind mount 권한과 CPU architecture 동작이 Linux 서버와 다르다. 그 경계와 OrbStack, Colima, Kiri 같은 호환 엔진의 차이는 [[Docker-Core-Desktop|Docker Desktop의 Linux VM 경계와 호환 엔진]]으로 나눴다.
 
 ## 실행 수명주기와 CLI
 
@@ -123,19 +110,9 @@ build platform을 지정하지 않으면 image는 build를 수행한 BuildKit da
 - `docker image inspect --format '{{.Os}}/{{.Architecture}}' IMAGE`로 image platform을 확인하고 실행 host의 architecture와 대조한다.
 - `failed to unpack image on snapshotter overlayfs: mismatched image rootfs and manifest layers`는 architecture 불일치로 단정하지 않는다. 공개 issue에서는 containerd image store가 지원하지 않는 layer media type이나 plugin content를 받을 때 이 문구가 보고됐다. image를 지우고 다시 pull해 local store 문제를 먼저 배제한다.
 
-## Engine 업데이트 뒤 검증 경로
+## Engine 업데이트 뒤 검증
 
-컨테이너 기동은 실행 경로 하나의 결과다. Docker Engine 29.9.0(2026-10-08) 릴리스 노트는 containerd image store에서 이미 unpack된 레이어 때문에 필요한 blob을 받지 않아 실행은 되지만 export와 push가 불완전해지는 오류의 수정을 기록한다. `lazy-pull`은 snapshotter가 이미 제공하는 레이어 내용의 다운로드를 생략하도록 제어하며, 알려진 remote snapshotter인 `nydus`, `overlaybd`, `soci`, `stargz`에서 기본 활성화된다. 모든 저장 방식에서 다운로드를 생략한다는 뜻은 아니다.
-
-같은 릴리스의 HTTP/2 수정은 daemon과 deprecated `/grpc`, BuildKit의 frontend용 gRPC 서버 경로를 다룬다. Windows 수정은 data root에 쓰기 권한이 있는 주체가 junction을 둔 조건에 관한 것이다. 암호화 overlay 수정은 커널 암호화 설정 오류 때 일부 노드로 평문이 송신될 수 있던 문제다. 수신 peer가 이를 버려도 단방향 흐름이나 완료되지 않은 handshake의 기밀성 노출은 남을 수 있다.
-
-운영 적용 제안: 사용하는 경로에 맞춰 기동, export/push, 외부 API와 frontend 접근, Windows data root 권한, overlay 송신 암호화를 따로 확인한다. 연결 실패를 암호화 성공으로 해석하지 않는다. 2026-10-23 위 릴리스 범위를 대조했으며 실제 환경 재현 결과나 최신 버전 권고는 아니다. 기존 본문의 전체 검증일은 유지한다.
-
-한 패치 릴리스에 묶인 보안 수정도 영향 조건이 서로 다르다. 29.9.3(2026-11-03)의 보안 수정은 여섯 건이며, 넷은 환경 조건에 따라 영향이 갈리고 둘은 입력 처리 결함이다. Swarm overlay network는 firewalld가 Docker의 iptables 규칙을 비운 뒤 암호화와 spoofing 방어가 빠지던 문제(CVE-2026-115538)이고, SwarmKit은 유효한 worker 인증서와 개인 키를 가진 공격자가 leader 변경 직후 짧은 구간에 manager 인증서를 얻을 수 있던 문제(CVE-2026-115539)다. BuildKit v0.34.2는 control API에 접근한 악의적 client가 state directory 밖 파일에 extended attribute를 설정해 host 권한 상승으로 이어질 수 있던 문제(GHSA-w26x-xg27-7qjc)와, 같은 Git source reference의 metadata를 두 번 해석하는 build가 resolver cache poisoning으로 daemon을 crash시킬 수 있던 문제(GHSA-2fqp-xg6f-v7gj)를 고쳤다. 나머지는 조작된 RSA key 파싱의 CPU 과다 사용(CVE-2026-116587)과 zstd 해제 중 panic(CVE-2026-116591)이다. 같은 릴리스는 부하 중 container, image, system API 요청에서 daemon이 멈추던 문제도 고쳤다.
-
-릴리스 노트는 항목별 심각도나 영향 버전의 전체 범위를 적지 않으며, 이는 각 항목에 연결된 GHSA 보안 권고에서 확인한다. CVE-2026-115538 권고는 encrypted overlay network를 쓰는 Swarm node에서 firewalld가 다른 애플리케이션의 iptables 규칙을 지우는 경우로 조건을 좁히고, 이때 트래픽이 암호화 없이 나가도 dockerd가 로그를 남기지 않는다고 설명한다. 그래서 overlay 통신이 된다는 사실은 암호화가 유지된다는 증거가 아니다.
-
-운영 적용 제안: Swarm에서 encrypted overlay network와 firewalld를 함께 쓰는지, worker 인증서가 노출될 수 있는지, BuildKit control API에 누가 접근하는지, Git source build를 쓰는지를 환경별로 대조해 적용 순서를 정한다. 29.10.0(2026-11-16)은 firewalld가 멈추거나 daemon보다 늦게 시작한 뒤 iptables 규칙이 복원되지 않던 문제의 수정을 별도 항목으로 기록한다. 같은 권고는 firewalld 중지와 늦은 시작도 CVE의 유발 조건으로 들지만, 두 수정의 관계는 릴리스 노트와 권고 어디에도 적혀 있지 않다. 따라서 firewalld를 쓰는 Swarm 환경에서 29.9.3만으로 이 경우까지 막힌다고 단정하지 않는다. 2026-11-19 릴리스 노트와 권고로 대조했으며 실제 환경 재현은 하지 않았다.
+Engine 업데이트 뒤에는 기동 외에 export와 push, 외부 API, overlay 송신 암호화처럼 쓰는 경로마다 확인할 것이 다르다. 29.9.0, 29.9.3과 29.10.0의 수정 범위와 영향 조건은 [[Docker-Core-Engine-Updates|Docker Engine 업데이트 뒤 검증 경로]]로 나눴다.
 
 ## 면접 포인트
 
@@ -152,8 +129,6 @@ Q. `docker stop`, `docker kill`, `docker rm -f`는 무엇이 다른가?
 - stop은 SIGTERM 뒤 grace period를 주고, kill과 `rm -f`는 SIGKILL로 즉시 끝내 graceful shutdown을 건너뛴다. `rm -f`는 writable layer까지 지운다
 
 ## 출처
-- [Docker Engine version 29 release notes — Docker Docs](https://docs.docker.com/engine/release-notes/29/) — 29.9.0의 수정 범위와 snapshotter 조건, 2026-10-23 확인. 29.9.3 보안 수정과 29.10.0 firewalld 복원 수정, 2026-11-19 확인.
-- [GHSA-6jhp-7446-hf7f 보안 권고 — moby/moby](https://github.com/moby/moby/security/advisories/GHSA-6jhp-7446-hf7f) — CVE-2026-115538의 유발 조건과 로그 부재, 2026-11-19 확인.
 - [Docker Docs — What is a container?](https://docs.docker.com/get-started/docker-concepts/the-basics/what-is-a-container/)
 - [Docker Docs — Dockerfile reference](https://docs.docker.com/reference/dockerfile/)
 - [Docker Docs — Volumes](https://docs.docker.com/engine/storage/volumes/)
@@ -162,9 +137,6 @@ Q. `docker stop`, `docker kill`, `docker rm -f`는 무엇이 다른가?
 - [Docker Docs — Linux post-installation steps](https://docs.docker.com/engine/install/linux-postinstall/)
 - [Docker Docs — Troubleshooting the Docker daemon](https://docs.docker.com/engine/daemon/troubleshoot/)
 - [Docker Docs — Docker contexts](https://docs.docker.com/engine/manage-resources/contexts/)
-- [Docker Docs — Docker Desktop settings](https://docs.docker.com/desktop/settings-and-maintenance/settings/)
-- [Docker Docs — FAQs for Docker Desktop for Mac](https://docs.docker.com/desktop/troubleshoot-and-support/faqs/macfaqs/)
-- [Docker Docs — Back up and restore Docker Desktop data](https://docs.docker.com/desktop/settings-and-maintenance/backup-and-restore/)
 - [Docker Docs — docker container run](https://docs.docker.com/reference/cli/docker/container/run/)
 - [Docker Docs — docker container stop](https://docs.docker.com/reference/cli/docker/container/stop/)
 - [Docker Docs — docker container kill](https://docs.docker.com/reference/cli/docker/container/kill/)
@@ -204,6 +176,8 @@ Q. `docker stop`, `docker kill`, `docker rm -f`는 무엇이 다른가?
 - [[Container-Linux-Internals|Linux 컨테이너 내부 구조]]
 - [[Docker-Core-Storage|Docker 데이터 영속성]]
 - [[Docker-Core-Dockerfile|Dockerfile과 build context]]
+- [[Docker-Core-Desktop|Docker Desktop의 Linux VM 경계와 호환 엔진]]
+- [[Docker-Core-Engine-Updates|Docker Engine 업데이트 뒤 검증 경로]]
 - [[Docker-Bridge-Networking|Docker bridge networking]]
 - [[Docker-Compose|Docker Compose]]
 - [[Multi-Stage-Build|Multi-stage build]]

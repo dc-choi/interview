@@ -14,7 +14,7 @@ aliases: ["보안(Security)", "Security Index"]
 - [[Smart-Device-Data-Collection|스마트 기기의 데이터 수집과 거부의 범위]] — TV의 자동 콘텐츠 인식(ACR)과 수집 주체, 기본값과 동의 단위, 끈 뒤에도 남는 전송과 오프라인 버퍼, 같은 네트워크의 기기 탐색, 음성 저장, 설정을 바꿀 수 없는 주변인
 - [[Smart-Contract-Price-Feed-Validation|스마트 컨트랙트 가격 피드 검증]] — 부호, 자릿수와 최신성, 누적값과 TWAP, 장애 시 기능 경계
 - [[IoT-Device-and-Firmware-Security|IoT 기기 인증과 펌웨어 보안]] — 식별과 개인키 보유 증명, 인증서 교체, secure boot와 OTA 검증, 업데이트 복구와 지원 기간, 클라우드 의존 기기의 평문 신뢰 앵커와 로컬 동작
-- [[Vulnerability-Operations-AI-Agents|취약점 운영(VulnOps)과 보안팀의 AI 에이전트 활용]] — 고치는 속도에 맞춘 운영, 취약점 원장과 중복 묶기, 배포 확인으로 판정하는 완료, 에이전트의 수행과 검증 분리, 여러 모델의 합의와 반증, 소규모 보안팀의 도구 직접 개발, Project Zero의 공개 기한 단축과 패치 격차, Apache mod_http2의 독립 발견과 HTTP/2 끄기 완화
+- [[Vulnerability-Operations-AI-Agents|취약점 운영(VulnOps)과 보안팀의 AI 에이전트 활용]] — 고치는 속도에 맞춘 운영, 취약점 원장과 중복 묶기, 배포 확인으로 판정하는 완료, 에이전트의 수행과 검증 분리, 여러 모델의 합의와 반증, 소규모 보안팀의 도구 직접 개발, Project Zero의 공개 기한 단축과 패치 격차, Apache mod_http2의 독립 발견과 HTTP/2 끄기 완화, nginx HTTP/2와 nginx2root의 기능별 노출, 완화 범위와 실행 중 워커 확인
 - [[Detection-as-Code-AI-SOC|탐지 룰의 코드화(Detection as Code)와 AI 에이전트 보안관제]] — 콘솔 편집의 형상 불일치, 룰 생성과 원본과 배포의 분리, 컴파일러가 주입하는 공통 필드, 임시 탐지 룰과 커버리지 매트릭스, 경보 판정 흐름과 코드 검증, 확인 못 함과 없음의 구분, 싼 모델 분업의 한계, 로컬 LLM 분석 보조와 에이전트 실행의 EDR 흔적
 - [[Security-Alert-Triage-Automation|보안 알림 triage 자동화]] — 즉시, 보류, 자동 확인의 세 갈래 판정과 정식 결과로서의 보류, shadow 운영 뒤 켜는 자동 종결, 하루치로 보는 EDR과 DLP 알림, 감시 도구의 감시, Frequency, SNR, 엔트로피로 신호를 먼저 고르는 방식, 확인 범위를 밝히는 조사 에이전트와 조사 경로를 고치는 오답 수정
 - [[AI-Accelerated-Threat-Defense|악용 시간 단축과 AI 공격에 대비하는 방어]] — 악용까지의 시간 관측값과 읽는 법, 자산과 소프트웨어 목록, 패치 작성과 적용의 병목, 번들 런타임과 배포 형태별 수정 경로, 패치 시나리오와 단계적 배포, 업데이트 기본값과 패치 물결, 오염된 업데이트와 관찰 기간의 한계, 독립된 다층 통제, AI 방어 자동화의 권한 경계
@@ -34,7 +34,8 @@ aliases: ["보안(Security)", "Security Index"]
 - [[Adversarial-Examples-Decision-Based-Attacks|적대적 예제와 결정 기반 공격]] — 위협 모델과 쿼리 예산, Boundary Attack과 HopSkipJumpAttack, 잠재 공간 변형, 상태 기반 탐지와 강건성 평가 도구
 - [[Agent-Execution-Isolation|에이전트 실행 격리]] — MXC 백엔드별 강제 범위, 내부자 위험과 조건부 백도어, 자기 호스팅과 egress 통제의 구분
 - [[Memory-Safety-Vulnerabilities|메모리 안전성 취약점]] — 읽기/수명 결함, PHP2Shell의 시도와 성공 및 권한 상승, EDK II의 PXE 부팅 노출, 설정 완화와 앞단 WAF 규칙의 범위, 업데이트와의 구분, 조사 시작일
-- [[VM-Guest-to-Host-Escape|VM 게스트에서 호스트로의 탈출]] — 하이퍼바이저 밖 호스트 커널 경로까지 포함한 격리 경계, 검사 후 사용 결함, 게스트가 아닌 호스트 패치와 롤링 재부팅, 에이전트 샌드박스 다층 방어, 공유 커널 컨테이너에서 microVM으로의 전환, PwnEscape 사례
+- [[VM-Guest-to-Host-Escape|VM 게스트에서 호스트로의 탈출]] — 하이퍼바이저 밖 호스트 커널 경로까지 포함한 격리 경계, 검사 후 사용 결함, 게스트가 아닌 호스트 패치와 롤링 재부팅, 에이전트 샌드박스 다층 방어, PwnEscape 사례와 배포판 수정 상태
+- [[VM-Guest-to-Host-Escape-Shared-Kernel|공유 커널 컨테이너에서 호스트로의 탈출]] — 공유 커널 컨테이너에서 microVM으로의 전환, nginx2root의 SCTP 커널 단계와 수정 커밋 상태, 모듈 차단, 기본 seccomp의 한계
 - [[Enterprise-Browser-Control|기업용 브라우저 통제]] — Firefox Enterprise의 관리 위치와 early access
 - [[Bot-Traffic-Operations|봇 트래픽 운영]] — 요청 로그와 사용자 분석, 차단과 부하 측정, AI 수집기 이름과 실제 요청자, robots.txt 응답 코드와 그룹 규칙, 관찰부터 캐시, 요청 제한, WAF까지 쌓는 순서, 함정 링크 자동 차단과 오탐
 - [[Signed-Payload-Deserialization|서명된 페이로드 역직렬화]] — 키 유출과 객체 복원 위험
@@ -55,7 +56,7 @@ aliases: ["보안(Security)", "Security Index"]
 - [[tech/security/auth/인증(Auth)|인증 (Auth)]] — Session과 비밀번호 변경 재인증, JWT, OAuth2, Token Exchange, FIDO, Refresh Token, Spring Security의 자동 로그인 저장소와 검증
 - [[tech/security/crypto/암호(Crypto)|암호 (Cryptography)]] — 패스워드 해싱, 공개키, RSA, 난수와 파일 키, 저장장치 인증과 휴대폰 잠금 상태, 이메일 암호화, 인터넷 투표의 검증
 - [[Certificate-Lifecycle-Management|인증서 수명주기 관리]] — 인벤토리, 공인 TLS 유효기간 단축, 갱신 후 적용 확인과 복구 경계
-- [[tech/security/web-attacks/웹공격(WebAttacks)|웹 공격 (Web Attacks)]] — 아카이브 파서 차이, CORS, CSRF, XSS와 프레임 메시지, SQL/Command Injection, 파일 업로드, IDOR, SSRF, 공유 링크
+- [[tech/security/web-attacks/웹공격(WebAttacks)|웹 공격 (Web Attacks)]] — 아카이브 파서 차이, 정규식 엔진의 공격면, CORS, CSRF, XSS와 프레임 메시지, SQL/Command Injection, 파일 업로드, IDOR, SSRF, 공유 링크
 - [[Actuator-Exposure|Actuator 노출 (Security Misconfiguration)]] — 운영 엔드포인트 노출, 필요한 것만 열기
 - [[tech/security/secrets/Secret-Management|시크릿 관리 (Secret Management)]] — Vault, K8s Secret 제거, CSI/Injector/AVP/ESO 주입, Auto Unseal, 동적 시크릿
 - [[tech/security/secrets/API-Key-Exposure|API 연동 키 노출과 최소 권한 스코프]] — 자격증명 노출, 권한 범위가 곧 공격 표면, 클라이언트/서버 키 구분, 정상 요청 위장 탐지, 사용자 키를 맡는 서비스(BYOK)의 통제와 사고 후 조치

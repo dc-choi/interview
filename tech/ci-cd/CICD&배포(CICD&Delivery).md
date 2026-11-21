@@ -14,7 +14,7 @@ aliases: ["CI/CD&배포(CI/CD&Delivery)", "CI/CD & Delivery", "CI/CD&배포"]
 
 ### 버전 관리
 
-- [[Server-Centric-Version-Control|서버 중심 버전 관리]] — Scion, 체크아웃 비용, 중앙 서비스 의존과 병합 뒤 검사, Git 프로토콜을 유지한 에이전트 규모 저장 계층
+- [[Server-Centric-Version-Control|서버 중심 버전 관리]] — Scion, 체크아웃 비용, 중앙 서비스 의존과 병합 뒤 검사, Git 프로토콜을 유지한 에이전트 규모 저장 계층, ABFS의 지연 로딩 작업 사본
 
 - [x] [[GitHub-Repository-Operations-Auth-and-Signing#개인 계정과 Enterprise Managed Users의 경계|GitHub 관리형 계정 전환]] — 계정 통제, 외부 협업과 Importer가 옮기지 않는 배포 설정
 - [x] [[Git-Object-Format|Git 객체 형식과 SHA-256 호환성]] — 객체 ID 길이, 현재 지원과 전환 계획, CI와 외부 도구 점검
@@ -34,7 +34,7 @@ aliases: ["CI/CD&배포(CI/CD&Delivery)", "CI/CD & Delivery", "CI/CD&배포"]
 - [x] [[Dependency-Catalogs|모노레포 의존성 카탈로그 (버전 선언 통합, 발행과 전환 정책, pnpm/Yarn 기본 기능과 확장 구분)]]
 - [x] [[Pnpm-Install-Cache-Boundaries|pnpm 설치 캐시의 재사용 경계]] — 빌드 결과 캐시 제외와 설치 단계별 점검
 - [x] [[Mise-Project-Toolchain|mise 프로젝트 도구 관리]] — 로컬과 CI의 버전 고정, 설정 우선순위, 실행 환경과 bootstrap 경계
-- [x] [[GitHub-Actions#속도 최적화 — 병목을 측정하고 줄이기|Build cache (의존성, Docker layer, GHA cache)]] / [[Monorepo-CICD#캐시 — 가장 조용한 성능 킬러|Turborepo 캐시와 무효화 전파]]
+- [x] [[GitHub-Actions#속도 최적화 — 병목을 측정하고 줄이기|Build cache (의존성, Docker layer, GHA cache)]] / [[Monorepo-CICD#캐시 — 가장 조용한 성능 킬러|Turborepo 캐시와 무효화 전파]] / [[Monorepo-CICD#선언한 입력만 보는 캐시 키와 숨은 의존성|숨은 의존성과 읽은 파일 검증]]
 
 ### 배포
 

@@ -1,7 +1,7 @@
 ---
 tags: [ai, mathematics, research, formal-verification, learning]
 status: done
-verified_at: 2026-11-16
+verified_at: 2026-11-21
 category: "AI엔지니어링(AIEngineering)"
 aliases: ["AI-Assisted Mathematical Research", "AI 보조 수학 연구"]
 ---
@@ -51,6 +51,16 @@ Lean은 프로그래밍 언어이면서 증명 보조기다. 증명 생성 과�
 - 검토 상태: 두 저장소 모두 동료 심사 완료를 밝히지 않는다. 같은 `openai/math` 기록은 2026-10-07에 부호 오류로 다른 원고 세 편을 철회한 이력도 남겼다. 형식 증명이 있어도 공동체 검토 전에는 주장 상태로 둔다.
 - 의미의 범위: Anthropic README는 결과가 순수하게 점근적이며 실제 공식을 푸는 속도에 관해 말하지 않는다고 적는다. 위 #3-SAT 시간 상한도 n의 다항식보다 빠르게 커지므로 이 결과가 맞더라도 3-SAT의 다항 시간 해법, 즉 P와 NP 문제의 해결을 뜻하지 않으며 두 저장소도 그런 주장을 하지 않는다.
 
+### 사례: 리만 가설과 유체 방정식 특이점의 형식화 주장
+
+2026-11-20 전후로 AI를 많이 쓴 세 증명 주장이 Lean 형식화와 함께 공개됐다. 이 문서는 Lean 빌드와 커널 검사를 직접 실행하지 않으며(범위 밖), 아래 검사 결과는 모두 제3자가 공개한 기록이다. 2026-11-21 발표문, 저장소 README, 외부 검증 페이지와 Lean 공동체 저장소의 검증 노트와 CI를 대조했다. 앞의 점검 틀에 대 보면 다음과 같다.
+
+- 공리와 재검사(리만 가설과 일반화 리만 가설, Levent Alpöge): 발표문은 추가 가정 없이 형식화했다고 적고 Lean 소스만 14개 분할 압축 파일로 공개했다. Andrew Sutherland의 MIT 검증 페이지(2026-11-21 10:05 UTC 갱신, 검사는 Claude Code로 실행)에 따르면 Lean v4.33.1과 Mathlib v4.33.1로 모듈 175,187개가 오류 없이 컴파일되고, 주정리 5개는 `propext`, `Classical.choice`, `Quot.sound`에만 의존하며, Lean 핵심 밖에 선언된 공리는 없다. Mathlib과 의존성의 컴파일 파일은 공식 캐시와 바이트 단위로 같았다. leanchecker가 모든 모듈을 커널로 재검사했고, 독립 구현 검사기 nanoda와 con-leche가 내보낸 증명 전체를, lean4lean이 컴파일된 모듈 전부를 받아들였다(lean4lean은 5개 모듈에서 단계 한도를 올려 다시 돌림). con-leche의 진술 대조 모드도 5개 정리를 확인했고, 진술만 담은 challenge export의 해시는 Lean 공동체 저장소(leanprover-community/riemann-hypothesis) CI가 만든 것과 같았다. 내보낸 증명에 대한 Lean 기본 커널과 paranoid 커널 검사, comparator의 전체 실행(진술 비교와 공리 검사는 통과)은 10:05 UTC에도 진행 중이었다. 공동체 저장소의 검증 노트는 Lean 4.33.1에 4.34.1의 런타임 수정(의도적으로 만든 입력으로 공식 커널에서 False 증명을 만들 수 있는 결함)이 빠져 있어 4.33.1 커널만의 통과, 즉 빌드 성공은 제한된 증거로 보고 판정은 Lean 4.36.0과 독립 검사기에 맡긴다고 적는다. Lean 4.36에 묶인 con-leche와 con-ron은 증명에 든 반사적(reflexive) 귀납형 하나를 지원하지 않아 거부가 아닌 오류로 끝났고 lean4lean 4.36판은 4.33 출력을 읽지 못해, 비교 설정의 판정자는 Lean 커널과 nanoda 둘로 정했다. 같은 노트의 결과 절은 2026-11-21 12:30 UTC 무렵에도 빌드 진행 중이었다.
+- 명제 대조: 주정리 가운데 `riemannHypothesis`는 Mathlib의 `RiemannHypothesis` 정의를 그대로 쓰고, 나머지 넷에는 모든 Dirichlet L-함수에 대한 같은 진술이 들어 있다고 페이지가 적는다. 다른 셋의 진술은 페이지에 설명이 없다. 이 일반화 리만 가설은 Dirichlet L-함수로 한정된다. 같은 페이지는 제타 함수 정의에 기대지 않는 확인으로, 리만 가설과 동치인 Robin, Lagarias 부등식의 별도 형식화(Robin1984)를 결합해 약수 합 부등식 두 개를 얻고 검사했다. 이 진술도 약수 합, 오일러 상수, 조화수, 지수와 로그의 Mathlib 정의와 Robin1984의 증명에 기댄다. Robin1984 단독은 comparator(v4.33.0, v4.36.0)를 통과했고, 결합한 export는 con-leche(진술 대조 포함)와 nanoda가 받아들였으며 comparator 실행은 진술 비교와 공리 검사를 통과한 뒤 커널 단계가 진행 중이었다. 사람이 읽을 증명은 없고 발표자는 주변 수학을 아직 숙달하지 못했다고 밝혔으므로, 형식 검사가 끝나도 전략의 이해는 남는다.
+- 형식화 밖의 계산(3차원 Navier–Stokes 방정식의 외력 없는 유한 시간 폭발, Alpöge와 Tristan Buckmaster): README는 진술 파일과 증명을 comparator 설정으로 짝짓고 표준 공리 3개만 허용한다고 적는다. 그러나 논문이 해시를 적은 인증서 데이터와, 인증서가 부록 B의 조건을 만족함을 보이는 구간 연산 계산(Arb, 128비트 정밀도)은 형식화 밖이고 저장소에도 없다(인증서는 공개 예정이라고 적지만 2026-11-21에도 없었고, 마지막 커밋은 2026-11-20 13:33 UTC이며 CI는 없다). 2026-11-20 패치를 적용한 패키지는 저장소를 꾸릴 때 다시 빌드하지 않았다고도 적는다. 계산 의존부는 Lean 검사와 따로 확인할 신뢰 범위다. 외부 독자는 이슈에서 논문 부록 B의 명제 B.1이 y₃ = 0 평면을 가로지르는 가중치의 연결 조건을 빠뜨렸다고 지적했는데, Lean 진술에는 그 조건이 있어 정리 1.1의 결론에는 영향이 없다고 지적자가 함께 적었다. 다른 독자는 이 연결을 직접 확인하려고 인증서의 공개 시점을 물었다. 외부 빌드 결과는 찾지 못했다.
+- 원고와의 대응(3차원 Euler 방정식의 외력 없는 유한 시간 특이점, Alpöge, Buckmaster, Matei Coiculescu): README는 원고의 번호 붙은 결과와 일대일로 대응하는 형식화가 표준 공리 3개에만 의존하고 `sorry`가 없다고 적는다. 원고가 인용하는 주기 Beale–Kato–Majda 판정법은 형식화하지 않았고, Lean 증명은 해당 따름정리에 필요한 소용돌이도 적분의 발산을 명제 8.2 증명 속 하한에서 직접 얻는다. 외부 빌드 결과는 찾지 못했다(2026-11-21 기준 마지막 커밋 2026-11-20 21:17 UTC, CI, 이슈와 포크 없음).
+- 검토 상태: 세 주장 모두 동료 심사를 마쳤다는 근거는 없다. 사람이 읽을 증명의 유무와 소화 정도, 같은 시기에 나온 사람의 증명안까지 포함한 공동체 쪽 기록은 [[AI-Intellectual-Community#검증 단계가 다른 증명 주장|검증 단계가 다른 증명 주장]]에 있다.
+
 ## 검증이 싸고 실패 비용이 낮은 환경부터
 
 공개된 추상 수학 문제는 잘못된 접근을 되돌리는 비용이 상대적으로 작고, 명제를 형식화하면 강한 검증 경로를 만들 수 있다. 이런 환경은 AI 보조 연구를 시험하기에 유리하다. 다만 긴 오증명 검토, 잘못된 결과의 전파와 교육 기회의 손실까지 비용이 없는 것은 아니다.
@@ -93,11 +103,17 @@ EBS 14강의 인지적 풍요와 인지적 비만은 값싼 답이 많아져도 
 - [Lean Language Reference, Validating a Lean Proof](https://lean-lang.org/doc/reference/latest/ValidatingProofs/) — 2026-11-03 형식 명제의 의미, 공리 검사와 신뢰 수준별 검증 절차 대조. 실제 빌드 미실행
 - [openai/math history.md — GitHub, OpenAI](https://github.com/openai/math/blob/main/history.md) — 2026-10-26 항목, 2026-11-16 주장 범위, 검토 그룹과 철회 이력 대조. 원고와 Lean 코드는 읽지 않음
 - [formal-math eth README — GitHub, Anthropic](https://github.com/anthropics/formal-math/blob/main/eth/README.md) — 2026-11-16 정리 진술, 의존 공리와 검사 절차 설명 대조. 빌드는 실행하지 않음
+- [remark.pdf — Levent Alpöge](https://alpo.ge/remark.pdf) — 2026-11-20 공개 4쪽 발표문, 2026-11-21 형식화 주장과 Lean만 공개한 이유 대조. Lean 압축 파일은 받지 않음
+- [RH Lean proof: verification files — MIT, Andrew Sutherland](https://math.mit.edu/~drew/grh/) — 2026-11-21 09:30 UTC 갱신판을 처음 대조하고 같은 날 12:32 UTC에 10:05 UTC 갱신판을 다시 조회해 컴파일, 공리, 공식 캐시 일치, 커널 재검사, 진술 범위, challenge 해시 일치와 Robin1984 결합 검사 대조. 진행 중인 검사의 결과는 이후 바뀔 수 있다
+- [riemann-hypothesis — GitHub, leanprover-community](https://github.com/leanprover-community/riemann-hypothesis) — 2026-11-20 만든 독립 Comparator 설정 저장소. 2026-11-21 README, `verification/NOTES.md`의 Lean 버전 제한, 검사기 선택 이유, 한계와 결과 절, checks CI의 성공 기록 대조
+- [Finite-time blow-up for the Navier–Stokes equations — GitHub, Alpöge, Buckmaster](https://github.com/tristanbuckmaster/navier-stokes) — 2026-11-21 README의 형식화 범위, 형식화 밖 계산과 재빌드 상태, 커밋과 CI 유무, 이슈 #2와 #3 대조. 논문과 Lean 코드는 읽지 않음
+- [Finite-Time Singularity Formation for the Three-Dimensional Euler Equations — GitHub, Alpöge, Buckmaster, Coiculescu](https://github.com/mcoiculescu/EulerBlowupPublic) — 2026-11-21 README의 대응 원칙, 공리와 예외, 커밋과 CI 유무 대조. 원고와 빌드는 확인하지 않음
 - [Mathematics in the age of AI — Terence Tao](https://arxiv.org/abs/2608.16753) — 2026-08 에세이. 2026-11-03 초록과 문제 설정 대조. 능력의 도래를 가정한 공동체의 목표 논의이며 보편적인 능력 입증이 아님
 
 ## 관련 문서
 
 - [[AI-Research-Innovation-Evaluation|AI 연구와 알고리듬 혁신 평가]]
+- [[AI-Intellectual-Community#검증 단계가 다른 증명 주장|검증 단계가 다른 증명 주장 (리만 가설, Euler와 Navier-Stokes, 2026-11)]]
 - [[LLM-Hallucination-Verification|LLM 환각 유형과 검증]]
 - [[Expertise-Formation-AI|AI 시대 전문성 형성]]
 - [[AI-Tutoring-and-Mastery-Learning|AI 튜터링과 완전학습]]

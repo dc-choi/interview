@@ -3,7 +3,7 @@ tags: [cs, functional, error-handling, monad, typescript, kotlin, gleam]
 status: done
 category: "CS&프로그래밍(CS&Programming)"
 aliases: ["Railway Oriented Programming", "ROP", "철도지향 프로그래밍", "Result 모나드"]
-verified_at: 2026-11-16
+verified_at: 2026-11-21
 ---
 
 # Railway-Oriented Programming (ROP)
@@ -30,6 +30,7 @@ verified_at: 2026-11-16
 - 단점: try-catch는 **타입 시스템에서 보이지 않음**(Java checked exception 제외), 예외가 "제어 흐름 점프"라 추적 난이도 상승
 - 흐름이 순차적이지 않다. `finally`에 도달했을 때 try에서 왔는지 catch에서 왔는지에 따라 상태가 다르므로 어느 경로로 끝나도 일관되게 정리되도록 짜야 한다. 호출자는 어떤 예외가 올지 구현을 읽어야 안다.
 - 그래도 필요한 자리가 있다. 서버의 요청 처리 루프처럼 프로세스가 죽으면 안 되는 **최상위 경계**에서는 예외를 잡아 로그와 응답으로 바꾸는 try-catch가 맞다. ROP를 쓰더라도 외부 라이브러리와의 경계는 try-catch로 감싸 Result로 바꾼다.
+- 실패를 알리는 채널도 설계 대상이다. 경고를 출력하고 `false`를 돌려주는 API는 실패를 반환값과 전역 오류 상태로만 알려 호출자가 놓치기 쉽고, 오류도 구조 없는 문자열로 남는다. PHP 8.6(2026-11-19 출시)은 파일과 네트워크 스트림 함수의 실패를 stream context마다 경고(기본), 예외(`StreamException`), 무음 중에서 고르게 하고, 실패를 오류 코드 enum, wrapper 이름과 경로를 담은 구조화 객체로 남겨 나중에 조회하거나 핸들러에 넘기게 했다. 예외 모드에서도 작업을 끝내지 못하게 하는 실패만 예외가 되고 나머지는 기록만 된다. 기본값은 경고로 두고 전역 기본 context에는 이 설정을 걸 수 없게 막아, 경고를 전제로 짠 기존 라이브러리가 갑자기 예외를 받지 않게 했다. 기존 API의 실패 보고 방식을 바꿀 때 호출자가 문맥 단위로 고르게 하는 전환 방식이다.
 
 **ROP는 EAFP를 타입 시스템 위에 올린 것**이다. try-catch 대신 **`Result<T, E>`** 같은 타입으로 에러를 값처럼 다룬다.
 
@@ -156,6 +157,8 @@ const flatMap = <T, U, E>(r: Result<T, E>, f: (t: T) => Result<U, E>): Result<U,
 - [gleam_stdlib, gleam/result](https://gleam-stdlib.hexdocs.pm/gleam/result.html) — v1.0.5 `try`가 `Error`에서 함수를 부르지 않는 동작
 - [You should try Gleam — Nicolas Chagnet](https://nchagnet.eu/blog/you-should-try-gleam) — 콜백 중첩을 줄이는 `use`의 쓰임
 - [Gleam을 써보자 — GeekNews](https://news.hada.io/topic?id=36975)
+- [PHP RFC, Stream Error Handling Improvements](https://wiki.php.net/rfc/stream_errors) — Implemented, 2026-11-21 대조
+- [PHP 8.6 Release Announcement — PHP](https://www.php.net/releases/8.6/en.php) — 2026-11-19 출시
 
 ## 관련 문서
 - [[Category-Theory-For-Programmers|Category Theory for Programmers — 수학적 토대]]

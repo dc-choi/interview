@@ -104,3 +104,4 @@ Raft에서 리더가 응답한 뒤에도 팔로워가 늦거나 멈추면 리더
 - [[Replication|MySQL Replication (async, semisync, failover)]]
 - [[Read-Replica-Routing|Read Replica 라우팅]]
 - [[Blockchain-Replication-and-Consensus-Cost|블록체인 복제와 합의 비용]]
+- [[Consensus-Liveness-and-Timeouts|합의의 진행 보장 (리더 장애, 타임아웃, QuePaxa)]]

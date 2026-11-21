@@ -1,9 +1,9 @@
 ---
 tags: [web, network, localhost, loopback, tcp-ip, kernel]
 status: done
-verified_at: 2026-08-26
+verified_at: 2026-11-21
 category: "웹&네트워크(Web&Network)"
-aliases: ["Loopback", "Localhost", "loopback 인터페이스", "127.0.0.1", "::1"]
+aliases: ["Loopback", "Localhost", "loopback 인터페이스", "127.0.0.1", "::1", "Reverse Tunnel", "로컬 공유 터널"]
 ---
 
 # Loopback, Localhost 동작 원리
@@ -79,6 +79,15 @@ $ ip addr show lo      # Linux
 
 **보안 관점**: 개발용 서버를 `0.0.0.0`으로 띄우면 **LAN의 다른 기기에서 접근 가능** → 실수로 비공개 API가 노출. 개발 중에는 기본 `127.0.0.1`, 필요할 때만 `0.0.0.0`.
 
+### 로컬 서비스를 외부에 공유하는 터널
+
+휴대폰, 동료나 webhook을 보내는 외부 서비스가 개발 중인 앱에 접속해야 할 때는 `0.0.0.0` 바인딩과 공유기 포트 개방 대신 역방향 터널을 쓸 수 있다. 로컬의 터널 에이전트가 터널 서비스의 edge로 암호화된 연결을 먼저 열어 두고(outbound), 방문자가 공개 HTTPS 주소로 접속하면 edge가 그 요청을 터널 안의 스트림으로 내려보내 에이전트가 로컬 포트로 넘긴다. 인터넷에서 들어오는 연결을 로컬에서 받지 않으므로 NAT 뒤에서도 동작하고, 방화벽이 edge로 나가는 연결만 허용하면 들어오는 연결은 모두 막아 둘 수 있다. 나가는 포트는 서비스마다 다르다. Cloudflare Tunnel(`cloudflared`)은 7844 포트(http2는 TCP, quic은 UDP), Kiri Share(`kiri share 3000`)는 443 포트로 edge에 연결한다(2026-11-21 각 공식 문서 확인). 나가는 연결까지 막은 망에서는 이 포트와 목적지를 먼저 열어야 한다.
+
+- 접근 정책을 따로 걸지 않으면 주소를 아는 누구나 접속한다. 인증 없는 개발 서버, 디버그 화면과 관리 API가 함께 열리므로 공유할 것만 열고 끝나면 닫는다. Cloudflare는 Tunnel로 공개한 앱 앞에 Access 정책을 두면 정책에 맞는 사용자만 들어오고, 정책 없이 공개하면 인터넷의 누구나 접근한다고 안내한다. Kiri Share 문서는 공유 주소가 공개라고 명시한다.
+- 트래픽이 터널 사업자의 edge를 지난다. 계정, 동시 링크 수, 속도와 월 전송량 한도, 일부 플랜의 방문자 안내 페이지 같은 조건을 확인한다. Kiri Share는 GitHub 계정 로그인을 요구하고 플랜마다 동시 링크 수, 속도와 월 전송량 한도를 두며, 월 한도를 다 쓰면 다음 달까지 링크가 멈춘다. 방문자 안내 페이지는 비용과 카드 없이 공유할 수 있다고 홍보하지만, 플랜별 수치와 유료 플랜 여부를 밝힌 가격 페이지는 2026-11-21 찾지 못했다(`runkiri.com/pricing`은 첫 페이지와 같은 내용을 돌려준다). 무료 범위를 가정하지 않고 `kiri share status`로 계정의 한도를 확인한다.
+- 방문자 안내 페이지가 앱보다 먼저 뜰 수 있다. Kiri는 이 페이지를 헤더 `kiri-skip-warning: 1`로 건너뛰게 하지만 어떤 요청에 붙는지는 문서에 없으므로, 헤더를 고칠 수 없는 webhook 발신자는 실제 전달로 확인한다(운영 제안).
+- 주소가 실행마다 바뀌면 webhook 등록을 다시 해야 한다. 고정 이름을 예약할 수 있는지 확인한다.
+
 ## 디버깅 도구
 
 ### 네트워크 인터페이스 확인
@@ -142,6 +151,14 @@ $ ping 127.0.0.1           # loopback 인터페이스 자체 확인
 - [IETF, RFC 6761: Special-Use Domain Names](https://www.rfc-editor.org/rfc/rfc6761.html)
 - [IANA, IPv4 Special-Purpose Address Space](https://www.iana.org/assignments/iana-ipv4-special-registry)
 - [Node.js, DNS](https://nodejs.org/api/dns.html)
+- [Cloudflare One docs, Cloudflare Tunnel](https://developers.cloudflare.com/cloudflare-one/networks/connectors/cloudflare-tunnel/) — outbound 전용 연결 모델, 2026-11-21 확인
+- [Cloudflare One docs, Tunnel with firewall](https://developers.cloudflare.com/cloudflare-one/networks/connectors/cloudflare-tunnel/configure-tunnels/tunnel-with-firewall/) — cloudflared의 7844 포트(TCP, UDP)와 나가는 연결 허용 목록, 2026-11-21 확인
+- [Cloudflare One docs, Publish a self-hosted application to the Internet](https://developers.cloudflare.com/cloudflare-one/access-controls/applications/http-apps/self-hosted-public-app/) — Access 정책이 없으면 공개 앱에 누구나 접근한다는 안내, 2026-11-21 확인
+- [Kiri Docs, Kiri Share](https://docs.runkiri.com/share/) — 연결 구조, 로그인, 이름 예약, 플랜 한도와 월 한도 소진 시 정지, 2026-11-21 확인
+- [Kiri Docs, Kiri Cloud](https://docs.runkiri.com/kiri-cloud/) — 공유에만 필요한 계정과 플랜 구성, 2026-11-21 확인
+- [Kiri, Kiri Share 소개 페이지](https://runkiri.com/share/) — 첫 방문 안내 페이지, 2026-11-21 확인
+- [Kiri, Kiri Share warning page](https://runkiri.com/share/warning/) — 방문자 안내 페이지의 무료 홍보 문구와 건너뛰기 헤더, 2026-11-21 확인
+- GeekNews, 2026-11-20 제공 요약: Kiri - 무료 ngrok 대안을 내장한 경량 Docker Desktop 대체재 (토픽 번호 미확인, 원문 식별에 사용)
 - [velog @480 (Matthew / Imweb CTO) — localhost의 동작 원리](https://velog.io/@480/localhost-%EC%9D%98-%EB%8F%99%EC%9E%91-%EC%9B%90%EB%A6%AC)
 
 ## 관련 문서
@@ -150,3 +167,4 @@ $ ping 127.0.0.1           # loopback 인터페이스 자체 확인
 - [[Network-Encapsulation|캡슐화와 커널 송신 경로]]
 - [[HTTPS-TLS|HTTPS / TLS Handshake]]
 - [[HTTP-Status-Code|HTTP Status Code]]
+- [[Docker-Core-Desktop|Docker Desktop의 Linux VM 경계와 호환 엔진]] — Kiri Share를 내장한 Kiri 엔진과 라이선스

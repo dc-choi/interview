@@ -11,7 +11,9 @@ Docker 기본, 데이터 영속성, Dockerfile, Compose와 bridge networking을 
 
 ## 목차
 
-- [[Docker-Core|Docker 기본]] — image, container, client와 daemon 구조, Docker Desktop VM 경계, 수명주기와 CLI(stop, kill, pause, rm), tag와 pull 정책, CPU architecture와 배포 안전선
+- [[Docker-Core|Docker 기본]] — image, container, client와 daemon 구조, 수명주기와 CLI(stop, kill, pause, rm), tag와 pull 정책, CPU architecture와 배포 안전선
+- [[Docker-Core-Desktop|Docker Desktop의 Linux VM 경계와 호환 엔진]] — VM disk image와 공간 회수, host network와 bind mount 권한 차이, OrbStack, Colima, Kiri와 라이선스
+- [[Docker-Core-Engine-Updates|Docker Engine 업데이트 뒤 검증 경로]] — 29.9.0의 경로별 수정, 29.9.3 보안 수정의 영향 조건, firewalld와 encrypted overlay
 - [[Docker-Core-Storage|Docker 데이터 영속성]] — writable layer와 image `VOLUME`, anonymous와 named volume 수명주기, bind mount 문법과 권한, 공식 DB image 초기화 계약
 - [[Docker-Core-Dockerfile|Dockerfile과 build context]] — 주요 명령, build context, COPY와 WORKDIR 경로 규칙, COPY와 ADD, 캐시 무효화
 - [[Docker-Compose|Docker Compose]] — 멀티 컨테이너 정의, docker run 대응, named volume 선언, 코드와 image 변경 반영, 네트워킹

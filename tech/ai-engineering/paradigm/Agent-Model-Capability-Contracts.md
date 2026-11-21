@@ -1,7 +1,7 @@
 ---
 tags: [ai, agent, model, memory, domain-evaluation, approval]
 status: done
-verified_at: 2026-10-27
+verified_at: 2026-11-21
 category: "AI엔지니어링(AIEngineering)"
 aliases: ["Agent Model Capability Contracts", "Muse Wonder", "GLM-Legal", "Ultramarine 1 Flash", "Claude Duet", "Inkling 2 Small", "Kimi K3.1 Pro", "Hy4"]
 ---
@@ -62,7 +62,7 @@ aliases: ["Agent Model Capability Contracts", "Muse Wonder", "GLM-Legal", "Ultra
 
 ## Inkling 2 Small: 스스로 확인하는 장기 작업과 실험 예산
 
-2026-11-09 Thinking Machines Lab 공식 발표(2026-11-05) 대조 기준이다. Inkling 2 Small은 전체 5,940억 파라미터 중 170억을 활성화하는 MoE로 이미지 입력과 추론 노력 조절을 지원하고 오디오는 지원하지 않는다. Tinker에서 추론과 미세조정을 먼저 제공하며, 발표 시점에 가중치는 비공개였고 외부 안전성 시험과 레드팀이 끝나면 발표 다음 주에 Apache 2.0으로 전체 가중치를 공개할 계획이라고 밝혔다. 실제 공개 여부는 2026-11-09에 확인하지 못했다.
+2026-11-09 Thinking Machines Lab 공식 발표(2026-11-05) 대조 기준이다. Inkling 2 Small은 전체 5,940억 파라미터 중 170억을 활성화하는 MoE로 이미지 입력과 추론 노력 조절을 지원하고 오디오는 지원하지 않는다. Tinker에서 추론과 미세조정을 먼저 제공하며, 발표 시점에 가중치는 비공개였고 외부 안전성 시험과 레드팀이 끝나면 발표 다음 주에 Apache 2.0으로 전체 가중치를 공개할 계획이라고 밝혔다. 실제 공개 여부는 2026-11-09에 확인하지 못했다. 같은 발표 페이지는 2026-11-12 갱신 문구로 가중치를 Hugging Face에서 내려받을 수 있게 됐다고 적고, Hugging Face 저장소의 모델 업로드 커밋도 2026-11-12(UTC)라 계획대로 발표 다음 주에 Apache 2.0으로 공개됐다(2026-11-21 확인). 같은 계열의 작은 반복형 모델 Inkling 2 Mini는 [[Latent-Reasoning#다른 경로: 층을 반복해 토큰당 계산을 늘린다|잠재 추론]]에 적었다.
 
 - **스스로 검증**: 요청하지 않아도 결과를 검증하도록 학습했고, 웹사이트, 게임, 3D 디자인처럼 화면이 나오는 코딩 결과는 렌더링한 화면을 보며 확인한다고 설명한다. 웹 앱 학습에는 렌더링한 앱의 스크린숏을 쌍으로 비교하는 보상 모델을 썼다.
 - **예산이 있는 자율 실험**: Proximal이 만든 내부 벤치마크 과제는 12시간과 Tinker 예산 500달러 안에 Qwen3.5-4B의 LoRA를 학습해 전력, 날씨, Wikipedia 조회수 같은 시계열을 예측하게 한다. 모델은 평가기를 만들고 5월까지의 기록으로 학습 문제 12,500개를 만든 뒤, 예측 8개에 같은 난수 seed를 주던 자기 평가의 버그를 찾아 기준선을 다시 쟀고, 강화학습은 예측이 과신으로 치우쳐 점수가 떨어지자 멈췄다. 4시간 17분 동안 426달러를 쓰고 SFT 체크포인트를 제출했다.
@@ -85,6 +85,8 @@ aliases: ["Agent Model Capability Contracts", "Muse Wonder", "GLM-Legal", "Ultra
 Tencent의 공식 소개 페이지는 이 환경에서 본문이 열리지 않아 GeekNews 요약과 OpenRouter 모델 목록으로만 확인했다(2026-11-09). OpenRouter 목록에서 `tencent/hy4`는 2026-11-04 등록됐고 제공사는 Tencent 하나다. 요약은 Tencent Cloud와 OpenRouter에서 먼저 제공하고 가중치는 나중에 공개할 계획이라고 전한다. 같은 요약의 컴퓨터 조작(CLI와 GUI를 오가며 Blender나 CAD 조작), 게임 개발 평가의 향상과 금융 전문가 213명이 만든 579개 실무 과제의 결과는 공급사 발표의 주장이며 원문과 대조하지 않았다.
 
 API를 먼저 열고 가중치를 나중에 공개하는 발표에서는 공개 일정, 라이선스와 시스템 카드가 아직 정해지지 않았을 수 있다. 자체 배포를 전제로 한 계획은 실제 가중치와 라이선스를 확인한 뒤 세운다(적용 제안). 위 Inkling 2 Small도 안전성 시험을 이유로 가중치 공개를 미뤘다.
+
+2026-11-21에는 Hugging Face에 Hy4, Hy4-FP8과 사전학습 Hy4 base 가중치가 Tencent Hy License 1.0으로 공개돼 있었고(모델 카드에 공개 날짜는 없다), OpenRouter의 Hy4 제공사에는 Together가 더해졌다. 같은 목록에서 Tencent 엔드포인트는 fp4로 표시되고 Together는 양자화를 밝히지 않으므로, 같은 모델 이름도 제공사마다 서빙 정밀도가 다를 수 있다. 같은 날 Hy4-preview 카드의 라이선스 표기는 Apache 2.0이었으므로 프리뷰판의 조건이 정식판으로 이어진다고 가정하지 않는다. 후속 Hy4 flash는 API와 가중치를 함께 냈고, 라이선스의 MaaS 조항은 [[Model-Release-Claims#라이선스와 제공 상태는 발표 문구와 따로 확인한다|모델 발표 수치 읽기]]에 적었다.
 
 ## Claude Duet: 개인 에이전트의 승인 경계
 
@@ -138,12 +140,14 @@ API를 먼저 열고 가중치를 나중에 공개하는 발표에서는 공개 
 - [Introducing Claude Duet — Anthropic](https://claude.com/resources/articles/claude-duet) — 2026-10-21, 기능, 승인 경계, 제공 범위와 한계
 - [Claude Duet Safety, Privacy, and Security — Anthropic](https://claude.com/resources/articles/claude-duet-safety-privacy-and-security) — 실행 격리, 자격 증명 처리, 금지 작업, 기억 보존
 - 사용자 제공 GeekNews 알림(2026-10-16~10-27): Ultramarine 1 Flash, Claude Duet. 학습 계기이며 내용은 위 공식 자료로 대조했다.
-- [Introducing Inkling 2 Small — Thinking Machines Lab](https://thinkingmachines.ai/news/inkling-2-small/) — 2026-11-05. 2026-11-09 구조, 제공 범위와 가중치 공개 계획, 자율 실험 기록, 스스로 밝힌 한계 대조
+- [Introducing Inkling 2 Small — Thinking Machines Lab](https://thinkingmachines.ai/news/inkling-2-small/) — 2026-11-05. 2026-11-09 구조, 제공 범위와 가중치 공개 계획, 자율 실험 기록, 스스로 밝힌 한계 대조. 2026-11-21 가중치 공개를 알린 11-12 갱신 문구 확인
 - [moonshotai/Kimi-K3.1-Pro — Hugging Face, Moonshot AI](https://huggingface.co/moonshotai/Kimi-K3.1-Pro) — 2026-11-09 구조, 컨텍스트, 양자화, 호출 계약과 비교표 대조
 - [Kimi K3.1 Pro License — Hugging Face, Moonshot AI](https://huggingface.co/moonshotai/Kimi-K3.1-Pro/blob/main/LICENSE) — 2026-11-09 2~4절의 별도 계약, 표시 의무와 예외 대조
 - [Kimi K3.1 Pro Tech Blog: Advancing Open Intelligence — Moonshot AI](https://www.kimi.ai/blog/kimi-k3-1-pro) — 2026-11-09 공개판의 사이버 데이터 조치, xdev-bench-hard 결과와 폴백 각주 대조
 - [Tencent: Hy4 — OpenRouter](https://openrouter.ai/tencent/hy4) — 2026-11-09 열람, 제공사 확인. 등록 시각은 [모델 엔드포인트 API](https://openrouter.ai/api/v1/models/tencent/hy4/endpoints)의 `created` 값(2026-11-04 UTC)으로 확인
 - [Tencent, 오픈소스 최상위권을 목표로 한 멀티모달 AI 모델 Hy4 공개 — GeekNews](https://news.hada.io/topic?id=36613) — 2026-11-05 요약. 원문인 [Tencent Hy4 소개](https://hy.tencent.ai/research/hy4)는 이 환경에서 본문이 열리지 않아 요약의 주장을 대조하지 못했다
+- [tencent/Hy4 — Hugging Face, Tencent](https://huggingface.co/tencent/Hy4) — 2026-11-21 공개 가중치 목록(Hy4, Hy4-FP8, Hy4 base)과 라이선스 표기 확인. 같은 날 [tencent/Hy4-preview](https://huggingface.co/tencent/Hy4-preview)의 Apache 2.0 표기와 OpenRouter [모델 엔드포인트 API](https://openrouter.ai/api/v1/models/tencent/hy4/endpoints)의 제공사와 양자화 표시도 확인
+- [thinkingmachines/Inkling-2-Small — Hugging Face, Thinking Machines Lab](https://huggingface.co/thinkingmachines/Inkling-2-Small) — 2026-11-21 공개 상태와 라이선스(Apache 2.0), 모델 업로드 커밋 날짜(2026-11-12) 확인
 
 ## 관련 문서
 

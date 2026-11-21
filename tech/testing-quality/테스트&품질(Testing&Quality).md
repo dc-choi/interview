@@ -10,7 +10,7 @@ aliases: ["테스트&품질(Testing&Quality)", "Testing & Quality"]
 ## Checklist
 
 - [x] [[Ruff-Upgrade-Validation|Ruff 업그레이드 검증]] — Python 기준, 기본 규칙, 수정 제안과 적용, CI와 편집기 연결
-- [[Agentic-Verification|에이전트 기반 검증]] — 완료 조건, E2E, 속성과 검사 기준 보호, verify 스킬과 차등 테스트, flaky 정책, 커밋 게이트와 놓친 결함의 규칙 승격
+- [[Agentic-Verification|에이전트 기반 검증]] — 완료 조건, E2E, 속성과 검사 기준 보호, verify 스킬과 차등 테스트, flaky 정책, 커밋 게이트와 놓친 결함의 규칙 승격, 실행 중인 앱의 내부 신호로 내리는 통과, 실패, 판단 불가 판정과 모델 없는 흐름 재실행
 - [[Ephemeral-Desktop-Test-VM|일회용 데스크톱 테스트 VM]] — Linux 실행기, Windows warm pool과 폐기
 - [x] [[Requirements-Traceability|요구사항 추적성 (양방향 연결, 변경 영향 분석, 링크와 검증 결과의 구분)]]
 - [x] [[Test-Pyramid#Unit Test|Unit test (단위 범위, AAA 구조, 격리와 실행 비용)]]

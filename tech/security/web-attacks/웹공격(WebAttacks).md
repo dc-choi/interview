@@ -15,6 +15,7 @@ CORS, CSRF, XSS, SQL Injection, Command Injection, 파일 업로드, IDOR, SSRF 
 - [x] [[JSON-Parser-Differentials|JSON 파서 해석 차이]] — 중복 이름과 대소문자 매칭, CouchDB 권한 상승 사례, Go encoding/json v1과 v2의 기본값과 마이그레이션
 
 - [x] [[Compressed-Input-Decoder-Security|압축 입력 디코더 보안]] — Brotli의 내장 사본, 도달 가능성, 상류 수정과 실제 재배포의 구분
+- [x] [[Regex-Engine-Attack-Surface|정규식 엔진의 공격면]] — ReDoS와 엔진 메모리 손상의 구분, 사용자 문자열이 패턴이 되는 경로와 리터럴 대안, Ruby 정규식과 대소문자 변환 결함 7건, CVE 없이 GHSA로 나온 런타임 권고
 - [[Signed-Payload-Deserialization|서명된 페이로드 역직렬화]] — 세션 서명과 pickle의 신뢰 경계
 - [x] [[CORS|CORS]]
 - [x] [[CSRF|CSRF Protection]]

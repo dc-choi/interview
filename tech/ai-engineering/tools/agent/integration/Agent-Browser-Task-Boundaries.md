@@ -99,6 +99,16 @@ Aside의 cron routine은 일정마다 새 작업을 만들고, heartbeat routine
 
 기억 기능은 브라우징 이력, 대화와 작업의 맥락을 재사용한다. Aside에서는 기억 생성 여부와 episodic memory의 보존 기간을 설정하고, 저장 내용을 검토하거나 편집할 수 있다. 저장된 기억을 최신 사실이나 현재 작업의 승인으로 취급하지 않는다. 보존 기간 설정과 원래 작업 기록의 보존 범위도 따로 확인한다.
 
+## 컴퓨터 사용의 경로 구분과 활동 기록 기억의 통제
+
+2026-11-17 공개 발표에서 Codex 앱의 컴퓨터 관련 기능은 다음처럼 소개됐고, 2026-11-21 공식 Computer Use, Chrome 확장과 Computer History 문서로 대조했다. 기능을 실행하지는 않았고 이 절만 대조했으므로 문서의 `verified_at`은 그대로 둔다.
+
+- **경로 구분:** 전용 플러그인이 없는 앱은 컴퓨터 사용으로 접근한다. 문서도 플러그인으로 없는 데이터 원천을 다룰 때 쓰고, 전용 플러그인이나 MCP 서버가 있으면 그쪽을 먼저 쓰라고 적는다. macOS에서는 사용자의 화면을 점유하지 않고 자기 커서로 백그라운드에서 돈다고 했는데, 문서는 macOS에서 범위를 정한 작업을 백그라운드로 돌리는 동안 다른 일을 할 수 있다고만 적고 별도 커서는 언급하지 않는다. Windows의 컴퓨터 사용은 활성 데스크톱에서 돌아 같은 세션을 쓰는 동안 백그라운드로 동작하지 못한다고 문서에 적혀 있다. 정보 수집과 iOS 시뮬레이터 앱 시험이 예로 나왔다. 웹사이트는 Chrome 확장으로 로그인된 맥락을 쓰고 Windows, Linux와 macOS에서 사용자가 다른 탭을 쓰는 동안 백그라운드로 작업한다고 했는데, 확장 문서는 이미 로그인한 사이트를 읽거나 조작한다고 적을 뿐 OS별 백그라운드 동작은 적지 않는다. [[ChatGPT-Dots#로컬 앱 조작은 OS 권한과 앱 승인을 함께 확인한다|dots의 로컬 앱 조작]]의 Windows 전경 입력도 데스크톱 앱 조작의 설명이므로, OS별 백그라운드 가능 여부를 한 문장으로 합치지 않고 경로마다 확인한다(이 문서의 해석).
+- **활동 기록(Computer History):** 문서 기준 macOS의 ChatGPT 데스크톱 앱에서 Pro, Business와 Enterprise 사용자에게 제공되고 기본으로 꺼져 있다. Business와 Enterprise는 관리자가 접근을 허용해도 사람마다 따로 켜야 하며 Memories가 필요하다. 발표는 쓰는 동안 쌓이므로 켠 직후에는 효과가 없다고 설명했다. 문서는 클릭, 입력, 단축키, 앱 전환 같은 상호작용 이벤트와 macOS 접근성 기능으로 얻는 텍스트를 쓰고 스크린샷과 오디오는 기록하지 않는다고 적는다. 사용하는 앱과 도구의 습관을 배워 메모리로 쓰며, 블로그 초안을 쓰는 도구를 바꾼 변화도 따라갔다는 예가 있었다. 앞서 보던 문서를 찾아 달라는 요청에도 쓴다.
+- **통제 수단:** 언제든 일시정지(메뉴 막대), 최근 기록을 소급해 지우기(문서 기준 최근 10분, 1시간, 1일 또는 전체), 특정 웹사이트와 앱을 제외하거나 고른 것만 포함하기가 문서와 같다. 비공개 모드의 웹 활동은 포함되지 않는다.
+
+발표가 설명하지 않은 점 가운데 문서로 확인된 것은 다음과 같다. 기록을 지우면 해당 이벤트와 그것으로 만든 메모리가 함께 지워지고 되돌릴 수 없다. 이벤트 파일은 Mac에 최대 48시간 임시로 남고, OpenAI가 서버에서 처리해 메모리를 만든 뒤 법적 요구가 없으면 보관하지 않으며 학습에 쓰지 않는다고 적는다. 만들어진 메모리는 `~/.codex/memories/extensions/skysight/` 아래 암호화되지 않은 Markdown 파일로 남아 같은 macOS 사용자로 도는 다른 프로그램이 읽을 수 있고, 이후 대화에 맥락으로 들어가면 데이터 제어 설정에 따라 모델 개선에 쓰일 수 있다. 점검(적용 제안): 로컬 보관이라는 설명을 무전송으로 읽지 않는다. 제외한 앱과 사이트의 내용이 컴퓨터 사용이나 Appshots 같은 다른 경로로는 여전히 읽히는지는 문서에서 확인하지 못했으므로 민감한 작업 환경에서는 켜기 전에 설정 화면으로 확인한다. 위 기억 절의 원칙대로 학습된 습관을 현재 사실이나 작업 승인으로 취급하지 않는다.
+
 ## 로컬 보관과 모델 전송은 다른 경계다
 
 Aside의 작업 기록과 산출물은 로컬에 저장되지만, hosted model에는 실행에 필요한 문맥이 전달될 수 있다. 개인정보 처리방침은 프롬프트, 도구 결과, 선택한 브라우저 snapshot, screenshot과 파일 등을 모델이 볼 수 있는 문맥으로 설명한다. 계정, 결제, 동기화와 hosted AI 기능에도 서버 측 서비스가 쓰인다.
@@ -129,6 +139,10 @@ ego(lite)도 비밀번호, 쿠키, 북마크와 방문 기록의 로컬 보관�
 - [Petal - 동료가 공유한 창을 내 데스크톱 창처럼 쓰는 원격 협업 앱 — GeekNews](https://news.hada.io/topic?id=36003) — 학습 계기
 - [Attacking Vision-Language Computer Agents via Pop-ups — ACL 2025, Yanzhe Zhang 외](https://arxiv.org/abs/2411.02391) — v2. 2026-11-18 공격 성공률, 과제 성공률 하락과 기본 방어의 효과 없음 대조
 - [YouTube, Stanford CS329Z Engineering AI Agents, Lecture 1 What Are AI Agents? Agentic Systems Explained](https://www.youtube.com/watch?v=DGI4vucR71w) — 2026-09-23 녹화. 화면 방해 요소에 대한 에이전트의 견고성을 다룬 정리 계기
+- [New Ways of Working with Codex — AI Engineer, Dominik Kundel, Charlie Guo](https://www.youtube.com/watch?v=IPh9YsWvDQk) — 2026-11-17 공개 영상의 14:13~17:52를 사람이 단 영어 자막과 대조. 컴퓨터 사용의 경로 구분과 활동 기록 기억의 통제 절의 근거이며 2026-11-21 아래 공식 문서로 대조했다. 실행하지 않았다.
+- [OpenAI, Computer Use](https://learn.chatgpt.com/docs/computer-use) — 2026-11-21 플러그인과의 선후, macOS 백그라운드 실행과 Windows의 전경 제약 대조
+- [OpenAI, Chrome extension](https://learn.chatgpt.com/docs/chrome-extension) — 2026-11-21 로그인한 사이트의 조작 범위 대조. OS별 백그라운드 동작은 문서에 없다
+- [OpenAI, Computer History](https://learn.chatgpt.com/docs/customization/computer-history) — 2026-11-21 제공 플랜과 기본값, 이벤트 종류, 일시정지와 삭제 단위, 제외 목록, 48시간 임시 보관, 서버 처리와 메모리 파일의 위치 대조
 
 ## 관련 문서
 

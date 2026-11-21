@@ -3,7 +3,7 @@ tags: [ai, local-llm, hardware, gpu, cuda, rocm, cost]
 status: done
 verified_at: 2026-11-17
 category: "AI엔지니어링(AIEngineering)"
-aliases: ["Local AI Hardware Lifecycle", "로컬 AI 장비 수명", "VRAM 구매 판단", "소프트웨어 지원 수명"]
+aliases: ["Local AI Hardware Lifecycle", "로컬 AI 장비 수명", "VRAM 구매 판단", "소프트웨어 지원 수명", "로컬 AI를 고르는 이유"]
 ---
 
 # 로컬 AI 장비의 수명: 용량당 가격보다 쓸 수 있는 기간
@@ -69,6 +69,18 @@ DeepSeek 가격 문서 기준으로 `deepseek-flash`의 출력은 100만 토큰�
 
 비용과 무관하게 장비를 사야 하는 경우도 있다. 코드, 고객 파일이나 환자 기록이 법적으로 외부로 나갈 수 없으면 클라우드 가격은 비교 대상이 아니다.
 
+## 비용 밖의 이유: 호출당 요금, 교체 시점과 지연
+
+로컬과 온프레미스를 고르는 이유는 토큰당 비용 비교만으로 드러나지 않는다. Moonshine Voice를 함께 만든 Pete Warden은 2026-11-19 게시된 대담(O'Reilly 팟캐스트에서 먼저 방송)에서 다음 이유를 들었다. 로컬 음성 모델을 만드는 사람의 견해이고 측정 근거가 함께 제시되지는 않았다.
+
+- **호출당 요금이 사라지면 설계가 바뀐다**: 앱 개발자가 화면의 아이콘을 누를 때마다 몇 센트를 내야 한다면 앱을 전혀 다르게 설계하고 많은 앱은 아예 없었을 것이라며, 호출 비용이 1센트에서 0으로 가는 변화는 점진적 개선이 아니라 쓸 수 있는 용도를 넓힌다고 본다. 위의 토큰당 비용 비교와는 다른 축으로, 상시 듣기나 매 상호작용마다 모델을 부르는 기능처럼 호출 빈도 자체가 설계 변수인 경우에 해당한다(이 문서의 해석).
+- **교체 시점을 직접 정한다**: 같은 모델 버전을 골라도 뒤에서 실제 동작이 날마다 바뀔 수 있어 안정성이 필요하면 적어도 자기 클라우드 인프라에 직접 호스팅해야 한다고 말한다. 언제 다른 모델로 바꿀지 스스로 정하고 단가가 하루아침에 크게 오르는 위험도 피한다는 것이다. 이름이 같아도 바뀌는 층은 [[Eval-Model-Drift-Monitoring#같은 이름 아래에서 바뀌는 네 층|서빙 모델 드리프트]]가 다룬다.
+- **지연**: 음성 인터페이스가 반응한다고 느끼려면 일반 UX 연구에 따라 약 200ms 이하가 필요하고, 클라우드 음성 인터페이스는 보통 적어도 몇 초를 기다리게 한다고 말한다. 측정 조건은 제시하지 않았다.
+- **감사할 수 있는 처리**: 로컬에서는 음성과 영상이 저장되지 않았음을 확인할 수 있지만 클라우드로 보낸 뒤에는 감사하기 어렵다고 본다.
+- **로컬의 범위**: 노트북만이 아니라 온프레미스나 기업이 통제하는 클라우드 인스턴스도 로컬로 본다. 위의 구매와 API 비교에 자기 통제 아래의 임대 인스턴스라는 선택지가 더해지는 셈이다(이 문서의 해석).
+
+같은 대담은 로컬 AI의 장벽이 모델 품질보다 사용성과 홍보에 있고, 로컬 모델은 구독 수익을 만들기 어려워 큰 회사가 밀지 않는다고 주장한다. 오픈 웨이트 모델이 상용 모델에 몇 달 뒤질 뿐이라며 벤치마크를 근거로 들지만 구체적인 수치는 없으므로, 품질이 충분한지는 자기 과업으로 잰다([[Model-Release-Claims#채택 전에 기록할 것|채택 전 기록]]).
+
 ## 구매 전 점검
 
 1. 이 칩이 지원되는 가장 최신의 CUDA 또는 ROCm 버전은 무엇이고, 쓰려는 추론 엔진의 현재 배포물이 그 버전을 대상으로 하는가?
@@ -77,6 +89,7 @@ DeepSeek 가격 문서 기준으로 `deepseek-flash`의 출력은 100만 토큰�
 4. 쓸 수 있는 연수의 가정을 절반으로 줄여도 구매가 임대나 API보다 유리한가?
 5. 데이터가 외부로 나갈 수 없는 제약이 실제로 있는가, 아니면 선호인가?
 6. 전원, 소음과 설치 공간을 감당할 수 있는가?
+7. 호출당 요금이 없어야 성립하는 기능이나 모델 교체 시점을 직접 정해야 하는 요구가 있는가, 있다면 자기 통제 아래의 클라우드 인스턴스로도 충족되는가?
 
 ## 출처
 
@@ -89,6 +102,8 @@ DeepSeek 가격 문서 기준으로 `deepseek-flash`의 출력은 100만 토큰�
 - [DeepSeek API Docs, Models & Pricing](https://api-docs.deepseek.com/quick_start/pricing) — 2026-11-17 모델 버전, 종료된 이전 이름의 처리와 출력 토큰 요금 대조
 - [Every Way to Get 256 GB of VRAM for Local AI — YouTube, RepoChad](https://www.youtube.com/watch?v=h8dxm7UEStQ) — 2026-10-19 공개, 2026-11-17 음성 인식 전사 전체 확인. 세 가지 기한의 틀, 장비별 가격과 속도, 사용 연수 가정의 출처. 가격은 2026-09 말~10-18 수집값이며 사용 연수는 제작자의 가정
 - [AI NEXT CAREER FAIR 2026 | AI시대의 새로운 직무와 채용 — YouTube, 면접왕 이형](https://www.youtube.com/watch?v=sxbbpZQNUJ0) — 2026-11-16 행사 생중계, 2026-11-17 음성 인식 전사 확인(현직자 세션). 장비 판매사 엔지니어의 구매 대 API 비용 주장 출처이며 가격과 성능은 대조하지 못함
+- [Pete Warden on Local AI, Open Models, Voice Interfaces, and the Future of Hardware — The Data Exchange, Ben Lorica](https://thedataexchange.media/pete-warden-moonshine/) — 2026-11-19 게시. O'Reilly의 Generative AI in the Real World로 먼저 방송된 대담의 전문으로, 2026-11-21 호출당 요금, 교체 시점, 200ms 지연, 감사 가능성, 로컬의 범위와 장벽에 관한 발언 대조
+- [AI는 왜 로컬로 향하는가 — GeekNews](https://news.hada.io/topic?id=37491) — 학습 계기
 
 ## 관련 문서
 
@@ -98,3 +113,4 @@ DeepSeek 가격 문서 기준으로 `deepseek-flash`의 출력은 100만 토큰�
 - [[LLM-Cost-Optimization|LLM 비용 최적화]] — 상시 인스턴스와 API의 손익분기
 - [[GPU-Server-Infrastructure|GPU 서버 인프라]]
 - [[Model-Release-Claims|모델 발표 수치 읽기]]
+- [[Eval-Model-Drift-Monitoring|서빙 모델 드리프트 감시]] — 같은 이름 아래에서 바뀌는 동작과 교체 시점

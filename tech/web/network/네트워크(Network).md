@@ -36,7 +36,7 @@ OSI 7계층과 캡슐화, IP 헤더, 스위치와 라우팅, TLS, 패킷 캡처,
 - [x] [[Routing-Table-and-Interface-Selection|호스트 라우팅 테이블과 인터페이스 선택 (longest prefix match, 메트릭, OS별 확인 명령)]]
 - [x] [[IPv4-NAT-and-Traversal|공유기의 NAT/NAPT 매핑, 정적/동적 NAT와 PAT 비교, 방화벽과의 차이, Cone 분류 해석, STUN/TURN/ICE 통과 전략, 공개 키로 상대를 지정하는 QUIC 연결 iroh]]
 - [x] [[Application-Layer-Protocols|DHCP, DNS, SSH, FTP, SMTP, POP3, IMAP 프로토콜 지도 (DORA 주소 지정, SSH 공개키 서명 인증과 양자 내성 알고리즘, 화면 원격의 페어링, 메일 포트와 TLS, SMTP 수락과 배달 실패)]]
-- [x] [[Loopback-And-Localhost|Loopback, Localhost 동작 원리 (127.0.0.1, ::1, loopback NIC, 커널 내 처리, 디버깅)]]
+- [x] [[Loopback-And-Localhost|Loopback, Localhost 동작 원리 (127.0.0.1, ::1, loopback NIC, 커널 내 처리, 디버깅, 로컬 서비스 공유 터널)]]
 - [x] [[Browser-URL-Flow|브라우저 URL 입력 프로세스 (DNS→ARP→TCP/TLS→HTTP→렌더링, Core Web Vitals)]]
 - [x] [[Network-Failure-Cases|네트워크 장애 사례로 보는 기본 원리]] — 주소, 포트, TCP와 UDP, DNS의 네 그림, 2021년 Meta 장애와 2008년 YouTube 경로 탈취, 500마일 이메일의 타임아웃, 로컬 이름 해석의 공격 표면, 물리 계층 사례
 - [x] [[Packet-Capture-and-Wireshark|패킷 캡처와 Wireshark (libpcap/Npcap, dumpcap, dissector, promiscuous 모드, 캡처 필터와 디스플레이 필터, TCP 스트림 재조립, SPAN/TAP, TLS 복호화, 법적 범위)]]

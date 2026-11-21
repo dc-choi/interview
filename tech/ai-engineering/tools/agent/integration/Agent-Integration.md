@@ -16,8 +16,8 @@ aliases: ["Agent Integration", "에이전트와 업무 시스템 연결"]
 - [[Agent-Email-Interface|이메일 에이전트 인터페이스]]: 비동기 궁합, 주소=라우팅 키, 엔티티별 DO 격리, HITL 발신 게이트, 단일 신뢰 경계 명시, MCP vs CLI vs 스킬
 - [[Public-Data-API-Grounding|공공 데이터 API로 에이전트 답변의 근거 연결]]: 공시, 통계, 법령, 사업자 상태, 실거래가, 학술 문헌의 공식 Open API, 원천과 집계 서비스의 차이, 실시간과 최신의 차이, 원천 식별 체계 입력, 키 보관, 0건과 실패 구분, 기준 시점 표기
 - [[Agent-Data-Analysis-Workflow|에이전트 데이터 분석과 보고서]] — 계획, 계산과 보고서 검산, 데이터 에이전트 pass@1과 질문별 프롬프트, 시맨틱 레이어와 권한
-- [[Agent-Browser-Task-Boundaries|브라우저 에이전트의 작업과 권한 경계]]: 파일과 계정 권한, 정기 실행과 기억, 로컬 보관과 모델 전송, 공유 컴퓨터의 봇 격리 경계(Rakazo), 화면 공유의 조작 동의와 AI 조작 승인(Petal), 쓰던 브라우저를 빌려줄 때의 탭 소유, 인계와 가드레일의 한계(OpenCode Browse)
-- [[Agent-Desktop-Accessibility-CLI|접근성 트리 기반 데스크톱 조작]]: agent-desktop의 snapshot과 ref, headless 기본값과 fail-closed, 다중 에이전트의 입력 독점, 출력의 개인 정보와 비밀 값 전달
+- [[Agent-Browser-Task-Boundaries|브라우저 에이전트의 작업과 권한 경계]]: 파일과 계정 권한, 정기 실행과 기억, 로컬 보관과 모델 전송, 공유 컴퓨터의 봇 격리 경계(Rakazo), 화면 공유의 조작 동의와 AI 조작 승인(Petal), 쓰던 브라우저를 빌려줄 때의 탭 소유, 인계와 가드레일의 한계(OpenCode Browse), 컴퓨터 사용의 경로 구분과 활동 기록 기억의 통제
+- [[Agent-Desktop-Accessibility-CLI|접근성 트리 기반 데스크톱 조작]]: agent-desktop의 snapshot과 ref, headless 기본값과 fail-closed, 다중 에이전트의 입력 독점, 출력의 개인 정보와 비밀 값 전달, 스크린샷에 접근성 트리 텍스트를 붙이는 캡처(발표 기준)
 - [[Siri-AI-App-Intents|Siri AI와 App Intents 앱 연동]]: 2026-11 Developer Preview의 공개 범위와 일정, 선언형 연동과 화면 조작의 차이, 상태 변경 동작의 멱등성과 확인
 
 ## 함께 볼 문서

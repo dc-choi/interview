@@ -145,4 +145,4 @@ Bandura의 자기 효능감 이론은 직접 수행한 성취, 다른 사람을 
 - [[Code-Review-Culture|생산적 코드 리뷰 문화]] — 리뷰이의 자세 (지적은 위험 신호가 아니다)
 - [[People-Leadership|사람을 키우는 시니어 리더십]] — 모른다고 말하는 능력
 - [[Burnout-Sustainable-Pace|번아웃과 지속 가능한 페이스]] — 지속되는 불안과 도움 요청
-- [[CS-Learning-Method|CS 지식 학습법]] — 회상 연습과 반복 읽기의 기억 유지 비교
+- [[CS-Learning-Method-Retrieval-Practice|CS 학습의 읽기, 회상과 적용]] — 회상 연습과 반복 읽기의 기억 유지 비교

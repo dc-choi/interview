@@ -1,9 +1,9 @@
 ---
 tags: [cicd, version-control, monorepo, scaling, merge-queue]
 status: done
-verified_at: 2026-11-02
+verified_at: 2026-11-21
 category: "CI/CD&배포(CI/CD&Delivery)"
-aliases: ["Server-centric Version Control", "서버 중심 버전 관리", "Scion", "Rubicon", "Ref-CAS", "에이전트 규모 Git 저장소", "Pando", "Aspen"]
+aliases: ["Server-centric Version Control", "서버 중심 버전 관리", "Scion", "Rubicon", "Ref-CAS", "에이전트 규모 Git 저장소", "Pando", "Aspen", "ABFS", "CASFS", "지연 체크아웃"]
 ---
 
 # 서버 중심 버전 관리
@@ -65,16 +65,22 @@ Git 객체는 내용 주소라 두 작성자가 같은 객체를 조율 없이 �
 | GitLab 차세대 SCM(2026-10-13 글) | Git 프로토콜을 유지하고 공유 객체 저장소 위에 수평 확장하는 무상태 계산을 둔다. 에이전트는 필요한 파일과 이력만 요청한다. 고객이 관리하는 S3 호환 저장소와 폐쇄망도 대상이다 | 비공개 베타. 초기 내부 시험의 최고치로 작업 완료 최대 50배, 토큰 최대 절반, 네트워크 트래픽 최대 1/1,000을 보고하지만 작업, 저장소 크기와 동시성 조건은 밝히지 않았다 |
 | ERSC(2026-09-10 글) | 일반 git 클라이언트와 Git 프로토콜로 접속하고, 서버는 Git 저장소가 아닌 자체 저장 엔진을 Git bridge 뒤에 둔다. 고객마다 배포를 나눈다. jj 사용자는 Git 백엔드로 같은 서버를 쓴다 | 저장소 기능은 베타 신청 단계이고 성능 수치는 없다. jj 고유 프로토콜 bridge는 계획이다 |
 | Pierre Code Storage(2025-10-14 공개) | 애플리케이션이 저장소를 필요할 때 만들고 푸시하는 white-label Git 계층이며, 분산 quorum 기반이라고 소개한다 | OpenAI가 Pierre 인수 계획을 발표했고, Code Storage 기능을 Codex에 통합하며 기존 고객은 기능이 옮겨질 때까지 계속 쓸 수 있다 |
-| OpenAI Pando(2026-11 발표) | 브랜치마다 푸시를 따로 처리해 서로 다른 브랜치의 푸시가 기다리지 않는다. 같은 브랜치의 갱신 순서는 지키지만 여러 브랜치를 함께 읽는 도구는 브랜치마다 다른 시점을 볼 수 있다. 팩파일을 재사용하고 지역 캐시에서 제공해 같은 요청마다 다시 압축하는 일을 줄인다 | 사내 백엔드이며 개발자와 에이전트는 기존 `git clone`과 `git push`를 쓴다 |
-| Cursor Continuity | 푸시를 S3의 변경 로그에 기록하고, 서버 디스크의 저장소 사본은 필요하면 다시 만드는 캐시로 쓴다 | 수치는 대조하지 않음 |
-| Entire 분산 Git 네트워크 | GitHub를 원본으로 두고 에이전트는 가까운 지역 미러에서 `clone`과 `pull`을 한다. 장애 대비 사본이 아니라 평소 원본으로 가던 읽기 요청을 나누는 사본이다 | 읽기 경로만 바꾼다 |
-| Aspen(오픈소스) | Pando 설계를 독립 구현한 Git 서버. PR마다 별도 커밋을 남기되 여러 PR을 모두 반영한 결과로 `main`을 한 번만 갱신한다 | 자체 실험에서 `git.git` 저장소의 브랜치 전용 URL로 5분간 초당 567회 푸시를 처리했고, 같은 변경을 `main`에 하나씩 반영하면 초당 약 4회였다. 두 수치 모두 CI를 포함하지 않는다 |
+| OpenAI Pando(2026-11-02 글) | 브랜치마다 푸시를 따로 처리해 서로 다른 브랜치의 푸시가 기다리지 않는다. 같은 브랜치의 갱신 순서는 지키지만 여러 브랜치를 함께 읽는 도구는 브랜치마다 다른 시점을 볼 수 있다. 팩파일을 재사용하고 지역 캐시에서 제공해 같은 요청마다 다시 압축하는 일을 줄인다 | 사내 모노레포의 백엔드이며 개발자와 에이전트는 기존 `git clone`과 `git push`를 쓴다. 이전 시스템 대비 푸시 지연 중앙값이 거의 5분의 1로 줄었고 하루 약 1페타바이트를 제공한다고 보고하며, 푸시 처리율은 밝히지 않았다 |
+| Cursor Continuity(2026-08-18 글, Origin의 저장 계층) | 푸시를 S3의 변경 로그(WAL)에 기록하고, 서버 디스크의 저장소 사본은 필요하면 다시 만드는 캐시로 쓴다. 로그 색인 갱신은 S3의 compare-and-swap 하나로 직렬화되어 저장소의 모든 푸시가 한 줄로 선다 | 자사 모노레포에서 S3 Standard는 초당 최대 120회, S3 Express One Zone은 300회 넘게 푸시를 받았고, 읽기는 합성 시험에서 복제본 100개까지 선형으로 늘었다고 보고한다 |
+| Entire 분산 Git 네트워크(2026-07-08 글) | GitHub를 원본으로 두고 에이전트는 지역 셀의 미러에서 `clone`과 `fetch`를 해 원본의 속도 제한을 피한다. 장애 대비 사본이 아니라 평소 원본으로 가던 읽기 요청을 나누는 사본이다. 미러로 push할 수도 있지만 GitHub에 연결된 브랜치는 GitHub가 허용하는 속도까지이고, `entire/unmirrored/` 접두사 브랜치만 그 지역에 남아 빠르게 받는다 | 미국, EU, 호주(갱신 시점 인도 추가) 지역으로 시작해 신규 사용자는 대기 목록을 거친다. 네이티브 호스팅과 오픈소스 백엔드는 계획이다 |
+| Aspen(2026-11-05 공개, Apache-2.0) | Pando 설계를 독립 구현한 Git 서버. 브랜치마다 Postgres 행 하나를 compare-and-swap으로 옮기고 받은 팩을 객체 저장소에 그대로 둔다. 서버 쪽 병합 큐는 PR마다 별도 커밋을 남기되 여러 PR을 반영한 결과로 `main`을 한 번만 갱신한다 | 8코어 서버 한 대, S3 Standard와 4코어 Postgres로 `git.git`의 브랜치 전용 URL에 5분간 초당 567회 푸시를 처리했고(중앙값 208ms), 같은 변경을 `main`에 하나씩 반영하면 초당 약 4회였다. 병합 큐의 수치는 아직 없고 어느 수치도 CI를 포함하지 않는다. pre-alpha다 |
 
-Pando, Continuity, Entire 미러와 Aspen 행은 GeekNews의 2026-11-12 정리를 기준으로 했고 각 회사 원문은 대조하지 못했다(OpenAI 원문은 2026-11-16 HTTP 403).
+Pando, Continuity, Entire 미러와 Aspen 행은 GeekNews의 2026-11-12 정리로 처음 모았고, 2026-11-21 각 회사의 원문으로 다시 대조했다(OpenAI 글은 브라우저로 열람). 수치는 모두 각 회사의 자체 보고이며 측정 조건이 서로 달라 직접 비교하지 않는다.
 
-OpenAI 발표 원문은 2026-11-09 HTTP 403으로 대조하지 못했다. 인수 계획, Codex 통합, Trees와 Diffs의 오픈소스 유지, 기존 고객의 계속 사용은 InfoWorld 보도(2026-11-06)로 확인했고, 규제 승인 등 거래 종결 조건은 GeekNews 요약에만 있다.
+OpenAI의 Pierre 인수 발표(2026-11-04)는 2026-11-21 브라우저로 열어 대조했다. 인수 계획, Code Storage 기능의 Codex 통합, Trees와 Diffs의 오픈소스 유지, 통합하는 동안 기존 고객의 계속 사용, 규제 승인을 포함한 통상의 거래 종결 조건과 종결 전까지 두 회사가 독립적으로 운영된다는 점이 원문에 있다.
 
 GitLab 글은 소스 관리를 빠르게 해도 병목이 CI, 검증, 보안 검토와 배포로 옮겨 간다고 본다. 저장 계층을 바꾸기 전에 위 병합 검증 절의 처리량 문제를 함께 계산한다.
+
+## 작업 사본을 필요할 때 채운다
+
+서버 쪽은 그대로 두고 클라이언트의 파일 시스템에서 체크아웃 비용을 줄이는 방식도 있다. Google이 2026-11-17 오픈소스로 공개한 ABFS는 Linux 커널 모듈로 만든 내용 주소 기반 가상 파일 시스템(CASFS)을 마운트한다. 체크아웃 때는 Git 해시가 붙은 디렉터리 메타데이터만 받아 파일 이름과 크기가 바로 보이고, 파일 내용은 처음 읽을 때 원격 저장소에서 받아 로컬 캐시에 둔다. Git 객체 모델을 그대로 써서 `git`과 `repo` 명령이 평소대로 동작하고, 같은 내용은 캐시에서 한 번만 받으므로 한 장비에 여러 브랜치의 작업 공간을 나란히 마운트해 에이전트가 병렬로 고치고 빌드하게 할 수 있다.
+
+Android 17 AOSP는 Git 저장소 1,084개, 일반 파일 약 162만 개, 소스 161GB와 빌드 출력 155GB 규모다. 저장소 README의 측정(64 vCPU VM, 3회 평균)에서 `repo sync` 체크아웃 36분 19초가 빈 로컬 캐시 마운트 7.4초, 캐시가 찬 마운트 3.6초로 줄었다. 제작자 측정이며 재현하지 않았다. 대가도 README가 밝힌다. 원격 캐시에 크게 기대는 네트워크 파일 시스템이라 클라이언트가 늘 온라인이고 네트워크가 좋아야 하며, 캐시 서버 여러 개를 운영하고 감시할 인력과 초기 계산 자원, 큰 캐시 저장 공간이 든다. 커널 모듈은 제한된 커널 버전에서만 빌드하고 시험했다. 빌드 결과 재사용은 [[Monorepo-CICD#선언한 입력만 보는 캐시 키와 숨은 의존성|숨은 의존성을 검증하는 빌드 캐시]]에서 다룬다.
 
 ## 선택 기준
 
@@ -90,9 +96,17 @@ GitLab 글은 소스 관리를 빠르게 해도 병목이 CI, 검증, 보안 검
 - [Scaling Git for the agentic software factory — GitLab, Bill Staples](https://about.gitlab.com/blog/scaling-git-for-the-agentic-software-factory/) — 2026-10-13 게시. 구조, 베타 상태와 최고치 조건을 2026-11-09 대조
 - [What comes after git — ERSC, Steve Klabnik](https://ersc.io/blog/what-comes-after-git) — 2026-09-10 게시. Git bridge, 고객별 배포와 jj 지원 계획을 2026-11-09 대조
 - [Introducing Code Storage — Pierre Computer Company](https://code.storage/changelog/introducing-code-storage) — 2025-10-14 게시. 제품 정의를 2026-11-09 대조
-- [OpenAI buys tiny software developer to improve Codex — InfoWorld, Maxwell Cooter](https://www.infoworld.com/article/4245719/openai-buys-tiny-software-developer-to-improve-codex.html) — 2026-11-06 보도. OpenAI 발표 원문(https://openai.com/index/openai-to-acquire-pierre/)은 2026-11-09 HTTP 403으로 미대조
-- [OpenAI, Pierre Computer Company 인수 예정 — GeekNews](https://news.hada.io/topic?id=36621) — 거래 종결 조건의 출처
-- [AI 시대, git push 앞뒤에서 바뀌는 것들 — GeekNews](https://news.hada.io/article/git-push-in-the-agent-era) — 2026-11-12 GeekNews 아티클(토픽 37034). 세 층 구분, 충돌 없는 병합의 동작 검증 예시, Pando, Continuity, Entire 미러와 Aspen의 구조와 수치의 출처. 각 회사 원문은 대조하지 못함
+- [OpenAI buys tiny software developer to improve Codex — InfoWorld, Maxwell Cooter](https://www.infoworld.com/article/4245719/openai-buys-tiny-software-developer-to-improve-codex.html) — 2026-11-06 보도
+- [OpenAI, Pierre Computer Company, Inc. 인수 예정 — OpenAI](https://openai.com/ko-KR/index/openai-to-acquire-pierre/) — 2026-11-04 게시. 2026-11-21 브라우저로 열어 인수 범위, 오픈소스 유지, 기존 고객과 거래 종결 조건 대조
+- [OpenAI, Pierre Computer Company 인수 예정 — GeekNews](https://news.hada.io/topic?id=36621) — 계기 자료. 거래 종결 조건은 위 OpenAI 원문으로 대조
+- [OpenAI의 Git 확장 — OpenAI](https://openai.com/ko-KR/index/scaling-git-at-openai/) — 2026-11-02 게시. 2026-11-21 브라우저로 열어 브랜치별 갱신, 팩 재사용과 지역 캐시, 보고 수치 대조
+- [Git at any scale — Cursor](https://cursor.com/blog/git-at-any-scale) — 2026-08-18 게시. 2026-11-21 Continuity의 WAL과 캐시 구조, compare-and-swap 직렬화와 처리량 대조
+- [An Entirely New Git Hosting Network — Entire](https://entire.com/blog/an-entirely-new-git-hosting-network) — 2026-07-08 게시, 08-28 수정. 2026-11-21 지역 미러의 읽기 분산, push 경로와 지역 대조
+- [Aspen: scaling agentic commits beyond what Git was built for — Reason Machines](https://reasonmachines.com/blog/aspen) — 2026-11-05 게시. 2026-11-21 설계, 측정 조건과 수치, 병합 큐와 pre-alpha 상태 대조
+- [Accelerating development for massive Git repositories — Google Developers Blog, The Android ABFS Team](https://developers.googleblog.com/accelerating-development-for-massive-git-repositories/) — 2026-11-17 게시. CASFS의 지연 로딩, AOSP 규모와 병렬 작업 공간을 2026-11-21 대조
+- [ABFS: Another Build File Service — GitHub, google/abfs](https://github.com/google/abfs) — 체크아웃 측정 조건과 도입이 어려운 조건을 2026-11-21 대조
+- [초대형 Git 저장소의 개발 속도 높이기 — GeekNews](https://news.hada.io/topic?id=37552) — 학습 계기
+- [AI 시대, git push 앞뒤에서 바뀌는 것들 — GeekNews](https://news.hada.io/article/git-push-in-the-agent-era) — 2026-11-12 GeekNews 아티클(토픽 37034). 세 층 구분, 충돌 없는 병합의 동작 검증 예시, Pando, Continuity, Entire 미러와 Aspen을 처음 모은 출처. 각 회사 원문은 2026-11-21 대조
 
 ## 관련 문서
 

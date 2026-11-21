@@ -101,18 +101,20 @@ Claude Code의 CLAUDE.md에 대응하며, 성격은 강제가 아닌 **권장(ad
 
 ## 구독 요금과 속도 모드의 사용량
 
-이 절은 2026-10-06 공식 Pricing과 Speed 문서를 대조한 범위다. 다른 절의 검증 날짜를 갱신하거나 개인 계정의 적용 상태를 확인한 것은 아니다.
+이 절은 2026-10-06 공식 Pricing과 Speed 문서를 대조했고, 2026-11-17 GPT-6.2 출시로 바뀐 배수와 속도를 2026-11-21 같은 문서로 다시 대조했다. 다른 절의 검증 날짜를 갱신하거나 개인 계정의 적용 상태를 확인한 것은 아니다.
 
-- Pro는 월 $100, $200, $500 요금제를 제공한다. GPT-6 Astra Ultrafast는 Pro $500과 조건을 충족하는 Enterprise, Edu에서 사용할 수 있다.
+- Pro는 월 $100, $200, $500 요금제를 제공한다. GPT-6 Astra와 GPT-6.1 Sol의 Ultrafast는 Pro $500과 조건을 충족하는 Enterprise, Edu에서 사용할 수 있다. GPT-6.2의 Ultrafast는 Pro $200에서 Sol만, Pro $500에서 Astra와 Sol 모두 쓸 수 있고, Enterprise와 Edu는 소유자가 켜야 한다.
 - ChatGPT Work와 Codex는 사용량을 공유한다. API 키 인증은 별도 API 토큰 요금을 사용하므로 구독 크레딧 배수를 적용하지 않는다.
 - 같은 모델의 Standard를 기준으로 포함 사용량과 구매 크레딧의 차감 배수는 다르다.
 
 | 속도 모드 | 구독 포함 사용량 차감 | 구매 크레딧과 Enterprise 종량제 차감 |
 |---|---|---|
-| Fast | 2.5배 | 2배 |
-| GPT-6 Astra Ultrafast | 8배 | 6배 |
+| Fast(GPT-6.2 Astra, Sol) | 2배 | 2배 |
+| Fast(GPT-6.1, GPT-6 계열) | 2.5배 | 2배 |
+| Ultrafast(GPT-6.2 Astra, Sol) | 6배 | 3배(2027-02-28까지), 2027-03-01부터 6배 |
+| Ultrafast(GPT-6 Astra, GPT-6.1 Sol) | 8배 | 6배 |
 
-이 배수는 과금 기준이며 작업 완료 속도의 배수가 아니다. Ultrafast의 최대 8배 속도 주장은 토큰 생성 속도 비교다. Pro $500에서는 포함 사용량을 먼저 쓰고 소진 뒤 사용 가능한 크레딧을 쓴다. 다른 셀프서비스 플랜은 추가 크레딧 구매만으로 Ultrafast 접근 권한을 얻지 못한다. Enterprise는 관리자 허용이 필요하며 미국 밖 추론 상주를 요구하는 워크스페이스는 대상이 아니다.
+이 배수는 과금 기준이며 작업 완료 속도의 배수가 아니다. 문서의 속도 주장은 Standard 대비 토큰 생성 속도 비교로, GPT-6 Astra Ultrafast는 Codex에서 최대 8배, GPT-6.2 Astra와 Sol의 Ultrafast는 최대 4.5배, GPT-6.2 Astra의 Fast는 약 1.5배다. Pro $500에서는 포함 사용량을 먼저 쓰고 소진 뒤 사용 가능한 크레딧을 쓴다. 다른 셀프서비스 플랜은 추가 크레딧 구매만으로 Ultrafast 접근 권한을 얻지 못한다. Enterprise는 관리자 허용이 필요하며 미국 밖 추론 상주를 요구하는 워크스페이스는 대상이 아니다.
 
 계정별 남은 한도와 초기화 시각은 사용량 대시보드나 CLI의 `/status`로 확인한다. 월 가격이나 토큰 단가만으로 실행 가능한 작업 수를 환산하지 않는다.
 
@@ -128,7 +130,7 @@ Claude Code의 CLAUDE.md에 대응하며, 성격은 강제가 아닌 **권장(ad
 
 - **ChatGPT 데스크톱 앱의 Codex**(2026-07-09 이전 Codex 앱): 병렬 작업 관리와 시각적 Git 워크플로우 조율에 강함
 - **Codex CLI**: 명령 수준 정밀 제어와 스킬 기반 작업에 강함
-- **휴대폰 원격 연결**: 2026-10-12 공식 문서 기준, ChatGPT 데스크톱 앱(macOS, Windows)의 Settings > Connections > Control this Mac or PC에서 QR 코드로 휴대폰을 짝지으면 휴대폰의 ChatGPT 앱에서 그 호스트의 Codex 채팅을 시작하거나 이어 가고, 명령 승인과 diff 검토를 할 수 있다. 파일, 셸 명령, MCP 서버와 스킬은 호스트의 것을 쓰므로 호스트가 잠들거나 네트워크가 끊기거나 앱을 닫으면 원격 접근도 멈춘다. 설정은 데스크톱 앱에서 시작하며 CLI나 IDE 확장에서는 할 수 없고, 워크스페이스에서는 관리자가 Remote Control 접근을 켜야 할 수 있다. Claude Code의 대응 방식은 [[Claude-Code-Customization#원격 제어 — 실행 위치 분리|원격 제어]]를 본다
+- **휴대폰 원격 연결**: 2026-10-12 공식 문서 기준, ChatGPT 데스크톱 앱(macOS, Windows)의 Settings > Connections > Control this Mac or PC에서 QR 코드로 휴대폰을 짝지으면 휴대폰의 ChatGPT 앱에서 그 호스트의 Codex 채팅을 시작하거나 이어 가고, 명령 승인과 diff 검토를 할 수 있다. 파일, 셸 명령, MCP 서버와 스킬은 호스트의 것을 쓰므로 호스트가 잠들거나 네트워크가 끊기거나 앱을 닫으면 원격 접근도 멈춘다. 설정은 데스크톱 앱에서 시작하며 CLI나 IDE 확장에서는 할 수 없고(2026-11-21 같은 문서 재확인), 워크스페이스에서는 관리자가 Remote Control 접근을 켜야 할 수 있다. 반면 같은 날 CLI 명령 문서는 `codex remote-control start`로 원격 제어를 켠 로컬 app-server 데몬을 띄우고 `codex remote-control pair`로 짧게 유효한 수동 페어링 코드를 만든다고 적는다. 릴리스 노트상 이 명령은 0.130.0(2026-05-08), `pair`는 0.143.0(2026-07-08), 기기 페어링 코드를 보여 주는 TUI의 `/rc`와 `/remote`는 0.171.0(2026-11-20)에 들어왔고, 2026-11-17 발표도 데스크톱 앱 없이 CLI로 하네스를 띄워 휴대폰으로 붙는 경로를 소개했다. 휴대폰 앱과 CLI로 띄운 호스트를 짝짓는 전체 흐름을 한 문서가 설명하지는 않으므로, 두 문서가 다르다는 점을 두고 설치한 버전과 계정에서 확인한다. Claude Code의 대응 방식은 [[Claude-Code-Customization#원격 제어 — 실행 위치 분리|원격 제어]]를 본다
 
 ## 제품 형태의 변화 — 클라우드 비동기 에이전트에서 로컬 엔진과 데스크톱 앱으로
 
@@ -164,8 +166,9 @@ Claude Code의 CLAUDE.md에 대응하며, 성격은 강제가 아닌 **권장(ad
 - [Codex CLI is Going Native — GitHub Discussions, openai/codex](https://github.com/openai/codex/discussions/1174) — 2025-05-30, Rust 재작성의 이유를 2026-10-27 대조
 - [How Codex Happened — Every, Dan Shipper](https://every.to/p/how-codex-happened) — 2026-10, 개발 팀 6명 인터뷰 기반 보도. 클라우드 에이전트의 마찰, 편집기 없는 앱 설계와 제품 형태의 해석을 2026-10-27 원문 대조. 사용자 수는 공식 자료로 확인하지 못해 쓰지 않음
 - [Codex는 어떻게 탄생했나 — GeekNews](https://news.hada.io/topic?id=36004) — 학습 계기
-- [Codex Speed — OpenAI](https://learn.chatgpt.com/docs/agent-configuration/speed)
-- [Remote connections — OpenAI](https://learn.chatgpt.com/docs/remote-connections) — 2026-10-12 휴대폰 연결 설정, 호스트가 제공하는 실행 환경과 연결이 끊기는 조건을 대조했다.
+- [Codex Speed — OpenAI](https://learn.chatgpt.com/docs/agent-configuration/speed) — 2026-11-21 GPT-6.2와 GPT-6 Astra의 속도 배수, Pricing의 차감 배수와 [GPT-6.2 출시 안내](https://learn.chatgpt.com/docs/whats-new/gpt-62-astra-sol)의 플랜별 Ultrafast 대상 대조
+- [Remote connections — OpenAI](https://learn.chatgpt.com/docs/remote-connections) — 2026-10-12 휴대폰 연결 설정, 호스트가 제공하는 실행 환경과 연결이 끊기는 조건을 대조했다. 2026-11-21 CLI와 IDE 확장에서 설정할 수 없다는 문구를 다시 확인
+- [Developer commands — OpenAI](https://learn.chatgpt.com/docs/developer-commands) — 2026-11-21 `codex remote-control`의 start, stop, pair 설명 대조. 도입 버전은 [openai/codex 릴리스](https://github.com/openai/codex/releases)의 rust-v0.130.0, 0.143.0, 0.171.0 항목으로 확인
 - [Codex 환경 변수와 스탠드얼론 설치 스크립트 — OpenAI](https://learn.chatgpt.com/docs/config-file/environment-variables.md)
 - [스킬 빌드하기 — OpenAI](https://learn.chatgpt.com/ko-KR/docs/build-skills)
 - [OpenAI Skills — 추천 스킬 목록 변경](https://github.com/openai/skills/commit/fdf90d652aea00d3fa57803a348744b1d7670fcb)

@@ -96,6 +96,7 @@ aliases: ["AGENTS.md 작성과 운영", "Repository Agent Instructions"]
 3. **범위 분리:** 저장소 공통 규칙과 패키지 규칙, 반복 절차를 나눈다.
 4. **작은 작업 검증:** 경로 규칙이 다른 두 작업에서 실제 발견 파일과 명령을 확인한다.
 5. **수정과 유지:** 실패 원인을 지침 누락, 잘못된 지침, 미로딩, 도구 제한과 실행 오류로 구분한다.
+6. **모델 교체 뒤 덜어내기:** 새 모델이 나오면 쌓아 둔 지침, 스킬과 우회 절차를 일단 덜어낸 상태로 대표 작업을 돌려 보고, 다시 문제가 생기는 항목만 되살린다. 2026-11-17 공개 발표의 권고이며 효과를 측정한 자료는 아니다. 2026-11-21 공식 문서에서 같은 절차를 권하는 문장은 찾지 못했고, 가장 가까운 것은 GPT-6.2 마이그레이션 안내가 새 모델의 글이 기본으로 더 간결하니 be concise 같은 기존 지시를 다시 보라고 적은 대목이다. 덜어낸 쪽과 둔 쪽을 같은 작업과 환경에서 성공률, 불필요한 변경과 비용으로 비교해야 낡은 지침과 여전히 필요한 지침이 갈린다. 모델이 강해져도 남는 가드가 있다는 관찰은 [[Agent-Overengineering-Guard#모델이 강해져도 가드가 필요한 이유 (사용 사례)|과잉설계 방지]]에, 이전 모델용 지시를 표시하는 도구는 [[Agent-Multi-Turn-Instructions#대응 2 — 턴을 주고받는 순서를 정해 사람 쪽에 하네스를 건다|여러 턴에 걸친 지시]]에 있다.
 
 기존 `CLAUDE.md`, `AGENT.md` 등을 이름만 바꾸기 전에 소비 호스트와 import, 심볼릭 링크 지원을 확인한다. 한 정본을 공유할 수 있지만 링크 방식과 재로딩 시점은 도구별 계약이다. 본 문서화는 실제 저장소의 지침 파일이나 설정을 이관하는 작업이 아니다.
 
@@ -138,6 +139,8 @@ aliases: ["AGENTS.md 작성과 운영", "Repository Agent Instructions"]
 - [OpenAI, Custom instructions with AGENTS.md](https://learn.chatgpt.com/docs/agent-configuration/agents-md)
 - [Anthropic, How Claude remembers your project](https://code.claude.com/docs/en/memory)
 - [GitHub Docs, About customizing GitHub Copilot responses](https://docs.github.com/en/copilot/concepts/prompting/response-customization?tool=webui)
+- [New Ways of Working with Codex — AI Engineer, Dominik Kundel, Charlie Guo](https://www.youtube.com/watch?v=IPh9YsWvDQk) — 2026-11-17 공개 영상의 56:38~57:40을 사람이 단 영어 자막과 대조. 모델 교체 뒤 지침 덜어내기 권고의 근거이며 효과를 측정한 자료는 아니다.
+- [OpenAI API, Using GPT-6.2](https://developers.openai.com/api/docs/guides/latest-model) — 2026-11-21 마이그레이션 때 문체 지시를 다시 보라는 안내 대조. 지침을 덜어낸 뒤 되살리는 절차는 문서에 없다
 
 ## 관련 문서
 

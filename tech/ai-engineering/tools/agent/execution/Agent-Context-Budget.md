@@ -30,6 +30,8 @@ aliases: ["Agent Context Budget", "컨텍스트 예산", "Context Budget", "에�
 
 입력 프롬프트를 줄인 뒤 사고량이나 재시도가 늘면 작업 전체 비용이 줄지 않을 수 있다. 적용 제안: 모델 ID, 프롬프트 리비전과 사고 설정을 함께 기록하고 같은 평가 과제의 성공률, 총출력과 재시도를 비교한다. 특정 실험의 프롬프트 삭제 비율을 일반 절감률로 쓰지 않는다. 정확한 식별자와 미해결 요구사항이 보존되는지도 확인한다.
 
+추론 노력 단계와 속도 모드도 입력 절감과 따로 비교할 손잡이다. 2026-11-17 공개 발표는 대부분의 작업에서 high를 출발점으로 삼고, 이전 세대에서 xhigh를 쓰던 작업은 새 세대가 나오면 high로 낮춰 같은 결과가 나오는지 보라고 권했다. 최고 단계는 수확 체감과 과잉 사고가 있을 수 있다는 설명이며 측정값은 제시하지 않았다. 2026-11-21 공식 문서의 출발점은 이와 다르다. Codex 모델 문서는 기본 effort로 시작해 필요할 때 올리라고 적고, API의 GPT-6.2 안내는 새 통합을 medium으로 시작하라고 적으며, xhigh를 high로 낮춰 보라는 권고는 찾지 못했다. 8배 빠르고 6배 비싸다고 소개된 속도 모드는 작업 시간이 빌드와 E2E 검증에 쏠리면 체감이 작다고 했다. 같은 날 문서 기준 8배는 GPT-6 Astra Ultrafast의 토큰 생성 속도이고 6배는 구매 크레딧 차감(포함 사용량은 8배)이며, GPT-6.2 Astra와 Sol의 Ultrafast는 최대 4.5배 속도에 포함 사용량 6배, 크레딧 3배(2027-02-28까지)다. 사용량 차감의 구분은 [[Codex-CLI#구독 요금과 속도 모드의 사용량|Codex 속도 모드의 사용량]]에서 다룬다. 어려운 부분만 상위 모델의 high 서브에이전트에, 번거로운 일은 작은 모델의 서브에이전트에 맡기는 지시를 스킬로 만드는 방법도 소개됐으나 더 낫거나 더 싸다는 보장은 없다고 발표자가 밝혔다. 적용 제안: 위 평가 과제 묶음에 effort 한 단계 아래와 모델 세대를 축으로 더해 성공률, 총출력, 재시도와 소요 시간을 함께 기록한다. 역할별 모델과 effort 배정의 구성 수단은 [[LLM-Model-Tiers#티어별 역할 분리와 상호 검토|티어별 역할 분리]]를 본다.
+
 ### 파일 분할의 효과는 실제로 읽은 범위로 확인한다
 
 역할별 파일 분리는 에이전트가 필요한 코드만 찾고 읽을 때 입력량을 줄일 수 있다. 파일 개수를 늘리거나 같은 파일을 여러 첨부로 나누는 것만으로는 절감을 보장하지 않는다. 분리한 파일을 매번 모두 읽으면 입력 범위가 줄지 않는다.
@@ -132,6 +134,11 @@ Q. 모델이 알아서 조금만 읽게 프롬프트로 지시하면?
 - [Nac: Arcee's Open-Source Harness for Long-Running Agent Work — Arcee AI](https://arcee.ai/blog/nac) — 2026-08-13 기술 글. thread와 episode 구조, 다른 thread의 episode 참고, 실패 처리와 범위 강제의 한계를 2026-11-16 대조
 - [nac — Arcee AI](https://github.com/arcee-ai/nac) — 2026-11-16 README와 `docs/usage`의 세션 동작(기본 direct, `NAC_ORCHESTRATION=1`) 대조
 - [nac - 긴 작업에서 원래 목표를 잃지 않게 하는 에이전트 하네스 — GeekNews](https://news.hada.io/topic?id=37085) — 학습 계기
+- [New Ways of Working with Codex — AI Engineer, Dominik Kundel, Charlie Guo](https://www.youtube.com/watch?v=IPh9YsWvDQk) — 2026-11-17 공개 영상의 20:52~23:58과 51:40~55:35를 사람이 단 영어 자막과 대조. 추론 노력과 속도 모드 비교의 근거이며 효과를 측정한 자료는 아니다.
+- 사용자 제공 GeekNews 알림 요약(https://news.hada.io/topic?id=37556): 같은 발표 소개. 학습 계기이며 게시물 본문은 확인하지 못했다
+- [OpenAI, Codex models](https://learn.chatgpt.com/docs/models) — 2026-11-21 기본 effort에서 시작하라는 안내 대조
+- [OpenAI API, Using GPT-6.2](https://developers.openai.com/api/docs/guides/latest-model) — 2026-11-21 새 통합의 medium 출발점 대조
+- [OpenAI, Fast and Ultrafast modes](https://learn.chatgpt.com/docs/agent-configuration/speed) — 2026-11-21 모델별 Ultrafast 속도 배수 대조. 차감 배수는 [Pricing의 Speed multipliers](https://learn.chatgpt.com/docs/pricing#speed-multipliers)로 확인
 
 ## 관련 문서
 

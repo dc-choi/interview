@@ -92,7 +92,7 @@ aliases: ["RDBMS", "OLTP"]
 - [x] [[SQL-Fundamentals|SQL 기본기 (표준과 방언, SELECT, 조건, DDL/DML, transaction)]]
 - [x] [[SQL-Fundamentals-NULL|SQL NULL과 3값 논리 (UNKNOWN, WHERE/ON/CHECK 판정 차이, NOT IN 함정)]]
 - [x] [[SQL-Fundamentals-Aggregation|SQL 집계, 그룹과 정렬 (빈 입력의 SUM, WHERE와 HAVING, NULL 정렬)]]
-- [x] [[PostgreSQL-SQL-Patterns|PostgreSQL SQL 패턴 (RETURNING, UPSERT, CTE, 윈도 함수, timestamptz)]]
+- [x] [[PostgreSQL-SQL-Patterns|PostgreSQL SQL 패턴 (RETURNING, UPSERT, 19의 get-or-create ON CONFLICT DO SELECT, CTE, 윈도 함수, timestamptz)]]
 
 ## 트랜잭션 & 격리 수준
 - [x] [[transactions-locks|트랜잭션과 락 폴더 인덱스 (ACID, 스케줄 이론, MVCC, 격리 수준, Lock, 2PL)]]
@@ -119,7 +119,8 @@ aliases: ["RDBMS", "OLTP"]
 - [x] [[Replication|Replication (sync / async, 역할 이름과 8.4 문법, 쓰기를 나누지 않는 한계)]]
 - [x] [[Clustering|Clustering]]
 - [x] [[MySQL-Backup|MySQL 백업, 복원 (mysqldump, XtraBackup, binlog PITR, RTO/RPO)]]
-- [x] [[Read-Replica-Routing|Read Replica 라우팅 (자동 분기, Read-After-Write, 트랜잭션, Prisma/TypeORM 구현)]]
+- [x] [[Read-Replica-Routing|Read Replica 라우팅 (자동 분기, Read-After-Write와 19의 WAIT FOR LSN, 트랜잭션)]]
+- [x] [[Read-Replica-Routing-Implementations|Read Replica 라우팅 구현 예 (Prisma 확장, TypeORM replication, 드라이버 직접 관리)]]
 
 - [x] [[PostgreSQL-Storage-Bottlenecks|PostgreSQL 스토리지 병목 (작업 집합, NVMe와 gp3 비교, 데이터 보존)]]
 

@@ -15,4 +15,4 @@ aliases: ["Community"]
 - [x] [[Deferred-Life-Plan|미뤄 놓은 인생 설계 (조건부 목표 미루기, 실제 생계 조건과 우회 목표, 역할 대안, 지금 작은 규모로 공유하기)]]
 - [x] [[Peer-Driven-Growth|함께 성장하기 (스터디 운영, 문제 정의를 돕는 멘토링, 실행을 점검하는 동료 소그룹, 밖으로 꺼내 검증)]]
 - [x] [[Professional-Networking-and-Mentors|외부 네트워킹과 멘토 확보 (집중과 열린 접점, 관계의 깊이, 관점과 커피챗, 멘토에게 기대할 것, 조언자의 경험 범위)]]
-- [x] [[AI-Intellectual-Community|AI와 지적 공동체]] — 기여 피드백, 산출과 이해, OSM과 수학 공동체 사례
+- [x] [[AI-Intellectual-Community|AI와 지적 공동체]] — 기여 피드백, 산출과 이해, OSM과 수학 공동체 사례, 검증 단계가 다른 증명 주장

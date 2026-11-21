@@ -9,10 +9,10 @@ aliases: ["Agent Instruction Design", "에이전트 지시 설계"]
 
 코딩 에이전트에게 무엇을, 어디까지, 어떻게 만들고 어떤 문체로 답하게 할지 지시로 고정하는 설계 — 스펙 6대 영역, 행동 교정 4원칙, YAGNI 사다리 주입, 검증 행동 교정, 출력 문체 제약. 상위: [[agent|에이전트 심화]].
 
-- [[Agent-Repository-Instructions|AGENTS.md 작성과 운영]]: README와 역할 분리, 중첩 범위, 이관, 지침과 권한 통제, ALIGN.md의 선호 보존과 실험 한계
+- [[Agent-Repository-Instructions|AGENTS.md 작성과 운영]]: README와 역할 분리, 중첩 범위, 이관, 지침과 권한 통제, ALIGN.md의 선호 보존과 실험 한계, 모델 교체 뒤 지침 덜어내기
 - [[Agent-Repository-Instructions-Hosts|AGENTS.md 호스트별 발견과 적용]]: Codex, Cursor, Copilot, Claude Code, Aider와 Gemini CLI, 지원 목록과 런타임 검증
 - [[Agent-Spec-Writing|에이전트 스펙 작성법]]: 6대 영역, 지시의 저주, Always/Ask/Never 3단계 경계, 숨은 결정 축 인터뷰, 스펙 산출물과 승인 지점, LLM-as-a-Judge
-- [[Agent-Multi-Turn-Instructions|여러 턴에 걸친 지시]]: 턴마다 나눠 준 요구의 성능 하락과 불안정, 이른 가정과 이전 답 고착, 모순 지시의 비용, 완결된 지시로 묶기와 작업 분할, 사람 쪽 절차, 세션 재시작 시점과 넘길 내용
+- [[Agent-Multi-Turn-Instructions|여러 턴에 걸친 지시]]: 턴마다 나눠 준 요구의 성능 하락과 불안정, 이른 가정과 이전 답 고착, 모순 지시의 비용, 완결된 지시로 묶기와 작업 분할, 사람 쪽 절차, 세션 재시작 시점과 넘길 내용, 탐색 반복의 피드백 고리와 화면 주석(발표 기준)
 - [[Agent-Coding-Guardrails|LLM 코딩 가드레일]]: 실패 패턴과 교정 4원칙 — 가정 표면화, 최소 코드, 수술적 변경, 성공 기준 검증 루프, 우회 처방 경계, CLAUDE.md와 스킬, Cursor rule 주입
 - [[Agent-Overengineering-Guard|에이전트 과잉설계 방지]]: YAGNI 사다리 7칸, 게으름 vs 태만, 안전 100% 유지, 상시 룰셋 주입, 다중 에이전트 이식성
 - [[Agent-Test-Verification-Behavior|에이전트 검증 행동]]: 기법 이름 지시는 행동을 바꾸지 않음, 자기 작성 테스트의 대칭 입력과 출력 박제, 효과 있는 것과 없는 것, 스킬 비용의 곱셈, 행동 교정 스킬 5원칙, 벤치마크 방법론 주의

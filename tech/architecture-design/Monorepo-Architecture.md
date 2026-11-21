@@ -99,6 +99,7 @@ Robert C. Martin의 **Stable Dependencies Principle(SDP)** 은 컴포넌트가 �
 
 - [[Module-Federation|Module Federation (Build/Run-time 통합, 마이크로 프론트엔드)]]
 - [[Monorepo-CICD|모노레포 CI/CD (파이프라인 독립, 캐시, 건강 지표)]]
+- [[Monorepo-CICD#선언한 입력만 보는 캐시 키와 숨은 의존성|숨은 의존성과 읽은 파일 검증]]
 - [[Monolith-vs-Microservice|Monolith vs Microservice (서비스 분해, 독립 배포)]]
 - [[Layered-Clean-Hexagonal|Layered/Clean/Hexagonal (의존성 규칙, Accidental Duplication)]]
 - [[Common-Code-Management|공통 코드 관리 (상수, Enum 동기화 관점의 공통)]]

@@ -2,13 +2,13 @@
 tags: [database, rdbms, postgresql, query-plan, statistics, parallel-query, performance]
 status: done
 category: "Data & Storage - RDB"
-aliases: ["PostgreSQL 실행 계획", "PostgreSQL EXPLAIN 읽기", "pg_stats", "PostgreSQL 병렬 계획"]
-verified_at: 2026-09-30
+aliases: ["PostgreSQL 실행 계획", "PostgreSQL EXPLAIN 읽기", "pg_stats", "PostgreSQL 병렬 계획", "pg_plan_advice", "plan advice", "pg_stash_advice"]
+verified_at: 2026-11-21
 ---
 
 # PostgreSQL 실행 계획과 planner 통계
 
-PostgreSQL `EXPLAIN`은 MySQL traditional 표처럼 테이블당 한 줄이 아니라 계획 노드의 트리로 나온다. 숫자의 단위와 병렬 노드의 의미, planner가 읽는 통계를 알아야 추정과 실측의 차이를 해석할 수 있다. PostgreSQL 18 기준이다.
+PostgreSQL `EXPLAIN`은 MySQL traditional 표처럼 테이블당 한 줄이 아니라 계획 노드의 트리로 나온다. 숫자의 단위와 병렬 노드의 의미, planner가 읽는 통계를 알아야 추정과 실측의 차이를 해석할 수 있다. PostgreSQL 18 기준이며, 19에서 추가된 계획 고정 모듈은 따로 표시한다.
 
 ## 계획 노드 읽기
 
@@ -87,6 +87,25 @@ WHERE schemaname = 'public' AND tablename = 'transactions';
 
 예상 rows와 실제 rows 차이가 크면 먼저 통계 갱신 시점을 보고, 그다음 해당 조건 컬럼의 `pg_stats`와 상관 컬럼 여부를 확인한다.
 
+## 계획을 고정하고 실험하기: pg_plan_advice (PostgreSQL 19)
+
+데이터가 바뀌면 planner는 계획을 다시 고르고, 가끔 새 계획이 더 느리다. PostgreSQL 19(2026-11-19 출시)는 planner의 핵심 결정을 plan advice라는 작은 언어로 기록, 재현하고 바꾸는 `pg_plan_advice` 모듈을 추가했다. 좋다고 판단한 계획을 고정하거나 planner가 나쁘다고 본 계획을 실험하는 용도다.
+
+```sql
+LOAD 'pg_plan_advice';   -- 또는 shared_preload_libraries, session_preload_libraries
+EXPLAIN (COSTS OFF, PLAN_ADVICE)
+  SELECT * FROM join_fact f JOIN join_dim d ON f.dim_id = d.id;
+-- Generated Plan Advice: JOIN_ORDER(f d) HASH_JOIN(d) SEQ_SCAN(f d) NO_GATHER(f d)
+
+SET pg_plan_advice.advice = 'JOIN_ORDER(f d)';  -- 필요한 결정만 골라 강제
+```
+
+- 생성된 advice에서 고정할 부분만 남겨 쓴다. advice를 준 계획의 `EXPLAIN`에는 `Supplied Plan Advice`와 적용 여부(`/* matched */`, `/* partially matched */` 등)가 함께 나온다.
+- advice는 planner를 대신하지 않고 선택지를 제한한다. planner가 애초에 고려하지 않는 계획(결과가 틀려지는 계획, 비용 계산 전에 버린 인덱스 경로)은 강제할 수 없고, 불가능한 요구를 하면 `Disabled: true` 노드가 섞인 더 나쁜 계획이 나올 수 있으므로 적용 결과를 확인한다.
+- 현재 집계 방식(정렬과 해시)과 `UNION` 같은 집합 연산은 제어하지 못한다. GEQO가 쓰이는 큰 조인에서는 advice가 확률적으로만 맞는다. advice는 계획을 세울 때만 읽히므로, 캐시된 prepared statement와 PL/pgSQL 계획은 `DISCARD PLANS` 전까지 이전 계획을 쓸 수 있다.
+- 짝 모듈 `pg_stash_advice`는 query ID별 advice를 공유 메모리에 저장해 해당 질의를 계획할 때 자동으로 적용하므로 애플리케이션을 바꾸지 않고 느린 계획을 고칠 수 있다(`compute_query_id` 필요, 기본으로 디스크에 저장). 권한 모델이 단순해 어떤 사용자든 stash 이름을 세션에 지정해 내용을 볼 수 있으니 advice 문자열에 민감한 정보를 넣지 않는다.
+- 문서는 계획이 데이터 분포에 맞춰 바뀌는 것이 기본적으로 이점이라고 강조한다. 분포가 바뀌면 고정한 계획이 오히려 나빠질 수 있고 적용 자체에도 비용이 있으므로, planner 오판 위험이 확인된 질의에 필요한 결정만 건다.
+
 ## 실험 데이터 준비
 
 대표 데이터가 없을 때 `generate_series`와 `random()`으로 수십만에서 수백만 건의 합성 데이터를 만들어 계획 모양을 볼 수 있다. FK 검증이 없는 테이블에 넣으면 적재가 빠르다. 다만 균등 난수는 실제 skew와 컬럼 상관을 재현하지 못하므로, 합성 데이터로는 노드 모양과 병렬 여부만 보고 성능 결론은 대표 데이터로 다시 확인한다.
@@ -107,6 +126,9 @@ WHERE schemaname = 'public' AND tablename = 'transactions';
 - [PostgreSQL 18 Documentation, Indexes on Expressions](https://www.postgresql.org/docs/18/indexes-expressional.html)
 - [PostgreSQL 18 Documentation, Operator Classes](https://www.postgresql.org/docs/18/indexes-opclass.html)
 - [cost_gather, compute_gather_rows, src/backend/optimizer/path/costsize.c — PostgreSQL REL_18_STABLE GitHub](https://github.com/postgres/postgres/blob/REL_18_STABLE/src/backend/optimizer/path/costsize.c)
+- [PostgreSQL 19 Documentation, pg_plan_advice](https://www.postgresql.org/docs/19/pgplanadvice.html) — 2026-11-21 대조
+- [PostgreSQL 19 Documentation, pg_stash_advice](https://www.postgresql.org/docs/19/pgstashadvice.html) — 2026-11-21 대조. query ID별 저장과 자동 적용, `compute_query_id`, 디스크 저장 기본값, 권한 모델
+- [PostgreSQL 19 Released! — PostgreSQL](https://www.postgresql.org/about/news/postgresql-19-released-3449/)
 - [PostgreSQL EXPLAIN과 인덱스 성능 비교 — 인프런, Hong](https://www.inflearn.com/courses/lecture?courseId=341698&unitId=439101)
 - [데이터베이스 성능 최적화 패턴 1 — 인프런, Hong](https://www.inflearn.com/courses/lecture?courseId=341698&unitId=439102)
 - [데이터베이스 성능 최적화 패턴 2 — 인프런, Hong](https://www.inflearn.com/courses/lecture?courseId=341698&unitId=439103)

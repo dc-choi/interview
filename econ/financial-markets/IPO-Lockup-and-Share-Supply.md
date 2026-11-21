@@ -50,12 +50,24 @@ SEC의 투자자 안내 기준으로, 기업이 상장하기 전에 회사와 �
 3. 국채 공급이면 최신 Quarterly Refunding 발표의 만기별 입찰 규모 변화를 확인한다.
 4. 공급 부담과 별개로 이익 전망과 평가배수가 함께 바뀌는지 본다. 이익이 늘어도 배수가 낮아지면 주가가 내릴 수 있다는 계산은 [[Valuation#이익 성장과 평가배수 변화를 나눠 계산한다|이익 성장과 평가배수 변화]]를 따른다.
 
+## 대형 공모가 흡수한 현금과 같은 날의 시장 하락
+
+공모에서 투자자가 내는 현금은 공모가에 판매 주식 수(초과배정 포함)를 곱한 금액이다. 공모가 기준 시가총액은 이 금액이 아니며, 같은 가격으로 특정 투자자에게 파는 동시 사모도 공모와 따로 센다. 큰 공모 직후 시장이 떨어지면 공모 대금을 마련하려고 다른 주식을 팔았다는 유동성 흡수 설명이 나오지만, 이는 매매 주체별 자금 흐름 자료로 확인할 가설이다.
+
+**사례(Anthropic, 2026-11):** 회사 발표 기준으로 2026-11-18 Class A 공모가를 주당 83달러로 정했다. 보도된 가격 범위 70~78달러보다 높다. 판매 주식은 980,000,000주(회사 신주 956,351,354주, 매출 주주 23,648,646주)였고, 11월 20일 초과배정 147,000,000주가 모두 행사돼 총 1,127,000,000주로 마감했다. 공모 총액은 약 935억 달러이며 그중 약 916억 달러가 회사 몫이다(인수 수수료 공제 전). 같은 가격으로 AMD, Broadcom, Google, Micron, Microsoft, NVIDIA, TSMC Partners에 Class N 313,253,007주(약 260억 달러)를 파는 동시 사모도 마감해 둘을 합한 총액은 약 1,195억 달러다. Class N은 법이 요구할 때 말고는 의결권이 없다([[Voting-Control-and-Public-Benefit-Corporations|의결권 구조]]). 11월 10일 보도된 조건(신주 801,350,000주, 매출 주주 23,650,000주, 초과배정 123,750,000주)보다 가격과 주식 수가 모두 늘었으므로 예비 조건으로 조달 규모를 계산하지 않는다.
+
+상장 뒤 거래는 보도 기준이다. 11월 19일 첫날 한때 약 40% 올랐다가 17% 상승으로 마쳤고, 둘째 날인 20일 9% 내려 88.30달러로 공모가에 다가갔다(The Guardian). 같은 날 Nasdaq 종합지수는 5.3% 내려 2026년 상승분을 모두 잃었고, S&P 500은 3.7%, Dow는 1.9% 내려 두 지수 모두 최근 고점 대비 10% 하락한 조정 구간에 들어갔다(NBC). 같은 주 아시아 증시는 2020년 이후 최악의 주간을, 유럽 증시는 2025년 3월 이후 가장 큰 주간 하락을 기록했다(The Guardian). 보도 수치로 계산하면 첫날 종가는 약 97달러이므로, 88.30달러에서 공모 배정분은 약 6% 이익, 첫날 종가 매수분은 약 9% 손실이다. 같은 종목이라도 수익률은 매수 가격이 정한다.
+
+하락의 원인 설명은 갈렸다. 한 분석가는 투자자들이 새 주식을 사려고 다른 주식을 팔아 시장 유동성을 빨아들일 수 있다고 봤고, 다른 분석가는 공모가 AI 투자 수요를 보여 줬지만 높은 가치평가, 수익성과 투자 지출의 지속성에 대한 우려를 넘지 못했다고 봤다. 금리 인상 우려로 달러가 19개월 만의 고점에 올랐다는 보도도 같은 날 나왔다. Nvidia의 약 14% 하락은 매체마다 계기를 다르게 적었다. The Guardian은 첨단 칩이 중국으로 흘러갔는지 조사하는 캘리포니아주의 소환장을, NBC는 규제 당국이 회계 문제를 들여다본다는 Reuters 보도를 든다. NBC는 이번 하락을 10월 초부터 이어진 흐름의 연장으로 설명한다. 그러므로 이 하락을 공모의 유동성 흡수 하나로 설명하지 않는다. 공모 대금은 투자자가 낸 현금이고 지수 시가총액의 감소는 기존 보유 주식의 평가액 변화라서, 두 크기를 견줘 원인을 정하지도 않는다(분석 제안). 뉴스의 원인 서술을 펼쳐 보는 연습은 [[News-Causal-Chain-Drill|뉴스 인과 체인 드릴]]을 따른다.
+
 ## 확인 질문
 
 - 상장 예정 기업의 전체 가치를 시장에 나올 매도 물량으로 계산하지 않았는가?
 - 보호예수 해제를 신주 발행이나 확정된 매도로 읽지 않았는가?
 - 국채 발행 증가 전망을 재무부의 실제 입찰 규모 결정과 구분했는가?
 - 차환 물량과 순증 물량을 나눠 보았는가?
+- 공모로 흡수된 현금을 공모가 기준 시가총액, 동시 사모와 구분했는가?
+- 예비 공모 조건과 최종 조건을 구분하고, 같은 날 하락의 원인을 한 분석가의 가설이나 한 매체의 서술로 확정하지 않았는가?
 
 ## 출처
 
@@ -63,6 +75,11 @@ SEC의 투자자 안내 기준으로, 기업이 상장하기 전에 회사와 �
 - [U.S. Department of the Treasury, Quarterly Refunding Statement of Assistant Secretary for Financial Markets Hunter McMaster](https://home.treasury.gov/news/press-releases/sb0678) — 2026-11-04 발표의 이표채와 FRN 입찰 규모 유지 예상, bill과 CMB로의 변동 대응, 12월과 1월 bill 규모 조정, 비용 최소화 목표, 7년물 분기 신규 발행 전환을 2026-11-18 대조
 - [U.S. Department of the Treasury, Most Recent Quarterly Refunding Documents](https://home.treasury.gov/policy-issues/financing-the-government/quarterly-refunding/most-recent-quarterly-refunding-documents/) — 2026-11-04 공개 시각과 다음 발표 예정일 대조
 - [폴 튜더 존스, 레이 달리오의 2027년 경고, 미국 증시에서 무엇을 걱정하는 걸까? — YouTube, 경제학 똑똑](https://www.youtube.com/watch?v=BGlr90-5sQI) — 2026-11-10 공개. 공급 경고를 공모 물량, 보호예수와 차환으로 나눠 보는 관점의 계기. 투자자들의 2027년 전망 발언 자체는 검증하지 않음
+- [Anthropic prices initial public offering — Anthropic](https://www.anthropic.com/news/anthropic-prices-initial-public-offering) — 2026-11-18 발표, 2026-11-21 공모가, 판매 주식 구성, 초과배정 옵션과 거래 시작일 대조
+- [Anthropic announces closing of initial public offering, including full exercise of underwriters' option to purchase additional shares, and closing of concurrent private placement — Anthropic](https://www.anthropic.com/news/ipo-close) — 2026-11-20 발표, 2026-11-21 초과배정 전량 행사, 총 주식 수, 공모 총액과 회사 수령액, Class N 동시 사모 대조
+- [Nasdaq erases all 2026 gains as AI sell-off dampens Anthropic's second day of trading — The Guardian, Lauren Almeida, Graeme Wearden](https://www.theguardian.com/business/2026/nov/20/global-stock-markets-slump-anthropic-ipo-ai-sell-off) — 2026-11-20 게시, 2026-11-21 11:02 UTC 갱신판으로 첫날과 둘째 날 주가, 분석가 설명, 달러와 Nvidia 관련 보도 대조. 기사가 계속 갱신돼 수치가 바뀔 수 있다
+- [Markets plunge: Nasdaq erases 2026 gains, S&P and Dow enter corrections — NBC News, Rob Wile](https://www.nbcnews.com/business/markets/anthropic-shares-markets-selloff-nasdaq-rcna610394) — 2026-11-20 오후 갱신판, 2026-11-21 지수 하락률, 조정 구간의 정의와 하락 흐름 설명 대조
+- [Anthropic의 기록적인 IPO도 AI주 매도세 막지 못해, 세계 증시 급락 — GeekNews](https://news.hada.io/topic?id=37542) — 학습 계기. 기사 초기판을 옮긴 요약이라 장중 최대 12% 하락과 85.12달러를 적는다
 
 ## 관련 문서
 
@@ -70,3 +87,5 @@ SEC의 투자자 안내 기준으로, 기업이 상장하기 전에 회사와 �
 - [[Bonds|채권]] — 금리와 가격, 신용스프레드
 - [[Fiscal-Policy|재정정책]] — 정부 부채와 차환
 - [[Valuation|밸류에이션]] — 이익과 평가배수 분해
+- [[AI-Company-Valuation-and-Funding|AI 기업가치와 자금 조달]] — 예비 공모 조건과 신고서 검토
+- [[News-Causal-Chain-Drill|뉴스 인과 체인 드릴]] — 원인 서술을 가설로 펼치는 연습

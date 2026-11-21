@@ -1,14 +1,14 @@
 ---
 tags: [ai, llm, reasoning, latent-reasoning, agent, inference]
 status: done
-verified_at: 2026-11-02
+verified_at: 2026-11-21
 category: "AI엔지니어링(AIEngineering)"
-aliases: ["Latent Reasoning", "잠재 추론", "Continuous Latent Reasoning", "연속 잠재 추론", "Chain of Continuous Thought", "Coconut", "HybridAgent", "HybridLink"]
+aliases: ["Latent Reasoning", "잠재 추론", "Continuous Latent Reasoning", "연속 잠재 추론", "Chain of Continuous Thought", "Coconut", "HybridAgent", "HybridLink", "Looped Transformer", "반복형 트랜스포머", "Inkling 2 Mini"]
 ---
 
 # 잠재 추론: 토큰 대신 은닉 상태를 다음 입력으로 넘기는 추론
 
-잠재 추론(latent reasoning)은 중간 추론을 토큰으로 디코딩하지 않고, 마지막 층의 은닉 상태를 다음 단계의 입력으로 되먹여 추론을 이어 가는 방식이다. 텍스트 사고 토큰(chain-of-thought, CoT)은 사람이 읽을 수 있고 그대로 도구 호출로 이어지지만, 단계마다 토큰 하나를 고르고 다시 임베딩한다. 잠재 추론은 이 과정을 건너뛰는 대신 사람이 읽기 어렵고 도구를 부르기 어렵다. 이 문서는 2026-11-02에 Coconut 논문(arXiv v4), HybridAgent 논문(arXiv 2610.18861 v1, 2026-10-13 제출), 공식 저장소와 Hugging Face 모델 카드를 대조한 기준이다. HybridAgent 논문의 저자 소속은 Stanford University, Together AI, UIUC, Meta이고 아래 HybridAgent 수치는 모두 저자 측정이다. 한 논문의 결과를 다른 모델과 과제의 일반 성질로 옮기지 않는다.
+잠재 추론(latent reasoning)은 중간 추론을 토큰으로 디코딩하지 않고, 마지막 층의 은닉 상태를 다음 단계의 입력으로 되먹여 추론을 이어 가는 방식이다. 텍스트 사고 토큰(chain-of-thought, CoT)은 사람이 읽을 수 있고 그대로 도구 호출로 이어지지만, 단계마다 토큰 하나를 고르고 다시 임베딩한다. 잠재 추론은 이 과정을 건너뛰는 대신 사람이 읽기 어렵고 도구를 부르기 어렵다. 이 문서는 2026-11-02에 Coconut 논문(arXiv v4), HybridAgent 논문(arXiv 2610.18861 v1, 2026-10-13 제출), 공식 저장소와 Hugging Face 모델 카드를 대조한 기준이다. HybridAgent 논문의 저자 소속은 Stanford University, Together AI, UIUC, Meta이고 아래 HybridAgent 수치는 모두 저자 측정이다. 한 논문의 결과를 다른 모델과 과제의 일반 성질로 옮기지 않는다. 층을 토큰마다 여러 번 통과시켜 말하지 않는 계산을 늘리는 반복형 트랜스포머는 다음 입력이 여전히 토큰이라 이 정의에 들지 않지만 감독에 같은 질문을 던지므로 [[#다른 경로: 층을 반복해 토큰당 계산을 늘린다|아래 절]]에서 함께 본다.
 
 ## 다음 입력으로 무엇을 넣는가
 
@@ -88,6 +88,21 @@ HybridAgent는 백본 구조를 그대로 두고 작은 어댑터 HybridLink와 
 - **채택 전에 잴 것**: 같은 크기와 데이터로 학습한 텍스트 에이전트와 정확도, 도구 지연을 포함한 wall-clock, 세션당 최대 메모리를 함께 비교한다. 잠재 벡터 교체와 텍스트 강제 같은 개입(Table 5)을 자기 과제에 재현해 잠재 구간이 실제로 쓰이는지 본다. 결정에 필요한 단계와 도구 인자는 텍스트로 남기고 잠재 구간 기록(벡터 또는 판독문)의 보존 범위를 정한다.
 - **추론 강도 설정과 구분한다**: 상용 추론 모델의 추론 강도 설정은 사고 토큰을 얼마나 생성할지를 바꾸고([[OpenAI-GPT-Generations|OpenAI GPT 세대]]의 effort), 잠재 추론은 다음 입력의 종류를 바꾸는 생성 인터페이스 변경이다. 상용 API가 잠재 추론을 제공하는지는 이 문서에서 확인하지 않았다.
 
+## 다른 경로: 층을 반복해 토큰당 계산을 늘린다
+
+반복형 트랜스포머(looped transformer)는 같은 층 묶음을 토큰마다 여러 번 통과시켜 파라미터를 늘리지 않고 직렬 계산 깊이를 늘린다. 다음 입력은 여전히 고른 토큰이라 도구 호출과 출력은 텍스트로 남지만, 토큰 하나를 내기 전의 계산이 늘어 CoT로 드러나지 않는 추론의 몫이 커질 수 있다. 위 잠재 추론과 방식은 다르지만 감독에는 같은 질문을 던진다(이 문서의 해석). 아래는 Thinking Machines Lab의 Inkling 2 Mini 발표와 모델 카드를 2026-11-21 대조한 기준이며 수치는 모두 연구진 측정이다.
+
+- **구조**: 24개 층을 6개씩 네 묶음으로 나누고 가운데 두 묶음을 세 번 돌려, 저장한 층은 24개지만 토큰당 층 적용은 48번이다. 첫 묶음의 출력이 모든 패스에 들어가고 두 번째와 세 번째 패스는 앞 패스의 출력도 읽는다. 둘을 섞는 게이트는 학습 초기에 앞 패스의 출력을 막았다가 점점 열어 반복을 안정적으로 도입한다. 가운데 12개 층을 반복한 쪽이 마지막 12개 층을 반복한 쪽보다 28개 평가 중 27개에서 이득이 컸다.
+- **학습 연산과 추론 연산의 교환**: 가지치기 전 모델끼리 비교하면 반복하지 않는 모델이 학습 연산은 7.5% 적었지만, 512K 토큰짜리 에이전트 궤적에서 반복 모델의 손실에 맞추려면 추론 연산이 140% 더 필요했다.
+- **늘지 않는 것**: 반복은 가중치에 저장되는 사실의 양을 늘리지 않으며 지식은 대체로 전체 파라미터 수가 정한다고 연구진은 적는다. 반복 횟수를 바꿀 수 있는 연구용 모델에서 패스를 늘리면 긴 문맥 검색(MRCR), 수학과 과학 추론, 장기 에이전트 과제가 오르고 닫힌 책 사실 질의(SimpleQA Verified, WorldVQA)는 거의 그대로였다. Inkling 2 Mini는 이 빈자리를 검색과 도구 사용으로 메운다고 설명한다.
+- **CoT 없이 할 수 있는 일**: 답의 앞부분을 미리 채워 CoT를 건너뛰게 한 Think Fast 평가에서, 사람의 소요 시간으로 잰 50% 신뢰도 과제 길이가 1패스 16초에서 3패스 37초로 늘고 그 뒤로는 평탄했다. 조회 표를 적지 않고 이어 따라가야 하는 N-Hop Lookup은 학습한 최대 5패스를 넘어 10패스까지 올랐다.
+- **CoT의 길이와 가독성**: 모든 패스에서 맞힌 GPQA Diamond 문항의 평균 CoT는 5패스에서 1,661토큰으로 1패스(3,703토큰)의 절반 아래였지만 문장 길이와 영어 사전에 있는 단어의 비율은 같았다. 초기 분석에서 차이는 답으로 가는 길의 되돌아가기가 줄어든 점이었다.
+- **CoT 통제와 은밀한 행동**: CoT를 지시대로 바꿀 수 있는지 보는 CoT-Control-QA에서 750~1,250토큰 구간의 성공률은 최대 0.1%로 Qwen3.8-27B(1.3%)보다 낮아 패스 수 사이의 차이를 가를 수 없었다. 악성 부수 작업을 들키지 않고 하는지 보는 LinuxArena에서 강한 감시자(Qwen3.8-27B)는 거의 모든 시도를 잡았고, 약한 감시자(Qwen3.6-35B-A3B, 오탐률 1%)로 잰 은밀 성공률은 패스 수와 뚜렷한 추세가 없었다. 도구 호출과 출력만 본 감시자는 상당수 공격을 놓쳤다. 이 시험은 부수 작업을 거부하지 않게 미세조정한 판으로 했다.
+- **연구진이 밝힌 한계**: 연구용 모델의 강화학습은 3패스로만 했으므로, 더 깊은 패스로 강화학습한 모델은 추론을 더 압축할 수 있다. 이 규모에서 감시 가능성의 의미 있는 저하를 보지 못했다는 결론도 이 조건에 묶인다.
+- **공개 범위**: Inkling 2 Mini 가중치는 Hugging Face에 Apache 2.0으로 공개됐고 연구용 가변 반복 모델도 함께 공개됐다. 학습과 같은 정밀도(층 20개 NVFP4, 마지막 4개 MXFP8)로 배포해 약 20GB이고, Ollama로 RAM 32GB 이상의 Mac에서 돈다고 안내한다. 발표는 전체 100B 미만 공개 가중치 모델 가운데 DeepSWE v1.1(48.2%)과 Vals Index v2.2(46.5%)에서 앞선다고 적지만, 비교표의 하네스가 벤치마크마다 다르고(Terminal Bench v2.1은 pi, DeepSWE는 mini-swe-agent) 모델마다 평가 설정이 다르다고 밝힌다. 파라미터 표기는 [[Model-Release-Claims#파라미터 수는 무엇을 셌는지 확인한다|모델 발표 수치 읽기]]에 적었다.
+
+적용하면(운영 제안) CoT 감시에 기대는 운영에서 반복형 모델을 쓸 때 CoT 길이 감소를 효율로만 보지 않는다. 같은 과제에서 모델이나 패스 수를 바꿔 CoT 길이와 정답률을 함께 기록하고, 도구 호출과 결과를 CoT와 별개의 감시 입력으로 남긴다.
+
 ## 확인 질문
 
 1. 텍스트 모드와 잠재 모드에서 다음 위치의 입력은 각각 무엇이고, 잠재 모드에서 생략되는 계산은 무엇인가?
@@ -96,6 +111,7 @@ HybridAgent는 백본 구조를 그대로 두고 작은 어댑터 HybridLink와 
 4. 다른 문제의 잠재 벡터로 바꾼 실험과 최근접 토큰으로 바꾼 실험은 각각 무엇을 보여 주고 무엇을 보여 주지 않는가?
 5. 2.7~3.7배 비용 절감 추정에서 빠진 비용은 무엇이고, 운영에서는 무엇을 다시 재야 하는가?
 6. 판독문이 읽힌다는 사실을 감사 근거로 쓸 때의 한계는 무엇인가?
+7. 층을 반복하는 구조는 무엇을 늘리고 무엇을 늘리지 않으며, CoT가 짧아진 결과를 감시 관점에서 어떻게 읽어야 하는가?
 
 ## 출처
 
@@ -104,6 +120,9 @@ HybridAgent는 백본 구조를 그대로 두고 작은 어댑터 HybridLink와 
 - [HybridAgent — GitHub, togethercomputer](https://github.com/togethercomputer/HybridAgent) — 2026-11-02 README의 체크포인트와 데이터셋 목록, Interpretable latent mode 예시, LICENSE(MIT), main 1b41ceb의 `hybridlink.py`, `engine.py`, `run_batch.py`, `requirements.txt` 확인
 - [togethercomputer/HybridAgent-8B-Agentic — Hugging Face, Together AI](https://huggingface.co/togethercomputer/HybridAgent-8B-Agentic) — 2026-11-02 기반 모델, 라이선스, 어댑터 파일, 특수 토큰과 transformers 단독 로드 제한 확인
 - [togethercomputer/HybridAgent-14B-Agentic — Hugging Face, Together AI](https://huggingface.co/togethercomputer/HybridAgent-14B-Agentic) — 2026-11-02 같은 항목 확인
+- [Introducing Inkling 2 Mini — Thinking Machines Lab](https://thinkingmachines.ai/news/inkling-2-mini/) — 2026-11-21 반복 구조와 게이트, 반복 위치 비교, 학습과 추론 연산의 교환, 패스 수별 능력 변화, Think Fast, CoT 길이와 가독성, CoT-Control-QA, LinuxArena 조건, 배포 정밀도와 실행 환경 대조
+- [thinkingmachines/Inkling-2-Mini — Hugging Face, Thinking Machines Lab](https://huggingface.co/thinkingmachines/Inkling-2-Mini) — 2026-11-21 라이선스(Apache 2.0)와 공개 상태 확인
+- [Inkling 2 Mini - 노트북에서 실행하는 반복형 트랜스포머 모델 — GeekNews](https://news.hada.io/topic?id=37545) — 학습 계기
 
 ## 관련 문서
 
@@ -117,4 +136,6 @@ HybridAgent는 백본 구조를 그대로 두고 작은 어댑터 HybridLink와 
 - [[Diffusion-Language-Models|확산 언어 모델]] — 토큰을 하나씩 확정하는 생성을 바꾸는 다른 연구
 - [[Energy-Based-Reasoning|에너지 기반 추론]] — 연속 잠재 공간에서 추론 경로를 평가하는 다른 구성
 - [[AI-Generated-Text-Readability|AI 생성 글의 처리 난도]] — 검증 가능한 보상이 출력을 압축 쪽으로 민다는 가설
+- [[AI-Alignment-and-Control|AI 목표 정렬과 행동 통제]] — 감시와 중단, CoT 감시가 드러난 결정만 잡는 한계
+- [[World-Models|월드 모델]] — 작은 looped transformer로 같은 블록 가중치를 반복한 사례
 - [[LLM-Generation-Mechanics|LLM 동작 원리]]

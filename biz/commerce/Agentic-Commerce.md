@@ -52,6 +52,10 @@ Buy for Me에서는 고객이 Amazon 화면에서 배송지, 세금과 배송비
 
 2026-10-09에 대조한 Meta의 Muse 출시 시점 기술 설명은 저장된 결제수단이 있는 사이트에서도 구매 상세를 제시하고 매번 승인을 받는 경로를 설명한다. 별도 지갑을 쓰는 경로 역시 결제마다 승인하며, 일회용 결제 자격은 판매자, 금액과 유효기간에 묶인다. 출시 시점의 지갑 제휴사는 Stripe Link다. 2026-09-08 Stripe 발표는 미국 소비자가 Link 계정을 연결하면 Link를 받는 가맹점에서는 Link에 저장된 결제수단으로 결제하고, 그 밖의 가맹점에는 승인한 구매로 범위를 묶은 일회용 가상카드를 Muse에 발급한다고 설명한다. 같은 발표는 모든 구매에서 사용자가 채팅 화면에서 거래 총액을 승인하고 Muse는 실제 결제 정보를 보지 못한다고 밝힌다. Link 가맹점 결제에도 위의 판매자, 금액과 유효기간 묶음이 적용되는지는 두 출처에서 확인하지 못했다. 이는 공개된 설계 사례이며 모든 사이트에서 오류 없이 작동한다는 검증 결과는 아니다.
 
+2026-11-17 Google 공식 블로그는 Gemini의 작업(Tasks) 모드를 미국, 일본, 한국, 캐나다, 호주와 인도에서 무료로 내놓기 시작하고(Gemini 4 Hydrogen 기반, 일부 고급 기능은 미국부터) 구매를 Agent Payments Protocol(AP2)로 처리한다고 밝혔다. Mastercard와 Visa의 지원 카드는 디지털 토큰으로 결제하고(American Express는 추가 예정) 카드의 포인트, 캐시백과 구매 보호는 그대로 받으며, 사용자가 미리 정한 지출 상한 안에 머물도록 설계했다고 설명한다. 구매 버튼을 누르기 전에는 확인이나 사전 승인을 묻도록 설계했고, 장바구니에 담기 같은 반복 작업은 항상 허용으로 둘 수 있다. 영수증과 배송 추적은 Google Wallet에 모이고, 일부 사이트에서는 거의 끝까지 진행한 뒤 마지막 버튼을 사용자에게 넘긴다. 설계 설명이며 상한 초과나 오구매가 없다는 검증 결과는 아니다.
+
+AP2(2025-09-17 발표)는 사용자 지시를 암호 서명한 mandate로 남긴다. 사람이 있는 구매에서는 요청이 Intent Mandate로, 제시된 장바구니에 대한 승인이 품목과 가격을 고정한 Cart Mandate로 기록된다. 사람이 없는 위임에서는 가격 한도, 시점 같은 조건을 담은 Intent Mandate에 미리 서명하고, 조건이 맞으면 에이전트가 Cart Mandate를 만든다. 의도에서 장바구니와 결제까지 이어지는 기록으로 승인, 진위와 책임 소재를 가리려는 설계다. 앞에서 구분한 탐색 동의와 거래 동의가 프로토콜에서는 조건부 사전 위임과 특정 장바구니 승인으로 나뉜 셈이다(해석). Gemini의 지출 상한과 구매 전 확인이 각각 어느 mandate로 구현되는지는 발표에 없다.
+
 사업 적용 제안: 고객의 탐색 동의를 포괄적인 구매 위임으로 처리하지 않는다. 품절로 대체품을 고르거나 배송비가 달라져 승인한 조건을 벗어나면 다시 확인하도록 정한다. 자동화가 줄일 마찰과 고객이 통제할 거래 조건을 함께 설계한다.
 
 ## 에이전트 참여 정책과 수익구조를 구분한다
@@ -118,6 +122,9 @@ Buy for Me에서는 고객이 Amazon 화면에서 배송지, 세금과 배송비
 - [Shopify Help Center, Shopify Catalog and product discovery for agentic storefronts](https://help.shopify.com/en/manual/online-sales-channels/agentic-storefronts/products) — Catalog 참여와 공개 검색 노출의 차이를 2026-10-10 대조
 - [How We Built Safety Into Muse — Meta AI Research](https://research.meta.ai/blog/security-and-safety-for-ai-agents-our-approach-with-muse) — 출시 시점의 Purchases 절, 2026-10-09 대조. Stripe Link 제휴 문장은 2026-10-20 재대조
 - [Stripe helps Muse, Meta’s new personal AI agent, shop across the internet with Link — Stripe](https://stripe.com/newsroom/news/stripe-helps-meta-muse-shop-with-link) — 2026-09-08 발표. Link 가맹점과 그 밖의 가맹점의 결제 경로, 채팅 화면의 총액 승인을 2026-10-20 대조
+- [Put Gemini to work for you — Google, Josh Woodward](https://blog.google/innovation-and-ai/products/gemini-app/tasks-in-gemini-free-new-features/) — 2026-11-17 게시, 2026-11-21 제공 국가와 모델, AP2 결제, 카드 토큰, 지출 상한, 구매 전 확인, Wallet 영수증과 사이트 인계 서술 대조
+- [Powering AI commerce with the new Agent Payments Protocol (AP2) — Google Cloud, Stavan Parikh, Rao Surapaneni](https://cloud.google.com/blog/products/ai-machine-learning/announcing-agents-to-payments-ap2-protocol) — 2025-09-17 발표, 2026-11-21 Intent Mandate와 Cart Mandate, 사람이 있는 구매와 없는 위임의 흐름 대조. 사양 저장소는 열지 않음
+- 사용자 제공 GeekNews 알림(2026-11-19): Google Gemini 개인 비서 Tasks 무료 제공. 학습 계기이며 게시물 번호는 확인하지 못했다
 - [Shopify Help Center, Shopify agentic storefronts](https://help.shopify.com/en/manual/online-sales-channels/agentic-storefronts)
 - [Shopify, Carts and checkout for agents](https://shopify.dev/docs/agents/carts-and-checkout)
 - [Amazon’s next-gen AI assistant for shopping is now even smarter, more capable, and more helpful — Amazon](https://www.aboutamazon.com/news/retail/amazon-rufus-ai-assistant-personalized-shopping-features)

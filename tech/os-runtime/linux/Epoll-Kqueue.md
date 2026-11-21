@@ -1,7 +1,7 @@
 ---
 tags: [linux, os, io, epoll, kqueue, interview]
 status: done
-verified_at: 2026-08-31
+verified_at: 2026-11-21
 category: "OS&런타임(OS&Runtime)"
 aliases: ["epoll", "kqueue", "I/O 멀티플렉싱", "Epoll Kqueue"]
 ---
@@ -30,6 +30,10 @@ aliases: ["epoll", "kqueue", "I/O 멀티플렉싱", "Epoll Kqueue"]
 | 공통 한계 | 호출할 때마다 fd 집합 전체를 커널로 복사하고 커널이 전체를 O(n) 스캔 | 동일 |
 
 두 API 모두 감시 대상이 1만 개면 이벤트가 1개만 준비돼도 1만 개를 훑는다. 이것이 **C10K 문제**(동시 1만 연결 처리)의 출발점이었고, 그 해법으로 정리된 목록에 `/dev/poll`, kqueue, epoll이 함께 등장한다.
+
+언어 런타임이 감싼 API도 같은 한계를 물려받는다. PHP의 `stream_select()`는 `select()` 기반이라 fd 상한(많은 시스템에서 1024)과 O(n) 스캔을 그대로 갖고, 엣지 트리거나 1회성 통지도 쓸 수 없었다. PHP 8.6(2026-11-19 출시)은 플랫폼에 맞춰 epoll, kqueue, event ports, WSAPoll 가운데 하나를 자동으로 고르는 `Io\Poll` API를 넣었다(엣지 트리거는 epoll과 kqueue에서만). ReactPHP, AMPHP 같은 이벤트 루프 라이브러리가 백엔드를 각자 구현하지 않고 이 위에 올라가라는 설계이며, Node.js에서는 [[libuv-Architecture|libuv]]가 같은 역할을 한다.
+
+연결이 수백만 단위로 늘면 감시 API보다 연결마다 커널이 잡는 소켓 메모리가 먼저 한계가 된다. 그 단계의 선택지인 사용자 공간 TCP/IP와 커널 우회는 [[Kernel-Bypass-Networking|커널 우회 네트워킹]]에서 다룬다.
 
 ## epoll 3단 API
 
@@ -125,6 +129,8 @@ epoll과 kqueue는 준비 상태를 알리는 readiness 모델이고, Windows의
 - [Linux man-pages, socket(7)](https://man7.org/linux/man-pages/man7/socket.7.html)
 - [FreeBSD Manual Pages, kqueue(2)](https://man.freebsd.org/cgi/man.cgi?kqueue)
 - [The C10K problem — kegel.com](http://www.kegel.com/c10k.html)
+- [PHP RFC, Polling API](https://wiki.php.net/rfc/poll_api) — Implemented, 2026-11-21 대조
+- [PHP 8.6 Release Announcement — PHP](https://www.php.net/releases/8.6/en.php) — 2026-11-19 출시
 
 ## 관련 문서
 - [[Sync-Async-Blocking|동기, 비동기, 블로킹, 논블로킹]]
@@ -135,6 +141,7 @@ epoll과 kqueue는 준비 상태를 알리는 readiness 모델이고, Windows의
 - [[Single-vs-Multi-Thread|Node.js 싱글 vs 멀티 스레드]]
 - [[Redis-Architecture|Redis 아키텍처]]
 - [[File-Descriptor-Limit|파일 디스크립터 한도]]
+- [[Kernel-Bypass-Networking|커널 우회 네트워킹 (연결당 커널 메모리, DPDK, AF_XDP)]]
 - [[Storage-and-FileSystem-Files|파일 디스크립터와 파일 구조]]
 - [[CPU-Bound-Vs-IO-Bound|CPU 바운드와 I/O 바운드]]
 - [[Linux-File-System|Linux 파일 시스템]]

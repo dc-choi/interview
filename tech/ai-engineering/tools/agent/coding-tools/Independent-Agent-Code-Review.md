@@ -55,6 +55,12 @@ aliases: ["Independent Agent Code Review", "독립 에이전트 코드 리뷰", 
 
 설치가 훅과 파일을 만들 수 있으므로 스킬 문서만 읽는 것과 설치를 구분한다. 이번에는 설치, 리뷰 실행과 성능 비교를 하지 않았다. 스캐너 수와 존재 검사를 결함 탐지율이나 무결함 보장으로 바꾸지 않는다.
 
+## 구현 사례: 앱 안의 PR 리뷰 탭에서 별도 스레드로 리뷰를 시작한다
+
+2026-11-17 공개 발표에서 소개된 Codex 앱의 코드 리뷰 탭이다. 2026-11-21 공식 Code Review 문서로 대조했고, 이 절만 대조했으므로 문서의 `verified_at`은 그대로 둔다. GitHub를 연결하면 내가 만들었거나 배정받은 PR을 모아 보여 주고, 앱을 떠나지 않고 diff와 GitHub 링크를 볼 수 있다. 문서 기준으로는 데스크톱 앱에 들어 있는 Code Review 플러그인이고 사이드바에 고정할 수 있으며, 수신함을 나에게 배정됨, 내 팀에 배정됨, 내가 작성함으로 거르고 Changes에서 diff와 댓글을 본다. GitHub 리뷰는 정식 제공이고 GitLab 병합 요청은 프리뷰다. 발표는 다른 사람이 에이전트로 쓴 코드가 검토 요청으로 넘어오는 상황을 배경으로 들었다. 리뷰 버튼을 누르면 별도 스레드에서 서브에이전트가 미리 만든 프롬프트로 PR을 검토하고 결과를 그 대화로 돌려준다고 했는데, 문서는 Review with Codex가 새 대화에서 리뷰를 시작한다고만 적고 서브에이전트와 미리 만든 프롬프트는 언급하지 않는다. 보게 할 부분은 Review instructions(설정의 Code Review에서도 수정)에 기준과 보고 형식을 적어 정하며, 이 지침은 리뷰 전반에 적용된다. 시연은 리뷰 결과를 보여 주지 않았으므로 지적의 정확도와 검증 방식은 확인하지 못했다.
+
+적용 점검(이 문서의 해석): 구현 대화와 다른 스레드에서 리뷰가 도는 구조는 위의 입력 분리와 맞는다. 다만 같은 모델과 같은 저장소 지침을 쓰면 같은 가정을 되풀이할 수 있으므로 다른 모델이나 별도 지침을 줄 수 있는지 본다. 사용자 지침에는 위치, 실패 조건과 수정 이유를 남기게 한다. 시연의 PR은 작성자가 모바일 화면을 포함한 스크린샷으로 동작을 확인한 증거를 붙였는데, 검토자는 그 증거가 주장한 동작을 실제로 보여 주는지 대조하고 스크린샷이 있다는 사실만으로 통과시키지 않는다.
+
 ## 확인 질문
 
 - 인용문이 코드에 있다는 검사만으로 결함이 입증되는가?
@@ -66,6 +72,8 @@ aliases: ["Independent Agent Code Review", "독립 에이전트 코드 리뷰", 
 - [You and what army? — Builder's Day, Tyler Benfield](https://builders.day/stream?session=tyler-benfield) — 2026-11-04 공개 발표의 14:53~20:54를 로컬 음성 전사와 대조. 독립 리뷰의 입력과 반박 절차를 참고했으며 자체 성과 수치는 일반화하지 않음.
 - [OpenQodex — OpenQodex](https://github.com/openqodex/openqodex) — 2026-11-02 README의 기본 범위, 22개 스캐너와 finder/verifier, 개인정보 경계 대조.
 - [Migrating the GitHub Copilot runtime to Rust, using Copilot — GitHub](https://github.blog/ai-and-ml/generative-ai/migrating-the-github-copilot-runtime-to-rust-using-copilot/) — 2026-09-16 게시, 2026-09-23 갱신. 2026-11-12 rebase 리뷰 지침, 다중 모델 대조 리뷰, 사람 리뷰의 초점, 회귀 유형과 테스트 보호 부분 대조.
+- [New Ways of Working with Codex — AI Engineer, Dominik Kundel, Charlie Guo](https://www.youtube.com/watch?v=IPh9YsWvDQk) — 2026-11-17 공개 영상의 43:36~45:10을 사람이 단 영어 자막과 대조. 앱 안 PR 리뷰 탭의 구성만 소개한 시연이며 리뷰 결과와 성능은 확인하지 않았다.
+- [OpenAI, Code review](https://learn.chatgpt.com/docs/code-review) — 2026-11-21 Code Review 플러그인, 수신함 필터, Changes, 새 대화에서 시작하는 리뷰, Review instructions와 GitHub와 GitLab의 제공 단계 대조
 
 ## 관련 문서
 

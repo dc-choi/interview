@@ -24,8 +24,8 @@ aliases: ["LLM 선택, 서빙과 운영", "LLM Selection Serving and Operations"
 - [[LLM-API-Version-Migration|LLM API 버전과 SDK 마이그레이션]]: 날짜 기반 버전 고정의 보장 범위, 모델 단위와 버전 단위 제약, Claude API 2026-10-21의 요청과 응답 계약 변경, SDK 메이저와 기본 버전 헤더, 제거된 파라미터 검색, 요청 단위 분리와 재시도하지 않는 400
 
 - [[Local-Inference-Deployment-Cases|로컬 추론의 배포 사례]]: Janas의 SSD 전문가 캐시, Minions의 작업 분산, MLX 분산 추론(JACCL, 파이프라인과 텐서 병렬, Muse Spark Open 2대와 4대 측정), Uzu의 Apple 기기 추론과 속도 비교 조건, PS5LM 콘솔 모델 서버, LFM2.5와 Muse Spark Open의 용량과 평가 경계, Edge0-145B의 RAM과 SSD 계층과 메모리 수치의 측정 조건, Harbor 보도의 확인 수준
-- [[Local-AI-Hardware-Lifecycle|로컬 AI 장비의 수명]]: 소프트웨어 지원, 모델 크기와 비용의 세 기한, CUDA 13.0과 ROCm의 구형 GPU 지원 종료, 표기 용량과 쓸 수 있는 용량, 사용 연수로 나눈 가격, 구매와 임대와 API 비교
-- [[Model-Release-Claims|모델 발표 수치 읽기]] — 측정 주체와 과업당 비용, 메모리와 라이선스, Carbon과 Mistral Large 4의 점수 및 제공 상태, 단가 인하 뒤의 과업당 비용 증가, 추론 강도별 토큰 차이, 모델마다 다른 하네스, 상대 백분율과 섞인 측정 주체(MAI Code 2), 직전 모델과만 비교한 자체 벤치마크(Qwen4-Max), 비교 쌍의 추론 강도(GPT-6.2)와 공급사별 추론 강도 이름
+- [[Local-AI-Hardware-Lifecycle|로컬 AI 장비의 수명]]: 소프트웨어 지원, 모델 크기와 비용의 세 기한, CUDA 13.0과 ROCm의 구형 GPU 지원 종료, 표기 용량과 쓸 수 있는 용량, 사용 연수로 나눈 가격, 구매와 임대와 API 비교, 호출당 요금과 교체 시점과 지연 같은 비용 밖의 이유
+- [[Model-Release-Claims|모델 발표 수치 읽기]] — 측정 주체와 과업당 비용, 메모리와 라이선스, Carbon과 Mistral Large 4의 점수 및 제공 상태, 단가 인하 뒤의 과업당 비용 증가, 추론 강도별 토큰 차이, 모델마다 다른 하네스, 상대 백분율과 섞인 측정 주체(MAI Code 2), 직전 모델과만 비교한 자체 벤치마크(Qwen4-Max), 게시본마다 다른 비교 비율과 추론 강도(GPT-6.2), 공급사별 추론 강도 이름, 학습 데이터와 겹친 과제 제외와 단가 비율(MAI Cyber 2 Flash), 근소한 순위 차이, 경쟁 모델의 피크 단가 비교와 조회 표를 센 파라미터(Hy4 flash)
 
 ## 함께 볼 문서
 

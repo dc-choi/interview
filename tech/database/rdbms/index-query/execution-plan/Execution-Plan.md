@@ -14,7 +14,7 @@ aliases: ["실행계획", "Execution Plan"]
 1. [[Execution-Plan-Basics|실행 계획 기본]]: `EXPLAIN`, 통계 수집, `EXPLAIN ANALYZE`의 구분, 진단 흐름, 조인 전 필터링
 2. [[Execution-Plan-MySQL-EXPLAIN|MySQL EXPLAIN 읽기]]: 읽는 순서, access type 조건, `possible_keys`와 `key`의 불일치, `key_len` 계산, `ref=func`, `Extra`
 3. [[Execution-Plan-MySQL-EXPLAIN-ANALYZE|MySQL EXPLAIN ANALYZE 숫자 읽기]]: actual time과 loops, 자기 시간, 파이프라인과 blocking, TREE 표식, 병목 좁히기
-4. [[Execution-Plan-PostgreSQL|PostgreSQL 실행 계획과 planner 통계]]: 계획 노드, cost 숫자, 병렬 계획, InitPlan과 SubPlan, `pg_stats`와 extended statistics
+4. [[Execution-Plan-PostgreSQL|PostgreSQL 실행 계획과 planner 통계]]: 계획 노드, cost 숫자, 병렬 계획, InitPlan과 SubPlan, `pg_stats`와 extended statistics, 19의 `pg_plan_advice` 계획 고정
 
 ## 함께 볼 문서
 

@@ -11,6 +11,14 @@ aliases: ["AI Code Delegation and Review", "AI 구현 위임과 코드 리뷰"]
 
 구현을 위임해도 목표, 보존할 동작, 허용할 절충과 완료 기준은 필요하다. 자연어가 모호하면 인터페이스, 함수 시그니처와 입출력 예시로 의도를 전달한다. 코드는 구현물인 동시에 의사소통 수단이다.
 
+### 아키텍처를 정하지 않으면 에이전트가 대신 정한다
+
+요구사항만 주고 아키텍처와 데이터 모델을 정하지 않으면 성능과 데이터 설계의 결정까지 에이전트가 내린다. 코딩 에이전트는 서비스가 막 출시했는지 사용자가 수백만인지 모르고 요구를 글자 그대로 구현하는 쪽으로 기운다. 그래서 구현 대부분을 맡긴 개발자는 알림 없이 아키텍트의 책임을 넘겨받는다. 앱을 느리게 만드는 요구에 제동을 걸고, 거절할 수 없으면 비동기 처리나 감수할 만한 우회로 절충하며, 한 줄처럼 보이는 코드 뒤의 API 호출 수 같은 비용을 아는 일이다.
+
+대응은 코딩 전에 사람이 아키텍처와 데이터 모델을 설계해 그 제약 안에서 구현을 맡기는 것이다. 요구가 아키텍처나 설계를 바꾸게 되면 에이전트가 스스로 바꾸지 않고 먼저 묻게 하고, 하위 호환이 필요한 경우와 옛 로직과 테이블을 지워 한 버전만 남길 시점을 명시하며, 설계를 따랐는지 아키텍트처럼 리뷰한다. 이 권고와, 코딩 도구가 기능 요구 외에 보안과 하위 호환에 맞춰져 있어 성능을 보안과 맞바꾸고 데이터 모델을 여러 벌 남기기 쉽다는 진단은 아래 사례 글의 경험에서 나왔으며 효과를 비교한 자료는 없다. 미리 정할 결정 축을 드러내는 방법은 [[Agent-Spec-Writing#숨은 결정 드러내기 — 결정 축 인터뷰|결정 축 인터뷰]]를 따른다.
+
+사례(2026-11 개인 블로그): Google Forms 애드온에서 바이브 코딩한 설치 로그 코드가 사용자 이메일을, 실패하면 사용자 ID를 차례로 조회하고 둘 다 실패하면 모른다고 기록하는 try/catch 사슬이었다. 줄마다 Google 서버를 여러 번 부르는 이 코드가 설치 직후 가장 먼저 실행돼 정적인 환영 화면이 뜨는 데 15초가 걸렸다. 제시된 해법은 설치 시각만 기록하고 화면을 먼저 띄우며, 설치만으로는 이메일을 얻을 수 없다고 마케팅에 알리는 것이다. 이메일이 꼭 필요하면 화면을 띄운 뒤 브라우저에서 비동기로 기록할 수 있지만 서버가 인증 없는 요청을 받아야 하는 보안 부담이 생긴다.
+
 ## 리뷰의 목적
 
 - **적합성:** 동작하는 결과와 요구한 결과가 같은지 확인한다.
@@ -86,37 +94,9 @@ AI 버그 수정 지침은 사소하지 않은 결함의 재현 시도, 수정 �
 
 2026년 10월 LKML 스레드에서 Torvalds는 특정 작업에 AI를 쓰지 말라는 규칙을 만들지 않겠다며, 기여자에게 기대하는 것은 최선을 다하고 자기가 하는 일을 이해하는 것이고 어떤 도구를 쓰는지는 그와 거의 무관하다는 취지로 답했다(GeekNews 번역 요약 기준, lore.kernel.org 원문은 접근 차단으로 대조하지 못했다). 그 자신의 페이지 캐시 패치도 같은 경계를 보여 준다. Phoronix가 인용한 첫 개발 브랜치(`noref-filemap-read-with-llm`)의 커밋 메시지는 코드, 테스트 프로그램, 검토 항목과 소개문 초안을 자신의 지휘 아래 Claude Code로 만들었고 측정은 자기 장비에서 했다고 밝힌다. GitHub 미러의 후속 브랜치(`rcu-free-v3`)에 있는 2026-10-12 커밋 `65401f4102b9`는 `Assisted-by: LLM` 태그와 함께 측정 장비, 기준 커널, 반복 조건, 읽기당 사이클과 명령어 수, 사용자 페이지가 메모리에 없을 때 `read()`마다 예외가 한 번 더 생기는 비용까지 커밋 메시지에 적는다(2026-10-27 확인, 메인라인 병합 여부는 확인하지 않음). 리뷰 요청에 옮기면 도구 표기보다 재현 조건, 측정 결과와 알려진 비용을 남기는 쪽이 검토에 쓸모 있다(운영 제안). 패치의 기술 내용은 [[Linux-Page-Cache-Contention|페이지 캐시 참조 카운팅 경합]]을 본다. 그 문서는 이 커밋을 확인하기 전인 2026-10-16 기준이라 패치와 측정을 아직 미대조로 둔다.
 
-## AI 리뷰가 결함을 더 빨리 찾으면 수정 용량이 병목이 된다
+## AI 리뷰의 발견량과 수정 용량
 
-LLM 보조 리뷰와 퍼징은 결함을 더 일찍 찾게 하지만 고칠 사람의 시간은 그만큼 늘지 않는다. 수정이 작아도 재현, 수정, 재검토와 병합에 결함마다 고정 비용이 붙으므로, 발견이 늘면 정해진 일정 안에 고칠 수 있는 양이 먼저 바닥난다.
-
-**PostgreSQL 19 (2026-10-09 커미터 회고와 Beta, RC 공지를 2026-10-27 대조):** 베타가 시작된 뒤 주요 기능 약 8~10개가 되돌려졌고 일부는 베타 후반이었다. 되돌림 몇 건은 드물지 않고 주기당 하나 정도는 예상할 수 있다는 점에 비하면 이례적인 규모다. 일부 기능의 개발자나 커미터였던 Peter Eisentraut는 기능마다 다른 요인의 조합으로 보며, 개인 의견임을 밝히고 다음을 든다.
-
-- 코드가 충분히 좋지 않았거나 시간 안에 끝내기 어려운 기능을 여럿 시도했을 수 있다. 일부는 베타 중에 빨리 고치기 어려운 구조적 결함이 있었다.
-- 예전이면 이후 5년 동안 조금씩 고쳤을 경계 조건 결함이 LLM 보조 코드 리뷰로 빨리 드러나 40건 남짓한 결함 보고가 쌓였다. 평균 세 줄짜리 수정이어도 건마다 고정 비용이 있어 시간이 모자랐다.
-- 되돌린 기능은 대부분 LLM 보조 리뷰가 지금만큼 쓸모 있기 전에 작성되고 커밋됐다. 작성 뒤에 실질적인 품질 기준이 올라간 것이며 바이브 코딩에서 나온 문제는 아니라고 본다.
-- 보안 취약점 수정 물량에 시니어 개발자가 몰린 4월부터 8월까지 베타 기간의 추가 검토와 테스트가 줄었다가 8월에 재개돼, 문제가 베타 후반에 몰려 드러났다.
-- 도메인, 복합 타입 위의 도메인, 삭제 뒤 다시 추가한 열, 열 순서를 바꿔 다시 붙인 파티션, 트리거에서 부른 SECURITY DEFINER 함수 안의 뷰가 겹치는 조합은 사람이 열거해 시험할 수 없지만 LLM 보조 퍼징은 빨리 찾는다. 이를 기능 개발에 포함하고, 문맥 조합마다 상호작용이 늘지 않도록 내부 인터페이스를 견고하게 만들자고 제안한다. 기능을 실험 상태로 커밋해 본 트리에서 성숙시키는 방식은 풀지 못한 과제로 남긴다.
-- 두 달쯤 더 있었다면 이런 결함도 고칠 수 있었겠지만, 커뮤니티는 수정을 더 넣으려고 출시를 미루기보다 일정을 지키려 했다고 본다.
-
-출시일은 그래도 예고보다 늦어졌다. 2026-06-04 Beta 1 공지는 정식 출시를 9~10월 무렵으로, 2026-09-24 Beta 4 공지는 RC를 10월 초로 잡고 GA도 10월일 수 있다고 예고했다. RC 1은 2026-10-15에 나왔고, 그 공지는 11월 12일 정기 업데이트에 들어갈 많은 수정을 19에도 넣으려고 같은 날 RC 2를 내며 문제가 없으면 11월 19일 정식 출시한다고 밝혔다. 기능을 되돌린 선택은 수정 시간을 벌려는 더 긴 연기를 피한 것이지 처음 일정을 그대로 지켰다는 뜻은 아니다(해석).
-
-**PostgreSQL 19 (Robert Haas 글, 2026-10-30 블로그 재게시본을 2026-11-08 대조):** 다른 커미터인 Robert Haas는 지연의 원인을 LLM으로 버그를 찾기가 훨씬 쉬워진 데서 찾는다. 고치기도 쉬워졌지만 같은 정도는 아니고, LLM이 수정 초안을 만들어도 늘 맞거나 프로젝트 기준에 맞지는 않으며 결국 사람이 검토하고 커밋해야 한다고 적는다. 그가 센 수치는 기능 동결일(4월 8일)부터 9월 25일까지다.
-
-- 릴리스 branch 커밋: 2025년 `REL_18_STABLE` 724건에서 2026년 `REL_19_STABLE` 1,169건으로 60% 넘게 늘었다.
-- master 커밋: 1,037건에서 1,443건으로 늘었지만 master에만 들어간 커밋은 조금 줄었다.
-- 이전 릴리스 하나 이상으로 백패치한 커밋: 248건(`REL_17_STABLE`)에서 433건(`REL_18_STABLE`)으로 74% 넘게 늘었다.
-
-그는 커미터의 실수가 늘었을 가능성을 배제하지 않지만 주된 원인으로 보지 않는다. 릴리스에 들어갈 기능을 검토할 시간이 보안 문제 대응으로 빠졌다는 설명은 Eisentraut의 네 번째 항목과 겹친다. 8월 27일부터 9월 15일 사이에 되돌린 기능으로 UPDATE/DELETE FOR PORTION OF, SQL/PGQ, ALTER TABLE의 MERGE PARTITION과 SPLIT PARTITION을 든다. 반영된 커밋을 센 수치라 고치지 못한 보고의 규모는 여기에 없고, 이 증가를 버그를 찾기 쉬워진 결과로 읽는 것은 그의 해석이다. 앞으로 PostgreSQL에서 쓰는 모든 기능이 AI의 검토를 받으므로 PostgreSQL 개발자 모두, 어느 정도는 모든 소프트웨어 개발자가 수준을 높여야 한다는 전망도 그의 의견이다.
-
-**Linux 7.2 (LWN 2026-08-17 개발 통계):** 이전 커밋의 버그를 고친다고 표시하는 `Fixes` 태그가 붙은 커밋이 4,830건이다. 여러 릴리스 동안 거의 평탄하던 Fixes 커밋이 최근 릴리스에서 크게 늘었고, LWN은 기존 소프트웨어의 버그 찾기에 LLM을 쓰는 사람이 많아진 영향으로 해석한다. 리뷰 시스템 Sashiko를 Reported-by로 밝힌 패치는 252건, 변경 설명에서 Sashiko를 언급한 커밋은 568건이다. 모두 반영된 커밋을 센 수치라 발견과 수정량이 늘었다는 신호이며, 고치지 못한 보고나 대기열의 크기는 이 통계에 없다. 발견이 수정 용량을 넘었는지는 미처리 보고 같은 별도 지표로 확인한다.
-
-적용할 때는 다음을 나눈다(운영 제안).
-
-- AI 리뷰를 들이기 전에 발견을 처리할 용량, 곧 분류, 재현, 수정과 재검토를 함께 잡는다. 발견 수만 늘면 대기열이 길어진다.
-- 이번 변경이 만든 결함과 원래 있던 결함을 나눠 센다. AI 리뷰 지적에 Pre-existing 같은 분류를 붙여 변경이 만들지 않은 결함을 작성자 책임과 구분하고, 기존 코드의 오래된 결함은 리뷰 에이전트의 야간 검토처럼 별도 흐름에서 찾는다([[Code-Review-AI-Agent-Operations#지적 처리와 도입 점검|지적 처리와 도입 점검]]).
-- 품질이 나빠진 것인지 판정 기준이 올라간 것인지 구분한다. 새 검사 도구가 쓰이기 전에 작성된 코드에서 드러난 결함은 새 변경의 회귀와 다른 선택지(되돌림, 다음 주기로 이월, 실험 기능 표시)를 가진다.
-- 조합이 폭발하는 기능은 퍼징과 [[Property-Based-Testing|속성 기반 테스트]]를 개발 단계에 넣는다.
+LLM 보조 리뷰와 퍼징으로 결함 발견이 늘 때 수정 용량이 먼저 바닥나는 문제, PostgreSQL 19의 기능 되돌림과 출시 일정, 커미터가 센 커밋 수치와 원인 해석, Linux 7.2의 Fixes 태그 증가, 발견과 수정의 용량 계획은 [[AI-Code-Delegation-Review-Fix-Capacity|AI 리뷰의 발견량과 수정 용량]]에 둔다.
 
 ## 형식 검증도 명세의 적합성까지 대신하지 않는다
 
@@ -165,13 +145,9 @@ Dafny 4 튜토리얼의 절댓값 예제에서 후조건이 `0 <= y`뿐이면 �
 - [Linus Torvalds Working On A Hefty Linux Kernel Improvement With Claude Code — Phoronix](https://www.phoronix.com/news/Linus-Torvalds-Claude-Code) — 2026-10-11, 첫 개발 브랜치 커밋 메시지 인용
 - [mm/filemap: read from the page cache without folio references — GitHub torvalds/linux 미러, Linus Torvalds](https://github.com/torvalds/linux/commit/65401f4102b974df3907267e9cac2e991a0a6680) — `rcu-free-v3` 브랜치 2026-10-12 커밋, 2026-10-27 커밋 메시지 확인
 - [Linus Torvalds "AI 사용을 금지하지 않겠다. 자신이 하는 일을 이해해야 한다" — GeekNews](https://news.hada.io/topic?id=35504) — LKML 메시지의 번역 요약. lore.kernel.org 원문은 2026-10-27 접근 차단으로 미대조
-- [The reverts will continue until morale improves — Peter Eisentraut](https://peter.eisentraut.org/blog/2026/10/09/the-reverts-will-continue-until-morale-improves) — 2026-10-09 개인 회고, 2026-10-27 원문 대조
-- [Postgres 19 is late, and it's AI's fault — Robert Haas](https://rhaas.blogspot.com/2026/10/postgres-19-is-late-and-its-ais-fault.html) — 2026-10-30 블로그 게시(neon.com 2026-10-21 원게시), 커밋 수치, 되돌린 기능과 원인 해석을 2026-11-08 원문 대조
-- [PostgreSQL 19 RC 1 Released! — PostgreSQL](https://www.postgresql.org/about/news/postgresql-19-rc-1-released-3409/) — 2026-10-15, RC 2와 정식 출시 예정일 대조
-- [PostgreSQL 19 Beta 1 Released! — PostgreSQL](https://www.postgresql.org/about/news/postgresql-19-beta-1-released-3313/) — 2026-06-04, 정식 출시 예고(9~10월 무렵)를 2026-10-27 대조
-- [PostgreSQL 19 Beta 4 Released! — PostgreSQL](https://www.postgresql.org/about/news/postgresql-19-beta-4-released-3386/) — 2026-09-24, RC와 GA 예고(10월)와 되돌린 기능 목록을 2026-10-27 대조
-- [Postgres 19 delayed after AI reviewers find more bugs than humans can fix — The Register, Lindsay Clark](https://www.theregister.com/databases/2026/10/16/postgres-19-delayed-after-ai-reviewers-find-more-bugs-than-humans-can-fix/5303471) — 2026-10-16 보도, 아래 GeekNews 연기 요약의 원문. 일정은 위 공식 공지로 대조
-- 사용자 제공 GeekNews 알림 요약(2026-10-16~27): Claude Code 팀의 코드 리뷰 방식, [Brain Sandwich](https://news.hada.io/topic?id=35604), [예전의 내 일은 이제 멀게 느껴진다](https://news.hada.io/topic?id=35541), [Ask HN](https://news.hada.io/topic?id=35662), [Postgres 19 출시 지연](https://news.hada.io/topic?id=35488), Linux 7.2 통계, Torvalds 발언. 위 원문으로 대조했다
+- [We promoted developers into architects without informing them — Mani Doraisamy](https://manidoraisamy.com/developer-to-architect.html) — 2026-11-21 열람 시 17시간 전 게시로 표시, 설치 로그 사례, 아키텍트 역할과 권고를 원문 대조. 개인 경험이며 Google 측 사용자 정보 제한에 관한 서술은 확인하지 않음
+- 사용자 제공 GeekNews 알림(2026-11-21): 우리는 개발자들에게 알리지도 않고 아키텍트로 승진시켰다. 학습 계기이며 게시물 번호는 확인하지 못했다
+- 사용자 제공 GeekNews 알림 요약(2026-10-16~27): Claude Code 팀의 코드 리뷰 방식, [Brain Sandwich](https://news.hada.io/topic?id=35604), [예전의 내 일은 이제 멀게 느껴진다](https://news.hada.io/topic?id=35541), [Ask HN](https://news.hada.io/topic?id=35662), Linux 7.2 통계, Torvalds 발언. 위 원문으로 대조했다
 
 ## 관련 문서
 
@@ -180,6 +156,7 @@ Dafny 4 튜토리얼의 절댓값 예제에서 후조건이 `0 <= y`뿐이면 �
 - [[Harness-Gate-Placement#푸시 전에 변경 이해를 묻는 훅은 연습 장치다|푸시 전 이해 확인 훅]]
 
 - [[AI-Code-Delegation-Review-Cognitive-Surrender|위임과 인지적 항복]] — 판단 위탁으로 미끄러지는 과정, 검증 병목의 두 선택, 검사 통과의 범위
+- [[AI-Code-Delegation-Review-Fix-Capacity|AI 리뷰의 발견량과 수정 용량]] — PostgreSQL 19 되돌림과 출시 일정, Linux Fixes 태그 증가, 발견과 수정의 용량 계획
 - [[Developer-Role-AI-Era|AI 시대 개발자 역할]]
 - [[Agent-Spec-Writing|에이전트 스펙 작성법]]
 - [[Expertise-Formation-AI|AI 시대 전문성 형성]]

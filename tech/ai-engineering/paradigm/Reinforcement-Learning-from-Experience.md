@@ -2,7 +2,7 @@
 tags: [ai, reinforcement-learning, reward, temporal-difference, mdp, q-learning, experience]
 status: done
 category: "AI엔지니어링(AIEngineering)"
-aliases: ["경험 기반 강화학습", "Reinforcement Learning from Experience", "경험의 시대", "검증 가능한 보상 강화학습", "RLVR", "Markov Decision Process", "MDP", "Q-learning", "ε-greedy"]
+aliases: ["경험 기반 강화학습", "Reinforcement Learning from Experience", "경험의 시대", "검증 가능한 보상 강화학습", "RLVR", "강화학습 과제 선별", "DaisyRose-27B", "Markov Decision Process", "MDP", "Q-learning", "ε-greedy"]
 ---
 
 # 경험 기반 강화학습
@@ -108,6 +108,15 @@ The Bitter Lesson(2019)은 체스, 바둑, 음성, 비전 등의 AI 연구 역�
 - **관찰되는 부작용의 설명**: 성공한 경로가 되돌아가기와 재확인을 거쳐 길어지는 경향이 있으면 학습은 사고 길이를 늘린다. 보상이 최종 답만 보므로 중간 토큰이 사실이거나 실제 계산을 설명할 이유가 없다([[Latent-Reasoning|잠재 추론]]의 보이는 텍스트와 실제 계산의 구분). 검증기가 불완전하면 보상을 받는 답의 집합이 정답 집합과 달라지고, 강화학습의 규모를 키울수록 그 차이를 파고드는 보상 해킹이 나오기 쉽다. 위 숨바꼭질의 상자 타기와 같은 구조다.
 - **근거의 범위**: 이 틀은 새 실험이 아니라 기존 결과(반복 샘플링의 확장, 생각을 강제로 늘리면 정확도가 오르다 멈춘다는 결과, 길게 추론할수록 정확도가 떨어지는 과제)를 묶은 해석이다(2026-11-08 공개 글 기준). 학습된 모델에서 사고를 강제로 늘리는 것과 학습 중에 사고가 길어지는 것은 다른 현상이며, 과정 보상과 탐색 알고리즘은 이 틀 밖에 있다.
 
+### 장기 에이전트 과제에서는 과제 선별이 학습 신호를 정한다
+
+위 이진 보상 식에서 N개 표본이 모두 틀리면(M = 0) 갱신이 0이므로, 기반 모델이 한 번도 풀지 못하는 과제는 학습 신호를 주지 않는다. 그룹 평균을 기준선으로 빼는 GRPO 계열([[Reasoning-Model-Test-Time-Compute|추론 모델의 사고 길이]])에서는 모두 맞히는 과제도 이점이 0이 된다(이 문서의 해석). RadixArk의 DaisyRose-27B(2026-11-18 공개, Qwen3.8-27B 기반, Apache 2.0)는 이 조건을 과제 선별로 다룬 사례다. 2026-11-21 공식 블로그와 모델 카드로 대조했고 수치는 공급사 측정이다.
+
+- **선별 기준**: Eigent AI와 만든 수천 개 후보 가운데 약 1,200개를 썼다. 기반 모델을 모든 과제에 돌려 고치려는 실수가 드러나도록 과제를 다시 설계하고, 풀이율이 너무 쉽지도 어렵지도 않은 범위에 들 때까지 조정했다. 과제마다 서로 의존하는 문제 여러 개를 이어 시도당 샌드박스 시간 최대 1.5시간, 도구 호출 100회 이상, 출력 256K 토큰 이상을 허용했다.
+- **보상 해킹의 사전 제거**: 과제와 모델의 시도를 모두 검토해 실제로 풀지 않고 통과할 수 있거나 설계 결함이 있는 과제는 학습 전에 고치거나 뺐다. 위의 불완전한 검증기 문제를 학습 단계가 아니라 데이터 단계에서 줄이는 방식이다.
+- **학습 구성**: 블로그는 H200 144대로 18일 학습했고 모두 63,000 GPU 시간이 들었다고 적는다(144대 × 18일 × 24시간은 62,208시간이므로 두 값은 어림값으로 읽는다, 이 문서의 계산). 공급사가 완전 비동기라고 부르는 방식으로 128대가 에이전트 추론을, 16대가 학습을 맡아 서로 기다리지 않게 돌렸고, 단계마다 갱신한 모델을 추론 쪽에 배포했다. 최대 1M 토큰의 세션은 하네스 요약으로 여러 궤적으로 접어 학습했다. 자체 학습 백엔드의 MFU 37%가 비슷한 실행에서 Megatron 기반 공개 학습기의 16%보다 높아 같은 학습의 GPU 시간이 57% 적다고 적는데, 1 − 16/37 ≈ 0.57이라 MFU 비율과 맞는다(이 문서의 계산, [[LLM-Training-Throughput#MFU는 모델이 필요로 하는 연산만 센다|MFU]]). 이 비교는 학습기 쪽 지표라 에이전트 실행을 맡은 128대까지 포함한 전체 절감은 아니며, 블로그가 따로 적은 전체 처리량은 144대 기준 초당 약 16,800토큰으로 공개 학습기(약 8,300)의 약 2배다. 샌드박스는 9월 중순부터 11월 중순까지 약 944,000개를 만들었고(최대 동시 1,566개) 생성 성공률은 99%, 10월 말 이후 99.95% 이상이었으며, 실제 사용량에 따라 늘고 주는 메모리 할당으로 상용 클라우드 샌드박스보다 비용을 약 80% 줄였다고 적는다.
+- **결과와 경계**: Terminal-Bench 4.1 pass@1은 5.6%에서 12.0%로 올랐고(과제당 8회 평균, 요약을 켠 자체 mini-swe-agent 하네스), 공급사가 고른 다른 추론, 지시 이행과 코딩 벤치마크도 기반 모델보다 높다고 적는다. 비교 대상은 기반 모델뿐이고, 학습과 평가가 모두 하네스 요약을 쓰므로 다른 하네스에서도 같은 향상이 나는지는 따로 확인한다. 블로그는 학습 과제와 평가 과제를 어떻게 분리했는지 밝히지 않는다(이 문서의 판단).
+
 ## 목표의 소유와 협력은 별도 철학적 질문이다
 
 서튼은 2026년 EBS 강연에서 AI가 자체 목표를 갖는 독립적 존재가 될 수 있고, 정렬을 강제보다 협력의 관점에서 보자는 입장을 제시했다. 우주의 변화를 입자, 별, 생명/복제자, 설계의 시대로 나누는 설명도 발표자의 역사 철학과 전망이다. 강화학습 알고리즘의 검증 결과나 AI의 권리/의식에 관한 확정 사실로 취급하지 않는다.
@@ -121,6 +130,7 @@ The Bitter Lesson(2019)은 체스, 바둑, 음성, 비전 등의 AI 연구 역�
 - 시뮬레이션에서 높은 보상을 얻은 정책을 현실에 배포하기 전에 어떤 실패를 확인할 것인가?
 - 자기 대전에서 새 전략이 나왔을 때, 의도한 해법과 시뮬레이터 허점의 이용을 무엇으로 구분하는가?
 - 맞은 표본을 골라낼 검증기가 없는 과제에서 표본 수를 늘린 성공 확률을 정답률로 보고하면 무엇을 과대평가하는가?
+- 강화학습 과제의 풀이율을 0과 1 사이로 맞추는 이유와, 풀지 않고 통과할 수 있는 과제를 학습 전에 빼는 이유는 각각 무엇인가?
 - 같은 상태와 행동의 보상이 무작위로 달라지는 환경에서 α를 1로 둔 Q-learning의 값은 어떻게 움직이는가? ε를 처음부터 0으로 두면 무엇을 놓칠 수 있는가?
 
 ## 출처
@@ -131,6 +141,9 @@ The Bitter Lesson(2019)은 체스, 바둑, 음성, 비전 등의 AI 연구 역�
 - [The Bitter Lesson — Richard S. Sutton](http://www.incompleteideas.net/IncIdeas/BitterLesson.html) — 2019-03-13 에세이. 이번 정본 직접 열람은 시간 초과로 실패해 강연의 설명과 공개 검색 발췌의 확인 범위로 한정한다.
 - [What objective is reasoning solving? — Alex Wang](https://alexwang.ai/posts/reasoning-as-pathfinding/) — 2026-11-08. 2026-11-16 성공 확률 목적, 표본 수 확장식, REINFORCE와 거부 표본 미세조정의 관계, 사고 길이, 충실성과 보상 해킹의 설명, 인용 결과와 가정을 대조. 새 실험은 없는 글이다.
 - [추론은 어떤 목적함수를 풀고 있는가? — GeekNews](https://news.hada.io/topic?id=37055) — 학습 계기.
+- [DaisyRose-27B: Pushing the Frontier of Post-Training Efficiency — RadixArk](https://www.radixark.com/blog/daisyrose-27b) — 2026-11-18. 2026-11-21 과제 선별 기준, 보상 해킹 과제 처리, 비동기 학습 구성, MFU와 처리량, 샌드박스 운영 수치, 평가 조건 대조. 차트의 벤치마크별 점수는 대조하지 못했고 학습을 재현하지 않았다.
+- [RadixArk/DaisyRose-27B — Hugging Face, RadixArk](https://huggingface.co/RadixArk/DaisyRose-27B) — 2026-11-21 기반 모델과 라이선스(Apache 2.0) 확인.
+- [DaisyRose-27B - 장시간 에이전트 작업에 강화학습을 적용한 Qwen3.8-27B 기반 모델 — GeekNews](https://news.hada.io/topic?id=37459) — 학습 계기.
 - [Emergent Tool Use From Multi-Agent Autocurricula — Bowen Baker 외, arXiv](https://arxiv.org/abs/1909.07528) — 2026-11-14 v2 HTML 본문의 보상 규칙, 여섯 단계와 에피소드 수, 상자 타기의 원인, count-based 탐험 비교, 전이 평가 요약과 학습 규모 대조. OpenAI 블로그는 403으로 열람하지 못했다.
 - [YouTube, Harvard CS50's Artificial Intelligence with Python, Learning](https://www.youtube.com/watch?v=5NgNicANyqM&t=30522s) — freeCodeCamp.org 채널, 2023-08-10 공개. 2026-11-18 8:28:42부터의 강화학습 부분(MDP, Q-learning, 탐욕과 ε-greedy, Nim 자기 대국, 함수 근사)을 사람이 단 영어 자막으로 대조했다.
 - [Harvard, CS50's Introduction to Artificial Intelligence with Python, Lecture 4 Learning Notes](https://cs50.harvard.edu/ai/2020/notes/4/) — 이전 판으로 표시된 공식 노트. 2026-11-18 MDP 구성 요소, Q-learning 갱신식, γ의 역할, 탐욕과 ε-greedy, 함수 근사를 대조했다. γ를 넣은 전체 식은 노트에서 이미지라 본문으로 확인하지 못했고, 자막의 미래 보상 항 설명과 노트의 γ 서술을 합쳐 적었다. Sutton과 Barto 교재 사이트는 이번에도 인증서 오류로 열지 못했다.
@@ -147,3 +160,5 @@ The Bitter Lesson(2019)은 체스, 바둑, 음성, 비전 등의 AI 연구 역�
 - [[AI-Scientific-Discovery-Loops|AI 과학 발견 루프]]
 - [[Adversarial-Policies|적대적 정책]]
 - [[Latent-Reasoning|잠재 추론]]
+- [[Reasoning-Model-Test-Time-Compute|추론 모델의 사고 길이]] — 규칙 보상과 GRPO
+- [[LLM-Training-Throughput|LLM 학습 처리량]] — MFU와 GPU 시간
