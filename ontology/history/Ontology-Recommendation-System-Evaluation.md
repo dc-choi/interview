@@ -54,6 +54,7 @@ aliases: ["추천시스템 선언과 호스트 측정", "Ontology Recommendation
 - 호스트가 직접 읽고 판단하면 문장 조회만으로 추천시스템의 기대 근거 절을 모두 찾았다. 기계 측정의 문장 조회 점수가 낮았던 것은 호스트가 읽고 고르는 단계가 빠졌기 때문이다.
 - 개념 질의를 더한 이득은 추천시스템 답 이름 +0.021로 사례 한 건에 못 미친다. 이벤트 발행에서는 근거와 답 이름이 사례 한 건 정도 낮고 명령은 30% 더 썼다.
 - 사례가 묶음당 12~16건이고 호스트 모델은 Opus 하나다. 작은 모델이 호스트일 때는 재지 않았다.
+- 답 이름은 기대 문자열과의 일치로 셌다. 같은 답을 의미로 다시 채점한 결과와 작은 호스트 측정은 [[Ontology-Host-Judge-and-Ranking]]에 있다.
 
 ## 비용
 
@@ -66,6 +67,7 @@ aliases: ["추천시스템 선언과 호스트 측정", "Ontology Recommendation
 ## 관련 문서
 
 - [[Ontology-Competency-Evaluation|타입 스키마 도입과 판단 질문 평가]]
+- [[Ontology-Host-Judge-and-Ranking|의미 판정, 작은 호스트와 긴 질문 순위]]
 - [[Ontology-Curation|개념과 관계를 선언하는 절차]]
 - [[Ontology-Instances|온톨로지 인스턴스 선언]]
 - [[Ontology-History|온톨로지 기록]]
