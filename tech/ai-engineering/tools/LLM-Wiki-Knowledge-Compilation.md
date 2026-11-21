@@ -123,6 +123,7 @@ LLM 위키가 검색을 지원하지 않는다는 구분은 맞지 않는다. �
 
 ## 관련 문서
 
+- [[Team-Shared-Knowledge-Layer|팀 공유 지식층]] — 팀 위키를 에이전트가 읽고 쓰게 만드는 구조와 스킬 호출 측정
 - [[Ontology-Knowledge-Graph|온톨로지와 지식 그래프]]
 - [[Agent-Memory-Retain-Recall-Reflect|에이전트 기억의 저장, 검색과 추론]]
 

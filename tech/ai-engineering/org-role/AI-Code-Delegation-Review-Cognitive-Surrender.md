@@ -30,6 +30,8 @@ aliases: ["Cognitive Surrender", "인지적 항복", "AI Code Delegation Cogniti
 
 이 이동은 단계마다 그럴듯해서 잘 보이지 않는다. 직전 결과를 꼼꼼히 읽었고 문제가 없었으니 다음 결과는 훑게 되고, 결과가 좋을수록 멈춰서 다시 볼 계기가 줄어든다. 출력 대부분이 매끄러운 형식과 확신하는 어조로 나오고 대체로 맞으면 다시 볼 이유를 주지 않으므로, 겉모양은 더 이상 품질 신호가 아니다. 이렇게 쌓인 이해의 공백은 시스템을 바꾸려고 머릿속의 작동 모델을 꺼낼 때 그 모델이 없다는 사실로 드러난다. 이를 인지 부채로 부르는 은유의 적합성은 [[Technical-Debt|기술 부채]]가 다룬다.
 
+현업에서 이 공백은 이렇게 보인다. 같은 기능의 동작을 AI에게 다시 묻는 자신을 발견하고, 기획과 디자인부터 구현과 검증까지 직접 거치며 남던 감각이 사라져 팀에서 그 기능을 분명히 아는 사람이 없어진다. 개발과 검증까지는 괜찮아도 운영에서 문제가 생기면 그 공백이 비용이 된다. 반대로 위임을 의식적으로 늘리되, 세부를 모르고도 큰 줄기와 맥락을 쥐는 조직장처럼 일하려는 선택도 있다. 그때는 판단 근거가 사라지지 않도록 작업을 잘게 나눠 커밋과 문서로 남긴다. AI 이전부터 쌓인 프로젝트에서는 코드만 보고 AI와 세운 구현 계획이 실제 구현에서 예상하지 못한 문제를 만나고, 문서에 없는 사정을 아는 사람에게 물으면 바로 풀리는 경우가 많다(2026-06 현업 대담).
+
 이 절부터 스스로 묻는 질문까지의 권고는 위 연구의 용어를 빌린 2026-11 실무자 글을 정리한 것이며 효과를 측정한 결과는 아니다. 사례로 든 팀 운영과 사내 연구는 각 출처의 범위를 따른다.
 
 ## 검증이 병목이면 검사를 조이거나 속도를 늦춘다
@@ -77,6 +79,7 @@ aliases: ["Cognitive Surrender", "인지적 항복", "AI Code Delegation Cogniti
 
 ## 출처
 
+- [코딩은 AI가 합니다, 이제 개발자는 뭘 해야 하죠? — 커밋하고퇴근](https://www.youtube.com/watch?v=WmYVUX7tF6c) — 2026-06-03 공개 팟캐스트, 2026-11-21 음성 인식 전사 전체 확인. 현업 개발자 두 명의 경험담. 지식이 남지 않는 증상과 레거시 프로젝트에서의 한계
 - [Thinking—Fast, Slow, and Artificial: How AI is Reshaping Human Reasoning and the Rise of Cognitive Surrender — SSRN, Steven D. Shaw, Gideon Nave](https://papers.ssrn.com/abstract=6097646) — 2026년 초 working paper. SSRN은 접근 차단이라 [Stanford SCALE 저장소의 초록](https://scale.stanford.edu/ai/repository/thinking-fast-slow-and-artificial-how-ai-reshaping-human-reasoning-and-rise-cognitive)으로 실험 수, 표본, 정확도 변화와 조절 변수를 2026-11-17 대조
 - [How AI Is Reshaping Human Intuition and Reasoning — Knowledge at Wharton, Gideon Nave, Steven Shaw](https://knowledge.wharton.upenn.edu/podcast/ripple-effect/how-ai-is-reshaping-human-intuition-and-reasoning-gideon-nave-and-steven-shaw/) — 2026-02-24 저자 대담, 세 번째 체계 정의를 2026-11-17 확인
 - [YouTube, 길리랩, 인지적 항복을 모르면 에이전트 코드가 팀을 망친다](https://www.youtube.com/watch?v=5xn2LqBHq0c) — 2026-11-09 실무 강의. 위임 크기, 완료 조건, 리뷰 게이트 권고이며 사례와 수치는 강의 안의 가상 예시

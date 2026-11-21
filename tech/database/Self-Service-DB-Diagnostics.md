@@ -103,6 +103,20 @@ DopeDB의 공개 README는 Analysis Article에 정제한 HTML과 읽기 전용 �
 | 접속 경로 | SSH 터널은 시스템 `ssh`를 실행해 사용자의 설정, 에이전트와 하드웨어 키를 그대로 쓰고, 비공개 DB는 AWS CLI와 Session Manager 플러그인으로 연결 | 클라이언트가 자체 SSH 구현이나 별도 키 저장소를 두는지 본다 |
 | 실행 계획 | 노드별 예상 행 수와 실제 행 수, 시간을 보여 주고 크게 어긋난 추정을 경고 | 실제 행 수는 문장을 실제로 실행해야 얻는다(PostgreSQL `EXPLAIN ANALYZE`). 운영 DB의 쓰기 문장과 무거운 조회에는 신중히 쓴다 |
 
+### 운영 DB 수작업에서 난 사고와 막는 장치
+
+클라이언트의 안전장치가 필요한 이유는 신입 시절 운영 DB 사고 사례에서 잘 드러난다.
+
+- **실행 계획을 보려다 실제로 실행했다.** 배포 전 대량 `UPDATE`의 영향을 미리 보려고 `ANALYZE`를 붙인 실행 계획 조회를 했더니 문장이 실제로 실행돼 이미지 URL 컬럼이 비었다. PostgreSQL은 `ANALYZE` 옵션을 주면 문장을 실제로 실행하므로, 쓰기 문장의 실제 행 수를 보려면 `BEGIN`과 `ROLLBACK` 사이에서 실행한다고 공식 문서가 안내한다. 그 사이에도 행은 바뀌고 잠금은 `ROLLBACK`까지 유지된다. 이 사례는 스냅샷으로 복구했다.
+- **GUI 필터가 만든 조건으로 대량 잠금이 걸렸다.** DB 클라이언트에서 설명 컬럼을 `LIKE`로 필터링한 결과 표의 셀을 고치자, 클라이언트가 그 필터를 `WHERE`에 넣은 `UPDATE`를 만들었다. 인덱스 없는 조건으로 수십만 행 이상을 훑으면서 잠금이 쌓였고, 모니터링 경보가 쏟아진 뒤 세션을 강제 종료해서야 풀렸다. MySQL InnoDB는 `UPDATE`와 `DELETE`가 조건과 관계없이 훑은 인덱스 레코드에 잠금을 걸고, 쓸 인덱스가 없어 전체를 훑으면 테이블의 모든 행이 잠긴다.
+
+두 사고 모두 사람이 실행되는 SQL을 보지 못한 채 실행했다는 점이 같다. 막는 장치는 다음 순서로 둔다.
+
+1. 운영 DB의 직접 쓰기 권한을 거둔다. 조회는 관리자 화면이나 읽기 전용 계정으로 하고, 데이터 수정은 검토를 거친 스크립트나 API로만 한다. 사고 뒤 팀이 실제로 택한 조치도 직접 접근 차단이었다.
+2. 수작업이 불가피하면 대상은 기본 키로 고르고, 클라이언트가 만든 문장이 아니라 직접 쓴 SQL을 실행한다. 실행 전 같은 조건의 `SELECT`로 대상 행 수를 확인한다.
+3. 실행 계획의 실제 실행 옵션은 쓰기 문장에 트랜잭션 없이 쓰지 않는다.
+4. 복구 수단(스냅샷, 시점 복구)이 실제로 있는지 작업 전에 확인하고, 혼자 원격으로 있을 때는 배포와 데이터 변경을 하지 않는 규칙을 둔다.
+
 같은 README의 성능 비교는 DBDelve 0.3.6과 DBeaver 25.3.1을 같은 Postgres 테이블에서 5회 실행한 중앙값이다(2026-10-11, M1 Pro, 32GB). 앱 시작 시간(Launch) 1.1초와 5.2초, 유휴 메모리 133MB와 606MB, 1,000행 쿼리 0.21초와 1.96초였고, 행 제한을 끄고 100만 행 전체를 메모리에 올리면 56초와 4.9GB, 208초와 17GB였다. 제작자 측정이며 독립적으로 재현하지 않았다.
 
 ## 면접 체크포인트
@@ -118,6 +132,9 @@ DopeDB의 공개 README는 Analysis Article에 정제한 HTML과 읽기 전용 �
 - 대규모 DB fleet 운영팀이 내부 DB 어드민(KDMS)에 데이터베이스 인사이트를 만들어 DB 부하 데이터, Grafana, CloudWatch와 로그를 한 화면에 통합하고, Slack 문의와 MCP 기반 AI 자동 분석까지 확장한 사례가 있다. 실제 운영에서는 채널/사용자 제한에 더해 리소스 범위 RBAC, read-only 도구 allowlist, 결과 제한과 감사 로그가 필요하다.
 
 ## 출처
+- [문과 출신도 개발자 취업 가능할까? 부트캠프, 면접, 첫 회사 실수까지 — 커밋하고퇴근](https://www.youtube.com/watch?v=wv5_K6VGltA) — 2026-07-09 공개 팟캐스트, 2026-11-21 사람이 단 자막 전체 확인. 운영 DB 사고 두 사례의 출처이며 DB 제품은 영상에서 밝히지 않았다
+- [PostgreSQL, EXPLAIN](https://www.postgresql.org/docs/current/sql-explain.html) — 2026-11-21 `ANALYZE` 실제 실행과 `BEGIN`, `ROLLBACK` 안내 대조
+- [MySQL 8.4 Reference Manual, Locks Set by Different SQL Statements in InnoDB](https://dev.mysql.com/doc/refman/8.4/en/innodb-locks-set.html) — 2026-11-21 훑은 레코드 잠금과 전체 스캔 시 모든 행 잠금 대조
 - [DopeDB README — DopeDB](https://github.com/json-choi/dopedb/blob/main/README.md) — 2026-10-30 공유 연결과 구성원 자격증명, Analysis Article의 공개 스냅숏과 인증 후 재실행 설명만 대조. 기존 AWS와 MCP 문서는 재검증하지 않아 verified_at을 유지한다.
 - [DB 클라이언트 이제는 도프디비로 — YouTube, 큰돌의터전](https://www.youtube.com/watch?v=CSIJMHoDj7M) — 2026-10-22 제작자 시연의 저장 SQL과 공유 분석을 학습 계기로 삼았다. 다른 클라이언트와의 기능 동등성, 비용과 안전성 우위는 채택하지 않았다.
 - [DBDelve README — DBDelve](https://github.com/ShayanAbbas1/dbdelve) — 2026-11-16 기능, 안전장치와 벤치마크 조건만 대조. 기존 AWS와 MCP 문서는 재검증하지 않아 verified_at을 유지한다.

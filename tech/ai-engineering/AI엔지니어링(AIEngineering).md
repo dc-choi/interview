@@ -59,6 +59,7 @@ Software 3.0 패러다임, LLM과 에이전트, 하네스, 평가, 조직 전환
 - [x] [[Agent-Repository-Instructions#사용자 판단 기준의 보존과 재정렬|에이전트와 사용자 기준 맞추기]] — ALIGN.md, 선호와 절차의 분리, 재정렬과 벤치마크 해석
 - [x] [[Tacit-Knowledge-Judgment-Agent|암묵지와 판단 에이전트]] — 암묵지와 형식지, Nonaka의 네 변환 방식, 사례와 피드백 흡수, 반복 판단의 원칙 승격, 판단 에이전트의 배치와 홀드아웃 일치도
 - [x] [[Ontology-Knowledge-Graph|온톨로지와 지식 그래프]] — 의미 규칙과 실제 사실의 구분, 허용 관계와 식별자, 반영 전 검사, Palantir Foundry Ontology의 object, link, action과 권한, 정의를 한곳에 두고 행동까지 잇기, RDF 그래프와 속성 그래프
+- [x] [[Ontology-Question-Driven-Design|질문에서 시작하는 온톨로지 설계]] — 질문 선별 기준, 질문에서 대상, 정보, 관계와 액션 뽑기, 관계형 DB, RDF와 OWL, 객체 모델의 선택, 승인을 거치는 쓰기, LLM, RAG와 온톨로지의 분담, FDE의 요구 분해
 - [x] [[Agent-Graph-Engineering|그래프 엔지니어링]] — 실행 그래프의 노드와 엣지, 코드와 모델과 사람의 판정 분담, 실패 노드 복귀와 재시도 한도, 그래프를 쓰지 않을 작업
 - [x] [[Autonomous-Graph-Driven-Development|자율 그래프 주도 개발]] — 예약 실행 노드와 스펙 원장, 질문 이슈와 승인으로만 참여하는 사람, 강등과 재확정, 턴 한도와 draft PR 이어받기, 형식적 승인과 같은 오해를 통과시킨 검사, 결정 대기로 수렴하는 리드타임
 - [x] [[AI-Agent-Anatomy-and-Lineage|AI 에이전트의 정의, 계보와 구성 요소]] — 약한 에이전트 개념, 액터 모델에서 AutoGPT까지, LLM 코어와 계획, 기억, 도구, 환경, CoALA의 내부와 외부 행동, 시스템, 데이터, 평가 층의 문제 진단, 구성 요소별 실패 지점과 행동 단계의 개인정보 유출

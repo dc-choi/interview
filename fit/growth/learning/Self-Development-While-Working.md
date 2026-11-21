@@ -158,6 +158,7 @@ Ivanova 등의 2020년 fMRI 연구에서는 Python과 ScratchJr 코드 이해에
 - **이직의 자동 해결 기대**: 바뀔 조건과 남을 조건을 확인하되 현재 환경을 먼저 고쳐야 한다는 의무는 두지 않는다
 - **동료와의 비교** — 성장 속도는 개인차 큼. 자기 기준과 어제의 나에 비교 ([[Peer-Comparison-Anxiety|동료 비교 불안]])
 - **학습이 출력으로 이어지지 않음** — 글, 코드, 발표로 **내보내는 습관**이 학습 각인
+- **퇴근 후 공부를 의무로 강요** — 하지 않으면 뒤처지기 쉬운 생태계지만 기본값으로 강요할 일은 아니다. 업무에 새 기술을 도입하기로 했다면 조사와 학습 시간은 업무 시간으로 확보한다
 
 ## 면접 체크포인트
 
@@ -169,6 +170,7 @@ Ivanova 등의 2020년 fMRI 연구에서는 Python과 ScratchJr 코드 이해에
 
 ## 출처
 
+- [코테 잘하면 일도 잘할까? 개발자 채용, 성장, 리더 논쟁 | EP.04 — 커밋하고퇴근](https://www.youtube.com/watch?v=hqVmnwDvGeQ) — 2026-09-13 공개 팟캐스트, 2026-11-21 사람이 단 자막 전체 확인. 현업 개발자 두 명의 의견. 퇴근 후 공부와 업무 시간 학습
 2026-10-02 언어 적성과 코드 이해 연구를 대조했다. 커리어 에세이의 조언은 보편적인 의무, 고정 학습 기간이나 뇌과학적 법칙과 구분한다.
 
 - [Relating Natural Language Aptitude to Individual Differences in Learning Programming Languages — Prat et al., 2020](https://www.nature.com/articles/s41598-020-60661-8)

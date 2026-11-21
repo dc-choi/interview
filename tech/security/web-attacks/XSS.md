@@ -40,6 +40,8 @@ OWASP는 여기에 더해 **Server XSS와 Client XSS**라는 축을 겹쳐 2x2�
 
 **인코딩으로 덮을 수 없는 자리도 있다.** `<script>` 태그 안 코드 자리, HTML 주석 안, CSS 블록 안처럼 위험한 컨텍스트는 어떤 인코딩을 적용해도 안전해지지 않는다. 이런 자리에는 사용자 데이터를 아예 넣지 않는다.
 
+**입력 단계에서 바꿔 저장하면 데이터가 망가질 수 있다.** 게시판 저장 직전에 XSS 방지 라이브러리를 적용했다가 꺾쇠가 퍼센트 인코딩 형태로 바뀐 채 저장돼 사용자 화면에 그대로 노출되고, 운영 DB의 기존 데이터를 사람이 하나씩 되돌린 사례가 있다. 원문은 그대로 저장하고 출력하는 자리의 컨텍스트에 맞춰 인코딩하는 위 규칙을 따르면, 변환 규칙이 틀려도 저장된 데이터는 남는다. HTML을 허용해야 하는 입력만 아래의 살균을 쓴다.
+
 DOM 기반에서 특히 어려운 점: **DOM 엘리먼트의 `value` 속성으로 값을 다시 꺼내면 인코딩이 풀린다.** 서버에서 HTML 인코딩해 내려보낸 값도 JS가 읽는 순간 원문으로 돌아와, 새 컨텍스트에서 다시 실행 가능한 상태가 된다.
 
 ## 프레임워크의 자동 이스케이프와 그 탈출구
@@ -127,6 +129,7 @@ Q. HttpOnly 쿠키를 쓰면 XSS로부터 안전한가?
 
 - [Do the Math: How We Took Over ChatGPT Accounts — Parameter](https://www.parameter.ai/labs/we-found-a-gap-at-openai) — 2026-10-28 직접 연구 공개. 2026-11-02 프레임 메시지, HTML sink와 수정 경과 대조
 - GeekNews, 2026-11-01 10:20 사용자 제공 발췌 — 공유 링크 취약점의 계기 자료
+- [문과 출신도 개발자 취업 가능할까? 부트캠프, 면접, 첫 회사 실수까지 — 커밋하고퇴근](https://www.youtube.com/watch?v=wv5_K6VGltA) — 2026-07-09 공개 팟캐스트, 2026-11-21 자막 확인. 입력 단계 변환으로 저장 데이터가 바뀐 사례
 
 - [OWASP Cheat Sheet Series — Cross Site Scripting Prevention](https://cheatsheetseries.owasp.org/cheatsheets/Cross_Site_Scripting_Prevention_Cheat_Sheet.html)
 - [OWASP Cheat Sheet Series — DOM based XSS Prevention](https://cheatsheetseries.owasp.org/cheatsheets/DOM_based_XSS_Prevention_Cheat_Sheet.html)

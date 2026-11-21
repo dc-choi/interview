@@ -121,6 +121,9 @@ raw 임계("에러율 > 1%")는 짧은 스파이크에도 울려 오탐을 만�
 - 한 번 만든 알람을 영원히 안 지움 → 누적 소음
 - 비율 알람만 두어 저트래픽 시간대의 단건 크리티컬을 놓침
 - dedupe 없는 건별 알람이 재시도마다 발송 → 채널 마비
+- 늘 나는 오류에 경보를 걸어 둠 → 팀이 그 경보를 아예 보지 않게 됨
+- LLM 응답 지연처럼 평소에도 튀는 지표에 고정 초 기준을 검 → 낮으면 소음, 높으면 무의미. 분위수와 사용자 영향으로 기준을 정하고, 경보가 잦으면 기준을 고치는 일을 미루지 않음
+- 경보 조건 밖에서 장애가 나 사업팀의 수동 확인으로 먼저 발견됨 → 증상 기반 경보와 사용자 흐름 점검이 빠졌다는 신호
 
 ## 면접 체크포인트
 
@@ -134,6 +137,7 @@ raw 임계("에러율 > 1%")는 짧은 스파이크에도 울려 오탐을 만�
 
 ## 출처
 
+- [일 잘하는 개발자는 코드만 보지 않는다 | 회사 개발의 완료 기준 — 커밋하고퇴근](https://www.youtube.com/watch?v=Ul9Zip_XyG0) — 2026-08-18 공개 팟캐스트, 2026-11-21 사람이 단 자막 전체 확인. 현업 개발자 두 명의 경험담. 상시 오류 경보의 무시와 지연 임계값 사례
 - [포스코홀딩스의 Managed Apache Flink를 활용한 효율적인 다수 CCTV 이벤트 처리 사례 — AWS 기술 블로그](https://aws.amazon.com/ko/blogs/tech/wefficient-multi-cctv-event-processing-using-managed-apache-flink-at-posco-holdings/)
 - [생성형 AI 기반 실시간 산업 재해 예방: 포스코홀딩스의 안전 관제 혁신 사례 — Amazon Web Services Korea](https://www.youtube.com/watch?v=d-BIVt4vEDQ) — 동일 객체를 구분하는 생성 로직 검수 사례, 30:41~31:41
 - [Google SRE Workbook — Alerting on SLOs](https://sre.google/workbook/alerting-on-slos/)

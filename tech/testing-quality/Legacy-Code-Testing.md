@@ -62,8 +62,17 @@ aliases: ["Legacy Code Testing", "레거시 테스트", "Characterization Test",
 
 완료를 판단할 때는 보존한 계약, 의도적으로 바꾼 동작, 실제 외부 연동을 검증한 범위와 아직 관찰하지 못한 경로를 함께 기록한다.
 
+## 사용처가 보이지 않는 코드를 지울 때
+
+IDE의 미사용 표시는 코드 안의 직접 호출만 본다. 프레임워크가 이벤트, 애노테이션, 설정이나 리플렉션으로 연결하는 코드는 호출하는 곳이 없어 보인다. 비동기 이벤트를 받아 알림을 보내던 리스너 클래스를 IDE 안내대로 지웠다가, 담당자가 자리를 비운 사이 알림이 멈춘 사례가 있다. 이벤트 리스너, 스케줄 작업, 라우트 핸들러, DI로 등록되는 구현체가 대표적이다.
+
+- 지우기 전에 이벤트 이름, 애노테이션과 설정 키로 등록 경로를 검색하고, 가능하면 위의 특성화 테스트로 현재 동작을 먼저 고정한다.
+- 리팩토링은 한 번에 크게 하지 않는다. 작게 나눠 배포해야 문제가 생겼을 때 원인을 좁히고 빨리 되돌릴 수 있다. 코드베이스가 커질수록 영향 범위를 다 파악했다고 확신하기 어렵다.
+- 정리 작업도 리뷰와 배포 후 확인을 거친다. 연말처럼 여유 있는 시기에 몰아서 하는 대청소는 빠뜨리는 범위가 커진다.
+
 ## 출처
 
+- [일 잘하는 개발자는 코드만 보지 않는다 | 회사 개발의 완료 기준 — 커밋하고퇴근](https://www.youtube.com/watch?v=Ul9Zip_XyG0) — 2026-08-18 공개 팟캐스트, 2026-11-21 사람이 단 자막 전체 확인. 현업 개발자 두 명의 경험담. 미사용으로 표시된 이벤트 리스너를 지운 사례
 - [Working Effectively with Legacy Code — Michael Feathers](https://www.objectmentor.com/resources/articles/WorkingEffectivelyWithLegacyCode.pdf)
 - [ApprovalTests.Java — 공식 저장소](https://github.com/approvals/ApprovalTests.Java)
 - [ApprovalTests.Java, Features](https://github.com/approvals/ApprovalTests.Java/blob/master/approvaltests/docs/Features.md)
