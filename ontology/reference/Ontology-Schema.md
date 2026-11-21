@@ -126,13 +126,13 @@ node src/cli.mjs validate
 node src/cli.mjs validate --staged
 ```
 
-`validate`는 `HEAD` tree를 해석해 gap과 개수를 JSON으로 출력하고, 온톨로지 gap이 하나라도 있으면 종료 코드 1로 끝난다. frontmatter YAML 오류(`MalformedFrontmatter`)도 선언을 조용히 잃게 하므로 이 판정에 포함한다. `--staged`는 index tree를 해석하며 cache를 쓰지 않는다. `HEAD`에 이미 있던 gap은 경고로만 보고하고, stage한 변경이 새로 만든 위반이 있을 때만 종료 코드 1이다. 같은 위반이 여러 개면 개수로 비교한다. 목록 안의 위치는 비교하지 않고 그 항목이 선언한 내용으로 비교한다. 관계는 적힌 그대로의 (subject, predicate, target), 개념은 `id`, 형식이 깨진 항목은 항목 전체가 기준이다. 그래서 항목을 중간에 끼워 넣어도 기존 위반이 새 위반으로 바뀌지 않고, 위반 하나를 고치면서 같은 사유의 다른 위반을 넣으면 새 위반으로 잡는다. 위반이 있는 문서의 경로를 바꾸면 그 위반은 새 위반으로 보고된다.
+`validate`는 `HEAD` tree를 해석해 gap과 개수를 JSON으로 출력하고, 온톨로지 gap이 하나라도 있으면 종료 코드 1로 끝난다. frontmatter YAML 오류(`MalformedFrontmatter`)도 선언을 조용히 잃게 하므로 이 판정에 포함한다. UTF-8이 아닌 Markdown은 build를 중단시키지만 validate는 그 파일을 색인에서 빼고 `invalid_source_encoding` gap으로 보고한다. `--staged`는 index tree를 해석하며 cache를 쓰지 않는다. `HEAD`에 이미 있던 gap은 경고로만 보고하고, stage한 변경이 새로 만든 위반이 있을 때만 종료 코드 1이다. 같은 위반이 여러 개면 개수로 비교한다. 목록 안의 위치는 비교하지 않고 그 항목이 선언한 내용으로 비교한다. 관계는 적힌 그대로의 (subject, predicate, target), 개념은 `id`, 형식이 깨진 항목은 항목 전체가 기준이다. 그래서 항목을 중간에 끼워 넣어도 기존 위반이 새 위반으로 바뀌지 않고, 위반 하나를 고치면서 같은 사유의 다른 위반을 넣으면 새 위반으로 잡는다. 위반이 있는 문서의 경로를 바꾸면 그 위반은 새 위반으로 보고된다.
 
 `undeclared_category`는 일반 문서의 `category` 값에서 생기므로 `--staged`에서 다르게 다룬다. `HEAD`와 index 사이에 Category 개념의 ID, label 또는 alias가 달라졌을 때만 커밋을 막고, 그렇지 않으면 경고로 보고한다. 새 category 문자열을 쓴 지식 문서가 선언 문서와 함께 stage돼도 그 커밋을 막지 않는다.
 
 `.claude/hooks/vault_guard.py`의 커밋 검사는 다음 중 하나일 때만 `validate --staged`를 실행한다.
 
-- stage한 Markdown의 frontmatter 안에 `ontology_concepts` 또는 `ontology_relations`라는 key 이름이 있다. 따옴표로 감싼 key, 콜론 앞의 공백과 flow mapping도 포함한다. 닫는 줄이 없는 frontmatter는 색인과 같이 파일 끝까지로 본다. 본문의 코드 블록에 적은 예시는 해당하지 않는다.
+- stage한 Markdown의 frontmatter 안에 `ontology_concepts` 또는 `ontology_relations`라는 key 이름이 있다. 따옴표로 감싼 key, 콜론 앞의 공백과 flow mapping도 포함한다. escape는 key 이름을 글자 그대로 적지 않고도 같은 key를 만들므로(예: `"ontology\x5fconcepts"`, anchor로 그 값을 key로 다시 쓰는 경우 포함) frontmatter의 어느 줄이든 큰따옴표 안에 backslash가 있으면 해당한다. 닫는 줄이 없는 frontmatter는 색인과 같이 파일 끝까지로 본다. 본문의 코드 블록에 적은 예시는 해당하지 않는다.
 - stage한 Markdown의 `HEAD` 내용이 frontmatter에 그 key 이름을 가지고 있다. 선언 문서의 삭제, 이름 변경과 key를 모두 지우는 변경이 여기에 해당한다.
 - stage한 경로가 `ontology/vocabulary/` 또는 `ontology/instances/` 아래다. 추가, 수정, 삭제, 이름 변경을 모두 포함한다.
 
@@ -145,8 +145,7 @@ node src/cli.mjs validate --staged
 - 선언이 없는 일반 문서가 새 `category` 문자열을 쓰면 검사 없이 `HEAD`에 들어가고 `validate`의 `undeclared_category`로 드러난다.
 - `Category` 선언을 모두 지우면 `undeclared_category` 판정 자체가 꺼지므로 gap이 생기지 않는다.
 - `--staged`의 비교에 남은 한계는 셋이다. 개념의 `broader`만 해석되지 않는 다른 slug로 바꾸면 같은 `id`의 위반으로 보아 새 위반으로 잡지 못한다. `MalformedFrontmatter`는 문서와 YAML 오류 문구로 비교한다. 내용이 같은 선언은 서로 구분하지 않고 개수로만 비교한다.
-- hook은 YAML escape로 적은 key(예: `"ontology\x5fconcepts"`)를 인식하지 못한다. 두 선언 폴더 밖의 문서에 그렇게 적으면 검사가 실행되지 않는다.
-- frontmatter를 닫지 않았고 본문에 key 이름이 있는 문서를 stage하면 선언이 없는 커밋도 검증 대상이 되고 `MalformedFrontmatter`로 막힌다. frontmatter의 값, 태그나 주석에 key 이름을 적은 문서도 커밋마다 검증 대상이 된다.
+- frontmatter를 닫지 않았고 본문에 key 이름이 있는 문서를 stage하면 선언이 없는 커밋도 검증 대상이 되고 `MalformedFrontmatter`로 막힌다. frontmatter의 값, 태그나 주석에 key 이름을 적은 문서와 온톨로지와 무관하게 큰따옴표 값이나 key 안에 backslash를 쓴 문서(예: `"C:\\temp"`)도 커밋마다 검증 대상이 된다. 2026-11-21 저장소 Markdown의 frontmatter에는 그런 줄이 없다.
 - 조건 판정이 실패한 커밋은 선언을 바꿨더라도 검증 없이 통과한다. hook 기록의 `ontology detect-failed`와 다음 `validate`로 확인한다.
 
 ## 관련 문서

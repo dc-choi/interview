@@ -11,7 +11,7 @@ const ONTOLOGY_GAPS = new Set([
   'UnverifiedOntologyRelation', 'UnsupportedOntologyPredicate', 'unresolved_relation',
   'invalid_concept_declaration', 'unsupported_concept_type', 'duplicate_concept_id', 'concept_label_collision',
   'domain_violation', 'range_violation', 'reflexive_relation', 'missing_evidence', 'hierarchy_cycle',
-  'undeclared_category',
+  'undeclared_category', 'invalid_source_encoding',
 ]);
 const SLUG = /^[a-z0-9][a-z0-9-]{0,79}$/;
 const COMMON_FIELDS = ['id', 'kind', 'home', 'evidence', 'status', 'proposed_by', 'proposed_at',
@@ -26,12 +26,13 @@ const categories = (result) => stableJson(result.entities.filter((entity) => ent
   .map(({ id, label, aliases }) => [id, label, [...aliases].sort()]));
 const headRevision = (repo) => git(repo, ['rev-parse', '--verify', 'HEAD^{commit}']).toString().trim();
 
-// The frontmatter value with the boundary of readFrontmatter in markdown.mjs. Only
-// a parsed frontmatter yields gaps with a list index, so nothing else is needed.
+// The frontmatter value with the boundary of readFrontmatter in markdown.mjs. A YAML
+// error can quote list-index text, so a frontmatter toJS() refuses has no value.
 function frontmatterValue(text) {
   const rest = text.slice(/^(?:\uFEFF)?---[\t ]*\r?\n/.exec(text)?.[0].length ?? text.length);
   const closing = /^(?:---|\.\.\.)[\t ]*\r?$/m.exec(rest);
-  return closing ? parseDocument(rest.slice(0, closing.index), { prettyErrors: false }).toJS() : undefined;
+  try { return closing ? parseDocument(rest.slice(0, closing.index), { prettyErrors: false }).toJS() : undefined; }
+  catch { return undefined; }
 }
 
 // Gap identities for one tree. A list index is replaced by what the item declares:
@@ -61,7 +62,9 @@ export function validateOntology({ repo, staged = false }) {
   const revision = headRevision(repo);
   const parsed = new Map();
   const head = graphTree(repo, revision, { revision, parsed });
-  const counts = (result) => ({ documents: result.files.length, ...result.stats, ontology_gaps: ontologyGaps(result).length });
+  // A Markdown file left out of the graph as invalid_source_encoding is not a document.
+  const counts = (result) => ({ documents: result.files.length
+    - result.gaps.filter((gap) => gap.reason === 'invalid_source_encoding').length, ...result.stats, ontology_gaps: ontologyGaps(result).length });
   if (!staged) {
     const gaps = ontologyGaps(head);
     return { ok: gaps.length === 0, mode: 'head', revision, counts: counts(head), gaps };

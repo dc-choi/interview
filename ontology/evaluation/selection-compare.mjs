@@ -10,7 +10,7 @@ import { prepareCases, scoreResult } from './score.mjs';
 const repo = fileURLToPath(new URL('../..', import.meta.url));
 const queryFile = join(repo, 'ontology/src/query.mjs');
 const scoreFile = fileURLToPath(new URL('./score.mjs', import.meta.url));
-const supportFiles = ['core.mjs', 'repository.mjs', 'snapshot.mjs', 'markdown.mjs'];
+const supportFiles = ['core.mjs', 'repository.mjs', 'snapshot.mjs', 'markdown.mjs', 'schema.mjs'];
 const defaultCases = [
   'ontology/evaluation/cases.json', 'ontology/evaluation/validation-cases.json',
   'ontology/evaluation/holdout-cases.json', 'ontology/evaluation/generalization-cases-2026-09-07.json',

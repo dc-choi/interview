@@ -1,6 +1,6 @@
 import assert from 'node:assert/strict';
 import { execFileSync } from 'node:child_process';
-import { mkdirSync, mkdtempSync, rmSync, writeFileSync } from 'node:fs';
+import { mkdirSync, mkdtempSync, readFileSync, rmSync, writeFileSync } from 'node:fs';
 import { tmpdir } from 'node:os';
 import { join } from 'node:path';
 import test from 'node:test';
@@ -148,4 +148,12 @@ test('evaluation validates grouped schema and pinned all-text evidence', (t) => 
   assert.throws(() => prepareCases([{ ...grouped, expected_empty: true }], snapshot, repo), /Invalid evidence groups/);
   assert.throws(() => prepareCases([{ ...grouped, expected_evidence_groups: [{ ...grouped.expected_evidence_groups[0], any_of: [{ ...grouped.expected_evidence_groups[0].any_of[0], all_text: ['missing gold text'] }] }] }], snapshot, repo), /Gold body text missing/);
   assert.equal(prepareCases([{ id: 'empty', query: 'none', expected_empty: true, expected_evidence: [] }], snapshot, repo)[0].expected_empty, true);
+});
+
+test('selection-compare links every module that the query code imports next to the frozen copy', () => {
+  // The frozen baseline query.mjs is written to a temporary directory, so each sibling it imports needs a link there.
+  const text = (path) => readFileSync(new URL(path, import.meta.url), 'utf8');
+  const imported = [...text('../src/query.mjs').matchAll(/from '\.\/([\w-]+\.mjs)'/g)].map((match) => match[1]);
+  const linked = /const supportFiles = \[([^\]]*)\]/.exec(text('../evaluation/selection-compare.mjs'))[1];
+  assert.deepEqual(imported.filter((name) => !linked.includes(`'${name}'`)), []);
 });

@@ -1,5 +1,5 @@
 import assert from 'node:assert/strict';
-import { readFileSync } from 'node:fs';
+import { readFileSync, rmSync, symlinkSync, writeFileSync } from 'node:fs';
 import { join } from 'node:path';
 import test from 'node:test';
 
@@ -104,6 +104,42 @@ test('name containment follows word boundaries', (t) => {
   assert.deepEqual(suggested(query({ concept: 'update' })), [['updates', 'name'], ['skip-locked', 'name']]);
   assert.deepEqual(suggested(query({ concept: 'pdate' })), [], 'the term starts inside a word of the name');
   assert.deepEqual(suggested(query({ concept: 'dates' })), [], 'dates is inside updates and spans UPDATE SKIP');
+});
+
+test('a term without a word of two characters is aligned on word starts too', (t) => {
+  const { query } = fixture(t, { 'tech/Short.md': ['---', 'ontology_concepts:',
+    '  - {id: redis, type: Topic, label: Redis}',
+    '  - {id: async-io, type: Topic, label: Async I/O}',
+    '  - {id: cpp, type: Topic, label: C++}',
+    '---', '# Short', ''].join('\n') });
+  assert.deepEqual(suggested(query({ concept: 'd i' })), [], 'neither d nor i starts a word of Redis');
+  assert.deepEqual(suggested(query({ concept: 'I/O' })), [['async-io', 'name']]);
+  assert.deepEqual(suggested(query({ concept: 'c+' })), [['cpp', 'name']]);
+});
+
+test('a one-character word glued on one side still matches when the other words align', (t) => {
+  const { query } = fixture(t, { 'tech/Glued.md': ['---', 'ontology_concepts:',
+    '  - {id: nest-key, type: Topic, label: Nest key store, aliases: ["NestJS 요청 멱등성 키"]}',
+    '  - {id: redis-lock, type: Topic, label: Redis 분산락}',
+    '---', '# Glued', ''].join('\n') });
+  // The name's words are inside the longer term: "멱등성 키" and "멱등성키" differ only by a one-character word.
+  assert.deepEqual(suggested(query({ concept: 'NestJS 요청 멱등성키 설계' })), [['nest-key', 'name']]);
+  // The term's words are inside the name: "분산 락" against "분산락".
+  assert.deepEqual(suggested(query({ concept: '분산 락' })), [['redis-lock', 'name']]);
+});
+
+test('evidence suggestions read only Sections whose path is no symlink and whose bytes match their hash', (t) => {
+  const item = fixture(t);
+  const snapshot = loadSnapshot(item);
+  const tampered = { ...snapshot, entities: snapshot.entities.map((entity) => entity.type === 'Section'
+    && entity.anchor.heading_path.at(-1) === '대안' ? { ...entity, content_hash: `sha256:${'0'.repeat(64)}` } : entity) };
+  assert.deepEqual(suggested(conceptQuery(item.options, { concept: '커밋 로그' }, tampered)), []);
+  assert.deepEqual(suggested(item.query({ concept: '커밋 로그' })), [['cdc-relay', 'evidence_text'],
+    ['transactional-outbox', 'evidence_text']]);
+  writeFileSync(join(item.root, 'outside.md'), '# Outside\n');
+  rmSync(join(item.repo, 'tech/Outbox.md'));
+  symlinkSync(join(item.root, 'outside.md'), join(item.repo, 'tech/Outbox.md'));
+  assert.throws(() => item.query({ concept: '커밋 로그' }), (error) => error.code === 'symlink_path');
 });
 
 test('a reworded name suggests concepts sharing enough name tokens and never resolves them', (t) => {

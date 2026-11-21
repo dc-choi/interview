@@ -332,7 +332,11 @@ export function graph(records, repoId) {
   } };
 }
 
-/** Parses one Git tree into the validated in-memory graph without writing a snapshot. */
+/**
+ * Parses one Git tree into the validated in-memory graph without writing a snapshot.
+ * A Markdown file that is not UTF-8 stays out of the graph as an invalid_source_encoding
+ * gap, so validate reports it; buildSnapshot still stops on it and keeps the active snapshot.
+ */
 export function graphTree(repo, tree, { revision = tree, parsed = new Map() } = {}) {
   const repoId = configuredRepoId();
   const files = listMarkdown(repo, tree, DEFAULT_SCOPES);
@@ -340,9 +344,17 @@ export function graphTree(repo, tree, { revision = tree, parsed = new Map() } = 
   const pending = files.filter((file) => !parsed.has(id(file)));
   const blobs = readBlobs(repo, pending);
   for (const file of pending) {
-    parsed.set(id(file), extractMarkdown({ path: file.path, content: blobs.get(file.path), repoId, revision }));
+    try {
+      parsed.set(id(file), extractMarkdown({ path: file.path, content: blobs.get(file.path), repoId, revision }));
+    } catch (error) {
+      if (error.code !== 'invalid_source_encoding') throw error;
+      parsed.set(id(file), { source_uri: file.path, reason: error.code, message: error.message });
+    }
   }
-  return { files, ...graph(files.map((file) => parsed.get(id(file))), repoId) };
+  const records = files.map((file) => parsed.get(id(file)));
+  const result = graph(records.filter((record) => record.document), repoId);
+  result.gaps.push(...records.filter((record) => !record.document));
+  return { files, ...result };
 }
 
 function readRegular(path) {

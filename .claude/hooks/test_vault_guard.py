@@ -141,6 +141,14 @@ try:
     a.write_text(FM + "one\ntwo\nthree\n")
     assert commit(wt, str(a))[0] == 0
     assert commit(wt, str(skill))[0] == 0
+    # 이름이 -로 시작하는 루트 문서도 VL check가 옵션으로 읽지 않는다(커밋 검사와 편집 뒤 검사)
+    dash = wt / "-Plain-Selftest.md"
+    dash.write_text(FM + "# 일반\n")
+    subprocess.run(["git", "add", "--", dash.name], cwd=wt, check=True)
+    assert hook_commit(wt, NO_NODE) == (0, ""), hook_commit(wt, NO_NODE)
+    assert run(wt, "post", edit(dash)) == (0, ""), run(wt, "post", edit(dash))
+    subprocess.run(["git", "reset", "-q", "--", dash.name], cwd=wt, check=True)
+    dash.unlink()
 
     # 온톨로지: 선언(frontmatter 키, 선언 폴더)이 없는 커밋은 node 없이도 통과하고, 있으면 node 22 이상을 요구한다
     onto = wt / "tech/Ontology-Guard-Selftest.md"
@@ -248,6 +256,13 @@ try:
         ("tech/Paren (Selftest).md", declared, NO_NODE, True),
         ("-Dash-Selftest.md", declared, NO_NODE, True),
         ("tech/Quoted-Key-Selftest.md", declared.replace("ontology_concepts:", '"ontology_concepts":'), NO_NODE, True),
+        # 큰따옴표 안 escape는 키 이름을 글자 그대로 적지 않고도 같은 키가 된다
+        ("tech/Escaped-Key-Selftest.md", declared.replace("ontology_concepts:", '"ontology\\x5fconcepts":'), NO_NODE, True),
+        ("tech/Continued-Key-Selftest.md", declared.replace("ontology_concepts:\n", '? "ontology_\\\n  concepts"\n:\n'), NO_NODE, True),
+        # 큰따옴표 안 backslash는 key 자리가 아니어도 검증한다. anchor로 escape 값을 key로 쓰는 경우를 놓치지 않기 위한 대가다.
+        ("tech/Escaped-Value-Selftest.md", '---\nstatus: done\ntitle: "C:\\\\temp"\nnote: "a \\"b\\": c"\n---\n# 일반\n', NO_NODE, True),
+        ("tech/Anchored-Key-Selftest.md", declared.replace("ontology_concepts:", 'x: &k "ontology\\x5fconcepts"\n*k :'), NO_NODE, True),
+        ("tech/Plain-Quote-Selftest.md", '---\nstatus: done\ntitle: "plain"\n---\n# 일반\n', NO_NODE, False),
         ("tech/Spaced-Colon-Selftest.md", declared.replace("ontology_concepts:", "ontology_concepts :"), NO_NODE, True),
         ("tech/Flow-Selftest.md", "---\n{status: done, ontology_concepts: [{id: selftest-edge-zzz, type: Topic, label: Z}]}\n---\n# 선언\n",
          NO_NODE, True),

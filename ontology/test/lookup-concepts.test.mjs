@@ -225,6 +225,33 @@ test('a cut never leaves an excerpt under 512 bytes; otherwise the hint is dropp
   assert.ok(dropped > 0 && shown > 0, `${dropped} ${shown}`);
 });
 
+test('when no excerpt can be cut, a failed cut for two reserved hints restores the flags before one is tried', (t) => {
+  // Seven returned Sections, each shorter than the 512 byte floor, so every cut fails.
+  const topics = ['Retry', 'Ordering', 'Visibility', 'Batching', 'Throughput', 'Monitoring', 'Format'];
+  const guide = ['# Queue Guide', ...topics.flatMap((topic) => [`## ${topic}`, `${topic} notes: poison messages move aside `
+    + 'after repeated failures, so one bad payload never blocks the consumers behind it. '.repeat(2).trim()]), ''].join('\n');
+  const files = (concepts) => ({ ...deadLetterFiles(concepts), 'tech/Queue.md': guide });
+  const withConcepts = fixture(t, files(['a', 'b'].map((slug) =>
+    `  - {id: ${slug}, type: Topic, label: ${slug.toUpperCase()}, evidence: "[[Queue#Retry]]"}`)));
+  const withoutConcepts = fixture(t, files([]));
+  const query = 'poison messages';
+  const plain = lookup(withoutConcepts, { query, max_bytes: 24000 });
+  assert.ok(plain.evidence_units.length > 1 && plain.evidence_units.every((unit) => Buffer.byteLength(unit.excerpt) < 512));
+  const { concepts } = lookup(withConcepts, { query, max_bytes: 24000 });
+  assert.deepEqual(concepts.map((item) => [item.label, item.evidence_unit_index]), [['A', 0], ['B', 0]]);
+  const shown = [0, 0, 0];
+  for (let max_bytes = plain.budget.used_bytes; max_bytes <= plain.budget.used_bytes + 240; max_bytes += 10) {
+    assert.ok(Buffer.byteLength(JSON.stringify({ concepts })) <= max_bytes / 20, 'both hints are reserved');
+    const result = lookup(withConcepts, { query, max_bytes });
+    fits(result, max_bytes);
+    // Two hints do not fit and cannot be cut in: one is tried with the flags restored, then none.
+    assert.deepEqual(evidencePart(result), evidencePart(lookup(withoutConcepts, { query, max_bytes })), String(max_bytes));
+    assert.deepEqual(result.concepts ?? [], concepts.slice(0, result.concepts?.length ?? 0), String(max_bytes));
+    shown[result.concepts?.length ?? 0] += 1;
+  }
+  assert.ok(shown.every((count) => count > 0), JSON.stringify(shown));
+});
+
 test('without a returned unit supporting a concept nothing is reserved and evidence matches a concept-free snapshot', (t) => {
   const withConcepts = fixture(t, deadLetterFiles([
     '  - {id: retry-policy, type: Approach, label: Retry Policy, evidence: "[[Queue#Retry]]"}']));

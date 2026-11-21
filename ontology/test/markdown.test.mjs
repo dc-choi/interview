@@ -90,6 +90,17 @@ test('reports malformed YAML and invalid metadata fields as coverage gaps', () =
   assert.equal(invalid.coverage_gaps.filter((gap) => gap.type === 'InvalidFrontmatterField').length, 3);
 });
 
+test('an alias that YAML parses but cannot resolve is a MalformedFrontmatter gap, not a thrown error', () => {
+  // Each level repeats the previous one ten times, which the YAML library refuses as an alias bomb.
+  const bomb = ['a: &a [1, 1, 1, 1, 1, 1, 1, 1, 1, 1]', ...[...'bcdefg'].map((name, index) =>
+    `${name}: &${name} [${Array(10).fill(`*${'abcdef'[index]}`).join(', ')}]`)].join('\n');
+  for (const yaml of ['tags: *missing', 'ontology_concepts: [*missing]', '*missing : 1', bomb]) {
+    const result = extract(`---\n${yaml}\n---\n# Body\n`);
+    assert.deepEqual(result.coverage_gaps.map((gap) => gap.type), ['MalformedFrontmatter'], yaml);
+    assert.deepEqual([result.document.tags, result.concepts, result.units.length], [[], [], 2]);
+  }
+});
+
 test('creates a searchable root section for frontmatter-only documents', () => {
   const markdown = '---\ntags: [context]\n---\n';
   const result = extract(markdown);

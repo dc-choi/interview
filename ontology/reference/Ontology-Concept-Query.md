@@ -44,11 +44,11 @@ entity ID, 축약 ID 순으로 찾고, 없으면 slug, label, alias의 비교 �
 | `evidence_heading` | 개념이나 그 관계를 지지하는 원문 Section의 heading 경로가 입력 전체 또는 위 기준의 단어를 가진다 |
 | `evidence_text` | 같은 Section의 본문이 가진다 |
 
-단어는 NFC와 소문자화 뒤 한글 연속과 그 밖의 글자, 숫자 연속으로 나누며 2자 미만은 버린다. 단어는 그 단어로 시작하는 낱말과 일치하므로 조사가 붙은 한글도 찾는다. `name_tokens`, `evidence_heading`, `evidence_text`에서는 그 영역에서 허용 범위 안 개념 8개보다 많은 개념에 나타나는 표현과 단어를 쓰지 않는다. 구별하는 힘이 없기 때문이다. `name` 일치는 개수와 관계없이 후보가 되고 8개를 넘는 수는 `budget.omitted_candidates`로 센다. 2자 이상의 단어가 없는 입력(기호만 있는 입력 등)은 `name` 일치만 쓰며 이때는 단어 경계를 확인하지 못한다.
+단어는 NFC와 소문자화 뒤 한글 연속과 그 밖의 글자, 숫자 연속으로 나누며 2자 미만은 버린다. 단어는 그 단어로 시작하는 낱말과 일치하므로 조사가 붙은 한글도 찾는다. `name_tokens`, `evidence_heading`, `evidence_text`에서는 그 영역에서 허용 범위 안 개념 8개보다 많은 개념에 나타나는 표현과 단어를 쓰지 않는다. 구별하는 힘이 없기 때문이다. `name` 일치는 개수와 관계없이 후보가 되고 8개를 넘는 수는 `budget.omitted_candidates`로 센다. 2자 이상의 단어가 없는 입력(`I/O`, `c++` 등)은 `name` 일치만 쓴다. `name`의 단어 경계 확인은 짧은 쪽의 2자 이상 단어로 하고, 2자 이상 단어가 없는 쪽만 1자 단어로 한다. 그래서 `d i`는 `Redis` 안에서 일치하지 않고, `멱등성키`와 `멱등성 키`처럼 1자 단어를 붙여 쓴 차이는 일치한다. 글자와 숫자가 없는 입력만 단어 경계를 확인하지 못한다.
 
 순서는 이름 일치(`name`, `name_tokens`), `evidence_heading`, `evidence_text`다. 이름 일치 안에서는 입력 단어를 더 많이 가진 이름이 앞에 오므로 `SQS FIFO dedup`에서 단어 하나만 겹치는 Topic `sqs`보다 세 단어를 모두 가진 개념이 먼저 나온다. 근거 일치는 선언과 그 근거 Section, 관계를 선언한 항목과 상대 개념이 모두 허용 범위 안일 때만 쓴다.
 
-첫 후보가 맞는 개념이라는 보장은 없다. 넓은 Topic이 이름 한 단어로 먼저 나올 수 있고, 본문 일치는 그 표현을 언급만 한 절의 개념을 제안할 수 있다. 측정한 정확도는 [[Ontology-Competency-Evaluation#이름 해석 개선과 새 미공개 질문]]에 있다. 본문 일치는 근거 문서의 Git blob을 읽으므로 찾지 못한 질의는 찾은 질의보다 수십 ms 더 걸리고, Git object가 없으면 `source_unavailable` 또는 `invalid_git_blob` 오류가 된다.
+첫 후보가 맞는 개념이라는 보장은 없다. 넓은 Topic이 이름 한 단어로 먼저 나올 수 있고, 본문 일치는 그 표현을 언급만 한 절의 개념을 제안할 수 있다. 측정한 정확도는 [[Ontology-Competency-Evaluation#이름 해석 개선과 새 미공개 질문]]에 있다. 본문 일치는 근거 문서의 고정된 Git blob을 `context_lookup`과 같은 방식으로 읽으므로 찾지 못한 질의는 찾은 질의보다 수십 ms 더 걸린다. 허용 범위 안 개념을 뒷받침하는 근거 문서 가운데 하나라도 작업 트리에서 그 경로나 상위 폴더가 symlink면 찾지 못한 질의는 입력과 관계없이 모두 `symlink_path`, Git object가 없으면 `source_unavailable` 오류가 되고, byte가 `content_hash`와 맞지 않는 Section은 근거 일치에 쓰지 않는다.
 
 ## 응답
 

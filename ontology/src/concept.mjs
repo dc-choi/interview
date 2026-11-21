@@ -1,7 +1,7 @@
-import { ContextError, conceptSlug, inScope, labelKey, normalizeScopes, stableJson } from './core.mjs';
+import { ContextError, conceptSlug, inScope, labelKey, normalizeScopes, sha256, stableJson } from './core.mjs';
 import { CLASS_BY_NAME, CONCEPT_TYPES, PREDICATES, PREDICATE_BY_NAME, hasCharacteristic, isA } from './schema.mjs';
-import { LIMITATIONS, effectiveScopes, indexSync, outputBytes, queryRelevantGaps, scopedGaps } from './query.mjs';
-import { getRepoState, listMarkdown, readBlobs } from './repository.mjs';
+import { LIMITATIONS, effectiveScopes, indexSync, outputBytes, queryRelevantGaps, readPinnedBlobs, scopedGaps } from './query.mjs';
+import { getRepoState } from './repository.mjs';
 import { loadSnapshot } from './snapshot.mjs';
 
 export const CONCEPT_LIMITS = Object.freeze({
@@ -26,9 +26,9 @@ const append = (map, key, value) => {
 const byId = (a, b) => a.id < b.id ? -1 : Number(a.id > b.id);
 const namesOf = (concept) => [conceptSlug(concept.id), concept.label, ...concept.aliases];
 const MATCH_KINDS = ['name', 'name_tokens', 'evidence_heading', 'evidence_text'];
-// NFC, lowercase runs of Hangul or of other letters and digits, at least 2 characters long.
-const tokensOf = (text) => [...new Set(text.normalize('NFC').toLowerCase()
-  .match(/\p{Script=Hangul}+|[[\p{L}\p{N}]--\p{Script=Hangul}]+/gv) ?? [])].filter((token) => token.length >= 2);
+// NFC, lowercase runs of Hangul or of other letters and digits; tokens are the distinct ones at least 2 characters long.
+const wordsOf = (text) => text.normalize('NFC').toLowerCase().match(/\p{Script=Hangul}+|[[\p{L}\p{N}]--\p{Script=Hangul}]+/gv) ?? [];
+const tokensOf = (text) => [...new Set(wordsOf(text))].filter((token) => token.length >= 2);
 
 function validateOptions(options) {
   if (!options || typeof options !== 'object' || Array.isArray(options)) fail('invalid_options', 'options must be an object');
@@ -301,12 +301,14 @@ function evidenceFields(concepts, relations, entityById, visible, repo, revision
     .map((unit) => entityById.get(unit)).filter((unit) => visible(unit) && unit.type === 'Section' && unit.anchor)])
     .filter(([, list]) => list.length > 0));
   const paths = [...new Set([...sections.values()].flat().map((unit) => unit.source_uri))];
-  const files = paths.length > 0 ? listMarkdown(repo, revision, paths) : [];
-  if (files.length !== paths.length) fail('source_unavailable', 'cannot resolve every pinned document');
-  const blobs = readBlobs(repo, files);
-  const field = (read) => new Map([...sections].map(([concept, list]) => [concept, list.map(read)]));
-  return [field((unit) => unit.anchor.heading_path.join(' ')),
-    field((unit) => blobs.get(unit.source_uri).subarray(unit.anchor.start_byte, unit.anchor.end_byte).toString('utf8'))];
+  // The pinned reader of lookup, which refuses a symlinked path. As lookup does for
+  // evidence, a Section whose bytes no longer match its content_hash is left out.
+  const blobs = paths.length > 0 ? readPinnedBlobs(repo, revision, paths) : new Map();
+  const bytes = (unit) => blobs.get(unit.source_uri).subarray(unit.anchor.start_byte, unit.anchor.end_byte);
+  const verified = [...sections].map(([concept, list]) => [concept,
+    list.filter((unit) => unit.content_hash === `sha256:${sha256(bytes(unit))}`)]);
+  const field = (read) => new Map(verified.map(([concept, list]) => [concept, list.map(read)]));
+  return [field((unit) => unit.anchor.heading_path.join(' ')), field((unit) => bytes(unit).toString('utf8'))];
 }
 
 // A concept is suggested under its first matching kind: a slug, label or alias that
@@ -324,14 +326,19 @@ function suggest(term, termKey, concepts, evidence) {
   const rank = new Map();
   const tokens = tokensOf(term);
   // Keys drop spaces, so containment alone crosses word boundaries ("econ" in
-  // "..._seconds", "updates" in "update skip"): each word of the shorter side must start
-  // a word of the longer side. A side without words (for example "c++") keeps plain containment.
+  // "..._seconds", "updates" in "update skip", "di" of "d i" in "redis"): each token of the
+  // shorter side must start a word of the longer side. A side with no token of two
+  // characters uses its one-character words instead ("I/O", "c++", "d i"), so a one-character
+  // word glued on one side ("멱등성 키" and "멱등성키") still matches. A side without letters or
+  // digits (for example "++") keeps plain containment.
+  const termWords = wordsOf(term);
+  const termInner = tokens.length > 0 ? tokens : termWords;
   const whole = (inner, outer) => inner.length === 0
     || inner.every((token) => outer.some((word) => word.startsWith(token)));
   for (const concept of concepts) {
-    const best = Math.max(0, ...namesOf(concept).map((name) => [labelKey(name), tokensOf(name)])
-      .filter(([name, words]) => name.length >= 2 && ((name.includes(termKey) && whole(tokens, words))
-        || (termKey.includes(name) && whole(words, tokens))))
+    const best = Math.max(0, ...namesOf(concept).map((name) => [labelKey(name), wordsOf(name), tokensOf(name)])
+      .filter(([name, words, nameTokens]) => name.length >= 2 && ((name.includes(termKey) && whole(termInner, words))
+        || (termKey.includes(name) && whole(nameTokens.length > 0 ? nameTokens : words, termWords))))
       .map(([name]) => Math.min(name.length, termKey.length) / Math.max(name.length, termKey.length)));
     if (best > 0) rank.set(concept, [0, best]);
   }

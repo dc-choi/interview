@@ -161,6 +161,39 @@ test('validate --staged warns on a new undeclared category unless the Category c
   assert.deepEqual(changed.report.violations.map((gap) => [gap.source_uri, gap.reason]), [['tech/Relay.md', 'undeclared_category']]);
 });
 
+test('validate reports a non-UTF-8 Markdown file as a gap, and --staged blocks it only when the change adds it', (t) => {
+  const latin = Buffer.from('---\nstatus: done\n---\n# caf\xe9\n', 'latin1');
+  const fixture = gitFixture(t, { ...CONCEPT_FILES, 'tech/Latin.md': latin });
+  const pairs = (gaps) => gaps.map((gap) => [gap.source_uri, gap.reason]);
+  const head = run('validate', '--repo', fixture.repo);
+  assert.deepEqual([head.code, pairs(head.report.gaps)], [1, [['tech/Latin.md', 'invalid_source_encoding']]]);
+  // The excluded file is not counted as a document.
+  const valid = run('validate', '--repo', gitFixture(t, CONCEPT_FILES).repo);
+  assert.equal(head.report.counts.documents, valid.report.counts.documents);
+  // A declaration commit next to a file it did not add passes with a warning.
+  fixture.write({ 'tech/New.md': '---\nontology_concepts:\n  - {id: new-topic, type: Topic, label: New Topic}\n---\n# New\n' });
+  fixture.git('add', 'tech/New.md');
+  const kept = run('validate', '--staged', '--repo', fixture.repo);
+  assert.deepEqual([kept.code, pairs(kept.report.violations), pairs(kept.report.warnings)],
+    [0, [], [['tech/Latin.md', 'invalid_source_encoding']]]);
+  assert.equal(kept.report.counts.concepts, 10);
+  fixture.write({ 'tech/Latin-2.md': latin });
+  fixture.git('add', 'tech/Latin-2.md');
+  const added = run('validate', '--staged', '--repo', fixture.repo);
+  assert.deepEqual([added.code, pairs(added.report.violations)], [1, [['tech/Latin-2.md', 'invalid_source_encoding']]]);
+});
+
+test('validate --staged keys a HEAD gap that quotes a list index even when its frontmatter cannot become a value', (t) => {
+  // The parse error quotes "ontology_relations[1]", and the alias makes toJS() throw.
+  const fixture = gitFixture(t, { ...CONCEPT_FILES, 'tech/Bad.md': '---\nx: *missing\n] ontology_relations[1]\n---\n# Bad\n' });
+  fixture.write({ 'tech/New.md': '---\nontology_concepts:\n  - {id: new-topic, type: Topic, label: New Topic}\n---\n# New\n' });
+  fixture.git('add', 'tech/New.md');
+  const { code, report } = run('validate', '--staged', '--repo', fixture.repo);
+  assert.deepEqual([code, report.violations], [0, []]);
+  assert.deepEqual(report.warnings.map((gap) => gap.message), ['Unexpected flow-seq-end token in YAML stream: "]"',
+    'Unexpected scalar token in YAML stream: "ontology_relations[1]"']);
+});
+
 test('candidates --check verifies shape, schema, endpoints, evidence and the verbatim quote against HEAD', (t) => {
   const fixture = gitFixture(t, CONCEPT_FILES);
   const line = (fields) => JSON.stringify({ home: 'tech/Outbox.md', status: 'candidate', proposed_by: 'model',

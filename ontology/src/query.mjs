@@ -458,7 +458,7 @@ function safeExcerpt(buffer, start, end, limit) {
   return { excerpt: '', truncated: true };
 }
 
-function readPinnedBlobs(repo, revision, paths) {
+export function readPinnedBlobs(repo, revision, paths) {
   for (const sourcePath of paths) assertNoSymlink(repo, sourcePath);
   const child = spawnSync('git', ['-C', repo, 'cat-file', '--batch'], {
     input: paths.map((sourcePath) => `${revision}:${sourcePath}`).join('\n') + '\n',

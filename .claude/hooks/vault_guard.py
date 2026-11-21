@@ -46,6 +46,10 @@ ONTOLOGY_KEYS = ("ontology_concepts", "ontology_relations")
 # markdown.mjs readFrontmatter와 같은 경계: 첫 줄의 ---부터 처음 나오는 --- 또는 ... 줄까지. 닫는 줄이 없으면 색인처럼 파일 끝까지 읽는다.
 FRONTMATTER = re.compile(r"\A\ufeff?---[\t ]*\r?\n(.*?)(?:^(?:---|\.\.\.)[\t ]*\r?$|\Z)", re.S | re.M)
 DECLARING = ("ontology/vocabulary/", "ontology/instances/")
+# 큰따옴표 key의 escape("ontology\x5fconcepts", 줄 끝 \로 이은 key)는 key 이름을 글자 그대로 적지 않아도 같은 key가 된다.
+# backslash가 든 큰따옴표 key는 모두 선언 후보로 본다. 2026-11-21 저장소 Markdown 5,372개의 frontmatter에는 backslash가 하나도 없다.
+# key 자리만 고르면 anchor로 쓴 escape 값이나 주석 뒤의 ':'를 놓치므로, git grep 후보와 같은 줄 단위 기준을 쓴다.
+ESCAPED = re.compile(r'"[^"\n]*\\')
 VALIDATE_TIMEOUT = 100  # 무인 auto-learn은 120초에 git을 끊으므로 그 전에 끝낸다
 NODE = ("온톨로지 선언(ontology/vocabulary, ontology/instances, frontmatter의 ontology_concepts나 ontology_relations)이 "
         "바뀐 커밋은 Node.js 22 이상으로 `node ontology/src/cli.mjs validate --staged`를 실행해 검사한다. "
@@ -113,6 +117,8 @@ def rel(path):
 
 
 def vl_check(files):
+    # argparse는 -로 시작하는 경로를 옵션으로 읽고 --files 뒤의 --도 받지 않으므로 ./를 붙인다. VL은 경로를 정규화해 ./를 지운다.
+    files = [f"./{f}" if f.startswith("-") else f for f in files]
     out = subprocess.run([sys.executable, str(VL), "check", "--files", *files], cwd=REPO, capture_output=True, text=True)
     try:
         problems = json.loads(out.stdout)["problems"]
@@ -170,10 +176,10 @@ def post(data):
 
 
 def declares(rev, path):
-    """rev(빈 문자열이면 index) 판의 frontmatter 안 어디든 온톨로지 키 이름이 있는가. 색인은 YAML을 해석하므로 따옴표 친 키,
-    콜론 앞 공백과 flow 형식도 선언이 되어 줄 맨 앞만 보지 않는다. 본문 코드 블록의 예시는 세지 않는다."""
+    """rev(빈 문자열이면 index) 판의 frontmatter 안 어디든 온톨로지 키 이름이나 backslash가 든 큰따옴표 key가 있는가. 색인은
+    YAML을 해석하므로 따옴표 친 키, 콜론 앞 공백, flow 형식과 escape도 선언이 되어 줄 맨 앞만 보지 않는다. 본문 코드 블록의 예시는 세지 않는다."""
     front = FRONTMATTER.match(git("show", "--no-color", f"{rev}:{path}", ok=(0,)).stdout)
-    return bool(front and any(key in front.group(1) for key in ONTOLOGY_KEYS))
+    return bool(front and (any(key in front.group(1) for key in ONTOLOGY_KEYS) or ESCAPED.search(front.group(1))))
 
 
 def declaring():
@@ -186,10 +192,11 @@ def declaring():
     md = [p for p in changed if p.endswith(".md")]
     if not md:
         return False
-    keys = [arg for key in ONTOLOGY_KEYS for arg in ("-e", key)]
+    # 확장 정규식: 키 이름 둘과, 큰따옴표 뒤에 backslash가 오는 줄(escape로 적은 key의 후보)
+    keys = [arg for key in (*ONTOLOGY_KEYS, r'"[^"]*\\') for arg in ("-e", key)]
     for rev, where in (("", "--cached"), ("HEAD", "HEAD")):  # -e 뒤라 --cached도 옵션으로 읽힌다. HEAD 쪽 출력은 HEAD:<경로>
         # --no-color: color.ui나 color.grep이 always면 파이프에도 경로에 색 코드가 붙는다. 1은 일치 없음이다.
-        found = git("--literal-pathspecs", "grep", "--no-color", "-l", "-z", "-F", *keys, where, "--", *md, ok=(0, 1)).stdout.split("\0")
+        found = git("--literal-pathspecs", "grep", "--no-color", "-l", "-z", "-E", *keys, where, "--", *md, ok=(0, 1)).stdout.split("\0")
         if any(declares(rev, p.split(":", 1)[1] if rev else p) for p in found if p):
             return True
     return False

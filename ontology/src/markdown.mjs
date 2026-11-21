@@ -90,8 +90,13 @@ function readFrontmatter(text) {
   const end = closeEnd + (newline?.[0].length ?? 0);
   const raw = text.slice(opening[0].length, closeStart);
   const document = parseDocument(raw, { prettyErrors: false });
+  const errors = document.errors.map((error) => error.message);
+  // An alias to a missing anchor and an alias bomb parse without errors, but toJS() throws on them.
+  if (errors.length === 0) {
+    try { document.toJS(); } catch (error) { errors.push(error.message); }
+  }
 
-  return { raw, value: document, start: opening[0].length, end, errors: document.errors.map((error) => error.message) };
+  return { raw, value: document, start: opening[0].length, end, errors };
 }
 
 function readMetadata(frontmatter, path) {
