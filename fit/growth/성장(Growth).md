@@ -11,6 +11,7 @@ aliases: ["Growth"]
 
 ## 목차
 
+- [[Daily-Working-Plan|하루 워킹 플랜]] — 06:30 기상, 하루 10시간 이상 몰입, 운동과 주간 점검
 - [[Current-Goals-and-Roadmap|현재 목표와 통합 로드맵]] — 대학원 진학 집중, 구직 중단과 아르바이트 자금 마련, 기존 계획 보존
 - [[Performance-Evidence-Playbook|성과 증거 플레이북]] — 결과 확인, 행동 근거에 따른 자기평가 교정과 공개 가능한 기록
 - [[fit/growth/retrospectives/회고(Retrospectives)|회고 기록 (Retrospectives)]] — 데일리, 주간, 월간, 행사와 프로젝트 종료 회고
