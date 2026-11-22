@@ -1,0 +1,456 @@
+[
+ {
+  "id": "h3-outbox-relay-multi-instance",
+  "split": "holdout",
+  "kind": "comparison",
+  "question": "주문 서비스를 ECS 태스크 3개로 늘렸더니 태스크마다 들어 있는 @Cron outbox 폴러가 같은 이벤트를 세 번씩 SNS로 쏘고 있어요. SKIP LOCKED로 행을 나눠 가지게 하는 것과 advisory lock으로 폴러 하나만 돌게 하는 것 중 뭐가 나을까요?",
+  "start": "FOR UPDATE SKIP LOCKED",
+  "predicate": "alternative_to",
+  "expected_evidence": [
+   {
+    "path": "tech/messaging-data-pipeline/cdc-outbox/Transactional-Outbox.md",
+    "heading": "Relay를 여러 인스턴스에서 돌릴 때"
+   }
+  ],
+  "expected_terms": [
+   "FOR UPDATE SKIP LOCKED",
+   "advisory lock"
+  ],
+  "note": "행 단위 claim, 단일 러너 선출, 중복 발행 허용의 세 축을 얻는 것과 잃는 것(처리량, 좌초 회수, 발행 정지)으로 비교하고 보통 섞어 쓴다고 설명한다."
+ },
+ {
+  "id": "h3-dynamodb-streams-outbox-order",
+  "split": "holdout",
+  "kind": "conditional",
+  "question": "DynamoDB 기반 서비스라 Debezium 없이 DynamoDB Streams를 outbox relay로 쓰려고 해요. 이벤트마다 outbox 아이템을 새로 put하는데 이러면 발행 순서가 지켜지나요? 그리고 relay가 하루 넘게 멈추면 어떻게 되나요?",
+  "start": "DynamoDB Streams",
+  "predicate": "requires",
+  "expected_evidence": [
+   {
+    "path": "tech/messaging-data-pipeline/cdc-outbox/Transactional-Outbox-Relay.md",
+    "heading": "DB 내장 변경 스트림"
+   }
+  ],
+  "expected_terms": [
+   "DynamoDB Streams",
+   "24시간"
+  ],
+  "note": "DynamoDB Streams는 같은 item 단위로만 순서를 보장해 이벤트마다 새 outbox item을 쓰면 item 사이 순서가 없고, 보존 기간(24시간)을 넘긴 relay 중단은 복구할 수 없어 lag 경보를 훨씬 짧게 둬야 한다고 설명한다."
+ },
+ {
+  "id": "h3-raw-cdc-vs-outbox-event",
+  "split": "holdout",
+  "kind": "comparison",
+  "question": "정산팀이 결제 완료에 반응해야 해서 payments 테이블 변경을 Debezium으로 그대로 Kafka에 흘려주려고 합니다. 테이블 변경을 그대로 넘기는 게 나은지, 애플리케이션이 별도 이벤트 테이블에 써서 내보내는 게 나은지 판단 기준이 궁금해요.",
+  "start": "Outbox Event Router",
+  "predicate": "alternative_to",
+  "expected_evidence": [
+   {
+    "path": "tech/messaging-data-pipeline/cdc-outbox/cdc-debezium/CDC-Debezium-Concept.md",
+    "heading": "Raw CDC와 domain event"
+   }
+  ],
+  "expected_terms": [
+   "Outbox Event Router",
+   "outbox"
+  ],
+  "note": "row event는 변경 이유와 업무 반응 대상을 설명하지 못해 projection과 analytics에는 raw CDC, 안정된 업무 계약이 필요하면 transaction에 outbox row를 함께 기록하고 Outbox Event Router로 변환하라고 구분한다."
+ },
+ {
+  "id": "h3-server-issued-order-id",
+  "split": "holdout",
+  "kind": "comparison",
+  "question": "결제 버튼 연타로 포인트가 두 번 차감되는 버그가 났어요. 클라이언트가 Idempotency-Key를 만들어 보내게 바꾸는 것 말고, 주문서를 먼저 저장해 두고 그 ID로만 결제를 받는 방식도 있다던데 이때 동시에 들어온 두 요청은 어떻게 막아야 하나요?",
+  "start": "CREATED",
+  "predicate": "alternative_to",
+  "expected_evidence": [
+   {
+    "path": "tech/web/http/Idempotency.md",
+    "heading": "서버가 먼저 발급한 ID로 실행 요청 식별"
+   }
+  ],
+  "expected_terms": [
+   "CREATED",
+   "SELECT ... FOR UPDATE"
+  ],
+  "note": "서버가 CREATED 초안 주문 ID를 먼저 발급하고 결제는 그 ID만 받게 하되, 상태 확인만으로는 동시 중복을 못 막으므로 조건부 UPDATE의 영향 행 수나 SELECT ... FOR UPDATE, 락으로 확인과 전이를 원자적으로 묶으라고 설명한다."
+ },
+ {
+  "id": "h3-pg-logical-slot-failover",
+  "split": "holdout",
+  "kind": "conditional",
+  "question": "PostgreSQL 18 프라이머리에 Debezium을 붙여 쓰고 있는데, 스탠바이를 승격할 때 CDC가 끊기지 않으려면 어떤 설정이 미리 돼 있어야 하고 승격 직전에는 뭘 확인해야 하나요?",
+  "start": "sync_replication_slots",
+  "predicate": "requires",
+  "expected_evidence": [
+   {
+    "path": "tech/messaging-data-pipeline/cdc-outbox/cdc-debezium/CDC-Debezium-Setup.md",
+    "heading": "슬롯 지연과 장애 전환의 경계"
+   }
+  ],
+  "expected_terms": [
+   "sync_replication_slots",
+   "failover"
+  ],
+  "note": "failover 논리 슬롯 동기화에 필요한 설정(failover 활성화, sync_replication_slots, primary_slot_name, hot_standby_feedback 등)과 승격 전 필요한 슬롯이 모두 synced이고 invalidation이 없는지 확인하는 절차를 설명한다."
+ },
+ {
+  "id": "h3-workflow-step-external-payment",
+  "split": "holdout",
+  "kind": "conditional",
+  "question": "@nestjs/workflows로 주문 흐름을 짜는데 ctx.step 안에서 PG 결제를 호출해요. 결제는 성공했는데 결과가 기록되기 전에 워커가 죽으면 그 step이 다시 돌면서 이중 결제가 날 수 있나요? 막으려면 뭘 넘겨야 하죠?",
+  "start": "at-least-once",
+  "predicate": "requires",
+  "expected_evidence": [
+   {
+    "path": "tech/os-runtime/nestjs/integrations/nestjs-reliability/workflows/NestJS-Workflows-Replay-and-Steps.md",
+    "heading": "완료 결과를 재생하는 실행"
+   }
+  ],
+  "expected_terms": [
+   "at-least-once",
+   "idempotencyKey"
+  ],
+  "note": "step은 at-least-once라 journal 기록 전 crash면 다시 호출되므로 instance id와 step name으로 만든 WorkflowStepContext.idempotencyKey를 외부 API나 DB unique key로 넘겨 중복 효과를 흡수하라고 설명한다."
+ },
+ {
+  "id": "h3-nest-outbox-inbox-exactly-once",
+  "split": "holdout",
+  "kind": "conditional",
+  "question": "@nestjs/outbox 로컬 핸들러에서 매출 집계 테이블 업데이트와 영수증 메일 발송을 같이 하는데, inbox를 기본값으로 켜 두면 둘 다 정확히 한 번만 실행된다고 믿어도 되나요?",
+  "start": "processInTransaction",
+  "predicate": "requires",
+  "expected_evidence": [
+   {
+    "path": "tech/os-runtime/nestjs/integrations/nestjs-reliability/NestJS-Outbox.md",
+    "heading": "Inbox와 exactly-once 범위"
+   }
+  ],
+  "expected_terms": [
+   "processInTransaction",
+   "inbox"
+  ],
+  "note": "기본 inbox는 실행 전 조회와 성공 뒤 기록 사이에 crash나 병렬 실행 간극이 있고, processInTransaction이 같은 DB writes에만 exactly-once를 주며 외부 메일과 결제로는 확장되지 않는다고 설명한다."
+ },
+ {
+  "id": "h3-partition-exclusive-external-call",
+  "split": "holdout",
+  "kind": "multi_doc",
+  "question": "Kafka 컨슈머 그룹이면 파티션이 한 컨슈머에만 붙으니까 외부 송금 API 중복 호출은 걱정 안 해도 되는 거 아닌가요? 처리 시간이 길어서 가끔 리밸런싱이 나는데, 이 경우 실제로 어떤 장치를 둬야 하는지 알려주세요.",
+  "start": "max.poll.interval.ms",
+  "predicate": "addresses",
+  "expected_evidence": [
+   {
+    "path": "tech/messaging-data-pipeline/delivery-guarantees/Consumer-Group.md",
+    "heading": "파티션 배타성은 처리 배타성이 아니다"
+   },
+   {
+    "path": "tech/reliability/Idempotent-Consumer.md",
+    "heading": "2. 멱등 키 + 상태 저장소"
+   }
+  ],
+  "expected_terms": [
+   "max.poll.interval.ms",
+   "PROCESSING",
+   "Idempotency-Key"
+  ],
+  "note": "poll 제한을 넘긴 컨슈머가 그룹을 떠난 뒤에도 처리를 이어 가 새 소유자와 겹칠 수 있으므로, 외부 효과는 별도 트랜잭션의 PROCESSING lease claim과 provider Idempotency-Key, 대사로 보호해야 한다는 두 절을 합쳐야 답이 된다."
+ },
+ {
+  "id": "h3-stripe-500-replay-nest",
+  "split": "holdout",
+  "kind": "multi_doc",
+  "question": "NestJS API에서 Stripe 결제를 Idempotency-Key 붙여 호출하는데 500이 떨어졌어요. Stripe 쪽에는 같은 키로 재시도하면 되는지, 그리고 우리 엔드포인트의 멱등 처리가 5xx를 기본으로 저장하지 않으니 클라이언트가 재시도할 때 결제가 또 나가는 건 아닌지 걱정됩니다.",
+  "start": "500",
+  "predicate": "addresses",
+  "expected_evidence": [
+   {
+    "path": "tech/messaging-data-pipeline/delivery-guarantees/Idempotency-Key.md",
+    "heading": "오류 응답 재생과 업무 결과 확인"
+   },
+   {
+    "path": "tech/os-runtime/nestjs/integrations/nestjs-reliability/NestJS-Idempotency.md",
+    "heading": "TTL과 효과 이후 실패"
+   }
+  ],
+  "expected_terms": [
+   "500",
+   "provider key"
+  ],
+  "note": "Stripe v1은 저장한 500도 같은 키에 재생하므로 오류 재생이 미실행의 증거가 아니어서 기존 결과를 먼저 대사해야 하고, NestJS 쪽은 외부 효과 뒤 실패를 기본 5xx release로 풀면 효과가 반복되므로 사용자 ID와 결합한 provider key와 특정 실패 보관을 함께 설계하라고 설명한다."
+ },
+ {
+  "id": "h3-single-relay-leader-fencing",
+  "split": "holdout",
+  "kind": "multi_doc",
+  "question": "outbox 발행을 인스턴스 하나만 하게 하려고 Postgres advisory lock이나 @nestjs/locks 리더 선출을 검토 중이에요. 락을 쥔 프로세스가 GC나 이벤트 루프 정지로 멈췄다가 깨어나면 두 프로세스가 동시에 발행할 수도 있나요? 어떤 방어가 필요하죠?",
+  "start": "세션 수준 락",
+  "predicate": "addresses",
+  "expected_evidence": [
+   {
+    "path": "tech/messaging-data-pipeline/cdc-outbox/Transactional-Outbox.md",
+    "heading": "단일 러너 선출"
+   },
+   {
+    "path": "tech/os-runtime/nestjs/integrations/nestjs-reliability/NestJS-Distributed-Locks.md",
+    "heading": "Lease의 blind spot과 fencing"
+   }
+  ],
+  "expected_terms": [
+   "세션 수준 락",
+   "fencing"
+  ],
+  "note": "단일 러너는 전용 연결의 세션 수준 advisory lock이나 leader election으로 잡되 승자 사망 뒤 발행 공백이 생기고, 멈췄다 깨어난 holder는 자신이 소유자라고 믿을 수 있어 resource가 같은 write에서 낮은 token을 거부하는 fencing이 있어야 한다는 두 절을 합친다."
+ },
+ {
+  "id": "h3-taxonomy-first-ott",
+  "split": "holdout",
+  "kind": "comparison",
+  "question": "OTT 작품 추천을 새로 만드는데 작품마다 장르와 분위기 태그는 꼼꼼히 달려 있지만 사용자 시청 로그는 거의 없고 신작 비중이 높아요. 행동 기반 협업 필터링부터 갈지 태그 기반으로 시작할지, 태그로 가면 무엇을 조심해야 하나요?",
+  "start": "Item-to-item",
+  "predicate": "alternative_to",
+  "expected_evidence": [
+   {
+    "path": "tech/architecture-design/recommendation-system/ott-discovery/Recommendation-System-OTT-Discovery-Scenarios.md",
+    "heading": "S1. Taxonomy-first"
+   }
+  ],
+  "expected_terms": [
+   "Item-to-item",
+   "overspecialization"
+  ],
+  "note": "작품 coverage와 할당 품질은 높고 행동이 희소하거나 신작 비중이 크면 taxonomy 기반 item-to-item과 tag affinity 후보로 시작하고, tag 오류, 흔한 장르 지배, 비슷한 작품 반복을 위험으로 들며 overspecialization guardrail을 적용하라고 한다."
+ },
+ {
+  "id": "h3-downrank-rule-vs-feature",
+  "split": "holdout",
+  "kind": "comparison",
+  "question": "피드에서 이미 클릭했거나 여러 번 본 콘텐츠가 계속 상단에 떠요. 이걸 랭커 피처로 학습시킬지, 랭킹 뒤 후처리로 순위를 내릴지, 아예 후보에서 빼버릴지 어떤 기준으로 골라야 하나요?",
+  "start": "soft objective",
+  "predicate": "alternative_to",
+  "expected_evidence": [
+   {
+    "path": "tech/architecture-design/recommendation-system/retrieval-ranking/Recommendation-System-Ranking-Reranking-Business-Rules.md",
+    "heading": "어떤 요구를 규칙으로 두는가"
+   }
+  ],
+  "expected_terms": [
+   "soft objective",
+   "eligibility"
+  ],
+  "note": "실시간 반영이나 설명 가능한 보장이 필요하면 결정적 규칙, 정확도와의 교환을 연속 조절하려면 soft objective, 노출 자체를 막으려면 eligibility로 두고 여러 계층에서 중복 감점되지 않게 책임을 나누라고 설명한다."
+ },
+ {
+  "id": "h3-filtered-retrieval-bitmap",
+  "split": "holdout",
+  "kind": "comparison",
+  "question": "통합 임베딩으로 '할인 중인 이 브랜드 상품' 같은 조건부 추천 칸을 만드는데, HNSW 검색에 카테고리 필터를 걸면 결과가 확 줄어요. 조건 조합별 후보 목록을 Redis에 미리 만들어 두는 방법도 있을 텐데 어떤 쪽이 나을까요?",
+  "start": "Roaring bitmap",
+  "predicate": "alternative_to",
+  "expected_evidence": [
+   {
+    "path": "tech/architecture-design/recommendation-system/retrieval-ranking/Recommendation-System-Shared-Embedding-Space.md",
+    "heading": "조건 리트리벌: 정확도와 지연을 같이 지킨다"
+   }
+  ],
+  "expected_terms": [
+   "Roaring bitmap",
+   "전수 계산"
+  ],
+  "note": "조합별 목록은 키가 폭발하고 공유 저장소 왕복이 생기므로 조건값별 Roaring bitmap을 메모리에 두고 AND로 겹친 뒤, 몰린 조건에서 recall이 무너지는 ANN 대신 좁힌 후보를 전수 계산하고 스레드별 버퍼로 할당 비용을 줄이라고 설명한다."
+ },
+ {
+  "id": "h3-ffm-lightweight-ctr",
+  "split": "holdout",
+  "kind": "comparison",
+  "question": "pCTR 랭커에 FFM을 쓰려니 field가 많아서 파라미터가 감당이 안 됩니다. 비슷한 정확도로 더 가볍게 가는 대안이 있을까요? 이미지와 텍스트 임베딩도 1024차원이라 그것도 줄여야 해요.",
+  "start": "FwFM",
+  "predicate": "alternative_to",
+  "expected_evidence": [
+   {
+    "path": "tech/architecture-design/recommendation-system/foundations/Recommendation-System-Modeling-Foundations.md",
+    "heading": "Field 단위 상호작용과 CTR 모델 경량화"
+   }
+  ],
+  "expected_terms": [
+   "FwFM",
+   "autoencoder"
+  ],
+  "note": "FwFM은 특징마다 잠재 벡터 하나에 field 쌍 가중치만 학습해 적게는 FFM 파라미터의 4%로 비슷한 성능을 내고, 사전학습 임베딩은 autoencoder로 수십 차원까지 줄이며 임베딩 테이블 공유와 해시 범위도 함께 검토하라고 설명한다."
+ },
+ {
+  "id": "h3-reembed-ann-index",
+  "split": "holdout",
+  "kind": "conditional",
+  "question": "two-tower의 아이템 인코더를 재학습하면서 출력 차원과 정규화 방식을 바꿨어요. 운영 중인 ANN 인덱스에 새 벡터를 순차적으로 upsert해서 갈아끼워도 되나요?",
+  "start": "index B",
+  "predicate": "requires",
+  "expected_evidence": [
+   {
+    "path": "tech/architecture-design/recommendation-system/system-contracts/Recommendation-System-Serving-Operations.md",
+    "heading": "Embedding 공간 자체 변경"
+   }
+  ],
+  "expected_terms": [
+   "index B",
+   "exact 대비 Recall"
+  ],
+  "note": "encoder 재학습이나 차원, normalization 변경으로 공간이 바뀌면 기존 index에 vector를 섞지 말고 전체를 새로 embedding한 index B를 병행 검증(exact 대비 Recall, coverage, p99, eligibility)한 뒤 bundle을 전환하라고 한다."
+ },
+ {
+  "id": "h3-ope-weight-clipping",
+  "split": "holdout",
+  "kind": "conditional",
+  "question": "탐색 트래픽 로그로 새 랭킹 정책을 IPS 방식으로 오프라인 평가했는데 일부 요청의 importance weight가 수백이라 추정치가 크게 흔들려요. weight를 잘라서 쓰면 되나요, 그러면 무엇을 잃나요?",
+  "start": "Clipping",
+  "predicate": "requires",
+  "expected_evidence": [
+   {
+    "path": "tech/architecture-design/recommendation-system/evaluation-experimentation/Recommendation-System-Off-Policy-Evaluation.md",
+    "heading": "Weight 안정화"
+   }
+  ],
+  "expected_terms": [
+   "Clipping",
+   "Switch-DR"
+  ],
+  "note": "clipping은 분산을 줄이지만 target value에 편향을 들여오므로 임계값별 sensitivity를 같이 보고하고, Switch-DR, self-normalization, 배포 gate로서의 policy restriction 같은 대안을 제시한다."
+ },
+ {
+  "id": "h3-purchased-item-reexposure",
+  "split": "holdout",
+  "kind": "conditional",
+  "question": "Amazon Personalize 필터로 구매한 상품을 추천에서 빼고 있는데, 몇 달 전에 산 냉장고 같은 내구재가 다시 추천에 뜹니다. 필터가 왜 이걸 놓치는지, 구매 이후 추천을 어떻게 설계해야 하는지 궁금해요.",
+  "start": "100개",
+  "predicate": "requires",
+  "expected_evidence": [
+   {
+    "path": "tech/architecture-design/recommendation-system/system-contracts/Recommendation-System-Personalization-Failure-Modes.md",
+    "heading": "완료된 목적과 지속 관심을 나눈다"
+   }
+  ],
+  "expected_terms": [
+   "100개",
+   "재구매 주기"
+  ],
+  "note": "상호작용 필터는 사용자별 이벤트 유형별 최근 100개만 보고 3개월간 import가 없으면 과거 이력을 고려하지 않아 오래된 구매가 다시 추천될 수 있으므로, 보유 상태는 별도 정본에서 판정하고 내구재는 구매 뒤 같은 범주를 줄이며 재구매 주기가 있는 상품만 다시 노출하라고 한다."
+ },
+ {
+  "id": "h3-delayed-conversion-label",
+  "split": "holdout",
+  "kind": "multi_doc",
+  "question": "앱 설치 광고 입찰 모델을 몇 시간마다 재학습하는데 구매 전환은 설치 후 일주일쯤 지나야 들어와요. 학습 데이터를 만들 때 아직 구매가 없는 노출을 그냥 음성으로 넣어도 되나요?",
+  "start": "delayed feedback",
+  "predicate": "addresses",
+  "expected_evidence": [
+   {
+    "path": "tech/architecture-design/recommendation-system/industry-cases/Recommendation-System-Industry-Ad-Bidding.md",
+    "heading": "지연 피드백"
+   },
+   {
+    "path": "tech/architecture-design/recommendation-system/system-contracts/Recommendation-System-Feedback-Data.md",
+    "heading": "Label 정의에는 시간 창이 필요하다"
+   }
+  ],
+  "expected_terms": [
+   "delayed feedback",
+   "labelAvailableAt"
+  ],
+  "note": "낙찰, 설치, 구매가 서로 다른 시점에 도착해 빠른 재학습과 느린 label이 공존하므로 delayed feedback 처리가 필요하고, 관측 창이 닫히기 전 negative 확정은 delayed positive를 오염시키므로 label version, observation window, labelAvailableAt과 finalized 여부를 남기라는 두 절을 합친다."
+ },
+ {
+  "id": "h3-row-underfill-fallback",
+  "split": "holdout",
+  "kind": "multi_doc",
+  "question": "홈 화면 row 중 하나가 자격 필터를 거치고 나면 아이템이 두세 개밖에 안 남거나 소스가 타임아웃 나요. 빈자리를 인기 작품으로 채워도 되는지, 그리고 랭커 자체가 죽었을 땐 어떤 순서로 대체해야 하는지 알려주세요.",
+  "start": "fallback",
+  "predicate": "addresses",
+  "expected_evidence": [
+   {
+    "path": "tech/architecture-design/recommendation-system/retrieval-ranking/Recommendation-System-Page-Level-Optimization.md",
+    "heading": "Underfill과 fallback"
+   },
+   {
+    "path": "tech/architecture-design/recommendation-system/system-contracts/Recommendation-System-Serving-Operations.md",
+    "heading": "Fallback ladder"
+   }
+  ],
+  "expected_terms": [
+   "fallback",
+   "degradationMode"
+  ],
+  "note": "row 단위로는 제한된 overfetch와 같은 의미의 다음 source, row 축소로 처리하고 부족하면 부적격 item으로 채우지 않고 짧게 반환하며, 서빙 전체로는 검증된 precomputed list, segment 인기, global 인기나 editorial 순의 ladder를 쓰되 hard filter를 유지하고 degradationMode를 기록하라는 두 절을 합친다."
+ },
+ {
+  "id": "h3-multi-interest-serving-diversity",
+  "split": "holdout",
+  "kind": "multi_doc",
+  "question": "관심 벡터 4개짜리 다중 관심 모델을 후보 생성에 쓰려는데, 후보마다 가중치를 달리 주는 합산 방식으로 점수를 내도 ANN 검색에 그대로 쓸 수 있나요? 그리고 관심끼리 cosine 정규화를 세게 줬는데도 상위 결과가 한 카테고리로만 채워집니다.",
+  "start": "weighted 집계",
+  "predicate": "addresses",
+  "expected_evidence": [
+   {
+    "path": "tech/architecture-design/recommendation-system/retrieval-ranking/Recommendation-System-Multi-Interest-Modeling.md",
+    "heading": "집계 방식이 서빙 위치를 정한다"
+   },
+   {
+    "path": "tech/architecture-design/recommendation-system/retrieval-ranking/Recommendation-System-Hubness-Popularity-Debiasing.md",
+    "heading": "관심을 벌려도 max 집계에서는 한 관심이 지배할 수 있다"
+   }
+  ],
+  "expected_terms": [
+   "weighted 집계",
+   "max",
+   "ComiRec"
+  ],
+  "note": "후보에 의존하는 weighted 집계는 질의 벡터 하나의 ANN으로 바꿀 수 없어 ranking 단계에 속하고 max 집계만 관심별 검색 병합으로 나뉘며, max 집계에서는 점수 규모가 큰 관심 하나가 상위를 채울 수 있어 카테고리 정규화나 ComiRec식 다양성 후처리가 필요하다는 두 절을 합친다."
+ },
+ {
+  "id": "h3-neg-pulsar-key-shared",
+  "split": "holdout",
+  "kind": "negative",
+  "question": "Apache Pulsar의 Key_Shared 구독에서 컨슈머를 늘릴 때 같은 키 메시지의 순서가 깨지지 않게 하려면 어떤 설정을 봐야 하나요?",
+  "start": "pulsar key shared",
+  "predicate": "requires",
+  "expected_empty": true,
+  "expected_evidence": [],
+  "expected_terms": [],
+  "note": "Pulsar와 Key_Shared 구독은 지정 범위 문서에서 다루지 않는다."
+ },
+ {
+  "id": "h3-neg-rabbitmq-delivery-limit",
+  "split": "holdout",
+  "kind": "negative",
+  "question": "RabbitMQ quorum queue에서 계속 실패하는 메시지를 몇 번까지만 재전달하고 dead letter exchange로 넘기려면 x-delivery-limit를 어떻게 잡아야 하나요?",
+  "start": "rabbitmq delivery limit",
+  "predicate": "requires",
+  "expected_empty": true,
+  "expected_evidence": [],
+  "expected_terms": [],
+  "note": "RabbitMQ는 전달 보장 표에서 ACK 방식만 언급될 뿐 quorum queue의 재전달 한도와 dead letter exchange 설정은 다루지 않는다."
+ },
+ {
+  "id": "h3-neg-faiss-ivfpq-params",
+  "split": "holdout",
+  "kind": "negative",
+  "question": "Faiss IVF-PQ 인덱스로 아이템 1억 개를 서빙하려는데 nlist, nprobe와 PQ 서브벡터 수를 어떻게 잡아야 메모리와 recall 균형이 맞나요?",
+  "start": "faiss ivfpq params",
+  "predicate": "requires",
+  "expected_empty": true,
+  "expected_evidence": [],
+  "expected_terms": [],
+  "note": "Faiss와 IVF-PQ 파라미터 튜닝은 추천 시스템 문서 범위에 없고 ANN 튜닝은 범위 밖 문서로 위임돼 있다."
+ },
+ {
+  "id": "h3-neg-artwork-personalization",
+  "split": "holdout",
+  "kind": "negative",
+  "question": "작품 카드의 썸네일 이미지를 사용자마다 다르게 고르는 아트워크 개인화를 하려는데, 이미지 후보별 보상을 무엇으로 정의하고 어떤 밴딧 알고리즘을 쓰는 게 좋을까요?",
+  "start": "artwork personalization",
+  "predicate": "requires",
+  "expected_empty": true,
+  "expected_evidence": [],
+  "expected_terms": [],
+  "note": "썸네일과 아트워크 개인화, 이미지 후보별 밴딧 보상 설계는 지정 범위 문서에서 다루지 않는다."
+ }
+]
