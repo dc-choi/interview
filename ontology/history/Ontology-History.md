@@ -21,6 +21,7 @@ category: "AI엔지니어링(AIEngineering)"
 - [[Ontology-Competency-Evaluation|2026-11-19 타입 스키마 도입과 판단 질문 평가]]
 - [[Ontology-Recommendation-System-Evaluation|2026-11-21 추천시스템 선언과 LLM 호스트 측정]]
 - [[Ontology-Host-Judge-and-Ranking|2026-11-21 의미 판정, 작은 호스트와 긴 질문 순위]]
+- [[Ontology-Long-Query-Evidence-Selection|2026-11-21 긴 질문의 보완 근거 선택]]
 
 ## 기록 읽는 법
 

@@ -1,0 +1,450 @@
+[
+  {
+    "id": "ho-multi_doc-hot-row-pool-drain",
+    "split": "holdout",
+    "kind": "multi_doc",
+    "question": "MySQL InnoDB, 특정 재고 행 하나에 업데이트 몰림, 전체 API 지연 급증, DB CPU 한가함, HikariCP pending 증가, 커넥션 획득 대기, lock wait, 풀 크기 늘려야 하나, 원인 분리",
+    "start": "락 대기 convoy",
+    "predicate": "addresses",
+    "expected_evidence": [
+      {
+        "path": "tech/database/rdbms/transactions-locks/Lock-Wait-Convoy.md",
+        "heading": "한 행의 경합이 커넥션 풀을 말리는 경로"
+      },
+      {
+        "path": "tech/performance-scalability/optimization/Connection-Pool.md",
+        "heading": "대기 구간을 둘로 나눈다"
+      }
+    ],
+    "expected_terms": [
+      "convoy"
+    ],
+    "note": "핫 로우 대기자가 커넥션을 쥔 채 풀 전체를 점유하는 경로와, pool 대기를 획득 전과 DB 안 구간으로 나눠 보는 진단이 함께 있어야 답이 된다."
+  },
+  {
+    "id": "ho-multi_doc-redis-lock-osiv-connection",
+    "split": "holdout",
+    "kind": "multi_doc",
+    "question": "Spring Boot JPA API에서 같은 DB의 쿠폰 차감 락 대기가 커넥션 풀을 고갈시켜 대기를 Redis 락으로 옮기려는데, 웹 요청이 처음 DB에 닿은 뒤 커넥션을 계속 쥐고 있는 설정이면 효과가 있을지 궁금합니다.",
+    "start": "Redis 분산 락",
+    "predicate": "requires",
+    "expected_evidence": [
+      {
+        "path": "tech/database/in-memory/Distributed-Lock.md",
+        "heading": "선택 기준"
+      },
+      {
+        "path": "tech/os-runtime/spring/jpa/api-performance/JPA-API-OSIV.md",
+        "heading": "운영 판단"
+      }
+    ],
+    "expected_terms": [
+      "OSIV"
+    ],
+    "note": "같은 DB라도 락 대기를 Redis로 옮기는 조건과 OSIV 기본값에서 커넥션 보유 시간을 확인하는 지표가 두 문서에 나뉘어 있다."
+  },
+  {
+    "id": "ho-multi_doc-spa-parallel-401-logout",
+    "split": "holdout",
+    "kind": "multi_doc",
+    "question": "React SPA, access token 메모리 보관, refresh token rotation, 페이지 진입 시 병렬 API 동시 401, 재발급 요청 중복, 재사용 탐지 오인, 전체 강제 로그아웃, 해결책",
+    "start": "Refresh Token Rotation",
+    "predicate": "addresses",
+    "expected_evidence": [
+      {
+        "path": "tech/security/auth/Refresh-Token-Rotation.md",
+        "heading": "해결: Single-flight 패턴"
+      },
+      {
+        "path": "tech/security/auth/Auth-Method-Selection.md",
+        "heading": "SPA (React, Vue) + 자체 백엔드"
+      }
+    ],
+    "expected_terms": [
+      "Single-flight"
+    ],
+    "note": "SPA의 메모리 토큰 보관과 갱신 절차 설계, 그리고 동시 401에서 refresh Promise를 공유하는 해결이 각각 다른 문서에 있다."
+  },
+  {
+    "id": "ho-multi_doc-jvm-memory-plateau-oomkilled",
+    "split": "holdout",
+    "kind": "multi_doc",
+    "question": "Spring Boot 컨테이너의 메모리 사용량이 배포 뒤 몇 주에 걸쳐 limit 근처까지 올라 고원을 유지하다가 가끔 OOMKilled로 재시작되는데, 힙 비율 옵션을 높게 준 상태라면 누수부터 의심해야 할까요?",
+    "start": "MaxRAMPercentage",
+    "predicate": "addresses",
+    "expected_evidence": [
+      {
+        "path": "tech/os-runtime/jvm/JVM-Container-Memory.md",
+        "heading": "상한은 합산으로 설계한다"
+      },
+      {
+        "path": "tech/infrastructure-cloud/Container-Memory-Metrics.md",
+        "heading": "전형적 패턴 — 고원은 누수가 아닐 수 있다"
+      }
+    ],
+    "expected_terms": [
+      "MaxRAMPercentage",
+      "page cache"
+    ],
+    "note": "힙 백분율이 힙만 정해 총합이 limit을 넘는 설계와, 파일 로그 page cache와 committed 메모리로 생기는 고원 패턴을 함께 봐야 판단할 수 있다."
+  },
+  {
+    "id": "ho-multi_doc-hpa-memory-no-scale-in",
+    "split": "holdout",
+    "kind": "multi_doc",
+    "question": "Kubernetes HPA, memory utilization 타깃, 트래픽 빠졌는데 replica 축소 안 됨, working set, page cache, inactive_file, cAdvisor 지표, 스케일 기준 지표 교체",
+    "start": "HPA",
+    "predicate": "addresses",
+    "expected_evidence": [
+      {
+        "path": "tech/infrastructure-cloud/k8s/K8s-HPA-VPA.md",
+        "heading": "부하 특성에 맞는 지표 선택"
+      },
+      {
+        "path": "tech/infrastructure-cloud/Container-Memory-Metrics.md",
+        "heading": "지표의 구성 — usage는 합계다"
+      }
+    ],
+    "expected_terms": [
+      "working set"
+    ],
+    "note": "memory 타깃이 축소를 막는 이유와 지표 교체 기준은 HPA 문서에, working set이 usage에서 inactive file cache만 뺀 값이라는 정의는 메모리 지표 문서에 있다."
+  },
+  {
+    "id": "ho-multi_doc-cascade-success-cost",
+    "split": "holdout",
+    "kind": "multi_doc",
+    "question": "저비용 모델로 먼저 답하고 품질이 부족하면 상위 모델을 다시 부르는 구조로 AI 기능 원가를 낮추려는데, 재호출과 재시도까지 포함하면 성공한 작업 한 건당 비용을 어떻게 계산해야 하나요?",
+    "start": "캐스케이드",
+    "predicate": "has_tradeoff",
+    "expected_evidence": [
+      {
+        "path": "tech/fin-ops/LLM-Cost-Optimization.md",
+        "heading": "5. 모델 라우팅: 선택 비용과 재시도 비용을 포함한다"
+      },
+      {
+        "path": "biz/business-model/Pricing-Strategy-AI-Usage.md",
+        "heading": "토큰 단가와 성공한 업무의 비용을 나눈다"
+      }
+    ],
+    "expected_terms": [
+      "캐스케이드"
+    ],
+    "note": "캐스케이드의 요청당 기대 비용식과, 성공률로 나눈 성공 결과 한 건의 기대 비용 계산이 두 문서에 나뉘어 있다."
+  },
+  {
+    "id": "ho-multi_doc-hot-key-l1-invalidation",
+    "split": "holdout",
+    "kind": "multi_doc",
+    "question": "Redis hot key, 단일 shard CPU 포화, 앱 인스턴스 메모리에 로컬 캐시 추가, 짧은 TTL, 멀티 인스턴스, 쓰기 후 stale, Pub/Sub 무효화, 일관성",
+    "start": "Hot key",
+    "predicate": "addresses",
+    "expected_evidence": [
+      {
+        "path": "tech/database/in-memory/Hot-Key.md",
+        "heading": "대응"
+      },
+      {
+        "path": "tech/database/in-memory/cache/Multi-Level-Cache.md",
+        "heading": "무효화 — 계층별 일관성"
+      }
+    ],
+    "expected_terms": [
+      "로컬 캐시",
+      "Pub/Sub"
+    ],
+    "note": "hot key를 L1 로컬 캐시로 흡수하는 대응과, 멀티 인스턴스에서 L1까지 무효화하는 순서가 각각 다른 문서에 있다."
+  },
+  {
+    "id": "ho-multi_doc-variable-loan-inflation",
+    "split": "holdout",
+    "kind": "multi_doc",
+    "question": "기준금리가 동결됐는데도 변동금리 주택담보대출 이자가 올랐어요. 물가가 오르면 빚의 실질 부담이 줄어든다는 말을 믿고 상환 계획을 그대로 둬도 될까요?",
+    "start": "COFIX",
+    "predicate": "addresses",
+    "expected_evidence": [
+      {
+        "path": "econ/macroeconomics/Interest-Rates-Monetary-Policy.md",
+        "heading": "COFIX와 대출금리의 재산정"
+      },
+      {
+        "path": "econ/macroeconomics/Inflation.md",
+        "heading": "실질 부채 감소와 상환 여력은 다르다"
+      }
+    ],
+    "expected_terms": [
+      "COFIX",
+      "재산정"
+    ],
+    "note": "정책금리 동결과 준거금리, 재산정일에 따른 대출금리 변화, 그리고 실질 부채 감소와 상환 여력의 구분이 두 문서에 나뉘어 있다."
+  },
+  {
+    "id": "ho-conditional-web-worker-offload",
+    "split": "holdout",
+    "kind": "conditional",
+    "question": "브라우저, 대용량 JSON 파싱, 이미지 필터 처리 중 화면 멈춤, Web Worker로 옮길지, postMessage 복사 비용, 짧은 작업도 보낼지, ArrayBuffer 넘기기, DOM 접근 불가",
+    "start": "Web Worker",
+    "predicate": "requires",
+    "expected_evidence": [
+      {
+        "path": "tech/web/frontend/Browser-Main-Thread-Offloading.md",
+        "heading": "워커로 보내기"
+      }
+    ],
+    "expected_terms": [
+      "구조화 복제",
+      "transferable"
+    ],
+    "note": "DOM과 무관하고 통신 비용을 상쇄할 만큼 무거운 작업일 때만 워커가 이득이라는 조건과 transferable 전송이 이 절에 있다."
+  },
+  {
+    "id": "ho-conditional-pdb-budget-field",
+    "split": "holdout",
+    "kind": "conditional",
+    "question": "오토스케일로 replica 수가 계속 바뀌는 stateless API와 quorum이 있는 StatefulSet에 중단 예산을 걸 때, 각각 어떤 필드로 예산을 잡아야 노드 drain이 영구히 막히지 않나요?",
+    "start": "PodDisruptionBudget",
+    "predicate": "requires",
+    "expected_evidence": [
+      {
+        "path": "tech/infrastructure-cloud/k8s/K8s-PDB.md",
+        "heading": "minAvailable과 maxUnavailable"
+      }
+    ],
+    "expected_terms": [
+      "maxUnavailable",
+      "minAvailable"
+    ],
+    "note": "replica가 변하는 stateless는 maxUnavailable 절대값, quorum stateful은 minAvailable을 quorum 크기로 두라는 조건별 판단 기준이 이 절에 있다."
+  },
+  {
+    "id": "ho-conditional-rag-full-context",
+    "split": "holdout",
+    "kind": "conditional",
+    "question": "사내 매뉴얼 Q&A 챗봇, 문서량 수백 쪽 수준, 벡터 DB 꼭 필요한가, 문서 전체를 prompt에 투입, prompt caching, 토큰 한도, context rot, 정확도 지연 비용 비교",
+    "start": "RAG",
+    "predicate": "requires",
+    "expected_evidence": [
+      {
+        "path": "tech/ai-engineering/tools/RAG-Retrieval-Engineering.md",
+        "heading": "검색 전에: 전체를 넣을 수 있는 규모인가"
+      }
+    ],
+    "expected_terms": [
+      "prompt caching"
+    ],
+    "note": "corpus가 작으면 검색 없이 전체를 넣고 캐싱으로 비용을 줄일 수 있다는 규모 조건과 그 한계가 이 절에 있다."
+  },
+  {
+    "id": "ho-conditional-bedrock-batch-cache",
+    "split": "holdout",
+    "kind": "conditional",
+    "question": "Bedrock에서 밤사이 상품 설명 수만 건을 일괄 요약하려는데, 비동기 일괄 처리 할인과 반복 프롬프트 캐시 할인을 같은 요청에 동시에 받는다고 보고 비용을 잡아도 되나요?",
+    "start": "Batch inference",
+    "predicate": "requires",
+    "expected_evidence": [
+      {
+        "path": "tech/fin-ops/LLM-Cost-Optimization.md",
+        "heading": "Bedrock에서 지연을 허용하는 대량 작업"
+      }
+    ],
+    "expected_terms": [
+      "Batch inference"
+    ],
+    "note": "Bedrock batch inference 경로는 prompt caching을 지원하지 않아 두 할인을 겹쳐 계산하지 않는다는 경로별 조건이 이 절에 있다."
+  },
+  {
+    "id": "ho-conditional-isa-asset-choice",
+    "split": "holdout",
+    "kind": "conditional",
+    "question": "ISA 납입 한도 활용, 국내 상장 해외지수 ETF, 국내주식형 ETF, 예적금 이자, 계좌 밖 과세 여부, 어떤 자산을 담아야 절세 효과 큼, 9.9% 분리과세",
+    "start": "ISA",
+    "predicate": "requires",
+    "expected_evidence": [
+      {
+        "path": "econ/investing/Tax-Advantaged-Accounts.md",
+        "heading": "5. ETF 과세: 계좌 안과 밖"
+      }
+    ],
+    "expected_terms": [
+      "계좌 밖 과세"
+    ],
+    "note": "ISA 효과가 그 자산이 계좌 밖에서 과세되는지에 달려 있다는 조건과 자산 유형별 표가 이 절에 있다."
+  },
+  {
+    "id": "ho-conditional-charm-price-ending",
+    "split": "holdout",
+    "kind": "conditional",
+    "question": "배달 메뉴 가격을 18,900원과 19,000원 중 어느 쪽으로 걸지 고민 중인데, 끝자리를 9로 맞추면 상품 종류나 구매 상황과 상관없이 구매가 늘어난다고 봐도 되나요?",
+    "start": "단수가격",
+    "predicate": "requires",
+    "expected_evidence": [
+      {
+        "path": "biz/business-model/Pricing-Strategy.md",
+        "heading": "끝자리 가격(9,900원과 10,000원)이 통하는 조건"
+      }
+    ],
+    "expected_terms": [
+      "단수가격",
+      "left-digit effect"
+    ],
+    "note": "실용재와 쾌락재, 구매 상황에 따라 단수가격과 라운드가격의 구매의도가 달라진 실험 조건과 일반화 한계가 이 절에 있다."
+  },
+  {
+    "id": "ho-comparison-db-lock-vs-redis-lock",
+    "split": "holdout",
+    "kind": "comparison",
+    "question": "멀티 인스턴스 Spring 서버, 재고 차감 동시성, 단일 MySQL, SELECT FOR UPDATE, Redis SET NX 락, 추가 인프라 부담, 자동 해제 방식, 대기 중 커넥션 점유, 장단점 비교",
+    "start": "분산 락",
+    "predicate": "alternative_to",
+    "expected_evidence": [
+      {
+        "path": "tech/database/in-memory/Distributed-Lock.md",
+        "heading": "DB Lock vs Redis 분산 Lock"
+      }
+    ],
+    "expected_terms": [
+      "FOR UPDATE"
+    ],
+    "note": "인프라, 적용 범위, 대기 비용, 자동 해제 기준으로 DB 행 락과 Redis 락을 비교한 표가 이 절에 있다."
+  },
+  {
+    "id": "ho-comparison-free-vs-paid-entry",
+    "split": "holdout",
+    "kind": "comparison",
+    "question": "소액 유료 워크숍과 무료 세미나 중 무엇을 첫 진입 상품으로 둘지 정하려는데, 돈을 낸 사람이 더 열심히 참여한다는 경험을 근거로 유료를 고르는 게 맞을까요?",
+    "start": "진입 제안",
+    "predicate": "alternative_to",
+    "expected_evidence": [
+      {
+        "path": "biz/marketing/Lead-Magnet-and-Entry-Offer.md",
+        "heading": "무료 진입과 유료 진입의 물량, 선별과 참여"
+      }
+    ],
+    "expected_terms": [
+      "선별"
+    ],
+    "note": "무료와 유료 진입을 물량, 선별, 지속으로 나눠 보고 결제자의 높은 참여를 지불 효과로 단정하지 말라는 비교가 이 절에 있다."
+  },
+  {
+    "id": "ho-comparison-session-vs-rtr",
+    "split": "holdout",
+    "kind": "comparison",
+    "question": "로그인 상태 유지 설계, 서버 세션 Redis 저장, refresh token rotation, 강제 로그아웃 처리, 수평 확장, 재사용 탐지, 발급된 access token 즉시 폐기, 차이 비교",
+    "start": "서버 세션",
+    "predicate": "alternative_to",
+    "expected_evidence": [
+      {
+        "path": "tech/security/auth/Refresh-Token-Rotation.md",
+        "heading": "Session vs RTR 비교"
+      }
+    ],
+    "expected_terms": [
+      "family"
+    ],
+    "note": "상태 관리, 확장성, 재사용 탐지, 강제 로그아웃 축으로 서버 세션과 RTR을 비교한 표가 이 절에 있다."
+  },
+  {
+    "id": "ho-comparison-preindex-vs-runtime-fetch",
+    "split": "holdout",
+    "kind": "comparison",
+    "question": "사내 위키와 티켓 시스템 내용을 LLM 답변 근거로 쓰려는데, 미리 임베딩해 색인해 둘지 질문이 들어올 때마다 원천 API로 가져올지 무엇을 기준으로 골라야 하나요?",
+    "start": "사전 색인",
+    "predicate": "alternative_to",
+    "expected_evidence": [
+      {
+        "path": "tech/ai-engineering/tools/RAG-Retrieval-Engineering.md",
+        "heading": "사전 색인과 요청 시점 조회를 함께 비교한다"
+      }
+    ],
+    "expected_terms": [
+      "사전 색인",
+      "요청 시점 조회"
+    ],
+    "note": "사전 색인, 요청 시점 조회, 혼합 경로를 선택 조건과 비용, 실패 유형으로 비교한 표가 이 절에 있다."
+  },
+  {
+    "id": "ho-comparison-compositor-vs-layout-props",
+    "split": "holdout",
+    "kind": "comparison",
+    "question": "모달 슬라이드인 애니메이션, top left 값 변경, 저사양 폰 프레임 드랍, transform translate, opacity, 레이어 합성, 메인 스레드 바쁨, 레이아웃 재계산, 어느 속성으로",
+    "start": "컴포지터",
+    "predicate": "alternative_to",
+    "expected_evidence": [
+      {
+        "path": "tech/web/frontend/Browser-Main-Thread-Offloading.md",
+        "heading": "컴포지터에 올리기"
+      }
+    ],
+    "expected_terms": [
+      "transform"
+    ],
+    "note": "top과 left 애니메이션은 매 프레임 레이아웃을 돌리고 transform과 opacity는 컴포지터에서 처리된다는 비교가 이 절에 있다."
+  },
+  {
+    "id": "ho-comparison-ai-billing-unit",
+    "split": "holdout",
+    "kind": "comparison",
+    "question": "업무 자동화 AI 에이전트를 B2B로 팔려는데 좌석 요금, 작업당 요금, 성과 기반 요금 중 무엇으로 과금할지 각각 어떤 문제가 생기는지 비교하고 싶어요.",
+    "start": "과금 단위",
+    "predicate": "alternative_to",
+    "expected_evidence": [
+      {
+        "path": "biz/business-model/Pricing-Strategy-AI-Usage.md",
+        "heading": "과금 단위를 고르는 기준"
+      }
+    ],
+    "expected_terms": [
+      "좌석",
+      "성과"
+    ],
+    "note": "좌석, 시간, 요청, 거래, 성과 과금 단위별로 고객 측 장점과 생기는 문제를 비교한 표가 이 절에 있다."
+  },
+  {
+    "id": "ho-negative-patroni-failover",
+    "split": "holdout",
+    "kind": "negative",
+    "question": "자체 구축 PostgreSQL 고가용성, Patroni 클러스터, etcd DCS, leader key TTL, 자동 failover 시간, split brain 방지, synchronous_mode 설정값 권장",
+    "start": "Patroni",
+    "predicate": "addresses",
+    "expected_empty": true,
+    "expected_evidence": [],
+    "expected_terms": [],
+    "note": "vault에 Patroni와 synchronous_mode, DCS leader key 설정을 다룬 내용이 없다(rg로 Patroni, synchronous_mode 0건 확인)."
+  },
+  {
+    "id": "ho-negative-speculation-rules",
+    "split": "holdout",
+    "kind": "negative",
+    "question": "멀티 페이지 사이트에서 다음 페이지 이동을 빠르게 하려고 브라우저의 speculation rules 스크립트로 prerender를 걸 때, eagerness 값은 어떤 기준으로 정해야 하나요?",
+    "start": "Speculation Rules API",
+    "predicate": "requires",
+    "expected_empty": true,
+    "expected_evidence": [],
+    "expected_terms": [],
+    "note": "vault의 prerender는 React와 Next.js의 서버 렌더링 의미뿐이고 브라우저 Speculation Rules API는 없다(rg로 speculationrules, speculation rules 0건 확인)."
+  },
+  {
+    "id": "ho-negative-taylor-rule",
+    "split": "holdout",
+    "kind": "negative",
+    "question": "기준금리 적정 수준 추정, 테일러 준칙 공식, 인플레이션 갭과 산출 갭 계수 0.5, 중립금리 가정, 한국은행 실제 결정과 괴리 비교",
+    "start": "테일러 준칙",
+    "predicate": "requires",
+    "expected_empty": true,
+    "expected_evidence": [],
+    "expected_terms": [],
+    "note": "vault에 테일러 준칙과 그 계수 공식이 없다(rg로 테일러, Taylor rule 0건, Taylor 히트는 무관한 인명과 제품명)."
+  },
+  {
+    "id": "ho-negative-sortino-calmar",
+    "split": "holdout",
+    "kind": "negative",
+    "question": "백테스트한 두 전략을 비교할 때 하락 변동성만 벌점으로 주는 Sortino ratio와 최대낙폭 기준의 Calmar ratio 중 무엇을 기준으로 삼아야 하나요?",
+    "start": "Sortino ratio",
+    "predicate": "alternative_to",
+    "expected_empty": true,
+    "expected_evidence": [],
+    "expected_terms": [],
+    "note": "vault에는 Deflated Sharpe Ratio 언급만 있고 Sortino와 Calmar 비율은 없다(rg로 Sortino, Calmar, 소르티노, 칼마 0건 확인)."
+  }
+]
