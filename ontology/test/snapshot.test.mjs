@@ -220,6 +220,54 @@ test('verified parsed records are reused without leaking caller mutation', (t) =
   assert.equal(second.entities[0].label, entity.label);
 });
 
+function countArtifactReads(t, artifact) {
+  const read = fs.readFileSync;
+  let reads = 0;
+  t.mock.method(fs, 'readFileSync', (path, ...args) => {
+    if (path === artifact) reads += 1;
+    return read(path, ...args);
+  });
+  syncBuiltinESMExports();
+  t.after(() => { t.mock.restoreAll(); syncBuiltinESMExports(); });
+  return () => reads;
+}
+
+test('verified artifacts are reused only while their files keep the identity they were verified with', (t) => {
+  const options = fixture(t);
+  const { fingerprint } = buildSnapshot(options);
+  const artifact = join(realpathSync(options.cacheDir), 'snapshots', fingerprint, 'entities.jsonl');
+  utimesSync(artifact, 1700000000, 1700000000);
+  const now = Date.now();
+  t.mock.method(Date, 'now', () => now + 5000);
+  const reads = countArtifactReads(t, artifact);
+  const first = loadSnapshot(options);
+  assert.equal(reads(), 1);
+  assert.strictEqual(loadSnapshot(options).entities[0], first.entities[0]);
+  assert.equal(reads(), 1);
+  // Same size, inode and restored mtime: only ctime records this write. The 50 ms wait
+  // assumes ctime finer than that, as on APFS, ext4 with nanosecond inodes and tmpfs.
+  Atomics.wait(new Int32Array(new SharedArrayBuffer(4)), 0, 0, 50);
+  const bytes = readFileSync(artifact);
+  bytes[bytes.indexOf('Source')] = 's'.charCodeAt(0);
+  writeFileSync(artifact, bytes);
+  utimesSync(artifact, 1700000000, 1700000000);
+  assert.throws(() => loadSnapshot(options), { code: 'snapshot_integrity_error' });
+});
+
+test('artifacts changed within two seconds of their verification are verified again', (t) => {
+  const options = fixture(t);
+  const { fingerprint } = buildSnapshot(options);
+  const artifact = join(realpathSync(options.cacheDir), 'snapshots', fingerprint, 'entities.jsonl');
+  utimesSync(artifact, new Date(), new Date());
+  // Freeze the clock at the write so a slow first load cannot age the ctime past the guard.
+  const now = Date.now();
+  t.mock.method(Date, 'now', () => now);
+  const reads = countArtifactReads(t, artifact);
+  loadSnapshot(options);
+  loadSnapshot(options);
+  assert.equal(reads(), 2);
+});
+
 test('rename and deletion replace source records instead of leaving stale edges', (t) => {
   const options = fixture(t);
   const before = buildSnapshot(options);

@@ -418,18 +418,41 @@ function freezeParsed(value) {
   return value;
 }
 
-function parsedRecords(repo, fingerprint, manifestHash, artifacts) {
+// Device, inode, size, mtime and ctime of a regular artifact file, or null.
+function artifactIdentity(path) {
+  const info = lstatSync(path, { bigint: true, throwIfNoEntry: false });
+  return info?.isFile() && !info.isSymbolicLink()
+    ? { key: `${info.dev}:${info.ino}:${info.size}:${info.mtimeNs}:${info.ctimeNs}`, ctimeNs: info.ctimeNs } : null;
+}
+
+// Records of the last verified load. A load under the same manifest reuses them without
+// reading and hashing the artifacts again while each artifact file keeps the identity it had
+// when verified: a write changes its ctime and a replacement its inode or ctime. Identities
+// are kept only when every ctime precedes the verifying read by two seconds, so a write in
+// the same timestamp tick of a coarse file system still changes them, as Git treats racily
+// clean index entries.
+function verifiedRecords(directory, manifest, repo, fingerprint, manifestHash) {
+  const startedNs = BigInt(Date.now()) * 1_000_000n;
+  const identities = ARTIFACTS.map((name) => artifactIdentity(join(directory, name)));
+  const keys = identities.every(Boolean) ? identities.map((identity) => identity.key).join('\n') : null;
   const cached = parsedRecordsCache;
-  if (cached?.repo === repo && cached.fingerprint === fingerprint && cached.manifestHash === manifestHash) {
-    return cached;
+  const sameManifest = cached?.repo === repo && cached.fingerprint === fingerprint && cached.manifestHash === manifestHash;
+  if (sameManifest && keys !== null && cached.keys === keys) return cached;
+  const artifacts = {};
+  for (const name of ARTIFACTS) {
+    const content = readRegular(join(directory, name));
+    if (sha256(content) !== manifest.artifact_hashes[name]) throw new ContextError('snapshot_integrity_error', `hash mismatch: ${name}`);
+    artifacts[name] = content;
   }
   const records = (name) => artifacts[name].toString().split('\n').filter(Boolean).map((line) => JSON.parse(line));
+  const settled = keys !== null && identities.every((identity) => identity.ctimeNs < startedNs - 2_000_000_000n);
   parsedRecordsCache = {
     repo,
     fingerprint,
     manifestHash,
-    entities: freezeParsed(records('entities.jsonl')),
-    relations: freezeParsed(records('relations.jsonl')),
+    keys: settled ? keys : null,
+    entities: sameManifest ? cached.entities : freezeParsed(records('entities.jsonl')),
+    relations: sameManifest ? cached.relations : freezeParsed(records('relations.jsonl')),
   };
   return parsedRecordsCache;
 }
@@ -447,19 +470,14 @@ function readSnapshotDirectory(directory, expectedHash, repo, fingerprint) {
   if (manifest.schema_version !== SCHEMA_VERSION || manifest.extractor_version !== EXTRACTOR_VERSION) {
     throw new ContextError('snapshot_incompatible', 'snapshot was built by another schema or extractor version');
   }
-  const artifacts = {};
-  for (const name of ARTIFACTS) {
-    const content = readRegular(join(directory, name));
-    if (sha256(content) !== manifest.artifact_hashes[name]) throw new ContextError('snapshot_integrity_error', `hash mismatch: ${name}`);
-    artifacts[name] = content;
-  }
-  const parsed = parsedRecords(repo, fingerprint, expectedHash, artifacts);
+  const parsed = verifiedRecords(directory, manifest, repo, fingerprint, expectedHash);
   return { manifest, entities: [...parsed.entities], relations: [...parsed.relations],
     fingerprint, manifest_hash: expectedHash };
 }
 
-export function loadSnapshot({ repo, cacheDir }) {
-  repo = resolveRepo(repo);
+/** `root` is resolveRepo(repo) when the caller already resolved it for this request. */
+export function loadSnapshot({ repo, cacheDir }, root = resolveRepo(repo)) {
+  repo = root;
   const cache = cacheLocation(repo, cacheDir);
   if (!existsSync(join(cache, 'active.json'))) throw new ContextError('index_not_built');
   try {

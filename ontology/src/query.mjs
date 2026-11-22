@@ -57,6 +57,7 @@ const MIN_CUT_EXCERPT_BYTES = 512;
 // Classes at either end of a typed judgment relation: Problem, Approach, Condition, Tradeoff.
 const JUDGMENT_TYPES = new Set(PREDICATES.filter((item) => item.evidence_required)
   .flatMap((item) => [...item.domain, ...item.range]));
+const LATIN_PARTICLE_TAIL = /^([a-z0-9_-]*[a-z0-9])(으로도|으로의|에서는|에서의|에서도|이랑|이나|라도|마다|에서|에게|에는|에도|까지|부터|처럼|보다|으로|로도|로의|와의|과의|이다|이고|이며|하면|하는|하고|해도|해서|되어|되는|되면|로|의|와|과|도|를|을|은|는|이|가|에|랑|나|된)$/u;
 const PARTICLE_SUFFIX = /(하려면|하면|하나|인가|인가요|인가요|에서|으로|에게|까지|부터|처럼|보다|이후|중에|에는|에는|은|는|을|를|이|가|에)$/u;
 const QUERY_CODE_HASH = sha256(fs.readFileSync(new URL(import.meta.url)));
 export const LIMITATIONS = [
@@ -273,8 +274,7 @@ function preferredSection(sections) {
 }
 
 function isUsefulSection(section) {
-  const label = exactText(section?.label);
-  return section?.type === 'Section' && !['출처', '관련 문서', '관련문서'].includes(label);
+  return section?.type === 'Section' && !['출처', '관련 문서', '관련문서'].includes(entityText(section).names[0]);
 }
 
 function words(value) {
@@ -285,7 +285,11 @@ function words(value) {
     ['복구', ['recovery', 'reconcile', 'retry']], ['검색', ['search']],
   ]);
   const normalized = raw.flatMap((word) => {
-    const stem = word.replace(PARTICLE_SUFFIX, '');
+    // A particle or light verb ending written straight after a Latin or digit term
+    // (CDC로, Kafka에서는, cache된) is dropped; other Hangul tails such as LG전자,
+    // for문 or 10만 are part of the term and stay.
+    const latin = word.match(LATIN_PARTICLE_TAIL);
+    const stem = latin && latin[1].length >= 2 ? latin[1] : word.replace(PARTICLE_SUFFIX, '');
     const base = stem.length >= 2 ? stem : word;
     return [base, ...(equivalents.get(base) ?? [])];
   });
@@ -397,22 +401,35 @@ function exactText(value) {
   return String(value ?? '').trim().toLocaleLowerCase();
 }
 
-function exactMetadataMatch(entity, query) {
-  const exact = exactText(query);
-  const fields = [entity.id, entity.label, ...(entity.aliases ?? []), ...(entity.tags ?? []), entity.anchor?.heading_path?.join(' ')];
-  return exact.length > 0 && fields.some((field) => exactText(field) === exact);
+// Normalized metadata fields of a record, kept for later queries and dropped with the
+// record. Only a record frozen with the fields read here is kept: loadSnapshot deep-freezes
+// every record (freezeParsed), and a record that can change is normalized on each call.
+const entityTexts = new WeakMap();
+function entityText(entity) {
+  let text = entityTexts.get(entity);
+  if (text) return text;
+  const names = [entity.label, ...(entity.aliases ?? [])].map(exactText);
+  const rest = [...(entity.tags ?? []), entity.anchor?.heading_path?.join(' ')].map(exactText);
+  text = {
+    names,
+    exact: [exactText(entity.id), ...names, ...rest],
+    // ID prefixes and percent-encoded anchors are storage syntax, not source text.
+    // Query terms never hold a newline, so a term occurs here only within one field.
+    partial: [exactText(sourcePath(entity)), ...names, ...rest].join('\n'),
+  };
+  if ([entity, entity.aliases, entity.tags, entity.anchor, entity.anchor?.heading_path].every((value) => Object.isFrozen(value))) {
+    entityTexts.set(entity, text);
+  }
+  return text;
 }
 
-function entityScore(entity, query, tokens) {
-  if (exactMetadataMatch(entity, query)) return 1000;
-  return matchingTokens(entity, tokens).length * 10;
+function exactMetadataMatch(entity, exactQuery) {
+  return exactQuery.length > 0 && entityText(entity).exact.includes(exactQuery);
 }
 
 function matchingTokens(entity, tokens) {
-  // ID prefixes and percent-encoded anchors are storage syntax, not source text.
-  const fields = [sourcePath(entity), entity.label, ...(entity.aliases ?? []), ...(entity.tags ?? []), entity.anchor?.heading_path?.join(' ')];
-  const normalized = fields.map(exactText);
-  return tokens.filter((token) => normalized.some((field) => field.includes(token)));
+  const { partial } = entityText(entity);
+  return tokens.filter((token) => partial.includes(token));
 }
 
 function discriminativeTokens(tokens, weights, documentFrequency) {
@@ -441,11 +458,13 @@ function scoreBodyMatch(body, tokens, weights) {
   return { score, matchedTokens };
 }
 
-function assertNoSymlink(repo, relativePath) {
+// `checked` holds paths this request already found to exist without a symlink.
+function assertNoSymlink(repo, relativePath, checked) {
   const parts = relativePath.split('/');
   let cursor = repo;
   for (const part of parts) {
     cursor = path.join(cursor, part);
+    if (checked?.has(cursor)) continue;
     try {
       if (fs.lstatSync(cursor).isSymbolicLink()) fail('symlink_path', `symlink path is not allowed: ${relativePath}`);
     } catch (error) {
@@ -453,6 +472,7 @@ function assertNoSymlink(repo, relativePath) {
       if (error?.code !== 'ENOENT') throw error;
       return;
     }
+    checked?.add(cursor);
   }
 }
 
@@ -498,6 +518,66 @@ export function readPinnedBlobs(repo, revision, paths) {
     offset = newline + length + 2;
   }
   return blobs;
+}
+
+// Pinned Markdown text that body scans and narrow reads fill, kept between the queries of
+// one process. A blob of a revision never changes, so entries stay valid for their
+// repository and revision; another revision replaces the cache, which bounds it to one
+// revision's documents. A revision that is no full object name gets a cache for one request.
+let revisionTexts = { repo: null, revision: null, documents: new Map() };
+
+function documentTexts(repo, revision) {
+  if (!/^[a-f0-9]{40,64}$/.test(revision)) return new Map();
+  if (revisionTexts.repo !== repo || revisionTexts.revision !== revision) {
+    revisionTexts = { repo, revision, documents: new Map() };
+  }
+  return revisionTexts.documents;
+}
+
+const pairHash = (text, index) => Math.imul((text.charCodeAt(index - 1) << 16) | text.charCodeAt(index), 0x9e3779b1);
+
+// `pairs` is a Bloom filter of adjacent UTF-16 code unit pairs: a power of two of at least
+// 64 bits and at least two bits per unit, under four from 32 units on.
+function documentText(blob) {
+  const lower = blob.toString('utf8').toLowerCase();
+  const size = Math.max(6, Math.ceil(Math.log2(2 * lower.length)));
+  const pairs = new Uint32Array(2 ** (size - 5));
+  const shift = 32 - size;
+  for (let index = 1; index < lower.length; index += 1) {
+    const bit = pairHash(lower, index) >>> shift;
+    pairs[bit >>> 5] |= 1 << (bit & 31);
+  }
+  return { blob, lower, pairs, shift, sections: new Map() };
+}
+
+function codeUnitPairs(term) {
+  const hashes = [];
+  for (let index = 1; index < term.length; index += 1) hashes.push(pairHash(term, index));
+  return hashes;
+}
+
+// False only when the text lacks a code unit pair of the term, so lacks the term.
+function mayContain(text, termPairs) {
+  return termPairs.every((hash) => {
+    const bit = hash >>> text.shift;
+    return (text.pairs[bit >>> 5] & (1 << (bit & 31))) !== 0;
+  });
+}
+
+// The lowercased body of a section byte range. A body found in its lowercased document
+// is kept as a slice of that text, and a term the document text lacks cannot occur in it.
+function sectionText(text, section) {
+  const start = section.anchor?.start_byte ?? 0;
+  const end = section.anchor?.end_byte ?? 0;
+  const key = `${start}:${end}`;
+  let value = text.sections.get(key);
+  if (!value) {
+    const body = text.blob.subarray(start, end).toString('utf8').toLowerCase();
+    const at = text.lower.indexOf(body);
+    value = at === -1 ? { body, inDocument: false } : { body: text.lower.slice(at, at + body.length), inDocument: true };
+    text.sections.set(key, value);
+  }
+  return value;
 }
 
 function normalizedHash(value) {
@@ -744,20 +824,94 @@ function trimToBudget(payload, maximum, directEvidenceToDocument, ownerDocumentF
   return true;
 }
 
+// Indexes of the last request's records and scopes, one entry, kept for the next request.
+// The indexes read only top-level fields of records, so arrays holding the same frozen
+// records in the same order, with the same scopes, give the same indexes. loadSnapshot
+// deep-freezes every record (freezeParsed); arrays with a record that can change are not kept.
+let recordIndexCache = null;
+
+function sameRecords(left, right) {
+  if (left.length !== right.length) return false;
+  for (let index = 0; index < left.length; index += 1) if (left[index] !== right[index]) return false;
+  return true;
+}
+
+function recordIndexes(entities, relations, scopes, conceptScopes) {
+  const key = JSON.stringify([scopes, conceptScopes]);
+  const cached = recordIndexCache;
+  if (cached?.key === key && sameRecords(cached.entities, entities) && sameRecords(cached.relations, relations)) {
+    return cached.indexes;
+  }
+  // Own copies, so a caller changing its arrays later cannot change the kept indexes.
+  const records = { entities: [...entities], relations: [...relations] };
+  const indexes = buildRecordIndexes(records.entities, records.relations, scopes, conceptScopes);
+  const frozen = records.entities.every((entity) => Object.isFrozen(entity))
+    && records.relations.every((relation) => Object.isFrozen(relation));
+  recordIndexCache = frozen ? { key, ...records, indexes } : null;
+  return indexes;
+}
+
+function buildRecordIndexes(entities, relations, scopes, conceptScopes) {
+  // Vocabulary documents are schema data, never retrieval roots or evidence.
+  const vocabulary = new Set(entities.filter((entity) => entity.type === 'Document' && entity.status === 'vocabulary')
+    .map(sourcePath));
+  const retrievable = (entity) => inScope(sourcePath(entity), scopes) && !vocabulary.has(sourcePath(entity));
+  const documents = entities.filter((entity) => entity.type === 'Document' && retrievable(entity));
+  const documentsByPath = new Map(documents.map((entity) => [sourcePath(entity), entity]));
+  const sections = entities.filter((entity) => (entity.type === 'Section' || entity.type === 'RelationAssertion') && retrievable(entity));
+  const concepts = entities.filter((entity) => CONCEPT_TYPES.includes(entity.type)
+    && inScope(sourcePath(entity), conceptScopes));
+  const searchableSections = sections.filter(isUsefulSection);
+  const sectionsById = new Map(sections.map((entity) => [entity.id, entity]));
+  const entitiesById = new Map([...documents, ...sections].map((entity) => [entity.id, entity]));
+  const ownerDocumentForEntity = new Map([...entitiesById.values()]
+    .map((entity) => [entity.id, documentIdFor(entity, documentsByPath)])
+    .filter(([, documentId]) => documentId));
+  const byDocument = new Map();
+  for (const section of searchableSections) {
+    const id = documentIdFor(section, documentsByPath);
+    if (!id) continue;
+    const group = byDocument.get(id) ?? [];
+    group.push(section);
+    byDocument.set(id, group);
+  }
+  // Built on first use: traversable relations of each endpoint in snapshot order, and record sources.
+  let traversable;
+  const relationsOf = (id) => {
+    if (!traversable) {
+      traversable = new Map();
+      const add = (key, relation) => (traversable.has(key) ? traversable.get(key).push(relation) : traversable.set(key, [relation]));
+      for (const relation of relations) {
+        if (relation.verification !== 'source_confirmed' || relation.predicate === 'contains') continue;
+        add(relation.subject, relation);
+        if (relation.object !== relation.subject) add(relation.object, relation);
+      }
+    }
+    return traversable.get(id) ?? [];
+  };
+  let sources;
+  const sourceOf = (id) => (sources ??= new Map(entities.map((entity) => [entity.id, sourcePath(entity)]))).get(id);
+  return {
+    documents, documentsByPath, sections, concepts, searchableSections, sectionsById, entitiesById,
+    ownerDocumentForEntity, byDocument, relationsOf, sourceOf,
+  };
+}
+
 /**
  * Build an evidence-backed Context Pack from the active immutable snapshot.
  * This intentionally does not infer claims or semantic relations.
  */
-export function lookup(options, args, snapshot) {
-  return retrieve(options, args, snapshot, 'lookup');
+export function lookup(options, args, snapshot, state) {
+  return retrieve(options, args, snapshot, 'lookup', state);
 }
 
 /** List ranked document candidates without treating metadata as body evidence. */
-export function search(options, args, snapshot) {
-  return retrieve(options, args, snapshot, 'search');
+export function search(options, args, snapshot, state) {
+  return retrieve(options, args, snapshot, 'search', state);
 }
 
-function retrieve(options, args, snapshot, mode) {
+// `state` is the caller's repository check for this request, when it made one.
+function retrieve(options, args, snapshot, mode, state) {
   const allowlist = validateOptions(options);
   const request = mode === 'search' ? validateSearchArgs(args) : validateArgs(args);
   const effectiveMaxBytes = Math.min(request.requestedMaxBytes, SERVER_MAX_BYTES);
@@ -767,7 +921,7 @@ function retrieve(options, args, snapshot, mode) {
   const requestedScopeIndexed = request.scope.length === 0
     ? scopes.length > 0
     : request.scope.every((scope) => scopes.some((effective) => isPrefix(effective, scope)));
-  const current = getRepoState(options.repo);
+  const current = state ?? getRepoState(options.repo);
   const gaps = boundedGaps(scopedGaps(manifest, scopes), manifest.source_id, scopes);
   const errors = requestedScopeIndexed ? [] : ['requested_scope_not_indexed'];
   if (!requestedScopeIndexed) appendGap(gaps, {
@@ -845,30 +999,11 @@ function retrieve(options, args, snapshot, mode) {
     return finalize();
   }
 
-  // Vocabulary documents are schema data, never retrieval roots or evidence.
-  const vocabulary = new Set(entities.filter((entity) => entity.type === 'Document' && entity.status === 'vocabulary')
-    .map(sourcePath));
-  const retrievable = (entity) => inScope(sourcePath(entity), scopes) && !vocabulary.has(sourcePath(entity));
-  const documents = entities.filter((entity) => entity.type === 'Document' && retrievable(entity));
-  const documentsByPath = new Map(documents.map((entity) => [sourcePath(entity), entity]));
-  const sections = entities.filter((entity) => (entity.type === 'Section' || entity.type === 'RelationAssertion') && retrievable(entity));
   const conceptScopes = effectiveScopes(allowlist, manifest.indexed_paths, []);
-  const concepts = entities.filter((entity) => CONCEPT_TYPES.includes(entity.type)
-    && inScope(sourcePath(entity), conceptScopes));
-  const searchableSections = sections.filter(isUsefulSection);
-  const sectionsById = new Map(sections.map((entity) => [entity.id, entity]));
-  const entitiesById = new Map([...documents, ...sections].map((entity) => [entity.id, entity]));
-  const ownerDocumentForEntity = new Map([...entitiesById.values()]
-    .map((entity) => [entity.id, documentIdFor(entity, documentsByPath)])
-    .filter(([, documentId]) => documentId));
-  const byDocument = new Map();
-  for (const section of searchableSections) {
-    const id = documentIdFor(section, documentsByPath);
-    if (!id) continue;
-    const group = byDocument.get(id) ?? [];
-    group.push(section);
-    byDocument.set(id, group);
-  }
+  const {
+    documents, documentsByPath, sections, concepts, searchableSections, sectionsById, entitiesById,
+    ownerDocumentForEntity, byDocument, relationsOf, sourceOf,
+  } = recordIndexes(entities, relations, scopes, conceptScopes);
   const memo = new Map();
   const read = (uri) => {
     if (!memo.has(uri)) {
@@ -877,6 +1012,11 @@ function retrieve(options, args, snapshot, mode) {
     }
     return memo.get(uri);
   };
+  const texts = documentTexts(options.repo, manifest.revision);
+  const textOf = (uri) => {
+    if (!texts.has(uri)) texts.set(uri, documentText(read(uri)));
+    return texts.get(uri);
+  };
   const conditionTerms = request.conditions.map(words);
   const queryTokens = [...new Set([...words(request.query), ...conditionTerms.flat()])];
   const expandedTerms = mode === 'lookup' && CONCEPT_QUERY_EXPANSION && concepts.length > 0
@@ -884,16 +1024,24 @@ function retrieve(options, args, snapshot, mode) {
   const tokens = [...queryTokens, ...expandedTerms];
   if (expandedTerms.length > 0) base.matching.expanded_terms = expandedTerms;
   const longQuery = tokens.length >= LONG_QUERY_TERMS;
+  const exactQuery = exactText(request.query);
+  const metadataTokens = new Map();
+  const matchedTokens = (entity) => {
+    if (!metadataTokens.has(entity)) metadataTokens.set(entity, matchingTokens(entity, tokens));
+    return metadataTokens.get(entity);
+  };
+  const entityScore = (entity) => (exactMetadataMatch(entity, exactQuery) ? 1000 : matchedTokens(entity).length * 10);
   const sectionTerms = new Map();
   const sectionPenalties = new Map();
-  const scoreSection = (section, weights) => {
-    const body = read(sourcePath(section)).subarray(section.anchor?.start_byte ?? 0, section.anchor?.end_byte ?? 0).toString('utf8').toLowerCase();
-    const match = scoreBodyMatch(body, tokens, weights);
+  // documentTerms: the query terms in the section's document text, when known.
+  const scoreSection = (section, weights, documentTerms) => {
+    const { body, inDocument } = sectionText(textOf(sourcePath(section)), section);
+    const match = scoreBodyMatch(body, inDocument && documentTerms ? documentTerms : tokens, weights);
     sectionTerms.set(section.id, match.matchedTokens);
     // Long notes can repeat broad terms without answering the specific query.
     const lengthPenalty = 1 + (longQuery ? LONG_QUERY_LENGTH_SLOPE : LENGTH_PENALTY_SLOPE) * Math.log1p(body.length / 200);
     sectionPenalties.set(section.id, lengthPenalty);
-    return { ...match, score: entityScore(section, request.query, tokens) + match.score / lengthPenalty };
+    return { ...match, score: entityScore(section) + match.score / lengthPenalty };
   };
   base.matching.query_term_count = tokens.length;
   let maxSectionTermMatches = 0;
@@ -901,30 +1049,30 @@ function retrieve(options, args, snapshot, mode) {
   const sectionScores = new Map();
   const exactSections = new Set();
   for (const doc of documents) {
-    const score = entityScore(doc, request.query, tokens);
+    const score = entityScore(doc);
     if (score > 0) scored.set(doc.id, {
       doc,
       score,
       direct: null,
-      metadataMatch: exactMetadataMatch(doc, request.query),
-      matchedTokens: new Set(matchingTokens(doc, tokens)),
+      metadataMatch: exactMetadataMatch(doc, exactQuery),
+      matchedTokens: new Set(matchedTokens(doc)),
     });
   }
   for (const section of sections) {
     const docId = documentIdFor(section, documentsByPath);
     const doc = documentsByPath.get(sourcePath(section));
     if (!docId || !doc) continue;
-    const score = entityScore(section, request.query, tokens);
-    const exact = exactMetadataMatch(section, request.query);
+    const score = entityScore(section);
+    const exact = exactMetadataMatch(section, exactQuery);
     if (exact) exactSections.add(section.id);
     const useful = isUsefulSection(section);
     sectionScores.set(section.id, useful || section.type === 'RelationAssertion' ? score : 0);
     if (useful) {
-      maxSectionTermMatches = Math.max(maxSectionTermMatches, matchingTokens(section, tokens).length);
+      maxSectionTermMatches = Math.max(maxSectionTermMatches, matchedTokens(section).length);
     }
     const existing = scored.get(docId);
     if (existing) {
-      for (const token of matchingTokens(section, tokens)) existing.matchedTokens.add(token);
+      for (const token of matchedTokens(section)) existing.matchedTokens.add(token);
       existing.metadataMatch ||= exact;
     }
     if (score > 0 && (!existing || existing.score < score)) {
@@ -933,7 +1081,7 @@ function retrieve(options, args, snapshot, mode) {
         score,
         direct: section,
         metadataMatch: exact || existing?.metadataMatch === true,
-        matchedTokens: new Set([...(existing?.matchedTokens ?? []), ...matchingTokens(section, tokens)]),
+        matchedTokens: new Set([...(existing?.matchedTokens ?? []), ...matchedTokens(section)]),
       });
     }
   }
@@ -943,15 +1091,32 @@ function retrieve(options, args, snapshot, mode) {
   const scanBodies = tokens.length > 0 && (!hasExactMetadataHit || tokens.length > 1);
   const localWeights = new Map(tokens.map((token) => [token, 1]));
   if (scanBodies) {
-    for (const doc of documents) assertNoSymlink(options.repo, sourcePath(doc));
-    // Resolve the pinned tree once instead of resolving revision:path per blob.
-    const files = listMarkdown(options.repo, manifest.revision, scopes)
-      .filter((file) => documentsByPath.has(file.path));
-    if (files.length !== documents.length) fail('source_unavailable', 'cannot resolve every pinned document');
-    for (const [uri, blob] of readBlobs(options.repo, files)) memo.set(uri, blob);
-    const documentBodies = [...memo.values()].map((blob) => blob.toString('utf8').toLowerCase());
-    const documentFrequency = new Map(tokens.map((token) => [token,
-      documentBodies.reduce((count, body) => count + Number(body.includes(token)), 0)]));
+    const checked = new Set();
+    for (const doc of documents) assertNoSymlink(options.repo, sourcePath(doc), checked);
+    // Read only what the revision cache lacks, resolving the pinned tree once instead of
+    // revision:path per blob. Duplicate paths still fail the document count check.
+    if (documentsByPath.size !== documents.length || documents.some((doc) => !texts.has(sourcePath(doc)))) {
+      const files = listMarkdown(options.repo, manifest.revision, scopes)
+        .filter((file) => documentsByPath.has(file.path));
+      if (files.length !== documents.length) fail('source_unavailable', 'cannot resolve every pinned document');
+      for (const [uri, blob] of readBlobs(options.repo, files.filter((file) => !texts.has(file.path)))) {
+        texts.set(uri, documentText(blob));
+      }
+    }
+    // Query terms in each document text, in query order.
+    const documentTerms = new Map(documents.map((doc) => [sourcePath(doc), []]));
+    const documentFrequency = new Map(tokens.map((token) => [token, 0]));
+    const termPairs = tokens.map(codeUnitPairs);
+    for (const doc of documents) {
+      const uri = sourcePath(doc);
+      const text = texts.get(uri);
+      memo.set(uri, text.blob);
+      tokens.forEach((token, index) => {
+        if (!mayContain(text, termPairs[index]) || !text.lower.includes(token)) return;
+        documentTerms.get(uri).push(token);
+        documentFrequency.set(token, documentFrequency.get(token) + 1);
+      });
+    }
     const weights = new Map(tokens.map((token) => [token,
       1 + Math.log((documents.length + 1) / ((documentFrequency.get(token) ?? 0) + 1))]));
     for (const [token, weight] of weights) localWeights.set(token, weight);
@@ -959,9 +1124,9 @@ function retrieve(options, args, snapshot, mode) {
       const docId = documentIdFor(section, documentsByPath);
       const doc = documentsByPath.get(sourcePath(section));
       if (!docId || !doc) continue;
-      const bodyMatch = scoreSection(section, weights);
+      const bodyMatch = scoreSection(section, weights, documentTerms.get(sourcePath(section)));
       maxSectionTermMatches = Math.max(maxSectionTermMatches,
-        new Set([...matchingTokens(section, tokens), ...bodyMatch.matchedTokens]).size);
+        new Set([...matchedTokens(section), ...bodyMatch.matchedTokens]).size);
       const score = bodyMatch.score;
       sectionScores.set(section.id, score);
       const existing = scored.get(docId);
@@ -985,8 +1150,8 @@ function retrieve(options, args, snapshot, mode) {
         // metadata (path and headings with the H1) of the best scanned section. For a
         // metadata-led entry the best section's body is not in the score; excluding it is conservative.
         const best = units.reduce((top, section) => (sectionScores.get(section.id) > sectionScores.get(top.id) ? section : top), units[0]);
-        const counted = new Set(best ? [...sectionTerms.get(best.id), ...matchingTokens(best, tokens)] : []);
-        for (const token of matchingTokens(entry.direct ?? entry.doc, tokens)) counted.add(token);
+        const counted = new Set(best ? [...sectionTerms.get(best.id), ...matchedTokens(best)] : []);
+        for (const token of matchedTokens(entry.direct ?? entry.doc)) counted.add(token);
         const credit = new Map();
         for (const section of units) {
           // The heading-less root unit holds the frontmatter; keys such as aliases are not body text.
@@ -1022,21 +1187,21 @@ function retrieve(options, args, snapshot, mode) {
       const bodyMatch = scoreSection(section, localWeights);
       sectionScores.set(section.id, bodyMatch.score);
       maxSectionTermMatches = Math.max(maxSectionTermMatches,
-        new Set([...matchingTokens(section, tokens), ...bodyMatch.matchedTokens]).size);
+        new Set([...matchedTokens(section), ...bodyMatch.matchedTokens]).size);
     }
   }
   // A document's title or alias can outrank all of its useful body sections.
   // Choose the reading start separately; root provenance is included elsewhere.
   for (const entry of scored.values()) {
     if (entry.direct?.type === 'Section' && !entry.direct.anchor?.heading_path?.length
-      && exactText(request.query) !== exactText(entry.direct.id)) {
+      && exactQuery !== exactText(entry.direct.id)) {
       entry.provenance = entry.direct;
       entry.direct = null;
     }
   }
   for (const section of sections) {
     if (section.type === 'Section' && !section.anchor?.heading_path?.length
-      && exactText(request.query) !== exactText(section.id)) continue;
+      && exactQuery !== exactText(section.id)) continue;
     const entry = scored.get(documentIdFor(section, documentsByPath));
     if (!entry) continue;
     const score = sectionScores.get(section.id) ?? 0;
@@ -1052,8 +1217,7 @@ function retrieve(options, args, snapshot, mode) {
   // ponytail: short topic queries use named concepts; long questions keep
   // lexical ranking so a broad name cannot displace their specific conditions.
   const namedQueryMatch = (doc) => !longQuery && doc.status !== 'index'
-    && [doc.label, ...(doc.aliases ?? [])]
-    .some((field) => tokens.includes(exactText(field)));
+    && entityText(doc).names.some((name) => tokens.includes(name));
   const roots = [...scored.values()].sort((a, b) => Number(b.metadataMatch) - Number(a.metadataMatch)
     || Number(namedQueryMatch(b.doc)) - Number(namedQueryMatch(a.doc))
     || b.score - a.score || a.doc.id.localeCompare(b.doc.id));
@@ -1089,8 +1253,7 @@ function retrieve(options, args, snapshot, mode) {
     };
     // The section explaining a link can be more useful than the peer's other text.
     // Rank that evidence before spending the bounded graph and response budgets.
-    const incident = relations.filter((relation) => {
-      if ((relation.subject !== id && relation.object !== id) || relation.verification !== 'source_confirmed' || relation.predicate === 'contains') return false;
+    const incident = relationsOf(id).filter((relation) => {
       const evidence = sectionsById.get(relation.evidence_unit_id);
       const subject = entitiesById.get(relation.subject);
       const object = entitiesById.get(relation.object);
@@ -1269,9 +1432,17 @@ function retrieve(options, args, snapshot, mode) {
       .filter((candidate) => candidate.item)
       .map((candidate) => ({ ...candidate, terms: [...sectionTerms.get(candidate.section.id)],
         coverage: conditionCoverage(sectionTerms.get(candidate.section.id)) }));
+    // A long question's incidental words make every unreturned term look like a new condition,
+    // so its sections rank by relevance instead: weighted terms over the section's length
+    // penalty, times its document's score. Returned terms are not discounted.
+    if (longQuery) for (const candidate of candidates) {
+      candidate.relevance = candidate.terms.reduce((total, token) => total + localWeights.get(token), 0)
+        / sectionPenalties.get(candidate.section.id) * (scored.get(candidate.doc.id)?.score ?? 0);
+    }
     // ponytail: six complementary sections in the bounded graph; semantic reranking needs a measured benefit.
     for (let added = 0; added < MAX_ROOTS && candidates.length > 0;) {
-      const gain = (candidate) => candidate.terms.reduce((total, token) => total + localWeights.get(token) / (1 + represented.get(token)), 0);
+      const gain = (candidate) => (longQuery ? candidate.relevance
+        : candidate.terms.reduce((total, token) => total + localWeights.get(token) / (1 + represented.get(token)), 0));
       const conditionGain = (candidate) => candidate.coverage.reduce((total, coverage, index) =>
         total + Math.max(0, coverage - representedConditions[index]), 0);
       candidates.sort((a, b) => conditionGain(b) - conditionGain(a) || gain(b) - gain(a)
@@ -1352,11 +1523,10 @@ function retrieve(options, args, snapshot, mode) {
   // Hints read the final evidence. Finalize cuts its text only for the hints counted
   // here, which a returned unit supports, and fits the others into the space left.
   if (concepts.length > 0) {
-    const sourceOf = new Map(entities.map((entity) => [entity.id, sourcePath(entity)]));
     hints = conceptHints(roots, relations, new Map(concepts.map((concept) => [concept.id, concept])), sectionsById, {
       evidenceIds: base.evidence_units.map((item) => item.id),
       tokens,
-      visibleUnit: (id) => inScope(sourceOf.get(id) ?? '', conceptScopes),
+      visibleUnit: (id) => inScope(sourceOf(id) ?? '', conceptScopes),
     });
     while (reserved < Math.min(MAX_RESERVED_HINTS, hints.length) && own(hints[reserved], 'evidence_unit_index')
       && byteLength({ concepts: hints.slice(0, reserved + 1) }) <= effectiveMaxBytes / 20) reserved += 1;

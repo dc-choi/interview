@@ -19,11 +19,21 @@ export function resolveRepo(repo) {
   return realpathSync(git(repo, ['rev-parse', '--show-toplevel']).toString().trim());
 }
 
+const isDirty = (repo) => git(repo, ['status', '--porcelain=v1', '-z', '--untracked-files=normal']).length > 0;
+
 export function getRepoState(repo) {
   return {
     revision: git(repo, ['rev-parse', '--verify', 'HEAD^{commit}']).toString().trim(),
-    dirty: git(repo, ['status', '--porcelain=v1', '-z', '--untracked-files=normal']).length > 0,
+    dirty: isDirty(repo),
   };
+}
+
+/** getRepoState plus resolveRepo's root, reading the root and HEAD in one rev-parse. */
+export function getRepoStateWithRoot(repo) {
+  const output = git(repo, ['rev-parse', '--show-toplevel', '--verify', 'HEAD^{commit}']).toString().trim();
+  const split = output.lastIndexOf('\n');
+  if (split < 0) throw new ContextError('source_unavailable', 'cannot read the requested Git source');
+  return { revision: output.slice(split + 1), dirty: isDirty(repo), root: realpathSync(output.slice(0, split).trim()) };
 }
 
 function checkRevision(revision) {

@@ -7,7 +7,7 @@ import { ContextError, DEFAULT_SCOPES, normalizeScopes } from './core.mjs';
 import { lookup, search } from './query.mjs';
 import { readEvidence, READ_LIMITS } from './read-evidence.mjs';
 import { outlineEvidence, OUTLINE_LIMITS } from './outline.mjs';
-import { getRepoState } from './repository.mjs';
+import { getRepoStateWithRoot } from './repository.mjs';
 import { buildSnapshot, defaultCacheDir, loadSnapshot } from './snapshot.mjs';
 
 export { DEFAULT_SCOPES } from './core.mjs';
@@ -80,12 +80,12 @@ export function createContextServer(options) {
   }, (args) => {
     try {
       assertArgumentSize(args);
-      const { snapshot } = ensureFreshSnapshot(settings);
+      const { snapshot, state } = ensureFreshSnapshot(settings);
       const payload = lookup({
         repo: settings.repo,
         cacheDir: settings.cacheDir,
         allowlist: settings.allowlist,
-      }, args, snapshot);
+      }, args, snapshot, state);
       return payloadResult(payload);
     } catch (error) {
       return errorResult(error);
@@ -104,12 +104,12 @@ export function createContextServer(options) {
   }, (args) => {
     try {
       assertSearchArgumentSize(args);
-      const { snapshot } = ensureFreshSnapshot(settings);
+      const { snapshot, state } = ensureFreshSnapshot(settings);
       const payload = search({
         repo: settings.repo,
         cacheDir: settings.cacheDir,
         allowlist: settings.allowlist,
-      }, args, snapshot);
+      }, args, snapshot, state);
       return payloadResult(payload);
     } catch (error) {
       return errorResult(error);
@@ -124,12 +124,12 @@ export function createContextServer(options) {
   }, (args) => {
     try {
       assertArgumentSize(args, CONCEPT_LIMITS.maxArgumentBytes);
-      const { snapshot } = ensureFreshSnapshot(settings);
+      const { snapshot, state } = ensureFreshSnapshot(settings);
       return payloadResult(conceptQuery({
         repo: settings.repo,
         cacheDir: settings.cacheDir,
         allowlist: settings.allowlist,
-      }, args, snapshot));
+      }, args, snapshot, state));
     } catch (error) {
       return errorResult(error);
     }
@@ -143,12 +143,12 @@ export function createContextServer(options) {
   }, (args) => {
     try {
       assertArgumentSize(args, READ_LIMITS.maxArgumentBytes);
-      const { snapshot } = ensureFreshSnapshot(settings);
+      const { snapshot, state } = ensureFreshSnapshot(settings);
       return payloadResult(readEvidence({
         repo: settings.repo,
         cacheDir: settings.cacheDir,
         allowlist: settings.allowlist,
-      }, args, snapshot));
+      }, args, snapshot, state));
     } catch (error) {
       return errorResult(error);
     }
@@ -162,12 +162,12 @@ export function createContextServer(options) {
   }, (args) => {
     try {
       assertArgumentSize(args, OUTLINE_LIMITS.maxArgumentBytes);
-      const { snapshot } = ensureFreshSnapshot(settings);
+      const { snapshot, state } = ensureFreshSnapshot(settings);
       return payloadResult(outlineEvidence({
         repo: settings.repo,
         cacheDir: settings.cacheDir,
         allowlist: settings.allowlist,
-      }, args, snapshot));
+      }, args, snapshot, state));
     } catch (error) {
       return errorResult(error);
     }
@@ -188,16 +188,17 @@ export async function serveMcp(options) {
 /**
  * Uses an active verified snapshot when it matches HEAD. A dirty worktree may
  * continue to serve an existing clean snapshot, but cannot create one unless
- * the caller opted into the pinned HEAD mode.
+ * the caller opted into the pinned HEAD mode. The returned state is this
+ * request's repository check, for the query to report instead of checking again.
  */
 export function ensureFreshSnapshot(options) {
   const settings = normalizeSettings(options);
-  const state = getRepoState(settings.repo);
+  const { root, ...state } = getRepoStateWithRoot(settings.repo);
   let snapshot;
   let missing;
 
   try {
-    snapshot = loadSnapshot({ repo: settings.repo, cacheDir: settings.cacheDir });
+    snapshot = loadSnapshot({ repo: settings.repo, cacheDir: settings.cacheDir }, root);
   } catch (error) {
     if (!isMissingSnapshot(error)) throw error;
     missing = error.code;
@@ -227,7 +228,8 @@ export function ensureFreshSnapshot(options) {
     scopes: settings.scopes,
     committedOnly: settings.committedOnly,
   });
-  return { state, snapshot: loaded, summary, refreshed: true, dirty: Boolean(state.dirty) };
+  // A rebuild can take seconds, so the query checks the repository again, as before.
+  return { snapshot: loaded, summary, refreshed: true, dirty: Boolean(state.dirty) };
 }
 
 export function payloadResult(payload) {

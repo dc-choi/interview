@@ -98,7 +98,7 @@ function payload(document, sections, offset, total, request, sync) {
 }
 
 /** Lists source-backed section receipts for one immutable document without reading excerpts. */
-export function outlineEvidence(options, args, snapshot) {
+export function outlineEvidence(options, args, snapshot, state) {
   const allowlist = validateOptions(options);
   const request = validateArgs(args);
   snapshot ??= loadSnapshot({ repo: options.repo, cacheDir: options.cacheDir });
@@ -118,7 +118,7 @@ export function outlineEvidence(options, args, snapshot) {
   sections.sort((a, b) => a.anchor.start_byte - b.anchor.start_byte || a.id.localeCompare(b.id));
   if (request.offset > sections.length) fail('invalid_offset_sections');
   request.effectiveMaxBytes = Math.min(request.requestedMaxBytes, OUTLINE_LIMITS.serverMaxBytes);
-  const sync = indexSync(manifest, getRepoState(options.repo));
+  const sync = indexSync(manifest, state ?? getRepoState(options.repo));
   const fit = (items) => {
     const candidate = payload(document, items, request.offset, sections.length, request, sync);
     const used = outputBytes(candidate);

@@ -289,3 +289,13 @@ test('a relation assertion outside the allowlist neither hints its concepts nor 
   assert.deepEqual(visible.concepts.map((item) => [item.id.split(':').at(-1), item.evidence_unit_index]),
     [['poison-message', 0], ['dead-letter', 0]]);
 });
+
+test('lookups with one request scope but different allowlists keep their own concept scopes', (t) => {
+  const options = fixture(t, deadLetterFiles([
+    '  - {id: retry-policy, type: Approach, label: Retry Policy, evidence: "[[Queue#Retry]]"}']));
+  // Both read tech/ only; the concept declared under ontology/ is visible to the second allowlist alone.
+  const args = { query: 'poison messages', scope: ['tech'], max_bytes: 24000 };
+  assert.equal(Object.hasOwn(lookup({ ...options, allowlist: ['tech'] }, args), 'concepts'), false);
+  assert.deepEqual(lookup({ ...options, allowlist: ['ontology', 'tech'] }, args).concepts,
+    [{ id: 'concept:interview-vault:retry-policy', type: 'Approach', label: 'Retry Policy' }]);
+});

@@ -1,6 +1,6 @@
 import assert from 'node:assert/strict';
 import { execFileSync } from 'node:child_process';
-import { mkdirSync, mkdtempSync, rmSync, writeFileSync } from 'node:fs';
+import { mkdirSync, mkdtempSync, renameSync, rmSync, symlinkSync, writeFileSync } from 'node:fs';
 import { tmpdir } from 'node:os';
 import { dirname, join } from 'node:path';
 import test from 'node:test';
@@ -448,6 +448,82 @@ test('lookup can finish from a pinned snapshot after another build replaces the 
   assert.ok(result.evidence_units.some((unit) => unit.excerpt.includes('aliases: [이벤트 발행]')));
 });
 
+test('body text kept from one revision is not reused for another', async (t) => {
+  const { repo, cacheDir } = await fixture(t);
+  const options = { repo, cacheDir, allowlist: ['tech'] };
+  const args = { query: '재시도 멱등성', max_bytes: 65536 };
+  const pinned = loadSnapshot(options);
+  const before = lookup(options, args, pinned);
+  assert.ok(before.evidence_units.some((unit) => unit.excerpt.includes('멱등성 검토')));
+
+  writeFileSync(join(repo, 'tech', 'event.md'), '# 이벤트 발행\n\n## 재시도\n\n재시도 간격은 지수 백오프로 늘린다.\n');
+  git(repo, ['commit', '-qam', 'rewrite event']);
+  const { snapshot } = buildSnapshot({ repo, cacheDir, scopes: ['tech'] });
+  const after = lookup(options, args, snapshot);
+  assert.ok(after.evidence_units.some((unit) => unit.excerpt.includes('지수 백오프')));
+  assert.ok(after.evidence_units.every((unit) => !unit.excerpt.includes('멱등성 검토')));
+
+  assert.deepEqual(lookup(options, args, pinned).evidence_units, before.evidence_units);
+});
+
+test('indexes kept between lookups follow the records of each snapshot', async (t) => {
+  const { repo, cacheDir } = await fixture(t);
+  const options = { repo, cacheDir, allowlist: ['tech'] };
+  const args = { query: '이벤트 발행', max_bytes: 65536 };
+  const snapshot = loadSnapshot(options);
+  const withoutTarget = snapshot.entities.filter((entity) => entity.source_uri !== 'tech/target.md');
+  assert.equal(lookup(options, args, snapshot).relations.length, 1);
+  assert.equal(lookup(options, args, { ...snapshot, relations: [] }).relations.length, 0);
+  assert.equal(lookup(options, args, { ...snapshot, entities: withoutTarget }).relations.length, 0);
+  assert.equal(lookup(options, args, snapshot).relations.length, 1);
+});
+
+test('a search after a wider one on the same records keeps the narrower request scope', async (t) => {
+  const { repo, cacheDir } = await fixtureWithFiles(t, [
+    ['tech/a/One.md', '# One\n\n## Detail\n\nThe shared needle sits in a.\n'],
+    ['tech/b/Two.md', '# Two\n\n## Detail\n\nThe shared needle sits in b.\n'],
+  ]);
+  const options = { repo, cacheDir, allowlist: ['tech'] };
+  const snapshot = loadSnapshot(options);
+  const paths = (scope) => search(options, { query: 'shared needle', scope }, snapshot).candidates.map((item) => item.source_uri);
+  assert.deepEqual(paths(['tech']).sort(), ['tech/a/One.md', 'tech/b/Two.md']);
+  assert.deepEqual(paths(['tech/a']), ['tech/a/One.md']);
+});
+
+test('a warm cache still rejects a document or its directory replaced by a symlink', async (t) => {
+  const { repo, cacheDir } = await fixture(t);
+  const options = { repo, cacheDir, allowlist: ['tech'] };
+  const snapshot = loadSnapshot(options);
+  // The two-term query scans every body; the one-term exact title reads only its document.
+  const calls = ['재시도 멱등성', 'Target'].flatMap((query) => [
+    () => lookup(options, { query }, snapshot), () => search(options, { query }, snapshot)]);
+  const rejected = () => calls.forEach((call) => assert.throws(call, (error) => error.code === 'symlink_path'));
+  for (const call of calls) call();
+  const target = join(repo, 'tech', 'target.md');
+  const outside = join(repo, '..', 'outside.md');
+  writeFileSync(outside, '# Target\n\n## 소비자\n\n바깥 본문\n');
+  rmSync(target);
+  symlinkSync(outside, target);
+  rejected();
+  rmSync(target);
+  git(repo, ['checkout', '--', 'tech/target.md']);
+  for (const call of calls) call();
+  renameSync(join(repo, 'tech'), join(repo, 'tech-real'));
+  symlinkSync('tech-real', join(repo, 'tech'));
+  rejected();
+});
+
+test('two Documents on one path fail the document count even when their text is cached', async (t) => {
+  const { repo, cacheDir } = await fixture(t);
+  const options = { repo, cacheDir, allowlist: ['tech'] };
+  const snapshot = loadSnapshot(options);
+  const args = { query: '재시도 멱등성' };
+  lookup(options, args, snapshot);
+  const document = snapshot.entities.find((entity) => entity.type === 'Document');
+  const duplicated = { ...snapshot, entities: [...snapshot.entities, { ...document, id: `${document.id}-copy` }] };
+  assert.throws(() => lookup(options, args, duplicated), (error) => error.code === 'source_unavailable');
+});
+
 test('lookup rejects a budget that cannot carry required metadata', async (t) => {
   const { repo, cacheDir } = await fixture(t);
   assert.throws(
@@ -671,6 +747,82 @@ test('lookup selects complementary conditions before repetitive navigation consu
   }
   assert.equal(Buffer.byteLength(JSON.stringify(linked)), linked.budget.used_bytes);
   assert.ok(linked.budget.used_bytes <= 8000);
+});
+
+// Eight terms make a long question. Its complementary sections are appended in the order chosen.
+const longQuestion = 'alpha bravo charlie delta echo foxtrot golf hotel';
+const start = '## Start\n\nalpha bravo charlie delta echo foxtrot. alpha bravo charlie delta echo foxtrot.\n\n';
+const pickOrder = (result) => result.evidence_units.map((unit) => `${unit.source_uri.slice(5, -3)}/${unit.anchor.heading_path.at(-1)}`);
+
+const topAndSide = [
+  ['tech/Main.md', `# Main\n\n${start}## Depth\n\nalpha again.\n`],
+  ['tech/Side.md', '# Side\n\n## Start\n\ngolf golf\n\n## Aside\n\nhotel here.\n'],
+];
+
+test('a long question takes a relevant section of its top document before an unreturned term elsewhere', async (t) => {
+  const options = { ...await fixtureWithFiles(t, topAndSide), allowlist: ['tech'] };
+  // Main's higher score keeps Main/Depth first. The short-question order, which discounts alpha
+  // already returned by Main/Start and has no document score, puts Side/Aside and its new term first.
+  assert.deepEqual(pickOrder(lookup(options, { query: longQuestion, max_bytes: 24000 })),
+    ['Main/Start', 'Side/Start', 'Main/Depth', 'Side/Aside']);
+});
+
+test('a question under eight terms keeps discounting terms its returned sections already hold', async (t) => {
+  const options = { ...await fixtureWithFiles(t, topAndSide), allowlist: ['tech'] };
+  // Seven terms: alpha, returned by Main/Start, is discounted, so Side/Aside comes first.
+  assert.deepEqual(pickOrder(lookup(options, { query: 'alpha bravo charlie delta echo golf hotel', max_bytes: 24000 })),
+    ['Main/Start', 'Side/Start', 'Side/Aside', 'Main/Depth']);
+});
+
+test('a Korean particle after a Latin term does not hide the term', async (t) => {
+  const options = { ...await fixtureWithFiles(t, [
+    ['tech/Cdc.md', '# Cdc\n\n## Note\n\nCDC 운영 기록\n'],
+    ['tech/Flow.md', '# Flow\n\n## Note\n\n변경 흘려보내기\n'],
+    ['tech/Lg.md', '# Lg\n\n## Note\n\nLG전자 사례\n'],
+    ['tech/Algo.md', '# Algo\n\n## Note\n\nalgorithm 메모\n'],
+    ['tech/Loop.md', '# Loop\n\n## Note\n\n향상된 for문 순회\n'],
+    ['tech/Ten.md', '# Ten\n\n## Note\n\n10만 건 처리\n'],
+    ['tech/Items.md', '# Items\n\n## Note\n\n10 items\n'],
+  ]), allowlist: ['tech'] };
+  const found = (query) => search(options, { query, scope: ['tech'] }).candidates.map((item) => item.source_uri).sort();
+  // Read as one term, CDC로 matches no body and only Flow is found.
+  assert.deepEqual(found('CDC로 흘려보내기'), ['tech/Cdc.md', 'tech/Flow.md']);
+  // A tail that is not a particle stays: lg alone would also match algorithm, for is
+  // a stopword that would leave no term at all, and 10 alone would match 10 items.
+  assert.deepEqual(found('LG전자 사례'), ['tech/Lg.md']);
+  assert.deepEqual(found('for문'), ['tech/Loop.md']);
+  assert.deepEqual(found('10만'), ['tech/Ten.md']);
+});
+
+test('a long question does not discount a term its returned sections already hold', async (t) => {
+  const options = { ...await fixtureWithFiles(t, [
+    ['tech/Main.md', '# Main\n\n## Start\n\nalpha bravo charlie delta echo foxtrot golf.\n\n## A\n\nalpha here.\n\n## B\n\nhotel here.\n'],
+    // Its 출처 section is never a candidate, but makes hotel weigh less than alpha.
+    ['tech/Other.md', '# Other\n\n## 출처\n\nhotel\n'],
+  ]), allowlist: ['tech'] };
+  // A and B are equal-length sections of one document, so only term weights and the discount decide.
+  // Discounting alpha, already returned by Main/Start, would put B first.
+  assert.deepEqual(pickOrder(lookup(options, { query: longQuestion, max_bytes: 24000 })),
+    ['Main/Start', 'Main/A', 'Main/B']);
+});
+
+test('a long question prefers a concise complementary section over a longer one with more terms', async (t) => {
+  const options = { ...await fixtureWithFiles(t, [
+    ['tech/Main.md', `# Main\n\n${start}## Short\n\nalpha bravo.\n\n## Long\n\nalpha bravo charlie. ${'Unrelated historical observations. '.repeat(40)}\n`],
+  ]), allowlist: ['tech'] };
+  // Without the section length penalty, Long's third term would put it first.
+  assert.deepEqual(pickOrder(lookup(options, { query: longQuestion, max_bytes: 24000 })),
+    ['Main/Start', 'Main/Short', 'Main/Long']);
+});
+
+test('a long question takes a complementary section of the higher-scored document first', async (t) => {
+  const options = { ...await fixtureWithFiles(t, [
+    ['tech/Aaa.md', '# Aaa\n\n## Start\n\ngolf golf hotel hotel\n\n## Depth\n\nalpha bravo again.\n'],
+    ['tech/Zzz.md', `# Zzz\n\n${start}## Depth\n\nalpha bravo again.\n`],
+  ]), allowlist: ['tech'] };
+  // The two Depth sections are identical; without the document score the section ID puts Aaa first.
+  assert.deepEqual(pickOrder(lookup(options, { query: longQuestion, max_bytes: 24000 })),
+    ['Zzz/Start', 'Aaa/Start', 'Zzz/Depth', 'Aaa/Depth']);
 });
 
 test('a condition after the excerpt limit is returned whole or omitted when it cannot fit', async (t) => {

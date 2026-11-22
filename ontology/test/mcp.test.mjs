@@ -1,6 +1,7 @@
 import assert from 'node:assert/strict';
-import { execFileSync, spawnSync } from 'node:child_process';
+import childProcess, { execFileSync, spawnSync } from 'node:child_process';
 import { mkdtemp, mkdir, rm, writeFile } from 'node:fs/promises';
+import { syncBuiltinESMExports } from 'node:module';
 import os from 'node:os';
 import path from 'node:path';
 import test from 'node:test';
@@ -8,8 +9,10 @@ import { fileURLToPath } from 'node:url';
 
 import { Client } from '@modelcontextprotocol/sdk/client/index.js';
 import { StdioClientTransport } from '@modelcontextprotocol/sdk/client/stdio.js';
+import { InMemoryTransport } from '@modelcontextprotocol/sdk/inMemory.js';
 import { CallToolResultSchema, ListToolsResultSchema } from '@modelcontextprotocol/sdk/types.js';
 import { parseArguments } from '../src/cli.mjs';
+import { createContextServer } from '../src/server.mjs';
 
 const here = path.dirname(fileURLToPath(import.meta.url));
 const cli = path.resolve(here, '../src/cli.mjs');
@@ -131,6 +134,46 @@ test('committed-only MCP server can build and serve HEAD from a dirty worktree',
   assert.equal(result.structuredContent.result_status, 'ok');
   assert.ok(result.structuredContent.evidence_units.some((unit) => unit.source_uri === 'tech/Transactional-Outbox.md'));
   assert.doesNotMatch(JSON.stringify(result.structuredContent), /UNCOMMITTED PRIVATE TEXT/);
+});
+
+test('each MCP tool call checks the repository state once, and again on the next call', async (t) => {
+  const item = await fixture();
+  t.after(() => rm(item.root, { recursive: true, force: true }));
+  const server = createContextServer({ repo: item.repo, cacheDir: item.cache, allowlist: ['tech'], scopes: ['tech'] });
+  const [clientSide, serverSide] = InMemoryTransport.createLinkedPair();
+  await server.connect(serverSide);
+  const client = new Client({ name: 'context-ontology-test', version: '0.1.0' });
+  await client.connect(clientSide);
+  t.after(() => client.close());
+  const call = (name, args) => client.request({ method: 'tools/call', params: { name, arguments: args } }, CallToolResultSchema);
+  const found = (await call('context_lookup', { query: 'transactional outbox' })).structuredContent;
+  const unit = found.evidence_units[0];
+  const document = found.entities.find((entity) => entity.type === 'Document');
+  const run = childProcess.execFileSync;
+  const checks = [];
+  t.mock.method(childProcess, 'execFileSync', (file, args, ...rest) => {
+    if (file === 'git' && ['rev-parse', 'status'].includes(args[2])) checks.push(args.slice(2).join(' '));
+    return run(file, args, ...rest);
+  });
+  syncBuiltinESMExports();
+  t.after(() => { t.mock.restoreAll(); syncBuiltinESMExports(); });
+  for (const [name, args] of [
+    ['context_lookup', { query: 'transactional outbox' }],
+    ['context_search', { query: 'transactional outbox' }],
+    ['context_concept', { concept: 'outbox' }],
+    ['context_read', { evidence_unit_id: unit.id, source_revision: unit.source_revision, content_hash: unit.content_hash }],
+    ['context_outline', { document_id: document.id, source_revision: unit.source_revision }],
+  ]) {
+    checks.length = 0;
+    const result = await call(name, args);
+    assert.equal(result.isError, undefined, name);
+    assert.equal(result.structuredContent.index_sync[0].status, 'synced', name);
+    assert.deepEqual(checks, ['rev-parse --show-toplevel --verify HEAD^{commit}',
+      'status --porcelain=v1 -z --untracked-files=normal'], name);
+  }
+  await writeFile(path.join(item.repo, 'tech', 'Untracked.md'), '# Untracked\n');
+  const dirty = await call('context_lookup', { query: 'transactional outbox' });
+  assert.equal(dirty.structuredContent.index_sync[0].status, 'unindexed_worktree');
 });
 
 test('serve exits cleanly on stdin EOF without emitting a JSON representation of the server', async (t) => {

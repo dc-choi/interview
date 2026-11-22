@@ -226,7 +226,7 @@ export async function execute(options) {
   if (options.command === 'validate') return validateOntology({ repo: options.repo, staged: options.staged });
   if (options.command === 'candidates') return checkCandidates({ repo: options.repo, file: options.check });
   if (['lookup', 'search', 'read', 'outline', 'concept'].includes(options.command)) {
-    const { snapshot } = ensureFreshSnapshot({
+    const { snapshot, state } = ensureFreshSnapshot({
       repo: options.repo,
       cacheDir: options.cacheDir,
       scopes: options.allowlist,
@@ -241,13 +241,13 @@ export async function execute(options) {
       if (options.depth !== undefined) args.depth = options.depth;
       if (options.includeInferred !== undefined) args.include_inferred = options.includeInferred;
       if (options.maxBytes !== undefined) args.max_bytes = options.maxBytes;
-      return conceptQuery(readOptions, args, snapshot);
+      return conceptQuery(readOptions, args, snapshot, state);
     }
     if (options.command === 'outline') {
       const args = { document_id: options.documentId, source_revision: options.sourceRevision };
       if (options.offsetSections !== undefined) args.offset_sections = options.offsetSections;
       if (options.maxBytes !== undefined) args.max_bytes = options.maxBytes;
-      return outlineEvidence(readOptions, args, snapshot);
+      return outlineEvidence(readOptions, args, snapshot, state);
     }
     if (options.command === 'read') {
       const args = {
@@ -257,18 +257,18 @@ export async function execute(options) {
       };
       if (options.offsetBytes !== undefined) args.offset_bytes = options.offsetBytes;
       if (options.maxBytes !== undefined) args.max_bytes = options.maxBytes;
-      return readEvidence(readOptions, args, snapshot);
+      return readEvidence(readOptions, args, snapshot, state);
     }
     const args = { query: options.query, scope: options.scopes };
     if (options.command === 'search') {
       if (options.maxBytes !== undefined) args.max_bytes = options.maxBytes;
       if (options.cursor !== undefined) args.cursor = options.cursor;
-      return search(readOptions, args, snapshot);
+      return search(readOptions, args, snapshot, state);
     }
     if (options.depth !== undefined) args.depth = options.depth;
     if (options.conditions?.length) args.conditions = options.conditions;
     if (options.maxBytes !== undefined) args.max_bytes = options.maxBytes;
-    return lookup(readOptions, args, snapshot);
+    return lookup(readOptions, args, snapshot, state);
   }
   if (options.command === 'status') return status(options);
   if (options.command === 'serve') {

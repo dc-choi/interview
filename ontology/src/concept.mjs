@@ -80,7 +80,7 @@ function validateArgs(args) {
  * include_inferred, schema rules add query-time relations flagged inferred: true;
  * they are never written to the snapshot.
  */
-export function conceptQuery(options, args, snapshot) {
+export function conceptQuery(options, args, snapshot, state) {
   const allowlist = validateOptions(options);
   const request = validateArgs(args);
   snapshot ??= loadSnapshot({ repo: options.repo, cacheDir: options.cacheDir });
@@ -93,7 +93,7 @@ export function conceptQuery(options, args, snapshot) {
   const payload = {
     query: request.term,
     result_status: 'concept_not_found',
-    index_sync: indexSync({ ...manifest, fingerprint, manifest_hash: manifestHash }, getRepoState(options.repo),
+    index_sync: indexSync({ ...manifest, fingerprint, manifest_hash: manifestHash }, state ?? getRepoState(options.repo),
       scopes, [], scopes.length > 0),
     concept: null,
     candidates: [],

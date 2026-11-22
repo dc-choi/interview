@@ -169,7 +169,7 @@ function partialPageEnds(raw, offset, maximum) {
 /**
  * Read one immutable, source-backed evidence unit without rebuilding a snapshot.
  */
-export function readEvidence(options, args, snapshot) {
+export function readEvidence(options, args, snapshot, state) {
   const allowlist = validateOptions(options);
   const request = validateArgs(args);
   snapshot ??= loadSnapshot({ repo: options.repo, cacheDir: options.cacheDir });
@@ -192,7 +192,7 @@ export function readEvidence(options, args, snapshot) {
   if (request.offsetBytes > raw.length || !isUtf8Boundary(raw, request.offsetBytes)) fail('invalid_offset_bytes');
 
   request.effectiveMaxBytes = Math.min(request.requestedMaxBytes, READ_LIMITS.serverMaxBytes);
-  const sync = indexSync(manifest, getRepoState(options.repo));
+  const sync = indexSync(manifest, state ?? getRepoState(options.repo));
   const remaining = raw.length - request.offsetBytes;
   if (remaining <= request.effectiveMaxBytes) {
     const full = payloadFor(unit, manifest.revision, raw.subarray(request.offsetBytes).toString('utf8'), request.offsetBytes,
