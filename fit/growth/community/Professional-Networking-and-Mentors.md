@@ -30,6 +30,10 @@ aliases: ["Professional Networking", "외부 네트워킹", "멘토 확보", "�
 
 호기심과 도전을 지지하는 사람도 현실적인 반대 의견을 낼 수 있다. 근거 있는 비판을 야망을 꺾는 태도로 단정하지 않고, 반복적인 비하와 구분한다. 주변 몇 사람의 평균이 곧 자신의 수준이라는 말을 측정된 법칙으로 쓰거나 도움이 되지 않는다는 이유만으로 관계를 끊는 기준으로 삼지 않는다. 그래서 자신이 가장 부족한 사람인 모임에 일부러 들어가 보라는 조언은 배울 것이 많은 자리를 고르라는 뜻으로만 쓴다.
 
+이어 가고 싶은 관계는 가만히 두면 이어지지 않는다는 회고도 있다. 서른 무렵부터는 안부와 기념일을 챙기고 시간을 내는 쪽이 있어야 만남이 계속되고, 한쪽만 애쓰는 관계는 오래가기 어렵다는 것이다. 같은 회고는 남길 사람에게 집중하려면 어중간하게 쓰던 시간을 줄여야 한다고도 말한다. 위의 끊는 기준과 부딪치지 않게, 줄이는 것은 시간 배분이고 사람에 대한 평가가 아니라고 읽는다(이 문서의 해석).
+
+순서에 관한 경험칙도 있다. 잘나가는 사람과 가까워지려고 원하지 않는 자리를 끝까지 지켜도, 자신의 실력이 그 수준에 이르지 않았으면 도움이 오지 않고 기회가 와도 살리기 어렵다. 그 시간에 자기 일을 잘하게 되면 연락은 저쪽에서 먼저 오고, 관계를 고르고 챙기는 일은 그때 해도 늦지 않다는 것이다. 한 사람의 경험이며 분야와 시기에 따라 다를 수 있다. 주는 쪽이 먼저라는 원칙과 같은 방향이다.
+
 ## 오프라인 행사에서의 원칙
 
 - 첫 만남에서 승부를 보지 않는다. 호감 정도의 인상을 남기면 충분하고, 실질적인 대화는 이후 1:1이나 소규모 모임에서 이어진다.
@@ -99,6 +103,7 @@ aliases: ["Professional Networking", "외부 네트워킹", "멘토 확보", "�
 - [Sam Altman on Choosing Projects, Creating Value, and Finding Purpose — Y Combinator](https://www.ycombinator.com/blog/sam-altman-on-choosing-projects-creating-value-and-finding-purpose) — 2018-11-08, 2026-11-01 공식 전사 06:58~08:06, 18:35~19:15, 24:45~26:18 대조. 만남의 양과 관점 전환은 경험적 조언
 - [The days are long but the decades are short — Sam Altman](https://blog.samaltman.com/the-days-are-long-but-the-decades-are-short) — 2026-11-01 본문 1, 11, 19, 21항 대조. 관계와 친절의 가치를 설명하는 개인 조언이며 주변 사람의 영향에 관한 인과 연구는 아님
 - [30대에 안 바꾸면 40대에 진짜 후회하는 것들 | 시사 애니메이션 — 햄찌 교수](https://www.youtube.com/watch?v=5EQkjp9rOas) — 2025-12-24 업로드, 2026-11-17 음성 인식 전사 전체 확인. 조언자의 경험과 모임 선택에 관한 조언의 출처이며 근거를 제시하지 않는다
+- [내가 20대에 몰랐어서 후회하는 것들 7가지 — U-who's Piano and Song](https://www.youtube.com/watch?v=iHDHa6g2ERo) — 2026-04-27 업로드, 2026-11-22 음성 인식 전사 전체 확인. 관계 유지의 노력과 자기계발을 먼저 하라는 순서에 관한 개인 회고의 출처이며 근거를 제시하지 않는다
 - [오프라인 네트워킹 원칙 — Threads, careernomad_](https://www.threads.com/@careernomad_/post/DWniR-riMB0)
 - [멘토 확보 15단계 — Threads, careernomad_](https://www.threads.com/@careernomad_/post/DRej9msgU2w)
 - [멘토의 정의와 멘토링 태도 — Threads, monk_on_weekdays](https://www.threads.com/@monk_on_weekdays/post/DL4iPRzok-t)

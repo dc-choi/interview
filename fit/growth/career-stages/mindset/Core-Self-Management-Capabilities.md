@@ -40,6 +40,7 @@ aliases: ["Core Self-Management Capabilities", "자기 관리 핵심 역량 5가
 
 - 다섯 역량을 갖추면 성공하지 않기가 더 어렵다는 말은 동기 부여 문장이지 검증된 명제가 아니다. 성과에는 시장, 환경, 시기, 운 같은 통제 밖 변수가 크게 작용한다. 역량은 확률을 높이지 결과를 보장하지 않는다.
 - 도파민 통제라는 표현은 대중적인 비유다. 도파민은 쾌락 그 자체보다 보상 예측과 동기에 관여한다고 알려져 있으므로, 실천 단위에서는 주의와 자극 환경의 관리로 이해하는 편이 정확하다.
+- 짧은 영상을 종일 본 뒤 긴 영상과 책에 집중하기 어려워졌다는 보고는 개인 경험이다. 인과를 잰 근거는 이 문서에서 대조하지 않았다. 일 때문에 봐야 한다면 보는 시간을 정하고, 그 밖의 시간에는 긴 글과 긴 영상으로 채우는 방법이 제안된다(적용 후보).
 - 실행력을 강조하다 보면 메타인지 없이 속도만 내는 함정이 생긴다. 반대로 메타인지와 문해력만 키우면 계속 분석하며 시작하지 않는다. 두 쪽을 짝지어 점검한다.
 - 지속력은 소진과 구분해야 한다. 의미가 사라진 일을 버티는 것은 지속력이 아니라 번아웃의 신호일 수 있다([[Burnout-Sustainable-Pace|번아웃과 지속 가능한 페이스]]).
 
@@ -56,6 +57,7 @@ aliases: ["Core Self-Management Capabilities", "자기 관리 핵심 역량 5가
 
 - [성공하기 위해 가장 필요한 5가지 능력 — Threads, zzang_insight](https://www.threads.com/@zzang_insight/post/Dd2VIEmisk4)
 - [재직 중 독서, 업무 효율화와 사업 구상 루틴 — Threads, naturalistic.fallacy](https://www.threads.com/@naturalistic.fallacy/post/Dd-GCXNiodM) — 개인 경험 사례, 특정 출근 시각과 성과를 일반화하지 않음
+- [내가 20대에 몰랐어서 후회하는 것들 7가지 — YouTube, U-who's Piano and Song](https://www.youtube.com/watch?v=iHDHa6g2ERo) — 2026-04-27 업로드, 2026-11-22 음성 인식 전사 전체 확인. 짧은 영상과 집중에 관한 개인 경험의 출처이며 근거를 제시하지 않는다
 
 ## 관련 문서
 
@@ -68,3 +70,4 @@ aliases: ["Core Self-Management Capabilities", "자기 관리 핵심 역량 5가
 - [[Interview-Soft-Skills-Metacognition|인성면접 가이드, 메타인지]]
 - [[AI-Handicap-Learning|AI를 학습 난이도 조절 도구로 (접바둑 학습)]]
 - [[Intrinsic-vs-Extrinsic-Motivation|내재적 동기와 외재적 동기]]
+- [[Wholehearted-Effort|결과와 무관하게 전력을 다해 본 경험]]
