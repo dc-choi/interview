@@ -1,7 +1,7 @@
 ---
 tags: [palantir, foundry, security, authorization, governance]
 status: done
-verified_at: 2026-10-25
+verified_at: 2026-11-23
 category: "AI엔지니어링(AIEngineering)"
 aliases: ["Palantir 보안과 거버넌스", "Foundry Security"]
 ---
@@ -10,7 +10,7 @@ aliases: ["Palantir 보안과 거버넌스", "Foundry Security"]
 
 보안 모델은 누가 어떤 데이터와 행동에 접근할 수 있는지 정하고 집행하는 계약이다. 정책 작성, 읽기 시점 차단과 읽은 데이터의 후속 이용은 다른 경계다. 일반 접근 제어 개념은 [[Access-Control-Models|RBAC, ABAC와 정책 집행]]에서 다룬다.
 
-2026-10-16 공식 문서 대조 기준이며, Security overview에서 가져온 내용은 2026-10-25에 다시 대조했다. 실제 enrollment의 정책 설정, API 거부, 외부 전송과 감사 로그를 시험한 기록은 아니다.
+2026-10-16 공식 문서 대조 기준이며, Security overview에서 가져온 내용은 2026-11-23에 다시 대조했다. 실제 enrollment의 정책 설정, API 거부, 외부 전송과 감사 로그를 시험한 기록은 아니다.
 
 ## 플랫폼 통제와 고객 책임을 구분한다
 
@@ -18,7 +18,11 @@ Foundry는 인증과 인가, 암호화와 감사 등 플랫폼 보안 기능을 
 
 예를 들어 플랫폼의 암호화와 MFA 제공 여부, 사내 사용자의 올바른 그룹 배정 여부, 고객 앱의 로그에 민감 정보가 남는지는 각각 확인할 대상이다.
 
-Palantir는 감사 로그, SSO와 MFA 같은 핵심 보안 통제를 별도 등급이나 추가 구매 조건으로 묶지 않고 표준 제공에 포함한다고 밝힌다. 표준 범위로 든 항목은 모든 데이터의 전송 중과 저장 시 필수 암호화, SSO와 MFA를 포함한 인증과 신원 보호 통제, mandatory/discretionary 접근 제어를 포함한 인가 통제, 보안 감사 로그, 정보 거버넌스, 관리와 프라이버시 통제다. 관리형 SaaS 고객에게는 MFA를 수년째 필수로 적용해 왔고 zero trust와 심층 방어 구조, 네트워크 분리, 침입 탐지, WAF와 계층별 보안 모니터링 같은 hosted infrastructure 계층을 추가로 둔다고 설명한다. ([Security overview](https://www.palantir.com/docs/foundry/security/overview)) Self-hosted 설치에서 고객이 검토할 통제는 [[Palantir-Security-Identity-Resilience-and-Shared-Responsibility|Foundry identity, 복구와 공동 책임]]에서 다룬다.
+보안 모델은 신원을 확인하는 인증과 사용자의 속성과 권한으로 접근을 허용하는 인가를 함께 다룬다. Palantir는 이 모델의 성질로 네 가지를 든다. 권한을 받은 데이터에만 접근하게 하는 엄격한 집행, 필요한 수준까지 나눌 수 있는 세밀한 통제, 누가 어떤 자원에 왜 접근할 수 있는지 추론할 수 있는 투명성, 사용자가 접근 제어를 이해하고 관리할 수 있는 사용성이다. 위협 모델은 자원과 기술을 갖추고 끈질기게 공격하는 상대를 막는 데 맞춰져 있으며, 그래서 모든 고객에게 높은 최소 보안 기준을 강제한다고 설명한다. 관리형 SaaS 고객에게 MFA를 수년째 필수로 적용해 온 것이 그 예다. ([Security overview](https://www.palantir.com/docs/foundry/security/overview)) MFA는 Foundry의 앱 기반 2단계 인증이나 고객 IdP에서 수행될 수 있고, SSO 경로의 MFA 강제는 공동 책임 모델에서 고객 책임으로 분류된다. 따라서 SSO를 쓰는 환경에서는 IdP 설정까지 확인한다([[Palantir-Security-Identity-Resilience-and-Shared-Responsibility|Foundry identity, 복구와 공동 책임]]). ([Multi-factor authentication](https://www.palantir.com/docs/foundry/authentication/multi-factor-auth), [Shared responsibility](https://www.palantir.com/docs/foundry/security/shared-security-responsibility-model))
+
+네 성질은 공급자의 설명이다. 실제 enrollment에서 특정 사용자가 접근 권한을 갖는 근거를 설명할 수 있는지는 아래 실행 검증 표의 정의와 운영 단계처럼 설정, 진단과 감사 기록으로 확인한다(적용 해석).
+
+Palantir는 감사 로그, SSO와 MFA 같은 핵심 보안 통제를 별도 등급이나 추가 구매 조건으로 묶지 않고 표준 제공에 포함한다고 밝힌다. 표준 범위로 든 항목은 모든 데이터의 전송 중과 저장 시 필수 암호화, SSO와 MFA를 포함한 인증과 신원 보호 통제, mandatory/discretionary 접근 제어를 포함한 인가 통제, 보안 감사 로그, 정보 거버넌스, 관리와 프라이버시 통제다. 관리형 SaaS에는 zero trust와 심층 방어 구조, 네트워크 분리, 침입 탐지, WAF와 계층별 보안 모니터링 같은 hosted infrastructure 계층을 추가로 둔다고 설명한다. ([Security overview](https://www.palantir.com/docs/foundry/security/overview)) Self-hosted 설치에서 고객이 검토할 통제는 [[Palantir-Security-Identity-Resilience-and-Shared-Responsibility|Foundry identity, 복구와 공동 책임]]에서 다룬다.
 
 HIPAA, GDPR, ITAR 같은 프레임워크에 맞춰 여러 산업과 지역의 규제 요건을 충족한다는 문장은 공급자의 설명이다. SafeBase Trust Center의 보안 백서, 정책, 침투 테스트 보고서, 준수 정보와 인증(SOC, ISO 등) 자료는 공급자 측 통제를 검토할 때 요청해 확인할 근거이며, NDA를 맺은 기존/잠재 고객은 추가 비공개 자료를 요청할 수 있다. 이런 근거와 제품 설명은 고객 workflow의 규제 준수나 실제 enrollment의 설정과 집행을 확인한 결과를 대신하지 않는다. ([Security overview](https://www.palantir.com/docs/foundry/security/overview))
 
@@ -46,7 +50,7 @@ Object type, link type과 action type은 스키마 자원이고, 실제 primary 
 
 Mandatory controls에는 markings, Classification-based Access Controls(CBAC)와 organization 경계가 있다. 이들은 데이터의 파생 흐름에 따라 전파된다. Discretionary controls에는 자원별 role과 restricted view, object/property 정책의 세부 행/열 필터가 있다. 두 통제의 차이는 필터 정밀도만이 아니라 읽은 뒤에도 제약이 이어지는지에 있다. ([Security overview](https://www.palantir.com/docs/foundry/security/overview))
 
-Organization은 Project에 적용되어 사용자와 자원을 묶은 그룹끼리 엄격히 분리하는 mandatory control이며, 공유를 명시적으로 구성하지 않으면 한 Organization의 사용자는 다른 Organization의 자원에 접근할 수 없다. PII나 재무 민감 데이터처럼 특별한 보호가 필요한 데이터와 자원에 붙는 marking은 Organization membership에 더해 별도 권한을 요구한다. 같은 Organization 소속만으로 discover나 access 가능 여부를 판단하지 않으며, guest와 cross-Org 공유의 세부 조건은 [[Palantir-Security-Projects-Roles-and-Collaboration|Foundry Project, role과 조직 경계]]에서 다룬다. ([Security overview](https://www.palantir.com/docs/foundry/security/overview))
+데이터와 자원은 Project에 담기고, 사용자는 Organization에 속하며 플랫폼 안에서 관리하거나 외부 identity provider로 관리하는 group으로 묶인다. Organization은 Project에 적용되어 사용자와 자원을 묶은 그룹끼리 엄격히 분리하는 mandatory control이며, 공유를 명시적으로 구성하지 않으면 한 Organization의 사용자는 다른 Organization의 자원에 접근할 수 없다. PII나 재무 민감 데이터처럼 특별한 보호가 필요한 데이터와 자원에 붙는 marking은 Organization membership에 더해 별도 권한을 요구한다. 같은 Organization 소속만으로 discover나 access 가능 여부를 판단하지 않으며, guest와 cross-Org 공유의 세부 조건은 [[Palantir-Security-Projects-Roles-and-Collaboration|Foundry Project, role과 조직 경계]]에서 다룬다. ([Security overview](https://www.palantir.com/docs/foundry/security/overview))
 
 세부 행/열 정책은 실행 사용자가 읽는 범위를 필터링하지만 그 정책이 반환 payload와 함께 전파되지는 않는다. 함수 반환, Action의 목적지 쓰기, OSDK 응답, AIP Logic 모델 문맥과 내보내기에 원래 행/열 정책이 자동으로 붙는다고 가정하지 않는다. 목적지와 후속 경로의 통제를 별도로 설계한다. 같은 정책 안의 mandatory/CBAC 통제는 세부 필터와 구별한다. ([Access control propagation](https://www.palantir.com/docs/foundry/security/access-control-propagation), [Manage object security](https://www.palantir.com/docs/foundry/object-permissioning/managing-object-security))
 
@@ -89,6 +93,7 @@ Ontology Manager의 policy test는 user/object를 골라 property visibility를 
 
 - [Palantir, Security and governance](https://www.palantir.com/docs/foundry/security/overview)
 - [Palantir, Shared security responsibility model](https://www.palantir.com/docs/foundry/security/shared-security-responsibility-model)
+- [Palantir, Multi-factor authentication](https://www.palantir.com/docs/foundry/authentication/multi-factor-auth)
 - [Palantir, Object permissioning](https://www.palantir.com/docs/foundry/object-permissioning/overview)
 - [Palantir, Ontology permissions](https://www.palantir.com/docs/foundry/object-permissioning/ontology-permissions)
 - [Palantir, Access control propagation](https://www.palantir.com/docs/foundry/security/access-control-propagation)
