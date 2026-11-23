@@ -18,6 +18,8 @@ aliases: ["Product Strategy", "제품 전략"]
 
 ## 역할과 관련 주제
 
+- [[Domain-Expertise-Automation-Business|도메인 전문성을 업무 자동화 사업으로 바꾸는 경로]] — 범용 AI가 알기 어려운 지식 층위, 내 업무 자동화에서 같은 업종 구축, 업종별 SaaS와 성과 기반 과금으로 이어지는 단계, 업종별 자동화 후보와 직접 만든 유료 서비스의 보안 책임
+
 - [[Founder-Background-and-Capability-Gaps|창업자 배경과 역량 공백]] — 고객 접점, 구현 도구, 유통과 운영의 남은 과제, 단독 창업의 판단과 지지 공백, 공동창업자 선택과 결정 방식, 지분 논의 전 시험 협업 사례
 
 - [[Solo-Game-Scope-and-Asset-Budget|1인 게임의 범위와 에셋 예산]] — 대표 장면, 자산 재사용과 적용 비용, 번들 구성과 라이선스 표기 충돌, AI가 넓히는 제작 기회와 결과 검증
