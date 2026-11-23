@@ -37,6 +37,7 @@ aliases: ["금융시장(Financial Markets)", "Financial Markets Map"]
 - [[Stocks|주식]] — 지분과 잔여청구권, 배당과 시세차익, 실적과 기대의 차이, PER, 리서치 등급과 이해상충, 지배주주와 소수주주 보호, GICS와 투자 테마의 구분 ✅
 - [[Bonds|채권]] — 금리와 가격, 쿠폰금리와 수익률의 차이, 듀레이션, 신용스프레드와 재투자 위험, 투자등급 경계의 강등과 지수 편출 ✅
 - [[Gold-Price-Drivers|금 가격의 결정 요인]] — 실질금리, 물가 기대, 중앙은행 수요와 준비자산 비중, 원화 환산, 국내 프리미엄과 매장량 해석 ✅
+- [[ETF-Creation-Redemption-and-Arbitrage|ETF 설정, 환매와 차익거래]] — 미국 SEC 기준의 유통시장과 발행시장, AP(authorized participant)의 creation unit과 바스켓, 할인과 할증의 차익거래, 장중 추정 가치와 괴리가 남는 조건 ✅
 
 ### 3. 위험
 - [[Risk-and-Return|위험과 수익]] — 위험의 종류, 총수익률과 CAGR, 입출금의 처리, 분산과 베타 ✅
