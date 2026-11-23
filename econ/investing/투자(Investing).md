@@ -31,6 +31,7 @@ aliases: ["투자(Investing)", "Investing Map"]
 - [[Bitcoin-Halving-and-Holding-Routes|비트코인의 반감기와 보유 경로]] — 210,000블록 반감 규칙과 2,100만 개 상한, 4년 주기설의 표본 한계, 거래소 위탁과 자기 보관과 현물 ETP의 위험 구분 ✅
 
 - [[AI-Company-Valuation-and-Funding|AI 기업가치와 자금 조달]] — 인식 매출과 run-rate, 순손실과 현금소진, 유출 자료와 평가 의견
+- [[Key-Person-Risk|핵심 인물 위험과 경영진 교체]] — 위험요인 공시의 의존 범위, 운영과 판단의 연속성, 주가 하락과 예상 이익, 보유와 신규 매수 판단의 구분
 - [[Vendor-Financing-and-Earnings-Quality|벤더 파이낸싱과 이익의 질 점검]] — 고객 금융과 보증의 손실 경로, 2000년 전후 통신 장비사 공시, AI 인프라의 의향서와 보증, DSO 정의 차이와 공시 점검 항목
 
 ### 3. 실행과 심리
