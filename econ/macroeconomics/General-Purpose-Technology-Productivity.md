@@ -143,6 +143,7 @@ EBS 10강에서 제시한 약 5년의 AI 보완 투자 기간과 2030년 생산�
 - [[AI-Capability-and-Cost-Trends|AI 능력과 비용 추세 읽기]]
 - [[AI-Infrastructure-Capital-Cycle|AI 인프라 투자와 자본 순환]] — 공급 측 투자와 현금 회수
 - [[Inflation|인플레이션과 디플레이션]] — AI의 생산성 효과와 투자 수요의 구분
+- [[Baumol-Cost-Disease|보몰의 비용병과 병목으로 흐르는 지출]] — 생산성이 정체된 서비스의 상대가격과 AI 활용 측 병목
 - [[AX-Transformation|AX 조직 전환]] — 조직 단위의 승인 대기와 핸드오프 병목
 - [[National-Transfer-Accounts|국민이전계정과 생애주기 적자]] — 근로소득이 없는 기간의 재원
 - [[Unemployment-Employment|실업과 고용]] — 자동화의 과업 대체와 복원 효과

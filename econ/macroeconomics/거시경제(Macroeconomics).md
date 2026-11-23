@@ -18,6 +18,7 @@ aliases: ["거시경제(Macroeconomics)", "Macroeconomics Map"]
 ### 1. 생산과 성장
 - [[GDP-Economic-Growth|GDP와 경제성장]] — 국내총생산, 명목 vs 실질, 실질 GDI와 교역조건, 성장률, 잠재성장률, 복리의 힘, 분모별 성장률과 일본 저성장의 인구 구조와 생산성 경로 ✅
 - [[General-Purpose-Technology-Productivity|범용 기술의 생산성 지연과 J커브]] — 생산성 역설, 전기화의 group drive와 unit drive, 무형 보완 투자와 측정 오차, 기술 기업과 나머지 기업의 AI 투자 성과, GDP-B와 WTA, 가치 창출과 회수 및 분배, 생산성 향상이 임금과 여가로 바뀌는 경로 ✅
+- [[Baumol-Cost-Disease|보몰의 비용병과 병목으로 흐르는 지출]] — 진보와 비진보 부문의 임금 연동, 노동 집약 서비스의 상대가격 상승, CPI 상대 중요도와 생활비 구성, AI 도입의 면허, 지불 제도와 채택 병목 ✅
 
 ### 2. 물가
 - [[Inflation|인플레이션과 디플레이션]] — 물가 수준과 상승률, 디스인플레이션, CPI, 실질수익률과 위험 ✅
