@@ -71,4 +71,5 @@ Intel은 2024-01-24 뉴멕시코 Rio Rancho의 Fab 9 개장을 발표했고, Fab
 - [[GPU-Server-Infrastructure|GPU 서버 인프라]]
 - [[Package-Substrate-Supply|패키지 기판과 공급 병목]]
 - [[GPU-Inference-Hardware|추론용 GPU 선택]]
+- [[Semiconductor-Foundry-Selection|파운드리 선택과 전환 비용]]
 - [[인프라&클라우드(Infrastructure&Cloud)|인프라와 클라우드 지도]]

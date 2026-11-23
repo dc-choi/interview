@@ -15,6 +15,7 @@ aliases: ["CS Computer Architecture", "컴퓨터 구조", "논리회로와 CPU"]
 - [x] [[Sequential-Logic-and-Memory|순차 논리회로와 메모리 (래치, 플립플롭, 레지스터, RAM)]]
 - [x] [[HBM-Stack-and-Base-Die|HBM 적층과 베이스 다이]] — 저장층과 로직층, 용량과 대역폭, 맞춤형 컨트롤러와 PHY
 - [x] [[DRAM-Cell-and-3D-DRAM|DRAM 셀과 3D DRAM]] — 1T1C 셀과 주변 회로, 로직 공정의 적용 범위, 셀과 주변 회로의 분리 접합, 셀 적층과 HBM의 차이
+- [x] [[Semiconductor-Foundry-Selection|파운드리 선택: 수율, 설계 생태계와 전환 비용]] — 팹리스와 파운드리, 수율과 다이 크기, PDK와 EDA와 IP, 듀얼 파운드리의 재설계와 재검증
 - [x] [[CPU-Datapath-Control-and-Instruction-Cycle|CPU 데이터패스와 명령어 사이클 (제어장치, ISA, 어셈블리)]]
 - [x] [[CPU-Datapath-Control-and-Instruction-Cycle-Programs|교육용 CPU 제어 신호와 반복 산술 프로그램]]
 
