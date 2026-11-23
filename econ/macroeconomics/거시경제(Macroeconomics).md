@@ -41,6 +41,7 @@ aliases: ["거시경제(Macroeconomics)", "Macroeconomics Map"]
 - [[Business-Cycle|경기순환]] — 경기침체와 GDP 갭의 구분, PMI 해석, 버블과 금융위기, 기술 투자 붐의 버블 논쟁을 나눠 읽는 질문 ✅
 - [[Exchange-Rates-Balance-of-Payments|환율과 국제수지]] — 금리 결정과 시장 기대, 환율 결정, 국제수지, 트릴레마, 달러 패권 ✅
 - [[Dollar-International-Role-Indicators|달러의 국제적 역할을 읽는 지표]] — 외환보유액 통화 구성(COFER)과 평가효과, BIS 외환거래 비중과 200% 합계, 통화 가치 희석 서사를 점검하는 순서 ✅
+- [[China-Competition-Export-Manufacturing|고객에서 경쟁자로: 중국 경쟁과 수출 제조업]] — 수입 대체, 제3시장 경쟁과 자국 시장 수입 경쟁의 구분, 독일의 대중국 수출 감소와 점유율 손실, 태양광 생산능력 집중, 에너지 비용 충격과 EU 전기차 상계관세 ✅
 
 ## 처음 읽는 순서 추천
 
