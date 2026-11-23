@@ -189,3 +189,4 @@ SQL/PGQ는 ISO SQL 표준의 속성 그래프 질의 부분이며, Oracle AI Dat
 - [[DDD|DDD]]
 - [[IoT-Edge-Cloud-Pipeline#설비 관계 조회와 원인 판단을 구분한다|설비 관계 그래프와 원인 판단]]
 - [[Agent-Graph-Engineering|그래프 엔지니어링 (에이전트 실행 흐름 그래프)]]
+- [[AI-Command-and-Control-Targeting|AI 기반 지휘통제와 표적처리 (전출처 정보 융합과 온톨로지 기반 결심 지원)]]

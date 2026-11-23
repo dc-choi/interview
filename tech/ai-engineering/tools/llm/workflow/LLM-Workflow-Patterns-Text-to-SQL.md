@@ -173,3 +173,4 @@ Databricks Genie Agent는 SQL과 파일 분석에 MCP connector의 외부 자료
 - [[Production-Agent-Architecture|프로덕션 에이전트 아키텍처]] — 에이전트 위임의 신뢰 설계, 운영 루프
 - [[Ontology-Knowledge-Graph|온톨로지와 지식 그래프]] — 흩어진 정의를 한곳에 두는 의미 모델
 - [[Agent-Ready-Data|에이전트용 데이터 준비]] — 지표 정의를 코드로 공유하는 시맨틱 뷰
+- [[Semantic-Layer|시맨틱 레이어]] — 정의를 질의 경로에서 강제하는 계층과 SQL 생성을 엔진에 맡기는 방식

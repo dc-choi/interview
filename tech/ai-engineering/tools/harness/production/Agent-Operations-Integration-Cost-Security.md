@@ -163,6 +163,7 @@ MCP 서버는 자기 코드, 키와 취약점을 가진 추상화 계층이다. 
 - [[Agent-Operations-Foundations|에이전트 운영 기반]]
 - [[Bedrock-AgentCore-Operations|Bedrock AgentCore 운영 경계]]
 - [[Agent-Governance-Controls|에이전트 거버넌스 통제]]
+- [[Agent-Identity-and-Execution-Authority|에이전트 신원과 실행 권한]] — 사용자와 에이전트를 함께 담는 권한증과 접근 통제의 다섯 질문
 - [[Generative-AI-Multi-Tenancy|생성형 AI 멀티테넌시]]
 - [[LLM-Cost-Optimization|LLM 비용 최적화]]
 - [[LLM-Prompt-Caching|프롬프트 캐싱]]

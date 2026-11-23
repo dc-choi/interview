@@ -154,3 +154,4 @@ downstream 자격 증명은 네 방식으로 나눠 볼 수 있다.
 - [[LLM-Application-Security|LLM 애플리케이션 보안]]
 - [[Context-Engineering|컨텍스트 엔지니어링]]
 - [[Claude-Code-Extension-Reference|Claude Code 확장 메커니즘]]
+- [[Agent-Identity-and-Execution-Authority|에이전트 신원과 실행 권한]] — 에이전트 등록, 자원별 권한 범위와 승인 정책

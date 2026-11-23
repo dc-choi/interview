@@ -89,3 +89,4 @@ aliases: ["Outbound Voice Agent Scenario Design", "아웃바운드 음성 에이
 - [[Realtime-Voice-Architecture|실시간 음성 에이전트의 대화와 작업 분리]]
 - [[LLM-Workflow-Patterns-Chain-vs-Agent|체인과 에이전트]]
 - [[LLM-Failure-Handling-Recovery|실패 처리와 멱등성]]
+- [[Contact-Center-AI-Agent|고객상담 AI 에이전트]] — 사고 접수 뒤 아웃바운드의 본인 확인, 동의 기록과 실패 경로

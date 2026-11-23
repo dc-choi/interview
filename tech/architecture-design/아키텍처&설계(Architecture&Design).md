@@ -20,7 +20,7 @@ aliases: ["아키텍처&설계(Architecture&Design)", "Architecture & Design"]
 - [[tech/architecture-design/design-pattern/디자인패턴이란|디자인 패턴 (Design Patterns)]]
 - [[tech/architecture-design/ddd-hexagonal/DDD&Hexagonal|DDD, Hexagonal]] — Layered/Clean/Hexagonal, 실무 적용, Saga, Event Sourcing
 - [[tech/architecture-design/principles/원칙(Principles)|원칙, 철학 (Principles)]] — 아키텍처 중요성, IoC, Tidy First
-- [[tech/architecture-design/evolution/진화(Evolution)|진화, 전환 (Evolution)]] — 모놀리스 vs MSA, 레거시 현대화, 런타임 스택
+- [[tech/architecture-design/evolution/진화(Evolution)|진화, 전환 (Evolution)]] — 모놀리스 vs MSA, 레거시 현대화, 런타임 스택, 에이전트 기반 레거시 코드 전환
 - [[tech/architecture-design/data-model/데이터모델(DataModel)|데이터 모델 (Data Model)]] — DTO, VO 레이어링
 - [[Recommendation-System-Architecture|추천 시스템]] — 후보 생성, 랭킹, 데이터 계약, 평가와 OTT 디스커버리
 
@@ -52,6 +52,12 @@ aliases: ["아키텍처&설계(Architecture&Design)", "Architecture & Design"]
 - [x] [[ADR|ADR (Architecture Decision Record)]] — 기존 보강: [[Tech-Spec-Writing-Review-Process#ADR(Architecture Decision Record)과의 차이|테크스펙과 ADR의 차이]]
 - [x] [[Clean-Architecture-NestJS-CQRS|CQRS (Command, Query, Event 분리, Read Model, NestJS 계약, 도입 임계점)]]
 - [x] [[Enterprise-Architecture|엔터프라이즈 아키텍처(EA)와 ISP]] — baseline, target과 전환 계획, TOGAF 네 도메인, Clinger-Cohen과 전자정부법의 ITA 근거, 형식화 조건
+- [x] [[AI-Ready-ERP-Transformation|AI 활용 기반으로서의 ERP 전환]] — AI 전사 확산의 네 병목, 프로세스 자산화와 프로세스 마이닝, 기준정보와 3층 Data Product, Clean Core와 핵심 업무 시스템 연계, 거버넌스와 전환 범위 점검 질문
+- [x] [[Agent-Ready-Core-System|에이전트가 일하기 좋은 코어 시스템 구조]] — 기간계에 에이전트를 붙이기 어려운 세 이유, 업무 단위 서비스와 표준 관문, 서비스별 원장과 모듈러 모놀리스의 선택, 표준 프로세스와 확장점, 운영 거래 재현 회귀, 참조 모델과 패키지 도입
+- [x] [[Manufacturing-AI-Data-Architecture|제조 AI의 데이터 아키텍처]] — 확산을 막는 다섯 병목, 엣지 배치와 엣지 플랫폼 요건, 디지털 트윈의 하향식과 상향식 데이터 요건, 데이터 플랫폼 요건과 여섯 맥락, 희귀 결함의 합성 데이터와 모델 붕괴
+- [x] [[Commercial-to-Open-Source-Transition|상용 소프트웨어에서 오픈소스 스택으로의 전환 (OX)]] — AI 스택이 늘리는 관리 대상, 가시화, 안전한 토대, 확장, SBOM과 라이선스 거버넌스, 금융사 사례
+- [x] [[Digital-Twin|디지털 트윈]] — 성숙도 다섯 단계, 연결 계층(ERP, WMS, WCS, PLC, 센서), 실제 운영 지표와 비교하는 모델 신뢰도, 가상 시운전의 검증 범위, CAD를 실시간 3D로 바꾸는 단계와 테셀레이션 허용치, 코딩 에이전트의 편집기 조작 경로
+- [x] [[Warehouse-Operations-Simulation|물류센터 운영 시뮬레이션]] — 네 구성 요소, 레이아웃과 위치 데이터, 출고량, 빈도, 연관도 기반 적치, 주문 단위 피킹과 총량 피킹 비교, 인력 스케줄링, 레이아웃 생성, 재고 조사 자동화, 에이전트 기반 자원 배치와 시작 조건
 
 ## 검색과 추천 숙련 게이트
 

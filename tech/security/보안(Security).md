@@ -54,7 +54,7 @@ aliases: ["보안(Security)", "Security Index"]
 - [[Linux-Host-Security-Checks|Linux 호스트 보안 점검]] — 해시 기준선과 보관 위치, 수정 시각의 한계, utmp/wtmp와 process accounting, UID 0과 RID 500, umask 비트 계산과 default ACL, pam_pwquality 음수 credit
 - [[Access-Control-Models|접근 제어 모델 (RBAC, ABAC, PBAC)]] — 역할, 속성, 정책의 관계, PAP/PDP/PIP/PEP, 하이브리드 설계와 운영
 - [[tech/security/auth/인증(Auth)|인증 (Auth)]] — Session과 비밀번호 변경 재인증, JWT, OAuth2, Token Exchange, FIDO, Refresh Token, Spring Security의 자동 로그인 저장소와 검증
-- [[tech/security/crypto/암호(Crypto)|암호 (Cryptography)]] — 패스워드 해싱, 공개키, RSA, 난수와 파일 키, 저장장치 인증과 휴대폰 잠금 상태, 이메일 암호화, 인터넷 투표의 검증
+- [[tech/security/crypto/암호(Crypto)|암호 (Cryptography)]] — 패스워드 해싱, 공개키, RSA, 난수와 파일 키, 저장장치 인증과 휴대폰 잠금 상태, 이메일 암호화, 인터넷 투표의 검증, 양자내성암호 전환, PQC 전환 실행(암호 인벤토리 레코드, 수명주기별 발견, 에이전트 기반 전환), 기관용 디지털자산 월렛의 자격증명과 키 관리
 - [[Certificate-Lifecycle-Management|인증서 수명주기 관리]] — 인벤토리, 공인 TLS 유효기간 단축, 갱신 후 적용 확인과 복구 경계
 - [[tech/security/web-attacks/웹공격(WebAttacks)|웹 공격 (Web Attacks)]] — 아카이브 파서 차이, 정규식 엔진의 공격면, CORS, CSRF, XSS와 프레임 메시지, SQL/Command Injection, 파일 업로드, IDOR, SSRF, 공유 링크
 - [[Actuator-Exposure|Actuator 노출 (Security Misconfiguration)]] — 운영 엔드포인트 노출, 필요한 것만 열기
@@ -67,8 +67,11 @@ aliases: ["보안(Security)", "Security Index"]
 - [[Dependency-Patch-Cycle|의존성 패치 반영 지연과 CI 패치 사이클]] — 패치가 나와도 남는 이유, 권고문 전 공백, OSV-Scanner 진단과 guided remediation 전략, 만료 있는 예외, MR 게이트와 예약 스캔
 - [x] [[SaaS-Application-Trust-Compromise|SaaS 앱 신뢰와 자격증명 침해]] — 외부 앱의 기존 권한 악용, 인증과 유출의 구분, 차단과 증거 보존
 - [[Open-Source-License-Review|오픈소스 라이선스 검토]] — MIT/Apache 고지, GPL 전달 조건, AGPL 네트워크 조건, SaaS와 납품, SPDX/SBOM의 판단 범위, DMCA 게시 중단과 포크 네트워크
-- [[tech/security/network-security/네트워크보안(NetworkSecurity)|네트워크 보안 (Network Security)]] — 경계 보안과 공인 IP 배치, UTM, 보안 장비 배치 순서, 인라인과 아웃오브패스, 포트 미러링과 TAP, IDS와 IPS, ARP 스푸핑과 DAI, ARP 기반 NAC 차단, 망분리와 망연계, 호스트의 앱별 아웃바운드 통제
+- [[tech/security/network-security/네트워크보안(NetworkSecurity)|네트워크 보안 (Network Security)]] — 경계 보안과 공인 IP 배치, UTM, 보안 장비 배치 순서, 인라인과 아웃오브패스, 포트 미러링과 TAP, IDS와 IPS, ARP 스푸핑과 DAI, ARP 기반 NAC 차단, 망분리와 망연계, 금융권 망분리 완화와 보안 목적 AI 특례, 호스트의 앱별 아웃바운드 통제, 차세대 방화벽(NGFW)과 TLS 검사, RFC 9411 성능 수치 읽기
+- [[OWASP-Agentic-Top-10|OWASP Top 10 for Agentic Applications (2026판)]] — 최소 자율성(Least Agency), ASI01~ASI10의 위험과 완화, 분류 경계, 2025년 사례 대응, 통제 지점별 묶음
+- [[Cloud-Security-Posture-and-AI-Assets|클라우드 보안 태세와 AI 자산 보호]] — CSPM, CIEM, CWPP, CNAPP의 범위, AI 자산 목록과 AI-SPM, 관리형 영역과 사각지대, 공격 경로로 줄이는 우선순위, 에이전트의 비인간 신원 관리
 - [[LLM-Application-Security|LLM 애플리케이션 보안 (OWASP Top 10 2025, 2026판 순위 변경)]] — 프롬프트 인젝션, Spotlighting과 Instruction Hierarchy의 한계, Dual-LLM과 CaMeL 격리, 가드의 한계, 적응형 공격과 Rule of Two, 민감정보 유출, 공급망, 출력 처리, 과도한 위임, RAG 임베딩, 허위정보, 무제한 소비
+- [[Agent-Governance-Controls#데이터 등급이 외부 AI 허용 범위를 정한다|외부 AI 사용의 데이터 등급 통제]] — 등급별 허용 범위, 기밀 문서 색인의 유사도로 거르는 전송 전 차단, 응답 비식별과 로그 탐지, 단계별 한계
 - [[tech/security/age-identity-verification/연령신원검증(AgeIdentityVerification)|연령/신원 검증 (Age & Identity Verification)]] — age assurance, IDV, PET, 규제 지형, 제3자 위탁 리스크
 
 ## 보강 체크리스트

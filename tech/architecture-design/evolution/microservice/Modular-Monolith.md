@@ -160,3 +160,4 @@ controller, service, repository 같은 기술 계층으로만 나누면 기능 �
 - [[Event-Driven-Architecture|Event-Driven Architecture (모듈 간 이벤트)]]
 - [[Spring-Modulith|Spring Modulith (패키지 규약 기반 모듈 검증, 모듈 통합 테스트, 이벤트 발행 기록)]]
 - [[Failure-Evolution-Under-Load|부하에 따른 장애 진화 (같은 시스템의 운영 축 — 재시도 증폭, 운영 리듬)]]
+- [[Agent-Ready-Core-System|에이전트가 일하기 좋은 코어 시스템 구조]] — 에이전트 연결점이 목적일 때 배포 분리와 모듈 경계의 선택

@@ -192,3 +192,4 @@ SaaS 도입에서는 다음과 같이 책임과 증거를 연결할 수 있다(�
 - [[Access-Control-Models|요청과 자원에 대한 인가]]
 - [[HealthOmics-Workflows|분석 실행과 결과 검증]]
 - [[Cloud-Migration-Strategies|전환 범위와 검증]]
+- [[Sovereign-AI-Platform|주권형 AI 플랫폼]] — 데이터 위치 밖의 가속기, 모델과 운영 환경 통제

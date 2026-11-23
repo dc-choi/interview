@@ -157,4 +157,5 @@ aliases: ["오픈소스 라이선스 검토", "OSS License Review", "상용 소�
 - [[Side-Project-Asset-Sale|사이드 프로젝트와 디지털 자산 매각]] — 제3자 권리와 인계 조건
 - [[LLM-Application-Security|LLM 애플리케이션 보안]] — 사전학습 모델, 어댑터와 병합 모델의 공급망 위험
 - [[Font-Licensing-for-Client-Work|외주 납품의 폰트 라이선스]] — 코드 밖 자산의 이용 조건
+- [[Commercial-to-Open-Source-Transition|상용 소프트웨어에서 오픈소스 스택으로의 전환]] — 전환 거버넌스의 라이선스 사전 평가와 고지 의무 이행
 - [[보안(Security)|보안 인덱스]]

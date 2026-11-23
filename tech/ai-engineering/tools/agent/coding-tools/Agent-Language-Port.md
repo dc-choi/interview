@@ -113,3 +113,4 @@ Bun 공식 글 두 편을 2026-11-14에 대조했다. 코드 실행과 성능 �
 - [[Rust-Soundness-and-Lifetime-Boundaries|Rust 건전성과 수명 계약]]
 - [[Agent-Terminal-Workspaces|에이전트 터미널과 작업 공간]]
 - [[Legacy-Modernization-Strategies|레거시 현대화 전략]]
+- [[Agentic-Legacy-Code-Conversion|에이전트 기반 레거시 코드 전환 파이프라인]] — 테스트가 부족한 레거시의 함수 단위 변환과 지식 그래프

@@ -18,6 +18,19 @@ aliases: ["Kubernetes GPU Sharing and Quota", "GPU 공유와 팀별 할당", "NV
 
 NVIDIA Run:ai README는 한 팀이 전용 GPU에서 작업만 돌린다면 기본 Kubernetes 스케줄링으로 충분할 수 있고, 여러 팀이 같은 GPU 자원을 나눠 쓰며 공유, 할당량 집행과 멀티테넌트 거버넌스가 필요할 때 이 계층이 필요하다고 설명한다.
 
+## 할당 계층이 없을 때 드러나는 증상
+
+GPU를 먼저 들인 조직이 겪는 문제로 한국레드햇 발표(2026년 9월)는 네 가지를 들었다. 증상마다 맡는 계층이 다르며, 아래 연결은 이 문서의 해석이다.
+
+| 증상 | 맡는 계층 |
+|---|---|
+| 누가 얼마나 썼는지 기록이 남지 않는다 | GPU 지표를 Pod와 작업에 연결하는 관측([[GPU-Server-Infrastructure#Kubernetes와 GPU 공유의 관측 경계|GPU 공유의 관측 경계]]) |
+| 팀별로 흩어진 GPU가 놀고 있다 | 공용 풀과 큐의 보장량, 초과 몫과 회수(아래 KAI Scheduler) |
+| 할당이 늦어 외부 API로 우회한다 | 대기를 줄이는 초과 몫 배분, 사내 모델의 서비스 제공과 [[LLM-Gateway|LLM 게이트웨이]]의 키 통제 |
+| 격리와 쿼터가 없어 민감 워크로드를 함께 올리지 못한다 | 큐의 상한과 분할 모드별 격리(아래 GPU 분할 요청과 실제 격리) |
+
+마지막 증상은 할당만으로 풀리지 않는다. 큐가 사용량을 나눠도 같은 GPU를 나눈 작업 사이의 메모리와 장애 격리는 공유 방식이 정한다. 이 기록이 주권형 플랫폼에서 통제의 근거가 되는 이유는 [[Sovereign-AI-Platform#GPU 사용을 보이게 한다|주권형 AI 플랫폼]]을 따른다.
+
 ## NVIDIA Run:ai 오픈소스의 구성
 
 2026-10-13 NVIDIA 기술 블로그와 각 저장소 README를 2026-10-27에 대조한 기준이다. NVIDIA는 Run:ai 플랫폼 전체를 오픈소스로 공개했다.
@@ -85,6 +98,7 @@ Pod별 지표 `gpu_fractioning_gpu_memory_used_bytes`와 `gpu_fractioning_gpu_sm
 - [GPU Fractioning Operator — kai-scheduler](https://github.com/kai-scheduler/gpu-fractioning)
 - [KAI Resource Management — kai-scheduler](https://github.com/kai-scheduler/kai-resource-management)
 - [NVIDIA Run:ai - 여러 팀이 GPU를 나눠 쓰도록 관리하는 Kubernetes 기반 플랫폼 — GeekNews](https://news.hada.io/topic?id=35507) — 2026-10-17 소개 글
+- [Sovereign AI 환경에서 완성하는 엔터프라이즈 Agentic AI 구축 및 운영 전략 — 삼성SDS REAL Summit 2026 발표 자료, 한국레드햇](https://image.samsungsds.com/kr/real/2026/assets/uploads/sessionPDF/Track%206-6%20Sovereign%20AI%20%ED%99%98%EA%B2%BD%EC%97%90%EC%84%9C%20%EC%99%84%EC%84%B1%ED%95%98%EB%8A%94%20%EC%97%94%ED%84%B0%ED%94%84%EB%9D%BC%EC%9D%B4%EC%A6%88%20Agentic%20AI%20%EA%B5%AC%EC%B6%95%20%EB%B0%8F%20%EC%9A%B4%EC%98%81%20%EC%A0%84%EB%9E%B5_%ED%95%9C%EC%9E%AC%EA%B2%BD%20fn.pdf) — 2026년 9월 발표. 할당 계층이 없을 때의 네 증상
 
 ## 관련 문서
 
@@ -93,3 +107,5 @@ Pod별 지표 `gpu_fractioning_gpu_memory_used_bytes`와 `gpu_fractioning_gpu_sm
 - [[K8s-Resource-Right-Sizing|Resource Right-Sizing]]
 - [[ECS-GPU-Inference|ECS GPU 추론과 분할 GPU]]
 - [[EKS|Amazon EKS]]
+- [[LLM-Inference-Fleet-Efficiency|LLM 추론 플릿 효율]] — 비수기 서빙 GPU의 학습 대여와 회수, 다중 모델 KV 메모리 공유
+- [[Sovereign-AI-Platform|주권형 AI 플랫폼]] — GPU 사용 기록과 통제의 근거

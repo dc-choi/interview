@@ -34,6 +34,8 @@ DR은 **정의한 재해 범위에서 서비스를 복구하는 계획**이다. 
 
 비즈니스가 요구하는 RTO/RPO, 중단과 손실의 비용 및 운영 역량으로 정한다. 결제나 주문이라는 도메인 이름만으로 Warm Standby 이상을 필수로 정하지 않는다. 선택한 전략이 실제 거래 복구와 정합성 목표를 충족하는지 드릴로 확인한다.
 
+시스템이 많으면 시스템마다 전략을 고르지 않고 영향도 점수로 등급을 나눈 뒤 등급마다 RTO, RPO, 구축 방식과 훈련 수준을 묶는다. 산정 지표, RTO를 재는 시작과 끝, 한국 공공 정보시스템의 A1~A4 기준은 [[DR-Tier-Classification|DR 등급 분류]]에 있다.
+
 ## 트래픽 전환 경로도 장애를 견뎌야 한다
 
 2026-10-13 Amazon Application Recovery Controller(ARC) 공식 문서 확인 기준. 복구 대상이 준비되어 있어도 전환에 필요한 관리 API가 응답하지 않으면 복구가 지연될 수 있다. 리소스를 생성하는 제어 계층과, 미리 구성한 경로를 전환하는 데이터 계층을 나눠 설계한다.
@@ -111,7 +113,9 @@ Restore testing의 복원 작업이 `COMPLETED`가 되면 EventBridge로 별도 
 - **복제본을 백업으로 오해** — 잘못된 쓰기나 삭제도 복제되므로 이전 시점의 독립 백업과 복원 경로를 유지한다.
 - **전환 후 쓰기 충돌** — 옛 리전의 쓰기를 차단하고 새 writer, DNS 캐시와 연결 풀을 확인한다. 복귀(failback) 때도 변경 데이터를 정합하게 합치는 절차를 별도로 검증한다.
 - **복구 리전의 용량 부족** — 서비스 quota, 실제 확보 가능한 용량과 스케일업 의존성을 사전에 확인한다.
-- **전환 도구가 같은 장애 범위에 있음** — Standby를 Active로 올리는 권한관리 기능(운영 및 관리도구)이 주 데이터센터 안에서만 이중화되어 있으면 서비스를 이중화해도 전환이 늦어질 수 있다. 위 판교 사례에서 카카오 복구 지연의 핵심 원인으로 지목됐다.
+- **전환 도구가 같은 장애 범위에 있음** — Standby를 Active로 올리는 권한관리 기능(운영 및 관리도구)이 주 데이터센터 안에서만 이중화되어 있으면 서비스를 이중화해도 전환이 늦어질 수 있다. 위 판교 사례에서 카카오 복구 지연의 핵심 원인으로 지목됐다. 2025년 국가정보자원관리원 대전센터 화재에서도 시스템 관리를 위한 통합운영관리시스템을 화재로 쓰기 어려웠다([[DR-Tier-Classification#사례: 2025년 국가정보자원관리원 대전센터 화재|국정자원 사례]]).
+- **IaC 상태 파일이 주 센터에 묶임** — 주 센터 장애 때 DR 쪽 인프라를 바꾸지 못한다. 상태 파일은 원격 저장소에 두고 주 센터와 DR 센터의 상태를 서로 격리한다.
+- **복제와 서비스 트래픽이 같은 경로를 씀** — 복제가 서비스 대역을 잠식하거나 복제 지연이 커진다. 복제 전용 서브넷을 나누고 리전 간 IP 대역이 겹치지 않게 계획한다.
 
 ## 면접 체크포인트
 
@@ -123,6 +127,8 @@ Restore testing의 복원 작업이 `COMPLETED`가 되면 EventBridge로 별도 
 - 데이터센터 전체 손실(화재와 전력 차단)에서 전환 권한과 운영 도구의 위치가 복구 시간을, 핵심 기능의 집중이 장애 범위를 키우는 경로
 
 ## 출처
+
+2026-11-23에는 흔한 함정에 더한 국정자원 문장만 2025-09-30 정부 브리핑에 대조했다. 상태 파일 격리와 복제 경로 분리는 발표 자료에서 가져온 설계 점검이며 frontmatter의 검증일은 유지한다.
 
 2026-11-02에는 판교 사례 절의 경위, 복구 시간, 네이버와의 대비, 장애 확대와 복구 지연 원인, 정부 요구와 강화 방안, 카카오의 이후 발표와 안산 데이터센터 설계, 흔한 함정과 면접 체크포인트에 더한 판교 관련 문장만 과기정통부 발표(대한민국 정책브리핑 게재)와 카카오 공식 자료에 대조했다. 발화 원인의 조사 결과, 이후 시행된 보호지침 조문과 각 사업자 대책의 이행 여부는 확인하지 않았고 AWS 관련 절은 다시 대조하지 않았다.
 
@@ -151,6 +157,8 @@ Restore testing의 복원 작업이 `COMPLETED`가 되면 EventBridge로 별도 
 - [Amazon Aurora — Using switchover or failover in Amazon Aurora Global Database](https://docs.aws.amazon.com/AmazonRDS/latest/AuroraUserGuide/aurora-global-database-disaster-recovery.html)
 - [AWS — Disaster recovery options in the cloud (4 strategies)](https://docs.aws.amazon.com/whitepapers/latest/disaster-recovery-workloads-on-aws/disaster-recovery-options-in-the-cloud.html)
 - [AWS — Aurora Global Database](https://docs.aws.amazon.com/AmazonRDS/latest/AuroraUserGuide/aurora-global-database.html)
+- [국가정보자원관리원 행정정보 시스템 화재 관련 중대본 브리핑 — 대한민국 정책브리핑](https://www.korea.kr/news/policyNewsView.do?newsId=156721899) — 2025-09-30, 통합운영관리시스템을 쓰기 어려웠다는 설명을 흔한 함정에 반영했다
+- [공공서비스 신뢰를 설계하다: DR 전략 — 삼성SDS REAL Summit 2026 발표 자료, 삼성SDS](https://image.samsungsds.com/kr/real/2026/assets/uploads/sessionPDF/Track%206-7_%EA%B3%B5%EA%B3%B5%EC%84%9C%EB%B9%84%EC%8A%A4%20%EC%8B%A0%EB%A2%B0%EB%A5%BC%20%EC%84%A4%EA%B3%84%ED%95%98%EB%8B%A4_DR%20%EC%A0%84%EB%9E%B5_%EC%9D%B4%EC%B2%A0%EC%8A%B9%ED%94%84%EB%A1%9C_%EB%B0%B0%ED%8F%AC%EB%B3%B8.pdf) — 2026년 9월 발표. IaC 상태 파일 격리와 복제 전용 서브넷 분리를 흔한 함정에 반영했다
 
 ## 관련 문서
 
@@ -160,3 +168,5 @@ Restore testing의 복원 작업이 `COMPLETED`가 되면 EventBridge로 별도 
 - [[RDS-Zero-Downtime-Migration|무중단 컷오버 (엔드포인트 전환, TTL)]]
 - [[Route53|Route 53 (헬스체크 DNS failover)]]
 - [[N-1-Capacity-Headroom|N-1 가용량 헤드룸 (정적 안정성, 복구 경로의 제어 기능 의존)]]
+- [[Public-Sector-AI-Infrastructure-Placement|공공 AI 인프라의 배치 판단 (데이터 등급별 처리 영역, 민간 클라우드 이관 방향, 2025년 국정자원 화재)]]
+- [[DR-Tier-Classification|DR 등급 분류 (영향도 점수, 등급별 목표와 훈련, 공공 정보시스템 안정성 고시)]]

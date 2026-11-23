@@ -19,7 +19,7 @@ aliases: ["인프라&클라우드(Infrastructure&Cloud)", "Infrastructure & Clou
 - [[PyTorch-Version-Upgrade-and-Rollback|PyTorch 버전 업그레이드와 롤백]] — 패키지 롤백으로 복구되지 않는 체크포인트 형식과 기본값 변경, 2.15의 DCP, NCCL backend, FSDP2 reduce dtype과 설치 조건
 - [[AI-Cluster-Network-Fabric|AI 학습 클러스터의 네트워크]] — collective 통신과 straggler, NVLink 스케일업 도메인, RDMA 백엔드(InfiniBand와 RoCE), 레일과 리프/스파인, oversubscription과 토폴로지 인지 배치, 프런트엔드와 스토리지 망 분리
 - [[Optical-Interconnect-and-CPO|광통신과 CPO]] — 광 변환 위치, 전기 경로와 외부 레이저, 제품별 정비 경계
-- [[tech/infrastructure-cloud/foundation/클라우드기초(Foundation)|클라우드 기초 (Foundation)]] — IaaS/PaaS/FaaS, SaaS 리전별 데이터 격리와 운영 주권, IaC와 Pulumi 컴포넌트, 클라우드 전환 전략, Cloudflare cf CLI와 Artifacts
+- [[tech/infrastructure-cloud/foundation/클라우드기초(Foundation)|클라우드 기초 (Foundation)]] — IaaS/PaaS/FaaS, SaaS 리전별 데이터 격리와 운영 주권, IaC와 Pulumi 컴포넌트, 클라우드 전환 전략, Cloudflare cf CLI와 Artifacts, 공공 AI 인프라의 데이터 등급별 처리 영역과 단일 검증 전환
 - [[tech/infrastructure-cloud/container/컨테이너(Container)|컨테이너 (Container)]] — Docker, Compose, runc 초기화와 rootless, 이미지 빌드, OpenShell과 AI 학습 환경 격리
 - [[tech/infrastructure-cloud/aws/AWS서비스(AWSServices)|AWS 서비스 (AWS)]] — EC2/ASG/ALB, Lambda, ALB 5XX와 NLB TCP 연결 진단, Amplify Gen 2 환경과 파일 권한
 - [[tech/infrastructure-cloud/network/인프라네트워크(InfraNetwork)|인프라 네트워크 (Network)]] — DNS, Load Balancer, Reverse Proxy
@@ -97,6 +97,7 @@ aliases: ["인프라&클라우드(Infrastructure&Cloud)", "Infrastructure & Clou
 - [x] [[MemoryDB-Multi-Region|MemoryDB Multi-Region]] — 비동기 복제, 자료형별 LWW와 동시 카운터의 한계
 - [x] [[Glue#수집 로그를 분석 테이블로 만드는 경계|수집 로그와 분석 테이블]] — 부분 실패와 재시도, 스키마 누락과 중첩 구조 변환
 - [x] [[AWS-Control-Tower|Control Tower 거버넌스]] — 계정 표준화, 통제별 적용 범위와 공동 책임
+- [x] [[Group-Landing-Zone|그룹 통합 랜딩 존]] — 계열사 공통 계정 구성, 다층 가드레일과 배포 경로별 빈틈, 기준 변경의 단계 적용, 원본 증적 분리와 탐지 후 대응 루프
 - [x] [[IoT-Edge-Cloud-Pipeline|IoT 엣지와 클라우드 파이프라인]] — 수집과 추론 분리, 메시지 순서와 중복, 현장 제어의 검증 경계
 - [x] [[End-User-Messaging-Two-Way-SMS|양방향 SMS 수신 진단]] — 목적지별 권한, FIFO 제한과 암호화 topic
 - [x] [[Elemental-Inference|영상 인코딩과 AI 분석]] — feed와 기능별 output, 자막 지원 언어와 최종 출력 검수
@@ -137,7 +138,7 @@ aliases: ["인프라&클라우드(Infrastructure&Cloud)", "Infrastructure & Clou
 ## Kubernetes
 - [x] [[K8s-OpenKruise-SidecarSet|OpenKruise SidecarSet]] — 사이드카 주입과 이미지 업데이트, native sidecar 지원 경계와 가용성 확인
 - [x] [[Container-Memory-Metrics|컨테이너 메모리 지표 해석 (cgroup 계정 범위, RSS와 page cache, working set, 고원 vs 우상향, 실측)]]
-- [x] [[K8s-AI-Workloads|AI 워크로드]] — [[K8s-GPU-Sharing-and-Quota|GPU 공유와 팀별 할당]](큐, 회수와 큐 안 선점, 분할 모드별 메모리 강제), [[K8s-Agent-Substrate|Agent Substrate]](스냅샷 재개, sandbox 격리와 배포 경로별 제약)
+- [x] [[K8s-AI-Workloads|AI 워크로드]] — [[K8s-GPU-Sharing-and-Quota|GPU 공유와 팀별 할당]](할당 계층이 없을 때의 증상, 큐, 회수와 큐 안 선점, 분할 모드별 메모리 강제), [[K8s-Agent-Substrate|Agent Substrate]](스냅샷 재개, sandbox 격리와 배포 경로별 제약), [[Air-Gapped-AI-Delivery|폐쇄망 AI 플랫폼의 이미지와 모델 반입]](미러 영역 검증과 반입 주기, oc-mirror, 모델 검증 게이트, 모델 서명과 ClusterImagePolicy)
 
 ### 기초와 운영 체크리스트
 - [x] [[K8s-Core-Workloads-and-Service-Architecture|Control plane과 node component]]

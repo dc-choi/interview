@@ -15,8 +15,10 @@ aliases: ["Network Security", "네트워크 보안"]
 - [[Public-WiFi-Trust-Boundaries|공공 Wi-Fi의 신뢰 경계]] — HTTPS, 서비스 신뢰와 기기 제어 권한, 미러링 시연의 사전 인증 조건
 - [[SSH-Authentication|SSH 인증]] — 서버 호스트 키, 사용자 인증 키와 세션 키, 첫 접속의 신뢰와 호스트 키 변경, 하드웨어에 묶은 사용자 키(FIDO, TPM, Secure Enclave)와 복구, Tailscale 포워딩의 권한 경계, musl 환경의 비밀번호 인증 우회와 salt 차용의 배경
 - [[Network-Perimeter-Security|네트워크 경계 보안]] — 공인 IP 배치 원칙, DNS 응답 IP와 실제 서버, UTM, 보안 장비가 로드밸런서보다 앞에 서는 순서, 프록시 방식 WAF와 SSL 종료, 클라우드의 퍼블릭/프라이빗 구분
+- [[Next-Generation-Firewall|차세대 방화벽(NGFW)]] — 포트 기반 통제가 놓치는 응용, 사용자와 기기, 볼 수 없는 암호화 트래픽의 처리 규칙과 TLS 검사의 대가, AI 에이전트 사이 트래픽과 내부 정책 집행 지점, 평면 분리와 전용 프로세서, RFC 9411로 성능 수치 읽기
 - [[Inline-vs-Out-of-Path|인라인과 아웃오브패스 배치]] — 경로 위 제어 장비와 사본 관찰 센서, fail-open과 fail-closed, 소프트웨어와 하드웨어 bypass, 포트 미러링(SPAN)과 TAP, 미러 포트 대역폭 병목과 사본 유실, IDS와 IPS, 클라우드의 GWLB와 Traffic Mirroring, AI 검사 API의 판정과 실제 차단
 - [[Network-Separation|망분리와 망연계]] — 막는 경로와 못 막는 경로, 물리적 분리와 서버 기반(VDI), 단말 기반 논리적 분리, 가상화 탈출과 공유 기능, 스냅샷 복원의 한계, 망연계와 data diode, 금융과 개인정보 규정의 요구 범위, N2SF, 경계 모델과 제로 트러스트
+- [[Financial-Network-Separation-Easing|금융권 망분리 완화와 자율보안 전환]] — 2013년 의무화에서 2024 로드맵의 자율보안-결과책임까지, 보안 목적 AI 망분리 특례의 1차와 2차 요건, 상시 제도화와 전면해제 TF, CSF 2.0 기반 수준진단, Security for AI와 AI for Security
 - [[Air-Gap-Covert-Channels|에어갭 은닉 채널]] — 내부 감염과 근거리 수신기라는 두 전제, RAMBO의 메모리 버스 전자기 송신과 OOK, 거리별 전송률과 오류율, 가상 머신 안 송신, 구역 분리와 탐지, 재밍, 차폐의 비용
 - [[ARP-Spoofing|ARP 스푸핑]] — 검증 없는 ARP 캐시 갱신, 양방향 위조와 중계로 만드는 MITM, 경로 위 공격자와 TLS, HSTS의 경계, 같은 원리를 쓰는 ARP 기반 NAC 차단의 트레이드오프, DHCP snooping과 DAI, 탐지 신호, 공용망과 VPC와 컨테이너의 위협 모델, IPv6 ND와 RA Guard
 - [[5G-Security-Architecture|5G 보안 구조]] — SUPI와 SUCI 은닉, null-scheme의 경계, 5G AKA 상호 인증과 가짜 기지국 해석, K에서 K_gNB까지의 키 계층과 갱신 시점, SBA의 TLS와 OAuth 2.0, SEPP, 슬라이스 인증(NSSAA)

@@ -165,3 +165,4 @@ Profile 방식의 profile 수는 금액을 나눌 축의 조합만큼 늘어난�
 - [[LLM-Cost-Optimization|LLM 비용 최적화]]
 - [[Bedrock-Private-Access|Bedrock 비공개 연결]]
 - [[Data-Flywheel-Moat|데이터 플라이휠과 해자]]
+- [[Government-AI-Common-Platform|공공 생성형 AI 공통기반 (정보시스템 단위 테넌트, 공유와 전용 용량)]]

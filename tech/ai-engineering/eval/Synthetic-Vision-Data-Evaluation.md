@@ -49,3 +49,4 @@ Titan Image Generator G1 V2의 공식 서비스 카드에서 확인한 기능과
 - [[Model-Feedback-Loop-and-Validation|모델 피드백 루프와 검증]]
 - [[Synthetic-Data-Privacy|합성 데이터의 개인정보 보호]]
 - [[Eval-Golden-Set-and-Deploy-Gates|골든셋과 배포 관문]]
+- [[Manufacturing-AI-Data-Architecture#희귀 결함은 합성 데이터로 보완한다|제조 결함 검사의 합성 데이터]] — 벤치마크 사례와 실데이터 보완 원칙

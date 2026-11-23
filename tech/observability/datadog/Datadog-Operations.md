@@ -182,6 +182,7 @@ route는 실제 URL이 아니라 `/contents/:id` 같은 템플릿으로 기록�
 - [[Alert-Fatigue|행동 가능한 알림]]
 - [[Deploy-Observability|배포 가시성]]
 - [[Incident-Runbook|Incident Runbook]]
+- [[AI-Governance-Observability|관측 신호로 집행하는 AI 거버넌스]] — LLM과 에이전트 관측을 거버넌스 통제 지점에 잇기
 
 ## 출처
 

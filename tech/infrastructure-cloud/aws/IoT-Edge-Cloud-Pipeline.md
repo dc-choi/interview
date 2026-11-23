@@ -336,3 +336,4 @@ Shadow 메시지의 도착 순서는 보장되지 않는다. 장비는 추적 �
 - [[SQS|큐 전달 보장과 소비]]
 - [[Idempotency-Key|중복 요청의 멱등 처리]]
 - [[DMS|업무 데이터의 변경 수집]]
+- [[Manufacturing-AI-Data-Architecture|제조 AI의 데이터 아키텍처]] — IT/OT 통합, 디지털 트윈의 두 데이터 요건과 맥락 종류

@@ -86,3 +86,4 @@ PLC 밖의 엔지니어링에도 같은 질문을 쓸 수 있다. 직무가 아�
 - [[Expertise-Formation-AI|AI 시대 전문성 형성]]
 - [[Citizen-Development-AI|AI 시민 개발]]
 - [[Youth-Employment-Labor-Market-Duality|청년고용 부진과 노동시장 이중구조]]
+- [[Digital-Twin|디지털 트윈]] — 가상 시운전에서 검증하는 범위와 현장에 남는 범위

@@ -97,3 +97,4 @@ MCP 명세(2026-11-18 대조)는 알 수 없는 툴 같은 프로토콜 오류�
 - [[MCP-Security-Boundaries|MCP 보안 경계]]
 - [[Agent-Ready-API-Design|에이전트 친화 API 설계]]
 - [[Envoy-Upgrade-Behavior-Changes|Envoy 업그레이드와 동작 변경 점검]]
+- [[Agent-Governance-Controls#자산은 등록과 공유를 나눈다|에이전트 거버넌스의 자산 등록]] — 에이전트 요청의 단일 관문과 검증된 자산만 공유하는 조직 기준

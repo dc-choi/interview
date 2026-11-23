@@ -247,4 +247,5 @@ Sonatype의 Hugging Face 분석은 모델 파일 디렉터리를 IQ CLI로 검�
 - [[Desktop-Window-Management|데스크톱 창 관리]] — 서드파티 cask가 quarantine 속성을 지우는 macOS 앱 사례
 - [[Linux-on-Apple-Silicon|Apple Silicon Mac에서 Linux 실행]] — 서명 카탈로그를 검증하는 설치기와 Homebrew cask
 - [[Dependency-Release-Cooldown|의존성 릴리스 쿨다운]] — 설치 도구의 게시 시점 필터, 업로드 시각이 없을 때의 차이와 예외 경로
+- [[Air-Gapped-AI-Delivery|폐쇄망 AI 플랫폼의 이미지와 모델 반입]] — 미러 영역 검증, 모델 서명과 클러스터 입장 검증
 - [[보안(Security)|보안 인덱스]]

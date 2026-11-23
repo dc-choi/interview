@@ -149,3 +149,4 @@ OWASP가 사용자를 대신한 행동은 그 사용자의 맥락에서 실행�
 - [[Harness-Engineering|하네스 엔지니어링 (Constrain/Inform/Verify/Correct/HITL)]]
 - [[AX-Transformation|AX 조직 전환]]
 - [[Developer-Role-AI-Era|AI 시대 개발자 역할]]
+- [[Agent-Identity-and-Execution-Authority|에이전트 신원과 실행 권한 (에이전트 신원, 위임 신원과 디지털 권한증)]]

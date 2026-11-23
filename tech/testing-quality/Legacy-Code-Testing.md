@@ -89,3 +89,5 @@ IDE의 미사용 표시는 코드 안의 직접 호출만 본다. 프레임워�
 - [[TDD-Refactoring-Practice|TDD의 점진적 테스트와 구현]]
 - [[Test-Fixture|테스트 데이터와 프로퍼티 기반 검증]]
 - [[Deterministic-Test|결정적인 테스트]]
+- [[Agentic-Legacy-Code-Conversion|에이전트 기반 레거시 코드 전환 파이프라인]] — 자동 변환 뒤 동작 보존을 증명하는 근거
+- [[Regression-Test-Automation#운영 거래 기록을 재현해 회귀 기준을 만든다|운영 거래 재현 회귀]] — 운영 결과를 기준선으로 쓰는 특성화

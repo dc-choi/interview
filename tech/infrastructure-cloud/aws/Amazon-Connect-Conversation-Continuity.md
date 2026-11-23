@@ -192,3 +192,4 @@ Direct Connect는 사내 edge router와 AWS 사이의 연결 개선에 쓸 수 �
 - [[AWS서비스(AWSServices)|AWS 서비스]]
 - [[S3|S3 스토리지와 접근 제어]]
 - [[IAM|IAM 권한 평가]]
+- [[Contact-Center-AI-Agent|고객상담 AI 에이전트]] — 가상상담의 요구, 지표 정의와 단계적 도입

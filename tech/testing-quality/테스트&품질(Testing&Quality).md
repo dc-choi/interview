@@ -12,7 +12,8 @@ aliases: ["테스트&품질(Testing&Quality)", "Testing & Quality"]
 - [x] [[Ruff-Upgrade-Validation|Ruff 업그레이드 검증]] — Python 기준, 기본 규칙, 수정 제안과 적용, CI와 편집기 연결
 - [[Agentic-Verification|에이전트 기반 검증]] — 완료 조건, E2E, 속성과 검사 기준 보호, verify 스킬과 차등 테스트, flaky 정책, 커밋 게이트와 놓친 결함의 규칙 승격, 실행 중인 앱의 내부 신호로 내리는 통과, 실패, 판단 불가 판정과 모델 없는 흐름 재실행
 - [[Ephemeral-Desktop-Test-VM|일회용 데스크톱 테스트 VM]] — Linux 실행기, Windows warm pool과 폐기
-- [x] [[Requirements-Traceability|요구사항 추적성 (양방향 연결, 변경 영향 분석, 링크와 검증 결과의 구분)]]
+- [x] [[Requirements-Traceability|요구사항 추적성 (양방향 연결, 변경 영향 분석, 링크와 검증 결과의 구분, 에이전트 작업 맥락으로 쓰는 추적 정보)]]
+- [x] [[Regression-Test-Automation#운영 거래 기록을 재현해 회귀 기준을 만든다|운영 거래 재현 회귀]] — 원장 스냅샷과 거래 로그 재현, 정답지 비교의 함정, 외부 참값 비교, 테스트 설계 역량과 실행 자동화의 구분
 - [x] [[Test-Pyramid#Unit Test|Unit test (단위 범위, AAA 구조, 격리와 실행 비용)]]
 - [x] [[Test-Pyramid#Integration Test|Integration test (외부 의존과의 상호작용 검증 범위)]]
 - [x] [[framework-testing|프레임워크 테스트 (프레임워크 DI 컨테이너 위의 테스트 경계, Jest mock과 matcher, Spring test context와 MockMvcTester, NestJS TestingModule override와 request-scoped, 쿠키 인증 E2E, 동적 모듈 스텁)]]

@@ -67,3 +67,4 @@ DAWO-NixOS 저장소는 NixOS를 통해 업무용 장비를 자동으로 동일�
 - [[Linux-File-System|Linux 파일시스템]]
 - [[Cloud-Migration-Strategies|클라우드 전환 전략]]
 - [[Service-Continuity-and-Exit|서비스 지속성과 종료 설계]]
+- [[Sovereign-AI-Platform|주권형 AI 플랫폼]] — AI 스택의 가속기, 모델과 운영 환경 통제

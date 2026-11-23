@@ -19,6 +19,7 @@ aliases: ["메시징&파이프라인(Messaging&Pipeline)", "Messaging & Data Pip
 - [[Event-Driven-Architecture|Event-Driven Architecture (EDA) — 결정 프레임워크]] (아키텍처 카테고리) — 신뢰성, 결합도, 일관성 3축 트레이드오프 + **8개 결정 층** + 패턴 매핑 그림
 
 - [[Data-Infrastructure-Layers|데이터 인프라의 계층과 계약]] — 저장과 계산, 웨어하우스와 레이크, 객체 저장소의 경계, Snowflake, BigQuery와 Redshift 비교, 파일과 테이블, 카탈로그, BI 지표와 AI 데이터 권한
+- [[Semantic-Layer|시맨틱 레이어]] — 업무 용어, 지표 산식, 조인과 권한을 한 번 정의해 BI와 에이전트의 질의 경로에서 강제, 흔한 오해 네 가지, 원시 스키마 질의의 다섯 문제, SQL 생성을 시맨틱 엔진에 맡기는 방식(dbt MetricFlow), 대화형 집합 분석, 운영 관측, 공급사 벤치마크의 조건
 
 ## 목차 (메시징 인프라 — 어떻게 안전하게 전송)
 

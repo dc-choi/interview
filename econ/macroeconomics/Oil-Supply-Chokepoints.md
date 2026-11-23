@@ -89,3 +89,4 @@ A.1106(29)는 AIS를 싣지 않는 선박이나 탑재를 면제받은 선박이
 - [[Inflation|인플레이션과 디플레이션]]
 - [[News-Causal-Chain-Drill|경제 뉴스 인과관계 연습]]
 - [[거시경제(Macroeconomics)|거시경제 지도]]
+- [[Logistics-Control-Tower|물류 관제와 가시성]] — 해상 물류의 병목 신호와 대응

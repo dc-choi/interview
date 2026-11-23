@@ -80,3 +80,4 @@ LLM의 비결정성은 단일 가드로 막을 수 없다. 단계별 차단을 �
 - [[Agent-Swarm-Containment|에이전트 군집 격리 (AI로 AI를 감독하는 구조와 한계)]]
 - [[Agent-Loop-Engineering|루프 엔지니어링 (agent loop의 정지 조건과 가드)]]
 - [[Claude-Code-Config-Permissions|Claude Code 설정과 권한 (auto mode)]]
+- [[Agent-Governance-Controls#자산은 등록과 공유를 나눈다|에이전트 거버넌스의 자산 등록 (등록 목록과 발견 목록의 대조)]]

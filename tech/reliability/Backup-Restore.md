@@ -192,6 +192,7 @@ MPA는 원본 계정에 접근할 수 없을 때 별도 복구 계정에서 백�
 ## 관련 문서
 
 - [[DR-Strategy|DR 전략 (multi-region)]]
+- [[DR-Tier-Classification|DR 등급 분류 (등급별 백업 정책과 원격지 소산 기준)]]
 - [[RDS-Aurora|RDS / Aurora (PITR, 스냅샷, 자동 백업)]]
 - [[MySQL-Backup|MySQL 백업 (mysqldump, XtraBackup, binlog PITR)]]
 - [[PostgreSQL-Production-Operations|PostgreSQL 운영 (pgBackRest PITR, 논리 덤프의 한계)]]

@@ -222,3 +222,4 @@ REA의 Evidence는 대상 산출물 식별, 원본 위치, 관찰, 추론과 미
 - [[Agent-Spec-Writing|agent 작업 명세 작성]]
 - [[Test-Pyramid|테스트 피라미드]]
 - [[Codebase-Knowledge-Map|대규모 코드베이스 지식 지도]]
+- [[Agentic-Legacy-Code-Conversion|에이전트 기반 레거시 코드 전환 파이프라인]] — 대량 전환에서의 함수 단위 변환과 읽기 전용 분석

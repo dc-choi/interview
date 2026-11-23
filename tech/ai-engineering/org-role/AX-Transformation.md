@@ -261,5 +261,10 @@ METR은 2026년 후속 글에서 최신 도구의 속도 향상이 더 클 가�
 - [[Trust-Respect-Teamwork|신뢰와 존중의 팀워크]]
 - [[AI-Leverage-Small-Teams|AI 시대 작은 팀의 구조적 레버리지]]
 - [[AI-Capability-Transfer|AI 역량 이전]] — Enablement가 사람에게 닿게 하는 코치 양성 구조
+- [[Work-Stage-AI-Adoption|업무 단계에서 찾는 AI 적용 지점과 도구 정착]] — 업무 단계 분해, 사람에게 남는 판단과 실사용자 시범 사용
+- [[AI-Ready-ERP-Transformation|AI 활용 기반으로서의 ERP 전환]] — 프로세스, 데이터, 시스템과 거버넌스를 AI 전사 확산의 운영 기반으로 정비하기
+- [[AX-Enterprise-Scaling|전사 AX 확산]] — 플랫폼, 프로세스, 사람(3P)의 정비, 수준별 변화관리와 허브, 스포크 거버넌스
+- [[AI-Adoption-Measurement|전사 AI 활용 측정]] — 채택, 행동, 성과와 사용 깊이
+- [[FDE-AX-Delivery|FDE 기반 AX 수행]] — 시범 검증에서 업무 전환까지와 공급사 FDE의 출구 조건
 - [[Toxic-Org-Detection|독성 조직 판별 프레임]]
 - [[IT-Downturn-Career-Strategy-Market-Shift|AI 패러다임과 시장 구조 변화]]

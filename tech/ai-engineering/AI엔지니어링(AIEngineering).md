@@ -17,7 +17,7 @@ Software 3.0 패러다임, LLM과 에이전트, 하네스, 평가, 조직 전환
 - [[Palantir-Foundry|Palantir Foundry와 운영 온톨로지]] — 데이터와 모델, 객체 백엔드, 행동과 함수, 보안, SDK와 에이전트 연결
 - [[paradigm|패러다임, 모델]] — Software 3.0, 에너지 기반 추론, Gemini 4 계열(Argon, Carbon, Neon, Hydrogen), Claude Fable 5 / Mythos 5, Claude Opus 5, OpenAI GPT 세대 변화 (모델, API 거동), 이미지 생성 모델의 잠재 공간과 픽셀 공간
 - [[tools|실천 도구]] — 하네스 시스템(구성요소 비교 실험, 런타임 구성도, 게이트 배치, 도입 계단, AI 네이티브 시스템과 조직, 군집 격리), 컨텍스트(멀티레포 분석과 업무 기록 재사용), 에이전트, 사용량 관측, RAG, MCP, LLM 원리와 운영(학습과 생성, 추론 병목과 로컬 메모리 예산, 모델 티어, 워크플로우 패턴과 승인 대기열, 결정 모델, 프롬프트 캐싱, 실패 처리), 음성 인식(로컬 STT 엔진 비교, 영상 전사 파이프라인)
-- [[org-role|조직, 역할]] — AX 조직 전환(Maker→Closer), 개발자 역할 재정의, 도달력(Distribution)이 새 해자, 생성형 AI 시장 구도와 규제 논쟁, AI 시민 개발
+- [[org-role|조직, 역할]] — AX 조직 전환(Maker→Closer), 개발자 역할 재정의, 도달력(Distribution)이 새 해자, 생성형 AI 시장 구도와 규제 논쟁, AI 시민 개발, 전사 AX 확산과 활용 측정, FDE 기반 AX 수행
 - [[eval|평가, 신뢰성, 캘리브레이션]] — LLM 평가 전략, Abstention(모른다고 말하는 능력), 환각 유형과 검증, 평가 주도 개발(EDD), 루브릭과 점수 게이트, LLM 판정기, 골든셋과 배포 관문, 서빙 모델 드리프트 감시
 - [[ml-foundations|머신러닝 기초]] — 지도학습 모델과 손실(k-NN, perceptron, SVM, 정규화), k-means, 신경망과 역전파, dropout, 합성곱 신경망, 자연어 처리 기초(문법, n-gram, Naive Bayes, word2vec), PyTorch 텐서와 학습 루프(autograd, optimizer, DataLoader)
 
@@ -35,6 +35,13 @@ Software 3.0 패러다임, LLM과 에이전트, 하네스, 평가, 조직 전환
 
 - [x] [[Expertise-Formation-AI|AI 시대 전문성 형성]] — 기본기와 지식의 폭, 필요할 때의 깊이, SRE 탈숙련 논의의 유추 한계
 - [x] [[AI-Tools-Automation-and-Learning|AI 도구, 자동화와 학습]] — 조직 병목과 생산성 자기 보고, 구현 속도와 완료 결과의 구분
+- [x] [[Work-Stage-AI-Adoption|업무 단계에서 찾는 AI 적용 지점과 도구 정착]] — 단계별 적용 가능성과 사람에게 남는 판단, 골목길 문제, 도입 목적에서 나온 검증 기준과 실사용자 시범 사용, 공급사 목표 모델과 기준선, 실무자 층에서 먼저 보이는 효용
+- [x] [[AX-Enterprise-Scaling|전사 AX 확산]] — 3P(플랫폼, 프로세스, 사람) 정비, 외부 AI를 차단에서 관리로, 연결 표준과 단일 등록 절차, 수준별 변화관리, 허브와 스포크 거버넌스, 클라이언트 제로
+- [x] [[AI-Adoption-Measurement|전사 AI 활용 측정]] — 채택, 행동, 성과의 세 층, 넓이보다 깊이, 크레딧 소진의 수요와 비용 신호, 설문의 표본과 오차
+- [x] [[FDE-AX-Delivery|FDE 기반 AX 수행]] — 시범 검증과 업무 전환의 차이, SI 방식과의 비교, 단계별 산출물(HITL 설계서, 런북), FDE 공수, 공급사 FDE 계약의 출구 조건
+- [x] [[Public-Sector-AX-Constraints|공공부문 AX의 구조적 제약]] — 결재가 남기지 않는 판단 배경, 망분리가 만든 업무 우회, 통합형과 연결형 시스템, 현업 수요 중심의 도입 주체
+- [x] [[Government-AI-Common-Platform|공공 생성형 AI 공통기반]] — 공유 플랫폼의 계층과 정보시스템 단위 테넌트, 공유와 전용 용량, 코드 수준별 빌더, AI정부24의 질의 형태와 전환 지표 정의, 공통기반과 기관 구축형의 선택
+- [x] [[AI-Command-and-Control-Targeting|AI 기반 지휘통제와 표적처리]] — F2T2EA 단계별 성격(JP 3-60 2013년판), 지능형 C2의 전출처 융합과 결심 지원, 결심 지점과 온톨로지 모델링, 끊기는 통신, CJADC2가 체계가 아닌 방향이라는 GAO 진단
 
 - [x] [[Crowdsourced-Human-Evaluation|크라우드소싱 사람 평가]] — 자격과 응답 품질의 분리, 검사 조건과 플랫폼 종료 확인
 - [x] [[Independent-Agent-Code-Review|독립 에이전트 코드 리뷰]] — 스캐너, finder/verifier 분리와 근거 및 전달 범위 검사
@@ -75,7 +82,9 @@ Software 3.0 패러다임, LLM과 에이전트, 하네스, 평가, 조직 전환
 - [x] [[Harness-Component-Evaluation#코딩 도구의 비용 비교|코딩 도구 비용 비교]] — 모델과 하네스 효과 분리, 실패와 재시도 포함, 환산 사용량과 청구액 구분
 - [x] [[Harness-Component-Evaluation#팀이 만든 하네스도 정기적으로 평가한다|팀 하네스의 정기 평가]] — 결정론과 비결정론 부분의 평가, enterprise harness의 얇고 연합된 시작
 - [x] [[Harness-Component-Evaluation#하네스를 바꿀 때는 고정 지시와 확장 경로를 비교한다|하네스 교체 비교]] — 시스템 프롬프트 변경 빈도, 요청당 고정 토큰, 확장 API와 권한 기본값
-- [x] [[Agent-Governance-Controls|에이전트 거버넌스 통제]] — 판단은 확률, 통제는 결정론. 신원과 권한, 조건부 승인, 되돌리기, 추적과 감사
+- [x] [[Agent-Governance-Controls|에이전트 거버넌스 통제]] — 판단은 확률, 통제는 결정론. 신원과 권한, 조건부 승인, 되돌리기, 추적과 감사, 조직이 정할 다섯 영역(데이터 등급과 외부 AI 허용 범위, 단일 관문, 모델 등급과 한도, 자산 등록, 영역별 성숙도)
+- [x] [[Enterprise-Code-Agent-Operations|기업 개발 조직의 코드 에이전트 운영 설계]] — 코드 생성 뒤 남는 병목, 정보 민감도별 모델 환경, 실행 가능한 작업 맥락, 기업 시스템 접근 계층, 금융 코드 변경 통제와 검증 패키지, 흐름 운영, 반복 판단의 자산화
+- [x] [[Agent-Identity-and-Execution-Authority|에이전트 신원과 실행 권한]] — 에이전트 신원, 위임 신원과 디지털 권한증(RFC 8693 위임 대응), 접근 통제의 다섯 질문, 계정 탈취와 프롬프트 주입과 섀도 에이전트, 등록에서 승인까지, IAM 운영 자동화와 레드팀, 블루팀
 - [x] [[Event-Log-Highlight-Generation|이벤트 로그 기반 하이라이트]] — 코드와 모델의 역할 분리, 통계 조회와 사실 검증
 - [x] [[Strands-Conversation-State|Strands 대화와 세션 상태]] — 문맥 축약과 저장, 대화별 동시 쓰기 경계
 - [x] [[LLM-Gateway|LLM 게이트웨이]] — 키별 권한, 예산 검사의 DB 의존성, 배포 경로와 운영 점검, 캐시 계층의 키와 정산
@@ -89,6 +98,7 @@ Software 3.0 패러다임, LLM과 에이전트, 하네스, 평가, 조직 전환
 - [x] [[Aspect-Based-Sentiment-Analysis|속성 기반 감성 분석]] — 구문과 감성 추출, 리뷰 집계와 요약, 단계별 평가
 - [x] [[Time-Series-Forecast-Evaluation|시계열 예측 평가]] — 예측 시점의 정보, rolling origin, 외부 변수와 MAPE의 해석
 - [x] [[Agent-Data-Analysis-Workflow|에이전트 데이터 분석과 보고서]] — 계획, 격리된 코드 실행, 계산 결과 인계와 검산, 정기 보고서의 데이터 확정과 최종 승인
+- [x] [[Data-Agent-Analysis-Scenarios|데이터 분석 에이전트의 단계와 분석 시나리오]] — 조회, 원인 분석, 조치 제안별 자산, 차이 분해의 순서와 검산, 검토 가능한 시나리오 그래프, 문서 인과 관계의 후보 처리 (발표 기준)
 - [x] [[Agent-Browser-Task-Boundaries|브라우저 에이전트의 작업과 권한 경계]] — 파일과 계정 권한, 정기 실행과 기억, 로컬 보관과 모델 전송
 - [x] [[Agent-Browser-Task-Boundaries#컴퓨터 사용의 경로 구분과 활동 기록 기억의 통제|컴퓨터 사용과 활동 기록의 통제]] — 경로별 백그라운드 실행, 일시정지와 소급 삭제, 제외 목록, 48시간 임시 보관과 서버 처리 (발표와 2026-11-21 공식 문서 대조)
 - [x] [[Agent-Platform-Knowledge-Skills#저장소 밖의 업무 맥락은 연결로 공급한다|저장소 밖 맥락의 플러그인 연결]] — 플러그인 묶음과 지원 표면, 되묻기, 사용자가 고르는 주입, 페이지 지침과 예약 작업의 구분 (발표와 2026-11-21 공식 문서 대조)
@@ -131,6 +141,7 @@ Software 3.0 패러다임, LLM과 에이전트, 하네스, 평가, 조직 전환
 - [x] [[Production-Agent-Architecture-Cases-and-Interview#사례|에이전트 격리와 행동 승인 사례]] — 사용자별 VM과 별도 통제 계층
 
 - [x] [[Realtime-Voice-Architecture|실시간 음성 에이전트]] — 전이중 대화와 백엔드 작업 분리, 위임과 취소, 음성 안내와 실제 결과 대조, TTS의 첫 재생 지연과 버퍼 절충
+- [x] [[Contact-Center-AI-Agent|고객상담 AI 에이전트]] — 세 이해관계자의 요구, 셀프서비스 해결률과 이탈률의 구분, 상담 지표 정의, 단계적 도입, 아웃바운드의 본인 확인과 실패 경로, AI 판정의 참고값 지위
 - [x] [[Korean-TTS-Training-and-Evaluation|한국어 TTS 학습과 평가]] — 코덱과 생성 모델의 병목 분리, LoRA와 전체 미세조정, 내용 정확도와 청취 평가
 - [x] [[MCP#RAG, 에이전트와 Function Calling의 경계|MCP, RAG와 에이전트의 책임 구분]] — 연결 프로토콜, 근거 검색과 동적 실행 흐름
 - [x] [[LLM-Inference-Bottlenecks#에이전트 서빙은 세션 단위로 측정한다|에이전트 서빙 벤치마크]] — 턴별 문맥 증가, 캐시 재사용, 동시성 포화점과 지연 목표
@@ -201,6 +212,9 @@ Software 3.0 패러다임, LLM과 에이전트, 하네스, 평가, 조직 전환
 - [x] [[Agent-Ready-API-Design#명령 발견과 실패 응답도 계약이다|OpenAI CLI의 출력과 입력 계약]] — 파이프에서도 텍스트인 기본 출력, 오류 형식, 신뢰하지 않는 stdin의 파일 참조 차단
 - [x] [[Agent-Always-On-Mac-Host#세션 유지는 끊김과 재부팅을 나눠 본다|에이전트 세션 복원의 범위]] — Corgi의 화면과 대화 복원, 에이전트 훅 추가와 복구 파일
 - [x] [[Codebase-Knowledge-Map|대규모 코드베이스 지식 지도]] — 결정론적 추출과 AI 연결, 확인, 추론과 미해결의 구분, 재구축 동일성 검사, 그래프 순회 상한과 상시 벡터 DB 없는 exact 비교 사례
+- [x] [[LLM-Inference-Fleet-Efficiency|LLM 추론 플릿 효율]] — 요청 상태 기반 라우팅, KV 캐시 계층 오프로딩과 캐시 키, 다중 모델 KV 메모리 공유, 추론과 학습의 GPU 대여와 회수, 장애 격리와 재배포, 이종 가속기 풀, 동시 적용한 효과의 측정 한계
+- [x] [[LLM-Inference-Fleet-Cases|LLM 추론 플릿 운영 사례]] — 발표 수치를 읽는 기준, 이종 GPU와 NPU 풀의 게이트웨이 입장 단계와 KV 캐시 4계층, GPU 이상 유형 17종과 XID 해석 한계, llm-d 3사 혼합 풀 실험의 부하 조건과 +91%가 나온 부하 지점
+- [x] [[Sovereign-AI-Platform|주권형 AI 플랫폼]] — 망분리가 통제하지 못하는 네 영역, 규제 요구의 세 질문, 가속기와 모델과 운영 환경의 독립성, GPU 사용 가시성, 에이전트 계층의 구축 순서
 
 - [x] [[AI-Information-Power|AI와 정보 선택의 권력]] — 생성과 추천시스템, 제도적 권한과 정정 경로
 - [x] [[AI-Assisted-Mathematical-Research|AI 보조 수학 연구]] — 증명의 검증, 선행 연구와 신규성, 이해를 보존하는 학습

@@ -80,6 +80,8 @@ Google Analytics의 전자상거래 계측은 상품 선택, 결제 시작과 �
 
 LG전자와 AWS의 공개 설계는 마케팅 질문의 계획 수립, 코드 기반 분석과 보고서 생성을 연결한다. 이는 분석 업무 자동화의 사례이며, 같은 구조를 도입하면 매출이나 생산성이 일정 비율로 증가한다는 보장은 아니다. 기술 구조는 [[Agent-Data-Analysis-Workflow|에이전트 데이터 분석과 보고서]]로 분리한다.
 
+롯데백화점은 생성형 BI와 내부 고객 분석 시스템을 합친 BI 에이전트를 2025년 5월 말부터 운영해 한 달 만에 고객 분석 업무 시간이 최대 70% 줄고 복잡한 심층 분석 건수가 10% 이상 늘었다고 회사와 공급사가 밝혔다(2025-06-29 보도). 상권, 날씨와 통신사 유동인구 같은 외부 정보도 고객 데이터와 합쳤다. 최대값이고 기준 업무와 측정 방법이 공개되지 않았으므로 평균 효과나 팀 전체의 생산성으로 바꾸지 않는다. 지표 정의를 BI와 에이전트가 함께 쓰게 하는 구조는 [[Semantic-Layer|시맨틱 레이어]]에서 다룬다.
+
 ## 마케팅 엔지니어: 분석을 실험 실행에 연결한다
 
 마케팅 엔지니어는 고객 조사, 페이지 제작, 광고 소재, 데이터 연결과 실험을 이어 주는 역할이다. 개별 캠페인 제작을 빨리 하는 것에서 반복 가능한 실행 흐름을 만드는 것으로 작업 단위가 바뀐다. 2026-10 Greg Isenberg의 운영 제안이며, 제목의 100배 실험은 비교 조건을 갖춘 생산성 벤치마크가 아니다.
@@ -152,6 +154,8 @@ LG전자와 AWS의 공개 설계는 마케팅 질문의 계획 수립, 코드 �
 - [Retention Futility: Targeting High-Risk Customers Might be Ineffective — Journal of Marketing Research, Eva Ascarza](https://journals.sagepub.com/doi/10.1509/jmr.16.0163)
 - [Affordable Uplift: Supervised Randomization in Controlled Experiments — arXiv, Johannes Haupt et al.](https://arxiv.org/abs/1910.00393)
 - [데이터 쌓기만 하면 뭐하나? 어떻게 볼지를 모르는데 – LG전자의 Agentic AI 기반 인사이트 추출 시스템 개발기 — AWS](https://aws.amazon.com/ko/blogs/tech/lge-agentic-report-automation/)
+- [롯데백화점, 생성형 AI로 고객 분석… 초개인화 전략 속도 — 동행미디어 시대](https://www.sidae.com/article/2025062814103038201) — 2025-06-29 보도, 운영 기간과 최대 70%, 10% 이상 수치 확인
+- [AI 비용은 50% 낮추고, 분석은 10배 빠르게: 신뢰할 수 있는 데이터 기반과 AI 에이전트가 만드는 차이 — 삼성SDS REAL Summit 2026 발표 자료, Strategy](https://image.samsungsds.com/kr/real/2026/assets/uploads/sessionPDF/Track%204-2%20Strategy_%EC%A0%95%EA%B2%BD%ED%9B%84%20%EC%A7%80%EC%82%AC%EC%9E%A5_AI%20%EB%B9%84%EC%9A%A9%EC%9D%80%2050%20%EB%82%AE%EC%B6%94%EA%B3%A0%20%EB%B6%84%EC%84%9D%EC%9D%80%2010%EB%B0%B0%20%EB%B9%A0%EB%A5%B4%EA%B2%8C_%EA%B3%B5%EC%9C%A0%EC%9A%A9.pdf) — 2026년 9월 발표. 롯데백화점 사례 인용
 
 ## 관련 문서
 
@@ -159,3 +163,5 @@ LG전자와 AWS의 공개 설계는 마케팅 질문의 계획 수립, 코드 �
 - [[Commerce-Revenue-Formula|커머스 수익 공식]]
 - [[Agent-Data-Analysis-Workflow|에이전트 데이터 분석과 보고서]]
 - [[Social-Content-Scaling|소셜 콘텐츠 성장 단계]]
+- [[Semantic-Layer|시맨틱 레이어]] — BI와 에이전트가 같은 지표 정의를 쓰는 구조
+- [[Marketing-Review-Criteria|마케팅 산출물의 검토 기준과 검토 병목]]

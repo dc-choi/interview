@@ -87,6 +87,7 @@ NIST SP 800-40 Rev. 4는 새 취약점마다 위험 평가로 최적의 대응�
 탐지에서 대응까지의 시간도 같은 문제다.
 
 - M-Trends 2026은 최초 접근 뒤 다른 위협 그룹으로 넘기기까지의 중앙값이 2022년 8시간 넘게에서 2025년 22초로 줄었다고 보고하고, 일상적인 악성코드 경보를 곧 이어질 2차 침입의 높은 우선순위 지표로 다뤄 사람이 직접 조작하는 단계 전에 정리하라고 권한다.
+- CrowdStrike 2026 Global Threat Report(2026-02-24)는 2025년 eCrime의 평균 breakout time(최초 접근에서 다른 시스템으로 측면 이동하기까지)이 29분으로 2024년보다 65% 빨라졌고 가장 빠른 사례는 27초, 한 침입에서는 최초 접근 4분 안에 데이터 유출이 시작됐다고 밝혔다. 벤더 자체 관측이며 위 M-Trends의 인계 시간과는 재는 구간이 다르다.
 - Hugging Face는 고심각도 신호가 요일과 관계없이 몇 분 안에 대응자를 호출하도록 탐지와 경보를 고쳤다고 밝혔다. 위 침입은 주말 사이에 번졌다.
 - Anthropic은 방어자에게 SOC 자동화, 위협 탐지, 취약점 평가와 사고 대응에 AI를 시험해 보라고 권했고, Hugging Face는 AI 보조 분석으로 보통 며칠 걸릴 일을 몇 시간에 했다고 밝혔다. 자동 대응을 어디까지 열지는 아래 권한 경계 절을 따른다.
 
@@ -154,6 +155,7 @@ OpenAI의 기술 보고서는 최소 권한, 격리와 분할, 강한 인증 같
 
 - [How Low Can You Go? An Analysis of 2023 Time-to-Exploit Trends — Google Cloud Blog, Mandiant](https://cloud.google.com/blog/topics/threat-intelligence/time-to-exploit-trends-2023) — 2024-10-16. 2026-11-02 TTE 정의, 연도별 평균, 이상치 처리, 제로데이와 n-day 구분과 비율, 보수적 추정이라는 한계 대조
 - [M-Trends 2026: Data, Insights, and Strategies From the Frontlines — Google Cloud Blog, Mandiant](https://cloud.google.com/blog/topics/threat-intelligence/m-trends-2026) — 2026-03-24. 평균 TTE 추정값, 22초 인계, AI 직접 원인에 대한 판단, 일상 경보 권고 대조
+- [2026 CrowdStrike Global Threat Report: AI Accelerates Adversaries and Reshapes the Attack Surface — CrowdStrike](https://www.crowdstrike.com/en-us/press-releases/2026-crowdstrike-global-threat-report/) — 2026-02-24. 2026-11-23 breakout time 29분, 65%, 27초와 4분 유출 대조
 - [Impact of AI on cyber threat from now to 2027 — NCSC](https://www.ncsc.gov.uk/report/impact-ai-cyber-threat-now-2027) — 2025-05-07 평가. 공개부터 악용까지의 시간에 대한 판단 대조
 - [Disrupting the first reported AI-orchestrated cyber espionage campaign — Anthropic](https://www.anthropic.com/news/disrupting-AI-espionage) — 2025-11-13. 탐지 시기, 대상 수, AI 수행 비율, 요청 속도, 안전장치 우회와 한계, 방어 권고 대조
 - [OpenAI-Hugging Face Incident Technical Report — OpenAI](https://cdn.openai.com/pdf/67869394-cb91-4c12-888c-5cbd85c7814c/OpenAI-Hugging-Face%20Incident-Technical-Report.pdf) — 2026-11-02 1장, 2장, 4장 B절, 6장 B절, 7장과 8장 D절 대조. 사고 당사자의 보고이며, 핵심 결론은 CrowdStrike가 검증하고 모델 행동은 METR와 Redwood Research가 평가했다고 밝힘

@@ -97,3 +97,4 @@ awslabs의 `aidlc-workflows` 저장소는 방법론을 도구 중립 코어와 �
 - [[Harness-Gate-Placement|게이트 배치 (요청 층과 강제 층)]]
 - [[Agent-Spec-Writing|에이전트 스펙 작성법]]
 - [[Developer-Role-AI-Era|AI 시대 개발자 역할]]
+- [[Enterprise-Code-Agent-Operations|기업 개발 조직의 코드 에이전트 운영 설계]] — 이름이 겹치는 삼성SDS의 AI DLC(작업 맥락 연결 체계, 이 방법론과의 관계 미확인)

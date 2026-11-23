@@ -123,5 +123,6 @@ ITU-R Report SM.2152(2009)는 SDR을 주파수 범위, 변조 방식, 출력 등
 - [[Mobile-Network-Continuity|이동 환경의 통신 연속성]]
 - [[Wireless-Multiple-Access|무선 다중접속과 공간 다중화]]
 - [[Satellite-Direct-to-Device|위성 직접 연결]]
+- [[Private-5G-Network|5G 특화망 (이음5G)]]
 - [[Session-Presentation-Application-Layer|세션, 프레젠테이션, 애플리케이션 계층]]
 - [[HTTP-3|HTTP/3와 QUIC]]

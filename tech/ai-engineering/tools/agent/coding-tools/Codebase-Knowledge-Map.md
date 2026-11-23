@@ -120,3 +120,4 @@ MCP를 상시 띄우지 않고 연결할 때마다 로컬에서 새로 시작하
 - [[LLM-Wiki-Knowledge-Compilation|LLM 위키와 지식 합성의 영속화]]
 - [[Vector-Similarity-Search|벡터 유사도 검색]]
 - [[Ontology-Knowledge-Graph|온톨로지와 지식 그래프]]
+- [[Agentic-Legacy-Code-Conversion|에이전트 기반 레거시 코드 전환 파이프라인]] — 전환용 지식 그래프에서 함수별 변환 맥락을 뽑는 사례

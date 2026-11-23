@@ -26,7 +26,7 @@ aliases: ["비즈니스&제품(Business&Product)", "Business & Product"]
 - [[biz/marketing/마케팅(Marketing)|마케팅 (Marketing)]] — 브랜딩, 마케팅, 광고 층위, STP, 4P, Customer Journey
 - [[biz/product-strategy/제품전략(ProductStrategy)|제품 전략 (Product Strategy)]] — 발견, 검증, 제품 전달, 성장과 확장
 - [[biz/measurement-and-risk/측정과리스크(MeasurementAndRisk)|측정과 리스크 (Measurement and Risk)]] — North Star Metric, 리스크 관리
-- [[biz/commerce/커머스(Commerce)|커머스 (Commerce)]] — 이커머스 거래 구조, 플랫폼 유형과 한국 시장 사례
+- [[biz/commerce/커머스(Commerce)|커머스 (Commerce)]] — 이커머스 거래 구조, 플랫폼 유형과 한국 시장 사례, 공급망 계획, 구매와 물류
 - [[biz/funding/자금조달(Funding)|자금 조달 (Funding)]] — 정부 지원사업과 정책자금, 사업계획서와 R&D 계획서, 공고 탐색
 - [[Business-Tax|사업자 세무]] — 세금 계산 기초, 부가세, 소득세와 법인세, 원천징수, 장부와 신고
 

@@ -136,3 +136,6 @@ AI 에이전트 작업에 대응시키면 다음과 같이 볼 수 있다(이 �
 - [[LLM-Wiki-Knowledge-Compilation|LLM 위키와 지식 합성의 영속화]]
 - [[Reverse-Engineering-Learning|역설계 학습 (구체적 질문으로 전문가의 암묵지를 끌어내기)]]
 - [[Community-Knowledge-and-Co-Creation|커뮤니티 지식 축적과 공동창작 (암묵지에서 콘텐츠와 IP로)]]
+- [[Public-Sector-AX-Constraints|공공부문 AX의 구조적 제약 (결재가 남기지 않는 판단 배경)]]
+- [[Logistics-Operations-Agents|물류 운영 AI 에이전트 (시스템에 남지 않는 결정 이유를 쌓는 사례)]]
+- [[Marketing-Review-Criteria|마케팅 산출물의 검토 기준 (리더의 검토 코멘트를 점검표로 꺼낸 사례)]]

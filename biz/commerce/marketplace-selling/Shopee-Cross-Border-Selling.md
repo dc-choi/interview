@@ -178,3 +178,4 @@ aliases: ["Shopee Cross-Border Selling", "쇼피 역직구 판매", "쇼피 크�
 - [[GTM-Strategy|Go-to-Market 전략]]
 - [[Grant-Search-Channels|지원사업 공고 탐색 채널]]
 - [[Commerce-Korea-History-2014-2017|한국 이커머스 역사 2014-2017]]
+- [[Export-Logistics-Cost-Structure|중소 수출기업의 물류비 구조와 공동물류]] — 혼재와 공동물류의 단가 구조

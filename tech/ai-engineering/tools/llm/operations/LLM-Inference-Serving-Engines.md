@@ -160,3 +160,4 @@ README, 저장소의 배포 Q&A 문서와 소스의 환경 변수 정의, 공개
 - [[LLM-Failure-Handling-Response-Validation|구조화 출력과 응답 검증]]
 - [[Local-Inference-Deployment-Cases|로컬 추론의 배포 사례]]
 - [[Deterministic-Test|결정적 테스트와 flaky 대응]]
+- [[LLM-Inference-Fleet-Efficiency|LLM 추론 플릿 효율]] — KV 캐시 계층과 복제본 라우팅의 운영

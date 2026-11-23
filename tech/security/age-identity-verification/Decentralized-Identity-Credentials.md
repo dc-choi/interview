@@ -166,4 +166,5 @@ DID는 `did:<method 이름>:<method별 식별자>`의 세 부분으로 된 문�
 - [[JWT|JWT (SD-JWT의 바탕인 서명 토큰)]]
 - [[Public-Key-Cryptography|공개키 암호 (디지털 서명과 PKI)]]
 - [[HSM-Key-Custody|HSM과 서명 키 관리 (발급자 서명 키 보관)]]
+- [[Institutional-Digital-Asset-Wallet|기관용 디지털자산 월렛 (vLEI 법인 역할 자격증명과 거래 서명 키의 결합)]]
 - [[Blockchain-Replication-and-Consensus-Cost|블록체인의 복제와 합의 비용 (원장을 레지스트리로 쓸 때의 비용)]]

@@ -37,3 +37,4 @@ aliases: ["Enterprise Browser Control", "기업용 브라우저 통제", "Firefo
 
 - [[Access-Control-Models|접근 제어 모델]]
 - [[Network-Separation|망분리와 데이터 경계]]
+- [[Agent-Governance-Controls#데이터 등급이 외부 AI 허용 범위를 정한다|외부 AI 사용의 데이터 등급 통제]] — 기밀 등급 업로드 차단, 응답 비식별과 로그 탐지

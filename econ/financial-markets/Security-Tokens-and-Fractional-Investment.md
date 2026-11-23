@@ -153,6 +153,7 @@ AWS Industry Week 2024 세션에서 코스콤이 공개한 구성이다(2025-01-
 - [[Stablecoin-Value-and-Redemption|스테이블코인 가치와 상환]] — 스테이블코인의 가치와 상환 구조
 - [[Financial-System-Overview|금융시스템 개관]] — 발행시장과 유통시장
 - [[HSM-Key-Custody|HSM과 서명 키 관리]] — 비추출 키, CloudHSM과 KMS 선택
+- [[Institutional-Digital-Asset-Wallet|기관용 디지털자산 월렛의 자격증명과 키 관리]] — 거래 요청자의 자격 검증, 서비스별 키 분리, 체인별 서명 방식
 - [[SaaS-Regional-Data-Isolation|SaaS 리전별 데이터 격리]] — 네임스페이스만으로 테넌트를 격리할 때의 한계
 - [[ELB|AWS ELB]] — GWLB와 보안 어플라이언스 경로
 - [[금융시장(Financial Markets)|금융시장 지도]]

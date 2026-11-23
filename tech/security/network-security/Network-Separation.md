@@ -3,7 +3,7 @@ tags: [security, network-security, network-separation, air-gap, vdi, virtualizat
 status: done
 category: "Security - 네트워크 보안"
 aliases: ["Network Separation", "망분리", "물리적 망분리", "논리적 망분리", "망연계", "Cross Domain Solution", "CDS", "Air Gap", "에어갭", "SBC", "CBC"]
-verified_at: 2026-10-11
+verified_at: 2026-11-23
 ---
 
 # 망분리: 네트워크 경로로 신뢰 영역을 나누는 통제
@@ -95,6 +95,8 @@ SBC와 CBC는 국내 업계에서 쓰는 분류다. 서버 기반 방식은 어�
 
 국가정보원이 2025-09-30 국가 망 보안체계(N2SF) 보안가이드라인 1.0을 공개했다고 보도됐다. 업무와 정보를 기밀(C), 민감(S), 공개(O) 등급으로 구분해 보안대책을 차등 적용하는 체계로, 기존의 획일적 망분리를 대체하고 보완하는 방향이다. 국정원 원문은 이 문서 작성 시 직접 열람하지 못해 보도 기준으로 적었다.
 
+2026-05-01 일부개정된 국가 사이버보안 기본지침은 N2SF 절(제39조의2~제39조의5)을 새로 두고 내부망과 인터넷망 분리 조항(제40조)을 삭제했다. 다만 같은 지침은 등급이 다른 도메인이나 정보시스템 사이의 통신을 차단하거나 분리할 수 있게 하고(제39조의5 제2항), 비밀을 전자적으로 처리할 때는 그렇게 분리한 기밀등급 영역이나 인터넷망과 분리된 별도의 기밀등급 정보시스템에서 처리하게 한다(제62조 제4항). 등급별 처리 규칙은 [[Public-Sector-AI-Infrastructure-Placement#업무정보 등급이 처리 영역을 정한다|공공 AI 인프라의 배치 판단]]에 있다.
+
 ## 판단: 경계 모델의 위치
 
 망분리는 네트워크 위치로 신뢰를 나누는 경계(perimeter) 모델이다. NIST SP 800-207은 제로 트러스트를 물리적 위치나 네트워크 위치만으로 자산이나 계정에 암묵적 신뢰를 주지 않는 모델로 정의하고, 경계가 뚫린 뒤에는 내부 이동을 막지 못하는 점을 경계 중심 보안의 한계로 든다. 망분리 환경도 망 안의 인증, 최소 권한, 접속 기록과 내부 분할이 있어야 이 한계를 줄인다.
@@ -148,7 +150,7 @@ AWS 예시의 처리 흐름을 2026-10-14 대조했다. 현행 규제 전체의 
 
 ## 출처
 
-망분리 영상은 제공된 메모를 바탕으로 정리했으며 영상 본문과 자막은 직접 확인하지 못했다. 보완한 기술 설명과 규제 내용은 아래 공식 자료와 대조했고, N2SF는 공식 원문 대신 보도를 기준으로 했다. 제로 트러스트 영상은 음성 인식 전사문으로 확인한 계기 자료이고, 본문의 제로 트러스트 서술은 NIST, OMB, CISA 문서와 BeyondCorp 원문을 기준으로 했다.
+망분리 영상은 제공된 메모를 바탕으로 정리했으며 영상 본문과 자막은 직접 확인하지 못했다. 보완한 기술 설명과 규제 내용은 아래 공식 자료와 대조했고, N2SF 보안가이드라인은 공식 원문 대신 보도를 기준으로 했으며 2026-05-01 개정 지침의 N2SF 조항은 지침 원문과 대조했다. 제로 트러스트 영상은 음성 인식 전사문으로 확인한 계기 자료이고, 본문의 제로 트러스트 서술은 NIST, OMB, CISA 문서와 BeyondCorp 원문을 기준으로 했다.
 
 - [망분리에 대한 이야기 — 널널한 개발자 TV](https://www.youtube.com/watch?v=YPSfR8QnKO0&list=PLXvgR_grOs1BkUIxKsLEUdefyMWMA0_U-&index=10)
 - [제로 트러스트 심화: 해커가 내부에 있어도 안전한 보안 구조 90초 완성 — 길리랩 - 실전 구현 랩](https://www.youtube.com/watch?v=3Wgr8vstc8Q)
@@ -168,6 +170,7 @@ AWS 예시의 처리 흐름을 2026-10-14 대조했다. 현행 규제 전체의 
 - [CISA, Zero Trust Maturity Model](https://www.cisa.gov/zero-trust-maturity-model) — 2026년 10월 확인 시 보관 자료(Archived Content) 표시
 - [BeyondCorp: A New Approach to Enterprise Security — USENIX ;login:, Rory Ward, Betsy Beyer](https://www.usenix.org/publications/login/dec14/ward)
 - [망분리 방식, 업무 특성, 사용 환경 맞게 선택해야 — 데이터넷](https://www.datanet.co.kr/news/articleView.html?idxno=70879)
+- [국가정보원, 국가 사이버보안 기본지침 (2026. 5. 1. 일부개정)](https://www.ncsc.go.kr/template/resources/file/nis_guide_lines_2023_1_31.pdf) — N2SF 절(제39조의2~제39조의5) 신설과 제40조 삭제만 2026-11-23 대조
 - [국정원, 국가 망 보안체계(N2SF) 보안가이드라인 정식판 공개 — 더페어](https://www.thefairnews.co.kr/news/articleView.html?idxno=57288)
 - [국정원 보안 통제 항목 176→260여개로...N2SF 정식 지침 공표 — ZDNet Korea](https://zdnet.co.kr/view/?no=20250909182304)
 
@@ -181,7 +184,10 @@ AWS 예시의 처리 흐름을 2026-10-14 대조했다. 현행 규제 전체의 
 - [[Air-Gap-Covert-Channels|에어갭 은닉 채널 (물리 방출로 격리망을 넘는 유출)]]
 - [[VPC-NAT-Security|VPC, NAT와 보안 (규제 관점)]]
 - [[Fintech-Seminar#망분리|핀테크 세미나: 금융권 망분리 의무]]
+- [[Financial-Network-Separation-Easing|금융권 망분리 완화와 자율보안 전환 (2026년 보안 목적 AI 특례와 전면해제 논의)]]
 - [[TS-Backend-Meetup-1#금융권보안현실|TS 백엔드 밋업: 금융권 보안 현실]]
 - [[Access-Control-Models#접속 후에도 권한을 다시 평가한다|접속 후 권한 재평가 (제로 트러스트의 세션별 접근)]]
 - [[Security-Policy-and-Assessment#경계 장비보다 자원과 접근 경로를 기준으로 점검한다|경계 장비보다 자원과 접근 경로 기준의 점검]]
+- [[Public-Sector-AI-Infrastructure-Placement|공공 AI 인프라의 배치 판단 (2026-05-01 지침의 N2SF 등급별 처리 영역)]]
+- [[Sovereign-AI-Platform|주권형 AI 플랫폼 (망분리 밖에 남는 AI 스택의 통제)]], [[Air-Gapped-AI-Delivery|폐쇄망 AI 플랫폼의 이미지와 모델 반입]]
 - [[네트워크보안(NetworkSecurity)|네트워크 보안 인덱스]]

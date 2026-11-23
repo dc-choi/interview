@@ -180,3 +180,4 @@ WMS에 적용한 하나의 설계안은 다음과 같다(강의 예시이며 회
 - [[Idempotency-Key|멱등성 키]]
 - [[Inventory-Data-Pipeline|재고 데이터 파이프라인 (재고 변동 이벤트의 하류 처리)]]
 - [[Test-Fixture-Scenario-Setup|상태별 픽스처와 시나리오 준비]]
+- [[Warehouse-Operations-Simulation|물류센터 운영 시뮬레이션 (적치 전략과 피킹 방식을 시나리오로 비교)]]

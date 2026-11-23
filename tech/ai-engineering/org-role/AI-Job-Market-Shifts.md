@@ -184,6 +184,7 @@ AI 활용 역량을 평가하는 전형이 무엇을 묻는지는 [[AI-Assisted-
 - [[Junior-Developer-Evidence-AI-Era|AI 시대 신입 개발자의 경험 증거]] — 책임 범위, 사용자 검증과 판단 기록
 - [[Expertise-Formation-AI|AI 시대의 전문성 형성]] — 위임과 이해의 축적
 - [[AI-Capability-Transfer|AI 역량 이전]] — 공급사 FDE 공고의 요건과 자립 역량 기준
+- [[FDE-AX-Delivery|FDE 기반 AX 수행]] — FDE가 실제로 하는 일(문제 정의, 업무 재설계, 평가)과 공급사가 비교한 SI 방식과의 차이
 - [[AI-Work-Output-and-Employment|AI 코드 생산과 제품 성과 및 고용]] — 생산량 지표와 고용 효과 연구의 한계
 - [[Developer-Role-AI-Era-Employment|AI 시대 개발자 고용과 견습 사다리]] — 과업별 노출과 직함의 유행
 - [[AI-Anxiety-and-FOMO|AI 불안과 FOMO를 다루는 법]] — 역사 비유와 고용 예측의 분리

@@ -165,3 +165,4 @@ Jack & Jill은 구직자용 Jack과 기업용 Jill을 두고, 양쪽에 맞는 �
 - [[Dev-Outsourcing-Engagement|개발 외주의 계약과 수주]]
 - [[Solo-Product-Market-Validation|1인 사업의 시장과 운영 용량]]
 - [[Trademark-and-Brand-Clearance|상표와 브랜드 권리 확인]] — 온라인 침해 신고의 근거와 정확도 요건
+- [[AI-Era-IT-Outsourcing|AI 시대 IT 아웃소싱과 오프쇼어의 역할 변화]] — 투입 공수 계약에서 성과 지표 계약으로의 전환과 함정

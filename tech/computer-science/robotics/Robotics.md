@@ -15,9 +15,12 @@ aliases: ["로보틱스", "Robotics"]
 - [x] [[Tactile-Grasp-Control|촉각 기반 파지 제어]] — 접촉과 미끄러짐 감지, 센서 보정, 실험 범위와 실패 조건
 
 - [x] [[Physical-AI-and-Liquid-Control|피지컬 AI와 리퀴드 제어]] — 몸체와 제어의 공동 설계, 판단과 반사의 계층, 통신 지연과 화성 로버의 현장 자율, 연속시간 동역학과 환경 전이
-- [x] [[Robot-Policy-Training-Pipeline|로봇 정책 학습과 평가 파이프라인]] — VLA 미세조정, 시연 데이터 증강, 시뮬레이터 폐루프 평가와 성공률 관문, 모델 레지스트리 승인, 범용 프런티어 모델의 직접 제어와 계층 구성, 구동기 모델 실측 맞춤
+- [x] [[Robot-Policy-Training-Pipeline|로봇 정책 학습과 평가 파이프라인]] — VLA 미세조정, 시연 데이터 증강, 시뮬레이터 폐루프 평가와 성공률 관문, 모델 레지스트리 승인, 범용 프런티어 모델의 직접 제어와 계층 구성, 구동기 모델 실측 맞춤, 센서 모사와 headless 병렬 시뮬레이션
+- [x] [[General-Purpose-Robot-Deployment|범용 로봇의 현장 도입]] — 공장과 물류센터의 확인된 배치 범위, RLBench와 BEHAVIOR-1K 수치 읽기, Gartner와 Goldman Sachs 전망, 가격 동등의 비교 단위, 도입 준비 단계
 - [x] [[Robot-Perception-Degradation-Safety|카메라 열화와 로봇의 위험 지시 거부]] — blur와 조작 영상에서 오르는 위험 과제 시도율, 시도와 완료의 구분, 관측 품질 검사와 불확실할 때의 정지
+- [x] [[Drone-Interoperability-Common-GCS|이기종 드론의 상호운용성과 공용 지상통제]] — MAVLink 방언과 `CRC_EXTRA`, 공통 모델과 기체별 어댑터, 전술 단말과 검증필 암호모듈, Blue UAS와 부품 단위 공급망 검증, 실증 데이터에서 단체표준으로 가는 경로
 
 ## 관련 문서
 
 - [[CS&프로그래밍(CS&Programming)|CS와 프로그래밍 지도]]
+- [[Digital-Twin|디지털 트윈]] — 로봇과 설비를 투입 전에 가상으로 검증하는 체계

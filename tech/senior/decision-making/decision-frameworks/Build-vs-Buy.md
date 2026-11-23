@@ -143,3 +143,4 @@ Build vs Buy는 필요한 기능을 직접 개발해 소유할지, 상용 제품
 - [[Durable-Workflow|지속 실행 워크플로]] — Temporal 도입과 경량 자작의 비교
 - [[AI-Commoditization-Differentiation|AI 범용화와 사업 차별화]] — 고객이 SaaS를 자체 도구로 대체하는 흐름과 남는 방어 요소
 - [[Dev-Outsourcing-Engagement|개발 외주의 계약과 수주]] — 외주 제안에서 구매할 기능과 직접 만들 기능의 구분
+- [[AI-Era-IT-Outsourcing|AI 시대 IT 아웃소싱과 오프쇼어의 역할 변화]] — 외부에 맡길 대상이 인력에서 검증, 운영, 테스트 역할로 옮겨 가는 구조

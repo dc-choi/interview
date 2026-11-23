@@ -94,3 +94,4 @@ TOGAF(The Open Group Architecture Framework)는 벤더 중립 컨소시엄 The O
 - [[ADR|ADR (Architecture Decision Record)]] — 개별 아키텍처 결정의 기록
 - [[Architecture-Styles|아키텍처 스타일]] — 애플리케이션 아키텍처 수준의 선택지
 - [[Tech-Debt-Management|기술 부채 관리]] — 전환 계획과 부채 상환의 우선순위
+- [[AI-Ready-ERP-Transformation|AI 활용 기반으로서의 ERP 전환]] — 프로세스, 데이터, 시스템 target을 AI 활용 기준으로 먼저 정하는 ERP 전환

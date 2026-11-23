@@ -67,3 +67,4 @@ AWS의 생성형 AI PoC 가이드는 사업 가치, 데이터 준비, 기술적 
 - [[B2B-Sales-Pipeline-and-Pilot|B2B 영업 파이프라인과 파일럿]]
 - [[Public-Procurement-Small-Contracts|국가기관과 지방자치단체의 소액 수의계약]]
 - [[PRD-Writing|요구사항과 비범위 정리]]
+- [[Procurement-AI-Agents|구매 업무의 자동화와 에이전트]] — 구매 조직 쪽에서 본 RFx 점검과 자동화

@@ -26,6 +26,7 @@ aliases: ["안정성엔지니어링(Reliability)", "Reliability Engineering"]
 - [x] [[Idempotent-Consumer|Idempotent consumer (멱등성, dedup, effectively-once)]]
 - [x] [[Backup-Restore|Backup / Restore + Data recovery (RTO/RPO, PITR, 복원 리허설)]]
 - [x] [[DR-Strategy|DR strategy (4전략, RTO/RPO, multi-region)]]
+- [x] [[DR-Tier-Classification|DR 등급 분류 (영향도 점수 산정, 등급별 RTO/RPO와 구축 방식, RTO 측정 시점, 등급별 훈련과 백업 기준, 2025년 국정자원 화재)]]
 - [x] [[RCA-Postmortem|RCA / Postmortem 문화 (blameless, 5 Whys, 액션 아이템, MTTR/MTTD)]]
 - [x] [[Root-Cause-Investigation-Loop|근본 원인 조사 루프 (특이점 파악, 수직과 수평 구체화, 가설 검증, conntrack 표 포화 사례)]]
 

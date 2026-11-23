@@ -10,6 +10,15 @@ aliases: ["Code Review AI Agent Operations", "에이전트 시대 코드 리뷰 
 
 AI가 작성한 변경도 요구사항, 호출부와 실패 조건에 대조해야 한다. 리뷰 운영에서는 오류 발견, 병합 승인, 배포 후 복구를 구분한다.
 
+## 리뷰 병목의 관측 자료
+
+Faros AI의 AI Engineering Report 2026(Q2판, 2026년 3월 분석 기준)은 약 2년의 텔레메트리(개발자 22,000명, 4,000여 팀)에서 팀이 AI 도입이 낮은 상태에서 높은 상태(주간 활성 사용자 50% 초과)로 옮겨 갈 때 지표가 어떻게 달라지는지 보고했다. 리뷰 쪽에서는 첫 리뷰까지의 대기 시간 중앙값이 156.6%, 리뷰에 머무는 시간의 중앙값이 441.5%(평균 199.6%) 늘었고, 사람과 에이전트 누구의 리뷰도 없이 병합된 PR이 31.3% 늘었다. 운영 쪽에서는 PR당 장애가 242.7%, 개발자당 버그가 54% 늘었다.
+
+- 회사별로 지표를 표준화한 뒤 순위 상관(스피어만)으로 본 관찰 분석이며, 6개 이상 회사의 데이터가 있고 유의(p<0.05)한 지표만 보고했다. AI 도입이 원인이라는 인과를 보인 것은 아니고, PR 크기가 커진 영향을 걸러 낸 분석은 보고서가 후속 과제로 남겼다. 엔지니어링 분석 플랫폼을 파는 회사가 자사 플랫폼 데이터로 낸 보고서다.
+- 2026년 9월 국내 공급사 발표(기업 AX를 위한 SW 개발 전략)는 이 보고서를 인용하며 리뷰 체류 시간 4.4배, 리뷰 없는 병합 33.1% 증가로 적었지만, 대조한 Q2판 기준으로는 중앙값 441.5% 증가(약 5.4배)와 31.3%다. PR당 장애 3.4배는 Q2판의 242.7% 증가와 맞는다. 발표는 판을 밝히지 않았고 뒤에 나온 Q3판(The Speed Trap)은 대조하지 않았다. 2차 인용 수치는 원문으로 확인한다.
+
+적용 제안: 리뷰 처리량을 늘리기 전에 첫 리뷰 대기, 리뷰 체류 시간, 리뷰 없는 병합 비율, 병합 PR당 장애를 같은 화면에 두고 AI 도입 전후를 비교한다. 리뷰 없는 병합이 늘면서 장애 지표도 오르면 리뷰를 건너뛰는 대신 아래 위험 등급별 경로를 다시 설계한다.
+
 ## 위험에 따른 검증
 
 검토 강도는 변경의 영향과 복구 가능성으로 정한다. 자동 검사 결과와 사람이 판단할 조건을 함께 남긴다.
@@ -123,6 +132,8 @@ LinkedIn 엔지니어링 블로그(2026-08-13)가 밝힌 사내 리뷰어 구성
 - [Risk-tiered human oversight — Thoughtworks Technology Radar Vol. 35](https://www.thoughtworks.com/radar/techniques/summary/risk-tiered-human-oversight) — 2026-11, 2026-11-09 Trial 링, 3단 분류, 검토 구역과 변경 분류 대조
 - [Human-in-the-loop theater — Thoughtworks Technology Radar Vol. 35](https://www.thoughtworks.com/radar/techniques/summary/human-in-the-loop-theater) — 2026-11, 2026-11-09 Caution 링, 정의와 대안 기법 대조
 - [How software engineering is changing: a tale of two eras — The Pragmatic Engineer, Neil Kakkar](https://newsletter.pragmaticengineer.com/p/how-software-engineering-is-changing) — 2026-11-03, 2026-11-09 리뷰 방식, 실패 유형의 리뷰 에이전트 반영과 세 사고 대조
+- [AI Engineering Report 2026: The Acceleration Whiplash — Faros AI](https://pages.faros.ai/hubfs/AI_Engineering_Report_2026_The_Acceleration_Whiplash_Faros.pdf) — Q2 2026판(2026년 3월 분석 기준), 2026-11-23 방법론, 리뷰 대기와 체류 시간, 리뷰 없는 병합, PR당 장애와 개발자당 버그 수치 대조
+- [기업 AX를 위한 SW 개발 전략 — 삼성SDS REAL Summit 2026 발표 자료, 삼성SDS](https://image.samsungsds.com/kr/real/2026/assets/uploads/sessionPDF/AX%EC%A0%84%EB%9E%B5_1-6_%EA%B8%B0%EC%97%85AX%EB%A5%BC_%EC%9C%84%ED%95%9C_SW%EA%B0%9C%EB%B0%9C%EC%A0%84%EB%9E%B5_%EC%8B%A0%EC%B0%BD%EB%AF%BC%EC%83%81%EB%AC%B4_%EB%B0%B0%ED%8F%AC%EB%B3%B8.pdf) — 2026년 9월 발표. 학습 계기, Faros 보고서 인용 수치와 Q2판 원문의 차이 확인
 
 - [High-Signal AI Code Review That Adapts to Your Codebase at Scale — LinkedIn Engineering, Min Chen, Shailesh Jannu, Mishal Patel, Peter Phan, Vidit S](https://www.linkedin.com/blog/engineering/ai/high-signal-ai-code-review-that-adapts-to-your-codebase-at-scale) — 2026-08-13, 2026-11-12 구성, 평가와 수용률 대조
 
@@ -142,3 +153,4 @@ LinkedIn 엔지니어링 블로그(2026-08-13)가 밝힌 사내 리뷰어 구성
 - [[Development-Workflow|저장소 승인 규칙과 머지 큐]]
 - [[Feature-Flag|피처 플래그]]
 - [[Rollback|롤백]]
+- [[Enterprise-Code-Agent-Operations|기업 개발 조직의 코드 에이전트 운영 설계]] — 코드 생성 뒤 남는 검토와 승인 병목, 통제된 변경

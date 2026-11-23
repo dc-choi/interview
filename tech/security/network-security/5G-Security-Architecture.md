@@ -96,3 +96,4 @@ NF끼리 서로를 인증하고 요청을 인가하는 구조는 내부망을 �
 - [[SSH-Authentication|SSH 인증]] — 서버 신원과 사용자 신원, 세션 키를 나누는 다른 프로토콜의 사례
 - [[Network-Security-Lab-Interpretation|네트워크 보안 시연을 해석하는 기준]] — Evil Twin과 가짜 접속점 시연의 해석 경계
 - [[Network-Separation|망분리와 망연계]] — 경계 모델과 제로 트러스트
+- [[Private-5G-Network|5G 특화망 (이음5G)]] — 비공중망 구성, 코어 공유와 국내 할당 절차

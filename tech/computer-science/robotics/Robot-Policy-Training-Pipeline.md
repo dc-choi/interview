@@ -1,7 +1,7 @@
 ---
 tags: [cs, robotics, vla, imitation-learning, simulation, mlops]
 status: done
-verified_at: 2026-11-19
+verified_at: 2026-11-23
 category: "CS - 로보틱스"
 aliases: ["로봇 정책 학습과 평가 파이프라인", "Robot Policy Training Pipeline", "VLA 미세조정과 시뮬레이션 평가"]
 ---
@@ -87,6 +87,10 @@ RLWRLD는 상자 옮기기나 집안일 같은 연구용 과제의 성공률로�
 
 정확한 구동기 모델과 학습 기반 상위 제어는 대체 관계가 아니라 함께 쓸 때 효과가 난다는 것이 이 사례의 요지다. 정책을 실물에 옮기기 전에 시뮬레이터의 구동기 응답, 제어 주기와 게인이 실물과 같은지 먼저 확인한다(이 문서의 판단).
 
+### 센서와 로봇 기술 파일도 시뮬레이터에 맞춘다
+
+정책이 보는 관측도 시뮬레이터가 만든다. 로봇의 기구 사슬(kinematic chain)을 담은 URDF를 가져오고, LiDAR, 카메라 영상과 IMU를 모사하고, ROS 2로 실제 로봇 소프트웨어와 잇고, 화면 없는(headless) 빌드로 여러 시뮬레이션을 병렬로 돌리는 것이 로봇 시뮬레이터 패키지의 기본 구성이다(Unity 제품 글 하나에서 일반화한 이 문서의 판단). Unity Simulation Pro는 이 네 가지를 묶은 패키지로 2026-09-22 Early Access를 시작했고 Unity 6.3 이상과 Unity Industry 라이선스를 요구한다. 구동기 모델처럼 센서 모델의 잡음과 오차가 실제 센서와 다르면 정책이 깨끗한 관측에만 맞춰질 수 있으므로, 센서 모델의 오차 설정도 실측과 비교한다(이 문서의 판단, [[Robot-Perception-Degradation-Safety|카메라 열화와 위험 지시 거부]]). 설비 제어 로직을 트윈으로 먼저 시험하는 가상 시운전은 [[Digital-Twin#가상 시운전|디지털 트윈]]에 있다.
+
 ## 성공률 관문과 모델 레지스트리
 
 AWS의 Physical AI Toolchain(2026-10 공개, Apache 2.0)은 NVIDIA의 GR00T, Isaac Sim, Isaac Lab, Cosmos, OSMO를 SageMaker, Batch, EKS 같은 AWS 서비스에 올리는 참조 아키텍처와 IaC(구성 요소 대부분이 독립 Terraform 모듈) 모음이다. 그 안의 Isaac Lab Arena 평가 구성(저장소 표기 Preview)은 다음 다섯 단계를 SageMaker 파이프라인으로 묶는다.
@@ -150,6 +154,7 @@ Fortune의 2026-11-13 보도(OpenAI 대변인 확인)에 따르면 OpenAI는 독
 - [GenerAIly Speaking: Let's train some humanoids — Amazon Web Services](https://www.youtube.com/watch?v=ljUjsyPhVOE) — 2026-11-02 게시 발표. 파이프라인 흐름의 계기.
 - [Exclusive: OpenAI disbands its stand-alone robotics team as its general models start running robots — Fortune](https://fortune.com/2026/11/13/openai-disbands-robotics-team-as-its-general-models-start-running-robots/) — 2026-11-13. 2026-11-16 회사가 확인한 개편 내용과 이유, 제어 구성 설명, Nvidia 연구 수치와 연구자 반론 대조. 출처가 밝혀지지 않은 손실 보도와 일정 목표는 옮기지 않았다.
 - [OpenAI, 범용 모델이 로봇을 제어하기 시작하면서 로보틱스 팀 해체 — GeekNews](https://news.hada.io/topic?id=37180) — 학습 계기.
+- [From simulation to real-world deployment: Unity Simulation Pro early access — Unity Blog](https://unity.com/blog/unity-simulation-pro-early-access) — 2026-09-22 게시. 2026-11-23 URDF 가져오기, LiDAR, 영상, IMU 센서, ROS 2, headless Linux 빌드, Early Access 시작일, 요구 버전과 라이선스 대조.
 
 ## 관련 문서
 
@@ -161,3 +166,5 @@ Fortune의 2026-11-13 보도(OpenAI 대변인 확인)에 따르면 OpenAI는 독
 - [[Gemini-4-Argon#10월 일반 제공과 로봇 활용의 확인 범위|Gemini 4 Argon의 로봇 활용 조건]]
 - [[Reinforcement-Learning-from-Experience|경험 기반 강화학습]]
 - [[Time-Series-Forecast-Evaluation|시계열 예측 평가]]
+- [[General-Purpose-Robot-Deployment|범용 로봇의 현장 도입]] — 시뮬레이션 벤치마크 수치를 읽는 법
+- [[Digital-Twin|디지털 트윈]] — 가상 시운전과 모델 신뢰도

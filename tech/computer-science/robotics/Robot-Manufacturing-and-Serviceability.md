@@ -80,4 +80,5 @@ Josef Chen의 방문기는 Unitree의 액추에이터 동에서 자동화 라인
 - [[Production-and-Cost|생산과 비용]] — 자동화 장비와 공정 투자의 비용 비교
 
 - [[Tactile-Grasp-Control|촉각 기반 파지 제어]] — 접촉 감지와 피드백 제어의 별도 검증
+- [[General-Purpose-Robot-Deployment|범용 로봇의 현장 도입]] — 범용 로봇의 가격 동등을 계산할 때의 비교 단위
 - [[Robotics|로보틱스]]

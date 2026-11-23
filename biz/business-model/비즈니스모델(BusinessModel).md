@@ -23,6 +23,7 @@ aliases: ["Business Model Index"]
 - [x] [[Five-Parts-of-Business|사업의 다섯 부분]] — 기능별 병목 진단, 대표의 균형 역량 가설과 한계, 제1원칙 분해, 불완전한 첫 버전
 - [x] [[Dev-Outsourcing-Engagement|개발 외주의 계약과 수주]] — 계약 전 점검표, 권리 이전과 하자담보, 제안서, 검수와 수금, 내용증명과 최고, 지급명령/소액사건/가압류와 집행, 중도 종료, 첫 고객 확보
 - [x] [[Software-Procurement-Terms|소프트웨어 구매와 계약 용어]] — RFI, RFP, RFQ와 BAFO, NDA와 PoC, SOW와 SLA의 역할 및 적용 범위
+- [x] [[AI-Era-IT-Outsourcing|AI 시대 IT 아웃소싱과 오프쇼어의 역할 변화]] — 검증, 운영, 테스트 병목, 인력에서 역할로의 조달, 투입 공수와 성과 기반 계약, 운영 이관 단계와 준비도 점검, 운영 지식 자산화
 - [x] [[Public-Procurement-Small-Contracts|국가기관과 지방자치단체의 소액 수의계약]] — 1인 견적과 전자조달 견적의 금액 구간, 소상공인 1억원 이하, 지방자치단체의 지정정보처리장치 견적, 나라장터 등록과 소프트웨어 용역 공고 사례
 - [x] [[App-Monetization-Models|앱 수익 모델]] — 앱 수익 모델 10종 비교, 혼합 모델, 광고 회수 한계, ARPU와 CPI의 분모 차이, 광고 크레딧과 지속 가능한 손익, 스토어 수수료 조건, 앱 매각 시장
 - [x] [[Side-Project-Asset-Sale|사이드 프로젝트와 디지털 자산 매각]] — 무매출 자산과 운영 사업 구분, 양도 권한, 실사, 에스크로와 데이터 이전, 영업양도와 지분 매각의 매도인 경업금지

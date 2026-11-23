@@ -160,3 +160,4 @@ V1은 `subject_token` 없이 `requested_subject`에 username이나 user ID만 �
 - [[JWT|JWT]]
 - [[Refresh-Token-Rotation|Refresh Token Rotation]]
 - [[Secret-Management|Secret Management]]
+- [[Agent-Identity-and-Execution-Authority|에이전트 신원과 실행 권한]] — 사용자와 에이전트를 함께 담는 위임 토큰 설계

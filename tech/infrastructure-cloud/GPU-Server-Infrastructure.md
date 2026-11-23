@@ -320,3 +320,4 @@ Slurm 관리 문서 기준, `/var/log/provision/provisioning.log`에 기록한 �
 - [[EKS|Amazon EKS]]
 - [[K8s-GPU-Sharing-and-Quota|Kubernetes GPU 공유와 팀별 할당]]
 - [[PyTorch-on-TPU|PyTorch on TPU]]
+- [[LLM-Inference-Fleet-Cases#GPU 이상 유형 분류|추론 플릿의 GPU 이상 유형 17종]] — 탐지 신호, XID 해석 한계와 persistence 방식

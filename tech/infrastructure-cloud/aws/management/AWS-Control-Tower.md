@@ -147,3 +147,4 @@ Control Tower 도입 자체가 규제 준수의 완료 증거는 아니다. AWS�
 - [[AWS-Organizations|AWS Organizations와 SCP]]
 - [[CloudTrail-Config|감사 로그와 구성 추적]]
 - [[IAM|IAM 정책과 권한]]
+- [[Group-Landing-Zone|그룹 통합 랜딩 존 (계열사 공통 계정, 다층 가드레일, 기준 변경과 대응 루프)]]

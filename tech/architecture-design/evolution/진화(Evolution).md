@@ -23,3 +23,5 @@ aliases: ["Evolution"]
 - [x] [[Tech-Debt-Management|기술 부채 관리 (가시화, 우선순위와 상환 운영)]]
 - [x] [[ADR|ADR (Architecture Decision Record)]]
 - [x] [[AI-Assisted-Legacy-Onboarding|AI로 레거시 공략 (채용=레거시 기본값, 코드→명세, 로그→특성화 테스트, 기획서 해독, AI 출력 검증)]]
+- [x] [[Agentic-Legacy-Code-Conversion|에이전트 기반 레거시 코드 전환 파이프라인 (지식 그래프와 함수 단위 변환, 배치 재설계, 병렬 빌드, 지표 기반 리팩토링, 빌드와 동작 보존의 구분, 읽기 전용 분석)]]
+- [x] [[Commercial-to-Open-Source-Transition|상용 소프트웨어에서 오픈소스 스택으로의 전환 (OX)]] — 전환 동기와 오픈소스 비중 수치의 정의, AI 스택이 늘리는 관리 대상(모델 가중치, RAG 데이터 오염), 가시화, 안전한 토대, 확장의 세 단계, SBOM, 라이선스, 패치의 거버넌스, 금융사 전환 사례의 효과 주장과 공개되지 않은 측정 조건

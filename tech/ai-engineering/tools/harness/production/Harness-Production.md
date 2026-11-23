@@ -22,9 +22,12 @@ aliases: ["Harness Production", "프로덕션 에이전트 운영과 격리"]
 - [[Bedrock-AgentCore-Operations|Bedrock AgentCore 운영 경계]]: 세션 격리와 사용자 매핑, 상태 영속화, 도구 인증과 인가, 관측과 업무 성공의 구분
 - [[Agent-Operations-Foundations|에이전트 운영 기반]]: AI for Operations와 Operations for AI, 여섯 운영 영역, 운영 로그 분류와 보존 상속, Guardrails와 Policy의 통제 범위, 문맥 편향 시험, 변경의 릴리스 관리와 장애 대비
   - [[Agent-Operations-Integration-Cost-Security|에이전트 운영의 통합, 비용과 보안]]: 공유 MCP 연결과 자격 증명 범위, OBO 토큰 교환, 토폴로지와 A2A, 비용 귀속과 토큰 상한, 캐싱과 모델 선택, 비율 기준선, 수집 데이터 인젝션과 포렌식 기록, 에이전트 신원 3계층, 조직 준비
-- [[Agent-Governance-Controls|에이전트 거버넌스 통제]]: 판단은 확률, 통제는 결정론. 신원과 권한, 조건부 승인, 보상 동작과 되돌리기, 추적과 감사, 탐지에서 차단까지의 루프
+- [[Agent-Governance-Controls|에이전트 거버넌스 통제]]: 판단은 확률, 통제는 결정론. 신원과 권한(위임 단계의 요청자 권한, 단일 관문), 조건부 승인, 보상 동작과 되돌리기, 추적과 감사, 탐지에서 차단까지의 루프, 조직이 정할 다섯 영역(데이터 등급과 외부 AI 허용 범위, 모델 등급과 한도, 자산 등록과 검증된 공유, 영역별 성숙도)
+  - [[Agent-Identity-and-Execution-Authority|에이전트 신원과 실행 권한]]: 사람 중심에서 에이전트 대행으로 바뀐 IAM의 질문, 에이전트 신원과 위임 신원과 디지털 권한증, RFC 8693 위임 대응, 접근 통제의 다섯 질문, 계정 탈취와 프롬프트 주입과 섀도 에이전트, 등록에서 승인까지, IAM 운영 자동화, 레드팀과 블루팀
+- [[Enterprise-Code-Agent-Operations|기업 개발 조직의 코드 에이전트 운영 설계]]: 코드 생성 뒤 남는 병목, 정보 민감도별 모델 환경, 실행 가능한 작업 맥락, 기업 시스템 접근 계층, 금융 코드 변경 통제와 검증 패키지, 흐름 운영, 반복 판단의 자산화
 - [[Agent-Swarm-Containment|에이전트 군집 격리]]: 공유 자원과 비인가 통신, 평가 환경의 권한 경계, 기록 무결성과 사고 조사 한계
 
 ## 함께 볼 문서
 
 - [[Harness-Systems|하네스 시스템]]
+- [[AI-Governance-Observability|관측 신호로 집행하는 AI 거버넌스]] — 거버넌스 단계별 런타임 신호와 통제 지점

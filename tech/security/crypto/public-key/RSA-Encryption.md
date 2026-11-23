@@ -85,7 +85,7 @@ ECC 256비트 = RSA 3072비트 수준 보안(같은 표에서 128비트 강도�
 - **사이드 채널** — 타이밍 공격, 전력 분석 → 일정 시간 구현 필요
 - **약한 난수** — p, q 선택 시 PRNG이 약하면 충돌. Debian OpenSSL 2008년 사고 사례
 - **e, d 재사용 오류** — 같은 메시지를 여러 다른 n에 같은 e로 암호화(Håstad broadcast attack)
-- **양자 컴퓨터(Shor 알고리즘)** — 충분히 큰 양자컴이 등장하면 RSA, ECC 모두 다항시간에 깨짐 → Post-Quantum Crypto(CRYSTALS-Kyber 등) 이행 필요
+- **양자 컴퓨터(Shor 알고리즘)** — 충분히 큰 양자컴이 등장하면 RSA, ECC 모두 다항시간에 깨짐 → Post-Quantum Crypto(ML-KEM 등, FIPS 203으로 표준화된 옛 CRYSTALS-Kyber) 이행 필요([[PQC-Migration|양자내성암호 전환]])
 
 ## 실무 사용처
 

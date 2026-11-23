@@ -15,6 +15,7 @@ IaaS/PaaS/FaaS 구분, IaC, 클라우드 전환 전략 — 클라우드 추상�
 - [x] [[Cloudflare-Durable-Objects|Durable Objects]] — 객체별 상태와 실행, hibernation과 영속 저장, 트랜잭션과 셀프호스팅의 경계
 - [x] [[Internal-Developer-Platform|내부 개발자 플랫폼]] — 셀프서비스 범위, API 접수와 준비 완료, 부분 실패와 운영 책임
 - [x] [[SaaS-Regional-Data-Isolation|SaaS 리전별 데이터 격리 (control/application plane, pool/silo/bridge, 복제와 복구, 파티션과 운영 주권, 데이터 위치와 CLOUD Act 제출 명령)]]
+- [x] [[Public-Sector-AI-Infrastructure-Placement|공공 AI 인프라의 배치 판단]] — N2SF 업무정보 등급과 처리 영역, 결합 데이터의 등급 상향, 현장 처리와 재학습 루프, 국정원 단일 검증 전환, 국정자원 화재 뒤 DR 용어와 등급별 DR 방식, 국가 연산자원, 풀스택과 계층별 분리
 - [x] [[Cloud-Foundry|Cloud Foundry]] — `cf push` 스테이징과 droplet, buildpack, Service Broker와 `cf cups`, org와 space 역할, cf-deployment, Korifi 보관과 kind 로컬 설치
 - [x] [[Cloud-Definition-and-Deployment-Models|클라우드 컴퓨팅의 정의와 배포 모델]] — NIST 다섯 가지 특징, 가상화와의 차이, private/community/public/hybrid, AZ에 속한 자원의 분산은 사용자 설계, 사는 것과 빌리는 것
 - [x] [[Cloud-Service-Models|IaaS/PaaS/FaaS/SaaS (추상화 계층, 책임 공유 모델, 서버리스 범위)]]

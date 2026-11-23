@@ -107,3 +107,4 @@ Google SRE Workbook의 서버 폐기 사례에서는 작업 재실행으로 대�
 - [[Incident-Detection-Logging|장애 감지와 로깅]]
 - [[SLI-SLO|SLI/SLO/에러 버짓]]
 - [[Alert-Fatigue|Alert fatigue 방지]]
+- [[Supply-Chain-Planning|공급망 계획과 예외 대응]] — 계획과 실적을 잇는 의사결정 회고

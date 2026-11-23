@@ -53,6 +53,8 @@ FDE(Forward Deployed Engineer)는 고객 현장에 들어가 문제를 풀고 �
 
 내부 코치 양성과 FDE는 같은 질문을 공유한다. 우리가 떠난 뒤에도 그들이 계속할 수 있는가.
 
+고객 쪽에서 이 질문은 계약 조건이 된다. Gartner는 2026-09-29 보도자료에서 2028년까지 기업의 70%가 공급사 FDE로 만든 에이전틱 AI를 비용 증가와 자체 발전 불능 때문에 버릴 것으로 예측하고, 성공을 구현 완료가 아니라 기업이 그 기술을 스스로 관리, 최적화, 확장할 수 있는지로 재라고 권고했다. 지식 이전, 지식재산권, 출구 책임을 계약 전에 정하는 원칙과 FDE 수행 단계는 [[FDE-AX-Delivery|FDE 기반 AX 수행]]에서 다룬다.
+
 ### 공고로 본 FDE 요건 (2026-10-12 확인 기준)
 
 금액은 공고에 게시된 연간 급여 범위이며 미국 공고는 달러, 영국 공고는 파운드 기준이다. 아래 요건은 공고의 주요 항목을 옮긴 발췌다. 공고는 수시로 마감되므로 지원 전에 원 공고를 다시 확인한다.
@@ -118,6 +120,7 @@ AWS는 파트너 소속 엔지니어의 FDE 역량을 확인하는 자격 두 �
 - [Forward Deployed AI Engineer — Palantir 채용 공고](https://jobs.lever.co/palantir/636fc05c-d348-4a06-be51-597cb9e07488)
 - [New FDE Pathways For AWS Partners: Get Ready for Production Agentic AI Delivery — AWS Partner Network (APN) Blog](https://aws.amazon.com/blogs/apn/new-fde-pathways-for-aws-partners-get-ready-for-production-agentic-ai-delivery/)
 - [AWS Partner: Forward Deployed Engineer (FDE) Credentials — Amazon Web Services (YouTube)](https://www.youtube.com/watch?v=0lagdP830NU)
+- [Gartner Predicts 70% of Enterprises Will Abandon Agentic AI Built by Vendor Forward-Deployed Engineering by 2028 — Gartner](https://www.gartner.com/en/newsroom/press-releases/2026-09-29-gartner-predicts-70-percent-of-enterprises-will-abandon-agentic-ai-built-by-vendor-forward-deployed-engineering-by-2028) — 2026-09-29 보도자료. Gartner 페이지는 HTTP 403이라 2026-11-23 [TechEdge AI의 전문 재게시본](https://techedgeai.com/gartner-predicts-70-of-enterprises-will-abandon-agentic-ai-built-by-vendor-forward-deployed-engineering-by-2028/)(본문 날짜 표기는 9월 30일)으로 70% 예측과 출구 권고를 대조했다
 
 ## 관련 문서
 
@@ -128,3 +131,5 @@ AWS는 파트너 소속 엔지니어의 FDE 역량을 확인하는 자격 두 �
 - [[Software-Productivity-Measurement|소프트웨어 생산성 측정의 함정]]
 - [[Developer-Role-AI-Era-Employment|AI 시대 개발자 고용과 견습 사다리]] — Product Engineer, FDE 같은 직함을 맡길 문제로 읽기
 - [[AI-Job-Market-Shifts|AI 시대 직무 변화 읽기]] — AX 사업 유형에 따라 달라지는 FDE 업무와 수요 지속성
+- [[FDE-AX-Delivery|FDE 기반 AX 수행]] — 시범 검증에서 업무 전환까지의 수행 단계와 공급사 FDE 계약의 출구 조건
+- [[AX-Enterprise-Scaling|전사 AX 확산]] — 수준별 변화관리와 역량 단계로 사내 확산을 넓히는 방법

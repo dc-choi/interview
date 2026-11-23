@@ -107,3 +107,4 @@ AWS 보안 표준의 CSPM 점검에 필요한 Config 구성도 활성화 조합�
 - [[GuardDuty-Investigation|경보 조사와 대응 판단]]
 - [[IAM-Policy|IAM 정책 평가와 권한 경계]]
 - [[Security-Policy-and-Assessment|점검 범위와 재점검]]
+- [[Cloud-Security-Posture-and-AI-Assets|클라우드 보안 태세와 AI 자산]] — CSPM, CIEM, CWPP, CNAPP의 범위, AI 자산 목록과 사각지대, 공격 경로

@@ -18,6 +18,7 @@ aliases: ["관측가능성(Observability)", "Observability"]
 - [x] [[Logs-vs-Metrics|로그 vs 메트릭 vs 추적 (카디널리티, 보관, 알림 설계 원칙)]]
 - [x] [[Ops-Level-Indicator|운영 레벨 지표 (여러 메트릭을 단일 단계로 압축, N-1 계산의 전제, 시간대 정규화, 플레이북)]]
 - [x] [[OpenSearch-Observability|Amazon OpenSearch 통합 관측성 (OpenSearch UI, PPL, 상관분석, AI 장애 조사, Optimized 엔진의 쿼리와 보존 제약)]]
+- [x] [[AI-Governance-Observability|관측 신호로 집행하는 AI 거버넌스 (SEE, GROUND, PROVE, ENFORCE, SUSTAIN의 신호와 통제 지점, NIST AI RMF, ISO/IEC 42001, AI TRiSM, OWASP, EU AI Act 비교, 결과 단위 비용과 케이스 기록)]]
 
 ## Logging
 - [x] [[Splunk-S3-Federated-Search|Splunk S3 연합 검색]] — 원격 조회의 전제, 스캔 비용과 보관 객체 복원

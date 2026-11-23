@@ -66,3 +66,4 @@ aliases: ["Test Pyramid Blind Spots", "초록불이 못 잡는 것"]
 - [[Migration-Backed-Test-Database|마이그레이션 기반 테스트 데이터베이스]]
 - [[Classicist-vs-Mockist-Testing|Classicist vs Mockist, Test Double]]
 - [[TestContainers-Integration|Testcontainers 통합 테스트]]
+- [[Digital-Twin|디지털 트윈]] — PLC 가상 시운전과 시뮬레이션 모델의 신뢰도

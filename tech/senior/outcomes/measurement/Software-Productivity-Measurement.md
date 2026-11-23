@@ -196,3 +196,4 @@ verified_at: 2026-10-25
 - [[Team-Contribution-Culture|엔지니어링 팀 기여 문화]]
 - [[Tradeoff|트레이드오프 & 성과 측정 프레임워크]]
 - [[Toxic-Org-Detection|독성 조직 판별 (측정 강요의 조직 신호)]]
+- [[AI-Adoption-Measurement|전사 AI 활용 측정]] — AI 사용량을 채택, 행동, 성과로 나눠 읽기

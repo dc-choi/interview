@@ -16,9 +16,9 @@ aliases: ["Test Strategy Layers", "테스트 전략과 계층"]
 - [[Service-Layer-Testing|서비스 레이어와 테스트 경계]]: 도메인 모델과 트랜잭션 스크립트 비교, 레이어별 단위와 통합 테스트 배치
 - [[Deterministic-Test|결정적 테스트와 flaky 대응]]: 시간, 난수, 외부 상태와 순서 의존성 제어
 - [[Property-Based-Testing|속성 기반 테스트]]: 생성 범위와 판정 규칙, 반례 축소, 실패 재현과 명세 추적
-- [[Requirements-Traceability|요구사항 추적성]]: 양방향 연결, 변경 영향 분석, 연결 기록과 검증 결과의 구분
+- [[Requirements-Traceability|요구사항 추적성]]: 양방향 연결, 변경 영향 분석, 연결 기록과 검증 결과의 구분, 에이전트 작업 맥락으로 쓰는 추적 정보
 - [[Load-Test-Automation|부하 테스트 자동화]]: 기준선, 단계적 부하와 CI 판정
-- [[Regression-Test-Automation|회귀 테스트 자동화]]: 우선순위, 변경 영향 선택, CI 배포 전 게이트, 유지 비용
+- [[Regression-Test-Automation|회귀 테스트 자동화]]: 우선순위, 변경 영향 선택, CI 배포 전 게이트, 유지 비용, 운영 거래 재현 회귀와 외부 참값 비교, 테스트 설계 역량과 실행 자동화의 구분
 - [[Chaos-Testing|카오스 테스팅]]: 장애 가설, 격리된 실험과 복구 검증
 - [[Chaos-Mesh-Kubernetes-Failure-Tests|Chaos Mesh 장애 테스트 자동화]]: 장애 CRD와 Daemon, Workflow 시점 고정, 시나리오 설계, 주입 실패 탐지, 매일 밤 회귀
 - [[Natural-Language-E2E-Agent|자연어 E2E 테스트 에이전트]]: 접근성 트리 우선과 비전 폴백, 반응형과 계획형 프로파일, 결정성과 검증 게이트, CI 비용

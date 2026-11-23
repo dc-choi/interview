@@ -87,3 +87,4 @@ AI 연산은 GPU를 사서 직접 운영하거나, 범용 클라우드나 GPU �
 - [[Data-Center-Cooling|데이터센터 냉각과 PUE]]
 - [[AI-Infrastructure-Capital-Cycle|AI 인프라 투자와 자본 순환]]
 - [[AI-Frontier-Regulation-Debate|프런티어 AI 규제 논쟁]]
+- [[Public-Sector-AI-Infrastructure-Placement|공공 AI 인프라의 배치 판단 (국가 GPU 확충 계획, 국가 AI 컴퓨팅센터, 지원 사업의 운영 구조)]]

@@ -137,3 +137,4 @@ aliases: ["Question-Driven Ontology Design", "질문에서 시작하는 온톨�
 - [[RAG-Retrieval-Engineering|RAG 검색 엔지니어링]]
 - [[B2B-GTM-AI-Operating-System|B2B GTM과 AI 운영 체계]]
 - [[Ontology-Competency-Evaluation|이 vault 온톨로지의 판단 질문 평가]]
+- [[Data-Agent-Analysis-Scenarios|데이터 분석 에이전트의 단계와 분석 시나리오]] — 문서에서 뽑은 인과 관계로 원인 후보를 좁히는 시연과 그 한계

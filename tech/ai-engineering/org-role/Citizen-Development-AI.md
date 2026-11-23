@@ -177,6 +177,7 @@ GeekNews 연결과 원 게시물 식별자 `arca.live/b/aihomelab/185810092`를 
 - [[AX-Transformation|AX(AI Transformation) 조직 전환]]
 - [[Developer-Role-AI-Era|AI 시대 개발자 역할]]
 - [[AI-Capability-Transfer|AI 역량 이전]] — 비개발 직군에게 역량이 퍼지게 하는 코치 양성 구조
+- [[Work-Stage-AI-Adoption|업무 단계에서 찾는 AI 적용 지점과 도구 정착]] — 만들기 전에 AI를 맡길 업무 단계를 고르는 방법
 - [[Claude-Code-Business-Automation|Claude Code 비즈니스 자동화]]
 - [[Claude-Code-Domain-Applications|Claude Code 도메인 응용]]
 - [[AI-Native-Org|AI 네이티브 조직]]
@@ -184,3 +185,4 @@ GeekNews 연결과 원 게시물 식별자 `arca.live/b/aihomelab/185810092`를 
 - [[OAuth2|OAuth 2.0]]
 - [[AI-Solo-Software-Business|AI 시대 1인 소프트웨어 사업]] — 개인용에서 보편적 소프트웨어로 갈 때 늘어나는 복잡성
 - [[Build-vs-Buy|직접 개발과 구매]] — 기성 제품 대신 사내 도구를 만들 때의 다년 소유 비용
+- [[Government-AI-Common-Platform|공공 생성형 AI 공통기반]] — 공무원이 쓰는 공통 플랫폼의 범위, 코드 수준별 빌더와 공통 데이터 자산

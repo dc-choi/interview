@@ -25,6 +25,7 @@ aliases: ["웹&네트워크(Web&Network)", "Web & Network"]
 - [x] [[Mobile-Network-Continuity|이동 환경의 통신 연속성]] — 주소 공간, 이동성, 오류 정정과 중계 자원의 구분
 - [x] [[Wireless-Multiple-Access|무선 다중접속과 공간 다중화]] — OFDMA, MIMO와 링크 적응의 역할 구분
 - [x] [[Self-Organizing-Network|SON과 무선 자원 관리]] — 망 자동 설정과 최적화, 수락 제어와 핸드오버, IP 유지 조건의 구분
+- [x] [[Private-5G-Network|5G 특화망 (이음5G)]] — 비공중망 형태, 코어와 UPF 배치, 산업단지 코어 공유, 할당과 지정 절차
 - [x] [[Game-State-Authority-and-Prediction|게임 상태 판정과 예측]] — 서버 권위, 재시뮬레이션, 명령 공유와 결정성의 조건
 - [x] [[Game-Loop-Frame-Timing|게임 루프의 프레임 시간]] — 델타 타임, 고정 시간 간격과 보간, lockstep의 고정 dt 조건
 - [x] [[Unity-UI-Canvas-Batching|Unity UI 캔버스 배칭과 분할]] — 캔버스 전체 재구성, 갱신 주기별 분할과 드로우콜 증가의 균형

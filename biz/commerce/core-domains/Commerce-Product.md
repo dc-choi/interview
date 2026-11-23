@@ -187,3 +187,4 @@ aliases: ["Commerce Product", "커머스 상품"]
 - [[Commerce-Member|커머스 회원 도메인]]
 - [[Ecommerce-Shopping-Mall-ERD|이커머스 쇼핑몰 ERD]]
 - [[Personalization-Recommendation|개인화와 추천]] — 연결고리(추천) 영역의 데이터 수준과 로직
+- [[Export-Logistics-Cost-Structure|중소 수출기업의 물류비 구조와 공동물류]] — 물동량을 모아 물류 단가를 낮추는 구조

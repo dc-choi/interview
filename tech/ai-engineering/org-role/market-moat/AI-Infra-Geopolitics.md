@@ -104,6 +104,7 @@ Anthropic이 최상위 모델 Mythos를 일반 공개 없이 Project Glasswing�
 - [[Model-Release-Claims|모델 발표 수치 읽기]] — 공개 가중치의 라이선스와 제공 상태
 - [[Open-Source-License-Review|오픈소스 라이선스 검토]] — 오픈 웨이트와 Open Source AI의 구분
 - [[LLM-Application-Security|LLM 애플리케이션 보안]] — 사전학습 모델과 어댑터의 공급망 위험
+- [[Sovereign-AI-Platform|주권형 AI 플랫폼]]
 - [[Distribution-As-Moat|도달력(Distribution)이 새 해자]]
 - [[AX-Transformation|AX 조직 전환]]
 - [[Developer-Role-AI-Era|AI 시대 개발자 역할]]
