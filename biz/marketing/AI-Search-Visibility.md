@@ -71,12 +71,14 @@ Google의 공식 기준은 앞 절에 적은 대로다. AI Overviews와 AI Mode�
 - **관측 상관:** 참조 도메인 수와 AI 인용 수의 Spearman 상관이 AI Overviews 0.406, ChatGPT 0.377이라는 DataForSEO 분석은 RevScope 정리로만 확인했다. 상관이므로 링크가 인용을 늘린다는 인과를 보여 주지 않는다.
 - **효과를 찾지 못한 조사:** SE Ranking은 약 30만 도메인에서 llms.txt와 AI 인용 사이의 상관을 찾지 못했고, 예측 모델에서 이 변수를 빼자 정확도가 오히려 올랐다고 적는다(2026-10-15). 해당 모델과 데이터 범위의 결과다.
 - **모의 엔진의 통제 실험:** RevScope가 인용한 GEO 논문(Aggarwal 외, KDD 2024)은 gpt-3.5-turbo가 Google 상위 5개 결과를 읽어 답하는 모의 생성 엔진에서 본문에 인용문, 통계, 출처 인용을 더하면 위치를 가중한 단어 수 지표가 기준선(19.3)보다 각각 약 41%, 31%, 27% 높아진다고 보고한다(표의 값으로 계산한 상대 증가, 초록은 최대 40%). 실제 엔진인 Perplexity.ai의 200개 표본에서는 인용문 추가의 개선이 22%였고, 기존 SEO의 키워드 채우기는 기준선보다 10% 나빴다. 2023년의 모델과 엔진에서 잰 값이므로 현재 Google이나 ChatGPT의 인용 증가율로 옮기지 않는다.
+- **벤치마크 재검증:** C-SEO Bench(Puerto 외, NeurIPS 2025 Datasets & Benchmarks)는 질의응답과 상품 추천 두 과제, 과제마다 세 도메인에서 페이지 수정 기법을 다시 쟀다. 대부분의 기법은 효과가 거의 없었고 문서 순위를 자주 떨어뜨렸으며, LLM 문맥 안에서 출처의 순위를 올리는 전통적 SEO가 훨씬 효과적이었다. 같은 기법을 쓰는 경쟁자가 늘수록 전체 이득은 줄어 혼잡하고 제로섬에 가까운 문제로 묘사한다. 이 벤치마크도 실제 서비스 엔진이 아닌 실험 환경의 결과이며, 모의 엔진 실험의 개선율을 실제 경쟁 환경의 기대 효과로 옮기지 않을 근거로 읽는다(이 문서의 해석).
+- **단일 사이트 자연 실험:** Glasp는 2026년 1월부터 YouTube 영상 질문에 답하는 자사 페이지에 중복 URL 통합, AI 봇이 요청한 페이지 생성, 질문형 제목, 짧은 독립 요약과 구글 유입이 이미 의미 있던 페이지는 다시 쓰지 않는 보호 규칙을 묶어 적용하고, 같은 사이트의 나머지 경로를 대조군으로 비교했다. 1월에서 5월(5월은 일부)까지 ChatGPT 유입 방문은 바꾼 페이지가 6.1배, 손대지 않은 페이지가 3.5배, 사이트 전체가 5.7배 늘었다. 주별 처리군/대조군 비율의 단절 시계열 모형은 적용 시점에 1.82배(95% 신뢰구간 1.31~2.54)의 수준 상승을 추정하지만, 가짜 시점으로 바꾼 위약 검정의 p가 0.16이라 저자들은 시사적일 뿐 결론적이지 않다고 본다. 저자들은 성장의 상당 부분이 변경 없이 생겼다고 보고, ChatGPT 이용 자체의 증가를 가능한 원인으로 든다. 무작위 배정이 아닌 묶음 변경, 처리군과 대조군의 콘텐츠 종류 차이, 한 사이트, ChatGPT 링크 방문(답변 속 언급이 아님) 기준이라는 한계가 있다. 최적화 전후의 배수만 보고하는 사례는 같은 기간 손대지 않은 페이지의 증가와 함께 읽는다(운영 제안).
 
 RevScope는 이런 근거를 묶어 기본 SEO 요건 유지, 다른 사이트의 링크, 플랫폼별 인용 출처 확인과 그 커뮤니티 참여, 질문에 바로 답하고 독자적인 데이터를 담은 페이지, 지름길 회피, 채널별 매출 평가를 권한다. 분석 제품을 판다고 스스로 밝히고 채널별 매출 평가는 그 제품의 기능과 겹치므로, 이 등급 구분과 권고는 이해관계가 있는 출처의 의견으로 읽는다.
 
 이 문서의 운영 제안은 Google 문서의 기본 요건을 지키되, 인용을 늘린다는 변경의 효과는 인용 수나 노출 수가 아니라 [[Metrics-Framework]]에 따라 같은 기간의 유입, 전환과 기여이익으로 판단하는 것이다. 변경 전에 질문 집합, 엔진과 비교 기간을 정해 두고([[#질문과 인용 페이지를 함께 남긴다|질문과 인용 페이지 기록]]), 전후 차이만으로 인과를 단정하지 않는다(운영 제안).
 
-2026-11-21 ISB의 연구 소개, SSRN 원문(초록과 PDF), Pew, DataForSEO 공개 소개 페이지, SE Ranking 원문과 GEO 논문을 대조해 이 두 절을 보탰다. 의도별 노출률과 상관계수는 RevScope 정리로만 확인했고, 기존 Google과 Bing 리포트 범위는 다시 검증하지 않아 문서의 검증일을 유지한다.
+2026-11-21 ISB의 연구 소개, SSRN 원문(초록과 PDF), Pew, DataForSEO 공개 소개 페이지, SE Ranking 원문과 GEO 논문을 대조해 이 두 절을 보탰다. 의도별 노출률과 상관계수는 RevScope 정리로만 확인했고, 기존 Google과 Bing 리포트 범위는 다시 검증하지 않아 문서의 검증일을 유지한다. 2026-11-23 C-SEO Bench 초록, Glasp 연구 소개와 그 논문 초록을 대조해 벤치마크와 자연 실험 항목을 더했다.
 
 ## 인용 수도 성과가 아니다
 
@@ -166,6 +168,9 @@ RevScope는 이런 근거를 묶어 기본 SEO 요건 유지, 다른 사이트�
 - [Google users are less likely to click on links when an AI summary appears in the results — Pew Research Center](https://www.pewresearch.org/short-reads/2025/07/22/google-users-are-less-likely-to-click-on-links-when-an-ai-summary-appears-in-the-results/) — 2025-07-22, 2026-11-21 표본, 클릭 비율과 관측 연구의 한계 대조
 - [Search Insider 2026 — DataForSEO](https://dataforseo.com/whitepapers/search-insider-2026) — 2026-11-21 공개 소개 페이지의 노출 비중과 클릭 점유 수치를 브라우저로 다시 대조. 의도별 노출률과 상관계수는 이 페이지에 없고, 전체 보고서는 이메일과 이름을 요구하는 신청 양식 뒤에 있어 제출하지 않았으므로 읽지 않음
 - [Does LLMs.txt impact your AI visibility and citations? No, according to research — SE Ranking](https://seranking.com/blog/llms-txt/) — 2026-10-15, 2026-11-21 표본 규모, 도입률과 상관 없음 결론 대조
+- [C-SEO Bench: Does Conversational SEO Work? — arXiv, Haritz Puerto 외](https://arxiv.org/abs/2506.11097) — NeurIPS 2025 Datasets & Benchmarks 채택, v3(2025-10-20). 2026-11-23 초록의 과제 구성, 기법 효과, 전통적 SEO 비교와 다수 채택 시 이득 감소 대조
+- [ChatGPT traffic grew even on pages we did not optimize — Glasp, Keisuke Watanabe, Kazuki Nakayashiki](https://glasp.co/research/measuring-answer-engine-optimization) — 2026-11-07 공개 연구 소개. 2026-11-23 변경 내용, 6.1배와 3.5배, 데이터 한계 대조. 자사 사이트를 다룬 회사 연구다
+- [Disentangling Answer Engine Optimization from Platform Growth: A Log-Based Natural Experiment on ChatGPT Referral Traffic — arXiv, Keisuke Watanabe, Kazuki Nakayashiki](https://arxiv.org/abs/2606.04362) — 2026-06-03 v1. 2026-11-23 초록의 단절 시계열 추정 1.82배, 신뢰구간과 위약 검정 p=0.16 대조
 - [Google's AI Overviews cut clicks to websites by 40% — RevScope](https://revscope.co/blog/search-seo-geo-2026/) — 2026-11-09 공개 정리, 2026-11-21 대조. 의도별 노출률, 상관계수와 권고 목록의 출처이며(18.5% 추정, 실험 한계와 GEO 논문 수치는 원문으로 대조) 분석 제품을 파는 회사의 글이라고 스스로 밝힌다
 - [Google의 AI 답변, 검색 유입을 40% 줄임 — GeekNews](https://news.hada.io/topic?id=37392) — 학습 계기
 
