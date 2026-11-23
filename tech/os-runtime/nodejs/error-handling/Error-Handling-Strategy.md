@@ -3,7 +3,7 @@ tags: [runtime, nodejs, error-handling, async]
 status: done
 category: "OS & Runtime"
 aliases: ["Node.js Error Handling", "uncaughtException", "Error-First Callback"]
-verified_at: 2026-08-26
+verified_at: 2026-11-24
 ---
 
 # Node.js Error Handling: 처리 전략
@@ -76,6 +76,12 @@ try {
 
 `fetch`와 여러 Node.js 비동기 API가 AbortSignal을 받는다. 지원 여부는 API별 시그니처를 확인한다. 호출자가 직접 취소할 때는 `AbortController`, 단순 deadline에는 타이머 정리가 필요 없는 `AbortSignal.timeout()`을 쓸 수 있다.
 
+### 내장 fetch의 기본 대기 시간
+
+Node.js 18 이상의 전역 `fetch`는 Node.js에 번들된 undici가 제공한다. undici 문서 기준 응답 헤더 대기 `headersTimeout`과 body chunk 사이 대기 `bodyTimeout`의 기본값은 각각 300초이고 연결 수립 `connectTimeout`은 10초다. `connectTimeout`은 HTTPS에서 TLS handshake 완료까지 덮으므로 TCP만 받고 TLS를 끝내지 않는 상대는 약 10초 뒤 `UND_ERR_CONNECT_TIMEOUT`으로 실패한다. 반면 연결(HTTPS는 TLS까지)이 끝난 뒤 응답 헤더를 보내지 않으면 signal 없는 호출은 약 5분 뒤에야 실패한다. 이때 `fetch`는 `TypeError: fetch failed`로 reject되고 원인 오류는 `error.cause`에 담기며, 헤더 대기 초과의 code는 `UND_ERR_HEADERS_TIMEOUT`이다. 번들된 undici 버전은 `process.versions.undici`로 확인한다.
+
+들어온 요청의 종료를 signal에 연결하지 않으면 호출한 클라이언트가 먼저 연결을 끊어도 서버 안의 outbound `fetch`는 자기 deadline까지 계속 기다리며 연결과 메모리를 붙든다. 결제사처럼 남이 운영하는 서버를 부르는 코드는 호출마다 `AbortSignal.timeout()` 같은 deadline과, 시간 초과 뒤 사용자에게 줄 응답을 함께 정한다. 시간 초과는 상대 쪽 처리 실패를 뜻하지 않는다. 결제 승인은 났는데 응답만 사라졌을 수 있으므로 재시도 전에 상태 조회나 멱등 키로 중복 처리를 막는다. Node.js 자체는 `setGlobalDispatcher`를 노출하지 않는다. 전역 기본값을 바꾸려면 npm `undici` 패키지를 설치해 `headersTimeout`, `bodyTimeout`을 준 `Agent`를 `setGlobalDispatcher`로 지정하고, 호출 단위로는 `fetch(url, { dispatcher })`를 쓴다. 설치한 undici와 번들 undici의 버전 호환은 따로 확인한다.
+
 ## 흔한 실수
 
 - **콜백 안에서 throw** → try/catch 못 잡음 → uncaughtException. `cb(err)`로 전달.
@@ -111,3 +117,6 @@ try {
 - [Node.js Process API](https://nodejs.org/api/process.html), [Stream API, `pipeline()`](https://nodejs.org/api/stream.html#streampipelinesource-transforms-destination-callback)
 - [Node.js Globals API, `AbortSignal.timeout()`](https://nodejs.org/api/globals.html#static-method-abortsignaltimeoutdelay)
 - [Node.js, DEP0160: `process.on('multipleResolves', handler)`](https://nodejs.org/api/deprecations.html#DEP0160)
+- [undici, Client options](https://github.com/nodejs/undici/blob/main/docs/docs/api/Client.md), [Errors](https://github.com/nodejs/undici/blob/main/docs/docs/api/Errors.md), [Undici Module vs. Node.js Built-in Fetch](https://github.com/nodejs/undici/blob/main/docs/docs/best-practices/undici-vs-builtin-fetch.md), [fetch 구현](https://github.com/nodejs/undici/blob/main/lib/web/fetch/index.js), [connect 구현](https://github.com/nodejs/undici/blob/main/lib/core/connect.js)
+- [Node.js Globals API, fetch](https://nodejs.org/api/globals.html#fetch)
+- [YouTube, 한상훈, 백엔드 마스터클래스 맛보기 강의 소개와 1강 요청 하나의 일생](https://www.youtube.com/watch?v=g19NHLDIBJQ)

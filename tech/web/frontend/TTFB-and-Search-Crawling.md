@@ -1,7 +1,7 @@
 ---
 tags: [web, frontend, performance, ttfb, seo, crawling, cdn]
 status: done
-verified_at: 2026-11-14
+verified_at: 2026-11-24
 category: "웹&네트워크(Web&Network)"
 aliases: ["TTFB와 검색 크롤링", "TTFB and Search Crawling", "Time to First Byte"]
 ---
@@ -62,6 +62,13 @@ Search Console의 설정에 있는 크롤링 통계 보고서는 기간 내 사�
 ## 측정과 해석
 
 - 여러 지역에서 TTFB를 단계별(DNS, TCP, TLS, 서버 대기)로 나눠 잰다. 가까운 지역은 빠르고 먼 지역만 느리면 거리 문제이고, 모든 지역에서 서버 대기가 길면 서버의 응답 생성 문제다.
+- 명령줄에서는 curl의 `-w`(`--write-out`)로 단계를 나눈다. `time_namelookup`(이름 조회 완료), `time_connect`(TCP 연결 완료), `time_appconnect`(TLS handshake 완료), `time_starttransfer`(첫 바이트 수신), `time_total`은 모두 요청 시작부터 잰 누적 시각이다. 요청 전송, 서버 처리와 첫 바이트 귀환은 `time_starttransfer - time_appconnect`(HTTP는 `time_connect`와의 차이)로 어림한다. 이 차이에는 왕복 1회가 들어 있으므로 먼 지역에서는 TCP 연결 시간(`time_connect - time_namelookup`, 약 1 RTT)을 더 빼야 서버 시간에 가까워진다.
+
+  ```bash
+  curl -o /dev/null -s -w 'dns=%{time_namelookup} tcp=%{time_connect} tls=%{time_appconnect} ttfb=%{time_starttransfer} total=%{time_total}\n' https://example.com/
+  ```
+
+  curl은 실행마다 연결을 새로 열고 끝나면 닫으므로 매번 TCP와 TLS가 다시 측정된다. 이름 조회는 OS나 resolver 캐시 덕에 두 번째부터 짧아질 수 있다. 로컬 서버를 재면 DNS, 연결과 TLS가 거의 0이라 운영 환경의 지연 구성을 보여 주지 못한다.
 - 측정 도구가 HEAD 요청을 쓰면 실제 페이지 GET 요청과 결과가 다를 수 있으므로 GET으로 다시 잰다.
 - CDN을 붙인 뒤에는 HTML 문서 요청의 캐시 상태 헤더와 TTFB를 변경 전후로 비교한다.
 - 실험실 측정과 실제 사용자 분포(CrUX, PageSpeed Insights의 실제 사용자 데이터)를 구분한다.
@@ -86,6 +93,8 @@ Search Console의 설정에 있는 크롤링 통계 보고서는 기간 내 사�
 - [Cloudflare, Default cache behavior](https://developers.cloudflare.com/cache/concepts/default-cache-behavior/)
 - [IETF, RFC 9846 The Transport Layer Security (TLS) Protocol Version 1.3](https://www.rfc-editor.org/rfc/rfc9846.html)
 - [IETF, RFC 9000 QUIC: A UDP-Based Multiplexed and Secure Transport](https://www.rfc-editor.org/rfc/rfc9000)
+- [curl, write-out](https://curl.se/docs/manpage.html#-w)
+- [YouTube, 한상훈, 백엔드 마스터클래스 맛보기 강의 소개와 1강 요청 하나의 일생](https://www.youtube.com/watch?v=g19NHLDIBJQ)
 
 ## 관련 문서
 
