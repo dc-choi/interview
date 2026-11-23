@@ -30,6 +30,8 @@ Confidential OAuth client+client-credentials grant로 service user를 만들고 
 
 새 automation 저장 또는 Manage ownership에서 client ID/secret을 제공해 이전하며 이후 편집 저장에도 credentials가 필요하다. Secret rotation은 기존 owned automation을 깨뜨리지 않는다고 명시한다. 원래 SCIM client 재생성과 같은 무효화 계약으로 일반화하지 않는다.
 
+Marketplace upgrade workflow(수동 upgrade)로 service-user owned automation이 든 product를 upgrade할 때는 automation의 owner application이 upgrade 전후로 같고 upgrade를 진행하는 사용자가 그 application의 client secret을 rotate할 권한이 있으면 기존 유효 credential을 재사용한다. 재사용은 secret을 rotate하지 않는다. 둘 중 하나라도 맞지 않으면 upgrade를 계속하기 전에 해당 application의 유효한 client ID/secret을 입력해야 한다. (2026-11-24 확인) 운영 제안: product upgrade 담당자의 권한과 secret 보관 경로를 미리 정한다. Product packaging과 Production mode 제한은 [[Palantir-Automate-Branch-and-Scenario-Isolation|branch와 Marketplace 제한]]에 있다.
+
 같은 client를 여러 automation에 쓸 수 있어 최소 권한과 영향 범위를 함께 정한다. 개인에게 되돌릴 때 service user의 필요 권한을 개인이 갖췄는지 확인한다. 이전 이력은 남지만 열람은 scope/marking을 따른다.
 
 ## History는 상태 기록과 결과 기록을 나눈다
@@ -49,6 +51,7 @@ History는 6개월 보존 후 영구삭제한다. 장기 보존이 필요하면 
 - [Palantir, History visibility and scope](https://www.palantir.com/docs/foundry/automate/history-visibility-and-scope)
 - [Palantir, Third-party application ownership](https://www.palantir.com/docs/foundry/automate/third-party-app-ownership)
 - [Palantir, Automation history](https://www.palantir.com/docs/foundry/automate/history)
+- [Palantir, Add automations to a Marketplace product](https://www.palantir.com/docs/foundry/automate/marketplace-automate)
 - [Palantir, Activity (중국어 기계번역판)](https://palantir.com/docs/zh/foundry/automate/concept-activity/)
 - [Palantir, Notification settings (중국어 기계번역판)](https://palantir.com/docs/zh/foundry/automate/concept-notification-settings/)
 - [Palantir, Security and permissions (중국어 기계번역판)](https://palantir.com/docs/zh/foundry/automate/concept-security-permissions/)

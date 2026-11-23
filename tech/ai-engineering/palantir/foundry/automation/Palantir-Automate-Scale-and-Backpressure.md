@@ -37,6 +37,8 @@ Live drop toggle은 앞 10,000개만 처리하고 나머지를 버리는 선택�
 
 Mute는 condition/history를 계속 평가하며 effects만 막는다. Auto-mute는 최근 30 event 중 모든 effect 실패가 최소 80%일 때 적용한다. Pause는 scheduled/live trigger와 active execution을 중단하지만 manual run/event retry는 남는다. Expired/trashed/otherwise disabled는 manual/retry 포함 전체를 막는다.
 
+Pause는 사용자가 거는 조치만이 아니다. 시스템이 과도한 활동을 감지하면 automation을 자동으로 pause할 수 있고, 이때도 scheduled/live trigger가 돌지 않고 manual run과 event retry는 남는다. Automation에 `Editor` role을 가진 사용자는 overview에서 언제든 resume할 수 있다. (2026-11-24 확인) Limits 문서는 자동 pause가 진행 중인 execution까지 끊는지는 따로 적지 않으므로 위의 일반 pause 계약을 기준으로 본다. 운영 제안: 자동 pause를 확인하면 바로 resume하기보다 아래 폭주 점검으로 원인을 먼저 줄인다.
+
 Expiration은 indefinitely 또는 날짜를 선택하고 날짜는 현재부터 최대 6개월이다. 중국어 구번역은 pause를 전면 미평가로 설명하지만 manual/retry 예외는 현재 영어 문서로 보완한다. 해당 번역은 정확성 미검증 경고가 있어 영어 최신 보장으로 취급하지 않는다.
 
 ## Backlog와 폭주를 나눠 복구한다
