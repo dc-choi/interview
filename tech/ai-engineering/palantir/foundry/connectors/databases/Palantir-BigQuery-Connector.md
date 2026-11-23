@@ -1,7 +1,7 @@
 ---
 tags: [palantir, foundry, data-connection, connectors]
 status: done
-verified_at: 2026-10-16
+verified_at: 2026-11-24
 category: "AI엔지니어링(AIEngineering)"
 ---
 
@@ -33,10 +33,23 @@ unparameterized BIGNUMERIC를 Spark 38/18로 맞추는 선택은 정밀도 손�
 
 gRPC 최대 메시지는 단일 최대 행만이 아니라 한 메시지에 모인 여러 행 기준이다. stale view schema는 원본 view refresh/recreate 진단을 확인한다.
 
+## 외부 코드
+
+복잡한 조회나 갱신은 external transform에서 `google-cloud-bigquery` client를 직접 쓴다. 2026-11-24 확인한 문서의 읽기와 쓰기 예제는 `@external_systems`로 source를 받고 `@transform.using`(lightweight transform 권장 문법, transforms 3.68.0 이상과 Code Repositories의 `transformsLangPythonPluginVersion` 1.978.0 이상)과 `LightweightInput`/`LightweightOutput`을 쓴다. source의 `get_secret("jsonCredentials")`를 JSON으로 읽어 `bigquery.Client.from_service_account_info`에 넘기므로 JSON 형식 service account key를 쓰는 source를 전제로 한다(예제 해석). PKCS8 key, OIDC나 instance 인증 source에는 예제를 그대로 쓸 수 없고, secret 이름은 transform의 source 패널에서 확인한다. 결과는 반환하지 않고 polars DataFrame으로 바꿔 `output.write_table`로 쓴다.
+
+- 읽기: 입력 dataset에서 만든 목록과 기준값을 `ArrayQueryParameter`, `ScalarQueryParameter`로 넘기고 `IN UNNEST(@...)` 조건으로 조회한다. 값을 SQL 문자열에 이어 붙이지 않는다.
+- 쓰기: 고정 이름의 임시 테이블(`temp_update_tracking`)을 지운 뒤 `load_table_from_json`(load job)으로 입력 행을 올리고, `MERGE`로 대상 테이블의 일치 행만 갱신한 다음 임시 테이블을 지우고 갱신된 행을 다시 조회해 output에 남긴다.
+
+다음은 예제 코드를 읽은 해석이며 Palantir 문서의 경고는 아니다. 임시 테이블 이름이 고정이라 같은 dataset에서 동시에 실행하면 서로의 데이터를 지울 수 있다. 예제에는 예외 처리가 없고 마지막 정리도 선택 단계로 표시돼 있어, 중간에 실패하면 다음 실행의 첫 삭제 전까지 임시 테이블이 남는다. BigQuery 쓰기와 Foundry output 쓰기는 구조상 하나의 트랜잭션이 아니므로 MERGE 뒤 build가 실패하면 외부 테이블만 바뀐 상태가 될 수 있다. 실행별 고유 임시 이름과 `try/finally` 정리를 따로 두고, MERGE 뒤 실패했을 때 재실행해도 같은 결과가 되는지 확인한다. 2026-10-20 수집본의 pandas 예제(`@lightweight`, `transform_pandas`, `load_table_from_dataframe`, DataFrame 반환)와 섞지 않으며, 3.68.0 미만 저장소는 legacy `@lightweight`와 `@transform` 조합을 쓸 수 있다.
+
 ## 출처
 
 - [Palantir, bigquery](https://www.palantir.com/docs/foundry/available-connectors/bigquery)
+- [Palantir, lightweight-api-evolution](https://www.palantir.com/docs/foundry/transforms-python/lightweight-api-evolution)
+- [Google Cloud, BigQuery Python Client](https://cloud.google.com/python/docs/reference/bigquery/latest/google.cloud.bigquery.client.Client)
 
 ## 관련 문서
 
 - [[Palantir-Connector-Contracts]]
+- [[Palantir-Python-Transform-Definition-and-Resources]]
+- [[Palantir-Source-Identity-and-Code]]

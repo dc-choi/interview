@@ -1,7 +1,7 @@
 ---
 tags: [econ, investing, semiconductor, cycle, disclosure]
 status: done
-verified_at: 2026-11-14
+verified_at: 2026-11-24
 category: "Economics"
 aliases: ["메모리와 반도체 장비의 업황 구분", "Memory Semiconductor Cycle"]
 ---
@@ -44,6 +44,24 @@ HBM 같은 고부가 제품의 비중이 늘어도 패키징에서 얻는 이익
 
 **분석 적용 제안:** 제품 구성 개선, 패키징과 시험 원가, 계약 재협상 주기, 수요 둔화 시 생산 전환을 함께 비교한다. 기술적 부가가치가 있다는 사실만으로 이익률의 하한이나 적정 PBR을 정하지 않는다. 4F² 발표와 실제 양품 공급의 차이는 [[Supply-and-Demand#셀 구조 전환 발표와 판매 가능한 비트 공급|셀 구조와 공급량]]을 따른다. 특정 업체의 기술 격차, 미래 증설 시점과 목표주가는 이 절에서 검증하지 않았다.
 
+## AI 칩 공급 병목은 시기마다 옮겨 간다
+
+AI 칩 생산을 막는 부품은 고정돼 있지 않다. Epoch AI의 추정(2026-03, 2026-05 발표)을 시기별로 나누면 다음과 같다.
+
+| 시기 | 주된 병목 | 추정 근거 |
+| --- | --- | --- |
+| 2024년 말~2025년 초 | 첨단 패키징(TSMC CoWoS) | 상위 4개 설계사(NVIDIA, Google, AMD, Amazon)가 CoWoS 웨이퍼 출력을 거의 전부 소비했다. 2025년 동안 TSMC가 CoWoS 생산능력을 늘리면서 완화됐지만, 2026-05 발표 기준으로 4사는 여전히 전체 CoWoS 공급의 약 80~85%를 쓴다 |
+| 2025년 | HBM | 4사의 HBM 점유가 2025년 1분기에 급등했고 하반기에는 공급을 거의 전부 소비했다. 미국 수출 통제 뒤 중국의 HBM 수요가 무너지고 B300, TPU v7처럼 메모리를 많이 쓰는 칩의 미국 수요가 빠르게 는 것이 원인으로 제시된다 |
+| 앞으로(전망) | 첨단 로직 공정이 더 심각한 제약이 될 수 있음 | 2026-03 발표의 2025년 추정에서 4사의 3~5nm 로직 다이 점유는 약 12%였다(2026-05 발표는 2024~2025년 첨단 로직 웨이퍼 생산능력의 약 11%로 적는다). 다음 세대 칩이 3nm로 옮겨 가면 점유가 커져 생산능력 제약에 부딪힐 수 있다고 본다. 메모리 병목이 끝난다는 뜻은 아니며, 아래의 2027년 전망과 함께 읽는다 |
+
+2026-03 발표의 2025년 연간 추정으로 4사는 CoWoS 생산능력(웨이퍼 기준)과 HBM 공급(금액 기준)의 약 90%를 소비했다. 2026-05 발표 기준으로 4사의 칩 부품 지출은 2024년 220억 달러에서 2025년 520억 달러로 늘었고 증가분 약 300억 달러 가운데 약 200억 달러가 HBM이었다. 같은 발표의 세 주요 HBM 공급사가 사실상 매진이고 메모리 병목이 2027년까지 이어질 것이라는 문장은 Epoch이 외부 보도를 인용한 전망이지 자체 추정이 아니다. 물량은 부문 매출에서 역산했고 칩당 사양도 추정값이며, Google과 Amazon의 재고를 모형에 넣지 않아 두 회사의 HBM 소비가 과소 추정됐을 가능성을 Epoch 스스로 밝힌다. 범위는 칩 자체이고 랙 단위 부품과 네트워크 장비는 뺐다.
+
+**분석 적용 제안:**
+
+- 병목 부품의 공급사가 가격 협상력을 갖는다는 해석은 가능하지만, 병목이 다른 부품으로 옮겨 가면 그 근거도 약해진다. HBM 수급만 보지 말고 패키징, 로직 공정, 전력과 데이터센터 완공 일정을 같은 시점으로 함께 본다. 다른 병목이 먼저 막히면 메모리 수요의 실현도 늦어질 수 있다. 전력과 데이터센터는 위 Epoch 추정의 범위 밖이다.
+- 구조 변화 주장은 사이클이 사라지는지가 아니라 장기 평균 이익률과 사이클 진폭이 바뀌는지로 검증한다. 진입 장벽과 고객 인증이 커져도 공급이 수요보다 빨리 늘면 가격은 내려갈 수 있다. 이익 정점에서 계산한 낮은 PER은 [[Valuation|정상 이익과 가치평가]]처럼 이익의 지속 기간으로 다시 본다.
+- AI 수요의 증가와 개별 모델 기업, 클라우드 기업의 투자 수익률은 다른 질문이다. 경영진이 투자 회수 기간을 제시하면 그 계산이 가정한 GPU 임대 가격과 가동률, 전력과 건설비, 자금 조달 비용이 무엇인지 확인한다. 투자 주기 전체는 [[AI-Infrastructure-Capital-Cycle|AI 인프라 자본 주기]]에서 본다.
+
 ## 메모리 가격 상승은 완제품 기업의 원가가 된다
 
 메모리 제조사의 판매가격 상승은 메모리를 사서 쓰는 완제품 기업에는 부품 원가 상승이다. 같은 업황이 공급사의 이익 개선과 구매사의 마진 압박으로 동시에 나타날 수 있으므로, 업황을 읽을 때 누구의 손익계산서인지 먼저 정한다.
@@ -82,6 +100,8 @@ Micron과 Lam Research의 2025 회계연도 자료, Apple의 2026 회계연도 �
 - [2026 Form 10-K — Apple](https://www.sec.gov/Archives/edgar/data/320193/000032019326000026/aapl-20260926.htm) — 2026-11-14 제품 매출총이익률 변화 요인, 부품 원가 상승과 이익률 전망 서술 대조.
 - [2025 Form 10-K — Apple](https://www.sec.gov/Archives/edgar/data/320193/000032019325000079/aapl-20250927.htm) — 2026-11-14 매출총이익률의 변동성과 하락 압력 문장이 전년에도 있었는지 대조.
 - [Q4 FY2026 Results, Form 8-K Exhibit 99.1 — Apple](https://www.sec.gov/Archives/edgar/data/320193/000032019326000024/a8-kex991q4202609262026.htm) — 2026-11-02 제출. 4분기 매출, iPhone 매출과 관세 환급을 포함한 매출총이익률 대조.
+- [Advanced packaging and HBM, not logic dies, were the bottlenecks on AI chip production in 2025 — Epoch AI, Venkat Somala](https://epoch.ai/data-insights/ai-chip-supply-chain-constraints) — 2026-03-12. 2026-11-24 2025년 구매자별 점유와 한계 절 대조.
+- [Introducing the AI Chip Components Explorer — Epoch AI, Venkat Somala](https://epoch.ai/latest/introducing-the-ai-chip-components-explorer) — 2026-05-08. 2026-11-24 병목 이동 시기, 원인, 부품 지출과 3nm 전망 대조.
 
 ## 관련 문서
 
@@ -89,4 +109,6 @@ Micron과 Lam Research의 2025 회계연도 자료, Apple의 2026 회계연도 �
 - [[Growth-Quality-and-Scenario-Valuation|공시와 시나리오 가치평가]]
 - [[Semiconductor-Advanced-Packaging|반도체 첨단 패키징]]
 - [[Semiconductor-Equipment-Localization|반도체 장비 국산화와 공급사 경쟁]]
+- [[AI-Infrastructure-Capital-Cycle|AI 인프라 자본 주기]]
+- [[HBM-Stack-and-Base-Die|HBM 적층과 베이스 다이]]
 - [[투자(Investing)|투자 지도]]
