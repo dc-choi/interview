@@ -1,7 +1,7 @@
 ---
 tags: [palantir, foundry, connectors, jdbc, authentication]
 status: done
-verified_at: 2026-10-16
+verified_at: 2026-11-24
 category: "AI엔지니어링(AIEngineering)"
 ---
 
@@ -87,18 +87,16 @@ Beta 기능은 enrollment에서 제공되지 않거나 개발 중 바뀔 수 있
 
 ## Microsoft Access
 
-기능: Exploration: Generally available; Batch syncs: Generally available; Incremental: Generally available; Table exports: Generally available.
+기능(2026-11-24 확인): Exploration: Generally available; Batch syncs: Generally available; Incremental: Generally available. Table export는 제공하지 않는다.
 
 | 입력 속성 | 필요 조건 | 기본값 |
 |---|---|---|
-| ConnectionType | 필수 | Local |
-| DataSource | 필수 | C:\Users\Public\Documents\MyDatabase.accdb |
+| ConnectionType | 필수 | Azure Files |
+| DataSource | 필수 | — |
 
 [해당 driver 속성 매뉴얼](https://cdn.cdata.com/help/DCK/jdbc/pg_connectionj.htm)
 
-입력의 상세 의미와 대체 auth mode는 아래 source의 해당 driver 매뉴얼에서 확인한다. agent 연결은 agent 도달성과 원본 inbound 허용을 함께 맞춘다.
-
-Table export는 source에서 exports를 켠 뒤 target table과 실제 쓰기 권한을 구성한다. OAuth를 쓰는 경우 해당 source의 authorization/refresh 절차도 필요하다.
+입력의 상세 의미와 대체 auth mode는 아래 source의 해당 driver 매뉴얼에서 확인한다. agent 연결은 agent 도달성과 원본 inbound 허용을 함께 맞춘다. 2026-10-16 확인본의 기본값(`Local`, 로컬 Windows 경로)과 table export GA 표기는 현재 문서에서 바뀌었다. Azure Files 구성, 코드 읽기와 파일 교체 방식의 한 행 갱신은 [[Palantir-Microsoft-Access-Connector]]에 정리한다.
 
 ## Microsoft Ads
 

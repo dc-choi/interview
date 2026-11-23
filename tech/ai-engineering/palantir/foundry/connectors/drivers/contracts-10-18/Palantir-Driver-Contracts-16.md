@@ -1,7 +1,7 @@
 ---
 tags: [palantir, foundry, connectors, jdbc, authentication]
 status: done
-verified_at: 2026-10-16
+verified_at: 2026-11-24
 category: "AI엔지니어링(AIEngineering)"
 ---
 
@@ -91,12 +91,12 @@ Table export는 source에서 exports를 켠 뒤 target table과 실제 쓰기 �
 | AuthScheme | 권장 | AzureServicePrincipal |
 | AzureTenant | 권장 | — |
 | Drive | 권장 | — |
-| IncludeSharePointSites | 권장 | FALSE |
 | InitiateOAuth | 권장 | GETANDREFRESH |
 | OAuthClientId | 권장 | — |
 | OAuthClientSecret | 권장 | — |
-| ShowSharedDocuments | 권장 | FALSE |
 | Workbook | 권장 | — |
+
+2026-11-24 확인한 표에는 2026-10-16 확인본의 IncludeSharePointSites와 ShowSharedDocuments 권장 행이 없다. 문서의 위임 로그인 절차는 표의 기본값과 달리 `AuthScheme=AzureAD`, `InitiateOAuth=REFRESH`를 설정한다. 인증, worksheet table 이름과 Graph 코드 예제는 [[Palantir-Microsoft-Workspace-Connectors]]에 정리한다.
 
 | 직접 연결 domain | 필요한 조건 |
 |---|---|

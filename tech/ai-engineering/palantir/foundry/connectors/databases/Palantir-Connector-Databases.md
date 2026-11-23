@@ -11,3 +11,4 @@ category: "AI엔지니어링(AIEngineering)"
 - [[Palantir-BigQuery-Connector]]
 - [[Palantir-Databricks-Connector]]
 - [[Palantir-Snowflake-Connector]]
+- [[Palantir-Microsoft-Access-Connector]]
