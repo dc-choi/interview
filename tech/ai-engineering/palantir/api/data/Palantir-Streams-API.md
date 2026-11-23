@@ -1,7 +1,7 @@
 ---
 tags: [palantir, foundry, api, stream, partition, cdc]
 status: done
-verified_at: 2026-10-16
+verified_at: 2026-11-24
 category: "AI엔지니어링(AIEngineering)"
 aliases: ["팔란티어 Streams API"]
 ---
@@ -16,7 +16,7 @@ Foundry stream은 cold storage인 streaming dataset과 hot storage인 buffer를 
 
 `POST /api/v2/streams/datasets/{datasetRid}/streams`는 기존 backing dataset에 새 branch와 그 branch의 stream을 만든다. branchName과 schema가 필수며 이미 있는 branch면 BranchAlreadyExists다. 두 생성 경로 모두 `api:streams-write`, `preview=true`를 요구한다.
 
-partitionsCount 기본값은 1이다. 생성 문서는 이 값을 나중에 변경할 수 없다고 명시하므로 사전 용량 계획이 필요하다. partition 하나 약 5 mb/s라는 reference의 일반적 설명은 성능 보장이나 실제 부하 시험의 결과로 사용하지 않는다. streamType은 기본 LOW_LATENCY이며 HIGH_THROUGHPUT과 호환되지 않는다. compressed 기본값은 false다.
+partitionsCount 기본값은 1이다. Create Streaming Dataset 명세는 이 값을 나중에 변경할 수 없다고 명시하므로 사전 용량 계획이 필요하다. reset으로 새 view에 다른 값을 적용할 수는 있지만 기존 record가 지워진다. partition 하나 약 5 mb/s라는 reference의 일반적 설명은 성능 보장이나 실제 부하 시험의 결과로 사용하지 않는다. streamType은 기본 LOW_LATENCY이며 HIGH_THROUGHPUT과 호환되지 않는다. compressed 기본값은 false다.
 
 schema field는 nullable, dataType과 선택적 customMetadata를 가진다. scalar 외에 struct/subFields, array/itemsSchema, map/keySchema/valueSchema를 표현한다. Decimal의 precision과 scale의 최대값은 각각 38로 기재된다. field 명세와 실제 record의 타입을 함께 검증한다.
 
@@ -30,7 +30,9 @@ CDC를 설정하려면 key 하나 이상이 필요하다. 확인일 fullRow 방�
 
 ## 조회와 publish 입력 위치
 
-Get Stream은 `/api/v2/streams/datasets/{datasetRid}/streams/{streamBranchName}`의 GET이며 `api:streams-read`를 요구한다. schema, branchName, viewRid, partitionsCount, streamType과 compressed를 반환한다. branch 부재, stream 부재와 접근 권한 부재 모두 404일 수 있다.
+Get Stream은 `/api/v2/streams/datasets/{datasetRid}/streams/{streamBranchName}`의 GET이며 `api:streams-read`를 요구한다. schema, branchName, viewRid, partitionsCount, streamType과 compressed를 반환한다. branch 부재, stream 부재와 접근 권한 부재 모두 404일 수 있다. 확인일 명세에는 preview 경고나 `preview` query가 없어 생성, reset과 달리 opt-in을 요구하지 않는다.
+
+Get Stream 명세에 나열된 오류는 StreamNotFound(404) 외에 400의 InvalidFieldSchema, InvalidStreamNoSchema, InvalidStreamType이다. 인증, 사용량 제한과 서버 오류 같은 공통 오류는 이 목록과 별도다. InvalidStreamNoSchema는 stream은 있으나 schema가 없어 유효하지 않은 상태를 뜻하므로, status가 아니라 errorName으로 나눠 이 오류는 stream 상태 점검으로, 그 밖의 400은 요청 인자부터 확인하는 처리를 검토한다. 이는 명세에서 도출한 설계 점검이며 공식 재시도 지침은 아니다. 권한 부족이 403이 아니라 404로 보일 수 있다는 점도 함께 고려해 부재와 권한 문제를 이 응답만으로 구분하지 않는다.
 
 고처리량 IO prefix는 `/api/v2/highScale/streams/datasets/{datasetRid}/streams/{streamBranchName}`다.
 
@@ -66,7 +68,7 @@ reset body에서 schema, partitionsCount, streamType과 compressed를 생략하�
 
 viewRid를 지정하면 특정 view에만 읽기/쓰기한다. 생략하면 branch의 최신 stream을 사용한다. reset 전후에 같은 branchName과 offset만 이어 쓰면 다른 view의 위치를 혼동할 수 있다. 특정 view를 고정한 client가 reset 이후 어떻게 전환할지도 함께 설계한다.
 
-InvalidSchema/InvalidFieldSchema, schema 없는 stream, 잘못된 streamType과 작업별 PermissionDenied를 구분한다. 공식 전체 schema 대조를 수행했으며 실제 publish/소비, 처리량, CDC 재정렬과 reset의 데이터 삭제를 시험하지 않았다.
+InvalidSchema/InvalidFieldSchema, schema 없는 stream, 잘못된 streamType과 작업별 PermissionDenied를 구분한다. 명세의 오류 목록 기준으로 reset은 권한 오류 ResetStreamPermissionDenied(403)를 따로 둔다. 다만 reset도 StreamNotFound(404)를 나열하고 어떤 권한 결핍이 403인지 설명하지 않으므로 reset의 404를 부재로 단정하지 않는다. 공식 전체 schema 대조를 수행했으며 실제 publish/소비, 처리량, CDC 재정렬과 reset의 데이터 삭제를 시험하지 않았다.
 
 ## 출처
 
@@ -74,13 +76,13 @@ InvalidSchema/InvalidFieldSchema, schema 없는 stream, 잘못된 streamType과 
 - [Palantir, Stream basics](https://www.palantir.com/docs/foundry/api/streams-v2-resources/streams/stream-basics)
 - [Palantir, Create Streaming Dataset](https://www.palantir.com/docs/foundry/api/streams-v2-resources/datasets/create-streaming-dataset)
 - [Palantir, Create Stream](https://www.palantir.com/docs/foundry/api/streams-v2-resources/streams/create-stream)
-- [Palantir, Get Stream](https://www.palantir.com/docs/foundry/api/streams-v2-resources/streams/get-stream)
+- [Palantir, Get Stream](https://www.palantir.com/docs/foundry/api/v2/streams-v2-resources/streams/get-stream)
 - [Palantir, Get End Offsets For Stream](https://www.palantir.com/docs/foundry/api/streams-v2-resources/streams/get-end-offsets-for-stream)
 - [Palantir, Get Records From Stream](https://www.palantir.com/docs/foundry/api/streams-v2-resources/streams/get-records-from-stream)
 - [Palantir, Publish Binary Record To Stream](https://www.palantir.com/docs/foundry/api/streams-v2-resources/streams/publish-binary-record-to-stream)
 - [Palantir, Publish Record To Stream](https://www.palantir.com/docs/foundry/api/streams-v2-resources/streams/publish-record-to-stream)
 - [Palantir, Publish Records To Stream](https://www.palantir.com/docs/foundry/api/streams-v2-resources/streams/publish-records-to-stream)
-- [Palantir, Reset Stream](https://www.palantir.com/docs/foundry/api/streams-v2-resources/streams/reset-stream)
+- [Palantir, Reset Stream](https://www.palantir.com/docs/foundry/api/v2/streams-v2-resources/streams/reset-stream)
 
 ## 관련 문서
 
