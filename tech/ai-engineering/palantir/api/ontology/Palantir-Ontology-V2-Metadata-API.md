@@ -63,6 +63,7 @@ Object type 목록은 요청 pageSize보다 작거나 클 수 있다. Action/obj
 - 이 endpoint의 선택 query parameter는 `branch`다. 생략하면 기본 branch를 사용하며, branch는 experimental이고 모든 workflow를 지원하지 않는다.
 - API name 조회에 있는 `sdkPackageRid`, `sdkVersion`과 bulk 조회의 `preview`는 이 단건 RID 조회의 query parameter로 정의되어 있지 않다. 다른 endpoint의 인자를 공통 필수값으로 복사하지 않는다.
 - 응답 schema는 `ActionTypeV2`이며 `apiName`, `status`, `rid`가 필수다. 이 페이지의 예시에도 `data` wrapper와 `status` 누락이 있어 위 단건 조회와 같은 schema/예시 불일치가 나타난다.
+- 2026-11-17 수집본부터(2026-11-19 `/api/v2/` 경로로 다시 수집한 본문도 동일) `ActionTypeV2`에는 2026-11-02 수집본에 없던 선택 필드 `returnType`(Ontology Query의 parameter와 output이 지원하는 타입의 union)이 있고, `ActionParameterV2`의 `dataType` union에 `geotimeSeriesReference`와 `interfaceObjectSet`이 더해졌다. 필수 필드와 요청 인자, 예시의 `data` wrapper는 그대로다. 같은 개정이 위 목록 조회 절에 있으므로 모르는 variant와 빠진 `returnType`의 처리도 그 절의 설계 제안을 따른다.
 
 실제 인증 요청과 반환 형식은 시험하지 않았다. 검증 범위는 RID 단건 조회의 요청과 응답 명세이며, 다른 metadata 항목의 검증일은 유지한다.
 
@@ -73,6 +74,7 @@ Object type 목록은 요청 pageSize보다 작거나 클 수 있다. Action/obj
 - 요청 본문은 `GetActionTypeByRidBatchRequest` 객체다. `requests` 목록의 각 원소는 필수 `actionTypeRid`를 가진 객체이며 RID 문자열 배열 자체가 아니다. Schema에서 `requests`는 선택 필드지만, 생략이나 빈 목록의 실행 결과는 확인하지 않았다.
 - 응답의 `data`는 선택적인 `ActionTypeV2` 목록이다. 존재하지 않거나 토큰에 필요한 권한이 없는 Action type은 응답에서 빠진다. 누락만으로 삭제와 권한 부족을 구분할 수 없다.
 - `branch`를 생략하면 기본 branch를 사용한다. Branch는 experimental이며 모든 workflow를 지원하지 않는다.
+- 2026-11-17 수집본부터(2026-11-19 재수집 본문도 동일) 응답 원소인 `ActionTypeV2`에 RID 단건 조회와 같은 개정(선택 `returnType`, parameter `dataType`의 새 variant)이 들어갔다. 요청 본문, `preview` 요건과 누락 조건은 바뀌지 않았다.
 
 클라이언트 설계 제안: 요청을 100개 이하로 나누고 응답을 `rid`로 대응시킨다. 반환되지 않은 RID는 미확인으로 남기고 삭제를 확정하지 않는다. 요청과 응답 개수가 같다는 가정이나 위치별 대응을 사용하지 않는다. 공식 예시의 빈 요청 본문을 정상 요청 양식으로 복사하지 않고 schema를 따른다.
 
