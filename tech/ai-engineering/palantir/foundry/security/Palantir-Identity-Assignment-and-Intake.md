@@ -1,7 +1,7 @@
 ---
 tags: [palantir, authentication, organization, group, intake]
 status: done
-verified_at: 2026-10-16
+verified_at: 2026-11-24
 category: "AI엔지니어링(AIEngineering)"
 aliases: ["Foundry identity 배정과 intake"]
 ---
@@ -20,7 +20,7 @@ Rule-based group은 자동 rule, provider/external group은 IdP, internal group�
 
 ## Primary organization과 group marking은 다른 배정이다
 
-Provider별 default org 또는 advanced user/group rule을 사용한다. User는 attribute/provider group을 우선 조건으로 쓰고 internal group 의존은 신중히 검토한다. Provider group은 이름 regex로 하나 이상의 org에 배정한다.
+Provider별 default org 또는 advanced user/group rule을 사용한다. User는 attribute/provider group을 우선 조건으로 쓰고 internal group 의존은 신중히 검토한다. Provider group은 이름 regex로 하나 이상의 org에 배정하며, 조건이 regex이므로 group 이름의 특수문자는 escape한다. Advanced rule은 user rule과 group rule을 따로 관리하고 선택적 fallback을 둘 수 있다. 저장 전 test panel은 기존 user가 어느 rule에 맞고 어느 org에 배정될지 보여 주지만, 그 provider로 로그인한 적 있는 user만 시험 대상으로 고를 수 있다.
 
 User의 No organization은 login을 막지만 provider group의 No organization은 마지막 login member의 org로 배정하는 동작이다. 둘을 같은 deny 설정으로 해석하지 않는다. Control Panel org assignment를 설정하면 legacy Multipass Group AUM의 org rule은 무시되므로 기존 rule과 비교한다.
 

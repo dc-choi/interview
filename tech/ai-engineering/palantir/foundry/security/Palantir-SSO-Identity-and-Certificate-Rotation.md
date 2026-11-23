@@ -1,7 +1,7 @@
 ---
 tags: [palantir, saml, oidc, authentication, certificate]
 status: done
-verified_at: 2026-10-16
+verified_at: 2026-11-24
 category: "AI엔지니어링(AIEngineering)"
 aliases: ["Foundry SSO 식별자와 인증서 회전"]
 ---
@@ -44,7 +44,7 @@ Provider를 enable한 뒤 test login을 만들면 login 결과와 received attri
 
 ## IdP 이전은 새 provider 생성만으로 끝나지 않는다
 
-새 SAML provider에서 그대로 login하면 사용자/group이 중복되고 home/shared resource 접근을 잃을 수 있다. In-place는 동일 attribute와 ID가 유지되는 경우에만 사용한다. ID가 달라지면 새 provider/test account를 시험한 뒤 잠시 disable하고 external-to-external 사용자 migration을 지원 경로로 수행한다. 두 provider enable과 계정 migration 완료를 별도로 확인한다.
+새 SAML provider에서 그대로 login하면 사용자/group이 중복되고 home/shared resource 접근을 잃을 수 있다. In-place는 동일 attribute와 ID가 유지되는 경우에만 사용한다. 기존 provider의 Manage에서 Foundry SAML integration metadata XML을 내려받아 IdP 쪽 application을 갱신하고, 새 IdP federation metadata를 기존 provider에 올린 뒤 user attribute가 바뀌지 않고 새 Foundry 계정이 생기지 않는지 test한다. ID가 달라지면 external-to-external 경로로 새 provider를 추가해 test account로 시험한 뒤, 두 provider가 동시에 enable되지 않도록 새 integration을 잠시 disable하고 사용자 migration은 Palantir 담당자의 지원을 받는다. 새 provider의 test 성공과 계정 migration 완료를 별도로 확인한다.
 
 ## 출처
 

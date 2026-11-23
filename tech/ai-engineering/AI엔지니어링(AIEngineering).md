@@ -27,6 +27,7 @@ Software 3.0 패러다임, LLM과 에이전트, 하네스, 평가, 조직 전환
 - [x] [[Contrail-Avoidance-Model-Evaluation|비행운 회피 모델의 현장 평가]] — 배정과 실행 집단, 발생률과 온난화 추정, 기종 보정 연료 비교
 - [x] [[Realtime-Vision-Agent-Pipeline|실시간 영상 에이전트]] — 미디어 전송, 영상 processor, 대화 모델과 음성 처리의 역할 구분
 - [x] [[Route-Travel-Time-Prediction|경로 선택과 통행시간 예측 평가]] — 경로 계산과 미래 교통 예측, GNN 도로 표현과 추천 피드백
+- [x] [[Dispatch-Objective-Weight-RL|배차 최적화기의 목적 가중치 강화학습]] — 최적화기와 학습 정책의 분담, 지연 보상의 지역 집계, 오프라인 학습과 switchback 평가, 작은 효과와 비유의 지표
 - [x] [[Generative-3D-Asset-Workflow|생성형 3D 자산 제작]] — Flow 입력과 실행, 형태와 텍스처 분리, 리깅 편집과 결과 검수
 - [x] [[Agent-Oriented-Programming-Languages|에이전트용 프로그래밍 언어]] — Zerolang의 검사된 그래프 편집, Mog의 호스트 권한과 검증 한계, Exact와 Text.js의 런타임 관찰 명령
 - [x] [[ML-Proxy-Discrimination|대리변수와 모델 공정성]] — 간접 정보, 집단별 오류와 공정성 기준의 차이
