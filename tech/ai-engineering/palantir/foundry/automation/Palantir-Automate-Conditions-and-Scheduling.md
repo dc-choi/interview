@@ -1,7 +1,7 @@
 ---
 tags: [palantir, automate, event, schedule, streaming]
 status: done
-verified_at: 2026-10-16
+verified_at: 2026-11-24
 category: "AI엔지니어링(AIEngineering)"
 aliases: ["Automate 조건과 평가 시점"]
 ---
@@ -12,9 +12,9 @@ Automate는 condition 평가와 effect 실행을 분리한다. Business automati
 
 ## 집합 진입은 객체 생성과 같지 않다
 
-Objects added는 새 객체뿐 아니라 기존 객체가 filter를 만족해 집합에 진입할 때도 trigger한다. Filter가 없을 때만 type에 새로 추가된 객체가 대상이다. Objects removed는 filter를 벗어난 객체를 잡지만 **Ontology에서 삭제된 객체는 trigger하지 않는다**.
+Objects added는 새 객체뿐 아니라 기존 객체가 filter를 만족해 집합에 진입할 때도 trigger한다. Filter가 없을 때만 type에 새로 추가된 객체가 대상이다. Objects removed는 filter를 벗어난 객체를 잡는다. 2026-10-16 확인본은 Ontology에서 삭제된 객체가 이 조건을 trigger하지 않는다고 적었으나, 2026-11-24 확인본의 Objects removed 절은 삭제를 따로 설명하지 않는다. live 평가가 가능한 batch-backed 집합에서 삭제를 잡아야 하면 아래의 Objects modified 삭제 옵션을 쓰고, removed 조건의 삭제 동작은 실제 automation history로 확인한다. Objects modified는 live 전용이라 live를 지원하지 않는 집합에서는 이 옵션을 쓸 수 없다.
 
-Objects modified는 선택 property 또는 모든 property의 변경을 감시한다. Include added/removed를 끄면 변경 전후 계속 집합에 남는 객체만 대상이고 켜면 집합 진입/이탈도 포함한다. 삭제는 여전히 대상이 아니다. 특정 값으로 바뀌는 사건이면 added+해당 값 filter가 더 명시적이다.
+Objects modified는 선택 property 또는 모든 property의 변경을 감시한다. 2026-11-24 확인본은 Also trigger when 아래에 추가 trigger 세 개를 둔다. Objects added to set은 filter에 맞는 새 객체를 포함한 집합 진입, Objects removed from set은 Ontology에 남아 있는 객체의 집합 이탈, Objects deleted from set은 집합에 속했던 객체의 Ontology 삭제다. 세 옵션을 모두 끄면 변경 전후 계속 집합에 남는 객체의 수정만 trigger한다. 집합 이탈과 삭제가 서로 다른 옵션이므로 removed만 켜고 삭제 알림까지 기대하지 않는다. 같은 페이지의 예시는 아직 옛 옵션명(Include objects added, Include objects removed)을 쓰고 삭제된 객체가 trigger하지 않는다고 적는데, 삭제 옵션을 켜지 않은 구성의 설명으로 읽는다. 실제 UI 표기와 기본값은 제품에서 확인한다. 특정 값으로 바뀌는 사건이면 added+해당 값 filter가 더 명시적이다.
 
 Run on all은 schedule/dependency마다 현재 전체 집합을 처리한다. Threshold crossed는 모든 Boolean check가 True가 되는 경계와 회복 방향 모두에 event/effect를 기록한다. Metric changed는 sunset이지만 기존 편집/지원이 남아 있어 deprecated/제거와 구분한다.
 
@@ -26,7 +26,7 @@ Live는 OSv2 index에 변경이 보인 뒤 수분 내 평가하며 patch와 back
 
 Objects modified는 live만, threshold/metric-changed는 scheduled만 지원한다. Added/removed는 live/scheduled/dependency, Run on all은 scheduled/dependency다. Derived property filter는 scheduled에서 가능하다. Frequent schedule의 비싼 query는 compute를 크게 쓸 수 있다.
 
-Stream-backed object의 live는 modified만 지원하고 감시 property를 골라 줄일 수 없다. 상태는 downstream Ontology에서 처리한다. Raw streaming dataset은 전용 stream condition과 초당 200 record 조건을 안내하며 binary input을 decode한다. Stream-backed 소개의 무제한 throughput 표현을 전체 effect/backend 처리량 보장으로 확대하지 않는다.
+Stream-backed object의 live는 modified만 지원하고 감시 property를 골라 줄일 수 없다. 2026-11-24 확인본은 stream-backed object type에 Objects added to set, Objects removed from set, Objects deleted from set을 쓸 수 없다고 적는다. 상태는 downstream Ontology에서 처리한다. Raw streaming dataset은 전용 stream condition과 초당 200 record 조건을 안내하며 binary input을 decode한다. Stream-backed 소개의 무제한 throughput 표현을 전체 effect/backend 처리량 보장으로 확대하지 않는다.
 
 ## Dataset condition은 commit의 전체 view를 평가한다
 

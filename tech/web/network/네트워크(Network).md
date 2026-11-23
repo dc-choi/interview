@@ -16,6 +16,7 @@ OSI 7계층과 캡슐화, IP 헤더, 스위치와 라우팅, TLS, 패킷 캡처,
 - [x] [[Private-5G-Network|5G 특화망 (이음5G)]] — 3GPP 비공중망(SNPN, PNI-NPN)과 TSN 통합, 공장 무선 요구와 Wi-Fi 비교, 코어와 UPF 배치, 산업단지 코어 공유 모델, 할당과 지정 절차, 도입 절차
 - [x] [[Network-Lab-Practice|네트워크 실습]] — 두 서브넷 연결, 게이트웨이와 ARP, 상태/왕복/서비스 분리, 장애 진단과 열 단계 실습 후보
 - [x] [[Satellite-Direct-to-Device|위성 직접 연결]] — 기존 LTE와 NTN, 지연과 도플러, 단말과 서비스 조건
+- [x] [[Cellular-Device-to-Device|셀룰러 단말 간 직접 통신(D2D, ProSe와 사이드링크)]] — PC5와 사이드링크, 사업자 권한과 자원 할당 방식, Rel-12 통신의 공공 안전 한정, LTE Direct, V2X와 NR 사이드링크 진화, Wi-Fi Direct와 구분
 - [x] [[Network-Functions-Virtualization|네트워크 기능 가상화(NFV)]] — 전용 장비를 범용 서버의 소프트웨어로, 2012 백서의 이점과 과제, SDN과의 관계, VNF, NFVI, MANO 기능 블록과 참조점
 - [x] [[Software-Defined-Networking|소프트웨어 정의 네트워킹(SDN)]] — 제어 평면과 데이터 평면 분리, OpenFlow 스위치의 flow table과 기본 action, Google B4의 중앙 TE와 링크 사용률, 트레이드오프
 - [x] [[Intelligent-Network|지능망과 SSP, SCP]] — 교환과 서비스 로직의 분리, 기능 엔티티와 물리 엔티티, 호 처리 흐름, Freephone 예시
