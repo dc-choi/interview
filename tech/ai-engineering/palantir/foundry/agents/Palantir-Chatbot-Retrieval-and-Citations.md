@@ -1,7 +1,7 @@
 ---
 tags: [palantir, chatbot, rag, citations]
 status: done
-verified_at: 2026-10-16
+verified_at: 2026-11-24
 category: "AI엔지니어링(AIEngineering)"
 aliases: ["Chatbot retrieval과 citation 계약"]
 ---
@@ -38,6 +38,14 @@ Document/Ontology context는 기본 citation prompt와 Sources 목록을 제공�
 Object citation 기본 click은 해당 object, PDF는 기본 첫 page 또는 지정 page를 연다. Object type별 external URL/PDF/variable update로 click 동작을 override하거나 citation 자체를 전역 비활성화할 수 있다. Citation이 보이지 않는 상황과 retrieval이 없었던 상황을 혼동하지 않는다.
 
 Singleton citation variable과 검색한 전체 object set output을 나눠 source preview와 결과 목록을 연결한다. URL/문서 page가 정확히 존재하고 권한에 맞게 열리는지, 답변의 수치/조건을 그 위치가 실제 지지하는지 평가한다.
+
+## 사용자 접근과 피드백 지표는 따로 확인한다
+
+AIP Chatbot은 Project나 folder에 저장되는 file이며 다른 resource와 같은 접근 제어를 따른다. Chatbot을 공유해도 사용자가 설정된 retrieval context에 접근하지 못하면 실행 중 오류가 난다. 사용자는 chatbot이 쓰는 model과 data source에도 접근 권한이 있어야 한다. 작성자 화면에서 잘 동작한 retrieval을 사용자 권한에서도 같은 결과로 보지 않는다. Project가 folder와 file 단위 role 부여를 막으면 chatbot 대신 Project에 role을 준다.
+
+편집기의 chat panel은 저장하지 않은 변경까지 포함한 현재 설정으로 응답하므로, 작성자가 시험한 결과가 published version의 동작과 다를 수 있다. 저장하지 않은 변경이 있으면 Publish를 할 수 없다. End user 관점은 View에서 version을 골라 확인한다. View가 누구의 권한으로 실행되는지는 이 안내에 없으므로 권한 차이는 실제 사용자 권한으로 따로 확인한다.
+
+Publish 뒤 Monitoring panel은 session 수, 사용자 수와 사용자가 thumbs up/down으로 helpful 또는 unhelpful을 표시한 session 비율을 보여 준다. 이 비율은 표시한 사용자의 만족 신호이며 답변의 사실 정확성이나 citation이 주장을 지지하는지에 대한 평가가 아니다. 정확성은 Function으로 게시한 chatbot을 AIP Evals로 평가하는 경로([[Palantir-AIP-Evaluation-Suites|질의와 근거 평가]])와 함께 본다. Usage panel은 Workshop, automation과 외부 배포 같은 사용처를 보여 주고 최신 published version을 AIP Assist에 노출하는 설정도 둔다. 설정 변경 전 영향 확인의 출발점으로 쓰되 이 목록이 모든 사용처를 보장한다고 보지 않는다.
 
 ## 출처
 

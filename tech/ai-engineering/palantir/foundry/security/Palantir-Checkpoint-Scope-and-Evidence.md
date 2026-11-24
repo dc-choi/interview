@@ -1,7 +1,7 @@
 ---
 tags: [palantir, checkpoints, governance, audit]
 status: done
-verified_at: 2026-10-16
+verified_at: 2026-11-24
 category: "AI엔지니어링(AIEngineering)"
 aliases: ["Checkpoint scope와 justification 기록"]
 ---
@@ -18,7 +18,7 @@ Space 설정은 Administer resource-scoped checkpoint configurations operation�
 
 유형을 여러 개 선택하면 공통으로 지원하는 condition만 쓸 수 있다. Location(resource/Project/space), 행위 사용자/group, 선택된 사용자/group, Marking, Action type과 object-set matcher를 조합한다. Object-set matcher는 type/type group/Ontology/datasource 위치/Marking/저장 exploration 또는 list를 기준으로 한다.
 
-AND matcher는 범위를 좁히고 NOT exemption은 예외를 만든다. Matcher type당 하나를 지정하지만 exemption의 여러 대상은 허용한다. Acting user와 추가/삭제 대상으로 선택한 user/group을 혼동하지 않는다.
+AND matcher는 범위를 좁히고 NOT exemption은 예외를 만든다. Matcher type당 하나를 지정하지만 exemption의 여러 대상은 허용한다. Acting user와 추가/삭제 대상으로 선택한 user/group을 혼동하지 않는다. 선택된 group condition은 그 group의 member group에도 적용할지 따로 정한다. AND matcher로 민감 group을 지정하고 이 선택을 끄면 member group 대상 변경에는 조건이 맞지 않아 checkpoint가 나타나지 않고, NOT exemption으로 지정했다면 반대로 member group 대상 변경에 나타난다. 이는 matcher 정의에서 따른 해석이므로 실제 환경에서 확인한다.
 
 ## Checkpoint type은 실제 entry point를 따른다
 
@@ -32,11 +32,11 @@ Login checkpoint는 Checkpoints Login AUM을 먼저 활성화해야 한다. Lega
 
 ## 입력 형식과 재확인 빈도
 
-Prompt title/prompt는 필수이며 description은 선택이다. Prompt/description은 Markdown을 지원한다. Configuration의 관리용 이름/설명은 사용자가 보는 문구와 다르다.
+Prompt title/prompt는 필수이며 description은 선택이다. Title은 45자 미만이어야 잘리지 않고 표시된다. Prompt/description은 Markdown을 지원한다. Configuration의 관리용 이름/설명은 사용자가 보는 문구와 다르다. 관리용 이름/설명은 configuration을 만들고 고칠 수 있는 다른 사용자에게 보이고 checkpoint를 통과하는 사용자는 볼 수 없으므로, 적용하는 거버넌스 정책은 관리용 설명에 남기고 사용자에게 알릴 내용은 prompt에 쓴다.
 
 Acknowledgment checkbox, free text(regex validation), dropdown(단일/복수, 선택적/필수 free text), IdP reauthentication을 고를 수 있다. Regex가 없으면 free text는 임의 응답을 허용하므로 업무적으로 충분한 이유인지 검토는 남는다. Reauthentication은 Login/Scoped session select에 사용할 수 없다.
 
-Response/Dropdown은 지난 한 달 같은 configuration의 최근 5개 free-text 이유를 자동 채울 수 있다. 과거 이유를 골랐다는 사실은 현재 목적도 같다는 보장이 아니다. Frequency 설정은 Login 유형에만 제공되며 나머지는 조건을 만족하는 매 interaction이 기본이다.
+Response/Dropdown은 사용자 본인이 지난 한 달 같은 configuration에 제출한 최근 5개 free-text 이유를 자동 채울 수 있다. 과거 이유를 골랐다는 사실은 현재 목적도 같다는 보장이 아니다. Frequency 설정은 Login 유형에만 제공되며 나머지는 조건을 만족하는 매 interaction이 기본이다.
 
 ## Record는 당시 화면과 접근 범위를 보존한다
 
