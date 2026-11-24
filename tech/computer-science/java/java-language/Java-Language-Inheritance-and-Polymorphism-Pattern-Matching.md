@@ -79,6 +79,14 @@ TypeScript는 `typeof value === "string"` 같은 조건 뒤에서 같은 변수�
 
 JDK 21은 type pattern을 `switch`의 case label에서 쓰는 pattern matching for switch(JEP 441)와 record 값을 구성 요소로 분해하는 record pattern(JEP 440)을 정식 기능으로 넣었다.
 
+## primitive type pattern은 preview에서 철회됐다
+
+`int`, `long`, `double` 같은 primitive type을 pattern, `instanceof`와 `switch`에 쓰는 preview 기능(Primitive Types in Patterns, instanceof, and switch)은 값이 정보 손실 없이 대상 type으로 변환될 수 있을 때만 match하고 변환한 값을 pattern variable에 담는 방식이었다. switch 선택자를 `long`, `float`, `double`, `boolean`과 그 boxed type으로 넓히는 부분도 이 기능에 포함됐다. 2026-11-09 Amber 명세 전문가 메일링 리스트 공지로 개발이 중단됐다. 여섯 번째 preview가 될 draft JEP는 철회되고, 기능은 JDK 28에서 제거될 예정이라 그 릴리스에서는 `--enable-preview`로도 쓸 수 없게 된다. 2026-11-14 시점의 JDK 28 early access build에는 아직 남아 있었다. 이유는 Project Valhalla가 사용자 정의 numeric type을 포함한 새 숫자 모델을 탐색하고 있어, 그 type들이 지원해야 할 정확한 numeric conversion의 정의가 정해지기 전에 현재 정의로 확정하기 이르다는 것이다. 대신 `case Point(0, 0)`처럼 일부 상수를 record pattern 안에 중첩해 쓰는 Constant Patterns를 도입할 계획이며, 이 설계는 switch의 확장된 primitive 지원을 이어받는다. 공지 시점에 대상 릴리스는 정해지지 않았다.
+
+preview 기능은 다음 릴리스에서 정식 기능이 되거나, 다시 preview되거나, 제거된다. 이번 공지는 JEP 12에 따라 새 JEP 없이 JBS issue로 제거할 수 있다고 밝혔다. preview 기능에 기대 작성한 코드는 JDK를 올릴 때 그 기능의 상태를 먼저 확인하고, 정식 기능만 쓰는 코드와 분리해 둔다(적용 제안).
+
+부분 검증(2026-11-25): 이 절은 공지 메일의 사본과 대조했다. openjdk.org의 원본 아카이브와 JEP 12는 자동 열기가 거부돼 직접 대조하지 못했으므로 frontmatter 검증일은 유지한다.
+
 ## sealed 계층과 switch 완전성의 호환성
 
 `sealed` class나 interface는 `permits`로 직접 하위 타입을 제한한다(JEP 409, JDK 17 정식). switch 대상이 sealed 타입이면 compiler가 알려진 하위 타입이 모두 case로 다뤄졌는지 확인하므로 `default` 없이 완전한 switch를 쓸 수 있다. 이 완전성은 컴파일 시점에 알던 하위 타입에 대한 보장이라, 하위 타입이 늘어나는 진화에는 두 경로로 영향이 난다.
@@ -120,6 +128,7 @@ JLS SE 26은 permitted 하위 타입 추가를 기존 바이너리와 binary com
 - `&&`와 `||`에서 pattern variable 사용 가능 여부가 갈리는 이유
 - negated `instanceof`와 early throw 뒤에서 pattern variable을 쓸 수 있는 이유
 - pattern variable이 field를 가릴 때 생기는 버그
+- primitive type pattern이 preview에서 철회된 이유와 preview 기능에 기댄 코드의 업그레이드 위험
 - sealed 타입에 하위 타입을 추가하는 변경이 binary compatible인데도 공개 API에서 major 변경으로 다뤄지는 이유
 
 ## 출처
@@ -134,6 +143,10 @@ JLS SE 26은 permitted 하위 타입 추가를 기존 바이너리와 binary com
 - [Java SE 26 Language Specification, sealed Classes (Binary Compatibility)](https://docs.oracle.com/javase/specs/jls/se26/html/jls-13.html#jls-13.4.2.1)
 - [Java SE 26 Language Specification, sealed and non-sealed Interfaces](https://docs.oracle.com/javase/specs/jls/se26/html/jls-13.html#jls-13.5.2)
 - [Java SE 26 Language Specification, Evolution of Enum Classes](https://docs.oracle.com/javase/specs/jls/se26/html/jls-13.html#jls-13.4.26)
+- [Withdrawing the Primitive Patterns preview feature — amber-spec-experts, Angelos Bimpoudis](https://mail.openjdk.org/archives/list/amber-spec-experts%40openjdk.org/thread/UYEK3PGOHN6R56AHJTSLPGAY363K666S/)
+- [Withdrawing the Primitive Patterns preview feature 사본 — The Mail Archive](https://mid.mail-archive.com/amber-spec-experts%40openjdk.org/msg00923.html)
+- [Oracle, Java SE 26 Primitive Types in Patterns, instanceof, and switch](https://docs.oracle.com/en/java/javase/26/language/primitive-types-patterns-instanceof-switch.html)
+- [Adaptive Heap Sizing + Numeric Conversion + Primitive Patterns — Inside Java Newscast #117](https://www.youtube.com/watch?v=44sLqD-0Sxk)
 - [Java exhaustiveness guide — Inside Java](https://inside.java/2026/08/14/java-exhaustiveness-guide/)
 - [Java sealed classes and exhaustive pattern matching — Neil Madden](https://neilmadden.blog/2026/04/24/java-sealed-classes-and-exhaustive-pattern-matching/)
 - [Java sealed 타입의 함정 - 새 하위 타입이 기존 코드를 깨뜨릴 수 있다 — GeekNews](https://news.hada.io/topic?id=35598)
