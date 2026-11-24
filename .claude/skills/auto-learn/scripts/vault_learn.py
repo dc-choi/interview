@@ -407,12 +407,13 @@ def ytdlp(*args):
 def classify(rc, output):
     if rc == 3:
         return "tools"
+    # 봇 차단 오류문에는 '받을 수 있는 오디오 형식이 없다'도 함께 찍히므로 영구 제외보다 먼저 본다(2026-11-23 영상 8개 오제외)
+    if SYSTEMIC.search(output):
+        return "systemic"
     if PERMANENT.search(output):
         return "skip"
     if LIVE.search(output):
         return "live"
-    if SYSTEMIC.search(output):
-        return "systemic"
     return "transient"
 
 
@@ -2948,6 +2949,8 @@ def cmd_selftest(a):
     assert classify(1, "ERROR: [youtube] x: Join this channel to get access to members-only content") == "skip"
     assert classify(1, "오류: VAD가 말소리를 찾지 못했다. 음악이나 무음 위주의 오디오일 수 있다.") == "skip"
     assert classify(1, "ERROR: Sign in to confirm you’re not a bot") == "systemic"
+    assert classify(1, "오류: 받을 수 있는 오디오 형식이 없다. 로그인, 멤버십, 비공개 영상인지 확인한다. 사유: Missing required "
+                       "Visitor Data / WARNING: [youtube] Sign in to confirm you’re not a bot.") == "systemic"
     assert classify(1, "오류: 진행 중이거나 예정된 라이브 방송이다.") == "live"
     assert classify(3, "") == "tools" and classify(1, "HTTP Error 503") == "transient"
     assert video_id("https://youtu.be/UqXdVgehxTA?t=3") == "UqXdVgehxTA"
