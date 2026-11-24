@@ -1,7 +1,7 @@
 ---
 tags: [palantir, app-pairing, commands, workshop]
 status: done
-verified_at: 2026-10-21
+verified_at: 2026-11-25
 category: "AI엔지니어링(AIEngineering)"
 aliases: ["App Pairing과 command 상태"]
 ---
@@ -17,12 +17,14 @@ Workshop App Pairing widget에는 다른 앱이 발견할 수 있는 user-facing
 | 공유 상태 | 전송 범위 |
 |---|---|
 | Selection | 선택한 data/metadata. Workshop variable 변경도 paired app으로 전송 |
-| Open data | 앱에 보이는 data. 현재 Graph에서만 지원 |
+| Open data | 앱에 보이는 data. deprecated이며 Graph에서만 지원 |
 | Custom | 기본 variable type에 맞지 않는 data. Media type string이나 Boolean/Date/Numeric/Numeric array/String/String array type으로 기술 |
 
 가장 많이 쓰는 selected objects variable이 기본으로 구성되어 있어, Gaia map이나 Graph analysis와 pair하면 이 variable의 기본값이 그 앱에서 현재 선택된 object를 기록한다. Add Variable로 Selection이나 Open data variable을 더 추가한다. Custom state variable 구성은 Palantir가 기존 preset을 갱신하지 않아도 이후의 앱 통합을 지원할 수 있게 한다.
 
 Graph에 열린 10개 object가 pairing 시점에 모두 Open data로 들어오는 것과 선택한 object만 받는 것을 구분한다. 문서는 Workshop variable 변경의 paired app 전송을 Selection variable에 대해서만 설명하므로 Open data에도 역방향 전송이 있다고 가정하지 않는다. 여러 앱을 embed하면 성능에 영향을 줄 수 있으므로 필요한 앱만 embed한다. Iframe은 추가 memory와 processing 자원을 써 Workshop module의 안정성과 성능에 영향을 줄 수 있어 한 화면에 iframe widget을 둘 이상 두는 구성은 권장되지 않는다.
+
+2026-11-25 확인한 App Pairing 문서는 Open data state type을 deprecated로 표시하고, Workshop module끼리 object를 공유할 때는 Discovered data variables를 쓰라고 안내한다. Shared state variable은 paired app들이 하나의 공유 variable을 읽고 쓰지만, discovered data variable은 각 앱이 자기 object를 내보내고 다른 앱들이 보낸 object를 합쳐 받는다. 같은 날 문서는 지원 범위를 Workshop module 사이로 적는다. Incoming object set은 모든 paired app에서 받은 object를 합친 object set variable이고, Outgoing object set은 모든 paired app에 보낼 object를 담으며 최대 100,000개다. 새 구성에서 Open data를 Workshop 사이 공유 수단으로 고르지 않고, 받은 집합이 여러 앱의 합집합이라 특정 앱 하나의 선택과 같다고 가정하지 않는다.
 
 Scope Id는 서로 pair할 앱을 수동으로 조정하는 설정이다. Workshop이 자동 생성한 Scope Id variable로 Workshop widget을, URL에 붙인 `&appPairingScopeId=[scope-id]`로 Workshop이 아닌 앱을 같은 scope에 넣어 pairing할 수 있게 한다. 수동으로 pair하거나 unpair하면 scope가 바뀐다. 이 ID를 data authorization을 대체하는 보안 경계로 취급하지 않는다.
 
