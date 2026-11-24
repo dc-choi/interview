@@ -27,6 +27,10 @@ legacy source migration은 자동이 아니다. password를 회수할 수 없으
 
 SMB 2/3는 TCP 445와 원본 allowlist, 필요한 AD domain을 맞춘다. 일반 파일 dataset sync이며 media sync로 간주하지 않는다. Pipeline Builder media 작업에는 실제 MediaSet으로 변환해야 한다.
 
+2026-11-24 확인한 SMB 문서의 external transform 예제 둘은 `@transform.using`과 polars로 바뀌었다. 파일과 메타데이터 읽기 예제는 `LightweightOutput`을 받아 메타데이터를 `pl.DataFrame`의 `write_table`로 쓰고, 파일 바이트를 출력의 `filesystem().open(..., 'wb')`로 쓴다. 이전 수집본은 `@transform`과 `ctx.spark_session.createDataFrame(pd.DataFrame(...))`, `write_dataframe`을 썼고 `smbclient`로 읽은 바이트를 텍스트 모드 `'w'`로 열어 썼다. MediaSet 예제는 디렉터리 경로를 `input_directories.polars()["path"]`로 읽고 메타데이터를 `pl.DataFrame(metadata_records, infer_schema_length=None)`으로 쓴다. polars는 dict 목록의 schema를 기본으로 앞 100행에서 추론하고 `None`이면 전체 행을 본다. 오류 행에만 있는 `download_error`, `processing_error` 같은 키가 추론 범위 뒤에 처음 나타나면 polars 버전에 따라 그 열이 빠지거나 생성이 실패할 수 있으므로 이 설정을 유지한다.
+
+두 예제는 source에서 password secret만 `get_secret("Password")`로 읽고 domain, username과 MediaSet 예제의 hostname, share는 코드 상수로 둔다. source 설정을 바꾸면 코드 값도 함께 맞춘다. 안전한 파일 이름은 경로의 basename만 남기므로, 하위 폴더를 재귀로 탐색하는 MediaSet 예제에서는 다른 하위 폴더의 같은 이름 파일이 같은 출력 이름이 된다.
+
 HDFS는 RPC 기반 hdfs와 webhdfs/swebhdfs의 port가 다르다. 문서의 일반 port 예시는 NameNode 8020/9000, DataNode 1019/50010/50020, WebHDFS 9820이며 실제 cluster 설정을 우선한다. Kerberos 사용 시 명시적인 User가 전역 Kerberos 설정을 덮어쓸 수 있으므로 비워 두는 조건을 확인한다.
 
 HDFS `fileChangeTimeout`보다 `lastModifiedBefore` processor가 효율적인 경우가 있다. legacy export의 retriesPerFile=1은 최초 한 번과 재시도 한 번을 합쳐 두 번 시도한다. incremental은 이전 transaction이 남아 있는지 확인한다.
@@ -56,7 +60,7 @@ Directory connector는 sunset legacy agent 전용이다. Foundry worker의 같�
 
 처리 후 삭제는 best effort다. 성공한 정확한 경로를 별도로 기록하고 삭제 결과를 확인해야 삭제 보장이 필요한 흐름을 만들 수 있다. 이 문장은 운영 설계 판단이며 connector 자체의 stronger guarantee가 아니다.
 
-공개 예제의 모든 host key 허용, binary 파일의 text write, basename 충돌, 디렉터리 오류를 잡고 partial list를 반환하는 패턴을 그대로 운영 보장으로 쓰지 않는다. 경로 유일성, bounded memory와 실패 전파를 검증한다.
+공개 예제의 모든 host key 허용, 이전 SMB 예제에 있던 binary 파일의 text write, basename 충돌, 디렉터리 오류를 잡고 partial list를 반환하는 패턴을 그대로 운영 보장으로 쓰지 않는다. 경로 유일성, bounded memory와 실패 전파를 검증한다.
 
 2026-11-24 확인한 SFTP와 Directory 문서의 external transform 예제 셋은 모두 `@transform.using`과 `LightweightInput`, `LightweightOutput`을 쓴다. 입출력 방식은 예제마다 다르다. SFTP 쓰기 예제는 입력 파일을 `filesystem().ls()`로 나열하고 업로드 경로 목록을 polars DataFrame의 `write_table`로 쓴다. Directory 읽기 예제는 경로를 `polars()`로 읽고 파일 바이트를 출력의 `filesystem().open(..., "wb")`로 쓰며, 삭제 예제는 경로를 `polars()`로 읽고 삭제 결과를 `write_table`로 쓴다. 이전 수집본은 `@lightweight`나 `@transform`과 pandas를 썼고, SFTP 예제는 기록한 목록 `remote_paths` 대신 반복 변수 `remote_path`를 `pd.DataFrame.from_records`에 넘겼다. 개정본은 `pl.DataFrame(remote_paths)`로 고쳤다. 예제를 옮길 때 polars를 run dependency에 선언했는지 확인한다.
 
@@ -72,6 +76,7 @@ SFTP 쓰기 예제는 paramiko `Transport.connect`에 `hostkey`를 넘기지 않
 - [Palantir, filesystem](https://www.palantir.com/docs/foundry/available-connectors/filesystem)
 - [Palantir, nfs](https://www.palantir.com/docs/foundry/available-connectors/nfs)
 - [Paramiko, Transport](https://docs.paramiko.org/en/stable/api/transport.html)
+- [Polars, DataFrame](https://docs.pola.rs/api/python/stable/reference/dataframe/index.html)
 - [RFC 9289, Towards Remote Procedure Call Encryption by Default](https://www.rfc-editor.org/rfc/rfc9289)
 
 ## 관련 문서
