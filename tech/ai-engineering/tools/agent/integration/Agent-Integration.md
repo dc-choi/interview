@@ -21,6 +21,7 @@ aliases: ["Agent Integration", "에이전트와 업무 시스템 연결"]
 - [[Agent-Desktop-Accessibility-CLI|접근성 트리 기반 데스크톱 조작]]: agent-desktop의 snapshot과 ref, headless 기본값과 fail-closed, 다중 에이전트의 입력 독점, 출력의 개인 정보와 비밀 값 전달, 스크린샷에 접근성 트리 텍스트를 붙이는 캡처(발표 기준)
 - [[Siri-AI-App-Intents|Siri AI와 App Intents 앱 연동]]: 2026-11 Developer Preview의 공개 범위와 일정, 선언형 연동과 화면 조작의 차이, 상태 변경 동작의 멱등성과 확인
 - [[Logistics-Operations-Agents|물류 운영 AI 에이전트]]: 메일 오더 접수의 판단, 기록, 확정 역할과 값의 출처, 운임 정산 대사와 사람 매핑, 예외 우선 브리핑, 결과와 이유를 남기는 데이터 층
+- [[Meeting-Participant-Agent|회의 참석 AI 에이전트]]: 기록 도구와의 차이, 존재 알림과 전사 동의, 외부 참석자 정책, 말한 사람 기준의 도구 권한, 답의 공개 범위와 파생 기록, Claude Meetings 베타의 기본값과 비용(2026-11-25 도움말 기준)
 - [[Contact-Center-AI-Agent|고객상담 AI 에이전트]]: 고객, IT 담당자, 상담 관리자의 요구, 셀프서비스 해결률과 이탈률의 구분, 상담 지표 정의, 단계적 도입, 사고 접수 뒤 아웃바운드의 본인 확인과 실패 경로, AI 판정의 참고값 지위
 
 ## 함께 볼 문서

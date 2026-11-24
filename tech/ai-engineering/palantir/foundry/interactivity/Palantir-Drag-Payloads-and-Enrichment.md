@@ -1,7 +1,7 @@
 ---
 tags: [palantir, drag-and-drop, osdk, gotham]
 status: done
-verified_at: 2026-10-16
+verified_at: 2026-11-25
 category: "AI엔지니어링(AIEngineering)"
 aliases: ["Drag payload와 enrichment"]
 ---
@@ -33,6 +33,10 @@ Enrichment 예제에는 async 없는 await, 누락된 parameter comma, parsed ar
 ## OSDK React는 object set 처리로 통일한다
 
 @palantir/dnd-osdk-react는 generated OSDK client로 metadata/hydration을 처리하고 OsdkObjectDragZone/DropZone과 acceptedObjectTypes를 제공한다. Object와 object set이 섞여도 dropped object를 object set으로 변환해 API name별 callback으로 넘긴다. Deep comparison memoization은 중복 backend call을 줄이는 수단이다.
+
+같은 drop zone이 OSDK object, object set과 custom data type을 함께 받을 수 있고, library가 object와 object set data를 직렬화한다. 시작은 Code Workspaces에서 React repository type의 VS Code workspace를 만들고 Libraries 패널에서 `@palantir/dnd-osdk-react`를 추가하는 것이며, 목록에 없으면 Palantir Support에 문의하라고 안내한다. Drag zone은 `OsdkObjectDragZone`에 `client`와 `objectSets`를 주고 자식 JSX를 끌 수 있게 만든다. Drop zone은 `OsdkObjectDropZone`에 `client`, `acceptedObjectTypes`, `onObjectSetsDrop`를 주고, 기본 스타일 `className`과 payload를 받을 수 있을 때의 `acceptedClassName`으로 상태를 표시한다.
+
+문서의 짧은 drop zone 조각은 `React.useCallback`을 component 밖에 두고 `OnOsdkObjectSetsDrop`와 React import가 빠졌으며 쓰지 않는 `ObjectSet` import가 있다. Hook은 component 안에서 부르는 전체 예제의 형태를 따른다. 전체 예제는 `$includeRid: true`로 가져온 `$rid`를 list key로 쓰므로 RID를 쓰려면 fetch 옵션을 함께 확인한다.
 
 예제는 첫 object set의 첫 100개만 fetchPage한다. 모든 dropped set/object를 로드하거나 count가 전체 크기임을 보장하지 않는다. Pagination, 다중 set 처리, fetch 오류와 stale result를 앱 요구에 맞춰 설계한다. Library와 object-type filtering은 backend resource 권한을 대신하지 않는다.
 

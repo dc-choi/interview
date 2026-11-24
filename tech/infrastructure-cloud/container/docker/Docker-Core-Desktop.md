@@ -31,6 +31,15 @@ local Desktop에서 되던 구성이 Linux 서버에서 실패할 때 먼저 볼
 
 OrbStack(macOS), Colima(macOS와 Linux), Kiri(macOS, WSL 2를 쓰는 Windows, Linux)처럼 `docker` CLI, Compose와 buildx를 그대로 쓰게 해 주는 엔진도 macOS와 Windows에서는 Linux VM 안에서 container를 돌린다(2026-11-21 각 프로젝트 문서 확인). 그래서 Linux VM 경계 자체는 남지만, 위에서 본 disk image 위치, host networking 설정과 file sharing 같은 Desktop 전용 설정과 동작은 엔진마다 다르다. `docker context`로 엔진을 고르면 명령은 바뀌지 않고, 차이는 VM과 runtime 구현에서 난다. 예컨대 Kiri(2026-11-19 릴리스 0.2.2의 README 기준 Apache-2.0, 문서 사이트의 FAQ는 MIT와 Apache-2.0 중 고르는 이중 라이선스로 적는다)는 자체 daemon이 VM을 소유하고 vsock으로 guest의 PID 1 agent에 요청하며, agent는 runc, shim과 dockerd 없이 `clone3` 한 번으로 container를 namespace와 cgroup 안에서 시작한다고 설명한다. `clone3`는 새 namespace를 만들 수 있지만 cgroup은 만들지 않고, `CLONE_INTO_CGROUP`으로 이미 있는 cgroup v2 디렉터리의 fd를 넘겨 그 안에 자식을 둔다(clone(2)). Kiri는 60초 동안 쓰지 않으면 VM을 재우고, 실행 중에는 balloon으로 쓰지 않는 memory를 host에 돌려준다. 이와 별개로 공개 port 트래픽은 user space에서 중계하므로 대용량 전송은 Docker Engine보다 느리다고 스스로 밝힌다(Linux 측정에서 10.3Gbit/s 대 100.7Gbit/s). 시작 속도 비교는 제작자 측정이므로 바꾸기 전에 자기 장비에서 bind mount 입출력, 공개 port 처리량과 build 시간을 잰다.
 
+### Kiri의 로컬 이름, 이관과 build 경계
+
+아래는 2026-11-25 Kiri 문서와 README에서 확인한 범위다(최신 릴리스 0.2.2). 설치와 실행은 시험하지 않았다.
+
+- **Port mapping 없는 이름:** container마다 `<이름>.kiri.localhost`를 설정 없이 준다(시스템이 `*.localhost`를 해석하는 경우). macOS에서는 관리자 암호로 한 번 켜면 `/etc/resolver/kiri.local`을 써서 `<이름>.kiri.local`도 쓰며, 80이나 443 port를 이미 다른 프로그램이 쓰면 라우터가 켜지지 않는다. Windows는 DNS 규칙과 관리자 승인 한 번으로 켜고, Linux에는 `.kiri.local` 이름이 없다. Compose service는 `<service>.<project>` 형태다. README는 `.kiri.local`을 대표 주소로 적지만 domains 문서는 `.kiri.localhost`를 기본으로 둔다. 라우터가 VM 안의 container 주소로 바로 연결하므로 `-p` 없이도 이름이 생기고, 대상 port는 `dev.kiri.http.port` label, 공개하거나 노출한 port, 80 순으로 고른다.
+- **로컬 HTTPS의 신뢰 범위:** macOS에서 HTTPS를 켜면 자체 CA를 사용자 login keychain에 웹사이트용 신뢰 root로 추가한다. 이 CA는 name constraints로 그 아래 인증서를 `.kiri.local`과 `.kiri.localhost` 이름에만 유효하게 제한하고 IP 주소를 제외한다. 이 제약은 개인 키가 다른 이름에 서명하는 것을 막지 않고, 인증서를 검증하는 클라이언트가 제약을 지킬 때만 효과가 있다. 로컬 HTTPS 도구가 신뢰 root를 추가할 때는 이런 이름 제약이 있는지, CA 개인 키가 어디에 있는지(Kiri는 `~/.kiri/tls`)를 확인한다. Windows와 Linux에는 container 이름의 HTTPS가 없다.
+- **기존 엔진에서 이관:** `kiri import`는 Docker Desktop이나 OrbStack의 image, volume과 container를 docker CLI로 복사한다. Image는 `docker save`와 `docker load`로, named volume은 읽기 전용 임시 container로 읽으며 원본은 바꾸지 않고 container는 멈춘 상태로 온다. 실행 중인 container가 쓰는 volume은 `--force` 없이는 복사하지 않는다. Windows에는 이 명령이 없고 앱의 Import 화면에서 Docker Desktop만 원본으로 고른다.
+- **Kubernetes와 build:** `kiri k8s start`는 단일 node k3s cluster를 `kiri` kubectl context로 띄우며 약 20초가 걸린다고 적는다. Build는 5분 유휴 뒤 멈추는 BuildKit container가 맡는다. 알려진 문제로 `--add-host name:host-gateway`가 BuildKit에서 실패하고, `--platform linux/amd64,linux/arm64`처럼 여러 platform을 한 번에 지정하면 manifest list를 내보내지 못해 실패한다. Multi-platform image는 platform별로 build하거나 OCI tar(`-o type=oci,dest=image.tar`)로 내보낸다. Kiri의 `docker load`는 OCI archive를 읽지 못하므로 이 tar는 registry push나 다른 runtime에서 쓴다. Network driver와 `--gpus`처럼 거부하는 option도 있으므로 기존 Compose와 build script를 그대로 옮기기 전에 돌려 본다.
+
 라이선스와 비용도 기준이다. Docker Desktop은 직원 250명 미만이면서 연 매출 1,000만 달러 미만인 소기업, 개인, 교육과 비상업 오픈소스에 무료이고, 그 밖의 상업적 사용에는 유료 구독이 필요하다(Docker 문서 2026-11-21 확인). Kiri는 README 비교표에서 업무용 사용도 무료라고 적고, 사이트는 Mac, Windows와 Linux에서 무료이며 베타라고 적는다(2026-11-21 확인). 내장 공유 기능인 Kiri Share는 계정과 플랜별 한도를 따로 두며, 그 조건은 [[Loopback-And-Localhost#로컬 서비스를 외부에 공유하는 터널|로컬 서비스를 외부에 공유하는 터널]]에 있다.
 
 ## 출처
@@ -42,6 +51,12 @@ OrbStack(macOS), Colima(macOS와 Linux), Kiri(macOS, WSL 2를 쓰는 Windows, Li
 - [Kiri README — GitHub, libracoder/kiri](https://github.com/libracoder/kiri) — 최신 릴리스 v0.2.2(2026-11-19)의 구조, 지원 OS, 유휴 동작과 벤치마크(제작자 측정), 2026-11-21 확인. 같은 날 Apache-2.0 라이선스와 비교표의 업무용 무료 표기 확인
 - [Kiri Docs, Questions](https://docs.runkiri.com/faq/) — MIT와 Apache-2.0 이중 라이선스 표기, Linux에서 VM 없이 도는 엔진, 2026-11-21 확인
 - [Kiri, runkiri.com 소개 페이지](https://runkiri.com/) — 무료와 베타 상태를 함께 적은 문구, 2026-11-21 확인
+- [Kiri Docs, What's new](https://docs.runkiri.com/whats-new/) — 최신 릴리스 0.2.2(2026-11-19), 2026-11-25 확인
+- [Kiri Docs, Domains](https://docs.runkiri.com/domains/) — 두 이름 접미사, port 선택 순서, resolver 파일, 2026-11-25 확인
+- [Kiri Docs, HTTPS](https://docs.runkiri.com/https/) — 자체 CA의 keychain 신뢰와 name constraints, 2026-11-25 확인
+- [Kiri Docs, Migrate](https://docs.runkiri.com/docker/migrate/) — `kiri import`의 복사 방식과 거부하는 option, 2026-11-25 확인
+- [Kiri Docs, Builds](https://docs.runkiri.com/docker/builds/) — BuildKit builder와 유휴 정지, 2026-11-25 확인
+- [Kiri features — GitHub, libracoder/kiri](https://github.com/libracoder/kiri/blob/main/docs/features.md) — k3s cluster와 build의 알려진 문제, 2026-11-25 확인
 - [Linux man-pages, clone(2)](https://man7.org/linux/man-pages/man2/clone.2.html) — `CLONE_INTO_CGROUP`이 기존 cgroup v2 fd로 자식을 넣는다는 설명, 2026-11-21 확인
 - [OrbStack Docs, FAQ](https://docs.orbstack.dev/faq) — 네이티브 macOS 앱, 2026-11-21 확인
 - [OrbStack Docs, Architecture](https://docs.orbstack.dev/architecture) — 경량 Linux VM 안의 Docker engine, 2026-11-21 확인
