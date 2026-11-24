@@ -97,6 +97,7 @@ aliases: ["CS Learning Method", "CS 학습 방법", "키워드 기반 책 접근
 이름이 어려워 보이는 개념의 상당수는 단순한 아이디어에 무거운 이름이 붙은 것이다. 정의를 외우기보다 다음 질문으로 개념을 쪼갠다. 순서는 고정이 아니며 막힌 지점에 맞는 질문을 고른다.
 
 - **어떤 고통을 없애는가**: 정의는 무엇인지는 알려 주지만 왜 생겼는지는 알려 주지 않는다. 생성자 안에서 DB 연결을 직접 만드는 클래스를 단위 테스트해 보면 실제 DB와 자격 증명이 필요해진다. 연결을 생성자로 주입받으면 가짜 객체로 빠르게 테스트할 수 있고, 그제야 의존성 주입이 존재할 이유가 보인다.
+- **이름과 등장 경위를 묻는다**: 왜 그 이름인지, 누가 언제 무엇의 한계 때문에 만들었는지, 어떤 핵심 아이디어로 풀었고 나온 뒤 무엇이 쉬워졌는지를 이어서 묻는다. 앞의 고통 질문을 시간 순서로 늘린 형태다. Martin Fowler는 2004년 글에서 Inversion of Control이 너무 일반적인 이름이라 혼란을 준다며 여러 IoC 지지자와 논의해 Dependency Injection이라는 이름을 정했다고 적었다. 이름을 바꾼 이유를 알면 이 패턴이 제어 흐름의 역전 일반이 아니라 의존 객체를 밖에서 넣어 주는 방식을 가리킨다는 점이 분명해진다.
 - **가장 단순한 버전을 직접 만든다**: 배열 하나로 해시맵을 만들어 키를 숫자로 바꾸고 배열 길이로 나눈 나머지 칸에 저장한다. 두 키가 같은 칸에 떨어지는 충돌을 겪으면 체이닝과 리사이징이 왜 필요한지 이해된다.
 - **비유를 깨질 때까지 밀어붙인다**: 이벤트 루프를 주문을 주방에 넘기고 다음 테이블로 가는 웨이터로 비유할 수 있다. 웨이터가 10분짜리 요리를 직접 하면 모든 테이블이 멈추는데, 이것이 Node.js 서버에서 무거운 JSON 파싱이나 동기 루프가 하는 일이다. 비유가 깨지는 지점이 실제 제약을 알려 준다.
 - **실제 값으로 손으로 추적한다**: `factorial(3)`의 호출과 스택 되감기를 종이에 적거나, HTTP 요청 하나가 브라우저에서 서버까지 거치는 구간을 모두 적는다. 작은 입력을 손으로 돌릴 수 있으면 큰 입력도 두렵지 않다.
@@ -148,6 +149,8 @@ aliases: ["CS Learning Method", "CS 학습 방법", "키워드 기반 책 접근
 - [인프런, JSCODE 박재성, 학습 Tip: First Word 법칙](https://www.inflearn.com/courses/lecture?courseId=334085&unitId=228056)
 - [CS Learn — Carnegie Mellon University School of Computer Science](https://www.cs.cmu.edu/learn/) — 2026-11-21 공개 과목 8개, 2027년 1월 예정 과목 5개, 자기주도 교재와 AI 튜터링 예정, CMU Online의 채점과 수료 구분 확인
 - [Carnegie Mellon, 컴퓨터 과학 강의를 YouTube에 무료 공개 — GeekNews](https://news.hada.io/topic?id=37307) — 학습 계기
+- [Inversion of Control Containers and the Dependency Injection pattern — Martin Fowler](https://martinfowler.com/articles/injection.html) — 2004-01-23. 2026-11-24 이름을 정한 경위 확인
+- [AI 기본기부터 배웠더니 벌어진 일, 바이브코딩PT 후기 인터뷰 — YouTube, 아는개발자](https://www.youtube.com/watch?v=fqi4GABrvWY) — 2026-11-24 업로드 공개, 2026-11-24 음성 인식 전사 전체 확인. 수강 상품 광고를 겸한 수강생 인터뷰이며, 제목의 수강생 실명은 개인정보 규칙에 따라 뺐다. 새 기술을 파고드는 다섯 질문만 반영했고, 인지 부채, 힌트 중심의 AI 학습과 코드 읽기는 기존 문서에 있어 옮기지 않음
 
 ## 관련 문서
 - [[CS-Learning-Method-Retrieval-Practice|CS 학습의 읽기, 회상과 적용]] — 회상 연습과 반복 읽기, 재회상과 복습 간격, 되읽기의 근거

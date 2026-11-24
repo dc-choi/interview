@@ -23,6 +23,8 @@ aliases: ["Strength Based Growth", "강점 기반 성장", "약점 보완 vs 강
 
 자기효능감이 목표 선택, 노력과 지속성에 영향을 주는 방식은 [[Self-Belief|자기 믿음]], 재능이 아니라 특성의 조합이 역량을 만든다는 관점도 같은 축이다.
 
+다른 사람의 한마디가 강점 메타인지의 계기가 되기도 한다. 구성원이 약점으로 여기는 특성을 업무 맥락의 장점으로 다시 읽어 말해 준 리더의 사례가 있다. 큰 체격에 작은 목소리는 응원하고 싶은 인상으로, 사투리는 처음 만난 사람과의 친근감으로, 느린 일 처리는 신중함과 적은 실수로 읽어 주는 식이다(판매점 점장 출신 저자의 경험담). 다시 읽은 장점은 실제 업무 결과와 맞아야 하고, 아래 경계처럼 보완이 필요한 필수 역량의 부족을 덮는 말이 되어서는 안 된다(이 문서의 단서).
+
 ## 좋은 개발자는 한 모습이 아니다
 
 좋은 개발자는 단일한 모습이 아니라 **다양한 강점의 조합**이다. 팀은 서로 다른 강점을 가진 사람들이 모여 시너지를 내는 단위이므로, 각자의 강점을 인지하고 서로의 강점을 강화하는 것 자체가 팀의 역량이 된다. 약점을 똑같이 메워 모두를 평준화하는 것보다 강점을 살려 조합하는 편이 팀 시너지에 가깝다.
@@ -90,6 +92,7 @@ Google SRE의 toil은 단순히 싫거나 번거로운 일이 아니다. 운영�
 - [Who knows what about a person? The self-other knowledge asymmetry (SOKA) model — Journal of Personality and Social Psychology, Simine Vazire (2010)](https://pubmed.ncbi.nlm.nih.gov/20085401/) — 98(2), 281-300. 초록 일부와 서지만 확인
 - [Others may know us better than we know ourselves, study finds — Washington University in St. Louis](https://source.washu.edu/2010/03/others-may-know-us-better-than-we-know-ourselves-study-finds/) — 2010-03 대학 보도자료, 검색 요약으로 확인
 - [Eliminating Toil — Google SRE](https://sre.google/sre-book/eliminating-toil/) — 번거로운 일과 지속적인 가치가 없는 반복 운영 작업의 구분
+- [콤플렉스를 개성으로 바꾼다 — 브런치, sellsecret](https://brunch.co.kr/@sellsecret/741) — 2019-09-10 발행. 스가 마사노리(須賀正則)의 『トヨタの伝説のディーラーが教える絶対に目標達成するリーダーの仕事』(ダイヤモンド社, 2016-09)를 옮긴 연재이며 원서는 대조하지 않았다. 판매점 점장 출신 저자의 경험담
 
 ## 관련 문서
 

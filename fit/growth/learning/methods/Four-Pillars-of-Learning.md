@@ -2,7 +2,7 @@
 tags: [learning, methods, cognitive-science, feedback, sleep]
 status: done
 category: "Growth - 학습"
-aliases: ["Four Pillars of Learning", "학습의 네 기둥", "How We Learn"]
+aliases: ["Four Pillars of Learning", "학습의 네 기둥", "How We Learn", "독해 전략", "Generative Learning", "생성적 학습"]
 ---
 
 # 학습의 네 기둥: 주의, 능동적 참여, 오류 피드백, 통합
@@ -51,6 +51,24 @@ aliases: ["Four Pillars of Learning", "학습의 네 기둥", "How We Learn"]
 
 이 문서의 네 기둥으로 보면 혼자 책을 읽는 일은 능동적 참여와 오류 피드백, 통합을 독자가 직접 설계해야 하는 일이다(해석). 장을 읽기 전에 답할 질문을 적고, 읽은 뒤 책을 덮고 설명하거나 예제를 풀어 본 다음 막힌 곳만 다시 읽고, 며칠 뒤 다시 떠올린다(적용 제안). 독자가 흡수하는 양이 적다는 판단은 저자가 공식 연구를 찾지 못해 직관에 기댄 것이고, 기억 매체가 다음 장의 작업 기억 부담을 줄일 것이라는 효과도 기대로 적혀 있다.
 
+### 막힌 층을 나눠 읽고 다른 형태로 바꿔 본다
+
+어려운 설명문이 읽히지 않으면 막힌 곳이 단어인지, 문장 구조인지, 개념 사이의 관계인지부터 나눈다. 아래 순서는 국어 비문학 독해 지도에서 쓰는 훈련을 일반화한 적용 제안이며, 단계마다 근거의 수준이 다르다.
+
+1. **단어:** 뜻을 물으면 바로 말할 수 없는 단어는 느낌으로 짐작되더라도 모르는 단어로 표시하고, 사전 정의 안의 모르는 단어까지 거슬러 찾는다. 글이 직접 정의해 주는 전문 용어는 글의 정의를 따른다. 선행 개념으로 거슬러 가는 방식은 [[CS-Learning-Method|CS 지식 학습법]]의 순환 탐색과 같다.
+2. **문장:** 긴 문장은 주어와 서술어의 뼈대를 먼저 찾고 수식어와 예시는 거기에 덧붙은 말로 다시 읽는다. 과학기술의 장점과 첨단 기술의 부작용을 한 문장에 늘어놓은 글이라면 과학기술은 좋은 측면이 있다, 첨단 기술은 사회 문제와 새 불평등을 낳는다는 두 뼈대로 줄인 뒤 나머지를 붙인다. 표시는 수단이다. 밑줄 긋기 자체는 학습 기법 검토에서 유용성이 낮게 평가됐으므로([[Structure-First-Memorization#근거가 있는 부분과 경험칙인 부분|근거가 있는 부분과 경험칙인 부분]]), 어디가 뼈대이고 어디가 덧붙은 말인지 판단하는 데 쓴다. 이 문장 쪼개기의 효과를 검증한 연구는 대조하지 못했다.
+3. **설명:** 읽은 문장을 처음 듣는 사람에게 소리 내어 설명한다. 설명이 막히는 곳이 이해가 빈 곳이다. 자기 설명은 2번에 링크한 검토에서 중간 유용성으로 평가됐고, 안다는 느낌과 설명 능력이 어긋난 실험은 [[Fluency-Illusion-and-Effortful-Learning|쉽게 느껴지는 공부와 오래 남는 공부]]에 있다.
+4. **그림과 도식:** 과정이나 공간의 변화를 다루는 글(빙하가 녹아 해수면이 오르는 과정, 이미지에 노이즈를 더했다가 걷어 내는 과정)은 그림으로, 개념 사이의 관계를 다루는 글(정립, 반정립, 종합을 나란한 세 범주가 아니라 대립하는 두 범주가 종합으로 모이는 구조로 설명하는 [[Dialectics|변증법]])은 도식으로 옮긴다.
+
+그림과 도식의 근거는 조건부다.
+
+- **생성적 학습 전략:** Fiorella와 Mayer는 새 내용을 다시 조직해 기존 지식과 잇게 하는 전략으로 요약, 매핑, 그리기, 상상하기, 자기 시험, 자기 설명, 가르치기, 실연하기의 여덟 가지를 정리했다(책 목차 기준, 전략별 효과 크기와 경계 조건은 본문을 열람하지 못함).
+- **직접 그리기:** 대학생 63명이 과학 글을 읽은 실험에서 그리기는 반복 읽기보다 이해를 높였는데, 사전 지식이 비교적 낮은 학습자에서 그랬다(Lin 외 2017). 초등 4학년과 6학년 실험에서는 도움을 받으며 그린 두 조건이 그리지 않은 조건보다 문제 해결 사후 검사 점수가 높았고, 6학년만 따로 보면 가장 많이 도움받은 조건이 도움 없이 그린 조건보다도 높았다. 4학년만 보면 조건 차이가 유의하지 않았고 객관식 재인 검사에서도 유의한 차이가 없었다(Van Meter 외 2006). 문헌 검토는 그리기를 권하는 처방과 연구로 확인된 내용 사이에 간극이 있다고 지적했다(Van Meter와 Garner 2005).
+- **머릿속으로 그려 보기:** 글을 읽으며 심상을 만드는 기법은 Dunlosky 외(2013)의 검토에서 유용성이 낮다는 평가를 받았다. 위 Lin 외 실험의 상상하기 조건은 글을 더 오래 읽게 했다.
+- **개념 지도:** 4학년부터 대학생까지 55개 연구, 5,818명을 묶은 메타분석에서 개념 지도 사용은 지식 유지 향상과 연관됐다. 효과 크기는 지도를 쓰는 방식에 따라 작은 것부터 큰 것까지 달랐고 대부분의 하위 집단에서 이질성이 컸다(Nesbit과 Adesope 2006).
+
+적용 제안: 머릿속으로 그려 보고 이해했다고 판단하지 않고 손으로 그린 다음, 원문과 대조해 틀린 연결을 고친다(이 문서의 오류 피드백). 도식은 글을 덮고 다시 그려 본다. 날마다 짧게 반복하는 편이 하루에 몰아서 많이 분석하는 것보다 낫다는 조언은 분산 연습의 근거와 같은 방향이며([[CS-Learning-Method-Retrieval-Practice|CS 학습의 읽기, 회상과 적용]]), 30분 같은 시간 기준은 경험칙이다.
+
 ## 한계
 
 네 기둥은 학습에 필요한 조건의 틀이지 특정 공부법의 효과 크기를 정한 처방이 아니다. 같은 틀 안에서도 필요한 지원은 사람마다 다를 수 있다. 수면 단계별 기능처럼 2015년 강의 소개에서 확정되지 않았던 부분은 현재 연구 상태를 확인하기 전까지 확정된 사실로 옮기지 않는다.
@@ -60,6 +78,7 @@ aliases: ["Four Pillars of Learning", "학습의 네 기둥", "How We Learn"]
 1. 예제를 읽기만 한 공부와 결과를 먼저 예측한 공부는 네 기둥 가운데 무엇이 다른가?
 2. 시도할 때마다 처벌받으면 학습자에게 어떤 일이 생기고, 오류 피드백은 왜 약해지는가?
 3. 오늘 이해한 개념을 다음 주에도 쓸 수 있게 하려면 계획에 무엇을 넣어야 하는가?
+4. 지금 막힌 글은 단어, 문장 구조, 개념 사이의 관계 가운데 어디서 막혔고, 그림이나 도식으로 옮기면 어느 연결이 비는가?
 
 ## 출처
 
@@ -69,10 +88,18 @@ aliases: ["Four Pillars of Learning", "학습의 네 기둥", "How We Learn"]
 - [Collège de France, Stanislas Dehaene, Learning consolidation and the importance of sleep](https://www.college-de-france.fr/en/agenda/lecture/cognitive-foundations-of-school-learning/learning-consolidation-and-the-importance-of-sleep) — 2015 강의, 2026-11-16 강의 소개 대조
 - [Why books don't work — Andy Matuschak](https://andymatuschak.org/books/) — 2019-05 에세이, 2026-11-16 전달주의, 독자의 피드백 고리, 강좌와의 비교, 기억 매체의 기대 효과와 연구 부재 단서 대조
 - [책이 제 역할을 하지 못하는 이유 (2019) — GeekNews](https://news.hada.io/topic?id=36969) — 2026-11-16 접속 시 브라우저 확인 페이지로 요약 미열람, 위 원문으로 대조
+- [Learning as a Generative Activity: Eight Learning Strategies that Promote Understanding — Cambridge University Press, Logan Fiorella, Richard E. Mayer](https://doi.org/10.1017/CBO9781107707085) — 2015. 2026-11-24 출판사 페이지의 목차로 여덟 전략의 이름만 확인, 본문 미열람
+- [The Effect of Learner-Generated Drawing and Imagination in Comprehending a Science Text — Journal of Experimental Education, Lijia Lin 외](https://eric.ed.gov/?id=EJ1118626) — 85권 1호 142~154쪽(2017). 2026-11-24 ERIC의 초록으로 참가자, 조건과 사전 지식에 따른 결과 확인
+- [Learner-Generated Drawing as a Strategy for Learning from Content Area Text — Contemporary Educational Psychology, Peggy Van Meter 외](https://eric.ed.gov/?id=EJ737565) — 31권 2호 142~166쪽(2006). 2026-11-24 ERIC의 초록으로 조건과 학년별 결과 확인
+- [The Promise and Practice of Learner-Generated Drawing: Literature Review and Synthesis — Educational Psychology Review, Peggy Van Meter, Joanna Garner](https://eric.ed.gov/?id=EJ732434) — 17권 4호 285~325쪽(2005). 2026-11-24 ERIC의 초록만 확인
+- [Learning with Concept and Knowledge Maps: A Meta-Analysis — Review of Educational Research, John C. Nesbit, Olusola O. Adesope](https://eric.ed.gov/?id=EJ751159) — 2006. 2026-11-24 ERIC의 초록으로 연구 수, 참가자 수, 유지 효과와 이질성 확인
+- [Improving Students' Learning With Effective Learning Techniques — Psychological Science in the Public Interest, Dunlosky 외](https://doi.org/10.1177/1529100612453266) — 14권 1호 4~58쪽(2013). 2026-11-24 Europe PMC의 초록으로 글 학습의 심상 사용이 낮은 유용성으로 평가된 점 확인
+- [책 100권 읽을 바엔 차라리... 이 영상 1개 보세요 \[문해력편\] — YouTube, 샤학관](https://www.youtube.com/watch?v=KmEj5FwdNh8) — 2025-05-09 업로드 공개, 2026-11-24 음성 인식 전사 전체 확인. 단어, 문장, 설명, 그림과 도식의 단계와 예문의 계기. 국어 4~5등급 학생이 1등급이 됐다는 사례와 열 명 중 셋도 안 한다는 관찰은 확인할 수 없어 옮기지 않음
 
 ## 관련 문서
 
 - [[AI-Tutoring-and-Mastery-Learning|AI 튜터링과 완전학습]]
 - [[Flow-Theory-and-Learning|몰입 이론과 학습]]
 - [[CS-Learning-Method|CS 지식 학습법]]
+- [[Structure-First-Memorization|구조를 먼저 외우고 가린 채 떠올리기]] — 밑줄 긋기와 자기 설명의 근거 수준
 - [[Recommender-System-Foundations-Roadmap|추천시스템 구현 기반 로드맵]]

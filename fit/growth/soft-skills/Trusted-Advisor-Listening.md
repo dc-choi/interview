@@ -2,7 +2,7 @@
 tags: [fit, growth, soft-skills, leadership, listening, ai-era]
 status: done
 category: "Growth - 소프트스킬"
-aliases: ["Trusted Advisor Listening", "판단 없는 경청", "신뢰받는 조언자", "심리적 안전감", "여행 가이드"]
+aliases: ["Trusted Advisor Listening", "판단 없는 경청", "신뢰받는 조언자", "심리적 안전감", "여행 가이드", "Humble Inquiry", "겸손한 질문", "도움 관계"]
 ---
 
 # 판단 없는 경청 — AI가 대체할 수 없는 조언자 역할
@@ -19,6 +19,8 @@ aliases: ["Trusted Advisor Listening", "판단 없는 경청", "신뢰받는 조
 - **책임자의 말은 질문이 아니라 신호로 번역된다**: 탐색하려고 던진 "이거 해보면 어떨까"가 누군가에게는 다음 주 업무(지시)가 된다. 그래서 탐색의 언어를 함부로 꺼내기 어렵다.
 
 AI에게는 이 마찰이 없다. 아이디어도 자질도 평가하지 않고, 소문내지 않으며, 탐색을 지시로 바꾸지 않는다. 그래서 정리 안 된 생각, 바보 같은 질문, 말도 안 되는 시나리오를 부담 없이 던질 수 있다. 이건 특정 직책만의 이야기가 아니라, **책임이 클수록 누구에게나 작동하는 힘**이다.
+
+조직 심리학자 Edgar Schein은 이 마찰을 도움 관계 자체의 불균형으로 설명한다. 도움을 청하는 사람은 무언가가 필요해 상대에게 기대므로 그 순간 지위를 조금 잃은 한 단계 낮은 자리에 선다. 돕는 사람이 곧바로 답을 내놓으면 그 자리를 굳히고 자기 힘을 쓰는 셈이 되므로, 질문을 하나 더 하는 겸손한 질문(humble inquiry)으로 시작해야 소통이 열리고 관계가 대등해진다는 것이 그의 설명이다.
 
 ## AI에게만 묻게 될 때의 비용
 
@@ -38,9 +40,15 @@ AI에게 먼저 묻는 것 자체는 괜찮다. 다만 AI에게만 묻게 되면
 
 차이는 결론의 옳고 그름이 아니라 **재단의 타이밍**이다. 의도와 맥락을 먼저 듣고 나서 판단을 더한다.
 
+Schein은 돕는 사람의 역할을 셋으로 나눈다. 받은 질문에 그대로 답과 정보를 주는 전문가, 문제를 진단하고 처방하는 의사, 상대가 무엇이 문제인지 스스로 알아내도록 돕는 프로세스 컨설턴트다. 상황에 따라 역할을 오가되 처음에는 질문으로 시작하는 프로세스 컨설턴트 역할에서 출발하고, 문제의 주인이 계속 상대에게 남아 있게 하라는 것이 그의 권고다. 조언이 고맙게 받아들여지지 않았다면 상대가 원한 역할과 내가 고른 역할이 어긋났는지부터 본다(적용 해석).
+
+반대로 아무도 불평하지 않는 팀이 만족한 팀이라고 단정하지 않는다. 말해도 소용없었거나 오히려 압박받은 경험이 쌓이면 사람들은 불평조차 하지 않고, 문제는 커진 뒤에야 드러난다는 현장 관찰이 있다(판매점 점장 출신 저자의 경험칙). 불평을 부정하지 않고 그대로 들은 뒤 어떻게 하면 좋을지 함께 묻는 것이 위의 다시 찾게 만드는 반응과 같은 순서다. 침묵을 읽는 기준은 [[Failure-Tolerant-Culture#침묵을 해석하고 발언을 요청하는 방법|침묵을 해석하는 방법]]에 있다.
+
 ## 여행 가이드의 자세
 
 전문가이자 책임자는 낯선 영역을 여행하는 상대의 안내자에 가깝다. 상대는 그 영역에 대해 편하게 말할 수 있는 사람을 찾는다. 바보 같은 질문에 화내거나 경멸하는 안내자는 다시 부르지 않고, 추천하지도 않는다 — 다음엔 혼자 검색하거나 AI를 연다. 편안하게 안내하는 것이 전문성의 일부다.
+
+상담 연구에도 비슷한 조건이 있다. Rogers(1957)는 성격 변화가 일어나는 조건으로 상담자가 관계 안에서 일치(진실)하고, 내담자를 조건 없이 긍정적으로 존중하며, 내담자의 내적 준거틀을 공감적으로 이해하고 그것을 전달하는 것 등 여섯 가지를 들었다. 상담자의 행동을 정확한 공감, 지배적이지 않은 따뜻함, 진실성이라는 비슷한 세 이름으로 재는 Truax-Carkhuff 척도도 있고, 이 세 표현을 사람을 바꾸는 리더의 조건으로 인용한 현장 리더도 있다. 다만 후속 논평은 이 조건들이 변화를 돕기는 하지만 필요하지도 충분하지도 않다고 본다. 상담 관계의 이론을 직장의 조언 관계로 옮기는 것은 해석이다.
 
 ## 왜 이것이 경쟁력인가
 
@@ -61,12 +69,18 @@ AI에게 먼저 묻는 것 자체는 괜찮다. 다만 AI에게만 묻게 되면
 - 결론만 받지 않고 **생각의 과정**을 같이 듣는가
 - 답을 주기 전에 **질문 자체를 다시 세워야 하는 상황**인지 보는가
 - 들은 뒤 조직의 맥락과 책임을 더해 답하는가 (AI와의 차별점)
+- 상대가 원하는 것이 정보, 진단, 함께 문제를 찾는 대화 가운데 무엇인지 확인하고 역할을 골랐는가
 
 ## 출처
 - 프로그래머, 열정을 말하다(채드 파울러) — 34장 모험 여행 안내자
 - AI 시대 리더가 사람 대신 AI를 먼저 찾는 이유 — 개인 블로그 에세이
 - [당신이 진짜 궁금하다는 태도 — Threads, dy.rom____](https://www.threads.com/@dy.rom____/post/DYFR4XYAYPt)
 - [네트워킹 모임에서 낮은 자리에 있어야 하는 이유 — Threads, kimjinhan_jjin](https://www.threads.com/@kimjinhan_jjin/post/DYOu-r6kouE)
+- [A General Philosophy of Helping: Process Consultation — MIT Sloan Management Review, Edgar H. Schein](https://sloanreview.mit.edu/article/a-general-philosophy-of-helping-process-consultation/) — 1990 봄호. 2026-11-24 세 가지 도움 모형, 질문으로 시작하는 원칙과 문제의 주인 확인
+- [Schein, Ed — Tom Peters, Cool Friends](https://tompeters.com/cool-friends/schein-ed/) — 『Helping』(Berrett-Koehler, 2009)에 관한 Schein 인터뷰이며 게시일은 표기되지 않았다. 2026-11-24 도움을 청할 때 잃는 지위, 겸손한 질문과 질문 역할 우선 확인
+- [The necessary and sufficient conditions of therapeutic personality change — Journal of Consulting Psychology, Carl R. Rogers](https://doi.org/10.1037/h0045357) — 1957, 21(2), 95~103. 2026-11-24 2007년 재수록본(Psychotherapy 44(3))의 PubMed 초록으로 여섯 조건을, 같은 호에 실린 Hill과 Samstag의 논평 초록으로 필요충분 조건에 대한 반론을 확인
+- [Four therapeutic approaches to the same patient: A study of the Truax variables — American Journal of Psychotherapy, Naftulin, Donnelly and Wolkon](https://doi.org/10.1176/appi.psychotherapy.1975.29.1.66) — 1975, 29(1), 66~71. 2026-11-24 PubMed 초록으로 Truax-Carkhuff 척도의 세 이름 확인
+- [41. 도움 : 세상에 변화 일으키기 — 브런치, sellsecret](https://brunch.co.kr/@sellsecret/636) — 2018-08-27 발행, Schein의 『Helping』 요약을 옮긴 글이며 책 본문은 대조하지 않았다. 추가 글: #754(2020-01-15, 세 조건을 리더의 조건으로 인용), #753(2020-01-15, 불평이 나오지 않는 조직). 두 글은 스가 마사노리(須賀正則)의 『トヨタの伝説のディーラーが教える絶対に目標達成するリーダーの仕事』(ダイヤモンド社, 2016-09)를 옮긴 연재이며 원서는 대조하지 않았다
 
 ## 관련 문서
 - [[First-Hand-Experience-AI-Era|AI 시대 직접 경험기와 작성자 신뢰]] — AI가 대체 못 하는 가치의 다른 축
@@ -75,3 +89,4 @@ AI에게 먼저 묻는 것 자체는 괜찮다. 다만 AI에게만 묻게 되면
 - [[Experience-Value-Framing|경험 가치 프레이밍 — 반대 분류(방향/부담/정보)]]
 - [[Co-Leadership-Partnership|공동 리더십]] — 목적 공유와 상호 이해의 리더십 버전
 - [[Toxic-Org-Detection|독성 조직 판별]] — 심리적 안전감의 반대 축
+- [[Failure-Tolerant-Culture|실패에 관대한 문화와 심리적 안전]] — 침묵을 해석하고 발언을 요청하는 방법

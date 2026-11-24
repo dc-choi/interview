@@ -16,7 +16,7 @@ aliases: ["Result-Oriented Career", "결과 지향 커리어", "임팩트 중심
 - 약한 이력: 새 프레임워크를 배웠다
 - 강한 이력: 그 프레임워크로 배포 시간을 줄였다, 사용자 경험을 개선했다
 
-기술 집착이 성과와 동일하지 않다는 건 [[Great-Developer-Habits|뛰어난 개발자의 행동 패턴]]의 프로덕트 중심 마인드와 같은 축이다.
+기술 집착이 성과와 동일하지 않다는 건 [[Great-Developer-Habits|뛰어난 개발자의 행동 패턴]]의 프로덕트 중심 마인드와 같은 축이다. 자기 일을 장면(차를 판다, API를 만든다)이 아니라 누구에게 어떤 가치를 주는지로 한 문장에 정의하고 남에게 설명해 보는 연습도 같은 축이다(영업 교육 담당자의 경험칙). 설명해 보면 안다는 느낌과 실제 이해의 차이가 드러난다([[Fluency-Illusion-and-Effortful-Learning#느낌과 결과가 어긋난 실험|설명 깊이의 착각]]).
 
 ### 직무명과 실제 맡을 일을 나누어 비교한다
 
@@ -172,6 +172,7 @@ ABZ planning은 불확실성 속에서 계획을 실행하면서 수정할 선�
 - [Priorities and Posteriorities, Adapted from The Effective Executive — The Drucker Institute](https://drucker.institute/wp-content/uploads/2018/08/Reading_Priorites-and-Posteriorities.pdf) — 2026-10-26 우선순위보다 후순위를 정하고 지키는 일이 어렵다는 대목 확인
 - [The Effective Executive — Kirkus Reviews](https://www.kirkusreviews.com/book-reviews/peter-f-drucker/the-effective-executive/) — 1966-06-15 호 서평, 2026-10-26 다섯 요소 목록과 익힐 수 있고 익혀야 한다는 결론 확인
 - [Open Library, The effective executive](https://openlibrary.org/books/OL21600791M/The_effective_executive) — 2026-10-26 Harper & Row 초판 서지 확인(도서관 서지의 발행 연도는 1967)
+- [1-1. SALES = SELL X SPAM (상) — 브런치, sellsecret](https://brunch.co.kr/@sellsecret/11) — 2017-08-18 발행, 일을 장면이 아닌 기여로 정의하고 설명해 보라는 경험 기반 주장. 추가 글: #13(2017-09-01). 응답 비율과 인물 인용은 옮기지 않았다
 - ["이걸 모르면 10년을 버립니다" 30대에 알면 인생이 바뀌는 이야기 — YouTube, 소울정](https://www.youtube.com/watch?v=9wonY0MH06o) — 2026-01-30 공개, 2026-11-17 음성 인식 전사 전체 확인. 유료 구독 상품 안내가 포함된 영상. 세 가지 구분의 출처이며 발표자의 경험에 따른 주장
 
 ## 관련 문서

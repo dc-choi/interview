@@ -57,6 +57,18 @@ MC가 ATC보다 낮으면 평균을 끌어내려 ATC가 하락하고, 높으면 
 
 이는 2026-10-14 OpenStax의 생산기술 선택과 비용곡선 이동 설명을 적용한 계산 예다. 실제 공정의 생산속도, 품질이나 비용 절감률을 검증한 수치는 아니다. 설비 용량, 가동 중단과 재작업 비용이 다르면 그 조건을 넣어 다시 비교한다.
 
+### 누적 생산량과 학습 곡선
+
+규모의 경제는 같은 기술 조건에서 한 시점의 생산 규모를 키울 때 평균비용이 내려가는 관계다(분업, 대량생산, 고정비 분산). 학습 곡선(경험 곡선)은 지금까지 만든 누적 생산량이 늘수록 경험이 쌓여 단위 비용이 내려가는 관계다. Wright(1936)가 항공기 생산비를 분석하며 다룬 이 관계는 흔히 누적 생산량이 두 배가 될 때마다 단위 비용이 일정 비율로 준다는 거듭제곱 관계, 라이트의 법칙으로 불린다. 같은 생산 규모에서도 누적량이 늘면 비용이 내려갈 수 있으므로 두 효과를 한 숫자로 섞지 않는다.
+
+Nagy 외(2013)는 62개 기술의 비용과 생산 자료로 여러 예측 법칙을 비교해 라이트의 법칙이 가장 좋은 예측을 내고, 시간이 흐르면 비용이 지수적으로 준다는 무어의 법칙이 그 뒤를 바짝 따른다고 보고했다. 생산량이 시간에 따라 지수적으로 늘어나는 경향이 있어 두 법칙이 거의 구분되지 않는다는 점도 함께 지적했다. 학습 곡선으로 비용을 내다보려면 학습률과 함께 누적 생산이 두 배가 되는 속도, 곧 수요 전망이 있어야 하는 이유다.
+
+판단에 옮길 때의 점검(적용 제안):
+
+- 가격을 먼저 낮춰 판매량을 늘리면 나중에 비용이 따라 내려간다는 계획은 누적 생산을 얼마나 빨리 두 배로 만들 수 있는지에 달려 있다. 수요가 따라오지 않으면 낮춘 가격의 손실만 남는다.
+- 비용 하락이 같은 기간의 생산 규모, 누적 경험, 공정 변경 가운데 어디서 왔는지 나눠 기록한다.
+- 1인 서비스에서도 같은 작업을 반복하면 건당 시간이 줄 수 있지만, 그 감소를 다음 견적에 반영하기 전에 실제 작업 기록으로 확인한다.
+
 ### 메모리 생산은 웨이퍼 수와 정상 제품의 용량을 나눠 본다
 
 생산량의 단위를 먼저 정한다. 같은 수의 웨이퍼를 투입해도 한 장에서 얻는 정상 제품의 저장 용량이 달라지면 비트 기준 생산량은 달라질 수 있다. 공정 전환을 분석할 때 투입량 감소와 산출량 감소를 같은 사건으로 취급하지 않는다.
@@ -161,6 +173,9 @@ MC가 ATC보다 낮으면 평균을 끌어내려 ATC가 하락하고, 높으면 
 - [IFRS Foundation, IAS 2 Inventories](https://www.ifrs.org/issued-standards/list-of-standards/ias-2-inventories/) — 문단 11, 12, 16
 - [Tesla to wind down production of Cybertruck, Elon Musk says — WJLA News Channel 3](https://wjla.com/news/nation-world/tesla-to-wind-down-production-of-cybertruck-elon-musk-says-electric-vehicle-truck-ev-texas) — 2026-11-06, Musk의 X 게시물과 CBS 보도 인용. X 원 게시물은 직접 열람하지 못함
 - [The Tesla Cybertruck Had The Biggest Sales Crash Of Any EV In 2025 — InsideEVs](https://insideevs.com/news/784715/tesla-cybertruck-ev-sales-drop-2025/) — 2026-01 게시, Cox Automotive 추정과 모델별 판매 미공개 확인
+- [Factors Affecting the Cost of Airplanes — Journal of the Aeronautical Sciences, T. P. Wright](https://doi.org/10.2514/8.155) — 1936, 3권 4호 122~128쪽. 2026-11-24 Crossref 서지만 확인했고 본문의 감소율은 대조하지 않았다
+- [Statistical Basis for Predicting Technological Progress — PLoS ONE, Béla Nagy, J. Doyne Farmer, Quan M. Bui, Jessika E. Trancik](https://doi.org/10.1371/journal.pone.0052669) — 2013. 2026-11-24 arXiv 초록(1207.1463)으로 62개 기술, 라이트의 법칙과 무어의 법칙의 예측 성능과 구분의 어려움 대조
+- [06화 규모의 경제 — 브런치, sellsecret](https://brunch.co.kr/@sellsecret/821) — 2023-04-28 게시. 학습 곡선 절의 계기. 글의 2023년 Tesla 가격 인하와 실적 수치는 실적 발표와 대조하지 않아 옮기지 않았다
 
 ## 관련 문서
 

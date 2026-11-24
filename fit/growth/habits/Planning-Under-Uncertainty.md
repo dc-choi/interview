@@ -48,6 +48,8 @@ aliases: ["Planning Under Uncertainty", "불확실성 아래의 계획", "거칠
 
 주 1회 정해진 시간에 두 가지를 본다. 한 주의 기록(그날의 생각을 적은 일간 기록과 그때그때 남긴 짧은 메모)을 읽어 배운 것을 적고, 주간 계획에서 된 것과 안 된 것의 이유를 본다. 그리고 이번 주를 더 좋게 만들 수 있었던 것이 무엇이었는지에 답한다. 그 답이 다음 주 계획의 수정 사항이 된다. 계획은 틀릴 것을 전제로 세웠으므로 고치는 시간이 세우는 시간만큼 중요하다. 할 일 목록 전체의 주간 점검은 [[Personal-Task-Management|개인 할 일 관리]], 회고 형식은 [[Retrospective-Methods|회고 기법]]에 있다.
 
+기간 목표의 진도를 어떻게 배분할지도 정해 둔다. 고르게 나누는 균등형, 마감 직전에 몰아치는 후반 추격형, 초반에 피크를 두는 앞서 나가기형 가운데 앞서 나가기형을 권하는 현장 경험칙이 있다. 일의 총량은 같아도 기간 말에 여유가 남아 다음 기간의 준비(잠재 고객 확보 같은 씨 뿌리기)에 쓸 수 있고, 초조한 상태로 기간을 마치지 않는다는 이유다(판매점 점장 출신 저자의 경험칙이며 비교한 근거는 없다). 같은 경험칙은 피크로 정한 주에 개인별 할당을 동그라미로 그려 달성할 때마다 칠하는 공개 표를 쓰되 매너리즘을 막으려 월 1~2회만 쓰라고 한다. 원 경험칙은 색칠하지 못한 사람이 눈에 띄게 해 말하지 않아도 움직이게 하는 압박을 이 표의 목적으로 밝힌다. 경계와 대안은 [[Frontline-Target-Leadership#기간 안의 페이스와 진척 공개|기간 안의 페이스와 진척 공개]]에 있다. 아래 진척 점검 메타분석에서 결과를 보고하거나 공개할 때 효과가 컸다는 결과를 팀원끼리 비교되는 공개 표로 옮기는 것은 외삽이며, 하위권 구성원에게 낙인이 되지 않는지 함께 본다(해석).
+
 ## 긴 목표는 하루의 행동까지 내리고 진척을 기록한다
 
 몇 년짜리 목표도 같은 방식으로 내려 쓸 수 있다. 3년 뒤에 하고 있을 일, 사는 곳과 함께 지낼 사람을 구체적으로 적고, 올해 이룰 것 세 가지로 줄인 뒤 분기, 달, 주, 하루의 할 일로 차례로 쪼갠다. 멀리 있는 칸일수록 가설이므로 이번 주의 행동만 확정하고 하루의 할 일은 그날 고르며, 나머지는 위의 주간 점검에서 고친다. 하루 단위로 미리 짜 둔 계획은 하루만 어긋나도 뒤를 다시 짜야 한다([[Personal-Task-Management#할 일 관리가 무너지는 세 가지 패턴|하루 단위 계획의 문제]]). 분해 순서는 자기계발 콘텐츠의 절차이며 이 순서의 효과는 대조하지 않았다. 가까운 칸만 확정한다는 단서는 이 문서의 해석이다. 원하는 미래를 선명하게 그리는 것과 실현 가능성 판단은 별개다([[Habit-Formation-and-Consistency#미래의 상상과 실행 가능성 판단을 구분한다|상상과 기대의 구분]]).
@@ -103,6 +105,7 @@ aliases: ["Planning Under Uncertainty", "불확실성 아래의 계획", "거칠
 - [New Directions in Goal-Setting Theory — Current Directions in Psychological Science, Locke와 Latham](https://doi.org/10.1111/j.1467-8721.2006.00449.x) — 15권 5호(2006), 2026-11-17 OpenAlex에 실린 서지와 초록으로 다루는 범위만 확인, 본문 미열람
 - [The Paradox of Stretch Goals: Organizations in Pursuit of the Seemingly Impossible — Academy of Management Review, Sitkin 외](https://doi.org/10.5465/amr.2008.0038) — 36권 3호(2011), 2026-11-17 OpenAlex에 실린 서지와 초록으로 결론과 틀의 제안만 확인, 본문 미열람
 - ["새해까지 기다리지 마세요" 남은 90일로 인생 리셋하는 방법 (뻔한 것 아님) — YouTube, 오너스 OWNOS](https://www.youtube.com/watch?v=nTunuxNVGNw) — 2026-10-04 업로드, 2026-11-17 음성 인식 전사 전체 확인. 열 배 목표, 판정 가능한 세 목표와 한 문장의 출처. 영상이 든 자기계발서 두 권은 읽지 않았다
+- [높은 목표도 '가능하다'고 생각하도록 만드는 방법 — 브런치, sellsecret](https://brunch.co.kr/@sellsecret/726) — 2019-07-01 발행. 스가 마사노리(須賀正則)의 『トヨタの伝説のディーラーが教える絶対に目標達成するリーダーの仕事』(ダイヤモンド社, 2016-09)를 옮긴 연재이며 원서는 대조하지 않았다. 세 가지 페이스 유형과 공개 표의 출처이며 판매점 점장 출신 저자의 경험 기반 주장
 - [Build a tower, build a team — TED, Tom Wujec](https://www.ted.com/talks/tom_wujec_build_a_tower_build_a_team) — 2010-02 발표. 전문은 열지 못했고 재료, 시간과 집단별 높이는 2차 자료의 검색 요약으로 확인
 - [Sam Altman, Co-Founder and CEO of OpenAI: Staying Human While Scaling Superintelligence — YouTube, Stanford Graduate School of Business](https://www.youtube.com/watch?v=anAmTGcewX8) — 2026-10-21 업로드, View From The Top 대담(48:48, 대담 날짜 미확인). 2026-11-18 사람이 단 영어 자막으로 03:58~07:03의 배움의 속도, 하면서 배우기와 의도적 연습 발언을 확인. 개인 경험에 기반한 견해
 - [샘 올트먼 영상은 정말 꼭 보세요(오픈 AI CEO, 챗GPT) — YouTube, 인간지능](https://www.youtube.com/watch?v=rfhk-TZFoXY) — 2026-11-07 업로드, 위 대담의 편집본(44:20). 2026-11-18 음성 인식 전사 전체를 공식 자막과 대조, 정리의 계기

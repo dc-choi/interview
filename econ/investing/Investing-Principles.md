@@ -68,6 +68,12 @@ aliases: ["투자의 기본 원칙", "Investing Principles"]
 
 이 구분을 AI 투자 논리에 적용하면 **경제 전체의 생산 증가, 자본소득분배율 상승과 내가 매수한 주식의 수익**을 따로 확인해야 한다. [[Unemployment-Employment#AI 성장 시나리오와 소득 분배를 읽는 기준|AI 경제 시나리오]]의 자본 몫은 GDP의 분배 비율이며 특정 종목의 가격 상승률이 아니다. 투자 판단에는 매수가격과 기대 현금흐름을 대조하는 [[Valuation|가치평가]], 분산과 돈이 필요한 시점이 추가로 필요하다. 이는 소득 분배 모형을 개인 투자에 적용할 때의 점검 기준이며, AI의 미래 성장 경로를 확정하는 결론이 아니다.
 
+나라 단위의 장기 자료도 같은 구분을 요구한다. Ritter(2005)는 1900~2002년 16개국에서 복리로 계산한 1인당 실질 GDP 성장률과 주식의 실질 수익률 사이의 국가 간 상관계수를 -0.37로 계산했다. p값이 0.16이라 통계적으로 유의한 음의 관계는 아니지만, 적어도 성장률이 높았던 나라의 주식 수익률이 더 높았다는 증거는 아니다. 그가 든 이유는 셋이다. 저축과 노동 투입이 늘어 생긴 성장이 새 회사나 기존 회사의 신주로 들어가면 기존 주식의 배당 현재가치를 늘리지 않는다. 기술 변화의 이익은 오래가는 독점이 없는 한 경쟁을 거쳐 소비자와 노동자에게 돌아간다. 성장이 기대되는 시장에는 높은 PER과 배당 배수가 매겨져 같은 배당을 받는 데 더 많은 돈이 든다. 그래서 성장 잠재력이 큰 나라도 가격이 낮지 않으면 좋은 투자 기회가 아니라고 결론 냈다. 단기에는 침체 가능성이 커지면 주가가 떨어지는 것처럼 예상하지 못한 성장 변화가 주가를 움직인다는 점도 함께 적었다.
+
+André Kostolany는 경제와 증시의 관계를 산책하는 주인과 개에 즐겨 빗댔다. 개는 주인보다 앞서 달리거나 뒤처지기를 반복해도 주인 곁으로 돌아온다는 그림이다. 그의 책 『돈, 뜨겁게 사랑하고 차갑게 다루어라』는 호황기에 기업이 설비 투자 자금을 주식 발행으로 조달하면 주식 공급이 늘어 주가가 눌리고, 불황기에는 저축의 일부가 증시로 흘러 주가가 오를 수 있다고 설명한다(책 소개 영상 기준, 본문 미대조). 경기와 주가가 따로 움직일 수 있다는 관찰은 위 연구와 같은 방향이지만, 개가 돌아오는 주인을 GDP로 읽으면 위 결과와 어긋난다. 기존 주주에게 돌아오는 몫은 주당 이익과 배당이며 신주 발행이 그 몫을 희석한다는 점을 함께 본다(해석). 예상한 호재가 발표된 뒤 오히려 주가가 내리는 현상(책에서 기정사실화, 곧 페따 꼼쁠리 현상이라 부른 것)은 [[Stocks#좋은 실적과 기대를 넘는 실적은 다르다|좋은 실적과 기대를 넘는 실적]]의 구분으로 읽는다.
+
+산업 단위에서도 같은 구분이 필요하다. Warren Buffett은 2023년 Berkshire Hathaway 주주총회에서 차량은 바뀌겠지만 차량이 바뀌었다고 시장을 소유하는 회사가 생기지는 않을 것이라고 말하고, 자동차 산업은 사라지지 않을 전 세계 경쟁자가 많아 너무 어려운 사업이라고 봤다. Charlie Munger는 전기차가 크게 오고 있지만 지금은 막대한 자본 비용과 위험을 요구한다고 덧붙였다(Fortune 보도 기준). 기술 전환이 일어난다는 확신과 그 전환에서 누가 초과 이익을 오래 지킬지는 다른 질문이며, 승자를 가를 메커니즘이 보이는지는 [[Competitive-Analysis|경쟁 해자]]와 [[Seven-Powers|7 Powers]]로 따로 묻는다(적용 해석).
+
 소유 지분을 넓히자는 정책 제안도 개인의 집중 매수 권고와 구분한다. 2021년 3월 공개된 *Moore's Law for Everything*의 American Equity Fund는 기업과 토지에 과세해 성인 시민에게 현금과 주식을 배분하자는 제안이다. 시행 중인 제도나 검증된 분배 효과가 아니며, 모든 사람이 주식을 직접 사야만 성장의 혜택을 받는다는 명제도 아니다. 정책의 설계와 재원은 [[Fiscal-Policy-Transfer-Design|이전지출의 설계와 재원]]으로 연결한다.
 
 ## 5. 비용과 세금 — 새는 수익
@@ -93,6 +99,12 @@ aliases: ["투자의 기본 원칙", "Investing Principles"]
 
 - [Stocks - FAQs — Investor.gov](https://www.investor.gov/introduction-investing/investing-basics/investment-products/stocks) — 2026-10-27 소유 지분, 배당과 가격 변화, 손실 가능성과 보통주의 잔여 청구 순위 대조
 - [Moore's Law for Everything — Sam Altman](https://moores.samaltman.com/) — 2021-03-16 공개 정책 제안, 2026-10-27 American Equity Fund의 과세와 시민 배분 구상 대조
+- [Now we know why Warren Buffett has steered clear of Tesla, to Elon Musk's chagrin — Fortune, Steve Mollman](https://fortune.com/2023/05/07/warren-buffett-elon-musk-tesla-ev-makers/) — 2023-05-07 보도, 2026-11-24 Buffett과 Munger의 주주총회 발언 인용 대조. 주주총회 녹취 원본은 확인하지 않았다
+- [02화 기업가와 투자자는 어떻게 다른가 — 브런치, sellsecret](https://brunch.co.kr/@sellsecret/838) — 2023-06-16 게시. 산업 단위 사례의 계기. 글의 BYD 지분 축소와 버크셔 재무 수치는 대조하지 않아 옮기지 않았다
+- [Economic growth and equity returns — Pacific-Basin Finance Journal, Jay R. Ritter](https://site.warrington.ufl.edu/ritter/files/2015/04/Economic-growth-and-equity-returns-2005.pdf) — 13권 489~503쪽(2005). 2026-11-24 저자 공개 PDF 본문에서 16개국 1900~2002년 상관계수 -0.37과 p값 0.16, 성장이 기존 주주에게 가지 않는 경로, 높은 배수의 효과와 단기 효과 대조
+- [Turbulenzen an den Börsen: Hunde spielen mit Herren — Tagesspiegel, Daniel Rhee-Piening](https://www.tagesspiegel.de/wirtschaft/turbulenzen-an-den-borsen-hunde-spielen-mit-herren-762760.html) — 2001-02-17. 2026-11-24 Kostolany가 주인과 개의 이야기를 즐겨 했다는 서술 대조
+- [돈, 뜨겁게 사랑하고 차갑게 다루어라 — 미래의창, 앙드레 코스톨라니](https://www.yes24.com/product/goods/122532297) — 한윤진 옮김, 2023-09-21 발행, 원제 Die Kunst über Geld nachzudenken. 2026-11-24 판매 페이지의 서지와 목차만 확인, 본문 미열람
+- [400년 역사 주식시장이 알려주는 불변의 법칙 | 돈, 뜨겁게 사랑하고 차갑게 다루어라 — 이혜성의 1% 북클럽](https://www.youtube.com/watch?v=BLx-6nW_ktw) — 2026-11-23 공개 영상, 2026-11-24 음성 인식 전사 전체 확인. 책 내용 소개의 출처. 단기 매매와 빚을 낸 투자에 대한 경고는 이 문서와 [[Behavioral-Biases-Risk|행동 편향과 리스크 관리]]에 근거가 있어 옮기지 않았고, 차르 시대 채권과 전후 독일 채권의 수익률, 튤립과 미시시피 회사 같은 버블 사례, 뉴턴의 말로 전해지는 인용은 확인하지 못해 옮기지 않음
 - [Investor.gov — Asset Allocation, Diversification, and Rebalancing](https://www.investor.gov/introduction-investing/getting-started/asset-allocation)
 - [CFPB — Explore financial well-being findings](https://www.consumerfinance.gov/consumer-tools/educator-tools/financial-well-being-resources/explore-findings/) — 2026-10-10 현재 지출 관리, 충격 흡수, 목표와 선택의 네 요소 대조
 - [Pay Off Credit Cards or Other High Interest Debt — Investor.gov](https://www.investor.gov/introduction-investing/investing-basics/save-and-invest/pay-credit-cards-or-other-high-interest) — 2026-10-03 투자 전 고금리 부채 검토 대조

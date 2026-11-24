@@ -3,7 +3,7 @@ tags: [econ, finance, corporate-governance, voting-rights, public-benefit-corpor
 status: done
 verified_at: 2026-11-16
 category: "Economics"
-aliases: ["의결권 구조와 공익법인", "지분과 의결권의 분리", "Voting Control Structures", "Public Benefit Corporation", "공익법인(PBC)"]
+aliases: ["의결권 구조와 공익법인", "지분과 의결권의 분리", "Voting Control Structures", "Public Benefit Corporation", "공익법인(PBC)", "Friedman Doctrine", "프리드먼 독트린", "주주 우선주의"]
 ---
 
 # 의결권 구조와 공익법인(PBC)
@@ -31,6 +31,14 @@ aliases: ["의결권 구조와 공익법인", "지분과 의결권의 분리", "
 - **강제 수단의 문턱(§367):** 균형 의무를 강제하는 소송은 개인 소송, 대표소송 등 유형과 관계없이 원고들이 소 제기일 기준 단독 또는 합산으로 발행주식의 2% 이상을 가져야 낼 수 있다. 상장회사는 2%와 시가 200만 달러어치 주식 중 더 적은 기준을 쓴다.
 
 이 구조는 이사회가 주주 이익만 좇지 않을 법적 근거를 주지만, 외부 수혜자가 직접 소송으로 공익을 요구할 수단을 만들지는 않는다. 공익 조항이 실제로 무엇을 바꾸는지는 이사 선임 구조와 보고 수준을 함께 보고 판단한다.
+
+### 주주 이익 극대화론과의 대비
+
+공익법인이 맞서는 관점은 Friedman(1970)의 기고문에 잘 정리돼 있다. 자유기업, 사유재산 체제에서 경영자는 회사 소유자에게 고용된 사람이고, 법과 윤리적 관습이라는 사회의 기본 규칙을 지키면서 대개 돈을 최대한 벌기를 바라는 소유자들의 뜻대로 경영할 책임을 진다. 경영자가 사회적 책임을 이유로 주주 수익을 줄이거나 고객 가격을 올리거나 직원 임금을 낮추면 남의 돈을 쓰는 것이고, 사실상 세금을 매기고 그 쓰임까지 정하는 셈이라 대표 없는 과세라는 정치적 문제가 된다고 봤다. 작은 지역사회의 주요 고용주가 지역에 쓰는 돈처럼 회사의 장기 이익으로 정당화되는 지출은 문제 삼지 않지만, 그것을 사회적 책임으로 포장하는 것은 위선적인 겉치레라고 했다. 시장은 모두가 자발적으로 동의하는 만장일치를, 정치 기구는 결정에 따라야 하는 순응(conformity)을 원리로 삼는다며 사회적 책임론이 정치의 영역을 모든 활동으로 넓힌다고 비판하고, 기업의 사회적 책임은 게임의 규칙, 곧 기만과 사기 없는 공개적이고 자유로운 경쟁 안에서 이익을 늘리는 것 하나뿐이라는 자기 책(Capitalism and Freedom)의 문장으로 끝맺는다.
+
+같은 글은 병원이나 학교처럼 소유자가 처음부터 금전 이익이 아닌 목적으로 세운 법인도 있으며 그때도 경영자는 그 목적을 정한 사람들의 대리인이라고 적었다. 공익법인은 이 대리인 논리와 정면으로 충돌하지만은 않는다. 공익을 경영자가 재량으로 고르는 것이 아니라 주주가 정관에 적어 이사회의 균형 의무로 만들기 때문이다(이 문서의 해석).
+
+반대편 선언의 예로 Business Roundtable은 2019-08-19 181명의 최고경영자가 서명한 기업 목적 성명에서 고객, 직원, 공급자, 지역사회와 주주 모두의 이익을 위해 회사를 이끌겠다고 약속했고, 1997년 이후 각 판의 성명이 주주 우선 원칙을 지지해 왔다고 밝혔다. 회원 기업 경영자의 원칙 선언이라 정관에 공익을 적은 공익법인처럼 이사의 의무 구조를 바꾸지는 않는다(해석). 투자 판단에서는 선언보다 정관, 이사 선임 구조와 보고 의무를 확인한다.
 
 ## 3. 사례: Anthropic의 상장 전 정관
 
@@ -66,6 +74,9 @@ Anthropic은 델라웨어 공익법인(Anthropic, PBC)이다. 2026-11-02 S-1/A�
 - [IPO Fact Sheet — Anthropic](https://ipo.anthropic.com/documents/us/factsheet.pdf) — 2026-11-16 장기이익신탁의 수탁자 수와 이사 선출 권한 문구 확인
 - [Anthropic Sets IPO Price Range At $70-$78 Per Share; Launches Roadshow — RTTNews](https://www.rttnews.com/3712632/anthropic-sets-ipo-price-range-at-70-78-per-share-launches-roadshow.aspx) — 2026-11-10 보도, SEC 신고서를 인용한 가격 범위. 신고서 본문은 직접 열지 못함
 - [Anthropic, IPO 희망가 70~78달러 공개… 11월 19일 나스닥 거래 예상 — GeekNews](https://news.hada.io/topic?id=37054)
+- [A Friedman doctrine — The Social Responsibility of Business Is to Increase Its Profits — The New York Times Magazine, Milton Friedman](https://www.nytimes.com/1970/09/13/archives/a-friedman-doctrine-the-social-responsibility-of-business-is-to.html) — 1970-09-13 게재. NYT 페이지는 직접 열지 못했고, 이 아카이브 페이지를 인쇄한 피츠버그대 경영대 강의 자료의 본문으로 2026-11-24 고용인과 대리인, 과세 비유, 장기 이익 지출과 겉치레, 만장일치와 순응, 결론 문장 대조
+- [Business Roundtable Redefines the Purpose of a Corporation to Promote ‘An Economy That Serves All Americans’ — Business Roundtable](https://www.businessroundtable.org/business-roundtable-redefines-the-purpose-of-a-corporation-to-promote-an-economy-that-serves-all-americans) — 2019-08-19 발표, 2026-11-24 서명자 수, 이해관계자 약속과 1997년 이후 주주 우선 원칙 대조
+- [21. 노벨 경제학자의 사회적 책임 — 브런치, sellsecret](https://brunch.co.kr/@sellsecret/523) — 2019-09-03 게시. Friedman 기고문의 번역 소개이며 번역문 대신 위 원문으로 대조했다
 
 ## 관련 문서
 

@@ -2,7 +2,7 @@
 tags: [growth, career-stages, mindset, self-efficacy, resilience]
 status: done
 category: "Growth - 커리어 단계"
-aliases: ["Self-Belief", "자기 효능감", "자기 믿음", "재능 신화", "자기충족 예언", "칭찬 불안", "Impostor Phenomenon", "임포스터 현상", "가면 증후군"]
+aliases: ["Self-Belief", "자기 효능감", "자기 믿음", "재능 신화", "자기충족 예언", "칭찬 불안", "Impostor Phenomenon", "임포스터 현상", "가면 증후군", "Self-Esteem", "자존감", "Explanatory Style", "설명 양식"]
 ---
 
 # 자기 믿음 (재능 신화와 타인의 평가)
@@ -47,6 +47,8 @@ Woollett과 Maguire(2011)는 채링크로스역 반경 6마일 안의 약 2만 5
 
 이런 해석은 연차와 무관하게 나타날 수 있다. 칭찬을 정체성 판결이 아니라 **이 사람이 이 행동을 좋게 보았다는 정보**로 읽는다. 지적과 마찬가지로 한 사람의 관점이라는 표본 크기 그대로 받고, 반복되는 피드백과 결과로 실제 강점인지 확인한다. 칭찬 뒤에도 틀릴 수 있고 모를 수 있다.
 
+능력 자체를 칭찬받는 경험을 다룬 실험도 있다. Mueller와 Dweck(1998)의 여섯 연구에서 지능을 칭찬받은 초등학교 5학년은 노력을 칭찬받은 아이보다 배우는 목표보다 성적 목표를 중시했고, 실패 뒤에는 덜 지속하고 덜 즐기며 능력 부족을 탓하고 수행도 낮았다. 지능을 고정된 특성으로 묘사하는 경향도 컸다. 다만 중국 아동 624명으로 이 실험을 가깝게 재현한 Li와 Bates(2019)에서는 실패 뒤 중간 난이도 시험의 차이만 경계 수준(p = .049)이었고 동기와 귀인 측정 여덟 가지에서는 차이가 없었으며, 이어진 두 연구에서는 효과를 찾지 못했다(두 논문 모두 초록 기준). 아동 대상 실험이라 직장의 칭찬으로 옮기는 것은 해석이며, 칭찬을 능력 판결보다 행동에 대한 정보로 읽자는 이 절의 제안을 거드는 정도로만 쓴다.
+
 ## 임포스터 현상 — 성취의 증거를 스스로 부정하는 경험
 
 임포스터 현상(impostor phenomenon)은 성취와 외부 인정이 있는데도 자신이 실제로는 유능하지 않으며 주변을 속여 왔다고 느끼는 내적 경험이다. 1978년 Clance와 Imes가 성취 수준이 높은 여성 150명 이상을 심리치료, 집단 작업과 대학 수업에서 만난 임상 경험을 바탕으로 기술했다. 좋은 결과를 운, 채점 실수나 주변의 과대평가로 돌리며 역량을 보여 주는 외부 증거를 계속 부정하는 것이 특징이다.
@@ -62,6 +64,14 @@ Woollett과 Maguire(2011)는 채링크로스역 반경 6마일 안의 약 2만 5
 자기 효능감(self-efficacy)은 목표 선택, 노력과 지속성에 영향을 줄 수 있어 성취 과정의 한 요인이 된다. 그러나 믿음만으로 결과가 보장되지는 않으며, 필요한 기술, 자원, 피드백과 환경을 함께 확인해야 한다. 피그말리온 효과는 다른 사람의 기대가 대우와 수행에 영향을 줄 수 있다는 별도 개념이므로 자기 효능감과 같은 뜻으로 사용하지 않는다.
 
 반대로 나는 할 수 없다는 판단은 시도와 도움 요청을 줄여 학습 기회를 좁힐 수 있다. 이는 [[Career-Attitude|커리어 태도]]에서 다루는 부정 루프와 연결되지만, 실패의 원인을 개인의 믿음 하나로 환원하지 않는다. 믿음은 결과를 결정하는 운명이 아니라 다음 행동을 선택할 때 점검할 변수다.
+
+### 자존감과 자기 효능감을 나눈다
+
+자존감(self-esteem)은 자기 개념에 담긴 자질과 특성을 얼마나 긍정적으로 지각하는지를 가리키는 전반적인 자기 평가이고, 자기 효능감은 주어진 상황에서 수행하거나 원하는 결과를 얻을 능력에 대한 주관적 지각이다(APA 심리학 사전). 자존감을 높이면 성과가 따라온다고 기대하기 쉽지만 Baumeister 외(2003)의 검토는 그 기대를 지지하지 않았다(초록 기준). 자존감을 키우면 성취한다는 대중 강연의 인과 주장이나 적정 점수 같은 수치도 이 검토와 맞지 않아 그대로 쓰지 않는다.
+
+- 학업 성적과의 상관은 크지 않았고, 높은 자존감은 좋은 성적의 원인이라기보다 일부 결과였다. 자존감을 높이려는 개입이 학업 성과를 높인다는 결과는 확인되지 않았고 때로는 역효과일 수 있다고 봤다.
+- 성인의 직무 성과와의 관계는 연구마다 크게 달랐고 인과 방향은 확인되지 않았다. 실험실 연구도 자존감이 과제 수행을 높인다는 결과를 대체로 얻지 못했으며, 실패 뒤 더 오래 버티게 한다는 점이 예외였다.
+- 높은 자존감은 장점을 솔직히 받아들이는 사람과 자기애적이고 방어적인 사람을 함께 담는다. 이익은 주도성과 즐거운 정서로 정리됐고, 저자들은 무분별한 칭찬 대신 바람직한 행동과 자기 개선에 대한 보상으로 칭찬하라고 권했다.
 
 ### 경험의 강도와 자기 효능감의 근거를 나눈다
 
@@ -93,6 +103,10 @@ Bandura의 자기 효능감 이론은 직접 수행한 성취, 다른 사람을 
 
 이 구분은 경쟁 스포츠의 동기 부여 발언에서 가져온 실천 관점이다. 엄격한 자기 요구가 성과를 높인다는 인과 근거나 성공 보장으로 사용하지 않는다.
 
+나쁜 일을 해석하는 습관은 설명 양식(explanatory style)으로 연구돼 왔다. 재구성된 학습된 무기력 모형은 나쁜 일을 내 탓이고(내부), 계속될 것이며(영속), 다른 일에도 번지는(전반) 원인으로 설명하는 경향이 나쁜 일을 만났을 때 그만두기 쉽게 만든다고 본다. Seligman과 Schulman(1986)은 이 예측을 생명보험 설계사에게 시험했다. 경력 설계사 94명의 횡단 연구에서 귀인 양식 질문지(ASQ)의 낙관 쪽 절반은 비관 쪽 절반보다 첫 2년간 보험을 37% 더 팔았고, 신입 103명을 1년 추적한 연구에서는 낙관 쪽 절반이 두 배 비율로 남았고 더 많이 팔았다(초록 기준). 무작위 배정이 아니고 직군도 하나다. 적용할 때 바꿀 것은 영속성과 전반성의 해석이다. 이번 실패를 늘 그럴 일이나 모든 일에 번질 일로 읽지 않되, 내 판단 가운데 바꿀 부분은 위처럼 다음 행동으로 따로 적는다(적용 해석).
+
+자기 대화에서는 왜 그랬지를 되풀이하는 대신 앞으로는 이렇게 하겠다로 문장을 바꾸라는 제안이 있다. 남에게 하는 말에서도 비교(남들은 안 그러는데), 비약(이러면 나중에 큰일 난다), 비난을 담은 왜(왜 그러니)는 선의로 시작해도 상대를 깎기 쉽다고 본다. 둘 다 정신과 전문의의 대중 강연에서 나온 제안이며 효과는 대조하지 않았다. 사람에게 묻는 왜와 시스템의 원인을 찾는 분석은 구분한다([[RCA-Postmortem|RCA와 포스트모템]]).
+
 ## 실천
 
 - 외부 평가를 받으면 **무엇을 개선할까**로 번역하고, **나는 안 되는 사람**이라는 판결로 내면화하지 않는다.
@@ -112,6 +126,7 @@ Bandura의 자기 효능감 이론은 직접 수행한 성취, 다른 사람을 
 - 성취의 증거를 운이나 주변의 과대평가로만 돌리고 있지 않은가, 그 느낌이 오래 이어지며 불안이나 우울을 동반하지 않는가
 - 선택의 결정권을 본인이 쥐고 있는가
 - 원인 분석을 남 탓이나 자기 비난 하나로 끝내지 않고, 바꿀 행동과 필요한 지원을 찾았는가
+- 이번 실패를 늘 그럴 일이나 모든 일에 번질 일로 읽고 있지 않은가, 자존감을 성과의 원인으로 기대하고 있지 않은가
 
 ## 사례
 
@@ -130,6 +145,12 @@ Bandura의 자기 효능감 이론은 직접 수행한 성취, 다른 사람을 
 - [Bandura, Self-efficacy: Toward a unifying theory of behavioral change](https://pubmed.ncbi.nlm.nih.gov/847061/)
 - [Self-efficacy: Toward a unifying theory of behavioral change — Albert Bandura](https://www.sciencedirect.com/science/article/pii/0146640278900024) — 1977년 논문의 1978년 정식 재수록본, 정보원 네 가지와 비교적 안전한 활동의 숙달 조건은 공개 초록 범위에서 대조
 - [Cognitive processes mediating behavioral change — Journal of Personality and Social Psychology, Bandura, Adams and Beyer (1977)](https://doi.org/10.1037/0022-3514.35.3.125) — 35권 3호 125~139쪽. 2026-11-24 PubMed 초록으로 세 조건과 결과 대조
+- [Does High Self-Esteem Cause Better Performance, Interpersonal Success, Happiness, or Healthier Lifestyles? — Psychological Science in the Public Interest, Baumeister, Campbell, Krueger and Vohs (2003)](https://doi.org/10.1111/1529-1006.01431) — 4권 1호 1~44쪽. 2026-11-24 OpenAlex에 실린 초록 확인, 본문 미열람
+- [APA Dictionary of Psychology, self-esteem](https://dictionary.apa.org/self-esteem), [self-efficacy](https://dictionary.apa.org/self-efficacy) — 2026-11-24 두 항목의 정의 확인
+- [Praise for intelligence can undermine children's motivation and performance — Journal of Personality and Social Psychology, Mueller and Dweck (1998)](https://doi.org/10.1037/0022-3514.75.1.33) — 75권 1호 33~52쪽. 2026-11-24 PubMed 초록 확인
+- [You can't change your basic ability, but you work at things, and that's how we get hard things done — Journal of Experimental Psychology: General, Li and Bates (2019)](https://doi.org/10.1037/xge0000669) — 148권 9호 1640~1655쪽. 2026-11-24 PubMed 초록으로 재현 설계와 결과 확인
+- [Explanatory style as a predictor of productivity and quitting among life insurance sales agents — Journal of Personality and Social Psychology, Seligman and Schulman (1986)](https://doi.org/10.1037/0022-3514.50.4.832) — 50권 4호 832~838쪽. 2026-11-24 Semantic Scholar에 실린 초록으로 표본, 비교와 결과 확인, 본문 미열람. 이 연구를 소개하는 글에 흔히 붙는 1,100여 명과 상하위 10%의 88% 차이는 초록에 없어 옮기지 않았다
+- [자존감 수업 (2) — 브런치, sellsecret](https://brunch.co.kr/@sellsecret/274) — 2018-02-19 발행. 정신과 전문의 윤홍균의 대중 강연을 블로그 저자가 정리한 글로, 자존감 도둑과 미래형 후회의 제안만 반영했다. 추가 글: #273(2018-02-19), #275(2018-02-20, 자존감 정의와 연구 소개), #510(2018-05-17, 낙관적 설명 양식과 영업)
 - [Korea Country Note, PISA 2018 Results — OECD](https://www.oecd.org/content/dam/oecd/en/about/programmes/edu/pisa/publications/national-reports/pisa-2018/featured-country-specific-overviews/PISA2018_CN_KOR.pdf) — 2026-11-24 본문에서 실패 걱정 문항과 자기 효능감 문항의 한국과 OECD 평균 대조
 - [Evaluating Large Language Models on the 2026 Korean CSAT Mathematics Exam — arXiv 2511.18649](https://arxiv.org/abs/2511.18649) — 2025-11 공개, 2026-11-24 초록으로 문항 수, 모델 수와 만점 조건 대조
 - [AI가 모든 정답을 아는 시대, 대체할 수 없는 한 가지 (스티브 잡스, 샘 올트먼 외) — YouTube, 백만수무강](https://www.youtube.com/watch?v=89Q52YLXa_8) — 2026-11-22 업로드, 2026-11-24 음성 인식 전사 전체 확인. 여러 인물의 발언을 엮은 영상이며 영어 인용 구간은 한국어 음성 인식으로 깨져 확인하지 못해 인용하지 않음. PISA 2012와 2022의 순위 설명은 원자료 미대조

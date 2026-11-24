@@ -57,6 +57,8 @@ Khan Academy는 2026-05 공개한 자체 제품 실험에서 응답 지연, 대�
 
 같은 달 EdWorkingPaper 26-1552는 6천 명 이상의 중학생에게 NUMI 연습 플랫폼의 AI 지원과 완전학습 진행 조건을 무작위 배정했다. AI 지원 집단은 진도가 느리고 시도 수가 적었지만 도달한 시도의 정답률과 오류 후 회복은 나았다. 완전학습만으로 1주 뒤 학습이 개선되지는 않았고, AI와 결합한 조건의 지연 평가 신호도 연습한 첫 과제에 집중된 경계적 유의성 수준이었다. 즉시 정답률 상승을 넓은 학습 효과로 확대하지 않는다(2026-11-03 저자 초록 대조, 작업논문).
 
+학습자의 만족도와 배웠다는 느낌은 또 다른 층위다. 강의 영상의 전달만 매끄럽게 바꾼 실험에서는 더 배웠다고 느끼고 강사를 높게 평가했지만 배운 양은 차이가 없었고, 같은 내용을 능동 수업과 수동 강의로 나눈 실험에서는 능동 수업 쪽이 더 배우고도 배웠다는 느낌은 낮았다([[Fluency-Illusion-and-Effortful-Learning#느낌과 결과가 어긋난 실험|느낌과 결과가 어긋난 실험]]). 그래서 수강 만족도 조사를 교육 평가의 마지막 단계로 두지 않고, AI 튜터와의 대화가 좋았다는 응답도 같은 층위로 따로 본다(적용 해석). 배움에 대한 만족이 익힘으로 이어지지 않을 수 있으므로 만족도 조사가 교육의 끝이 될 수 없다는 지적은 평생교육 현장에서도 나온다.
+
 강의의 50개 이상 효과 연구 언급은 기존 Khan Academy 전체 자료에 관한 설명이다. 그 수를 Khanmigo의 인과 효과 연구 수로 옮기지 않는다. 모든 학생, 연령과 과목에서 AI 튜터가 사람의 일대일 지도를 재현한다는 근거로도 쓰지 않는다.
 
 ## 노동 전환기의 역량과 반복 가능한 평가
@@ -80,10 +82,12 @@ AI로 사라지는 과업과 새로 생기는 일의 수, 전환 속도와 재�
 - [Making AI Tutoring Productive: Evidence from a Mastery-Based Math Practice Experiment — EdWorkingPapers, Philip Oreopoulos 외](https://edworkingpapers.com/ai26-1552) — 2026-08 작업논문, 2026-11-03 초록 대조. 본문과 원자료 재분석은 하지 않음
 - [OpenMAIC — THU-MAIC](https://github.com/THU-MAIC/OpenMAIC) — 2026-11-16 README의 개요와 장면 2단계 생성, AI 교사와 토론 에이전트, 퀴즈의 AI 채점, 연결한 논문과 수치 근거의 범위 확인. 설치와 실행, 논문 본문 확인은 하지 않음
 - [OpenMAIC - 주제나 문서를 AI 교사와 토론하는 수업으로 만드는 오픈소스 플랫폼 — GeekNews](https://news.hada.io/topic?id=37017) — 학습 계기
+- [교육에 대한 시선 — 브런치, sellsecret](https://brunch.co.kr/@sellsecret/692) — 2019-01-16 발행. 2019-01-15 한국평생교육학회 학술포럼 발제를 블로그 저자가 재구성한 글이며 발제 원문은 확인하지 못했다. 만족도와 익힘의 구분만 반영했다
 
 ## 관련 문서
 
 - [[Purpose-Driven-Learning|목적 있는 학습]]
+- [[Fluency-Illusion-and-Effortful-Learning|쉽게 느껴지는 공부와 오래 남는 공부]] — 배웠다는 느낌과 실제 학습의 차이
 - [[CS-Learning-Method|CS 지식 학습법]]
 - [[Expertise-Formation-AI|AI 시대 전문성 형성]]
 - [[AI-Assisted-Mathematical-Research|AI 보조 수학 연구]]

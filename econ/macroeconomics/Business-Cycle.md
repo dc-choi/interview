@@ -139,4 +139,5 @@ Oaktree의 Howard Marks는 2026-11-11 메모에서 AI 버블 질문을 세 판�
 - [[General-Purpose-Technology-Productivity|범용 기술의 생산성 지연과 J커브]] — 기술의 가치와 투자 수익의 구분
 - [[AI-Infrastructure-Capital-Cycle|AI 인프라 투자와 자본 순환]] — AI 설비투자의 현금 회수와 위험
 - [[Vendor-Financing-and-Earnings-Quality|벤더 파이낸싱과 이익의 질 점검]] — 공급자 금융과 매출의 질
+- [[Founder-Salary-Replacement-and-Runway|퇴사 창업 전 급여 대체 금액과 생활비 여력]] — 창업 활동과 경기 순환의 관계, 진입 시점 주장의 한계
 - [[거시경제(Macroeconomics)]] — 지도
