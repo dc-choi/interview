@@ -1,7 +1,7 @@
 ---
 tags: [palantir, foundry, data-connection, connectors]
 status: done
-verified_at: 2026-11-12
+verified_at: 2026-11-24
 category: "AI엔지니어링(AIEngineering)"
 ---
 
@@ -58,6 +58,10 @@ Directory connector는 sunset legacy agent 전용이다. Foundry worker의 같�
 
 공개 예제의 모든 host key 허용, binary 파일의 text write, basename 충돌, 디렉터리 오류를 잡고 partial list를 반환하는 패턴을 그대로 운영 보장으로 쓰지 않는다. 경로 유일성, bounded memory와 실패 전파를 검증한다.
 
+2026-11-24 확인한 SFTP와 Directory 문서의 external transform 예제 셋은 모두 `@transform.using`과 `LightweightInput`, `LightweightOutput`을 쓴다. 입출력 방식은 예제마다 다르다. SFTP 쓰기 예제는 입력 파일을 `filesystem().ls()`로 나열하고 업로드 경로 목록을 polars DataFrame의 `write_table`로 쓴다. Directory 읽기 예제는 경로를 `polars()`로 읽고 파일 바이트를 출력의 `filesystem().open(..., "wb")`로 쓰며, 삭제 예제는 경로를 `polars()`로 읽고 삭제 결과를 `write_table`로 쓴다. 이전 수집본은 `@lightweight`나 `@transform`과 pandas를 썼고, SFTP 예제는 기록한 목록 `remote_paths` 대신 반복 변수 `remote_path`를 `pd.DataFrame.from_records`에 넘겼다. 개정본은 `pl.DataFrame(remote_paths)`로 고쳤다. 예제를 옮길 때 polars를 run dependency에 선언했는지 확인한다.
+
+SFTP 쓰기 예제는 paramiko `Transport.connect`에 `hostkey`를 넘기지 않는다. paramiko 문서상 `hostkey`가 `None`이면 host key 검증을 하지 않으므로, source 설정의 Host key 검증과 같은 보호가 필요하면 확인한 host key를 코드에서 직접 넘긴다. 예제는 key를 `Ed25519Key`로 읽으므로 RSA key라면 형식에 맞는 key class로 바꾼다. 공백만 `_`로 바꾸는 원격 경로 함수는 서로 다른 파일 이름을 같은 경로로 겹치게 할 수 있고, 파일 전체를 `read()`로 메모리에 올린다.
+
 ## 출처
 
 - [Palantir, ftps](https://www.palantir.com/docs/foundry/available-connectors/ftps)
@@ -67,6 +71,7 @@ Directory connector는 sunset legacy agent 전용이다. Foundry worker의 같�
 - [Palantir, directory](https://www.palantir.com/docs/foundry/available-connectors/directory)
 - [Palantir, filesystem](https://www.palantir.com/docs/foundry/available-connectors/filesystem)
 - [Palantir, nfs](https://www.palantir.com/docs/foundry/available-connectors/nfs)
+- [Paramiko, Transport](https://docs.paramiko.org/en/stable/api/transport.html)
 - [RFC 9289, Towards Remote Procedure Call Encryption by Default](https://www.rfc-editor.org/rfc/rfc9289)
 
 ## 관련 문서
