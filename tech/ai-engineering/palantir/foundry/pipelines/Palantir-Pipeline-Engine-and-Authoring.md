@@ -1,7 +1,7 @@
 ---
 tags: [palantir, pipeline, datafusion, spark]
 status: done
-verified_at: 2026-10-16
+verified_at: 2026-11-24
 category: "AI엔지니어링(AIEngineering)"
 aliases: ["Foundry pipeline engine 선택"]
 ---
@@ -20,11 +20,13 @@ SQL은 정형 변환에 적합하고 Python/Java는 파일 접근, 다중 출력
 
 ## Faster는 engine의 의미 차이를 포함한다
 
-Faster는 이전 lightweight 명칭을 대체한 DataFusion 기반 single-node batch/incremental engine이다. Standard는 분산 Spark engine이다. 15분 미만 job의 startup overhead 절감이 주요 후보이며, 1~50GB 또는 2억 행은 권장 예시다. Query와 schema에 따라 terabyte 입력도 처리할 수 있어 크기만으로 상한을 정하지 않는다.
+Faster는 이전 lightweight 명칭을 대체한 DataFusion 기반 single-node batch/incremental engine이다. Standard는 분산 Spark engine이다. 15분 미만 job의 startup overhead 절감이 주요 후보이며, 1~50GB 또는 1~2억 행은 권장 예시다. Query와 schema에 따라 terabyte 입력도 처리할 수 있어 크기만으로 상한을 정하지 않는다.
+
+Pipeline Builder에서 새 batch pipeline을 만들면 batch compute는 Faster가 기본으로 선택된다. Dataset과 media set의 batch 튜토리얼은 이 기본값을 바꿔 Standard를 고르도록 안내한다. 기본값을 그대로 두고 만든 pipeline이 Spark 전제의 기존 pipeline과 같은 engine이라고 가정하지 말고 생성 시 고른 compute를 확인한다.
 
 Branch나 복제본에서 변환 호환성, 실제 결과와 사용량을 비교한다. Conversion checks로 미지원 node를 찾고 전환을 확인한다. 전환은 되돌릴 수 있지만 결과를 자동으로 동등하게 만들어 주지는 않는다.
 
-- LLM, geospatial, media, trained model node와 time-series reference 생성은 해당 가이드의 미지원 범위다.
+- Faster는 Standard batch와 같은 transform/expression 집합을 지원하지 않는다. 대표적으로 일부 geospatial과 array expression이 미지원이며, 개별 expression의 지원 여부는 functions index에서 확인한다. Trained model node와 time-series reference 생성도 미지원이다.
 - 부동소수 마지막 자리, complex type의 cast/string 표현과 날짜 format 지원이 다를 수 있다.
 - Decimal overflow는 NULL 대신 오류, `pow` overflow는 infinity 대신 NULL이다. Struct 비교와 complex type min/max도 제한된다.
 - Empty output은 빈 파일 하나 대신 파일 0개가 된다. Build stats는 row count 외에 제한된다.
@@ -59,6 +61,7 @@ Owner의 자동 merge는 required check가 최소 하나 있고 통과한 경우
 - [Palantir, External pipelines](https://www.palantir.com/docs/foundry/building-pipelines/create-external-pipeline-pb)
 - [Palantir, Dataset batch pipeline with Code Repositories](https://www.palantir.com/docs/foundry/building-pipelines/create-batch-pipeline-cr)
 - [Palantir, Dataset batch pipeline with Pipeline Builder](https://www.palantir.com/docs/foundry/building-pipelines/create-batch-pipeline-pb)
+- [Palantir, Media set batch pipeline with Pipeline Builder](https://www.palantir.com/docs/foundry/building-pipelines/create-batch-pipeline-pb-media-set)
 
 ## 관련 문서
 
