@@ -1,7 +1,7 @@
 ---
 tags: [palantir, foundry, data-connection, connectors]
 status: done
-verified_at: 2026-11-04
+verified_at: 2026-11-24
 category: "AI엔지니어링(AIEngineering)"
 ---
 
@@ -29,6 +29,13 @@ SQL Server connector의 exploration, batch, incremental, Iceberg sync, CDC sync�
 
 CDC는 database와 각 table에서 켜고 CDC schema에 대한 실행/읽기 권한을 맞춘다. source 설정만으로 원본 CDC 활성화가 완료되지는 않는다.
 
+코드에서 SQL Server를 다루는 공식 예제는 external transform에서 `pymssql`로 직접 연결한다(2026-11-24 확인한 문서 기준). 연결 값은 port 1433, `encryption: "require"`, `timeout: 30`이고 password는 source secret `MSSQL_BASIC_AUTH_PASSWORD`에서 읽는다. pymssql의 `timeout`은 query timeout(초)이며 연결과 로그인 대기는 `login_timeout`으로 따로 정한다. pymssql은 암호화 설정을 FreeTDS에 넘기는데, FreeTDS의 `require`는 암호화된 연결만 허용할 뿐이고 CA 파일을 지정하지 않으면 서버 인증서를 검증하지 않는다. 그래서 위 커넥터 기본값(`trustServerCertificate=false`)과 같은 검증을 기대하지 않는다. Foundry runtime의 FreeTDS 설정은 확인하지 못했다. 2026-11-04 수집본과 2026-11-24 수집본 사이의 개정에서 두 예제는 `@lightweight`와 `transform_pandas`의 DataFrame 반환 대신 `transform.using`과 `LightweightOutput.write_table`로 쓰도록 바뀌었고, pandas 대신 Polars를 쓴다.
+
+- 읽기: `cursor(as_dict=True)`로 `FruitName, Inventory, PricePerKg` 열을 지정해 조회하고, 결과를 `pl.String`, `pl.Int32`, `pl.Decimal(10, 2)`의 명시 schema로 Polars DataFrame에 담는다. 원본 DDL의 `DECIMAL(10, 2)`와 같은 precision과 scale이다. schema를 고정하면 조회 결과가 0행이어도 열 이름과 타입이 정해진다(해석).
+- 쓰기: 입력 dataset을 `fruits_df.polars().iter_rows(named=True)`로 한 행씩 읽어 `UPDATE`하고, `rowcount`가 0이면 `INSERT`한 뒤 마지막에 한 번 commit한다. 행마다 inserted나 updated를 적은 요약 dataset을 출력한다. 다음은 예제를 읽은 해석이다. 갱신 뒤 삽입은 한 문장이 아니어서 같은 키를 동시에 쓰는 다른 writer가 있으면 두 `INSERT`가 겹쳐 primary key 위반이 날 수 있으므로 단일 writer를 전제로 한다. 예제 주석의 입력 schema는 `PricePerKg: Double`이라 `DECIMAL(10, 2)`에 쓰는 과정에서 소수 자리 반올림이 생길 수 있다. SQL Server는 대상 scale보다 소수 자리가 많은 값을 오류 없이 반올림하고, precision을 넘는 값은 오류 8115로 거부한다. 큰 입력에는 행마다 두 번까지 왕복하는 이 방식보다 일괄 적재를 검토한다.
+
+Lightweight 입출력 객체의 계약은 [[Palantir-Python-Dataset-IO]]에서 본다.
+
 ## Oracle Database
 
 문서는 JDBC 21.x에 Oracle 12.1 이상을 요구한다. 더 오래된 서버는 custom driver 호환을 검토한다. 기본 TLS true, port 1521이며 SID와 service name은 대체 가능한 필드가 아니다.
@@ -53,6 +60,9 @@ Redshift는 endpoint, database, 사용자/password와 port 기본 5439를 지정
 - [Palantir, optimize-jdbc-syncs](https://www.palantir.com/docs/foundry/data-connection/optimize-jdbc-syncs)
 - [Microsoft Learn, SET TRANSACTION ISOLATION LEVEL (Transact-SQL)](https://learn.microsoft.com/sql/t-sql/statements/set-transaction-isolation-level-transact-sql)
 - [Microsoft Learn, Transaction locking and row versioning guide](https://learn.microsoft.com/sql/relational-databases/sql-server-transaction-locking-and-row-versioning-guide)
+- [Microsoft Learn, CAST and CONVERT (Transact-SQL)](https://learn.microsoft.com/en-us/sql/t-sql/functions/cast-and-convert-transact-sql)
+- [pymssql, pymssql module reference](https://pymssql.readthedocs.io/en/latest/ref/pymssql.html)
+- [FreeTDS, freetds.conf](https://www.freetds.org/userguide/freetdsconf.html)
 
 ## 관련 문서
 
