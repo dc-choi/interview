@@ -137,6 +137,7 @@ Agent Manager는 발행된 agent의 버전과 메타데이터를 확인하고 �
 
 ## 관련 문서
 
+- [[Palantir-Agent-Session-API|정의 버전과 세션 API]]
 - [[Palantir-Pro-Code-Agents|함수 배포형 agent]]
 - [[Palantir-AI-FDE-and-Skills|대화형 개발 agent]]
 - [[Palantir-AIP-Observability|실행 관측과 보호]]

@@ -18,6 +18,7 @@ category: "AI엔지니어링(AIEngineering)"
 - [[Palantir-Filesystem-API|리소스 계층, Project, 역할과 접근 요건]]
 - [[Palantir-Media-APIs|Media Item, transaction, metadata와 비동기 변환]]
 - [[Palantir-Chatbot-API|AIP Chatbot 버전, 세션, RAG context와 trace]]
+- [[Palantir-Agent-Session-API|Agents API 정의 버전, 세션과 event]]
 - [[Palantir-Connectivity-API|Connection, File/Table Import와 Virtual Table]]
 - [[Palantir-Models-API|모델 버전, 실험, 학습과 Live Deployment]]
 - [[Palantir-Admin-API|사용자, 그룹, 조직, Marking과 CBAC]]
