@@ -18,6 +18,8 @@ Ontology primary key는 unique/non-null/stable해야 한다. 매 build random/mo
 
 Notional generation은 synthesizer field spec과 row count로 자료를 만든다. Seed와 key 충돌을 별도로 통제하며 synthetic임을 명시한다. Fake data의 정상 흐름만으로 결측/중복/경계값 검증을 대체하지 않는다.
 
+2026-11-24 본문 기준으로 2024-03-26 제출 예제는 `DataFrameTransformOrchestrator`에 spec, row 수 10,000과 Spark session만 넘기며 seed 인자는 보이지 않는다. 같은 code를 다시 build했을 때 같은 값이 나온다고 가정하지 않는다. `pk`는 `level_1`~`level_4`를 `concat_ws("__", ...)`로 이은 값인데 각 level이 0~9, 0~19, 0~49, 0~99에서 무작위로 뽑히므로 가능한 조합은 100만 개다. 조합이 균등하게 뽑힌다고 가정하면 10,000행에서 같은 조합을 가진 행 쌍의 기댓값은 약 10,000×9,999/2÷1,000,000 ≈ 50쌍이라 중복 key가 거의 확실히 생긴다. 이 열을 primary key로 쓰려면 중복을 제거하거나 row 번호 같은 고유 값을 붙이고 uniqueness 검사를 둔다. 예제는 이름, 전화번호, 주소처럼 실제와 비슷한 값을 만들고, `ThisIsFakeData` 열도 값은 `first_name` 출력이라 합성임은 열 이름으로만 드러난다. 뒤 단계에서 그 열을 빼면 표시가 사라지므로 행 단위 flag나 dataset 수준의 표시로 synthetic임을 남기는 편이 안전하다(예제가 설명하지 않는 판단이다). import 뒤에 놓인 문자열 주석의 `synthetizer` 표기와 import의 `synthesizer`가 다르므로 library 이름은 import 기준으로 확인한다.
+
 ## Incremental은 누적 가능한 연산을 요구한다
 
 `ctx.is_incremental`로 분기하고 schema와 함께 previous output을 읽어 replace할 수 있다. 그러나 batch별 `count_distinct` 합은 transaction 사이 재등장한 값을 중복 집계한다. 전역 distinct에는 key state/중복 제거 또는 재계산이 필요하다.

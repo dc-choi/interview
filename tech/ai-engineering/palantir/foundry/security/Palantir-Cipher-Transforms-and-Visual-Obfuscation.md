@@ -1,7 +1,7 @@
 ---
 tags: [palantir, cipher, transforms, visual-obfuscation]
 status: done
-verified_at: 2026-10-16
+verified_at: 2026-11-24
 category: "AI엔지니어링(AIEngineering)"
 aliases: ["Cipher transform과 image obfuscation"]
 ---
@@ -22,11 +22,11 @@ String-level `encrypt_string`, `decrypt_string`, `hash_string`와 match variant�
 
 ## Visual obfuscation은 픽셀을 바꾼다
 
-Visual Obfuscation은 channel seed로 polygon 내부 RGB를 scramble하는 deterministic/reversible operation이다. 화면 위에 가림막만 올리는 방식이 아니다. 해당 guide는 PNG만 지원하며 lossless 보존이 복원에 중요하다.
+Visual Obfuscation은 Cipher Channel의 image scrambling seed로 polygon 내부 pixel의 RGB 값을 scramble한다. 공식 guide는 이 연산을 commutative하고 reversible하다고 설명하며, 복원은 scramble된 값에 역 scramble을 적용해 원래 pixel 값을 되찾는 방식이다. 화면 위에 가림막만 올리는 방식이 아니라 pixel 자체를 바꾼다. guide 기준 현재 PNG만 지원하며, PNG는 lossless라 암호화와 복호화가 압축 artifact를 남기지 않는다고 설명한다. 이로부터 추론하면 손실 압축으로 다시 저장한 image는 pixel 값이 바뀌어 역 scramble로 원본을 되찾지 못한다.
 
 Code Repositories에서 encryption/key access가 있는 Admin license로 media set input/output과 polygon을 처리한다. Output PNG media set을 먼저 생성한다. 전체 media listing을 driver collect하는 튜토리얼은 대규모 영상/이미지 corpus의 처리 용량을 보장하지 않는다.
 
-Workshop Image Display에서의 복원은 beta 경로다. Image object와 polygon object를 many-to-one으로 연결하고 polygon ID, image path, channel RID, JSON 좌표와 선택적 label을 저장한다. 좌표 serialization 예시에는 구분 기호 누락이 있을 수 있어 유효한 JSON과 이미지 좌표계를 검증한다. Operational decrypt license로 선택 영역을 복원한다.
+Workshop Image Display에서의 복원은 beta 경로다. Polygon object(다수)를 image object(하나)에 many-to-one으로 연결하고 polygon ID, image path, channel RID, JSON 좌표와 선택적 label을 저장한다. 2026-11-24 수집본의 polygon 예시는 `[[0,0],[100,0],[100,100],[0,100]]`처럼 좌표 목록을 JSON 직렬화한 string이다. 예시가 유효한 JSON이어도 실제 저장값의 JSON 유효성과 이미지 좌표계(원점과 축 방향)는 따로 검증한다. Operational decrypt license로 선택 영역을 복원한다.
 
 Polygon/seed/원본 image 경로를 보존할 정책을 함께 정한다. 권한 있는 사람이 복원할 수 있다는 설계이므로 irreversibly anonymized image와 다르다. License 통제, cell/operation audit와 실제 output bytes의 보호를 각각 확인한다.
 

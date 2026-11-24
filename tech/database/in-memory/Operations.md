@@ -1,7 +1,7 @@
 ---
 tags: [database, redis, cache]
 status: done
-verified_at: 2026-09-30
+verified_at: 2026-11-24
 category: "Data & Storage - Cache & KV"
 aliases: ["운영 팁", "Operations"]
 ---
@@ -11,7 +11,9 @@ aliases: ["운영 팁", "Operations"]
 ## 싱글 스레드 주의사항
 Redis의 명령 실행은 주로 단일 스레드에서 직렬 처리된다. 네트워크 I/O 스레드와 persistence, lazy free, active defragmentation 같은 백그라운드 작업도 있지만, 오래 걸리는 명령은 명령 처리 루프를 막아 다른 요청을 지연시킬 수 있다.
 
-- `keys` 대신 `scan` 사용
+- `keys` 대신 `scan` 사용. `KEYS`는 DB의 키 수 N에 대해 O(N)이고, 공식 문서도 큰 DB에서 성능을 망칠 수 있으니 일반 애플리케이션 코드에서 쓰지 말라고 한다. `SCAN`은 호출 한 번이 O(1)이고 cursor가 0으로 돌아올 때까지의 전체 순회가 O(N)이라 일을 여러 호출로 나눌 뿐 총량을 줄이지는 않는다. 대신 다음을 감수해야 한다.
+  - 순회 시작부터 끝까지 계속 있던 원소는 모두 돌려주지만, 같은 원소가 여러 번 나올 수 있고 순회 중에 추가되거나 삭제된 원소는 나올 수도 안 나올 수도 있다. 결과로 일괄 처리를 한다면 중복에 안전하게 만든다
+  - `COUNT`는 호출마다 할 작업량의 힌트일 뿐이고(기본 10), 크게 주면 호출 한 번의 작업도 늘어난다. `MATCH`와 `TYPE`(6.0+) 필터는 원소를 꺼낸 뒤에 적용되어 빈 결과가 더 잦아지며, 필터가 없어도 중간 호출은 빈 결과를 돌려줄 수 있다. 빈 결과가 아니라 반환된 cursor가 0일 때만 순회가 끝난 것이다
 - hash나 sorted set의 한 키가 매우 커지면 단일 명령 지연, migration과 장애 복구 비용이 커질 수 있다. 고정 100만 개 기준 대신 실제 원소 크기와 명령 latency를 측정해 big key 기준을 정한다.
 - 데이터가 많은 키 조회 시 `hgetall` 대신 `hscan` 사용. 10만 원소 리스트를 `LRANGE key 0 -1`로 한 번에 읽으면 서버가 응답을 직렬화하는 동안 다른 명령을 처리하지 못하고 네트워크 전송량도 급증한다. 리스트에는 길이 상한을 두고, 수십만 원소로 커질 해시나 셋은 키를 나눈다.
 - 데이터가 많은 키 삭제 시 `del` 대신 `unlink` 사용 (백그라운드 삭제). Redis 8.x 기본값(`lazyfree-lazy-user-del no`)에서는 여전히 필요하다. Valkey 8.0+는 이 설정이 기본 `yes`라 `DEL`도 메모리 해제를 백그라운드로 넘기므로, 통념보다 버전과 `CONFIG GET lazyfree*` 결과로 판단한다.
@@ -103,6 +105,8 @@ Primary 장애 시 자동 승격 이후 새 replica 보충과 재동기화 부�
 
 - [Redis latency optimization](https://redis.io/docs/latest/operate/oss_and_stack/management/optimization/latency/)
 - [Redis INFO command](https://redis.io/docs/latest/commands/info/)
+- [Redis KEYS command](https://redis.io/docs/latest/commands/keys/)
+- [Redis SCAN command](https://redis.io/docs/latest/commands/scan/)
 - [Valkey INFO command](https://valkey.io/commands/info/)
 - [Valkey CLI (valkey-cli)](https://valkey.io/topics/cli/)
 - [Valkey SLOWLOG GET command](https://valkey.io/commands/slowlog-get/)

@@ -108,6 +108,19 @@ AMP에 비공개로 접근하려면 AWS PrivateLink 기반 interface endpoint를
 
 운영 점검 제안: 수집 대상 접근, AMP 전송, 인증 토큰 획득, 중앙 쿼리와 경보 평가를 각각 확인한다. 네트워크를 바꾼 뒤 전송 적체와 데이터 공백도 확인하며, 한 사례의 절감률이나 데이터 무유실을 일반 보장으로 옮기지 않는다. 실제 네트워크 구성은 수행하지 않았으며 기존 검증일은 유지한다.
 
+## 버전 업그레이드 검증
+
+부분 검증(2026-11-24): v3.16.0 릴리스 노트(2026-11-04), PR #20080, Configuration 문서와 대조했다. 기존 절 전체를 재검증한 날짜는 아니다.
+
+새 버전이 정상 기동했다는 것은 설정과 flag를 읽고 프로세스가 떴다는 뜻이다. 릴리스 노트의 항목을 호환성 변경, 지표와 통계 변경, 저장 경로 수정, 새 기능 활성화로 나눠 따로 확인한다. v3.16.0을 예로 들면 다음과 같다.
+
+- 호환성 변경: `--web.config.file`로 TLS를 켜면 `--web.external-url`의 기본값이 https가 된다. 실험 단계의 search endpoint는 `batch_size`를 1000으로 제한한다(clamp). label 이름이 중복된 exemplar와 int64를 넘는 `timeout`, `lookback_delta` 값은 거부한다. 외부 링크, 자동화 스크립트와 API 클라이언트가 이전 동작에 기대는지 확인한다.
+- 지표와 통계 변경: Remote Write 2.0 큐는 deprecated 메타데이터 지표 4개(`prometheus_remote_storage_metadata_total`, `prometheus_remote_storage_metadata_failed_total`, `prometheus_remote_storage_metadata_retried_total`, `prometheus_remote_storage_metadata_bytes_total`)를 더 이상 노출하지 않는다. 해당 PR 기준으로 Remote Write 2.0 큐에서는 지표 등록 자체를 멈추므로(Remote Write 1.0은 유지) 값이 0이 되는 것이 아니라 series가 사라진다. 같은 PR과 지표 설명에 따르면 Remote Write 2.0의 메타데이터 바이트는 `prometheus_remote_storage_bytes_total`에 포함되지만 sample 바이트와 분리되지 않고, 건수와 실패, 재시도 건수를 대신할 지표는 안내되지 않는다. 그러므로 이 지표를 쓰는 dashboard와 alert rule은 업그레이드 전에 찾아 참조를 지우거나 다른 신호로 바꾸고, `absent()` 기반 경보가 의도치 않게 울리지 않는지도 본다. subquery의 sample 통계(TotalSamples, SamplesRead 등) 계산 방식도 바뀌었으므로 업그레이드 전후의 수치 차이를 쿼리 부하 변화로 바로 해석하지 않는다.
+- 저장 경로 수정: WAL checkpoint가 series record를 버릴 때 out-of-order sample이 빠지던 문제, 재시작 뒤 WAL replay가 같은 series의 여러 reference를 합칠 때 out-of-order sample이 빠지거나 in-order chunk가 중복되던 문제, selected-series와 stale-series compaction 중 sample이 유실될 수 있던 문제가 고쳐졌다. checkpoint 항목은 out-of-order 수집(`out_of_order_time_window`, 기본 0s)을 켠 경우에 해당한다. replay 항목의 in-order chunk 중복이 out-of-order 수집 없이도 생기는지는 출처가 밝히지 않는다. stale-series compaction은 `stale_series_compaction_threshold`(기본 0)로 꺼져 있는 실험 기능이고, selected-series compaction(`CompactSelectedSeries`)은 v3.16.0 코드 주석상 Prometheus 자체가 호출하지 않으며 주 사용자는 Mimir다. 따라서 compaction 두 항목은 기본 설정의 Prometheus에 닿지 않을 수 있다. 릴리스 노트는 복구를 말하지 않으므로 수정이 이미 유실된 sample을 되살린다고 기대하지 않는다.
+- 새 기능 활성화: PromQL의 smoothed, anchored vector selector는 안정화되어 flag 없이 항상 켜진다. anchored, smoothed modifier로 조회하는 float series에서 start timestamp로 counter reset을 감지하는 기능은 `use-start-timestamps` feature flag 뒤에 있고, query별로 `X-Prometheus-Use-Start-Timestamps` HTTP 헤더로 처리를 override할 수 있다. 실험 함수 `integral()`은 `--enable-feature=promql-experimental-functions`, 쿼리 비용 추정과 실행 제한은 `--enable-feature=query-cost`로 켠다.
+
+운영 점검 제안: 기동 확인 뒤에 사라진 지표를 참조하는 rule과 panel, 바뀐 기본값에 기대는 클라이언트, 켜려는 기능의 flag를 차례로 확인한다. 저장 경로 수정은 과거 공백이 복구됐다는 근거로 쓰지 않는다. out-of-order 수집이나 stale-series compaction을 켰던 환경이라면 이전 버전의 이 버그를 과거 공백의 원인 후보로 검토한다.
+
 ## 흔한 함정
 
 - 고카디널리티 라벨(user_id, request_id) → 시계열 폭발, OOM ([[Cardinality]])
@@ -137,6 +150,11 @@ AMP에 비공개로 접근하려면 AWS PrivateLink 기반 interface endpoint를
 - [Prometheus — Operators](https://prometheus.io/docs/prometheus/latest/querying/operators/)
 - [Prometheus — Storage](https://prometheus.io/docs/prometheus/latest/storage/)
 - [Prometheus — Migration to Prometheus 3.0](https://prometheus.io/docs/prometheus/latest/migration/)
+- [Prometheus v3.16.0 release notes — prometheus/prometheus](https://github.com/prometheus/prometheus/releases/tag/v3.16.0)
+- [storage/remote: stop exposing legacy metadata metrics for RW2 (PR #20080) — GitHub, prometheus/prometheus](https://github.com/prometheus/prometheus/pull/20080)
+- [Prometheus — Configuration](https://prometheus.io/docs/prometheus/latest/configuration/configuration/)
+- [tsdb/db.go v3.16.0 — GitHub, prometheus/prometheus](https://github.com/prometheus/prometheus/blob/v3.16.0/tsdb/db.go) — `CompactSelectedSeries` 주석
+- [Prometheus 3.16.0 업그레이드 | 정상 기동 뒤 확인할 3가지 — 길리랩 - 실전 구현 랩](https://www.youtube.com/watch?v=JuESq18gBSM) — 점검 항목 구성의 계기이며 변경 사실은 위 릴리스 노트로 대조
 - [인프런, 김영한, 프로메테우스 - 기본 기능](https://www.inflearn.com/courses/lecture?courseId=330459&unitId=148155)
 - [인프런, 김영한, 정리](https://www.inflearn.com/courses/lecture?courseId=330459&unitId=148162)
 
