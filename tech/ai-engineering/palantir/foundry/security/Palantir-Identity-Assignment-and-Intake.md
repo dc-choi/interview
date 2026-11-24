@@ -34,9 +34,11 @@ Org admin 기본 승인과 attribute별 federated reviewer를 구분한다. Attr
 
 ## Self-service directory의 recovery와 offboarding
 
-Passwordless directory는 새 commercial/developer tier와 bootcamp의 제한된 경로이며 일반 enterprise IdP와 다르다. Enrollment/Authentication Administrator가 초대, passkey와 계정을 관리한다.
+Passwordless self-service directory는 일반 enterprise IdP와 다른 경로다. 2026-10 사용자 관리 문서는 새 commercial/developer tier enrollment와 AIP bootcamp에만 제공된다는 경고를 두었지만, 2026-11-24 문서에서는 그 경고가 빠지고 self-service directory를 쓰는 commercial과 government enrollment를 대상으로 적는다. 로그인 안내 문서는 여전히 Developer Tier와 Bootcamp 기준으로 설명하므로 실제 제공 여부는 enrollment에서 확인한다. Enrollment/Authentication Administrator가 Control Panel > Manage user directory > Manage users에서 초대, passkey와 계정을 관리한다.
 
 Passkey 일부 삭제는 나머지 인증을 유지하고 전부 삭제는 recovery email과 재등록을 요구하는 account reset이다. 최대 4개이며 slot이 차면 기존 하나를 지워야 한다. 이름은 관리자에게 보이므로 민감정보를 넣지 않는다.
+
+Manage passkeys의 Add passkey는 추가 등록 초대를 보내며, 한 기기에서만 잠겼고 다른 기기의 passkey가 유효한 경우에 유용하다. 사용자는 one-time password와 등록 link가 담긴 메일을 받고, 기존 credential은 그대로 남는다. 패널은 남은 slot 수를 보여 주며 4개가 차 있으면 버튼이 비활성화된다. 관리자 dialog에는 사용자 이름, email과 user RID가 함께 보인다. Directory 전체의 허용 authenticator는 이 화면이 아니라 passkey profile에서 정한다([[Palantir-Passkey-Enrollment-and-Recovery|Passkey 등록과 계정 복구]]).
 
 Disable은 등록/login/reset을 막고, re-enable은 account reset 후 다시 등록/login하게 한다. Delete는 복구 불가이므로 소유 resource 공유/이전을 먼저 확인한다. 계정 삭제를 그 사람이 소유한 업무 자원의 자동 안전 이전으로 해석하지 않는다.
 
@@ -46,9 +48,11 @@ Disable은 등록/login/reset을 막고, re-enable은 account reset 후 다시 �
 - [Palantir, Organization assignment](https://www.palantir.com/docs/foundry/authentication/org-assignment)
 - [Palantir, Intake forms](https://www.palantir.com/docs/foundry/authentication/intake-forms)
 - [Palantir, Manage users within your enrollment](https://www.palantir.com/docs/foundry/authentication/user-directory)
+- [Palantir, Authentication](https://www.palantir.com/docs/foundry/getting-started/authentication/)
 
 ## 관련 문서
 
 - [[Palantir-SSO-Identity-and-Certificate-Rotation|SSO ID와 provider 이전]]
 - [[Palantir-Approval-Request-Lifecycle|승인과 invocation]]
 - [[Palantir-SCIM-Provisioning-and-Reconciliation|비동기 provisioning]]
+- [[Palantir-Passkey-Enrollment-and-Recovery|Passkey 등록과 계정 복구]]
