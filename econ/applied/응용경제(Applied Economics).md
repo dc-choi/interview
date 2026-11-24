@@ -27,6 +27,7 @@ aliases: ["응용경제(Applied Economics)", "Applied Economics Map"]
 - [[GPU-Collateral-and-Securitization|GPU 담보 금융과 유동화]] — 플랫폼 목표와 대출 집행, 정상 상환과 담보 회수, 고객 계약 조건, 유동화와 잔존 가치 지원의 범위
 - [[Data-Center-Grid-Access-Politics|데이터센터 전력망 연결과 지역 수용성]] — 접속 대기열과 실제 수요, 감사 지시와 정보 요구 항목, 비용 배분과 자금 구조별 지연 영향
 - [[Profit-Linked-Bonus-Design|이익연동 성과급 설계]] — 이익 N% 요구와 합의의 구분, 기준 지표와 재원 방식, 상한과 이연, 운과 기여의 분리, 사업부 간 격차 ✅
+- [[Medical-Fee-Regulation-and-Physician-Allocation|공정 진료비와 의사 인력 배분]] — 보험과 비보험 부문의 가격 결정 차이, 일본 직미와 2026년 재정 건의의 부담금과 고령자 본인부담 개편, 건의와 시행의 구분 ✅
 
 ### 2. 의사결정
 - [[Personal-Cash-Flow-Planning|개인 현금흐름 계획]] — 주별 잔액, 목적별 자금 구분, 소득 변동에 맞춘 자동이체, 목표 기한에서 역산한 부족액과 세 가지 수단 ✅
