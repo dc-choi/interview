@@ -88,12 +88,11 @@ Beta 기능은 enrollment에서 제공되지 않거나 개발 중 바뀔 수 있
 | 직접 연결 domain | 필요한 조건 |
 |---|---|
 | \<URL> | 해당 source에서 필수. URL connection property |
-| \<KerberosKDC>:88 | If SharePointEdition='SharePoint OnPremise' (default) AND AuthScheme=Negotiate |
-| \<KerberosServiceKDC>:88 | If SharePointEdition='SharePoint OnPremise' (default) AND AuthScheme=Negotiate AND Kerberos topology uses multiple realms |
-| \<SSOLoginURL> | If SharePointEdition='SharePoint OnPremise' (default) AND AuthScheme=ADFS |
-| login.microsoftonline.com | If SharePointEdition='SharePoint Online' AND AuthScheme=AzureAD, AzurePassword, SharePointOAuth, OAuthJWT  AND AzureEnvironment=GLOBAL (default) |
-| login.chinacloudapi.cn | If SharePointEdition='SharePoint Online' AND AuthScheme=AzureAD, AzurePassword, SharePointOAuth, OAuthJWT AND AzureEnvironment=CHINA |
-| login.microsoftonline.us | If SharePointEdition='SharePoint Online' AND AuthScheme=AzureAD, AzurePassword, SharePointOAuth, OAuthJWT AND AzureEnvironment=USGOVT or USGOVTDOD |
+| \<KerberosKDC>:88 | If AuthScheme=Negotiate |
+| \<KerberosServiceKDC>:88 | If AuthScheme=Negotiate AND Kerberos topology uses multiple realms |
+| \<SSOLoginURL> | If AuthScheme=ADFS |
+
+2026-11-24 확인한 개정본 기준이다. 이전 표에 있던 `SharePointEdition` 조건과 SharePoint Online용 Microsoft 로그인 host 세 행(`login.microsoftonline.com`, `login.chinacloudapi.cn`, `login.microsoftonline.us`)은 빠졌다. 이 커넥터는 on-premise SharePoint server가 노출한 Excel Services API로 workbook을 읽어 batch sync하며, Excel 파일을 SharePoint에 저장해 둔 것만으로는 쓸 수 없다. driver의 `SharePointVersion` 속성은 SharePoint 2010과 2013을 적는다. 위 표의 `URL` 기본값 `https://myorg.sharepoint.com`은 SharePoint Online 형식의 예시 값일 뿐이므로 실제로는 on-premise SharePoint site URL을 넣는다. 연결 경로별 선택은 [[Palantir-Microsoft-Workspace-Connectors|Microsoft Workspace 커넥터]]를 따른다.
 
 [해당 driver 속성 매뉴얼](https://cdn.cdata.com/help/DTK/jdbc/pg_connectionj.htm)
 

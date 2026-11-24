@@ -9,6 +9,8 @@ category: "AI엔지니어링(AIEngineering)"
 
 Excel driver의 worksheet/cell relational table과 파일 download/edit/upload는 다르다. generic Excel은 저장소 URI를, Excel Online은 Graph를, SharePoint Excel은 on-premise 2010/2013 계열의 별도 계약을 따른다. xls는 지원하지 않고 xlsm은 read-only라는 형식 조건을 확인한다.
 
+2026-11-24 확인한 SharePoint Excel 문서는 workbook에 닿는 경로로 커넥터를 고르게 한다. on-premise SharePoint server의 Excel Services API는 SharePoint Excel, SharePoint Online이나 OneDrive의 Microsoft 365 workbook은 Excel Online, 지원하는 저장소에 놓인 workbook 파일은 generic Excel, 이미 Foundry에 들어온 Excel 파일은 Foundry 안의 Excel parser다. SharePoint Excel은 server가 Excel Services API를 노출해야 하며 파일을 SharePoint에 저장해 둔 것만으로는 부족하다. 기능은 모두 Beta이고 networking 표에는 SharePoint Online 로그인 host가 없다.
+
 ## Excel의 읽기 부작용
 
 기본 Recalculate는 read 중 workbook을 변경할 수 있다. cached value만 읽으려면 FALSE 선택과 실제 결과를 확인한다. mixed cell의 숫자가 text로 읽히는 경우도 있다. folder URI로 여러 workbook을 찾는 기능과 한 workbook의 sheet 범위를 구별한다.
