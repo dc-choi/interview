@@ -80,6 +80,10 @@ GDP 갭은 생산의 **수준** 비교이고 경기침체는 경제활동의 **�
 
 이 질문들은 2026-11 AI 투자가 버블이라고 단정하기 어렵다는 블로그 글과 그 반론을 계기로 정리한 점검 틀이며, 특정 시점의 버블 여부를 판정하지 않는다.
 
+Oaktree의 Howard Marks는 2026-11-11 메모에서 AI 버블 질문을 세 판단으로 나눴다. 기술 자체가 과장돼 실망을 줄 것인가, 기업의 지출이 과도해 부족한 수익으로 끝날 운명인가, 투자자가 이 분야 지분에 너무 큰 위험을 지고 너무 많이 지불하고 있는가다. 그는 기술은 환상이 아니라고 결론 냈지만, AI가 어떻게 쓰이고 누가 이익을 볼지 알아 기업 이익을 합리적으로 추정할 수 있기 전까지는 기업 지출의 타당성과 주가, 채권 수익률의 적정성을 판단할 수 없다고 썼다. 버블의 정의는 비이성적 과열이 무분별한 행동, 과잉 투자와 참여 가격의 과도함으로 이어지는 상태로 두었다. 같은 메모는 현실이 꽤 좋음과 썩 좋지 않음 사이를 오가는 동안 투자자의 머릿속에서는 흠잡을 데 없음과 가망 없음 사이를 오간다고 적었다. 위 질문 목록의 첫 항목처럼 기술의 쓸모와 지출의 회수, 가격을 따로 묻는 틀이다. Marks 자신은 기술 판단에서만 결론을 냈고 지출과 가격은 판단을 유보했으며, 버블인가에 예나 아니오로 답하지 않았다.
+
+같은 메모의 마지막 질문(AI 투자를 어떻게 생각할 것인가)에서 그는 AI에 한정되지 않는 점검 질문을 남겼다. 받아들일 만한 수익을 얻으려면 몇 가지가 맞아야 하는가, 핵심 가정이 틀리면 얼마를 잃을 수 있는가, 보상받는 위험과 그냥 떠안는 위험은 무엇인가, 가격에 이미 얼마나 낙관이 들어 있는가, 이 투자가 포트폴리오의 기존 위험을 더하는가 분산하는가다. 잠재력이 크므로 미래가 불확실하다는 이유만으로 AI 참여를 거절할 수는 없지만, 모든 것을 알지 못한다는 점을 받아들이고 전략 선택, 포지션 크기와 위험 감수에서 조율된 겸손과 불확실성 속에서도 행동할 의지를 함께 가져야 한다는 것이 그의 입장이다.
+
 ## 7. 경기 대응 정책 (counter-cyclical)
 
 정부와 중앙은행은 경기의 진폭을 줄이려 **경기와 반대 방향으로** 움직인다.
@@ -125,6 +129,7 @@ GDP 갭은 생산의 **수준** 비교이고 경기침체는 경제활동의 **�
 - [IMF, Making Monetary Policy Decisions in the Dark](https://www.imf.org/en/Blogs/Articles/2015/08/12/making-monetary-policy-decisions-in-the-dark) — 잠재GDP와 GDP 갭의 추정 및 수정 불확실성
 - [S&P Global, Purchasing Managers' Index](https://www.spglobal.com/market-intelligence/en/solutions/products/pmi) — PMI의 전월 대비 조사 기준
 - [I'm Not Convinced The AI Bubble Exists — matteoraso.github.io](https://matteoraso.github.io/im-not-convinced-the-ai-bubble-exists.html) — 2026-11-08 게시. 2026-11-16 일회성 구축비, 부채 상환 계산, 배수 비교와 금융 구조 위험의 논거 대조. 작성자의 의견
+- [A Layman Thinks About AI — Oaktree Capital, Howard Marks](https://www.oaktreecapital.com/insights/memo/a-layman-thinks-about-ai) — 2026-11-11 메모, 2026-11-24 버블 질문의 세 판단 중 기술 판단의 결론과 지출, 가격 판단의 조건부 유보, 버블 정의, 마지막 점검 질문 대조
 - [AI 버블이라고 확신하기 어려운 이유 — GeekNews](https://news.hada.io/topic?id=36874) — 2026-11-16 장비 교체 주기, 매출과 이익의 혼동을 지적한 댓글 반론 확인(같은 날 재확인 시도는 접속 차단으로 실패)
 
 ## 관련 문서
