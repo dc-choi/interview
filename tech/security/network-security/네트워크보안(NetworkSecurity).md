@@ -24,6 +24,7 @@ aliases: ["Network Security", "네트워크 보안"]
 - [[5G-Security-Architecture|5G 보안 구조]] — SUPI와 SUCI 은닉, null-scheme의 경계, 5G AKA 상호 인증과 가짜 기지국 해석, K에서 K_gNB까지의 키 계층과 갱신 시점, SBA의 TLS와 OAuth 2.0, SEPP, 슬라이스 인증(NSSAA)
 - [[Proxy-Trust-and-Anonymity|중계 경로의 신뢰 모델]] — 프락시 경유가 만드는 익명성과 그 대가, 중계자가 볼 수 있는 범위, Tor의 회로와 계층 암호화, 프락시/VPN/Tor의 신뢰 가정 비교, 아웃바운드 통제
 - [[Residential-Proxy-Networks|주거용 프록시 네트워크와 내부망 노출]] — 앱 내장 SDK와 사전 설치 펌웨어로 출구가 되는 기기, DNS로 사설 대역 차단을 우회한 내부망 접근, 정부 기관 네트워크 출구 관측 사례, 관측과 침해의 구분, 게스트와 IoT 분리
+- [[Access-Policy-Change-Safety|접근 정책의 변경 안전성과 실효 검증]] — 정책 변경을 배포로 다루기, 발행 대상 급감 보류, 집행과 같은 판정 코드로 후보 평가, head 포인터 복구와 변경 보존, 연쇄 순위 감사 로그, 복호화 예외와 hit count 0의 함정, 정책 밖 변화 점검, NRD 차단, 직접 만든 ZTNA의 운영 비용
 - [[Host-Outbound-Firewall|호스트의 앱별 아웃바운드 통제]] — 네트워크 egress 통제와 판정 단위의 차이, Windows 기본 방화벽 위의 질문형 규칙(PacketHound), 서명된 기본 도구의 예외, 첫 연결 차단과 경로 기반 규칙의 제약, 알림 피로
 
 ## 관련 문서
