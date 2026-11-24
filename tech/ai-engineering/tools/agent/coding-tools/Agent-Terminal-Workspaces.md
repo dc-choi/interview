@@ -52,6 +52,8 @@ Orca는 새 worktree에 없는 의존성, 캐시와 무시된 로컬 파일을 �
 3. 같은 DB, 포트나 외부 서비스를 사용한다면 충돌을 어떻게 막을 것인가.
 4. 결과를 합칠 때 어떤 diff와 검사가 완료를 판정하는가.
 
+worktree를 언제 만드는지도 도구 선택의 기준이 된다. 한 현업 개발자는 한 작업을 대화로 충분히 좁힌 뒤 실행 직전에 worktree를 따게 하는 방식을 쓰는데, 처음부터 worktree를 전제로 하는 도구는 이 흐름과 맞지 않아 쓰지 않는다고 밝혔다. 회사가 에이전트에 대한 원격 접근을 금지하면 원격 기능의 장점도 선택 이유가 되지 못한다고 했다(2026-11 개인 경험담).
+
 세 번째와 네 번째 항목은 worktree 기능 외부에 남는 운영 책임이다. 보안 경계가 필요하면 [[Agent-Swarm-Containment|에이전트 군집 격리]]와 함께 검토한다.
 
 ### worktree는 장비의 계산 자원을 나누지 않는다
@@ -103,6 +105,7 @@ Prospero는 C++와 Dear ImGui 기반 네이티브 하네스로 Windows, macOS와
 
 2026-10-07 공식 문서의 기능과 상태 정의를 대조했다. 제품을 설치하거나 성능, 원격 연결과 실제 상태 판별 정확도를 시험한 기록은 아니다. T3 Code 절은 2026-10-27 공식 저장소 문서를 대조했다.
 
+- [코드.. 이제 사람이 못 봐요.. AI 정착 후 생존 경쟁이 되어버린 판교 IT 회사 분위기 — YouTube, 판교 뚜벅쵸](https://www.youtube.com/watch?v=2-CvcwEVhRQ) — 2026-11-22 업로드, 2026-11-23 음성 인식 전사 확인. 01:36~03:06의 도구 선택 이유, 개인 경험담
 - [Ghostty Documentation, About Ghostty](https://ghostty.org/docs/about)
 - [Corgi — tals](https://github.com/tals/corgi) — 2026-10-28 README의 상태 표시, 훅 통합과 CLI 범위 부분 대조
 - [Herdr Documentation, Agents](https://herdr.dev/docs/agents/)

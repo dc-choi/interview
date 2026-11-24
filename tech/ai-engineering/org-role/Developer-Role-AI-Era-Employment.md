@@ -35,6 +35,14 @@ Anthropic의 2026-10-16 보고서는 사내 고용, AI 사용, 산출 지표, �
 - 지금 주니어가 성장 기회를 얻지 못하면, 10년 후 시니어 풀이 말라버림
 - 조직은 **AI가 1차로 처리하고 주니어가 검토, 보완하는 구조** 같은 의도적 사다리를 만들어야 함 — 단, 검토만으로는 판단력이 충분히 쌓이지 않을 수 있으므로 직접 구현 구간을 함께 설계한다 ([[Expertise-Formation-AI|AI 시대 전문성 형성]]의 가드레일 RCT 근거). 그냥 AI에 맡기면 사다리 자체가 사라짐
 
+### 채용 공고의 반등 신호를 읽는 법
+
+Indeed Hiring Lab이 공개하는 미국 소프트웨어 개발 직군 공고 지수(계절 조정, 7일 이동 평균, 2020-02-01 = 100)는 2022-02-28 233.82로 정점을 찍은 뒤 2025-05-17 61.1까지 내려갔고, 2026-01-01 67.21에서 2026-11-13 81.71로 올라왔다(2026-11-17 갱신 자료로 2026-11-23 계산). 바닥에서는 반등했지만 코로나 이전 기준보다 아직 약 18% 낮다. 공고 수는 실제 채용 인원을 직접 보여 주지 않고, 이 지수에는 경력 수준의 구분이 없어 신입 공고가 늘었는지는 알 수 없다.
+
+한 그래픽스 교육자는 2026-11 라이브에서 화면의 채용 공고 그래프로 반등을 짚고 신입 공고도 조금 늘었다고 말했다(화면 자료의 출처와 신입 증가는 확인하지 못했다). 그는 반등의 이유로 아직 사람이 AI보다 싸고, AI가 생각보다 일을 잘 못하며, 응답 지연이 커서 한 사람이 동시에 돌릴 수 있는 작업이 세 개 정도라는 자신의 경험을 들었다. 일을 더 하려면 AI를 더 돌리는 것이 아니라 AI를 돌리는 주니어를 고용해야 하므로 반등이 추세로 자리 잡으면 주니어 채용도 돌아온다는 전망이다. 한 사람이 감당하는 동시 세션의 한계는 [[Agent-Terminal-Workspaces-Human-Bottleneck|사람이 병목이 될 때의 위임 계층]]의 사례와 같은 방향이지만, 위 Anthropic 사례처럼 주니어 비중이 줄어든 관찰도 있으므로 전망으로 읽는다.
+
+2026-11-23 부분 검증: 이 절의 공고 지수만 Hiring Lab 공개 자료로 계산했다. 기존 고용 연구 수치는 재검증하지 않았으므로 기존 `verified_at`은 유지한다.
+
 ## 직함보다 문제의 경계와 책임을 본다
 
 ### 자동화 노출과 실제 고용 변화를 구분한다
@@ -61,6 +69,8 @@ Product Engineer, Forward Deployed Engineer(FDE), Agent Engineer 같은 표현�
 - [취업시장이 원하는 개발자가 바뀌었습니다 — YouTube, 코딩맨](https://www.youtube.com/watch?v=FMUpmrsXAXA) — 2026-04-08, 교육 과정 광고 포함, 직군 전망과 채용 수치는 별도 검증하지 않은 의견
 - [Canaries in the Coal Mine? Six Facts about the Recent Employment Effects of Artificial Intelligence — Stanford Digital Economy Lab, 2026-08-12 개정](https://digitaleconomy.stanford.edu/app/uploads/2026/08/Canaries_August2026.pdf)
 - [Toss Tech — 개발자는 AI에게 대체될 것인가](https://toss.tech/article/will-ai-replace-developers)
+- [job_postings_tracker — GitHub, Indeed Hiring Lab](https://github.com/hiring-lab/job_postings_tracker) — 2026-11-17 갱신 자료. 2026-11-23 README의 지수 정의(계절 조정, 7일 이동 평균, 2020-02-01 기준)와 미국 Software Development 직군의 정점, 저점과 최근 값을 계산했다
+- [\[라이브\] 공부의 위기 — YouTube, 홍정모](https://www.youtube.com/watch?v=cl421zWxxx8) — 2026-11-21 업로드, 2026-11-23 음성 인식 전사 전체 확인. 공고 반등의 이유와 주니어 채용 전망은 화자의 경험에 기반한 견해. 화면 그래프의 출처는 확인하지 못함
 
 ## 관련 문서
 - [[Developer-Role-AI-Era|AI 시대 개발자 역할]] — 위임의 4분면, 추상화의 위험, 개발자에게 남는 가치와 전략

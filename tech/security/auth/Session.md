@@ -60,6 +60,8 @@ MFA는 로그인 순간의 인증을 강화한다. 그러나 로그인 결과로
 - **AiTM(adversary-in-the-middle) 피싱**: 피싱 사이트가 사용자와 실제 사이트 사이에서 요청을 중계하는 프록시로 동작한다. 사용자가 넣은 비밀번호와 OTP를 실제 사이트에 그대로 넘기고, 인증이 끝나면 발급된 세션 쿠키를 가로챈다. 공격자는 이 쿠키를 자기 브라우저에 넣어 MFA가 켜져 있어도 인증 단계를 건너뛴다. MFA의 취약점이 아니라 인증의 결과물을 훔치는 공격이다.
 - **기기 감염(인포스틸러)**: 사용자 기기의 악성코드가 브라우저에 저장된 세션 쿠키를 빼내고, 공격자가 다른 환경에서 재생(replay)한다. 로그인 과정에 끼어들지 않으므로 인증 수단을 강화해도 막지 못한다.
 
+브라우저만의 문제가 아니다. 메신저나 게임 런처 같은 데스크톱 앱도 로그인 뒤 받은 토큰을 기기에 두고, 메시지를 보낼 때마다 비밀번호와 2차 인증을 다시 묻지 않는다. 출처를 확인하지 않은 게임 모드, 확장 프로그램과 실행 파일은 이런 토큰을 빼내는 악성코드가 들어오는 경로가 될 수 있고, 모르는 사람이 보낸 링크는 AiTM 피싱의 입구가 된다. 2차 인증을 켠 계정이 광고 메시지를 뿌리는 데 쓰였다면 인증이 뚫렸다고 보기보다 토큰이 나갔다고 먼저 의심한다. 탈취가 의심될 때의 순서는 다음과 같다(해석). 감염된 기기에서 비밀번호만 바꾸면 새 토큰도 다시 나갈 수 있으므로 기기부터 정리하고, 깨끗한 기기에서 비밀번호를 바꾸면서 모든 기기의 세션을 끊고, 연결된 앱 권한을 확인한다. 비밀번호 변경이 기존 세션을 끊는지는 서비스마다 다르므로 [[#비밀번호 변경과 재인증 상태|비밀번호 변경과 재인증 상태]]의 기준으로 확인한다.
+
 | 층 | 수단 | 막는 것 | 남는 한계 |
 |---|---|---|---|
 | 로그인 | 피싱 저항 인증([[FIDO-WebAuthn\|FIDO2 패스키]], 인증서 기반) | 사람이 도메인을 눈으로 확인하는 데 기대지 않으므로 비밀번호와 OTP를 중계하는 AiTM이 통하지 않는다. 패스키는 자격증명이 RP ID에 묶이고 브라우저가 origin과 RP ID를 대조하며 RP가 서명된 origin을 검증한다 | 이미 발급된 쿠키의 탈취, 비밀번호와 OTP 같은 피싱 가능한 대체 로그인 경로, MFA 재설정 같은 복구 경로 |
@@ -127,6 +129,7 @@ SSO로 로그인하면 IdP 세션과 각 앱의 세션이 따로 생긴다. 로�
 - [Global Token Revocation, draft-parecki-oauth-global-token-revocation-06 — IETF](https://www.ietf.org/archive/id/draft-parecki-oauth-global-token-revocation-06.txt)
 - [W3C, Web Authentication: An API for accessing Public Key Credentials Level 3](https://www.w3.org/TR/webauthn-3/)
 - [AI 시대, 기업 Identity 보안의 새로운 전략, 인증을 넘어 계정, 권한, 세션까지 — 토크아이티, Okta 웨비나](https://www.youtube.com/watch?v=XP_2i3tzcjQ) — 공격 경로 구분의 계기로만 사용
+- [2차 인증이 무적이 아니라고요???? 아니 왜?!!! — YouTube, Normaltic Place](https://www.youtube.com/watch?v=riE7FtkR-7k) — 2026-11-23 업로드, 2026-11-23 음성 인식 전사 전체 확인. 2차 인증을 켠 메신저 계정의 토큰 탈취와 링크, 게임 모드 경로의 계기로만 사용. 링크 클릭의 예로 든 CSRF는 토큰을 빼내는 공격이 아니어서 옮기지 않았고, 개별 서비스의 세션 폐기 동작은 확인하지 않음
 - [OpenID Foundation, OpenID Connect Back-Channel Logout 1.0](https://openid.net/specs/openid-connect-backchannel-1_0.html)
 - [OpenID Foundation, OpenID Shared Signals Framework Specification 1.0](https://openid.net/specs/openid-sharedsignals-framework-1_0-final.html)
 - [OpenID Foundation, OpenID Continuous Access Evaluation Profile 1.0](https://openid.net/specs/openid-caep-1_0-final.html)

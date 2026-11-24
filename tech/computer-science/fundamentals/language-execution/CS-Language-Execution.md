@@ -12,6 +12,7 @@ aliases: ["CS Language and Execution", "언어와 실행 모델"]
 ## 목차
 
 - [x] [[Programming-Language-Landscape|프로그래밍 언어 지형과 구분 기준 (설계 목적과 계보, 대표 구현의 실행 경로, 메모리 관리 방식, 타입 검사 시점, 플랫폼과 생태계, 메모리 안전성 권고)]] — 언어 교체의 지연 상한과 CPU 비용, 작은 구현을 읽는 학습
+- [x] [[Language-Adoption-Signals|프로그래밍 언어 채택 지표 읽는 법]] — 설치 기반과 신규 채택의 구분, 조사마다 다른 측정 대상, 순위와 증가율, 언어가 맡는 층, 전망을 베팅으로 읽기
 - [x] [[Compile-and-Runtime|컴파일과 런타임 (의사코드와 알고리즘, 네이티브, 매니지드, 인터프리터)]]
 - [x] [[Native-Compilation-Compatibility|네이티브 컴파일과 호환성 (런타임 포함 실행 파일, 바이트코드 사전 생성, 네이티브 AOT, Bun AOT 실험과 TurboPython 소유권, .NET 11의 CPU 하한과 ReadyToRun 대상)]]
 - [x] [[Emulation-and-Compatibility-Layers|다른 플랫폼용 프로그램 실행 (에뮬레이터, Wine과 Proton 호환 계층, Rosetta 명령어 변환, 셰이더 변환, TBDR 최적화와 이식 판단)]]

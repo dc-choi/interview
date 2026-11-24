@@ -217,3 +217,4 @@ aliases: ["Programming Language Landscape", "프로그래밍 언어 지형", "�
 - [[Redis-Atomic-Operations-Lua|Redis Lua 스크립트와 Functions]]
 - [[Payment-System-Principles|결제 시스템 원칙]]
 - [[AI-Infrastructure-Language-Layers|AI 서비스 스택의 언어 계층]]
+- [[Language-Adoption-Signals|프로그래밍 언어 채택 지표 읽는 법]]

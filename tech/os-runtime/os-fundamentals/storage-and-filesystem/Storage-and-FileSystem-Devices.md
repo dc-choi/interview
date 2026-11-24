@@ -70,6 +70,21 @@ aliases: ["저장 장치와 주변장치", "기억장치 계층과 HDD SSD"]
 - 장치는 이 정보를 garbage collection과 write amplification 완화에 활용할 수 있음
 - 지원 여부, 즉시/주기 실행과 실제 효과는 OS, filesystem, controller와 storage 계층 설정에 따라 다름
 
+### 처분 전 데이터 삭제
+
+기기를 팔거나 넘기기 전의 삭제는 누가 어떤 수단으로 복구를 시도할지에 맞춰 고른다. NIST SP 800-88 Rev. 2는 방법을 셋으로 나눈다.
+
+| 방법 | 수단 | 막는 수준 |
+|---|---|---|
+| Clear | 표준 읽기/쓰기 명령으로 사용자가 접근하는 영역을 덮어쓰거나, 덮어쓰기를 지원하지 않으면 공장 초기화 메뉴를 쓴다 | 사용자와 같은 인터페이스로 하는 단순하고 비침습적인 복구 |
+| Purge | 장치의 삭제 명령이나 암호화 삭제처럼 물리적, 논리적 기법을 쓴다. 매체는 다시 쓸 수 있다 | 최신 실험실 수준의 복구 |
+| Destroy | 매체를 파괴한다. 이후 저장 매체로 쓸 수 없다 | 최신 실험실 수준의 복구 |
+
+- 지침은 가능하면 Clear보다 Purge를 쓰라고 권하고, 중간 민감도의 데이터에는 일부가 복구될 수 있다는 위험을 받아들이고 Clear를 고를 수 있다고 본다.
+- **SSD에 0을 여러 번 덮어쓰는 방식은 피한다.** 덮어쓰기는 host가 접근하는 logical block에만 닿는다. over-provisioning 영역처럼 사용자 용량보다 큰 물리 공간에 데이터가 남을 수 있어, 지침은 이런 매체에서 다회 덮어쓰기가 주는 기밀성 보호가 매우 작다고 적는다.
+- **암호화 삭제(cryptographic erase):** 저장 데이터를 암호화한 키를 지워 복호화를 불가능하게 만드는 Purge 기법이다. 다른 방법보다 훨씬 빠르지만 처음부터 강한 암호화가 적용돼 있었다는 조건이 붙는다.
+- 개인 기기에 적용하면(해석) 저장 장치 암호화를 켜 둔 상태에서 초기화하는 쪽이 0으로 채우는 포맷보다 SSD에 맞는다. OS와 제조사가 제공하는 초기화가 어느 방법에 해당하는지는 기기별 문서로 확인한다.
+
 ## 저장 매체, 통신 규격과 폼팩터
 
 HDD, SSD, NVMe와 EDSFF는 같은 분류 단계의 네 가지 디스크가 아니다. 사양표를 읽을 때는 아래 축을 분리한다.
@@ -140,6 +155,8 @@ Write-back과 write-allocate는 같은 라인의 후속 쓰기를 합칠 수 있
 - [Kingston, FAQs for SATA and M.2 SSDs](https://www.kingston.com/en/ssd/ssd-faq)
 - [Understanding SSD Technology: NVMe, SATA, M.2 — Kingston](https://www.kingston.com/en/ssd/what-is-nvme-ssd-technology)
 - [Internal Hard Drives — Western Digital](https://www.westerndigital.com/solutions/hard-drives/internal-hdd)
+- [NIST, SP 800-88 Rev. 2 Guidelines for Media Sanitization](https://csrc.nist.gov/pubs/sp/800/88/r2/final) — 2025-09 발행. 2026-11-23 3.1절의 Clear, Purge와 Destroy 정의, 덮어쓰기와 over-provisioning 서술, 3.2절의 암호화 삭제 대조. 처분 전 데이터 삭제 절에만 해당
+- [2차 인증이 무적이 아니라고요???? 아니 왜?!!! — YouTube, Normaltic Place](https://www.youtube.com/watch?v=riE7FtkR-7k) — 2026-11-23 업로드, 음성 인식 전사 확인. 노트북 판매 전 초기화 질문의 계기로만 사용
 
 - [인프런, 모영철, Guarded Suspension](https://www.inflearn.com/courses/lecture?courseId=331869&unitId=178840)
 

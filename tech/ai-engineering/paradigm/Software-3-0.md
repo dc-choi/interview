@@ -89,5 +89,6 @@ Software 1.0 부분은 여전히 결정론적이어야 함(런타임, 테스트)
 - [[Agent-From-Scratch|에이전트 직접 만들기]]
 - [[Harness-Engineering|하네스 엔지니어링]]
 - [[Agent-Spec-Writing|AI 에이전트 스펙 작성법]]
+- [[Vibe-Coding-and-Agentic-Engineering|바이브 코딩과 에이전틱 엔지니어링]]
 - [[Developer-Role-AI-Era|AI 시대 개발자 역할]]
 - [[AX-Transformation|AX 조직 전환]]

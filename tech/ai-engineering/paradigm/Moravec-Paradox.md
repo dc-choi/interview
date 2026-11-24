@@ -36,6 +36,8 @@ IT 인프라 운영이 한 예다. 광케이블과 UTP가 빽빽한 곳에서 �
 - Uptime Institute의 2025년 세계 데이터센터 조사(2025-04~05, 800명 넘는 소유자와 운영자 응답)에서 운영자의 3분의 2 가까이가 직원 유지나 자격을 갖춘 지원자 확보, 또는 둘 다에 어려움이 있다고 답했다. 보도자료에는 현장 물리 작업 인력을 따로 나눈 수치가 없고(조사 보고서 본문은 열람하지 못했다), 같은 보도자료에서 Uptime의 연구 책임자는 경력 초기보다 시니어 인력의 채용과 유지가 어렵다는 운영자가 처음으로 더 많아졌다고 말했다. 인력난의 자료이며 임금이나 대체 불가능성의 자료가 아니다.
 - Nvidia의 Jensen Huang은 2025-10에 보도된 Channel 4 News 인터뷰에서 전기 기술자, 배관공과 목수가 수십만 명 필요하고 숙련 기능 직종이 호황을 맞을 것이라고 말했다. 근거는 AI 데이터센터(발언의 표현은 factories)를 짓는 수요다. 건설 수요가 는다는 주장이지 그 직업이 AI에 대체되지 않는다는 주장이 아니므로 둘을 섞어 인용하지 않는다.
 
+소프트웨어 안에서도 비대칭이 보인다는 견해가 있다(한 그래픽스 교육자의 2026-11 라이브). 완성된 웹 화면에서 버튼을 몇 픽셀 옮기는 일이 건물을 1cm 옮기는 것만큼 번거롭다는 개발자 비유가 있는데, AI는 구조를 통째로 바꾸는 것처럼 사람에게 힘든 변경을 쉽게 해내면서 사람에게 당연하고 직관적인 일에서는 어이없이 실패하기도 하므로 그 차이를 빨리 파악하라는 것이다. 같은 교육자는 로봇에 대해 전동 액추에이터는 힘이 약하고 힘이 센 것은 비싸며 배터리가 오래가지 못한다는 점, 행사에서 춤추는 휴머노이드가 할 수 있는 일은 가벼운 물건 다루기 정도이고 정작 필요한 무겁고 위험한 일은 원가가 맞지 않는다는 점을 들었다. 자기 공장에 쓰려고 튼튼하게 만든 산업용 로봇은 수요가 분명해 쓸모가 있지만 그것이 가정용 범용 로봇으로 팔린다는 뜻은 아니라는 구분도 했다. 숙련 직종으로 가는 선택도 AI를 피해 가는 길로 보기보다 결국 잘 만드는 사람이 버는 자기 사업으로 보라고 권했다. 원가와 성능 수치는 제시되지 않았다.
+
 ## 한계와 반론
 
 - **시점이 있는 관찰이다**: 역설은 1980년대의 관찰이고 물리 작업의 난도가 고정돼 있다는 뜻이 아니다. 로봇 정책 학습의 진전은 [[Robot-Policy-Training-Pipeline|로봇 정책 학습 파이프라인]]과 [[Physical-AI-and-Liquid-Control|피지컬 AI와 리퀴드 제어]]에서 본다. 물리 현장의 대체까지 최소 10년이 남았다는 말은 개인의 추정이다.
@@ -66,6 +68,7 @@ AI의 출력으로 결정하더라도 마지막 책임은 사람이 진다는 �
 - [Job losses might be likely due to AI but Nvidia's CEO says the booming billion-dollar industry will always need more plumbers and electricians — PC Gamer](https://www.pcgamer.com/hardware/job-losses-might-be-likely-due-to-ai-but-nvidias-ceo-says-the-booming-billion-dollar-industry-will-always-need-more-plumbers-and-electricians) — 2025-10-02 보도. Channel 4 News 인터뷰 발언. 인터뷰 영상은 확인하지 못함
 - [Nvidia CEO Says These Two Trade Jobs Will Be Crucial To The AI Boom — SlashGear](https://www.slashgear.com/1987555/nvidia-ceo-ai-trade-jobs-electrians-plumbers/) — 2025-10-06 보도. 발언이 AI 데이터센터 건설에 대한 질문의 답이었다는 맥락
 - [세무사 AI 부정행위 사태를 보며 깨달은 인간의 유일한 '살길' — minux](https://www.youtube.com/watch?v=25FrGvvwhCs) — 2026-11-16 영상, 자막(ko) 전사 확인(화면 미확인). 인프라 현장의 예와 견해
+- [\[라이브\] 공부의 위기 — YouTube, 홍정모](https://www.youtube.com/watch?v=cl421zWxxx8) — 2026-11-21 업로드, 2026-11-23 음성 인식 전사 전체 확인. 소프트웨어 작업의 비대칭, 로봇의 원가와 숙련 직종에 관한 화자의 견해. 수치 근거는 제시되지 않음
 
 ## 관련 문서
 

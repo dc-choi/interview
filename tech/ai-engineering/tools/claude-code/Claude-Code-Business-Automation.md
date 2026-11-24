@@ -18,6 +18,17 @@ verified_at: 2026-10-26
 - **Claude Code (터미널)**: 대량 처리, 파일 일괄, 자동화. 예로 영수증 20장 이상을 폴더 단위로 처리하거나 CLAUDE.md에 분석 기준을 고정한 반복 가능한 경쟁사 분석에 적합
 - **애드인 (Excel/PowerPoint)**: 기존 오피스 워크플로에 붙일 때, 앱 간 컨텍스트 공유
 
+### 일이 커지는 순서로 진입점을 옮긴다
+
+같은 업무도 묻기, 만들기, 맡기기, 내 컴퓨터에서 실행하기의 순서로 사람 손을 떠난다. 쌓인 문의를 어떻게 나눌지 묻고, 나눈 결과를 표로 만들게 하고, 매일 아침 새 문의를 그 표에 넣는 일을 예약하고, 마지막에 로컬 파일까지 고치게 하는 흐름이 예다.
+
+- **웹과 문서에서 끝나는 일**은 대화창(Cowork), **내 컴퓨터의 파일이나 코드를 고쳐야 하는 일**은 Claude Code로 보낸다. 이미 쓰는 파일이 있으면 새로 만들지 않고 그 파일이 열린 앱 안에서 부른다.
+- **맡길 일의 기준**은 매주 같은 순서로 반복하고, 끝났는지만 확인하면 되는 일이다. 주간 매출 정리, 답장할 메일 추리기와 월별 장부 대조가 예다.
+- **사람이 직접 하는 단계를 먼저 정한다:** 로그인, 결제, 이체, 신고 제출과 비밀번호 입력은 맡기지 않는다. 나눌 경계가 정해져 있어야 나머지를 맡길 수 있다.
+- **세션을 나눌 때는 둘부터:** 찾는 세션과 정리하는 세션으로 시작한다. 세션 수만큼 사용 한도가 빨리 줄고 클라우드 실행도 같은 한도에서 나간다(한 사용자의 운영 경험).
+
+2026-11-24 Claude 릴리스 노트로 확인한 일정은 다음과 같다. Cowork의 웹과 모바일 제공 및 기기가 꺼진 상태의 예약 실행은 2026-07-07(Max부터 순차), 주제별로 고치고 지우는 메모리 목록과 민감 주제 설정은 2026-08-25, Claude Design, Slides와 Docs의 전 플랜 제공은 2026-09-16(Enterprise는 베타)이다. 먼저 챙기는 방식의 Claude Duet는 2026-10-21 Pro와 Max 대상 연구용 미리 보기, 계좌를 연결하는 Personal Finance는 2026-11-05 미국 한정 베타, 회의에 참가자로 들어오는 Claude Meetings는 2026-11-12 Team과 Enterprise 베타(Google Meet)로 올라와 있다. 베타 기능은 이름과 제공 범위가 바뀔 수 있다.
+
 ## 문서 자동화의 공통 골격
 
 이메일 분류, 회의록 액션아이템, 영수증 추출, 보고서/제안서, SOP, 기획서가 전부 같은 형태다.
@@ -147,6 +158,8 @@ Connectors든 수동 설정이든 **밑단은 모두 MCP**다. 차이는 설정 
 - [Anthropic — Prompting best practices](https://platform.claude.com/docs/en/build-with-claude/prompt-engineering/claude-prompting-best-practices)
 - [Claude Code — MCP](https://code.claude.com/docs/en/mcp)
 - [Claude Code — Routines](https://code.claude.com/docs/en/routines)
+- [Claude Help Center — Release notes](https://support.claude.com/en/articles/12138966-release-notes) — 2026-11-24 위 일정 문단의 날짜와 플랜 대조. 이 범위만 확인했으며 frontmatter의 검증일은 유지
+- [모든 클로드 사용법 종결편, 이 지도 한 장으로 끝내드립니다(최신판) — YouTube, 혼잡스](https://www.youtube.com/watch?v=FXmf7Du3564) — 2026-11-20 업로드, 2026-11-24 음성 인식 전사 전체 확인. 진입점을 옮기는 순서, 맡길 일의 기준과 세션 분할 경험의 출처. 문서, 발표와 디자인 기능의 무료 제공일을 2026-10-08로 설명했으나 릴리스 노트에는 2026-09-16로 올라와 있어 릴리스 노트를 따름. 표와 화이트보드, 데이터 기능의 2026-11-10 출시, 오피스와 외부 앱 연동 일정, 모델별 사용 한도 차이는 릴리스 노트에서 찾지 못해 넣지 않음
 - [Claude Cowork 시작하기](https://support.claude.com/en/articles/13345190-get-started-with-claude-cowork)
 - [클로드 코드 가이드 (비즈니스 파트 15챕터) — WikiDocs](https://wikidocs.net/book/19104)
 - [Puppeteer — PDF generation](https://pptr.dev/guides/pdf-generation)

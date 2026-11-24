@@ -13,6 +13,7 @@ AI 시대 엔지니어링의 토대 — 패러다임 전환과 모델, API 거�
 - [x] [[Monte-Carlo-Tree-Search|몬테카를로 트리 탐색과 UCT]] — 탐색 예산, 평균 보상과 탐색 보너스, 최종 행동 선택
 - [x] [[Energy-Based-Reasoning|에너지 기반 추론]] — 에너지 학습과 탐색, 제약 검사, 공급사 데모의 비교 조건
 - [x] [[Software-3-0|Software 3.0 (Karpathy 1.0/2.0/3.0, Harness, 레이어드 아키텍처 매핑)]]
+- [x] [[Vibe-Coding-and-Agentic-Engineering|바이브 코딩과 에이전틱 엔지니어링]] — 책임 수준의 구분, 이메일로 결제와 계정을 이은 설계 사례, 사람에게 남는 스펙과 원리 이해와 취향, 생성 코드의 보안 실패율 자료와 읽는 법
 - [x] [[frontier-models|프런티어 모델 카드]] — Gemini 4 Argon과 Carbon, Neon, Hydrogen, Claude Fable 5와 Mythos 5, Claude Opus 5, OpenAI GPT 세대별 변화 (하위 인덱스)
 - [x] [[AI-Capability-and-Cost-Trends|AI 능력과 비용 추세 읽기 (벤치마크 점수의 셋, 하네스, 추론 강도 조건, 같은 성능의 가격과 토큰 처리 비용의 구분, 오픈웨이트의 토큰과 지출 점유율, 시간 지평)]]
 - [x] [[Agent-Model-Capability-Contracts|에이전트 모델의 능력 계약]] — 기억과 장기 작업, 전문 영역 평가, 승인 경계, 개인화 인터페이스와 카나나의 제공 계획, 예산 안의 자율 실험과 요약 수치, 추론 내용을 돌려주는 호출 계약, 공개판의 사이버 능력 조정, API 먼저 연 모델의 가중치 공개와 라이선스 변화

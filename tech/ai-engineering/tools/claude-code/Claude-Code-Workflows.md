@@ -173,6 +173,7 @@ Claude Code를 만든 엔지니어의 실사용 패턴. 위 원칙들의 극단�
 
 - [[Claude-Code-Fundamentals|Claude Code 기초 (권한 모드, 컨텍스트, CLAUDE.md)]]
 - [[Claude-Code-Dynamic-Workflows|동적 워크플로우 (대규모 서브에이전트 오케스트레이션)]]
+- [[Claude-Code-Unattended-Sessions|무인 장기 세션 (통제를 모델, 하네스, 환경으로 옮기기)]]
 - [[Claude-Code-Bedrock|Claude Code on Amazon Bedrock 배포와 운영]]
 - [[Harness-Engineering|하네스 엔지니어링 (Constrain→Inform→Verify→Correct)]]
 - [[AI-Native-Org|AI 네이티브 조직 (공용 실행 계층)]]
