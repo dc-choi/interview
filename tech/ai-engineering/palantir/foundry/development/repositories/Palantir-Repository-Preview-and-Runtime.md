@@ -12,7 +12,7 @@ Preview는 sample을 실행하며 commit/check/materialization을 수행하지 �
 
 ## Sample과 실제 output을 구분한다
 
-File preview는 사용할 sample file을 선택하고 이후 재사용한다. Foundry-trained/file-backed model asset preview는 가능하지만 container/external-hosted model은 미지원인 범위다. General guide의 모든 model preview 가능 표현보다 이 세부 조건을 따른다. Generated transform은 `__name__`을 의미 있게 설정해 올바른 대상을 선택한다.
+File preview는 사용할 sample file을 선택하고 이후 재사용한다. 결과는 row나 file로 보며, 필요한 권한이 있으면 preview output file을 내려받을 수도 있다. 이 다운로드도 sample 실행의 결과일 뿐 dataset build 산출물이 아니다. Foundry-trained/file-backed model asset preview는 가능하지만 container/external-hosted model은 미지원인 범위다. General guide의 모든 model preview 가능 표현보다 이 세부 조건을 따른다. Generated transform은 `__name__`을 의미 있게 설정해 올바른 대상을 선택한다.
 
 Python debugger는 breakpoint line 실행 전에 멈춘다. Console은 선택 frame의 local/global variable을 보며 다른 frame local은 NameError가 될 수 있다. 내부 library breakpoint는 console 제약이 있고 해당 debugging을 별도 enable한다. Dataframe preview는 여전히 sample이므로 실제 build 결과 검증을 대체하지 않는다.
 
@@ -83,7 +83,7 @@ Spark profile은 먼저 Project에 import해야 checks가 통과한다. Restrict
 
 ## Export용 단일 파일은 병목을 만든다
 
-직접 UI export가 불가능할 때만 고급 transform 경로로 필요한 row/column을 최소화하고 type/timestamp 표현을 정해 CSV를 생성한다. Repartition(1)은 단일 출력 파일에 유리하지만 하나의 executor에 처리 부담이 모인다. Filter와 같은 transform의 coalesce(1)은 upstream parallelism까지 줄일 수 있다.
+직접 UI export가 불가능할 때만 고급 transform 경로로 필요한 row/column을 최소화하고 type/timestamp 표현을 정해 CSV를 생성한다. Repartition(1)은 단일 출력 파일에 유리하지만 하나의 executor에 처리 부담이 모인다. Filter와 같은 transform의 coalesce(1)은 upstream parallelism까지 줄일 수 있다. Output format은 CSV 외에 JSON, ORC, Parquet, Avro도 고를 수 있다. Python 예시의 `write_dataframe(..., output_format="csv")`는 Spark transform에서만 동작하고, Pipeline Builder는 Spark `DataFrameWriter`의 CSV option 중 일부만 노출한다. Build가 끝나면 dataset page의 Details 탭에서 파일을 내려받는다.
 
 128MB 미만은 guide의 성능 권장값이며 보편적 hard limit이 아니다. Sampling은 목표 row 수를 정확히 보장하지 않고 0행 분모도 처리한다. 더 큰 자료는 여러 partition/file 또는 적절한 profile을 검토한다. Export 권한과 목적은 partition 변경으로 우회하지 않는다.
 
