@@ -51,13 +51,26 @@ table export는 dataset 행을 workbook에 추가만 하며 개별 행 갱신이
 
 ## Teams
 
-Teams driver는 team/channel/chat/member/message를 relational 형태로 제공한다. delegated 사용자 권한, tenant app 권한과 selected RSC를 구별한다. service principal은 tenant/client/secret 또는 certificate, application permission과 admin consent를 맞추며 interactive redirect/Authorize 단계가 필요하지 않은 흐름이다.
+2026-11-24 확인한 문서 기준이다. Teams 커넥터는 Microsoft Graph로 team, channel, chat, member, message를 relational table로 보여 주고 batch sync로 dataset에 쓴다. 기능 표의 Exploration, batch sync, incremental, OAuth와 table export는 모두 Generally available이다.
 
-discovery의 Team.ReadBasic/Channel.ReadBasic과 message read, member read는 다르다. ChannelMessage.Read.All, Chat.Read.All의 광범위한 app 권한과 ChannelMessage.Read.Group RSC를 같은 범위로 보지 않는다.
+인증은 `AuthScheme`으로 고른다. `AzureAD`는 위임 로그인으로, source에 `AzureTenant`, `OAuthClientId`, `OAuthClientSecret`, `InitiateOAuth=REFRESH`와 자동으로 채워지는 `CallbackURL`(Entra 앱의 Web redirect URI)을 넣고 Authorize로 대상 사용자가 로그인한다. `AzureServicePrincipal`(client secret)과 `AzureServicePrincipalCert`(인증서)는 로그인 사용자 없이 앱으로 읽으며 redirect URI와 Authorize 단계가 없고, Graph 앱 권한은 관리자 동의가 있어야 효력이 생긴다. Palantir 문서는 Global Administrator가 동의하라고 적지만, Microsoft Entra 문서는 Privileged Role Administrator도 Microsoft Graph 앱 권한에 동의할 수 있다고 적는다.
 
-일반 새 메시지 전송에는 delegated ChannelMessage.Send 또는 해당 RSC가 필요하다. Teamwork.Migrate.All은 역사적 메시지 import이며 일반 send의 대안이 아니다. read 예제는 최근 20개 metadata이지 모든 대화의 전체 본문 수집이 아니다.
+| 할 일 | 위임 권한 | 앱 권한 |
+|---|---|---|
+| team과 channel 찾기 | `Team.ReadBasic.All`, `Channel.ReadBasic.All`(사용자 동의) | 같은 두 권한(관리자 동의) |
+| channel 메시지 읽기 | `ChannelMessage.Read.All`(관리자 동의) | `ChannelMessage.Read.All`(테넌트 전체, 관리자 동의) 또는 `ChannelMessage.Read.Group`(앱을 설치한 team만, resource-specific consent) |
+| chat과 chat 메시지 읽기 | Palantir 표에 없음(Graph의 chat 메시지 목록 API는 위임 `Chat.Read`를 지원) | `Chat.Read.All`(관리자 동의). Graph 참조는 chat별 resource-specific consent인 `ChatMessage.Read.Chat`을 최소 권한으로 적는다 |
+| member와 owner 목록 | `GroupMember.Read.All`, `TeamMember.Read.All`, `ChannelMember.Read.All`(관리자 동의) | 같은 세 권한(관리자 동의) |
+| channel 메시지 보내기 | `ChannelMessage.Send`(사용자 동의) | `ChannelMessage.Send.Group`(team마다 resource-specific consent) |
 
-별도 REST delegated send는 첫 authorization과 실제 사용자에게 보이는 post를 수반한다. 문서가 안내하는 앱/tenant/channel별 rate limit은 Palantir 문서 기준이며 현재 Microsoft 전체 quota를 별도로 검증한 값은 아니다.
+Palantir 문서는 channel 메시지 조회(`GET /teams/{team-id}/channels/{channel-id}/messages`)의 Microsoft 제한을 앱 전체 초당 200회, 앱과 테넌트 조합당 초당 20회, channel당 초당 1회로 적는다. Microsoft throttling 문서의 Teams 표도 같은 세 값을 적지만, 그 문서는 수치가 바뀔 수 있고 요청 하나가 여러 제한에 동시에 걸려 가장 먼저 닿는 제한이 적용된다고 밝힌다. 같은 Teams 절은 더 긴 구간에서 표 값의 약 83%인 지속 제한도 본다고 적는다. 사용자별 열이 비어 있으면 그 요청도 기본 제한을 받는다는 주석과 기본 표의 사용자당 GET 초당 1회를 합쳐 읽으면, 위임 로그인 경로는 사용자별 제한에도 걸릴 수 있다(기본 표 머리말은 앞 표에 없는 요청에 적용한다고 적어 문서 안에서 해석이 갈린다). 다음은 표를 읽은 해석이다. 앱 token(service principal) 경로에서는 제한이 channel당 초당 1회이므로 많은 channel을 동시에 읽는 sync와 한 channel의 긴 이력을 읽는 sync는 병목이 다르다. 사용자 한 명의 위임 token이면 모든 channel이 사용자당 제한을 나눠 쓰므로 channel을 병렬로 읽어도 빨라지지 않을 수 있다. 어느 경로든 긴 이력을 초당 1회로 꽉 채워 오래 읽는다고 가정하지 않는다.
+
+코드에서 쓰는 경로는 읽기와 보내기가 다르다.
+
+- 읽기: Teams source를 code repository나 Function에 가져와 service principal로 쓴다. Python pipeline, Python Function, TypeScript v1과 v2 Function 예제는 source의 `OAuthClientSecret`으로 `client_credentials` grant와 `https://graph.microsoft.com/.default` scope의 앱 token을 받아 channel 메시지를 `$top=20`으로 한 번 요청하고 `id`, `createdDateTime`, `webUrl`만 반환한다. 본문이 아닌 메타데이터이고 첫 페이지뿐이다. Graph는 기본 20개, 최대 50개를 한 페이지로 주고 `@odata.nextLink`로 다음 페이지를 이어 준다. 이 API는 답글 없이 최상위 메시지만 주고 답글 묶음의 마지막 수정 시각 순으로 정렬하므로, 링크를 끝까지 따라가도 최상위 메시지만 모인다. 답글까지 필요하면 `$expand=replies`(기본으로 답글을 200개까지 담고, 더 많으면 답글 목록에 별도의 다음 페이지 링크가 붙는다)나 답글 목록 API를 함께 쓴다. team과 channel ID는 source explorer의 `Teams`, `Channels` table에서 찾는다.
+- 보내기: Teams source가 아니라 `https://graph.microsoft.com`에 대한 REST API source와 outbound application을 만든다. 메시지를 보낼 사용자가 outbound application을 authorize하고, Python과 TypeScript v2 Function은 그 사용자의 session credential에서 access token을 꺼내 channel 메시지 `POST`에 붙인다. Workshop이나 자동화에서 바로 쓰기 전에 function-backed action으로 authorize를 먼저 거친다. Function은 호출한 사용자의 인증으로 돌므로 그 인증이 만료되거나 취소되면 사용자가 대화형 흐름에서 다시 authorize해야 한다. 실행하면 channel 구성원에게 보이는 메시지가 올라가므로 시험은 운영이 아닌 channel에서 한다. Microsoft는 channel 메시지 `POST`를 channel당, 사용자당 초당 1회로 제한하고, Teams를 로그 파일처럼 쓰는 것은 이용 약관 위반이라고 적는다. 예제 `POST`에는 재시도와 중복 방지가 없어, 시간 초과 뒤 다시 보내면 같은 메시지가 두 번 올라갈 수 있다.
+
+Palantir 문서는 선택한 team에 앱으로 보낼 때 `ChannelMessage.Send.Group` RSC와 읽기 예제의 앱 token 패턴을 쓰라고 하고, `Teamwork.Migrate.All`은 과거 메시지 import용이지 새 메시지 전송용이 아니라고 한다. Microsoft 문서끼리도 갈린다. Graph v1.0의 channel 메시지 전송 API 참조는 앱 권한으로 `Teamwork.Migrate.All`만 적고 앱 권한은 migration에만 지원한다고 쓰지만, Teams의 resource-specific consent(RSC) 문서는 `ChannelMessage.Send.Group`을 이 team의 channel에 메시지를 보내는 앱 전용 권한으로 적어 Palantir 설명과 맞는다. RSC 문서 본문은 앱 전용 RSC를 관리자나 리소스 소유자만 동의할 수 있다고 쓰지만 같은 페이지의 표는 앱 전용 team 권한에 team 소유자나 구성원이 동의할 수 있다고 적어 서로 다르므로 동의 주체는 테넌트 정책으로 확인한다. 이 문서는 또 channel RSC는 앱을 따로 추가하지 않은 private, shared channel에는 미치지 않는다고도 적는다. 참조 문서가 어긋나므로 앱 token으로 일반 메시지를 보내는 경로는 대상 테넌트에서 실제로 되는지 먼저 확인하고, 확인 전에는 문서가 예제를 준 위임 경로를 쓴다.
 
 ## SharePoint Online
 
@@ -79,6 +92,12 @@ Graph Lists 예제는 list item의 `@odata.nextLink`를 이어 가지만 list �
 - [Microsoft Learn, Upload small files](https://learn.microsoft.com/en-us/graph/api/driveitem-put-content?view=graph-rest-1.0)
 - [Requests, Quickstart: Timeouts](https://requests.readthedocs.io/en/latest/user/quickstart/#timeouts)
 - [Palantir, microsoft-teams](https://www.palantir.com/docs/foundry/available-connectors/microsoft-teams)
+- [Microsoft Learn, Microsoft Graph service-specific throttling limits](https://learn.microsoft.com/en-us/graph/throttling-limits)
+- [Microsoft Learn, List channel messages](https://learn.microsoft.com/en-us/graph/api/channel-list-messages?view=graph-rest-1.0)
+- [Microsoft Learn, Send chatMessage in a channel](https://learn.microsoft.com/en-us/graph/api/channel-post-messages?view=graph-rest-1.0)
+- [Microsoft Learn, Resource-Specific Consent for Teams Agents and Apps](https://learn.microsoft.com/en-us/microsoftteams/platform/graph-api/rsc/resource-specific-consent)
+- [Microsoft Learn, Grant tenant-wide admin consent to an application](https://learn.microsoft.com/en-us/entra/identity/enterprise-apps/grant-admin-consent)
+- [Microsoft Learn, List messages in a chat](https://learn.microsoft.com/en-us/graph/api/chat-list-messages?view=graph-rest-1.0)
 - [Palantir, sharepoint-online](https://www.palantir.com/docs/foundry/available-connectors/sharepoint-online)
 
 ## 관련 문서
