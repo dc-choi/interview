@@ -9,7 +9,7 @@ verified_at: 2026-11-24
 
 Boardroom은 director와 전문 에이전트가 Foundry/Gotham의 Ontology, 코드 실행과 도구를 사용해 공동 작업하는 beta 앱이다. Primary Ontology에 Mindkit product를 설치하고 AIP를 활성화해야 한다. Prompt-driven 또는 Ontology-informed로 팀을 생성한 뒤 각 역할, 모델, memory, skill, 도구와 직접 호출할 subagent를 조정한다.
 
-Global context는 모든 agent에 전달된다. 기본 Ontology search를 끄면 global/개별 context에 추가한 객체로 탐색 범위를 제한한다. 이 설정과 실제 Ontology 권한은 별개로 검토한다. Agent delegation description은 작업 분담, key skill은 발견을 돕는 설정이다.
+Global context는 모든 agent에 전달된다. 기본 Ontology search를 끄면 global/개별 context에 추가한 객체로 탐색 범위를 제한한다. 이 설정과 실제 Ontology 권한은 별개로 검토한다. Workshop 앱과 지원되는 다른 Foundry 앱도 도구로 넣어 agent가 알맞은 workflow를 띄우게 할 수 있다. 모드별 설정은 따로 있으며, 문서의 예시는 Meetings에서 실시간 음성으로부터 사용자 정의 객체를 추출하는 action을 더하는 것이다(2026-11-24 문서 기준, 이전 판은 Panel의 회의 전사문에서 추출하는 예시였다). Meetings의 흐름은 [[Palantir-Boardroom-Modes-and-Reuse|작업 모드와 재사용 지침]]에 있다. Agent delegation description은 작업 분담, key skill은 발견을 돕는 설정이다.
 
 ## 저장과 권한
 
@@ -38,3 +38,4 @@ Workshop module 같은 다른 Foundry 앱에 iframe widget으로 boardroom을 �
 ## 관련 문서
 
 - [[Palantir-Foundry]]
+- [[Palantir-Boardroom-Modes-and-Reuse|작업 모드와 재사용 지침]]

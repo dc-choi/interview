@@ -1,7 +1,7 @@
 ---
 tags: [architecture, fullstack, baas, nextjs, supabase, rsc]
 status: done
-verified_at: 2026-11-13
+verified_at: 2026-11-24
 category: "Architecture - 진화"
 aliases: ["Fullstack BaaS Boundaries", "풀스택 프레임워크와 BaaS 경계", "Next.js Supabase 아키텍처 오해", "BaaS 종속과 이탈 기준"]
 ---
@@ -45,9 +45,10 @@ BaaS의 종속은 기능마다 다르다. DB는 Postgres라 Supabase CLI나 `pg_
 
 ## 요금제 한도와 백업 범위
 
-아래 수치는 2026-10-12 Supabase 공식 문서 기준이며(무료 플랜 할당과 중지 조건은 2026-11-13 요금 페이지와 과금 문서 기준) 바뀔 수 있다.
+아래 수치는 2026-10-12 Supabase 공식 문서 기준이며(무료 플랜 할당과 중지 조건은 2026-11-13 요금 페이지와 과금 문서, 유료 조직의 컴퓨트 과금, 일시정지와 프로젝트 이전은 2026-11-24 과금 FAQ, 컴퓨트, 일시정지와 프로젝트 이전 문서, 문제 해결 문서 기준) 바뀔 수 있다.
 
 - **무료 플랜 할당과 중지 조건**: Free는 Auth 월간 활성 사용자 50,000명, 프로젝트당 DB 500MB, 파일 스토리지 1GB, egress 5GB(캐시 egress 별도 5GB)를 준다. DB 크기는 프로젝트마다 제한되고, MAU, 스토리지와 egress 같은 사용량 할당은 조직 안의 프로젝트를 합산해 적용된다. 활성 무료 프로젝트는 Owner나 Administrator인 조직 전체를 합쳐 2개까지다. 1주일 동안 활동이 없으면 프로젝트가 중지되며 유료 플랜은 중지되지 않는다. Pro는 월 25달러부터이고 Micro 컴퓨트 한 대분 크레딧이 포함되며 프로젝트를 더하면 컴퓨트 요금이 붙는다. 트래픽이 적은 초기 서비스는 비활성 중지에 걸릴 수 있고, Free에는 자동 백업과 PITR이 없으며 활성 프로젝트가 2개뿐이므로 넉넉한 할당만 보고 고객 서비스를 두기 전에 이 조건을 확인한다.
+- **유료 조직의 프로젝트별 컴퓨트 비용**: 플랜은 조직 단위로 정해져 한 조직 안에 유료와 무료 프로젝트를 섞을 수 없다. 유료 조직은 프로젝트마다 전용 서버를 두고 컴퓨트를 시간 단위로 청구하며(한 시간 중 일부만 돌아도 한 시간), 매달 주는 10달러 컴퓨트 크레딧이 기본 크기(Micro, 약 월 10달러) 프로젝트 하나를 덮는다. 시험용 프로젝트까지 Pro 조직에 두면 프로젝트마다 약 월 10달러가 더 붙는다(문서 예시: 프로젝트 3개면 플랜 25달러에 컴퓨트 30달러, 크레딧 10달러를 빼 월 45달러). 일시정지한 프로젝트는 컴퓨트를 청구하지 않고 무료 활성 프로젝트 한도에도 세지 않지만, 유료 플랜의 프로젝트는 일시정지할 수 없다. 출시 전이거나 쉬는 프로젝트는 Free 조직으로 옮긴 뒤 일시정지할 수 있고, 일시정지한 프로젝트는 멈춘 때부터 최대 1년 안에 Studio에서 복원할 수 있다. 다만 문제 해결 문서는 이 우회를 500MB 미만 프로젝트로 한정하고, Free 조직에서는 DB가 1GB 이하일 때만 재개할 수 있어 더 크면 Pro 이상 조직으로 다시 옮겨 재개한다. Free 한도를 넘는 사용량은 이전 뒤 제한으로 이어질 수 있다. 옮기기 전 주요 요건: 원본 조직의 Owner만 옮길 수 있고, 대상 Free 조직의 Owner와 Administrator 각자의 활성 무료 프로젝트 한도(기본 2개, 일시정지한 프로젝트 제외)를 넘으면 막히며, preview와 persistent branch, log drain, 전화나 WebAuthn MFA, pipeline을 쓰는 프로젝트는 Free 조직으로 옮길 수 없다. GitHub 연결도 먼저 끊어야 한다. Free 조직으로 옮기면 add-on이 빠지고 되돌려 옮겨도 복구되지 않으며, 이전에는 되돌리기가 없어 다시 옮기려면 같은 검사를 거친다. 오래 쓰지 않을 프로젝트는 DB와 Storage를 내려받아 보관한 뒤 삭제를 검토할 수 있고, 컴퓨트 과금은 삭제한 때 멈춘다. Pro로 올린 뒤에도 무료 프로젝트 2개는 별도 Free 조직에 둬서 유지한다. 일시정지와 삭제는 이후 사용량만 멈춘다. 유료 조직은 이미 돌린 컴퓨트 시간을 청구하고, 할당량 초과로 걸린 Fair Use 제한은 프로젝트를 멈추거나 지워도 이미 쓴 사용량이 결제 주기가 초기화될 때까지 계속 세져 바로 풀리지 않는다.
 - **파일 크기**: Free 프로젝트의 전역 파일 크기 상한은 50MB를 넘을 수 없고, Pro 이상은 500GB까지 올릴 수 있으며 그보다 크면 Supabase에 문의한다. 판매 파일의 최대 크기 같은 제품 결정이 그 단계에서 쓰는 플랜의 한도와 부딪히지 않는지 결정할 때 확인한다.
 - **큰 파일 업로드**: 6MB를 넘을 수 있는 파일이나 네트워크가 불안정한 업로드에는 재개 가능한 TUS 업로드가 권장된다. 업로드 URL은 최대 24시간 유효하며 그 안에 끝내지 못하면 처음부터 다시 올린다.
 - **백업 범위**: 자동 일일 백업은 Pro 이상 플랜에 있고(Pro는 최근 7일), Free 프로젝트에는 CLI `db dump`로 정기적으로 내보내 오프사이트에 보관하라고 권장한다. DB 백업에는 Storage API로 올린 객체가 들어가지 않고 메타데이터만 남으므로, 판매 파일 같은 객체는 따로 백업한다([[Backup-Restore|백업과 복구]]).
@@ -75,6 +76,14 @@ BaaS의 종속은 기능마다 다르다. DB는 Postgres라 Supabase CLI나 `pg_
 - [Supabase Docs — Self-Hosting](https://supabase.com/docs/guides/self-hosting)
 - [Supabase — Pricing](https://supabase.com/pricing)
 - [Supabase Docs — About billing on Supabase](https://supabase.com/docs/guides/platform/billing-on-supabase)
+- [Supabase Docs — Billing FAQ](https://supabase.com/docs/guides/platform/billing-faq)
+- [Supabase Docs — Manage Compute usage](https://supabase.com/docs/guides/platform/manage-your-usage/compute)
+- [Supabase Docs — Pro projects can't be paused: workarounds](https://supabase.com/docs/guides/troubleshooting/pausing-pro-projects-vNL-2a)
+- [Supabase Docs — Keeping your 2 Free projects after upgrading to Pro](https://supabase.com/kb/troubleshooting/keeping-free-projects-after-pro-upgrade-Kf9Xm2)
+- [Supabase Docs — Project Pausing](https://supabase.com/docs/guides/platform/pausing)
+- [Supabase Docs — Transfer a project](https://supabase.com/docs/guides/platform/project-transfer)
+- [Supabase Docs — Pause a Pro or Team Plan project](https://supabase.com/docs/guides/platform/project-transfer/pause-project)
+- [Supabase Docs — Project transfer requirements](https://supabase.com/docs/guides/platform/project-transfer/requirements)
 - [PostgREST Docs — Transactions](https://docs.postgrest.org/en/stable/references/transactions.html)
 - [YouTube, 양실장의 바이브코딩대학, 3시간 순삭) 55개 기술 의사결정, 소스코드 해설까지! 현존 바이브코딩 기본 강의 중 가장 실전적인 강의](https://www.youtube.com/watch?v=K6Rsy-pHBi0) — 2026-08-18, 1:13:47~1:20:50의 Supabase 유지와 제거 기준은 강사의 경험적 판단이고 1:39:57의 파일 크기와 무료 플랜 한도 충돌은 시연 사례. 본문의 수치와 권한 기본값은 위 공식 문서로 확인했다.
 
