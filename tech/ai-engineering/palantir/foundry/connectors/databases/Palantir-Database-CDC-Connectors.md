@@ -15,6 +15,11 @@ category: "AI엔지니어링(AIEngineering)"
 
 Beta CDC는 logical replication slot과 publication을 source당 하나씩 사용한다. 한 source에서 여러 table을 읽을 수 있지만 다른 slot/publication이 필요하면 source를 분리한다. 자동 생성에는 CREATE/REPLICATION 등 추가 권한과 읽기 SELECT가 필요하다. exploration에는 작동 중인 runtime 조건을 확인한다.
 
+코드에서 PostgreSQL을 다루는 공식 예제는 external transform에서 `psycopg2`로 직접 연결한다(2026-11-24 확인한 문서 기준). 두 예제 모두 `transform.using`과 `LightweightOutput.write_table`을 쓰고, password는 source secret `PASSWORD`에서 읽으며 host, port `5432`, database, user는 코드에 적는다. `psycopg2.connect`에는 `sslmode`가 없다. libpq의 기본 `sslmode`는 `prefer`라 SSL을 먼저 시도하고 실패하면 암호화 없이 연결하며 서버 인증서를 검증하지 않는다. 그래서 위 커넥터 기본값 `verify-full`과 같은 검증을 기대하지 않는다(해석). `PGSSLMODE` 같은 환경 변수가 Foundry runtime에 있는지는 확인하지 못했으므로 검증이 필요하면 `sslmode="verify-full"`과 CA 경로를 연결 인자로 직접 준다.
+
+- 읽기: `SELECT * FROM plants;`를 `pl.read_database(query, conn, infer_schema_length=None)`로 읽는다. Polars는 DBAPI2 연결을 직접 받고, `infer_schema_length=None`은 행 단위로 읽은 data 전체를 훑어 열 타입을 추론한다는 뜻이라 큰 결과에서는 느릴 수 있다. Polars는 자기가 만들지 않은 연결을 닫지 않으며, 예제는 읽기 연결을 닫는 코드가 없다.
+- 쓰기: `CREATE TABLE IF NOT EXISTS plants (name TEXT PRIMARY KEY, ...)`를 실행한 뒤 `COLUMN_MAPPING`으로 Foundry 열 이름을 PostgreSQL 열 이름으로 바꿔 행마다 `INSERT`하고, 쓴 행 수(`plants.height`)를 요약 dataset으로 출력한다. `with conn:` 블록은 예외가 없으면 commit, 예외가 나면 rollback하지만 연결은 닫지 않으므로 예제는 `finally`에서 `conn.close()`를 부른다. 다음은 예제를 읽은 해석이다. `ON CONFLICT`가 없어 이미 있는 `name`을 다시 쓰면 primary key 위반으로 그 실행의 모든 삽입이 rollback되므로, 같은 입력으로 build를 다시 돌리면 실패한다. 재실행을 허용하려면 `ON CONFLICT (name) DO UPDATE` 같은 upsert가 필요하다. 입력에 `COLUMN_MAPPING`에 없는 열이 있으면 연결 직후 `KeyError`로 멈추고, 이 오류는 `try` 밖에서 나므로 `finally`의 `conn.close()`도 실행되지 않는다. 열 매핑을 연결 전에 끝내면 이 경로가 없어진다. 행마다 왕복하는 방식이라 큰 입력에는 server 왕복을 줄이는 `psycopg2.extras.execute_values` 같은 일괄 실행을 검토한다.
+
 ## Microsoft SQL Server
 
 사용자/password, Microsoft Entra Password, MSI와 service principal 모드를 구별한다. Entra Password를 NTLM/Kerberos로 해석하지 않는다. NTLM은 custom JDBC 경로를 검토한다.
@@ -61,6 +66,10 @@ Redshift는 endpoint, database, 사용자/password와 port 기본 5439를 지정
 - [Microsoft Learn, SET TRANSACTION ISOLATION LEVEL (Transact-SQL)](https://learn.microsoft.com/sql/t-sql/statements/set-transaction-isolation-level-transact-sql)
 - [Microsoft Learn, Transaction locking and row versioning guide](https://learn.microsoft.com/sql/relational-databases/sql-server-transaction-locking-and-row-versioning-guide)
 - [Microsoft Learn, CAST and CONVERT (Transact-SQL)](https://learn.microsoft.com/en-us/sql/t-sql/functions/cast-and-convert-transact-sql)
+- [PostgreSQL Documentation, libpq Database Connection Control Functions](https://www.postgresql.org/docs/current/libpq-connect.html) — `sslmode`의 기본값 `prefer`와 모드별 인증서 검증
+- [Psycopg 2, Basic module usage](https://www.psycopg.org/docs/usage.html) — `with connection`의 commit, rollback과 연결 유지
+- [Psycopg 2, Extras](https://www.psycopg.org/docs/extras.html) — fast execution helpers와 `execute_values`
+- [Polars, polars.read_database](https://docs.pola.rs/api/python/stable/reference/api/polars.read_database.html) — DBAPI2 연결, `infer_schema_length=None`, 연결을 닫지 않는 동작
 - [pymssql, pymssql module reference](https://pymssql.readthedocs.io/en/latest/ref/pymssql.html)
 - [FreeTDS, freetds.conf](https://www.freetds.org/userguide/freetdsconf.html)
 
