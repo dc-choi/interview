@@ -48,6 +48,14 @@ OPM은 작업 표본 평가를 실제 업무와 같거나 유사한 과제를 �
 
 예를 들어 반복되는 `switch`가 변경을 어렵게 만들면 다른 구조를 검토할 수 있다. 단순한 분기를 유지하는 편이 명확하다면 Strategy나 Adapter를 추가하지 않는 판단도 타당하다. 관련 기준은 [[Code-Quality-Criteria|코드 품질의 기준]]에서 확인한다.
 
+### 항목별 결과를 남기고 합산 규칙은 미리 정한다
+
+위 항목들은 한 사람 안에서도 서로 다른 수준으로 나타날 수 있다. 미 공군의 1952년 기술 보고서(Daniels)는 비행 인력 4,063명의 신체 치수 10개 항목에서 평균 범위(평균의 ±0.3 표준편차, 각 항목에서 가운데 약 30%)를 차례로 적용했는데, 열 항목 모두에서 평균 범위에 든 사람은 한 명도 없었다. Todd Rose는 이를 바탕으로 사람의 특성이 항목마다 높고 낮은 들쭉날쭉한(jagged) 모양이며 한 차원의 점수로 다루면 그 정보를 잃는다고 주장한다. 원 보고서는 신체 치수의 자료이고 능력에 대한 일반화는 Rose의 주장이다.
+
+그렇다고 합산을 피하고 평가자의 종합 판단에 맡기는 편이 낫다는 근거는 아니다. Kuncel, Klieger, Connelly와 Ones(2013)의 메타분석에서는 선발과 입학 결정의 자료를 종합 판단으로 결합하면, 해당 직무와 조직을 잘 아는 전문가가 결합해도 공식에 따른 기계적 결합보다 승진, 상사의 수행 평가, 훈련 성과와 학점 예측의 타당도가 일관되고 크게 낮았다. 직무 수행 예측에서 두 방식의 타당도 차이는 예측력이 50% 넘게 나아지는 크기였다.
+
+이를 채점에 옮기면 항목별 결과를 따로 기록하고, 역할에 반드시 필요한 항목은 최저 기준으로 거른다. 나머지 항목은 후보를 보기 전에 역할과 팀에 필요한 정도에 따라 가중치를 정해 합산하고, 팀에 없는 강점처럼 더해 볼 요소도 그 가중치에 미리 넣는다. 합계만 남기면 변경 안전성이 약한 후보와 설계 판단이 약한 후보가 같은 점수로 보일 수 있으므로 항목별 결과를 함께 남기되, 결정 단계에서 후보를 보며 가중치를 바꾸지 않는다(적용 제안).
+
 ## 평가자의 판단도 검증한다
 
 - 질문과 기준을 후보자마다 임의로 바꾸지 않고, 관찰한 행동과 해석을 구분해 기록한다.
@@ -74,6 +82,10 @@ OPM은 작업 표본 평가를 실제 업무와 같거나 유사한 과제를 �
 2026-10-20에는 구조화된 면접의 직무 역량, 과거 행동/가상 상황 질문, 공통 질문 순서와 평가 척도를 재확인하고 직무 간 협력 평가 예시를 보완했다.
 
 - [Work Samples and Simulations — OPM](https://www.opm.gov/policy-data-oversight/assessment-and-selection/other-assessment-methods/work-samples-and-simulations/)
+- [The "Average Man"? — Wright Air Development Center, Gilbert S. Daniels](https://archive.org/details/DTIC_AD0010203) — 1952-12, Technical Note WCRD 53-7(DTIC AD0010203). 2026-11-24 Internet Archive의 OCR 본문으로 표본, 10개 항목, 평균 범위의 정의와 결과 대조
+- [Beyond Average — Harvard Graduate School of Education, Ed. Magazine](https://www.gse.harvard.edu/ideas/ed-magazine/15/08/beyond-average) — 2015-08-24, Todd Rose의 들쭉날쭉한 특성 주장 소개. 2026-11-24 대조
+- [Mechanical versus clinical data combination in selection and admissions decisions: A meta-analysis — Journal of Applied Psychology, Kuncel, Klieger, Connelly, Ones](https://doi.org/10.1037/a0034156) — 2013, 98권 6호 1060~1072쪽. 2026-11-24 OpenAlex 초록으로 종합 판단 결합의 타당도 손실과 직무 수행 예측의 차이 대조
+- [19. 평균의 유령 — 브런치, sellsecret](https://brunch.co.kr/@sellsecret/632) — 2018-09 발행, 평균의 종말을 소개한 해설. 조종사 연구의 항목 수와 결과는 원 보고서와 달라 보고서 기준으로 바로잡았고, 평균 체형 대회와 농구팀 사례, 기업 평가 제도 변경 서술은 대조하지 못해 쓰지 않았다
 - [Structured Interviews — OPM](https://www.opm.gov/policy-data-oversight/assessment-and-selection/structured-interviews/)
 - [[Dreyfus-Skill-Model|드레퓌스 기술 습득 모형]] — 단계 설명과 적용 범위
 - [[Code-Quality-Criteria|코드 품질의 기준]] — 변경 결과 검토

@@ -62,6 +62,8 @@ Ruinous Empathy는 Kim Scott의 Radical Candor 프레임워크에 속한다. Cla
 
 CORE는 칭찬에도 쓸 수 있다. **적용 예시:** 장애 설명 자료에서 실패 조건을 분리한 행동, 덕분에 확인 순서를 정할 수 있었던 결과, 다음 문서에도 유지할 기준을 함께 말한다. 상대의 성격을 높이는 막연한 말이나 비판을 부드럽게 포장하려고 붙이는 칭찬과 구분한다. 공개 칭찬이 불편한 사람에게는 공개 방식을 강요하지 않는다.
 
+칭찬의 시점을 고르는 현장 실무서의 경험칙도 있다. 좋은 실적 직후, 슬럼프나 실패 직후(결과와 별개로 행동을 인정), 중요한 상담을 앞두고 긴장할 때를 고르고, 결과보다 접객 미소나 안내장 문장 같은 과정을 짧게 짚으라고 권한다([[Frontline-Target-Leadership-People#칭찬과 감사의 운영|칭찬과 감사의 운영]]). 효과를 측정한 근거는 아니다.
+
 ## 동료 간 상호 책임을 일상화한다
 
 팀의 기준을 관리자만 집행하면 구성원은 문제를 보면서도 위로 넘기게 된다. 건강한 팀에서는 동료가 약속을 어기거나 공동 기준을 훼손했을 때 서로 직접 말할 수 있어야 한다. 이는 사람을 공격하는 일이 아니라 공동 결과를 함께 책임지는 행동이다.
@@ -96,6 +98,10 @@ Radical Candor의 공식 FAQ는 개선 피드백 예시에서 CORE 사용을 안
 
 CORE는 어려운 대화를 자동으로 해결하는 문구가 아니다. 사실 오류가 있거나 상대 반응이 강하면 멈추고 이해를 다시 맞춘다. 피드백을 준 사람도 자기 관찰이 제한적일 수 있음을 인정해야 한다.
 
+### 사람을 향한 왜를 줄인다
+
+선의로 시작한 지적을 깎아내리는 말로 바꾸는 세 말버릇이 있다는 상담 현장의 관찰이 있다. 남들은 안 그러는데 같은 비교, 이러다 큰일 난다 같은 비약, 왜 그랬어처럼 사람을 향한 왜다. 사람에게 던지는 왜는 해명과 방어를 부르기 쉬우므로 CORE의 Observation과 Explore처럼 무슨 일이 있었는지와 다음에 무엇을 할지를 묻는다. 정신건강의학과 전문의의 강연에서 나온 상담 관행이며 연구로 확인한 효과는 아니다. 장애의 원인을 거듭 묻는 5 Whys는 사람이 아니라 시스템의 원인을 향하므로 이 권고와 충돌하지 않는다([[RCA-Postmortem|RCA와 포스트모템]]).
+
 ## 면접 체크포인트
 
 - "동료에게 부정적 피드백을 준 경험은?" → CORE의 상황, 관찰, 결과와 다음 행동으로 설명한다.
@@ -116,6 +122,7 @@ CORE는 어려운 대화를 자동으로 해결하는 문구가 아니다. 사�
 - [[People-Leadership|사람을 키우는 시니어 리더십]] — 모른다고 말하는 능력, 1:1
 - [[Failure-Tolerant-Culture|실패에 관대한 문화와 심리적 안전]] — 솔직한 회고의 토대
 - [[Code-Review-Reviewer-Guide|코드 리뷰 리뷰어 가이드]] — 코드 위 피드백의 실전
+- [[Frontline-Target-Leadership-People|현장 리더의 사람 육성과 일상 운영]] — 칭찬의 시점, 변명에 대한 질문과 비공식 조력자의 긴장
 
 ## 출처
 - [Redpoint Office Hours: Claire Hughes Johnson 인터뷰 — Tomasz Tunguz](https://tomtunguz.com/transcripts/claire-hughes-johnson/) — 2021-10-25 공개 인터뷰의 협업 방식 문서, 자발적 작성과 갱신, 성과 비교의 한계를 2026-10-24 대조
@@ -132,3 +139,5 @@ CORE는 어려운 대화를 자동으로 해결하는 문구가 아니다. 사�
 - [Radical Candor, Glossary](https://www.radicalcandor.com/glossary)
 - [Radical Candor, Give humble feedback](https://www.radicalcandor.com/blog/give-humble-feedback)
 - [불편한 말이 팀을 살린다 — DataPortal](https://dataportal.kr/books/the-art-of-small-teams/ch-06-uncomfortable-truth/)
+- [자존감 수업 (2) — 브런치, sellsecret](https://brunch.co.kr/@sellsecret/274) — 2018-02 발행, 정신건강의학과 전문의 강연을 정리한 글. 비교, 비약과 사람을 향한 왜의 말버릇은 강연자의 상담 관행으로만 반영했다
+- [항상 가장 아래 레벨에 맞춘다 — 브런치, sellsecret](https://brunch.co.kr/@sellsecret/735) — 2019-08 발행, 스가 마사노리 책의 번역 소개. 칭찬의 시점과 과정 칭찬은 경험칙으로 반영했다

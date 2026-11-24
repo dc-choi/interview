@@ -21,6 +21,8 @@ van Knippenberg와 van Knippenberg(2005)는 실험과 설문에서 리더의 자
 
 실무에서는 일정 변경의 부담을 리더도 나누고, 약속한 지원을 제공하며, 승인한 위험에 책임지는 방식으로 적용할 수 있다. 이것은 연구를 바탕으로 한 적용안이며 과로, 감정 억제나 동료의 진로를 무조건 책임지겠다는 약속을 권하는 근거가 아니다. 받은 지원을 다른 사람에게 이어 주는 행동 역시 유용한 실천 후보지만, 이 논문이 신뢰의 전승 자체를 검증한 것은 아니다.
 
+현장의 솔선수범 사례로, 점장이 막내 몫이던 화장실 청소를 하루 여러 번 하자 구성원이 먼저 청소하게 됐다는 회고와 세차를 빨리 끝내는 방법을 직접 보여 준 시범이 [[Frontline-Target-Leadership-People#솔선수범과 언행일치|솔선수범과 언행일치]]에 있다. 한 리더의 회고이며 위 연구의 조건인 집단 전형성과 대조하지 않았다.
+
 ## 리더의 기분은 팀 과정에 영향을 줄 수 있다
 
 정서 전염은 다른 사람과 상호작용하며 기분이 비슷한 방향으로 움직이는 현상이다. 리더의 기분이 구성원과 팀 분위기에 전달되는 것도 그 한 경우다.
@@ -38,6 +40,8 @@ Sy, Côté, Saavedra(2005)는 리더의 기분을 영상으로 유도하고 팀�
 이 결과를 늘 웃으면 성과가 높아진다거나 힘든 감정을 숨겨야 한다는 규칙으로 바꾸지 않는다. 단기 실험이라 장기간 감정을 억누르는 비용과 팀 성과를 평가한 것도 아니다.
 
 실무 적용안은 감정을 없애려 하기보다 감정, 사실과 다음 행동을 구분해 전달하는 것이다. 일정이 위험해 초조하다는 말과 함께 남은 작업, 지원 요청과 재판단 시점을 설명할 수 있다. 불안한 표정만 전달하거나 근거 없이 잘될 것이라고 안심시키는 대신 팀이 대응할 정보를 남긴다.
+
+한 현장 실무서는 리더가 불안해도 구성원 앞에서는 당당하게 허세를 부리라고 권한다([[Frontline-Target-Leadership#적용 범위와 근거 수준|현장 목표 리더십]]). 이 문서는 감정을 감추는 대신 사실과 다음 행동을 함께 전하는 쪽을 택한다. 위 실험은 오래 감정을 억누르는 비용을 다루지 않았으므로 어느 쪽도 이 연구로 확정되지 않는다.
 
 ## 공동 정체성은 말과 기여 배분을 함께 본다
 
@@ -110,6 +114,7 @@ Sherman 등(2012)은 군 장교와 공공 부문 간부 등을 포함한 표본�
 - [Leadership is associated with lower levels of stress — PNAS, Sherman 등 (2012)](https://pmc.ncbi.nlm.nih.gov/articles/PMC3497788/)
 - [A meta-analysis of shared leadership and team effectiveness — Journal of Applied Psychology, Wang, Waldman, Zhang (2014)](https://pubmed.ncbi.nlm.nih.gov/24188392/) — 초록의 표본 수, 전체 관계와 조절 조건을 확인했다.
 - [A Meta-Analysis of Different Forms of Shared Leadership–Team Performance Relations — Journal of Management, D’Innocenzo, Mathieu, Kukenberger (2016)](https://journals.sagepub.com/doi/10.1177/0149206314525205) — 공개 초록의 표본 수, 효과크기 수와 측정 방식에 따른 차이를 확인했다.
+- [불안하면, 사람은 생각한다 — 브런치, sellsecret](https://brunch.co.kr/@sellsecret/716) — 2019-05 발행, 스가 마사노리 책의 번역 소개. 추가 글: #714. 솔선수범 사례와 허세를 권하는 조언은 경험 기반 주장으로만 반영했다
 
 ## 관련 문서
 
@@ -117,4 +122,6 @@ Sherman 등(2012)은 군 장교와 공공 부문 간부 등을 포함한 표본�
 - [[Trust-Respect-Teamwork|신뢰와 존중의 팀워크]] — 안전하게 의견을 내고 약속을 지키는 팀 운영
 - [[Failure-Tolerant-Culture|실패에 관대한 문화와 심리적 안전]] — 위험 보고와 학습, 품질 기준
 - [[DRI-Delegation-Culture|DRI와 권한 위임 문화]] — 결정권과 책임 경계
+- [[Leader-Traits-and-Dark-Side|리더 성격 특성과 어두운 면]] — 리더 출현과 효과성, 나르시시즘
+- [[Frontline-Target-Leadership-People|현장 리더의 사람 육성과 일상 운영]] — 솔선수범과 언행일치의 현장 사례
 - [[Leadership-Practice|리더십 실천]]

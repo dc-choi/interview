@@ -1,7 +1,7 @@
 ---
 tags: [architecture, blockchain, bitcoin, ethereum, replication, consensus, byzantine-fault-tolerance]
 status: done
-verified_at: 2026-11-01
+verified_at: 2026-11-24
 category: "아키텍처&설계(Architecture&Design)"
 aliases: ["블록체인 복제와 합의 비용", "Blockchain Replication and Consensus Cost", "이중지불", "Double Spending", "비잔틴 장군 문제", "Byzantine Generals Problem"]
 ---
@@ -153,6 +153,11 @@ Ethereum의 업그레이드 패턴은 배포된 코드를 직접 고치는 대�
 - 운영자 하나가 업무 규칙을 결정하는 문제라면 일반 DB, 복제와 감사 기록으로 충족할 수 있는가?
 - 체인의 확정 상태와 외부 시스템의 지급 완료를 어떻게 연결하고 중복 실행을 막을 것인가?
 - 노드 수를 두 배로 늘리면 무엇이 두 배가 되는지, 저장과 검증 및 처리량을 나눠 설명할 수 있는가?
+- 토큰으로 참여자에게 보상을 나누는 사업 모델이라면, 같은 배분을 토큰 없이 포인트와 정산으로도 할 수 있는지, 보상을 받을 참여자(광고주, 퍼블리셔, 사용자)가 실제로 참여하는지를 기술 선택과 따로 검증하는가?
+
+마지막 질문의 예로 Brave Rewards는 사용자가 스스로 Brave Ads를 보기로 고르면 BAT(Basic Attention Token)로 보상하고, 대상 광고에서 사용자 몫이 Brave 몫 이상이라고 밝힌다. 사용자는 받은 BAT로 등록된 웹사이트와 창작자를 후원할 수 있지만, 보상을 받으려면 지급 계정을 연결해야 하고 지급 계정 지원은 지역마다 다르며 iOS에서는 후원에만 쓸 수 있다. 광고주만 돈을 내는 고객이고 사용자는 노출 대상이던 구조를 사용자도 보상받는 참여자로 바꾼 사업 모델이다. 2021년 학술대회 발표 원고는 이런 사업 모델 혁신의 관건을 기술보다 생태계 형성과 참여자의 실제 사용으로 봤다(발표자의 해석).
+
+부분 검증(2026-11-24): Brave의 공식 Rewards 페이지로 보상 방식, 수익 배분 문구와 지역, 플랫폼 제한을 대조했다. 토큰 발행량, 사용자 수와 광고 성과 수치는 확인하지 않았다.
 
 ## 출처
 
@@ -176,6 +181,8 @@ Ethereum의 업그레이드 패턴은 배포된 코드를 직접 고치는 대�
 - [The Byzantine Generals Problem — ACM Transactions on Programming Languages and Systems, Leslie Lamport, Robert Shostak, Marshall Pease](https://lamport.azurewebsites.net/pubs/byz.pdf)
 - [Time, Clocks, and the Ordering of Events in a Distributed System — Communications of the ACM, Leslie Lamport](https://lamport.azurewebsites.net/pubs/time-clocks.pdf)
 - [YouTube, 한상훈, 이중지불과 비잔틴 장군 (블록체인 마스터 클래스 1강)](https://www.youtube.com/watch?v=q5QVzaw01f8)
+- [Brave, Brave Rewards](https://brave.com/brave-rewards/)
+- [블록체인을 이용한 비즈니스 모델 혁신 사례 — 브런치, sellsecret](https://brunch.co.kr/@sellsecret/770)
 
 ## 관련 문서
 

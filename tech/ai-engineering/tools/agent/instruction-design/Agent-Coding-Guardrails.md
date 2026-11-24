@@ -2,7 +2,7 @@
 tags: [ai, agent, guardrails, prompt-engineering]
 status: done
 category: "AI엔지니어링(AIEngineering)"
-aliases: ["Agent Coding Guardrails", "LLM 코딩 가드레일", "코딩 가드레일 4원칙", "Karpathy Guidelines"]
+aliases: ["Agent Coding Guardrails", "LLM 코딩 가드레일", "코딩 가드레일 4원칙", "Karpathy Guidelines", "의도 인터뷰", "Flipped Interaction", "리버스 프롬프팅", "Reverse Prompting"]
 ---
 
 # LLM 코딩 가드레일 — 실패 패턴과 교정 4원칙
@@ -85,6 +85,29 @@ AI의 제안은 원인을 찾기보다 문제를 돌아가는 쪽으로 기울 �
 - 자명해 보이는 요구사항일수록 구현 전에 `구조부터 확인하고 결과만 보고 멈춰`처럼 지시해, 스키마와 전제의 모순을 먼저 드러낸다. 여기서 AI의 값은 코드 생성이 아니라 전제 반박이다.
 - 사람은 표면을, AI는 구조를 보는 분업으로 쓴다. 직관적으로 당연해 보이는 연결(예: 이름을 바꾸면 태그도 함께 바꾼다)이 실제 데이터 구조에서는 독립이라 부작용을 낳는 경우를, 코드가 나오기 전에 잡는다.
 
+## 의도 인터뷰 — 묻기를 기다리지 않고 흐름을 뒤집는다
+
+Think Before Coding은 불확실하면 묻게 하지만, 모델이 모호함을 알아채고도 거의 묻지 않고 답부터 내며 근거 문서를 붙이면 더 덜 묻는다는 측정이 있다([[LLM-Abstention#모호한 요청에서 묻는가 — 알아채는 것과 묻는 것의 차이|알아채는 것과 묻는 것의 차이]]). 그래서 요구가 덜 정해진 작업은 모델이 물어 주기를 기다리지 않고 처음부터 모델이 사용자를 인터뷰하게 한다. Jules White 외(Vanderbilt University, 2023)의 프롬프트 패턴 카탈로그는 이를 Flipped Interaction 패턴으로 정리했다. 사용자가 대화를 이끄는 대신 모델이 목표 달성에 필요한 정보를 질문으로 모으게 하는 방식이며, 논문은 이를 제어의 역전(inversion of control)에 빗대고 목표는 반드시 밝히되 끝낼 조건과 한 번에 물을 질문 수도 정해 두면 좋다고 본다. 일부 실무자는 리버스 프롬프팅이라고 부른다.
+
+- **무엇보다 왜를 먼저 맞춘다:** 상위 목표가 빠지면 모델은 빈칸을 그럴듯한 쪽으로 채운다. 같은 게임 요청도 새 모델의 실력을 혼자 시험해 보려는 것이면 HTML 파일 하나로 충분하고, 출시가 목표면 엔진, 저장 구조, 밸런스 데이터 분리와 배포 환경이 처음부터 달라진다. 목표를 공유하면 화면을 어디까지 챙길지, 예외 처리를 어느 수준으로 할지 같은 작업 중의 작은 선택도 의도 쪽으로 기운다. Anthropic 프롬프트 가이드도 지시의 이유를 함께 주면 Claude가 목표를 더 잘 알고 그 설명에서 일반화한다고 설명한다(2026-11-24 확인).
+- **한 번에 하나씩, 추측을 붙여 묻는다:** 빈 화면에서 설명하기보다 틀린 추측을 고치는 편이 쉽다. 팀 스탠드업에서 볼 대시보드냐는 추측에 혼자 돌리는 실험을 잊지 않으려는 것이라고 답하는 순간, 필요한 것이 차트가 아니라 실험 목록이었음이 드러난다. 질문을 묶으면 훑고 넘어가기 쉽고 뒤 질문이 앞 답에 따라 바뀐다. 사용자가 예의상 추측에 동의하는 위험은 가끔 반박이 나올 방향으로 추측해 줄인다.
+- **그래야 할 것 같은 답을 되묻는다:** 확장성, 깔끔한 아키텍처, 표준 방식처럼 모범 답안 같지만 구체적인 결과가 없는 답에는, 누구에게도 정당화할 필요가 없다면 실제로 무엇을 원하는지 묻는다. 혼자 쓸 도구가 불필요하게 커지는 것을 막는다.
+- **범위 밖까지 요약하고 명시적 동의를 받는다:** 결과, 사용자, 지금인 이유, 성공 기준, 제약과 범위 밖을 몇 줄로 돌려 말하고 확인받는다. 알아서 해 달라는 답은 동의가 아니라 위임이므로 구체적인 두 선택지로 다시 묻는다.
+- **끝낼 시점을 검사할 수 있게 둔다:** 다음에 물을 세 질문에 대한 사용자 반응을 예측할 수 있으면 멈춘다. 여러 번 물어도 예측이 안 되면 요청에 근본적인 공백이 있다는 신호로 보고 한 걸음 물러선다.
+
+뒤의 네 장치는 Addy Osmani의 agent-skills 저장소(MIT)에 있는 `interview-me` 스킬 지침(2026-11-24 확인, 마지막 변경 2026-08-19)의 절차다. 지침은 어긋남의 절반이 무엇을 만들지 않을지에 대한 말 없는 불일치라고 보지만 측정값은 아니다. 의도가 확정되면 그 턴에 하위 작업을 시작하지 않고 멈춰 다음 경로를 사용자가 고르게 하고, 사용자가 원할 때만 의도 문서로 저장한다. CI, 예약 실행과 반복 루프처럼 답할 사람이 없는 실행에서는 쓰지 말고 요청이 모호하다는 사실을 막힌 지점으로 보고하라고 적는다.
+
+Matt Pocock의 `grill-me`(MIT, 2026-11-24 저장소 문서 기준)는 장치가 다르다. 결정을 설계 트리로 보고 선행 결정이 끝난 질문 전부를 한 라운드에 번호와 추천 답을 붙여 묻고, 환경에서 찾을 수 있는 사실은 사용자에게 묻지 않고 서브에이전트로 조사하며, 트리의 모든 분기를 돌면 끝난다. 사용자가 직접 불러야 실행되고 파일을 남기지 않는다. 막연한 아이디어에서 시작해도 된다고 밝히므로 이미 세운 계획을 검증할 때만 쓰는 스킬로 구분하지 않는다. 같은 문서는 동의만 반복하면 아무것도 정하지 않은 채 확신만 높은 계획이 나온다고 경고하고, 긴 입력 폼 하나로 할지 세 페이지로 나눌지처럼 말로는 답할 수 없는 질문은 버릴 시제품을 만들어 보고 답하라고 권한다. 팀 SDD에서 이 스킬을 감싸 쓰는 예는 [[Spec-Decision-Records|에이전트 작업의 스펙과 결정 기록]]에 있다.
+
+도구도 같은 흐름을 기본 기능으로 둔다(2026-11-24 공식 문서 기준). Claude Code는 요구를 모으거나 모호함을 풀 때 `AskUserQuestion` 도구로 객관식 질문을 던지고, 모범 사례 문서는 원하는 것이 아직 정해지지 않았으면 스펙을 쓸 수 있을 때까지 인터뷰하게 해 `SPEC.md`로 남기라고 권한다. Codex 문서는 어렵거나 모호한 작업이면 코딩 전에 계획하라며, 맥락을 모으고 확인 질문을 한 뒤 계획을 세우는 Plan mode(`/plan` 또는 Shift+Tab)와 막연한 아이디어를 먼저 질문하게 해 가정을 반박하고 구체화하는 인터뷰 요청을 함께 든다. 묻는 기능이 있다는 것과 필요한 순간에 묻는다는 것은 따로 확인한다.
+
+운영에서 놓치기 쉬운 점은 다음과 같다(실무 제안).
+
+1. **발동 조건을 상시 지침에 둔다:** 스킬은 설명만 상시 로드되고 본문은 관련 있다고 판단될 때 로드되므로([[Spec-Decision-Records#규칙과 스킬의 배치|규칙과 스킬의 배치]]), 목적이나 완료 기준이 빠진 요청이면 구현 전에 인터뷰부터 한다는 한 줄을 CLAUDE.md나 AGENTS.md에 둔다. Claude Code 모범 사례 문서도 그런 한 줄을 따를지는 매 턴 Claude의 판단이라고 설명하므로 보장은 아니다. 무인 실행은 조건에서 뺀다.
+2. **인터뷰한 세션에서 구현하지 않는다:** 인터뷰 대화에는 틀린 추측과 버린 아이디어가 남는다. 확정한 의도, 특히 목적과 범위 밖을 파일로 쓰고 구현은 그 파일을 읽는 새 세션에서 시작한다. 명세는 인터뷰 맥락이 남은 세션에서 쓰라는 grill-me 문서의 안내와 SPEC.md가 생기면 새 세션에서 구현하라는 Claude Code 문서를 합치면, 정리는 인터뷰 세션에서 하고 구현만 새로 시작하는 순서가 된다. 넘길 것과 버릴 것은 [[Agent-Multi-Turn-Instructions#대응 3 — 세션을 새로 시작할 때와 넘길 내용|세션 교체]]를 따른다.
+3. **아직 묻지 않은 선택지로 이해를 시험한다:** 세 질문을 예측할 수 있다는 판단도 모델의 자기 평가다. 요약을 받으면 인터뷰에서 다루지 않은 선택(데이터를 내 컴퓨터에 둘지 서버 DB를 붙일지)을 하나 물어 답이 앞서 말한 목적을 따르는지 본다. 혼자 쓰는 도구인데 큰 서버 구조를 권하면 상위 목표가 아직 전달되지 않은 것이다.
+4. **이미 아는 요구는 처음에 준다:** Flipped Interaction 논문은 미리 알려진 요구를 프롬프트에 넣지 않으면 모델이 물을지 추측할지를 비결정적으로 고른다고 보고, 개입을 최소로 할지 핵심 결정을 모두 확인받을지도 명시하라고 권한다. 오타 수정 같은 모호하지 않은 요청, 단순 정보 질문과 속도를 원한다고 밝힌 요청에는 인터뷰를 돌리지 않는다(interview-me 지침).
+
 ## 왜 작동하나 — 복잡성은 옳고 그름이 아니라 타이밍 문제
 
 과잉 설계된 코드는 명백히 틀린 코드가 아니다. 디자인 패턴과 모범 사례를 따른 코드다. 문제는 필요해지기 전에 복잡성을 넣는 타이밍이고, 이것이 이해를 어렵게 하고 버그를 늘리고 구현과 테스트를 느리게 한다. 단순 버전은 이해와 테스트가 쉽고, 복잡성이 실제로 필요해질 때 리팩토링하면 된다. 좋은 코드는 오늘의 문제를 단순하게 푸는 코드지, 내일의 문제를 미리 푸는 코드가 아니다.
@@ -119,6 +142,7 @@ AI의 제안은 원인을 찾기보다 문제를 돌아가는 쪽으로 기울 �
 - 과잉 설계를 옳고 그름이 아니라 타이밍 문제로 설명할 수 있는가
 - 행동 가드레일의 트레이드오프(신중 vs 속도)와 적용 예외
 - 같은 룰셋의 주입 경로별 차이 — 상시 주입(CLAUDE.md)과 온디맨드 로드(스킬)의 구분
+- 불확실하면 물으라는 지시와 인터뷰로 흐름을 뒤집는 설계의 차이 — 모호함 인식과 질문 행동의 괴리, 추측을 붙인 질문, 범위 밖 요약, 인터뷰와 구현의 세션 분리
 
 ## 출처
 
@@ -130,6 +154,14 @@ AI의 제안은 원인을 찾기보다 문제를 돌아가는 쪽으로 기울 �
 - [CLAUDE.md에 공학 원칙을 넣어 사수처럼 쓰기 — Threads, jaewan_sim](https://www.threads.com/@jaewan_sim/post/DMDE528SQos)
 - [Roles of Variables — Jorma Sajaniemi](http://www.cs.joensuu.fi/~saja/var_roles/)
 - [Patterns for API Design — Olaf Zimmermann, Mirko Stocker, Daniel Lübke, Uwe Zdun, Cesare Pautasso](https://api-patterns.org/book/)
+- [A Prompt Pattern Catalog to Enhance Prompt Engineering with ChatGPT — arXiv, Jules White 외](https://arxiv.org/abs/2302.11382) — 2023-02-21 v1, 2026-11-24 Flipped Interaction 절의 의도, 구조, 제어의 역전 표현과 결과(미리 알려진 요구, 사용자 개입 수준) 대조
+- [interview-me SKILL.md — GitHub, addyosmani/agent-skills](https://github.com/addyosmani/agent-skills/blob/main/skills/interview-me/SKILL.md) — 2026-11-24 확인(마지막 변경 2026-08-19), 추측 첨부, 그래야 할 것 같은 답, 범위 밖 요약, 세 질문 예측, 턴 종료와 무인 실행 제외
+- [grill-me — GitHub, mattpocock/skills](https://github.com/mattpocock/skills/blob/main/docs/productivity/grill-me.md) — 2026-11-24 문서와 [grilling SKILL.md](https://github.com/mattpocock/skills/blob/main/skills/productivity/grilling/SKILL.md) 확인, 라운드와 frontier, 사용자 호출 전용, 수동성 경고, 말로 답할 수 없는 질문과 명세 전 세션 유지
+- [Claude Code Docs, Best practices for Claude Code](https://code.claude.com/docs/en/best-practices) — 2026-11-24 인터뷰와 SPEC.md, 새 세션 구현, CLAUDE.md 한 줄의 준수가 매 턴 Claude의 판단이라는 설명 대조
+- [Claude Code Docs, Tools reference](https://code.claude.com/docs/en/tools-reference) — 2026-11-24 `AskUserQuestion`의 객관식 질문 대조
+- [OpenAI, Codex best practices](https://learn.chatgpt.com/docs/learn/best-practices) — 2026-11-24 Plan first 절의 Plan mode와 인터뷰 요청 대조
+- [Anthropic Platform Docs, Prompting best practices](https://platform.claude.com/docs/en/build-with-claude/prompt-engineering/claude-prompting-best-practices) — 2026-11-24 지시의 이유를 함께 주라는 안내 대조
+- [AI한테 내 의도를 완벽하게 전하는 기술 (프롬프트 포함) — YouTube, 허드의 AI딸깍](https://www.youtube.com/watch?v=NDVAXNHUlio) — 2026-11-20 공개, 2026-11-24 사람이 단 자막 전체 확인. 무엇보다 왜, 게임과 대시보드 예시, 상시 지침의 발동 규칙, 세션 분리와 묻지 않은 선택지로 이해 시험하기의 계기. 연구와 도구 사실은 위 원문으로 대조했고, grill-me를 이미 세운 계획의 검증용으로 본 설명은 현재 저장소 문서와 달라 쓰지 않았으며 설치 수는 쓰지 않음
 
 ## 관련 문서
 
@@ -139,3 +171,6 @@ AI의 제안은 원인을 찾기보다 문제를 돌아가는 쪽으로 기울 �
 - [[Agent-Skills|에이전트 스킬 (SKILL.md, 점진적 공개)]]
 - [[Context-Engineering|컨텍스트 엔지니어링 (영속 컨텍스트, 권장 vs 강제)]]
 - [[Claude-Code-Workflows|Claude Code 개발 워크플로우 (CLAUDE.md 규칙 주입)]]
+- [[LLM-Abstention|LLM Abstention (모호함을 알아채는 것과 묻는 것의 차이)]]
+- [[Agent-Multi-Turn-Instructions|여러 턴에 걸친 지시 (인터뷰 뒤 SPEC.md와 새 세션, 넘길 것과 버릴 것)]]
+- [[Spec-Decision-Records|에이전트 작업의 스펙과 결정 기록 (grill-me를 감싼 plan.md와 decisions.md)]]

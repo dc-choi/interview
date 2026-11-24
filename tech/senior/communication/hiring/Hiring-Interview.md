@@ -100,6 +100,7 @@ aliases: ["Hiring Interview", "채용 인터뷰"]
 - **1년 후 중요 프로젝트** 담당 가능한 수준까지
 - 친절한 문서화, 페어링으로 러닝 커브 단축
 - 이직 시 아쉬움보다 **남은 사람에 집중** — 성장한 신입이 떠나도 절대적으로 남은 사람이 더 많다
+- **팀을 고르게 하는 온보딩**: Facebook 엔지니어링 블로그(2009)는 신입 엔지니어가 6주 부트캠프에서 코드베이스 전반을 익히고 여러 팀의 버그를 고쳐 본 뒤 끝에 합류할 팀을 스스로 고른다고 소개했다. 면접 결과로 배정하는 대신 일해 본 경험으로 맞는 팀을 고르는 방식이다. 지원자가 몰리지 않는 팀은 사람을 채우기 어려워질 수 있으므로 팀별 수요와 결정 기준을 함께 둔다(이 문서의 해석). 2009년의 소개이며 현재 운영 방식은 확인하지 않았다.
 
 ### 신입 채용 시 확인 포인트
 
@@ -135,6 +136,8 @@ aliases: ["Hiring Interview", "채용 인터뷰"]
 ## 출처
 
 - [필수 면접 질문 5가지와 의도 — Threads, kimjinhan_jjin](https://www.threads.com/@kimjinhan_jjin/post/DX593aBEpDN)
+- [Facebook Engineering Bootcamp — Engineering at Meta, Andrew Bosworth](https://engineering.fb.com/2009/11/19/production-engineering/facebook-engineering-bootcamp/) — 2009-11-19. 2026-11-24 6주 과정, 버그 수정과 끝에 팀을 고르는 방식 대조
+- [14. 페이스북의 HRD — 브런치, sellsecret](https://brunch.co.kr/@sellsecret/227) — 2018-02 발행, 현지 직원 인터뷰를 옮긴 2차 정보. 신입에게 일을 주지 않는다는 인터뷰 내용은 확인하지 못해 쓰지 않았다
 
 ## 관련 문서
 - [[Toss-Evaluation-Criteria|토스 내부 평가 기준]]
@@ -143,3 +146,4 @@ aliases: ["Hiring Interview", "채용 인터뷰"]
 - [[Code-Review-Culture|생산적 코드 리뷰 문화]]
 - [[Competence-Identification|능력있는 개발자 판별]]
 - [[Hiring-Under-Uncertainty|불확실성 속 스타트업 채용]]
+- [[HRD-Scope-and-HRM-Boundary|HRD의 범위와 HRM과의 경계]] — 교육과 인사 결정의 연결

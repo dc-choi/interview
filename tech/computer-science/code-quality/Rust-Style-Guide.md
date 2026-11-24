@@ -1,7 +1,7 @@
 ---
 tags: [cs, code-quality, rust, style-guide, api-design, large-scale-change]
 status: done
-verified_at: 2026-10-27
+verified_at: 2026-11-24
 category: "CS - 코드 품질"
 aliases: ["Rust Style Guide", "Google Rust Style Guide", "Rust 스타일 가이드", "Rust API 설계 규칙", "LSC 친화 코드 규칙"]
 ---
@@ -116,10 +116,12 @@ API를 표현할 때 다음 순서로 고른다.
 - 외부 가이드를 들여올 때는 규칙과 이유를 함께 읽는다. LSC와 빌드 그래프에서 나온 규칙(glob import 금지, import 형태 고정, 작은 crate)은 자동화 리팩터링과 대형 저장소를 운영할 때 이득이 크고, 작은 프로젝트에서는 공식 Rust 스타일과 API 가이드라인으로 충분할 수 있다.
 - 라이브러리와 애플리케이션을 나눠 API 규칙의 구속력을 달리하는 방식은 언어와 무관하게 쓸 수 있다. 공용 라이브러리는 변경 여지와 범용 입력을 우선하고, 애플리케이션은 단순성을 우선한다.
 - formatter 옵션, lint와 CI로 강제할 수 있는 규칙을 먼저 자동화하고, 도구가 지원하지 않는 규칙(stable rustfmt의 import 형태 등)만 리뷰가 맡는다([[Function-Structure-and-Contracts|함수 구조와 호출 계약]]).
+- 위 표의 unwrap과 unsafe 규칙은 Clippy lint로 위치를 찾을 수 있다. `unwrap_used`, `expect_used`, `undocumented_unsafe_blocks`(바로 앞 줄에 `// SAFETY:` 주석이 없는 unsafe 블록)는 restriction 그룹이라 기본값이 allow이므로 `Cargo.toml`의 `[lints.clippy]`에서 수준을 올려야 한다(`[lints]` 표는 Rust 1.74부터 반영). OpenAI Codex의 Rust 워크스페이스는 `unwrap_used`와 `expect_used`를 deny로 둬, 이유를 남긴 `expect`를 허용하는 이 가이드보다 엄격하다. 대여 대신 넣은 `.clone()`은 nursery 그룹의 `redundant_clone`이 이후 쓰이지 않는 원본의 복제만 보수적으로 찾으므로 리뷰가 맡는다(2026-11-24 Clippy stable 문서와 Codex 저장소 기준).
+- 코딩 에이전트가 쓴 Rust는 컴파일 통과를 완료 조건으로 삼지 않는다. `cargo check`는 코드 생성 단계를 건너뛰어 그 단계에서만 나오는 진단을 보고하지 않으므로 빌드와 `cargo test`까지 돌리고, 위 lint 결과와 함께 unsafe 블록마다 위치와 이유를 받는다. GitHub Copilot 런타임의 Rust 포팅은 runtime crate의 unsafe 블록 158개(파일 36개)를 C ABI, Windows API, POSIX와 libc 같은 이유로 나눠 모두 외부 구성요소와의 연동이라고 보고하면서, 의존성, 빌드 도구와 잘못 기술된 FFI 계약은 이 목록 밖이라고 적었다. 실행 중 panic이 나면 `panicked at src/main.rs:2:5` 같은 파일, 줄과 열 위치를 그대로 넘겨 수정 범위를 좁힌다. 검증 일반은 [[Agent-Test-Verification-Behavior|에이전트 검증 행동]]을 따른다.
 
 ## 확인 범위
 
-2026-10-27 Google 스타일 가이드 페이지 본문과 google/styleguide 저장소의 `rustguide.md` 커밋 이력(최초 2026-10-21, 내부 가이드의 자동 내보내기)을 대조했다. 페이지에는 버전이나 확정 표기가 없고 첫 주에 여러 번 갱신됐으므로 세부 규칙은 적용 시점에 다시 확인한다. 각 코드베이스의 실제 적용 범위와 강제 수준은 확인하지 않았다.
+2026-10-27 Google 스타일 가이드 페이지 본문과 google/styleguide 저장소의 `rustguide.md` 커밋 이력(최초 2026-10-21, 내부 가이드의 자동 내보내기)을 대조했다. 페이지에는 버전이나 확정 표기가 없고 첫 주에 여러 번 갱신됐으므로 세부 규칙은 적용 시점에 다시 확인한다. 각 코드베이스의 실제 적용 범위와 강제 수준은 확인하지 않았다. 적용 제안에 더한 Clippy lint의 그룹과 기본 수준, Cargo `[lints]` 표, `cargo check`의 범위, panic 출력 형식, Codex 저장소의 lint 설정과 GitHub 글의 unsafe 집계는 2026-11-24 대조했다. lint와 명령은 실행해 보지 않았다.
 
 ## 출처
 
@@ -127,6 +129,13 @@ API를 표현할 때 다음 순서로 고른다.
 - [google/styleguide rustguide.md 커밋 이력 — GitHub](https://github.com/google/styleguide/commits/gh-pages/rustguide.md) — 최초 게시일과 갱신 이력 확인
 - [rustfmt, Configurations](https://github.com/rust-lang/rustfmt/blob/master/Configurations.md#imports_granularity) — `imports_granularity`의 stable 여부 확인
 - [Google의 Rust 스타일 가이드 — GeekNews](https://news.hada.io/topic?id=35789) — 2026-10-22 소개 글, 원문 식별에 사용
+- [Clippy Lints, unwrap_used](https://rust-lang.github.io/rust-clippy/stable/index.html#unwrap_used), [expect_used](https://rust-lang.github.io/rust-clippy/stable/index.html#expect_used), [undocumented_unsafe_blocks](https://rust-lang.github.io/rust-clippy/stable/index.html#undocumented_unsafe_blocks), [redundant_clone](https://rust-lang.github.io/rust-clippy/stable/index.html#redundant_clone) — 2026-11-24 그룹, 기본 수준과 검사 범위 대조
+- [The Cargo Book, The Manifest Format](https://doc.rust-lang.org/cargo/reference/manifest.html#the-lints-section) — 2026-11-24 `[lints]` 표의 수준 지정과 Rust 1.74 반영 대조
+- [The Cargo Book, cargo check](https://doc.rust-lang.org/cargo/commands/cargo-check.html) — 2026-11-24 코드 생성 단계에서만 나오는 진단의 한계 대조
+- [The Rust Programming Language, Unrecoverable Errors with panic!](https://doc.rust-lang.org/book/ch09-01-unrecoverable-errors-with-panic.html) — 2026-11-24 panic 출력의 파일, 줄, 열 표기 대조
+- [openai/codex codex-rs/Cargo.toml — GitHub](https://github.com/openai/codex/blob/main/codex-rs/Cargo.toml) — 2026-11-24 main(9acdf80aaf)의 `[workspace.lints.clippy]` 대조
+- [Migrating the GitHub Copilot runtime to Rust, using Copilot — GitHub, Stephen Toub](https://github.blog/ai-and-ml/generative-ai/migrating-the-github-copilot-runtime-to-rust-using-copilot/) — 2026-11-24 runtime crate의 unsafe 블록 집계와 그 목록 밖의 경계 대조
+- [러스트가 뭐길래? 클로드 코드, 코파일럿, 안드로이드가 전부 갈아탔다 — YouTube, 투더제이 TTJ](https://www.youtube.com/watch?v=qrMK2aEkBbg) — 2026-11-24 업로드, 2026-11-24 음성 인식 전사 전체 확인. 에이전트에 Rust를 맡길 때 unwrap, unsafe, clone과 panic 위치를 확인하라는 점검의 계기다. lint와 명령의 동작은 위 공식 문서로, OpenAI가 Codex에서 unwrap을 설정으로 막았다는 부분은 Codex 저장소로 확인했다
 
 ## 관련 문서
 
@@ -135,4 +144,6 @@ API를 표현할 때 다음 순서로 고른다.
 - [[Readable-Code-Cognition|코드 가독성의 인지과학]]
 - [[Backward-Compatibility-Design|하위 호환성 설계]]
 - [[Rust-Soundness-and-Lifetime-Boundaries|Rust 건전성과 수명 계약]]
+- [[Rust-Ownership-and-Borrowing|Rust 소유권과 대여]]
 - [[Programming-Language-Landscape|프로그래밍 언어 지형과 구분 기준]]
+- [[Agent-Test-Verification-Behavior|에이전트 검증 행동]] — 에이전트가 쓴 코드의 완료 조건

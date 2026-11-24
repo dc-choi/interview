@@ -10,7 +10,7 @@ aliases: ["AI 패러다임", "AI Paradigm & Models"]
 AI 시대 엔지니어링의 토대 — 패러다임 전환과 모델, API 거동. 상위: [[AI엔지니어링(AIEngineering)|AI 시대 엔지니어링]].
 
 ## 목차
-- [x] [[Monte-Carlo-Tree-Search|몬테카를로 트리 탐색과 UCT]] — 탐색 예산, 평균 보상과 탐색 보너스, 최종 행동 선택
+- [x] [[Monte-Carlo-Tree-Search|몬테카를로 트리 탐색과 UCT]] — 탐색 예산, 평균 보상과 탐색 보너스, 최종 행동 선택, AlphaGo의 정책망 사전확률과 가치망, 롤아웃 혼합 평가
 - [x] [[Energy-Based-Reasoning|에너지 기반 추론]] — 에너지 학습과 탐색, 제약 검사, 공급사 데모의 비교 조건
 - [x] [[Software-3-0|Software 3.0 (Karpathy 1.0/2.0/3.0, Harness, 레이어드 아키텍처 매핑)]]
 - [x] [[Vibe-Coding-and-Agentic-Engineering|바이브 코딩과 에이전틱 엔지니어링]] — 책임 수준의 구분, 이메일로 결제와 계정을 이은 설계 사례, 사람에게 남는 스펙과 원리 이해와 취향, 생성 코드의 보안 실패율 자료와 읽는 법

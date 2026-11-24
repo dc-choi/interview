@@ -38,6 +38,13 @@ verified_at: 2026-09-03
 - 태도는 막연한 좋은 사람이 아니라 조직이 선호하는 속성으로 구체화해야 평가 가능하다. 조직마다 기준은 다르되, 시간이 갈수록 무겁게 보게 되는 세 속성은 겸손함, 성실함, 책임감이다.
 - 겸손함은 피드백을 방어 없이 받고 자기 부족을 인정하는 능력, 성실함은 약속한 일을 끝까지 끌고 가는 일관성, 책임감은 결과를 자기 것으로 끌어안는 자세다. 이 셋 중 하나라도 빠지면 나머지가 빛을 잃는다.
 
+태도를 조직의 일에 맞게 구체화한 공개 사례도 있다.
+
+- **환대 서비스업**: 레스토랑 경영자 Danny Meyer는 직원의 역량을 정서적 환대와 기술적 탁월함으로 나눠 51 대 49의 비중을 바란다고 쓰고, 찾는 정서 역량으로 낙관적인 따뜻함, 배우기 위해 배우는 호기심(지성), 일을 할 수 있는 한 잘하려는 직업윤리, 공감, 자기 인식과 진실성을 든다(Setting the Table의 공개 발췌). 한 경영자의 채용 원칙이며 선발 타당도를 검증한 기준은 아니다.
+- **B2B 영업**: 영업 컨설턴트 Steve W. Martin은 B2B 영업 담당자 1,000명의 성격 검사를 할당량 달성 수준으로 나눠 비교했다고 전한다(HBR 기고, 2011). 상위 성과자의 91%가 중간 이상의 겸손, 85%가 높은 성실성, 84%가 매우 높은 성취 지향, 82%가 매우 높은 호기심을 보였고, 자의식이 높은 사람은 5% 미만이었다. 사교적이고 자신만만한 영업 담당자라는 고정관념과 다르다는 점에서 참고하되, 동료 심사를 거친 연구가 아니고 표본과 측정 도구가 공개되지 않았다.
+
+이런 속성은 본인의 자기 평가로 판정하지 않는다. 아래 평판 조회와 같은 방식으로 과거 행동의 구체적인 사례를 같은 질문과 기준으로 묻는다([[Competence-Identification|개발 역량 평가]]).
+
 ## 끝의 태도 = 리트머스 테스트
 
 모든 일은 시작보다 끝이 중요하다. 시작에는 설렘과 충동, 도파민이 사람을 움직이지만, 끝에는 책임감과 희생, 함께 버틴 전우애가 있어야 일이 마무리된다.
@@ -166,3 +173,6 @@ OPM 안내의 구조화 방법을 참고한 절차이며, 특정 추천인의 �
 - [Employee onboarding — High Growth Handbook, Elad Gil](https://growth.eladgil.com/book/recruiting/employee-onboarding/)
 - [Hiring Breakpoints — Stay SaaSy](https://staysaasy.com/hiring-breakpoints/) — 2026-09-30, 2026-11-16 네 구간의 역할, 관리 인원, Dunbar 구간의 권고와 AI에 관한 의견 대조. 저자 표기 없음
 - [스타트업은 팀 규모에 따라 어떻게 채용해야 할까? — GeekNews](https://news.hada.io/topic?id=36905) — 2026-11-16 접속 시 브라우저 확인 페이지로 요약 미열람, 위 원문으로 대조
+- [Meyer: 51-percenters have five key emotional skills necessary to provide excellent hospitality — Nation's Restaurant News, Danny Meyer](https://www.nrn.com/restaurant-labor/meyer-51-percenters-have-five-key-emotional-skills-necessary-to-provide-excellent-hospitality) — 2007-02-05, Setting the Table의 The 51 Percent Solution 장 발췌. 2026-11-24 51 대 49의 비중과 다섯 정서 역량 대조
+- [Seven Personality Traits of Top Salespeople — Harvard Business Review, Steve W. Martin](https://hbr.org/2011/06/the-seven-personality-traits-o) — 2011-06-27. 2026-11-24 페이지는 도입부만 열람됐고 표본(1,000명)과 다섯 수치는 hbr.org 검색 발췌로 대조했다. 군집성과 낙담에 관한 수치는 확인하지 못해 쓰지 않았다
+- [세일즈 4.0, 성공의 Ctrl+C, Ctrl+V — 브런치, sellsecret](https://brunch.co.kr/@sellsecret/5) — 2017-08 발행, Martin의 기고를 소개한 해설. 추가 글: #421(Danny Meyer의 인재 역량)

@@ -3,7 +3,7 @@ tags: [cs, algorithm, bitmask, dynamic-programming, tsp, np-hard]
 status: done
 category: "CS - 알고리즘"
 aliases: ["Bitmask DP and TSP", "비트마스크 DP", "외판원 문제", "Traveling Salesman Problem"]
-verified_at: 2026-09-30
+verified_at: 2026-11-24
 ---
 
 # 비트마스크 DP와 외판원 문제
@@ -130,6 +130,8 @@ brute force보다 크게 개선되지만 polynomial algorithm은 아니다. 실�
 
 도시 수가 커지면 exact solution 대신 branch-and-bound, meet-in-the-middle, integer programming, approximation 또는 heuristic을 검토한다. metric TSP처럼 triangle inequality가 있는지에 따라 보장 가능한 approximation도 달라진다.
 
+heuristic과 exact가 둘 중 하나만 고르는 선택은 아니다. 큰 인스턴스의 최적성은 heuristic으로 좋은 tour(상한)를 먼저 찾고, LP 완화와 절단 평면(cutting plane)으로 어떤 tour도 그보다 짧을 수 없다는 하한을 끌어올려 두 값을 맞추는 방식으로 증명한다. 한국 술집 81,998곳을 OSRM 도보 시간으로 잇는 인스턴스가 이렇게 풀렸다. LKH가 1시간 안에 찾은 tour를 LKH tour 47개의 병합으로 다음 날 15,386,177초(약 178일)까지 줄였고, 독립 실행 세 번이 2024-12-14까지 같은 길이에 이르렀다. 그 tour가 최적이라는 증명에는 두 달이 더 걸렸다. Concorde의 절단 평면으로 LP 완화를 만들고(LP는 CPLEX로 풂) 하위 문제 2,121개의 branch-and-bound로 마무리했으며, 전체 CPU 시간은 약 44년(branch-and-bound만 10.2년), 경과 시간은 약 3개월이었다. 계산 팀은 증명된 최적까지 푼 도로망 TSP 가운데 가장 큰 인스턴스라고 밝힌다(2026-11-24 확인). 이 사례에서 최적 tour는 며칠 만에 나왔고 나머지 기간은 그보다 짧은 tour가 없다는 증명에 들었다. 최적이라는 주장은 yes 답의 증거 하나로 끝나는 NP의 확인과 다르다. 최악의 경우 지수 시간이라는 판정과 실제 인스턴스의 풀이 가능성의 관계는 [[P-vs-NP-Implications#최악이 어려워도 눈앞의 인스턴스는 풀린다|P 대 NP의 함의]]에 있다.
+
 ## 출처
 
 - [NIST Dictionary of Algorithms and Data Structures, Hamiltonian cycle](https://xlinux.nist.gov/dads/HTML/hamiltonianCycle.html)
@@ -151,11 +153,14 @@ brute force보다 크게 개선되지만 polynomial algorithm은 아니다. 실�
 - [cppreference, std::popcount](https://en.cppreference.com/w/cpp/numeric/popcount)
 - [C++ working draft, Counting](https://eel.is/c++draft/bit.count)
 - [GCC, Bit Operation Builtins](https://gcc.gnu.org/onlinedocs/gcc/Bit-Operation-Builtins.html)
+- [korea81998 — University of Waterloo, William Cook 외](https://www.math.uwaterloo.ca/tsp/korea/) — 2026-11-24 인스턴스 규모, OSRM 도보 시간 기준, 계산 기간, LKH와 Concorde의 결합과 가장 큰 도로망 인스턴스라는 주장 확인
+- [korea81998 Computation — University of Waterloo](https://math.uwaterloo.ca/tsp/korea/computation.html) — 2026-11-24 tour 탐색 경과, LP 완화와 branch-and-bound, 하위 문제 수, CPU와 경과 시간 표 확인
 
 ## 관련 문서
 
 - [[Algorithm-DP|Dynamic Programming]]
 - [[Algorithm-Complexity|P, NP와 점근 복잡도]]
+- [[P-vs-NP-Implications|P 대 NP의 함의]] — 최악의 경우와 실제 인스턴스
 - [[Graph-Traversal-and-Shortest-Path|그래프 탐색과 최단 경로]]
 - [[알고리즘(Algorithm)|알고리즘 인덱스]]
 - [[Cpp-Language-Memory-and-STL|C++ 정수와 bit 연산]]

@@ -1,7 +1,7 @@
 ---
 tags: [ai, llm, benchmark, evaluation, pricing, trend]
 status: done
-verified_at: 2026-10-21
+verified_at: 2026-11-24
 category: "AI엔지니어링(AIEngineering)"
 aliases: ["AI Capability and Cost Trends", "AI 능력과 비용 추세", "벤치마크 주장 읽기"]
 ---
@@ -37,6 +37,7 @@ AI가 대회에서 사람을 이겼다, 어려운 시험의 절반을 넘었다,
 ### 연구 결과
 
 - OpenAI는 2026-08-01 내부 모델이 얻은 수학과 이론 컴퓨터과학 결과 10개를 발표하고 Lean 4 형식화를 공개했다. 그중 한 결과는 에르되시 문제 183을, 다른 한 결과는 146과 180을 해결한다고 적는다.
+- 2026-09-08 OpenAI는 내부 다중 에이전트 시스템이 3차원 비압축 Navier–Stokes 방정식에서, 처음에 정지한 매끄러운 유체에 매끄러운 외력이 가해지고 에너지가 유한하게 유지되는 상태로 유한 시간 안에 특이점이 생길 수 있음을 보였다고 발표했다. 이것이 Clay 공식 명세의 명제 C(와 D)를 성립시켜 밀레니엄 문제를 해결한다고 주장하고 Lean 형식화 저장소(openai/NavierStokesAndEuler)를 공개했으며, 같은 시스템이 외력 없는 Euler 방정식의 정칙성도 반증했다고 적는다. 상금은 청구하지 않겠다고 밝혔고 동료 심사나 외부 검증은 언급하지 않는다. 발표문의 동시 진행 연구 절은 Alpöge와 Buckmaster의 연구(외력이 있는 Euler)와의 관계를 설명하고, 2026-09-10 갱신에서 사용자 입력이 결과에 영향을 줄 수 없었다는 OpenAI의 조사 결과를 덧붙였다. 이 문서에서는 논문, Clay 명세와 Lean 진술의 대응을 대조하지 않았다(2026-11-24 발표문 확인). 같은 연구자들이 이후 낸 외력 없는 Navier–Stokes 주장은 [[AI-Intellectual-Community#검증 단계가 다른 증명 주장|검증 단계가 다른 증명 주장]]에 있다.
 - 2026-10-06에는 원고 722편(결과군 372개)을 공개했다. 다음 날 갱신에서 한 원고의 부호 오류가 그 원고와 이에 의존한 원고 2편의 논증을 무너뜨려 3편을 철회했고, 이와 별도로 원고 14편을 증명 보완, 진술 정정, 가정과 의존 관계 명확화 등으로 고쳤다. 이 갱신 뒤 원고는 719편이며, 원고별 대표 결과(top-line result) 가운데 Lean으로 형식화된 것은 300편, 약 42%다.
 - 저장소 README는 결과 대부분이 같은 절차로 미공개 내부 모델에서 나왔고, 결과 하나에 평균 ChatGPT Pro thinking 연산 3시간을 썼으며, 평가 동안 모델에 약 4,000개 문제를 냈다고 적는다. 출력은 결과군과 원고로 묶고 일정 수준의 중요성을 요구해 목록을 만들었으며, 결과군은 주 결과와 관련 논증, 따름 결과 등의 원고를 묶을 수 있는 단위다. README는 결과군과 문제의 대응 관계, 문제를 고른 방식과 실패한 시도의 수를 밝히지 않으므로 약 4,000개 대비 결과군 372개를 성공률로 읽지 않는다(2026-10-21 확인).
 - 저장소의 원고 목록(CONTENTS.md)은 결과군 102가 Khot의 Unique Games Conjecture를 증명한다고 적는다(원고 The Unique Games Theorem, 2026-09-23자). 같은 결과군에는 Max-Cut의 Goemans–Williamson 비율을 넘는 근사와 Vertex Cover의 2배 미만 근사 등이 NP-난해임을 기존 PCP와 Label Cover 난해성 결과를 쓰는 별도의 직접 환원으로 보였다는 원고도 함께 묶여 있다. 저장소의 Lean 형식화 목록은 The Unique Games Theorem 원고와 Max-Cut, Vertex Cover 원고의 주 결과 선언을 올렸고, 같은 파일은 개별 결과가 아니라 저장소 형식화 전체의 scope를 Partial progress로, review 상태를 unchecked로 적는다. 이는 저장소가 공개한 원고의 주장이며, 이 문서에서는 Lean 진술이 원래 추측과 근사 난해성 명제를 정확히 옮겼는지, 증명의 정확성과 학계 검토 여부를 확인하지 않았다(2026-10-21 목록 확인).
@@ -142,6 +143,7 @@ METR는 사람 전문가가 걸리는 시간으로 잰 소프트웨어와 추론
 - [GPT-6.1 Sol — Epoch AI](https://epoch.ai/models/gpt-6-1-sol) — 2026-10-21 열람
 - [OpenAI API, Changelog](https://developers.openai.com/api/docs/changelog) — 2026-10-21 GPT-5.6 Sol, GPT-6 Astra, GPT-6.1 Sol 출시일 대조
 - [Ten Advances in Mathematics and Theoretical Computer Science — OpenAI](https://cdn.openai.com/pdf/ten-proofs-oai.pdf) — 2026-08-01, 2026-08-06 갱신
+- [나비에–스토크스 밀레니엄 문제에 관하여 — OpenAI](https://openai.com/ko-KR/index/navier-stokes-solution/) — 2026-09-08 발표, 2026-09-10 갱신. 2026-11-24 주장 범위(외력, Clay 명제 C와 D), Lean 저장소 링크, 상금 비청구와 동시 진행 연구 절 확인. 논문과 Lean 코드는 읽지 않음
 - [ten-proofs — GitHub, OpenAI](https://github.com/openai/ten-proofs)
 - [math — GitHub, OpenAI](https://github.com/openai/math) — 2026-10-06 첫 공개(원고 722편), 현재 원고 수와 형식화 비율, 2026-10-21 README의 실행 조건 확인
 - [math history — GitHub, OpenAI](https://github.com/openai/math/blob/main/history.md) — 2026-10-07 철회와 수정

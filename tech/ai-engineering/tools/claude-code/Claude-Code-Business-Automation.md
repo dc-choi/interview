@@ -126,6 +126,12 @@ Connectors든 수동 설정이든 **밑단은 모두 MCP**다. 차이는 설정 
 
 패턴: **형식을 수동으로 확정한 뒤 스케줄에 태운다** (일일 브리핑을 예시 데이터로 먼저 완성 → Connectors 실데이터 연결 → 스케줄 등록). 태스크는 5개 이내로 시작.
 
+### 스킬에서 무인 실행까지 넓히는 순서
+
+- **스킬 없이 먼저 해 본다:** 같은 업무를 에이전트와 몇 차례 진행하며 매번 다시 알려 준 맥락(대상 파일, 필드 정의, 테스트 계정을 빼는 규칙)과 그때만 달랐던 예외를 가르고, 공통 맥락만 스킬로 옮긴다. Anthropic의 스킬 작성 지침도 스킬 없이 과제를 끝내며 반복해서 준 정보를 찾고, 스킬 없이 돌린 결과를 기준선 삼아 평가 시나리오 셋으로 공백을 확인한 뒤 그 공백을 메울 만큼의 최소 지침만 쓰며, 시험은 스킬만 불러온 새 세션에 맡기라고 한다(2026-11-24 확인).
+- **매번 같아야 하는 단계는 스크립트로 둔다:** 판단이 필요한 절차는 지침으로, 순서와 결과가 정해진 조회, 집계, 검증과 형식 변환은 스크립트로 둔다. 같은 지침은 깨지기 쉽고 일관성이 중요한 작업일수록 자유도를 낮춰 정해진 스크립트를 실행하게 하라고 한다. 스킬 여러 개와 스크립트를 함께 배포할 때는 [[Claude-Code-Customization#플러그인 — 확장을 묶어 설치하는 단위|플러그인]]으로 묶는다.
+- **무인 범위는 되돌릴 수 있는 단계부터 넓힌다:** 트리거, 수집과 집계는 코드, 분류와 해설 같은 판단은 모델, 송금과 메일 발송처럼 되돌릴 수 없는 실행 직전의 승인은 사람이 맡는 [[Agent-Graph-Engineering#판단의 분담: 코드, 모델, 사람|분담]]에서 출발해, 결과가 안정된 단계부터 사람 확인을 줄인다. 서버의 cron에서 `claude -p`로 돌릴 때 `--allowedTools`는 나머지 도구를 막지 않는 사전 승인이므로, 목록 밖 호출과 답할 사람이 없는 승인 요청의 처리는 [[Claude-Code-Operations#헤드리스와 CI|헤드리스와 CI]]에서 정한다.
+
 ## 확장 — 병렬, 스킬, 브라우저, Vibe Coding
 
 - **경쟁사 병렬 분석**: CLAUDE.md에 분석 기준(비교 항목, 출력 표 형식) 고정 → "각 경쟁사를 **병렬로** 분석". Cowork도 작업을 하위 태스크로 나눠 서브에이전트를 병렬 조율할 수 있다. 공개 정보만 사용하며, CLAUDE.md로 기준을 고정하는 흐름은 CLI의 강점이다
@@ -182,6 +188,8 @@ Connectors든 수동 설정이든 **밑단은 모두 MCP**다. 차이는 설정 
 - [인프런, 널널한 개발자, Claude for Desktop 주요기능 소개](https://www.inflearn.com/courses/lecture?courseId=344484&unitId=498592)
 - [인프런, 널널한 개발자, 대화를 넘어! 행동하는 Cowork](https://www.inflearn.com/courses/lecture?courseId=344484&unitId=498593)
 - [Goldman Sachs restricts AI coding tools for traders and bankers — FStech](https://fstech.co.uk/fst/Goldman_Sachs_Restricts_AI_Coding_Tools_For_Traders_And_Bankers.php) — 2026-11-09 대조. Bloomberg 보도(2026-11-02)와 회사 대변인 발언을 옮긴 2차 기사
+- [Anthropic — Skill authoring best practices](https://platform.claude.com/docs/en/agents-and-tools/agent-skills/best-practices) — 2026-11-24, 스킬 없이 과제를 끝내 보는 작성 순서, 평가 시나리오와 기준선, 새 인스턴스 시험, 자유도와 스크립트 선택 대조. 이 범위만 확인했으며 frontmatter의 검증일은 유지
+- [YouTube, 양실장의 바이브코딩대학, AI 자동화를 위한 풀스택 지식 174개의 강의를 압축 총정리](https://www.youtube.com/watch?v=5KAZJCEl7Hs) — 2026-11-24 공개, 2026-11-24 음성 인식 전사 전체 확인. 50:31~1:00:57의 코드, AI, 사람의 분담, 되돌릴 수 있는 실행과 없는 실행, 수동 수행 뒤 스킬, 플러그인과 `claude -p`로 넓히는 순서. 칠판 도식은 확인하지 않았다
 
 ## 관련 문서
 

@@ -1,7 +1,7 @@
 ---
 tags: [ai, deep-learning, neural-network, gradient-descent, backpropagation, dropout, rnn, keras, learning]
 status: done
-verified_at: 2026-11-18
+verified_at: 2026-11-24
 category: "AI엔지니어링(AIEngineering)"
 aliases: ["신경망 기초", "Neural Network Fundamentals", "인공 신경망", "Artificial Neural Network", "활성 함수", "Activation Function", "경사 하강법", "Gradient Descent", "역전파", "Backpropagation", "드롭아웃", "Dropout", "순환 신경망", "Recurrent Neural Network"]
 ---
@@ -80,6 +80,41 @@ Keras 문서 기준으로 sigmoid는 둘째 원소를 0으로 둔 2원소 softma
 
 이 계산은 미분의 연쇄 법칙(chain rule)으로 모든 가중치의 기울기를 구하는 방법이며, 경사 하강법과 함께 은닉층이 있는 신경망을 학습할 수 있게 한 핵심 알고리즘이다. TensorFlow 같은 라이브러리는 층 구조와 데이터만 정하면 역전파를 대신 실행한다. PyTorch autograd가 연산을 그래프로 기록하고 `backward()`로 기울기를 채우는 방식은 [[PyTorch-Training-Loop#autograd|PyTorch 학습 루프]]에 있다. LLM 사전학습에서 순전파, 손실, 역전파와 옵티마이저가 이어지는 흐름과 역전파 없이 기울기를 추정하는 방법은 [[LLM-Generation-Mechanics-Training#LLM은 어떻게 학습하는가|LLM 학습 원리]]에 있다.
 
+### 손으로 따라가는 역전파
+
+두 수의 곱을 배우는 작은 망으로 연쇄 법칙이 모든 기울기를 만드는 과정을 따라간다. 입력 2개, ReLU를 쓰는 은닉층 2개(층마다 유닛 2개), 활성 함수 없는 출력 유닛 1개로 이뤄진 망이다. 연결 10개에 가중치가 하나씩, 유닛 5개에 bias가 하나씩 있어 학습할 값은 15개다. w1, w2는 입력에서 H1로, w3, w4는 H2로, w5, w6은 H1과 H2에서 H3으로, w7, w8은 H4로, w9, w10은 H3과 H4에서 출력으로 가는 가중치다. 표본 하나 `(x1, x2) = (2, 3)`과 정답 `y = 6`을 쓰고 bias는 모두 0에서 시작한다.
+
+| 단계 | 계산 | 값 |
+|---|---|---|
+| H1 | `relu(w1 × x1 + w2 × x2) = relu(0.4 × 2 + 0.3 × 3)` | 1.7 |
+| H2 | `relu(w3 × x1 + w4 × x2) = relu(0.9 × 2 − 0.7 × 3) = relu(−0.3)` | 0 |
+| H3 | `relu(w5 × H1 + w6 × H2) = relu(0.1 × 1.7 + w6 × 0)` | 0.17 |
+| H4 | `relu(w7 × H1 + w8 × H2) = relu(1.2 × 1.7 + w8 × 0)` | 2.04 |
+| 출력 | `w9 × H3 + w10 × H4 = 1.9 × 0.17 + 0.6 × 2.04` | 1.547 |
+| 손실 | `(1.547 − 6)²` | 19.829 |
+
+H2가 0이므로 w6, w8의 값은 이 표본의 계산에 영향을 주지 않는다. 기울기는 세 가지 국소 기울기의 곱과 합으로 만든다.
+
+- 가중합 `z = w1 × x1 + w2 × x2 + b`를 가중치로 미분하면 그 가중치의 입력, 입력으로 미분하면 그 입력의 가중치, bias로 미분하면 1이다.
+- ReLU의 기울기는 z가 양수면 1, 음수면 0이다. 기울기를 통과시키거나 막는 문처럼 동작한다.
+- 제곱 오차 `(ŷ − y)²`의 기울기는 `2 × (ŷ − y)`이고, 여기서는 `2 × (1.547 − 6) = −8.906`이다.
+
+| 값 | 손실까지의 경로 | 기울기 |
+|---|---|---|
+| w10 | 출력의 기울기 × w10의 입력 H4 = −8.906 × 2.04 | −18.168 |
+| w5 | −8.906 × w9(1.9) × H3의 문(1) × w5의 입력 H1(1.7) | −28.766 |
+| w1 | H3 경로(−8.906 × 1.9 × 0.1 = −1.692)와 H4 경로(−8.906 × 0.6 × 1.2 = −6.412)를 더한 H1의 기울기 −8.104 × w1의 입력 x1(2) | −16.209 |
+
+이 표본에서 H1, H3, H4의 문은 모두 열려 있어 1을 곱한다. 경로를 따라가며 국소 기울기를 곱하고, 경로가 둘 이상이면 각 경로의 곱을 더한다. 연쇄 법칙 자체는 [[Calculus-Limits-and-Derivatives#미분 규칙|미분 규칙]]에 있다.
+
+15개 값의 사슬을 따로 적으면 출력에서 H3, H4, H1까지의 앞부분이 반복된다. 역전파는 유닛마다 손실에 대한 기울기를 출력 쪽부터 한 번씩 구해 재사용한다. H3의 기울기는 −8.906 × 1.9 = −16.921이므로 H3으로 들어가는 w5의 기울기는 −16.921 × 1.7로 바로 나오고, H1의 기울기 −8.104는 w1, w2와 b1이 함께 쓴다. 순전파에서 각 유닛의 값을 버리지 않고 두는 이유도 이 단계에서 다시 쓰기 때문이다.
+
+- **닫힌 문:** H2는 z가 음수라 이 표본에서는 H2로 들어가는 w3, w4, b2와 H2를 입력으로 받는 w6, w8의 기울기가 모두 0이다. 이 표본만으로는 다섯 값이 갱신되지 않는다.
+- **수치 검산:** w10을 0.01 올리면 손실이 약 0.181 줄어 0.01 × (−18.168)과 맞는다. 값 하나를 조금 바꿔 손실 변화를 재는 방식은 손으로 구한 기울기를 검산할 때 쓴다. 간격에 따른 오차는 [[Calculus-Limits-and-Derivatives#수치 미분의 오차|수치 미분의 오차]]를 따른다.
+- **갱신 한 번:** 학습률 0.005로 15개 값을 모두 기울기 반대 방향으로 옮기면 w10은 0.6에서 0.691, w1은 0.4에서 0.481, w5는 0.1에서 0.244가 된다. 같은 표본의 출력은 3.230, 손실은 7.674로 준다. 한 표본에 맞춘 갱신이므로 실제 학습은 앞의 경사 하강법과 배치 크기 절처럼 여러 표본의 기울기를 평균해 갱신한다.
+
+위 수치는 2026-11-24 같은 계산을 다시 실행해 대조했다. 역전파를 다룬 고전 논문으로 Rumelhart, Hinton과 Williams의 Learning representations by back-propagating errors(Nature, 1986)가 있다.
+
 ## dropout
 
 유닛이 많은 신경망은 일부 유닛에 지나치게 의존하는 방식으로 학습 데이터에 과적합할 수 있다. dropout은 학습 중 무작위로 고른 유닛을 일시적으로 없는 것처럼 빼고 가중치를 갱신하며, 다음 갱신에서는 다른 유닛을 뺀다. 어느 유닛이 빠져도 동작하도록 학습되므로 특정 유닛 의존이 줄어든다.
@@ -110,6 +145,7 @@ LSTM(long short-term memory)은 널리 쓰인 RNN 변형이다. RNN은 앞 단�
 3. 활성 함수를 모두 항등 함수로 바꾼 3층 신경망이 단층 선형 모델과 같은 경계만 표현하는 이유를 설명한다.
 4. dropout이 추론에서도 켜져 있으면 같은 입력의 예측이 어떻게 되는지 설명한다.
 5. 영상 분류, 이미지 설명 생성, 번역을 일대다, 다대일, 다대다로 나누고 각각 출력이 언제 나오는지 설명한다.
+6. 손으로 따라가는 역전파의 망에서 w9와 H4의 기울기를 구하고, H2의 문이 닫혀 이 표본에서 기울기가 0이 되는 값 다섯 개를 고른다.
 
 ## 출처
 
@@ -119,6 +155,8 @@ LSTM(long short-term memory)은 널리 쓰인 RNN 변형이다. RNN은 앞 단�
 - [Keras, Dropout layer](https://keras.io/api/layers/regularization_layers/dropout/) — 2026-11-18 `rate`의 뜻, 남은 입력의 `1 / (1 - rate)` 배율, 학습 모드에서만 적용되는 조건 대조.
 - [YouTube, Zachary Huang, Give me 31 minutes, I will make PyTorch click forever](https://www.youtube.com/watch?v=K1ksiPHfgVs) — 2026-10-13 공개. 2026-11-18 로컬 음성 인식 전사로 tanh와 GELU를 포함한 활성 함수 목록을 확인했다. 두 함수의 정의는 아래 PyTorch 문서로 대조했다.
 - [PyTorch, torch.nn.Tanh](https://docs.pytorch.org/docs/2.15/generated/torch.nn.Tanh.html), [torch.nn.GELU](https://docs.pytorch.org/docs/2.15/generated/torch.nn.GELU.html) — 2.15 문서. 2026-11-18 tanh와 GELU의 정의 대조.
+- [YouTube, Zachary Huang, Give me 24 minutes, I will make Neural Networks click forever](https://www.youtube.com/watch?v=wq3gFCU8bfE) — 2026-10-10 공개. 2026-11-24 로컬 음성 인식 전사 전체 확인. 손으로 따라가는 역전파의 망 구조, 초기 가중치와 계산 순서의 출처이며 수치는 같은 계산을 다시 실행해 대조했다. 화면에만 나온 w6, w8 초깃값이 필요한 9개 표본의 미니배치 기울기와 2,000스텝 학습 결과는 대조할 수 없어 옮기지 않았다.
+- [Learning representations by back-propagating errors — Nature, David E. Rumelhart, Geoffrey E. Hinton, Ronald J. Williams](https://doi.org/10.1038/323533a0) — 1986년 10월, 323권 6088호 533~536쪽. 2026-11-24 DOI 서지 정보(Crossref)로 제목, 저자와 게재 정보 확인.
 
 ## 관련 문서
 
@@ -130,3 +168,4 @@ LSTM(long short-term memory)은 널리 쓰인 RNN 변형이다. RNN은 앞 단�
 - [[PyTorch-Training-Loop|PyTorch 학습 루프]]
 - [[LLM-Generation-Mechanics-Training|LLM 학습 원리]]
 - [[Reinforcement-Learning-from-Experience|경험 기반 강화학습]]
+- [[Calculus-Limits-and-Derivatives|미분: 극한, 연속과 도함수]] — 연쇄 법칙과 수치 미분의 오차

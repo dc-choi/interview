@@ -1,7 +1,7 @@
 ---
 tags: [ai, image-generation, html, design, verification]
 status: done
-verified_at: 2026-11-09
+verified_at: 2026-11-24
 category: "AI엔지니어링(AIEngineering)"
 aliases: ["Generative Artifact Contracts", "AesCode", "Krea 3", "Open Intelligent UI", "생성형 UI", "OpenUI", "A2UI", "json-render", "GPT Image 2.6", "Images 2.6"]
 ---
@@ -65,13 +65,25 @@ SVG는 벡터 편집기에서 경로, 색과 글자를 실제로 고칠 수 있�
 |---|---|---|---|
 | OpenUI Lang | Thesys(OpenUI, MIT) | `root = Stack([header, chart])`처럼 줄 단위 `identifier = Expression`. 도착한 줄부터 파싱해 구조를 먼저 그리고 데이터를 채운다 | React, Vue, Svelte, Angular 공식 런타임 |
 | json-render | Vercel Labs(Apache-2.0) | Zod로 타입을 정한 catalog의 컴포넌트와 action만 쓰는 JSON spec. 스트림 compiler가 chunk마다 patch를 낸다 | React, Vue, Svelte, Solid, React Native 등 |
-| A2UI | Google 제작(a2ui.org 기준, 저장소 a2ui-project/a2ui, Apache 2.0) | 평평한 스트리밍 JSON 구조의 선언형 데이터이며 실행 코드가 아니다 | v1.0 기준 React, Lit, Angular, Flutter(alpha), SwiftUI(alpha) |
+| A2UI | Google 제작(a2ui.org 기준, 저장소 a2ui-project/a2ui, Apache 2.0) | 평평한 스트리밍 JSON 구조의 선언형 데이터이며 실행 코드가 아니다 | 2026-11-24 SDK 문서 기준 React, Lit, Angular, Flutter, SwiftUI는 v1.0, Jetpack Compose는 v0.9.1까지 |
 
 - **연결 방식:** OpenUI는 컴포넌트 라이브러리 정의에서 system prompt를 생성해 백엔드의 system prompt에 붙이고, 응답 스트림을 `@openuidev/react-lang` 같은 런타임이 파싱해 내 컴포넌트로 렌더링한다. 파서는 검증에 실패한 부분을 버리고 나머지를 보여 주므로, 화면이 떴다는 사실이 모델 출력 전체가 유효했다는 뜻은 아니다.
 - **토큰과 지연 수치:** Thesys가 자체 공개한 벤치마크(46개 화면, 6개 모델)는 화면당 평균 출력 토큰을 OpenUI 1,362, A2UI 2,823, json-render 3,258로 제시한다. 저장소 README의 7개 시나리오 tiktoken 합계는 json-render 대비 약 2.1배 차이인데, 같은 README의 비교표는 json-render와 A2UI를 토큰 3배, 60 tok/s 환산 지연 4.9초 대 14.2초로 적고 산출 시나리오를 밝히지 않는다. 4.9초는 가장 차이가 큰 단일 시나리오의 OpenUI 토큰 수와 맞아 전체 합계가 아닌 최선 사례 수치로 보인다(해석). 벤치마크 페이지의 시간도 50 tok/s 기준 환산값이다. 벤더가 설계한 측정이므로 형식 선택 전에는 내 컴포넌트와 모델로 출력 토큰, 첫 렌더 시점과 검증 실패율을 다시 잰다(운영 제안).
 - **경계:** 선언형 형식의 안전성은 등록한 컴포넌트와 action의 권한에서 나온다. OpenUI 명세는 custom function을 순수한 동기 함수로 제한하고 프로그램에 적힌 `@Name(...)` 호출만 custom action을 만든다고 정한다. toolProvider는 Renderer 옆 브라우저에서 돌며, architecture 문서는 데이터 접근을 서버에 두려면 도구 함수를 API route나 서버의 MCP로 연결하라고 하고 예시가 인증을 생략해 운영 코드에는 필요하다고 경고한다. 모델이 고를 수 있는 Mutation이나 action이 결제나 삭제를 부른다면 그 API에서 인증과 권한을 확인한다(운영 제안).
 
 OpenUI 문서는 채팅 안의 차트와 폼뿐 아니라 대시보드, CRUD와 모니터링 화면도 대상으로 제시하며, LLM이 화면을 한 번 생성한 뒤에는 Query 재조회도 LLM 호출 없이 도구로 실행하는 모델을 설명한다. 클릭마다 앱 화면 전체를 새로 생성하는 방식은 이와 다른 패턴이다. 그런 시연에서는 깨진 화면과 제공자 rate limit이 반복됐다는 사례가 있으므로, 백엔드와 권한은 고정한 채 화면만 생성하고 생성 실패를 정상 경로로 다루는 구성을 전제로 검토한다(운영 제안). 설치와 실행은 하지 않았다.
+
+### A2UI 1.0의 카탈로그 계약과 추론 형식
+
+Google은 2026-11-11 A2UI 1.0을 첫 안정 버전으로 발표했다. 2026-11-24 공식 문서 기준 현재 프로토콜은 v1.0이고, v0.9.1과 v0.9는 이전 버전, v0.8은 지원 중단(deprecated) 상태다.
+
+- **처리 흐름:** 서버의 에이전트 SDK가 `catalog.json`에서 프롬프트 지침과 문법 규칙을 만들고, 모델 출력을 카탈로그와 대조해 검증한 뒤 `createSurface`, `updateComponents`, `updateDataModel` 메시지로 바꿔 AG-UI, A2A, MCP나 WebSocket으로 보낸다. 클라이언트 렌더러는 평평한 컴포넌트 목록을 트리로 풀어 플랫폼의 네이티브 위젯으로 그린다. 입력 값은 화면의 데이터 모델에만 반영되고 바로 에이전트로 가지 않으며, 버튼 같은 명시적 조작이 `action` 메시지에 데이터 모델의 값을 실어 에이전트에 보낸다.
+- **카탈로그:** 컴포넌트(JSON Schema로 적은 속성), 함수와 시스템 프롬프트에 붙는 `instructions`를 담은 에이전트와 렌더러 사이의 계약이다. 렌더러가 `supportedCatalogIds`로 지원 목록을 알리면 에이전트가 화면마다 `catalogId`를 고른다. 기본 카탈로그에는 범용 컴포넌트 18개와 함수 14개(서식, 입력 검증, 논리 연산, URL 열기)가 있고, 자체 카탈로그는 `catalog.json`을 쓰고, 에이전트에 불러오고, 클라이언트에 같은 `catalogId`로 대응하는 위젯을 등록하는 세 단계로 만든다. 작업이나 사용자 역할에 필요 없는 컴포넌트와 함수를 빼면 프롬프트 토큰과 모델이 낼 수 있는 화면 기능이 함께 준다.
+- **응답 형태의 범위:** 공식 사이트는 같은 요청이 미리 만든 위젯(모델은 고르고 값만 채운다), 카탈로그 컴포넌트의 조합, 샌드박스 iframe에서 도는 생성 HTML과 JS 가운데 하나로 돌아올 수 있다고 설명한다. 미리 만든 위젯은 예상하지 못한 흐름을 다루지 못하고, 생성 코드는 자유롭지만 앱의 디자인 시스템, 상태와 접근성에서 떨어진다. A2UI는 조합을 중심에 두되 미리 만든 위젯을 카탈로그 컴포넌트나 서버 쪽 매크로로 등록하고, 생성 HTML을 A2UI 화면 안의 MCP App으로 넣을 수 있게 한다.
+- **Express와 토큰:** 모델은 wire JSON 대신 `<a2ui>` 태그 안의 위치 인자 표기인 Express로 쓰고 SDK가 이를 wire JSON으로 컴파일한다. TypeScript, Python, Dart 에이전트 SDK의 기본 형식이다. 공식 평가(`core_v1_0` 표본 54개, `gemini-3.8-flash`, temperature 0, 사고 끔)에서 Direct JSON 대비 입력 토큰 중앙값은 10,980에서 6,000(−45.4%), 코드 토큰은 807에서 297(−63.2%)로 줄었고 Pass@1은 둘 다 98.1%였다. 사고를 제한하지 않으면 사고 토큰이 두 형식 모두 약 1,400개라 전체 출력 감소는 22.9%에 그친다. 앞의 Thesys 벤치마크가 A2UI를 어느 형식으로 쟀는지는 확인하지 않았으므로 두 수치를 바로 비교하지 않고, 내 카탈로그와 모델로 다시 잰다(운영 제안).
+- **보안 경계:** 카탈로그는 명시적 허용 목록이고 에이전트는 HTML, CSS나 실행 스크립트를 보내지 않는다. v1.0 함수는 `allowedCallers`(기본 `rendererOnly`, `agentOnly`, `rendererOrAgent`)와 `requiresUserActivation`을 선언하며, `openUrl`처럼 사용자 조작이 필요한 함수는 `rendererOnly`여야 하고 렌더러가 실행 시점에 확인해 어긋난 호출을 거부한다. 허용 목록은 무엇을 그릴지만 제한하므로 `Image` 같은 컴포넌트가 참조하는 외부 URL과 화면에 담기는 값은 따로 검증한다(운영 제안). MCP App 안에서는 호스트의 CSP가 허용 목록에 없는 외부 미디어를 막으므로 쓰는 출처를 선언해야 한다.
+- **결정을 받는 화면:** 발표 글의 Gemini Notebook 예는 슬라이드를 만들기 전에 발표용과 상세 자료 중 어떤 형식으로 어떤 주제를 다룰지 카드로 먼저 묻고, 형식, 초점과 시각 스타일을 고칠 수 있는 검토 카드를 이어 보여 준다. 에이전트의 긴 텍스트 질문에 사람이 텍스트로 답하는 왕복을 선택 조작으로 바꾸는 쓰임이며, 사람의 판단이 병목이 되는 구조는 [[Agent-Terminal-Workspaces-Human-Bottleneck|사람 병목과 판단 대기열]]이 다룬다.
+- **지원 범위와 쓰임:** 공식 렌더러는 React, Lit, Angular, Flutter, SwiftUI, Jetpack Compose이고 Jetpack Compose만 v0.9.1까지 지원한다(발표 글은 v1.0 예정으로 적는다). 에이전트 SDK는 TypeScript, Python, Dart다. 공식 문서는 정적 카드로는 경직되고 iframe 코드로는 브랜드, 접근성이나 보안 경계가 깨지는 다단계 흐름, 한 에이전트 스트림을 여러 플랫폼에 그리는 경우, 실행 코드 대신 선언형 데이터를 보내야 하는 원격, 다중 에이전트나 신뢰 경계 너머의 연동을 쓰임으로 든다.
 
 ## 슬라이드는 원본 편집과 내보낸 파일을 따로 확인한다
 
@@ -119,7 +131,10 @@ Space 안에서 요소를 편집할 수 있다는 사실을 내보낸 모든 요
 - [The Weird Future Of User Interfaces — YouTube, Better Stack](https://www.youtube.com/watch?v=AhVHtwh5k3E) — 2026-10-23 공개 영상, 계기 자료와 화면 전체 생성 시연의 실패 사례. 사실은 위 OpenUI 문서, 저장소와 a2ui.org로 대조했고 영상의 토큰과 지연 배수는 옮기지 않았다
 - [openui — GitHub, thesysdev](https://github.com/thesysdev/openui) — 2026-11-09 패키지 구성, 지원 런타임, 라이선스와 README 비교표 대조
 - [json-render — GitHub, vercel-labs](https://github.com/vercel-labs/json-render) — 2026-11-09 catalog 제한, 스트림 compiler와 렌더러 대조
-- [A2UI](https://a2ui.org/) — 2026-11-09 선언형 데이터 형식, 제작 주체와 [렌더러 목록](https://a2ui.org/reference/renderers/)의 v1.0 상태 대조
+- [A2UI](https://a2ui.org/) — 2026-11-09 선언형 데이터 형식, 제작 주체와 [렌더러 목록](https://a2ui.org/reference/renderers/)의 v1.0 상태 대조. 2026-11-24 응답 형태의 범위와 라이선스를 다시 확인했고, 렌더러 목록 주소는 아래 SDK 문서로 넘어간다
+- [A2UI 1.0: Build delightful, fast, reliable, agentic experiences — Google Developers Blog](https://developers.googleblog.com/a2ui-10-build-delightful-fast-reliable-agentic-experiences/) — 2026-11-11 게시. 2026-11-24 첫 안정 버전 발표, 공식 렌더러와 Jetpack Compose의 v0.9.1 상태, 에이전트 SDK 언어와 Gemini Notebook 예 대조
+- [A2UI, Overview: How A2UI Works](https://a2ui.org/concepts/overview/), [Messages](https://a2ui.org/concepts/messages/), [Catalogs](https://a2ui.org/concepts/catalogs/), [Inference Formats](https://a2ui.org/concepts/inference-formats/), [SDKs](https://a2ui.org/concepts/sdks/), [How to Define a Catalog](https://a2ui.org/guides/defining-a-catalog/), [llms.txt](https://a2ui.org/llms.txt) — 2026-11-24 처리 흐름과 메시지, 기본 카탈로그 구성, 함수 호출 경계, Express 기본값과 토큰 평가, 렌더러별 지원 버전, 프로토콜 버전 상태와 쓰임 대조. MCP App의 CSP 조건은 [Render A2UI Inside an MCP App](https://a2ui.org/guides/a2ui-in-mcp-apps/)으로 확인
+- [요즘 구글 폼 좋네 | AI가 응답하는 방식이 바뀝니다 (A2UI) — YouTube, 개발동생](https://www.youtube.com/watch?v=XDIoLsgZs6s) — 2026-11-23 업로드, 2026-11-24 사람이 단 자막 전체 확인. A2UI 1.0 절의 계기 자료이며 사실은 위 공식 문서와 발표 글로 대조했다. 저장소 별 수, 기여자 수, 웹 패키지 주간 다운로드 수, 커뮤니티 렌더러 수, 플레이그라운드와 자작 데모의 시간과 토큰, Google이 이미지 주소를 통한 유출과 숨은 폼 위험을 언급했다는 부분은 1차 출처에서 확인하지 못해 쓰지 않았다
 - 사용자 제공 GeekNews 알림 요약(2026-10-16~27): OpenIntelligentUI. 게시물 URL은 확인하지 못했고 위 저장소로 대조했다. [Anatomy](https://news.hada.io/topic?id=35670)도 같은 기간 알림에 다시 올라왔으며 내용은 위 2026-10-22 대조와 같다.
 
 ## 관련 문서
@@ -127,3 +142,4 @@ Space 안에서 요소를 편집할 수 있다는 사실을 내보낸 모든 요
 - [[Generative-Product-Image-Workflow|생성형 상품 이미지 검수]]
 - [[Claude-Design-Handoff|디자인과 구현 인계]]
 - [[LLM-Hallucination-Verification|내용의 근거 확인]]
+- [[Agent-Terminal-Workspaces-Human-Bottleneck|사람 병목과 판단 대기열]] — 결정을 받는 화면의 쓰임

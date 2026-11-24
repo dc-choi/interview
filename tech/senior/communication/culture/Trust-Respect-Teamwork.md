@@ -3,7 +3,7 @@ tags: [senior, communication, culture, teamwork, trust, psychological-safety]
 status: done
 category: "Senior - 커뮤니케이션"
 aliases: ["Trust Respect Teamwork", "신뢰와 존중의 팀워크", "효과적인 팀의 조건"]
-verified_at: 2026-11-23
+verified_at: 2026-11-24
 ---
 
 # 신뢰와 존중의 팀워크
@@ -22,6 +22,10 @@ verified_at: 2026-11-23
 
 심리적 안전은 기준을 낮추거나 모든 의견에 동의하는 상태가 아니다. 문제를 드러내도 처벌받지 않으면서 품질 기준과 책임은 분명한 상태다. 실패를 다루는 구체적인 절차는 [[Failure-Tolerant-Culture|실패에 관대한 문화와 심리적 안전]]을 따른다.
 
+### 일에 쓸 여력도 함께 본다
+
+Kahn(1990)은 사람이 일에 자신을 쏟는 심리적 조건으로 의미, 안전과 가용성을 제시했다. 가용성은 일에 쓸 신체적, 정서적, 심리적 여력이 있는 상태다. May, Gilson과 Harter(2004)의 미국 보험회사 현장 연구에서 세 조건은 모두 몰입과 양의 관계였고 의미의 관계가 가장 강했다. 지지적인 상사와 보람 있는 동료 관계는 안전과 양의 관계, 동료 규범에 맞추는 정도와 자의식은 음의 관계였으며, 가용성은 쓸 수 있는 자원과 양의 관계였다. 위 표에 없는 가용성은 피로, 장시간 근무와 업무 밖 부담 때문에 구성원에게 일에 쓸 여력이 남아 있는지 묻는 축으로 쓴다(적용 제안, [[Burnout-Sustainable-Pace|번아웃과 지속 가능한 페이스]]).
+
 ## 신뢰와 존중의 운영 방식
 
 - 약속한 결과와 기한을 지키되, 지키기 어렵다는 신호를 발견하면 영향과 대안을 함께 알린다.
@@ -29,6 +33,8 @@ verified_at: 2026-11-23
 - 피드백은 사람의 성격이 아니라 관찰한 행동, 영향과 다음 기대를 다룬다.
 - 다른 의견은 숨기지 않되 상대의 맥락을 먼저 확인하고 판단 근거를 공개한다.
 - 도움 요청과 모른다는 표현을 무능의 증거가 아니라 위험을 일찍 드러내는 행동으로 취급한다.
+- 아침 인사, 감사와 퇴근 인사 같은 일상 대우는 모두에게 같은 방식으로 한다. 한 사람에게 보좌와 책임을 몰아주면 편애로 읽힐 수 있다([[Frontline-Target-Leadership-People#공평한 일상 대우와 비공식 조력자|공평한 일상 대우]]).
+- 하겠다고 말하고, 말한 것을 하고, 했다고 알리는 세 단계로 약속을 닫는다(블로그 저자가 언행일치를 세 단계로 정리한 글의 경험칙).
 
 존중은 에둘러 말하는 것과 다르다. [[Radical-Candor-Feedback|Radical Candor]]가 설명하듯 상대를 사람으로 존중하면서도 필요한 문제는 직접 제기할 수 있다.
 
@@ -52,7 +58,24 @@ Netflix의 문화 메모는 이 기준을 명시한 공개 사례다(2026-11-23 
 - **행동과 영향으로 피드백한다:** 성격 대신 관찰한 행동과 그 영향을 짚는다(예: 회의에서 동료 발언을 끊고 비꼰 뒤로 다른 구성원의 아이디어 제안이 줄었다). 바뀌어야 할 행동과 다시 확인할 시점을 합의한다.
 - **바뀌지 않으면 결정한다:** 합의한 기간 뒤에도 행동이 그대로라면 단기 성과 손실을 감수하고 역할 변경이나 이별을 결정한다. 이때 결정을 미룬 기간 동안 떠난 사람과 멈춘 협업도 비용으로 계산한다.
 
-이 제안을 저성과자나 의견이 다른 사람을 내보내는 근거로 넓히지 않는다. 반대 의견을 직접 말하는 것은 [[Radical-Candor-Feedback|Radical Candor]]가 권하는 행동이고, 문제는 상대를 무시하고 깎아내리는 방식이다. 부정적인 말을 하는 팀원을 곧바로 배제하지 않고 관찰과 균형으로 다루는 기준은 [[People-Leadership#부정적 팀원 — 배제보다 관찰과 균형|부정적 팀원]]을 함께 본다. 반복적인 무시와 비꼼이 직장 내 괴롭힘이나 규정 위반으로 의심되면 피드백 기간과 별개로 조사와 피해자 보호 절차를 따르고, 해고와 징계는 근로 관계 법령과 내부 절차를 따로 확인한다.
+이 제안을 저성과자나 의견이 다른 사람을 내보내는 근거로 넓히지 않는다. 해고 권한이 없는 중간 관리자가 육성만으로 저성과자를 바꾸려 한 현장 사례는 [[Frontline-Target-Leadership-People|현장 리더의 사람 육성]]에 있으며, 결정 권한과 법적 조건이 다르다. 반대 의견을 직접 말하는 것은 [[Radical-Candor-Feedback|Radical Candor]]가 권하는 행동이고, 문제는 상대를 무시하고 깎아내리는 방식이다. 부정적인 말을 하는 팀원을 곧바로 배제하지 않고 관찰과 균형으로 다루는 기준은 [[People-Leadership#부정적 팀원 — 배제보다 관찰과 균형|부정적 팀원]]을 함께 본다. 반복적인 무시와 비꼼이 직장 내 괴롭힘이나 규정 위반으로 의심되면 피드백 기간과 별개로 조사와 피해자 보호 절차를 따르고, 해고와 징계는 근로 관계 법령과 내부 절차를 따로 확인한다.
+
+## 팀 발달 단계는 진단 가설로 쓴다
+
+Tuckman(1965)은 치료 집단, 훈련 집단(T-group), 자연 집단과 실험실 집단을 다룬 50편의 연구를 검토해 집단이 형성(forming), 격동(storming), 규범(norming), 수행(performing)을 거친다는 모형을 제안했다. 단계는 대인 관계 활동과 과업 활동으로 나눠 기술됐다. Tuckman과 Jensen(1977)은 이후 10년의 연구 22편을 다시 검토했는데 이 가설을 직접 검증하려 한 연구는 하나뿐이었고, 다섯 번째 단계로 해산(adjourning)을 더하며 실증 연구가 더 필요하다고 권했다.
+
+순서가 고정돼 있다는 가정에는 반례가 있다. Gersick(1988)이 실제 팀 8개를 처음부터 끝까지 관찰했더니 팀들은 정해진 단계를 차례로 밟지 않고, 관성이 이어지는 시기와 일하는 방식이 급격히 바뀌는 시기를 오갔다. 진행은 쌓인 작업량보다 시간과 마감에 대한 인식에 좌우되는 것으로 보였다.
+
+그래서 단계 모형은 지금 팀에 무엇이 부족한지 묻는 진단 질문으로 쓴다(적용 제안).
+
+| 관찰되는 모습 | 리더가 확인할 것 |
+|---|---|
+| 리더의 지시에 크게 기대고 역할이 불분명하다 | 목적, 외부 관계와 각자의 역할을 설명했는가 |
+| 역할과 영향력을 두고 부딪치고 결정이 늦어진다 | 관계 문제로 방향을 잃지 않게 목표로 다시 모으고 진전을 위한 타협 지점을 정했는가 |
+| 역할과 책임이 합의되고 작은 결정을 맡길 수 있다 | 작은 결정의 위임 범위와 확인 시점을 정했는가 |
+| 목표를 공유하고 이견을 팀 안에서 푼다 | 리더가 개입을 줄이고 결정 기준만 확인하는가 |
+
+마감이 다가오는 때처럼 시간에 대한 인식이 바뀌는 시점에 일하는 방식이 크게 바뀔 수 있다는 점도 함께 본다. 성숙도에 따라 지시에서 위임으로 옮기라는 Hersey와 Blanchard의 상황적 리더십 같은 처방 모형도 있으나 이 문서는 그 효과를 검증한 자료를 대조하지 않았다. 개인의 과업 성숙도에 맞춘 위임은 [[DRI-Delegation-Culture#절차 문서와 과업 성숙도에 맞춘 위임|과업 성숙도에 맞춘 위임]]이 다룬다.
 
 ## 면접 체크포인트
 
@@ -66,6 +89,9 @@ Netflix의 문화 메모는 이 기준을 명시한 공개 사례다(2026-11-23 
 - [[Failure-Tolerant-Culture|실패에 관대한 문화와 심리적 안전]]
 - [[Team-Contribution-Culture|엔지니어링 팀 기여 문화]]
 - [[People-Leadership|사람을 키우는 시니어 리더십]] — 위임과 1:1
+- [[DRI-Delegation-Culture|DRI와 권한 위임 문화]] — 개인 단위의 과업 성숙도와 위임
+- [[Shared-Norms-and-Social-Control|공유 규범과 사회적 통제]] — 동료 규범이 행동을 조율하는 방식
+- [[Frontline-Target-Leadership-People|현장 리더의 사람 육성과 일상 운영]] — 일상 대우, 솔선수범과 기본 행동
 
 ## 출처
 
@@ -74,3 +100,9 @@ Netflix의 문화 메모는 이 기준을 명시한 공개 사례다(2026-11-23 
 - [Radical Candor, Frequently Asked Questions](https://www.radicalcandor.com/frequently-asked-questions)
 - [Netflix Culture Memo — Netflix](https://jobs.netflix.com/culture) — 2026-11-23 확인. 성과 기준과 동료에 대한 품위와 존중, keeper test 보완 설명의 관리자와의 정기 대화와 전체 기록 평가
 - [매출보다 기본, 대표의 조직 운영 원칙 — Threads, temaingz](https://www.threads.com/@temaingz/post/DZEzVFOlbfS)
+- [Developmental sequence in small groups — Psychological Bulletin, Tuckman (1965)](https://doi.org/10.1037/h0022100) — 63권 6호 384~399쪽. 2026-11-24 OpenAlex 초록으로 검토 범위(50편, 네 집단 유형)와 대인 관계 및 과업 활동의 구분 대조
+- [Stages of Small-Group Development Revisited — Group & Organization Studies, Tuckman과 Jensen (1977)](https://doi.org/10.1177/105960117700200404) — 2권 4호 419~427쪽. 2026-11-24 OpenAlex 초록 대조
+- [Time and Transition in Work Teams: Toward a New Model of Group Development — Academy of Management Journal, Gersick (1988)](https://doi.org/10.5465/256496) — 31권 1호 9~41쪽. 2026-11-24 OpenAlex 초록 대조
+- [Psychological Conditions of Personal Engagement and Disengagement at Work — Academy of Management Journal, Kahn (1990)](https://doi.org/10.5465/256287) — 33권 4호 692~724쪽. 2026-11-24 서지와 초록 앞부분만 확인했고 세 조건의 이름과 관계는 아래 후속 연구의 초록으로 대조했다
+- [The psychological conditions of meaningfulness, safety and availability and the engagement of the human spirit at work — Journal of Occupational and Organizational Psychology, May, Gilson, Harter (2004)](https://doi.org/10.1348/096317904322915892) — 77권 1호 11~37쪽. 2026-11-24 OpenAlex 초록 대조
+- [29. 팀, 리더십에 대한 생각 — 브런치, sellsecret](https://brunch.co.kr/@sellsecret/384) — 2018-05 발행, 팀 발달 단계 소개. 추가 글: #684(몰입의 심리 조건 나열), #669(2018-10 발행, 언행일치의 세 단계)

@@ -22,6 +22,7 @@ aliases: ["Claude Code Operations", "클로드 코드 운영", "클로드 코드
 
 - `--bare`: 최소 모드. 공식 CLI 문서 기준(확인 2026-07-15) 훅, 스킬, 플러그인, MCP 서버, auto-memory, CLAUDE.md의 자동 탐색을 건너뛰고 `CLAUDE_CODE_SIMPLE=1`을 설정한다. Bash와 파일 읽기, 편집 도구는 유지된다. 필요한 컨텍스트와 확장은 `--append-system-prompt`, `--settings`, `--mcp-config`, `--agents`, `--plugin-dir` 같은 플래그로 명시 주입한다. OAuth와 키체인도 읽지 않으므로 인증은 `ANTHROPIC_API_KEY` 또는 `--settings`의 `apiKeyHelper`로 제공한다. CI와 스크립트처럼 장비별 로컬 설정에 영향받지 않아야 할 때 적합하다
 - CI 안전장치 4종: `--max-turns`(리뷰 5, 구현 10~15 권장), `--max-budget-usd`, 잡 타임아웃, dontAsk 권한 모드. `--dangerously-skip-permissions`는 격리 컨테이너에서만
+- 무인 실행의 승인 처리(2026-11-24 공식 문서 대조): `--allowedTools`는 나열한 도구를 묻지 않고 실행하게 하는 사전 승인이지 나머지를 막는 목록이 아니다. 목록 밖이라도 승인이 필요 없는 호출(작업 디렉터리의 파일 읽기, 읽기 전용 명령)은 실행되고, 공식 문서는 권한 모드를 정하지 않은 `-p` 실행이 Manual 모드로 시작해 승인이 필요한 호출을 `PermissionRequest` 훅이나 `--permission-prompt-tool`이 승인하지 않으면 거부한다고 안내한다. 다만 changelog의 v2.1.302 항목은 이 기본값을 서드파티 제공자, 텔레메트리 꺼짐, 새 설치로 한정하고, 그 밖의 환경에서는 기본 모드가 서버 설정에 따라 auto일 수 있다(2026-11-24 changelog 대조). 무인 실행은 기본값에 기대지 않고 `--permission-mode`를 명시한다. 예약 작업처럼 답할 사람이 없으면 `--permission-prompts none`(v2.1.259 이상)을 준다. 승인 호스트(`--permission-prompt-tool`, SDK의 `canUseTool` 콜백)가 있으면 이 플래그 없이는 요청마다 호스트의 답을 기다리지만, 플래그를 주면 `PermissionRequest` 훅이 허용하지 않는 한 묻지 않고 거부하며 `AskUserQuestion`처럼 사람의 답이 필요한 도구도 뺀다. 이후 실행에도 적용하려면 `permissions.denyInsteadOfPrompting`(v2.1.319 이상)을 켜고, 특정 도구를 막아야 하면 사전 승인 목록이 아니라 deny 규칙을 둔다([[Claude-Code-Config-Permissions|설정과 권한]])
 - 구조화 출력: `--output-format json` + `--json-schema`로 파이프라인에서 파싱 가능한 응답 강제
 - GitHub Actions: 공식 액션 + `@claude` 트리거. **모델 버전 고정이 필수** — 별칭이 새 모델을 가리키게 되면 미활성 모델 에러로 파이프라인이 깨진다
 - 자동 코드 리뷰(Code Review, Team과 Enterprise 대상 research preview, ZDR이나 HIPAA 구성을 적용한 조직은 쓸 수 없고 Anthropic BAA 적용 대상도 아님): GitHub 앱이 저장소 설정에 따라 PR을 열 때, push마다 또는 `@claude review` 코멘트로 리뷰하고 발견을 해당 줄의 인라인 코멘트로 단다. 비용은 플랜 포함 사용량과 별도로 사용 크레딧(usage credits)에서 나가며 리뷰당 평균 $15에서 $25다. 커스터마이즈는 CLAUDE.md(새로 들어온 위반을 nit로 표시)보다 리뷰 전용 파일 REVIEW.md가 확실하다. REVIEW.md는 발견과 검증 에이전트에 리뷰 지침으로 직접 전달되고 순위와 보고 에이전트도 참고하므로 심각도 기준, nit 상한과 skip 규칙을 여기에 명시한다
@@ -81,6 +82,7 @@ Game Developer의 2026-10-30 기사(같은 날 Anthropic 확인을 반영해 갱
 - [Claude Code 공식 문서, CLI reference](https://code.claude.com/docs/en/cli-usage)
 - [Claude Code 공식 문서, Environment variables](https://code.claude.com/docs/en/env-vars)
 - [Run Claude Code programmatically — bare mode](https://code.claude.com/docs/en/headless#start-faster-with-bare-mode)
+- [Run Claude Code programmatically — auto-approve tools](https://code.claude.com/docs/en/headless#auto-approve-tools) — 2026-11-24, `--allowedTools`의 사전 승인, Manual 모드 시작(v2.1.302), dontAsk, `--permission-prompts none`(v2.1.259)과 `permissions.denyInsteadOfPrompting` 대조. 이 범위만 확인했으며 frontmatter의 검증일은 유지
 - [Claude Code 공식 문서, Fast mode](https://code.claude.com/docs/en/fast-mode)
 - [Claude Code 공식 문서, Manage costs](https://code.claude.com/docs/en/costs)
 - [Claude Code 공식 문서, Settings reference](https://code.claude.com/docs/en/settings-reference)

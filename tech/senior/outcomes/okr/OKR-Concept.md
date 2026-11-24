@@ -47,6 +47,8 @@ MBO의 핵심은 세 가지가 함께 이루어지는 것:
 
 OKR은 MBO를 실행하는 한 방법론이다.
 
+공동 계획의 근거를 볼 때는 참여 자체와 이유의 설명을 나눈다. Locke와 Latham(2002)의 정리에 따르면 목표 난도를 같게 두면 참여로 정한 목표와 할당한 목표의 성과는 유의하게 다르지 않았다. 이유 없이 짧게 지시한 목표는 참여로 정한 목표보다 성과가 낮았지만, 목적이나 이유를 함께 준 할당 목표는 참여 목표만큼 효과적이었다(Latham, Erez, Locke, 1988). 참여의 주된 이점은 동기보다 과제 전략을 함께 짜며 정보를 나누는 데 있다고 본다. 다만 같은 정리는 목표 설정에 참여한 직원이 할당받은 직원보다 더 높은 목표를 세워 성과도 높았다는 연구(Latham과 Yukl 1976, Latham, Mitchell, Dossett 1978)도 들므로, 참여가 더 높은 목표를 거쳐 성과를 올리는 경로도 있다. 구성원이 스스로 낸 목표의 합이 조직 목표를 넘을 때 낮춰 맞추는 현장 절차는 이 경로를 쓰지 않는다(이 문서의 해석). 그 절차와 공개 선언의 부담은 [[Frontline-Target-Leadership#목표를 함께 정하고 자기 입으로 말하게 한다|현장 목표 리더십]]에 있다.
+
 ## 미션, 비전, OKR — 시간 지평의 차이
 
 | 구분 | 성격 | 시간 지평 |
@@ -75,6 +77,10 @@ Objective는 정성적인 문장이라 그것만 보고는 절반을 왔는지 �
 | 혁신 KR | 0%가 아니면 다행 | 신사업, 완전히 새로운 시도. 의지를 반영해 세우지만 결과 예측이 어렵고 실패 가능성도 높을 때 |
 | 필수 KR | 100% 달성이 기준 | 조직이 건강하게 운영되기 위한 지표. 현금 흐름, 사고, 소송, 불법 행위 등 재무적, 물리적, 법적 리스크 관련 |
 
+### 지난 실적으로 다음 목표를 올리면 생기는 일
+
+100%가 기준인 숫자 목표를 달성할 때마다 다음 기간에 올리는 규칙은 구성원이 80~90%만 달성해 상향을 피하는 반응을 부를 수 있다. 한 현장 실무서는 이를 80점 주의라 부른다. Cardella와 Depew(2018)의 실험에서도 다음 기준이 오르는 것을 피하려는 산출 제한이 개인 단위 평가에서 강하게 나타났고, 그 제한은 해 보며 배우는 기회를 줄여 이후 생산성까지 낮췄다. 목표를 올리는 규칙을 정할 때 지난 달성치만 기계적으로 쓰지 않고 성장과 환경 변화를 근거로 설명하며, 도전 KR과 필수 KR을 섞지 않는다(적용 제안, [[Frontline-Target-Leadership#오르는 목표와 80점 주의|오르는 목표와 80점 주의]]).
+
 ## 왜 OKR인가
 
 - **도전을 유도** — 도전적인 목표 수립을 강조하며, 달성하려면 하던 일의 반복이 아닌 새로운 시도와 혁신이 필요해진다.
@@ -94,9 +100,13 @@ Objective는 정성적인 문장이라 그것만 보고는 절반을 왔는지 �
 - [[OKR-Operations|OKR 운영]]
 - [[Software-Productivity-Measurement|소프트웨어 생산성 측정의 함정 (Goodhart)]]
 - [[Output-vs-Outcome|산출물 vs 사용자 성과]]
+- [[Frontline-Target-Leadership|현장 목표 리더십]] — 참여형 목표 설정과 오르는 목표의 현장 운영
 
 ## 출처
 
 - 장영학, 유병은 — Why를 소통하는 도구, OKR (도서)
 - [OKR 강의 영상 플레이리스트 — YouTube](https://youtube.com/playlist?list=PLyAjRMJVCLLjtJPe7GX5AjncaaxU1L9a0)
 - [Performance Management: Concepts & Definitions — UC Berkeley People & Culture](https://hr.berkeley.edu/hr-network/central-guide-managing-hr/managing-hr/managing-successfully/performance-management/concepts) (성과관리 영문 정의 인용)
+- [Building a Practically Useful Theory of Goal Setting and Task Motivation: A 35-Year Odyssey — American Psychologist, Locke와 Latham (2002)](https://doi.org/10.1037/0003-066X.57.9.705) — 57권 9호 705~717쪽. 2026-11-24 본문의 참여 목표와 할당 목표 절과 참여한 직원이 더 높은 목표를 세웠다는 인용 대조
+- [Output restriction and the ratchet effect: Evidence from a real-effort work task — Games and Economic Behavior, Cardella와 Depew (2018)](https://doi.org/10.1016/j.geb.2017.11.005) — 107권 182~202쪽. 2026-11-24 EconPapers 초록 대조
+- [높은 목표이기에, 연속 달성이 가능하다 — 브런치, sellsecret](https://brunch.co.kr/@sellsecret/720) — 2019-06 발행, 스가 마사노리 책의 번역 소개이며 경험 기반 주장. 추가 글: #724(목표 공유 절차)

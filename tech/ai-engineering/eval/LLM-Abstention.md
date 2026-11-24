@@ -1,7 +1,7 @@
 ---
 tags: [ai, llm, reliability, calibration, abstention]
 status: done
-verified_at: 2026-10-06
+verified_at: 2026-11-24
 category: "AI엔지니어링(AIEngineering)"
 aliases: ["LLM Abstention", "Abstention", "모른다고 말하기", "LLM 캘리브레이션"]
 ---
@@ -47,6 +47,17 @@ AbstentionBench(2025-06)는 답이 알려지지 않은 질문, 조건이 부족�
 - behavioral calibration: 확률을 출력하게 하는 대신 확신이 t 이상인 범위에서 가장 유용한 답을 내는지를 본다. 여러 t에서 정답률과 오류율을 비교해 감사할 수 있다.
 
 아래 보상 설계의 강한 오답 페널티도 같은 방향의 설계다. 제품의 시스템 프롬프트와 내부 평가에 같은 문턱과 감점을 적어 두면 무엇을 모르겠다로 돌릴지가 지시와 채점에서 같은 문장이 된다(설계 제안, [[Eval-Golden-Set-and-Deploy-Gates#프롬프트와 Eval은 같은 문장의 앞뒷면|프롬프트와 Eval의 앞뒷면]]). 환각의 유형 구분과 사전학습 단계의 원인은 [[LLM-Hallucination-Verification|LLM 환각 유형과 검증]]에서 다룬다.
+
+## 모호한 요청에서 묻는가 — 알아채는 것과 묻는 것의 차이
+
+해석이 여러 개인 요청에서는 답을 거부하기보다 확인 질문으로 의도를 좁히는 것이 abstention의 실용적인 형태다. 모호함을 알아채는 능력과 실제로 묻는 행동은 따로 잰다.
+
+- **알아채도 묻지 않는다:** Su와 Cardie(Cornell University, 2026-05-24 arXiv 사전 공개)는 AmbigQA에서 뽑은 사실형 질문 1,000개(모호 575개, 명확 425개)로 10개 모델을 비교했다. 질문이 모호한지 판정하게 하면 대부분의 모델이 모호한 질문을 대개 60~80% 맞혔지만(명확한 질문까지 모호하다고 과잉 판정하는 경향도 있었다), 그냥 답하게 하면 압도적으로 바로 답했다. 확인 질문을 가장 많이 한 Claude 계열도 문맥 없는 모호한 질문에서 약 5%였다.
+- **근거 문서를 붙이면 더 덜 묻는다:** 검색한 문맥을 함께 주면 정답률은 올랐지만 이미 낮던 확인 질문 비율은 더 낮아졌고(변화 폭은 작다), 모호한 질문을 알아채는 정확도는 나아지지 않았다. 저자들은 근거 문서가 있으면 모델이 질문을 사실상 명확한 것으로 보고 답을 정한다고 해석한다.
+- **범위:** 평가 모델은 본문 기준 GPT-3.5 Turbo부터 GPT-4.1까지의 OpenAI 6종, Claude 3.5 Sonnet과 Haiku, Qwen2.5 14B와 7B이고(부록 표 하나는 Claude 4.5 모델명을 적어 표기가 엇갈린다), 과제는 단일 턴 사실형 QA다. 확인 질문을 유도하는 지시의 효과는 본문에서 다루지 않았다. 코딩 에이전트에 프로젝트 파일을 많이 넣을수록 덜 묻는다고 옮기는 것은 확장 해석이다.
+- **배포된 에이전트의 관찰:** Anthropic이 2026-02-18 공개한 분석은 2025년 말부터 2026년 초까지의 대화형 Claude Code 세션 50만 건에서, 과제가 복잡할수록 Claude가 스스로 멈춰 확인을 구하는 빈도가 늘었다고 보고했다. 가장 복잡한 과제에서는 확인 요청이 사람의 중단보다 두 배 넘게 잦았고, 최소 복잡도 과제의 두 배도 넘었다. Claude가 분류한 멈춤 이유는 제안한 접근 사이의 선택 요청(35%), 진단 정보나 테스트 결과 수집(21%), 모호하거나 불완전한 요청의 명확화(13%), 빠진 자격 증명이나 접근 요청(12%), 실행 전 승인(11%) 순이었다. 연구진은 Claude가 적절한 순간에 멈추지 않거나 불필요하게 물을 수 있고 Plan Mode 같은 제품 기능의 영향을 받을 수 있다고 적었으며, 모호한 과제에서 확인 질문을 하도록 Claude를 학습시킨다고 밝힌다.
+
+두 결과는 모델 세대, 과제와 측정 방식이 달라 직접 비교할 수 없다. 묻는 행동은 모델 학습과 제품 설계에 따라 달라지므로 쓰는 도구에 모호한 요청을 넣어 실제로 묻는지 확인하고, 요구가 덜 정해진 작업은 모델이 물어 주기를 기다리지 않고 인터뷰로 시작한다([[Agent-Coding-Guardrails#의도 인터뷰 — 묻기를 기다리지 않고 흐름을 뒤집는다|의도 인터뷰]]). 평가셋에는 확인 질문이 나와야 할 모호한 문항과 바로 답해도 되는 문항을 함께 넣어 과잉 질문도 잰다(설계 제안).
 
 ## 처방 — alignment 재설계
 
@@ -112,6 +123,7 @@ LLM이 abstention을 잘 못한다는 전제로 **시스템 차원**에서 보�
 - "RAG를 붙였는데 왜 여전히 hallucinate 하는가?" → 검색 점수 낮을 때 거부하도록 강제하지 않아서. 검색 ≠ 거부 분기.
 - "프로덕션 LLM 시스템에서 가장 위험한 실패 모드는?" → **모르는 영역에서의 자신감 있는 오답** (조용히 틀림). 정답률 떨어지는 것보다 신뢰성 측면에서 훨씬 치명.
 - 모르면 모른다고 하라고 지시하면 충분한가? → 지시는 abstention을 끌어올리지만 근본 한계는 남는다. 오답에 감점을 주는 확신 목표로 채점을 바꾸고, 업무 결과에 needs_review 상태를 두고, 과잉 거부를 함께 잰다.
+- 모델이 모호함을 알아채면 알아서 묻는가? → 판정 능력과 질문 행동은 따로 잰다. 사실형 QA 실험에서는 알아채도 거의 묻지 않았고 근거 문서를 붙이면 더 덜 물었다. 묻는 기능이 있는 도구도 필요한 순간에 묻는지는 확인 대상이다.
 
 ## 관련 문서
 
@@ -122,12 +134,16 @@ LLM이 abstention을 잘 못한다는 전제로 **시스템 차원**에서 보�
 - [[Production-Agent-Architecture|프로덕션 에이전트 아키텍처]] — Defense in Depth, Eval 설계
 - [[Harness-Engineering|하네스 엔지니어링]] — Verify, Correct 단계가 abstention 보완
 - [[Agent-Spec-Writing|에이전트 스펙 작성법]] — LLM-as-Judge, 평가 설계
+- [[Agent-Coding-Guardrails#의도 인터뷰 — 묻기를 기다리지 않고 흐름을 뒤집는다|의도 인터뷰]] — 묻기를 기다리지 않고 질문 흐름을 먼저 여는 코딩 에이전트 설계
 - [[AI엔지니어링(AIEngineering)|AI 엔지니어링 인덱스]]
 
 ## 출처
 
-2026-10-06에 세 가지 결과, 이진 채점과 확신 목표, abstention 평가 지표를 아래 두 논문에 대조했다. 처방과 프로덕션 적용 절의 나머지는 설계 제안이다.
+2026-10-06에 세 가지 결과, 이진 채점과 확신 목표, abstention 평가 지표를 Kalai 등과 AbstentionBench 두 논문에 대조했다. 2026-11-24에는 확인 질문 절의 표본, 모델, 수치와 한계를 Su와 Cardie의 논문과 Anthropic 분석 원문에 대조했다. 처방과 프로덕션 적용 절의 나머지와 확인 질문 절의 마지막 문단은 설계 제안이다.
 
 - [LLM은 언제 "모른다"고 말해야 하는가 — sparklingness, DEVOCEAN](https://devocean.sk.com/blog/techBoardDetail.do?id=168279&boardType=techBlog&isShared=Y)
 - [Why Language Models Hallucinate — Kalai et al., arXiv](https://arxiv.org/abs/2509.04664)
 - [AbstentionBench: Reasoning LLMs Fail on Unanswerable Questions — Kirichenko et al., arXiv](https://arxiv.org/abs/2506.09038)
+- [Knowing but Not Showing: LLMs Recognize Ambiguity but Rarely Ask Clarifying Questions — Su and Cardie, arXiv](https://arxiv.org/abs/2605.25284) — v1(2026-05-24), 2026-11-24 표본, 평가 모델, 세 조건, 확인 질문 비율과 문맥의 효과를 본문과 표로 대조
+- [Measuring AI agent autonomy in practice — McCain et al., Anthropic](https://www.anthropic.com/research/measuring-agent-autonomy) — 2026-02-18 게시, 2026-11-24 확인 질문과 사람의 중단 비교, 멈춤 이유 비율과 한계 진술 대조
+- [AI한테 내 의도를 완벽하게 전하는 기술 (프롬프트 포함) — 허드의 AI딸깍, YouTube](https://www.youtube.com/watch?v=NDVAXNHUlio) — 2026-11-20 공개, 2026-11-24 사람이 단 자막 전체 확인. 위 두 연구를 소개한 계기이며 수치는 원문으로 대조했다. 영상의 수백만 세션 표현은 확인 질문 분석의 표본(대화형 세션 50만 건)과 달라 쓰지 않음

@@ -12,11 +12,11 @@ aliases: ["Culture", "리더십과 조직 문화"]
 ## 목차
 - [x] [[Leadership-Practice|리더십 실천 (사람 리더십, 공동 리더십, 위기 리더십, 역발상)]] — 서브폴더
 - [x] [[Cross-Functional-Product-Collaboration|직군 간 프로덕트 협업 (기획/디자인/개발 역할, "안 된다"+대안, 예시와 레퍼런스 소통, 스프린트 파이프라인, 고정관념 깨기)]]
-- [x] [[Product-Design-Workflow-and-Handoff|프로덕트 디자인 워크플로와 개발 핸드오프 (단계별 완료 조건, 결과물별 결정권, 출처별 SSOT와 project index, Figma 상태 구성과 master log, Ready for development 계약과 전달물 구성, 디자인 시스템 통제 수준)]]
-- [x] [[Product-Design-Workflow-and-Handoff-Stages|디자인 단계별 산출물 (킥오프 원페이저, 발산과 수렴, 구현 중 새 아이디어 보류, 가이드, 코딩 에이전트로 만드는 디자이너의 prototype)]]
-- [x] [[Product-Design-Workflow-and-Handoff-Organization|프로덕트 조직 구조와 업무 루프 (일곱 체계 진단, 기능 조직과 squad, 직군 통합의 지원 조건과 평가, 구현이 빨라진 뒤의 왕복 대기와 프로덕트 빌더, 분석 없는 squad, 오너십, 디자인 엔지니어의 역할과 책임, 규모 관찰)]]
+- [x] [[Product-Design-Handoff|프로덕트 디자인 워크플로와 핸드오프 (product-design-handoff/ 폴더 인덱스)]] — 단계별 완료 조건과 결정권, Figma SSOT, Ready for development 계약, 단계별 산출물, 프로덕트 조직 구조와 업무 루프
 - [x] [[Team-Contribution-Culture|엔지니어링 팀 기여 문화 (기여의 범위, 기여 문화 3조건, 혼자가 편한 개발자, 도우미형 리드, 기여와 업무 분산의 경계)]]
 - [x] [[Failure-Tolerant-Culture|실패에 관대한 문화와 심리적 안전 (Loon Shots, 비난 없는 포스트모템, 실험과 사고의 경계, 침묵의 해석과 발언 요청)]]
 - [x] [[Engineering-Business-Alignment|개발팀의 비즈니스 align (성장 질문과 성과 질문, 개발팀과 매출의 거리, align의 양 끝, 회사 맥락 이해)]]
 - [x] [[Trust-Respect-Teamwork|신뢰와 존중의 팀워크 (심리적 안전, 수행 신뢰, 구조와 명료성, 의미와 영향, 행동 기반 피드백)]]
-- [x] [[High-Commitment-HR-Practices|고몰입 인사관리 (통제형과 몰입형 인사 시스템, Pfeffer의 일곱 관행, 관행 묶음의 보완성, 상관과 역인과 한계, 리드와 초기 회사의 적용)]]
+- [x] [[High-Commitment-HR-Practices|고몰입 인사관리 (통제형과 몰입형 인사 시스템, Pfeffer의 일곱 관행, 관행 묶음의 보완성, 상관과 역인과 한계, A 포지션, 리드와 초기 회사의 적용)]]
+- [x] [[Shared-Norms-and-Social-Control|공유 규범과 사회적 통제 (몰입의 네 경로, 측정과 교정의 합의, 산출을 억제하는 동료 규범, 우선순위를 둔 소수의 기준, 작은 팀 적용)]]
+- [x] [[HRD-Scope-and-HRM-Boundary|HRD의 범위와 HRM과의 경계 (Swanson의 정의와 이론적 기초, 교육이 인사 결정이 되는 지점, 만족도와 학습, 동료가 가르치는 네트워크)]]

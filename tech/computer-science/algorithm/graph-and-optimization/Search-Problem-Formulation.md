@@ -2,7 +2,7 @@
 tags: [cs, algorithm, search, state-space, heuristic, a-star]
 status: done
 category: "CS - 알고리즘"
-aliases: ["Search Problem Formulation", "탐색 문제 정식화", "Uninformed Search", "무정보 탐색", "Informed Search", "정보 탐색", "Greedy Best-First Search", "탐욕적 최우선 탐색", "Frontier", "Explored Set"]
+aliases: ["Search Problem Formulation", "탐색 문제 정식화", "Uninformed Search", "무정보 탐색", "Informed Search", "정보 탐색", "Greedy Best-First Search", "탐욕적 최우선 탐색", "Frontier", "Explored Set", "Bidirectional Search", "양방향 탐색", "Weighted A*", "가중 A*"]
 ---
 
 # 탐색 문제의 정식화와 탐색 전략
@@ -63,6 +63,16 @@ explored ← 빈 집합
 
 같은 미로에서도 결과가 갈린다. 처음 고른 갈림길이 목표 쪽이면 DFS가 가장 빠르지만, 반대쪽 막다른 길을 끝까지 판 뒤에야 돌아오면 BFS보다 훨씬 많은 상태를 확인할 수 있고, 찾은 경로가 가장 짧다는 보장도 없다. BFS는 가까운 상태부터 넓게 훑으므로 목표가 멀면 그 거리 안의 상태를 거의 모두 확인한 뒤에야 최단 경로를 낸다. 명시적 그래프에서의 구현과 메모리 비교는 [[Graph-Traversal-and-Shortest-Path#탐색 비용에서 E를 잊지 않기|그래프 탐색 비용]]에 있다.
 
+### 양방향 탐색: 시작과 목표에서 함께 넓힌다
+
+양방향 탐색은 시작 상태에서 앞으로 가는 탐색과, 목표 상태에서 행동을 거꾸로 적용하는 탐색을 번갈아 돌린다. 한쪽이 만든 상태가 다른 쪽에 이미 도달한 상태이면 두 경로를 이어 해를 만든다. 깊이가 늘수록 상태 수가 빠르게 불어나는 문제라면 해 깊이의 절반씩 두 번 넓히는 편이 끝까지 한 번 넓히는 것보다 훨씬 적은 상태를 다룬다.
+
+8퍼즐로 확인하면 차이가 크다. 목표(1부터 8까지 순서대로, 빈칸은 오른쪽 아래)에서 거리 10 이내의 상태는 706개지만 거리 19 이내는 37,809개다. 최단 해가 20수인 시작 상태 20개에서 BFS는 중앙값 48,048개(37,850~60,221개)를 확장했고, 작은 쪽 frontier의 층을 하나씩 넓힌 양방향 BFS는 840개(840~957개)를 확장했다(2026-11-24 직접 실행, 난수 시드 20261124, BFS는 꺼낼 때 목표 판정).
+
+- **적용 조건:** 뒤쪽 탐색은 목표 상태에서 출발하므로 목표가 구체적인 상태로 주어지고, 어떤 상태에서 왔는지 거꾸로 계산할 수 있어야 한다. 체스의 체크메이트처럼 목표가 조건으로만 주어지고 해당 상태가 셀 수 없이 많으면 뒤쪽 탐색의 출발점을 정하기 어렵다.
+- **종료 조건:** 처음 만난 연결이 가장 짧다는 보장은 구현의 종료 규칙에 달려 있다. 위 실행은 만남이 생긴 층의 확장을 끝낸 뒤 가장 짧은 연결을 골랐고, 20개 모두 최단 길이 20과 일치했다.
+- **휴리스틱을 더할 때:** 휴리스틱을 쓰는 양방향 탐색은 두 탐색이 중간에서 만난다는 보장이 없었다. 해 길이가 16 이하인 하노이 탑 실험에서 각 방향으로 깊이 13까지 확장한 예가 보고됐다. Holte 외(2016)는 해 비용의 절반을 넘는 노드를 확장하지 않는 첫 알고리즘 MM을 제시했지만, 같은 논문의 실험에서 가장 적게 확장한 방법은 휴리스틱에 따라 단방향 휴리스틱 탐색, 휴리스틱 없는 양방향 탐색, MM 가운데 어느 것이든 될 수 있었고, 휴리스틱을 더해 확장이 오히려 늘기도 했다(한 팬케이크 퍼즐 실험에서 4배).
+
 ## 휴리스틱과 탐욕적 최우선 탐색
 
 휴리스틱 h(n)은 상태 n에서 목표까지 남은 비용의 추정치다. 흔히 제약 일부를 없앤 완화 문제(relaxed problem)의 정확한 답을 쓴다. 미로에서 벽을 무시하고 가로와 세로로 떨어진 칸 수를 더한 맨해튼 거리가 그 예다. 벽이 있으면 실제 거리는 이보다 길 수는 있어도 짧을 수는 없다.
@@ -85,6 +95,8 @@ A*가 최적 해를 내려면 휴리스틱이 다음 조건을 만족해야 한�
 
 h를 모든 상태에서 0으로 두면 A*는 균일 비용 탐색이 된다. admissible한 휴리스틱이 여럿이면 상태마다 그 최댓값을 써도 admissible하다. 간선 가중치를 바꿔 Dijkstra로 보는 관점과 다시 여는 구현의 조건은 [[Graph-Traversal-and-Shortest-Path-Variants|최단 경로 변형]]의 A* 절에 있다. A*는 생성한 노드를 frontier와 탐색 집합에 보관하므로 상태 공간이 크면 메모리 사용이 커진다. 비용 한계를 늘리며 깊이 우선으로 다시 탐색하는 [[IDA-Star-Pattern-Database|IDA*]]가 그 대안이다.
 
+h를 0으로 줄이는 것과 반대로 1보다 큰 배수 ε를 곱해 f(n) = g(n) + ε × h(n)으로 꺼내는 가중 A*(weighted A*)는 확장하는 상태가 크게 줄 때가 많지만, 과대평가를 허용하므로 admissible 조건이 깨져 최적 해 보장이 사라진다. consistent한 h에 ε를 곱했다면 찾은 해의 비용은 최적 비용의 ε배를 넘지 않는다. 시간 제한 안에서 ε를 줄여 가며 해를 고치는 ARA*가 이 상한을 쓴다. 속도와 해의 품질을 맞바꾸는 선택이므로, 해의 비용이 중요하면 ε = 1의 결과와 비교해 품질 손실을 잰다.
+
 ## 구현 체크포인트
 
 - **frontier의 중복 규칙**: frontier나 탐색 집합에 이미 있는 상태를 다시 넣지 않는 규칙은 BFS와 DFS에는 충분하다. 균일 비용 탐색과 A*에서는 더 싼 경로로 같은 상태에 닿으면 frontier의 노드를 그 경로로 바꾸거나, 새 항목을 넣고 꺼낸 항목이 기록된 최소 비용보다 비싸면 건너뛴다. 그러지 않으면 먼저 발견한 비싼 경로가 답이 될 수 있다.
@@ -98,6 +110,7 @@ h를 모든 상태에서 0으로 두면 A*는 균일 비용 탐색이 된다. ad
 - 같은 코드에서 DFS와 BFS를 바꾸려면 무엇만 바꾸면 되는가?
 - 갈림길에서 h가 작은 쪽만 고르는 전략이 더 긴 경로를 내는 미로를 그릴 수 있는가?
 - frontier에 있는 상태를 다시 넣지 않는 규칙이 BFS에서는 안전하고 A*에서는 왜 위험한가?
+- 양방향 탐색을 체크메이트 찾기에 바로 쓰기 어려운 이유는 무엇이고, consistent한 h에 3을 곱한 A*의 해는 최적 비용의 몇 배까지 커질 수 있는가?
 
 ## 출처
 
@@ -107,6 +120,9 @@ h를 모든 상태에서 0으로 두면 A*는 균일 비용 탐색이 된다. ad
 - [UC Berkeley, CS 188 Introduction to Artificial Intelligence, Informed Search](https://inst.eecs.berkeley.edu/~cs188/textbook/search/informed.html) — 완화 문제 휴리스틱, 탐욕 탐색의 한계, 그래프 탐색의 더 싼 경로 확인, h = 0과 최댓값 휴리스틱
 - [Breadth-First-Search — GitHub, aimacode/aima-pseudocode](https://github.com/aimacode/aima-pseudocode/blob/master/md/Breadth-First-Search.md) — 자식을 만들 때의 목표 판정
 - [Uniform-Cost-Search — GitHub, aimacode/aima-pseudocode](https://github.com/aimacode/aima-pseudocode/blob/master/md/Uniform-Cost-Search.md) — 3판의 꺼낼 때 목표 판정과 더 싼 frontier 노드 교체, 4판의 생성 시 판정 뒤 계속 탐색
+- [Bidirectional Search That Is Guaranteed to Meet in the Middle — AAAI-16, Robert C. Holte 외](https://doi.org/10.1609/aaai.v30i1.10436) — 2026-11-24 강의 자료로 공개된 PDF 본문에서 역방향 연산자로 도는 뒤쪽 탐색, 중간에서 만나지 않던 기존 알고리즘과 하노이 탑 예, MM의 보장과 실험 결과 대조
+- [ARA*: Anytime A* with Provable Bounds on Sub-Optimality — NIPS 2003, Maxim Likhachev 외](https://papers.nips.cc/paper/2003/file/ee8fe9093fbbb687bef15a38facc44d2-Paper.pdf) — 2026-11-24 본문 1절과 2.1절에서 휴리스틱 배수의 확장 감소, admissible 위반과 ε배 상한 대조
+- [YouTube, Zachary Huang, Give Me 1 Hour, I Will Make Artificial Intelligence Click Forever](https://www.youtube.com/watch?v=fCEvvkAbJOs) — 2026-10-27 업로드 공개, 2026-11-24 음성 인식 전사 전체 확인. 양방향 탐색과 휴리스틱 배수의 계기. 영상의 실행 수치는 옮기지 않고 8퍼즐은 직접 실행했다
 
 ## 관련 문서
 

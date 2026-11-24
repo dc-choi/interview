@@ -92,7 +92,7 @@ word2vec은 어휘의 단어마다 벡터 하나를 학습하므로 철자가 �
 
 1. **RNN 인코더-디코더:** 인코더 RNN이 입력 단어를 하나씩 읽으며 은닉 상태를 갱신한다. 입력 끝을 알리는 종료 토큰 뒤에 디코더 RNN이 직전 출력 단어와 상태를 받아 다음 단어를 내고, 종료 토큰을 내면 멈춘다([[Neural-Network-Fundamentals#순차 데이터와 순환 신경망|순환 신경망]]).
 2. **attention:** 마지막 은닉 상태 하나에 긴 입력 전체를 담기는 어렵다. attention은 출력 단어를 만들 때마다 입력 위치별 은닉 상태에 관련도 점수를 매기고, 점수로 가중 평균한 문맥 벡터를 디코더에 넣는다. 점수 계산은 내적처럼 단순한 방식부터 별도 신경망까지 있으며, 어디에 주목할지는 학습으로 정해진다. 번역에서 점수를 시각화하면 서로 대응하는 단어 쌍이 높게 나온다.
-3. **Transformer:** RNN은 앞 단계가 끝나야 다음 단계를 계산하므로 병렬화가 어렵다. Transformer는 순환과 합성곱 없이 attention만으로 위치 사이 정보를 결합해 위치들을 병렬로 처리한다. 순서 정보는 입력 임베딩에 위치 인코딩을 더해 넣는다. 인코더의 self-attention에서는 각 단어가 같은 입력의 다른 단어를 참고하고, 여러 head가 서로 다른 표현 공간의 관계를 함께 본다. 디코더는 이전 출력에 대한 self-attention에 더해 인코더 출력에 대한 attention을 쓴다. 인코더만 쓰거나 디코더만 쓰는 변형도 있다.
+3. **Transformer:** RNN은 앞 단계가 끝나야 다음 단계를 계산하므로 병렬화가 어렵다. Transformer는 순환과 합성곱 없이 attention만으로 위치 사이 정보를 결합해 위치들을 병렬로 처리한다. 순서 정보는 입력 임베딩에 위치 인코딩을 더해 넣는다. 인코더의 self-attention에서는 각 단어가 같은 입력의 다른 단어를 참고하고, 여러 head가 서로 다른 표현 공간의 관계를 함께 본다. 디코더는 이전 출력에 대한 self-attention에 더해 인코더 출력에 대한 attention을 쓴다. 인코더만 쓰거나 디코더만 쓰는 변형도 있다. 직관적으로는, 가을과 단풍이 함께 나오는 문장에서 은행이 은행나무 열매인지 금융기관인지를 주변 단어와의 관계로 정하는 계산이 층마다 반복되며 뜻이 좁혀지는 과정이다(대중 해설의 예).
 
 계보와 학습 비용은 [[Deep-Learning-Foundations-and-Practice#번역 구조에서 범용 설계도까지|Transformer 계보]], Q, K, V 계산과 디코딩은 [[LLM-Generation-Mechanics-Decoding|추론과 디코딩]]에 있다. 이 절은 2023년 공개 강의 범위의 구조 개요이며 현재 LLM의 구성이나 성능을 설명하지 않는다.
 
@@ -110,6 +110,7 @@ word2vec은 어휘의 단어마다 벡터 하나를 학습하므로 철자가 �
 - [Harvard, CS50's Introduction to Artificial Intelligence with Python, Lecture 6 Language Notes](https://cs50.harvard.edu/ai/2020/notes/6/) — 이전 판으로 표시된 공식 노트. 2026-11-18 NLP 과업, 구문과 의미의 예문, CFG 규칙, n-gram과 토큰화 정의, Markov 텍스트 생성, bag-of-words, Naive Bayes 추정과 평활, one-hot과 분산 표현, word2vec을 대조했다. 이 판에는 attention과 Transformer가 없어 그 부분은 자막과 아래 논문으로 대조했다.
 - [scikit-learn, Naive Bayes](https://scikit-learn.org/stable/modules/naive_bayes.html) — 1.9.1 문서. MultinomialNB의 평활 추정과 Laplace, Lidstone 구분, BernoulliNB의 이진 특징과 짧은 문서, 확률 추정기로서의 한계.
 - [Efficient Estimation of Word Representations in Vector Space — Mikolov 외](https://arxiv.org/abs/1301.3781) — 2013. 2026-11-18 v3 PDF의 1.1절 King과 Queen 예시, 3.1절과 3.2절, 그림 1의 CBOW와 Skip-gram, 4절의 코사인 거리 유추 검색과 질문 단어 제외를 대조했다.
+- [현재의 AI 대혁명은 바로 이 논문에서 시작됐다 | 필요한 건 오직 어텐션뿐 | 다큐프라임 — YouTube, EBS](https://www.youtube.com/watch?v=YXLWe_pqmjU) — 2026-11-24 공개, 2026-11-24 음성 인식 전사 확인. 동음이의어 직관 예만 썼다. 인터뷰 구간은 음성 인식 반복 오류가 커서 쓰지 않았다
 - [Attention Is All You Need — Vaswani 외](https://arxiv.org/abs/1706.03762) — 2026-11-18 초록의 순환과 합성곱 없는 구조와 병렬화, v7 HTML의 3.2.2절 multi-head, 3.2.3절 attention의 세 쓰임, 3.5절 위치 인코딩을 대조했다.
 
 ## 관련 문서

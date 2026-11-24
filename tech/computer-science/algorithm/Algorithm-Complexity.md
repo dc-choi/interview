@@ -100,7 +100,7 @@ best case가 빠르다는 정보는 약하다. 입력이 이미 정렬됐는지 
 - **NP-hard**: 모든 NP 문제를 polynomial-time reduction으로 이 문제에 환원할 수 있다. NP에 속할 필요도, decision problem일 필요도 없다.
 - **NP-complete**: NP에 속하면서 NP-hard인 문제다.
 
-`P ⊆ NP`는 알려져 있지만 `P = NP`인지는 2026-09-30 현재도 미해결이다. NP를 단순히 exponential time이 필요한 문제나 P보다 어려운 문제라고 정의하면 안 된다. 현재 polynomial-time algorithm을 모른다는 사실과 존재하지 않는다는 증명은 다르다.
+`P ⊆ NP`는 알려져 있지만 `P = NP`인지는 2026-09-30 현재도 미해결이다. NP를 단순히 exponential time이 필요한 문제나 P보다 어려운 문제라고 정의하면 안 된다. 현재 polynomial-time algorithm을 모른다는 사실과 존재하지 않는다는 증명은 다르다. 어느 쪽 답이 나오든 무엇이 바뀌는지(환원의 크기, 평균 사례 난이도와 암호, 실제 인스턴스의 풀이)는 [[P-vs-NP-Implications|P 대 NP의 함의]]에 있다.
 
 최적화 문제는 bound를 붙인 decision version과 연결해 복잡도를 분석할 수 있다. 예를 들어 최소 tour를 찾는 TSP optimization은 NP-hard이고, 비용이 `K` 이하인 tour가 존재하는지를 묻는 decision version은 NP-complete다. bitmask DP는 이를 polynomial로 만들지 않지만 brute force `n!`을 `O(n²2ⁿ)`으로 줄인다. [[Bitmask-DP-and-TSP]]
 
@@ -190,5 +190,6 @@ AI가 낸 개선 주장도 같은 기준으로 읽는다. OpenAI 내부 모델�
 - [[알고리즘(Algorithm)|알고리즘 인덱스]]
 - [[Algorithm-Searching|선형 검색과 이진 검색]]
 - [[Bitmask-DP-and-TSP|비트마스크 DP와 외판원 문제]]
+- [[P-vs-NP-Implications|P 대 NP의 함의]]
 - [[Problem-Solving-Techniques|코딩 테스트 문제 해결 기법]]
 - [[AI-Capability-and-Cost-Trends|AI 능력과 비용 추세 읽기]]

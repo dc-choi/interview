@@ -51,7 +51,7 @@ Software 3.0 패러다임, LLM과 에이전트, 하네스, 평가, 조직 전환
 - [x] [[Task-Specific-Small-Models|작은 특화 모델]] — Pinterest와 WorldTUI, LFM3의 로컬 실행 예산과 little-lm의 사전학습 평가 조건
 - [x] [[LLM-Steganography|생성 이미지의 스테가노그래피]] — 은닉 메시지 복원 실험과 에이전트 사이의 통신 채널
 - [x] [[AI-Generated-Text-Readability|AI 생성 글의 처리 난도]] — 대리 지표, 왕복 번역 기준선과 정보 밀도 압력 가설
-- [x] [[Monte-Carlo-Tree-Search|몬테카를로 트리 탐색과 UCT]] — 선택, 확장, 시뮬레이션과 통계 갱신, 탐색 점수와 실행 기준의 구분
+- [x] [[Monte-Carlo-Tree-Search|몬테카를로 트리 탐색과 UCT]] — 선택, 확장, 시뮬레이션과 통계 갱신, 탐색 점수와 실행 기준의 구분, AlphaGo의 학습한 사전확률과 가치 평가
 - [x] [[Claude-Code-Projects|Claude Code Projects]] — 조율과 실행의 분리, 공유 메모리, 병합 충돌과 병렬 사용량
 - [x] [[Deep-Learning-Foundations-and-Practice|딥러닝 기초와 실습]] — 개념과 과업의 연결, Transformer 계보(RNN에서 GPT, BERT와 비텍스트 확장까지)와 이차 비용, 파괴적 망각, Keras 학습과 평가, 교재 범위와 실행 검증의 구분
 - [x] [[Supervised-Learning-Validation-and-Metrics|지도학습 검증과 평가 지표]] — 학습, 검증, 테스트의 역할, K-fold와 누수 방지, macro F1과 로그 오차의 입력 조건
@@ -114,6 +114,8 @@ Software 3.0 패러다임, LLM과 에이전트, 하네스, 평가, 조직 전환
 - [x] [[Agent-Swarm-Containment#역량 평가와 배포 통제를 분리해 읽는다|사이버 역량 평가의 조건]] — 역량 등급, 평가 접근권, 안전장치와 서비스 설정의 구분
 - [x] [[Claude-Code-Cloud-Security#컨텍스트의 계정 정보가 외부 요청에 실릴 때|컨텍스트 개인정보의 외부 전송]] — 모델이 쓴 요청으로 나간 계정 이메일, 지시와 출력 검사와 컨텍스트 제거의 차이
 - [x] [[Agent-Spec-Writing#스펙 산출물과 승인 지점을 분리한다|스펙 생성과 검토 흐름]] — 요구사항, 설계와 작업 목록, Quick Spec의 승인 생략과 사후 검토
+- [x] [[Agent-Coding-Guardrails#의도 인터뷰 — 묻기를 기다리지 않고 흐름을 뒤집는다|의도 인터뷰]] — 무엇보다 왜, Flipped Interaction, 추측을 붙인 질문과 범위 밖 요약, interview-me와 grill-me, AskUserQuestion과 Codex Plan mode, 인터뷰와 구현의 세션 분리 (2026-11-24 공식 문서 대조)
+- [x] [[LLM-Abstention#모호한 요청에서 묻는가 — 알아채는 것과 묻는 것의 차이|모호함 인식과 확인 질문]] — AmbigQA 실험의 인식과 행동 차이, 근거 문서가 줄인 확인 질문, Claude Code의 스스로 멈춤 분석과 한계
 - [x] [[Agent-Test-Verification-Behavior#마이그레이션에서는 기존 구현을 비교 기준으로 쓴다|생성 코드의 마이그레이션 검증]] — 같은 초기 상태, 반환값과 DB 변경, 의도된 차이와 회귀, 이식한 테스트의 충실도와 알려진 차이
 - [x] [[LLM-Generation-Mechanics-Context-and-Agent#계산 계획을 검토 가능한 데이터로 둔다|LLM 계산 계획과 실행]] — 상위 계획, 계산 그래프와 실행 결과의 대조
 - [x] [[AI-Workflow-Knowledge-Loop#운영 표준, 작업 경험과 현재 환경을 분리한다|운영 지식의 재사용]] — 표준과 경험의 권위, 실행 시점 환경 조회와 권한 차단의 구분
@@ -129,6 +131,7 @@ Software 3.0 패러다임, LLM과 에이전트, 하네스, 평가, 조직 전환
 - [x] [[Claude-Design-Handoff|AI 디자인 시스템과 구현 인계]] — 시안 선택, 디자인 동기화, 프로토타입 검증과 웹 애니메이션의 영상 렌더링 경계
 - [x] [[Claude-Design-Handoff-Resources|생성 UI 외부 자원과 납품 전 출처 확인]] — 스킬 카탈로그, 컴포넌트, 아이콘, 글자 효과와 시각 캔버스의 제공 방식, 라이선스와 납품 전 고지 보존
 - [x] [[Claude-Code-Business-Automation#시각 산출물 — 출력 형식과 최종 PDF 검수|문서 생성과 PDF 검수]] — 편집 가능한 원본의 필요, 인쇄 미디어, 웹 화면 캡처와 최종 PDF 페이지 검수의 구분
+- [x] [[Claude-Code-Business-Automation#스킬에서 무인 실행까지 넓히는 순서|스킬에서 무인 실행까지]] — 스킬 없이 먼저 해 보기와 평가 기준선, 스크립트로 둘 단계, 되돌릴 수 있는 단계부터 넓히는 무인 범위, `claude -p`의 사전 승인과 Manual 모드
 - [x] [[Agent-Ready-API-Design#명령 발견과 실패 응답도 계약이다|에이전트 CLI 계약]] — 구조화된 도움말, 후속 명령 안내와 재시도 판단의 한계
 - [x] [[LLM-Generation-Mechanics-Training#LoRA와 QLoRA: 바꾸는 파라미터와 저장 정밀도|LoRA와 QLoRA]] — 저랭크 변화량, 기반 가중치 고정, 저장 정밀도와 연산 정밀도, 배포 구성 평가
 - [x] [[Codex-CLI#구독 요금과 속도 모드의 사용량|Codex 구독과 속도 모드]] — 포함 사용량, 구매 크레딧과 API 과금의 구분

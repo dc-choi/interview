@@ -35,6 +35,8 @@ aliases: ["Cognitive Biases in Programming", "프로그래밍 인지 편향", "�
 - 정기적인 **도구, 라이브러리 재평가** 세션
 - 외부 리뷰어, 컨설턴트에게 "이거 왜 자체 제작해?" 질문받기
 
+**스스로 고른 것도 과대평가하는가**: 직접 만든 것이 아니라 직접 고른 것에 대해서도 비슷한 주장이 있다. Langer(1975)는 복권을 직접 고른 사람이 배정받은 사람보다 그 복권을 되팔거나 바꾸기를 더 꺼렸다고 보고했고, 선택이 통제 착각을 만든다는 근거로 널리 인용됐다. 그러나 17개 실험(10,825명)으로 다시 검증한 Klusowski 외(2021)는 선택이 실제로 결과를 바꾸지 않는 한 좋은 결과가 날 것 같다는 느낌을 거의 키우지 않았고, 효과가 보일 때도 선택이 착각을 만든 것이 아니라 같은 조건의 선택지를 다르다고 믿던 기존 생각이 선택에 드러난 것이라고 결론지었다. 고객에게 고르게 하면 더 가치 있게 여긴다는 설득 요령의 근거로 이 복권 연구를 쓰지 않는다. 설득 기법의 원 연구와 경계는 [[Persuasion-Principles-and-Boundaries|설득 원리와 정직한 사용의 경계]]에서 다룬다.
+
 ## 3. Premature Optimization — 시기상조 최적화
 
 **실제 병목을 측정하기 전에 코드를 최적화하는 경향.**
@@ -90,6 +92,14 @@ Donald Knuth의 명언: *"Premature optimization is the root of all evil."*
 
 **대응 제안**: 코드나 설계의 예상 결과, 확신 정도와 근거를 남긴 뒤 테스트, 실행 결과와 독립적인 피드백에 대조한다. 틀린 결론뿐 아니라 근거가 부족한데 확신했던 지점도 수정한다. 질문하는 태도와 실제 수행을 따로 평가하며, 이 절차 자체의 효과를 위 연구가 검증한 것으로 제시하지 않는다.
 
+### 평균 이상 효과 (Better-Than-Average Effect)
+
+다수가 자기 능력이나 성과를 평균보다 높게 평가하는 경향이다. 모든 아이가 평균 이상이라는 가상의 마을 이름을 따 워비곤 호수 효과라고도 부른다. Svenson(1981)은 미국과 스웨덴의 운전자 표본에게 다른 참가자와 비교한 자신의 운전 안전성과 기술을 물었고 다수가 자신을 중앙값보다 위에 놓았다. 2023년의 사전 등록 재현 연구(Koppel 외, 1,203명)도 다수가 자기 운전 기술과 안전성을 평균 이상으로 평가해 원 연구와 일치하는 결과를 얻었다.
+
+Dunning-Kruger와는 질문이 다르다. Dunning-Kruger는 특정 과제의 수행 수준에 따라 자기평가 오차가 어떻게 달라지는지를 보고, 평균 이상 효과는 집단 전체가 자기 위치를 평균보다 높게 놓는 분포를 본다. 숙련자가 남의 능력을 깎아 본다는 식의 설명은 위 Dunning-Kruger 절의 원 논문 설명과 다르므로 옮기지 않는다.
+
+**대응 제안**: 일정 추정, 코드 리뷰 자체 평가와 성과 자기평가처럼 자기 판단이 기준이 되는 곳에는 과거 실측, 동료 비교 자료나 외부 리뷰처럼 자신 밖의 기준을 붙인다. 자기 점검표로 상위 성과자의 특성을 확인하는 방식도 대부분이 자신을 평균 이상으로 평가한다는 점 때문에 결론을 내리기 어렵다.
+
 ### Sunk Cost Fallacy — 매몰 비용 오류
 이미 투입한 시간, 비용이 아까워 실패하는 방향을 계속 추진. "이만큼 했는데 지금 접을 순 없잖아."
 
@@ -115,11 +125,17 @@ Donald Knuth의 명언: *"Premature optimization is the root of all evil."*
 - **90-90 법칙**을 아는가, 일정 추정에서 어떻게 반영하는가
 - **사전 부검(Pre-mortem)** 기법의 의미
 - **Dunning-Kruger**의 과제별 자기평가 오차와 연차, 자신감만으로 실력을 판별하는 오류를 구분하는가
+- **평균 이상 효과**가 자기평가 중심의 일정 추정과 성과 평가에 주는 위험과 외부 기준을 붙이는 방법
 - 편향을 **조직 차원 장치**(ADR, 테크스펙, 체크리스트)로 줄이는 방법
 
 ## 출처
 - [Kruger and Dunning — Unskilled and Unaware of It (1999)](https://gwern.net/doc/psychology/1999-kruger.pdf) — 2026-10-26 원 논문의 네 연구, 상위 집단의 상대 평가와 한계 절 확인. 개발자 연차에 대한 인과는 다루지 않음
 - [mimul — 프로그래밍에서의 인지 편향](https://www.mimul.com/blog/cognitive-biases-in-programming/)
+- [Svenson — Are we all less risky and more skillful than our fellow drivers? (Acta Psychologica, 1981)](https://doi.org/10.1016/0001-6918(81)90005-6) — 47권 2호 143~148쪽. 2026-11-24 Crossref 서지와 아래 재현 논문의 원 연구 설명으로 대조했고, 원문의 집단별 백분율은 확인하지 못해 옮기지 않았다
+- [Koppel 외 — We are all less risky and more skillful than our fellow drivers: Successful replication and extension of Svenson (1981) (Meta-Psychology, 2023)](https://doi.org/10.15626/MP.2021.2932) — 2026-11-24 초록의 표본과 결과 대조
+- [Langer — The illusion of control (Journal of Personality and Social Psychology, 1975)](https://doi.org/10.1037/0022-3514.32.2.311) — 32권 2호 311~328쪽. 2026-11-24 Crossref 서지와 아래 재검증 논문의 원 연구 설명으로 대조
+- [Klusowski, Small, Simmons — Does Choice Cause an Illusion of Control? (Psychological Science, 2021)](https://doi.org/10.1177/0956797620958009) — 32권 2호 159~172쪽. 2026-11-24 저자 소속 기관(Wharton)에 게시된 논문 PDF의 초록과 서론 대조
+- [브런치 sellsecret — 17. 착각적 우월성](https://brunch.co.kr/@sellsecret/465) — 2018-07-10 게시. 평균 이상 효과 절의 계기. 글의 임원, 운전자, 노동자 조사 수치는 원 출처를 대조하지 못해 옮기지 않았다. 추가 글: #449(복권 연구를 근거로 한 상담 제안)
 
 ## 관련 문서
 - [[Tech-Spec-Writing|Tech Spec (결정 근거 기록)]]

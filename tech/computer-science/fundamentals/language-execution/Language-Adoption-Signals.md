@@ -1,7 +1,7 @@
 ---
 tags: [cs, fundamentals, programming-language, language-selection, developer-survey, rust, go]
 status: done
-verified_at: 2026-11-23
+verified_at: 2026-11-24
 category: "CS - 기초"
 aliases: ["Language Adoption Signals", "프로그래밍 언어 채택 지표 읽는 법", "언어 전망과 설치 기반"]
 ---
@@ -15,6 +15,7 @@ aliases: ["Language Adoption Signals", "프로그래밍 언어 채택 지표 읽
 - **남아 있을 언어:** 큰 업무 시스템을 다른 언어로 바꾸려면 기존 동작을 보존하고, 데이터를 안전하게 옮기고, 개발자를 다시 교육하고, 새 시스템의 신뢰성을 입증해야 한다. 그래서 많은 조직에는 동작하는 애플리케이션을 개선하는 쪽이 처음부터 다시 쓰는 쪽보다 실용적이다. 언어의 지속성은 언어 문법보다 런타임, 프레임워크, 도구와 경험 있는 개발자를 합친 플랫폼에서 나온다. 점진 교체의 방법은 [[Legacy-Modernization-Strategies|레거시 현대화 전략]]을 따른다.
 - **새로 고를 언어:** 새 구성요소는 교체 비용이 없으므로 그 구성요소의 제약(실행 위치, 메모리 안전, 배포 단위, 생태계)에 맞는 언어를 고를 수 있다.
 - **결론이 갈리는 지점:** 어떤 언어가 사라지지 않는다는 판단과 그 언어가 다음 세대의 중심이 된다는 판단은 따로 한다. 언어가 죽었다는 선언과 계속 쓰인다는 반론은 대개 서로 다른 질문에 답하고 있다.
+- **설치 기반이 실제로 바뀐 사례:** Linux에서 Android의 프로세스 간 통신을 맡는 Binder 드라이버는 6.18부터 Rust 구현이 C 구현과 함께 들어가 있었고, 2026-10-25 메인라인에 병합된 7.4 변경이 C 구현을 지웠다(파일 20개, 11,470줄 삭제). 삭제 커밋은 15년 넘게 복잡해진 C 드라이버로는 취약점을 밟지 않고 새 기능을 넣기 어려웠다는 점과, Rust 구현이 기능 동등성을 갖추고 성능도 같거나 자주 더 나았으며 Android 기기에서 한동안 돌았다는 점을 이유로 든다(작성자 평가). 교체는 새 구현이 같은 자리에서 동등성을 보이고 두 구현이 함께 있던 기간 뒤에 일어났다(해석).
 
 ## 조사마다 재는 것이 다르다
 
@@ -28,6 +29,7 @@ aliases: ["Language Adoption Signals", "프로그래밍 언어 채택 지표 읽
 
 - **모집단:** 설문은 응답한 사람의 자기 보고이고 저장소 통계는 공개 활동이다. 사내 저장소의 코드와 응답하지 않은 개발자는 두 쪽 모두에서 빠진다. 특정 언어 사용자만 대상으로 한 조사는 그 언어의 쓰임새를 보여 줄 뿐 다른 언어와의 비교에는 쓸 수 없다.
 - **순위와 증가율:** 증가율은 분모가 작을수록 크게 나온다. 증가율 1위와 증가 인원 1위가 다른 언어일 수 있으므로 두 값을 함께 본다. 빠른 성장이 장기 정착을 보장하지는 않는다.
+- **선호와 사용률:** Stack Overflow의 admired는 지난 1년 그 언어로 많이 개발했다고 답한 사람 가운데 다음 1년에도 쓰고 싶다고 답한 비율이라 분모가 그 언어의 사용자다. 2026년 조사(응답자 14,099명)에서 Rust는 admired 67.4%로 사용률 12위 안의 언어 가운데 가장 높지만 사용률은 18.0%다. 사용자가 17명(0.1%)인 Elm의 admired는 94.1%다. admired는 써 본 사람이 계속 쓰려는 의향이지 채택 범위가 아니므로 사용률, 응답자 수와 함께 읽는다.
 - **조사 간 비교:** 사용률 1위와 기여자 수 1위가 다르다고 해서 한쪽이 틀린 것이 아니다. 측정 대상이 다르므로 한 조사의 순위를 다른 조사의 순위와 직접 잇지 않는다.
 - **묶음 단위:** TypeScript는 JavaScript로 변환돼 실행되므로 웹 플랫폼의 전망을 볼 때는 두 언어를 한 생태계로 묶어 읽는 편이 맞다. 조사는 둘을 따로 세므로 어느 단위로 읽는지 먼저 정한다.
 
@@ -63,7 +65,11 @@ aliases: ["Language Adoption Signals", "프로그래밍 언어 채택 지표 읽
 
 ## 출처
 
-- [The results of the 2026 Developer Survey are here — Stack Overflow](https://stackoverflow.blog/2026/10/06/the-results-of-the-2026-developer-survey-are-here/) — 2026-10-06 게시. 2026-11-23 상위 10개 변동, SQL 2위와 Rust 12위 대조. 언어별 사용률 표는 확인하지 않았다
+- [The results of the 2026 Developer Survey are here — Stack Overflow](https://stackoverflow.blog/2026/10/06/the-results-of-the-2026-developer-survey-are-here/) — 2026-10-06 게시. 2026-11-23 상위 10개 변동, SQL 2위와 Rust 12위 대조. 언어별 수치는 아래 기술 데이터 페이지로 2026-11-24 대조했다
+- [2026 Developer Survey: Technology — Stack Overflow](https://survey.stackoverflow.co/2026/technology/data) — 2026-11-24 언어 사용률(응답자 14,099명)과 Admired and Desired 표의 정의, Rust와 Elm 수치 대조
+- [binder: rm -f binder.c — torvalds/linux, GitHub](https://github.com/torvalds/linux/commit/fd2bc059ed466bdd95347a4f7891d150d94e7de2) — 2026-09-12 작성 커밋. 2026-11-24 삭제 이유와 규모, v6.18, v7.3, v7.4-rc1 태그의 C 구현과 Rust 구현 유무 대조
+- [Merge tag char-misc-7.4-rc1 — torvalds/linux, GitHub](https://github.com/torvalds/linux/commit/330517c63aa9b48227b6ab45f01003effac77ae4) — 2026-10-25 병합. 2026-11-24 C Binder 삭제가 7.4 병합 창의 변경에 들어간 사실 대조
+- [러스트가 뭐길래? 클로드 코드, 코파일럿, 안드로이드가 전부 갈아탔다 — YouTube, 투더제이 TTJ](https://www.youtube.com/watch?v=qrMK2aEkBbg) — 2026-11-24 업로드, 2026-11-24 음성 인식 전사 전체 확인. Binder의 C 구현 삭제와 Rust의 선호, 사용률 수치를 다룬 계기이며 위 커널 커밋과 설문 데이터로 대조했다. Linux 7.0에서 실험 단계 표시를 뗐다는 연혁은 확인하지 않아 쓰지 않았다
 - [Octoverse: Commits, pushes, reach new highs in 2026 as developers build with agents — GitHub](https://github.blog/2026-10-28-octoverse-commits-pushes-reach-new-highs-in-2026-as-developers-build-with-agents/) — 2026-10-28 게시. 2026-11-23 월간 기여자 증가 인원과 Rust 증가율 문장 대조
 - [Results from the 2025 Go Developer Survey — The Go Blog](https://go.dev/blog/survey2025) — 2026-01-21 게시. 2026-11-23 용도 비율 대조
 - [huggingface/candle — GitHub](https://github.com/huggingface/candle) — 2026-11-23 저장소 소개 문구 확인

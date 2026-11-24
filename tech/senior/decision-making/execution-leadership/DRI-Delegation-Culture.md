@@ -30,6 +30,8 @@ DRI(Directly Responsible Individual)는 어떤 사안의 **단일 최종 의사�
 
 위임한 범위에서는 팀이 방향을 정하고 만들고 결과를 관찰하는 흐름을 설계한다. 이때 줄이려는 것은 **판단에 기여하지 않는 중복 보고와 승인 대기**다. 의존 팀과의 정보 공유, 위험 검토와 결과 확인은 별도로 유지한다. 가역적 결정을 팀에 맡기는 기준은 [[One-Way-vs-Two-Way-Door|되돌릴 수 있는 문 vs 없는 문]]과 함께 검토한다.
 
+조직 구조 수준의 예도 있다. Toyota는 2016년 3월 기능 중심 조직을 제품 중심의 사내 컴퍼니 체제로 바꾼다고 발표하고(4월 시행), 각 사업 단위가 더 빠르고 독립적으로 결정하게 하며 각 사내 컴퍼니 사장에게 전권과 책임을 준다는 목적을 밝혔다. 회사가 밝힌 목적이며 의사결정 속도나 성과의 변화를 독립적으로 평가한 자료는 아니다.
+
 ## 문서 작성과 최종 판단의 책임을 나눈다
 
 결과에 책임지는 사람이 모든 자료 조사와 보고서 작성을 직접 해야 하는 것은 아니다. GitLab의 TeamOps는 DRI를 최종 의사결정자로 두면서 모든 실무를 혼자 수행할 책임과 구분한다. GitLab Handbook의 RACI 설명에서도 실행을 맡는 Responsible과 최종 책임을 지는 Accountable을 구분한다(2026-10-13 확인).
@@ -57,6 +59,8 @@ Netflix의 공개 문화 원칙은 구성원의 판단 여지를 넓히면서도
 3. 비윤리적 결정, 중대한 피해, 위기와 신규 구성원의 맥락 부족처럼 리더의 개입이 필요한 조건을 남긴다.
 4. 결정 대기, 재작업과 사고를 함께 관찰한다. 절차 축소만으로 신뢰나 인력 유지가 개선됐다고 판단하지 않는다.
 
+규칙 대신 소수의 판단 기준과 우선순위를 공유하는 방식과, 동료 규범이 오히려 성과를 억제하는 경우는 [[Shared-Norms-and-Social-Control|공유 규범과 사회적 통제]]를 함께 본다.
+
 ## 할 일이 아니라 맥락을 넘긴다
 
 위임의 단위는 할 일 목록이 아니라 판단에 필요한 맥락이다. A를 하라고만 말하면 상황이 바뀌는 순간 다시 지시를 기다려야 한다. 회사가 B라는 목표로 가고 있고, 그러려면 C 문제를 풀어야 하며, 그래서 지금 A가 중요하다고 설명하면 받는 사람은 A가 막혔을 때 다른 방법을 스스로 찾을 수 있다. 방향 정렬은 지시가 아니라 설득의 과정이고, 이유를 납득한 사람이 DRI로서 결정을 이어 간다.
@@ -72,6 +76,8 @@ Netflix는 문화 문서에서 관리자에게 context not control, 즉 모든 �
 - **규칙은 위험이 큰 곳에 최소로 둔다**: Netflix의 현행 문화 문서(2024-06 갱신)는 출시, 마케팅, 보상, 분기 결산처럼 프로세스가 필요한 일과 괴롭힘, 회사 정보 유출, 내부자 거래처럼 엄격한 규칙이 필요한 영역을 인정하면서도 규칙은 최소로, 프로세스는 단순하고 효율적으로 유지한다고 밝힌다. context not control은 손을 떼는 관리가 아니라고 하며, 관리자는 주변 업무에 관여해 팀을 적극적으로 코칭해야 하고, 누군가 비윤리적이거나 회사에 중대한 피해를 줄 수 있는 결정을 내리려 할 때, 위기 상황이나 신규 구성원에게 충분한 맥락이 없을 때는 개입해야 할 수도 있다고 적는다.
 
 적용 제안: 반복 업무를 맡은 사람과 합류 초기 구성원에게는 절차와 완료 기준을 문서로 주고 확인 시점을 정한다. 성숙도가 높아진 과업은 목표와 확인 지표만 남기고 맥락 위임으로 옮기며, 과업이나 환경이 크게 바뀌어 성숙도가 떨어지면 다시 구체적인 지시에서 시작한다. 절차 문서는 리더도 같은 기준으로 따르고, 바꿀 때는 문서를 먼저 고친다. 개인에게 일을 맡기며 성장을 설계하는 방법은 [[People-Leadership#위임 — 방치가 아니라 성장 설계|사람 리더십의 위임]]에서 다룬다.
+
+성숙도가 낮은 과업의 구조화된 지시는 리더가 업무를 쪼개 먼저 해 보이고, 납득할 때까지 설명하고, 따라 해 보게 하는 순서로 할 수 있다. 지시의 기준을 팀에서 경험이 가장 적은 사람에게 맞추면 베테랑에게는 있을 수 없는 실수를 미리 막는다는 현장 경험칙도 있다([[Frontline-Target-Leadership-People#해 보이고, 설명하고, 시켜 본다|해 보이고, 설명하고, 시켜 본다]]). 개인이 아니라 팀 단위의 발달 단계를 진단하는 질문은 [[Trust-Respect-Teamwork#팀 발달 단계는 진단 가설로 쓴다|팀 발달 단계]]에 있다.
 
 ## 상향식 제안을 실행 책임으로 연결한다
 
@@ -111,6 +117,8 @@ Netflix는 문화 문서에서 관리자에게 context not control, 즉 모든 �
 - [[Failure-Tolerant-Culture|실패에 관대한 문화]] — 위임과 짝을 이루는 실험 문화
 - [[Co-Leadership-Partnership|공동 리더십]] — 역할은 나누되 관심은 나누지 말라
 - [[People-Leadership#위임 — 방치가 아니라 성장 설계|사람 리더십의 위임]] — 개인 단위 위임과 성장 설계
+- [[Shared-Norms-and-Social-Control|공유 규범과 사회적 통제]] — 규칙 대신 공유하는 판단 기준
+- [[Frontline-Target-Leadership-People|현장 리더의 사람 육성과 일상 운영]] — 성숙도 낮은 과업의 시범과 설명
 
 ## 출처
 
@@ -128,3 +136,5 @@ Netflix는 문화 문서에서 관리자에게 context not control, 즉 모든 �
 - [Effective delegation — GitLab Handbook](https://handbook.gitlab.com/handbook/leadership/effective-delegation/)
 - [All-remote onboarding — GitLab Handbook](https://handbook.gitlab.com/handbook/company/culture/all-remote/onboarding/)
 - [High Output Management — Vintage, Andrew S. Grove](https://books.google.com/books?id=piCeCgAAQBAJ) — Google Books 미리보기 스니펫과 1983년 초판 사본으로 TRM 대목 확인
+- [Toyota Overhauls Function-based Structure in Favor of Products — Toyota Global Newsroom](https://global.toyota/en/detail/11234406) — 2016-03-02 발표, 2016-04-18 시행. 2026-11-24 개편의 목적(빠르고 독립적인 결정, 사내 컴퍼니 사장의 전권과 책임) 대조
+- [12. Learning TOYOTA — 브런치, sellsecret](https://brunch.co.kr/@sellsecret/264) — 2018-02 발행, 국내 경영서를 인용한 해설. 독립채산과 인원 수 같은 세부와 개편 효과의 인과는 확인하지 못해 쓰지 않았다

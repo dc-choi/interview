@@ -22,6 +22,8 @@ aliases: ["Senior Retention Signals", "최고 엔지니어 이탈", "Engineering
 
 휴가 사용이나 사적인 행동을 면접 또는 퇴사 준비의 증거로 취급하지 않는다. 업무에서 관측한 문제를 질문하고 본인의 설명을 확인한다. 동료의 연쇄 이탈 가능성이나 채용 비용도 표본과 기간 없이 고정 수치로 제시하지 않는다.
 
+몰입을 간단히 볼 때는 컨설팅사 Aon의 몰입 모형이 쓰는 세 행동을 질문으로 빌릴 수 있다. 회사를 남에게 좋게 말하는가(Say), 오래 머물 생각인가(Stay), 요구 이상으로 노력하는가(Strive)다. Aon은 이 세 차원에 대한 직원 설문 응답으로 몰입 수준을 잰다고 설명하며, 차원별 문항 수는 공개 자료로 확인하지 못했다. 다만 말로 밝힌 잔류 의향과 실제 퇴사는 같은 결과가 아니다. 심리적 계약 위반이 이직 의도와는 관련됐지만 실제 퇴사와는 관련되지 않았다는 메타분석은 [[People-Leadership#약속 불이행과 실제 퇴사를 구분한다|약속 불이행과 실제 퇴사의 구분]]에 있다. 세 질문은 대화의 출발점으로 쓰고, 개인의 퇴사를 예측하거나 감시하는 척도로 쓰지 않는다.
+
 ## 조기 감지 방법
 
 ### Skip-Level 1:1
@@ -82,6 +84,8 @@ Google SRE의 공개 사례는 toil과 그 밖의 운영 작업을 합친 시간
 - [Rational snacking: Young children's decision-making on the marshmallow task is moderated by beliefs about environmental reliability — Cognition, Kidd, Palmeri, Aslin](https://doi.org/10.1016/j.cognition.2012.08.004) — 약속 신뢰도와 기다림의 관계, 직장 보상 효과의 직접 근거는 아님
 - [우리 회사, 스타트업일까 좋소일까? — JOB담](https://www.youtube.com/watch?v=mH3GCacqt7c) — 즉각 보상과 약속 이행에 관한 VC, 서치펌 대표의 경험
 - [GitLab Handbook, Managing Effective Skip Level Meetings](https://handbook.gitlab.com/handbook/engineering/devops/dev/create/engineers/skip-level/) — 피드백 공유와 민감한 주제의 처리 사례
+- [Aon, Culture & Engagement](https://humancapital.aon.com/solutions/talent/culture-and-engagement) — 2026-11-24 검색 결과의 발췌로 Say, Stay, Strive 응답으로 몰입을 잰다는 설명을 확인했다. 페이지 직접 열람은 같은 날 다시 시도해도 실패했고(HTTP 526), 차원별 문항 수는 확인하지 못했다
+- [16. 몰입(Engagement)의 정의 — 브런치, sellsecret](https://brunch.co.kr/@sellsecret/351) — 2018-03 발행, 세 행동을 관리자의 관찰 신호로 쓰자는 경험 기반 주장
 
 ## 관련 문서
 

@@ -79,6 +79,8 @@ EBS 11강은 이전 16%와 갱신된 19%를 비교하고, 청년의 명시적 �
 
 반복 과업을 자동화해 현재의 비용을 줄이는 선택과 사람이 이전에 못 하던 일을 가능하게 하는 선택은 인력, 품질과 분배에 다른 영향을 줄 수 있다. Turing trap은 사람을 그대로 모방하는 목표에만 집중하면 노동자의 경제적 교섭력과 정치적 영향력이 약해질 수 있다는 경제적 경고다. 모든 자동화가 해롭다거나 보완 도구가 모든 노동자의 임금을 올린다는 보장은 아니다.
 
+대체 가능성은 분석 단위에 따라 크게 달라진다. Frey와 Osborne(2013)은 미국 702개 직업의 컴퓨터화 확률을 추정해 전체 고용의 약 47%가 고위험이라고 보고했고, 2018년에는 이 수치가 기술적으로 자동화할 수 있다는 뜻일 뿐 일자리가 얼마나 빨리 실제로 사라질지는 추정하지 않았다고 밝혔다. 같은 직업 안에서도 사람마다 맡은 과업이 다르다는 점을 반영한 Arntz, Gregory와 Zierahn(2016)의 과업 기반 추정에서 OECD 21개국의 자동화 가능 일자리는 평균 9%(한국 6%, 오스트리아 12%)였고, 저자들은 직업 단위 접근이 위험을 과대 추정할 수 있다고 봤다. 두 숫자 모두 기술적 가능성이며 고용 감소의 예측이 아니다. 직업 이름보다 과업과 실제 결정 과정을 보는 이유는 아래 직무 폐지와 기술적 대체의 구분과 같다.
+
 진입 업무가 사라질 때는 향후 숙련자를 만드는 경로도 따로 설계한다. 채용을 줄이는 단기 효율과 5~10년 뒤 경력 인력의 공급은 다른 문제다. AI를 교육에 쓰더라도 도구를 사용하는 동안의 성과와 도구 없이 할 수 있는 업무를 구분한다. Sal Khan의 EBS 6강이 제시한 운전과 콜센터 자동화 일화도 전환기의 재교육과 사회적 불안정에 관한 문제 제기이며 일반 고용 손실률의 실증 근거로 쓰지 않는다.
 
 평가를 AI 단독 성능에서 사람과 AI의 협업 성과로 넓힐 수 있다. Centaur evaluation은 참여자의 숙련도, 상호작용 인터페이스, 채점과 자원 예산을 명시하고 사람이 AI와 함께 문제를 풀게 한다. 사람 단독, AI 단독, 협업 조건을 같은 과업에서 비교해야 협업의 추가 가치를 알 수 있다. 정답률 외에 사람 시간, 비용, 오류와 이해 가능성도 함께 측정한다. 협업이 우월하다는 결론은 비교 결과로 확인할 대상이다(2026-11-03 Haupt와 Brynjolfsson의 논문 정의 대조).
@@ -131,6 +133,10 @@ Where is all the new, good software? 에세이는 공개 제품의 부족에 대
 - [Canaries in the Coal Mine? Six Facts about the Recent Employment Effects of Artificial Intelligence — Stanford Digital Economy Lab](https://digitaleconomy.stanford.edu/publication/canaries-in-the-coal-mine-six-facts-about-the-recent-employment-effects-of-artificial-intelligence/) — 2026-08-12 개정판, 2026-11-03 연구 소개의 수치, 채용 경로와 비인과 해석 대조. 원자료 재분석은 하지 않음
 - [The Turing Trap: The Promise & Peril of Human-Like Artificial Intelligence — Stanford Digital Economy Lab, Erik Brynjolfsson](https://digitaleconomy.stanford.edu/publication/the-turing-trap-the-promise-peril-of-human-like-artificial-intelligence/) — 2026-11-03 논지와 적용 범위 대조
 - [AI Should Not Be An Imitation Game: Centaur Evaluations — Stanford Digital Economy Lab, Andreas Haupt와 Erik Brynjolfsson](https://digitaleconomy.stanford.edu/publication/ai-should-not-be-an-imitation-game-centaur-evaluations/) — 2025 논문, 2026-11-03 참여자, 인터페이스와 채점의 정의 대조
+- [The Future of Employment: How susceptible are jobs to computerisation? — Oxford Martin School, Carl Benedikt Frey와 Michael A. Osborne](https://www.oxfordmartin.ox.ac.uk/publications/the-future-of-employment) — 2013-09-01 작업 논문(Technological Forecasting and Social Change 114권 254~280쪽 게재). 2026-11-24 초록의 702개 직업과 약 47% 대조
+- [Automation and the future of work: understanding the numbers — Oxford Martin School](https://www.oxfordmartin.ox.ac.uk/opinion/view/404) — 2018-04-13 저자들의 해설. 2026-11-24 기술적 가능성일 뿐 실제 자동화 규모와 속도의 추정이 아니라는 서술 대조
+- [The Risk of Automation for Jobs in OECD Countries: A Comparative Analysis — ZEW, Melanie Arntz, Terry Gregory, Ulrich Zierahn](https://www.zew.de/PU78037) — 2016, OECD Social, Employment and Migration Working Papers 189호. 2026-11-24 초록의 과업 기반 접근, 21개국 평균 9%와 국가별 범위 대조
+- [당신의 일자리는 안녕하십니까? — 브런치, sellsecret](https://brunch.co.kr/@sellsecret/2) — 2017-07 발행, 직업별 자동화 확률 연구를 인용한 칼럼. 직업별 순위 수치와 언론 분석의 출처는 대조하지 못해 쓰지 않았다
 
 - [Artificial Intelligence in the Firm: Bottlenecks in Software Production — Fiona Chen and James Stratton](https://fion.ac/jellyfish.pdf) — 2026-08-04 판을 2026-10-16 부분 대조. 같은 주소의 2026-11-19 판(첫 판 2026-01-07)을 2026-11-21 초록, 서론, 표본 조건, 산출, 리뷰, 고용과 결론 절로 대조. 부록 그림과 모형 추정 절차는 읽지 않음
 - 사용자 제공 GeekNews 알림(2026-11-19): AI 코딩 에이전트 도입 뒤 코드 작성량과 리뷰 시간에 관한 Harvard 연구. 학습 계기이며 게시물 번호는 확인하지 못했다

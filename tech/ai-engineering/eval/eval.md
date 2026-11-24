@@ -23,7 +23,7 @@ LLM 출력의 평가와 모른다고 말하는 능력, 비전 모델의 합성 �
 - [x] [[LLM-Sycophancy-Evaluation|LLM 아첨 편향 평가]] — 정답 훼손, 정정 수용과 선호만 바꾼 쌍 비교
 - [x] [[Review-Moderation-Pipeline|리뷰 검수 자동화]] — 정책별 판정, 정밀도와 재현율, 사람 재검토와 결과 버전
 - [x] [[LLM-Eval-Strategy|LLM 평가 전략 (Pass@k, 성능 비고정성, Multi-gate 데이터 품질, CSAT vs 사실정확도, 에이전트 과업 완료)]]
-- [x] [[LLM-Abstention|LLM Abstention (모른다고 말하는 능력, 정확도와 독립, AbstentionBench의 세 결과, 이진 채점이 추측을 보상, 확신 목표와 behavioral calibration, 과잉 거부, needs_review, alignment 재설계)]]
+- [x] [[LLM-Abstention|LLM Abstention (모른다고 말하는 능력, 정확도와 독립, AbstentionBench의 세 결과, 이진 채점이 추측을 보상, 확신 목표와 behavioral calibration, 과잉 거부, needs_review, alignment 재설계, 모호함을 알아채는 것과 묻는 것의 차이, Claude Code의 확인 요청 분석)]]
 - [x] [[LLM-Hallucination-Verification|LLM 환각 유형과 검증 (사실성과 충실성 두 축, 사전학습과 채점의 원인, Chain-of-Verification 변형과 한계, 설명은 증거가 아니다, 행동 주장과 실행 기록, 규칙은 코드로, 인용의 존재와 적용과 지지 검사, 평가 사례)]]
 - [x] [[LLM-Statistical-Citation-Verification|AI 인용과 통계의 원출처 검증]] — 숫자와 분모, 재인용 경로, 위키백과 정리와 탐지 한계
 - [x] [[LLM-App-Three-Gulfs|LLM 애플리케이션의 세 간극]] — 이해, 명세, 일반화 간극, 명세 실패와 일반화 실패의 구분, 분석, 측정, 개선 루프, 사용자가 간극을 메우는 정도

@@ -11,7 +11,7 @@ aliases: ["OKR", "Objectives and Key Results"]
 
 ## 목차
 
-- [[OKR-Concept|OKR 개념 — 성과관리 vs 성과개발, 코브라 효과, MBO, 미션과 비전과 OKR, KR 3종, 왜 OKR인가]]
+- [[OKR-Concept|OKR 개념 — 성과관리 vs 성과개발, 코브라 효과, MBO와 참여 목표 연구, 미션과 비전과 OKR, KR 3종, 오르는 목표와 80점 주의, 왜 OKR인가]]
 - [[OKR-Writing|OKR 작성법 — Objective 실수 패턴, KR 시작값과 목표값, KR 스트레치 골, Initiative 구분(통제 가능성), 개수 가이드]]
 - [[OKR-Operations|OKR 운영 — 주간회의(진척도, 자신감 지표), 분기 리뷰, 실행 조건과 조직 적합성의 실험]]
 

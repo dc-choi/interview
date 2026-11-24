@@ -1,7 +1,7 @@
 ---
 tags: [rust, ownership, borrowing, memory-safety, error-handling, allocator, cargo]
 status: done
-verified_at: 2026-11-16
+verified_at: 2026-11-24
 category: "CS - 기초"
 aliases: ["Rust Ownership and Borrowing", "Rust 소유권과 대여", "소유권 규칙", "borrow checker", "대여 검사기", "never type", "never 타입", "DropGuard"]
 ---
@@ -80,6 +80,17 @@ shout(&mut name);
 - 참조는 항상 유효해야 한다. 해제된 메모리를 가리키는 참조는 컴파일되지 않는다.
 - 이 제약으로 데이터 경쟁을 컴파일 시점에 막는다. 데이터 경쟁은 둘 이상의 포인터가 같은 데이터에 동시에 접근하고, 그중 하나 이상이 쓰며, 접근을 동기화하는 장치가 없는 상태다.
 
+같은 규칙은 스레드가 하나여도 해제된 메모리를 가리키는 참조를 막는다. `Vec`은 원소를 연속된 메모리에 두므로 `push`할 때 자리가 모자라면 더 큰 공간을 새로 할당해 원소를 옮기고 원래 공간을 해제한다. 그래서 첫 원소를 빌려 둔 채 `push`하는 코드는 컴파일되지 않는다.
+
+```rust
+let mut v = vec![1, 2, 3, 4, 5];
+let first = &v[0];   // 불변 대여
+v.push(6);           // error[E0502]: cannot borrow `v` as mutable because it is also borrowed as immutable
+println!("{first}"); // 불변 대여를 여기서 아직 쓴다
+```
+
+`push`를 모두 마친 뒤 `&v[0]`을 빌리면 통과한다. C++의 `std::vector`도 `push_back`으로 재할당이 일어나면 원소의 참조와 반복자가 모두 무효가 되지만([[Cpp-Language-Memory-and-STL#문자열과 Container 선택|C++ container 선택]]), 컴파일러는 무효가 된 참조를 쓰는 코드를 막지 않는다. 해제된 저장 공간을 통한 접근은 표준이 정의하지 않은 동작이라 충돌, 엉뚱한 값, 정상처럼 보이는 실행 가운데 무엇이 될지 보장되지 않는다.
+
 문서 공유 권한에 빗대면 불변 참조는 여러 사람에게 주는 보기 권한, 가변 참조는 한 사람에게만 주는 편집 권한이다. 비유는 규칙을 외우는 용도이며 참조의 유효 기간(수명) 검사는 담지 못한다.
 
 ## 변수는 기본이 불변이다
@@ -129,6 +140,7 @@ Cargo는 빌드 도구와 패키지 관리자를 겸한다. `cargo new`가 프�
 - `let s2 = s1;` 뒤에 `s1`을 쓰면 왜 컴파일되지 않는가? 정수에서는 왜 되는가?
 - 읽기만 필요한 함수에 `String`을 넘길 때 `clone`과 `&` 가운데 무엇을 쓰며 비용 차이는 무엇인가?
 - 가변 참조가 있는 동안 불변 참조를 만들 수 없다는 규칙은 데이터 경쟁의 세 조건 가운데 무엇을 없애는가?
+- 첫 원소를 빌려 둔 채 `push`하는 코드가 스레드 하나에서도 거부되는 이유는 무엇이며, C++에서는 같은 코드가 어떻게 되는가?
 - `?`와 `unwrap`은 `Err`을 만났을 때 각각 무엇을 하는가?
 - `cargo run`으로 잰 실행 시간을 성능 근거로 쓰면 안 되는 이유는 무엇인가?
 - `DropGuard`로 되돌리기를 구현할 때 성공 경로에서 `dismiss`를 빠뜨리면 어떤 일이 생기는가?
@@ -137,6 +149,9 @@ Cargo는 빌드 도구와 패키지 관리자를 겸한다. `cargo new`가 프�
 
 - [The Rust Programming Language, What Is Ownership?](https://doc.rust-lang.org/book/ch04-01-what-is-ownership.html) — 2026-11-16 소유권 세 규칙, 이동과 Copy, clone의 비용, String의 세 구성 요소, E0382 출력 대조
 - [The Rust Programming Language, References and Borrowing](https://doc.rust-lang.org/book/ch04-02-references-and-borrowing.html) — 참조 규칙과 데이터 경쟁의 정의
+- [The Rust Programming Language, Storing Lists of Values with Vectors](https://doc.rust-lang.org/book/ch08-01-vectors.html) — 2026-11-24 Listing 8-6의 대여 중 `push` 예제, E0502 출력과 재할당 설명 대조
+- [cppreference, std::vector::push_back](https://en.cppreference.com/w/cpp/container/vector/push_back) — 2026-11-24 재할당 때 모든 반복자와 원소 참조가 무효가 되는 조건 대조
+- [C++ Working Draft, Compound types](https://eel.is/c++draft/basic.compound) — 2026-11-24 저장 기간이 끝난 영역을 가리키는 포인터 값을 통한 간접 참조가 정의되지 않은 동작이라는 규정 확인
 - [The Rust Programming Language, Variables and Mutability](https://doc.rust-lang.org/book/ch03-01-variables-and-mutability.html) — 기본 불변, `mut`, 상수와의 차이
 - [The Rust Programming Language, Defining an Enum](https://doc.rust-lang.org/book/ch06-01-defining-an-enum.html) — null이 없다는 설명과 `Option<T>`
 - [The Rust Programming Language, Error Handling](https://doc.rust-lang.org/book/ch09-00-error-handling.html) — 예외가 없고 `Result`와 `panic!`으로 나눈다는 설명
@@ -149,6 +164,7 @@ Cargo는 빌드 도구와 패키지 관리자를 겸한다. `cargo new`가 프�
 - [Announcing Rust 1.100.0 — Rust Blog](https://blog.rust-lang.org/2026/11/12/Rust-1.100.0/) — 2026-11-16 never 타입과 폴백 변경, Allocator 안정화 범위, DropGuard 예제와 `dismiss`가 연관 함수인 이유, 미사용 의존성 경고의 한계 대조
 - [Rust 1.100.0 - never 타입과 사용자 정의 메모리 할당자 안정화 — GeekNews](https://news.hada.io/topic?id=37070) — 요약의 `cargo install` 잠금 파일 기본 사용 항목은 공식 발표에서 확인하지 못해 쓰지 않았다
 - [Rust for Dummies in 7 Minutes — YouTube, The Coding Gopher](https://www.youtube.com/watch?v=ROYk9_7Dyrk) — 2026-11-13 업로드, 2026-11-16 음성 인식 전사 전체 확인. 설명 순서와 비유의 계기. 소유권, 대여, 타입과 Cargo의 사실은 위 공식 문서와 대조했고, 메모리 관리 방식 비교 표는 영상의 구분을 따랐으며 벤치마크 수치는 자체 측정으로 표기
+- [러스트가 뭐길래? 클로드 코드, 코파일럿, 안드로이드가 전부 갈아탔다 — YouTube, 투더제이 TTJ](https://www.youtube.com/watch?v=qrMK2aEkBbg) — 2026-11-24 업로드, 2026-11-24 음성 인식 전사 전체 확인. 대여 중 `push` 예제와 C++ 비교의 계기이며 사실은 위 Rust Book, cppreference와 C++ 표준 초안으로 대조했다. 영상이 보여 준 실행 결과와 빌드 폴더 크기는 화면과 자체 실행 기록이라 옮기지 않았다
 
 ## 관련 문서
 
@@ -156,6 +172,7 @@ Cargo는 빌드 도구와 패키지 관리자를 겸한다. `cargo new`가 프�
 - [[Rust-Abstraction-Choices|Rust의 추상화 선택과 비용]] — 디스패치 방식, derive 매크로, 부모 참조의 Weak와 아레나
 - [[Programming-Language-Landscape|프로그래밍 언어 지형과 구분 기준]] — 메모리 관리 방식의 언어별 비교
 - [[Compile-and-Runtime|컴파일과 런타임]] — 검사 시점과 실행의 구분
-- [[Rust-Style-Guide|Rust 스타일 가이드]]
+- [[Rust-Style-Guide|Rust 스타일 가이드]] — unwrap, unsafe 규칙과 에이전트가 쓴 Rust의 lint 점검
+- [[Cpp-Language-Memory-and-STL|C++ 값과 메모리, Container와 Algorithm]] — 재할당 뒤 참조와 반복자 무효화
 - [[Zig-Safety-and-C-Interop|Zig의 안전 장치와 C 연동]] — GC 없이 할당자를 인자로 넘기는 다른 방식
 - [[Dependency-Release-Cooldown|의존성 릴리스 쿨다운]] — Cargo `global-min-publish-age`

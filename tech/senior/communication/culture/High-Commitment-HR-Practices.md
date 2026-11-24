@@ -50,7 +50,7 @@ Huselid(1995)는 Bailey(1993)를 따라 인사 관행이 조직 성과에 영향
 - **측정 문제**: 한 영역에서 이런 관행을 쓰는 기업은 다른 영역에서도 쓸 가능성이 크다고 본다. 그렇다면 관행 하나만 측정한 효과 추정치는 묶음 전체의 효과를 떠안아 위로 치우칠 수 있다(Huselid, 1995).
 - **실증 결과**: Combs 외(2006)의 메타분석에서 관계는 개별 관행보다 관행 시스템을 분석할 때 강했다. 반면 Huselid(1995)가 직접 검정한 관행 사이의 정합(내부 적합)은 근거가 약했고, 경쟁 전략과의 정합(외부 적합)은 근거가 거의 없었다. 다만 적합 측정이 초기 단계여서, 관행 도입 자체가 정합을 맞추는 노력보다 중요하다고 결론 내리기는 이르다(Huselid, 1995).
 
-실무에서는 관행 하나를 들여오기 전에 그 효과를 받쳐 줄 관행과 상쇄할 관행을 함께 본다. 이는 위 보완성 주장을 옮긴 점검 방식이며 실증으로 확정된 규칙은 아니다.
+실무에서는 관행 하나를 들여오기 전에 그 효과를 받쳐 줄 관행과 상쇄할 관행을 함께 본다. 이는 위 보완성 주장을 옮긴 점검 방식이며 실증으로 확정된 규칙은 아니다. 교육 결과를 인증, 승진과 보상에 연결하면 교육도 인사 결정의 일부가 된다([[HRD-Scope-and-HRM-Boundary|HRD의 범위와 HRM과의 경계]]).
 
 ## 근거와 한계
 
@@ -68,6 +68,17 @@ Huselid(1995)는 Bailey(1993)를 따라 인사 관행이 조직 성과에 영향
 - **효과 크기**: 상관 .20은 관계가 있다는 근거이지만 인사 관행이 조직 성과 차이의 대부분을 설명한다는 뜻은 아니다.
 - **업종 맥락**: 관계는 서비스 조직보다 제조 기업에서 강했고(Combs 외, 2006) Arthur의 근거는 철강 한 업종이다. 제조 현장의 효과 크기를 지식 노동 조직에 그대로 옮기지 않는다.
 - **분석 단위**: 검토한 연구의 분석 단위는 기업, 공장과 사업부다. 직원 몇 명 규모의 회사에서 같은 관계가 나타나는지는 이 근거로 확인되지 않는다.
+
+## A 포지션 — 어느 자리에 차별 투자할지
+
+관행 묶음을 모든 직무에 같은 강도로 적용할 여력이 없다면 투자할 자리를 고른다. Huselid, Beatty와 Becker(2005)는 뛰어난 사람(A players)을 찾는 데만 집중하기보다 전략적으로 결정적인 자리(A positions)를 먼저 정하고 그 자리에 불균형하게 투자하라고 제안한다. A 포지션은 두 조건을 함께 만족하는 자리다.
+
+- 회사가 전략의 일부를 실행하는 능력에 불균형하게 중요하다.
+- 그 자리에 있는 사람들 사이에 일의 질의 편차가 크다. 편차는 평균을 끌어올렸을 때 얻을 수 있는 이득의 여지를 뜻한다.
+
+두 조건을 함께 봐야 하는 예로 조종사를 든다. 조종사는 대부분 항공사의 안전 목표에 핵심이지만 경력 내내 이어지는 훈련과 정부 규제로 대부분 잘 수행하므로 안전 영역의 성과를 더 끌어올리는 투자가 경쟁 우위의 기회가 되기는 어렵다. 같은 소매업이라도 개인화된 서비스로 경쟁하는 Nordstrom에서는 매장 판매 직원이, 낮은 가격과 상품 구색으로 경쟁하는 Costco에서는 구매 담당자가 결정적이다. 저자들은 이런 자리가 대개 인력의 20% 미만이고 조직 곳곳에 흩어져 있으며 위계나 채용의 어려움으로 정해지지 않는다고 본다. A 포지션을 지원하거나 편차가 작은 B 포지션, 전략에 기여하지 않아 외주나 제거를 검토할 C 포지션과 구분한다.
+
+Boudreau와 Ramstad(2005)도 인사 부서가 채용 단가 같은 자기 활동보다 그 활동이 돕는 인재 결정의 질을 재야 한다고 본다. 두 글 모두 실무 기고이며 차별 투자의 성과를 통제된 비교로 보인 연구는 아니다. 같은 조직 안에서 자리마다 투자가 다르면 B, C 포지션 구성원의 공정성 인식과 사기에 비용이 생길 수 있으므로 기준을 공개한다(이 문서의 제안).
 
 ## 적용 제안
 
@@ -90,6 +101,7 @@ Huselid(1995)는 Bailey(1993)를 따라 인사 관행이 조직 성과에 영향
 
 - **고용 안정**: 장기 고용 보장은 초기 회사가 지키기 어려운 약속이다. 대신 계약 기간, 남은 운영 자금으로 버틸 수 있는 기간, 역할 변경이나 계약 종료 때의 사전 공지와 절차를 계약 전에 서면으로 밝힌다.
 - **선별 채용**: 첫 한 명이 팀의 판단 기준과 대화 방식을 바꿀 수 있다. 친숙함보다 역할에 필요한 행동 증거로 뽑는다.
+- **첫 자리 고르기**: 어느 역할의 성과 편차가 고객 결과와 매출을 가장 크게 바꾸는지 묻는다. 위 A 포지션의 두 조건을 역할 후보에 적용한 질문이며, 병목에서 역할을 도출하는 절차는 [[Scaling-and-Hiring|1인 제품 확장과 첫 채용]]을 따른다.
 - **정보 공유**: 매출, 비용, 영업 파이프라인과 운영 가능 기간을 정해진 주기와 형식으로 공유한다. 실적이 나쁜 달에도 같은 형식을 유지하고, 고객 기밀과 개인정보는 범위에서 뺀다.
 - **분권화**: 맡긴 영역에서 혼자 결정할 범위와 대표에게 확인할 조건을 정한다.
 - **교육**: 초기 회사에서는 큰 교육 예산보다 시간과 피드백을 먼저 확보하는 편이 현실적이다. 페어링과 코드 리뷰 시간, 외부 강의나 도서 비용의 상한을 미리 정한다.
@@ -104,6 +116,7 @@ Huselid(1995)는 Bailey(1993)를 따라 인사 관행이 조직 성과에 영향
 - 연구 근거를 인용할 때 상관과 인과, 역인과 가능성과 업종 맥락을 함께 말하는가
 - 성과 연동 보상의 기준이 조직 성과인지 개인 공적인지 구분했는가
 - 지킬 수 없는 고용 보장이나 보상을 약속하지 않았는가
+- 관행에 더 투자할 자리를 전략 기여와 성과 편차로 골랐고, 그 기준을 구성원에게 설명할 수 있는가
 - 도입 전후에 볼 지표(이직, 생산성, 품질)를 정했고, 작은 팀의 전후 비교만으로 효과를 단정하지 않는가
 
 ## 출처
@@ -116,6 +129,9 @@ Huselid(1995)는 Bailey(1993)를 따라 인사 관행이 조직 성과에 영향
 - [The Human Equation: Building Profits by Putting People First — Harvard Business School Press, Jeffrey Pfeffer](https://www.gsb.stanford.edu/faculty-research/books/human-equation-building-profits-putting-people-first) — 1998, 스탠퍼드 경영대학원 도서 소개 확인. 출판사는 1998년 판 서지(Open Library) 기준이며, 도서 소개에는 Harvard Business Review Press로 표기됨
 - [The Relationship Between HR Practices and Firm Performance: Examining Causal Order — Personnel Psychology, Wright, Gardner, Moynihan, Allen](https://doi.org/10.1111/j.1744-6570.2005.00487.x) — 2005, 초록 확인
 - [How Much Do High-Performance Work Practices Matter? A Meta-Analysis of Their Effects on Organizational Performance — Personnel Psychology, Combs, Liu, Hall, Ketchen](https://doi.org/10.1111/j.1744-6570.2006.00045.x) — 2006, 초록 확인
+- ["A Players" or "A Positions"? The Strategic Logic of Workforce Management — Harvard Business Review, Huselid, Beatty, Becker](https://www.markhuselid.com/pdfs/articles/2005%20Huselid-Beatty-Becker%20HBR%20Paper.pdf) — 2005-12, 저자 공개 PDF로 1~4쪽(A 포지션의 두 조건, 조종사, Nordstrom과 Costco, 인력 비중과 B, C 포지션) 확인
+- [Where's Your Pivotal Talent? — Harvard Business Review, John W. Boudreau, Peter M. Ramstad](https://hbr.org/2005/04/wheres-your-pivotal-talent) — 2005-04, 공개 요약만 확인
+- [31. 누가 핵심인재인가? — 브런치, sellsecret](https://brunch.co.kr/@sellsecret/567) — 2018-06 발행, 컨설팅사 발표 자료를 재구성한 해설. 추가 글: #16, #154. 놀이공원 청소원 사례, 승무원 비교와 기업별 채용 관행은 원 출처를 대조하지 못해 쓰지 않았다
 
 ## 관련 문서
 
@@ -130,3 +146,5 @@ Huselid(1995)는 Bailey(1993)를 따라 인사 관행이 조직 성과에 영향
 - [[DRI-Delegation-Culture|DRI와 권한 위임 문화]] — 분권화된 의사결정
 - [[Startup-Crisis-Leadership|스타트업 위기 리더십과 레이오프]] — 레이오프 원칙과 보상 삭감, 인원 감축의 트레이드오프
 - [[Intrinsic-vs-Extrinsic-Motivation|내재적 동기와 외재적 동기]] — 보상과 동기를 양자택일로 보지 않기
+- [[HRD-Scope-and-HRM-Boundary|HRD의 범위와 HRM과의 경계]] — 교육이 인사 결정이 되는 지점
+- [[Shared-Norms-and-Social-Control|공유 규범과 사회적 통제]] — 몰입형 시스템과 사회적 통제

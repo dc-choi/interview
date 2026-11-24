@@ -79,6 +79,8 @@ LLM에게 연구 아이디어를 물으면 학습한 문헌에서 이미 많이 
 
 연구자 개인의 사용 기록도 같은 검토 비용을 보여 준다. 한 연구 엔지니어(2026-10-31 개인 글)는 문헌 검색에서는 LLM이 일반 학술 검색이 놓친 세부 자료까지 찾아 첫 선택이 됐지만, 모델이 어떤 전제든 선의로 뒷받침할 수 있다는 점 때문에 신뢰와 근거는 여전히 사람 전문가와 책에 기댄다고 적었다. 새로운 연구에서는 모델이 더 나쁜 설계 쪽으로 이끌다가 더 나은 구조를 직접 물은 뒤에야 대안을 보였고, 에이전트의 연구 산출물을 검토하는 데 스스로 답을 만드는 것보다 품이 더 드는 경우가 있었다고 적었다. 자기 보고이지만 위 점검 기준을 산출물 검토 비용과 함께 설계해야 하는 이유로 읽는다.
 
+발견보다 검증이 더 오래 걸린 사례도 공개됐다. Anthropic Frontier Red Team의 2026-07-28 글에 따르면 Claude Mythos Preview는 AES-128의 10라운드 가운데 7라운드만 남긴 연구용 변형에서, 실행 시간 측정 방식에 따라 기존 최선의 meet-in-the-middle 공격보다 200~800배 빠른 공격을 거의 자율적으로 1주 만에 찾았다. 그 방법이 맞다고 확신하는 데는 연구자 두 명이 한 달 가까이 걸렸고, 사람의 시간 대부분이 주장의 정확성 검증에 들어갔으며, 검증에 필요한 암호 연구를 익히는 데 수백 시간을 썼다고 적는다. 같은 글의 HAWK(NIST 추가 전자서명 공모 3라운드 후보) 공격은 연구원 한 명이 Claude와 약 1주 함께 작업해 찾기, 다듬기와 검증에 모두 약 60시간이 들었다. 글은 두 결과 모두 현재 시스템에 실질적 영향이 없다고 밝히고(전체 AES는 깨지 않았고 HAWK는 배포되지 않은 후보), 학계에 자문해 타당성을 확인했다고 적는다. 사람이 이런 결과의 기술적 타당성, 신규성과 유용성을 연구하고 검증하는 데서 병목이 될 수 있다는 것이 글의 결론이다. 탐색을 자동화할수록 검증자의 시간과 해당 분야의 전문성을 별도 예산으로 잡는다(운영 제안). 찾기와 확인의 비용 차이에 관한 이론적 배경은 [[P-vs-NP-Implications|P 대 NP의 함의]]에 있다.
+
 ### 사례: 이론물리 미해결 문제 두 건과 공개 범위
 
 2026-11-17 Anthropic 블로그는 Claude가 블랙홀과 양자중력에 관한 이론물리 미해결 문제 두 건을 풀었다고 발표했다. 아래는 2026-11-21 블로그 본문과 두 프리프린트(Hexagon, 2026-11-07 등록)의 초록과 출처 설명을 대조한 범위이며 프리프린트 본문의 계산은 검증하지 않았다.
@@ -132,6 +134,7 @@ LLM에게 연구 아이디어를 물으면 학습한 문헌에서 이미 많이 
 - [Independent Assessment of AI R&D Acceleration at Anthropic in October 2026 — METR](https://metr.org/blog/2026-11-05-anthropic-ai-rd-acceleration-assessment/) — 2026-11-05, 2026-11-17 평가 기간, 접근 자료, 속도와 귀속 추정, 병목 판단, 가림 한계와 Process details의 연산량 검증 취소 대조. 부록은 대조하지 않음
 - [Review of the "Risks from automated R&D" section in Anthropic's Risk Report (August 2026) — METR](https://metr.org/blog/2026-11-05-rd-section-anthropic-risk-report-august-2026-review/) — 2026-11-05, 2026-11-17 2배 가속 기준과 위험 판단 대조
 - [How I use AI (Oct 2026) — Ben Stolovitz](https://ben.stolovitz.com/posts/how-use-ai-oct-2026/) — 2026-10-31 개인 글, 2026-11-09 문헌 검색과 새로운 연구에서의 사용 경험 대조. 자기 보고
+- [Discovering cryptographic weaknesses with Claude — Anthropic](https://www.anthropic.com/research/discovering-cryptographic-weaknesses) — 2026-07-28(07-29 소속 표기 수정), 2026-11-24 두 공격의 대상과 범위, 발견과 검증에 든 시간, 실질 영향이 없다는 표시와 병목 문장 대조. 기술 논문은 읽지 않음
 - [Claude solves two open problems in the physics of black holes — Anthropic](https://www.anthropic.com/research/claude-black-hole-physics) — 2026-11-17, 2026-11-21 두 결과의 설명, Claude가 만든 후보 22개와 약 6주의 에이전트 운영, Hawking-Page 결과의 두 실행, 병렬 시도 61회, OpenAI 증명 전략을 따른 절반, 9월 Lean 검증 언급과 한계 서술 대조. 2026-11-21 다시 열어 Lean 자료 링크가 없음을 확인
 - [The Hawking-Page transition at weak coupling — Hexagon, Anthropic](https://hexagonmath.org/2611.00175v1) — 2026-11-07 등록 v1, 2026-11-21 초록과 출처 설명 대조. 같은 날 원본 파일 목록(TeX와 그림)과 서론, 검산, 경위 절의 TeX에서 Lean 언급이 없음을 확인. 본문 계산은 검증하지 않음
 - [The spinless modular bootstrap at large central charge — Hexagon, Anthropic](https://hexagonmath.org/2611.00174v1) — 2026-11-07 등록 v1, 2026-11-21 초록의 Λ 공식, 개선 한계, 출처 설명과 참고문헌의 OpenAI 구 채우기 장 인용 대조. 같은 날 원본 파일 목록과 main.tex에서 Lean 파일과 언급이 없음, OpenAI 증명을 직접 검증하지 않았다는 문장을 확인. 본문 계산은 검증하지 않음
