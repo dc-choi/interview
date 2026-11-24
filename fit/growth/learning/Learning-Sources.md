@@ -201,6 +201,7 @@ auto-learn 파이프라인이 새 자료를 모으는 YouTube 채널, 이메일 
 | 소울정 | [@younsojung](https://www.youtube.com/@younsojung) | fit |
 | Stanford Online | [@stanfordonline](https://www.youtube.com/@stanfordonline) | tech |
 | 커밋하고퇴근 | [@커밋하고퇴근](https://www.youtube.com/@커밋하고퇴근) | fit, tech |
+| 주언규 joo earn gyu | [@주언규PD](https://www.youtube.com/@주언규PD) | biz |
 
 ## 이메일 뉴스레터
 
