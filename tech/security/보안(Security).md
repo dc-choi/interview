@@ -15,6 +15,7 @@ aliases: ["보안(Security)", "Security Index"]
 - [[Smart-Contract-Price-Feed-Validation|스마트 컨트랙트 가격 피드 검증]] — 부호, 자릿수와 최신성, 누적값과 TWAP, 장애 시 기능 경계
 - [[IoT-Device-and-Firmware-Security|IoT 기기 인증과 펌웨어 보안]] — 식별과 개인키 보유 증명, 인증서 교체, secure boot와 OTA 검증, 업데이트 복구와 지원 기간, 클라우드 의존 기기의 평문 신뢰 앵커와 로컬 동작
 - [[Vulnerability-Operations-AI-Agents|취약점 운영(VulnOps)과 보안팀의 AI 에이전트 활용]] — 고치는 속도에 맞춘 운영, 취약점 원장과 중복 묶기, 배포 확인으로 판정하는 완료, 에이전트의 수행과 검증 분리, 여러 모델의 합의와 반증, 소규모 보안팀의 도구 직접 개발, Project Zero의 공개 기한 단축과 패치 격차, Apache mod_http2의 독립 발견과 HTTP/2 끄기 완화, nginx HTTP/2와 nginx2root의 기능별 노출, 완화 범위와 실행 중 워커 확인
+- [[AI-Code-Vulnerability-Scanning|AI 코드 취약점 스캔]] — 탐지, 격리 검증, 패치와 기록 단계, 변경분 스캔과 정기 전체 스캔, SARIF 내보내기, 스캔당 비용 상한, 트래커와 원장 연결, OpenAI Codex Security의 CLI와 GitHub Action, 공급자 오탐 수치를 읽는 법
 - [[Detection-as-Code-AI-SOC|탐지 룰의 코드화(Detection as Code)와 AI 에이전트 보안관제]] — 콘솔 편집의 형상 불일치, 룰 생성과 원본과 배포의 분리, 컴파일러가 주입하는 공통 필드, 임시 탐지 룰과 커버리지 매트릭스, 경보 판정 흐름과 코드 검증, 확인 못 함과 없음의 구분, 싼 모델 분업의 한계, 로컬 LLM 분석 보조와 에이전트 실행의 EDR 흔적
 - [[Security-Alert-Triage-Automation|보안 알림 triage 자동화]] — 즉시, 보류, 자동 확인의 세 갈래 판정과 정식 결과로서의 보류, shadow 운영 뒤 켜는 자동 종결, 하루치로 보는 EDR과 DLP 알림, 감시 도구의 감시, Frequency, SNR, 엔트로피로 신호를 먼저 고르는 방식, 확인 범위를 밝히는 조사 에이전트와 조사 경로를 고치는 오답 수정
 - [[AI-Accelerated-Threat-Defense|악용 시간 단축과 AI 공격에 대비하는 방어]] — 악용까지의 시간 관측값과 읽는 법, 자산과 소프트웨어 목록, 패치 작성과 적용의 병목, 번들 런타임과 배포 형태별 수정 경로, 패치 시나리오와 단계적 배포, 업데이트 기본값과 패치 물결, 오염된 업데이트와 관찰 기간의 한계, 독립된 다층 통제, AI 방어 자동화의 권한 경계
