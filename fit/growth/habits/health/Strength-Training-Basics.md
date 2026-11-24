@@ -60,21 +60,33 @@ ACSM의 2026년 건강한 성인 지침은 파워 훈련에서 1RM의 30~70% 부
 | 주간 빈도와 분할 | 주 2~3회는 전신, 주 4회는 상하체 분할 | 비전문 선수에게 제시된 운영안이다. 특정 분할이나 근육군별 주 2~3회가 모두에게 최적이라는 뜻은 아니다 |
 | 회복일 | 주 1일 이상, 필요하면 2일 완전 휴식 | 고정 일수보다 누적 피로와 다음 훈련의 수행 수준을 함께 확인한다 |
 
+### 그래플링이 만드는 체력을 매트 없이 훈련할 때
+
+오래 레슬링을 한 사람과 가슴과 팔 위주로 운동한 사람의 차이는 근육량보다 근육이 붙은 위치(목, 등 위쪽, 전완, 엉덩이)에 있다는 관찰에서 출발한 주 3일 구성이다. 근거로 확인되는 부분과 구성 자체를 나눠 읽는다.
+
+- **목은 따로 훈련해야 커진다:** Conley 외(1997)는 활동적인 대학생 22명을 세 집단으로 나눴다. 스쿼트, 데드리프트, 벤트 로우 같은 큰 근육 운동만 주 3일 12주 한 집단(6명)은 목 근육 단면적이 변하지 않았고(19.6에서 19.7cm²), 같은 운동에 머리 젖히기 3세트 10회를 더한 집단(8명)은 19.5에서 22.0cm²로 약 13% 늘었다. 앞 집단의 대퇴사두근은 7% 커졌으므로 훈련량이 부족해서가 아니었다(초록 기준). 위 보조운동 항목의 근거가 되는 결과이며 표본이 작다.
+- **경기의 부하 양상:** del Vecchio 외(2011)는 지역 대회 종합격투기 선수 52명의 경기에서 고강도 구간 대 저강도 구간과 멈춤의 비가 1:2에서 1:4였다고 보고했다. Chaabene 외(2017)의 문헌고찰은 무산소 파워와 용량이 성적이 좋은 레슬러와 그렇지 않은 레슬러를 가른 변수였고 최대근력, 등척성 근력, 순발력과 근지구력이 높은 수준의 경기력과 관련된다고 정리했다(둘 다 초록 기준).
+
+| 날 | 구성 | 비고 |
+|---|---|---|
+| 근력 | 트랩바 데드리프트, 고블릿 또는 프런트 스쿼트, 풀업(어려우면 랫풀다운), 수건을 걸고 매달리기, 엎드려 가벼운 원판으로 머리 들기 | 목 운동은 이 구성에서 유일하게 무겁게 하지 않는 종목 |
+| 지속 | 언덕이나 자전거에서 15초 전력, 45초 천천히를 8~10회. 케틀벨 스윙 10회, 스프롤 5회, 곰 걸음 10m, 샌드백 어깨에 메고 20m를 3분간 돌고 1분 쉬기 3회. 끝에 대화가 되는 강도로 15~20분 | 1:3 비율은 위 측정 범위 안이다. 오래 전력 질주를 하지 않았으면 가파른 언덕 빠르게 걷기로 바꾼다 |
+| 운반 | 샌드백 안고 30~40m, 덤벨 들고 같은 거리, 한 팔 덤벨 로우, 회전 운동, 손으로 버티는 목 앞과 옆 운동, 플랭크 어깨 터치 | 세션은 한 시간 안, 사이에 하루 이상 쉰다 |
+
+한두 주마다 무게나 횟수를 조금 올리고 4주째에는 전체를 가볍게 한다. 구성 전체는 한 영상의 제안이며 이 조합의 효과를 비교한 연구는 제시되지 않았다. 유명 선수의 이름이 붙어 도는 루틴은 선수나 코치가 공개한 적이 없는 경우가 있으므로 출처를 확인한다(같은 영상이 두 선수의 사례로 든 점이며 따로 대조하지 않았다). 목, 허리나 심장에 문제가 있었으면 전력 질주와 목 운동 전에 의료진과 상의한다.
+
 목 근력과 머리 안정화의 관계를 뇌진탕 예방 효과로 확대하지 않는다. 목에 직접 부하를 주는 운동은 코치나 전문가의 지도를 받아 결정한다. 근육량 증가도 체급, 속도와 지구력에 주는 영향을 함께 평가한다.
 
 ## 나이, 수면과 영양
 
 - **나이** — 근육량과 근력은 청년기에 정점에 이르고 중년에 유지되다가 나이가 들며 줄어든다. 유럽 근감소증 합의문(EWGSOP2)은 50세 이후 다리 근육량이 연 1~2%, 근력이 연 1.5~5% 줄었다는 보고를 인용하고, 영양과 운동이 이 과정을 늦추거나 되돌릴 수 있다고 본다. 목표는 젊을 때 근육을 최대한 만들고 중년에 유지하는 것이다. 30대부터 근감소증이 시작된다는 대중적인 표현은 이 서술보다 시점이 이르다(합의문의 정점과 유지 시기 문구는 2026-11-17에 다시 대조하지 못했다). 근육량이 줄기 시작하는 것과 근감소증 진단은 같은 말이 아니며, 30대의 감소율은 이 문서에서 대조하지 않았다.
 - **단백질** — 근력운동과 단백질 보충의 메타분석(49개 연구)은 하루 총섭취량 약 1.62g/kg에서 제지방량 증가 효과의 변곡점을 추정했다. 95% 신뢰구간은 1.03~2.20g/kg이며, 건강하고 에너지 섭취를 제한하지 않는 성인이 대상이었다. 약 1.6g/kg은 참고값이지 모든 사람의 절대 상한이나 감량기 처방이 아니다. 보충제와 식사를 합한 총량으로 계산한다.
+- **단백질 급원과 단가** — 보충제는 한 통의 가격이 아니라 단백질 20g당 가격으로 비교한다. 분리대두단백(ISP)은 콩에서 단백질만 분리한 원료로 유청보다 단가가 낮다. 대두 단백과 동물성 단백 보충을 비교한 메타분석(9개 연구, 266명)은 6주 이상의 근력운동에서 근력과 제지방량 증가에 집단 간 차이를 찾지 못했다. 같은 초록은 단기 연구에서 류신이 많은 유청이 근단백 합성을 더 크게 자극한다는 점도 적고 있으며, 포함된 연구와 참가자 수가 적다. 향과 감미료가 없는 원료형 제품은 맛 때문에 계속 먹기 어려울 수 있으므로 소량으로 먼저 확인하고, 제품 표시의 나트륨(한 리뷰가 읽은 표시는 30g당 단백질 26.4g, 나트륨 348mg)은 하루 섭취 횟수만큼 합산한다. 원료 공장과 소분 시설의 위생 인증은 따로 표시되므로 둘 다 본다.
 - **수면** — 회복과 호르몬 환경의 바탕이다. 건강한 젊은 남성 10명을 대상으로 한 연구에서 일주일간 하루 5시간 수면은 낮 시간 테스토스테론을 10~15% 낮췄다. 표본이 작아 일반화에는 한계가 있지만 수면 부족을 운동으로 메울 수 없다는 근거로는 충분하다.
 
 ### 수면 환경과 일정
 
-일반 성인은 대체로 하루 7~9시간의 수면이 필요하다. 취침과 기상 시각을 모두 일정하게 유지하고 침실을 어둡고 조용하며 서늘하게 만든다. 일정한 취침이 일정한 기상보다 우월하다거나 알람 없이 깨는 것이 항상 낫다는 결론은 여기서 대조한 지침으로 확인되지 않았다. [NIH 수면 안내](https://health.nih.gov/health-topics-a-z/insomnia), [NHLBI 수면 습관](https://www.nhlbi.nih.gov/health/sleep-deprivation/healthy-sleep-habits)
-
-NHLBI는 잠들기 전 한 시간을 조용히 보내며 격한 운동과 TV, 컴퓨터 화면 같은 밝은 인공 조명을 피하고, 취침 몇 시간 안에는 과식을 피하라고 안내한다(가벼운 간식은 괜찮다). 카페인의 효과는 최대 8시간 이어질 수 있어 늦은 오후의 커피 한 잔도 잠드는 것을 방해할 수 있다(2026-11-17 확인). NHLBI는 끊는 시각을 따로 정하지 않지만, 효과가 최대 8시간 간다는 설명에 비추면 취침 한 시간 전부터 카페인을 끊는다는 자기계발 콘텐츠의 기준은 너무 늦다(이 문서의 해석). 잠들기 3~5시간 전에 마지막 식사를 끝내고 기상 뒤 1~2시간 안에 첫 끼를 먹으라는 식사 시각 조언은 자기계발 콘텐츠의 주장이며, 구체적인 시간 범위와 폭식 감소 같은 효과는 대조하지 않았다.
-
-잠들기 전 다음 날 할 일과 걱정을 적어 두는 방법은 이완을 돕기 위한 실천 후보로 둘 수 있다. 효과를 보장하는 치료법으로 취급하지 않는다.
+수면 시간과 일정, 취침 전 카페인과 식사, 수면 추적 기록과 멜라토닌은 [[Sleep-Basics|수면의 기본]]으로 옮겼다.
 
 ### 증량을 위한 식사 조정
 
@@ -115,21 +127,25 @@ NHLBI는 잠들기 전 한 시간을 조용히 보내며 격한 운동과 TV, �
 
 화면에만 제시된 운동표와 식단표는 확인하지 못했다. 자막의 운동 예시를 완성된 프로그램으로 복원하지 않았다. [연결 운동계획](https://zero2kombat.com/workout-plans/)은 본문을 확보하지 못했으므로 세부 종목, 세트와 휴식시간은 후속 확인 대상으로 남긴다.
 
-2026-11-17 보강은 나이 항목의 대중적 표현, 수면 안내와 걷기 불릿에 한정했고 NHLBI 안내와 WHO fact sheet만 대조했다. EWGSOP2 원문과 WHO 2020 지침은 다시 열지 않았다.
+2026-11-17 보강은 나이 항목의 대중적 표현, 수면 안내(2026-11-24 [[Sleep-Basics|수면의 기본]]으로 이동)와 걷기 불릿에 한정했고 NHLBI 안내와 WHO fact sheet만 대조했다. EWGSOP2 원문과 WHO 2020 지침은 다시 열지 않았다.
 
 ## 출처
 
 - [YouTube, Zero2Kombat, How Fighters Actually Build Muscle](https://www.youtube.com/watch?v=C3KUxm6jFNE)
 - [YouTube, 햄찌 교수, 30대에 안 바꾸면 40대에 진짜 후회하는 것들 | 시사 애니메이션](https://www.youtube.com/watch?v=5EQkjp9rOas) — 2025-12-24 업로드, 2026-11-17 음성 인식 전사 전체 확인. 30대의 근감소, 식사 시각, 취침 전 카페인과 걷기 주장의 출처이며 근거를 제시하지 않는다
 - [ACSM Unveils Landmark 2026 Resistance Training Guidelines — ACSM (2026)](https://acsm.org/resistance-training-guidelines-update-2026/)
-- [Insomnia — NIH](https://health.nih.gov/health-topics-a-z/insomnia)
-- [Sleep Deprivation and Deficiency: Healthy Sleep Habits — NHLBI](https://www.nhlbi.nih.gov/health/sleep-deprivation/healthy-sleep-habits)
 - [Multivitamin/mineral Supplements — NIH Office of Dietary Supplements](https://ods.od.nih.gov/factsheets/MVMS-Consumer/)
 - [WHO, Guidelines on physical activity and sedentary behaviour (2020)](https://www.who.int/publications/i/item/9789240015128)
 - [WHO, Physical activity (fact sheet)](https://www.who.int/news-room/fact-sheets/detail/physical-activity)
 - [Dose-response relationship between weekly resistance training volume and increases in muscle mass — Journal of Sports Sciences, Schoenfeld, Ogborn, Krieger (2017)](https://doi.org/10.1080/02640414.2016.1210197)
 - [Loading Recommendations for Muscle Strength, Hypertrophy, and Local Endurance: A Re-Examination of the Repetition Continuum — Sports, Schoenfeld 외 (2021)](https://doi.org/10.3390/sports9020032)
 - [Sarcopenia: revised European consensus on definition and diagnosis — Age and Ageing, Cruz-Jentoft 외 (2019)](https://doi.org/10.1093/ageing/afy169)
+- [Specificity of resistance training responses in neck muscle size and strength — European Journal of Applied Physiology and Occupational Physiology, Conley 외 (1997)](https://doi.org/10.1007/s004210050186) — 75권 5호 443~448쪽. 2026-11-24 PubMed 초록으로 집단 구성, 기간과 단면적 변화 대조
+- [A review of time-motion analysis and combat development in mixed martial arts matches at regional level tournaments — Perceptual and Motor Skills, del Vecchio, Hirata, Franchini (2011)](https://doi.org/10.2466/05.25.PMS.112.2.639-648) — 2026-11-24 PubMed 초록으로 표본과 노력 대 휴식 비 대조
+- [Physical and Physiological Attributes of Wrestlers: An Update — Journal of Strength and Conditioning Research, Chaabene 외 (2017)](https://doi.org/10.1519/JSC.0000000000001738) — 2026-11-24 PubMed 초록으로 성적을 가른 체력 변수 대조
+- [This Workout Gives You FIGHTER'S Physique (Not Sparring) — YouTube, Evolve & Build](https://www.youtube.com/watch?v=HJmmAdHNhSk) — 2026-10-03 업로드, 2026-11-24 영어 음성 인식 전사 전체 확인. 주 3일 구성의 출처. 트랩바가 허리 부담을 줄인다는 설명과 선수 일화는 대조하지 않음
+- [No Difference Between the Effects of Supplementing With Soy Protein Versus Animal Protein on Gains in Muscle Mass and Strength in Response to Resistance Exercise — International Journal of Sport Nutrition and Exercise Metabolism, Messina 외 (2018)](https://doi.org/10.1123/ijsnem.2018-0071) — 2026-11-23 PubMed 초록으로 포함 연구 수, 참가자 수와 집단 간 비교 결과 확인. 이해 상충 공개는 확인하지 못함
+- [트레이너 사이에서 난리남 — YouTube, 도던](https://www.youtube.com/watch?v=NaMbLbnkiFw) — 2026-11-22 업로드, 2026-11-23 음성 인식 전사 전체 확인. 제작자가 직접 구매했다고 밝힌 분리대두단백 제품 리뷰이며 단가 비교 방식과 제품 표시 수치의 출처. 제품별 가격, 나트륨이 중화 공정에서 온다는 추정과 원료 업체의 해외 등록 여부는 확인하지 못해 넣지 않음
 - [A systematic review, meta-analysis and meta-regression of the effect of protein supplementation on resistance training-induced gains in muscle mass and strength in healthy adults — British Journal of Sports Medicine, Morton 외 (2018)](https://doi.org/10.1136/bjsports-2017-097608)
 - [Effect of 1 Week of Sleep Restriction on Testosterone Levels in Young Healthy Men — JAMA, Leproult, Van Cauter (2011)](https://doi.org/10.1001/jama.2011.710)
 - [Body weight loss reverts obesity-associated hypogonadotropic hypogonadism — European Journal of Endocrinology, Corona 외 (2013)](https://doi.org/10.1530/EJE-12-0955)
@@ -141,6 +157,9 @@ NHLBI는 잠들기 전 한 시간을 조용히 보내며 격한 운동과 TV, �
 
 ## 관련 문서
 
-- [[습관(Habits)|습관과 회고]] — 습관 지식의 카테고리 인덱스
+- [[Health-and-Exercise|건강과 운동]] — 이 폴더의 인덱스
+- [[Sleep-Basics|수면의 기본]] — 수면 시간, 일정과 지나친 관리
+- [[Isometric-Strength-Training|등척성 운동]] — 움직이지 않고 힘을 내는 훈련의 근거와 변수
+- [[Pull-Up-Variation-Selection|풀업 변형 선택]] — 그립과 보조 방식을 목적에 맞추는 기준
 - [[Current-Goals-and-Roadmap|현재 목표와 통합 로드맵]] — 집 운동 주 2회, 회당 20분 기준
 - [[Burnout-Sustainable-Pace|번아웃과 지속 가능한 개발 페이스]] — 회복과 지속 가능한 속도

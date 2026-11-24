@@ -57,6 +57,8 @@ Careau 외(2021)는 일상생활을 하는 성인 1,754명의 총 에너지 소�
 
 ## 관련 문서
 
-- [[Strength-Training-Basics|짧은 근력운동의 근거]] — 주간 볼륨, 걷기와 신체 활동 권고, 수면과 식사
+- [[Health-and-Exercise|건강과 운동]] — 이 폴더의 인덱스
+- [[Strength-Training-Basics|짧은 근력운동의 근거]] — 주간 볼륨, 걷기와 신체 활동 권고, 식사
+- [[Sleep-Basics|수면의 기본]] — 수면 시간과 일정
 - [[Habit-Formation-and-Consistency|습관 형성과 꾸준함]] — 시작 조건과 상황 점검
 - [[Burnout-Sustainable-Pace|번아웃과 지속 가능한 개발 페이스]]

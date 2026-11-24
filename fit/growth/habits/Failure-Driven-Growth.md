@@ -54,6 +54,10 @@ aliases: ["Failure Driven Growth", "실패를 성장으로", "실패 다루기",
 
 Gross와 John의 2003년 연구에서는 재평가 사용이 더 나은 대인관계 기능과 안녕감에, 표현 억제 사용은 그 반대 방향에 관련됐다. 이 관련성을 감정을 참으면 성장한다거나, 감정을 드러내면 문제가 해결된다는 보편적 인과로 확대하지 않는다. 이 연구는 실패를 견딘 횟수가 역량을 높인다는 근거도 아니다.
 
+억누르기의 비용은 나중에 드러날 수 있다. Cioffi와 Holloway의 1993년 실험은 참가자 63명에게 얼음물에 손을 담그게 하고 세 가지 지시 중 하나를 줬다. 자기 방을 떠올리기(주의 분산), 손의 감각에 주의를 기울이기(관찰), 그 감각을 의식에서 지우기(억제)다. 손을 뺀 뒤 2분 동안의 통증 평정에서 관찰 집단이 가장 빨리 회복했고 억제 집단이 가장 느렸다. 억제 집단은 같은 실험 시간의 뒤쪽에 받은 무해한 진동도 다른 집단보다 불쾌하게 평가했다. 신체 통증을 다룬 실험 하나이므로 학습 중의 좌절에 같은 효과가 난다는 증거는 아니다.
+
+실력이 오르지 않는 구간의 답답함에 적용하면(해석) 참고 넘기기보다 지금 드는 생각과 감정을 글로 풀어 적고, 그중 고치고 싶은 것 하나를 고른다. 아프다는 덩어리 하나로 두면 줄었는지 확인할 대상이 없지만, 나눠 적으면 항목별로 확인할 수 있다. 틀린 문제에도 같은 방법을 쓴다. 풀 때 실제로 한 생각을 단계별로 적고, 어느 단계에서 어긋났고 다음에 어떻게 바꿀지를 다른 색으로 덧붙인다. 위 루틴의 2번과 3번을 문제 하나에 적용한 형태다.
+
 회고에 적용할 때는 다음을 실무 점검 기준으로 삼는다. 연구에서 검증한 처방이나 개인의 성숙도 판정표는 아니다.
 
 - 즉시 답하지 않더라도 감정과 관찰한 사실을 따로 적는다. 반응을 늦추는 것과 문제를 숨기는 것을 구분한다.
@@ -86,6 +90,8 @@ Gross와 John의 2003년 연구에서는 재평가 사용이 더 나은 대인�
 
 - [The Functional Theory of Counterfactual Thinking — Kai Epstude, Neal J. Roese](https://pmc.ncbi.nlm.nih.gov/articles/PMC2408534/) — 2008년 이론 논문, 반사실 사고의 행동 조절 경로와 원인 추론 조건
 - [Individual Differences in Two Emotion Regulation Processes: Implications for Affect, Relationships, and Well-Being — James J. Gross, Oliver P. John](https://doi.org/10.1037/0022-3514.85.2.348) — 2003년 원 연구. 재평가와 표현 억제의 구분 및 관련성 범위 확인
+- [Delayed costs of suppressed pain — Delia Cioffi, James Holloway](https://doi.org/10.1037/0022-3514.64.2.274) — 1993년 원 연구, Journal of Personality and Social Psychology. 2026-11-23 초록에서 참가자 수, 세 지시, 회복 순서와 진동 평가 대조. 본문은 확인하지 못함
+- [멘탈 키우기(x) 멘탈 관리(o) — YouTube, 공부삼신](https://www.youtube.com/watch?v=ZZ0tnJkQaU4) — 2026-11-22 업로드, 2026-11-23 음성 인식 전사 전체 확인. 학습 침체기 적용과 오답 기록 방법의 출처. 영상이 든 집단별 통증 점수(16, 27, 39점)는 초록에 없어 옮기지 않음
 - [개발자 원칙 — 제어 가능한 것, 실패, 전문가성 — YouTube](https://www.youtube.com/watch?v=DJCmvzhFVOI&list=PLgXGHBqgT2TtGi82mCZWuhMu-nQy301ew&index=15)
 - [재능이라는 허상 — 곽지욱](https://www.gwagjiug.com/blog/illusion_of_talent)
 - [자기 코드가 마음에 들지 않는 개발자에게 — Team Grit](https://teamgrit.co/article/332)
