@@ -1,7 +1,7 @@
 ---
 tags: [web, frontend, react, tanstack]
 status: done
-verified_at: 2026-10-25
+verified_at: 2026-11-25
 category: "웹&네트워크(Web&Network)"
 aliases: ["TanStack Start", "탠스택 스타트"]
 ---
@@ -99,6 +99,20 @@ Start vs Next.js 문서는 타입 있는 URL 상태, route context, 명시적 lo
 4. 내장 기능 의존: 이미지 최적화, 폰트, metadata, CMS와 인증 연동을 프레임워크에 기대는가, 따로 고르는가?
 5. 인수인계와 업데이트: 납품 뒤 유지보수할 사람이 익숙한 생태계인가? 보안 공지와 버전 변경을 계약 기간 동안 누가 반영하고 재배포하는가?
 
+### 사례: tanstack.com의 RSC 도입과 철회
+
+RSC가 opt-in이라는 설계가 실제로 어떤 의미인지 TanStack 팀이 자기 사이트에서 보여 준 사례다. 수치는 각 블로그 글이 밝힌 측정값이며 다른 앱에 그대로 옮길 수 있는 기준이 아니다.
+
+- **도입(2026-04-13 글):** 블로그와 문서 페이지의 markdown 파싱과 구문 강조를 RSC로 서버에 옮겨 블로그와 문서 페이지의 client JS를 gzip 기준 약 153KB 줄였고, 블로그 페이지 Lighthouse 점수가 52에서 74로 올랐다고 밝혔다. 같은 글은 RSC를 필요할 때 더하는 최적화이지 모든 성능 문제의 답이 아니라고 설명한다.
+- **철회(2026-07-24 글):** RSC로 client에서 빠진 코드는 markdown 처리 pipeline과 구문 강조(대부분 Shiki)였다. 그 대가로 bundler 설정, 의존성 해석, 수동 chunk 분리와 runtime 경계, 직렬화를 계속 신경 써야 했다. 글은 이를 의존성 크기 문제를 아키텍처 결정으로 바꿔 푼 것이라고 정리했다. 팀은 기술 블로그, 문서와 스트리밍 AI 출력을 대상으로 한 가벼운 `@tanstack/markdown`(parser 약 4.9KB gzip)과 `@tanstack/highlight`(core 1.7KB, 문서용 9개 언어 5.8KB)를 만들고 RSC를 걷어냈다. 새 렌더러는 RSC 판보다 전송량이 약 18~19KiB 늘었지만, 같은 시기 다른 변경이 섞인 상태로 페이지 전체 전송량은 줄었다. 블로그 페이지의 Lighthouse 점수는 76에서 67로 내려갔지만 TBT는 139ms에서 66ms로 좋아졌고, 문서 페이지는 71로 같았다. 글쓴이는 잡음이 큰 점수 하나를 제품의 사실로 보지 않는다고 덧붙였다.
+- **적용:** RSC를 검토하는 이유가 무거운 client 의존성 하나라면 먼저 그 의존성을 가볍게 바꿀 수 있는지 본다. RSC가 opt-in이었기에 철회가 프레임워크 교체 없이 끝났다는 점도 기록할 만하다. 2026-11-25에 확인한 Start 문서에서 RSC는 여전히 기본으로 꺼진 실험 기능이다.
+
+### 사례: AI 코드 생성 서비스의 기본 프레임워크 전환
+
+AI로 앱을 생성하는 Lovable은 2026-05-13부터 새 프로젝트를 TanStack Start 기반 SSR로 만들고, 2026-08-18에는 자사 사이트 lovable.dev도 Next.js에서 옮겼다고 밝혔다. 새 프로젝트 전환(06-01 글)의 이유는 React 생태계 유지, JavaScript 서버를 돌릴 수 있는 어느 플랫폼에나 배포할 수 있는 점과 AI가 따를 명확한 가드레일이다. Start는 대부분의 LLM 학습 시점 뒤에 나와 모델이 Next.js 패턴으로 되돌아가는 문제가 있었다. 자사 사이트 이전(08-18 글)은 자기 제품을 직접 쓰는 dogfooding, 단일 앱 규모의 한계 시험과 그 지식을 생성 에이전트에 되돌려 주는 것을 이유로 들었다. 같은 글은 Next.js의 v12, v14, v16 방식이 크게 달라 에이전트가 어느 버전 방식으로 써야 할지 헷갈렸다고 적고, 작아도 일관된 학습 자료가 크지만 서로 모순되는 자료보다 낫다고 정리했다. 자사 사이트 이전은 약 400개 route 규모로 약 6개월이 걸렸다.
+
+외주나 AI 생성 코드로 프레임워크를 고를 때는 학습 자료의 양보다 버전별 API가 섞여 있는지를 함께 본다. 기존 코드베이스를 새 프레임워크로 옮길 때는 에이전트에 사용 중인 프레임워크와 버전을 명시하고, 대표 route부터 옮겨 검증한다. 위 수치와 이유는 Lovable이 자기 서비스에서 밝힌 결과이며 일반화된 비교가 아니다.
+
 ## 도입 점검
 
 - 버전: `@tanstack/react-start` 1.169 이상이 안정 릴리스다. Vite로 빌드하면 Vite 8이 필요하고 Vite 7은 지원하지 않는다. RC에서 올릴 때는 migration guide에 따라 제거된 `.inputValidator()`를 같은 validator를 받는 `.validator()`로 바꾸고, `@tanstack/nitro-v2-vite-plugin` 대신 `nitro/vite`의 `nitro()`를 쓴다. RC 시절 예제나 생성 코드에 남은 제거 API를 먼저 찾는다.
@@ -113,6 +127,11 @@ Start vs Next.js 문서는 타입 있는 URL 상태, route context, 명시적 lo
 
 - [TanStack Start 1.0 is Stable — TanStack Blog, Tanner Linsley](https://tanstack.com/blog/tanstack-start-1-0)
 - [TanStack Start security update: CVE-2026-102989 — TanStack Blog](https://tanstack.com/blog/tanstack-start-security-update-cve-2026-102989)
+- [React Server Components Your Way — TanStack Blog](https://tanstack.com/blog/react-server-components)
+- [We Stopped Using RSC on TanStack.com — TanStack Blog, Tanner Linsley](https://tanstack.com/blog/we-stopped-using-rsc-on-tanstack-com)
+- [Introducing TanStack Markdown and TanStack Highlight — TanStack Blog, Tanner Linsley](https://tanstack.com/blog/introducing-tanstack-markdown-and-highlight)
+- [Building apps using TanStack Start — Lovable Blog, Fabian Hedin](https://lovable.dev/blog/building-apps-using-tanstack-start)
+- [How we migrated lovable.dev away from Next.js and turned it into another Lovable app — Lovable Blog, Alexander Lebedev](https://lovable.dev/blog/how-we-migrated-lovable-dev-away-from-nextjs)
 - [Release @tanstack/react-start 1.169.0 — GitHub](https://github.com/TanStack/router/releases/tag/%40tanstack%2Freact-start%401.169.0)
 - [TanStack Start, Overview](https://tanstack.com/start/latest/docs/framework/react/overview)
 - [TanStack Start, Migrate from the Release Candidate](https://tanstack.com/start/latest/docs/framework/react/migrate-from-release-candidate)

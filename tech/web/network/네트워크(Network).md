@@ -44,6 +44,7 @@ OSI 7계층과 캡슐화, IP 헤더, 스위치와 라우팅, TLS, 패킷 캡처,
 - [x] [[Packet-Capture-and-Wireshark|패킷 캡처와 Wireshark (libpcap/Npcap, dumpcap, dissector, promiscuous 모드, 캡처 필터와 디스플레이 필터, TCP 스트림 재조립, SPAN/TAP, TLS 복호화, 법적 범위)]]
 - [x] [[WiFi-Generations|Wi-Fi 세대와 연결 구간 진단 (변조와 QAM, CSMA/CA, Wi-Fi 5/6/6E/7/8과 802.11ac/ax/be/bn, 인증과 승인일 구분, ping과 traceroute 구간 진단, captive portal RFC, 개발 서버 사설 IP 접속)]]
 - [x] [[WiFi-Direct|Wi-Fi Direct (AP 없는 기기 간 연결, 탐색, provision discovery, 그룹 오너 intent 협상과 초대, WPS 프로비저닝, WPA2와 R2의 WPA3, Android P2P API 권한)]]
+- [x] [[Wireless-Mesh-Network|무선 메시 네트워크 (다중 홉 중계, IEEE 802.11s의 MAC 주소 전달과 mesh gate, HWMP와 airtime 메트릭, SAE와 AMPE, MANET과 AODV/OLSR, 백본/클라이언트/하이브리드 구조, EasyMesh와 802.11s 구분, 홉당 처리량 비용)]]
 - [x] [[WPAN-and-6LoWPAN|WPAN과 6LoWPAN (Bluetooth Classic과 LE, Zigbee, IEEE 802.15.4의 127바이트 프레임과 주소, 단편화와 헤더 압축, 인터페이스 식별자, 6LBR과 Neighbor Discovery 최적화)]]
 - [x] [[WiFi-Sensing|Wi-Fi 센싱 (CSI, 카메라를 교사로 쓰는 학습, 교차 환경 정확도, IEEE 802.11bf, 벽 너머 감지와 프라이버시)]]
 

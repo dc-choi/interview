@@ -26,7 +26,7 @@ Transform wizard는 lightweight/Spark template, input/output 이름과 Project �
 
 Custom Gradle task는 language subproject의 build.gradle에서 check/test/publish 의존성이나 finalizedBy로 연결한다. Internal task를 의존하거나 upgrade가 덮어쓸 ci.yml에 넣지 않는다. Unit test helper 실행과 required CI check 여부도 구분한다.
 
-Upgrade PR은 dedicated branch에서 default로 들어간다. 자동 merge는 required checks, 최신 affected build와 새 Spark runtime 실행 조건 등을 만족해야 한다. Upgrade branch의 사용자 변경, template file overwrite, 너무 옛 template 등은 수동 개입을 요구한다. Repository를 다른 Project로 옮기면 checks/build 전에 수동 upgrade로 reference를 갱신해야 한다.
+Upgrade PR은 dedicated branch에서 default로 들어간다. 자동 merge는 repository 설정의 Automatic merge of upgrade PRs를 켰을 때만 시도하며 required checks, 최신 affected build와 새 Spark runtime 실행 조건 등을 만족해야 한다. 설정이 꺼져 있거나 merge에 실패하면 repository에 새 upgrade PR 안내만 표시되고 적절한 권한을 가진 사용자가 직접 merge해야 한다. Template 유형이 merge를 지원하지 않는 경우, upgrade branch의 사용자 변경, 사용자 수정이 있는 template file overwrite, 너무 옛 template 등은 수동 개입을 요구한다. Repository를 다른 Project로 옮기면 checks/build 전에 수동 upgrade로 reference를 갱신해야 한다.
 
 Spark module pin은 branch/all-branch별 최대 90일의 임시 override다. Expiry 뒤 build가 실패할 수 있어 외부 운영 일정도 관리한다. CI는 pin version이 template 최소보다 높을 때 그 library를 쓰며 in-platform pin은 cdconfig보다 우선한다. Pin restore나 신규 feature 안내를 무기한 유지 보장으로 읽지 않는다.
 
