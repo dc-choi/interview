@@ -43,6 +43,8 @@ External pipeline은 외부 warehouse에서 실행하면서 Foundry lineage, sec
 
 Databricks는 serverless 또는 classic cluster ID를 설정한다. Source가 SQL warehouse이면 classic용 cluster ID를 별도로 제공해야 한다. Snowflake warehouse 미설정 시 source 기본값을 쓴다. 해당 가이드는 incremental, LLM/media, union, UDF와 geospatial을 미지원으로 명시한다. Preview와 실제 output을 함께 대조한다.
 
+External pipeline은 생성 단계에서 Batch pipeline 아래의 External을 골라 만든다. 같은 가이드의 알려진 제한은 Python transforms와 Pipeline Builder의 compute pushdown에서 branching을 지원하지 않는다고 명시한다. 이 제한 때문에 Faster 전환에서 쓰는 branch 시험과 아래의 branch build 및 검토 흐름은 external pipeline에서 쓸 수 없다고 해석한다. 복제본 비교가 external에서도 가능한지는 확인하지 못했다. 출력은 source 시스템에 저장되는 virtual table이므로 build output 확인이 branch 격리 없이 source의 실제 테이블에 쓰는 일이 될 수 있다(해석).
+
 ## 저장, 검증과 데이터 생성은 다른 단계다
 
 Code Repositories autosave는 commit이 아니다. Commit은 변경을 기록하고 checks를 실행하며 Build는 commit/checks와 dataset 생성을 함께 실행한다. 의미 있는 commit message를 먼저 남기고 build한다. Branch build 성공 후 merge해도 master output은 별도로 build해야 한다. Revert도 commit을 되돌리는 PR이므로 데이터의 재생성까지 확인한다.

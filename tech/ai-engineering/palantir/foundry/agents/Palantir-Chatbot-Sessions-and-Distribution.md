@@ -1,7 +1,7 @@
 ---
 tags: [palantir, chatbot, session, logging, marketplace]
 status: done
-verified_at: 2026-10-16
+verified_at: 2026-11-24
 category: "AI엔지니어링(AIEngineering)"
 aliases: ["Chatbot session, API와 배포"]
 ---
@@ -12,13 +12,13 @@ Interactive chatbot을 Function, API, Workshop 또는 Marketplace로 배포할 �
 
 ## Function 입력은 session과 state default를 포함한다
 
-Function publish는 chatbot publish 때마다 version을 만들거나 save 때 minor version도 만들도록 설정한다. Publish 기능을 꺼도 이후 등록을 멈추는 것이며 기존 Function의 삭제를 의미하지 않는다. 다시 켠 뒤 publish해야 새 Function version이 나온다.
+공식 문서는 Function으로 게시한 chatbot을 플랫폼에서 Function을 실행할 수 있는 곳 어디서나 쓸 수 있다고 안내하며, 예로 AIP Evals 평가, Automate 자동화와 Code Repositories 호출을 든다. 호출할 수 있다는 것이 같은 tool 지원을 뜻하지는 않는다. Backend 실행에서는 command tool이 무시된다([[Palantir-Chatbot-Tools-and-Commands|실행 환경별 tool 지원]]). Publish settings에서 Function publish를 켜고 Ontology를 고른 뒤 Function 이름, API name과 설명을 입력한다. Function publish는 chatbot publish 때마다 version을 만들거나 save 때 minor version도 만들도록 설정한다. Publish 기능을 끄면 이후 version의 Function 등록이 멈춘다. 기존 Function이 유지되는지는 공식 문서에서 확인하지 못했다. 다시 켠 뒤 publish해야 새 Function version이 나온다.
 
 `userInput`은 질의이며 새 session이면 optional `sessionRid`를 생략한다. Empty string을 전달하지 않는다. 기존 session RID를 넣으면 대화를 이어간다. Output의 RID를 다음 실행에 전달해 continuity를 유지한다.
 
 Application variables는 optional input/output으로 노출한다. Object set input을 생략하면 기본이 해당 object type의 전체 base set이고 string은 Studio default다. 누락을 empty set으로 해석하면 예상보다 넓은 context를 전달할 수 있다. Output은 변경된 variable만 반환하며 빈 output을 값 삭제로 해석하지 않는다.
 
-AIP Evals suite는 chatbot과 같은 Project에 둔다. 독립 case는 `sessionRid=null`로 시작하고 object set은 null 또는 실제 값이어야 하며 empty 값은 허용되지 않는 경로다. 이전 case session을 공유해 테스트가 오염되지 않게 한다.
+AIP Evals suite는 chatbot을 Function으로 게시한 뒤 Chatbot Studio 왼쪽 도구 모음의 Evaluation 탭에서 Create evaluation suite로 만들며, chatbot과 같은 Project에 둔다. 독립 case는 `sessionRid=null`로 시작하고 object set은 null 또는 실제 값이어야 하며 empty 값은 허용되지 않는 경로다. 이전 case session을 공유해 테스트가 오염되지 않게 한다.
 
 ## API application의 resource 범위는 자동 확장되지 않는다
 
