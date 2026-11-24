@@ -71,6 +71,16 @@ Bandura의 자기 효능감 이론은 직접 수행한 성취, 다른 사람을 
 
 커리어에 적용한다면 완료한 작은 과제, 받았던 도움과 다음에 혼자 할 수 있는 범위를 함께 적는다. 몰입 시간이나 실패 규모보다 재현 가능한 수행의 증거를 찾기 위한 제안이며, 특정 활동이 역량이나 회복력을 보장한다는 검증 결과는 아니다.
 
+직접 수행이 관찰보다 강한 근거라는 점은 같은 해의 실험으로 확인된다. Bandura, Adams와 Beyer(1977)는 공포증이 있는 성인을 직접 수행으로 숙달을 경험하는 처치, 다른 사람의 수행을 지켜보는 처치와 처치 없는 조건으로 나눴다. 직접 수행한 쪽의 효능 기대가 지켜보기만 한 쪽보다 높고 강했으며 다른 대상으로도 더 넓게 일반화됐다. 효능 기대는 어느 경로로 바뀌었든 이후의 수행을 일관되게 예측했다(초록 기준). 믿어서 해 보는 것이 아니라 해 봐서 믿게 된다는 요약은 이 결과의 순서를 가리킨다. 공포증 치료 장면의 결과이므로 진로나 창작의 확신으로 옮기는 것은 적용 해석이다.
+
+### 정답을 맞히는 실력과 자기 생각을 내놓는 자신감은 따로 움직인다
+
+- 2026학년도 수능 수학 46문항을 공개 두 시간 안에 디지털화해 언어 모델 24개에 풀게 한 평가에서 일부 모델은 특정 입력 조건에서 100점을 받았다(arXiv 초록 기준). 정해진 답을 맞히는 능력만으로 앞서기는 어려워졌다는 주장의 근거로 쓰인다.
+- OECD의 PISA 2018 한국 국가 노트는 실패하면 남들이 나를 어떻게 생각할지 걱정된다는 문항에 동의한 한국 학생이 75%로 OECD 평균 56%보다 높았다고 적는다. 어려운 상황에서 대개 빠져나갈 길을 찾을 수 있다는 문항에는 81%(OECD 평균 84%)가 동의했다.
+- 한국 학생이 교과서 밖의 문제 해결과 창의적 사고 평가에서는 최상위권이면서 창의적 표현에 대한 자신감은 중간 이하였다는 설명은 PISA 2012와 2022 자료를 근거로 한 한 영상의 정리이며 원자료로 대조하지 못했다.
+- 그래서 평가 기준을 남이 매기는 점수에서 내가 정한 것을 지켰는지로 옮기고, 하고 싶은 일을 작게 한 번 해 보고 잘했는지가 아니라 했는지만 확인하라는 권고가 나온다(영상의 제안). 생각대로 해 보고 틀리면 바꾼다는 태도는 틀린 생각을 끝까지 붙드는 것과 구분한다.
+- 실패에 대한 걱정이 큰 것과 자기 생각을 믿지 못하는 것 사이의 인과는 이 자료들이 보여 주지 않는다. 설문 문항 하나의 국가 간 차이이며 응답 방식의 문화적 차이도 섞일 수 있다(이 문서의 해석).
+
 2026-10-22 원 논문의 공개 초록과 정식 재수록본의 출판사 검색 반환 초록을 대조했다. 전체 논문과 개별 연구 자료를 다시 검증한 것은 아니다.
 
 ## 자기 책임과 자기 비난을 구분한다
@@ -119,6 +129,10 @@ Bandura의 자기 효능감 이론은 직접 수행한 성취, 다른 사람을 
 - [재능이라는 허상 — 곽지욱](https://www.gwagjiug.com/blog/illusion_of_talent)
 - [Bandura, Self-efficacy: Toward a unifying theory of behavioral change](https://pubmed.ncbi.nlm.nih.gov/847061/)
 - [Self-efficacy: Toward a unifying theory of behavioral change — Albert Bandura](https://www.sciencedirect.com/science/article/pii/0146640278900024) — 1977년 논문의 1978년 정식 재수록본, 정보원 네 가지와 비교적 안전한 활동의 숙달 조건은 공개 초록 범위에서 대조
+- [Cognitive processes mediating behavioral change — Journal of Personality and Social Psychology, Bandura, Adams and Beyer (1977)](https://doi.org/10.1037/0022-3514.35.3.125) — 35권 3호 125~139쪽. 2026-11-24 PubMed 초록으로 세 조건과 결과 대조
+- [Korea Country Note, PISA 2018 Results — OECD](https://www.oecd.org/content/dam/oecd/en/about/programmes/edu/pisa/publications/national-reports/pisa-2018/featured-country-specific-overviews/PISA2018_CN_KOR.pdf) — 2026-11-24 본문에서 실패 걱정 문항과 자기 효능감 문항의 한국과 OECD 평균 대조
+- [Evaluating Large Language Models on the 2026 Korean CSAT Mathematics Exam — arXiv 2511.18649](https://arxiv.org/abs/2511.18649) — 2025-11 공개, 2026-11-24 초록으로 문항 수, 모델 수와 만점 조건 대조
+- [AI가 모든 정답을 아는 시대, 대체할 수 없는 한 가지 (스티브 잡스, 샘 올트먼 외) — YouTube, 백만수무강](https://www.youtube.com/watch?v=89Q52YLXa_8) — 2026-11-22 업로드, 2026-11-24 음성 인식 전사 전체 확인. 여러 인물의 발언을 엮은 영상이며 영어 인용 구간은 한국어 음성 인식으로 깨져 확인하지 못해 인용하지 않음. PISA 2012와 2022의 순위 설명은 원자료 미대조
 - [Rosenthal and Jacobson, Pygmalion in the classroom](https://doi.org/10.1007/BF02322211)
 - [The Imposter Phenomenon in High Achieving Women: Dynamics and Therapeutic Intervention — Clance and Imes, 1978](https://doi.org/10.1037/h0086006)
 - [Prevalence, Predictors, and Treatment of Impostor Syndrome: a Systematic Review — Bravata et al., 2020](https://doi.org/10.1007/s11606-019-05364-1)
