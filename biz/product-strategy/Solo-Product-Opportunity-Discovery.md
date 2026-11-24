@@ -237,3 +237,4 @@ SBA의 시장 조사 안내는 수요, 시장 규모, 고객 위치와 도달 �
 - [[Thin-Start-Project-Approach|얇게 시작하기, 프로젝트 MVP 접근]]
 - [[Pricing-Strategy|가격 정책 설계]]
 - [[Community-Dark-Patterns|커뮤니티, 프로덕트 다크 패턴]]
+- [[Audience-Fragmentation-and-Taste-Niches|시청자 파편화와 취향 기반 니치 수요]]
