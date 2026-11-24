@@ -1,7 +1,7 @@
 ---
 tags: [econ, applied, tax, income-tax]
 status: done
-verified_at: 2026-10-21
+verified_at: 2026-11-25
 category: "Economics"
 aliases: ["Personal Income Tax Basics", "개인 소득세와 연말정산"]
 ---
@@ -60,6 +60,23 @@ aliases: ["Personal Income Tax Basics", "개인 소득세와 연말정산"]
 
 실무 점검은 지출 사실, 본인의 적용 요건, 제출할 증빙을 나누어 한다. ISA, 연금저축과 IRP는 [[Tax-Advantaged-Accounts|계좌별 세제와 인출 조건]], 사업상 비용의 증빙은 [[Tax-Bookkeeping-and-Filing|사업 장부와 증빙 관리]]에서 별도로 확인한다. 개인 소비에 대한 소득공제와 사업 필요경비를 같은 절차로 처리하지 않는다.
 
+## 연말 전에 확인할 공제 요건 (2026년 귀속)
+
+2026-11-25 소득세법(법률 제21221호)과 조세특례제한법(법률 제21223호)의 2026-01-01 시행본 조문으로 대조한 범위다. 그 뒤 시행된 조세특례제한법 개정(법률 제21549호, 제21612호와 현행 제21467호, 2026-09-18 시행)이 아래 조문을 바꿨는지는 전부 대조하지 않았으므로 신고 전에 현행 조문을 확인한다. 연말이 지나면 바꿀 수 없는 조건, 즉 기준 시점과 소득 경계가 있는 항목을 먼저 본다.
+
+| 항목 | 요건과 금액 | 기준 시점과 주의 |
+|---|---|---|
+| 의료비 세액공제 | 총급여의 3%를 넘는 의료비부터 15%. 일반 대상자 의료비는 연 700만원까지, 본인, 65세 이상, 6세 이하, 장애인 등은 한도 없음. 미숙아와 선천성이상아 20%, 난임시술비 30% | 3%에 못 미친 금액은 다른 의료비에서 먼저 뺀다(소득세법 제59조의4) |
+| 부양가족 기본공제 | 연간 소득금액 합계 100만원 이하. 근로소득만 있으면 총급여 500만원 이하 | 배우자와 부양가족에 같은 기준(소득세법 제50조) |
+| 주택청약종합저축 소득공제 | 무주택 세대의 세대주 또는 세대주의 배우자, 총급여 7천만원 이하, 연 납입 300만원까지 40%(최대 120만원). 적용기한 2028-12-31 | 무주택은 과세기간 중 내내, 세대주 여부는 과세기간 종료일 기준(조특법 제87조 제2항, 제5항) |
+| 월세 세액공제 | 총급여 8천만원 이하(종합소득금액 7천만원 초과자 제외), 연 1천만원까지의 월세에 15%. 총급여 5,500만원 이하(종합소득금액 4,500만원 초과자 제외)는 17% | 무주택 세대주 판정은 과세기간 종료일 현재. 2026년 지급분부터 월세공제 요건을 갖추고 세대주와 주소를 달리하는 등 시행령 요건을 충족한 배우자도 공제 가능하며 부부 합계 1천만원을 넘는 금액은 배우자 몫에서 뺀다(조특법 제95조의2) |
+| 고향사랑기부금 | 10만원 이하 110분의 100, 10만원 초과 20만원 이하 40%, 20만원 초과 15%(특별재난지역 30%) | 40% 구간은 2026-01-01 이후 기부분부터. 고향사랑e음의 44%는 지방소득세를 더한 실효율이다(조특법 제58조) |
+| 혼인 세액공제 | 2026-12-31 이전 혼인신고, 신고한 해에 생애 1회 50만원, 부부가 각각 | 조문은 종료일만 정하고, 2024년 신고분부터라는 시작점은 국세청 안내(2024~2026년 혼인신고분) 기준이다. 적용례 부칙 원문은 대조하지 않았다(조특법 제92조) |
+
+세액공제 항목은 공제할 산출세액이 있어야 효과가 있다. 고향사랑기부금과 혼인 세액공제처럼 금액이 정해진 공제도 앞선 공제 뒤 남은 산출세액이 없으면 돌려받는 돈이 생기지 않는다. 2026년 세제개편안의 비수도권 우대지역 고향사랑기부금 공제율 인상안은 2027년 적용 예정인 정부안이며 2026-11-25 기준 법률 통과를 확인하지 않았다.
+
+해외주식의 양도차익은 소득세법 제94조 제1항 제3호 다목의 양도소득이라 양도시기 규정인 제98조가 직접 적용되고, 제98조는 양도시기를 원칙적으로 대금을 청산한 날로 둔다. 부동산 같은 국외자산 규정(제118조의2 이하)으로 읽지 않는다. 미국 주식의 표준 결제주기는 2024-05-28부터 T+1이므로 연말 마지막 거래일의 매도는 결제일이 다음 해로 넘어갈 수 있다. 다만 증권시장 거래의 대금청산일을 결제일로 본다고 명시한 국세청 문서는 확인하지 못했으므로, 특정 연도 귀속이 중요하면 증권사 거래내역의 결제일과 국세청 안내로 확인한다. 양도소득 과세의 기본 구조는 [[Housing-Rental-Market-Indicators|주택 매매와 임대차 지표]]의 해외주식 설명과 함께 본다.
+
 ## 처음 확보할 자료
 
 - 근로소득 원천징수영수증에서 총급여, 결정세액과 기납부세액을 찾는다.
@@ -85,6 +102,12 @@ aliases: ["Personal Income Tax Basics", "개인 소득세와 연말정산"]
 - [국회 의안정보시스템, 소득세법 일부개정법률안 2221923](https://likms.assembly.go.kr/bill/billDetail.do?billId=PRC_0D2E0B01B1CB43269B26553CC2D957), [2220914](https://likms.assembly.go.kr/bill/billDetail.do?billId=PRC_X2X6W0X8V2V8D1C3C3A6B5A5A4I6H5), [2220515](https://likms.assembly.go.kr/bill/billDetail.do?billId=PRC_B2A6A0Z8Z0H6I1G5F4F5D0E6M8M9L3), [2204341](https://likms.assembly.go.kr/bill/billDetail.do?billId=PRC_A2I4J0H9I2G3F0F9N4N2M3N4L4M6K2), [2217609](https://likms.assembly.go.kr/bill/billDetail.do?billId=PRC_T2S6R0Z3Y1X8V1S7R5N0W4V6U6T0B8) — 2026-10-21 계류 중인 정보교환 연동, 2028년, 2029년, 2030년 유예안과 폐지안 대조
 - [Jurisdictions committed to implement the Crypto-Asset Reporting Framework (CARF) in time to commence exchanges in 2027, 2028 or 2029 as part of the Global Forum's CARF commitment process — OECD Global Forum on Transparency and Exchange of Information for Tax Purposes](https://www.oecd.org/content/dam/oecd/en/networks/global-forum-tax-transparency/commitments-carf.pdf) — 2026-09-14 갱신 목록에서 한국의 2027년 첫 교환 약정 대조
 - [국세청, 근로소득 연말정산 세액계산방법](https://nts.go.kr/nts/cm/cntnts/cntntsView.do?cntntsId=7870&mi=6434)
+- [국가법령정보센터, 소득세법(법률 제21221호, 2026-01-01 시행)](https://www.law.go.kr/LSW/lsInfoR.do?lsiSeq=280405&efYd=20260101&chrClsCd=010202&urlMode=lsInfoP&ancYnChk=0) — 2026-11-25 제50조 기본공제 소득요건, 제59조의4 의료비 세액공제, 제94조 제1항 제3호 다목과 제98조 양도시기 대조
+- [국가법령정보센터, 조세특례제한법(법률 제21223호, 2026-01-01 시행)](https://www.law.go.kr/LSW/lsInfoR.do?lsiSeq=280409&efYd=20260101&chrClsCd=010202&urlMode=lsInfoP&ancYnChk=0) — 2026-11-25 제58조 고향사랑기부금(부칙 제13조 적용 시기), 제87조 주택청약종합저축, 제92조 혼인 세액공제, 제95조의2 월세 세액공제(부칙 제17조) 대조
+- [국세청, 원천세 근로소득 안내](https://www.nts.go.kr/nts/cm/cntnts/cntntsView.do?cntntsId=7875&mi=6596) — 2026-11-25 혼인 세액공제의 2024~2026년 혼인신고분과 생애 1회 안내 대조
+- [고향사랑e음, 세액공제 안내](https://ilovegohyang.go.kr/donation/guide3.html) — 2026-11-25 지방소득세 포함 실효 공제율 대조
+- [지역 여건에 따라 세제혜택 더 두텁게! — 대한민국 정책브리핑, 행정안전부](https://www.korea.kr/news/policyNewsView.do?newsId=148969910) — 2026-08-12, 2027년 적용 예정 정부안의 확인 범위
+- [SEC, New T+1 Settlement Cycle – What Investors Need To Know](https://www.sec.gov/oiea/investor-alerts-and-bulletins/new-t1-settlement-cycle-what-investors-need-know-investor) — 2024-05-28 시행 T+1 결제주기
 - [국세청, 종합소득세 개요와 확정신고 예외](https://i.nts.go.kr/nts/cm/cntnts/cntntsView.do?cntntsId=7664&mi=2224)
 - [국세청, 근로소득의 범위](https://nts.go.kr/nts/cm/cntnts/cntntsView.do?cntntsId=8165&mi=6769)
 

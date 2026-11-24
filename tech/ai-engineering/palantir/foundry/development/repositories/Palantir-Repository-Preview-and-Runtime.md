@@ -1,7 +1,7 @@
 ---
 tags: [palantir, preview, runtime, spark, compute]
 status: done
-verified_at: 2026-11-09
+verified_at: 2026-11-25
 category: "AI엔지니어링(AIEngineering)"
 aliases: ["Code Repositories preview와 runtime 관리"]
 ---
@@ -57,6 +57,22 @@ Source를 쓰려면 code import 허용과 API name, repository import(source의 
 
 공식 문서가 나열한 실행 환경 도구는 bash와 grep/sed/find/tar 등 기본 유틸리티, git, python3 표준 라이브러리, `$JAVA_HOME`의 JDK다. curl과 ssh는 없으므로 HTTP 호출은 Python `urllib.request` 등으로 작성한다. Marketplace product에 포함한 repository의 custom job은 설치 뒤 실행이 보장되지 않고 checks를 실패시킬 수 있다.
 
+## Preview 성공, build 실패, check 실패와 repository 복구를 따로 다룬다
+
+Code Preview는 data의 일부만 실행하므로 preview가 성공해도 전체 build에서 subset에 없던 값이 코드를 깨뜨릴 수 있다. 먼저 실패한 build log에서 `Caused by`로 시작하는 줄을 찾는다. 이 줄이 transform file의 특정 line을 가리키기도 한다. 그다음 repository upgrade를 검토한다. `... > Upgrade`는 upgrade PR을 만들 뿐이므로 그 PR을 merge해야 branch가 실제로 바뀌고, protected branch로의 merge는 review와 승인이 필요하다. `...` 메뉴에 Upgrade가 보이지 않으면 이미 최신이다.
+
+Code Workbook 코드를 repository로 옮겨 실패하면 다음 순서로 본다.
+
+1. Decorator와 함수의 입출력 방식이 맞는가. `@transform_df`는 DataFrame을 반환해야 하고 `@transform`은 함수가 output에 직접 쓴다.
+2. 모든 input을 선언하고 compute 함수에 전달했는가.
+3. Dataframe 이름이 workbook과 같고 실제로 반환하는가.
+4. Workbook에서 쓰던 library가 repository 환경에도 있는가.
+5. Workbook cell의 input과 branch가 repository가 읽는 dataset과 같은가.
+
+예전에 되던 Python library 때문에 checks가 `PackageNotFoundError`나 Conda cache 손상에 따른 `MD5MismatchError`로 실패하면, 코드보다 cache를 먼저 의심한다. 공식 FAQ의 순서는 아무 변경(빈 줄이라도)을 담은 새 commit, 그래도 같으면 설정(톱니바퀴)에서 Hidden files를 켜고 Python subproject의 `conda-versions.run.linux-64.lock`을 지운 commit(Gradle cache 정리), 그래도 같으면 Palantir 지원 문의다.
+
+Repository 복제 기능은 플랫폼에 없다. Local로 clone해 새 repository에 push하고, 새 Project에 input reference를 모두 다시 추가한다. 지운 transform 코드는 그 코드로 build한 dataset preview의 Compare로 당시 코드를 보거나 Branches에서 해당 branch의 변경 이력을 열어 되살린다.
+
 ## Compute는 wall time과 allocation을 함께 본다
 
 해당 compute guide는 code 작성 자체와 dataset build 사용량을 구분한다. Build는 read/실행/I/O wait/write 전체 allocation 시간으로 계산한다. Driver와 각 executor에 `max(vCPU, GiB/7.5) * duration`을 합하며 dynamic executor는 구간별 적분한다. GPU는 driver와 executor마다 GPU 수, model별 rate와 기간을 곱해 더한다.
@@ -79,6 +95,7 @@ Spark profile은 먼저 Project에 import해야 checks가 통과한다. Restrict
 - [Palantir, AIP features](https://www.palantir.com/docs/foundry/code-repositories/aip-features)
 - [Palantir, Control Panel repository settings](https://www.palantir.com/docs/foundry/code-repositories/configure-repositories-in-control-panel)
 - [Palantir, Custom CI](https://www.palantir.com/docs/foundry/code-repositories/custom-ci)
+- [Palantir, Code Repositories FAQ](https://www.palantir.com/docs/foundry/code-repositories/faq)
 - [Palantir, Unit tests](https://www.palantir.com/docs/foundry/code-repositories/unit-tests)
 - [Palantir, Repository upgrades](https://www.palantir.com/docs/foundry/code-repositories/repository-upgrades)
 - [Palantir, Module pinning](https://www.palantir.com/docs/foundry/code-repositories/module-pinning)
