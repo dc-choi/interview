@@ -2,7 +2,7 @@
 tags: [palantir, foundry, boardroom]
 status: done
 category: "AI엔지니어링(AIEngineering)"
-verified_at: 2026-10-16
+verified_at: 2026-11-24
 ---
 
 # Boardroom 에이전트 팀과 접근 권한
@@ -18,6 +18,15 @@ Global context는 모든 agent에 전달된다. 기본 Ontology search를 끄면
 Restricted는 직접 role grant를 받은 사람/그룹만 접근하게 한다. Viewer도 새 chat/creation을 만들고 자신이 만든 항목을 수정/삭제할 수 있다. 다른 생성물과 설정은 읽을 수 있지만 수정할 수 없다. Editor는 boardroom 안의 항목 전체를 수정/삭제하고 Owner는 권한 관리와 boardroom 삭제도 수행한다.
 
 생성 시 nested object는 같은 CBAC, mandatory marking과 discretionary permission을 사용한다. 생성 후 discretionary 권한은 바꿀 수 있지만 CBAC/mandatory marking은 변경할 수 없다. 생성 전에 데이터 분류를 정해야 한다. Boardroom에 접근할 수 있다는 사실을 모든 참조 Ontology/media 데이터의 권한으로 확대하지 않는다.
+
+## 다른 앱에 임베드
+
+Workshop module 같은 다른 Foundry 앱에 iframe widget으로 boardroom을 넣을 수 있다. 기본 임베드는 boardroom 자체 sidebar를 포함하고, 그 sidebar의 Back 버튼은 Boardroom 홈으로 돌아가 사용자를 원래 앱의 흐름 밖으로 내보낸다. Boardroom URL에 다음 parameter 중 하나를 붙여 막는다(2026-11-24 문서 기준).
+
+- `hideSidebar=true`: Back 버튼과 모드 간 이동을 포함한 boardroom sidebar를 숨긴다. Foundry sidebar까지 숨기려면 `embedded=true`를 함께 고려한다.
+- `embedded-chat-only=true`: Chat 모드에서 boardroom sidebar와 header를 없앤다.
+
+이 parameter는 표시 요소를 숨길 뿐이고, 원문은 임베드했을 때의 권한 동작을 설명하지 않는다. 임베드해도 앞의 접근 역할과 객체 권한 검토를 그대로 적용한다.
 
 ## 출처
 

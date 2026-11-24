@@ -34,6 +34,12 @@ EIA는 spare capacity를 **30일 이내 가동해 최소 90일 유지할 수 있
 
 이 항로 설명은 2026-03-03 갱신된 EIA 자료를 2026-10-07 확인한 기준이다. 현재 통항 여부, 피해 규모, 복구 일정과 운임을 뜻하지 않는다.
 
+## LNG는 원유와 우회 조건이 다르다
+
+호르무즈 해협은 원유뿐 아니라 액화천연가스(LNG)의 병목이기도 하다. EIA는 2024년 세계 LNG 교역의 약 20%가 이 해협을 지났고 대부분 카타르산이었으며, 카타르가 하루 약 9.3 Bcf(십억 입방피트), 아랍에미리트가 약 0.7 Bcf를 이 해협을 통해 내보냈다고 집계한다. [EIA의 호르무즈 LNG 분석](https://www.eia.gov/todayinenergy/detail.php?id=65584) 2026-03-03 갱신된 운송 병목 자료의 표는 해협의 전체 LNG 통과량을 같은 기준으로 2024년 하루 10.5 Bcf, 2025년 상반기 11.4 Bcf(세계 LNG 교역의 20% 이상)로 적는다. 앞의 국가별 수출 합계와 이 전체 통과량은 지표와 자료 시점이 달라 직접 비교하지 않는다. 두 자료의 수치는 2025년 상반기까지의 실적이며 그 뒤의 통항 상태를 뜻하지 않는다.
+
+EIA가 호르무즈의 대안으로 드는 사우디아라비아, 아랍에미리트와 이란의 송유관은 원유 우회 수단이며, 같은 자료는 LNG의 우회 경로를 제시하지 않는다. 그래서 해협을 지나던 LNG 차질을 원유 우회 송유관 용량으로 상쇄해 계산하지 않는다. 페르시아만 안쪽 수입국으로 가는 물량처럼 해협을 지나지 않는 거래는 이 차질에 들지 않는다. 액화시설 자체가 피해를 입으면 통항이 재개돼도 수출이 바로 회복되지 않으므로, 아래 뉴스 판단 순서처럼 생산 중단과 경로 차단을 나눠 본다(EIA 자료와 항로 구조에서 도출한 구분). [EIA의 운송 병목 분석](https://www.eia.gov/international/content/analysis/special_topics/World_Oil_Transit_Chokepoints/)
+
 ## 선박 간 환적과 AIS 공백은 따로 확인한다
 
 유조선끼리 바다에서 화물을 옮기는 선박 간 환적(STS, ship-to-ship transfer)은 화물을 실은 선박의 크기와 선박 추적 자료에 드러나는 모습을 바꿀 수 있다. 그러나 환적만으로 해협을 지나는 경로가 사라지지는 않는다. 해협 안쪽에서 실은 화물을 바깥 해역의 다른 선박으로 옮기려면 그 화물을 실은 선박 가운데 하나는 여전히 해협을 지나야 하므로, 환적 물량은 동원할 선박 수, 환적 위치와 안전 조건에 묶이며 차단 전 통항량과 같다고 보지 않는다(분석 기준).
@@ -79,7 +85,8 @@ A.1106(29)는 AIS를 싣지 않는 선박이나 탑재를 면제받은 선박이
 - [Benchmarks play an important role in pricing crude oil — U.S. Energy Information Administration](https://www.eia.gov/Todayinenergy/detail.php?id=18571) — 가격 기준과 차등 요인 설명, 2014-10-28
 - [Oil prices and outlook — U.S. Energy Information Administration](https://www.eia.gov/energyexplained/oil-and-petroleum-products/prices-and-outlook.php)
 - [What drives crude oil prices: Spot Prices — U.S. Energy Information Administration](https://www.eia.gov/finance/markets/crudeoil/spot_prices.php)
-- [World Oil Transit Chokepoints — U.S. Energy Information Administration](https://www.eia.gov/international/content/analysis/special_topics/World_Oil_Transit_Chokepoints/) — 2026-03-03 갱신 자료의 항로와 우회 제약
+- [World Oil Transit Chokepoints — U.S. Energy Information Administration](https://www.eia.gov/international/content/analysis/special_topics/World_Oil_Transit_Chokepoints/) — 2026-03-03 갱신 자료의 항로와 우회 제약, 2025년 상반기 호르무즈 LNG 통과량, 2026-11-24 대조
+- [About one-fifth of global liquefied natural gas trade flows through the Strait of Hormuz — U.S. Energy Information Administration](https://www.eia.gov/todayinenergy/detail.php?id=65584) — 2025-06-24 게시, 2024년 카타르와 아랍에미리트의 LNG 통과량, 2026-11-24 대조
 - [AIS transponders — International Maritime Organization](https://www.imo.org/en/OurWork/Safety/Pages/AIS.aspx) — SOLAS V/19의 탑재 대상, 송신 정보와 상시 작동 요건, 2026-11-15 대조
 - [Resolution A.1106(29), Revised guidelines for the onboard operational use of shipborne AIS — International Maritime Organization](https://wwwcdn.imo.org/localresources/en/OurWork/Safety/Documents/AIS/Resolution%20A.1106(29).pdf) — 2015-12-02 채택, Annex 3항의 단계적 탑재 기간과 AIS 정보의 한계, 22항의 작동과 차단 조건, 2026-11-15 대조
 - [Shipping Circular No. 16 of 2024 — Maritime and Port Authority of Singapore](https://www.mpa.gov.sg/api/media/206148d2-ec65-4b78-b604-c06a808a6ed2/sc_no_16_of_2024.pdf) — 2024-12-20 회람의 MARPOL 부속서 I 제8장 요약과 Annex A의 IMO 결의 A.1192(33) 원문, 2026-11-15 대조
