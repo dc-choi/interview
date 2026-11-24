@@ -1,7 +1,7 @@
 ---
 tags: [palantir, cipher, encryption, license]
 status: done
-verified_at: 2026-10-16
+verified_at: 2026-11-24
 category: "AI엔지니어링(AIEngineering)"
 aliases: ["Cipher channel과 license 권한"]
 ---
@@ -34,7 +34,29 @@ Admin license는 높은 신뢰를 필요로 한다. Python code에서 같은 ope
 
 Property type을 Cipher text로 지정하고 Plaintext Type, 빈/평문 field 수정에 쓸 Default Encryption Channel을 설정한다. Encrypted Value renderer에서 적절한 Operational license와 justification으로 개별값을 본다. 예전 string RID Renderer보다 CipherText property 경로를 사용한다.
 
-Functions는 `decryptAsync()`와 `updateAsync()`를 사용한다. Update는 OntologyEditFunction/Edits 선언 후 Action으로 apply해야 하며 function preview는 실제 object를 수정하지 않는다. Optional property의 undefined 처리도 필요하다. Inline editable type class는 OSv1/API-edit 제약이 있어 권장 기본 경로와 구분한다.
+Functions에서 Cipher를 쓰려면 Operational User license가 필요하다. TypeScript v1은 `decryptAsync()`와 `updateAsync()`를 사용한다. Update는 OntologyEditFunction/Edits 선언 후 Action으로 apply해야 하며 function preview는 실제 object를 수정하지 않는다. Optional property의 undefined 처리도 필요하다. Inline editable type class는 OSv1/API-edit 제약이 있어 권장 기본 경로와 구분한다.
+
+OSDK 경로는 언어별로 지원 범위가 다르다. 2026-11-24 확인한 문서 기준이다.
+
+| OSDK | 복호화 | 새 값 쓰기(암호화) | 호출 형태 |
+|---|---|---|---|
+| TypeScript v2 | 지원 | 지원 | `name?.decrypt()`, `createEditBatch`의 `batch.update(obj, { name: { plaintext, strategy } })` 결과를 edit로 반환 |
+| Python | 지원 | 지원 | `name.decrypt()`, `@function(edits=[...])` 안에서 `name.set(plaintext=..., cipher_channel_strategy=...)` |
+| Java 2.0.0-rc3 이후 release candidate | 지원 | 미지원 | `name().orElseThrow().decrypt()` |
+| Java 1.x | CipherText property 미지원 | 미지원 | 없음 |
+
+Java로 CipherText를 수정하는 기능을 설계하면 쓰기 경로를 TypeScript나 Python function으로 둔다.
+
+새 암호값을 만들거나 기존 값을 바꿀 때는 Cipher Channel을 골라야 한다. 생성은 property의 default channel이 반드시 있어야 하며 selection strategy를 무시한다. Update는 strategy로 default channel과 기존 값을 암호화한 channel 중 무엇을 쓸지 정한다. 지정하지 않으면 `PREFER_EXISTING`이다.
+
+| Strategy | 동작 | 실패 조건 |
+|---|---|---|
+| `PREFER_EXISTING`(기본) | 기존 값의 channel, 아직 암호화되지 않았으면 default channel | 둘 다 없음 |
+| `PREFER_DEFAULT` | default channel, 없으면 기존 값의 channel | 둘 다 없음 |
+| `DEFAULT_ONLY` | default channel만 | default channel 미설정 |
+| `EXISTING_ONLY` | 기존 값의 channel만 | 값이 아직 암호화되지 않음 |
+
+위 정의에서 유도한 운영 판단으로, property의 default channel을 새 channel로 바꾼 경우 기본값 `PREFER_EXISTING`은 이미 암호화된 값을 수정해도 기존 channel을 쓴다. 수정하는 값을 새 default channel로 옮기려면 `PREFER_DEFAULT`나 `DEFAULT_ONLY`를 명시한다. 기존 channel 유지가 규칙이면 `EXISTING_ONLY`로 아직 암호화되지 않은 값의 update를 실패로 드러낸다.
 
 민감 raw dataset의 Marking을 가진 채 obfuscate하고 필요한 안전 데이터만 파생한 뒤 승인된 unmarking으로 소비 Project에 공유한다. License 접근과 파생물의 Marking 제거는 서로 다른 승인 경계다.
 
