@@ -106,7 +106,7 @@ STP로 전략이 섰다면 4P로 실행한다.
 - **Place (유통):** 고객이 제품을 만나는 온/오프라인 채널.
 - **Promotion (촉진):** 광고, PR, 이벤트 등 알리는 활동.
 
-현대 디지털 환경에서는 4P에 People, Process, Physical evidence를 더한 **7P**나, 고객 관점으로 바꾼 **4C** (Customer value / Cost / Convenience / Communication) 같은 확장 프레임워크도 쓴다.
+현대 디지털 환경에서는 4P에 People, Process, Physical evidence를 더한 **7P**나, 고객 관점으로 바꾼 **4C** (Customer value / Cost / Convenience / Communication) 같은 확장 프레임워크도 쓴다. 제품과 가격이 경쟁자와 같으면 더해진 세 요소가 구매처를 가르는 요인이 될 수 있다. 같은 계열 판매점들이 겹치는 차종을 비슷한 가격에 파는 상권에서 입지 대신 직원의 질로 경쟁했다는 판매점 책임자의 회고와, 고객의 등에 부담되던 제조사 지정 소파를 바꾼 판매점 사례가 번역 소개됐지만 독립적으로 확인하지는 않았다. 바꾸기 어려운 입지보다 직원 역량과 접점 운영에 투자한다는 판단은 이런 조건에서 검토한다.
 
 ## Customer Journey — 인지부터 옹호까지
 
@@ -159,7 +159,7 @@ CAC와 LTV의 정의와 비율 해석은 [[Business-Model|비즈니스 모델]]�
 사람들은 물건이 아니라 그 물건이 확인해 주는 정체성을 산다는 원칙은 소비재 브랜딩에서 자주 쓰인다. 실행은 고객이 믿고 싶은 정체성을 찾고, 모든 접점에서 같은 느낌을 주며, 할인처럼 그 정체성을 깎는 타협을 피하는 방향이다. 반론도 있다. B2B는 구매자, 사용자, 승인자가 나뉜 의사결정 구조라 브랜딩만으로 팔리지 않고, 소비재도 초기 구매 이후에는 성능과 사용 경험이 재구매를 좌우할 수 있다.
 
 ### 약속과 실행의 불일치
-브랜딩으로 약속한 가치와 실제 제품 경험의 간극이 크면 신뢰가 약해질 수 있다. 약속의 수준을 제품과 고객 지원이 반복해서 제공할 수 있는 범위에 맞춘다.
+브랜딩으로 약속한 가치와 실제 제품 경험의 간극이 크면 신뢰가 약해질 수 있다. 약속의 수준을 제품과 고객 지원이 반복해서 제공할 수 있는 범위에 맞춘다. 구매 전에는 극진하다가 구매 뒤 정비나 문의 때 응대가 달라지는 것, 좋은 응대를 말로만 내세우고 고객이 느낄 물리적 증거가 없는 것도 같은 간극이다(자동차 판매 현장을 관찰한 글의 실패 유형). 반대로 제품은 좋은데 인식이 뒤처진 경우에는 리브랜딩 지출보다 제품과 경험의 실체를 먼저 다지라는 실무 관점이 있지만, 인식이 저절로 따라온다는 보장은 없으므로 노출과 사용 경험의 증거를 함께 확인한다.
 
 ## 과거 적용 기록: school-manage
 
@@ -190,6 +190,7 @@ CAC와 LTV의 정의와 비율 해석은 [[Business-Model|비즈니스 모델]]�
 - [Les Binet and Peter Field, advertising effectiveness](https://www.thinkbox.tv/news-and-opinion/opinion/advertising-effectiveness-for-dot-coms-by-les-binet-and-peter-field)
 - [서비스 전략 기획 사례 분석 — 쪼렙 서비스기획자 (Brunch)](https://brunch.co.kr/@b30afb04c9f54dc/57)
 - [하이브의 뉴진스 단독 앱 포닝 출시 전략 — 쪼렙 서비스기획자 (Brunch)](https://brunch.co.kr/@b30afb04c9f54dc/41)
+- [0. the King of Lexus — sellsecret (Brunch)](https://brunch.co.kr/@sellsecret/686) — 2018-11-26 발행. 렉서스 판매점을 다룬 책(시가나이 야스히로)의 소개 연재이며 원서와 판매점의 순위, 수치는 확인하지 않았다. 추가 글: #689(소파 교체), #707(입지와 직원의 질, 스가 마사노리의 トヨタの伝説のディーラーが教える 絶対に目標達成するリーダーの仕事(다이아몬드사, 2016)를 옮긴 연재이며 원서 본문은 대조하지 않음), #705(구매 후 홀대와 물리적 증거, 연재 서문의 저자 관찰), #825(브랜드 인식과 실체, 저자 해석)
 - [Google Ads Help, Conversion value per cost](https://support.google.com/google-ads/answer/13405059)
 - [About Public Relations — PRSA](https://www.prsa.org/about/all-about-pr) — 2026-10-07 마케팅 정의는 AMA, PR의 정의와 활동 범위는 PRSA와 부분 대조. 문서 전체의 재검증 날짜는 아님.
 - [마케팅 핵심 용어 7가지 — Threads, binx_lab](https://www.threads.com/@binx_lab/post/DZoYIYNCl_j)

@@ -38,6 +38,7 @@ Noriaki Kano(1984)가 제안한 고객 만족도 분류 프레임워크이다.
 - 자잘한 요청 여러 개가 하나의 문제를 가리킬 수 있으므로 요청을 모아 공통 패턴을 찾는다. [[#JTBD 인터뷰 기법|JTBD]]로 요청 뒤의 진전을 묻는다.
 - 결제 제안의 타이밍도 같은 문제 안에 있다. 가치를 경험하기 전의 결제 요구는 이탈 원인이 될 수 있다.
 - 기회와 해결책을 분리하는 [[#Continuous Discovery (Teresa Torres)|Continuous Discovery]]의 기회 해결 트리와 같은 원리다.
+- 대면 클레임에서도 요구는 해결책의 형태로 온다. 주문 착오로 7인승 차를 받은 고객이 계약대로 8인승으로 바꿔 달라고 하자, 판매점 책임자가 왜 8인승이어야 하는지 물어 아이가 태어났다는 이유를 듣고 가운데 통로와 카시트 설치가 쉬운 7인승의 장점을 설명해 납득을 얻은 사례가 있다(번역 소개된 단일 사례). 이유를 묻는 것은 요구를 거절할 근거가 아니며, 판매자 과실이면 고객이 계약대로 이행받을 권리를 대신하지 않는다([[Consignment-Sourcing-and-Fulfillment-Claims#트레이드오프와 한계|클레임 대응의 조건]]).
 
 ## SaaS 전환에서는 고객군별 사용 차이를 조사한다
 
@@ -183,6 +184,7 @@ Q. 사용자 피드백을 어떻게 관리하는가?
 - [Product Talk, Opportunity Solution Trees](https://www.producttalk.org/opportunity-solution-trees/)
 - [Nielsen Norman Group, Interviewing Users](https://www.nngroup.com/articles/interviewing-users/)
 - [승무원을 위한 서비스 분석 — 쪼렙 서비스기획자 (Brunch)](https://brunch.co.kr/@b30afb04c9f54dc/60)
+- [클레임 대응에서 알게 되는 리더십 — sellsecret (Brunch)](https://brunch.co.kr/@sellsecret/736) — 2019-08-21 발행. 스가 마사노리(須賀正則)의 トヨタの伝説のディーラーが教える 絶対に目標達成するリーダーの仕事(다이아몬드사, 2016)를 옮긴 연재이며 원서 본문은 대조하지 않았다
 
 ## 관련 문서
 - [[Product-Owner-Role|PO(Product Owner)의 역할과 책임]]

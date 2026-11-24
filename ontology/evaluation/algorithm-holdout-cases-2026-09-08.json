@@ -243,12 +243,12 @@
         "id": "costly-customer-commitment",
         "any_of": [
           {
-            "path": "biz/product-strategy/Solo-Product-Market-Validation.md",
+            "path": "biz/product-strategy/solo-business/Solo-Product-Market-Validation.md",
             "heading": "행동 증거의 강도",
             "all_text": ["사용자나 구매자가 부담하는 비용이 클수록 일반적으로 증거가 강해진다."]
           },
           {
-            "path": "biz/product-strategy/Solo-Product-Market-Validation.md",
+            "path": "biz/product-strategy/solo-business/Solo-Product-Market-Validation.md",
             "heading": "시장 증거의 여섯 관문",
             "all_text": ["지불 의향 설문, 희망 가격과 수익 연결 없는 사용자 증가"]
           }

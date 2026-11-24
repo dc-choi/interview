@@ -3,10 +3,12 @@ tags: [business, strategy, framework, portfolio]
 status: done
 verified_at: 2026-11-02
 category: "비즈니스&제품(Business&Product)"
-aliases: ["Strategy Analysis Frameworks", "전략 분석 프레임워크", "Ansoff Matrix", "앤소프 매트릭스", "제품-시장 성장 대안", "BCG Matrix", "Growth-Share Matrix", "성장-점유율 매트릭스", "자원 기반 관점", "Resource-Based View"]
+aliases: ["Strategy Analysis Frameworks", "전략 분석 프레임워크", "Ansoff Matrix", "앤소프 매트릭스", "제품-시장 성장 대안", "BCG Matrix", "Growth-Share Matrix", "성장-점유율 매트릭스", "자원 기반 관점", "Resource-Based View", "Value Disciplines", "가치 규율", "Unbundling the Corporation", "언번들링", "Ambidextrous Organization", "양손잡이 조직", "Value Chain", "가치사슬"]
 ---
 
 # 전략 분석 프레임워크: 성장 방향, 사업 포트폴리오와 자원
+
+전략은 수준에 따라 묻는 질문이 다르다. OpenStax 경영학 교재는 기업 전략을 큰 회사를 키우거나 유지하거나 줄이는 결정을 다루는 가장 넓은 수준으로, 사업 수준 전략을 한 제품의 회사가 경쟁자를 이기도록 활동을 조직하는 방식(원가 우위, 차별화 등)으로 정의한다. 그 아래에서 자원, 프로세스와 사람을 배치하는 기능(운영) 수준을 따로 나누기도 한다. 아래 Ansoff와 BCG는 주로 어느 사업과 시장에 돈과 사람을 둘지 정하는 기업 수준의 질문에, 가치 규율은 사업 수준의 경쟁 방식에 가깝다.
 
 세 틀은 서로 다른 질문에 답한다. Ansoff의 제품-시장 대안은 어떤 제품과 시장으로 성장할지, BCG의 성장-점유율 매트릭스는 여러 사업이나 제품 사이에 현금을 어떻게 배분할지, Barney의 자원 기반 관점은 어떤 자원이 지속적 경쟁 우위를 만들 수 있는지를 묻는다. 산업 구조와 외부 환경 분석은 [[Competitive-Analysis|경쟁사 분석]]의 Five Forces와 SWOT이 맡는다.
 
@@ -15,6 +17,8 @@ aliases: ["Strategy Analysis Frameworks", "전략 분석 프레임워크", "Anso
 | Ansoff 제품-시장 대안 | 어느 방향으로 성장할 것인가 | 제품 라인과 그 제품이 수행하는 임무(시장) | 현재 제품과 새 제품, 현재 시장과 새 시장 |
 | BCG 성장-점유율 매트릭스 | 여러 사업 사이에 현금을 어떻게 나눌 것인가 | 사업 단위나 제품 | 상대 시장 점유율과 시장 성장률 |
 | 자원 기반 관점의 네 지표 | 어떤 자원이 지속적 경쟁 우위를 만들 수 있는가 | 기업이 가진 자원 | 가치, 희소성, 모방 가능성, 대체 가능성 |
+
+한 사업 안에서 원가나 가격의 우위가 어느 활동에서 생기는지는 [[#가치사슬: 활동의 구성과 연결에서 우위를 찾는다|가치사슬]]로 따로 본다.
 
 ## Ansoff의 제품-시장 성장 대안
 
@@ -41,6 +45,8 @@ Henderson은 제품의 현금 흐름을 정하는 네 규칙을 들었다.
 2. 성장하려면 늘어나는 자산에 쓸 현금이 들어가고, 점유율을 유지하는 데 드는 추가 현금은 성장률의 함수다.
 3. 높은 점유율은 벌어들이거나 사야 하며, 점유율을 사려면 추가 투자가 필요하다.
 4. 어떤 시장도 끝없이 성장할 수는 없으므로, 성장의 보상은 성장이 느려질 때 오지 않으면 끝내 오지 않는다.
+
+첫 규칙의 경험 곡선은 누적 생산량이 늘수록 단위 비용이 내려간다는 관계다. 생산 규모에 따른 고정비 분산과 구분하는 법은 [[Production-and-Cost#누적 생산량과 학습 곡선|생산과 비용의 학습 곡선]]에서 다룬다.
 
 | 칸 | 위치 | 현금과 역할(Henderson 1970) | BCG가 제시하는 대응 |
 |---|---|---|---|
@@ -72,11 +78,42 @@ Henderson의 네 번째 규칙처럼 성장의 보상은 성장이 느려질 때
 
 1인 사업에 옮기면 현재 매출을 내는 일과 다음 상품 실험에 쓴 시간과 돈을 따로 기록하고, 다음 상품의 신호(문의, 시범 고객, 재구매)를 현재 매출과 섞지 않는다. 외주 매출이 늘어 실험이 멈췄다면 그 사실을 성장 기록과 함께 남긴다(적용 제안).
 
+### 활용과 탐색: 양손잡이 조직
+
+March(1991)는 이미 가진 역량을 다듬는 활용(exploitation)과 새 가능성을 찾는 탐색(exploration)의 균형을 다뤘다. 적응 과정은 탐색보다 활용을 더 빨리 다듬기 때문에 단기에는 효과적이지만 장기에는 스스로를 무너뜨릴 수 있다는 것이 그 요지다. 어제 성과를 낸 공식과 문화가 환경이 바뀐 뒤의 적응을 막는다는 경고와 같은 축이다.
+
+O'Reilly와 Tushman(2004)은 기존 제품과 시장을 넘어서는 혁신을 시도한 사업들을 살펴, 성공한 회사들이 새 탐색 조직을 기존 활용 조직과 분리하되 최고경영진 수준에서 긴밀히 연결했다고 정리하고 이를 양손잡이 조직(ambidextrous organization)이라 불렀다(HBS 요약 기준, 표본 규모는 원문 미대조). 사람을 나눌 수 없는 1인 사업에서는 조직 대신 시간, 예산과 평가 기준을 나눈다. 탐색 실험을 현재 매출 기준으로 평가하면 늘 지는 쪽이 되므로 실험마다 따로 성공 조건과 중단 조건을 둔다(적용 제안).
+
 ## 자원 기반 관점: 지속적 경쟁 우위의 네 지표
 
 Barney(1991)는 전략적 자원이 기업마다 이질적으로 분포하고 그 차이가 시간이 지나도 안정적이라는 가정에서 출발해 기업 자원과 지속적 경쟁 우위의 관계를 다뤘다. 자원이 지속적 경쟁 우위를 만들 잠재력을 보는 경험적 지표로 가치, 희소성, 모방 가능성, 대체 가능성의 네 가지를 논의했다. 이 문서는 네 지표를 자원마다 가치가 있는가, 드문가, 경쟁자가 모방할 수 있는가, 대체할 다른 자원이 있는가를 묻는 질문으로 옮겨 쓴다(이 문서의 적용).
 
 VRIO 형태는 이 문서에서 원문을 확인하지 않았다. 네 지표는 자원이 우위를 만들 잠재력을 보는 지표이며, 산업의 매력도나 성장 방향은 앞의 두 틀과 Five Forces로 따로 본다.
+
+## 한 회사 안의 세 사업과 가치 규율
+
+Hagel과 Singer(1999)는 대부분의 회사 안에 성격이 다른 세 사업이 묶여 있다고 봤다. 고객을 찾아 관계를 맺는 고객 관계 사업, 새 상품과 서비스를 만들어 시장에 내놓는 제품 혁신 사업, 물류, 제조, 통신처럼 대량 반복 업무의 설비를 짓고 운영하는 인프라 관리 사업이다. 세 사업을 움직이는 경제성이 달라 고객 관계는 범위(scope), 제품 혁신은 속도(speed), 인프라는 규모(scale)가 이익을 좌우하고, 한 회사에 묶으면 셋을 동시에 최적화할 수 없어 타협이 생긴다는 주장이다. 그래서 성격이 다른 사업을 떼어 내는 언번들링을 제안했다.
+
+Treacy와 Wiersema(1993)는 시장 선도 기업이 운영 탁월성(operational excellence), 고객 친밀성(customer intimacy), 제품 리더십(product leadership)의 세 가치 규율 가운데 하나에 집중하고 운영 모델 전체를 그 규율에 맞추며, 사업 초점을 넓히지 않고 좁혀서 성공한다고 봤다(HBR 소개문 기준). 두 틀은 모두 집중을 권하지만, 앞은 조직을 떼어 내는 쪽이고 뒤는 한 규율에 맞춰 회사 전체를 정렬하는 쪽이다.
+
+1인 사업에 옮겨 보면(적용 제안) 고객 맞춤 외주는 고객 관계, 자체 제품 개발은 제품 혁신, 여러 고객의 호스팅과 유지보수 운영은 인프라 관리에 가깝다. 셋을 한 기준으로 평가하면 서로 시간을 빼앗는 갈등이 커지므로, 한 사람이 함께 할 때도 일마다 성과를 재는 기준(관계의 넓이와 재의뢰, 출시 속도, 건당 운영 비용)을 따로 둔다. 어느 규율로 경쟁할지 정하면 나머지 둘은 고객이 떠나지 않을 수준만 유지하는 판단이 쉬워진다.
+
+## 가치사슬: 활동의 구성과 연결에서 우위를 찾는다
+
+Michael Porter가 만든 가치사슬(value chain)은 회사를 전략적으로 의미 있는 활동들로 쪼개 보는 도구다. 우위는 활동이 더 높은 가격이나 더 낮은 비용으로 이어질 때 생기고, 전략은 개별 활동을 잘하는 것보다 활동들을 어떻게 구성하고 서로 연결하는지에서 드러난다. 회사의 가치사슬은 공급자와 유통 경로까지 포함한 더 큰 가치 시스템의 일부다(HBS 전략경쟁력연구소 소개 기준). 1985년 책 Competitive Advantage에 정리된 기본 구성은 다음과 같다(케임브리지대 제조연구소 요약 기준, 책 본문은 대조하지 못했다).
+
+| 구분 | 활동 |
+|---|---|
+| 본원적 활동 | 내부 물류(투입물의 수령, 보관, 배분), 운영(투입물을 산출물로 바꿈), 외부 물류(산출물의 수집, 보관, 유통), 마케팅과 판매(구매자에게 알리고 사게 하며 구매를 쉽게 함), 서비스(판매와 인도 뒤 제품이나 서비스가 구매자에게 계속 잘 작동하게 함) |
+| 지원 활동 | 조달, 인적 자원 관리, 기술 개발, 기업 인프라(회계, 법무, 재무, 일반 관리) |
+
+물류가 없는 B2B SaaS에서는 사슬을 연구개발(기술과 기능 연구), 제품 개발, 영업, 확산(시장과 고객사 안으로 도입을 넓히는 일), 서비스(고객 지원과 도입 컨설팅)로 바꿔 그리는 실무 관점이 있다. 더 줄이면 만들고, 팔고, 운영하는 일의 조합이다. Porter의 구성에서 기술 개발은 지원 활동이지만 이 변형에서는 연구개발이 본원적 활동의 첫 단계로 올라온다(이 문서의 대응). 사업 기능의 병목을 찾는 다른 분류는 [[Five-Parts-of-Business|비즈니스의 5요소]]에 있다.
+
+- **서비스는 사슬의 끝이지만 만족이 완성되는 곳이다.** 고객 경험의 마지막 구간을 맡으므로, 회고적 평가가 강한 순간과 마지막 순간의 영향을 받을 수 있다는 [[UX-Laws|피크엔드 법칙]]을 옮기면 지원과 도입의 질이 제품 전체의 기억을 바꿀 수 있다(적용 해석). 코스 요리의 첫 요리와 디저트에 힘을 준다는 비유로 이 관점을 설명하기도 하는데, 첫인상 쪽은 이 법칙이 다루는 범위가 아니다.
+- **서비스에서 나온 고객의 소리(VOC)가 연구개발로 돌아가야 사슬이 고리가 된다.** 활동 사이의 연결이 끊기면 활동마다 잘해도 우위가 쌓이지 않는다. 여러 활동을 넘나드는 현장 배치 엔지니어(FDE)는 이 연결을 맡는 역할로 볼 수 있다([[B2B-GTM-AI-Operating-System#첫 사용 사례에서 계정 확장으로|FDE의 제품 환류]]).
+- **팀의 미션은 맡은 활동의 말로 회사 미션을 다시 쓴다.** 회사의 핵심 미션은 자주 바꾸지 않고, 팀마다 그 아래에서 자기 활동의 미션을 정해 공유한다. 플랫폼 API 팀이라면 기능 팀이 빠르게 일할 인터페이스를 만든다는 식이다. 미션은 시간 배분으로 드러난다. 대기업 고객의 도입 상황 파악과 계약 마무리를 미션으로 둔 팀이 여러 일을 맡으면서도 그 일에 시간의 절반 이상을 쓰는 식이다(실무 사례).
+
+새 제품 곡선이 쌓일 때 앞 곡선의 운영 비용을 함께 보는 관점은 [[Product-Roadmap#제품 수명 주기와 이전 곡선의 흡수|제품 수명 주기와 이전 곡선의 흡수]], 고객의 수용 단계별 도입 지원은 [[GTM-Strategy#캐즘: 초기 시장과 주류 시장 사이|캐즘]]에서 다룬다.
 
 ## 1인 외주 사업에 옮겨 보기
 
@@ -92,6 +129,8 @@ VRIO 형태는 이 문서에서 원문을 확인하지 않았다. 네 지표는 
 - Henderson(1970)과 2014년 재검토는 pet을 각각 어떻게 다루는가?
 - 자원의 네 지표로 볼 때 흔한 기술 스택이 약한 지표는 무엇인가?
 - 현재 사업의 매출 성장이 다음 사업의 준비 부족을 가리지 않는지 어떤 기록으로 확인하는가?
+- 고객 관계, 제품 혁신, 인프라 관리의 일을 한 기준으로 평가하면 무엇이 불리해지는가?
+- 가치사슬에서 서비스 활동을 비용으로만 보면 무엇을 놓치는가?
 
 ## 출처
 
@@ -102,6 +141,15 @@ VRIO 형태는 이 문서에서 원문을 확인하지 않았다. 네 지표는 
 - [Firm Resources and Sustained Competitive Advantage — Journal of Management, Jay Barney](https://doi.org/10.1177/014920639101700108) — 1991, 17권 1호 99~120쪽. 2026-11-02 Crossref에 등록된 초록 대조
 - [Huang Resigns: Nvidia's AI Infrastructure Roadmap in Question — Data Center Knowledge, Beth Pariseau](https://datacenterknowledge.com/data-center-chips/huang-resigns-nvidia-s-ai-infrastructure-roadmap-in-question) — 2026-11-12 게시, 2026-11-18 분석가의 로드맵 실행 위험과 Microsoft 승계 비유 확인. 분석가 의견
 - 젠슨 황 이후, Nvidia는 어디로 가나? — GeekNews, 2026-11-17 사용자 제공 발췌. 원 기사 미확인. 실행 중심 후임의 장기 투자 축소 가능성은 이 발췌로만 확인
+- [OpenStax, Principles of Management, 9.4 Strategic Objectives and Levels of Strategy](https://openstax.org/books/principles-management/pages/9-4-strategic-objectives-and-levels-of-strategy) — 2026-11-24 기업 전략과 사업 수준 전략의 정의 대조. 기능 수준의 정의는 이 페이지에 없다
+- [Exploration and Exploitation in Organizational Learning — Organization Science, James G. March](https://doi.org/10.1287/orsc.2.1.71) — 1991, 2권 1호 71~87쪽. 2026-11-24 Crossref에 등록된 초록의 요지 대조
+- [The Ambidextrous Organization — Harvard Business Review, Charles A. O'Reilly III, Michael L. Tushman](https://hbr.org/2004/04/the-ambidextrous-organization) — 2004년 4월호. 본문은 유료라 [HBS Working Knowledge의 요약](https://www.library.hbs.edu/working-knowledge/a-clear-eye-for-innovation)으로 2026-11-24 분리와 최고경영진 통합 대조
+- [Unbundling the Corporation — Harvard Business Review, John Hagel III, Marc Singer](https://hbr.org/1999/03/unbundling-the-corporation) — 1999년 3~4월호. 본문은 유료이고, 2026-11-24 McKinsey Quarterly 재게재본(https://www.mckinsey.com/capabilities/strategy-and-corporate-finance/our-insights/unbundling-the-corporation)을 직접 열지 못해 검색 색인에 수록된 세 사업과 범위, 속도, 규모의 발췌로만 대조
+- [Customer Intimacy and Other Value Disciplines — Harvard Business Review, Michael Treacy, Fred Wiersema](https://hbr.org/1993/01/customer-intimacy-and-other-value-disciplines) — 1993년 1~2월호. 2026-11-24 [HBR Store 소개문](https://store.hbr.org/product/customer-intimacy-and-other-value-disciplines/93107)으로 세 규율과 한 규율 집중 대조. 나머지 둘의 최소 수준 유지는 소개문에 없어 적용 제안으로만 적었다
+- [The Value Chain — Institute for Strategy and Competitiveness, Harvard Business School](https://www.isc.hbs.edu/strategy/business-strategy/Pages/the-value-chain.aspx) — 2026-11-24 Porter의 개발, 전략적으로 의미 있는 활동으로의 분해, 활동의 구성과 연결, 더 큰 가치 시스템, 더 높은 가격이나 더 낮은 비용 문장 대조. 활동 목록은 이 페이지에 없다
+- [Porter's Value Chain — University of Cambridge, Institute for Manufacturing](https://www.ifm.eng.cam.ac.uk/research/dstools/value-chain-/) — 2026-11-24 본원적 활동 다섯과 지원 활동 넷의 이름과 설명, 출처 표기(Competitive Advantage, The Free Press, 1985, 1장 11~15쪽) 대조. 출판사 페이지는 접근이 거부되어 책의 서지와 활동 목록은 이 요약으로만 확인했다
+- [엔지니어를 위한 비즈니스의 이해 — YouTube, 채널데브톡](https://www.youtube.com/watch?v=QxQvFglNSq8) — 2026-10-30 업로드 공개, 2026-11-24 음성 인식 전사 전체 확인. 만들고 팔고 운영하는 조합, B2B SaaS의 활동 사슬, 서비스의 마지막 인상과 VOC 고리, 팀별 미션과 시간 배분은 사내 세션 발표자의 실무 관점
+- [3. Unbundled Corporation — 브런치, sellsecret](https://brunch.co.kr/@sellsecret/383) — 2018-03-26 게시. 추가 글: #521(탐색과 활용), #549(성공의 끝), #562(전략의 정의와 수준). 교재와 논문을 소개한 글이며 전략 정의 원문(Johnson, Scholes, Whittington)과 세 시간대 구분은 대조하지 못해 옮기지 않았다
 
 ## 관련 문서
 
@@ -111,3 +159,5 @@ VRIO 형태는 이 문서에서 원문을 확인하지 않았다. 네 지표는 
 - [[Expansion-Strategy|성장과 확장]]
 - [[AI-Commoditization-Differentiation|AI 범용화와 사업 차별화]]
 - [[Business-Continuity-for-Small-Business|소규모 사업의 연속성 계획]] — 대표자 부재와 CEO 교체 사례
+- [[Five-Parts-of-Business|비즈니스의 5요소]] — 사업 기능의 병목 진단
+- [[GTM-Strategy|Go-to-Market 전략]] — 캐즘과 수용 단계별 도입 지원

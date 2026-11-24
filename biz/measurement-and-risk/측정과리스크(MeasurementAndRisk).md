@@ -10,26 +10,14 @@ aliases: ["Measurement and Risk", "측정과 리스크", "Analytics", "분석", 
 지표로 사업을 측정하고 리스크를 관리하는 프레임워크.
 
 ## 목차
+- [x] [[Operations-Management|운영 관리와 개선 (operations-management/ 폴더 인덱스)]] — 업무 매뉴얼, 린 낭비 진단, 지출 재량과 성과 피드백, 고객지원 운영 지표
+- [x] [[Business-Risk|사업 리스크와 자금 (business-risk/ 폴더 인덱스)]] — 리스크 관리, 사업 연속성, 보험과 위험 이전, 자금조달과 레버리지
+- [x] [[Legal-and-Compliance|법무와 규제 준수 (legal-and-compliance/ 폴더 인덱스)]] — 법인 설립과 권한, 규제 샌드박스, 개인정보와 GDPR, AI 기본법과 채용 AI, 창업 전 근로계약 의무
 - [x] [[AI-Regulated-Workflow-Evaluation|규제 업무의 AI 평가]] — 후보 생성, 실험, 문서 검토와 최종 판단, 초기 신약 개발 사례의 검증 범위
 - [x] [[Survivorship-Bias-and-Selection|생존자 편향과 관측 대상의 선택]] — 성공 사례의 분모, 누락된 결과와 사업 적용의 한계
 - [x] [[Correlation-and-Simpsons-Paradox|상관관계와 심슨의 역설]] — 피어슨과 스피어만 상관의 한계, 이상값, 공통 원인, 집계 역전과 자기상관
-- [x] [[Operational-Manual-and-Improvement|업무 매뉴얼과 운영 개선]] — 수행 기준, 현장 개선, 개정과 효과 확인의 구분
-- [x] [[Delegated-Spending-and-Performance-Feedback|지출 재량과 성과 피드백]] — 재량과 책임, 성과 등급 폐지와 성과 관리의 구분, 판단 책임자와 반대 의견 수렴, 제도 적용 전 점검
 - [x] [[Product-Carbon-Footprint|제품 탄소발자국]] — 제품과 기업 단위, 산정 경계, 활동자료와 배출계수, 측정 이력, 포장 비용과 파손 및 배출량의 구분
-- [x] [[Customer-Support-Operations-Metrics|고객지원 운영 지표]] — 상담과 문제 해결의 구분, 포기율과 처리 시간, 자동화 비교와 해결 건당 비용
 - [x] [[Metrics-Framework|지표 설계 & North Star Metric (AARRR, 증분과 가치 구분, 분자와 분모, 실험 해석, 업무 날짜와 제품 사용 시각, 파워 유저 곡선)]]
+- [x] [[Balanced-Scorecard|균형성과표(BSC)]] — 재무, 고객, 내부 프로세스, 학습과 성장의 네 관점과 관점 사이 연결의 가설성
 - [x] [[Marketing-Mix-Modeling|마케팅 믹스 모델링(MMM)]] — 플랫폼 기여, 리프트 실험과 MMM의 구분, 이월 효과와 포화, 실험 보정, 데이터 양과 예산 최적화의 한계
 - [x] [[App-Analytics-Event-Tracking|앱 분석과 이벤트 설계 (GA4와 Firebase, 권장 이벤트, 퍼널과 코호트, 테스트 구분값과 필터 상태)]]
-- [x] [[Risk-Management|리스크 관리]] — 제품 가정, 거래 상대, 지급 승인과 대사, 1인 사업의 대체 통제
-- [x] [[Business-Financing-and-Leverage|사업 자금조달과 재무 레버리지]] — 차입과 지분투자, 손익 확대, 상환 현금과 통제권
-- [x] [[Corporate-Authority-and-Business-Assets|법인의 계약 권한과 자산]] — 주주와 대표, 내부 결의, 소규모 회사 특례와 이해관계자 거래
-- [x] [[Corporation-Formation-Decisions|법인 설립 전 결정 사항]] — 자본금과 설립 등록면허세, 대도시 중과, 목적 변경 비용, 1인 설립과 이사, 감사 구성, 과점주주 책임과 설립 후 신고
-- [x] [[Regulatory-Sandbox-and-Licensing|규제 샌드박스와 정식 인가]] — 특례와 제도화, 인가의 구분, 인가 수 상한과 평가 항목, 탈락 시 고객 자산 이관, 조각투자 유통 사례
-- [x] [[Business-Continuity-for-Small-Business|소규모 사업의 연속성 계획]] — 업무 영향, 대표자 부재, 공급업체 중단과 복구 연습
-- [x] [[Business-Insurance-and-Risk-Transfer|사업 보험과 위험 이전]] — 계약 역할, 보장 조건, 자기 손실과 배상책임, 사이버와 공급업체 중단
-- [x] [[Privacy-Operations-for-Small-Business|대표의 개인정보 운영 (처리 근거, 위탁, 보관과 파기, 권리 요청, 사고 대응)]]
-- [x] [[Privacy-Breach-Civil-Liability|개인정보 유출의 민사 책임과 손해배상]] — 과징금, 분쟁조정과 소송의 구분, 법정손해배상과 배수 배상, 정신적 손해 판단, 손해배상책임 보장 의무
-- [x] [[GDPR-Scope-and-Data-Subject-Rights|GDPR 적용 범위와 정보주체 권리]] — EU 대상 처리, 적법 근거, 삭제와 이동권, 사고 신고와 통지, DPO 요건
-- [x] [[AI-Basic-Act-Scope-and-Obligations|AI 기본법의 적용 범위와 사업자 의무]] — 사업자 정의, 생성형 AI 고지와 표시, 고영향 확인과 책무, 국내대리인 기준, 계도기간, 외주 역할 구분
-- [x] [[AI-Hiring-Discrimination-Liability|채용 AI의 차별 책임]] — 도구 공급자의 대리인 책임, 차별적 영향과 고의적 차별 청구의 구분, ADEA opt-in 집단의 예비 인증과 진행 상황
-- [x] [[Employment-Obligations-Before-Founding|퇴사 창업과 겸업 전 근로계약 의무]] — 경업금지 약정의 효력, 영업비밀, 직무발명과 업무상저작물, 재직 중 겸업, 사직 통보와 위약 예정 금지

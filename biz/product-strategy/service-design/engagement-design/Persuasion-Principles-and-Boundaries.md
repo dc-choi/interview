@@ -1,7 +1,7 @@
 ---
 tags: [business, product, marketing, psychology, persuasion, ethics, dark-pattern]
 status: done
-verified_at: 2026-11-02
+verified_at: 2026-11-24
 category: "비즈니스&제품(Business&Product)"
 aliases: ["Persuasion Principles", "설득 원리와 경계"]
 ---
@@ -34,8 +34,9 @@ aliases: ["Persuasion Principles", "설득 원리와 경계"]
 | 권위 | 신뢰할 만하고 지식 있는 전문가를 따르는 경향 | 원 실험은 확인하지 않았다 |
 | 상호성 | 먼저 받은 행동, 선물, 서비스를 되돌려 줄 의무를 느끼는 경향 | 원 실험은 확인하지 않았다 |
 | 정보 격차(호기심) | 특정 정보에 대한 지식이나 이해의 공백을 지각할 때 인지적으로 유발되는 결핍감으로서의 호기심(특정 정보를 향한 상태적 호기심에 한정) | Loewenstein(1994)은 1960년대 1차 연구 시기의 이론이 사람들이 왜 스스로 호기심을 찾는지와 호기심을 일으키는 상황 요인을 설명하지 못했다고 검토하고, 호기심을 지식이나 이해의 공백을 지각할 때 인지적으로 유발되는 결핍감으로 재해석하는 정보 격차(information gap) 관점을 제안했다. 새 실험을 따로 수행한 논문이 아니라 문헌 검토와 이론 제안이며, 예측의 근거로 저자가 공저한 미출간 작업논문 Loewenstein 외(1992)의 실험 결과를 요약해 인용한다 |
+| 심리적 반발(reactance) | 선택의 자유가 없어지거나 위협받을 때 그 자유를 되찾으려는 동기 상태 | Brehm(1966)이 제안했다. Rains(2013)는 연구 20개(4,942명)를 메타분석해 반발을 분노와 반론이 함께 나타내는 잠재 요인으로 본 결합 모형(Dillard와 Shen 2005)이 자료에 가장 잘 맞는다고 보고했다. Reynolds-Tylus(2019)의 검토는 자유를 강하게 위협하는 표현이 위협 지각과 반발을 키우고 반발이 권하는 행동에 대한 태도를 낮춘 결과를 정리하며, 선택은 당신에게 있다는 문장을 덧붙인 완화 효과(Miller 외 2007)는 연구마다 엇갈렸다고 적는다 |
 
-희소성, 사회적 증거, 일관성, 호감, 권위, 상호성의 정의는 Influence At Work 페이지의 정의를 옮긴 것이다. 정보 격차 관점의 호기심은 치알디니의 원리 목록에 없지만, 결론을 뒤로 미루는 제목이나 첫 문장 같은 도입부 문구를 검토할 때 기준으로 쓸 수 있어 함께 둔다. Loewenstein(1994)은 이론을 제안한 검토 논문이므로, 특정 도입부 문구가 클릭이나 시청을 늘린다는 효과는 이 논문만으로 뒷받침되지 않는다.
+희소성, 사회적 증거, 일관성, 호감, 권위, 상호성의 정의는 Influence At Work 페이지의 정의를 옮긴 것이다. 정보 격차 관점의 호기심은 치알디니의 원리 목록에 없지만, 결론을 뒤로 미루는 제목이나 첫 문장 같은 도입부 문구를 검토할 때 기준으로 쓸 수 있어 함께 둔다. Loewenstein(1994)은 이론을 제안한 검토 논문이므로, 특정 도입부 문구가 클릭이나 시청을 늘린다는 효과는 이 논문만으로 뒷받침되지 않는다. 심리적 반발도 목록에 없지만 설득의 압박을 높일수록 거부가 커질 수 있다는 반대 방향의 기준이라 함께 둔다. 정리된 연구 대부분이 건강 캠페인 메시지이므로 판매 화면이나 상담의 전환 효과로 옮기지 않는다.
 
 ## 근거의 강도와 조건
 
@@ -69,6 +70,7 @@ aliases: ["Persuasion Principles", "설득 원리와 경계"]
 | 타협 효과 | 실제로 판매하고 제공할 수 있는 패키지만 단계로 두고, 단계마다 포함 범위와 제외 범위를 같은 기준으로 비교하게 한다 | 팔 생각이 없거나 제공할 수 없는 최고가 패키지를 가운데 패키지가 무난해 보이도록 끼워 넣는다 | 이 문서의 해석 |
 | 시간 재구성 | 하루나 월 단위 금액을 쓰면 총액, 약정 기간과 결제 주기를 같은 화면에 함께 밝힌다 | 작은 단위 금액만 앞세우고 총액과 약정 기간은 다른 화면이나 작은 글씨로 미룬다 | 이 문서의 해석. 가격 표시의 첫 화면에 총금액 일부만 보이는 유형은 [[Solo-Product-Opportunity-Discovery#사람들이 돈을 쓰는 이유로 탐색을 넓힌다\|1인 제품 기회 발견]]의 전자상거래법 제21조의2 설명을 함께 본다. 그 설명이 다루는 것은 첫 화면에 총금액 중 일부만 보여 주는 표시이며, 같은 총액을 기간 단위 금액으로 바꿔 보여 주는 표시에 이 조항이 적용되는지는 확인하지 않았다 |
 | 거래 효용 | 긴급 대응이나 일정 단축처럼 가치나 제공 비용을 실제로 바꾸는 조건을 견적에 밝혀 가격 차이의 근거로 삼는다 | 근거 없는 정가나 비교 가격으로 기준가를 높여 거래가 이득처럼 보이게 한다 | [[Commerce-Pricing\|커머스 가격]]의 기준가 표시 근거 |
+| 선택(자율) | 실제로 다른 선택지와 거절할 여지를 주고, 결정은 고객에게 있다고 밝힌다 | 어느 답도 거절이 될 수 없게 짠 양자택일로 이미 결정한 것처럼 몰아가거나, 첫머리에 받은 의견 표명 약속을 구매 약속처럼 쓴다 | 이 문서의 해석. 선택이 통제 착각을 만든다는 주장의 재검증과 상담 적용은 [[Consultative-Sales-Conversation#고객이 고르게 하되 선택의 착각을 노리지 않는다\|대면 상담형 판매]] |
 | 기본값 효과 | 고객에게 실제로 권할 수 있는 설정을 기본값으로 두고 그 내용과 바꾸는 방법을 같은 화면에 보이며, 추가 상품과 유료 옵션은 고객이 직접 고르게 한다 | 고객이 고르지 않은 추가 상품, 다른 서비스 가입이나 유료 옵션을 미리 선택해 둔다 | 다른 재화등의 청약 선택항목을 미리 표시해 두는 행위는 전자상거래법 제21조의2 제1항 제2호. 같은 상품의 유료 옵션까지 넓힌 것은 이 문서의 해석이며, 적용 범위는 아래 한국 온라인 인터페이스 규정 절 |
 
 ## 규제 기준
@@ -162,6 +164,9 @@ FTC는 2024-08-14 다음 행위를 금지하는 최종 규칙을 발표했다.
 - [Compliance without Pressure: The Foot-in-the-Door Technique — Journal of Personality and Social Psychology, Freedman, Fraser](https://pubmed.ncbi.nlm.nih.gov/5969145/)
 - [The Foot-in-the-Door Compliance Procedure: A Multiple-Process Analysis and Review — Personality and Social Psychology Review, Burger](https://pubmed.ncbi.nlm.nih.gov/15661679/)
 - [The Psychology of Curiosity: A Review and Reinterpretation — Psychological Bulletin, Loewenstein](https://doi.org/10.1037/0033-2909.116.1.75) — 1994, 116권 1호 75~98쪽. 2026-10-19 초록과 본문(86~92쪽, 참고문헌) 대조
+- [The Nature of Psychological Reactance Revisited: A Meta-Analytic Review — Human Communication Research, Rains](https://doi.org/10.1111/j.1468-2958.2012.01443.x) — 2013, 39권 1호 47~73쪽. 2026-11-24 초록 대조
+- [Psychological Reactance and Persuasive Health Communication: A Review of the Literature — Frontiers in Communication, Reynolds-Tylus](https://doi.org/10.3389/fcomm.2019.00056) — 2019, 4권 56. 2026-11-24 본문 대조
+- [20. 인간과 반대 심리 — 브런치, sellsecret](https://brunch.co.kr/@sellsecret/616) — 2018-09-07 발행. 연구를 인용하지 않은 경험 글로, 반발 원리를 보탠 계기다. 선택 행의 계기는 #449, #156
 - [Choice Based on Reasons: The Case of Attraction and Compromise Effects — Journal of Consumer Research, Simonson](https://doi.org/10.1086/209205) — 1989, 16권 2호 158~174쪽. 2026-11-01 초록 대조
 - [Choice in Context: Tradeoff Contrast and Extremeness Aversion — Journal of Marketing Research, Simonson, Tversky](https://doi.org/10.1177/002224379202900301) — 1992, 29권 3호 281~295쪽. 2026-11-01 저자 소속기관(Stanford GSB)의 공식 초록 대조
 - [The Limits of Attraction — Journal of Marketing Research, Frederick, Lee, Baskin](https://doi.org/10.1509/jmr.12.0061) — 2014, 51권 4호 487~507쪽. 2026-11-01 초록 대조

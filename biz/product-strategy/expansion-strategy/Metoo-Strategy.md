@@ -65,6 +65,12 @@ Golder와 Tellis(1993)는 기존 연구가 주로 쓴 PIMS, ASSESSOR 데이터�
 
 세 항목 모두(셋째는 주장과 사례) Lieberman과 Montgomery(1988)가 정리한 선행 연구에서 왔고, 두 번째 기준인 자사 차별화, 특히 자산 기반 차별화와 같은 방향이다. 다만 연구 속 미투는 제품 속성과 포지셔닝의 모방이라, 사용 방식(멘탈모델)을 따르는 효과를 검증한 결과는 아니다.
 
+### 벤치마킹이 만드는 수렴: 모방적 동형화
+
+DiMaggio와 Powell(1983)은 같은 분야의 조직들이 시간이 지나며 서로 닮아 가는 제도적 동형화를 다뤘다. 자금이나 규제를 쥔 쪽의 압력에 맞추는 강압적 동형화, 불확실할 때 같은 분야에서 더 정당하거나 성공적으로 보이는 조직을 따라 하는 모방적 동형화, 산업의 전문직화와 인력의 이동으로 구조가 비슷해지는 흐름과 이어지는 규범적 동형화다. 두 저자는 이런 과정이 조직을 더 닮게 하지만 반드시 더 효율적으로 만들지는 않으며, 특정 구조가 널리 퍼진 것도 채택한 모델이 효율을 높인다는 구체적 증거보다 모방의 보편성 때문일 가능성이 크다고 봤다. 경쟁사 벤치마킹으로 효율이 나아질 수는 있어도 보장되지는 않으며, 갈 방향까지 경쟁사를 기준으로 정하면 차별화가 약해질 수 있다(이 문서의 해석). 원조 가까이에 자리 잡은 미투가 약했다는 위 결과와 같은 방향이다.
+
+점검 질문(적용 제안): 경쟁사 정보를 규제 충족과 고객의 기본 기대 수준을 맞추는 데 쓰는가, 우리가 갈 방향을 정하는 근거로까지 쓰는가. 업계 관행에서 벗어난 선택이 우위인지는 그 선택이 고객 가치와 원가 구조에서 왜 성립하는지로 판단하며, 관행을 벗어났다는 사실만으로 우위를 단정하지 않는다. 성공 사례의 겉으로 보이는 특징을 원인으로 읽는 함정은 [[Survivorship-Bias-and-Selection#성공자의 특성을 실행 규칙으로 바꾸기 전|성공자의 특성을 실행 규칙으로 바꾸기 전]]에서 다룬다.
+
 ### 진입 판단 점검 질문
 
 연구 결과를 바탕으로 정리한 질문이다. 작은 서비스 사업이나 외주 사업의 진입 검토에도 쓸 수 있지만, 그 규모의 사업을 따로 검증한 결과는 아니다.
@@ -106,6 +112,9 @@ Golder와 Tellis(1993)는 기존 연구가 주로 쓴 PIMS, ASSESSOR 데이터�
 - [First-Mover Advantage and the Speed of Competitive Entry, 1887-1986 — Rajshree Agarwal, Michael Gort (Journal of Law and Economics, 2001)](https://ideas.repec.org/a/ucp/jlawec/v44y2001i1p161-77.html) — 초록 확인
 - [Conundra and Progress: Research on Entry Order and Performance — Marvin B. Lieberman, David B. Montgomery (Long Range Planning, 2013)](https://escholarship.org/content/qt1xk469q4/qt1xk469q4.pdf)
 - [The Role of Industry Dynamics in the Persistence of First Mover Advantages — Jaime Gomez, Gianvito Lanzolla, Juan Pablo Maicas (Long Range Planning, 2016)](https://openaccess.city.ac.uk/id/eprint/15193/)
+- [The Iron Cage Revisited: Institutional Isomorphism and Collective Rationality in Organizational Fields — Paul J. DiMaggio, Walter W. Powell (American Sociological Review, 1983)](https://doi.org/10.2307/2095101) — 48권 2호 147~160쪽. 2026-11-24 Crossref 서지 확인. 같은 날 Gwern.net에 공개된 원문 스캔본으로 초록, 147쪽의 효율 문장과 151~152쪽의 모방 과정, 규범적 압력 절 대조
+- [Unlocking the "Iron Cage" of Corporate Conformity — Sara Harrison (Stanford GSB Insights, 2024)](https://www.gsb.stanford.edu/insights/unlocking-iron-cage-corporate-conformity) — 2024-04-11 게시, 2026-11-24 강압적, 모방적 동형화의 설명과 전문직화, 인력 이동에 관한 서술 대조
+- [11화 경쟁을 보지 말고 목표에 집중하라 — 브런치, sellsecret](https://brunch.co.kr/@sellsecret/832) — 2023-05-17 게시. 모방적 동형화 소절의 계기. 글의 Tesla 사례와 경쟁사 출시 순서는 사실관계가 의심되어 옮기지 않았다
 
 ## 관련 문서
 - [[UX-Laws|UX 심리학 법칙]] — 제이콥의 법칙 (멘탈모델의 이론 축)

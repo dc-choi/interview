@@ -14,7 +14,7 @@ aliases: ["Growth and Expansion Strategy", "Expansion Strategy", "성장과 확�
 - [x] [[Bootstrapped-Single-Product-Growth|한 제품 부트스트랩 성장 전략]] — 제품 경계, 내부 현금 재투자, 확장 순서와 창업자 독립성
 - [x] [[Scaling-and-Hiring|1인 제품 확장과 첫 채용]] — 확장 축, 병목 기반 자원 선택, 첫 역할 정의와 한국의 고용 의무
 - [x] [[Category-Expansion|카테고리 확장과 카니발리제이션]] — 확장 두 축, 고객군과 공급 기반의 단계별 확장, 해자와 엣지, 다각화, O2O, 데이터 선점
-- [x] [[Community-Strategy|커뮤니티 전략]] — 여정별 효과, 유무형 가치, UGC 동기와 감정 동인, 시드와 자생력
+- [x] [[Community-Strategy|커뮤니티 전략]] — 여정별 효과, 유무형 가치, UGC 동기와 감정 동인, 시드와 자생력, 기여를 열람 조건으로 거는 시드, 직접 판매 광고와 의료기관 광고의 계약 구조, 빌린 플랫폼의 이전 시점과 유입 의존
 - [x] [[Community-Models|커뮤니티 모델]] — 세계관과 미션, 참여 설계, 지식 축적과 공동창작
 - [x] [[D2C-Brand-Strategy|D2C와 브랜드 데이터 전략]] — 플랫폼 위협 4가지, 데이터 3축(상품, 주문, 사용)
 - [x] [[Metoo-Strategy|Me-too 서비스 기획]] — 멘탈모델 보존과 자산 기반 차별화, 프로세스 단계도

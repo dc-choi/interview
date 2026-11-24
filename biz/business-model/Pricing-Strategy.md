@@ -1,7 +1,7 @@
 ---
 tags: [business, pricing]
 status: done
-verified_at: 2026-11-09
+verified_at: 2026-11-24
 category: "비즈니스&제품(Business&Product)"
 aliases: ["Pricing Strategy", "가격 정책"]
 ---
@@ -16,7 +16,7 @@ aliases: ["Pricing Strategy", "가격 정책"]
 | **가치 기반 (Value-based)** | 고객이 느끼는 가치에 맞춤 | SaaS, 프리미엄 |
 | **경쟁 기반 (Competitor-based)** | 경쟁사 가격 참고 | 레드오션, 커머디티 |
 | **침투 (Penetration)** | 낮은 가격으로 시장 점유 | 신규 진입 |
-| **스키밍 (Skimming)** | 높은 가격 후 점진 인하 | 혁신 제품, 얼리어답터 |
+| **스키밍 (Skimming)** | 높은 가격 후 점진 인하. 같은 제품의 가격을 내리는 대신 고가 소량 제품으로 시작해 후속 제품마다 물량을 늘리고 가격을 낮추는 제품 라인 하향도 있다 | 혁신 제품, 얼리어답터. 테슬라의 2006년 계획은 새 기술의 초기 단위 원가가 높다는 이유로 웃돈을 낼 고객이 있는 고가 시장에서 시작해 다음 모델마다 내려간다고 밝혔다 |
 
 ## Freemium 전략
 
@@ -71,7 +71,7 @@ Wadhwa와 Zhang(2015)은 라운드가격이 감정 중심 판단과, 비라운�
 
 ## 구매 불안과 가격 표시를 나누어 검증한다
 
-고가와 저가만으로 판매법을 정하지 않는다. 구매 관여도, 실패했을 때의 손실, 사용 빈도와 대안의 차이가 고객의 판단에 함께 영향을 준다. 가격이 부담인 고객과 결과를 믿지 못하는 고객에게 같은 할인만 제시하면 원인을 구분하기 어렵다.
+고가와 저가만으로 판매법을 정하지 않는다. 구매 관여도, 실패했을 때의 손실, 사용 빈도와 대안의 차이가 고객의 판단에 함께 영향을 준다. 가격이 부담인 고객과 결과를 믿지 못하는 고객에게 같은 할인만 제시하면 원인을 구분하기 어렵다. 대면 상담의 가격 반론을 원인별로 듣는 방법은 [[Consultative-Sales-Conversation#가격 반론은 원인을 나눠 듣는다|가격 반론]]에 있다.
 
 아래는 구매 행동 개념을 적용한 실험 질문이다. 가격대별로 반대 전략을 써야 한다는 법칙이나 전환율을 보장하는 처방이 아니다.
 
@@ -81,6 +81,7 @@ Wadhwa와 Zhang(2015)은 라운드가격이 감정 중심 판단과, 비라운�
 | 구매 후 손실 | 맞지 않으면 어떤 비용이 남는가 | 보증, 지원, 반환의 실제 범위와 제외 조건 |
 | 지출 부담 | 총액이 큰가, 지급 시점이 어려운가 | 총액과 지급 일정을 함께 보여 주는 가격안 |
 | 사용과 거래의 수고 | 도입, 배송, 학습과 변경이 번거로운가 | 필요한 준비, 처리 절차와 예상 투입을 구체화 |
+| 판매자와 거래 절차에 대한 불신 | 가격이 같아도 이 판매자에게서 사겠는가 | 총액과 거래 조건의 공개, 사후 대응의 실제 범위, 확인 가능한 판매 이력. 아니라는 답이면 할인보다 신뢰를 먼저 다룬다는 영업 현장의 진단이며 검증된 처방은 아니다 |
 
 월 환산액이나 업그레이드 차액을 보여 줄 때도 총액, 약정 기간과 추가 비용을 함께 제공한다. 선택지 수, 가격 앵커, 할인 표시와 제안 시점은 실험 변수다. 실제로 끝나지 않는 마감, 허위 희소성, 숨긴 비용이나 자동으로 담는 추가 상품은 설명의 단순화와 구분한다. FTC의 다크패턴 보고서는 이런 기만적 설계를 문제로 다루며, 미국 자료를 한국 법률 판단으로 그대로 옮기지는 않는다. 기간 단위 표시의 효과와 금액이 클 때 효과가 뒤집히는 조건은 [[Persuasion-Principles-and-Boundaries|설득 원리와 정직한 사용의 경계]]에서 본다.
 
@@ -166,7 +167,7 @@ Q. 가격 정책은 어떻게 설계했는가?
 
 2026-10-18에는 단독/공동 평가 절을 Hsee(1998)의 출판사 초록과 2023년 재현 연구의 Study 2 본문으로 대조했다. 원 연구의 지불 의향 금액은 전체 원문으로 확인하지 않아 옮기지 않았다. 다른 가격 정책 절의 검증 날짜는 갱신하지 않았다.
 
-2026-11-09에는 사용량 한도 체험 절의 Kagi 사례만 공식 변경 기록으로 대조했다. 다른 절은 다시 대조하지 않았다.
+2026-11-09에는 사용량 한도 체험 절의 Kagi 사례만 공식 변경 기록으로 대조했다. 2026-11-24에는 스키밍 행에 더한 테슬라의 제품 라인 하향 계획만 공식 블로그 글의 보관본으로 대조했다. 다른 절은 다시 대조하지 않았다.
 
 ## 출처
 
@@ -175,6 +176,8 @@ Q. 가격 정책은 어떻게 설계했는가?
 - [OpenStax, 신제품 가격 전략](https://openstax.org/books/principles-marketing/pages/12-4-pricing-strategies-for-new-products)
 - [Stripe, 가격 모델과 Freemium](https://stripe.com/resources/more/pricing-models-explained-types-of-pricing-models-and-when-to-use-them)
 - [Kagi, Changelog](https://kagi.com/changelog) — 2026-11-09 확인. 2026-11-05 무료 검색 한도, 2026-07-02 AI 기능 끄기, 2026-08-21 유료 장벽 링크 제거, 2026-10-16 사기와 피싱 사이트 차단 항목
+- [The Secret Tesla Motors Master Plan (just between you and me) — Tesla, Elon Musk](https://www.tesla.com/secret-master-plan) — 2006-08-02 게시. 2026-11-24 공식 블로그의 2016년 웹 보관본으로 고가 시장 진입과 후속 모델의 하향, 둘째 모델을 로드스터 가격의 약 절반으로 둔다는 문장 대조. 공식 페이지는 자동 조회가 막혀 직접 열지 못했다
+- [최고의 가격은 지금 당신이 가진 가격이다 — 브런치, sellsecret](https://brunch.co.kr/@sellsecret/46) — 2018-01-25 발행, 자동차 판매 교육 경험에 기반한 주장. 판매자와 거래에 대한 불신 행의 출발점. 추가 글: #47, #441, #818(테슬라 계획 소개)
 - [OpenStax, Understanding Consumer Markets and Buying Behavior](https://openstax.org/books/principles-marketing/pages/3-1-understanding-consumer-markets-and-buying-behavior)
 - [Cross Sell vs Upsell: Differences and Examples — Shopify](https://www.shopify.com/blog/upselling-and-cross-selling)
 - [Price Bundling: How Price Bundling Helps Increase Sales — Shopify](https://www.shopify.com/blog/price-bundling)

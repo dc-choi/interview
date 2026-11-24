@@ -15,6 +15,18 @@ aliases: ["Operational Manual and Improvement", "업무 매뉴얼과 운영 개�
 
 공개 사례로 MUJI의 2013년 연수 기록은 일상 업무에 MUJIGRAM을 사용하고, 관련 부서가 매뉴얼을 구성하며 품질 관리의 실제 점검표로 교육한 방식을 설명한다. MUJI REPORT 2025는 매장에서 발견한 문제와 개선안을 공유하고, 교대 일정 작성과 식품 기한 점검 등의 개선 절차를 MUJIGRAM으로 다른 매장에 전파한다고 설명한다. 이는 회사가 공개한 운영 사례이며, 매뉴얼만의 독립적인 생산성 효과를 입증한 실험은 아니다.
 
+### 기준이 충돌할 때의 우선순위를 정해 둔다
+
+매뉴얼이 모든 상황을 담을 수는 없다. 처음 보는 상황에서 현장이 스스로 판단하려면 지킬 기준과 함께 기준끼리 부딪칠 때 무엇을 앞세울지가 필요하다. Disney 테마파크 부문은 2021년 공식 블로그 글에서 안전(Safety), 예절(Courtesy), 쇼(Show), 효율(Efficiency)의 Four Keys가 65년 넘게 고객 응대를 이끌어 왔다고 밝히고, 직원들의 제안으로 포용(Inclusion)을 다섯째 기준으로 더해 다섯 기준의 중심에 두었다. 다섯째는 더한 순서일 뿐 목록의 위치가 아니어서, 도쿄 디즈니 리조트 운영사 Oriental Land는 Safety, Courtesy, Inclusion, Show, Efficiency 순으로 적는다. 이 운영사는 안전을 최우선으로 두고 효율은 안전, 예절과 쇼에 팀워크를 더해 높인다고 설명하지만, 다섯 기준 전체를 순위로 쓴다는 문장은 두 공식 자료에 없다([[Shared-Norms-and-Social-Control#소수의 기준에 우선순위를 둔다|공유 규범의 기준 우선순위]]). 바쁠수록 효율이 앞서 응대가 무너지는 것을 막으려면, 효율을 앞의 기준을 지킨 뒤에 추구할 기준으로 순서를 적어 두는 방법이 있다(적용 제안).
+
+작은 사업에서는 예외와 책임 행(아래 표)에 기준의 순서를 함께 적는다. 예를 들어 개인정보 보호, 약속한 품질, 응답 속도 순으로 정해 두면 급한 요청에 검수를 건너뛸지 판단할 근거가 된다. 순서는 사업마다 다르며, 정한 뒤에는 실제 예외 사례로 맞는지 다시 본다.
+
+### 잘된 방식을 사람이 아니라 표준으로 옮긴다
+
+성과를 낸 사람에게 잘했다로 끝내지 않고 어떻게 했는지 확인하면 팀 전체가 쓸 방식을 찾을 수 있다. 일본 자동차 판매점 점장의 경험을 옮긴 연재(스가 마사노리, 2016년 책의 블로그 번역, 원서 미대조)에는 두 사례가 나온다. 한 직원이 손님을 기다리는 대신 시승차를 고객에게 가져가는 출장 시승으로 잠재 고객을 늘리자, 누구나 할 수 있고 바로 효과가 나는 방식이라 전원이 쓰게 했고, 모자란 시승차를 두고 다투지 않도록 차량 배정을 관리하는 체계는 리더가 만들었다. 점장이 직접 1명 5분, 2명 2분 30초에 끝나는 세차 방법을 해 보여 정성껏 오래 하던 세차 시간을 줄인 사례도 있다. 모두 경험담이며 효과를 측정한 자료는 아니다.
+
+적용할 때는 세 가지를 나눈다(적용 제안). 개인의 재능에 기댄 방식인지 누구나 따라 할 수 있는 절차인지, 그 방식을 넓히면 부족해지는 공유 자원(차량, 장비, 계정, 검수자의 시간)이 무엇이고 누가 배정할지, 그리고 시범을 보인 방식을 아래 표의 수행 단계와 확인 기준으로 적어 다음 사람이 문서만으로 재현할 수 있는지다. 성과가 안 나는 사람도 서류 정리나 도구 사용 같은 과정의 작은 문제가 원인인 경우가 있어 결과만이 아니라 일하는 방식을 관찰한다. 일의 편차를 줄이는 평준화와 정리정돈을 유지 규칙으로 만드는 방법은 [[Lean-Waste-and-5S|린 운영의 낭비 진단]]에서 다룬다.
+
 ## 반복 업무 하나를 기준으로 작성한다
 
 ### 여러 업무를 맡을 때는 수행과 확인 책임을 나눈다
@@ -66,9 +78,16 @@ aliases: ["Operational Manual and Improvement", "업무 매뉴얼과 운영 개�
 - [MUJI×JICA PROJECT Kyrgyz #06 — MUJI Laboratory for Living](https://www.muji.net/lab/found/kyrgyz/en/06.html) — 2013년 연수의 업무 매뉴얼과 점검표 활용 사례.
 - [MUJI REPORT 2025 — Ryohin Keikaku](https://www.ryohin-keikaku.jp/pdf/sustainability/muji-sustainability/report/MUJI_REPORT_2025_E.pdf) — Independent Store Management의 현장 개선과 MUJIGRAM을 통한 절차 전파.
 - [SBA, Manage your business](https://www.sba.gov/counseling/manage-your-business/) — 2026-10-28 운영 영역과 회계 지원 선택지를 확인. 수행과 확인 책임의 배치는 이를 적용한 제안이다.
+- [A Place Where Everyone is Welcome — Disney Parks Blog, Josh D'Amaro](https://disneyparksblog.com/blog/2021/04/a-place-where-everyone-is-welcome/) — 2021-04-13 게시. 2026-11-24 Four Keys의 이름, 65년 넘는 사용, 다섯째 Inclusion 추가와 중심 배치 대조. 글은 기준 사이의 우선순위를 밝히지 않는다
+- [The Five Keys — Oriental Land Co.](https://www.olc.co.jp/en/sustainability/social/safety/scse.html) — 2026-11-24 Internet Archive 사본(영문 2026-01-19, 일문 2026-02-11 수집)으로 다섯 기준의 순서, 안전 최우선, Inclusion의 중심 배치와 효율 설명 대조. 현재 페이지는 시간 초과로 열지 못했다
+- [효율은 맨 끝에 온다 — 브런치, sellsecret](https://brunch.co.kr/@sellsecret/16) — 2018-01-17 게시. 기준 순서와 현장 판단에 관한 소개 글이며 재방문율 같은 수치는 대조하지 못해 옮기지 않았다
+- [목표 달성을 위해 무엇을 했는지를 보라 — 브런치, sellsecret](https://brunch.co.kr/@sellsecret/728) — 2019-07-09 게시. 스가 마사노리(須賀正則)의 2016년 책을 블로그 저자가 옮긴 연재로 원서는 대조하지 않았다. 추가 글: #716(세차 시범). 점장의 경험담
 
 ## 관련 문서
 
+- [[Lean-Waste-and-5S|린 운영의 낭비 진단]] — 무다, 무라, 무리와 평준화, 정리정돈의 유지 규칙
 - [[Metrics-Framework|지표 설계]] — 활동, 결과와 인과 해석의 구분
 - [[Business-Continuity-for-Small-Business|소규모 사업의 연속성 계획]] — 담당자 부재와 업무 인계
 - [[Risk-Management|리스크 관리]] — 예외와 확인 책임
+- [[Shared-Norms-and-Social-Control|공유 규범과 사회적 통제]] — 매뉴얼이 닿지 않는 상황의 행동을 정하는 규범과 기준의 우선순위
+- [[Frontline-Target-Leadership-People#결과보다 과정을 보고 잘된 방식을 표준으로 만든다|잘된 방식을 표준으로]] — 현장 개선을 팀 표준과 공유 자원 배정으로 옮긴 사례

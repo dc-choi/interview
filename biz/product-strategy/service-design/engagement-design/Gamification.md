@@ -39,6 +39,8 @@ aliases: ["Gamification", "게이미피케이션"]
 
 이 문서의 적용 제안: 랭킹과 친구 비교는 이미 익숙한 반복 행동에 붙이고, 처음 배우는 기능이나 판단이 복잡한 과제에는 공개 비교를 늦춘다. 팀에서 성과를 공개해 경쟁을 붙일 때도 같은 기준을 검토한다. 인용한 연구는 같은 공간에 있는 타인을 다뤘으므로, 비동기 랭킹과 팀 성과 공개에 옮기는 것은 검증할 가설로 둔다. 도입 뒤에는 참여 수뿐 아니라 정확도와 오류도 함께 본다.
 
+현장 사례: 한 자동차 판매팀 책임자는 한 달 가운데 피크로 정한 주에만 개인별 할당을 동그라미로 그려 달성할 때마다 칠하는 표를 붙였고, 매주 하면 무뎌진다며 월 1~2회로 제한했다. 표에서는 칠하지 못한 사람이 눈에 띄어 리더가 말하지 않아도 필사적으로 움직였다고 한다. 월별 실적으로 스모 계급처럼 등급을 새로 매겨 신입도 맨 위 등급이 될 수 있었고, 베테랑은 애송이를 뜻하는 맨 아래 등급이 되는 것을 피하려고 필사적으로 영업했다고 회고한다. 두 장치 모두 뒤처진 모습이 드러나는 부담과 자존심을 동기로 쓴다. 기간마다 순위를 새로 매긴 장치는 비교 단위를 좁히라는 위 경쟁 설계 포인트와 같은 방향이고 공개 표의 사용 빈도도 제한했지만, 하위권 구성원에게 미친 영향과 효과는 측정되지 않은 한 팀의 경험이다. 옮길 때는 실명 개인 순위와 낮잡는 등급명 대신 팀 단위 진척이나 본인과 리더만 보는 진척표를 쓴다(이 문서의 적용 제안).
+
 ## 기록 공유의 심리 엔진: 자기표현 욕구
 
 뱃지와 기록 공유가 작동하는 바탕은 자기표현, 과시 욕구다. 표현 매체는 기술과 함께 바뀌어 왔다 — 미화된 사진에서 SNS의 좋아요 수치로, 지금은 **정량화된 활동 데이터**(달린 거리, 운동량)가 자기 관리에 철저한 나를 인증하는 수단이다(갓생 인증).
@@ -103,6 +105,7 @@ Cookie Clicker의 공개 게임 코드는 건물 가격을 `기본 가격 × 1.1
 - [게이미피케이션 적용 방법론 — 쪼렙 서비스기획자 (Brunch)](https://brunch.co.kr/@b30afb04c9f54dc/8)
 - [서비스 전략 기획 사례 분석 — 쪼렙 서비스기획자 (Brunch)](https://brunch.co.kr/@b30afb04c9f54dc/57)
 - [나이키 Run Club은 어떻게 허영심을 자극하는가 — 쪼렙 서비스기획자 (Brunch)](https://brunch.co.kr/@b30afb04c9f54dc/36)
+- [높은 목표도 가능하다고 생각하도록 만드는 방법 — sellsecret (Brunch)](https://brunch.co.kr/@sellsecret/726) — 2019-07-01 발행. 스가 마사노리(須賀正則)의 トヨタの伝説のディーラーが教える 絶対に目標達成するリーダーの仕事(다이아몬드사, 2016)를 옮긴 연재이며 원서 본문은 대조하지 않았다. 추가 글: #734(월별 등급 발표)
 - [The Dynamogenic Factors in Pacemaking and Competition — Norman Triplett (American Journal of Psychology)](http://psychclassics.yorku.ca/Triplett/) — 1898, 9권 4호 507~533쪽. 2026-10-19 과제 장치와 아이 40명 분류 대조
 - [What Did Triplett Really Find? A Contemporary Analysis of the First Experiment in Social Psychology — Michael J. Strube (American Journal of Psychology)](https://doi.org/10.2307/30039059) — 2005, 118권 2호 271~286쪽. 2026-10-19 초록 대조
 - [Social Facilitation of Dominant Responses by the Presence of an Audience and the Mere Presence of Others — Nickolas B. Cottrell, Dennis L. Wack, Gary J. Sekerak, Robert H. Rittle (Journal of Personality and Social Psychology)](https://doi.org/10.1037/h0025902) — 1968, 9권 3호 245~250쪽. 2026-10-19 초록, Zajonc(1965) 가설 정리, 세 조건 설계와 결론 대조
@@ -113,3 +116,4 @@ Cookie Clicker의 공개 게임 코드는 건물 가격을 `기본 가격 × 1.1
 - [[Commerce-Member|커머스 회원 도메인]]
 - [[User-Feedback|사용자 피드백 관리]]
 - [[Live-Ops-Service-Model|라이브옵스와 서비스형 제품 모델]] — 게임 서비스 전체의 재접속, 지속, 결제 구조
+- [[Frontline-Target-Leadership#기간 안의 페이스와 진척 공개|기간 안의 페이스와 진척 공개]] — 영업팀의 공개 진척표와 월간 등급을 쓸 때의 조건

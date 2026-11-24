@@ -82,6 +82,8 @@ aliases: ["Product Roadmap", "프로덕트 로드맵", "Story Mapping", "스토�
 
 두 방식 모두 일하는 사람이 몰입할 수 있는 대상이어야 버틴다. 그래서 연 단위 수치 목표를 고정하지 않고 매일의 판단 기준이 되는 핵심 가치 하나(예: 비용 절감, 최저가)를 고정하며, 계획은 눈앞의 주기만 세운다는 것이 이 관점의 제안이다. 짧은 주기 안의 측정 가능한 목표와 완료 조건은 위 절들을 그대로 따른다. 별개의 참고로, Nvidia의 당시 최고경영자(2026-11-12 사임 발표 이전 재임)는 과거 인터뷰에서 주기적 계획 체계를 두지 않고 계획을 계속 고친다고 말한 것으로 보도됐다(검색 요약으로만 확인했고, 이 발언이 위 제안의 근거는 아니다).
 
+비용 의식을 공식 가치로 적어 둔 회사의 예가 있다. IKEA는 핵심 가치에 Cost-consciousness를 두고 품질을 해치지 않으면서 더 적은 것으로 더 많이 만들도록 스스로와 남에게 계속 요구한다고 설명하며, 가치를 일상의 방식을 이끄는 나침반이라 부른다. Amazon은 리더십 원칙의 Frugality를 더 적은 것으로 더 많이 이루라는 문장으로 시작하고, 값이 싸서 문짝에 다리를 달아 만든 초기 책상을 이 가치의 상징으로 계속 쓰며 고객의 낮은 가격에 기여한 아이디어에 Door Desk Award를 준다고 2018년 글에서 밝혔다. 두 회사가 수치 목표 없이 운영한다는 근거는 아니며, 가치를 매일의 판단 기준으로 명문화한 예로만 쓴다.
+
 읽을 때의 조건: 계획 지평을 줄인다는 말은 방향이 없다는 뜻이 아니다. 긴 지속의 성공담은 살아남은 사례만 보이는 생존자 편향이 있으므로 감당할 손실 한도와 중단 조건은 따로 정한다([[Solo-Product-Market-Validation#결과에 따른 결정|결과에 따른 결정]]). 설비 투자가 크거나 계약 납기가 있는 사업에는 그대로 옮기기 어렵다. 한 강연자의 경영 관점이며 측정된 비교가 아니다.
 
 ### 장기 비전과 현재 제공 능력을 구분한다
@@ -93,6 +95,8 @@ aliases: ["Product Roadmap", "프로덕트 로드맵", "Story Mapping", "스토�
 - **제공 근거:** 고객이 사용할 수 있는 범위, 지원 조건과 실제 사용 결과를 어떤 자료로 확인했는가. 발표의 기대만 있으면 이 칸을 확정하지 않는다.
 
 2026-10-30 확인한 Tesla의 Optimus 공식 소개는 위험하거나 반복적이거나 지루한 작업을 수행하는 범용 자율 이족 보행 로봇을 개발 목표로 제시한다. 그 목표에는 균형, 탐색, 인식과 물리 세계 상호작용을 위한 소프트웨어 구축이 필요하다고 설명한다. 이는 회사가 공개한 개발 목표와 과제이며, 모든 인간 수요를 충족했다는 실적이나 고객에게 보장한 제공 범위의 증거가 아니다. 로드맵에서는 이런 장기 기대와 다음 단계에서 검증할 능력을 분리한다.
+
+공개한 장기 순서와 실제 실행을 나중에 대조할 수 있는 예로 Tesla의 2006-08-02 블로그 글이 있다. 첫 제품은 고성능 전기 스포츠카 Roadster이고, 둘째 모델은 Roadster 가격 8만 9천 달러의 대략 절반인 4도어 패밀리카, 셋째는 그보다 더 저렴한 모델이며, 무배출 발전 선택지도 함께 제공하겠다는 순서였다. 가격에 덜 민감한 소수 고객에게 파는 고가 제품으로 개발비와 인지도를 확보한 뒤 더 싼 대량 제품으로 내려가는 순서이고, 한 제품의 가격을 시간에 따라 내리는 가격 스키밍과 달리 제품 라인을 차례로 바꾼다. 로드맵에 옮길 때는 이런 장기 순서를 고정 약속이 아니라 단계마다 검증할 가정으로 두고, 각 단계의 실제 출시 가격과 시점을 계획과 나란히 기록한다(적용 제안).
 
 ### 기존 기능과 사용자가 새로 요청한 능력을 구분한다
 
@@ -162,6 +166,8 @@ AWS 공개 대담에서는 Micro-battles의 시간 범위를 최대 3~4개월로
 - [GOV.UK, Developing a roadmap](https://www.gov.uk/service-manual/agile-delivery/developing-a-roadmap)
 - [Samsung Raises the Bar for Smart Robot Vacuums With the Jet Bot AI+ — Samsung Global Newsroom](https://news.samsung.com/global/samsung-raises-the-bar-for-smart-robot-vacuums-with-the-jet-bot-aiplus) — 2021-06-25 제조사 발표의 Patrol Mode, 예약 모니터링과 앱 사용 조건을 2026-11-04 대조. 자율 개발과 외부 메신저 전송의 근거로 사용하지 않음
 - [Tesla, SI & Robotics](https://www.tesla.com/SI) — 2026-10-30 Optimus의 개발 목표와 필요한 소프트웨어 과제 대조. 제품 납품과 범용 작업 성능을 검증한 자료로 사용하지 않음
+- [The Secret Tesla Motors Master Plan — Tesla, Elon Musk](https://www.tesla.com/secret-master-plan) — 2006-08-02 게시. 2026-11-24 페이지 직접 열람이 거부되어 검색 색인에 수록된 본문으로 첫 제품, 둘째 모델의 가격 목표와 셋째 모델의 순서만 대조했다
+- [01화 Tesla Master Plan Part 1 — 브런치, sellsecret](https://brunch.co.kr/@sellsecret/818) — 2023-04-26 게시. 장기 순서 사례의 계기. 글의 판매량, 공모액과 이후 가격 수치는 대조하지 않아 옮기지 않았다
 - [서비스 기획자의 로드맵 수립 — 쪼렙 서비스기획자 (Brunch)](https://brunch.co.kr/@b30afb04c9f54dc/54)
 - [The Parlor Room, Season 1 Bonus Content (Part 2) — Linda Hill 외 (Harvard Business School Online)](https://online.hbs.edu/podcast/season-1-bonus-content-part-2-linda-hill-mihir-desai-forest-reinhardt-and-joshua-margolis) — 계획의 가정, 행동의 영향과 방향 수정에 관한 공개 대담
 - [How Bain’s Micro-Battles Drive Agile Digital Transformation — Frank Ford, Tom Soderstrom (AWS)](https://aws.amazon.com/executive-insights/podcast/driving-digital-transformation-with-bain-micro-battles/) — 2026-10-16 공식 전사문의 문제 선택, 제한된 실험과 확장 조건을 대조. 대담의 조직 전환 성공률과 AI 효과 예측은 일반 사실로 사용하지 않음
@@ -170,6 +176,10 @@ AWS 공개 대담에서는 Micro-battles의 시간 범위를 최대 3~4개월로
 - [Exploit the Product Life Cycle — Theodore Levitt (Harvard Business Review)](https://hbr.org/1965/11/exploit-the-product-life-cycle) — 1965년 11월호. 2026-11-13 공개 첫 문단에서 개념의 전략적 활용이 드물다는 지적만 대조했고 단계 명칭과 본문은 유료라 확인하지 않음
 - [엔지니어를 위한 비즈니스의 이해 — 채널데브톡 (YouTube)](https://www.youtube.com/watch?v=QxQvFglNSq8) — 2026-10-30 업로드, 사내 세션을 공개한 영상. 새 기능 곡선의 운영 비용과 수용 단계별 도입 지원은 발표자의 실무 관점
 - [AI시대, 전혀 새로운 사업법 — 라이프코드 LIFECODE (YouTube)](https://www.youtube.com/watch?v=U9juw8VapfI) — 2026-11-08 업로드 강연, 2026-11-16 음성 인식 전사 전체 확인. 두 운영 방식과 핵심 가치는 강연자의 경영 관점. 특정 회사의 사업 피해와 인물 일화는 대조하지 못해 반영하지 않았다
+- [AI시대 창업하는 법 — 라이프코드 LIFECODE (YouTube)](https://www.youtube.com/watch?v=4rWQi4RqoQE) — 2026-05-20 업로드 공개, 2026-11-24 음성 인식 전사 전체 확인. 같은 강연자의 이전 업로드로 두 운영 방식과 핵심 가치의 논지가 같다. 강연에서 든 IKEA와 Amazon의 비용 절감 예는 회사 공식 자료로 대조한 범위만 옮겼다. 후배 창업자의 사업계획이 1년 안에 무너진 사례, Microsoft와 Anthropic의 관계, Nvidia 대표의 방한 해석과 IKEA 대표실 문 일화는 대조하지 못해 반영하지 않았다
+- [IKEA culture and values — Inter IKEA Group](https://www.inter.ikea.com/en/how-we-do-business/ikea-culture-and-values) — 2026-11-24 여덟 가치, Cost-consciousness 설명과 가치의 역할 문장 대조
+- [Amazon Leadership Principles — Amazon](https://www.aboutamazon.com/about-us/leadership-principles) — 2026-11-24 Frugality 원칙 문장 대조
+- [How a door became a desk, and a symbol of Amazon — Amazon](https://www.aboutamazon.com/news/workplace/how-a-door-became-a-desk-and-a-symbol-of-amazon) — 2018-01-17 게시, 2026-11-24 도어 데스크의 유래, 검소함의 상징 유지와 Door Desk Award 설명 대조
 - [Jensen Huang's Unusual Nvidia Management Style Doesn't Include Long-Term Plans or Reports — Tom's Hardware](https://www.tomshardware.com/news/nvidia-ceo-shares-management-style-always-learn-make-no-plans) — 계획 체계에 관한 발언. 기사 게시 시점은 확인하지 못했다. 2026-11-16 검색 결과 요약으로만 확인했고 원 인터뷰는 열람하지 못했다
 
 ## 관련 문서

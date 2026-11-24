@@ -129,6 +129,12 @@ Clayton Christensen의 JTBD 관점에서, 고객이 제품을 전환(switch)하�
 
 **전환은 Push와 Pull이 Anxiety와 Habit보다 강할 때 일어날 가능성이 커진다는 설명 틀이다.** 경쟁자는 같은 카테고리 제품만이 아니라, 같은 Job을 해결하는 모든 대안이다.
 
+### 아예 사지 않는 사람: 비소비와 시장 창조 혁신
+
+같은 Job의 대안에는 아무것도 사지 않는 선택도 들어간다. Christensen Institute는 혁신 유형으로 현재 경쟁의 궤도를 유지하며 제품을 개선하는 유지 혁신, 사업 모델과 대상 고객은 그대로 두고 만드는 공정을 바꾸는 효율 혁신, 그리고 시장 창조 혁신을 구분한다(같은 자료는 파괴적 혁신도 따로 둔다). 시장 창조 혁신은 복잡하고 비싼 제품을 단순하고 감당할 만한 제품으로 바꿔 비소비(혜택을 볼 수 있는데도 사지 못하는 상태)를 겨냥하며, 이익뿐 아니라 일자리와 인프라까지 만든다고 본다. Christensen, Ojomo, Dillon(2019)이 HBR 글과 책 The Prosperity Paradox에서 신흥 시장을 대상으로 펼친 틀이다.
+
+기회를 찾을 때 기존 고객의 불만만 보지 말고, 가격, 기술, 시간 장벽 때문에 아예 사지 않는 집단과 그 장벽을 없앨 원가 구조와 사업 모델을 함께 본다(적용 제안). 자동차를 부유층의 여가용품에서 대중 제품으로 바꾼 초기 대량 생산 차가 흔히 예로 쓰이지만 가격과 판매 수치는 이 문서에서 대조하지 않았다. 비소비자가 많다는 사실이 곧 수요는 아니며, 장벽을 낮춘 뒤의 지불 행동은 [[Solo-Product-Market-Validation|시장 검증]]으로 따로 확인한다.
+
 ## 현장 적용: school-manage
 
 아래는 당시 시장 조사와 가설의 기록이다. 현재 사업의 진행 상태, 채택한 타깃이나 검증된 매출 전망을 뜻하지 않는다.
@@ -162,6 +168,10 @@ Q. 시장 분석을 어떻게 했는가?
 - [AI 기반 심리상담에 대한 인식조사 — 한국리서치](https://hrcopinion.co.kr/archives/32744) — 2025년 조사, 의향과 경험 문항의 구분
 - [Shrinking Smartly and Sustainably, A policy framework and policy recommendations to address demographic change — OECD](https://www.oecd.org/en/publications/shrinking-smartly-and-sustainably_f91693e3-en/full-report/a-policy-framework-and-policy-recommendations-to-address-demographic-change_9bb55cde.html) — 2025, 2026-10-22 수요 구성과 서비스 제공 비용 확인
 - [Shrinking Smartly and Sustainably, Adapting multi-level governance, finance, service and infrastructure provision to demographic change — OECD](https://www.oecd.org/en/publications/shrinking-smartly-and-sustainably_f91693e3-en/full-report/adapting-multi-level-governance-finance-service-and-infrastructure-provision-to-demographic-change_d4b55d22.html) — 2025, 2026-10-22 공동 운영, 복합 거점과 수요응답형 서비스 확인
+- [The Different Types of Innovation — Clayton Christensen Institute](https://www.christenseninstitute.org/graphic/infographic-the-different-types-of-innovation) — 게시일 표기 없음. 2026-11-24 유지, 효율, 시장 창조 혁신의 정의 대조
+- [Targeting nonconsumption: The most viable path to growth — Clayton Christensen Institute, Efosa Ojomo](https://www.christenseninstitute.org/blog/targeting-nonconsumption-the-most-viable-path-to-growth/) — 2019-10-08 게시, 2026-11-24 비소비와 시장 창조 혁신의 정의 대조
+- [Cracking Frontier Markets — Harvard Business Review, Clayton M. Christensen, Efosa Ojomo, Karen Dillon](https://store.hbr.org/product/cracking-frontier-markets/R1901F) — 2019년 1~2월호. 2026-11-24 제목과 호수만 확인했고 본문은 열지 못했다
+- [포드주의와 테슬라주의 — 브런치, sellsecret](https://brunch.co.kr/@sellsecret/843) — 2023-07-17 게시. 시장 창조 혁신 소절의 계기. 글의 Model T 가격, 판매량, 이직률과 일당 5달러의 목적은 역사 자료와 대조하지 않아 옮기지 않았다
 
 ## 관련 문서
 - [[Competitive-Analysis|경쟁사 분석]]

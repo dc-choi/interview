@@ -1,7 +1,7 @@
 ---
 tags: [business, product, design, ux, accessibility]
 status: done
-verified_at: 2026-09-30
+verified_at: 2026-11-24
 category: "비즈니스&제품(Business&Product)"
 aliases: ["Service Design Principles", "서비스 설계 원칙", "GOV.UK Design Principles"]
 ---
@@ -39,6 +39,12 @@ aliases: ["Service Design Principles", "서비스 설계 원칙", "GOV.UK Design
 ### 명사보다 동사
 
 도메인 용어를 사용자 언어로 번역한다. 수수료 감면(제도 명칭)보다 수수료 비용을 지원하다(사용자가 얻는 것)가 이해도 낮은 사용자도 움직이게 한다. [[Product-Roadmap|프로덕트 로드맵]]의 Theme 작성 원칙(기능이 아니라 고객 가치 문장)과 같은 축.
+
+### 사용자 과업에 맞춰 버릴 정보를 정한다: 지하철 노선도
+
+단순성 원칙(항상 그래왔다는 이유를 거부)의 고전 사례가 런던 지하철 노선도다. 1925년부터 런던 지하철에서 신호 기술자 사무실의 기술 도면을 그리던 제도사 Harry Beck은 1931년 실제 지형을 버리고 수평, 수직과 45도 선만으로 노선을 이은 도식을 내놓았다. 전기 회로도에서 착안했을 것으로 보이며, 역 이름을 읽기 쉽게 도심 구간을 크게 키우고 지리적 정확성은 포기했다. 지하철 측은 처음에 너무 급진적이라며 거절했다가 1932년 시범 운영에서 이용자 의견을 구한 뒤 1933년에 인쇄했다. 어느 노선을 타고 어디서 갈아타는가라는 이용자의 과업에 필요한 정보만 남긴 설계다.
+
+추상화에는 비용도 있다. Guo(2011)는 1998~2005년 런던 지하철 자료로 경로 선택을 모형화해, 노선도 위의 거리가 실제 이동 시간보다 두 배 큰 탄력성을 보였고 이용자가 자기 이동 경험보다 노선도를 더 믿는 경향이 있다고 보고했다. 환승을 점 하나로 그리는지 연결선으로 그리는지도 환승 결정에 영향을 줄 수 있었다(초록 기준). 화면과 대시보드를 단순화할 때도 버린 정보가 사용자의 판단을 바꾸지 않는지, 바꾼다면 필요한 순간에 다시 꺼내 볼 수 있는지 확인한다(이 문서의 적용).
 
 ### 디자인 시스템
 
@@ -91,6 +97,9 @@ aliases: ["Service Design Principles", "서비스 설계 원칙", "GOV.UK Design
 - [GOV.UK, Manage existing content](https://guidance.publishing.service.gov.uk/writing-to-gov-uk-standards/plan-manage-content/manage-existing-govuk-content/) — 콘텐츠 검토와 갱신 책임의 참고 기준. 위 표는 정보 서비스에 적용한 설계 질문이다.
 - [영국 정부에게 배우는 서비스 기획 — 쪼렙 서비스기획자 (Brunch)](https://brunch.co.kr/@b30afb04c9f54dc/38)
 - [쌓아놓기에서 미니멀리스트 기획자되기 — 도그냥 (Brunch)](https://brunch.co.kr/@windydog/384)
+- [How Harry Beck revolutionised the Tube map — London Museum](https://www.londonmuseum.org.uk/collections/london-stories/harry-beck-revolutionised-tube-map/) — 2026-11-24 Beck의 직무와 입사 연도, 1931년 도식, 첫 거절과 1932년 시범, 1933년 인쇄, 선의 각도와 도심 확대 대조
+- [Mind the map! The impact of transit maps on path choice in public transit — Transportation Research Part A, Zhan Guo](https://doi.org/10.1016/j.tra.2011.04.001) — 2011, 45권 7호 625~639쪽. 2026-11-24 초록 대조(IDEAS/RePEc 서지)
+- [23. 인사이터 : 최초의 시선 — sellsecret (Brunch)](https://brunch.co.kr/@sellsecret/652) — 2018-11-07 발행. 노선도 사례를 고른 계기이며 인쇄 부수 같은 세부 사실은 위 박물관 자료로 바꿔 썼다
 - [KRDS, KRDS 소개](https://www.krds.go.kr/html/site/utility/utility_01.html)
 - [KRDS, 리소스 다운로드](https://www.krds.go.kr/html/site/outline/outline_05.html)
 - [행정안전부, 범정부 UI/UX 디자인시스템(KRDS) 정식 개시 보도자료 (2025-01-15)](https://www.mois.go.kr/frt/bbs/type010/commonSelectBoardArticle.do?bbsId=BBSMSTR_000000000008&nttId=115144)

@@ -78,6 +78,7 @@ Geoffrey Moore는 기술 수용 주기에서 초기수용자 시장과 주류 �
 
 - **좁은 거점 세그먼트:** 한 세그먼트에서 완결된 해결책과 레퍼런스를 만든 뒤 인접 세그먼트로 넓힌다. [[PMF-Funnel|PMF 검증]]의 Post-PMF 인접 시장 확장과 같은 흐름이다.
 - **집중과 포기의 프레임:** 캐즘은 시장 진단보다 어디에 집중하고 무엇을 버릴지 정하는 장치로 쓸 때 유용하다.
+- **수용 단계별 도입 지원:** 효과를 따져 보되 직접 익힐 돈, 시간과 역량이 있는 초기 다수에게는 가이드, 사용 설명서와 교육을, 효과를 따져 보지만 익힐 자원이 없는 후기 다수에게는 담당자가 대부분을 대신 설정해 주는 지원을 두는 B2B SaaS 실무 관점이 있다. 제품이 저절로 퍼지기를 기다리기보다 큰 전략 변경과 집중된 노력이 필요하다고 보고, 고객 행사에서 효과가 분명한 장면을 보여 주는 것을 그 수단의 하나로 든다. 둘 다 Moore의 처방이 아니라 실무 관점이다.
 - **사례:** 소셜 앱이 출시 직후 급증한 뒤 정체했다가, 기존 앱에서의 유입 경로와 전문성 있는 초기 크리에이터의 정착으로 일반 사용자가 들어온 흐름을 캐즘 통과로 설명하는 관점이 있다.
 
 ## B2B는 피칭보다 사용 증거
@@ -192,6 +193,7 @@ Q. GTM 전략을 어떻게 수립/실행했는가?
 - [Interpret your Retention Analysis chart: Usage interval — Amplitude](https://www.amplitude.com/docs/analytics/charts/retention-analysis/retention-analysis-interpret-usage) — 2026-10-02 제품별 사용 주기와 유지율 해석 범위 확인
 - [승무원을 위한 서비스 분석 — 쪼렙 서비스기획자 (Brunch)](https://brunch.co.kr/@b30afb04c9f54dc/60)
 - [Crossing the Chasm — Geoffrey A. Moore (HarperBusiness, 1991, 3판 2014)](https://geoffreyamoore.com/book/crossing-the-chasm/)
+- [엔지니어를 위한 비즈니스의 이해 — YouTube, 채널데브톡](https://www.youtube.com/watch?v=QxQvFglNSq8) — 2026-10-30 업로드 공개, 2026-11-24 음성 인식 전사 전체 확인. 수용 단계별 도입 지원과 고객 행사의 역할은 사내 세션 발표자의 실무 관점
 - [인핸스, 512억원 시리즈C 유치 — 벤처스퀘어](https://www.venturesquare.net/1114540)
 - [캐즘과 스레드의 성장 — Threads, turtle_step_](https://www.threads.com/@turtle_step_/post/DY7Dq81iTrz)
 - [인핸스 시리즈C와 고객사 계열 투자 — Threads, pioaxis](https://www.threads.com/@pioaxis/post/DdjIofnE7om)

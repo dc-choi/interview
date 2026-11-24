@@ -199,4 +199,5 @@ Fair Trade USA의 2025년 공개 사례는 시제품 과정에서 필요한 데�
 - [[Metrics-Framework|제품 지표 프레임워크]]
 - [[Service-Design|서비스 설계와 UX 패턴]]
 - [[B2B-Sales-Pipeline-and-Pilot|B2B 영업 파이프라인]] — 단계별 증거, 청구 일정과 금액 구분
+- [[Consultative-Sales-Conversation|대면 상담형 판매의 대화 구조]] — 여러 직원이 한 고객을 나눠 응대할 때의 진행 상태 공유
 - [[Agent-Spec-Writing|에이전트 스펙 작성법]] — 구현 직전의 숨은 결정 인터뷰

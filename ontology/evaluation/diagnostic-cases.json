@@ -12,7 +12,7 @@
       }
     ],
     "forbidden_paths": [
-      "biz/product-strategy/service-design/Community-Dark-Patterns.md",
+      "biz/product-strategy/service-design/engagement-design/Community-Dark-Patterns.md",
       "biz/product-strategy/service-design/Pagination-Patterns.md"
     ],
     "min_relations": 1

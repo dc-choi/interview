@@ -1,7 +1,7 @@
 ---
 tags: [business, market, revenue, financial-analysis, growth]
 status: done
-verified_at: 2026-11-18
+verified_at: 2026-11-24
 category: "비즈니스&제품(Business&Product)"
 aliases: ["Revenue Mix and Growth Interpretation", "매출 구성과 성장률 해석"]
 ---
@@ -70,6 +70,12 @@ AMD 전망의 하단이 Intel 전망의 상단보다 높으므로, 두 회사가
 
 같은 10-K의 경쟁 항목은 하드웨어와 소프트웨어를 내부에서 설계하는 대형 클라우드 회사(Alibaba, Alphabet, Amazon, Baidu, Huawei, Microsoft)를 경쟁자로 꼽는다. 큰 구매자가 대체품을 직접 만들 수 있으면 [[Competitive-Analysis|Five Forces]]의 구매자 교섭력이 커진다. 상위 고객의 매출 비중과 함께 고객 유형이 경쟁자 목록과 겹치는지 본다.
 
+## 광고에 기대는 매출은 경기 민감도를 함께 본다
+
+매출 구성은 성장률만이 아니라 경기에 대한 민감도도 바꾼다. 2020년 연간 공시에서 Alphabet의 Google advertising 매출은 146,924백만 달러로 전체 매출 182,527백만 달러의 약 80.5%였고, Facebook(현 Meta)의 광고 매출은 84,169백만 달러로 전체 85,965백만 달러의 약 97.9%였다(공시 표로 계산). Alphabet의 같은 연차보고서는 광고 매출 성장에 영향을 주는 요인으로 경기 상황과 계절성을 들고, 경기 하강으로 광고주 지출이 줄면 광고 매출이 크게 줄 수 있다는 위험을 적는다.
+
+광고 매출 안에서도 유형에 따라 경기 반응이 다를 수 있다. 인수 직후 Twitter 경영자가 직원에게 보낸 메일은 성과형이 아닌 브랜드 광고 비중이 높아 경기 침체에 더 취약하다며 구독 매출을 키우겠다고 했다고 인용되지만(아래 블로그 글의 인용, 메일 원문 미확인), 그 비중과 브랜드 광고가 먼저 줄어든다는 전제는 업계 자료로 확인하지 않았다. 판단에는 회사가 공시하는 광고 유형별 정보와 실제 경기 하강기의 분기 매출을 쓴다.
+
 ## 확인할 질문
 
 - 실적과 전망을 구분하고, 전망은 범위의 양 끝으로 비교했는가
@@ -82,6 +88,7 @@ AMD 전망의 하단이 Intel 전망의 상단보다 높으므로, 두 회사가
 - 지역 매출의 기준(청구지, 본사 소재지, 배송지)과 과거 기간의 재작성 여부를 확인했는가
 - 연간 비중과 분기 비중처럼 길이가 다른 기간을 이어 붙이지 않았는가
 - 상위 고객이 직접 고객인지 최종 구매자인지 구분하고, 고객 유형과 경쟁자 목록이 겹치는지 봤는가
+- 광고처럼 경기에 민감한 매출의 비중과, 광고 안에서 성과형과 브랜드형처럼 경기 반응이 다를 수 있는 유형의 비중을 확인했는가
 
 ## 출처
 
@@ -93,6 +100,9 @@ AMD 전망의 하단이 Intel 전망의 상단보다 높으므로, 두 회사가
 - [Form 10-K for the fiscal year ended January 25, 2026 — NVIDIA, SEC EDGAR](https://www.sec.gov/Archives/edgar/data/1045810/000104581026000021/nvda-20260125.htm) — 2026-11-18 Segment Information 주석(XBRL R25, R84)의 본사 소재지 기준 지역 매출과 재작성, 직접 고객 집중과 고객 정의, 경쟁 항목, H20 수출 허가와 비용, 중국 시장 서술 대조
 - [Form 10-K for the fiscal year ended January 26, 2025 — NVIDIA, SEC EDGAR](https://www.sec.gov/Archives/edgar/data/1045810/000104581025000023/nvda-20250126.htm) — 2026-11-18 Segment Information 주석(XBRL R25)의 청구지 기준 지역 매출과 싱가포르의 청구, 배송 설명 대조
 - [Form 10-Q for the quarter ended July 26, 2026 — NVIDIA, SEC EDGAR](https://www.sec.gov/Archives/edgar/data/1045810/000104581026000075/nvda-20260726.htm) — 2026-11-18 지역별 매출 상세(XBRL R65)의 3개월, 6개월 수치 대조
+- [Form 10-K for the fiscal year ended December 31, 2020 — Alphabet, SEC EDGAR](https://www.sec.gov/Archives/edgar/data/1652044/000165204421000010/goog-20201231.htm) — 2026-11-24 유형별 매출 표의 2020년 Google advertising과 총매출, 광고 매출 성장 요인(경기 상황, 계절성)과 경기 하강 위험 서술 대조
+- [Facebook Reports Fourth Quarter and Full Year 2020 Results — Facebook, SEC Form 8-K Exhibit 99.1](https://www.sec.gov/Archives/edgar/data/1326801/000132680121000011/fb-12312020xexhibit991.htm) — 2021-01-27, 2026-11-24 2020년 광고 매출과 총매출 대조
+- [하드코어한 엔지니어링 문화 — 브런치, sellsecret](https://brunch.co.kr/@sellsecret/839) — 2023-06-16 게시. 광고 유형과 경기 민감도 질문의 계기. 글이 인용한 경영자 메일의 브랜드 광고 비중 70%는 원문을 확인하지 못해 옮기지 않았다. 추가 글: #841(광고 집중 수치, 공시로 다시 계산)
 - Nvidia는 젠슨 황 논란 이전부터 어려움을 겪고 있었다 — GeekNews, 2026-11-17 사용자 제공 발췌. 원 기사 미확인. 발췌의 중국 비중 20%에서 8%는 본사 소재지 기준 2024 회계연도 연간 값과 2027 회계연도 2분기 값으로 보면 위 공시와 맞는다
 
 ## 관련 문서
