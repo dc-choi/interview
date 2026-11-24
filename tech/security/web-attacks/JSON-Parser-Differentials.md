@@ -1,7 +1,7 @@
 ---
 tags: [security, json, parser, go, interoperability]
 status: done
-verified_at: 2026-11-17
+verified_at: 2026-11-24
 category: "Security - 웹 공격"
 aliases: ["JSON Parser Differentials", "JSON 파서 해석 차이", "JSON 중복 키 공격", "Go encoding/json v2"]
 ---
@@ -64,6 +64,15 @@ err := jsonv2.Unmarshal(data, &u, json.DefaultOptionsV1())
 err = jsonv2.Unmarshal(data, &u)
 ```
 
+v2 기본값으로 옮길 때 보안 규칙 외에도 출력과 입력이 바뀌는 지점이 있다.
+
+- **모르는 필드는 v2도 기본으로 무시한다.** 엄격해진 것은 중복 이름, 대소문자와 UTF-8이며, 모르는 이름까지 거부하려면 `RejectUnknownMembers`를 켠다.
+- **`omitempty`의 의미가 바뀌었다.** v2의 `omitempty`는 JSON의 null, 빈 문자열, 빈 객체나 빈 배열로 인코딩될 필드를 뺀다. Go의 zero 값을 기준으로 빼려면 `omitzero`를 쓴다. `omitzero`는 v1과 v2가 똑같이 지원하므로 v1을 쓰는 동안 먼저 옮겨 둘 수 있다.
+- **맵 순서와 `time.Duration`.** v1은 맵 키를 정렬해 출력했지만 v2는 순서를 정하지 않는다. `Deterministic` 옵션은 마샬링에만 적용되고 같은 빌드 안에서만 같은 바이트를 보장하며, 소스, 툴체인 버전, GOOS/GOARCH나 빌드 플래그가 다르면 보장하지 않는다. 그래서 저장해 둔 출력 파일과 바이트를 비교하는 테스트는 의미 단위 비교로 바꾼다(적용 제안). v2는 기본 표현이 없는 `time.Duration`을 직렬화하면 오류를 낸다. v1처럼 나노초 숫자로 쓰려면 `encoding/json`의 `FormatDurationAsNano` 옵션을 넘긴다. 실험 단계의 `format` 태그 옵션은 Go 1.27에서 제거됐다.
+- **차이 관측 도구.** `github.com/go-json-experiment/jsonsplit`은 운영 중 v1과 v2를 함께 호출해 차이를 보고하면서 호출자에게는 v1 결과를 돌려주는 모드를 제공한다. 마샬링 비용이 대략 두 배가 되므로 `SetMarshalCallRatio`로 일부 호출만 표본 검사한다.
+
+v2는 문법(토큰, 인코딩과 디코딩, 스트리밍)을 `jsontext`에, Go 값과의 의미 매핑을 `encoding/json/v2`에 나눴다. `MarshalWrite`, `UnmarshalRead`는 `io.Writer`, `io.Reader`를 직접 받고, 옵션은 호출마다 넘긴다.
+
 ## 방어 설계
 
 1. **신뢰 경계에서 한 번, 엄격하게 파싱한다.** 중복 이름, 잘못된 UTF-8, 모르는 필드를 경계에서 거부하고, 이후 컴포넌트에는 다시 직렬화한 정규형만 넘긴다(적용 제안).
@@ -79,11 +88,11 @@ err = jsonv2.Unmarshal(data, &u)
 
 ## 출처
 
-- [A new Go API for JSON — The Go Blog, Michael Pratt 외](https://go.dev/blog/jsonv2) — 2026-11-04 게시, 2026-11-17 대조
+- [A new Go API for JSON — The Go Blog, Michael Pratt 외](https://go.dev/blog/jsonv2) — 2026-11-04 게시, 2026-11-24 대조
 - [Go, Go 1.27 Release Notes](https://go.dev/doc/go1.27)
 - [Go, encoding/json/v2 Migration Guide](https://go.dev/doc/jsonv2-migration)
-- [Go Packages, encoding/json/v2](https://pkg.go.dev/encoding/json/v2) — 2026-11-17 go1.27.4 문서 기준
-- [Go Packages, encoding/json](https://pkg.go.dev/encoding/json) — 2026-11-17 go1.27.4 문서 기준
+- [Go Packages, encoding/json/v2](https://pkg.go.dev/encoding/json/v2) — 2026-11-24 go1.27.4 문서 기준
+- [Go Packages, encoding/json](https://pkg.go.dev/encoding/json) — 2026-11-24 go1.27.4 문서 기준
 - [Apache CouchDB CVE-2017-12635 and CVE-2017-12636 — The Apache CouchDB Blog](https://blog.couchdb.org/2017/11/14/apache-couchdb-cve-2017-12635-and-cve-2017-12636/)
 - [CVE, CVE-2017-12635](https://www.cve.org/CVERecord?id=CVE-2017-12635)
 - [IETF, RFC 8259: The JavaScript Object Notation (JSON) Data Interchange Format](https://www.rfc-editor.org/rfc/rfc8259)

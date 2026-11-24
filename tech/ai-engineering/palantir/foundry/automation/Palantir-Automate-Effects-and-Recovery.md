@@ -1,7 +1,7 @@
 ---
 tags: [palantir, automate, effect, retry, idempotency]
 status: done
-verified_at: 2026-10-16
+verified_at: 2026-11-24
 category: "AI엔지니어링(AIEngineering)"
 aliases: ["Automate effect와 실패 복구"]
 ---
@@ -35,6 +35,8 @@ Function effect 전용 문서는 retry policy를 설명하지만 일반 retry �
 ## Function, Logic와 Action의 편집 계약이 다르다
 
 Function effect는 computed output 경로이며 Ontology edit return을 apply하지 않는다. 편집하려면 function-backed Action을 쓴다. Async 지원 type은 submit/polling으로 최대 4시간 실행하고 미지원 type은 synchronous다. Stable >=1.0.0의 compatible auto-upgrade는 non-prerelease의 다음 major 전까지다.
+
+Function effect 문서의 수명주기 표시는 바뀌었다. 2026-10 확인본은 beta 단계라 enrollment에 따라 쓸 수 없고 기능이 바뀔 수 있다고 적었고, 2026-11-24 확인본에는 이 beta 안내가 없다. 문서가 GA를 명시하지는 않으므로 표시가 빠진 것만으로 모든 enrollment의 사용 가능 여부를 단정하지 않고 실제 enrollment의 effect 목록에서 확인한다. 같은 문서는 function이 automation owner를 대신해 실행되므로 owner 계정이 비활성화되거나 삭제되면 더 이상 실행되지 않는다고 경고한다.
 
 Logic effect는 edit list를 반환하는 legacy Logic만 받는다. Staged writes를 켠 Logic은 output type이 바뀌어 새 major가 되므로 기존 auto-upgrade가 건너가지 않는다. Create action으로 감싸 Action effect에서 호출하거나 명시적으로 migration한다. Project scope는 Logic auto-upgrade를 지원하지 않는다. Per-object 기본 parallelism 20과 충돌/지연을 함께 본다.
 

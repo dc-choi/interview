@@ -62,11 +62,13 @@ Managed Instances는 고객 계정의 EC2 인스턴스에서 실행되며 실행
 
 2026-10-13 부분 검증: 2026-10-12 AWS 출시 발표와 제품 안내로 아래 범위를 확인했다. 기존 Event Functions의 quota 전체를 재검증한 날짜는 아니다.
 
-- **요청 처리**: 이벤트 핸들러 대신 포트에서 HTTP 요청을 받는 Node.js 서버를 실행한다. 별도 Lambda 어댑터는 필요 없지만 서버가 `AWS_LAMBDA_HTTP_ENDPOINT`의 host와 port를 사용하도록 설정해야 한다.
+- **요청 처리**: 이벤트 핸들러 대신 포트에서 HTTP 요청을 받는 서버를 실행한다(출시 때 Node.js, 2026-11-24 기준 Python은 preview). 별도 Lambda 어댑터는 필요 없지만 서버가 `AWS_LAMBDA_HTTP_ENDPOINT`의 host와 port를 사용하도록 설정해야 한다.
 - **동시성**: warm 실행 환경 하나에서 최대 128개 요청을 동시에 처리한다. 요청별 전역 변수와 DB 연결 풀의 공유를 점검해야 하며, cold start가 사라진다는 보장은 아니다.
 - **과금**: active CPU 시간과 환경 수명 동안의 메모리를 구분한다. I/O를 기다리는 동안 CPU 사용은 작아질 수 있지만 요청, 메모리와 데이터 전송 비용까지 없어지는 것은 아니다.
-- **배포**: 선택한 리전에 코드를 복제하고 단일 endpoint에서 지연 기반으로 라우팅한다. 변경 불가능한 revision 사이에 트래픽 비중을 나눌 수 있다. 코드 복제를 데이터베이스의 다중 리전 복제로 해석하지 않는다.
-- **출시 범위**: Node.js 24, Arm64이며 버지니아 북부, 오하이오, 오리건, 도쿄와 아일랜드에서 출시됐다. 서울 리전 사용 가능 여부를 이 목록 밖으로 추정하지 않는다.
+- **배포**: MultiRegion과 PerRegion endpoint는 대상 리전에 코드와 설정을 복제하며, MultiRegion은 전역 도메인 하나에서 지연 기반으로 라우팅한다. HomeRegion과 PerRegion의 동작은 [[AWS-Lambda-Web-Functions|Lambda Web Functions]]의 endpoint 유형 표를 본다. 변경 불가능한 revision 사이에 트래픽 비중을 나눌 수 있다. 코드 복제를 데이터베이스의 다중 리전 복제로 해석하지 않는다.
+- **출시 범위**: 출시 발표 기준 Node.js 24, Arm64이며 버지니아 북부, 오하이오, 오리건, 도쿄와 아일랜드에서 출시됐다. 서울 리전 사용 가능 여부를 이 목록 밖으로 추정하지 않는다. 2026-11-24 개발자 가이드의 런타임 표에는 `nodejs26.x`와 preview인 `python3.15`도 있다.
+
+endpoint 유형, revision, 확장과 throttle, quota는 [[AWS-Lambda-Web-Functions|Lambda Web Functions]]에서 다룬다.
 
 ### Cold Start, 기본 컴퓨팅
 

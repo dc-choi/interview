@@ -14,6 +14,7 @@ AWS Lambda는 **이벤트 구동 함수 실행 서비스(FaaS, Function as a Ser
 - [[AWS-Lambda-Invocation-Concurrency|트리거 종류, 호출 모델 3종과 Destinations, DLQ, 동시성 제어, VPC Lambda 설정과 권한, Lambda@Edge]]
 - [[AWS-Lambda-Operations-Exam|EC2 비교, 장단점, 실무 패턴, 버전과 Alias, RDB 궁합과 비용 구조, 흔한 실수, 면접 체크포인트]]
 - [[AWS-Lambda-API-Gateway-Proxy-Errors|API Gateway 프록시 통합 오류 — 응답 형식 계약, 500과 502 구분, 실행 로그와 함수 로그 진단 순서]]
+- [[AWS-Lambda-Web-Functions|Web Functions — 포트에서 대기하는 HTTP 서버 실행, 환경당 동시 요청, endpoint 리전 유형, 확장과 throttle, 비용 판단]]
 - [[AWS-Lambda-MicroVMs|MicroVMs — Firecracker 스냅샷 기반 상태 보존형 격리 샌드박스, suspend/resume, Function 비교]]
 
 ## 출처
