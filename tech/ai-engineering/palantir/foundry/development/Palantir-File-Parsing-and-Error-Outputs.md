@@ -1,7 +1,7 @@
 ---
 tags: [palantir, parsing, excel, filesystem]
 status: done
-verified_at: 2026-10-16
+verified_at: 2026-11-25
 category: "AI엔지니어링(AIEngineering)"
 aliases: ["Foundry 파일 parsing과 오류 결과"]
 ---
@@ -27,6 +27,8 @@ Catch에서 upload status를 Failed로 바꾼다고 앞선 edits가 자동 취�
 ## Archive와 원본 bytes
 
 Raw copy는 binary read/write로 bytes를 보존한다. 여러 regex 결과를 union하면 같은 path가 중복 선택되어 동시 write가 생길 수 있으므로 deduplicate한다. Gzip은 decompress 뒤 encoding을 명시한다. Zip CSV의 `line.split(',')`는 quoted comma/newline을 처리하는 CSV parser가 아니다.
+
+2026-11-24 본문 기준 Zip CSV 예제는 그대로 실행되는 코드가 아니다. `process_file`이 쓰는 `fs`와 `MyRow`가 예제 전체에서 정의되거나 import되지 않고, 파일 목록도 다른 예제의 `filesystem().files()`가 아니라 `my_input.files()`로 읽는다. Filesystem 객체와 row schema를 먼저 만들고, 행이 없을 수 있으면 `toDF()`의 추론 대신 schema를 명시한다. Zip 생성 예제는 `@transform` 함수 끝에서 입력 `source_df`를 반환하는데, 결과는 output filesystem에 직접 쓴 파일이므로 반환값을 결과로 오해하지 않는다.
 
 Zip 전체 memory load, driver file-list collect, decompressed 크기/파일 수와 경로를 확인한다. Arbitrary binary를 text mode로 추출하지 않는다. Virtual filesystem의 `.name`이 로컬 path라는 가정 없이 zip stream 지원을 확인한다. DOCX 예제는 첫 번째 파일을 Document로 읽을 뿐 output/table/header/image 추출을 완성하지 않는다.
 

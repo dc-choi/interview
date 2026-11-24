@@ -1,14 +1,14 @@
 ---
 tags: [palantir, transforms, identity, graph, incremental]
 status: done
-verified_at: 2026-10-16
+verified_at: 2026-11-25
 category: "AI엔지니어링(AIEngineering)"
 aliases: ["Foundry transform 식별자와 알고리즘 계약"]
 ---
 
 # Transform 식별자와 알고리즘 계약
 
-공식 code example은 구현 아이디어를 제공하지만 문법, 데이터 분포와 상태 전제까지 보장하는 production 계약은 아니다. 아래는 2024년 제출 예제를 2026년 10월 본문과 대조한 결과이며 실제 Foundry runtime에서 실행하지 않았다.
+공식 code example은 구현 아이디어를 제공하지만 문법, 데이터 분포와 상태 전제까지 보장하는 production 계약은 아니다. 아래는 2024년 제출 예제를 2026년 10월 본문과 대조한 결과이고, 날짜를 따로 적은 단락은 그 날짜의 본문 기준이며 실제 Foundry runtime에서 실행하지 않았다.
 
 ## Stable key는 직렬화 규칙까지 안정적이어야 한다
 
@@ -40,7 +40,11 @@ Shapefile은 `.shp`와 `.prj`/`.cpg` 등 sidecar를 같이 읽고 원 CRS를 확
 
 Flattening은 node/parent/level/path와 stable key로 self-link를 구성한다. Tree/DAG, 다중 parent와 cycle의 허용 여부를 정한다. Partition별 pandas/NetworkX는 연결된 component가 같은 partition에 있어야 관계를 잃지 않고 가장 큰 group은 worker memory에 들어가야 한다.
 
-Vertex BFS 예제는 loop에서 `currentNode` 대신 root인 `exampleObject.child`를 읽어 깊은 tree를 탐색하지 못한다. 현재 node child와 stable RID visited가 필요하다. 결과 interface는 direct/intermediate edge, orphan RID와 grouping을 표현한다. NetworkX 예제의 vertex `child`/edge `child_id`도 union 전에 맞춰야 한다.
+Vertex BFS 예제는 loop에서 `currentNode` 대신 root인 `exampleObject.child`를 읽어 깊은 tree를 탐색하지 못한다. 현재 node child와 stable RID visited가 필요하다. 결과 interface는 direct/intermediate edge, orphan RID와 grouping을 표현한다.
+
+2026-11-24 transform 예제 본문에서 NetworkX 준비 단계의 vertex 행은 `F.lit(None).cast(T.StringType())`로 빈 `child_id`를 만들어 edge 행과 `unionByName`한다. 두 종류의 행을 같은 schema로 합친 뒤 `_partition_column`별 `applyInPandas`에서 `type`으로 다시 나누는 구조다. Descendant는 `nx.bfs_tree(g, source)`의 node 목록에서 첫 원소(source)를 뺀 값이고, 나가는 edge가 없는 node는 None이다. Ancestor는 `edge_dfs(..., orientation="reverse")`가 내는 `(parent, child, 방향)` 3-tuple에서 parent만 모으고 빈 배열은 Spark 단계에서 null로 바꾼다. 따라서 둘 다 없음은 null이다. Parent가 하나인 tree에서는 역방향 탐색이 한 사슬이라 ancestor가 가까운 parent부터 root 순으로 나오며, `parents_path`의 root부터 가까운 parent 순과 반대다. 다중 parent를 허용하는 DAG에서는 DFS 탐색 순서라 경로가 아니고 같은 조상이 여러 번 나올 수 있으므로 중복 제거 여부를 정한다. 그래프는 `add_edges_from`으로만 만들므로 parent와 child가 모두 없는 고립 vertex는 `g`에 없다. 이런 vertex를 `edge_dfs`의 source로 넘기기 전에 `g.has_node(source)`로 거른다.
+
+Flatten 예제의 `parent_pk`는 `concat_ws("__", parent_level, parent_id)`인데 Spark의 `concat_ws`는 null을 건너뛰므로 최상위 node의 `parent_pk`는 null이 아닌 빈 문자열이 된다. Self-join이나 Ontology link에서 빈 문자열을 null과 같게 볼지 정한다. 또 `parents_path`는 자기 level column까지 넣어 만들므로 열 설명의 부모 id 배열과 달리 자기 자신을 포함하고, 최상위 node는 빈 배열이다. 열 설명 dictionary도 `parent_level`을 사람이 읽는 식별자로 적고 생성한 `title` 열은 설명하지 않아, 설명 문자열을 schema 계약으로 그대로 쓰지 않는다.
 
 Child/grandchild search-around는 link 방향과 union 중복 의미를 확인한다. Round-robin assignment는 analyst 0명일 때 종료하며 매 호출 index 0에서 시작하므로 전역 공정성/동시 실행 상태를 유지하지 않는다. Timestamp 차이를 24시간으로 나눈 floor는 elapsed day이며 지역 달력 날짜 차이가 아니다.
 
@@ -57,6 +61,9 @@ Child/grandchild search-around는 link 방향과 union 중복 의미를 확인�
 - [Palantir, Graph and tree transforms](https://www.palantir.com/docs/foundry/code-examples/graph-and-tree-structured-datasets-transforms)
 - [Palantir, Graph and tree object Functions](https://www.palantir.com/docs/foundry/code-examples/graph-and-tree-structured-datasets-functions-on-objects)
 - [Palantir, Notional generation](https://www.palantir.com/docs/foundry/code-examples/notional-data-generation-transforms)
+- [Apache Spark, SQL string functions concat_ws](https://spark.apache.org/docs/latest/api/sql/string-functions/#concat_ws)
+- [NetworkX, edge_dfs](https://networkx.org/documentation/stable/reference/algorithms/generated/networkx.algorithms.traversal.edgedfs.edge_dfs.html)
+- [NetworkX, bfs_tree](https://networkx.org/documentation/stable/reference/algorithms/generated/networkx.algorithms.traversal.breadth_first_search.bfs_tree.html)
 
 ## 관련 문서
 
