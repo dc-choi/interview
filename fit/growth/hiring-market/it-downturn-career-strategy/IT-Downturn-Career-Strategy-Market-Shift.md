@@ -93,6 +93,14 @@ OECD Employment Outlook 2026에 따르면 OECD 평균 실질임금 증가율은 
 
 현장직도 직무 이름만으로 안전성을 판단하지 않는다. 미국 BLS의 용접 직군 안내는 기술 교육과 현장 훈련의 필요성을 설명하며, 숙련 수요가 있어도 제조업 자동화가 전체 수요를 제한할 수 있다고 본다. 미국 직군 설명을 한국의 채용 규모나 전환 성공률로 옮기지 않는다.
 
+기술직 선호가 늘었다는 보도도 수치의 범위를 확인하고 읽는다.
+
+- **미국의 설문과 등록**: Z세대의 절반 넘게가 기술직을 진지하게 고려한다는 수치는 이력서 서비스 회사 Zety가 2025년에 취업 중인 Z세대 1,000명에게 물은 온라인 설문의 53%이고 세대 전체의 통계가 아니다(2차 보도 기준). 직업 교육 비중이 높은 커뮤니티 칼리지의 2023년 가을 등록은 16.0% 늘었다(National Student Clearinghouse, 2024-01-24 발표).
+- **수요 쪽의 발언**: Nvidia CEO는 2026-01 다보스에서 칩 공장과 AI 설비를 짓는 인력의 임금이 거의 두 배가 돼 여섯 자리 연봉을 이야기하는 수준이라고 말했다. 설비 수요를 만드는 쪽의 발언이고 임금 수치의 독립된 확인은 찾지 못했다.
+- **한국의 도배기능사**: 20대 지원이 4년 만에 두 배가 됐다는 수치는 실기 접수가 2018년 359명에서 2022년 782명으로 늘었다는 2023년 보도다. 공식 통계연보에서는 전체 실기 접수(2022년 5,230명, 2025년 6,384명)만 확인되고 종목별 연령 구분은 없다.
+
+관심과 접수가 늘었다는 것과 그 일로 생계가 유지된다는 것은 다른 사실이다. 몸의 부담, 경기에 따른 일감 변동과 수습 기간의 소득을 따로 확인하고, 일을 그만두기 전에 직업 훈련 과정 하나를 들어 보는 식으로 싸게 시험한다(뒤의 제안은 한 직장인 유튜버의 것이며 훈련 지원 제도의 조건은 대조하지 않았다).
+
 다음은 위 근거를 직무 전환 검토에 적용한 질문이다.
 
 | 판단 대상 | 확인할 증거 |
@@ -117,6 +125,11 @@ OECD Employment Outlook 2026에 따르면 OECD 평균 실질임금 증가율은 
 
 - [How might generative AI impact different occupations? — International Labour Organization](https://www.ilo.org/resource/article/how-might-generative-ai-impact-different-occupations) — 2025년 과업별 잠재 노출도와 실제 영향의 구분.
 - [Welders, Cutters, Solderers, and Brazers — U.S. Bureau of Labor Statistics](https://www.bls.gov/ooh/production/welders-cutters-solderers-and-brazers.htm) — 직무 진입 훈련과 제조업 자동화의 수요 제약.
+- [65% of Gen Z Concerned Over AI Consider Switch to Trade Career — CPA Practice Advisor](https://www.cpapracticeadvisor.com/2025/07/29/65-of-gen-z-concerned-over-ai-consider-switch-to-trade-career/165814/) — 2025년 보도(주소는 07-29, 페이지 표기는 08-22). 2026-11-26 Zety 설문의 53%와 표본 1,000명 대조. 제목의 65%는 대학 학위가 AI로 인한 실직을 막아 주지 못한다고 답한 비율로 기술직 고려 비율과 다른 문항이다. Zety 원문은 미열람
+- [Undergraduate Enrollment Grew in the Fall of 2023 — National Student Clearinghouse](https://www.studentclearinghouse.org/news/undergraduate-enrollment-grew-in-the-fall-of-2023/) — 2024-01-24 발표. 직업 교육 중심 커뮤니티 칼리지의 등록 증가율
+- [AI infrastructure buildout boosts construction worker pay, Nvidia CEO says — Fox Business](https://www.foxbusiness.com/economy/nvidia-ceo-says-ai-boom-create-six-figure-construction-jobs) — 2026-01-23 보도. 2026-11-26 다보스 대담 발언의 인용문 대조. 세계경제포럼의 대담 기록은 미열람
+- ['Tough and Grueling Work?'... These Days, People in Their 20s Are Lining Up for This Certificate — The Asia Business Daily](https://www.asiae.co.kr/en/article/2023101617223490366) — 2023-10-16 보도. 2026-11-26 한국산업인력공단 자료를 인용한 2018년과 2022년의 연령별 접수. 전체 접수는 [2026 국가기술자격 통계연보](https://www.q-net.or.kr/qnet/images/banner/2026%20qualification%20statistical%20yearbook%28pdf%29.pdf)로 확인
+- [미국도 이렇게 돈번다는데, 대한민국도 곧 이겠죠 — YouTube, 홍성욱](https://www.youtube.com/watch?v=Td4QBl1LM94) — 2026-11-22 업로드, 2026-11-25 음성 인식 전사 전체 확인. 기술직 선호 수치를 읽는 계기와 퇴사 전 훈련 과정 제안의 출처
 - [The 2026 AI Index Report — Stanford HAI](https://hai.stanford.edu/ai-index/2026-ai-index-report)
 - [Research and Development, 2026 AI Index — Stanford HAI](https://hai.stanford.edu/ai-index/2026-ai-index-report/research-and-development)
 - [Technical Performance, 2026 AI Index — Stanford HAI](https://hai.stanford.edu/ai-index/2026-ai-index-report/technical-performance)

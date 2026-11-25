@@ -81,7 +81,9 @@ AI 이전에는 도메인 지식은 일하며 쌓이고 기술 깊이는 따로 
 
 ## 수치를 읽을 때
 
-- **청년 고용**: 국가데이터처의 2026년 10월 고용동향에서 청년층 고용률은 42.9%로 전년 같은 달보다 1.7%p 낮았고 15~64세 고용률은 70.4%로 0.3%p 높았다. 브리핑 질의응답은 청년층 취업자 감소가 48개월가량, 고용률 하락이 30개월가량 이어졌다고 밝히고 경력직 선호와 수시 채용 확산을 요인으로 들었다(2026-11-17 브리핑 대조).
+- **청년 고용**: 국가데이터처의 2026년 10월 고용동향에서 청년층 고용률은 42.9%로 전년 같은 달보다 1.7%p 낮았고 15~64세 고용률은 70.4%로 0.3%p 높았다. 브리핑 질의응답은 청년층 취업자 감소가 48개월가량, 고용률 하락이 30개월가량 이어졌다고 밝히고 경력직 선호와 수시 채용 확산을 요인으로 들었다(2026-11-17 브리핑 대조). 6년 만에 가장 낮다는 표현은 10월끼리 견준 언론의 서술이며 발표 자료의 문구가 아니다. 업종별 AI 노출과 청년 일자리 감소를 견준 한국은행 분석은 [[AI-Work-Output-and-Employment#연구 사례: 청년 고용의 상대 격차와 채용 경로|청년 고용의 상대 격차]]에 있다.
+- **대기업 신입 공고**: 채용 플랫폼 캐치는 자사 사이트에 실린 대기업 정규직 신입 공고가 2024년 1~11월 3,741건에서 2025년 같은 기간 2,145건으로 43% 줄었다고 집계했다. 한 플랫폼의 공고 수이고 채용 인원이 아니며, 11개월 기준이고 대기업의 정의는 기사에 없다(2차 보도 대조).
+- **희망퇴직 연령**: 2026-11 한 음료 대기업의 희망퇴직은 1981년 이전 출생이면서 근속 10년 이상인 직원이 대상이라고 보도됐다. 출생 연도만 옮기면 근속 조건이 빠진다.
 - **대기업 신규 채용 계획**: 한국경제인협회의 2026년 하반기 조사(매출액 500대 기업 중 121곳 응답)에서 계획을 세우지 못했다는 응답은 28.1%, 채용 계획이 없다는 응답은 20.7%로 합쳐 48.8%였다. 전년의 38.0%와 24.8%(합 62.8%)에서 줄어든 값이므로 악화의 근거로 읽으면 방향이 반대다(2차 보도 대조, 협회 원문은 확인하지 못함).
 - **행사 주최 측 수치**: 행사 안내 페이지는 청년 고용률 44.2%와 27개월 연속 하락(2026년 7월 기준 표기), 초기 투자 유치 기업의 고용 증가 22.6%를 제시했다. 뒤의 수치는 대조하지 못했다. 발표에 나온 구직자의 93%가 AI를 쓴다는 수치, FDE 채용이 47배 늘었다는 수치와 주최 측 플랫폼 통계도 출처를 확인하지 못했다.
 
@@ -123,6 +125,8 @@ AI 이전에는 도메인 지식은 일하며 쌓이고 기술 깊이는 따로 
 - [AI NEXT CAREER FAIR 2026 — 그룹바이](https://groupby.kr/landing/ai-next-career-fair-2026/leehyung) — 2026-11-17 행사 일정, 참가 기업 표기와 안내 페이지의 고용 수치 확인
 - [New Workday Research: Companies Are Leaving AI Gains on the Table — Workday Newsroom](https://newsroom.workday.com/2026-01-14-New-Workday-Research-Companies-Are-Leaving-AI-Gains-on-the-Table) — 2026-01-14 보도자료, 2026-11-17 재작업 비중, 순이익을 얻는 직원 비율, 검토 비율과 조사 개요 대조
 - [2026년 10월 고용동향 브리핑 — 대한민국 정책브리핑, 국가데이터처](https://www.korea.kr/briefing/policyBriefingView.do?newsId=156788701) — 2026-11-17 청년층과 15~64세 고용률, 질의응답의 지속 기간과 요인 설명 대조
+- [대기업 정규직 신입 자리 43% 줄었다 — 한경비즈니스](https://magazine.hankyung.com/business/article/202512242637b) — 2025-12-24 보도. 2026-11-26 캐치의 자사 사이트 공고 집계(1~11월 기준) 건수와 감소율 대조. 페이지 제목 표기에는 퍼센트 기호가 빠져 있어 본문에 맞춰 적었다
+- [롯데칠성, 올해도 희망퇴직 실시…"사업 효율화" — SBS Biz](https://biz.sbs.co.kr/amp/article/20000343681) — 2026-11-02 보도. 2026-11-26 출생 연도와 근속 조건 대조. 두 조건을 모두 충족해야 한다는 서술은 [IB토마토 보도](https://newstomato.com/ReadNews.aspx?no=1319392) 기준이다
 - [대기업 절반 "하반기 채용 계획 有"…'공채, 수시 병행' 증가 — 더팩트](https://news.tf.co.kr/read/economy/2370508.htm) — 2026-09-29 보도, 2026-11-17 한국경제인협회 조사의 응답 수와 비율 대조(합계는 이 문서의 계산). 제목의 가운뎃점은 쉼표로 바꿔 적었고 협회 원문은 미대조
 - [The validity and utility of selection methods in personnel psychology: Practical and theoretical implications of 85 years of research findings — Psychological Bulletin, Frank L. Schmidt와 John E. Hunter](https://doi.org/10.1037/0033-2909.124.2.262) — 1998, 2026-11-17 OpenAlex의 초록으로 조합별 타당도 서술 대조
 - [Revisiting meta-analytic estimates of validity in personnel selection: Addressing systematic overcorrection for restriction of range — Journal of Applied Psychology, Paul R. Sackett 외](https://doi.org/10.1037/apl0000994) — 2022(온라인 공개 2021), 2026-11-17 OpenAlex의 초록으로 추정치 하향 폭과 구조화 면접의 순위 대조

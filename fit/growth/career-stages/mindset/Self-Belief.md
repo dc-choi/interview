@@ -73,6 +73,8 @@ Woollett과 Maguire(2011)는 채링크로스역 반경 6마일 안의 약 2만 5
 - 성인의 직무 성과와의 관계는 연구마다 크게 달랐고 인과 방향은 확인되지 않았다. 실험실 연구도 자존감이 과제 수행을 높인다는 결과를 대체로 얻지 못했으며, 실패 뒤 더 오래 버티게 한다는 점이 예외였다.
 - 높은 자존감은 장점을 솔직히 받아들이는 사람과 자기애적이고 방어적인 사람을 함께 담는다. 이익은 주도성과 즐거운 정서로 정리됐고, 저자들은 무분별한 칭찬 대신 바람직한 행동과 자기 개선에 대한 보상으로 칭찬하라고 권했다.
 
+긍정적인 자기 진술을 되풀이하는 확언도 같은 구분으로 본다. Wood, Perunovic와 Lee(2009)의 두 실험에서 자존감이 낮은 참가자는 "I'm a lovable person"(나는 사랑받을 만한 사람이다)이라는 문장을 반복하거나 그 문장이 참인 이유에만 집중했을 때 그러지 않은 참가자보다 기분이 나빴다. 자존감이 높은 참가자는 나아졌지만 그 폭이 제한적이었다(초록 기준). 저자들은 확언이 일부에게 도움이 될 수 있어도 가장 필요해 보이는 사람에게 역효과일 수 있다고 정리했다. 잠들기 직전에 원하는 모습을 되뇌면 잠재의식이 목표 쪽으로 이끈다는 설명은 자기계발 콘텐츠의 경험담이며 근거가 제시되지 않았다. 불안할 때 읽을 문장을 평소에 모아 두는 방법은 마음을 가라앉히는 개인 수단으로 쓸 수 있지만 효과는 대조하지 않았다. 원하는 미래를 그리는 상상과 실제 노력의 관계는 [[Habit-Formation-and-Consistency|습관 형성과 꾸준함]]의 Oettingen과 Mayer 연구를 본다.
+
 ### 경험의 강도와 자기 효능감의 근거를 나눈다
 
 Bandura의 자기 효능감 이론은 직접 수행한 성취, 다른 사람을 관찰한 대리 경험, 언어적 설득과 생리적 상태를 주요 정보원으로 구분한다. 과거에 몰입했다는 기억만 볼 것이 아니라, 어떤 과제를 실제로 수행했고 무엇을 배웠는지 구체적으로 확인한다.
@@ -146,6 +148,8 @@ Bandura의 자기 효능감 이론은 직접 수행한 성취, 다른 사람을 
 - [Self-efficacy: Toward a unifying theory of behavioral change — Albert Bandura](https://www.sciencedirect.com/science/article/pii/0146640278900024) — 1977년 논문의 1978년 정식 재수록본, 정보원 네 가지와 비교적 안전한 활동의 숙달 조건은 공개 초록 범위에서 대조
 - [Cognitive processes mediating behavioral change — Journal of Personality and Social Psychology, Bandura, Adams and Beyer (1977)](https://doi.org/10.1037/0022-3514.35.3.125) — 35권 3호 125~139쪽. 2026-11-24 PubMed 초록으로 세 조건과 결과 대조
 - [Does High Self-Esteem Cause Better Performance, Interpersonal Success, Happiness, or Healthier Lifestyles? — Psychological Science in the Public Interest, Baumeister, Campbell, Krueger and Vohs (2003)](https://doi.org/10.1111/1529-1006.01431) — 4권 1호 1~44쪽. 2026-11-24 OpenAlex에 실린 초록 확인, 본문 미열람
+- [Positive self-statements: power for some, peril for others — Psychological Science, Wood, Perunovic and Lee (2009)](https://doi.org/10.1111/j.1467-9280.2009.02370.x) — 20권 7호 860~866쪽. 2026-11-25 PubMed 초록 확인, 본문 미열람
+- [어떻게 살아야 할지 답이 없을 때 꼭 해보세요 (무적의 치트키) — YouTube, 글토크](https://www.youtube.com/watch?v=Zmc9TK-b3-Q) — 2026-11-22 업로드, 2026-11-25 음성 인식 전사 전체 확인. 잠들기 전 확언과 진정용 문장 모으기의 출처. 개인 경험이며 근거를 제시하지 않고 저서 홍보가 들어 있다
 - [APA Dictionary of Psychology, self-esteem](https://dictionary.apa.org/self-esteem), [self-efficacy](https://dictionary.apa.org/self-efficacy) — 2026-11-24 두 항목의 정의 확인
 - [Praise for intelligence can undermine children's motivation and performance — Journal of Personality and Social Psychology, Mueller and Dweck (1998)](https://doi.org/10.1037/0022-3514.75.1.33) — 75권 1호 33~52쪽. 2026-11-24 PubMed 초록 확인
 - [You can't change your basic ability, but you work at things, and that's how we get hard things done — Journal of Experimental Psychology: General, Li and Bates (2019)](https://doi.org/10.1037/xge0000669) — 148권 9호 1640~1655쪽. 2026-11-24 PubMed 초록으로 재현 설계와 결과 확인
