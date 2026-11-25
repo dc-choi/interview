@@ -1,9 +1,9 @@
 ---
 tags: [ai, evaluation, benchmark, productivity]
 status: done
-verified_at: 2026-10-26
+verified_at: 2026-11-25
 category: "AI엔지니어링(AIEngineering)"
-aliases: ["벤치마크 평가 범위와 업무 성과", "Benchmark Coverage and Workplace Performance"]
+aliases: ["벤치마크 평가 범위와 업무 성과", "Benchmark Coverage and Workplace Performance", "SimpleBench"]
 ---
 
 # 벤치마크 평가 범위와 업무 성과
@@ -35,6 +35,17 @@ Artificial Analysis의 2026-10-27 Intelligence Index v5 발표는 9개 평가를
 FrontierCode 2.0과 Terminal-Bench-Science를 추가하고 HLE-Diamond, AA-Omniscience v1.1과 CritPt v2를 개편했다. 평가 구성이 바뀐 v4와 v5 점수의 차이를 능력 향상량으로 그대로 빼지 않는다. 장기 추세용 Progress Index v1도 별도 척도다.
 
 발표일의 max 설정 점수는 Opus 5.5 58, GPT-6 Astra 57, GPT-6.1 Sol 55였다. 공개 가중치 부문 46점의 Kimi K3.1 Pro는 당시 가중치가 미공개였고 실제 공개 모델 최고점은 32였다. 이후 Carbon 발표의 59점과 충돌하는 순위가 아니라 날짜가 다른 결과다. 같은 날짜, 지수 버전, 추론 강도와 실제 가중치 제공 여부를 붙인다. 9개 평가 전부를 이긴 단일 모델이 있다는 근거로 쓰지 않는다.
+
+## 새 버전이 낮게 나온 제3자 점수는 설정과 표본부터 본다
+
+SimpleBench는 전문 지식 없이 풀 수 있는 객관식 문항 200여 개로 시공간 추론, 사회적 상황 이해와 함정이 있는 질문(언어적 적대 견고성)을 잰다. 공개 문항은 10개(선택지 A~F)이고 나머지는 비공개다. 점수는 다섯 번 돌린 평균(AVG@5)이다. 사이트는 샘플링을 temperature 0.7, top-p 0.95(o1 계열 제외)로 적지만, 이 값을 받지 않는 추론 모델에 실제로 쓴 샘플링과 추론 강도는 적지 않는다. 벤치마크에 맞춘 프롬프트를 시도한 항목에 붙이는 주석 표시가 있지만 현재 표에는 그 표시가 붙은 항목이 없다. 아래는 2026-11-25 공식 리더보드와 그 데이터 파일을 대조한 기준이다.
+
+- **버전 간 하락**: 2026-11-18 등재된 GPT-6.2 Astra는 77.3%(17위), GPT-6.2 Astra Pro는 79.2%(16위), GPT-6.2 Sol은 69.9%(30위)로 직전의 GPT-6 Astra 83.6%, GPT-6 Astra Pro 86.5%, GPT-6.1 Sol 82.9%보다 낮았다. 같은 표의 1위와 2위는 Claude Fable 5.2(94.9%)와 Gemini 4 Neon(94.4%)이다.
+- **사람 기준선은 9명이다**: 기준선 83.7%는 고등학교 수준 지식을 가진 참가자 9명의 결과이고, 표에는 최고 사람 점수 95.4%가 따로 있다. 9명 평균은 흔들림이 커서 기준선을 몇 점 넘거나 밑도는 것을 사람보다 낫거나 못하다는 근거로 쓰기 어렵다(이 문서의 판단). 사이트는 사람이 모든 모델을 앞선다는 소개 문단의 구절과 제목의 해당 표현을 취소선으로 철회해 두었다.
+- **실행 설정이 이름에 없다**: 예전 항목 일부는 `(xhigh)`, `(high)`처럼 추론 강도를 붙였지만 GPT-6.2 항목에는 없다. 데이터 파일의 모델별 값에는 정의가 없는데, 단가와 곱해 보면 `tout`은 문항당 평균 출력 토큰, `cpr`은 한 번 실행 비용으로 읽힌다(이 문서의 계산). 그 값이 GPT-6.2 Sol 54, GPT-6.2 Astra 69로 GPT-6.1 Sol 140의 약 39%, GPT-6 Astra 136의 약 51%이고 Claude Fable 5.2는 537이다. 이 역산은 Sol과 Astra 행에서는 표기된 비용과 맞지만 Pro 두 행에서는 맞지 않는다. 비교 대상인 이전 세대 항목에도 추론 강도 표기는 없다. 해석이 맞다면 새 버전이 같은 문항에 훨씬 짧게 답한 것이고, 하락의 일부는 추론 강도나 출력 길이 같은 실행 조건의 차이일 수 있지만, 같은 추론 강도로 다시 잰 결과가 없어 원인을 단정하지 않는다(이 문서의 해석). 선택할 수 있는 추론 강도는 [[OpenAI-GPT-Generations#GPT-6 계열에서 바뀐 호출 계약|GPT-6 계열의 호출 계약]]에 있다.
+- **문항 수가 정하는 오차**: 200문항에서 정답률 75% 부근 점수 하나의 표준 오차는 약 3%포인트다(√(0.75 × 0.25 / 200) ≈ 0.031, 이 문서의 계산). 다섯 번 평균은 실행 사이의 흔들림만 줄이고 문항 표본의 오차는 줄이지 않는다. Sol의 13점 하락은 이보다 훨씬 크지만, 몇 점 차이의 순위는 문항별 결과 없이 가르기 어렵다.
+
+평가에 옮기면(운영 제안) 새 버전으로 바꾸기 전에 자기 업무의 짧은 판단 문항을 이전 버전과 같은 추론 강도로 나란히 돌리고 출력 토큰을 점수와 함께 기록한다. 토큰을 줄였다는 발표([[Model-Release-Claims#비용 절감률은 단가, 토큰 수, 과업당 비용으로 나눈다|비용 절감률과 토큰 수]])는 짧게 답할 때 놓치는 문항이 생기는지와 함께 본다. 객관식 점수의 채점 방식 차이는 [[LLM-Perplexity-and-Benchmarks#객관식 벤치마크는 채점 방식까지가 벤치마크다|객관식 벤치마크 채점]]에 있다.
 
 ## 익숙한 과제를 바꿔 점수의 일반화를 확인한다
 
@@ -84,6 +95,7 @@ FrontierCode 2.0과 Terminal-Bench-Science를 추가하고 HLE-Diamond, AA-Omnis
 - 문항이 많이 연결된 과업의 정답률도 높다고 말할 수 있는가?
 - 구현 시간이 줄었지만 검토와 승인 대기가 늘었다면 어떤 시간을 비교해야 하는가?
 - 공개 점수가 같은 두 모델이 변형 과제에서 크게 갈린다면 무엇을 의심하고 무엇을 독립적으로 다시 재야 하는가?
+- 새 버전의 제3자 점수가 이전 버전보다 낮을 때, 능력 저하로 읽기 전에 확인할 실행 조건과 표본 오차는 무엇인가?
 - 느린 모델의 초과 시간을 단계당 시간과 단계 수로 나누면, 각각 인프라, 하네스와 모델 행동 중 무엇을 바꿔야 줄어드는가?
 
 ## 출처
@@ -95,6 +107,9 @@ FrontierCode 2.0과 Terminal-Bench-Science를 추가하고 HLE-Diamond, AA-Omnis
 - [unlap-labs/maxxbench — GitHub](https://github.com/unlap-labs/maxxbench) — 2026-11-09 README와 tasks 폴더의 과제 89개 확인.
 - [Why is Gemini 4 Carbon taking so long? — Kernel](https://kernel.dev/blog/why-is-gemini-4-carbon-taking-so-long/) — 2026-11 게시, 2026-11-21 과제 조건, 단계당 시간과 궤적 길이의 분해, 하네스와 추론 강도 대조, 단계 라벨, 확인 문구 개입과 비용 그림의 가정 대조. 평가를 재실행하지 않음.
 - [Gemini 4 Carbon은 왜 이렇게 오래 걸릴까? — GeekNews](https://news.hada.io/topic?id=37411) — 학습 계기.
+- [SimpleBench — SimpleBench Team](https://simple-bench.com/) — 2026-11-25 문항 구성, 사람 기준선 표본, AVG@5와 샘플링 설정, 리더보드 순위와 점수, 소개 문단의 취소선 처리 대조. 리더보드 표는 같은 사이트의 데이터 파일(`static/js/leaderboard-data.js`)에서 읽었고 `tout`, `cpr` 필드의 뜻은 단가로 역산했다.
+- [simple-bench/SimpleBench — GitHub](https://github.com/simple-bench/SimpleBench) — 2026-11-25 공개 문항 10개와 선택지 형식 확인.
+- [Astra 6.2와 Sol 6.2, SimpleBench에서 부진 — GeekNews](https://news.hada.io/topic?id=37602) — 학습 계기.
 
 ## 관련 문서
 
@@ -104,3 +119,5 @@ FrontierCode 2.0과 Terminal-Bench-Science를 추가하고 HLE-Diamond, AA-Omnis
 - [[Eval-Model-Drift-Monitoring|서빙 모델 드리프트 감시]] — 공개 벤치마크 오염과 과제 비공개
 - [[Harness-Component-Evaluation|하네스 구성요소 평가]] — 단계 수와 통과당 비용
 - [[Gemini-4-Argon|Gemini 4 Argon]] — Carbon과 Neon의 설정별 단계, 토큰과 과업당 비용
+- [[OpenAI-GPT-Generations|OpenAI GPT 세대별 변화]] — GPT-6.2의 추론 강도와 호출 계약
+- [[LLM-Perplexity-and-Benchmarks|perplexity와 객관식 벤치마크 채점]] — 채점 구현에 따른 점수 차

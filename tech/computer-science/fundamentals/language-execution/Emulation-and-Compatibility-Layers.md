@@ -1,9 +1,9 @@
 ---
-tags: [compatibility, emulation, wine, proton, rosetta, metal, gpu, game]
+tags: [compatibility, emulation, wine, proton, rosetta, metal, gpu, game, webassembly, linux, browser]
 status: done
 verified_at: 2026-11-01
 category: "CS&프로그래밍(CS&Programming)"
-aliases: ["Emulation and Compatibility Layers", "에뮬레이션과 호환 계층", "게임 이식", "Game Porting"]
+aliases: ["Emulation and Compatibility Layers", "에뮬레이션과 호환 계층", "게임 이식", "Game Porting", "브라우저 안의 Linux", "unkernel"]
 ---
 
 # 다른 플랫폼용 프로그램 실행: 에뮬레이션, 호환 계층과 네이티브 이식
@@ -49,6 +49,26 @@ Apple silicon의 GPU는 TBDR(tile-based deferred rendering)을 쓴다. 렌더링
 
 Win16 실행 파일을 `otvdm.exe`에 넘기거나 `otvdmw.exe`로 실행하는 경로와 설치 후 파일 연결을 제공한다. DOS 에뮬레이션은 불완전하다고 명시하므로, Win16 지원을 모든 DOS 프로그램의 호환 보장으로 확대하지 않는다. 설치, 레지스트리 변경과 실행 시험은 하지 않았다. 기존 게임 이식 절 전체를 다시 검증한 것은 아니므로 문서의 기존 검증일은 유지한다.
 
+## 브라우저에서 Linux 프로그램 실행: 어느 층을 에뮬레이션하는가
+
+브라우저 탭은 네이티브 기계어를 실행하지 않고 원시 TCP 소켓도 열지 못한다. 그래서 Linux 프로그램을 돌리려면 CPU, 커널과 장치 중 일부를 WebAssembly 위에서 다시 만들어야 하고, 어느 층을 컴파일된 코드로 두고 어느 층을 에뮬레이션하는지가 호환성과 속도를 가른다. 아래 분류와 예는 unkernel 저장소 README(2026-11-25 확인)가 제시한 것이다.
+
+| 방식 | 커널 | 사용자 프로그램 | MMU | README의 예 |
+|---|---|---|---|---|
+| 기계 전체 에뮬레이션 | Linux, 에뮬레이션 | 수정 없는 바이너리, 에뮬레이션 | 에뮬레이션 | v86, JSLinux, container2wasm, QEMU의 wasm 빌드 |
+| 시스템 호출 에뮬레이션 | 없음, 런타임이 시스템 호출을 다시 구현 | 수정 없는 바이너리, 에뮬레이션 | 런타임 자체 | |
+| Wasm용 POSIX 런타임 | 없음, 런타임이 시스템 호출을 제공 | wasm으로 다시 빌드하거나 JavaScript | 없음 | Wasmer WASIX, WebContainers, BrowserPod |
+| MMU 없는 Linux | Linux, wasm으로 컴파일 | wasm으로 다시 빌드 | 없음 | linux-wasm, tombl/linux, WasmLinux(LKL) |
+| unkernel | Linux, wasm으로 컴파일 | 수정 없는 aarch64 바이너리, 에뮬레이션 | 실제 페이지 테이블 | |
+
+README의 비교에 따르면 기계 전체 에뮬레이션은 충실하지만 시스템 호출과 페이지 폴트마다 에뮬레이션된 하드웨어를 거쳐 느리다. 시스템 호출 에뮬레이션은 빠르지만 런타임이 구현한 만큼만 Linux를 흉내 낸다. 프로그램을 wasm으로 다시 빌드하는 방식도 빠르지만 네이티브 바이너리를 그대로 쓸 수 없고, `fork`처럼 MMU가 필요한 기능은 깨지거나 근사된다.
+
+unkernel(Pooya Parsa, GPL-2.0-or-later이고 페이지에 끼워 넣는 JavaScript SDK와 페이지는 MIT)은 Linux 7.3.4에 `arch/wasm` 패치를 더해 커널을 wasm 모듈 하나로 컴파일한다. 사용자 프로그램은 커널에 링크된 aarch64 CPU 에뮬레이터 kwemu가 실행하며, kwemu가 커널의 페이지 테이블을 그대로 따라가므로 메모리 관리는 실제 Linux 코드가 맡는다. 프로그램이 시스템 호출을 하면 kwemu가 커널로 돌아가 wasm으로 컴파일된 코드가 처리하며, 그 사이에 에뮬레이션된 trap이나 커널 모드가 없다. 작업 전환은 JSPI(`WebAssembly.Suspending`)로 커널 스택을 멈췄다 재개한다([[WebAssembly#비동기 호출과 제어 흐름|JSPI]]). 자주 도는 사용자 코드는 블록을 wasm 모듈로 컴파일하는 JIT가 맡고, 결과는 인터프리터와 비트 단위로 같게 만든다고 적는다. 디스크, 네트워크, 화면, 입력과 소리는 JavaScript 호스트와 통신하는 작은 준가상화 드라이버로 제공하고, 브라우저에서는 TCP 연결을 WebSocket 위의 Wisp 프록시로 내보낸다.
+
+제작자 측정(README, Node에서 측정)으로 `getppid`는 약 170ns(네이티브 110ns, qemu-system 약 1.7µs), `fork`와 종료, 대기는 약 60µs(네이티브 약 70µs, qemu-system 1.2ms)였다. 시스템 호출 수치는 초기의 riscv64 사용자 공간으로 2026-11-14에 잰 값이다. 순수 계산은 네이티브보다 크게 느려, JIT가 인터프리터보다 1.6~2.3배 빠르게 만든 Alpine 작업도 네이티브에는 못 미친다고 적는다. 시스템 호출, 프로세스 생성과 I/O가 많은 작업일수록 이 구조의 이득이 크고 계산 위주 작업일수록 작다는 것은 이 측정에서 읽은 해석이다. 알려진 한계는 IPv6와 DHCP, DNS 밖의 UDP, 들어오는 연결의 부재와 JSPI를 지원하는 브라우저(Chrome과 Edge 137, Firefox 153, Safari 27 이상)의 필요다.
+
+**사례: trynix.** Farid Zakaria의 2026-11-23 글에 따르면 Nix 패키지 30만 개 이상의 버전을 브라우저에서 실행하는 trynix.dev가 실행 엔진을 qemu-wasm에서 unkernel로 바꿨다. 저자의 첫 실행 벤치마크는 작업에 따라 2~32배 빨라졌고, 커널 작업 비중이 큰 첫 실행에서 차이가 컸다고 적는다(`hello`, `rg --version`, Python 계산 등 6개 작업, 로그 축 차트, 브라우저와 기기 조건은 밝히지 않음). Wayland 창은 페이지의 합성기가 그리고, 게스트에 설치된 Mesa의 virgl 드라이버가 wasm으로 컴파일한 virglrenderer를 거쳐 브라우저 WebGL2로 렌더링하며(unkernel README 기준이다. 글은 virgl 드라이버만 넣은 최소 Mesa 빌드를 WebAssembly로 컴파일했다고 적어 README와 표현이 다르다), ALSA 사운드 카드와 Wisp 중계로 소리와 네트워크를 쓴다. trynix 안의 Firefox가 trynix.dev를 열고 다시 Firefox를 띄운 중첩 시연은 안쪽 Firefox의 JIT를 끄는 등의 조건에서 4시간 넘게 걸렸다고 밝힌다(무엇에 걸린 시간인지는 글에 없다). 실행됐다는 시연과 실용적 속도는 다르다(아래 판단 기준).
+
 ## 판단 기준
 
 - 비공식 실행 시연은 시연에서 보인 범위가 실행됐다는 뜻이다. 정식 지원, 안정적인 성능, 쉬운 설치나 업데이트 뒤의 호환을 뜻하지 않는다.
@@ -58,6 +78,9 @@ Win16 실행 파일을 `otvdm.exe`에 넘기거나 `otvdmw.exe`로 실행하는 
 ## 출처
 
 - [winevdm on 64-bit Windows — GitHub, otya128/winevdm](https://github.com/otya128/winevdm) — 2026-11-02 README의 구성, 실행과 DOS 지원 한계를 확인.
+- [unkernel — GitHub, pithings/unkernel](https://github.com/pithings/unkernel) — 2026-11-25 README의 방식 분류, 구조, 측정과 알려진 한계를 확인. 직접 실행하지 않았다
+- [2035 came early — Farid Zakaria](https://fzakaria.com/2026/11/23/2035-came-early) — 2026-11-23 게시. trynix의 엔진 교체, 첫 실행 벤치마크와 그래픽, 소리, 네트워크 구성
+- 사용자 제공 GeekNews 알림(2026-11-25): 2035년이 일찍 찾아왔다. 학습 계기이며 게시물 번호는 확인하지 못했다
 
 - [Apple Developer, Game Porting Toolkit](https://developer.apple.com/games/game-porting-toolkit/)
 - [Apple Developer, Metal shader converter](https://developer.apple.com/metal/shader-converter/)

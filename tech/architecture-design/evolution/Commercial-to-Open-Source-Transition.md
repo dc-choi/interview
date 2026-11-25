@@ -93,5 +93,6 @@ iM캐피탈은 상용 RDBMS(Oracle 등)를 PostgreSQL 기반 DBMS로, 상용 미
 - [[LLM-Application-Security|LLM 애플리케이션 보안]] — AI-BOM과 모델 공급망
 - [[AI-Accelerated-Threat-Defense|악용 시간 단축과 AI 공격 방어]]
 - [[Redis-Valkey-Migration|Redis와 Valkey]] — 버전에 따라 바뀐 라이선스
+- [[Software-Company-Economics#무료 사용자에게 무엇을 팔지가 매출을 정한다|소프트웨어 회사의 경제 구조]] — 공급자가 AGPL 코드를 source-available 유료 구독으로 바꾼 사례
 - [[Build-vs-Buy|직접 개발과 구매]] — 다년 소유 비용
 - [[AX-Enterprise-Scaling|전사 AX 확산]] — 바뀌는 구성요소를 표준으로 감싸는 플랫폼 전략

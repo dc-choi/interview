@@ -176,5 +176,6 @@ Next.js 16은 `next lint` 명령을 없앴고 `next build`는 더 이상 lint를
 - [[NextJS-ESLint|Next.js ESLint 규칙과 독립 검사]]
 - [[Agent-Skills|에이전트 스킬 (산출물 제약을 인코딩하는 스킬과 역할 토큰)]]
 - [[Service-Design-Principles|서비스 설계 원칙 (디자인 시스템과 반복 판단)]]
+- [[Product-Design-Workflow-and-Handoff#Design system은 제한 목록이 아니라 product다|design system 운영 (system 팀과 제품 팀의 유인 충돌, CSS 덮어쓰기 우회, framework 호환성)]]
 - [[Claude-Design-Handoff#생성 UI가 같은 기본값으로 모이는 문제|생성 UI의 기본값 수렴 (알려진 AI 디자인 흔적을 찾는 탐지 규칙)]]
 - [[Claude-Design-Handoff#디자인 시스템에서 출발한다|DESIGN.md로 넘기는 디자인 시스템 (토큰 파일 자체의 lint와 코드 lint의 구분)]]

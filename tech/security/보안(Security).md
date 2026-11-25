@@ -20,6 +20,7 @@ aliases: ["보안(Security)", "Security Index"]
 - [[Security-Alert-Triage-Automation|보안 알림 triage 자동화]] — 즉시, 보류, 자동 확인의 세 갈래 판정과 정식 결과로서의 보류, shadow 운영 뒤 켜는 자동 종결, 하루치로 보는 EDR과 DLP 알림, 감시 도구의 감시, Frequency, SNR, 엔트로피로 신호를 먼저 고르는 방식, 확인 범위를 밝히는 조사 에이전트와 조사 경로를 고치는 오답 수정
 - [[Endpoint-Control-State-Verification|엔드포인트 보안 통제의 상태 검증과 기기 신뢰]] — 설치, 동작, 보호, 정책 판정과 근거 저장, 장치 식별 key, 코드와 분리한 판정 기준, 단일 콘솔이 놓치는 미등록과 장기 미통신, 예외의 대체 통제와 모름 판정, SQL 위험 규칙과 탐색, 반박 agent, 기기 신뢰 점수와 과락, SSF와 ZTNA 연계, 보안 솔루션 설정 기준선과 드리프트, 인증 심사 항목 통합, 개인정보 업무의 AI 초안과 검수
 - [[AI-Accelerated-Threat-Defense|악용 시간 단축과 AI 공격에 대비하는 방어]] — 악용까지의 시간 관측값과 읽는 법, 자산과 소프트웨어 목록, 패치 작성과 적용의 병목, 번들 런타임과 배포 형태별 수정 경로, 패치 시나리오와 단계적 배포, 업데이트 기본값과 패치 물결, 오염된 업데이트와 관찰 기간의 한계, 독립된 다층 통제, AI 방어 자동화의 권한 경계
+- [[Runtime-Virtual-Patching|런타임 가상 패치: 패치 전까지 실행 중인 호스트에서 막기]] — 앞단, 커널 hook, 프로세스 안의 완화 위치, 취약 동작보다 앞선 검사, Shirudo의 서명 로더와 TPM 측정, Java upatch의 로드 시점 한계, 서명은 출처이지 정확성이 아님, AI가 만든 완화의 승인 점검
 - [[Security-as-Enabler|가능하게 하는 보안: 위험 평가로 허용 조건을 설계하기]] — 막기만 할 때의 우회와 가시성 상실, 위험 0 목표의 함정, 구체적 위험 정의로 만드는 허용 조건, 사내 AI 허용 기준과 AI Gateway, 에이전트 권한 경계, 바이브 코딩 산출물 전용 인프라, 도달 가능성 기반 패치 우선순위, 가상 패치와 1%, 5%, 25% 단계 배포, 자동화로 만든 여력과 경영진 설득, 보안 솔루션 내재화 사례
 - [[AI-Offensive-Testing-Tools|AI 침투 테스트 도구의 운영 위험과 탐지]] — 모델을 부리는 실행 틀로서의 구조, 모델 거부와 계정 차단의 한계, 공격 비용 하락과 외곽 서비스, 점검 도구가 데이터를 지운 실험과 실행 환경으로 정하는 피해 범위, 도구 트래픽 탐지의 수명, 수정 대기열 병목
 - [[Hardware-Wallet-Physical-Trust|하드웨어 지갑의 물리적 신뢰 경계]] — 정품 칩 인증과 추가 부품 탐지의 차이, 화면 경로의 비밀 노출
@@ -67,7 +68,7 @@ aliases: ["보안(Security)", "Security Index"]
 - [[Supply-Chain-Security|공급망 보안 (Supply Chain)]] — PyPI/npm과 IDE 확장 배포, 아카이브 검사/설치 차이, postinstall/.pth, 전이 의존성, lockfile 핀과 별도 영속성 대응, Homebrew 탭 신뢰와 cask quarantine
 - [[IDE-Extension-Trust-Model|IDE 확장 신뢰 모델과 AI 코딩 도구의 공격 표면]] — 확장의 편집기 동일 권한, 시작 시 활성화와 Workspace Trust 선언, 자동 업데이트 지연, 게시자 신뢰와 허용 목록, MCP 서버와 패키지 경로, 의도된 전송과 침해의 구분, 방어 계층 순서
 - [[Dependency-Release-Cooldown|의존성 릴리스 쿨다운]] — 고정, 해시, 쿨다운이 막는 단계, uv, pip, pnpm, npm, Cargo의 게시 시점 필터와 기본값, 업로드 시각이 없을 때의 차이, 저장소 프록시에서 강제하는 쿨다운, 오래된 릴리스에 늦게 붙는 파일과 PyPI 게시 경로 경고, 예외 경로와 보안 수정 지연
-- [[Dependency-Patch-Cycle|의존성 패치 반영 지연과 CI 패치 사이클]] — 패치가 나와도 남는 이유, 권고문 전 공백, OSV-Scanner 진단과 guided remediation 전략, 만료 있는 예외, MR 게이트와 예약 스캔
+- [[Dependency-Patch-Cycle|의존성 패치 반영 지연과 CI 패치 사이클]] — 패치가 나와도 남는 이유, 권고문 전 공백, OSV-Scanner 진단과 guided remediation 전략, 만료 있는 예외, MR 게이트와 예약 스캔, 보고와 스캐너 경보를 받는 메인테이너와 배포판의 부담, 보안 수정과 API 변경의 결합
 - [x] [[SaaS-Application-Trust-Compromise|SaaS 앱 신뢰와 자격증명 침해]] — 외부 앱의 기존 권한 악용, 인증과 유출의 구분, 차단과 증거 보존
 - [[Open-Source-License-Review|오픈소스 라이선스 검토]] — MIT/Apache 고지, GPL 전달 조건, AGPL 네트워크 조건, SaaS와 납품, SPDX/SBOM의 판단 범위, DMCA 게시 중단과 포크 네트워크
 - [[tech/security/network-security/네트워크보안(NetworkSecurity)|네트워크 보안 (Network Security)]] — 경계 보안과 공인 IP 배치, UTM, 보안 장비 배치 순서, 인라인과 아웃오브패스, 포트 미러링과 TAP, IDS와 IPS, ARP 스푸핑과 DAI, ARP 기반 NAC 차단, 망분리와 망연계, 금융권 망분리 완화와 보안 목적 AI 특례, 호스트의 앱별 아웃바운드 통제, 차세대 방화벽(NGFW)과 TLS 검사, RFC 9411 성능 수치 읽기

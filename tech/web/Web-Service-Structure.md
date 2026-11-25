@@ -1,9 +1,9 @@
 ---
 tags: [web, architecture, html, css, javascript, state, cookie, browser, ssr, csr, jamstack, serverless]
 status: done
-verified_at: 2026-10-11
+verified_at: 2026-11-25
 category: "웹&네트워크(Web&Network)"
-aliases: ["Web Service Structure", "웹 서비스의 구조", "웹 서비스 3대 요소", "정적 웹과 동적 웹", "CSR SSR 판별", "렌더링 방식 판별", "웹사이트 서버 구성 선택"]
+aliases: ["Web Service Structure", "웹 서비스의 구조", "웹 서비스 3대 요소", "정적 웹과 동적 웹", "CSR SSR 판별", "렌더링 방식 판별", "웹사이트 서버 구성 선택", "Ladybird", "web-platform-tests"]
 ---
 
 # 웹 서비스의 구조: 클라이언트 3요소, 서버 처리와 상태 저장
@@ -70,6 +70,12 @@ HTTP는 각 요청을 다른 요청과 독립적으로 해석하는 무상태 �
 
 파서는 토큰화와 트리 구성으로 텍스트를 DOM으로 만들고, 렌더링 엔진은 DOM과 CSSOM을 합쳐 `display: none`처럼 박스를 만들지 않는 노드를 뺀 렌더 트리를 만든 뒤 위치를 계산하고 그린다. `visibility: hidden` 노드는 보이지 않아도 공간을 차지하므로 렌더 트리에 남는다. 스크립트 엔진은 JavaScript를 파싱, 컴파일, 실행하며, 스크립트가 DOM을 바꾸면 렌더링이 다시 일어난다. 실제 브라우저에서는 파서가 렌더링 엔진 안에 구현되는 경우가 많고 스크립트 엔진은 별도 구성 요소다. 세 작업이 한 메인 스레드를 나눠 쓰므로 긴 스크립트는 화면 갱신을 막는다 ([[Browser-Main-Thread]]). 엔진 내부 구조는 [[V8]], DOM 조작 API는 [[Browser-DOM-Manipulation-and-Safety]]에서 다룬다.
 
+### 엔진 구현과 표준 적합성: Ladybird 사례
+
+엔진 사이의 표준 적합성은 web-platform-tests(WPT)로 비교한다. WPT는 같은 테스트를 모든 브라우저에서 돌려 구현끼리 호환되는지 확인하려는 교차 브라우저 테스트 모음이고, wpt.fyi가 여러 브라우저의 결과를 정기적으로 모은다. 통과한 하위 테스트 수는 테스트가 있는 기능의 적합성을 보여 줄 뿐 실제 사이트의 동작, 성능과 보안을 대신하지 않는다(이 문서의 판단).
+
+Ladybird는 다른 엔진을 포크하지 않고 처음부터 만든 엔진이라고 밝히며, 2026-11-23 macOS와 Linux용 알파를 공개했다. 알파는 자동 업데이트를 정기적으로 받는 롤링 채널이고, 일부 사이트가 동작하지 않고 가끔 비정상 종료하며 현재 보안을 약속하지 않으니 보안 연구자는 공격해 보고 방법을 알려 달라고 공지한다. 프로젝트 소식지에 따르면 2026-10-26 WPT 통과 하위 테스트 수에서 Safari Technology Preview를 넘었고, 10월 말 차트 값은 Chrome 2,244,397, Firefox 2,189,315, Ladybird 2,184,722, Safari Technology Preview 2,172,990이다. 같은 소식지는 스타일 계산과 레이아웃을 별도 스레드로, 페인트 기록을 또 다른 스레드로 옮겨 JavaScript와 동시에 돌게 했다고 설명한다. 스크립트가 요소 크기 같은 레이아웃 정보를 요청하면 대기 중인 레이아웃이 끝날 때까지 기다려 오래된 값을 받지 않고, JavaScript가 바쁜 동안에도 CSS 애니메이션과 hover 스타일이 갱신된다. 앞 문단의 한 메인 스레드 설명은 엔진 구현에 따라 달라질 수 있다는 사례다. JavaScript 엔진은 Linux와 macOS의 x86-64와 AArch64에서 자주 실행되는 코드를 기계어로 컴파일하는 JIT를 갖췄다(2026-11-25 프로젝트 공지와 소식지 대조).
+
 ## 렌더링 방식 판별: 첫 문서 응답과 실행 후 DOM
 
 개발자 도구의 Elements 패널은 서버가 보낸 HTML이 아니라 현재의 DOM을 보여 준다. HTML은 초기 페이지 내용이고 DOM은 지금 동작 중인 페이지 내용이라, 스크립트가 노드를 추가, 삭제, 수정하면 둘이 달라진다. 그래서 완성된 구조가 Elements에 보인다는 사실만으로는 서버가 HTML을 만들었는지(SSR), 브라우저가 스크립트로 만들었는지(CSR) 구분할 수 없다. 서버가 보낸 원문과 실행 후 DOM을 비교해야 한다.
@@ -117,6 +123,7 @@ HTTP는 각 요청을 다른 요청과 독립적으로 해석하는 무상태 �
 - GET과 POST를 데이터 조회와 서버 상태 변경으로 구분해 쓰는 이유
 - 무상태 HTTP 위에서 로그인 상태가 유지되는 원리와 쿠키, 세션, 데이터베이스의 역할 분담
 - 브라우저가 HTML 텍스트를 화면으로 만드는 단계와 스크립트가 끼어드는 지점
+- WPT 통과 수가 보여 주는 것과 보여 주지 못하는 것(실제 사이트 호환, 성능, 보안)
 - Elements 패널만으로 CSR과 SSR을 구분할 수 없는 이유와 첫 문서 응답, JavaScript 비활성화로 판별하는 방법
 - 정적 문서에서 SPA까지 각 단계가 푼 문제와 남긴 문제
 - Jamstack, 계층형, 서버리스, 마이크로서비스를 한 줄로 순위 매길 수 없는 이유와 소개 사이트에 동적 기능이 생길 때의 조합
@@ -149,6 +156,10 @@ HTTP는 각 요청을 다른 요청과 독립적으로 해석하는 무상태 �
 - [Next.js Docs, How to implement Incremental Static Regeneration (ISR)](https://nextjs.org/docs/app/guides/incremental-static-regeneration)
 - [What is Jamstack? — Jamstack](https://jamstack.org/what-is-jamstack/)
 - [Why Jamstack? — Jamstack](https://jamstack.org/why-jamstack/)
+- [Ladybird is now in alpha — Ladybird](https://ladybird.org/posts/alpha) — 2026-11-23 게시. 자체 엔진, 지원 OS, 롤링 채널과 보안 고지
+- [This Month in Ladybird - October 2026 — Ladybird](https://ladybird.org/newsletter/2026-10-31) — WPT 수치, 스타일과 레이아웃의 스레드 분리, JavaScript JIT
+- [The web-platform-tests Project — GitHub, web-platform-tests/wpt](https://github.com/web-platform-tests/wpt) — README의 목적과 결과 수집 사이트
+- 사용자 제공 GeekNews 알림(2026-11-24): Ladybird 브라우저, 알파 버전 공개. 학습 계기이며 게시물 번호는 확인하지 못했다
 
 ## 관련 문서
 

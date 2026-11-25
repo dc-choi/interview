@@ -113,6 +113,7 @@ OWASP는 가상 패치(virtual patching)를 취약한 코드를 바꾸지 않고
 ## 관련 문서
 
 - [[AI-Accelerated-Threat-Defense|악용 시간 단축과 AI 공격에 대비하는 방어]]
+- [[Runtime-Virtual-Patching|런타임 가상 패치]] — 호스트 커널과 프로세스 안에서 거는 가상 패치, 완화 코드의 서명과 측정
 - [[AX-Enterprise-Scaling|전사 AX 확산]]
 - [[Agent-Governance-Controls|에이전트 거버넌스 통제]]
 - [[LLM-Gateway|LLM 게이트웨이]]

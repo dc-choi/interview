@@ -116,3 +116,4 @@ PostgreSQL은 하나의 로그 체계에서 감사, 에러, 슬로우 역할을 
 - [[Saga-Pattern|Saga 패턴]] — 보상 트랜잭션으로 다단계 작업의 일관성 확보
 - [[RDS-Aurora|관리형 DB (RDS, Aurora)]] — Aurora 아키텍처와 운영 전반
 - [[RDS-Security-Group|RDS Security Group]] — 클러스터별 SG 구성
+- [[Agent-Database-Provisioning|에이전트가 만드는 데이터베이스]] — 작업마다 만들고 버리는 DB의 생성 속도, 쉬는 비용과 운영 데이터 경계

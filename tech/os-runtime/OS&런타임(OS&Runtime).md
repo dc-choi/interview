@@ -38,7 +38,7 @@ aliases: ["OS&런타임(OS&Runtime)", "OS & Runtime"]
 - [[Linux-Laptop-GPU-Power-Management|Linux 노트북 GPU 전력 관리]] — CPU와 GPU 전력 배분의 OS별 구성요소, nvidia-powerd 조건, WSL의 호스트 드라이버, 전원 연결과 배터리 비교
 - [[Linux-on-Apple-Silicon|Apple Silicon Mac에서 Linux 실행]] — OS별 부트 정책과 recoveryOS 확인, 칩과 기능별 Asahi 지원 범위, Omarchy Mac 설치기의 단계와 문서별 지원 표시 차이, 암호화와 Touch ID 위험
 - [[Native-Compilation-Compatibility|네이티브 컴파일과 호환성]] — Bun 패키징과 AOT 실험, TurboPython의 소유권, .NET 11의 CPU 하한과 ReadyToRun 대상
-- [[Emulation-and-Compatibility-Layers|에뮬레이션과 호환 계층]] — Wine과 Proton, Rosetta, 셰이더 변환, TBDR과 이식 판단
+- [[Emulation-and-Compatibility-Layers|에뮬레이션과 호환 계층]] — Wine과 Proton, Rosetta, 셰이더 변환, TBDR과 이식 판단, 브라우저 안 Linux의 에뮬레이션 층 선택(unkernel과 trynix)
 
 ## Linux 체크리스트
 - [x] [[Linux-System-Boot-Composition|Linux 시스템 구성과 부팅 경로 (커널과 PID 1, 로더와 C 라이브러리, initramfs와 부트 로더, 배포판 커널, VM과 컨테이너와 WSL 2)]]

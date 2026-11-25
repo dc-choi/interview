@@ -60,6 +60,15 @@ Incident Commander(IC)는 장애를 **가장 잘 고치는 사람이 아니라 �
 - 포스트모템에서 원인뿐 아니라 **대응 과정 자체**도 본다. 선언이 늦지 않았는지, 역할 분리가 됐는지, 외부 업데이트 공백이 얼마였는지. 단 [[RCA-Postmortem|blameless 원칙]]은 대응 과정 평가에도 똑같이 적용한다.
 - 드릴에서 나온 개선은 사람의 기억이 아니라 [[Incident-Runbook|런북]]과 알람 설정에 반영해야 남는다.
 
+## 사례: 대화방이 갈라지면 가설과 결정의 그림이 흩어진다
+
+2026-11-12~13 약 24시간 이어져 내부 메모가 Exchange Online 역사상 고객 영향이 가장 컸다고 적은 Microsoft 365 장애(원인 분석은 [[Root-Cause-Investigation-Loop#문제 인지: 빨리, 단서와 함께|근본 원인 조사 루프]]의 최종 PIR 요약) 뒤, Reuters는 2026-11-24 내부 메모를 근거로 다음을 보도했다. 회사 공식 발표가 아니라 보도된 내부 문서의 내용이다.
+
+- 최고 수준의 엔지니어를 투입했지만 대응자들은 Teams 대화방 11개에서 메시지 11,000개 넘게 주고받았고, 진단 데이터가 여러 내부 추적 시스템에 흩어져 가설과 결정의 일관된 그림을 유지하지 못했다. M365 Core와 Work IQ를 맡은 부사장은 메모에서 이 상태를 전장의 안개(fog of war)에 비유했다.
+- 회사는 재발 방지를 최우선 과제로 두는 Code Red를 선언했고, 부하 차단, 지리적 트래픽 분할과 더 빠른 복구 수단을 다루는 작업 흐름 다섯 개, 향후 장애를 전 세계에서 1시간 안에 해결한다는 목표, 엔지니어가 시스템 상태 데이터를 더 빨리 진단하도록 돕는 AI 에이전트 도입 계획을 세웠다고 보도됐다.
+
+읽는 기준(이 문서의 해석): 대응 인원과 채널이 늘수록 IC와 서기의 일은 대화를 따라가는 것이 아니라 가설, 시도한 조치와 결과, 대기 중인 결정을 라이브 상태 문서 한 장으로 모으는 일이 된다. 하위 팀이 따로 대화방을 열어도 결정은 그 문서와 지휘 채널로 올린다. 진단 데이터가 시스템마다 흩어져 있다면 장애 전에 조회 경로를 하나로 묶어 두는 일이 지휘 구조만큼 복구 시간을 좌우한다. 보도된 목표와 계획은 선언이며 달성 여부는 이후 공개 자료로 확인할 대상이다.
+
 ## 흔한 함정
 
 - IC가 직접 키보드를 잡는다. 가장 잘 아는 사람이 IC를 맡을 때 거의 항상 일어난다. 그 사람은 실무 대응자로 두고 IC는 다른 사람이 맡는 편이 낫다.
@@ -83,6 +92,8 @@ Incident Commander(IC)는 장애를 **가장 잘 고치는 사람이 아니라 �
 - [Different Roles — PagerDuty Incident Response](https://response.pagerduty.com/before/different_roles/)
 - [Incident Commander Training — PagerDuty Incident Response](https://response.pagerduty.com/training/incident_commander/)
 - [External Communication Guidelines — PagerDuty Incident Response](https://response.pagerduty.com/during/external_communication_guidelines/)
+- [Exclusive-Microsoft declares 'Code Red' after historic outage, internal memos show — Reuters(The Star 게재)](https://www.thestar.com.my/tech/tech-news/2026/11/25/exclusive-microsoft-declares-039code-red039-after-historic-outage-internal-memos-show) — 2026-11-24 Reuters 보도, 2026-11-25 대조. 내부 메모의 인용이며 회사 공식 발표는 아니다
+- GeekNews, 2026-11-25 제공 요약: Microsoft, 대규모 장애 이후 Code Red 선언, 내부 메모로 드러난 대응 문제 (토픽 번호 미확인, 원문 식별에 사용)
 
 ## 관련 문서
 

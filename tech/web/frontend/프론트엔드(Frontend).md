@@ -27,10 +27,13 @@ aliases: ["Frontend", "프론트엔드"]
 - [[Responsive-Web-Layout|반응형 웹 레이아웃]] — 콘텐츠 기준 분기, 표 스크롤, 안전 영역과 모달 메뉴의 포커스
 - [[Swiper-Carousel|Swiper 이미지 슬라이드]] — 자산과 모듈 구성, 자동 재생 옵션, 포커스와 정지 제어
 - [[Agent-Friendly-Websites|에이전트 친화적 웹사이트]] — 화면, DOM과 접근성 트리의 의미 일치, 버튼의 키보드 동작과 레이아웃 안정성
+- [[UI-Behavior-Primitives|UI 동작 프리미티브]] — ARIA 역할과 직접 구현할 동작, 콤보박스와 복합 위젯의 포커스 계약, UI SDK의 동작 조합과 다섯 프레임워크 어댑터, 패턴 검사와 스크린 리더 확인의 경계
 - [[Agent-Platform-Knowledge-Skills|코딩 에이전트의 웹 플랫폼 지식 스킬]] — Modern Web Guidance의 검색형 지침, 저장소 지침의 Baseline 목표와 기본값, 조건부 폴리필, 정적 현대화 스캔과 보정된 평가
 - [[Frontend-Rendering-Models|프런트엔드 렌더링과 상호작용 모델]] — hydration, islands, resumability와 서버 HTML 조각 교체
 - [[Fine-Grained-Reactivity|세밀한 반응성: 시그널 그래프와 비동기]] — 컴포넌트 재실행과 식 단위 갱신, Solid 2.0의 비동기 보류와 경쟁 처리, 낙관적 갱신, 서버 함수의 보안 경계, 안정된 진단 코드
-- [[TTFB-and-Search-Crawling|TTFB와 검색 크롤링]] — 첫 바이트의 구성 단계와 거리 지연, LCP와의 관계, 크롤러가 읽는 HTML, 응답 시간에 따른 크롤링 한도, 정적 생성과 CDN
+- [[TTFB-and-Search-Crawling|TTFB와 검색 크롤링]] — 첫 바이트의 구성 단계와 거리 지연, LCP와의 관계, 크롤러가 읽는 HTML, 응답 시간에 따른 크롤링 한도, 정적 생성과 CDN, 요청 때 만든 HTML을 길게 캐시하고 쓰기 때 전체를 비우는 구조
+- [[Performance-Budget-and-Design-Decisions|성능 예산과 디자인 결정]] — 속도를 정하는 다섯 층, LCP 이미지의 지연 로딩 금지와 fetchpriority, Core Web Vitals 기준과 예산표, Lighthouse 제한 조건, 첫 카드 지연 로딩 사례
+- [[Streaming-Markdown-Rendering|스트리밍 Markdown 렌더링]] — 생성 중인 AI 응답의 확정 경계와 증분 갱신, 뒤에 오는 링크 정의, 미완성 문법의 표시용 보정, WAT 렌더러 Words, 원문 HTML과 외부 이미지 제한
 - [[Foldable-Web-Layout|폴더블 웹 레이아웃]] — 자세와 뷰포트 구획의 구분, 경첩 공간, 점진적 적용과 접근성
 - [[React|React]] — UI/state, DOM, 서버 경계, Compiler와 lint
 - [[React-Native|React Native]] — Guides, [[RN-Components|컴포넌트]], [[RN-APIs|API와 전역 객체]], [[RN-Architecture|아키텍처]], 개발 환경과 플랫폼 확장

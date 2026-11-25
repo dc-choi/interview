@@ -110,6 +110,7 @@ DeepSeek 가격 문서 기준으로 `deepseek-flash`의 출력은 100만 토큰�
 - [[Local-Inference-Deployment-Cases|로컬 추론의 배포 사례]] — 메모리와 저장 계층, 분산 실행
 - [[LLM-Inference-Serving-Engines|LLM 추론 서빙 엔진]] — 엔진 기능과 텐서 병렬 사례
 - [[LLM-Inference-Bottlenecks|LLM 추론 병목]] — 메모리 대역폭과 디코드
+- [[LLM-Weight-Quantization|LLM 가중치 양자화]] — VRAM 구간별 모델과 문맥 선택, 양자화 품질 평가
 - [[LLM-Cost-Optimization|LLM 비용 최적화]] — 상시 인스턴스와 API의 손익분기
 - [[GPU-Server-Infrastructure|GPU 서버 인프라]]
 - [[Model-Release-Claims|모델 발표 수치 읽기]]

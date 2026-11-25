@@ -52,3 +52,4 @@ HotSpot은 `java.util.Base64` 같은 일부 JDK 메서드를 바이트코드 대
 - [[Memory-Safety-Vulnerabilities|메모리 안전성 취약점]] — 메모리 안전 언어가 보장하지 못하는 범위
 - [[Dependency-Vulnerability-Scanning|의존성 취약점 스캔]] — 언어 런타임의 버전 관리
 - [[JVM-Architecture|JVM 아키텍처]] — 실행 엔진의 구성
+- [[Runtime-Virtual-Patching|런타임 가상 패치]] — Java4Shell에 시험한 Base64 디코더 입력 검사 완화와 Java 에이전트의 로드 시점

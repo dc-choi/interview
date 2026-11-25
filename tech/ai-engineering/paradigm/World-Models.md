@@ -138,6 +138,7 @@ NVIDIA Cosmos 논문은 world foundation model(WFM)을 과거 관측 `x(0:t)`와
 - [[LLM-Generation-Mechanics|LLM 동작 원리]] — 다음 토큰 예측과 자기회귀 생성
 - [[Harness-Systems|하네스 시스템]] — 모델 바깥의 실행, 문맥과 권한 관리
 - [[Monte-Carlo-Tree-Search|몬테카를로 트리 탐색과 UCT]] — 상태 전이를 모의해야 하는 계획 탐색
+- [[Interactive-Video-Generation-Latency|상호작용 영상 생성의 지연 예산]] — 입력에서 첫 프레임까지의 지연과 디노이징 밖의 병목
 - [[Energy-Based-Reasoning|에너지 기반 추론과 제약 검증]] — 학습한 점수와 명시적 검사의 구분
 - [[Time-Series-Foundation-Models|시계열 파운데이션 모델]] — 블록 단위 자기회귀 예측과 누적 불확실성
 - [[Task-Specific-Small-Models|작은 특화 모델]] — 터미널 출력을 예측하는 작은 월드 모델 사례

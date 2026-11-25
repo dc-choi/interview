@@ -96,7 +96,7 @@ Google SRE Workbook의 서버 폐기 사례에서는 작업 재실행으로 대�
 - 사람을 탓함 → 다음 장애에 정보 은폐
 - 근본 원인을 1개로 닫음 → 다른 기여 요인 방치
 - 액션 아이템에 오너/기한이 없음 → 영원히 안 함
-- 큰 장애만 포스트모템 → 작은 반복 장애의 누적 비용과 큰 사고의 전조를 놓침. 천 번에 세 번 나는 불량처럼 확률이 낮다는 사실은 원인 조사를 생략할 근거가 아니다. 다만 모두 같은 강도로 조사할 수는 없으니 영향과 재발 가능성으로 순서를 정한다
+- 큰 장애만 포스트모템 → 작은 반복 장애의 누적 비용과 큰 사고의 전조를 놓침. 천 번에 세 번 나는 불량처럼 확률이 낮다는 사실은 원인 조사를 생략할 근거가 아니다. 다만 모두 같은 강도로 조사할 수는 없으니 영향과 재발 가능성으로 순서를 정한다. 2026-11 Microsoft 365 장애 뒤 Reuters가 보도한 내부 메모에는, 장애가 난 구성요소가 약 10년치의 수용 가능한 실패를 겪어 왔다는 임원 발언이 인용됐다(보도 기준, [[Hotfix-Decision-Loop#재발 방지 이행을 닫는다|재발 방지 이행]])
 - 보고서 한 장으로 납득 → 원인 확인이 형식에 그친다. 현지현물(genchi genbutsu)은 문제가 일어난 곳에서 직접 관찰해 정보와 데이터를 확인하는 관행이며 관리자뿐 아니라 임원에게도 적용된다(Lean Enterprise Institute 용어집)
 - 포스트모템을 적고 어디에도 공유 안 함 → 조직 학습 안 됨
 
@@ -121,6 +121,7 @@ Google SRE Workbook의 서버 폐기 사례에서는 작업 재실행으로 대�
 - [Lean Enterprise Institute — Genchi Genbutsu](https://www.lean.org/lexicon-terms/genchi-genbutsu/) (2026-11-24 정의와 임원 적용 대조)
 - [브런치 sellsecret — 토요타 5W1H 사고방식 3) 토요타는 문제를 이렇게 대한다](https://brunch.co.kr/@sellsecret/757) (2020-06-22 게시. 쿠와바라 테루야의 『トヨタ式5W1H思考』를 블로그 저자가 옮긴 번역 연재로 원서는 대조하지 않았다. 추가 글: #756 수선과 수리, #758 접착제 캔, #759 병원 대기, #761 저빈도 불량, #762 현지현물. 사례는 익명이며 수치를 검증하지 않았다)
 - [브런치 sellsecret — 토요타의 문화: 문제가 없는 것이 문제다](https://brunch.co.kr/@sellsecret/624) (2018-08-10 게시, Shook 2010 소개 글)
+- [Reuters — Exclusive-Microsoft declares 'Code Red' after historic outage, internal memos show](https://www.thestar.com.my/tech/tech-news/2026/11/25/exclusive-microsoft-declares-039code-red039-after-historic-outage-internal-memos-show) (2026-11-24 보도, The Star 게재본으로 2026-11-25 대조. 내부 메모의 인용이며 회사 공식 발표가 아니다)
 
 ## 관련 문서
 

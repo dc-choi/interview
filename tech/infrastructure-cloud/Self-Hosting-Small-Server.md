@@ -2,7 +2,7 @@
 tags: [self-hosting, homelab, podman, systemd, operations]
 status: done
 category: "인프라&클라우드(Infrastructure&Cloud)"
-aliases: ["Small Server Self Hosting", "소형 서버 셀프호스팅"]
+aliases: ["Small Server Self Hosting", "소형 서버 셀프호스팅", "Self-Hosted Webmail", "셀프호스팅 웹메일"]
 ---
 
 # 소형 서버 셀프호스팅: 서비스 수보다 운영 범위
@@ -74,6 +74,21 @@ BookOrbit는 도서, import 폴더, 앱 데이터와 PostgreSQL을 포함한 모
 - **설치를 먼저 연 사람이 관리자가 된다.** 주소가 알려지기 전에 설정을 끝내거나 `SETUP_TOKEN`을 둔다. 백업은 기본으로 꺼져 있다.
 - **법적 책임은 설치한 조직에 남는다.** 약관과 개인정보 처리방침, 보관 기간과 서명자 데이터 요청 처리를 운영 조직이 맡는다.
 
+## 셀프호스팅 웹메일은 메일 서버가 아니라 계정의 클라이언트다
+
+여러 메일 계정을 한 화면에 모으는 웹메일 앱을 자기 서버에 설치하는 일은 메일 서버를 직접 운영하는 일과 다르다. 메일의 저장과 송수신은 각 계정 제공자의 IMAP과 SMTP 서버가 맡고, 설치한 앱은 그 서버에 로그인해 메일을 가져오고 보내는 클라이언트다. 수신 경로와 발송 평판은 계속 제공자가 맡는 대신, 여러 계정의 자격증명과 메일 사본이 내 서버 한 곳에 모인다(해석).
+
+2026-11-25 MailFlow 저장소의 README와 릴리스 노트(v4.5.1, 2026-11-20 기준)로 확인한 운영 경계는 다음과 같다. 설치, 계정 연결과 복원은 직접 시험하지 않았다.
+
+- **구성:** HTTPS를 맡는 Caddy 프런트엔드 컨테이너 뒤에 Node.js 백엔드가 있고, 백엔드가 PostgreSQL(메시지, 계정, 사용자, 세션)과 메일 서버로 나가는 IMAP 연결을 가진다. 컨테이너 없이 Node.js와 PostgreSQL로 설치하는 방법도 있다.
+- **계정 연결:** Gmail과 iCloud는 계정 비밀번호 대신 앱 비밀번호를 넣고(Gmail은 2단계 인증을 먼저 켠다), Outlook.com과 대부분의 Microsoft 365 계정은 Microsoft가 비밀번호 방식(basic auth)을 껐으므로 OAuth2로 연결한다.
+- **자격증명과 백업:** IMAP과 SMTP 자격증명은 DB에 저장되고 `ENCRYPTION_KEY`로 암호화된다. 내장 백업 파일에는 비밀번호 해시와 암호화된 계정 자격증명이 들고, 캐시한 메일을 포함하면 모든 메시지가 읽을 수 있는 상태로 들어간다. 새 서버에서 복원하려면 같은 `ENCRYPTION_KEY`가 필요하므로 키는 백업 파일과 따로 보관한다. 캐시한 메일 없이 복원하면 받은편지함의 최신 안 읽은 메일이 새 메일로 다시 들어와 전달을 포함한 받은편지함 규칙이 다시 실행된다.
+- **서버가 실행하는 기능:** 받은편지함 규칙(이동, 보관, 삭제), 차단 목록, 스누즈와 예약 발송은 메일 제공자가 아닌 이 앱의 기능이라 앱 서버가 멈추면 함께 멈춘다(해석). 4.1.2 릴리스 노트는 예약 메일을 보내던 중 서버가 재시작되면 발송 여부를 알 수 없어 사용자 판단으로 넘기고 보낸편지함에 사본이 하나 더 남을 수 있었으며, Message-ID로 보낸 메일을 찾도록 고쳤다고 적는다. 외부 효과의 결과를 모를 때 고유 식별자로 대사하는 원리는 [[Payment-Unknown-Outcome-and-Reversal|결제 결과 미확인]]과 같다.
+- **제공자의 세션 한도:** 4.5.1 릴리스 노트는 Zoho가 계정당 동시 IMAP 세션을 다른 메일 앱과 합쳐 3개 정도만 허용해 초과 세션이 하루 50번가량 끊겼고, Gmail의 15세션 한도 아래로 머물도록 세션 풀을 줄였다고 적는다. Gmail의 한도는 Google 도움말(계정당 동시에 메일 클라이언트 15개까지)과 맞고, Zoho의 한도는 Zoho Mail의 사용 정책과 IMAP 설정 도움말에서 찾지 못해 릴리스 노트의 관찰로만 남긴다. 같은 계정을 쓰는 다른 메일 앱과 연결 수를 함께 센다(적용 제안).
+- **노출 설정:** 처음 가입한 계정이 관리자가 되므로 계정을 만든 뒤 공개 가입을 닫는다. Docker가 게시한 포트는 모든 인터페이스에 열리고 ufw 같은 방화벽이 걸러 내지 않으므로, 리버스 프록시 뒤에 두면 포트를 프록시만 닿는 주소에 묶은 뒤에야 프록시 홉 신뢰 설정(`TRUST_PROXY_HOPS`)을 켠다. 묶지 않고 켜면 직접 접속한 클라이언트가 로그인 속도 제한과 기록에 쓰일 주소를 스스로 고를 수 있다.
+- **외부 통신:** AI 비서는 OpenAI 호환 API 제공자나 ChatGPT Codex 구독을 쓰고, 선택 기능인 발신자 도메인 파비콘은 외부 아이콘 서비스(Twenty Icons)를 거쳐 가져와 캐시한다. 관리자는 AI 비서를 쓸 사용자를 정하고, 사용자는 파비콘 조회를 끌 수 있다. 셀프호스팅이어도 이런 기능을 켜면 메일 내용이나 발신 도메인이 밖으로 나간다(해석).
+- **라이선스:** AGPL-3.0이라 개인과 기업 모두 자체 호스팅할 수 있고, 수정해 네트워크로 제공하면 변경을 같은 라이선스로 공개해야 한다. 기업에 요청하는 연간 비즈니스 라이선스는 법적 의무가 아니며, 수정본을 공개하지 않으려는 기업을 위한 상용 라이선스가 따로 있다. 판단 절차는 [[Open-Source-License-Review|오픈소스 라이선스 검토]]를 따른다.
+
 ## 운영 체크포인트
 
 1. 외부 노출이 필요한 서비스와 VPN 안에 둘 서비스를 정한다.
@@ -96,6 +111,10 @@ BookOrbit는 도서, import 폴더, 앱 데이터와 PostgreSQL을 포함한 모
 - [Resend, Pricing](https://resend.com/pricing) — Free 플랜 월 3,000통과 하루 100통, 초과 과금은 유료 플랜만, 2026-11-21 확인
 - [Vercel, Terms of Service](https://vercel.com/legal/terms) — Hobby 플랜의 개인 또는 비상업 용도 조항, 2026-11-21 확인
 - [SignuDoc - 내 계정에 배포해 운영하는 오픈소스 전자서명 앱 — GeekNews](https://news.hada.io/topic?id=37551) — 학습 계기
+- [MailFlow — GitHub, maathimself/mailflow](https://github.com/maathimself/mailflow) — 2026-11-25 README로 구성, 계정 연결, 자격증명 암호화와 백업 복원, 보안 메모, 외부 연동과 라이선스를 확인. v4.5.1(2026-11-20) 기준
+- [MailFlow v4.5.1 — GitHub, maathimself/mailflow](https://github.com/maathimself/mailflow/releases/tag/v4.5.1) — 2026-11-20 릴리스 노트. Zoho와 Gmail의 세션 한도 대응
+- [MailFlow v4.1.2 — GitHub, maathimself/mailflow](https://github.com/maathimself/mailflow/releases/tag/v4.1.2) — 재시작으로 결과를 모르게 된 예약 발송의 처리
+- GeekNews, 2026-11-25 제공 요약: MailFlow - 여러 이메일 계정을 한곳에서 관리하는 셀프호스팅 웹메일 (토픽 번호 미확인, 원문 식별에 사용)
 
 - [Immich, Backup and Restore](https://docs.immich.app/administration/backup-and-restore/)
 - [Vaultwarden README — Vaultwarden](https://github.com/dani-garcia/vaultwarden)
@@ -103,6 +122,7 @@ BookOrbit는 도서, import 폴더, 앱 데이터와 PostgreSQL을 포함한 모
 - [n8n LICENSE.md — n8n](https://github.com/n8n-io/n8n/blob/master/LICENSE.md)
 - [What I Self-Host — viceconsole.fyi](https://viceconsole.fyi/blog/2026/10/10/what-i-self-host) — URL 식별, 2026-10-16 본문 접근 실패
 - GeekNews, 2026-10-15 제공 발췌: 내가 셀프호스팅하는 것들 - N100 미니 PC로 서비스 28개 운영하기
+- [Google, Gmail Help, Add Gmail to another email client](https://support.google.com/mail/answer/7126229) — 2026-11-25 동시 연결 한도(메일 클라이언트 15개) 확인
 
 ## 관련 문서
 

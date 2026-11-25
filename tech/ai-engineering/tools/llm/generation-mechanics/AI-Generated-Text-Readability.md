@@ -52,6 +52,16 @@ aliases: ["AI-Generated Text Readability", "AI 생성 글의 처리 난도", "AI
 - 최상위 모델의 인과를 확인하려면 후학습 과정 자체를 연구해야 하는데 규모상 어려워 대리 지표에 기댔다.
 - 독자 실험이 없다. 지표는 처리 난도와 상관이 알려진 특징이며 실제 이해도를 잰 값이 아니다.
 
+## 모델마다 문체가 다르다
+
+같은 프롬프트로 사람 글과 LLM 글의 병렬 말뭉치를 만들어 Biber의 66개 어휘, 문법, 수사 특징을 비교한 연구는 사람과 LLM 사이뿐 아니라 LLM끼리도 체계적인 문체 차이를 찾았다. 대상은 2024년 모델(GPT-4o, GPT-4o Mini, Llama 3 8B와 70B의 기본 모델과 Instruct 모델)과 영어 글이다.
+
+- 사람 글과 여섯 모델을 일곱 출처로 나누는 랜덤 포레스트의 정확도는 66%였다(무작위는 14%). 오류는 대부분 같은 계열의 크기만 다른 모델 사이에서 났다. LLM 글을 사람 글로 본 비율은 4.2%, 사람 글을 LLM 글로 본 비율은 9.8%였다.
+- 사람 글과 특정 모델 하나를 가르는 랜덤 포레스트의 정확도는 대체로 93~98%였다. lasso 분류기는 Llama 기본 모델에서 약 75%였다.
+- 지시 조정 모델은 현재분사절을 사람의 2~5배, 명사화를 1.5~2배 썼다. GPT-4o는 각각 5.3배와 2.1배였고, 행위자 없는 수동태는 사람의 약 절반이었다.
+- 차이는 기본 모델보다 지시 조정 모델에서 컸다. 연구진은 지시 조정이 정보 밀도가 높고 명사 중심인 문체를 학습시킨다고 해석한다. 위의 정보 밀도 압력 가설과 같은 방향의 관찰이다.
+- 다른 말뭉치(M4의 arXiv 초록, GPT-3.5 글)로 옮기면 분류 정확도가 크게 떨어진다. 장르와 모델이 함께 바뀐 시험이고, Llama 기본 모델로 학습한 분류기는 50%였다. 문체 특징으로 만든 판별기를 다른 모델이나 다른 장르에 그대로 쓸 수 없다.
+
 ## 명료성 결함 세 가지로 나눠 본다
 
 위 지표가 문장 처리의 난도를 재는 대리 지표라면, 사람이 읽고 불명확한 곳을 결함 유형으로 표시하는 방법도 있다. Williams와 Bizup의 『Style: The Basics of Clarity and Grace』(5판)의 명료성 원칙에 기댄 아래 분류는 Zonder Labs가 2026-11-09 공개한 측정에서 썼고, 2026-11-18 원문과 대조했다.
@@ -84,6 +94,8 @@ aliases: ["AI-Generated Text Readability", "AI 생성 글의 처리 난도", "AI
 - [AI가 쓴 글은 왜 이해하기 어려울까? — GeekNews](https://news.hada.io/topic?id=35947) — 학습 계기
 - [Why is AI Slop so Frustrating to Read? — Zonder Labs](https://zonderlabs.com/slop) — 2026-11-09, 2026-11-18 세 결함과 예시, 불명확 비율과 AI 탐지율, Claude Code 예문 대조. 판정 단위, 표본과 판정자는 공개되지 않음
 - [OpenAI API, Using GPT-6.2](https://developers.openai.com/api/docs/guides/latest-model) — 2026-11-18 Writing style 절의 지시 예 확인
+- [Do LLMs write like humans? Variation in grammatical and rhetorical styles — arXiv, Alex Reinhart 외](https://arxiv.org/abs/2410.16107) — PNAS 게재본(DOI 10.1073/pnas.2422455122), 2026-11-25 arXiv v2 초록과 본문의 분류 정확도, 특징 배율과 지시 조정 해석 대조
+- [GeekNews Weekly #385 AI가 쓴 글은 왜 읽기 힘들까요? — GeekNews](https://news.hada.io/weekly/202647) — 2026-11-23, 학습 계기. 본문은 열지 않았다
 - 사용자 제공 GeekNews 알림(2026-11-17): AI 슬롭은 왜 이렇게 읽기 짜증날까. 학습 계기이며 게시물 번호는 확인하지 못했다
 
 ## 관련 문서

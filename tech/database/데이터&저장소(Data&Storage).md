@@ -37,6 +37,7 @@ aliases: ["데이터&저장소(Data&Storage)", "Data & Storage"]
 ## DB 운영, 자동화
 - [[Database-Operations-Automation|DB 운영 자동화 (DBA 플랫폼 엔지니어링)]] — toil 감소 선순환, 설치/스키마/오토스케일링/K8s Operator 자동화, DBA 역할 진화
 - [[DB-Provisioning-Pipeline|DB 프로비저닝 자동화 파이프라인]] — 이벤트 체인 + 보상 롤백, 클러스터별 전용 서브넷/SG, 파라미터 템플릿, AWS Backup, 로그 Export, 후처리
+- [[Agent-Database-Provisioning|에이전트가 만드는 데이터베이스]] — Databricks와 Supabase 관련 발표와 보도가 전한 에이전트 생성 비율, 빠른 생성과 scale to zero, copy-on-write 브랜치와 TTL, 운영 데이터를 담은 브랜치의 경계, Postgres와 SQLite 파일 DB의 선택
 - [[MongoDB-Kubernetes-Operator|MongoDB Kubernetes Operator (PSMDB)]] — 선언적 관리, Reconcile Loop, K8s+AWS 컨트롤러 협력, 외부 접속(Split Horizon+SNI), EBS Volume Clone 빠른 프로비저닝
 
 ## DB 장애 진단

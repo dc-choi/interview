@@ -59,3 +59,4 @@ Sharma 등의 연구는 당시 다섯 AI assistant에서 피드백, 답변 변�
 - [[Eval-LLM-Judge|LLM 판정기의 편향과 검증]]
 - [[Eval-Golden-Set-and-Deploy-Gates|골든셋과 배포 관문]]
 - [[Eval-Model-Drift-Monitoring|서빙 모델 드리프트 감시]]
+- [[LLM-Default-Answer-Convergence|LLM 기본 답 쏠림]] — 사용자 맥락이 비었을 때 같은 답으로 모이는 반대 방향의 현상

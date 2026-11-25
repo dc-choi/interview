@@ -115,6 +115,8 @@ verified_at: 2026-10-05
 
 웹은 특정 회사의 전용 네트워크나 폐쇄형 프로그램으로 배포되지 않았다. 1993년 4월 30일 CERN이 웹 소프트웨어를 퍼블릭 도메인으로 내놓아 소스 코드를 로열티 없이 쓸 수 있게 하면서 누구나 서버와 브라우저를 구현하고 문서를 게시할 수 있었다. 구현체끼리 같은 주소, 전송과 문서 표준을 지키면 연결될 수 있었고, 이 상호운용성이 웹의 빠른 확산을 만들었다.
 
+웹 아래의 TCP/IP도 공개를 택했다. 공동 설계자 Vint Cerf는 2026-11 공개된 인터뷰에서 1970년대 초 개발 중에 특허를 둘지 논의했다고 회고한다. 미국 지휘통제 체계의 기반이 되리라 생각했지만 25년 뒤 누가 동맹일지 알 수 없었고, 동맹이 이 기술에 접근하도록 보장할 유일한 방법은 공개라고 보고 모든 프로토콜을 공개했다고 말한다. 그가 1980년대에 만든 상용 전자우편 MCI Mail은 전신, 팩스와 우편 시스템까지 연결했지만 프랑스 Minitel은 연결 제안을 거절했다고도 회고한다. 둘 다 당사자의 증언이며 당시 문서로 대조하지 않았다. 행성 간 통신에서 TCP/IP의 가정이 깨지는 문제는 [[Delay-Tolerant-Networking|지연과 단절을 견디는 네트워킹]]에서 다룬다.
+
 ## 흔한 오해
 
 - 인터넷과 웹은 같은 계층이다: 인터넷은 데이터 전달 기반이고 웹은 그 위의 응용 시스템이다.
@@ -129,7 +131,7 @@ verified_at: 2026-10-05
 - 웹 외의 인터넷 서비스와 브라우저 외의 웹 클라이언트를 예로 들 수 있는가
 - 하이퍼텍스트, 주소와 HTTP가 정보 공유 문제를 어떻게 해결했는지 설명할 수 있는가
 - 1989년 제안서의 요구사항(원격 접근, 이기종, 비중앙화, 기존 데이터 접근)이 저장과 표시의 분리, URL, 단방향 링크, 게이트웨이 서버로 이어진 과정과 단방향 링크의 대가(끊긴 링크)를 설명할 수 있는가
-- 개방 표준과 상호운용성이 웹 확산에 기여한 이유를 설명할 수 있는가
+- 개방 표준과 상호운용성이 웹 확산에 기여한 이유와, TCP/IP가 특허 없이 공개된 이유를 설명할 수 있는가
 - URI, HTTP, HTML이 각각 식별, 전송, 표현을 맡는다는 역할 구분을 설명할 수 있는가
 - 웹이라는 이름이 문서 연결 구조(그래프)에서 왔음을 설명할 수 있는가
 - 첫 구현의 인터페이스, 제어, 데이터를 현대 웹 구성 요소에 대응시킬 수 있는가
@@ -158,6 +160,8 @@ verified_at: 2026-10-05
 - [The World Wide Web: A very short personal history — W3C, Tim Berners-Lee](https://www.w3.org/People/Berners-Lee/ShortHistory.html)
 - [The birth of the Web — CERN](https://home.cern/science/computing/the-birth-of-the-web)
 - [RFC 9110: HTTP Semantics — IETF](https://www.rfc-editor.org/rfc/rfc9110.html)
+- [Vint Cerf interview transcript — Future Stories, João Tomé](https://ourfuturestories.eu/vint-cerf) — 2026-11 공개 인터뷰 전사. TCP/IP 공개 이유와 MCI Mail, Minitel 회고는 Cerf의 발언으로만 옮겼다
+- 사용자 제공 GeekNews 알림(2026-11-22): Vint Cerf가 말하는 TCP/IP를 특허로 등록하지 않은 이유. 학습 계기이며 게시물 번호는 확인하지 못했다
 - [YouTube, 쉬운코드, World Wide Web의 개념과 발명 과정](https://www.youtube.com/watch?v=1JjUYaoxJ9Y)
 - [YouTube, 쉬운코드, 네트워크와 인터넷 개념, 인터넷 동작 방식과 ISP](https://www.youtube.com/watch?v=oFKYzp6gGfc)
 

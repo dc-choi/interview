@@ -15,8 +15,9 @@ LLM 출력의 평가와 모른다고 말하는 능력, 비전 모델의 합성 �
 
 - [x] [[ML-Proxy-Discrimination|대리변수와 모델 공정성]] — 민감 속성 제외의 한계, 집단별 평가 기준과 적용 순서
 - [x] [[Crowdsourced-Human-Evaluation|크라우드소싱 사람 평가]] — 평가자 자격과 응답 검수, 주의력 검사와 Mechanical Turk 종료
-- [x] [[AI-Consciousness-Evidence|AI 의식의 증거]] — 자기보고와 행동, 내부 구조 지표와 기능 검증의 구분
-- [x] [[Benchmark-Coverage-and-Workplace-Performance|벤치마크 평가 범위와 업무 성과]] — 업무 과업 매핑, AAII v5 구성 변경과 비공개 평가, 날짜와 제공 상태의 비교, 변형 과제로 본 일반화와 숨은 테스트 추정, 느린 에이전트 실행의 단계당 시간과 단계 수 분해
+- [x] [[AI-Consciousness-Evidence|AI 의식의 증거]] — 자기보고와 행동, 내부 구조 지표와 기능 검증의 구분, 계산적 기능주의에 대한 생물학적 자연주의의 반론
+- [x] [[Benchmark-Coverage-and-Workplace-Performance|벤치마크 평가 범위와 업무 성과]] — 업무 과업 매핑, AAII v5 구성 변경과 비공개 평가, 날짜와 제공 상태의 비교, 새 버전의 제3자 점수 하락을 읽는 조건(SimpleBench의 9명 사람 기준선, 이름에 없는 추론 강도와 출력 토큰, 문항 수의 오차), 변형 과제로 본 일반화와 숨은 테스트 추정, 느린 에이전트 실행의 단계당 시간과 단계 수 분해
+- [x] [[LLM-Default-Answer-Convergence|LLM 기본 답 쏠림과 응답 다양성]] — 한 대화 안과 새 대화 사이의 다양성, 최빈 답 비율과 분모, 사후학습 첫 단계에서 좁아지는 분포, 지어낸 값의 확산, 모델이 쓴 난수와 비밀번호의 편향, 사용자 맥락으로 비키기와 조건 민감도 평가
 - [x] [[LLM-Perplexity-and-Benchmarks|perplexity와 객관식 벤치마크 채점]] — perplexity의 정의, 범위와 비교 조건, 교차 엔트로피의 하한, 사후학습 뒤의 보정 저하, MMLU 채점 구현에 따른 점수 차, n-gram 겹침과 순서 교환 오염 검사
 - [x] [[Synthetic-Vision-Data-Evaluation|합성 비전 데이터 평가]] — 생성과 인식 모델의 분리, 라벨 검수와 실제 데이터 평가
 - [x] [[Model-Feedback-Loop-and-Validation|모델 피드백 루프와 검증]] — 실험 결과 환류, shadow 비교와 실제 행동의 구분
@@ -26,7 +27,7 @@ LLM 출력의 평가와 모른다고 말하는 능력, 비전 모델의 합성 �
 - [x] [[LLM-Abstention|LLM Abstention (모른다고 말하는 능력, 정확도와 독립, AbstentionBench의 세 결과, 이진 채점이 추측을 보상, 확신 목표와 behavioral calibration, 과잉 거부, needs_review, alignment 재설계, 모호함을 알아채는 것과 묻는 것의 차이, Claude Code의 확인 요청 분석)]]
 - [x] [[LLM-Hallucination-Verification|LLM 환각 유형과 검증 (사실성과 충실성 두 축, 사전학습과 채점의 원인, Chain-of-Verification 변형과 한계, 설명은 증거가 아니다, 행동 주장과 실행 기록, 규칙은 코드로, 인용의 존재와 적용과 지지 검사, 평가 사례)]]
 - [x] [[LLM-Statistical-Citation-Verification|AI 인용과 통계의 원출처 검증]] — 숫자와 분모, 재인용 경로, 위키백과 정리와 탐지 한계
-- [x] [[LLM-App-Three-Gulfs|LLM 애플리케이션의 세 간극]] — 이해, 명세, 일반화 간극, 명세 실패와 일반화 실패의 구분, 분석, 측정, 개선 루프, 사용자가 간극을 메우는 정도
+- [x] [[LLM-App-Three-Gulfs|LLM 애플리케이션의 세 간극]] — 이해, 명세, 일반화 간극, 명세 실패와 일반화 실패의 구분, 분석, 측정, 개선 루프, 분석을 시작하는 실무 기준(trace 수와 포화, 첫 실패 주석, 차원 조합 합성 입력, 코드 검사 우선, 전이 실패 행렬), 사용자가 간극을 메우는 정도
 - [x] [[Evaluation-Driven-Development|평가 주도 개발 EDD (Generator와 Evaluator 두 축, Eval과 테스트의 차이, 성숙도 Lv.0에서 Lv.5, 하네스 부품의 승격, 회귀와 이행과 품질 순서, 실행 기록과 최종 결과 대조, GEPA 개선 후보 평가)]]
 - [x] [[Eval-Rubric-and-Score-Gate|루브릭과 점수 게이트 (채점기 3종, 결정론과 LLM-as-Judge와 사람의 3층, 규칙의 결정론 번역, 거부권 배점, 미달 항목 루프와 3중 안전장치, 실행 불가 판정과 중단 출구, 완료 선언 차단과 fail-closed, 점수 의심 순서)]]
 - [x] [[Eval-LLM-Judge|LLM 판정기 LLM-as-a-Judge (참조 기반 지표의 한계, 판정 입력과 출력, 판정 방식 넷, 위치와 장황함과 자기 선호 편향, 사람 라벨 교정과 kappa, 판정기 교체와 grader hacking)]]

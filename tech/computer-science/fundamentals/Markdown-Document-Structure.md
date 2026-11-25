@@ -62,3 +62,4 @@ AI에 전달할 때도 목적, 입력, 제약과 완료 조건을 구분하는 �
 - [[CS-Data-Representation|데이터 표현]]
 - [[Agent-Spec-Writing|에이전트 스펙 작성법]]
 - [[LLMs-Txt|웹 문서를 위한 llms.txt]]
+- [[Streaming-Markdown-Rendering|스트리밍 Markdown 렌더링]] — 생성 중인 AI 응답을 그릴 때 앞부분이 바뀌는 문법과 보정

@@ -24,7 +24,7 @@ verified_at: 2026-10-14
 - **같은 변형의 재요청률**: 일정 기간 안에 다시 요청되는 비율이 낮으면 요청 시 만들어도 반복 계산이 적다.
 - **클라이언트 캐시**: 프로필처럼 자주 보이는 이미지는 앱의 파일 캐시가 먼저 흡수한다.
 
-변형 종류가 적고 모두 자주 쓰이거나, 변환이 무거워 첫 요청 지연을 견딜 수 없으면 미리 만들기가 맞다. 요청 시 만들기를 고르면 지연을 원본 읽기와 변환으로 나눠 측정한다. 원본 읽기가 더 길면 변환을 더 최적화해도 얻을 것이 적고, 변환 비용은 라이브러리 선택에 크게 좌우된다(아래 사례에서 Skia는 ImageMagick보다 약 4배 빨랐다).
+변형 종류가 적고 모두 자주 쓰이거나, 변환이 무거워 첫 요청 지연을 견딜 수 없으면 미리 만들기가 맞다. 미리 만들 때는 변환을 어디서 돌릴지도 고른다. 한 개인 작품 사이트는 필요한 크기 세 가지를 이미 알고 있어 업로드하는 운영자의 브라우저에서 축소본을 만들고 원본과 함께 Cloudflare R2에 올린다. 저자는 첫 요청 때 크기를 바꿔 주는 Cloudflare 이미지 서비스가 있다는 점을 알면서도 미리 계산하는 쪽을 택했다([[TTFB-and-Search-Crawling#구조로 줄이는 방법|사례 전체 구조]]). 서버 쪽 변환 비용과 첫 요청 지연이 없어지는 대신, 결과물의 품질과 형식이 업로드한 브라우저의 인코더에 달리고 새 크기가 필요해지면 기존 이미지를 다시 처리해야 한다(이 문서의 판단). 요청 시 만들기를 고르면 지연을 원본 읽기와 변환으로 나눠 측정한다. 원본 읽기가 더 길면 변환을 더 최적화해도 얻을 것이 적고, 변환 비용은 라이브러리 선택에 크게 좌우된다(아래 사례에서 Skia는 ImageMagick보다 약 4배 빨랐다).
 
 ### 변환 결과를 저장소에 다시 캐시할지
 
@@ -143,6 +143,7 @@ GIF→MP4는 FFmpeg가 필요한데 Lambda@Edge의 제약에 걸린다.
 - [S3와 이미지 CDN 비용 최적화 — 인프랩 기술블로그](https://tech.inflab.com/20251029-optimize-s3/)
 - [서버 비용을 70%나 줄인 온디맨드 리사이징 이야기 — VCNC Engineering Blog](https://web.archive.org/web/20160710233929/http://engineering.vcnc.co.kr/2016/05/ondemand-image-resizing/)
 - [Amazon S3 이미지 온디맨드 리사이징을 통한 70% 서버 비용 줄이기 — Amazon Web Services Korea](https://www.youtube.com/watch?v=c8tI-yLFXtM)
+- [I'm quite pleased by the tech architecture of my art website — Kshitij Lauria](https://klauria.tech/klauria-art/) — 업로드 때 브라우저에서 만든 축소본과 R2 저장, 요청 시 변환 서비스를 쓰지 않은 이유. 게시일은 글에 없다
 
 ## 관련 문서
 - [[CDN|CDN / CloudFront (Lambda@Edge, 캐시 키)]]
@@ -152,3 +153,4 @@ GIF→MP4는 FFmpeg가 필요한데 Lambda@Edge의 제약에 걸린다.
 - [[S3-Storage-Performance|S3 요청률과 접두사]]
 - [[SQS-Worker-Reliability|SQS 워커 신뢰성 (가시성 연장, in-flight 한도)]]
 - [[Idempotent-Consumer|멱등 컨슈머]]
+- [[Performance-Budget-and-Design-Decisions|성능 예산과 디자인 결정]] — LCP 이미지의 지연 로딩 금지와 우선순위

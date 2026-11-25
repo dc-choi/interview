@@ -105,3 +105,4 @@ MMLU는 초등 수학, 미국사, 컴퓨터과학, 법학 등 57개 과목의 �
 - [[LLM-Generation-Mechanics-Decoding|추론과 디코딩]] — 토크나이저 차이
 - [[Natural-Language-Processing-Foundations|자연어 처리 기초]] — n-gram과 단어 단위 토큰화
 - [[LLM-Abstention|LLM Abstention]] — 이진 채점과 확신 표현
+- [[Superintelligence-Pathways#진전을 무엇으로 잴 것인가: 사전학습 손실의 문턱|사전학습 손실의 문턱]] — perplexity를 개발사 간 공동 지표와 한계선으로 쓰자는 제안과 그 한계

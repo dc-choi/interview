@@ -38,6 +38,31 @@ aliases: ["서버 견적 검토", "Server Quotation Checklist", "케이블과 �
 
 VM별 라이선스는 별도 선택지이며 구독 라이선스 또는 활성 Software Assurance 조건이 있다. 따라서 모든 구매를 물리 코어 방식으로 단정하지 않는다. 이 예시는 코어 수 산정만 설명하며, 실행할 OSE 수, 에디션, CAL과 구매 계약의 권리까지 포함한 최종 견적은 아니다. 실제 권리는 Product Terms와 취득 계약으로 확인한다.
 
+## 세대 교체 견적은 벤치마크 배수를 풀어서 읽는다
+
+새 세대 서버가 옛 서버보다 몇 배 빠르다는 결과는 여러 시험의 평균이다. 교체와 통합 견적에서는 그 배수를 우리 워크로드, 전력과 과금 단위로 다시 풀어 본다. 아래 사양은 2026-11-25 AMD 공식 사양 페이지와 데이터시트로 대조한 소켓당 값이다.
+
+| 항목 | 1세대 EPYC 7601 | 6세대 EPYC 9996 | 6세대 EPYC 9686F |
+|---|---|---|---|
+| 코어와 스레드 | 32, 64 | 256, 512 | 96, 192 |
+| 기본 클럭과 최대 부스트 | 2.2 GHz, 3.2 GHz | 2.55 GHz, 4.1 GHz | 4.05 GHz, 5.3 GHz |
+| L3 캐시 | 64 MB | 1,024 MB | 384 MB |
+| 메모리 | DDR4 8채널, 최대 2666 MT/s, 소켓당 170.6 GB/s | DDR5 16채널, MRDIMM 12,800 MT/s에서 소켓당 이론 최대 1,638.4 GB/s | 9996과 같은 플랫폼 |
+| 전력 기준 | 기본 TDP 180 W | 기본 CPU 전력 600 W(400~600 W) | 기본 CPU 전력 600 W(400~600 W) |
+
+AMD는 6세대부터 전력 기준으로 TDP 대신 연산 다이와 I/O 다이의 전체 전력을 뜻하는 기본 CPU 전력(Default CPU Power)을 쓰고, 두 값 모두 비교와 전력 계획의 기준으로 쓸 수 있다고 설명한다. 표로 계산하면 소켓당 코어는 9996이 8배, 9686F가 3배이고 L3는 16배와 6배, 메모리 이론 대역폭은 약 9.6배다.
+
+Phoronix는 2026-11 두 소켓 구성끼리 100개 넘는 벤치마크를 돌려 기하평균으로 9996이 7601의 12.1배, 9686F가 8.7배라고 보고했다. 원문은 2026-11-25 자동 접근 확인 페이지에 막혀 직접 대조하지 못했고, 이하 수치는 이를 인용한 Hardware Busters 기사와 GeekNews 요약 기준이다. 분야별 기하평균은 AVX-512를 쓰는 작업 16.4배, HPC 15.6배, 창작 작업 13.6배였고 OpenSSL과 데이터베이스류 서버 작업은 최대 22배, OpenVINO 추론 시험 하나는 처리량이 최대 133배였다(GeekNews 요약은 얼굴 인식 시험으로 적는다). 성능 대비 전력은 약 5배인데, CPU 자체 센서(RAPL)로 잰 값이라 팬, 메모리, 디스크와 전원 손실은 들어가지 않는다.
+
+다음은 이 결과를 견적에 옮길 때의 읽는 법이다(적용 제안).
+
+- **평균은 우리 작업의 배수가 아니다.** 같은 비교 안에서 기하평균은 12.1배인데 시험 하나는 최대 133배다(가장 낮은 배수는 확인한 2차 기사에 없다). 명령어 확장을 쓰는지, 메모리 대역폭에 묶이는지, 코어 수만큼 병렬화되는지에 따라 달라지므로 우리 작업을 새 장비에서 직접 잰다. 보고된 배수를 코어 배수로 나누면 코어당 약 1.5배(9996)와 2.9배(9686F)인데, 시험마다 병렬화 정도가 달라 단순 계산으로만 쓴다.
+- **세대 격차에는 CPU 밖의 차이가 섞인다.** 인용한 기사는 구형 서버가 Spectre 계열 소프트웨어 완화를 모두 켠 채 돌아 시스템 호출이 많은 시험의 격차 일부가 보안 오버헤드라고 적는다. 두 서버는 메모리와 저장장치 구성도 다르다(DDR4 32GB 16개와 SATA SSD 대 MRDIMM-12800 64GB 32개와 PCIe Gen6 SSD).
+- **코어 단위 과금을 다시 센다.** 위 물리 코어 라이선스처럼 코어로 과금하는 소프트웨어는 256코어 소켓 하나가 32코어 소켓 여덟 개 분량을 요구한다. 같은 작업을 더 적은 코어로 처리하는 고클럭 SKU가 라이선스 총액에서는 유리할 수 있다.
+- **통합 비율은 공급사의 추정이다.** AMD 데이터시트는 2P EPYC 9996 서버(SPECrate2017_int_base 추정 4,900)로 2P Xeon Gold 6258R 서버(397)를 12대 1로 통합해 서버 약 92%, 전력 약 77%, 5년 TCO 약 40%를 줄인다고 제시하면서, 각주에서 이 시나리오가 많은 가정과 추정을 담은 정보 제공용 예시이므로 실제 시험을 대신하는 의사결정 근거로 쓰지 말라고 적는다.
+- **통합하면 장애 단위가 커진다.** 옛 서버 여러 대의 일을 한 대가 맡으면 그 한 대의 장애나 정비가 그만큼의 용량을 한 번에 뺀다. N-1 헤드룸은 새 장비 단위로 다시 계산하고, 코어가 많은 신형 장비에서만 드러난 결함 사례도 함께 본다([[N-1-Capacity-Headroom#사례 — 시험에서 잰 한계가 운영 장비의 한계보다 높았다|N-1 가용량 헤드룸]]).
+- **전력과 냉각 한도부터 본다.** 소켓당 기본 600 W면 두 소켓 CPU만 1,200 W다. 랙의 전력과 냉각 한도 안에 몇 대를 넣을 수 있는지 먼저 확인한다([[Data-Center-Power-Distribution|데이터센터 전력 분배]], [[Data-Center-Cooling|데이터센터 냉각]]).
+
 ## 연결 부품은 양쪽 끝과 길이로 읽는다
 
 견적서의 네트워크와 전원 항목은 링크나 전원 경로 하나를 이루는 부품의 조합으로 읽는다. 선의 종류, 양쪽 끝 모양, 길이와 수량이 함께 맞아야 장비가 연결된다. 아래 제품 수치는 2026-11-02에 대조한 해당 제품 문서 기준이며 다른 제품으로 일반화하지 않는다. 제품명은 표기를 읽는 예시이고 구매 권고가 아니다.
@@ -106,6 +131,7 @@ IEC 60320 계열 전원 코드의 끝 모양 이름(C13 등)은 커플러 종류
 - 같은 512 GB 구성 두 개를 비교할 때 DIMM 개수와 CPU별 배치를 왜 함께 확인하는가?
 - 지원 소켓 두 개 중 하나만 장착하면 메모리와 확장 구성을 어떤 문서로 확인할 것인가?
 - CPU의 코어와 스레드 중 구매하려는 소프트웨어가 계산하는 단위는 무엇인가?
+- 새 세대 서버의 몇 배라는 벤치마크 결과를 우리 작업의 실측, 코어 단위 라이선스와 커진 장애 단위로 어떻게 다시 계산하는가?
 - 장애 대응 계약에서 응답이나 방문과 서비스 복구 완료를 어떻게 구분할 것인가?
 - 기존 OM3 듀플렉스 LC 배선을 10G에서 40G나 100G로 올릴 때 새 모듈의 커넥터, 필요한 가닥 수와 거리를 왜 다시 확인하는가?
 - 서버 전원 장치의 인렛과 랙 PDU의 콘센트 규격으로 전원 코드의 양쪽 끝과 수량을 정한 뒤, 코드 세트의 정격이 전원 장치의 입력 전류를 감당하는지 어떻게 확인하는가?
@@ -116,6 +142,11 @@ IEC 60320 계열 전원 코드의 끝 모양 이름(C13 등)은 커플러 종류
 
 - [Dell PowerEdge R760 Installation and Service Manual, General memory module installation guidelines](https://www.dell.com/support/manuals/en-us/oth-r760/per760_ism_pub/general-memory-module-installation-guidelines?guid=guid-841ca5c9-cf8d-4c22-9ea0-761296b8c5d7&lang=en-us)
 - [Microsoft Licensing, Windows Server 2025 Licensing Guidance](https://www.microsoft.com/licensing/guidance/Windows-Server-2025)
+- [AMD, AMD EPYC 9006 SP7 Series Server CPUs Data Sheet](https://www.amd.com/content/dam/amd/en/documents/epyc-technical-docs/other/amd-epyc-9006-sp7-server-cpus-data-sheet.pdf) — 2026-11-25 대조. 9996과 9686F의 코어, 클럭, L3와 기본 CPU 전력, 16채널 MRDIMM 12,800 MT/s와 소켓당 이론 대역폭, Default CPU Power 정의, 12:1 통합 시나리오와 각주의 한계
+- [AMD, AMD EPYC 7601 Drivers and Downloads](https://www.amd.com/en/support/downloads/drivers.html/processors/epyc/epyc-7001-series/amd-epyc-7601.html) — 2026-11-25 사양 표 대조. 코어, 클럭, L3, 기본 TDP, DDR4 8채널과 소켓당 메모리 대역폭
+- [AMD EPYC Zen 6 vs. Zen 1 Performance: 12.1x Geo Mean In Less Than 10 Years, Up To 133x In AI Review — Phoronix](https://www.phoronix.com/review/amd-epyc-9006-7601) — 벤치마크 원문. 2026-11-25 자동 접근 확인 페이지에 막혀 본문을 대조하지 못했고 제목만 검색 결과로 확인했다
+- [EPYC Zen 6 vs Zen 1: Nine Years Bought 12.1x the Server Throughput, and Up to 133x in AI — Hardware Busters](https://hwbusters.com/news/epyc-zen-6-vs-zen-1-nine-years-bought-12-1x-the-server-throughput-and-up-to-133x-in-ai/) — Phoronix 결과를 인용한 2차 기사, 2026-11-25 대조. 시험 구성, 분야별 기하평균과 RAPL 기준 성능 대비 전력
+- GeekNews, 2026-11-25 제공 요약: AMD EPYC Zen 6 대 Zen 1 성능 비교: 10년도 안 돼 기하평균 12.1배 (토픽 번호 미확인, 원문 식별에 사용)
 - [Cisco, Cisco SFP Modules for Gigabit Ethernet Applications Data Sheet](https://www.cisco.com/c/en/us/products/collateral/interfaces-modules/gigabit-ethernet-gbic-sfp-modules/datasheet-c78-366584.html)
 - [Cisco, Cisco 10GBASE SFP+ Modules Data Sheet](https://www.cisco.com/c/en/us/products/collateral/interfaces-modules/transceiver-modules/data_sheet_c78-455693.html)
 - [Cisco, Cisco 25GBASE SFP28 Modules Data Sheet](https://www.cisco.com/c/en/us/products/collateral/interfaces-modules/transceiver-modules/datasheet-c78-736950.html)

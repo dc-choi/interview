@@ -69,5 +69,6 @@ aliases: ["Self-Consistency", "Sampling and Voting", "Universal Self-Consistency
 - [[Evaluator-Guided-Program-Search|평가기 주도 프로그램 탐색]] — 투표 대신 모델 밖 평가기로 고르는 구성
 - [[Eval-LLM-Judge|LLM 심판 평가]] — LLM이 후보를 고르고 채점할 때의 편향
 - [[LLM-Generation-Mechanics-Decoding|디코딩과 샘플링]] — 탐욕 디코딩과 샘플링의 차이
+- [[LLM-Default-Answer-Convergence|LLM 기본 답 쏠림]] — 같은 계열 모델이 공유하는 기본 답과 표본의 독립성
 - [[LLM-Workflow-Patterns|LLM 워크플로우 패턴]]
 - [[AI-Agent-Anatomy-and-Lineage|AI 에이전트의 정의, 계보와 구성 요소]] — 계획과 추론 구성 요소의 대표 기법

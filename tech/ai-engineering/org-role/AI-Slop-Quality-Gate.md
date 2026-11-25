@@ -189,3 +189,4 @@ XP(Extreme Programming)의 spike solution에도 같은 구분이 있다. spike�
 - [[Software-Productivity-Measurement|소프트웨어 생산성 측정의 함정]] — AI 도구 설문을 생산성 근거로 읽는 법
 - [[Dev-Outsourcing-Engagement|개발 외주의 계약과 수주]] — 시연 결과물을 납품할 때 걸리는 검수, 유지보수와 하자담보 조건
 - [[LLM-Application-Security|LLM 애플리케이션 보안]] — LLM09 허위 정보와 과도한 신뢰의 완화
+- [[AI-Generated-Text-Readability|AI 생성 글의 처리 난도]] — 읽는 사람에게 넘어가는 해독 비용을 명료성 결함과 처리 난도 지표로 재는 방법

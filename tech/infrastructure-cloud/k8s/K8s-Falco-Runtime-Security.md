@@ -147,3 +147,4 @@ sudo journalctl _COMM=falco -p warning
 - [[K8s-NetworkPolicy|NetworkPolicy]]
 - [[Container-Linux-Internals|컨테이너 Linux 내부]]
 - [[Agent-Execution-Isolation|에이전트 실행 격리]]
+- [[Runtime-Virtual-Patching|런타임 가상 패치]] — eBPF로 탐지가 아닌 차단을 거는 완화, 서명 로더만 허용하는 호스트에서 다른 BPF 도구의 공존 문제

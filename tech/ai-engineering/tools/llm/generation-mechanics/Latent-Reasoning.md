@@ -1,9 +1,9 @@
 ---
 tags: [ai, llm, reasoning, latent-reasoning, agent, inference]
 status: done
-verified_at: 2026-11-21
+verified_at: 2026-11-25
 category: "AI엔지니어링(AIEngineering)"
-aliases: ["Latent Reasoning", "잠재 추론", "Continuous Latent Reasoning", "연속 잠재 추론", "Chain of Continuous Thought", "Coconut", "HybridAgent", "HybridLink", "Looped Transformer", "반복형 트랜스포머", "Inkling 2 Mini"]
+aliases: ["Latent Reasoning", "잠재 추론", "Continuous Latent Reasoning", "연속 잠재 추론", "Chain of Continuous Thought", "Coconut", "HybridAgent", "HybridLink", "Looped Transformer", "Loop Transformer", "반복형 트랜스포머", "Inkling 2 Mini", "GLM-5.4"]
 ---
 
 # 잠재 추론: 토큰 대신 은닉 상태를 다음 입력으로 넘기는 추론
@@ -101,7 +101,18 @@ HybridAgent는 백본 구조를 그대로 두고 작은 어댑터 HybridLink와 
 - **연구진이 밝힌 한계**: 연구용 모델의 강화학습은 3패스로만 했으므로, 더 깊은 패스로 강화학습한 모델은 추론을 더 압축할 수 있다. 이 규모에서 감시 가능성의 의미 있는 저하를 보지 못했다는 결론도 이 조건에 묶인다.
 - **공개 범위**: Inkling 2 Mini 가중치는 Hugging Face에 Apache 2.0으로 공개됐고 연구용 가변 반복 모델도 함께 공개됐다. 학습과 같은 정밀도(층 20개 NVFP4, 마지막 4개 MXFP8)로 배포해 약 20GB이고, Ollama로 RAM 32GB 이상의 Mac에서 돈다고 안내한다. 발표는 전체 100B 미만 공개 가중치 모델 가운데 DeepSWE v1.1(48.2%)과 Vals Index v2.2(46.5%)에서 앞선다고 적지만, 비교표의 하네스가 벤치마크마다 다르고(Terminal Bench v2.1은 pi, DeepSWE는 mini-swe-agent) 모델마다 평가 설정이 다르다고 밝힌다. 파라미터 표기는 [[Model-Release-Claims#파라미터 수는 무엇을 셌는지 확인한다|모델 발표 수치 읽기]]에 적었다.
 
-적용하면(운영 제안) CoT 감시에 기대는 운영에서 반복형 모델을 쓸 때 CoT 길이 감소를 효율로만 보지 않는다. 같은 과제에서 모델이나 패스 수를 바꿔 CoT 길이와 정답률을 함께 기록하고, 도구 호출과 결과를 CoT와 별개의 감시 입력으로 남긴다.
+### 이미 학습한 모델을 반복형으로 바꾸기: GLM-5.4
+
+2026-11-23 Z.ai 기술 블로그와 개발자 문서를 2026-11-25 대조한 기준이다. 수치와 비교는 모두 Z.ai의 보고이고, 750B 모델 자체의 벤치마크 점수는 공개되지 않았다.
+
+- **처음부터 학습하지 않는다**: 가중치를 공유하는 반복 모델을 처음부터 사전학습하면 같은 사전학습 연산에서 공유하지 않는 모델에 뒤진다는 이유로, 이미 사전학습한 GLM-5 기반 모델을 이어서 학습해 반복형으로 바꿨다. 기반 모델의 층 28개를 두 번 통과시키는 750B 모델이며, Z.ai는 2T~3T 파라미터 모델에 견줄 지능이라고 내세운다.
+- **게이트로 갱신 크기를 조절한다**: 기존 모델의 중간 층을 여러 번 돌리며 은닉 상태를 그대로 덮어쓰면 반복할수록 활성값의 노름이 커져, 뒤쪽 층이 학습 때와 다른 크기와 분포의 입력을 받는다. 그래서 반복마다 토큰별 게이트를 두어 후보 갱신을 잔차 흐름에 비율만큼만 쓴다. 학습 뒤 첫 패스는 작은 게이트 값으로 전역 문맥을 조심스럽게 쓰고 두 번째 패스는 게이트를 열어 출력을 다듬었으며, 어려운 토큰에서는 첫 패스부터 더 크게 썼다. 위 Inkling 2 Mini의 게이트처럼 반복을 안정시키려는 장치이며, 두 발표가 설명하는 게이트의 세부 설계는 같지 않다(이 문서의 해석).
+- **반복이 KV 캐시를 곱하지 않게 한다**: 반복마다 전체 KV 캐시를 따로 두면 메모리가 반복 횟수만큼 는다. 두 번째 패스는 첫 패스에서 희소 어텐션이 고른 KV를 다시 쓰고, 자기가 새로 만든 KV는 슬라이딩 윈도 안에만 둔다. 반복 하나의 추가 비용이 전체 문맥 캐시가 아니라 윈도 하나가 되므로 1M 문맥에서 GLM-5.3 대비 배포 비용 증가를 억제했다고 적는다. 두 번째 패스는 첫 패스의 인덱서가 만든 희소 어텐션 인덱스도 그대로 써 인덱싱 비용을 더하지 않고, 매 패스 다시 계산한 경우와 성능이 거의 같았다고 보고한다.
+- **같은 파라미터의 대조 실험**: 1B, 4B, 30B, 750B 순서로 구조를 검증했다. 750B 기반과 구조가 같은 30B 모델에서, 파라미터 수가 같고 총 학습 연산이 약 10% 많은 반복형이 수학, 과학 추론과 긴 문맥 과제에서 가장 크게 나아졌다(긴 문맥 SFT 200K 뒤 사고 모드로 평가). GPQA-Diamond와 MMLU-Pro 같은 평가에서 평균 출력 길이는 10~14% 줄었고 대부분 CoT가 짧아진 몫이었다. Z.ai는 이를 추론의 일부가 출력 토큰에서 반복의 깊이로 옮겨 간 것으로 해석한다. 결과표(이미지로 제공)의 기준형 대 반복형 점수는 AIME25 19.17 대 30.42, GPQA-Diamond 47.58 대 56.26, AA-LCR 40.33 대 47.67, MMLU-Pro 71.65 대 75.05, IFBench 50.20 대 53.47이고, 평균 출력 길이 변화는 AIME25 −2%부터 MMLU-Pro −14.9%까지다.
+- **범용 코딩**: Z.ai는 코드로 영상을 만들고 편집하거나, 게임, GLSL 셰이더의 3D 장면, FreeCAD 기계 설계까지 푸는 방향을 범용 코딩(Generalized Coding)이라 부르고 사례 영상으로 보인다. 이 방향을 잰 정량 평가는 공개되지 않았다.
+- **한계와 제공 범위**: 지나치게 긴 사고에 빠지는 경향을 Z.ai가 스스로 한계로 밝힌다. 비혼잡 시간 최대 200토큰/초, 혼잡 시 70~80토큰/초라는 속도는 측정 조건을 밝히지 않은 서비스 수치다. 개발자 문서 기준 문맥 1M, 최대 출력 128K이고 GLM Coding Plan, ZCode, Z.ai Chat에서 쓸 수 있다. 발표 글은 API를 준비 중(Coming Soon)으로만 표시하고, 가중치는 안전 보강을 마친 뒤 공개할 계획이라고 적는다.
+
+적용하면(운영 제안) CoT 감시에 기대는 운영에서 반복형 모델을 쓸 때 CoT 길이 감소를 효율로만 보지 않는다. Inkling 2 Mini와 GLM-5.4 모두 반복으로 CoT가 짧아졌다고 보고하므로, 같은 과제에서 모델이나 패스 수를 바꿔 CoT 길이와 정답률을 함께 기록하고, 도구 호출과 결과를 CoT와 별개의 감시 입력으로 남긴다. 직접 서빙한다면 반복 패스의 KV 캐시를 어떻게 나누는지에 따라 문맥 길이별 메모리가 크게 달라지므로 세션 단위로 잰다.
 
 ## 확인 질문
 
@@ -112,6 +123,7 @@ HybridAgent는 백본 구조를 그대로 두고 작은 어댑터 HybridLink와 
 5. 2.7~3.7배 비용 절감 추정에서 빠진 비용은 무엇이고, 운영에서는 무엇을 다시 재야 하는가?
 6. 판독문이 읽힌다는 사실을 감사 근거로 쓸 때의 한계는 무엇인가?
 7. 층을 반복하는 구조는 무엇을 늘리고 무엇을 늘리지 않으며, CoT가 짧아진 결과를 감시 관점에서 어떻게 읽어야 하는가?
+8. 이미 학습한 모델을 반복형으로 바꿀 때 반복별 게이트와 KV 캐시 공유는 각각 어떤 문제를 막는가?
 
 ## 출처
 
@@ -123,6 +135,9 @@ HybridAgent는 백본 구조를 그대로 두고 작은 어댑터 HybridLink와 
 - [Introducing Inkling 2 Mini — Thinking Machines Lab](https://thinkingmachines.ai/news/inkling-2-mini/) — 2026-11-21 반복 구조와 게이트, 반복 위치 비교, 학습과 추론 연산의 교환, 패스 수별 능력 변화, Think Fast, CoT 길이와 가독성, CoT-Control-QA, LinuxArena 조건, 배포 정밀도와 실행 환경 대조
 - [thinkingmachines/Inkling-2-Mini — Hugging Face, Thinking Machines Lab](https://huggingface.co/thinkingmachines/Inkling-2-Mini) — 2026-11-21 라이선스(Apache 2.0)와 공개 상태 확인
 - [Inkling 2 Mini - 노트북에서 실행하는 반복형 트랜스포머 모델 — GeekNews](https://news.hada.io/topic?id=37545) — 학습 계기
+- [GLM-5.4: Toward Generalized Coding with Our First Loop Transformer — Z.ai](https://z.ai/blog/glm-5.4) — 2026-11-23 게시. 2026-11-25 기존 모델의 반복형 전환, 층 수와 반복 횟수, 게이트, KV 캐시 공유와 인덱스 재사용, 30B 대조 실험의 조건과 결론, 출력 길이 감소, 속도, 한계와 공개 계획 대조. 30B 결과표는 이미지라 같은 날 이미지를 직접 읽어 개별 점수 대조
+- [Z.ai Developer Docs, GLM-5.4](https://docs.z.ai/guides/llm/glm-5.4) — 2026-11-25 문맥 길이, 최대 출력, 입력 형식과 제공 경로 확인
+- [GLM-5.4: Z.ai의 첫 Loop Transformer로 범용 코딩을 향해 — GeekNews](https://news.hada.io/topic?id=37712) — 학습 계기
 
 ## 관련 문서
 

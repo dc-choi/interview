@@ -14,7 +14,7 @@ aliases: ["성능&확장성(Performance&Scalability)", "Performance & Scalabilit
 - [x] [[Transaction-Lock-Contention|트랜잭션 경합과 Lock 문제]]
 
 ## Checklist
-- [x] [[Agent-Assisted-Performance-Analysis|에이전트 성능 분석과 검증]] — 프로파일 근거, 변경 계약, 카나리 대조군과 공개 사례의 확인 범위
+- [x] [[Agent-Assisted-Performance-Analysis|에이전트 성능 분석과 검증]] — 프로파일 근거, 변경 계약, 카나리 대조군과 공개 사례의 확인 범위, 느린 함수만 Rust로 옮기는 부분 이식과 기록 호출 재생 검증, 언어 경계 비용
 - [x] [[Performance-Fundamentals|성능 기초 개념 폴더 인덱스 (CPU vs I/O, 처리량과 지연시간, 확장 방향, 캐시와 큐)]]
 - [x] [[Performance-Optimization|성능 최적화 전략 폴더 인덱스 (레이턴시, 읽기와 쓰기, 커넥션 풀, 락 경합, 이미지 전송, 증설 없는 스케일링)]]
 - [x] [[Traffic-Workload-Patterns|대규모 트래픽 워크로드 패턴 폴더 인덱스 (선착순, 대기열, 알림 팬아웃, 위치 매칭)]]
@@ -42,6 +42,7 @@ aliases: ["성능&확장성(Performance&Scalability)", "Performance & Scalabilit
 - [x] [[Traffic-Scaling-Playbook|트래픽 스케일링 실전 (서버 증설 없는 최적화, 모니터링→식별→카나리)]]
 - [x] [[Notification-Broadcast-System|대규모 알림 시스템 (계층적 팬아웃, SQS in-flight, 전용 인프라 격리)]]
 - [x] [[Image-Delivery-Optimization|이미지 전송 최적화 (Lambda@Edge 리사이즈, WebP/AVIF, GIF→MP4, LCP/egress)]]
+- [x] [[Performance-Budget-and-Design-Decisions|웹 페이지 성능 예산과 디자인 결정 (속도를 정하는 다섯 층, LCP 이미지 우선순위, 예산표와 제한한 첫 로드 측정)]]
 - [x] [[Video-Compression-H264|H.264 영상 압축 원리와 인코딩 설정 (예측, 정수 변환, QP와 양자화, CABAC, GOP와 HLS 세그먼트, x264 CRF와 preset, 프로파일과 faststart)]]
 - [x] [[Geospatial-Matching|실시간 위치 기반 매칭 (H3 육각형 격자, k-ring, 공간+시간 분할, 핫 파티션, 위치 갱신 수집과 질의 형태별 저장, ETA 순위와 배차 확정, GPS 보정과 맵 매칭)]]
 - [x] [[Capacity-Planning|캐퍼시티 플래닝 (스파이크 대비 사이클, 램프업 vs 스텝 BMT, Redis 가용량 확보 3옵션)]]

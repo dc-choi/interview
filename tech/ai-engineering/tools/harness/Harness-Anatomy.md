@@ -3,7 +3,7 @@ tags: [ai, harness, architecture]
 status: done
 verified_at: 2026-09-16
 category: "AI엔지니어링(AIEngineering)"
-aliases: ["Harness Anatomy", "하네스 구성도", "에이전트 = 모델 + 하네스"]
+aliases: ["Harness Anatomy", "하네스 구성도", "에이전트 = 모델 + 하네스", "ClawDOS"]
 ---
 
 # 하네스 구성도 (Harness Anatomy)
@@ -21,6 +21,8 @@ aliases: ["Harness Anatomy", "하네스 구성도", "에이전트 = 모델 + 하
 | 계기판 | 관찰 - 로그, 상태, 피드백 |
 
 엔진이 좋아도 핸들과 브레이크와 바퀴가 없으면 도로에 나갈 수 없다. 하네스 엔지니어링은 엔진을 개조하는 일이 아니라 차량을 설계하는 일이다.
+
+같은 구분을 두뇌와 외골격으로 비유하기도 한다. OpenAI의 최고인사책임자는 2026-11 한 투자사 행사에서 모델을 두뇌로, Codex나 Claude Code 같은 하네스를 스킬, 도구와 여러 에이전트에 걸쳐 맥락을 유지하는 런타임을 갖춘 외골격으로 보고, 그 위에 비서와 전문 에이전트 같은 구현체를 두는 그림을 그렸다(진행자의 정리 글 기준). 같은 자리의 조직 변화 발언은 [[AI-Anxiety-and-FOMO#초보 상태를 견디는 것도 연습 대상이다|모두가 주니어라는 주장]]에 있다.
 
 ## 다섯 개의 손잡이
 
@@ -89,6 +91,19 @@ aliases: ["Harness Anatomy", "하네스 구성도", "에이전트 = 모델 + 하
 
 터미널 TUI, IDE 확장, 헤드리스 실행, SDK와 앱서버는 입구가 다를 뿐 같은 코어로 수렴한다. 코어는 컨텍스트 조립, 에이전트 루프, 평가와 제어 셋이다. 입구와 바깥(모델 API, 샌드박스와 셸, MCP 서버)은 갈아 끼우는 부분이고 가운데가 팀이 만드는 부분이다. 그래서 한 도구에서 익힌 구조는 도구를 바꿔도 대부분 옮겨간다.
 
+## 가장 작은 하네스로 본 코어: ClawDOS
+
+코어가 무엇인지는 하네스를 극단적으로 작은 장비에 올린 사례에서 드러난다. 2026-11-25 확인한 공개 저장소 README 기준, ClawDOS는 4.77MHz 8088, 640KB RAM과 CGA를 갖춘 IBM PC XT에서 도는 Claude 코딩 에이전트다(GPL-3.0 이상, 저장소 코드 전부를 Claude가 썼다고 적는다).
+
+- **코어는 장비 안에 있다:** 176KB의 `HARNESS.EXE`가 Messages API 요청을 쓰고, 스트리밍 응답(SSE와 JSON)을 해석하고, 도구 18개를 실행하고, 대화를 API의 메시지 형식 그대로 디스크에 남긴다. 도구는 파일 조회와 변경, DOS 프로그램 실행(한 번에 명령 12개까지, 요청하면 화면 캡처), 메모리와 I/O 포트 읽기 쓰기, 스피커와 텍스트 아트, 기억 관리로 나뉜다. 매 왕복의 첫 토큰 시간, 업로드 크기, 토큰 수와 캐시 읽기는 로그 파일에 남는다.
+- **암호화와 키는 밖으로 뺄 수 있다:** 8088이 감당하지 못하는 TLS는 다른 컴퓨터의 중계(tunnel)가 맡고 PC는 평문 HTTP로 중계에 붙는다. 중계가 API 키를 쥐면 키가 PC 디스크에 남지 않는다. 에이전트 밖 프록시가 자격 증명을 끼우는 [[Always-On-Agent-Architecture#권한|상시 실행 에이전트의 권한 구성]]과 같은 배치다. 대신 PC와 중계 사이는 암호화되지 않으므로 같은 신뢰 구역 안에 둔다(적용 제안).
+- **상태를 남기면 하네스가 자리를 비킬 수 있다:** 컴파일할 때는 상태를 저장하고 메모리에서 빠져 Turbo C가 약 450KB를 쓰게 한 뒤 프로그램 출력을 들고 같은 대화로 돌아온다(하네스가 남아 있으면 프로그램 몫은 약 200KB). 전원 스위치로 끊긴 대화도 다시 연다. 위 세션, 상태 층이 재개의 전제라는 점을 보여 준다.
+- **첫 요청 뒤에는 새 내용만 올린다:** README는 시스템 프롬프트와 도구 정의를 API가 캐시한다는 것과, 대화의 첫 요청 뒤에는 새 내용만 올려 도구 결과 하나가 약 500바이트로 올라간다는 것을 나란히 적는다. 프롬프트 캐싱만으로는 매 턴의 업로드가 줄지 않는다([[LLM-Prompt-Caching|프롬프트 캐싱]]). 업로드를 줄이는 것은 별도 설정인 message threads이며, 저장소의 API 문서는 이 설정(`threads 1`, 베타)을 켜면 이후 요청이 새 내용만 보낸다고 적는다. 설정이 없으면 꺼져 있고 배포된 설정 파일의 Anthropic 항목이 이를 켠다. 끊긴 연결과 과부하 응답은 재시도하고 턴을 이어 간다.
+- **기억과 스킬은 평문 파일이다:** 기억(`C:\MEMORY`)과 함께 배포되는 스킬 안내서 모두 매 대화의 시스템 프롬프트에 목록만 들어가고 과업에 맞을 때 읽는다. [[Agent-Skills|에이전트 스킬]]의 점진적 공개와 같은 방식이다.
+- **권한 게이트:** 기본으로 켜진 safe mode가 파일, 메모리, 포트를 바꾸기 전에 `Allow ...? (y/n)`으로 묻는다.
+
+시연에서 100 미만의 소수를 출력하는 C 프로그램을 쓰고 컴파일해 실행한 요청은 64초(그중 26초가 컴파일, 링크와 실행)가 걸렸고, 시연 화면은 86Box로 에뮬레이션한 PC XT에서 녹화했다고 적는다. README에서 컨텍스트 창 크기와 대화 압축 방식은 찾지 못했다. 설치와 실기 실행은 시험하지 않았다.
+
 ## 제약과 검증이 끼어드는 지점
 
 에이전트 루프 한 바퀴의 흐름:
@@ -130,6 +145,7 @@ aliases: ["Harness Anatomy", "하네스 구성도", "에이전트 = 모델 + 하
 - 제약과 검증이 루프의 어느 단계에 끼어드는지, 그래서 왜 문장보다 훅이 센지
 - 루프 가드가 모델 판단과 별개로 존재해야 하는 이유
 - 세 기둥 중 자기 팀에 비어 있는 기둥을 지목할 수 있는가
+- ClawDOS가 장비 밖으로 뺀 것(TLS, API 키)과 안에 남긴 것(루프, 도구 실행, 상태 저장)을 나누고, 루프와 상태를 원격에 두는 다른 배치와 견줄 수 있는가
 
 ## 출처
 
@@ -143,6 +159,10 @@ aliases: ["Harness Anatomy", "하네스 구성도", "에이전트 = 모델 + 하
 - [carve-harness — GitHub, claude-code-expert](https://github.com/claude-code-expert/carve-harness)
 - [Anthropic, Hooks](https://code.claude.com/docs/en/hooks)
 - [Anthropic, CLI reference](https://code.claude.com/docs/en/cli-reference)
+- [ClawDOS — GitHub, Ricapar](https://github.com/Ricapar/ClawDOS) — 2026-11-25 README의 하드웨어, 하네스 구성과 도구, TLS 중계와 키 보관, 메모리 배분, 캐시와 재시도, 기억과 스킬, safe mode와 시연 시간 대조
+- [ClawDOS, API](https://github.com/Ricapar/ClawDOS/blob/main/docs/API.md) — 2026-11-25 캐시와 message threads 설정 대조
+- [ClawDOS - DOS용 AI 코딩 에이전트 — GeekNews](https://news.hada.io/topic?id=37604) — 2026-11-23 게시, 학습 계기
+- [We Are All Junior Talent Now — Tomasz Tunguz](https://tomtunguz.com/we-are-all-junior-talent-now/) — 2026-11-10, 2026-11-25 두뇌와 외골격 비유 대조. 행사 발언 원본은 확인하지 못함
 
 ## 관련 문서
 

@@ -1,9 +1,9 @@
 ---
 tags: [ai, agent, architecture, memory, permissions, webhook]
 status: done
-verified_at: 2026-11-21
+verified_at: 2026-11-25
 category: "AI엔지니어링(AIEngineering)"
-aliases: ["Always-On Agent Architecture", "상시 실행 에이전트 구조", "Building always-on agents", "에이전트 이벤트 수신함"]
+aliases: ["Always-On Agent Architecture", "상시 실행 에이전트 구조", "Building always-on agents", "에이전트 이벤트 수신함", "Pine"]
 ---
 
 # 상시 실행 에이전트의 구조 — 이벤트 수신함, 타이머, 메모리, 권한과 발신함
@@ -72,6 +72,18 @@ aliases: ["Always-On Agent Architecture", "상시 실행 에이전트 구조", "
 
 너무 많이 보내면 시끄럽고 너무 적게 보내면 사용자가 알아야 할 것을 놓친다. Anthropic은 평가(eval)로 균형을 찾고, 조용히 시작해 사용자의 주의를 조금씩 얻어 가라고 권한다. 알림 등급과 발송 직전의 수신자 인가 재검사는 [[Production-Agent-Architecture-Delegation|위임 경계]]를 본다.
 
+## 제품 사례: 이벤트에 반응하는 하네스 Pine
+
+2026-11-25 공식 저장소의 README와 이벤트 참고 문서 기준, Pine은 파일, 메시지와 기기의 변화 같은 이벤트에 에이전트가 반응하게 하는 오픈소스 하네스다(MIT, npm 배포). 터미널 UI와 데스크톱 앱 외에 UI 없이 이벤트에 계속 반응하는 데몬 모드가 있다. 위 구성 요소에 대응시키면 다음과 같다.
+
+- **출처와 구독:** 이벤트 출처는 스키마를 가진 TypeScript 서비스이며, 문서의 출처 유형에는 폴더, MQTT, 웹훅, FTP, Telegram, HTTP, 명령, 피드, 캘린더, 메일, Slack, ONVIF 카메라, Modbus와 시리얼 장치 등이 있다. 사용자가 감시할 대상과 할 일을 말하면 메인 에이전트가 관리용 도구 호출로 에이전트, MCP, 출처, 스킬과 일정을 구성한다. 설정을 에이전트가 바꾸므로 그 변경도 권한과 검토 대상으로 둔다(적용 제안).
+- **수신함의 동작:** 이벤트는 MQTT식 와일드카드(`+`, `#`)를 쓰는 토픽으로 흐른다. 기본 경로는 구독이다. 문서는 대부분의 구성에 경로(route)가 필요 없다고 적고, 출처에 반응하는 에이전트는 그 출처를 구독하며 이벤트는 구독한 대화의 다음 메시지로 들어간다. 구독의 throttle 기본값은 10초이고 그 사이에 온 이벤트는 이벤트 로그에만 남을 뿐 에이전트를 깨우지 않으며 나중을 위해 보관되지도 않는다(모든 이벤트가 중요한 출처는 `0s`로 끄고, 에이전트에게 쓴 메시지를 전하는 `talks` 유형 출처에는 기본 throttle이 적용되지 않는다). debounce는 잠잠해질 때까지 기다렸다 마지막 것만 처리하고, 구독한 대화가 일하는 중이면 이벤트는 차례를 기다린다. 경로는 에이전트를 깨우지 않고 값을 저장하거나 다른 토픽으로 내보내는 작은 일에 쓰며, 경로에서 에이전트를 부를 때의 `whenBusy`는 기본값 `steer`이면 진행 중인 작업에 넘겨 실행 한 번과 답 한 번으로 묶고(답이 다른 곳으로 가는 이벤트는 기다린다) `queue`면 작업이 끝날 때까지 기다린다. throttle 기본값은 위 수신함의 이벤트를 잃지 않는다는 원칙과 다른 선택이므로 출처마다 확인한다(이 문서의 판단).
+- **타이머:** cron, 간격(`every`), 한 번(`at`, `in`) 일정을 둔다. 데몬이 꺼진 동안 지난 일회성 일정과 작업이 붙은 cron 일정(7일 이내)은 다시 켜질 때 한 번 실행하며 늦었다고 알리고, 간격 일정은 따라잡지 않는다.
+- **신뢰 등급:** 웹훅과 외부 출처의 이벤트는 기본으로 신뢰하지 않는(untrusted) 등급이고, 출처 항목에 `"trust": "owner"`가 있으면 owner 등급이다(계정을 직접 짝지은 Telegram 출처는 추가할 때 이 값이 들어간다). 문서는 서명이 맞아도 보낸 사람을 확인할 뿐 내용이 따를 만하다는 뜻은 아니라고 적는다. 보호 방식은 전달 경로에 따라 다르다. 기본 구독에서는 이벤트가 데이터로 표시돼 들어가고 에이전트는 그 대화의 파일과 도구를 그대로 가지며(외부 이벤트가 시작한 실행에는 다른 대화를 읽는 `read_source`만 빠진다), 대신 그 대화에 외부 내용을 읽었다는 표시가 붙어 정보를 밖으로 보내는 행동은 실행 전에 사용자에게 묻고(소유자에게 알리는 전송은 예외) 우회(bypass) 모드가 멈춘다. 구독에 `separate: true`를 주면 이벤트가 전용 대화로 들어가고, 내 것이 아닌 출처에는 줄인 도구 묶음(파일 읽기)만 준다. 경로를 거친 신뢰하지 않는 이벤트에 대해서는 출처와 데이터임을 알리는 앞머리 줄이 예의일 뿐이고(본문은 정해진 길이에서 잘린다) 실제 보호는 그 실행이 쓸 도구를 줄이는 데 있다고 밝힌다. 경로의 신뢰를 owner로 올리는 설정은 소유자 말고는 아무도 쓸 수 없는 출처에만 쓰라고 한다. 따라서 기본 구독은 도구를 줄이지 않으며, 낯선 사람의 글이 실리는 출처나 권한이 큰 무인 에이전트에는 `separate`를 쓰라는 것이 문서의 권고다.
+- **실행 격리:** `safe` 모드는 macOS와 Linux의 시스템 샌드박스를 쓴다. Docker 안에서는 권한을 더 주지 않으면 에이전트 전용 샌드박스를 만들 수 없어 `auto` 모드로 돌고, 에이전트와 Pine 자신의 비밀 값이 같은 컨테이너에 있다고 적는다. 이벤트가 이벤트를 부르는 고리는 일정 단계에서 끊고 로그에 남긴다.
+
+README는 소유자가 설정한 모델 서버, 웹 주소, 출처와 MCP 서버 말고는 정보를 보내지 않는다고 적는다(앱의 새 버전 확인 요청은 예외). 보안 문서는 신뢰하지 않는 이벤트가 시작한 작업의 기본 도구를 읽기와 검색(`read`, `grep`, `find`, `ls`)으로 한정하고 셸, 쓰기, MCP 서버, 위임, 이벤트 발행과 설정 변경 도구를 등록하지 않으며, 그 작업을 사용자 대화와 분리된 세션에서 돌린다고 적는다. 이 범위는 에이전트별로 넓힐 수 있고 넓힌 만큼은 묻지 않고 쓰이므로, `pine check`가 셸이나 쓰기를 가진 프로필을 알려 준다. 확인한 문서에서 같은 이벤트의 재전달과 장애 뒤 재시도의 중복 방지, 발신량 조절은 찾지 못했으므로 위의 [[Idempotency|멱등성]]과 발신함 평가는 직접 확인한다. 설치와 이벤트 처리는 시험하지 않았다.
+
 ## 모델 비용 수치를 읽는 조건
 
 Anthropic은 상시 실행 에이전트가 다시 늘어난 이유로 사용자 의도와 확인 시점을 더 잘 판단하는 모델, 특히 장기 과업에서 싸진 비용을 든다. 근거 수치는 한 장기 코딩 벤치마크에서 Opus 5.5의 해결 과업당 비용이 Opus 5보다 78% 낮고 일반 작업에서는 40% 낮다는 것이다.
@@ -83,6 +95,7 @@ Anthropic은 상시 실행 에이전트가 다시 늘어난 이유로 사용자 
 다음은 위 구조에서 도출한 적용 제안이다.
 
 - 어떤 출처가 수신함에 쓸 수 있는지, 그 내용을 신뢰할 지시로 볼지 외부 입력으로 볼지 정했는가.
+- 외부 입력이 깨운 실행에 줄 도구를 신뢰 등급에 따라 줄였는가. 도구가 기본으로 줄어드는지, 따로 설정해야 하는지 확인했는가.
 - 같은 이벤트를 다시 실행해도 외부 부작용이 두 번 생기지 않는가.
 - 에이전트가 스스로 거는 후속 확인에 개수와 최소 간격의 상한이 있는가.
 - 메모리에 넣지 않을 것(다시 조회할 수 있는 정보, 비밀 값)을 정했는가.
@@ -94,6 +107,12 @@ Anthropic은 상시 실행 에이전트가 다시 늘어난 이유로 사용자 
 - [Building always-on agents — Anthropic, William Hu](https://claude.com/resources/articles/building-always-on-agents) — 2026-11-13 게시(claude.com/blog 주소에서 옮겨짐), 2026-11-21 다섯 구성 요소, 수신함 모범 사례, 타이머 처리, 메모리 종류, 권한 구성, 발신함과 비용 수치를 원문 대조
 - [Claude Platform Docs, Optimizing for cost and intelligence](https://platform.claude.com/docs/en/about-claude/models/optimizing-for-cost-and-intelligence) — 2026-11-21 78% 수치의 벤치마크, 노력 수준, 해결률, 가격 기준과 40% 수치의 출처 확인
 - [항상 작동하는 에이전트 구축하기 — GeekNews](https://news.hada.io/topic?id=37550) — 2026-11-21 게시, 학습 계기
+- [pine — GitHub, pmndre](https://github.com/pmndre/pine) — 2026-11-25 README(기본 브랜치 next)의 이벤트 구독, 관리용 도구 호출, 데몬 모드, safe 모드와 Docker, 개인정보 서술 대조. 라이선스는 저장소의 LICENSE 파일(MIT)로 확인
+- [pine, Events, routes and schedules](https://github.com/pmndre/pine/blob/next/docs/references/events.md) — 2026-11-25 토픽과 신뢰 등급, 경로의 throttle, debounce와 whenBusy, 일정의 지연 실행, 고리 차단 대조
+- [pine, Event sources](https://github.com/pmndre/pine/blob/next/docs/references/sources.md) — 2026-11-25 구독의 기본 동작(throttle 10초, 바쁠 때 대기), 외부 내용 표시와 `separate` 대조
+- [pine, Security](https://github.com/pmndre/pine/blob/next/docs/references/security.md) — 2026-11-25 신뢰 등급의 정의와 untrusted 프로필의 도구 범위 대조
+- [pine, Source types](https://github.com/pmndre/pine/blob/next/docs/references/source-types.md) — 2026-11-25 출처 유형 목록 확인
+- [Pine - 파일과 메시지, 기기 변화에 반응해 작업하는 AI 에이전트 하네스 — GeekNews](https://news.hada.io/topic?id=37742) — 2026-11-24 게시, 학습 계기
 
 ## 관련 문서
 

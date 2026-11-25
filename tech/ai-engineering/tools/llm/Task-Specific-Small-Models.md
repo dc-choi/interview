@@ -156,3 +156,4 @@ Muon, FP8과 사다리꼴 학습률을 사용했다는 사실만으로 각 요�
 - [[LLM-Inference-Serving-Engines|LLM 추론 서빙 엔진]] — 초안 기반 디코딩과 구조화 출력
 - [[Eval-LLM-Judge|LLM 판정기]]
 - [[Local-Inference-Deployment-Cases|로컬 추론의 배포 사례]]
+- [[LLM-Weight-Quantization|LLM 가중치 양자화]] — 짧은 과제와 장기 에이전트 과제에서 다르게 나타나는 양자화 손실

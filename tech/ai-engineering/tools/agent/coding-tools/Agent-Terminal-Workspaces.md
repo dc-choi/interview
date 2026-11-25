@@ -1,9 +1,9 @@
 ---
 tags: [ai, agent, terminal, workspace, worktree, observability]
 status: done
-verified_at: 2026-11-15
+verified_at: 2026-11-25
 category: "AI엔지니어링(AIEngineering)"
-aliases: ["Agent Terminal Workspaces", "에이전트 터미널 작업 공간", "T3 Code"]
+aliases: ["Agent Terminal Workspaces", "에이전트 터미널 작업 공간", "T3 Code", "DreamCoder"]
 ---
 
 # 에이전트 터미널과 작업 공간
@@ -38,6 +38,17 @@ Herdr는 지원하는 에이전트의 프로세스와 pane의 최신 화면을 �
 2026-10-28 공식 README 기준, Corgi는 Ghostty 기반의 터미널 멀티플렉서 겸 에이전트 관리 도구다. 에이전트별 작업/입력 대기/완료 상태와 컨텍스트, 토큰 및 사용량 한도를 표시한다. Claude Code와 Codex 설정에 훅을 추가하며, 다른 도구의 통합 방식은 다를 수 있다. 관찰 기능 도입도 기존 에이전트 설정을 바꾸는 작업으로 취급한다.
 
 실행 중 세션의 조회와 pane 입력/읽기를 CLI로 제공하지만, 재부팅 뒤 화면과 대화를 복원하는 것과 모든 프로세스의 실행 상태를 그대로 복원하는 것은 구분한다. 구체적인 경계는 [[Agent-Always-On-Mac-Host#세션 유지는 끊김과 재부팅을 나눠 본다|세션 복원의 범위]]를 따른다. 이 절은 문서 확인이며 설치나 복원 시험 결과가 아니다.
+
+### 브라우저 타일 배치와 작업 공간 미니맵: DreamCoder
+
+2026-11-20 제작자 발표 기준, DreamCoder는 대화창과 터미널 같은 pane을 브라우저 안의 타일 창 관리자로 나란히 두는 코딩 하네스 겸 IDE다. macOS, Windows, Linux용과 Docker 이미지로 배포하며 Emacs와 무관한 별도 프로그램이다. 제작자는 코딩 하네스가 대화 화면을 넘어 미래의 IDE가 된다고 보며, 발표의 화면 목록에는 이벤트 그래프, 목표, 이미지 pane과 휴대폰 화면도 있다. 위 세 책임 가운데 화면 배치와 상태 관찰을 한 화면에 묶는다.
+
+- **배치:** pane마다 최소, 적정, 최대 크기를 두고 제약 충족 solver가 새 pane 요청과 보이는 pane들의 크기 균형을 맞춘다. 자리가 없으면 오래된 pane을 숨김 창 막대로 보내며, 그곳에서도 실시간 보기로 진행을 확인한다. 작업 공간은 가상 데스크톱처럼 나뉜다.
+- **상태:** 작업 공간마다 실제 배치를 줄인 미니맵을 두어 작업 중인 pane은 맥박처럼 깜박이고, 막힌 pane은 눈에 띄게 표시하며, 할 일이 없으면 초록으로 보인다. 앞의 `blocked`처럼 사람의 응답을 기다리는 실행을 여러 작업 공간에서 찾는 장치이며, 초록 표시도 작업 성공의 증거는 아니다.
+- **하네스 기능:** 백그라운드 서브에이전트와 셸 명령, MCP, 스킬, 훅을 지원하고 Pi, OpenCode, Codex 설정을 가져온다. 다른 하네스의 루프를 빌리지 않고 자체 도구 루프를 쓴다(제작자의 댓글 답변). Qwen, Gemma, DeepSeek, GLM 같은 오픈 웨이트 모델의 로컬 실행을 중시한다.
+- **권한:** 훅으로 에이전트를 샌드박스에 감쌀 수 있느냐는 질문에 제작자는 가능하다면서도 DreamCoder 자체가 시스템 접근 권한을 가지므로 컨테이너(Docker 이미지)에 넣는 편이 낫다고 답했다. 에이전트를 감싸도 하네스 프로세스의 권한은 따로 남는다는 뜻으로 읽는다(적용 제안).
+
+가격, 라이선스와 소스 공개 여부는 발표문에서 찾지 못했다. 캐시 적중 99%와 며칠씩 실행된다는 말은 측정 조건이 없는 제작자 주장이다. 설치, 상태 표시의 정확도와 컨테이너 격리는 시험하지 않았다.
 
 ## Worktree가 나누는 것과 공유하는 것
 
@@ -103,7 +114,7 @@ Prospero는 C++와 Dear ImGui 기반 네이티브 하네스로 Windows, macOS와
 
 ## 출처
 
-2026-10-07 공식 문서의 기능과 상태 정의를 대조했다. 제품을 설치하거나 성능, 원격 연결과 실제 상태 판별 정확도를 시험한 기록은 아니다. T3 Code 절은 2026-10-27 공식 저장소 문서를 대조했다.
+2026-10-07 공식 문서의 기능과 상태 정의를 대조했다. 제품을 설치하거나 성능, 원격 연결과 실제 상태 판별 정확도를 시험한 기록은 아니다. T3 Code 절은 2026-10-27 공식 저장소 문서를 대조했다. DreamCoder 절은 2026-11-25 제작자의 발표 글과 같은 페이지의 제작자 댓글을 대조했다.
 
 - [코드.. 이제 사람이 못 봐요.. AI 정착 후 생존 경쟁이 되어버린 판교 IT 회사 분위기 — YouTube, 판교 뚜벅쵸](https://www.youtube.com/watch?v=2-CvcwEVhRQ) — 2026-11-22 업로드, 2026-11-23 음성 인식 전사 확인. 01:36~03:06의 도구 선택 이유, 개인 경험담
 - [Ghostty Documentation, About Ghostty](https://ghostty.org/docs/about)
@@ -124,6 +135,8 @@ Prospero는 C++와 Dear ImGui 기반 네이티브 하네스로 Windows, macOS와
 - [New Ways of Working with Codex — AI Engineer, Dominik Kundel, Charlie Guo](https://www.youtube.com/watch?v=IPh9YsWvDQk) — 2026-11-17 공개 영상의 35:49~36:49와 53:50~56:38을 사람이 단 영어 자막과 대조. 동료 서브에이전트, 독립 스레드와 CLI 원격 연결 소개의 근거이며 2026-11-21 아래 공식 문서로 대조했다.
 - [OpenAI, Subagents](https://learn.chatgpt.com/docs/agent-configuration/subagents) — 2026-11-21 메인 스레드가 결과를 모으는 구조와 에이전트 스레드 전환 대조. 동료 서브에이전트와 독립 스레드는 찾지 못함
 - [OpenAI, Developer commands](https://learn.chatgpt.com/docs/developer-commands) — 2026-11-21 `codex remote-control`, `codex agents`, `/voice` 대조. 휴대폰 설정 경로는 [Remote connections](https://learn.chatgpt.com/docs/remote-connections)와 엇갈린다
+- [Announcing DreamCoder — Mastering Emacs, Mickey Petersen](https://www.masteringemacs.org/article/announcing-dreamcoder) — 2026-11-20 발표, 2026-11-25 타일 배치, 미니맵 상태, 지원 기능, 오픈 웨이트 모델과 컨테이너 권고(제작자 댓글 답변) 대조. 가격, 라이선스와 소스 공개 여부는 찾지 못함
+- [DreamCoder: Mastering Emacs 저자가 만든 코딩 하네스와 IDE — GeekNews](https://news.hada.io/topic?id=37564) — 2026-11-22 게시, 학습 계기
 
 ## 관련 문서
 

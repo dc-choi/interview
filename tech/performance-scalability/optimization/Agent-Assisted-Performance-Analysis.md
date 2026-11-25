@@ -1,9 +1,9 @@
 ---
-tags: [performance, profiling, ai, agent, canary]
+tags: [performance, profiling, ai, agent, canary, rust, ffi]
 status: done
-verified_at: 2026-11-04
+verified_at: 2026-11-25
 category: "성능&확장성(Performance&Scalability)"
-aliases: ["Agent Assisted Performance Analysis", "에이전트 성능 분석"]
+aliases: ["Agent Assisted Performance Analysis", "에이전트 성능 분석", "핫 함수 부분 이식", "fast-anything"]
 ---
 
 # 에이전트를 활용한 성능 분석과 검증
@@ -45,21 +45,43 @@ P99 CONF 2026의 Netflix 발표 공개 소개는 운영 서비스에서 비효�
 
 확인 범위는 공개 소개문이다. 등록이 필요한 발표 녹화, 내부 코드와 측정 원본은 확인하지 않았다. 개별 최적화의 개선 배수, 내부 패턴 저장소와 승인 절차는 이 소개만으로 확정하지 않는다. 위 표는 적용을 위한 설계 제안이며 해당 회사의 상세 구현을 복원한 것이 아니다.
 
+## 느린 함수만 다른 언어로 옮기는 부분 이식
+
+실행 시간 대부분이 몇 개 함수에 몰려 있으면 앱 전체를 다시 쓰지 않고 그 함수만 빠른 언어로 옮길 수 있다. 앱 전체의 개선 폭은 옮긴 함수가 차지하던 시간 비율에 묶인다([[Concurrency-vs-Parallelism|Amdahl의 법칙]]과 같은 계산). 위의 발견, 수정과 검증 단계를 한 명령으로 묶은 오픈소스 도구 fast-anything(MIT)의 흐름은 다음과 같다(2026-11-25 저장소 README 기준).
+
+| 단계 | README의 동작 | 일반화한 점검(이 문서의 제안) |
+|---|---|---|
+| 후보 선택 | 앱을 프로파일해 함수를 실행 시간 × 이식 가능성으로 순위 매긴다. 숫자, 문자열, 목록 같은 평범한 데이터를 받는 결정적 최상위 함수만 옮기고, 옮길 수 없는 함수는 이유를 알려 준다 | 넓은 프레임이라도 상태나 부수효과가 얽힌 함수는 부분 이식보다 구조 변경이 먼저일 수 있다 |
+| 입력 기록 | 실제 호출을 최대 500개 기록하고 함수 하나짜리 Rust crate와 작업 지시서를 만든다 | 기록이 실제 부하의 입력 분포를 대표하는지 확인한다 |
+| 이식 | 코딩 에이전트가 지시서를 받아 Rust로 옮긴다 | 에이전트 출력은 아래 검증 전까지 후보일 뿐이다 |
+| 검증 | 릴리스 빌드 뒤 기록한 호출을 모두 재생하고, 경계 사례(NaN, ±무한대, -0.0, 0과 ±1, 비ASCII 문자열, 빈 입력과 최대 16배 큰 입력)와 줄인 입력을 원본이 답하게 해 함께 비교한다. 값이 같고(실수는 1e-9 이내) 원본이 오류를 내는 곳에서 같이 오류를 내야 통과다 | 기록과 파생 사례 밖의 경로는 검증되지 않는다 |
+| 활성화 | 모든 사례가 맞아도 호출당 원본보다 느리면 켜지 않는다. 표시한 블록 하나로 넣고 빼며 환경 변수로 언제든 원본을 실행한다 | 되돌리기 경로가 있어야 [[#발견, 수정과 검증을 분리한다\|제한 배포]]로 넘길 수 있다 |
+| 측정 | 원본과 이식본을 번갈아 실행해 앱 전체 시간을 비교한다 | 함수 단위 개선과 앱 전체 개선을 따로 기록한다 |
+
+언어 경계를 넘는 호출에는 고정 비용이 든다. 작은 함수를 반복문 안에서 수백만 번 부르면 경계 비용이 절약한 계산보다 커질 수 있으므로, 도구는 옮길 수 있는 가장 바깥 반복문을 옮겨 경계를 한 번만 넘게 한다. Python은 PyO3, JavaScript와 TypeScript는 napi-rs로 연결하고, Ruby, Java, Go, PHP, C와 C++, C#, R은 JSON을 주고받는 C 진입점 하나로 연결한다. JSON 변환 비용도 경계 비용에 들어간다(이 문서의 해석).
+
+제작자가 공개한 예제 측정(i5-10500과 Windows 11, C와 C++는 4코어 GitHub Actions Linux 러너)에서 이름 700개의 유사 중복을 찾는 Python 예제는 4.91초에서 42ms로 116배, 이름 4,000개의 Java 예제는 3.50초에서 1.18초로 3배였다. Java는 함수만 보면 11배였고 나머지는 JVM 시작 시간이라고 적어, 함수 개선과 앱 전체 개선이 다를 수 있음을 보여 준다. README는 안쪽 `levenshtein` 함수만 옮긴 경우를 35배와 1.9배로 따로 적지만 어느 예제의 수치인지는 밝히지 않는다. 모두 제작자의 예제이며 직접 재현하지 않았다. 운영 코드에 넣을 때는 빌드에 Rust 도구 체인이 추가되고 두 구현을 함께 유지해야 한다는 비용도 따진다(이 문서의 판단).
+
 ## 검토할 질문
 
 - 수정 후보의 근거를 프로파일과 정확한 코드 버전까지 추적할 수 있는가?
 - 실행 계약을 보존하는지와 자원 사용을 줄였는지를 따로 검사했는가?
 - 카나리와 대조군을 나눠 오류율과 지연을 확인했는가?
 - 측정 실패나 불충분한 관측을 개선 성공으로 처리하지 않는가?
+- 다른 언어로 옮긴 함수가 기록한 실제 호출과 경계 사례에서 값과 오류 동작까지 같은지, 언어 경계 비용을 넣어도 빨라졌는지 확인했는가?
 
 ## 출처
 
 - [Flame Graphs — Brendan Gregg](https://www.brendangregg.com/flamegraphs.html)
 - [Canarying Releases — Google SRE](https://sre.google/workbook/canarying-releases/)
 - [The Autonomous Performance Agent: A Netflix Production Story — P99 CONF, Rajat Shah](https://p99conf.io/session/the-autonomous-performance-agent-a-netflix-production-story/) — 공개 발표 소개만 확인.
+- [fast-anything — GitHub, EL4CTEO/fast-anything](https://github.com/EL4CTEO/fast-anything) — 2026-11-25 README의 단계, 검증 조건, 언어별 연결과 예제 측정을 확인. 실행해 재현하지 않았다
+- 사용자 제공 GeekNews 알림(2026-11-23): Fast-Anything: 전체를 Rust로 재작성하지 말고, 느린 5%만 재작성하라. 학습 계기이며 게시물 번호는 확인하지 못했다
 
 ## 관련 문서
 
 - [[Debugging-Profiling|디버깅과 프로파일링]]
 - [[Traffic-Scaling-Playbook|트래픽 스케일링 실전]]
 - [[Cloud-Unit-Cost|클라우드 단위 비용]]
+- [[CPU-Bound-Vs-IO-Bound|CPU-Bound vs I/O-Bound]] — 언어 교체가 효과를 내는 병목의 종류
+- [[AI-Infrastructure-Language-Layers|AI 서비스 스택의 언어 계층]]

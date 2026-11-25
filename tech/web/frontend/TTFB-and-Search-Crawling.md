@@ -1,7 +1,7 @@
 ---
 tags: [web, frontend, performance, ttfb, seo, crawling, cdn]
 status: done
-verified_at: 2026-11-24
+verified_at: 2026-11-25
 category: "웹&네트워크(Web&Network)"
 aliases: ["TTFB와 검색 크롤링", "TTFB and Search Crawling", "Time to First Byte"]
 ---
@@ -58,6 +58,9 @@ Search Console의 설정에 있는 크롤링 통계 보고서는 기간 내 사�
 1. **미리 만든다**: 방문자마다 같은 페이지는 정적 HTML로 만들어 요청 시점의 서버 처리 시간을 없앤다. 크롤러가 읽을 내용도 첫 HTML에 들어간다([[Web-Service-Structure|웹 서비스 구조의 서버 구성 선택]]).
 2. **사용자 가까이 복제한다**: 오리진은 한 곳에 두고 앞에 CDN을 세워 가까운 엣지가 연결, TLS와 응답을 처리하게 한다.
 3. **HTML도 캐시되는지 확인한다**: Cloudflare 일반 CDN의 기본 캐시 대상은 확장자 기준이라 HTML이 빠져 있다. 이미지와 CSS만 캐시되면 TTFB를 만드는 HTML은 여전히 오리진까지 간다. 공개 경로만 캐시 대상으로 지정하고 로그인 화면처럼 사용자마다 다른 HTML은 제외한다([[Cloudflare-HTML-Cache|Cloudflare HTML 캐시]]).
+4. **요청 때 한 번 만들고 쓸 때 비운다**: 서버나 엣지 함수가 첫 요청에 HTML을 만들어 CDN에 긴 TTL로 캐시하고, 내용을 고치는 쓰기가 성공하면 캐시를 비운다. 방문자는 정적 사이트처럼 캐시된 HTML을 받고 운영자는 빌드 없이 웹 화면에서 내용을 고친다. 한 항목의 수정이 목록, 태그와 연표 페이지처럼 여러 페이지에 퍼지므로 비울 페이지를 정확히 고르려면 페이지 사이 의존 관계를 추적해야 하고, 일부만 비우면 반쯤 갱신된 사이트가 남는다. 의존 관계를 따로 적지 않는 작은 사이트라면 쓰기마다 전체를 비우는 단순한 선택이 정합성을 지키기 쉽다. 대가로 비운 직후의 요청은 모두 캐시 미스가 된다. Cloudflare 문서는 전체 비우기 뒤 캐시가 다시 채워질 때까지 모든 요청을 오리진이 처리해야 하고 트래픽이 큰 사이트에서는 오리진 요청이 급증할 수 있다며 URL 단위 비우기를 강하게 권한다. Workers Caching에 저장한 응답은 대시보드나 API의 영역(zone) 단위 비우기로 지워지지 않고 Worker가 `ctx.cache.purge()`로 직접 비운다고 Workers 문서는 설명하므로, 응답을 어느 캐시 계층에 저장했는지부터 확인한다(2026-11-25 Cloudflare 문서 대조). 쓰기가 드물고 페이지가 적으며 쓰는 사람이 정해진 사이트에 맞는 방식이다(이 문서의 판단).
+
+   사례로 한 작가의 작품 사이트는 Cloudflare Worker에서 Astro로 HTML을 렌더링해 30일 캐시 헤더로 내보내고, 쓰기 요청 처리기가 캐시된 모든 페이지를 무효화한다. 저자는 무효화를 정확히 하기가 까다롭고 의존 관계가 어디에도 적혀 있지 않아 전체를 비우기로 했다고 설명한다. 작품 메타데이터 전체는 R2에 둔 JSON 파일 하나이고 지도와 연표 같은 상호작용은 브라우저에서 이 JSON을 읽기만 하며, 생성기가 페이지마다 생성 시각을 적어 언제 만든 HTML인지 확인한다. 이미지 축소본은 업로드할 때 운영자의 브라우저에서 만든다([[Image-Delivery-Optimization#크기별 변형: 미리 만들기 vs 요청 시 만들기|이미지 크기별 변형]]). JSON 파일 하나를 통째로 고쳐 쓰는 방식은 편집자가 한 명일 때 단순하지만 여럿이 동시에 고치면 나중 쓰기가 앞 변경을 덮어쓸 수 있다(이 문서의 판단).
 
 ## 측정과 해석
 
@@ -78,6 +81,7 @@ Search Console의 설정에 있는 크롤링 통계 보고서는 기간 내 사�
 - TTFB가 Core Web Vitals가 아닌데도 중요한 이유는 FCP와 LCP의 시작점이기 때문이다.
 - 해외 사용자의 TTFB가 느릴 때 서버 증설보다 정적 생성과 CDN을 먼저 검토하는 이유는 왕복 지연이 거리에 묶여 있기 때문이다.
 - CDN을 붙여도 TTFB가 그대로라면 HTML이 캐시 대상인지부터 확인한다.
+- HTML을 길게 캐시하고 쓰기 때 비우는 구조에서 전체 비우기와 URL 단위 비우기를 고르는 기준은 의존 관계 추적 비용, 쓰기 빈도와 비운 직후의 오리진 부하다.
 
 ## 출처
 
@@ -91,6 +95,10 @@ Search Console의 설정에 있는 크롤링 통계 보고서는 기간 내 사�
 - [Google Search Central, Understanding page experience in Google Search results](https://developers.google.com/search/docs/appearance/page-experience)
 - [Search Console Help, Crawl Stats report](https://support.google.com/webmasters/answer/9679690)
 - [Cloudflare, Default cache behavior](https://developers.cloudflare.com/cache/concepts/default-cache-behavior/)
+- [Cloudflare, Purge everything](https://developers.cloudflare.com/cache/how-to/purge-cache/purge-everything/) — 전체 비우기 뒤 캐시 미스와 오리진 요청 급증, URL 단위 비우기 권고
+- [Cloudflare Workers, Purge and invalidate the cache](https://developers.cloudflare.com/workers/cache/purge/) — Workers Caching과 영역 단위 비우기의 분리, 쓰기 뒤 비우기
+- [I'm quite pleased by the tech architecture of my art website — Kshitij Lauria](https://klauria.tech/klauria-art/) — 작품 사이트의 렌더링, 30일 캐시와 쓰기 시 전체 무효화, R2의 JSON 메타데이터와 브라우저 축소본. 게시일은 글에 없다
+- 사용자 제공 GeekNews 알림(2026-11-23): 내 미술 작품 웹사이트의 기술 아키텍처가 꽤 마음에 든다. 학습 계기이며 게시물 번호는 확인하지 못했다
 - [IETF, RFC 9846 The Transport Layer Security (TLS) Protocol Version 1.3](https://www.rfc-editor.org/rfc/rfc9846.html)
 - [IETF, RFC 9000 QUIC: A UDP-Based Multiplexed and Secure Transport](https://www.rfc-editor.org/rfc/rfc9000)
 - [curl, write-out](https://curl.se/docs/manpage.html#-w)
@@ -104,3 +112,4 @@ Search Console의 설정에 있는 크롤링 통계 보고서는 기간 내 사�
 - [[SEO-Google-Naver-Operations|Google과 네이버 SEO 운영]]
 - [[Browser-URL-Flow|브라우저 URL 처리 흐름]]
 - [[Latency-Optimization|레이턴시 최적화]]
+- [[Performance-Budget-and-Design-Decisions|성능 예산과 디자인 결정]] — TTFB 뒤의 LCP 리소스 순서와 예산

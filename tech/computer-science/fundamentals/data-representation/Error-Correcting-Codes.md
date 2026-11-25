@@ -100,5 +100,6 @@ k비트 메시지를 n비트 부호어로 바꾸는 블록 부호는 (n, k, d)�
 - [[Storage-and-FileSystem-Performance|디스크 접근 시간과 RAID]] — 패리티로 디스크 장애 감내
 - [[S3-Scale-Design-Lessons|S3 설계에서 배우는 대규모 스토리지 교훈]] — erasure coding
 - [[Throughput-vs-Latency|처리량과 지연시간]] — 전파 지연은 처리량으로 없앨 수 없다
+- [[Delay-Tolerant-Networking|지연과 단절을 견디는 네트워킹(DTN)]] — 왕복이 수십 분이고 링크가 끊기는 구간의 저장 후 전달
 - [[Physical-AI-and-Liquid-Control|피지컬 AI와 리퀴드 제어]] — 통신 지연과 현장 자율의 계층
 - [[CS-Data-Representation|데이터 표현 인덱스]]

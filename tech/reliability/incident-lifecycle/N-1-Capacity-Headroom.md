@@ -87,7 +87,7 @@ Auto Scaling은 평시 수요 변화 대응에 쓸 수 있지만, 장애 중 신
 
 ## 사례 — 시험에서 잰 한계가 운영 장비의 한계보다 높았다
 
-2026-11-15 Microsoft 365 예비 PIR 기준이며 최종 보고서로 대체되면서 바뀔 수 있다. 네트워크 게이트웨이 서버군은 전날의 별개 문제로 용량의 약 14%가 빠져 있었지만, 보고서는 여유 용량이 충분해 이 감소만으로는 영향이 없었다고 적는다. 약 15시간 전 다른 게이트웨이에서 failover한 Teams 트래픽이 부하와 트래픽 패턴을 바꿨고, 늘어난 부하와 줄어든 용량이 겹치자 7월부터 배포된 수정에 든 잠금 경합 결함이 드러나 요청이 쌓이다 서버가 응답을 멈췄다. 평소의 부하 시험은 실험실의 트래픽 구성과 장비 SKU 때문에 이 결함을 잡지 못했다. 경합은 코어가 많은 최신 장비에서 더 심했는데 부하 시험은 코어가 적은 약한 장비 위주였다.
+2026-11-20 Microsoft 365 최종 PIR 기준이다. 네트워크 게이트웨이 서버군은 최신 서비스 버전을 배포하는 일상 작업으로 용량의 약 14%가 빠져 있었지만(11-15 예비 보고서는 전날의 별개 문제로 적었다), 보고서는 여유 용량이 충분해 이 감소만으로는 영향이 없었다고 적는다. 미국 동부의 라우팅 문제로 failover한 Teams 트래픽이 들어온 뒤에도 약 16시간은 정상이었는데, 해당 지역들이 아직 일일 피크 트래픽을 받기 전이었기 때문이다. 피크와 failover 유입, 줄어든 용량이 겹치자 7월부터 배포된 업데이트에 든 잠금 경합 결함이 드러나 요청이 쌓이다 서버가 응답을 멈췄다. 결함은 코어가 많아 동시 요청이 많은 신형 SKU에서만 드러났고 구형 SKU에는 영향이 없었는데, 평소의 부하 시험은 코어가 적은 구형 SKU를 썼고 트래픽 조건도 장애 때와 달랐다. 재발 방지 항목에는 최신 고코어 장비와 운영을 닮은 트래픽으로 피크 한계까지 정기 시험하기와 헤드룸용 용량 추가(각각 2027년 1분기 목표), 헤드룸을 깎는 장기 용량 손실의 탐지(2026년 4분기 목표)가 있다.
 
 읽는 기준(이 문서의 해석): 두 배수 비교의 분자인 한계 사용량은 운영과 같은 장비 세대, 코어 수와 트래픽 구성에서 잰 값이어야 한다. 장비를 새 세대로 바꾸면 처리량이 늘었다고 가정하지 말고 한계를 다시 잰다. 진행 중인 용량 손실과 failover 유입은 각각 헤드룸 안에 있어도 남은 서버의 부하를 곱으로 키우므로 같은 계산에 함께 넣는다. 한계를 넘은 뒤 자동 재라우팅이 만든 연쇄는 [[Failure-Evolution-Under-Load#3단계 — 시스템 상호작용 장애|부하에 따른 장애 진화]], 원인 조사 쪽 교훈은 [[Root-Cause-Investigation-Loop#문제 인지: 빨리, 단서와 함께|근본 원인 조사 루프]]에 있다.
 
@@ -105,7 +105,8 @@ Auto Scaling은 평시 수요 변화 대응에 쓸 수 있지만, 장애 중 신
 - [Static stability using Availability Zones — AWS Builders' Library](https://aws.amazon.com/builders-library/static-stability-using-availability-zones/)
 - [Multiple services were experiencing issues in the europe-west2 region — Google Cloud Service Health](https://status.cloud.google.com/incidents/Xs2XTHzAVC9YnafnPyzj)
 - [Google's Batteries Ran Out, Revolut Went Down — YouTube, Better Stack](https://www.youtube.com/watch?v=qLAcIYRVRiA) — 2026-10-24 공개 영상, 계기 자료. 사실은 위 Incident Report로 대조했고 영상의 고객사 영향과 규제 동향은 옮기지 않았다
-- [Preliminary Post Incident Report For Microsoft 365 — Microsoft](https://next.ink/wp-content/uploads/2026/11/PostIncidentReport.pdf) — 2026-11-15 작성 예비 PIR(EX1550543/MO1550821). next.ink가 게시한 PDF 사본을 2026-11-18 대조했다. 세 요인, 용량 감소 비율, 부하 시험 장비의 한계. 최종 PIR은 2026-11-20 예정
+- [Preliminary Post Incident Report For Microsoft 365 — Microsoft](https://next.ink/wp-content/uploads/2026/11/PostIncidentReport.pdf) — 2026-11-15 작성 예비 PIR(EX1550543/MO1550821). next.ink가 게시한 PDF 사본을 2026-11-18 대조했다. 아래 최종 PIR로 대체됐다
+- [Post Incident Report For Microsoft 365 — Microsoft](https://www.365fanatic.com/wp-content/uploads/2026/11/postincidentreport-mo1550821.pdf) — 2026-11-20 작성 최종 PIR. 365Fanatic이 게시한 PDF 사본을 2026-11-25 대조했다. 네 요인, 용량 감소의 원인 정정, 신형 SKU 한정과 부하 시험, 헤드룸 관련 재발 방지 항목
 - 지진에도 흔들리지 않는 네이버 검색 시스템 2편 — 네이버 검색 공식블로그 (blog.naver.com/naver_search)
 - [네이버 검색의 SRE 시스템 — NAVER D2](https://d2.naver.com/helloworld/2047663)
 

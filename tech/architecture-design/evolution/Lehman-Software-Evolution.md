@@ -29,7 +29,7 @@ aliases: ["Lehman's Laws of Software Evolution", "Lehman의 소프트웨어 진�
 
 - 새 구현을 더하기 전에 같은 역할의 기존 구현을 찾고, 있으면 하나로 합치는 일을 같은 변경의 범위로 본다. AI에 맡긴 변경도 같은 기준으로 검토한다([[AI-Code-Delegation-Review|AI 구현 위임과 코드 리뷰]]).
 - 금지할 의존 방향이나 한 곳에만 있어야 할 책임 같은 전체 규칙은 [[Architecture-Fitness-Functions|fitness function]]으로 자동 검사하고, 그 구조를 택한 이유는 [[ADR|ADR]]로 남겨 국소 판단의 근거로 쓴다.
-- 서로 다른 사고를 이 틀로 묶기 전에 각 사고의 1차 보고서로 직접 원인을 확인한다. 2026-11에는 Microsoft 365 전 세계 장애와 PHP2Shell을 소프트웨어의 체계적 붕괴라는 같은 흐름으로 묶는 해석이 나왔지만, 예비 사후 보고서가 밝힌 장애 원인은 몇 달 전 수정에 든 잠금 경합 결함이고([[Root-Cause-Investigation-Loop#문제 인지: 빨리, 단서와 함께|근본 원인 조사 루프]]) PHP2Shell은 PHP 엔진의 메모리 안전성 결함이다([[Memory-Safety-Vulnerabilities|메모리 안전성 취약점]]). 예비 보고서는 AI의 관여를 언급하지 않는다.
+- 서로 다른 사고를 이 틀로 묶기 전에 각 사고의 1차 보고서로 직접 원인을 확인한다. 2026-11에는 Microsoft 365 전 세계 장애와 PHP2Shell을 소프트웨어의 체계적 붕괴라는 같은 흐름으로 묶는 해석이 나왔지만, 2026-11-20 최종 사후 보고서가 밝힌 장애 원인은 7월부터 배포된 업데이트에 든 잠금 경합 결함이 용량 감소, failover 유입과 피크 트래픽에 겹친 것이고([[Root-Cause-Investigation-Loop#문제 인지: 빨리, 단서와 함께|근본 원인 조사 루프]]) PHP2Shell은 PHP 엔진의 메모리 안전성 결함이다([[Memory-Safety-Vulnerabilities|메모리 안전성 취약점]]). 최종 보고서는 사이버 공격이 원인이 아님을 확인했고 악의적 활동의 증거도 없었으며 AI 도구가 만든 변경도 아니라고 적는다.
 
 ## 법칙을 설계 보장으로 읽지 않는다
 
@@ -44,7 +44,8 @@ aliases: ["Lehman's Laws of Software Evolution", "Lehman의 소프트웨어 진�
 ## 출처
 
 - [Laws of Software Evolution Revisited — M. M. Lehman](https://gwern.net/doc/cs/1996-lehman.pdf) — 1996년 원 논문, E-type 범위와 법칙 I, II, VIII 및 법칙의 근거 논의. 2026-10-26 대조.
-- [Software is breaking down at a systemic level — Jimmy Breck-McKye](https://www.breck-mckye.com/blog/2026/11/software-is-breaking-down-at-a-systemic-level/) — 2026-11-15 게시 의견 글, 비정합성 절의 계기 자료. 정의는 Kristen Maevyn의 The Decoherence Trap 인용이며 원 글은 찾지 못했다. Microsoft 장애 원인을 네트워크 설정 실패로 추정하고 이틀간의 장애로 적은 부분은 2026-11-15 예비 PIR(2026-11-12 16:20~11-13 16:10 UTC, 잠복 결함)과 맞지 않아 옮기지 않았다.
+- [Software is breaking down at a systemic level — Jimmy Breck-McKye](https://www.breck-mckye.com/blog/2026/11/software-is-breaking-down-at-a-systemic-level/) — 2026-11-15 게시 의견 글, 비정합성 절의 계기 자료. 정의는 Kristen Maevyn의 The Decoherence Trap 인용이며 원 글은 찾지 못했다. Microsoft 장애 원인을 네트워크 설정 실패로 추정하고 이틀간의 장애로 적은 부분은 2026-11-20 최종 PIR(2026-11-12 16:20~11-13 16:10 UTC, 잠복 결함과 용량 감소 등 네 요인)과 맞지 않아 옮기지 않았다.
+- [Post Incident Report For Microsoft 365 — Microsoft](https://www.365fanatic.com/wp-content/uploads/2026/11/postincidentreport-mo1550821.pdf) — 2026-11-20 작성 최종 PIR. 365Fanatic이 게시한 PDF 사본을 2026-11-25 대조. 네 요인의 결합, 악의적 활동과 AI 도구 변경에 관한 명시
 
 ## 관련 문서
 

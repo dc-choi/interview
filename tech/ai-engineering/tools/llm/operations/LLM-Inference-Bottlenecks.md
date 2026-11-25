@@ -209,3 +209,4 @@ MindWalk 사례는 AMD 공개 사례 PDF의 작업 구분과 수치 한계를 20
 - [[LLM-Prompt-Caching|LLM 프롬프트 캐싱]] — 프리필 재사용
 - [[LLM-Model-Tiers|LLM 모델 티어 선택]] — 모델 크기와 서빙 비용
 - [[LLM-Inference-Fleet-Efficiency|LLM 추론 플릿 효율]] — 여러 엔진과 GPU 사이의 라우팅, KV 캐시 계층과 GPU 회수
+- [[LLM-Weight-Quantization|LLM 가중치 양자화]] — 비트 수, 보정 데이터와 품질 평가, 런타임 지원

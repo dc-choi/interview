@@ -156,6 +156,7 @@ Deletion Tuning(2026)은 사전학습 가중치를 고정한 채 어떤 가중�
 - [[LLM-Hallucination-Verification|LLM 환각 유형과 검증]]
 - [[LLM-Abstention|LLM Abstention]] — 추측을 보상하는 채점과 보정
 - [[LLM-Sycophancy-Evaluation|LLM 아첨 편향 평가]]
+- [[LLM-Default-Answer-Convergence|LLM 기본 답 쏠림]] — SFT 단계에서 좁아지는 답 분포와 모델 계열의 공통 기본값
 - [[AI-Generated-Text-Readability|AI 생성 글의 처리 난도]] — 검증 가능한 정답 보상과 출력 압축 가설
 - [[Eval-LLM-Judge|LLM 판정기]] — 길이 편향과 보정
 - [[Crowdsourced-Human-Evaluation|크라우드소싱 사람 평가]]

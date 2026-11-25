@@ -30,6 +30,8 @@ aliases: ["Product Design Workflow", "Design Handoff", "프로덕트 디자인 �
 
 모두가 ownership을 가진다는 말도 최종 결정권자가 없다는 뜻은 아니다. 각 결과물마다 DRI, approver, consulted, informed를 구분하고 충돌 시 결정 시한과 escalation 경로를 둔다. 조직 형태의 판단과 직군별 오너십 범위는 [[Product-Design-Workflow-and-Handoff-Organization|프로덕트 조직 구조와 업무 루프]]에서 다룬다.
 
+디자인은 결정권 공백이 특히 비싸다. 한 엔지니어의 2026-11 경험담에서는 처음 맡던 디자이너 대신 시니어 디자이너 두 명이 들어와 제품 전체를 다시 설계했고, 두 사람의 취향이 달라 한 사람이 요청한 변경을 다른 사람이 되돌리면서 일부 화면을 서너 번 고쳤다. 모두 모여 정하자는 시도도, 마감 일주일 전 관리자 두 단계를 불러 디자인을 동결한 조치도 출시 전날까지 이어진 변경을 막지 못했다. 글쓴이는 엔지니어링 논쟁은 지연 시간이나 버그 같은 구체적 척도로 가를 수 있지만 디자인은 취향만 남고, 사용자는 제품을 하나로 경험하므로 디자인 결정이 제품 전체에 걸친다는 두 가지로 이를 설명하며, 디자이너는 한 명만 두라고 권한다. 디자이너 수를 줄이기 어렵다면 화면 영역마다 디자인 DRI를 하나로 정하고, 동결 뒤의 변경은 영향과 함께 정해 둔 승인 경로를 거치게 한다(해석).
+
 ## SSOT는 한 도구가 아니라 출처 계약이다
 
 모든 정보를 Figma에 복사하면 Figma와 code, analytics, API 문서 중 무엇이 최신인지 다시 모호해진다. artifact마다 authoritative source를 하나 정하고 **project index가 그 출처를 연결**하게 한다. 출처가 흩어진 채 방치되면 어느 문서가 최신인지 되묻는 확인 대화와 도구 사이의 context switching이 반복되고, 오래된 문서를 근거로 한 재작업이 생긴다.
@@ -108,6 +110,8 @@ Design system은 color와 component library만이 아니라 principle, token, pa
 
 System 개선은 디자이너끼리 먼저 좋았던 점, 불편한 점, 바꿀 점을 모은 뒤 platform designer, product designer, engineer가 함께 review해 code component와 맞춘다. 개발자에게 익숙한 방식과 도구를 존중하면 구현 속도가 오른다.
 
+위 경험담의 글쓴이는 design system을 싫어하면서도 일관된 디자인을 강제하는 방법으로는 본 것 중 가장 낫다고 보고, 구조적 마찰 두 가지를 든다. 첫째는 유인의 충돌이다. system을 소유한 팀은 아름답고 일관된 공용 component를 원하고, 제품 팀은 dropdown에 임의의 이미지를 넣는 것 같은 까다로운 고객 요구를 맞춰야 해서 줄다리기가 끝나지 않는다. 디자이너마다 미묘하게 다른 변형을 원하면 더 심해지고, 엔지니어는 component를 다시 구현하거나 CSS를 덮어써 우회하다가 system이 갱신될 때 깨진다. 둘째는 호환성이다. system은 보통 최신 framework로 만들어지는데 회사의 frontend에는 바꾸기 비싼 옛 기술이 섞여 있어, React design system으로 그린 화면을 순수 HTML과 CSS 화면에 옮겨야 하기도 한다. 디자이너가 보는 system 버전과 엔지니어가 쓰는 버전이 미묘하게 달라 엔지니어는 가까운 component로 충분한지 매번 번역하고, framework를 올리면 디자이너와 합의해 둔 우회가 깨질 수 있다. 위의 예외 사용 사례 기록과 design component와 code component의 mapping이 이 마찰을 드러내는 장치이며, component마다 지원하는 framework와 버전을 함께 적어 둔다(해석). 덮어쓰기를 CI에서 잡는 방법은 [[Design-System-Lint|디자인 시스템 lint]]에 있다.
+
 ## Review와 rollout
 
 - design review는 시각적 취향보다 문제, 사용자 flow, 접근성, 기술 제약과 metric을 기준으로 한다.
@@ -144,6 +148,8 @@ System 개선은 디자이너끼리 먼저 좋았던 점, 불편한 점, 바꿀 
 - [인프런, 디자인 프로세스 구조화](https://www.inflearn.com/courses/lecture?courseId=338233&unitId=329387)
 - [인프런, 디자인 프로세스 Q&A](https://www.inflearn.com/courses/lecture?courseId=338233&unitId=329390)
 - [인프런, 마무리: 완벽한 구조는 없다](https://www.inflearn.com/courses/lecture?courseId=338233&unitId=329392)
+- [Working with designers — Sean Goedecke](https://www.seangoedecke.com/working-with-designers/) — 2026-11-07 게시, 2026-11-25 본문 대조. 디자이너가 여럿일 때의 취향 충돌과 수정 번복, design system의 유인 충돌과 호환성 문제. 한 엔지니어의 경험과 견해
+- GeekNews, 2026-11-23 제공 요약: 디자이너와 함께 일하기 (토픽 번호 미확인, 원문 식별에 사용)
 
 ## 관련 문서
 

@@ -20,6 +20,7 @@ AI 시대 엔지니어링의 토대 — 패러다임 전환과 모델, API 거�
 - [x] [[Time-Series-Foundation-Models|시계열 파운데이션 모델과 분위수 예측]] — zero-shot 예측, 21개 분위수와 pinball loss, CRPS와 scaled 지표, 벤치마크 집계와 누출 처리, 매출 기준 라이선스
 - [x] [[World-Models|월드 모델]] — 상태 전이와 행동 조건, 긴 상호작용의 일관성, tinyworldformer의 공유 가중치와 보드 실행 경계
 - [x] [[AI-Forecasts-and-Human-Augmentation|AI 전망과 인간 능력 확장]] — AGI와 특이점의 기준, 위험 경고의 시점과 판정 기준, 질병 정복 시한과 임상 검증 단계, 신경 보조와 장수 전망, 진화와 풍요 이후의 가치
+- [x] [[Superintelligence-Pathways|AGI 이후: 초지능으로 가는 경로와 진전의 측정]] — AGI와 ASI의 기준, 확장과 패러다임 전환과 다중 에이전트와 재귀적 개선의 네 경로와 마찰, 인지 산업화, 사전학습 손실 문턱과 공동 한계선 제안
 - [x] [[Moravec-Paradox|모라벡의 역설]] — 추론과 감각운동의 난도 비대칭, 진화 설명, 논리 계층과 물리 계층의 작업 구분, 인력 수요 자료를 읽는 법, 한계와 반론
 - [x] [[Image-Diffusion-Latent-and-Pixel-Space|이미지 생성 모델의 잠재 공간과 픽셀 공간]] — VAE 잠재 공간과 큰 패치 픽셀 공간, 해상도별 토큰 수, 저비용 학습 발표의 금액과 지표
 - [x] [[Helmholtz-Machine-Wake-Sleep|헬름홀츠 머신과 wake-sleep 학습]] — 인식 모델과 생성 모델, 관측 확률의 하한과 설명 길이, wake와 sleep 단계의 갱신, 공상 데이터와 곱 분포의 한계, VAE와의 차이

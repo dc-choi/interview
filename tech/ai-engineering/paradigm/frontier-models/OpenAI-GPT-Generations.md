@@ -106,6 +106,7 @@ aliases: ["OpenAI GPT Generations", "GPT 세대별 변화", "GPT-2에서 GPT-6�
 - [[LLM-Model-Tiers|LLM 모델 티어 선택]] — GPT-5.6과 GPT-6 계열의 티어, 단가와 라우팅
 - [[AI-Capability-and-Cost-Trends|AI 능력과 비용 추세 읽기]] — GPT-6 Astra의 벤치마크와 과업당 비용
 - [[Model-Release-Claims|모델 발표 수치 읽기]] — 비교 대상의 세대와 측정 조건
+- [[Benchmark-Coverage-and-Workplace-Performance#새 버전이 낮게 나온 제3자 점수는 설정과 표본부터 본다|새 버전의 제3자 점수 하락]] — GPT-6.2 Astra와 Sol의 SimpleBench 하락을 읽는 조건
 - [[Long-Context-Evaluation|긴 문맥 평가]] — 컨텍스트 한도와 실제 활용의 차이
 - [[Eval-Model-Drift-Monitoring|서빙 모델 드리프트 감시]] — 스냅샷과 별칭
 - [[LLM-API-Version-Migration|LLM API 버전과 SDK 마이그레이션]] — 제거된 파라미터와 400 응답

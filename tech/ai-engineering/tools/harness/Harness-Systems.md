@@ -10,7 +10,7 @@ aliases: ["Harness Systems", "하네스 시스템"]
 에이전트를 감싸는 제어 계층 — 이 vault의 하네스 5대 점검 축, 런타임 구성도와 게이트 배치, 도입 계단, 레포와 조직 단위의 결정론적 강제, 프로덕션 에이전트 아키텍처. 상위: [[tools|AI 엔지니어링 실천 도구]].
 
 - [[Harness-Engineering|하네스 엔지니어링]]: 이 vault의 Constrain→Inform→Verify→Correct→HITL 점검 축, 프롬프트→컨텍스트→하네스→루프 실무 프레임, 조건부 멀티 에이전트 오케스트레이션과 적용 점검
-- [[Harness-Anatomy|하네스 구성도]]: 에이전트 = 모델 + 하네스, 다섯 손잡이(Tools, Knowledge, Observation, Action, Permissions), 런타임 블록 지도와 횡단 계층, 하네스 경계 밖 세 상자, 네 입구 하나의 코어, 세 기둥
+- [[Harness-Anatomy|하네스 구성도]]: 에이전트 = 모델 + 하네스, 다섯 손잡이(Tools, Knowledge, Observation, Action, Permissions), 런타임 블록 지도와 횡단 계층, 하네스 경계 밖 세 상자, 네 입구 하나의 코어, 가장 작은 하네스 사례(ClawDOS의 TLS 중계와 상태 저장 뒤 메모리 비우기), 세 기둥
 - [[Harness-Gate-Placement|게이트 배치]]: 게이트는 비용이라는 전제, 요청 층과 강제 층의 판별 질문, 걸 곳 셋과 걸지 않을 곳 둘, 위험 명령 A/B 실증, 여섯 방어 시점과 각 층이 놓치는 것, 푸시 전 이해 확인 훅과 강제 통제의 차이
 - [[Harness-Adoption-Ladder|하네스 도입 계단]]: Lv.0에서 Lv.5까지의 성숙도와 얹는 순서, 다섯 단계 파이프라인과 네 게이트, 대조 가능한 계획 파일, 한 사람의 도입 6단계 사례
 - [[BMad-Method|BMad Method]]: 역할별 에이전트와 파일 산출물로 나눈 기성 워크플로우, v6에서 v7로의 전환, story 단위 plan과 리뷰 기록, 무인 실행으로 확장할 때의 실천

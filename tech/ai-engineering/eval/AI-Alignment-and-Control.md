@@ -118,3 +118,5 @@ AI 정렬(alignment)은 시스템의 행동이 인간이 의도한 목표와 제
 - [[LLM-Hallucination-Verification|주장과 실행 근거의 대조]]
 - [[Eval-Rubric-and-Score-Gate|루브릭과 점수 게이트]] — 결과물의 채점 항목으로 저성능 비교
 - [[AI-Frontier-Regulation-Debate|프론티어 AI 규제 논쟁]] — 속도 조절의 전제와 공개 모델의 해악 문턱
+- [[Superintelligence-Pathways#공동 한계선 제안|개발사 공동 한계선 제안]] — 감시 이정표까지의 공동 한계선 제안
+- [[AI-Frontier-Regulation-Debate#통제 없는 정렬이 민주적 통제를 벗어난다는 주장|통제 없는 정렬 주장]] — 정렬과 통제를 다른 축으로 보는 쟁점, 발언과 공개 기록의 대조

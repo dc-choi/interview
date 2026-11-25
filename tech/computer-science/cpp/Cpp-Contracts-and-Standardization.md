@@ -8,7 +8,7 @@ aliases: ["C++ Contracts", "C++26 Contracts", "C++ 표준화 절차", "C++26 DIS
 
 # C++ Contracts와 표준화 절차
 
-계약(contract)은 함수가 호출 전에 기대하는 조건, 반환 뒤 보장하는 조건과 실행 중 성립해야 하는 조건을 코드에 적는 장치다. C++26 초안은 언어 차원의 계약 어설션을 담았지만, 2026-10 국제표준안(DIS) 투표에서 부결돼 표준 확정이 늦어졌다. 기능이 어떻게 동작하는지와 기능이 표준이 되는 절차를 나눠 본다. 함수의 호출 계약을 설계하는 일반 원칙은 [[Function-Structure-and-Contracts|함수 구조와 호출 계약]]에서 다룬다.
+계약(contract)은 함수가 호출 전에 기대하는 조건, 반환 뒤 보장하는 조건과 실행 중 성립해야 하는 조건을 코드에 적는 장치다. C++26 초안은 언어 차원의 계약 어설션을 담았지만, 2026-10 국제표준안(DIS) 투표에서 부결돼 표준 확정이 늦어졌다. 2026-11 회의에서 위원회는 계약을 유지하고 항상 강제되는 레이블을 더한 수정본을 두 번째 DIS 투표에 부치기로 했다. 기능이 어떻게 동작하는지와 기능이 표준이 되는 절차를 나눠 본다. 함수의 호출 계약을 설계하는 일반 원칙은 [[Function-Structure-and-Contracts|함수 구조와 호출 계약]]에서 다룬다.
 
 ## 계약 어설션의 세 형태
 
@@ -102,7 +102,30 @@ WG21 위원이자 독일 투표 대표단인 Andreas Fertig의 2026-11-03 글에
 | 기술 명세(TS) 발행 | 국제 표준 대신 수정 초안을 TS로 낸다 |
 | 프로젝트 취소 | C++23에서 C++29로 바로 가며, C++26에 채택된 기능을 다시 제안해야 한다 |
 
-네 선택지 모두 표준을 늦추고 WG21의 다수 합의가 필요하며, 어느 쪽이든 C++26이라는 이름이 유지될지는 불확실하다. 2026-11-16 WG21 회의에서 대응을 논의할 예정이었으므로, 2026-11-09 작성 시점에는 결과가 정해지지 않았다.
+네 선택지 모두 표준을 늦추고 WG21의 다수 합의가 필요하다. 2026-11-09 작성 시점에는 C++26이라는 이름이 유지될지도 불확실했다.
+
+## 2026-11 회의: 계약 유지와 항상 강제되는 레이블
+
+브라질 Búzios에서 열린 6일간의 혼합(대면과 원격) 회의 결과를 WG21 위원 Herb Sutter의 2026-11-21 회의 보고로 정리한다. 레이블의 세부 규칙은 2026-11-25 채택된 논문 P4451R2(2026-11-19) 원문과 대조했다.
+
+- 첫 DIS는 국가 회원기관의 추가 의견과 함께 위원회로 돌아왔다. 의견은 대부분 계약에 관한 것이었고, 계약 우려를 처음 제기한 다섯 국가 회원기관이 반대표를 냈다.
+- 계약을 빼 달라는 여러 의견을 놓고 다시 표결해 C++26에 남기기로 재확인했다. 수정본을 다시 내는 표결은 찬성 대 반대 기준 92.5%(찬성 111, 반대 9, 기권 8)였다. 2025-02 초안 병합은 87.7%(100, 14, 12), 2026-03 확정은 90.5%(114, 12, 3)였다.
+- P4451R2(Early Adoption of an Always-Enforced Label)는 특정 계약을 항상 강제한다고 소스에 적게 하는 순수 확장이다. 보고가 인용한 보장은 다른 계약 어설션의 평가 의미와 관계없이 위반되면 실행이 그 어설션을 넘어 계속되지 않는다는 것이다. 논문은 이 레이블이 붙은 어설션의 평가가 종료 의미인 quick-enforce나 enforce여야 한다고 정하므로, 위 표의 ignore와 observe는 이 어설션에 적용되지 않는다. 레이블을 쓰려면 `<contracts>` 헤더를 포함하거나 `std` 모듈을 가져와야 한다. 레이블은 일반 이름 조회로 찾으므로 namespace 별칭이나 using 지시문으로 줄여 쓸 수 있고, C++29에서 논의하는 P3400R5 같은 레이블 제안과 앞으로 호환되도록 만들었다고 보고는 설명한다. 논문은 이 기능을 P3400R5의 작은 부분집합으로 소개하면서, 위원회가 실제 합의가 있는 것만 하기로 한다면 채택하지 말아야 하고 출하하기로 한다면 제때 할 수 있도록 준비한 안이라고 적는다. 채택이 설계 합의가 넓었다는 뜻은 아니다(이 문서의 해석).
+- 같은 주에 C++26과 C++29 초안에 함께 반영한 다른 논문은 모듈과 리플렉션의 일관성을 위한 P4466R2, `std::execution`의 메모리 할당 제어를 넓힌 P4453R1, `string_view`, `span`, `tuple`을 템플릿 인자 등으로 더 쓰게 하는 P3861R1이다.
+- 수정본은 두 번째 DIS 투표와 최종 편집을 거쳐 ISO가 곧 출판할 것으로 예상한다고 적었다. 출판 날짜는 밝히지 않았다. 앞 표의 선택지 중 첫째(수정 초안으로 DIS 재투표)에 해당한다(이 문서의 대응).
+
+```cpp
+int f(int x)
+    pre<std::contracts::controls::enforced>(x > 0);
+
+void g(int x)
+{
+    using namespace std::contracts::controls;
+    contract_assert<enforced>(x > 0);
+}
+```
+
+레이블 표기와 using 지시문으로 줄여 쓰는 형태는 논문의 예와 같다(논문의 using 예는 이름공간 범위에 둔다). 논문은 GCC, Clang, EDG의 브랜치에 구현돼 Compiler Explorer에서 `-fcontracts-p4451` 옵션(EDG는 `--contracts_p4451`)으로 쓸 수 있다고 적는다. 정식 릴리스의 지원 여부는 확인하지 못했다.
 
 ## 개발자가 확인할 것
 
@@ -110,11 +133,15 @@ WG21 위원이자 독일 투표 대표단인 Andreas Fertig의 2026-11-03 글에
 - 기능 확인 매크로 `__cpp_contracts`는 C++26 Contracts에 `202502L`, 가상 함수 계약을 더한 C++29에 `202606L`로 cppreference에 표기돼 있다.
 - predicate에는 부수효과를 두지 않는다.
 - 헤더의 inline 함수와 템플릿에 계약을 붙인 라이브러리는 사용자의 빌드 설정과 섞일 수 있으므로 지원하는 평가 의미를 문서화한다(제안).
+- 빌드 설정과 무관하게 멈춰야 하는 검사(메모리 안전과 직결된 전제조건 등)는 enforced 레이블 후보로, 나머지는 빌드 설정에 맡기는 식으로 나눠 기록한다(제안). 레이블 지원이 확인되기 전에는 일반 검사와 오류 처리로 같은 보장을 둔다.
 - 표준 지위가 정해지기 전의 도입은 특정 컴파일러 기능에 의존하는 결정으로 기록한다(제안).
 
 ## 출처
 
 - [C++26 DIS failed, how does C++ survive? — Andreas Fertig](https://andreasfertig.com/blog/2026/11/cpp26-dis-failed-how-does-cpp-survive/) — 2026-11-03 게시, 투표 결과와 선택지의 정리. 저자 개인 견해 부분은 옮기지 않았다
+- [C++26 is done (again)! Trip report: November 2026 ISO C++ standards meeting (Búzios, Brazil) — Sutter’s Mill, Herb Sutter](https://herbsutter.com/2026/11/21/c26-is-done-again-trip-report-november-2026-iso-c-standards-meeting-buzios-brazil/) — 2026-11-21 게시, 2026-11-25 대조. 회의 결정, 표결 수치, P4451R2의 보장 문구와 예시
+- [WG21, P4451R2 Early Adoption of an Always-Enforced Label](https://isocpp.org/files/papers/P4451R2.pdf) — 2026-11-19, Joshua Berne. 2026-11-25 레이블 이름과 문법 예, 종료 의미 한정, 이름 조회, 구현 경험과 채택에 대한 저자의 단서 대조
+- 사용자 제공 GeekNews 알림(2026-11-25): C++26이 다시 완성됐다: ISO C++ 표준 회의 보고. 학습 계기이며 게시물 번호는 확인하지 못했다. 사실은 위 회의 보고로 대조했다
 - [cppreference, Contract assertions (since C++26)](https://en.cppreference.com/w/cpp/language/contracts.html) — 평가 의미, 위반 처리, 부수효과와 ODR 주의, 기능 확인 매크로
 - [cppreference, Function declaration](https://en.cppreference.com/w/cpp/language/function.html) — `pre`, `post` 문법과 결과 묶기
 - [WG21, P3573R0 Contract concerns](https://www.open-std.org/jtc1/sc22/wg21/docs/papers/2025/p3573r0.pdf) — 2025-01-12

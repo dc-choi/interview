@@ -104,6 +104,7 @@ L = λW
 - [[Thread-Pool-Sizing|스레드 풀 사이징]]
 - [[Error-Correcting-Codes|오류 정정 부호]] — 왕복이 길면 재전송보다 정정 부호를 미리 싣는 쪽으로 기우는 이유
 - [[Physical-AI-and-Liquid-Control|피지컬 AI와 리퀴드 제어]] — 지구의 판단을 기다릴 수 없는 화성 로버의 현장 자율
+- [[Delay-Tolerant-Networking|지연과 단절을 견디는 네트워킹(DTN)]] — 전파 지연과 단절을 프로토콜 설계로 받아들이는 방식
 
 ## 전파 지연은 처리량으로 없앨 수 없다
 

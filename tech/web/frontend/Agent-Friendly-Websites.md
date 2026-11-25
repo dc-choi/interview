@@ -40,3 +40,4 @@ aliases: ["Agent-Friendly Websites", "에이전트 친화적 웹사이트"]
 
 - [[Frontend-Rendering-Models|프런트엔드 렌더링과 상호작용 모델]]
 - [[React-Ref-and-Identity-Hooks|React ref와 접근성 id 계약]]
+- [[UI-Behavior-Primitives|UI 동작 프리미티브]] — 직접 만든 위젯의 키보드와 포커스 동작을 재사용 단위로 묶는 방식

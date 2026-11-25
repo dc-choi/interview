@@ -35,10 +35,10 @@ aliases: ["인프라&클라우드(Infrastructure&Cloud)", "Infrastructure & Clou
 - [[Semiconductor-Advanced-Packaging|반도체 첨단 패키징]] — EMIB와 Foveros의 연결 구조, EMIB와 CoWoS-L의 bridge 배치, HBM base die와 기판의 구분, 제조 거점과 고객 제품 양산의 구분
 - [[Package-Substrate-Supply|패키지 기판과 공급 병목]] — FC-BGA 기판의 간격 변환과 전원 공급, 빌드업과 ABF, 패널 면적 효과와 휨, 수율과 신뢰성, 유리 보강재와 캐리어, 코어의 구분, 합작 공장과 생산 능력 예약 계약
 - [[Storage-Access-Models|저장장치 연결과 데이터 접근]] — DAS, NAS와 SAN, 블록/파일/객체, 공유 연결과 동시 쓰기 조정, 소프트웨어 정의 스토리지(Ceph, vSAN)
-- [[Server-Quotation-Checklist|서버 견적 검토]] — 메모리 배치, 옵션과 지원 조건, 물리 코어 라이선스의 적용 범위, 케이블과 트랜시버, DAC와 AOC, 전원 코드와 랙 PDU
+- [[Server-Quotation-Checklist|서버 견적 검토]] — 메모리 배치, 옵션과 지원 조건, 물리 코어 라이선스의 적용 범위, 세대 교체 벤치마크 배수를 워크로드, 라이선스, 장애 단위와 전력으로 풀어 읽기(EPYC Zen 1 대 Zen 6), 케이블과 트랜시버, DAC와 AOC, 전원 코드와 랙 PDU
 - [[GPU-Inference-Hardware|추론용 GPU 선택]] — Intel D270, 가중치와 KV 캐시, 실측 조건, GeForce 텐서 연산 제한과 외부 커널 모듈의 도입 경계, TPU 8세대의 용도별 시스템, 엣지 NPU의 대역폭 상한과 PIM
 - [[Rack-Scale-System-Emulation|랙 규모 시스템 에뮬레이션]] — Voxel, 실제 소프트웨어와 가상 하드웨어의 검증 경계
-- [[Self-Hosting-Small-Server|소형 서버 셀프호스팅]] — N100 사례, 네이티브와 Podman, 복구 책임, 오픈소스 채택을 가르는 설치와 운영 마찰, 내 클라우드 계정 배포 모델의 무료 한도와 약관
+- [[Self-Hosting-Small-Server|소형 서버 셀프호스팅]] — N100 사례, 네이티브와 Podman, 복구 책임, 오픈소스 채택을 가르는 설치와 운영 마찰, 내 클라우드 계정 배포 모델의 무료 한도와 약관, 계정의 클라이언트인 셀프호스팅 웹메일의 자격증명 보관과 서버 실행 기능
 - [[Smart-Home-Hub-and-Personal-Context|가정용 허브와 개인 맥락]] — HomeView와 Apple TV 4K, 기기 및 지역 조건
 
 ## AWS 체크리스트

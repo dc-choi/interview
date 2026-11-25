@@ -63,6 +63,18 @@ aliases: ["Dependency Patch Cycle", "의존성 패치 사이클", "패치 반영
 - **예약 파이프라인의 권한:** GitLab 예약 파이프라인은 스케줄 소유자의 권한으로 실행되고, 사람이 수동으로 돌리면 실행한 사람의 권한을 쓴다. 소유자가 차단되거나 프로젝트에서 빠지면 스케줄이 비활성화될 수 있으므로, 정기 스캔이 조용히 멈추지 않았는지 마지막 실행 시각을 확인한다(운영 제안).
 - **폐쇄망:** `--offline`은 로컬 DB를 내려받거나 갱신하지 않는다. `--offline-vulnerabilities`와 `--download-offline-databases`를 함께 쓰면 DB를 받거나 갱신한다. DB를 들여오는 주기만큼 새 권고문의 탐지가 늦어진다.
 
+## 보고와 경보를 받는 메인테이너와 배포판의 부담
+
+사용하는 조직이 줄일 수 있는 구간 앞에는 메인테이너와 배포판이 감당하는 구간이 있다. 아래는 Gentoo 개발자의 2026-10-27 개인 블로그 글이 지적한 내용이며, 수치 근거가 없는 경험과 의견이다.
+
+- **걸러 낸 뒤에도 판단이 남는다:** AI의 도움으로 누구나 보안 보고를 하게 되면서 보고가 크게 늘었다. 명백히 무효한 보고를 버린 뒤에도 메인테이너는 남은 보고의 중요도를 정하고, 제안된 수정이 맞는지와 기존 기능을 깨지 않는지 확인하거나 거절 이유를 설명해야 한다. 커널과 OpenSSH가 겪은 같은 흐름은 [[Coordinated-Vulnerability-Disclosure#AI 도구로 찾은 버그를 공개 보고로 다루는 프로젝트|조율된 취약점 공개]]에 있다.
+- **취약점인지는 사용 방식이 정한다:** ReDoS 같은 성능 버그가 취약점인지는 공격 경로와 소프트웨어의 사용 방식에 달렸다. 사용자가 직접 입력한 위험한 명령을 셸이 실행했다는 식의 억지스러운 보고도 있고, 사용자의 비밀을 드러낼 수 있는 타이밍 공격처럼 심각한 보고도 있다. 이 판단에는 깊은 전문 지식이 필요하고, 메인테이너의 판단이 사용자의 기대와 다를 수 있다([[Regex-Engine-Attack-Surface#시간 고갈과 메모리 손상은 다른 문제다|정규식 엔진의 공격면]]).
+- **스캐너는 영향 여부를 모른다:** CVE가 붙으면 점수가 지나치게 높게 매겨질 수 있고, 스캐너는 수정될 때까지 경보를 낸다. 사용자는 질문, 항의, 비난이나 포크로 압박한다. 글쓴이는 Gentoo에 영향이 없는 취약점(취약한 의존성의 내장 사본을 이미 분리한 경우 등)에도 스캐너 오탐을 피하려고 불필요한 보안 안정화를 했고, 오래된 패키지로 보고되지 않도록 실제 변경이 없거나 Gentoo에 해당하지 않는 버전 올림도 했다고 적는다.
+- **수정만 따로 받을 길이 없다:** 많은 프로젝트에 LTS나 보안 브랜치가 없고 변경을 최소화한 보안 릴리스를 내지 못해, 보안 수정이 새 기능, 폐기와 API 변경에 섞여 나온다. 대규모 재작성 도중이나 충분히 시험하지 않은 코드와 함께 보안 릴리스가 나오기도 하고, 사용자는 취약한 버전을 벗어나려고 큰 API 변경을 받아들여야 한다. 위 [[Dependency-Patch-Cycle#조직이 줄일 수 있는 구간|호환성 부담]]의 메인테이너 쪽 원인이다.
+- **악순환:** 따라가지 못한 사람들이 남의 코드에 기대는 대신 코드를 더 많이 내장하고, 내장 사본이 늘면 패치할 곳도 늘어 부담이 다시 커진다는 것이 글의 결론이다. 내장 사본이 수정 반영을 늦추는 경로는 [[Compressed-Input-Decoder-Security|압축 입력 디코더 보안]]의 Brotli 사례에 있다.
+
+사용하는 쪽에서 할 수 있는 일(운영 제안): 영향 없음으로 판단한 경보는 근거와 함께 위 예외 형식(만료일, 사유)으로 남겨 같은 경보를 되풀이해 처리하지 않는다. 수정이 메이저 버전에만 있으면 업그레이드 비용과 함께 업스트림 보안 브랜치나 배포판 백포트가 있는지 확인한다. 메인테이너에게 보고할 때는 영향 조건, 재현과 수정안을 붙여 판단 비용을 줄인다([[Coordinated-Vulnerability-Disclosure#대량 발견은 재현, 경로 검증과 패치를 붙여 보고한다|대량 발견의 보고]]).
+
 ## 출처
 
 - [Anthropic, Coordinated vulnerability disclosure dashboard](https://red.anthropic.com/2026/cvd/) — 2026-11-02 기준 집계
@@ -76,6 +88,8 @@ aliases: ["Dependency Patch Cycle", "의존성 패치 사이클", "패치 반영
 - [google/osv-scanner, internal/config/ignores.go](https://github.com/google/osv-scanner/blob/main/internal/config/ignores.go) — `ignoreUntil` 폐기 예정 키, 2026-11-18 main 기준
 - [Improper HMAC Signature Verification in auth0/node-jws (GHSA-869p-cjfg-cm3x) — GitHub, auth0/node-jws](https://github.com/auth0/node-jws/security/advisories/GHSA-869p-cjfg-cm3x)
 - [OSV-Scanner와 GitLab CI로 취약점 패치 반영을 앞당기는 5단계 — 인포그랩](https://insight.infograb.net/blog/2026/10/07/patch-cycle/) — 다섯 단계 구성과 실습 결과
+- [The next circle of security hell — Retroactively fixing the world, Michał Górny](https://blogs.gentoo.org/mgorny/2026/10/27/the-next-circle-of-security-hell/) — 2026-10-27 게시된 Gentoo 개발자의 개인 의견 글, 2026-11-25 본문 대조. 메인테이너와 배포판의 부담 절의 근거
+- GeekNews, 2026-11-24 제공 요약: 보안 지옥의 다음 단계 (토픽 번호 미확인, 원문 식별에 사용)
 
 ## 관련 문서
 

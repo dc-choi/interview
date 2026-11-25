@@ -18,7 +18,7 @@ aliases: ["Agent Coding Tools", "코딩 에이전트 작업 도구"]
 - [[Agent-Skills|에이전트 스킬]]: 재사용 작업 단위 = 온디맨드 플레이북, SKILL.md 폴더+description 자동 로드, 점진적 공개, Claude vs Codex 같은 포맷 다른 관례, 스킬 vs 훅, 수명주기 감사, 표면별 설치와 외부 스킬 신뢰
 - [[Agent-Platform-Knowledge-Skills|플랫폼 지식 스킬]]: 학습 뒤에 바뀐 플랫폼 기능을 검색형 지침으로 넣기, 저장소 지침의 Baseline 호환성 목표와 기본값, 보정된 검사와 대조군 평가, 정적 현대화 스캔과 실행 확인(Modern Web Guidance 1.0), 저장소 밖 업무 맥락을 플러그인 연결로 공급하는 방식(발표와 공식 문서 대조)
 - [[Agent-Skills-Kiro|Kiro Steering, 훅, 스킬, MCP와 Powers]]: Steering 포함 모드와 AGENTS.md, Hooks 형식과 차단 경계, 스킬 범위와 이식 점검, MCP 설정 병합과 도구 승인, workspace 신뢰, Powers 키워드 활성화, plugin.json과 스킬, API 명세 조회와 생성 코드 검증, SageMaker Unified Studio 원격 작업 경계
-- [[Agent-Terminal-Workspaces|에이전트 터미널과 작업 공간]] — 화면과 상태, worktree 분리, Herdr app/core와 TUI 구분, Prospero 원격 호스트, 서로 의존하는 병렬 작업의 동료 서브에이전트와 독립 스레드(발표 기준, 공식 문서에 없음), CLI 원격 제어와 휴대폰 연결 문서의 차이
+- [[Agent-Terminal-Workspaces|에이전트 터미널과 작업 공간]] — 화면과 상태, worktree 분리, Herdr app/core와 TUI 구분, Prospero 원격 호스트, DreamCoder의 브라우저 타일 배치와 작업 공간 미니맵, 서로 의존하는 병렬 작업의 동료 서브에이전트와 독립 스레드(발표 기준, 공식 문서에 없음), CLI 원격 제어와 휴대폰 연결 문서의 차이
 - [[Agent-Terminal-Workspaces-Human-Bottleneck|사람이 병목이 될 때의 위임 계층과 판단 대기열]]: 오케스트레이터와 PM 계층의 사례, Orca orchestration의 Run, Task, Dispatch와 Decision gate, 한 사람이 돌리는 병렬 세션의 비용과 저장소에 두는 판단 대기열
 - [[JetBrains-IDE-Agent-Integration|JetBrains IDE의 코딩 에이전트 통합]]: Air in IDEs의 실행 화면과 세션 diff, ACP registry, 구독 인증 경로, 내장 MCP 서버의 도구 노출과 Brave mode, 로그포인트와 에이전트 디버깅, 스킬 설치 위치, ThinkRail의 pi 호스트와 worktree, SPEC.md 그래프와 승인
 - [[Agent-Always-On-Mac-Host|상시 실행 Mac 에이전트 호스트]]: 잠자기 방지와 정전 뒤 시동, FileVault와 자동 로그인의 재시작 절충, Remote Login과 Tailscale SSH, 세션 유지 방식의 재부팅 한계, Corgi의 화면/대화 복원과 에이전트 훅, 플러그인과 업데이트 소유

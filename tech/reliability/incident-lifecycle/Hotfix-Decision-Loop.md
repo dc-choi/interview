@@ -99,6 +99,8 @@ Google Play의 staged rollout을 중단하면 추가 사용자는 해당 버전�
 
 Google SRE Workbook도 포스트모템 액션을 중앙 이슈 추적 시스템에 연결하고 완료 상태를 추적해야 조치가 빠지는 일을 막을 수 있다고 설명한다. 사람이 완료라고 적은 상태보다 검증 가능한 종료 조건이 중요하다.
 
+대형 장애 뒤에는 재발 방지를 일반 백로그에 두지 않고 조직의 최우선 과제로 올려 리더십이 직접 추적하기도 한다. Reuters가 2026-11-24 보도한 Microsoft 내부 메모에 따르면, 2026-11 Microsoft 365 장애 뒤 M365 Core 책임자는 Code Red를 선언해 이를 팀의 최우선 작업으로 두고, 장애 관련 조치를 리더십 팀과 매일 점검하고 매주 검토하겠다고 적었다. 같은 책임자는 앞선 메모에서 핵심 서비스의 긴급 패치가 전 세계에 퍼지는 데 너무 오래 걸린다며, 다른 최근 사고에서는 긴급 운영 수정이 전 세계에 다 퍼지기까지 5~6일이 걸렸다고 썼다. 회사의 최종 PIR도 이번 장애에서 수정 설정을 전 세계 서버군에 배포하고 검증하는 데 너무 오래 걸렸다고 적고 전체 서버군 장애의 복구 절차 개선을 재발 방지 항목에 넣었다. 긴급 수정이 전체에 반영되기까지의 시간도 복구 시간의 일부로 재고, 선언이나 목표는 위 4번처럼 배포, 시험과 지표로 이행을 확인할 대상으로 둔다(적용 제안).
+
 ## 지표가 행동을 왜곡하지 않게 한다
 
 핫픽스 건수만 줄이면 미보고와 다음 배포로의 지연도 개선으로 보인다. 최소한 다음 지표를 함께 본다.
@@ -132,6 +134,8 @@ Google SRE Workbook도 포스트모템 액션을 중앙 이슈 추적 시스템�
 - [Apple Developer 공식 문서, Release a version update in phases](https://developer.apple.com/help/app-store-connect/update-your-app/release-a-version-update-in-phases)
 - [Canarying Releases — Google SRE Workbook](https://sre.google/workbook/canarying-releases/)
 - [Postmortem Practices: Learning from Failure — Google SRE Workbook](https://sre.google/workbook/postmortem-culture/)
+- [Exclusive-Microsoft declares 'Code Red' after historic outage, internal memos show — Reuters(The Star 게재)](https://www.thestar.com.my/tech/tech-news/2026/11/25/exclusive-microsoft-declares-039code-red039-after-historic-outage-internal-memos-show) — 2026-11-24 보도, 2026-11-25 대조. 내부 메모의 인용이며 회사 공식 발표는 아니다
+- [Post Incident Report For Microsoft 365 — Microsoft](https://www.365fanatic.com/wp-content/uploads/2026/11/postincidentreport-mo1550821.pdf) — 2026-11-20 작성 최종 PIR. 365Fanatic이 게시한 PDF 사본을 2026-11-25 대조했다. 수정 배포와 검증의 지연, 복구 절차 개선 항목
 
 ## 관련 문서
 
