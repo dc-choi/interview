@@ -1,7 +1,7 @@
 ---
 tags: [palantir, data-connection, sync, virtualization]
 status: done
-verified_at: 2026-10-16
+verified_at: 2026-11-25
 category: "AI엔지니어링(AIEngineering)"
 ---
 
@@ -26,6 +26,8 @@ category: "AI엔지니어링(AIEngineering)"
 
 Batch sync 한 번은 출력 dataset의 단일 transaction으로 기록된다. 실행 중 실패하면 abort하여 해당 실행의 부분 데이터가 commit되지 않고 이전 상태를 유지한다. 이 보장을 여러 dataset이나 외부 export까지의 분산 transaction으로 해석하지 않는다.
 
+지원되는 장시간 sync에는 continuous compute라는 관리형 실행 모드가 있으며, Core concepts는 이를 중단을 최소화하고 높은 가용성을 제공하도록 설계한 모드로 설명한다. 설계 목표를 무중단이나 record 무손실 보장으로 읽지 않는다. 2026-11-25 Compute modes 문서 기준 이 모드는 beta이고 enrollment에 따라 제공되지 않을 수 있으며, Foundry worker source의 일부 streaming sync가 대상이고 출력 dataset의 `master` branch에 쓰는 sync여야 한다. 문서는 connector별 목록을 두지 않고 가용성을 Palantir Support에 확인하라고 안내한다.
+
 ## 코드 경로의 차이
 
 Foundry worker source는 코드에서 사용할 수 있지만 legacy agent worker source는 사용할 수 없다. Core concepts는 cloud identity, outbound application과 OIDC 같은 일부 자격 증명 유형도 코드에서 사용할 수 없을 수 있다고 주의한다. 실제 선택한 유형의 전용 문서와 런타임 지원을 다시 확인한다.
@@ -35,6 +37,7 @@ Foundry worker source는 코드에서 사용할 수 있지만 legacy agent worke
 | External transforms | Python으로 batch 수집/export, media sync와 virtual 자원 등록을 구현한다. |
 | External functions | 기존 webhook을 감싸거나 TypeScript fetch/Python requests로 직접 요청한다. |
 | Compute modules | 장시간 연산과 여러 언어를 사용하며 streaming/CDC/webhook의 코드 대안이 된다. |
+| Custom CI jobs (beta) | Code Repositories의 checks가 repository에 import하고 설정 파일에 선언한 source의 egress policy와 secret을 쓸 수 있다. 설정과 반출 위험은 [[Palantir-Repository-Preview-and-Runtime\|Repository preview와 runtime]]에서 다룬다. |
 | External models, Code Workspaces | 해당 개념 문서에서는 source 직접 import 대신 egress policy 사용으로 설명한다. |
 | Code Workbooks | 해당 개념 문서는 외부 연결을 지원하지 않는다고 설명한다. |
 
@@ -53,6 +56,7 @@ Marketplace에는 batch/streaming sync와 export를 제품에 포함할 수 있�
 ## 출처
 
 - [Palantir, Core concepts](https://www.palantir.com/docs/foundry/data-connection/core-concepts)
+- [Palantir, Compute modes](https://www.palantir.com/docs/foundry/data-connection/compute-modes)
 - [Palantir, Source exploration](https://www.palantir.com/docs/foundry/data-connection/source-exploration)
 - [Palantir, Marketplace syncs and exports](https://www.palantir.com/docs/foundry/data-connection/marketplace-data-connection)
 - [Palantir, Marketplace virtual tables](https://www.palantir.com/docs/foundry/data-connection/marketplace-virtual-tables)
@@ -61,3 +65,5 @@ Marketplace에는 batch/streaming sync와 export를 제품에 포함할 수 있�
 
 - [[Palantir-Connection-Architecture|Worker와 네트워크 경로]]
 - [[Palantir-Data-Connectivity|데이터 연결]]
+
+2026-11-25에는 Core concepts 개정본과 Compute modes만 대조했고 Source exploration과 Marketplace 문서는 다시 대조하지 않았다.

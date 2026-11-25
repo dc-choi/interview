@@ -1,7 +1,7 @@
 ---
 tags: [palantir, export, transactions, governance]
 status: done
-verified_at: 2026-10-21
+verified_at: 2026-11-25
 category: "AI엔지니어링(AIEngineering)"
 ---
 
@@ -17,7 +17,7 @@ Export는 Foundry 밖에 접근과 보존의 새로운 지점을 만든다. 수�
 
 표의 작업 가운데 ISO 역할은 export 허용 스위치에 필요하고 exportable marking과 organization 추가에는 필요하지 않다. 아래 `Enable exports to this source without markings validations` 설정의 UI 권한은 Exports 문서에 없다. API의 `updateExportSettings`로 `exportsEnabled`와 `exportEnabledWithoutMarkingsValidation`을 바꾸는 일은 ISO 역할 사용자만 할 수 있다([[Palantir-Connection-API|Connection API]]). Exportable marking은 monitoring view가 보내는 Slack 알림에 어떤 resource metadata가 나타날 수 있는지도 정한다.
 
-일부 대화형 workflow는 내보낼 데이터를 모두 추론하지 못하므로 `Enable exports to this source without markings validations`가 필요하다. Functions의 webhook이 그 예다. 이 경로에는 marking 검증이 적용된다고 설명하면 안 된다.
+일부 workflow는 내보낼 데이터를 모두 추론하지 못하므로 `Enable exports to this source without markings validations`가 필요하다. Functions의 webhook과 Code Repositories의 custom CI job(beta)에서 쓰는 source가 그 예다(2026-11-25 대조 기준, 2026-10-21 수집본에는 webhook 예만 있었다. [[Palantir-Repository-Preview-and-Runtime|Repository preview와 runtime]]). 이 경로에는 marking 검증이 적용된다고 설명하면 안 된다.
 
 ## 파일과 streaming
 
@@ -75,4 +75,4 @@ Legacy `incrementalType: incremental`은 최초 전체를 내보낸 후 새 tran
 - [[Palantir-External-Transforms-Governance|외부 코드와 통제]]
 - [[Palantir-Data-Connectivity|데이터 연결]]
 
-공식 문서 계약을 비교했다. 2026-10-21에는 Exports 개정본만 다시 대조했고 legacy export task 문서는 다시 대조하지 않았다. 외부 table 생성, truncate, export와 재시도는 실행하지 않았다.
+공식 문서 계약을 비교했다. 2026-10-21과 2026-11-25에는 Exports 개정본만 다시 대조했고 legacy export task 문서는 다시 대조하지 않았다. 외부 table 생성, truncate, export와 재시도는 실행하지 않았다.
