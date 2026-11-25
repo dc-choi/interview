@@ -20,7 +20,7 @@ aliases: ["Harness Systems", "하네스 시스템"]
 - [[Spec-Decision-Records|에이전트 작업의 스펙과 결정 기록]]: 의도, 맥락, 시행착오 손실, plan과 decisions 두 문서, 결정의 출처와 영향도 태그와 누적 번호, 항상 적용할 rule과 온디맨드 스킬의 배치, 날짜 태그 릴리스, 자동 현황 문서, 규칙을 덜 때의 A/B 확인
 - [[Spec-Driven-Development|코딩 에이전트와 스펙 주도 개발]]: 프로젝트 헌법(미션, 기술 스택, 로드맵)과 기존 코드에서의 역추출, 브랜치 단위 기능 루프(plan, requirements, validation), 재계획과 헌법 변경의 별도 브랜치, 검토 피로를 줄이는 시작 점검, Spec Kit과 OpenSpec의 흐름, 에이전트를 바꿔도 남는 워크플로우
 - [[Harness-Component-Evaluation|코딩 에이전트 하네스 구성요소 평가]]: 계획, 행동 인터페이스, 컨텍스트 관리의 조건부 실험과 평가 기준, 학습 분포 밖 언어(KillSwitch)로 기억 의존을 줄이려는 평가 시도와 교란 요인, 팀 하네스의 정기 평가와 enterprise harness, 하네스 교체 때 고정 지시와 확장 경로 비교, 모델별로 달라지는 하네스 순위와 통과당 비용(FrontierHarness Eval v1.1)
-- [[Harness-AI-Native|AI 네이티브 시스템과 조직 (ai-native/ 서브폴더)]]: 레포 단위의 결정론적 강제(부탁 vs 강제, 제어 4계층, AST 아키텍처 테스트)와 조직 공용 실행 계층(팀챗 위 전사 AI 실행 플랫폼, 상태머신+HITL, 4계층 메모리, 조직 6요소)
+- [[Harness-AI-Native|AI 네이티브 시스템과 조직 (ai-native/ 서브폴더)]]: 레포 단위의 결정론적 강제(부탁 vs 강제, 제어 4계층, AST 아키텍처 테스트)와 조직 공용 실행 계층(팀챗 위 전사 AI 실행 플랫폼, 상태머신+HITL, 4계층 메모리, 조직 6요소), 팀 채팅에 들인 AI 동료 봇(분할과 소유, 학습 승인, 지시 권한, 신뢰 단계)
 - [[Harness-Production|프로덕션 에이전트 운영과 격리 (production/ 서브폴더)]]: 프로덕션 에이전트 아키텍처(분업, Defense in Depth, Metric Registry, Closure-loop 위임 경계), Bedrock AgentCore 운영 경계, 에이전트 군집 격리
 
 ## 함께 볼 문서

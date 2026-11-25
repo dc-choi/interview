@@ -37,6 +37,16 @@ aliases: ["Independent Agent Code Review", "독립 에이전트 코드 리뷰", 
 
 작성 단계의 자체 검증에는 실제 실행 경로도 포함한다. 예를 들어 버튼 처리 함수의 테스트가 통과해도 화면의 다른 요소가 버튼을 가리면 사용자는 클릭할 수 없다. 테스트 결과와 실행 관찰을 함께 남겨 검토자가 확인할 수 있게 한다.
 
+## 리뷰 깊이는 토큰 예산과 제품 의도로 정한다
+
+리뷰 에이전트를 더 겹치고 더 꼼꼼히 돌리면 결함을 더 찾지만, 그 비용은 변경마다 다시 든다. 아래는 2026-11-14 공개 대담에서 오간 실무자들의 경험과 판단이며(발표 기준), 효과를 잰 결과는 아니다.
+
+- **평가 묶음이 리뷰 비용을 붙잡는다:** 한 진행자는 변경을 줄마다 훑는 자기 리뷰 skill이 한 번에 수천만 토큰을 쓴다고 했다. 약 5,000만 토큰을 1,000만으로 줄이려 했지만, 놓치면 안 되는 버그 유형 약 30개를 모은 held-out 평가 때문에 3,000만까지만 내려갔다고 털어놓았다(자기 보고). 리뷰가 잡을 범위를 평가가 정하면, 그 평가에 실제로 고칠 가치가 있는 결함만 들어 있는지가 비용을 정한다(이 문서의 정리).
+- **제품 의도를 모르는 리뷰는 과적합한다:** 다른 모델 계열의 에이전트들이 diff를 깨뜨리려 하는 적대적 리뷰(pstack의 `interrogate`)는 여전히 쓸모가 있지만, 리뷰어가 제품의 목표와 로드맵을 모르면 좋은 지적과 아닌 지적을 가르지 못한다. 두 달 뒤 폐기할 코드를 이상적인 형태로 다듬자는 지적이나 거의 일어나지 않는 일반 정확성 버그를 고치자는 지적이 섞인다. pstack 작성자는 이 때문에 리뷰 skill의 비중을 줄였다고 했고, 진행자는 제품 요구사항 문서를 리뷰 입력에 넣어 무엇이 고칠 버그인지 정하게 하는 방안을 내놨다(시험 결과 없음). 위의 입력 분리에서 구현 대화는 빼되 업무 제약과 인수 조건은 남기라는 것과 같은 원리다.
+- **투자는 거꾸로 된 피라미드로 둔다:** pstack 작성자는 투자의 대부분을 코드베이스(아키텍처, API 설계)와 정적 분석(린트 규칙, 컴파일러, CI)에 두고, 그 위에 규칙, skill과 AGENTS.md를 얹으며, 사람 리뷰는 가끔 하되 인프라, 데이터베이스와 배포처럼 민감한 영역에서는 사람이 루프에 남는다고 설명했다. 코드베이스를 기억의 한 형태로 보면 강제 장치로 옮긴 규칙은 이후 변경마다 리뷰 토큰을 쓰지 않는다. 리뷰 비용은 변경 수에 비례하고 강제 장치의 비용은 주로 만들 때 든다(이 문서의 정리). Electron의 main 프로세스 코드와 renderer 코드 사이의 import를 린트 규칙과 의존성 그래프 검사로 막아 renderer가 끊기는 회귀를 리뷰 전에 없앤 사례와 강제 층의 순서는 [[AI-Native-System#가장 짧은 경로를 올바른 경로로 만든다|가장 짧은 경로를 올바른 경로로]]와 [[Pstack#반복 실수를 강제 층으로 내린다|pstack의 correct]]에 있다.
+
+같은 작성자는 이런 투자 뒤에 에이전트가 자기 PR을 병합하게 하고 사람은 산출물만 본다고 했으며, 월 4,000건이 넘는 PR을 올린다고 밝혔다(자기 보고, 병합 수와 변경 크기는 밝히지 않음). 사람 리뷰를 빼는 경로의 위험 등급과 승인 조건은 [[Code-Review-AI-Agent-Operations#위험에 따른 검증|에이전트 시대 코드 리뷰 운영]]을 본다.
+
 ## 동작을 보존하는 이관의 리뷰
 
 언어나 런타임을 옮기는 변경은 새 코드가 그럴듯한지보다 기존 동작을 그대로 옮겼는지가 리뷰 대상이다. GitHub의 Copilot 런타임 Rust 이관(2026-09-16 게시, 2026-09-23 갱신된 공식 글 기준)은 다른 개발자가 같은 저장소를 계속 바꾸는 중에 이 확인을 반복한 사례다.
@@ -66,6 +76,7 @@ aliases: ["Independent Agent Code Review", "독립 에이전트 코드 리뷰", 
 - 인용문이 코드에 있다는 검사만으로 결함이 입증되는가?
 - 리뷰 후 코드가 바뀌면 어떤 기준으로 다시 검토할 것인가?
 - 스캐너 성공, 테스트 성공과 업무 요구사항 만족을 구분하는가?
+- 리뷰가 잡을 결함의 범위를 무엇이 정하는가(제품 의도, 평가 묶음), 같은 지적이 반복되면 코드베이스의 강제로 옮겼는가?
 
 ## 출처
 
@@ -74,6 +85,7 @@ aliases: ["Independent Agent Code Review", "독립 에이전트 코드 리뷰", 
 - [Migrating the GitHub Copilot runtime to Rust, using Copilot — GitHub](https://github.blog/ai-and-ml/generative-ai/migrating-the-github-copilot-runtime-to-rust-using-copilot/) — 2026-09-16 게시, 2026-09-23 갱신. 2026-11-12 rebase 리뷰 지침, 다중 모델 대조 리뷰, 사람 리뷰의 초점, 회귀 유형과 테스트 보호 부분 대조.
 - [New Ways of Working with Codex — AI Engineer, Dominik Kundel, Charlie Guo](https://www.youtube.com/watch?v=IPh9YsWvDQk) — 2026-11-17 공개 영상의 43:36~45:10을 사람이 단 영어 자막과 대조. 앱 안 PR 리뷰 탭의 구성만 소개한 시연이며 리뷰 결과와 성능은 확인하지 않았다.
 - [OpenAI, Code review](https://learn.chatgpt.com/docs/code-review) — 2026-11-21 Code Review 플러그인, 수신함 필터, Changes, 새 대화에서 시작하는 리뷰, Review instructions와 GitHub와 GitLab의 제공 단계 대조
+- [The Rise Of AI Coworkers — Y Combinator, Lauren Tan, Roman Ugarte](https://www.youtube.com/watch?v=y1-9yeYLJUo) — 2026-11-14 공개 Lightcone 대담. 2026-11-25 재게시본(머니 래빗홀, gP1ELwJA97k)의 사람이 단 영어 자막으로 38:01~45:56 구간(리뷰 예산, 거꾸로 된 피라미드)과 17:24~22:20 구간(PR 수, 에이전트의 자기 PR 병합)을 확인. 토큰과 PR 수치는 자기 보고
 
 ## 관련 문서
 
@@ -81,3 +93,7 @@ aliases: ["Independent Agent Code Review", "독립 에이전트 코드 리뷰", 
 - [[AI-Code-Delegation-Review|AI 구현 위임과 코드 리뷰]]
 - [[Harness-Gate-Placement|하네스 게이트 배치]]
 - [[Dependency-Vulnerability-Scanning|의존성 취약점 스캐닝]]
+- [[AI-Native-System|AI 네이티브 시스템 (가장 짧은 경로를 올바른 경로로)]]
+- [[Pstack|pstack (interrogate와 correct)]]
+- [[Code-Review-AI-Agent-Operations|에이전트 시대 코드 리뷰 운영 (위험 등급별 승인)]]
+- [[AI-Coworker-Bots|AI 동료 봇 (산출물만 보는 흐름의 전제)]]

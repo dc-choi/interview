@@ -118,6 +118,13 @@ Tailscale 공식 설명 기준 구조는 다음과 같다.
 
 활용 예로는 밖에서 폰의 SSH 터미널 앱으로 집 데스크톱에 접속해 코딩 에이전트 세션을 이어 가거나, NAS 파일을 운영체제와 무관하게 주고받는 구성이 있다.
 
+부분 검증(2026-11-25): 아래 네 항목은 Tailscale 문서, Headscale과 tailcat의 README와 대조했다. 위 요금 설명은 다시 검증하지 않아 기존 `verified_at`을 유지한다.
+
+- **포트 포워딩과의 차이**: 포트 포워딩은 그 포트의 서비스를 인터넷 전체에 내놓으므로 서비스의 인증과 패치가 방어선의 전부가 된다([[IPv4-NAT-and-Traversal#Basic NAT와 NAPT|정적 PAT]]). Tailscale 단말은 `100.64.0.0/10`(RFC 6598 공유 주소 공간)에서 주소를 하나씩 받고, 이 주소는 공용 인터넷에 노출되지 않으며 단말이 망을 옮겨도 바뀌지 않는다. 서비스는 그 주소와 포트로 접속하되 닿을 수 있는 상대가 tailnet 단말로 좁혀진다. 서비스 자체의 취약점이 사라지는 것은 아니므로 아래 ACL을 함께 건다(해석).
+- **exit node**: 한 단말을 exit node로 두면 다른 단말의 공용 인터넷 트래픽(기본 경로 `0.0.0.0/0`, `::/0`)이 그 단말을 거쳐 나가고, 인터넷 서비스에는 exit node의 공인 주소가 보인다. exit node가 될 단말이 스스로 광고하고 관리자가 허용해야 하며, 쓰는 단말도 각자 켠다. 기본값에서는 exit node를 쓰는 동안 자기 LAN에 접근하지 못한다. 집 장비나 임대 서버를 출구로 삼아 상용 VPN 서비스를 대신할 수 있지만 출구의 주소가 자기 명의이므로 익명성을 주는 수단은 아니다(해석).
+- **제어 평면의 직접 운영**: Tailscale의 클라이언트 데몬과 DERP relay는 오픈소스이고, Tailscale이 운영하는 코디네이션 서버는 비공개다. Headscale은 그 제어 서버를 오픈소스로 구현한 독립 프로젝트이며 Tailscale Inc.와 무관하다고 밝힌다(활성 메인테이너 한 명은 Tailscale 직원). 범위는 tailnet 하나, 개인이나 작은 오픈소스 조직용이다. 키 교환과 정책 조율을 제3자에게 맡기지 않는 대신 그 서버의 가용성, 패치와 인증을 직접 책임진다(해석).
+- **계정 없이 두 장비만 잇기**: tailcat(2026-08 공개)은 Tailscale의 데이터 평면만 떼어 netcat처럼 쓰는 Go 패키지이자 CLI다. 계정, 관리자 권한과 라우팅, DNS 변경 없이 사용자 공간에서 동작한다. 한쪽이 출력한 `tc`로 시작하는 주소(공개 키와 DERP 접속 정보)를 상대에게 따로 전달하면 WireGuard로 종단 간 암호화된 연결이 맺어지고, 직접 연결이 안 되면 DERP로 중계된다. 주소를 아는 것이 곧 접속 권한이므로 비밀번호처럼 다룬다. API와 CLI의 안정성 약속이 없고 공용 DERP relay에는 가동 시간 보장이 없다.
+
 보안 점검은 기존 VPN과 같은 원칙을 따른다.
 
 - **접근 제어(ACL)**: 기본 정책이 모든 단말 간 통신을 허용하는지 확인하고, 단말과 태그별로 필요한 포트만 열어 둔다. 개인 기기가 뚫리면 메시 전체가 노출될 수 있다.
@@ -155,6 +162,10 @@ AWS Client VPN 절은 2026-10-13 아래 AWS 공식 문서와 대조했다. 다�
 - [Codex Cloud shipped with Tailscale support. Nobody told us. — Tailscale Blog](https://tailscale.com/blog/codex-cloud-tailscale) — 2026-10-06 게시, 2026-10-21 대조: 키 설정, 노출 범위, 게시 시점의 지원 트래픽과 운영 권고
 - [OpenAI Codex, Cloud environments](https://learn.chatgpt.com/docs/environments/cloud-environments) — 2026-10-21 Private networking (VPN)과 VPN 문제 해결 절의 지원 VPN, 접근 허용, DNS, 프록시와 공유 환경, VM 실행 환경
 - [Tailscale Docs, Auth keys](https://tailscale.com/kb/1085/auth-keys) — 2026-10-21 Pre-approved와 device approval, auth key 만료 범위, 만료와 폐기 뒤 장비 상태와 장비 삭제
+- [Tailscale Docs, Exit nodes](https://tailscale.com/kb/1103/exit-nodes), [Tailscale Docs, Tailscale IP addresses](https://tailscale.com/kb/1015/100.x-addresses) — 2026-11-25 exit node의 경로, 광고와 승인, LAN 접근 기본값, 주소 대역과 고정 여부 대조
+- [Tailscale, Open source](https://tailscale.com/opensource), [headscale README — GitHub, juanfont](https://github.com/juanfont/headscale) — 2026-11-25 공개와 비공개 구성 요소, Headscale의 범위와 Tailscale과의 관계 대조
+- [tailcat README — GitHub, tailscale](https://github.com/tailscale/tailcat), [tailcat 소개 글 — Tailscale Blog](https://tailscale.com/blog/tailcat) — 2026-08-31 게시, 2026-11-25 동작 방식, 주소 형식과 안정성 고지 대조. 라이선스와 버전은 확인하지 못함
+- [누구나 쓸 수 있는 2조원짜리 보안기술 — YouTube, 코딩애플](https://www.youtube.com/watch?v=SucveHciVU0) — 2026-11-25 업로드, 사람이 단 자막 전체 확인. 포트 포워딩과의 비교, exit node, Headscale과 tailcat을 다룬 계기. 본문의 사실 관계는 위 문서와 대조했고 앱 크기와 기업 가치 수치는 넣지 않음
 - [AWS Client VPN, Create an AWS Client VPN endpoint](https://docs.aws.amazon.com/vpn/latest/clientvpn-admin/cvpn-working-endpoint-create.html)
 - [AWS Client VPN, AWS Client VPN target networks](https://docs.aws.amazon.com/vpn/latest/clientvpn-admin/cvpn-working-target.html)
 - [AWS Client VPN, AWS Client VPN authorization rules](https://docs.aws.amazon.com/vpn/latest/clientvpn-admin/cvpn-working-rules.html)

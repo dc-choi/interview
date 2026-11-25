@@ -42,6 +42,7 @@ pstack의 검증 skill은 범용 체크리스트가 아니라 그 앱을 사용�
 - **사람이 검증자이면 병목이 된다.** 에이전트가 앱을 직접 실행하고 조작하지 못하면 사람이 앱을 띄워 확인하고 스크린샷과 콘솔 오류를 옮겨 준다. 이 상태에서는 에이전트를 여러 개 띄워도 병렬로 진행되지 않는다. 검증 skill은 좋은 설계를 보장하지 않지만 적어도 조작한 경로에서 코드가 동작하는지는 에이전트가 확인하게 해 준다. 성능 문제라면 같은 조작 경로에서 CPU 트레이스나 힙 스냅샷을 뜨고, 그 분석은 `trace forensics` playbook이 맡는다.
 - **기능 지도는 모호한 보고의 색인이다.** 앱을 띄울 수 있어도 기능의 위치와 도달 경로를 모르면 에이전트는 사이드바가 느리다는 보고를 받고도 코드를 뒤지며 헤맨다. 지도가 있으면 물음표만 붙은 스크린샷 같은 보고도 기능과 재현 경로로 옮길 수 있다.
 - **로컬에서 만들고 신뢰가 쌓인 뒤 넓힌다.** 검증 skill은 에이전트가 앱을 조작하는 모습을 로컬에서 지켜보며 다듬는다. 믿을 수 있게 된 뒤에는 같은 skill을 클라우드 에이전트와 자동화가 쓴다. 세션의 사례에서는 들어온 버그 보고를 클라우드 환경의 에이전트가 같은 skill로 재현하고 main에서 이미 고쳐졌는지까지 확인해 돌려줬다. 결과를 믿을 근거 없이 많은 클라우드 에이전트부터 띄우면 토큰만 쓴다. 권한과 자율을 넓히는 일반 순서는 [[Agent-Loop-Engineering|루프 엔지니어링]]의 위임 사다리를 따른다.
+- **경보가 같은 skill을 부른다:** 같은 작성자는 이후 대담(2026-11-14 공개)에서 이 순서의 다음 단계를 설명했다. 에이전트가 직접 실행하고 확인하는 작은 루프가 믿을 만해지면, 지표가 임계값 아래로 떨어질 때 울리는 경보가 에이전트를 실행하고 에이전트는 작은 루프에 준 skill로 문제를 재현하고 고친다. 사람의 일은 에이전트 하나하나를 지켜보는 데서 여러 에이전트를 조율하는 쪽으로 옮겨 간다. 사내에서는 pstack 사내판을 저장소에 설치해 구성원 모두와 봇이 띄운 클라우드 에이전트가 같은 skill을 쓴다고 했다(자기 보고). 팀 채팅의 봇이 이 바깥 루프를 맡는 구성은 [[AI-Coworker-Bots|AI 동료 봇]]을 본다.
 
 ## 반복 실수를 강제 층으로 내린다
 
@@ -56,7 +57,7 @@ pstack의 검증 skill은 범용 체크리스트가 아니라 그 앱을 사용�
 - **in-your-own-words**: 작업 전에 사용자의 목표와 풀려는 문제를 에이전트의 말로 다시 설명하게 한다. 지시를 잘못 이해한 채 오래 달리는 실패를 시작 전에 드러내는 장치다. `poteto-mode`도 첫 규칙으로 목표 재진술을 둔다.
 - **ketchup**: 마지막 메시지 이후 대화에서 무엇이 바뀌었는지 요약한다. 영상으로 만드는 `ketchup-video`도 있다.
 - **show-me-your-work**: 결정을 커밋할 수 있는 TSV로 기록해 검토 가능한 결정 이력을 남긴다. `poteto-mode`는 긴 자율 실행에 이를 쓰도록 안내한다.
-- **interrogate**: 여러 모델이 diff를 깨뜨리려 시도하고 증명된 지적만 남긴다. 같은 모델의 자기 리뷰를 줄이는 방향은 [[Independent-Agent-Code-Review|독립 에이전트 코드 리뷰]]를 본다.
+- **interrogate**: 여러 모델이 diff를 깨뜨리려 시도하고 증명된 지적만 남긴다. 같은 모델의 자기 리뷰를 줄이는 방향은 [[Independent-Agent-Code-Review|독립 에이전트 코드 리뷰]]를 본다. 작성자는 제품 의도를 모르는 리뷰어가 과적합할 수 있다며 리뷰 skill의 비중을 줄이고 투자를 코드베이스와 정적 분석으로 옮겼다고 밝혔다([[Independent-Agent-Code-Review#리뷰 깊이는 토큰 예산과 제품 의도로 정한다|리뷰 깊이와 토큰 예산]]).
 - **reflect**: 긴 작업의 절차를 skill 수정으로 남긴다. `automate-me`는 사용자의 대화 기록에서 자기만의 `-mode` skill 초안을 만든다.
 
 ## skill 변경은 눈가림 평가로 확인한다
@@ -96,6 +97,7 @@ pstack의 skill은 작성자가 에이전트의 도구 호출과 추론 기록�
 - [pstack eval playbook — GitHub, cursor/plugins](https://github.com/cursor/plugins/blob/main/pstack/skills/poteto-mode/playbooks/eval.md) — 2026-11-18 눈가림 규칙, 루브릭과 판정자 배치, 실행 기록 판정 확인
 - [pstack no-comments SKILL.md — GitHub, cursor/plugins](https://github.com/cursor/plugins/blob/main/pstack/skills/no-comments/SKILL.md) — 2026-11-18 주석 정리와 제약 주석의 강제 수단 이전 확인
 - [SpaceX AI engineer, Lauren Tan — YouTube, Ai insider](https://www.youtube.com/watch?v=I_oMJk6barY) — 2026-09-26 재게시, 음성 전사 기준. 원 세션은 [How Cursor Turned AI Agents Into Better Engineers — Maven Lightning Lesson](https://maven.com/p/e23d9c/how-cursor-turned-ai-agents-into-better-engineers)(2026-08-12, Zoom)로 보인다(날짜, 진행자와 질의응답 형식이 일치한다는 추론). 설명란의 에이전트 사용률과 에이전트 팀 구성 주장은 음성에 없어 반영하지 않았다
+- [The Rise Of AI Coworkers — YouTube, Y Combinator](https://www.youtube.com/watch?v=y1-9yeYLJUo) — 2026-11-14 공개 Lightcone 대담, 2026-11-25 재게시본(머니 래빗홀, gP1ELwJA97k)의 사람이 단 영어 자막 기준. 경보로 시작하는 바깥 루프, 저장소에 설치한 사내판, 리뷰 skill 비중 축소는 작성자의 자기 보고
 
 ## 관련 문서
 

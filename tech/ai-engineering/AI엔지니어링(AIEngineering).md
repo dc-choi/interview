@@ -45,7 +45,7 @@ Software 3.0 패러다임, LLM과 에이전트, 하네스, 평가, 조직 전환
 - [x] [[AI-Command-and-Control-Targeting|AI 기반 지휘통제와 표적처리]] — F2T2EA 단계별 성격(JP 3-60 2013년판), 지능형 C2의 전출처 융합과 결심 지원, 결심 지점과 온톨로지 모델링, 끊기는 통신, CJADC2가 체계가 아닌 방향이라는 GAO 진단
 
 - [x] [[Crowdsourced-Human-Evaluation|크라우드소싱 사람 평가]] — 자격과 응답 품질의 분리, 검사 조건과 플랫폼 종료 확인
-- [x] [[Independent-Agent-Code-Review|독립 에이전트 코드 리뷰]] — 스캐너, finder/verifier 분리와 근거 및 전달 범위 검사
+- [x] [[Independent-Agent-Code-Review|독립 에이전트 코드 리뷰]] — 스캐너, finder/verifier 분리와 근거 및 전달 범위 검사, 리뷰 깊이와 토큰 예산(제품 의도 없는 리뷰의 과적합, 거꾸로 된 피라미드)
 - [x] [[Agent-Diagram-Evidence|에이전트 다이어그램의 근거와 검증]] — 구조화된 입력과 HTML, 커밋 고정, 자동 검사와 의미 검증의 구분
 - [x] [[LLM-API-Price-Competition|LLM API 가격 경쟁]] — 인하 형태, 캐시 읽기 비중과 공급사 벤치마크의 비교 조건
 - [x] [[Task-Specific-Small-Models|작은 특화 모델]] — Pinterest와 WorldTUI, LFM3의 로컬 실행 예산과 little-lm의 사전학습 평가 조건
@@ -208,6 +208,7 @@ Software 3.0 패러다임, LLM과 에이전트, 하네스, 평가, 조직 전환
 - [x] [[Production-Agent-Architecture-Delegation#무엇을 맡기고 얼마나 풀어 줄지 정하는 사고 도구|위임 결정의 사고 도구]] — 성공 작업당 원가, 오류 누적, 평가가 곧 명세, 자율성 다이얼과 문 유형, 굿하트의 법칙
 - [x] [[AI-Native-Org#업무별 전환 단계는 증거로 올린다|업무별 AI 전환 단계]] — 단계별 증거와 멈춤 신호, AI를 빼 보는 사고실험의 네 축
 - [x] [[AI-Native-Org#결정 병목을 기록된 판단 원칙으로 줄이는 시도|기록된 판단 원칙과 결정 병목]] — AI 판정자의 결정, 반려와 사람 이관, 단일 모델 의존
+- [x] [[AI-Coworker-Bots|AI 동료 봇]] — 팀 채팅의 바깥 루프, 고객 단위와 기능 단위의 분할, 팀 봇의 학습 승인, 실행 권한과 지시 권한, 보이는 봇끼리의 채널, 읽기 전용에서 시작하는 신뢰 단계, 판정 기반과 맥락이 없는 직무의 봇 공장
 - [x] [[AI-Slop-Quality-Gate#공유 자원의 관리자에게 넘어가는 검증 비용|공유 자원의 검증 비용]] — 외부 기여를 닫는 오픈소스 정책, 증거 우선과 Sybil 한계
 - [x] [[Benchmark-Coverage-and-Workplace-Performance#익숙한 과제를 바꿔 점수의 일반화를 확인한다|변형 과제로 본 벤치마크 일반화]] — 점수 폭 확대, 숨은 테스트 추정과 자기 보고 수치 맞추기
 - [x] [[Benchmark-Coverage-and-Workplace-Performance#느린 실행은 단계당 시간과 단계 수로 나눈다|느린 에이전트 실행의 분해]] — 단계당 시간과 궤적 길이, 하네스와 추론 강도 대조, 요청 범위 밖 작업의 라벨, 확인 문구 개입(Gemini 4 Carbon)
