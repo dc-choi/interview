@@ -1,7 +1,7 @@
 ---
 tags: [palantir, permissions, security, data-connection]
 status: done
-verified_at: 2026-10-21
+verified_at: 2026-11-25
 category: "AI엔지니어링(AIEngineering)"
 ---
 
@@ -53,7 +53,7 @@ Plugin과 driver의 Owner는 Editor 권한을 물려받는다. Editor는 삭제�
 | 이미 Source를 가져온 코드의 build 실행 | Code resource Editor, Source 권한은 별도로 필요하지 않음 |
 | 코드에서 Source 제거 | Source 또는 code resource Editor |
 
-코드 저장소 Editor는 가져온 Source의 연결 정보와 secret을 사용자 코드로 읽을 수 있다. Source 공유와 저장소 공유를 따로 검토하면 이 권한 전이를 놓칠 수 있고, UI에서 credential을 가리는 것만으로는 저장소 편집자의 접근을 막지 못한다(설계 해석).
+위 import 규칙은 transform(문서 링크는 Python transforms), Pipeline Builder pipeline과 compute module에 같이 적용된다. 코드 저장소 Editor는 가져온 Source의 연결 정보와 secret을 사용자 코드로 읽을 수 있다. Code Repositories의 custom CI job(2026-11-25 Custom CI 문서 기준 beta)도 저장소에 import한 Source의 egress policy와 secret을 쓸 수 있고, 저장소를 편집할 수 있는 사용자는 어느 branch에든 그런 job을 더할 수 있다. 따라서 Source는 그 credential을 맡겨도 되는 사용자만 편집하는 저장소에만 import한다. Custom CI 문서 기준으로 job이 Source를 쓰려면 Source의 code import 허용, markings 검증 없는 export 설정과 `ci.additions.yml` 선언이 함께 필요하다([[Palantir-Repository-Preview-and-Runtime|Repository preview와 runtime]]). Source 공유와 저장소 공유를 따로 검토하면 이 권한 전이를 놓칠 수 있고, UI에서 credential을 가리는 것만으로는 저장소 편집자의 접근을 막지 못한다(설계 해석).
 
 ## Marking과 webhook 이력
 
@@ -64,6 +64,7 @@ Webhook 권한은 연결된 Source에서 모두 상속한다. 설정 보기에�
 ## 출처
 
 - [Palantir, Data Connection permissions reference](https://www.palantir.com/docs/foundry/data-connection/permissions)
+- [Palantir, Custom CI](https://www.palantir.com/docs/foundry/code-repositories/custom-ci)
 
 ## 관련 문서
 
@@ -72,4 +73,4 @@ Webhook 권한은 연결된 Source에서 모두 상속한다. 설정 보기에�
 - [[Palantir-Data-Connectivity|데이터 연결]]
 - [[Palantir-Export-State-and-Governance|export 상태와 거버넌스]]
 
-2026-10-21 수집한 Data Connection permissions reference 본문 전체(기본 역할, Source 생성 설정, 권장 배치)와 대조했다. 실제 enrollment의 custom role, 권한 전이와 Control Panel 설정 변경은 시험하지 않았다.
+2026-10-21 수집한 Data Connection permissions reference 본문 전체(기본 역할, Source 생성 설정, 권장 배치)와 대조했다. 2026-11-25 수집본과 다시 대조해 code import 대상과 custom CI job의 secret 사용을 보탰다. 실제 enrollment의 custom role, 권한 전이와 Control Panel 설정 변경은 시험하지 않았다.

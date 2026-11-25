@@ -15,6 +15,8 @@ Data Connection webhook은 Foundry에서 외부로 나가는 요청이다. 외�
 
 Read API webhook은 query와 Ontology edit function에서 사용할 수 있다. Write API는 Ontology edit function에서 사용한다. 인증 token을 받는 POST처럼 반복해도 업무 상태를 바꾸지 않는 요청은 의미를 검토한 뒤 Read API로 지정할 수 있다. HTTP 메서드 이름을 바꾸거나 안전하다고 표시한다고 실제 외부 효과가 없어지지는 않는다.
 
+입력 parameter 타입은 Boolean, Integer/Long/Double, 허용 값을 제한할 수 있는 String, Date와 Timestamp가 기본이고, 순서 있는 List, 필수 key와 값 타입을 제한할 수 있는 Record, 있어도 없어도 되는 Optional을 조합한다. REST API Source 요청에서 body를 받는 요청은 Raw JSON, Form Data, Form URL Encoded, binary File, XML, Plain Text, HTML 등의 형식을 쓸 수 있다. Source 설정에 따라 런타임에 더해지는 query parameter는 webhook 화면에 읽기 전용으로 보인다(Headers 행에도 같은 문구가 있다). 인증 정보는 Source 설정을 따르며 고칠 때는 Source로 돌아가 고친다.
+
 Action의 입력 mapping 함수가 `undefined`를 반환하면 webhook을 발사하지 않는 구성이 가능하다. Attachment 입력은 agent worker Source에서 지원하지 않는다. 응답의 nested key나 0부터 시작하는 array index로 값을 추출하고, 전체 응답을 String으로 받을 수도 있다. String output의 비문자열은 JSON 문자열로 변환되고, Record output의 문자열은 JSON 파싱을 시도하며, Integer/Long은 Double로 변환할 수 있다.
 
 ## 생성과 시험
@@ -39,9 +41,9 @@ TypeScript v1은 Source와 webhook을 functions repository에 가져오는 흐�
 
 Authorization code grant는 outbound application을 사용해 실행 사용자에게 인증을 요구한다. Redirect URI는 해당 enrollment의 callback과 정확히 일치해야 한다. 이 지원을 outbound application 인증을 지원하지 않는 external transform에 그대로 적용하지 않는다.
 
-Client credentials grant는 token endpoint 호출 후 받은 token으로 업무 API를 호출한다. Microsoft Graph 예시는 `login.microsoftonline.com`과 `graph.microsoft.com` 양쪽 domain과 egress를 구성한다. Webhook에서는 여러 domain을 사용할 수 있지만, 다중 domain REST Source를 Python transform에 가져오는 것은 별도 제한을 받는다.
+Client credentials grant는 token endpoint 호출 후 받은 token으로 업무 API를 호출한다. 공식 예시는 REST API Source에 OAuth 2.0 서버 domain과 resource domain을 함께 등록하되 Source의 인증 옵션은 고르지 않고, client secret을 Source의 Additional secrets에 넣어 첫 call의 요청에서 참조한다. 두 번째 call의 Authorization header에는 첫 응답에서 key로 추출한 `access_token`류 값을 넣는다. 필드 이름과 필수 값은 OAuth 서버마다 다르므로 대상 시스템 문서를 따른다. Microsoft Graph 예시는 `login.microsoftonline.com`과 `graph.microsoft.com` 양쪽 domain과 egress를 구성한다. Webhook에서는 여러 domain을 사용할 수 있지만, 다중 domain REST Source를 Python transform에 가져오는 것은 별도 제한을 받는다.
 
-응답은 기본적으로 6개월 저장된다. 실행자와 `webhooks:read-privileged-data` 권한자는 전체 응답을 볼 수 있으므로 token endpoint의 응답 저장을 끄는 것이 공식 권고다. Secret이 Source UI에서 숨겨져도 code import를 허용한 저장소의 Editor는 secret을 읽을 수 있다는 별도 권한 계약을 함께 적용한다.
+History는 실행마다 실행한 사용자 ID, 시각과 성공/실패 상태를 항상 남긴다. 입력과 전체 응답은 기본적으로 실행한 사용자에게만 보이고, `webhooks:read-privileged-data`는 기본으로 아무에게도 부여되지 않으므로 이 권한을 역할에 추가해야 전체 이력을 본다. Configuration reference는 custom role이 필요하다고 쓰고, permissions reference는 custom 또는 default role에 추가할 수 있다고 쓴다. 민감한 값을 돌려주는 webhook은 응답 저장 자체를 끌 수 있다. 응답은 기본적으로 6개월 저장된다. 실행자와 `webhooks:read-privileged-data` 권한자는 전체 응답을 볼 수 있으므로 token endpoint의 응답 저장을 끄는 것이 공식 권고다. Secret이 Source UI에서 숨겨져도 code import를 허용한 저장소의 Editor는 secret을 읽을 수 있다는 별도 권한 계약을 함께 적용한다.
 
 ## Legacy task 구분
 
@@ -63,4 +65,4 @@ Legacy REST webhook의 extractor는 JSON만 허용한다고 설명한다. 이 �
 - [[Palantir-External-Transforms-Governance|외부 연산의 export 통제]]
 - [[Palantir-Data-Connectivity|데이터 연결]]
 
-본문과 예제의 계약을 확인했다. 2026-11-25에는 Setup 문서 수집본과 생성, 복제, cURL 가져오기와 시험 절차를 다시 대조했다. Webhook 실행, 외부 변경과 function 게시를 수행하지 않았다.
+본문과 예제의 계약을 확인했다. 2026-11-25에는 Setup 문서 수집본과 생성, 복제, cURL 가져오기와 시험 절차를 다시 대조했고, Configuration reference 수집본으로 입력 타입, body 형식, client credentials 구성과 history 공개 범위를 보탰다. Webhook 실행, 외부 변경과 function 게시를 수행하지 않았다.

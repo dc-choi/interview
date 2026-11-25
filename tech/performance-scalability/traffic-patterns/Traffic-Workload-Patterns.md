@@ -12,6 +12,7 @@ aliases: ["Traffic Workload Patterns", "대규모 트래픽 워크로드 패턴"
 - [[First-Come-Coupon-Patterns|선착순 이벤트(쿠폰, 재고, 티켓) 패턴]]: Redis INCR 원자성, 1인 1회 SADD 게이트, 공유 DB 쓰기 부하와 Kafka 비동기 저장
 - [[First-Come-Coupon-Patterns-Failure-and-Verification|선착순 이벤트 경계 실패, 복구와 검증]]: 경계 실패 설계, 승인 뒤 consumer 실패와 재발급, NestJS와 TypeORM 경계, 총량과 1인 1회 검증
 - [[Virtual-Waiting-Room-Architecture|가상 대기열 아키텍처 폴더 인덱스]]: 문제 정의와 대기 등록, 입장 제어와 예매 처리, 대기 상태 통신과 운영
+- [[Scheduled-Spike-Design-Inventory|예정된 피크 이벤트 설계 목록]]: 피크 1초 역산, 빠르고 정확한 실패 응답, 동시 충돌, 외부 호출 실패와 자원 한도 목록
 - [[Notification-Broadcast-System|대규모 알림 시스템]]: 계층적 팬아웃, SQS in-flight 한계, 전용 인프라 격리
 - [[Media-Event-Traffic|미디어 공개와 중계 이벤트 트래픽]]: CDN 대역폭 quota, 진입 계층 사전 용량, 공개 일정 기반 예약 증설과 Spot, 라이선스와 heartbeat 부하
 - [[Geospatial-Matching|실시간 위치 기반 매칭]]: H3 육각형 격자, k-ring, 공간과 시간 분할, 핫 파티션, 위치 갱신 수집과 저장 분리, ETA 순위와 배차 확정, GPS 보정
