@@ -1,7 +1,7 @@
 ---
 tags: [palantir, custom-endpoints, api, release-management]
 status: done
-verified_at: 2026-10-16
+verified_at: 2026-11-25
 category: "AI엔지니어링(AIEngineering)"
 aliases: ["Custom endpoint release 계약"]
 ---
@@ -24,13 +24,13 @@ Publish는 현재 set의 immutable semantic-version snapshot을 만든다. Relea
 
 Endpoint set의 Overview에서 subdomain을 요청하고 enrollment administrator 승인 후 Domain ready를 확인한다. Set마다 연결된 subdomain이 필요하며 Control Panel에서 독립적으로 만든 standalone subdomain을 그대로 쓰는 경로는 지원하지 않는다. 대기 중에도 definition 구성/test를 준비할 수 있다.
 
-여러 release를 같은 subdomain에 동시에 deploy할 수 있다. Caller는 `endpoint-api-version` header로 deployed version을 선택하며 없으면 latest deployed로 간다. 안정적인 consumer는 version selection을 명시하고 새 release deploy가 header 없는 caller를 바꾸는 영향을 확인한다. 최신 published와 최신 deployed는 다를 수 있다.
+여러 release를 같은 subdomain에 동시에 deploy할 수 있다. 공식 문서는 이 multi-version deployment로 beta, stable, legacy version을 한 subdomain에 함께 열어 두고 release 안정성을 관리하는 용도를 든다. Caller는 `endpoint-api-version` header로 deployed version을 선택하며 없으면 latest deployed로 간다. 안정적인 consumer는 version selection을 명시하고 새 release deploy가 header 없는 caller를 바꾸는 영향을 확인한다. 최신 published와 최신 deployed는 다를 수 있다.
 
 ## API 통합은 별도 인증과 backing 접근을 요구한다
 
 2026-10-16 기준 custom endpoint 통합은 Developer Console의 unrestricted application만 지원한다. Restricted application 지원을 전제하지 않는다. 동시에 backing function/action resource 접근을 설정해야 하므로 unrestricted라는 이름을 모든 resource 접근 허가로 읽지 않는다. 현재 앱 유형과 resource configuration UI에서 실제 권한을 확인한다.
 
-승인 subdomain에 publish/deploy한 뒤 Versions의 example request와 설정을 검토하고 token을 사용해 호출한다. Version별 path/parameter/output과 negative authorization을 확인한다. Consumer Public Application의 unauthenticated proxy나 Compute Module의 OpenAPI server integration과 별도 기능이며 해당 제약을 섞지 않는다.
+공식 문서 기준 승인 subdomain에서는 publish와 deploy 직후 version에 접근할 수 있어야 한다. 실제 호출 성공은 token과 backing function/action 권한에 달려 있다. 수동 시험은 user-generated token을 `FOUNDRY_TOKEN` 환경 변수로 두고, Versions의 Deployed Version > Custom Endpoint에서 example CURL request와 endpoint 설정을 확인한 뒤 복사해 실행한다. 이는 개인 token으로 하는 시험 경로이며 운영 consumer의 인증 방식은 앞 문단의 Developer Console application 조건을 따른다. Version별 path/parameter/output과 negative authorization을 확인한다. Consumer Public Application의 unauthenticated proxy나 Compute Module의 OpenAPI server integration과 별도 기능이며 해당 제약을 섞지 않는다.
 
 ## 출처
 

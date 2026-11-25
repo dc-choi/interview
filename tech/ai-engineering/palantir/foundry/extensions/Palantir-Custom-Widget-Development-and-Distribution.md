@@ -1,7 +1,7 @@
 ---
 tags: [palantir, custom-widgets, deployment, marketplace]
 status: done
-verified_at: 2026-11-09
+verified_at: 2026-11-25
 category: "AI엔지니어링(AIEngineering)"
 aliases: ["Custom Widget 개발과 배포"]
 ---
@@ -47,10 +47,14 @@ Widget set 자체를 product output으로 추가(Add files로 Compass에서 widg
 Marketplace product는 Custom Widgets 기능 대부분을 지원하지만 아래는 예외다. 설치 계획을 세울 때 이 목록을 설치 후 수동 작업과 함께 확인한다.
 
 - 설치된 Foundry code repository source에서 개발하고 새 version 발행(설치된 source는 debugging용이다)
-- 원본과 다른 API name의 ontology resource(prefix 없이 설치하거나 기존 entity로 input을 mapping해 API name을 원본과 맞춘다)
+- 원본과 다른 API name의 ontology resource(아래 API name 문단 참고)
 - OSDK의 versioned function(latest version만 지원)
 - Map tile source 패키징(다른 enrollment에 설치해도 원본 tile source 참조를 유지한다. [[Palantir-Custom-Widget-State-and-Security|상태와 보안]]의 map tile 절 참고)
 - 설치 중 Ontology APIs 자동 enable(아래 수동 작업 참고)
+
+API name 일치는 OSDK를 쓰는 widget set의 runtime 계약이다. 설치된 widget set은 publish 당시의 원본 API name(object type, property, link type, action type, interface, function)으로 설치 대상 ontology를 호출한다. 설치 시점에 API name 일치를 강제하지 않는 예전 product는 이름이 달라도 설치되고, 실행 중 404 not found가 나거나 의도와 다른 ontology resource를 읽을 수 있다. 새 product는 validation 단계에서 검사해 이름이 다르면 `apiBindingNotStable` blocking validation error로 설치를 막고, 어떤 resource의 API name이 어긋났는지 알려 준다. 원문은 예전과 새 product를 가르는 기준을 밝히지 않으므로 실제 설치 validation 결과로 확인한다.
+
+공식 문서는 해결 방법으로 네 가지를 든다. 설치하는 쪽은 원본과 같은 API name으로 prefix 없이 설치하거나, 기존 ontology resource 중 원본과 같은 API name을 가진 것에 input을 mapping한다. Ontology Manager에서 설치 대상의 기존 API name을 원본에 맞게 직접 바꿀 수도 있지만 그 이름에 기대던 다른 workflow가 영향을 받는다. 원본 OSDK에 쓰지 않는 resource가 들어 있어 생긴 불일치라면 product를 만드는 원본 쪽에서 그 resource를 OSDK에서 빼고 새 OSDK version을 만들어 widget set repository에 설치한 뒤 widget set을 다시 publish하고 그 version을 product에 넣는다.
 
 OSDK Ontology APIs는 설치 시 자동 enable되지 않는다. 설치 후 권한자가 한 번 수동 enable하며 이후 product upgrade에서도 설정은 유지된다. Product 설치 성공을 runtime API enablement 완료로 보고하지 않는다.
 
