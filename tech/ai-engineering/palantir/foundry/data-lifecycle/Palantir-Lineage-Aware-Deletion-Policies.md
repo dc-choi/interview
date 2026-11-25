@@ -1,14 +1,14 @@
 ---
 tags: [palantir, data-lifetime, retention, lineage]
 status: done
-verified_at: 2026-10-16
+verified_at: 2026-11-25
 category: "AI엔지니어링(AIEngineering)"
 aliases: ["Data Lifetime 계보 기반 삭제"]
 ---
 
 # 계보를 따르는 삭제 정책
 
-Data Lifetime은 dataset transaction에 삭제 날짜를 정하고 그 transaction에서 파생한 downstream transaction에도 전파하는 lineage-aware retention이다. Retention application의 일반 정책은 이 전파를 하지 않는다. 두 정책을 함께 쓸 수 있지만 Data Lifetime의 날짜 화면은 다른 retention policy의 더 이른 삭제일을 합산하지 않는다.
+Data Lifetime은 dataset transaction에 삭제 날짜를 정하고 그 transaction에서 파생한 downstream transaction에도 전파하는 lineage-aware retention이다. Retention application의 일반 정책은 이 전파를 하지 않는다. 두 정책을 함께 쓸 수 있지만 Data Lifetime의 날짜 화면은 다른 retention policy의 더 이른 삭제일을 반영하지 않는다.
 
 ## 삭제 단위와 branch 범위
 
@@ -23,6 +23,10 @@ Downstream은 parent transaction의 삭제일 또는 삭제일 없음을 계승�
 집계/최소화된 downstream을 더 오래 유지해야 하는 경우 override로 upstream 삭제일 상속을 끊을 수 있다. Superseding policy를 지정하거나 replacement 없이 override할 수 있다. 후자는 해당 transaction/downstream에 삭제일이 없어질 수 있다. 다른 lineage를 통해 별도 정책을 이미 받는 downstream에는 대체 정책이 그대로 적용되지 않을 수 있으므로 최종 날짜를 확인한다.
 
 Override는 Data Governance Officer를 요구한다. Namespace/Policy/Dataset View 권한과 함께 판단하며 Dataset Editor가 할 수 있는 기존 policy 적용/제거와 namespace policy 생성/수정/삭제 권한을 구분한다. Creation guide의 Editor 또는 Officer라는 넓은 prerequisite를 policy 생성 권한표보다 우선하지 않는다.
+
+## 정책 생성과 적용 경로
+
+정책을 만들고 적용하는 기본 경로는 Applications, Security & governance 아래의 Data Lifetime application이다. 이 application에서 policy를 만든 뒤 Apply to dataset으로 대상을 고른다. 공식 가이드는 이 경로를 권장하고, 경우에 따라 dataset 화면의 Details 탭, Lineage-aware retention policies에서 그 dataset에 직접 정책을 구성하는 경로도 안내한다. Override도 같은 dataset 패널에서 설정한다. 정책 자체는 namespace 수준에서 정의되므로 dataset 경로를 dataset 전용 정책 객체로 이해하지 않는다. Root/upstream 우선 검토 권고는 경로와 무관하게 적용한다. 적용 이력은 Data Lifetime application의 policy History에서 확인하며, 공식 가이드는 dataset 경로로 만든 경우의 이력 확인 절차를 따로 설명하지 않는다.
 
 ## 적용 이력과 실제 삭제는 다르다
 
