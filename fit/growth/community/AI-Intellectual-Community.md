@@ -56,11 +56,11 @@ Mathematics has changed. Let’s act like it는 2026-11-01 Frank Calegari가 Ter
 
 ## 검증 단계가 다른 증명 주장
 
-2026-11-20 전후로 AI를 많이 쓴 증명 주장 세 건과 AI를 쓰지 않은 증명 주장 한 건이 공개됐다. 비슷한 때 나왔어도 사람이 읽을 증명, 기계 검증과 공동체 검토가 어디까지 왔는지는 서로 다르다. Terence Tao는 앞의 세 건을 소화된 정도의 순서로 정리했다. 2026-11-21 기준으로 네 주장 모두 동료 심사를 마쳤다는 근거는 없다. 이 문서는 수학 내용을 검토하거나 Lean 빌드를 직접 실행하지 않으며(범위 밖), 아래의 검사 결과는 제3자가 공개한 기록이다. 형식화의 범위와 외부 검사 결과는 [[AI-Assisted-Mathematical-Research#사례: 리만 가설과 유체 방정식 특이점의 형식화 주장|형식화 주장 사례]]에서 다룬다.
+2026-11-20 전후로 AI를 많이 쓴 증명 주장 세 건과 AI를 쓰지 않은 증명 주장 한 건이 공개됐다. 비슷한 때 나왔어도 사람이 읽을 증명, 기계 검증과 공동체 검토가 어디까지 왔는지는 서로 다르다. Terence Tao는 앞의 세 건을 소화된 정도의 순서로 정리했다. 2026-11-25 기준으로 네 주장 모두 동료 심사를 마쳤다는 근거는 없다. 이 문서는 수학 내용을 검토하거나 Lean 빌드를 직접 실행하지 않으며(범위 밖), 아래의 검사 결과는 제3자가 공개한 기록이다. 형식화의 범위와 외부 검사 결과는 [[AI-Assisted-Mathematical-Research#사례: 리만 가설과 유체 방정식 특이점의 형식화 주장|형식화 주장 사례]]에서 다룬다.
 
 - **3차원 비압축 Euler 방정식의 외력 없는 유한 시간 특이점(Levent Alpöge, Tristan Buckmaster, Matei Coiculescu):** AI의 도움을 많이 받아 쓴 사람이 읽을 원고와, 원고와 대응하는 Lean 형식화가 함께 있다. Tao의 정리에서 가장 많이 소화된 결과다.
 - **3차원 비압축 Navier–Stokes 방정식의 외력 없는 유한 시간 폭발(Alpöge, Buckmaster):** Tao는 논문이 기술적으로는 사람이 읽을 수 있고, 수치로 근사 이산 자기유사 해를 만든 뒤 엄밀한 섭동 이론으로 정확한 해로 옮기는 증명 전략도 대체로 분명하지만, 제대로 된 전문적인 증명으로 쓰는 일이 더 남았다고 평가했다. Lean 패키지가 있지만 논문이 기대는 수치 인증서와 그 확인 계산은 형식화 밖이고, 인증서는 2026-11-21에도 공개되지 않았다.
-- **리만 가설과 Dirichlet L-함수의 일반화 리만 가설(Alpöge):** 발표자는 개인 사이트의 4쪽 발표문에서 Claude와 함께 증명을 찾았다고 믿는다고 밝혔고(Tao는 내부 AI 모델이라고 적는다), 사람이 읽을 증명 없이 Lean만 공개했다. 자동으로 만든 25만 쪽 이상의 서술 문서는 내지 않았고, 주변 수학을 아직 숙달하지 못했으며 Claude가 전문가인 부분의 개요는 부정확할 수 있다고 적었다. 확장 리만 가설까지 가리라는 말은 전망이다. 외부 검증자의 여러 검사기 재검사 결과가 하루 남짓 만에 공개됐지만 일부 검사는 진행 중이었고(2026-11-21 10:05 UTC 갱신판 기준), Lean 공동체가 따로 만든 비교 저장소도 같은 날 결과 절을 빌드 진행 중으로 두었다. 발표는 소속 회사의 상장 다음 날 나왔고, 발표문은 일정에 지켜야 할 제약이 있었다며 시점에 대한 냉소적 해석을 부인한다. 회사의 공식 발표는 찾지 못했다.
+- **리만 가설과 Dirichlet L-함수의 일반화 리만 가설(Alpöge):** 발표자는 개인 사이트의 4쪽 발표문에서 Claude와 함께 증명을 찾았다고 믿는다고 밝혔고(Tao는 내부 AI 모델이라고 적는다), 사람이 읽을 증명 없이 Lean만 공개했다. 자동으로 만든 25만 쪽 이상의 서술 문서는 내지 않았고, 주변 수학을 아직 숙달하지 못했으며 Claude가 전문가인 부분의 개요는 부정확할 수 있다고 적었다. 확장 리만 가설까지 가리라는 말은 전망이다. 외부 검증자의 여러 검사기 재검사 결과가 하루 남짓 만에 공개됐고, Lean FRO와 Mathlib Initiative는 2026-11-21 공동 성명에서 리만 가설의 명제와 증명이 모두 옳다고 인증했다(그날 진행 중이던 커널 검사 대부분도 2026-11-24까지 통과로 갱신됐다). 인증 대상은 리만 가설이며 Dirichlet L-함수의 일반화 리만 가설 정리는 성명에 언급되지 않는다. 이 인증은 형식 검증에 관한 것이며, 성명은 증명의 새 아이디어를 설명할 수학 공동체의 활동을 기대한다고 맺었다. 사람이 읽을 증명은 2026-11-25에도 찾지 못했다. 발표는 소속 회사의 상장 다음 날 나왔고, 발표문은 일정에 지켜야 할 제약이 있었다며 시점에 대한 냉소적 해석을 부인한다. 회사의 공식 발표는 찾지 못했다.
 - **Hecke L-함수의 일반화 리만 가설(Alessandro Maria Masullo):** Ravi Vakil은 이 증명안이 AI 없이 사람이 쓴 것이고 Brian Conrad가 수개월 검토해 지금까지 좋아 보인다고 공지했다(Conrad 본인의 공개 평가는 2026-11-21 공지 페이지와 검색에서도 찾지 못함). 1년 동안 다듬고 여러 사람의 검토를 거친 뒤 발표할 생각이었지만 지금은 현재 원고를 먼저 내는 편이 낫다고 적었다. 940쪽 원고의 서문은 12년 가까이 걸린 작업이고 서론이 미완성이며 알려진 결함이 몇 군데 있다고 인정하면서, 1년 다듬기 계획은 그대로 이어 간다고 적는다. 대상은 모든 수체와 모든 유니터리 Hecke 지표다. 약 8시간 뒤의 공지 갱신은 여러 사람이 서로 다른 AI 모델의 도움으로 찾은 문제를 보고해 왔다고 적고, 공지자는 증명 전략의 정확성을 주장하지 않으며 공동체가 납득할 만큼 해결돼야 받아들여진다고 덧붙였다. Lean 형식화는 없고 공지는 형식화를 요청했다.
 
 읽을 점은 셋이다.
@@ -68,6 +68,16 @@ Mathematics has changed. Let’s act like it는 2026-11-01 Frank Calegari가 Ter
 1. 기계 검증의 재현과 이해는 다른 단계다. 커널 재검사가 빨리 나와도 형식 진술이 원래 문제와 같은지, 형식화 밖의 계산이 맞는지, 전략을 사람이 이해했는지는 남는다. Tao는 일반화 리만 가설의 소화에 시간이 걸리겠지만 소통할 사람 저자가 있다는 점을 다행으로 꼽았고, Lean 공동체의 토론방도 논의를 Lean에 관한 측면으로 좁혔다.
 2. 이 사례에서는 사람이 쓴 원고의 검토에도 AI가 쓰였다. 보고된 문제가 고칠 수 있는 결함인지 전략의 실패인지는 아직 판정되지 않았다. 한 공지의 갱신에 근거한 관찰이므로 검토 관행 전반의 변화로 넓히지 않는다.
 3. 사람이 쓴 증명안은 다듬은 뒤 발표하려던 순서를 바꿔 현재 원고를 먼저 공개했다(원고 서문은 1년 다듬기 계획을 이어 간다고 적는다). 공지는 급하다고만 적고 원고 서문은 지금의 분위기를 이유로 든다. 같은 날의 경쟁 발표와 연결한 것은 독자들의 해석이다. 발표 순서와 결과의 정확성은 따로 판단한다.
+
+### 증명 소식을 받아들이는 방식: 주체성과 상실감
+
+같은 발표를 두고 검증과 별개로 그 의미를 묻는 글도 나왔다. 아래 두 에세이는 2026-11-25 원문으로 확인했으며, 증명의 정확성에 관한 근거가 아니라 글쓴이의 가치 판단이다.
+
+- **경외의 대상이 바뀌었다는 비판(Re: Riemann, Fernando Borretti):** 발표문은 이것을 끝으로 느끼는 것이 자연스럽고 자신에게는 오래 길잡이로 삼던 목표를 잃는 일이지만 과정에서 본 것은 과학 전반에 걸친 훨씬 큰 무엇의 새벽이라고 믿는다고 하면서, 결승선 근처에서는 Claude가 자신을 훨씬 앞질렀다고 적었다. 글은 이를 Ayn Rand의 Apollo 11 발사 관람기와 대비한다. 그 관람기의 경외는 자연이 풀어놓았다면 인간을 쓸어버렸을 힘을 인간이 계획하고 풀어놓고 통제한다는 데서 나온다. 글쓴이가 아끼는 Diego Rivera의 벽화 Man, Controller of the Universe도 과학과 기술의 이미지 한가운데에서 조종 장치를 쥔 사람을 그린다. 반면 이번 발표와 Anthropic CEO의 에세이 Machines of Loving Grace에서는 Claude가 중심에 있고 사람은 가장자리에서 혜택을 받는 수동적인 존재가 된다며, 글은 이를 배신이자 항복이라고 부른다. AI 기업과 AI 안전, 효과적 이타주의, 합리주의 공동체 대부분의 꿈을 그렇게 묘사한 부분도 글쓴이의 해석이다.
+- **정답을 책 뒤에서 확인한 듯한 씁쓸함(And yet, it moves, Signore Galilei 블로그):** 글쓴이는 증명 발표일을 화성 탐사선 착륙, 힉스 입자 발견, 첫 블랙홀 사진 같은 축하로 상상했지만 실제 분위기는 애도에 가깝거나 기껏해야 씁쓸했다고 적는다. 증명이 우리 가운데 누군가가 아니라 속을 알 수 없는 실리콘 마음에서 나왔고, 스스로 풀 수도 있었을 문제를 포기하고 책 뒤의 정답을 확인한 것 같다는 것이다. 직전에 본 뮤지컬 Galileo에서 떠올린 과학의 혁명성은 자연에 올바르게 물으면 무엇이 참인지 알아낼 수 있다는 데 있었는데, 그 기획에서 사람이 발견하는 역할이 끝나 간다고 본다. 진보가 멈추기를 바라는 마음을 적으면서도, 갈릴레오가 했다는 전설의 말 그래도 지구는 돈다(Eppur si muove)를 빌려 원하던 세상은 아니어도 세상은 이미 그렇게 움직인다고 받아들이며 끝난다. 기계도 사람이 만들었다는 댓글에는, 기계를 만들고 능숙하게 운용한 사람들은 축하받아야 하지만 비행기로 에베레스트 위를 처음 넘은 것과 직접 오른 것처럼 다른 종류의 성취라고 답했다.
+- **조건부 결과에 거는 기대:** 같은 글은 리만 가설을 전제로 참임이 증명된 추측이 무수히 많아 증명이 수학의 넓은 영역을 열 것이라고 적는다. Clay 수학연구소의 공식 문제 설명(Bombieri)은 global L-함수의 리만 가설이 가져올 결과의 예로 Chebotarev 밀도 정리의 매우 강한 유효형, 필요한 합동 조건을 만족하는 5변수 이상 비특이 3차 형식이 0을 비자명하게 표현함(Hooley), Miller의 결정론적 다항 시간 소수 판정을 든다. 어떤 조건부 결과가 실제로 무조건부가 되는지는 그 결과가 제타 함수의 리만 가설, Dirichlet L-함수의 일반화 리만 가설, 더 넓은 L-함수의 가설 가운데 무엇을 전제했는지와 이번 주장의 범위가 맞는지에 달려 있다(이 문서의 판단).
+
+두 글은 앞의 수학자들의 상실감이나 최전선 발견의 즐거움 사례와 같은 상실을 다루지만, 결과가 맞는지보다 누가 발견의 주체였는지를 묻는다. 그래서 형식 검증이 끝나도 이 질문은 남는다. 경외가 인간의 통제와 성취에서 AI의 능력으로 옮겨 간다는 관찰과 기계를 만들고 운용한 사람의 성취를 따로 셀 수 있다는 반론은 모두 개인의 가치 판단이며, 공동체 전체의 정서를 대표하는 자료로 쓰지 않는다.
 
 ## 출처
 
@@ -84,8 +94,9 @@ Mathematics has changed. Let’s act like it는 2026-11-01 Frank Calegari가 Ter
 - [Why I'm no longer updating this repository — Paul Battley](https://po-ru.com/2026/10/18/why-im-no-longer-updating-this-repository) — 2026-10-18, 2026-10-27 확인. 저장소 수는 글에 없다
 - [Ruby gem 개발을 그만두는 이유 - AI가 바꾼 생태계 — GeekNews](https://news.hada.io/topic?id=35649)
 - [remark.pdf — Levent Alpöge](https://alpo.ge/remark.pdf) — 2026-11-20 공개 4쪽 발표문, 2026-11-21 전문 확인. 주장 범위, Lean만 공개한 이유, 25만 쪽 문서 비공개, 저자의 숙달 한계와 시점 해명 확인. Lean 압축 파일은 받지 않음
-- [RH Lean proof: verification files — MIT, Andrew Sutherland](https://math.mit.edu/~drew/grh/) — 2026-11-21 09:30 UTC 갱신판 대조, 같은 날 12:32 UTC에 10:05 UTC 갱신판을 다시 확인. 진행 중인 검사가 있어 이후 결과가 바뀔 수 있다
-- [riemann-hypothesis — GitHub, leanprover-community](https://github.com/leanprover-community/riemann-hypothesis) — 2026-11-21 독립 Comparator 설정, 검증 노트의 한계와 결과 절(빌드 진행 중) 확인
+- [RH Lean proof: verification files — MIT, Andrew Sutherland](https://math.mit.edu/~drew/grh/) — 2026-11-21 09:30 UTC 갱신판 대조, 같은 날 12:32 UTC에 10:05 UTC 갱신판을 다시 확인. 2026-11-25 조회 때 최신인 2026-11-24 05:25 UTC 갱신판으로 남은 커널 검사 대부분의 통과 확인
+- [Lean verification of the Riemann Hypothesis — Lean Community Blog, Lean FRO와 Mathlib Initiative](https://leanprover-community.github.io/blog/posts/riemann-hypothesis/) — 2026-11-21 13:55 게시 공동 성명. 2026-11-25 인증 범위와 근거, 새 아이디어의 설명을 공동체에 남긴 맺음말 확인
+- [riemann-hypothesis — GitHub, leanprover-community](https://github.com/leanprover-community/riemann-hypothesis) — 2026-11-21 독립 Comparator 설정과 검증 노트의 한계 확인. 2026-11-25에는 성명과 별개로 증명의 정리본을 유지하는 작업으로 바뀌었고 검증 노트의 결과 절은 여전히 빌드 진행 중이었다
 - [Unforced Euler singularity, unforced Navier-Stokes singularity, and the Generalized Riemann Hypothesis — What's new, Terence Tao](https://terrytao.wordpress.com/2026/11/20/unforced-euler-singularity-unforced-navier-stokes-singularity-and-the-generalized-riemann-hypothesis/) — 2026-11-20, 세 결과의 소화 정도와 Lean 토론방 운영 갱신 확인. 2026-11-21 다시 확인했을 때 본문 갱신은 그 하나뿐이었고 이후 관련 새 글은 없었다
 - [Finite-Time Singularity Formation for the Three-Dimensional Euler Equations — GitHub, Alpöge, Buckmaster, Coiculescu](https://github.com/mcoiculescu/EulerBlowupPublic) — 2026-11-21 README의 형식화 대응, 공리와 예외 확인. 원고와 빌드는 확인하지 않음
 - [Finite-time blow-up for the Navier–Stokes equations — GitHub, Alpöge, Buckmaster](https://github.com/tristanbuckmaster/navier-stokes) — 2026-11-21 README의 형식화 범위, 형식화 밖 계산과 재빌드 상태, 인증서 미공개와 CI 없음 확인. 논문은 읽지 않음
@@ -95,6 +106,11 @@ Mathematics has changed. Let’s act like it는 2026-11-01 Frank Calegari가 Ter
 - [Anthropic 수학자, Claude와 리만 가설 및 일반화 리만 가설을 증명했다고 발표 — GeekNews](https://news.hada.io/topic?id=37529)
 - [긴급 공지: Alessandro Masullo, 일반화 리만 가설(GRH) 증명안 공개 — GeekNews](https://news.hada.io/topic?id=37541)
 - [외력이 없는 Euler와 Navier-Stokes 방정식의 특이점과 일반화 리만 가설 — GeekNews](https://news.hada.io/topic?id=37546)
+- [Re: Riemann — Fernando Borretti](https://borretti.me/article/re-riemann) — 2026-11-21(호주 시각) 게시, 2026-11-25 전문 확인. 글이 인용한 Ayn Rand의 Apollo 11 관람기와 Diego Rivera 벽화는 글 안의 인용과 링크로만 확인
+- [And yet, it moves — Signore Galilei](https://signoregalilei.com/2026/11/20/and-yet-it-moves/) — 2026-11-20 게시, 2026-11-25 본문과 글쓴이의 댓글 답변 확인
+- [Problems of the Millennium: the Riemann Hypothesis — Clay Mathematics Institute, E. Bombieri](https://www.claymath.org/wp-content/uploads/2022/05/riemann.pdf) — 공식 문제 설명. 2026-11-25 일반 L-함수의 리만 가설이 가져올 결과의 예 대조
+- Re: Riemann - 리만 가설 증명 발표와 AI 앞에서 인간의 주체성 — GeekNews, 2026-11-22 게시. 학습 계기이며 글 주소는 확인하지 못함
+- 그럼에도 지구는 돈다 — GeekNews, 2026-11-22 게시. 학습 계기이며 글 주소는 확인하지 못함
 
 ## 관련 문서
 

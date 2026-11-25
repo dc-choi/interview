@@ -125,3 +125,4 @@ Martin Fowler의 2026-10-29 LLM Voice는 인간 독자에게 생각을 전달하
 - [[First-Hand-Experience-AI-Era|AI 시대 직접 경험기와 작성자 신뢰]]
 - [[Running-A-Tech-Blog-Process|기술 블로그 운영 프로세스]]
 - [[Resume-Action-Verbs|동사 중심 이력서 문장]]
+- [[AI-Generated-Text-Readability|AI 생성 글의 처리 난도]] — 명료성 결함 세 가지와 처리 난도 지표

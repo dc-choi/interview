@@ -111,6 +111,7 @@ OECD Employment Outlook 2026에 따르면 OECD 평균 실질임금 증가율은 
 - [[Developer-Role-AI-Era|AI 시대 개발자 역할]] — 견습 사다리 붕괴, 위임되는 일과 인간에게 남는 일
 - [[Unemployment-Employment|실업과 고용]] — 마찰적, 구조적, 경기적 실업의 구분
 - [[Elasticity|탄력성]] — 비용 하락이 총수요를 늘리는 조건
+- [[Long-Unemployment-Reentry|장기 실업 뒤 재진입]] — 공백 신호의 실험 근거, 약한 연결과 전환 경로
 
 ## 출처
 
