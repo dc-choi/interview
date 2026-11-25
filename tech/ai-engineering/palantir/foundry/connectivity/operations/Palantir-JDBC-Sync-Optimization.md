@@ -1,7 +1,7 @@
 ---
 tags: [palantir, foundry, data-connection, operations]
 status: done
-verified_at: 2026-10-16
+verified_at: 2026-11-25
 category: "AI엔지니어링(AIEngineering)"
 ---
 
@@ -39,12 +39,15 @@ OR가 있으면 `(condition1 OR condition2) AND partition-condition`이 되도�
 
 fetch size는 rows/round-trip과 heap의 교환이다. 기본 시작 권장 500에서 원본 응답과 메모리를 보며 조정한다. 큰 값은 왕복을 줄이고 heap을 더 사용한다. upload 병목이면 파일 수/크기와 network를 함께 본다.
 
+upload 단계가 오래 걸리거나 실패하면 network link 과부하를 의심하고 source advanced options의 Max file size(byte 또는 row 단위)를 조정한다. 작게 하면 작은 파일을 더 자주 올려 network 압력이 커지지만 실패한 파일의 재전송 비용이 작다. 크게 하면 전체 대역폭은 덜 쓰지만 업로드가 실패할 가능성이 커진다.
+
 진단 문서의 max file 120MB 권장과 custom JDBC의 Parquet buffer 기본128MB/최소 두 배 조건은 설정 맥락이 다르다. 120MB를 모든 source의 maxBytesPerFile에 그대로 적용하지 않는다. 실제 source 옵션의 단위와 최소값을 확인한다.
 
 ## 출처
 
 - [Palantir, optimize-jdbc-syncs](https://www.palantir.com/docs/foundry/data-connection/optimize-jdbc-syncs)
 - [Palantir, syncs-troubleshooting](https://www.palantir.com/docs/foundry/data-connection/syncs-troubleshooting)
+- [Palantir, faq](https://www.palantir.com/docs/foundry/data-connection/faq)
 
 ## 관련 문서
 

@@ -1,9 +1,9 @@
 ---
 tags: [web, frontend, performance, browser, compositor, web-worker]
 status: done
-verified_at: 2026-09-30
+verified_at: 2026-11-25
 category: "웹&네트워크(Web&Network)"
-aliases: ["Browser Main Thread Offloading", "메인 스레드 밖으로 보내기", "FLIP", "Layout Thrashing", "레이아웃 스래싱"]
+aliases: ["Browser Main Thread Offloading", "메인 스레드 밖으로 보내기", "FLIP", "Layout Thrashing", "레이아웃 스래싱", "List Virtualization", "DOM Recycling", "가상 스크롤"]
 ---
 
 # 메인 스레드 밖으로 보내기와 일 없애기
@@ -101,6 +101,21 @@ worker.postMessage({ buffer: pixels.buffer, width, height }, [pixels.buffer]);
 
 디바운스는 입력 중의 실행을, 화면 밖 렌더링 지연은 보이지 않는 항목의 렌더링을 생략한 것이므로 이 역시 일을 없애는 방법이다. 작업을 더 빠르게 만들기 전에 그 일이 지금, 여기서, 꼭 일어나야 하는지를 먼저 묻는다.
 
+### 긴 목록과 그리드의 가상화와 DOM 재사용
+
+DOM 노드 하나는 싸지만 공짜가 아니다. 노드마다 메모리, 레이아웃, 스타일, 페인트 비용이 붙고, DOM이 클수록 클래스 하나를 바꿀 때의 스타일 재계산과 레이아웃도 비싸진다. 수만 행을 표로 다 그리거나 무한 스크롤로 행을 계속 붙이면 저사양 기기부터 느려진다.
+
+- **가상화(windowing)**: 사용자에게 보이는 범위만 렌더링하고 스크롤에 따라 그 창을 옮긴다. 렌더링하는 노드 수가 데이터 건수가 아니라 창의 크기에 묶인다.
+- **DOM 재사용(recycling)**: 창 밖으로 나간 요소를 지우고 새로 만드는 대신, 이미 만든 요소에 새 데이터를 채워 창 반대편에 다시 놓는다. 수십 개의 행 요소를 풀로 돌려 10만 건을 보여 주는 식이다.
+- **배치는 직접 계산한다**: 요소를 재사용할 때마다 흐름 배치를 다시 하면 목록 전체가 재배치된다. 요소를 절대 위치로 두고 `transform`으로 옮기며, 계산한 위치는 캐시해 위로 되돌아갈 때 바로 쓴다. Chrome 글의 구현은 추가 선택으로 각 항목과 목록 컨테이너에 `contain: layout`을 준다.
+- **스크롤 길이 확보**: 실제 행이 없어도 스크롤바가 전체 길이를 나타내도록 컨테이너 높이를 따로 만든다. 1px 요소를 `transform`으로 끝 위치에 두어 높이를 늘리는 방식이 있다.
+- **overscan**: 빠르게 스크롤하면 새 행이 그려지기 전에 빈 공간이 번쩍일 수 있어 창 밖에 몇 개를 더 그려 둔다. 너무 많이 그리면 가상화의 이점을 깎으므로 최소로 둔다. 기본값은 라이브러리와 버전마다 다르다(react-window는 1.8 소스가 2, 2026-11-25 기준 v2.5.4의 List와 Grid가 3).
+- **늦게 오는 데이터와 높이 변화**: 데이터가 오기 전에는 자리표시 요소(tombstone)를 두고, 실제 항목의 높이가 다르면 픽셀 대신 화면 맨 위 항목과 그 안의 오프셋을 기준으로 스크롤 위치를 보정한다(scroll anchoring).
+
+그리드는 행과 열 두 축을 함께 가상화할 수 있다. 한 데이터 그리드 구현 사례는 두 축의 표시 범위를 이진 탐색으로 찾고, 셀 편집기 하나를 공유해 띄우는 방식을 쓴다고 소개한다. 행 높이나 열 너비가 제각각이면 누적 오프셋 배열에서 스크롤 위치의 첫 표시 행과 열을 찾을 수 있고, 편집기를 공유하면 재사용 풀의 행 구조를 바꾸지 않아도 된다(설계 해석). SI 화면에서는 엑셀 내려받기를 위해 전체 행을 숨긴 DOM에 따로 그려 두는 관행도 소개되는데, 이렇게 하면 가상화로 줄인 노드 수가 되살아나므로, 내보내기는 화면 DOM이 아니라 데이터에서 만든다(설계 해석).
+
+한계도 있다. 화면에 없는 행은 DOM에 없으므로 그 행에 기대는 기능은 데이터 기준으로 다시 만들어야 한다(설계 해석). Chrome 글의 구현처럼 뷰포트를 지나가는 요소를 모두 붙이면, 매우 빠르게 스크롤할 때 레이아웃과 페인트가 따라가지 못해 잠깐 배경만 보일 수 있다. 가상화를 넣기 전에 DevTools로(web.dev 글은 FPS meter를 예로 든다) 렌더링과 스크롤 성능이 실제로 문제인지 먼저 잰다.
+
 ## 체크포인트
 
 - 메인 스레드를 막아도 `transform` 애니메이션이 도는 이유와 `left` 애니메이션과의 차이
@@ -109,6 +124,7 @@ worker.postMessage({ buffer: pixels.buffer, width, height }, [pixels.buffer]);
 - 강제 동기 레이아웃과 레이아웃 스래싱, 읽기와 쓰기를 모으는 해법
 - 워커가 유리한 작업과 손해인 작업, 구조화 복제와 transferable 전송의 차이
 - 배압 상황에서 버리기, 합치기, 생략하기를 고르는 기준
+- 10만 행 목록에서 렌더링 노드 수를 데이터 건수와 떼어 놓는 방법과 overscan을 크게 잡으면 안 되는 이유
 
 ## 출처
 
@@ -117,6 +133,10 @@ worker.postMessage({ buffer: pixels.buffer, width, height }, [pixels.buffer]);
 - [MDN, Transferable objects](https://developer.mozilla.org/en-US/docs/Web/API/Web_Workers_API/Transferable_objects)
 - [MDN, will-change](https://developer.mozilla.org/en-US/docs/Web/CSS/will-change)
 - [FLIP Your Animations — aerotwist.com, Paul Lewis](https://aerotwist.com/blog/flip-your-animations/)
+- [Complexities of an infinite scroller — Chrome for Developers, Surma, Robert Flack](https://developer.chrome.com/blog/infinite-scroller)
+- [Virtualize large lists with react-window — web.dev](https://web.dev/articles/virtualize-long-lists-react-window)
+- [react-window — GitHub, Brian Vaughn](https://github.com/bvaughn/react-window)
+- [DOM 풀링 방식의 데이터 그리드와 웹 컴포넌트 제작기 — 하찮은오후](https://www.youtube.com/watch?v=ZOJVdVnAH1M)
 
 ## 관련 문서
 

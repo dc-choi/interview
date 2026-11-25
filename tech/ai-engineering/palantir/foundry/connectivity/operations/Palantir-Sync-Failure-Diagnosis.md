@@ -1,7 +1,7 @@
 ---
 tags: [palantir, foundry, data-connection, operations]
 status: done
-verified_at: 2026-10-16
+verified_at: 2026-11-25
 category: "AI엔지니어링(AIEngineering)"
 ---
 
@@ -13,6 +13,8 @@ category: "AI엔지니어링(AIEngineering)"
 
 fetching 지연은 원본 자체의 응답을 Foundry 밖에서도 확인한다. 원본이 바쁘면 작은 sync, incremental과 한가한 시간대를 검토한다. agent heap/동시 quota 부족은 별도 문제이며 무조건 heap만 늘리지 않는다.
 
+간헐 실패나 멈춤이 agent 자원 부족인지는 agent host의 `<bootvisor-directory>/var/data/processes`에서 가장 최근 `bootstrapper~<uuid>` 폴더의 `var/log/magritte-agent-output.log`로 확인한다. `OutOfMemory`가 보이면 agent가 배정된 작업량을 감당하지 못한 것이다. agent overview에서 heap size를 늘리되 heap tuning 안내를 먼저 확인하고, 늘릴 수 없으면 같은 화면의 Maximum concurrent syncs를 낮춘다.
+
 FTP/SFTP/Directory crawl은 변경 중인 파일을 피하기 위해 기본 두 번 전체 순회할 수 있다. subfolder를 좁히고 regex는 source root 기준 상대 경로라는 점을 확인한다. HTTP proxy는 active FTP를 지원하지 않으며 load-balancing proxy의 IP 변화는 stateful FTP에서 간헐 실패를 낼 수 있다.
 
 파일 sync는 transactional이다. 마지막 한 파일 전송이 실패해도 그 run의 transaction이 abort되고 앞서 보낸 파일도 dataset view에 commit되지 않는다. APPEND와 file-limit filter로 run을 나누면 실패한 현재 batch만 다시 시도할 수 있다.
@@ -21,7 +23,7 @@ FTP/SFTP/Directory crawl은 변경 중인 파일을 피하기 위해 기본 두 
 
 ## 원본별 오류
 
-S3 403은 region, S3/STS egress, assume-role credential과 proxy/VPC 경로를 나눠 확인한다. region과 signing region을 함께 지정해 list가 실패하는 경우 문서는 signing region만 두는 해결을 제시한다. 모든 region 설정에 일반화하지 않는다.
+S3 403은 region, S3/STS egress, assume-role credential과 proxy/VPC 경로를 나눠 확인한다. bucket이 proxy와 다른 region에 있으면 Region 필드가 필요하다. proxy 대신 VPC로 S3 endpoint에 가야 하는 sync는 source의 `proxyConfiguration`에 `nonProxyHosts`로 bucket과 regional S3 주소를 넣어 proxy에서 제외한다. region과 signing region을 함께 지정해 list가 실패하는 경우 문서는 signing region만 두는 해결을 제시한다. 모든 region 설정에 일반화하지 않는다.
 
 Response421은 unsupported protocol/port 조합을 확인한다. sync 진단 문서의 implicit FTPS 991 예시는 native FTPS connector의 implicit 990/default explicit21과 구별하고 실제 server 설정을 확인한다.
 
