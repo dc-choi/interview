@@ -1,7 +1,7 @@
 ---
 tags: [palantir, data-health, incident, notifications]
 status: done
-verified_at: 2026-10-16
+verified_at: 2026-11-26
 category: "AI엔지니어링(AIEngineering)"
 aliases: ["Health alert와 사고 조사"]
 ---
@@ -28,11 +28,11 @@ Failure spotlight는 같은 check type/resource/source 등으로 cluster를 만�
 
 ## Build failure는 최초 실패부터 찾는다
 
-최근 성공 이후 logic/schema/volume/upstream 변화와 cluster 부하를 비교한다. Waiting for resources는 compute queue일 수 있고, upstream failure로 schedule이 canceled된 waiting dependencies는 첫 실패 job부터 해결한다. ErrorInstanceID만으로 infrastructure 원인으로 확정하지 않는다. Full trace의 Caused by/UserCodeError 등을 읽고 재현 시각/timezone과 조사 내용을 Support에 제공한다.
+최근 성공 이후 logic/schema/volume/upstream 변화와 cluster 부하를 비교한다. Builds 앱 Datasets pane의 Logs로 build 이력을, Compare로 이전 transaction과의 차이(schema 변화 포함)를 본다. 최근 logic 변경을 되돌려 build가 성공하면 원인을 새 logic으로 좁힐 수 있다. Waiting for resources는 compute queue일 수 있다. 플랫폼이 덜 붐비는 시간에 실행해 보고, schedule은 정각이나 자정처럼 실행이 몰리는 시각을 피한다. Upstream failure로 schedule이 canceled된 waiting dependencies는 첫 실패 job부터 해결한다. ErrorInstanceID만으로 infrastructure 원인으로 확정하지 않는다. Full trace의 Caused by/UserCodeError 등을 읽고 재현 시각/timezone과 조사 내용을 Support에 제공한다.
 
-Skew join은 key별 row-count product와 task spill/긴 tail을 확인한다. Salted join은 큰 쪽에 0..N-1을 배정하고 작은 쪽을 같은 범위로 복제해 partition 부하를 나누는 방식이다. Off-by-one은 row 손실을 만들고 불필요한 salting은 비용을 늘리므로 무조건 빠른 최적화로 적용하지 않는다.
+Skew join은 key별 row-count product와 task spill/긴 tail을 확인한다. Salted join은 큰 쪽에 0..N-1을 배정하고 작은 쪽을 같은 범위로 복제해 partition 부하를 나누는 방식이다. Off-by-one은 row 손실을 만들고 불필요한 salting은 비용을 늘리므로 무조건 빠른 최적화로 적용하지 않는다. Salting이 build를 반드시 빠르게 하지는 않으며 성공할 가능성을 높이는 조치다. Explode 배수는 8, 16, 32처럼 2의 거듭제곱으로 추정해 시작한다. Join key histogram에서 가장 큰 bucket이 다음으로 큰 bucket의 X배라면 배수를 X 이상으로 잡는다. Salting 전 job의 executor별 row 수를 보는 방법도 있다.
 
-Shrinkwrap은 referenced path와 dataset RID/current path의 mapping이다. Move/trash/merge 변경과 transforms-shrinkwrap.yml을 대조한다. 재생성 전 실제 dataset/ownership을 확인한다. Output Editor 권한과 repository sourceProvenance를 확인하고 dataset job spec 소유권 이전은 양쪽 repo의 중복 output을 정리하는 계획으로 수행한다. 단순 check 실패를 해결하려고 임의 job spec을 삭제하지 않는다.
+Shrinkwrap은 referenced path와 dataset RID/current path의 mapping이다. Move/trash/merge 변경과 transforms-shrinkwrap.yml을 대조한다. 재생성 전 실제 dataset/ownership을 확인한다. PERMISSION_DENIED는 build를 실행한 사용자가 output dataset의 Editor인지 확인한다. Data Lineage의 Permissions filter에서 Resource Permissions로 node를 색칠하면 조회하는 사용자 자신의 권한을 한눈에 볼 수 있다. Repository sourceProvenance를 확인하고 dataset job spec 소유권 이전은 양쪽 repo의 중복 output을 정리하는 계획으로 수행한다. 단순 check 실패를 해결하려고 임의 job spec을 삭제하지 않는다.
 
 CI timeout 안내의 refresh-dependencies 예제는 긴 dash 표기와 repository별 configuration을 확인한다. 재시도/upgrade가 원인을 증명하는 것은 아니며 같은 실패가 재현되는지 비교한다.
 
