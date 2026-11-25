@@ -1,7 +1,7 @@
 ---
 tags: [payment, idempotency, reversal, reliability]
 status: done
-verified_at: 2026-10-02
+verified_at: 2026-11-26
 category: "Reliability"
 aliases: ["결제 결과 미확인과 망취소"]
 ---
@@ -25,7 +25,7 @@ HTTP 200만으로 승인 성공을 판정하지 않고 업무 상태와 코드�
 
 승인, 첫 번째 부분 환불, 두 번째 부분 환불은 서로 다른 논리 동작이다. 각 동작의 재전송은 같은 키와 같은 의미의 요청을 사용하고, 다른 동작에 키를 재사용하지 않는다.
 
-토스페이먼츠 문서 확인 기준으로 POST 요청의 `Idempotency-Key`는 최대 300자, 보존 기간 15일이며 API 키, 엔드포인트, 메서드와 키의 조합으로 구분된다. `409 IDEMPOTENT_REQUEST_PROCESSING`은 요청 처리 중을 뜻한다. 이 조건은 다른 PG나 VAN에 적용되는 공통 규칙이 아니다.
+2026-10-02 토스페이먼츠 문서 확인 기준으로 POST 요청의 `Idempotency-Key`는 최대 300자, 보존 기간 15일이며 API 키, 엔드포인트, 메서드와 키의 조합으로 구분된다. `409 IDEMPOTENT_REQUEST_PROCESSING`은 요청 처리 중을 뜻한다. 이 조건은 다른 PG나 VAN에 적용되는 공통 규칙이 아니다.
 
 키의 보존 기간이 지났다는 것은 재청구가 허용됐다는 뜻이 아니다. 원거래 조회, 내부 중복 방지와 거래 이력을 함께 사용한다. 재시도 횟수를 키에 넣어 매번 새 요청으로 만드는 방식은 중복 승인 위험을 키운다.
 
@@ -47,7 +47,7 @@ NICEPAY의 망취소와 KICC VAN 취소 명세처럼 제공자별 필드와 경�
 
 KICC 간편결제 VAN의 망취소 가이드는 read timeout, 연결 오류와 응답 parsing 오류에 원승인 요청 데이터를 그대로 사용하도록 요구한다. 권장 30초는 그 경로의 예시다. 반면 Adyen local integration은 동기 연결과 상태 조회의 120/150초 조건을 안내한다. 단일 timeout 값을 모든 결제 경로에 적용하지 않는다.
 
-Adyen Terminal API의 `ServiceID`는 해당 `POIID`에서 최근 48시간 동안 고유해야 하는 요청 ID다. 상점의 영구 거래 ID나 다른 공급자의 멱등키와 같지 않다. Cloud async 경로의 초기 `ok`는 접수 결과이고 최종 MessageHeader/response body는 event notification에서 확인한다.
+2026-10-02 확인 기준으로 Adyen Terminal API의 `ServiceID`는 해당 `POIID`에서 최근 48시간 동안 고유해야 하는 요청 ID다. 상점의 영구 거래 ID나 다른 공급자의 멱등키와 같지 않다. Cloud async 경로의 초기 `ok`는 접수 결과이고 최종 MessageHeader/response body는 event notification에서 확인한다.
 
 토스페이먼츠에서는 창 닫기가 상태 변경을 만들지 않으면 웹훅도 오지 않으며, 자동결제/키인 결제의 승인 완료에도 일반 결제 웹훅이 발송되지 않는 조건이 있다. 가상계좌 상태 이벤트 두 종류를 함께 구독하면 같은 변동에 알림을 두 번 받을 수 있다. 이벤트를 구독했다는 이유로 모든 승인과 사용자 이탈을 탐지했다고 판단하지 않는다.
 
@@ -57,7 +57,7 @@ API 버전을 고정해도 호환 변경으로 새 필드, ENUM/에러 코드와
 
 ## 단말 캐시와 현재 거래 상태를 구분한다
 
-토스 프론트 SDK의 `getPayment`/`getPaymentCancel`은 요청한 단말의 성공 결과를 복구하는 로컬 캐시 조회다. 공식 문서의 보존 조건은 각각 14일, 최대 1,000건이며 TIMEOUT, 취소나 승인 실패는 캐시하지 않는다. `PAYMENT_NOT_FOUND`는 캐시 부재이고 외부 미승인의 증거가 아니다.
+토스 프론트 SDK의 `getPayment`/`getPaymentCancel`은 요청한 단말의 성공 결과를 복구하는 로컬 캐시 조회다. 2026-10-02 확인한 공식 문서의 보존 조건은 각각 14일, 최대 1,000건이며 TIMEOUT, 취소나 승인 실패는 캐시하지 않는다. `PAYMENT_NOT_FOUND`는 캐시 부재이고 외부 미승인의 증거가 아니다.
 
 승인과 취소 캐시는 독립적이다. 취소 성공 후에도 `getPayment`가 이전 승인 성공을 반환할 수 있으므로 그것을 현재 미취소 상태로 덮어쓰지 않는다. 서버/VAN의 거래 상태, 취소 결과와 대사 자료를 별도로 반영한다.
 
@@ -78,6 +78,25 @@ NICEPAY 웹훅 수신은 200 상태만으로 끝나지 않는다. 공식 계약�
 토스페이먼츠 샘플의 2026-10-02 확인 snapshot은 API 호출 흐름을 보여준다. 프론트 주석은 주문번호/금액의 서버 사전 저장을 요구하지만 Express 승인 서버는 요청의 `orderId`와 `amount`를 전달하고 주문 완료 업무를 TODO로 남긴다. success URL의 값과 화면 표시를 내부 주문의 승인 근거로 삼지 않고, 인증된 구매자와 서버의 주문 금액을 대조한 뒤 외부 결과를 영속 반영한다.
 
 샘플 서버의 HTTP 결과도 공급자의 처리 결과와 다를 수 있다. 해당 Go/PHP 샘플은 upstream HTTP 상태를 그대로 전달하지 않으므로 자체 서버의 200만으로 승인됐다고 판단하지 않는다. 가상계좌 웹훅 샘플도 수신한 `secret`, `status`, `orderId`를 출력하는 예시이며, 저장된 secret 대조와 중복 반영 방지를 구현한 운영 수신기가 아니다. 샘플이 제공하지 않는 `BILLING_DELETED` 수신, 네트워크 실패와 내부 저장 실패의 복구까지 별도로 구현해야 한다. 이는 읽은 소스의 범위 설명이며 실제 승인 시험 결과는 아니다.
+
+## PayPal: 재전송은 현재 상태를 돌려준다
+
+PayPal REST API의 멱등성은 POST 요청의 `PayPal-Request-Id` 헤더로 얻는다. 2026-11-26 확인한 공식 문서 기준의 계약은 다음과 같다.
+
+- 모든 API가 이 헤더를 지원하지는 않는다. 지원 여부와 ID 보존 기간은 API별 레퍼런스에서 확인하라고 안내되지만, 2026-11-26 확인한 Orders v2와 Payments v2 레퍼런스의 헤더 설명에는 보존 기간이 없었다. 기간을 모르면 재시도 가능 창을 가정하지 않고 원거래 조회로 확인한다.
+- 헤더를 빼면 같은 요청이 중복 처리된다. 값은 요청마다, API 호출 유형마다 고유해야 하며 UUID가 권장된다.
+- 네트워크 타임아웃이나 5xx로 실패한 호출은 서버가 ID를 보존하는 동안 같은 값으로 재시도할 수 있다.
+- 같은 ID의 요청 두 개를 동시에 보내면 첫 요청만 처리되고 두 번째는 실패할 수 있다.
+- 끝난 ID를 다시 보내면 원래 응답의 사본이 아니라 그 요청의 현재 상태를 돌려준다. 문서의 예시는 이미 끝난 capture를 다시 보내면 다시 매입하지 않고 COMPLETED를 돌려주는 경우다. 그사이 환불 같은 후속 변화가 있었다면 재전송 응답에 반영될 수 있다고 해석되므로(해석), 재전송 결과를 처음 결과로 저장하지 않는다.
+
+Standard Checkout에서 승인(authorize)과 매입(capture)을 나누는 흐름의 PayPal 계정 결제 기준으로, 승인은 자금을 29일 동안 묶어 두고 매입은 3일의 honor period 안에 하도록 안내된다. 3일이 지나면 29일 안에서 재승인할 수 있고, 재승인은 새 authorization ID를 만들며 honor period를 다시 시작한다. 재승인해도 29일 창은 늘지 않아 27일째에 재승인하면 honor period는 2일만 남고, 원승인에서 30일이 지나면 새 승인을 만들어야 한다. 그래서 매입 요청과 그 재시도는 원래 승인 ID가 아니라 현재 유효한 승인 ID를 기준으로 기록한다(적용 제안).
+
+웹훅 수신기는 2xx를 돌려줘야 하며, 그렇지 않으면 PayPal은 3일에 걸쳐 최대 25번 다시 보낸다. 검증은 두 방식이다.
+
+- **자체 검증(문서가 우선 권장):** `paypal-transmission-id`, `paypal-transmission-time`, 구독할 때 받은 webhook ID, 본문 CRC32(10진수)를 `|`로 이어 붙인 문자열을 만들고, `paypal-cert-url`의 인증서로 `paypal-transmission-sig` 서명을 확인한다. CRC32는 받은 원문 바이트로 계산해야 하며, 파싱한 객체를 다시 직렬화하면 값이 달라진다.
+- **postback:** `POST /v1/notifications/verify-webhook-signature`에 받은 이벤트를 그대로 보내 확인한다. 시뮬레이터가 만든 mock 이벤트는 이 방식으로 검증되지 않으며, 자체 검증할 때는 webhook ID 자리에 문자열 `WEBHOOK_ID`를 쓴다.
+
+이벤트 재전송은 Webhook Events 대시보드의 Resend로 할 수 있으므로, 같은 이벤트 ID가 두 번 와도 업무 처리가 한 번만 일어나는지 운영 전에 시험할 수 있다. Webhooks Management API에도 `POST /v1/notifications/webhooks-events/{event_id}/resend`가 있지만 pending 상태의 알림은 다시 보내지 않는다. 오류 응답은 sandbox의 negative testing(베타)에서 `PayPal-Mock-Response` 헤더에 `mock_application_codes` JSON을 넣어 흉내 낼 수 있다. 대상은 Orders v2와 Payments v1/v2의 일부 호출이며, 라이브 환경에서는 쓸 수 없다.
 
 ## 복구는 두 방향으로 필요하다
 
@@ -114,6 +133,14 @@ NICEPAY 웹훅 수신은 200 상태만으로 끝나지 않는다. 공식 계약�
 - [KICC, 간편결제 취소](https://docs.kicc.co.kr/docs/van-payment/simple/cancel/)
 - [무응답이라는 세 번째 답 — 결제 도메인 학습](https://mihyekang.github.io/study/payment/day-13.html)
 - [EBANX, ISO 8583 Response Codes](https://docs.ebanx.com/docs/pay-in/dev-tools/response-codes/iso8583-codes)
+- [PayPal, Idempotency](https://developer.paypal.com/api/rest/reference/idempotency/)
+- [PayPal, Integrate webhooks](https://developer.paypal.com/api/rest/webhooks/rest/)
+- [PayPal, Webhooks Events dashboard](https://developer.paypal.com/api/rest/webhooks/events-dashboard/)
+- [PayPal, Webhooks Management v1](https://developer.paypal.com/api/webhooks/v1/)
+- [PayPal, Authorize a payment and capture funds later](https://developer.paypal.com/docs/checkout/standard/customize/authorization/)
+- [PayPal, Payments v2 reauthorize](https://developer.paypal.com/api/payments/v2/authorizations-reauthorize)
+- [PayPal, Test error conditions with negative testing](https://developer.paypal.com/tools/sandbox/negative-testing/)
+- [PayPal, Simulate negative responses with request headers](https://developer.paypal.com/tools/sandbox/negative-testing/request-headers/)
 - [망취소 환경 구축 — TAES-K](https://taes-k.github.io/2022/09/23/net-cancel/) — 2022년 구현 사례, 시간값은 해당 사례의 조건
 
 ## 관련 문서
