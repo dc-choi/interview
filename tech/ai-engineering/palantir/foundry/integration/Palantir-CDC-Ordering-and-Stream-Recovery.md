@@ -1,7 +1,7 @@
 ---
 tags: [palantir, cdc, streaming, flink, recovery]
 status: done
-verified_at: 2026-10-16
+verified_at: 2026-11-25
 category: "AI엔지니어링(AIEngineering)"
 aliases: ["CDC ordering과 stream 복구"]
 ---
@@ -16,13 +16,15 @@ Stream live는 펼쳐진 event 목록, archive는 resolution strategy로 접은 
 
 Ordering=2의 foo 뒤에 ordering=1의 bar가 도착하면 archive와 Ontology가 다르게 보일 수 있다. 문서에는 connector/stream ordering이 유지된다는 전제가 있지만 custom ingestion/backfill은 이를 충족하는지 확인한다. Pipeline Builder에서 재정렬한 뒤 indexing하는 경로를 검토한다. Key By metadata를 붙이는 것만으로 모든 consumer가 event-time order를 적용한다고 보장하지 않는다.
 
-Pipeline Builder는 metadata column이 바뀌지 않으면 CDC metadata를 전파하고 변경/누락하면 Key By로 다시 구성할 수 있다. Dataset transforms의 append-only incremental과 Iceberg changelog incremental 지원도 구분한다. Source data retention window에 오래 갱신되지 않은 record는 Ontology에서 사라질 수 있다. Workshop auto-refresh는 index의 변경을 보여 주는 기능이며 ordering 오류를 교정하지 않는다.
+Pipeline Builder는 metadata column이 바뀌지 않으면 CDC metadata를 전파하고 변경/누락하면 Key By로 다시 구성할 수 있다. 반대로 changelog가 기록한 변경 과정 자체를 분석하려면 metadata column에 transform을 적용하거나 streaming dataset schema에서 resolution strategy를 직접 지워 metadata를 제거한다. primary key, ordering, deletion column을 의도치 않게 변환해도 같은 방식으로 metadata를 잃으므로 CDC output의 schema를 확인한다. Dataset transforms의 append-only incremental과 Iceberg changelog incremental 지원도 구분한다. Source data retention window에 오래 갱신되지 않은 record는 Ontology에서 사라질 수 있다. Workshop auto-refresh는 index의 변경을 보여 주는 기능이며 ordering 오류를 교정하지 않는다.
 
 ## CDC 시작은 전체 과거 data 복원이 아니다
 
 지원 source에서도 DB/table의 log capture와 SELECT/필요한 EXECUTE 권한을 준비한다. 현행 문서의 direct CDC source는 Db2/SQL Server/Oracle/PostgreSQL이며 다른 DB가 log를 생산할 수 있다는 사실과 connector 지원은 별도다. Kafka 등으로 받은 changelog-shaped stream에 수동 metadata를 붙이는 대안이 있다.
 
 Default는 앞으로의 변경만 수집하며 자동 backfill하지 않는다. 먼저 CDC를 시작하고 batch snapshot을 create event로 변환해 합치는 패턴은 가능하지만 snapshot 시각, event ordering과 deletion 재구성을 맞춰야 한다. Snapshot CURRENT_TIMESTAMP를 source 변경 시각과 같은 의미로 쓰지 않는다. 불완전한 snapshot 비교로 삭제를 추론할 때 coverage도 확인한다.
+
+CDC sync를 만들 때 output stream의 예상 throughput을 정하며, CDC 문서는 sync 생성 뒤에는 바꿀 수 없다고 적는다. 기본값은 5MB/s이고, 문서는 관계형 DB의 변경이 사람이 만드는 규모라 대부분의 CDC workflow에는 충분하다고 본다. 아래의 ingest stream reset은 throughput을 바꾸는 별도 경로이지만 기존 record를 지우고 downstream replay가 필요하며, CDC sync stream에 적용되는지는 문서에서 확인하지 못했다. 대량 batch update처럼 변경량이 큰 table은 생성 전에 예상 변경량을 따진다(적용 제안).
 
 같은 source의 CDC sync들은 single multi-output extract job이다. Feed 추가/제거 때 기존 stream도 잠시 중지하고 변경 후 job을 수동 재시작해야 한다. Outage 동안 log retention이 최대 outage보다 길어야 catch-up이 가능하며, source log가 purge되면 자동 복구할 수 없는 gap이 생길 수 있다.
 

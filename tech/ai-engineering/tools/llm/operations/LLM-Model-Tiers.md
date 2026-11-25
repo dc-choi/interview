@@ -1,7 +1,7 @@
 ---
 tags: [ai, llm, cost, model-selection]
 status: done
-verified_at: 2026-11-01
+verified_at: 2026-11-25
 category: "AI엔지니어링(AIEngineering)"
 aliases: ["LLM Model Tiers", "모델 티어 선택", "모델 라우팅", "Model Routing"]
 ---
@@ -20,7 +20,7 @@ aliases: ["LLM Model Tiers", "모델 티어 선택", "모델 라우팅", "Model 
 | 균형형 | 일상 업무용, 플래그십 대비 큰 폭 저렴 | 대부분의 프로덕션 트래픽, 일반 생성, 요약 |
 | 저비용형 | 가장 빠르고 가장 싼 | 분류, 추출, 라우팅, 단순 변환, 대량 배치 |
 
-벤더별 매핑 예: 2026-09-29 Codex 모델 문서 기준 OpenAI는 GPT-6 Astra를 가장 강한 모델로, GPT-6 Sol(복잡한 코딩과 에이전트 작업)과 GPT-6 Luna(범위가 분명한 대량 반복 작업)를 권장 모델로 안내한다. 이전 세대 GPT-5.6 Sol, Terra, Luna는 롤아웃 기간 동안 유지된다. Anthropic은 Opus, Sonnet, Haiku에 더해 2026년부터 Opus 위에 Fable/Mythos 최상위 티어가 생겨 4층이 됐다 ([[Claude-Fable-5-Mythos-5|Fable 5, Mythos 5]]). [[Claude-Opus-5|Opus 5]]가 Fable 5의 절반 단가로 근접 성능을 내는 것은 한 티어 아래가 윗 티어를 따라잡는 단가 패턴의 실측 사례다. 2026-10-12 공식 모델 개요 기준 현재 모델은 Fable 5.1(100만 토큰당 입력 $10, 출력 $50), Opus 5.5($4, $20), Sonnet 5.5($2, $10), Haiku 5.5(프롬프트 10만 토큰 이하 $0.10, $0.50)이고 네 모델 모두 컨텍스트 1M, 최대 출력 128K다. 2026-10-07 출시된 Haiku 5.5가 저비용형 자리를 이었고 Haiku 4.5($1, $5, 컨텍스트 200K)는 2026-10-12 기준 레거시 목록에 남아 아직 쓸 수 있다. 공식 안내는 대부분의 작업을 Opus 5.5로 시작하고, 어려운 추론과 장기 에이전트 작업이나 Opus 5.5를 높은 effort로 돌려도 eval이 모자랄 때 Fable 5.1을 쓰라는 것이다. 대부분의 작업에서 Opus 5.5가 Fable 5.1 수준이라는 벤더 발표도 같은 패턴을 잇는다. Google은 Gemini Pro, Flash 계열을 써 왔고, Gemini 4 세대는 Carbon과 Argon 아래에 빠른 실행용 Hydrogen을 둔다([[Gemini-4-Argon#Gemini 4 계열의 Carbon과 Hydrogen|Gemini 4 계열]]). 이름은 달라도 capability/cost 축에서 같은 자리를 차지한다.
+벤더별 매핑 예: 2026-09-29 Codex 모델 문서 기준 OpenAI는 GPT-6 Astra를 가장 강한 모델로, GPT-6 Sol(복잡한 코딩과 에이전트 작업)과 GPT-6 Luna(범위가 분명한 대량 반복 작업)를 권장 모델로 안내한다. 이전 세대 GPT-5.6 Sol, Terra, Luna는 롤아웃 기간 동안 유지된다. Anthropic은 Opus, Sonnet, Haiku에 더해 2026년부터 Opus 위에 Fable/Mythos 최상위 티어가 생겨 4층이 됐다 ([[Claude-Fable-5-Mythos-5|Fable 5, Mythos 5]]). [[Claude-Opus-5|Opus 5]]가 Fable 5의 절반 단가로 근접 성능을 내는 것은 한 티어 아래가 윗 티어를 따라잡는 단가 패턴의 실측 사례다. 2026-10-12 공식 모델 개요 기준 현재 모델은 Fable 5.1(100만 토큰당 입력 $10, 출력 $50), Opus 5.5($4, $20), Sonnet 5.5($2, $10), Haiku 5.5(프롬프트 10만 토큰 이하 $0.10, $0.50)이고 네 모델 모두 컨텍스트 1M, 최대 출력 128K다. 2026-10-07 출시된 Haiku 5.5가 저비용형 자리를 이었고 Haiku 4.5($1, $5, 컨텍스트 200K)는 2026-10-12 기준 레거시 목록에 남아 아직 쓸 수 있다. 공식 안내는 대부분의 작업을 Opus 5.5로 시작하고, 어려운 추론과 장기 에이전트 작업이나 Opus 5.5를 높은 effort로 돌려도 eval이 모자랄 때 Fable 5.1을 쓰라는 것이다. 대부분의 작업에서 Opus 5.5가 Fable 5.1 수준이라는 벤더 발표도 같은 패턴을 잇는다. 2026-11-25 공식 모델 개요의 최신 모델은 Fable 5.2($8, $40)이고 어려운 추론 안내의 대상도 Fable 5.2로 바뀌었다. Google은 Gemini Pro, Flash 계열을 써 왔고, Gemini 4 세대는 Carbon과 Argon 아래에 빠른 실행용 Hydrogen을 둔다([[Gemini-4-Argon#Gemini 4 계열의 Carbon과 Hydrogen|Gemini 4 계열]]). 이름은 달라도 capability/cost 축에서 같은 자리를 차지한다.
 
 ## 티어 간 트레이드오프
 
@@ -30,6 +30,16 @@ aliases: ["LLM Model Tiers", "모델 티어 선택", "모델 라우팅", "Model 
 - **능력 게이팅**: 최상위 추론 강도(max reasoning effort)나 특수 모드는 플래그십에서만 열리는 경우가 있다. 즉 일부 능력은 돈을 더 낸다고 아무 티어에서나 살 수 없고, 티어 자체를 올려야 한다.
 - **재작업 비용**: 호출 단가만 보면 하위 티어가 싸지만, 복잡한 작업에서는 근거 없는 내용을 사실처럼 쓰거나 스스로 점검하지 못하고 중간에 멈춰 사람이 뒷수습하는 비용이 붙는다. 반대로 스펙이 확정된 단순 반복 구현(CRUD, 정해진 양식의 보고서)에 상위 티어를 쓰면 비용만 늘고 결과가 더 좋지도 않다. 초기 오류를 막는 일이 중요하고 디버깅이 비싼 작업은 상위 티어와 높은 effort를, 스펙이 분명하고 속도가 중요한 작업은 하위 티어를 먼저 고른다. 경험칙이므로 같은 과업의 품질, 시간, 비용으로 확인한다.
 - **effort는 두 번째 손잡이**: 같은 모델 안에서도 effort가 사고뿐 아니라 텍스트와 도구 호출을 포함한 출력 토큰 전체의 성향을 바꾼다. 적응형 사고(adaptive thinking)는 모델이 요청마다 생각할지와 얼마나 생각할지를 스스로 정하는 방식이고 effort가 그 성향을 조절한다. 공식 문서는 낮은 effort를 서브에이전트처럼 단순하고 빠른 작업에 권하고, effort를 엄격한 예산이 아닌 행동 신호로 설명한다. 티어를 내리기 전에 effort를 먼저 조정해 볼 수 있다.
+
+### Claude 모델과 effort를 함께 고르는 기준
+
+2026-11-09 Claude 블로그의 모델 선택 가이드(2026-11-25 확인)는 모델과 effort를 한 쌍으로 고른다. 수치는 Anthropic 자체 측정이고 일부는 내부 벤치마크다.
+
+- **출발점과 배정**: 모르면 Opus 5.5 `medium`(Claude Code 기본값)에서 시작한다. Sonnet 5.5는 범위가 분명한 코딩(`medium`, 어려우면 `high`), 반복 에이전트 작업(`medium`), 대화(`low`나 `medium`)에, Haiku 5.5는 분류, 라우팅, 대량 추출에 둔다. 파일 탐색, 로그 읽기, 요약 서브에이전트는 Haiku 5.5나 Sonnet 5.5의 기본 effort로 돌린다. Fable 5.2는 대규모 리팩터링과 마이그레이션, 아키텍처 계획, 여러 서브에이전트 지휘, 깊은 조사와 정량 분석에 `medium`부터 쓴다. API 기본 effort는 Fable 5.2와 Sonnet 5.5가 `high`라 `medium`부터 쓰려면 명시해야 한다(Claude Code에서는 둘 다 기본 `medium`). 같은 글의 API 단가는 100만 토큰당 Opus 5.5 $4/$20, Fable 5.2 $8/$40이다.
+- **effort의 한계**: effort를 올리면 더 오래 생각하고 도구를 더 부르고 자기 결과를 더 점검하지만 없는 지식이나 능력은 생기지 않는다. 그때는 모델을 올린다. SWE-bench Pro 일부 과제(아래 재실행 실험과 같은 비공개 구성으로 읽힌다)의 Opus 5.5는 `high` 대비 `medium`이 약 2.5점 낮고 비용 약 70%, `low`가 약 8점 낮고 약 3분의 1, `xhigh`가 약 1.4점 높고 2.5배였다. FrontierCode 2.0에서 Fable 5.2 `high`(45.3%)는 Opus 5.5 `max`(45.5%)와 비슷한 점수를 과업당 비용 약 절반으로 냈다. `high`를 넘기고 싶으면 윗 모델의 낮은 effort를 먼저 재 본다.
+- **결과가 모자랄 때의 순서**: 테스트, 빌드나 검사 스크립트로 모델이 자기 결과를 확인하게 하고, effort를 한 단계만 올리고, 그래도 모자라면 윗 모델을 아래 모델보다 낮은 effort로 시작한다. 결과를 자동으로 판정할 수 있으면 모두 `low`로 먼저 돌리고 실패만 `high`로 다시 돌리는 방식이, Opus 5.5로 잰 SWE-bench Pro 일부 과제(구성은 공개되지 않아 공개 점수와 비교하지 않는다)에서 전부 `high`(95.3%, 과업당 $0.29)보다 나았다(약 97%, 약 $0.17). 아래 모델 라우팅 절의 에스컬레이션을 같은 모델의 effort에 적용한 사례로 볼 수 있다(적용 해석).
+- **분담 실험의 크기**: Opus 5.5가 이끌고 Sonnet 5.5 일꾼을 동시에 최대 25개 돌린 결함 탐색(소스 약 2,200만 토큰)은 Opus 5.5 단독(기본 effort)보다 비용이 약 3분의 1 적고 점수는 비슷했다. Opus 5.5 `high` 실행자에 Fable 5.1 advisor를 붙인 구성은 1.7점 올랐지만 비용이 약 2.1배였고, 글은 이 차이를 실행 간 잡음의 경계로 본다.
+- **Claude Code 적용**: 서브에이전트 정의의 `model: haiku`로 싼 모델을 배정한다. 이 별칭은 Anthropic API에서 Haiku 5.5(Claude Code v2.1.293 이상)를 가리키지만 Bedrock, Google Cloud 등 일부 플랫폼에서는 아직 Haiku 4.5를 가리킨다. 내장 Explore 서브에이전트는 현재 세션 모델로 돌고(세션이 Fable이면 구독, Console 계정, LLM gateway에서는 Opus로, Bedrock 등에서는 Fable로 돈다), 같은 이름 `Explore`의 서브에이전트를 `model: haiku`로 정의하면 내장 것을 덮어 탐색을 싸게 한다. 모델을 바꾼 첫 턴은 대화 전체의 캐시 쓰기 비용을 다시 내므로 바꾸기 전에 `/compact`로 대화를 줄이거나, 짧은 계획서를 들고 새 세션을 연다. 아래 티어로 내리면 앞 모델의 사고 블록도 넘어가지 않는다. 자기 과업은 결과 판정 기준을 정하고 후보 모델마다 effort 2~3개를 캐시가 섞이지 않게 따로 돌려 점수와 비용을 한 그래프에 찍은 뒤, 혼합 구성이 모든 단일 모델보다 나을 때만 섞는다.
 
 ### 저비용형으로 내릴 때 확인할 조건
 
@@ -156,7 +166,10 @@ DeepSeek 사례를 2026-10-26 공식 가격표, 변경 이력과 모델 카드�
 - [DeepSeek API Docs, Change Log](https://api-docs.deepseek.com/updates/) (2026-09-10 이름 변경, 2026-10-17 판 교체와 하네스 권고 항목)
 - [Hugging Face, deepseek-ai/DeepSeek-V4.1-Flash-1017](https://huggingface.co/deepseek-ai/DeepSeek-V4.1-Flash-1017) (2026-10-26 벤치마크 표의 하네스 조건, 라이선스와 safetensors 파라미터 표시 확인)
 - [DeepSeek-V4.1-Flash: Pushing the Limits of KV Cache Compression — arXiv, DeepSeek-AI](https://arxiv.org/abs/2609.19969) (2026-10-27 백본과 단계별 활성 파라미터 확인)
-- [Anthropic Platform Docs, Models overview](https://platform.claude.com/docs/en/about-claude/models/overview) (Anthropic 라인업, 티어별 가격, 2026-09-30 현재 모델 확인, 2026-10-06 재확인, 2026-10-12 Haiku 5.5 반영)
+- [Which Claude model should you build with? Fable, Opus, Sonnet, or Haiku — Claude Blog, Addy Osmani](https://claude.dev/blog/which-claude-model-should-you-build-with) (2026-11-09 게시, 2026-11-25 작업별 모델과 effort 표, effort 단계별 비용과 점수, 에스컬레이션 순서, 분담과 advisor 실험, 서브에이전트와 캐시 안내, 단가 확인)
+- [Claude Code Docs, Subagents](https://code.claude.com/docs/en/sub-agents) (2026-11-25 내장 Explore의 모델과 같은 이름 서브에이전트의 우선 확인)
+- [클로드 비용 40% 줄이고 결과는 더 좋게, 앤트로픽이 공개한 모델 고르는 법 — YouTube, 투더제이 TTJ](https://www.youtube.com/watch?v=H1-mQl-SY40) — 2026-11-15, 모델 선택 가이드의 학습 계기이며 수치는 원문 블로그로 대조
+- [Anthropic Platform Docs, Models overview](https://platform.claude.com/docs/en/about-claude/models/overview) (Anthropic 라인업, 티어별 가격, 2026-09-30 현재 모델 확인, 2026-10-06 재확인, 2026-10-12 Haiku 5.5 반영, 2026-11-25 Fable 5.2 단가와 API 기본 effort 확인)
 - [Introducing Claude Haiku 5.5 — Anthropic](https://www.anthropic.com/claude-haiku-5-5)
 - [Anthropic Platform Docs, What's new in Claude Haiku 5.5](https://platform.claude.com/docs/en/models/haiku-5-5/whats-new-haiku-5-5)
 - [Anthropic Platform Docs, Claude Haiku 5.5](https://platform.claude.com/docs/en/models/haiku-5-5/overview)
