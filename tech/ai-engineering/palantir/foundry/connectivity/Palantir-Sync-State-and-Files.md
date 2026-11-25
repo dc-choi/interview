@@ -1,7 +1,7 @@
 ---
 tags: [palantir, sync, incremental, media]
 status: done
-verified_at: 2026-10-16
+verified_at: 2026-11-25
 category: "AI엔지니어링(AIEngineering)"
 ---
 
@@ -44,7 +44,9 @@ Completion strategy는 legacy이며 기존 설정은 읽기 전용이고 새 syn
 
 Streaming throughput 설정은 partition 수에 영향을 준다. Setup 문서는 Normal을 최대 5MB/s로 설명한다. Agent worker는 host에서 연산하므로 Foundry compute profile 설정을 제공하지 않는다. Schema 추론을 덮어쓸 수 있지만 실제 message와 호환성은 검증해야 한다.
 
-Media sync 문서의 명시적 지원 Source는 S3와 OneLake/ABFS다. 미지원 파일 Source는 dataset으로 수집한 뒤 Python으로 media set에 쓸 수 있다. Virtual media set은 원천에서 직접 읽으며 파일을 Foundry backing store로 복사하지 않는다. 파일 형식, 경로, 크기, 이미 수집한 파일과 schema 불일치 필터를 선택하고 schedule을 별도로 설정한다.
+Streaming sync 설정 화면은 Source마다 다른 source-specific 설정과 모든 streaming sync에 공통인 core 설정(throughput, schema, 출력 위치)으로 나뉜다. 문서의 절차는 sync를 만든 뒤 Overview 탭에서 Start를 눌러 실행하고, 설정한 stream의 preview에서 record 유입을 확인하는 순서다. 2026-11-25 확인한 setup 문서는 지원되는 장시간 sync에 continuous compute 실행 모드를 쓸 수 있다고 안내한다. 이 모드의 beta 상태와 적용 조건은 [[Palantir-Connection-Capability-Boundaries|연결 기능 경계]]에 정리했다.
+
+2026-11-25 Media sync 문서의 명시적 지원 Source는 S3와 OneLake/ABFS다. 같은 문서가 지원 Source가 늘고 있다고 밝히므로 다른 Source는 connector별 capability 표를 따로 확인한다. 미지원 파일 Source는 dataset으로 수집한 뒤 Python으로 media set에 쓸 수 있다. 문서는 SharePoint Online connector로 파일을 dataset에 받은 뒤 Python transform으로 media set에 쓰는 경로를 예로 들고, SMB connector 문서에도 비슷한 예시가 있다. Virtual media set은 원천에서 직접 읽으며 파일을 Foundry backing store로 복사하지 않는다. 지원되는 Source 유형에 한해 같은 설정 절차에서 Media set sync 대신 Virtual media set sync를 고르며, 자격 증명 유형과 agent connection 제약은 [[Palantir-Media-Ingestion-and-Virtualization|media 수집과 가상화]]에 정리했다. 파일 형식, 하위 폴더, 경로, 크기, 이미 수집한 파일과 schema 불일치 필터를 선택하고 build schedule을 별도로 설정한다. Schedule은 처음 설정한 뒤에도 바꿀 수 있다.
 
 ## 출처
 
@@ -58,5 +60,6 @@ Media sync 문서의 명시적 지원 Source는 S3와 OneLake/ABFS다. 미지원
 - [[Palantir-Export-State-and-Governance|외부 export의 상태와 재실행]]
 - [[Palantir-External-Transforms-Governance|외부 transform]]
 - [[Palantir-Data-Connectivity|데이터 연결]]
+- [[Palantir-Connection-Capability-Boundaries|연결 기능 경계]]
 
-공식 동작 설명을 학습했다. 수집 실패, 재시도와 원천 삭제를 실제로 실행하지 않았다.
+공식 동작 설명을 학습했다. 수집 실패, 재시도와 원천 삭제를 실제로 실행하지 않았다. 2026-11-25에는 Set up a streaming sync와 Media set syncs 문서를 대조해 반영했고, batch와 file 절은 현재 문서와 상충하는지만 확인했다.
