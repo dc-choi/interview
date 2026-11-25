@@ -13,8 +13,9 @@ aliases: ["Solo Business", "1인 사업", "1인 제품"]
 
 - [x] [[Solo-Product-Opportunity-Discovery|1인 제품 기회 발견]]
 - [x] [[AI-Solo-Software-Business|AI 시대 1인 소프트웨어 사업의 유형과 순서]] — 사업 유형 7가지, 유통과 작은 실험, 창업자의 목표 제안과 실적 구분, PoC와 MVP 및 지속 운영의 구분, 플랫폼 종속과 운영 부담
-- [x] [[Domain-Expertise-Automation-Business|도메인 전문성을 업무 자동화 사업으로 바꾸는 경로]] — 범용 AI가 알기 어려운 지식 층위, 내 업무 자동화에서 같은 업종 구축, 업종별 SaaS와 성과 기반 과금, 직접 만든 유료 서비스의 보안 책임
+- [x] [[Domain-Expertise-Automation-Business|도메인 전문성을 업무 자동화 사업으로 바꾸는 경로]] — 범용 AI가 알기 어려운 지식 층위, 내 업무 자동화에서 같은 업종 구축, 업종별 SaaS와 성과 기반 과금, 작은 사업장의 반복 업무 하나를 구독으로 파는 형태와 자동화 도구의 재판매 조건, 1인 성공 사례의 숫자 읽기, 직접 만든 유료 서비스의 보안 책임
 - [x] [[Solo-Business-First-Revenue-Paths|1인 사업의 유형별 첫 수익 경로와 실패 패턴]] — 콘텐츠, 서비스, 오프라인 서비스, 앱, 커머스의 구조, 첫 고객이 온 경로, 반복 수익 전환, 효과가 없었던 수단, AI 이후의 배포 병목, 잘 안 된 사례의 공통점
+- [x] [[Existing-Business-Acquisition|기존 가게를 인수하는 창업]] — 차리는 것과 사는 것의 차이, 고령 자영업자 통계와 승계 주장의 확인 범위, 인수 전 점검(단골의 귀속, 장부 대조, 먼저 일해 보기), 대조하지 않은 계약 항목
 - [x] [[Time-Bound-Service-Business|대표의 시간에 묶인 서비스 사업과 방향 기준]] — 관심, 지갑, 지속의 세 질문, 관심 표현과 결제의 구분, 기록에서 시스템으로 옮기는 순서, 지원금과 방향의 관계
 - [x] [[Solo-Product-Market-Validation|1인 제품 시장 검증과 접수 용량]]
 - [x] [[Solo-Seller-Execution-Lessons|1인 판매자의 실행 원칙]] — 시작 구조, 하루 단위 목표, 판매 숫자로 고치기, 실패에서 배운 순서
