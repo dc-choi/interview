@@ -16,6 +16,7 @@ aliases: ["CS Probability and Statistics", "확률과 통계 기초"]
 - [x] [[Discrete-Probability-Distributions|이산 확률분포 (범주형 분포와 벡터 표기, 이항, 기하와 포아송, PMF와 CDF, 기댓값, 큰 수의 법칙과 정규분포의 구분)]]
 - [x] [[Conditional-Probability-and-Bayes|조건부확률과 베이즈 정리]] — 확률 공리와 포함배제, 결합확률과 주변확률, 조건의 방향, 곱셈 규칙과 전체확률, 기저율, 배반과 독립의 구분, 조건부 독립의 세 연결 구조, 베이즈 네트워크의 인수분해와 마르코프 블랭킷
 - [x] [[Bayesian-Network-Inference|베이즈 네트워크 추론]] — 질의, 증거와 은닉 변수, 정규화 상수, 열거 추론과 변수 제거, 직접과 기각 샘플링, 가능도 가중의 가중치와 한계, 깁스 샘플링
+- [x] [[Decision-Networks-and-Value-of-Information|의사결정 네트워크와 정보의 가치]] — 확률, 행동, 효용 노드, 최대 기대 효용(MEU), 완전 정보의 가치(VPI)와 음이 아님, 비가산성, 순서 무관성, 행동을 바꾸지 않는 정보의 가치
 - [x] [[Markov-Chain-and-Stationary-Distribution|마르코프 체인과 정상 분포]] — 마르코프 성질과 시간 동질 가정, 전이 행렬과 `π(0)P^n`, 경로 확률과 주변 분포, 정상 분포의 장기 비율 해석, 기약과 비주기 수렴 조건과 주기 체인 반례
 - [x] [[Hidden-Markov-Model|은닉 마르코프 모형]] — 전이 모형과 센서 모형, 두 마르코프 가정, 필터링과 예측, 전방-후방 평활화, 비터비와 시점별 최빈 상태의 차이, 입자 필터
 - [x] [[Confidence-Intervals-and-Standard-Error|신뢰구간과 표준오차]] — 원자료와 표집분포, SD와 SE, 반복 표집의 95%, 부트스트랩의 한계

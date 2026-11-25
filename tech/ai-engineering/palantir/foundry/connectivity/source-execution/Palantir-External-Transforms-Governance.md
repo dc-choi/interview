@@ -1,7 +1,7 @@
 ---
 tags: [palantir, transforms, security, integration]
 status: done
-verified_at: 2026-10-16
+verified_at: 2026-11-25
 category: "AI엔지니어링(AIEngineering)"
 ---
 
@@ -14,6 +14,14 @@ Source 기반 external transform은 Python transform에서 외부 시스템을 �
 Foundry worker Source를 가져와 `@external_systems`에 선언한다. Agent worker와 outbound application 인증 Source는 지원하지 않는다. REST Source에 여러 domain이 있으면 코드로 가져올 수 없으므로 필요한 domain마다 Source를 나눈다. Source의 code import 허용 설정과 Source Editor 권한이 필요하다.
 
 `transforms-external-systems` library를 사용하며, lightweight 실행도 지원한다. Source에서 자격 증명, egress와 exportable markings를 중앙 관리한다. 변경은 다음 build 시작 때 적용되고 이미 실행 중인 build에는 적용되지 않는다. 즉시 반영이라는 설명을 실행 중 credential 폐기 보장으로 해석하지 않는다.
+
+## 사설망 원천 연결
+
+Agent worker Source는 쓸 수 없지만 사설망이나 on-premise 원천에 닿는 경로가 막힌 것은 아니다. Source를 Direct connection runtime(현재 Foundry worker 개념에 통합된 명칭)으로 만들고, network connectivity 설정에서 Agent proxy egress policy를 만들어 경유할 Data Connection agent를 고른 뒤 code import를 허용한다. 실행 위치를 정하는 worker 종류와 네트워크 경로를 정하는 egress policy를 구분해서 판단한다.
+
+이 경로에는 조건이 있다. Agent proxy policy는 Rubix에서 실행되는 enrollment에서만 쓸 수 있고, virtual table과 OIDC 인증은 지원하지 않으며, external transform의 preview는 VS Code에서만 지원한다. 사설망 원천의 virtual table은 이 경로로 읽을 수 없다. 지원 표면의 전체 목록은 [[Palantir-Network-Egress-and-Private-Connectivity|네트워크 egress와 사설 연결]]과 [[Palantir-Agent-Proxy-and-Migration|Agent proxy와 이전]]에서 본다.
+
+공식 예시는 PostgreSQL을 Spark sidecar 안의 Flask API로 조회하지만, 같은 문서는 더 단순한 경우에는 sidecar가 필요 없을 수 있다고 적는다. 이 문서의 해석으로는 sidecar가 별도 container 의존성이 필요할 때의 선택지이지 사설망 연결의 필수 조건은 아니다.
 
 ## 읽기에도 필요한 export 승인
 
@@ -39,11 +47,15 @@ Legacy 문서는 Foundry 입력을 사용하는 외부 transform을 Preview help
 
 - [Palantir, External transforms](https://www.palantir.com/docs/foundry/data-connection/external-transforms)
 - [Palantir, External transforms, legacy](https://www.palantir.com/docs/foundry/data-connection/external-transforms-legacy)
+- [Palantir, Configure egress](https://www.palantir.com/docs/foundry/administration/configure-egress) — Agent proxy egress policy의 지원 표면과 미지원 workflow
+- [Palantir, Data Connection core concepts](https://www.palantir.com/docs/foundry/data-connection/core-concepts) — Direct connection과 Foundry worker의 관계, Rubix 조건
 
 ## 관련 문서
 
 - [[Palantir-Source-Identity-and-Code|Source와 세션 자격 증명]]
 - [[Palantir-Data-Connection-Permissions|권한과 비밀 접근]]
 - [[Palantir-Data-Connectivity|데이터 연결]]
+- [[Palantir-Network-Egress-and-Private-Connectivity|네트워크 egress와 사설 연결]]
+- [[Palantir-Agent-Proxy-and-Migration|Agent proxy와 이전]]
 
-Source 기반과 legacy 문서 및 예제를 대조했다. 실제 이전과 build는 수행하지 않았다.
+Source 기반과 legacy 문서 및 예제를 대조했다. 2026-11-25에는 Data Integration 경로(`data-integration/external-transforms`, `external-transforms-source-based`)에서 수집한 본문과 다시 대조했다. 이 경로는 위 External transforms와 같은 본문을 내보내는 별칭이다. 실제 이전과 build는 수행하지 않았다.

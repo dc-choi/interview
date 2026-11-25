@@ -42,6 +42,7 @@ aliases: ["Product Detail Page Design", "상세페이지와 썸네일 설계", "
 - 정성껏처럼 모든 판매자가 쓰는 상투어 대신 중량, 산지, 보관법을 넣는다.
 - 분석과 구성 축은 상품 유형에 따라 바꾼다. 농수산물은 구매 이유, 품질, 맛, 보관, 먹는 방법 순으로, 공산품은 불편함, 해결 방법, 기능, 사용법, 구매 포인트 순으로 잡는다. 공산품 시장이 농수산물보다 크다는 의견도 함께 나오지만 근거는 제시되지 않았다.
 - 좋은 후기 문장은 상세페이지 본문에 옮겨 후기란까지 내려가지 않는 손님도 보게 한다. 추천보증 심사지침은 광고주가 체험담에 내용을 첨가해 효과를 부풀리는 경우를 부당한 예로 들므로 문장을 고치지 않고 옮기며, 대가를 주거나 상품을 무료로 준 후기라면 경제적 이해관계 공개 기준을 [[Persuasion-Principles-and-Boundaries|설득 원리와 정직한 사용의 경계]]에서 확인한다.
+- 후기가 0건에서 몇 건으로 늘어날 때의 차이가 그 뒤의 증가보다 크다는 연구가 있다. Northwestern 대학 Spiegel Research Center가 2017년에 처음 발표한 결과는 후기 5건인 상품의 구매 가능성이 후기 없는 상품보다 270% 높고, 추가 후기의 한계 효과는 첫 5건 뒤 빠르게 줄어든다고 보고했다. 후기를 보여 줬을 때 전환율 상승은 저가 카테고리 190%, 고가 카테고리 380%로 비싼 쪽에서 더 컸고, 구매 가능성은 평점 4.0~4.7에서 대개 가장 높았다가 5.0에 가까워질수록 낮아졌다. 전체 보고서에 따르면 270%와 190%, 380%는 후기 솔루션 업체 PowerReviews와 협업해 얻은 고가 선물 소매점 1곳의 1년치 데이터이고, 저가와 고가는 그 소매점 안의 카테고리 구분이다. 업종과 가격대가 다른 내 상품의 기대치로 이 배수를 옮기지 않고, 첫 후기 몇 건을 확보하는 일의 우선순위와 만점이 아닌 평점을 감출 이유가 없다는 판단의 근거로만 쓴다. 판매처의 검색 노출에서 후기 수가 하는 역할은 [[Marketplace-Search-Exposure|오픈마켓 검색 노출]]에서 따로 본다.
 - 반품, 환불, 배송 안내는 별도 페이지 한 장으로 만들어 모든 상세페이지 맨 끝에 붙이고, 판매처마다 같은 상세페이지와 문구를 쓴다. 상품마다 새로 쓰면 언젠가 한 곳이 빠지고, 바꿀 일이 생기면 그 한 장만 고치면 된다. 한 판매자는 판매처 12곳에 같은 상세페이지를 쓴다고 한다. 네이버 도움말은 스마트스토어 판매자가 전자상거래법의 청약철회 기준을 숙지하고 지켜야 한다고 안내하므로, 공통 안내의 기한과 비용 문구는 [[Website-Sales-Legal-Checklist|자사 사이트 판매 페이지 공개 전 법정 표시 점검]]의 청약철회 항목과 대조한다.
 - 네이버 스마트스토어는 상세설명 길이가 4000px를 넘으면 3000px까지만 보여 주고 나머지는 상세정보 펼쳐보기로 연다(펼치기 전 높이 PC 3000px, 모바일 1200px). 구매 이유를 첫 화면에 올리는 구조가 이 화면 제약과도 맞는다. 상세설명 권장 가로는 848px, 스마트에디터 ONE 화면의 최대 가로는 860px이다.
 
@@ -155,6 +156,8 @@ aliases: ["Product Detail Page Design", "상세페이지와 썸네일 설계", "
 - [국가법령정보센터, 농수산물품질법 제29조](https://www.law.go.kr/LSW/lsSideInfoP.do?lsiSeq=273431&joNo=0029&joBrNo=00&docCls=jo&urlMode=lsScJoRltInfoR) — 2026-10-21 확인, 우수관리인증농산물이 아닌 농산물의 우수표시품 표시와 광고 금지
 - [국가법령정보센터, 원산지표시법 제6조](https://www.law.go.kr/LSW/lsSideInfoP.do?lsiSeq=237105&joNo=0006&joBrNo=00&docCls=jo&urlMode=lsScJoRltInfoR), [시행령 별표 1](https://www.law.go.kr/LSW/flDownload.do?gubun=&flSeq=170523835&bylClsCd=110201) — 2026-10-21 확인, 거짓과 혼동 표시 금지, 국산 농산물과 혼합 물량의 표시 기준
 - [국가법령정보센터, 추천보증 등에 관한 표시광고 심사지침](https://www.law.go.kr/LSW/admRulInfoR.do?admRulSeq=2100000280130) — 2026-10-21 확인, 공정거래위원회예규 제499호(2026-06-01 시행) 경험적 사실 부합, 실제 사용 없는 후기와 사진 게재와 체험담 내용 첨가의 부당 예시, 경제적 이해관계 공개
+- [How Online Reviews Influence Sales — Spiegel Research Center, Northwestern University](https://spiegel.medill.northwestern.edu/how-online-reviews-influence-sales/) — 2026-11-25 확인, 2017년 첫 발표 결과의 후기 5건 270%, 첫 5건 뒤 한계 효과 감소, 저가 190%와 고가 380% 전환율 상승, 평점 4.0~4.7 정점
+- [Online Reviews eBook (전체 보고서 PDF) — Spiegel Research Center, Northwestern University](https://spiegel.medill.northwestern.edu/wp-content/uploads/sites/2/2021/04/Spiegel_Online-Review_eBook_Jun2017_FINAL.pdf) — 2026-11-25 확인, PowerReviews 협업, 270%와 190%, 380%가 고가 선물 소매점 1곳의 데이터이고 저가와 고가가 그 안의 카테고리 구분이라는 범위
 - [OpenAI, Pricing](https://learn.chatgpt.com/docs/pricing) — 2026-10-21 확인, ChatGPT Work와 Codex 요금 안내의 개인 요금제 Go 월 8달러, Plus 월 20달러(USD)
 
 ## 관련 문서
