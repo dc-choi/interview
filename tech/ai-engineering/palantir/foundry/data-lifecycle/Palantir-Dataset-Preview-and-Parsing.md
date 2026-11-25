@@ -1,7 +1,7 @@
 ---
 tags: [palantir, dataset-preview, csv, time-travel]
 status: done
-verified_at: 2026-10-16
+verified_at: 2026-11-26
 category: "AI엔지니어링(AIEngineering)"
 aliases: ["Dataset Preview와 parsing"]
 ---
@@ -10,9 +10,24 @@ aliases: ["Dataset Preview와 parsing"]
 
 Dataset Preview는 selected branch의 data sample과 metadata/history/schema/files/job spec/health를 함께 보는 앱이다. Preview의 기본 sample을 전체 dataset으로 읽지 않는다. Filter/sort는 일반 dataset 전체에 적용되지만 결과 preview에도 row 수 제한이 남는다. Table이 보여 준 행 수를 분석 모집단 크기로 사용하지 않는다.
 
+## 화면 구성과 어디서 무엇을 확인하나
+
+| 영역 | 확인할 것 |
+|---|---|
+| Header | 이름, display name, 위치, 선택한 branch. 공유, 이동, 이름 변경 같은 file 작업 |
+| Information panel의 About | 생성과 갱신 시각과 사용자, table 크기, 생성에 쓰인 tool과 input dataset, tag |
+| Information panel의 Columns | column type, 설명, null 비율과 분포, sample 값 |
+| Information panel의 Schedules | 이 dataset을 갱신하는 build schedule |
+| Details | schema 편집, file 목록과 download, job spec, sync 상태, custom metadata, disk와 Spark resource usage, stream의 last run details |
+| Actions | All actions dropdown의 분석, 탐색, 변환, 관리 tool과 menu 밖에 노출된 Analyze(Contour), Build |
+
+About의 Edit schema는 CSV와 JSON에만 schema를 추론하고 jagged row drop, encoding, file path, row byte offset, import timestamp, row number column 추가 같은 parsing option을 준다. 다른 file type은 Details의 Schema에서 고친다. Furnace SQL output은 job spec에 여러 SQL definition을 남길 수 있다. Active definition은 다음 rebuild(schedule 또는 수동)에 실행될 SQL이고 active를 바꿔도 즉시 실행되지 않으므로, rebuild 전에는 현재 data를 만든 definition과 다를 수 있다. Custom metadata로 더한 field는 information panel에 보이므로 소유자, 용도 같은 운영 정보를 dataset 곁에 둘 수 있다.
+
+Preview table의 column menu는 sort, filter, chart를 만들고, cell 선택으로 그 값만 포함하거나 제외할 수 있다. Column 단위로 issue를 보고하고 조회할 수 있어 data 품질 문제를 그 column에 붙여 남긴다.
+
 ## Stream과 archive의 관측 범위
 
-Streaming preview는 최근 row의 작은 sample이며 Live updates로 바뀐다. Sorting/filter/chart는 Archive에서만 사용하고 archive 상태를 나타낸다. History/Health/Compare도 Archive에서 보이며 Health 결과는 live stream 자체가 아니라 archive dataset의 검사다. Live job/metric은 Stream/Metrics와 troubleshooting view로 조사한다.
+Streaming preview는 최근 row의 작은 sample이며 Live updates로 바뀐다. Sorting/filter/chart는 Archive에서만 사용하고 archive 상태를 나타낸다. History/Health/Compare도 Archive에서 보이며 Health 결과는 live stream 자체가 아니라 archive dataset의 검사다. Live job/metric은 Stream/Metrics와 troubleshooting view로 조사한다. Metrics tab은 권장 debugging metric을 표시한 dropdown과 threshold, 경고 표시가 있는 chart를 주고, 상단 toggle의 Troubleshoot and Debug mode는 stream 중단을 단계별로 따라가게 하고, 오른쪽 panel의 metric tag를 선택하면 해당 chart가 강조된다.
 
 History에서 삭제되지 않은 과거 transaction에 branch를 만들 수 있다. Details의 schema/files/job spec/source provenance/sync/resource usage를 함께 확인한다. Compare는 별도 dataset/과거 transaction/다른 branch를 비교할 수 있지만 preview 화면만으로 merge의 모든 runtime 영향이 검증되지는 않는다.
 
@@ -55,9 +70,11 @@ Bisect는 key와 column/target value로 추가/삭제/값 변경 시점을 찾�
 - [Palantir, Dataset Preview FAQ](https://www.palantir.com/docs/foundry/dataset-preview/dataset-preview-faq)
 - [Palantir, SQL console](https://www.palantir.com/docs/foundry/dataset-preview/sql-console)
 - [Palantir, Time Travel (Beta)](https://www.palantir.com/docs/foundry/dataset-preview/time-travel)
+- [Palantir, SQL definitions](https://www.palantir.com/docs/foundry/sql-warehousing/sql-definitions/)
 
 ## 관련 문서
 
 - [[Palantir-Lineage-Aware-Deletion-Policies|Retention과 가용 history]]
 - [[Palantir-Health-Check-Evaluation-and-Freshness|Archive health의 시점]]
 - [[Palantir-SQL-Execution-and-Worksheets|SQL 실행과 worksheet]]
+- [[Palantir-SQL-Writes-History-and-Active-Definitions|SQL 쓰기 이력과 active definition]]

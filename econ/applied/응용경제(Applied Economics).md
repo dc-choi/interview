@@ -27,6 +27,7 @@ aliases: ["응용경제(Applied Economics)", "Applied Economics Map"]
 - [[GPU-Collateral-and-Securitization|GPU 담보 금융과 유동화]] — 플랫폼 목표와 대출 집행, 정상 상환과 담보 회수, 고객 계약 조건, 유동화와 잔존 가치 지원의 범위
 - [[Data-Center-Grid-Access-Politics|데이터센터 전력망 연결과 지역 수용성]] — 접속 대기열과 실제 수요, 감사 지시와 정보 요구 항목, 비용 배분과 자금 구조별 지연 영향
 - [[Profit-Linked-Bonus-Design|이익연동 성과급 설계]] — 이익 N% 요구와 합의의 구분, 기준 지표와 재원 방식, 상한과 이연, 운과 기여의 분리, 사업부 간 격차 ✅
+- [[Night-Time-Economy-Policy|야간경제 정책 읽기]] — 시민 여가와 방문객 체류를 함께 노리는 손잡이(운영시간, 명소, 골목상권, 이동, 안전, 정보), 2026-08 서울형 야간경제의 공식 사업량과 수치의 발표 시점, 투입과 결과 지표, 총량과 분포, 순증과 이동의 구분, 소규모 사업자의 확인 질문 ✅
 - [[Medical-Fee-Regulation-and-Physician-Allocation|공정 진료비와 의사 인력 배분]] — 보험과 비보험 부문의 가격 결정 차이, 일본 직미와 2026년 재정 건의의 부담금과 고령자 본인부담 개편, 건의와 시행의 구분 ✅
 
 ### 2. 의사결정
