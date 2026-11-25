@@ -31,10 +31,12 @@ Transformer 원 논문(Vaswani et al., 2017)이 sinusoidal을 고른 근거는 �
 
 #### Sinusoidal과 RoPE가 위치를 넣는 지점
 
-2026-10-21 원 논문 두 편의 위치 표현 절을 대조한 범위다. 아래 수식은 구조 설명이며 특정 서비스 모델이 이 설정을 쓴다는 뜻은 아니다.
+2026-10-21 원 논문 두 편의 위치 표현 절을 대조한 범위다(회전 속도와 `rope_theta` 항목은 2026-11-26 RoFormer v5, Llama 3 논문, Xiong et al.(2023)과 Llama 2, Llama 3 참조 구현으로 대조). 아래 수식은 구조 설명이며 특정 서비스 모델이 이 설정을 쓴다는 뜻은 아니다.
 
 - **Sinusoidal**: 원 Transformer는 `PE(pos, 2i) = sin(pos / 10000^(2i/d_model))`, `PE(pos, 2i+1) = cos(pos / 10000^(2i/d_model))`를 쓴다. 서로 다른 주파수의 sine/cosine 쌍으로 위치 벡터를 만들고, 같은 차원의 token embedding에 더한다. 위치 0의 벡터는 `[0, 1, 0, 1, ...]`이다.
 - **RoPE**: RoFormer는 Query와 Key의 성분을 2차원 쌍으로 묶고 위치에 따른 회전을 적용한다. 위치 m, n의 회전 행렬을 `R_m`, `R_n`이라 하면 `(R_m q)ᵀ(R_n k) = qᵀR_(n-m)k`가 되어 위치의 영향이 상대 거리로 들어간다. 점수 전체가 거리만으로 정해지는 것은 아니며 q와 k의 내용에도 의존한다.
+- **회전 속도와 base**: 차원 쌍마다 회전 각속도가 다르며 RoFormer 3.2.2절은 미리 정한 상수 `θ_i = 10000^(-2(i-1)/d)`(i = 1..d/2)를 쓴다. 앞쪽 쌍은 위치마다 빠르게, 뒤쪽 쌍은 느리게 돈다(θ_1 = 1). 빠른 쌍이 가까운 거리, 느린 쌍이 먼 거리를 구분한다는 설명은 시계의 초침과 시침에 빗댄 직관이며 논문의 주장은 아니다. θ는 학습하지 않는 상수다. 3.3절은 이 설정에서 상대 거리가 커질수록 감쇠하는 long-term decay 성질을 증명할 수 있다고 하지만, 3.4.3절의 유도는 내적 자체가 아니라 그 크기의 상한에 대한 것이다. 또 논문은 4.5.5절 한계에서 더 빠른 수렴과 긴 텍스트에서의 성능을 충실히 설명하지 못했다고 인정한다. 그래서 decay를 RoPE가 잘 동작하는 이유로 단정하지 않는다.
+- **`rope_theta`**: Llama 3 참조 구현의 `ModelArgs.rope_theta`(기본값 500000)가 이 base 값이다. Llama 2 참조 구현은 기본값 10000을 쓰고(`precompute_freqs_cis`의 `theta: float = 10000.0`), Llama 3는 더 긴 컨텍스트를 지원하려고 RoPE base frequency를 500,000으로 올렸다(The Llama 3 Herd of Models 3.2절). base를 키우면 모든 쌍의 회전각이 줄어든다. Llama 3 논문이 근거로 인용한 Xiong et al.(2023)은 이것이 먼 토큰에 대한 RoPE의 감쇠 효과를 줄인다고 설명하며 32,768 길이까지 효과를 보였다. 느린 쌍이 한 바퀴 도는 데 더 오래 걸려 먼 위치가 구분된다는 설명은 직관이다(추론). 위치 표를 학습하는 방식과 달리 구조상 최대 위치 수가 정해져 있지 않지만, 학습 때 보지 못한 길이에서의 품질은 별도 문제다.
 - **해석의 한계**: sine/cosine을 사용한다는 공통점만으로 두 방법을 같은 연산으로 보지 않는다. 입력에 위치 벡터를 더하는 것과 Q/K를 회전하는 것은 다르다. 큰 위치의 수식을 계산할 수 있다는 사실도 그 길이에서의 과제 품질을 보장하지 않는다.
 
 ### 토크나이저는 빈도로 어휘를 만든다 (BPE)
@@ -123,7 +125,12 @@ Transformer 원 논문의 base는 encoder와 decoder가 각 6층(N=6), `d_model 
 
 - [Attention Is All You Need — Vaswani et al.](https://arxiv.org/abs/1706.03762)
 - [(PAPER CREW) 25년간 나온 전 세계 논문 중 7위 찍은 미친 논문. Attention Is All You Need — YouTube, CODER X DOX 코더엑스독스](https://www.youtube.com/watch?v=UirAROVTqf8) — 2026-10-12 논문 리뷰 영상, 8:20~8:57의 앙상블 비교. 수식과 수치는 원 논문으로 대조
-- [RoFormer: Enhanced Transformer with Rotary Position Embedding — Su et al.](https://arxiv.org/abs/2104.09864) — 2026-10-21 위치 회전과 상대 거리 수식 대조. 기존 토크나이저와 API 과금 절의 확인일은 유지한다.
+- [RoFormer: Enhanced Transformer with Rotary Position Embedding — Su et al.](https://arxiv.org/abs/2104.09864) — 2026-10-21 위치 회전과 상대 거리 수식 대조. 2026-11-26 v5의 θ 정의(3.2.2절), long-term decay(3.3절, 3.4.3절)와 한계(4.5.5절) 대조. 기존 토크나이저와 API 과금 절의 확인일은 유지한다.
+- [The Llama 3 Herd of Models — Llama Team, AI @ Meta](https://arxiv.org/abs/2407.21783) — 2026-11-26 3.2절의 RoPE base frequency 500,000 대조
+- [llama/model.py — GitHub, meta-llama](https://github.com/meta-llama/llama/blob/main/llama/model.py) — 2026-11-26 Llama 2 참조 구현의 `theta` 기본값 대조
+- [llama3/llama/model.py — GitHub, meta-llama](https://github.com/meta-llama/llama3/blob/main/llama/model.py) — 2026-11-26 `ModelArgs`의 `rope_theta` 기본값 500000 대조
+- [Effective Long-Context Scaling of Foundation Models — Xiong et al.](https://arxiv.org/abs/2309.16039) — 2026-11-26 2.1절의 base frequency 조정과 감쇠 효과 설명 대조
+- [(PAPER CREW) LLM 에 토큰을 때려박을 수 있었던 이유 — YouTube, CODER X DOX 코더엑스독스](https://www.youtube.com/watch?v=Kyhk-Hw-lJg) — 2026-11-15 RoFormer 리뷰 영상. 회전 속도와 `rope_theta` 항목의 계기이며 수식과 수치는 위 논문과 구현으로 대조
 - [Attention Is Not Explanation — Jain and Wallace](https://arxiv.org/abs/1902.10186)
 - [The Curious Case of Neural Text Degeneration — Holtzman et al.](https://arxiv.org/abs/1904.09751)
 - [Neural Machine Translation of Rare Words with Subword Units — Sennrich et al.](https://arxiv.org/abs/1508.07909)
