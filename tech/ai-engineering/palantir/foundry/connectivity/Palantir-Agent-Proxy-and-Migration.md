@@ -1,7 +1,7 @@
 ---
 tags: [palantir, data-connection, agent-proxy, migration]
 status: done
-verified_at: 2026-10-19
+verified_at: 2026-11-26
 category: "AI엔지니어링(AIEngineering)"
 ---
 
@@ -20,6 +20,15 @@ Source에 설정한 hostname과 port로만 proxy 연결을 허용하는 통제�
 ## Worker 이전의 실제 변경
 
 Foundry worker는 capability별 컨테이너를 사용하므로 agent JVM heap을 공동으로 경쟁하는 구조에서 벗어난다. 비교 문서의 성능과 안정성 설명은 설계상 장점이며 모든 워크로드의 실측 개선을 보장하지 않는다. Agent proxy를 사용하면 사내 agent가 연결을 시작하는 네트워크 모델은 유지되지만 연산과 자격 증명 관리 위치가 달라진다.
+
+비교 문서는 Foundry worker의 이점을 다섯 가지로 든다. 위의 컨테이너 격리 외에 나머지 넷은 다음과 같다.
+
+- **업그레이드 주기:** agent worker는 고객이 관리하는 host에서 돌아 agent의 maintenance window(보통 주 1회)에만 업그레이드되므로 수정이 늦게 닿고 host의 자원 고갈, OS나 JVM 문제에도 노출된다. Foundry worker는 플랫폼과 함께 계속 갱신된다.
+- **지원 기능:** virtual table, virtual media, external transform과 external function, compute module에서 source를 코드로 쓰는 기능, 그리고 최근 몇 년간 추가된 여러 capability가 agent worker에서 돌지 않는다. 새 capability 개발도 Foundry worker만 대상으로 한다. 다만 agent proxy policy는 virtual table과 OIDC 인증을 지원하지 않으므로, 사설망 원천을 Foundry worker와 agent proxy로 옮겨도 virtual table이 풀리지 않는다([[Palantir-Network-Egress-and-Private-Connectivity|egress와 사설 연결]]).
+- **운영 부담:** agent JVM heap 조정, agent host 용량 계획과 OS 수준의 agent 프로세스 감시가 필요 없어진다. agent proxy로 남는 agent는 네트워크 proxy 역할만 하므로 연산을 맡던 때보다 운영 범위가 작다.
+- **자격 증명 수명 주기:** Foundry worker에서는 자격 증명이 특정 agent에 묶이지 않고 Foundry가 중앙에서 관리하므로, source에 배정한 agent를 바꾸거나 agent host를 다시 구성해도 secret을 다시 입력하지 않는다.
+
+보안 비교에서 비교 문서는 두 방식 모두 자격 증명을 저장과 전송 중에 암호화하며, 실질적인 차이는 암호화 키가 agent host의 디스크에 있느냐 Foundry 안에서 관리되느냐뿐이라고 설명한다.
 
 이전 wizard에는 건강한 기존 agent와 egress 정책 관리 권한이 필요하다. 대표 agent에서 secret과 인증서, 필요하면 JDBC driver를 가져오고 새 egress policy를 지정한다. 인증서는 agent 전체 설정 대신 source에 적용한다. 수동 전환에서는 secret 자동 이전이 없으므로 다시 입력해야 한다.
 
