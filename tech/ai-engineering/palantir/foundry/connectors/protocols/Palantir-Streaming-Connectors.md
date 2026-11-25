@@ -1,13 +1,19 @@
 ---
 tags: [palantir, foundry, data-connection, connectors]
 status: done
-verified_at: 2026-11-24
+verified_at: 2026-11-26
 category: "AI엔지니어링(AIEngineering)"
 ---
 
 # Kafka, Kinesis와 Pub/Sub의 스트림 계약
 
 streaming sync는 장시간 실행되며 재시작도 예상 중단에 포함한다. 문서상 Foundry worker는 적어도 48시간마다 재시작하고 대기 자원에 따라 수분의 중단이 생길 수 있다. legacy agent는 유지보수 창의 중단을 확인하고 두 agent를 쓰면 창을 겹치지 않게 한다. 이것이 무중단 SLA는 아니다.
+
+## 수집 방향과 커넥터 범위
+
+Streaming resource guide는 stream 데이터를 Foundry로 들이는 경로를 둘로 나눈다. 하나는 Data Connection이 streaming platform에서 record를 당겨 오는 pull 방식이다. Guide는 이를 batch sync처럼 agent architecture의 단방향 연결로 설명하지만, Kafka connector 문서는 streaming sync를 Foundry worker(인터넷 direct connection 또는 agent proxy)에서 돌리기를 권하고 agent worker는 legacy로 둔다. 다른 하나는 외부 stream이 stream proxy를 통해 Foundry stream에 record를 직접 넣는 push 방식이다. Push는 원천 쪽 producer를 고쳐 Foundry로 보내게 할 수 있을 때의 선택지이고, Foundry 인증이나 표준 stream schema를 맞출 수 없는 inbound webhook은 [[Palantir-Listener-Integration-and-Rotation|Listener]] 경로를 본다. 둘 다 어려우면 pull 경로의 connector 지원부터 확인한다(적용 판단). 지원되는 장시간 sync의 continuous compute 실행 모드는 [[Palantir-Connection-Capability-Boundaries|연결 기능 경계]]에 정리했다.
+
+2026-11-26 확인한 guide가 전용 커넥터가 있는 streaming 원천의 예로 드는 것은 Apache Kafka, Amazon Kinesis, Amazon SQS, Aveva PI, Google Pub/Sub이다. 전용 커넥터가 없는 원천은 external transform으로 연결할 수 있으며, guide는 ActiveMQ, Amazon SNS, IBM MQ, RabbitMQ, Solace와 MQTT([Beta] 표기)를 예로 든다. 두 목록은 예시이며 수집(sync) 기준의 분류다. Exports 문서는 Solace source type을 streaming export 대상에 올리고 있어([[Palantir-Export-State-and-Governance|export 상태와 거버넌스]]), 방향별 지원은 connector별 capability 표에서 다시 확인한다. External transform은 소비 위치와 중복 처리를 사용자 코드가 맡으므로(Kafka라면 아래 예제의 offset 관리) 전용 커넥터의 streaming sync와 같은 운영 계약으로 보지 않는다(적용 판단).
 
 ## Kafka
 
@@ -47,6 +53,9 @@ JSON/PKCS8 service account와 GCP agent 전용 instance auth를 구별한다. ex
 
 ## 출처
 
+- [Palantir, streaming-guide](https://www.palantir.com/docs/foundry/data-integration/streaming-guide)
+- [Palantir, push-based-ingestion](https://www.palantir.com/docs/foundry/data-connection/push-based-ingestion)
+- [Palantir, export-overview](https://www.palantir.com/docs/foundry/data-connection/export-overview)
 - [Palantir, kafka](https://www.palantir.com/docs/foundry/available-connectors/kafka)
 - [Palantir, amazon-kinesis](https://www.palantir.com/docs/foundry/available-connectors/amazon-kinesis)
 - [Palantir, pubsub](https://www.palantir.com/docs/foundry/available-connectors/pubsub)

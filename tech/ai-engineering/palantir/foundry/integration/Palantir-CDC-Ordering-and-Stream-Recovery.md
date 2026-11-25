@@ -1,7 +1,7 @@
 ---
 tags: [palantir, cdc, streaming, flink, recovery]
 status: done
-verified_at: 2026-11-25
+verified_at: 2026-11-26
 category: "AI엔지니어링(AIEngineering)"
 aliases: ["CDC ordering과 stream 복구"]
 ---
@@ -51,7 +51,7 @@ Checkpoint는 operator state와 처리 위치를 보존한다. Pipeline exactly-
 
 ## Monitor와 reset의 범위
 
-Deterministic flow에 ingest count alert를 두고 pipeline checkpoint liveness/duration/trigger failures/consecutive failures, lag/throughput/utilization을 본다. Zero incoming이어도 state checkpoint는 살아 있어야 한다. Ingest live-view 성공과 output application 반영은 별도다. Beta output monitor는 time-series와 geotemporal로 제한되며 geotemporal sent는 service 처리 완료를 보장하지 않는다.
+Deterministic flow에 ingest count alert를 두고 pipeline checkpoint liveness/duration/trigger failures/consecutive failures, lag/throughput/utilization을 본다. Zero incoming이어도 state checkpoint는 살아 있어야 하며, 이 주기적 state 보존 조건은 pipeline에만 적용된다. Ingest live-view 성공과 output application 반영은 별도다. Beta output monitor는 time-series와 geotemporal로 제한되며 geotemporal sent는 service 처리 완료를 보장하지 않는다. Geotemporal monitor는 errors dataset이 아니라 backing observation dataset에 건다.
 
 Profile은 pipeline과 같은 Project에 reference가 필요하다. Large profile import는 Enrollment Resource Administrator가 수행하며 참조 제거는 사용하는 job을 깨뜨릴 수 있다. Monitor metrics UI는 single-target streaming/time-series scope에서 제공되는 제한을 확인한다. Email/PagerDuty는 subscription/integration 설정을 따르고 실제 incident evidence와 대조한다.
 
