@@ -41,6 +41,7 @@ aliases: ["Professional Networking", "외부 네트워킹", "멘토 확보", "�
   - 제가 어떻게 기억해 드리면 좋을까요?
   - 오늘 어떤 분과 가장 이야기해 보고 싶으셨어요?
   - 그 직함은 주로 어떤 일을 하시나요?
+- 소개받기 쉬운 한 문장을 준비한다. 누가 겪는 어떤 문제를 어떤 방식으로 풀고 있는지와 지금 찾는 사람이 누구인지를 말하면, 상대가 나를 누구에게 연결할지 떠올리기 쉽다. 아직 정하지 못했으면 먼저 해 본 선배를 찾는다고 말한다([[Freelance-Client-Acquisition-and-Retention#소개받기 쉬운 한 문장을 준비한다|소개 문장의 틀]]).
 - 가기 전에 온라인 프로필을 정리한다. 만난 사람은 대개 이름을 검색하므로 SNS 소개, 최근 글과 포트폴리오가 두 번째 인상이 된다.
 - 행사 뒤 짧은 후속 연락으로 1:1 대화를 제안한다. 행사 자체보다 후속 연락이 관계를 만든다.
 
@@ -127,6 +128,7 @@ aliases: ["Professional Networking", "외부 네트워킹", "멘토 확보", "�
 - [멘토 확보 15단계 — Threads, careernomad_](https://www.threads.com/@careernomad_/post/DRej9msgU2w)
 - [멘토의 정의와 멘토링 태도 — Threads, monk_on_weekdays](https://www.threads.com/@monk_on_weekdays/post/DL4iPRzok-t)
 - [자기계발 습관과 커피챗 요청 팁 — Threads, beyond.cho](https://www.threads.com/@beyond.cho/post/DR_30mZEbnS)
+- 독립해 일하는 사람들의 네트워킹 모임 발표 — 2026-11-20, 현장 녹음의 음성 인식 전사 전체 확인. 소개 문장의 틀의 출처. 공개된 영상이나 자료는 없고 발표자의 경험에 따른 조언이다
 
 ## 관련 문서
 
