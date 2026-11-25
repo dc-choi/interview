@@ -29,6 +29,8 @@ MCP 명세(2026-07-28)의 기준:
 - 상태를 잇는 handle(장바구니 ID, 작업 ID)을 가졌다는 사실을 인증으로 취급하지 않고(MUST NOT), handle을 검증된 사용자에 묶도록 권한다(SHOULD).
 - MCP 서버가 알려 준 OAuth 관련 URL을 가져오는 클라이언트와, 클라이언트가 준 metadata 문서 URL을 가져오는 인가 서버도 SSRF의 표적이 된다. 사설 IP 대역과 cloud metadata 주소를 막고, 리디렉션 대상도 같은 규칙으로 검증하며, 검사 시점과 사용 시점의 DNS 결과가 달라지는 문제(TOCTOU)를 고려하도록 권한다. 명세의 SSRF 지침은 이 두 경우를 다루며, 위 표의 API 목적지 기준은 같은 원칙을 서버의 downstream 호출에 적용한 것이다.
 
+리디렉션은 SSRF만이 아니라 비밀 유출 경로이기도 하다(이 문단은 클라이언트 쪽 경계다). 명세의 Security Best Practices는 SSRF 문맥에서 MCP 클라이언트가 리디렉션 대상에도 같은 URL 검증을 적용하도록 권하고(SHOULD), 자동 추종을 끄고 hop마다 검증하는 방안은 고려 사항으로 든다. Authorization은 refresh token을 원하는 클라이언트가 이를 전송과 저장 중 기밀로 유지하도록 요구한다(MUST). 두 문구를 묶어 리디렉션을 비밀 유출 경로로 보는 것은 이 문서의 종합이다. 실제 클라이언트에서 이 경계가 깨진 사례로, Claude Code changelog의 2.1.321 항목(2026-11-26 대조)은 서버가 MCP OAuth 요청을 리디렉션했을 때 refresh token 같은 비밀을 다른 host로 보내던 문제를 고쳤다. 클라이언트를 직접 구현한다면 토큰 요청은 리디렉션을 자동으로 따르지 않거나, 따를 때 scheme, host, port를 포함한 origin이 처음 요청과 같은지 확인하고 다르면 비밀을 담은 본문과 헤더를 보내지 않는다(이 문서의 적용 제안). host만 비교하면 같은 host의 https에서 http로 내려가는 리디렉션을 걸러내지 못한다.
+
 ## 사례: 2026년에 공개된 MCP 서버 권고
 
 | 패키지 | 경계 | 내용 | 수정 버전 |
@@ -155,6 +157,7 @@ downstream 자격 증명은 네 방식으로 나눠 볼 수 있다.
 - [OSV, CVE-2026-61560](https://osv.dev/vulnerability/CVE-2026-61560)
 - [OSV, CVE-2026-61559](https://osv.dev/vulnerability/CVE-2026-61559)
 - [OSV, CVE-2026-61568](https://osv.dev/vulnerability/CVE-2026-61568)
+- [Claude Code CHANGELOG — GitHub, anthropics/claude-code](https://github.com/anthropics/claude-code/blob/main/CHANGELOG.md) — 2026-11-26, 2.1.321의 MCP OAuth 리디렉션 비밀 전송 수정 항목만 대조
 - [How DoorDash Built a Centralized Gateway for AI Agent-Tool Access — DoorDash Engineering](https://careersatdoordash.com/blog/how-doordash-built-a-centralized-gateway-for-ai-agent-tool-access/)
 - [MCP 서버 보안, 넣어 둔 토큰이 요청자의 권한이 되는 이유 — YouTube, 길리랩 - 실전 구현 랩](https://www.youtube.com/watch?v=zQ4SFM857L4)
 - [MCP Python SDK 2.3.0, 도구 등록이 멈추는 이유 — YouTube, 길리랩 - 실전 구현 랩](https://www.youtube.com/watch?v=8cn9qiyRS8U)
