@@ -18,13 +18,15 @@ Dataset의 Watch all은 현재 check에 설정을 일괄 적용하는 기능이�
 
 2026-10-16 문서 기준 check group은 sunset이며 기존 saved group은 편집 가능하지만 새 group 생성은 막혀 있다. 같은 페이지 아래의 Create Group 절차는 과거 UI 설명으로 보존하며 신규 구축 경로로 제안하지 않는다. Scope 기반 coverage가 필요하면 Monitoring views로 migration한다.
 
-Check group은 검사 실행 시점을 바꾸지 않는다. Group schedule은 aggregate email digest의 빈도이며 group Watch는 개별 check Watch를 켜지 않는다. Only when failing과 빈도를 지정해 pipeline alert noise를 줄일 수 있다. 동적 resource 추가 coverage와 기존 group의 고정 목록을 구분한다.
+Check group은 검사 실행 시점을 바꾸지 않는다. Group schedule은 aggregate email digest의 빈도이며 group Watch는 개별 check Watch를 켜지 않는다. Only when failing과 빈도를 지정해 pipeline alert noise를 줄일 수 있다. 동적 resource 추가 coverage와 기존 group의 고정 목록을 구분한다. Group을 Watch하려면 그 group의 view 권한이 필요하고, owner가 Actions의 Manage permissions로 부여한다.
 
 ## 조사 UI가 보여주는 맥락
 
-Failure spotlight는 같은 check type/resource/source 등으로 cluster를 만들어 root cause 후보를 보여준다. Build, snoozed together, related grouping과 hidden snoozed/finished duration filters를 확인한다. Snooze는 failure 해소가 아니며 이유/이력과 hidden filter가 현재 표시를 바꾼다.
+이 절은 기존 check group의 Actions > Troubleshoot checks 화면 기준이다. Monitoring views의 snooze는 rule과 target 단위가 다르므로 [[Palantir-Monitoring-Scope-and-Alert-State|monitoring scope 문서]]를 따른다.
 
-복수 선택 toolbar는 선택된 모든 check/resource에 적용한다. Comments는 선택 target resource를 참조하고 group View 접근자에게 보인다. Issues는 해당 resource의 open issue, Schedules는 영향을 주는 하나 이상의 schedule, Source는 실패 원인의 source와 commit history를 보여준다. Source commit은 check가 붙은 target보다 upstream에서 실제 실패한 dataset의 것이 될 수 있다.
+Failure spotlight는 같은 check type/resource/source 등으로 cluster를 만들어 root cause 후보를 보여준다. Build, snoozed together, related grouping과 hidden snoozed/finished duration filters를 확인한다. Snooze는 failure 해소가 아니며 이유/이력과 hidden filter가 현재 표시를 바꾼다. 현재 snooze 중이 아닌(회색) snooze 버튼 옆의 주황색 점은 최근 snooze된 적이 있는 check라는 표시이고, hover로 최근 snooze 이력을 볼 수 있어 진행 중인 incident나 과거 조치의 단서가 된다. 여러 check를 한 번에 snooze하면 같은 기간과 이유가 각 check에 개별 적용되며, 알림을 한꺼번에 다시 켜려면(un-snooze) 그 check들을 다시 모두 선택한다.
+
+복수 선택 toolbar는 선택된 모든 check/resource에 적용한다. Comments는 선택 target resource를 참조하고 group View 접근자에게 보인다. Issues는 해당 resource의 open issue, Schedules는 영향을 주는 하나 이상의 schedule, Source는 실패 resource를 만든 source를 보여주고, 그 dataset이 code repository로 만들어졌으면 commit history도 보여준다. Source commit은 check가 붙은 target보다 upstream에서 실제 실패한 dataset의 것이 될 수 있다. 조사를 시작하기 전에 Issues를 먼저 보면 관련 issue에서 root cause 단서를 얻거나 다른 사람이 이미 처리 중인 것을 발견할 수 있다. 이 패널은 group이 감시하는 resource의 open issue만 보여주므로 비어 있어도 아무도 처리하지 않는다는 증거는 아니다.
 
 ## Build failure는 최초 실패부터 찾는다
 
