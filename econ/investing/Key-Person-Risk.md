@@ -26,7 +26,9 @@ aliases: ["Key-Person Risk", "핵심 인물 위험", "경영진 교체 위험", 
 | 사업 영향 | 다음 실적의 매출과 이익 전망, 주요 고객 주문, 제품 로드맵 | 주가 반응을 사업 차질의 증거로 쓰지 않는다 |
 | 보안과 규제 | 기밀 유출이나 수출 통제 위반의 확인 여부, 새 내부 통제 | 위원회 신설을 위험 해소로 읽지 않는다 |
 
-**사례 (NVIDIA, 2026-11-24 회사 발표 대조):** 2026-11-12 회사는 CEO가 사장, CEO와 이사직에서 즉시 물러났고 CFO가 임시 CEO를 겸하며, 처음으로 이사회 의장을 두고 내부와 외부 후보를 검토하는 후임 선정에 들어간다고 발표했다. 11일 뒤 2026-11-23 이사회는 같은 인물을 만장일치로 복귀시키면서, 그가 외국 정보기관 공작의 표적이었다는 보도와 관련한 독립 이사 위원회의 조사는 끝까지 진행하고, 독립 이사로만 구성한 국가안보와 수출통제 위원회를 새로 두며 새로 만드는 최고준법책임자 직의 적임자를 찾는다고 밝혔다. 같은 발표에서 회사는 진행 중인 정부 조사와 질의에 계속 협조한다고 적었고, 이사회는 복귀가 국가안보 위험을 일으키지 않는다고 확신한다고 밝혔다(회사의 주장이며 검증하지 않음). 이 사례에서 사임 발표가 곧 영구 교체로 이어지지 않았고, 복귀 뒤에도 조사 결론은 남아 있다. 조직 운영 쪽 대응은 [[Business-Continuity-for-Small-Business#대표자 부재와 공급업체 중단을 함께 본다|소규모 사업의 연속성 계획]], 교체 직후의 분석가 의견은 [[Strategy-Analysis-Frameworks|전략 분석 프레임]]에 있다.
+**사례 (NVIDIA, 2026-11-24 회사 발표 대조, 2026-11-25 재대조):** 2026-11-12 회사는 CEO가 사장, CEO와 이사직에서 즉시 물러났고 CFO가 임시 CEO를 겸하며, 처음으로 이사회 의장을 두고 내부와 외부 후보를 검토하는 후임 선정에 들어간다고 발표했다. 11일 뒤 2026-11-23 이사회는 같은 인물을 만장일치로 복귀시키면서, 그가 외국 정보기관 공작의 표적이었다는 보도와 관련한 독립 이사 위원회의 조사는 끝까지 진행한다고 밝혔다. 같은 발표에서 회사는 진행 중인 정부 조사와 질의에 계속 협조한다고 적었다. 이 사례에서 사임 발표가 곧 영구 교체로 이어지지 않았고, 복귀 뒤에도 조사 결론은 남아 있다. 조직 운영 쪽 대응은 [[Business-Continuity-for-Small-Business#대표자 부재와 공급업체 중단을 함께 본다|소규모 사업의 연속성 계획]], 교체 직후의 분석가 의견은 [[Strategy-Analysis-Frameworks|전략 분석 프레임]]에 있다.
+
+복귀 발표는 판단의 근거를 두 가지로 적는다. 이사회가 당사자와 여러 차례 논의하고 만난 뒤 그의 솔직함과 회사를 이끌 능력에 만족했다는 것, 그리고 결정 과정에서 미국 정부 고위층의 의견을 받아 복귀가 국가안보 위험을 일으키지 않는다고 확신하게 됐다는 것이다(회사의 주장이며 검증하지 않음). 이사회 차원의 감독 장치도 더했다. 임시 체제 중이던 2026-11-17 이사회는 독립 이사로 구성한 상설 국가안보와 수출통제 감독 위원회를 설치하고 기존 국가안보 팀과 무역 준법 팀이 이 위원회에 직접 보고하게 했으며(일상 운영은 당시 임시 CEO에게도 보고), 복귀 발표는 회사 전체의 준법을 감독하고 지명과 기업지배구조 위원회에 보고할 최고준법책임자 직을 새로 만든다고 밝혔다. 승계 판단에 옮기면 이사회가 조사 결론보다 먼저 복귀를 정한 점, 그 판단을 이사회의 면담과 외부 의견으로 설명한 점, 감독을 독립 이사 위원회와 준법 조직의 보고선에 맡긴 점을 따로 본다. 남은 확인 대상은 조사의 결론과 새 위원회와 준법 조직의 실제 활동이다(분석 기준).
 
 ## 주가 하락은 예상 이익과 함께 본다
 
@@ -47,13 +49,15 @@ aliases: ["Key-Person Risk", "핵심 인물 위험", "경영진 교체 위험", 
 
 ## 확인 범위
 
-2026-11-24에 NVIDIA의 회계연도 2026 Form 10-K Item 1A와 2026-11-12, 2026-11-23 회사 발표를 대조했다. 독립 조사의 결론, 관련 8-K 본문, 사건 전후의 실제 주가 변동과 애널리스트 이익 전망치는 확인하지 않았다. 경영자 개인에 대한 보도 내용은 회사 발표에 적힌 범위만 옮겼다.
+2026-11-24에 NVIDIA의 회계연도 2026 Form 10-K Item 1A와 2026-11-12, 2026-11-23 회사 발표를 대조했다. 2026-11-25에는 2026-11-23 발표를 다시 열어 복귀 판단의 근거와 최고준법책임자의 보고선을 더하고, 국가안보와 수출통제 위원회의 설치를 2026-11-17 발표로 바로잡았다(이전 서술은 복귀 발표에서 새로 두는 것처럼 읽혔다). 독립 조사의 결론, 관련 8-K 본문, 사건 전후의 실제 주가 변동과 애널리스트 이익 전망치는 확인하지 않았다. 경영자 개인에 대한 보도 내용은 회사 발표에 적힌 범위만 옮겼다.
 
 ## 출처
 
 - [Form 10-K for the fiscal year ended January 25, 2026 — NVIDIA, SEC EDGAR](https://www.sec.gov/Archives/edgar/data/1045810/000104581026000021/nvda-20260125.htm) — 2026-02-25 제출. Item 1A의 경영진과 핵심 인력 위험요인, 승계와 지식 이전 문구 대조
 - [NVIDIA Announces CEO Transition — NVIDIA Newsroom](https://nvidianews.nvidia.com/news/nvidia-announces-ceo-transition) — 2026-11-12 사임 범위, 임시 CEO, 이사회 의장과 후임 선정 절차
-- [NVIDIA Board Reinstates Jensen Huang as President, CEO and Board Director — NVIDIA Newsroom](https://nvidianews.nvidia.com/news/nvidia-board-reinstates-jensen-huang-as-president-ceo-and-board-director) — 2026-11-23 복귀 결정, 진행 중인 조사, 새 위원회와 준법책임자 선임
+- [NVIDIA Board Reinstates Jensen Huang as President, CEO and Board Director — NVIDIA Newsroom](https://nvidianews.nvidia.com/news/nvidia-board-reinstates-jensen-huang-as-president-ceo-and-board-director) — 2026-11-23 복귀 결정, 진행 중인 조사, 위원회와 준법책임자 선임. 2026-11-25 복귀 판단의 근거와 준법책임자의 보고선 재대조
+- [NVIDIA Board of Directors Establishes National Security and Export Control Oversight Committee — NVIDIA Newsroom](https://nvidianews.nvidia.com/news/nvidia-board-of-directors-establishes-national-security-and-export-control-oversight-committee) — 2026-11-17 상설 위원회 설치와 임시 체제의 보고선, 2026-11-25 대조
+- 젠슨 황, NVIDIA CEO로 복귀 — GeekNews, 2026-11-24 게시. 학습 계기이며 글 주소는 확인하지 못했다
 - [젠슨 황이 떠난다면? 엔비디아 투자자가 따져봐야 할 진짜 위험 — 경제학 똑똑](https://www.youtube.com/watch?v=JBYmS7FhNww) — 2026-11-12 공개, 학습 계기. 로컬 음성 인식 전사로 읽었고 예상 이익 대비 가격 계산과 판단 구분의 착안만 가져왔다. 영상 속 보도 인용과 주가 수치는 대조하지 않아 쓰지 않았다
 
 ## 관련 문서
