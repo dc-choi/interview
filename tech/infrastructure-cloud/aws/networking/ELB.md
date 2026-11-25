@@ -14,6 +14,7 @@ AWS의 관리형 부하분산 서비스. 외부, 내부 클라이언트 요청�
 
 - 클라이언트는 **ELB의 DNS 주소**로 요청 → ELB가 대상 그룹(Target Group)의 정상 인스턴스로 분배
 - **보안 그룹**은 ALB에 적용할 수 있고 NLB도 생성 시 보안 그룹을 연결한 구성에서 사용할 수 있다. GWLB의 보안 제어 방식은 별도다.
+  - 대상이 ALB를 거친 트래픽만 받게 하려면 대상 보안 그룹의 인바운드 source에 IP 대신 ALB의 보안 그룹을 지정한다. EC2 인스턴스 대상 기준 AWS 권장 규칙(2026-11-26 대조)에서는 ALB가 대상이 수신하는 트래픽 포트(AWS 표의 instance listener)와 헬스 체크 포트 모두로 통신할 수 있어야 하므로 두 포트를 함께 허용하고, ALB 보안 그룹의 아웃바운드도 대상 보안 그룹의 같은 두 포트로 열어 둔다. `ip`나 `lambda` 대상에는 그대로 적용하지 말고 따로 확인한다. 보안 그룹 참조가 상대를 고르는 방식이라는 점은 [[VPC-NAT-Security#SG 참조는 상대 선택이며 규칙 상속이 아니다|SG 참조]]를 따른다.
 - 배치 방식
   - **Internet-facing**: 공인 IP + 사설 IP 부여 — 외부 노출
   - **Internal**: 사설 IP만 — 내부 마이크로서비스용
@@ -226,7 +227,8 @@ ALB의 504는 대상이 연결 timeout이나 idle timeout(기본 60초) 안에 �
 - [Gateway Load Balancer 대상 그룹 health check](https://docs.aws.amazon.com/elasticloadbalancing/latest/gateway/health-checks.html)
 - [Gateway Load Balancer 대상 그룹 속성](https://docs.aws.amazon.com/elasticloadbalancing/latest/gateway/edit-target-group-attributes.html)
 - [AWS, Elastic Load Balancing pricing](https://aws.amazon.com/elasticloadbalancing/pricing/)
-- [AWS, Free Tier FAQs (legacy)](https://aws.amazon.com/free/legacy/free-tier-faqs)- [Application Load Balancer 용량 예약](https://docs.aws.amazon.com/elasticloadbalancing/latest/application/capacity-unit-reservation.html)
+- [AWS, Free Tier FAQs (legacy)](https://aws.amazon.com/free/legacy/free-tier-faqs)
+- [Application Load Balancer 용량 예약](https://docs.aws.amazon.com/elasticloadbalancing/latest/application/capacity-unit-reservation.html)
 - [Application Load Balancer 용량 예약 요청](https://docs.aws.amazon.com/elasticloadbalancing/latest/application/request-capacity-unit-reservation.html)
 - [Application Load Balancer 용량 예약 모니터링](https://docs.aws.amazon.com/elasticloadbalancing/latest/application/monitor-capacity-unit-reservation.html)
 - [Application Load Balancer HTTP 헤더](https://docs.aws.amazon.com/elasticloadbalancing/latest/application/x-forwarded-headers.html)
@@ -245,6 +247,7 @@ ALB의 504는 대상이 연결 timeout이나 idle timeout(기본 60초) 안에 �
 - [Network Load Balancer 대상 그룹 health check](https://docs.aws.amazon.com/elasticloadbalancing/latest/network/target-group-health-checks.html)
 - [Application Load Balancer 문제 해결](https://docs.aws.amazon.com/elasticloadbalancing/latest/application/load-balancer-troubleshooting.html)
 - [Application Load Balancer 속성 편집, connection idle timeout](https://docs.aws.amazon.com/elasticloadbalancing/latest/application/edit-load-balancer-attributes.html)
+- [Application Load Balancer 보안 그룹](https://docs.aws.amazon.com/elasticloadbalancing/latest/application/load-balancer-update-security-groups.html)
 - [인프런, Sungmin Kim, ELB](https://www.inflearn.com/courses/lecture?courseId=325381&unitId=43732)
 - [YouTube, 데브아트 DevArt, 로드 밸런서 비용 기본료와 사용량](https://www.youtube.com/watch?v=qD0Pgq5gnSU)
 

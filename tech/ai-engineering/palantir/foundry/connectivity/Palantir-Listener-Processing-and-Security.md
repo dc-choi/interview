@@ -16,6 +16,11 @@ Listener는 표준 Foundry OAuth나 payload 형식에 맞출 수 없는 외부 �
 | HTTPS | Stream | GA, 대략 초당 100 request, 개별 event/request 1MB |
 | WebSocket | 자동 생성된 compute module | Beta, 지속적인 양방향 연결 |
 | Email | Media set | GA지만 enrollment별 제공 여부 확인, 첨부 포함 40MB, enrollment당 최대 10개 |
+| Generic | 자동 생성된 compute module | Beta, private network 시스템의 raw TCP 또는 UDP를 secure tunnel로 수신 |
+
+Generic은 다른 Listener 유형이 지원하지 않는 protocol을 compute module 안의 custom server로 처리하는 선택지다. 대부분의 Listener와 달리 URL endpoint와 외부 시스템별 서명이나 검증 방식을 제공하지 않고 raw traffic을 넘긴다. 문서가 메시지 수준의 검증을 플랫폼 기능으로 제시하지 않으므로, protocol 해석과 메시지 검증은 그 server가 맡는다고 보고 설계하는 것이 이 문서의 해석이다. 연결 허용 범위는 별도로 inbound connection policy 승인과 secure tunnel initiator의 ingress allowlist가 제한한다. UDP는 client에서 compute module 방향으로만 전달된다.
+
+Listener는 외부 시스템이 Foundry로 연결을 여는 inbound 전용이다. Foundry가 외부로 요청을 보내는 경우는 Source, sync, outbound webhook, external transform 같은 연결 기능을 쓴다. 외부 시스템에 통합 코드를 직접 넣을 수 있으면 Listener 대신 public API로 stream push, dataset upload나 Ontology 조작을 한다.
 
 HTTPS의 제한보다 높은 처리량은 streaming sync나 public streaming API를 검토한다. 위 수치는 보장된 처리 성능이나 모든 배포 환경의 동일 설정을 뜻하지 않는다.
 
@@ -33,6 +38,8 @@ Email은 기본적으로 모든 발신자를 거부한다. 주소나 domain allo
 
 ## WebSocket의 실행 주체
 
+WebSocket은 실시간 음성과 전화 workflow를 주된 용도로 하며 지원 유형은 Twilio Media Streams, Azure Communication Services, Genesys AudioHook과 Foundry 인증이며 connector 제공 여부는 enrollment별로 확인한다(2026-11-25 수집한 Listeners overview와 WebSocket listeners 문서 기준, 두 Beta 기능은 바뀔 수 있다). Foundry는 WebSocket Listener 연결의 고가용성을 보장하지 않으므로 가능하면 연결이 끊길 때 자동으로 다시 연결하는 provider를 쓴다. 통화 중 끊김을 업무 흐름에서 처리하는 것은 설계 제안이다.
+
 외부 서비스용 WebSocket은 전용 subdomain, ingress와 서비스별 인증을 구성한다. 현재 지원 처리 방식은 Listener가 자동 생성한 compute module이다. Module은 기본적으로 자원 권한이 없으므로 입력과 출력을 명시한다. 양방향 응답으로 데이터가 나갈 수 있어 exportable markings도 구성한다. Marking이 있는 데이터를 허용하려면 해당 marking을 해제할 수 있는 사용자가 설정해야 한다.
 
 Foundry 인증 WebSocket은 primary domain을 사용하고 caller의 Listener 및 compute module 권한을 확인한다. 내부 server 주소는 `ws://localhost:5000/`로 고정되며 `0.0.0.0:5000`에서 `/` upgrade를 받아야 한다. Public endpoint path와 client token은 server에 전달되지 않는다. 따라서 client 인증을 해당 사용자의 token으로 내부 자원을 자동 조회하는 구조로 해석하지 않는다.
@@ -48,6 +55,7 @@ Client는 upgrade의 `Authorization: Bearer ...` 또는 browser WebSocket subpro
 - [Palantir, WebSocket listeners](https://www.palantir.com/docs/foundry/data-connection/listeners-websocket)
 - [Palantir, WebSocket Foundry authentication](https://www.palantir.com/docs/foundry/data-connection/listeners-websocket-foundry-auth)
 - [Palantir, WebSocket security](https://www.palantir.com/docs/foundry/data-connection/listeners-websocket-security)
+- [Palantir, Generic listeners](https://www.palantir.com/docs/foundry/data-connection/listeners-generic)
 - [Palantir, Email listeners](https://www.palantir.com/docs/foundry/data-connection/listeners-email)
 - [Palantir, Email security](https://www.palantir.com/docs/foundry/data-connection/listeners-email-security)
 
