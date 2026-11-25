@@ -1,7 +1,7 @@
 ---
 tags: [palantir, foundry, foundryts]
 status: done
-verified_at: 2026-10-16
+verified_at: 2026-11-26
 category: "AI엔지니어링(AIEngineering)"
 ---
 
@@ -11,7 +11,7 @@ scale(factor)는 value를 곱하고 value_shift(delta)는 더한다. time_shift(
 
 ## Deprecated operation
 
-timestamp_scale은 이름과 옛 설명에 timestamp 곱셈이 남아 있지만 현재 deprecated no-op이며 결과를 바꾸지 않는다. backend가 time unit을 통일하므로 단위변환 수단으로 쓰지 않는다. where(true,false)는 nonzero/zero 분기를 변환하는 deprecated API다. DSL conditional과 실제 지원 version을 확인한다.
+timestamp_scale은 이름과 옛 설명에 timestamp 곱셈이 남아 있지만 현재 deprecated no-op이며 결과를 바꾸지 않는다. 향후 release에서 제거될 예정이라고 명시되어 있으므로 기존 호출은 남겨 둘 이유가 없는 제거 대상으로 본다. backend가 time unit을 통일하므로 단위변환 수단으로 쓰지 않는다. where(true,false)는 nonzero/zero 분기를 변환하는 deprecated API이며 역시 향후 release에서 제거될 예정이다. 공식 문서는 대체 API를 지정하지 않는다. DSL conditional과 실제 지원 version을 확인한다.
 
 ## Unit과 nonfinite
 

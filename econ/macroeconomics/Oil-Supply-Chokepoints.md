@@ -61,6 +61,19 @@ A.1106(29)는 AIS를 싣지 않는 선박이나 탑재를 면제받은 선박이
 
 부분 확인(2026-11-04): EIA의 2014년 교육 자료에서 가격 기준과 차등 요인만 확인했다. 당시 생산량과 Brent 구성 유종을 현재 사실로 옮기지 않았으며, 현재 시세와 군사 충돌, 주가 전망은 검증하지 않았다.
 
+## 원유 가격과 석유제품 가격은 따로 움직일 수 있다
+
+원유 가격이 내릴 때 경유나 휘발유 가격이 항상 같은 폭으로 내리는 것은 아니다. 둘 사이의 차이를 보는 지표가 크랙 스프레드(crack spread)다. EIA는 이를 석유제품 도매가격과 원유 가격의 차이로 정의하고 정제마진(refining margin)의 추정치로 쓴다. [EIA의 크랙 스프레드 소개](https://www.eia.gov/todayinenergy/detail.php?id=1630)
+
+- **계산:** 경유 크랙 스프레드는 경유 1갤런의 도매가격에서 원유 1갤런의 현물가격을 뺀다. [EIA의 경유 가격 구성](https://www.eia.gov/todayinenergy/detail.php?id=68164) 3:2:1 크랙 스프레드는 휘발유 2배럴과 증류유 1배럴의 가격에서 원유 3배럴의 가격을 뺀다. EIA는 2011년 설명에서 이 비율이 미국 정유업이 대체로 휘발유 2배럴당 증류유 1배럴을 생산하는 구성을 반영한다고 했다. 이 비율을 현재 수율로 읽지 않는다. [EIA의 크랙 스프레드 소개](https://www.eia.gov/todayinenergy/detail.php?id=1630)
+- **한계:** 이 지표는 원유 외의 정제 비용과 다른 제품의 판매 수익을 넣지 않는다. 따라서 정유사의 실제 이익과 같지 않다. [EIA의 크랙 스프레드 소개](https://www.eia.gov/todayinenergy/detail.php?id=1630) 비교할 때는 어느 원유 기준과 어느 제품 시장으로 계산했는지, 갤런당인지 배럴당인지, 뉴스의 정제마진이 정제 비용까지 뺀 값인지 먼저 맞춘다(점검 절차).
+- **제품별로 벌어지는 이유:** 제품마다 수요, 재고와 정제 및 수출 여건이 다르다. 2020년 봄 미국에서 휘발유 수요가 크게 줄었을 때 휘발유 크랙 스프레드는 음수까지 내려갔지만, 경유는 수요가 덜 줄었고 원유 가격이 경유 가격보다 더 빨리 떨어져 마진이 올랐다. [EIA의 2020년 마진 분석](https://www.eia.gov/todayinenergy/detail.php?id=44656) 2026-09 EIA는 미국 증류유 순수출 증가와 러시아, 중국, 중동의 정제 감소 속에 낮아진 증류유 재고가 경유 정제마진을 끌어올렸고, 높은 원유 가격과 함께 소매 경유 가격을 밀어 올렸다고 설명했다. [EIA의 경유 가격 구성](https://www.eia.gov/todayinenergy/detail.php?id=68164)
+- **수율 조정:** 2020년 4월 미국 정유사는 가동을 줄이면서 증류유 생산을 늘리고 휘발유 생산을 줄였고, 휘발유 수요가 돌아오자 다시 휘발유 쪽으로 옮겼다. [EIA의 2020년 마진 분석](https://www.eia.gov/todayinenergy/detail.php?id=44656) 이 사례는 가동을 줄이던 시기에 수율을 옮긴 방향만 보여 준다. 옮길 수 있는 폭은 설비 구성에 묶이고, 가동률을 높이면 다른 제품도 함께 늘 수 있으므로 한 제품의 고마진이 다른 제품 생산에 주는 영향은 수율 범위와 재고를 함께 보고 판단한다(분석 기준).
+
+뉴스에서 원유 가격 하락과 경유 마진 상승이 함께 나오면 원유 하락의 원인(공급 증가인지 수요 감소인지)과 제품 쪽 원인(그 제품의 수요, 재고, 정제와 수출 차질)을 따로 확인한다. 2020년 미국 사례에서 EIA는 경유 마진 상승의 원인으로 경유 수요 유지와 원유의 더 빠른 하락을 들었으므로, 마진 상승을 곧바로 제품 공급 부족으로 읽지 않는다(분석 기준).
+
+부분 확인(2026-11-26): EIA의 크랙 스프레드 소개(2011-06-02), 2020-08-06 휘발유와 경유 마진 분석, 2026-09-18 경유 가격 구성 설명을 대조했다. 2026년 글은 수율 전환을 다루지 않았고, 수율 전환 폭과 가동률에 따른 결합 생산 전제는 세 글에서 확인하지 못한 분석이다. 현재 수율과 정제마진 수치, 특정 분쟁 중의 경유 수출량은 검증하지 않았다.
+
 ## 뉴스를 판단하는 순서
 
 다음은 위 개념을 적용하는 점검 절차다.
@@ -79,6 +92,7 @@ A.1106(29)는 AIS를 싣지 않는 선박이나 탑재를 면제받은 선박이
 - 실제 공급 중단이 확인되기 전에도 유가가 오를 수 있는 이유는 무엇인가?
 - 우회 항로를 평가할 때 출발지와 목적지를 함께 확인해야 하는 이유는 무엇인가?
 - AIS 추적 지도에 통항 선박이 거의 보이지 않을 때 실제 물동량을 판단하려면 무엇을 더 확인해야 하는가?
+- 원유 가격이 내리는데 경유 정제마진이 오를 때 무엇을 나눠 확인해야 하고, 크랙 스프레드가 정유사 이익과 다른 이유는 무엇인가?
 
 ## 출처
 
@@ -87,6 +101,9 @@ A.1106(29)는 AIS를 싣지 않는 선박이나 탑재를 면제받은 선박이
 - [What drives crude oil prices: Spot Prices — U.S. Energy Information Administration](https://www.eia.gov/finance/markets/crudeoil/spot_prices.php)
 - [World Oil Transit Chokepoints — U.S. Energy Information Administration](https://www.eia.gov/international/content/analysis/special_topics/World_Oil_Transit_Chokepoints/) — 2026-03-03 갱신 자료의 항로와 우회 제약, 2025년 상반기 호르무즈 LNG 통과량, 2026-11-24 대조
 - [About one-fifth of global liquefied natural gas trade flows through the Strait of Hormuz — U.S. Energy Information Administration](https://www.eia.gov/todayinenergy/detail.php?id=65584) — 2025-06-24 게시, 2024년 카타르와 아랍에미리트의 LNG 통과량, 2026-11-24 대조
+- [An introduction to crack spreads — U.S. Energy Information Administration](https://www.eia.gov/todayinenergy/detail.php?id=1630) — 2011-06-02 게시, 크랙 스프레드 정의, 3:2:1 계산과 제외 비용, 2026-11-26 대조
+- [Gasoline and diesel refining margins that diverged in March have moved closer together — U.S. Energy Information Administration](https://www.eia.gov/todayinenergy/detail.php?id=44656) — 2020-08-06 게시, 제품별 마진 차이와 수율 전환, 2026-11-26 대조
+- [What goes into diesel prices? — U.S. Energy Information Administration](https://www.eia.gov/todayinenergy/detail.php?id=68164) — 2026-09-18 게시, 경유 크랙 스프레드 계산과 재고 영향, 2026-11-26 대조
 - [AIS transponders — International Maritime Organization](https://www.imo.org/en/OurWork/Safety/Pages/AIS.aspx) — SOLAS V/19의 탑재 대상, 송신 정보와 상시 작동 요건, 2026-11-15 대조
 - [Resolution A.1106(29), Revised guidelines for the onboard operational use of shipborne AIS — International Maritime Organization](https://wwwcdn.imo.org/localresources/en/OurWork/Safety/Documents/AIS/Resolution%20A.1106(29).pdf) — 2015-12-02 채택, Annex 3항의 단계적 탑재 기간과 AIS 정보의 한계, 22항의 작동과 차단 조건, 2026-11-15 대조
 - [Shipping Circular No. 16 of 2024 — Maritime and Port Authority of Singapore](https://www.mpa.gov.sg/api/media/206148d2-ec65-4b78-b604-c06a808a6ed2/sc_no_16_of_2024.pdf) — 2024-12-20 회람의 MARPOL 부속서 I 제8장 요약과 Annex A의 IMO 결의 A.1192(33) 원문, 2026-11-15 대조
