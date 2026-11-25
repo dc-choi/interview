@@ -29,6 +29,14 @@ aliases: ["Gamification", "게이미피케이션"]
 - **경쟁**은 절대 성과가 아니라 비교 가능한 단위(주간 랭킹, 친구 간)로 좁혀야 하위권 이탈을 막는다.
 - **뱃지**는 획득률(상위 몇 %)을 함께 표시해 희소성을 부여하면 상징적 보상만으로도 반응이 커진다. 사용자는 생각 이상으로 상징 보상에 반응한다.
 
+### 스트릭에 유예 장치를 둔다
+
+하루만 빠져도 연속 기록이 0으로 돌아가면 손실 회피가 오히려 이탈 계기가 될 수 있다. 끊긴 순간 지킬 것이 사라져 재방문 이유도 함께 사라지기 때문이다(설계 해석). 그래서 빠진 하루를 대신 메워 기록을 이어 주는 유예 장치를 스트릭과 함께 설계한다.
+
+- **사례:** Duolingo의 Streak Freeze는 하루 동안 스트릭을 멈춰 두는 아이템이다. Duolingo 공식 블로그(2022-01-31)는 한 번에 장착할 수 있는 Freeze를 2개까지 늘렸더니 쉬는 날이 늘기보다 매일 활동하는 학습자 수가 상대적으로 0.38% 늘었다고 밝혔다. 같은 글은 7일 스트릭에 도달한 학습자가 코스를 완료할 가능성이 3.6배 높다고 적었다. 측정 방법, 기간, 표본과 유의성은 공개하지 않았고, 3.6배는 상관 관계라 스트릭이 완료를 만든다는 인과 근거는 아니다.
+- **목표와 분리:** Duolingo의 2020-11-19 글은 스트릭을 일일 목표 달성과 분리해 레슨 하나만 해도 이어지게 바꾸자 14일 리텐션이 3.3%, 일일 활동 학습자가 1% 늘었다고 밝혔다(모두 상대 변화). 같은 글은 분리 뒤 일일 목표를 달성하는 학습자가 줄었다고도 밝혔다(수치 미공개). 스트릭을 유지하는 최소 행동의 문턱도 설계 변수다.
+- **적용:** 유예 장치는 무제한이 아니라 보유 상한을 둔다. 연속 달성으로 다시 채우게 하면 꾸준함에 대한 보상과 실수 허용을 함께 줄 수 있다(설계 해석). 한 개인 개발 앱은 7일 연속마다 1개씩 최대 2개를 채우는 방식을 소개하지만 효과는 측정되지 않았다. 효과는 서비스마다 다르므로 일일 활동뿐 아니라 실제 학습이나 목표 달성 지표를 같이 본다. 위 수치는 Duolingo가 자사 블로그에 공개한 결과이며 독립적으로 검증되지 않았다.
+
 ### 경쟁 요소가 수행을 바꾸는 조건
 
 경쟁과 비교가 수행을 끌어올린다는 가정이 늘 성립하지는 않는다. 효과의 유무와 방향은 과제, 사람과 관찰 조건에 따라 달라질 수 있다.
@@ -99,6 +107,9 @@ Cookie Clicker의 공개 게임 코드는 건물 가격을 `기본 가격 × 1.1
 - 다크 패턴 경계 질문이 따라올 수 있다 — 손실 회피 장치의 윤리 기준을 함께 답할 수 있어야 한다.
 
 ## 출처
+- [The habit-building research behind your Duolingo streak — Osman Mansur (Duolingo Blog)](https://blog.duolingo.com/how-duolingo-streak-builds-habit) — 2022-01-31 게시. 2026-11-25 Streak Freeze 2개 장착 변경의 수치와 7일 스트릭 수치 대조
+- [Improving the streak: Forming habits one lesson at a time — Anton Yu (Duolingo Blog)](https://blog.duolingo.com/improving-the-streak) — 2020-11-19 게시. 2026-11-25 스트릭과 일일 목표 분리 실험 대조
+- [하루 빼먹었는데 연속 기록이 그대로인 이유 — 딩코딩코 (YouTube)](https://www.youtube.com/watch?v=WMBv__iC4nM) — 스트릭 유예 장치 소개(쇼츠)
 - [The Philosophy of Grinding and how to Reduce it — Josh Bycer (Game Developer)](https://www.gamedeveloper.com/design/the-philosophy-of-grinding-and-how-to-reduce-it) — 대체 진전 경로와 제한된 활동 단위에 관한 설계 제안
 - [Cookie Clicker main.js — Orteil (DashNet)](https://orteil.dashnet.org/cookieclicker/main.js) — 2026-11-15 `Game.priceIncrease`, `getPrice`, `getSumPrice`, `getSellMultiplier`와 `Game.modifyBuildingPrice` 대조
 - [클릭 게임을 멈출 수 없는 이유, 1.15배 — 딩코딩코 (YouTube)](https://www.youtube.com/watch?v=F9BWwkhRtr0) — 구매마다 오르는 가격 곡선 소개(쇼츠)

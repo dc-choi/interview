@@ -1,7 +1,7 @@
 ---
 tags: [palantir, data-lineage, branching, builds]
 status: done
-verified_at: 2026-10-16
+verified_at: 2026-11-25
 category: "AI엔지니어링(AIEngineering)"
 aliases: ["Lineage branch와 build 범위"]
 ---
@@ -28,7 +28,7 @@ All ancestors는 선택 dataset과 필요한 stale ancestor, Between selected는
 
 Build timeline은 1시간~10일 범위의 Gantt chart로 job의 status/start/end/duration과 build/schedule로 연결한다. 보이는 timeline 범위를 전체 운영 이력으로 취급하지 않는다. Running status는 open transaction의 단서이지만 외부 API로 열린 모든 transaction을 전수 증명하는 방법은 아니다.
 
-Manage schedules는 선택 resource에 관련된 target/trigger/latest run/last update/build scope를 보여준다. Schedule success와 그 build success를 구분하고 Project/user permission scope를 확인한다. Stale dataset은 target build 실패, upstream 미build와 source의 새 data 부재를 각각 조사한다. 색을 새로 바꾸거나 graph를 저장하는 작업은 stale data를 갱신하지 않는다.
+Manage schedules는 선택 resource에 관련된 target/trigger/latest run/last update/build scope를 보여준다. Schedule success와 그 build success를 구분하고 Project/user permission scope를 확인한다. Stale dataset은 target build 실패, upstream 미build와 source의 새 data 부재를 각각 조사한다. 조사 순서는 관심 dataset node를 우클릭해 Expand node를 고르고, Expand parents 위의 double left arrow로 모든 ancestor를 펼친 뒤, 오른쪽 위 Node color options에서 Build status를 골라 pipeline 전체의 build 상태를 한 화면에서 보는 것이다. 색을 새로 바꾸거나 graph를 저장하는 작업은 stale data를 갱신하지 않는다.
 
 ## 출처
 

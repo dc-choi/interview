@@ -1,14 +1,14 @@
 ---
 tags: [palantir, data-lineage, permissions, markings]
 status: done
-verified_at: 2026-10-16
+verified_at: 2026-11-25
 category: "AI엔지니어링(AIEngineering)"
 aliases: ["Data Lineage 탐색과 접근 검사"]
 ---
 
 # Data Lineage 탐색과 접근 검사
 
-Data Lineage는 dataset/source/artifact/Ontology entity의 연결을 표시하고 data/logic/history/health를 조사하는 graph다. 현재 화면의 node 집합과 모든 resource의 전체 계보를 구분한다. Parent/descendant, 두 node 사이 경로와 common ancestors를 명시적으로 확장하고 node count를 보며 탐색 범위를 조절한다.
+Data Lineage는 dataset/source/artifact/Ontology entity의 연결을 표시하고 data/logic/history/health를 조사하는 graph다. 현재 화면의 node 집합과 모든 resource의 전체 계보를 구분한다. Parent/descendant, 두 node 사이 경로와 common ancestors를 명시적으로 확장하고 node count를 보며 탐색 범위를 조절한다. Expand의 chevron은 노출할 단계 수를 정하고 double-chevron은 raw data(또는 최종 descendant)까지 한 번에 펼친다. 한꺼번에 node를 많이 넣으면 graph 성능과 사용성에 영향을 줄 수 있다고 문서가 안내하며 Expand tool의 node count를 확인하라고 권한다. 단계를 제한해 펼친 뒤 필요한 구간만 더 여는 방식이 실용적이다(적용 제안).
 
 ## 화면에 있는 범위에서만 비교한다
 
@@ -16,7 +16,7 @@ Search/browse로 resource를 넣고 single selection에서 properties, multiple 
 
 Node는 source/dataset/object type/artifact를 구분하며 dataset dashed border는 unstructured, sync/object-definition/open-issue/trash badge는 별도 속성이다. Related artifacts는 직접 연결된 분석/application을 찾고 기본적으로 deleted/autosaved를 제외할 수 있다. 목록을 모든 소비자/모든 사용자의 완전한 usage graph로 단정하지 않는다.
 
-Data preview는 문서 기준 첫 300 row이며 표본이다. Code helper는 code-backed resource의 logic을 조사하며 uploaded/writeback dataset에는 코드가 없을 수 있다. Fusion은 sheet 같은 원 authoring app으로 이동한다. Code helper의 수정 가능성과 실제 build/publish 권한도 구분한다.
+Data preview는 문서 기준 첫 300 row이며 표본이다. Code helper는 code-backed resource의 logic을 조사하며 uploaded/writeback dataset에는 코드가 없을 수 있다. Explore lineage 문서 기준 Code 보기는 Code Workbook과 Code Repositories에서 만든 dataset에만 있고, View in code workbook/View in repository로 원 코드로 이동해 권한 범위에서 수정한다. 보여 줄 코드가 없는 Fusion sheet sync는 원 sheet를 여는 선택지가 있을 수 있다. Code helper의 수정 가능성과 실제 build/publish 권한도 구분한다.
 
 ## Coloring은 metric과 시간 범위를 가진다
 
