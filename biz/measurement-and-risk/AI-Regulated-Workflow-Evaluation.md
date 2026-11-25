@@ -57,3 +57,4 @@ Enveda의 공개 보고는 4개 제조 기록, 1,061페이지를 비교했다. �
 - [[Metrics-Framework|지표 설계와 측정]]
 - [[Risk-Management|리스크 관리]]
 - [[AI-Code-Delegation-Review|AI 구현 위임과 코드 리뷰]]
+- [[Survivorship-Bias-and-Selection#동시 비교군 없이 과거 수치와 비교한 결과|동시 비교군 없는 결과]] — 동시 비교군 없는 초기 임상 결과와 무작위 확증 시험, 허가 범위의 구분

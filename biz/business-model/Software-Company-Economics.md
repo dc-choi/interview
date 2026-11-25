@@ -3,7 +3,7 @@ tags: [business, software, saas, unit-economics, moat]
 status: done
 verified_at: 2026-11-17
 category: "비즈니스&제품(Business&Product)"
-aliases: ["Software Company Economics", "소프트웨어 회사의 경제 구조", "SaaS 사업의 비용과 해자"]
+aliases: ["Software Company Economics", "소프트웨어 회사의 경제 구조", "SaaS 사업의 비용과 해자", "오픈소스 수익화"]
 ---
 
 # 소프트웨어 회사의 경제 구조
@@ -69,6 +69,24 @@ Schneider Electric은 2026-10-05 산업용 소프트웨어 회사 PTC를 주당 
 - 보도자료는 인수 근거로 산업용 소프트웨어 포트폴리오의 규모와 제품 수명주기 영역의 보완(합병 뒤 그룹 매출에서 소프트웨어와 서비스 비중 약 24%, 종결 전인 Cognite 인수를 포함한 프로포마 추정), 설계 자료와 운영 자료의 결합, 진출 시장 확대와 교차 판매(산업용 소프트웨어의 접근 가능 시장 약 3배), 재무 지표 개선(성장성, 반복 매출의 질, 이익률과 현금 창출)을 들고, 3년 차까지 연 2.5억 유로의 비용 시너지와 약 8억 유로의 매출 시너지를 예상했다. 고객이 떠날 수 없어서 비싸게 샀다는 설명은 해설 콘텐츠의 해석이고, PTC의 고객 유지율은 이 문서에서 대조하지 않았다.
 - 발표 당일 Schneider Electric의 주가는 파리 오전 거래에서 9% 넘게 내렸다(Euronews). 같은 기사는 PTC의 선행 주가수익비율이 그해 13.1배까지 내려갔다는 수치(MarketWatch가 인용한 FactSet)와, AI 우려로 소프트웨어 기업가치가 눌려 있었다는 평가(MarketWatch가 인용한 Jefferies 애널리스트)를 전한다. 프리미엄 42%는 눌린 주가를 기준으로 한 수치라서, 전환 비용에 웃돈을 준 거래로도 낮은 가격에 산 거래로도 읽힌다(해석).
 
+## 무료 사용자에게 무엇을 팔지가 매출을 정한다
+
+오픈소스로 공개한 소프트웨어의 수익화에서는 라이선스를 어떻게 설계할지보다 고객이 무엇에 돈을 낼지를 먼저 확인한다(아래 사례에서 끌어낸 적용 기준). 이메일 계정을 REST API로 다루게 하는 EmailEngine의 1인 개발자가 2026-11-02 공개한 회고가 그 차이를 보여 준다. 아래는 창업자의 자기 보고이며 매출 수치는 독립 검증하지 않았다.
+
+| 시기 | 과금 방식 | 결과(창업자 보고) |
+|---|---|---|
+| 회사 설립 뒤 약 1년 반 | AGPL로 무료 공개하고, 상업에 쓰기 편한 MIT 라이선스로 쓸 권리를 유료로 판매 | 고객 3곳이 250유로씩 낸 750유로. 두 곳은 기간 제한 없는 라이선스였고 한 곳만 연 구독이었다. 상업 라이선스가 필요해서라기보다 후원에 가까웠다고 본다 |
+| 전환 첫 달 | 상업 라이선스로 바꾸고 유효한 구독 키가 있어야 동작하게 함. 소스는 계속 공개해 오픈소스가 아닌 source-available이 됐고 가격은 연 250유로 그대로 | 2,000달러. 모두 무료 버전을 이미 쓰던 회사가 계속 쓰고 업데이트받으려고 냈다 |
+| 이후 | 기능 개발과 함께 가격을 단계적으로 올려 표준 구독 연 1,450달러 | 월 반복 매출 2만 달러. 직원, 투자자, 영업과 마케팅 조직 없이 혼자 운영 |
+
+창업자는 대기업이 잘 알려지지 않은 소프트웨어를 AGPL의 대안이 있다는 이유로 도입하지 않았고 작은 회사는 라이선스를 거의 따지지 않았다며, 대부분의 잠재 고객에게 없던 라이선스 문제의 해법을 팔고 있었다고 정리한다. 제품과 마케팅은 거의 그대로였고 바뀐 것은 과금 방식이었다는 결론이다. 다만 같은 글은 전환 때 제품 이름을 바꾸고 새 사용자 화면도 만들었다고 적으므로, 첫 달 매출의 원인을 과금 변경 하나로 분리할 수는 없다. 가격을 올려도 신규 고객 수가 줄지 않는 것처럼 보였다고도 말하지만 근거 자료는 공개하지 않았다.
+
+다른 사업에 옮기기 전에 확인할 조건이다(적용 제안).
+
+- **재허가 권리:** 외부 기여자에게 처음부터 기여자 라이선스 계약(CLA)을 받아 둬서 기존 코드의 라이선스를 바꿀 권리가 있었다. 기여자의 권리를 확보하지 않은 프로젝트는 같은 전환이 어려울 수 있다. source-available과 OSI 오픈소스 정의의 차이는 [[Open-Source-License-Review|오픈소스 라이선스 검토]], 라이선스를 바꿔도 이전 버전이 기존 조건으로 남은 예는 [[Redis-Valkey-Migration|Redis와 Valkey]]에 있다.
+- **이미 쓰는 사용자:** 첫 달 매출은 무료 버전을 업무에 쓰던 회사에서 나왔다. 업무에 깊이 들어간 사용자가 없으면 같은 전환이 같은 매출을 만들지 않는다. 앞 절의 전환 비용과 같은 원리다.
+- **걸린 시간과 실패:** 오픈소스로 돈을 버는 구상(2013년)에서 회사 설립(2020년), 작동하는 과금 방식(그 뒤 약 1년 반)과 현재 매출까지 여러 해가 걸렸고, 그 전의 오픈소스 활동이 좁은 분야의 경험, 신뢰와 청중을 줬다고 창업자는 설명한다. 다른 시도는 대부분 돈을 벌지 못했다고 밝히고, 급여를 빨리 대체할 경로로는 권하지 않는다. 한 성공 사례이므로 [[Survivorship-Bias-and-Selection|생존자 편향]]을 함께 본다.
+
 ## 좁고 지루한 시장을 고르는 전략
 
 식당, 건설 현장, 제약처럼 한 업종의 반복 업무와 규제 대응을 맡는 소프트웨어는 화제가 되지 않지만 고객이 매달 돈을 내고 잘 떠나지 않는다는 주장이 있다(예로 드는 회사는 Toast, Procore, Veeva이며 개별 실적은 대조하지 않았다). 고르는 기준은 세 가지다. 문제가 충분히 아프다. 고객에게 낼 돈이 있다. 큰 회사가 들어오기에는 시장이 작다.
@@ -96,6 +114,8 @@ Schneider Electric은 2026-10-05 산업용 소프트웨어 회사 PTC를 주당 
 - [Schneider Electric to acquire PTC, creating the next level of Energy and Industrial Intelligence — Schneider Electric](https://www.se.com/ww/en/assets/pdf/Schneider-Electric-to-acquire-PTC) — 2026-10-05 Financial Release. 2026-11-17 인수 조건, PTC 소개, 자금 조달과 종결 예정 시점 대조. PTC의 SEC 공시와 IR 페이지는 접근이 거부돼 대조하지 못함
 - [Schneider Electric shares plunge on record $22.6bn PTC deal — Euronews](https://www.euronews.com/2026/10/05/schneider-electric-shares-plunge-on-record-226bn-ptc-deal) — 2026-10-05. 발표 당일 주가, MarketWatch를 거쳐 인용된 FactSet 수치와 Jefferies 평가의 출처. 인용된 MarketWatch 기사는 열지 못함
 - [Operating and Net Margins — NYU Stern, Aswath Damodaran](https://pages.stern.nyu.edu/~adamodar/New_Home_Page/datafile/margin.html) — 2026-01 기준 미국 자료. 2026-11-17 소프트웨어, 식료품 소매와 전체 시장 행 대조. 표본 정의와 집계 방식을 적은 자료 설명 페이지는 대조하지 못함
+- [The very long road to $20k MRR — EmailEngine Blog, Andris Reinman](https://blog.emailengine.app/the-very-long-road-to-20k-mrr/) — 2026-11-02 게시(페이지 제목 From Open Source to $20k MRR: The EmailEngine Story). 2026-11-25 본문 전체 확인. 과금 방식별 매출, 가격과 고객 수는 창업자의 자기 보고
+- 오픈 소스에서 월 반복 매출 2만 달러까지: EmailEngine의 여정 — GeekNews, 2026-11-25 게시. 학습 계기이며 글 주소는 확인하지 못했다
 - [The Economics of Owning a Software Company — YouTube, Cost Anatomy](https://www.youtube.com/watch?v=fDAz7A3hrEk) — 2026-10-08 업로드, 2026-11-17 음성 인식 전사(영어) 전체 확인. 구성과 점검 질문의 출처. 근거를 제시하지 않는 해설 영상이며 비용과 영업 수치, 폐업 통계는 대조하지 못함
 
 ## 관련 문서
@@ -109,3 +129,4 @@ Schneider Electric은 2026-10-05 산업용 소프트웨어 회사 PTC를 주당 
 - [[Valuation|밸류에이션]] — PER, EV/EBITDA 같은 평가배수와 ARR 정의의 차이
 - [[B2B-Sales-Pipeline-and-Pilot|B2B 영업 파이프라인과 파일럿]] — 구매 조직의 역할과 파일럿 합의
 - [[Distribution-As-Moat|도달력]] — 고객에게 닿는 경로가 방어 수단이 되는 이유
+- [[Open-Source-License-Review|오픈소스 라이선스 검토]] — source-available과 오픈소스 정의, 라이선스별 의무

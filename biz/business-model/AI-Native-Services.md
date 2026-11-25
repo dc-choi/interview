@@ -31,9 +31,22 @@ Emergence의 2026-03 플레이북은 AI 레버리지가 아니라 사람 노동�
 
 매출총이익률을 계산할 때 추론 비용과 사람 검토 인건비는 판관비가 아니라 매출원가에 넣는다. 플레이북은 추론 비용을 판관비에 묻으면 마진이 부풀려진다고 경고한다.
 
+### 다시 맡기는지와 제공이 나아지는지를 따로 본다
+
+결과를 파는 서비스는 첫 고객부터 돈을 받으므로 매출이 수요를 일찍 보여 주지만, 다음 고객 100곳에 사람이 비례해 늘지 않는지는 시험하지 않는다. Lean Analytics 공저자 Ben Yoskovitz의 2026-11-10 글은 계약 검토 도구를 파는 대신 계약 검토를 직접 맡는 사업을 예로 들며, 고객이 다시 일을 맡기는지(매출과 유지)와 사업이 커질수록 제공 체계가 나아지는지(제공 비용이 매출만큼 늘지 않는지)를 따로 확인하라고 권한다. 숙련자를 모든 건에 붙이면 고객은 만족해도 비용이 매출과 함께 오르고, 자동화를 서두르면 마진은 나아져도 고객이 결과를 믿지 않게 될 수 있어 두 축은 반대로 움직일 수 있다. 첫날부터 청구해도 고객이 다시 오지 않으면 아직 고착(stickiness) 단계의 문제라는 것이 작성자의 진단이다. 위 표에 더해 추적할 항목은 다음과 같다.
+
+| 항목 | 읽는 법 |
+|---|---|
+| 반복 의뢰와 고객당 업무량 | 매달 하는 장부 정리와 가끔 맡기는 법률 업무처럼 서비스 본래의 빈도에 대어 본다. 물량 증가가 만족, 할인, 고객 자신의 업무 증가 중 무엇 때문인지 묻는다 |
+| 건당 사람 투입과 이익 금액 | 검토 외에 수정, 예외, 고객 문의, 재작업과 창업자가 일요일에 손본 시간까지 넣는다(Crosby는 문서당 변호사 검토 시간을 따로 잰다). 매출총이익률과 함께 건당 남는 금액을 보고, 초기에는 비율의 방향을 본다 |
+| 처리 시간 | 일상 건과 복잡한 건을 나눈다. 평균이 좋아도 어려운 건이 쌓일 수 있다 |
+| 오류와 재작업 | 내부에서 잡은 실수와 고객에게 나간 실수를 나눈다. 무엇을 쟀는지 밝히지 않은 정확도 수치는 판단 근거가 되지 않는다 |
+
 ## 가격은 인력 기준에서 결과 기준으로 옮긴다
 
 같은 플레이북은 제공 효율을 배우는 동안에는 시장 관행인 인력 기준 가격으로 시작하되, AI가 성숙하고 제공이 안정되면 결과 기준 가격으로 옮길 시점을 미리 정하라고 권한다. 인력 기준 가격에 오래 머물면 자동화가 늘수록 청구액도 줄어 스스로 성장을 깎아 먹는다. 서비스 자체가 결과이므로 소프트웨어처럼 성과에 대한 기여를 나눠 증명하는 문제가 생기지 않는다는 것도 이 플레이북의 주장이다. 결과 단위 가격의 구성과 검증은 [[Pricing-Strategy|가격 정책 설계]]와 함께 보고, 좌석, 요청, 거래와 성과 과금의 조건은 [[Pricing-Strategy-AI-Usage|AI 기능의 과금 단위와 크레딧 설계]]에서 비교한다.
+
+자동화로 줄인 비용이 공급자에게 남는다는 보장은 없다. 앞의 Yoskovitz 글의 가상 예에서 1,000달러짜리 일의 제공 비용이 600달러면 건당 400달러가 남고, 자동화로 비용이 300달러가 되면 같은 가격에서 700달러(70%)가 남는다. 경쟁자도 자동화해 가격이 600달러로 내려가면 300달러(50%)만 남아 처음보다 건당 이익 금액이 줄어든다. 정액 가격은 그 가격을 지킬 수 있을 때만 비용 절감을 이익으로 남긴다. 고객은 결과물과 함께 책임을 사므로 규제 업종에서는 면허를 가진 보험 대리점이나 변호사가 소유한 법률 사무소 같은 구조가 필요하고, 고객이 추천의 이유를 물을 때 전문가가 설명하고 반박할 수 있어야 한다. 사람 검토를 줄여야 마진이 오르는 구조와 사람이 모두 확인한다는 약속은 함께 지키기 어렵다. 같은 글은 공개된 근거가 아직 적고 효율 주장의 다수가 회사나 투자사에서 나온다고 밝히며, Emergence의 매출총이익률 구간(50% 미만은 서비스 사업, 70% 초과는 소프트웨어 배수 가능)도 그 회사의 틀이지 증명된 규칙이 아니라고 적는다.
 
 ### 도입 수요, 제공 효율과 과금 구조를 따로 본다
 
@@ -150,6 +163,8 @@ Jack & Jill은 구직자용 Jack과 기업용 Jill을 두고, 양쪽에 맞는 �
 - [Why AI-Native Services, and Why Now — Emergence Capital](https://emcap.com/thoughts/why-ai-native-services-and-why-now) — 2026-03-23
 - [The AI-Native Services Playbook — Emergence Capital](https://emcap.com/thoughts/the-ai-native-services-playbook) — 2026-03-30
 - [Roll Up or Build? Why the Fastest Path to a Venture-Scale AINS Business Is the One Founders Keep Avoiding — Emergence Capital](https://emcap.com/thoughts/roll-up-or-build-why-the-fastest-path-to-a-venture-scale-ains-business-is-the-one-founders-keep-avoiding) — 2026-06-02
+- [Inside the AI-Native Services Business Model — Focused Chaos, Ben Yoskovitz](https://www.focusedchaos.co/p/inside-the-ai-native-services-business) — 2026-11-10 게시, 2026-11-25 본문 대조. 두 검증 축, 추적 항목, 가격 하락의 가상 예와 책임 구조. 작성자의 판단 틀이며 인용된 회사의 수치는 회사 주장
+- AI 네이티브 서비스 비즈니스 모델의 내부 구조 — GeekNews, 2026-11-25 게시. 학습 계기이며 글 주소는 확인하지 못했다
 - [Services: The New Software — Sequoia Capital, Julien Bek](https://sequoiacap.com/article/services-the-new-software) — 2026-03-05. 도구와 일의 판매, 외주 업무를 진입점으로 삼는 이유와 서비스 지출 비교. 2026-10-18 확인
 - [Full Brand Control with MarqVision — MarqVision](https://www.marqvision.com/) — 2026-10-18 제품 구성과 MarqLaw 확인, 2026-10-23 시험 구매, 현지 조사, 현지 당국과의 단속 및 법률 대응 범위 추가 대조
 - [Stop Counterfeit Sales. Protect Your Brand. — MarqVision](https://www.marqvision.com/brand-protection) — 2026-10-18 확인, 위조품 노출 추세 지표(Saturation Rate)

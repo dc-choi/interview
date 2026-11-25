@@ -197,6 +197,7 @@ Meta는 2025-04-29 독립형 Meta AI 앱을 발표하면서 기존 WhatsApp, Ins
 - [[Category-Expansion|카테고리 확장과 카니발리제이션 (다각화)]]
 - [[Metrics-Framework|지표 설계 (Vanity vs Actionable, North Star Metric)]]
 - [[Competitive-Analysis|경쟁사 분석]]
+- [[Market-Structures#성장이 만든 지대와 지배력으로 걷는 지대|시장구조의 두 지대]] — 성장이 둔화한 플랫폼이 거래 조건으로 이익을 지키는 전환
 - [[Social-Content-Scaling|소셜 콘텐츠 성장 단계]] — 플랫폼별 발행 한도와 외부 링크 한도
 - [[LLM-Market-Landscape|생성형 AI 시장 경쟁 구도]]
 - [[AI-Infra-Geopolitics|AI 인프라 지정학]]

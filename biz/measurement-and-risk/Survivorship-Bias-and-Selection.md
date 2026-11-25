@@ -2,7 +2,7 @@
 tags: [business, measurement, survivorship-bias, selection-bias]
 status: done
 category: "비즈니스&제품(Business&Product)"
-aliases: ["Survivorship Bias", "생존자 편향", "생존 편향"]
+aliases: ["Survivorship Bias", "생존자 편향", "생존 편향", "과거 대조군 비교", "Historical Control"]
 ---
 
 # 생존자 편향과 관측 대상의 선택
@@ -40,6 +40,21 @@ AI 자동화, 개인 브랜드, 시장 체험과 반복 시도 같은 목록을 
 
 공개 창업자 인터뷰에서도 경험 진술과 재현 가능한 조건을 분리한다. The School of Hard Knocks의 케이블 사업 창업자 인터뷰는 차입을 감당한 이유를 사업 현금흐름으로 설명한다. 이는 당사자의 회고이며 재무제표나 시장별 스트레스 테스트를 확인한 결과가 아니다. 같은 차입 전략으로 실패한 사업자가 인터뷰 표본에서 빠졌는지도 별도로 살펴야 한다. 부채에 대한 자신감이나 최종 성공을 차입 확대의 근거로 바로 쓰지 않고, [[Business-Financing-and-Leverage|사업 자금조달과 재무 레버리지]]의 지급 시점과 하방 조건을 대조한다.
 
+## 동시 비교군 없이 과거 수치와 비교한 결과
+
+새 방법을 쓴 집단의 결과를 다른 시기, 다른 선정 기준의 과거 수치와 나란히 놓으면 차이에 방법의 효과와 대상 선정의 차이가 섞인다. 시험에 들어온 대상은 참여 조건을 통과한 사람이고, 과거 수치는 다른 조건의 집단에서 나왔기 때문이다. 같은 기간에 무작위로 나눈 비교군이 있어야 이 차이를 줄일 수 있다.
+
+**사례(전이성 췌장암 표적 치료제, 2026-11-25 학회 발표문과 FDA 공지 대조):** 2026-11-20 학회에서 발표된 RMC-GI-102 시험(1/2상, 화학요법 단독 비교군 없음)은 전이 후 치료를 받은 적 없는 전이성 췌장암 환자 61명에게 경구 RAS 억제제 daraxonrasib을 표준 항암화학요법(gemcitabine과 nab-paclitaxel)과 함께 썼다. 2026-09-28 기준 중앙 추적 18.3개월에서 종양이 줄거나 사라진 비율 60.7%(검출되지 않을 만큼 사라진 완전 반응 8.2%), 종양이 줄었거나 더 자라지 않은 비율(질병 통제율) 90.2%, 무진행 생존 중앙값 12.8개월, 12개월 생존율 76.6%였다. 발표문은 화학요법의 과거 성적(종양 축소 23~42%, 전체 생존 8.5~11.1개월)과 나란히 놓으면서도, 연구책임자의 말로 화학요법만 받은 환자와 비교하지 않은 초기 시험이라 신중히 해석해야 하며 무작위 3상 RASolute-303이 그 질문을 맡는다고 적었다. 시험은 개발사가 후원했고 발표자는 그 후속 3상의 연구책임자다. 같은 약은 2026-08-26 미국 FDA 허가를 받았지만 대상과 용법이 다르다. 허가는 전이성 췌장암 성인 가운데 이전 전신 치료를 받았거나 다제 요법 대상이 아닌 환자에게 단독으로 쓰는 것이고, 근거는 500명을 무작위로 나눠 표준 화학요법과 비교한 3상 RASolute 302(전체 생존 중앙값 13.2개월 대 6.7개월, 위험비 0.40)였다.
+
+이 사례를 판단 질문으로 옮긴다(적용 제안).
+
+- **비교군:** 같은 기간, 같은 선정 기준에서 무작위로 나눈 집단인가, 다른 시기와 다른 시험의 과거 수치인가.
+- **표본과 불확실성:** 61명에서는 한 명이 약 1.6%포인트다. 학회 보도가 전한 12개월 생존율의 95% 신뢰구간은 63.7~85.4%이므로 점추정 하나보다 넓은 범위로 읽는다.
+- **단계와 허가:** 동시 비교군 없는 초기 시험, 무작위 확증 시험과 허가는 서로 다른 증거다. 한 대상과 용법의 허가가 다른 대상과 병용의 효과를 증명하지 않는다.
+- **사업 판단:** 새 프로세스를 적용한 파일럿 고객의 성과를 작년 전체 평균과 비교하면 파일럿에 들어온 고객의 선정 차이와 시기 차이가 섞인다. 같은 기간의 비교 집단을 함께 둔다.
+
+수십 년 만의 최대 돌파구라는 평가와 화학요법만 받은 환자의 1년 생존율이 통상 40~45%라는 비교는 학습 계기가 된 GeekNews 요약에서만 봤고 발표문에서는 확인하지 못했다. 이 절은 근거를 읽는 방법의 예이며 치료 선택의 근거가 아니다.
+
 ## 조언의 권위와 적용 조건을 분리한다
 
 성공 사례의 선택 편향과 조언의 적용 가능성은 다른 질문이다. 빠진 실패 사례를 확인한 뒤에도 조언이 나온 고객군, 사업 단계, 자금과 실행 역량이 현재 조건과 맞는지 따져야 한다. 다음은 조언을 작은 검증으로 바꾸는 실천 제안이다.
@@ -75,9 +90,14 @@ SCORE의 공개 멘토링 안내는 고객의 사업상 이익 우선과 기관 
 - [A Method of Estimating Plane Vulnerability Based on Damage of Survivors — Abraham Wald (CNA 재간행)](https://www.cna.org/reports/1980/0204320000.pdf) — 2026-10-30 Part VIII의 귀환 조건부 피격 분포와 추정 가정 확인. 부위별 공식 전체나 통속적 전쟁 일화의 세부는 검증하지 않았다.
 - [The Cable BILLIONAIRE — The School of Hard Knocks (LinkedIn)](https://www.linkedin.com/posts/the-school-of-hard-knocks-llc_the-cable-billionaire-i-interviewed-activity-7508284113477332996-zsGg) — 2026-11-03 제작자가 공개한 인터뷰 텍스트의 현금흐름 설명 확인. 사업 재무와 성과의 독립 검증은 아니다.
 - [2-3. 어떻게 차별화할 것인가 (상) — 브런치, sellsecret](https://brunch.co.kr/@sellsecret/110) — 2018-01-29 게시. 방송 인터뷰를 옮긴 가게 사례로 운영 특징 문단의 계기. 매출 수치는 대조하지 않아 옮기지 않았다.
+- [Metastatic pancreatic cancer responds well to initial treatment with combination of daraxonrasib and chemotherapy — EORTC (EurekAlert!)](https://www.eurekalert.org/news-releases/1152109) — 2026-11-19 배포, 2026-11-20 학회 발표. 2026-11-25 대상과 용법, 반응률, 무진행 생존, 12개월 생존율, 과거 성적의 비교와 연구책임자가 밝힌 해석의 한계 대조
+- [FDA approves daraxonrasib for metastatic pancreatic adenocarcinoma — U.S. FDA](https://www.fda.gov/drugs/cancer-approvals/fda-approves-daraxonrasib-metastatic-pancreatic-adenocarcinoma) — 2026-08-26 허가. 2026-11-25 허가 대상, 단독 용량과 RASolute 302의 설계와 결과 대조
+- [Daraxonrasib Plus Gemcitabine/Nab-Paclitaxel Generates Durable Responses in First-Line Metastatic PDAC — OncLive](https://www.onclive.com/view/daraxonrasib-plus-gemcitabine-nab-paclitaxel-generates-durable-responses-in-first-line-metastatic-pdac) — 2026-11-20 보도. 12개월 생존율의 95% 신뢰구간 출처이며 발표문에는 구간이 없다
+- 췌장암 치료 알약, 수십 년 만의 최대 돌파구로 평가받음 — GeekNews, 2026-11-22 게시. 학습 계기이며 글 주소와 원 기사는 확인하지 못했다
 
 ## 관련 문서
 
 - [[Metrics-Framework|지표의 분모와 비교 기준]]
 - [[Risk-Management|리스크와 근거의 불확실성]]
 - [[Correlation-and-Simpsons-Paradox|상관관계와 심슨의 역설]]
+- [[AI-Regulated-Workflow-Evaluation|규제 업무의 AI 평가]] — 신약 개발의 단계별 증거와 승인 결과의 구분
