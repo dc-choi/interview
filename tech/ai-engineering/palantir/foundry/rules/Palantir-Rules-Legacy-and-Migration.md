@@ -1,7 +1,7 @@
 ---
 tags: [palantir, foundry, rules]
 status: done
-verified_at: 2026-10-16
+verified_at: 2026-11-26
 category: "AI엔지니어링(AIEngineering)"
 ---
 
@@ -15,9 +15,17 @@ Legacy Java runner는 모든 input을 putSources에 등록하고 many-to-many jo
 
 ## Migration
 
+### 이전할지 먼저 판단한다
+
+공식 문서는 Taurus의 장기 지원이 계속된다고 적으므로 이전은 선택이다. 공식 문서가 드는 이득은 단일 configuration 페이지에서 몇 분 안에 끝나는 배포, configuration 한 곳의 단일 단계 수정, streaming을 포함해 pipeline 코드를 건드리지 않는 실행, 고급 사례용 custom pipeline 코드 생성기다. Supply chain optimization, anti-money laundering, 자동차 산업용 QMOS처럼 Taurus를 더 큰 제품의 일부로 쓰면 지금은 이전할 필요가 없다고 적는다. 사용자 그룹별로 설정이 다른 rule editor widget 여러 개, Taurus package의 고급 기능(예: proposal로 영향 분석 생성)이나 rule logic을 특수한 방식으로 적용하는 repository, rule action의 optional visibility나 object locator, object set, attachment field는 refactoring이 필요하므로 이득과 변경량을 비교한다. 반대로 input dataset, object type이나 rule output을 계속 늘리는 중이면 새 configuration 화면이 유지보수에 유리할 수 있고, Java repository를 함께 써도 일부 코드 생성의 이득이 있다.
+
+가장 적합한 workflow는 사용자가 작성할 한 종류의 rule로 하나의 use case를 겨냥한다. 사용자 그룹과 rule 작성 application이 여럿이면 migration wizard를 여러 번 실행해 workflow를 나누는 것을 검토한다.
+
+### 절차와 복구
+
 V2 migration은 기존 objects/Workshop을 사용하면서 parallel pipeline과 새 outputs를 만들어 기존 실행을 보존한다. time series sync/link, references, application upgrade와 필요시 unlink를 진행한 뒤 downstream을 새 output으로 전환한다. V1 object의 backing dataset 교체는 object edits를 잃을 수 있어 기존 backing에 새 결과를 직접 복사하는 경로도 검토한다.
 
-한 configuration에는 rule editor/reviewer 각 하나가 필요하다. 같은 설정의 중복 widget은 먼저 줄였다가 이후 복제하고 다른 설정은 workflow로 나눈다. 복잡한 custom runner나 output form의 visibility/object locator/object set/attachment는 재구성이 필요할 수 있다. form 변환 warning은 field 동작을 확인한다. 동시 application 변경 후 cancel 실패는 이전 published version으로 manual change를 되돌리는 복구 절차가 필요하다.
+한 configuration에는 rule editor/reviewer 각 하나가 필요하다. 같은 설정의 중복 widget은 먼저 줄였다가 이후 복제하고 다른 설정은 workflow로 나눈다. form 변환 warning은 field 동작을 확인한다. 동시 application 변경 후 cancel 실패는 이전 published version으로 manual change를 되돌리는 복구 절차가 필요하다.
 
 성공 build만으로 개별 rule 결과가 정상임을 보장하지 않는다. writeback 재build, status dataset 및 기존 결과와의 대조 후 전환을 판단한다.
 

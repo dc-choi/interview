@@ -1,7 +1,7 @@
 ---
 tags: [palantir, webhooks, functions, oauth]
 status: done
-verified_at: 2026-11-25
+verified_at: 2026-11-26
 category: "AI엔지니어링(AIEngineering)"
 ---
 
@@ -35,7 +35,7 @@ Legacy agent worker는 받은 순서대로 task를 실행하므로 대형 sync �
 
 Webhook을 Ontology function으로 게시하면 Workshop, OSDK, 다른 Functions와 function-backed Action에서 재사용할 수 있다. 게시 활성화 이후 webhook version은 function version으로도 게시된다. 문서는 이 작업을 되돌릴 수 없으며 게시된 function을 삭제할 수 없다고 명시한다.
 
-TypeScript v1은 Source와 webhook을 functions repository에 가져오는 흐름을 제공한다. TypeScript v2와 Python에서 webhook을 사용하려면 먼저 webhook function으로 게시한 뒤 OSDK로 호출한다. External Functions 문서의 임의 TypeScript API 호출 제한은 이 webhook 경로의 설명이다. 다른 Functions API 호출 기능의 지원까지 이를 근거로 일괄 부정하지 않는다.
+코드에서 참조하려면 Source Overview에서 API name을 먼저 정한다. Source API name은 namespace 안에서 고유하게 두라고 권하고(should), webhook API name은 그 Source 안에서 고유해야 하며(must) 한 Source에 webhook을 여러 개 둘 수 있다. TypeScript v1은 Source와 webhook을 functions repository에 가져오는 흐름을 제공한다. TypeScript v2와 Python에서 webhook을 사용하려면 먼저 webhook function으로 게시한 뒤 OSDK로 호출한다. External Functions 문서의 임의 TypeScript API 호출 제한은 이 webhook 경로의 설명이다. 다른 Functions API 호출 기능의 지원까지 이를 근거로 일괄 부정하지 않는다.
 
 ## OAuth와 이력
 
@@ -65,4 +65,4 @@ Legacy REST webhook의 extractor는 JSON만 허용한다고 설명한다. 이 �
 - [[Palantir-External-Transforms-Governance|외부 연산의 export 통제]]
 - [[Palantir-Data-Connectivity|데이터 연결]]
 
-본문과 예제의 계약을 확인했다. 2026-11-25에는 Setup 문서 수집본과 생성, 복제, cURL 가져오기와 시험 절차를 다시 대조했고, Configuration reference 수집본으로 입력 타입, body 형식, client credentials 구성과 history 공개 범위를 보탰다. Webhook 실행, 외부 변경과 function 게시를 수행하지 않았다.
+본문과 예제의 계약을 확인했다. 2026-11-25에는 Setup 문서 수집본과 생성, 복제, cURL 가져오기와 시험 절차를 다시 대조했고, Configuration reference 수집본으로 입력 타입, body 형식, client credentials 구성과 history 공개 범위를 보탰다. 2026-11-26에는 External Functions 수집본으로 Source와 webhook API name의 고유 범위를 보탰다. Webhook 실행, 외부 변경과 function 게시를 수행하지 않았다.
