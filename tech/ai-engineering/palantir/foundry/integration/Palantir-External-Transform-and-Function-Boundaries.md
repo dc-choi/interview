@@ -1,7 +1,7 @@
 ---
 tags: [palantir, external-transforms, webhooks, egress]
 status: done
-verified_at: 2026-10-16
+verified_at: 2026-11-25
 category: "AI엔지니어링(AIEngineering)"
 aliases: ["External transform/function 경계"]
 ---
@@ -14,7 +14,7 @@ External transform은 batch sync/export/media sync 등 Python pipeline에서 sou
 
 Python repository에 transforms-external-systems를 설치하고 Code import를 허용한 source를 Editor 이상으로 import한다. @external_systems에 Source RID를 선언하고 get_secret 또는 get_https_connection/client를 사용한다. REST source가 여러 domain을 담으면 import할 수 없으므로 domain마다 source를 분리한다.
 
-Foundry worker/direct connection이 기본 경로다. Agent worker source와 outbound application 인증 source는 지원하지 않는다. Private network는 direct source에 agent proxy egress policy를 연결하는 경로를 사용할 수 있으며 legacy agent proxy runtime과 구분한다. 해당 routing/certificate가 필요한 경우 built-in client를 사용한다. os.chdir로 certificate/env-relative path를 깨뜨리지 않는다.
+Foundry worker/direct connection이 기본 경로다. Agent worker source와 outbound application 인증 source는 지원하지 않는다. Private network는 direct source에 agent proxy egress policy를 연결하는 경로를 사용할 수 있으며 sunset 단계인 agent proxy runtime과 구분한다. 해당 routing/certificate가 필요한 경우 built-in client를 사용한다. os.chdir로 certificate/env-relative path를 깨뜨리지 않는다.
 
 Source가 HTTPS client를 제공하지 않으면 password 같은 secret 외 hostname 등 non-secret attribute를 읽지 못할 수 있다. 자체 client/SDK를 쓸 때 이를 source에 저장된 모든 configuration을 자동 조회할 수 있다는 의미로 확대하지 않는다.
 
@@ -39,6 +39,10 @@ CSV export 예제는 output file을 만드는 단계다. 그 file을 외부 시�
 TypeScript v1은 source/webhook API name을 import해 wrapper logic을 쓸 수 있다. TypeScript v2/Python은 webhook을 Ontology function으로 publish하고 OSDK로 호출하는 경로를 사용한다. 미리 webhook으로 정의하지 않은 arbitrary external API call은 이 기능의 지원 경로가 아니다.
 
 Read API는 query 또는 OntologyEditFunction에서 쓸 수 있고 Write API는 OntologyEditFunction에서만 사용한다. Query는 외부 변경을 포함한 side effect가 없어야 한다. HTTP GET이라는 이름만으로 실제 외부 operation이 read-only라고 확정하지 않는다. 외부 write와 Ontology edit를 하나의 원자적 rollback으로 취급하지 않고 실패/재시도/idempotency를 설계한다.
+
+공식 문서는 네 가지 용도를 예로 든다. 외부 서버에 record를 만들고 대응하는 Ontology record를 쓰는 흐름, function 입력을 webhook 요청 parameter로 바꾸는 전처리와 응답을 Ontology edit 전에 가공하는 후처리, 여러 외부 요청과 Ontology edit를 중간 처리와 함께 잇는 흐름, read-only 요청으로 외부 데이터를 Workshop에 저장 없이 보여 주는 조회다. 이 중 연결 흐름은 webhook 하나가 동적인 개수의 외부 요청을 수행할 수 없어서 function으로 구성한다. 마지막 조회도 Ontology에 쓰지 않을 뿐 외부 요청은 실제로 나가므로 Read API 지정의 의미 검토를 생략하지 않는다(해석).
+
+Code에서 참조하려면 Source와 webhook 모두 API name이 있어야 한다. Setup 가이드 기준으로 Source API name은 namespace 안에서 고유하게 두도록 권장하고(should), webhook API name은 그 Source 안에서 반드시 고유해야 한다(must). 한 Source에 webhook을 여러 개 둘 수 있다. Setup 가이드는 REST API Source의 연결 runtime으로 Foundry worker를 권장하며, Foundry 네트워크에서 직접 닿는 대상은 direct connection egress policy로, 다른 네트워크의 대상은 agent proxy egress policy로 연결한다. Agent proxy runtime은 sunset 경로다.
 
 ## 출처
 
