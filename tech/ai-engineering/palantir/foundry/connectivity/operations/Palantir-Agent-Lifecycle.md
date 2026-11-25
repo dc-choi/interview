@@ -1,21 +1,29 @@
 ---
 tags: [palantir, foundry, data-connection, operations]
 status: done
-verified_at: 2026-10-16
+verified_at: 2026-11-25
 category: "AI엔지니어링(AIEngineering)"
 ---
 
 # Agent 권한, 업그레이드와 설치 이동
 
-Agent 생성에는 Organization administrator, Data flows administrator 또는 Create agent workflow를 가진 custom role과 대상 project의 Editor/Owner가 필요하다. 2023-05-27 이전 enrollment의 역할 기반 생성 enforcement는 별도 opt-in 조건이 있다.
+Agent 생성에는 두 조건이 모두 필요하다. 하나는 **Create Data Connection agents** workflow를 포함한 조직 역할이다. Organization administrator와 Data flows administrator 역할에는 기본으로 들어 있고, custom role에 더할 수도 있다. 다른 하나는 agent를 저장할 Project의 Editor 또는 Owner 역할이다. 2023-05-27 이전에 프로비저닝된 enrollment는 이 workflow를 요구하지 않을 수 있고, 이런 enrollment의 문의는 Palantir Support가 받는다. 이때 **Change agent creation authentication method** workflow를 가진 사용자가 Control Panel에서 이 요구를 강제할 수 있으며, Organization administrator 역할에는 이 workflow가 기본으로 들어 있다.
 
-생성 후 보기/변경/삭제/worker 배정은 project 권한을 따른다. 생성 가능한 Editor가 download link 등 관리 작업까지 가능한 Owner라는 뜻은 아니다. agent를 저장할 project의 접근 범위를 함께 정한다.
+생성 뒤 agent에 할 수 있는 일은 agent가 든 Project의 역할이 정한다. 아래는 기본 역할 기준이며 custom role을 쓰는 조직은 다를 수 있다. 상위 역할은 하위 역할의 권한을 모두 포함한다.
+
+| Project 역할 | agent에 대한 권한 |
+| --- | --- |
+| Viewer | 상태, health, metric, 설정, event history와 upgrade window 보기 |
+| Editor | Source에 배정, plugin과 driver 추가와 제거, 설정과 upgrade window 변경, 재시작과 중지, 삭제 |
+| Owner | 인증서 추가와 제거, download link나 새 token 생성, secure tunnel initiator 배포 |
+
+Project 역할이 Editor뿐이면 그 Project에 agent를 만들 수는 있지만 설치에 필요한 download link는 만들 수 없다. 따라서 기본 역할 기준으로는 생성과 설치를 한 사람이 끝내려면 Owner가 필요하다. Editor는 agent를 새 Source에 배정하고 설정을 바꿀 수 있으므로, agent가 든 Project의 Editor와 Owner는 agent 관리를 맡길 수 있는 사용자에게만 준다. Source와 plugin 쪽 권한은 [[Palantir-Data-Connection-Permissions|Data Connection 권한]]을 본다.
 
 ## 업그레이드와 관측
 
 upgrade window는 매주 반복되는 중단 허용 시간이며 새 버전이 있으면 coordinator가 그 안에서 재시작한다. 실행 중 job은 종료되고 새 job 시작도 일시 정지한다. window는 최소 60분이지만 실제 업그레이드가 60분 걸린다는 뜻은 아니다.
 
-두 agent의 창을 겹치지 않게 두고 각각이 전체 workload를 감당하도록 구성한다. 이중 agent 자체를 평소 workload를 절반씩 나누는 용량 계획으로 쓰지 않는다. 단일 agent면 sync가 창 전에 끝나거나 창 종료 수분 뒤 시작하게 한다.
+원문은 모든 source에 agent를 둘 이상 배정하고 upgrade window를 엇갈리게 두라고 권하며, 한 agent가 업그레이드하는 동안 중단된 job은 짝 agent에서 재시도된다. 이 때문에 각 agent가 전체 workload를 감당하도록 구성하고, 이중 agent를 평소 workload를 절반씩 나누는 용량 계획으로 쓰지 않는다(이 문서의 설계 해석). 단일 agent면 sync가 창 전에 끝나거나 창 종료 수분 뒤 시작하게 한다.
 
 OS memory/disk/load/CPU, heap/threads/uptime, queue/running job/duration/upload, heartbeat와 version stale time을 함께 본다. certificate expiration은 keystore/truststore에서 가장 먼저 만료되는 인증서까지의 시간이다. 만료됐으면 000ms, 인증서가 없으면 빈 그래프다.
 
@@ -38,9 +46,11 @@ backup/cache는 사용하지 않는 이전 버전과 실행 중 directory를 구
 ## 출처
 
 - [Palantir, agent-configuration-reference](https://www.palantir.com/docs/foundry/data-connection/agent-configuration-reference)
+- [Palantir, agents-troubleshooting](https://www.palantir.com/docs/foundry/data-connection/agents-troubleshooting)
 
 ## 관련 문서
 
 - [[Palantir-Connection-Operations]]
 - [[Palantir-Agent-Worker-Runtime]]
 - [[Palantir-Agent-Recovery]]
+- [[Palantir-Data-Connection-Permissions]]
