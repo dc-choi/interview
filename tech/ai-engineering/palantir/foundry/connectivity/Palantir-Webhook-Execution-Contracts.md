@@ -1,7 +1,7 @@
 ---
 tags: [palantir, webhooks, functions, oauth]
 status: done
-verified_at: 2026-10-16
+verified_at: 2026-11-25
 category: "AI엔지니어링(AIEngineering)"
 ---
 
@@ -16,6 +16,12 @@ Data Connection webhook은 Foundry에서 외부로 나가는 요청이다. 외�
 Read API webhook은 query와 Ontology edit function에서 사용할 수 있다. Write API는 Ontology edit function에서 사용한다. 인증 token을 받는 POST처럼 반복해도 업무 상태를 바꾸지 않는 요청은 의미를 검토한 뒤 Read API로 지정할 수 있다. HTTP 메서드 이름을 바꾸거나 안전하다고 표시한다고 실제 외부 효과가 없어지지는 않는다.
 
 Action의 입력 mapping 함수가 `undefined`를 반환하면 webhook을 발사하지 않는 구성이 가능하다. Attachment 입력은 agent worker Source에서 지원하지 않는다. 응답의 nested key나 0부터 시작하는 array index로 값을 추출하고, 전체 응답을 String으로 받을 수도 있다. String output의 비문자열은 JSON 문자열로 변환되고, Record output의 문자열은 JSON 파싱을 시도하며, Integer/Long은 Double로 변환할 수 있다.
+
+## 생성과 시험
+
+Source에는 연결에 필요한 최소한의 secret과 연결 정보만 두고, 상대 경로, query parameter, header와 body는 webhook마다 설정한다. Source의 Webhooks 탭에서 wizard로 이름, 선택적인 function 게시 설정, Source, 입력 parameter, 요청 구성과 선택적인 Limits를 순서대로 정한다. 입력 parameter는 path, query parameter, header와 body에서 참조할 수 있다. SAP, legacy Salesforce, legacy `magritte-rest-v2` 같은 일부 Source는 더 복잡한 task 구성을 쓰며 Webhooks reference를 따른다. 그중 아래 Legacy task 구분 절은 `magritte-rest-v2`와 Salesforce에 해당하고, SAP webhook 구성은 SAP ERP connector 문서의 webhooks 절을 본다.
+
+같은 API의 비슷한 endpoint는 Actions 메뉴의 Duplicate로 기존 webhook을 복제해 만든다. 지원하는 옵션만 쓴 cURL 명령이 Source에 이미 등록된 domain을 가리키면 Import from cURL로 요청 Call을 만들 수 있다. 저장한 뒤 Test Connection 패널로 언제든 시험 요청을 보내고, 그 응답으로 output parameter 추출 규칙을 정한다. 문서는 명시하지 않지만 응답을 받아 output을 파싱하므로 실제 요청이 나간다고 보고, write API는 부작용이 없는 대상이나 시험 환경에서 확인한다(해석).
 
 ## 한도와 실행 위치
 
@@ -57,4 +63,4 @@ Legacy REST webhook의 extractor는 JSON만 허용한다고 설명한다. 이 �
 - [[Palantir-External-Transforms-Governance|외부 연산의 export 통제]]
 - [[Palantir-Data-Connectivity|데이터 연결]]
 
-본문과 예제의 계약을 확인했다. Webhook 실행, 외부 변경과 function 게시를 수행하지 않았다.
+본문과 예제의 계약을 확인했다. 2026-11-25에는 Setup 문서 수집본과 생성, 복제, cURL 가져오기와 시험 절차를 다시 대조했다. Webhook 실행, 외부 변경과 function 게시를 수행하지 않았다.

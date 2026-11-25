@@ -58,9 +58,11 @@ Export는 sync처럼 Foundry build system의 job으로 실행된다. History의 
 
 ## Legacy export task의 통제 공백
 
-2026-10-21 문서 기준 export task는 sunset 단계이며 게시된 product lifecycle에 따라 deprecated될 예정이다. Legacy task는 agent worker에서 YAML로 설정하며 markings/export controls와 통합되지 않는다. 따라서 데이터 unmarking 권한을 요구하지 않는다는 명시적 차이가 있다. 새 export의 통제를 legacy에도 있다고 가정하지 않는다. 입력 Source와 output 이름은 각각 `inputSource`, `outputDataset`이어야 한다.
+Exports 문서는 export task를 sunsetted로 부르고 게시된 product lifecycle에 따라 deprecated될 예정이라고 적는다(2026-10-21, 2026-11-25 대조). Export tasks 페이지 자체의 표시는 [Legacy]이며, Palantir lifecycle 정의에서 Legacy와 Sunset은 다른 단계이므로 두 페이지의 표시가 엇갈린다. 2026-11-25 Export tasks 페이지의 경고는 외부 source로 되쓰는 데 export task를 일반적으로 권장하지 않으며, enrollment에 따라 일부 source type에서 사용과 지원이 가능할 수 있다고 적는다. Legacy task는 agent worker source에서만 동작하고, 구성 UI 없이 YAML로 설정하며 markings/export controls와 통합되지 않는다. 따라서 데이터 unmarking 권한을 요구하지 않는다는 명시적 차이가 있다. 새 export의 통제를 legacy에도 있다고 가정하지 않는다. 모든 옵션이 self-service용으로 문서화되어 있지는 않고 경우에 따라 Palantir 지원을 거쳐야만 구성할 수 있으며, 성능 최적화가 되어 있지 않아 대량 export는 장시간 실행되거나 끝나지 못할 수 있다.
 
-Legacy `incrementalType: incremental`은 최초 전체를 내보낸 후 새 transaction만 처리하지만 기준 transaction이 사라지면 전체 snapshot으로 돌아간다. 새 export의 엄격한 APPEND 모드와 다르다. Path rewriting의 regex group, 날짜, transaction/dataset ID 템플릿도 legacy 설정이다.
+구성은 source와 task 설정 두 부분이다. Source는 dataset sync와 같은 방식으로 설정하고, 파일 시스템에서 source를 우클릭해 `Create Data Connection Task`로 task를 만든다. 입력 Source와 output 이름은 각각 `inputSource`, `outputDataset`이어야 하고 입력 dataset은 `inputDataset`으로 둔다. Task는 output dataset에서 job이 시작될 때 실행된다.
+
+Legacy `incrementalType`은 모든 export 유형이 지원하며 기본값은 snapshot(현재 view의 모든 파일을 매번 export)이다. JDBC export에서는 전역이 아니라 dataset마다 지정한다. `incremental`은 최초 전체를 내보낸 후 새 transaction만 처리하지만 기준 transaction이 사라지면(예: dataset rebuild) 전체 snapshot으로 돌아간다. 새 export의 엄격한 APPEND 모드와 다르다. 파일 기반 export의 `rewritePaths`는 정규식과 치환 template의 map이며 `$1` 같은 capture group, Java DateTimeFormatter 문법의 `${dt:yyyy-MM-dd}`, `${transaction}`, `${dataset}`을 쓴다. 이 template도 legacy 설정이다.
 
 이전은 수동이다. 새 workflow의 결과를 검증한 뒤 기존 task를 제거한다. pre/staging/after SQL, 수동 transaction 관리와 세밀한 thread 제어가 필요하면 external transform을 검토한다. 새 export는 legacy의 `writeDirectly: true`, `copyMode: insert`에 해당하는 동작으로 고정되고, transaction isolation은 source 설정에 있으면 그 값을 따른다. `batchSize` 지원은 source type마다 다르다. Exports 문서의 기능 비교표는 JDBC source의 지원을 명시하고, Redshift처럼 connector 문서에 별도 batch 계약을 둔 경우도 있다. 대상 table 생성을 지원하지 않으므로 `quoteIdentifiers`도 없다. 문서의 general overview가 BigQuery를 legacy task 사례로 들더라도 실제 선택은 최신 connector별 export 지원을 확인한다.
 
@@ -75,4 +77,4 @@ Legacy `incrementalType: incremental`은 최초 전체를 내보낸 후 새 tran
 - [[Palantir-External-Transforms-Governance|외부 코드와 통제]]
 - [[Palantir-Data-Connectivity|데이터 연결]]
 
-공식 문서 계약을 비교했다. 2026-10-21과 2026-11-25에는 Exports 개정본만 다시 대조했고 legacy export task 문서는 다시 대조하지 않았다. 외부 table 생성, truncate, export와 재시도는 실행하지 않았다.
+공식 문서 계약을 비교했다. 2026-10-21과 2026-11-25에는 Exports 개정본을 다시 대조했고, legacy export task 문서는 2026-11-25 수집본과 대조했다. Export tasks 수집본과 live 페이지의 lifecycle 표시는 [Legacy]이고 sunset, deprecated 문구는 없다. 외부 table 생성, truncate, export와 재시도는 실행하지 않았다.
