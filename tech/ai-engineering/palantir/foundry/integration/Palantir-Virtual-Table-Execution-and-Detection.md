@@ -1,7 +1,7 @@
 ---
 tags: [palantir, virtual-tables, pushdown, iceberg]
 status: done
-verified_at: 2026-11-08
+verified_at: 2026-11-25
 category: "AI엔지니어링(AIEngineering)"
 aliases: ["Virtual table 실행과 변경 감지"]
 ---
@@ -14,13 +14,15 @@ Managed Iceberg는 Foundry catalog가 관리하고 virtual Iceberg는 외부 cat
 
 ## Source, table type과 engine별 capability
 
-BigQuery/Snowflake/Databricks와 S3/ADLS/GCS 등의 지원 source가 있지만 capability는 조합별로 다르다. 예를 들어 Databricks managed Delta/view는 read-only이고 external Delta/managed Iceberg는 write 경로가 있으며, Snowflake managed Iceberg는 다른 Snowflake table과 Foundry single-node 지원이 다르다.
+BigQuery/Snowflake/Databricks와 S3/ADLS/GCS 등의 지원 source가 있지만 capability는 조합별로 다르다. 예를 들어 Databricks managed Delta/view는 read-only이고 external Delta/managed Iceberg는 write 경로가 있으며, Snowflake managed Iceberg는 compatibility matrix 표기상 다른 Snowflake table과 Foundry single-node 지원이 다르다.
 
 2026-11-08 matrix 기준 native pushdown은 BigQuery Python Ibis, Databricks PySpark/Pipeline Builder, Snowflake Snowpark/Pipeline Builder 경로로 나뉜다. Object-store Parquet/Avro/CSV/Delta의 표는 read/write capability와 Foundry Python/Pipeline Builder compute 지원 칸을 다르게 표시한다. 상단 format/지원 표와도 범위 차이가 있으므로 source 문서/actual table type 없이 일괄 사용 가능하다고 결론 내리지 않는다.
 
 Iceberg catalog도 source별이다. S3는 Glue/Object Storage/Polaris, ADLS는 Object Storage/Polaris, GCS는 Lakehouse/Object Storage, Snowflake는 Horizon, Databricks는 Unity 경로를 확인한다. S3/ADLS에서 Unity는 legacy이며 Databricks source가 권장된다.
 
-Virtual input은 Contour 분석, Ontology backing, Lineage, supported transforms/Workspaces에 사용할 수 있다. Contour Save as dataset, Pipeline Builder streaming/faster build는 지원 범위 밖이다. Python은 새 virtual output을 생성할 수 있고 SQL/Java는 기존 virtual output 쓰기 경로를 지원한다. Single-node virtual output의 expectation on_error=FAIL은 지원하지 않지만 input/managed Iceberg/Spark와는 다르다.
+Virtual input은 Contour 분석, Ontology backing, Lineage, supported transforms/Workspaces에 사용할 수 있다. Contour Save as dataset, Pipeline Builder streaming/faster build는 지원 범위 밖이다. Python은 새 virtual output을 생성할 수 있고 SQL/Java는 기존 virtual output 쓰기 경로를 지원한다. Observability 표기 기준으로 single-node virtual output의 expectation on_error=FAIL은 지원하지 않지만 input/managed Iceberg/Spark와는 다르다. 위 single-node 표기는 아래의 문서 간 불일치를 함께 본다.
+
+2026-11-25 확인한 개정본은 Code Repositories 행의 지원하지 않는 항목에 Lightweight transforms(Foundry compute)를 더했다. Python transforms on virtual tables 문서는 Foundry 쪽 compute를 Spark로 설명하고 Polars와 Pandas 같은 lightweight engine을 virtual table에 쓸 수 없다고 적는다. 다른 compute mode인 compute pushdown은 모든 input과 output이 같은 source의 virtual table이고 그 source가 pushdown을 지원해야 하며, `@incremental` 증분 계산을 지원하지 않는다. 같은 날 virtual tables 문서의 compatibility matrix는 BigQuery, Databricks와 일부 Snowflake table type에 Python Single-node를 여전히 지원으로 표시해 두 표기가 어긋난다. Single-node 경로를 설계에 넣기 전에 대상 source 문서와 실제 enrollment에서 확인한다.
 
 ## Registration과 actual source table의 수명
 
@@ -54,7 +56,8 @@ Virtual table은 중복 storage를 줄이고 지원 query를 source로 pushdown�
 
 ## 출처
 
-- [Palantir, Virtual tables](https://www.palantir.com/docs/foundry/data-integration/virtual-tables) — 2026-11-08 Branching support 안내 추가분과 나머지 본문 재대조
+- [Palantir, Virtual tables](https://www.palantir.com/docs/foundry/data-integration/virtual-tables) — 2026-11-08 Branching support 안내 추가분과 나머지 본문 재대조, 2026-11-25 Code Repositories의 Lightweight transforms 미지원 추가분 대조
+- [Palantir, Python transforms on virtual tables](https://www.palantir.com/docs/foundry/transforms-python/tables-overview/) — 2026-11-25 Spark와 compute pushdown의 두 compute mode 확인
 - [Palantir, Iceberg tables](https://www.palantir.com/docs/foundry/data-integration/iceberg-tables)
 - [Palantir, External pipelines in Pipeline Builder](https://www.palantir.com/docs/foundry/building-pipelines/create-external-pipeline-pb/#known-limitations) — 2026-11-08 compute pushdown의 branching 제약 확인
 - [Apache Iceberg, Table Spec: Snapshot References](https://iceberg.apache.org/spec/#snapshot-references) — 2026-11-08 branch와 tag의 snapshot reference 설명 확인

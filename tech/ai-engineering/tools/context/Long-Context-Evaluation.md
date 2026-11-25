@@ -43,13 +43,35 @@ aliases: ["Long Context Evaluation", "긴 문맥 평가", "Lost in the Middle", 
 4. 검색과 요약에서 원문으로 돌아갈 경로를 보존한다. 짧아졌다는 사실만으로 개선으로 판정하지 않는다.
 5. 입력 구성이나 모델을 바꾼 뒤 같은 평가를 반복한다. 배치 순서 조정은 검증할 가설이지 정확도 보장이 아니다.
 
+## 고정 길이 잠재 기억이라는 세 번째 선택지
+
+전체 투입과 RAG 외에, 문서 묶음을 질문에 맞춰 고정 개수의 벡터로 압축해 모델 입력에 넣는 방식이 있다. 2026년 10월 공개된 Memorilla 연구가 한 예다.
+
+- **구조:** 고정된 임베딩 모델(Qwen3-Embedding-4B)이 문서마다 벡터 하나를 미리 만들어 둔다. 질문이 오면 학습한 기억 모듈(약 1.94억 파라미터)이 질문을 보고 모든 문서 벡터에 attention을 걸어 16개의 잠재 기억 토큰을 만든다. 이 토큰은 단어 임베딩 자리에 들어가는 soft token이며, 고정된 LLM(Qwen3-8B)은 원문 대신 이것을 읽는다. 학습하는 것은 기억 모듈뿐이며, 3단계 학습의 마지막은 평가 벤치마크들의 학습 분할을 섞어 쓴다.
+- **보고된 효과:** 저자들은 RAG, Mem0, MemoRAG, xRAG, LLMLingua-2와 비교해 8개 벤치마크의 평균 점수가 가장 높았고, PubMedQA를 뺀 7개 벤치마크에서 전체 투입보다 점수가 높았다고 보고했다(FactKG 84.33% 대 80.43%). H100 한 장, 문서 512개 조건에서 답변 시간은 0.74초로 전체 투입의 19.9초보다 짧았다. NarrativeQA와 PubMedQA처럼 다른 방식이 이긴 벤치마크도 있다.
+- **저자가 밝힌 한계:** 정확한 이름 같은 세부를 잃을 수 있다. 가중치가 공개된 모델과 그 모델마다 학습한 기억 모듈이 필요하고, 실험은 Qwen 모델과 텍스트에 한정됐다.
+
+공개 직후 한 외부 재현 시도(영상 발표 기준)는 저장소 예제와 속도 경향을 재현했지만 결과가 엇갈렸다. 가상 대화 150개에 사실 몇 개를 숨긴 시험에서는 비교한 네 방식 모두 숨은 단서를 찾지 못했고, Memorilla는 없는 알레르기나 틀린 이름과 생일을 지어냈다. 소설 한 권 질문 8개에서는 전체 투입(윈도우 초과로 뒷부분만 투입) 5개, RAG 4개, Memorilla 1개를 맞혔다. 답변 시간은 문서 512개에서도 약 0.12초로 거의 일정했지만 문서 임베딩 시간을 넣으면 약 3.2초로, 전체 투입 대비 개선은 약 6배였다. 시험자는 가상 대화가 학습 분포와 달랐을 가능성을 원인으로 추정했을 뿐 확인하지 않았다. 표본이 작은 단일 시험이므로 결론이 아니라 확인할 항목으로 읽는다.
+
+적용 판단:
+
+- 고정 토큰 기억은 이력이 길어져도 모델 입력 비용이 늘지 않는 대신 정확한 값의 회수를 잃을 수 있다. 이름, 날짜, 금액처럼 정확한 값이 필요한 질문은 원문을 꺼내는 RAG나 전체 투입과 함께 비교한다.
+- 속도 비교에는 문서 임베딩과 기억 생성 단계를 넣는다. 문서 벡터를 미리 만들어 두는 구조에서 신규 문서 반영 비용을 따로 잰다.
+- 논문 점수는 학습 분포와 비슷한 벤치마크의 결과다. 자체 데이터로 기억 모듈을 다시 학습할 수 있다는 점(저장소는 Apache 2.0)도 재학습 비용과 함께 평가한다.
+- 논문과 프로젝트 페이지는 답의 근거 문서를 되짚는 수단을 제시하지 않으므로, 위 설계 제안 4번의 근거 추적은 원문 저장소로 따로 보완한다.
+
 ## 출처
 
 - [Lost in the Middle: How Language Models Use Long Contexts — Liu et al.](https://arxiv.org/abs/2307.03172)
 - [RULER: What's the Real Context Size of Your Long-Context Language Models? — Hsieh et al.](https://arxiv.org/abs/2404.06654)
+- [Memorilla: Latent Semantic Memory for LLMs — Fallahpour et al.](https://arxiv.org/abs/2610.21375) — v3(2026-11-03) 기준
+- [Memorilla 프로젝트 페이지 — Stanford](https://memory.stanford.edu)
+- [snap-stanford/memorilla — GitHub](https://github.com/snap-stanford/memorilla)
+- [Did Stanford Just Solve AI Memory? (Memorilla) — Better Stack](https://www.youtube.com/watch?v=lNpDxKfBlf8)
 
 ## 관련 문서
 
 - [[Context-Engineering|컨텍스트 엔지니어링]]
 - [[RAG-Retrieval-Engineering|RAG 검색과 최종 입력의 근거 추적]]
 - [[Agent-Context-Budget|에이전트 컨텍스트 예산]]
+- [[Agent-Memory-Write-and-Consolidation-Failures|에이전트 기억의 쓰기와 정리 실패]]
