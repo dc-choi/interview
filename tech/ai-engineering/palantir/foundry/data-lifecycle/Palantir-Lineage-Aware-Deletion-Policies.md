@@ -30,9 +30,11 @@ Override는 Data Governance Officer를 요구한다. Namespace/Policy/Dataset Vi
 
 ## 적용 이력과 실제 삭제는 다르다
 
-Policy History의 Applications/Removals는 dataset에 policy를 적용/제거한 기록이다. Removals를 data deletion으로 보고하지 않는다. 실제 deleted/marked transaction은 Deletions에서 transaction RID/time range로 확인한다. RID는 Dataset Preview History의 transaction details에서 찾는다.
+공식 가이드가 안내하는 policy 제거 절차는 Data Lifetime application의 Policies 탭에서 policy를 고른 뒤 Root datasets 목록의 해당 dataset 메뉴에서 Remove policy from dataset을 선택하고 확인 창에서 Remove policy를 누르는 것이다. Dataset 화면의 패널에서 제거하는 절차는 가이드에 없다. 제거 대상은 policy 자체가 아니라 그 dataset과의 연결이며, 성공 메시지는 연결을 끊었다는 뜻이다. 가이드는 제거 뒤 이미 붙은 삭제일과 downstream이 계승한 날짜의 처리를 설명하지 않으므로, 성공 메시지를 날짜 해제의 증거로 보지 않고 해당 dataset과 downstream의 삭제일을 직접 확인한다.
 
-최신 view 정책 적용이 underlying storage의 즉시 물리 삭제를 뜻하지 않는다. 정책 평가/삭제는 rate limited이며 하루 여러 번 mark하고 storage 정리에는 시간이 걸린다. FAQ는 통상 긴 경우 약 30일을 안내하지만 모든 환경의 확정 삭제 SLA로 확대하지 않는다. Policy 제거가 이미 삭제된 데이터를 복원하지도 않는다.
+Policy History의 Applications/Removals는 dataset에 policy를 적용/제거한 기록이고 최신 작업부터 보인다. Removals를 data deletion으로 보고하지 않는다. 실제 deleted/marked transaction은 Deletions에서 transaction RID/time range로 확인한다. RID는 Dataset Preview History의 transaction details에서 찾는다.
+
+최신 view 정책 적용이 underlying storage의 즉시 물리 삭제를 뜻하지 않는다. 정책 평가/삭제는 rate limited이며 하루 여러 번 mark하고 storage 정리에는 시간이 걸린다. FAQ는 통상 긴 경우 약 30일을 안내하지만 모든 환경의 확정 삭제 SLA로 확대하지 않는다. 공식 문서는 policy 제거가 이미 삭제된 데이터를 복원하는지 설명하지 않으므로 복원을 기대하지 않는다.
 
 Policy 적용/제거와 override 권한을 제한하고 필요하면 Checkpoint justification으로 근거를 기록한다. 삭제 범위의 법적 적합성은 이 기능의 성공 메시지로 증명되지 않으며 해당 조직의 적용 요건과 실제 파생 data 범위를 확인한다. 이 문서는 설정 계약 학습이며 실제 삭제를 실행한 기록이 아니다.
 

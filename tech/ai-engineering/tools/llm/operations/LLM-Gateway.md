@@ -37,6 +37,8 @@ API 형식을 통합해도 모델의 답변 품질과 도구 호출 의미까지
 - DB 장애와 사용량 기록 지연 때의 동작은 별도로 시험한다. DB 없는 배포의 동작으로 장애 시 동작까지 추정하지 않는다.
 - 재시도와 폴백을 포함한 총사용량을 제공자의 청구 자료와 대조한다.
 
+관리형 게이트웨이의 한도도 근사치로 다룬다. 2026-11-25 Cloudflare AI Gateway 문서 기준, spend limit은 토큰 수와 모델 가격으로 추정한 비용을 best-effort로 계산하고 집계가 최종적 일관성이라 동시 요청이 몰리면 한도를 잠시 넘을 수 있다. 적용 대상은 가격이 알려진 모델의 Unified Billing 요청과 BYOK 요청이다. 규칙은 gateway당 20개까지 provider, model이나 custom metadata 값별로 나누고, 한도를 넘으면 기본으로 창이 초기화될 때까지 `429`를 돌려준다. 차단 대신 fallback이 필요하면 dynamic route에 primary와 fallback 모델을 두고 primary 모델에 spend limit을 건다. 이와 별개로 dynamic route의 Rate/Budget Limit 노드는 key별 요청 수나 비용 한도를 넘으면 연결한 fallback 출력으로 넘기고 fallback이 없으면 route를 끝내는데, 노드의 key(예: `metadata.user_id`)가 없는 요청은 한 한도를 함께 쓰므로 사용자별 예산이라면 metadata 누락부터 막는다.
+
 ## 배포 예제와 운영 보장을 구분한다
 
 AWS 참조 구성에는 CloudFront를 둔 공개 경로, ALB 직접 접근과 private VPC 경로가 있다. 선택한 경로의 인증, 네트워크 노출과 외부 모델로 나가는 데이터 범위를 확인한다. 내부 진입점이라고 외부 모델 전송까지 차단된다고 가정하지 않는다.
@@ -158,6 +160,9 @@ SimHash는 고차원 특징 벡터를 짧은 지문으로 줄이는 기법이다
 - [Guidance for Multi-Provider Generative AI Gateway on AWS — AWS Solutions Library Samples](https://github.com/aws-solutions-library-samples/guidance-for-multi-provider-generative-ai-gateway-on-aws)
 - [LiteLLM, Virtual Keys](https://docs.litellm.ai/docs/proxy/virtual_keys)
 - [LiteLLM, Budgets, Rate Limits](https://docs.litellm.ai/docs/proxy/users)
+- [Cloudflare AI Gateway, Spend limits](https://developers.cloudflare.com/ai-gateway/features/spend-limits/)
+- [Cloudflare AI Gateway, Dynamic routes](https://developers.cloudflare.com/ai-gateway/features/routing/dynamic-routing/)
+- [Cloudflare AI Gateway, JSON Configuration](https://developers.cloudflare.com/ai-gateway/features/routing/dynamic-routing/json-configuration/)
 - [Anthropic, OpenAI SDK compatibility](https://platform.claude.com/docs/en/cli-sdks-libraries/libraries/openai-sdk)
 - [Google AI for Developers, Thought signatures (Generate Content API)](https://ai.google.dev/gemini-api/docs/generate-content/thought-signatures)
 - [Amazon Bedrock, Deploy a prompt to your application using versions in Prompt management](https://docs.aws.amazon.com/bedrock/latest/userguide/prompt-management-deploy.html)

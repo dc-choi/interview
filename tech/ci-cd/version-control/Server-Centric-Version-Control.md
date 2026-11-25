@@ -57,6 +57,8 @@ Scion처럼 클라이언트 모델까지 바꾸는 대신, 클라이언트와 �
 
 Git 객체는 내용 주소라 두 작성자가 같은 객체를 조율 없이 써도 충돌하지 않는다([[Git-Object-Format|Git 객체 형식]]). 그래서 직렬화가 필요한 곳은 ref 이동뿐이고, 에이전트가 서로 다른 브랜치에 푸시하는 동안에는 대부분 서로 기다리지 않는다. 같은 브랜치를 다투면 여전히 하나만 이긴다.
 
+ref 저장 자체도 직렬화 지점이 된다. GitHub는 Ref-CAS에 앞서 두 방식을 시도했다. 저장소의 모든 ref에 대한 write-ahead log를 blob 하나로 색인하자 그 blob에는 조건부 쓰기가 한 번에 하나만 진행돼, 쓰는 동안 도착한 푸시를 다음 쓰기로 묶어도 쓰기가 초당 수백 건 중반에서 막혔고, ref를 여러 segment blob으로 나누자 읽기가 모든 segment를 확인해야 해 쓰기 지연을 읽기 지연으로 바꾸는 데 그쳤다. 아래 Continuity 행처럼 로그 색인을 compare-and-swap 하나로 갱신하는 구조는 저장소의 모든 푸시를 한 줄로 세우므로, 왕복 지연과 묶음 크기로 그 한 지점의 상한을 먼저 계산하고, 그 안에서는 compaction 같은 다른 병목도 함께 본다(이 문서의 연결).
+
 **사례 비교.** 각 회사의 자체 발표이며 직접 재현하지 않았다. GitHub, GitLab, ERSC와 Pierre의 글은 2026-11-09 대조했다.
 
 | 사례 | 공개한 구조 | 상태와 수치 |
@@ -92,7 +94,7 @@ Android 17 AOSP는 Git 저장소 1,084개, 일반 파일 약 162만 개, 소스 
 - [GitHub Docs, Managing a merge queue](https://docs.github.com/en/repositories/configuring-branches-and-merges-in-your-repository/configuring-pull-request-merges/managing-a-merge-queue)
 - [Git, scalar](https://git-scm.com/docs/scalar)
 - [How the Claude Code team does code review — claude.dev, Addy Osmani, Morgan Westlee Lunt, Qing Wang](https://claude.dev/blog/solving-code-review-at-anthropic/)
-- [Inside GitHub's new Git storage architecture — GitHub Blog, Karthik Raman, Brian Celenza](https://github.blog/engineering/architecture-optimization/inside-githubs-new-git-storage-architecture/) — 2026-11-05 게시. Rubicon의 객체와 ref 분리, Ref-CAS, compaction, 시험 수치와 출시 상태를 2026-11-09 대조
+- [Inside GitHub's new Git storage architecture — GitHub Blog, Karthik Raman, Brian Celenza](https://github.blog/engineering/architecture-optimization/inside-githubs-new-git-storage-architecture/) — 2026-11-05 게시. Rubicon의 객체와 ref 분리, Ref-CAS, compaction, 시험 수치와 출시 상태를 2026-11-09 대조, 앞선 ref 저장 시도 두 가지를 2026-11-25 대조
 - [Scaling Git for the agentic software factory — GitLab, Bill Staples](https://about.gitlab.com/blog/scaling-git-for-the-agentic-software-factory/) — 2026-10-13 게시. 구조, 베타 상태와 최고치 조건을 2026-11-09 대조
 - [What comes after git — ERSC, Steve Klabnik](https://ersc.io/blog/what-comes-after-git) — 2026-09-10 게시. Git bridge, 고객별 배포와 jj 지원 계획을 2026-11-09 대조
 - [Introducing Code Storage — Pierre Computer Company](https://code.storage/changelog/introducing-code-storage) — 2025-10-14 게시. 제품 정의를 2026-11-09 대조
