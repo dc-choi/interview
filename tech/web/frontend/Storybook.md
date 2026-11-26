@@ -62,6 +62,43 @@ export const Required: StoryObj = { args: { required: true } };
 
 Storybook 문서가 권하는 도입 순서는 프로젝트 기본값을 `'error'`로 두고, 현재 실패하는 컴포넌트만 `'todo'`로 낮춘 뒤 고칠 때마다 표시를 지우는 방식이다. 기존 컴포넌트가 많은 디자인 시스템에서는 이렇게 하면 새 컴포넌트의 위반은 막으면서 남은 부채를 목록으로 유지할 수 있다.
 
+## 페이지 story와 네트워크 mock
+
+페이지도 입력(서버 응답, 권한, 대상의 상태)이 같으면 같은 화면을 그리는 큰 컴포넌트로 볼 수 있다. 그래서 페이지의 상태마다 story를 두면 테스트 계정이나 특정 조건의 데이터를 만들지 않고도 화면을 확인할 수 있다. 문제는 응답을 어디서 바꾸느냐다.
+
+아래 비교는 사례 발표의 설명을 일반화한 것이다.
+
+| 방식 | 결과 |
+|---|---|
+| 페이지 코드에 mock 데이터와 `mock` 같은 props를 넣는다 | 실제 요청을 막는 분기와 로딩, 오류, 데이터별 분기가 늘고, story용 코드가 서비스 번들에 함께 배포된다 |
+| 네트워크 계층에서 요청을 가로챈다(MSW) | 페이지는 실제 서비스와 같은 요청을 보내고, Storybook에서만 handler가 mock 응답을 돌려준다. handler와 mock 데이터는 Storybook 설정과 story 파일에 둔다 |
+
+발표 밖의 주의점으로, worker 스크립트를 앱과 같은 static 폴더(예: Vite의 `public/`)에 만들면 그 파일은 앱 빌드 결과에도 복사된다.
+
+MSW(Mock Service Worker)는 브라우저에서 Service Worker로 요청을 가로채 handler가 정한 응답을 돌려준다. Storybook에서는 `msw-storybook-addon`으로 연결한다. addon 저장소 main의 README와 MIGRATION(3.x 기준), Storybook의 network mocking 문서를 2026-11-26에 대조한 순서는 다음과 같다.
+
+1. `npx msw init <static 폴더> --save`로 worker 스크립트(`mockServiceWorker.js`)를 만들고, Storybook 설정의 `staticDirs`가 그 폴더를 포함하게 한다. 스크립트를 제공하지 못하면 Service Worker 등록이 404나 MIME type 오류로 실패한다.
+2. worker 하나를 여러 story가 함께 쓰도록 등록한다. CSF Next는 `definePreview({ addons: [addonMsw()] })`를 쓴다. CSF 3.0은 `.storybook/main`의 `addons`에 `msw-storybook-addon`을 넣고 `.storybook/preview`에 `loaders: [mswLoader()]`(`msw-storybook-addon/csf3`)를 두는데, 이 loader API는 3.x에서 deprecated이며 다음 major에서 제거될 예정이다. deprecated인 것은 addon의 loader API이지 CSF 3 형식 자체가 아니며, CSF Next는 Storybook 10.6 문서에서 Preview 기능이다. CSF 3의 TypeScript 프로젝트는 `msw-storybook-addon/csf3`를 `compilerOptions.types`에 더한다. 이전 story의 handler는 story마다 초기화되어 다음 story로 새지 않는다.
+3. story별 응답은 `beforeEach({ msw }) { msw.use(...) }`로 덮어쓴다. 2.x까지 쓰던 `parameters.msw`는 3.x에서 deprecated이고, CSF 3.0 구성에서만 동작하며 CSF Next에서는 지원하지 않고, 다음 major에서 제거될 예정이다.
+
+다음은 가상의 endpoint로 쓴 예시다. `HttpResponse.error()`는 네트워크 오류 응답을 만든다. 서버 오류(5xx)를 재현하려면 `HttpResponse.json(body, { status: 500 })`처럼 상태 코드를 준다.
+
+```ts
+import { http, HttpResponse } from 'msw'
+
+export const StatusRequestFailed: Story = {
+  beforeEach({ msw }) {
+    msw.use(
+      http.get('/api/example/status', () => HttpResponse.error()),
+    )
+  },
+}
+```
+
+실서버에서는 일부러 만들기 어려운 오류 응답이나 신청 뒤에만 생기는 업무 상태도 응답 값 하나로 재현된다. 다만 mock 응답이 실제 API 계약과 어긋나면 story가 통과해도 연동에서 깨지므로, 응답 형태를 API 계약 문서나 타입과 함께 관리하는 편이 낫다(적용 제안).
+
+사례로, 2012년 JSP로 만든 뒤 React와 Vue 화면을 JSP 화면 안에 iframe으로 덧붙여 온 관리도구를 개편하면서 문서는 낡았거나 거의 없고 담당자는 떠난 상황에서 AI가 여러 저장소의 코드를 페이지 단위로 읽어 정책, 화면, 데이터 문서로 기획서를 역추출하고, 그 결과를 상태별 story로 옮겨 검증한 발표가 있다(NAVER Engineering Day 발표 기준). 특수한 계정이나 연동 상태에서만 보이던 정책(예: 비즈센터에 연동된 카페는 폐쇄할 수 없음)이 story로 드러났고, 프런트엔드가 화면에 필요한 데이터로 API 응답 계약을 먼저 정의해 서버 구현을 기다리지 않는 방식으로 협업 순서를 바꿨다고 한다. 레거시 분석 일반은 [[AI-Assisted-Legacy-Onboarding|AI를 활용한 레거시 온보딩과 변경]]을 본다.
+
 ## 트레이드오프
 
 | 장점 | 비용 |
@@ -88,6 +125,13 @@ Storybook 문서가 권하는 도입 순서는 프로젝트 기본값을 `'error
 - [Storybook, Vite](https://storybook.js.org/docs/builders/vite)
 - [Storybook, Storybook Docs for Web Components](https://github.com/storybookjs/storybook/blob/v10.6.5/code/addons/docs/docs/frameworks/WEB_COMPONENTS.md)
 - [Custom Elements Manifest analyzer — open-wc](https://github.com/open-wc/custom-elements-manifest/tree/master/packages/analyzer)
+- [Storybook, Mocking network requests](https://storybook.js.org/docs/writing-stories/mocking-data-and-modules/mocking-network-requests)
+- [MSW, Browser integration](https://mswjs.io/docs/integrations/browser)
+- [MSW, HttpResponse](https://mswjs.io/docs/api/http-response)
+- [MSW, init](https://mswjs.io/docs/cli/init)
+- [MSW Storybook Addon README — mswjs](https://github.com/mswjs/msw-storybook-addon/blob/main/README.md)
+- [MSW Storybook Addon MIGRATION — mswjs](https://github.com/mswjs/msw-storybook-addon/blob/main/MIGRATION.md)
+- [카페 관리도구 개편기: 문서는 낡았고, 사람은 떠났고, 코드만 남았다 — NAVER D2](https://www.youtube.com/watch?v=RnRZR-rz5ks) — 2026-11-16 업로드, 페이지 story와 MSW 적용 사례
 - [프론트 스택 2편. 개발 스택 선정: Lit과 Storybook을 선택한 이유 — 하찮은오후](https://www.youtube.com/watch?v=TEFl9Y3bFDQ) — 2026-11-04 업로드, 정리의 계기. 사실은 위 1차 출처로 대조
 
 ## 관련 문서

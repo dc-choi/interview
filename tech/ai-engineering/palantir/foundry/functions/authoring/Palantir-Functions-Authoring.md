@@ -29,6 +29,27 @@ TypeScript v1은 제한된 JavaScript 환경이다. Node.js의 파일 시스템�
 
 태그는 저장소의 모든 등록 함수를 게시한다. 일부 함수만 변경했어도 함께 게시되는 함수와 소비자를 확인한다. 성공한 release 직후에도 권한 전파 때문에 검색에 늦게 나타날 수 있다. Live preview는 개발 실행 환경이므로 배포 실행의 권한, 자원 한도와 성능을 보장하지 않는다.
 
+## 객체를 입력으로 받는 함수의 최소 흐름
+
+객체를 쓰는 함수는 먼저 필요한 객체 타입, 링크 타입과 interface를 저장소가 속한 Project로 import한다(세부 단위는 [[Palantir-Functions-Imports-and-Local-SDK|Ontology imports, 생성 SDK와 로컬 개발]]). 그 뒤 import 경로가 버전마다 다르다.
+
+| 구분 | 타입 import | 객체 입력 타입 |
+|---|---|---|
+| TypeScript v1 | `@foundry/ontology-api`, private Ontology는 `@foundry/ontology-api/<ontology-api-name>` | 생성된 객체 타입 그대로(`airport: Airport`) |
+| TypeScript v2 | import 뒤 Ontology SDK를 생성하고 설치해야 `@ontology/sdk`에서 쓸 수 있다 | `@osdk/client`의 `Osdk.Instance<Airport>`로 감싼다 |
+
+```typescript
+// TypeScript v2: src/functions/airportLocation.ts
+import { Airport } from "@ontology/sdk";
+import { Osdk } from "@osdk/client";
+
+export default function airportLocation(airport: Osdk.Instance<Airport>): string {
+    return `${airport.city}, ${airport.country}`;
+}
+```
+
+객체를 입력으로 받는 함수를 Live preview로 실행하려면 그 객체 타입의 backing datasource를 functions helper에서 따로 import해야 한다. Live preview에서 객체 타입에 대한 권한은 TypeScript 저장소가 각 객체 타입의 backing datasource에 갖는 권한으로 정해진다. notification을 만드는 함수는 preview에서 수신자 권한을 검사하지 않으므로, preview에서 성공해도 다른 곳의 Action에서 실패할 수 있다([[Palantir-Functions-Consumers-and-Notifications|함수 소비자와 notification]]). 게시는 코드를 커밋하고 Branches 탭에서 새 tag를 게시하는 방식이며, 게시한 뒤에야 다른 애플리케이션에서 쓸 수 있다. 이 절은 2026-11-26에 foo-getting-started와 대조했다.
+
 ## 문서의 지원 표를 읽는 방법
 
 언어 지원 표와 상세 기능 문서가 항상 같은 시점의 내용을 담지는 않는다. 예를 들어 표의 media 변환 미지원과 최신 media 문서의 beta 변환 지원을 구분해야 한다. 상세 SDK 버전과 enrollment 조건을 함께 확인한다. 구형 TypeScript 예제의 decorator를 v2에 그대로 옮기지 않는다.
