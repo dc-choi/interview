@@ -28,6 +28,8 @@ async function fixture() {
     'Store the domain change and event record in one database transaction. [[Idempotency]]', '',
   ].join('\n'));
   git(repo, ['init', '--quiet']);
+  await mkdir(path.join(repo, 'ontology'), { recursive: true });
+  await writeFile(path.join(repo, 'ontology', 'config.json'), JSON.stringify({ repository_id: 'test-vault' }));
   git(repo, ['config', 'user.email', 'test@example.com']);
   git(repo, ['config', 'user.name', 'Test']);
   git(repo, ['add', '.']);
@@ -39,10 +41,11 @@ function git(repo, args) {
   return execFileSync('git', ['-C', repo, ...args], { encoding: 'utf8' });
 }
 
-async function connect(args) {
+async function connect(args, env = process.env) {
   const transport = new StdioClientTransport({
     command: process.execPath,
     args: [cli, 'serve', ...args],
+    env,
     stderr: 'pipe',
   });
   const client = new Client({ name: 'context-ontology-test', version: '0.1.0' });
@@ -62,8 +65,8 @@ test('MCP server lists read-only lookup and evidence tools and returns structure
 
   const listed = await connection.client.request({ method: 'tools/list', params: {} }, ListToolsResultSchema);
   assert.deepEqual(listed.tools.map((tool) => tool.name).sort(),
-    ['context_concept', 'context_lookup', 'context_outline', 'context_read', 'context_search']);
-  for (const tool of listed.tools) {
+    ['context_concept', 'context_lookup', 'context_outline', 'context_profile', 'context_read', 'context_search']);
+  for (const tool of listed.tools.filter((item) => item.name !== 'context_profile')) {
     assert.equal(tool.annotations.readOnlyHint, true);
     assert.equal(tool.annotations.destructiveHint, false);
     assert.equal(tool.annotations.openWorldHint, false);
@@ -186,4 +189,47 @@ test('serve exits cleanly on stdin EOF without emitting a JSON representation of
   assert.equal(result.status, 0, result.stderr);
   assert.equal(result.stdout, '');
   assert.doesNotMatch(result.stderr, /circular structure/i);
+});
+
+test('context_profile reads only the capped local profile when requested', async (t) => {
+  const item = await fixture();
+  t.after(() => rm(item.root, { recursive: true, force: true }));
+  const home = path.join(item.root, 'home');
+  await mkdir(home, { recursive: true });
+  const connection = await connect(['--repo', item.repo, '--cache', item.cache, '--allow', 'tech'],
+    { ...process.env, HOME: home });
+  t.after(() => close(connection));
+
+  const listed = await connection.client.request({ method: 'tools/list', params: {} }, ListToolsResultSchema);
+  const profileTool = listed.tools.find((tool) => tool.name === 'context_profile');
+  assert.ok(profileTool);
+  assert.equal(profileTool.annotations.readOnlyHint, true);
+  assert.equal(profileTool.annotations.destructiveHint, false);
+  assert.deepEqual(profileTool.inputSchema.properties ?? {}, {});
+
+  const call = (arguments_) => connection.client.request({ method: 'tools/call',
+    params: { name: 'context_profile', arguments: arguments_ } }, CallToolResultSchema);
+  const absent = await call({});
+  assert.deepEqual(absent.structuredContent, { configured: false, profile: null });
+
+  const profilePath = path.join(home, '.development-context', 'profile.md');
+  await mkdir(path.dirname(profilePath), { recursive: true });
+  const profile = 'x'.repeat(8192);
+  await writeFile(profilePath, profile);
+  const configured = await call({});
+  assert.equal(configured.structuredContent.configured, true);
+  assert.equal(configured.structuredContent.profile, profile);
+
+  const lookup = await connection.client.request({ method: 'tools/call', params: {
+    name: 'context_lookup', arguments: { query: 'transactional outbox', scope: ['tech'], max_bytes: 8000 },
+  } }, CallToolResultSchema);
+  assert.equal(JSON.stringify(lookup.structuredContent).includes(profile), false);
+
+  const override = await call({ profile_path: '/etc/passwd' });
+  if (override.isError !== true) assert.equal(override.structuredContent.profile, profile);
+
+  await writeFile(profilePath, 'x'.repeat(8193));
+  const oversized = await call({});
+  assert.equal(oversized.isError, true);
+  assert.equal(oversized.structuredContent.error.code, 'profile_too_large');
 });

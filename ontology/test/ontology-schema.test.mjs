@@ -11,7 +11,7 @@ import { CLASSES, CONCEPT_TYPES, PREDICATES, isA } from '../src/schema.mjs';
 import { buildSnapshot, loadSnapshot } from '../src/snapshot.mjs';
 import { CONCEPT_FILES, gitFixture } from './ontology-fixture.mjs';
 
-const id = (slug) => `concept:interview-vault:${slug}`;
+const id = (slug) => `concept:test-vault:${slug}`;
 const edges = (snapshot, predicate) => snapshot.relations.filter((relation) => relation.predicate === predicate);
 const has = (snapshot, subject, predicate, object) => snapshot.relations
   .some((relation) => relation.subject === subject && relation.predicate === predicate && relation.object === object);
@@ -51,15 +51,15 @@ test('concept declarations in block and flow style become anchored units and con
     assert.equal(unit.content_hash, `sha256:${sha256(bytes)}`);
     return bytes.toString();
   };
-  assert.match(anchored('unit:interview-vault:tech/Outbox.md:frontmatter.ontology_concepts[0]'),
+  assert.match(anchored('unit:test-vault:tech/Outbox.md:frontmatter.ontology_concepts[0]'),
     /^id: transactional-outbox\n {4}type: Approach[\s\S]*broader: delivery-guarantee\n$/);
-  assert.match(anchored('unit:interview-vault:tech/Outbox.md:frontmatter.ontology_concepts[1]'), /^\{id: dual-write-problem,.*\}$/);
+  assert.match(anchored('unit:test-vault:tech/Outbox.md:frontmatter.ontology_concepts[1]'), /^\{id: dual-write-problem,.*\}$/);
   assert.deepEqual(declarations.find((item) => item.id.endsWith('Outbox.md:frontmatter.ontology_concepts[1]')).anchor.heading_path,
     ['frontmatter', 'ontology_concepts', '1']);
-  const document = 'document:interview-vault:tech/Outbox.md';
+  const document = 'document:test-vault:tech/Outbox.md';
   const declares = edges(snapshot, 'declares').find((edge) => edge.object === id('transactional-outbox'));
   assert.equal(declares.subject, document);
-  assert.equal(declares.evidence_unit_id, 'unit:interview-vault:tech/Outbox.md:frontmatter.ontology_concepts[0]');
+  assert.equal(declares.evidence_unit_id, 'unit:test-vault:tech/Outbox.md:frontmatter.ontology_concepts[0]');
   const support = edges(snapshot, 'supported_by').find((edge) => edge.subject === id('transactional-outbox'));
   assert.match(support.object, /%ED%95%B4%EA%B2%B0%3A%20Outbox%20%ED%85%8C%EC%9D%B4%EB%B8%94#1$/);
   assert.equal(support.evidence_unit_id, declares.evidence_unit_id);
@@ -72,10 +72,10 @@ test('concept declarations in block and flow style become anchored units and con
 test('relation endpoints accept canonical IDs, concept shorthand and wikilinks, and evidence adds supported_by', (t) => {
   const { snapshot } = built(t, {
     ...CONCEPT_FILES,
-    'tech/Legacy.md': '---\nontology_relations:\n  - {predicate: verified_by, target: "document:interview-vault:tech/Relay.md"}\n'
+    'tech/Legacy.md': '---\nontology_relations:\n  - {predicate: verified_by, target: "document:test-vault:tech/Relay.md"}\n'
       + '  - {predicate: verified_by, target: "[[Outbox#문제]]"}\n---\n# Legacy\n',
   });
-  const assertion = 'unit:interview-vault:tech/Outbox.md:frontmatter.ontology_relations[0]';
+  const assertion = 'unit:test-vault:tech/Outbox.md:frontmatter.ontology_relations[0]';
   const addresses = edges(snapshot, 'addresses')[0];
   assert.equal(addresses.subject, id('transactional-outbox'));
   assert.equal(addresses.object, id('dual-write-problem'));
@@ -89,7 +89,7 @@ test('relation endpoints accept canonical IDs, concept shorthand and wikilinks, 
   const contradicted = edges(snapshot, 'contradicted_by')[0];
   assert.equal(snapshot.entities.find((entity) => entity.id === contradicted.object).label, '비용');
   const legacy = edges(snapshot, 'verified_by');
-  assert.deepEqual(legacy.map((edge) => edge.object).sort(), ['document:interview-vault:tech/Relay.md',
+  assert.deepEqual(legacy.map((edge) => edge.object).sort(), ['document:test-vault:tech/Relay.md',
     snapshot.entities.find((entity) => entity.type === 'Section' && entity.source_uri === 'tech/Outbox.md' && entity.label === '문제').id].sort());
   assert.equal(wikilinkTarget(' [[Doc#Heading|label]] '), 'Doc#Heading');
   assert.equal(wikilinkTarget('[[Doc]] and more'), undefined);
@@ -152,8 +152,8 @@ test('every validation violation becomes a coverage gap instead of an edge or en
     unresolved_relation: 2,
     unsupported_concept_type: 1,
   });
-  const relation = (index) => `unit:interview-vault:tech/Approaches.md:frontmatter.ontology_relations[${index}]`;
-  const vocabulary = (index) => `unit:interview-vault:ontology/vocabulary/Vocabulary-Gaps.md:frontmatter.ontology_concepts[${index}]`;
+  const relation = (index) => `unit:test-vault:tech/Approaches.md:frontmatter.ontology_relations[${index}]`;
+  const vocabulary = (index) => `unit:test-vault:ontology/vocabulary/Vocabulary-Gaps.md:frontmatter.ontology_concepts[${index}]`;
   const gap = (reason, unit) => gaps.find((item) => item.reason === reason && item.evidence_unit_id === unit);
   assert.ok(gap('domain_violation', relation(0)));
   assert.ok(gap('range_violation', relation(1)));
@@ -164,8 +164,8 @@ test('every validation violation becomes a coverage gap instead of an edge or en
   assert.ok(gap('reflexive_relation', vocabulary(5)));
   assert.ok(gap('unresolved_relation', vocabulary(4)));
   assert.ok(gap('missing_evidence', vocabulary(10)));
-  assert.ok(gap('duplicate_concept_id', 'unit:interview-vault:tech/Approaches.md:frontmatter.ontology_concepts[4]'));
-  assert.ok(gap('missing_evidence', 'unit:interview-vault:tech/Approaches.md:frontmatter.ontology_concepts[3]'));
+  assert.ok(gap('duplicate_concept_id', 'unit:test-vault:tech/Approaches.md:frontmatter.ontology_concepts[4]'));
+  assert.ok(gap('missing_evidence', 'unit:test-vault:tech/Approaches.md:frontmatter.ontology_concepts[3]'));
   assert.deepEqual(gaps.filter((item) => item.reason === 'concept_label_collision').map((item) => item.evidence_unit_id).sort(),
     [vocabulary(2), vocabulary(3)]);
   assert.equal(gaps.find((item) => item.reason === 'undeclared_category').source_uri, 'tech/Approaches.md');
@@ -196,7 +196,7 @@ test('a declaration rejected for missing evidence does not claim its slug from a
 
 test('tags and categories map through the label index and counts report coverage', (t) => {
   const { result, snapshot } = built(t, CONCEPT_FILES);
-  const tagged = (path) => edges(snapshot, 'tagged_with').filter((edge) => edge.subject === `document:interview-vault:${path}`)
+  const tagged = (path) => edges(snapshot, 'tagged_with').filter((edge) => edge.subject === `document:test-vault:${path}`)
     .map((edge) => edge.object).sort();
   assert.deepEqual(tagged('tech/Outbox.md'), [id('messaging'), id('messaging-reliability')]);
   assert.deepEqual(tagged('tech/Relay.md'), [id('delivery-guarantee')]);

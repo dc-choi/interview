@@ -98,7 +98,7 @@ export function validateOntology({ repo, staged = false }) {
 export function checkCandidates({ repo, file }) {
   repo = resolveRepo(repo);
   const revision = headRevision(repo);
-  const repoId = configuredRepoId();
+  const repoId = configuredRepoId(repo);
   const { files, entities } = graphTree(repo, revision);
   const entityById = new Map(entities.map((entity) => [entity.id, entity]));
   const resolveLink = linkResolver(entities.filter((entity) => entity.type === 'Document'),

@@ -19,6 +19,8 @@ function fixture(t) {
   const cacheDir = join(root, 'cache');
   mkdirSync(join(repo, 'tech'), { recursive: true });
   git(root, ['init', '-q', repo]);
+  mkdirSync(join(repo, 'ontology'), { recursive: true });
+  writeFileSync(join(repo, 'ontology', 'config.json'), JSON.stringify({ repository_id: 'test-vault' }));
   git(repo, ['config', 'user.name', 'Fixture']);
   git(repo, ['config', 'user.email', 'fixture@example.invalid']);
   const clause = `${'prefix '.repeat(240)}필수 조항은 한국어와 emoji 🧪, 따옴표 "와 backslash \\를 보존한다. ${'suffix '.repeat(1200)}`;

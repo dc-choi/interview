@@ -17,6 +17,8 @@ function fixture(t, extraFiles = {}) {
   git('init', '-q');
   git('config', 'user.name', 'Fixture');
   git('config', 'user.email', 'fixture@example.invalid');
+  mkdirSync(join(repo, 'ontology'), { recursive: true });
+  writeFileSync(join(repo, 'ontology', 'config.json'), JSON.stringify({ repository_id: 'test-vault' }));
   writeFileSync(join(repo, 'tech', 'Alpha.md'), '# 설명\n\n고요한 문장의 기록이다.\n');
   writeFileSync(join(repo, 'tech', 'Guide.md'), '# 안내\n\nDocument identifiers support unit tests.\n');
   writeFileSync(join(repo, 'tech', 'Unit-Catalog.md'), '# 목록\n\n이름으로 찾는 자료다.\n');
@@ -37,6 +39,8 @@ function needleFixture(t, { exactHeading = false } = {}) {
   git('init', '-q');
   git('config', 'user.name', 'Fixture');
   git('config', 'user.email', 'fixture@example.invalid');
+  mkdirSync(join(repo, 'ontology'), { recursive: true });
+  writeFileSync(join(repo, 'ontology', 'config.json'), JSON.stringify({ repository_id: 'test-vault' }));
   const needleBody = exactHeading
     ? ['# Needle', '', 'Needle body links to [[Peer]].']
     : ['# Guide', '', '## Needle explanation', '', 'Needle body links to [[Peer]].'];

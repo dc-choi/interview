@@ -23,6 +23,8 @@ function graphFixture(t) {
   const repo = join(root, 'repo');
   const cacheDir = join(root, 'cache');
   git(root, ['init', '-q', repo]);
+  mkdirSync(join(repo, 'ontology'), { recursive: true });
+  writeFileSync(join(repo, 'ontology', 'config.json'), JSON.stringify({ repository_id: 'test-vault' }));
   git(repo, ['config', 'user.name', 'Test User']);
   git(repo, ['config', 'user.email', 'test@example.com']);
 
@@ -45,7 +47,7 @@ function graphFixture(t) {
     '',
     ...routeLinks,
   ].join('\n'));
-  git(repo, ['add', 'tech']);
+  git(repo, ['add', '.']);
   git(repo, ['commit', '-qm', 'fixture']);
   buildSnapshot({ repo, cacheDir, scopes: ['tech'] });
   t.after(() => rmSync(root, { recursive: true, force: true }));
@@ -95,6 +97,8 @@ test('an exact one-token document title still ranks an incident link by its body
   const repo = join(root, 'repo');
   const cacheDir = join(root, 'cache');
   git(root, ['init', '-q', repo]);
+  mkdirSync(join(repo, 'ontology'), { recursive: true });
+  writeFileSync(join(repo, 'ontology', 'config.json'), JSON.stringify({ repository_id: 'interview-vault' }));
   git(repo, ['config', 'user.name', 'Test User']);
   git(repo, ['config', 'user.email', 'test@example.com']);
   mkdirSync(join(repo, 'tech'), { recursive: true });
@@ -115,7 +119,7 @@ test('an exact one-token document title still ranks an incident link by its body
     '',
     ...noiseLinks,
   ].join('\n'));
-  git(repo, ['add', 'tech']);
+  git(repo, ['add', '.']);
   git(repo, ['commit', '-qm', 'fixture']);
   buildSnapshot({ repo, cacheDir, scopes: ['tech'] });
   t.after(() => rmSync(root, { recursive: true, force: true }));
@@ -155,6 +159,8 @@ test('typed relation assertion metadata outranks generic linked sections', (t) =
   const repo = join(root, 'repo');
   const cacheDir = join(root, 'cache');
   git(root, ['init', '-q', repo]);
+  mkdirSync(join(repo, 'ontology'), { recursive: true });
+  writeFileSync(join(repo, 'ontology', 'config.json'), JSON.stringify({ repository_id: 'interview-vault' }));
   git(repo, ['config', 'user.name', 'Test User']);
   git(repo, ['config', 'user.email', 'test@example.com']);
   mkdirSync(join(repo, 'tech'), { recursive: true });
@@ -168,7 +174,7 @@ test('typed relation assertion metadata outranks generic linked sections', (t) =
   writeFileSync(join(repo, 'tech', 'Target-A.md'), '# Target\n\nUnrelated dependency.\n');
   const body = ['# Needle', '', ...noiseLinks].join('\n');
   writeFileSync(join(repo, 'tech', 'Needle.md'), body);
-  git(repo, ['add', 'tech']);
+  git(repo, ['add', '.']);
   git(repo, ['commit', '-qm', 'initial fixture']);
   buildSnapshot({ repo, cacheDir, scopes: ['tech'] });
 
@@ -232,6 +238,8 @@ test('an explicit parent link wins a relevance tie without changing document sea
   const cacheDir = join(root, 'cache');
   t.after(() => rmSync(root, { recursive: true, force: true }));
   git(root, ['init', '-q', repo]);
+  mkdirSync(join(repo, 'ontology'), { recursive: true });
+  writeFileSync(join(repo, 'ontology', 'config.json'), JSON.stringify({ repository_id: 'test-vault' }));
   git(repo, ['config', 'user.name', 'Test User']);
   git(repo, ['config', 'user.email', 'test@example.com']);
   mkdirSync(join(repo, 'tech'));
@@ -241,7 +249,7 @@ test('an explicit parent link wins a relevance tie without changing document sea
   }
   const body = `# Needle\n\n## Routes\n\n${names.map((name) => `[[${name}]]`).join('\n')}\n`;
   writeFileSync(join(repo, 'tech', 'Needle.md'), body);
-  git(repo, ['add', 'tech']);
+  git(repo, ['add', '.']);
   git(repo, ['commit', '-qm', 'unclassified links']);
   const initial = buildSnapshot({ repo, cacheDir, scopes: ['tech'] }).snapshot;
   const parent = initial.relations.filter((edge) => edge.predicate === 'links_to')
@@ -250,7 +258,7 @@ test('an explicit parent link wins a relevance tie without changing document sea
   writeFileSync(join(repo, 'tech', 'Body-Match.md'), '# Evidence\n');
   writeFileSync(join(repo, 'tech', 'Needle.md'), body.replace(`[[${parentName}]]`, `상위: [[${parentName}]]`)
     + '\n## Explanation\n\nThe needle mechanism is explained by [[Body-Match]].\n');
-  git(repo, ['add', 'tech']);
+  git(repo, ['add', '.']);
   git(repo, ['commit', '-qm', 'declare parent without changing link order']);
   const snapshot = buildSnapshot({ repo, cacheDir, scopes: ['tech'] }).snapshot;
   const options = { repo, cacheDir, allowlist: ['tech'] };

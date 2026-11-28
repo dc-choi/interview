@@ -15,7 +15,10 @@ function fixture(t) {
   const cacheDir = join(root, 'cache');
   mkdirSync(join(repo, 'tech'), { recursive: true });
   const git = (...args) => execFileSync('git', ['-C', repo, ...args], { encoding: 'utf8' });
-  git('init', '-q'); git('config', 'user.name', 'Fixture'); git('config', 'user.email', 'fixture@example.invalid');
+  git('init', '-q');
+  mkdirSync(join(repo, 'ontology'), { recursive: true });
+  writeFileSync(join(repo, 'ontology', 'config.json'), JSON.stringify({ repository_id: 'test-vault' }));
+  git('config', 'user.name', 'Fixture'); git('config', 'user.email', 'fixture@example.invalid');
   writeFileSync(join(repo, 'tech', 'guide.md'), '# 시작 🙂\n\n## 중복\n\n하나\n\n## 중복\n\n둘\n\n## 끝\n\n셋\n');
   git('add', '.'); git('commit', '-qm', 'fixture');
   buildSnapshot({ repo, cacheDir, scopes: ['tech'] });

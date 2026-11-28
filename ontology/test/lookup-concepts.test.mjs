@@ -6,8 +6,8 @@ import { CONCEPT_QUERY_EXPANSION, lookup, search } from '../src/query.mjs';
 import { buildSnapshot } from '../src/snapshot.mjs';
 import { CONCEPT_FILES, gitFixture } from './ontology-fixture.mjs';
 
-// Recorded with the schema 1 / extractor 12 code (HEAD f5681066) for the same
-// pinned commit. Only version strings and the fingerprints that hash them differ.
+// A concept-free fixture pinned to Git commit time. Version and fingerprint fields
+// are masked so the comparison stays focused on the query output shape.
 const BASELINE = JSON.parse(readFileSync(new URL('./fixtures/concept-free-baseline.json', import.meta.url)));
 const MASKED = new Set(['fingerprint', 'manifest_hash', 'schema_version', 'extractor_version', 'extraction_version']);
 const mask = (value) => JSON.stringify(value, (key, item) => MASKED.has(key) ? '<masked>' : item);
@@ -163,7 +163,7 @@ test('a hint a returned unit supports takes the bytes it needs from excerpts whe
   const full = lookup(withoutConcepts, { query, max_bytes: 24000 }).budget.used_bytes;
   const plain = lookup(withoutConcepts, { query, max_bytes: full });
   const hinted = lookup(withConcepts, { query, max_bytes: full });
-  const hint = { id: 'concept:interview-vault:dead-letter', type: 'Approach', label: 'Dead Letter Queue', evidence_unit_index: 0 };
+  const hint = { id: 'concept:test-vault:dead-letter', type: 'Approach', label: 'Dead Letter Queue', evidence_unit_index: 0 };
   assert.deepEqual(hinted.concepts, [hint]);
   fits(hinted, full);
   // The same unit stays; only the end of its excerpt goes, within a twentieth of the budget.
@@ -203,7 +203,7 @@ test('a cut never leaves an excerpt under 512 bytes; otherwise the hint is dropp
   const withConcepts = fixture(t, deadLetterFiles(['  - {id: dl, type: Approach, label: DLQ, evidence: "[[Queue#Dead Letter]]"}']));
   const withoutConcepts = fixture(t, deadLetterFiles([]));
   const query = 'poison messages';
-  const hint = { id: 'concept:interview-vault:dl', type: 'Approach', label: 'DLQ', evidence_unit_index: 0 };
+  const hint = { id: 'concept:test-vault:dl', type: 'Approach', label: 'DLQ', evidence_unit_index: 0 };
   const hintBytes = Buffer.byteLength(JSON.stringify({ concepts: [hint] }));
   let dropped = 0;
   let shown = 0;
@@ -259,7 +259,7 @@ test('without a returned unit supporting a concept nothing is reserved and evide
   const query = 'poison messages';
   // The concept's Section is in the root document but not returned: a leftover-space hint.
   assert.deepEqual(lookup(withConcepts, { query, max_bytes: 24000 }).concepts,
-    [{ id: 'concept:interview-vault:retry-policy', type: 'Approach', label: 'Retry Policy' }]);
+    [{ id: 'concept:test-vault:retry-policy', type: 'Approach', label: 'Retry Policy' }]);
   const full = lookup(withoutConcepts, { query, max_bytes: 24000 }).budget.used_bytes;
   for (const max_bytes of [full, full - 300, 3000, 2600]) {
     const hinted = lookup(withConcepts, { query, max_bytes });
@@ -297,5 +297,5 @@ test('lookups with one request scope but different allowlists keep their own con
   const args = { query: 'poison messages', scope: ['tech'], max_bytes: 24000 };
   assert.equal(Object.hasOwn(lookup({ ...options, allowlist: ['tech'] }, args), 'concepts'), false);
   assert.deepEqual(lookup({ ...options, allowlist: ['ontology', 'tech'] }, args).concepts,
-    [{ id: 'concept:interview-vault:retry-policy', type: 'Approach', label: 'Retry Policy' }]);
+    [{ id: 'concept:test-vault:retry-policy', type: 'Approach', label: 'Retry Policy' }]);
 });

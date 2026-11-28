@@ -99,7 +99,7 @@ test('the follow arm retries a not-found start once with its first candidate and
   assert.deepEqual([reworded.concept.result_status, reworded.concept.evidence_score], ['concept_not_found', 0]);
   assert.deepEqual([reworded.follow.retried, reworded.follow.start, reworded.follow.match, reworded.follow.result_status,
     reworded.follow.evidence_score, reworded.follow.term_score],
-  [true, 'concept:interview-vault:dual-write-problem', 'name_tokens', 'ok', 1, 1]);
+  [true, 'concept:test-vault:dual-write-problem', 'name_tokens', 'ok', 1, 1]);
   assert.deepEqual(exact.follow, { retried: false, ...exact.concept });
   assert.deepEqual([unknown.follow.retried, unknown.follow.result_status, unknown.follow.evidence_score],
     [false, 'concept_not_found', 0]);

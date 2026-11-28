@@ -10,7 +10,7 @@ import { readEvidence } from '../src/read-evidence.mjs';
 import { buildSnapshot, loadSnapshot } from '../src/snapshot.mjs';
 import { CONCEPT_FILES, gitFixture } from './ontology-fixture.mjs';
 
-const id = (slug) => `concept:interview-vault:${slug}`;
+const id = (slug) => `concept:test-vault:${slug}`;
 const view = (result) => result.relations.map((item) => [item.predicate, item.direction, item.peer.label, item.inferred,
   item.rule ?? null]);
 
@@ -390,7 +390,7 @@ test('scoped gap messages never name concepts or paths outside the allowlist', (
   for (const result of [conceptQuery(scoped, { concept: 'queue' }), lookup(scoped, { query: 'Message Queue' })]) {
     const gap = result.coverage_gaps.find((item) => item.reason === 'concept_label_collision');
     assert.deepEqual([gap.source_uri, gap.evidence_unit_id, Object.hasOwn(gap, 'message')],
-      ['tech/B.md', 'unit:interview-vault:tech/B.md:frontmatter.ontology_concepts[0]', false]);
+      ['tech/B.md', 'unit:test-vault:tech/B.md:frontmatter.ontology_concepts[0]', false]);
     assert.equal(JSON.stringify(result).includes('job-queue'), false);
     assert.equal(JSON.stringify(result).includes('fit/'), false);
   }

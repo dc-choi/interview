@@ -19,14 +19,35 @@ const byId = (a, b) => a.id < b.id ? -1 : Number(a.id > b.id);
 const jsonFile = (value) => `${stableJson(value)}\n`;
 let parsedRecordsCache;
 
-export function configuredRepoId() {
-  const config = JSON.parse(readFileSync(new URL('../config.json', import.meta.url), 'utf8'));
-  if (!config || typeof config !== 'object' || Array.isArray(config)
-    || Object.keys(config).length !== 1 || typeof config.repository_id !== 'string'
-    || !/^[a-zA-Z0-9][a-zA-Z0-9_-]{0,63}$/.test(config.repository_id)) {
-    throw new ContextError('invalid_config', 'config.json must define a stable repository_id');
+function readRepositoryConfig(repo) {
+  const root = resolveRepo(repo);
+  let config;
+  try {
+    config = JSON.parse(readFileSync(join(root, 'ontology', 'config.json'), 'utf8'));
+  } catch {
+    throw new ContextError('invalid_config', 'ontology/config.json must be valid JSON');
   }
-  return config.repository_id;
+  if (!config || typeof config !== 'object' || Array.isArray(config)
+    || Object.keys(config).some((key) => !['repository_id', 'default_scopes'].includes(key))
+    || typeof config.repository_id !== 'string'
+    || !/^[a-zA-Z0-9][a-zA-Z0-9_-]{0,63}$/.test(config.repository_id)) {
+    throw new ContextError('invalid_config', 'ontology/config.json must define a stable repository_id');
+  }
+  let defaultScopes;
+  try {
+    defaultScopes = normalizeScopes(config.default_scopes ?? DEFAULT_SCOPES);
+  } catch {
+    throw new ContextError('invalid_config', 'ontology/config.json default_scopes must contain valid repository-relative paths');
+  }
+  return { repository_id: config.repository_id, default_scopes: defaultScopes };
+}
+
+export function configuredRepoId(repo) {
+  return readRepositoryConfig(repo).repository_id;
+}
+
+export function configuredDefaultScopes(repo) {
+  return readRepositoryConfig(repo).default_scopes;
 }
 
 export function defaultCacheDir(repo) {
@@ -338,8 +359,9 @@ export function graph(records, repoId) {
  * gap, so validate reports it; buildSnapshot still stops on it and keeps the active snapshot.
  */
 export function graphTree(repo, tree, { revision = tree, parsed = new Map() } = {}) {
-  const repoId = configuredRepoId();
-  const files = listMarkdown(repo, tree, DEFAULT_SCOPES);
+  const config = readRepositoryConfig(repo);
+  const repoId = config.repository_id;
+  const files = listMarkdown(repo, tree, config.default_scopes);
   const id = (file) => `${file.path}\0${file.oid}`;
   const pending = files.filter((file) => !parsed.has(id(file)));
   const blobs = readBlobs(repo, pending);
@@ -493,9 +515,10 @@ export function loadSnapshot({ repo, cacheDir }, root = resolveRepo(repo)) {
   }
 }
 
-export function buildSnapshot({ repo, cacheDir, scopes = DEFAULT_SCOPES, committedOnly = false }) {
+export function buildSnapshot({ repo, cacheDir, scopes, committedOnly = false }) {
   repo = resolveRepo(repo);
-  scopes = normalizeScopes(scopes);
+  const config = readRepositoryConfig(repo);
+  scopes = normalizeScopes(scopes ?? config.default_scopes);
   const cache = cacheLocation(repo, cacheDir);
   prepareCache(repo, cache);
   let temporary;
@@ -507,7 +530,7 @@ export function buildSnapshot({ repo, cacheDir, scopes = DEFAULT_SCOPES, committ
     }
     const state = getRepoState(repo);
     if (state.dirty && !committedOnly) throw new ContextError('unindexed_worktree', 'use --committed-only to index the committed revision explicitly');
-    const repoId = configuredRepoId();
+    const repoId = config.repository_id;
     const inputs = { repo_id: repoId, source_root: repo, revision: state.revision, indexed_paths: scopes,
       schema_version: SCHEMA_VERSION, extractor_version: EXTRACTOR_VERSION };
     fingerprint = sha256(stableJson(inputs));

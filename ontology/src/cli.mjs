@@ -9,8 +9,8 @@ import { lookup, search } from './query.mjs';
 import { readEvidence } from './read-evidence.mjs';
 import { outlineEvidence } from './outline.mjs';
 import { getRepoState } from './repository.mjs';
-import { buildSnapshot, defaultCacheDir, loadSnapshot } from './snapshot.mjs';
-import { DEFAULT_SCOPES, ensureFreshSnapshot, serveMcp, toErrorPayload } from './server.mjs';
+import { buildSnapshot, configuredDefaultScopes, defaultCacheDir, loadSnapshot } from './snapshot.mjs';
+import { ensureFreshSnapshot, serveMcp, toErrorPayload } from './server.mjs';
 import { checkCandidates, validateOntology } from './validate.mjs';
 
 const DEFAULT_REPO = resolve(fileURLToPath(new URL('../..', import.meta.url)));
@@ -203,7 +203,8 @@ export function parseArguments(argv) {
   if (options.command === 'serve' && (options.scopes.length || options.query !== undefined || options.depth !== undefined || options.maxBytes !== undefined || options.cursor !== undefined)) {
     throw new ContextError('invalid_arguments', 'serve accepts --allow and --committed-only only.');
   }
-  options.allowlist = options.allowlist.length ? options.allowlist : DEFAULT_SCOPES;
+  const defaultScopes = configuredDefaultScopes(options.repo);
+  options.allowlist = options.allowlist.length ? options.allowlist : defaultScopes;
   options.scopes = options.scopes.length ? options.scopes : options.allowlist;
   options.cacheDir ??= defaultCacheDir(options.repo);
   return options;
@@ -317,12 +318,13 @@ function isMissingSnapshot(error) {
 }
 
 export function usage() {
+  const defaultScopes = configuredDefaultScopes(DEFAULT_REPO);
   return [
     'Usage: context-ontology <build|lookup|search|read|outline|concept|serve|status|validate|candidates> [options]',
     '  --repo <absolute-path>       Vault repository, defaults to this repository',
     '  --cache <absolute-path>      Cache outside the repository',
-    `  --scope <path>               Repeatable build, lookup, or search scope, defaults to ${DEFAULT_SCOPES.join(', ')}`,
-    `  --allow <path>               Repeatable lookup, search, read, outline, or server allowlist, defaults to ${DEFAULT_SCOPES.join(', ')}`,
+    `  --scope <path>               Repeatable build, lookup, or search scope, defaults to ${defaultScopes.join(', ')}`,
+    `  --allow <path>               Repeatable lookup, search, read, outline, or server allowlist, defaults to ${defaultScopes.join(', ')}`,
     '  --committed-only              Build or serve the current HEAD when worktree is dirty',
     '  lookup requires --query <text>; accepts --condition <text> (up to 3), --depth <1|2> and --max-bytes <integer>',
     '  search requires --query <text>; accepts --scope <path>, --max-bytes <integer>, and --cursor <opaque-token>',

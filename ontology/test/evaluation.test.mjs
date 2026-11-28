@@ -24,6 +24,8 @@ function sourceFixture(t) {
   git('init', '-q');
   git('config', 'user.name', 'Fixture');
   git('config', 'user.email', 'fixture@example.invalid');
+  mkdirSync(join(repo, 'ontology'), { recursive: true });
+  writeFileSync(join(repo, 'ontology', 'config.json'), JSON.stringify({ repository_id: 'test-vault' }));
   writeFileSync(join(repo, 'tech', 'source.md'), '# Source\n\n## Rule\n\nFirst requirement. Second requirement.\n');
   git('add', '.');
   git('commit', '-qm', 'fixture');

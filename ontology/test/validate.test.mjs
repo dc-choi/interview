@@ -133,7 +133,7 @@ test('validate --staged keeps a pre-existing hierarchy cycle a warning when decl
     '  - {id: queue, type: Topic, label: Queue, broader: stream}',
     '  - {id: stream, type: Topic, label: Stream, broader: cache}', '---', '# Cycle', ''].join('\n');
   const fixture = gitFixture(t, { [path]: cycle() });
-  const message = 'concept:interview-vault:stream broader concept:interview-vault:cache closes a cycle.';
+  const message = 'concept:test-vault:stream broader concept:test-vault:cache closes a cycle.';
   assert.deepEqual(run('validate', '--repo', fixture.repo).report.gaps.map((gap) => gap.message), [message]);
   // The insertion shifts every edge ID; with these slugs the greatest one moves from queue to cache.
   fixture.write({ [path]: cycle('  - {id: buffer, type: Topic, label: Buffer}') });

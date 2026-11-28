@@ -19,6 +19,8 @@ async function fixture(t) {
   const cacheDir = join(root, 'cache');
   execFileSync('mkdir', ['-p', join(repo, 'tech')]);
   git(root, ['init', '-q', repo]);
+  mkdirSync(join(repo, 'ontology'), { recursive: true });
+  writeFileSync(join(repo, 'ontology', 'config.json'), JSON.stringify({ repository_id: 'test-vault' }));
   git(repo, ['config', 'user.name', 'Test User']);
   git(repo, ['config', 'user.email', 'test@example.com']);
   writeFileSync(join(repo, 'tech', 'event.md'), [
@@ -35,7 +37,7 @@ async function fixture(t) {
     '',
   ].join('\n'));
   writeFileSync(join(repo, 'tech', 'target.md'), '# Target\n\n## 소비자\n\n소비자는 이벤트 계약을 확인한다.\n');
-  git(repo, ['add', 'tech']);
+  git(repo, ['add', '.']);
   git(repo, ['commit', '-qm', 'fixture']);
   await buildSnapshot({ repo, cacheDir, scopes: ['tech'] });
   t.after(() => rmSync(root, { recursive: true, force: true }));
@@ -47,6 +49,8 @@ async function fixtureWithFiles(t, files) {
   const repo = join(root, 'repo');
   const cacheDir = join(root, 'cache');
   git(root, ['init', '-q', repo]);
+  mkdirSync(join(repo, 'ontology'), { recursive: true });
+  writeFileSync(join(repo, 'ontology', 'config.json'), JSON.stringify({ repository_id: 'test-vault' }));
   git(repo, ['config', 'user.name', 'Test User']);
   git(repo, ['config', 'user.email', 'test@example.com']);
   for (const [sourcePath, content] of files) {

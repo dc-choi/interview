@@ -1,3 +1,4 @@
 {
-  "repository_id": "interview-vault"
+  "repository_id": "interview-vault",
+  "default_scopes": ["README.md", "biz", "econ", "fit", "ontology", "tech"]
 }

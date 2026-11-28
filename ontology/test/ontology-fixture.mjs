@@ -96,6 +96,8 @@ export function gitFixture(t, files, { date } = {}) {
   git('init', '-q');
   git('config', 'user.name', 'Fixture');
   git('config', 'user.email', 'fixture@example.invalid');
+  mkdirSync(join(repo, 'ontology'), { recursive: true });
+  writeFileSync(join(repo, 'ontology', 'config.json'), JSON.stringify({ repository_id: 'test-vault' }));
   write(files);
   commit();
   return { root, repo, cacheDir, git, write, commit };

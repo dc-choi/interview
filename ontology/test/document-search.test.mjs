@@ -24,6 +24,8 @@ function fixture(t) {
     writeFileSync(join(repo, sourcePath), content);
   };
   git(root, ['init', '-q', repo]);
+  mkdirSync(join(repo, 'ontology'), { recursive: true });
+  writeFileSync(join(repo, 'ontology', 'config.json'), JSON.stringify({ repository_id: 'test-vault' }));
   git(repo, ['config', 'user.name', 'Fixture']);
   git(repo, ['config', 'user.email', 'fixture@example.invalid']);
   for (let index = 0; index < 25; index += 1) {

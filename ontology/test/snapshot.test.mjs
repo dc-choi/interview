@@ -7,7 +7,7 @@ import { syncBuiltinESMExports } from 'node:module';
 import { homedir, tmpdir } from 'node:os';
 import { basename, join } from 'node:path';
 import { fileURLToPath } from 'node:url';
-import { buildSnapshot, defaultCacheDir, loadSnapshot } from '../src/snapshot.mjs';
+import { buildSnapshot, configuredDefaultScopes, configuredRepoId, defaultCacheDir, loadSnapshot } from '../src/snapshot.mjs';
 import { getRepoState, readBlob } from '../src/repository.mjs';
 import { sha256 } from '../src/core.mjs';
 import { ensureFreshSnapshot } from '../src/server.mjs';
@@ -22,6 +22,8 @@ function fixture(t) {
   git('init');
   git('config', 'user.name', 'Fixture');
   git('config', 'user.email', 'fixture@example.invalid');
+  mkdirSync(join(repo, 'ontology'), { recursive: true });
+  writeFileSync(join(repo, 'ontology', 'config.json'), JSON.stringify({ repository_id: 'test-vault' }));
   const write = (path, text) => { mkdirSync(join(repo, path, '..'), { recursive: true }); writeFileSync(join(repo, path), text); };
   const commit = () => { git('add', '.'); git('commit', '-m', 'fixture'); };
   write('tech/A.md', '---\naliases: [Alpha]\n---\n# Source\n본문 [[B#Target]] [[Missing]]\n');
@@ -36,6 +38,20 @@ function gitAt(repo, args, date) {
     env: { ...process.env, GIT_AUTHOR_DATE: date, GIT_COMMITTER_DATE: date },
   }).trim();
 }
+
+test('repository config supplies stable identity and default scopes', (t) => {
+  const options = fixture(t);
+  options.write('fit/Personal.md', '# Private profile\n');
+  options.write('ontology/config.json', JSON.stringify({ repository_id: 'shared-vault', default_scopes: ['tech'] }));
+  options.commit();
+
+  assert.equal(configuredRepoId(options.repo), 'shared-vault');
+  assert.deepEqual(configuredDefaultScopes(options.repo), ['tech']);
+  buildSnapshot({ repo: options.repo, cacheDir: options.cacheDir });
+  const snapshot = loadSnapshot(options);
+  assert.ok(snapshot.entities.some((entity) => entity.id === 'document:shared-vault:tech/A.md'));
+  assert.equal(snapshot.entities.some((entity) => entity.source_uri === 'fit/Personal.md'), false);
+});
 
 test('snapshots are deterministic, source-backed, and reproducible', (t) => {
   const options = fixture(t);

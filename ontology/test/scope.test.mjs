@@ -36,6 +36,8 @@ function fixture(t) {
   }
   const git = (...args) => execFileSync('git', ['-C', repo, ...args], { stdio: 'pipe' });
   git('init', '--quiet');
+  mkdirSync(join(repo, 'ontology'), { recursive: true });
+  writeFileSync(join(repo, 'ontology', 'config.json'), JSON.stringify({ repository_id: 'test-vault' }));
   git('config', 'user.name', 'Fixture');
   git('config', 'user.email', 'fixture@example.invalid');
   git('add', '.');
